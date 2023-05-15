@@ -159,6 +159,10 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
 
+  LayerTreeHostImpl* LayerTreeHostImplForTesting() const {
+    return host_impl_.get();
+  }
+
  protected:
   SingleThreadProxy(LayerTreeHost* layer_tree_host,
                     LayerTreeHostSingleThreadClient* client,

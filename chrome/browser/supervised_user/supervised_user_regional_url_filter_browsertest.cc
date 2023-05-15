@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
@@ -135,7 +136,8 @@ class SupervisedUserRegionalURLFilterTest
                         &MockKidsChromeManagementClient::MakeUnique)));
   }
 
-  MockKidsChromeManagementClient* kids_chrome_management_client_;
+  raw_ptr<MockKidsChromeManagementClient, ExperimentalAsh>
+      kids_chrome_management_client_;
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
@@ -43,7 +44,7 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
   }
 
  private:
-  AccessibilityPanel* panel_;
+  raw_ptr<AccessibilityPanel, ExperimentalAsh> panel_;
 };
 
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,

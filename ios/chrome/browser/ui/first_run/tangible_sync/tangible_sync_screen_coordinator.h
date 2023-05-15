@@ -18,6 +18,7 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
                                         delegate:
                                             (id<FirstRunScreenDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

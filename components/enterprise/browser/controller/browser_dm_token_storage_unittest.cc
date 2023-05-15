@@ -83,15 +83,13 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserDMTokenStorageStoreAndRetrieveTest,
     BrowserDMTokenStorageStoreAndRetrieveTest,
     testing::Values(
-        StoreAndRetrieveTestParams(
-            kDMToken1,
-            DMToken::CreateValidTokenForTesting(kDMToken1)),
-        StoreAndRetrieveTestParams(
-            kDMToken2,
-            DMToken::CreateValidTokenForTesting(kDMToken2)),
+        StoreAndRetrieveTestParams(kDMToken1,
+                                   DMToken::CreateValidToken(kDMToken1)),
+        StoreAndRetrieveTestParams(kDMToken2,
+                                   DMToken::CreateValidToken(kDMToken2)),
         StoreAndRetrieveTestParams("INVALID_DM_TOKEN",
-                                   DMToken::CreateInvalidTokenForTesting()),
-        StoreAndRetrieveTestParams("", DMToken::CreateEmptyTokenForTesting())));
+                                   DMToken::CreateInvalidToken()),
+        StoreAndRetrieveTestParams("", DMToken::CreateEmptyToken())));
 
 TEST_F(BrowserDMTokenStorageTest, RetrieveClientId) {
   EXPECT_EQ(kClientId1, storage_.RetrieveClientId());

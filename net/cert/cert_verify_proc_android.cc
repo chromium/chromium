@@ -27,6 +27,7 @@
 #include "net/cert/known_roots.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
@@ -101,7 +102,7 @@ std::shared_ptr<const ParsedCertificate> FindLastCertWithUnknownIssuer(
 bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
                                          std::string_view uri,
                                          ParsedCertificateList* cert_list) {
-  GURL url(base::StringPiece(uri.data(), uri.size()));
+  GURL url(uri);
   if (!url.is_valid())
     return false;
   std::unique_ptr<CertNetFetcher::Request> request(fetcher->FetchCaIssuers(
@@ -244,6 +245,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 bool VerifyFromAndroidTrustManager(
     const std::vector<std::string>& cert_bytes,
     const std::string& hostname,
+    int flags,
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     CertVerifyResult* verify_result) {
   android::CertVerifyStatusAndroid status;
@@ -255,7 +257,8 @@ bool VerifyFromAndroidTrustManager(
 
   // If verification resulted in a NO_TRUSTED_ROOT error, then fetch
   // intermediates and retry.
-  if (status == android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT) {
+  if (status == android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT &&
+      !(flags & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)) {
     status = TryVerifyWithAIAFetching(cert_bytes, hostname,
                                       std::move(cert_net_fetcher),
                                       verify_result, &verified_chain);
@@ -362,13 +365,20 @@ int CertVerifyProcAndroid::VerifyInternal(
     const NetLogWithSource& net_log) {
   std::vector<std::string> cert_bytes;
   GetChainDEREncodedBytes(cert, &cert_bytes);
-  if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, cert_net_fetcher_,
-                                     verify_result)) {
+  if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, flags,
+                                     cert_net_fetcher_, verify_result)) {
     return ERR_FAILED;
   }
 
   if (IsCertStatusError(verify_result->cert_status))
     return MapCertStatusToNetError(verify_result->cert_status);
+
+  if (TestRootCerts::HasInstance() &&
+      !verify_result->verified_cert->intermediate_buffers().empty() &&
+      TestRootCerts::GetInstance()->IsKnownRoot(x509_util::CryptoBufferAsSpan(
+          verify_result->verified_cert->intermediate_buffers().back().get()))) {
+    verify_result->is_issued_by_known_root = true;
+  }
 
   LogNameNormalizationMetrics(".Android", verify_result->verified_cert.get(),
                               verify_result->is_issued_by_known_root);

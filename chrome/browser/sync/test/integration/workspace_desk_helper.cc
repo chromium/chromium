@@ -15,7 +15,7 @@
 namespace workspace_desk_helper {
 
 DeskUuidChecker::DeskUuidChecker(desks_storage::DeskSyncService* service,
-                                 const base::GUID& uuid)
+                                 const base::Uuid& uuid)
     : uuid_(uuid), service_(service) {
   DCHECK(service);
   service->GetDeskModel()->AddObserver(this);
@@ -30,7 +30,7 @@ bool DeskUuidChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be added/updated.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
+  for (const base::Uuid& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return true;
     }
@@ -48,14 +48,14 @@ void DeskUuidChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskUuidChecker::EntriesRemovedRemotely(
-    const std::vector<base::GUID>& uuids) {
+    const std::vector<base::Uuid>& uuids) {
   CheckExitCondition();
 }
 
 // DeskUuidDeletedChecker
 DeskUuidDeletedChecker::DeskUuidDeletedChecker(
     desks_storage::DeskSyncService* service,
-    const base::GUID& uuid)
+    const base::Uuid& uuid)
     : uuid_(uuid), service_(service) {
   DCHECK(service);
   service->GetDeskModel()->AddObserver(this);
@@ -70,7 +70,7 @@ bool DeskUuidDeletedChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be deleted.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
+  for (const base::Uuid& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return false;
     }
@@ -88,7 +88,7 @@ void DeskUuidDeletedChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskUuidDeletedChecker::EntriesRemovedRemotely(
-    const std::vector<base::GUID>& uuids) {
+    const std::vector<base::Uuid>& uuids) {
   CheckExitCondition();
 }
 
@@ -119,7 +119,7 @@ void DeskModelReadyChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskModelReadyChecker::EntriesRemovedRemotely(
-    const std::vector<base::GUID>& uuids) {
+    const std::vector<base::Uuid>& uuids) {
   CheckExitCondition();
 }
 

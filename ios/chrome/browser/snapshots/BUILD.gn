@@ -25,16 +25,16 @@ source_set("snapshots") {
     "snapshots_util.mm",
   ]
   deps = [
-    ":features",
     "//base",
     "//base/ios",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
+    "//build:blink_buildflags",
     "//ios/chrome/browser/sessions:scene_util",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs:features",
-    "//ios/chrome/browser/web_state_list",
     "//ios/third_party/webkit",
     "//ios/web/public",
     "//ui/base",
@@ -72,9 +72,9 @@ source_set("unit_tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/web",
@@ -86,13 +86,4 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/gfx",
   ]
-}
-
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
 }

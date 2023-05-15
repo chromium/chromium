@@ -20,15 +20,24 @@
 
 namespace viz {
 
+// Returns the closest SkColorType for a given single planar `format`.
+//
 // NOTE: The formats BGRX_8888, BGR_565 and BGRA_1010102 return a SkColorType
 // with R/G channels reversed. This is because from GPU perspective, GL format
 // is always RGBA and there is no difference between RGBA/BGRA. Also, these
 // formats should not be used for software SkImages/SkSurfaces.
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ResourceFormatToClosestSkColorType(bool gpu_compositing, ResourceFormat format);
+ToClosestSkColorType(bool gpu_compositing, SharedImageFormat format);
+
+// Returns the closest SkColorType for a given `format` and `plane_index`. For
+// single planar formats (eg. RGBA) the plane_index must be zero and it's
+// equivalent to calling function above.
+VIZ_RESOURCE_FORMAT_EXPORT SkColorType
+ToClosestSkColorType(bool gpu_compositing,
+                     SharedImageFormat format,
+                     int plane_index);
 
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT int AlphaBits(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
 SkColorTypeToResourceFormat(SkColorType color_type);
 
@@ -43,16 +52,12 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
 // Checks if there is an equivalent BufferFormat.
 VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
     SharedImageFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
-    ResourceFormat format);
 
 // Returns the pixel format of the resource when mapped into client-side memory.
 // Returns a default value when IsGpuMemoryBufferFormatSupported() returns false
 // for a given format, as in this case the resource will not be mapped into
 // client-side memory, and the returned value is not used.
 VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat BufferFormat(
-    ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT bool IsResourceFormatCompressed(
     ResourceFormat format);
 
 // |use_angle_rgbx_format| should be true when the GL_ANGLE_rgbx_internal_format
@@ -69,29 +74,13 @@ VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
 // display compositor.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsBitmapFormatSupported(ResourceFormat format);
 
-VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
-GetResourceFormat(gfx::BufferFormat format);
-
-VIZ_RESOURCE_FORMAT_EXPORT bool GLSupportsFormat(ResourceFormat format);
+VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
+GetSharedImageFormat(gfx::BufferFormat format);
 
 #if BUILDFLAG(ENABLE_VULKAN)
 VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT VkFormat ToVkFormat(ResourceFormat format);
 #endif
-
-// Gets the closest SkColorType for a given `format` and `plane_index`. For
-// single planar formats (eg. RGBA) the plane_index can be set to 0 and the
-// corresponding function with ResourceFormat is called. For multiplanar formats
-// a plane_index is required.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing,
-                     SharedImageFormat format,
-                     int plane_index);
-
-// This should ideally be used for known single planar SharedImageFormats
-// which calls corresponding function with ResourceFormat.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing, SharedImageFormat format);
 
 }  // namespace viz
 

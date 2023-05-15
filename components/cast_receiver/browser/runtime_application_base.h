@@ -116,9 +116,9 @@ class RuntimeApplicationBase
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::raw_ref<ApplicationClient> application_client_;
+  raw_ref<ApplicationClient> application_client_;
 
-  base::raw_ptr<EmbedderApplication> embedder_application_{nullptr};
+  raw_ptr<EmbedderApplication> embedder_application_{nullptr};
 
   // Cached mojom rules that are set iff |cast_web_view_| is not created before
   // SetUrlRewriteRules is called.

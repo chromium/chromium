@@ -4,10 +4,10 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from 'chrome://new-tab-page/lazy_load.js';
+import {ModuleDescriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -80,23 +80,5 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     // Assert.
     assertEquals(null, moduleElement);
     assertEquals(123, timeout);
-  });
-
-  suite('V2', () => {
-    test('creates element on timeout', async () => {
-      // Arrange.
-      const moduleDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.SHORT,
-          () => new Promise(() => {}) /* Never resolves. */);
-
-      // Act.
-      const initializePromise = moduleDescriptor.initialize(123);
-      const [callback] = await windowProxy.whenCalled('setTimeout');
-      callback();
-      const moduleElement = await initializePromise;
-
-      // Assert.
-      assertTrue(!!moduleElement);
-    });
   });
 });

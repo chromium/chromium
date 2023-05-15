@@ -70,21 +70,16 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
                 !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
-  dict->Set("testapi_shouldSkipGuestTos",
-            StartupUtils::IsEulaAccepted() ||
-                !features::IsOobeConsolidatedConsentEnabled() ||
-                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->Set(
+      "testapi_shouldSkipGuestTos",
+      StartupUtils::IsEulaAccepted() || !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   dict->Set("testapi_isFingerprintSupported",
             quick_unlock::IsFingerprintSupported());
 
-  dict->Set("testapi_isLibAssistantEnabled",
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-            true
-#else
-            false
-#endif
-  );
+  dict->Set("testapi_shouldSkipAssistant",
+            features::IsOobeSkipAssistantEnabled() ||
+                !BUILDFLAG(ENABLE_CROS_LIBASSISTANT));
 
   dict->Set("testapi_isBrandedBuild",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -98,8 +93,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             TabletMode::Get()->InTabletMode() ||
                 switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
-            !features::IsOobeConsolidatedConsentEnabled() ||
-                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+            !BUILDFLAG(GOOGLE_CHROME_BRANDING));
   dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
 }
 

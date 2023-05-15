@@ -172,6 +172,12 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // |weak_factory_for_registration_| weak pointers used for registration.
   void CancelPendingRegistration();
 
+  // Fetches an OAuth token to allow the cloud policy service to register with
+  // the cloud policy server. |oauth_login_token| should contain an OAuth login
+  // refresh token that can be downscoped to get an access token for the
+  // device_management service.
+  virtual void RegisterCloudPolicyService();
+
   // Convenience helpers to get the associated CloudPolicyManager and
   // IdentityManager.
   CloudPolicyManager* policy_manager() { return policy_manager_; }
@@ -207,12 +213,6 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   void CallPolicyRegistrationCallbackForTemporaryClient(
       std::unique_ptr<CloudPolicyClient> client,
       PolicyRegistrationCallback callback);
-
-  // Fetches an OAuth token to allow the cloud policy service to register with
-  // the cloud policy server. |oauth_login_token| should contain an OAuth login
-  // refresh token that can be downscoped to get an access token for the
-  // device_management service.
-  void RegisterCloudPolicyService();
 
   // Callback invoked when policy registration has finished.
   void OnRegistrationComplete();

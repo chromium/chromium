@@ -808,32 +808,6 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfileOnBlockedDomain) {
   TestImportScenario(test_scenario);
 }
 
-// Test that the observation of quasi identical profile that has a different
-// structure in the name will result in a silent update even when the profile
-// has the legacy property of being verified.
-TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateVerifiedProfile) {
-  AutofillProfile observed_profile = test::StandardProfile();
-
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  updateable_profile.set_origin(kSettingsOrigin);
-  ASSERT_TRUE(updateable_profile.IsVerified());
-
-  AutofillProfile final_profile = observed_profile;
-  test::CopyGUID(updateable_profile, &final_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = false,
-      .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
-      .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
-      .expected_final_profiles = {final_profile}};
-  TestImportScenario(test_scenario);
-}
-
 // Test the observation of a profile that can only be merged with a
 // settings-visible change. Here, `kUserNotAsked` is returned as the fallback
 // mechanism when the UI is not available for technical reasons.
@@ -926,36 +900,6 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge_BlockedProfile) {
       .is_profile_change_expected = false,
       .expected_final_profiles = {mergeable_profile},
       .blocked_guids_for_updates = {mergeable_profile.guid()}};
-
-  TestImportScenario(test_scenario);
-}
-
-// Test the observation of a profile that can only be merged with a
-// settings-visible change. The existing profile has the legacy property of
-// being verified.
-TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge_VerifiedProfile) {
-  AutofillProfile observed_profile = test::StandardProfile();
-
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-  mergeable_profile.set_origin(kSettingsOrigin);
-  ASSERT_TRUE(mergeable_profile.IsVerified());
-
-  AutofillProfile final_profile = observed_profile;
-  test::CopyGUID(mergeable_profile, &final_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {mergeable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kAccepted,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = final_profile,
-      .expected_final_profiles = {final_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
-          SettingsVisibleFieldTypeForMetrics::kZip,
-          SettingsVisibleFieldTypeForMetrics::kCity}};
 
   TestImportScenario(test_scenario);
 }

@@ -140,7 +140,8 @@ TEST_F(CastDialogSinkViewTest, FreezableSink) {
   EXPECT_NE(nullptr, sink_view_2.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.stop_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.title_for_test());
-  EXPECT_NE(nullptr, sink_view_2.subtitle_for_test());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_PAUSED),
+            sink_view_2.subtitle_for_test()->GetText());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_RESUME),
             sink_view_2.freeze_button_for_test()->GetText());
 }

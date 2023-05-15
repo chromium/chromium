@@ -98,6 +98,9 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
   void SetPreinstalledWebAppManager(
       std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager);
+  void SetOriginAssociationManager(
+      std::unique_ptr<WebAppOriginAssociationManager>
+          origin_association_manager);
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See

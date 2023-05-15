@@ -213,6 +213,14 @@ const GURL& MockWebWrapper::GetLastCommittedURL() {
   return last_committed_url_;
 }
 
+bool MockWebWrapper::IsFirstLoadForNavigationFinished() {
+  return is_first_load_finished_;
+}
+
+void MockWebWrapper::SetIsFirstLoadForNavigationFinished(bool finished) {
+  is_first_load_finished_ = finished;
+}
+
 bool MockWebWrapper::IsOffTheRecord() {
   return is_off_the_record_;
 }
@@ -273,6 +281,12 @@ void ShoppingServiceTestBase::DidFinishLoad(WebWrapper* web) {
   base::RunLoop().RunUntilIdle();
 }
 
+void ShoppingServiceTestBase::SimulateProductInfoJsTaskFinished() {
+  task_environment_.FastForwardBy(
+      base::Milliseconds(kProductInfoJavascriptDelayMs));
+  base::RunLoop().RunUntilIdle();
+}
+
 void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
                                               const GURL& url) {
   shopping_service_->DidNavigateAway(web, url);
@@ -295,7 +309,7 @@ int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {
   if (it == shopping_service_->product_info_cache_.end())
     return 0;
 
-  return std::get<0>(it->second);
+  return it->second->pages_with_url_open;
 }
 
 const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(

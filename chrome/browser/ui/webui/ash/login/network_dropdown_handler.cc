@@ -32,7 +32,7 @@ NetworkDropdownHandler::~NetworkDropdownHandler() = default;
 void NetworkDropdownHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void NetworkDropdownHandler::RegisterMessages() {
+void NetworkDropdownHandler::DeclareJSCallbacks() {
   AddCallback(kJsApiLaunchInternetDetailDialog,
               &NetworkDropdownHandler::HandleLaunchInternetDetailDialog);
   AddCallback(kJsApiLaunchAddWiFiNetworkDialog,

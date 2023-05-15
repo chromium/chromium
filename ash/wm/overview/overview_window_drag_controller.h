@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -196,10 +197,10 @@ class ASH_EXPORT OverviewWindowDragController {
   // `new_desk_button_scale_up_timer_` for more information.
   void MaybeScaleUpNewDeskButton();
 
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // The drag target window in the overview mode.
-  OverviewItem* item_ = nullptr;
+  raw_ptr<OverviewItem, ExperimentalAsh> item_ = nullptr;
 
   DragBehavior current_drag_behavior_ = DragBehavior::kNoDrag;
 
@@ -212,15 +213,15 @@ class ASH_EXPORT OverviewWindowDragController {
 
   // The original size of the dragged item after we scale it up when we start
   // dragging it. The item is restored to this size once it no longer intersects
-  // with the DesksBarView.
+  // with the LegacyDeskBarView.
   gfx::SizeF original_scaled_size_;
 
   // Track the per-overview-grid desks bar data used to perform the window
   // sizing operations when it is moved towards or on the desks bar.
   struct GridDesksBarData {
     // The scaled-down size of the dragged item once the drag location is on the
-    // DesksBarView of the corresponding grid. We size the item down so that it
-    // fits inside the desks' preview view.
+    // LegacyDeskBarView of the corresponding grid. We size the item down so
+    // that it fits inside the desks' preview view.
     gfx::SizeF on_desks_bar_item_size;
 
     // Cached values related to dragging items while the desks bar is shown.

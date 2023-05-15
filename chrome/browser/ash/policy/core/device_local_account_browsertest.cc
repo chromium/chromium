@@ -27,6 +27,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -36,19 +37,21 @@
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -68,7 +71,9 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -78,9 +83,11 @@
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -369,8 +376,7 @@ DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
 
 bool IsFullManagementDisclosureNeeded(AccountId account) {
   auto* broker = GetDeviceLocalAccountPolicyBroker(account);
-  return ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-      broker);
+  return ash::login::IsFullManagementDisclosureNeeded(broker);
 }
 
 }  // namespace
@@ -392,10 +398,8 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
       "screenplay-0834405c-3800-4c41-b5d5-cc57c9bfd472";
   static constexpr char kUserAvatarImageTag[] =
       "screenplay-91d50c4f-f526-4fad-a04d-5c9e1a90fb2b";
-
-  static void AddScreenplayTag(const std::string& screenplay_tag) {
-    base::AddTagToTestResult("feature_id", screenplay_tag);
-  }
+  static constexpr char kSessionLengthLimitTag[] =
+      "screenplay-a91d99d7-8ea0-4ec7-9c64-bc614a759d02";
 
   DeviceLocalAccountTest()
       : public_session_input_method_id_(
@@ -709,6 +713,15 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     VerifyKeyboardLayoutMatchesLocale();
   }
 
+  void SetSessionLengthLimitPolicy(int limit) {
+    device_local_account_policy_.payload()
+        .mutable_sessionlengthlimit()
+        ->set_value(limit);
+    UploadAndInstallDeviceLocalAccountPolicy();
+    AddPublicSessionToDevicePolicy(kAccountId1);
+    WaitForPolicy();
+  }
+
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           kAccountId1,
@@ -801,12 +814,36 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
     registry_->AddObserver(this);
   }
 
-  extensions::ExtensionRegistry* registry_;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
   base::RunLoop run_loop_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
   std::string waiting_extension_id_;
   bool observed_;
+};
+
+// Fake implementation to advance the clock for SessionLengthLimiter.
+class FakeDelegateImpl : public ash::SessionLengthLimiter::Delegate {
+ public:
+  FakeDelegateImpl() { clock_.SetNow(base::Time::Now()); }
+
+  FakeDelegateImpl(const FakeDelegateImpl&) = delete;
+  FakeDelegateImpl& operator=(const FakeDelegateImpl&) = delete;
+
+  ~FakeDelegateImpl() override {}
+
+  const base::Clock* GetClock() const override { return &clock_; }
+  void StopSession() override {
+    chrome::AttemptUserExit();
+    session_stopped_ = true;
+  }
+
+  void AdvanceClock(base::TimeDelta delta) { clock_.Advance(delta); }
+  bool session_stopped() const { return session_stopped_; }
+
+ private:
+  base::SimpleTestClock clock_;
+  bool session_stopped_ = false;
 };
 
 // Tests that the data associated with a device local account is removed when
@@ -874,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_LoginScreen) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
-  AddScreenplayTag(DeviceLocalAccountTest::kDisplayNameTag);
+  base::AddFeatureIdTagToTestResult(DeviceLocalAccountTest::kDisplayNameTag);
 
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
@@ -1021,7 +1058,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, FullscreenAllowed) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
-  AddScreenplayTag(DeviceLocalAccountTest::kExtensionsUncachedTag);
+  base::AddFeatureIdTagToTestResult(
+      DeviceLocalAccountTest::kExtensionsUncachedTag);
 
   // Make it possible to force-install a hosted app and an extension.
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -1085,7 +1123,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
-  AddScreenplayTag(DeviceLocalAccountTest::kExtensionsCachedTag);
+  base::AddFeatureIdTagToTestResult(
+      DeviceLocalAccountTest::kExtensionsCachedTag);
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1379,7 +1418,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
-  AddScreenplayTag(DeviceLocalAccountTest::kUserAvatarImageTag);
+  base::AddFeatureIdTagToTestResult(
+      DeviceLocalAccountTest::kUserAvatarImageTag);
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2149,6 +2189,61 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LoginWarningShown) {
   ash::LoginScreenTestApi::ClickPublicExpandedAdvancedViewButton();
   ASSERT_TRUE(ash::LoginScreenTestApi::IsExpandedPublicSessionAdvanced());
   ASSERT_TRUE(ash::LoginScreenTestApi::IsPublicSessionWarningShown());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
+  base::AddFeatureIdTagToTestResult(
+      DeviceLocalAccountTest::kSessionLengthLimitTag);
+  constexpr int kThreeHoursInMs = 3 * 60 * 60 * 1000;
+  constexpr int kTwoHoursInMs = 2 * 60 * 60 * 1000;
+
+  PolicyTestAppTerminationObserver observer;
+
+  // Install and refresh the device policy now. This will also fetch the initial
+  // user policy for the device-local account now.
+  SetSessionLengthLimitPolicy(kThreeHoursInMs);
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
+  WaitForSessionStart();
+
+  // Setup a fake delegate to advance clock.
+  auto delegate_ptr = std::make_unique<FakeDelegateImpl>();
+  auto* delegate = delegate_ptr.get();
+  static_cast<ash::ChromeUserManagerImpl*>(user_manager::UserManager::Get())
+      ->GetSessionLengthLimiterForTesting()
+      ->SetDelegateForTesting(std::move(delegate_ptr));
+
+  // Ensure the SessionLengthLimit is updated.
+  LocalStateValueWaiter(prefs::kSessionLengthLimit,
+                        base::Value(kThreeHoursInMs))
+      .Wait();
+
+  // The session is not terminated.
+  EXPECT_FALSE(observer.WasAppTerminated());
+  EXPECT_FALSE(delegate->session_stopped());
+
+  // Advance the clock by 3 hours.
+  delegate->AdvanceClock(base::Hours(3));
+
+  // Update the SessionLengthLimit policy to limit the session by two hours.
+  // The session is expected to be terminated asap, because the current time is
+  // later than the max session length.
+  SetSessionLengthLimitPolicy(kTwoHoursInMs);
+
+  // Fetch the policy update.
+  {
+    DeviceLocalAccountPolicyBroker* broker =
+        GetDeviceLocalAccountPolicyBroker(account_id_1_);
+    ASSERT_TRUE(broker);
+    broker->core()->client()->FetchPolicy();
+  }
+  // Ensure the SessionLengthLimit is updated.
+  LocalStateValueWaiter(prefs::kSessionLengthLimit, base::Value(kTwoHoursInMs))
+      .Wait();
+
+  // The session is terminated.
+  EXPECT_TRUE(observer.WasAppTerminated());
+  EXPECT_TRUE(delegate->session_stopped());
 }
 
 class DeviceLocalAccountWarnings : public DeviceLocalAccountTest {

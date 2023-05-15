@@ -50,7 +50,12 @@ void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
 FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
     : ProfileKeyedServiceFactory(
           "FirstPartySetsPolicyService",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {}
 
 FirstPartySetsPolicyServiceFactory::~FirstPartySetsPolicyServiceFactory() =
     default;

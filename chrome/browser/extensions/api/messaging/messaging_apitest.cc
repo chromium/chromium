@@ -58,7 +58,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -81,12 +80,8 @@ class MessageSender : public ExtensionHostRegistry::Observer {
  private:
   static base::Value::List BuildEventArguments(const bool last_message,
                                                const std::string& data) {
-    base::Value::Dict event;
-    event.Set("lastMessage", last_message);
-    event.Set("data", data);
-    base::Value::List arguments;
-    arguments.Append(std::move(event));
-    return arguments;
+    return base::Value::List().Append(
+        base::Value::Dict().Set("lastMessage", last_message).Set("data", data));
   }
 
   static std::unique_ptr<Event> BuildEvent(
@@ -306,11 +301,9 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   };
 
   bool AppendIframe(const GURL& src) {
-    bool result;
-    CHECK(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "actions.appendIframe('" + src.spec() + "');", &result));
-    return result;
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "actions.appendIframe('" + src.spec() + "');")
+        .ExtractBool();
   }
 
   Result CanConnectAndSendMessagesToMainFrame(const Extension* extension,
@@ -391,11 +384,10 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
     }
     as_js_array += "]";
 
-    bool any_defined;
-    CHECK(content::ExecuteScriptAndExtractBool(
-        frame,
-        "assertions.areAnyRuntimePropertiesDefined(" + as_js_array + ")",
-        &any_defined));
+    bool any_defined =
+        content::EvalJs(frame, "assertions.areAnyRuntimePropertiesDefined(" +
+                                   as_js_array + ")")
+            .ExtractBool();
     return any_defined ?
         testing::AssertionSuccess() : testing::AssertionFailure();
   }
@@ -607,11 +599,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
@@ -1005,8 +996,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   // Trigger a infobars in both tabs by trying to send messages.
   std::string script =
       base::StringPrintf("assertions.trySendMessage('%s')", app->id().c_str());
-  CHECK(content::ExecuteScript(incognito_frame1, script));
-  CHECK(content::ExecuteScript(incognito_frame2, script));
+  CHECK(content::ExecJs(incognito_frame1, script));
+  CHECK(content::ExecJs(incognito_frame2, script));
   EXPECT_EQ(1U, infobar_manager1->infobar_count());
   EXPECT_EQ(1U, infobar_manager2->infobar_count());
 
@@ -1041,11 +1032,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
   // Regression test for crbug.com/472700.
   LoadChromiumConnectableExtension();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
-  bool result;
-  CHECK(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "assertions.tryIllegalArguments()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "assertions.tryIllegalArguments()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
@@ -1478,11 +1467,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> invalid =
       ExtensionBuilder()
           .SetID(crx_file::id_util::GenerateId("invalid"))
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
@@ -1533,8 +1521,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
 // Tests that the channel name used in runtime.connect() cannot redirect the
 // message to another event (like onMessage).
 // See https://crbug.com/1430999.
-// NOTE: This is currently an anti-test -- it tests undesirable behavior that we
-// hope to change.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
   static constexpr char kManifest[] =
       R"({
@@ -1549,13 +1535,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
                  {name: 'chrome.runtime.sendMessage'});
              chrome.test.assertEq('chrome.runtime.sendMessage', port.name);
              port.onMessage.addListener((msg) => {
-               // TODO(https://crbug.com/1430999): This should be:
-               // chrome.test.assertEq('pong', msg);
-               // chrome.test.succeed();
-               // But currently the message goes to the wrong event. Verify
-               // the incorrect behavior for now by fail()ing if we get a
-               // response.
-               chrome.test.fail('Unexpected reply: ' + msg);
+               chrome.test.assertEq('pong', msg);
+               chrome.test.succeed();
              });
              port.postMessage('ping');
            }
@@ -1564,23 +1545,15 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
       R"(chrome.runtime.onConnect.addListener((port) => {
            self.port = port;
            port.onMessage.addListener((msg) => {
-             // TODO(https://crbug.com/1430999): This should be:
-             // chrome.test.assertEq(port.name, 'chrome.runtime.sendMessage');
-             // chrome.test.assertEq(msg, 'ping');
-             // port.postMessage('pong');
-             // But we don't currently get a message here because it goes to
-             // the wrong event. Verify the incorrect behavior for now by
-             // fail()ing if we get a message.
-             chrome.test.fail('Unexpected reply: ' + msg);
+             chrome.test.assertEq(port.name, 'chrome.runtime.sendMessage');
+             chrome.test.assertEq(msg, 'ping');
+             port.postMessage('pong');
            });
          });
          chrome.runtime.onMessage.addListener((msg) => {
-           // TODO(https://crbug.com/1430999): This should be:
-           // chrome.test.fail(`Unexpected onMessage received: ${msg}`);
-           // But currently the message goes here instead of the port.
-           // Verify the incorrect behavior for now.
-           chrome.test.assertEq(msg, 'ping');
-           chrome.test.succeed();
+           // We don't expect anything to hit the `onMessage` listener.
+           // See https://crbug.com/1430999.
+           chrome.test.fail(`Unexpected onMessage received: ${msg}`);
          });)";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
@@ -1690,9 +1663,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   // This is a hack to make sure messaging IPCs are finished. Since IPCs
   // are sent synchronously, anything started prior to this method will finish
-  // before this method returns (as content::ExecuteScript() blocks until
+  // before this method returns (as content::ExecJs() blocks until
   // completion).
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "1 == 1;"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "1 == 1;"));
 
   content::RunAllTasksUntilIdle();
 

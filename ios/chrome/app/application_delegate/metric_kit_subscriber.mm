@@ -115,7 +115,11 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type) {
           {base::SysNSStringToUTF8(key),
            base::SysNSStringToUTF8(previous_session.reportParameters[key])});
     }
-
+    if (previous_session.breadcrumbs) {
+      override_annotations.insert(
+          {"breadcrumbs",
+           base::SysNSStringToUTF8(previous_session.breadcrumbs)});
+    }
     crash_reporter::ProcessExternalDump("MetricKit", spanpayload,
                                         override_annotations);
   }

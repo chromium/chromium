@@ -22,3 +22,6 @@ per-file subprojects/chromium/ci/chromium.coverage.star=pasthana@google.com
 per-file subprojects/chromium/ci/chromium.fuchsia.fyi.star=file://build/fuchsia/test/OWNERS
 per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/test/OWNERS
 per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/test/OWNERS
+
+# Chrome Browser Build owners
+per-file subprojects/chromium/ci/chromium.fyi.star=file://infra/config/groups/chrome-build/OWNERS

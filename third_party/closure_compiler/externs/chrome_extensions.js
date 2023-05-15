@@ -2442,33 +2442,6 @@ chrome.enterprise.reportingPrivate.Certificate;
 chrome.enterprise.reportingPrivate.getCertificate = function(url, callback) {};
 
 /**
- * Metadata describing the type of event being reported
- * @enum {number}
- */
-chrome.enterprise.reportingPrivate.EventType = {
-  DEVICE: 0,
-  USER: 1
-};
-
-/**
- * Composite object that captures the information needed to report events.
- * @typedef {?{
- *  recordData: !ArrayBufferView,
- *  priority: number,
- *  eventType: chrome.enterprise.reportingPrivate.EventType
- * }}
- */
-chrome.enterprise.reportingPrivate.EnqueueRecordRequest;
-
-/**
- * Enqueues a record to be reported
- * @param {!chrome.enterprise.reportingPrivate.EnqueueRecordRequest} request
- * @param {(function(): void)=} callback Callback triggered after completion
- */
-chrome.enterprise.reportingPrivate.enqueueRecord = function(
-    request, callback) {};
-
-/**
  * @see https://developer.chrome.com/extensions/extension.html
  * @const
  */

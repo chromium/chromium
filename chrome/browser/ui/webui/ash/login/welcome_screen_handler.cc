@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -45,6 +46,7 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
@@ -113,6 +115,17 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                   IDS_INSTALLED_PRODUCT_OS_NAME);
     builder->Add("welcomeScreenGreetingSubtitle",
                  IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  } else if (features::IsOobeSimonEnabled()) {
+    auto product_name =
+        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+            IDR_CROS_OOBE_PRODUCT_NAME);
+    builder->AddF("welcomeScreenGreeting",
+                  IDS_WELCOME_SCREEN_GREETING_CLOUD_READY,
+                  base::UTF8ToUTF16(product_name));
+    builder->Add("welcomeScreenGreetingSubtitle",
+                 IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
+#endif
   } else {
     builder->AddF("welcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
                   ui::GetChromeOSDeviceTypeResourceId());
@@ -265,7 +278,6 @@ void WelcomeScreenHandler::GiveChromeVoxHint() {
 }
 
 void WelcomeScreenHandler::SetQuickStartEnabled() {
-  DCHECK(features::IsOobeQuickStartEnabled());
   CallExternalAPI("setQuickStartEnabled");
 }
 

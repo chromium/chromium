@@ -14,9 +14,9 @@ source_set("web_usage_enabler") {
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
   ]
 }
 
@@ -31,9 +31,9 @@ source_set("unit_tests") {
     ":web_usage_enabler",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

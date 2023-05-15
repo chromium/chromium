@@ -123,13 +123,16 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   DCHECK(signed_in_profile);
   DCHECK_EQ(Step::kAccountSelection, current_step());
 
-  Step step = Step::kUnknown;
+  Step step;
   if (is_saml) {
     step = Step::kFinishSamlSignin;
     DCHECK(!IsStepInitialized(step));
+    // The SAML step controller handles finishing the profile setup by itself
+    // when we switch to it.
     RegisterStep(step, CreateSamlStep(signed_in_profile, std::move(contents)));
   } else {
     step = Step::kPostSignInFlow;
+    DCHECK(!IsStepInitialized(step));
     RegisterStep(step,
                  CreatePostSignInStep(signed_in_profile, std::move(contents)));
   }

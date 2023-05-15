@@ -24,22 +24,6 @@
 
 namespace ash {
 
-namespace {
-
-// The maximum index of `kBrightnessLevelIcons`.
-const int kBrightnessLevels =
-    std::size(UnifiedBrightnessView::kBrightnessLevelIcons) - 1;
-
-// Get vector icon reference that corresponds to the given brightness level.
-// `level` is between 0.0 to 1.0.
-const gfx::VectorIcon& GetBrightnessIconForLevel(float level) {
-  int index = static_cast<int>(std::ceil(level * kBrightnessLevels));
-  DCHECK(index >= 0 && index <= kBrightnessLevels);
-  return *UnifiedBrightnessView::kBrightnessLevelIcons[index];
-}
-
-}  // namespace
-
 UnifiedBrightnessView::UnifiedBrightnessView(
     UnifiedBrightnessSliderController* controller,
     scoped_refptr<UnifiedSystemTrayModel> model,
@@ -116,11 +100,18 @@ void UnifiedBrightnessView::OnDisplayBrightnessChanged(bool by_user) {
   float level = model_->display_brightness();
 
   if (features::IsQsRevampEnabled()) {
-    slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
-        GetBrightnessIconForLevel(level),
-        cros_tokens::kCrosSysSystemOnPrimaryContainer, kQsSliderIconSize));
+    slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
+    slider_button()->SetIconColorId(
+        cros_tokens::kCrosSysSystemOnPrimaryContainer);
   }
   SetSliderValue(level, by_user);
+}
+
+const gfx::VectorIcon& UnifiedBrightnessView::GetBrightnessIconForLevel(
+    float level) {
+  int index = static_cast<int>(std::ceil(level * kBrightnessLevels));
+  CHECK(index >= 0 && index <= kBrightnessLevels);
+  return *kBrightnessLevelIcons[index];
 }
 
 void UnifiedBrightnessView::OnNightLightButtonPressed() {

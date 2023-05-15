@@ -10,8 +10,10 @@
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -206,25 +208,32 @@ class SearchBoxViewBase : public views::View,
   // Update search box border based on whether the search box is activated.
   virtual void UpdateSearchBoxBorder() {}
 
+  // Updates the style of the searchbox labels and textfield.
+  void SetPreferredStyleForAutocompleteText(const gfx::FontList& font_list,
+                                            ui::ColorId text_color_id);
+  void SetPreferredStyleForSearchboxText(const gfx::FontList& font_list,
+                                         ui::ColorId text_color_id);
+
  private:
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
   raw_ptr<views::BoxLayoutView> main_container_;
-  views::BoxLayoutView* content_container_;
-  SearchIconImageView* search_icon_ = nullptr;
-  SearchBoxImageButton* assistant_button_ = nullptr;
-  SearchBoxImageButton* close_button_ = nullptr;
-  views::BoxLayoutView* text_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> content_container_;
+  raw_ptr<SearchIconImageView, ExperimentalAsh> search_icon_ = nullptr;
+  raw_ptr<SearchBoxImageButton, ExperimentalAsh> assistant_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> text_container_ = nullptr;
 
-  views::Textfield* search_box_;
-  views::BoxLayoutView* ghost_text_container_ = nullptr;
-  views::Label* separator_label_ = nullptr;
-  views::Label* autocomplete_ghost_text_ = nullptr;
-  views::Label* category_separator_label_ = nullptr;
-  views::Label* category_ghost_text_ = nullptr;
+  raw_ptr<views::Textfield, ExperimentalAsh> search_box_;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> ghost_text_container_ =
+      nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> separator_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> autocomplete_ghost_text_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> category_separator_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> category_ghost_text_ = nullptr;
 
-  views::View* search_box_button_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> search_box_button_container_ = nullptr;
 
   views::ViewTracker iph_view_tracker_;
 

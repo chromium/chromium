@@ -534,20 +534,6 @@ void WebViewGuest::WebContentsDestroyed() {
   GuestViewBase::WebContentsDestroyed();
 }
 
-void WebViewGuest::GuestReady() {
-  // The guest RenderView should always live in an isolated guest process.
-  CHECK(web_contents()->GetPrimaryMainFrame()->GetProcess()->IsForGuestsOnly());
-  ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents()->GetPrimaryMainFrame())
-      ->SetFrameName(name_);
-
-  // We don't want to accidentally set the opacity of an interstitial page.
-  // WebContents::GetRenderWidgetHostView will return the RWHV of an
-  // interstitial page if one is showing at this time. We only want opacity
-  // to apply to web pages.
-  SetTransparency();
-}
-
 void WebViewGuest::GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                                  const gfx::Size& new_size) {
   base::Value::Dict args;
@@ -934,16 +920,23 @@ void WebViewGuest::UserAgentOverrideSet(
 
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,
                                     const std::string& name) {
-  // WebViewGuest does not support back/forward cache or prerendering so
-  // |render_frame_host| should be either active or pending deletion.
-  DCHECK(render_frame_host->IsActive() ||
-         render_frame_host->IsInLifecycleState(
-             RenderFrameHost::LifecycleState::kPendingDeletion));
   if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   if (name_ == name)
     return;
+
+  // WebViewGuest does not support back/forward cache or prerendering so
+  // `render_frame_host` should be either active or pending deletion.
+  //
+  // Note that the name change could also happen from WebViewGuest itself
+  // before a navigation commits (see WebViewGuest::RenderFrameCreated). In
+  // that case, `render_frame_host` could also be pending commit, but `name`
+  // should already match `name_` and we should early return above. Hence it is
+  // important to order this check after that redundant name check.
+  DCHECK(render_frame_host->IsActive() ||
+         render_frame_host->IsInLifecycleState(
+             RenderFrameHost::LifecycleState::kPendingDeletion));
 
   ReportFrameNameChange(name);
 }
@@ -974,8 +967,21 @@ void WebViewGuest::OnDidAddMessageToConsole(
 
 void WebViewGuest::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetSiteInstance()->IsGuest())
-    PushWebViewStateToIOThread(render_frame_host);
+  CHECK_EQ(render_frame_host->GetProcess()->IsForGuestsOnly(),
+           render_frame_host->GetSiteInstance()->IsGuest());
+
+  if (!render_frame_host->GetSiteInstance()->IsGuest()) {
+    return;
+  }
+
+  PushWebViewStateToIOThread(render_frame_host);
+
+  if (!render_frame_host->GetParentOrOuterDocument()) {
+    ExtensionWebContentsObserver::GetForWebContents(web_contents())
+        ->GetLocalFrame(render_frame_host)
+        ->SetFrameName(name_);
+    SetTransparency(render_frame_host);
+  }
 }
 
 void WebViewGuest::RenderFrameDeleted(
@@ -1242,11 +1248,12 @@ void WebViewGuest::SetName(const std::string& name) {
   name_ = name;
 
   // Return early if this method is called before RenderFrameCreated().
-  // In that case, we still have a chance to update the name at GuestReady().
-  if (!web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive())
+  // In that case, we still update the name in RenderFrameCreated().
+  if (!GetGuestMainFrame()->IsRenderFrameLive()) {
     return;
+  }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents()->GetPrimaryMainFrame())
+      ->GetLocalFrame(GetGuestMainFrame())
       ->SetFrameName(name_);
 }
 
@@ -1280,22 +1287,17 @@ void WebViewGuest::SetAllowTransparency(bool allow) {
     return;
 
   allow_transparency_ = allow;
-  if (!web_contents()
-           ->GetPrimaryMainFrame()
-           ->GetRenderViewHost()
-           ->GetWidget()
-           ->GetView())
-    return;
 
-  SetTransparency();
+  SetTransparency(GetGuestMainFrame());
 }
 
-void WebViewGuest::SetTransparency() {
-  auto* view = web_contents()
-                   ->GetPrimaryMainFrame()
-                   ->GetRenderViewHost()
-                   ->GetWidget()
-                   ->GetView();
+void WebViewGuest::SetTransparency(
+    content::RenderFrameHost* render_frame_host) {
+  auto* view = render_frame_host->GetView();
+  if (!view) {
+    return;
+  }
+
   if (allow_transparency_)
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   else

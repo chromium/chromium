@@ -512,6 +512,12 @@ message BrowsingContextState {
   // The ID of the BrowsingInstance that the BrowsingContextState belongs to.
   optional int32 browsing_instance_id = 1;
 
+  // The ID of the CoopRelatedGroup that the BrowsingContextState belongs to.
+  optional int32 coop_related_group_id = 2 [deprecated = true];
+
+  // The token of the CoopRelatedGroup that the BrowsingContextState belongs to.
+  optional string coop_related_group_token = 3;
+
   // Additional untyped debug information associated with this
   // FrameTreeNode, populated via TracedProto::AddDebugAnnotations API.
   repeated DebugAnnotation debug_annotations = 99;
@@ -734,6 +740,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_INTERNAL_NAVIGATION_CANCELLATION = 80;
     TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION = 81;
     TASK_TYPE_STORAGE = 82;
+    TASK_TYPE_NETWORKING_UNFREEZABLE_IMAGE_LOADING = 83;
   }
 
   enum FrameType {
@@ -863,6 +870,7 @@ message SequenceManagerTask {
     HIGH_PRIORITY_CONTINUATION = 8;
     NORMAL_PRIORITY_CONTINUATION = 9;
     LOW_PRIORITY_CONTINUATION = 10;
+    EXTREMELY_HIGH_PRIORITY = 11;
   }
 
   enum QueueName {

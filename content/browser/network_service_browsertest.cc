@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -18,6 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -129,39 +131,39 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
   NetworkServiceBrowserTest& operator=(const NetworkServiceBrowserTest&) =
       delete;
 
-  bool ExecuteScript(const std::string& script) {
-    bool xhr_result = false;
-    // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell(), script, &xhr_result);
-    return xhr_result && execute_result;
-  }
-
   bool FetchResource(const GURL& url, bool synchronous = false) {
     if (!url.is_valid())
       return false;
     std::string script = JsReplace(
         "var xhr = new XMLHttpRequest();"
         "xhr.open('GET', $1, $2);"
-        "xhr.onload = function (e) {"
-        "  if (xhr.readyState === 4) {"
-        "    window.domAutomationController.send(xhr.status === 200);"
+        "new Promise(resolve => {"
+        "  xhr.onload = function (e) {"
+        "    if (xhr.readyState === 4) {"
+        "      resolve(xhr.status === 200);"
+        "    }"
+        "  };"
+        "  xhr.onerror = function () {"
+        "    resolve(false);"
+        "  };"
+        "  try {"
+        "    xhr.send(null);"
+        "  } catch (error) {"
+        "    resolve(false);"
         "  }"
-        "};"
-        "xhr.onerror = function () {"
-        "  window.domAutomationController.send(false);"
-        "};"
-        "try {"
-        "  xhr.send(null);"
-        "} catch (error) {"
-        "  window.domAutomationController.send(false);"
-        "}",
+        "});",
         url, !synchronous);
-    return ExecuteScript(script);
+
+    EvalJsResult result = EvalJs(shell(), script);
+    if (!result.error.empty()) {
+      return false;
+    }
+    return result.ExtractBool();
   }
 
   bool CheckCanLoadHttp() {
-    return FetchResource(embedded_test_server()->GetURL("/echo"));
+    return FetchResource(embedded_test_server()->GetURL("/echo"),
+                         /*synchronous=*/false);
   }
 
   void SetUpOnMainThread() override {
@@ -212,8 +214,14 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebUIBindingsNoHttp DISABLED_WebUIBindingsNoHttp
+#else
+#define MAYBE_WebUIBindingsNoHttp WebUIBindingsNoHttp
+#endif
+
 // Verifies that WebUI pages with WebUI bindings can't make network requests.
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, WebUIBindingsNoHttp) {
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, MAYBE_WebUIBindingsNoHttp) {
   GURL test_url(GetWebUIURL("webui/"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
@@ -359,7 +367,24 @@ class NetworkConnectionObserver
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
+class NetworkServiceConnectionTypeSyncedBrowserTest
+    : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceConnectionTypeSyncedBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+#if BUILDFLAG(IS_LINUX)
+        {net::features::kAddressTrackerLinuxIsProxied},
+#else
+        {},
+#endif
+        {features::kNetworkServiceInProcess});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceConnectionTypeSyncedBrowserTest,
                        ConnectionTypeChangeSyncedToNetworkProcess) {
   NetworkConnectionObserver observer;
   net::NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
@@ -374,11 +399,19 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
-                       MemoryPressureSentToNetworkProcess) {
-  if (IsInProcessNetworkService())
-    return;
+class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceOutOfProcessBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kNetworkServiceInProcess);
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
+                       MemoryPressureSentToNetworkProcess) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
@@ -404,10 +437,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
 }
 
 // Verifies that sync XHRs don't hang if the network service crashes.
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncXHROnCrash) {
-  if (IsInProcessNetworkService())
-    return;
-
+IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest, SyncXHROnCrash) {
   net::EmbeddedTestServer http_server;
   http_server.AddDefaultHandlers(GetTestDataFilePath());
   http_server.RegisterRequestMonitor(base::BindLambdaForTesting(
@@ -428,10 +458,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncXHROnCrash) {
 }
 
 // Verifies that sync cookie calls don't hang if the network service crashes.
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncCookieGetOnCrash) {
-  if (IsInProcessNetworkService())
-    return;
-
+IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
+                       SyncCookieGetOnCrash) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
@@ -440,8 +468,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncCookieGetOnCrash) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(shell()->web_contents(), "document.cookie"));
+  ASSERT_TRUE(content::ExecJs(shell()->web_contents(), "document.cookie"));
   // If the renderer is hung the test will hang.
 }
 
@@ -1640,6 +1667,45 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
               ConnectUDPSocketSync(network_context, &socket));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class EmptyNetworkServiceTest : public ContentBrowserTest {
+ public:
+  EmptyNetworkServiceTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kNetworkServiceInProcess, {}},
+         {network::features::kNetworkServiceEmptyOutOfProcess, {}}},
+        {});
+  }
+  EmptyNetworkServiceTest(const EmptyNetworkServiceTest&) = delete;
+  EmptyNetworkServiceTest& operator=(const EmptyNetworkServiceTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
+  // This test is only for high-RAM device to create another process.
+  if (!IsInProcessNetworkService()) {
+    GTEST_SKIP();
+  }
+
+  // Check if EmptyNetworkService is available.
+  network::mojom::EmptyNetworkService* empty_network_service =
+      GetEmptyNetworkServiceForTesting();
+  DCHECK(empty_network_service);
+  const int32_t kExpected = 42;
+  int32_t value = 0;
+  base::RunLoop loop;
+  empty_network_service->Ping(kExpected,
+                              base::BindLambdaForTesting([&](int32_t val) {
+                                value = val;
+                                loop.Quit();
+                              }));
+  loop.Run();
+  EXPECT_EQ(kExpected, value);
+}
+#endif
 
 }  // namespace
 

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_fetch = [
+  "attribution_reporting_to_mojom.cc",
+  "attribution_reporting_to_mojom.h",
   "blob_bytes_consumer.cc",
   "blob_bytes_consumer.h",
   "body.cc",
@@ -39,13 +41,12 @@ blink_core_sources_fetch = [
   "request.h",
   "response.cc",
   "response.h",
-  "trust_token_issuance_authorization.cc",
-  "trust_token_issuance_authorization.h",
   "trust_token_to_mojom.cc",
   "trust_token_to_mojom.h",
 ]
 
 blink_core_tests_fetch = [
+  "attribution_reporting_to_mojom_test.cc",
   "blob_bytes_consumer_test.cc",
   "body_stream_buffer_test.cc",
   "bytes_consumer_tee_test.cc",

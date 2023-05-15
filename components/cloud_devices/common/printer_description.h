@@ -205,6 +205,18 @@ class VendorCapability {
   };
 };
 
+struct VendorItem {
+  VendorItem();
+  VendorItem(const std::string& id, const std::string& value);
+
+  bool IsValid() const;
+  bool operator==(const VendorItem& other) const;
+  bool operator!=(const VendorItem& other) const { return !(*this == other); }
+
+  std::string id;
+  std::string value;
+};
+
 enum class ColorType {
   STANDARD_COLOR,
   STANDARD_MONOCHROME,
@@ -529,6 +541,7 @@ class PageRangeTraits;
 class CollateTraits;
 class CopiesCapabilityTraits;
 class CopiesTicketItemTraits;
+class VendorItemTraits;
 
 typedef ListCapability<ContentType, ContentTypeTraits> ContentTypesCapability;
 typedef ValueCapability<PwgRasterConfig, PwgRasterConfigTraits>
@@ -566,6 +579,7 @@ typedef TicketItem<int32_t, CopiesTicketItemTraits> CopiesTicketItem;
 typedef TicketItem<PageRange, PageRangeTraits> PageRangeTicketItem;
 typedef TicketItem<bool, CollateTraits> CollateTicketItem;
 typedef TicketItem<bool, ReverseTraits> ReverseTicketItem;
+typedef ListTicketItem<VendorItem, VendorItemTraits> VendorTicketItems;
 
 }  // namespace printer
 

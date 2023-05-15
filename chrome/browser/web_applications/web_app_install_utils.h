@@ -77,10 +77,6 @@ void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
 void PopulateProductIcons(WebAppInstallInfo* web_app_info,
                           const IconsMap* icons_map);
 
-// Record an app banner added to homescreen event to ensure banners are not
-// shown for this app.
-void RecordAppBanner(content::WebContents* contents, const GURL& app_url);
-
 // Records downloaded icons result and http code and code class.
 void RecordDownloadedIconsResultAndHttpStatusCodes(
     IconsDownloadedResult result,

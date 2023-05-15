@@ -19,12 +19,10 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
 namespace blink {
@@ -92,11 +90,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kTypeSlow2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.Slow2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.Slow2G",
             visible_load_delay);
       }
       break;
@@ -104,11 +102,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.2G",
             visible_load_delay);
       }
       break;
@@ -116,11 +114,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType3G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.3G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.3G",
             visible_load_delay);
       }
       break;
@@ -128,11 +126,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType4G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G",
             visible_load_delay);
       }
       break;
@@ -153,21 +151,12 @@ LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
       root_document.LoadEventFinished();
 }
 
-void LazyLoadImageObserver::StartMonitoringNearViewport(
-    Document* root_document,
-    Element* element,
-    DeferralMessage deferral_message) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageLoadingEnabled());
-
+void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
+                                                        Element* element) {
   if (!lazy_load_intersection_observer_) {
     CreateLazyLoadIntersectionObserver(root_document);
   }
   lazy_load_intersection_observer_->observe(element);
-
-  if (deferral_message == DeferralMessage::kMissingDimensionForLazy) {
-    UseCounter::Count(root_document,
-                      WebFeature::kLazyLoadImageMissingDimensionsForLazy);
-  }
 }
 
 void LazyLoadImageObserver::StopMonitoring(Element* element) {
@@ -242,8 +231,6 @@ void LazyLoadImageObserver::LoadIfNearViewport(
 void LazyLoadImageObserver::StartMonitoringVisibility(
     Document* root_document,
     HTMLImageElement* image_element) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled());
-
   VisibleLoadTimeMetrics& visible_load_time_metrics =
       image_element->EnsureVisibleLoadTimeMetrics();
   if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
@@ -262,7 +249,6 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
 }
 
 void LazyLoadImageObserver::OnLoadFinished(HTMLImageElement* image_element) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled());
   VisibleLoadTimeMetrics& visible_load_time_metrics =
       image_element->EnsureVisibleLoadTimeMetrics();
 
@@ -290,7 +276,10 @@ void LazyLoadImageObserver::OnVisibilityChanged(
         image_element->EnsureVisibleLoadTimeMetrics();
     // The image's visiblity shouldn't still be monitored if the time when the
     // image first became visible has already been measured.
-    DCHECK(visible_load_time_metrics.time_when_first_visible.is_null());
+    if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
+      visibility_metrics_observer_->unobserve(image_element);
+      continue;
+    }
 
     if (!visible_load_time_metrics.has_initial_intersection_been_set) {
       visible_load_time_metrics.has_initial_intersection_been_set = true;
@@ -309,11 +298,11 @@ void LazyLoadImageObserver::OnVisibilityChanged(
       // WebEffectiveConnectionType.
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
             GetNetworkStateNotifier().EffectiveType());
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
             GetNetworkStateNotifier().EffectiveType());
       }
     } else {
@@ -343,28 +332,26 @@ void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
 
 void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
     Document* root_document) {
-  HeapVector<Member<Element>> existing_targets;
-  if (lazy_load_intersection_observer_) {
-    for (const IntersectionObservation* observation :
-         lazy_load_intersection_observer_->Observations()) {
-      existing_targets.push_back(observation->Target());
-    }
-  }
-
   int viewport_threshold =
       use_viewport_distance_threshold_
           ? GetLazyImageLoadingViewportDistanceThresholdPx(*root_document)
           : 0;
-  lazy_load_intersection_observer_ = IntersectionObserver::Create(
+  IntersectionObserver* new_observer = IntersectionObserver::Create(
       {Length::Fixed(viewport_threshold)}, {std::numeric_limits<float>::min()},
       root_document,
       WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
                          WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
-  for (Element* element : existing_targets) {
-    lazy_load_intersection_observer_->observe(element);
+  if (lazy_load_intersection_observer_) {
+    for (const IntersectionObservation* observation :
+         lazy_load_intersection_observer_->Observations()) {
+      new_observer->observe(observation->Target());
+    }
+    lazy_load_intersection_observer_->disconnect();
   }
+
+  lazy_load_intersection_observer_ = new_observer;
 }
 
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {

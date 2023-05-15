@@ -1,0 +1,21 @@
+Two keystrokes are considered as part of one typehead session if time difference between them is less than 1 sec
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+1. space key as part of search string.
+PASS popup.open is false
+PASS popup.value is "United States"
+2. space key as part of search string with some delay.
+PASS popup.open is false
+PASS popup.value is "Spain"
+3. space key to open popup menu.
+PASS popup.open is true
+PASS popup.value is "United Arab Emirates"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Canada
+Spain
+United Arab Emirates
+United States

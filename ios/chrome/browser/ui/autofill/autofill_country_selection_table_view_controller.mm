@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -54,6 +55,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // The fetched country list.
 @property(nonatomic, weak) NSArray<CountryItem*>* allCountries;
 
+// If YES, denotes that the view is shown in the settings.
+@property(nonatomic, assign) BOOL settingsView;
+
 @end
 
 @implementation AutofillCountrySelectionTableViewController
@@ -62,14 +66,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                     (id<AutofillCountrySelectionTableViewControllerDelegate>)
                         delegate
                  selectedCountry:(NSString*)selectedCountry
-                    allCountries:(NSArray<CountryItem*>*)allCountries {
+                    allCountries:(NSArray<CountryItem*>*)allCountries
+                    settingsView:(BOOL)settingsView {
   DCHECK(delegate);
 
-  self = [super initWithStyle:ChromeTableViewStyle()];
+  self = [super initWithStyle:(settingsView ? ChromeTableViewStyle()
+                                            : UITableViewStylePlain)];
   if (self) {
     _delegate = delegate;
     _currentlySelectedCountry = selectedCountry;
     _allCountries = allCountries;
+    _settingsView = settingsView;
   }
   return self;
 }
@@ -79,7 +86,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
+  if (!self.settingsView) {
+    self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SELECT_COUNTRY);
+    self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.tableView.sectionHeaderHeight = 0;
+    self.tableView.sectionFooterHeight = 0;
+  } else {
+    self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
+  }
+  [self.tableView
+      setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
   // Search controller.
   self.searchController =

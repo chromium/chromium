@@ -34,8 +34,8 @@ features:
 future_on:
 - fuchsia
 owners:
-- file://components/policy/OWNERS
-- zmin@chromium.org
+- pmarko@chromium.org
+- file://components/proxy_config/OWNERS
 schema:
   properties:
     ProxyBypassList:

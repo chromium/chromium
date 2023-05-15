@@ -92,7 +92,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   absl::optional<base::Time> show_time_;
 
   // The share attempt this bubble was opened for.
-  share::ShareAttempt attempt_;
+  const share::ShareAttempt attempt_;
 
   base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };

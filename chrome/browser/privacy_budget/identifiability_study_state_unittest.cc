@@ -479,8 +479,8 @@ TEST(IdentifiabilityStudyStateStandaloneTest, ShouldReportEncounteredSurface) {
   // The specific surface doesn't matter.
   EXPECT_TRUE(state.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
                                                    kRegularSurface1));
-  EXPECT_FALSE(state.ShouldReportEncounteredSurface(ukm::NoURLSourceId(),
-                                                    kRegularSurface1));
+  EXPECT_TRUE(state.ShouldReportEncounteredSurface(ukm::NoURLSourceId(),
+                                                   kRegularSurface1));
 }
 
 // Test the mode in which only the meta experiment (i.e. reporting encountered

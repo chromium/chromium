@@ -148,7 +148,7 @@ class RebootNotificationsScheduler
                           session_manager::SessionManagerObserver>
       observation_{this};
 
-  base::raw_ptr<const base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<RebootNotificationsScheduler> weak_ptr_factory_{this};
 };

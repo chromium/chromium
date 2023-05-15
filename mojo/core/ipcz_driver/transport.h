@@ -89,6 +89,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
     error_handler_context_ = context;
   }
 
+  // Overrides the IO task runner used to monitor this transport for IO. Unless
+  // this is called, all Transports use the global IO task runner by default.
+  void OverrideIOTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   // Takes ownership of the Transport's underlying channel endpoint, effectively
   // invalidating the transport. May only be called on a Transport which has not
   // yet been activated, and only when the channel endpoint is not a server.
@@ -226,6 +231,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // TODO(https://crbug.com/1299283): Refactor Channel so that this is
   // unnecessary, once the non-ipcz Mojo implementation is phased out.
   scoped_refptr<Transport> self_reference_for_channel_ GUARDED_BY(lock_);
+
+  // The IO task runner used by this Transport to watch for incoming I/O events.
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_{
+      GetIOTaskRunner()};
 
   // These fields are not guarded by locks, since they're only set prior to
   // activation and remain constant throughout the remainder of this object's

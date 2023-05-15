@@ -138,6 +138,27 @@ public abstract class BrowserServicesIntentDataProvider {
     public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER = 3;
     public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX = 3;
 
+    @IntDef({ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+            ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SideSheetRoundedCornersPosition {}
+
+    /**
+     * Side sheet's default rounded corner configuration. Same as
+     * {@link ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE}
+     */
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT = 0;
+    /**
+     * Side sheet with no rounded corners.
+     */
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE = 1;
+    /**
+     * Side sheet with the inner top corner rounded (if positioned on the right of the screen, this
+     * will be the top left corner)
+     */
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP = 2;
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_MAX = 2;
+
     @IntDef({ACTIVITY_LAYOUT_STATE_NONE, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET,
             ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED, ACTIVITY_LAYOUT_STATE_SIDE_SHEET,
             ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED, ACTIVITY_LAYOUT_STATE_FULL_SCREEN})
@@ -619,7 +640,14 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return An int representing the side sheet decoration type for the Activity.
      */
     public int getActivitySideSheetDecorationType() {
-        return ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+    }
+
+    /**
+     * @return An int representing the side sheet rounded corner position for the Activity
+     */
+    public int getActivitySideSheetRoundedCornersPosition() {
+        return ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
     }
 
     /**
@@ -666,11 +694,11 @@ public abstract class BrowserServicesIntentDataProvider {
 
     /** Return the default behavior. */
     public int getSideSheetSlideInBehavior() {
-        return ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
     }
 
     /** Return the default position. */
     public int getSideSheetPosition() {
-        return ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_POSITION_END;
     }
 }

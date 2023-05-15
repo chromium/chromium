@@ -11,11 +11,11 @@ namespace network {
 
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerInMemory::CreateStorage(
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::SharedDictionaryStorageIsolationKey& isolation_key) {
   return base::MakeRefCounted<SharedDictionaryStorageInMemory>(
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
-                         GetWeakPtr(), network_isolation_key)));
+                         GetWeakPtr(), isolation_key)));
 }
 
 }  // namespace network

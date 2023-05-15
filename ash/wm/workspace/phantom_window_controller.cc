@@ -19,7 +19,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -214,8 +213,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
               kPhantomWindowCornerRadius,
               chromeos::features::IsJellyrollEnabled()
                   ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-                  : views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/false))
+                  : views::HighlightBorder::Type::kHighlightBorder1))
           .Build());
   return phantom_widget;
 }
@@ -257,8 +255,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
               kPhantomWindowCornerRadius,
               chromeos::features::IsJellyrollEnabled()
                   ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-                  : views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/false))
+                  : views::HighlightBorder::Type::kHighlightBorder1))
           .AddChildren(
               views::Builder<views::Label>()
                   .SetText(l10n_util::GetStringUTF16(

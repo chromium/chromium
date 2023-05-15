@@ -131,11 +131,18 @@ class FeedbackServiceTest : public ApiUnitTest {
 
     auto feedback_service = base::MakeRefCounted<FeedbackService>(
         browser_context(), mock_delegate.get());
+    RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
+    EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
+  }
+
+  void RunUntilFeedbackIsSent(scoped_refptr<FeedbackService> feedback_service,
+                              const FeedbackParams& params,
+                              SendFeedbackCallback mock_callback) {
     base::RunLoop run_loop;
-    feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
+    feedback_service->RedactThenSendFeedback(params, feedback_data_,
+                                             std::move(mock_callback));
     base::ThreadPoolInstance::Get()->FlushForTesting();
     run_loop.RunUntilIdle();
-    EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
   }
 
   base::ScopedTempDir scoped_temp_dir_;
@@ -161,7 +168,7 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
   auto feedback_service = base::MakeRefCounted<FeedbackService>(
       browser_context(), shell_delegate.get());
 
-  feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
+  RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
 }
 
 TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {
@@ -185,13 +192,14 @@ TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {
   auto feedback_service = base::MakeRefCounted<FeedbackService>(
       browser_context(), mock_delegate.get());
 
-  feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
+  RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
 }
 
-TEST_F(FeedbackServiceTest, SendFeedbackDoNotSendTabTitles) {
+// TODO(crbug.com/1439227): Re-enable this test
+TEST_F(FeedbackServiceTest, DISABLED_SendFeedbackDoNotSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(false);
   EXPECT_EQ(0u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
@@ -220,7 +228,7 @@ TEST_F(FeedbackServiceTest, SendFeedbackAutofillMetadata) {
   auto feedback_service =
       base::MakeRefCounted<FeedbackService>(browser_context(), nullptr);
 
-  feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
+  RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
 }
 
 }  // namespace extensions

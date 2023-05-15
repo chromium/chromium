@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်ခြင်း ရပ်သွားသည်။ နောက်ထပ်ဗီဒီယိုများ မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="2036868001356139588">တိုင်မာကြာချိန်</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ကို ရွေးထားသည်</translation>
-<translation id="2128052519899549250">အမြန်ပြကွက်မုဒ် ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="2134029355740465625">ဗီဒီယို ဆက်တင်များ</translation>
 <translation id="2144806332417375165">စိတ်ကြိုက် ဗီဒီယို သတ်မှတ်ချက်များ</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">စာရွက်စာတမ်းကို တွေ့ထားသည်</translation>
 <translation id="414641094616694804">ဤကင်မရာတွင် ပုံရိပ်ပြတ်သားကိန်းကို မပြောင်းနိုင်ပါ</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
-<translation id="4281620174117014503">အလယ်အလတ် ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="428234092390943511">စာမျက်နှာ ပုံသေး</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
 <translation id="4445542136948522167">ဓာတ်ပုံရိုက်ခြင်း ရပ်တန့်ရန်</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5320594929574852403">ဘယ်ဘက် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">အမြန်ပြကွက်မုဒ်</translation>
 <translation id="5662366948659129155">စာမျက်နှာ <ph name="COUNT" /> ကို စကင်ဖတ်နေသည်</translation>
 <translation id="5671277269877808209">စတုရန်း</translation>
+<translation id="574392208103952083">အလယ်အလတ်</translation>
 <translation id="5746169159649715125">PDF အဖြစ်သိမ်း</translation>
 <translation id="5753488212459587150">ကျွမ်းကျင်သူမုဒ် ဖွင့်ရန်</translation>
 <translation id="5759254179196327752">မှတ်တမ်းကို စကင်ဖတ်ရန်</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">မှတ်တမ်း၏ ညာဘက်ထောင့်အောက်ခြေ</translation>
+<translation id="7684446460490665873">အမြန်ပြကွက်မုဒ် ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="7692090236657809299">ရွှေ့ကြည့်ခြင်း/စောင်းကြည့်ခြင်း/ဇူးမ်ဆွဲခြင်းတို့ကို ဖွင့်ရန်</translation>
 <translation id="7726641833034062494">ပုံမှန်ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="7748344063862150053">မှတ်တမ်း၏ ညာဘက်ထောင့်ထိပ်</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">မှတ်တမ်းဖိုင်၏ ဘေးအစွန်းအားလုံးကို ဘောင်အတွင်းထားပါ</translation>
 <translation id="9045155556724273246">၁၀ စက္ကန့်</translation>
 <translation id="906331135292332864">ပုံကို စီမံဆောင်ရွက်နေသည်...</translation>
+<translation id="9161584225258678723">အမြန်ပြကွက်မုဒ်</translation>
 <translation id="922762992951083513">မှန်ဖွင့်ရန်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 </translationbundle>

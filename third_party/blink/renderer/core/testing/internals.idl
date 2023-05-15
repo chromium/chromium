@@ -105,6 +105,7 @@
     DOMRectReadOnly boundingBox(Element element);
 
     [RaisesException] void setMarker(Document document, Range range, DOMString markerType);
+    [RaisesException] void removeMarker(Document document, Range range, DOMString markerType);
     [RaisesException] unsigned long markerCountForNode(Text text, DOMString markerType);
     unsigned long activeMarkerCountForNode(Text text);
     [RaisesException] Range markerRangeForNode(Text text, DOMString markerType, unsigned long index);
@@ -282,6 +283,8 @@
     boolean selectPopupItemStyleIsRtl(Node select, long itemIndex);
     long selectPopupItemStyleFontHeight(Node select, long itemIndex);
     void resetTypeAheadSession(HTMLSelectElement select);
+
+    void resetSelectMenuTypeAheadSession(HTMLSelectMenuElement selectmenu);
 
     StaticSelection getDragCaret();
     [RaisesException] StaticSelection getSelectionInFlatTree(Window window);

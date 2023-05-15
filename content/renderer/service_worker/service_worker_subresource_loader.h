@@ -10,6 +10,8 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +23,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
@@ -45,7 +48,8 @@ class ServiceWorkerSubresourceLoaderFactory;
 class CONTENT_EXPORT ServiceWorkerSubresourceLoader
     : public network::mojom::URLLoader,
       public blink::mojom::ServiceWorkerFetchResponseCallback,
-      public ControllerServiceWorkerConnector::Observer {
+      public ControllerServiceWorkerConnector::Observer,
+      public ServiceWorkerResourceLoader {
  public:
   // See the comments for ServiceWorkerSubresourceLoaderFactory's ctor (below)
   // to see how each parameter is used.
@@ -136,20 +140,32 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
                                  absl::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
-  void CommitResponseHeaders();
+  // ServiceWorkerResourceLoader overrides:
+  void CommitResponseHeaders(
+      const network::mojom::URLResponseHeadPtr&) override;
 
-  // Calls url_loader_client_->OnReceiveResponse() with |response_head_|,
+  // Calls url_loader_client_->OnReceiveResponse() with given |response_head|,
   // |response_body|, and |cached_metadata|.
-  void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body,
-                          absl::optional<mojo_base::BigBuffer> cached_metadata);
+  void CommitResponseBody(
+      const network::mojom::URLResponseHeadPtr& response_head,
+      mojo::ScopedDataPipeConsumerHandle response_body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
-  void CommitEmptyResponseAndComplete();
+  void CommitEmptyResponseAndComplete() override;
 
   // Calls url_loader_client_->OnComplete(). Expected to be called after
   // CommitResponseHeaders (i.e. status_ == kSentHeader).
-  void CommitCompleted(int error_code);
+  void CommitCompleted(int error_code, const char* reason) override;
+
+  // Calls url_loader_client_->OnReceiveRedirect(). Sends too many redirects
+  // error if it hits the redirect limit.
+  void HandleRedirect(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHeadPtr& response_head) override;
+
+  bool IsMainResourceLoader() override;
 
   // Record loading milestones. Called after a response is completed or
   // a request is fall back to network. Never called when an error is
@@ -161,6 +177,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Called when the fetch handler doesn't handle the requset (i.e. network
   // fallback case).
   void RecordTimingMetricsForNetworkFallbackCase();
+  // Called when the response from RaceNetworkRequest is faster than the
+  // response from the fetch handler.
+  void RecordTimingMetricsForRaceNetworkReqestCase();
   // Time between the request is made and the request is routed to this loader.
   void RecordStartToForwardServiceWorkerTiming(
       const net::LoadTimingInfo& load_timing);
@@ -183,10 +202,16 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Renderer -> Browser IPC delay (network fallback case).
   void RecordFetchHandlerEndToFallbackNetworkTiming(
       const net::LoadTimingInfo& load_timing);
+  // Time between the request is made and complete reading response body.
+  void RecordStartToCompletedTiming(const net::LoadTimingInfo& load_timing);
 
   base::TimeTicks completion_time_;
 
   void TransitionToStatus(Status new_status);
+
+  // If eligible, dispatch the network request which races the ServiceWorker
+  // fetch handler.
+  bool MaybeStartRaceNetworkRequest();
 
   network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
@@ -241,6 +266,16 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   blink::mojom::ServiceWorkerFetchEventTimingPtr fetch_event_timing_;
   network::mojom::FetchResponseSource response_source_;
+
+  // True when RaceNetworkRequest is triggered regardless of its result.
+  bool did_start_race_network_request_ = false;
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+      race_network_request_url_loader_factory_;
+  mojo::PendingRemote<network::mojom::URLLoader>
+      race_network_request_url_loader_;
+  absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
+      race_network_request_loader_client_;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
 };

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="100506692671054486">no hay comandos anteriores</translation>
 <translation id="1009046985747440431">Presiona las flechas hacia arriba o abajo para navegar y, luego, Intro para activar una opción</translation>
 <translation id="1011903154582639569">Busca una tecla y, luego, activa el teclado para escribir</translation>
 <translation id="1012173283529841972">Elemento de lista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavanda rojizo</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3962990492275676168">Comenzar a leer desde la ubicación actual</translation>
+<translation id="397094149579293440">no hay texto seleccionado</translation>
 <translation id="3970951409746498040">Marrón arena</translation>
 <translation id="3989324057180830702">btn act</translation>
 <translation id="3991317907213946254">Mocasín</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">No hay encabezados de nivel 1 anteriores</translation>
 <translation id="4787577491510559358">Anuncia el formato del elemento actual</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">no hay campo de texto enfocado</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="481165870889056555">Indicar el título de la página actual</translation>
 <translation id="4815668758102003883">Turquesa claro</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Vínculo interno</translation>
 <translation id="4909019435900810068">Retroceder una palabra</translation>
 <translation id="4911349081560453449">No hay casillas de verificación anteriores</translation>
+<translation id="4919186071145887492">No se pudo <ph name="COMMAND" />. Vuelve a intentarlo.</translation>
 <translation id="492295894462528572">Prefacio</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953585991029886728">Editar texto</translation>
+<translation id="4964701498510730546">el campo de texto está vacío</translation>
 <translation id="4973717656530883744">Mínimo <ph name="X" /></translation>
 <translation id="4974612477719259470">No hay botones anteriores</translation>
 <translation id="4979404613699303341">Botón anterior</translation>
+<translation id="4981239367072766915">no se reconoce la entrada</translation>
 <translation id="4982917827052020884">Comencemos con algunas teclas que usarás con frecuencia. Con la tecla Control, que se encuentra en la esquina inferior izquierda del teclado, puedes silenciar la voz actual. Para continuar, presiona la tecla Control.</translation>
 <translation id="4983588134362688868">Ir al principio de la página</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ventana</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Anunciar el estado actual de la batería</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botón de selección seleccionado</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botón de selección de elemento de menú seleccionado</translation>
+<translation id="5014131807708055994">No se puede <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Habilitar el acceso por voz</translation>
 <translation id="5041394372352067729">Mover la pantalla de braille a la parte superior de la página</translation>
 <translation id="5042770794184672516">Aumentar el volumen de voz</translation>

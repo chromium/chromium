@@ -15,12 +15,10 @@ class Profile;
 namespace bruschetta {
 
 extern const char kToolsDlc[];
+extern const char kUefiDlc[];
 
 extern const char kBruschettaVmName[];
 extern const char kBruschettaDisplayName[];
-
-extern const char kBiosPath[];
-extern const char kPflashPath[];
 
 extern const char kBruschettaPolicyId[];
 
@@ -30,7 +28,7 @@ enum class BruschettaResult {
   kUnknown = 0,
   kSuccess = 1,
   kDlcInstallError = 2,
-  kBiosNotAccessible = 3,
+  // Deprecated: kBiosNotAccessible = 3
   kStartVmFailed = 4,
   kTimeout = 5,
   kForbiddenByPolicy = 6,

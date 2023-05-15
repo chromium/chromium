@@ -581,7 +581,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   // Create one image with a size of 10x10px
   SkImageInfo raster_image_info =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(raster_image_info));
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(raster_image_info));
   ImageResourceContent* image_content = ImageResourceContent::CreateLoaded(
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot())
           .get());

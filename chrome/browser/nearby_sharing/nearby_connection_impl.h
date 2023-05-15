@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 #include <queue>
@@ -36,7 +37,8 @@ class NearbyConnectionImpl : public NearbyConnection {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  NearbyConnectionsManager* nearby_connections_manager_;
+  raw_ptr<NearbyConnectionsManager, ExperimentalAsh>
+      nearby_connections_manager_;
   std::string endpoint_id_;
   ReadCallback read_callback_;
   base::OnceClosure disconnect_listener_;

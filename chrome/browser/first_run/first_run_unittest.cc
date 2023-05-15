@@ -3,16 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/first_run/first_run.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/initial_preferences.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace first_run {
@@ -23,6 +27,11 @@ base::FilePath GetTestDataPath(const std::string& test_name) {
   return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
       .AppendASCII("first_run")
       .AppendASCII(test_name);
+}
+
+base::FilePath GetSentinelFilePath() {
+  return base::PathService::CheckedGet(chrome::DIR_USER_DATA)
+      .Append(chrome::kFirstRunSentinel);
 }
 
 }  // namespace
@@ -107,26 +116,151 @@ TEST_F(FirstRunTest, DetermineFirstRunState_SuppressSwitch) {
 }
 
 TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_Created) {
+  base::HistogramTester histogram_tester;
   first_run::CreateSentinelIfNeeded();
+  histogram_tester.ExpectUniqueSample(
+      "FirstRun.Sentinel.Created",
+      startup_metric_utils::FirstRunSentinelCreationResult::kSuccess, 1);
+
   // Gets the creation time of the first run sentinel.
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   base::File::Info info;
-  ASSERT_TRUE(base::GetFileInfo(user_data_dir.Append(chrome::kFirstRunSentinel),
-                                &info));
+  ASSERT_TRUE(base::GetFileInfo(GetSentinelFilePath(), &info));
 
   EXPECT_EQ(info.creation_time, first_run::GetFirstRunSentinelCreationTime());
 }
 
 TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_NotCreated) {
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   base::File::Info info;
-  ASSERT_FALSE(base::GetFileInfo(
-      user_data_dir.Append(chrome::kFirstRunSentinel), &info));
+  ASSERT_FALSE(base::GetFileInfo(GetSentinelFilePath(), &info));
 
   EXPECT_EQ(0, first_run::GetFirstRunSentinelCreationTime().ToDoubleT());
 }
+
+TEST_F(FirstRunTest, CreateSentinelIfNeeded) {
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_TRUE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    histogram_tester.ExpectUniqueSample(
+        "FirstRun.Sentinel.Created",
+        startup_metric_utils::FirstRunSentinelCreationResult::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_TRUE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    // We are still considered in the first run, but we'll attempt a creation
+    // even if the file exists.
+    histogram_tester.ExpectUniqueSample(
+        "FirstRun.Sentinel.Created",
+        startup_metric_utils::FirstRunSentinelCreationResult::kFilePathExists,
+        1);
+  }
+
+  first_run::ResetCachedSentinelDataForTesting();
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_FALSE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    // The file already exists, and we identified that we are not in the first
+    // run, the creation is not needed.
+    histogram_tester.ExpectTotalCount("FirstRun.Sentinel.Created", 0);
+  }
+}
+
+TEST_F(FirstRunTest, CreateSentinelIfNeeded_DoneEvenIfForced) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceFirstRun);
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_TRUE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    histogram_tester.ExpectUniqueSample(
+        "FirstRun.Sentinel.Created",
+        startup_metric_utils::FirstRunSentinelCreationResult::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_TRUE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    // While the first run state is forced, we'll always attempt to create the
+    // sentinel.
+    histogram_tester.ExpectUniqueSample(
+        "FirstRun.Sentinel.Created",
+        startup_metric_utils::FirstRunSentinelCreationResult::kFilePathExists,
+        1);
+  }
+
+  first_run::ResetCachedSentinelDataForTesting();
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(base::PathExists(GetSentinelFilePath()));
+    EXPECT_TRUE(IsChromeFirstRun());
+
+    first_run::CreateSentinelIfNeeded();
+
+    // While the first run state is forced, we'll always attempt to create the
+    // sentinel.
+    histogram_tester.ExpectUniqueSample(
+        "FirstRun.Sentinel.Created",
+        startup_metric_utils::FirstRunSentinelCreationResult::kFilePathExists,
+        1);
+  }
+}
+
+TEST_F(FirstRunTest, CreateSentinelIfNeeded_SkippedIfSuppressed) {
+  base::HistogramTester histogram_tester;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+
+  first_run::CreateSentinelIfNeeded();
+
+  histogram_tester.ExpectTotalCount("FirstRun.Sentinel.Created", 0);
+  EXPECT_FALSE(base::PathExists(GetSentinelFilePath()));
+  EXPECT_FALSE(IsChromeFirstRun());
+}
+
+#if BUILDFLAG(IS_POSIX)  // This test relies on Posix file permissions.
+TEST_F(FirstRunTest, CreateSentinelIfNeeded_FileSystemError) {
+  base::HistogramTester histogram_tester;
+
+  // Make the user data dir read-only so the sentinel can't be written.
+  // Note: the test fixture registers an override to a temp dir for the
+  // scope of each test, the below is not as destructive as it seems.
+  auto path = base::PathService::CheckedGet(chrome::DIR_USER_DATA);
+  ASSERT_TRUE(SetPosixFilePermissions(
+      path, DirectoryExists(path) ? (S_IRUSR | S_IXUSR) : S_IRUSR));
+
+  first_run::CreateSentinelIfNeeded();
+
+  histogram_tester.ExpectUniqueSample(
+      "FirstRun.Sentinel.Created",
+      startup_metric_utils::FirstRunSentinelCreationResult::kFileSystemError,
+      1);
+  EXPECT_FALSE(base::PathExists(GetSentinelFilePath()));
+
+  EXPECT_TRUE(IsChromeFirstRun());  // This is still a first run.
+}
+#endif
 
 // This test, and the one below, require customizing the path that the initial
 // prefs code will search. On non-Mac platforms that path is derived from

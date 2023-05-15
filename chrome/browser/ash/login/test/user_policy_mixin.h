@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -69,7 +70,8 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   // Policy server that can optionally be passed into UserPolicyMixin. If set
   // user policy changes done by RequestPolicyUpdate() will also be forwarded
   // to the policy server.
-  EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
+  raw_ptr<EmbeddedPolicyTestServerMixin, ExperimentalAsh>
+      embedded_policy_server_ = nullptr;
 
   policy::UserPolicyBuilder user_policy_builder_;
 

@@ -76,10 +76,10 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
@@ -96,12 +96,13 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   // requires saving data and metadata atomically. Also need to transfer the
   // meta_data_change_list from the InMemoryMetadataChangeList created by
   // CreateMetadataChangeList() within the transaction created in
-  // MergeSyncData() and ApplySyncChanges().
+  // MergeFullSyncData() and ApplyIncrementalSyncChanges().
   std::unique_ptr<syncer::MetadataChangeList>
   CreateMetadataChangeListInTransaction();
 
-  // Helper function called by both `MergeSyncData` with is_initial_merge=true
-  // and `ApplySyncChanges` with is_initial_merge=false.
+  // Helper function called by both `MergeFullSyncData` with
+  // is_initial_merge=true and `ApplyIncrementalSyncChanges` with
+  // is_initial_merge=false.
   absl::optional<syncer::ModelError> ApplyChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList& entity_changes,

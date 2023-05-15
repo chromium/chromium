@@ -4,6 +4,7 @@
 
 #include "ash/glanceables/glanceables_v2_controller.h"
 
+#include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
@@ -32,9 +33,17 @@ void GlanceablesV2Controller::UpdateClientsRegistration(
   clients_registry_.insert_or_assign(account_id, registration);
 }
 
+GlanceablesClassroomClient* GlanceablesV2Controller::GetClassroomClient()
+    const {
+  const auto iter = clients_registry_.find(active_account_id_);
+  return iter != clients_registry_.end() ? iter->second.classroom_client.get()
+                                         : nullptr;
+}
+
 GlanceablesTasksClient* GlanceablesV2Controller::GetTasksClient() const {
   const auto iter = clients_registry_.find(active_account_id_);
-  return iter != clients_registry_.end() ? iter->second.tasks_client : nullptr;
+  return iter != clients_registry_.end() ? iter->second.tasks_client.get()
+                                         : nullptr;
 }
 
 }  // namespace ash

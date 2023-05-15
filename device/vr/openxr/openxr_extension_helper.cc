@@ -44,13 +44,6 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
     : extension_enumeration_(extension_enumeration) {
   // Failure to query a method results in a nullptr
 
-  // D3D11
-  std::ignore = xrGetInstanceProcAddr(
-      instance, "xrGetD3D11GraphicsRequirementsKHR",
-      reinterpret_cast<PFN_xrVoidFunction*>(
-          const_cast<PFN_xrGetD3D11GraphicsRequirementsKHR*>(
-              &extension_methods_.xrGetD3D11GraphicsRequirementsKHR)));
-
   // Hand tracking methods
   std::ignore = xrGetInstanceProcAddr(
       instance, "xrCreateHandTrackerEXT",
@@ -133,11 +126,14 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetSceneMeshBuffersMSFT*>(
               &extension_methods_.xrGetSceneMeshBuffersMSFT)));
+
+#if BUILDFLAG(IS_WIN)
   std::ignore = xrGetInstanceProcAddr(
       instance, "xrConvertWin32PerformanceCounterToTimeKHR",
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrConvertWin32PerformanceCounterToTimeKHR*>(
               &extension_methods_.xrConvertWin32PerformanceCounterToTimeKHR)));
+#endif
 }
 
 }  // namespace device

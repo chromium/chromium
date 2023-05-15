@@ -21,7 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/services/filesystem/directory_impl.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -175,11 +175,14 @@ void PrepareUnzipParams(
     const base::FilePath& output_dir,
     UnzipFilterCallback filter_callback,
     UnzipListenerCallback listener_callback,
-    mojo::PendingRemote<filesystem::mojom::Directory>& directory_remote,
+    mojo::PendingRemote<storage::mojom::Directory>& directory_remote,
     mojo::PendingRemote<unzip::mojom::UnzipFilter>& filter_remote,
     mojo::PendingRemote<unzip::mojom::UnzipListener>& listener_remote) {
+  // kTrusted is set to allow the unzipping process to handle all types of
+  // files.
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<filesystem::DirectoryImpl>(output_dir, nullptr),
+      std::make_unique<storage::FilesystemImpl>(
+          output_dir, storage::FilesystemImpl::ClientType::kTrusted),
       directory_remote.InitWithNewPipeAndPassReceiver());
 
   unzip_params->unzipper().set_disconnect_handler(
@@ -217,7 +220,7 @@ void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
   auto unzip_params = base::MakeRefCounted<UnzipParams>(
       std::move(unzipper), std::move(result_callback));
 
-  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote;
+  mojo::PendingRemote<storage::mojom::Directory> directory_remote;
   mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote;
   mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote;
   PrepareUnzipParams(unzip_params, output_dir, filter_callback,
@@ -382,7 +385,7 @@ void DoUnzipWithParams(mojo::PendingRemote<mojom::Unzipper> unzipper,
   unzip_params = base::MakeRefCounted<UnzipParams>(std::move(unzipper),
                                                    std::move(result_callback));
 
-  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote;
+  mojo::PendingRemote<storage::mojom::Directory> directory_remote;
   mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote;
   mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote;
   PrepareUnzipParams(unzip_params, output_dir, filter_callback,

@@ -173,7 +173,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element*,
       PseudoId);
 
-  Element* FindContainerForElement(Element*, const ContainerSelector&);
+  Element* FindContainerForElement(Element*,
+                                   const ContainerSelector&,
+                                   const TreeScope* selector_tree_scope);
 
   Font ComputeFont(Element&, const ComputedStyle&, const CSSPropertyValueSet&);
 
@@ -320,9 +322,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   void ApplyCallbackSelectors(StyleResolverState&);
   void ApplyDocumentRulesSelectors(StyleResolverState&, ContainerNode* scope);
-  StyleRuleList* CollectMatchingRulesFromRuleSet(StyleResolverState&,
-                                                 RuleSet*,
-                                                 ContainerNode* scope);
+  StyleRuleList* CollectMatchingRulesFromUnconnectedRuleSet(
+      StyleResolverState&,
+      RuleSet*,
+      ContainerNode* scope);
 
   Document& GetDocument() const { return *document_; }
 

@@ -55,7 +55,6 @@ static const std::unordered_set<policy::DeviceMode>& DeviceModeConsumer() {
 static const std::unordered_set<policy::DeviceMode>& DeviceModeEnterprise() {
   static const std::unordered_set<policy::DeviceMode> kModeEnterprise(
       {policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
-       policy::DeviceMode::DEVICE_MODE_ENTERPRISE_AD,
        policy::DeviceMode::DEVICE_MODE_DEMO});
   return kModeEnterprise;
 }
@@ -366,6 +365,14 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerOnMachineStatisticsLoaded);
+
+  // Block virtual machines and debug builds (dev mode enabled).
+  if (statistics_provider_->IsRunningOnVm() ||
+      statistics_provider_->IsCrosDebugMode()) {
+    LOG(ERROR) << "Terminate - device is running in VM or with cros_debug mode "
+                  "enabled.";
+    return;
+  }
 
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(

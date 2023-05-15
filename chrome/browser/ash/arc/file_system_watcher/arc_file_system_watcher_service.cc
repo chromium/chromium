@@ -487,8 +487,7 @@ void ArcFileSystemWatcherService::StopWatchingRemovableMedia(
     const std::string& mount_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!removable_media_watchers_.count(mount_path)) {
-    LOG(ERROR) << "Unmounting non-existing volume with mount path: "
-               << mount_path;
+    VLOG(1) << "Unmounting non-existing volume with mount path: " << mount_path;
     return;
   }
   file_task_runner_->DeleteSoon(

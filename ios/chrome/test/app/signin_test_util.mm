@@ -8,13 +8,14 @@
 #import "base/notreached.h"
 #import "base/test/ios/wait_util.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -135,11 +136,12 @@ void ResetUserApprovedAccountListManager() {
 void SignInWithoutSync(id<SystemIdentity> identity) {
   Browser* browser = GetMainBrowser();
   UIViewController* viewController = GetActiveViewController();
-  __block AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:browser
-                                         identity:identity
-                                 postSignInAction:PostSignInAction::kNone
-                         presentingViewController:viewController];
+  __block AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
+               initWithBrowser:browser
+                      identity:identity
+                   accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN
+              postSignInAction:PostSignInAction::kNone
+      presentingViewController:viewController];
   authenticationFlow.dispatcher = (id<BrowsingDataCommands>)GetMainController();
   [authenticationFlow startSignInWithCompletion:^(BOOL success) {
     authenticationFlow = nil;

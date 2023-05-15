@@ -207,7 +207,7 @@ bool EditingStyleUtilities::IsTransparentColorValue(const CSSValue* css_value) {
   if (!css_value)
     return true;
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_value))
-    return !color_value->Value().Alpha();
+    return color_value->Value().IsFullyTransparent();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(css_value))
     return identifier_value->GetValueID() == CSSValueID::kTransparent;
   return false;

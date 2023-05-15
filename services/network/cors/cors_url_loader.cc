@@ -9,6 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -416,6 +419,23 @@ void CorsURLLoader::FollowRedirect(
   if (request_.method == net::HttpRequestHeaders::kGetMethod)
     request_.request_body = nullptr;
 
+  // When we follow a redirect, we should not expect the IP address space of
+  // the target server to stay the same. The new target server's IP address
+  // space will be recomputed and Private Network Access checks will apply anew.
+  //
+  // This only affects redirects where a new request is initiated at this layer
+  // instead of being handled in `network::URLLoader`.
+  //
+  // See also: https://crbug.com/1293891
+  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
+
+  // Similarly, when we follow a redirect, we may make a different decision as
+  // to whether and why we should send a preflight request. Maybe the request
+  // is now same-origin when it was cross-origin, or vice-versa. Maybe the
+  // request now does not target the private network. In any case, we will set
+  // this bit back to true if we need to.
+  sending_pna_only_warning_preflight_ = false;
+
   const bool original_fetch_cors_flag = fetch_cors_flag_;
   SetCorsFlagIfNeeded();
 
@@ -561,16 +581,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
-
-  // When a redirect is received, we should not expect the IP address space of
-  // the target server to stay the same. The new target server's IP address
-  // space will be recomputed and Private Network Access checks will apply anew.
-  //
-  // This only affects redirects where a new request is initiated at this layer
-  // instead of being handled in `network::URLLoader`.
-  //
-  // See also: https://crbug.com/1293891
-  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
 
   response_head->private_network_access_preflight_result =
       TakePrivateNetworkAccessPreflightResult();

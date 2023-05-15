@@ -10,6 +10,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -127,11 +128,13 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
-  phonehub::FakeNotificationManager* notification_manager_;
-  phonehub::FakeFeatureStatusProvider* feature_status_provider_;
-  PhoneHubNotificationController* controller_;
+  raw_ptr<phonehub::FakeNotificationManager, ExperimentalAsh>
+      notification_manager_;
+  raw_ptr<phonehub::FakeFeatureStatusProvider, ExperimentalAsh>
+      feature_status_provider_;
+  raw_ptr<PhoneHubNotificationController, ExperimentalAsh> controller_;
   base::flat_set<phonehub::Notification> fake_notifications_;
 };
 

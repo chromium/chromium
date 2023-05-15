@@ -506,6 +506,8 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         return loadTimeData.getString('unknownPrinterError');
       case PrinterErrorCode.kClientUnauthorized:
         return loadTimeData.getString('clientUnauthorized');
+      case PrinterErrorCode.kExpiredCertificate:
+        return loadTimeData.getString('expiredCertificate');
       default:
         assertNotReached();
     }
@@ -541,6 +543,8 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         return loadTimeData.getString('unknownPrinterErrorStopped');
       case PrinterErrorCode.kClientUnauthorized:
         return loadTimeData.getString('clientUnauthorized');
+      case PrinterErrorCode.kExpiredCertificate:
+        return loadTimeData.getString('expiredCertificate');
       case PrinterErrorCode.kPrinterUnreachable:
         assertNotReached();
       default:

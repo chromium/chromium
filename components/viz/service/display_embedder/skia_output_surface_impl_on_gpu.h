@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -47,12 +48,12 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
-}
+}  // namespace gfx
 
 namespace gl {
 class GLSurface;
 class Presenter;
-}
+}  // namespace gl
 
 namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
@@ -60,6 +61,11 @@ class SharedImageRepresentationFactory;
 class SharedImageFactory;
 class SyncPointClientState;
 }  // namespace gpu
+
+namespace skgpu::graphite {
+class Context;
+class Recording;
+}  // namespace skgpu::graphite
 
 namespace ui {
 #if BUILDFLAG(IS_OZONE)
@@ -146,13 +152,15 @@ class SkiaOutputSurfaceImplOnGpu
     return weak_ptr_;
   }
 
-  void Reshape(const SkSurfaceCharacterization& characterization,
+  void Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform);
   void FinishPaintCurrentFrame(
       sk_sp<SkDeferredDisplayList> ddl,
       sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
@@ -179,6 +187,7 @@ class SkiaOutputSurfaceImplOnGpu
       const gpu::Mailbox& mailbox,
       sk_sp<SkDeferredDisplayList> ddl,
       sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
@@ -266,6 +275,7 @@ class SkiaOutputSurfaceImplOnGpu
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          uint32_t usage,
+                         std::string debug_label,
                          gpu::SurfaceHandle surface_handle);
   void CreateSolidColorSharedImage(gpu::Mailbox mailbox,
                                    const SkColor4f& color,
@@ -311,7 +321,11 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersInternal(absl::optional<OutputSurfaceFrame> frame);
   void PostSubmit(absl::optional<OutputSurfaceFrame> frame);
 
-  GrDirectContext* gr_context() { return context_state_->gr_context(); }
+  GrDirectContext* gr_context() const { return context_state_->gr_context(); }
+
+  skgpu::graphite::Context* graphite_context() const {
+    return context_state_->graphite_context();
+  }
 
   bool is_using_vulkan() const {
     return !!vulkan_context_provider_ &&
@@ -351,7 +365,8 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<gpu::SkiaImageRepresentation>
   CreateSharedImageRepresentationSkia(SharedImageFormat format,
                                       const gfx::Size& size,
-                                      const gfx::ColorSpace& color_space);
+                                      const gfx::ColorSpace& color_space,
+                                      base::StringPiece debug_label);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, renders
   // |surface| into |dest_surface|'s canvas, cropping and scaling the results
@@ -365,11 +380,12 @@ class SkiaOutputSurfaceImplOnGpu
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, flushes writes
   // to |surface| with |end_semaphores| and |end_state|.
-  bool FlushSurface(SkSurface* surface,
-                    std::vector<GrBackendSemaphore>& end_semaphores,
-                    std::unique_ptr<GrBackendSurfaceMutableState> end_state,
-                    GrGpuFinishedProc finished_proc = nullptr,
-                    GrGpuFinishedContext finished_context = nullptr);
+  bool FlushSurface(
+      SkSurface* surface,
+      std::vector<GrBackendSemaphore>& end_semaphores,
+      gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
+      GrGpuFinishedProc finished_proc = nullptr,
+      GrGpuFinishedContext finished_context = nullptr);
 
   // Creates surfaces needed to store the data in NV12 format.
   // |plane_access_datas| will be populated with information needed to access
@@ -508,9 +524,7 @@ class SkiaOutputSurfaceImplOnGpu
     base::flat_set<ImageContextImpl*> image_contexts_;
   };
   PromiseImageAccessHelper promise_image_access_helper_{this};
-  base::flat_set<std::pair<ImageContextImpl*,
-                           std::unique_ptr<GrBackendSurfaceMutableState>>>
-      image_contexts_with_end_access_state_;
+  base::flat_set<ImageContextImpl*> image_contexts_to_apply_end_state_;
 
   std::unique_ptr<SkiaOutputDevice> output_device_;
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;

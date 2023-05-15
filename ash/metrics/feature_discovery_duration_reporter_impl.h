@@ -10,6 +10,7 @@
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 
 class PrefRegistrySimple;
@@ -76,7 +77,7 @@ class FeatureDiscoveryDurationReporterImpl
   // is set when the active user pref service changes.
   // NOTE: `active_pref_service_` is not reset when signing out. Because the
   // reporter instance should be destroyed in this scenario.
-  base::raw_ptr<PrefService> active_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_pref_service_ = nullptr;
 
   // If true, starting observations on feature discovery is allowed.
   bool is_active_ = false;

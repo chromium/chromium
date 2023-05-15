@@ -881,7 +881,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxComputeWorkgroupsPerDimension
 [Worker]     getter maxDynamicStorageBuffersPerPipelineLayout
 [Worker]     getter maxDynamicUniformBuffersPerPipelineLayout
-[Worker]     getter maxFragmentCombinedOutputResources
 [Worker]     getter maxInterStageShaderComponents
 [Worker]     getter maxInterStageShaderVariables
 [Worker]     getter maxSampledTexturesPerShaderStage
@@ -1161,9 +1160,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface MLGraphBuilder
 [Worker]     attribute @@toStringTag
+[Worker]     method abs
 [Worker]     method add
 [Worker]     method averagePool2d
 [Worker]     method buildSync
+[Worker]     method ceil
 [Worker]     method clamp
 [Worker]     method concat
 [Worker]     method constant
@@ -1171,6 +1172,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method conv2d
 [Worker]     method convTranspose2d
 [Worker]     method div
+[Worker]     method elu
+[Worker]     method floor
 [Worker]     method gemm
 [Worker]     method hardSwish
 [Worker]     method input
@@ -1179,6 +1182,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method maxPool2d
 [Worker]     method min
 [Worker]     method mul
+[Worker]     method neg
 [Worker]     method pad
 [Worker]     method prelu
 [Worker]     method relu
@@ -1597,7 +1601,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unobserve
 [Worker] interface PressureRecord
 [Worker]     attribute @@toStringTag
-[Worker]     getter factors
 [Worker]     getter source
 [Worker]     getter state
 [Worker]     getter time
@@ -3750,6 +3753,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method open
 [Worker]     method overrideMimeType
 [Worker]     method send
+[Worker]     method setAttributionReporting
 [Worker]     method setPrivateToken
 [Worker]     method setRequestHeader
 [Worker]     setter onreadystatechange

@@ -7,18 +7,19 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_view_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 
@@ -176,11 +177,18 @@ constexpr CGFloat preferredCornerRadius = 20;
   NSString* webStateIdentifier = webState->GetStableIdentifier();
   if (![webStateIdentifier isEqualToString:identifier])
     return;
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  web::WebFrame* mainFrame =
+      feature->GetWebFramesManager(webState)->GetMainWebFrame();
+  if (!mainFrame) {
+    return;
+  }
+
   FormInputAccessoryViewHandler* handler =
       [[FormInputAccessoryViewHandler alloc] init];
   handler.webState = webState;
-  NSString* mainFrameID =
-      base::SysUTF8ToNSString(web::GetMainWebFrameId(webState));
+  NSString* mainFrameID = base::SysUTF8ToNSString(mainFrame->GetFrameId());
   [handler setLastFocusFormActivityWebFrameID:mainFrameID];
   [handler closeKeyboardWithoutButtonPress];
 }

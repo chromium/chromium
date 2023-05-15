@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -102,7 +103,7 @@ class NetworkConnectImpl : public NetworkConnect {
   void ConfigureSetProfileSucceeded(const std::string& network_id,
                                     base::Value::Dict properties_to_set);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   base::WeakPtrFactory<NetworkConnectImpl> weak_factory_{this};
 };
 

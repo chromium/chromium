@@ -21,9 +21,10 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="110724200315609752">کھلی ہوئی ونڈو پر سوئچ کریں</translation>
 <translation id="1112015203684611006">پرنٹنگ ناکام۔</translation>
+<translation id="1113057722807951993">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہیں۔
+
+اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1125564390852150847">نیا ٹیب بنائیں۔</translation>
-<translation id="1126013303640354461">‏Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
-صرف وہ شخص جس کے پاس آپ کی پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا یا اس کے ذریعے اسٹور نہیں کیا جاتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ آپ کو اب بھی Gmail اور تلاش جیسی Google کی دیگر سروسز میں جہاں بھی دستیاب ہوگا محفوظ براؤزنگ کا تحفظ ملے گا۔</translation>
 <translation id="1145536944570833626">موجودہ ڈیٹا کو حذف کریں۔</translation>
 <translation id="1147031633655575115"><ph name="USER" /> کے بطور سائن ان ہیں</translation>
@@ -70,6 +71,7 @@
 <translation id="1375321115329958930">محفوظ کردہ پاس ورڈز</translation>
 <translation id="1377255359165588604">مطابقت پذیری نے کام کرنا بند کر دیا ہے۔</translation>
 <translation id="1377321085342047638">کارڈ نمبر</translation>
+<translation id="1377508275003315939">پاس ورڈز</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="138618066238211776">بطور <ph name="USER_NAME" /> جاری رکھیں</translation>
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
@@ -88,6 +90,7 @@
 <translation id="1509960214886564027">بہت سی سائٹس پر خصوصیات میں خلل ہو سکتا ہے</translation>
 <translation id="152234381334907219">کبھی محفوظ نہیں ہوئے</translation>
 <translation id="1523341279170789507">سبھی کوکیز کی اجازت دیں</translation>
+<translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1531836666020185856">نمایاں کردہ</translation>
 <translation id="1535268707340844072">آپ کی موجودہ ترتیب کی وجہ سے ممکن ہے کچھ سائٹس کام نہ کریں۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="1540800554400757039">پتہ 1</translation>
@@ -112,6 +115,7 @@
 <translation id="1657011748321897393">اشتراک ناکام ہوگیا کیونکہ آپ نیٹ ورک سے منسلک نہیں ہیں۔</translation>
 <translation id="1657641691196698092">مسدود کردہ کوکیز</translation>
 <translation id="165877110639533037">کوئی کھلے ٹیبز نہیں ہیں</translation>
+<translation id="166310177317698233">آپ ٹیبز دکھائیں بٹن کو تھپتھپا کر اپنے پن کردہ ٹیبز تلاش کر سکتے ہیں۔</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
 <translation id="1683483432843341018">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="168715261339224929">اپنے تمام آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، مطابقت پذیری آن کریں۔</translation>
@@ -123,6 +127,7 @@
 <translation id="1750238553597293878">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرتے رہیں</translation>
 <translation id="1752547299766512813">پاس ورڈز محفوظ کریں</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} کمزور پاس ورڈ}other{{count} کمزور پاس ورڈز}}</translation>
 <translation id="1767766085187034454">‏Google ترجمہ</translation>
 <translation id="1789803444939621101">واپسی پر خوش آمدید، <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">کارڈ کے حامل کا نام</translation>
@@ -131,11 +136,15 @@
 <translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{متاثرہ پاس ورڈز}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
+<translation id="1830634592642484976">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں۔</translation>
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
+<translation id="1836891464494477513">{count,plural, =1{‏بک مارک آپ کے Google اکاؤنٹ میں محفوظ کیا، {email}}other{‏باک مارکس آپ کے Google اکاؤنٹ میں محفوظ کیے گئے، {email}}}</translation>
 <translation id="1870148520156231997">پاس ورڈ ظاہر کریں</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
+<translation id="1883255238294161206">فہرست سکیڑیں</translation>
 <translation id="1891796056033961979">آپ کے محفوظ کردہ بُک مارکس، پاس ورڈز، ترتیبات وغیرہ اب اس اسکرین سے قابل رسائی ہیں۔</translation>
 <translation id="1894023287452300670">قیمت کو یہاں ٹریک کریں</translation>
+<translation id="1910975740091000991">‏Chrome برائے iOS</translation>
 <translation id="1911619930368729126">‏Google Drive میں اپ لوڈ کریں</translation>
 <translation id="1923342640370224680">پچھلے گھنٹے</translation>
 <translation id="1930989359703290198">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -144,6 +153,7 @@
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
 <translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
+<translation id="1967461193809857427">{count,plural, =1{‏وہ ٹیب منتخب کریں جو آپ نے Android پر چھوڑا تھا؟}other{‏وہ ٹیبز منتخب کریں جنہیں آپ نے Android پر چھوڑا تھا؟}}</translation>
 <translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیب حاصل کریں}other{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیبز حاصل کریں}}</translation>
@@ -151,6 +161,7 @@
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="1990820278544963435">تلاش کریں</translation>
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
+<translation id="2008357574463816229">‏اگر آپ اپنی پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="2010008505735295285">دوبارہ لوڈ کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
 <translation id="2021670401941426298">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
@@ -162,7 +173,6 @@
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2080769225927880590">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
-<translation id="2090878303988764231">آپ جو مواد دیکھتے ہیں اس کا نظم کرنے کے لیے سائن ان کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="21133533946938348">ٹیب کو پن کریں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
@@ -171,7 +181,6 @@
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="214201757571129614">سائن ان کریں…</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
-<translation id="2150175299852799498">‏Chrome برائے موبائل</translation>
 <translation id="2155145621546387786">‏Chrome کا اشتراک کریں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2178545675770638239">پاس ورڈ منتخب کریں</translation>
@@ -181,6 +190,7 @@
 <translation id="2242467532204595597">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو Chrome استعمال کریں۔</translation>
 <translation id="22508856139286506">برخاست کردہ وارننگز (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">مینیو ← سرگزشت</translation>
+<translation id="2252674110805316998">Web Search</translation>
 <translation id="2256933947031277845">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
@@ -221,6 +231,7 @@
 <translation id="2500374554657206846">پاس ورڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="2523363575747517183">یہ ویب سائٹ بار بار ایک اور ایپلیکیشن کھولنے کی کوشش کر رہی ہے۔</translation>
 <translation id="2529021024822217800">تمام کھولیں</translation>
+<translation id="2536991091671391962">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="EMAIL" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="2547458583188611426">مطابقت پذیری کام نہیں کر رہی ہے۔ مطابقت پذیری شروع کرنے کے لیے اپنا پاس فریز درج کریں۔</translation>
 <translation id="2551153019974022505">اکاؤنٹ کی خرابی</translation>
 <translation id="2556092377360758201">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
@@ -228,6 +239,7 @@
 <translation id="2576499762020411840">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="2578571896248130439">ویب صفحہ بھیجیں</translation>
 <translation id="2584132361465095047">اکاؤنٹ شامل کریں…</translation>
+<translation id="2587010742985678408">{count,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{count} متاثرہ پاس ورڈ}other{{count} متاثرہ پاس ورڈز}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{ایک یا زیادہ دن کے لیے استعمال نہ ہونے والے کھلے ٹیبز کو غیر فعال ٹیبز میں منتقل کر دیا جاتا ہے تاکہ آپ آسانی سے ان ٹیبز پر توجہ مرکوز کر سکیں جنہیں آپ سب سے زیادہ استعمال کرتے ہیں۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔}other{{COUNT} یا زیادہ دن کے لیے استعمال نہ ہونے والے کھلے ٹیبز کو غیر فعال ٹیبز میں منتقل کر دیا جاتا ہے تاکہ آپ آسانی سے ان ٹیبز پر توجہ مرکوز کر سکیں جنہیں آپ سب سے زیادہ استعمال کرتے ہیں۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔}}</translation>
 <translation id="2600682495497606169">سائٹ کوکیز صاف کریں</translation>
 <translation id="2609008503159898744">سبھی ٹیبز بند کریں؟</translation>
@@ -237,7 +249,6 @@
 <translation id="2647269890314209800">زیر استعمال کوکیز</translation>
 <translation id="2648721026697078500">کبھی منتقل نہ کریں</translation>
 <translation id="2648803196158606475">پڑھے ہوئے کو حذف کریں</translation>
-<translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2664621323652615289">روکیں</translation>
 <translation id="2671426118752779020">‏آپ اپنے iPhone پر Google پاس ورڈ مینیجر میں اپنے محفوظ کردہ پاس ورڈز کو دیگر ایپس میں استعمال کر سکتے ہیں۔</translation>
 <translation id="2690858294534178585">کیمرا زیر استعمال ہے</translation>
@@ -271,6 +282,7 @@
 <translation id="2797029671965852011">سرگزشت دکھائیں</translation>
 <translation id="2800683595868705743">ٹیب سوئچ کنندہ کو چھوڑیں</translation>
 <translation id="2815198996063984598">2۔ ڈیفالٹ براؤزر ایپ تھپتھپائیں</translation>
+<translation id="2818821771744632548">‏آپ اپنے iPhone ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ واپس سائن ان کرنے کے لیے، نیچے "جاری رکھیں" پر تھپتھپائیں۔</translation>
 <translation id="2822917246944009066">ٹیب کو پن کر دیا گیا ہے</translation>
 <translation id="2830972654601096923">پتوں کا نظم کریں...</translation>
 <translation id="2834399722155632105">3. پاس ورڈ کے اختیارات پر تھپتھپائیں۔</translation>
@@ -296,7 +308,6 @@
 <translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2932765531295814441">دستی طور پر پاس ورڈز شامل کریں</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
-<translation id="2953871438216280742">‏اپنے Google اکاؤنٹ میں اپنی پڑھنے کی فہرست کو کھولنے اور محفوظ کرنے کے لیے سائن ان کریں۔</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2961210776189273067">عنوان</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
@@ -321,7 +332,6 @@
 <translation id="3131206671572504478">سبھی کو مسدود کریں</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3146109040683991651">‏Chrome کو ڈيفالٹ براؤزر کے بطور سیٹ کریں</translation>
-<translation id="3152169319860972623">پاس ورڈ چیک اپ آپ کے محفوظ کردہ پاس ورڈز کا جائزہ لیتا ہے اور آپ کو کسی بھی آن لائن خلاف ورزی سے متنبہ کرتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں۔<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157684681743766797">سبھی کو نشان زد کریں…</translation>
@@ -352,8 +362,8 @@
 <translation id="3305294846493618482">مزید</translation>
 <translation id="3311748811247479259">آف</translation>
 <translation id="3324193307694657476">پتہ 2</translation>
-<translation id="3328459813621383194">غیر فعال ٹیبز کو منتقل کریں</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
+<translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="3377063233124932127">اب آپ کے محفوظ کردہ بک مارکس، پاس ورڈز اور بہت کچھ سب سے اوپر ہیں۔</translation>
 <translation id="3393920035788932672">پاپ اپس کی اجازت ہے</translation>
@@ -399,6 +409,7 @@
 <translation id="3638472932233958418">ویب صفحات کو پیشگی لوڈ کریں</translation>
 <translation id="3661160521073045932">کنفیگریشن پروفائل دستیاب ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
+<translation id="3700134753671613714">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="3709582977625132201">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="371230970611282515">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتا ہے اور آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="37207012422556617">رجحان ساز تلاشیں</translation>
@@ -425,6 +436,7 @@
 <translation id="3861486700625780712">پیروی ختم کریں</translation>
 <translation id="3863769054730344136">اپنے آلات پر بھیجیں</translation>
 <translation id="387280738075653372">‏یہاں Chrome ڈاؤن لوڈ کریں۔</translation>
+<translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3888863481921783344">اس کا استعمال آپ کو آپ کے ایونٹ کے ممکنہ مدعو کنندگان دکھانے کے لیے کیا جائے گا۔</translation>
 <translation id="3891414008432200754">قیمت</translation>
 <translation id="3892144330757387737">آپ کو اپنی سرگزشت یہاں ملے گی</translation>
@@ -480,6 +492,7 @@
 <translation id="4272631900155121838">‏QR کوڈ اسکین کرنے کیلئے، ترتیبات سے کیمرا فعال کریں</translation>
 <translation id="4277990410970811858">محفوظ براؤزنگ</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
+<translation id="4293080268407233932">تلاش کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="430793432425771671">ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="4309403553630140242">مزيد معلومات کے لیے دوبار تھپتھپائيں</translation>
@@ -492,6 +505,7 @@
 <translation id="4343046787186034850">کیمرے اور مائیکروفون تک رسائی کی اجازت ہے</translation>
 <translation id="4359125752503270327">یہ صفحہ کسی دوسری ایپلیکیشن میں کھلے گا۔</translation>
 <translation id="4371526908359194219">ای میل اطلاعات</translation>
+<translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4375040482473363939">‏QR کوڈ کی تلاش</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4389019817280890563">زبان تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
@@ -530,16 +544,14 @@
 <translation id="4620246317052452550">آپ کے پڑھے ہوئے صفحات</translation>
 <translation id="4620888520263267479">لنک کے پیش مناظر دکھائیں</translation>
 <translation id="4630540211544979320">صفحات کا ترجمہ کریں</translation>
+<translation id="4631335160486397366">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="4634124774493850572">پاس ورڈ استعمال کریں</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
 <translation id="4650125387981512669">بطور <ph name="FIRST_RUN_ACCOUNT_NAME" /> جاری رکھیں</translation>
-<translation id="4659126640776004816">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے۔</translation>
+<translation id="4652817563047461855">اس بات کو یقینی بنائیں کہ آپ کے پاس ورڈز محفوظ ہیں، معلوم کریں کہ آیا ان سے سمجھوتہ کیا گیا ہے اور اپنے آپ کو آن لائن محفوظ رکھنے میں مدد کے لیے مشورہ حاصل کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">ٹیب سوئچ کنندہ میں داخل ہوں</translation>
 <translation id="46614316059270592">پاس ورڈ محفوظ کریں</translation>
-<translation id="4666531726415300315"><ph name="EMAIL" /> کے بطور سائن ان کردہ۔
-
-آپ کے ڈیٹا کی آپ کے مطابقت پذیر پاس فریز کے ساتھ مرموز کاری کی گئی ہے۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="4682686630151240767">‏1۔ iPhone ترتیبات کھولیں</translation>
 <translation id="4689564913179979534">ادائیگی کے طریقوں کا نظم کریں...</translation>
 <translation id="469300482518076788">ٹیب بند کریں</translation>
@@ -548,16 +560,12 @@
 <translation id="4737560986434232178">حالیہ ٹیبز تلاش کریں</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4746926359847517643">یہ آپ کو سرگزشت میں ہمیشہ واپس مل سکتے ہیں۔</translation>
-<translation id="4747097190499141774">‏پاس فریز کی مرموز کاری میں Google Pay کے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔ آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا ہے اور نہ ہی Google اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری کو دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />، <ph name="STATE" />، صرف اس آلہ پر، <ph name="URL" /></translation>
 <translation id="4751645464639803239">نیا پوشیدگی ٹیب</translation>
 <translation id="4766112107778026136">‏Discover اور پیروی کرنا</translation>
 <translation id="4775879719735953715">ڈیفالٹ براؤزر</translation>
 <translation id="4778644898150334464">دوسرا پاس ورڈ استعمال کریں</translation>
 <translation id="478808905805139173">پوشیدگی وضع میں کھولیں؟</translation>
-<translation id="4802417911091824046">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
-
-اس ترتیب کو تبدیل کرنے کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">آپ کی تنظیم کے زیر انتظام۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">کارڈ نمبر غلط ہے</translation>
@@ -576,7 +584,6 @@
 <translation id="4844899002472726590">ان موضوعات کو دیکھیں اور ان میں ترمیم کریں جن میں آپ کی دلچسپی ہے۔</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
 <translation id="4854345657858711387">ایک پاس کوڈ سیٹ کریں</translation>
-<translation id="4856498338299082007">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="4858786880085262208">‏ممکن ہونے پر HTTPS میں اپ گریڈ کریں۔ محفوظ سائٹس ایسے مواد کو سرایت کر سکتی ہیں جو محفوظ نہیں ہے۔</translation>
 <translation id="4860895144060829044">کال کریں</translation>
 <translation id="4872323082491632254">پاس ورڈز چیک کریں</translation>
@@ -593,10 +600,12 @@
 <translation id="4941089862236492464">معذرت، آپ کے آئٹم کا اشتراک کرتے ہوئے ایک مسئلہ پیش آگیا۔</translation>
 <translation id="4944543191714094452">صفحہ میں تلاش کریں…</translation>
 <translation id="4945756290001680296">پاس ورڈ کی ترتیبات تک رسائی حاصل کریں</translation>
+<translation id="4958444002117714549">فہرست پھیلائیں</translation>
 <translation id="4971735654804503942">‏ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تیز، فعال حفاظت۔ پاس ورڈز کی خلاف ورزیوں کے بارے میں آپ کو متنبہ کرتا ہے۔ براؤزنگ ڈیٹا کو Google کے پاس بھیجے جانے کی ضرورت ہوتی ہے۔</translation>
 <translation id="4979397965658815378">‏اپنے سبھی آلات پر اپنے بُک مارکس، پاس ورڈز، سرگزشت اور دیگر ترتیبات حاصل کرنے کیلئے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="4986678885919050584">اس آلہ سے ہٹائيں</translation>
 <translation id="498985224078955265">‏اس ٹیب کو دوسرے آلے پر بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں۔</translation>
+<translation id="4996567535980789550">آپ جو مواد دیکھتے ہیں اس کا نظم کرنے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> پر بھیجیں</translation>
 <translation id="5017828934289857214">مجھے بعد میں یاد دلائیں</translation>
@@ -620,7 +629,6 @@
 <translation id="5168414296986405587">‏iPadOS کیلئے بنائی گئی</translation>
 <translation id="5173088371991956744">مطابقت پذیری کو آپ کی شناخت کی توثیق کرنے کی ضرورت ہے</translation>
 <translation id="5176312250994681348">حالیہ پاس ورڈ محفوظ رکھیں</translation>
-<translation id="51802232683641391">{count,plural, =1{‏وہ ٹیب منتخب کریں جسے آپ نے Android سے چھوڑا تھا؟}other{‏وہ ٹیبز منتخب کریں جنہیں آپ نے Android سے چھوڑا تھا؟}}</translation>
 <translation id="5181140330217080051">ڈاؤن لوڈ کیا جا رہا ہے</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5186185447130319458">نجی</translation>
@@ -631,6 +639,7 @@
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
 <translation id="5219295696240154694">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="5221339005270097309">پاس ورڈز چیک ہو رہے ہیں…</translation>
+<translation id="5226568866393490213">وارننگ مسترد کریں</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
 <translation id="5232485538978018676">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -653,10 +662,10 @@
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
 <translation id="5439599923922718668">اکثر ملاحظہ کردہ</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" /> کے بطور سائن ان ہیں</translation>
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
-<translation id="5453250766792920795">{count,plural, =1{بُک مارک آپ کے اکاؤنٹ میں محفوظ کیا گیا، {email}}other{بُک مارکس آپ کے اکاؤنٹ میں محفوظ کئے گئے، {email}}}</translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
 <translation id="5489208564673669003">سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5490005495580364134">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی)</translation>
@@ -664,6 +673,7 @@
 <translation id="5520466080178053306">پاس ورڈز مینیجر پر تھپتھپائیں پھر شامل کریں پر تھپتھپائیں</translation>
 <translation id="5525095647255982834">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے وہاں Chrome میں سائن ان کریں۔</translation>
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ملے</translation>
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
@@ -685,6 +695,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5669617676038747374">‏QR کوڈ تخلیق کریں</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرنے اور محفوظ کرنے کے لیے، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
+<translation id="5684761169742812828">‏یہ پاس ورڈ انٹرنیٹ پر ڈیٹا کی خلاف ورزی میں افشاء ہو گیا۔ اگر آپ کے پاس ابھی اسے تبدیل کرنے کا وقت نہیں ہے تو Google تجویز کرتا ہے کہ بعد میں خود کو یاد دلانے کے لیے اس وارننگ کو برقرار رکھیں۔</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="5701270923492462699">کیمرے تک رسائی کی اجازت ہے</translation>
 <translation id="5704908597376970822">سائن نہیں کیا جا سکتا۔</translation>
@@ -700,6 +711,9 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5745916533876677730">پچھلے ٹیب پر جائیں</translation>
 <translation id="5755162682436943950">سائن آؤٹ ہوگئے۔ سائن ان کرنے اور مطابقت پذیری کو آن کرنے کے لیے ڈائیلاگ کھولتا ہے۔</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
+<translation id="5762370665605786758">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہیں۔
+
+صرف وہ شخص جس کے پاس آپ کی پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجی جاتی ہے اور نہ ہی اس کے ذریعے اسٹور کی جاتی ہے۔ اگر آپ اپنی پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="5765456154762864099">مینیو ← ترتیبات ← ڈیفالٹ براؤزر</translation>
 <translation id="5777888488419460501">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
@@ -732,6 +746,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5951816930277761335">لنک کا اشتراک کریں</translation>
 <translation id="5955891643922670672">آف لائن ورژن دیکھنا</translation>
 <translation id="5957613098218939406">مزید اختیارات</translation>
+<translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>
 <translation id="5963939892571022323">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔</translation>
 <translation id="5965679971710331625">آپ سائن ان ہیں</translation>
 <translation id="5979837087407522202">پاس ورڈز تلاش کریں</translation>
@@ -784,6 +799,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6229318421047648685">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="6231782223312638214">تجویز کردہ</translation>
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
+<translation id="6236952928980352967">وارننگ بحال کریں</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6254066287920239840">براؤزر کی بجائے لنکس کو ایپ میں کھولیں۔</translation>
 <translation id="625491139841322297">{count,plural, =1{ٹیب کا جائزہ لیں}other{تمام ٹیبز کا جائزہ لیں}}</translation>
@@ -794,8 +810,10 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
 <translation id="6321526113093607004">بُک مارکس میں شامل کریں</translation>
 <translation id="6324669097367352121">سائن ان کی ترتیبات</translation>
+<translation id="6331180460633101391">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
 <translation id="633809752005859102">واقعی کچھ غلط ہوگیا۔ ہم اس پر کام کریں گے۔</translation>
+<translation id="6339793034470834130">‏ویب انسپکٹر استعمال کرنے کے لیے، کیبل کا استعمال کرتے ہوئے اپنے کمپیوٹر پر Safari سے منسلک ہوں اور ڈیولپ مینو سے اپنے iPhone تک رسائی حاصل کریں۔ آپ اپنے کمپیوٹر پر Safari کی ترتیبات کے جدید ترین سیکشن میں ڈویلپمنٹ مینو کو فعال کر سکتے ہیں۔</translation>
 <translation id="6340285871011301182">جزوی ترجمہ دستیاب نہیں ہے۔</translation>
 <translation id="6342069812937806050">ابھی ابھی</translation>
 <translation id="6344783595350022745">متن صاف کریں</translation>
@@ -803,6 +821,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6347953390226388422">{count,plural, =1{‏یہ پتہ آپ کے Google اکاؤنٹ (<ph name="USER_EMAIL" />) اور اس آلے سے حذف ہو جائے گا۔}other{‏یہ پتے آپ کے Google اکاؤنٹ (<ph name="USER_EMAIL" />) اور اس آلے سے حذف ہو جائیں گے۔}}</translation>
 <translation id="634878792104344809">اپنے سبھی آلات پر اپنے پاس ورڈز، سرگزشت اور مزید کی مطابقت پذیری کریں</translation>
 <translation id="6348855835728304880">‏اس آلے پر موجود دیگر ایپس پر اپنے Chrome پاس ورڈز اور مزید تک رسائی حاصل کریں۔</translation>
+<translation id="63519665078626091">‏ویب انسپکٹر استعمال کرنے کے لیے، کیبل کا استعمال کرتے ہوئے اپنے کمپیوٹر پر Safari سے منسلک ہوں اور ڈیولپ مینو سے اپنے iPad تک رسائی حاصل کریں۔ آپ اپنے کمپیوٹر پر Safari کی ترتیبات کے جدید ترین سیکشن میں ڈویلپمنٹ مینو کو فعال کر سکتے ہیں۔</translation>
 <translation id="6355820205320395730">کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ مضبوط پاس ورڈز کی تخلیق کو یقینی بنائیں۔ <ph name="BEGIN_LINK" />سیکیورٹی کی مزید تجاویز دیکھیں۔<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> کی پیروی کریں</translation>
 <translation id="6362362396625799311">کوئی پوشیدگی ٹیبز نہیں ہیں</translation>
@@ -811,16 +830,12 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6366663624406569102">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6377118281273296434">سائٹ کی سیکیورٹی</translation>
-<translation id="6380866119319257197">اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">مقام کھولیں…</translation>
 <translation id="6387994324662817823">‏پاس ورڈز صرف اس آلہ پر Google پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں۔</translation>
 <translation id="6389470377220713856">کارڈ پر نام</translation>
 <translation id="6406506848690869874">مطابقت پذیر بنائیں</translation>
 <translation id="6410390304316730527">محفوظ براؤزنگ ان حملہ آوروں سے آپ کی حفاظت کرتی ہے جو نقصان دہ سافٹ ویئر انسٹال کرنے یا پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز جیسی ذاتی معلومات افشاء کرنے جیسے کچھ خطرناک کام انجام دینے میں آپ کو پھنسا سکتے ہیں۔ اگر آپ اسے آف کرتے ہیں تو غیر مانوس یا غیر معروف سائٹس کو براؤز کرتے وقت محتاط رہیں۔</translation>
 <translation id="6410883413783534063">ایک ہی وقت میں مختلف صفحات دیکھنے کیلئے ٹیبز کھولیں</translation>
-<translation id="641799622251403418"><ph name="EMAIL" /> کے بطور سائن ان کردہ۔
-
-آپ کے ڈیٹا کی آپ کے مطابقت پذیر پاس فریز کے ساتھ <ph name="TIME" /> پر مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6418346271604475326">‏PDF تیار ہو رہی ہے</translation>
 <translation id="6429213933892582367">پاس ورڈ کے اختیارات کھولیں</translation>
 <translation id="6434591244308415567">ایک خرابی پیش آ گئی۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -840,6 +855,9 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6476800141292307438">صفحہ کا <ph name="LANGUAGE" /> میں ترجمہ کیا جا رہا ہے۔ اسکرین کے نچلے حصے کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="648164694371393720">توثیق کی خرابی</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹم کو حذف کر دیا گیا</translation>
+<translation id="6484712497741564393">‏<ph name="EMAIL" /> کے بطور سائن ان کردہ۔
+
+آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ مرموز کردہ ہے۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کے لیے اسے درج کریں۔</translation>
 <translation id="6497772452874122664">اگر آپ کو <ph name="TIME" /> پر اعتماد ہے تو آپ کسی اور سائٹ سے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔
 
 ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
@@ -851,6 +869,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6530992499366869131">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">‏کسی سائٹ پر جائیں اور Chrome مینیو میں پیروی کریں پر کلک کریں</translation>
+<translation id="6550675742724504774">اختیارات</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
 <translation id="6583087784430677195">آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کھولیں اور آٹو فل پاس ورڈز پر جائیں۔</translation>
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
@@ -885,6 +904,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6730682669179532099">پاسورڈز برآمد نہیں ہو سکے</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6748108480210050150">منجانب</translation>
+<translation id="6753469262000681876">لاک ڈاؤن وضع</translation>
 <translation id="6760509555861141183">حالیہ ٹیب میں واپس جائیں</translation>
 <translation id="6762812039470893796">سبھی غیر منتخب کریں</translation>
 <translation id="6780034285637185932">زپ کوڈ</translation>
@@ -896,7 +916,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
 <translation id="6822587385560699678">آن ہونے پر پاس ورڈز <ph name="ACCOUNT" /> میں محفوظ ہوتے ہیں۔ آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
-<translation id="683022620450280906">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="6851516051005285358">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
@@ -1033,6 +1052,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7840771868269352570">آپ کے منتخب کردہ آئٹمز کو ہٹا دیا جائے گا۔</translation>
 <translation id="7845466610722898">پڑھنے کی فہرست دکھائیں</translation>
 <translation id="784551991304901159">مواد دیکھنے کے لیے، مینیو سے 'آن کریں' کو منتخب کریں</translation>
+<translation id="7846158885638438868">{count,plural, =1{"{title}" میں بُک مارک ہو گیا}other{"{title}" میں بُک مارک ہو گیا}}</translation>
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7856733331829174190">ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="785938070103630874">پاس ورڈز، ادائیگی کے طریقے یا پتہ اور بہت کچھ کھولیں</translation>
@@ -1061,6 +1081,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7993619969781047893">کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="800361585186029508">‏درج کردہ URLs کو Google Chrome میں کھولتا ہے۔</translation>
 <translation id="8005666035647241369">‏اس آلے پر Google پاس ورڈ مینیجر میں</translation>
+<translation id="8011489434346330032">ویب انسپکٹر</translation>
 <translation id="8016714545083187120">ہمیشہ محفوظ کنکشنز کا استعمال کریں</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8023878949384262191">سیکشن کو پھیلاتا ہے۔</translation>
@@ -1096,13 +1117,13 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8197543752516192074">صفحہ کا ترجمہ کریں</translation>
 <translation id="8205564605687841303">منسوخ کریں</translation>
 <translation id="8206354486702514201">اس ترتیب کو آپ کے منتظم نے نافذ کیا ہے۔</translation>
-<translation id="821809831108207540">‏اپنی Discover فیڈ اور Chrome کو ذاتی نوعیت کا بنانے کے لیے، سائن ان کریں اور مطابقت پذیری کو آن کریں۔</translation>
+<translation id="8214293972734702249">پن کر دیا گیا، <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">کیش کردہ تصاویر اور فائلیں</translation>
 <translation id="8237382152611443140">آٹو فل پاس ورڈ کی ترتیبات کھولیں</translation>
 <translation id="8248969482078657578">غیر فعال ٹیبز آپ کو توجہ مرکوز رکھنے میں مدد کرتے ہیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8264966119170358612">‏آپ کے محفوظ کردہ کچھ پاس ورڈز غیر Google ڈیٹا کی خلاف ورزی میں افشاء ہو گئے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">صرف اس آلے پر</translation>
+<translation id="826614135184049678">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ واپس سائن ان کرنے کے لیے، نیچے "جاری رکھیں" پر تھپتھپائیں۔</translation>
 <translation id="8271720166617117963">قبول کریں اور سائن ان کریں</translation>
 <translation id="8278938988428169257">ایک لفظ یا جملہ درج کریں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1111,6 +1132,9 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8299613349954694191">ویب کو نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں۔</translation>
 <translation id="8316944564970119719">سائٹ اور پاس ورڈ درج کریں، پھر محفوظ کریں</translation>
+<translation id="8317835149433843300">‏Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوگی۔
+
+صرف وہ شخص جس کے پاس آپ کی پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجی جاتی ہے اور نہ ہی اس کے ذریعے اسٹور کی جاتی ہے۔ اگر آپ اپنی پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>
 <translation id="8323906514956095947">ٹیب کے مزید اختیارات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="8328777765163860529">تمام بند کریں</translation>
@@ -1133,6 +1157,9 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
 <translation id="8488923644885757471">نئی ونڈو</translation>
 <translation id="8490978609246021741">تبدیلیاں محفوظ کریں</translation>
+<translation id="8491300088149538575">‏<ph name="EMAIL" /> کے بطور سائن ان کردہ۔
+
+آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ <ph name="TIME" /> کو مرموز کیا گیا تھا۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کے لیے اسے درج کریں۔</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="850600235656508448">پوشیدگی وضع میں کھولیں</translation>
 <translation id="8517375800490286174">اوپن سورس لائسنسز</translation>
@@ -1151,6 +1178,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8620640915598389714">ترمیم کریں</translation>
 <translation id="8626393685701737946">آپ ترتیبات &gt; مواد کی ترتیبات میں ڈیفالٹ سائٹ منظر کو ڈیسک ٹاپ میں تبدیل کر سکتے ہیں</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="8654802032646794042">منسوخ کریں</translation>
 <translation id="8663764600409216912">آپ ایسے پاس ورڈ کا استعمال کر رہے ہیں جن کا اندازہ لگانا مشکل ہے</translation>
 <translation id="8668210798914567634">اس صفحہ کو آپ کی پڑھنے کی فہرست میں محفوظ کر دیا گیا ہے۔</translation>
@@ -1203,6 +1231,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8952559610785099500">پاس ورڈ شامل کریں</translation>
 <translation id="8953046091948372197">آپ کو اپنے پاس ورڈ یہاں ملیں گے</translation>
 <translation id="895541991026785598">ایک مسئلہ کی اطلاع دیں</translation>
+<translation id="8961757677053809960">وارننگ مسترد کریں؟</translation>
 <translation id="8971545611707025079">دوبارہ چیک کریں</translation>
 <translation id="8974714402877957201">‏1۔ iPad ترتیبات کھولیں</translation>
 <translation id="8976382372951310360">مدد</translation>
@@ -1216,6 +1245,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>
+<translation id="9043368763795653245">‏اپنی Discover فیڈ اور Chrome کو ذاتی نوعیت کا بنانے کے لیے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="9055772144595778347">سائن ان نہیں کر سکتے ہیں</translation>
 <translation id="9055960261314198756">بہتر کردہ حفاظت آف ہے</translation>
 <translation id="9057972802061533987">پیروی نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>

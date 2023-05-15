@@ -71,26 +71,6 @@ class MetricsTreeModel {
   }
 
   /**
-   * Returns a metadata |*size_file|'s |containers| list if it exists, or a list
-   * with a synthesized container for old format with out explicit containers.
-   * @param {?Object} sizeFile
-   * @return {!Array<!Object>}
-   * @private
-   */
-  getOrMakeContainers(sizeFile) {
-    if (sizeFile) {
-      if (sizeFile.containers)
-        return sizeFile.containers;
-      // Synthesize for old format without explicit containers.
-      const container = {name: '(Default container)'};
-      if (sizeFile.metrics_by_file)
-        container.metrics_by_file = sizeFile.metrics_by_file;
-      return [container];
-    }
-    return [];
-  }
-
-  /**
    * Visits multiple containers and files therein, applies
    * |containerFileFilter|, visits each metric ([name] -> value), and returns a
    * nested map [metric name] -> ([path = container/file] ->  metric value).
@@ -119,7 +99,7 @@ class MetricsTreeModel {
   }
 
   /**
-   * Creates MetricsTreeNode using commonly used fields.
+   * Creates MetricsTreeNode populated with commonly used fields.
    * @param {string} name
    * @param {?Array<!MetricsTreeNode>} children
    * @param {string} iconKey
@@ -133,19 +113,28 @@ class MetricsTreeModel {
     if (iconKey)
       node.iconKey = iconKey;
     return node;
-  };
+  }
 
   /**
    * Specialized makeDataNode() for metrics.
+   * @param {!Set<string>} extensionSet
    * @param {string} metricSuffix
    * @return {!MetricsTreeNode}
    * @private
    */
-  makeMetricNode(metricSuffix) {
-    // Heuristically classify as ELF vs. DEX based on metrics name suffix.
-    if (metricSuffix.startsWith('.'))
-      return this.makeDataNode(`ELF: ${metricSuffix}`, [], 'elf');
-    return this.makeDataNode(`DEX: ${metricSuffix}`, [], 'dex');
+  makeMetricNode(extensionSet, metricSuffix) {
+    // Use destructuring to distinguish size-{0, 1, 2+} cases.
+    const [first, second] = extensionSet;
+    let ext = 'other';                // Default value for size-2+ cases.
+    if (second == null) {             // Size-{0, 1}.
+      if (!first || first == 'so') {  // Size-0, or Size-1 for ELF.
+        ext = 'elf'
+      } else if (first === 'arsc' || first === 'dex') {  // Size-1, known.
+        ext = first;
+      }  // Else Size-1, unknown: Keep ext = 'other'.
+    }
+    const prefix = ext.toUpperCase();
+    return this.makeDataNode(`${prefix}: ${metricSuffix}`, [], ext);
   }
 
   /**
@@ -161,9 +150,9 @@ class MetricsTreeModel {
     if (metadata)
       this.metadata = metadata;
 
-    const containers = this.getOrMakeContainers(this.metadata?.size_file);
+    const containers = getOrMakeContainers(this.metadata?.size_file);
     const beforeContainers =
-        this.getOrMakeContainers(this.metadata?.before_size_file);
+        getOrMakeContainers(this.metadata?.before_size_file);
 
     /** @type {!Map<string, !Map<string, number>>} */
     const metricNameToData = this.transposeMetrics(containers);
@@ -177,8 +166,8 @@ class MetricsTreeModel {
     const lazyPrefixNodeMap =
         /** @type {!DefaultMap<string, !MetricsTreeNode>} */ (
             new DefaultMap((prefix) => {
-              const prefixNode =
-                  this.makeDataNode(prefix + ' metrics', [], 'metrics');
+              const name = prefix.slice(0, 1) + prefix.slice(1).toLowerCase()
+              const prefixNode = this.makeDataNode(name, [], 'metrics');
               prefixNode.sorted = true;
               rootNode.children.push(prefixNode);
               return prefixNode;
@@ -199,7 +188,11 @@ class MetricsTreeModel {
       totalItem.value = 0;
       if (diffMode)
         totalItem.beforeValue = 0;
+      const extensionSet = new Set();
       for (const path of paths) {
+        const ext = getFileExtension(path);
+        if (ext)
+          extensionSet.add(ext);
         const item = /** @type {!MetricsItem} */ ({});
         item.name = path;
         item.value = data.get(path) ?? 0;
@@ -212,13 +205,13 @@ class MetricsTreeModel {
       }
       tableNode.items.push(totalItem);
 
-      // E.g., |prefix| = 'SIZE', |suffix| = '.text'.
+      // E.g., 'SIZE/.text' => |prefix| = 'SIZE', |suffix| = '.text'.
       const prefix = metricName.split('/', 1)[0];
       const suffix = metricName.slice(prefix.length + 1);
-      const metricNode = this.makeMetricNode(suffix);
+      const metricNode = this.makeMetricNode(extensionSet, suffix);
       metricNode.children.push(tableNode);
       metricNode.size = /** @type{!SizeWithUnit} */ ({});
-      // Heuristically get unit from |prefix|..
+      // Heuristically get unit from |prefix|.
       metricNode.size.unit = (prefix === 'COUNT') ? 'count' : 'byte';
       metricNode.size.value = totalItem.value;
       if (diffMode)

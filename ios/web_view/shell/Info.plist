@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>IDS_IOS_MICROPHONE_USAGE_DESCRIPTION</string>
+	<key>NSCameraUsageDescription</key>
+	<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

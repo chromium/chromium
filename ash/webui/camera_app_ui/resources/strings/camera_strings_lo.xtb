@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ຢຸດການບັນທຶກຂອງທ່ານແລ້ວເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນອຸປະກອນເຫຼືອໜ້ອຍ. ເພື່ອບັນທຶກວິດີໂອເພີ່ມເຕີມ, ທ່ານຈະຕ້ອງສ້າງພື້ນທີ່ຫວ່າງຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="2036868001356139588">ໄລຍະເວລາຂອງໂມງນັບຖອຍຫຼັງ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ເປີດໃຊ້ຢູ່</translation>
-<translation id="2128052519899549250">ບັນທຶກວິດີໂອທາມແລບ</translation>
 <translation id="2134029355740465625">ການຕັ້ງຄ່າວິດີໂອ</translation>
 <translation id="2144806332417375165">ຄ່າພາຣາມີເຕີວິດີໂອແບບກຳນົດເອງ</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
@@ -54,7 +53,7 @@
 <translation id="3411958449466169012">ປິດນັບຖອຍຫຼັງ</translation>
 <translation id="3448774564454087943">ບໍ່ໄດ້ບັນທຶກວິດີໂອເນື່ອງຈາກມັນສັ້ນເກີນໄປ</translation>
 <translation id="346539236881580388">ຖ່າຍໃໝ່</translation>
-<translation id="3517926952904427380">ບໍ່ສາມາດຖ່າຍຮູບບຸກຄົນໄດ້</translation>
+<translation id="3517926952904427380">ບໍ່ສາມາດຖ່າຍຮູບແນວຕັ້ງໄດ້</translation>
 <translation id="3566302376254083266">ກຳລັງຍ້າຍໄປທາງຊ້າຍເທິງ</translation>
 <translation id="3573890771273113519">ສະຫຼັບໄປໂໝດສະແກນ</translation>
 <translation id="3583444040776960729">ມຸມຊ້າຍລຸ່ມຂອງເອກະສານ</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">ກວດພົບເອກະສານ</translation>
 <translation id="414641094616694804">ກ້ອງຖ່າຍຮູບນີ້ບໍ່ສາມາດປ່ຽນຄວາມລະອຽດໄດ້</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
-<translation id="4281620174117014503">ຄວາມລະອຽດປານກາງ</translation>
 <translation id="428234092390943511">ຮູບຕົວຢ່າງໜ້າ</translation>
 <translation id="4383571725254449280">ພິມບັນທຶກປະສິດທິພາບ</translation>
 <translation id="4445542136948522167">ຢຸດການຖ່າຍຮູບ</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5320594929574852403">ກຳລັງຍ້າຍໄປທາງຊ້າຍ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ທາມແລບ</translation>
 <translation id="5662366948659129155">ກຳລັງສະແກນໜ້າ <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
+<translation id="574392208103952083">ສື່ກາງ</translation>
 <translation id="5746169159649715125">ບັນທຶກເປັນ PDF</translation>
 <translation id="5753488212459587150">ເປີດການນຳໃຊ້ໂໝດຜູ້ຊ່ຽວຊານ</translation>
 <translation id="5759254179196327752">ສະແກນເອກະສານ</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ມຸມຂວາລຸ່ມຂອງເອກະສານ</translation>
+<translation id="7684446460490665873">ບັນທຶກວິດີໂອທາມແລບ</translation>
 <translation id="7692090236657809299">ເປີດການນຳໃຊ້ການເລື່ອນ, ອຽງ, ຊູມ</translation>
 <translation id="7726641833034062494">ບັນທຶກວິດີໂອປົກກະຕິ</translation>
 <translation id="7748344063862150053">ມຸມຂວາເທິງຂອງເອກະສານ</translation>
@@ -155,7 +154,7 @@
 <translation id="8711011893539266636">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ກຳລັງປິດສຽງຢູ່</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
-<translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບບຸກຄົນ</translation>
+<translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບແນວຕັ້ງ</translation>
 <translation id="8828441885228359828">ສືບຕໍ່ການບັນທຶກ</translation>
 <translation id="8870695351537079478">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>
 <translation id="8880167521484863515">4 ຕໍ່ 3</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ</translation>
 <translation id="9045155556724273246">10 ວິນາທີ</translation>
 <translation id="906331135292332864">ກຳລັງປະມວນຜົນຮູບ...</translation>
+<translation id="9161584225258678723">ທາມແລບ</translation>
 <translation id="922762992951083513">ເປີດການສະທ້ອນແລ້ວ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 </translationbundle>

@@ -189,13 +189,11 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::WrapExternalData(
             info->pixel_format, info->coded_size, info->visible_rect,
-            info->visible_rect.size(),
-            const_cast<uint8_t*>(static_cast<const uint8_t*>(mapping.memory())),
+            info->visible_rect.size(), mapping.GetMemoryAs<const uint8_t>(),
             mapping.size(), info->timestamp);
     ASSERT_TRUE(frame);
     frame->set_metadata(info->metadata);
-    if (info->color_space.has_value())
-      frame->set_color_space(info->color_space.value());
+    frame->set_color_space(info->color_space);
 
     frame->AddDestructionObserver(base::BindOnce(
         [](base::ReadOnlySharedMemoryMapping mapping) {}, std::move(mapping)));

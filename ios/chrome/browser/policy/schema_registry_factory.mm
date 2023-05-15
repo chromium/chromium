@@ -8,7 +8,7 @@
 #import "components/policy/core/common/policy_namespace.h"
 #import "components/policy/core/common/schema.h"
 #import "components/policy/core/common/schema_registry.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

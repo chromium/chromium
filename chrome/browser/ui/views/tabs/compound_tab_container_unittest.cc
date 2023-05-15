@@ -127,9 +127,9 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
         std::make_unique<FakeTabDragContext>();
     std::unique_ptr<CompoundTabContainer> tab_container =
         std::make_unique<CompoundTabContainer>(
-            raw_ref<TabContainerController>(*(tab_container_controller_.get())),
-            nullptr /*hover_card_controller*/, drag_context.get(),
-            *(tab_slot_controller_.get()), nullptr /*scroll_contents_view*/);
+            *tab_container_controller_.get(), nullptr /*hover_card_controller*/,
+            drag_context.get(), *(tab_slot_controller_.get()),
+            nullptr /*scroll_contents_view*/);
     tab_container->SetAvailableWidthCallback(base::BindRepeating(
         [](CompoundTabContainerTest* test) {
           return test->tab_container_width_;

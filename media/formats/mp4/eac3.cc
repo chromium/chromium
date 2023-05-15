@@ -30,6 +30,31 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     return false;
   }
 
+  // For EC3SpecificBox, please refer to ETSI TS 102 366 V1.4.1
+  //    https://www.etsi.org/deliver/etsi_ts/102300_102399/102366/01.03.01_60/ts_102366v010301p.pdf
+  //    F.6 EC3SpecificBox
+  //        data_rate                                   13 bits
+  //        num_ind_sub                                 3 bits
+  //        {
+  //            fscod                                   2 bits
+  //            bsid                                    5 bits
+  //            reserved                                1 bits
+  //            asvc                                    1 bits
+  //            bsmod                                   3 bits
+  //            acmod                                   3 bits
+  //            lfeon                                   1 bits
+  //            reserved                                3 bits
+  //            num_dep_sub                             4 bits
+  //            if num_dep_sub > 0 chan_loc             9 bits
+  //            else reserved                           1 bits
+  //        }
+  //        reserved                             variable bits
+
+  // At least one independent substreams exist without ndependent substream
+  if (data.size() * 8 < (13 + 3 + (2 + 5 + 1 + 1 + 3 + 3 + 1 + 3 + 4 + 1))) {
+    return false;
+  }
+
   // Parse dec3 box using reader.
   BitReader reader(&data[0], data.size());
 
@@ -41,18 +66,15 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 
   int max_channel_count = 0;
   for (int i = 0; i < num_ind_sub + 1; i++) {
-    // Please refer to ETSI TS 102 366 V1.4.1
-    //    https://www.etsi.org/deliver/etsi_ts/102300_102399/102366/01.03.01_60/ts_102366v010301p.pdf
-    //    F.4 AC3SpecificBox
-    //        fscod     2 bits
-    //        bsid      5 bits
-    //        reserved  1 bits
-    //        asvc      1 bits
-    //        bsmod     3 bits
+    // skip fscod, bsid, reserved, asvc, bsmod
     RCHECK(reader.SkipBits(2 + 5 + 1 + 1 + 3));
 
     int acmod;
     RCHECK(reader.ReadBits(3, &acmod));
+    if (acmod >= static_cast<int>(sizeof(kGlobalChannelArray))) {
+      return false;
+    }
+
     int lfeon;
     RCHECK(reader.ReadBits(1, &lfeon));
 

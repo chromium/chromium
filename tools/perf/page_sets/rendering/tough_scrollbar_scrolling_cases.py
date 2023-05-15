@@ -89,9 +89,14 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
     window_height = float(
         action_runner.EvaluateJavaScript('window.innerHeight'))
 
-    top = 0
-    bottom = 1 - (scrollbar_thickness * 1.5) / (window_height +
-                                                scrollbar_thickness)
+    # For regular scrollbars the minimal thumb length is one and two times the
+    # track's width in W10 and W11 respectively. For Fluent scrollbars the
+    # minimal thumb length is 17px. The constant was chosen such that:
+    # (Button Length) <= (Track width * |track_to_arrow_button_ratio|) <=
+    # (Button Length + Minimum thumb length) for all scrollbars.
+    track_to_arrow_button_ratio = 1.8
+    top = (scrollbar_thickness * track_to_arrow_button_ratio) / window_height
+    bottom = 1 - top
     scrollbar_mid_x = (window_width + (scrollbar_thickness / 2)) / window_width
     return scrollbar_mid_x, top, bottom
 

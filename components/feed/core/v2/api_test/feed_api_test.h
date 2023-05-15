@@ -83,6 +83,7 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
   ~TestReliabilityLoggingBridge() override;
 
   std::string GetEventsString() const;
+  void ClearEventsString();
 
   // ReliabilityLoggingBridge implementation.
   void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
@@ -112,6 +113,14 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
 
   void LogLaunchFinishedAfterStreamUpdate(
       feedwire::DiscoverLaunchResult result) override;
+  void LogLoadMoreStarted() override;
+  void LogLoadMoreIndicatorShown() override;
+  void LogLoadMoreActionUploadRequestStarted() override;
+  void LogLoadMoreRequestSent() override;
+  void LogLoadMoreResponseReceived(int64_t server_receive_timestamp_ns,
+                                   int64_t server_send_timestamp_ns) override;
+  void LogLoadMoreRequestFinished(int canonical_status) override;
+  void LogLoadMoreEnded(bool success) override;
 
  private:
   std::vector<std::string> events_;
@@ -362,7 +371,6 @@ class TestFeedNetwork : public FeedNetwork {
   AccountInfo last_account_info;
   // The consistency token to use when constructing default network responses.
   std::string consistency_token;
-  bool forced_signed_out_request = false;
   net::HttpStatusCode http_status_code = net::HttpStatusCode::HTTP_OK;
   net::Error error = net::Error::OK;
 

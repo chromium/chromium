@@ -44,6 +44,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -280,7 +281,7 @@ class ShelfStateWatcher : public ShelfObserver {
   ~ShelfStateWatcher() override {
     AshTestBase::GetPrimaryShelf()->RemoveObserver(this);
   }
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override {
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override {
     state_change_count_++;
   }
   int state_change_count() const { return state_change_count_; }
@@ -346,7 +347,8 @@ class HotseatTransitionAnimationObserver
     int aborted;
   } observer_counts_ = {0};
   std::unique_ptr<base::RunLoop> run_loop_;
-  HotseatTransitionAnimator* hotseat_transition_animator_;
+  raw_ptr<HotseatTransitionAnimator, ExperimentalAsh>
+      hotseat_transition_animator_;
 };
 
 // Used to test the Hotseat, ScrollableShelf, and DenseShelf features.

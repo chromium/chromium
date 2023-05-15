@@ -49,7 +49,7 @@ class FileSystemSignalsCollector : public BaseSignalsCollector {
       const std::vector<FileSystemItem>& file_system_items);
 
   // Instance used to retrieve a pointer to a SystemSignalsService instance.
-  base::raw_ptr<SystemSignalsServiceHost> system_service_host_;
+  raw_ptr<SystemSignalsServiceHost> system_service_host_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSystemSignalsCollector> weak_factory_{this};

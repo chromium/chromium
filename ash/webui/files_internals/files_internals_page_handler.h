@@ -29,11 +29,26 @@ class FilesInternalsPageHandler : public mojom::files_internals::PageHandler {
   void GetSmbfsEnableVerboseLogging(
       GetSmbfsEnableVerboseLoggingCallback callback) override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;
-  void GetOfficeSetupComplete(GetOfficeSetupCompleteCallback callback) override;
-  void SetOfficeSetupComplete(bool complete) override;
-  void GetAlwaysMoveOfficeFiles(
-      GetAlwaysMoveOfficeFilesCallback callback) override;
-  void SetAlwaysMoveOfficeFiles(bool always_move) override;
+  void GetOfficeFileHandlers(GetOfficeFileHandlersCallback callback) override;
+  void ClearOfficeFileHandlers() override;
+  void GetMoveConfirmationShownForDrive(
+      GetMoveConfirmationShownForDriveCallback callback) override;
+  void GetMoveConfirmationShownForOneDrive(
+      GetMoveConfirmationShownForOneDriveCallback callback) override;
+  void GetMoveConfirmationShownForLocalToDrive(
+      GetMoveConfirmationShownForLocalToDriveCallback callback) override;
+  void GetMoveConfirmationShownForLocalToOneDrive(
+      GetMoveConfirmationShownForLocalToOneDriveCallback callback) override;
+  void GetMoveConfirmationShownForCloudToDrive(
+      GetMoveConfirmationShownForCloudToDriveCallback callback) override;
+  void GetMoveConfirmationShownForCloudToOneDrive(
+      GetMoveConfirmationShownForCloudToOneDriveCallback callback) override;
+  void GetAlwaysMoveOfficeFilesToDrive(
+      GetAlwaysMoveOfficeFilesToDriveCallback callback) override;
+  void SetAlwaysMoveOfficeFilesToDrive(bool always_move) override;
+  void GetAlwaysMoveOfficeFilesToOneDrive(
+      GetAlwaysMoveOfficeFilesToOneDriveCallback callback) override;
+  void SetAlwaysMoveOfficeFilesToOneDrive(bool always_move) override;
 
  private:
   raw_ptr<FilesInternalsUI> files_internals_ui_;  // Owns |this|.

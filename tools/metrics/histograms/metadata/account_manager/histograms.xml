@@ -24,7 +24,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AccountManager.AccountAdditionResultStatus"
-    enum="AccountManagerAccountAdditionResultStatus" expires_after="2023-10-31">
+    enum="AccountManagerAccountUpsertionResultStatus"
+    expires_after="2023-10-31">
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
@@ -165,6 +166,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the number of accounts stored in Chrome OS Account Manager by a given
     user. This is recorded only once per session, at login time.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.ReportAuthError.IsAccountKeyEmpty"
+    enum="BooleanEmpty" expires_after="2023-12-31">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Indicates if the account whose authentication error is being reported to
+    AccountManagerMojoService has an empty account id. This is recorded whenever
+    AccountManagerMojoService receives a notification for an authentication
+    error for an account.
+
+    This histogram will be used to decide the severity of
+    AccountManagerMojoService receiving malformed account ids.
   </summary>
 </histogram>
 

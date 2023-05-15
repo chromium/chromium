@@ -14,14 +14,22 @@ found in the LICENSE file.
     display: none;
   }
 
-  #box {
+  :host-context([theme='legacy']) #box {
     display: block;
     overflow: auto;
     padding-top: 16px;
     width: 320px;
   }
 
-  .category {
+  :host-context([theme='refresh23']) #box {
+    display: block;
+    overflow: auto;
+    padding-bottom: 16px;
+    padding-top: 16px;
+    width: 320px;
+  }
+
+  :host-context([theme='legacy']) .category {
     color: var(--cros-text-color-primary);
     font-family: 'Roboto Medium';
     font-size: 14px;
@@ -29,7 +37,15 @@ found in the LICENSE file.
     margin-inline-start: 32px;
   }
 
-  hr {
+  :host-context([theme='refresh23']) .category {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+    padding-bottom: 16px;
+    padding-inline: 32px 16px;
+    padding-top: 16px;
+  }
+
+  :host-context([theme='legacy']) hr {
     border-color: var(--cros-separator-color);
     border-top-width: 1px !important;
     border-width: 0;
@@ -37,11 +53,19 @@ found in the LICENSE file.
     margin-top: 16px;
   }
 
+  :host-context([theme='refresh23']) hr {
+    border-color: var(--cros-sys-separator);
+    border-top-width: 1px !important;
+    border-width: 0;
+    margin-bottom: 16px;
+    margin-top: 16px;
+  }
+
   @media only screen and (max-width: 720px) {
-    #box {
+    :host-context([theme='legacy']) #box {
       width: 240px;
     }
-    .category {
+    :host-context([theme='legacy']) .category {
       margin: 12px 12px;
     }
   }

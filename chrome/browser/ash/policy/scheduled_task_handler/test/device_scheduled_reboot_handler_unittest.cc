@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
@@ -201,7 +202,7 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  FakeScheduledTaskExecutor* scheduled_task_executor_;
+  raw_ptr<FakeScheduledTaskExecutor, ExperimentalAsh> scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;
@@ -713,7 +714,7 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  ScheduledTaskExecutorImpl* scheduled_task_executor_;
+  raw_ptr<ScheduledTaskExecutorImpl, ExperimentalAsh> scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;
@@ -789,7 +790,7 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  FakeScheduledTaskExecutor* scheduled_task_executor_;
+  raw_ptr<FakeScheduledTaskExecutor, ExperimentalAsh> scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;

@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -173,7 +174,8 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;  // Owned by TestingProfileManager.
+  raw_ptr<TestingProfile, ExperimentalAsh>
+      profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::string mount_point_name_;

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CALCULATION_EXPRESSION_ANCHOR_QUERY_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CALCULATION_EXPRESSION_ANCHOR_QUERY_NODE_H_
 
+#include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -18,7 +19,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
  public:
   static scoped_refptr<const CalculationExpressionAnchorQueryNode> CreateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
-      AnchorValue side,
+      CSSAnchorValue side,
       const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
   CreateAnchorPercentage(const AnchorSpecifierValue& anchor_specifier,
@@ -26,28 +27,28 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
                          const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
   CreateAnchorSize(const AnchorSpecifierValue& anchor_specifier,
-                   AnchorSizeValue size,
+                   CSSAnchorSizeValue size,
                    const Length& fallback);
 
-  AnchorQueryType Type() const { return type_; }
+  CSSAnchorQueryType Type() const { return type_; }
   const AnchorSpecifierValue& AnchorSpecifier() const {
     return *anchor_specifier_;
   }
-  AnchorValue AnchorSide() const {
-    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
+  CSSAnchorValue AnchorSide() const {
+    DCHECK_EQ(type_, CSSAnchorQueryType::kAnchor);
     return value_.anchor_side;
   }
   float AnchorSidePercentage() const {
-    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
-    DCHECK_EQ(AnchorSide(), AnchorValue::kPercentage);
+    DCHECK_EQ(type_, CSSAnchorQueryType::kAnchor);
+    DCHECK_EQ(AnchorSide(), CSSAnchorValue::kPercentage);
     return side_percentage_;
   }
   float AnchorSidePercentageOrZero() const {
-    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
-    return AnchorSide() == AnchorValue::kPercentage ? side_percentage_ : 0;
+    DCHECK_EQ(type_, CSSAnchorQueryType::kAnchor);
+    return AnchorSide() == CSSAnchorValue::kPercentage ? side_percentage_ : 0;
   }
-  AnchorSizeValue AnchorSize() const {
-    DCHECK_EQ(type_, AnchorQueryType::kAnchorSize);
+  CSSAnchorSizeValue AnchorSize() const {
+    DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
     return value_.anchor_size;
   }
   const Length& GetFallback() const { return fallback_; }
@@ -67,12 +68,12 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
 #endif
 
   union AnchorQueryValue {
-    AnchorValue anchor_side;
-    AnchorSizeValue anchor_size;
+    CSSAnchorValue anchor_side;
+    CSSAnchorSizeValue anchor_size;
   };
 
   CalculationExpressionAnchorQueryNode(
-      AnchorQueryType type,
+      CSSAnchorQueryType type,
       const AnchorSpecifierValue& anchor_specifier,
       AnchorQueryValue value,
       float side_percentage,
@@ -86,7 +87,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
   }
 
  private:
-  AnchorQueryType type_;
+  CSSAnchorQueryType type_;
   Persistent<const AnchorSpecifierValue> anchor_specifier_;
   AnchorQueryValue value_;
   float side_percentage_ = 0;  // For AnchorSideValue::kPercentage only

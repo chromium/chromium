@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_CANDIDATE_H_
 
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -21,7 +22,8 @@ class SpeculationRuleSet;
 // third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.
 // Largely equivalent to the mojom type, but stores some extra fields that
 // are used by DevTools.
-class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
+class CORE_EXPORT SpeculationCandidate
+    : public GarbageCollected<SpeculationCandidate> {
  public:
   SpeculationCandidate(const KURL& url,
                        mojom::blink::SpeculationAction action,
@@ -30,6 +32,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
                        mojom::blink::SpeculationTargetHint target_hint,
                        mojom::blink::SpeculationEagerness eagerness,
                        network::mojom::blink::NoVarySearchPtr no_vary_search,
+                       mojom::blink::SpeculationInjectionWorld injection_world,
                        SpeculationRuleSet* rule_set,
                        HTMLAnchorElement* anchor);
   virtual ~SpeculationCandidate() = default;
@@ -57,6 +60,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
   const mojom::blink::SpeculationTargetHint target_hint_;
   const mojom::blink::SpeculationEagerness eagerness_;
   const network::mojom::blink::NoVarySearchPtr no_vary_search_;
+  const mojom::blink::SpeculationInjectionWorld injection_world_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElement> anchor_;
 };

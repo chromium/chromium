@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="2023-08-20">
+    enum="PermissionEmbargoStatus" expires_after="2023-10-22">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -559,6 +559,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Experimental.PrimaryMainNavigationFinished.{PermissionType}.TopLevelHeaderPolicy"
+    enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a navigation finished in a primary main frame. Records
+    what type of permission header policy the top-level document defined for the
+    feature corresponding to {PermissionType} .
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
+<histogram
     name="Permissions.Experimental.Usage.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
     enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
   <owner>tungnh@chromium.org</owner>
@@ -655,6 +672,26 @@ chromium-metrics-reviews@google.com.
     ignored or not.
   </summary>
   <token key="PermissionType" variants="Top2PermissionTypes"/>
+</histogram>
+
+<histogram name="Permissions.OneTimePermission.{PermissionType}.Event"
+    enum="OneTimePermissionEvent" expires_after="2024-04-20">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Logs granting, revocation, and expiry behaviors of one time permissions. It
+    records grant events, manual revoke events, expiry due to tab closure or
+    discards, and expiry in the background due to non-usage. Note that the
+    number of grants that expired due to the 24 hour maximum grant time limit
+    can be aproximated by calculating #(granted one time) - #(other events),
+    though this does not take into account one time permissions that are still
+    currently active.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
 </histogram>
 
 <histogram
@@ -779,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted.PriorDismissCount2" units="units"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1364,7 +1401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -1415,7 +1452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -1435,9 +1472,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2023-02-19">
-  <owner>ayui@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
+    enum="WebSiteSettingsAllSitesAction2" expires_after="2023-11-01">
+  <owner>sauski@google.com</owner>
+  <owner>alimariam@google.com</owner>
   <summary>
     Tracks actions with the &quot;All Sites&quot; page in website settings
     starting in M82. No data available for M94, was temporarily expired. Values
@@ -1495,7 +1532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.GetAllSitesLoadTime" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>

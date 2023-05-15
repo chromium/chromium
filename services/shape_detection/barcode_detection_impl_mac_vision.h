@@ -5,19 +5,20 @@
 #ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_VISION_H_
 #define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_VISION_H_
 
-#include <os/availability.h>
-
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision_api.h"
 #include "services/shape_detection/detection_utils_mac.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class SkBitmap;
 class VisionAPIInterface;
@@ -56,7 +57,7 @@ class BarcodeDetectionImplMacVision : public mojom::BarcodeDetection {
   void OnBarcodesDetected(VNRequest* request, NSError* error);
 
   CGSize image_size_;
-  base::scoped_nsobject<NSArray<VNBarcodeSymbology>> symbology_hints_;
+  NSArray<VNBarcodeSymbology>* __strong symbology_hints_;
   std::unique_ptr<VisionAPIAsyncRequestMac> barcodes_async_request_;
   DetectCallback detected_callback_;
   mojo::SelfOwnedReceiverRef<mojom::BarcodeDetection> receiver_;

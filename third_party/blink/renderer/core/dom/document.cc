@@ -2256,11 +2256,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
-  StyleResolver& style_resolver = GetStyleResolver();
-  if (style_resolver.WasViewportResized()) {
-    style_resolver.ClearResizedForViewportUnits();
-    View()->MarkOrthogonalWritingModeRootsForLayout();
-  }
+  GetStyleResolver().ClearResizedForViewportUnits();
 
   GetLayoutView()->ClearHitTestCache();
 
@@ -2784,12 +2780,6 @@ void Document::SetIsXrOverlay(bool val, Element* overlay_element) {
   // On navigation, the layout view may be invalid, skip style changes.
   if (!GetLayoutView())
     return;
-
-  if (val) {
-    // The UA style sheet for the :xr-overlay pseudoclass uses lazy loading.
-    // If we get here, we need to ensure that it's present.
-    GetStyleEngine().EnsureUAStyleForXrOverlay();
-  }
 
   if (overlay_element) {
     // Now that the custom style sheet is loaded, update the pseudostyle for
@@ -4513,6 +4503,7 @@ void Document::ProcessBaseElement() {
     UpdateBaseURL();
   }
 
+  AtomicString old_base_target = base_target_;
   if (target) {
     if (target->Contains('\n') || target->Contains('\r'))
       UseCounter::Count(*this, WebFeature::kBaseWithNewlinesInTarget);
@@ -4521,6 +4512,11 @@ void Document::ProcessBaseElement() {
     base_target_ = *target;
   } else {
     base_target_ = g_null_atom;
+  }
+  if (old_base_target != base_target_) {
+    if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
+      document_rules->DocumentBaseTargetChanged();
+    }
   }
 }
 
@@ -4943,6 +4939,7 @@ void Document::DynamicViewportUnitsChanged() {
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {
+  HTMLElement::HoveredElementChanged(hover_element_, new_hover_element);
   hover_element_ = new_hover_element;
 }
 
@@ -6607,7 +6604,6 @@ FragmentDirective& Document::fragmentDirective() const {
 
 ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
                                         const String& issuer,
-                                        const String& type,
                                         ExceptionState& exception_state) {
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -6625,14 +6621,6 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
     exception_state.ThrowTypeError(
         "hasPrivateToken: Private Token issuer origins must be both HTTP(S) "
         "and secure (\"potentially trustworthy\").");
-    resolver->Reject(exception_state);
-    return promise;
-  }
-
-  if (type != "private-state-token") {
-    exception_state.ThrowTypeError(
-        "hasPrivateToken: Private Token types other than "
-        "private-state-token are unsupported.");
     resolver->Reject(exception_state);
     return promise;
   }
@@ -8775,6 +8763,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_hint_showing_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
+  visitor->Trace(all_open_popovers_);
   visitor->Trace(elements_with_css_toggles_);
   visitor->Trace(elements_needing_style_recalc_for_toggle_);
   visitor->Trace(css_toggle_inference_);

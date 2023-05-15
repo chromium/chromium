@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="100506692671054486">no hi ha cap ordre anterior</translation>
 <translation id="1009046985747440431">Prem les fletxes amunt i avall per navegar; prem Retorn per activar una opció</translation>
 <translation id="1011903154582639569">Cerca una tecla i, a continuació, aixeca el dit per prémer-la</translation>
 <translation id="1012173283529841972">Element de la llista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavanda rosàcia</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3962990492275676168">Inicia la lectura des de la ubicació actual.</translation>
+<translation id="397094149579293440">no hi ha text seleccionat</translation>
 <translation id="3970951409746498040">Marró arenós</translation>
 <translation id="3989324057180830702">botó per activar/desactivar</translation>
 <translation id="3991317907213946254">Cuir clar</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">No hi ha cap encapçalament anterior de nivell 1</translation>
 <translation id="4787577491510559358">Anuncia el format de l'element actual</translation>
 <translation id="479989351350248267">cerca</translation>
+<translation id="4802034228771424756">camp de text sense focus</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="481165870889056555">Presenta el títol de la pàgina actual</translation>
 <translation id="4815668758102003883">Turquesa pàl·lid</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Enllaç intern</translation>
 <translation id="4909019435900810068">Retrocedeix una paraula</translation>
 <translation id="4911349081560453449">No hi ha cap casella de selecció anterior</translation>
+<translation id="4919186071145887492">No es pot <ph name="COMMAND" />; torna-ho a provar</translation>
 <translation id="492295894462528572">Preàmbul</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4953585991029886728">Edita el text</translation>
+<translation id="4964701498510730546">el camp de text és buit</translation>
 <translation id="4973717656530883744">Mín. <ph name="X" /></translation>
 <translation id="4974612477719259470">No hi ha cap botó anterior</translation>
 <translation id="4979404613699303341">Botó anterior</translation>
+<translation id="4981239367072766915">entrada no reconeguda</translation>
 <translation id="4982917827052020884">Comencem amb unes quantes tecles que utilitzaràs sovint. La tecla de control es pot fer servir per aturar qualsevol entrada de veu en curs. La trobaràs a l'extrem inferior esquerre del teclat. Per continuar, prem la tecla de control.</translation>
 <translation id="4983588134362688868">Va a la part superior de la pàgina.</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, finestra</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Anuncia l'estat actual de la bateria</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botó d'opció seleccionat</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botó d'opció seleccionat de l'element de menú</translation>
+<translation id="5014131807708055994">No es pot <ph name="COMMAND" />; <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Activa el registre de veu</translation>
 <translation id="5041394372352067729">Mou la pantalla Braille a la part superior de la pàgina.</translation>
 <translation id="5042770794184672516">Augmenta el volum de la parla</translation>

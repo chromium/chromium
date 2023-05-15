@@ -217,17 +217,14 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     size_t array_slice,
     scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
     GPUResourceInitCB gpu_resource_init_cb) {
-  DCHECK(texture);
+  CHECK(texture);
 
   helper_ = get_helper_cb.Run();
-  if (!helper_ || !helper_->MakeContextCurrent()) {
+  if (!helper_) {
     std::move(on_error_cb)
-        .Run(std::move(D3D11Status::Codes::kMakeContextCurrentFailed));
+        .Run(std::move(D3D11Status::Codes::kGetCommandBufferHelperFailed));
     return;
   }
-
-  helper_->AddWillDestroyStubCB(base::BindOnce(&GpuResources::OnWillDestroyStub,
-                                               weak_factory_.GetWeakPtr()));
 
   // Usage flags to allow the display compositor to draw from it, video to
   // decode, and allow webgl/canvas access.
@@ -274,11 +271,19 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     DCHECK_EQ(mailboxes.size(), 1u);
     // TODO(crbug.com/1430349): Switch |texture_target| to GL_TEXTURE_2D since
     // it's now supported by ANGLE.
-    shared_image_backings.push_back(gpu::D3DImageBacking::Create(
-        mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
-        size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        usage, texture, std::move(dxgi_shared_handle_state),
-        GL_TEXTURE_EXTERNAL_OES, array_slice));
+    std::unique_ptr<gpu::SharedImageBacking> backing =
+        gpu::D3DImageBacking::Create(
+            mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
+            size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType, usage, texture,
+            std::move(dxgi_shared_handle_state), GL_TEXTURE_EXTERNAL_OES,
+            array_slice);
+    if (backing) {
+      // Need to clear the backing since the D3D11 Video Decoder will initialize
+      // the textures.
+      backing->SetCleared();
+      shared_image_backings.push_back(std::move(backing));
+    }
   } else {
     shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
         mailboxes, dxgi_format, size, usage, texture, array_slice,
@@ -312,29 +317,6 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       .Run(std::move(picture_buffer), std::move(shared_image_rep));
 }
 
-DefaultTexture2DWrapper::GpuResources::~GpuResources() {
-  // Destroy shared images with a current context, otherwise mark context lost.
-  // Check that stub is not destroyed since MakeContextCurrent will fail after
-  // that and we should've already propagated context loss in OnWillDestroyStub.
-  if (!is_stub_destroyed_ && (!helper_ || !helper_->MakeContextCurrent())) {
-    for (auto& shared_image_rep : shared_images_) {
-      shared_image_rep->OnContextLost();
-    }
-  }
-  // Destroy helper after shared image since the shared image has a raw pointer
-  // to the helper's memory tracker.
-  shared_images_.clear();
-  helper_.reset();
-}
-
-void DefaultTexture2DWrapper::GpuResources::OnWillDestroyStub(
-    bool have_context) {
-  if (!have_context) {
-    for (auto& shared_image_rep : shared_images_) {
-      shared_image_rep->OnContextLost();
-    }
-  }
-  is_stub_destroyed_ = true;
-}
+DefaultTexture2DWrapper::GpuResources::~GpuResources() = default;
 
 }  // namespace media

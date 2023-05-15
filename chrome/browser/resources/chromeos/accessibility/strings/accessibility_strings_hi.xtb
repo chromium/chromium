@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="100506692671054486">कोई पिछला निर्देश नहीं है</translation>
 <translation id="1009046985747440431">नेविगेट करने के लिए ऊपर या नीचे की ओर तीर का निशान और चालू करने के लिए enter बटन दबाएं</translation>
 <translation id="1011903154582639569">कुंजी ढूंढें, फिर लिखने के लिए उठाएं</translation>
 <translation id="1012173283529841972">सूची आइटम</translation>
@@ -459,6 +460,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3936394396199829062">बैंगनी लाल</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3962990492275676168">वर्तमान स्‍थान से पढ़ना प्रारंभ करें</translation>
+<translation id="397094149579293440">कोई टेक्स्ट नहीं चुना गया</translation>
 <translation id="3970951409746498040">रेत जैसा भूरा</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">मोकासिन</translation>
@@ -565,6 +567,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4786285211967466855">पहले से कोई लेवल 2 टाइटल नहीं है</translation>
 <translation id="4787577491510559358">मौजूदा आइटम का फ़ॉर्मैट बताएं</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">फ़ोकस किया गया कोई टेक्स्ट फ़ील्ड नहीं है</translation>
 <translation id="4804818685124855865">डिसकनेक्ट करें</translation>
 <translation id="481165870889056555">वर्तमान पेज का टाइटल प्रदर्शित करें</translation>
 <translation id="4815668758102003883">हल्का फ़िरोज़ी</translation>
@@ -587,13 +590,16 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="489907760999452556">आंतरिक लिंक</translation>
 <translation id="4909019435900810068">एक शब्द पीछे जाएं</translation>
 <translation id="4911349081560453449">पहले से कोई चेकबॉक्स नहीं है</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> को लागू नहीं किया जा सका. फिर से कोशिश करें</translation>
 <translation id="492295894462528572">भूमिका</translation>
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953585991029886728">लेख में बदलाव करें</translation>
+<translation id="4964701498510730546">टेक्स्ट फ़ील्ड खाली है</translation>
 <translation id="4973717656530883744">न्‍यूनतम <ph name="X" /></translation>
 <translation id="4974612477719259470">कोई पिछला बटन नहीं है</translation>
 <translation id="4979404613699303341">पिछला बटन</translation>
+<translation id="4981239367072766915">अमान्य इनपुट</translation>
 <translation id="4982917827052020884">चलो, उन बटन के बारे में जानते हैं जिन्हें आप नियमित तौर पर इस्तेमाल करेंगे. आप Control बटन दबाकर, ChromeVox को बोलने से रोक सकते हैं. Control बटन, कीबोर्ड पर सबसे नीचे, बाएं कोने में होता है. जारी रखने के लिए, Control बटन दबाएं.</translation>
 <translation id="4983588134362688868">पेज के शीर्ष पर जाएं</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, विंडो</translation>
@@ -601,6 +607,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4994420463726586413">बैटरी की मौजूदा स्थिति बताएं</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, रेडियो बटन चयनित</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, मेन्यू आइटम रेडियो बटन चुना गया</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> को लागू नहीं किया जा सका. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">'बोलकर लॉग करना' चालू करें</translation>
 <translation id="5041394372352067729">ब्रेल डिसप्ले को पेज के ऊपर वाले हिस्से में ले जाएं</translation>
 <translation id="5042770794184672516">बोली वॉल्‍यूम बढ़ाएं</translation>

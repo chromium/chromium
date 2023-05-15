@@ -17,6 +17,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/functional/bind.h"
 #include "base/functional/bind_internal.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -80,7 +81,8 @@ class LoadShillProfileWaiter {
     run_loop_.Quit();
   }
 
-  FakeSessionManagerClient* const fake_session_manager_client_;
+  const raw_ptr<FakeSessionManagerClient, ExperimentalAsh>
+      fake_session_manager_client_;
   base::RunLoop run_loop_;
   std::vector<cryptohome::AccountIdentifier> invocations_;
 };

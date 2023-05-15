@@ -20,227 +20,288 @@ base::RepeatingClosure* GetVolumeAdjustmentCallback() {
 
 }  // namespace
 
+//  If you plan on adding a new accelerator and want it displayed in the
+//  Shortcuts app, please follow the instructions at:
+// `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
 const AcceleratorData kAcceleratorData[] = {
-    {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
-    {false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
-    {true, ui::VKEY_TAB, ui::EF_ALT_DOWN, CYCLE_FORWARD_MRU},
+    {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kSwitchToLastUsedIme},
+    {false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kSwitchToLastUsedIme},
+    {true, ui::VKEY_TAB, ui::EF_ALT_DOWN, AcceleratorAction::kCycleForwardMru},
     {true, ui::VKEY_TAB, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     CYCLE_BACKWARD_MRU},
-    {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE, TOGGLE_OVERVIEW},
+     AcceleratorAction::kCycleBackwardMru},
+    {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE,
+     AcceleratorAction::kToggleOverview},
     // Historically, the browser search key with and without the shift key can
     // toggle the app list into different open states. Now the two combinations
     // are used to toggle the app list in the same way to keep the behavior
     // consistent.
-    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE, TOGGLE_APP_LIST},
-    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST},
-    {true, ui::VKEY_ALL_APPLICATIONS, ui::EF_NONE, TOGGLE_APP_LIST},
-    {true, ui::VKEY_WLAN, ui::EF_NONE, TOGGLE_WIFI},
-    {true, ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::EF_NONE, PRIVACY_SCREEN_TOGGLE},
+    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE,
+     AcceleratorAction::kToggleAppList},
+    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleAppList},
+    {true, ui::VKEY_ALL_APPLICATIONS, ui::EF_NONE,
+     AcceleratorAction::kToggleAppList},
+    {true, ui::VKEY_WLAN, ui::EF_NONE, AcceleratorAction::kToggleWifi},
+    {true, ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::EF_NONE,
+     AcceleratorAction::kPrivacyScreenToggle},
     {true, ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_NONE,
-     MICROPHONE_MUTE_TOGGLE},
+     AcceleratorAction::kMicrophoneMuteToggle},
     {true, ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE,
-     KEYBOARD_BACKLIGHT_TOGGLE},
-    {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE, KEYBOARD_BRIGHTNESS_DOWN},
-    {true, ui::VKEY_KBD_BRIGHTNESS_UP, ui::EF_NONE, KEYBOARD_BRIGHTNESS_UP},
+     AcceleratorAction::kKeyboardBacklightToggle},
+    {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE,
+     AcceleratorAction::kKeyboardBrightnessDown},
+    {true, ui::VKEY_KBD_BRIGHTNESS_UP, ui::EF_NONE,
+     AcceleratorAction::kKeyboardBrightnessUp},
     // Maximize button.
-    {true, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN, TOGGLE_MIRROR_MODE},
-    {true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN, SWAP_PRIMARY_DISPLAY},
+    {true, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kToggleMirrorMode},
+    {true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+     AcceleratorAction::kSwapPrimaryDisplay},
     // Cycle windows button.
-    {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN, TAKE_SCREENSHOT},
+    {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTakeScreenshot},
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     TAKE_PARTIAL_SCREENSHOT},
+     AcceleratorAction::kTakePartialScreenshot},
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
-     TAKE_WINDOW_SCREENSHOT},
-    {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_NONE, BRIGHTNESS_DOWN},
-    {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_DOWN},
-    {true, ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE, BRIGHTNESS_UP},
-    {true, ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_UP},
+     AcceleratorAction::kTakeWindowScreenshot},
+    {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_NONE,
+     AcceleratorAction::kBrightnessDown},
+    {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_ALT_DOWN,
+     AcceleratorAction::kKeyboardBrightnessDown},
+    {true, ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE,
+     AcceleratorAction::kBrightnessUp},
+    {true, ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN,
+     AcceleratorAction::kKeyboardBrightnessUp},
     {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     MAGNIFIER_ZOOM_OUT},
+     AcceleratorAction::kMagnifierZoomOut},
     {true, ui::VKEY_BRIGHTNESS_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     MAGNIFIER_ZOOM_IN},
-    {true, ui::VKEY_L, ui::EF_COMMAND_DOWN, LOCK_SCREEN},
-    {true, ui::VKEY_L, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, SUSPEND},
+     AcceleratorAction::kMagnifierZoomIn},
+    {true, ui::VKEY_L, ui::EF_COMMAND_DOWN, AcceleratorAction::kLockScreen},
+    {true, ui::VKEY_L, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kSuspend},
     // The lock key on Chrome OS keyboards produces F13 scancodes.
-    {true, ui::VKEY_F13, ui::EF_NONE, LOCK_PRESSED},
-    {false, ui::VKEY_F13, ui::EF_NONE, LOCK_RELEASED},
+    {true, ui::VKEY_F13, ui::EF_NONE, AcceleratorAction::kLockPressed},
+    {false, ui::VKEY_F13, ui::EF_NONE, AcceleratorAction::kLockReleased},
     // Generic keyboards can use VKEY_SLEEP to mimic ChromeOS keyboard's lock
     // key.
-    {true, ui::VKEY_SLEEP, ui::EF_NONE, LOCK_PRESSED},
-    {false, ui::VKEY_SLEEP, ui::EF_NONE, LOCK_RELEASED},
-    {true, ui::VKEY_POWER, ui::EF_NONE, POWER_PRESSED},
-    {false, ui::VKEY_POWER, ui::EF_NONE, POWER_RELEASED},
-    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE, OPEN_CALCULATOR},
+    {true, ui::VKEY_SLEEP, ui::EF_NONE, AcceleratorAction::kLockPressed},
+    {false, ui::VKEY_SLEEP, ui::EF_NONE, AcceleratorAction::kLockReleased},
+    {true, ui::VKEY_POWER, ui::EF_NONE, AcceleratorAction::kPowerPressed},
+    {false, ui::VKEY_POWER, ui::EF_NONE, AcceleratorAction::kPowerReleased},
+    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE,
+     AcceleratorAction::kOpenCalculator},
     {true, ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
-     OPEN_DIAGNOSTICS},
-    {true, ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, OPEN_FILE_MANAGER},
-    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN, OPEN_GET_HELP},
+     AcceleratorAction::kOpenDiagnostics},
+    {true, ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kOpenFileManager},
+    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kOpenGetHelp},
     {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     OPEN_GET_HELP},
-    {true, ui::VKEY_T, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, OPEN_CROSH},
+     AcceleratorAction::kOpenGetHelp},
+    {true, ui::VKEY_T, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kOpenCrosh},
     {true, ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     TOUCH_HUD_MODE_CHANGE},
+     AcceleratorAction::kTouchHudModeChange},
     {true, ui::VKEY_I,
      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-     TOUCH_HUD_CLEAR},
+     AcceleratorAction::kTouchHudClear},
     {true, ui::VKEY_H, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     TOGGLE_HIGH_CONTRAST},
+     AcceleratorAction::kToggleHighContrast},
     {true, ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     TOGGLE_SPOKEN_FEEDBACK},
-    {true, ui::VKEY_D, ui::EF_COMMAND_DOWN, TOGGLE_DICTATION},
-    {true, ui::VKEY_DICTATE, ui::EF_NONE, TOGGLE_DICTATION},
+     AcceleratorAction::kToggleSpokenFeedback},
+    {true, ui::VKEY_D, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleDictation},
+    {true, ui::VKEY_DICTATE, ui::EF_NONE, AcceleratorAction::kToggleDictation},
     {true, ui::VKEY_OEM_COMMA, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     SWITCH_TO_PREVIOUS_USER},
+     AcceleratorAction::kSwitchToPreviousUser},
     {true, ui::VKEY_OEM_PERIOD, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     SWITCH_TO_NEXT_USER},
+     AcceleratorAction::kSwitchToNextUser},
     // Single shift release turns off caps lock.
-    {false, ui::VKEY_LSHIFT, ui::EF_NONE, DISABLE_CAPS_LOCK},
-    {false, ui::VKEY_SHIFT, ui::EF_NONE, DISABLE_CAPS_LOCK},
-    {false, ui::VKEY_RSHIFT, ui::EF_NONE, DISABLE_CAPS_LOCK},
-    {true, ui::VKEY_C, ui::EF_COMMAND_DOWN, TOGGLE_CALENDAR},
+    {false, ui::VKEY_LSHIFT, ui::EF_NONE, AcceleratorAction::kDisableCapsLock},
+    {false, ui::VKEY_SHIFT, ui::EF_NONE, AcceleratorAction::kDisableCapsLock},
+    {false, ui::VKEY_RSHIFT, ui::EF_NONE, AcceleratorAction::kDisableCapsLock},
+    {true, ui::VKEY_C, ui::EF_COMMAND_DOWN, AcceleratorAction::kToggleCalendar},
     // Accelerators to toggle Caps Lock.
     // The following is triggered when Search is released while Alt is still
     // down. The key_code here is LWIN (for search) and Alt is a modifier.
-    {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, TOGGLE_CAPS_LOCK},
+    {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
     // The following is triggered when Alt is released while search is still
     // down. The key_code here is MENU (for Alt) and Search is a modifier
     // (EF_COMMAND_DOWN is used for Search as a modifier).
-    {false, ui::VKEY_MENU, ui::EF_COMMAND_DOWN, TOGGLE_CAPS_LOCK},
-    {true, ui::VKEY_V, ui::EF_COMMAND_DOWN, TOGGLE_CLIPBOARD_HISTORY},
+    {false, ui::VKEY_MENU, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleCapsLock},
+    {true, ui::VKEY_V, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleClipboardHistory},
     {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT},
-    {true, ui::VKEY_VOLUME_MUTE, ui::EF_NONE, VOLUME_MUTE},
-    {true, ui::VKEY_VOLUME_DOWN, ui::EF_NONE, VOLUME_DOWN},
-    {true, ui::VKEY_VOLUME_UP, ui::EF_NONE, VOLUME_UP},
-    {true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN, SHOW_TASK_MANAGER},
+     AcceleratorAction::kPasteClipboardHistoryPlainText},
+    {true, ui::VKEY_VOLUME_MUTE, ui::EF_NONE, AcceleratorAction::kVolumeMute},
+    {true, ui::VKEY_VOLUME_DOWN, ui::EF_NONE, AcceleratorAction::kVolumeDown},
+    {true, ui::VKEY_VOLUME_UP, ui::EF_NONE, AcceleratorAction::kVolumeUp},
+    {true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kShowTaskManager},
     {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SWITCH_TO_NEXT_IME},
-    {true, ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, OPEN_FEEDBACK_PAGE},
-    {true, ui::VKEY_Q, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, EXIT},
+     AcceleratorAction::kSwitchToNextIme},
+    {true, ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kOpenFeedbackPage},
+    {true, ui::VKEY_Q, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kExit},
     {true, ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     NEW_INCOGNITO_WINDOW},
-    {true, ui::VKEY_N, ui::EF_CONTROL_DOWN, NEW_WINDOW},
-    {true, ui::VKEY_T, ui::EF_CONTROL_DOWN, NEW_TAB},
-    {true, ui::VKEY_NEW, ui::EF_NONE, NEW_TAB},
+     AcceleratorAction::kNewIncognitoWindow},
+    {true, ui::VKEY_N, ui::EF_CONTROL_DOWN, AcceleratorAction::kNewWindow},
+    {true, ui::VKEY_T, ui::EF_CONTROL_DOWN, AcceleratorAction::kNewTab},
+    {true, ui::VKEY_NEW, ui::EF_NONE, AcceleratorAction::kNewTab},
     {true, ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SCALE_UI_UP},
+     AcceleratorAction::kScaleUiUp},
     {true, ui::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SCALE_UI_DOWN},
-    {true, ui::VKEY_0, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, SCALE_UI_RESET},
+     AcceleratorAction::kScaleUiDown},
+    {true, ui::VKEY_0, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kScaleUiReset},
     {true, ui::VKEY_BROWSER_REFRESH, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     ROTATE_SCREEN},
+     AcceleratorAction::kRotateScreen},
     {true, ui::VKEY_BROWSER_REFRESH,
-     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ROTATE_WINDOW},
-    {true, ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, RESTORE_TAB},
+     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kRotateWindow},
+    {true, ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kRestoreTab},
     // This corresponds to the "Print Screen" key.
-    {true, ui::VKEY_SNAPSHOT, ui::EF_NONE, TAKE_SCREENSHOT},
-    {true, ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN, TAKE_PARTIAL_SCREENSHOT},
+    {true, ui::VKEY_SNAPSHOT, ui::EF_NONE, AcceleratorAction::kTakeScreenshot},
+    {true, ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN,
+     AcceleratorAction::kTakePartialScreenshot},
     // On Chrome OS, Search key is mapped to LWIN. The Search key binding should
     // act on release instead of press when using Search as a modifier key for
     // extended keyboard shortcuts.
-    {false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
-    {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST},
-    {true, ui::VKEY_ZOOM, ui::EF_NONE, TOGGLE_FULLSCREEN},
-    {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN, TOGGLE_FULLSCREEN},
-    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, UNPIN},
+    {false, ui::VKEY_LWIN, ui::EF_NONE, AcceleratorAction::kToggleAppList},
+    {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleAppList},
+    {true, ui::VKEY_ZOOM, ui::EF_NONE, AcceleratorAction::kToggleFullscreen},
+    {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleFullscreen},
+    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kUnpin},
     {true, ui::VKEY_S, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-     FOCUS_CAMERA_PREVIEW},
-    {true, ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_SHELF},
-    {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_PIP},
-    {true, ui::VKEY_HELP, ui::EF_NONE, SHOW_SHORTCUT_VIEWER},
+     AcceleratorAction::kFocusCameraPreview},
+    {true, ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kFocusShelf},
+    {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kFocusPip},
+    {true, ui::VKEY_HELP, ui::EF_NONE, AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     SHOW_SHORTCUT_VIEWER},
+     AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_OEM_2,
      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     SHOW_SHORTCUT_VIEWER},
-    {true, ui::VKEY_F14, ui::EF_NONE, SHOW_SHORTCUT_VIEWER},
+     AcceleratorAction::kShowShortcutViewer},
+    {true, ui::VKEY_F14, ui::EF_NONE, AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     TOGGLE_MESSAGE_CENTER_BUBBLE},
-    {true, ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, SHOW_STYLUS_TOOLS},
+     AcceleratorAction::kToggleMessageCenterBubble},
+    {true, ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kShowStylusTools},
     {true, ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     TOGGLE_SYSTEM_TRAY_BUBBLE},
+     AcceleratorAction::kToggleSystemTrayBubble},
     // Until we have unified settings and notifications the "hamburger"
     // key opens quick settings.
-    {true, ui::VKEY_SETTINGS, ui::EF_NONE, TOGGLE_SYSTEM_TRAY_BUBBLE},
+    {true, ui::VKEY_SETTINGS, ui::EF_NONE,
+     AcceleratorAction::kToggleSystemTrayBubble},
     {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     TOGGLE_IME_MENU_BUBBLE},
-    {true, ui::VKEY_1, ui::EF_ALT_DOWN, LAUNCH_APP_0},
-    {true, ui::VKEY_2, ui::EF_ALT_DOWN, LAUNCH_APP_1},
-    {true, ui::VKEY_3, ui::EF_ALT_DOWN, LAUNCH_APP_2},
-    {true, ui::VKEY_4, ui::EF_ALT_DOWN, LAUNCH_APP_3},
-    {true, ui::VKEY_5, ui::EF_ALT_DOWN, LAUNCH_APP_4},
-    {true, ui::VKEY_6, ui::EF_ALT_DOWN, LAUNCH_APP_5},
-    {true, ui::VKEY_7, ui::EF_ALT_DOWN, LAUNCH_APP_6},
-    {true, ui::VKEY_8, ui::EF_ALT_DOWN, LAUNCH_APP_7},
-    {true, ui::VKEY_9, ui::EF_ALT_DOWN, LAUNCH_LAST_APP},
+     AcceleratorAction::kToggleImeMenuBubble},
+    {true, ui::VKEY_1, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp0},
+    {true, ui::VKEY_2, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp1},
+    {true, ui::VKEY_3, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp2},
+    {true, ui::VKEY_4, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp3},
+    {true, ui::VKEY_5, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp4},
+    {true, ui::VKEY_6, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp5},
+    {true, ui::VKEY_7, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp6},
+    {true, ui::VKEY_8, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchApp7},
+    {true, ui::VKEY_9, ui::EF_ALT_DOWN, AcceleratorAction::kLaunchLastApp},
 
     // Window management shortcuts.
-    {true, ui::VKEY_OEM_4, ui::EF_ALT_DOWN, WINDOW_CYCLE_SNAP_LEFT},
-    {true, ui::VKEY_OEM_6, ui::EF_ALT_DOWN, WINDOW_CYCLE_SNAP_RIGHT},
-    {true, ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN, WINDOW_MINIMIZE},
-    {true, ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, TOGGLE_FLOATING},
-    {true, ui::VKEY_OEM_PLUS, ui::EF_ALT_DOWN, TOGGLE_MAXIMIZED},
-    {true, ui::VKEY_BROWSER_FORWARD, ui::EF_CONTROL_DOWN, FOCUS_NEXT_PANE},
-    {true, ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN, FOCUS_PREVIOUS_PANE},
+    {true, ui::VKEY_OEM_4, ui::EF_ALT_DOWN,
+     AcceleratorAction::kWindowCycleSnapLeft},
+    {true, ui::VKEY_OEM_6, ui::EF_ALT_DOWN,
+     AcceleratorAction::kWindowCycleSnapRight},
+    {true, ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN,
+     AcceleratorAction::kWindowMinimize},
+    {true, ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleFloating},
+    {true, ui::VKEY_OEM_PLUS, ui::EF_ALT_DOWN,
+     AcceleratorAction::kToggleMaximized},
+    {true, ui::VKEY_BROWSER_FORWARD, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kFocusNextPane},
+    {true, ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kFocusPreviousPane},
     {true, ui::VKEY_BROWSER_BACK, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     FOCUS_NEXT_PANE},
-    {true, ui::VKEY_BROWSER_BACK, ui::EF_NONE, MINIMIZE_TOP_WINDOW_ON_BACK},
+     AcceleratorAction::kFocusNextPane},
+    {true, ui::VKEY_BROWSER_BACK, ui::EF_NONE,
+     AcceleratorAction::kMinimizeTopWindowOnBack},
+    {true, ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore},
 
     // Moving active window between displays shortcut.
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS},
+     AcceleratorAction::kMoveActiveWindowBetweenDisplays},
 
     // Magnifiers shortcuts.
     {true, ui::VKEY_D, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     TOGGLE_DOCKED_MAGNIFIER},
+     AcceleratorAction::kToggleDockedMagnifier},
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     TOGGLE_FULLSCREEN_MAGNIFIER},
+     AcceleratorAction::kToggleFullscreenMagnifier},
 
     // Media Player shortcuts.
-    {true, ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE, MEDIA_NEXT_TRACK},
-    {true, ui::VKEY_MEDIA_PAUSE, ui::EF_NONE, MEDIA_PAUSE},
-    {true, ui::VKEY_MEDIA_PLAY, ui::EF_NONE, MEDIA_PLAY},
-    {true, ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE, MEDIA_PLAY_PAUSE},
-    {true, ui::VKEY_MEDIA_PREV_TRACK, ui::EF_NONE, MEDIA_PREV_TRACK},
-    {true, ui::VKEY_MEDIA_STOP, ui::EF_NONE, MEDIA_STOP},
-    {true, ui::VKEY_OEM_103, ui::EF_NONE, MEDIA_REWIND},
-    {true, ui::VKEY_OEM_104, ui::EF_NONE, MEDIA_FAST_FORWARD},
+    {true, ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE,
+     AcceleratorAction::kMediaNextTrack},
+    {true, ui::VKEY_PAUSE, ui::EF_NONE, AcceleratorAction::kMediaPause},
+    {true, ui::VKEY_PLAY, ui::EF_NONE, AcceleratorAction::kMediaPlay},
+    {true, ui::VKEY_MEDIA_PAUSE, ui::EF_NONE, AcceleratorAction::kMediaPause},
+    {true, ui::VKEY_MEDIA_PLAY, ui::EF_NONE, AcceleratorAction::kMediaPlay},
+    {true, ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE,
+     AcceleratorAction::kMediaPlayPause},
+    {true, ui::VKEY_MEDIA_PREV_TRACK, ui::EF_NONE,
+     AcceleratorAction::kMediaPrevTrack},
+    {true, ui::VKEY_MEDIA_STOP, ui::EF_NONE, AcceleratorAction::kMediaStop},
+    {true, ui::VKEY_OEM_103, ui::EF_NONE, AcceleratorAction::kMediaRewind},
+    {true, ui::VKEY_OEM_104, ui::EF_NONE, AcceleratorAction::kMediaFastForward},
 
     // Assistant shortcuts.
-    {true, ui::VKEY_A, ui::EF_COMMAND_DOWN, START_ASSISTANT},
-    {true, ui::VKEY_ASSISTANT, ui::EF_NONE, START_ASSISTANT},
+    {true, ui::VKEY_A, ui::EF_COMMAND_DOWN, AcceleratorAction::kStartAssistant},
+    {true, ui::VKEY_ASSISTANT, ui::EF_NONE, AcceleratorAction::kStartAssistant},
 
     // IME mode change key.
-    {true, ui::VKEY_MODECHANGE, ui::EF_NONE, SWITCH_TO_NEXT_IME},
+    {true, ui::VKEY_MODECHANGE, ui::EF_NONE,
+     AcceleratorAction::kSwitchToNextIme},
 
     // Emoji picker shortcut.
     {true, ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     SHOW_EMOJI_PICKER},
-    {true, ui::VKEY_EMOJI_PICKER, ui::EF_NONE, SHOW_EMOJI_PICKER},
+     AcceleratorAction::kShowEmojiPicker},
+    {true, ui::VKEY_EMOJI_PICKER, ui::EF_NONE,
+     AcceleratorAction::kShowEmojiPicker},
 
     // Debugging shortcuts that need to be available to end-users in
     // release builds.
-    {true, ui::VKEY_U, kDebugModifier, PRINT_UI_HIERARCHIES},
+    {true, ui::VKEY_U, kDebugModifier, AcceleratorAction::kPrintUiHierarchies},
 
     // Virtual Desks shortcuts.
     // Desk activation:
-    {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK_LEFT},
-    {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK_RIGHT},
+    {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kDesksActivateDeskLeft},
+    {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kDesksActivateDeskRight},
     // Moving windows to desks:
     {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM_LEFT},
+     AcceleratorAction::kDesksMoveActiveItemLeft},
     {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM_RIGHT},
+     AcceleratorAction::kDesksMoveActiveItemRight},
     // TODO(afakhry): Implement moving windows to a desk by its index directly.
 
     // TODO(yusukes): Handle VKEY_MEDIA_STOP, and VKEY_MEDIA_LAUNCH_MAIL.
 
     // ARC-specific shortcut.
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     TOGGLE_RESIZE_LOCK_MENU},
+     AcceleratorAction::kToggleResizeLockMenu},
 
     // Projector shortcuts.
-    {true, ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN, TOGGLE_PROJECTOR_MARKER},
+    {true, ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleProjectorMarker},
 };
 
 const size_t kAcceleratorDataLength = std::size(kAcceleratorData);
@@ -254,8 +315,9 @@ const AcceleratorData kDisableWithNewMappingAcceleratorData[] = {
     // consumed by apps and pages (since they're not search-based).
     // TODO(afakhry): Change the following to Search+Shift+"+"/"-" once
     // https://crbug.com/976487 is fixed.
-    {true, ui::VKEY_F12, ui::EF_SHIFT_DOWN, DESKS_NEW_DESK},
-    {true, ui::VKEY_F11, ui::EF_SHIFT_DOWN, DESKS_REMOVE_CURRENT_DESK},
+    {true, ui::VKEY_F12, ui::EF_SHIFT_DOWN, AcceleratorAction::kDesksNewDesk},
+    {true, ui::VKEY_F11, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kDesksRemoveCurrentDesk},
 };
 
 const size_t kDisableWithNewMappingAcceleratorDataLength =
@@ -264,44 +326,44 @@ const size_t kDisableWithNewMappingAcceleratorDataLength =
 const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
     // Desk creation and removal:
     {true, ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_NEW_DESK},
+     AcceleratorAction::kDesksNewDesk},
     {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_REMOVE_CURRENT_DESK},
+     AcceleratorAction::kDesksRemoveCurrentDesk},
 
     // Desk activation:
     {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     DESKS_ACTIVATE_DESK_LEFT},
+     AcceleratorAction::kDesksActivateDeskLeft},
     {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     DESKS_ACTIVATE_DESK_RIGHT},
+     AcceleratorAction::kDesksActivateDeskRight},
 
     // Moving windows to desks:
     {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM_LEFT},
+     AcceleratorAction::kDesksMoveActiveItemLeft},
     {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM_RIGHT},
+     AcceleratorAction::kDesksMoveActiveItemRight},
 
     // Snap
     {true, ui::VKEY_OEM_COMMA,
      ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     WINDOW_CYCLE_SNAP_LEFT},
+     AcceleratorAction::kWindowCycleSnapLeft},
     {true, ui::VKEY_OEM_PERIOD,
      ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     WINDOW_CYCLE_SNAP_RIGHT},
+     AcceleratorAction::kWindowCycleSnapRight},
 
     // Zoom
     {true, ui::VKEY_UP,
      ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SCALE_UI_UP},
+     AcceleratorAction::kScaleUiUp},
     {true, ui::VKEY_DOWN,
      ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SCALE_UI_DOWN},
+     AcceleratorAction::kScaleUiDown},
     {true, ui::VKEY_BACK,
      ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     SCALE_UI_RESET},
+     AcceleratorAction::kScaleUiReset},
 
     // Shortcut Viewer
     {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     SHOW_SHORTCUT_VIEWER},
+     AcceleratorAction::kShowShortcutViewer},
 };
 
 const size_t kEnableWithNewMappingAcceleratorDataLength =
@@ -316,9 +378,9 @@ const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
     // TODO(crbug.com/1179893): Merge these to the main table once
     // IsImprovedKeyboardShortcutsEnabled() is permanently enabled.
     {true, ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_NEW_DESK},
+     AcceleratorAction::kDesksNewDesk},
     {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_REMOVE_CURRENT_DESK},
+     AcceleratorAction::kDesksRemoveCurrentDesk},
 };
 
 const size_t kEnableWithPositionalAcceleratorsDataLength =
@@ -328,47 +390,50 @@ const AcceleratorData
     kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[] = {
         // Indexed-desk activation:
         {true, ui::VKEY_1, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_0},
+         AcceleratorAction::kDesksActivate0},
         {true, ui::VKEY_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_1},
+         AcceleratorAction::kDesksActivate1},
         {true, ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_2},
+         AcceleratorAction::kDesksActivate2},
         {true, ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_3},
+         AcceleratorAction::kDesksActivate3},
         {true, ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_4},
+         AcceleratorAction::kDesksActivate4},
         {true, ui::VKEY_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_5},
+         AcceleratorAction::kDesksActivate5},
         {true, ui::VKEY_7, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_6},
+         AcceleratorAction::kDesksActivate6},
         {true, ui::VKEY_8, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_ACTIVATE_7},
+         AcceleratorAction::kDesksActivate7},
         // Toggle assign to all desks:
         {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS},
+         AcceleratorAction::kDesksToggleAssignToAllDesks},
 };
 
 const size_t kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength =
     std::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
 
 const AcceleratorData kEnableWithSameAppWindowCycleAcceleratorData[] = {
-    {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN, CYCLE_SAME_APP_WINDOWS_FORWARD},
+    {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN,
+     AcceleratorAction::kCycleSameAppWindowsForward},
     {true, ui::VKEY_OEM_3, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     CYCLE_SAME_APP_WINDOWS_BACKWARD},
+     AcceleratorAction::kCycleSameAppWindowsBackward},
 };
 
 const size_t kEnableWithSameAppWindowCycleAcceleratorDataLength =
     std::size(kEnableWithSameAppWindowCycleAcceleratorData);
 
 const AcceleratorData kEnableWithFloatWindowAcceleratorData[] = {
-    {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN, TOGGLE_MULTITASK_MENU},
+    {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleMultitaskMenu},
 };
 
 const size_t kEnableWithFloatWindowAcceleratorDataLength =
     std::size(kEnableWithFloatWindowAcceleratorData);
 
 const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
-    {true, ui::VKEY_G, ui::EF_COMMAND_DOWN, TOGGLE_GAME_DASHBOARD},
+    {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleGameDashboard},
 };
 
 const size_t kToggleGameDashboardAcceleratorDataLength =

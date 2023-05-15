@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/app_restore/restore_data.h"
@@ -79,7 +80,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const std::string& app_id,
       const ::app_restore::RestoreData::LaunchList& launch_list);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<::app_restore::RestoreData> restore_data_;
 };
 

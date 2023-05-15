@@ -13,7 +13,7 @@ import android.os.Build.VERSION_CODES;
 import android.view.DragEvent;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -99,7 +99,8 @@ public class ContextMenuDragTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mTestUrl = mTestServer.getURL(TEST_PATH);
 
         sActivityTestRule.loadUrl(mTestUrl);

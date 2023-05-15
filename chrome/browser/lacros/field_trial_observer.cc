@@ -22,8 +22,8 @@ void FieldTrialObserver::Start() {
     return;
 
   // Check if Ash is too old to support FieldTrialObserver.
-  int version = lacros_service->GetInterfaceVersion(
-      crosapi::mojom::FieldTrialService::Uuid_);
+  int version =
+      lacros_service->GetInterfaceVersion<crosapi::mojom::FieldTrialService>();
   int min_required_version =
       static_cast<int>(crosapi::mojom::FieldTrialService::MethodMinVersions::
                            kAddFieldTrialObserverMinVersion);

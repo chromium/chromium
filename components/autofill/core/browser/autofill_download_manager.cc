@@ -10,7 +10,6 @@
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -920,7 +919,7 @@ int AutofillDownloadManager::GetMaxServerAttempts() {
   // statically on first use to avoid re-parsing the param on each retry
   // opportunity.
   static const int max_attempts =
-      base::clamp(kAutofillMaxServerAttempts.Get(), 1, 20);
+      std::clamp(kAutofillMaxServerAttempts.Get(), 1, 20);
   return max_attempts;
 }
 

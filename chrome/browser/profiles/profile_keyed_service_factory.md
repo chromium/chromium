@@ -27,7 +27,6 @@ services for non regular profiles. Previously, most services used to create
 services with no checks on profile types, meaning that most existing services
 are created for mostly all profile types. Changing the default behavior per
 profile type allows for a clearer and better targeted usage of KeyedServices.
-This is done through experiments described below.
 
 This work is mirrored on to `RefCountedProfileKeyedServiceFactory` for keyed
 services that are ref counted.
@@ -114,61 +113,12 @@ profiles are filtered out (returning nullptr).
 
 The default values that are set are:
 - Regular Profile: kOriginalOnly.
-- Guest Profile: Follows Regular Profile value unless the corresponding
-experiment is active (details below).
-- System Profile: Follows Regular Profile value unless the corresponding
-experiment is active (details below).
+- Guest Profile: kNone
+- System Profile: kNone
 - Ash Internal Profiles: Follows Regular Profile value.
 
-`ProfileSelections` also has some predefined static builders in its interface,
-initially those were created to accommodate easily for the experiemnts that are
-running (introducing force values to bypass the experiemnts). However it is
-recommended that any value that needs to be set (different that the default one)
-to be explicitly stated, and not creating a new static predefined builder for
-that.
-
-## Experiments and default behaviors for irregular Profiles
-
-Given that a lot of existing keyed services are created for non regular profiles
-because of the previous default behavior, it is a complex and risky transition
-to do when trying to remove or add services for some profiles.
-
-- System Profile:
-
-The target of the experiment is on the System Profile. Analysis showed that most
-services should not be needed on the System Profile. The following experiment
-goal is to default the System Profile `ProfileSelection` to
-`ProfileSelection::kNone` so that no services will be created, unless explicitly
-stated.
-
-`kSystemProfileSelectionDefaultNone`: When enabled, this feature flag changes
-the default `ProfileSelection` for the System Profile to be `kNone`. When the
-feature flag is disabled, the previous behavior remains: which is following the
-same behavior as the Regular Profile. This approach considers that no keyed
-service is needed unless proven otherwise.
-Force values on experimental builders can be used to easily bypass the
-experiment. If set to true, enforce the value set to the Regular Profile to also
-affect the System Profile so that the experiment condition is bypassed.
-
-- Guest Profile:
-
-For Guest Profile type, analysis showed that more services are actually needed,
-and we have no generic or easy way to determine which ones are needed.
-Therefore we cannot use the same approach with the same kind of exeperiment on
-affecting default value directly.
-
-However, work has been done to turn the default value to
-`ProfileSelection::kNone`, but keeping all existing factories have the same
-behavior, most of the time following the value set to the Regular Profile (which
-was the old default behavior), by using a specific set of "experimental"
-`ProfileSelection::Builder` with force values. This way future factories have to
-explicitly state the fact they have to construct services for the Guest Profile
-(preferably not using the experimental builders).
-By default all existing force values in experimental builders are set to true,
-setting them to false will stop creating the service for the Guest Profile.
-
-### Experiment status
-- `kSystemProfileSelectionDefaultNone`: Experiment started: [Bug](crbug/1376461).
+`ProfileSelections` also has some predefined static builders in its interface
+that provides common usages with standard behaviors.
 
 ### Future work
 It seems that the Ash internal profiles are very similar to the System Profile,

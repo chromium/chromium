@@ -80,6 +80,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       VirtualCardEnrollBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowMandatoryReauthBubble(
+      content::WebContents* web_contents,
+      MandatoryReauthBubbleController* controller,
+      bool is_user_gesture) override;
 
   void OnPasswordSaved() override;
 

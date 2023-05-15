@@ -21,9 +21,9 @@ limitations under the License.
 
 #include "absl/status/status.h"       // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+#include "tensorflow/lite/acceleration/configuration/configuration.pb.h"
+#include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/experimental/acceleration/configuration/configuration.pb.h"
-#include "tensorflow/lite/experimental/acceleration/configuration/delegate_registry.h"
 #include "tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h"
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/interpreter_builder.h"
@@ -79,7 +79,7 @@ struct InterpreterCreationResources {
 // threads must be guarded by synchronization outside this class.
 //
 // [1]:
-// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
+// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
 class TfLiteInterpreterWrapper {
  public:
   // Creates an instance to be associated with a TfLite model that could be

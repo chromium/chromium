@@ -91,7 +91,8 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(scroller_id);
 
-  gfx::PointF offset = scroll_tree.GetPixelSnappedScrollOffset(scroll_node->id);
+  gfx::PointF offset =
+      scroll_tree.GetScrollOffsetForScrollTimeline(*scroll_node);
   DCHECK_GE(offset.x(), 0);
   DCHECK_GE(offset.y(), 0);
 
@@ -125,8 +126,12 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
       end_offset == start_offset
           ? 1
           : (current_offset - start_offset) / (end_offset - start_offset);
-  return base::TimeTicks() +
-         base::Milliseconds(progress * kScrollTimelineDurationMs);
+
+  // Round to nearest microsecond for integer-backed TimeTicks
+  // (compare blink::TimeTolerance).
+  int64_t progress_us =
+      base::ClampRound(progress * kScrollTimelineDurationMs * 1000);
+  return base::TimeTicks() + base::Microseconds(progress_us);
 }
 
 void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
@@ -198,6 +203,11 @@ void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
 
 bool ScrollTimeline::IsScrollTimeline() const {
   return true;
+}
+
+bool ScrollTimeline::IsLinkedToScroller(ElementId scroller) const {
+  auto& id = active_id();
+  return id && id.value() == scroller;
 }
 
 }  // namespace cc

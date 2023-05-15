@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/app_restore/app_restore_utils.h"
 
 namespace aura {
@@ -154,7 +155,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // from the hidden container.
   std::set<int32_t> not_restored_task_ids_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace app_restore

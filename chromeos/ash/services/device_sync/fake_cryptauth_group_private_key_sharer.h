@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/ash/services/device_sync/cryptauth_group_private_key_sharer.h"
@@ -94,7 +95,8 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
       std::unique_ptr<base::OneShotTimer> timer) override;
 
   std::vector<FakeCryptAuthGroupPrivateKeySharer*> instances_;
-  CryptAuthClientFactory* last_client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
+      nullptr;
 };
 
 }  // namespace device_sync

@@ -39,7 +39,7 @@ DownloadControllerClientLacros::DownloadControllerClientLacros() {
     return;
 
   int remote_version =
-      service->GetInterfaceVersion(crosapi::mojom::DownloadController::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::DownloadController>();
   if (remote_version < 0 ||
       static_cast<uint32_t>(remote_version) <
           crosapi::mojom::DownloadController::kBindClientMinVersion) {

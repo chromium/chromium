@@ -6,11 +6,11 @@
 
 #include <unistd.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
@@ -104,11 +104,11 @@ void SetupCommonSandboxParameters(
       sandbox::policy::kParamDisableSandboxDenialLogging, !enable_logging));
 
   std::string bundle_path =
-      sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath()).value();
+      sandbox::policy::GetCanonicalPath(base::apple::MainBundlePath()).value();
   CHECK(compiler->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
 
   std::string bundle_id = base::mac::BaseBundleID();
-  DCHECK(!bundle_id.empty()) << "base::mac::OuterBundle is unset";
+  DCHECK(!bundle_id.empty()) << "base::apple::OuterBundle is unset";
   CHECK(compiler->SetParameter(sandbox::policy::kParamBundleId, bundle_id));
 
   CHECK(compiler->SetParameter(sandbox::policy::kParamBrowserPid,
@@ -124,7 +124,7 @@ void SetupCommonSandboxParameters(
 #if defined(COMPONENT_BUILD)
   // For component builds, allow access to one directory level higher, where
   // the dylibs live.
-  base::FilePath component_path = base::mac::MainBundlePath().Append("..");
+  base::FilePath component_path = base::apple::MainBundlePath().Append("..");
   std::string component_path_canonical =
       sandbox::policy::GetCanonicalPath(component_path).value();
   CHECK(compiler->SetParameter(sandbox::policy::kParamComponentPath,
@@ -182,7 +182,7 @@ void SetupPPAPISandboxParameters(
   SetupCommonSandboxParameters(compiler, command_line);
 
   base::FilePath bundle_path =
-      sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath());
+      sandbox::policy::GetCanonicalPath(base::apple::MainBundlePath());
 
   const std::string param_base_name = "PPAPI_PATH_";
   int index = 0;

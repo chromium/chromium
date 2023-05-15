@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_result.h"
@@ -160,9 +161,9 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
 
   void FinishAttempt(CryptAuthEnrollmentResult::ResultCode result_code);
 
-  CryptAuthKeyRegistry* key_registry_;
+  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_;
 
-  CryptAuthClientFactory* client_factory_;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

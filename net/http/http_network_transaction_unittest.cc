@@ -23546,6 +23546,110 @@ TEST_F(HttpNetworkTransactionTest, SSLConfigChanged) {
   trans3.reset();
 }
 
+TEST_F(HttpNetworkTransactionTest, SSLConfigChangedDuringTransaction) {
+  SSLContextConfig ssl_context_config;
+  ssl_context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  auto ssl_config_service =
+      std::make_unique<TestSSLConfigService>(ssl_context_config);
+  TestSSLConfigService* ssl_config_service_raw = ssl_config_service.get();
+  session_deps_.ssl_config_service = std::move(ssl_config_service);
+
+  // First request will start connecting before SSLConfig change.
+  HttpRequestInfo request1;
+  request1.method = "GET";
+  request1.url = GURL("https://foo.test/1");
+  request1.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const MockWrite kWrites1[] = {
+      MockWrite("GET /1 HTTP/1.1\r\n"
+                "Host: foo.test\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+  const MockRead kReads1[] = {
+      MockRead(ASYNC, ERR_IO_PENDING, 1),
+      MockRead(ASYNC, 2,
+               "HTTP/1.1 200 OK\r\n"
+               "Connection: keep-alive\r\n"
+               "Content-Length: 1\r\n\r\n"
+               "1"),
+  };
+
+  // Second request will be after SSLConfig changes so it should be on a new
+  // socket.
+  HttpRequestInfo request2;
+  request2.method = "GET";
+  request2.url = GURL("https://foo.test/2");
+  request2.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const MockWrite kWrites2[] = {
+      MockWrite("GET /2 HTTP/1.1\r\n"
+                "Host: foo.test\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+
+  const MockRead kReads2[] = {
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Connection: keep-alive\r\n"
+               "Content-Length: 1\r\n\r\n"
+               "2")};
+
+  SequencedSocketData data1(kReads1, kWrites1);
+  StaticSocketDataProvider data2(kReads2, kWrites2);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  // 1st request starts before config change, so should see the initial
+  // SSLConfig.
+  ssl1.expected_ssl_version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  // 2nd request should be made on a new socket after config change, so should
+  // see the new SSLConfig.
+  ssl2.expected_ssl_version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  TestCompletionCallback callback1;
+  auto trans1 =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans1->Start(&request1, callback1.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Wait for the first transaction to connect and start reading data.
+  data1.RunUntilPaused();
+
+  // Change network config.
+  ssl_context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config_service_raw->UpdateSSLConfigAndNotify(ssl_context_config);
+
+  // Resume the first transaction reads.
+  data1.Resume();
+  EXPECT_THAT(callback1.GetResult(rv), IsOk());
+  std::string response_data1;
+  EXPECT_THAT(ReadTransaction(trans1.get(), &response_data1), IsOk());
+  EXPECT_EQ("1", response_data1);
+  trans1.reset();
+
+  // Start 2nd transaction. Since the config was changed, it should use a new
+  // socket.
+  TestCompletionCallback callback2;
+  auto trans2 =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  rv = trans2->Start(&request2, callback2.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_THAT(callback2.GetResult(rv), IsOk());
+  std::string response_data2;
+  EXPECT_THAT(ReadTransaction(trans2.get(), &response_data2), IsOk());
+  EXPECT_EQ("2", response_data2);
+  trans2.reset();
+}
+
 TEST_F(HttpNetworkTransactionTest, SSLConfigChangedPendingConnect) {
   SSLContextConfig ssl_context_config;
   ssl_context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
@@ -23561,11 +23665,27 @@ TEST_F(HttpNetworkTransactionTest, SSLConfigChangedPendingConnect) {
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Make a socket which never connects.
-  StaticSocketDataProvider data({}, {});
-  session_deps_.socket_factory->AddSocketDataProvider(&data);
-  SSLSocketDataProvider ssl_data(SYNCHRONOUS, ERR_IO_PENDING);
-  ssl_data.expected_ssl_version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  const MockWrite kWrites1[] = {
+      MockWrite("GET /1 HTTP/1.1\r\n"
+                "Host: foo.test\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+  const MockRead kReads1[] = {
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Connection: keep-alive\r\n"
+               "Content-Length: 1\r\n\r\n"
+               "1"),
+  };
+
+  StaticSocketDataProvider data1(kReads1, kWrites1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  // Even though the transaction was created before the change, the connection
+  // shouldn't happen until after the SSLConfig change, so expect that the
+  // socket will be created with the new SSLConfig.
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.expected_ssl_version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
@@ -23579,7 +23699,11 @@ TEST_F(HttpNetworkTransactionTest, SSLConfigChangedPendingConnect) {
   ssl_context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_config_service_raw->UpdateSSLConfigAndNotify(ssl_context_config);
 
-  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  std::string response_data;
+  EXPECT_THAT(ReadTransaction(trans.get(), &response_data), IsOk());
+  EXPECT_EQ("1", response_data);
+  trans.reset();
 }
 
 // Test that HttpNetworkTransaction correctly handles existing sockets when the

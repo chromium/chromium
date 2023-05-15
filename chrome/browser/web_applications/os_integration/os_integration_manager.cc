@@ -111,7 +111,7 @@ class OsIntegrationManager::OsHooksBarrier
   friend class base::RefCounted<OsHooksBarrier>;
 
   ~OsHooksBarrier() {
-    DCHECK(callback_);
+    CHECK(callback_);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), std::move(errors_)));
   }
@@ -208,12 +208,12 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   sub_managers_.push_back(
       std::move(uninstallation_via_os_settings_sub_manager));
 
-  set_subsystems_called = true;
+  set_subsystems_called_ = true;
 }
 
 void OsIntegrationManager::Start() {
-  DCHECK(registrar_);
-  DCHECK(file_handler_manager_);
+  CHECK(registrar_);
+  CHECK(file_handler_manager_);
 
   registrar_observation_.Observe(registrar_.get());
   shortcut_manager_->Start();
@@ -227,11 +227,24 @@ void OsIntegrationManager::Synchronize(
     base::OnceClosure callback,
     absl::optional<SynchronizeOsOptions> options) {
   first_synchronize_called_ = true;
-  DCHECK(registrar_->GetAppById(app_id))
-      << "Can't perform OS integration without the app existing in the "
-         "registrar.";
 
-  CHECK(set_subsystems_called);
+  // This is usually called whenever the app is missing in the web app registry,
+  // to clean up left over OS integration states.
+  if (options.has_value() && options.value().force_unregister_on_app_missing) {
+    ForceUnregisterOsIntegrationOnSubManager(app_id, /*index=*/0,
+                                             std::move(callback));
+    return;
+  }
+
+  // If the app does not exist in the DB and an unregistration is required, it
+  // should have been done in the past Synchronize call.
+  CHECK(registrar_->GetAppById(app_id))
+      << "Can't perform OS integration without the app existing in the "
+         "registrar. If the use-case requires an app to not be installed, "
+         "consider setting the force_unregister_on_app_missing flag inside "
+         "SynchronizeOsOptions";
+
+  CHECK(set_subsystems_called_);
 
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();
@@ -239,11 +252,6 @@ void OsIntegrationManager::Synchronize(
   }
 
   if (sub_managers_.empty()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  if (!registrar_->GetAppById(app_id)) {
     std::move(callback).Run();
     return;
   }
@@ -290,8 +298,8 @@ void OsIntegrationManager::InstallOsHooks(
   scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
       os_hooks_errors, std::move(callback));
 
-  DCHECK(options.os_hooks[OsHookType::kShortcuts] ||
-         !options.os_hooks[OsHookType::kShortcutsMenu])
+  CHECK(options.os_hooks[OsHookType::kShortcuts] ||
+        !options.os_hooks[OsHookType::kShortcutsMenu])
       << "Cannot install shortcuts menu without installing shortcuts.";
 
   auto shortcuts_callback = base::BindOnce(
@@ -433,7 +441,7 @@ void OsIntegrationManager::UpdateOsHooks(
 void OsIntegrationManager::GetAppExistingShortCutLocation(
     ShortcutLocationCallback callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   shortcut_manager_->GetAppExistingShortCutLocation(std::move(callback),
                                                     std::move(shortcut_info));
 }
@@ -441,7 +449,7 @@ void OsIntegrationManager::GetAppExistingShortCutLocation(
 void OsIntegrationManager::GetShortcutInfoForApp(
     const AppId& app_id,
     WebAppShortcutManager::GetShortcutInfoCallback callback) {
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   return shortcut_manager_->GetShortcutInfoForApp(app_id, std::move(callback));
 }
 
@@ -451,7 +459,7 @@ bool OsIntegrationManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
 
 const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
     const AppId& app_id) const {
-  DCHECK(file_handler_manager_);
+  CHECK(file_handler_manager_);
   return file_handler_manager_->GetEnabledFileHandlers(app_id);
 }
 
@@ -491,18 +499,18 @@ OsIntegrationManager::GetDisallowedHandlersForProtocol(
 }
 
 WebAppShortcutManager& OsIntegrationManager::shortcut_manager_for_testing() {
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   return *shortcut_manager_;
 }
 
 UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
-  DCHECK(url_handler_manager_);
+  CHECK(url_handler_manager_);
   return *url_handler_manager_;
 }
 
 WebAppProtocolHandlerManager&
 OsIntegrationManager::protocol_handler_manager_for_testing() {
-  DCHECK(protocol_handler_manager_);
+  CHECK(protocol_handler_manager_);
   return *protocol_handler_manager_;
 }
 
@@ -524,7 +532,7 @@ void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
 
 void OsIntegrationManager::RegisterFileHandlers(const AppId& app_id,
                                                 ResultCallback callback) {
-  DCHECK(file_handler_manager_);
+  CHECK(file_handler_manager_);
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.FileHandlersRegistration.Result",
@@ -567,6 +575,12 @@ void OsIntegrationManager::RegisterShortcutsMenu(
     return;
   }
 
+  // Exit early if shortcuts_menu_item_infos are not populated.
+  if (shortcuts_menu_item_infos.size() < 1) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
@@ -574,7 +588,7 @@ void OsIntegrationManager::RegisterShortcutsMenu(
         return result;
       }).Then(std::move(callback));
 
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   shortcut_manager_->RegisterShortcutsMenuWithOs(
       app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps,
       std::move(metrics_callback));
@@ -588,6 +602,15 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     return;
   }
 
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
+      registrar_->GetAppShortcutsMenuItemInfos(app_id);
+
+  // Exit early if shortcuts_menu_item_infos are not populated.
+  if (shortcuts_menu_item_infos.size() < 1) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
@@ -596,7 +619,7 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       }).Then(std::move(callback));
 
   shortcut_manager_->ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-      app_id, std::move(metrics_callback));
+      app_id, shortcuts_menu_item_infos, std::move(metrics_callback));
 }
 
 void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,
@@ -623,7 +646,7 @@ void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
 }
 
 void OsIntegrationManager::AddAppToQuickLaunchBar(const AppId& app_id) {
-  DCHECK(ui_manager_);
+  CHECK(ui_manager_);
   if (ui_manager_->CanAddAppToQuickLaunchBar()) {
     ui_manager_->AddAppToQuickLaunchBar(app_id);
   }
@@ -691,7 +714,7 @@ void OsIntegrationManager::DeleteShortcuts(
 
 void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id,
                                                   ResultCallback callback) {
-  DCHECK(file_handler_manager_);
+  CHECK(file_handler_manager_);
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.FileHandlersUnregistration.Result",
@@ -738,7 +761,7 @@ void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
         FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
     return;
   }
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   if (!shortcut_manager_->CanCreateShortcuts()) {
     std::move(callback).Run(Result::kOk);
     return;
@@ -824,7 +847,7 @@ void OsIntegrationManager::UpdateFileHandlers(
         },
         weak_ptr_factory_.GetWeakPtr(), app_id, std::move(finished_callback));
   } else {
-    DCHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
+    CHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
     callback_after_removal = std::move(finished_callback);
   }
 
@@ -914,7 +937,7 @@ void OsIntegrationManager::OnAppRegistrarDestroyed() {
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
     const AppId& app_id) {
-  DCHECK(shortcut_manager_);
+  CHECK(shortcut_manager_);
   return shortcut_manager_->BuildShortcutInfo(app_id);
 }
 
@@ -926,7 +949,7 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
   // This can never be a use-case where we execute OS integration registration/
   // unregistration but do not update the WebAppOsIntegrationState proto in the
   // web_app DB.
-  DCHECK(AreOsIntegrationSubManagersEnabled());
+  CHECK(AreOsIntegrationSubManagersEnabled());
 
   // The "execute" step is skipped in the following cases:
   // 1. The app is no longer in the registrar. The whole synchronize process is
@@ -993,11 +1016,28 @@ void OsIntegrationManager::WriteStateToDB(
   {
     ScopedRegistryUpdate update(sync_bridge_);
     WebApp* web_app = update->UpdateApp(app_id);
-    DCHECK(web_app);
+    CHECK(web_app);
     web_app->SetCurrentOsIntegrationStates(*desired_states.get());
   }
 
   std::move(callback).Run();
+}
+
+void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
+    const AppId& app_id,
+    size_t index,
+    base::OnceClosure final_callback) {
+  CHECK(index < sub_managers_.size());
+  base::OnceClosure next_callback = base::OnceClosure();
+  if (index == sub_managers_.size() - 1) {
+    next_callback = std::move(final_callback);
+  } else {
+    next_callback = base::BindOnce(
+        &OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager,
+        weak_ptr_factory_.GetWeakPtr(), app_id, index + 1,
+        std::move(final_callback));
+  }
+  sub_managers_[index]->ForceUnregister(app_id, std::move(next_callback));
 }
 
 void OsIntegrationManager::OnShortcutsCreated(
@@ -1007,7 +1047,7 @@ void OsIntegrationManager::OnShortcutsCreated(
     scoped_refptr<OsHooksBarrier> barrier,
     bool shortcuts_created) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(barrier);
+  CHECK(barrier);
 
   if (registrar_ && !registrar_->GetAppById(app_id)) {
     return;

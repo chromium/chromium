@@ -55,7 +55,7 @@ void OsAndPoliciesUpdateChecker::Start(UpdateCheckCompletionCallback cb,
         FROM_HERE, update_checker_internal::kWaitForNetworkTimeout,
         base::BindOnce(&OsAndPoliciesUpdateChecker::OnNetworkWaitTimeout,
                        base::Unretained(this)));
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
     return;
   }
 

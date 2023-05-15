@@ -27,12 +27,9 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -118,7 +115,7 @@ public class InstantStartTabSwitcherTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(4)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
     @Rule
@@ -172,7 +169,7 @@ public class InstantStartTabSwitcherTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
         Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
 
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -207,7 +204,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         RecyclerView recyclerView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
+        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
         mRenderTestRule.render(recyclerView, "tabSwitcher_3tabs");
 
         // Resume native initialization and make sure the GTS looks the same.
@@ -251,7 +248,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         RecyclerView recyclerView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
+        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
         // TODO(crbug.com/1065314): Tab group cards should not have favicons.
         mRenderTestRule.render(StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
                 "tabSwitcher_tabGroups_aspect_ratio_point85");
@@ -310,7 +307,7 @@ public class InstantStartTabSwitcherTest {
 
         RecyclerView recyclerView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
+        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
         mRenderTestRule.render(StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
                 "tabSwitcher_tabGroups_theme_enforcement");
     }
@@ -576,23 +573,6 @@ public class InstantStartTabSwitcherTest {
                         ReturnToChromeUtil
                                 .LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
                         isSRP ? 1 : 0));
-    }
-
-    private boolean allCardsHaveThumbnail(RecyclerView recyclerView) {
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
-        assert adapter != null;
-        for (int i = 0; i < adapter.getItemCount(); i++) {
-            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                ImageView thumbnail = viewHolder.itemView.findViewById(
-                        org.chromium.chrome.test.R.id.tab_thumbnail);
-                if (!(thumbnail.getDrawable() instanceof BitmapDrawable)) return false;
-                BitmapDrawable drawable = (BitmapDrawable) thumbnail.getDrawable();
-                Bitmap bitmap = drawable.getBitmap();
-                if (bitmap == null) return false;
-            }
-        }
-        return true;
     }
 
     private int getRelatedTabListSizeOnUiThread(TabModelFilter tabModelFilter) {

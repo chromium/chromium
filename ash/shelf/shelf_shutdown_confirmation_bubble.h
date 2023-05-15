@@ -8,8 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_bubble.h"
-#include "ash/style/default_colors.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
@@ -75,10 +75,10 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Report bubble action metrics
   void ReportBubbleAction(BubbleAction action);
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::LabelButton* cancel_ = nullptr;
-  views::LabelButton* confirm_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> cancel_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> confirm_ = nullptr;
 
   enum class DialogResult { kNone, kCancelled, kConfirmed };
 

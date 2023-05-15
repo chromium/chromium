@@ -13,7 +13,7 @@
 #import "ios/web/annotations/annotations_text_manager_impl.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,7 +47,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
                                                int maximum_text_length,
                                                int seq_id) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }
@@ -62,7 +62,7 @@ void AnnotationsJavaScriptFeature::DecorateAnnotations(
     WebState* web_state,
     base::Value& annotations) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }
@@ -74,7 +74,7 @@ void AnnotationsJavaScriptFeature::DecorateAnnotations(
 
 void AnnotationsJavaScriptFeature::RemoveDecorations(WebState* web_state) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }
@@ -84,7 +84,7 @@ void AnnotationsJavaScriptFeature::RemoveDecorations(WebState* web_state) {
 
 void AnnotationsJavaScriptFeature::RemoveHighlight(WebState* web_state) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }

@@ -246,10 +246,10 @@ void ClientTagBasedModelTypeProcessor::ClearAllTrackedMetadataAndResetState() {
   std::unique_ptr<MetadataChangeList> change_list;
 
   // All changes before the initial sync is done are ignored and in fact they
-  // were never persisted by the bridge (prior to MergeSyncData), so no
+  // were never persisted by the bridge (prior to MergeFullSyncData), so no
   // entities should be tracking.
   //
-  // Clear metadata if MergeSyncData() was called before.
+  // Clear metadata if MergeFullSyncData() was called before.
   if (entity_tracker_) {
     change_list = bridge_->CreateMetadataChangeList();
     std::vector<const ProcessorEntity*> entities =
@@ -305,8 +305,8 @@ std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
-  // (i.e. prior to exercising MergeSyncData()). Let's be cautious and hide the
-  // account ID.
+  // (i.e. prior to exercising MergeFullSyncData()). Let's be cautious and hide
+  // the account ID.
   if (!IsTrackingMetadata()) {
     return "";
   }
@@ -317,8 +317,8 @@ std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
-  // (i.e. prior to exercising MergeSyncData()). Let's be cautious and hide the
-  // cache GUID.
+  // (i.e. prior to exercising MergeFullSyncData()). Let's be cautious and hide
+  // the cache GUID.
   if (!IsTrackingMetadata()) {
     return "";
   }
@@ -724,7 +724,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
   // to clear.
   entity_tracker_->ClearTransientSyncState();
 
-  absl::optional<ModelError> error = bridge_->ApplySyncChanges(
+  absl::optional<ModelError> error = bridge_->ApplyIncrementalSyncChanges(
       std::move(metadata_change_list), std::move(entity_change_list));
 
   if (!error_response_list.empty()) {
@@ -825,7 +825,7 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
 
   DCHECK(entity_tracker_);
   // If there were entities with empty storage keys, they should have been
-  // updated by bridge as part of ApplySyncChanges.
+  // updated by bridge as part of ApplyIncrementalSyncChanges.
   DCHECK(entity_tracker_->AllStorageKeysPopulated());
   // There may be new reasons to commit by the time this function is done.
   NudgeForCommitIfNeeded();
@@ -845,7 +845,8 @@ void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
       invalidations_to_store.begin(), invalidations_to_store.end());
   metadata_changes->UpdateModelTypeState(model_type_state);
   entity_tracker_->set_model_type_state(model_type_state);
-  bridge_->ApplySyncChanges(std::move(metadata_changes), EntityChangeList());
+  bridge_->ApplyIncrementalSyncChanges(std::move(metadata_changes),
+                                       EntityChangeList());
 }
 
 bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
@@ -1000,14 +1001,14 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
 
   // Let the bridge handle associating and merging the data.
   // For ApplyUpdatesImmediatelyTypes(), no merge is necessary or supported, so
-  // call ApplySyncChanges() instead.
+  // call ApplyIncrementalSyncChanges() instead.
   if (ApplyUpdatesImmediatelyTypes().Has(type_)) {
-    return bridge_->ApplySyncChanges(std::move(metadata_changes),
-                                     std::move(entity_data));
+    return bridge_->ApplyIncrementalSyncChanges(std::move(metadata_changes),
+                                                std::move(entity_data));
   }
 
-  return bridge_->MergeSyncData(std::move(metadata_changes),
-                                std::move(entity_data));
+  return bridge_->MergeFullSyncData(std::move(metadata_changes),
+                                    std::move(entity_data));
 }
 
 absl::optional<ModelError>
@@ -1095,7 +1096,8 @@ void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     metadata_changes->ClearMetadata(storage_key);
   }
 
-  bridge_->ApplySyncChanges(std::move(metadata_changes), EntityChangeList());
+  bridge_->ApplyIncrementalSyncChanges(std::move(metadata_changes),
+                                       EntityChangeList());
 }
 
 void ClientTagBasedModelTypeProcessor::CommitLocalChanges(

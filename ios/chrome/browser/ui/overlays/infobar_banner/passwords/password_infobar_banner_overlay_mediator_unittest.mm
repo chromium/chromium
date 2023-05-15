@@ -6,13 +6,9 @@
 
 #import <string>
 
-#import "base/feature_list.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -42,58 +38,8 @@ const char kAccount[] = "foobar@gmail.com";
 // Test fixture for PasswordInfobarBannerOverlayMediator.
 using PasswordInfobarBannerOverlayMediatorTest = PlatformTest;
 
-// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
-// consumer.
-TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
-  // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
-  std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
-      MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
-  IOSChromeSavePasswordInfoBarDelegate* delegate = passed_delegate.get();
-  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
-                     std::move(passed_delegate));
-  // Package the infobar into an OverlayRequest, then create a mediator that
-  // uses this request in order to set up a fake consumer.
-  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  PasswordInfobarBannerOverlayMediator* mediator =
-      [[PasswordInfobarBannerOverlayMediator alloc]
-          initWithRequest:request.get()];
-  FakeInfobarBannerConsumer* consumer =
-      [[FakeInfobarBannerConsumer alloc] init];
-  mediator.consumer = consumer;
-
-  // Verify that the infobar was set up properly.
-  NSString* title = base::SysUTF16ToNSString(delegate->GetMessageText());
-  NSString* password = [@"" stringByPaddingToLength:kPassword.length
-                                         withString:@"•"
-                                    startingAtIndex:0];
-  NSString* subtitle =
-      [NSString stringWithFormat:@"%@ %@", kUsername, password];
-  NSString* bannerAccessibilityLabel =
-      [NSString stringWithFormat:@"%@,%@, %@", title, kUsername,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
-  EXPECT_NSEQ(bannerAccessibilityLabel, consumer.bannerAccessibilityLabel);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(
-                  delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK)),
-              consumer.buttonText);
-  EXPECT_NSEQ(title, consumer.titleText);
-  EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_TRUE(consumer.presentsModal);
-  EXPECT_NSEQ(
-      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize),
-      consumer.iconImage);
-}
-
 TEST_F(PasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithLocalStorage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
-
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
                      MockIOSChromeSavePasswordInfoBarDelegate::Create(
@@ -130,10 +76,6 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 
 TEST_F(PasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithAccountStorage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
-
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
                      MockIOSChromeSavePasswordInfoBarDelegate::Create(

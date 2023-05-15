@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -55,7 +56,8 @@ class AccessibilityExtensionLoader {
   const base::FilePath::CharType* guest_manifest_filename_;
   base::RepeatingClosure unload_callback_;
 
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
+      browser_context_ = nullptr;
   bool loaded_ = false;
 
   // Whether this extension was reset for kiosk mode.

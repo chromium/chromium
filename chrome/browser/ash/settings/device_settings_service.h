@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -187,7 +188,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Determines the ownership status and reports the result to |callback|. This
   // is guaranteed to never return OWNERSHIP_UNKNOWN.
-  void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
+  virtual void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
 
   // Checks whether we have the private owner key.
   //
@@ -274,7 +275,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
 
-  SessionManagerClient* session_manager_client_ = nullptr;
+  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
+      nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Status store_status_ = STORE_SUCCESS;

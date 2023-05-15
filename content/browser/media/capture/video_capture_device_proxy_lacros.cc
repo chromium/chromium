@@ -51,7 +51,7 @@ bool VideoCaptureDeviceProxyLacros::IsAvailable() {
   if (!service)
     return false;
 
-  return service->GetInterfaceVersion(crosapi::mojom::ScreenManager::Uuid_) >=
+  return service->GetInterfaceVersion<crosapi::mojom::ScreenManager>() >=
          kVideoCaptureMinVersion;
 }
 

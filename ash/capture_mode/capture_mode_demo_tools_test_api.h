@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/pointer_details.h"
@@ -73,7 +74,9 @@ class CaptureModeDemoToolsTestApi {
   const TouchHighlightLayersMap& GetTouchIdToHighlightLayerMap() const;
 
  private:
-  CaptureModeDemoToolsController* const demo_tools_controller_;
+  const raw_ptr<CaptureModeDemoToolsController,
+                DanglingUntriaged | ExperimentalAsh>
+      demo_tools_controller_;
 };
 
 }  // namespace ash

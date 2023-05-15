@@ -14,6 +14,18 @@
 
 namespace net {
 
+namespace {
+
+// True if network state partitioning should be enabled regardless of feature
+// settings.
+bool g_partition_by_default = false;
+
+// True if NAK::IsPartitioningEnabled has been called, and the value of
+// `g_partition_by_default` cannot be changed.
+bool g_partition_by_default_locked = false;
+
+}  // namespace
+
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const SchemefulSite& top_frame_site,
     bool is_cross_site,
@@ -173,6 +185,46 @@ std::string NetworkAnonymizationKey::GetSiteDebugString(
 absl::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
     const SchemefulSite& site) {
   return *(const_cast<SchemefulSite&>(site).SerializeWithNonce());
+}
+
+// static
+bool NetworkAnonymizationKey::IsPartitioningEnabled() {
+  g_partition_by_default_locked = true;
+  return g_partition_by_default ||
+         base::FeatureList::IsEnabled(
+             features::kSplitHostCacheByNetworkIsolationKey) ||
+         base::FeatureList::IsEnabled(
+             features::kPartitionConnectionsByNetworkIsolationKey) ||
+         base::FeatureList::IsEnabled(
+             features::kPartitionHttpServerPropertiesByNetworkIsolationKey) ||
+         base::FeatureList::IsEnabled(
+             features::kPartitionSSLSessionsByNetworkIsolationKey) ||
+         base::FeatureList::IsEnabled(
+             features::kPartitionNelAndReportingByNetworkIsolationKey);
+}
+
+// static
+void NetworkAnonymizationKey::PartitionByDefault() {
+  DCHECK(!g_partition_by_default_locked);
+  // Only set the global if none of the relevant features are overridden.
+  if (!base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "SplitHostCacheByNetworkIsolationKey") &&
+      !base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "PartitionConnectionsByNetworkIsolationKey") &&
+      !base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "PartitionHttpServerPropertiesByNetworkIsolationKey") &&
+      !base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "PartitionSSLSessionsByNetworkIsolationKey") &&
+      !base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "PartitionNelAndReportingByNetworkIsolationKey")) {
+    g_partition_by_default = true;
+  }
+}
+
+// static
+void NetworkAnonymizationKey::ClearGlobalsForTesting() {
+  g_partition_by_default = false;
+  g_partition_by_default_locked = false;
 }
 
 }  // namespace net

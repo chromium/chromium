@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -41,7 +41,7 @@ public class CustomTabFromChromeExternalNavigationTest {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                    InstrumentationRegistry.getTargetContext(), intent);
+                    ApplicationProvider.getApplicationContext(), intent);
             IntentUtils.addTrustedIntentExtras(intent);
             return intent;
         });

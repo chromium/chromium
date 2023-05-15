@@ -265,27 +265,6 @@ const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
 const char SafeBrowsingPrivateEventRouter::kKeyUrlCategory[] = "urlCategory";
 const char SafeBrowsingPrivateEventRouter::kKeyAction[] = "action";
 
-// All new event names should be added to the array
-// `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
-// `chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h`
-const char SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent[] =
-    "urlFilteringInterstitialEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
-    "passwordReuseEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent[] =
-    "passwordChangedEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent[] =
-    "dangerousDownloadEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent[] =
-    "interstitialEvent";
-const char SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent[] =
-    "sensitiveDataEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
-    "unscannedFileEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyLoginEvent[] = "loginEvent";
-const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent[] =
-    "passwordBreachEvent";
-
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
 

@@ -654,10 +654,13 @@ class TargetHandler::TargetFilter {
     return base::WrapUnique(new TargetFilter(std::move(*filter.fromJust())));
   }
 
-  bool Match(DevToolsAgentHost& host) const {
+  bool Match(DevToolsAgentHost& host) const { return Match(host.GetType()); }
+
+  bool Match(base::StringPiece type) const {
     for (const auto& entry : entries_) {
-      if (!entry->HasType() || entry->GetType("") == host.GetType())
+      if (!entry->HasType() || entry->GetType("") == type) {
         return !entry->GetExclude(false);
+      }
     }
     return false;
   }
@@ -735,20 +738,27 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
   DCHECK(auto_attacher == auto_attacher_);
   DevToolsAgentHost* host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-  // For new pages create Throttle only if the session is still paused.
-  if (!host)
-    return nullptr;
-  auto it = auto_attached_sessions_.find(host);
-  if (it == auto_attached_sessions_.end())
-    return nullptr;
-  if (!it->second->IsWaitingForDebuggerOnStart())
-    return nullptr;
-  // RFDTAHs created during auto-attach had no renderer allocated originally,
-  // and hence have messages paused, but with navigation we're supposed to
-  // have a line host, so we can send messages to renderer now.
-  DCHECK(frame_tree_node->current_frame_host()->IsRenderFrameLive());
-  it->second->ResumeSendingMessagesToAgent();
-
+  TargetHandler::Session* waiting_session = FindWaitingSession(host);
+  if (waiting_session) {
+    // RFDTAHs created during auto-attach had no renderer allocated originally,
+    // and hence have messages paused, but with navigation we're supposed to
+    // have a live host, so we can send messages to renderer now.
+    DCHECK(frame_tree_node->current_frame_host()->IsRenderFrameLive());
+    // Only resume sending messages to frame agents (i.e. skip for WebContents
+    // ones).
+    waiting_session->ResumeSendingMessagesToAgent();
+  } else {
+    // Currently, either RFDTAH or WCDTAH may be waiting for debugger (when
+    // `waitForDebuggerOnStart` is honored for the Tab target, it is ignored
+    // for the Page target), so in case no Page-level sessions are waiting,
+    // also check the tab target.
+    host = WebContentsDevToolsAgentHost::GetFor(
+        WebContentsImpl::FromFrameTreeNode(frame_tree_node));
+    waiting_session = FindWaitingSession(host);
+    if (!waiting_session) {
+      return nullptr;
+    }
+  }
   // window.open() navigations are throttled on the renderer side and the main
   // request will not be sent until runIfWaitingForDebugger is received from
   // the client, so there is no need to throttle the navigation in the
@@ -756,11 +766,26 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
   //
   // New window navigations (such as ctrl+click) should be throttled before
   // the main request is sent to apply user agent and other overrides.
-  FrameTreeNode* opener = frame_tree_node->opener();
-  if (opener)
+  if (frame_tree_node->opener()) {
     return nullptr;
+  }
   return std::make_unique<RequestThrottle>(weak_factory_.GetWeakPtr(),
                                            navigation_handle, host);
+}
+
+TargetHandler::Session* TargetHandler::FindWaitingSession(
+    DevToolsAgentHost* host) {
+  if (!host) {
+    return nullptr;
+  }
+  auto it = auto_attached_sessions_.find(host);
+  if (it == auto_attached_sessions_.end()) {
+    return nullptr;
+  }
+  if (!it->second->IsWaitingForDebuggerOnStart()) {
+    return nullptr;
+  }
+  return it->second;
 }
 
 void TargetHandler::ClearThrottles() {
@@ -984,6 +1009,14 @@ void TargetHandler::SetAutoAttach(
   }
   auto_attach_target_filter_ =
       auto_attach ? TargetFilter::Create(std::move(filter)) : nullptr;
+  if (auto_attach_target_filter_ && access_mode_ == AccessMode::kBrowser &&
+      auto_attach_target_filter_->Match(DevToolsAgentHost::kTypeTab) &&
+      auto_attach_target_filter_->Match(DevToolsAgentHost::kTypePage)) {
+    callback->sendFailure(Response::InvalidParams(
+        "Filter should not simultaneously allow \"tab\" and \"page\", "
+        "page targets are attached via tab targets"));
+    return;
+  }
   SetAutoAttachInternal(
       auto_attach, wait_for_debugger_on_start, flatten.fromMaybe(false),
       base::BindOnce(&SetAutoAttachCallback::sendSuccess, std::move(callback)));

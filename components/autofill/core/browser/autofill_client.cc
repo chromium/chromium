@@ -124,6 +124,11 @@ void AutofillClient::ShowVirtualCardEnrollDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
+void AutofillClient::ShowMandatoryReauthOptInPrompt(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   // This is overridden by platform subclasses. Currently only
@@ -182,7 +187,8 @@ void AutofillClient::ShowAutofillProgressDialog(
 }
 
 void AutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }

@@ -1873,14 +1873,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).
       return false;
-    case CSSSelector::kPseudoInitial: {
-      if (!context.is_initial || !context.in_rightmost_compound ||
-          context.in_nested_complex_selector) {
-        return false;
-      }
-      result.SetFlag(MatchFlag::kAffectedByInitial);
-      return true;
-    }
     case CSSSelector::kPseudoTrue:
       return true;
     case CSSSelector::kPseudoUnknown:
@@ -1984,6 +1976,18 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       result.dynamic_pseudo = context.pseudo_id;
       return selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
              selector.Argument() == pseudo_argument_;
+    }
+    case CSSSelector::kPseudoScrollbarButton:
+    case CSSSelector::kPseudoScrollbarCorner:
+    case CSSSelector::kPseudoScrollbarThumb:
+    case CSSSelector::kPseudoScrollbarTrack:
+    case CSSSelector::kPseudoScrollbarTrackPiece: {
+      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) !=
+          context.pseudo_id) {
+        return false;
+      }
+      result.dynamic_pseudo = context.pseudo_id;
+      return true;
     }
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {

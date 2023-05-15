@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -108,34 +109,34 @@ class SourcesBuilder {
     }
 
     if (sources_.machine_info_filepath.empty()) {
-      sources_.machine_info_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.machine_info_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     if (sources_.vpd_echo_filepath.empty()) {
-      sources_.vpd_echo_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.vpd_echo_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     if (sources_.vpd_filepath.empty()) {
-      sources_.vpd_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.vpd_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     if (sources_.vpd_status_filepath.empty()) {
-      sources_.vpd_status_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.vpd_status_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     if (sources_.oem_manifest_filepath.empty()) {
-      sources_.oem_manifest_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.oem_manifest_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     if (sources_.cros_regions_filepath.empty()) {
-      sources_.cros_regions_filepath = CreateFileInTempDir("", temp_dir_);
+      sources_.cros_regions_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     return std::move(sources_);
   }
 
  private:
-  const base::ScopedTempDir& temp_dir_;
+  const raw_ref<const base::ScopedTempDir, ExperimentalAsh> temp_dir_;
   StatisticsProviderImpl::StatisticsSources sources_;
 };
 

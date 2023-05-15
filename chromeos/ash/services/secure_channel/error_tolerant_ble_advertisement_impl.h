@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/error_tolerant_ble_advertisement.h"
@@ -86,7 +87,7 @@ class ErrorTolerantBleAdvertisementImpl
   }
 
   std::unique_ptr<DataWithTimestamp> advertisement_data_;
-  BleSynchronizerBase* ble_synchronizer_;
+  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_;
 
   bool registration_in_progress_ = false;
   bool unregistration_in_progress_ = false;

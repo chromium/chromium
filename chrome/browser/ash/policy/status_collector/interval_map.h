@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 
 namespace policy {
 
@@ -157,7 +158,7 @@ class IntervalMapConstIterator {
   }
 
  private:
-  const MapType* map_;
+  raw_ptr<const MapType, ExperimentalAsh> map_;
 
   // Pointer to the entry in the IntervalMap that specifies the
   // beginning of the current interval.

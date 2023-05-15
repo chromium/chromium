@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Kalo te dritarja e hapur</translation>
 <translation id="1112015203684611006">Printimi dështoi.</translation>
 <translation id="1125564390852150847">Krijo një skedë të re</translation>
-<translation id="1126013303640354461">Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
-Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
@@ -70,6 +68,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1375321115329958930">Fjalëkalimet e ruajtura</translation>
 <translation id="1377255359165588604">"Sinkronizimi" ka ndaluar së funksionuari.</translation>
 <translation id="1377321085342047638">Numri i kartës</translation>
+<translation id="1377508275003315939">Fjalëkalimet</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="138618066238211776">Vazhdo si <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 javët e fundit</translation>
@@ -88,6 +87,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
 <translation id="152234381334907219">Nuk u ruajt asnjëherë</translation>
 <translation id="1523341279170789507">Lejo të gjitha kukit</translation>
+<translation id="1524563461097350801">Jo, faleminderit</translation>
 <translation id="1531836666020185856">Të veçuara</translation>
 <translation id="1535268707340844072">Cilësimi yt aktual mund të bëjë që disa sajte të prishen. Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet e kukive<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
@@ -112,6 +112,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
 <translation id="1657641691196698092">Kukit e bllokuara</translation>
 <translation id="165877110639533037">Nuk ka skeda të hapura</translation>
+<translation id="166310177317698233">Skedat e tua të gozhduara mund t'i gjesh duke trokitur te butoni "Shfaq skedat".</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Kërko sajtin për celular</translation>
 <translation id="168715261339224929">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo sinkronizimin.</translation>
@@ -123,6 +124,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1750238553597293878">Vazhdo të përdorësh fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1753905327828125965">Më të vizituara</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} fjalëkalim i dobët}other{{count} fjalëkalime të dobëta}}</translation>
 <translation id="1767766085187034454">Përkthe me Google</translation>
 <translation id="1789803444939621101">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
@@ -131,11 +133,15 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1815941218935345331">Kodi i kalimit</translation>
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Fjalëkalimet e komprometuara}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
+<translation id="1830634592642484976">Kjo adresë është ruajtur aktualisht në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
+<translation id="1836891464494477513">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="1870148520156231997">Zbulo fjalëkalimin</translation>
 <translation id="1872096359983322073">Elektriku</translation>
+<translation id="1883255238294161206">Palos listën</translation>
 <translation id="1891796056033961979">Faqeshënuesit, fjalëkalimet, cilësimet e ruajtura etj. ofrohen nga ky ekran.</translation>
 <translation id="1894023287452300670">Monitoro çmimin këtu</translation>
+<translation id="1910975740091000991">Chrome për iOS</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1923342640370224680">Ora e fundit</translation>
 <translation id="1930989359703290198">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara. Llogaritë që nuk lejohen janë të fshehura. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -144,6 +150,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
 <translation id="1959679933317802873">Në pritje të përmbajtjes</translation>
 <translation id="1965935827552890526">Përfundo atë që po bën në dritaren tjetër të hapur të Chrome.</translation>
+<translation id="1967461193809857427">{count,plural, =1{Të vazhdohet me skedën ku e ke lënë në Android?}other{Të vazhdohet me skedat ku e ke lënë në Android?}}</translation>
 <translation id="1973912524893600642">Mbaj të dhënat</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1980417445547898121">{count,plural, =1{Merr {count} skedë aktive së fundi nga pajisja jote tjetër në këtë iPhone}other{Merr {count} skeda aktive së fundi nga pajisja jote tjetër në këtë iPhone}}</translation>
@@ -162,7 +169,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2080769225927880590">Identifikohu me një llogari të vlefshme</translation>
-<translation id="2090878303988764231">Identifikohu për të menaxhuar përmbajtjet që shikon</translation>
 <translation id="2103075008456228677">Hap history.google.com</translation>
 <translation id="21133533946938348">Gozhdimi i skedës</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u lëvizën</translation>
@@ -171,7 +177,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2139867232736819575">Kërko për tekstin që kopjove</translation>
 <translation id="214201757571129614">Identifikohu…</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
-<translation id="2150175299852799498">Chrome për celular</translation>
 <translation id="2155145621546387786">Ndaje Chrome</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2178545675770638239">Zgjidh fjalëkalimin</translation>
@@ -181,6 +186,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2242467532204595597">Përdore Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="22508856139286506">Paralajmërimet e hequra (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyja → Historiku</translation>
+<translation id="2252674110805316998">Kërkimi në ueb</translation>
 <translation id="2256933947031277845">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara.</translation>
 <translation id="225943865679747347">Kodi i gabimit: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Shto një llogari</translation>
@@ -221,6 +227,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2500374554657206846">Opsionet për të ruajtur fjalëkalimin</translation>
 <translation id="2523363575747517183">Ky sajt uebi po përpiqet vazhdimisht të hapë një aplikacion tjetër.</translation>
 <translation id="2529021024822217800">Hapi të gjithë</translation>
+<translation id="2536991091671391962">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato ruhen në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" />.</translation>
 <translation id="2547458583188611426">Sinkronizimi nuk po funksionon. Për të nisur sinkronizimin, fut frazën e kalimit.</translation>
 <translation id="2551153019974022505">Gabim i llogarisë</translation>
 <translation id="2556092377360758201">Asnjë mbrojtje (nuk rekomandohet)</translation>
@@ -228,6 +235,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2576499762020411840">Përdor dhe ruaj fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="2578571896248130439">Dërgo faqen e uebit</translation>
 <translation id="2584132361465095047">Shto një llogari…</translation>
+<translation id="2587010742985678408">{count,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{count} fjalëkalim i komprometuar}other{{count} fjalëkalime të komprometuara}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Skedat e hapura që nuk përdoren për një ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}other{Skedat e hapura që nuk përdoren për {COUNT} ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}}</translation>
 <translation id="2600682495497606169">Pastro kukit e sajtit</translation>
 <translation id="2609008503159898744">Të mbyllen të gjitha skedat?</translation>
@@ -237,7 +245,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2647269890314209800">Kukit në përdorim</translation>
 <translation id="2648721026697078500">Mos zhvendos asnjëherë</translation>
 <translation id="2648803196158606475">Fshi të lexuarat</translation>
-<translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2664621323652615289">Ndalo</translation>
 <translation id="2671426118752779020">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve të Google" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
@@ -271,6 +278,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2797029671965852011">Shfaq historikun</translation>
 <translation id="2800683595868705743">Largohu nga "Ndërruesi i skedave"</translation>
 <translation id="2815198996063984598">2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"</translation>
+<translation id="2818821771744632548">Ke dalë nga llogaria jote, <ph name="USER_NAME" />, si pjesë e rivendosjes së telefonit iPhone. Për t'u identifikuar përsëri, trokit te "Vazhdo" më poshtë.</translation>
 <translation id="2822917246944009066">Skeda u gozhdua</translation>
 <translation id="2830972654601096923">Menaxho adresat...</translation>
 <translation id="2834399722155632105">3. Trokit tek "Opsionet e fjalëkalimeve"</translation>
@@ -296,7 +304,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2932085390869194046">Sugjero një fjalëkalim...</translation>
 <translation id="2932765531295814441">Shto fjalëkalimet në mënyrë manuale</translation>
 <translation id="2952581218264071393">1. Hap "Cilësimet" e Chrome</translation>
-<translation id="2953871438216280742">Identifikohu për të hapur dhe ruajtur listën tënde të leximit në "Llogarinë tënde të Google".</translation>
 <translation id="2958718410589002129">Fjalëkalimet</translation>
 <translation id="2961210776189273067">Titulli</translation>
 <translation id="2964349545761222050">Blloko kukit e palëve të treta</translation>
@@ -351,8 +358,8 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3311748811247479259">Joaktiv</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
-<translation id="3328459813621383194">Skeda të tjera ndërvepruese</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
+<translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="3371831930909698441">Ofrohet "Përkthe". Opsionet ofrohen pranë fundit të ekranit</translation>
 <translation id="3377063233124932127">Tani faqeshënuesit, fjalëkalimet e ruajtura etj. janë në krye.</translation>
 <translation id="3393920035788932672">Lejohen dritaret kërcyese</translation>
@@ -398,6 +405,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3638472932233958418">Ngarko paraprakisht faqet e uebit</translation>
 <translation id="3661160521073045932">Ofrohet profili i konfigurimit</translation>
 <translation id="3670030362669914947">Numri</translation>
+<translation id="3700134753671613714">Identifikohu për të marrë faqeshënuesit në të gjitha pajisjet e tua.</translation>
 <translation id="3709582977625132201">Shëno si të palexuar</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
 <translation id="37207012422556617">Kërkimet në tendencë</translation>
@@ -424,6 +432,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3861486700625780712">Mos e ndiq</translation>
 <translation id="3863769054730344136">Dërgo te pajisjet e tua</translation>
 <translation id="387280738075653372">Shkarko Chrome këtu.</translation>
+<translation id="3875783148670536197">Më trego mënyrën</translation>
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
 <translation id="3891414008432200754">Çmimi</translation>
 <translation id="3892144330757387737">Këtu do të gjesh historikun tënd</translation>
@@ -479,6 +488,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4272631900155121838">Për të skanuar një kod QR, aktivizo kamerën nga cilësimet</translation>
 <translation id="4277990410970811858">Shfletimi i sigurt</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
+<translation id="4293080268407233932">Kërko</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="430793432425771671">Sinkronizo gjithçka</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
@@ -491,6 +501,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4343046787186034850">Lejohet qasja te "Kamera" dhe "Mikrofoni"</translation>
 <translation id="4359125752503270327">Kjo faqe do të hapet në një aplikacion tjetër.</translation>
 <translation id="4371526908359194219">Njoftimet me email</translation>
+<translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4375040482473363939">Kërkim me kod QR</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
@@ -529,16 +540,14 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4620246317052452550">Faqet që ke lexuar</translation>
 <translation id="4620888520263267479">Shfaq pamjet paraprake të lidhjeve</translation>
 <translation id="4630540211544979320">Përkthe faqet</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
 <translation id="4636930964841734540">Informacion</translation>
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
 <translation id="4650125387981512669">Vazhdo si <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
-<translation id="4659126640776004816">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar.</translation>
+<translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde në linjë. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Futu te "Ndërruesi i skedave"</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
-<translation id="4666531726415300315">Je identifikuar si <ph name="EMAIL" />.
-
-Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkronizimin. Fute atë për të nisur sinkronizimin.</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
 <translation id="469300482518076788">Mbylle skedën</translation>
@@ -547,16 +556,12 @@ Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkroniz
 <translation id="4737560986434232178">Kërko skedat e fundit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4746926359847517643">Mund t'i kthesh ato gjithmonë te historiku</translation>
-<translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, vetëm në këtë pajisje, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Skedë e re "e fshehtë"</translation>
 <translation id="4766112107778026136">"Zbulo" dhe "Po ndjek"</translation>
 <translation id="4775879719735953715">Shfletuesi i parazgjedhur</translation>
 <translation id="4778644898150334464">Përdor një fjalëkalim tjetër</translation>
 <translation id="478808905805139173">Të hapet në modalitetin "e fshehtë"?</translation>
-<translation id="4802417911091824046">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
-
-Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Menaxhohet nga organizata jote.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numër karte i pavlefshëm</translation>
@@ -575,7 +580,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4844899002472726590">Shiko dhe modifiko temat që të interesojnë</translation>
 <translation id="4848999860252535517">Të fshihet fjalëkalimi për <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Vendos një kod</translation>
-<translation id="4856498338299082007">Në "Llogarinë tënde të Google"</translation>
 <translation id="4858786880085262208">Përmirësoje në HTTPS, kur është e mundur. Sajtet e sigurta mund të integrojnë përmbajtje që nuk janë të sigurta.</translation>
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4872323082491632254">Kontrollo fjalëkalimet</translation>
@@ -592,10 +596,12 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4941089862236492464">Na vjen keq, kishte një problem në ndarjen e artikullit tënd.</translation>
 <translation id="4944543191714094452">Gjej në faqe…</translation>
 <translation id="4945756290001680296">Qasu te cilësimet e fjalëkalimit</translation>
+<translation id="4958444002117714549">Zgjero listën</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
 <translation id="4986678885919050584">Hiq nga kjo pajisje</translation>
 <translation id="498985224078955265">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet.</translation>
+<translation id="4996567535980789550">Aktivizo sinkronizimin për të menaxhuar përmbajtjet që shikon</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Më kujto më vonë</translation>
@@ -619,7 +625,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5168414296986405587">Krijuar për iPadOS</translation>
 <translation id="5173088371991956744">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="5176312250994681348">Mbaj fjalëkalimin më të fundit</translation>
-<translation id="51802232683641391">{count,plural, =1{Të vazhdohet me skedën ku e ke lënë në Android?}other{Të vazhdohet me skedat ku e ke lënë në Android?}}</translation>
 <translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5186185447130319458">Privat</translation>
@@ -630,6 +635,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5211488077761630279">Të lejohet që "<ph name="SITE_NAME" />" të përdorë <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Ndihmo në përmirësimin e sigurisë në ueb për të gjithë</translation>
 <translation id="5221339005270097309">Po kontrollon fjalëkalimet…</translation>
+<translation id="5226568866393490213">Hiq paralajmërimin</translation>
 <translation id="5228579091201413441">Aktivizo sinkronizimin</translation>
 <translation id="5232485538978018676">Identifikohu me llogari të menaxhuar</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -652,10 +658,10 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
 <translation id="5439599923922718668">Të vizituara shpesh</translation>
+<translation id="5439618055789623719">Identifikuar si <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informacioni i sigurisë së faqes</translation>
 <translation id="5443952882982198570">Kartat e kreditit</translation>
 <translation id="5444892875087332195">Faqeshënuesit</translation>
-<translation id="5453250766792920795">{count,plural, =1{Faqeshënuesi u ruajt në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën në llogarinë tënde, {email}}}</translation>
 <translation id="5457226814769348910">Hap versionin jashtë linje</translation>
 <translation id="5489208564673669003">Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet e kukive<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blloko të gjitha kukit (nuk rekomandohet)</translation>
@@ -663,6 +669,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5520466080178053306">Trokit te "Menaxheri i fjalëkalimeve" dhe më pas trokit te "Shto"</translation>
 <translation id="5525095647255982834">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të.</translation>
 <translation id="5525269841082836315">Krijo fjalëkalim</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5542540507657872337">Të gjetura: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një faqe interneti në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Faqja aktuale e hapur e internetit do të shfaqet në Dock të kompjuterit tënd Mac.
 
@@ -684,6 +691,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5669617676038747374">Krijo një kod QR</translation>
 <translation id="567881659373499783">Versioni <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Për të përdorur dhe ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti.</translation>
+<translation id="5684761169742812828">Ky fjalëkalim është ekspozuar në një nxjerrje të paautorizuar të të dhënave në internet. Nëse nuk ke kohë që ta ndryshosh tani, Google rekomandon që ta mbash këtë paralajmërim për t'u kujtuar më vonë.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Tani po shfaqet 1 dritare e Chrome}other{Tani po shfaqen {count} dritare të Chrome}}</translation>
 <translation id="5701270923492462699">Lejohet qasja te "Kamera"</translation>
 <translation id="5704908597376970822">Nuk mund të identifkohesh.</translation>
@@ -731,6 +739,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5951816930277761335">Ndaj lidhjen</translation>
 <translation id="5955891643922670672">Po shikon versionin jashtë linje</translation>
 <translation id="5957613098218939406">Opsione të tjera</translation>
+<translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nuk mund të krijohet një lidhje për te teksti i theksuar.</translation>
 <translation id="5965679971710331625">Je i identifikuar</translation>
 <translation id="5979837087407522202">Kërko për fjalëkalime</translation>
@@ -783,6 +792,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6229318421047648685">Kërko sajtin për desktop</translation>
 <translation id="6231782223312638214">Sugjerimet</translation>
 <translation id="6232329973559504466">Kërkimi "i fshehtë"</translation>
+<translation id="6236952928980352967">Restauro paralajmërimin</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6254066287920239840">Hapi lidhjet në aplikacion në vend të shfletuesit.</translation>
 <translation id="625491139841322297">{count,plural, =1{Rishiko skedën}other{Rishiko të gjitha skedat}}</translation>
@@ -793,8 +803,10 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
 <translation id="6321526113093607004">Shto te faqeshënuesit</translation>
 <translation id="6324669097367352121">Cilësimet e identifikimit</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
 <translation id="633809752005859102">Diçka shkoi me të vërtetë keq. Do të merremi ne me këtë.</translation>
+<translation id="6339793034470834130">Për të përdorur Web Inspector, lidhu me Safari në kompjuterin tënd duke përdorur një kabllo dhe qasu te telefoni yt iPhone nga menyja Develop. Mund ta aktivizosh menynë Develop në seksionin Advanced të cilësimeve të Safari në kompjuterin tënd.</translation>
 <translation id="6340285871011301182">Përkthimi i pjesshëm nuk ofrohet.</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6344783595350022745">Pastro tekstin</translation>
@@ -802,6 +814,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6347953390226388422">{count,plural, =1{Kjo adresë do të fshihet nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}other{Këto adresa do të fshihen nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}}</translation>
 <translation id="634878792104344809">Sinkronizo fjalëkalimet, historikun tënd etj. në të gjitha pajisjet e tua</translation>
 <translation id="6348855835728304880">Qasu te fjalëkalimet e tua të Chrome dhe më shumë nëpër aplikacione të tjera në këtë pajisje.</translation>
+<translation id="63519665078626091">Për të përdorur Web Inspector, lidhu me Safari në kompjuterin tënd duke përdorur një kabllo dhe qasu te pajisja jote iPad nga menyja Develop. Mund ta aktivizosh menynë Develop në seksionin Advanced të cilësimeve të Safari në kompjuterin tënd.</translation>
 <translation id="6355820205320395730">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Sigurohu që po krijon fjalëkalime të forta. <ph name="BEGIN_LINK" />Shiko më shumë këshilla sigurie.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Ndiq <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Asnjë skedë "e fshehtë"</translation>
@@ -810,16 +823,12 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6366663624406569102">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6377118281273296434">Siguria e sajtit</translation>
-<translation id="6380866119319257197">Nëse e harron frazën e kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Hap vendndodhjen…</translation>
 <translation id="6387994324662817823">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" vetëm në këtë pajisje.</translation>
 <translation id="6389470377220713856">Emri në kartë</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
-<translation id="641799622251403418">Je identifikuar si <ph name="EMAIL" />.
-
-Të dhënat e tua janë koduar me frazën tënde të kalimit për sinkronizimin më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
 <translation id="6429213933892582367">Hap "Opsionet e fjalëkalimeve"</translation>
 <translation id="6434591244308415567">Ndodhi një gabim. Provo përsëri më vonë.</translation>
@@ -850,6 +859,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6530992499366869131">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Vizito një sajt dhe kliko "Ndiq" në "Menynë e Chrome"</translation>
+<translation id="6550675742724504774">Opsionet</translation>
 <translation id="6561262006871132942">Zmadho</translation>
 <translation id="6583087784430677195">Për ta fikur, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Plotësimi automatik i fjalëkalimeve".</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
@@ -895,7 +905,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6807889908376551050">Shfaqi të gjitha...</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6822587385560699678">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="ACCOUNT" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
-<translation id="683022620450280906">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato janë të ruajtura në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
 <translation id="6851516051005285358">Kërko sajtin për desktop</translation>
@@ -1032,6 +1041,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7840771868269352570">Artikujt që zgjodhe do të hiqen.</translation>
 <translation id="7845466610722898">Shfaq listën e leximit</translation>
 <translation id="784551991304901159">Për të parë përmbajtjen, zgjidh "Aktivizo" nga menyja</translation>
+<translation id="7846158885638438868">{count,plural, =1{U ruajt si faqeshënues te "{title}"}other{U ruajtën si faqeshënues te "{title}"}}</translation>
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7856733331829174190">Nuk mundi të shkarkohej</translation>
 <translation id="785938070103630874">Hap fjalëkalimet, mënyrat e pagesës ose adresat etj.</translation>
@@ -1056,10 +1066,11 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="797413074872316787">Për të sinkronizuar dhe personalizuar mes pajisjeve, aktivizo sinkronizimin.</translation>
 <translation id="7978018860671536736">3. Trokit "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
-<translation id="7987685713885608670">Për siguri shtesë, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
+<translation id="7987685713885608670">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="7993619969781047893">Veçoritë në disa sajte mund të ndalojnë së funksionuari</translation>
 <translation id="800361585186029508">Hap URL-të e futura në Google Chrome.</translation>
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
+<translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Përdor gjithmonë lidhje të sigurta</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8023878949384262191">Zgjeron seksionin.</translation>
@@ -1095,13 +1106,12 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8197543752516192074">Përkthe faqen</translation>
 <translation id="8205564605687841303">Anulo</translation>
 <translation id="8206354486702514201">Ky cilësim zbatohet nga administratori yt.</translation>
-<translation id="821809831108207540">Për të personalizuar furnizimin tënd të "Zbulo" dhe Chrome, identifikohu dhe aktivizo sinkronizimin.</translation>
 <translation id="8225985093977202398">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="8237382152611443140">Hap "Cilësimet e plotësimit automatik të fjalëkalimit"</translation>
 <translation id="8248969482078657578">Skedat joaktive të ndihmojnë të ruash përqendrimin</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Vetëm në këtë pajisje</translation>
+<translation id="826614135184049678">Ke dalë nga llogaria jote, <ph name="USER_NAME" />, si pjesë e rivendosjes së pajisjes iPad. Për t'u identifikuar përsëri, trokit te "Vazhdo" më poshtë.</translation>
 <translation id="8271720166617117963">Pranoje dhe identifikohu</translation>
 <translation id="8278938988428169257">Fut një fjalë ose një frazë</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1150,6 +1160,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8620640915598389714">Redakto</translation>
 <translation id="8626393685701737946">Mund të ndryshosh pamjen e parazgjedhur të sajtit në desktop te Cilësimet &gt; Cilësimet e përmbajtjes</translation>
 <translation id="8636825310635137004">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="8654802032646794042">Anulo</translation>
 <translation id="8663764600409216912">Po përdor fjalëkalime që duken të vështira për t'u hamendësuar</translation>
 <translation id="8668210798914567634">Kjo faqe është ruajtur në "Listën tënde të leximit".</translation>
@@ -1202,6 +1213,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8952559610785099500">Shto fjalëkalimin</translation>
 <translation id="8953046091948372197">Këtu do të gjesh fjalëkalimet e tua</translation>
 <translation id="895541991026785598">Raporto një problem</translation>
+<translation id="8961757677053809960">Të hiqet paralajmërimi?</translation>
 <translation id="8971545611707025079">Kontrollo përsëri</translation>
 <translation id="8974714402877957201">1. Hap "Cilësimet e iPad"</translation>
 <translation id="8976382372951310360">Ndihma</translation>
@@ -1215,6 +1227,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>
+<translation id="9043368763795653245">Për të personalizuar furnizimin tënd të "Zbulo" dhe Chrome, aktivizo sinkronizimin.</translation>
 <translation id="9055772144595778347">Nuk mund të identifikohet</translation>
 <translation id="9055960261314198756">Mbrojtja e përmirësuar është joaktive</translation>
 <translation id="9057972802061533987">Nuk mund të ndiqet. Ndodhi një gabim.</translation>

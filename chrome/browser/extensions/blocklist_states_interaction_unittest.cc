@@ -58,8 +58,7 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
   void SetOmahaBlocklistStateForExtension(const std::string& extension_id,
                                           const std::string& omaha_attribute,
                                           bool value) {
-    base::Value attributes(base::Value::Type::DICT);
-    attributes.SetBoolKey(omaha_attribute, value);
+    auto attributes = base::Value::Dict().Set(omaha_attribute, value);
     service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
 

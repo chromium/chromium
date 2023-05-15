@@ -246,11 +246,14 @@ PrivacySandboxService::PrivacySandboxService(
     // Disable trials prefs.
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
 
-    // Disable M1 prefs.
+    // Disable M1 prefs. Measurement pref should not be reset when restricted
+    // notice feature is enabled.
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              false);
+    if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                false);
+    }
 
     // Clear any recorded consent information.
     pref_service_->ClearPref(prefs::kPrivacySandboxTopicsConsentGiven);
@@ -259,6 +262,15 @@ PrivacySandboxService::PrivacySandboxService(
         prefs::kPrivacySandboxTopicsConsentLastUpdateReason);
     pref_service_->ClearPref(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
+  }
+
+  // kRestricted prompt suppression reason must be cleared at startup when
+  // restricted notice feature is enabled.
+  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get() &&
+      static_cast<PromptSuppressedReason>(
+          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) ==
+          PromptSuppressedReason::kRestricted) {
+    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
   // Check for FPS pref init at each startup.
@@ -359,6 +371,13 @@ void PrivacySandboxService::PromptActionOccurredM1(
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
+  } else if (PromptAction::kRestrictedNoticeAcknowledge == action ||
+             PromptAction::kRestrictedNoticeOpenSettings == action) {
+    CHECK(privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get());
+    pref_service_->SetBoolean(
+        prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                              true);
   }
 }
 
@@ -422,6 +441,10 @@ bool PrivacySandboxService::IsPrivacySandboxManaged() {
 
 bool PrivacySandboxService::IsPrivacySandboxRestricted() {
   return privacy_sandbox_settings_->IsPrivacySandboxRestricted();
+}
+
+bool PrivacySandboxService::IsRestrictedNoticeEnabled() {
+  return privacy_sandbox_settings_->IsRestrictedNoticeEnabled();
 }
 
 void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
@@ -677,6 +700,14 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
           PromptStartupState::kROWNoticeFlowCompleted);
       return;
     }
+
+    case PromptSuppressedReason::kNoticeShownToGuardian: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::
+              kRestrictedNoticeNotShownDueToNoticeShownToGuardian);
+      return;
+    }
   }
 
   // Prompt was not suppressed explicitly at this point.
@@ -687,6 +718,54 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
         PromptStartupState::kPromptNotShownDueToManagedState);
+    return;
+  }
+
+  // Check for users waiting for graduation: If a user was ever reported as both
+  // restricted and unrestricted it means they are ready for graduation.
+  const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
+      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
+  const bool user_reported_restricted =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
+  const bool user_reported_unrestricted =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Unrestricted);
+
+  if (user_reported_restricted && user_reported_unrestricted) {
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        restricted_notice_acknowledged
+            ? PromptStartupState::
+                  kWaitingForGraduationRestrictedNoticeFlowCompleted
+            : PromptStartupState::
+                  kWaitingForGraduationRestrictedNoticeFlowNotCompleted);
+
+    return;
+  }
+
+  const bool row_notice_acknowledged =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged);
+  const bool eaa_notice_acknowledged =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged);
+  // Restricted Notice
+  // Note that ordering is important: one of consent or notice will always be
+  // required when the restricted prompt is shown, and both return
+  // unconditionally.
+  if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
+    // Acknowledgement of any of the prompt types implies acknowledgement of the
+    // restricted notice as well.
+    if (row_notice_acknowledged || eaa_notice_acknowledged) {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::
+              kRestrictedNoticeNotShownDueToFullNoticeAcknowledged);
+
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        restricted_notice_acknowledged
+            ? PromptStartupState::kRestrictedNoticeFlowCompleted
+            : PromptStartupState::kRestrictedNoticePromptWaiting);
     return;
   }
 
@@ -704,9 +783,7 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     // Consent decision made at this point.
 
     // Notice Acknowledged
-    const bool notice_acknowledged = pref_service_->GetBoolean(
-        prefs::kPrivacySandboxM1EEANoticeAcknowledged);
-    if (notice_acknowledged) {
+    if (eaa_notice_acknowledged) {
       base::UmaHistogramEnumeration(
           privacy_sandbox_prompt_startup_histogram,
           topics_enabled
@@ -722,9 +799,6 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
 
   // ROW
   if (privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get()) {
-    const bool row_notice_acknowledged = pref_service_->GetBoolean(
-        prefs::kPrivacySandboxM1RowNoticeAcknowledged);
-
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
         row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
@@ -1331,11 +1405,35 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
 
   // If the Privacy Sandbox is restricted, set the suppression reason as such,
   // and do not show a prompt.
-  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+  if (privacy_sandbox_settings->IsPrivacySandboxRestricted() &&
+      !privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
     pref_service->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kRestricted));
     return PromptType::kNone;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+    CHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get() ||
+          privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+    if (!pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged) &&
+        !pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1EEANoticeAcknowledged) &&
+        !pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+      if (privacy_sandbox_settings->IsSubjectToM1NoticeRestricted()) {
+        return PromptType::kM1NoticeRestricted;
+      }
+      if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+        pref_service->SetInteger(
+            prefs::kPrivacySandboxM1PromptSuppressed,
+            static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
+        pref_service->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                 true);
+        return PromptType::kNone;
+      }
+    }
   }
 
   if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
@@ -1382,9 +1480,11 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
     return PromptType::kNone;
   }
 
-  // If the notice has already been acknowledged, do not show a prompt.
-  // Else, show the row notice prompt.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+  // If either the ROW notice or the restricted notice has already been
+  // acknowledged, do not show a prompt. Else, show the row notice prompt.
+  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
+      pref_service->GetBoolean(
+          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged)) {
     return PromptType::kNone;
   } else {
     return PromptType::kM1NoticeROW;
@@ -1626,6 +1726,16 @@ void PrivacySandboxService::RecordPromptActionMetrics(
     case (PromptAction::kNoticeMoreButtonClicked): {
       base::RecordAction(base::UserMetricsAction(
           "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
+      break;
+    }
+    case (PromptAction::kRestrictedNoticeAcknowledge): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
+      break;
+    }
+    case (PromptAction::kRestrictedNoticeOpenSettings): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
       break;
     }
   }

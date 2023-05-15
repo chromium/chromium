@@ -4,15 +4,20 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/mock_callback.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -22,7 +27,7 @@ namespace {
 
 struct FormatPair {
   ui::ClipboardInternalFormat clipboard_format;
-  ClipboardHistoryItem::DisplayFormat display_format;
+  crosapi::mojom::ClipboardHistoryDisplayFormat display_format;
 };
 
 }  // namespace
@@ -99,6 +104,61 @@ TEST_F(ClipboardHistoryItemTest, DisplayText) {
   EXPECT_EQ(builder.Build().display_text(), u"File.txt, Other File.txt");
 }
 
+// Verifies that a callback can be added to an item to run iff the item's
+// display image is updated.
+TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
+  // Create a clipboard history item.
+  ClipboardHistoryItemBuilder builder;
+  builder.SetFormat(ui::ClipboardInternalFormat::kHtml);
+  ClipboardHistoryItem item = builder.Build();
+  EXPECT_EQ(item.display_format(),
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml);
+  ASSERT_TRUE(item.display_image().has_value());
+  EXPECT_EQ(item.display_image().value(),
+            clipboard_history_util::GetHtmlPreviewPlaceholder());
+
+  {
+    SCOPED_TRACE("Set a callback that is run.");
+    // Set a callback to be notified when the item's display image is updated.
+    base::MockCallback<base::RepeatingClosure> callback;
+    auto subscription = item.AddDisplayImageUpdatedCallback(callback.Get());
+    EXPECT_CALL(callback, Run());
+
+    // Update the item's display image. The callback should be run.
+    item.SetDisplayImage(ui::ImageModel::FromImage(gfx::test::CreateImage()));
+
+    // Verify that the display image was, in fact, updated.
+    EXPECT_NE(item.display_image().value(),
+              clipboard_history_util::GetHtmlPreviewPlaceholder());
+  }
+
+  {
+    SCOPED_TRACE("Set a callback that is not run because the item was copied.");
+    base::MockCallback<base::RepeatingClosure> callback;
+    auto subscription = item.AddDisplayImageUpdatedCallback(callback.Get());
+    EXPECT_CALL(callback, Run()).Times(0);
+
+    // Copy the item and update the new item's display image. The callback
+    // should not be run.
+    ClipboardHistoryItem copied_item(item);
+    copied_item.SetDisplayImage(
+        ui::ImageModel::FromImage(gfx::test::CreateImage()));
+  }
+
+  {
+    SCOPED_TRACE("Set a callback that is not run because the item was moved.");
+    base::MockCallback<base::RepeatingClosure> callback;
+    auto subscription = item.AddDisplayImageUpdatedCallback(callback.Get());
+    EXPECT_CALL(callback, Run()).Times(0);
+
+    // Move the item and update the new item's display image. The callback
+    // should not be run.
+    ClipboardHistoryItem moved_item(std::move(item));
+    moved_item.SetDisplayImage(
+        ui::ImageModel::FromImage(gfx::test::CreateImage()));
+  }
+}
+
 class ClipboardHistoryItemDisplayTest
     : public ClipboardHistoryItemTest,
       public testing::WithParamInterface<FormatPair> {
@@ -109,7 +169,7 @@ class ClipboardHistoryItemDisplayTest
   ui::ClipboardInternalFormat GetClipboardFormat() const {
     return GetParam().clipboard_format;
   }
-  ClipboardHistoryItem::DisplayFormat GetDisplayFormat() const {
+  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
     return GetParam().display_format;
   }
 
@@ -130,18 +190,20 @@ class ClipboardHistoryItemDisplayTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClipboardHistoryItemDisplayTest,
-    ::testing::Values(FormatPair{ui::ClipboardInternalFormat::kText,
-                                 ClipboardHistoryItem::DisplayFormat::kText},
-                      FormatPair{ui::ClipboardInternalFormat::kPng,
-                                 ClipboardHistoryItem::DisplayFormat::kPng},
-                      FormatPair{ui::ClipboardInternalFormat::kHtml,
-                                 ClipboardHistoryItem::DisplayFormat::kHtml},
-                      FormatPair{ui::ClipboardInternalFormat::kFilenames,
-                                 ClipboardHistoryItem::DisplayFormat::kFile}));
+    ::testing::Values(
+        FormatPair{ui::ClipboardInternalFormat::kText,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
+        FormatPair{ui::ClipboardInternalFormat::kPng,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
+        FormatPair{ui::ClipboardInternalFormat::kHtml,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
+        FormatPair{ui::ClipboardInternalFormat::kFilenames,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}));
 
 TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
   const auto& maybe_icon = item().icon();
-  if (GetDisplayFormat() == ClipboardHistoryItem::DisplayFormat::kFile) {
+  if (GetDisplayFormat() ==
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     ASSERT_TRUE(maybe_icon.has_value());
     EXPECT_TRUE(maybe_icon.value().IsVectorIcon());
   } else {
@@ -152,12 +214,14 @@ TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
 TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
   const auto& maybe_image = item().display_image();
   switch (GetDisplayFormat()) {
-    case ClipboardHistoryItem::DisplayFormat::kText:
-    case ClipboardHistoryItem::DisplayFormat::kFile:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+      NOTREACHED_NORETURN();
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       EXPECT_FALSE(maybe_image);
       break;
-    case ClipboardHistoryItem::DisplayFormat::kPng:
-    case ClipboardHistoryItem::DisplayFormat::kHtml:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       ASSERT_TRUE(maybe_image);
       EXPECT_TRUE(maybe_image.value().IsImage());
       break;

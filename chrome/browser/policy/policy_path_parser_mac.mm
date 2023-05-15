@@ -5,10 +5,8 @@
 #include "chrome/browser/policy/policy_path_parser.h"
 
 #import <Cocoa/Cocoa.h>
-#include <stddef.h>
-#import <SystemConfiguration/SCDynamicStore.h>
-#import <SystemConfiguration/SCDynamicStoreCopySpecific.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#include <stddef.h>
 
 #include <string>
 
@@ -20,9 +18,11 @@
 #include "build/branding_buildflags.h"
 #include "components/policy/policy_constants.h"
 
-namespace policy {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
-namespace path_parser {
+namespace policy::path_parser {
 
 const char kUserNamePolicyVarName[] = "${user_name}";
 const char kMachineNamePolicyVarName[] = "${machine_name}";
@@ -31,7 +31,7 @@ const char kMacDocumentsFolderVarName[] = "${documents}";
 
 struct MacFolderNamesToSPDMapping {
   const char* name;
-  NSSearchPathDirectory id;
+  NSSearchPathDirectory search_path_directory;
 };
 
 // Mapping from variable names to MacOS NSSearchPathDirectory ids.
@@ -57,10 +57,10 @@ base::FilePath::StringType ExpandPathVariables(
   for (const auto& mapping : mac_folder_mapping) {
     size_t position = result.find(mapping.name);
     if (position != std::string::npos) {
-      NSArray* searchpaths = NSSearchPathForDirectoriesInDomains(
-          mapping.id, NSAllDomainsMask, true);
-      if ([searchpaths count] > 0) {
-        NSString* variable_value = searchpaths[0];
+      NSArray<NSString*>* search_paths = NSSearchPathForDirectoriesInDomains(
+          mapping.search_path_directory, NSAllDomainsMask, true);
+      if (search_paths.count > 0) {
+        NSString* variable_value = search_paths[0];
         result.replace(position, strlen(mapping.name),
                        base::SysNSStringToUTF8(variable_value));
       }
@@ -82,11 +82,11 @@ base::FilePath::StringType ExpandPathVariables(
     SCDynamicStoreContext context = {0, nullptr, nullptr, nullptr};
     base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
         kCFAllocatorDefault, CFSTR("policy_subsystem"), nullptr, &context));
-    base::ScopedCFTypeRef<CFStringRef> machinename(
+    base::ScopedCFTypeRef<CFStringRef> machine_name(
         SCDynamicStoreCopyLocalHostName(store));
-    if (machinename) {
+    if (machine_name) {
       result.replace(position, strlen(kMachineNamePolicyVarName),
-                     base::SysCFStringRefToUTF8(machinename));
+                     base::SysCFStringRefToUTF8(machine_name));
     } else {
       int error = SCError();
       LOG(ERROR) << "Machine name variable can not be resolved. Error: "
@@ -128,6 +128,4 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
   *user_data_dir = base::FilePath(string_value);
 }
 
-}  // namespace path_parser
-
-}  // namespace policy
+}  // namespace policy::path_parser

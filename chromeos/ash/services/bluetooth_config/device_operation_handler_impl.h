@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
@@ -47,8 +48,8 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  DeviceNameManager* device_name_manager_;
-  FastPairDelegate* fast_pair_delegate_;
+  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_;
+  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
 
   base::Time last_reconnection_attempt_start_;
 

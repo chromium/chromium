@@ -9,9 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "chrome/browser/media/router/providers/cast/mock_mirroring_activity.h"
@@ -24,7 +22,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -318,24 +315,12 @@ TEST_F(CastMediaRouteProviderTest, GetState) {
   }));
 }
 
+// MediaRemotingWithoutFullscreen is enabled on Win/Mac/Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
   MediaSinkInternal cc = CreateCastSinkWithModelName("Chromecast");
   MediaSinkInternal cc_ultra = CreateCastSinkWithModelName("Chromecast Ultra");
   MediaSinkInternal nest = CreateCastSinkWithModelName("Nest");
-
-  // It should not update sinks for RemotePlayback MediaSource when the feature
-  // is disabled.
-  EXPECT_CALL(mock_router_, OnSinksReceived(_, _, _, _)).Times(0);
-  provider_->OnSinkQueryUpdated(
-      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=aac",
-      {cc, cc_ultra, nest});
-  base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&mock_router_);
-
-  // Enable the feature and it should return sinks compatible with the
-  // RemotePlayback MediaSource.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   EXPECT_CALL(mock_router_,
@@ -385,4 +370,16 @@ TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&mock_router_);
 }
+#else
+// MediaRemotingWithoutFullscreen is disabled on other desktop platforms. The
+// Cast MRP should not update sinks for RemotePlayback MediaSource.
+TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
+  EXPECT_CALL(mock_router_, OnSinksReceived(_, _, _, _)).Times(0);
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=aac",
+      {CreateCastSinkWithModelName("Chromecast")});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+}
+#endif
 }  // namespace media_router

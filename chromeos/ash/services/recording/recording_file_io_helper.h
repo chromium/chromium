@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -70,7 +71,7 @@ class RecordingFileIoHelper {
   // The `RecordingEncoder` that owns this helper (either directly or
   // indirectly) which acts as a delegate of this class to notify with any IO
   // errors.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Once this value becomes <= 0, we trigger a remaining disk space poll.
   // Initialized to 0, so that we poll the disk space on the very first write

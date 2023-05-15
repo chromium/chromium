@@ -386,8 +386,8 @@ bool JsonManifest::Init(const std::string& manifest_json_data,
       base::JSONReader::ReadAndReturnValueWithError(manifest_json_data);
   if (!parsed_json.has_value()) {
     error_info->error = PP_NACL_ERROR_MANIFEST_PARSING;
-    error_info->string = std::string("manifest JSON parsing failed: ") +
-                         parsed_json.error().message;
+    error_info->string =
+        "manifest JSON parsing failed: " + parsed_json.error().message;
     return false;
   }
   base::Value json_data = std::move(*parsed_json);

@@ -42,9 +42,6 @@ declare_args() {
   #  and with this switch, clang emits it like this:
   #    foo/bar.cc:12:34: error: something went wrong
   use_clang_diagnostics_format = false
-
-  # Indicates whether to use /pdbpagesize:8192 to allow PDBs larger than 4 GiB.
-  use_large_pdbs = true
 }
 
 # This is included by reference in the //build/config/compiler config that
@@ -171,14 +168,14 @@ config("compiler") {
     ldflags += [ "/lldignoreenv" ]
   }
 
-  if (use_large_pdbs) {
-    # This allows PDBs up to 8 GiB in size. This requires lld-link.exe or
-    # link.exe from VS 2022 or later.
-    if (!defined(configs)) {
-      configs = []
-    }
-    configs += [ ":pdb_larger_than_4gb" ]
-  }
+  # Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
+  # to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
+  # which is a PDB limit that was hit in https://crbug.com/1406510. The page size
+  # can easily be increased in the future to allow even larger PDBs or larger
+  # block maps.
+  # This flag requires lld-link.exe or link.exe from VS 2022 or later to create
+  # the PDBs, and tools from circa 22H2 or later to consume the PDBs.
+  ldflags += [ "/pdbpagesize:8192" ]
 
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
@@ -330,11 +327,6 @@ config("common_linker_setup") {
       "/verbose:incr",
     ]
   }
-}
-
-# Flags that should be applied to building .exe files but not .dll files.
-config("exe_flags") {
-  rustflags = [ "-Ctarget-feature=+crt-static" ]
 }
 
 config("default_cfg_compiler") {
@@ -509,11 +501,25 @@ config("dynamic_crt") {
   if (is_debug) {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
+
+    # /MDd specifies msvcrtd.lib as the CRT library. Rust needs to agree, so
+    # we specify it explicitly.
+    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
+    # instead tell rustc which CRT to use (static/dynamic + release/debug).
+    rustflags = [ "-Clink-arg=msvcrtd.lib" ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
     }
   } else {
     cflags = [ "/MD" ]
+
+    # /MD specifies msvcrt.lib as the CRT library. Rust needs to agree, so
+    # we specify it explicitly.
+    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
+    # instead tell rustc which CRT to use (static/dynamic + release/debug).
+    rustflags = [ "-Clink-arg=msvcrt.lib" ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
     }
@@ -524,11 +530,25 @@ config("static_crt") {
   if (is_debug) {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
+
+    # /MTd specifies libcmtd.lib as the CRT library. Rust needs to agree, so
+    # we specify it explicitly.
+    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
+    # instead tell rustc which CRT to use (static/dynamic + release/debug).
+    rustflags = [ "-Clink-arg=libcmtd.lib" ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
     }
   } else {
     cflags = [ "/MT" ]
+
+    # /MT specifies libcmt.lib as the CRT library. Rust needs to agree, so
+    # we specify it explicitly.
+    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
+    # instead tell rustc which CRT to use (static/dynamic + release/debug).
+    rustflags = [ "-Clink-arg=libcmt.lib" ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
     }
@@ -607,16 +627,4 @@ config("lean_and_mean") {
 
 config("nominmax") {
   defines = [ "NOMINMAX" ]
-}
-
-# Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
-# to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
-# which is a PDB limit that was hit in https://crbug.com/1406510. The page size
-# can easily be increased in the future to allow even larger PDBs or larger
-# block maps.
-config("pdb_larger_than_4gb") {
-  if (!defined(ldflags)) {
-    ldflags = []
-  }
-  ldflags += [ "/pdbpagesize:8192" ]
 }

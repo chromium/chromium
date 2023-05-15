@@ -23,17 +23,6 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
 }
 
 // static
-void WebV8Features::EnableSharedArrayBuffer() {
-  static bool shared_array_buffer_enabled = false;
-  if (shared_array_buffer_enabled)
-    return;
-
-  shared_array_buffer_enabled = true;
-  constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
-  v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
-}
-
-// static
 void WebV8Features::EnableMojoJSAndUseBroker(
     v8::Local<v8::Context> context,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {

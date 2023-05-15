@@ -12,6 +12,10 @@
 #include <sys/types.h>
 #include <sys/utsname.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // The "~~" prefixes are replaced with the home directory of the
@@ -44,50 +48,73 @@ NSString* const kUserMasterPrefsPath =
      "Google Chrome Master Preferences";
 
 // Condensed from chromium's base/mac/mac_util.mm.
-bool IsOSXVersionSupported() {
-  // On 10.6, Gestalt() was observed to be able to spawn threads (see
-  // http://crbug.com/53200). Don't call Gestalt().
+bool IsMacOSVersionSupported() {
+  // base::OperatingSystemVersionNumbers() at one time called Gestalt(), which
+  // was observed to be able to spawn threads (see https://crbug.com/53200).
+  // Nowadays that function calls -[NSProcessInfo operatingSystemVersion], whose
+  // current implementation does things like hit the file system, which is
+  // possibly a blocking operation. Either way, it's overkill for what needs to
+  // be done here.
+  //
+  // uname, on the other hand, is implemented as a simple series of sysctl
+  // system calls to obtain the relevant data from the kernel. The data is
+  // compiled right into the kernel, so no threads or blocking or other
+  // funny business is necessary.
+
   struct utsname uname_info;
-  if (uname(&uname_info) != 0)
+  if (uname(&uname_info) != 0) {
     return false;
-  if (strcmp(uname_info.sysname, "Darwin") != 0)
+  }
+  if (strcmp(uname_info.sysname, "Darwin") != 0) {
     return false;
+  }
 
   char* dot = strchr(uname_info.release, '.');
-  if (!dot)
+  if (!dot) {
     return false;
+  }
 
   int darwin_major_version = atoi(uname_info.release);
-  if (darwin_major_version < 6)
+  if (darwin_major_version < 6) {
     return false;
+  }
 
-  // The Darwin major version is always 4 greater than the Mac OS X minor
-  // version for Darwin versions beginning with 6, corresponding to Mac OS X
-  // 10.2.
-  int mac_os_x_minor_version = darwin_major_version - 4;
+  int macos_version;
+  // Darwin major versions 6 through 19 corresponded to macOS versions 10.2
+  // through 10.15. Darwin major version 20 corresponds to macOS version 11.0.
+  // Assume a correspondence between Darwin's major version numbers and macOS
+  // major version numbers.
+  if (darwin_major_version <= 19) {
+    macos_version = 1000 + darwin_major_version - 4;
+  } else {
+    macos_version = 100 * (darwin_major_version - 9);
+  }
 
-  // Chrome is known to work on 10.11 - 10.15.
-  return mac_os_x_minor_version >= 11 && mac_os_x_minor_version <= 15;
+  // Chrome is known to work on 10.13 - 13.x.
+  return macos_version >= 1013 && macos_version < 1400;
 }
 
 // Returns the pid/gid of the logged-in user, even if getuid() claims that the
 // current user is root.
 // Returns nullptr on error.
 passwd* GetRealUserId() {
-  CFDictionaryRef session_info_dict = CGSessionCopyCurrentDictionary();
-  [NSMakeCollectable(session_info_dict) autorelease];
-  if (!session_info_dict)
+  CFDictionaryRef session_info = CGSessionCopyCurrentDictionary();
+  CFAutorelease(session_info);
+  if (!session_info) {
     return nullptr;  // Possibly no screen plugged in.
+  }
 
   CFNumberRef ns_uid =
-      (CFNumberRef)CFDictionaryGetValue(session_info_dict, kCGSessionUserIDKey);
-  if (CFGetTypeID(ns_uid) != CFNumberGetTypeID())
+      (CFNumberRef)CFDictionaryGetValue(session_info, kCGSessionUserIDKey);
+  if (CFGetTypeID(ns_uid) != CFNumberGetTypeID()) {
     return nullptr;
+  }
 
   uid_t uid;
   BOOL success = CFNumberGetValue(ns_uid, kCFNumberSInt32Type, &uid);
-  if (!success)
+  if (!success) {
     return nullptr;
+  }
 
   return getpwuid(uid);
 }
@@ -96,8 +123,9 @@ enum TicketKind { kSystemTicket, kUserTicket };
 
 // Replaces "~~" with |home_dir|.
 NSString* AdjustHomedir(NSString* s, const char* home_dir) {
-  if (![s hasPrefix:@"~~"])
+  if (![s hasPrefix:@"~~"]) {
     return s;
+  }
   NSString* ns_home_dir = @(home_dir);
   return [ns_home_dir stringByAppendingString:[s substringFromIndex:2]];
 }
@@ -107,11 +135,11 @@ NSString* AdjustHomedir(NSString* s, const char* home_dir) {
 BOOL FindChromeTicket(TicketKind kind,
                       const passwd* user,
                       NSString** chrome_path) {
-  if (chrome_path)
+  if (chrome_path) {
     *chrome_path = nil;
+  }
 
-  // Don't use Objective-C 2 loop syntax, in case an installer runs on 10.4.
-  NSMutableArray* keystone_paths = [NSMutableArray
+  NSMutableArray<NSString*>* keystone_paths = [NSMutableArray
       arrayWithObjects:kSystemKsadminPath, kSystemKsadminPathOld, nil];
   if (kind == kUserTicket) {
     [keystone_paths insertObject:AdjustHomedir(kUserKsadminPath, user->pw_dir)
@@ -120,19 +148,18 @@ BOOL FindChromeTicket(TicketKind kind,
         insertObject:AdjustHomedir(kUserKsadminPathOld, user->pw_dir)
              atIndex:1];
   }
-  NSEnumerator* e = [keystone_paths objectEnumerator];
-  id ks_path;
-  while ((ks_path = [e nextObject])) {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:ks_path])
-      continue;
 
-    NSTask* task = nil;
+  for (NSString* path in keystone_paths) {
+    if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
+      continue;
+    }
+
     NSString* string = nil;
     bool ksadmin_ran_successfully = false;
 
     @try {
-      task = [[NSTask alloc] init];
-      [task setLaunchPath:ks_path];
+      NSTask* task = [[NSTask alloc] init];
+      task.launchPath = path;
 
       NSArray* arguments = @[
         kind == kUserTicket ? @"--user-store" : @"--system-store",
@@ -142,32 +169,30 @@ BOOL FindChromeTicket(TicketKind kind,
       ];
       if (geteuid() == 0 && kind == kUserTicket) {
         NSString* run_as = @(user->pw_name);
-        [task setLaunchPath:@"/usr/bin/sudo"];
-        arguments = [@[ @"-u", run_as, ks_path ]
-            arrayByAddingObjectsFromArray:arguments];
+        task.launchPath = @"/usr/bin/sudo";
+        arguments =
+            [@[ @"-u", run_as, path ] arrayByAddingObjectsFromArray:arguments];
       }
-      [task setArguments:arguments];
+      task.arguments = arguments;
 
       NSPipe* pipe = [NSPipe pipe];
-      [task setStandardOutput:pipe];
+      task.standardOutput = pipe;
 
-      NSFileHandle* file = [pipe fileHandleForReading];
+      NSFileHandle* file = pipe.fileHandleForReading;
 
       [task launch];
 
       NSData* data = [file readDataToEndOfFile];
       [task waitUntilExit];
 
-      ksadmin_ran_successfully = [task terminationStatus] == 0;
-      string =
-          [[[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding] autorelease];
+      ksadmin_ran_successfully = task.terminationStatus == 0;
+      string = [[NSString alloc] initWithData:data
+                                     encoding:NSUTF8StringEncoding];
     } @catch (id exception) {
       // Most likely, ks_path didn't exist.
     }
-    [task release];
 
-    if (ksadmin_ran_successfully && [string length] > 0) {
+    if (ksadmin_ran_successfully && string.length > 0) {
       // If the user deleted chrome, it doesn't get unregistered in keystone.
       // Check if the path keystone thinks chrome is at still exists, and if not
       // treat this as "chrome isn't installed". Sniff for
@@ -176,29 +201,34 @@ BOOL FindChromeTicket(TicketKind kind,
       // a user chrome on top of a system ticket produces a non-autoupdating
       // chrome.
       NSRange start = [string rangeOfString:@"\n\txc=<KSPathExistenceChecker:"];
-      if (start.location == NSNotFound && start.length == 0)
+      if (start.location == NSNotFound && start.length == 0) {
         return YES;  // Err on the cautious side.
+      }
       string = [string substringFromIndex:start.location];
 
       start = [string rangeOfString:@"path="];
-      if (start.location == NSNotFound && start.length == 0)
+      if (start.location == NSNotFound && start.length == 0) {
         return YES;  // Err on the cautious side.
+      }
       string = [string substringFromIndex:start.location];
 
       NSRange end = [string rangeOfString:@".app>\n\t"];
-      if (end.location == NSNotFound && end.length == 0)
+      if (end.location == NSNotFound && end.length == 0) {
         return YES;
+      }
 
       string = [string substringToIndex:NSMaxRange(end) - [@">\n\t" length]];
       string = [string substringFromIndex:start.length];
 
-      BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:string];
-      if (exists && chrome_path)
+      BOOL exists = [NSFileManager.defaultManager fileExistsAtPath:string];
+      if (exists && chrome_path) {
         *chrome_path = string;
+      }
       // Don't allow reinstallation over a system ticket, even if chrome doesn't
       // exist on disk.
-      if (kind == kSystemTicket)
+      if (kind == kSystemTicket) {
         return YES;
+      }
       return exists;
     }
   }
@@ -224,20 +254,17 @@ BOOL CreatePathToFile(NSString* path, const passwd* user) {
   // user paths just the owner may.
   NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
   if (user) {
-    attributes[NSFilePosixPermissions] =
-        [NSNumber numberWithShort:kUserPermissions];
-    attributes[NSFileOwnerAccountID] = [NSNumber numberWithInt:user->pw_uid];
+    attributes[NSFilePosixPermissions] = @(kUserPermissions);
+    attributes[NSFileOwnerAccountID] = @(user->pw_uid);
   } else {
-    attributes[NSFilePosixPermissions] =
-        [NSNumber numberWithShort:kAdminPermissions];
+    attributes[NSFilePosixPermissions] = @(kAdminPermissions);
     attributes[NSFileGroupOwnerAccountName] = @"admin";
   }
 
-  NSFileManager* manager = [NSFileManager defaultManager];
-  return [manager createDirectoryAtPath:path
-            withIntermediateDirectories:YES
-                             attributes:attributes
-                                  error:nil];
+  return [NSFileManager.defaultManager createDirectoryAtPath:path
+                                 withIntermediateDirectories:YES
+                                                  attributes:attributes
+                                                       error:nil];
 }
 
 // Tries to write |data| at |user_path|.
@@ -246,8 +273,8 @@ NSString* WriteUserData(NSData* data, NSString* user_path, const passwd* user) {
   user_path = AdjustHomedir(user_path, user->pw_dir);
   if (CreatePathToFile(user_path, user) && [data writeToFile:user_path
                                                   atomically:YES]) {
-    chmod([user_path fileSystemRepresentation], kUserPermissions & ~0111);
-    chown([user_path fileSystemRepresentation], user -> pw_uid, user -> pw_gid);
+    chmod(user_path.fileSystemRepresentation, kUserPermissions & ~0111);
+    chown(user_path.fileSystemRepresentation, user->pw_uid, user->pw_gid);
     return user_path;
   }
   return nil;
@@ -262,10 +289,11 @@ NSString* WriteData(NSData* data,
   // Try system first.
   if (CreatePathToFile(system_path, nullptr) && [data writeToFile:system_path
                                                        atomically:YES]) {
-    chmod([system_path fileSystemRepresentation], kAdminPermissions & ~0111);
+    chmod(system_path.fileSystemRepresentation, kAdminPermissions & ~0111);
     // Make sure the file is owned by group admin.
-    if (group* group = getgrnam("admin"))
-      chown([system_path fileSystemRepresentation], 0, group -> gr_gid);
+    if (group* group = getgrnam("admin")) {
+      chown(system_path.fileSystemRepresentation, 0, group->gr_gid);
+    }
     return system_path;
   }
 
@@ -278,9 +306,10 @@ NSString* WriteBrandCode(const char* brand_code, const passwd* user) {
     kBrandKey : @(brand_code),
   };
   NSData* contents = [NSPropertyListSerialization
-      dataFromPropertyList:brand_dict
+      dataWithPropertyList:brand_dict
                     format:NSPropertyListBinaryFormat_v1_0
-          errorDescription:nil];
+                   options:0
+                     error:nil];
 
   return WriteUserData(contents, kUserBrandPath, user);
 }
@@ -296,8 +325,9 @@ BOOL WriteMasterPrefs(const char* master_prefs_contents,
 
 NSString* PathToFramework(NSString* app_path, NSDictionary* info_plist) {
   NSString* version = info_plist[@"CFBundleShortVersionString"];
-  if (!version)
+  if (!version) {
     return nil;
+  }
   return [NSString pathWithComponents:@[
     app_path, @"Contents", @"Frameworks", @"Google Chrome Framework.framework",
     @"Versions", version
@@ -319,34 +349,40 @@ bool isbrandchar(int c) {
 int GoogleChromeCompatibilityCheck(unsigned* reasons) {
   unsigned local_reasons = 0;
   @autoreleasepool {
-    if (!IsOSXVersionSupported())
+    if (!IsMacOSVersionSupported()) {
       local_reasons |= GCCC_ERROR_OSNOTSUPPORTED;
+    }
 
     NSString* path;
     if (FindChromeTicket(kSystemTicket, nullptr, &path)) {
       local_reasons |= GCCC_ERROR_ALREADYPRESENT;
-      if (!path)  // Ticket points to nothingness.
+      if (!path) {  // Ticket points to nothingness.
         local_reasons |= GCCC_ERROR_ACCESSDENIED;
+      }
     }
 
     passwd* user = GetRealUserId();
-    if (!user)
+    if (!user) {
       local_reasons |= GCCC_ERROR_ACCESSDENIED;
-    else if (FindChromeTicket(kUserTicket, user, nullptr))
+    } else if (FindChromeTicket(kUserTicket, user, nullptr)) {
       local_reasons |= GCCC_ERROR_ALREADYPRESENT;
+    }
 
-    if ([[NSFileManager defaultManager] fileExistsAtPath:kChromeInstallPath])
+    if ([NSFileManager.defaultManager fileExistsAtPath:kChromeInstallPath]) {
       local_reasons |= GCCC_ERROR_ALREADYPRESENT;
+    }
 
     if ((local_reasons & GCCC_ERROR_ALREADYPRESENT) == 0) {
-      if (![[NSFileManager defaultManager]
-              isWritableFileAtPath:@"/Applications"])
+      if (![NSFileManager.defaultManager
+              isWritableFileAtPath:@"/Applications"]) {
         local_reasons |= GCCC_ERROR_ACCESSDENIED;
+      }
     }
   }
 
-  if (reasons != nullptr)
+  if (reasons != nullptr) {
     *reasons = local_reasons;
+  }
   return local_reasons == 0;
 }
 
@@ -354,13 +390,15 @@ int InstallGoogleChrome(const char* source_path,
                         const char* brand_code,
                         const char* master_prefs_contents,
                         unsigned master_prefs_contents_size) {
-  if (!GoogleChromeCompatibilityCheck(nullptr))
+  if (!GoogleChromeCompatibilityCheck(nullptr)) {
     return 0;
+  }
 
   @autoreleasepool {
     passwd* user = GetRealUserId();
-    if (!user)
+    if (!user) {
       return 0;
+    }
 
     NSString* app_path = @(source_path);
     NSString* info_plist_path =
@@ -376,7 +414,7 @@ int InstallGoogleChrome(const char* source_path,
     }
 
     @try {
-      NSTask* task = [[[NSTask alloc] init] autorelease];
+      NSTask* task = [[NSTask alloc] init];
 
       // install.sh tries to make the installed app admin-writable, but
       // only when it's not run as root.
@@ -387,7 +425,7 @@ int InstallGoogleChrome(const char* source_path,
         // dropped groups).
         // Since geteuid() is 0, su won't prompt for a password.
         NSString* run_as = @(user->pw_name);
-        [task setLaunchPath:@"/usr/bin/su"];
+        task.launchPath = @"/usr/bin/su";
 
         NSString* single_quote_escape = @"'\"'\"'";
         NSString* install_script_quoted = [install_script
@@ -403,15 +441,15 @@ int InstallGoogleChrome(const char* source_path,
         NSString* install_script_execution = [NSString
             stringWithFormat:@"exec '%@' '%@' '%@'", install_script_quoted,
                              app_path_quoted, install_path_quoted];
-        [task setArguments:@[ run_as, @"-c", install_script_execution ]];
+        task.arguments = @[ run_as, @"-c", install_script_execution ];
       } else {
-        [task setLaunchPath:install_script];
-        [task setArguments:@[ app_path, kChromeInstallPath ]];
+        task.launchPath = install_script;
+        task.arguments = @[ app_path, kChromeInstallPath ];
       }
 
       [task launch];
       [task waitUntilExit];
-      if ([task terminationStatus] != 0) {
+      if (task.terminationStatus != 0) {
         return 0;
       }
     } @catch (id exception) {
@@ -421,20 +459,23 @@ int InstallGoogleChrome(const char* source_path,
     // Set brand code. If Chrome's Info.plist contains a brand code, use that.
     NSString* info_plist_brand = info_plist[kBrandKey];
     if (info_plist_brand &&
-        [info_plist_brand respondsToSelector:@selector(UTF8String)])
+        [info_plist_brand respondsToSelector:@selector(UTF8String)]) {
       brand_code = [info_plist_brand UTF8String];
+    }
 
     BOOL valid_brand_code =
         brand_code && strlen(brand_code) == 4 && isbrandchar(brand_code[0]) &&
         isbrandchar(brand_code[1]) && isbrandchar(brand_code[2]) &&
         isbrandchar(brand_code[3]);
 
-    if (valid_brand_code)
+    if (valid_brand_code) {
       WriteBrandCode(brand_code, user);
+    }
 
     // Write master prefs.
-    if (master_prefs_contents)
+    if (master_prefs_contents) {
       WriteMasterPrefs(master_prefs_contents, master_prefs_contents_size, user);
+    }
 
     // TODO Set default browser if requested.
   }
@@ -444,21 +485,23 @@ int InstallGoogleChrome(const char* source_path,
 int LaunchGoogleChrome() {
   @autoreleasepool {
     passwd* user = GetRealUserId();
-    if (!user)
+    if (!user) {
       return 0;
+    }
 
     NSString* app_path;
 
     NSString* path;
-    if (FindChromeTicket(kUserTicket, user, &path) && path)
+    if (FindChromeTicket(kUserTicket, user, &path) && path) {
       app_path = path;
-    else if (FindChromeTicket(kSystemTicket, nullptr, &path) && path)
+    } else if (FindChromeTicket(kSystemTicket, nullptr, &path) && path) {
       app_path = path;
-    else
+    } else {
       app_path = kChromeInstallPath;
+    }
 
     // NSWorkspace launches processes as the current console owner,
     // even when running with euid of 0.
-    return [[NSWorkspace sharedWorkspace] launchApplication:app_path];
+    return [NSWorkspace.sharedWorkspace launchApplication:app_path];
   }
 }

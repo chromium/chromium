@@ -129,8 +129,7 @@ std::unique_ptr<TabContainer> MakeTabContainer(
     TabDragContext* drag_context) {
   if (base::FeatureList::IsEnabled(features::kSplitTabStrip)) {
     return std::make_unique<CompoundTabContainer>(
-        raw_ref<TabContainerController>::from_ptr(tab_strip),
-        hover_card_controller, drag_context, *tab_strip, tab_strip);
+        *tab_strip, hover_card_controller, drag_context, *tab_strip, tab_strip);
   }
   return std::make_unique<TabContainerImpl>(
       *tab_strip, hover_card_controller, drag_context, *tab_strip, tab_strip);
@@ -604,7 +603,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     int source_view_index = static_cast<int>(
         base::ranges::find(views, source_view) - views.begin());
 
-    const auto should_animate_tab = [=, &views, this](int index_in_views) {
+    const auto should_animate_tab = [&](size_t index_in_views) {
       // If the tab at `index_in_views` is already animating, don't interrupt
       // it.
       if (bounds_animator_.IsAnimating(views[index_in_views]))

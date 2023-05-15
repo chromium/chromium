@@ -44,6 +44,9 @@ static const ax::mojom::Role kRolesToSkip[]{
 // OneShotAccessibilityTreeSearch.
 void GetContentRootNodes(const ui::AXNode* root,
                          std::vector<const ui::AXNode*>* content_root_nodes) {
+  if (!root) {
+    return;
+  }
   std::queue<const ui::AXNode*> queue;
   queue.push(root);
   while (!queue.empty()) {
@@ -127,24 +130,15 @@ void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
   main_content_extractor_->ExtractMainContent(
       snapshot, ukm_source_id,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::UnsafeDanglingUntriaged(
-                         base::raw_ref<const ui::AXTree>(tree))));
+                     weak_ptr_factory_.GetWeakPtr(), tree.GetAXTreeID()));
 }
 
 void AXTreeDistiller::ProcessScreen2xResult(
-    const ui::AXTree& tree,
+    const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // If content nodes were identified, run callback.
-  if (!content_node_ids.empty()) {
-    on_ax_tree_distilled_callback_.Run(tree.GetAXTreeID(), content_node_ids);
-    return;
-  }
+  on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids);
 
-  // Otherwise, try the rules-based approach.
-  DistillViaAlgorithm(tree);
-
-  // TODO(crbug.com/1266555): If still no content nodes were identified, and
+  // TODO(crbug.com/1266555): If no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing
   // the selected nodes.
 }

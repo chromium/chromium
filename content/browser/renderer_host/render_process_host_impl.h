@@ -327,10 +327,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ResumeSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
 
-#if BUILDFLAG(IS_ANDROID)
-  void SetOsSupportForAttributionReporting(
-      attribution_reporting::mojom::OsSupport os_support) override;
-#endif
+  void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport) override;
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
@@ -551,6 +549,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns true if a spare RenderProcessHost should be kept at all times.
   static bool IsSpareProcessKeptAtAllTimes();
+
+  // Iterate over all renderers and clear their in-memory resource cache.
+  static void ClearAllResourceCaches();
 
   // Helper method that allows crash reporting logic to determine if a
   // specific RenderProcessHost is the current spare process.
@@ -952,9 +953,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns a RenderProcessHost that is rendering a URL corresponding to
   // |site_instance| in one of its frames, or that is expecting a navigation to
-  // that SiteInstance.
+  // that SiteInstance. `main_frame_threshold` is an optional parameter to
+  // limit the maximum number of main frames a RenderProcessHost can host.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
-      SiteInstanceImpl* site_instance);
+      SiteInstanceImpl* site_instance,
+      absl::optional<size_t> main_frame_threshold = absl::nullopt);
 
   void NotifyRendererOfLockedStateUpdate();
 

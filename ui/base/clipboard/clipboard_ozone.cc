@@ -19,15 +19,20 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
+#include "base/types/variant_util.h"
 #include "build/build_config.h"
+#include "clipboard_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
@@ -553,7 +558,9 @@ void ClipboardOzone::ReadRTF(ClipboardBuffer buffer,
 void ClipboardOzone::ReadPng(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              ReadPngCallback callback) const {
-  auto clipboard_data = ReadPngInternal(buffer);
+  auto clipboard_data =
+      async_clipboard_ozone_->ReadClipboardDataSetSourceAndWait(buffer,
+                                                                kMimeTypePNG);
 
   if (!IsReadAllowed(GetSource(buffer), data_dst, clipboard_data)) {
     std::move(callback).Run(std::vector<uint8_t>());
@@ -633,16 +640,23 @@ void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
                                                      const ObjectMap& objects) {
   // Just like Non-Backed/X11 implementation does, copy text data from the
   // copy/paste selection to the primary selection.
-  if (buffer == ClipboardBuffer::kCopyPaste && IsSelectionBufferAvailable()) {
-    auto text_iter = objects.find(PortableFormat::kText);
-    if (text_iter != objects.end() && !text_iter->second.data.empty()) {
-      const auto& char_vector = text_iter->second.data[0];
-      async_clipboard_ozone_->PrepareForWriting();
-      if (!char_vector.empty())
-        WriteText(&char_vector.front(), char_vector.size());
-      async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
-    }
+  if (buffer != ClipboardBuffer::kCopyPaste || !IsSelectionBufferAvailable()) {
+    return;
   }
+
+  auto text_iter = objects.find(base::VariantIndexOfType<Data, TextData>());
+  if (text_iter == objects.end()) {
+    return;
+  }
+
+  const auto& text_data = absl::get<TextData>(text_iter->second.data);
+  if (text_data.data.empty()) {
+    return;
+  }
+
+  async_clipboard_ozone_->PrepareForWriting();
+  WriteText(text_data.data);
+  async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
 }
 
 void ClipboardOzone::WritePortableAndPlatformRepresentations(
@@ -661,42 +675,38 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
+    DispatchPortableRepresentation(object.second);
   async_clipboard_ozone_->OfferData(buffer);
 
   WritePortableTextRepresentation(buffer, objects);
 }
 
-void ClipboardOzone::WriteText(const char* text_data, size_t text_len) {
-  std::vector<uint8_t> data(text_data, text_data + text_len);
+void ClipboardOzone::WriteText(base::StringPiece text) {
+  std::vector<uint8_t> data(text.begin(), text.end());
   async_clipboard_ozone_->InsertData(
       std::move(data), {kMimeTypeText, kMimeTypeLinuxText, kMimeTypeLinuxString,
                         kMimeTypeTextUtf8, kMimeTypeLinuxUtf8String});
 }
 
-void ClipboardOzone::WriteHTML(const char* markup_data,
-                               size_t markup_len,
-                               const char* url_data,
-                               size_t url_len) {
-  // `url_data` and `url_len` are not used in this platform.
-  std::vector<uint8_t> data(markup_data, markup_data + markup_len);
+void ClipboardOzone::WriteHTML(base::StringPiece markup,
+                               absl::optional<base::StringPiece> source_url) {
+  std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
 }
 
-void ClipboardOzone::WriteUnsanitizedHTML(const char* markup_data,
-                                          size_t markup_len,
-                                          const char* url_data,
-                                          size_t url_len) {
-  WriteHTML(markup_data, markup_len, url_data, url_len);
+void ClipboardOzone::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
+  WriteHTML(markup, source_url);
 }
 
-void ClipboardOzone::WriteSvg(const char* markup_data, size_t markup_len) {
-  std::vector<uint8_t> data(markup_data, markup_data + markup_len);
+void ClipboardOzone::WriteSvg(base::StringPiece markup) {
+  std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeSvg});
 }
 
-void ClipboardOzone::WriteRTF(const char* rtf_data, size_t data_len) {
-  std::vector<uint8_t> data(rtf_data, rtf_data + data_len);
+void ClipboardOzone::WriteRTF(base::StringPiece rtf) {
+  std::vector<uint8_t> data(rtf.begin(), rtf.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeRTF});
 }
 
@@ -706,14 +716,11 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeURIList});
 }
 
-void ClipboardOzone::WriteBookmark(const char* title_data,
-                                   size_t title_len,
-                                   const char* url_data,
-                                   size_t url_len) {
+void ClipboardOzone::WriteBookmark(base::StringPiece title,
+                                   base::StringPiece url) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
   std::u16string bookmark =
-      base::UTF8ToUTF16(base::StringPiece(url_data, url_len)) + u"\n" +
-      base::UTF8ToUTF16(base::StringPiece(title_data, title_len));
+      base::StrCat({base::UTF8ToUTF16(url) + u"\n" + base::UTF8ToUTF16(title)});
 
   std::vector<uint8_t> data(
       reinterpret_cast<const uint8_t*>(bookmark.data()),
@@ -727,16 +734,23 @@ void ClipboardOzone::WriteWebSmartPaste() {
 }
 
 void ClipboardOzone::WriteBitmap(const SkBitmap& bitmap) {
-  std::vector<unsigned char> output;
-  if (gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, false, &output))
-    async_clipboard_ozone_->InsertData(std::move(output), {kMimeTypePNG});
+  // Encode the bitmap to a PNG from the UI thread. Unfortunately we can't hop
+  // to a background thread to perform the encoding because clipboard writes are
+  // (unfortunately) currently synchronous. We could consider making writes
+  // async, then encode the image on a background sequence. We could also
+  // consider storing the image as a bitmap and only encoding to a PNG on paste
+  // (e.g. see https://crrev.com/c/3260985).
+  std::vector<uint8_t> png_bytes =
+      clipboard_util::EncodeBitmapToPngAcceptJank(bitmap);
+  if (!png_bytes.empty()) {
+    async_clipboard_ozone_->InsertData(std::move(png_bytes), {kMimeTypePNG});
+  }
 }
 
 void ClipboardOzone::WriteData(const ClipboardFormatType& format,
-                               const char* data_data,
-                               size_t data_len) {
-  std::vector<uint8_t> data(data_data, data_data + data_len);
-  async_clipboard_ozone_->InsertData(std::move(data), {format.GetName()});
+                               base::span<const uint8_t> data) {
+  std::vector<uint8_t> owned_data(data.begin(), data.end());
+  async_clipboard_ozone_->InsertData(std::move(owned_data), {format.GetName()});
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -761,13 +775,5 @@ void ClipboardOzone::SetSource(ClipboardBuffer buffer,
   data_src_[buffer] = std::move(data_src);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-base::span<uint8_t> ClipboardOzone::ReadPngInternal(
-    const ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
-
-  return async_clipboard_ozone_->ReadClipboardDataSetSourceAndWait(
-      buffer, kMimeTypePNG);
-}
 
 }  // namespace ui

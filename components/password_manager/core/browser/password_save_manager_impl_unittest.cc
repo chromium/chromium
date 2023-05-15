@@ -155,7 +155,7 @@ class MockFormSaver : public StubFormSaver {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(autofill::AutofillDownloadManager*,
               GetAutofillDownloadManager,
               (),
@@ -1683,8 +1683,8 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted", kTrigger,
-      1);
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      kTrigger, 1);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -85,7 +86,8 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   void MaybeWaitForLoginScreenLoad();
 
  private:
-  FakeUpdateEngineClient* update_engine_client_ = nullptr;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_ =
+      nullptr;
 
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 58
+// Next MinVersion: 59
 
 module arc.mojom;
 
@@ -313,7 +313,7 @@ enum AppCategory {
   kAccessibility = 8,
 };
 
-// Next method ID: 19
+// Next method ID: 21
 // Deprecated method IDs: 1
 interface AppHost {
   // Sends newly added ARC app to Chrome. This message is sent when ARC receives
@@ -396,6 +396,16 @@ interface AppHost {
   // defined by its |intent_uri| and |package_name|.
   [MinVersion=18] OnUninstallShortcut@16(string package_name,
                                          string intent_uri);
+
+  // Notifies that a package installation has a new progress value.
+  [MinVersion=58] OnInstallationProgressChanged@19(string package_name,
+                                                   float progress);
+
+  // Notifies that a package installation session has either become active
+  // (currently downloading or installing) or inactive (installation is
+  // pending or paused).
+  [MinVersion=58] OnInstallationActiveChanged@20(string package_name,
+                                                 bool active);
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
@@ -405,18 +415,8 @@ interface AppInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
 
-  [MinVersion=1] CanHandleResolutionDeprecated@4(
-      string package_name, string activity, Rect dimension) =>
-          (bool can_handle);
-
   // Closes the the given task.
   [MinVersion=4] CloseTask@8(int32 task_id);
-
-  // Requests information about task. Deprecated: b/265158447
-  // Use the kArcPackageNameKey window property to get the package name, and
-  // OnTaskCreated to get the activity.
-  [MinVersion=3] GetTaskInfoDeprecated@6(int32 task_id) =>
-      (string package_name, string activity);
 
   // Sends a request to ARC to install package.
   [MinVersion=8] InstallPackage@11(ArcPackageInfo arcPackageInfo);

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FILTER_OPERATION_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FILTER_OPERATION_RESOLVER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -14,7 +15,6 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
-class ScriptValue;
 
 // Similar to
 // third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h but
@@ -28,9 +28,9 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
 
  public:
   static FilterOperations CreateFilterOperations(
-      ExecutionContext* execution_context,
-      HeapVector<ScriptValue>,
-      ExceptionState&);
+      const V8CanvasFilterInput& filter_init,
+      ExecutionContext& execution_context,
+      ExceptionState& exception_state);
 };
 
 }  // namespace blink

@@ -195,6 +195,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   virtual gfx::CALayerResult GetCALayerErrorCode() const;
 
+  // For Lacros, get damage that was not assigned to any overlay candidates
+  // during ProcessForOverlays.
+  virtual gfx::RectF GetUnassignedDamage() const;
+
  protected:
   OverlayProcessorInterface() = default;
 };

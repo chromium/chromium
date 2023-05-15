@@ -4,7 +4,8 @@
 
 #include "cc/trees/layer_tree_impl.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -26,8 +27,8 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::RectF& rect,
     const gfx::PointF& top,
     const gfx::PointF& bottom) {
-  gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
-                    base::clamp(top.y(), rect.y(), rect.bottom()));
+  gfx::PointF start(std::clamp(top.x(), rect.x(), rect.right()),
+                    std::clamp(top.y(), rect.y(), rect.bottom()));
   gfx::PointF end = start + (bottom - top);
   return {start, end};
 }

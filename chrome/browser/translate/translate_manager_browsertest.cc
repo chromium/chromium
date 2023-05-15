@@ -314,7 +314,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 
     const std::string click_link_js =
         "(function() { document.getElementById('test').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
     // Detect language on the new page
     // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
   // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
   const std::string click_link_js =
       "(function() { "
       "document.getElementById('test-unsupported-language').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
   // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateConflict) {
 
   const std::string click_link_js =
       "(function() { document.getElementById('test-conflict').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateNoHrefLang) {
   const std::string click_link_js =
       "(function() { document.getElementById('test-no-hrefLang').click(); "
       "})();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1343,7 +1343,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1399,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1442,7 +1442,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   const std::string click_link_js =
       "(function() { "
       "document.getElementById('test-unsupported-language').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1491,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test-conflict').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   const std::string click_link_js =
       "(function() { document.getElementById('test-no-hrefLang').click(); "
       "})();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1598,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1926,7 +1926,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   const std::string click_link_js =
       "(function() { document.getElementById('test').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_link_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page
   WaitUntilLanguageDetermined(chrome_translate_client);

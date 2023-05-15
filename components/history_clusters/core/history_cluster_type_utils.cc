@@ -124,6 +124,13 @@ mojom::ClusterPtr ClusterToMojom(const TemplateURLService* template_url_service,
       match_mojom->end = match.second;
       cluster_mojom->label_match_positions.push_back(std::move(match_mojom));
     }
+
+    if (GetConfig().named_new_tab_groups && cluster.raw_label &&
+        (cluster.label_source == history::Cluster::LabelSource::kSearch ||
+         cluster.label_source ==
+             history::Cluster::LabelSource::kContentDerivedEntity)) {
+      cluster_mojom->tab_group_name = base::UTF16ToUTF8(*cluster.raw_label);
+    }
   }
 
   cluster_mojom->from_persistence = cluster.from_persistence;

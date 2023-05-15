@@ -101,8 +101,8 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if BUILDFLAG(ENABLE_PKEYS)
-  internal::PartitionAddressSpace::UninitPkeyPoolForTesting();
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  internal::PartitionAddressSpace::UninitThreadIsolatedPoolForTesting();
 #endif
   internal::g_oom_handling_function = nullptr;
 }
@@ -126,17 +126,6 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
-
-#if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
-     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-void CheckThatSlotOffsetIsZero(uintptr_t address) {
-  // Add kPartitionPastAllocationAdjustment, because
-  // PartitionAllocGetSlotStartInBRPPool will subtract it.
-  PA_CHECK(PartitionAllocGetSlotStartInBRPPool(
-               address + kPartitionPastAllocationAdjustment) == address);
-}
-#endif
 
 }  // namespace internal
 

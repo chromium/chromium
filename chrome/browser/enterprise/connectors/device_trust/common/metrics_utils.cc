@@ -63,7 +63,7 @@ void LogAttestationResult(DTAttestationResult result) {
     VLOG(1) << "Device Trust attestation was successful";
   } else {
     LOG(ERROR) << "Device Trust attestation error: "
-               << AttestationResultToString(result);
+               << AttestationErrorToString(result);
   }
 }
 

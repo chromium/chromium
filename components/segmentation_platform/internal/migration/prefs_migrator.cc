@@ -22,7 +22,7 @@ PrefsMigrator::PrefsMigrator(
 PrefsMigrator::~PrefsMigrator() = default;
 
 void PrefsMigrator::MigrateOldPrefsToNewPrefs() {
-  for (const auto& config : configs_) {
+  for (const auto& config : *configs_) {
     if (!IsPrefMigrationRequired(config.get())) {
       continue;
     }
@@ -69,7 +69,7 @@ void PrefsMigrator::DeleteOldPrefsEntryIfFullyMigrated(
     Config* config,
     absl::optional<SelectedSegment> old_result) {
   // If the model has been migrated, delete the entry from the old prefs.
-  if (metadata_utils::HasMigratedToMultiOutput(config) &&
+  if (!metadata_utils::ConfigUsesLegacyOutput(config) &&
       old_result.has_value()) {
     // Decide when to delete old result.
     old_prefs_->SaveSegmentationResultToPref(config->segmentation_key,

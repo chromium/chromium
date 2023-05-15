@@ -296,11 +296,14 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
 
   const auto* properties =
       GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
-  DCHECK(properties);
+  CHECK(properties);
 
   const TransformPaintPropertyNode* scroll_translation = nullptr;
-  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar))
+  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar)) {
     scroll_translation = properties->ScrollTranslation();
+    CHECK(scroll_translation);
+    CHECK(scroll_translation->ScrollNode());
+  }
 
   auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(scrollbar);
   ScrollbarDisplayItem::Record(context, scrollbar, type, delegate, visual_rect,

@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/exo/surface_observer.h"
 
@@ -73,7 +74,7 @@ class WaylandDmabufFeedbackManager {
   void SendTranche(const WaylandDmabufFeedbackTranche* tranche,
                    wl_resource* resource);
 
-  Display* const display_;
+  const raw_ptr<Display, ExperimentalAsh> display_;
   uint32_t version_;
   IndexedDrmFormatsAndModifiers drm_formats_and_modifiers_;
   std::unique_ptr<base::ReadOnlySharedMemoryRegion> shared_memory_region_;

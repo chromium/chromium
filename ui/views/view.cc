@@ -1354,6 +1354,12 @@ const ui::NativeTheme* View::GetNativeTheme() const {
 }
 
 void View::SetNativeThemeForTesting(ui::NativeTheme* theme) {
+  // In testing, View maybe not have a parent or widget, in this case we set the
+  // `native_theme_` to the global NativeTheme to prevent the DCHECK in
+  // GetNativeTheme().
+  if (!native_theme_ && !parent() && !GetWidget()) {
+    native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
+  }
   ui::NativeTheme* original_native_theme = GetNativeTheme();
   native_theme_ = theme;
   if (native_theme_ != original_native_theme)
@@ -2715,6 +2721,9 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
       views::ElementTrackerViews::GetInstance()->RegisterView(new_element_id,
                                                               this);
     }
+  }
+  for (auto& observer : observers_) {
+    observer.OnViewPropertyChanged(this, key, old_value);
   }
 }
 

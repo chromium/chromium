@@ -6,10 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,11 +22,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/favicon_status.h"
@@ -49,6 +53,8 @@ using content::WebContents;
 const size_t BackForwardMenuModel::kMaxHistoryItems = 12;
 const size_t BackForwardMenuModel::kMaxChapterStops = 5;
 static const int kMaxBackForwardMenuWidth = 700;
+const char kBackNavigationMenuIsOpenedEvent[] =
+    "back_navigation_menu_is_opened";
 
 BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
                                            ModelType model_type)
@@ -213,6 +219,13 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
     base::RecordComputedAction(BuildActionName("ChapterClick", chapter_index));
   }
 
+  CHECK(menu_model_open_timestamp_.has_value());
+  base::TimeDelta time =
+      base::TimeTicks::Now() - menu_model_open_timestamp_.value();
+  base::UmaHistogramLongTimes(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem",
+      time);
+
   absl::optional<size_t> controller_index = MenuIndexToNavEntryIndex(index);
   DCHECK(controller_index.has_value());
 
@@ -229,8 +242,23 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
 
 void BackForwardMenuModel::MenuWillShow() {
   base::RecordComputedAction(BuildActionName("Popup", absl::nullopt));
+  browser_->window()->NotifyFeatureEngagementEvent(
+      kBackNavigationMenuIsOpenedEvent);
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
+  menu_model_open_timestamp_ = base::TimeTicks::Now();
+
+  // Close the IPH popup if the user opens the menu.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHBackNavigationMenuFeature);
+}
+
+void BackForwardMenuModel::MenuWillClose() {
+  CHECK(menu_model_open_timestamp_.has_value());
+  base::TimeDelta time =
+      base::TimeTicks::Now() - menu_model_open_timestamp_.value();
+  base::UmaHistogramLongTimes(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToCloseMenu", time);
 }
 
 bool BackForwardMenuModel::IsSeparator(size_t index) const {

@@ -161,20 +161,15 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
     hit_test_observer.WaitForHitTestData();
   }
 
-  int ExecuteScriptAndExtractInt(const std::string& script) {
-    return EvalJs(shell(), script).ExtractInt();
-  }
-
   int GetScrollTop() {
-    return ExecuteScriptAndExtractInt("document.scrollingElement.scrollTop");
+    return EvalJs(shell(), "document.scrollingElement.scrollTop").ExtractInt();
   }
 
   void DoWheelScroll() {
     EXPECT_EQ(0, GetScrollTop());
 
-    int scrollHeight =
-        ExecuteScriptAndExtractInt("document.documentElement.scrollHeight");
-    EXPECT_EQ(kWebsiteHeight, scrollHeight);
+    EXPECT_EQ(kWebsiteHeight,
+              EvalJs(shell(), "document.documentElement.scrollHeight"));
 
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());
@@ -207,9 +202,8 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
   void DoTouchScroll() {
     EXPECT_EQ(0, GetScrollTop());
 
-    int scrollHeight =
-        ExecuteScriptAndExtractInt("document.documentElement.scrollHeight");
-    EXPECT_EQ(kWebsiteHeight, scrollHeight);
+    EXPECT_EQ(kWebsiteHeight,
+              EvalJs(shell(), "document.documentElement.scrollHeight"));
 
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());

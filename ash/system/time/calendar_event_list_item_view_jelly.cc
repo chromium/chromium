@@ -20,6 +20,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/event_date_formatter_util.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,7 +42,7 @@ namespace {
 
 // The paddings for `CalendarEventListViewItemJelly`.
 constexpr auto kEventListItemInsets =
-    gfx::Insets::VH(6, calendar_utils::kEventListItemViewStartEndMargin);
+    gfx::Insets::VH(8, calendar_utils::kEventListItemViewStartEndMargin);
 constexpr auto kEventListItemHorizontalChildSpacing = 8;
 constexpr int kEventListItemCornerRadius = 16;
 constexpr int kEventListItemCornerDefaultRadius = 4;
@@ -51,24 +52,33 @@ constexpr float kEventListItemFocusCornerRadius = 3.0f;
 constexpr int kColorDotRadius = 4;
 
 // Dimension of the event color dot view.
-constexpr int kColorDotViewSize = 8;
+constexpr int kColorDotViewSize = kColorDotRadius * 2;
 
 // Default Calendar API color ID to use when no event color is specifified.
 constexpr char kDefaultColorId[] = "7";
 
 // Map of Calendar API color ids and their respective hex color code.
-std::map<std::string, std::string> kEventHexColorCodes = {
-    {"1", "a4bdfc"}, {"2", "7ae7bf"},  {"3", "dbadff"}, {"4", "ff887c"},
-    {"5", "fbd75b"}, {"6", "ffb878"},  {"7", "46d6db"}, {"8", "e1e1e1"},
-    {"9", "5484ed"}, {"10", "51b749"}, {"11", "dc2127"}};
+constexpr auto kEventHexColorCodes =
+    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"1", "6994FF"},
+         {"2", "3CBD8E"},
+         {"3", "BB74F2"},
+         {"4", "FA827A"},
+         {"5", "C7C419"},
+         {"6", "F0A85F"},
+         {"7", "60BDBD"},
+         {"8", "BD9C9C"},
+         {"9", "7077DC"},
+         {"10", "5B9157"},
+         {"11", "D45D5D"}});
 
 // Renders an Event color dot.
 class CalendarEventListItemDot : public views::View {
  public:
   explicit CalendarEventListItemDot(std::string color_id) {
     DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
-    std::string hex_code =
-        kEventHexColorCodes[color_id.empty() ? kDefaultColorId : color_id];
+
+    base::BasicStringPiece<char> hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
     SetPreferredSize(gfx::Size(
         kColorDotViewSize,
@@ -90,6 +100,14 @@ class CalendarEventListItemDot : public views::View {
   }
 
  private:
+  base::BasicStringPiece<char> LookupColorId(std::string color_id) {
+    const auto* iter = kEventHexColorCodes.find(color_id);
+    if (iter == kEventHexColorCodes.end()) {
+      return kEventHexColorCodes.at(kDefaultColorId);
+    }
+    return iter->second;
+  }
+
   // The color value of the dot.
   int color_;
 };
@@ -101,10 +119,11 @@ views::Builder<views::Label> CreateSummaryLabel(
     const int& fixed_width) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
-                 TypographyToken::kCrosAnnotation1,
+                 TypographyToken::kCrosButton2,
                  event_summary.empty()
                      ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
-                     : base::UTF8ToUTF16(event_summary)))
+                     : base::UTF8ToUTF16(event_summary),
+                 cros_tokens::kCrosSysOnSurface))
       .SetID(kSummaryLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
@@ -122,8 +141,8 @@ views::Builder<views::Label> CreateTimeLabel(
     const std::u16string& title,
     const std::u16string& tooltip_text) {
   return views::Builder<views::Label>(
-             bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2, title,
-                                       cros_tokens::kColorSecondary))
+             bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation1, title,
+                                       cros_tokens::kCrosSysOnSurfaceVariant))
       .SetID(kTimeLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
@@ -269,7 +288,7 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
             &CalendarEventListItemViewJelly::OnJoinMeetingButtonPressed,
             weak_ptr_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON),
-        PillButton::Type::kPrimaryWithoutIcon);
+        PillButton::Type::kDefaultWithoutIcon);
     join_button->SetAccessibleName(
         l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME,
                                    base::UTF8ToUTF16(event.summary())));
@@ -283,7 +302,7 @@ CalendarEventListItemViewJelly::~CalendarEventListItemViewJelly() = default;
 void CalendarEventListItemViewJelly::OnThemeChanged() {
   views::View::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface)));
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface5)));
 }
 
 bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {

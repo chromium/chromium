@@ -9,6 +9,7 @@
 
 #include "ash/app_list/model/folder_image.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -27,7 +28,7 @@ class AppIconLoadHelper::AppItemHelper : public AppListItemObserver {
   const AppListItem* app_item() const { return app_item_; }
 
  private:
-  AppListItem* app_item_ = nullptr;
+  raw_ptr<AppListItem, ExperimentalAsh> app_item_ = nullptr;
   IconLoadCallback icon_load_callback_;
   base::ScopedObservation<AppListItem, AppListItemObserver>
       app_item_observeration_{this};
@@ -39,7 +40,7 @@ AppIconLoadHelper::AppItemHelper::AppItemHelper(
     : app_item_(app_item), icon_load_callback_(std::move(icon_load_callback)) {
   DCHECK(!icon_load_callback_.is_null());
 
-  app_item_observeration_.Observe(app_item_);
+  app_item_observeration_.Observe(app_item_.get());
 
   if (app_item_->GetDefaultIcon().isNull())
     icon_load_callback_.Run(app_item_->id());
@@ -76,7 +77,7 @@ class AppIconLoadHelper::AppItemListHelper : public AppListItemListObserver {
 
   void UpdateHelper();
 
-  AppListItemList* const list_;
+  const raw_ptr<AppListItemList, ExperimentalAsh> list_;
   IconLoadCallback icon_load_callback_;
   base::ScopedObservation<AppListItemList, AppListItemListObserver>
       list_observeration_{this};
@@ -89,7 +90,7 @@ AppIconLoadHelper::AppItemListHelper::AppItemListHelper(
     : list_(list), icon_load_callback_(std::move(icon_load_callback)) {
   DCHECK(!icon_load_callback_.is_null());
 
-  list_observeration_.Observe(list_);
+  list_observeration_.Observe(list_.get());
 
   UpdateHelper();
 }

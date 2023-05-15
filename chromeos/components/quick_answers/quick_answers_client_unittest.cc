@@ -191,9 +191,14 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
   std::unique_ptr<QuickAnswer> quick_answer = std::make_unique<QuickAnswer>();
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>("answer"));
-  EXPECT_CALL(*mock_delegate_,
-              OnQuickAnswerReceived(QuickAnswerEqual(&(*quick_answer))));
-  client_->OnQuickAnswerReceived(std::move(quick_answer));
+
+  std::unique_ptr<QuickAnswersSession> quick_answers_session =
+      std::make_unique<QuickAnswersSession>();
+  quick_answers_session->quick_answer = std::move(quick_answer);
+
+  EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Pointer(
+                                   testing::Eq(quick_answers_session.get()))));
+  client_->OnQuickAnswerReceived(std::move(quick_answers_session));
 }
 
 TEST_F(QuickAnswersClientTest, SendRequestForPreprocessing) {

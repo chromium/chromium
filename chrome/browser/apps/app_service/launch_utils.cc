@@ -47,6 +47,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -507,8 +508,17 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
       return;
     }
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(ash::NewWindowDelegate::GetPrimary());
+
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&params);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

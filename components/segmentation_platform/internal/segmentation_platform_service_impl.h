@@ -19,8 +19,6 @@
 #include "components/segmentation_platform/internal/migration/prefs_migrator.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
-#include "components/segmentation_platform/internal/selection/cached_result_provider.h"
-#include "components/segmentation_platform/internal/selection/cached_result_writer.h"
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
@@ -113,6 +111,11 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
                                const PredictionOptions& prediction_options,
                                scoped_refptr<InputContext> input_context,
                                ClassificationResultCallback callback) override;
+  void GetAnnotatedNumericResult(
+      const std::string& segmentation_key,
+      const PredictionOptions& prediction_options,
+      scoped_refptr<InputContext> input_context,
+      AnnotatedNumericResultCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
   void GetSelectedSegmentOnDemand(const std::string& segmentation_key,
@@ -154,9 +157,6 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Temporarily stored till initialization and moved to `execution_service_`.
   std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder_;
 
-  // Config.
-  std::vector<std::unique_ptr<Config>> configs_;
-  base::flat_set<proto::SegmentId> all_segment_ids_;
   std::unique_ptr<FieldTrialRegister> field_trial_register_;
 
   std::unique_ptr<StorageService> storage_service_;
@@ -173,12 +173,6 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
-
-  // Result cache.
-  std::unique_ptr<CachedResultProvider> cached_result_provider_;
-
-  // Writes to result cache.
-  std::unique_ptr<CachedResultWriter> cached_result_writer_;
 
   // Records field trials for all configs.
   std::unique_ptr<FieldTrialRecorder> field_trial_recorder_;

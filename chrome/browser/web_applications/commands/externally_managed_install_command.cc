@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -88,8 +88,6 @@ void ExternallyManagedInstallCommand::StartWithLock(
           &ExternallyManagedInstallCommand::OnGetWebAppInstallInfoInCommand,
           weak_factory_.GetWeakPtr()));
 }
-
-void ExternallyManagedInstallCommand::OnSyncSourceRemoved() {}
 
 void ExternallyManagedInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
@@ -308,10 +306,6 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
       app_id, install_surface_);
-
-  if (install_params_.locally_installed) {
-    RecordAppBanner(web_contents_.get(), web_app_info_->start_url);
-  }
 
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     if (install_error_log_entry_.HasErrorDict()) {

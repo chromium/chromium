@@ -10,6 +10,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -18,7 +19,9 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -230,7 +233,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError4";
+      "Conversions.TriggerRegistrationError5";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -284,6 +287,106 @@ TEST(TriggerRegistrationTest, ToJson) {
           })json",
       },
   };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(TriggerRegistrationTest, ParseAggregatableSourceRegistrationTime) {
+  const struct {
+    const char* description;
+    const char* json;
+    base::expected<TriggerRegistration, TriggerRegistrationError> expected;
+  } kTestCases[] = {
+      {
+          "empty",
+          R"json({})json",
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.source_registration_time_config =
+                mojom::SourceRegistrationTimeConfig::kExclude;
+          }),
+      },
+      {
+          "aggregatable_source_registration_time_include",
+          R"json({"aggregatable_source_registration_time":"include"})json",
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.source_registration_time_config =
+                mojom::SourceRegistrationTimeConfig::kInclude;
+          }),
+      },
+      {
+          "aggregatable_source_registration_time_exclude",
+          R"json({"aggregatable_source_registration_time":"exclude"})json",
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.source_registration_time_config =
+                mojom::SourceRegistrationTimeConfig::kExclude;
+          }),
+      },
+      {
+          "aggregatable_source_registration_time_wrong_type",
+          R"json({"aggregatable_source_registration_time":123})json",
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableSourceRegistrationTimeWrongType),
+      },
+      {
+          "aggregatable_source_registration_time_invalid_value",
+          R"json({"aggregatable_source_registration_time":"unknown"})json",
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableSourceRegistrationTimeUnknownValue),
+      },
+  };
+
+  static constexpr char kTriggerRegistrationErrorMetric[] =
+      "Conversions.TriggerRegistrationError5";
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      kAttributionReportingNullAggregatableReports);
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
+    auto trigger = TriggerRegistration::Parse(test_case.json);
+    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
+
+    if (trigger.has_value()) {
+      histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);
+    } else {
+      histograms.ExpectUniqueSample(kTriggerRegistrationErrorMetric,
+                                    trigger.error(), 1);
+    }
+  }
+}
+
+TEST(TriggerRegistrationTest, SerializeAggregatableSourceRegistrationTime) {
+  const struct {
+    TriggerRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          TriggerRegistration(),
+          R"json({
+            "aggregatable_source_registration_time": "include",
+            "aggregation_coordinator_identifier": "aws-cloud",
+            "debug_reporting": false
+          })json",
+      },
+      {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.source_registration_time_config =
+                mojom::SourceRegistrationTimeConfig::kExclude;
+          }),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregation_coordinator_identifier": "aws-cloud",
+            "debug_reporting": false,
+          })json",
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      kAttributionReportingNullAggregatableReports);
 
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),

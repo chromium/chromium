@@ -15,6 +15,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {constants} from '../../foreground/js/constants.js';
 
 import {promisify} from './api.js';
 import {createDOMError} from './dom_utils.js';
@@ -404,13 +405,21 @@ util.isComputersEntry = entry => {
 };
 
 /**
+ * Returns true if the given root type is Trash.
+ * @param {VolumeManagerCommon.RootType|null} rootType
+ * @returns {boolean}
+ */
+util.isTrashRootType = rootType => {
+  return rootType == VolumeManagerCommon.RootType.TRASH;
+};
+
+/**
  * Returns true if the given entry is the root folder of Trash.
  * @param {!Entry|!FilesAppEntry} entry Entry or a fake entry.
  * @returns {boolean}
  */
 util.isTrashRoot = entry => {
-  return entry.fullPath === '/' &&
-      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+  return entry.fullPath === '/' && util.isTrashRootType(entry.rootType);
 };
 
 /**
@@ -419,8 +428,7 @@ util.isTrashRoot = entry => {
  * @returns {boolean}
  */
 util.isTrashEntry = entry => {
-  return entry.fullPath !== '/' &&
-      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+  return entry.fullPath !== '/' && util.isTrashRootType(entry.rootType);
 };
 
 
@@ -1162,15 +1170,6 @@ util.isSinglePartitionFormatEnabled = () => {
 };
 
 /**
- * Returns true if FilesTrash feature flag is enabled.
- * @returns {boolean}
- */
-util.isTrashEnabled = () => {
-  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
-      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
-};
-
-/**
  * Returns true if InlineSyncStatus feature flag is enabled.
  * @returns {boolean}
  */
@@ -1529,19 +1528,60 @@ class UserCanceledError extends Error {}
 util.isNullOrUndefined = (value) => value === null || value === undefined;
 
 /**
+ * @param {string|undefined} providerId
+ * @return {boolean}
+ */
+util.isOneDriveId = (providerId) => {
+  if (
+      // App built manually from internal git, used for the early dogfood.
+      providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
+      // App built manually from internal repo.
+      providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
+      // App from official internal repo.
+      providerId === constants.ODFS_EXTENSION_ID) {
+    return true;
+  }
+  return false;
+};
+
+/**
  * @param {?VolumeInfo} volumeInfo
  * @return {boolean}
  */
 util.isOneDrive = (volumeInfo) => {
-  if (
-      // App built manually from internal git, used for the early dogfood.
-      volumeInfo?.providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
-      // App built manually from internal repo.
-      volumeInfo?.providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
-      // App from official internal repo.
-      volumeInfo?.providerId === 'gnnndjlaomemikopnjhhnoombakkkkdg') {
+  return util.isOneDriveId(volumeInfo?.providerId);
+};
+
+/**
+ * Bulk pinning should only show visible UI elements when in progress or
+ * continuing to sync.
+ * @param {chrome.fileManagerPrivate.BulkPinStage|undefined} stage
+ * @param {boolean|undefined} pref
+ * @returns {boolean}
+ */
+util.canBulkPinningCloudPanelShow = (stage, pref) => {
+  if (!util.isDriveFsBulkPinningEnabled()) {
+    return false;
+  }
+
+  // If the stage is in progress and the bulk pinning preference is enabled,
+  // then the cloud panel should not be visible.
+  if (pref &&
+      (stage === chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE ||
+       stage === chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES ||
+       stage === chrome.fileManagerPrivate.BulkPinStage.SYNCING)) {
     return true;
   }
+
+  // The `PAUSED` stage represents the user being offline and the
+  // `NOT_ENOUGH_SPACE` represents the user not having enough space on disk
+  // to download. For the former the preference should still be enabled,
+  // however, for the latter the preference will have been disabled.
+  if ((stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED && pref) ||
+      stage === chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE) {
+    return true;
+  }
+
   return false;
 };
 

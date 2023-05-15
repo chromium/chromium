@@ -18,6 +18,11 @@ struct ifaddrmsg;
 
 namespace net {
 
+class AddressMapCacheLinux;
+namespace internal {
+class AddressTrackerLinux;
+}
+
 // Various components of //net need to access a real-time-updated AddressMap
 // (see comments below). For example, AddressSorterPosix (used in DNS
 // resolution) and GetNetworkList() (used in many places).
@@ -57,6 +62,13 @@ class NET_EXPORT AddressMapOwnerLinux {
   virtual AddressMap GetAddressMap() const = 0;
   // Returns set of interface indices for online interfaces.
   virtual std::unordered_set<int> GetOnlineLinks() const = 0;
+
+  // These are the concrete implementations of AddressMapOwnerLinux and these
+  // functions serve as an ad-hoc dynamic cast to the concrete implementation,
+  // so this base class is not polluted with methods that end up unimplemented
+  // in one subclass.
+  virtual internal::AddressTrackerLinux* GetAddressTrackerLinux();
+  virtual AddressMapCacheLinux* GetAddressMapCacheLinux();
 };
 
 }  // namespace net

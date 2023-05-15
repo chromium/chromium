@@ -118,6 +118,12 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   // Returns true if an animation is active and requires further ticking.
   bool Animate(base::TimeTicks animate_time);
 
+  // Returns the current focus bound. For an active selection, this is the
+  // selection bound that has most recently been dragged or updated (defaulting
+  // to the end if neither endpoint has moved). For an active insertion it is
+  // the caret bound. Should only be called when touch selection is active.
+  const gfx::SelectionBound& GetFocusBound() const;
+
   // Returns the rect between the two active selection bounds. If just one of
   // the bounds is visible, or both bounds are visible and on the same line,
   // the rect is simply a one-dimensional rect of that bound. If no selection

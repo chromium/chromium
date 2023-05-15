@@ -342,8 +342,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
          usingSearchAction:ScrollDown()
-      onElementWithMatcher:chrome_test_util::
-                               SettingsPriceNotificationsTableView()]
+      onElementWithMatcher:chrome_test_util::SettingsNotificationsTableView()]
       performAction:grey_tap()];
 }
 
@@ -492,6 +491,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 - (void)selectAllBrowsingDataAndClear {
   // Check "Saved Passwords" and "Autofill Data" which are unchecked by
   // default.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearSavedPasswordsButton()];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
   [[[EarlGrey
@@ -527,6 +528,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [self waitForAppToIdle];
 
   // Recheck "Saved Passwords" and "Autofill Data".
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearSavedPasswordsButton()];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
   [[[EarlGrey

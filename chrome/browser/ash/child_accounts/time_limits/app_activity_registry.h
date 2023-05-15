@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -53,7 +54,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     void SaveAppActivity();
 
    private:
-    AppActivityRegistry* const registry_;
+    const raw_ptr<AppActivityRegistry, ExperimentalAsh> registry_;
   };
 
   // Interface for the observers interested in the changes of apps state.
@@ -304,13 +305,14 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // has been updated.
   void AppLimitUpdated(const AppId& app_id);
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Owned by AppTimeController.
-  AppServiceWrapper* const app_service_wrapper_;
+  const raw_ptr<AppServiceWrapper, ExperimentalAsh> app_service_wrapper_;
 
   // Notification delegate.
-  AppTimeNotificationDelegate* const notification_delegate_;
+  const raw_ptr<AppTimeNotificationDelegate, ExperimentalAsh>
+      notification_delegate_;
 
   // Observers to be notified about app state changes.
   base::ObserverList<AppStateObserver> app_state_observers_;

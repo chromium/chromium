@@ -4,15 +4,6 @@
 
 #include "media/cast/encoding/external_video_encoder.h"
 
-#if DCHECK_IS_ON()
-#include <ios>
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/cpu.h"            // nogncheck
-#include "base/no_destructor.h"  // nogncheck
-#endif
-
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -58,14 +49,12 @@ bool IsHardwareVP8EncodingEnabled(
     return false;
   }
 
-  // The hardware encoder on ChromeOS has major issues when connecting to a
-  // variety of first and third party devices. See https://crbug.com/1382591.
-  const bool is_enabled_on_platform = !BUILDFLAG(IS_CHROMEOS);
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareVp8);
 
   return IsHardwareEncodingEnabled(profiles, VP8PROFILE_MIN, VP8PROFILE_MAX,
-                                   is_enabled_on_platform, is_force_enabled);
+                                   /*is_enabled_on_platform=*/true,
+                                   is_force_enabled);
 }
 
 // Scan profiles for hardware H.264 encoder support.
@@ -81,15 +70,6 @@ bool IsHardwareH264EncodingEnabled(
   // TODO(crbug.com/1015482): hardware encoder broken on Windows, Apple OSes.
   bool is_enabled_on_platform = !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN);
 
-// TODO(b/169533953): hardware encoder broken on AMD chipsets on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
-  if (is_amd) {
-    is_enabled_on_platform = false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareH264);
 
@@ -101,18 +81,18 @@ bool IsHardwareH264EncodingEnabled(
 
 bool IsSoftwareEnabled(Codec codec) {
   switch (codec) {
-    case CODEC_VIDEO_VP8:
+    case Codec::kVideoVp8:
       return true;
 
-    case CODEC_VIDEO_VP9:
+    case Codec::kVideoVp9:
       return base::FeatureList::IsEnabled(kCastStreamingVp9);
 
-    case CODEC_VIDEO_AV1:
+    case Codec::kVideoAv1:
       return IsCastStreamingAv1Enabled();
 
     // The test infrastructure is responsible for ensuring the fake codec is
     // used properly.
-    case CODEC_VIDEO_FAKE:
+    case Codec::kVideoFake:
       return true;
 
     default:
@@ -124,10 +104,10 @@ bool IsHardwareEnabled(
     Codec codec,
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
   switch (codec) {
-    case CODEC_VIDEO_VP8:
+    case Codec::kVideoVp8:
       return IsHardwareVP8EncodingEnabled(profiles);
 
-    case CODEC_VIDEO_H264:
+    case Codec::kVideoH264:
       return IsHardwareH264EncodingEnabled(profiles);
 
     default:

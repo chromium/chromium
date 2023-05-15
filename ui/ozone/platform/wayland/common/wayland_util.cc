@@ -68,10 +68,10 @@ bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
 
   auto* mapped_memory = out_buffer->GetMemory();
   auto size = out_buffer->size();
-  sk_sp<SkSurface> sk_surface = SkSurface::MakeRasterDirect(
-      SkImageInfo::Make(size.width(), size.height(), kColorType,
-                        kOpaque_SkAlphaType),
-      mapped_memory, out_buffer->stride());
+  sk_sp<SkSurface> sk_surface =
+      SkSurfaces::WrapPixels(SkImageInfo::Make(size.width(), size.height(),
+                                               kColorType, kOpaque_SkAlphaType),
+                             mapped_memory, out_buffer->stride());
 
   if (!sk_surface)
     return false;

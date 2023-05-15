@@ -32,6 +32,7 @@ per-file chrome.json=skylab-test-cros-roller@chops-service-accounts.iam.gservice
 per-file chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+per-file tryserver.chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 
 # Perf owners
 per-file *chromium.perf*.json=johnchen@chromium.org

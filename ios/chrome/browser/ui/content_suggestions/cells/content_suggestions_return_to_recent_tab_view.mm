@@ -17,6 +17,7 @@
 
 namespace {
 const CGFloat kContentViewCornerRadius = 12.0f;
+const CGFloat kMagicStackContentViewCornerRadius = 24.0f;
 const CGFloat kContentViewBorderWidth = 1.0f;
 const CGFloat kIconCornerRadius = 4.0f;
 const CGFloat kContentViewSubviewSpacing = 12.0f;
@@ -28,15 +29,16 @@ const CGFloat kIconWidth = 32.0f;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.layer setBorderColor:ntp_home::NTPBackgroundColor().CGColor];
-    } else {
-      [self.layer
-          setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
-    }
+    [self.layer
+        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
     [self.layer setBorderWidth:kContentViewBorderWidth];
-    self.layer.cornerRadius = kContentViewCornerRadius;
+    self.layer.cornerRadius = IsMagicStackEnabled()
+                                  ? kMagicStackContentViewCornerRadius
+                                  : kContentViewCornerRadius;
     self.layer.masksToBounds = YES;
+    if (IsMagicStackEnabled()) {
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    }
 
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.isAccessibilityElement = NO;
@@ -120,12 +122,8 @@ const CGFloat kIconWidth = 32.0f;
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
     // CGColors are static RGB, so the border color needs to be reset.
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.layer setBorderColor:ntp_home::NTPBackgroundColor().CGColor];
-    } else {
-      [self.layer
-          setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
-    }
+    [self.layer
+        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
   }
 }
 

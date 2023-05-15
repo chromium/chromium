@@ -109,9 +109,6 @@ class OmniboxResultView : public views::View {
   // state.
   void UpdateRemoveSuggestionVisibility();
 
-  // Sets the widths of the suggestion and keyword and calls Layout().
-  void SetWidths();
-
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
@@ -135,9 +132,7 @@ class OmniboxResultView : public views::View {
 
   // Weak pointers for easy reference.
   raw_ptr<OmniboxMatchCellView>
-      suggestion_view_;                         // The leading (or left) view.
-  // TODO(manukh) No longer used as of crrev.com/c/3381302. Remove.
-  raw_ptr<OmniboxMatchCellView> keyword_view_;  // The trailing (or right) view.
+      suggestion_view_;  // The leading (or left) view.
 
   // The blue bar used to indicate selection.
   raw_ptr<OmniboxResultSelectionIndicator> selection_indicator_ = nullptr;

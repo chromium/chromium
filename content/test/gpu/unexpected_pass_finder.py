@@ -35,9 +35,18 @@ via `finder:disable-stale` and `finder:enable-stale`.
 """
 
 import argparse
+import importlib
+import inspect
+import logging
 import os
+import pkgutil
+from typing import Dict, Type
 
+import gpu_path_util
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
 from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
+
+from gpu_tests import gpu_integration_test
 
 from unexpected_passes import gpu_builders
 from unexpected_passes import gpu_expectations
@@ -47,13 +56,43 @@ from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
 
-SUITE_TO_EXPECTATIONS_MAP = {
-    'power': 'power_measurement',
-    'webgl1_conformance': 'webgl_conformance',
-}
+
+def _GenerateTestNameMapping(
+) -> Dict[str, Type[gpu_integration_test.GpuIntegrationTest]]:
+  """Generates a mapping from suite name to class.
+
+  Returns:
+    A dict mapping a suite's human-readable name to the class that implements
+    it.
+  """
+  mapping = {}
+  for p in pkgutil.iter_modules(
+      [os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests')]):
+    if p.ispkg:
+      continue
+    module_name = 'gpu_tests.' + p.name
+    try:
+      module = importlib.import_module(module_name)
+    except ImportError:
+      logging.warning(
+          'Unable to import module %s. This is likely due to stale .pyc files '
+          'existing on disk.', module_name)
+      continue
+    for name, obj in inspect.getmembers(module):
+      # Look for cases of GpuIntegrationTest that have Name() overridden. The
+      # name check filters out base classes.
+      if (inspect.isclass(obj)
+          and issubclass(obj, gpu_integration_test.GpuIntegrationTest)
+          and obj.Name() != name):
+        mapping[obj.Name()] = obj
+  return mapping
 
 
-def ParseArgs():
+def ParseArgs() -> argparse.Namespace:
+  name_mapping = _GenerateTestNameMapping()
+  test_suites = list(name_mapping.keys())
+  test_suites.sort()
+
   parser = argparse.ArgumentParser(
       description=('Script for finding cases of stale expectations that can '
                    'be removed/modified.'))
@@ -73,47 +112,42 @@ def ParseArgs():
       help='The name of a test to check for unexpected passes. Can be passed '
       'multiple times to specify multiple tests. Will be treated as if it was '
       'expected to be flaky on all configurations.')
-  parser.add_argument(
-      '--suite',
-      required=True,
-      # Could probably autogenerate this list using the same
-      # method as Telemetry's run_browser_tests.py now that WebGL 1 and 2 are
-      # properly split.
-      choices=[
-          'context_lost',
-          'hardware_accelerated_feature',
-          'gpu_process',
-          'info_collection',
-          'maps',
-          'mediapipe',
-          'pixel',
-          'power',
-          'screenshot_sync',
-          'trace_test',
-          'webcodecs',
-          'webgl1_conformance',
-          'webgl2_conformance',
-      ],
-      help='The test suite being checked.')
+  parser.add_argument('--suite',
+                      required=True,
+                      choices=test_suites,
+                      help='The test suite being checked.')
 
   args = parser.parse_args()
   argument_parsing.PerformCommonPostParseSetup(args)
+  suite_class = name_mapping[args.suite]
 
   if not (args.tests or args.expectation_file):
-    args.expectation_file = os.path.join(
-        os.path.dirname(__file__), 'gpu_tests', 'test_expectations',
-        '%s_expectations.txt' %
-        SUITE_TO_EXPECTATIONS_MAP.get(args.suite, args.suite))
+    expectation_files = suite_class.ExpectationsFiles()
+    if not expectation_files:
+      raise RuntimeError(
+          'Suite %s does not specify an expectation file and is thus not '
+          'compatible with this script.' % args.suite)
+    if len(expectation_files) > 1:
+      raise RuntimeError(
+          'Suite %s specifies %d expectation files when only 1 is supported.' %
+          len(expectation_files))
+    args.expectation_file = expectation_files[0]
 
   if args.remove_stale_expectations and not args.expectation_file:
-    raise argparse.ArgumentError('--remove-stale-expectations',
-                                 'Can only be used with expectation files')
+    parser.error(
+        '--remove-stale-expectations can only be used with expectation files')
+
+  # Change to whatever repo the test suite claims the expectation file lives in.
+  # This allows the script to work for most suites if run from outside of
+  # chromium/src. Similarly, it allows suites such as WebGPU CTS that have
+  # expectation files in a different repo to be work when run from chromium/src.
+  os.chdir(suite_class.GetExpectationsFilesRepoPath())
 
   return args
 
 
 # pylint: disable=too-many-locals
-def main():
+def main() -> None:
   args = ParseArgs()
 
   builders_instance = gpu_builders.GpuBuilders(args.suite,

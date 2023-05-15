@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/user_education_feature_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -23,7 +23,7 @@ class WelcomeTourControllerObserver;
 // Controller responsible for Welcome Tour feature tutorials. Note that the
 // `WelcomeTourController` is owned by the `UserEducationController` and exists
 // if and only if the Welcome Tour feature is enabled.
-class ASH_EXPORT WelcomeTourController : public TutorialController,
+class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
                                          public SessionObserver {
  public:
   WelcomeTourController();
@@ -43,7 +43,7 @@ class ASH_EXPORT WelcomeTourController : public TutorialController,
   ui::ElementContext GetInitialElementContext() const;
 
  private:
-  // TutorialController:
+  // UserEducationFeatureController:
   std::map<TutorialId, user_education::TutorialDescription>
   GetTutorialDescriptions() override;
 

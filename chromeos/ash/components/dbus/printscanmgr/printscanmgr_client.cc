@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
@@ -178,7 +179,7 @@ class PrintscanmgrClientImpl : public PrintscanmgrClient {
     std::move(callback).Run(dbus_error);
   }
 
-  dbus::ObjectProxy* printscanmgr_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> printscanmgr_proxy_ = nullptr;
   base::WeakPtrFactory<PrintscanmgrClientImpl> weak_ptr_factory_{this};
 };
 

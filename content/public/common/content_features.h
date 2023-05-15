@@ -114,8 +114,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeLimitNumAuctions);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaSet);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaSetAutoSelectAllScreens);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kHandleRendererThreadTypeChangesInBrowser);
@@ -133,8 +131,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayGrouping);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptExperimentalSharedMemory);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIwaControlledFrame);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameLoading);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageLoading);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageVisibleLoadTimeMetrics);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyInitializeMediaControls);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLegacyWindowsDWriteFontFallback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLogJsConsoleMessages);
@@ -195,6 +191,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessSendPreflights);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessPermissionPrompt);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProactivelySwapBrowsingInstance);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kOriginKeyedProcessesByDefault);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithDefaultSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithStrictSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEvent);
@@ -203,6 +200,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kRenderAccessibilityHostDeserializationOffMainThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocument);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRetryGetVideoCaptureDeviceInfos);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessPerSiteUpToMainFrameThreshold);
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kProcessPerSiteMainFrameThreshold;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRunVideoCaptureServiceInBrowserProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmationDebug);
@@ -278,6 +278,8 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kStartServiceWorkerForEmptyFetchHandler;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAsyncStartServiceWorkerForEmptyFetchHandler;
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebLockScreenApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTP);
@@ -316,6 +318,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTrapHandler);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAuthnTouchToFillCredentialSelection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBluetooth);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBluetoothNewPermissionsBackend);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebEnvironmentIntegrity);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebGLImageChromium);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebMidi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOtpBackendAuto);
@@ -330,7 +333,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAsyncTreeConstruction);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoom);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibilityV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundMediaRendererHasModerateBinding);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBindingManagerConnectionLimit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kOnDemandAccessibilityEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteAdditions);

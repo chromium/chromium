@@ -290,7 +290,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Removes all obsolete prefs from all users.
   void CleanObsoletePrefs();
 
-  const base::raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace user_manager

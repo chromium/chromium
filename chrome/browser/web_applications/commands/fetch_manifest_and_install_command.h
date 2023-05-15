@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/file_path.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #endif
 
@@ -56,7 +57,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
   // WebAppCommandTemplate<NoopLock>:
   const LockDescription& lock_description() const override;
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   content::WebContents* GetInstallingWebContents() override;
   base::Value ToDebugValue() const override;
@@ -136,6 +136,10 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
   base::Value::Dict debug_log_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<base::FilePath> app_profile_path_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -38,7 +40,8 @@ public class BookmarkActivity extends SnackbarActivity {
         mBookmarkManagerCoordinator = new BookmarkManagerCoordinator(this,
                 IntentUtils.safeGetParcelableExtra(
                         getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
-                true, isIncognito, getSnackbarManager(), Profile.getLastUsedRegularProfile());
+                true, isIncognito, getSnackbarManager(), Profile.getLastUsedRegularProfile(),
+                new BookmarkUiPrefs(SharedPreferencesManager.getInstance()));
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);

@@ -10,12 +10,12 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;
 
 namespace policy {
-class ActiveDirectoryJoinDelegate;
 struct EnrollmentConfig;
 enum class LicenseType;
 class EnrollmentStatus;
@@ -66,7 +66,6 @@ class EnterpriseEnrollmentHelper {
   // Factory method. Caller takes ownership of the returned object.
   static std::unique_ptr<EnterpriseEnrollmentHelper> Create(
       EnrollmentStatusConsumer* status_consumer,
-      policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain,
       policy::LicenseType license_type);
@@ -127,8 +126,7 @@ class EnterpriseEnrollmentHelper {
   EnterpriseEnrollmentHelper();
 
   // This method is called once from Create method.
-  virtual void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
-                     const policy::EnrollmentConfig& enrollment_config,
+  virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
                      const std::string& enrolling_user_domain,
                      policy::LicenseType license_type) = 0;
 
@@ -139,7 +137,7 @@ class EnterpriseEnrollmentHelper {
   EnrollmentStatusConsumer* status_consumer() const { return status_consumer_; }
 
  private:
-  EnrollmentStatusConsumer* status_consumer_;
+  raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
   static EnterpriseEnrollmentHelper* mock_enrollment_helper_;

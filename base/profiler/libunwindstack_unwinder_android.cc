@@ -80,7 +80,7 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
     : memory_regions_map_(NativeUnwinderAndroid::CreateMemoryRegionsMap(
-          /*use_updatable_maps=*/true)),
+          /*use_updatable_maps=*/false)),
       process_memory_(std::shared_ptr<unwindstack::Memory>(
           memory_regions_map_->TakeMemory().release())) {
   TRACE_EVENT_INSTANT(

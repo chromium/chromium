@@ -10,6 +10,9 @@
 // The accessibility identifier of the Privacy setting table view.
 extern NSString* const kPrivacyTableViewId;
 
+// The accessibility identifier of the Privacy Lockdown Mode cell.
+extern NSString* const kPrivacyLockdownModeCellId;
+
 // The accessibility identifier of the Privacy Safe Browsing setting table view.
 extern NSString* const kPrivacySafeBrowsingTableViewId;
 

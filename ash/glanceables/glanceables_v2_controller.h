@@ -8,10 +8,12 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
 
+class GlanceablesClassroomClient;
 class GlanceablesTasksClient;
 
 // Root glanceables controller.
@@ -21,7 +23,9 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
  public:
   // Convenience wrapper to pass all clients from browser to ash at once.
   struct ClientsRegistration {
-    GlanceablesTasksClient* tasks_client = nullptr;
+    raw_ptr<GlanceablesClassroomClient, ExperimentalAsh> classroom_client =
+        nullptr;
+    raw_ptr<GlanceablesTasksClient, ExperimentalAsh> tasks_client = nullptr;
   };
 
   GlanceablesV2Controller();
@@ -35,6 +39,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // Updates `clients_registry_` for a specific `account_id`.
   void UpdateClientsRegistration(const AccountId& account_id,
                                  const ClientsRegistration& registration);
+
+  // Returns a classroom client pointer associated with the
+  // `active_account_id_`. Could return `nullptr`.
+  GlanceablesClassroomClient* GetClassroomClient() const;
 
   // Returns a tasks client pointer associated with the `active_account_id_`.
   // Could return `nullptr`.

@@ -35,5 +35,6 @@ extern NSString* const kSigninPromoViewId;
 extern NSString* const kSigninPromoPrimaryButtonId;
 extern NSString* const kSigninPromoSecondaryButtonId;
 extern NSString* const kSigninPromoCloseButtonId;
+extern NSString* const kSigninPromoActivityIndicatorId;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_SIGNIN_PROMO_VIEW_CONSTANTS_H_

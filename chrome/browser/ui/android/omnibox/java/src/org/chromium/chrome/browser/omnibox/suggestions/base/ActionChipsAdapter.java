@@ -17,8 +17,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** ModelListAdapter for Omnibox Suggestion Action Chips. */
 public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
+    @VisibleForTesting
     // The 0th element is always the lead-in header.
-    private static final int FIRST_CHIP_INDEX = 1;
+    public static final int FIRST_CHIP_INDEX = 1;
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 

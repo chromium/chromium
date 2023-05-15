@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="100506692671054486">žiadny predchádzajúci príkaz</translation>
 <translation id="1009046985747440431">Prechádzajte stlačením šípky nahor alebo nadol. Aktivujete zadaním textu.</translation>
 <translation id="1011903154582639569">Nájdite kláves, potom napíšte písmeno zdvihnutím prsta</translation>
 <translation id="1012173283529841972">Položka zoznamu</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Levanduľová ružová</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3962990492275676168">Začať čítať z aktuálneho miesta</translation>
+<translation id="397094149579293440">žiadny vybraný text</translation>
 <translation id="3970951409746498040">Piesková hnedá</translation>
 <translation id="3989324057180830702">prepínač</translation>
 <translation id="3991317907213946254">Svetlobéžová</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Žiadny predchádzajúci nadpis prvej úrovne</translation>
 <translation id="4787577491510559358">Oznamovať formátovanie aktuálnej položky</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">žiadne označené textové pole</translation>
 <translation id="4804818685124855865">Odpojiť</translation>
 <translation id="481165870889056555">Oznámiť názov aktuálnej stránky</translation>
 <translation id="4815668758102003883">Bledotyrkysová</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interný odkaz</translation>
 <translation id="4909019435900810068">Posunúť o slovo vzad</translation>
 <translation id="4911349081560453449">Žiadne predchádzajúce začiarkavacie políčko</translation>
+<translation id="4919186071145887492">Príkaz <ph name="COMMAND" /> bol neúspešný, skúste to znova</translation>
 <translation id="492295894462528572">Predhovor</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
 <translation id="495170559598752135">Akcie</translation>
 <translation id="4953585991029886728">Upraviť text</translation>
+<translation id="4964701498510730546">textové pole je prázdne</translation>
 <translation id="4973717656530883744">Min. <ph name="X" /></translation>
 <translation id="4974612477719259470">Žiadne predchádzajúce tlačidlo</translation>
 <translation id="4979404613699303341">Predchádzajúce tlačidlo</translation>
+<translation id="4981239367072766915">nerozpoznaný vstup</translation>
 <translation id="4982917827052020884">Začnime niektorými klávesmi, ktoré používate pravidelne. Klávesom Control zastavíte akúkoľvek prebiehajúcu reč. Nájdete ho v ľavom dolnom rohu klávesnice. Pokračujte stlačením klávesa Control.</translation>
 <translation id="4983588134362688868">Prechod do hornej časti stránky</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, okno</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Oznamovať aktuálny stav batérie</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, prepínač bol vybraný</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, bol vybraný prepínač položiek ponuky</translation>
+<translation id="5014131807708055994">Príkaz <ph name="COMMAND" /> bol neúspešný, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Povoliť zapisovanie reči do denníka</translation>
 <translation id="5041394372352067729">Presunúť zobrazenie Braillovho písma do hornej časti stránky</translation>
 <translation id="5042770794184672516">Zvýšiť hlasitosť reči</translation>

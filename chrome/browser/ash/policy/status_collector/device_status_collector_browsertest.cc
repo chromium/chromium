@@ -21,6 +21,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -48,6 +50,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -57,6 +60,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -102,6 +106,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
@@ -344,11 +349,13 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
   // production logic with fake tpm manager and attestation clients.
   TestingDeviceStatusCollector(
       PrefService* pref_service,
+      ReportingUserTracker* reporting_user_tracker,
       ash::system::StatisticsProvider* provider,
       ManagedSessionService* managed_session_service,
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options,
       base::SimpleTestClock* clock)
       : DeviceStatusCollector(pref_service,
+                              reporting_user_tracker,
                               provider,
                               managed_session_service,
                               options->volume_info_fetcher,
@@ -364,12 +371,12 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
         test_clock_(*clock) {
     // Set the baseline time to a fixed value (1 hour after day start) to
     // prevent test flakiness due to a single activity period spanning two days.
-    test_clock_.SetNow(base::Time::Now().LocalMidnight() + kHour);
+    test_clock_->SetNow(base::Time::Now().LocalMidnight() + kHour);
   }
 
   void Simulate(ui::IdleState* states, int len) {
     for (int i = 0; i < len; i++) {
-      test_clock_.Advance(DeviceStatusCollector::kIdlePollInterval);
+      test_clock_->Advance(DeviceStatusCollector::kIdlePollInterval);
       ProcessIdleState(states[i]);
     }
   }
@@ -418,7 +425,7 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
   }
 
  private:
-  base::SimpleTestClock& test_clock_;
+  const raw_ref<base::SimpleTestClock, ExperimentalAsh> test_clock_;
 
   std::unique_ptr<DeviceLocalAccount> kiosk_account_;
 };
@@ -811,6 +818,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   // TODO(b/216186861) Default all policies to false for each unit test
   DeviceStatusCollectorTest()
       : user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        reporting_user_tracker_(std::make_unique<ReportingUserTracker>(
+            user_manager::UserManager::Get())),
         got_session_status_(false),
         fake_kiosk_device_local_account_(
             DeviceLocalAccount::TYPE_KIOSK_APP,
@@ -837,10 +846,6 @@ class DeviceStatusCollectorTest : public testing::Test {
         crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
-    auto* user_manager = GetFakeChromeUserManager();
-    user_manager->CreateLocalState();
-    TestingPrefServiceSimple* local_state =
-        static_cast<TestingPrefServiceSimple*>(user_manager->GetLocalState());
 
     // Ensure mojo is started, otherwise browser context keyed services that
     // rely on mojo will explode.
@@ -884,14 +889,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     // DiskMountManager takes ownership of the MockDiskMountManager.
     DiskMountManager::InitializeForTesting(mock_disk_mount_manager.release());
-    TestingDeviceStatusCollector::RegisterPrefs(local_state->registry());
     TestingDeviceStatusCollector::RegisterProfilePrefs(
         profile_pref_service_.registry());
-
-    // Set up a fake local state for KioskAppManager and KioskCryptohomeRemover.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
-    ash::KioskAppManager::RegisterLocalStatePrefs(local_state->registry());
-    ash::KioskCryptohomeRemover::RegisterPrefs(local_state->registry());
 
     // Use FakeUpdateEngineClient.
     update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
@@ -929,7 +928,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::UpdateEngineClient::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     ash::FakeSpacedClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
     content::RunAllTasksUntilIdle();
@@ -965,9 +963,9 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   virtual void RestartStatusCollector(
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options) {
-    std::vector<em::VolumeInfo> expected_volume_info;
     status_collector_ = std::make_unique<TestingDeviceStatusCollector>(
-        GetFakeChromeUserManager()->GetLocalState(), &fake_statistics_provider_,
+        GetFakeChromeUserManager()->GetLocalState(),
+        reporting_user_tracker_.get(), &fake_statistics_provider_,
         managed_session_service_.get(), std::move(options), &test_clock_);
   }
 
@@ -1179,6 +1177,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   // unit test setup and make a TestingBrowserProcess. Must be first member.
   TestingBrowserProcessInitializer initializer_;
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
@@ -1198,6 +1198,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   // called.
   std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
   user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
   em::DeviceStatusReportRequest device_status_;
   em::SessionStatusReportRequest session_status_;
   bool got_session_status_;
@@ -1211,7 +1212,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
-  ash::FakeUpdateEngineClient* update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;
@@ -1578,8 +1579,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   user_manager->UserLoggedIn(public_account_id, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1609,8 +1608,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
@@ -1854,11 +1851,6 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
   user_manager->UserLoggedIn(account_id5, user5->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(account_id0);
-  user_manager->AddReportingUser(account_id1);
-  user_manager->AddReportingUser(account_id2);
-  user_manager->AddReportingUser(account_id4);
-  user_manager->AddReportingUser(account_id5);
 
   // Verify that users are reported by default.
   GetStatus();

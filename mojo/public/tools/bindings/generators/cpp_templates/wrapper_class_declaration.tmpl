@@ -68,6 +68,9 @@ class {{export_attribute}} {{struct.name}} {
   template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
   bool operator==(const T& rhs) const { return Equals(rhs); }
 
+  template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
+  bool operator!=(const T& rhs) const { return !operator==(rhs); }
+
 {%- if struct|is_hashable %}
   size_t Hash(size_t seed) const;
 {%- endif %}

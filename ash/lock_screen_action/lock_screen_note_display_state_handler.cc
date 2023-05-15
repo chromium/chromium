@@ -30,7 +30,8 @@ LockScreenNoteDisplayStateHandler::LockScreenNoteDisplayStateHandler(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
       backlights_forced_off_observation_(this) {
-  backlights_forced_off_observation_.Observe(backlights_forced_off_setter_);
+  backlights_forced_off_observation_.Observe(
+      backlights_forced_off_setter_.get());
 }
 
 LockScreenNoteDisplayStateHandler::~LockScreenNoteDisplayStateHandler() =

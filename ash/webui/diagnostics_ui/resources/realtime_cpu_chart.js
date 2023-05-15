@@ -186,8 +186,11 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
   updateChartWidth_() {
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
-    this.width_ = parseFloat(
+    const width = parseFloat(
         window.getComputedStyle(this).getPropertyValue('--chart-width-nav'));
+    if (!isNaN(width)) {
+      this.width_ = width;
+    }
   }
 
   /**

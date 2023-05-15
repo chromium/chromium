@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
@@ -93,7 +94,7 @@ class AppListSyncUpdateWaiter
   }
 
  private:
-  app_list::AppListSyncableService* const service_;
+  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh> service_;
   bool service_updated_ = false;
 };
 

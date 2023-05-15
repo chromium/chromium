@@ -14,7 +14,6 @@
 #include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/assistant/ui/dialog_plate/mic_view.h"
 #include "ash/assistant/util/animation_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -83,24 +82,6 @@ void HideKeyboardIfEnabled() {
 
   if (keyboard_controller->IsEnabled())
     keyboard_controller->HideKeyboardImplicitlyByUser();
-}
-
-// Returns the primary color adjusted for enabled features.
-ui::ColorId GetPrimaryColor() {
-  if (features::IsDarkLightModeEnabled())
-    return cros_tokens::kColorPrimary;
-
-  // The dark color is used by default.
-  return cros_tokens::kColorPrimaryDark;
-}
-
-// Returns the secondary color adjusted for enabled features.
-ui::ColorId GetSecondaryColor() {
-  if (features::IsDarkLightModeEnabled())
-    return cros_tokens::kColorSecondary;
-
-  // The dark color is used by default.
-  return cros_tokens::kColorSecondaryDark;
 }
 
 }  // namespace
@@ -316,9 +297,10 @@ void AssistantDialogPlate::RequestFocus() {
 void AssistantDialogPlate::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  textfield_->SetTextColor(GetColorProvider()->GetColor(GetPrimaryColor()));
+  textfield_->SetTextColor(
+      GetColorProvider()->GetColor(cros_tokens::kColorPrimary));
   textfield_->set_placeholder_text_color(
-      GetColorProvider()->GetColor(GetSecondaryColor()));
+      GetColorProvider()->GetColor(cros_tokens::kColorSecondary));
 }
 
 views::View* AssistantDialogPlate::FindFirstFocusableView() {
@@ -463,7 +445,7 @@ void AssistantDialogPlate::InitVoiceLayoutContainer() {
   AssistantButton::InitParams params;
   params.size_in_dip = kButtonSizeDip;
   params.icon_size_in_dip = kIconSizeDip;
-  params.icon_color_type = GetPrimaryColor();
+  params.icon_color_type = cros_tokens::kColorPrimary;
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
   params.tooltip_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_TOOLTIP;
   keyboard_input_toggle_ =

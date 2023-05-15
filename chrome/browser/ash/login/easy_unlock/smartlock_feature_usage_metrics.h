@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 
@@ -36,7 +37,8 @@ class SmartLockFeatureUsageMetrics
   bool IsEligible() const override;
   bool IsEnabled() const override;
 
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
   feature_usage::FeatureUsageMetrics feature_usage_metrics_;
 };
 

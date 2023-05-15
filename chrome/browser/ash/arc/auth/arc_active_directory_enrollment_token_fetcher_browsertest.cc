@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
@@ -81,7 +82,8 @@ class FakeArcSupportObserverBase : public FakeArcSupport::Observer {
 
  protected:
   ~FakeArcSupportObserverBase() override = default;
-  FakeArcSupport* const fake_arc_support_;  // Not owned.
+  const raw_ptr<FakeArcSupport, ExperimentalAsh>
+      fake_arc_support_;  // Not owned.
 };
 
 // Simulates SAML authentication success.
@@ -109,7 +111,7 @@ class SimulateAuthCancelledObserver : public FakeArcSupportObserverBase {
   }
 
  private:
-  base::RunLoop* const run_loop_;  // Not owned.
+  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;  // Not owned.
 };
 
 // Simulates SAML authentication failure.
@@ -128,7 +130,7 @@ class SimulateAuthFailsObserver : public FakeArcSupportObserverBase {
   }
 
  private:
-  base::RunLoop* const run_loop_;  // Not owned.
+  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;  // Not owned.
 };
 
 // Simulates SAML authentication retry.
@@ -156,7 +158,7 @@ class SimulateAuthRetryObserver : public FakeArcSupportObserverBase {
   }
 
  private:
-  base::RunLoop* const run_loop_;  // Not owned.
+  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;  // Not owned.
   int saml_auth_count_ = 0;
 };
 

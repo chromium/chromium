@@ -12,7 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/protocol/errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -42,6 +44,7 @@ class RegisterSupportHostRequest {
   virtual void StartRequest(SignalStrategy* signal_strategy,
                             scoped_refptr<RsaKeyPair> key_pair,
                             const std::string& authorized_helper,
+                            absl::optional<ChromeOsEnterpriseParams> params,
                             RegisterCallback callback) = 0;
 };
 

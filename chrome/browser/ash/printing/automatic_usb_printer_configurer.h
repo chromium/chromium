@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -74,8 +75,10 @@ class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
   SEQUENCE_CHECKER(sequence_);
 
   std::unique_ptr<PrinterConfigurer> printer_configurer_;
-  PrinterInstallationManager* installation_manager_;           // Not owned.
-  UsbPrinterNotificationController* notification_controller_;  // Not owned.
+  raw_ptr<PrinterInstallationManager, ExperimentalAsh>
+      installation_manager_;  // Not owned.
+  raw_ptr<UsbPrinterNotificationController, ExperimentalAsh>
+      notification_controller_;  // Not owned.
   base::flat_set<std::string> configured_printers_;
   base::flat_set<std::string> unconfigured_printers_;
 

@@ -33,6 +33,9 @@
 - (void)readingListListViewController:(UIViewController*)viewController
               openItemOfflineInNewTab:(id<ReadingListListItem>)item;
 
+// Notifies the delegate that the reading list has been loaded.
+- (void)didLoadContent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_LIST_VIEW_CONTROLLER_DELEGATE_H_

@@ -9,10 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -283,7 +283,8 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
   ui::Accelerator paste_accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);
 
   message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, base::GenerateGUID(), title,
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), title,
       l10n_util::GetStringFUTF16(
           IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION,
           paste_accelerator.GetShortcutText()),

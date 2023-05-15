@@ -1024,21 +1024,24 @@ void Canvas2DLayerBridge::FinalizeFrame(
     return;
 
   FlushRecording(reason);
-  if (is_being_displayed_) {
-    ++frames_since_last_commit_;
-    // Make sure the GPU is never more than two animation frames behind.
-    constexpr unsigned kMaxCanvasAnimationBacklog = 2;
-    if (frames_since_last_commit_ >=
-        static_cast<int>(kMaxCanvasAnimationBacklog)) {
-      if (IsComposited() && !rate_limiter_) {
-        rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
-            kMaxCanvasAnimationBacklog);
+  if (reason == CanvasResourceProvider::FlushReason::kCanvasPushFrame) {
+    if (is_being_displayed_) {
+      ++frames_since_last_commit_;
+      // Make sure the GPU is never more than two animation frames behind.
+      constexpr unsigned kMaxCanvasAnimationBacklog = 2;
+      if (frames_since_last_commit_ >=
+          static_cast<int>(kMaxCanvasAnimationBacklog)) {
+        if (IsComposited() && !rate_limiter_) {
+          rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
+              kMaxCanvasAnimationBacklog);
+        }
       }
     }
-  }
 
-  if (rate_limiter_)
-    rate_limiter_->Tick();
+    if (rate_limiter_) {
+      rate_limiter_->Tick();
+    }
+  }
 }
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {

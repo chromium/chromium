@@ -30,17 +30,14 @@ struct StructTraits<password_manager::mojom::CSVPasswordDataView,
     return r.GetParseStatus();
   }
   static const GURL url(const password_manager::CSVPassword& r) {
-    base::expected<GURL, std::string> expected_url = r.GetURL();
-    if (expected_url.has_value())
-      return expected_url.value();
-    return GURL();
+    return r.GetURL().value_or(GURL());
   }
   static absl::optional<std::string> invalid_url(
       const password_manager::CSVPassword& r) {
     base::expected<GURL, std::string> expected_url = r.GetURL();
     if (!expected_url.has_value())
       return expected_url.error();
-    return absl::optional<std::string>();
+    return absl::nullopt;
   }
   static const std::string& username(const password_manager::CSVPassword& r) {
     return r.GetUsername();

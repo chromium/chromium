@@ -110,8 +110,8 @@ class ScopedStderrThreshold final {
 // Log Backtrace At
 //------------------------------------------------------------------------------
 //
-// Users can request backtrace to be logged at specific locations, specified
-// by file and line number.
+// Users can request an existing `LOG` statement, specified by file and line
+// number, to also include a backtrace when logged.
 
 // ShouldLogBacktraceAt()
 //
@@ -123,8 +123,15 @@ ABSL_MUST_USE_RESULT bool ShouldLogBacktraceAt(absl::string_view file,
 
 // SetLogBacktraceLocation()
 //
-// Sets the location the backtrace should be logged at.
+// Sets the location the backtrace should be logged at.  If the specified
+// location isn't a `LOG` statement, the effect will be the same as
+// `ClearLogBacktraceLocation` (but less efficient).
 void SetLogBacktraceLocation(absl::string_view file, int line);
+
+// ClearLogBacktraceLocation()
+//
+// Clears the set location so that backtraces will no longer be logged at it.
+void ClearLogBacktraceLocation();
 
 //------------------------------------------------------------------------------
 // Prepend Log Prefix
@@ -144,6 +151,29 @@ ABSL_MUST_USE_RESULT bool ShouldPrependLogPrefix();
 // Updates the value of the Prepend Log Prefix option.
 // This function is async-signal-safe.
 void EnableLogPrefix(bool on_off);
+
+//------------------------------------------------------------------------------
+// Configure Android Native Log Tag
+//------------------------------------------------------------------------------
+//
+// The logging library forwards to the Android system log API when built for
+// Android.  That API takes a string "tag" value in addition to a message and
+// severity level.  The tag is used to identify the source of messages and to
+// filter them.  This library uses the tag "native" by default.
+
+// SetAndroidNativeTag()
+//
+// Stores a copy of the string pointed to by `tag` and uses it as the Android
+// logging tag thereafter. `tag` must not be null.
+// This function must not be called more than once!
+void SetAndroidNativeTag(const char* tag);
+
+namespace log_internal {
+// GetAndroidNativeTag()
+//
+// Returns the configured Android logging tag.
+const char* GetAndroidNativeTag();
+}  // namespace log_internal
 
 namespace log_internal {
 

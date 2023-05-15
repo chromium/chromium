@@ -220,6 +220,10 @@ def _set_orchestrator_properties(ctx):
 
         compilator = d.compilator
         compilator_properties = dict(orchestrator_properties)
+
+        # The "cq" property doesn't inherit; compilators aren't ever triggered by CV.
+        compilator_properties.pop("cq", None)
+
         compilator_properties.update(json.decode(compilator.builder.properties))
         compilator.builder.properties = json.encode(compilator_properties)
         _update_description(

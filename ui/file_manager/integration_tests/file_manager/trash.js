@@ -11,17 +11,6 @@ import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
- * Clicks the enabled and visible move to trash button and ensures the delete
- * button is hidden.
- * @param {string} appId
- */
-async function clickTrashButton(appId) {
-  await remoteCall.waitForElement(appId, '#delete-button[hidden]');
-  await remoteCall.waitAndClickElement(
-      appId, '#move-to-trash-button:not([hidden]):not([disabled])');
-}
-
-/**
  * Clicks the enabled and visible delete button and ensures the move to trash
  * button is hidden.
  * @param {string} appId
@@ -99,7 +88,7 @@ testcase.trashMoveToTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -148,7 +137,7 @@ testcase.trashMoveToTrash = async () => {
   // Delete photos dir (no dialog),
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
 
   // Wait for photos to be removed, and .Trash to be recreated.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
@@ -203,7 +192,7 @@ testcase.trashDeleteFromTrashOriginallyFromMyFiles = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -228,7 +217,7 @@ testcase.trashRestoreFromToast = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -257,7 +246,7 @@ testcase.trashRestoreFromTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -305,7 +294,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -340,7 +329,7 @@ testcase.trashEmptyTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -372,7 +361,7 @@ testcase.trashEmptyTrashShortcut = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -407,7 +396,7 @@ testcase.trashDeleteFromTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -425,14 +414,14 @@ testcase.trashDeleteFromTrash = async () => {
  */
 testcase.trashDeleteFromTrashOriginallyFromDrive = async () => {
   const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Select hello.txt.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -462,7 +451,7 @@ testcase.trashNoTasksInTrashRoot = async () => {
   await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -492,7 +481,7 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
       appId, DOWNLOADS_FAKE_TASKS[0].descriptor, ['hello.txt']);
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -521,7 +510,7 @@ testcase.trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton =
 
   // Delete item and wait for it to be removed (no dialog).
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -553,7 +542,7 @@ testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
   // Select the Photos folder and trash the whole thing.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
 
   // Navigate to /Trash and ensure the "photos" folder is shown.
@@ -810,7 +799,7 @@ testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
   // Select hello.txt and make sure a default task is executed when double
   // clicking.
   await remoteCall.waitAndClickElement(appId, fileNameSelector);
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, fileNameSelector);
 
   // Navigate to /Trash and ensure the file is there and has not been deleted,
@@ -852,7 +841,7 @@ testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -888,41 +877,6 @@ testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
 };
 
 /**
- * Tests that the Cut command should be enabled whilst the copy command should
- * be disabled.
- */
-testcase.trashCopyShouldBeDisabledCutShouldBeEnabled = async () => {
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-
-  const fileSelector = '#file-list [file-name="hello.txt"]';
-
-  // Select hello.txt and send it to the Trash.
-  await remoteCall.waitAndClickElement(appId, fileSelector);
-  await clickTrashButton(appId);
-  await remoteCall.waitForElementLost(appId, fileSelector);
-
-  // Navigate to the Trash root.
-  await navigateWithDirectoryTree(appId, '/Trash');
-
-  // Wait for the element to appear in the Trash and right click it to get
-  // access to the context menu.
-  await remoteCall.waitAndRightClick(appId, fileSelector);
-
-  // Wait for the context menu to appear.
-  const contextMenuSelector = '#file-context-menu:not([hidden])';
-  await remoteCall.waitForElement(appId, contextMenuSelector);
-
-  // Ensure the cut command is enabled and the copy command is disabled.
-  await remoteCall.waitForElement(
-      appId,
-      contextMenuSelector + ' [command="#cut"]:not([hidden]):not([disabled])');
-  await remoteCall.waitForElement(
-      appId,
-      contextMenuSelector + ' [command="#copy"][disabled]:not([hidden])');
-};
-
-/**
  * Tests that the "Moving to trash" visual signal that is shown whilst a trash
  * operation is in progress, does not contain the "Undo" button.
  */
@@ -938,7 +892,7 @@ testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -965,7 +919,7 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
   // Select hello.txt and send it to the Trash, this file should not be removed
   // in between enabling and disabling the feature.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -1041,7 +995,7 @@ testcase.trashCantRestoreWhenParentDoesntExist = async () => {
   await remoteCall.waitAndClickElement(appId, '#file-list [file-name="B"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="B"]');
 
   // Navigate to /My files/Downloads and click the "A" directory.
@@ -1049,7 +1003,7 @@ testcase.trashCantRestoreWhenParentDoesntExist = async () => {
   await remoteCall.waitAndClickElement(appId, '#file-list [file-name="A"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="A"]');
 
   // Navigate to Trash and click the "B" directory of which the parent "A"
@@ -1068,17 +1022,19 @@ testcase.trashCantRestoreWhenParentDoesntExist = async () => {
 };
 
 /**
- * Verify that files within Trash root can't be renamed.
+ * Verify that infeasible actions within Trash root are disabled and hidden when
+ * right clicking a file. Verify that feasible actions are enabled.
  */
-testcase.trashCantRenameFilesInTrashRoot = async () => {
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+testcase.trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot =
+    async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   const fileSelector = '#file-list [file-name="hello.txt"]';
 
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(appId, fileSelector);
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, fileSelector);
 
   // Navigate to the Trash root.
@@ -1088,11 +1044,169 @@ testcase.trashCantRenameFilesInTrashRoot = async () => {
   // access to the context menu.
   await remoteCall.waitAndRightClick(appId, fileSelector);
 
-  // Ensure the rename command is disabled.
   const contextMenuSelector = '#file-context-menu:not([hidden])';
   await remoteCall.waitForElement(appId, contextMenuSelector);
+
+  // Ensure each infeasible action is disabled and hidden.
+  const infeasibleActions = [
+    'rename',
+    'new-folder',
+    'paste',
+    'copy',
+    'zip-selection',
+    'set-wallpaper',
+  ];
+  for (const action of infeasibleActions) {
+    await remoteCall.waitForElement(
+        appId,
+        contextMenuSelector + ' [command="#' + action + '"][disabled][hidden]');
+  }
+
+  // Ensure each feasible action not disabled and not hidden.
+  const feasibleActions = [
+    'cut',
+    'get-info',
+    'delete',
+    'restore-from-trash',
+  ];
+  for (const action of feasibleActions) {
+    await remoteCall.waitForElement(
+        appId,
+        contextMenuSelector + ' [command="#' + action +
+            '"]:not([disabled]):not([hidden])');
+  }
+};
+
+/**
+ * Verify that infeasible actions within Trash root are disabled and hidden when
+ * right clicking a folder. Verify that feasible actions are enabled.
+ */
+testcase.trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot =
+    async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.directoryA], []);
+
+  // Select and copy hello.txt into the clipboard to check the Paste Into Folder
+  // action.
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
+      'execCommand failed');
+
+  const fileSelector = '#file-list [file-name="A"]';
+
+  // Select folder A and send it to the Trash.
+  await remoteCall.waitAndClickElement(appId, fileSelector);
+  await remoteCall.clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, fileSelector);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash and right click it to get
+  // access to the context menu.
+  await remoteCall.waitAndRightClick(appId, fileSelector);
+
+  const contextMenuSelector = '#file-context-menu:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuSelector);
+
+  // Ensure each infeasible action is disabled and hidden.
+  const infeasibleActions = [
+    'rename',
+    'new-folder',
+    'copy',
+    'zip-selection',
+    'paste-into-folder',
+  ];
+  for (const action of infeasibleActions) {
+    await remoteCall.waitForElement(
+        appId,
+        contextMenuSelector + ' [command="#' + action + '"][disabled][hidden]');
+  }
+
+  // Ensure each feasible action not disabled and not hidden.
+  const feasibleActions = [
+    'cut',
+    'get-info',
+    'delete',
+    'restore-from-trash',
+  ];
+  for (const action of feasibleActions) {
+    await remoteCall.waitForElement(
+        appId,
+        contextMenuSelector + ' [command="#' + action +
+            '"]:not([disabled]):not([hidden])');
+  }
+};
+
+/**
+ * Verify that Extract All within Trash root is disabled and hidden when right
+ * clicking a zip file.
+ */
+testcase.trashExtractAllForZipHiddenAndDisabledInTrashRoot = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
+
+  const fileSelector = '#file-list [file-name="archive.zip"]';
+
+  // Select tera.zip and send it to the Trash.
+  await remoteCall.waitAndClickElement(appId, fileSelector);
+  await remoteCall.clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, fileSelector);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash and right click it to get
+  // access to the context menu.
+  await remoteCall.waitAndRightClick(appId, fileSelector);
+
+  const contextMenuSelector = '#file-context-menu:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuSelector);
+  // Ensure extract all action is disabled and hidden.
   await remoteCall.waitForElement(
-      appId, contextMenuSelector + ' [command="#rename"][disabled][hidden]');
+      appId,
+      contextMenuSelector + ' [command="#extract-all"][disabled][hidden]');
+};
+
+/**
+ * Verify that infeasible actions within Trash root are disabled and hidden when
+ * right clicking a blank space. Verify that Cut is disabled but not hidden.
+ */
+testcase.trashAllActionsDisabledForBlankSpaceInTrashRoot = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Select and copy hello.txt into the clipboard to check the Paste action.
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
+      'execCommand failed');
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Click blank space.
+  await remoteCall.rightClickFileListBlankSpace(appId);
+
+  // Ensure the context menu is not hidden.
+  const contextMenuSelector = '#file-context-menu:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuSelector);
+  // Ensure each infeasible action is disabled and hidden.
+  const infeasibleActions = [
+    'paste',
+    'new-folder',
+    'copy',
+  ];
+  for (const action of infeasibleActions) {
+    await remoteCall.waitForElement(
+        appId,
+        contextMenuSelector + ' [command="#' + action + '"][disabled][hidden]');
+  }
+
+  // Ensure Cut is disabled and not hidden.
+  await remoteCall.waitForElement(
+      appId, contextMenuSelector + ' [command="#cut"][disabled]:not([hidden])');
 };
 
 /**
@@ -1110,7 +1224,7 @@ testcase.trashNudgeShownOnFirstTrashOperation = async () => {
   // Select hello.txt and send it to the Trash, this file should not be removed
   // in between enabling and disabling the feature.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -1133,7 +1247,7 @@ testcase.trashNudgeShownOnFirstTrashOperation = async () => {
 
   // Select and trash the file "world.ogv".
   await remoteCall.waitUntilSelected(appId, 'world.ogv');
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="world.ogv"]');
 
@@ -1152,7 +1266,7 @@ testcase.trashStaleTrashInfoFilesAreRemovedAfterOneHour = async () => {
 
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(appId, fileSelector);
-  await clickTrashButton(appId);
+  await remoteCall.clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, fileSelector);
 
   // Enable hidden files to be shown.

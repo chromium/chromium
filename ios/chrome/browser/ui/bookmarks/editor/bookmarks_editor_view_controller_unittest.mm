@@ -56,13 +56,15 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
 
   const bookmarks::BookmarkNode* mobile_node =
       profile_bookmark_model_->mobile_node();
-  const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, @"foo");
+  const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, u"foo");
   BookmarksEditorMediator* mediator = [[BookmarksEditorMediator alloc]
-      initWithBookmarkModel:profile_bookmark_model_
-                   bookmark:bookmark
-                      prefs:nullptr
-           syncSetupService:nullptr
-                syncService:nullptr];
+      initWithProfileBookmarkModel:profile_bookmark_model_
+              accountBookmarkModel:nullptr
+                      bookmarkNode:bookmark
+                             prefs:nullptr
+                  syncSetupService:nullptr
+                       syncService:nullptr
+                      browserState:nullptr];
   controller.mutator = mediator;
   [controller updateSync];
 }

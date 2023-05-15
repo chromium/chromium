@@ -19,11 +19,15 @@ component("devices") {
     "input_device.cc",
     "input_device.h",
     "input_device_event_observer.h",
+    "keyboard_device.cc",
+    "keyboard_device.h",
     "microphone_mute_switch_monitor.cc",
     "microphone_mute_switch_monitor.h",
     "stylus_state.h",
     "touch_device_transform.cc",
     "touch_device_transform.h",
+    "touchpad_device.cc",
+    "touchpad_device.h",
     "touchscreen_device.cc",
     "touchscreen_device.h",
   ]
@@ -74,6 +78,21 @@ if (is_android) {
   generate_jni("ui_events_devices_jni_headers") {
     sources = [ "../../android/java/src/org/chromium/ui/events/devices/InputDeviceObserver.java" ]
   }
+}
+
+source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "input_device_unittest.cc",
+    "touchscreen_device_unittest.cc",
+  ]
+
+  deps = [
+    ":devices",
+    "//base",
+    "//base/test:test_support",
+  ]
 }
 
 source_set("test_support") {

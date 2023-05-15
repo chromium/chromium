@@ -1,7 +1,7 @@
 <style include="signin-shared tangible-sync-style-shared">
+  /* TODO look at UI with inspector to see which lines are overridden by the
+   shared config. */
   :host {
-    --banner-size: auto;
-    --footer-margin: 24px;
     --sync-benefits-list-color: var(--google-grey-50);
     --sync-benefit-icon-color: var(--google-blue-600);
     color: var(--cr-primary-text-color);
@@ -57,160 +57,42 @@
     position: absolute;
   }
 
-  /* Modal dialog design */
-  #illustration-container {
-    height: 168px;
-    margin-bottom: 32px;
-    position: relative;
-    width: 100%;
-  }
-
-  #illustration {
-    background: url(./images/sync_confirmation_illustration.svg);
-    background-size: 100% 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  #illustration-container > img {
-    border-radius: 50%;
-    height: 68px;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 96px;
-    width: 68px;
-  }
-
-  .heading {
-    font-weight: normal;
-    margin-bottom: 32px;
-    margin-top: 0;
-    padding: 0 24px;
-    text-align: center;
-  }
-
-  .signin-intercept-design .heading {
-    font-size: 20px;
-    line-height: 24px;
-    margin-bottom: 24px;
-  }
-
-  #content-container {
-    /* Saves space for button row. */
-    padding-bottom: 96px;
-    position: relative;
-    width: 100%;
-  }
-
-  .message-container {
-    line-height: 20px;
-    margin-bottom: 16px;
-    padding: 0 24px;
-  }
-
-  .signin-intercept-design .message-container {
-    font-size: 15px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 24px;
-    padding: 0 55px;
-    text-align: center;
-  }
-
-  .signin-intercept-design .secondary {
-    color: var(--cr-primary-text-color);
-  }
-
-  @media (prefers-color-scheme: light) {
-    #grey-banner {
-      background: var(--paper-grey-50);
-      height: 128px;
-      top: 0;
-      width: 100%;
-    }
-  }
-
-  #modal-footer {
-    margin-bottom: 0;
-    padding-top: 12px;
-  }
-
-  /* Makes the absolutely positioned footer relative to confirmationContainer
-     which may be larger than the window. */
-  #confirmationContainer {
-    min-height: 100%;
-    position: absolute;
-    width: 100%;
-  }
-
-  #headerContainer {
-    height: 244px;
-    position: relative;
-    width: 100%;
-  }
-
-  #syncPromoBanner {
-    background-image: url(images/sync_confirmation_refreshed_illustration.svg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: var(--banner-size);
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 0;
-  }
 
   #avatarContainer {
     --avatar-border-width: 2px;
-    --avatar-size: 100px;
-    bottom: calc(var(--avatar-size)/-2);
+    --avatar-size: var(--tangible-sync-style-avatar-size);
     height: var(--avatar-size);
     left: 0;
     margin: auto;
-    position: absolute;
+    position: relative;
     right: 0;
     width: var(--avatar-size);
     z-index: 1;
   }
 
   #avatar {
+    /** The user avatar may be transparent, add a background */
+    background-color: var(--md-background-color);
     border: var(--avatar-border-width) solid var(--md-background-color);
     border-radius: 50%;
     height: 100%;
+    left: calc(-1 * var(--avatar-border-width));
+    position: absolute;
+    top: calc(-1 * var(--avatar-border-width));
     width: 100%;
   }
 
   .work-badge {
-    --badge-width: 30px;
-    --badge-offset: -6px;
-    border: 3px solid white;
-    border-radius: 50%;
-    bottom: var(--badge-offset);
-    height: var(--badge-width);
-    inset-inline-end: var(--badge-offset);
+    bottom: 0;
     position: absolute;
-    width: var(--badge-width);
-  }
-
-  .work-badge > iron-icon {
-    --work-icon-size: 20px;
-    background-color: var(--md-background-color);
-    border-radius: 50%;
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
-    color: var(--signin-work-badge-foreground-color);
-    height: var(--work-icon-size);
-    padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
-    width: var(--work-icon-size);
   }
 
   #contentContainer {
-    margin-bottom: calc(32px + 2 * var(--footer-margin));
-    margin-top: 72px;
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    max-width: 500px;
     text-align: center;
   }
 
@@ -229,7 +111,7 @@
   }
 
   #buttonsContainer {
-    --action-container-padding: var(--footer-margin);
+    --action-container-padding: 24px;
   }
 
   #buttonsContainer cr-button {
@@ -245,61 +127,7 @@
     font-weight: normal;
   }
 
-  #headerContainer.signin-intercept-design {
-    background: center 36px no-repeat
-        url(./images/sync_confirmation_signin_intercept_illustration.svg);
-    height: 170px;
-    margin-bottom: 14px;
-  }
-
-  .signin-intercept-design #avatarContainer {
-    --avatar-size: 76px;
-    bottom: auto;
-    top: 91px;
-  }
-
-  .signin-intercept-design #avatar,
-  .tangible-sync-style #avatar {
-    /** The user avatar may be transparent, add a background */
-    background-color: var(--md-background-color);
-    left: calc(-1 * var(--avatar-border-width));
-    position: absolute;
-    top: calc(-1 * var(--avatar-border-width));
-  }
-
-  .signin-intercept-design .work-badge {
-    --badge-width: 26px;
-    --badge-offset: -4px;
-    background-color: var(--signin-work-badge-background-color);
-    border: 1px solid var(--google-grey-300);
-    bottom: 0;
-    inset-inline-end: var(--badge-offset);
-  }
-
-  .tangible-sync-style .work-badge {
-    bottom: 0;
-  }
-
-  .signin-intercept-design .work-badge > iron-icon {
-    --work-icon-size: 16px;
-    background-color: var(--signin-work-badge-background-color);
-    margin: auto;
-  }
-
-  .signin-intercept-design .action-container {
-    --action-container-padding: 24px;
-    column-gap: 12px;
-  }
-
-  .tangible-sync-style #contentContainer {
-    align-items: stretch;
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    max-width: 500px;
-  }
-
-  .main-container.tangible-sync-style:not(.dialog) {
+  .main-container:not(.dialog) {
     --button-container-height: calc(2 * var(--action-container-padding) +
         var(--cr-button-height));
     display: flex;
@@ -307,7 +135,7 @@
     width: 100vw;
   }
 
-  .tangible-sync-style.dialog #contentContainer {
+  .dialog #contentContainer {
     --cr-button-height: 32px;
     --sync-info-desc-bottom-margin: 48px;
     --container-bottom-padding: calc(var(--sync-info-desc-bottom-margin) +
@@ -316,20 +144,6 @@
     /* Bottom padding is needed to save space for the button row in
     the modal dialog view. */
     padding: 32px 0 var(--container-bottom-padding);
-  }
-
-  .tangible-sync-style #avatarContainer {
-    --avatar-size: var(--tangible-sync-style-avatar-size);
-    bottom: unset;
-    position: relative;
-  }
-
-  .tangible-sync-style .work-badge {
-    --badge-width: 22px;
-  }
-
-  .tangible-sync-style .work-badge > iron-icon {
-    --work-icon-size: 14px;
   }
 
   #syncBenefitsList {
@@ -345,7 +159,7 @@
     row-gap: 16px;
   }
 
-  .tangible-sync-style.dialog #syncBenefitsList {
+  .dialog #syncBenefitsList {
     margin: 16px 38px;
     padding: 20px 24px;
   }
@@ -364,30 +178,30 @@
     width: 24px;
   }
 
-  #syncInfoDesc {
+  .sync-info-desc {
     font-size: 0.75rem;
     line-height: 20px;
   }
 
-  .tangible-sync-style.dialog #syncInfoDesc {
+  .dialog .sync-info-desc {
     margin: 0 38px;
   }
 
   .tangible-sync-style-dialog-illustration {
-    content: url(./images/tangible_sync_dialog_illustration.svg);
+    content: url(./images/dialog_illustration.svg);
   }
 
   .tangible-sync-style-left-banner {
     animation-duration: 500ms;
     animation-name: left-illustration-slide-animation, fade-in-animation;
-    content: url(./images/tangible_sync_window_left_illustration.svg);
+    content: url(./images/window_left_illustration.svg);
     transition-timing-function: ease-in-out;
   }
 
   .tangible-sync-style-right-banner {
     animation-duration: 500ms;
     animation-name: right-illustration-slide-animation, fade-in-animation;
-    content: url(./images/tangible_sync_window_right_illustration.svg);
+    content: url(./images/window_right_illustration.svg);
     transition-timing-function: ease-in-out;
   }
 
@@ -401,41 +215,16 @@
       --sync-benefit-icon-color: var(--google-blue-300);
     }
 
-    /* Modal dialog design */
-    #illustration {
-      background-image:
-          url(./images/sync_confirmation_illustration_dark.svg);
-    }
-
     .tangible-sync-style-dialog-illustration {
-      content: url(./images/tangible_sync_dialog_illustration_dark.svg);
-    }
-
-    /* Non-modal design */
-    #syncPromoBanner {
-      background-image:
-        url(images/sync_confirmation_refreshed_illustration_dark.svg);
+      content: url(./images/dialog_illustration_dark.svg);
     }
 
     .tangible-sync-style-left-banner {
-      content: url(./images/tangible_sync_window_left_illustration_dark.svg);
+      content: url(./images/window_left_illustration_dark.svg);
     }
 
     .tangible-sync-style-right-banner {
-      content: url(./images/tangible_sync_window_right_illustration_dark.svg);
-    }
-
-    #headerContainer.signin-intercept-design {
-      background-image: url(
-          ./images/sync_confirmation_signin_intercept_illustration_dark.svg);
-    }
-
-    .work-badge {
-      border-color: var(--md-background-color);
-    }
-
-    .signin-intercept-design .work-badge {
-      border-color: var(--google-grey-500);
+      content: url(./images/window_right_illustration_dark.svg);
     }
   }
 </style>
@@ -447,188 +236,75 @@
   which user clicks to indicate consent.
 -->
 
-<template is="dom-if" if="[[isModalDialogWithoutTangibleSync_(
-    isModalDialog_, isTangibleSync_)]]">
-  <template is="dom-if" if="[[!isSigninInterceptFre_]]">
-    <div id="illustration-container">
-      <div id="grey-banner"></div>
-      <div id="illustration"></div>
-      <img src="[[accountImageSrc_]]">
-    </div>
-  </template>
-  <template is="dom-if" if="[[isSigninInterceptFre_]]">
-    <div id="headerContainer" class="signin-intercept-design">
-      <div id="avatarContainer">
-        <img id="avatar" alt="" src="[[accountImageSrc_]]">
-        <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
-        </div>
+<div class$="main-container tangible-sync-style
+    [[getMaybeDialogClass_(isModalDialog_)]]">
+  <img class="tangible-sync-style-dialog-illustration" alt=""
+      hidden="[[!isModalDialog_]]">
+  <img class="tangible-sync-style-left-banner" alt=""
+      hidden="[[isModalDialog_]]">
+  <img class="tangible-sync-style-right-banner" alt=""
+      hidden="[[isModalDialog_]]">
+  <div id="contentContainer" class$="[[animationClasses_]]">
+    <div id="avatarContainer">
+      <img id="avatar" alt="" src="[[accountImageSrc_]]">
+      <div id="badge" class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+        <iron-icon icon="cr:domain" alt=""></iron-icon>
       </div>
     </div>
-  </template>
-  <div id="content-container" class$="[[getSigninInterceptDesignClass_(
-      isSigninInterceptFre_)]]">
-    <h1 id="syncConfirmationHeading" class="heading" consent-description>
+    <h1 class="title" consent-description>
       $i18n{syncConfirmationTitle}
     </h1>
-    <div class="message-container">
-      <div consent-description>$i18n{syncConfirmationSyncInfoTitle}</div>
-      <template is="dom-if" if="[[!isSigninInterceptFre_]]">
-        <div class="secondary" consent-description>
-          $i18n{syncConfirmationSyncInfoDesc}
+    <div class="subtitle" consent-description>
+      $i18n{syncConfirmationSyncInfoTitle}
+    </div>
+    <div id="syncBenefitsList">
+      <template is="dom-repeat" items="[[syncBenefitsList_]]">
+        <div class="sync-benefit">
+          <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]"
+              alt="">
+          </iron-icon>
+          <div class="sync-benefit-text" consent-description>
+            [[i18n(item.title)]]
+          </div>
         </div>
       </template>
     </div>
-    <template is="dom-if" if="[[!isSigninInterceptFre_]]">
-      <div id="modal-footer" class="message-container secondary">
-        $i18n{syncConfirmationSettingsInfo}
-      </div>
-    </template>
-    <div class="action-row">
-      <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div class="action-container">
-        <cr-button class="action-button" id="confirmButton"
-            on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
-            consent-confirmation autofocus>
-          $i18n{syncConfirmationConfirmLabel}
-        </cr-button>
-        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
-          <cr-button id="settingsButton" on-click="onGoToSettings_"
-              disabled="[[anyButtonClicked_]]" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
-        <cr-button id="cancelButton" on-click="onUndo_"
-            disabled="[[anyButtonClicked_]]">
-          $i18n{syncConfirmationUndoLabel}
-        </cr-button>
-        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
-          <cr-button id="settingsButton" on-click="onGoToSettings_"
-              disabled="[[anyButtonClicked_]]" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
-      </div>
+    <div class="sync-info-desc secondary"
+          hidden="[[useClickableSyncInfoDesc_]]" consent-description>
+      $i18n{syncConfirmationSyncInfoDesc}
     </div>
+      <localized-link class="sync-info-desc secondary"
+          consent-description
+          hidden="[[!useClickableSyncInfoDesc_]]"
+          localized-string="$i18n{syncConfirmationSyncInfoDesc}"
+          on-link-clicked="onDisclaimerClicked_">
+      </localized-link>
   </div>
-</template>
-
-<template is="dom-if" if="[[isWindowVersionWithoutTangibleSync_(
-    isModalDialog_, isTangibleSync_)]]">
-  <div id="confirmationContainer">
-    <div id="headerContainer">
-      <div id="syncPromoBanner"></div>
-      <div id="avatarContainer">
-        <img id="avatar" alt="" src="[[accountImageSrc_]]">
-        <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
-        </div>
-      </div>
-    </div>
-
-    <div id="contentContainer">
-      <h2 consent-description id="syncConfirmationHeading">
-        $i18n{syncConfirmationTitle}
-      </h2>
-      <div id="confirmationDescription" class="secondary">
-        <span consent-description>$i18n{syncConfirmationSyncInfoTitle}</span>.
-        <span>
-          $i18n{syncConfirmationSettingsInfo}
-        </span>
-        <span consent-description>$i18n{syncConfirmationSyncInfoDesc}</span>.
-      </div>
-    </div>
-    <div class="action-row">
-      <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div id="buttonsContainer" class="action-container">
-        <cr-button class="action-button" id="confirmButton"
-            on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
-            consent-confirmation>
-          $i18n{syncConfirmationConfirmLabel}
-        </cr-button>
-        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
-          <cr-button id="settingsButton" on-click="onGoToSettings_"
-              disabled="[[anyButtonClicked_]]" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
-        <cr-button id="notNowButton" on-click="onUndo_"
-            disabled="[[anyButtonClicked_]]">
-          $i18n{syncConfirmationUndoLabel}
-        </cr-button>
-        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
-          <cr-button id="settingsButton" on-click="onGoToSettings_"
-              disabled="[[anyButtonClicked_]]" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template is="dom-if" if="[[isTangibleSync_]]">
-  <div class$="main-container [[tangibleSyncStyleClass]]">
-    <img class="tangible-sync-style-dialog-illustration" alt=""
-        hidden="[[!isModalDialog_]]">
-    <img class="tangible-sync-style-left-banner" alt=""
-        hidden="[[isModalDialog_]]">
-    <img class="tangible-sync-style-right-banner" alt=""
-        hidden="[[isModalDialog_]]">
-    <div id="contentContainer" class$="[[getAnimationClass_()]]">
-      <div id="avatarContainer">
-        <img id="avatar" alt="" src="[[accountImageSrc_]]">
-        <div id="badge" class="work-badge" hidden="[[!showEnterpriseBadge_]]">
-          <iron-icon icon="cr:domain" alt=""></iron-icon>
-        </div>
-      </div>
-      <h1 class="title" consent-description>
-        $i18n{syncConfirmationTitle}
-      </h1>
-      <div class="subtitle" consent-description>
-        $i18n{syncConfirmationSyncInfoTitle}
-      </div>
-      <div id="syncBenefitsList">
-        <template is="dom-repeat" items="[[syncBenefitsList_]]">
-          <div class="sync-benefit">
-            <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]"
-                alt="">
-            </iron-icon>
-            <div class="sync-benefit-text" consent-description>
-              [[i18n(item.title)]]
-            </div>
-          </div>
-        </template>
-      </div>
-      <div id="syncInfoDesc" class="secondary" consent-description>
-        $i18n{syncConfirmationSyncInfoDesc}
-      </div>
-    </div>
-  </div>
-  <div class$="action-row [[getAnimationClass_()]]">
-    <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-    <div class$="action-container [[tangibleSyncStyleClass]]">
-      <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
-          disabled="[[anyButtonClicked_]]" consent-confirmation
-          autofocus="[[isModalDialog_]]">
-        $i18n{syncConfirmationConfirmLabel}
+</div>
+<div class$="action-row [[getAnimationClass_(isModalDialog_)]]">
+  <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
+  <div class$="action-container tangible-sync-style
+      [[getMaybeDialogClass_(isModalDialog_)]]">
+    <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
+        disabled="[[anyButtonClicked_]]" consent-confirmation
+        autofocus="[[isModalDialog_]]">
+      $i18n{syncConfirmationConfirmLabel}
+    </cr-button>
+    <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
+      <cr-button id="settingsButton" on-click="onGoToSettings_"
+          disabled="[[anyButtonClicked_]]" consent-confirmation>
+        $i18n{syncConfirmationSettingsLabel}
       </cr-button>
-      <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
-            disabled="[[anyButtonClicked_]]" consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
-        </cr-button>
-      </if>
-      <cr-button id="notNowButton" on-click="onUndo_"
-          disabled="[[anyButtonClicked_]]">
-        $i18n{syncConfirmationUndoLabel}
+    </if>
+    <cr-button id="notNowButton" on-click="onUndo_"
+        disabled="[[anyButtonClicked_]]">
+      $i18n{syncConfirmationUndoLabel}
+    </cr-button>
+    <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
+      <cr-button id="settingsButton" on-click="onGoToSettings_"
+          disabled="[[anyButtonClicked_]]" consent-confirmation>
+        $i18n{syncConfirmationSettingsLabel}
       </cr-button>
-      <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
-            disabled="[[anyButtonClicked_]]" consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
-        </cr-button>
-      </if>
-    </div>
+    </if>
   </div>
-</template>
+</div>

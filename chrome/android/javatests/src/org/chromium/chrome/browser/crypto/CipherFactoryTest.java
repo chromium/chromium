@@ -13,11 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
@@ -34,61 +33,15 @@ import javax.crypto.Cipher;
 public class CipherFactoryTest {
     private static final byte[] INPUT_DATA = {1, 16, 84};
 
-    /** Generates non-random byte[] for testing. */
-    private static class DeterministicParameterGenerator extends ByteArrayGenerator {
-        @Override
-        public byte[] getBytes(int numBytes) {
-            return getBytes(numBytes, (byte) 0);
-        }
-
-        /**
-         * Generates a linearly-increasing byte[] sequence that wraps around after 0xFF.
-         * @param numBytes Length of the byte[] to create.
-         * @param startByte Byte to start at.
-         * @return The completed byte[].
-         */
-        public byte[] getBytes(int numBytes, byte startByte) {
-            byte[] bytes = new byte[numBytes];
-            for (int i = 0; i < numBytes; ++i) {
-                bytes[i] = (byte) (startByte + i);
-            }
-            return bytes;
-        }
+    private static byte[] getRandomBytes(int n) {
+        byte[] ret = new byte[n];
+        new SecureRandom().nextBytes(ret);
+        return ret;
     }
 
-    /** A test implementation to verify callback is correctly notified. */
-    private static class TestCipherDataCallback implements Runnable {
-        private int mDataObserverNotifiedCount;
-
-        @Override
-        public void run() {
-            mDataObserverNotifiedCount++;
-        }
-
-        /** Whether the cipher data callback has been notified that cipher data is generated. */
-        public int getTimesNotified() {
-            return mDataObserverNotifiedCount;
-        }
-    }
-
-    private DeterministicParameterGenerator mNumberProvider;
-
-    private Runnable mEmptyRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Do nothing.
-        }
-    };
-
-    /**
-     * Overrides the {@link ByteArrayGenerator} used by the {@link CipherFactory} to ensure
-     * deterministic results.
-     */
     @Before
     public void setUp() {
         CipherFactory.resetInstanceForTesting();
-        mNumberProvider = new DeterministicParameterGenerator();
-        CipherFactory.getInstance().setRandomNumberProviderForTests(mNumberProvider);
     }
 
     /**
@@ -120,11 +73,11 @@ public class CipherFactoryTest {
         Bundle aBundle = new Bundle();
         Bundle bBundle = new Bundle();
 
-        byte[] sameIv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 100);
+        byte[] sameIv = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, sameIv);
         bBundle.putByteArray(CipherFactory.BUNDLE_IV, sameIv);
 
-        byte[] sameKey = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 200);
+        byte[] sameKey = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_KEY, sameKey);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, sameKey);
 
@@ -148,8 +101,8 @@ public class CipherFactoryTest {
     public void testDifferentBundleRestoration() throws Exception {
         // Restore one set of parameters.
         Bundle aBundle = new Bundle();
-        byte[] aIv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 50);
-        byte[] aKey = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 100);
+        byte[] aIv = getRandomBytes(CipherFactory.NUM_BYTES);
+        byte[] aKey = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, aIv);
         aBundle.putByteArray(CipherFactory.BUNDLE_KEY, aKey);
         Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(aBundle));
@@ -157,8 +110,8 @@ public class CipherFactoryTest {
 
         // Restore using a different set of parameters.
         Bundle bBundle = new Bundle();
-        byte[] bIv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 150);
-        byte[] bKey = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 200);
+        byte[] bIv = getRandomBytes(CipherFactory.NUM_BYTES);
+        byte[] bKey = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_IV, bIv);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, bKey);
         Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(bBundle));
@@ -179,13 +132,13 @@ public class CipherFactoryTest {
 
         // Try restoring without the key.
         Bundle aBundle = new Bundle();
-        byte[] iv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 50);
+        byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, iv);
         Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(aBundle));
 
         // Try restoring without the initialization vector.
         Bundle bBundle = new Bundle();
-        byte[] key = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 100);
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
         Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(bBundle));
     }
@@ -198,8 +151,8 @@ public class CipherFactoryTest {
     @Test
     @MediumTest
     public void testRestorationSucceedsBeforeCipherCreated() {
-        byte[] iv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 50);
-        byte[] key = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 100);
+        byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         Bundle bundle = new Bundle();
         bundle.putByteArray(CipherFactory.BUNDLE_IV, iv);
         bundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
@@ -217,8 +170,8 @@ public class CipherFactoryTest {
     @Test
     @MediumTest
     public void testRestorationDiscardsAfterOtherCipherAlreadyCreated() throws Exception {
-        byte[] iv = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 50);
-        byte[] key = mNumberProvider.getBytes(CipherFactory.NUM_BYTES, (byte) 100);
+        byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         Bundle bundle = new Bundle();
         bundle.putByteArray(CipherFactory.BUNDLE_IV, iv);
         bundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
@@ -253,47 +206,6 @@ public class CipherFactoryTest {
 
         // Confirm the saved keys match by restoring it.
         Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(afterBundle));
-    }
-
-    /**
-     * Checks that an callback is notified when cipher data is created.
-     */
-    @Test
-    @MediumTest
-    public void testCipherFactoryCallback() {
-        TestCipherDataCallback callback = new TestCipherDataCallback();
-        CipherFactory.getInstance().setTestCipherDataGeneratedCallback(callback);
-        Assert.assertEquals(0, callback.getTimesNotified());
-        CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        Assert.assertEquals(1, callback.getTimesNotified());
-        CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        Assert.assertEquals(1, callback.getTimesNotified());
-        CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        Assert.assertEquals(1, callback.getTimesNotified());
-        CipherFactory.getInstance().setTestCipherDataGeneratedCallback(null);
-    }
-
-    /**
-     * Verifies that if the callback is attached after cipher data has already been
-     * created the callback doesn't fire.
-     */
-    @Test
-    @MediumTest
-    public void testCipherFactoryCallbackTooLate() {
-        CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
-        // Ensures that cipher finishes initializing before running the rest of the test.
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        TestCipherDataCallback callback = new TestCipherDataCallback();
-        CipherFactory.getInstance().setTestCipherDataGeneratedCallback(callback);
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        Assert.assertEquals(0, callback.getTimesNotified());
-        CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
-        TestThreadUtils.runOnUiThreadBlocking(mEmptyRunnable);
-        Assert.assertEquals(0, callback.getTimesNotified());
-        CipherFactory.getInstance().setTestCipherDataGeneratedCallback(null);
     }
 
     /**

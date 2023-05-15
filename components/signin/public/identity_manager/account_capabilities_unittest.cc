@@ -130,76 +130,30 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
             signin::Tribool::kFalse);
 }
 
-// Temporary test that should be modified once
-// `is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice()` is
-// based on a real account capability and not derived from other capabilities
-// client-side.
-//
-// TODO(crbug.com/1430845): Update to a regular capabilities test once
-// is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice()`
-// is backed by a real account capability.
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {
-  {
-    // `can_run_chrome_privacy_sandbox_trials` is unknown
-    // `set_is_subject_to_parental_controls` is unknown
-    AccountCapabilities c;
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kUnknown);
-  }
+  AccountCapabilities capabilities;
+  EXPECT_EQ(
+      capabilities
+          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
+      signin::Tribool::kUnknown);
 
-  {
-    // `can_run_chrome_privacy_sandbox_trials` is unknown
-    AccountCapabilities c;
-    AccountCapabilitiesTestMutator mutator(&c);
-    mutator.set_is_subject_to_parental_controls(true);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kUnknown);
-    mutator.set_is_subject_to_parental_controls(false);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kUnknown);
-  }
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator
+      .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
+          true);
+  EXPECT_EQ(
+      capabilities
+          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
+      signin::Tribool::kTrue);
 
-  {
-    // `can_run_chrome_privacy_sandbox_trials` is true
-    AccountCapabilities c;
-    AccountCapabilitiesTestMutator mutator(&c);
-    mutator.set_can_run_chrome_privacy_sandbox_trials(true);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kUnknown);
-
-    mutator.set_is_subject_to_parental_controls(true);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kFalse);
-    mutator.set_is_subject_to_parental_controls(false);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kFalse);
-  }
-
-  {
-    // `can_run_chrome_privacy_sandbox_trials` is false
-    AccountCapabilities c;
-    AccountCapabilitiesTestMutator mutator(&c);
-    mutator.set_can_run_chrome_privacy_sandbox_trials(false);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kUnknown);
-
-    mutator.set_is_subject_to_parental_controls(true);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kFalse);
-    mutator.set_is_subject_to_parental_controls(false);
-    EXPECT_EQ(
-        c.is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-        signin::Tribool::kTrue);
-  }
+  mutator
+      .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
+          false);
+  EXPECT_EQ(
+      capabilities
+          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
+      signin::Tribool::kFalse);
 }
 
 TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {

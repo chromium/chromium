@@ -15,8 +15,8 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
@@ -117,7 +117,7 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
 
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (!supervised_user_service ||
       !supervised_user_service->IsURLFilteringEnabled()) {

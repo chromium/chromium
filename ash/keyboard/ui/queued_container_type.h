@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace keyboard {
@@ -30,7 +31,7 @@ class QueuedContainerType {
   gfx::Rect target_bounds() { return bounds_; }
 
  private:
-  KeyboardUIController* controller_;
+  raw_ptr<KeyboardUIController, ExperimentalAsh> controller_;
   ContainerType container_type_;
   gfx::Rect bounds_;
   base::OnceCallback<void(bool success)> callback_;

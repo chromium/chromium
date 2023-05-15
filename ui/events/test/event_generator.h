@@ -453,6 +453,9 @@ class EventGenerator {
   // Dispatch the event to the WindowEventDispatcher.
   void Dispatch(Event* event);
 
+  // Advances the event generator's clock by `delta`.
+  void AdvanceClock(const base::TimeDelta& delta);
+
   void set_current_target(EventTarget* target) {
     current_target_ = target;
   }

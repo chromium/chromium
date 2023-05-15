@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
-#include "chrome/browser/performance_manager/metrics/metrics_provider.h"
+#include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
@@ -65,7 +66,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
@@ -171,26 +171,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageFreezingPolicy>());
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHeuristicMemorySaver)) {
-    graph->PassToGraph(std::make_unique<performance_manager::policies::
-                                            HeuristicMemorySaverPolicy>(
-        performance_manager::features::
-            kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get(),
-        base::Seconds(
-            performance_manager::features::
-                kHeuristicMemorySaverThresholdReachedHeartbeatSeconds.Get()),
-        base::Seconds(
-            performance_manager::features::
-                kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds.Get()),
-        base::Minutes(
-            performance_manager::features::
-                kHeuristicMemorySaverMinimumMinutesInBackground.Get())));
-  } else {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::HighEfficiencyModePolicy>());
-  }
+  // Add both policies. Only one will be enabled at a time.
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::HeuristicMemorySaverPolicy>());
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::HighEfficiencyModePolicy>());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   graph->PassToGraph(
@@ -297,7 +284,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
   // This object is created by the metrics service before threads, but it
   // needs the UserPerformanceTuningManager to exist. At this point it's
   // instantiated, but still needs to be initialized.
-  performance_manager::MetricsProvider::GetInstance()->Initialize();
+  performance_manager::MetricsProviderDesktop::GetInstance()->Initialize();
 #endif
 }
 

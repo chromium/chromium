@@ -33,11 +33,24 @@ extern const char kChromeWebstoreBaseURL[];
 extern const char kChromeWebstoreUpdateURL[];
 extern const char kNewChromeWebstoreBaseURL[];
 
+// Various utm attribution sources for web store URLs.
+// From the sub-menu item in the extension menu inside the 3-dot menu.
+extern const char kAppMenuUtmSource[];
+// From the button in the puzzle-piece extensions menu in the toolbar.
+extern const char kExtensionsMenuUtmSource[];
+// From the link in the sidebar in the chrome://extensions page.
+extern const char kExtensionsSidebarUtmSource[];
+
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing
 // slash. Do not use this as a prefix/extent for the store.
 GURL GetWebstoreLaunchURL();
 GURL GetNewWebstoreLaunchURL();
+
+// Returns a url with a utm_source query param value of `utm_source_value`
+// appended.
+GURL AppendUtmSource(const GURL& url,
+                     const base::StringPiece& utm_source_value);
 
 // Returns the URL to the extensions category on the Web Store. This is
 // derived from GetWebstoreLaunchURL().

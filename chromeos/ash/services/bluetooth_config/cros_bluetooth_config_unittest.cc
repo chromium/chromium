@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller_impl.h"
@@ -83,7 +84,7 @@ class CrosBluetoothConfigTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  user_manager::FakeUserManager* fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;

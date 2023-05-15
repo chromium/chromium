@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -159,6 +160,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+
+  static std::unique_ptr<VideoDecoder> CreateForTesting(
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      std::unique_ptr<MediaLog> media_log,
+      bool ignore_resolution_changes_to_smaller_for_testing = false);
 
   static std::vector<Fourcc> DefaultPreferredRenderableFourccs();
 
@@ -413,6 +419,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // Set to true to bypass checks for encrypted content support for testing.
   bool allow_encrypted_content_for_testing_ = false;
+
+  // See VP9Decoder for information on this.
+  bool ignore_resolution_changes_to_smaller_for_testing_ = false;
 
   base::WeakPtr<VideoDecoderPipeline> decoder_weak_this_;
   // The weak pointer of this, bound to |decoder_task_runner_|.

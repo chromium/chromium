@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_
 
 #include "ash/glanceables/glanceables_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -42,10 +43,10 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate,
   // Returns true if glanceables should be show for the current login.
   bool ShouldShowOnLogin() const;
 
-  ash::GlanceablesController* const controller_;
+  const raw_ptr<ash::GlanceablesController, ExperimentalAsh> controller_;
 
   // The identity manager for the primary profile.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_

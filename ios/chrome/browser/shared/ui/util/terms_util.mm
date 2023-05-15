@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -32,7 +32,7 @@ std::string FindFileInResource(const std::string& base_name,
                                const std::string& language,
                                const std::string& ext) {
   std::string resource_file(base_name + "_" + language);
-  BOOL exists = [base::mac::FrameworkBundle()
+  BOOL exists = [base::apple::FrameworkBundle()
                     URLForResource:base::SysUTF8ToNSString(resource_file)
                      withExtension:base::SysUTF8ToNSString(ext)] != nil;
   return exists ? resource_file + "." + ext : std::string();

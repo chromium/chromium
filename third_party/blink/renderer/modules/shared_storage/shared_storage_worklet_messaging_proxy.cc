@@ -8,7 +8,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
@@ -22,7 +22,7 @@ namespace blink {
 
 SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
-    mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+    mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
     base::OnceClosure worklet_terminated_callback)
     : ThreadedWorkletMessagingProxy(
           /*execution_context=*/nullptr,
@@ -45,7 +45,8 @@ SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
 void SharedStorageWorkletMessagingProxy::
     InitializeSharedStorageWorkletServiceOnWorkletThread(
         WorkerThread* worker_thread,
-        mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver) {
+        mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService>
+            receiver) {
   DCHECK(worker_thread->IsCurrentThread());
 
   auto disconnect_handler = WTF::BindOnce(

@@ -25,9 +25,6 @@ NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled();
 
-// An array of deprecated keys to be removed if present.
-NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys();
-
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.
 extern NSString* const

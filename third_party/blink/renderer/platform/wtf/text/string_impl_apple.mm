@@ -21,7 +21,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #import <Foundation/Foundation.h>
-#include "base/mac/foundation_util.h"
+
+#include "base/apple/bridging.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace WTF {
 
@@ -31,14 +36,14 @@ base::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
           ? CFStringCreateWithBytes(
                 kCFAllocatorDefault,
                 reinterpret_cast<const UInt8*>(Characters8()), length_,
-                kCFStringEncodingISOLatin1, false)
+                kCFStringEncodingISOLatin1, /*isExternalRepresentation=*/false)
           : CFStringCreateWithCharacters(
                 kCFAllocatorDefault,
                 reinterpret_cast<const UniChar*>(Characters16()), length_));
 }
 
 StringImpl::operator NSString*() {
-  return [base::mac::CFToNSCast(CreateCFString().release()) autorelease];
+  return base::apple::CFToNSOwnershipCast(CreateCFString().release());
 }
 
 }  // namespace WTF

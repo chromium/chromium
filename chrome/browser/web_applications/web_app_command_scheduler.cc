@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/commands/install_placeholder_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -270,8 +272,8 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
     const GURL& url,
     const AppId& app_id,
     WebAppInstallInfo install_info,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     ManifestWriteCallback callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
@@ -286,7 +288,8 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateFinalizeCommand>(
           url, app_id, std::move(install_info), std::move(callback),
-          std::move(keep_alive), std::move(profile_keep_alive)),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive)),
       location);
 }
 
@@ -311,11 +314,39 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
       location);
 }
 
+void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
+    const GURL& install_url,
+    const GURL& origin,
+    bool is_renderer_initiated,
+    NavigateAndTriggerInstallDialogCommandCallback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       NavigateAndTriggerInstallDialogCommandResult::kFailure));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<NavigateAndTriggerInstallDialogCommand>(
+          install_url, origin, is_renderer_initiated, std::move(callback),
+          provider_->ui_manager().GetWeakPtr(),
+          std::make_unique<WebAppUrlLoader>(),
+          std::make_unique<WebAppDataRetriever>(), &*profile_),
+      location);
+}
+
 void WebAppCommandScheduler::InstallIsolatedWebApp(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     InstallIsolatedWebAppCallback callback,
     const base::Location& call_location) {
+  DCHECK(profile_keep_alive == nullptr ||
+         profile_keep_alive->profile() == &*profile_);
+
   if (IsShuttingDown()) {
     InstallIsolatedWebAppCommandError error;
     error.message = "The profile and/or browser are shutting down.";
@@ -328,7 +359,10 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, location, CreateIsolatedWebAppWebContents(*profile_),
-          std::make_unique<WebAppUrlLoader>(), *profile_, std::move(callback)),
+          std::make_unique<WebAppUrlLoader>(), std::move(keep_alive),
+          std::move(profile_keep_alive), std::move(callback),
+          InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
+              *profile_->GetPrefs())),
       call_location);
 }
 
@@ -534,6 +568,7 @@ void WebAppCommandScheduler::LaunchAppWithCustomParams(
 void WebAppCommandScheduler::SynchronizeOsIntegration(
     const AppId& app_id,
     base::OnceClosure synchronize_callback,
+    absl::optional<SynchronizeOsOptions> synchronize_options,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -543,7 +578,7 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
-          app_id, std::move(synchronize_callback)),
+          app_id, synchronize_options, std::move(synchronize_callback)),
       location);
 }
 

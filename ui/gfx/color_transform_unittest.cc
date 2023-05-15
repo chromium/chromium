@@ -623,6 +623,119 @@ TEST(ColorSpaceTest, ExtendedSRGBScale) {
   EXPECT_NEAR(val_scaled.z() / val_unscaled.z(), scale, kMathEpsilon);
 }
 
+TEST(ColorSpaceTest, ScrgbLinear80Nits) {
+  ColorSpace dst(ColorSpace::PrimaryID::BT2020,
+                 ColorSpace::TransferID::SCRGB_LINEAR_80_NITS);
+
+  // PQ's 80 nits maps to 80 nits.
+  {
+    ColorSpace src_pq = ColorSpace::CreateHDR10();
+
+    ColorTransform::Options options;
+    ColorTransform::RuntimeOptions runtime_options;
+
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(src_pq, dst, options));
+
+    constexpr float kPq80Nits = 0.4858567653886785f;
+    ColorTransform::TriStim val(kPq80Nits, kPq80Nits, kPq80Nits);
+    xform->Transform(&val, 1, runtime_options);
+    EXPECT_NEAR(val.x(), 1.f, kMathEpsilon);
+  }
+
+  // SDR white is scaled by 80 nits.
+  {
+    constexpr float kSdrWhite = 300.f;
+
+    ColorSpace src_srgb = ColorSpace::CreateSRGB();
+
+    ColorTransform::Options options;
+    ColorTransform::RuntimeOptions runtime_options;
+    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(src_srgb, dst, options));
+
+    ColorTransform::TriStim val(1.f, 1.f, 1.f);
+    xform->Transform(&val, 1, runtime_options);
+    EXPECT_NEAR(val.x(), kSdrWhite / 80.f, kMathEpsilon);
+  }
+
+  // PQ's maximum maps to the maximum value when tonemapped.
+  {
+    constexpr float kSdrWhite = 150.f;
+    constexpr float kDstMaxLumRel = 2.f;
+
+    ColorSpace src_pq = ColorSpace::CreateHDR10();
+
+    ColorTransform::Options options;
+    ColorTransform::RuntimeOptions runtime_options;
+    options.tone_map_pq_and_hlg_to_dst = true;
+    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
+
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(src_pq, dst, options));
+
+    ColorTransform::TriStim val(1.f, 1.f, 1.f);
+    xform->Transform(&val, 1, runtime_options);
+    EXPECT_NEAR(val.x(), kDstMaxLumRel * kSdrWhite / 80.f, kMathEpsilon);
+  }
+
+  // HLG's maximum value will be 12 times 203 nits.
+  // TODO(https://crbug.com/1442884): This is not an appropriate value.
+  {
+    constexpr float kSdrWhite = 300.f;
+
+    ColorSpace src_hlg(ColorSpace::PrimaryID::BT2020,
+                       ColorSpace::TransferID::HLG);
+
+    ColorTransform::Options options;
+    ColorTransform::RuntimeOptions runtime_options;
+    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(src_hlg, dst, options));
+
+    ColorTransform::TriStim val(1.f, 1.f, 1.f);
+    xform->Transform(&val, 1, runtime_options);
+    EXPECT_NEAR(val.x(), 12.f * ColorSpace::kDefaultSDRWhiteLevel / 80.f,
+                kMathEpsilon);
+  }
+
+  // HLG's maximum maps to the maximum value when tonemapped.
+  {
+    constexpr float kSdrWhite = 200.f;
+    constexpr float kDstMaxLumRel = 2.f;
+    constexpr float kMathLargeEpsilon = 0.025f;
+
+    ColorSpace src_hlg(ColorSpace::PrimaryID::BT2020,
+                       ColorSpace::TransferID::HLG);
+
+    ColorTransform::Options options;
+    ColorTransform::RuntimeOptions runtime_options;
+    options.tone_map_pq_and_hlg_to_dst = true;
+    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
+
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(src_hlg, dst, options));
+
+    {
+      ColorTransform::TriStim val(1.f, 1.f, 1.f);
+      xform->Transform(&val, 1, runtime_options);
+      EXPECT_NEAR(val.x(), kDstMaxLumRel * kSdrWhite / 80.f, kMathLargeEpsilon);
+    }
+
+    // Test a non-maximum value which is affected by the OOTF curve.
+    {
+      ColorTransform::TriStim val(0.5f, 0.5f, 0.5f);
+      xform->Transform(&val, 1, runtime_options);
+      EXPECT_NEAR(val.x(), 0.38373923301696777f, kMathLargeEpsilon);
+    }
+  }
+}
+
 TEST(ColorSpaceTest, PQSDRWhiteLevel) {
   // The PQ function maps |pq_encoded_nits| to |nits|. We mangle it a bit with
   // the SDR white level.
@@ -638,7 +751,8 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     // default.
     const ColorSpace hdr10 = ColorSpace::CreateHDR10();
     ColorTransform::Options options;
-    options.sdr_max_luminance_nits = nits[i];
+    ColorTransform::RuntimeOptions runtime_options;
+    runtime_options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -651,7 +765,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     // Do the transform to the values in |pq_encoded_nits|.
     ColorTransform::TriStim val(pq_encoded_nits[0], pq_encoded_nits[1],
                                 pq_encoded_nits[2]);
-    xform->Transform(&val, 1);
+    xform->Transform(&val, 1, runtime_options);
 
     // The white level should be mapped to 1.
     switch (i) {
@@ -677,7 +791,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
         ColorTransform::NewColorTransform(target, hdr10, options));
-    xform_inv->Transform(&val, 1);
+    xform_inv->Transform(&val, 1, runtime_options);
     EXPECT_NEAR(val.x(), pq_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), pq_encoded_nits[1], kMathEpsilon);
     EXPECT_NEAR(val.z(), pq_encoded_nits[2], kMathEpsilon);
@@ -699,7 +813,8 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     // default.
     const ColorSpace hlg = ColorSpace::CreateHLG();
     ColorTransform::Options options;
-    options.sdr_max_luminance_nits = nits[i];
+    ColorTransform::RuntimeOptions runtime_options;
+    runtime_options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -712,7 +827,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     // Do the transform to the values in |hlg_encoded_nits|.
     ColorTransform::TriStim val(hlg_encoded_nits[0], hlg_encoded_nits[1],
                                 hlg_encoded_nits[2]);
-    xform->Transform(&val, 1);
+    xform->Transform(&val, 1, runtime_options);
 
     // Each |hlg_encoded_nits| value should map back to 1.0f after conversion
     // via a ColorSpace with the right SDR white level.
@@ -735,7 +850,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
         ColorTransform::NewColorTransform(target, hlg, options));
-    xform_inv->Transform(&val, 1);
+    xform_inv->Transform(&val, 1, runtime_options);
     EXPECT_NEAR(val.x(), hlg_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), hlg_encoded_nits[1], kMathEpsilon);
     EXPECT_NEAR(val.z(), hlg_encoded_nits[2], kMathEpsilon);

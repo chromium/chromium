@@ -30,12 +30,12 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -153,7 +153,6 @@ void Start() {
     crash_reporter::SetCrashpadRunning(true);
   }
   UMA_HISTOGRAM_BOOLEAN("Stability.IOS.Crashpad.Initialized", initialized);
-  crash_reporter::InitializeCrashKeys();
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static crash_reporter::CrashKeyString<4> key("partition_alloc");

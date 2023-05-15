@@ -11,11 +11,11 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
-#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
@@ -26,9 +26,9 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
 #include "chromeos/assistant/internal/ambient/utils.h"
 #include "chromeos/assistant/internal/proto/backdrop/backdrop.pb.h"
@@ -98,7 +98,7 @@ std::string GetClientId() {
   std::string client_id =
       prefs->GetString(ambient::prefs::kAmbientBackdropClientId);
   if (client_id.empty()) {
-    client_id = base::GenerateGUID();
+    client_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     prefs->SetString(ambient::prefs::kAmbientBackdropClientId, client_id);
   }
 

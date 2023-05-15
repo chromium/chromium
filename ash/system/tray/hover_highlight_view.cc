@@ -10,11 +10,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/unfocusable_label.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,6 +107,7 @@ void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
 
   std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView(
       /*use_wide_layout=*/features::IsQsRevampEnabled()));
+  icon_ = icon.get();
   icon->SetImage(image);
   icon->SetEnabled(GetEnabled());
 
@@ -117,6 +120,7 @@ void HoverHighlightView::AddIconAndLabel(const ui::ImageModel& image,
 
   std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView(
       /*use_wide_layout=*/features::IsQsRevampEnabled()));
+  icon_ = icon.get();
   icon->SetImage(image);
   icon->SetEnabled(GetEnabled());
 
@@ -132,7 +136,7 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
   SetLayoutManager(std::make_unique<views::FillLayout>());
   tri_view_ = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/features::IsQsRevampEnabled());
-  AddChildView(tri_view_);
+  AddChildView(tri_view_.get());
 
   left_view_ = view.get();
   tri_view_->AddView(TriView::Container::START, view.release());
@@ -140,9 +144,16 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);
   text_label_->SetEnabled(GetEnabled());
-  text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  TrayPopupUtils::SetLabelFontList(
-      text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  if (chromeos::features::IsJellyEnabled()) {
+    // From QS Component List Item spec.
+    text_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *text_label_);
+  } else {
+    text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+    TrayPopupUtils::SetLabelFontList(
+        text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  }
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
   // By default, END container is invisible, so labels in the CENTER should have
   // an extra padding at the end.
@@ -163,13 +174,20 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   tri_view_ = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/features::IsQsRevampEnabled());
-  AddChildView(tri_view_);
+  AddChildView(tri_view_.get());
 
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);
-  text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  TrayPopupUtils::SetLabelFontList(
-      text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  if (chromeos::features::IsJellyEnabled()) {
+    // From QS Component List Item spec.
+    text_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *text_label_);
+  } else {
+    text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+    TrayPopupUtils::SetLabelFontList(
+        text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  }
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
 
   AddSubRowContainer();
@@ -202,6 +220,7 @@ void HoverHighlightView::SetAccessibilityState(
 
 void HoverHighlightView::Reset() {
   RemoveAllChildViews();
+  icon_ = nullptr;
   text_label_ = nullptr;
   sub_text_label_ = nullptr;
   left_view_ = nullptr;

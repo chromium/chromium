@@ -30,16 +30,22 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   // AutofillProgressDialogView:
   void Dismiss(bool show_confirmation_before_closing,
                bool is_canceled_by_user) override;
+  void InvalidateControllerForCallbacks() override;
 
   // DialogDelegate:
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
 
  private:
-  // Close the widget of this view, and notify controller. |is_canceled_by_user|
-  // is a boolean that is true if the user cancels the progress dialog, false if
-  // the progress dialog closes automatically after a confirmation message.
-  void CloseWidget(bool is_canceled_by_user);
+  // Close the widget of this view, and notify controller.
+  void CloseWidget();
+
+  // Callback that is triggered when the dialog is canceled.
+  void OnDialogCanceled();
+
+  // Boolean that denotes whether the user took an action that cancelled the
+  // dialog. This will be set when `Dismiss()` is called.
+  bool is_canceled_by_user_ = false;
 
   raw_ptr<AutofillProgressDialogController> controller_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;

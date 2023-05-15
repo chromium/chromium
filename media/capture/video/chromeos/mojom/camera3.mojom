@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 6
+// Next min version: 8
 
 module cros.mojom;
 
+import "media/capture/video/chromeos/mojom/camera_features.mojom";
 import "media/capture/video/chromeos/mojom/camera_metadata.mojom";
 
 // These usages flags are defined in gralloc.h. They determine the nature of
@@ -87,6 +88,7 @@ struct Camera3Stream {
   [MinVersion=1] CropRotateScaleInfo? crop_rotate_scale_info;
   // Required for camera HAL device API versions >= 3.5.
   [MinVersion=4] string? physical_camera_id;
+  [MinVersion=6] array<Camera3StreamEffect>? effects;
 };
 
 struct Camera3StreamConfiguration {
@@ -113,8 +115,8 @@ struct CameraBufferHandle {
   array<uint32> strides;
   array<uint32> offsets;
   [MinVersion=3] array<uint32>? sizes;
-  [MinVersion=5] bool has_modifier;
-  [MinVersion=5] uint64 modifier;
+  [MinVersion=7] bool has_modifier;
+  [MinVersion=7] uint64 modifier;
 };
 
 struct Camera3StreamBuffer {

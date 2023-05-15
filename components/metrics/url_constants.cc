@@ -6,14 +6,14 @@
 
 namespace metrics {
 
-const char kNewMetricsServerUrl[] =
-    "https://clientservices.googleapis.com/uma/v2";
-
-const char kNewMetricsServerUrlInsecure[] =
-    "http://clientservices.googleapis.com/uma/v2";
-
-const char kOldMetricsServerUrl[] = "https://clients4.google.com/uma/v2";
-
-const char kDefaultMetricsMimeType[] = "application/vnd.chrome.uma";
+// Chrome metrics URLs are stored internally to prevent Chromium forks from
+// accidentally sending metrics to Google servers. The URLs can be found here:
+// https://chrome-internal.googlesource.com/chrome/components/metrics/internal/
+const char kNewMetricsServerUrl[] = "";
+const char kNewMetricsServerUrlInsecure[] = "";
+const char kOldMetricsServerUrl[] = "";
+const char kDefaultMetricsMimeType[] = "";
+const char kDefaultUkmServerUrl[] = "";
+const char kUkmMimeType[] = "";
 
 } // namespace metrics

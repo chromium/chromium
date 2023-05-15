@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"
@@ -43,8 +44,8 @@ class SystemPropertiesProviderImpl
   // DeviceCache::Observer:
   void OnPairedDevicesListChanged() override;
 
-  AdapterStateController* adapter_state_controller_;
-  DeviceCache* device_cache_;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

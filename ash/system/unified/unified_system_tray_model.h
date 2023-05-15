@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -178,7 +179,7 @@ class ASH_EXPORT UnifiedSystemTrayModel
   // <notification ID, if notification is manually expanded>
   std::map<std::string, bool> notification_changes_;
 
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   std::unique_ptr<DBusObserver> dbus_observer_;
 

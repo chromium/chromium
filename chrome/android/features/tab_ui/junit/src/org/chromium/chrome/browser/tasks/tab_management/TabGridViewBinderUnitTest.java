@@ -121,16 +121,25 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
         mCallbackCaptor.getValue().onResult(mBitmap);
 
-        verify(mThumbnailView).setScaleType(ScaleType.FIT_CENTER);
-        verify(mThumbnailView).setAdjustViewBounds(true);
+        verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageBitmap(mBitmap);
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
+
+        // Verify metrics scale + translate.
+        // Scale = updatedBitmapWidth / INIT_WIDTH = 176 / 100 = 1.76f.
+        float expectedScale = 1.76f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
+        float expectedXTrans = 0.f;
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -146,16 +155,25 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, false);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(false));
         mCallbackCaptor.getValue().onResult(mBitmap);
 
-        verify(mThumbnailView).setScaleType(ScaleType.FIT_CENTER);
-        verify(mThumbnailView).setAdjustViewBounds(true);
+        verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageBitmap(mBitmap);
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
+
+        // Verify metrics scale + translate.
+        // Scale = updatedBitmapWidth / INIT_WIDTH = 176 / 100 = 1.76f.
+        float expectedScale = 1.76f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
+        float expectedXTrans = 0.f;
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -173,6 +191,7 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 
@@ -208,6 +227,7 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 

@@ -9,7 +9,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 
 using extensions::mojom::ManifestLocation;
 

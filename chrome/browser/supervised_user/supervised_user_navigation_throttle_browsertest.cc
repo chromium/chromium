@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -25,13 +26,13 @@
 #include "chrome/browser/supervised_user/permission_request_creator_mock.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
@@ -371,12 +372,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
   // Both iframes (from allowed host iframe1.com as well as from blocked host
   // iframe2.com) should be loaded normally, since we don't filter iframes
   // (yet) - see crbug.com/651115.
-  bool loaded1 = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(tab, "loaded1()", &loaded1));
-  EXPECT_TRUE(loaded1);
-  bool loaded2 = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(tab, "loaded2()", &loaded2));
-  EXPECT_TRUE(loaded2);
+  EXPECT_TRUE(content::EvalJs(tab, "loaded1()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(tab, "loaded2()").ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
@@ -441,14 +438,14 @@ class SupervisedUserIframeFilterTest
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
-  PermissionRequestCreatorMock* permission_creator_;
+  raw_ptr<PermissionRequestCreatorMock, ExperimentalAsh> permission_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
   SupervisedUserNavigationThrottleTest::SetUpOnMainThread();
 
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
       std::make_unique<PermissionRequestCreatorMock>(browser()->profile());
@@ -555,8 +552,8 @@ void SupervisedUserIframeFilterTest::SendCommandToFrame(
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsRenderFrameLive());
   std::string command = base::StrCat({"sendCommand(\'", command_name, "\')"});
-  ASSERT_TRUE(content::ExecuteScript(
-      content::ToRenderFrameHost(render_frame_host), command));
+  ASSERT_TRUE(
+      content::ExecJs(content::ToRenderFrameHost(render_frame_host), command));
 }
 
 void SupervisedUserIframeFilterTest::WaitForNavigationFinished(
@@ -873,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        IframesWithSameDomainAsMainFrameAllowed) {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   supervised_user::SupervisedUserURLFilter* filter = service->GetURLFilter();
 

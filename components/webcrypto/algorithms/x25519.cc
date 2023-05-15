@@ -173,8 +173,7 @@ Status X25519Implementation::ExportKey(blink::WebCryptoKeyFormat format,
 Status X25519Implementation::DeriveBits(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& base_key,
-    bool has_optional_length_bits,
-    unsigned int optional_length_bits,
+    absl::optional<unsigned int> length_bits,
     std::vector<uint8_t>* derived_bytes) const {
   DCHECK(derived_bytes);
 
@@ -214,18 +213,20 @@ Status X25519Implementation::DeriveBits(
   // editors are discussing the possibility of performing the checks during the
   // key import operation instead.
 
-  if (!has_optional_length_bits || optional_length_bits == 0) {
+  // TODO(crbug.com/1433707): The second condition conflates zero and null, and
+  // does not match the spec.
+  if (!length_bits.has_value() || *length_bits == 0) {
     return Status::Success();
   }
 
-  if (8 * derived_len < optional_length_bits) {
+  if (8 * derived_len < *length_bits) {
     return Status::ErrorX25519LengthTooLong();
   }
 
   // Zeros "unused bits" in the final byte.
   // TODO(jfernandez): Diffie-Hellman primitives give back a structured output.
   // Truncation isn't safe!
-  TruncateToBitLength(optional_length_bits, derived_bytes);
+  TruncateToBitLength(*length_bits, derived_bytes);
 
   return Status::Success();
 }

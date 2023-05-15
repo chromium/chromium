@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
-#include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -29,6 +29,7 @@ class ImeKeyboard;
 namespace ui {
 
 enum class DomCode;
+struct KeyboardDevice;
 
 // EventRewriterAsh makes various changes to keyboard-related events,
 // including KeyEvents and some other events with keyboard modifier flags:
@@ -131,6 +132,21 @@ class EventRewriterAsh : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
+
+    // Used to record when either Alt+Click or Search+Click is remapped to a
+    // right click event. The `kEventRemappedToRightClick` pref will be used
+    // to determine the default behavior for simulating a right click.
+    virtual void RecordEventRemappedToRightClick() = 0;
+
+    // Used to record Alt/Search based key event rewrites for Six Pack keys.
+    // `alt_based` tells us whether this "six pack" event was produced by an
+    // Alt or Search/Launcher based keyboard shortcut. The corresponding
+    // "six pack" key pref will be incremented when the Alt variant is used and
+    // decremented when the Search/Launcher variant is used. This information
+    // will determine the default behavior for rewriting a key event to a
+    // "six pack" key.
+    virtual void RecordSixPackEventRewrite(KeyboardCode key_code,
+                                           bool alt_based) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not
@@ -206,7 +222,7 @@ class EventRewriterAsh : public EventRewriter {
   // Given a keyboard device, returns true if we get back the Assistant key
   // property without getting an error. Property value is stored in
   // |has_assistant_key|.
-  static bool HasAssistantKeyOnKeyboard(const InputDevice& keyboard_device,
+  static bool HasAssistantKeyOnKeyboard(const KeyboardDevice& keyboard_device,
                                         bool* has_assistant_key);
 
   // Part of rewrite phases below. These methods are public only so that
@@ -214,27 +230,32 @@ class EventRewriterAsh : public EventRewriter {
 
   // Returns true when the input |state| has key |DomKey::ALT_GRAPH_LATCH| and
   // is remapped.
-  bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state);
-  void RewriteFunctionKeys(const KeyEvent& event, MutableKeyState* state);
+  // TODO(crbug.com/1440147): Remove this function.
+  bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state) {
+    return RewriteModifierKeys(event, last_keyboard_device_id_, state);
+  }
+  void RewriteFunctionKeys(const KeyEvent& event, MutableKeyState* state) {
+    return RewriteFunctionKeys(event, last_keyboard_device_id_, state);
+  }
 
  private:
-  void DeviceKeyPressedOrReleased(int device_id);
+  // Returns the fixed-up keyboard device id.
+  // |keyboard_device_id| should be KeyEvent::source_device_id() for the current
+  // event, and |last_keyboard_device_id| is the previous one.
+  int GetKeyboardDeviceId(int keyboard_device_id,
+                          int last_keyboard_device_id) const;
 
   // By default the top row (F1-F12) keys are system keys for back, forward,
   // brightness, volume, etc. However, windows for v2 apps can optionally
   // request raw function keys for these keys.
   bool ForceTopRowAsFunctionKeys(int device_id) const;
 
-  // Returns true if |last_keyboard_device_id_| is Hotrod remote.
-  bool IsHotrodRemote() const;
-  // Returns true if |last_keyboard_device_id_| is of given |device_type|.
-  bool IsLastKeyboardOfType(KeyboardCapability::DeviceType device_type) const;
-  // Returns the device type of |last_keyboard_device_id_|.
-  KeyboardCapability::DeviceType GetLastKeyboardType() const;
+  // Returns true if |device_id| is Hotrod remote.
+  bool IsHotrodRemote(int device_id) const;
 
   // Given modifier flags |original_flags|, returns the remapped modifiers
   // according to user preferences and/or event properties.
-  int GetRemappedModifierMasks(const Event& event, int original_flags) const;
+  int GetRemappedModifierMasks(int device_id, int original_flags) const;
 
   // Returns true if this event should be remapped to a right-click.
   // |matched_mask| will be set to the variant (Alt+Click or Search+Click)
@@ -254,8 +275,8 @@ class EventRewriterAsh : public EventRewriter {
 
   // Records when modifier keys are pressed to metrics for tracking usage of
   // various metrics before and after remapping.
-  void RecordModifierKeyPressedBeforeRemapping(DomCode dom_code);
-  void RecordModifierKeyPressedAfterRemapping(DomCode dom_code);
+  void RecordModifierKeyPressedBeforeRemapping(int device_id, DomCode dom_code);
+  void RecordModifierKeyPressedAfterRemapping(int device_id, DomCode dom_code);
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,
@@ -272,22 +293,28 @@ class EventRewriterAsh : public EventRewriter {
 
   // Rewriter phases. These can inspect the original |event|, but operate using
   // the current |state|, which may have been modified by previous phases.
+  bool RewriteModifierKeys(const KeyEvent& event,
+                           int device_id,
+                           MutableKeyState* state);
   void RewriteNumPadKeys(const KeyEvent& event, MutableKeyState* state);
+  void RewriteFunctionKeys(const KeyEvent& event,
+                           int device_id,
+                           MutableKeyState* state);
   void RewriteExtendedKeys(const KeyEvent& event, MutableKeyState* state);
   int RewriteLocatedEvent(const Event& event);
   int RewriteModifierClick(const MouseEvent& event, int* flags);
 
   // Handle Function <-> Action key remapping for new CrOS keyboards that
   // support supplying a custom layout via sysfs.
-  bool RewriteTopRowKeysForCustomLayout(
-      int device_id,
-      const ui::KeyEvent& key_event,
-      bool search_is_pressed,
-      ui::EventRewriterAsh::MutableKeyState* state);
+  bool RewriteTopRowKeysForCustomLayout(const ui::KeyEvent& key_event,
+                                        int device_id,
+                                        bool search_is_pressed,
+                                        MutableKeyState* state);
 
   // Handle Fn/Action key remapping for Wilco keyboard layout.
   bool RewriteTopRowKeysForLayoutWilco(
       const KeyEvent& key_event,
+      int device_id,
       bool search_is_pressed,
       MutableKeyState* state,
       KeyboardCapability::KeyboardTopRowLayout layout);
@@ -327,7 +354,7 @@ class EventRewriterAsh : public EventRewriter {
   // used to interpret modifiers on pointer events.
   int last_keyboard_device_id_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // For each pair, the first element is the rewritten key state and the second
   // one is the original key state. If no key event rewriting happens, the first
@@ -336,7 +363,7 @@ class EventRewriterAsh : public EventRewriter {
 
   // The sticky keys controller is not owned here;
   // at time of writing it is a singleton in ash::Shell.
-  EventRewriter* const sticky_keys_controller_;
+  const raw_ptr<EventRewriter, ExperimentalAsh> sticky_keys_controller_;
 
   // Some drallion devices have digital privacy screens and a corresponding
   // privacy screen toggle key in the top row.
@@ -370,8 +397,8 @@ class EventRewriterAsh : public EventRewriter {
   // latches. See b/216049965 for more details.
   base::flat_map<DomCode, ui::EventFlags> previous_non_modifier_latches_;
 
-  KeyboardCapability* const keyboard_capability_;
-  ash::input_method::ImeKeyboard* const ime_keyboard_;
+  const raw_ptr<KeyboardCapability, ExperimentalAsh> keyboard_capability_;
+  const raw_ptr<ash::input_method::ImeKeyboard, ExperimentalAsh> ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably

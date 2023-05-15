@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

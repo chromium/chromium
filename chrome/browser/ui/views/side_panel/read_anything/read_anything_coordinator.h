@@ -37,6 +37,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
  public:
   class Observer : public base::CheckedObserver {
    public:
+    virtual void Activate(bool active) {}
     virtual void OnCoordinatorDestroyed() = 0;
   };
 

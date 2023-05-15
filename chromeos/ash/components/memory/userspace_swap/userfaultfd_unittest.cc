@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -69,20 +70,20 @@ class ScopedMemory {
   }
 
   void* Remap(size_t new_size) {
-    ptr_ = mremap(ptr_, len_, new_size, MREMAP_MAYMOVE, nullptr);
+    ptr_ = mremap(ptr_.get(), len_, new_size, MREMAP_MAYMOVE, nullptr);
     len_ = new_size;
     return ptr_;
   }
 
   void* Release() {
-    void* ptr = nullptr;
-    std::swap(ptr_, ptr);
+    void* ptr = ptr_;
+    ptr_ = nullptr;
     return ptr;
   }
 
   operator bool() { return is_valid(); }
 
-  operator uintptr_t() { return reinterpret_cast<uintptr_t>(ptr_); }
+  operator uintptr_t() { return reinterpret_cast<uintptr_t>(ptr_.get()); }
 
   template <typename T>
   operator T*() {
@@ -93,7 +94,7 @@ class ScopedMemory {
   void* get() { return ptr_; }
 
  private:
-  void* ptr_ = nullptr;
+  raw_ptr<void, ExperimentalAsh> ptr_ = nullptr;
   size_t len_ = 0;
 };
 

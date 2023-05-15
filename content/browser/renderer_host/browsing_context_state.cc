@@ -36,11 +36,13 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 
 BrowsingContextState::BrowsingContextState(
     blink::mojom::FrameReplicationStatePtr replication_state,
-    raw_ptr<RenderFrameHostImpl> parent,
-    absl::optional<BrowsingInstanceId> browsing_instance_id)
+    RenderFrameHostImpl* parent,
+    absl::optional<BrowsingInstanceId> browsing_instance_id,
+    absl::optional<base::UnguessableToken> coop_related_group_token)
     : replication_state_(std::move(replication_state)),
       parent_(parent),
-      browsing_instance_id_(browsing_instance_id) {
+      browsing_instance_id_(browsing_instance_id),
+      coop_related_group_token_(coop_related_group_token) {
   TRACE_EVENT_BEGIN("navigation", "BrowsingContextState",
                     perfetto::Track::FromPointer(this),
                     "browsing_context_state_when_created", this);
@@ -53,13 +55,14 @@ BrowsingContextState::~BrowsingContextState() {
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
     SiteInstanceGroup* site_instance_group,
     ProxyAccessMode proxy_access_mode) const {
-  TRACE_EVENT_BEGIN("navigation",
+  TRACE_EVENT_BEGIN("navigation.debug",
                     "BrowsingContextState::GetRenderFrameProxyHost",
                     ChromeTrackEvent::kBrowsingContextState, this,
                     ChromeTrackEvent::kSiteInstanceGroup, site_instance_group);
   auto* proxy =
       GetRenderFrameProxyHostImpl(site_instance_group, proxy_access_mode);
-  TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  TRACE_EVENT_END("navigation.debug", ChromeTrackEvent::kRenderFrameProxyHost,
+                  proxy);
   return proxy;
 }
 
@@ -73,20 +76,19 @@ RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHostImpl(
     // CHECK to verify that the proxy is being accessed from the correct
     // BrowsingContextState. As both BrowsingContextState (in non-legacy mode)
     // and RenderFrameProxyHost (via SiteInstance) are tied to a given
-    // BrowsingInstance, the browsing instance id of the BrowsingContextState
-    // (in the non-legacy mode) and of the SiteInstanceGroup should match.
-    // If they do not, the code calling this method has likely chosen the
-    // wrong BrowsingContextGroup (e.g. one from the current RenderFrameHost
-    // rather than from speculative or vice versa) – as this can lead to
-    // various unpredictable bugs in proxy management logic, we want to
-    // crash the browser here when this condition fails.
+    // CoopRelatedGroup, the CoopRelatedGroupId of the BrowsingContextState
+    // (in the non-legacy mode) and of the SiteInstanceGroup should match. If
+    // they do not, the code calling this method has likely chosen the wrong
+    // BrowsingContextState (e.g. one from the current RenderFrameHost rather
+    // than from speculative or vice versa) – as this can lead to various
+    // unpredictable bugs in proxy management logic, we want to crash the
+    // browser here when this condition fails.
     //
-    // Note that the outer delegate and opener proxies are an exception and the
-    // only cases of a proxy associated with a SiteInstanceGroup from another
-    // BrowsingInstance. Meanwhile, for openers the opener and openee have to be
-    // in the same BrowsingInstance as well.
-    CHECK_EQ(browsing_instance_id_.value(),
-             site_instance_group->browsing_instance_id());
+    // Note: Outer delegates are an exception, and when we're expecting to
+    // interact with one, we should pass in the proper `proxy_access_mode` to
+    // not end up in this condition.
+    CHECK_EQ(coop_related_group_token_.value(),
+             site_instance_group->coop_related_group_token());
   }
   auto it = proxy_hosts_.find(site_instance_group->GetId());
   if (it != proxy_hosts_.end()) {
@@ -103,8 +105,8 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
               kSwapForCrossBrowsingInstanceNavigations &&
       proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
-    CHECK_EQ(browsing_instance_id_.value(),
-             site_instance_group->browsing_instance_id());
+    CHECK_EQ(coop_related_group_token_.value(),
+             site_instance_group->coop_related_group_token());
   }
   TRACE_EVENT("navigation", "BrowsingContextState::DeleteRenderFrameProxyHost",
               ChromeTrackEvent::kBrowsingContextState, this,
@@ -138,8 +140,8 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
               kSwapForCrossBrowsingInstanceNavigations &&
       proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
-    CHECK_EQ(browsing_instance_id_.value(),
-             site_instance->GetBrowsingInstanceId());
+    CHECK_EQ(coop_related_group_token_.value(),
+             site_instance->coop_related_group_token());
   }
 
   auto site_instance_group_id = site_instance->group()->GetId();
@@ -478,8 +480,14 @@ void BrowsingContextState::ExecuteRemoteFramesBroadcastMethod(
 
 void BrowsingContextState::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
-  if (browsing_instance_id_.has_value())
+  if (browsing_instance_id_.has_value()) {
     proto->set_browsing_instance_id(browsing_instance_id_.value().value());
+  }
+
+  if (coop_related_group_token_.has_value()) {
+    proto->set_coop_related_group_token(
+        coop_related_group_token_.value().ToString());
+  }
 
   perfetto::TracedDictionary dict = std::move(proto).AddDebugAnnotations();
   dict.Add("this", static_cast<const void*>(this));

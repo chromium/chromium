@@ -16,10 +16,10 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/uuid.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/install_util.h"
 
@@ -123,14 +123,14 @@ bool GetMsiComponentPath(base::WStringPiece product_guid,
   // Internally, the Microsoft Installer uses a special formatting of the guids
   // to store the information in the registry.
   product_guid = product_guid.substr(1, 36);
-  if (!base::GUID::ParseCaseInsensitive(base::AsStringPiece16(product_guid))
+  if (!base::Uuid::ParseCaseInsensitive(base::AsStringPiece16(product_guid))
            .is_valid()) {
     return false;
   }
   std::wstring product_squid = InstallUtil::GuidToSquid(product_guid);
 
   component_guid = component_guid.substr(1, 36);
-  if (!base::GUID::ParseCaseInsensitive(base::AsStringPiece16(component_guid))
+  if (!base::Uuid::ParseCaseInsensitive(base::AsStringPiece16(component_guid))
            .is_valid()) {
     return false;
   }

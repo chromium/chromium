@@ -8,8 +8,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -288,6 +290,30 @@ TEST_F(FocusControllerTest,
   // The end of the recovery form is detected just because it the end of <form>.
   EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForImeAndAutofill(
                          recover_username, mojom::blink::FocusType::kForward));
+}
+
+// Test for FocusController::FindScopeOwnerSlot().
+TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
+  const char* main_html =
+      "<div id='host'>"
+      "<div id='inner1'></div>"
+      "<div id='inner2'></div>"
+      "</div>";
+
+  GetDocument().body()->setInnerHTML(String::FromUTF8(main_html));
+  auto* host = To<Element>(GetDocument().body()->firstChild());
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(String::FromUTF8("<slot></slot>"));
+
+  Element* inner1 = GetDocument().QuerySelector("#inner1");
+  Element* inner2 = GetDocument().QuerySelector("#inner2");
+  auto* slot = To<HTMLSlotElement>(shadow_root.QuerySelector("slot"));
+
+  EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*host));
+  EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*slot));
+  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner1));
+  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner2));
 }
 
 class FocusControllerTestWithIframes : public RenderingTest {

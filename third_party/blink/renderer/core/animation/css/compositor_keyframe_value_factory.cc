@@ -90,7 +90,7 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
         Color color = color_value->Value();
         return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
-            color.Alpha(), color.Red(), color.Green(), color.Blue()));
+            color.AlphaAsInteger(), color.Red(), color.Green(), color.Blue()));
       }
 
       return nullptr;

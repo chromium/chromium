@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 
 class IOSChromeSavePasswordInfoBarDelegate;
 

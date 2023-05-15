@@ -9,10 +9,10 @@
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -86,14 +86,16 @@
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:&_autofillProfile
-              countryCode:base::SysUTF8ToNSString(countryCode)];
+              countryCode:base::SysUTF8ToNSString(countryCode)
+        isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
              userEmail:[self syncingUserEmail]
-            controller:self.viewController];
+            controller:self.viewController
+          settingsView:YES];
   self.mediator.consumer = self.sharedViewController;
   self.viewController.handler = self.sharedViewController;
 
@@ -132,11 +134,16 @@
           [[AutofillCountrySelectionTableViewController alloc]
               initWithDelegate:self
                selectedCountry:country
-                  allCountries:allCountries];
+                  allCountries:allCountries
+                  settingsView:YES];
   [self.baseNavigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];
   self.isCountrySelectorPresented = YES;
+}
+
+- (void)didSaveProfile {
+  NOTREACHED();
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate

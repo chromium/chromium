@@ -93,5 +93,20 @@ bool ReadEntireStream(ReadStream* stream, std::vector<uint8_t>* data) {
   return true;
 }
 
+bool CopyStreamToFile(ReadStream* source, base::File& dest) {
+  dest.Seek(base::File::Whence::FROM_BEGIN, 0);
+  uint8_t buffer[1024];
+  size_t bytes_read = 0;
+  do {
+    if (!source->Read(buffer, sizeof(buffer), &bytes_read)) {
+      return false;
+    }
+    if (!dest.WriteAtCurrentPosAndCheck(base::make_span(buffer, bytes_read))) {
+      return false;
+    }
+  } while (bytes_read > 0);
+  return true;
+}
+
 }  // namespace dmg
 }  // namespace safe_browsing

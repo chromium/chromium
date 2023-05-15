@@ -24,7 +24,11 @@
 
 namespace chromeos {
 
-namespace diag = api::os_diagnostics;
+namespace {
+
+namespace cx_diag = api::os_diagnostics;
+
+}  // namespace
 
 // DiagnosticsApiFunctionBase --------------------------------------------------
 
@@ -68,21 +72,21 @@ void OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
 
 void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
     const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>& routines) {
-  diag::GetAvailableRoutinesResponse result;
+  cx_diag::GetAvailableRoutinesResponse result;
   for (const auto in : routines) {
-    diag::RoutineType out;
+    cx_diag::RoutineType out;
     if (converters::ConvertMojoRoutine(in, &out)) {
       result.routines.push_back(out);
     }
   }
 
-  Respond(ArgumentList(diag::GetAvailableRoutines::Results::Create(result)));
+  Respond(ArgumentList(cx_diag::GetAvailableRoutines::Results::Create(result)));
 }
 
 // OsDiagnosticsGetRoutineUpdateFunction ---------------------------------------
 
 void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::GetRoutineUpdate::Params>();
+  const auto params = GetParams<cx_diag::GetRoutineUpdate::Params>();
   if (!params) {
     return;
   }
@@ -105,7 +109,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
     return;
   }
 
-  diag::GetRoutineUpdateResponse result;
+  cx_diag::GetRoutineUpdateResponse result;
   result.progress_percent = ptr->progress_percent;
 
   if (ptr->output.has_value() && !ptr->output.value().empty()) {
@@ -123,14 +127,14 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
     }
     case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::kInteractiveUpdate:
       // Routine is waiting for user action. Set the status to waiting.
-      result.status = diag::RoutineStatus::kWaitingUserAction;
+      result.status = cx_diag::RoutineStatus::kWaitingUserAction;
       result.status_message = "Waiting for user action. See user_message";
       result.user_message = converters::ConvertRoutineUserMessage(
           ptr->routine_update_union->get_interactive_update()->user_message);
       break;
   }
 
-  Respond(ArgumentList(diag::GetRoutineUpdate::Results::Create(result)));
+  Respond(ArgumentList(cx_diag::GetRoutineUpdate::Results::Create(result)));
 }
 
 // DiagnosticsApiRunRoutineFunctionBase ----------------------------------------
@@ -144,7 +148,7 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
     return;
   }
 
-  diag::RunRoutineResponse result;
+  cx_diag::RunRoutineResponse result;
   result.id = ptr->id;
   result.status = converters::ConvertRoutineStatus(ptr->status);
   Respond(WithArguments(result.ToValue()));
@@ -158,7 +162,7 @@ DiagnosticsApiRunRoutineFunctionBase::GetOnResult() {
 // OsDiagnosticsRunAcPowerRoutineFunction ------------------------------
 
 void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunAcPowerRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunAcPowerRoutine::Params>();
   if (!params) {
     return;
   }
@@ -177,7 +181,7 @@ void OsDiagnosticsRunBatteryCapacityRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBatteryChargeRoutineFunction --------------------------------
 
 void OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunBatteryChargeRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunBatteryChargeRoutine::Params>();
   if (!params) {
     return;
   }
@@ -190,7 +194,7 @@ void OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBatteryDischargeRoutineFunction -----------------------------
 
 void OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunBatteryDischargeRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunBatteryDischargeRoutine::Params>();
   if (!params) {
     return;
   }
@@ -209,7 +213,7 @@ void OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
 
 void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunCpuCacheRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunCpuCacheRoutine::Params>();
   if (!params) {
     return;
   }
@@ -222,7 +226,7 @@ void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
 
 void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
   const auto params =
-      GetParams<diag::RunCpuFloatingPointAccuracyRoutine::Params>();
+      GetParams<cx_diag::RunCpuFloatingPointAccuracyRoutine::Params>();
   if (!params) {
     return;
   }
@@ -234,7 +238,7 @@ void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunCpuPrimeSearchRoutineFunction -------------------------------
 
 void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunCpuPrimeSearchRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunCpuPrimeSearchRoutine::Params>();
   if (!params) {
     return;
   }
@@ -246,7 +250,7 @@ void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
 
 void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunCpuStressRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunCpuStressRoutine::Params>();
   if (!params) {
     return;
   }
@@ -258,7 +262,7 @@ void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunDiskReadRoutineFunction -------------------------------------
 
 void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunDiskReadRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunDiskReadRoutine::Params>();
   if (!params) {
     return;
   }
@@ -313,7 +317,7 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunNvmeSelfTestRoutineFunction ---------------------------------
 
 void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
-  auto params = GetParams<diag::RunNvmeSelfTestRoutine::Params>();
+  auto params = GetParams<cx_diag::RunNvmeSelfTestRoutine::Params>();
   if (!params) {
     return;
   }
@@ -326,7 +330,7 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
 
 void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunNvmeWearLevelRoutine::Params>();
+  const auto params = GetParams<cx_diag::RunNvmeWearLevelRoutine::Params>();
   if (!params) {
     return;
   }

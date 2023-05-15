@@ -322,6 +322,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     if (!this.isAutoEnroll_) {
       const gaiaParams = {};
       gaiaParams.gaiaUrl = data.gaiaUrl;
+      gaiaParams.gaiaPath = data.gaiaPath;
       gaiaParams.clientId = data.clientId;
       gaiaParams.needPassword = false;
       gaiaParams.hl = data.hl;

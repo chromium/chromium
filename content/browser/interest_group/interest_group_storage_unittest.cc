@@ -116,14 +116,15 @@ class InterestGroupStorageTest : public testing::Test {
         /*ads=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                     "metadata1", "group_1"),
+                                     "metadata1", "group_1", "buyer_id",
+                                     "shared_id", "ad_render_id"),
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "metadata2", "group_2")},
+                                     "metadata2", "group_2", "buyer_id2")},
         /*ad_components=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                "group_1"),
+                "group_1", "ad_render_id2"),
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent2"), "metadata2c",
                 "group_2")},
@@ -172,7 +173,8 @@ class InterestGroupStorageTest : public testing::Test {
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
     update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3",
-                             "group_3");
+                             "group_3", "new_buyer_id", "another_share_id",
+                             "ad_render_id3");
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
         GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");
@@ -544,8 +546,14 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   InterestGroup g = NewInterestGroup(test_origin, "name");
   g.ads.emplace();
-  g.ads->push_back(blink::InterestGroup::Ad(ad1_url, "metadata1"));
-  g.ads->push_back(blink::InterestGroup::Ad(ad2_url, "metadata2"));
+  g.ads->emplace_back(ad1_url, "metadata1",
+                      /*size_group=*/absl::nullopt,
+                      /*buyer_reporting_id=*/"brid1",
+                      /*buyer_and_seller_reporting_id=*/"shrid1");
+  g.ads->emplace_back(ad2_url, "metadata2",
+                      /*size_group=*/absl::nullopt,
+                      /*buyer_reporting_id=*/"brid2",
+                      /*buyer_and_seller_reporting_id=*/absl::nullopt);
   g.ad_components.emplace();
   g.ad_components->push_back(
       blink::InterestGroup::Ad(ad1_url, "component_metadata1"));

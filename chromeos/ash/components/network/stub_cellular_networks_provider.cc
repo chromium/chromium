@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
@@ -101,7 +101,7 @@ bool StubCellularNetworksProvider::GetStubNetworkMetadata(
     if (iccid_eid_pair.first != iccid)
       continue;
 
-    *service_path_out = GenerateStubCellularServicePath(iccid);
+    *service_path_out = cellular_utils::GenerateStubCellularServicePath(iccid);
     *guid_out = GetGuidForStubIccid(iccid);
     return true;
   }
@@ -115,7 +115,7 @@ const std::string& StubCellularNetworksProvider::GetGuidForStubIccid(
 
   // If we have not yet generated a GUID for this ICCID, generate one.
   if (guid.empty())
-    guid = base::GenerateGUID();
+    guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   return guid;
 }

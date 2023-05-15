@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 
-#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -12,6 +12,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -24,7 +25,7 @@ constexpr int kFocusRingRadius = 16;
 CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
     const std::u16string& text,
     bool set_text,
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     base::RepeatingClosure pressed_callback)
     : LabelButton(pressed_callback),
       bar_view_(bar_view),
@@ -53,7 +54,11 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
-      [&](views::View* view) { return IsViewHighlighted(); });
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<CrOSNextDeskButtonBase>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
 }
 
 CrOSNextDeskButtonBase::~CrOSNextDeskButtonBase() = default;

@@ -232,20 +232,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
-  MOCK_METHOD(bool,
-              IsFastCheckoutSupported,
-              (const autofill::FormData&,
-               const autofill::FormFieldData&,
-               const autofill::AutofillManager&),
-              (override));
-  MOCK_METHOD(bool,
-              TryToShowFastCheckout,
-              (const autofill::FormData&,
-               const autofill::FormFieldData&,
-               base::WeakPtr<autofill::AutofillManager>),
-              (override));
-  MOCK_METHOD(void, HideFastCheckout, (bool), (override));
-  MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
@@ -295,7 +281,10 @@ class MockAutofillClient : public autofill::AutofillClient {
               (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const, override));
-  MOCK_METHOD(void, ExecuteCommand, (int), (override));
+  MOCK_METHOD(void,
+              ExecuteCommand,
+              (autofill::Suggestion::FrontendId),
+              (override));
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
   MOCK_METHOD(const autofill::AutofillAblationStudy&,
               GetAblationStudy,
@@ -557,7 +546,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
 
     std::vector<const PasswordForm*> same_scheme_matches;
     FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                    &best_matches, &preferred_match);
+                    &best_matches);
+    if (!best_matches.empty()) {
+      preferred_match = best_matches[0];
+    }
 
     if (test_case.expected_preferred_match_index == kNotFound) {
       // Case of empty |matches|.
@@ -622,10 +614,9 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   matches.push_back(&profile_form2);
 
   std::vector<const PasswordForm*> best_matches;
-  const PasswordForm* preferred_match = nullptr;
   std::vector<const PasswordForm*> same_scheme_matches;
   FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                  &best_matches, &preferred_match);
+                  &best_matches);
   // |profile_form1| is filtered out because it's the same as |account_form1|.
   EXPECT_EQ(best_matches.size(), 3U);
   EXPECT_TRUE(base::Contains(best_matches, &account_form1));

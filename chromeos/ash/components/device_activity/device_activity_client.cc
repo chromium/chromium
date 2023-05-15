@@ -425,7 +425,7 @@ DeviceActivityClient::DeviceActivityClient(
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
                        &DeviceActivityClient::ReportingTriggeredByTimer);
 
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   // Send DBus method to read preserved files for last ping timestamps.
   GetLastPingDatesStatus();

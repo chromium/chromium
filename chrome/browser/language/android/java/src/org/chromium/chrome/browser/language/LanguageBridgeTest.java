@@ -56,6 +56,18 @@ public class LanguageBridgeTest {
         Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
                 AppLanguagePromoDialog.TopULPMatchType.NO);
 
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("no", "en-US"));
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("nb"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("nn-NO", "en-US"));
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("nb"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("tl-PH", "en-US"));
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("fil"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+
         mFakeLanguageBridge.setULPLanguages(new ArrayList<>());
         Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
                 AppLanguagePromoDialog.TopULPMatchType.EMPTY);

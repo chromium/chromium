@@ -45,6 +45,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -516,13 +517,7 @@ public class TabGridDialogMediator
         KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
 
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+        TextWatcher textWatcher = new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!mIsUpdatingTitle) return;

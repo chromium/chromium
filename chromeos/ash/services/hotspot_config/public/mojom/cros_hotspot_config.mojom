@@ -141,7 +141,8 @@ struct HotspotInfo {
 // CrosHotspotConfig interface provides methods to get current hotspot status,
 // configure, enable or disable hotspot.
 interface CrosHotspotConfig {
-  // Adds an observer that can listen to hotspot related events.
+  // Adds an observer that can listen to hotspot related events. Invokes
+  // OnHotspotInfoChange() when observer is added.
   AddObserver(pending_remote<CrosHotspotConfigObserver> observer);
 
   // Adds an observer to listen to hotspot turned on/off events.

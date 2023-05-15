@@ -82,8 +82,7 @@ TEST_F(HistoryNoticeUtilsTest, SyncingWithWrongParameters) {
   // ...or even if there's no custom passphrase, but we're not syncing history.
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
+      /*types=*/{syncer::UserSelectableType::kPasswords});
   sync_service()->SetIsUsingExplicitPassphrase(false);
   ExpectShouldPopupDialogAboutOtherFormsOfBrowsingHistoryWithResult(false);
 }

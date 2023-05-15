@@ -254,6 +254,11 @@ stage_install_common() {
     strippedfile="${OUTPUTDIR}/${file}.stripped"
     install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
+  if [ -f "${OUTPUTDIR}/libqt6_shim.so" ]; then
+    file="libqt6_shim.so"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
 
   # libc++
   if [ -f "${OUTPUTDIR}/lib/libc++.so" ]; then

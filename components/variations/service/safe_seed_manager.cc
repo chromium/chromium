@@ -4,9 +4,10 @@
 
 #include "components/variations/service/safe_seed_manager.h"
 
+#include <algorithm>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -68,7 +69,7 @@ SafeSeedManager::SafeSeedManager(PrefService* local_state)
   int num_failed_fetches =
       local_state_->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);
   base::UmaHistogramSparse("Variations.SafeMode.Streak.FetchFailures",
-                           base::clamp(num_failed_fetches, 0, 100));
+                           std::clamp(num_failed_fetches, 0, 100));
 }
 
 SafeSeedManager::~SafeSeedManager() = default;

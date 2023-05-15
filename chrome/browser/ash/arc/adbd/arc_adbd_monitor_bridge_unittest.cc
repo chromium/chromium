@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/fake_adbd_monitor_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -100,7 +101,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<TestBrowserContext> context_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  ArcAdbdMonitorBridge* bridge_;
+  raw_ptr<ArcAdbdMonitorBridge, ExperimentalAsh> bridge_;
 
   // List of upstart operations recorded. When it's "start" the boolean is set
   // to true.

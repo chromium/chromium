@@ -24,7 +24,6 @@ enum SynchronizationType {
 struct TransferableResource {
   ResourceId id;
   SharedImageFormat format;
-  uint32 filter;
   gfx.mojom.Size size;
   gpu.mojom.MailboxHolder mailbox_holder;
   SynchronizationType synchronization_type;

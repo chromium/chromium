@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
@@ -114,7 +115,8 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   ::login::StringList scraped_saml_passwords_;
 
-  InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
+  raw_ptr<InSessionPasswordSyncManager, ExperimentalAsh>
+      password_sync_manager_ = nullptr;
 
   std::unique_ptr<UserContext> user_context_;
 

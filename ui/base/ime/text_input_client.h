@@ -225,6 +225,22 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   // of IPC between browser and renderer.
   virtual void ExtendSelectionAndDelete(size_t before, size_t after) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deletes any active composition, and the current selection plus the
+  // specified number of char16 values before and after the selection, and
+  // replaces it with |replacement_string|.
+  // Places the cursor at the end of |replacement_string|.
+  //
+  // Clients should try to implement this with an atomic operation to ensure
+  // that input method features like autocorrection works well. However, it's
+  // also okay for clients to fall back to ExtendSelectionAndDelete followed by
+  // InsertText for a degraded experience.
+  virtual void ExtendSelectionAndReplace(
+      size_t length_before_selection,
+      size_t length_after_selection,
+      base::StringPiece16 replacement_string);
+#endif
+
   // Ensure the caret is not in |rect|.  |rect| is in screen coordinates in
   // DIP (Density Independent Pixel) and may extend beyond the bounds of this
   // TextInputClient.

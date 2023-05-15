@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -155,7 +156,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                   install_result_code_, app_id);
             }));
 
-    web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+    web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
         base::BindLambdaForTesting(
             [this](apps::AppLaunchParams&& params) -> content::WebContents* {
               auto instance = std::make_unique<apps::Instance>(
@@ -282,7 +283,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxy* app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
 
   std::unique_ptr<WebKioskAppManager> app_manager_;
 

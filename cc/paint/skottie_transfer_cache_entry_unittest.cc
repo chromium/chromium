@@ -36,7 +36,8 @@ TEST(SkottieTransferCacheEntryTest, SerializationDeserialization) {
   // De-serialize
   auto entry(std::make_unique<ServiceSkottieTransferCacheEntry>());
   ASSERT_TRUE(entry->Deserialize(
-      nullptr, base::make_span(static_cast<uint8_t*>(data.data()), size)));
+      /*gr_context=*/nullptr, /*graphite_recorder=*/nullptr,
+      base::make_span(static_cast<uint8_t*>(data.data()), size)));
 
   EXPECT_EQ(entry->skottie()->id(), skottie->id());
   EXPECT_EQ(entry->skottie()->duration(), skottie->duration());

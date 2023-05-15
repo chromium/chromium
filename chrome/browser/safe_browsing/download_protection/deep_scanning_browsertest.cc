@@ -211,12 +211,10 @@ class DownloadDeepScanningBrowserTestBase
       AuthorizeForDeepScanning();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      SetDMTokenForTesting(
-          policy::DMToken::CreateValidTokenForTesting("dm_token"));
+      SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 #else
       if (connectors_machine_scope()) {
-        SetDMTokenForTesting(
-            policy::DMToken::CreateValidTokenForTesting("dm_token"));
+        SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
       } else {
         SetProfileDMToken(browser()->profile(), "dm_token");
       }

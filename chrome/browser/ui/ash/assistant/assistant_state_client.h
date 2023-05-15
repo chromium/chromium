@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_STATE_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_STATE_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -40,7 +41,7 @@ class AssistantStateClient
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   base::WeakPtrFactory<AssistantStateClient> weak_ptr_factory_{this};
 };

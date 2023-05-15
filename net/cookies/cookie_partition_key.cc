@@ -114,10 +114,14 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
   if (!PartitionedCookiesEnabled(nonce))
     return absl::nullopt;
 
-  // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
-  // Set or if it is an extension URL.
+  // Use frame site for nonced partitions. Since the nonce is unique, this still
+  // creates a unique partition key. The reason we use the frame site is to
+  // align CookiePartitionKey's implementation of nonced partitions with
+  // StorageKey's. See https://crbug.com/1440765.
   const absl::optional<SchemefulSite>& partition_key_site =
-      network_isolation_key.GetTopFrameSite();
+      nonce ? network_isolation_key.GetFrameSiteForCookiePartitionKey(
+                  NetworkIsolationKey::CookiePartitionKeyPasskey())
+            : network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
     return absl::nullopt;
 
@@ -127,11 +131,11 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
 // static
 absl::optional<net::CookiePartitionKey>
 CookiePartitionKey::FromStorageKeyComponents(
-    const SchemefulSite& top_level_site,
+    const SchemefulSite& site,
     const absl::optional<base::UnguessableToken>& nonce) {
   if (!PartitionedCookiesEnabled(nonce))
     return absl::nullopt;
-  return CookiePartitionKey::FromWire(top_level_site, nonce);
+  return CookiePartitionKey::FromWire(site, nonce);
 }
 
 bool CookiePartitionKey::IsSerializeable() const {

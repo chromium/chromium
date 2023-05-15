@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget_observer.h"
@@ -51,7 +52,7 @@ class ChromeKeyboardBoundsObserver
   bool ShouldWindowOverscroll(aura::Window* window);
   bool ShouldEnableInsets(aura::Window* window);
 
-  aura::Window* const keyboard_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> keyboard_window_;
   std::set<views::Widget*> observed_widgets_;
   gfx::Rect occluded_bounds_in_screen_;
 };

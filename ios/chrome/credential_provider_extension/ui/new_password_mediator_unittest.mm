@@ -109,7 +109,6 @@ ArchivableCredential* TestCredential(NSString* recordIdentifier) {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:@"user"
-                                  validationIdentifier:@"validationIdentifier"
                                                   note:@"note"];
 }
 

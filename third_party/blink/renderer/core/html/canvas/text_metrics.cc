@@ -67,10 +67,7 @@ void TextMetrics::Update(const Font& font,
   {
     // TODO(kojii): Need to figure out the desired behavior of |advances| when
     // bidi reorder occurs.
-    TextRun text_run(
-        text, /* xpos */ 0, /* expansion */ 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        direction, false);
+    TextRun text_run(text, direction, false);
     text_run.SetNormalizeSpace(true);
     advances_ = font.IndividualCharacterAdvances(text_run);
   }
@@ -88,10 +85,8 @@ void TextMetrics::Update(const Font& font,
   float xpos = 0;
   for (const auto& run : runs) {
     // Measure each run.
-    TextRun text_run(
-        StringView(text, run.start, run.Length()), xpos, /* expansion */ 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        run.Direction(), /* directional_override */ false);
+    TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
+                     /* directional_override */ false);
     text_run.SetNormalizeSpace(true);
     gfx::RectF run_glyph_bounds;
     float run_width = font.Width(text_run, &run_glyph_bounds);

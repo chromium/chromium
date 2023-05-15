@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_UI_PRESENCE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_UI_PRESENCE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
@@ -44,7 +45,10 @@ class NearbyInternalsPresenceHandler
 
   void Initialize(const base::Value::List& args);
   void HandleStartPresenceScan(const base::Value::List& args);
-  content::BrowserContext* const context_;
+  void HandleSyncPresenceCredentials(const base::Value::List& args);
+  void HandleFirstTimePresenceFlow(const base::Value::List& args);
+
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   base::WeakPtrFactory<NearbyInternalsPresenceHandler> weak_ptr_factory_{this};
 };

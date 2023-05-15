@@ -68,8 +68,7 @@ class WebApkInstallService : public KeyedService {
   ~WebApkInstallService() override;
 
   // Returns whether an install for |web_manifest_url| is in progress.
-  bool IsInstallInProgress(const GURL& web_manifest_url,
-                           const GURL& manifest_id);
+  bool IsInstallInProgress(const GURL& manifest_id);
 
   // Installs WebAPK and adds shortcut to the launcher. It talks to the Chrome
   // WebAPK server to generate a WebAPK on the server and to Google Play to
@@ -77,7 +76,6 @@ class WebApkInstallService : public KeyedService {
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
-                    bool is_primary_icon_maskable,
                     webapps::WebappInstallSource install_source);
 
   void RetryInstallAsync(std::unique_ptr<std::string> serialized_web_apk,
@@ -109,7 +107,6 @@ class WebApkInstallService : public KeyedService {
   void OnFinishedInstall(base::WeakPtr<content::WebContents> web_contents,
                          const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
-                         bool is_priamry_icon_maskable,
                          webapps::WebApkInstallResult result,
                          std::unique_ptr<std::string> serialized_webapk,
                          bool relax_updates,
@@ -119,7 +116,6 @@ class WebApkInstallService : public KeyedService {
   // Triggers the callback to propagate the |WebApkInstallResult| to the
   // scheduling Client.
   void OnFinishedInstallWithProto(
-      const GURL& manifest_url,
       const GURL& manifest_id,
       const GURL& url,
       const std::u16string& short_name,
@@ -172,9 +168,6 @@ class WebApkInstallService : public KeyedService {
       std::unique_ptr<std::string> serialized_webapk);
 
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // In progress installs.
-  std::set<GURL> installs_;
 
   // In progress installs's id.
   std::set<GURL> install_ids_;

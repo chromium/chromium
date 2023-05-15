@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -23,10 +25,12 @@
 
 namespace ash {
 
-CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
+CaptureModeTypeView::CaptureModeTypeView(CaptureModeBehavior* active_behavior)
     : capture_type_switch_(AddChildView(std::make_unique<IconSwitch>())) {
-  // If it's not a projector session, add image toggle button.
-  if (!projector_mode) {
+  CHECK(active_behavior);
+
+  // Only add the image toggle button if the active behavior allows.
+  if (active_behavior->ShouldImageCaptureTypeBeAllowed()) {
     image_toggle_button_ = capture_type_switch_->AddButton(
         base::BindRepeating(&CaptureModeTypeView::OnImageToggle,
                             base::Unretained(this)),

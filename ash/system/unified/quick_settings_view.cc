@@ -20,6 +20,7 @@
 #include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -84,7 +85,7 @@ class AccessibilityFocusHelperView : public views::View {
   }
 
  private:
-  UnifiedSystemTrayController* controller_;
+  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 };
 
 }  // namespace
@@ -114,7 +115,7 @@ class QuickSettingsView::SystemTrayContainer : public views::View {
   }
 
  private:
-  views::BoxLayout* const layout_manager_;
+  const raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_;
 };
 
 BEGIN_METADATA(QuickSettingsView, SystemTrayContainer, views::View)
@@ -154,8 +155,7 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
     media_view_container_ = system_tray_container_->AddChildView(
         std::make_unique<QuickSettingsMediaViewContainer>(controller_));
-  } else if (base::FeatureList::IsEnabled(
-                 media::kGlobalMediaControlsForChromeOS)) {
+  } else {
     media_controls_container_ = system_tray_container_->AddChildView(
         std::make_unique<UnifiedMediaControlsContainer>());
     media_controls_container_->SetExpandedAmount(1.0f);
@@ -207,6 +207,7 @@ void QuickSettingsView::AddMediaControlsView(views::View* media_controls) {
 }
 
 void QuickSettingsView::ShowMediaControls() {
+  DCHECK(media_controls_container_);
   media_controls_container_->SetShouldShowMediaControls(true);
 
   if (detailed_view_container_->GetVisible()) {

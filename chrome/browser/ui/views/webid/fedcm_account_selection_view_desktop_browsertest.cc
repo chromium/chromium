@@ -28,13 +28,14 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     std::vector<content::IdentityRequestAccount> accounts = {
-        {"id", "email", "name", "given_name", GURL::EmptyGURL()}};
+        {"id", "email", "name", "given_name", GURL::EmptyGURL(),
+         std::vector<std::string>()}};
     account_selection_view()->Show(
         "top-frame-example.com",
         absl::make_optional<std::string>("iframe-example.com"),
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
-          blink::mojom::RpContext::kSignIn}},
+          blink::mojom::RpContext::kSignIn, /*request_permission=*/true}},
         Account::SignInMode::kExplicit, /*show_auto_reauthn_checkbox=*/false);
   }
 

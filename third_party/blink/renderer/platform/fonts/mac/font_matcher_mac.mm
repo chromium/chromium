@@ -33,12 +33,16 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace blink {
 
@@ -73,11 +77,9 @@ BOOL BetterChoice(NSFontTraitMask desired_traits,
   const NSFontTraitMask kMasks[] = {NSPosterFontMask,    NSSmallCapsFontMask,
                                     NSItalicFontMask,    NSCompressedFontMask,
                                     NSCondensedFontMask, NSExpandedFontMask,
-                                    NSNarrowFontMask,    0};
+                                    NSNarrowFontMask};
 
-  int i = 0;
-  NSFontTraitMask mask;
-  while ((mask = kMasks[i++])) {
+  for (NSFontTraitMask mask : kMasks) {
     BOOL desired = (desired_traits & mask) != 0;
     BOOL chosen_has_unwanted_trait = desired != ((chosen_traits & mask) != 0);
     BOOL candidate_has_unwanted_trait =
@@ -119,38 +121,39 @@ NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
 }  // namespace
 
 NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
-  // Testing with a large list of fonts available on Mac OS shows that matching
-  // for kCTFontNameAttribute matches postscript name as well as full font name.
+  // Note the header documentation: when matching, the system first searches for
+  // fonts with its value as their PostScript name, then falls back to searching
+  // for fonts with its value as their family name, and then falls back to
+  // searching for fonts with its value as their display name.
   NSString* desired_name = unique_font_name;
   NSDictionary* attributes = @{
-    (NSString*)kCTFontNameAttribute : desired_name,
-    (NSString*)kCTFontSizeAttribute : @(size)
+    base::apple::CFToNSPtrCast(kCTFontNameAttribute) : desired_name,
+    base::apple::CFToNSPtrCast(kCTFontSizeAttribute) : @(size)
   };
   base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
-      CTFontDescriptorCreateWithAttributes(base::mac::NSToCFCast(attributes)));
+      CTFontDescriptorCreateWithAttributes(
+          base::apple::NSToCFPtrCast(attributes)));
 
   base::ScopedCFTypeRef<CTFontRef> matched_font(
       CTFontCreateWithFontDescriptor(descriptor, 0, nullptr));
-
-  // CoreText will usually give us *something* but not always an exactly
-  // matched font.
   DCHECK(matched_font);
-  base::ScopedCFTypeRef<CFStringRef> matched_font_ps_name(
+
+  // CoreText will usually give us *something* but not always an exactly matched
+  // font.
+  NSString* matched_postscript_name = base::apple::CFToNSOwnershipCast(
       CTFontCopyName(matched_font, kCTFontPostScriptNameKey));
-  base::ScopedCFTypeRef<CFStringRef> matched_font_full_font_name(
+  NSString* matched_full_font_name = base::apple::CFToNSOwnershipCast(
       CTFontCopyName(matched_font, kCTFontFullNameKey));
-  // If the found font does not match in postscript name or full font name, it's
+  // If the found font does not match in PostScript name or full font name, it's
   // not the exact match that is required, so return nullptr.
-  if (kCFCompareEqualTo != CFStringCompare(matched_font_ps_name,
-                                           base::mac::NSToCFCast(desired_name),
-                                           kCFCompareCaseInsensitive) &&
-      kCFCompareEqualTo != CFStringCompare(matched_font_full_font_name,
-                                           base::mac::NSToCFCast(desired_name),
-                                           kCFCompareCaseInsensitive)) {
+  if ([matched_postscript_name caseInsensitiveCompare:desired_name] !=
+          NSOrderedSame &&
+      [matched_full_font_name caseInsensitiveCompare:desired_name] !=
+          NSOrderedSame) {
     return nullptr;
   }
 
-  return [base::mac::CFToNSCast(matched_font.release()) autorelease];
+  return base::apple::CFToNSOwnershipCast(matched_font.release());
 }
 
 // Family name is somewhat of a misnomer here.  We first attempt to find an
@@ -167,15 +170,15 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
     NSFont* font = [NSFont systemFontOfSize:size
                                      weight:ToFontWeight(desired_weight)];
     if (desired_traits & IMPORTANT_FONT_TRAITS)
-      font = [[NSFontManager sharedFontManager] convertFont:font
-                                                toHaveTrait:desired_traits];
+      font = [NSFontManager.sharedFontManager convertFont:font
+                                              toHaveTrait:desired_traits];
     return font;
   }
 
   NSString* desired_family = desired_family_string;
-  NSFontManager* font_manager = [NSFontManager sharedFontManager];
+  NSFontManager* font_manager = NSFontManager.sharedFontManager;
 
-  // From Mac OS 10.15 [NSFontManager availableFonts] does not list certain
+  // From macOS 10.15 `NSFontManager.availableFonts` does not list certain
   // fonts that availableMembersOfFontFamily actually shows results for, for
   // example "Hiragino Kaku Gothic ProN" is not listed, only Hiragino Sans is
   // listed. We previously enumerated availableFontFamilies and looked for a
@@ -186,7 +189,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   NSString* available_family = nil;
   NSArray* fonts_in_family =
       [font_manager availableMembersOfFontFamily:desired_family];
-  if (fonts_in_family && [fonts_in_family count]) {
+  if (fonts_in_family && fonts_in_family.count) {
     available_family = desired_family;
   }
 
@@ -194,7 +197,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   if (!available_family) {
     // Match by PostScript name.
     NSEnumerator* available_fonts =
-        [[font_manager availableFonts] objectEnumerator];
+        font_manager.availableFonts.objectEnumerator;
     NSString* available_font;
     NSFont* name_matched_font = nil;
     NSFontTraitMask desired_traits_for_name_match =
@@ -208,16 +211,18 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
         // need to treat Osaka-Mono as fixed pitch.
         if ([desired_family caseInsensitiveCompare:@"Osaka-Mono"] ==
                 NSOrderedSame &&
-            desired_traits_for_name_match == 0)
+            desired_traits_for_name_match == 0) {
           return name_matched_font;
+        }
 
         NSFontTraitMask traits = [font_manager traitsOfFont:name_matched_font];
         if ((traits & desired_traits_for_name_match) ==
-            desired_traits_for_name_match)
+            desired_traits_for_name_match) {
           return [font_manager convertFont:name_matched_font
                                toHaveTrait:desired_traits_for_name_match];
+        }
 
-        available_family = [name_matched_font familyName];
+        available_family = name_matched_font.familyName;
         break;
       }
     }
@@ -227,27 +232,32 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   BOOL chose_font = false;
   NSInteger chosen_weight = 0;
   NSFontTraitMask chosen_traits = 0;
-  NSString* chosen_full_name = 0;
+  NSString* chosen_full_name = nil;
 
-  NSArray* fonts = [font_manager availableMembersOfFontFamily:available_family];
-  NSUInteger n = [fonts count];
-  NSUInteger i;
-  for (i = 0; i < n; i++) {
-    NSArray* font_info = fonts[i];
+  NSArray<NSArray*>* fonts =
+      [font_manager availableMembersOfFontFamily:available_family];
+  for (NSArray* font_info in fonts) {
+    // Each font is represented by an array of four elements:
 
-    // Array indices must be hard coded because of lame AppKit API.
+    // TODO(https://crbug.com/1442008): The docs say that font_info[0] is the
+    // PostScript name of the font, but it's treated as the full name here.
+    // Either the docs are wrong and we should note that here for future readers
+    // of the code, or the docs are right and we should fix this.
+    // https://developer.apple.com/documentation/appkit/nsfontmanager/1462316-availablemembersoffontfamily
     NSString* font_full_name = font_info[0];
+    // font_info[1] is "the part of the font name used in the font panel that's
+    // not the font name". This is not needed.
     NSInteger font_weight = [font_info[2] intValue];
-
     NSFontTraitMask font_traits = [font_info[3] unsignedIntValue];
 
     BOOL new_winner;
-    if (!chose_font)
+    if (!chose_font) {
       new_winner = AcceptableChoice(desired_traits, font_traits);
-    else
+    } else {
       new_winner =
           BetterChoice(desired_traits, app_kit_font_weight, chosen_traits,
                        chosen_weight, font_traits, font_weight);
+    }
 
     if (new_winner) {
       chose_font = YES;

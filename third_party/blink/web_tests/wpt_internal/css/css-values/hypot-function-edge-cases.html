@@ -1,0 +1,16 @@
+<!doctype html>
+<title>hypot() function extreme cases</title>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/numeric-testcommon.js"></script>
+
+<meta name=author content="sakhapov@chromium.org">
+<link rel=help href="https://drafts.csswg.org/css-values-4/#round-func">
+
+<div id=target></div>
+<script>
+test_math_used('hypot(3,4)', '5', {type:'number'});
+test_math_used('hypot(3e-154,4e-154)', '5e-154', {type:'number'});
+test_math_used('hypot(pow(10, 300), pow(10, 300), pow(10, 300), pow(10, 300))', 'calc(2 * pow(10, 300))', {type:'number'});
+</script>

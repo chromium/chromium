@@ -26,6 +26,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -149,7 +150,7 @@ class GlanceablesTest : public AshTestBase {
   views::Label* GetNoEventsLabel() { return GetUpNextView()->no_events_label_; }
 
  protected:
-  GlanceablesController* controller_ = nullptr;
+  raw_ptr<GlanceablesController, ExperimentalAsh> controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_{features::kGlanceables};
 };
 

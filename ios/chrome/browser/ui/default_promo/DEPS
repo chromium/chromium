@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/ui/infobars",
+  "+ios/chrome/browser/ui/policy/user_policy_util.h",
+  "+ios/chrome/browser/ui/promos_manager",
+]

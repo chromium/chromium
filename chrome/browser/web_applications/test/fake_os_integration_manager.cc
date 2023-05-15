@@ -6,6 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 namespace web_app {
 
@@ -44,7 +45,7 @@ FakeOsIntegrationManager::~FakeOsIntegrationManager() = default;
 
 void FakeOsIntegrationManager::SetNextCreateShortcutsResult(const AppId& app_id,
                                                             bool success) {
-  DCHECK(!base::Contains(next_create_shortcut_results_, app_id));
+  CHECK(!base::Contains(next_create_shortcut_results_, app_id));
   next_create_shortcut_results_[app_id] = success;
 }
 
@@ -122,6 +123,25 @@ void FakeOsIntegrationManager::UpdateOsHooks(
   OsHooksErrors os_hooks_errors;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
+}
+
+void FakeOsIntegrationManager::Synchronize(
+    const AppId& app_id,
+    base::OnceClosure callback,
+    absl::optional<SynchronizeOsOptions> options) {
+  // Holding a scoped_supress ensures that execution is skipped during the
+  // entire Synchronization flow. See
+  // OsIntegrationManager::StartSubManagerExecutionIfRequired() for more
+  // information.
+  auto scoped_supress =
+      std::make_unique<OsIntegrationManager::ScopedSuppressForTesting>();
+  auto scoped_supress_callback = base::BindOnce(
+      [&](std::unique_ptr<OsIntegrationManager::ScopedSuppressForTesting>
+              scoped_supress) {},
+      std::move(scoped_supress));
+  OsIntegrationManager::Synchronize(
+      app_id, std::move(callback).Then(std::move(scoped_supress_callback)),
+      options);
 }
 
 void FakeOsIntegrationManager::SetFileHandlerManager(

@@ -511,7 +511,8 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   DCHECK_EQ(runtime->GetId(), request.runtime_id);
 
 #if BUILDFLAG(ENABLE_OPENXR)
-  if (request.options->mode == device::mojom::XRSessionMode::kImmersiveAr) {
+  if (request.options->mode == device::mojom::XRSessionMode::kImmersiveAr &&
+      runtime->GetId() == device::mojom::XRDeviceId::OPENXR_DEVICE_ID) {
     DCHECK(
         base::FeatureList::IsEnabled(
             device::features::kOpenXrExtendedFeatureSupport));

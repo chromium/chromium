@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom-forward.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -19,6 +22,18 @@ class ColorChangeHandler;
 namespace ash {
 namespace printing {
 namespace printing_manager {
+
+class PrintManagementUI;
+
+// The WebUIConfig for chrome://print-management/.
+class PrintManagementUIConfig : public ChromeOSWebUIConfig<PrintManagementUI> {
+ public:
+  explicit PrintManagementUIConfig(
+      CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIPrintManagementHost,
+                            create_controller_func) {}
+};
 
 // The WebUI for chrome://print-management/.
 class PrintManagementUI : public ui::MojoWebUIController {

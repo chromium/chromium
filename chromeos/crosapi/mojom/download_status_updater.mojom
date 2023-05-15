@@ -1,0 +1,63 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/download_controller.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Representation of a Lacros download's status to be passed into Ash Chrome
+// and rendered in the appropriate System UI surface(s).
+//
+// Next MinVersion: 2
+// Next ID: 8
+//
+[Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
+struct DownloadStatus {
+
+  // The GUID for the underlying download which uniquely identifies the download
+  // during its lifetime.
+  string guid@0;
+
+  // The current state of the underlying download.
+  DownloadState state@1;
+
+  // The total number of bytes that have been received and written to the
+  // underlying download file.
+  [MinVersion=1] int64? received_bytes@2;
+
+  // The total number of bytes expected to be written to the underlying download
+  // file, or -1 if the total number of bytes is unknown.
+  [MinVersion=1] int64? total_bytes@3;
+
+  // The target path of an in-progress download. Note that the actual path being
+  // written to may be that of a temporary or intermediate file, but the target
+  // path will be used once the underlying download completes. Also note that
+  // the target path may be empty if it hasn't yet been determined.
+  [MinVersion=1] mojo_base.mojom.FilePath? target_file_path@4;
+
+  // Whether an in-progress download can be cancelled by the user.
+  [MinVersion=1] bool? cancellable@5;
+
+  // Whether an in-progress download can be paused by the user.
+  [MinVersion=1] bool? pausable@6;
+
+  // Whether an in-progress download can be resumed by the user.
+  [MinVersion=1] bool? resumable@7;
+
+};
+
+// The interface which allows Lacros download status updates to be passed into
+// Ash Chrome for rendering in the appropriate System UI surface(s).
+//
+// Next MinVersion: 1
+// Next ID: 1
+//
+[Stable, Uuid="2f06d2a1-7c81-4418-affe-bc821f43594e"]
+interface DownloadStatusUpdater {
+
+  // Invoked when `status` for a download should be updated.
+  Update@0(DownloadStatus status);
+
+};

@@ -1,0 +1,32 @@
+Verifies that redirects to a cached URL do not produce extra info events
+
+Fresh redirect:
+request:
+  url: http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-cached.php
+  !!redirectResponse: false
+  redirectHasExtraInfo: false
+request:
+  url: http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-cached-target.php
+  !!redirectResponse: true
+  redirectHasExtraInfo: true
+response:
+  fromDiskCache: false
+  hasExtraInfo: true
+  requestExtraInfoCount: 2
+  responseExtraInfoCount: 2
+
+Redirect to a cached resource:
+request:
+  url: http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-cached.php
+  !!redirectResponse: false
+  redirectHasExtraInfo: false
+request:
+  url: http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-cached-target.php
+  !!redirectResponse: true
+  redirectHasExtraInfo: true
+response:
+  fromDiskCache: true
+  hasExtraInfo: false
+  requestExtraInfoCount: 1
+  responseExtraInfoCount: 1
+

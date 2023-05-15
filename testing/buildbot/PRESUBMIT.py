@@ -56,6 +56,14 @@ def CheckSourceSideSpecs(input_api, output_api):
 
 
 def CheckTests(input_api, output_api):
+  for f in input_api.AffectedFiles():
+    # If the only files changed here match //testing/buildbot/*.(pyl|json),
+    # then we can assume the unit tests are unaffected.
+    if (len(f.LocalPath().split(input_api.os_path.sep)) != 3
+        or not f.LocalPath().endswith(('.json', '.pyl'))):
+      break
+  else:
+    return []
   glob = input_api.os_path.join(input_api.PresubmitLocalPath(), '*test.py')
   tests = input_api.canned_checks.GetUnitTests(input_api,
                                                output_api,

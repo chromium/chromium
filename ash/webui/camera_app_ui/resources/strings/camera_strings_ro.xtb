@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Înregistrarea s-a oprit din cauza spațiului de stocare redus de pe dispozitiv. Pentru a înregistra mai multe videoclipuri, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="2036868001356139588">Durata temporizatorului</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> s-a activat</translation>
-<translation id="2128052519899549250">Înregistrează un videoclip Timelapse</translation>
 <translation id="2134029355740465625">Setări video</translation>
 <translation id="2144806332417375165">Parametri video personalizați</translation>
 <translation id="2175927920773552910">Cod QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">S-a detectat un document</translation>
 <translation id="414641094616694804">Rezoluția acestei camere foto nu poate fi schimbată</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
-<translation id="4281620174117014503">Rezoluție medie</translation>
 <translation id="428234092390943511">Miniatură pentru pagină</translation>
 <translation id="4383571725254449280">Printează jurnalele de performanță</translation>
 <translation id="4445542136948522167">Nu mai fotografia</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5320594929574852403">Se deplasează spre stânga</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Timelapse</translation>
 <translation id="5662366948659129155">Se scanează pagina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Pătrat</translation>
+<translation id="574392208103952083">Mediu</translation>
 <translation id="5746169159649715125">Salvați ca PDF</translation>
 <translation id="5753488212459587150">Activează modul expert</translation>
 <translation id="5759254179196327752">Scanează documentul</translation>
@@ -138,6 +136,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7670511624014457267">60 CPS</translation>
 <translation id="7671804233658741790">Colțul din dreapta jos al documentului</translation>
+<translation id="7684446460490665873">Înregistrează un videoclip cu filmare lentă</translation>
 <translation id="7692090236657809299">Activează opțiunile de deplasare, înclinare și zoom</translation>
 <translation id="7726641833034062494">Înregistrează un videoclip obișnuit</translation>
 <translation id="7748344063862150053">Colțul din dreapta sus al documentului</translation>
@@ -163,6 +162,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="9045010116236796332">Încadrează toate marginile documentului în cadru</translation>
 <translation id="9045155556724273246">10 secunde</translation>
 <translation id="906331135292332864">Se procesează imaginea...</translation>
+<translation id="9161584225258678723">Filmare lentă</translation>
 <translation id="922762992951083513">Oglindirea este activată</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 </translationbundle>

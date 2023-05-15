@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
@@ -64,10 +65,10 @@ class ASH_EXPORT FullscreenNotificationBubble : public aura::WindowObserver,
   gfx::Rect GetBubbleBounds();
 
   // The contents of the widget.
-  SubtleNotificationView* view_ = nullptr;
+  raw_ptr<SubtleNotificationView, ExperimentalAsh> view_ = nullptr;
 
   // The widget containing the bubble.
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   // A timer to auto-dismiss the bubble after a short period of time.
   std::unique_ptr<base::OneShotTimer> timer_;

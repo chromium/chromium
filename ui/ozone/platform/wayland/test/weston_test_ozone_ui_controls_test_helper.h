@@ -71,10 +71,4 @@ class WestonTestOzoneUIControlsTestHelper
 
 }  // namespace wl
 
-namespace ui {
-
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland();
-
-}  // namespace ui
-
 #endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_

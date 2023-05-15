@@ -19,6 +19,12 @@
 
 namespace blink {
 
+// Note: these must match the values in renderer_preferences.mojom.
+constexpr uint32_t kDefaultActiveSelectionBgColor = 0xFF1967D2;
+constexpr uint32_t kDefaultActiveSelectionFgColor = 0xFFFFFFFF;
+constexpr uint32_t kDefaultInactiveSelectionBgColor = 0xFFC8C8C8;
+constexpr uint32_t kDefaultInactiveSelectionFgColor = 0xFF323232;
+
 // User preferences passed between the browser and renderer processes.
 // See //third_party/blink/public/mojom/renderer_preferences.mojom for a
 // description of what each field is about.
@@ -32,10 +38,10 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
       gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE};
   bool use_subpixel_positioning{false};
   uint32_t focus_ring_color{0xFFE59700};
-  uint32_t active_selection_bg_color{0xFF1E90FF};
-  uint32_t active_selection_fg_color{0xFFFFFFFF};
-  uint32_t inactive_selection_bg_color{0xFFC8C8C8};
-  uint32_t inactive_selection_fg_color{0xFF323232};
+  uint32_t active_selection_bg_color{kDefaultActiveSelectionBgColor};
+  uint32_t active_selection_fg_color{kDefaultActiveSelectionFgColor};
+  uint32_t inactive_selection_bg_color{kDefaultInactiveSelectionBgColor};
+  uint32_t inactive_selection_fg_color{kDefaultInactiveSelectionFgColor};
   bool browser_handles_all_top_level_requests{false};
   absl::optional<base::TimeDelta> caret_blink_interval;
   bool use_custom_colors{true};

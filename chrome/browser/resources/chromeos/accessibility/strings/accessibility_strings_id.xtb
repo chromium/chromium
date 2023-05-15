@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="100506692671054486">tidak ada perintah sebelumnya</translation>
 <translation id="1009046985747440431">Tekan panah atas atau bawah untuk memilih; enter untuk mengaktifkan</translation>
 <translation id="1011903154582639569">Cari tombol, lalu angkat untuk mengetik</translation>
 <translation id="1012173283529841972">Item daftar</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavender Blush</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3962990492275676168">Mulai membaca dari lokasi saat ini</translation>
+<translation id="397094149579293440">tidak ada teks yang dipilih</translation>
 <translation id="3970951409746498040">Sandy Brown</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Moccasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Tidak ada judul level 1 sebelumnya</translation>
 <translation id="4787577491510559358">Ucapkan format item saat ini</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">tidak ada kolom teks yang difokuskan</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="481165870889056555">Mengumumkan judul dari halaman saat ini</translation>
 <translation id="4815668758102003883">Pale Turquoise</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Tautan internal</translation>
 <translation id="4909019435900810068">Mundur satu kata</translation>
 <translation id="4911349081560453449">Tidak ada kotak centang sebelumnya</translation>
+<translation id="4919186071145887492">Tidak dapat <ph name="COMMAND" />, coba lagi</translation>
 <translation id="492295894462528572">Kata pengantar</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953585991029886728">Edit teks</translation>
+<translation id="4964701498510730546">kolom teks kosong</translation>
 <translation id="4973717656530883744">Min <ph name="X" /></translation>
 <translation id="4974612477719259470">Tidak ada tombol sebelumnya</translation>
 <translation id="4979404613699303341">Tombol sebelumnya</translation>
+<translation id="4981239367072766915">input tidak dikenal</translation>
 <translation id="4982917827052020884">Mari mulai dengan beberapa tombol yang akan sering Anda gunakan. Tombol Control dapat digunakan untuk menghentikan ucapan saat ini. Temukan tombol Control di pojok kiri bawah keyboard. Untuk melanjutkan, tekan tombol Control.</translation>
 <translation id="4983588134362688868">Menuju ke bagian atas halaman</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, jendela</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Ucapkan status baterai saat ini</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, tombol radio dipilih</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, tombol pilihan item menu dipilih</translation>
+<translation id="5014131807708055994">Tidak dapat <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Aktifkan penyimpanan log ucapan</translation>
 <translation id="5041394372352067729">Pindahkan penampil braille ke bagian atas halaman</translation>
 <translation id="5042770794184672516">Meningkatkan volume ucapan</translation>

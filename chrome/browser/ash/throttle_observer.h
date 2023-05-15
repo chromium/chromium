@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 
 namespace content {
@@ -67,7 +68,7 @@ class ThrottleObserver {
   ObserverStateChangedCallback callback_;
 
  private:
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 };
 
 }  // namespace ash

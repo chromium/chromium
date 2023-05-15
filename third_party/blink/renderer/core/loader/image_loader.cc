@@ -25,6 +25,7 @@
 #include <memory>
 #include <utility>
 
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -161,7 +161,6 @@ ImageLoader::ImageLoader(Element* element)
     : element_(element),
       image_complete_(true),
       suppress_error_events_(false),
-      was_deferred_explicitly_(false),
       lazy_image_load_state_(LazyImageLoadState::kNone) {
   RESOURCE_LOADING_DVLOG(1) << "new ImageLoader " << this;
 }
@@ -509,9 +508,9 @@ void ImageLoader::DoUpdateFromElement(
         frame->GetAttributionSrcLoader()->CanRegister(
             url, To<HTMLImageElement>(GetElement()),
             /*request_id=*/absl::nullopt)) {
-      resource_request.SetHttpHeaderField(
-          http_names::kAttributionReportingEligible,
-          kAttributionEligibleEventSourceAndTrigger);
+      resource_request.SetAttributionReportingEligibility(
+          network::mojom::AttributionReportingEligibility::
+              kEventSourceOrTrigger);
     }
 
     bool page_is_being_dismissed =
@@ -544,26 +543,17 @@ void ImageLoader::DoUpdateFromElement(
     if (update_behavior != kUpdateForcedReload &&
         lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
       if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
-        LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
-            html_image->FastGetAttribute(html_names::kLoadingAttr));
-        switch (LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
-            *frame, html_image, params.Url())) {
-          case LazyImageHelper::Eligibility::kEnabledFullyDeferred:
-            lazy_image_load_state_ = LazyImageLoadState::kDeferred;
-            was_deferred_explicitly_ =
-                (loading_attr == LoadingAttributeValue::kLazy);
-            params.SetLazyImageDeferred();
-            break;
-          case LazyImageHelper::Eligibility::kDisabled:
-            break;
+        if (LazyImageHelper::ShouldDeferImageLoad(*frame, html_image)) {
+          LazyImageHelper::StartMonitoringVisibilityMetrics(html_image);
+          lazy_image_load_state_ = LazyImageLoadState::kDeferred;
+          params.SetLazyImageDeferred();
         }
       }
     }
 
     // If we're now loading in a once-deferred image, make sure it doesn't block
     // the load event.
-    if (was_deferred_explicitly_ &&
-        lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
+    if (lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
         !force_blocking) {
       params.SetLazyImageNonBlocking();
     }

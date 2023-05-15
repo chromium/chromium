@@ -40,8 +40,7 @@
 class ChromeRenderViewTest;
 class GURL;
 class ModuleSystem;
-struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_TabConnectionInfo;
+struct ExtensionMsg_OnConnectData;
 
 namespace blink {
 class WebLocalFrame;
@@ -103,7 +102,9 @@ class Dispatcher : public content::RenderThreadObserver,
 
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
 
-  const std::string& webview_partition_id() { return webview_partition_id_; }
+  const absl::optional<std::string>& webview_partition_id() {
+    return webview_partition_id_;
+  }
 
   bool activity_logging_enabled() const { return activity_logging_enabled_; }
 
@@ -245,6 +246,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetWebViewPartitionID(const std::string& partition_id) override;
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override;
+  void UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) override;
   void ShouldSuspend(ShouldSuspendCallback callback) override;
   void TransferBlobs(TransferBlobsCallback callback) override;
   void UpdatePermissions(const std::string& extension_id,
@@ -278,10 +280,7 @@ class Dispatcher : public content::RenderThreadObserver,
                         const PortId& target_port_id,
                         const Message& message);
   void OnDispatchOnConnect(int worker_thread_id,
-                           const PortId& target_port_id,
-                           const std::string& channel_name,
-                           const ExtensionMsg_TabConnectionInfo& source,
-                           const ExtensionMsg_ExternalConnectionInfo& info);
+                           const ExtensionMsg_OnConnectData& connect_data);
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
@@ -376,9 +375,10 @@ class Dispatcher : public content::RenderThreadObserver,
   bool activity_logging_enabled_;
 
   // The WebView partition ID associated with this process's storage partition,
-  // if this renderer is a WebView guest render process. Otherwise, this will be
-  // empty.
-  std::string webview_partition_id_;
+  // if this renderer is a WebView guest render process, otherwise unset.
+  // Note that this may be an empty string, even if it's set (if the webview
+  // doesn't have a set partition ID).
+  absl::optional<std::string> webview_partition_id_;
 
   // Extensions renderer receiver. This is an associated receiver because
   // it is dependent on other messages sent on other associated channels.

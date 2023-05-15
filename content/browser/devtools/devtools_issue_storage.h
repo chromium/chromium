@@ -40,6 +40,7 @@ class DevToolsIssueStorage
       std::pair<GlobalRenderFrameHostId,
                 std::unique_ptr<protocol::Audits::InspectorIssue>>;
   base::circular_deque<RenderFrameHostAssociatedIssue> issues_;
+  int total_added_issues_ = 0;
 };
 
 }  // namespace content

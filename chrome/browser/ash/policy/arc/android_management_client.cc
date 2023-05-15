@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -86,7 +86,7 @@ void AndroidManagementClientImpl::CheckAndroidManagement(
       DMServerJobConfiguration>(
       device_management_service_,
       DeviceManagementService::JobConfiguration::TYPE_ANDROID_MANAGEMENT_CHECK,
-      /*client_id=*/base::GenerateGUID(),
+      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
       /*critical=*/false, DMAuth::NoAuth(), access_token, url_loader_factory_,
       base::BindOnce(&AndroidManagementClientImpl::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));

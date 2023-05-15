@@ -16,6 +16,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../../settings_shared.css.js';
 import '../os_languages_page/shared_style.css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -30,7 +31,7 @@ import {getTemplate} from './change_dictation_locale_dialog.html.js';
  * pack for the locale is installed, and whether it should be highlighted as
  * recommended to the user.
  */
-interface DictationLocaleOption {
+export interface DictationLocaleOption {
   name: string;
   value: string;
   worksOffline: boolean;
@@ -44,6 +45,8 @@ export interface ChangeDictationLocaleDialog {
     changeDictationLocaleDialog: CrDialogElement,
     recommendedLocalesList: IronListElement,
     search: CrSearchFieldElement,
+    cancel: CrButtonElement,
+    update: CrButtonElement,
   };
 }
 
@@ -52,7 +55,7 @@ const ChangeDictationLocaleDialogBase = I18nMixin(PolymerElement);
 export class ChangeDictationLocaleDialog extends
     ChangeDictationLocaleDialogBase {
   static get is() {
-    return 'os-settings-change-dictation-locale-dialog';
+    return 'os-settings-change-dictation-locale-dialog' as const;
   }
 
   static get template() {
@@ -304,6 +307,12 @@ export class ChangeDictationLocaleDialog extends
       this.set('pref.value', this.selectedLocale_.value);
     }
     this.$.changeDictationLocaleDialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ChangeDictationLocaleDialog.is]: ChangeDictationLocaleDialog;
   }
 }
 

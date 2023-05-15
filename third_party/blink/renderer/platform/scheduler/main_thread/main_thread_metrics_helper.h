@@ -8,7 +8,6 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
-#include "components/scheduling_metrics/total_duration_metric_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -83,12 +82,10 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   // When adding a new renderer priority, initialize an entry in the constructor
   // and update histograms.xml.
   static_assert(
-      static_cast<size_t>(TaskPriority::kPriorityCount) == 10,
+      static_cast<size_t>(TaskPriority::kPriorityCount) == 11,
       "Queueing delay histograms must be kept in sync with TaskPriority.");
   CustomCountHistogram queueing_delay_histograms_[static_cast<size_t>(
       TaskPriority::kPriorityCount)];
-
-  scheduling_metrics::TotalDurationMetricReporter total_task_time_reporter_;
 
   MainThreadTaskLoadState main_thread_task_load_state_;
   base::MetricsSubSampler metrics_subsampler_;

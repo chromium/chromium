@@ -35,8 +35,6 @@ static_library("driver") {
     "non_ui_syncable_service_based_model_type_controller.h",
     "passphrase_type_metrics_provider.cc",
     "passphrase_type_metrics_provider.h",
-    "startup_controller.cc",
-    "startup_controller.h",
     "sync_api_component_factory.h",
     "sync_auth_manager.cc",
     "sync_auth_manager.h",

@@ -37,8 +37,11 @@ AndroidOutcomeToLocalApprovalResult(
 
 SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
     content::WebContents* web_contents,
-    int frame_id)
-    : ChromeSupervisedUserWebContentHandlerBase(web_contents, frame_id) {}
+    int frame_id,
+    int64_t interstitial_navigation_id)
+    : ChromeSupervisedUserWebContentHandlerBase(web_contents,
+                                                frame_id,
+                                                interstitial_navigation_id) {}
 
 SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;
@@ -54,7 +57,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
               ->GetProfileKey());
 
   WebsiteParentApproval::RequestLocalApproval(
-      web_contents_.get(), supervised_user::NormalizeUrl(url),
+      web_contents_, supervised_user::NormalizeUrl(url),
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
@@ -68,7 +71,7 @@ void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
                                                        std::u16string reason) {
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-  ReportChildAccountFeedback(web_contents_.get(), message, url);
+  ReportChildAccountFeedback(web_contents_, message, url);
 }
 
 void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(

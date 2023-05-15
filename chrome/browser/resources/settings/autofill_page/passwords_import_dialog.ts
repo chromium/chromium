@@ -22,9 +22,10 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -83,8 +84,15 @@ export enum PasswordsImportDesktopInteractions {
   DIALOG_OPENED_FROM_THREE_DOT_MENU = 0,
   DIALOG_OPENED_FROM_EMPTY_STATE = 1,
   CANCELED_BEFORE_FILE_SELECT = 2,
+  UPM_STORE_PICKER_OPENED = 3,
+  UPM_FILE_SELECT_LAUNCHED = 4,
+  UPM_VIEW_PASSWORDS_CLICKED = 5,
+  CONFLICTS_CANCELED = 6,
+  CONFLICTS_REAUTH_FAILED = 7,
+  CONFLICTS_SKIP_CLICKED = 8,
+  CONFLICTS_REPLACE_CLICKED = 9,
   // Must be last.
-  COUNT = 3,
+  COUNT = 10,
 }
 
 export class PasswordsImportDialogElement extends
@@ -99,7 +107,10 @@ export class PasswordsImportDialogElement extends
 
   static get properties() {
     return {
-      dialogState: Number,
+      dialogState: {
+        type: Number,
+        observer: 'focusOnFirstActionableItem_',
+      },
 
       importDialogStateEnum_: {
         type: Object,
@@ -198,6 +209,24 @@ export class PasswordsImportDialogElement extends
     this.dialogState = ImportDialogState.START;
   }
 
+  private focusOnFirstActionableItem_() {
+    afterNextRender(this, () => {
+      let elementToFocus = this.$.close as HTMLElement;
+      if (this.isState_(ImportDialogState.CONFLICTS)) {
+        const firstCheckbox =
+            this.$.conflictsList.querySelector('cr-checkbox') as HTMLElement;
+        if (firstCheckbox) {
+          elementToFocus = firstCheckbox;
+        }
+      } else if (!this.shouldHideDeleteFileOption_()) {
+        elementToFocus = this.$.deleteFileOption as HTMLElement;
+      } else if (this.shouldShowStorePicker_()) {
+        elementToFocus = this.$.storePicker as HTMLElement;
+      }
+      focusWithoutInk(elementToFocus);
+    });
+  }
+
   private computeConflictsListClass_(): string {
     return this.inProgress_ ? 'disabled-conflicts-list' : '';
   }
@@ -293,6 +322,8 @@ export class PasswordsImportDialogElement extends
 
   private async onSkipClick_() {
     assert(this.isState_(ImportDialogState.CONFLICTS));
+    recordPasswordsImportInteraction(
+        PasswordsImportDesktopInteractions.CONFLICTS_SKIP_CLICKED);
     this.inProgress_ = true;
     this.results_ =
         await this.passwordManager_.continueImport(/*selectedIds=*/[]);
@@ -301,6 +332,8 @@ export class PasswordsImportDialogElement extends
 
   private async onReplaceClick_() {
     assert(this.isState_(ImportDialogState.CONFLICTS));
+    recordPasswordsImportInteraction(
+        PasswordsImportDesktopInteractions.CONFLICTS_REPLACE_CLICKED);
     this.inProgress_ = true;
     this.results_ = await this.passwordManager_.continueImport(
         this.conflictsSelectedForReplace_);
@@ -325,7 +358,7 @@ export class PasswordsImportDialogElement extends
                 this.results_.displayedEntries.length);
         this.conflicts_ = this.results_.displayedEntries;
         this.dialogState = ImportDialogState.CONFLICTS;
-        return;
+        break;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
         this.descriptionText_ =
             this.i18nAdvanced('importPasswordsFileSizeExceeded');
@@ -351,6 +384,10 @@ export class PasswordsImportDialogElement extends
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
+        if (this.isState_(ImportDialogState.CONFLICTS)) {
+          recordPasswordsImportInteraction(
+              PasswordsImportDesktopInteractions.CONFLICTS_REAUTH_FAILED);
+        }
         // Dialog state should not change if a system file picker was dismissed.
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
@@ -361,7 +398,6 @@ export class PasswordsImportDialogElement extends
       default:
         assertNotReached();
     }
-    this.$.close.focus();
   }
 
   private async handleSuccess_() {
@@ -403,8 +439,6 @@ export class PasswordsImportDialogElement extends
       this.descriptionText_ = sanitizeInnerHtml(descriptionText);
     }
     this.dialogState = ImportDialogState.SUCCESS;
-
-    this.$.close.focus();
   }
 
   private getStoreOptionAccountText_(): string {
@@ -436,8 +470,6 @@ export class PasswordsImportDialogElement extends
         return this.i18n('importPasswordsInvalidURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
         return this.i18n('importPasswordsLongURL');
-      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
-        return this.i18n('importPasswordsNonASCIIURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
         return this.i18n('importPasswordsLongPassword');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
@@ -453,6 +485,7 @@ export class PasswordsImportDialogElement extends
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_CONCATENATED_NOTE:
         return this.i18n('importPasswordsLongNote');
       case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
+      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
       default:
         assertNotReached();
     }
@@ -514,12 +547,20 @@ export class PasswordsImportDialogElement extends
       recordPasswordsImportInteraction(
           PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);
     }
+    if (this.isState_(ImportDialogState.CONFLICTS)) {
+      recordPasswordsImportInteraction(
+          PasswordsImportDesktopInteractions.CONFLICTS_CANCELED);
+    }
     if (this.enablePasswordsImportM2_) {
       // Trigger the file deletion if checkbox is ticked in SUCCESS (with no
       // errors) state.
       const deleteFile = !this.shouldHideDeleteFileOption_() &&
           this.$.deleteFileOption.checked;
       await this.passwordManager_.resetImporter(deleteFile);
+      if (!this.shouldHideDeleteFileOption_) {
+        chrome.metricsPrivate.recordBoolean(
+            'PasswordManager.Import.FileDeletionSelected', deleteFile);
+      }
     }
     this.$.dialog.close();
   }

@@ -6,8 +6,8 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -46,8 +46,9 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
 // Tests that a SaveCardInfobarBannerOverlayMediator correctly sets up its
 // consumer.
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, SetUpConsumer) {
-  autofill::CreditCard credit_card(base::GenerateGUID(),
-                                   "https://www.example.com/");
+  autofill::CreditCard credit_card(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "https://www.example.com/");
   std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile>
       passed_delegate =
           autofill::AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(
@@ -82,8 +83,9 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, SetUpConsumer) {
 // presents the modal.
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOn) {
   // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
-  autofill::CreditCard credit_card(base::GenerateGUID(),
-                                   "https://www.example.com/");
+  autofill::CreditCard credit_card(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "https://www.example.com/");
   std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile>
       passed_delegate =
           autofill::AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
@@ -113,8 +115,9 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOn) {
 // does not present the modal.
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOff) {
   // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
-  autofill::CreditCard credit_card(base::GenerateGUID(),
-                                   "https://www.example.com/");
+  autofill::CreditCard credit_card(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "https://www.example.com/");
   std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile>
       passed_delegate =
           autofill::AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(

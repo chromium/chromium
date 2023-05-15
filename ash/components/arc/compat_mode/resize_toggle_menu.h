@@ -10,6 +10,8 @@
 #include "ash/components/arc/compat_mode/resize_util.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -58,7 +60,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
     views::ImageView* icon_view_{nullptr};
     views::Label* title_{nullptr};
 
-    const gfx::VectorIcon& icon_;
+    const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
     bool is_selected_{false};
   };
 
@@ -99,9 +101,9 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   void CloseBubble();
 
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 
-  ArcResizeLockPrefDelegate* pref_delegate_;
+  raw_ptr<ArcResizeLockPrefDelegate, ExperimentalAsh> pref_delegate_;
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
@@ -110,12 +112,12 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   base::CancelableOnceClosure auto_close_closure_;
 
-  views::Widget* bubble_widget_{nullptr};
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_{nullptr};
 
   // Store only for testing.
-  MenuButtonView* phone_button_{nullptr};
-  MenuButtonView* tablet_button_{nullptr};
-  MenuButtonView* resizable_button_{nullptr};
+  raw_ptr<MenuButtonView, ExperimentalAsh> phone_button_{nullptr};
+  raw_ptr<MenuButtonView, ExperimentalAsh> tablet_button_{nullptr};
+  raw_ptr<MenuButtonView, ExperimentalAsh> resizable_button_{nullptr};
 
   base::WeakPtrFactory<ResizeToggleMenu> weak_ptr_factory_{this};
 };

@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,6 +43,7 @@ class FingerprintStorageUnitTest : public testing::Test {
   void SetUp() override {
     test_api_ = std::make_unique<TestApi>(/*override_quick_unlock=*/true);
     test_api_->EnableFingerprintByPolicy(Purpose::kAny);
+    UserDataAuthClient::InitializeFake();
   }
 
   void SetRecords(int records_number) {
@@ -71,7 +74,7 @@ class FingerprintStorageTestApi {
   }
 
  private:
-  FingerprintStorage* fingerprint_storage_;
+  raw_ptr<FingerprintStorage, ExperimentalAsh> fingerprint_storage_;
 };
 
 // Verifies that:

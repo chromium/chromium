@@ -18,6 +18,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -26,12 +27,14 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -153,42 +156,10 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   return PolicyEffect::kNone;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FinishedReason {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  kExperimentCounterfactual = 0,
-#endif
-  kFinishedFlow = 1,
-  kProfileAlreadySetUp = 2,
-  kSkippedByPolicies = 3,
-  kMaxValue = kSkippedByPolicies,
-};
-
-void SetFirstRunFinished(FinishedReason reason) {
+void SetFirstRunFinished(FirstRunService::FinishedReason reason) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kFirstRunFinished, true);
   base::UmaHistogramEnumeration("ProfilePicker.FirstRun.FinishReason", reason);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
-  switch (reason) {
-    case FinishedReason::kFinishedFlow:
-      // No outcome to log, the flow logs it by itself.
-      break;
-    case FinishedReason::kProfileAlreadySetUp:
-      outcome =
-          ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing;
-      break;
-    case FinishedReason::kSkippedByPolicies:
-      outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
-      break;
-  }
-
-  if (outcome.has_value()) {
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(*outcome);
-  }
-#endif
 }
 
 // Returns whether `prefs::kFirstRunFinished` is true. This implies that the FRE
@@ -244,7 +215,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 #endif
   if (has_set_up_profile) {
-    SetFirstRunFinished(FinishedReason::kProfileAlreadySetUp);
+    FinishFirstRun(FinishedReason::kProfileAlreadySetUp);
     return;
   }
 
@@ -271,7 +242,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
 #endif
 
   if (policy_effect != PolicyEffect::kNone) {
-    SetFirstRunFinished(FinishedReason::kSkippedByPolicies);
+    FinishFirstRun(FinishedReason::kSkippedByPolicies);
     return;
   }
 
@@ -338,11 +309,58 @@ void FirstRunService::OnFirstRunHasExited(
   if (should_mark_fre_finished) {
     // The user got to the last step, we can mark the FRE as finished, whether
     // we eventually proceed with the original intent or not.
-    SetFirstRunFinished(FinishedReason::kFinishedFlow);
+    FinishFirstRun(FinishedReason::kFinishedFlow);
   }
 
   base::UmaHistogramEnumeration("ProfilePicker.FirstRun.ExitStatus", status);
   std::move(resume_task_callback_).Run(proceed);
+}
+
+void FirstRunService::FinishFirstRun(FinishedReason reason) {
+  SetFirstRunFinished(reason);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
+  switch (reason) {
+    case FinishedReason::kFinishedFlow:
+      // No outcome to log, the flow logs it by itself.
+      break;
+    case FinishedReason::kProfileAlreadySetUp:
+      outcome =
+          ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing;
+      break;
+    case FinishedReason::kSkippedByPolicies:
+      outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
+      break;
+  }
+
+  if (outcome.has_value()) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(*outcome);
+  }
+#endif
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Noting that we expect that the name should already be available, as
+    // after sign-in, the extended info is fetched and used for the sync
+    // opt-in screen.
+    profile_name_resolver_ =
+        std::make_unique<ProfileNameResolver>(identity_manager);
+    profile_name_resolver_->RunWithProfileName(base::BindOnce(
+        &FirstRunService::FinishProfileSetUp, weak_ptr_factory_.GetWeakPtr()));
+  } else if (reason == FinishedReason::kSkippedByPolicies) {
+    // TODO(crbug.com/1416511): Try to get a domain name if available.
+    FinishProfileSetUp(
+        profiles::GetDefaultNameForNewEnterpriseProfile(kNoHostedDomainFound));
+  }
+}
+
+void FirstRunService::FinishProfileSetUp(std::u16string profile_name) {
+  DCHECK(IsFirstRunMarkedFinishedInPrefs());
+
+  profile_name_resolver_.reset();
+  DCHECK(!profile_name.empty());
+  FinalizeNewProfileSetup(profile_, profile_name, /*is_default_name=*/false);
 }
 
 void FirstRunService::OpenFirstRunIfNeeded(EntryPoint entry_point,
@@ -446,7 +464,8 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
 
   if (!base::FeatureList::IsEnabled(kForYouFre)) {
     base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", false);
-    SetFirstRunFinished(FinishedReason::kExperimentCounterfactual);
+    SetFirstRunFinished(
+        FirstRunService::FinishedReason::kExperimentCounterfactual);
     return nullptr;
   }
 #endif

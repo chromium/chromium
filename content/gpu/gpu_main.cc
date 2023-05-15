@@ -62,6 +62,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
@@ -98,6 +99,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_mac.h"
 #include "components/metal_util/device_removal.h"
+#include "gpu/ipc/service/built_in_shader_cache_loader.h"
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
 #endif
@@ -189,6 +191,14 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif
 };
 
+void LoadMetalShaderCacheIfNecessary() {
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kUseBuiltInMetalShaderCache)) {
+    gpu::BuiltInShaderCacheLoader::StartLoading();
+  }
+#endif
+}
+
 }  // namespace
 
 // Main function for starting the Gpu process.
@@ -200,6 +210,10 @@ int GpuMain(MainFunctionParams parameters) {
       kTraceEventGpuProcessSortIndex);
 
   const base::CommandLine& command_line = *parameters.command_line;
+
+  // Start this early on as it reads from a file (in the background) and full
+  // startup is gated by this completing.
+  LoadMetalShaderCacheIfNecessary();
 
   gpu::GpuPreferences gpu_preferences;
   if (command_line.HasSwitch(switches::kGpuPreferences)) {

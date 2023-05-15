@@ -100,7 +100,6 @@ android_library("java") {
     "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//net/android:net_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

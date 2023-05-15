@@ -26,7 +26,7 @@ public class MockTab extends TabImpl {
      */
     public static Tab createAndInitialize(int id, boolean incognito) {
         TabImpl tab = new MockTab(id, incognito);
-        tab.initialize(null, null, null, null, null, false, null);
+        tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
@@ -36,14 +36,14 @@ public class MockTab extends TabImpl {
     public static Tab createAndInitialize(
             int id, boolean incognito, @TabLaunchType int tabLaunchType) {
         TabImpl tab = new MockTab(id, incognito, tabLaunchType);
-        tab.initialize(null, null, null, null, null, false, null);
+        tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
     public static TabImpl initializeWithCriticalPersistedTabData(
             TabImpl tab, CriticalPersistedTabData criticalPersistedTabData) {
         tab.getUserDataHost().setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        tab.initialize(null, null, null, null, null, false, null);
+        tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
@@ -63,7 +63,7 @@ public class MockTab extends TabImpl {
     public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState) {
+            TabState tabState, boolean initializeRenderer) {
         if (loadUrlParams != null) {
             mGurlOverride = new GURL(loadUrlParams.getUrl());
             CriticalPersistedTabData.from(this).setUrl(mGurlOverride);

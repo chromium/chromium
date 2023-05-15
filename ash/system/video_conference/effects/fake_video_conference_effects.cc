@@ -128,9 +128,10 @@ void ShaggyFurEffect::OnEffectControlActivated(VcEffectId effect_id,
   ++num_activations_for_testing_[state.value()];
 }
 
-int ShaggyFurEffect::GetNumActivationsForTesting(int value) {
-  DCHECK(value >= 0 && value < static_cast<int>(FurShagginess::kMaxNumValues));
-  return num_activations_for_testing_[value];
+int ShaggyFurEffect::GetNumActivationsForTesting(int state_value) {
+  CHECK(state_value >= 0 &&
+        state_value < static_cast<int>(FurShagginess::kMaxNumValues));
+  return num_activations_for_testing_[state_value];
 }
 
 void ShaggyFurEffect::AddStateToEffect(VcHostedEffect* effect,

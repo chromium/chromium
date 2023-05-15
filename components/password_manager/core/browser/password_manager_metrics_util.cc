@@ -359,7 +359,7 @@ void LogIsPasswordProtected(bool is_password_protected) {
   if (base::RandInt(0, 9) == 0) {
     log_value = !is_password_protected;
   }
-  base::UmaHistogramBoolean("PasswordManager.IsPasswordProtected", log_value);
+  base::UmaHistogramBoolean("PasswordManager.IsPasswordProtected2", log_value);
 }
 
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,

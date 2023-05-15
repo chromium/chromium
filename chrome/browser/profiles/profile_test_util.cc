@@ -41,7 +41,7 @@ Profile& CreateProfileSync(ProfileManager* profile_manager,
 #if !BUILDFLAG(IS_ANDROID)
 
 void SwitchToProfileSync(const base::FilePath& path, bool always_create) {
-  base::test::TestFuture<Profile*> future;
+  base::test::TestFuture<Browser*> future;
   profiles::SwitchToProfile(path, always_create, future.GetCallback());
   ASSERT_TRUE(future.Wait()) << "profiles::SwitchToProfile() did not complete";
 }

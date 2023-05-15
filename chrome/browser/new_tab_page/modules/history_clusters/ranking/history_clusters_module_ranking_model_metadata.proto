@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package new_tab_page.proto;
+
+enum HistoryClustersModuleRankingModelSignals {
+  HISTORY_CLUSTERS_MODULE_RANKING_MODEL_SIGNALS_UNKNOWN = 0;
+  // Minutes since the most recent visit of the cluster occurred.
+  HISTORY_CLUSTERS_MODULE_RANKING_MINUTES_SINCE_MOST_RECENT_VISIT = 1;
+  // Whether the cluster belongs to a boosted category.
+  HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_BOOSTED_CATEGORY = 2;
+  // The number of visits that have an image.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_VISITS_WITH_IMAGE = 3;
+  // The number of total visits within the cluster, including ones that are not
+  // shown in the module.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_TOTAL_VISITS = 4;
+  // The number of unique hosts for visits contained within the cluster.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_UNIQUE_HOSTS = 5;
+  // The number of abandoned carts associated with the cluster.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS = 6;
+}
+
+message HistoryClustersModuleRankingModelMetadata {
+  // The version supported.
+  //
+  // If sent from the server, this is the maximum version the
+  // returned model supports. If sent from the client, this is the maximum
+  // version the client knows how to evaluate.
+  int32 version = 1;
+
+  // The features that are used by the model in the order that the input tensors
+  // should be populated in.
+  repeated HistoryClustersModuleRankingModelSignals signals = 2;
+}

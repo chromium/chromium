@@ -77,6 +77,7 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 
+  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
   SVGResources::UpdatePaints(*this, old_style, StyleRef());

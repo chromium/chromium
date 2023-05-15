@@ -11,6 +11,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
+#include "net/cert/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -85,6 +86,17 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   CertificateTrust GetTrust(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override;
 
+  struct ListCertsResult {
+    ListCertsResult(ScopedCERTCertificate cert, CertificateTrust trust);
+    ~ListCertsResult();
+    ListCertsResult(ListCertsResult&& other);
+    ListCertsResult& operator=(ListCertsResult&& other);
+
+    ScopedCERTCertificate cert;
+    CertificateTrust trust;
+  };
+  std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
+
  private:
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;
   CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
@@ -92,6 +104,11 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   CertificateTrust GetTrustIgnoringSystemTrust(
       const ParsedCertificate* cert,
       base::SupportsUserData* debug_data) const;
+
+  CertificateTrust GetTrustIgnoringSystemTrust(
+      CERTCertificate* nss_cert,
+      base::SupportsUserData* debug_data) const;
+
   CertificateTrust GetTrustWithSystemTrust(
       const ParsedCertificate* cert,
       base::SupportsUserData* debug_data) const;

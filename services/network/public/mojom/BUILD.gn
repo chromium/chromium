@@ -374,15 +374,18 @@ mojom("mojom_attribution") {
     {
       types = [
         {
-          mojom = "network.mojom.TriggerAttestation"
-          cpp = "::network::TriggerAttestation"
+          mojom = "network.mojom.TriggerVerification"
+          cpp = "::network::TriggerVerification"
           move_only = true
+        },
+        {
+          mojom = "network.mojom.AttributionReportingRuntimeFeatures"
+          cpp = "::network::AttributionReportingRuntimeFeatures"
         },
       ]
       traits_headers =
           [ "//services/network/public/cpp/attribution_mojom_traits.h" ]
-      traits_deps =
-          [ "//services/network/public/cpp:trigger_attestation_traits" ]
+      traits_deps = [ "//services/network/public/cpp:attribution_traits" ]
     },
   ]
 
@@ -418,6 +421,7 @@ mojom("url_loader_base") {
     "load_timing_info.mojom",
     "network_change_manager.mojom",
     "network_interface.mojom",
+    "network_interface_change_listener.mojom",
     "network_types.mojom",
     "no_vary_search.mojom",
     "parsed_headers.mojom",
@@ -461,6 +465,12 @@ mojom("url_loader_base") {
   enabled_features = []
   if (is_android || is_chromeos || is_linux) {
     enabled_features += [ "network_change_notifier_in_browser" ]
+  }
+
+  if (is_linux) {
+    # TODO(crbug.com/1431866): Remove this once is_linux in the mojom IDL does
+    # not include lacros.
+    enabled_features += [ "use_network_interface_change_listener" ]
   }
 
   if (!is_ios) {
@@ -723,6 +733,28 @@ mojom("url_loader_base") {
     },
   ]
 
+  if (is_linux) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network.mojom.IfAddrMsg"
+            cpp = "struct ifaddrmsg"
+          },
+          {
+            mojom = "network.mojom.AddressMap"
+            cpp = "::net::AddressMapOwnerLinux::AddressMap"
+          },
+          {
+            mojom = "network.mojom.OnlineLinks"
+            cpp = "::std::unordered_set<int>"
+          },
+        ]
+        traits_headers = [ "//services/network/public/cpp/network_interface_change_listener_mojom_traits.h" ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_typemaps
 
   blink_cpp_typemaps = shared_typemaps
@@ -832,10 +864,6 @@ mojom("mojom_network_param") {
           cpp = "::net::CertVerifyResult"
         },
         {
-          mojom = "network.mojom.CTVerifyResult"
-          cpp = "::net::ct::CTVerifyResult"
-        },
-        {
           mojom = "network.mojom.HttpResponseHeaders"
           cpp = "::scoped_refptr<::net::HttpResponseHeaders>"
           nullable_is_same_type = true
@@ -847,6 +875,10 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.ProxyServer"
           cpp = "::net::ProxyServer"
+        },
+        {
+          mojom = "network.mojom.ProxyScheme"
+          cpp = "::net::ProxyServer::Scheme"
         },
         {
           mojom = "network.mojom.ResolveErrorInfo"
@@ -1005,6 +1037,11 @@ mojom("mojom_structured_headers") {
         {
           mojom = "network.mojom.StructuredHeadersParameterizedItem"
           cpp = "::net::structured_headers::ParameterizedItem"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.StructuredHeadersParameterizedMember"
+          cpp = "::net::structured_headers::ParameterizedMember"
           move_only = true
         },
       ]
@@ -1346,6 +1383,12 @@ mojom("mojom") {
     if (enable_reporting) {
       enabled_features += [ "enable_reporting" ]
     }
+  }
+
+  if (is_linux) {
+    # TODO(crbug.com/1431866): Remove this once is_linux in the mojom IDL does
+    # not include lacros.
+    enabled_features += [ "use_network_interface_change_listener" ]
   }
 
   # Typemaps which apply to both Blink and non-Blink bindings.

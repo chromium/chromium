@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"

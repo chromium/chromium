@@ -21,6 +21,7 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_affordance.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -46,8 +47,9 @@ constexpr int kDistanceForSplitViewResize = 49;
 // Called by CanStartGoingBack() to check whether we can start swiping from the
 // split view divider to go back.
 bool CanStartGoingBackFromSplitViewDivider(const gfx::Point& screen_location) {
-  if (!IsCurrentScreenOrientationLandscape())
+  if (!IsCurrentScreenOrientationLandscape()) {
     return false;
+  }
 
   // If virtual keyboard is visible when we swipe from the splitview divider
   // area, do not allow go back if the location is inside of the virtual
@@ -104,16 +106,14 @@ bool CanStartGoingBackFromSplitViewDivider(const gfx::Point& screen_location) {
   }
 
   if (!base::i18n::IsRTL()) {
-    divider_bounds.set_x(divider_bounds.x() -
-                         SplitViewDivider::kDividerEdgeInsetForTouch);
+    divider_bounds.set_x(divider_bounds.x() - kSplitViewDividerExtraInset);
   } else {
-    divider_bounds.set_x(divider_bounds.x() -
-                         SplitViewDivider::kDividerEdgeInsetForTouch -
+    divider_bounds.set_x(divider_bounds.x() - kSplitViewDividerExtraInset -
                          BackGestureEventHandler::kStartGoingBackLeftEdgeInset);
   }
 
   divider_bounds.set_width(
-      divider_bounds.width() + SplitViewDivider::kDividerEdgeInsetForTouch +
+      divider_bounds.width() + kSplitViewDividerExtraInset +
       BackGestureEventHandler::kStartGoingBackLeftEdgeInset);
   return divider_bounds.Contains(screen_location);
 }

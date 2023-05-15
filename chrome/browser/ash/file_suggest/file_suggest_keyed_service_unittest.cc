@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -42,7 +43,7 @@ class FileSuggestKeyedServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
 };
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
@@ -146,7 +147,8 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
 
   // This test verifies the suggestion removal only. Therefore, a mock file
   // suggest keyed service is sufficient.
-  MockFileSuggestKeyedService* file_suggest_service_ = nullptr;
+  raw_ptr<MockFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
+      nullptr;
 
   // The mount point for local files.
   std::unique_ptr<ScopedTestMountPoint> local_fs_mount_point_;
@@ -175,7 +177,7 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveDriveFileSuggestions) {
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>
       scoped_observation(&observer_mocker);
-  scoped_observation.Observe(file_suggest_service_);
+  scoped_observation.Observe(file_suggest_service_.get());
 
   // The observer should be notified of the drive file suggestion update.
   EXPECT_CALL(observer_mocker,
@@ -211,7 +213,7 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveLocalFileSuggestions) {
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>
       scoped_observation(&observer_mocker);
-  scoped_observation.Observe(file_suggest_service_);
+  scoped_observation.Observe(file_suggest_service_.get());
 
   // The observer should be notified of the local file suggestion update.
   EXPECT_CALL(observer_mocker,
@@ -240,7 +242,7 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveMixedFileSuggestions) {
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>
       scoped_observation(&observer_mocker);
-  scoped_observation.Observe(file_suggest_service_);
+  scoped_observation.Observe(file_suggest_service_.get());
 
   // The observer should be notified of the updates in drive and local file
   // suggestions.

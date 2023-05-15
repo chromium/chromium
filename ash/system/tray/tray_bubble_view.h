@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -108,7 +109,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // corresponding tray has been cleaned up.
     base::WeakPtr<Delegate> delegate = nullptr;
     gfx::NativeWindow parent_window = nullptr;
-    View* anchor_view = nullptr;
+    raw_ptr<View, ExperimentalAsh> anchor_view = nullptr;
     AnchorMode anchor_mode = AnchorMode::kView;
     // Only used if anchor_mode == AnchorMode::kRect.
     gfx::Rect anchor_rect;
@@ -122,6 +123,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     int corner_radius = kBubbleCornerRadius;
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;
+    // If the view has a large corner radius(e.g. slider bubble), we should
+    // paint the shadow on texture layer since `SystemShadowOnNinePatchLayer`
+    // has geometry limitations. See `SystemShadowOnTextureLayer` for details.
+    bool has_large_corner_radius = false;
     bool has_shadow = true;
     SystemShadow::Type shadow_type = kBubbleShadowType;
     // Use half opaque widget instead of fully opaque.
@@ -250,13 +255,13 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
-    TrayBubbleView* tray_bubble_view_;
+    raw_ptr<TrayBubbleView, ExperimentalAsh> tray_bubble_view_;
   };
 
   void CloseBubbleView();
 
   InitParams params_;
-  views::BoxLayout* layout_;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_;
   base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;

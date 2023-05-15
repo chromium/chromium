@@ -9,6 +9,7 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -21,6 +22,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -86,6 +90,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
       {"modulesCartDiscountConsentAccept",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
+      {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -97,15 +102,20 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,
                              IdentityManagerFactory::GetForProfile(profile_)));
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  source->AddBoolean(
+      "showCartInQuestModuleSetting",
+      IsCartModuleEnabled() &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kNtpChromeCartInHistoryClusterModule));
+  webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSidePanelCustomizeChromeResources,
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

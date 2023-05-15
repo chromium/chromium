@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -100,6 +99,7 @@ const int kHungIntervalSeconds = 10;
 
 // Lifetime of unclaimed pushed stream, in seconds: after this period, a pushed
 // stream is cancelled if still not claimed.
+// TODO(https://crbug.com/1426477): Remove.
 const int kPushedStreamLifetimeSeconds = 300;
 
 // Default initial value for HTTP/2 SETTINGS.
@@ -110,6 +110,7 @@ const uint32_t kDefaultInitialMaxFrameSize = 16384;
 
 // Values of Vary response header on pushed streams.  This is logged to
 // Net.PushedStreamVaryResponseHeader, entries must not be changed.
+// TODO(https://crbug.com/1426477): Remove.
 enum PushedStreamVaryResponseHeaderValues {
   // There is no Vary header.
   kNoVaryHeader = 0,
@@ -140,16 +141,18 @@ enum class SpdyAcceptChEntries {
 };
 
 // String literals for parsing the Vary header in a pushed response.
+// TODO(https://crbug.com/1426477): Remove.
 const char kVary[] = "vary";
 const char kStar[] = "*";
 const char kAcceptEncoding[] = "accept-encoding";
 
+// TODO(https://crbug.com/1426477): Remove.
 enum PushedStreamVaryResponseHeaderValues ParseVaryInPushedResponse(
     const spdy::Http2HeaderBlock& headers) {
   spdy::Http2HeaderBlock::iterator it = headers.find(kVary);
   if (it == headers.end())
     return kNoVaryHeader;
-  base::StringPiece value = base::StringViewToStringPiece(it->second);
+  base::StringPiece value = it->second;
   if (value.empty())
     return kVaryIsEmpty;
   if (value == kStar)
@@ -409,6 +412,7 @@ base::Value::Dict NetLogSpdyRecvGoAwayParams(spdy::SpdyStreamId last_stream_id,
   return dict;
 }
 
+// TODO(https://crbug.com/1426477): Remove.
 base::Value::Dict NetLogSpdyPushPromiseReceivedParams(
     const spdy::Http2HeaderBlock* headers,
     spdy::SpdyStreamId stream_id,
@@ -421,6 +425,7 @@ base::Value::Dict NetLogSpdyPushPromiseReceivedParams(
   return dict;
 }
 
+// TODO(https://crbug.com/1426477): Remove.
 base::Value::Dict NetLogSpdyAdoptedPushStreamParams(
     spdy::SpdyStreamId stream_id,
     const GURL& url) {
@@ -438,6 +443,7 @@ base::Value::Dict NetLogSpdySessionStalledParams(size_t num_active_streams,
   base::Value::Dict dict;
   dict.Set("num_active_streams", static_cast<int>(num_active_streams));
   dict.Set("num_created_streams", static_cast<int>(num_created_streams));
+  // TODO(https://crbug.com/1426477): Remove.
   dict.Set("num_pushed_streams", static_cast<int>(num_pushed_streams));
   dict.Set("max_concurrent_streams", static_cast<int>(max_concurrent_streams));
   dict.Set("url", url);
@@ -485,6 +491,7 @@ size_t GetTotalSize(const T (&arr)[N]) {
 // the server permits more, we will never exceed this limit.
 const size_t kMaxConcurrentStreamLimit = 256;
 
+// TODO(https://crbug.com/1426477): Remove.
 class SpdyServerPushHelper : public ServerPushDelegate::ServerPushHelper {
  public:
   explicit SpdyServerPushHelper(base::WeakPtr<SpdySession> session,
@@ -1003,7 +1010,7 @@ SpdySession::~SpdySession() {
 int SpdySession::GetPushedStream(const GURL& url,
                                  spdy::SpdyStreamId pushed_stream_id,
                                  RequestPriority priority,
-                                 SpdyStream** stream) {
+                                 raw_ptr<SpdyStream>* stream) {
   CHECK(!in_io_loop_);
   // |pushed_stream_id| must be valid.
   DCHECK_NE(pushed_stream_id, kNoPushedStreamFound);

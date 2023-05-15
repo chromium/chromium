@@ -18,7 +18,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -33,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/cache_storage/cache_storage.pb.h"
@@ -287,7 +287,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     std::string cache_dir;
     base::FilePath cache_path;
     do {
-      cache_dir = base::GenerateGUID();
+      cache_dir = base::Uuid::GenerateRandomV4().AsLowercaseString();
       cache_path = directory_path.AppendASCII(cache_dir);
     } while (base::PathExists(cache_path));
 
@@ -401,7 +401,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       const storage::BucketLocator& bucket_locator) {
     if (!base::WriteFile(tmp_path, data)) {
       base::DeleteFile(tmp_path);
-      quota_manager_proxy->NotifyWriteFailed(bucket_locator.storage_key);
+      quota_manager_proxy->OnClientWriteFailed(bucket_locator.storage_key);
       return false;
     }
 
@@ -541,7 +541,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
         std::string cache_dir;
         base::FilePath cache_path;
         do {
-          cache_dir = base::GenerateGUID();
+          cache_dir = base::Uuid::GenerateRandomV4().AsLowercaseString();
           cache_path = directory_path.AppendASCII(cache_dir);
         } while (base::PathExists(cache_path));
 

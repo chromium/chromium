@@ -23,7 +23,7 @@ class BackgroundTracingRule {
       base::RepeatingCallback<bool(const BackgroundTracingRule*)>;
 
   BackgroundTracingRule();
-  explicit BackgroundTracingRule(int trigger_delay);
+  explicit BackgroundTracingRule(base::TimeDelta trigger_delay);
 
   BackgroundTracingRule(const BackgroundTracingRule&) = delete;
   BackgroundTracingRule& operator=(const BackgroundTracingRule&) = delete;
@@ -36,7 +36,7 @@ class BackgroundTracingRule {
   virtual void GenerateMetadataProto(MetadataProto* out) const;
 
   // Seconds from the rule is triggered to finalization should start.
-  virtual int GetTraceDelay() const;
+  virtual base::TimeDelta GetTraceDelay() const;
 
   // Probability that we should allow a tigger to  happen.
   double trigger_chance() const { return trigger_chance_; }
@@ -63,7 +63,7 @@ class BackgroundTracingRule {
   RuleTriggeredCallback trigger_callback_;
   bool installed_ = false;
   double trigger_chance_ = 1.0;
-  int trigger_delay_ = -1;
+  base::TimeDelta trigger_delay_;
   std::string rule_id_;
   bool is_crash_ = false;
 };

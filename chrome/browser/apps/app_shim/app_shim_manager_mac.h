@@ -42,6 +42,11 @@ class BrowserContext;
 
 namespace apps {
 
+// The passed in `callback` will be called when all launches for the next app
+// shim launch have completed (all profiles the app will launch in, as well
+// as possibly multiple windows within profiles).
+void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback);
+
 // This app shim handler that handles events for app shims that correspond to an
 // extension.
 class AppShimManager : public AppShimHostBootstrap::Client,
@@ -96,13 +101,14 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     // Launch the app in Chrome. This will (often) create a new window. It is
     // guaranteed that |app_id| is installed for |profile| when this method
     // is called.
-    virtual void LaunchApp(Profile* profile,
-                           const web_app::AppId& app_id,
-                           const std::vector<base::FilePath>& files,
-                           const std::vector<GURL>& urls,
-                           const GURL& override_url,
-                           chrome::mojom::AppShimLoginItemRestoreState
-                               login_item_restore_state) = 0;
+    virtual void LaunchApp(
+        Profile* profile,
+        const web_app::AppId& app_id,
+        const std::vector<base::FilePath>& files,
+        const std::vector<GURL>& urls,
+        const GURL& override_url,
+        chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+        base::OnceClosure launch_finished_callback) = 0;
 
     // Launch the shim process for an app. It is guaranteed that |app_id| is
     // installed for |profile| when this method is called.
@@ -343,7 +349,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   void LoadAndLaunchApp_LaunchIfAppropriate(
       Profile* profile,
       ProfileState* profile_state,
-      const LoadAndLaunchAppParams& params);
+      const LoadAndLaunchAppParams& params,
+      base::OnceClosure launch_finished_callback);
 
   // The final step of both paths for OnShimProcessConnected. This will connect
   // |bootstrap| to |profile_state|'s AppShimHost, if possible. The value of

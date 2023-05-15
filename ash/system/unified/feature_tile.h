@@ -6,11 +6,22 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_TILE_H_
 
 #include "ash/ash_export.h"
-#include "ash/style/icon_button.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
+namespace views {
+class ImageButton;
+class ImageView;
+class InkDropContainerView;
+class Label;
+}  // namespace views
 
 namespace ash {
 
@@ -19,12 +30,13 @@ namespace ash {
 
 // There are two TileTypes: Primary and Compact.
 
-// The primary tile has an icon and title, and may have a subtitle and a
-// drill-in button. It presents one of the following behaviors:
+// The primary tile has an icon and title, and may have a subtitle. The icon may
+// or may not be separately clickable. The tile has one of the following
+// behaviors:
 // 1. Launch surface        (e.g. Screen Capture)
 // 2. Toggle                (e.g. Toggle Dark Theme)
 // 3. Drill-in              (e.g. Go to Accessibility detailed view)
-// 4. Toggle with drill-in  (e.g. Toggle Wi-Fi | Go to Network detailed view)
+// 4. Toggle with drill-in  (e.g. Toggle Wi-Fi | Go to Network details)
 // 5. Togglable tile with decorative drill-in (e.g. Selecting a VPN network)
 
 // The compact tile has an icon and a single title, which may be
@@ -48,9 +60,8 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
   // Constructor for FeatureTiles. `callback` will be called when interacting
   // with the main part of the button, which accounts for the whole tile.
-  // For primary tiles with drill-in, `callback` is called when interacting with
-  // the left side of the button, since the right side holds the drill-in
-  // button.
+  // If the icon is not separately clickable (the default), `callback` will
+  // also be called when clicking on the icon.
   explicit FeatureTile(base::RepeatingCallback<void()> callback,
                        bool is_togglable = true,
                        TileType type = TileType::kPrimary);
@@ -62,24 +73,27 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // depending on the button's `type_`.
   void CreateChildViews();
 
-  // Creates `drill_in_button_` which holds `the drill_in_arrow_` icon button,
-  // and is positioned in the right area of the feature tile.
-  // `callback` is triggered when interacting with the drill-in button, but
-  // focus is set on its child `drill_in_arrow_`.
-  void CreateDrillInButton(base::RepeatingCallback<void()> callback,
-                           const std::u16string& tooltip_text);
+  // Sets whether the icon on the left is clickable, separate from clicking on
+  // the tile itself. Use SetIconClickCallback() to set the callback. This
+  // function is separate from SetIconClickCallback() because it's likely that
+  // FeatureTile users will want to set the callback once but may want to switch
+  // the icon between being clickable or not (e.g. the network icon based on
+  // Ethernet vs. Wi-Fi).
+  void SetIconClickable(bool clickable);
 
-  // Creates a `drill_in_button_` that is not clickable but exists to indicate
-  // the button shows a detailed view when pressed. Events will be processed by
-  // its parent `FeatureTile`.
-  void CreateDecorativeDrillInButton(const std::u16string& tooltip_text);
+  // Sets the `callback` for clicks on `icon_button_`.
+  void SetIconClickCallback(base::RepeatingCallback<void()> callback);
+
+  // Creates a decorative `drill_in_arrow_` on the right side of the tile. This
+  // indicates to the user that the tile shows a detailed view when pressed.
+  void CreateDecorativeDrillInArrow();
 
   TileType tile_type() { return type_; }
 
   // Updates the colors of the background and elements of the button.
   void UpdateColors();
 
-  // Updates the `toggled_` state of the button. If button is not togglable,
+  // Updates the `toggled_` state of the tile. If the tile is not togglable,
   // `toggled_` will always be false.
   void SetToggled(bool toggled);
   bool IsToggled() const;
@@ -90,6 +104,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the tile icon from an ImageSkia.
   void SetImage(gfx::ImageSkia image);
 
+  // Sets the tooltip text of `icon_button_`.
+  void SetIconButtonTooltipText(const std::u16string& text);
+
   // Sets the text of `label_`.
   void SetLabel(const std::u16string& label);
 
@@ -99,40 +116,48 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets visibility of `sub_label_`.
   void SetSubLabelVisibility(bool visible);
 
-  // Sets the tooltip text of `drill_in_button_`.
-  void SetDrillInButtonTooltipText(const std::u16string& text);
-
-  // views::View:
-  void OnThemeChanged() override;
-
-  views::ImageView* icon() { return icon_; }
+  bool is_icon_clickable() const { return is_icon_clickable_; }
+  views::ImageButton* icon_button() { return icon_button_; }
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
-  views::LabelButton* drill_in_button() { return drill_in_button_; }
-  IconButton* drill_in_arrow() { return drill_in_arrow_; }
+  views::ImageView* drill_in_arrow() { return drill_in_arrow_; }
 
  private:
   friend class BluetoothFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
 
-  // Updates `drill_in_arrow_` since it uses a different focus ring color when
-  // the tile is toggled to provide contrast with the background color.
-  void UpdateDrillInButtonFocusRingColor();
+  // views::View:
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
 
-  // Creates the drill-in button related views. Will style the button as
-  // decorative if an empty callback is provided.
-  void CreateDrillInButtonView(base::RepeatingClosure callback,
-                               const std::u16string& tooltip_text);
+  // Returns the color id to use for the `icon_button_` and `drill_in_arrow_`
+  // based on the tile's enabled and toggled state.
+  ui::ColorId GetIconColorId() const;
+
+  // Updates the ink drop hover color and ripple color for `icon_button_`.
+  void UpdateIconButtonRippleColors();
+
+  // Updates the focus ring color for `icon_button_` for better visibility.
+  void UpdateIconButtonFocusRingColor();
+
+  // Updates the color of `drill_in_arrow_` for better visibility.
+  void UpdateDrillInArrowColor();
+
+  // Ensures the ink drop is painted above the button's background.
+  raw_ptr<views::InkDropContainerView, ExperimentalAsh> ink_drop_container_ =
+      nullptr;
 
   // The vector icon for the tile, if one is set.
-  const gfx::VectorIcon* vector_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_ = nullptr;
 
   // Owned by views hierarchy.
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
-  views::Label* sub_label_ = nullptr;
-  views::LabelButton* drill_in_button_ = nullptr;
-  IconButton* drill_in_arrow_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> icon_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> drill_in_arrow_ = nullptr;
+
+  // Whether the icon is separately clickable.
+  bool is_icon_clickable_ = false;
 
   // Whether this button is togglable.
   bool is_togglable_ = false;

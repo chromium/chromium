@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -313,6 +314,8 @@ class MockEventListener final : public NativeEventListener {
   MOCK_METHOD2(Invoke, void(ExecutionContext* executionContext, Event*));
 };
 
+static const base::TickClock* s_platform_clock_;
+
 class HTMLMediaElementWithMockSchedulerTest
     : public HTMLMediaElementEventListenersTest {
  protected:
@@ -326,8 +329,18 @@ class HTMLMediaElementWithMockSchedulerTest
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
     platform()->AdvanceClockSeconds(1);
 
+    s_platform_clock_ = GetTickClock();
+
+    time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
+
     HTMLMediaElementEventListenersTest::SetUp();
   }
+
+  static base::TimeTicks Now() { return s_platform_clock_->NowTicks(); }
+
+ private:
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
 };
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
@@ -355,17 +368,20 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   // as media player's CurrentTime continues to advance.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(4);
   platform()->RunForPeriodSeconds(1);
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // If media playback time is fixed, periodic timeupdate's should not continue
   // to fire.
   WebMediaPlayer()->SetAutoIncrementTimeDelta(absl::nullopt);
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
   platform()->RunForPeriodSeconds(1);
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Per spec, pausing should fire `timeupdate`
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
   Video()->pause();
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Seek to some time in the past. A completed seek while paused should trigger
   // a *single* timeupdate.
@@ -381,6 +397,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
   // Give the scheduled timeupdate a chance to fire.
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 }
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
@@ -410,12 +427,14 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   platform()->RunForPeriodSeconds(.250);
   // The event is scheduled, but needs one more scheduler cycle to fire.
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Now advance 125 ms to reach the middle of the periodic timeupdate interval.
   // no additional timeupdate should trigger.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
   platform()->RunForPeriodSeconds(.125);
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // While still in the middle of the periodic timeupdate interval, start and
   // complete a seek and verify that a *non-periodic* timeupdate is fired.
@@ -423,11 +442,6 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   ASSERT_GE(WebMediaPlayer()->CurrentTime(), 0.3);
   Video()->setCurrentTime(0.2);
   WebMediaPlayer()->FinishSeek();
-
-  // Expect another timeupdate after FinishSeek due to
-  // seeking -> begin scrubbing -> pause -> timeupdate.
-  EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform()->RunUntilIdle();
 
   // Advancing the remainder of the last periodic timeupdate interval should be
   // insufficient to trigger a new timeupdate event because the seek's
@@ -437,12 +451,14 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
   platform()->RunForPeriodSeconds(.125);
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Advancing another 125ms, we should expect a new timeupdate because we are
   // now 250ms from the seek's timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
   platform()->RunForPeriodSeconds(.125);
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Advancing 250ms further, we should expect yet another timeupdate because
   // this represents a full periodic timeupdate interval with no interruptions
@@ -450,6 +466,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
   platform()->RunForPeriodSeconds(.250);
   platform()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 }
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterLoop) {
@@ -572,10 +589,10 @@ class CueEventListener final : public NativeEventListener {
 
   void ExpectAllEventsFiredWithinMargin(base::TimeDelta margin) const {
     for (auto const& delta : cue_event_deltas_) {
-      EXPECT_TRUE(delta.enter_time_delta.has_value());
+      ASSERT_TRUE(delta.enter_time_delta.has_value());
       EXPECT_LE(delta.enter_time_delta.value(), margin);
       EXPECT_GE(delta.enter_time_delta.value(), base::TimeDelta());
-      EXPECT_TRUE(delta.exit_time_delta.has_value());
+      ASSERT_TRUE(delta.exit_time_delta.has_value());
       EXPECT_GE(delta.exit_time_delta.value(), base::TimeDelta());
       EXPECT_LE(delta.exit_time_delta.value(), margin);
     }

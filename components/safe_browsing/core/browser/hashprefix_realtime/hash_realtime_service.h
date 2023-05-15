@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -71,6 +72,12 @@ class HashRealTimeService : public KeyedService {
   // it).
   bool IsEnhancedProtectionEnabled();
 
+  // Returns whether the |url| is eligible for hash-prefix real-time checks.
+  // It's never eligible if the |request_destination| is not mainframe.
+  static bool CanCheckUrl(
+      const GURL& url,
+      network::mojom::RequestDestination request_destination);
+
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
   virtual void StartLookup(
@@ -87,7 +94,10 @@ class HashRealTimeService : public KeyedService {
 
  private:
   friend class HashRealTimeServiceTest;
+  friend class HashRealTimeServiceDirectFetchTest;
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_RetriableNetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_NetErrorHttpCodeFailure);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -102,6 +112,8 @@ class HashRealTimeService : public KeyedService {
                            TestLookupFailure_MissingCacheDuration);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestBackoffModeSet);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeSet_RetriableError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeSet_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_FullyCached);
@@ -109,6 +121,8 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_NotCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLogSearchCacheWithNoQueryParamsMetric);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
+                           TestLookupFailure_RetriableNetError);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =
@@ -138,8 +152,13 @@ class HashRealTimeService : public KeyedService {
   };
 
   // Returns the traffic annotation tag that is attached in the simple URL
-  // loader.
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const;
+  // loader when a direct fetch request is sent.
+  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForDirectFetch()
+      const;
+
+  // Returns the traffic annotation tag that is attached in the Oblivious HTTP
+  // request when an OHTTP request is sent.
+  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForOhttp() const;
 
   // Get a resource request with URL, load_flags, credentials mode, and method
   // set.
@@ -220,6 +239,9 @@ class HashRealTimeService : public KeyedService {
   //  - |response_body| is the unparsed response from the server.
   //  - |net_error| is the net error code from the server.
   //  - |response_code| is the HTTP status code from the server.
+  //  - |allow_retriable_errors| specifies whether certain types of errors can
+  //    be considered retriable, meaning they don't increment the backoff
+  //    counter.
   void OnURLLoaderComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -230,7 +252,8 @@ class HashRealTimeService : public KeyedService {
       SBThreatType locally_cached_results_threat_type,
       std::unique_ptr<std::string> response_body,
       int net_error,
-      int response_code);
+      int response_code,
+      bool allow_retriable_errors);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
   // contains the merged caching and server response results. The |url| is
@@ -263,17 +286,21 @@ class HashRealTimeService : public KeyedService {
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body,
-      const std::vector<std::string>& requested_hash_prefixes) const;
+      const std::vector<std::string>& requested_hash_prefixes,
+      bool allow_retriable_errors) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
   // returns either the response proto or an |OperationResult| with details on
   // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
   // sanitization call into |RemoveUnmatchedFullHashes|.
+  // |allow_retriable_errors| specifies whether certain types of errors can be
+  // considered retriable, meaning they don't increment the backoff counter.
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
   ParseResponse(int net_error,
                 int http_error,
                 std::unique_ptr<std::string> response_body,
-                const std::vector<std::string>& requested_hash_prefixes) const;
+                const std::vector<std::string>& requested_hash_prefixes,
+                bool allow_retriable_errors) const;
 
   // Removes any |FullHash| within the |response| whose hash prefix is not found
   // within |requested_hash_prefixes|. This is not expected to occur, but is
@@ -281,11 +308,6 @@ class HashRealTimeService : public KeyedService {
   void RemoveUnmatchedFullHashes(
       std::unique_ptr<V5::SearchHashesResponse>& response,
       const std::vector<std::string>& requested_hash_prefixes) const;
-
-  // Log temporary debugging info for crbug.com/1430928.
-  void LogTemporaryUnmatchedFullHashesDebugInfo(
-      const std::unique_ptr<V5::SearchHashesResponse>& response,
-      const std::set<std::string>& requested_hash_prefixes_set) const;
 
   // Removes any |FullHashDetail| within the |response| that has invalid
   // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,

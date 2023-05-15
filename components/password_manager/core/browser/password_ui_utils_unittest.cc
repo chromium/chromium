@@ -7,7 +7,9 @@
 #include <tuple>
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -84,6 +86,15 @@ TEST(SplitByDotAndReverseTest, ReversedHostname) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.output, SplitByDotAndReverse(test_case.input));
   }
+}
+
+TEST(ToUsernameString, NonEmptyUsername) {
+  EXPECT_EQ(ToUsernameString("nadeshiko"), u"nadeshiko");
+}
+
+TEST(ToUsernameString, EmptyUsername) {
+  EXPECT_EQ(ToUsernameString(""),
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN));
 }
 
 }  // namespace password_manager

@@ -204,20 +204,19 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
     base::FileErrorOr<base::File::Info> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(net::FileErrorToNetError(result.error()));
-    return;
-  }
-  const auto& file_info = result.value();
-  if (file_info.is_directory) {
-    std::move(callback).Run(net::ERR_FILE_NOT_FOUND);
-    return;
-  }
-  if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
-    std::move(callback).Run(net::ERR_UPLOAD_FILE_CHANGED);
-    return;
-  }
-  std::move(callback).Run(file_info.size);
+  std::move(callback).Run([&]() -> int {
+    if (!result.has_value()) {
+      return net::FileErrorToNetError(result.error());
+    }
+    const auto& file_info = result.value();
+    if (file_info.is_directory) {
+      return net::ERR_FILE_NOT_FOUND;
+    }
+    if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
+      return net::ERR_UPLOAD_FILE_CHANGED;
+    }
+    return file_info.size;
+  }());
 }
 
 void LocalFileStreamReader::OnRead(int read_result) {

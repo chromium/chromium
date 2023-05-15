@@ -18,6 +18,7 @@ import './side_bar.js';
 import './toolbar.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
@@ -27,10 +28,13 @@ import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util_ts.js
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CheckupSectionElement} from './checkup_section.js';
+import {FocusConfig} from './focus_config.js';
 import {PasswordRemovedEvent} from './password_details_card.js';
 import {getTemplate} from './password_manager_app.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {Page, Route, RouteObserverMixin} from './router.js';
+import {PasswordsSectionElement} from './passwords_section.js';
+import {Page, Route, RouteObserverMixin, Router} from './router.js';
 import {SettingsSectionElement} from './settings_section.js';
 import {PasswordManagerSideBarElement} from './side_bar.js';
 import {PasswordManagerToolbarElement} from './toolbar.js';
@@ -50,9 +54,11 @@ function isEditable(element: Element): boolean {
 
 export interface PasswordManagerAppElement {
   $: {
+    checkup: CheckupSectionElement,
     content: IronPagesElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
+    passwords: PasswordsSectionElement,
     prefs: SettingsPrefsElement,
     removalToast: CrToastElement,
     settings: SettingsSectionElement,
@@ -96,12 +102,27 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       },
 
       toastMessage_: String,
+
+      /**
+       * A Map specifying which element should be focused when exiting a
+       * subpage. The key of the map holds a Route path, and the value holds
+       * either a query selector that identifies the desired element, an element
+       * or a function to be run when a neon-animation-finish event is handled.
+       */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          return map;
+        },
+      },
     };
   }
 
   private selectedPage_: Page;
   private narrow_: boolean;
   private toastMessage_: string;
+  private focusConfig_: FocusConfig;
 
   override ready() {
     super.ready();
@@ -197,6 +218,36 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   private onUndoButtonClick_() {
     PasswordManagerImpl.getInstance().undoRemoveSavedPasswordOrException();
     this.$.removalToast.hide();
+  }
+
+  private onSearchEnterClick_() {
+    this.$.passwords.focusFirstResult();
+  }
+
+  private onIronSelect_(e: Event) {
+    // Ignore bubbling 'iron-select' events not originating from
+    // |content| itself.
+    if (e.target !== this.$.content) {
+      return;
+    }
+
+    if (!this.focusConfig_ || Router.getInstance().previousRoute === null) {
+      return;
+    }
+
+    const pathConfig =
+        this.focusConfig_.get(Router.getInstance().previousRoute!.page);
+    if (pathConfig) {
+      let handler;
+      if (typeof pathConfig === 'function') {
+        handler = pathConfig;
+      } else {
+        handler = () => {
+          focusWithoutInk(pathConfig as HTMLElement);
+        };
+      }
+      handler();
+    }
   }
 }
 declare global {

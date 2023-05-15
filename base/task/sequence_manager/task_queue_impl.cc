@@ -34,6 +34,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -273,6 +274,9 @@ scoped_refptr<SingleThreadTaskRunner> TaskQueueImpl::CreateTaskRunner(
 
 void TaskQueueImpl::UnregisterTaskQueue() {
   TRACE_EVENT0("base", "TaskQueueImpl::UnregisterTaskQueue");
+  // Invalidate weak pointers now so no voters reference this in a partially
+  // torn down state.
+  voter_weak_ptr_factory_.InvalidateWeakPtrs();
   // Detach task runners.
   {
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -490,7 +494,6 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     sequence_manager_->WillQueueTask(&pending_task);
     MaybeReportIpcTaskQueuedFromMainThread(pending_task);
   }
-  RecordQueuingDelayedTaskMetrics(pending_task, lazy_now);
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
   UpdateWakeUp(lazy_now);
 
@@ -537,34 +540,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
                                                &lazy_now, false);
   }
   TraceQueueSize();
-}
-
-void TaskQueueImpl::RecordQueuingDelayedTaskMetrics(const Task& pending_task,
-                                                    LazyNow* lazy_now) {
-  // The sampling depends on having a high-resolution clock.
-  if (!base::TimeTicks::IsHighResolution())
-    return;
-
-  // A sample is taken on average every kSampleRate tasks.
-  static constexpr int kSampleRate = 10000;
-
-  // Use pseudorandom sampling to avoid "running jank," which may occur
-  // when emitting many samples to a histogram in parallel. (This function is
-  // called a lot in parallel.) See https://crbug/1254354 for more details. The
-  // current time is used as a source of pseudorandomness.
-  if (((lazy_now->Now() - TimeTicks::UnixEpoch()).InMicroseconds() ^
-       pending_task.sequence_num) %
-          kSampleRate ==
-      0) {
-    // The |delay| will be different than the delay passed to PostDelayedTask
-    // for cross-thread delayed tasks.
-    const TimeDelta delay = pending_task.delayed_run_time - lazy_now->Now();
-    UMA_HISTOGRAM_LONG_TIMES("Scheduler.TaskQueueImpl.PostDelayedTaskDelay",
-                             delay);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Scheduler.TaskQueueImpl.DelayedIncomingQueueSize",
-        static_cast<int>(main_thread_only().delayed_incoming_queue.size()));
-  }
 }
 
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
@@ -1516,6 +1491,60 @@ void TaskQueueImpl::OnQueueUnblocked() {
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
         main_thread_only().enqueue_order_at_which_we_became_unblocked;
   }
+}
+
+std::unique_ptr<TaskQueue::QueueEnabledVoter>
+TaskQueueImpl::CreateQueueEnabledVoter() {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  return WrapUnique(
+      new TaskQueue::QueueEnabledVoter(voter_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TaskQueueImpl::AddQueueEnabledVoter(bool voter_is_enabled,
+                                         TaskQueue::QueueEnabledVoter& voter) {
+  ++main_thread_only().voter_count;
+  if (voter_is_enabled) {
+    ++main_thread_only().enabled_voter_count;
+  }
+}
+
+void TaskQueueImpl::RemoveQueueEnabledVoter(
+    bool voter_is_enabled,
+    TaskQueue::QueueEnabledVoter& voter) {
+  bool was_enabled = AreAllQueueEnabledVotersEnabled();
+  if (voter_is_enabled) {
+    --main_thread_only().enabled_voter_count;
+    DCHECK_GE(main_thread_only().enabled_voter_count, 0);
+  }
+
+  --main_thread_only().voter_count;
+  DCHECK_GE(main_thread_only().voter_count, 0);
+
+  bool is_enabled = AreAllQueueEnabledVotersEnabled();
+  if (was_enabled != is_enabled) {
+    SetQueueEnabled(is_enabled);
+  }
+}
+
+void TaskQueueImpl::OnQueueEnabledVoteChanged(bool enabled) {
+  bool was_enabled = AreAllQueueEnabledVotersEnabled();
+  if (enabled) {
+    ++main_thread_only().enabled_voter_count;
+    DCHECK_LE(main_thread_only().enabled_voter_count,
+              main_thread_only().voter_count);
+  } else {
+    --main_thread_only().enabled_voter_count;
+    DCHECK_GE(main_thread_only().enabled_voter_count, 0);
+  }
+
+  bool is_enabled = AreAllQueueEnabledVotersEnabled();
+  if (was_enabled != is_enabled) {
+    SetQueueEnabled(is_enabled);
+  }
+}
+
+void TaskQueueImpl::CompleteInitializationOnBoundThread() {
+  voter_weak_ptr_factory_.BindToCurrentSequence(PassKey<TaskQueueImpl>());
 }
 
 TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;

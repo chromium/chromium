@@ -90,4 +90,6 @@ v8::Isolate* SimpleMainThreadScheduler::Isolate() {
   return isolate_;
 }
 
+void SimpleMainThreadScheduler::StartIdlePeriodForTesting() {}
+
 }  // namespace blink::scheduler

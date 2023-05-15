@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -84,10 +85,11 @@ class ASH_EXPORT UnifiedMediaControlsController
   void MaybeShowMediaControlsOrEmptyState();
 
   // Weak ptr, owned by view hierarchy.
-  UnifiedMediaControlsView* media_controls_ = nullptr;
+  raw_ptr<UnifiedMediaControlsView, DanglingUntriaged | ExperimentalAsh>
+      media_controls_ = nullptr;
 
   // Delegate for show/hide media controls.
-  Delegate* const delegate_ = nullptr;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 

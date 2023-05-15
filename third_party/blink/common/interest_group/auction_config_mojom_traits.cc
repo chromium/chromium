@@ -112,6 +112,20 @@ bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::AdCurrencyDataView, blink::AdCurrency>::Read(
+    blink::mojom::AdCurrencyDataView data,
+    blink::AdCurrency* out) {
+  std::string currency_code;
+  if (!data.ReadCurrencyCode(&currency_code)) {
+    return false;
+  }
+  if (!blink::IsValidAdCurrencyCode(currency_code)) {
+    return false;
+  }
+  *out = blink::AdCurrency::From(currency_code);
+  return true;
+}
+
 bool StructTraits<blink::mojom::AuctionAdConfigBuyerCurrenciesDataView,
                   blink::AuctionConfig::BuyerCurrencies>::
     Read(blink::mojom::AuctionAdConfigBuyerCurrenciesDataView data,
@@ -156,6 +170,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadAuctionReportBuyers(&out->auction_report_buyers) ||
       !data.ReadRequiredSellerCapabilities(
           &out->required_seller_capabilities) ||
+      !data.ReadRequestedSize(&out->requested_size) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }

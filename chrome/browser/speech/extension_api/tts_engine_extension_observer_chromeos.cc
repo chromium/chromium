@@ -100,7 +100,12 @@ class TtsEngineExtensionObserverChromeOSFactory
             "TtsEngineExtensionObserverChromeOS",
             // If given an incognito profile (including the Chrome OS login
             // profile), share the service with the original profile.
-            ProfileSelections::BuildRedirectedInIncognito()) {
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kRedirectedToOriginal)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kRedirectedToOriginal)
+                .Build()) {
     DependsOn(extensions::EventRouterFactory::GetInstance());
   }
 

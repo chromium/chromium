@@ -427,6 +427,32 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 }
 
 TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
+       EmptyDataDoesNotRegisterShortcutsMenu) {
+  const AppId& app_id =
+      InstallWebAppWithShortcutMenuIcons(ShortcutsMenuIconBitmaps());
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+
+  if (AreSubManagersExecuteEnabled()) {
+#if BUILDFLAG(IS_WIN)
+    const std::wstring app_user_model_id =
+        web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+            app_user_model_id));
+#else
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif
+  } else {
+    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
+  }
+}
+
+TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
        UninstallRemovesShortcutMenuItems) {
   const int num_menu_items = 3;
 

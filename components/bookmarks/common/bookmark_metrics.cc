@@ -4,6 +4,7 @@
 
 #include "components/bookmarks/common/bookmark_metrics.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "components/bookmarks/common/url_load_stats.h"
@@ -132,6 +133,7 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
                    stats.total_url_bookmark_count / 2) /
                   stats.total_url_bookmark_count;
   }
+
   base::UmaHistogramPercentage(
       "Bookmarks.Utilization.OnProfileLoad.PercentageUsed", utilization);
   base::UmaHistogramCounts1000("Bookmarks.Utilization.OnProfileLoad.TotalUsed",
@@ -139,6 +141,24 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
   base::UmaHistogramCounts1000(
       "Bookmarks.Utilization.OnProfileLoad.TotalUnused",
       stats.total_url_bookmark_count - stats.used_url_bookmark_count);
+
+  if (stats.most_recently_used_bookmark_days != SIZE_MAX) {
+    base::UmaHistogramCounts1000(
+        "Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays",
+        base::saturated_cast<int>(stats.most_recently_used_bookmark_days));
+  }
+
+  if (stats.most_recently_saved_bookmark_days != SIZE_MAX) {
+    base::UmaHistogramCounts1000(
+        "Bookmarks.Times.OnProfileLoad.MostRecentlySavedBookmarkInDays",
+        base::saturated_cast<int>(stats.most_recently_saved_bookmark_days));
+  }
+
+  if (stats.most_recently_saved_folder_days != SIZE_MAX) {
+    base::UmaHistogramCounts1000(
+        "Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays",
+        base::saturated_cast<int>(stats.most_recently_saved_folder_days));
+  }
 }
 
 void RecordCloneBookmarkNode(int num_cloned) {

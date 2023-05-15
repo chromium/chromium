@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
@@ -193,7 +194,8 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
-  BluetoothDetailedViewController* bluetooth_detailed_view_controller_;
+  raw_ptr<BluetoothDetailedViewController, ExperimentalAsh>
+      bluetooth_detailed_view_controller_;
   FakeBluetoothDetailedViewFactory bluetooth_detailed_view_factory_;
   FakeBluetoothDeviceListControllerFactory
       bluetooth_device_list_controller_factory_;

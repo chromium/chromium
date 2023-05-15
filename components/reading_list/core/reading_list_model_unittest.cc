@@ -452,7 +452,7 @@ TEST_F(ReadingListModelTest, SyncAddEntry) {
                                                 reading_list::ADDED_VIA_SYNC));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
-  model_->SyncAddEntry(std::move(entry));
+  model_->AddEntry(std::move(entry), reading_list::ADDED_VIA_SYNC);
 
   EXPECT_EQ(1, storage_saved_);
   EXPECT_EQ(0, storage_removed_);

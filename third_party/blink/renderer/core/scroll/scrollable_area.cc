@@ -671,7 +671,7 @@ void ScrollableArea::RecalculateScrollbarOverlayColorTheme() {
   if (GetLayoutBox()) {
     Color background_color = GetLayoutBox()->StyleRef().VisitedDependentColor(
         GetCSSPropertyBackgroundColor());
-    if (background_color.Alpha()) {
+    if (!background_color.IsFullyTransparent()) {
       double hue, saturation, lightness;
       background_color.GetHSL(hue, saturation, lightness);
       overlay_theme = lightness <= 0.5 ? kScrollbarOverlayColorThemeLight

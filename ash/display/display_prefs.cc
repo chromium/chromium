@@ -28,8 +28,8 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/json_converter.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -434,26 +434,22 @@ void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
   // be empty.
   DCHECK(!GetDisplayManager()->mixed_mirror_mode_params());
 
-  auto* mirroring_source_id_value = pref_data.Find(kMirroringSourceId);
-  if (!mirroring_source_id_value)
+  auto* mirroring_source_id_string = pref_data.FindString(kMirroringSourceId);
+  if (!mirroring_source_id_string)
     return;
 
-  DCHECK(mirroring_source_id_value->is_string());
   int64_t mirroring_source_id;
-  if (!base::StringToInt64(mirroring_source_id_value->GetString(),
-                           &mirroring_source_id)) {
+  if (!base::StringToInt64(*mirroring_source_id_string, &mirroring_source_id)) {
     return;
   }
 
-  auto* mirroring_destination_ids_value =
-      pref_data.Find(kMirroringDestinationIds);
-  if (!mirroring_destination_ids_value)
+  auto* mirroring_destination_ids_list =
+      pref_data.FindList(kMirroringDestinationIds);
+  if (!mirroring_destination_ids_list)
     return;
 
-  DCHECK(mirroring_destination_ids_value->is_list());
   display::DisplayIdList mirroring_destination_ids;
-  for (const auto& entry : mirroring_destination_ids_value->GetList()) {
-    DCHECK(entry.is_string());
+  for (const auto& entry : *mirroring_destination_ids_list) {
     int64_t id;
     if (!base::StringToInt64(entry.GetString(), &id))
       return;

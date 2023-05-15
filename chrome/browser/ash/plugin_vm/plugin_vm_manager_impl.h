@@ -5,15 +5,17 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_MANAGER_IMPL_H_
 
+#include <memory>
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_uninstaller_notification.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
@@ -93,7 +95,7 @@ class PluginVmManagerImpl : public PluginVmManager,
   void OnInstallPluginVmDlc(
       base::OnceCallback<void(bool default_vm_exists)> success_callback,
       base::OnceClosure error_callback,
-      const ash::DlcserviceClient::InstallResult& install_result);
+      guest_os::GuestOsDlcInstallation::Result install_result);
   void OnStartDispatcher(
       base::OnceCallback<void(bool default_vm_exists)> success_callback,
       base::OnceClosure error_callback,
@@ -146,7 +148,7 @@ class PluginVmManagerImpl : public PluginVmManager,
   // policy changes.
   void OnAvailabilityChanged(bool is_allowed, bool is_configured);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string owner_id_;
   uint64_t seneschal_server_handle_ = 0;
 
@@ -159,6 +161,8 @@ class PluginVmManagerImpl : public PluginVmManager,
       vm_tools::plugin_dispatcher::VmState::VM_STATE_UNKNOWN;
 
   base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
+
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_installation_;
 
   // Members used in the launch flow.
 

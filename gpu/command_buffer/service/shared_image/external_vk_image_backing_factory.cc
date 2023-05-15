@@ -59,11 +59,11 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
     VkPhysicalDevice vk_physical_device) {
   base::flat_map<VkFormat, VkImageUsageFlags> image_usage_cache;
 
-  for (int i = 0; i <= static_cast<int>(viz::RESOURCE_FORMAT_MAX); ++i) {
-    viz::SharedImageFormat format = viz::SharedImageFormat::SinglePlane(
-        static_cast<viz::ResourceFormat>(i));
-    if (!HasVkFormat(format))
-      continue;
+  auto add_to_cache_if_supported = [&image_usage_cache, &vk_physical_device](
+                                       viz::SharedImageFormat format) {
+    if (!HasVkFormat(format)) {
+      return;
+    }
     VkFormat vk_format = ToVkFormat(format);
     DCHECK_NE(vk_format, VK_FORMAT_UNDEFINED);
     VkFormatProperties format_props = {};
@@ -71,6 +71,14 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
                                         &format_props);
     image_usage_cache[vk_format] =
         GetMaximalImageUsageFlags(format_props.optimalTilingFeatures);
+  };
+
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    add_to_cache_if_supported(format);
+  }
+
+  for (auto format : viz::LegacyMultiPlaneFormat::kAll) {
+    add_to_cache_if_supported(format);
   }
 
   return image_usage_cache;

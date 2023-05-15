@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -23,22 +25,6 @@ const char kSAMLUserEmail[] = "alice@corp.example.com";
 const char kSyncToken[] = "sync-token-1";
 
 constexpr base::TimeDelta kSamlTokenDelay = base::Seconds(60);
-
-class FakeUserManagerWithLocalState : public FakeChromeUserManager {
- public:
-  FakeUserManagerWithLocalState()
-      : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    RegisterPrefs(test_local_state_->registry());
-  }
-  ~FakeUserManagerWithLocalState() override = default;
-
-  PrefService* GetLocalState() const override {
-    return test_local_state_.get();
-  }
-
- private:
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-};
 
 }  // namespace
 
@@ -57,15 +43,16 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  ScopedTestingLocalState scoped_local_state_;
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
-  FakeChromeUserManager* user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<PasswordSyncTokenLoginChecker> checker_;
 };
 
-PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest() {
-  std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeUserManagerWithLocalState>();
+PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest()
+    : scoped_local_state_(TestingBrowserProcess::GetGlobal()) {
+  auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(fake_user_manager));
 

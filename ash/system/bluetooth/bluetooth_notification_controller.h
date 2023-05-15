@@ -11,6 +11,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -92,7 +93,9 @@ class ASH_EXPORT BluetoothNotificationController
   // Clears any shown pairing notification now that the device has been bonded.
   void NotifyBondedDevice(device::BluetoothDevice* device);
 
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<message_center::MessageCenter,
+                DanglingUntriaged | ExperimentalAsh>
+      message_center_;
 
   // Reference to the underlying BluetoothAdapter object, holding this reference
   // ensures we stay around as the pairing delegate for that adapter.

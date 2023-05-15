@@ -236,7 +236,7 @@ void TransportSecurityPersister::OnWriteFinished(base::OnceClosure callback) {
 }
 
 absl::optional<std::string> TransportSecurityPersister::SerializeData() {
-  DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
+  CHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   base::Value::Dict toplevel;
   toplevel.Set(kVersionKey, kCurrentVersionValue);

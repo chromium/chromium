@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
@@ -187,12 +188,15 @@ void GPUDevice::InjectError(WGPUErrorType type, const char* message) {
 }
 
 void GPUDevice::AddConsoleWarning(const char* message) {
+  AddConsoleWarning(StringFromASCIIAndUTF8(message));
+}
+
+void GPUDevice::AddConsoleWarning(const String& message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        StringFromASCIIAndUTF8(message));
+        mojom::blink::ConsoleMessageLevel::kWarning, message);
     execution_context->AddConsoleMessage(console_message);
 
     allowed_console_warnings_remaining_--;
@@ -203,6 +207,47 @@ void GPUDevice::AddConsoleWarning(const char* message) {
           "WebGPU: too many warnings, no more warnings will be reported to the "
           "console for this GPUDevice.");
       execution_context->AddConsoleMessage(final_message);
+    }
+  }
+}
+
+void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
+  size_t index = static_cast<size_t>(type);
+  if (UNLIKELY(!singleton_warning_fired_[index])) {
+    singleton_warning_fired_[index] = true;
+
+    std::string message;
+    switch (type) {
+      case GPUSingletonWarning::kNonPreferredFormat:
+        message =
+            "WebGPU canvas configured with a different format than is "
+            "preferred by this device (\"" +
+            std::string(FromDawnEnum(GPU::preferred_canvas_format())) +
+            "\"). This requires an extra copy, which may impact performance.";
+        break;
+      case GPUSingletonWarning::kDepthKey:
+        message =
+            "The key \"depth\" was included in a GPUExtent3D dictionary, which "
+            "has no effect. It is likely that \"depthOrArrayLayers\" was "
+            "intended instead.";
+        break;
+      case GPUSingletonWarning::kTimestampArray:
+        // TODO(dawn:1800): Remove after a deprecation period;
+        message =
+            "Specifying timestampWrites as an array is deprecated and will "
+            "soon be removed.";
+        break;
+      case GPUSingletonWarning::kCount:
+        NOTREACHED();
+    }
+
+    ExecutionContext* execution_context = GetExecutionContext();
+    if (execution_context) {
+      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          StringFromASCIIAndUTF8(message.c_str()));
+      execution_context->AddConsoleMessage(console_message);
     }
   }
 }

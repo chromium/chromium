@@ -44,7 +44,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.value()) {
     case SyncerError::UNSET:
     case SyncerError::SYNCER_OK:
-    case SyncerError::SERVER_MORE_TO_DOWNLOAD:
       NOTREACHED();
       break;
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:

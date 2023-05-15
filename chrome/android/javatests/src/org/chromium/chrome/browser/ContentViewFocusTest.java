@@ -8,8 +8,8 @@ import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;

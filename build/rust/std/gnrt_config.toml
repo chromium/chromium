@@ -5,6 +5,17 @@
 # Provides per-crate and overall configuration options to gnrt.
 
 [all]
+# std crates should have metadata applied to them. This would avoid any symbol
+# conflicts between std dependencies and third_party/rust crates.
+#
+# However, we can't apply it yet. GN can't automatically clean old artifacts,
+# nor can we delete and rebuild the sysroot on every build.
+#
+# TODO(crbug.com/1245714): set up GN rules to rebuilt the sysroot only when
+# needed. Then set this metadata.
+#
+# rustc_metadata = "libstd"
+
 # force-unstable-if-unmarked prevents normal crates from inadvertently using
 # symbols from std-internal dependencies in the sysroot. This is normally passed
 # during an x.py build, but we have to do it manually.
@@ -16,17 +27,56 @@ rustflags = ['-Zforce-unstable-if-unmarked']
 output_dir = '$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/'
 
 # This target provides setup needed for building std.
-extra_gn_deps = ['//build/rust/std:std_build_deps']
+extra_gn_deps = [
+    '//build/rust/std:std_build_deps',
+    '//build/rust/std:profiler_builtins_group',
+]
+
+[crate.compiler_builtins]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.core]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.libc]
-# Requires:
-# * cfg(libc_align) for new enough rustc, which is normally provided by build.rs
-#   but we don't run build scripts for std crates.
-# * cfg(libc_priv_mod_use) is required for the below to work properly.
-# * cfg(libc_core_cvoid) to use the same ffi c_void definition as libcore.
-#
+# Many flags are set by libc's build.rs based on new enough rustc but we don't
+# run build scripts for std crates.
 # See https://github.com/rust-lang/libc/blob/master/build.rs
-cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
+cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
+'libc_int128', 'libc_core_cvoid', 'libc_packedN', 'libc_cfg_target_vendor',
+'libc_non_exhaustive', 'libc_long_array', 'libc_ptr_addr_of',
+'libc_underscore_const_names', 'libc_const_extern_fn'
+]
+# The libc crate tries to link in the Windows CRT, but we specify the CRT
+# library ourselves in //build/config/win:dynamic_crt and
+# //build/config/win:static_crt because Rustc does not allow us to specify
+# using the debug CRT: https://github.com/rust-lang/rust/issues/39016
+rustflags = ['-Zlink-directives=false']
+
+# This target is #[no_core] when included by std, which is incompatible with
+# profiling.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.profiler_builtins]
+# profiler_builtins cannot depend on itself, which it would if build with
+# instrumentation.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.rustc-std-workspace-alloc]
+# This target is #[no_core] which is incompatible with profiling.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.rustc-std-workspace-core]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.std]
 # Requires:
@@ -40,6 +90,9 @@ cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
 # See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
+
+# Remove this from std. It will be depended on directly when needed.
+exclude_deps_in_gn = ['profiler_builtins']
 
 [crate.test]
 # Requires:

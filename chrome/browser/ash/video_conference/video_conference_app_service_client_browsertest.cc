@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/test_window_builder.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -128,7 +129,7 @@ class FakeAppInstance {
  private:
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<apps::Instance> instance_;
-  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
+  raw_ptr<apps::InstanceRegistry> instance_registry_;
 };
 
 }  // namespace
@@ -232,10 +233,12 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
  protected:
-  apps::InstanceRegistry* instance_registry_ = nullptr;
-  apps::AppRegistryCache* app_registry_cache_ = nullptr;
-  apps::AppCapabilityAccessCache* capability_cache_ = nullptr;
-  VideoConferenceAppServiceClient* client_ = nullptr;
+  raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
+      nullptr;
+  raw_ptr<apps::AppCapabilityAccessCache, ExperimentalAsh> capability_cache_ =
+      nullptr;
+  raw_ptr<VideoConferenceAppServiceClient, ExperimentalAsh> client_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};
@@ -328,7 +331,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
           /*is_capturing_microphone=*/state1.is_capturing_microphone,
           /*is_capturing_screen=*/false,
           /*title=*/base::UTF8ToUTF16(std::string(kAppName1)),
-          /*url=*/absl::nullopt);
+          /*url=*/absl::nullopt,
+          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
 
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
 }
@@ -402,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/false,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
 
@@ -452,7 +457,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/true,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
 
@@ -495,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/true,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
 

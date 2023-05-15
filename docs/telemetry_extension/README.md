@@ -299,6 +299,8 @@ For information around configuration of certain cros-config values please visit:
 
 2. [Customization Guide - Fingerprint Diagnostics](fingerprint_diag.md)
 
+3. [Telemetry Extension API overview](api_overview.md)
+
 # FAQs
 
 Q: I found a bug, how do I report it?<br>

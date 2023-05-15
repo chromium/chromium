@@ -16,6 +16,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://web-app-internals source.
@@ -25,6 +29,14 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
       internals,
       base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
       IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  internals->UseStringsJs();
+  internals->AddBoolean(
+      "experimentalIsolationEnabled",
+      web_app::ResolveExperimentalWebAppIsolationFeature() !=
+          web_app::ExperimentalWebAppIsolationMode::kDisabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInternalsUI)

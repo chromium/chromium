@@ -66,19 +66,6 @@ class CORE_EXPORT HTMLImageElement final
                                                   unsigned width,
                                                   unsigned height);
 
-  // Returns dimension type of the attribute value or inline dimensions usable
-  // for LazyLoad, whether the dimension is absolute or not and if the absolute
-  // value is small enough to be skipped for lazyloading.
-  enum class LazyLoadDimensionType {
-    kNotAbsolute,
-    kAbsoluteNotSmall,
-    kAbsoluteSmall,
-  };
-  static LazyLoadDimensionType GetAttributeLazyLoadDimensionType(
-      const String& attribute_value);
-  static LazyLoadDimensionType GetInlineStyleDimensionsType(
-      const CSSPropertyValueSet* property_set);
-
   HTMLImageElement(Document&, const CreateElementFlags);
   explicit HTMLImageElement(Document&, bool created_by_parser = false);
   ~HTMLImageElement() override;
@@ -156,7 +143,7 @@ class CORE_EXPORT HTMLImageElement final
 
   void SetIsFallbackImage() { is_fallback_image_ = true; }
 
-  FetchParameters::ResourceWidth GetResourceWidth() const;
+  absl::optional<float> GetResourceWidth() const;
   float SourceSize(Element&);
 
   void ForceReload() const;
@@ -202,6 +189,8 @@ class CORE_EXPORT HTMLImageElement final
 
   static bool SupportedImageType(const String& type,
                                  const HashSet<String>* disabled_image_types);
+
+  bool is_lazy_loaded() const { return is_lazy_loaded_; }
 
  protected:
   // Controls how an image element appears in the layout. See:

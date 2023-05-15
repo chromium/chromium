@@ -30,7 +30,6 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -63,8 +62,6 @@ public class PageZoomIPHControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, true);
         FeatureList.setTestValues(mTestValues);
 
         Resources resources = ApplicationProvider.getApplicationContext().getResources();

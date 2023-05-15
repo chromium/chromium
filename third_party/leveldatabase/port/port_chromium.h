@@ -71,7 +71,9 @@ bool Snappy_GetUncompressedLength(const char* input, size_t length,
 bool Snappy_Uncompress(const char* input_data, size_t input_length,
                        char* output);
 
-inline bool Zstd_Compress(const char* input, size_t length,
+inline bool Zstd_Compress(int level,
+                          const char* input,
+                          size_t length,
                           std::string* output) {
   return false;
 }

@@ -296,8 +296,8 @@ bool LoopbackServer::CreatePermanentBookmarkFolder(
 bool LoopbackServer::CreateDefaultPermanentItems() {
   // Permanent folders are always required for Bookmarks (hierarchical
   // structure) and Nigori (data stored in permanent root folder).
-  ModelTypeSet permanent_folder_types =
-      ModelTypeSet(syncer::BOOKMARKS, syncer::NIGORI);
+  const ModelTypeSet permanent_folder_types = {syncer::BOOKMARKS,
+                                               syncer::NIGORI};
 
   for (ModelType model_type : permanent_folder_types) {
     std::unique_ptr<LoopbackServerEntity> top_level_entity =

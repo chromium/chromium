@@ -37,6 +37,30 @@
 
 namespace cc::slim {
 
+namespace {
+
+class LayerTreeImplScopedKeepSurfaceAlive
+    : public LayerTree::ScopedKeepSurfaceAlive {
+ public:
+  LayerTreeImplScopedKeepSurfaceAlive(base::WeakPtr<LayerTreeImpl> layer_tree,
+                                      const viz::SurfaceId& surface_id)
+      : layer_tree_(std::move(layer_tree)), range_(surface_id, surface_id) {
+    layer_tree_->AddSurfaceRange(range_);
+  }
+
+  ~LayerTreeImplScopedKeepSurfaceAlive() override {
+    if (layer_tree_) {
+      layer_tree_->RemoveSurfaceRange(range_);
+    }
+  }
+
+ private:
+  const base::WeakPtr<LayerTreeImpl> layer_tree_;
+  const viz::SurfaceRange range_;
+};
+
+}  // namespace
+
 LayerTreeImpl::PresentationCallbackInfo::PresentationCallbackInfo(
     uint32_t frame_token,
     std::vector<PresentationCallback> presentation_callbacks,
@@ -71,6 +95,11 @@ void LayerTreeImpl::SetViewportRectAndScale(
     const gfx::Rect& device_viewport_rect,
     float device_scale_factor,
     const viz::LocalSurfaceId& local_surface_id) {
+  if (device_viewport_rect_ == device_viewport_rect &&
+      device_scale_factor_ == device_scale_factor &&
+      local_surface_id_ == local_surface_id) {
+    return;
+  }
   if (local_surface_id_ != local_surface_id) {
     local_surface_id_ = local_surface_id;
     if (frame_sink_) {
@@ -222,6 +251,17 @@ void LayerTreeImpl::ReleaseLayerTreeFrameSink() {
   damage_from_previous_frame_.clear();
 }
 
+std::unique_ptr<LayerTree::ScopedKeepSurfaceAlive>
+LayerTreeImpl::CreateScopedKeepSurfaceAlive(const viz::SurfaceId& surface_id) {
+  return std::make_unique<LayerTreeImplScopedKeepSurfaceAlive>(
+      weak_factory_.GetWeakPtr(), surface_id);
+}
+
+const LayerTree::SurfaceRangesAndCounts&
+LayerTreeImpl::GetSurfaceRangesForTesting() const {
+  return referenced_surfaces_;
+}
+
 bool LayerTreeImpl::BeginFrame(
     const viz::BeginFrameArgs& args,
     viz::CompositorFrame& out_frame,
@@ -338,14 +378,21 @@ gfx::Size LayerTreeImpl::GetUIResourceSize(int resource_id) {
 
 void LayerTreeImpl::AddSurfaceRange(const viz::SurfaceRange& range) {
   DCHECK(range.IsValid());
-  DCHECK(!referenced_surfaces_.contains(range));
-  referenced_surfaces_.insert(range);
+  DCHECK(!referenced_surfaces_.contains(range) ||
+         referenced_surfaces_[range] >= 1);
+  if (++(referenced_surfaces_[range]) == 1) {
+    SetNeedsDraw();
+  }
 }
 
 void LayerTreeImpl::RemoveSurfaceRange(const viz::SurfaceRange& range) {
   DCHECK(range.IsValid());
-  DCHECK(referenced_surfaces_.contains(range));
-  referenced_surfaces_.erase(range);
+  DCHECK(referenced_surfaces_.contains(range) &&
+         referenced_surfaces_[range] >= 1);
+  if (--(referenced_surfaces_[range]) == 0) {
+    referenced_surfaces_.erase(range);
+    SetNeedsDraw();
+  }
 }
 
 void LayerTreeImpl::MaybeRequestFrameSink() {
@@ -427,8 +474,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
       viz::BeginFrameAck(args, /*has_damage=*/true);
   out_frame.metadata.device_scale_factor = device_scale_factor_;
   out_frame.metadata.root_background_color = background_color_;
-  out_frame.metadata.referenced_surfaces = std::vector<viz::SurfaceRange>(
-      referenced_surfaces_.begin(), referenced_surfaces_.end());
+  out_frame.metadata.referenced_surfaces.reserve(referenced_surfaces_.size());
+  for (const auto& [range, range_counts] : referenced_surfaces_) {
+    out_frame.metadata.referenced_surfaces.emplace_back(range);
+  }
   out_frame.metadata.top_controls_visible_height = top_controls_visible_height_;
   top_controls_visible_height_.reset();
   out_frame.metadata.display_transform_hint = display_transform_hint_;
@@ -526,8 +575,10 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
 
   // Compute new clip in layer space.
+  const bool mask_to_bounds =
+      layer.masks_to_bounds() || layer.HasRoundedCorner();
   gfx::RectF clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
-  if (layer.masks_to_bounds()) {
+  if (mask_to_bounds) {
     clip_in_layer.Intersect(
         gfx::RectF(layer.bounds().width(), layer.bounds().height()));
   }
@@ -545,19 +596,28 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
 
   {
+    const int num_drawing_layers_in_subtree =
+        layer.GetNumDrawingLayersInSubtree();
     const bool is_root = root_.get() == &layer;
     const bool filters_needs_pass = layer.HasFilters() && !is_root;
+    // There is no way to merge 2 rounded corners, so create a render pass so
+    // existing rounded corners can go into RenderPassDrawQuad, and the layer's
+    // rounded corners can go into quad its own pass.
+    const bool rounded_corners_needs_pass =
+        layer.HasRoundedCorner() &&
+        data.mask_filter_info_in_target.HasRoundedCorners();
     const bool clip_needs_pass =
-        !is_root && layer.masks_to_bounds() &&
+        !is_root && mask_to_bounds &&
         !transform_to_target.Preserves2dAxisAlignment();
     const bool opacity_needs_pass =
-        layer.opacity() != 1.0f && layer.GetNumDrawingLayersInSubtree() > 1;
-    if (!filters_needs_pass && !clip_needs_pass && !opacity_needs_pass) {
+        layer.opacity() != 1.0f && num_drawing_layers_in_subtree > 1;
+    if (!filters_needs_pass && !clip_needs_pass &&
+        !rounded_corners_needs_pass && !opacity_needs_pass) {
       // Does not need new render pass.
       // Compute new clip in target space.
       gfx::RectF new_clip_in_target(gfx::SizeF(layer.bounds()));
       const gfx::RectF* clip_in_target = parent_clip_in_target;
-      if (layer.masks_to_bounds()) {
+      if (mask_to_bounds) {
         new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
         if (parent_clip_in_target) {
           new_clip_in_target.Intersect(*parent_clip_in_target);
@@ -612,7 +672,7 @@ void LayerTreeImpl::Draw(Layer& layer,
 
     // First clip in layer space, then transform to parent target space.
     new_pass_clip = gfx::ToEnclosedRect(clip_in_layer);
-    if (layer.masks_to_bounds()) {
+    if (mask_to_bounds) {
       new_pass_clip.Intersect(gfx::Rect(layer.bounds()));
     }
     new_pass_clip = transform_to_target.MapRect(new_pass_clip);
@@ -686,8 +746,9 @@ void LayerTreeImpl::Draw(Layer& layer,
       occlusion_in_new_pass.Contains(content_rect);
   shared_quad_state->SetAll(
       transform_new_pass_to_parent_target, content_rect, content_rect,
-      gfx::MaskFilterInfo(), clip_opt, new_pass_contents_opaque,
+      data.mask_filter_info_in_target, clip_opt, new_pass_contents_opaque,
       parent_opacity * layer.opacity(), SkBlendMode::kSrcOver, 0);
+  shared_quad_state->is_fast_rounded_corner = true;
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
@@ -713,7 +774,7 @@ void LayerTreeImpl::Draw(Layer& layer,
                  transform_new_pass_to_parent_target.MapRect(content_rect)));
   data.render_pass_damage = std::move(parent_pass_damage);
 
-  data.frame.render_pass_list.push_back(std::move(new_pass));
+  data.frame->render_pass_list.push_back(std::move(new_pass));
 }
 
 void LayerTreeImpl::DrawChildrenAndAppendQuads(
@@ -728,6 +789,15 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   const bool subtree_property_changed =
       layer.GetAndResetSubtreePropertyChanged() ||
       data.subtree_property_changed_from_parent;
+  absl::optional<base::AutoReset<gfx::MaskFilterInfo>>
+      auto_reset_mask_filter_info;
+  if (layer.HasRoundedCorner()) {
+    gfx::MaskFilterInfo info(gfx::RRectF(gfx::RectF(gfx::Rect(layer.bounds())),
+                                         layer.corner_radii()));
+    info.ApplyTransform(transform_to_target);
+    auto_reset_mask_filter_info.emplace(&data.mask_filter_info_in_target, info);
+  }
+
   {
     base::AutoReset reset(&data.subtree_property_changed_from_parent,
                           subtree_property_changed);
@@ -795,7 +865,7 @@ bool LayerTreeImpl::UpdateOcclusionRect(
     }
   }
 
-  if (opacity < 1.0f || !layer.contents_opaque()) {
+  if (opacity < 1.0f || !layer.contents_opaque() || layer.HasRoundedCorner()) {
     return true;
   }
 

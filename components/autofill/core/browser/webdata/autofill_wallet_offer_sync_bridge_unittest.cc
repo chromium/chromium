@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -53,7 +52,6 @@ using syncer::MockModelTypeChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
-const char kLocaleString[] = "en-US";
 const char kDefaultCacheGuid[] = "CacheGuid";
 
 void ExtractAutofillOfferSpecificsFromDataBatch(
@@ -134,7 +132,6 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
       const AutofillWalletOfferSyncBridgeTest&) = delete;
 
   void SetUp() override {
-    CountryNames::SetLocaleString(kLocaleString);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
@@ -266,7 +263,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
 
 // Tests that when a new offer data is sent by the server, the client only keeps
 // the new data.
-TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NewData) {
   // Create one offer data in the client table.
   AutofillOfferData old_data = test::GetCardLinkedOfferData1();
   table()->SetAutofillOffers({old_data});
@@ -287,7 +284,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
 
 // Tests that when no data is sent by the server, all local data should be
 // deleted.
-TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NoData) {
   // Create one offer data in the client table.
   AutofillOfferData client_data = test::GetCardLinkedOfferData1();
   table()->SetAutofillOffers({client_data});
@@ -300,7 +297,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
 }
 
 // Test to ensure whether the data being valid is logged correctly.
-TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_LogDataValidity) {
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_LogDataValidity) {
   AutofillOfferSpecifics offer_specifics1;
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &offer_specifics1);

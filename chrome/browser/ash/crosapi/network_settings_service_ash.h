@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -96,8 +97,8 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   // instance running.
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
 
-  PrefService* local_state_;
-  ProfileManager* profile_manager_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_ = nullptr;
 
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>

@@ -56,6 +56,8 @@ config("pgo_optimization_flags") {
     } else if (is_chromeos_lacros) {
       if (target_cpu == "arm") {
         _pgo_target = "lacros-arm"
+      } else if (target_cpu == "arm64") {
+        _pgo_target = "lacros-arm64"
       } else {
         _pgo_target = "lacros64"
       }
@@ -85,6 +87,8 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/lacros64.pgo.txt" ]
     } else if (_pgo_target == "lacros-arm") {
       inputs = [ "//chrome/build/lacros-arm.pgo.txt" ]
+    } else if (_pgo_target == "lacros-arm64") {
+      inputs = [ "//chrome/build/lacros-arm64.pgo.txt" ]
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {
@@ -114,6 +118,21 @@ config("pgo_optimization_flags") {
       # See https://crbug.com/978401
       "-Wno-backend-plugin",
     ]
+
+    # Enable basic block layout based on the extended TSP problem. This aims to
+    # improve icache utilization and reduce the binary size.
+    if (use_thin_lto) {
+      if (is_win) {
+        ldflags = [ "-mllvm:-enable-ext-tsp-block-placement=1" ]
+      } else {
+        ldflags = [ "-Wl,-mllvm,-enable-ext-tsp-block-placement=1" ]
+      }
+    } else {
+      cflags += [
+        "-mllvm",
+        "-enable-ext-tsp-block-placement=1",
+      ]
+    }
   }
 }
 

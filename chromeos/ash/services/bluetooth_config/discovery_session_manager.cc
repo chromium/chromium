@@ -14,9 +14,10 @@ DiscoverySessionManager::DiscoverySessionManager(
     DiscoveredDevicesProvider* discovered_devices_provider)
     : adapter_state_controller_(adapter_state_controller),
       discovered_devices_provider_(discovered_devices_provider) {
-  adapter_state_controller_observation_.Observe(adapter_state_controller_);
+  adapter_state_controller_observation_.Observe(
+      adapter_state_controller_.get());
   discovered_devices_provider_observation_.Observe(
-      discovered_devices_provider_);
+      discovered_devices_provider_.get());
   delegates_.set_disconnect_handler(
       base::BindRepeating(&DiscoverySessionManager::OnDelegateDisconnected,
                           base::Unretained(this)));

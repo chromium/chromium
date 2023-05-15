@@ -24,6 +24,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/optimization_guide/core/test_model_info_builder.h"
+#endif
+
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
@@ -82,11 +86,24 @@ class OnDeviceHeadProviderTest : public testing::Test,
     metadata.mutable_lstm_model_params()->set_state_size(512);
     metadata.mutable_lstm_model_params()->set_embedding_dimension(64);
 
-    auto* update_listener = OnDeviceModelUpdateListener::GetInstance();
-    if (update_listener) {
-      update_listener->OnTailModelUpdate(tail_model_path, additional_files,
-                                         metadata);
-    }
+    optimization_guide::proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/com.foo.OnDeviceTailSuggestModelMetadata");
+    metadata.SerializeToString(any_metadata.mutable_value());
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelFilePath(tail_model_path)
+            .SetAdditionalFiles(additional_files)
+            .SetVersion(123)
+            .SetModelMetadata(any_metadata)
+            .Build();
+
+    client_->GetOnDeviceTailModelService()->OnModelUpdated(
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+        *model_info);
+
     task_environment_.RunUntilIdle();
   }
 #endif
@@ -220,7 +237,8 @@ TEST_F(OnDeviceHeadProviderTest, HasTailMatches) {
 
   EXPECT_TRUE(provider_->done());
   EXPECT_FALSE(provider_->matches().empty());
-  EXPECT_EQ(u"facebook", provider_->matches()[0].contents);
+  EXPECT_TRUE(base::StartsWith(provider_->matches()[0].contents, u"facebook",
+                               base::CompareCase::SENSITIVE));
 }
 #endif
 

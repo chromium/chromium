@@ -35,8 +35,7 @@ class Connection : public CancelationSignal::Observer {
 
   HttpResponse Init(const GURL& connection_url,
                     const std::string& access_token,
-                    const std::string& payload,
-                    bool allow_batching);
+                    const std::string& payload);
   bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
 
   // CancelationSignal::Observer overrides.
@@ -70,8 +69,7 @@ Connection::~Connection() = default;
 
 HttpResponse Connection::Init(const GURL& sync_request_url,
                               const std::string& access_token,
-                              const std::string& payload,
-                              bool allow_batching) {
+                              const std::string& payload) {
   post_provider_->SetURL(sync_request_url);
 
   if (!access_token.empty()) {
@@ -83,8 +81,6 @@ HttpResponse Connection::Init(const GURL& sync_request_url,
   // Must be octet-stream, or the payload may be parsed for a cookie.
   post_provider_->SetPostPayload("application/octet-stream", payload.length(),
                                  payload.data());
-
-  post_provider_->SetAllowBatching(allow_batching);
 
   // Issue the POST, blocking until it finishes.
   if (!cancelation_signal_->TryRegisterHandler(this)) {
@@ -159,7 +155,6 @@ SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
     const std::string& access_token,
-    bool allow_batching,
     std::string* buffer_out) {
   if (access_token.empty()) {
     // Print a log to distinguish this "known failure" from others.
@@ -177,8 +172,8 @@ HttpResponse SyncServerConnectionManager::PostBuffer(
 
   // Note that the post may be aborted by now, which will just cause Init to
   // fail with CONNECTION_UNAVAILABLE.
-  HttpResponse http_response = connection->Init(sync_request_url_, access_token,
-                                                buffer_in, allow_batching);
+  HttpResponse http_response =
+      connection->Init(sync_request_url_, access_token, buffer_in);
 
   if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
     ClearAccessToken();

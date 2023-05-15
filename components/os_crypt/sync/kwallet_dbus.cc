@@ -17,10 +17,13 @@ namespace {
 // DBus service, path, and interface names for klauncher and kwalletd.
 const char kKWalletDName[] = "kwalletd";
 const char kKWalletD5Name[] = "kwalletd5";
+const char kKWalletD6Name[] = "kwalletd6";
 const char kKWalletServiceName[] = "org.kde.kwalletd";
 const char kKWallet5ServiceName[] = "org.kde.kwalletd5";
+const char kKWallet6ServiceName[] = "org.kde.kwalletd6";
 const char kKWalletPath[] = "/modules/kwalletd";
 const char kKWallet5Path[] = "/modules/kwalletd5";
+const char kKWallet6Path[] = "/modules/kwalletd6";
 const char kKWalletInterface[] = "org.kde.KWallet";
 const char kKLauncherServiceName[] = "org.kde.klauncher";
 const char kKLauncherPath[] = "/KLauncher";
@@ -30,7 +33,11 @@ const char kKLauncherInterface[] = "org.kde.KLauncher";
 
 KWalletDBus::KWalletDBus(base::nix::DesktopEnvironment desktop_env)
     : session_bus_(nullptr), kwallet_proxy_(nullptr) {
-  if (desktop_env == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
+  if (desktop_env == base::nix::DESKTOP_ENVIRONMENT_KDE6) {
+    dbus_service_name_ = kKWallet6ServiceName;
+    dbus_path_ = kKWallet6Path;
+    kwalletd_name_ = kKWalletD6Name;
+  } else if (desktop_env == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
     dbus_service_name_ = kKWallet5ServiceName;
     dbus_path_ = kKWallet5Path;
     kwalletd_name_ = kKWalletD5Name;

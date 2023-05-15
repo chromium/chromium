@@ -153,23 +153,49 @@ static void SetControlsToMaxValues(int device_fd) {
 }
 
 static void VerifyUserControlsAreSetToDefaultValues(int device_fd) {
+  auto do_ioctl = base::BindRepeating(
+      [](int device_fd, int request, void* argp) {
+        return HANDLE_EINTR(ioctl(device_fd, request, argp));
+      },
+      device_fd);
+
   for (const auto& control : kControls) {
     v4l2_queryctrl range = {};
-    range.id = control.control_base | V4L2_CTRL_FLAG_NEXT_CTRL;
+    // Start right below the base so that the first next retrieved control ID
+    // is always the first available control ID within the class even if that
+    // control ID is equal to the base (V4L2_CID_BRIGHTNESS equals to
+    // V4L2_CID_USER_BASE).
+    range.id = (control.control_base - 1) | V4L2_CTRL_FLAG_NEXT_CTRL;
     while (0 == HANDLE_EINTR(ioctl(device_fd, VIDIOC_QUERYCTRL, &range))) {
       if (V4L2_CTRL_ID2CLASS(range.id) != V4L2_CTRL_ID2CLASS(control.class_id))
         break;
-      range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
       DVLOG(1) << __func__ << " " << range.name << ": " << range.minimum << "-"
                << range.maximum << ", default: " << range.default_value;
 
       v4l2_control current = {};
-      current.id = range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL;
+      current.id = range.id;
+
+      // Prepare to query for the next control as `range` is an in-out
+      // parameter.
+      range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+
+      if (range.flags & (V4L2_CTRL_FLAG_DISABLED | V4L2_CTRL_FLAG_READ_ONLY)) {
+        // Permanently disabled or permanently read-only.
+        continue;
+      }
+      if (V4L2CaptureDelegate::IsBlockedControl(current.id) ||
+          !V4L2CaptureDelegate::IsControllableControl(current.id, do_ioctl)) {
+        // Skip controls which are blocked and controls which are controlled
+        // by special controls which are in automatic states.
+        continue;
+      }
+
       if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_G_CTRL, &current)) < 0)
         DPLOG(ERROR) << "control " << range.name;
 
-      EXPECT_EQ(range.default_value, current.value);
+      EXPECT_EQ(range.default_value, current.value)
+          << " control " << range.name << " didn't reset correctly";
     }
   }
 }

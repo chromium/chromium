@@ -77,6 +77,11 @@ bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {
   return browsing_instance_id() == group->browsing_instance_id();
 }
 
+bool SiteInstanceGroup::IsCoopRelatedSiteInstanceGroup(
+    SiteInstanceGroup* group) {
+  return coop_related_group_token() == group->coop_related_group_token();
+}
+
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
   DCHECK_EQ(process_->GetID(), host->GetID());
   process_->RemoveObserver(this);

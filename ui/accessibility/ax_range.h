@@ -400,10 +400,15 @@ class AXRange {
         break;
       }
 
+      ax::mojom::Role prev_role = start->GetAnchor()->GetRole();
       start = start->CreateNextLeafTextPosition();
+      // We should not mark `cross_paragraph_boundary` as true if the start
+      // anchor is a `kListMarker` since there should be no newline added
+      // by default after the `kListMarker` node.
       if (concatenation_behavior ==
               AXTextConcatenationBehavior::kWithParagraphBreaks &&
-          !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
+          !crossed_paragraph_boundary && !is_first_non_whitespace_leaf &&
+          prev_role != ax::mojom::Role::kListMarker) {
         crossed_paragraph_boundary = start->AtStartOfParagraph();
       }
     }

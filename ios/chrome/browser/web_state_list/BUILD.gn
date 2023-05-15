@@ -9,51 +9,35 @@ source_set("session_metrics") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("web_state_list") {
   sources = [
-    "active_web_state_observation_forwarder.h",
-    "active_web_state_observation_forwarder.mm",
-    "all_web_state_observation_forwarder.h",
-    "all_web_state_observation_forwarder.mm",
     "web_state_dependency_installation_observer.h",
     "web_state_dependency_installation_observer.mm",
     "web_state_dependency_installer_bridge.h",
     "web_state_dependency_installer_bridge.mm",
-    "web_state_list.h",
-    "web_state_list.mm",
-    "web_state_list_delegate.h",
     "web_state_list_favicon_driver_observer.h",
     "web_state_list_favicon_driver_observer.mm",
-    "web_state_list_observer.h",
-    "web_state_list_observer.mm",
-    "web_state_list_observer_bridge.h",
-    "web_state_list_observer_bridge.mm",
     "web_state_list_order_controller.h",
     "web_state_list_order_controller.mm",
     "web_state_list_removing_indexes.h",
     "web_state_list_removing_indexes.mm",
     "web_state_list_serialization.h",
     "web_state_list_serialization.mm",
-    "web_state_opener.h",
-    "web_state_opener.mm",
   ]
   deps = [
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/tabs:features",
-    "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/session",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -69,17 +53,18 @@ source_set("agents") {
   ]
   deps = [
     ":session_metrics",
-    ":web_state_list",
     "//base",
+    "//build:blink_buildflags",
     "//components/navigation_metrics",
     "//components/profile_metrics",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:restoration_observer",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/url:constants",
@@ -94,24 +79,9 @@ source_set("agents") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_web_state_list_delegate.h",
-    "fake_web_state_list_delegate.mm",
-  ]
-  deps = [
-    ":web_state_list",
-    "//base",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "active_web_state_observation_forwarder_unittest.mm",
-    "all_web_state_observation_forwarder_unittest.mm",
     "session_metrics_unittest.cc",
     "tab_insertion_browser_agent_unittest.mm",
     "web_state_dependency_installation_observer_unittest.mm",
@@ -120,32 +90,25 @@ source_set("unit_tests") {
     "web_state_list_order_controller_unittest.mm",
     "web_state_list_removing_indexes_unittest.mm",
     "web_state_list_serialization_unittest.mm",
-    "web_state_list_unittest.mm",
-    "web_state_opener_unittest.mm",
   ]
   deps = [
     ":agents",
     ":session_metrics",
-    ":test_support",
     ":web_state_list",
-    "//base",
     "//base/test:test_support",
     "//components/favicon/ios",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
-    "//ios/chrome/browser/web",
-    "//ios/web",
+    "//ios/web/public/navigation",
+    "//ios/web/public/navigation:referrer",
     "//ios/web/public/session",
     "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-    "//net",
     "//testing/gtest",
-    "//ui/gfx",
-    "//url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

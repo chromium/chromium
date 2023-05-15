@@ -19,8 +19,12 @@
     margin-inline-end: var(--control-label-spacing);
     padding: var(--cr-section-vertical-padding) 0;
   }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
 </style>
-<div id="outerRow" noSubLabel$="[[!subLabel]]" role="switch">
+<div id="outerRow" noSubLabel$="[[!subLabel]]">
   <div class="flex" id="labelWrapper">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="cr-secondary-text label" id="sub-label" hidden="[[!subLabel]]">
@@ -29,16 +33,13 @@
       </span>
     </div>
   </div>
+  <template is="dom-if" if="[[hasPrefPolicyIndicator_(pref.*)]]">
+    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+    </cr-policy-pref-indicator>
+  </template>
   <cr-toggle id="control" checked="{{checked}}"
-      disabled="[[disabled]]"
+      disabled="[[controlDisabled_(pref.*, disabled)]]"
       on-change="onToggleClick_"
       aria-label="[[getAriaLabel_(label, subLabel)]]">
   </cr-toggle>
-  <template is="dom-if" if="[[pref.extensionId]]">
-    <extension-controlled-icon id="extensionIcon"
-        extension-id="[[pref.extensionId]]"
-        extension-name="[[pref.controlledByName]]"
-        extension-can-be-disabled="[[pref.extensionCanBeDisabled]]">
-    </extension-controlled-icon>
-  </template>
 </div>

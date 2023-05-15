@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -28,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -69,7 +69,20 @@
 #include "ui/gl/trace_util.h"
 
 namespace cc {
+
+// A feature that will start a task on a timer to purge old cache entries.
+BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
+             "PurgeOldCacheEntriesOnTimer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
+constexpr base::FeatureParam<int> kPurgeInterval{&kPurgeOldCacheEntriesOnTimer,
+                                                 "seconds", 30};
+
+constexpr base::FeatureParam<int> kPurgeMaxAge{&kPurgeOldCacheEntriesOnTimer,
+                                               "seconds", 30};
+
 // The number or entries to keep in the cache, depending on the memory state of
 // the system. This limit can be breached by in-use cache items, which cannot
 // be deleted.
@@ -516,8 +529,7 @@ absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
     const SkISize target_size,
     const SkYUVAPixmapInfo::SupportedDataTypes& yuva_supported_data_types) {
   SkYUVAPixmapInfo original_yuva_pixmap_info;
-  if (!draw_image.paint_image().IsYuv(yuva_supported_data_types,
-                                      AuxImage::kDefault,
+  if (!draw_image.paint_image().IsYuv(yuva_supported_data_types, aux_image,
                                       &original_yuva_pixmap_info)) {
     return absl::nullopt;
   }
@@ -541,6 +553,17 @@ absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
   }
   // Original size decode.
   return original_yuva_pixmap_info;
+}
+
+bool NeedsToneMapping(sk_sp<SkColorSpace> image_color_space, bool has_gainmap) {
+  if (has_gainmap) {
+    return true;
+  }
+  if (image_color_space &&
+      gfx::ColorSpace(*image_color_space).IsToneMappedByDefault()) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -753,7 +776,7 @@ GpuImageDecodeCache::DecodedAuxImageData::DecodedAuxImageData(
   auto release_proc = [](const void*, void*) {};
   images[0] = SkImages::RasterFromPixmap(rgba_pixmap, release_proc, nullptr);
   pixmaps[0] = rgba_pixmap;
-  DCHECK(!pixmaps[0].dimensions().isEmpty());
+  ValidateImagesMatchPixmaps();
 }
 
 GpuImageDecodeCache::DecodedAuxImageData::DecodedAuxImageData(
@@ -765,8 +788,8 @@ GpuImageDecodeCache::DecodedAuxImageData::DecodedAuxImageData(
     images[plane] = SkImages::RasterFromPixmap(yuva_pixmaps.plane(plane),
                                                release_proc, nullptr);
     pixmaps[plane] = yuva_pixmaps.plane(plane);
-    DCHECK(!pixmaps[plane].dimensions().isEmpty());
   }
+  ValidateImagesMatchPixmaps();
 }
 
 GpuImageDecodeCache::DecodedAuxImageData::DecodedAuxImageData(
@@ -776,6 +799,7 @@ GpuImageDecodeCache::DecodedAuxImageData::DecodedAuxImageData(
     images[plane] = std::move(other.images[plane]);
     pixmaps[plane] = other.pixmaps[plane];
   }
+  ValidateImagesMatchPixmaps();
   other.ResetData();
 }
 
@@ -783,36 +807,40 @@ GpuImageDecodeCache::DecodedAuxImageData&
 GpuImageDecodeCache::DecodedAuxImageData::operator=(
     DecodedAuxImageData&& other) {
   data = std::move(other.data);
+  other.data = nullptr;
   for (int plane = 0; plane < SkYUVAInfo::kMaxPlanes; ++plane) {
     images[plane] = std::move(other.images[plane]);
     pixmaps[plane] = other.pixmaps[plane];
+    other.images[plane] = nullptr;
+    other.pixmaps[plane] = SkPixmap();
   }
+  ValidateImagesMatchPixmaps();
   return *this;
 }
 
 GpuImageDecodeCache::DecodedAuxImageData::~DecodedAuxImageData() = default;
 
 bool GpuImageDecodeCache::DecodedAuxImageData::IsEmpty() const {
+  ValidateImagesMatchPixmaps();
+
+  // If `data` is present, then there must be at least one image and pixmap.
   if (data) {
     DCHECK(images[0]);
-    DCHECK(pixmaps[0].dimensions().isEmpty());
     return false;
   }
-  // Note that bitmap backed DecodedAuxImageData will have an `images` and
-  // `pixmaps`, but no data.
-  for (auto& image : images) {
-    if (image) {
-      return false;
+  // A bitmap-backed DecodedAuxImageData will have an `images` and `pixmaps`,
+  // but no data.
+  if (images[0]) {
+    for (int i = 1; i < SkYUVAInfo::kMaxPlanes; ++i) {
+      DCHECK(!images[i]);
     }
-  }
-  // It is in error for `images` to be empty but for `pixmaps` to not be empty.
-  for (auto& pixmap : pixmaps) {
-    DCHECK(pixmap.dimensions().isEmpty());
+    return false;
   }
   return true;
 }
 
 void GpuImageDecodeCache::DecodedAuxImageData::ResetData() {
+  ValidateImagesMatchPixmaps();
   data = nullptr;
   for (auto& image : images) {
     image = nullptr;
@@ -820,6 +848,8 @@ void GpuImageDecodeCache::DecodedAuxImageData::ResetData() {
   for (auto& pixmap : pixmaps) {
     pixmap = SkPixmap();
   }
+  ValidateImagesMatchPixmaps();
+  DCHECK(IsEmpty());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -831,54 +861,112 @@ GpuImageDecodeCache::DecodedImageData::DecodedImageData(
     bool do_hardware_accelerated_decode)
     : is_bitmap_backed_(is_bitmap_backed),
       can_do_hardware_accelerated_decode_(can_do_hardware_accelerated_decode),
-      do_hardware_accelerated_decode_(do_hardware_accelerated_decode) {}
+      do_hardware_accelerated_decode_(do_hardware_accelerated_decode) {
+  for (const auto& aux_image_data : aux_image_data_) {
+    aux_image_data.ValidateImagesMatchPixmaps();
+  }
+}
 
 GpuImageDecodeCache::DecodedImageData::~DecodedImageData() {
+  for (const auto& aux_image_data : aux_image_data_) {
+    aux_image_data.ValidateImagesMatchPixmaps();
+  }
   ResetData();
 }
 
 bool GpuImageDecodeCache::DecodedImageData::Lock() {
-  if (aux_image_data_.data->Lock()) {
+  DCHECK(!is_bitmap_backed_);
+  for (const auto& aux_image_data : aux_image_data_) {
+    aux_image_data.ValidateImagesMatchPixmaps();
+  }
+
+  bool did_lock = true;
+  bool did_lock_image[kAuxImageCount] = {false, false};
+  for (size_t i = 0; i < kAuxImageCount; ++i) {
+    if (!aux_image_data_[i].data) {
+      continue;
+    }
+    did_lock_image[i] = aux_image_data_[i].data->Lock();
+    if (did_lock_image[i]) {
+      continue;
+    }
+
+    // If we fail to lock an image, unlock all images that we locked in this
+    // loop, and break out of the loop.
+    for (size_t j = 0; j < i; ++j) {
+      if (did_lock_image[j]) {
+        aux_image_data_[j].data->Unlock();
+      }
+    }
+    did_lock = false;
+    break;
+  }
+  if (did_lock) {
     OnLock();
   }
   return is_locked_;
 }
 
 void GpuImageDecodeCache::DecodedImageData::Unlock() {
-  aux_image_data_.data->Unlock();
+  for (auto& aux_image_data : aux_image_data_) {
+    if (aux_image_data.data) {
+      aux_image_data.data->Unlock();
+    }
+  }
   OnUnlock();
 }
 
 void GpuImageDecodeCache::DecodedImageData::SetLockedData(
-    DecodedAuxImageData aux_image_data,
+    DecodedAuxImageData aux_image_data[kAuxImageCount],
     bool out_of_raster) {
-  DCHECK(aux_image_data_.IsEmpty());
-  aux_image_data_ = std::move(aux_image_data);
-  DCHECK(!aux_image_data_.pixmaps[0].dimensions().isEmpty());
+  for (size_t i = 0; i < kAuxImageCount; ++i) {
+    DCHECK(aux_image_data_[i].IsEmpty());
+    aux_image_data[i].ValidateImagesMatchPixmaps();
+    aux_image_data_[i] = std::move(aux_image_data[i]);
+  }
+
+  // A default image must have been set.
+  DCHECK(!aux_image_data_[kAuxImageIndexDefault].IsEmpty());
+  for (size_t i = 0; i < kAuxImageCount; ++i) {
+    aux_image_data_[i].ValidateImagesMatchPixmaps();
+  }
   OnSetLockedData(out_of_raster);
 }
 
 void GpuImageDecodeCache::DecodedImageData::SetBitmapImage(
     sk_sp<SkImage> image) {
   DCHECK(is_bitmap_backed_);
-  DCHECK(aux_image_data_.IsEmpty());
-  aux_image_data_.images[0] = std::move(image);
-  aux_image_data_.images[0]->peekPixels(&aux_image_data_.pixmaps[0]);
+  for (const auto& aux_image_data : aux_image_data_) {
+    DCHECK(aux_image_data.IsEmpty());
+  }
+  aux_image_data_[kAuxImageIndexDefault].images[0] = std::move(image);
+  aux_image_data_[kAuxImageIndexDefault].images[0]->peekPixels(
+      &aux_image_data_[kAuxImageIndexDefault].pixmaps[0]);
+  aux_image_data_[kAuxImageIndexDefault].ValidateImagesMatchPixmaps();
+
+  for (const auto& aux_image_data : aux_image_data_) {
+    aux_image_data.ValidateImagesMatchPixmaps();
+  }
   OnLock();
 }
 
 void GpuImageDecodeCache::DecodedImageData::ResetBitmapImage() {
   DCHECK(is_bitmap_backed_);
   // Bitmaps only ever have a single SkImage.
-  aux_image_data_.ResetData();
+  aux_image_data_[0].ResetData();
+  for (auto& aux_image_data : aux_image_data_) {
+    DCHECK(aux_image_data.IsEmpty());
+  }
   OnUnlock();
 }
 
 void GpuImageDecodeCache::DecodedImageData::ResetData() {
-  if (aux_image_data_.data) {
+  if (aux_image_data_[kAuxImageIndexDefault].data) {
     ReportUsageStats();
   }
-  aux_image_data_.ResetData();
+  for (auto& aux_image_data : aux_image_data_) {
+    aux_image_data.ResetData();
+  }
   OnResetData();
 }
 
@@ -1028,7 +1116,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool is_bitmap_backed,
     bool can_do_hardware_accelerated_decode,
     bool do_hardware_accelerated_decode,
-    const ImageInfo& info)
+    ImageInfo image_info[kAuxImageCount])
     : paint_image_id(paint_image_id),
       mode(mode),
       target_color_params(target_color_params),
@@ -1036,7 +1124,8 @@ GpuImageDecodeCache::ImageData::ImageData(
       upload_scale_mip_level(upload_scale_mip_level),
       needs_mips(needs_mips),
       is_bitmap_backed(is_bitmap_backed),
-      info(info),
+      info(std::move(image_info[kAuxImageIndexDefault])),
+      gainmap_info(std::move(image_info[kAuxImageIndexGainmap])),
       decode(is_bitmap_backed,
              can_do_hardware_accelerated_decode,
              do_hardware_accelerated_decode) {
@@ -1088,8 +1177,13 @@ void GpuImageDecodeCache::ImageData::ValidateBudgeted() const {
   DCHECK_GT(upload.ref_count, 0u);
 }
 
-size_t GpuImageDecodeCache::ImageData::GetSize() const {
-  return info.size;
+size_t GpuImageDecodeCache::ImageData::GetTotalSize() const {
+  size_t size = 0;
+  for (const auto aux_image : kAllAuxImages) {
+    const auto& aux_image_info = GetImageInfo(aux_image);
+    size += aux_image_info.size;
+  }
+  return size;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1131,6 +1225,10 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       max_working_set_bytes_(max_working_set_bytes),
       max_working_set_items_(kMaxItemsInWorkingSet),
       dark_mode_filter_(dark_mode_filter) {
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
+
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // Note that to compute |allow_accelerated_jpeg_decodes_| and
   // |allow_accelerated_webp_decodes_|, the last thing we check is the feature
@@ -1318,7 +1416,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
 
   // Ensure that the image we're about to decode/upload will fit in memory, if
   // not already budgeted.
-  if (!image_data->is_budgeted && !EnsureCapacity(image_data->GetSize())) {
+  if (!image_data->is_budgeted && !EnsureCapacity(image_data->GetTotalSize())) {
     // Image will not fit, do an at-raster decode.
     return TaskResult(false /* need_unref */, true /* is_at_raster_decode */,
                       image_data->decode.can_do_hardware_accelerated_decode());
@@ -1569,10 +1667,15 @@ void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
     EnsureCapacity(0);
   }
 
-  MaybePurgeOldCacheEntries();
+  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+    DCHECK(persistent_cache_.empty() || has_pending_purge_task());
+    PostPurgeOldCacheEntriesTask();
+  } else {
+    MaybePurgeOldCacheEntries();
+  }
 
   WillAddCacheEntry(draw_image);
-  persistent_cache_memory_size_ += data->GetSize();
+  persistent_cache_memory_size_ += data->GetTotalSize();
   persistent_cache_.Put(draw_image.frame_key(), std::move(data));
 }
 
@@ -1604,19 +1707,15 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
   if (entries_it->second.count == 0u)
     paint_image_entries_.erase(entries_it);
 
-  persistent_cache_memory_size_ -= it->second->GetSize();
+  persistent_cache_memory_size_ -= it->second->GetTotalSize();
   return persistent_cache_.Erase(it);
 }
 
-void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
-  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
-    return;
-  }
-
-  const base::TimeTicks min_last_use =
-      base::TimeTicks::Now() - base::Seconds(kCacheAgeLimitSeconds.Get());
+void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
+  const base::TimeTicks min_last_use = base::TimeTicks::Now() - max_age;
   for (auto it = persistent_cache_.rbegin();
-       it != persistent_cache_.rend() && it->second->last_use < min_last_use;) {
+       it != persistent_cache_.rend() &&
+       it->second->last_use <= min_last_use;) {
     if (it->second->decode.ref_count != 0 ||
         it->second->upload.ref_count != 0) {
       ++it;
@@ -1624,6 +1723,43 @@ void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
     }
 
     it = RemoveFromPersistentCache(it);
+  }
+}
+
+void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
+  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
+    return;
+  }
+
+  DoPurgeOldCacheEntries(base::Seconds(kCacheAgeLimitSeconds.Get()));
+}
+
+void GpuImageDecodeCache::PurgeOldCacheEntriesCallback() {
+  base::AutoLock locker(lock_);
+  DoPurgeOldCacheEntries(get_max_purge_age());
+
+  has_pending_purge_task_ = false;
+
+  // If the cache is empty, we stop posting the task, to avoid endless wakeups.
+  if (persistent_cache_.empty()) {
+    return;
+  }
+
+  PostPurgeOldCacheEntriesTask();
+}
+
+void GpuImageDecodeCache::PostPurgeOldCacheEntriesTask() {
+  if (has_pending_purge_task()) {
+    return;
+  }
+
+  if (task_runner_) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&GpuImageDecodeCache::PurgeOldCacheEntriesCallback,
+                       weak_ptr_factory_.GetWeakPtr()),
+        get_purge_interval());
+    has_pending_purge_task_ = true;
   }
 }
 
@@ -1719,20 +1855,23 @@ bool GpuImageDecodeCache::OnMemoryDump(
   for (const auto& image_pair : persistent_cache_) {
     const ImageData* image_data = image_pair.second.get();
     int image_id = static_cast<int>(image_pair.first.hash());
-    const auto& info = image_data->info;
 
     // If we have discardable decoded data, dump this here.
-    if (image_data->decode.data()) {
+    for (const auto aux_image : kAllAuxImages) {
+      const auto& info = image_data->GetImageInfo(aux_image);
+      const auto* data = image_data->decode.data(aux_image);
+      if (!data) {
+        continue;
+      }
       std::string discardable_dump_name = base::StringPrintf(
-          "%s/discardable/image_%d", dump_name.c_str(), image_id);
+          "%s/discardable/image_%d%s", dump_name.c_str(), image_id,
+          aux_image == AuxImage::kDefault ? "" : AuxImageName(aux_image));
       MemoryAllocatorDump* dump =
-          image_data->decode.data()->CreateMemoryAllocatorDump(
-              discardable_dump_name.c_str(), pmd);
+          data->CreateMemoryAllocatorDump(discardable_dump_name.c_str(), pmd);
       // Dump the "locked_size" as an additional column.
       // This lets us see the amount of discardable which is contributing to
       // memory pressure.
-      size_t locked_size =
-          image_data->decode.is_locked() ? image_data->GetSize() : 0u;
+      size_t locked_size = image_data->decode.is_locked() ? info.size : 0u;
       dump->AddScalar("locked_size", MemoryAllocatorDump::kUnitsBytes,
                       locked_size);
     }
@@ -1742,6 +1881,9 @@ bool GpuImageDecodeCache::OnMemoryDump(
     if (image_data->HasUploadedData()) {
       switch (image_data->mode) {
         case DecodedDataMode::kGpu: {
+          // The GPU path does not support auxiliary images, so we can assume
+          // that this is the default image.
+          const auto& info = image_data->info;
           size_t discardable_size = info.size;
           auto* context_support = context_->ContextSupport();
           // If the discardable system has deleted this out from under us, log a
@@ -1781,7 +1923,8 @@ bool GpuImageDecodeCache::OnMemoryDump(
           MemoryAllocatorDump* dump =
               pmd->CreateAllocatorDump(uploaded_dump_name);
           dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes, info.size);
+                          MemoryAllocatorDump::kUnitsBytes,
+                          image_data->GetTotalSize());
         } break;
 
         case DecodedDataMode::kCpu:
@@ -2027,18 +2170,18 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
       image_data->upload.ref_count > 0 || image_data->decode.ref_count > 0;
   // If we have no image refs on an image, we should unbudget it.
   if (!has_any_refs && image_data->is_budgeted) {
-    DCHECK_GE(working_set_bytes_, image_data->GetSize());
+    DCHECK_GE(working_set_bytes_, image_data->GetTotalSize());
     DCHECK_GE(working_set_items_, 1u);
-    working_set_bytes_ -= image_data->GetSize();
+    working_set_bytes_ -= image_data->GetTotalSize();
     working_set_items_ -= 1;
     image_data->is_budgeted = false;
   }
 
   // Don't keep around completely empty images. This can happen if an image's
   // decode/upload tasks were both cancelled before completing.
-  const bool has_cpu_data =
-      image_data->decode.data() ||
-      (image_data->is_bitmap_backed && image_data->decode.image(0));
+  const bool has_cpu_data = image_data->decode.HasData() ||
+                            (image_data->is_bitmap_backed &&
+                             image_data->decode.image(0, AuxImage::kDefault));
   if (!has_any_refs && !image_data->HasUploadedData() && !has_cpu_data &&
       !image_data->is_orphaned) {
     auto found_persistent = persistent_cache_.Peek(draw_image.frame_key());
@@ -2076,8 +2219,8 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
 
   // If we have image that could be budgeted, but isn't, budget it now.
   if (has_any_refs && !image_data->is_budgeted &&
-      CanFitInWorkingSet(image_data->GetSize())) {
-    working_set_bytes_ += image_data->GetSize();
+      CanFitInWorkingSet(image_data->GetTotalSize())) {
+    working_set_bytes_ += image_data->GetTotalSize();
     working_set_items_ += 1;
     image_data->is_budgeted = true;
   }
@@ -2091,10 +2234,10 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
 
   if (should_unlock_decode && image_data->decode.is_locked()) {
     if (image_data->is_bitmap_backed) {
-      DCHECK(!image_data->decode.data());
+      DCHECK(!image_data->decode.HasData());
       image_data->decode.ResetBitmapImage();
     } else {
-      DCHECK(image_data->decode.data());
+      DCHECK(image_data->decode.HasData());
       image_data->decode.Unlock();
     }
   }
@@ -2260,7 +2403,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     return;
   }
 
-  if (image_data->decode.data() &&
+  if (image_data->decode.HasData() &&
       (image_data->decode.is_locked() || image_data->decode.Lock())) {
     // We already decoded this, or we just needed to lock, early out.
     return;
@@ -2271,76 +2414,101 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
   image_data->decode.ResetData();
 
   // Decode the image into `aux_image_data` while the lock is not held.
-  DecodedAuxImageData aux_image_data;
+  DecodedAuxImageData aux_image_data[kAuxImageCount];
   {
     base::AutoUnlock unlock(lock_);
-
-    // Allocate the backing memory for the decode.
-    std::unique_ptr<base::DiscardableMemory> backing_memory;
-    if (base::FeatureList::IsEnabled(
-            features::kNoDiscardableMemoryForGpuDecodePath)) {
-      backing_memory =
-          std::make_unique<HeapDiscardableMemory>(image_data->info.size);
-    } else {
-      auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
-      backing_memory = allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
-          image_data->info.size,
-          base::BindOnce(&GpuImageDecodeCache::ClearCache,
-                         base::Unretained(this)));
-    }
-
-    // Do the decode.
-    if (image_data->info.yuva.has_value()) {
-      // Decode as YUV.
-      DVLOG(3) << "GpuImageDecodeCache wants to do YUV decoding/rendering";
-      SkYUVAPixmaps yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
-          image_data->info.yuva.value(), backing_memory->data());
-      if (DrawAndScaleImageYUV(draw_image, AuxImage::kDefault,
-                               generator_client_id_, yuva_supported_data_types_,
-                               yuva_pixmaps)) {
-        aux_image_data =
-            DecodedAuxImageData(yuva_pixmaps, std::move(backing_memory));
-      } else {
-        DLOG(ERROR) << "DrawAndScaleImageYUV failed.";
-        backing_memory->Unlock();
-        backing_memory.reset();
+    for (auto aux_image : kAllAuxImages) {
+      if (aux_image == AuxImage::kGainmap) {
+        if (!draw_image.paint_image().HasGainmap()) {
+          continue;
+        }
       }
-    } else {
-      // Decode as RGB.
-      SkImageInfo image_info = image_data->info.rgba->makeColorSpace(
-          ColorSpaceForImageDecode(draw_image, image_data->mode));
-      SkPixmap pixmap(image_info, backing_memory->data(),
-                      image_info.minRowBytes());
-      if (DrawAndScaleImageRGB(draw_image, AuxImage::kDefault, pixmap,
-                               generator_client_id_)) {
-        aux_image_data = DecodedAuxImageData(pixmap, std::move(backing_memory));
+      const auto aux_image_index = AuxImageIndex(aux_image);
+      const auto info = image_data->GetImageInfo(aux_image);
+
+      // Allocate the backing memory for the decode.
+      std::unique_ptr<base::DiscardableMemory> backing_memory;
+      if (base::FeatureList::IsEnabled(
+              features::kNoDiscardableMemoryForGpuDecodePath)) {
+        backing_memory = std::make_unique<HeapDiscardableMemory>(info.size);
       } else {
-        DLOG(ERROR) << "DrawAndScaleImageRGB failed.";
-        backing_memory->Unlock();
-        backing_memory.reset();
+        auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
+        backing_memory =
+            allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
+                info.size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
+                                          base::Unretained(this)));
+      }
+
+      // Do the decode.
+      if (info.yuva.has_value()) {
+        // Decode as YUV.
+        DCHECK(!info.rgba.has_value());
+        DVLOG(3) << "GpuImageDecodeCache (" << AuxImageName(aux_image)
+                 << "wants to do YUV decoding/rendering";
+        SkYUVAPixmaps yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
+            info.yuva.value(), backing_memory->data());
+        if (DrawAndScaleImageYUV(draw_image, aux_image, generator_client_id_,
+                                 yuva_supported_data_types_, yuva_pixmaps)) {
+          aux_image_data[aux_image_index] =
+              DecodedAuxImageData(yuva_pixmaps, std::move(backing_memory));
+        } else {
+          DLOG(ERROR) << "DrawAndScaleImageYUV failed.";
+          backing_memory->Unlock();
+          backing_memory.reset();
+          break;
+        }
+      } else {
+        // Decode as RGB.
+        DCHECK(info.rgba.has_value());
+        SkImageInfo image_info = info.rgba->makeColorSpace(
+            ColorSpaceForImageDecode(draw_image, image_data->mode));
+        SkPixmap pixmap(image_info, backing_memory->data(),
+                        image_info.minRowBytes());
+        if (DrawAndScaleImageRGB(draw_image, aux_image, pixmap,
+                                 generator_client_id_)) {
+          aux_image_data[aux_image_index] =
+              DecodedAuxImageData(pixmap, std::move(backing_memory));
+        } else {
+          DLOG(ERROR) << "DrawAndScaleImageRGB failed.";
+          backing_memory->Unlock();
+          backing_memory.reset();
+          break;
+        }
       }
     }
   }
 
-  if (image_data->decode.data()) {
-    // An at-raster task decoded this before us. Ignore our decode.
-    if (image_data->info.yuva.has_value()) {
-      for (int i = 0; i < image_data->info.yuva->numPlanes(); ++i) {
-        DCHECK(image_data->decode.image(i));
+  if (image_data->decode.HasData()) {
+    // An at-raster task decoded this before us. Ignore our decode, but ensure
+    // that the expected number of images are populated.
+    for (auto aux_image : kAllAuxImages) {
+      const auto info = image_data->GetImageInfo(aux_image);
+      int num_planes = 0;
+      if (info.yuva) {
+        num_planes = image_data->info.yuva->numPlanes();
       }
-    } else {
-      DCHECK(image_data->decode.image(0));
+      if (info.rgba) {
+        num_planes = 1;
+      }
+      for (int i = 0; i < SkYUVAInfo::kMaxPlanes; ++i) {
+        if (i < num_planes) {
+          DCHECK(image_data->decode.image(i, aux_image));
+        } else {
+          DCHECK(!image_data->decode.image(i, aux_image));
+        }
+      }
     }
     return;
   }
 
-  // If `aux_image_data`'s data was not populated, we had a non-decodable image.
-  if (!aux_image_data.data) {
+  // If the default image's `data` was not populated, we had a non-decodable
+  // image. Do not fail if the gainmap failed to decode.
+  if (!aux_image_data[kAuxImageIndexDefault].data) {
     image_data->decode.decode_failure = true;
     return;
   }
 
-  image_data->decode.SetLockedData(std::move(aux_image_data),
+  image_data->decode.SetLockedData(aux_image_data,
                                    task_type == TaskType::kOutOfRaster);
 }
 
@@ -2350,7 +2518,7 @@ void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
   // Caller must ensure draw image needs dark mode to be applied.
   DCHECK(NeedsDarkModeFilter(draw_image, image_data));
   // Caller must ensure image is valid and has decoded data.
-  DCHECK(image_data->decode.image(0));
+  DCHECK(image_data->decode.image(0, AuxImage::kDefault));
 
   // TODO(prashant.n): Calling ApplyToImage() from |dark_mode_filter_| can be
   // expensive. Check the possibilitiy of holding |lock_| only for accessing and
@@ -2360,7 +2528,7 @@ void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
   if (image_data->decode.decode_failure)
     return;
 
-  const SkPixmap& pixmap = image_data->decode.pixmaps()[0];
+  const SkPixmap& pixmap = image_data->decode.pixmaps(AuxImage::kDefault)[0];
   image_data->decode.dark_mode_color_filter_cache[draw_image.src_rect()] =
       dark_mode_filter_->ApplyToImage(pixmap, draw_image.src_rect());
 }
@@ -2413,8 +2581,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // have happened at decode time.
   sk_sp<SkColorSpace> decoded_target_colorspace =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
+  const bool needs_tone_mapping = NeedsToneMapping(
+      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
   if (target_color_space && decoded_target_colorspace) {
-    if (!gfx::ColorSpace(*decoded_target_colorspace).IsToneMappedByDefault() &&
+    if (!needs_tone_mapping &&
         SkColorSpace::Equals(target_color_space.get(),
                              decoded_target_colorspace.get())) {
       target_color_space = nullptr;
@@ -2440,9 +2610,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       // Do not color convert YUVA images unless the the color conversion also
       // performs tone mapping.
       if (image_data->info.yuva.has_value()) {
-        if (!decoded_target_colorspace ||
-            !gfx::ColorSpace(*decoded_target_colorspace)
-                 .IsToneMappedByDefault()) {
+        if (!needs_tone_mapping) {
           target_color_params = absl::nullopt;
         }
       }
@@ -2453,7 +2621,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   } else {
     // Grab a reference to our decoded image. For the kCpu path, we will use
     // this directly as our "uploaded" data.
-    sk_sp<SkImage> uploaded_image = image_data->decode.image();
+    sk_sp<SkImage> uploaded_image =
+        image_data->decode.image(0, AuxImage::kDefault);
     GrMipMapped image_needs_mips =
         image_data->needs_mips ? GrMipMapped::kYes : GrMipMapped::kNo;
 
@@ -2521,22 +2690,37 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
 
-  ClientImageTransferCacheEntry::Image image;
-  if (image_data->info.yuva.has_value()) {
-    DCHECK(!image_data->info.rgba.has_value());
-    image = ClientImageTransferCacheEntry::Image(
-        image_data->decode.pixmaps(),
-        image_data->info.yuva->yuvaInfo().planeConfig(),
-        image_data->info.yuva->yuvaInfo().subsampling(),
-        decoded_target_colorspace.get(),
-        image_data->info.yuva->yuvaInfo().yuvColorSpace());
-  } else {
-    DCHECK(image_data->info.rgba.has_value());
-    image = ClientImageTransferCacheEntry::Image(image_data->decode.pixmaps());
+  ClientImageTransferCacheEntry::Image image[kAuxImageCount];
+  bool has_gainmap = false;
+
+  for (auto aux_image : kAllAuxImages) {
+    auto aux_image_index = AuxImageIndex(aux_image);
+    const auto& info = image_data->GetImageInfo(aux_image);
+    if (aux_image == AuxImage::kGainmap) {
+      has_gainmap = info.rgba.has_value() || info.yuva.has_value();
+    }
+    if (info.yuva.has_value()) {
+      DCHECK(!info.rgba.has_value());
+      image[aux_image_index] = ClientImageTransferCacheEntry::Image(
+          image_data->decode.pixmaps(aux_image), info.yuva->yuvaInfo(),
+          decoded_target_colorspace.get());
+    }
+    if (info.rgba.has_value()) {
+      DCHECK(!info.yuva.has_value());
+      image[aux_image_index] = ClientImageTransferCacheEntry::Image(
+          image_data->decode.pixmaps(aux_image));
+    }
   }
 
-  ClientImageTransferCacheEntry image_entry(image, image_data->needs_mips,
-                                            target_color_params);
+  ClientImageTransferCacheEntry image_entry =
+      has_gainmap
+          ? ClientImageTransferCacheEntry(
+                image[kAuxImageIndexDefault], image[kAuxImageIndexGainmap],
+                draw_image.paint_image().GetGainmapInfo(),
+                image_data->needs_mips, target_color_params)
+          : ClientImageTransferCacheEntry(image[kAuxImageIndexDefault],
+                                          image_data->needs_mips,
+                                          target_color_params);
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);
@@ -2557,9 +2741,12 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
   // YUV with no alpha.
   DCHECK_EQ(image_data->info.yuva->yuvaInfo().planeConfig(),
             SkYUVAInfo::PlaneConfig::kY_U_V);
-  sk_sp<SkImage> uploaded_y_image = image_data->decode.image(0);
-  sk_sp<SkImage> uploaded_u_image = image_data->decode.image(1);
-  sk_sp<SkImage> uploaded_v_image = image_data->decode.image(2);
+  sk_sp<SkImage> uploaded_y_image =
+      image_data->decode.image(0, AuxImage::kDefault);
+  sk_sp<SkImage> uploaded_u_image =
+      image_data->decode.image(1, AuxImage::kDefault);
+  sk_sp<SkImage> uploaded_v_image =
+      image_data->decode.image(2, AuxImage::kDefault);
 
   // For kGpu, we upload and color convert (if necessary).
   if (image_data->mode == DecodedDataMode::kGpu) {
@@ -2696,14 +2883,34 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                                      bool allow_hardware_decode) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::CreateImageData");
+  ImageInfo image_info[kAuxImageCount];
 
-  const auto [image_info, upload_scale_mip_level] =
+  // Extract ImageInfo and SkImageInfo for the default image, assuming software
+  // decoding to RGBA.
+  const auto [sk_image_info, upload_scale_mip_level] =
       CreateImageInfoForDrawImage(draw_image, AuxImage::kDefault);
+  image_info[kAuxImageIndexDefault] = ImageInfo(sk_image_info);
   bool needs_mips = ShouldGenerateMips(draw_image, AuxImage::kDefault,
                                        upload_scale_mip_level);
+
+  // Extract ImageInfo and SkImageInfo for the gainmap image, if it exists,
+  // assuming software decoindg to RGBA.
+  const bool has_gainmap = draw_image.paint_image().HasGainmap();
+  SkImageInfo gainmap_sk_image_info;
+  ImageInfo gainmap_info;
+  if (has_gainmap) {
+    gainmap_sk_image_info = std::get<0>(
+        CreateImageInfoForDrawImage(draw_image, AuxImage::kGainmap));
+    image_info[kAuxImageIndexGainmap] = ImageInfo(gainmap_sk_image_info);
+  }
+
+  // Determine if the image can fit in a texture (to determine mode and RGBA vs
+  // YUVA decode).
   const bool image_larger_than_max_texture =
-      image_info.width() > max_texture_size_ ||
-      image_info.height() > max_texture_size_;
+      sk_image_info.width() > max_texture_size_ ||
+      sk_image_info.height() > max_texture_size_ ||
+      (has_gainmap && (gainmap_sk_image_info.width() > max_texture_size_ ||
+                       gainmap_sk_image_info.height() > max_texture_size_));
   DecodedDataMode mode;
   if (use_transfer_cache_) {
     mode = DecodedDataMode::kTransferCache;
@@ -2738,6 +2945,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   // - The caller allows hardware decodes.
   // - We are using the transfer cache (OOP-R).
   // - The image does not require downscaling for uploading (see TODO below).
+  // - The image does not have a gainmap.
   // - The image is supported according to the profiles advertised by the GPU
   //   service.
   //
@@ -2749,7 +2957,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   bool can_do_hardware_accelerated_decode = false;
   bool do_hardware_accelerated_decode = false;
   if (allow_hardware_decode && mode == DecodedDataMode::kTransferCache &&
-      upload_scale_mip_level == 0 &&
+      upload_scale_mip_level == 0 && !has_gainmap &&
       context_->ContextSupport()->CanDecodeWithHardwareAcceleration(
           image_metadata)) {
     DCHECK(image_metadata);
@@ -2766,23 +2974,33 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       do_hardware_accelerated_decode = true;
       DCHECK(!is_bitmap_backed);
     }
-  }
 
-  // Populate the ImageInfo for the base and gainmap images.
-  ImageInfo info(image_info);
-  if (!do_hardware_accelerated_decode && mode != DecodedDataMode::kCpu &&
-      !image_larger_than_max_texture) {
-    info.yuva =
-        GetYUVADecodeInfo(draw_image, AuxImage::kDefault,
-                          image_info.dimensions(), yuva_supported_data_types_);
-    if (info.yuva.has_value()) {
-      info = ImageInfo(info.yuva.value());
+    // Override the estimated size if we are doing hardware decode.
+    if (do_hardware_accelerated_decode) {
+      image_info[kAuxImageIndexDefault].size =
+          EstimateHardwareDecodedDataSize(image_metadata);
     }
   }
 
-  // Override the estimated size if we are doing hardware decode.
-  if (do_hardware_accelerated_decode) {
-    info.size = EstimateHardwareDecodedDataSize(image_metadata);
+  // Determine if we will do YUVA decoding for the image and the gainmap, and
+  // update `image_info` to reflect that.
+  if (!do_hardware_accelerated_decode && mode != DecodedDataMode::kCpu &&
+      !image_larger_than_max_texture) {
+    auto yuva_info = GetYUVADecodeInfo(draw_image, AuxImage::kDefault,
+                                       sk_image_info.dimensions(),
+                                       yuva_supported_data_types_);
+    if (yuva_info.has_value()) {
+      image_info[kAuxImageIndexDefault] = ImageInfo(yuva_info.value());
+    }
+    if (has_gainmap) {
+      auto gainmap_yuva_info = GetYUVADecodeInfo(
+          draw_image, AuxImage::kGainmap, gainmap_sk_image_info.dimensions(),
+          yuva_supported_data_types_);
+      if (gainmap_yuva_info.has_value()) {
+        image_info[kAuxImageIndexGainmap] =
+            ImageInfo(gainmap_yuva_info.value());
+      }
+    }
   }
 
   return base::WrapRefCounted(new ImageData(
@@ -2790,7 +3008,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       draw_image.target_color_params(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
-      do_hardware_accelerated_decode, info));
+      do_hardware_accelerated_decode, image_info));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {
@@ -2979,7 +3197,7 @@ std::tuple<SkImageInfo, int> GpuImageDecodeCache::CreateImageInfoForDrawImage(
     const DrawImage& draw_image,
     AuxImage aux_image) const {
   const int upload_scale_mip_level =
-      CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault);
+      CalculateUploadScaleMipLevel(draw_image, aux_image);
   gfx::Size mip_size =
       CalculateSizeForMipLevel(draw_image, aux_image, upload_scale_mip_level);
 
@@ -3130,9 +3348,11 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
   sk_sp<SkColorSpace> decoded_target_colorspace =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
+  const bool needs_tone_mapping = NeedsToneMapping(
+      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
+
   bool color_is_compatible = false;
-  if (!decoded_target_colorspace ||
-      !gfx::ColorSpace(*decoded_target_colorspace).IsToneMappedByDefault()) {
+  if (!needs_tone_mapping) {
     color_is_compatible = image_data->target_color_params.color_space ==
                           draw_image.target_color_space();
   } else {
@@ -3150,7 +3370,7 @@ size_t GpuImageDecodeCache::GetDrawImageSizeForTesting(const DrawImage& image) {
   base::AutoLock lock(lock_);
   scoped_refptr<ImageData> data =
       CreateImageData(image, false /* allow_hardware_decode */);
-  return data->GetSize();
+  return data->GetTotalSize();
 }
 
 void GpuImageDecodeCache::SetImageDecodingFailedForTesting(
@@ -3235,6 +3455,14 @@ bool GpuImageDecodeCache::NeedsDarkModeFilterForTesting(
       draw_image, InUseCacheKeyFromDrawImage(draw_image));
 
   return NeedsDarkModeFilter(draw_image, image_data);
+}
+
+void GpuImageDecodeCache::TouchCacheEntryForTesting(
+    const DrawImage& draw_image) {
+  base::AutoLock locker(lock_);
+  ImageData* image_data = GetImageDataForDrawImage(
+      draw_image, InUseCacheKeyFromDrawImage(draw_image));
+  image_data->last_use = base::TimeTicks::Now();
 }
 
 void GpuImageDecodeCache::OnMemoryPressure(
@@ -3484,6 +3712,14 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetTaskFromMapForClientId(
   if (task_it != task_map.end())
     return task_it->second;
   return nullptr;
+}
+
+base::TimeDelta GpuImageDecodeCache::get_purge_interval() {
+  return base::Seconds(kPurgeInterval.Get());
+}
+
+base::TimeDelta GpuImageDecodeCache::get_max_purge_age() {
+  return base::Seconds(kPurgeMaxAge.Get());
 }
 
 }  // namespace cc

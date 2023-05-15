@@ -4,7 +4,7 @@
 
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 void AssignBytesToProtoString(base::span<const uint8_t> bytes,
                               std::string* bytes_proto_field) {
@@ -15,4 +15,4 @@ std::vector<uint8_t> ProtoStringToBytes(const std::string& bytes_string) {
   return std::vector<uint8_t>(bytes_string.begin(), bytes_string.end());
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

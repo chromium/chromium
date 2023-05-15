@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -133,9 +134,10 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
   void OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled);
 
-  sync_preferences::PrefServiceSyncable* prefs_;
+  raw_ptr<sync_preferences::PrefServiceSyncable, ExperimentalAsh> prefs_;
 
-  input_method::InputMethodManager* input_method_manager_;
+  raw_ptr<input_method::InputMethodManager, ExperimentalAsh>
+      input_method_manager_;
   std::unique_ptr<ContentTracingManager> tracing_manager_;
 
   BooleanPrefMember performance_tracing_enabled_;
@@ -186,7 +188,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   PrefChangeRegistrar pref_change_registrar_;
 
   // User owning these preferences.
-  const user_manager::User* user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> user_;
 
   // Whether user is a primary user.
   bool user_is_primary_;

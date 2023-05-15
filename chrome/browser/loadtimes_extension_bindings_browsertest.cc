@@ -21,25 +21,16 @@ class LoadtimesExtensionBindingsTest : public InProcessBrowserTest {
     // zero it out so the test is stable.
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(content::ExecuteScript(
-        contents,
-        "window.before.firstPaintAfterLoadTime = 0;"
-        "window.before.firstPaintTime = 0;"
-        "window.after.firstPaintAfterLoadTime = 0;"
-        "window.after.firstPaintTime = 0;"));
+    ASSERT_TRUE(content::ExecJs(contents,
+                                "window.before.firstPaintAfterLoadTime = 0;"
+                                "window.before.firstPaintTime = 0;"
+                                "window.after.firstPaintAfterLoadTime = 0;"
+                                "window.after.firstPaintTime = 0;"));
 
-    std::string before;
-    std::string after;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        contents,
-        "window.domAutomationController.send("
-        "    JSON.stringify(before))",
-        &before));
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        contents,
-        "window.domAutomationController.send("
-        "    JSON.stringify(after))",
-        &after));
+    std::string before =
+        content::EvalJs(contents, "JSON.stringify(before)").ExtractString();
+    std::string after =
+        content::EvalJs(contents, "JSON.stringify(after)").ExtractString();
     EXPECT_EQ(before, after);
   }
 };
@@ -51,12 +42,12 @@ IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      contents, "window.before = window.chrome.loadTimes()"));
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(
+      content::ExecJs(contents, "window.before = window.chrome.loadTimes()"));
+  ASSERT_TRUE(content::ExecJs(
       contents, "window.location.href = window.location + \"#\""));
-  ASSERT_TRUE(content::ExecuteScript(
-      contents, "window.after = window.chrome.loadTimes()"));
+  ASSERT_TRUE(
+      content::ExecJs(contents, "window.after = window.chrome.loadTimes()"));
   CompareBeforeAndAfter();
 }
 
@@ -68,10 +59,10 @@ IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      contents, "window.before = window.chrome.loadTimes()"));
+  ASSERT_TRUE(
+      content::ExecJs(contents, "window.before = window.chrome.loadTimes()"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), hash_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      contents, "window.after = window.chrome.loadTimes()"));
+  ASSERT_TRUE(
+      content::ExecJs(contents, "window.after = window.chrome.loadTimes()"));
   CompareBeforeAndAfter();
 }

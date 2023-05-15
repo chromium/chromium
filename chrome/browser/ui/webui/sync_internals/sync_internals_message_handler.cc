@@ -254,7 +254,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
     return;
   }
 
-  service->GetUserSettings()->SetSyncRequested();
+  service->SetSyncFeatureRequested();
   // If the service was previously stopped via StopAndClear(), then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_PROFILE_INFO_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_PROFILE_INFO_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 
 class Profile;
@@ -26,7 +27,7 @@ class NearbyShareProfileInfoProviderImpl
   absl::optional<std::string> GetProfileUserName() const override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_PROFILE_INFO_PROVIDER_IMPL_H_

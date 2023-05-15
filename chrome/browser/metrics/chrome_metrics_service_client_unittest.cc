@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/client_info.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -52,6 +53,9 @@ class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {
   // Equivalent to ChromeMetricsServiceClient::Create
   static std::unique_ptr<TestChromeMetricsServiceClient> Create(
       metrics::MetricsStateManager* metrics_state_manager) {
+    // Needed because RegisterMetricsServiceProviders() checks for this.
+    metrics::SubprocessMetricsProvider::CreateInstance();
+
     std::unique_ptr<TestChromeMetricsServiceClient> client(
         new TestChromeMetricsServiceClient(metrics_state_manager));
     client->Initialize();
@@ -190,7 +194,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 22;
+  expected_providers += 23;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
@@ -210,8 +214,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
-  // FamilyLinkUserMetricsProvider, and PageLoadMetricsProvider.
-  expected_providers += 4;
+  // and PageLoadMetricsProvider.
+  expected_providers += 3;
 #else
   // performance_manager::MetricsProvider
   expected_providers += 1;
@@ -230,11 +234,12 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
-  // KeyboardBacklightColorMetricsProvider, PrinterMetricsProvider,
+  // KeyboardBacklightColorMetricsProvider,
+  // PersonalizationAppThemeMetricsProvider, PrinterMetricsProvider,
   // HashedLoggingMetricsProvider, FamilyUserMetricsProvider,
   // FamilyLinkUserMetricsProvider, UpdateEngineMetricsProvider,
-  // and UserTypeByDeviceTypeMetricsProvider.
-  expected_providers += 11;
+  // OsSettingsMetricsProvider, and UserTypeByDeviceTypeMetricsProvider.
+  expected_providers += 13;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -267,6 +272,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // BluetoothMetricsProvider
   expected_providers += 1;
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+  expected_providers++;  // FamilyLinkUserMetricsProvider
 #endif
 
   std::unique_ptr<TestChromeMetricsServiceClient>

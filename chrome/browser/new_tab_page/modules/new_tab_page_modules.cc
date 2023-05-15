@@ -49,7 +49,11 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
                              : IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE);
   }
 
-  if (IsCartModuleEnabled()) {
+  if (IsCartModuleEnabled() &&
+      (!base::FeatureList::IsEnabled(
+           ntp_features::kNtpChromeCartInHistoryClusterModule) ||
+       base::FeatureList::IsEnabled(
+           ntp_features::kNtpChromeCartHistoryClusterCoexist))) {
     details.emplace_back("chrome_cart", IDS_NTP_MODULES_CART_SENTENCE);
   }
 

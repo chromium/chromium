@@ -39,7 +39,7 @@ constexpr gfx::Size kPrimaryActionSize(24, 24);
 
 absl::optional<const gfx::VectorIcon*> GetOverlayIcon(
     const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsScreenCapture(item->type()));
+  DCHECK(HoldingSpaceItem::IsScreenCaptureType(item->type()));
   switch (item->type()) {
     case HoldingSpaceItem::Type::kScreenRecording:
       return &vector_icons::kPlayArrowIcon;

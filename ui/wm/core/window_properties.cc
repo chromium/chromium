@@ -28,4 +28,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(float,
                              15.f)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowHidingAnimationCountKey, 0)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPersistableKey, true)
+
 }  // namespace wm

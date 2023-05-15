@@ -174,8 +174,7 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   bool IsLoggingEnabled() const;
 
-  base::raw_ptr<KeyboardInputLog> keyboard_input_log_ptr_ =
-      nullptr;  // Not Owned.
+  raw_ptr<KeyboardInputLog> keyboard_input_log_ptr_ = nullptr;  // Not Owned.
 
   // Denotes whether DiagnosticsDialog should be closed when escape is pressed.
   // Currently, this is only false when the keyboard tester is actively in use.
@@ -214,7 +213,7 @@ class InputDataProvider : public mojom::InputDataProvider,
   base::Time keyboard_tester_start_timestamp_;
 
   bool logged_not_dispatching_key_events_ = false;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 

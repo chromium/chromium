@@ -43,6 +43,10 @@ mojom("mojom") {
           cpp = "::ash::ime::AssistiveSuggestion"
         },
         {
+          mojom = "ash.ime.mojom.SuggestionsTextContext"
+          cpp = "::ash::ime::SuggestionsTextContext"
+        },
+        {
           mojom = "ash.ime.mojom.TextRange"
           cpp = "::gfx::Range"
         },

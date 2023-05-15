@@ -4,13 +4,17 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/user_education/user_education_constants.h"
+#include "ash/user_education/user_education_util.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -42,33 +46,46 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
             ash::WelcomeTourController::Get()->GetInitialElementContext()));
   }
 
+  // Returns a builder for an interaction step that runs `steps` in the context
+  // for a matching view in the primary root window for the specified
+  // `element_id`. If there are multiple matches, this method does *not*
+  // guarantee which context will be selected.
+  [[nodiscard]] auto InMatchingViewInPrimaryRootWindowContext(
+      ui::ElementIdentifier element_id,
+      MultiStep steps) {
+    return InContext(
+        views::ElementTrackerViews::GetContextForView(
+            ash::user_education_util::GetMatchingViewInRootWindow(
+                display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+                element_id)),
+        std::move(steps));
+  }
+
   // Returns a builder for an interaction step that waits for a help bubble.
   [[nodiscard]] static auto WaitForHelpBubble() {
-    return WaitForShow(
-        user_education::HelpBubbleView::kHelpBubbleElementIdForTesting);
+    return WaitForShow(ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting);
   }
 
   // Returns a builder for an interaction step that checks that the body text of
   // a help bubble matches the specified `message_id`.
   [[nodiscard]] static auto CheckHelpBubbleBodyText(int message_id) {
-    return CheckViewProperty(
-        user_education::HelpBubbleView::kBodyTextIdForTesting,
-        &views::Label::GetText, l10n_util::GetStringUTF16(message_id));
+    return CheckViewProperty(ash::HelpBubbleViewAsh::kBodyTextIdForTesting,
+                             &views::Label::GetText,
+                             l10n_util::GetStringUTF16(message_id));
   }
 
   // Returns a builder for an interaction step that checks that the default
   // button text of a help bubble matches the specified `message_id`.
   [[nodiscard]] static auto CheckHelpBubbleDefaultButtonText(int message_id) {
-    return CheckViewProperty(
-        user_education::HelpBubbleView::kDefaultButtonIdForTesting,
-        &views::LabelButton::GetText, l10n_util::GetStringUTF16(message_id));
+    return CheckViewProperty(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting,
+                             &views::LabelButton::GetText,
+                             l10n_util::GetStringUTF16(message_id));
   }
 
   // Returns a builder for an interaction step that presses the default button
   // of a help bubble.
   [[nodiscard]] auto PressHelpBubbleDefaultButton() {
-    return PressButton(
-        user_education::HelpBubbleView::kDefaultButtonIdForTesting);
+    return PressButton(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting);
   }
 
  private:
@@ -84,11 +101,27 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
       WaitForHelpBubble(),
       CheckHelpBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
       CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-      PressHelpBubbleDefaultButton()
+      PressHelpBubbleDefaultButton(),
+
+      // Step 2: Status area.
+      InMatchingViewInPrimaryRootWindowContext(
+          ash::kUnifiedSystemTrayElementId,
+          Steps(WaitForHelpBubble(),
+                CheckHelpBubbleBodyText(
+                    IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                PressHelpBubbleDefaultButton())),
+
+      // Step 3: Home button.
+      InMatchingViewInPrimaryRootWindowContext(
+          ash::kHomeButtonElementId,
+          Steps(WaitForHelpBubble(),
+                CheckHelpBubbleBodyText(
+                    IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                PressHelpBubbleDefaultButton()))
 
       // TODO(http://b:275616974): Implement after registering views.
-      // Step 2: Status area.
-      // Step 3: Home button.
       // Step 4: Search box.
       // Step 5: Settings app.
       // Step 6: Explore app.

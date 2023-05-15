@@ -808,17 +808,6 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
-  void ClearVisualUpdateDurations();
-  void SetVisualUpdateDurations(
-      base::TimeDelta previous_surfaces_visual_update_duration,
-      base::TimeDelta visual_update_duration);
-  base::TimeDelta previous_surfaces_visual_update_duration() const {
-    return previous_surfaces_visual_update_duration_;
-  }
-  base::TimeDelta visual_update_duration() const {
-    return visual_update_duration_;
-  }
-
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,

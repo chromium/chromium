@@ -8,17 +8,10 @@ import android.view.View;
 
 /**
  * Helper class that handles the logic and state behind the "Auto Disable" accessibility feature.
- * This class will start a timer with a {@link WAIT_TIME_BEFORE_DISABLING_ACCESSIBILITY_MS} delay.
- * When the timer is up, the class will notify the provided Client that the underlying renderer
- * accessibility engine can be disabled in the C++ code.
- *
  * Clients need to cancel/reset the timer based on their implementation (e.g. on a user action).
- *
  * Only one timer per instance can exist.
  */
 public class AutoDisableAccessibilityHandler {
-    private static final int WAIT_TIME_BEFORE_DISABLING_ACCESSIBILITY_MS = 60 * 1000;
-
     /**
      * Interface for any Client of this handler.
      */
@@ -57,13 +50,6 @@ public class AutoDisableAccessibilityHandler {
     }
 
     /**
-     * Starts running the timer for this instance.
-     */
-    public void startDisableTimer() {
-        startDisableTimer(WAIT_TIME_BEFORE_DISABLING_ACCESSIBILITY_MS);
-    }
-
-    /**
      * Cancels the running timer for this instance.
      */
     public void cancelDisableTimer() {
@@ -71,16 +57,6 @@ public class AutoDisableAccessibilityHandler {
 
         mClient.getView().removeCallbacks(mRunnable);
         mHasPendingTimer = false;
-    }
-
-    /**
-     * Resets the running timer for this instance.
-     */
-    public void resetPendingTimer() {
-        if (!mHasPendingTimer) return;
-
-        mClient.getView().removeCallbacks(mRunnable);
-        mClient.getView().postDelayed(mRunnable, WAIT_TIME_BEFORE_DISABLING_ACCESSIBILITY_MS);
     }
 
     /**

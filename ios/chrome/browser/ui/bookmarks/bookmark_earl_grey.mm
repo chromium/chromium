@@ -57,9 +57,9 @@ const GURL GetFrenchUrl() {
       setupBookmarksWhichExceedsScreenHeightUsingURL:@"http://google.com"]);
 }
 
-- (void)waitForBookmarkModelLoaded:(BOOL)loaded {
+- (void)waitForBookmarkModelLoaded {
   EG_TEST_HELPER_ASSERT_TRUE(
-      [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded:loaded],
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded],
       @"Bookmark model was not loaded");
 }
 

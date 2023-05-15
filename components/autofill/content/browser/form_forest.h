@@ -9,13 +9,16 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace autofill {
+class ContentAutofillDriver;
+}
 
 namespace autofill::internal {
 
@@ -145,7 +148,7 @@ namespace autofill::internal {
 //    - FormFieldData::host_form_id
 // 2. GetBrowserForm() must only be called for known renderer forms. A renderer
 //    form is *known* after a corresponding UpdateTreeOfRendererForm() call
-//    until it is erased by EraseForms() or EraseFrame().
+//    until it is erased by EraseForms() or EraseFormsOfFrame().
 class FormForest {
  public:
   // A FrameData is a frame node in the form tree. Its children are FormData
@@ -286,7 +289,7 @@ class FormForest {
   // FrameData::parent_form pointers of all child forms.
   //
   // Afterwards, all renderer forms in |frame| are unknown.
-  void EraseFrame(LocalFrameToken frame);
+  void EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame);
 
   // Returns the set of FrameData nodes of the forest.
   const base::flat_set<std::unique_ptr<FrameData>,
@@ -366,9 +369,9 @@ class FormForest {
   // May be used in const qualified methods if the return value is not mutated.
   FrameAndForm GetRoot(FormGlobalId form);
 
-  // Helper for EraseFrame() and EraseForms() that removes all fields that
-  // originate from |frame_or_form| and unsets FrameData::parent_form pointer of
-  // |frame_or_form|'s children.
+  // Helper for EraseFormsOfFrame() and EraseForms() that removes all fields
+  // that originate from |frame_or_form| and unsets FrameData::parent_form
+  // pointer of |frame_or_form|'s children.
   //
   // Afterwards, all renderer forms in |frame_or_form| (if it is a frame) or the
   // renderer form |frame_or_form| (if it is a form) are unknown.

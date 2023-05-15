@@ -107,7 +107,6 @@ suite('ManageProfileTests', function() {
     element.profileName = 'Initial Fake Name';
     element.syncStatus = {
       supervisedUser: false,
-      childUser: false,
       statusAction: StatusAction.NO_ACTION,
     };
     document.body.appendChild(element);
@@ -154,20 +153,6 @@ suite('ManageProfileTests', function() {
 
     const args = await browserProxy.whenCalled('setProfileName');
     assertEquals('New Name', args[0]);
-  });
-
-  test('ProfileNameIsDisabledForSupervisedUser', function() {
-    manageProfile.syncStatus = {
-      supervisedUser: true,
-      childUser: false,
-      statusAction: StatusAction.NO_ACTION,
-    };
-
-    const nameField = manageProfile.$.name;
-    assertTrue(!!nameField);
-
-    // Name field should be disabled for legacy supervised users.
-    assertTrue(!!nameField.disabled);
   });
 
   // Tests profile name updates pushed from the browser.

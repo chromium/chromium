@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
-#include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -40,10 +40,7 @@ class AffiliatedCloudPolicyInvalidator;
 class AffiliatedInvalidationServiceProvider;
 class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
-class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
-class ActiveDirectoryDeviceStateUploader;
-class ActiveDirectoryMigrationManager;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -97,9 +94,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Checks whether this is a cloud (DM server) managed enterprise device.
   bool IsCloudManaged() const;
 
-  // Checks whether this is an Active Directory managed enterprise device.
-  bool IsActiveDirectoryManaged() const;
-
   // Returns the enterprise enrollment domain if device is managed.
   std::string GetEnterpriseEnrollmentDomain() const;
 
@@ -111,10 +105,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Returns the SSO profile id for the managing OU of this device. Currently
   // identifies the SAML settings for the device.
   std::string GetSSOProfile() const;
-
-  // Returns the Kerberos realm (aka Windows Domain) if the device is managed by
-  // Active Directory.
-  std::string GetRealm() const;
 
   // Returns the device asset ID if it is set.
   std::string GetDeviceAssetID() const;
@@ -146,23 +136,20 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Delegates to `ash::InstallAttributes::Get()`.
   ash::InstallAttributes* GetInstallAttributes() const;
 
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {
     return device_cloud_policy_manager_;
   }
 
-  // May be nullptr, e.g. for cloud-managed devices.
-  DeviceActiveDirectoryPolicyManager* GetDeviceActiveDirectoryPolicyManager()
-      const {
-    return device_active_directory_policy_manager_;
-  }
-
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   DeviceLocalAccountPolicyService* GetDeviceLocalAccountPolicyService() const {
     return device_local_account_policy_service_.get();
   }
 
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   ServerBackedStateKeysBroker* GetStateKeysBroker() const {
     return state_keys_broker_.get();
   }
@@ -241,10 +228,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
-  // TODO(crbug.com/1187628): Combine the following two functions into one to
-  // simplify the API.
   base::flat_set<std::string> device_affiliation_ids() const override;
-  ash::AffiliationIDSet GetDeviceAffiliationIDs() const;
 
   // BrowserPolicyConnector:
   // Always returns true as command line flag can be set under dev mode only.
@@ -270,14 +254,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<AffiliatedInvalidationServiceProvider>
       affiliated_invalidation_service_provider_;
-  DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ = nullptr;
-  DeviceActiveDirectoryPolicyManager* device_active_directory_policy_manager_ =
+  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh>
+      device_cloud_policy_manager_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_ =
       nullptr;
-  std::unique_ptr<ActiveDirectoryDeviceStateUploader>
-      active_directory_device_state_uploader_;
-  std::unique_ptr<ActiveDirectoryMigrationManager>
-      active_directory_migration_manager_;
-  PrefService* local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
@@ -314,7 +294,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  ProxyPolicyProvider* global_user_cloud_policy_provider_ = nullptr;
+  raw_ptr<ProxyPolicyProvider, ExperimentalAsh>
+      global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
       device_network_configuration_updater_;

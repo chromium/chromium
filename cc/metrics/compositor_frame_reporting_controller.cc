@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
@@ -417,14 +418,19 @@ void CompositorFrameReportingController::
 
 void CompositorFrameReportingController::TrackSwapTiming(
     const viz::FrameTimingDetails& details) {
-  if (details.swap_timings.swap_start != base::TimeTicks()) {
+  if (last_started_compositor_frame_.args.IsValid() &&
+      details.swap_timings.swap_start != base::TimeTicks() &&
+      details.swap_timings.swap_start >
+          last_started_compositor_frame_.args.frame_time) {
     if (latest_swap_times_.empty() ||
         latest_swap_times_.back() < details.swap_timings.swap_start)
       latest_swap_times_.push(details.swap_timings.swap_start);
   }
 
   // Making sure the queue would not keep growing in size.
-  DCHECK_LE(latest_swap_times_.size(), 10u);
+  if (latest_swap_times_.size() > 10) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void CompositorFrameReportingController::ReportMultipleSwaps(
@@ -615,6 +621,7 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
     }
   }
   last_started_compositor_frame_ = {};
+  latest_swap_times_ = {};
 }
 
 void CompositorFrameReportingController::NotifyReadyToCommit(

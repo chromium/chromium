@@ -21,13 +21,11 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForR;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * DisplayAndroidManager is a class that informs its observers Display changes.
  */
 @JNINamespace("ui")
-@MainDex
 public class DisplayAndroidManager {
     /**
      * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
@@ -196,14 +194,16 @@ public class DisplayAndroidManager {
                 displayAndroid.getDisplayId(), displayAndroid.getDisplayWidth(),
                 displayAndroid.getDisplayHeight(), displayAndroid.getDipScale(),
                 displayAndroid.getRotationDegrees(), displayAndroid.getBitsPerPixel(),
-                displayAndroid.getBitsPerComponent(), displayAndroid.getIsWideColorGamut());
+                displayAndroid.getBitsPerComponent(), displayAndroid.getIsWideColorGamut(),
+                displayAndroid.getHdrMaxLuminanceRatio());
     }
 
     @NativeMethods
     interface Natives {
         void updateDisplay(long nativeDisplayAndroidManager, DisplayAndroidManager caller,
                 int sdkDisplayId, int width, int height, float dipScale, int rotationDegrees,
-                int bitsPerPixel, int bitsPerComponent, boolean isWideColorGamut);
+                int bitsPerPixel, int bitsPerComponent, boolean isWideColorGamut,
+                float hdrMaxLuminanceRatio);
         void removeDisplay(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
         void setPrimaryDisplayId(

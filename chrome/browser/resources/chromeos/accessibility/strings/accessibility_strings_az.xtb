@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="100506692671054486">əvvəlki əmr yoxdur</translation>
 <translation id="1009046985747440431">Hərəkət etmək üçün yuxarı və aşağı oxlara basın; aktiv etmək üçün isə enter düyməsinə basın</translation>
 <translation id="1011903154582639569">Açar tapın, daha sonra yazmaq üçün qaldırın</translation>
 <translation id="1012173283529841972">Siyahı elementi</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Qırmızımtıl Lavanda</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3962990492275676168">Cari məkandan oxumağa başlayın</translation>
+<translation id="397094149579293440">seçilmiş mətn yoxdur</translation>
 <translation id="3970951409746498040">Qum Qəhvəyisi</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Açıq-qəhvəyi</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Öncəki 1-ci səviyyə başlığı yoxdur</translation>
 <translation id="4787577491510559358">Cari element üçün formatlamanı elan edin</translation>
 <translation id="479989351350248267">axtarın</translation>
+<translation id="4802034228771424756">fokuslanmış mətn sahəsi yoxdur</translation>
 <translation id="4804818685124855865">Ayırın</translation>
 <translation id="481165870889056555">Cari səhifənin başlığını elan edin</translation>
 <translation id="4815668758102003883">Solğun Firuzəyi</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Daxili link</translation>
 <translation id="4909019435900810068">Bir söz geri köçürün</translation>
 <translation id="4911349081560453449">Öncəki qeyd xanası yoxdur</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> icra olunmur, yenidən cəhd edin</translation>
 <translation id="492295894462528572">Ön söz</translation>
 <translation id="495046168593986294">Yuxarı sürüşdürün</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4953585991029886728">Mətni redaktə edin</translation>
+<translation id="4964701498510730546">mətn sahəsi boşdur</translation>
 <translation id="4973717656530883744">Min <ph name="X" /></translation>
 <translation id="4974612477719259470">Öncəki düymə yoxdur</translation>
 <translation id="4979404613699303341">Əvvəlki düymə</translation>
+<translation id="4981239367072766915">tanınmayan daxiletmə</translation>
 <translation id="4982917827052020884">Gəlin müntəzəm olaraq istifadə edəcəyiniz bir neçə düymə ilə başlayaq. Control düyməsi istənilən cari nitqi dayandırmaq üçün istifadə edilə bilər. Klaviaturanızın aşağıdan sol küncündə Control düyməsini tapın. Davam etmək üçün Control düyməsinə basın.</translation>
 <translation id="4983588134362688868">Səhifənin başlanğıcına keçin</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, pəncərə</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Cari batareya statusunu elan edin</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, radio düyməsi seçildi</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyu elementi dəyirmi düyməsi seçilib</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> icra olunmur, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Nitq girişini aktiv edin</translation>
 <translation id="5041394372352067729">Brayl ekranını səhifənin yuxarısına köçürün</translation>
 <translation id="5042770794184672516">Nitq dərəcəsini artırın</translation>

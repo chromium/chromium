@@ -22,7 +22,8 @@ class FileManagerUntrustedUIConfig : public content::WebUIConfig {
   ~FileManagerUntrustedUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // WebUI for chrome-untrusted://file-manager, intended to be used by the file

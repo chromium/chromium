@@ -5,9 +5,11 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -64,4 +66,17 @@ bool IsAddressType(const AutofillType& type) {
   }
   NOTREACHED_NORETURN();
 }
+
+size_t AddressLineIndex(ServerFieldType type) {
+  static constexpr auto kAddressLineIndex =
+      base::MakeFixedFlatMap<ServerFieldType, size_t>(
+          {{ADDRESS_HOME_LINE1, 0},
+           {ADDRESS_HOME_LINE2, 1},
+           {ADDRESS_HOME_LINE3, 2}});
+  if (kAddressLineIndex.contains(type)) {
+    return kAddressLineIndex.at(type);
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace autofill

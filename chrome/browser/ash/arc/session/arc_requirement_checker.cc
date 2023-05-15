@@ -158,7 +158,8 @@ void ArcRequirementChecker::StartRequirementChecks(
     VLOG(1) << "Use default negotiator.";
     terms_of_service_negotiator_ =
         std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
-            profile_->GetPrefs(), support_host_);
+            profile_->GetPrefs(), support_host_,
+            g_browser_process->metrics_service());
   } else {
     DCHECK(!g_ui_enabled) << "Negotiator is not created on production.";
     return;
@@ -185,7 +186,7 @@ void ArcRequirementChecker::StartBackgroundChecks(
     return;
 
   android_management_checker_ = android_management_checker_factory_.Run(
-      profile_, true /* retry_on_error */);
+      profile_.get(), true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
       &ArcRequirementChecker::OnBackgroundAndroidManagementChecked,
       weak_ptr_factory_.GetWeakPtr()));
@@ -244,7 +245,7 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
     return;
 
   android_management_checker_ = android_management_checker_factory_.Run(
-      profile_, false /* retry_on_error */);
+      profile_.get(), false /* retry_on_error */);
   android_management_checker_->StartCheck(
       base::BindOnce(&ArcRequirementChecker::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));

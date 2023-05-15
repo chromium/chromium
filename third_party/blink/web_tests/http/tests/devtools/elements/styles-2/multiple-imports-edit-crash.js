@@ -9,9 +9,9 @@
   await TestRunner.loadHTML(`
     <head>
       <style>
-        @import url(../../styles/resources/multiple-imports-edit-crash-1.css);
-        @import url(../../styles/resources/multiple-imports-edit-crash-2.css);
-        @import url(../../styles/resources/multiple-imports-edit-crash-1.css);
+        @import url(../styles/resources/multiple-imports-edit-crash-1.css);
+        @import url(../styles/resources/multiple-imports-edit-crash-2.css);
+        @import url(../styles/resources/multiple-imports-edit-crash-1.css);
         #inspected {
             color: green;
         }

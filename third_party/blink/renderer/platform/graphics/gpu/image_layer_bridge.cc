@@ -173,9 +173,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
-    uint32_t filter = filter_quality_ == cc::PaintFlags::FilterQuality::kNone
-                          ? GL_NEAREST
-                          : GL_LINEAR;
     auto mailbox_holder = image_for_compositor->GetMailboxHolder();
 
     if (mailbox_holder.mailbox.IsZero()) {
@@ -192,7 +189,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
     *out_resource = viz::TransferableResource::MakeGpu(
-        mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
+        mailbox_holder.mailbox, mailbox_holder.texture_target,
         mailbox_holder.sync_token, size,
         viz::SharedImageFormat::SinglePlane(
             viz::SkColorTypeToResourceFormat(color_type)),

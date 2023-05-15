@@ -15,7 +15,7 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace syncer {
+namespace trusted_vault {
 
 class TrustedVaultAccessTokenFetcherFrontend;
 
@@ -46,6 +46,6 @@ class TrustedVaultAccessTokenFetcherImpl
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_IMPL_H_

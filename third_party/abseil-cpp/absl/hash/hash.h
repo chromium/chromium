@@ -42,7 +42,7 @@
 //
 // `absl::Hash` may also produce different values from different dynamically
 // loaded libraries. For this reason, `absl::Hash` values must never cross
-// boundries in dynamically loaded libraries (including when used in types like
+// boundaries in dynamically loaded libraries (including when used in types like
 // hash containers.)
 //
 // `absl::Hash` is intended to strongly mix input bits with a target of passing

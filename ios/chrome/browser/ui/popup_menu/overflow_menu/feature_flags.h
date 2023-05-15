@@ -10,9 +10,6 @@
 // Feature to enable the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
-// Feature to enable smart sorting the new overflow menu.
-BASE_DECLARE_FEATURE(kSmartSortingNewOverflowMenu);
-
 // Feature to add the Price Tracking destination (with Smart Sorting) to the new
 // overflow menu.
 BASE_DECLARE_FEATURE(kSmartSortingPriceTrackingDestination);
@@ -20,17 +17,11 @@ BASE_DECLARE_FEATURE(kSmartSortingPriceTrackingDestination);
 // Feature to add a "Share Chrome App" action to the overflow menu
 BASE_DECLARE_FEATURE(kNewOverflowMenuShareChromeAction);
 
-// Feature to use the alternate overflow IPH flow.
-BASE_DECLARE_FEATURE(kNewOverflowMenuAlternateIPH);
-
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
-
-// Whether smart sorting the new overflow menu is enabled.
-bool IsSmartSortingNewOverflowMenuEnabled();
 
 // Whether the Price Tracking destination (with Smart Sorting) is added to the
 // new overflow menu.
@@ -38,8 +29,5 @@ bool IsSmartSortingPriceTrackingDestinationEnabled();
 
 // Whether or not the NewOverflowMenuShareChromeAction is enabled.
 bool IsNewOverflowMenuShareChromeActionEnabled();
-
-// Whether or not the alternate overflow menu IPH flow is enabled.
-bool IsNewOverflowMenuAlternateIPHEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_FEATURE_FLAGS_H_

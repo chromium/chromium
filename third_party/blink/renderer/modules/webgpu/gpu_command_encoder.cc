@@ -8,12 +8,16 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_encoder_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_timestamp_write.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_timestamp_writes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_color_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_write.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_writes.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucomputepasstimestampwritesequence_gpucomputepasstimestampwrites.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpurenderpasstimestampwritesequence_gpurenderpasstimestampwrites.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -49,6 +53,15 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
   return true;
 }
 
+namespace {
+
+// TODO(dawn:1800): Remove after a deprecation period;
+using ComputeTimestampWrites =
+    V8UnionGPUComputePassTimestampWriteSequenceOrGPUComputePassTimestampWrites;
+using RenderTimestampWrites =
+    V8UnionGPURenderPassTimestampWriteSequenceOrGPURenderPassTimestampWrites;
+
+// TODO(dawn:1800): Remove after a deprecation period;
 WGPUComputePassTimestampWrite AsDawnType(
     const GPUComputePassTimestampWrite* webgpu_desc) {
   DCHECK(webgpu_desc);
@@ -62,6 +75,7 @@ WGPUComputePassTimestampWrite AsDawnType(
   return dawn_desc;
 }
 
+// TODO(dawn:1800): Remove after a deprecation period;
 WGPURenderPassTimestampWrite AsDawnType(
     const GPURenderPassTimestampWrite* webgpu_desc) {
   DCHECK(webgpu_desc);
@@ -74,8 +88,6 @@ WGPURenderPassTimestampWrite AsDawnType(
 
   return dawn_desc;
 }
-
-namespace {
 
 WGPURenderPassDepthStencilAttachment AsDawnType(
     GPUDevice* device,
@@ -201,25 +213,78 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
   }
 
-  uint32_t timestamp_writes_count =
-      static_cast<uint32_t>(descriptor->timestampWrites().size());
-  dawn_desc.timestampWriteCount = timestamp_writes_count;
-  std::unique_ptr<WGPURenderPassTimestampWrite[]> timestamp_writes;
-  if (timestamp_writes_count > 0) {
+  std::vector<WGPURenderPassTimestampWrite> dawn_timestamp_writes;
+  if (descriptor->hasTimestampWrites()) {
     V8GPUFeatureName::Enum requiredFeatureEnum =
         V8GPUFeatureName::Enum::kTimestampQuery;
-    if (!device_->features()->has(requiredFeatureEnum)) {
-      exception_state.ThrowTypeError(
-          String::Format("Use of the timestampWrites member in render pass "
-                         "descriptor requires the '%s' "
-                         "feature to be enabled on %s.",
-                         V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-                         device_->formattedLabel().c_str()));
-      return nullptr;
+
+    if (descriptor->timestampWrites()->GetContentType() ==
+        RenderTimestampWrites::ContentType::
+            kGPURenderPassTimestampWriteSequence) {
+      // TODO(dawn:1800): Remove this branch after a deprecation period;
+      device_->AddSingletonWarning(GPUSingletonWarning::kTimestampArray);
+
+      auto timestamp_sequence =
+          descriptor->timestampWrites()
+              ->GetAsGPURenderPassTimestampWriteSequence();
+
+      uint32_t timestamp_writes_count = timestamp_sequence.size();
+      for (uint32_t i = 0; i < timestamp_writes_count; ++i) {
+        dawn_timestamp_writes.push_back(
+            AsDawnType(timestamp_sequence[i].Get()));
+      }
+
+      if (timestamp_writes_count > 0 &&
+          !device_->features()->has(requiredFeatureEnum)) {
+        exception_state.ThrowTypeError(
+            String::Format("Use of the timestampWrites member in compute pass "
+                           "descriptor requires the '%s' "
+                           "feature to be enabled on %s.",
+                           V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+                           device_->formattedLabel().c_str()));
+        return nullptr;
+      }
+    } else {
+      if (!device_->features()->has(requiredFeatureEnum)) {
+        exception_state.ThrowTypeError(
+            String::Format("Use of the timestampWrites member in compute pass "
+                           "descriptor requires the '%s' "
+                           "feature to be enabled on %s.",
+                           V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+                           device_->formattedLabel().c_str()));
+        return nullptr;
+      }
+
+      GPURenderPassTimestampWrites* timestamp_writes =
+          descriptor->timestampWrites()->GetAsGPURenderPassTimestampWrites();
+
+      if (timestamp_writes->hasBeginningOfPassWriteIndex()) {
+        WGPURenderPassTimestampWrite begin_write = {};
+        begin_write.querySet = timestamp_writes->querySet()->GetHandle();
+        begin_write.queryIndex = timestamp_writes->beginningOfPassWriteIndex();
+        begin_write.location = WGPURenderPassTimestampLocation_Beginning;
+        dawn_timestamp_writes.push_back(begin_write);
+      }
+
+      if (timestamp_writes->hasEndOfPassWriteIndex()) {
+        WGPURenderPassTimestampWrite end_write = {};
+        end_write.querySet = timestamp_writes->querySet()->GetHandle();
+        end_write.queryIndex = timestamp_writes->endOfPassWriteIndex();
+        end_write.location = WGPURenderPassTimestampLocation_End;
+        dawn_timestamp_writes.push_back(end_write);
+      }
+
+      if (dawn_timestamp_writes.size() == 0) {
+        GetProcs().commandEncoderInjectValidationError(
+            GetHandle(),
+            "If timestampWrites is specified at least one of "
+            "beginningOfPassWriteIndex or endOfPassWriteIndex must be given.");
+      }
     }
 
-    timestamp_writes = AsDawnType(descriptor->timestampWrites());
-    dawn_desc.timestampWrites = timestamp_writes.get();
+    dawn_desc.timestampWrites = dawn_timestamp_writes.data();
+    dawn_desc.timestampWriteCount =
+        static_cast<uint32_t>(dawn_timestamp_writes.size());
   }
 
   WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
@@ -248,27 +313,78 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     dawn_desc.label = label.c_str();
   }
 
-  uint32_t timestamp_writes_count =
-      static_cast<uint32_t>(descriptor->timestampWrites().size());
-  dawn_desc.timestampWriteCount = timestamp_writes_count;
-  std::unique_ptr<WGPUComputePassTimestampWrite[]> timestamp_writes;
-  if (timestamp_writes_count > 0) {
+  std::vector<WGPUComputePassTimestampWrite> dawn_timestamp_writes;
+  if (descriptor->hasTimestampWrites()) {
     V8GPUFeatureName::Enum requiredFeatureEnum =
         V8GPUFeatureName::Enum::kTimestampQuery;
-    if (!device_->features()->has(requiredFeatureEnum)) {
-      exception_state.ThrowTypeError(
-          String::Format("Use of the timestampWrites member in compute pass "
-                         "descriptor requires the '%s' "
-                         "feature to be enabled on %s.",
-                         V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-                         device_->formattedLabel().c_str()));
-      return nullptr;
+
+    if (descriptor->timestampWrites()->GetContentType() ==
+        ComputeTimestampWrites::ContentType::
+            kGPUComputePassTimestampWriteSequence) {
+      // TODO(dawn:1800): Remove this branch after a deprecation period;
+      device_->AddSingletonWarning(GPUSingletonWarning::kTimestampArray);
+
+      auto timestamp_sequence =
+          descriptor->timestampWrites()
+              ->GetAsGPUComputePassTimestampWriteSequence();
+
+      uint32_t timestamp_writes_count = timestamp_sequence.size();
+      for (uint32_t i = 0; i < timestamp_writes_count; ++i) {
+        dawn_timestamp_writes.push_back(
+            AsDawnType(timestamp_sequence[i].Get()));
+      }
+
+      if (timestamp_writes_count > 0 &&
+          !device_->features()->has(requiredFeatureEnum)) {
+        exception_state.ThrowTypeError(
+            String::Format("Use of the timestampWrites member in compute pass "
+                           "descriptor requires the '%s' "
+                           "feature to be enabled on %s.",
+                           V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+                           device_->formattedLabel().c_str()));
+        return nullptr;
+      }
+    } else {
+      if (!device_->features()->has(requiredFeatureEnum)) {
+        exception_state.ThrowTypeError(
+            String::Format("Use of the timestampWrites member in compute pass "
+                           "descriptor requires the '%s' "
+                           "feature to be enabled on %s.",
+                           V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+                           device_->formattedLabel().c_str()));
+        return nullptr;
+      }
+
+      GPUComputePassTimestampWrites* timestamp_writes =
+          descriptor->timestampWrites()->GetAsGPUComputePassTimestampWrites();
+
+      if (timestamp_writes->hasBeginningOfPassWriteIndex()) {
+        WGPUComputePassTimestampWrite begin_write = {};
+        begin_write.querySet = timestamp_writes->querySet()->GetHandle();
+        begin_write.queryIndex = timestamp_writes->beginningOfPassWriteIndex();
+        begin_write.location = WGPUComputePassTimestampLocation_Beginning;
+        dawn_timestamp_writes.push_back(begin_write);
+      }
+
+      if (timestamp_writes->hasEndOfPassWriteIndex()) {
+        WGPUComputePassTimestampWrite end_write = {};
+        end_write.querySet = timestamp_writes->querySet()->GetHandle();
+        end_write.queryIndex = timestamp_writes->endOfPassWriteIndex();
+        end_write.location = WGPUComputePassTimestampLocation_End;
+        dawn_timestamp_writes.push_back(end_write);
+      }
+
+      if (dawn_timestamp_writes.size() == 0) {
+        GetProcs().commandEncoderInjectValidationError(
+            GetHandle(),
+            "If timestampWrites is specified at least one of "
+            "beginningOfPassWriteIndex or endOfPassWriteIndex must be given.");
+      }
     }
 
-    timestamp_writes = AsDawnType(descriptor->timestampWrites());
-    dawn_desc.timestampWrites = timestamp_writes.get();
-  } else {
-    dawn_desc.timestampWrites = nullptr;
+    dawn_desc.timestampWrites = dawn_timestamp_writes.data();
+    dawn_desc.timestampWriteCount =
+        static_cast<uint32_t>(dawn_timestamp_writes.size());
   }
 
   GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(
@@ -285,7 +401,7 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             ExceptionState& exception_state) {
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
@@ -308,7 +424,7 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             ExceptionState& exception_state) {
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_source;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state)) {
     return;
   }
@@ -332,7 +448,7 @@ void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_source;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;

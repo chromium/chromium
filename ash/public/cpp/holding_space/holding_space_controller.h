@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
 
@@ -70,10 +71,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
   void SetModel(HoldingSpaceModel* model);
 
   // The currently active holding space client, set by `SetClient()`.
-  HoldingSpaceClient* client_ = nullptr;
+  raw_ptr<HoldingSpaceClient, ExperimentalAsh> client_ = nullptr;
 
   // The currently active holding space model, set by `SetModel()`.
-  HoldingSpaceModel* model_ = nullptr;
+  raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_ = nullptr;
 
   // The currently active user account id.
   AccountId active_user_account_id_;

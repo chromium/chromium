@@ -37,6 +37,9 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   // canceled if the sign-in is done in time (or fails).
   base::CancelableOnceClosure _signinTimeoutClosure;
   AuthenticationFlow* _authenticationFlow;
+  // True if the mediator was initialized with no existing account on device.
+  // Kept for metrics reasons.
+  BOOL _initializedWithDefaultAccount;
 }
 
 // List of gaia IDs added by the user with the consistency view.
@@ -74,18 +77,32 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     _addedGaiaIDs = [[NSMutableSet alloc] init];
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(self.identityManager, self));
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::SHOWN);
+
+    _initializedWithDefaultAccount =
+        self.accountManagerService->HasIdentities();
+    if (_initializedWithDefaultAccount) {
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::SHOWN, _accessPoint);
+    } else {
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SHOWN_WITH_NO_DEVICE_ACCOUNT,
+          _accessPoint);
+    }
   }
   return self;
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
-  DCHECK(!self.authenticationService);
-  DCHECK(!self.identityManager);
-  DCHECK(!self.userPrefService);
-  DCHECK(!_identityManagerObserverBridge.get());
+  DCHECK(!self.accountManagerService && !self.authenticationService &&
+         !self.identityManager && !self.userPrefService &&
+         !_identityManagerObserverBridge.get())
+      << "self.accountManagerService: " << self.accountManagerService
+      << ", self.authenticationService: " << self.authenticationService
+      << ", self.identityManager: " << self.identityManager
+      << ", self.userPrefService: " << self.userPrefService
+      << ", _identityManagerObserverBridge: "
+      << _identityManagerObserverBridge.get();
 }
 
 - (void)disconnectWithResult:(SigninCoordinatorResult)signinResult {
@@ -96,32 +113,43 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       id<SystemIdentity> defaultIdentity =
           self.accountManagerService->GetDefaultIdentity();
       DCHECK(defaultIdentity);
-      if ([self.addedGaiaIDs containsObject:signingIdentity.gaiaID]) {
+      if (!_initializedWithDefaultAccount) {
+        // Added identity, from having no existing account.
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::
+                SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
+            _accessPoint);
+      } else if ([self.addedGaiaIDs containsObject:signingIdentity.gaiaID]) {
         // Added identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_ADDED_ACCOUNT);
+                SIGNED_IN_WITH_ADDED_ACCOUNT,
+            _accessPoint);
       } else if ([defaultIdentity isEqual:signingIdentity]) {
         // Default identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+                SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+            _accessPoint);
       } else {
         // Other identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+                SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+            _accessPoint);
       }
       break;
     }
     case SigninCoordinatorResultCanceledByUser: {
       RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON);
+          signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON,
+          _accessPoint);
       break;
     }
     case SigninCoordinatorResultInterrupted: {
       RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER);
+          signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,
+          _accessPoint);
       break;
     }
   }
@@ -189,15 +217,18 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorTimeout:
       RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN);
+          signin_metrics::AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN,
+          _accessPoint);
       break;
     case ConsistencyPromoSigninMediatorErrorGeneric:
       RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN);
+          signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN,
+          _accessPoint);
       break;
     case ConsistencyPromoSigninMediatorErrorFailedToSignin:
       RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED);
+          signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED,
+          _accessPoint);
       break;
   }
   __weak __typeof(self) weakSelf = self;

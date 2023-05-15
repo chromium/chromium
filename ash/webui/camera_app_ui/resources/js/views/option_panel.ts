@@ -40,8 +40,12 @@ export class OptionPanel extends View {
     this.title.setAttribute('i18n-text', titleLabel);
 
     this.container.replaceChildren();
-    for (const {label, ariaLabel, state: targetState, isDisableOption} of
-             stateOptions) {
+    for (const {
+           label,
+           ariaLabel,
+           state: targetState,
+           isDisableOption = false,
+         } of stateOptions) {
       const item = util.instantiateTemplate('#state-option-template');
       const span = dom.getFrom(item, 'span', HTMLSpanElement);
 

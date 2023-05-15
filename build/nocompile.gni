@@ -68,7 +68,7 @@ if (is_mac) {
 }
 
 declare_args() {
-  # TODO(crbug.com/105388): make sure no-compile test is not flaky.
+  # TODO(crbug.com/1442625): Enable for Windows.
   enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
                            host_cpu == target_cpu
 }
@@ -81,7 +81,7 @@ if (enable_nocompile_tests) {
 
     action_foreach(nocompile_target) {
       testonly = true
-      script = "//tools/nocompile_driver.py"
+      script = "//tools/nocompile/driver.py"
       sources = invoker.sources
       deps = invoker.deps
       if (defined(invoker.public_deps)) {
@@ -89,19 +89,25 @@ if (enable_nocompile_tests) {
       }
 
       result_path = "$target_gen_dir/{{source_name_part}}_nc.cc"
-      depfile = "${result_path}.d"
       outputs = [ result_path ]
+      rebased_result_path = rebase_path(result_path, root_build_dir)
+      if (is_win) {
+        if (host_os == "win") {
+          cxx = "clang-cl.exe"
+          nulldevice = "nul"
+        } else {
+          cxx = "clang-cl"
+          nulldevice = "/dev/null"
+        }
+      } else {
+        cxx = "clang++"
+      }
       args = [
-        rebase_path("$clang_base_path/bin/clang++", root_build_dir),
+        rebase_path("$clang_base_path/bin/$cxx", root_build_dir),
         "4",  # number of compilers to invoke in parallel.
         "{{source}}",
-        rebase_path(result_path, root_build_dir),
+        rebased_result_path,
         "--",
-        "-nostdinc++",
-        "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
-        "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-        "-std=c++17",
-        "-Wall",
         "-Werror",
         "-Wfatal-errors",
         "-Wthread-safety",
@@ -113,6 +119,42 @@ if (enable_nocompile_tests) {
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
         "-Wno-implicit-int-float-conversion",
       ]
+      if (is_win) {
+        args += [
+          "/W4",
+          "-Wno-unused-parameter",
+          "-I" + rebase_path("$libcxx_prefix/include", root_build_dir),
+          "/std:c++20",
+
+          # TODO(crbug.com/1442625): Uncomment this, then filter and process the
+          # output appropriately to track dependencies.
+          # "/showIncludes:user"
+
+          "/Fo" + nulldevice,
+          "/c",
+          "/Tp",
+        ]
+      } else {
+        depfile = "${result_path}.d"
+        args += [
+          "-Wall",
+          "-nostdinc++",
+          "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
+          "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
+          "-std=c++20",
+          "-MMD",
+          "-MF",
+          rebased_result_path + ".d",
+          "-MT",
+          rebased_result_path,
+          "-o",
+          "/dev/null",
+          "-c",
+          "-x",
+          "c++",
+        ]
+      }
+      args += [ "{{source}}" ]
 
       if (is_mac && host_os != "mac") {
         args += [
@@ -129,10 +171,15 @@ if (enable_nocompile_tests) {
       }
 
       if (sysroot != "") {
-        args += [
-          "--sysroot",
-          rebase_path(sysroot, root_build_dir),
-        ]
+        sysroot_path = rebase_path(sysroot, root_build_dir)
+        if (is_win) {
+          args += [ "/winsysroot" + sysroot_path ]
+        } else {
+          args += [
+            "--sysroot",
+            sysroot_path,
+          ]
+        }
       }
 
       if (!is_nacl) {

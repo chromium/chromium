@@ -19,7 +19,7 @@ import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
 // Audio jack event info. This is emitted when the
 // audio jack is plugged in or out.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 2, NextIndex: 2
 [Stable]
 struct TelemetryAudioJackEventInfo {
   [Stable, Extensible]
@@ -33,11 +33,91 @@ struct TelemetryAudioJackEventInfo {
   };
 
   State state@0;
+
+  [Stable, Extensible]
+  enum DeviceType {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // The device is a headphone.
+    kHeadphone,
+    // The device is a microphone.
+    kMicrophone,
+  };
+
+  [MinVersion=1] DeviceType device_type@1;
+};
+
+// Lid event info. This is emitted when the lid is closed or opened.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryLidEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Lid closed.
+    kClosed = 1,
+    // Lid opened.
+    kOpened = 2,
+  };
+
+  State state@0;
+};
+
+// USB event info. This is emitted when a USB device is connected or
+// disconnected.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct TelemetryUsbEventInfo {
+  // Vendor name.
+  string vendor@0;
+  // Name, model name or product name.
+  string name@1;
+  // Vendor ID.
+  uint16 vid@2;
+  // Product ID.
+  uint16 pid@3;
+  // USB device categories.
+  // https://www.usb.org/defined-class-codes
+  array<string> categories@4;
+
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // USB plugs in.
+    kAdd = 1,
+    // USB plugs out.
+    kRemove = 2,
+  };
+
+  State state@5;
+};
+
+// SD card event info. This is emitted when a SD card is plugged in or plugged
+// out.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct TelemetrySdCardEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // SD card plugged in.
+    kAdd = 1,
+    // SD card plugged out.
+    kRemove = 2,
+  };
+
+  State state@0;
 };
 
 // Union of event info.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 4, NextIndex: 5
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -45,16 +125,25 @@ union TelemetryEventInfo {
   [Default] uint8 default_type@0;
   // Audio jack event info.
   TelemetryAudioJackEventInfo audio_jack_event_info@1;
+  // Lid event info.
+  [MinVersion=1] TelemetryLidEventInfo lid_event_info@2;
+  // Usb event info.
+  [MinVersion=2] TelemetryUsbEventInfo usb_event_info@3;
+  // SD card event info.
+  [MinVersion=3] TelemetrySdCardEventInfo sd_card_event_info@4;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 4, NextIndex: 5
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
   kAudioJack = 1,
+  [MinVersion=1] kLid = 2,
+  [MinVersion=2] kUsb = 3,
+  [MinVersion=3] kSdCard = 4,
 };
 
 // Implemented by clients who desire events.

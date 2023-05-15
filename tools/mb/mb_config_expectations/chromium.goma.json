@@ -13,43 +13,7 @@
       "use_goma": true
     }
   },
-  "Chromium Android ARM 32-bit Goma RBE ToT": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
-  "Chromium Android ARM 32-bit Goma RBE ToT (ATS)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
   "Chromium Linux Goma RBE Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Chromium Linux Goma RBE Staging (clobber)": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
@@ -65,39 +29,7 @@
       "use_goma": true
     }
   },
-  "Chromium Linux Goma RBE Staging (dbg) (clobber)": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Chromium Linux Goma RBE ToT": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Chromium Linux Goma RBE ToT (ATS)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "Chromium Mac Goma RBE Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Chromium Mac Goma RBE Staging (clobber)": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
@@ -113,35 +45,7 @@
       "use_goma": true
     }
   },
-  "Chromium Mac Goma RBE ToT": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "Chromium Win Goma RBE ATS Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Chromium Win Goma RBE ATS Staging (clobber)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Chromium Win Goma RBE ATS ToT": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
@@ -161,53 +65,7 @@
       "use_goma": true
     }
   },
-  "Chromium Win Goma RBE Staging (clobber)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Chromium Win Goma RBE ToT": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Chromium iOS Goma RBE ToT": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ios_code_signing_identity_description": "Apple Development",
-      "ios_enable_code_signing": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
   "chromeos-amd64-generic-rel-goma-rbe-staging": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
-    "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
-      "dcheck_always_on": false,
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false,
-      "use_remoteexec": false
-    }
-  },
-  "chromeos-amd64-generic-rel-goma-rbe-tot": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",

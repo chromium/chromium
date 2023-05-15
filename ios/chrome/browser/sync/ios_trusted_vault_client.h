@@ -70,9 +70,9 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key);
 
-  const base::raw_ptr<ChromeAccountManagerService> account_manager_service_;
-  const base::raw_ptr<TrustedVaultClientBackend> backend_;
-  syncer::TrustedVaultRegistrationVerifier registration_verifier_;
+  const raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  const raw_ptr<TrustedVaultClientBackend> backend_;
+  trusted_vault::TrustedVaultRegistrationVerifier registration_verifier_;
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 

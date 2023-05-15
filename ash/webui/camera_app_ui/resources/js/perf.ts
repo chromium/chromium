@@ -89,7 +89,7 @@ export class PerfLogger {
 
     // If there is error during performance measurement, drop it since it might
     // be inaccurate.
-    if (perfInfo.hasError) {
+    if (perfInfo.hasError ?? false) {
       return;
     }
 

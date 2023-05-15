@@ -11,9 +11,9 @@
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -24,7 +24,7 @@ namespace ash {
 
 namespace {
 
-const DesksBarView* GetDesksBarView() {
+const LegacyDeskBarView* GetDesksBarView() {
   auto* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());

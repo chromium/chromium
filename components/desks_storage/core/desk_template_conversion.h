@@ -21,13 +21,7 @@ namespace apps {
 class AppRegistryCache;
 }
 
-namespace desks_storage {
-
-// DeskTemplateConversion contains helper functions for converting between
-// the various representations of desk template storage. These include
-// ChromeSync format, DeskTemplate objects, and JSON representation.
-
-namespace desk_template_conversion {
+namespace desks_storage::desk_template_conversion {
 
 using SyncWindowOpenDisposition =
     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition;
@@ -63,9 +57,6 @@ std::unique_ptr<ash::DeskTemplate> FromSyncProto(
 sync_pb::WorkspaceDeskSpecifics ToSyncProto(
     const ash::DeskTemplate* desk_template,
     apps::AppRegistryCache* app_cache);
-
-}  // namespace desk_template_conversion
-
-}  // namespace desks_storage
+}  // namespace desks_storage::desk_template_conversion
 
 #endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_TEMPLATE_CONVERSION_H_

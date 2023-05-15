@@ -33,6 +33,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -99,7 +100,8 @@ class ASH_EXPORT AppListControllerImpl
   void RemoveObserver(AppListControllerObserver* obsever) override;
   void SetActiveModel(int profile_id,
                       AppListModel* model,
-                      SearchModel* search_model) override;
+                      SearchModel* search_model,
+                      QuickAppAccessModel* quick_app_access_model) override;
   void ClearActiveModel() override;
   void DismissAppList() override;
   void ShowAppList(AppListShowSource source) override;
@@ -416,7 +418,7 @@ class ASH_EXPORT AppListControllerImpl
   // gesture is reversed).
   HomeLauncherTransitionState home_launcher_transition_state_ = kFinished;
 
-  AppListClient* client_ = nullptr;
+  raw_ptr<AppListClient, ExperimentalAsh> client_ = nullptr;
 
   // Tracks the most recent show source for the app list.
   absl::optional<AppListShowSource> last_open_source_;
@@ -472,7 +474,7 @@ class ASH_EXPORT AppListControllerImpl
   // last calculated.
   // This window changing it's visibility to false is used as a signal that the
   // home launcher visibility should be recalculated.
-  aura::Window* tracked_app_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> tracked_app_window_ = nullptr;
 
   // A callback that can be registered by a test to wait for the app list state
   // transition animation to finish.

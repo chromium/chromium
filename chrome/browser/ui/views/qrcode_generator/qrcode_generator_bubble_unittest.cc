@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -70,13 +69,16 @@ TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
             image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip));
 }
 
-// Test-fake implementation of QRCodeGeneratorService; the real implementation
+// Test-fake implementation of QRImageGenerator; the real implementation
 // can't be used in these tests because it requires spawning a service process.
-class FakeQRCodeGeneratorService : public mojom::QRCodeGeneratorService {
+class FakeQRCodeGeneratorService {
  public:
   FakeQRCodeGeneratorService() = default;
+
+  using GenerateQRCodeCallback =
+      base::OnceCallback<void(mojom::GenerateQRCodeResponsePtr)>;
   void GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
-                      GenerateQRCodeCallback callback) override {
+                      GenerateQRCodeCallback callback) {
     pending_callback_ = std::move(callback);
     if (run_loop_)
       run_loop_->Quit();
@@ -131,9 +133,15 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
     auto bubble = std::make_unique<QRCodeGeneratorBubble>(
         anchor_view_, nullptr, base::DoNothing(), base::DoNothing(),
         GURL("https://www.chromium.org/a"));
+
+    // `base::Unretained` is okay, because `TearDown` will run before
+    // destruction of `fake_service_` and will `reset` the `bubble_widget_`
+    // which will destroy the `bubble` which will destroy/drop the callback we
+    // are setting for testing below.
     bubble->SetQRCodeServiceForTesting(
-        mojo::Remote<mojom::QRCodeGeneratorService>(
-            receiver_.BindNewPipeAndPassRemote()));
+        base::BindRepeating(&FakeQRCodeGeneratorService::GenerateQRCode,
+                            base::Unretained(&fake_service_)));
+
     bubble_ = bubble.get();
     bubble_widget_.reset(
         views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)));
@@ -189,7 +197,6 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   WidgetAutoclosePtr bubble_widget_;
 
   FakeQRCodeGeneratorService fake_service_;
-  mojo::Receiver<mojom::QRCodeGeneratorService> receiver_{&fake_service_};
 };
 
 // This test is a bit fiddly because mojo imposes asynchronicity on both sender
@@ -225,7 +232,6 @@ TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
   auto ok_response = mojom::GenerateQRCodeResponse::New();
   ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
   ok_response->bitmap.allocN32Pixels(16, 16);
-  ok_response->data.resize(16 * 16);
   ok_response->data_size = gfx::Size(16, 16);
 
   {
@@ -262,7 +268,6 @@ TEST_F(QRCodeGeneratorBubbleUITest,
   ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
   ok_response->bitmap.allocN32Pixels(16, 16);
   ok_response->bitmap.eraseColor(SK_ColorRED);
-  ok_response->data.resize(16 * 16);
   ok_response->data_size = gfx::Size(16, 16);
 
   // The UI regenerates the QR code when the user types new text, so synthesize

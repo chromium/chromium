@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_SERVICE_H_
 #define CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_SERVICE_H_
 
+#include <memory>
 #include "ash/public/cpp/desk_template.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
@@ -68,12 +71,18 @@ class FloatingWorkspaceService : public KeyedService,
 
   void TryRestoreMostRecentlyUsedSession();
 
+  void CaptureAndUploadActiveDeskForTest(
+      std::unique_ptr<DeskTemplate> desk_template);
+
   // desks_storage::DeskModelObserver overrides:
   void DeskModelLoaded() override {}
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override {}
+  void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override {}
+
+ protected:
+  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
  private:
   void InitForV1();
@@ -111,6 +120,9 @@ class FloatingWorkspaceService : public KeyedService,
   virtual void LaunchFloatingWorkspaceTemplate(
       const DeskTemplate* desk_template);
 
+  // Return the desk client to be used, in test it will return a mocked one.
+  virtual DesksClient* GetDesksClient();
+
   // Compare currently captured and previous floating workspace desk.
   // Called by CaptureAndUploadActiveDesk before upload.
   // If no difference is recorded no upload job will be triggered.
@@ -122,20 +134,26 @@ class FloatingWorkspaceService : public KeyedService,
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
   void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
-                          const base::GUID& desk_uuid);
+                          const base::Uuid& desk_uuid);
 
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
   void OnTemplateCaptured(absl::optional<DesksClient::DeskActionError> error,
-                          std::unique_ptr<DeskTemplate>);
+                          std::unique_ptr<DeskTemplate> desk_template);
+
+  // Upload floating workspace desk template after detecting that it's a
+  // different template. Virtual for testing.
+  virtual void UploadFloatingWorkspaceTemplateToDeskModel(
+      std::unique_ptr<DeskTemplate> desk_template);
 
   void OnTemplateUploaded(
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
       std::unique_ptr<DeskTemplate> new_entry);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  sync_sessions::SessionSyncService* session_sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService, ExperimentalAsh>
+      session_sync_service_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 
@@ -152,10 +170,12 @@ class FloatingWorkspaceService : public KeyedService,
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
-  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
-
   // Indicate if it is a testing class.
   bool is_testing_ = false;
+
+  // The uuid associated with this device's floating workspace template. This is
+  // populated when we first capture a floating workspace template.
+  absl::optional<base::Uuid> floating_workspace_uuid_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};

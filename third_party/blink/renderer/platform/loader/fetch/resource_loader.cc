@@ -462,6 +462,7 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
 ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
                                ResourceLoadScheduler* scheduler,
                                Resource* resource,
+                               ContextLifecycleNotifier* context,
                                ResourceRequestBody request_body,
                                uint32_t inflight_keepalive_bytes)
     : scheduler_client_id_(ResourceLoadScheduler::kInvalidClientId),
@@ -471,6 +472,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       request_body_(std::move(request_body)),
       inflight_keepalive_bytes_(inflight_keepalive_bytes),
       is_cache_aware_loading_activated_(false),
+      progress_receiver_(this, context),
       cancel_timer_(fetcher_->GetTaskRunner(),
                     this,
                     &ResourceLoader::CancelTimerFired) {
@@ -515,6 +517,7 @@ void ResourceLoader::Trace(Visitor* visitor) const {
   visitor->Trace(response_body_loader_);
   visitor->Trace(data_pipe_completion_notifier_);
   visitor->Trace(cancel_timer_);
+  visitor->Trace(progress_receiver_);
   ResourceLoadSchedulerClient::Trace(visitor);
 }
 
@@ -827,7 +830,7 @@ bool ResourceLoader::WillFollowRedirect(
       passed_redirect_response.PrivateNetworkAccessPreflightResult());
 
   if (resource_->GetResourceRequest().HttpHeaderFields().Contains(
-          net::HttpRequestHeaders::kAuthorization) &&
+          http_names::kAuthorization) &&
       !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
                                      new_url)) {
     fetcher_->GetUseCounter().CountUse(
@@ -1150,8 +1153,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
   if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
       response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
-      !initial_request.HttpHeaderFields().Contains(
-          net::HttpRequestHeaders::kRange)) {
+      !initial_request.HttpHeaderFields().Contains(http_names::kRange)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));
     return;

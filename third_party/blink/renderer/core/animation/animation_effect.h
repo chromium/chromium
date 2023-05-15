@@ -168,9 +168,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   // In web-animations-1, auto is treated as "the value zero for the purpose of
   // timing model calculations and for the result of the duration member
   // returned from getComputedTiming()".
-  virtual AnimationTimeDelta IntrinsicIterationDuration() const {
-    return AnimationTimeDelta();
-  }
+  virtual AnimationTimeDelta IntrinsicIterationDuration() const;
 
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,

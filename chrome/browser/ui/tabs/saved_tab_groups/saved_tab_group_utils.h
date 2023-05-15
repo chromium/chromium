@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -27,13 +27,15 @@ class SavedTabGroupUtils {
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(
       content::WebContents* contents,
-      base::GUID saved_tab_group_id);
+      base::Uuid saved_tab_group_id);
 
   static content::WebContents* OpenTabInBrowser(
       const GURL& url,
       Browser* browser,
       Profile* profile,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      absl::optional<int> tabstrip_index = absl::nullopt,
+      absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt);
 
   // Returns the Browser that contains a local group with id `group_id`.
   static Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);

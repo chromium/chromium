@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
-import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -41,7 +40,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -327,6 +325,7 @@ class TabListMediator {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final PriceWelcomeMessageController mPriceWelcomeMessageController;
 
+    private Size mDefaultGridCardSize;
     private String mComponentName;
     private ThumbnailProvider mThumbnailProvider;
     private boolean mActionsOnAllRelatedTabs;
@@ -773,6 +772,20 @@ class TabListMediator {
                     .OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
         mTabGridItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 onLongPressTabItemEventListener);
+    }
+
+    /**
+     * @param size The default size to use for any new Tab cards.
+     */
+    void setDefaultGridCardSize(Size size) {
+        mDefaultGridCardSize = size;
+    }
+
+    /**
+     * @return The default size to use for any tab cards.
+     */
+    Size getDefaultGridCardSize() {
+        return mDefaultGridCardSize;
     }
 
     private void selectTab(int oldIndex, int newIndex) {
@@ -1403,8 +1416,7 @@ class TabListMediator {
         mComponentCallbacks = new ComponentCallbacks() {
             @Override
             public void onConfigurationChanged(Configuration newConfig) {
-                updateSpanCount(
-                        manager, newConfig.orientation, newConfig.screenWidthDp);
+                updateSpanCount(manager, newConfig.screenWidthDp);
                 if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE) updateLayout();
             }
 
@@ -1418,13 +1430,13 @@ class TabListMediator {
     /**
      * Update the grid layout span count and span size lookup base on orientation.
      * @param manager     The {@link GridLayoutManager} used to update the span count.
-     * @param orientation The orientation based on which we update the span count.
      * @param screenWidthDp The screnWidth based on which we update the span count.
+     * @return whether the span count changed.
      */
-    void updateSpanCount(
-            GridLayoutManager manager, int orientation, int screenWidthDp) {
-        int spanCount = getSpanCount(orientation, screenWidthDp);
-        manager.setSpanCount(spanCount);
+    boolean updateSpanCount(GridLayoutManager manager, int screenWidthDp) {
+        final int oldSpanCount = manager.getSpanCount();
+        final int newSpanCount = getSpanCount(screenWidthDp);
+        manager.setSpanCount(newSpanCount);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -1438,6 +1450,7 @@ class TabListMediator {
                 return 1;
             }
         });
+        return oldSpanCount != newSpanCount;
     }
 
     /**
@@ -1479,7 +1492,7 @@ class TabListMediator {
      * When in multi-window mode on phone, the span count is fixed to 2 to keep tab card size
      * reasonable.
      */
-    private int getSpanCount(int orientation, int screenWidthDp) {
+    private int getSpanCount(int screenWidthDp) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
             return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
@@ -1488,8 +1501,7 @@ class TabListMediator {
                             ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM
                             : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE;
         }
-        return orientation == Configuration.ORIENTATION_PORTRAIT
-                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
+        return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
                 ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
                 : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM;
     }
@@ -1693,6 +1705,10 @@ class TabListMediator {
 
         updateFaviconForTab(pseudoTab, null, null);
 
+        if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
+            tabInfo.set(TabProperties.GRID_CARD_SIZE,
+                    new Size(mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+        }
         if (mThumbnailProvider != null && mVisible) {
             boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),

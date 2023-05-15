@@ -21,13 +21,14 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safety_check/safety_check.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/password_store_observer_bridge.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -36,7 +37,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+private.h"
@@ -403,12 +403,12 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
           base::UmaHistogramEnumeration(
               kSafetyCheckInteractions,
               SafetyCheckInteractions::kPasswordsManage);
-          password_manager::LogPasswordCheckReferrer(
-              password_manager::PasswordCheckReferrer::kSafetyCheck);
 
           if (IsPasswordCheckupEnabled()) {
             [self.handler showPasswordCheckupPage];
           } else {
+            password_manager::LogPasswordCheckReferrer(
+                password_manager::PasswordCheckReferrer::kSafetyCheck);
             [self.handler showPasswordIssuesPage];
           }
           break;
@@ -1175,7 +1175,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
                                   base::NumberToString16(reusedPasswordCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateWeakPasswords: {
@@ -1185,7 +1185,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT, weakPasswordCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateDismissedWarnings: {
@@ -1195,7 +1195,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, dismissedWarningCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateDisabled:

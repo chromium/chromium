@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -34,18 +35,21 @@
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
 
 namespace {
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 const size_t kMaxClipboardSuggestionShownNumTimesSimpleSize = 20;
 
-// Clipboard suggestion is placed in a dedicated SECTION_MOBILE_CLIPBOARD.
-// It is the only occupant of this section, making its relevance score not
-// important.
-const int kClipboardMatchRelevanceScore = 1;
+// Clipboard suggestion is placed either in a dedicated
+// SECTION_MOBILE_CLIPBOARD, or SECTION_PERSONALIZED_ZERO_SUGGEST.
+// The score for the former is irrelevant, but for the latter we need to be
+// confident the suggestion shows up on top.
+const int kClipboardMatchRelevanceScore = 1600;
 
 bool IsMatchDeletionEnabled() {
   return base::FeatureList::IsEnabled(
@@ -217,7 +221,7 @@ void ClipboardProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 
 void ClipboardProvider::AddCreatedMatchWithTracking(
     const AutocompleteInput& input,
-    const AutocompleteMatch& match,
+    AutocompleteMatch match,
     const base::TimeDelta clipboard_contents_age) {
   // Record the number of times the currently-offered URL has been suggested.
   // This only works over this run of Chrome; if the URL was in the clipboard
@@ -232,6 +236,18 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
   RecordCreatingClipboardSuggestionMetrics(current_url_suggested_times_,
                                            matches_.empty(), match.type,
                                            clipboard_contents_age);
+
+  if (is_android &&
+      OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
+          .Get() &&
+      omnibox::IsNTPPage(input.current_page_classification())) {
+    // Assign the Clipboard to the PZPS group on NTP pages to improve the use
+    // of the suggest space.
+    match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  } else {
+    // Leave the clipboard in its dedicated section otherwise.
+    match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
+  }
 
   matches_.push_back(match);
 }
@@ -291,17 +307,20 @@ void ClipboardProvider::OnReceiveClipboardContent(
     // the image may take some time, so just be wary whenever that step happens
     // (e.g OmniboxView::OpenMatch).
     AutocompleteMatch match = NewBlankImageMatch();
-    AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
+    AddCreatedMatchWithTracking(input, std::move(match),
+                                clipboard_contents_age);
     NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::URL) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankURLMatch();
-    AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
+    AddCreatedMatchWithTracking(input, std::move(match),
+                                clipboard_contents_age);
     NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::Text) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankTextMatch();
-    AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
+    AddCreatedMatchWithTracking(input, std::move(match),
+                                clipboard_contents_age);
     NotifyListeners(true);
   }
   done_ = true;
@@ -406,7 +425,8 @@ void ClipboardProvider::AddImageMatchCallback(
   if (!match) {
     return;
   }
-  AddCreatedMatchWithTracking(input, match.value(), clipboard_contents_age);
+  AddCreatedMatchWithTracking(input, std::move(match).value(),
+                              clipboard_contents_age);
   NotifyListeners(true);
   done_ = true;
 }
@@ -416,7 +436,6 @@ AutocompleteMatch ClipboardProvider::NewBlankURLMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_URL);
 
-  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_LINK_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});
@@ -438,7 +457,6 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_TEXT);
 
-  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_TEXT_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});
@@ -462,7 +480,6 @@ AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_IMAGE);
 
-  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_IMAGE_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});

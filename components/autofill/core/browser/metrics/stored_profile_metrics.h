@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
@@ -41,6 +42,14 @@ void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
 // `LogStoredProfileDaysSinceLastUse()` metrics for every
 // AutofillProfileSourceCategory and the corresponding subset of `profiles`.
 void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles);
+
+// Logs the number of `kLocalOrSynable` profiles that are a strict superset of
+// some `kAccount` profile. This corresponds to the number of profiles that
+// cannot be automatically deduplicated, since no profiles should be silently
+// deleted from the account storage.
+// Comparisons are done by the `app_locale`-based `AutofillProfileComparator`.
+void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
+                                    base::StringPiece app_locale);
 
 }  // namespace autofill::autofill_metrics
 

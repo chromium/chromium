@@ -17,10 +17,10 @@
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -217,7 +217,7 @@ void OfflinePageTabHelper::DidFinishNavigation(
   if (reading_list::IsOfflineReloadURL(navigation_context->GetUrl())) {
     if (dont_reload_online_on_next_navigation_) {
       dont_reload_online_on_next_navigation_ = false;
-    } else {
+    } else if (reloading_from_offline_) {
       ReplaceLocationUrlAndReload(
           reading_list::ReloadURLForOfflineURL(navigation_context->GetUrl()));
       return;

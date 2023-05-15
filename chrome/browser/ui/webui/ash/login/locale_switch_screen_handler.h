@@ -42,7 +42,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
  private:
-  base::raw_ptr<CoreOobeView> core_oobe_view_;
+  raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
 }  // namespace ash

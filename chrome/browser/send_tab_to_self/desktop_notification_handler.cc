@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -130,7 +130,8 @@ void DesktopNotificationHandler::DisplaySendingConfirmation(
 void DesktopNotificationHandler::DisplayFailureMessage(const GURL& url) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      kDesktopNotificationSharedPrefix + base::GenerateGUID(),
+      kDesktopNotificationSharedPrefix +
+          base::Uuid::GenerateRandomV4().AsLowercaseString(),
       l10n_util::GetStringUTF16(
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE),
       l10n_util::GetStringUTF16(

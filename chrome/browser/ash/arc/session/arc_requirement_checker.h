@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -116,8 +117,8 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   // expires.
   void OnFirstPoliciesLoadedOrTimeout();
 
-  Profile* const profile_;
-  ArcSupportHost* const support_host_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<ArcSupportHost, ExperimentalAsh> support_host_;
   const AndroidManagementCheckerFactory android_management_checker_factory_;
 
   State state_ = State::kStopped;

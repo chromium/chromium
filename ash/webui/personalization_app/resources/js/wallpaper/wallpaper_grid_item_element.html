@@ -204,7 +204,7 @@
         on-load="onImgLoad_"
         part="image">
   </template>
-  <div class="wallpaper-grid-item-border"></div>
+  <div part="border" class="wallpaper-grid-item-border"></div>
   <template is="dom-if"
       if="[[isTextVisible_(imageStatus_, primaryText, secondaryText)]]"
       restamp>
@@ -229,5 +229,5 @@
     <!-- TODO(b/268400442) better contrast required -->
     <info-svg id="infoIcon" title$="[[infoText]]"></info-svg>
   </template>
-  <iron-icon icon="[[checkmarkIcon_]]"></iron-icon>
+  <iron-icon part="icon" icon="[[checkmarkIcon_]]"></iron-icon>
 </div>

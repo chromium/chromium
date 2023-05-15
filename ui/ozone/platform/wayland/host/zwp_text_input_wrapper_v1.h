@@ -49,6 +49,8 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
   void SetCursorRect(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::string& text,
                           const gfx::Range& selection_range) override;
+  bool HasOffsetSupport() const override;
+  void SetSurroundingTextOffsetUtf16(uint32_t offset_utf16) override;
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,

@@ -125,7 +125,8 @@ class StubCellularNetworksProviderTest : public testing::Test {
     }
 
     EXPECT_TRUE(exists);
-    EXPECT_EQ(GenerateStubCellularServicePath(iccid), service_path);
+    EXPECT_EQ(cellular_utils::GenerateStubCellularServicePath(iccid),
+              service_path);
   }
 
   void DisableCellularTechnology() {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -56,8 +57,9 @@ class SearchAndAssistantEnabledChecker {
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError response);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
-  Delegate* const delegate_;
+  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
+      url_loader_factory_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   base::WeakPtrFactory<SearchAndAssistantEnabledChecker> weak_factory_{this};
 };

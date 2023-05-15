@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/unguessable_token.h"
@@ -72,7 +73,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   void OnClipboardHistoryCleared() override;
 
   // Owned by `ClipboardHistoryController`.
-  ClipboardHistory* const clipboard_history_;
+  const raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_;
 
   // Pending requests for image models to be rendered. Once a request finishes,
   // all of the clipboard history items waiting on that image model will be

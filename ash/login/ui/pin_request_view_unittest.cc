@@ -24,6 +24,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -177,7 +178,8 @@ class PinRequestViewTest : public LoginTestBase,
   // Whether the next pin submission will trigger setting an error state.
   bool will_authenticate_ = true;
 
-  PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
+  raw_ptr<PinRequestView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by test widget view hierarchy.
 };
 
 // Tests that back button works.

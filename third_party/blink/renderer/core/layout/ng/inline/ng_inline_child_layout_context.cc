@@ -18,7 +18,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
   NGFragmentItemsBuilder items_builder_;
   absl::optional<NGInlineLayoutStateStack> box_states_;
   absl::optional<LayoutUnit> optional_layout_unit;
-  void* pointers[3];
+  void* pointers[5];
   unsigned number;
   HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
@@ -33,9 +33,21 @@ static_assert(
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
     const NGInlineNode& node,
-    NGBoxFragmentBuilder* container_builder)
+    NGBoxFragmentBuilder* container_builder,
+    NGLineInfo* line_info)
     : container_builder_(container_builder),
-      items_builder_(node, container_builder->GetWritingDirection()) {
+      items_builder_(node, container_builder->GetWritingDirection()),
+      line_info_(line_info) {
+  container_builder->SetItemsBuilder(ItemsBuilder());
+}
+
+NGInlineChildLayoutContext::NGInlineChildLayoutContext(
+    const NGInlineNode& node,
+    NGBoxFragmentBuilder* container_builder,
+    NGLineInfoList* line_info_list)
+    : container_builder_(container_builder),
+      items_builder_(node, container_builder->GetWritingDirection()),
+      line_info_list_(line_info_list) {
   container_builder->SetItemsBuilder(ItemsBuilder());
 }
 

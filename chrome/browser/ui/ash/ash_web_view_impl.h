@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
 
 #include "ash/public/cpp/ash_web_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -91,7 +92,7 @@ class AshWebViewImpl : public ash::AshWebView,
   const InitParams params_;
 
   std::unique_ptr<content::WebContents> web_contents_;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
 
   // Whether or not the embedded |web_contents_| can go back.
   bool can_go_back_ = false;

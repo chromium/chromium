@@ -39,27 +39,6 @@ export interface MultiDeviceBrowserProxy {
   setUpAndroidSms(): void;
 
   /**
-   * Returns the value of the preference controlling whether Smart Lock may be
-   * used to sign-in the user (as opposed to unlocking the screen).
-   */
-  getSmartLockSignInEnabled(): Promise<boolean>;
-
-  /**
-   * Sets the value of the preference controlling whether Smart Lock may be
-   * used to sign-in the user (as opposed to unlocking the screen).
-   * @param enabled
-   * @param authToken Authentication token used to restrict
-   *    edit access to the Smart Lock sign-in pref.
-   */
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void;
-
-  /**
-   * Returns the value of the preference controlling whether Smart Lock
-   * sign-in is allowed.
-   */
-  getSmartLockSignInAllowed(): Promise<boolean>;
-
-  /**
    * Returns android messages info with messages feature state
    * and messages for web permissions origin.
    */
@@ -105,6 +84,11 @@ export interface MultiDeviceBrowserProxy {
    * Cancel the connection flow.
    */
   cancelFeatureSetupConnection(): void;
+
+  /**
+   * Open the Chrome Sync settings page in browser settings.
+   */
+  showBrowserSyncSettings(): void;
 
   /**
    * Log [Cancel] button click event in phone hub combined feature access setup
@@ -173,18 +157,6 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
     chrome.send('setUpAndroidSms');
   }
 
-  getSmartLockSignInEnabled(): Promise<boolean> {
-    return sendWithPromise('getSmartLockSignInEnabled');
-  }
-
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void {
-    chrome.send('setSmartLockSignInEnabled', [enabled, authToken]);
-  }
-
-  getSmartLockSignInAllowed(): Promise<boolean> {
-    return sendWithPromise('getSmartLockSignInAllowed');
-  }
-
   getAndroidSmsInfo(): Promise<AndroidSmsInfo> {
     return sendWithPromise('getAndroidSmsInfo');
   }
@@ -221,6 +193,10 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
 
   cancelFeatureSetupConnection(): void {
     chrome.send('cancelFeatureSetupConnection');
+  }
+
+  showBrowserSyncSettings(): void {
+    chrome.send('showBrowserSyncSettings');
   }
 
   logPhoneHubPermissionSetUpScreenAction(

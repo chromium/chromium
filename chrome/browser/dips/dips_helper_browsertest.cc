@@ -25,6 +25,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -52,29 +53,6 @@ using testing::Optional;
 using testing::Pair;
 
 namespace {
-
-class FrameCookieAccessObserver : public content::WebContentsObserver {
- public:
-  explicit FrameCookieAccessObserver(WebContents* web_contents,
-                                     RenderFrameHost* render_frame_host)
-      : WebContentsObserver(web_contents),
-        render_frame_host_(render_frame_host) {}
-
-  // Wait until the frame accesses cookies.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver override
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  base::RunLoop run_loop_;
-};
 
 // Histogram names
 constexpr char kTimeToInteraction[] =
@@ -118,6 +96,21 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
     DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
         GetActiveWebContents()->GetBrowserContext());
     dips_service->WaitForInitCompleteForTesting();
+
+    // Initialize exceptions for 1P sites with embedded 3P cookies. Block 3PC by
+    // default on a.test and d.test, since those are used as the initial and
+    // final URL in the redirect chains. This avoids trimming bounces due to 1P
+    // exceptions (e.g. Chrome Guard).
+    map_ = HostContentSettingsMapFactory::GetForProfile(
+        chrome_test_utils::GetActiveWebContents(this)->GetBrowserContext());
+    map_->SetContentSettingCustomScope(
+        ContentSettingsPattern::Wildcard(),
+        ContentSettingsPattern::FromString("[*.]a.test"),
+        ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_BLOCK);
+    map_->SetContentSettingCustomScope(
+        ContentSettingsPattern::Wildcard(),
+        ContentSettingsPattern::FromString("[*.]d.test"),
+        ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
   WebContents* GetActiveWebContents() {
@@ -198,6 +191,7 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
   base::SimpleTestClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<HostContentSettingsMap> map_;
 };
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
@@ -339,7 +333,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
 
   // Write a cookie in the b.test iframe.
   SetDIPSTime(time);
-  FrameCookieAccessObserver observer(web_contents, iframe);
+  FrameCookieAccessObserver observer(web_contents, iframe,
+                                     CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(
       iframe, "document.cookie = 'foo=bar; SameSite=None; Secure';",
       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -385,7 +380,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // b.test.
   SetDIPSTime(time + base::Seconds(10));
   FrameCookieAccessObserver observer(web_contents,
-                                     web_contents->GetPrimaryMainFrame());
+                                     web_contents->GetPrimaryMainFrame(),
+                                     CookieAccessDetails::Type::kRead);
   ASSERT_TRUE(content::ExecJs(web_contents,
                               content::JsReplace(
                                   R"(
@@ -406,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
-  GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
+  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
 
   SetDIPSTime(time);
@@ -439,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
+  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
@@ -471,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 // create an Incognito browser without regard to platform is public.
 #if !BUILDFLAG(IS_ANDROID)
   base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
+  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
   Browser* browser = CreateIncognitoBrowser();
   content::WebContents* web_contents =
@@ -513,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+      web_contents, embedded_test_server()->GetURL("b.test", "/title1.html")));
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // wait until we can click.
   SetDIPSTime(time);
@@ -527,7 +523,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
 
   // Write a cookie now that the click has been handled.
   SetDIPSTime(time + base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame);
+  FrameCookieAccessObserver cookie_observer(web_contents, frame,
+                                            CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();
@@ -541,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_MultipleStoragesThenClick) {
   base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
+  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
@@ -588,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_MultipleClicksThenStorage) {
   base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL url = embedded_test_server()->GetURL("b.test", "/title1.html");
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
@@ -629,7 +626,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // Write a cookie now that both clicks have been handled.
   SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
               base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame);
+  FrameCookieAccessObserver cookie_observer(web_contents, frame,
+                                            CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();
@@ -823,10 +821,10 @@ std::pair<GURL, GURL> MakeRedirectAndFinalUrl(net::EmbeddedTestServer* server) {
       "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
       "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
       "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
-      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/c.test";
+      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/d.test";
   redirect_path += final_dest;
   return std::make_pair(server->GetURL("b.test", redirect_path),
-                        server->GetURL("c.test", final_dest));
+                        server->GetURL("d.test", final_dest));
 }
 
 // Attempt to detect flakiness in waiting for DIPS storage by repeatedly
@@ -890,14 +888,14 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   base::Time recent_bounce_time = base::Time::Now() - base::Minutes(10);
 
   SetDIPSTime(old_bounce_time);
-  // Make b.test statefully bounce to c.test.
+  // Make b.test statefully bounce to d.test.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
   ASSERT_TRUE(content::NavigateToURLFromRenderer(
       web_contents,
       embedded_test_server()->GetURL(
-          "b.test", "/cross-site-with-cookie/c.test/title1.html"),
-      embedded_test_server()->GetURL("c.test", "/title1.html")));
+          "b.test", "/cross-site-with-cookie/d.test/title1.html"),
+      embedded_test_server()->GetURL("d.test", "/title1.html")));
   // End the chain so the bounce is recorded.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));

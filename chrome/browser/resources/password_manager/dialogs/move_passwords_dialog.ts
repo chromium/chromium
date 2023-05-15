@@ -18,6 +18,20 @@ import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './move_passwords_dialog.html.js';
 
+/**
+ * This should be kept in sync with the enum in
+ * components/password_manager/core/browser/password_manager_metrics_util.h.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * @enum {number}
+ */
+export const MoveToAccountStoreTrigger = {
+  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD: 0,
+  EXPLICITLY_TRIGGERED_IN_SETTINGS: 1,
+  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS: 2,
+  COUNT: 3,
+};
+
 export interface MovePasswordsDialogElement {
   $: {
     accountEmail: HTMLElement,
@@ -61,6 +75,12 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
+        MoveToAccountStoreTrigger
+            .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS,
+        MoveToAccountStoreTrigger.COUNT);
 
     this.selectedPasswordIds_ = this.passwords.map(item => item.id);
     PasswordManagerImpl.getInstance()

@@ -105,8 +105,6 @@ struct CC_EXPORT CommitState {
   SkColor4f background_color = SkColors::kWhite;
   ViewportPropertyIds viewport_property_ids;
   viz::LocalSurfaceId local_surface_id_from_parent;
-  base::TimeDelta previous_surfaces_visual_update_duration;
-  base::TimeDelta visual_update_duration;
 
   // -------------------------------------------------------------------------
   // Take/reset: these values are reset on the LayerTreeHost between commits.

@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -609,10 +608,9 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
                     float width = 0) {
     SCOPED_TRACE(testing::Message() << header_name);
 
-    FetchParameters::ResourceWidth resource_width;
+    absl::optional<float> resource_width;
     if (width > 0) {
-      resource_width.width = width;
-      resource_width.is_set = true;
+      resource_width = width;
     }
 
     const KURL input_url(input);
@@ -638,11 +636,10 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
   }
 
   String GetHeaderValue(const char* input, const char* header_name) {
-    FetchParameters::ResourceWidth resource_width;
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
-    GetFetchContext()->AddClientHintsIfNecessary(resource_width,
-                                                 resource_request);
+    GetFetchContext()->AddClientHintsIfNecessary(
+        absl::nullopt /* resource_width */, resource_request);
     return resource_request.HttpHeaderField(header_name);
   }
 
@@ -1420,8 +1417,6 @@ TEST_F(FrameFetchContextMockedLocalFrameClientTest,
 }
 
 TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
-  HistogramTester histograms;
-
   ResourceRequest request(KURL("https://localhost/"));
   // Sets Sec-CH-UA-Reduced, which should result in the reduced User-Agent
   // string being used.
@@ -1431,10 +1426,6 @@ TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
   ResourceLoaderOptions options(nullptr /* world */);
   GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
                                     ResourceType::kRaw);
-
-  // There should be 1 occurrence for when Blink.Fetch.ReducedUserAgent is true.
-  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", true, 1);
-  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", false, 0);
 }
 
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
@@ -1460,7 +1451,6 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   const KURL url("https://www.example.com/");
   ResourceRequest request(url);
 
-  FetchParameters::ResourceWidth resource_width;
   ResourceLoaderOptions options(nullptr /* world */);
 
   document->GetFrame()->GetClientHintsPreferences().SetShouldSend(
@@ -1482,8 +1472,8 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
-                                             request, options);
+  GetFetchContext()->PopulateResourceRequest(
+      ResourceType::kRaw, absl::nullopt /* resource_width */, request, options);
   // Should not crash.
 }
 
@@ -1599,7 +1589,6 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
 
  protected:
   void SetupForAcceptLanguageTest(bool is_detached, ResourceRequest& request) {
-    FetchParameters::ResourceWidth resource_width;
     ResourceLoaderOptions options(/*world=*/nullptr);
 
     document->GetFrame()->SetReducedAcceptLanguage("en-GB");
@@ -1608,7 +1597,8 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
       dummy_page_holder = nullptr;
 
     GetFetchContext()->PopulateResourceRequest(
-        ResourceType::kRaw, resource_width, request, options);
+        ResourceType::kRaw, absl::nullopt /* resource_width */, request,
+        options);
   }
 
  private:

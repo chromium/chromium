@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -70,7 +70,8 @@ public class PopupTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT, () -> Assert.assertTrue(getNumInfobarsShowing() == 0));
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mPopupHtmlUrl = mTestServer.getURL(POPUP_HTML_PATH);
     }
 

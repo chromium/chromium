@@ -10,35 +10,34 @@ from page_sets import press_story
 
 _SPEEDOMETER_SUITE_NAME_BASE = '{0}-TodoMVC'
 _SPEEDOMETER_SUITES = [
-  'VanillaJS',
-  'Vanilla-ES2015',
-  'Vanilla-ES2015-Babel-Webpack',
-  'React',
-  'React-Redux',
-  'EmberJS',
-  'EmberJS-Debug',
-  'BackboneJS',
-  'AngularJS',
-  'Angular2-TypeScript',
-  'VueJS',
-  'jQuery',
-  'Preact',
-  'Inferno',
-  'Elm',
-  'Flight'
+    'VanillaJS',
+    'Vanilla-ES2015',
+    'Vanilla-ES2015-Babel-Webpack',
+    'React',
+    'React-Redux',
+    'EmberJS',
+    'EmberJS-Debug',
+    'BackboneJS',
+    'AngularJS',
+    'Angular2-TypeScript',
+    'VueJS',
+    'jQuery',
+    'Preact',
+    'Inferno',
+    'Elm',
+    'Flight',
 ]
 
 
-class Speedometer2Story(press_story.PressStory):
+class _Speedometer2Story(press_story.PressStory):
   URL = 'file://InteractiveRunner.html'
-  NAME = 'Speedometer2'
 
   def __init__(self,
                page_set,
                should_filter_suites,
                filtered_suite_names=None,
                iterations=None):
-    super(Speedometer2Story, self).__init__(page_set)
+    super(_Speedometer2Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
     self._iterations = iterations
@@ -53,8 +52,10 @@ class Speedometer2Story(press_story.PressStory):
     if not suite_regex:
       return []
     exp = re.compile(suite_regex)
-    return [name for name in _SPEEDOMETER_SUITES
-            if exp.search(Speedometer2Story.GetFullSuiteName(name))]
+    return [
+        name for name in _SPEEDOMETER_SUITES
+        if exp.search(_Speedometer2Story.GetFullSuiteName(name))
+    ]
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -125,3 +126,15 @@ class Speedometer2Story(press_story.PressStory):
           suite_times;
           """,
           key=suite_name)
+
+
+class Speedometer20Story(_Speedometer2Story):
+  NAME = 'Speedometer20'
+
+
+class Speedometer21Story(_Speedometer2Story):
+  NAME = 'Speedometer21'
+
+
+class Speedometer2Story(Speedometer20Story):
+  NAME = 'Speedometer2'

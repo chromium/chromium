@@ -24,10 +24,11 @@ BASE_DECLARE_FEATURE(kEnableArcNearbyShareFuseBox);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableLazyWebViewInit);
 BASE_DECLARE_FEATURE(kEnablePerVmCoreScheduling);
+BASE_DECLARE_FEATURE(kEnableReadOnlyPermissions);
 BASE_DECLARE_FEATURE(kEnableUnifiedAudioFocusFeature);
 BASE_DECLARE_FEATURE(kEnableUnmanagedToManagedTransitionFeature);
-BASE_DECLARE_FEATURE(kEnableUsap);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkForData);
+BASE_DECLARE_FEATURE(kExternalStorageAccess);
 BASE_DECLARE_FEATURE(kFixupWindowFeature);
 BASE_DECLARE_FEATURE(kGhostWindowNewStyle);
 BASE_DECLARE_FEATURE(kVirtioBlkDataConfigOverride);
@@ -50,13 +51,11 @@ extern const base::FeatureParam<int> kMglruReclaimSwappiness;
 BASE_DECLARE_FEATURE(kNativeBridgeToggleFeature);
 BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);
 BASE_DECLARE_FEATURE(kPictureInPictureFeature);
-BASE_DECLARE_FEATURE(kRightClickLongPress);
 BASE_DECLARE_FEATURE(kRtVcpuDualCore);
 BASE_DECLARE_FEATURE(kRtVcpuQuadCore);
 BASE_DECLARE_FEATURE(kSaveRawFilesOnTracing);
 BASE_DECLARE_FEATURE(kSwitchToKeyMintOnT);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
-BASE_DECLARE_FEATURE(kArcUpdateO4CListViaA2C2);
 BASE_DECLARE_FEATURE(kUsbStorageUIFeature);
 BASE_DECLARE_FEATURE(kUseDalvikMemoryProfile);
 BASE_DECLARE_FEATURE(kUseDefaultBlockSize);
@@ -72,7 +71,9 @@ BASE_DECLARE_FEATURE(kVmmSwapPolicy);
 extern const base::FeatureParam<int> kVmmSwapOutDelaySecond;
 extern const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond;
 extern const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond;
-
+BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
+extern const base::FeatureParam<int> kPriorityAppLmkDelaySecond;
+extern const base::FeatureParam<std::string> kPriorityAppLmkDelayList;
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_ARC_FEATURES_H_

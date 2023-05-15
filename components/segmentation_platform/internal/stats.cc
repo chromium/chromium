@@ -43,8 +43,10 @@ GetOptimizationTargetOutputDescription(SegmentId segment_id) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
     case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
+    case SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO:
       return proto::SegmentationModelMetadata::RETURN_TYPE_PROBABILITY;
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
       return proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT;
     default:
       return proto::SegmentationModelMetadata::UNKNOWN_RETURN_TYPE;
@@ -245,9 +247,8 @@ void RecordSegmentSelectionComputed(
   // to write custom logic for other kinds of segments.
 }
 
-void RecordSegmentSelectionUpdated(
+void RecordClassificationResultComputed(
     const Config& config,
-    const absl::optional<proto::PredictionResult>& old_result,
     const proto::PredictionResult& new_result) {
   PostProcessor post_processor;
   int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
@@ -255,10 +256,18 @@ void RecordSegmentSelectionUpdated(
       base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
                     ".PostProcessing.TopLabel.Computed"});
   base::UmaHistogramSparse(computed_hist, new_result_top_label);
+}
+
+void RecordClassificationResultUpdated(
+    const Config& config,
+    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult& new_result) {
   if (config.on_demand_execution) {
     return;
   }
 
+  PostProcessor post_processor;
+  int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
   int old_result_top_label =
       old_result.has_value()
           ? post_processor.GetIndexOfTopLabel(old_result.value())
@@ -278,10 +287,13 @@ void RecordSegmentSelectionUpdated(
   // none -> label 0 : -200
   // none -> label 1 : -199
   // none -> label 2 : -198
+  // label 0 -> none : -2
   // label 0 -> label 1 : 1
   // label 0 -> label 2 : 2
+  // label 1 -> none : 98
   // label 1 -> label 0 : 100
   // label 1 -> label 2 : 102
+  // label 2 -> none : 198
   // label 2 -> label 0 : 200
   // label 2 -> label 1 : 201
 
@@ -459,6 +471,8 @@ void RecordModelExecutionResult(SegmentId segment_id,
     case proto::Predictor::kBinnedClassifier:
       [[fallthrough]];
     case proto::Predictor::kRegressor:
+      [[fallthrough]];
+    case proto::Predictor::kGenericPredictor:
       is_probability_score = false;
       break;
     default:
@@ -555,6 +569,14 @@ void RecordSegmentSelectionFailure(const Config& config,
       reason);
 }
 
+void RecordSegmentSelectionFailure(const std::string& segmentation_key,
+                                   SegmentationSelectionFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"SegmentationPlatform.SelectionFailedReason.",
+                    SegmentationKeyToUmaName(segmentation_key)}),
+      reason);
+}
+
 std::string FeatureProcessingErrorToString(FeatureProcessingError error) {
   switch (error) {
     case FeatureProcessingError::kUkmEngineDisabled:
@@ -603,6 +625,43 @@ void RecordTrainingDataCollectionEvent(SegmentId segment_id,
       "SegmentationPlatform.TrainingDataCollectionEvents." +
           SegmentIdToHistogramVariant(segment_id),
       event);
+}
+
+// This conversion exists because segment selector uses the result state
+// differently. TODO(ritikagup): Remove this conversion when selector is
+// deleted.
+SegmentationSelectionFailureReason GetSuccessOrFailureReason(
+    SegmentResultProvider::ResultState result_state) {
+  switch (result_state) {
+    case SegmentResultProvider::ResultState::kUnknown:
+      NOTREACHED();
+      return SegmentationSelectionFailureReason::kMaxValue;
+    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
+      return SegmentationSelectionFailureReason::kScoreUsedFromDatabase;
+    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
+      return SegmentationSelectionFailureReason::kScoreComputedFromDefaultModel;
+    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
+      return SegmentationSelectionFailureReason::kScoreComputedFromTfliteModel;
+    case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
+      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotReady;
+    case SegmentResultProvider::ResultState::kSegmentNotAvailable:
+      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotAvailable;
+    case SegmentResultProvider::ResultState::kSignalsNotCollected:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultMissingMetadata;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultSignalNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultExecFailed;
+    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentTfliteExecFailed;
+  }
 }
 
 }  // namespace segmentation_platform::stats

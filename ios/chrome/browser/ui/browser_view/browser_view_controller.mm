@@ -6,7 +6,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -14,17 +14,16 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/feature_engagement/tracker_util.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
@@ -42,9 +41,10 @@
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
@@ -80,16 +80,14 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -99,6 +97,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
@@ -189,14 +188,12 @@ enum HeaderBehaviour {
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <FindBarPresentationDelegate,
-                                     LensPresentationDelegate,
+@interface BrowserViewController () <LensPresentationDelegate,
                                      FullscreenUIElement,
                                      MainContentUI,
                                      SideSwipeControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
-                                     URLLoadingObserver,
                                      ViewRevealingAnimatee> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
@@ -207,9 +204,6 @@ enum HeaderBehaviour {
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
   KeyCommandsProvider* _keyCommandsProvider;
-
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  PrerenderService* _prerenderService;
 
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
@@ -259,8 +253,6 @@ enum HeaderBehaviour {
   // Fake status bar view used to blend the toolbar into the status bar.
   UIView* _fakeStatusBarView;
 
-  std::unique_ptr<UrlLoadingObserverBridge> _URLLoadingObserverBridge;
-
   // The disabler that prevents the toolbar from being scrolled offscreen when
   // the thumb strip is visible.
   std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
@@ -295,8 +287,6 @@ enum HeaderBehaviour {
 // not active, the UI will not react to changes in the active web state, so
 // generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
-// The Browser whose UI is managed by this instance.
-@property(nonatomic, assign) Browser* browser;
 // Browser container view controller.
 @property(nonatomic, strong)
     BrowserContainerViewController* browserContainerViewController;
@@ -350,29 +340,23 @@ enum HeaderBehaviour {
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
 
-// Command handler for load query commands
-@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
-
-// Command handler for omnibox commands
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
-
-// Command handler for text zoom commands
+// Command handler for text zoom commands.
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 
-// Command handler for help commands
+// Command handler for help commands.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
-// Command handler for popup menu commands
+// Command handler for popup menu commands.
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
-// Command handler for application commands
+// Command handler for application commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 
-// Command handler for browser coordinator commands
+// Command handler for browser coordinator commands.
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
 
-// Command handler for find in page commands
+// Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
 // The FullscreenController.
@@ -388,8 +372,6 @@ enum HeaderBehaviour {
 // TODO(crbug.com/880656): Convert to a container coordinator.
 @property(nonatomic, strong) UIView* secondaryToolbarContainerView;
 // Coordinator used to manage the secondary toolbar view.
-@property(nonatomic, strong)
-    ToolbarContainerCoordinator* secondaryToolbarContainerCoordinator;
 
 // Vertical offset for the primary toolbar, used for fullscreen.
 @property(nonatomic, strong) NSLayoutConstraint* primaryToolbarOffsetConstraint;
@@ -435,21 +417,17 @@ enum HeaderBehaviour {
 
 #pragma mark - Object lifecycle
 
-- (instancetype)initWithBrowser:(Browser*)browser
-    browserContainerViewController:
+- (instancetype)
+    initWithBrowserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-               keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
-                      dependencies:
-                          (BrowserViewControllerDependencies)dependencies {
-  self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
+                       keyCommandsProvider:
+                           (KeyCommandsProvider*)keyCommandsProvider
+                              dependencies:(BrowserViewControllerDependencies)
+                                               dependencies {
+  self = [super initWithNibName:nil bundle:base::apple::FrameworkBundle()];
   if (self) {
-    DCHECK(browser);
-
-    self.browser = browser;
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
-    // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-    _prerenderService = dependencies.prerenderService;
     _sideSwipeController = dependencies.sideSwipeController;
     [_sideSwipeController setSwipeDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
@@ -469,8 +447,6 @@ enum HeaderBehaviour {
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
-    self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
-    self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
     _urlLoadingNotifierBrowserAgent =
@@ -480,8 +456,6 @@ enum HeaderBehaviour {
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _voiceSearchController = dependencies.voiceSearchController;
-    self.secondaryToolbarContainerCoordinator =
-        dependencies.secondaryToolbarContainerCoordinator;
     self.safeAreaProvider = dependencies.safeAreaProvider;
     _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
 
@@ -490,11 +464,6 @@ enum HeaderBehaviour {
     _inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
-
-    _URLLoadingObserverBridge =
-        std::make_unique<UrlLoadingObserverBridge>(self);
-    _urlLoadingNotifierBrowserAgent->AddObserver(
-        _URLLoadingObserverBridge.get());
 
     // When starting the browser with an open tab, it is necessary to reset the
     // clipsToBounds property of the WKWebView so the page can bleed behind the
@@ -515,11 +484,6 @@ enum HeaderBehaviour {
 
 - (UIView*)contentArea {
   return self.browserContainerViewController.view;
-}
-
-// TODO(crbug.com/1329093): Remove this property. Also not a public property.
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
 }
 
 - (void)setInfobarBannerOverlayContainerViewController:
@@ -703,6 +667,22 @@ enum HeaderBehaviour {
   return height - statusBarOffset;
 }
 
+- (UIView*)viewForCurrentWebState {
+  return [self viewForWebState:self.currentWebState];
+}
+
+- (void)updateWebStateVisibility:(BOOL)isVisible {
+  if (isVisible) {
+    // TODO(crbug.com/971364): The webState is not necessarily added to the view
+    // hierarchy, even though the bookkeeping says that the WebState is visible.
+    // Do not DCHECK([webState->GetView() window]) here since this is a known
+    // issue.
+    self.currentWebState->WasShown();
+  } else {
+    self.currentWebState->WasHidden();
+  }
+}
+
 - (web::WebState*)currentWebState {
   return self.webStateList ? _webStateList->GetActiveWebState() : nullptr;
 }
@@ -720,8 +700,7 @@ enum HeaderBehaviour {
 
 - (void)setPrimary:(BOOL)primary {
   if (_tabUsageRecorderBrowserAgent) {
-    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(
-        primary, self.currentWebState);
+    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(primary);
   }
   if (primary) {
     [self updateBroadcastState];
@@ -803,7 +782,7 @@ enum HeaderBehaviour {
   // dismiss the keyboard.
   [self.findInPageCommandsHandler closeFindInPage];
   [self.textZoomHandler closeTextZoom];
-  [[self viewForWebState:self.currentWebState] endEditing:NO];
+  [self.viewForCurrentWebState endEditing:NO];
 
   // Present voice search.
   [_voiceSearchController
@@ -815,7 +794,7 @@ enum HeaderBehaviour {
 // TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
 // about model layer objects such as webstates.
 - (void)displayCurrentTab {
-  [self displayWebState:self.currentWebState];
+  [self displayTabView];
 }
 
 #pragma mark - browser_view_controller+private.h
@@ -829,15 +808,13 @@ enum HeaderBehaviour {
   [self updateBroadcastState];
 
   if (active) {
-    // Make sure the tab (if any; it's possible to get here without a current
-    // tab if the caller is about to create one) ends up on screen completely.
     // Force loading the view in case it was not loaded yet.
     [self loadViewIfNeeded];
     _pagePlaceholderBrowserAgent->AddPagePlaceholder();
-    if (self.currentWebState)
-      [self displayWebState:self.currentWebState];
+    if (self.viewForCurrentWebState) {
+      [self displayTabView];
+    }
   }
-
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
@@ -917,11 +894,6 @@ enum HeaderBehaviour {
   DCHECK(!_isShutdown);
   _isShutdown = YES;
 
-  if (_urlLoadingNotifierBrowserAgent) {
-    _urlLoadingNotifierBrowserAgent->RemoveObserver(
-        _URLLoadingObserverBridge.get());
-  }
-
   // Disconnect child coordinators.
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {
     [self.tabStripCoordinator stop];
@@ -934,14 +906,10 @@ enum HeaderBehaviour {
 
   _bubblePresenter = nil;
 
-  self.browser = nullptr;
-
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
 
   [self.primaryToolbarCoordinator stop];
   self.primaryToolbarCoordinator = nil;
-  [self.secondaryToolbarContainerCoordinator stop];
-  self.secondaryToolbarContainerCoordinator = nil;
   [self.secondaryToolbarCoordinator stop];
   self.secondaryToolbarCoordinator = nil;
   _sideSwipeController = nil;
@@ -996,7 +964,7 @@ enum HeaderBehaviour {
   if (self.bottomPosition)
     return NO;
 
-  return YES;
+  return self.viewVisible;
 }
 
 #pragma mark - UIViewController
@@ -1071,9 +1039,10 @@ enum HeaderBehaviour {
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
 
-  if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
+  if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
+      self.webUsageEnabled) {
     self.ntpCoordinator.viewController.view.frame =
-        [self ntpFrameForWebState:self.currentWebState];
+        [self ntpFrameForCurrentWebState];
   }
 }
 
@@ -1096,10 +1065,11 @@ enum HeaderBehaviour {
   if (!self.webUsageEnabled || !self.contentArea) {
     return;
   }
-  // Update the displayed WebState (if any; the switcher may not have created
+  // Update the displayed view (if any; the switcher may not have created
   // one yet) in case it changed while showing the switcher.
-  if (self.currentWebState)
-    [self displayWebState:self.currentWebState];
+  if (self.viewForCurrentWebState) {
+    [self displayTabView];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1107,7 +1077,7 @@ enum HeaderBehaviour {
   [self updateBroadcastState];
   web::WebState* activeWebState = self.currentWebState;
   if (activeWebState) {
-    activeWebState->WasHidden();
+    [self updateWebStateVisibility:NO];
     if (!self.presentedViewController)
       activeWebState->SetKeepRenderProcessAlive(false);
   }
@@ -1131,8 +1101,6 @@ enum HeaderBehaviour {
     _voiceSearchController.dispatcher = nil;
     [self.primaryToolbarCoordinator stop];
     self.primaryToolbarCoordinator = nil;
-    [self.secondaryToolbarContainerCoordinator stop];
-    self.secondaryToolbarContainerCoordinator = nil;
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
     _toolbarUIState = nil;
@@ -1336,7 +1304,7 @@ enum HeaderBehaviour {
       self.hideStatusBar = YES;
 
       // Load view from Launch Screen and add it to window.
-      NSBundle* mainBundle = base::mac::FrameworkBundle();
+      NSBundle* mainBundle = base::apple::FrameworkBundle();
       NSArray* topObjects = [mainBundle loadNibNamed:@"LaunchScreen"
                                                owner:self
                                              options:nil];
@@ -1367,10 +1335,7 @@ enum HeaderBehaviour {
       };
     }
   }
-
-  if ([_sideSwipeController inSwipe]) {
-    [_sideSwipeController resetContentView];
-  }
+  [_sideSwipeController resetContentView];
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
@@ -1460,15 +1425,7 @@ enum HeaderBehaviour {
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
 
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    self.secondaryToolbarContainerCoordinator.toolbarCoordinators =
-        @[ self.secondaryToolbarCoordinator ];
-    [self.secondaryToolbarContainerCoordinator start];
-  } else {
-    [self.secondaryToolbarCoordinator start];
-  }
+  [self.secondaryToolbarCoordinator start];
 
   [self updateBroadcastState];
   if (_voiceSearchController) {
@@ -1563,16 +1520,8 @@ enum HeaderBehaviour {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
       ![self canShowTabStrip]) {
     topAnchor = self.view.topAnchor;
-    // TODO(crbug.com/1423799): Dchecks added for investigation purposes, remove
-    // once crash root cause is found.
-    DCHECK(self.view);
-    DCHECK(topAnchor);
   } else {
     topAnchor = self.tabStripView.bottomAnchor;
-    // TODO(crbug.com/1423799): Dchecks added for investigation purposes, remove
-    // once crash root cause is found.
-    DCHECK(self.tabStripView);
-    DCHECK(topAnchor);
   }
 
   // Only add leading and trailing constraints once as they are never updated.
@@ -1593,9 +1542,6 @@ enum HeaderBehaviour {
 
   // Create a constraint for the vertical positioning of the toolbar.
   UIView* primaryView = self.primaryToolbarCoordinator.viewController.view;
-  // TODO(crbug.com/1423799): Dcheck added for investigation purposes, remove
-  // once crash root cause is found.
-  DCHECK(primaryView.topAnchor);
   self.primaryToolbarOffsetConstraint =
       [primaryView.topAnchor constraintEqualToAnchor:topAnchor];
 
@@ -1634,31 +1580,11 @@ enum HeaderBehaviour {
   }
 }
 
-// Adds constraints to the secondary toolbar container anchoring it to the
-// bottom of the browser view.
-- (void)addConstraintsToSecondaryToolbarContainer {
-  if (!self.secondaryToolbarContainerCoordinator)
-    return;
-
-  // Constrain the container to the bottom of the view.
-  UIView* containerView =
-      self.secondaryToolbarContainerCoordinator.viewController.view;
-  AddSameConstraintsToSides(
-      self.view, containerView,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-}
-
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
 // top and bottom of the browser view.
 - (void)addConstraintsToToolbar {
   [self addConstraintsToPrimaryToolbar];
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    [self addConstraintsToSecondaryToolbarContainer];
-  } else {
-    [self addConstraintsToSecondaryToolbar];
-  }
+  [self addConstraintsToSecondaryToolbar];
   [[self view] layoutIfNeeded];
 }
 
@@ -1683,15 +1609,8 @@ enum HeaderBehaviour {
     // Add the toolbars as child view controllers.
     [self addChildViewController:self.primaryToolbarCoordinator.viewController];
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        [self addChildViewController:self.secondaryToolbarContainerCoordinator
-                                         .viewController];
-      } else {
-        [self addChildViewController:self.secondaryToolbarCoordinator
-                                         .viewController];
-      }
+      [self addChildViewController:self.secondaryToolbarCoordinator
+                                       .viewController];
     }
 
     // Add the primary toolbar. On iPad, it should be in front of the tab strip
@@ -1714,23 +1633,14 @@ enum HeaderBehaviour {
 
     // Add the secondary toolbar.
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        // Add the container view to the hierarchy.
-        UIView* containerView =
-            self.secondaryToolbarContainerCoordinator.viewController.view;
-        [self.view insertSubview:containerView aboveSubview:primaryToolbarView];
-      } else {
-        // Create the container view for the secondary toolbar and add it to
-        // the hierarchy
-        UIView* container = [[LegacyToolbarContainerView alloc] init];
-        container.translatesAutoresizingMaskIntoConstraints = NO;
-        [container
-            addSubview:self.secondaryToolbarCoordinator.viewController.view];
-        [self.view insertSubview:container aboveSubview:primaryToolbarView];
-        self.secondaryToolbarContainerView = container;
-      }
+      // Create the container view for the secondary toolbar and add it to
+      // the hierarchy
+      UIView* container = [[LegacyToolbarContainerView alloc] init];
+      container.translatesAutoresizingMaskIntoConstraints = NO;
+      [container
+          addSubview:self.secondaryToolbarCoordinator.viewController.view];
+      [self.view insertSubview:container aboveSubview:primaryToolbarView];
+      self.secondaryToolbarContainerView = container;
     }
 
     // Create the NamedGuides and add them to the browser view.
@@ -1783,15 +1693,8 @@ enum HeaderBehaviour {
     [self.primaryToolbarCoordinator.viewController
         didMoveToParentViewController:self];
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        [self.secondaryToolbarContainerCoordinator.viewController
-            didMoveToParentViewController:self];
-      } else {
-        [self.secondaryToolbarCoordinator.viewController
-            didMoveToParentViewController:self];
-      }
+      [self.secondaryToolbarCoordinator.viewController
+          didMoveToParentViewController:self];
     }
   }
 
@@ -1804,9 +1707,10 @@ enum HeaderBehaviour {
   [self updateOverlayContainerOrder];
 }
 
-// Makes `webState` the currently visible WebState, displaying its view.
-- (void)displayWebState:(web::WebState*)webState {
-  DCHECK(webState);
+// Displays the current webState view.
+- (void)displayTabView {
+  UIView* view = self.viewForCurrentWebState;
+  DCHECK(view);
   [self loadViewIfNeeded];
 
   if (!self.inNewTabAnimation) {
@@ -1818,14 +1722,14 @@ enum HeaderBehaviour {
 
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
-    CGRect webStateViewFrame = self.contentArea.bounds;
+    CGRect viewFrame = self.contentArea.bounds;
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       // If the view was translated for the thumb strip, make sure to re-apply
       // that translation here.
       if (self.viewTranslatedForSmoothScrolling) {
         CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-        webStateViewFrame = UIEdgeInsetsInsetRect(
-            webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+        viewFrame = UIEdgeInsetsInsetRect(
+            viewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
       }
     } else {
       // If the Smooth Scrolling is on, the WebState view is not
@@ -1834,29 +1738,26 @@ enum HeaderBehaviour {
       // they should be accounted for here to prevent animation jitter.
       UIEdgeInsets viewportInsets =
           self.fullscreenController->GetCurrentViewportInsets();
-      webStateViewFrame =
-          UIEdgeInsetsInsetRect(webStateViewFrame, viewportInsets);
+      viewFrame = UIEdgeInsetsInsetRect(viewFrame, viewportInsets);
     }
-    [self viewForWebState:webState].frame = webStateViewFrame;
+    view.frame = viewFrame;
 
     [self updateToolbarState];
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    if (NTPHelper && NTPHelper->IsActive()) {
-      NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
+
+    NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
+    if (NTPCoordinator.isNTPActiveForCurrentWebState) {
       UIViewController* viewController = NTPCoordinator.viewController;
-      viewController.view.frame = [self ntpFrameForWebState:webState];
+      viewController.view.frame = [self ntpFrameForCurrentWebState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
       // not be restored until LoadIfNecessary call. Remove when fixed.
-      webState->GetNavigationManager()->LoadIfNecessary();
+      self.currentWebState->GetNavigationManager()->LoadIfNecessary();
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
       [NTPCoordinator constrainDiscoverHeaderMenuButtonNamedGuide];
     } else {
-      self.browserContainerViewController.contentView =
-          [self viewForWebState:webState];
+      self.browserContainerViewController.contentView = view;
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
@@ -1867,13 +1768,7 @@ enum HeaderBehaviour {
   // somehow.
   [self.primaryToolbarCoordinator updateToolbar];
 
-  // TODO(crbug.com/971364): The webState is not necessarily added to the view
-  // hierarchy, even though the bookkeeping says that the WebState is visible.
-  // Do not DCHECK([webState->GetView() window]) here since this is a known
-  // issue.
-  // TODO(crbug.com/1329088): This update should happen in the mediator, not
-  // here.
-  webState->WasShown();
+  [self updateWebStateVisibility:YES];
 }
 
 - (void)updateOverlayContainerOrder {
@@ -1929,9 +1824,8 @@ enum HeaderBehaviour {
 }
 
 // Returns the appropriate frame for the NTP.
-- (CGRect)ntpFrameForWebState:(web::WebState*)webState {
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  DCHECK(NTPHelper && NTPHelper->IsActive());
+- (CGRect)ntpFrameForCurrentWebState {
+  DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
   if (!IsRegularXRegularSizeClass(self)) {
@@ -1977,8 +1871,7 @@ enum HeaderBehaviour {
 - (UIView*)viewForWebState:(web::WebState*)webState {
   if (!webState)
     return nil;
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
   }
@@ -2030,19 +1923,6 @@ enum HeaderBehaviour {
   _lastTapTime = CACurrentMediaTime();
 }
 
-#pragma mark - Private Methods: Reading List
-
-// TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
-// BVC
-- (BOOL)isNTPActiveForCurrentWebState {
-  if (self.currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(self.currentWebState);
-    return NTPHelper && NTPHelper->IsActive();
-  }
-  return NO;
-}
-
 #pragma mark - ** Protocol Implementations and Helpers **
 
 #pragma mark - ThumbStripSupporting
@@ -2075,8 +1955,7 @@ enum HeaderBehaviour {
     webStateViewFrame = UIEdgeInsetsInsetRect(
         webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
   }
-  UIView* webStateView = [self viewForWebState:self.currentWebState];
-  webStateView.frame = webStateViewFrame;
+  self.viewForCurrentWebState.frame = webStateViewFrame;
 
   self.ntpCoordinator.panGestureHandler = panHandler;
   [self.ntpCoordinator.thumbStripSupporting
@@ -2099,8 +1978,7 @@ enum HeaderBehaviour {
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  UIView* webStateView = [self viewForWebState:self.currentWebState];
-  webStateView.frame = webStateViewFrame;
+  self.viewForCurrentWebState.frame = webStateViewFrame;
 
   [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
   self.ntpCoordinator.panGestureHandler = nil;
@@ -2168,10 +2046,10 @@ enum HeaderBehaviour {
       self.viewTranslatedForSmoothScrolling = YES;
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       if (self.currentWebState) {
-        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-            [self viewForWebState:self.currentWebState].frame,
-            UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+        CGRect webStateViewFrame =
+            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
+                                  UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+        self.viewForCurrentWebState.frame = webStateViewFrame;
       }
 
       // Translate all web states' offset so web states from other tabs are also
@@ -2198,7 +2076,7 @@ enum HeaderBehaviour {
 
   // Stop scrolling in the current web state when transitioning.
   if (self.currentWebState) {
-    if (self.isNTPActiveForCurrentWebState) {
+    if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
       [self.ntpCoordinator stopScrolling];
     } else {
       CRWWebViewScrollViewProxy* scrollProxy =
@@ -2274,10 +2152,10 @@ enum HeaderBehaviour {
       self.fullscreenController->FreezeToolbarHeight(false);
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       if (self.currentWebState) {
-        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-            [self viewForWebState:self.currentWebState].frame,
-            UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
-        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+        CGRect webStateViewFrame =
+            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
+                                  UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
+        self.viewForCurrentWebState.frame = webStateViewFrame;
       }
 
       for (int index = 0; index < self.webStateListSize; ++index) {
@@ -2323,7 +2201,7 @@ enum HeaderBehaviour {
   DCHECK(bubblePresenter == _bubblePresenter);
 
   // If NTP exists, check if it is scrolled to top.
-  if (self.isNTPActiveForCurrentWebState) {
+  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     return [self.ntpCoordinator isScrolledToTop];
   }
 
@@ -2376,7 +2254,7 @@ enum HeaderBehaviour {
                         fromTabId:(NSString*)tabId {
   // Check if the call comes from currently visible tab.
   NSString* visibleTabId = self.currentWebState->GetStableIdentifier();
-  if ([tabId isEqual:visibleTabId]) {
+  if ([tabId isEqualToString:visibleTabId]) {
     [self addChildViewController:viewController];
     [self.view addSubview:viewController.view];
     [viewController didMoveToParentViewController:self];
@@ -2409,80 +2287,6 @@ enum HeaderBehaviour {
   CGRect bounds = self.view.bounds;
   return CGPointMake(CGRectGetMidX(bounds),
                      CGRectGetMinY(bounds) + self.headerHeight);
-}
-
-#pragma mark - URLLoadingObserver
-
-// TODO(crbug.com/907527): consider moving these separate functional blurbs
-// closer to their main component (using localized observers)
-
-- (void)tabWillLoadURL:(GURL)URL
-        transitionType:(ui::PageTransition)transitionType {
-  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
-
-  web::WebState* currentWebState = self.currentWebState;
-  if (currentWebState &&
-      (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    new_tab_page_uma::RecordActionFromOmnibox(_isOffTheRecord, currentWebState,
-                                              URL, transitionType);
-  }
-}
-
-- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
-  if (isUserInitiated) {
-    // Send either the "New Tab Opened" or "New Incognito Tab" opened to the
-    // feature_engagement::Tracker based on `inIncognito`.
-    feature_engagement::NotifyNewTabEvent(self.browserState, _isOffTheRecord);
-  }
-}
-
-- (void)willSwitchToTabWithURL:(GURL)URL
-              newWebStateIndex:(NSInteger)newWebStateIndex {
-  if ([self canShowTabStrip])
-    return;
-
-  WebStateList* webStateList = self.webStateList;
-  web::WebState* webStateBeingActivated =
-      webStateList->GetWebStateAt(newWebStateIndex);
-
-  // Add animations only if the tab strip isn't shown.
-  UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
-
-  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
-  SwipeView* swipeView = [[SwipeView alloc]
-      initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
-                        .top];
-
-  [swipeView setTopToolbarImage:[self.primaryToolbarCoordinator
-                                    toolbarSideSwipeSnapshotForWebState:
-                                        webStateBeingActivated]];
-  [swipeView setBottomToolbarImage:[self.secondaryToolbarCoordinator
-                                       toolbarSideSwipeSnapshotForWebState:
-                                           webStateBeingActivated]];
-
-  SnapshotTabHelper::FromWebState(webStateBeingActivated)
-      ->RetrieveColorSnapshot(^(UIImage* image) {
-        if (PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
-                ->will_add_placeholder_for_next_navigation()) {
-          [swipeView setImage:nil];
-        } else {
-          [swipeView setImage:image];
-        }
-      });
-
-  SwitchToTabAnimationView* animationView =
-      [[SwitchToTabAnimationView alloc] initWithFrame:self.view.bounds];
-
-  [self.view addSubview:animationView];
-
-  SwitchToTabAnimationPosition position =
-      newWebStateIndex > webStateList->active_index()
-          ? SwitchToTabAnimationPositionAfter
-          : SwitchToTabAnimationPositionBefore;
-  [animationView animateFromCurrentView:snapshotView
-                              toNewView:swipeView
-                             inPosition:position];
 }
 
 #pragma mark - OmniboxPopupPresenterDelegate methods.
@@ -2684,19 +2488,12 @@ enum HeaderBehaviour {
   self.footerFullscreenProgress = progress;
 
   CGFloat height = 0.0;
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    height = [self.secondaryToolbarContainerCoordinator
-        toolbarStackHeightForFullscreenProgress:progress];
-  } else {
-    // Update the height constraint and force a layout on the container view
-    // so that the update is animatable.
-    height = [self secondaryToolbarHeightWithInset] * progress;
-    self.secondaryToolbarHeightConstraint.constant = height;
-    [self.secondaryToolbarContainerView setNeedsLayout];
-    [self.secondaryToolbarContainerView layoutIfNeeded];
-  }
+  // Update the height constraint and force a layout on the container view
+  // so that the update is animatable.
+  height = [self secondaryToolbarHeightWithInset] * progress;
+  self.secondaryToolbarHeightConstraint.constant = height;
+  [self.secondaryToolbarContainerView setNeedsLayout];
+  [self.secondaryToolbarContainerView layoutIfNeeded];
 }
 
 // Updates the browser container view such that its viewport is the space
@@ -2714,38 +2511,6 @@ enum HeaderBehaviour {
       AlignValueToPixel(progress * [self secondaryToolbarHeightWithInset]);
 
   [self updateContentPaddingForTopToolbarHeight:top bottomToolbarHeight:bottom];
-}
-
-// Updates the frame of the web view so that it's `offset` from the bottom of
-// the container view.
-- (void)updateWebViewFrameForBottomOffset:(CGFloat)offset {
-  if (!self.currentWebState)
-    return;
-
-  // Move the frame of the container view such that the bottom is aligned with
-  // the top of the bottom toolbar.
-  id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
-  CGRect webViewFrame = webViewProxy.frame;
-  CGFloat oldOriginY = CGRectGetMinY(webViewFrame);
-  webViewProxy.contentOffset = CGPointMake(0.0, -offset);
-  // Update the contentOffset so that the scroll position is maintained
-  // relative to the screen.
-  CRWWebViewScrollViewProxy* scrollViewProxy = webViewProxy.scrollViewProxy;
-  CGFloat originDelta = CGRectGetMinY(webViewProxy.frame) - oldOriginY;
-  CGPoint contentOffset = scrollViewProxy.contentOffset;
-  contentOffset.y += originDelta;
-  scrollViewProxy.contentOffset = contentOffset;
-}
-
-// Updates the web view's viewport by changing the safe area insets.
-- (void)updateBrowserSafeAreaForTopToolbarHeight:(CGFloat)topToolbarHeight
-                             bottomToolbarHeight:(CGFloat)bottomToolbarHeight {
-  UIViewController* containerViewController =
-      self.browserContainerViewController;
-  containerViewController.additionalSafeAreaInsets = UIEdgeInsetsMake(
-      topToolbarHeight - self.rootSafeAreaInsets.top -
-          self.currentWebState->GetWebViewProxy().contentOffset.y,
-      0, 0, 0);
 }
 
 // Updates the padding of the web view proxy. This either resets the frame of
@@ -2770,28 +2535,12 @@ enum HeaderBehaviour {
 
   // Prerender tab does not have a toolbar, return `headerHeight` as promised by
   // API documentation.
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  if (_prerenderService && _prerenderService->IsLoadingPrerender())
+  if ([self.primaryToolbarCoordinator isLoadingPrerenderer]) {
     return self.headerHeight;
+  }
 
   UIView* topHeader = headers[0].view;
   return -(topHeader.frame.origin.y - self.headerOffset);
-}
-
-// Returns the insets into `view` that result in the visible viewport.
-- (UIEdgeInsets)viewportInsetsForView:(UIView*)view {
-  DCHECK(view);
-  UIEdgeInsets viewportInsets =
-      self.fullscreenController->GetCurrentViewportInsets();
-  // TODO(crbug.com/917548): Use BVC for viewport inset coordinate space rather
-  // than the content area.
-  CGRect viewportFrame = [view
-      convertRect:UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets)
-         fromView:self.contentArea];
-  return UIEdgeInsetsMake(
-      CGRectGetMinY(viewportFrame), CGRectGetMinX(viewportFrame),
-      CGRectGetMaxY(view.bounds) - CGRectGetMaxY(viewportFrame),
-      CGRectGetMaxX(view.bounds) - CGRectGetMaxX(viewportFrame));
 }
 
 #pragma mark - MainContentUI
@@ -2803,7 +2552,7 @@ enum HeaderBehaviour {
 #pragma mark - OmniboxFocusDelegate (Public)
 
 - (void)omniboxDidBecomeFirstResponder {
-  if (self.isNTPActiveForCurrentWebState) {
+  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
   [_sideSwipeController setEnabled:NO];
@@ -2848,18 +2597,13 @@ enum HeaderBehaviour {
 
 #pragma mark - BrowserCommands
 
-// TODO(crbug.com/1272540): Remove this command after updating ios_internal.
-- (void)addToReadingList:(ReadingListAddCommand*)command {
-  self.readingListBrowserAgent->AddURLsToReadingList(command.URLs);
-}
-
 - (void)prepareForOverflowMenuPresentation {
   DCHECK(self.visible || self.dismissingModal);
 
   // Dismiss the omnibox (if open).
   [self.omniboxCommandsHandler cancelOmniboxEdit];
   // Dismiss the soft keyboard (if open).
-  [[self viewForWebState:self.currentWebState] endEditing:NO];
+  [self.viewForCurrentWebState endEditing:NO];
   // Dismiss Find in Page focus.
   [self.findInPageCommandsHandler defocusFindInPage];
 
@@ -2880,7 +2624,7 @@ enum HeaderBehaviour {
 }
 
 - (void)webStateSelected {
-  if (!self.currentWebState) {
+  if (!self.viewForCurrentWebState) {
     return;
   }
   // Ignore changes while the tab stack view is visible (or while suspended).
@@ -2889,9 +2633,7 @@ enum HeaderBehaviour {
     return;
   }
 
-  // TODO(crbug.com/1329088): Trigger this update from the mediator, or (as an
-  // interm step) pass the view to be displayed instead.
-  [self displayWebState:self.currentWebState];
+  [self displayTabView];
   if (!self.inNewTabAnimation) {
     _pagePlaceholderBrowserAgent->CancelPagePlaceholder();
   }
@@ -2899,7 +2641,6 @@ enum HeaderBehaviour {
 
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState {
   // Initiates the new tab foreground animation, which is phone-specific.
-  DCHECK(webState);
   if ([self canShowTabStrip]) {
     if (self.foregroundTabWasAddedCompletionBlock) {
       // This callback is called before webState is activated. Dispatch the
@@ -2939,10 +2680,63 @@ enum HeaderBehaviour {
   self.inNewTabAnimation = NO;
 }
 
-- (void)displayWebStateIfActive:(web::WebState*)webState {
+- (void)displayTabViewIfActive {
   if (self.active) {
-    [self displayWebState:webState];
+    [self displayTabView];
   }
+}
+
+- (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex {
+  if ([self canShowTabStrip]) {
+    return;
+  }
+
+  WebStateList* webStateList = self.webStateList;
+  web::WebState* webStateBeingActivated =
+      webStateList->GetWebStateAt(newWebStateIndex);
+
+  // Add animations only if the tab strip isn't shown.
+  UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
+
+  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
+  SwipeView* swipeView = [[SwipeView alloc]
+      initWithFrame:self.contentArea.frame
+          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
+                        .top];
+
+  [swipeView setTopToolbarImage:[self.primaryToolbarCoordinator
+                                    toolbarSideSwipeSnapshotForWebState:
+                                        webStateBeingActivated]];
+  [swipeView setBottomToolbarImage:[self.secondaryToolbarCoordinator
+                                       toolbarSideSwipeSnapshotForWebState:
+                                           webStateBeingActivated]];
+
+  SnapshotTabHelper::FromWebState(webStateBeingActivated)
+      ->RetrieveColorSnapshot(^(UIImage* image) {
+        if (PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
+                ->will_add_placeholder_for_next_navigation()) {
+          [swipeView setImage:nil];
+        } else {
+          [swipeView setImage:image];
+        }
+      });
+
+  SwitchToTabAnimationView* animationView =
+      [[SwitchToTabAnimationView alloc] initWithFrame:self.view.bounds];
+
+  [self.view addSubview:animationView];
+
+  SwitchToTabAnimationPosition position =
+      newWebStateIndex > webStateList->active_index()
+          ? SwitchToTabAnimationPositionAfter
+          : SwitchToTabAnimationPositionBefore;
+  [animationView animateFromCurrentView:snapshotView
+                              toNewView:swipeView
+                             inPosition:position];
+}
+
+- (void)dismissBookmarkModalController {
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
 }
 
 #pragma mark - TabConsumer helpers
@@ -3003,8 +2797,9 @@ enum HeaderBehaviour {
     [self.contentArea addSubview:toolbarSnapshot];
     newPage.frame = self.view.bounds;
   } else {
-    if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
-      newPage.frame = [self ntpFrameForWebState:self.currentWebState];
+    if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
+        self.webUsageEnabled) {
+      newPage.frame = [self ntpFrameForCurrentWebState];
     } else {
       newPage.frame = self.contentArea.bounds;
     }
@@ -3097,7 +2892,7 @@ enum HeaderBehaviour {
     [firstResponder resignFirstResponder];
     // Close presented view controllers, e.g. share sheets.
     if (self.presentedViewController) {
-      [self dismissViewControllerAnimated:NO completion:nil];
+      [self.applicationCommandsHandler dismissModalDialogs];
     }
 
   } else {
@@ -3157,8 +2952,8 @@ enum HeaderBehaviour {
   return self.contentArea;
 }
 
-- (void)sideSwipeRedisplayWebState:(web::WebState*)webState {
-  [self displayWebState:webState];
+- (void)sideSwipeRedisplayTabView {
+  [self displayTabView];
 }
 
 // TODO(crbug.com/1329105): Federate side swipe logic.
@@ -3215,8 +3010,8 @@ enum HeaderBehaviour {
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  if (self.isNTPActiveForCurrentWebState) {
-    NewTabPageCoordinator* coordinator = self.ntpCoordinator;
+  NewTabPageCoordinator* coordinator = self.ntpCoordinator;
+  if (coordinator.isNTPActiveForCurrentWebState) {
     if ([coordinator logoAnimationControllerOwner]) {
       // If NTP coordinator is showing a GLIF view (e.g. the NTP when there is
       // no doodle), use that GLIFControllerOwner.

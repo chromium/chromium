@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
@@ -53,7 +53,7 @@ public class SettingsActivityTestRule<T extends Fragment>
      * @return The activity that just started.
      */
     public SettingsActivity startSettingsActivity(Bundle fragmentArgs) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
                 context, mFragmentClass.getName(), fragmentArgs);

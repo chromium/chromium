@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -76,7 +77,7 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
   }
 
   // |card_element_| should outlive the Processor.
-  AssistantCardElement* const card_element_;
+  const raw_ptr<AssistantCardElement, ExperimentalAsh> card_element_;
   ProcessingCallback callback_;
 
   std::unique_ptr<AshWebView> contents_view_;

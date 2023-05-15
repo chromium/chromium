@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -54,15 +55,15 @@ class ASH_EXPORT PageIndicatorView : public views::View,
 
   PageIndicatorButton* GetButtonByIndex(int index);
 
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   // Owned by UnifiedSystemTrayModel.
-  PaginationModel* const model_;
+  const raw_ptr<PaginationModel, ExperimentalAsh> model_;
 
   double expanded_amount_;
 
   // Owned by views hierarchy.
-  views::View* buttons_container_;
+  raw_ptr<views::View, ExperimentalAsh> buttons_container_;
 };
 
 }  // namespace ash

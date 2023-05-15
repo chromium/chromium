@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Salvestamine peatati, sest seadmes on liiga vähe salvestusruumi. Kui soovite rohkem videoid salvestada, vabastage seadmes rohkem ruumi.</translation>
 <translation id="2036868001356139588">Taimeri kestus</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivne</translation>
-<translation id="2128052519899549250">Kiirendatud video salvestamine</translation>
 <translation id="2134029355740465625">Video seaded</translation>
 <translation id="2144806332417375165">Video kohandatud parameetrid</translation>
 <translation id="2175927920773552910">QR-kood</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Tuvastati dokument</translation>
 <translation id="414641094616694804">See kaamera ei saa eraldusvõimet muuta</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
-<translation id="4281620174117014503">Keskmine eraldusvõime</translation>
 <translation id="428234092390943511">Lehe pisipilt</translation>
 <translation id="4383571725254449280">Toimivuslogide trükkimine</translation>
 <translation id="4445542136948522167">Peata foto jäädvustamine</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5320594929574852403">Liigub vasakule</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Kiirendatud video</translation>
 <translation id="5662366948659129155">Lehe <ph name="COUNT" /> skannimine</translation>
 <translation id="5671277269877808209">Ruut</translation>
+<translation id="574392208103952083">Keskmine</translation>
 <translation id="5746169159649715125">Salvesta PDF-ina</translation>
 <translation id="5753488212459587150">Luba ekspertrežiim</translation>
 <translation id="5759254179196327752">Dokumendi skannimine</translation>
@@ -138,6 +136,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Dokumendi parem alanurk</translation>
+<translation id="7684446460490665873">Kiirendatud video salvestamine</translation>
 <translation id="7692090236657809299">Luba panoraamimine, kallutamine ja suum</translation>
 <translation id="7726641833034062494">Tavalise video salvestamine</translation>
 <translation id="7748344063862150053">Dokumendi parem ülanurk</translation>
@@ -163,6 +162,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="9045010116236796332">Paigutage kõik dokumendi servad raami sisse</translation>
 <translation id="9045155556724273246">10 sekundit</translation>
 <translation id="906331135292332864">Pildi töötlemine …</translation>
+<translation id="9161584225258678723">Kiirendatud video</translation>
 <translation id="922762992951083513">Peegeldamine on sisse lülitatud</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 </translationbundle>

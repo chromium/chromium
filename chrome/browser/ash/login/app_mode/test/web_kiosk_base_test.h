@@ -54,9 +54,8 @@ class WebKioskBaseTest : public OobeBaseTest {
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
   std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
-  // Web kiosks do not support consumer-based kiosk. Network can always be
-  // configured.
-  ScopedCanConfigureNetwork can_configure_network_override_{true, false};
+  // Network can always be configured.
+  ScopedCanConfigureNetwork can_configure_network_override_{true};
 };
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -46,14 +47,16 @@ class ASH_EXPORT CastFeaturePodController
   // Updates feature pod button visibility. Used pre-QsRevamp.
   void Update();
 
-  // Updates tile sublabel visibility. Used post-QsRevamp.
-  void UpdateSublabelVisibility();
+  // Updates the feature tile. Used post-QsRevamp.
+  void UpdateFeatureTile();
 
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      tray_controller_;
 
   // Owned by views hierarchy.
-  FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<CastFeaturePodController> weak_factory_{this};
 };

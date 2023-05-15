@@ -597,11 +597,22 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   std::tie(key, value_name) = InstallUtil::GetCloudManagementDmTokenLocation(
       InstallUtil::ReadOnly(true), InstallUtil::BrowserLocation(false));
   if (key.Valid()) {
-    std::wstring dmtoken_value;
-    auto result = key.ReadValue(value_name.c_str(), &dmtoken_value);
-    if (result == ERROR_SUCCESS && !dmtoken_value.empty() &&
-        dmtoken_value.compare(L"INVALID_DM_TOKEN")) {
-      has_valid_dm_token = true;
+    DWORD dtype = REG_NONE;
+    std::vector<char> raw_value(512);
+    DWORD size = static_cast<DWORD>(raw_value.size());
+    auto result =
+        key.ReadValue(value_name.c_str(), raw_value.data(), &size, &dtype);
+    if (result == ERROR_MORE_DATA && size > raw_value.size()) {
+      raw_value.resize(size);
+      result =
+          key.ReadValue(value_name.c_str(), raw_value.data(), &size, &dtype);
+    }
+    if (result == ERROR_SUCCESS && dtype == REG_BINARY && size != 0) {
+      std::string dmtoken_value(base::TrimWhitespaceASCII(
+          base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
+      if (dmtoken_value.compare("INVALID_DM_TOKEN")) {
+        has_valid_dm_token = true;
+      }
     }
   }
 

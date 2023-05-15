@@ -24,9 +24,11 @@ class SyncService;
 @property(nonatomic, assign) AuthenticationService* authService;
 
 // SyncService used by MailtoHandlerService.
+// TODO(crbug.com/1442213): Remove once all downstream dependencies are deleted.
 @property(nonatomic, assign) syncer::SyncService* syncService;
 
 // SyncSetupService used by MailtoHandlerService.
+// TODO(crbug.com/1442213): Remove once all downstream dependencies are deleted.
 @property(nonatomic, assign) SyncSetupService* syncSetupService;
 
 // PrefService used by MailtoHandlerService.

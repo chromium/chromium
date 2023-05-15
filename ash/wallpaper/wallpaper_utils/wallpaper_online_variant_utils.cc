@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "base/ranges/algorithm.h"
 
 namespace ash {
@@ -24,9 +25,9 @@ bool IsSuitableOnlineWallpaperVariantInternal(
   }
   switch (checkpoint) {
     case ScheduleCheckpoint::kSunrise:
+      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE;
     // `kDisabled` is equivalent to Light mode.
     case ScheduleCheckpoint::kDisabled:
-      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE;
     case ScheduleCheckpoint::kMorning:
       return variant.type ==
                  backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE ||
@@ -74,6 +75,17 @@ const OnlineWallpaperVariant* FirstValidVariant(
     return &(*iter);
   }
   return nullptr;
+}
+
+bool IsTimeOfDayWallpaper(const WallpaperInfo& wallpaper_info) {
+  const std::vector<OnlineWallpaperVariant>& variants = wallpaper_info.variants;
+  return base::ranges::any_of(
+      variants, [](const OnlineWallpaperVariant& variant) {
+        return variant.type ==
+                   backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE ||
+               variant.type ==
+                   backdrop::Image_ImageType_IMAGE_TYPE_LATE_AFTERNOON_MODE;
+      });
 }
 
 }  // namespace ash

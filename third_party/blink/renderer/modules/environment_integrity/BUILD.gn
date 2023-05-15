@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("environment_integrity") {
+  sources = [
+    "environment_integrity.cc",
+    "environment_integrity.h",
+    "navigator_environment_integrity.cc",
+    "navigator_environment_integrity.h",
+  ]
+}

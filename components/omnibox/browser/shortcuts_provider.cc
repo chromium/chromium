@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -52,6 +53,7 @@
 namespace {
 
 using ShortcutMatch = ShortcutsProvider::ShortcutMatch;
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 class DestinationURLEqualsURL {
  public:
@@ -105,11 +107,10 @@ int CalculateScoreFromFactors(size_t typed_length,
   // Due to appending 3 chars when updating shortcuts, and expanding the last
   // word when updating or creating shortcuts, the shortcut text can be longer
   // than the user's previous inputs (see
-  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore 3
-  // or 10 chars in the shortcut text. Shortcuts are often deduped with higher
-  // scoring history suggestions anyway.
-  const size_t adjustment =
-      OmniboxFieldTrial::IsShortcutExpandingEnabled() ? 10 : 3;
+  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore 10
+  // chars in the shortcut text. Shortcuts are often deduped with higher scoring
+  // history suggestions anyway.
+  const size_t adjustment = 10;
   const size_t adjusted_text_length =
       std::max(shortcut_text_length, typed_length + adjustment) - adjustment;
   // Using the square root of the typed fraction boosts the base score rapidly
@@ -137,13 +138,14 @@ int CalculateScoreFromFactors(size_t typed_length,
 // Populate scoring signals from the shortcut match to ACMatch.
 void PopulateScoringSignals(const ShortcutMatch& shortcut_match,
                             AutocompleteMatch* match) {
-  match->scoring_signals.set_shortcut_visit_count(
+  match->scoring_signals = absl::make_optional<ScoringSignals>();
+  match->scoring_signals->set_shortcut_visit_count(
       shortcut_match.aggregate_number_of_hits);
-  match->scoring_signals.set_shortest_shortcut_len(
+  match->scoring_signals->set_shortest_shortcut_len(
       shortcut_match.shortest_text_length);
-  match->scoring_signals.set_elapsed_time_last_shortcut_visit_sec(
+  match->scoring_signals->set_elapsed_time_last_shortcut_visit_sec(
       (base::Time::Now() - shortcut_match.most_recent_access_time).InSeconds());
-  match->scoring_signals.set_length_of_url(
+  match->scoring_signals->set_length_of_url(
       match->destination_url.spec().length());
 }
 
@@ -355,7 +357,8 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         auto match = ShortcutToACMatch(
             *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
             relevance, input, fixed_up_input, term_string);
-        if (populate_scoring_signals) {
+        if (populate_scoring_signals &&
+            AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
           PopulateScoringSignals(shortcut_match, &match);
         }
         return match;

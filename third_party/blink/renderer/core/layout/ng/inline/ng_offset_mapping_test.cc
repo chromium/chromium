@@ -1509,6 +1509,20 @@ TEST_F(NGOffsetMappingTest, WordBreak) {
             result.GetMappingUnitsForLayoutObject(wbr));
 }
 
+// crbug.com/1443193
+TEST_F(NGOffsetMappingTest, NoCrashByListStyleTypeChange) {
+  SetupHtml("ifc",
+            R"HTML(
+      <div id=ifc>
+        <span id=t style="display:inline list-item">item</span>
+      </div>)HTML");
+  Element* target = GetElementById("t");
+  target->SetInlineStyleProperty(CSSPropertyID::kListStyleType, "myanmar");
+  UpdateAllLifecyclePhasesForTest();
+  GetOffsetMapping();
+  // Pass if NGOffsetMapping constructor didn't crash.
+}
+
 // Test |GetOffsetMapping| which is available both for LayoutNG and for legacy.
 class NGOffsetMappingGetterTest : public RenderingTest {};
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import "base/format_macros.h"
 #import "base/json/json_string_value_serializer.h"
@@ -170,6 +171,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // After clearing browsing history via code, wait for the UI to be done
   // with any updates. This includes icons from the new tab page being removed.
   GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+- (void)killWebKitNetworkProcess {
+  [ChromeEarlGreyAppInterface killWebKitNetworkProcess];
 }
 
 - (NSInteger)browsingHistoryEntryCount {
@@ -402,9 +407,36 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
+- (void)waitForNotSufficientlyVisibleElementWithMatcher:
+    (id<GREYMatcher>)matcher {
+  NSString* errorDescription = [NSString
+      stringWithFormat:
+          @"Failed waiting for element with matcher %@ to become not visible",
+          matcher];
+
+  GREYCondition* waitForElement = [GREYCondition
+      conditionWithName:errorDescription
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:matcher]
+                        assertWithMatcher:grey_sufficientlyVisible()
+                                    error:&error];
+                    return error != nil;
+                  }];
+
+  bool matchedElement =
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
+}
+
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher {
   [self waitForUIElementToAppearWithMatcher:matcher
                                     timeout:kWaitForUIElementTimeout];
+}
+
+- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher {
+  return [self testUIElementAppearanceWithMatcher:matcher
+                                          timeout:kWaitForUIElementTimeout];
 }
 
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
@@ -412,7 +444,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* errorDescription = [NSString
       stringWithFormat:@"Failed waiting for element with matcher %@ to appear",
                        matcher];
+  bool matched = [self testUIElementAppearanceWithMatcher:matcher
+                                                  timeout:timeout];
+  EG_TEST_HELPER_ASSERT_TRUE(matched, errorDescription);
+}
 
+- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher
+                                   timeout:(base::TimeDelta)timeout {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()
@@ -420,8 +458,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
     return error == nil;
   };
 
-  bool matched = WaitUntilConditionOrTimeout(timeout, condition);
-  EG_TEST_HELPER_ASSERT_TRUE(matched, errorDescription);
+  return WaitUntilConditionOrTimeout(timeout, condition);
 }
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
@@ -1317,6 +1354,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isUIButtonConfigurationEnabled {
   return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
+}
+
+- (BOOL)isSortingTabsByRecency {
+  return [ChromeEarlGreyAppInterface isSortingTabsByRecency];
 }
 
 #pragma mark - ContentSettings

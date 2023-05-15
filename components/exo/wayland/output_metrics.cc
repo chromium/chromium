@@ -8,8 +8,8 @@
 #include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/display/display.h"
-#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/util/display_manager_util.h"
 
 namespace exo::wayland {
 namespace {
@@ -92,6 +92,8 @@ OutputMetrics::OutputMetrics(const display::Display& display)
   physical_size_px = info.bounds_in_native().size();
   physical_size_mm =
       ScaleToRoundedSize(physical_size_px, kInchInMm / info.device_dpi());
+
+  physical_overscan_insets = info.GetOverscanInsetsInPixel();
 
   // Use panel_rotation otherwise some X apps will refuse to take events from
   // outside the "visible" region.

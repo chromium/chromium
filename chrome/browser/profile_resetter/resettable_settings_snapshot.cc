@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/hash/md5.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -17,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -85,7 +85,7 @@ ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
 
   // Calculate the MD5 sum of the GUID to make sure that no part of the GUID
   // contains information identifying the sender of the report.
-  guid_ = base::MD5String(base::GenerateGUID());
+  guid_ = base::MD5String(base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 ResettableSettingsSnapshot::~ResettableSettingsSnapshot() {

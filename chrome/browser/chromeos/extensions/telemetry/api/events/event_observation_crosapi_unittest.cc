@@ -18,26 +18,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
+
 namespace {
+
+namespace crosapi = ::crosapi::mojom;
 
 class EventDelegate : public EventObservationCrosapi::Delegate {
  public:
   ~EventDelegate() override = default;
 
   // EventManager::Delegate:
-  void OnAudioJackEvent(const extensions::ExtensionId& extension_id,
-                        api::os_events::AudioJackEventInfo info) override {
+  void OnEvent(const extensions::ExtensionId& extension_id,
+               crosapi::TelemetryEventInfoPtr info) override {
     future_.AddValue(std::make_tuple(extension_id, std::move(info)));
   }
 
-  std::tuple<extensions::ExtensionId, api::os_events::AudioJackEventInfo>
+  std::tuple<extensions::ExtensionId, crosapi::TelemetryEventInfoPtr>
   WaitAndGetData() {
     return future_.Take();
   }
 
  private:
   base::test::RepeatingTestFuture<
-      std::tuple<extensions::ExtensionId, api::os_events::AudioJackEventInfo>>
+      std::tuple<extensions::ExtensionId, crosapi::TelemetryEventInfoPtr>>
       future_;
 };
 
@@ -63,12 +66,10 @@ class TelemetryExtensionEventObservationCrosapiTest
 
   EventDelegate* GetEventDelegate() { return event_delegate_; }
 
-  mojo::Remote<crosapi::mojom::TelemetryEventObserver>& GetRemote() {
-    return remote_;
-  }
+  mojo::Remote<crosapi::TelemetryEventObserver>& GetRemote() { return remote_; }
 
-  void Bind(mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver>
-                pending_remote) {
+  void Bind(
+      mojo::PendingRemote<crosapi::TelemetryEventObserver> pending_remote) {
     remote_.Bind(std::move(pending_remote));
   }
 
@@ -77,17 +78,18 @@ class TelemetryExtensionEventObservationCrosapiTest
   std::unique_ptr<EventObservationCrosapi> event_observation_;
   raw_ptr<EventDelegate> event_delegate_;
 
-  mojo::Remote<crosapi::mojom::TelemetryEventObserver> remote_;
+  mojo::Remote<crosapi::TelemetryEventObserver> remote_;
 };
 
-TEST_F(TelemetryExtensionEventObservationCrosapiTest, CanObserveEvent) {
+TEST_F(TelemetryExtensionEventObservationCrosapiTest,
+       CanObserveAudioJackEvent) {
   Bind(GetEventRouter()->GetRemote());
 
-  auto audio_info = crosapi::mojom::TelemetryAudioJackEventInfo::New();
-  audio_info->state = crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+  auto audio_info = crosapi::TelemetryAudioJackEventInfo::New();
+  audio_info->state = crosapi::TelemetryAudioJackEventInfo::State::kAdd;
 
-  auto info = crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
-      std::move(audio_info));
+  auto info =
+      crosapi::TelemetryEventInfo::NewAudioJackEventInfo(std::move(audio_info));
 
   GetRemote()->OnEvent(std::move(info));
 
@@ -97,8 +99,10 @@ TEST_F(TelemetryExtensionEventObservationCrosapiTest, CanObserveEvent) {
   auto result = GetEventDelegate()->WaitAndGetData();
 
   EXPECT_EQ(std::get<0>(result), extension()->id());
-  EXPECT_EQ(std::get<1>(result).event,
-            api::os_events::AudioJackEvent::kConnected);
+  EXPECT_EQ(std::get<1>(result),
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
+                crosapi::TelemetryAudioJackEventInfo::New(
+                    crosapi::TelemetryAudioJackEventInfo::State::kAdd)));
 }
 
 }  // namespace chromeos

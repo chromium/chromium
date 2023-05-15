@@ -49,13 +49,14 @@ LocalCardMigrationManager::LocalCardMigrationManager(
 LocalCardMigrationManager::~LocalCardMigrationManager() {}
 
 bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
-    const absl::optional<CreditCard>& credit_card_import_candidate,
+    const absl::optional<CreditCard>& extracted_credit_card,
     int credit_card_import_type) {
   // Reset and store the extracted credit card info for a later check of whether
   // the extracted card is supported.
   extracted_credit_card_number_.reset();
-  if (credit_card_import_candidate)
-    extracted_credit_card_number_ = credit_card_import_candidate->number();
+  if (extracted_credit_card) {
+    extracted_credit_card_number_ = extracted_credit_card->number();
+  }
   credit_card_import_type_ = credit_card_import_type;
   // Must be an existing card. New cards always get Upstream or local save.
   switch (credit_card_import_type_) {

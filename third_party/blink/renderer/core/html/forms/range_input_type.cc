@@ -96,12 +96,6 @@ InputType::ValueMode RangeInputType::GetValueMode() const {
 
 void RangeInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRange);
-  if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
-    if (style->EffectiveAppearance() == kSliderVerticalPart) {
-      UseCounter::Count(GetElement().GetDocument(),
-                        WebFeature::kInputTypeRangeVerticalAppearance);
-    }
-  }
 }
 
 const AtomicString& RangeInputType::FormControlType() const {

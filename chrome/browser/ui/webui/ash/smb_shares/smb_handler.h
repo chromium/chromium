@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -56,7 +57,7 @@ class SmbHandler : public content::WebUIMessageHandler {
 
   bool host_discovery_done_ = false;
   base::OnceClosure stored_mount_call_;
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   UpdateCredentialsCallback update_cred_callback_;
   base::WeakPtrFactory<SmbHandler> weak_ptr_factory_{this};
 };

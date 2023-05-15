@@ -15,6 +15,7 @@ component("memory") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced:resourced",
+    "//chromeos/ash/components/dbus/swap_management",
     "//chromeos/dbus/constants",
     "//components/memory_pressure",
     "//crypto",
@@ -48,6 +49,7 @@ source_set("unit_tests") {
     ":memory",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chromeos/ash/components/dbus/resourced",
     "//components/memory_pressure",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
     "memory_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
+    "swap_configuration_unittest.cc",
     "zram_writeback_controller_unittest.cc",
   ]
 }

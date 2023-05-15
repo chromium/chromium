@@ -12,13 +12,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './os_japanese_clear_ime_data_dialog.html.js';
 
-interface OsSettingsClearPersonalizedDataDialogElement {
+export interface OsSettingsClearPersonalizedDataDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class OsSettingsClearPersonalizedDataDialogElement extends PolymerElement {
+export class OsSettingsClearPersonalizedDataDialogElement extends
+    PolymerElement {
   static get is() {
     return 'os-settings-japanese-clear-ime-data-dialog' as const;
   }

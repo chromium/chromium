@@ -303,28 +303,28 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
         base::ClampRound<SkAlpha>(SK_AlphaOPAQUE - icon_alpha / kFadeOutRatio);
   }
 
-  int centered_origin_x = (width() - icon_image_.width()) / 2;
-  int centered_origin_y = (height() - icon_image_.height()) / 2;
+  gfx::Rect icon_bounds = GetContentsBounds();
+  icon_bounds.ClampToCenteredSize(icon_image_.size());
+  const int icon_bounds_x = icon_bounds.x();
+  const int icon_bounds_y = icon_bounds.y();
 
   if (crossfade_icon_alpha > 0 && !crossfade_icon_image_.isNull()) {
     canvas->SaveLayerAlpha(GetAlphaForIcon(alpha_));
     cc::PaintFlags flags;
     flags.setAlphaf(icon_alpha / 255.0f);
-    DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
-                     flags);
+    DrawIconContents(canvas, icon_image_, icon_bounds_x, icon_bounds_y, flags);
 
     flags.setAlphaf(crossfade_icon_alpha / 255.0f);
     flags.setBlendMode(SkBlendMode::kPlus);
-    DrawIconContents(canvas, crossfade_icon_image_, centered_origin_x,
-                     centered_origin_y, flags);
+    DrawIconContents(canvas, crossfade_icon_image_, icon_bounds_x,
+                     icon_bounds_y, flags);
     canvas->Restore();
   } else {
     if (!swap_images_animation_->is_animating())
       icon_alpha = alpha_;
     cc::PaintFlags flags;
     flags.setAlphaf(GetAlphaForIcon(icon_alpha) / 255.0f);
-    DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
-                     flags);
+    DrawIconContents(canvas, icon_image_, icon_bounds_x, icon_bounds_y, flags);
   }
 }
 
@@ -392,6 +392,8 @@ DEFINE_ENUM_CONVERTERS(
      u"CAPTION_BUTTON_ICON_ZOOM"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CENTER,
      u"CAPTION_BUTTON_ICON_CENTER"},
+    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_FLOAT,
+     u"CAPTION_BUTTON_ICON_FLOAT"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CUSTOM,
      u"CAPTION_BUTTON_ICON_CUSTOM"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_COUNT,

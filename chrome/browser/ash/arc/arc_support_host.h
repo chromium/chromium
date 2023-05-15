@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
@@ -250,12 +251,14 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
   void DisconnectMessageHost();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   RequestOpenAppCallback request_open_app_callback_;
 
-  AuthDelegate* auth_delegate_ = nullptr;           // not owned
-  TermsOfServiceDelegate* tos_delegate_ = nullptr;  // not owned
-  ErrorDelegate* error_delegate_ = nullptr;         // not owned
+  raw_ptr<AuthDelegate, ExperimentalAsh> auth_delegate_ = nullptr;  // not owned
+  raw_ptr<TermsOfServiceDelegate, ExperimentalAsh> tos_delegate_ =
+      nullptr;  // not owned
+  raw_ptr<ErrorDelegate, ExperimentalAsh> error_delegate_ =
+      nullptr;  // not owned
 
   // True, if ARC support app is requested to start, but the connection is not
   // yet established. Reset to false, when the app is started and the
@@ -263,7 +266,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   bool app_start_pending_ = false;
 
   // The instance is created and managed by Chrome.
-  arc::ArcSupportMessageHost* message_host_ = nullptr;
+  raw_ptr<arc::ArcSupportMessageHost, ExperimentalAsh> message_host_ = nullptr;
 
   absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 

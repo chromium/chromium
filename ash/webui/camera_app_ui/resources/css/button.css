@@ -22,44 +22,40 @@ button.text-button.pill:focus {
 }
 
 .text-button.dark.primary {
-  background: var(--blue-300);
-  color: var(--grey-900);
+  background: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
 }
 
 .text-button.dark.primary:hover {
-  background: rgba(var(--blue-300-rgb), 0.92);
+  /* Use linear-gradient to apply multiple background colors. */
+  background: linear-gradient(
+    0deg,
+    var(--cros-sys-hover_on_prominent),
+    var(--cros-sys-hover_on_prominent)
+  ), var(--cros-sys-primary);
 }
 
-.text-button.dark.secondary {
-  background: 1px solid var(--grey-900);
-  border: 1px solid var(--grey-700);
-  color: var(--blue-300);
-}
+.text-button.dark:is(.secondary, .system-secondary) {
+  background: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
 
-.text-button.dark.secondary:hover {
-  background: rgba(var(--blue-300-rgb), 0.08);
-}
+  :is(svg-wrapper) {
+    color: var(--cros-sys-on_primary_container);
+  }
 
-.text-button.dark.system-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--grey-200);
-}
-
-.text-button.dark.system-secondary:hover,
-.text-button.dark.system-secondary:focus {
-  background-color: rgba(0, 0, 0, 0.05);
+  &:hover {
+    background: linear-gradient(
+      0deg,
+      var(--cros-sys-hover_on_subtle),
+      var(--cros-sys-hover_on_subtle)
+    ), var(--cros-sys-primary_container);
+  }
 }
 
 .icon-button {
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 50%;
-}
-
-button.icon-button:focus {
-  outline-offset: 2px;
+  border-radius: 12px;
 }
 
 button.icon-button.dark:hover {
-  background-color: rgba(var(--blue-300-rgb), 0.08);
+  background: var(--cros-sys-hover_on_subtle);
 }

@@ -45,7 +45,7 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
 template <>
 struct DowncastTraits<NGTableNode> {
   static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsNGTable();
+    return node.IsTable();
   }
 };
 

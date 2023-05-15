@@ -26,16 +26,15 @@ using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 AttributionReport DefaultEventLevelReport(
     base::Time source_time = base::Time::Now()) {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
-                 .Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder(source_time).BuildStored())
       .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
       .Build();
 }
 
 AttributionReport DefaultAggregatableReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
           {AggregatableHistogramContribution(1, 2)})
       .BuildAggregatableAttribution();
@@ -759,6 +758,20 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
            "source_site": "https://impression.test"
          },
          "type": "trigger-aggregate-insufficient-budget"
+       }])json"},
+      {AggregatableResult::kExcessiveReports,
+       /*new_aggregatable_report=*/absl::nullopt,
+       CreateReportResult::Limits{.max_aggregatable_reports_per_source = 10},
+       /*source_debug_key=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "10",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-aggregate-excessive-reports"
        }])json"},
       {AggregatableResult::kNoMatchingSourceFilterData,
        /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),

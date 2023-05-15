@@ -8,15 +8,14 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -118,18 +117,16 @@
   self.infobarAccepted = YES;
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  DefaultBrowserSceneAgent* agent =
-      [DefaultBrowserSceneAgent agentFromScene:sceneState];
-  [agent.nonModalScheduler logUserPerformedPromoAction];
+  [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
+      logUserPerformedPromoAction];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
   if (userInitiated) {
     SceneState* sceneState =
         SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    DefaultBrowserSceneAgent* agent =
-        [DefaultBrowserSceneAgent agentFromScene:sceneState];
-    [agent.nonModalScheduler logUserDismissedPromo];
+    [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
+        logUserDismissedPromo];
   }
 }
 

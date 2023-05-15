@@ -12,6 +12,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -114,9 +115,10 @@ void FrameHeader::FrameAnimatorView::StartAnimation(base::TimeDelta duration) {
 
   AddLayerToRegion(old_layer, views::LayerRegion::kBelow);
 
-  // The old layer is on top and should fade out.
-  old_layer->SetOpacity(1.f);
-  new_layer->SetOpacity(1.f);
+  // The old layer is on top and should fade out. The new layer is given the
+  // opacity as the old layer is currently targeting. This ensures that we don't
+  // change the overall opacity, since it may have been set by something else.
+  new_layer->SetOpacity(old_layer->GetTargetOpacity());
   {
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
     settings.SetPreemptionStrategy(
@@ -319,6 +321,10 @@ void FrameHeader::SetFrameTextOverride(
 
 SkPath FrameHeader::GetWindowMaskForFrameHeader(const gfx::Size& size) {
   return SkPath();
+}
+
+ui::ColorId FrameHeader::GetColorIdForCurrentMode() const {
+  return mode_ == MODE_ACTIVE ? ui::kColorFrameActive : ui::kColorFrameInactive;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

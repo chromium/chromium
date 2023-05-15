@@ -56,12 +56,14 @@ String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint);
 // unrecognized, returns nullopt. Based on the spec:
 // https://immersive-web.github.io/webxr/#feature-name
 absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
-    const ExecutionContext* context,
     const String& feature_string);
 
 // Inverse of |StringToXRSessionFeature()|, used for logging to console and for
 // |XRSession::enabledFeatures|.
 String XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
+
+bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
+                                const ExecutionContext* context);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

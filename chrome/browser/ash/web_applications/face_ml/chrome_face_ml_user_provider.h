@@ -29,7 +29,7 @@ class ChromeFaceMLUserProvider : public FaceMLUserProvider {
   mojom::face_ml_app::UserInformation GetCurrentUserInformation() override;
 
  private:
-  const base::raw_ref<content::WebUI> web_ui_;  // Owns |this|.
+  const raw_ref<content::WebUI> web_ui_;  // Owns |this|.
 };
 }  // namespace ash
 

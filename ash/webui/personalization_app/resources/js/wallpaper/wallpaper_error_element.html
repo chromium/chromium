@@ -12,8 +12,25 @@
     margin: 24px 12px 0 12px;
     max-width: 316px;
   }
+
+  :host-context(body.jelly-enabled) p {
+    margin-top: 0;
+    position: relative;
+    top: -12px;
+  }
+
+  iron-icon[icon='personalization-illo:wallpaper_error'] {
+    --iron-icon-width: 400px;
+    --iron-icon-height: 177px;
+    top: -24px;
+  }
+
+  :host-context(body.jelly-enabled) #wallpaperError,
+  :host-context(body:not(.jelly-enabled)) #wallpaperErrorJelly {
+    display: none;
+  }
 </style>
-<svg width="380" height="140" viewBox="0 0 380 140" fill="none"
+<svg id="wallpaperError" width="380" height="140" viewBox="0 0 380 140" fill="none"
     xmlns="http://www.w3.org/2000/svg">
   <g clip-path="url(#clip0)">
     <rect width="380" height="140"></rect>
@@ -68,4 +85,5 @@
     </clipPath>
   </defs>
 </svg>
+<iron-icon id="wallpaperErrorJelly" icon="personalization-illo:wallpaper_error"></iron-icon>
 <p>$i18n{wallpaperNetworkError}</p>

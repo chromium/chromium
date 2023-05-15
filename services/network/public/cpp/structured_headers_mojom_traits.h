@@ -98,6 +98,30 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
                    net::structured_headers::ParameterizedItem* out);
 };
 
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
+    StructTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
+                 net::structured_headers::ParameterizedMember> {
+  static const std::vector<net::structured_headers::ParameterizedItem>& member(
+      const net::structured_headers::ParameterizedMember& in) {
+    return in.member;
+  }
+
+  static bool member_is_inner_list(
+      const net::structured_headers::ParameterizedMember& in) {
+    return in.member_is_inner_list;
+  }
+
+  static const std::vector<
+      std::pair<std::string, net::structured_headers::Item>>&
+  parameters(const net::structured_headers::ParameterizedMember& in) {
+    return in.params;
+  }
+
+  static bool Read(network::mojom::StructuredHeadersParameterizedMemberDataView,
+                   net::structured_headers::ParameterizedMember* out);
+};
+
 }  // namespace mojo
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_STRUCTURED_HEADERS_MOJOM_TRAITS_H_

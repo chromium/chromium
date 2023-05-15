@@ -170,10 +170,6 @@ def _ParseArgs(args):
   input_opts.add_argument(
       '--webp-cache-dir', help='The directory to store webp image cache.')
   input_opts.add_argument(
-      '--no-xml-namespaces',
-      action='store_true',
-      help='Whether to strip xml namespaces from processed xml resources.')
-  input_opts.add_argument(
       '--is-bundle-module',
       action='store_true',
       help='Whether resources are being generated for a bundle module.')
@@ -769,7 +765,7 @@ def _PackageApk(options, build):
   if options.shared_resources:
     link_command.append('--shared-lib')
 
-  if options.no_xml_namespaces:
+  if int(options.min_sdk_version) > 21:
     link_command.append('--no-xml-namespaces')
 
   if options.package_id:

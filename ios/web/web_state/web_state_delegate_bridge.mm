@@ -70,7 +70,7 @@ JavaScriptDialogPresenter* WebStateDelegateBridge::GetJavaScriptDialogPresenter(
   return nullptr;
 }
 
-bool WebStateDelegateBridge::HandlePermissionsDecisionRequest(
+void WebStateDelegateBridge::HandlePermissionsDecisionRequest(
     WebState* source,
     NSArray<NSNumber*>* permissions,
     WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
@@ -79,9 +79,9 @@ bool WebStateDelegateBridge::HandlePermissionsDecisionRequest(
     [delegate_ webState:source
         handlePermissions:permissions
           decisionHandler:handler];
-    return true;
+  } else {
+    handler(PermissionDecisionShowDefaultPrompt);
   }
-  return false;
 }
 
 void WebStateDelegateBridge::OnAuthRequired(

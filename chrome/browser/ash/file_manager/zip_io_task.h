@@ -9,6 +9,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -49,7 +50,7 @@ class ZipIOTask : public IOTask {
   void OnZipProgress();
   void OnZipComplete();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   size_t files_preprocessed_ = 0;

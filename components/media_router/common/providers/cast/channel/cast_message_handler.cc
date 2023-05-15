@@ -4,6 +4,7 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>

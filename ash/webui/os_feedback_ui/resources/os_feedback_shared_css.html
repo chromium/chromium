@@ -1,5 +1,5 @@
 <template>
-  <style include="cr-shared-style md-select">
+  <style include="cr-shared-style md-select cros-color-overrides">
     :host {
       --feedback-footer-height: 92px;
       --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
@@ -11,12 +11,51 @@
       --feedback-medium-font-weight: 500;
     }
 
+    :host-context(body.jelly-enabled) {
+      --feedback-roboto-font-family: var(--cros-body-0-font);
+      --feedback-google-sans-font-family: var(--cros-body-0-font);
+      font: var(--cros-body-2-font);
+    }
+
     :host-context([dir='rtl']) .dialog-back-arrow {
       transform: rotate(180deg);
     }
 
-    html {
-      background-color: var(--cros-bg-color);
+    :host-context(body.jelly-enabled) .dialog-toolbar {
+      font: var(--cros-headline-1-font);
+    }
+
+    :host-context(body.jelly-enabled) .md-select {
+      --md-select-bg-color: var(--cros-sys-app_base);
+    }
+
+    :host-context(body.jelly-enabled) .page-title {
+      font: var(--cros-display-6-font);
+    }
+
+    :host-context(body:not(jelly-enabled)) cr-button {
+      font: var(--cros-button-2-font);
+    }
+
+    :host-context(body:not(jelly-enabled)) cr-button.action-button {
+      font: var(--cros-body-1-font);
+    }
+
+    :host-context(body:not(jelly-enabled)) cr-checkbox {
+      --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
+    }
+
+    :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+      border-radius: 20px;
+      font: var(--cros-body-2-font);
+    }
+
+    :host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
+      font: var(--cros-annotation-2-font);
+    }
+
+    :host-context(body.jelly-enabled) h2 {
+      font: var(--cros-headline-1-font);
     }
 
     a {
@@ -129,7 +168,6 @@
 
     cr-checkbox {
       --cr-checkbox-label-padding-start: 10px;
-      --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
       margin-inline-end: 12px;
     }
 

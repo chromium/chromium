@@ -38,7 +38,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SE
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -56,7 +55,10 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -75,9 +77,13 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -94,6 +100,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
@@ -142,6 +149,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final View mLogoContainerView;
     private final boolean mIsFeedGoneImprovementEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final TabCreatorManager mTabCreatorManager;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -218,6 +226,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
     private boolean mIsStartSurfaceRefactorEnabled;
     private OnClickListener mTabSwitcherClickHandler;
+    private ObservableSupplier<Profile> mProfileSupplier;
 
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
@@ -227,13 +236,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ActivityStateChecker activityStateChecker, boolean excludeQueryTiles,
+            ActivityStateChecker activityStateChecker,
+            @Nullable TabCreatorManager tabCreatorManager, boolean excludeQueryTiles,
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
             Runnable initializeMVTilesRunnable, Supplier<Tab> parentTabSupplier,
             View logoContainerView, @Nullable BackPressManager backPressManager,
             ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OnClickListener tabSwitcherClickHandler) {
+            OnClickListener tabSwitcherClickHandler, ObservableSupplier<Profile> profileSupplier) {
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabSwitcherModule = tabSwitcherModule;
         mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : controller;
@@ -245,6 +255,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
+        mTabCreatorManager = tabCreatorManager;
         mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
@@ -262,6 +273,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.addObserver(this::onProfileAvailable);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -471,9 +484,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // Note that isVoiceSearchEnabled will return false in incognito mode.
             mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
                     mOmniboxStub.getVoiceRecognitionHandler().isVoiceSearchEnabled());
-            boolean shouldShowLensButton = mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE);
-            LensMetrics.recordShown(LensEntryPoint.TASKS_SURFACE, shouldShowLensButton);
-            mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, shouldShowLensButton);
+            updateLensVisibility();
 
             // This is for Instant Start when overview is already visible while the omnibox, Feed
             // and MV tiles haven't been set.
@@ -494,14 +505,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                             true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
                     RecordUserAction.record("TasksSurface.FakeBox.Tapped");
                 });
-                mPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+                mPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new EmptyTextWatcher() {
                     @Override
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0) return;
@@ -533,6 +537,25 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             mTabSwitcherModule.initWithNative();
         }
         mFeedVisibilityPrefOnStartUp = prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+
+        // Trigger the creation of spare tab for StartSurface after the native is initialized to
+        // speed up navigation from start.
+        maybeScheduleSpareTabCreation();
+    }
+
+    void onProfileAvailable(Profile profile) {
+        if (profile.isOffTheRecord()) return;
+
+        TemplateUrlServiceFactory.getForProfile(profile).addObserver(this::updateLensVisibility);
+        mProfileSupplier.removeObserver(this::onProfileAvailable);
+    }
+
+    private void updateLensVisibility() {
+        if (mOmniboxStub == null) return;
+
+        boolean shouldShowLensButton = mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE);
+        LensMetrics.recordShown(LensEntryPoint.TASKS_SURFACE, shouldShowLensButton);
+        mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, shouldShowLensButton);
     }
 
     void destroy() {
@@ -543,8 +566,50 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mCallbackController != null) {
             mCallbackController.destroy();
         }
+        if (mProfileSupplier.get() != null) {
+            TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+                    .removeObserver(this::updateLensVisibility);
+        }
+        mProfileSupplier.removeObserver(this::onProfileAvailable);
         mayRecordHomepageSessionEnd();
         mActivityLifecycleDispatcher.unregister(this);
+    }
+
+    /**
+     * Returns true if START_SURFACE_SPARE_TAB feature is enabled.
+     */
+    private static boolean isStartSurfaceSpareTabEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.START_SURFACE_SPARE_TAB);
+    }
+
+    /**
+     * Schedules creating a spare tab when native is initialized and when start surface is shown.
+     */
+    private void maybeScheduleSpareTabCreation() {
+        // Only create spare tab when native is initialized. If start surface is shown before native
+        // is initialized, this will be invoked later.
+        if (!mIsNativeInitialized) return;
+
+        // Only create a spare tab if tab creator exists.
+        if (mTabCreatorManager == null) return;
+        TabCreator tabCreator = mTabCreatorManager.getTabCreator(mIsIncognito);
+        // Don't create a spare tab when no tab creator is present.
+        if (tabCreator == null) return;
+
+        // Only create a spare tab if the StartSurfaceSpareTab feature is enabled.
+        if (!isStartSurfaceSpareTabEnabled()) return;
+
+        // Only create a spare tab when start surface is shown.
+        if (!isHomepageShown()) return;
+
+        recordTimeBetweenShowAndCreate();
+        // We use UI_DEFAULT priority to not slow down high priority tasks such as user input.
+        // As this is behavior is behind a feature flag, based on the results we will deviate to
+        // lower priority if needed.
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                ()
+                        -> WarmupManager.getInstance().createSpareTab(
+                                tabCreator, TabLaunchType.FROM_START_SURFACE));
     }
 
     /**
@@ -614,6 +679,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         RecordUserAction.record("StartSurface.Shown");
         RecordUserAction.record("StartSurface.SinglePane.Home");
         mayRecordHomepageSessionBegin();
+
+        maybeScheduleSpareTabCreation();
     }
 
     void setSecondaryTasksSurfacePropertyModel(PropertyModel propertyModel) {
@@ -862,6 +929,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         }
         mayRecordHomepageSessionBegin();
         mController.showTabSwitcherView(animate);
+
+        maybeScheduleSpareTabCreation();
     }
 
     /**
@@ -1046,6 +1115,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             RecordUserAction.record("StartSurface.Hidden");
             mIsHomepageShown = false;
         }
+
+        // Since the start surface is hidden, destroy any spare tabs created.
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> WarmupManager.getInstance().destroySpareTab());
+
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
         }
@@ -1537,6 +1611,15 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private void recordTimeSpendInStart() {
         RecordHistogram.recordMediumTimesHistogram(
                 "StartSurface.TimeSpent", System.currentTimeMillis() - mLastShownTimeMs);
+    }
+
+    /**
+     * Records the UMA between the time that a start surface appears and the time at which a spare
+     * tab creation is initiated.
+     */
+    private void recordTimeBetweenShowAndCreate() {
+        RecordHistogram.recordMediumTimesHistogram("StartSurface.SpareTab.TimeBetweenShowAndCreate",
+                System.currentTimeMillis() - mLastShownTimeMs);
     }
 
     /**

@@ -88,7 +88,7 @@ enum class NGCacheSlot { kLayout, kMeasure };
 // The NGConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a NGFragment within.
 class CORE_EXPORT NGConstraintSpace final {
-  // Though some STACK_ALLOCATED classes, |NGContainerFragmentBuilder| and
+  // Though some STACK_ALLOCATED classes, |NGFragmentBuilder| and
   // |NGLineBreaker|, have reference to it, DISALLOW_NEW is applied here for
   // performance reason.
   DISALLOW_NEW();
@@ -282,6 +282,12 @@ class CORE_EXPORT NGConstraintSpace final {
                          : absl::nullopt;
   }
 
+  // True if we're using the "fallback" available inline-size. This typically
+  // means that we depend on the size of the initial containing block.
+  bool UsesOrthogonalFallbackInlineSize() const {
+    return HasRareData() && rare_data_->uses_orthogonal_fallback_inline_size;
+  }
+
   // Inline/block target stretch size constraints.
   // See:
   // https://w3c.github.io/mathml-core/#dfn-inline-stretch-size-constraint
@@ -424,7 +430,11 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Whether the current node is a table-cell.
-  bool IsTableCell() const { return bitfields_.is_table_cell; }
+  bool IsTableCell() const {
+    return HasRareData() &&
+           rare_data_->data_union_type ==
+               static_cast<unsigned>(RareData::DataUnionType::kTableCellData);
+  }
 
   // Whether the table-cell fragment should be hidden (not painted) if it has
   // no children.
@@ -517,6 +527,10 @@ class CORE_EXPORT NGConstraintSpace final {
   // set within |NGBlockLayoutAlgorithm| for the conditions when this applies.
   bool IsRestrictedBlockSizeTableCellChild() const {
     return bitfields_.is_restricted_block_size_table_cell_child;
+  }
+
+  bool IsInFlexIntrinsicSizing() const {
+    return bitfields_.is_in_flex_intrinsic_sizing;
   }
 
   bool IsPaintedAtomically() const { return bitfields_.is_painted_atomically; }
@@ -888,6 +902,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_past_break(false),
           min_block_size_should_encompass_intrinsic_size(false),
           has_override_min_max_block_sizes(false),
+          uses_orthogonal_fallback_inline_size(false),
           min_break_appeal(kBreakAppealLastResort),
           propagate_child_break_values(false),
           is_at_fragmentainer_start(false),
@@ -923,6 +938,8 @@ class CORE_EXPORT NGConstraintSpace final {
               other.min_block_size_should_encompass_intrinsic_size),
           has_override_min_max_block_sizes(
               other.has_override_min_max_block_sizes),
+          uses_orthogonal_fallback_inline_size(
+              other.uses_orthogonal_fallback_inline_size),
           min_break_appeal(other.min_break_appeal),
           propagate_child_break_values(other.propagate_child_break_values),
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
@@ -1144,6 +1161,8 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureBlockData()->lines_until_clamp = value;
     }
 
+    void SetIsTableCell() { EnsureTableCellData(); }
+
     NGBoxStrut TableCellBorders() const {
       return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_borders
@@ -1315,6 +1334,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_past_break : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned has_override_min_max_block_sizes : 1;
+    unsigned uses_orthogonal_fallback_inline_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
     unsigned propagate_child_break_values : 1;
     unsigned is_at_fragmentainer_start : 1;
@@ -1528,7 +1548,6 @@ class CORE_EXPORT NGConstraintSpace final {
           writing_mode(
               static_cast<unsigned>(writing_direction.GetWritingMode())),
           direction(static_cast<unsigned>(writing_direction.Direction())),
-          is_table_cell(false),
           is_anonymous(false),
           is_new_formatting_context(false),
           is_orthogonal_writing_mode_root(false),
@@ -1547,6 +1566,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_initial_block_size_indefinite(false),
           is_table_cell_child(false),
           is_restricted_block_size_table_cell_child(false),
+          is_in_flex_intrinsic_sizing(false),
           percentage_inline_storage(kSameAsAvailable),
           percentage_block_storage(kSameAsAvailable),
           replaced_percentage_block_storage(kSameAsAvailable) {}
@@ -1555,7 +1575,6 @@ class CORE_EXPORT NGConstraintSpace final {
       return adjoining_object_types == other.adjoining_object_types &&
              writing_mode == other.writing_mode &&
              direction == other.direction &&
-             is_table_cell == other.is_table_cell &&
              is_anonymous == other.is_anonymous &&
              is_new_formatting_context == other.is_new_formatting_context &&
              is_orthogonal_writing_mode_root ==
@@ -1586,8 +1605,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned writing_mode : 3;
     unsigned direction : 1;
 
-    unsigned is_table_cell : 1;
-
     unsigned is_anonymous : 1;
     unsigned is_new_formatting_context : 1;
     unsigned is_orthogonal_writing_mode_root : 1;
@@ -1608,6 +1625,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_initial_block_size_indefinite : 1;
     unsigned is_table_cell_child : 1;
     unsigned is_restricted_block_size_table_cell_child : 1;
+    unsigned is_in_flex_intrinsic_sizing : 1;
 
     unsigned percentage_inline_storage : 2;           // NGPercentageStorage
     unsigned percentage_block_storage : 2;            // NGPercentageStorage

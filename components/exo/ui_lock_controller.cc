@@ -16,6 +16,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -213,6 +214,14 @@ class ExitNotifier : public ui::EventHandler,
       OnFullscreen();
     } else if (pointer_is_captured_) {
       MaybeShowPointerCaptureNotification();
+    }
+  }
+
+  // Notify again but this only notifies again the fullscreen notifier.
+  void NotifyAgainForFullscreen() {
+    ash::WindowState* window_state = ash::WindowState::Get(window_);
+    if (window_state->IsFullscreen()) {
+      OnFullscreen();
     }
   }
 
@@ -439,9 +448,11 @@ class ExitNotifier : public ui::EventHandler,
       exit_popup_->Hide(animate);
   }
 
-  aura::Window* const window_;
-  views::Widget* fullscreen_esc_notification_ = nullptr;
-  views::Widget* pointer_capture_notification_ = nullptr;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<views::Widget, ExperimentalAsh> fullscreen_esc_notification_ =
+      nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> pointer_capture_notification_ =
+      nullptr;
   bool want_pointer_capture_notification_ = false;
   bool pointer_is_captured_ = false;
   std::unique_ptr<FullscreenControlPopup> exit_popup_;
@@ -575,11 +586,17 @@ void UILockController::OnLockStateChanged(bool locked) {
 void UILockController::OnSurfaceFocused(Surface* gained_focus,
                                         Surface* lost_focus,
                                         bool has_focused_surface) {
-  if (gained_focus != focused_surface_to_unlock_)
+  if (gained_focus != focused_surface_to_unlock_) {
     StopTimer();
+  }
 
-  if (gained_focus)
-    GetExitNotifier(this, gained_focus->window(), true);
+  if (gained_focus) {
+    ExitNotifier* exit_notifier =
+        GetExitNotifier(this, gained_focus->window(), true);
+    if (exit_notifier) {
+      exit_notifier->NotifyAgainForFullscreen();
+    }
+  }
 }
 
 void UILockController::OnPointerCaptureEnabled(Pointer* pointer,

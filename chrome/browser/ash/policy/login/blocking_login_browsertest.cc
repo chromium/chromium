@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -208,7 +209,7 @@ class BlockingLoginTest
         &BlockingLoginTest::HandleRequest, base::Unretained(this)));
   }
 
-  Profile* profile_added_;
+  raw_ptr<Profile, ExperimentalAsh> profile_added_;
 
  private:
   std::vector<std::unique_ptr<net::test_server::HttpResponse>> responses_;

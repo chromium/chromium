@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 
@@ -65,7 +66,8 @@ class ASH_PUBLIC_EXPORT PaginationController {
   // Helper function to change the page and callback record_metrics_.
   void SelectPageAndRecordMetric(int delta, ui::EventType type);
 
-  PaginationModel* const pagination_model_;  // Not owned.
+  const raw_ptr<PaginationModel, ExperimentalAsh>
+      pagination_model_;  // Not owned.
   const ScrollAxis scroll_axis_;
 
   const RecordMetrics record_metrics_;

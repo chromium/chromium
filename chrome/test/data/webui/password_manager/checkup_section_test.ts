@@ -4,8 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, PluralStringProxy, PluralStringProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -221,9 +220,9 @@ suite('CheckupSectionTest', function() {
     assertTrue(section.$.weakRow.hasAttribute('show-yellow-icon'));
 
     // Expect a proper rear icon state
-    assertFalse(section.$.compromisedRow.hasAttribute('hide-icon'));
-    assertTrue(section.$.reusedRow.hasAttribute('hide-icon'));
-    assertFalse(section.$.weakRow.hasAttribute('hide-icon'));
+    assertFalse(section.$.compromisedRow.hasAttribute('non-clickable'));
+    assertTrue(section.$.reusedRow.hasAttribute('non-clickable'));
+    assertFalse(section.$.weakRow.hasAttribute('non-clickable'));
   });
 
   test('Number of checked passwords', async function() {

@@ -10,11 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/message.h"
@@ -58,6 +57,8 @@ policy::DlpRulesManager::Component MapProtoToPolicyComponent(
       return policy::DlpRulesManager::Component::kUsb;
     case ::dlp::DlpComponent::GOOGLE_DRIVE:
       return policy::DlpRulesManager::Component::kDrive;
+    case ::dlp::DlpComponent::MICROSOFT_ONEDRIVE:  // TODO(b/280575394): Handle
+                                                   // OneDrive properly.
     case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
       return policy::DlpRulesManager::Component::kUnknownComponent;
@@ -110,25 +111,19 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
             "Unable to parse IsDlpPolicyMatchedRequest"));
     return;
   }
-  if (!request.has_source_url()) {
-    std::move(response_sender)
-        .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_INVALID_ARGS,
-            "Missing source url in request"));
-    return;
-  }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   DCHECK(rules_manager);
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
 
   // TODO(crbug.com/1360005): Add actual file path.
   bool restricted =
       files_controller
           ? files_controller->IsDlpPolicyMatched(
-                policy::DlpFilesController::FileDaemonInfo(
+                policy::DlpFilesControllerAsh::FileDaemonInfo(
                     request.file_metadata().inode(), base::FilePath(),
                     request.file_metadata().source_url()))
           : false;
@@ -162,7 +157,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     return;
   }
 
-  std::vector<policy::DlpFilesController::FileDaemonInfo> files_info;
+  std::vector<policy::DlpFilesControllerAsh::FileDaemonInfo> files_info;
   for (const auto& file : request.transferred_files()) {
     if (!file.has_inode() || !file.has_path() || !file.has_source_url()) {
       LOG(ERROR) << "Missing file path or file source url";
@@ -175,10 +170,11 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   DCHECK(rules_manager);
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
   if (!files_controller) {
-    std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+    std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
                           dlp::RestrictionLevel>>
         response_files;
     for (const auto& file : files_info) {
@@ -214,20 +210,11 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
 void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    const std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+    const std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
                                 dlp::RestrictionLevel>>& requested_files) {
   dlp::IsFilesTransferRestrictedResponse response_proto;
 
   for (const auto& [file, level] : requested_files) {
-    // Daemon still uses the old logic to rely on these fields.
-    // TODO(b/259182892): Remove when it's not used.
-    if (level == ::dlp::RestrictionLevel::LEVEL_BLOCK ||
-        level == ::dlp::RestrictionLevel::LEVEL_WARN_CANCEL) {
-      dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
-      file_metadata->set_inode(file.inode);
-      file_metadata->set_path(file.path.value());
-      file_metadata->set_source_url(file.source_url.spec());
-    }
     dlp::FileRestriction* files_restriction =
         response_proto.add_files_restrictions();
     files_restriction->mutable_file_metadata()->set_inode(file.inode);

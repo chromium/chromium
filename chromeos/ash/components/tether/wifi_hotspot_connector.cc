@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
@@ -34,7 +34,7 @@ WifiHotspotConnector::WifiHotspotConnector(
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 WifiHotspotConnector::~WifiHotspotConnector() {
@@ -78,7 +78,7 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   ssid_ = ssid;
   password_ = password;
   tether_network_guid_ = tether_network_guid;
-  wifi_network_guid_ = base::GenerateGUID();
+  wifi_network_guid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   callback_ = std::move(callback);
   timer_->Start(FROM_HERE, base::Seconds(kConnectionTimeoutSeconds),
                 base::BindOnce(&WifiHotspotConnector::OnConnectionTimeout,
@@ -105,6 +105,10 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   }
 }
 
+void WifiHotspotConnector::RequestWifiScan() {
+  network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
+}
+
 void WifiHotspotConnector::OnEnableWifiError(const std::string& error_name) {
   is_waiting_for_wifi_to_enable_ = false;
   PA_LOG(ERROR) << "Failed to enable Wi-Fi: " << error_name;
@@ -122,6 +126,11 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
     return;
   }
 
+  if (!has_requested_wifi_scan_) {
+    has_requested_wifi_scan_ = true;
+    RequestWifiScan();
+  }
+
   if (network->IsConnectedState()) {
     // The network has connected, so complete the connection attempt. Because
     // this is a NetworkStateHandlerObserver callback, complete the attempt in
@@ -135,6 +144,12 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
   }
 
   if (network->connectable() && !has_initiated_connection_to_current_network_) {
+    // Set |has_initiated_connection_to_current_network_| to true to ensure that
+    // this code path is only run once per connection attempt. Without this
+    // field, the association and connection code below would be re-run multiple
+    // times for one network.
+    has_initiated_connection_to_current_network_ = true;
+
     // The network is connectable, so initiate a connection attempt. Because
     // this is a NetworkStateHandlerObserver callback, complete the attempt in
     // a new task to ensure that NetworkStateHandler is not modified while it is
@@ -180,12 +195,6 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
                     << "initiated.";
     return;
   }
-
-  // Set |has_initiated_connection_to_current_network_| to true to ensure that
-  // this code path is only run once per connection attempt. Without this
-  // field, the association and connection code below would be re-run multiple
-  // times for one network.
-  has_initiated_connection_to_current_network_ = true;
 
   // If the network is now connectable, associate it with a Tether network
   // ASAP so that the correct icon will be displayed in the tray while the
@@ -234,6 +243,7 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   wifi_network_guid_.clear();
   has_initiated_connection_to_current_network_ = false;
   is_waiting_for_wifi_to_enable_ = false;
+  has_requested_wifi_scan_ = false;
 
   timer_->Stop();
 

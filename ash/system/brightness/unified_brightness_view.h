@@ -11,6 +11,7 @@
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -43,7 +44,16 @@ class ASH_EXPORT UnifiedBrightnessView
       &kUnifiedMenuBrightnessHighIcon,    // High brightness.
   };
 
+  // The maximum index of `kBrightnessLevelIcons`.
+  static constexpr int kBrightnessLevels = std::size(kBrightnessLevelIcons) - 1;
+
  private:
+  friend class UnifiedBrightnessViewTest;
+
+  // Get vector icon reference that corresponds to the given brightness level.
+  // `level` is between 0.0 to 1.0.
+  const gfx::VectorIcon& GetBrightnessIconForLevel(float level);
+
   // Callback called when `night_light_button_` is pressed.
   void OnNightLightButtonPressed();
 
@@ -54,9 +64,10 @@ class ASH_EXPORT UnifiedBrightnessView
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   scoped_refptr<UnifiedSystemTrayModel> model_;
-  NightLightControllerImpl* const night_light_controller_;
+  const raw_ptr<NightLightControllerImpl, ExperimentalAsh>
+      night_light_controller_;
   // Owned by the views hierarchy.
-  IconButton* night_light_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> night_light_button_ = nullptr;
 };
 
 }  // namespace ash

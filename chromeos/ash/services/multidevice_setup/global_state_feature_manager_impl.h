@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -149,9 +150,9 @@ class GlobalStateFeatureManagerImpl
   // Corresponding CryptAuth host feature for |managed_feature_|.
   multidevice::SoftwareFeature managed_host_feature_;
   const std::string pending_state_pref_name_;
-  HostStatusProvider* host_status_provider_;
-  PrefService* pref_service_;
-  device_sync::DeviceSyncClient* device_sync_client_;
+  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   bool network_request_in_flight_ = false;

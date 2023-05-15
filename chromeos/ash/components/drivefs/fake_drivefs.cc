@@ -104,6 +104,13 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   void GetNextPage(GetNextPageCallback callback) override {
     if (!drive_fs_) {
       std::move(callback).Run(drive::FileError::FILE_ERROR_ABORT, {});
+    } else if (next_page_called_) {
+      // If GetNextPage was previously called, on the next request send an empty
+      // array. This is the current way to identify if a query has no more
+      // results, however, this is slightly incorrect and b/277018122 tracks
+      // providing a more robust fix.
+      next_page_called_ = false;
+      std::move(callback).Run(drive::FILE_ERROR_OK, {});
     } else {
       // Default implementation: just search for a file name.
       callback_ = std::move(callback);
@@ -112,6 +119,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
           base::BindOnce(&SearchQuery::SearchFiles, drive_fs_->mount_path()),
           base::BindOnce(&SearchQuery::GetMetadata,
                          weak_ptr_factory_.GetWeakPtr()));
+      next_page_called_ = true;
     }
   }
 
@@ -281,6 +289,8 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   std::vector<drivefs::mojom::QueryItemPtr> results_;
   size_t pending_callbacks_ = 0;
 
+  bool next_page_called_ = false;
+
   base::WeakPtrFactory<SearchQuery> weak_ptr_factory_{this};
 };
 
@@ -338,7 +348,8 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
                               const mojom::Capabilities& capabilities,
                               const mojom::FolderFeature& folder_feature,
                               const std::string& doc_id,
-                              const std::string& alternate_url) {
+                              const std::string& alternate_url,
+                              bool shortcut) {
   auto& stored_metadata = metadata_[path];
   stored_metadata.mime_type = mime_type;
   stored_metadata.original_name = original_name;
@@ -354,6 +365,9 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
   }
   if (shared) {
     stored_metadata.shared = true;
+  }
+  if (shortcut) {
+    stored_metadata.shortcut = true;
   }
   stored_metadata.alternate_url = alternate_url;
 }
@@ -379,6 +393,9 @@ absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
   const auto& metadata = metadata_.find(path);
   if (metadata == metadata_.end()) {
     return absl::nullopt;
+  }
+  if (metadata->second.stable_id == 0) {
+    metadata->second.stable_id = next_stable_id_++;
   }
   return metadata->second;
 }
@@ -445,6 +462,11 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   metadata->stable_id = stored_metadata.stable_id;
   if (stored_metadata.hosted) {
     metadata->can_pin = mojom::FileMetadata::CanPinStatus::kDisabled;
+  }
+  if (stored_metadata.shortcut) {
+    metadata->shortcut_details = mojom::ShortcutDetails::New();
+    metadata->shortcut_details->target_lookup_status =
+        mojom::ShortcutDetails::LookupStatus::kOk;
   }
 
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
@@ -653,6 +675,11 @@ void FakeDriveFs::CancelUploadByPath(const base::FilePath& path) {}
 void FakeDriveFs::SetDocsOfflineEnabled(
     bool enabled,
     drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) {
+  std::move(callback).Run(drive::FILE_ERROR_OK);
+}
+
+void FakeDriveFs::ClearOfflineFiles(
+    drivefs::mojom::DriveFs::ClearOfflineFilesCallback callback) {
   std::move(callback).Run(drive::FILE_ERROR_OK);
 }
 

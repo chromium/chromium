@@ -5,6 +5,8 @@
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -180,6 +182,10 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
           base::BindOnce(
               &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink,
               weak_ptr_factory_.GetWeakPtr()));
+  // Verify that the saved devices sink added time isn't reset after it has been
+  // successfully opened and exists in the media router.
+  EXPECT_EQ(GetPrefUpdater()->GetDeviceAddedTime("cast:<1234>").value(),
+            GetDeviceAddedTime());
 }
 
 }  // namespace media_router

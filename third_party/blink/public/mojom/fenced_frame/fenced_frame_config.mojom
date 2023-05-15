@@ -7,6 +7,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -140,6 +141,13 @@ struct FencedFrameConfig {
   // control the frame's behavior, e.g. sandbox flags. We don't want the
   // concept of a mode to stick around in the future.
   DeprecatedFencedFrameMode mode;
+
+  // APIs like FLEDGE and Shared Storage require specific features to be enabled
+  // in the loaded frame. If an embedder is allowed to set arbitrary permissions
+  // on a fenced frame, it can be used as a fingerprinting channel. Instead,
+  // each API sets a list of feature permissions that a fenced frame needs to
+  // enable to be allowed to load.
+  array<PermissionsPolicyFeature> required_permissions_to_load;
 };
 
 // The `FencedFrameProperties` struct is used to transfer a redacted version
@@ -179,4 +187,6 @@ struct FencedFrameProperties {
   bool has_fenced_frame_reporting;
 
   DeprecatedFencedFrameMode mode;
+
+  array<PermissionsPolicyFeature> required_permissions_to_load;
 };

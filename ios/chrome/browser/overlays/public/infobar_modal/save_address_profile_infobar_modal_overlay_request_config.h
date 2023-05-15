@@ -50,6 +50,9 @@ class SaveAddressProfileModalRequestConfig
   // delegate.
   NSDictionary* GetProfileInfo();
 
+  // Profile to be saved.
+  const autofill::AutofillProfile* GetProfile();
+
   // Whether the request is for the update address profile modal.
   bool IsUpdateModal() const;
 

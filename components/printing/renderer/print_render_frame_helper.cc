@@ -831,19 +831,19 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
 }
 
 // static - Not anonymous so that platform implementations can use it.
-float PrintRenderFrameHelper::RenderPageContent(blink::WebLocalFrame* frame,
-                                                uint32_t page_number,
-                                                const gfx::Rect& canvas_area,
-                                                const gfx::Rect& content_area,
-                                                double scale_factor,
-                                                cc::PaintCanvas* canvas) {
+void PrintRenderFrameHelper::RenderPageContent(blink::WebLocalFrame* frame,
+                                               uint32_t page_number,
+                                               const gfx::Rect& canvas_area,
+                                               const gfx::Rect& content_area,
+                                               double scale_factor,
+                                               cc::PaintCanvas* canvas) {
   TRACE_EVENT1("print", "PrintRenderFrameHelper::RenderPageContent",
                "page_number", page_number);
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
   canvas->translate((content_area.x() - canvas_area.x()) / scale_factor,
                     (content_area.y() - canvas_area.y()) / scale_factor);
-  return frame->PrintPage(page_number, canvas);
+  frame->PrintPage(page_number, canvas);
 }
 
 // Class that calls the Begin and End print functions on the frame and changes
@@ -1455,7 +1455,9 @@ void PrintRenderFrameHelper::SetPrintPreviewUI(
 }
 
 void PrintRenderFrameHelper::InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
+#endif
     bool has_selection) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
@@ -2566,7 +2568,6 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
   return true;
 }
 
-#if !BUILDFLAG(IS_APPLE)
 void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                                                uint32_t page_number,
                                                uint32_t page_count,
@@ -2602,16 +2603,13 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                          final_scale_factor, *page_layout_in_points, params);
   }
 
-  float webkit_scale_factor =
-      RenderPageContent(frame, page_number, canvas_area, content_area,
-                        final_scale_factor, canvas);
-  DCHECK_GT(webkit_scale_factor, 0.0f);
+  RenderPageContent(frame, page_number, canvas_area, content_area,
+                    final_scale_factor, canvas);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
   bool ret = metafile->FinishPage();
   DCHECK(ret);
 }
-#endif  // !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::ShowScriptedPrintPreview() {

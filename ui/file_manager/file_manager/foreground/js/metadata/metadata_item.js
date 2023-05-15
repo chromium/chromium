@@ -250,5 +250,19 @@ export class MetadataItem {
      * @type {number|undefined}
      */
     this.progress;
+
+    /**
+     * If true, the item is a shortcut. Typically refers to a shortcut in Drive,
+     * but used to surface a shortcut badge on the file item.
+     * @type {boolean|undefined}
+     */
+    this.shortcut;
+
+    /**
+     * Time in milliseconds since the epoch when the file last received a
+     * "completed" sync status.
+     * @type {number|undefined}
+     */
+    this.syncCompletedTime;
   }
 }

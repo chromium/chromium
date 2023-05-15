@@ -190,10 +190,14 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
 
 bool ShouldResourceBeKeptStrongReferenceByType(Resource* resource) {
   // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
-  return (resource->GetType() == ResourceType::kImage ||
-          resource->GetType() == ResourceType::kFont ||
-          resource->GetType() == ResourceType::kCSSStyleSheet ||
-          resource->GetType() == ResourceType::kScript);
+  return (resource->GetType() == ResourceType::kImage &&
+          !base::FeatureList::IsEnabled(
+              features::kMemoryCacheStrongReferenceFilterImages)) ||
+         (resource->GetType() == ResourceType::kScript &&
+          !base::FeatureList::IsEnabled(
+              features::kMemoryCacheStrongReferenceFilterScripts)) ||
+         resource->GetType() == ResourceType::kFont ||
+         resource->GetType() == ResourceType::kCSSStyleSheet;
 }
 
 bool ShouldResourceBeKeptStrongReference(Resource* resource) {
@@ -454,7 +458,9 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     FetchParameters::SpeculativePreloadType speculative_preload_type,
     RenderBlockingBehavior render_blocking_behavior,
     mojom::blink::ScriptType script_type,
-    bool is_link_preload) {
+    bool is_link_preload,
+    const absl::optional<float> resource_width,
+    const absl::optional<float> resource_height) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
   ResourceLoadPriority priority = TypeToPriority(type);
@@ -530,6 +536,10 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
       priority, type, resource_request, defer_option, render_blocking_behavior,
       is_link_preload);
 
+  priority = AdjustImagePriority(priority, type, resource_request,
+                                 speculative_preload_type, is_link_preload,
+                                 resource_width, resource_height);
+
   if (properties_->IsSubframeDeprioritizationEnabled()) {
     if (properties_->IsOutermostMainFrame()) {
       UMA_HISTOGRAM_ENUMERATION(
@@ -553,6 +563,52 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   return priority;
+}
+
+// Boost the priority for the first N not-small images from the preload scanner
+ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
+    ResourceLoadPriority priority_so_far,
+    ResourceType type,
+    const ResourceRequestHead& resource_request,
+    FetchParameters::SpeculativePreloadType speculative_preload_type,
+    bool is_link_preload,
+    const absl::optional<float> resource_width,
+    const absl::optional<float> resource_height) {
+  ResourceLoadPriority new_priority = priority_so_far;
+
+  if (speculative_preload_type ==
+          FetchParameters::SpeculativePreloadType::kInDocument &&
+      type == ResourceType::kImage && !is_link_preload &&
+      boosted_image_count_ < boosted_image_target_) {
+    // If the width or height is available, determine if it is a "small" image
+    // where "small" is any image that covers less than 10,000px^2.
+    // If a size can not be determined then it defaults to "not small"
+    // and gets the relevant priority boost.
+    bool is_small_image = false;
+    if (resource_width && resource_height) {
+      float image_area = resource_width.value() * resource_height.value();
+      if (image_area <= small_image_max_size_) {
+        is_small_image = true;
+      }
+    } else if (resource_width && resource_width == 0) {
+      is_small_image = true;
+    } else if (resource_height && resource_height == 0) {
+      is_small_image = true;
+    }
+    // Count all candidate images
+    if (!is_small_image) {
+      ++boosted_image_count_;
+
+      // only boost the priority if one wasn't explicitly set
+      if (new_priority < ResourceLoadPriority::kMedium &&
+          resource_request.GetFetchPriorityHint() ==
+              mojom::blink::FetchPriorityHint::kAuto) {
+        new_priority = ResourceLoadPriority::kMedium;
+      }
+    }
+  }
+
+  return new_priority;
 }
 
 // This method simply takes in information about a ResourceRequest, and returns
@@ -608,11 +664,21 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
               : nullptr),
       blob_registry_remote_(init.context_lifecycle_notifier),
       resource_cache_remote_(init.context_lifecycle_notifier),
+      context_lifecycle_notifier_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),
       image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
+
+  // Determine the number of images that should get a boosted priority and the
+  // pixel area threshold for determining "small" images.
+  // TODO(http://crbug.com/1431169): Change these to constexpr after the
+  // experiments determine appropriate values.
+  if (base::FeatureList::IsEnabled(features::kBoostImagePriority)) {
+    boosted_image_target_ = features::kBoostImagePriorityImageCount.Get();
+    small_image_max_size_ = features::kBoostImagePriorityImageSize.Get();
+  }
 
   if (IsMainThread()) {
     MainThreadFetchersSet().insert(this);
@@ -650,9 +716,10 @@ bool ResourceFetcher::ShouldDeferResource(ResourceType type,
   if (type == ResourceType::kFont && !params.IsLinkPreload())
     return true;
 
-  // Defer loading images either when:
-  // - images are disabled
-  // - instructed to defer loading images from network
+  // Defer loading images when:
+  // - images are disabled.
+  // - image loading is disabled and the image is not a data url.
+  // - instructed to defer loading images from network.
   if (type == ResourceType::kImage &&
       (ShouldDeferImageLoad(params.Url()) ||
        params.GetImageRequestBehavior() ==
@@ -992,7 +1059,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         resource_type, params.GetResourceRequest(),
         ResourcePriority::kNotVisible, params.Defer(),
         params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
-        params.GetScriptType(), params.IsLinkPreload());
+        params.GetScriptType(), params.IsLinkPreload(),
+        params.GetResourceWidth(), params.GetResourceHeight());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
@@ -1021,7 +1089,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
     // prerendered pages. Add "Purpose: prefetch" as well for compatibility
     // concerns (See https://github.com/WICG/nav-speculation/issues/133).
-    resource_request.SetHttpHeaderField("Sec-Purpose", "prefetch;prerender");
+    resource_request.SetHttpHeaderField(http_names::kSecPurpose,
+                                        AtomicString("prefetch;prerender"));
     resource_request.SetPurposeHeader("prefetch");
   }
 
@@ -1188,7 +1257,11 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool is_data_url = resource_request.Url().ProtocolIsData();
   bool is_static_data = is_data_url || archive_;
   bool is_stale_revalidation = params.IsStaleRevalidation();
-  if (!is_stale_revalidation && is_static_data) {
+  bool should_defer = ShouldDeferResource(resource_type, params);
+  // MHTML archives do not load from the network and must load immediately. Data
+  // urls can also load immediately, except in cases when they should be
+  // deferred.
+  if (!is_stale_revalidation && (archive_ || (is_data_url && !should_defer))) {
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
       policy =
@@ -1234,9 +1307,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       }
     }
   }
-
-  // Use factory.GetType() since resource can be nullptr here.
-  bool should_defer = ShouldDeferResource(factory.GetType(), params);
 
   UpdateMemoryCacheStats(
       resource, MapToPolicyForMetrics(policy, resource, should_defer), params,
@@ -1404,7 +1474,7 @@ void ResourceFetcher::InitializeRevalidation(
     if (revalidating_request.GetCacheMode() ==
         mojom::blink::FetchCacheMode::kValidateCache) {
       revalidating_request.SetHttpHeaderField(http_names::kCacheControl,
-                                              "max-age=0");
+                                              AtomicString("max-age=0"));
     }
   }
   if (!last_modified.empty()) {
@@ -1441,8 +1511,18 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
             frame_scheduler->GetAgentGroupScheduler()->DefaultTaskRunner();
       }
     }
+  } else if (request.GetRequestContext() ==
+                 mojom::blink::RequestContextType::IMAGE &&
+             base::FeatureList::IsEnabled(
+                 features::kMainThreadHighPriorityImageLoading)) {
+    if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
+      if (auto* frame_scheduler =
+              frame_or_worker_scheduler->ToFrameScheduler()) {
+        task_runner = frame_scheduler->GetTaskRunner(
+            TaskType::kNetworkingUnfreezableImageLoading);
+      }
+    }
   }
-
   return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
                                           freezable_task_runner_, task_runner,
                                           back_forward_cache_loader_helper_);
@@ -1922,7 +2002,8 @@ void ResourceFetcher::SetImagesEnabled(bool enable) {
 }
 
 bool ResourceFetcher::ShouldDeferImageLoad(const KURL& url) const {
-  return !Context().AllowImage(images_enabled_, url) || !auto_load_images_;
+  return !Context().AllowImage(images_enabled_, url) ||
+         (!auto_load_images_ && !url.ProtocolIsData());
 }
 
 void ResourceFetcher::ReloadImagesIfNotDeferred() {
@@ -2160,7 +2241,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
           network::mojom::FetchResponseType::kOpaque &&
       resource->GetResponse().HasRangeRequested() &&
       !resource->GetResourceRequest().HttpHeaderFields().Contains(
-          net::HttpRequestHeaders::kRange)) {
+          http_names::kRange)) {
     RemovePreload(resource);
   }
 
@@ -2304,7 +2385,8 @@ bool ResourceFetcher::StartLoad(
     }
 
     loader = MakeGarbageCollected<ResourceLoader>(
-        this, scheduler_, resource, std::move(request_body), size);
+        this, scheduler_, resource, context_lifecycle_notifier_,
+        std::move(request_body), size);
     // Preload requests should not block the load event. IsLinkPreload()
     // actually continues to return true for Resources matched from the preload
     // cache that must block the load event, but that is OK because this method
@@ -2642,7 +2724,7 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     if (!response.NetworkAccessed() &&
         (!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough())) {
-      initiator_type = "early-hints";
+      initiator_type = AtomicString("early-hints");
     }
   }
 
@@ -2680,16 +2762,12 @@ void ResourceFetcher::CancelWebBundleSubresourceLoadersFor(
 void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
   if (base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference) &&
       ShouldResourceBeKeptStrongReference(resource)) {
-    if (resource->GetType() != ResourceType::kImage ||
-        !base::FeatureList::IsEnabled(
-            features::kMemoryCacheStrongReferenceFilterImages)) {
-      document_resource_strong_refs_.insert(resource);
-      freezable_task_runner_->PostDelayedTask(
-          FROM_HERE,
-          WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource)),
-          GetResourceStrongReferenceTimeout(resource));
-    }
+    document_resource_strong_refs_.insert(resource);
+    freezable_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                      WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+        GetResourceStrongReferenceTimeout(resource));
   }
 }
 
@@ -2768,6 +2846,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(subresource_web_bundles_);
   visitor->Trace(document_resource_strong_refs_);
   visitor->Trace(resource_cache_remote_);
+  visitor->Trace(context_lifecycle_notifier_);
   MemoryPressureListener::Trace(visitor);
 }
 

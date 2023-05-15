@@ -19,6 +19,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -369,21 +369,19 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {
 
   std::vector<base::Value::Dict> expected_printers;
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id.c_str()))
-          .Set("name", "Printer 2")
-          .Build());
+          .Set("name", "Printer 2"));
 
   auto printers =
       FetchPrintersFromFuture(std::move(get_printers_repeating_future));
@@ -406,13 +404,12 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersAsyncSuccess) {
 
   std::vector<base::Value::Dict> expected_printers;
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
 
   auto printers =
       FetchPrintersFromFuture(std::move(get_printers_repeating_future));
@@ -441,37 +438,33 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
 
   std::vector<base::Value::Dict> expected_printers;
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_1)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_1.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("extensionId", extension_id_1)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_1.c_str()))
-          .Set("name", "Printer 2")
-          .Build());
+          .Set("name", "Printer 2"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
-          .Set("name", "Printer 2")
-          .Build());
+          .Set("name", "Printer 2"));
 
   auto printers =
       FetchPrintersFromFuture(std::move(get_printers_repeating_future));
@@ -531,21 +524,19 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
 
   std::vector<base::Value::Dict> expected_printers;
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
-          .Set("name", "Printer 2")
-          .Build());
+          .Set("name", "Printer 2"));
 
   auto printers =
       FetchPrintersFromFuture(std::move(get_printers_repeating_future));
@@ -575,21 +566,19 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
 
   std::vector<base::Value::Dict> expected_printers;
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
-          .Set("name", "Printer 1")
-          .Build());
+          .Set("name", "Printer 1"));
   expected_printers.push_back(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
-          .Set("name", "Printer 2")
-          .Build());
+          .Set("name", "Printer 2"));
 
   auto printers =
       FetchPrintersFromFuture(std::move(get_printers_repeating_future));
@@ -734,15 +723,14 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
 
   UsbDeviceManager* device_manager = UsbDeviceManager::Get(profile());
   base::Value::Dict expected_printer_info =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("description", "This printer is a USB device.")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test USB printer provider")
           .Set("id",
                base::StringPrintf("%s:usbDevice-%u", extension_id.c_str(),
                                   device_manager->GetIdFromGuid(device->guid)))
-          .Set("name", "Test Printer")
-          .Build();
+          .Set("name", "Test Printer");
   base::test::TestFuture<base::Value::Dict> future;
   StartGetUsbPrinterInfoRequest(extension_id, *device, future.GetCallback());
   ASSERT_EQ(future.Get(), expected_printer_info);

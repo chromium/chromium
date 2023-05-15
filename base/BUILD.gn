@@ -147,7 +147,8 @@ if (is_win) {
       # Linking with shcore.lib causes the shcore api forwarder dll to load.
       "/DELAYLOAD:api-ms-win-shcore-scaling-l1-1-1.dll",
 
-      # Linking with OneCore.lib causes the next two dlls to load.
+      # Linking with OneCore.lib causes the next three dlls to load.
+      "/DELAYLOAD:api-ms-win-core-realtime-l1-1-1.dll",
       "/DELAYLOAD:api-ms-win-power-base-l1-1-0.dll",
       "/DELAYLOAD:api-ms-win-power-setting-l1-1-0.dll",
       "/DELAYLOAD:cfgmgr32.dll",
@@ -480,6 +481,8 @@ component("base") {
     "metrics/dummy_histogram.h",
     "metrics/field_trial.cc",
     "metrics/field_trial.h",
+    "metrics/field_trial_list_including_low_anonymity.cc",
+    "metrics/field_trial_list_including_low_anonymity.h",
     "metrics/field_trial_param_associator.cc",
     "metrics/field_trial_param_associator.h",
     "metrics/field_trial_params.cc",
@@ -626,8 +629,6 @@ component("base") {
     "sequence_token.h",
     "state_transitions.h",
     "stl_util.h",
-    "strings/abseil_string_conversions.cc",
-    "strings/abseil_string_conversions.h",
     "strings/abseil_string_number_conversions.cc",
     "strings/abseil_string_number_conversions.h",
     "strings/escape.cc",
@@ -661,6 +662,7 @@ component("base") {
     "strings/stringprintf.cc",
     "strings/stringprintf.h",
     "strings/sys_string_conversions.h",
+    "strings/to_string.h",
     "strings/utf_offset_string_conversions.cc",
     "strings/utf_offset_string_conversions.h",
     "strings/utf_string_conversion_utils.cc",
@@ -729,8 +731,6 @@ component("base") {
     "task/sequence_manager/enqueue_order_generator.h",
     "task/sequence_manager/fence.cc",
     "task/sequence_manager/fence.h",
-    "task/sequence_manager/hierarchical_timing_wheel.cc",
-    "task/sequence_manager/hierarchical_timing_wheel.h",
     "task/sequence_manager/lazily_deallocated_deque.h",
     "task/sequence_manager/sequence_manager.cc",
     "task/sequence_manager/sequence_manager.h",
@@ -759,8 +759,6 @@ component("base") {
     "task/sequence_manager/thread_controller_with_message_pump_impl.h",
     "task/sequence_manager/time_domain.cc",
     "task/sequence_manager/time_domain.h",
-    "task/sequence_manager/timing_wheel.cc",
-    "task/sequence_manager/timing_wheel.h",
     "task/sequence_manager/wake_up_queue.cc",
     "task/sequence_manager/wake_up_queue.h",
     "task/sequence_manager/work_deduplicator.cc",
@@ -934,6 +932,7 @@ component("base") {
     "types/optional_util.h",
     "types/pass_key.h",
     "types/strong_alias.h",
+    "types/supports_ostream_operator.h",
     "types/token_type.h",
     "types/variant_util.h",
     "unguessable_token.cc",
@@ -1204,6 +1203,8 @@ component("base") {
       "android/event_log.cc",
       "android/event_log.h",
       "android/feature_list_jni.cc",
+      "android/feature_map.cc",
+      "android/feature_map.h",
       "android/features_jni.cc",
       "android/field_trial_list.cc",
       "android/important_file_writer_android.cc",
@@ -1677,10 +1678,7 @@ component("base") {
     }
 
     if (is_posix && !is_ios) {
-      sources += [
-        "process/kill_posix.cc",
-        "process/process_posix.cc",
-      ]
+      sources += [ "process/process_posix.cc" ]
     }
 
     if (use_blink) {
@@ -1696,6 +1694,10 @@ component("base") {
         "process/process_iterator.cc",
         "process/process_iterator.h",
       ]
+
+      if (is_posix) {
+        sources += [ "process/kill_posix.cc" ]
+      }
     }
 
     if (is_linux || is_chromeos) {
@@ -1920,8 +1922,6 @@ component("base") {
 
     deps += [ "//base/win:base_win_buildflags" ]
 
-    data_deps += [ "//build/win:runtime_libs" ]
-
     if (com_init_check_hook_disabled) {
       defines += [ "COM_INIT_CHECK_HOOK_DISABLED" ]
     }
@@ -2046,13 +2046,14 @@ component("base") {
   # Mac or iOS.
   if (is_apple) {
     sources += [
+      "apple/backup_util.h",
+      "apple/backup_util.mm",
+      "apple/bridging.h",
+      "apple/bundle_locations.h",
+      "apple/bundle_locations.mm",
       "file_version_info_mac.h",
       "file_version_info_mac.mm",
       "files/file_util_mac.mm",
-      "mac/backup_util.h",
-      "mac/backup_util.mm",
-      "mac/bundle_locations.h",
-      "mac/bundle_locations.mm",
       "mac/call_with_eh_frame.cc",
       "mac/call_with_eh_frame.h",
       "mac/call_with_eh_frame_asm.S",
@@ -2141,7 +2142,6 @@ component("base") {
       "ios/ns_range.h",
       "ios/scoped_critical_action.h",
       "ios/scoped_critical_action.mm",
-      "mac/bridging.h",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
@@ -2157,6 +2157,7 @@ component("base") {
         "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
+        "process/kill_mac.cc",
         "process/launch_mac.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
@@ -2164,6 +2165,7 @@ component("base") {
         "process/process_handle_mac.cc",
         "process/process_iterator_ios.mm",
         "process/process_mac.cc",
+        "process/process_metrics_posix.cc",
         "process/process_posix.cc",
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
@@ -2437,14 +2439,6 @@ component("base") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
-  }
-
-  if (!use_allocation_event_dispatcher && (!is_ios || use_allocator_shim)) {
-    # The old hooks depend on PoissonAllocationSampler, which is not always enabled.
-    sources += [
-      "allocator/dispatcher/standard_hooks.cc",
-      "allocator/dispatcher/standard_hooks.h",
-    ]
   }
 }
 
@@ -2773,6 +2767,10 @@ test("base_perftests") {
     # build, only do stack trace perftest for unofficial build
     sources += [ "debug/stack_trace_perftest.cc" ]
   }
+
+  if (build_allocation_stack_trace_recorder) {
+    sources += [ "debug/allocation_trace_perftest.cc" ]
+  }
 }
 
 test("base_i18n_perftests") {
@@ -2946,6 +2944,7 @@ if (is_apple) {
     sources = [
       "ios/crb_protocol_observers_unittest.mm",
       "mac/bind_objc_block_unittest_arc.mm",
+      "mac/scoped_nsobject_unittest_arc.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
@@ -3249,7 +3248,6 @@ test("base_unittests") {
     "sequence_token_unittest.cc",
     "state_transitions_unittest.cc",
     "stl_util_unittest.cc",
-    "strings/abseil_string_conversions_unittest.cc",
     "strings/abseil_string_number_conversions_unittest.cc",
     "strings/escape_unittest.cc",
     "strings/no_trigraphs_unittest.cc",
@@ -3264,6 +3262,7 @@ test("base_unittests") {
     "strings/stringize_macros_unittest.cc",
     "strings/stringprintf_unittest.cc",
     "strings/sys_string_conversions_unittest.cc",
+    "strings/to_string_test.cc",
     "strings/utf_offset_string_conversions_unittest.cc",
     "strings/utf_string_conversions_unittest.cc",
     "substring_set_matcher/string_pattern_unittest.cc",
@@ -3290,7 +3289,6 @@ test("base_unittests") {
     "task/post_job_unittest.cc",
     "task/scoped_set_task_priority_for_current_thread_unittest.cc",
     "task/sequence_manager/atomic_flag_set_unittest.cc",
-    "task/sequence_manager/hierarchical_timing_wheel_unittest.cc",
     "task/sequence_manager/lazily_deallocated_deque_unittest.cc",
     "task/sequence_manager/sequence_manager_impl_unittest.cc",
     "task/sequence_manager/task_order_unittest.cc",
@@ -3299,7 +3297,6 @@ test("base_unittests") {
     "task/sequence_manager/test/mock_time_message_pump_unittest.cc",
     "task/sequence_manager/thread_controller_power_monitor_unittest.cc",
     "task/sequence_manager/thread_controller_with_message_pump_impl_unittest.cc",
-    "task/sequence_manager/timing_wheel_unittest.cc",
     "task/sequence_manager/wake_up_queue_unittest.cc",
     "task/sequence_manager/work_deduplicator_unittest.cc",
     "task/sequence_manager/work_queue_sets_unittest.cc",
@@ -3397,6 +3394,7 @@ test("base_unittests") {
     "types/optional_util_unittest.cc",
     "types/pass_key_unittest.cc",
     "types/strong_alias_unittest.cc",
+    "types/supports_ostream_operator_test.cc",
     "types/token_type_unittest.cc",
     "types/variant_util_unittest.cc",
     "unguessable_token_unittest.cc",
@@ -3564,8 +3562,8 @@ test("base_unittests") {
     sources += [
       "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
       "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
+      "apple/backup_util_unittest.mm",
       "enterprise_util_mac_unittest.mm",
-      "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/call_with_eh_frame_unittest.mm",
       "mac/dispatch_source_mach_unittest.cc",
@@ -3727,7 +3725,7 @@ test("base_unittests") {
 
     sources += [
       # Pull in specific Mac files for iOS.
-      "mac/backup_util_unittest.mm",
+      "apple/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/foundation_util_unittest.mm",
       "mac/scoped_nsobject_unittest.mm",
@@ -3808,7 +3806,8 @@ test("base_unittests") {
       # This test requires RELRO, which is not enabled in component builds.
       # Also, require a debug build, since we only disable stack protectors in
       # debug builds in partition alloc (see below why it's needed).
-      sources += [ "allocator/partition_allocator/pkey_unittest.cc" ]
+      sources +=
+          [ "allocator/partition_allocator/thread_isolation/pkey_unittest.cc" ]
 
       # We want to test the pkey code without access to memory that is not
       # pkey-tagged. This will allow us to catch unintended memory accesses
@@ -3896,11 +3895,6 @@ test("base_unittests") {
       "message_loop/fd_watch_controller_posix_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
     ]
-
-    # FilePatchWatcherImpl is not implemented. See crbug.com/851641.
-    # TODO(crbug.com/1430566): Convert this subtraction to a condition where
-    # it is added.
-    sources -= [ "files/file_path_watcher_unittest.cc" ]
 
     deps += [
       ":test_interface_impl",
@@ -4020,8 +4014,6 @@ if (is_win && toolchain_has_rust) {
       "//testing/gtest",
     ]
     data_deps = [ "//build/rust/tests/test_control_flow_guard" ]
-    cfg_exe = rebase_path("${root_out_dir}/test_control_flow_guard.exe")
-    defines = [ "RUST_CFG_WIN_UNITTEST_PATH_TO_RUST_EXE=\"${cfg_exe}\"" ]
     sources = [ "memory/rust_cfg_win_unittest.cc" ]
   }
 }
@@ -4156,7 +4148,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/CalledByNative.java",
       "android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
       "android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
-      "android/java/src/org/chromium/base/annotations/JNIAdditionalImport.java",
       "android/java/src/org/chromium/base/annotations/JNINamespace.java",
       "android/java/src/org/chromium/base/annotations/JniIgnoreNatives.java",
       "android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
@@ -4241,7 +4232,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
-      "android/java/src/org/chromium/base/ByteArrayGenerator.java",
       "android/java/src/org/chromium/base/Callback.java",
       "android/java/src/org/chromium/base/CallbackController.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",
@@ -4279,6 +4269,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/Promise.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/RequiredCallback.java",
+      "android/java/src/org/chromium/base/ResettersForTesting.java",
       "android/java/src/org/chromium/base/StreamUtil.java",
       "android/java/src/org/chromium/base/StrictModeContext.java",
       "android/java/src/org/chromium/base/SysUtils.java",
@@ -4489,6 +4480,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
       "test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
       "test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
+      "test/android/javatests/src/org/chromium/base/test/ResettersForTestingTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
       "test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
       "test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
@@ -4634,6 +4626,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PromiseTest.java",
+      "android/junit/src/org/chromium/base/ResettersForTestingTest.java",
       "android/junit/src/org/chromium/base/TimeUtilsTest.java",
       "android/junit/src/org/chromium/base/TraceEventTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",

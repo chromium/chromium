@@ -34,6 +34,8 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
 
   std::unique_ptr<EventWithCallback> Pop();
 
+  WebInputEvent::Type PeekType() const;
+
   bool empty() const { return queue_.empty(); }
 
   size_t size() const { return queue_.size(); }

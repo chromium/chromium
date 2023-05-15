@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_SCOPED_SINGLETON_RESETTER_FOR_TEST_H_
 #define ASH_PUBLIC_CPP_SCOPED_SINGLETON_RESETTER_FOR_TEST_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash {
 
 // Helper class to reset singleton instance in constructor and restore it in
@@ -21,7 +23,7 @@ class ASH_PUBLIC_EXPORT ScopedSingletonResetterForTest {
  private:
   // Override this method to provide pointer holding singleton instance.
   T*& GetGlobalInstanceHolder();
-  T* const instance_;
+  const raw_ptr<T, ExperimentalAsh> instance_;
 };
 
 }  // namespace ash

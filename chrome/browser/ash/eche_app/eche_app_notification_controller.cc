@@ -61,7 +61,7 @@ void EcheAppNotificationController::LaunchNetworkSettings() {
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {
-  relaunch_callback_.Run(profile_);
+  relaunch_callback_.Run(profile_.get());
 }
 
 void EcheAppNotificationController::ShowNotificationFromWebUI(

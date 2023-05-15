@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -303,7 +304,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   int GetXPositionOfScreenshot(int index);
 
   // The root window that this animator is associated with.
-  aura::Window* const root_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The index of the active desk at the start of the animation.
   int starting_desk_index_;
@@ -311,7 +312,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // The index of the desk to activate and animate to with this animator.
   int ending_desk_index_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // The owner of the layer tree of the old detached layers of the removed
   // desk's windows. This is only valid if |for_remove_| is true. This layer

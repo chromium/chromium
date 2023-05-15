@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
@@ -14,8 +15,6 @@
 namespace arc::input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColorAlpha =
-    SkColorSetA(SK_ColorBLACK, 0x99 /*60%*/);
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 
 // Return true if |v1| is on top than |v2|, or |v1| is on the left side of |v2|
@@ -65,8 +64,7 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       break;
     case DisplayMode::kEdit:
       SortChildren();
-      SetBackground(views::CreateSolidBackground(
-          AllowReposition() ? kEditModeBgColor : kEditModeBgColorAlpha));
+      SetBackground(views::CreateSolidBackground(kEditModeBgColor));
       break;
     default:
       NOTREACHED();

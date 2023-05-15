@@ -279,10 +279,12 @@ suite('PrivacyGuidePageTests', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
   });
 
-  test('privacyGuideVisibilityChildAccount', async function() {
-    // Set the user to have a non-child account.
-    const syncStatus:
-        SyncStatus = {childUser: false, statusAction: StatusAction.NO_ACTION};
+  test('privacyGuideVisibilitySupervisedAccount', async function() {
+    // Set the user to have a non-supervised account.
+    const syncStatus: SyncStatus = {
+      supervisedUser: false,
+      statusAction: StatusAction.NO_ACTION,
+    };
     webUIListenerCallback('sync-status-changed', syncStatus);
 
     // Navigating to the privacy guide works.
@@ -290,10 +292,12 @@ suite('PrivacyGuidePageTests', function() {
     await flushTasks();
     assertWelcomeCardVisible(page);
 
-    // The user signs in to a child user account. This hides the privacy guide
-    // and navigates away back to privacy settings page.
-    const newSyncStatus:
-        SyncStatus = {childUser: true, statusAction: StatusAction.NO_ACTION};
+    // The user signs in to a supervised user account. This hides the privacy
+    // guide and navigates away back to privacy settings page.
+    const newSyncStatus: SyncStatus = {
+      supervisedUser: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
     webUIListenerCallback('sync-status-changed', newSyncStatus);
     assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
 

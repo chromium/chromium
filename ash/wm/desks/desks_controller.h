@@ -18,11 +18,12 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
@@ -56,6 +57,7 @@ enum class DeskCloseType {
 
 class Desk;
 class DeskAnimationBase;
+class DeskBarController;
 class DeskTemplate;
 
 // Defines a controller for creating, destroying and managing virtual desks and
@@ -130,6 +132,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   DeskAnimationBase* animation() const { return animation_.get(); }
 
+  DeskBarController* desk_bar_controller() const {
+    return desk_bar_controller_.get();
+  }
+
   // Finds and returns the name of the desk that `desk` would be combined with
   // when the user clicks or presses the combine desks button or context menu
   // item.
@@ -178,7 +184,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Returns the desk that matches the desk_uuid, and returns null if no matches
   // found.
-  Desk* GetDeskByUuid(const base::GUID& desk_uuid) const;
+  Desk* GetDeskByUuid(const base::Uuid& desk_uuid) const;
 
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
@@ -258,7 +264,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void RestoreNameOfDeskAtIndex(std::u16string name, size_t index);
 
   // Sets the `uuid_` of the desk at `index` to the supplied `guid`.
-  void RestoreGuidOfDeskAtIndex(base::GUID guid, size_t index);
+  void RestoreGuidOfDeskAtIndex(base::Uuid guid, size_t index);
 
   // Restores the creation time of the desk at |index|.
   void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);
@@ -475,7 +481,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   std::vector<std::unique_ptr<Desk>> desks_;
 
-  Desk* active_desk_ = nullptr;
+  raw_ptr<Desk, ExperimentalAsh> active_desk_ = nullptr;
 
   // Target desk if in middle of desk activation, `nullptr` otherwise.
   Desk* desk_to_activate_ = nullptr;
@@ -511,6 +517,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Holds a desk when it has been removed but we are still waiting for the user
   // to confirm that they want the desk to be removed.
   std::unique_ptr<RemovedDeskData> temporary_removed_desk_;
+
+  // Dedicated controller for the desk bars.
+  std::unique_ptr<DeskBarController> desk_bar_controller_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

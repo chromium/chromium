@@ -36,20 +36,10 @@ BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteNonEn);
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;
 
-// Shows a link with more info about a site in PageInfo.
-// Use page_info::IsAboutThisSiteFeatureEnabled() instead of checking this flag
-// directly.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreInfo);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Keeps the 'About this site' side panel open and updated on same tab
 // navigations
 BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
-
-// Experiment with different secondary icons.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteSecondaryIcon);
-// Parameter to select one of the icons from AboutThisSiteSeconaryIcon;
-extern const base::FeatureParam<int> kAboutThisSiteSecondaryIconId;
 
 // Enables the history section for Page Info on desktop.
 BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);

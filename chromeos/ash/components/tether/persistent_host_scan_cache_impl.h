@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/persistent_host_scan_cache.h"
 
 class PrefRegistrySimple;
@@ -51,7 +52,7 @@ class PersistentHostScanCacheImpl : public PersistentHostScanCache {
   void StoreCacheEntriesToPrefs(
       const std::unordered_map<std::string, HostScanCacheEntry>& entries);
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 };
 
 }  // namespace tether

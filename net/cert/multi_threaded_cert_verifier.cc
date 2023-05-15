@@ -218,6 +218,7 @@ int MultiThreadedCertVerifier::Verify(const RequestParams& params,
                                       CompletionOnceCallback callback,
                                       std::unique_ptr<Request>* out_req,
                                       const NetLogWithSource& net_log) {
+  CHECK(params.certificate());
   out_req->reset();
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -239,6 +240,7 @@ void MultiThreadedCertVerifier::UpdateVerifyProcData(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   verify_proc_ = verify_proc_factory_->CreateCertVerifyProc(
       std::move(cert_net_fetcher), impl_params);
+  CHECK(verify_proc_);
   NotifyCertVerifierChanged();
 }
 

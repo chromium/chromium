@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce.mojom;
+
+// This contains the current state and the expected state of a feature.
+struct EligibleEntry {
+  // The current state of the feature, enabled or disabled.
+  bool value;
+  // The expected state of the feature. This can be either enabled(true) or
+  // disabled(false);
+  bool expected_value;
+};
+
+// This outlines each factor that contributes to whether a user is eligible
+// for the shopping-list feature.
+struct ShoppingListEligibleDetail {
+  EligibleEntry is_region_locked_feature_enabled;
+  EligibleEntry is_shopping_list_allowed_for_enterprise;
+  EligibleEntry is_account_checker_valid;
+  EligibleEntry is_signed_in;
+  EligibleEntry is_syncing_bookmarks;
+  EligibleEntry is_anonymized_url_data_collection_enabled;
+  EligibleEntry is_web_and_app_activity_enabled;
+  EligibleEntry is_subject_to_parental_controls;
+};
+
+// Used by the WebUI to bootstrap bidirectional communication.
+interface CommerceInternalsHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateCommerceInternalsHandler(
+      pending_remote<CommerceInternalsPage> page,
+      pending_receiver<CommerceInternalsHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface CommerceInternalsHandler {
+  // Returns whether the user is eligible to use the shopping list feature.
+  GetIsShoppingListEligible() => (bool eligible);
+  // Returns the ShoppingListEligibleDetail.
+  GetShoppingListEligibleDetails() =>(ShoppingListEligibleDetail detail);
+};
+
+// WebUI-side handler for requests from the browser.
+interface CommerceInternalsPage {
+  // A notification that the eligibility status for the shopping list feature
+  // changed.
+  OnShoppingListEligibilityChanged(bool eligible);
+};

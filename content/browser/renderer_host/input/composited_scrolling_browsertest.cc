@@ -114,18 +114,9 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
     observer.WaitForHitTestData();
   }
 
-  // ContentBrowserTest:
-  int ExecuteScriptAndExtractInt(const std::string& script) {
-    return EvalJs(shell(), script).ExtractInt();
-  }
-
-  double ExecuteScriptAndExtractDouble(const std::string& script) {
-    return EvalJs(shell(), script).ExtractDouble();
-  }
-
   double GetScrollTop() {
-    return ExecuteScriptAndExtractDouble(
-        "document.getElementById(\"scroller\").scrollTop");
+    return EvalJs(shell(), "document.getElementById(\"scroller\").scrollTop")
+        .ExtractDouble();
   }
 
   // Generate touch events for a synthetic scroll from |point| for |distance|.

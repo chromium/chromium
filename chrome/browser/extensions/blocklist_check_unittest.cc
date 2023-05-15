@@ -22,7 +22,7 @@ class BlocklistCheckTest : public testing::Test {
  public:
   BlocklistCheckTest()
       : test_prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-        blocklist_(test_prefs_.prefs()) {}
+        blocklist_(test_prefs_.pref_service()) {}
 
  protected:
   void SetUp() override {

@@ -84,6 +84,12 @@ bool IsInManagedEnvironment(std::vector<NetworkStatePropertiesPtr> networks) {
     return !IsNetworkManagedByPolicy(network);
   });
 
+  // Filter out vpns, as a vpn might be used even while the device is inside the
+  // user's home.
+  EraseIf(networks, [](const auto& network) {
+    return network->type == NetworkType::kVPN;
+  });
+
   // Filter out cellular networks, as managed cellular networks might
   // be found even at the user's home.
   EraseIf(networks, [](const auto& network) {

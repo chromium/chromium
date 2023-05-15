@@ -40,10 +40,11 @@ namespace leveldb_chrome {
 namespace {
 
 size_t DefaultBlockCacheSize() {
-  if (base::SysInfo::IsLowEndDevice())
+  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     return 1 << 20;  // 1MB
-  else
+  } else {
     return 8 << 20;  // 8MB
+  }
 }
 
 std::string GetDumpNameForMemEnv(const leveldb::Env* memenv) {
@@ -60,9 +61,10 @@ class Globals {
   }
 
   Globals()
-      : web_block_cache_(base::SysInfo::IsLowEndDevice()
-                             ? nullptr
-                             : NewLRUCache(DefaultBlockCacheSize())),
+      : web_block_cache_(
+            base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
+                ? nullptr
+                : NewLRUCache(DefaultBlockCacheSize())),
         browser_block_cache_(NewLRUCache(DefaultBlockCacheSize())),
         // Using |this| here (when Globals is only partially constructed) is
         // safe because base::MemoryPressureListener calls our callback

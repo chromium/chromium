@@ -4,9 +4,12 @@
 
 #include "ash/style/tab_slider.h"
 
+#include <cstddef>
+
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -85,7 +88,7 @@ class TabSlider::SelectorView : public views::View {
   // Indicates if there is a movement animation.
   const bool has_animation_;
   // Now owned.
-  TabSliderButton* button_ = nullptr;
+  raw_ptr<TabSliderButton, ExperimentalAsh> button_ = nullptr;
 };
 
 //------------------------------------------------------------------------------
@@ -113,6 +116,11 @@ TabSlider::~TabSlider() = default;
 
 views::View* TabSlider::GetSelectorView() {
   return selector_view_;
+}
+
+TabSliderButton* TabSlider::GetButtonAtIndex(size_t index) {
+  CHECK(index < buttons_.size());
+  return buttons_[index];
 }
 
 void TabSlider::SetCustomLayout(const LayoutParams& layout_params) {

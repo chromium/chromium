@@ -13,9 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -298,8 +296,6 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
 }
 
 TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(chromeos::features::kDarkLightMode);
   ash::AshTestBase::SimulateGuestLogin();
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->SetDarkModeEnabledForTest(false);
@@ -322,7 +318,14 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
-TEST_F(KeyboardShortcutViewTest, AccessibilityProperties) {
+// TODO(https://crbug.com/1439747): Flaky on ASAN, probably due to hard-coded
+// timeout.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityProperties DISABLED_AccessibilityProperties
+#else
+#define MAYBE_AccessibilityProperties AccessibilityProperties
+#endif
+TEST_F(KeyboardShortcutViewTest, MAYBE_AccessibilityProperties) {
   // Show the widget.
   Toggle();
 

@@ -17,7 +17,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
   // If sync is not allowed, uploading should never be enabled, even if all the
   // data types are enabled.
   service.SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
 
   service.GetUserSettings()->SetSelectedTypes(
@@ -100,7 +100,7 @@ TEST(SyncServiceUtilsTest,
                  syncer::UserSelectableType::kPreferences});
 
   // But one of them fails to actually start up!
-  service.SetFailedDataTypes(ModelTypeSet(syncer::PREFERENCES));
+  service.SetFailedDataTypes({syncer::PREFERENCES});
 
   // Sanity check: Upload is ACTIVE for the model type that did start up.
   ASSERT_EQ(UploadState::ACTIVE,

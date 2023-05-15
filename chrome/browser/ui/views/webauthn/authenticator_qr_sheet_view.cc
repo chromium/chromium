@@ -49,7 +49,6 @@ class AuthenticatorQRViewCentered : public views::View {
     qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
-    request->should_render = true;
     request->center_image = qrcode_generator::mojom::CenterImage::PASSKEY_ICON;
 
     request->render_module_style =
@@ -62,7 +61,7 @@ class AuthenticatorQRViewCentered : public views::View {
     auto callback =
         base::BindOnce(&AuthenticatorQRViewCentered::OnQrCodeGenerated,
                        base::Unretained(this));
-    qr_code_service()->GenerateQRCode(std::move(request), std::move(callback));
+    qr_code_service().GenerateQRCode(std::move(request), std::move(callback));
   }
 
   ~AuthenticatorQRViewCentered() override = default;
@@ -83,11 +82,11 @@ class AuthenticatorQRViewCentered : public views::View {
   }
 
  private:
-  qrcode_generator::mojom::QRCodeGeneratorService* qr_code_service() {
-    if (!qr_code_service_remote_)
-      qr_code_service_remote_ =
-          qrcode_generator::LaunchQRCodeGeneratorService();
-    return qr_code_service_remote_.get();
+  qrcode_generator::QRImageGenerator& qr_code_service() {
+    if (!qr_code_service_) {
+      qr_code_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
+    }
+    return *qr_code_service_;
   }
 
   gfx::Size qrCodeImageSize() const {
@@ -106,9 +105,10 @@ class AuthenticatorQRViewCentered : public views::View {
   std::string qr_string_;
   raw_ptr<views::ImageView> qr_code_image_;
 
-  // Service instance for QR code image generation.
-  mojo::Remote<qrcode_generator::mojom::QRCodeGeneratorService>
-      qr_code_service_remote_;
+  // TODO(https://crbug.com/1431991): Remove this field once there is no
+  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
+  // `QRImageGenerator` class.
+  std::unique_ptr<qrcode_generator::QRImageGenerator> qr_code_service_;
 };
 
 BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)

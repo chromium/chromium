@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,19 +33,19 @@ class DeskAsh : public mojom::Desk {
   // mojom::Desk override.
   void LaunchEmptyDesk(const std::string& desk_name,
                        LaunchEmptyDeskCallback callback) override;
-  void RemoveDesk(const base::GUID& desk_uuid,
+  void RemoveDesk(const base::Uuid& desk_uuid,
                   bool close_all,
                   RemoveDeskCallback callback) override;
-  void GetTemplateJson(const base::GUID& uuid,
+  void GetTemplateJson(const base::Uuid& uuid,
                        GetTemplateJsonCallback callback) override;
   void GetAllDesks(GetAllDesksCallback callback) override;
 
   void SaveActiveDesk(SaveActiveDeskCallback callback) override;
 
-  void DeleteSavedDesk(const base::GUID& uuid,
+  void DeleteSavedDesk(const base::Uuid& uuid,
                        DeleteSavedDeskCallback callback) override;
 
-  void RecallSavedDesk(const base::GUID& uuid,
+  void RecallSavedDesk(const base::Uuid& uuid,
                        RecallSavedDeskCallback callback) override;
 
   void SetAllDesksProperty(int32_t app_restore_window_id,
@@ -53,8 +53,8 @@ class DeskAsh : public mojom::Desk {
                            SetAllDesksPropertyCallback callback) override;
   void GetSavedDesks(GetSavedDesksCallback callback) override;
   void GetActiveDesk(GetActiveDeskCallback callback) override;
-  void SwitchDesk(const base::GUID& uuid, SwitchDeskCallback callback) override;
-  void GetDeskByID(const base::GUID& uuid,
+  void SwitchDesk(const base::Uuid& uuid, SwitchDeskCallback callback) override;
+  void GetDeskByID(const base::Uuid& uuid,
                    GetDeskByIDCallback callback) override;
 
  private:

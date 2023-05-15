@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
@@ -66,7 +67,8 @@ class FakeNearbyShareDeviceDataUpdaterFactory
 
   std::vector<FakeNearbyShareDeviceDataUpdater*> instances_;
   base::TimeDelta latest_timeout_;
-  NearbyShareClientFactory* latest_client_factory_ = nullptr;
+  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> latest_client_factory_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_FAKE_NEARBY_SHARE_DEVICE_DATA_UPDATER_H_

@@ -57,7 +57,7 @@ class FakeVideoConferenceManagerClient
 
   ~FakeVideoConferenceManagerClient() override = default;
 
-  std::map<base::UnguessableToken, base::raw_ptr<content::WebContents>>
+  std::map<base::UnguessableToken, raw_ptr<content::WebContents>>
   id_to_webcontents() {
     return id_to_webcontents_;
   }

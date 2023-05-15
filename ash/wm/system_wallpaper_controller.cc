@@ -12,7 +12,8 @@ namespace ash {
 
 SystemWallpaperController::SystemWallpaperController(aura::Window* root_window,
                                                      SkColor color)
-    : root_window_(root_window), layer_(new ui::Layer(ui::LAYER_SOLID_COLOR)) {
+    : root_window_(root_window),
+      layer_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
   root_window_->AddObserver(this);
   layer_->SetColor(color);
 
@@ -24,10 +25,6 @@ SystemWallpaperController::SystemWallpaperController(aura::Window* root_window,
 
 SystemWallpaperController::~SystemWallpaperController() {
   root_window_->RemoveObserver(this);
-}
-
-void SystemWallpaperController::SetColor(SkColor color) {
-  layer_->SetColor(color);
 }
 
 void SystemWallpaperController::OnWindowBoundsChanged(

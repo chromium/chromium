@@ -30,7 +30,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
@@ -60,8 +59,8 @@ AppListTestHelper::AppListTestHelper() {
   // Use a new app list client for each test
   app_list_client_ = std::make_unique<TestAppListClient>();
   app_list_controller_->SetClient(app_list_client_.get());
-  app_list_controller_->SetActiveModel(/*profile_id=*/1, &model_,
-                                       &search_model_);
+  app_list_controller_->SetActiveModel(
+      /*profile_id=*/1, &model_, &search_model_, &quick_app_access_model_);
   // Disable app list nudge as default.
   DisableAppListNudge(true);
   AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);

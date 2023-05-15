@@ -49,7 +49,6 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
                                       SkColor tint_color,
                                       bool preserve_color_alpha) override;
   void PreloadResource(AndroidResourceType res_type, int res_id) override;
-  void MarkTintNonDiscardable(SkColor tint_color) override;
   void OnFrameUpdatesFinished() override;
 
   // Called from Java

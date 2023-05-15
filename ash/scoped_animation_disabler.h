@@ -6,6 +6,7 @@
 #define ASH_SCOPED_ANIMATION_DISABLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -24,7 +25,7 @@ class ASH_EXPORT ScopedAnimationDisabler {
   ~ScopedAnimationDisabler();
 
  private:
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   bool needs_disable_ = false;
 };
 

@@ -292,6 +292,7 @@ export class InfoViewElement extends CustomElement {
       'direct_rendering_display_compositor':
           'Direct Rendering Display Compositor',
       'webgpu': 'WebGPU',
+      'skia_graphite': 'Skia Graphite',
     };
 
     const statusMap = {

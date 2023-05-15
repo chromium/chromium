@@ -138,11 +138,9 @@ class KeyPermissionsManagerBrowserTestBase
         break;
     }
 
-    std::string public_key_str(public_key.begin(), public_key.end());
-
     base::test::TestFuture<Status> set_attr_waiter;
     GetPlatformKeysService()->SetAttributeForKey(
-        GetToken(), public_key_str, KeyAttributeType::kKeyPermissions,
+        GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         internal::KeyPermissionsProtoToBytes(key_permissions),
         set_attr_waiter.GetCallback());
     ASSERT_TRUE(set_attr_waiter.Wait());
@@ -156,12 +154,10 @@ class KeyPermissionsManagerBrowserTestBase
   // fake chaps.
   bool IsKeyAllowedForUsageInChaps(KeyUsage usage,
                                    const std::vector<uint8_t>& public_key) {
-    std::string public_key_str(public_key.begin(), public_key.end());
-
     base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
         get_attr_waiter;
     GetPlatformKeysService()->GetAttributeForKey(
-        GetToken(), public_key_str, KeyAttributeType::kKeyPermissions,
+        GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         get_attr_waiter.GetCallback());
     EXPECT_TRUE(get_attr_waiter.Wait());
 

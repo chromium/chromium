@@ -5,7 +5,6 @@
 #ifndef CC_SLIM_TEST_LAYER_TREE_IMPL_H_
 #define CC_SLIM_TEST_LAYER_TREE_IMPL_H_
 
-#include "base/containers/flat_set.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
 
@@ -25,7 +24,7 @@ class TestLayerTreeImpl : public LayerTreeImpl {
   ~TestLayerTreeImpl() override = default;
 
   using LayerTreeImpl::NeedsBeginFrames;
-  const base::flat_set<viz::SurfaceRange>& referenced_surfaces() const {
+  const SurfaceRangesAndCounts& referenced_surfaces() const {
     return referenced_surfaces_;
   }
 

@@ -166,7 +166,7 @@ class WebApps : public apps::AppPublisher,
   bool is_ready_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::InstanceRegistry* const instance_registry_;
+  const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
 #endif
 
   WebAppPublisherHelper publisher_helper_;

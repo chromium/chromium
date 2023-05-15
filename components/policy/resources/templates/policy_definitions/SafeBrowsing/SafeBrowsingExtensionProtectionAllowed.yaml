@@ -1,0 +1,26 @@
+caption: Allow Safe Browsing Extension Protection
+desc: |-
+    When this policy is enabled or left unset, <ph name="SAFE_BROWSING_NAME">Safe Browsing</ph> extension protection will be controlled by <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> is set to <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD">Standard</ph> or <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED">Enhanced Protection</ph>, malicious extensions will be disabled faster in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> sends a request to Google Safe Browsing server to check whether an extension has been taken down from Chrome Web Store for being deemed problematic, i.e., malicious, vulnerable, unwanted software, or violating Chrome Web Store (CWS) policies. If an extension has been taken down, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will block users from installing the extension and will disable the extension if it has already been installed.
+    When this policy is disabled, <ph name="SAFE_BROWSING_NAME">Safe Browsing</ph> extension protection will be disabled and malicious extensions will be checked and removed less regularly through <ph name="GOOGLE_UPDATE_NAME">Google Update</ph>. No data is sent to Google <ph name="SAFE_BROWSING_NAME">Safe Browsing</ph> for verdicts.
+default: true
+example_value: true
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+  unlisted: true
+items:
+- caption: Safe Browsing Extension Protection is controlled by <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy
+  value: true
+- caption: Disable Safe Browsing Extension Protection
+  value: false
+owners:
+- alexwchen@chromium.org
+- file://components/safe_browsing/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:114-
+tags:
+- google-sharing
+type: main

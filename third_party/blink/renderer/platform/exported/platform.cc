@@ -43,6 +43,7 @@
 #include "media/base/media_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -309,6 +310,8 @@ void Platform::CreateServiceWorkerSubresourceLoaderFactory(
     CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
         service_worker_container_host,
     const WebString& client_id,
+    mojom::blink::ServiceWorkerFetchHandlerBypassOption
+        fetch_handler_bypass_option,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {}

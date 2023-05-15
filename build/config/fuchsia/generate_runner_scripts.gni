@@ -142,7 +142,10 @@ template("fuchsia_run_script_with_packages") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       executable = _generated_script_path
       wrapper_script = "$root_build_dir/${invoker.executable_wrapper}"
-      deps = [ ":${invoker._run_target}" ]
+      deps = [
+        ":${invoker._install_target}",
+        ":${invoker._run_target}",
+      ]
     }
   }
 }

@@ -7,7 +7,10 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
+#include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
+#include "base/uuid.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -37,10 +40,9 @@ TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
 }  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
-    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager)
-    : connection_broker_(TargetDeviceConnectionBrokerFactory::Create(
-          nearby_connections_manager,
-          /*session_id=*/absl::nullopt)) {}
+    std::unique_ptr<TargetDeviceConnectionBroker>
+        target_device_connection_broker)
+    : connection_broker_(std::move(target_device_connection_broker)) {}
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 
@@ -100,19 +102,17 @@ void TargetDeviceBootstrapController::StopAdvertising() {
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED) {
+  if (status_.step != Step::CONNECTED || !authenticated_connection_) {
     return;
   }
 
-  // TODO(b/234655072): Trigger message to notify source device of update.
-  // TODO(b/234655072): Implement timeout for connection to close.
-  // If the source device successfully receives this message, it drops the
-  // connection. The target device waits 1-3 seconds for the connection to close
-  // in order to confirm the source device is prepared to re-connect after the
-  // target device reboots. If the connection isn't closed within the timeout,
-  // the target device reboots like normal and will not automatically resume
-  // Quick Start after the update.
-  prepare_for_update_on_connection_closed_ = true;
+  // TODO(b/234655072): Implement 3 second timeout for invocation of
+  // OnNotifySourceOfUpdateResponse() callback.
+  authenticated_connection_->NotifySourceOfUpdate(
+      session_id_,
+      base::BindOnce(
+          &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
@@ -140,35 +140,34 @@ void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
-    const std::string& source_device_id,
-    base::WeakPtr<AuthenticatedConnection> connection) {
+    base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+        authenticated_connection) {
   constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
+
+  authenticated_connection_ = authenticated_connection;
+
+  // Create session ID by generating UUID and then hashing.
+  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
+  session_id_ = static_cast<int32_t>(
+      base::PersistentHash(random_uuid.AsLowercaseString()));
 
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
 }
 
-void TargetDeviceBootstrapController::OnConnectionRejected(
-    const std::string& source_device_id) {
+void TargetDeviceBootstrapController::OnConnectionRejected() {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_REJECTED;
   NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
-    const std::string& source_device_id) {
+    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   NotifyObservers();
-
-  if (prepare_for_update_on_connection_closed_) {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    // TODO(b/234655072): Get RandomSessionID and secondary SharedSecret from
-    // connection_broker_ and persist to local state as well.
-  }
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
@@ -192,6 +191,22 @@ void TargetDeviceBootstrapController::OnStopAdvertising() {
   status_.step = Step::NONE;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
+    bool ack_successful) {
+  CHECK(authenticated_connection_);
+
+  if (ack_successful) {
+    PrefService* prefs = g_browser_process->local_state();
+    prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
+    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
+  }
+
+  authenticated_connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::
+          kTargetDeviceUpdate);
 }
 
 }  // namespace ash::quick_start

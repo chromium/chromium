@@ -28,25 +28,27 @@ TEST_F(DeviceTierSegmentTest, ExecuteModelWithInput) {
 
   ModelProvider::Request input = {};
   // High-end devices
-  ExpectClassifierResults(/*input=*/{/*8GB=*/8192, 10},
+  ExpectClassifierResults(/*input=*/{/*8GB=*/8192, 10, 371},
                           {kDeviceTierSegmentLabelHigh});
-  ExpectClassifierResults(/*input=*/{/*6GB=*/6144, 11},
+  ExpectClassifierResults(/*input=*/{/*6GB=*/6144, 11, 374},
                           {kDeviceTierSegmentLabelHigh});
 
   // Medium-end devices
-  ExpectClassifierResults(/*input=*/{/*3GB=*/3072, 10},
+  ExpectClassifierResults(/*input=*/{/*3GB=*/3072, 10, 10},
                           {kDeviceTierSegmentLabelMedium});
-  ExpectClassifierResults(/*input=*/{/*6GB=*/6144, 10},
+  ExpectClassifierResults(/*input=*/{/*6GB=*/6144, 10, 670},
+                          {kDeviceTierSegmentLabelMedium});
+  ExpectClassifierResults(/*input=*/{/*6GB=*/6144, 11, 370},
                           {kDeviceTierSegmentLabelMedium});
 
   // All other devices
-  ExpectClassifierResults(/*input=*/{/*2GB=*/2048, 9},
+  ExpectClassifierResults(/*input=*/{/*2GB=*/2048, 9, 10},
                           {kDeviceTierSegmentLabelLow});
-  ExpectClassifierResults(/*input=*/{/*5GB=*/5120, 9},
+  ExpectClassifierResults(/*input=*/{/*5GB=*/5120, 9, 10},
                           {kDeviceTierSegmentLabelLow});
 
   // Not a device.
-  ExpectClassifierResults(/*input=*/{0, 0}, {kDeviceTierSegmentLabelNone});
+  ExpectClassifierResults(/*input=*/{0, 0, 0}, {kDeviceTierSegmentLabelNone});
 }
 
 }  // namespace segmentation_platform

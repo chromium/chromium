@@ -142,14 +142,9 @@ void SharingHubBubbleViewImpl::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kInterItemPadding));
-  if (controller_->ShouldUsePreview()) {
-    auto* preview = AddChildView(std::make_unique<PreviewView>(
-        attempt_, share::GetDesktopSharePreviewVariant()));
-    preview->TakeCallbackSubscription(
-        controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
-            &PreviewView::OnImageChanged, base::Unretained(preview))));
-    AddChildView(std::make_unique<views::Separator>());
-  }
+
+  AddChildView(std::make_unique<PreviewView>(attempt_));
+  AddChildView(std::make_unique<views::Separator>());
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kActionButtonHeight * kMaximumButtons);

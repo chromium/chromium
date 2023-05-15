@@ -354,12 +354,14 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
           .FindOrCreateFrameForNavigation(frame_request, target_or_base_target)
           .frame;
 
+  // Apply replacement now, before any async steps, as the result may change.
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
   LocalFrame* target_local_frame = DynamicTo<LocalFrame>(target_frame);
   if (target_local_frame &&
-      !target_local_frame->GetDocument()->LoadEventFinished() &&
-      !LocalFrame::HasTransientUserActivation(target_local_frame))
+      target_local_frame->NavigationShouldReplaceCurrentHistoryEntry(
+          frame_request, load_type)) {
     load_type = WebFrameLoadType::kReplaceCurrentItem;
+  }
 
   return MakeGarbageCollected<FormSubmission>(
       copied_attributes.Method(), action_url, target_or_base_target,

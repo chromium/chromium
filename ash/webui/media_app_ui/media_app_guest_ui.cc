@@ -148,20 +148,21 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // Allow images to also handle data urls.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src blob: data: 'self';");
-  // Allow styles to include inline styling needed for Polymer elements.
+  // Allow styles to include inline styling needed for Polymer elements and
+  // the material 3 dynamic palette.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' 'unsafe-inline';");
+      "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
   // Allow loading PDFs as blob URLs.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src blob:;");
   // Required to successfully load PDFs in the `<embed>` element.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src blob:;");
-  // Allow wasm.
+  // Allow wasm and mojo.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'wasm-eval';");
+      "script-src 'self' 'wasm-eval' chrome-untrusted://resources;");
   // Allow calls to Maps reverse geocoding API for loading metadata.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
@@ -254,8 +255,16 @@ void MediaAppGuestUI::StartFontDataRequestAfterPathExists(
   }
 }
 
+void MediaAppGuestUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {
   return MediaAppMetricsHelper::actions;
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(MediaAppGuestUI)
 
 }  // namespace ash

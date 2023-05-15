@@ -59,7 +59,8 @@ ArrayBufferContents::ArrayBufferContents(
                     base::SysInfo::VMAllocationGranularity();
     uint8_t* base = static_cast<uint8_t*>(buffer) - offset;
     base::span<uint8_t> mapping = base::make_span(base, length + offset);
-    gin::GetSharedMemoryMapperForArrayBuffers()->Unmap(mapping);
+    auto* mapper = gin::GetSharedMemoryMapperForArrayBuffers();
+    base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };
   void* base = result.value().data() + offset_rounding;
   backing_store_ =

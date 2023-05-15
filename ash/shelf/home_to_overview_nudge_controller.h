@@ -6,6 +6,7 @@
 #define ASH_SHELF_HOME_TO_OVERVIEW_NUDGE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
@@ -66,8 +67,8 @@ class ASH_EXPORT HomeToOverviewNudgeController : views::WidgetObserver {
 
   bool nudge_allowed_for_shelf_state_ = false;
 
-  HotseatWidget* const hotseat_widget_;
-  ContextualNudge* nudge_ = nullptr;
+  const raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_;
+  raw_ptr<ContextualNudge, ExperimentalAsh> nudge_ = nullptr;
 
   base::OneShotTimer nudge_show_timer_;
   base::OneShotTimer nudge_hide_timer_;

@@ -55,7 +55,7 @@ class CommanderUITest : public InProcessBrowserTest,
 
  protected:
   void ExecuteJS(std::string js) {
-    ASSERT_TRUE(content::ExecuteScript(contents_.get(), js));
+    ASSERT_TRUE(content::ExecJs(contents_.get(), js));
   }
   // CommanderHandler::Delegate implementation.
   void OnTextChanged(const std::u16string& text) override {

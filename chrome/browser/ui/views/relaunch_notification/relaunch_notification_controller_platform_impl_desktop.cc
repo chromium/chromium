@@ -35,7 +35,8 @@ RelaunchNotificationControllerPlatformImpl::
   DCHECK(!widget_);
   if (on_visible_)
     BrowserList::RemoveObserver(this);
-  CHECK(!IsInObserverList());
+  CHECK(!WidgetObserver::IsInObserverList());
+  CHECK(!BrowserListObserver::IsInObserverList());
 }
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(

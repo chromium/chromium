@@ -5,6 +5,7 @@
 #ifndef SERVICES_ACCESSIBILITY_FEATURES_AUTOMATION_INTERNAL_BINDINGS_H_
 #define SERVICES_ACCESSIBILITY_FEATURES_AUTOMATION_INTERNAL_BINDINGS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -118,7 +119,7 @@ class AutomationInternalBindings : public mojom::Automation,
                                      gfx::Rect rect);
 
   // Used during object template creation.
-  v8::Local<v8::ObjectTemplate>* template_;
+  raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;
 
   base::WeakPtr<BindingsIsolateHolder> isolate_holder_;
 

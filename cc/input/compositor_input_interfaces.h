@@ -130,6 +130,7 @@ class CompositorDelegateForInput {
   virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
                                           BrowserControlsState current,
                                           bool animate) = 0;
+  virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
 
   // TODO(bokan): Temporary escape hatch for code that hasn't yet been
   // converted to use the input<->compositor interface. This will eventually be

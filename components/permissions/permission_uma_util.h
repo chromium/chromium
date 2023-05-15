@@ -252,6 +252,28 @@ enum class AdaptiveTriggers {
   THREE_CONSECUTIVE_DENIES = 0x01,
 };
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "OneTimePermissionEvent" in tools/metrics/histograms/enums.xml.
+enum class OneTimePermissionEvent {
+  // Recorded for each one time grant
+  GRANTED_ONE_TIME = 0,
+
+  // Recorded when the user manually revokes a one time grant
+  REVOKED_MANUALLY = 1,
+
+  // Recorded when a one time grant expires because all tabs are either closed
+  // or discarded.
+
+  ALL_TABS_CLOSED_OR_DISCARDED = 2,
+
+  // Recorded when a one time grant expires because the permission was unused in
+  // the background.
+  EXPIRED_IN_BACKGROUND = 3,
+
+  kMaxValue = EXPIRED_IN_BACKGROUND
+};
+
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
   NONE = 0,
@@ -535,6 +557,12 @@ class PermissionUmaUtil {
   static void RecordPageInfoDialogAccessType(
       PageInfoDialogAccessType access_type);
 
+  static std::string GetOneTimePermissionEventHistogram(
+      ContentSettingsType type);
+
+  static void RecordOneTimePermissionEvent(ContentSettingsType type,
+                                           OneTimePermissionEvent event);
+
   static void RecordPageInfoPermissionChangeWithin1m(
       ContentSettingsType type,
       PermissionAction previous_action,
@@ -576,6 +604,18 @@ class PermissionUmaUtil {
       ContentSettingsType content_settings_type,
       PermissionAction action,
       content::RenderFrameHost* render_frame_host);
+
+  static void RecordTopLevelPermissionsHeaderPolicyOnNavigation(
+      content::RenderFrameHost* render_frame_host);
+
+  // Logs a metric that captures how long since revocation, due to a site being
+  // considered unused, the user regrants a revoked permission.
+  static void RecordPermissionRegrantForUnusedSites(
+      const GURL& origin,
+      ContentSettingsType request_type,
+      PermissionSourceUI source_ui,
+      content::BrowserContext* browser_context,
+      base::Time current_time);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

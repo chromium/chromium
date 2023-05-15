@@ -406,7 +406,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     *mailbox = sii->CreateSharedImage(
         format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+        kPremul_SkAlphaType, usage, "OneCopyRasterTile",
+        gpu::kNullSurfaceHandle);
     // Clear the resource if we're not going to initialize it fully from the
     // copy due to non-exact resource reuse.  See https://crbug.com/1313091
     needs_clear = rect_to_copy.size() != resource_size;
@@ -417,7 +418,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     const uint32_t usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
     staging_buffer->mailbox = sii->CreateSharedImage(
         staging_buffer->gpu_memory_buffer.get(), gpu_memory_buffer_manager_,
-        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        "OneCopyRasterStaging");
   } else {
     sii->UpdateSharedImage(staging_buffer->sync_token, staging_buffer->mailbox);
   }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
@@ -85,8 +86,8 @@ class OmniboxResult : public ChromeSearchResult,
   // Mojo.
   const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;

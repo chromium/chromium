@@ -31,17 +31,6 @@ struct StartParams {
     M16G,
   };
 
-  enum class UsapProfile {
-    // Default USAP profile suitable for all devices.
-    DEFAULT = 0,
-    // USAP profile suitable for 4G devices.
-    M4G,
-    // USAP profile suitable for 8G devices.
-    M8G,
-    // USAP profile suitable for 16G devices.
-    M16G,
-  };
-
   StartParams();
 
   StartParams(const StartParams&) = delete;
@@ -63,8 +52,6 @@ struct StartParams {
       PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT;
 
   DalvikMemoryProfile dalvik_memory_profile = DalvikMemoryProfile::DEFAULT;
-
-  UsapProfile usap_profile = UsapProfile::DEFAULT;
 
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;

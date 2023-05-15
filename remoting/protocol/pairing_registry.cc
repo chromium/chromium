@@ -10,12 +10,12 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "crypto/random.h"
 
@@ -47,7 +47,7 @@ PairingRegistry::Pairing::~Pairing() = default;
 PairingRegistry::Pairing PairingRegistry::Pairing::Create(
     const std::string& client_name) {
   base::Time created_time = base::Time::Now();
-  std::string client_id = base::GenerateGUID();
+  std::string client_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string shared_secret;
   char buffer[kKeySize];
   crypto::RandBytes(buffer, std::size(buffer));

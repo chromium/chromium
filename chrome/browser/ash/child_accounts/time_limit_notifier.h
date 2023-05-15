@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,7 +52,7 @@ class TimeLimitNotifier {
   TimeLimitNotifier(content::BrowserContext* context,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   // Called to show warning and exit notifications.
   base::OneShotTimer warning_notification_timer_;

@@ -312,9 +312,6 @@
             "speedometer2-future": {
                 "abridged": false
             },
-            "speedometer2-pcscan": {
-                "abridged": false
-            },
             "system_health.common_desktop": {
                 "end": 11,
                 "abridged": false
@@ -357,13 +354,7 @@
                 "begin": 73,
                 "abridged": false
             },
-            "system_health.pcscan": {
-                "abridged": false
-            },
             "tab_switching.typical_25": {
-                "abridged": false
-            },
-            "tracing.tracing_with_background_memory_infra": {
                 "abridged": false
             },
             "v8.browsing_desktop": {

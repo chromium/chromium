@@ -93,9 +93,26 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   // Triggers the press and release event of the given `button`.
   void ClickButton(views::Button* button) const;
 
+  // Updates the user's site access for `extension` on `web_contents` to
+  // `site_access`.
+  void UpdateUserSiteAccess(
+      const extensions::Extension& extension,
+      content::WebContents* web_contents,
+      extensions::PermissionsManager::UserSiteAccess site_access);
+
+  // Updates the user's site setting to `site_setting` for `url`.
+  void UpdateUserSiteSetting(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      const GURL& url);
+
   // Returns the user's site setting for `url`.
   extensions::PermissionsManager::UserSiteSetting GetUserSiteSetting(
       const GURL& url);
+
+  // Returns the user's `extension` site access for `url`.
+  extensions::PermissionsManager::UserSiteAccess GetUserSiteAccess(
+      const extensions::Extension& extension,
+      const GURL& url) const;
 
   // Returns a list of the views of the currently pinned extensions, in order
   // from left to right.
@@ -122,6 +139,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
  private:
   raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::PermissionsManager> permissions_manager_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_

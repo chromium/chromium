@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -150,7 +151,7 @@ class ServerPrintersProviderImpl
     return (servers_are_complete_ && fetchers_.empty());
   }
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // A callback to propagate update of the resultant list of server printers.
   OnPrintersUpdateCallback callback_;

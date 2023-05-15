@@ -95,30 +95,4 @@ public class IPHCommand {
         this.removeArrow = removeArrow;
         this.preferredVerticalOrientation = preferredVerticalOrientation;
     }
-
-    // TODO(peilinwang): Remove this constructor after ANDROID_SCROLL_OPTIMIZATIONS fully rolls out.
-    IPHCommand(String featureName, String contentString, String accessibilityText,
-            boolean dismissOnTouch, View anchorView, Runnable onDismissCallback,
-            Runnable onShowCallback, Runnable onBlockedCallback, Rect insetRect,
-            long autoDismissTimeout, ViewRectProvider viewRectProvider, HighlightParams params,
-            Rect anchorRect, boolean removeArrow,
-            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
-        this.stringId = 0;
-        this.accessibilityStringId = 0;
-        this.featureName = featureName;
-        this.contentString = contentString;
-        this.accessibilityText = accessibilityText;
-        this.dismissOnTouch = dismissOnTouch;
-        this.anchorView = anchorView;
-        this.onDismissCallback = onDismissCallback;
-        this.onShowCallback = onShowCallback;
-        this.onBlockedCallback = onBlockedCallback;
-        this.insetRect = insetRect;
-        this.autoDismissTimeout = autoDismissTimeout;
-        this.viewRectProvider = viewRectProvider;
-        this.highlightParams = params;
-        this.anchorRect = anchorRect;
-        this.removeArrow = removeArrow;
-        this.preferredVerticalOrientation = preferredVerticalOrientation;
-    }
 }

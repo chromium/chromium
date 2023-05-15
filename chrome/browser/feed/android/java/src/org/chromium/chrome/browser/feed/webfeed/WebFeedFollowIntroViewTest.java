@@ -27,7 +27,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
@@ -87,8 +86,6 @@ public final class WebFeedFollowIntroViewTest {
     @SmallTest
     public void showIPHTest() {
         FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
-        baseTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(baseTestValues);
 
         mWebFeedFollowIntroView.showIPH(mHelper, () -> {}, () -> {});

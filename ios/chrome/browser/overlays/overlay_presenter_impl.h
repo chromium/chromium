@@ -9,15 +9,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/public/overlay_dismissal_callback.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_user_data.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class OverlayResponse;
 

@@ -128,7 +128,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     return handle;
   }
 
-  storage::BucketLocator CreateBucketForTesting() {
+  storage::QuotaErrorOr<storage::BucketLocator> CreateBucketForTesting() {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
         bucket_future;
     quota_manager_proxy_->CreateBucketForTesting(
@@ -136,9 +136,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         blink::mojom::StorageType::kTemporary,
         base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
-    auto bucket = bucket_future.Take();
-    EXPECT_TRUE(bucket.has_value());
-    return bucket->ToBucketLocator();
+    return bucket_future.Take().transform(
+        &storage::BucketInfo::ToBucketLocator);
   }
 
  protected:
@@ -179,7 +178,9 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         test_src_storage_key_, type, test_file_path);
     if (type == storage::kFileSystemTypeTemporary) {
-      test_file_url_.SetBucket(CreateBucketForTesting());
+      auto bucket = CreateBucketForTesting();
+      ASSERT_TRUE(bucket.has_value());
+      test_file_url_.SetBucket(*std::move(bucket));
     }
 
     ASSERT_EQ(base::File::FILE_OK,

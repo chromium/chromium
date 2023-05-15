@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
@@ -350,8 +351,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
     ++index;
   }
 
-  if (ShouldAddPinMenu())
+  if (IsAppPinEditable(app_type_, item().id.app_id, controller()->profile())) {
     AddPinMenu(menu_model.get());
+  }
 
   size_t shortcut_index = menu_items.items.size();
   for (size_t i = index; i < menu_items.items.size(); i++) {
@@ -588,59 +590,6 @@ extensions::LaunchType AppServiceShelfContextMenu::GetExtensionLaunchType()
 
   return extensions::GetLaunchType(
       extensions::ExtensionPrefs::Get(controller()->profile()), extension);
-}
-
-bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
-  switch (app_type_) {
-    case apps::AppType::kArc: {
-      const arc::ArcAppShelfId& arc_shelf_id =
-          arc::ArcAppShelfId::FromString(item().id.app_id);
-      DCHECK(arc_shelf_id.valid());
-      const ArcAppListPrefs* arc_list_prefs =
-          ArcAppListPrefs::Get(controller()->profile());
-      DCHECK(arc_list_prefs);
-      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-          arc_list_prefs->GetApp(arc_shelf_id.app_id());
-      if (!arc_shelf_id.has_shelf_group_id() && app_info->launchable)
-        return true;
-      return false;
-    }
-    case apps::AppType::kPluginVm:
-    case apps::AppType::kBuiltIn: {
-      bool show_in_launcher = false;
-      apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
-          ->AppRegistryCache()
-          .ForOneApp(item().id.app_id,
-                     [&show_in_launcher](const apps::AppUpdate& update) {
-                       show_in_launcher =
-                           update.ShowInLauncher().value_or(false);
-                     });
-      return show_in_launcher;
-    }
-    case apps::AppType::kCrostini:
-    case apps::AppType::kBorealis:
-    case apps::AppType::kChromeApp:
-    case apps::AppType::kWeb:
-    case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return true;
-    case apps::AppType::kStandaloneBrowser:
-      // Lacros behaves like the Chrome browser icon and cannot be unpinned.
-      return false;
-    case apps::AppType::kUnknown:
-      // Type kUnknown is used for "unregistered" Crostini apps, which do not
-      // have a .desktop file and can only be closed, not pinned.
-      return false;
-    case apps::AppType::kMacOs:
-    case apps::AppType::kRemote:
-    case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED() << "Type " << (int)app_type_
-                   << " should not appear in shelf.";
-      return false;
-    case apps::AppType::kBruschetta:
-      return true;
-  }
 }
 
 void AppServiceShelfContextMenu::ExecutePublisherContextMenuCommand(

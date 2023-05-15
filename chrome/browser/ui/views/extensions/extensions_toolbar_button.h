@@ -24,6 +24,14 @@ class ExtensionsToolbarButton : public ToolbarButton,
  public:
   METADATA_HEADER(ExtensionsToolbarButton);
 
+  enum class State {
+    // All extensions have blocked access to the current site.
+    kAllExtensionsBlocked,
+    // At least one extension has access to the current site.
+    kAnyExtensionHasAccess,
+    kDefault,
+  };
+
   ExtensionsToolbarButton(Browser* browser,
                           ExtensionsToolbarContainer* extensions_container,
                           ExtensionsMenuCoordinator* coordinator);
@@ -36,6 +44,11 @@ class ExtensionsToolbarButton : public ToolbarButton,
   void ToggleExtensionsMenu();
 
   bool GetExtensionsMenuShowing() const;
+
+  void UpdateState(State state);
+
+  // Accessors used by tests:
+  State GetStateForTesting() { return state_; }
 
   // ToolbarButton:
   gfx::Size CalculatePreferredSize() const override;
@@ -59,6 +72,9 @@ class ExtensionsToolbarButton : public ToolbarButton,
   // rolled out.
   // TODO(crbug.com/1279986): Remove this disclaimer once feature is rolled out.
   const raw_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
+
+  // The type for the button icon.
+  State state_ = State::kDefault;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BUTTON_H_

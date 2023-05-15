@@ -18,6 +18,10 @@ class AggregationKeys;
 class FilterData;
 }  // namespace attribution_reporting
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace content {
 
 class AggregatableHistogramContribution;
@@ -45,6 +49,8 @@ enum class AssembleAggregatableReportStatus {
 
 CONTENT_EXPORT absl::optional<AggregatableReportRequest>
 CreateAggregatableReportRequest(const AttributionReport& report);
+
+CONTENT_EXPORT base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time);
 
 }  // namespace content
 

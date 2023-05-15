@@ -5,6 +5,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 #import <Foundation/Foundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -88,56 +89,49 @@ ClipboardFormatType ClipboardFormatType::GetType(
 
 // static
 const ClipboardFormatType& ClipboardFormatType::FilenamesType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeURIList));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeFileURL.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::UrlType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeMozillaURL));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeURL.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::PlainTextType() {
   static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeText));
+      UTTypePlainText.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::HtmlType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeHTML));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeHTML.identifier);
   return *type;
 }
 
 const ClipboardFormatType& ClipboardFormatType::SvgType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeSvg));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeSVG.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::RtfType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeRTF));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeRTF.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::PngType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypePNG));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypePNG.identifier);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::BitmapType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(kMimeTypeImageURI));
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeImage.identifier);
   return *type;
 }
 

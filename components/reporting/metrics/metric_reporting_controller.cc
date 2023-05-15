@@ -62,7 +62,7 @@ void MetricReportingController::UpdateSetting() {
   }
 
   bool new_setting_enabled = setting_enabled_default_value_;
-  reporting_settings_->GetBoolean(setting_path_, &new_setting_enabled);
+  reporting_settings_->GetReportingEnabled(setting_path_, &new_setting_enabled);
 
   if (setting_enabled_ != new_setting_enabled) {
     setting_enabled_ = new_setting_enabled;

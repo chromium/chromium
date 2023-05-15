@@ -4,7 +4,11 @@
 
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 
+#include <stdint.h>
+
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +28,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -198,8 +203,9 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
 void SharedStorageWorkletHost::RunOperationOnWorklet(
     const std::string& name,
-    const std::vector<uint8_t>& serialized_data,
-    bool keep_alive_after_operation) {
+    blink::CloneableMessage serialized_data,
+    bool keep_alive_after_operation,
+    const absl::optional<std::string>& context_id) {
   // This function is invoked from `document_service_`. Thus both `page_` and
   // `document_service_` should be valid.
   DCHECK(page_);
@@ -220,7 +226,8 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
   }
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
-      name, serialized_data, MaybeBindPrivateAggregationHost(),
+      name, std::move(serialized_data),
+      MaybeBindPrivateAggregationHost(context_id),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -229,8 +236,9 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     const std::string& name,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
-    const std::vector<uint8_t>& serialized_data,
+    blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
+    const absl::optional<std::string>& context_id,
     blink::mojom::SharedStorageDocumentService::
         RunURLSelectionOperationOnWorkletCallback callback) {
   if (add_module_state_ != AddModuleState::kInitiated) {
@@ -287,7 +295,8 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
   shared_storage_worklet_host_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
-      name, urls, serialized_data, MaybeBindPrivateAggregationHost(),
+      name, urls, std::move(serialized_data),
+      MaybeBindPrivateAggregationHost(context_id),
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
@@ -900,7 +909,8 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 }
 
 mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
+SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
+    const absl::optional<std::string>& context_id) {
   DCHECK(browser_context_);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
@@ -915,7 +925,7 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
       pending_pa_host_remote;
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
-      PrivateAggregationBudgetKey::Api::kSharedStorage,
+      PrivateAggregationBudgetKey::Api::kSharedStorage, context_id,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

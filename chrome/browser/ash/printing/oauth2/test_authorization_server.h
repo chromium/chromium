@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -108,7 +109,8 @@ class FakeAuthorizationServer {
   base::queue<std::string> upload_data_;
 
   // The pending request that is currently being processed.
-  network::TestURLLoaderFactory::PendingRequest* current_request_ = nullptr;
+  raw_ptr<network::TestURLLoaderFactory::PendingRequest, ExperimentalAsh>
+      current_request_ = nullptr;
 
   network::TestURLLoaderFactory fake_server_;
   base::test::TaskEnvironment task_environment_;

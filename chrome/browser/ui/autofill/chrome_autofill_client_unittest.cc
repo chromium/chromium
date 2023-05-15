@@ -152,56 +152,5 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
             client()->GetCurrentFormInteractionsFlowId());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-class ChromeAutofillClientTestForFastCheckout
-    : public ChromeAutofillClientTest {
- protected:
-  MockFastCheckoutClient* fast_checkout_client() {
-    return static_cast<MockFastCheckoutClient*>(
-        client()->GetFastCheckoutClient());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kFastCheckout};
-};
-
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       IsFastCheckoutSupportedWithDisabledFeature) {
-  FormData form;
-  FormFieldData field;
-  EXPECT_FALSE(
-      client()->IsFastCheckoutSupported(form, field, *autofill_manager()));
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       HideFastCheckout_IsShowing_CallsStopOnFastCheckoutClient) {
-  ON_CALL(*fast_checkout_client(), IsShowing)
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(*fast_checkout_client(), Stop(true));
-  client()->HideFastCheckout(/*allow_further_runs=*/true);
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       HideFastCheckout_NotShowing_DoesNotCallStopOnFastCheckoutClient) {
-  ON_CALL(*fast_checkout_client(), IsShowing)
-      .WillByDefault(testing::Return(false));
-  EXPECT_CALL(*fast_checkout_client(), Stop).Times(0);
-  client()->HideFastCheckout(/*allow_further_runs=*/true);
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout, IsShowingFastCheckoutUI) {
-  EXPECT_CALL(*fast_checkout_client(), IsShowing)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->IsShowingFastCheckoutUI());
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout, TryToShowFastCheckout) {
-  EXPECT_CALL(*fast_checkout_client(), TryToStart)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->TryToShowFastCheckout(
-      FormData(), FormFieldData(), autofill_manager()->GetWeakPtr()));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 }  // namespace autofill

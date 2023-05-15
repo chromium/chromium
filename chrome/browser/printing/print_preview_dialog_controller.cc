@@ -203,23 +203,20 @@ PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
   return g_browser_process->print_preview_dialog_controller();
 }
 
-// static
 void PrintPreviewDialogController::PrintPreview(WebContents* initiator) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleDatabase::DisableThirdPartyBlocking();
 #endif
 
-  if (initiator->IsCrashed())
+  if (initiator->IsCrashed()) {
     return;
+  }
 
-  PrintPreviewDialogController* dialog_controller = GetInstance();
-  if (!dialog_controller)
-    return;
-  if (!dialog_controller->GetOrCreatePreviewDialog(initiator)) {
-    PrintViewManager* print_view_manager =
-        PrintViewManager::FromWebContents(initiator);
-    if (print_view_manager)
+  if (!GetOrCreatePreviewDialog(initiator)) {
+    auto* print_view_manager = PrintViewManager::FromWebContents(initiator);
+    if (print_view_manager) {
       print_view_manager->PrintPreviewDone();
+    }
   }
 }
 

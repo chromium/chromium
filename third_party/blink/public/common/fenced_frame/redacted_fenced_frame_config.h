@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -22,7 +23,6 @@
 namespace content {
 struct FencedFrameConfig;
 struct FencedFrameProperties;
-FORWARD_DECLARE_TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest);
 }  // namespace content
 
 namespace blink::FencedFrame {
@@ -127,15 +127,16 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
     return shared_storage_budget_metadata_;
   }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
+  const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  required_permissions_to_load() const {
+    return required_permissions_to_load_;
+  }
 
  private:
   friend struct content::FencedFrameConfig;
   friend struct mojo::StructTraits<
       blink::mojom::FencedFrameConfigDataView,
       blink::FencedFrame::RedactedFencedFrameConfig>;
-
-  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
-                           ConfigMojomTraitsTest);
 
   absl::optional<GURL> urn_uuid_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
@@ -152,6 +153,9 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
 
   // TODO(crbug.com/1347953): Not yet used.
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
+
+  std::vector<blink::mojom::PermissionsPolicyFeature>
+      required_permissions_to_load_;
 };
 
 // Represents a set of fenced frame properties (instantiated from a config) that
@@ -197,15 +201,16 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
     return has_fenced_frame_reporting_;
   }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
+  const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  required_permissions_to_load() const {
+    return required_permissions_to_load_;
+  }
 
  private:
   friend struct content::FencedFrameProperties;
   friend struct mojo::StructTraits<
       blink::mojom::FencedFramePropertiesDataView,
       blink::FencedFrame::RedactedFencedFrameProperties>;
-
-  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
-                           ConfigMojomTraitsTest);
 
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
   absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
@@ -220,6 +225,8 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       shared_storage_budget_metadata_;
   bool has_fenced_frame_reporting_ = false;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
+  std::vector<blink::mojom::PermissionsPolicyFeature>
+      required_permissions_to_load_;
 };
 
 }  // namespace blink::FencedFrame

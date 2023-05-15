@@ -75,13 +75,17 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/native_library.h"
+#include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/sandbox.h"
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN)
 sandbox::TargetServices* g_utility_target_services = nullptr;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -131,6 +135,37 @@ bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
   return false;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+// Handle pre-lockdown sandbox hooks
+bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
+  CHECK_GT(delegate_blob.size(), 0u);
+  // TODO(1435571) Use a typed structure rather than a base::Pickle for this.
+  // TODO(1435571) Migrate other settable things to delegate_data.
+  base::Pickle libs_pickle(reinterpret_cast<const char*>(delegate_blob.data()),
+                           delegate_blob.size());
+  base::PickleIterator libs_iter(libs_pickle);
+  base::FilePath library_path;
+  while (library_path.ReadFromPickle(&libs_iter)) {
+    CHECK(library_path.IsAbsolute());
+    base::NativeLibraryLoadError lib_error;
+    HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
+    // We deliberately "leak" `h_mod` so that the module stays loaded.
+    if (!h_mod) {
+      // The browser should not request libraries that do not exist, so crash on
+      // failure.
+      wchar_t dll_name[MAX_PATH];
+      base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
+      base::debug::Alias(dll_name);
+      base::debug::Alias(&lib_error);
+      NOTREACHED_NORETURN();
+    }
+  }
+  CHECK(libs_iter.ReachedEnd());
+
+  return true;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void SetUtilityThreadName(const std::string utility_sub_type) {
   // Typical utility sub-types are audio.mojom.AudioService or
@@ -263,6 +298,15 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 #elif BUILDFLAG(IS_WIN)
   g_utility_target_services = parameters.sandbox_info->target_services;
+
+  // Call hooks with data provided by UtilitySandboxedProcessLauncherDelegate.
+  // Must happen before IO thread to preempt any mojo services starting.
+  if (g_utility_target_services) {
+    auto delegate_data = g_utility_target_services->GetDelegateData();
+    if (delegate_data.has_value() && !delegate_data->empty()) {
+      PreLockdownSandboxHook(delegate_data.value());
+    }
+  }
 #endif
 
   ChildProcess utility_process(base::ThreadType::kDefault);

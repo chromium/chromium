@@ -4,8 +4,6 @@
 
 #include "ash/wm/raster_scale_controller.h"
 
-#include <memory>
-
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ui/aura/client/aura_constants.h"

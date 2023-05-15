@@ -32,7 +32,7 @@
 
 namespace {
 
-absl::optional<media_router::MediaRouter*> media_router_for_test_;
+absl::optional<media_router::MediaRouter*> g_media_router_for_test;
 
 Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())
@@ -48,8 +48,9 @@ Profile* GetProfile() {
 // Returns the MediaRouter instance for the current primary profile, if there is
 // one.
 media_router::MediaRouter* GetMediaRouter() {
-  if (media_router_for_test_)
-    return *media_router_for_test_;
+  if (g_media_router_for_test) {
+    return *g_media_router_for_test;
+  }
 
   Profile* profile = GetProfile();
   if (!profile || !media_router::MediaRouterEnabled(profile))
@@ -154,7 +155,7 @@ void CastConfigControllerMediaRouter::OnFreezeInfoChanged() {
 // static
 void CastConfigControllerMediaRouter::SetMediaRouterForTest(
     media_router::MediaRouter* media_router) {
-  media_router_for_test_ = media_router;
+  g_media_router_for_test = media_router;
 }
 
 CastDeviceCache* CastConfigControllerMediaRouter::device_cache() {

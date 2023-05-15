@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_SYSTEM_NOTIFICATION_MANAGER_H_
 
 #include "ash/public/cpp/notification_utils.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/event_router.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -255,6 +258,18 @@ class SystemNotificationManager {
           uma_types_for_buttons,
       absl::optional<int> button_index);
 
+  using DataProtectionWarningContinueCallback = base::RepeatingClosure;
+
+  /**
+   * Click handler for Data Leak Prevention or Enterprise Connectors policy
+   * notifications.
+   */
+  void HandleDataProtectionPolicyNotificationClick(
+      file_manager::io_task::IOTaskId task_id,
+      const std::string& notification_id,
+      DataProtectionWarningContinueCallback callback,
+      absl::optional<int> button_index);
+
   /**
    * Click handler for the progress notification.
    */
@@ -276,9 +291,35 @@ class SystemNotificationManager {
       const Volume& volume);
 
   /**
+   * Makes a notification instance Data Leak Prevention or Enterprise Connectors
+   * errors and warnings. For warnings, |continue_callback| should be passed in
+   * order to resume the task in case the user chooses to.
+   */
+  std::unique_ptr<message_center::Notification>
+  MakeDataProtectionPolicyNotification(
+      const std::string& notification_id,
+      const file_manager::io_task::ProgressStatus& status,
+      DataProtectionWarningContinueCallback continue_callback);
+
+  /**
+   * Helper function to show a policy warning dialog.
+   */
+  void ShowPolicyWarningDialog(DataProtectionWarningContinueCallback callback);
+
+  /**
+   * Helper function to show a policy error dialog.
+   */
+  void ShowPolicyErrorDialog();
+
+  /**
    * Helper function bound to notification instances that hides notifications.
    */
   void Dismiss(const std::string& notification_id);
+
+  /**
+   * Helper function to cancel a task.
+   */
+  void CancelTask(file_manager::io_task::IOTaskId task_id);
 
   /**
    * Maps device paths to their mount status.
@@ -293,16 +334,18 @@ class SystemNotificationManager {
       mount_status_;
 
   // User profile.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;
 
   // DriveFS event router: not owned.
-  DriveFsEventRouter* drivefs_event_router_ = nullptr;
+  raw_ptr<DriveFsEventRouter, DanglingUntriaged | ExperimentalAsh>
+      drivefs_event_router_ = nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  file_manager::io_task::IOTaskController* io_task_controller_ = nullptr;
+  raw_ptr<file_manager::io_task::IOTaskController, ExperimentalAsh>
+      io_task_controller_ = nullptr;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};

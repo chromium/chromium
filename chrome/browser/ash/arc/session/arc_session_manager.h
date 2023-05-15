@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -474,7 +475,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
       adb_sideloading_availability_delegate_;
 
   // Unowned pointer. Keeps current profile.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // Whether ArcSessionManager is requested to enable (starting to run ARC
   // instance) or not.

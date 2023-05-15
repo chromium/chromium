@@ -24,6 +24,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -111,7 +112,8 @@ class FakeNotificationSurface : public exo::NotificationSurface {
     // null SharedMainThreadContextProvider in test under mash.
   }
 
-  exo::NotificationSurfaceManager* const manager_;  // Not owned.
+  const raw_ptr<exo::NotificationSurfaceManager, ExperimentalAsh>
+      manager_;  // Not owned.
 };
 
 aura::Window* GetFocusedWindow() {
@@ -270,7 +272,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
   std::unique_ptr<exo::NotificationSurface> notification_surface_;
 
   // owned by the |wrapper_widget_|.
-  ArcNotificationView* notification_view_ = nullptr;
+  raw_ptr<ArcNotificationView, ExperimentalAsh> notification_view_ = nullptr;
   std::unique_ptr<views::Widget> wrapper_widget_;
 };
 

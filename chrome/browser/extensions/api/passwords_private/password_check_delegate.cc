@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -272,9 +273,16 @@ PasswordCheckDelegate::GetCredentialsWithReusedPassword() {
           ConstructInsecureCredentialUiEntry(credential));
     }
   }
+
   std::vector<api::passwords_private::PasswordUiEntryList> result;
   result.reserve(password_to_credentials.size());
   for (auto& pair : password_to_credentials) {
+    // This check is relevant in the cases where the password store has changed
+    // after the password check was already run. (e.g if a reused password has
+    // been deleted)
+    if (pair.second.size() < 2) {
+      continue;
+    }
     api::passwords_private::PasswordUiEntryList api_result;
     api_result.entries = std::move(pair.second);
     result.push_back(std::move(api_result));
@@ -418,7 +426,8 @@ PasswordCheckDelegate::GetInsecureCredentialsManager() {
   return &insecure_credentials_manager_;
 }
 
-void PasswordCheckDelegate::OnSavedPasswordsChanged() {
+void PasswordCheckDelegate::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   // Getting the first notification about a change in saved passwords implies
   // that the delegate is initialized, and start check callbacks can be invoked,
   // if any.

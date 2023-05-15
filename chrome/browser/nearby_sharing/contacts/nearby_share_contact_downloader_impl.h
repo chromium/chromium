@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
@@ -74,7 +75,7 @@ class NearbyShareContactDownloaderImpl : public NearbyShareContactDownloader {
   size_t current_page_number_ = 0;
   std::vector<nearbyshare::proto::ContactRecord> contacts_;
   base::TimeDelta timeout_;
-  NearbyShareClientFactory* client_factory_ = nullptr;
+  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   base::TimeTicks start_timestamp_;
   std::unique_ptr<NearbyShareClient> client_;
   base::OneShotTimer timer_;

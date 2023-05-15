@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -74,7 +75,7 @@ class HostScanSchedulerImplTest : public testing::Test {
     test_clock_.Advance(base::Seconds(10));
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     host_scan_scheduler_->SetTestDoubles(
-        base::WrapUnique(mock_host_scan_batch_timer_), &test_clock_,
+        base::WrapUnique(mock_host_scan_batch_timer_.get()), &test_clock_,
         test_task_runner_);
   }
 
@@ -171,7 +172,7 @@ class HostScanSchedulerImplTest : public testing::Test {
   std::unique_ptr<FakeHostScanner> fake_host_scanner_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 
-  base::MockOneShotTimer* mock_host_scan_batch_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_host_scan_batch_timer_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 

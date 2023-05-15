@@ -16,6 +16,7 @@ namespace base {
 
 using TimeNowFunction = decltype(&Time::Now);
 using TimeTicksNowFunction = decltype(&TimeTicks::Now);
+using LiveTicksNowFunction = decltype(&LiveTicks::Now);
 using ThreadTicksNowFunction = decltype(&ThreadTicks::Now);
 
 // Time overrides should be used with extreme caution. Discuss with //base/time
@@ -23,21 +24,23 @@ using ThreadTicksNowFunction = decltype(&ThreadTicks::Now);
 namespace subtle {
 
 // Override the return value of Time::Now and Time::NowFromSystemTime /
-// TimeTicks::Now / ThreadTicks::Now to emulate time, e.g. for tests or to
-// modify progression of time. It is recommended that the override be set while
-// single-threaded and before the first call to Now() to avoid threading issues
-// and inconsistencies in returned values. Overriding time while other threads
-// are running is very subtle and should be reserved for developer only use
-// cases (e.g. virtual time in devtools) where any flakiness caused by a racy
-// time update isn't surprising. Instantiating a ScopedTimeClockOverrides while
-// other threads are running might break their expectation that TimeTicks and
-// ThreadTicks increase monotonically. Nested overrides are not allowed.
+// TimeTicks::Now / LiveTicks::Now / ThreadTicks::Now to emulate time, e.g. for
+// tests or to modify progression of time. It is recommended that the override
+// be set while single-threaded and before the first call to Now() to avoid
+// threading issues and inconsistencies in returned values. Overriding time
+// while other threads are running is very subtle and should be reserved for
+// developer only use cases (e.g. virtual time in devtools) where any flakiness
+// caused by a racy time update isn't surprising. Instantiating a
+// ScopedTimeClockOverrides while other threads are running might break their
+// expectation that TimeTicks and ThreadTicks increase monotonically. Nested
+// overrides are not allowed.
 class BASE_EXPORT ScopedTimeClockOverrides {
  public:
   // Pass |nullptr| for any override if it shouldn't be overriden.
   ScopedTimeClockOverrides(TimeNowFunction time_override,
                            TimeTicksNowFunction time_ticks_override,
-                           ThreadTicksNowFunction thread_ticks_override);
+                           ThreadTicksNowFunction thread_ticks_override,
+                           LiveTicksNowFunction live_ticks_override = nullptr);
 
   ScopedTimeClockOverrides(const ScopedTimeClockOverrides&) = delete;
   ScopedTimeClockOverrides& operator=(const ScopedTimeClockOverrides&) = delete;
@@ -59,6 +62,7 @@ class BASE_EXPORT ScopedTimeClockOverrides {
 BASE_EXPORT Time TimeNowIgnoringOverride();
 BASE_EXPORT Time TimeNowFromSystemTimeIgnoringOverride();
 BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
+BASE_EXPORT LiveTicks LiveTicksNowIgnoringOverride();
 BASE_EXPORT ThreadTicks ThreadTicksNowIgnoringOverride();
 
 #if BUILDFLAG(IS_POSIX)
@@ -81,6 +85,7 @@ namespace internal {
 extern std::atomic<TimeNowFunction> g_time_now_function;
 extern std::atomic<TimeNowFunction> g_time_now_from_system_time_function;
 extern std::atomic<TimeTicksNowFunction> g_time_ticks_now_function;
+extern std::atomic<LiveTicksNowFunction> g_live_ticks_now_function;
 extern std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function;
 
 }  // namespace internal

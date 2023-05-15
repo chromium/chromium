@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_password_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
@@ -49,7 +50,8 @@ class LoginPinViewTest : public LoginTestBase {
   void OnPinBackspace() { ++backspace_; }
   void OnPinSubmit() { ++submit_; }
 
-  LoginPinView* view_ = nullptr;  // Owned by test widget view hierarchy.
+  raw_ptr<LoginPinView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by test widget view hierarchy.
   absl::optional<int> value_;
   // Number of times the backspace event has been fired.
   int backspace_ = 0;

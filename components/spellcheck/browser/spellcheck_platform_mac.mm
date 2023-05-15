@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Integration with OS X built-in spellchecker.
+// Integration with macOS built-in spellchecker.
 
 #include "components/spellcheck/browser/spellcheck_platform.h"
 
@@ -18,6 +18,10 @@
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class PlatformSpellChecker;
 
@@ -36,25 +40,25 @@ const unsigned int kShortLanguageCodeSize = 2;
 // browser.
 NSSpellChecker* SharedSpellChecker() {
   @try {
-    return [NSSpellChecker sharedSpellChecker];
+    return NSSpellChecker.sharedSpellChecker;
   } @catch (id exception) {
     return nil;
   }
 }
 
-// A private utility function to convert hunspell language codes to OS X
+// A private utility function to convert hunspell language codes to macOS
 // language codes.
 NSString* ConvertLanguageCodeToMac(const std::string& hunspell_lang_code) {
   NSString* whole_code = base::SysUTF8ToNSString(hunspell_lang_code);
 
-  if ([whole_code length] > kShortLanguageCodeSize) {
+  if (whole_code.length > kShortLanguageCodeSize) {
     NSString* lang_code = [whole_code
                            substringToIndex:kShortLanguageCodeSize];
     // Add 1 here to skip the underscore.
     NSString* region_code = [whole_code
                              substringFromIndex:(kShortLanguageCodeSize + 1)];
 
-    // Check for the special case of en-US and pt-PT, since OS X lists these
+    // Check for the special case of en-US and pt-PT, since macOS lists these
     // as just en and pt respectively.
     // TODO(pwicks): Find out if there are other special cases for languages
     // not installed on the system by default. Are there others like pt-PT?
@@ -67,16 +71,16 @@ NSString* ConvertLanguageCodeToMac(const std::string& hunspell_lang_code) {
 
     // Otherwise, just build a string that uses an underscore instead of a
     // dash between the language and the region code, since this is the
-    // format that OS X uses.
-    NSString* os_x_language =
+    // format that macOS uses.
+    NSString* macos_language =
         [NSString stringWithFormat:@"%@_%@", lang_code, region_code];
-    return os_x_language;
+    return macos_language;
   } else {
     // Special case for Polish.
     if ([whole_code isEqualToString:@"pl"]) {
       return @"pl_PL";
     }
-    // This is just a language code with the same format as OS X
+    // This is just a language code with the same format as macOS
     // language code.
     return whole_code;
   }
@@ -85,15 +89,23 @@ NSString* ConvertLanguageCodeToMac(const std::string& hunspell_lang_code) {
 std::string ConvertLanguageCodeFromMac(NSString* lang_code) {
   // TODO(pwicks):figure out what to do about Multilingual
   // Guards for strange cases.
-  if ([lang_code isEqualToString:@"en"]) return std::string("en-US");
-  if ([lang_code isEqualToString:@"pt"]) return std::string("pt-PT");
-  if ([lang_code isEqualToString:@"pl_PL"]) return std::string("pl");
+  if ([lang_code isEqualToString:@"en"]) {
+    return std::string("en-US");
+  }
+  if ([lang_code isEqualToString:@"pt"]) {
+    return std::string("pt-PT");
+  }
+  if ([lang_code isEqualToString:@"pl_PL"]) {
+    return std::string("pl");
+  }
 
-  if ([lang_code length] > kShortLanguageCodeSize &&
+  if (lang_code.length > kShortLanguageCodeSize &&
       [lang_code characterAtIndex:kShortLanguageCodeSize] == '_') {
-    return base::SysNSStringToUTF8([NSString stringWithFormat:@"%@-%@",
-                [lang_code substringToIndex:kShortLanguageCodeSize],
-                [lang_code substringFromIndex:(kShortLanguageCodeSize + 1)]]);
+    return base::SysNSStringToUTF8([NSString
+        stringWithFormat:@"%@-%@",
+                         [lang_code substringToIndex:kShortLanguageCodeSize],
+                         [lang_code
+                             substringFromIndex:(kShortLanguageCodeSize + 1)]]);
   }
   return base::SysNSStringToUTF8(lang_code);
 }
@@ -103,8 +115,7 @@ std::string ConvertLanguageCodeFromMac(NSString* lang_code) {
 namespace spellcheck_platform {
 
 void GetAvailableLanguages(std::vector<std::string>* spellcheck_languages) {
-  NSArray* availableLanguages = [SharedSpellChecker() availableLanguages];
-  for (NSString* lang_code in availableLanguages) {
+  for (NSString* lang_code in SharedSpellChecker().availableLanguages) {
     spellcheck_languages->push_back(
               ConvertLanguageCodeFromMac(lang_code));
   }
@@ -124,7 +135,7 @@ void AddSpellcheckLanguagesForTesting(
 }
 
 std::string GetSpellCheckerLanguage() {
-  return ConvertLanguageCodeFromMac([SharedSpellChecker() language]);
+  return ConvertLanguageCodeFromMac(SharedSpellChecker().language);
 }
 
 bool SpellCheckerAvailable() {
@@ -138,18 +149,18 @@ bool SpellCheckerProvidesPanel() {
 
 bool SpellingPanelVisible() {
   // This should only be called from the main thread.
-  DCHECK([NSThread currentThread] == [NSThread mainThread]);
-  return [[SharedSpellChecker() spellingPanel] isVisible];
+  DCHECK(NSThread.isMainThread);
+  return SharedSpellChecker().spellingPanel.visible;
 }
 
 void ShowSpellingPanel(bool show) {
   if (show) {
-    [[SharedSpellChecker() spellingPanel]
+    [SharedSpellChecker().spellingPanel
         performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
                          withObject:nil
                       waitUntilDone:YES];
   } else {
-    [[SharedSpellChecker() spellingPanel]
+    [SharedSpellChecker().spellingPanel
         performSelectorOnMainThread:@selector(close)
                          withObject:nil
                       waitUntilDone:YES];
@@ -168,13 +179,13 @@ void UpdateSpellingPanelWithMisspelledWord(const std::u16string& word) {
 void PlatformSupportsLanguage(PlatformSpellChecker* spell_checker_instance,
                               const std::string& current_language,
                               base::OnceCallback<void(bool)> callback) {
-  // First, convert the language to an OS X language code.
+  // First, convert the language to an macOS language code.
   NSString* mac_lang_code = ConvertLanguageCodeToMac(current_language);
 
   // Then grab the languages available.
-  NSArray* availableLanguages = [SharedSpellChecker() availableLanguages];
+  NSArray* availableLanguages = SharedSpellChecker().availableLanguages;
 
-  // Return true if the given language is supported by OS X.
+  // Return true if the given language is supported by macOS.
   std::move(callback).Run([availableLanguages containsObject:mac_lang_code]);
 }
 
@@ -224,7 +235,7 @@ void FillSuggestionList(const std::u16string& wrong_word,
   NSSpellChecker* checker = SharedSpellChecker();
   NSString* language = [checker language];
   NSArray* guesses =
-      [checker guessesForWordRange:NSMakeRange(0, [ns_wrong_word length])
+      [checker guessesForWordRange:NSMakeRange(0, ns_wrong_word.length)
                           inString:ns_wrong_word
                           language:language
             inSpellDocumentWithTag:last_seen_tag_];
@@ -268,7 +279,7 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
                       const std::u16string& text,
                       TextCheckCompleteCallback passed_callback) {
   NSString* text_to_check = base::SysUTF16ToNSString(text);
-  NSRange range_to_check = NSMakeRange(0, [text_to_check length]);
+  NSRange range_to_check = NSMakeRange(0, text_to_check.length);
   __block TextCheckCompleteCallback callback(std::move(passed_callback));
 
   [SharedSpellChecker()
@@ -283,17 +294,18 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
                                 NSInteger) {
           std::vector<SpellCheckResult> check_results;
           for (NSTextCheckingResult* result in results) {
-            // Deliberately ignore non-spelling results. OSX at the very least
+            // Deliberately ignore non-spelling results. macOS at the very least
             // delivers a result of NSTextCheckingTypeOrthography for the
             // whole fragment, which underlines the entire checked range.
-            if ([result resultType] != NSTextCheckingTypeSpelling)
+            if (result.resultType != NSTextCheckingTypeSpelling) {
               continue;
+            }
 
             // In this use case, the spell checker should never
             // return anything but a single range per result.
             check_results.emplace_back(SpellCheckResult::SPELLING,
-                                       [result range].location,
-                                       [result range].length);
+                                       result.range.location,
+                                       result.range.length);
           }
           // TODO(groby): Verify we don't need to post from here.
           std::move(callback).Run(check_results);
@@ -311,17 +323,17 @@ class SpellcheckerStateInternal {
 };
 
 SpellcheckerStateInternal::SpellcheckerStateInternal() {
-  language_ = [SharedSpellChecker() language];
+  language_ = SharedSpellChecker().language;
   automaticallyIdentifiesLanguages_ =
-      [SharedSpellChecker() automaticallyIdentifiesLanguages];
+      SharedSpellChecker().automaticallyIdentifiesLanguages;
   [SharedSpellChecker() setLanguage:@"en"];
-  [SharedSpellChecker() setAutomaticallyIdentifiesLanguages:NO];
+  SharedSpellChecker().automaticallyIdentifiesLanguages = NO;
 }
 
 SpellcheckerStateInternal::~SpellcheckerStateInternal() {
   [SharedSpellChecker() setLanguage:language_];
-  [SharedSpellChecker() setAutomaticallyIdentifiesLanguages:
-      automaticallyIdentifiesLanguages_];
+  SharedSpellChecker().automaticallyIdentifiesLanguages =
+      automaticallyIdentifiesLanguages_;
 }
 
 ScopedEnglishLanguageForTest::ScopedEnglishLanguageForTest()

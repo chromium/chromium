@@ -1211,17 +1211,18 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       }
 #endif
 
+      constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
       if (multi_planar_format) {
         DCHECK_EQ(NumSharedImages(output_format_), 1u);
         plane_resource.mailbox = sii->CreateSharedImage(
             *multi_planar_format, gpu_memory_buffer->GetSize(), color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
       } else {
         plane_resource.mailbox = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
             GetSharedImageBufferPlane(output_format_, plane), color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel);
       }
     } else if (!plane_resource.mailbox.IsZero()) {
       sii->UpdateSharedImage(frame_resources->sync_token,

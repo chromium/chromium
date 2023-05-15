@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {
@@ -39,7 +40,7 @@ class DiagnosticsManager {
   std::unique_ptr<SystemDataProvider> system_data_provider_;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
   std::unique_ptr<InputDataProvider> input_data_provider_;
-  content::WebUI* webui_;
+  raw_ptr<content::WebUI, ExperimentalAsh> webui_;
 };
 
 }  // namespace diagnostics

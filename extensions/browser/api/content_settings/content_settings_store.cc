@@ -70,10 +70,7 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
     bool incognito) const {
   std::vector<std::unique_ptr<RuleIterator>> iterators;
 
-  // The individual |RuleIterators| shouldn't lock; pass |lock_| to the
-  // |ConcatenationIterator| in a locked state.
-  std::unique_ptr<base::AutoLock> auto_lock =
-      std::make_unique<base::AutoLock>(lock_);
+  base::AutoLock auto_lock(lock_);
 
   // Iterate the extensions based on install time (most-recently installed
   // items first).
@@ -83,16 +80,14 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
 
     std::unique_ptr<RuleIterator> rule_it;
     if (incognito) {
-      rule_it =
-          entry->incognito_session_only_settings.GetRuleIterator(type, nullptr);
+      rule_it = entry->incognito_session_only_settings.GetRuleIterator(type);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
-      rule_it =
-          entry->incognito_persistent_settings.GetRuleIterator(type, nullptr);
+      rule_it = entry->incognito_persistent_settings.GetRuleIterator(type);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
     } else {
-      rule_it = entry->settings.GetRuleIterator(type, nullptr);
+      rule_it = entry->settings.GetRuleIterator(type);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
     }
@@ -100,8 +95,7 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
   if (iterators.empty())
     return nullptr;
 
-  return std::make_unique<ConcatenationIterator>(std::move(iterators),
-                                                 auto_lock.release());
+  return std::make_unique<ConcatenationIterator>(std::move(iterators));
 }
 
 void ContentSettingsStore::SetExtensionContentSetting(
@@ -114,6 +108,7 @@ void ContentSettingsStore::SetExtensionContentSetting(
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
+    base::AutoLock map_lock(map->GetLock());
     if (setting == CONTENT_SETTING_DEFAULT) {
       map->DeleteValue(primary_pattern, secondary_pattern, type);
     } else {
@@ -167,16 +162,31 @@ void ContentSettingsStore::UnregisterExtension(
     auto i = FindIterator(ext_id);
     if (i == entries_.end())
       return;
-    notify = !(*i)->settings.empty();
-    notify_incognito = !(*i)->incognito_persistent_settings.empty() ||
-                       !(*i)->incognito_session_only_settings.empty();
 
+    ShouldNotifyForEntry(**i, &notify, &notify_incognito);
     entries_.erase(i);
   }
   if (notify)
     NotifyOfContentSettingChanged(ext_id, false);
   if (notify_incognito)
     NotifyOfContentSettingChanged(ext_id, true);
+}
+
+void ContentSettingsStore::ShouldNotifyForEntry(const ExtensionEntry& entry,
+                                                bool* notify,
+                                                bool* notify_incognito) {
+  {
+    base::AutoLock map_lock(entry.settings.GetLock());
+    *notify = !entry.settings.empty();
+  }
+  {
+    base::AutoLock map_lock(entry.incognito_persistent_settings.GetLock());
+    *notify_incognito = !entry.incognito_persistent_settings.empty();
+  }
+  if (!*notify_incognito) {
+    base::AutoLock map_lock(entry.incognito_session_only_settings.GetLock());
+    *notify_incognito = !entry.incognito_session_only_settings.empty();
+  }
 }
 
 void ContentSettingsStore::SetExtensionState(
@@ -189,10 +199,7 @@ void ContentSettingsStore::SetExtensionState(
     if (!entry)
       return;
 
-    notify = !entry->settings.empty();
-    notify_incognito = !entry->incognito_persistent_settings.empty() ||
-                       !entry->incognito_session_only_settings.empty();
-
+    ShouldNotifyForEntry(*entry, &notify, &notify_incognito);
     entry->enabled = is_enabled;
   }
   if (notify)
@@ -242,6 +249,7 @@ void ContentSettingsStore::ClearContentSettingsForExtension(
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
     DCHECK(map);
+    base::AutoLock map_lock(map->GetLock());
     notify = !map->empty();
     map->clear();
   }
@@ -259,6 +267,7 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
     DCHECK(map);
 
+    base::AutoLock map_lock(map->GetLock());
     if (map->find(content_type) == map->end())
       return;
 
@@ -274,26 +283,35 @@ base::Value::List ContentSettingsStore::GetSettingsForExtension(
   const OriginIdentifierValueMap* map = GetValueMap(extension_id, scope);
   if (!map)
     return {};
-
+  std::vector<ContentSettingsType> keys;
+  {
+    // Grab the set of keys first as OriginIdentifierValueMap::GetRuleIterator
+    // requires that the lock isn't already held.
+    base::AutoLock map_lock(map->GetLock());
+    // Range-based for loops break locking annotations.
+    // https://github.com/llvm/llvm-project/issues/62497
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (auto it = map->begin(); it != map->end(); it++) {
+      keys.push_back(it->first);
+    }
+  }
   base::Value::List settings;
-  for (const auto& it : *map) {
-    const auto& key = it.first;
-    std::unique_ptr<RuleIterator> rule_iterator(
-        map->GetRuleIterator(key,
-                             nullptr));  // We already hold the lock.
+  for (ContentSettingsType key : keys) {
+    std::unique_ptr<RuleIterator> rule_iterator(map->GetRuleIterator(key));
     if (!rule_iterator)
       continue;
 
     while (rule_iterator->HasNext()) {
-      const Rule& rule = rule_iterator->Next();
+      std::unique_ptr<Rule> rule = rule_iterator->Next();
       base::Value::Dict setting_dict;
-      setting_dict.Set(kPrimaryPatternKey, rule.primary_pattern.ToString());
-      setting_dict.Set(kSecondaryPatternKey, rule.secondary_pattern.ToString());
+      setting_dict.Set(kPrimaryPatternKey, rule->primary_pattern.ToString());
+      setting_dict.Set(kSecondaryPatternKey,
+                       rule->secondary_pattern.ToString());
       setting_dict.Set(
           kContentSettingsTypeKey,
           content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
-          content_settings::ValueToContentSetting(rule.value);
+          content_settings::ValueToContentSetting(rule->value());
       DCHECK_NE(CONTENT_SETTING_DEFAULT, content_setting);
 
       std::string setting_string =

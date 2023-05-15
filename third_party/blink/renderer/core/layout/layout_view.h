@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
-#include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -105,6 +104,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
+  LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:
   // - checks for null LocalFrameView
@@ -177,11 +177,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   void CalculateScrollbarModes(mojom::blink::ScrollbarMode& h_mode,
                                mojom::blink::ScrollbarMode& v_mode) const;
-
-  LayoutState* GetLayoutState() const {
-    NOT_DESTROYED();
-    return layout_state_;
-  }
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
@@ -259,6 +254,12 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     needs_marker_counter_update_ = true;
   }
 
+  // Return true if laying out with a new initial containing block size.
+  bool IsResizingInitialContainingBlock() const {
+    NOT_DESTROYED();
+    return is_resizing_initial_containing_block_;
+  }
+
   // Update generated markers and counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.
   void UpdateMarkersAndCountersAfterStyleChange(
@@ -276,16 +277,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   gfx::SizeF LargeViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
   gfx::SizeF DynamicViewportSizeForViewportUnits() const;
-
-  void PushLayoutState(LayoutState& layout_state) {
-    NOT_DESTROYED();
-    layout_state_ = &layout_state;
-  }
-  void PopLayoutState() {
-    NOT_DESTROYED();
-    DCHECK(layout_state_);
-    layout_state_ = layout_state_->Next();
-  }
 
   PhysicalRect LocalVisualRectIgnoringVisibility() const override;
 
@@ -356,16 +347,20 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return ViewLogicalHeight(kIncludeScrollbars);
   }
 
+  // Set to true if laying out with a new initial containing block size. Always
+  // set back to false after layout.
+  bool is_resizing_initial_containing_block_ = false;
+
  private:
   bool CanHaveChildren() const override;
-
-  void UpdateBlockLayout(bool relayout_children) override;
-
-#if DCHECK_IS_ON()
-  void CheckLayoutState();
-#endif
-
   void UpdateFromStyle() override;
+
+  // The CompositeBackgroundAttachmentFixed optimization doesn't apply to
+  // LayoutView which paints background specially.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   Member<LocalFrameView> frame_view_;
 
@@ -373,12 +368,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // This is only used during printing to split the content into pages.
   // Outside of printing, this is 0x0.
   PhysicalSize page_size_;
-
-  // LayoutState is an optimization used during layout.
-  // |m_layoutState| will be nullptr outside of layout.
-  //
-  // See the class comment for more details.
-  LayoutState* layout_state_;
 
   Member<ViewFragmentationContext> fragmentation_context_;
 

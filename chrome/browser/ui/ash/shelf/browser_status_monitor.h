@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -102,7 +103,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void SetShelfIDForBrowserWindowContents(Browser* browser,
                                           content::WebContents* web_contents);
 
-  ChromeShelfController* shelf_controller_;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> shelf_controller_;
 
   std::map<Browser*, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>
@@ -111,7 +112,8 @@ class BrowserStatusMonitor : public BrowserListObserver,
   BrowserTabStripTracker browser_tab_strip_tracker_;
   bool initialized_ = false;
 
-  AppServiceInstanceRegistryHelper* app_service_instance_helper_ = nullptr;
+  raw_ptr<AppServiceInstanceRegistryHelper, ExperimentalAsh>
+      app_service_instance_helper_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Browsers for which OnBrowserAdded() was called, but not OnBrowserRemoved().

@@ -14,7 +14,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.version_info.VersionInfo;
 
@@ -32,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  *
  * This class is written in pure Java, so it can handle exception happens before native is loaded.
  */
-@MainDex
 public abstract class PureJavaExceptionReporter
         implements PureJavaExceptionHandler.JavaExceptionReporter {
     // report fields, please keep the name sync with MIME blocks in breakpad_linux.cc

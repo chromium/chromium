@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,18 +13,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
@@ -60,59 +57,15 @@ class FaviconWatcher final : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-// Overrides SiteDataRecorder's heuristics for when to record a feature change,
-// since they involve waiting for many seconds of real time and this test
-// doesn't use a mock clock.
-class TestSiteDataRecorderHeuristics : public SiteDataRecorderHeuristics {
- public:
-  bool IsLoadedIdle(PageNode::LoadingState loading_state) const override {
-    // kLoadedIdle takes >1 s after the top-level document is loaded. To avoid
-    // slowing the test, allow kLoadedBusy as well.
-    switch (loading_state) {
-      case PageNode::LoadingState::kLoadingNotStarted:
-      case PageNode::LoadingState::kLoading:
-      case PageNode::LoadingState::kLoadingTimedOut:
-        return false;
-      case PageNode::LoadingState::kLoadedBusy:
-      case PageNode::LoadingState::kLoadedIdle:
-        return true;
-    }
-    NOTREACHED_NORETURN();
-  }
-
-  bool IsInBackground(const PageNode* page_node) const override {
-    return SiteDataRecorderHeuristics::DefaultIsInBackground(page_node);
-  }
-
-  bool IsOutsideLoadingGracePeriod(
-      const PageNode* page_node,
-      FeatureType feature_type,
-      base::TimeDelta time_since_load) const override {
-    return true;
-  }
-
-  bool IsOutsideBackgroundingGracePeriod(
-      const PageNode* page_node,
-      FeatureType feature_type,
-      base::TimeDelta time_since_backgrounding) const override {
-    return true;
-  }
-};
-
 class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    SiteDataRecorder::SetHeuristicsImplementationForTesting(
-        std::make_unique<TestSiteDataRecorderHeuristics>());
   }
 
   // Opens a new page in the background, and returns its index in the tab strip.
   int OpenNewBackgroundPage() {
-    content::WindowedNotificationObserver load(
-        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-        content::NotificationService::AllSources());
     // Load a page with title and favicon so that some tests can manipulate
     // them.
     content::OpenURLParams page(
@@ -120,10 +73,12 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         content::Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui::PAGE_TRANSITION_TYPED, false);
     content::WebContents* contents = browser()->OpenURL(page);
+    content::TestNavigationObserver observer(contents);
+    observer.set_expected_initial_url(page.url);
 
     // Wait for the page and the initial favicon to finish loading.
     FaviconWatcher favicon_watcher(contents);
-    load.Wait();
+    observer.Wait();
     favicon_watcher.Wait();
 
     return browser()->tab_strip_model()->GetIndexOfWebContents(contents);
@@ -200,6 +155,8 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
+  // TODO(crbug.com/1426484): Add tests for all the other heuristics in
+  // PageDiscardingHelper::CanDiscard().
   for (auto discard_reason :
        {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
     {
@@ -214,64 +171,42 @@ IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
       browser()->tab_strip_model()->ActivateTabAt(index2);
       ExpectImmediateDiscard(index2, discard_reason, false);
     }
+
+    {
+      // Updating the title while in the background should block only proactive
+      // discards.
+      const int index1 = OpenNewBackgroundPage();
+      UpdatePageTitle(index1);
+      ExpectImmediateDiscard(index1, discard_reason,
+                             discard_reason == DiscardReason::URGENT);
+
+      // Updating the page title while in the foreground should not block any
+      // discards.
+      const int index2 = OpenNewBackgroundPage();
+      browser()->tab_strip_model()->ActivateTabAt(index2);
+      UpdatePageTitle(index2);
+      browser()->tab_strip_model()->ActivateTabAt(index1);
+      ExpectImmediateDiscard(index2, discard_reason, true);
+    }
+
+    {
+      // Updating the favicon while in the background should block only
+      // proactive discards.
+      const int index1 = OpenNewBackgroundPage();
+      UpdateFavicon(index1);
+      ExpectImmediateDiscard(index1, discard_reason,
+                             discard_reason == DiscardReason::URGENT);
+
+      // Updating the favicon while in the foreground should not block any
+      // discards.
+      const int index2 = OpenNewBackgroundPage();
+      browser()->tab_strip_model()->ActivateTabAt(index2);
+      UpdateFavicon(index2);
+      browser()->tab_strip_model()->ActivateTabAt(index1);
+      ExpectImmediateDiscard(index2, discard_reason, true);
+    }
   }
 }
-
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest,
-                       DiscardSpecificPageUpdateTitle) {
-  // Updating the page title while in the foreground should not block any
-  // discards.
-  for (auto discard_reason :
-       {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
-    const int index1 = OpenNewBackgroundPage();
-    const int index2 = OpenNewBackgroundPage();
-    browser()->tab_strip_model()->ActivateTabAt(index1);
-    UpdatePageTitle(index1);
-    browser()->tab_strip_model()->ActivateTabAt(index2);
-    ExpectImmediateDiscard(index1, discard_reason, true);
-  }
-
-  // Updating the title while in the background should block only proactive
-  // discards. Once SiteDataRecorder has observed a background title
-  // change, further discards for the same site should be blocked.
-  const int index1 = OpenNewBackgroundPage();
-  UpdatePageTitle(index1);
-  ExpectImmediateDiscard(index1, DiscardReason::PROACTIVE, false);
-  ExpectImmediateDiscard(index1, DiscardReason::URGENT, true);
-
-  const int index2 = OpenNewBackgroundPage();
-  ExpectImmediateDiscard(index2, DiscardReason::PROACTIVE, false);
-  ExpectImmediateDiscard(index2, DiscardReason::URGENT, true);
-}
-
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest,
-                       DiscardSpecificPageUpdateFavicon) {
-  // Updating the favicon while in the foreground should not block any discards.
-  for (auto discard_reason :
-       {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
-    const int index1 = OpenNewBackgroundPage();
-    const int index2 = OpenNewBackgroundPage();
-    browser()->tab_strip_model()->ActivateTabAt(index1);
-    UpdateFavicon(index1);
-    browser()->tab_strip_model()->ActivateTabAt(index2);
-    ExpectImmediateDiscard(index1, discard_reason, true);
-  }
-
-  // Updating the favicon while in the background should block only proactive
-  // discards. Once SiteDataRecorder has observed a background title
-  // change, further discards for the same site should be blocked.
-  const int index1 = OpenNewBackgroundPage();
-  UpdateFavicon(index1);
-  ExpectImmediateDiscard(index1, DiscardReason::PROACTIVE, false);
-  ExpectImmediateDiscard(index1, DiscardReason::URGENT, true);
-
-  const int index2 = OpenNewBackgroundPage();
-  ExpectImmediateDiscard(index2, DiscardReason::PROACTIVE, false);
-  ExpectImmediateDiscard(index2, DiscardReason::URGENT, true);
-}
-
-// TODO(crbug.com/1426484): Add tests for all the other heuristics in
-// PageDiscardingHelper::CanDiscard().
 
 }  // namespace
 

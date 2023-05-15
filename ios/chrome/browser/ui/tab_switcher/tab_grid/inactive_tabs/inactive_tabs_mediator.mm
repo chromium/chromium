@@ -7,28 +7,26 @@
 #import "base/notreached.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url/url_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
@@ -91,8 +89,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                                     WebStateListObserving> {
   // The UI consumer to which updates are made.
   __weak id<TabCollectionConsumer, InactiveTabsInfoConsumer> _consumer;
-  // The handler for commands related to Inactive Tabs.
-  __weak id<InactiveTabsCommands> _commandHandler;
   // The list of inactive tabs.
   WebStateList* _webStateList;
   // The snapshot cache of _webStateList.
@@ -109,8 +105,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // The short-term cache for grid thumbnails.
-  NSMutableDictionary<NSString*, UIImage*>* _appearanceCache;
   // The saved session window just before close all tabs from regular tab grid
   // is called.
   SessionWindowIOS* _closedSessionWindow;
@@ -132,16 +126,14 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 - (instancetype)
            initWithConsumer:
                (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)consumer
-             commandHandler:(id<InactiveTabsCommands>)commandHandler
                webStateList:(WebStateList*)webStateList
                 prefService:(PrefService*)prefService
     sessionRestorationAgent:
         (SessionRestorationBrowserAgent*)sessionRestorationAgent
               snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
           tabRestoreService:(sessions::TabRestoreService*)tabRestoreService {
-  CHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsAvailable());
   CHECK(consumer);
-  CHECK(commandHandler);
   CHECK(webStateList);
   CHECK(prefService);
   CHECK(sessionRestorationAgent);
@@ -151,7 +143,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   self = [super init];
   if (self) {
     _consumer = consumer;
-    _commandHandler = commandHandler;
     _webStateList = webStateList;
 
     // Observe the web state list.
@@ -181,14 +172,11 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // Push the tabs to the consumer.
     PopulateConsumerItems(_consumer, _webStateList);
     // Push the info to the consumer.
-    NSInteger daysThreshold =
-        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    NSInteger daysThreshold = InactiveTabsTimeThreshold().InDays();
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
 
     _snapshotCache = snapshotAgent->snapshot_cache();
     [_snapshotCache addObserver:self];
-
-    _appearanceCache = [[NSMutableDictionary alloc] init];
 
     _sessionRestorationAgent = sessionRestorationAgent;
     _snapshotAgent = snapshotAgent;
@@ -216,8 +204,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   _prefObserverBridge.reset();
   _prefService = nullptr;
   [_snapshotCache removeObserver:self];
-  _snapshotCache = nullptr;
-  _appearanceCache = nullptr;
+  _snapshotCache = nil;
   _sessionRestorationAgent = nullptr;
   [self discardSavedClosedItems];
   _snapshotAgent = nullptr;
@@ -243,86 +230,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
-#pragma mark - GridImageDataSource
-
-- (void)snapshotForIdentifier:(NSString*)identifier
-                   completion:(void (^)(UIImage*))completion {
-  if (_appearanceCache[identifier]) {
-    completion(_appearanceCache[identifier]);
-    return;
-  }
-  web::WebState* webState =
-      GetWebState(_webStateList, WebStateSearchCriteria{
-                                     .identifier = identifier,
-                                 });
-  if (webState) {
-    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-        ^(UIImage* image) {
-          completion(image);
-        });
-  }
-}
-
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  web::WebState* webState =
-      GetWebState(_webStateList, WebStateSearchCriteria{
-                                     .identifier = identifier,
-                                 });
-  if (!webState) {
-    completion(nil);
-    return;
-  }
-
-  // NTP tabs get no favicon.
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    completion(nil);
-    return;
-  }
-
-  // Use the page favicon if available.
-  favicon::FaviconDriver* faviconDriver =
-      favicon::WebFaviconDriver::FromWebState(webState);
-  if (faviconDriver) {
-    gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      completion(favicon.ToUIImage());
-      return;
-    }
-  }
-
-  // Otherwise, set a default favicon.
-  UIImage* defaultFavicon =
-      webState->GetBrowserState()->IsOffTheRecord()
-          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
-          : [UIImage imageNamed:@"default_world_favicon_regular"];
-  completion(defaultFavicon);
-}
-
-- (void)preloadSnapshotsForVisibleGridItems:
-    (NSSet<NSString*>*)visibleGridItems {
-  for (int i = 0; i <= _webStateList->count() - 1; i++) {
-    web::WebState* web_state = _webStateList->GetWebStateAt(i);
-    NSString* identifier = web_state->GetStableIdentifier();
-
-    BOOL isWebStateHidden = ![visibleGridItems containsObject:identifier];
-    if (isWebStateHidden) {
-      continue;
-    }
-
-    __weak __typeof(_appearanceCache) weakAppearanceCache = _appearanceCache;
-    auto cacheImage = ^(UIImage* image) {
-      weakAppearanceCache[identifier] = image;
-    };
-
-    [self snapshotForIdentifier:identifier completion:cacheImage];
-  }
-}
-
-- (void)clearPreloadedSnapshots {
-  [_appearanceCache removeAllObjects];
-}
-
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -330,10 +237,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     NSInteger daysThreshold =
         _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
-
-    if (daysThreshold == kInactiveTabsDisabledByUser) {
-      [_commandHandler inactiveTabsExplicitlyDisabledByUser];
-    }
   }
 }
 
@@ -341,7 +244,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  [_appearanceCache removeObjectForKey:identifier];
   web::WebState* webState =
       GetWebState(_webStateList, WebStateSearchCriteria{
                                      .identifier = identifier,

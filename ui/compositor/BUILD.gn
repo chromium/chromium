@@ -134,8 +134,6 @@ static_library("test_support") {
     "test/fake_context_factory.h",
     "test/in_process_context_factory.cc",
     "test/in_process_context_factory.h",
-    "test/in_process_context_provider.cc",
-    "test/in_process_context_provider.h",
     "test/layer_animation_observer_test_api.cc",
     "test/layer_animation_observer_test_api.h",
     "test/layer_animation_stopped_waiter.cc",

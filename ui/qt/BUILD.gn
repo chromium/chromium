@@ -11,13 +11,6 @@ assert(use_qt)
 assert(is_linux)
 assert(!is_castos)
 
-pkg_config("qt5_config") {
-  packages = [
-    "Qt5Core",
-    "Qt5Widgets",
-  ]
-}
-
 config("qt_internal_config") {
   if (is_clang) {
     # libstdc++ headers are incompatible with -fcomplete-member-pointers.
@@ -56,40 +49,57 @@ if (!use_sysroot) {
   }
 }
 
-shared_library("qt5_shim") {
-  visibility = [
-    ":qt",
-    "//chrome/installer/linux:*",
-  ]
+template("qt_shim") {
+  pkg_config("qt" + invoker.qt_version + "_config") {
+    packages = [
+      "Qt" + invoker.qt_version + "Core",
+      "Qt" + invoker.qt_version + "Widgets",
+    ]
+  }
 
-  # Since qt_shim is a shared library even in non-component builds, it shouldn't
-  # depend on any other targets since that would duplicate code between binaries
-  # leading to increased size and potential issues from duplicated global state.
-  no_default_deps = true
-  assert_no_deps = [
-    "//base",
-    "//buildtools/third_party/libc++",
-  ]
-  deps = [ ":qt_interface" ]
+  shared_library(target_name) {
+    visibility = [
+      ":qt",
+      "//chrome/installer/linux:*",
+    ]
 
-  configs -= [ "//build/config/compiler:runtime_library" ]
-  configs += [
-    ":qt_internal_config",
-    ":qt5_config",
-  ]
+    # Since qt_shim is a shared library even in non-component builds, it shouldn't
+    # depend on any other targets since that would duplicate code between binaries
+    # leading to increased size and potential issues from duplicated global state.
+    no_default_deps = true
+    assert_no_deps = [
+      "//base",
+      "//buildtools/third_party/libc++",
+    ]
+    deps = [ ":qt_interface" ]
 
-  public = []
-  sources = [
-    "qt_shim.cc",
-    "qt_shim.h",
-  ]
-  if (use_sysroot) {
-    # This file is generated with gen_qt_shim_moc.sh on an amd64 system to
-    # avoid a build-time dependency on `moc` when using the sysroot.
-    sources += [ "qt_shim_moc.cc" ]
-  } else {
-    sources += get_target_outputs(":generate_moc")
-    deps += [ ":generate_moc" ]
+    configs -= [ "//build/config/compiler:runtime_library" ]
+    configs += [
+      ":qt_internal_config",
+      ":qt" + invoker.qt_version + "_config",
+    ]
+
+    public = []
+    sources = [
+      "qt_shim.cc",
+      "qt_shim.h",
+    ]
+    if (use_sysroot) {
+      # This file is generated with gen_qt_shim_moc.sh on an amd64 system to
+      # avoid a build-time dependency on `moc` when using the sysroot.
+      sources += [ "qt" + invoker.qt_version + "_shim_moc.cc" ]
+    } else {
+      sources += get_target_outputs(":generate_moc")
+      deps += [ ":generate_moc" ]
+    }
+  }
+}
+qt_shim("qt5_shim") {
+  qt_version = "5"
+}
+if (use_qt6) {
+  qt_shim("qt6_shim") {
+    qt_version = "6"
   }
 }
 
@@ -100,6 +110,9 @@ component("qt") {
 
   # qt_shim is in data_deps since we want to load it manually.
   data_deps = [ ":qt5_shim" ]
+  if (use_qt6) {
+    data_deps += [ ":qt6_shim" ]
+  }
   deps = [
     ":qt_interface",
     "//base",

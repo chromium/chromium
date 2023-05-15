@@ -7,9 +7,7 @@
 
 #import "ios/web/public/ui/context_menu_params.h"
 
-namespace base {
-class Value;
-}  // namespace base
+#import "base/values.h"
 
 namespace web {
 
@@ -22,7 +20,8 @@ inline constexpr double kContextMenuMaxScreenshotSize = 1e7;
 // If set, all these fields must have String values.
 // This constructor does not set fields relative to the touch event (view and
 // location).
-ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element);
+ContextMenuParams ContextMenuParamsFromElementDictionary(
+    const base::Value::Dict& element);
 
 }  // namespace web
 

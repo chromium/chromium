@@ -203,7 +203,7 @@ ci.builder(
 
 ci.builder(
     name = "Afl Upload Linux ASan",
-    executable = "recipe:chromium_afl",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
@@ -373,7 +373,7 @@ ci.builder(
         ),
     ),
     builderless = False,
-    cores = 4,
+    cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac asan",
@@ -404,7 +404,7 @@ ci.builder(
         ),
     ),
     builderless = False,
-    cores = 4,
+    cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac asan",
@@ -604,8 +604,8 @@ ci.builder(
 ci.builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
     executable = "recipe:chromium_libfuzzer",
-    cores = 4,
-    os = os.MAC_12,
+    cores = 12,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "ios",

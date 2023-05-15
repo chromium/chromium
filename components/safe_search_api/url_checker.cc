@@ -4,24 +4,31 @@
 
 #include "components/safe_search_api/url_checker.h"
 
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 namespace safe_search_api {
 
+BASE_FEATURE(kCacheOnlyCertainUrlClassifications,
+             "CacheOnlyCertainUrlClassifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+bool ShouldCacheUrlClassification(bool is_uncertain) {
+  if (!is_uncertain) {
+    return true;
+  }
+
+  return !base::FeatureList::IsEnabled(kCacheOnlyCertainUrlClassifications);
+}
 
 const size_t kDefaultCacheSize = 1000;
 const size_t kDefaultCacheTimeoutSeconds = 3600;
@@ -109,10 +116,13 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   std::vector<CheckCallback> callbacks = std::move(it->get()->callbacks);
   checks_in_progress_.erase(it);
 
-  cache_.Put(url, CheckResult(classification, uncertain));
+  if (ShouldCacheUrlClassification(uncertain)) {
+    cache_.Put(url, CheckResult(classification, uncertain));
+  }
 
-  for (size_t i = 0; i < callbacks.size(); i++)
-    std::move(callbacks[i]).Run(url, classification, uncertain);
+  for (CheckCallback& callback : callbacks) {
+    std::move(callback).Run(url, classification, uncertain);
+  }
 }
 
 }  // namespace safe_search_api

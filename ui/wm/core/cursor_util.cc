@@ -13,6 +13,7 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -321,7 +322,8 @@ absl::optional<ui::CursorData> GetCursorData(
   std::vector<SkBitmap> bitmaps;
   const gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  const float resource_scale = gfx::ImageSkia::MapToResourceScale(scale);
+  const float resource_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactorForRescale(scale));
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(resource_scale);
   CHECK_EQ(image_rep.scale(), resource_scale);
   SkBitmap bitmap = image_rep.GetBitmap();
@@ -453,7 +455,8 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
   DCHECK_EQ(resource->type, t);
   *resource_id = resource->id;
   *point = resource->hotspot_1x;
-  if (gfx::ImageSkia::MapToResourceScale(scale_factor) == 2.0f) {
+  if (ui::GetSupportedResourceScaleFactorForRescale(scale_factor) ==
+      ui::k200Percent) {
     *point = resource->hotspot_2x;
   }
   return true;

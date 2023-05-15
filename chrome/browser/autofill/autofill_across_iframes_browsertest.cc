@@ -1024,7 +1024,7 @@ class AutofillAcrossIframesTest_FullIframes
   [[nodiscard]] const FormStructure* FormAfterRemovalOfExtraFields() {
     // A core part of this test is in the following lines: We check that after
     // removing fields, the BrowserAutofillAgent learns about that.
-    if (!content::ExecuteScript(web_contents(), "removeFields();")) {
+    if (!content::ExecJs(web_contents(), "removeFields();")) {
       ADD_FAILURE() << "Failed to call removeFields();";
       return nullptr;
     }
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
   ASSERT_TRUE(LoadForm());
 
   // This removes the entire <form> element for the first iframe.
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), R"(
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
       document.getElementsByTagName("IFRAME")[0]
         .contentWindow
         .deleteForm();
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
   ASSERT_TRUE(LoadForm());
 
   // This removes the entire <form> element for the first iframe.
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), R"(
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
       document.getElementsByTagName("IFRAME")[0]
         .contentWindow
         .deleteParentOfForm();

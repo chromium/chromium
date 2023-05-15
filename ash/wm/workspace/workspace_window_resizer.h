@@ -12,6 +12,8 @@
 
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/workspace/magnetism_matcher.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_tracker.h"
@@ -214,7 +216,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   gfx::PointF last_location_in_parent_;
 
   // Window the drag has magnetically attached to.
-  aura::Window* magnetism_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> magnetism_window_ = nullptr;
 
   // Used to verify |magnetism_window_| is still valid.
   aura::WindowTracker window_tracker_;

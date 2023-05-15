@@ -58,7 +58,9 @@ using AuthFactorsSet = base::EnumSet<AshAuthFactor,
 enum AuthHubMode {
   kNone,         // State before initialization
   kLoginScreen,  // Login screen, no profile data available.
-  kInSession     // In-session mode, user is fixed, but purposes might change.
+  kInSession     // In-session mode (including lock screen), user is fixed,
+                 // but purposes might change,
+
 };
 
 }  // namespace ash

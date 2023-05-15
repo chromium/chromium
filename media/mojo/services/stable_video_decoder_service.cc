@@ -8,6 +8,106 @@
 
 namespace media {
 
+namespace {
+
+stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
+    scoped_refptr<VideoFrame> media_frame) {
+  CHECK(!media_frame->metadata().end_of_stream);
+  CHECK_EQ(media_frame->storage_type(),
+           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  CHECK(media_frame->HasGpuMemoryBuffer());
+
+  stable::mojom::VideoFramePtr mojo_frame = stable::mojom::VideoFrame::New();
+  CHECK(mojo_frame);
+
+  static_assert(
+      std::is_same<decltype(media_frame->format()),
+                   decltype(stable::mojom::VideoFrame::format)>::value,
+      "Unexpected type for media::VideoFrame::format(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->format = media_frame->format();
+
+  static_assert(
+      std::is_same<decltype(media_frame->coded_size()),
+                   std::add_lvalue_reference<std::add_const<
+                       decltype(stable::mojom::VideoFrame::coded_size)>::type>::
+                       type>::value,
+      "Unexpected type for media::VideoFrame::coded_size(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->coded_size = media_frame->coded_size();
+
+  static_assert(
+      std::is_same<
+          decltype(media_frame->visible_rect()),
+          std::add_lvalue_reference<std::add_const<
+              decltype(stable::mojom::VideoFrame::visible_rect)>::type>::type>::
+          value,
+      "Unexpected type for media::VideoFrame::visible_rect(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->visible_rect = media_frame->visible_rect();
+
+  static_assert(
+      std::is_same<
+          decltype(media_frame->natural_size()),
+          std::add_lvalue_reference<std::add_const<
+              decltype(stable::mojom::VideoFrame::natural_size)>::type>::type>::
+          value,
+      "Unexpected type for media::VideoFrame::natural_size(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->natural_size = media_frame->natural_size();
+
+  static_assert(
+      std::is_same<decltype(media_frame->timestamp()),
+                   decltype(stable::mojom::VideoFrame::timestamp)>::value,
+      "Unexpected type for media::VideoFrame::timestamp(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->timestamp = media_frame->timestamp();
+
+  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
+      media_frame->GetGpuMemoryBuffer()->CloneHandle();
+  CHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
+  CHECK(!gpu_memory_buffer_handle.native_pixmap_handle.planes.empty());
+  mojo_frame->gpu_memory_buffer_handle = std::move(gpu_memory_buffer_handle);
+
+  static_assert(
+      std::is_same<
+          decltype(media_frame->metadata()),
+          std::add_lvalue_reference<
+              decltype(stable::mojom::VideoFrame::metadata)>::type>::value,
+      "Unexpected type for media::VideoFrame::metadata(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->metadata = media_frame->metadata();
+
+  static_assert(
+      std::is_same<decltype(media_frame->ColorSpace()),
+                   decltype(stable::mojom::VideoFrame::color_space)>::value,
+      "Unexpected type for media::VideoFrame::ColorSpace(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->color_space = media_frame->ColorSpace();
+
+  static_assert(
+      std::is_same<
+          decltype(media_frame->hdr_metadata()),
+          std::add_lvalue_reference<std::add_const<
+              decltype(stable::mojom::VideoFrame::hdr_metadata)>::type>::type>::
+          value,
+      "Unexpected type for media::VideoFrame::hdr_metadata(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  mojo_frame->hdr_metadata = media_frame->hdr_metadata();
+
+  return mojo_frame;
+}
+
+}  // namespace
+
 StableVideoDecoderService::StableVideoDecoderService(
     std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
     MojoCdmServiceContext* cdm_service_context)
@@ -179,7 +279,8 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
   CHECK(frame->metadata().power_efficient);
 
   stable_video_decoder_client_remote_->OnVideoFrameDecoded(
-      frame, can_read_without_stalling, *release_token);
+      MediaVideoFrameToMojoVideoFrame(std::move(frame)),
+      can_read_without_stalling, *release_token);
 }
 
 void StableVideoDecoderService::OnWaiting(WaitingReason reason) {

@@ -12,6 +12,12 @@
 
 namespace base {
 
+// Amount of threads that will be system-wide restricted from being used
+// by thread pools.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap);
+
+extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
+
 // Under this feature, a utility_thread_group will be created for
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
@@ -25,13 +31,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kNoWakeUpsForCanceledTasks);
 
 // Controls whether or not canceled delayed tasks are removed from task queues.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveCanceledTasksInTaskQueue);
-
-// This feature controls whether or not the scheduled task is always abandoned
-// when a timer is stopped or reset. The re-use of the scheduled task is an
-// optimization that ensures a timer can not leave multiple canceled tasks in
-// the task queue. Meant to be used in conjunction with
-// kRemoveCanceledTasksInTaskQueue.
-BASE_EXPORT BASE_DECLARE_FEATURE(kAlwaysAbandonScheduledTask);
 
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
 // up to purge partition alloc within the first minute of their lifetime. See

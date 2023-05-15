@@ -52,7 +52,7 @@ export async function play(
   const queue = getQueueFor(el);
   async function job() {
     void el.offsetWidth;  // Force repaint before applying the animation.
-    if (changeElement) {
+    if (changeElement !== undefined) {
       changeElement();
     }
     el.classList.add('animate');

@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/cbor/reader.h"
@@ -384,7 +384,7 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo shared_info =
       example_request.shared_info().Clone();
-  shared_info.report_id = base::GUID();
+  shared_info.report_id = base::Uuid();
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
@@ -585,7 +585,7 @@ TEST(AggregatableReportTest,
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*report_id=*/
-      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict(),
       /*api_version=*/"1.0",
@@ -608,7 +608,7 @@ TEST(AggregatableReportTest,
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*report_id=*/
-      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict(),
       /*api_version=*/"1.0",
@@ -635,7 +635,7 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*report_id=*/
-      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled,
       std::move(additional_fields),
@@ -770,7 +770,7 @@ TEST(AggregatableReportProtoMigrationTest,
               AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
-              base::GUID::ParseLowercase(
+              base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),
@@ -814,7 +814,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
-              base::GUID::ParseLowercase(
+              base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),
@@ -856,7 +856,7 @@ TEST(AggregatableReportProtoMigrationTest, NoAdditionalFields_ParsesCorrectly) {
               AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
-              base::GUID::ParseLowercase(
+              base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),

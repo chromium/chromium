@@ -92,26 +92,42 @@ struct SynchWaitParams;
 //
 // A `Mutex` has two basic operations: `Mutex::Lock()` and `Mutex::Unlock()`.
 // The `Lock()` operation *acquires* a `Mutex` (in a state known as an
-// *exclusive* -- or write -- lock), while the `Unlock()` operation *releases* a
+// *exclusive* -- or *write* -- lock), and the `Unlock()` operation *releases* a
 // Mutex. During the span of time between the Lock() and Unlock() operations,
-// a mutex is said to be *held*. By design all mutexes support exclusive/write
+// a mutex is said to be *held*. By design, all mutexes support exclusive/write
 // locks, as this is the most common way to use a mutex.
+//
+// Mutex operations are only allowed under certain conditions; otherwise an
+// operation is "invalid", and disallowed by the API. The conditions concern
+// both the current state of the mutex and the identity of the threads that
+// are performing the operations.
 //
 // The `Mutex` state machine for basic lock/unlock operations is quite simple:
 //
-// |                | Lock()     | Unlock() |
-// |----------------+------------+----------|
-// | Free           | Exclusive  | invalid  |
-// | Exclusive      | blocks     | Free     |
+// |                | Lock()                 | Unlock() |
+// |----------------+------------------------+----------|
+// | Free           | Exclusive              | invalid  |
+// | Exclusive      | blocks, then exclusive | Free     |
 //
-// Attempts to `Unlock()` must originate from the thread that performed the
-// corresponding `Lock()` operation.
+// The full conditions are as follows.
 //
-// An "invalid" operation is disallowed by the API. The `Mutex` implementation
-// is allowed to do anything on an invalid call, including but not limited to
+// * Calls to `Unlock()` require that the mutex be held, and must be made in the
+//   same thread that performed the corresponding `Lock()` operation which
+//   acquired the mutex; otherwise the call is invalid.
+//
+// * The mutex being non-reentrant (or non-recursive) means that a call to
+//   `Lock()` or `TryLock()` must not be made in a thread that already holds the
+//   mutex; such a call is invalid.
+//
+// * In other words, the state of being "held" has both a temporal component
+//   (from `Lock()` until `Unlock()`) as well as a thread identity component:
+//   the mutex is held *by a particular thread*.
+//
+// An "invalid" operation has undefined behavior. The `Mutex` implementation
+// is allowed to do anything on an invalid call, including, but not limited to,
 // crashing with a useful error message, silently succeeding, or corrupting
-// data structures. In debug mode, the implementation attempts to crash with a
-// useful error message.
+// data structures. In debug mode, the implementation may crash with a useful
+// error message.
 //
 // `Mutex` is not guaranteed to be "fair" in prioritizing waiting threads; it
 // is, however, approximately fair over long periods, and starvation-free for
@@ -257,7 +273,7 @@ class ABSL_LOCKABLE Mutex {
   // Aliases for `Mutex::Lock()`, `Mutex::Unlock()`, and `Mutex::TryLock()`.
   //
   // These methods may be used (along with the complementary `Reader*()`
-  // methods) to distingish simple exclusive `Mutex` usage (`Lock()`,
+  // methods) to distinguish simple exclusive `Mutex` usage (`Lock()`,
   // etc.) from reader/writer lock usage.
   void WriterLock() ABSL_EXCLUSIVE_LOCK_FUNCTION() { this->Lock(); }
 
@@ -679,6 +695,20 @@ class Condition {
   template<typename T>
   Condition(bool (*func)(T *), T *arg);
 
+  // Same as above, but allows for cases where `arg` comes from a pointer that
+  // is convertible to the function parameter type `T*` but not an exact match.
+  //
+  // For example, the argument might be `X*` but the function takes `const X*`,
+  // or the argument might be `Derived*` while the function takes `Base*`, and
+  // so on for cases where the argument pointer can be implicitly converted.
+  //
+  // Implementation notes: This constructor overload is required in addition to
+  // the one above to allow deduction of `T` from `arg` for cases such as where
+  // a function template is passed as `func`. Also, the dummy `typename = void`
+  // template parameter exists just to work around a MSVC mangling bug.
+  template <typename T, typename = void>
+  Condition(bool (*func)(T *), typename absl::internal::identity<T>::type *arg);
+
   // Templated version for invoking a method that returns a `bool`.
   //
   // `Condition(object, &Class::Method)` constructs a `Condition` that evaluates
@@ -1006,6 +1036,12 @@ inline Condition::Condition(bool (*func)(T *), T *arg)
                 "An overlarge function pointer was passed to Condition.");
   StoreCallback(func);
 }
+
+template <typename T, typename>
+inline Condition::Condition(bool (*func)(T *),
+                            typename absl::internal::identity<T>::type *arg)
+    // Just delegate to the overload above.
+    : Condition(func, arg) {}
 
 template <typename T>
 inline Condition::Condition(T *object,

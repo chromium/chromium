@@ -9,19 +9,19 @@
 #import <memory>
 #import <utility>
 
+#import "base/apple/bundle_locations.h"
 #import "base/format_macros.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"

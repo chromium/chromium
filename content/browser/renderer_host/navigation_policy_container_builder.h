@@ -159,6 +159,13 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // `ComputePoliciesForError()` must have been called previously.
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
+  // Returns a new refptr to the `PolicyContainerHost`.
+  //
+  // `ComputePolicies()` or `ComputePoliciesForError()` must have been called
+  // previously.
+  // It is invalid to call after `TakePolicyContainerHost()`.
+  scoped_refptr<PolicyContainerHost> GetPolicyContainerHost();
+
   // Moves the `PolicyContainerHost` out of this builder. The returned host
   // contains the same policies as `FinalPolicies()`.
   //

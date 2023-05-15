@@ -33,6 +33,11 @@ export interface SyncConfirmationBrowserProxy {
    */
   goToSettings(description: string[], confirmation: string): void;
 
+  /**
+   * Called when the user clicks on the device settings link.
+   */
+  openDeviceSyncSettings(): void;
+
   initializedWithSize(height: number[]): void;
 
   /**
@@ -61,6 +66,10 @@ export class SyncConfirmationBrowserProxyImpl implements
 
   requestAccountInfo() {
     chrome.send('accountInfoRequest');
+  }
+
+  openDeviceSyncSettings() {
+    chrome.send('openDeviceSyncSettings');
   }
 
   static getInstance(): SyncConfirmationBrowserProxy {

@@ -9,12 +9,12 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -36,12 +36,10 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
-#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,70 +87,13 @@ void AnimateToTargetOpacity(views::View* view, float target_opacity) {
   view->layer()->SetOpacity(target_opacity);
 }
 
-// Returns the file paths extracted from the specified `data` at the filenames
-// storage location. The Files app stores file paths but *not* directory paths
-// at this location.
-std::vector<base::FilePath> ExtractFilePathsFromFilenames(
-    const ui::OSExchangeData& data) {
-  if (!data.HasFile())
-    return {};
-
-  std::vector<ui::FileInfo> filenames;
-  if (!data.GetFilenames(&filenames))
-    return {};
-
-  std::vector<base::FilePath> result;
-  for (const ui::FileInfo& filename : filenames)
-    result.push_back(base::FilePath(filename.path));
-
-  return result;
-}
-
-// Returns the file paths extracted from the specified `data` at the file system
-// sources storage location. The Files app stores both file paths *and*
-// directory paths at this location.
-std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
-    const ui::OSExchangeData& data) {
-  base::Pickle pickle;
-  if (!data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                           &pickle)) {
-    return {};
-  }
-
-  constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
-
-  std::u16string file_system_sources;
-  ui::ReadCustomDataForType(pickle.data(), pickle.size(),
-                            kFileSystemSourcesType, &file_system_sources);
-  if (file_system_sources.empty())
-    return {};
-
-  HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
-
-  std::vector<base::FilePath> result;
-  for (const base::StringPiece16& file_system_source :
-       base::SplitStringPiece(file_system_sources, u"\n", base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
-    base::FilePath file_path =
-        client->CrackFileSystemUrl(GURL(file_system_source));
-    if (!file_path.empty())
-      result.push_back(file_path);
-  }
-
-  return result;
-}
-
 // Returns the file paths extracted from the specified `data` which are *not*
 // already pinned to the attached holding space model.
 std::vector<base::FilePath> ExtractUnpinnedFilePaths(
     const ui::OSExchangeData& data) {
-  // Prefer extracting file paths from file system sources when possible. The
-  // Files app populates both file system sources and filenames storage
-  // locations, but only the former contains directory paths.
   std::vector<base::FilePath> unpinned_file_paths =
-      ExtractFilePathsFromFileSystemSources(data);
-  if (unpinned_file_paths.empty())
-    unpinned_file_paths = ExtractFilePathsFromFilenames(data);
+      holding_space_util::ExtractFilePaths(data,
+                                           /*fallback_to_filenames=*/true);
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   base::EraseIf(unpinned_file_paths, [model](const base::FilePath& file_path) {
@@ -172,7 +113,8 @@ bool IsPreviewsEnabled() {
 // being initialized, what makes an `item` previewable is having been created by
 // a user action.
 bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
-  return item->IsInitialized() && !HoldingSpaceItem::IsSuggestion(item->type());
+  return item->IsInitialized() &&
+         !HoldingSpaceItem::IsSuggestionType(item->type());
 }
 
 // Creates the default tray icon.
@@ -850,10 +792,13 @@ void HoldingSpaceTray::UpdateDefaultTrayIcon() {
       .SetTransform(layer, gfx::Transform(), tween_type);
 }
 
-void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
+void HoldingSpaceTray::UpdateDropTargetState(
+    ScopedDragDropObserver::EventType event_type,
+    const ui::DropTargetEvent* event) {
   bool is_drop_target = false;
 
-  if (event && !ExtractUnpinnedFilePaths(event->data()).empty()) {
+  if (event_type == ScopedDragDropObserver::EventType::kDragUpdated &&
+      !ExtractUnpinnedFilePaths(event->data()).empty()) {
     // If the `event` contains pinnable files and is within range of this view,
     // indicate this view is a drop target to increase discoverability.
     constexpr int kProximityThreshold = 20;

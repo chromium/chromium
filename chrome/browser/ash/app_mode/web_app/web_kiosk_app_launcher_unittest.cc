@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -124,7 +125,7 @@ class AppWindowCloser : public BrowserListObserver {
   }
 
  private:
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> app_browser_ = nullptr;
   // TODO(crbug/1379290): Use `TestFuture<void>` in all these tests
   TestFuture<bool> closed_waiter_;
 };
@@ -211,7 +212,8 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
 
  protected:
   AccountId account_id_;
-  web_app::TestWebAppUrlLoader* url_loader_;  // Owned by |launcher_|.
+  raw_ptr<web_app::TestWebAppUrlLoader, ExperimentalAsh>
+      url_loader_;  // Owned by |launcher_|.
 
  private:
   std::unique_ptr<WebKioskAppManager> app_manager_;
@@ -313,7 +315,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
   WebKioskAppLauncherUsingLacrosTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
         fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kWebKioskEnableLacros);
@@ -349,7 +351,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };

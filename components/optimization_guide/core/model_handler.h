@@ -26,18 +26,31 @@
 
 namespace optimization_guide {
 
+namespace {
+
+void RecordTaskExecutionLatency(proto::OptimizationTarget optimization_target,
+                                base::TimeDelta execution_time) {
+  base::UmaHistogramMediumTimes(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_target),
+      execution_time);
+}
+
+}  // namespace
+
 // This class owns and handles the execution of models on the UI thread.
 // Derived classes must provide an implementation of |ModelExecutor|
 // which is then owned by |this|. The passed executor will be called
 // and destroyed on the thread specified by |model_executor_task_runner|,
 // which is all handled by this class.
-template <class OutputType, class... InputTypes>
+template <class OutputType, class InputType>
 class ModelHandler : public OptimizationTargetModelObserver {
  public:
   ModelHandler(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
-      std::unique_ptr<ModelExecutor<OutputType, InputTypes...>> model_executor,
+      std::unique_ptr<ModelExecutor<OutputType, InputType>> model_executor,
       // Passing nullopt will use a default value.
       absl::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
@@ -88,11 +101,11 @@ class ModelHandler : public OptimizationTargetModelObserver {
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
   virtual void ExecuteModelWithInput(ExecutionCallback callback,
-                                     InputTypes... input) {
+                                     InputType input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     model_executor_task_runner_->PostTask(
-        FROM_HERE, GetExecutionTask(std::move(callback), input...));
+        FROM_HERE, GetExecutionTask(std::move(callback), input));
   }
 
   // Same as the method above. But also receives a `base::CancelableTaskTracker`
@@ -101,11 +114,45 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // TODO(crbug/1173328): Add a way to surface errors.
   virtual void ExecuteModelWithInput(base::CancelableTaskTracker* tracker,
                                      ExecutionCallback callback,
-                                     InputTypes... input) {
+                                     InputType input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
-                      GetExecutionTask(std::move(callback), input...));
+                      GetExecutionTask(std::move(callback), input));
+  }
+
+  // Variants of the above |ExecuteModelWithInput| but which support running
+  // multiple model executions in the same call stack. It is guaranteed that the
+  // output passed to |BatchExecutionCallback| will always be in the same order
+  // as the input vector.
+  //
+  // IMPORTANT: Running the model multiple times in the same PostTask means that
+  // it will take longer for Chrome's threadpool to reuse these CPU cycles for
+  // other work, especially for high priority tasks. This method should only be
+  // used in time-sensitive applications, for example when the model output is
+  // used on UI surfaces. Otherwise use multiple calls to
+  // |ExecuteModelWithInput| with a |base::BarrierClosure| (see
+  // page_content_annotation_job_executor.cc for an example and explanation).
+  using BatchExecutionCallback =
+      base::OnceCallback<void(const std::vector<absl::optional<OutputType>>&)>;
+  virtual void BatchExecuteModelWithInput(
+      BatchExecutionCallback callback,
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          batch_input) {
+    model_executor_task_runner_->PostTask(
+        FROM_HERE, GetBatchExecutionTask(std::move(callback), batch_input));
+  }
+
+  // See above comment.
+  virtual void BatchExecuteModelWithInput(
+      base::CancelableTaskTracker* tracker,
+      BatchExecutionCallback callback,
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          batch_input) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
+                      GetBatchExecutionTask(std::move(callback), batch_input));
   }
 
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
@@ -114,7 +161,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType,
-                           InputTypes...>::SetShouldUnloadModelOnComplete,
+                           InputType>::SetShouldUnloadModelOnComplete,
             model_executor_->GetWeakPtrForExecutionThread(),
             should_auto_unload));
   }
@@ -126,7 +173,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     model_executor_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&ModelExecutor<OutputType, InputTypes...>::UnloadModel,
+        base::BindOnce(&ModelExecutor<OutputType, InputType>::UnloadModel,
                        model_executor_->GetWeakPtrForExecutionThread()));
   }
 
@@ -151,10 +198,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     model_executor_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &ModelExecutor<OutputType, InputTypes...>::UpdateModelFile,
-            model_executor_->GetWeakPtrForExecutionThread(),
-            model_info.GetModelFilePath()));
+        base::BindOnce(&ModelExecutor<OutputType, InputType>::UpdateModelFile,
+                       model_executor_->GetWeakPtrForExecutionThread(),
+                       model_info.GetModelFilePath()));
 
     // Run any observing callbacks after the model file is posted to the
     // model executor thread so that any model execution requests are posted to
@@ -201,39 +247,59 @@ class ModelHandler : public OptimizationTargetModelObserver {
  private:
   // Returns a closure supplied with |callback| and |input| for model execution.
   base::OnceClosure GetExecutionTask(ExecutionCallback callback,
-                                     InputTypes... input) {
+                                     InputType input) {
     base::TimeTicks now = base::TimeTicks::Now();
 
     ExecutionCallback on_complete_callback =
         base::BindOnce(&ModelHandler::OnExecutionCompleted, std::move(callback),
                        optimization_target_, now);
     return base::BindOnce(
-        &ModelExecutor<OutputType, InputTypes...>::SendForExecution,
+        &ModelExecutor<OutputType, InputType>::SendForExecution,
         model_executor_->GetWeakPtrForExecutionThread(),
-        std::move(on_complete_callback), now, input...);
+        std::move(on_complete_callback), now, input);
+  }
+
+  // Returns a closure supplied with |callback| and |inputs| for model
+  // execution.
+  base::OnceClosure GetBatchExecutionTask(
+      BatchExecutionCallback callback,
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          inputs) {
+    base::TimeTicks now = base::TimeTicks::Now();
+
+    BatchExecutionCallback on_complete_callback =
+        base::BindOnce(&ModelHandler::OnBatchExecutionCompleted,
+                       std::move(callback), optimization_target_, now);
+    return base::BindOnce(
+        &ModelExecutor<OutputType, InputType>::SendForBatchExecution,
+        model_executor_->GetWeakPtrForExecutionThread(),
+        std::move(on_complete_callback), now, inputs);
   }
 
   // This is called by |model_executor_|. This method does not have to be
   // static, but because it is stateless we've made it static so that we don't
-  // have to have this class support WeakPointers.
+  // have to have this class support WeakPointers on the calling thread.
   static void OnExecutionCompleted(
       ExecutionCallback callback,
       proto::OptimizationTarget optimization_target,
       base::TimeTicks model_execute_start_time,
       const absl::optional<OutputType>& output) {
-    if (!output) {
-      std::move(callback).Run(output);
-      return;
-    }
+    RecordTaskExecutionLatency(
+        optimization_target,
+        /*execution_time=*/base::TimeTicks::Now() - model_execute_start_time);
 
-    base::TimeDelta execution_time =
-        base::TimeTicks::Now() - model_execute_start_time;
+    std::move(callback).Run(output);
+  }
 
-    base::UmaHistogramMediumTimes(
-        "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target),
-        execution_time);
+  static void OnBatchExecutionCompleted(
+      BatchExecutionCallback callback,
+      proto::OptimizationTarget optimization_target,
+      base::TimeTicks model_execute_start_time,
+      const std::vector<absl::optional<OutputType>>& output) {
+    RecordTaskExecutionLatency(
+        optimization_target,
+        /*execution_time=*/base::TimeTicks::Now() - model_execute_start_time);
+
     std::move(callback).Run(output);
   }
 
@@ -251,7 +317,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   absl::optional<base::TimeTicks> handler_created_time_;
 
   // The owned model executor.
-  std::unique_ptr<ModelExecutor<OutputType, InputTypes...>> model_executor_;
+  std::unique_ptr<ModelExecutor<OutputType, InputType>> model_executor_;
 
   // The model executor task runner. Note that whenever a task is posted here,
   // the task takes a reference to the TaskRunner (in a cyclic dependency) so

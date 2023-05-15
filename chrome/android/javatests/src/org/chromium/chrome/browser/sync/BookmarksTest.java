@@ -48,8 +48,6 @@ public class BookmarksTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private static final String TAG = "BookmarksTest";
-
     private static final String BOOKMARKS_TYPE_STRING = "Bookmarks";
 
     private static final GURL URL = new GURL("http://chromium.org/");
@@ -66,7 +64,6 @@ public class BookmarksTest {
         public final String title;
         public final String url;
         public final String parentId;
-        public final String parentGuid;
 
         private Bookmark(String id, String guid, String title, String url, String parentId,
                 String parentGuid) {
@@ -75,7 +72,6 @@ public class BookmarksTest {
             this.title = title;
             this.url = url;
             this.parentId = parentId;
-            this.parentGuid = parentGuid;
         }
 
         public boolean isFolder() {

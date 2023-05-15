@@ -86,17 +86,17 @@ PrefetchURLLoaderService::PrefetchURLLoaderService(
 void PrefetchURLLoaderService::GetFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     int frame_tree_node_id,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> factories,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle,
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto factory_bundle =
-      network::SharedURLLoaderFactory::Create(std::move(factories));
   loader_factory_receivers_.Add(
       this, std::move(receiver),
       std::make_unique<BindContext>(
-          frame_tree_node_id, factory_bundle, std::move(render_frame_host),
+          frame_tree_node_id, subresource_proxying_factory_bundle,
+          std::move(render_frame_host),
           std::move(prefetched_signed_exchange_cache)));
 }
 

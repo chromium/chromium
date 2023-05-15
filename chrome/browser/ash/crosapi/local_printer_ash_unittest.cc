@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -218,7 +219,7 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
     return std::make_unique<ash::TestPrinterConfigurer>(manager_);
   }
 
-  ash::TestCupsPrintersManager* const manager_;
+  const raw_ptr<ash::TestCupsPrintersManager, ExperimentalAsh> manager_;
 };
 
 // Base testing class for `LocalPrinterAsh`.  Contains the base
@@ -386,7 +387,8 @@ class LocalPrinterAshTestBase : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
-  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
+  raw_ptr<ash::TestCupsPrintersManager, ExperimentalAsh> printers_manager_ =
+      nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 
@@ -779,9 +781,9 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
   auto* prefs = GetPrefs();
-  base::Value paper_size(base::Value::Type::DICT);
-  paper_size.SetStringKey(kPaperSizeName, "iso_a4_210x297mm");
-  prefs->Set("printing.paper_size_default", std::move(paper_size));
+  base::Value::Dict paper_size;
+  paper_size.Set(kPaperSizeName, "iso_a4_210x297mm");
+  prefs->Set("printing.paper_size_default", base::Value(std::move(paper_size)));
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -1097,8 +1099,11 @@ class LocalPrinterAshWithOAuth2Test : public testing::Test {
 
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
-  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
-  testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>*
+  raw_ptr<ash::TestCupsPrintersManager, ExperimentalAsh> printers_manager_ =
+      nullptr;
+  raw_ptr<
+      testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>,
+      ExperimentalAsh>
       auth_manager_ = nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
@@ -1219,7 +1224,8 @@ class TestLocalPrinterAshWithClientInfoCalculator : public TestLocalPrinterAsh {
   }
 
  private:
-  ash::printing::IppClientInfoCalculator* client_info_calculator_;
+  raw_ptr<ash::printing::IppClientInfoCalculator, ExperimentalAsh>
+      client_info_calculator_;
 };
 
 struct MockIppClientInfoCalculator : ash::printing::IppClientInfoCalculator {
@@ -1240,7 +1246,7 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
   void SetUp() override {
     user_manager_ = new user_manager::FakeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
     user_manager_->AddUserWithAffiliation(kAffiliatedUserAccountId,
                                           /*is_affiliated*/ true);
     user_manager_->AddUserWithAffiliation(kUnaffiliatedUserAccountId,
@@ -1282,12 +1288,13 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
   }
 
  private:
-  user_manager::FakeUserManager* user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
   FakeUser primary_user_;
-  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
+  raw_ptr<ash::TestCupsPrintersManager, ExperimentalAsh> printers_manager_ =
+      nullptr;
   NiceMock<MockIppClientInfoCalculator> client_info_calculator_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 };

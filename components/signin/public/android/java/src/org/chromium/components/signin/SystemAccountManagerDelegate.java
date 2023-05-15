@@ -50,8 +50,11 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     private static final String TAG = "Auth";
 
     public SystemAccountManagerDelegate() {
-        Context context = ContextUtils.getApplicationContext();
-        mAccountManager = AccountManager.get(context);
+        this(AccountManager.get(ContextUtils.getApplicationContext()));
+    }
+
+    SystemAccountManagerDelegate(AccountManager accountManager) {
+        mAccountManager = accountManager;
         mObserver = null;
     }
 
@@ -209,6 +212,22 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             Log.e(TAG, "SystemAccountManagerDelegate.getAccountGaiaId", ex);
             return null;
         }
+    }
+
+    @Override
+    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+        AccountManagerCallback<Bundle> accountManagerCallback = (accountManagerFuture) -> {
+            @Nullable
+            Bundle result = null;
+            try {
+                result = accountManagerFuture.getResult();
+            } catch (Exception e) {
+                Log.e(TAG, "Error while confirming credentials: ", e);
+            }
+            callback.onResult(result);
+        };
+        mAccountManager.confirmCredentials(
+                account, new Bundle(), activity, accountManagerCallback, null);
     }
 
     protected boolean isGooglePlayServicesAvailable() {

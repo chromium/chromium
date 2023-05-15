@@ -19,7 +19,6 @@ namespace web {
 struct FaviconURL;
 class NavigationContext;
 enum Permission : NSUInteger;
-class WebFrame;
 class WebState;
 
 enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
@@ -132,20 +131,6 @@ class WebStateObserver : public base::CheckedObserver {
   virtual void PermissionStateChanged(WebState* web_state,
                                       Permission permission)
       API_AVAILABLE(ios(15.0)) {}
-
-  // Called when a frame was created or navigated to a new document.
-  // Receivers can keep references to `web_frame` until
-  // `WebFrameWillBecomeUnavailable` is called but must not assume that the
-  // web Frame described by `web_frame` still exist.
-  virtual void WebFrameDidBecomeAvailable(WebState* web_state,
-                                          WebFrame* web_frame) {}
-
-  // Called when a frame was deleted or navigated away from the document and
-  // will be removed from the WebFramesManager.
-  // Receivers of this callback should clear all references to
-  // `web_frame`.
-  virtual void WebFrameWillBecomeUnavailable(WebState* web_state,
-                                             WebFrame* web_frame) {}
 
   // Called when the web process is terminated (usually by crashing, though
   // possibly by other means).

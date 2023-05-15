@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -49,7 +50,7 @@ class RemoteAppsImpl;
 // KeyedService which manages the logic for |AppType::kRemote| in AppService.
 // This service is created for Managed Guest Sessions and Regular User Sessions.
 // The IDs of the added apps and folders are GUIDs generated using
-// |base::GenerateGUID()|.
+// |base::Uuid::GenerateRandomV4().AsLowercaseString()|.
 // See crbug.com/1101208 for more details on Remote Apps.
 class RemoteAppsManager
     : public KeyedService,
@@ -128,6 +129,10 @@ class RemoteAppsManager
   // sort order which moves the remote apps to the front of the launcher.
   void SortLauncherWithRemoteAppsFirst();
 
+  // Sets the list of apps to be pinned on the shelf. If `app_ids` are empty
+  // it should unpin all currently pinned apps.
+  RemoteAppsError SetPinnedApps(const std::vector<std::string>& app_ids);
+
   // Adds a folder with |folder_name|. Note that empty folders are not shown in
   // the launcher. Returns the ID for the added folder. If |add_to_front| is
   // true, the folder will be added to the front of the app item list.
@@ -194,11 +199,12 @@ class RemoteAppsManager
 
   void OnIconDownloaded(const std::string& id, const gfx::ImageSkia& icon);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   bool is_initialized_ = false;
-  app_list::AppListSyncableService* app_list_syncable_service_ = nullptr;
-  AppListModelUpdater* model_updater_ = nullptr;
-  extensions::EventRouter* event_router_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_ = nullptr;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
+  raw_ptr<extensions::EventRouter, ExperimentalAsh> event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;

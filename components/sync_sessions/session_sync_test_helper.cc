@@ -8,8 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
-#include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_sessions/synced_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_sessions {
@@ -21,16 +19,17 @@ static const char* kReferrer = "referrer";
 static const char* kTitle = "title";
 
 // static
-void SessionSyncTestHelper::BuildSessionSpecifics(
+sync_pb::SessionSpecifics
+SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
     const std::string& tag,
-    sync_pb::SessionSpecifics* meta) {
-  meta->set_session_tag(tag);
-  sync_pb::SessionHeader* header = meta->mutable_header();
-  header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_LINUX);
-  header->set_device_form_factor(
-      sync_pb::SyncEnums::DeviceFormFactor::
-          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
+    sync_pb::SyncEnums_DeviceType device_type) {
+  sync_pb::SessionSpecifics specifics;
+  specifics.set_session_tag(tag);
+  sync_pb::SessionHeader* header = specifics.mutable_header();
+  // TODO(crbug.com/1434959): Set device form factor instead.
+  header->set_device_type(device_type);
   header->set_client_name(kClientName);
+  return specifics;
 }
 
 // static
@@ -49,59 +48,10 @@ void SessionSyncTestHelper::AddWindowSpecifics(
 }
 
 // static
-void SessionSyncTestHelper::VerifySyncedSession(
-    const std::string& tag,
-    const std::vector<std::vector<SessionID>>& windows,
-    const SyncedSession& session) {
-  ASSERT_EQ(tag, session.GetSessionTag());
-  ASSERT_EQ(syncer::DeviceInfo::FormFactor::kDesktop,
-            session.GetDeviceFormFactor());
-  ASSERT_EQ(kClientName, session.GetSessionName());
-  ASSERT_EQ(windows.size(), session.windows.size());
-
-  // We assume the window id's are in increasing order.
-  int i = 1;
-  for (const std::vector<SessionID>& window : windows) {
-    sessions::SessionWindow* win_ptr;
-    auto map_iter = session.windows.find(SessionID::FromSerializedValue(i));
-    if (map_iter != session.windows.end()) {
-      win_ptr = &map_iter->second->wrapped_window;
-    } else {
-      FAIL();
-    }
-    ASSERT_EQ(window.size(), win_ptr->tabs.size());
-    ASSERT_EQ(0, win_ptr->selected_tab_index);
-    ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
-    int j = 0;
-    for (const SessionID tab_id : window) {
-      sessions::SessionTab* tab = win_ptr->tabs[j].get();
-      ASSERT_EQ(tab_id, tab->tab_id);
-      ASSERT_EQ(1U, tab->navigations.size());
-      ASSERT_EQ(1, tab->tab_visual_index);
-      ASSERT_EQ(0, tab->current_navigation_index);
-      ASSERT_TRUE(tab->pinned);
-      ASSERT_EQ(kAppId, tab->extension_app_id);
-      ASSERT_EQ(1U, tab->navigations.size());
-      ASSERT_EQ(tab->navigations[0].virtual_url(), GURL(kVirtualUrl));
-      ASSERT_EQ(tab->navigations[0].referrer_url(), GURL(kReferrer));
-      ASSERT_EQ(tab->navigations[0].title(), base::ASCIIToUTF16(kTitle));
-      ASSERT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-          tab->navigations[0].transition_type(), ui::PAGE_TRANSITION_TYPED));
-      j++;
-    }
-    i++;
-  }
-}
-
 sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
     const std::string& tag,
-    SessionID window_id,
-    SessionID tab_id) {
-  return BuildTabSpecifics(tag, window_id, tab_id, ++max_tab_node_id_);
-}
-
-sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
-    const std::string& tag,
+    const std::string& title,
+    const std::string& virtual_url,
     SessionID window_id,
     SessionID tab_id,
     int tab_node_id) {
@@ -116,34 +66,33 @@ sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
   tab->set_pinned(true);
   tab->set_extension_app_id(kAppId);
   sync_pb::TabNavigation* navigation = tab->add_navigation();
-  navigation->set_virtual_url(kVirtualUrl);
+  navigation->set_title(title);
+  navigation->set_virtual_url(virtual_url);
   navigation->set_referrer(kReferrer);
-  navigation->set_title(kTitle);
   navigation->set_page_transition(sync_pb::SyncEnums_PageTransition_TYPED);
   return specifics;
 }
 
-void SessionSyncTestHelper::Reset() {
-  max_tab_node_id_ = 0;
+sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
+    const std::string& tag,
+    SessionID window_id,
+    SessionID tab_id) {
+  return BuildTabSpecifics(tag, kTitle, kVirtualUrl, window_id, tab_id);
 }
 
-sync_pb::SessionSpecifics SessionSyncTestHelper::BuildForeignSession(
+// Overload of BuildTabSpecifics to allow overriding title and URL.
+sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
     const std::string& tag,
-    const std::vector<SessionID>& tab_list,
-    std::vector<sync_pb::SessionSpecifics>* tabs) {
-  const SessionID window_id = SessionID::FromSerializedValue(1);
-  sync_pb::SessionSpecifics header;
-  BuildSessionSpecifics(tag, &header);
-  AddWindowSpecifics(window_id, tab_list, &header);
+    const std::string& title,
+    const std::string& virtual_url,
+    SessionID window_id,
+    SessionID tab_id) {
+  return BuildTabSpecifics(tag, title, virtual_url, window_id, tab_id,
+                           ++max_tab_node_id_);
+}
 
-  if (tabs) {
-    tabs->clear();
-    for (SessionID tab_id : tab_list) {
-      tabs->push_back(BuildTabSpecifics(tag, window_id, tab_id));
-    }
-  }
-
-  return header;
+void SessionSyncTestHelper::Reset() {
+  max_tab_node_id_ = 0;
 }
 
 }  // namespace sync_sessions

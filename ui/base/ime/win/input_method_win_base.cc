@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <cwctype>
 
 #include <memory>
 #include <vector>
@@ -15,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/win/on_screen_keyboard_display_manager_input_pane.h"
@@ -230,9 +230,9 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   }
 
   // If only 1 WM_CHAR per the key event, set it as the character of it.
-  if (char_msgs.size() == 1 &&
-      !std::iswcntrl(static_cast<wint_t>(char_msgs[0].wParam)))
+  if (char_msgs.size() == 1 && !base::IsAsciiControl(char_msgs[0].wParam)) {
     event->set_character(static_cast<char16_t>(char_msgs[0].wParam));
+  }
 
   return ProcessUnhandledKeyEvent(event, &char_msgs);
 }

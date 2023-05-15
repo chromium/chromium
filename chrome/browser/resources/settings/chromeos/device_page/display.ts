@@ -17,13 +17,15 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './display_layout.js';
 import './display_overscan_dialog.js';
 import '../settings_scheduler_slider/settings_scheduler_slider.js';
-import '../../controls/settings_slider.js';
+import '/shared/settings/controls/settings_slider.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
-import '../../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
@@ -33,8 +35,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
-import {SettingsSliderElement} from '../../controls/settings_slider.js';
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';

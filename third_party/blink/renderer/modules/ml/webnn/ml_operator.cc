@@ -28,12 +28,22 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "mul";
     case MLOperator::OperatorKind::kDiv:
       return "div";
+    case MLOperator::OperatorKind::kAbs:
+      return "abs";
+    case MLOperator::OperatorKind::kCeil:
+      return "ceil";
+    case MLOperator::OperatorKind::kFloor:
+      return "floor";
+    case MLOperator::OperatorKind::kNeg:
+      return "neg";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
     case MLOperator::OperatorKind::kMax:
       return "max";
     case MLOperator::OperatorKind::kMin:
       return "min";
+    case MLOperator::OperatorKind::kElu:
+      return "elu";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
     case MLOperator::OperatorKind::kHardSwish:

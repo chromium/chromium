@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 
 class ChromeSearchResult;
 
@@ -68,7 +69,7 @@ class SearchProvider {
   void SwapResults(Results* new_results);
 
  private:
-  SearchController* search_controller_ = nullptr;
+  raw_ptr<SearchController, ExperimentalAsh> search_controller_ = nullptr;
 };
 
 }  // namespace app_list

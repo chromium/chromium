@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -27,7 +28,8 @@ import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
 import org.chromium.chrome.browser.feed.FeedListContentManager;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.FeedStream;
-import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
+import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
@@ -44,7 +46,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -55,6 +56,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -87,12 +89,13 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private CreatorTabMediator mTabMediator;
     private Activity mActivity;
     private FeedListContentManager mContentManager;
+    private UiConfig mUiConfig;
     private RecyclerView mRecyclerView;
     private View mProfileView;
     private ViewGroup mLayoutView;
     private HybridListRenderer mHybridListRenderer;
     private SurfaceScope mSurfaceScope;
-    private FeedSurfaceScopeDependencyProvider mDependencyProvider;
+    private FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private PropertyModel mCreatorModel;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
             mCreatorProfileModelChangeProcessor;
@@ -122,6 +125,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private GURL mBottomSheetUrl;
     private int mEntryPoint;
+
+    private @Nullable FeedStreamViewResizer mStreamViewResizer;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
     private static final String CREATOR_PRIVACY_ID = "CreatorPrivacyId";
@@ -170,6 +175,9 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mCreatorViewGroup =
                 (ViewGroup) LayoutInflater.from(mActivity).inflate(R.layout.creator_activity, null);
         mLayoutView = mCreatorViewGroup.findViewById(R.id.creator_layout);
+        mUiConfig = new UiConfig(mLayoutView);
+        mStreamViewResizer =
+                FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
         mLayoutView.addView(mRecyclerView);
 
         // Generate Creator Model
@@ -254,7 +262,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         }
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
-                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount);
+                mHybridListRenderer, null, mHeaderCount);
     }
 
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
@@ -288,7 +296,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
+            mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
                     mActivity, mActivity, ColorUtils.inNightMode(mActivity));
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
         } else {

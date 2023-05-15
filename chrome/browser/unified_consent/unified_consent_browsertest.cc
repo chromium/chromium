@@ -45,7 +45,7 @@ class UnifiedConsentBrowserTest : public SyncTest {
 
     sync_blocker_ = GetSyncService(client_id)->GetSetupInProgressHandle();
     ASSERT_TRUE(GetClient(client_id)->SignInPrimaryAccount());
-    GetSyncService(client_id)->GetUserSettings()->SetSyncRequested();
+    GetSyncService(client_id)->SetSyncFeatureRequested();
     ASSERT_TRUE(GetClient(client_id)->AwaitEngineInitialization());
   }
 
@@ -119,7 +119,9 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentBrowserTest,
   // Second client: Start sync setup.
   StartSyncSetup(1);
   ASSERT_TRUE(GetSyncService(1)->IsSetupInProgress());
-  ASSERT_FALSE(GetSyncService(1)->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_FALSE(GetSyncService(1)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
 
   // Second client: Turn on pref B while sync setup is in progress.
   GetProfile(1)->GetPrefs()->SetBoolean(pref_B, true);

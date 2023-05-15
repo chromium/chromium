@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_KEY_ITEM_VIEW_H_
 #define ASH_CAPTURE_MODE_KEY_ITEM_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -39,8 +40,8 @@ class KeyItemView : public views::View {
 
  private:
   const ui::KeyboardCode key_code_;
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 }  // namespace ash

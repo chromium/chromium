@@ -25,6 +25,9 @@
 namespace ash {
 
 namespace {
+constexpr char kVideoConferenceTraySpeakOnMuteDetectedId[] =
+    "video_conference_tray_toast_ids.speak_on_mute_detected";
+
 constexpr char kVideoConferenceTrayUseWhileDisabledToastId[] =
     "video_conference_tray_toast_ids.use_while_disable";
 }  // namespace
@@ -269,6 +272,39 @@ TEST_F(VideoConferenceTrayControllerTest,
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
                 app_name, microphone_device_name),
             toast_manager->GetCurrentToastDataForTesting().text);
+}
+
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteToast) {
+  auto* toast_manager = Shell::Get()->toast_manager();
+
+  // No toast show be shown before `OnSpeakOnMuteDetected()` is called.
+  EXPECT_FALSE(
+      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+
+  // Toast should be displayed. Showing that client is speaking while on mute.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(
+      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+
+  toast_manager->Cancel(kVideoConferenceTraySpeakOnMuteDetectedId);
+
+  // Toast should not be displayed as there is a cool down period for the toast.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(
+      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+
+  // Toast should be displayed again as the mute action will reset the toast
+  // cool down timer.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(
+      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
 }
 
 }  // namespace ash

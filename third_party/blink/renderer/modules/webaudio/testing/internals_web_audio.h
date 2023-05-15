@@ -16,6 +16,7 @@ class InternalsWebAudio {
 
  public:
   static unsigned audioHandlerCount(Internals&);
+  static unsigned audioWorkletProcessorCount(Internals&);
 };
 
 }  // namespace blink

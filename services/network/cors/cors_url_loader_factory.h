@@ -142,7 +142,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const int32_t process_id_ = mojom::kInvalidProcessId;
   const absl::optional<url::Origin> request_initiator_origin_lock_;
   const bool ignore_isolated_world_origin_;
-  const mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
+  const mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy_;
+  const mojom::TrustTokenOperationPolicyVerdict trust_token_redemption_policy_;
   net::IsolationInfo isolation_info_;
   const bool automatically_assign_isolation_info_;
   const std::string debug_tag_;

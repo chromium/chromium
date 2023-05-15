@@ -17,9 +17,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
@@ -114,6 +114,8 @@ FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(ios::provider::IsTextZoomEnabled());
   web_state->AddObserver(this);
+  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
+  feature->GetWebFramesManager(web_state)->AddObserver(this);
   content_size_did_change_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIContentSizeCategoryDidChangeNotification
                   object:nil
@@ -248,6 +250,8 @@ int FontSizeTabHelper::GetFontSize() const {
 
 void FontSizeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
+  feature->GetWebFramesManager(web_state)->RemoveObserver(this);
 }
 
 void FontSizeTabHelper::PageLoaded(
@@ -266,10 +270,10 @@ void FontSizeTabHelper::DidFinishNavigation(web::WebState* web_state,
   }
 }
 
-void FontSizeTabHelper::WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                                   web::WebFrame* web_frame) {
+void FontSizeTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
   // Make sure that any new web frame starts with the correct zoom level.
-  DCHECK_EQ(web_state, web_state_);
   int size = GetFontSize();
   // Prevent any zooming errors by only zooming when necessary. This is mostly
   // when size != 100, but if zooming has happened before, then zooming to 100

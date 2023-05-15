@@ -67,12 +67,14 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
 
+  enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   NGConstraintSpace BuildSpaceForIntrinsicInlineSize(
       const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const NGBlockNode& flex_item,
-      absl::optional<LayoutUnit> override_inline_size = absl::nullopt) const;
+      absl::optional<LayoutUnit> override_inline_size,
+      Phase phase) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
@@ -85,7 +87,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
 
-  enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   void ConstructAndAppendFlexItems(
       Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);

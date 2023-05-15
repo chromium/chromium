@@ -9,12 +9,12 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -219,8 +219,7 @@ bool NotificationsApiFunction::CreateNotification(
 
   NotificationBitmapSizes bitmap_sizes = GetNotificationBitmapSizes();
 
-  float image_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactors().back());
+  const float image_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   // Extract required fields: type, title, message, and icon.
   message_center::NotificationType type =
@@ -377,8 +376,7 @@ bool NotificationsApiFunction::UpdateNotification(
 #endif
 
   NotificationBitmapSizes bitmap_sizes = GetNotificationBitmapSizes();
-  float image_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactors().back());
+  const float image_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   // Update optional fields if provided.
   if (options->type != api::notifications::TEMPLATE_TYPE_NONE)
@@ -575,9 +573,10 @@ NotificationsCreateFunction::RunNotificationsApi() {
     // If the caller provided a notificationId, use that.
     notification_id = *params_->notification_id;
   } else {
-    // Otherwise, use a randomly created GUID. In case that GenerateGUID returns
-    // the empty string, simply generate a random string.
-    notification_id = base::GenerateGUID();
+    // Otherwise, use a randomly created GUID. In case that
+    // Uuid::GenerateRandomV4().AsLowercaseString returns the empty string,
+    // simply generate a random string.
+    notification_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     if (notification_id.empty())
       notification_id = base::RandBytesAsString(16);
   }

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 336 tests; 196 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 336 tests; 279 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS CSS Transitions: property <font-size-adjust> from neutral to [2] at (-2) should be [0]
 PASS CSS Transitions: property <font-size-adjust> from neutral to [2] at (-0.3) should be [0.7]
 PASS CSS Transitions: property <font-size-adjust> from neutral to [2] at (0) should be [1]
@@ -56,34 +56,34 @@ PASS Web Animations: property <font-size-adjust> from [initial] to [2] at (0.5) 
 PASS Web Animations: property <font-size-adjust> from [initial] to [2] at (0.6) should be [2]
 PASS Web Animations: property <font-size-adjust> from [initial] to [2] at (1) should be [2]
 PASS Web Animations: property <font-size-adjust> from [initial] to [2] at (1.5) should be [2]
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2] assert_true: 'to' value should be supported expected true got false
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2]
+PASS CSS Transitions: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2]
+PASS CSS Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (-0.3) should be [initial]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0) should be [initial]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.3) should be [initial]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.5) should be [cap-height 2]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (0.6) should be [cap-height 2]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1) should be [cap-height 2]
+PASS Web Animations: property <font-size-adjust> from [initial] to [cap-height 2] at (1.5) should be [cap-height 2]
 PASS CSS Transitions: property <font-size-adjust> from [inherit] to [2] at (-2) should be [5]
 PASS CSS Transitions: property <font-size-adjust> from [inherit] to [2] at (-0.3) should be [3.3]
 PASS CSS Transitions: property <font-size-adjust> from [inherit] to [2] at (0) should be [3]
@@ -168,34 +168,34 @@ PASS Web Animations: property <font-size-adjust> from [0] to [1.2] at (0.3) shou
 PASS Web Animations: property <font-size-adjust> from [0] to [1.2] at (0.6) should be [0.72]
 PASS Web Animations: property <font-size-adjust> from [0] to [1.2] at (1) should be [1.2]
 PASS Web Animations: property <font-size-adjust> from [0] to [1.2] at (1.5) should be [1.8]
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_true: 'from' value should be supported expected true got false
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_equals: expected "cap - height 0.36 " but got "0.36 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_equals: expected "cap - height 0.72 " but got "0.72 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.2 "
+FAIL CSS Transitions: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_equals: expected "cap - height 1.8 " but got "1.8 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0] assert_equals: expected "cap - height 0 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_equals: expected "cap - height 0.36 " but got "0.36 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_equals: expected "cap - height 0.72 " but got "0.72 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.2 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_equals: expected "cap - height 1.8 " but got "1.8 "
+PASS CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0]
+PASS CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0]
+PASS CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0]
+FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_equals: expected "cap - height 0.36 " but got "cap - height 0 "
+FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_equals: expected "cap - height 0.72 " but got "cap - height 1.2 "
+PASS CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+FAIL CSS Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_equals: expected "cap - height 1.8 " but got "cap - height 1.2 "
+PASS Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-2) should be [cap-height 0]
+PASS Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (-0.3) should be [cap-height 0]
+PASS Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0) should be [cap-height 0]
+FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.3) should be [cap-height 0.36] assert_equals: expected "cap - height 0.36 " but got "cap - height 0 "
+FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (0.6) should be [cap-height 0.72] assert_equals: expected "cap - height 0.72 " but got "cap - height 1.2 "
+PASS Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+FAIL Web Animations: property <font-size-adjust> from [cap-height 0] to [cap-height 1.2] at (1.5) should be [cap-height 1.8] assert_equals: expected "cap - height 1.8 " but got "cap - height 1.2 "
 PASS CSS Transitions: property <font-size-adjust> from [none] to [1.2] at (-0.3) should be [none]
 PASS CSS Transitions: property <font-size-adjust> from [none] to [1.2] at (0) should be [none]
 PASS CSS Transitions: property <font-size-adjust> from [none] to [1.2] at (0.3) should be [none]
@@ -224,34 +224,34 @@ PASS Web Animations: property <font-size-adjust> from [none] to [1.2] at (0.5) s
 PASS Web Animations: property <font-size-adjust> from [none] to [1.2] at (0.6) should be [1.2]
 PASS Web Animations: property <font-size-adjust> from [none] to [1.2] at (1) should be [1.2]
 PASS Web Animations: property <font-size-adjust> from [none] to [1.2] at (1.5) should be [1.2]
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'to' value should be supported expected true got false
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS CSS Transitions: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS CSS Transitions with transition: all: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (-0.3) should be [none]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0) should be [none]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.3) should be [none]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [none] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
 PASS CSS Transitions: property <font-size-adjust> from [0.2] to [1.2] at (-2) should be [0]
 PASS CSS Transitions: property <font-size-adjust> from [0.2] to [1.2] at (-0.3) should be [0]
 PASS CSS Transitions: property <font-size-adjust> from [0.2] to [1.2] at (0) should be [0.2]
@@ -280,61 +280,61 @@ PASS Web Animations: property <font-size-adjust> from [0.2] to [1.2] at (0.3) sh
 PASS Web Animations: property <font-size-adjust> from [0.2] to [1.2] at (0.6) should be [0.8]
 PASS Web Animations: property <font-size-adjust> from [0.2] to [1.2] at (1) should be [1.2]
 PASS Web Animations: property <font-size-adjust> from [0.2] to [1.2] at (1.5) should be [1.7]
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_true: 'from' value should be supported expected true got false
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "0 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "0 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_equals: expected "ch - width 0.2 " but got "0.2 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_equals: expected "ch - width 0.5 " but got "0.5 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_equals: expected "ch - width 0.8 " but got "0.8 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_equals: expected "ch - width 1.2 " but got "1.2 "
+FAIL CSS Transitions: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_equals: expected "ch - width 1.7 " but got "1.7 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2] assert_equals: expected "ch - width 0.2 " but got "0.2 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_equals: expected "ch - width 0.5 " but got "0.5 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_equals: expected "ch - width 0.8 " but got "0.8 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2] assert_equals: expected "ch - width 1.2 " but got "1.2 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_equals: expected "ch - width 1.7 " but got "1.7 "
+FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "ch - width 0.2 "
+FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "ch - width 0.2 "
+PASS CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2]
+FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_equals: expected "ch - width 0.5 " but got "ch - width 0.2 "
+FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_equals: expected "ch - width 0.8 " but got "ch - width 1.2 "
+PASS CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2]
+FAIL CSS Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_equals: expected "ch - width 1.7 " but got "ch - width 1.2 "
+FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-2) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "ch - width 0.2 "
+FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (-0.3) should be [ch-width 0] assert_equals: expected "ch - width 0 " but got "ch - width 0.2 "
+PASS Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0) should be [ch-width 0.2]
+FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.3) should be [ch-width 0.5] assert_equals: expected "ch - width 0.5 " but got "ch - width 0.2 "
+FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (0.6) should be [ch-width 0.8] assert_equals: expected "ch - width 0.8 " but got "ch - width 1.2 "
+PASS Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1) should be [ch-width 1.2]
+FAIL Web Animations: property <font-size-adjust> from [ch-width 0.2] to [ch-width 1.2] at (1.5) should be [ch-width 1.7] assert_equals: expected "ch - width 1.7 " but got "ch - width 1.2 "
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2] assert_equals: expected "0.2 " but got "0 "
+PASS CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2]
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2] assert_equals: expected "0.2 " but got "0.5 "
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.7 "
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.8 "
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.2 "
+FAIL CSS Transitions: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.7 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.2 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.5 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.7 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "0.8 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.2 "
+FAIL CSS Transitions with transition: all: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2] assert_equals: expected "cap - height 1.2 " but got "1.7 "
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS CSS Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (-0.3) should be [ex-height 0.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0) should be [ex-height 0.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.3) should be [ex-height 0.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.5) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (0.6) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1) should be [cap-height 1.2]
+PASS Web Animations: property <font-size-adjust> from [ex-height 0.2] to [cap-height 1.2] at (1.5) should be [cap-height 1.2]
 Harness: the test ran to completion.
 

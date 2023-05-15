@@ -117,6 +117,9 @@ class PaymentsClient {
     // The selected challenge option. Should be populated when we are doing CVC
     // unmasking for a virtual card.
     absl::optional<CardUnmaskChallengeOption> selected_challenge_option;
+    // A vector of signals used to share client behavior with the Payments
+    // server.
+    std::vector<ClientBehaviorConstants> client_behavior_signals;
   };
 
   // Information retrieved from an UnmaskRequest.

@@ -1066,6 +1066,8 @@ pub const CPUCTL_MSRSBIT: ::c_int = 0xc0106305;
 pub const CPUCTL_MSRCBIT: ::c_int = 0xc0106306;
 pub const CPUCTL_CPUID_COUNT: ::c_int = 0xc0106307;
 
+pub const CPU_SETSIZE: ::size_t = ::mem::size_of::<::cpumask_t>() * 8;
+
 pub const EVFILT_READ: i16 = -1;
 pub const EVFILT_WRITE: i16 = -2;
 pub const EVFILT_AIO: i16 = -3;
@@ -1089,6 +1091,7 @@ pub const EV_NODATA: u16 = 0x1000;
 pub const EV_FLAG1: u16 = 0x2000;
 pub const EV_ERROR: u16 = 0x4000;
 pub const EV_EOF: u16 = 0x8000;
+pub const EV_HUP: u16 = 0x8000;
 pub const EV_SYSFLAGS: u16 = 0xf000;
 
 pub const FIODNAME: ::c_ulong = 0x80106678;
@@ -1407,6 +1410,16 @@ pub const MSG_FBLOCKING: ::c_int = 0x00010000;
 pub const MSG_FNONBLOCKING: ::c_int = 0x00020000;
 pub const MSG_FMASK: ::c_int = 0xFFFF0000;
 
+// sys/mount.h
+pub const MNT_NODEV: ::c_int = 0x00000010;
+pub const MNT_AUTOMOUNTED: ::c_int = 0x00000020;
+pub const MNT_TRIM: ::c_int = 0x01000000;
+pub const MNT_LOCAL: ::c_int = 0x00001000;
+pub const MNT_QUOTA: ::c_int = 0x00002000;
+pub const MNT_ROOTFS: ::c_int = 0x00004000;
+pub const MNT_USER: ::c_int = 0x00008000;
+pub const MNT_IGNORE: ::c_int = 0x00800000;
+
 // utmpx entry types
 pub const EMPTY: ::c_short = 0;
 pub const RUN_LVL: ::c_short = 1;
@@ -1571,6 +1584,15 @@ safe_f! {
     pub {const} fn WIFSIGNALED(status: ::c_int) -> bool {
         (status & 0o177) != 0o177 && (status & 0o177) != 0
     }
+
+    pub {const} fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
+        let major = major as ::dev_t;
+        let minor = minor as ::dev_t;
+        let mut dev = 0;
+        dev |= major << 8;
+        dev |= minor;
+        dev
+    }
 }
 
 extern "C" {
@@ -1642,6 +1664,9 @@ extern "C" {
 
     pub fn umtx_sleep(ptr: *const ::c_int, value: ::c_int, timeout: ::c_int) -> ::c_int;
     pub fn umtx_wakeup(ptr: *const ::c_int, count: ::c_int) -> ::c_int;
+
+    pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
+    pub fn basename(path: *mut ::c_char) -> *mut ::c_char;
 }
 
 #[link(name = "rt")]

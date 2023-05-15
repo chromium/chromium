@@ -26,6 +26,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -390,8 +391,13 @@ void SigninViewController::ShowDiceSigninTab(
     active_contents = browser_->tab_strip_model()->GetActiveWebContents();
   }
 
+  // Checks that we have right contents, in which the signin page is being
+  // loaded. Note that we need to check the original URL, being mindful of
+  // possible redirects, but also the navigation hasn't happened yet.
   DCHECK(active_contents);
-  DCHECK_EQ(signin_url, active_contents->GetVisibleURL());
+  DCHECK_EQ(
+      signin_url,
+      active_contents->GetController().GetVisibleEntry()->GetUserTypedURL());
   DiceTabHelper::CreateForWebContents(active_contents);
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
 

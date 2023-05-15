@@ -234,9 +234,6 @@ Compromised renderers shouldn't be able to poison the JavaScript code cache
 used by scripts executed in cross-site execution contexts.
 
 Protection techniques:
-- Validating origins sent in IPCs from a renderer process by using
-  `CanAccessDataForOrigin` in
-  `CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage`.
 - Using trustworthy, browser-side origin lock while writing to and fetching from
   the code cache by using `ChildProcessSecurityPolicyImpl::GetOriginLock` in
   `GetSecondaryKeyForCodeCache` in

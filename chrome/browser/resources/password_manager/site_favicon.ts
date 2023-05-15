@@ -18,7 +18,7 @@ import {getTemplate} from './site_favicon.html.js';
 export interface SiteFaviconElement {
   $: {
     favicon: HTMLElement,
-    downloadedFavicon: HTMLElement,
+    downloadedFavicon: HTMLImageElement,
   };
 }
 
@@ -58,6 +58,17 @@ export class SiteFaviconElement extends PolymerElement {
   domain: string;
   url: string;
   private showDownloadedIcon_: boolean;
+
+  override ready() {
+    super.ready();
+    // Set a timeout to handle a case when image takes too long to load.
+    setTimeout(() => {
+      if (!this.$.downloadedFavicon.complete) {
+        // Reset src to cancel ongoin request.
+        this.$.downloadedFavicon.src = '';
+      }
+    }, 1000);
+  }
 
   private getBackgroundImage_() {
     if (this.domain) {

@@ -195,7 +195,7 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
   ASSERT_FALSE(pem_tokenizer.GetNext());
 
   ScopedCERTCertificate cert(x509_util::CreateCERTCertificateFromBytes(
-      reinterpret_cast<const uint8_t*>(cert_der.data()), cert_der.size()));
+      base::as_bytes(base::make_span(cert_der))));
   ASSERT_TRUE(cert);
 
   ASSERT_TRUE(ImportClientCertToSlot(cert.get(), test_db.slot()));

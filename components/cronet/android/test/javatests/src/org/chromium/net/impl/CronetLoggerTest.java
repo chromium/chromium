@@ -31,6 +31,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
@@ -61,6 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Test logging functionalities.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(JUnit4.class)
 @RequiresMinAndroidApi(Build.VERSION_CODES.O)
 public final class CronetLoggerTest {

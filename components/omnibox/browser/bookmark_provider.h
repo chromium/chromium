@@ -57,15 +57,8 @@ class BookmarkProvider : public AutocompleteProvider {
       const AutocompleteInput& input,
       size_t kMaxBookmarkMatches);
 
-  // There are 2 short bookmark features that determine the matching algorithm
-  // used, i.e. whether input words shorter than 3 chars can prefix match.
-  // 1) |IsShortBookmarkSuggestionsEnabled()| always allows short input word
-  //    prefix matching.
-  // 2) |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| allows short
-  //    input word prefix matching only if the input is longer than a threshold
-  //    param. This feature also has a counterfactual param.
-  // 3) Otherwise, if both features are disabled (or if the counterfactual param
-  //    is true), short input word matching won't be allowed.
+  // Allow short input word prefix matching only if the input is longer than 3
+  // chars.
   query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input);
 
   // Calculates the relevance score for |match|.

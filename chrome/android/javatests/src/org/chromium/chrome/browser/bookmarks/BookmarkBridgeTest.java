@@ -254,14 +254,14 @@ public class BookmarkBridgeTest {
 
         long[] startingIdsArray = new long[] {kBUrl, kAUrl, kBFolder, kAFolder, kPartnerBookmarks};
         Assert.assertArrayEquals(
-                startingIdsArray, getIdArray(mBookmarkBridge.getChildIDs(mMobileNode)));
+                startingIdsArray, getIdArray(mBookmarkBridge.getChildIds(mMobileNode)));
 
         long[] reorderedIdsArray = new long[] {kAUrl, kBFolder, kBUrl, kAFolder};
         mBookmarkBridge.reorderBookmarks(mMobileNode, reorderedIdsArray);
 
         long[] endingIdsArray = new long[] {kAUrl, kBFolder, kBUrl, kAFolder, kPartnerBookmarks};
         Assert.assertArrayEquals(
-                endingIdsArray, getIdArray(mBookmarkBridge.getChildIDs(mMobileNode)));
+                endingIdsArray, getIdArray(mBookmarkBridge.getChildIds(mMobileNode)));
     }
 
     /**

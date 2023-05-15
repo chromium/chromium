@@ -118,6 +118,14 @@ void FederatedProviderFetcher::OnWellKnownFetched(
                 additional_console_error_message);
         return;
       }
+      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+        OnError(fetch_result,
+                FederatedAuthRequestResult::
+                    kErrorFetchingWellKnownInvalidContentType,
+                TokenStatus::kWellKnownInvalidContentType,
+                additional_console_error_message);
+        return;
+      }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
         NOTREACHED();
       }
@@ -194,6 +202,14 @@ void FederatedProviderFetcher::OnConfigFetched(
                 FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
                 TokenStatus::kConfigInvalidResponse,
                 additional_console_error_message);
+        return;
+      }
+      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+        OnError(
+            fetch_result,
+            FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType,
+            TokenStatus::kConfigInvalidContentType,
+            additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {

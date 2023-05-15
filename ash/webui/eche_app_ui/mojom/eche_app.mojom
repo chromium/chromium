@@ -67,6 +67,15 @@ interface SystemInfoObserver {
           bool android_device_on_cellular);
 };
 
+
+// Interface for passing accessibility events between SWA and Browser process.
+interface AccessibilityProvider {
+  // Registers a function for sending accessibility events from the SWA to
+  // the browser.
+  // Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
+  HandleAccessibilityEventReceived(array<uint8> serialized_proto);
+};
+
 // Interface for generating uid. The uid is unique and persistent.
 interface UidGenerator {
   // Get the uid.

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -231,12 +232,14 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   std::unique_ptr<CryptAuthGroupPrivateKeySharer> group_private_key_sharer_;
 
   State state_ = State::kNotStarted;
-  CryptAuthDeviceRegistry* device_registry_ = nullptr;
-  CryptAuthKeyRegistry* key_registry_ = nullptr;
-  CryptAuthClientFactory* client_factory_ = nullptr;
-  SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker_ = nullptr;
-  AttestationCertificatesSyncer* attestation_certificates_syncer_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<CryptAuthDeviceRegistry, ExperimentalAsh> device_registry_ = nullptr;
+  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<SyncedBluetoothAddressTracker, ExperimentalAsh>
+      synced_bluetooth_address_tracker_ = nullptr;
+  raw_ptr<AttestationCertificatesSyncer, ExperimentalAsh>
+      attestation_certificates_syncer_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<CryptAuthDeviceSyncerImpl> weak_ptr_factory_{this};

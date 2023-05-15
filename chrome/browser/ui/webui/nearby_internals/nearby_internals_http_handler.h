@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_HTTP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_HTTP_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
@@ -62,7 +63,7 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
   // Message handler callback that calls List Contacts RPC.
   void ListContactPeople(const base::Value::List& args);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   base::ScopedObservation<NearbyShareHttpNotifier,
                           NearbyShareHttpNotifier::Observer>
       observation_{this};

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
-
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,10 +13,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -104,7 +103,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
@@ -158,7 +157,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
         ->GetMenuItemContainerForTesting();
   }
 
-  ChromeLabsBubbleViewModel* chrome_labs_model() {
+  ChromeLabsModel* chrome_labs_model() {
     return browser_view()->toolbar()->chrome_labs_model();
   }
 
@@ -173,7 +172,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
@@ -246,7 +245,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
@@ -317,7 +316,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
     return chrome_labs_bubble()->GetMenuItemContainerForTesting();
   }
 
-  ChromeLabsBubbleViewModel* chrome_labs_model() {
+  ChromeLabsModel* chrome_labs_model() {
     return browser_view()->toolbar()->chrome_labs_model();
   }
 
@@ -388,7 +387,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
@@ -469,7 +468,7 @@ class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
   ChromeLabsAshFeatureTest()
       : ChromeLabsFeatureTest(),
         user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
     const AccountId account_id(
@@ -479,7 +478,7 @@ class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
   }
 
  private:
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="100506692671054486">אין פקודה קודמת</translation>
 <translation id="1009046985747440431">‏ניתן לעבור בין האפשרויות על ידי הקשה על החיצים למעלה או למטה, ולהפעיל אפשרות על ידי הקשה על Enter</translation>
 <translation id="1011903154582639569">כדי להקליד, מקישים על המקש הרצוי ומרפים ממנו</translation>
 <translation id="1012173283529841972">פריט רשימה</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">סומק לבנדר</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3962990492275676168">יש להתחיל לקרוא מהמיקום הנוכחי</translation>
+<translation id="397094149579293440">לא נבחר טקסט</translation>
 <translation id="3970951409746498040">חום חול</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">מוקסין</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">אין כותרת קודמת מרמה 1</translation>
 <translation id="4787577491510559358">הקראת הפורמט של הפריט הנוכחי</translation>
 <translation id="479989351350248267">Search</translation>
+<translation id="4802034228771424756">אין שדה טקסט מודגש</translation>
 <translation id="4804818685124855865">ניתוק</translation>
 <translation id="481165870889056555">הכרזה על הכותרת של הדף הנוכחי</translation>
 <translation id="4815668758102003883">טורקיז בהיר</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">קישור פנימי</translation>
 <translation id="4909019435900810068">העברת הסמן למילה הקודמת</translation>
 <translation id="4911349081560453449">אין תיבת סימון קודמת</translation>
+<translation id="4919186071145887492">לא ניתן <ph name="COMMAND" />. אפשר לנסות שוב</translation>
 <translation id="492295894462528572">פתח דבר</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4953585991029886728">עריכת הטקסט</translation>
+<translation id="4964701498510730546">שדה הטקסט ריק</translation>
 <translation id="4973717656530883744">מינימום <ph name="X" /></translation>
 <translation id="4974612477719259470">אין לחצן קודם</translation>
 <translation id="4979404613699303341">לחצן 'הקודם'</translation>
+<translation id="4981239367072766915">קלט לא מזוהה</translation>
 <translation id="4982917827052020884">‏נתחיל במספר מקשים שישמשו אותך באופן שוטף. אפשר להשתמש במקש Control כדי להפסיק דיבור שפועל. מקש Control נמצא בפינה השמאלית התחתונה של המקלדת. כדי להמשיך, יש להקיש על המקש Control.</translation>
 <translation id="4983588134362688868">דילוג לחלק העליון של הדף</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, חלון</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">הקראת מצב הסוללה הנוכחי</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, לחצן בחירה מסומן</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, סימנת את לחצן הבחירה של האפשרות בתפריט</translation>
+<translation id="5014131807708055994">לא ניתן <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">הפעלה של תיעוד דיבור</translation>
 <translation id="5041394372352067729">העברת תצוגת ברייל לחלק העליון של הדף</translation>
 <translation id="5042770794184672516">הגברת עוצמת הדיבור</translation>

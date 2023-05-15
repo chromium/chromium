@@ -117,6 +117,15 @@ group("assert_no_deps") {
   # for no reason and is easy to mess up. See the comment at the top of
   # //chrome/installer/util/BUILD.gn.
   assert_no_deps = [ "//chrome/installer/util:strings" ]
+
+  if (is_fuchsia) {
+    assert_no_deps += [
+      # Chrome should use Perfetto instead of libtrace. Vulkan depends on
+      # trace-engine, but there should be no dependencies on trace-provider.
+      "//third_party/fuchsia-sdk/sdk/pkg/trace",
+      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
+    ]
+  }
 }
 
 if (!is_android && !is_mac) {
@@ -533,12 +542,15 @@ if (is_win) {
       ":chrome_app_strings_bundle_data",
       ":chrome_resources",
       ":chrome_versioned_bundle_data",
-      ":chromium_updater_privileged_helper",
       "//base/allocator:early_zone_registration_mac",
       "//build:branding_buildflags",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
     ]
+
+    if (enable_updater) {
+      deps += [ ":chromium_updater_privileged_helper" ]
+    }
 
     if (enable_stripping) {
       # At link time, preserve the global symbols specified in the .exports
@@ -688,13 +700,15 @@ if (is_win) {
     }
   }
 
-  bundle_data("chromium_updater_privileged_helper") {
-    sources = [ "$root_out_dir/$privileged_helper_name" ]
-    outputs = [
-      "{{bundle_contents_dir}}/Library/LaunchServices/{{source_file_part}}",
-    ]
+  if (enable_updater) {
+    bundle_data("chromium_updater_privileged_helper") {
+      sources = [ "$root_out_dir/$privileged_helper_name" ]
+      outputs = [
+        "{{bundle_contents_dir}}/Library/LaunchServices/{{source_file_part}}",
+      ]
 
-    public_deps = [ "//chrome/updater/mac:privileged_helper" ]
+      public_deps = [ "//chrome/updater/mac:privileged_helper" ]
+    }
   }
 
   action("clean_up_old_versions") {
@@ -943,6 +957,8 @@ if (is_win) {
 
   bundle_data("chrome_framework_resources") {
     sources = [
+      "//ui/gl/resources/angle-metal/gpu_shader_cache.bin",
+
       # This image is used to badge the lock icon in the
       # authentication dialogs, such as those used for installation
       # from disk image and Keystone promotion (if so enabled).  It

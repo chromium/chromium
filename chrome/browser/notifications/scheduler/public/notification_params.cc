@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
 
 namespace notifications {
@@ -15,7 +15,7 @@ NotificationParams::NotificationParams(SchedulerClientType type,
                                        NotificationData notification_data,
                                        ScheduleParams schedule_params)
     : type(type),
-      guid(base::GenerateGUID()),
+      guid(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       enable_ihnr_buttons(false),
       notification_data(std::move(notification_data)),
       schedule_params(std::move(schedule_params)) {}

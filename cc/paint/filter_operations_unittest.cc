@@ -984,32 +984,38 @@ TEST(FilterOperationsTest, HasFilterOfType) {
   EXPECT_FALSE(filters.HasFilterOfType(FilterOperation::ZOOM));
 }
 
-TEST(FilterOperationsTest, MaximumPixelMovement) {
+TEST(FilterOperationsTest, ExpandRectForPixelMovement) {
+  constexpr gfx::Rect test_rect(0, 0, 100, 100);
   FilterOperations filters;
 
   filters.Append(FilterOperation::CreateBlurFilter(20));
-  EXPECT_FLOAT_EQ(20.f * 3, filters.MaximumPixelMovement());
+  EXPECT_EQ(gfx::Rect(-60, -60, 220, 220),
+            filters.ExpandRectForPixelMovement(test_rect));
 
   filters.Clear();
   filters.Append(FilterOperation::CreateDropShadowFilter(
       gfx::Point(3, -8), 20, SkColors::kTransparent));
-  float max_movement = fmax(std::abs(3), std::abs(-8)) + 20.f * 3;
-  EXPECT_FLOAT_EQ(max_movement, filters.MaximumPixelMovement());
+  // max_movement = max(std::abs(3), std::abs(-8)) + 20 * 3;
+  EXPECT_EQ(gfx::Rect(-68, -68, 236, 236),
+            filters.ExpandRectForPixelMovement(test_rect));
 
   filters.Clear();
   filters.Append(FilterOperation::CreateZoomFilter(2, 3));
   // max movement = zoom_inset = 3
-  EXPECT_FLOAT_EQ(3.f, filters.MaximumPixelMovement());
+  EXPECT_EQ(gfx::Rect(-3, -3, 106, 106),
+            filters.ExpandRectForPixelMovement(test_rect));
 
   filters.Clear();
   filters.Append(FilterOperation::CreateOffsetFilter(gfx::Point(3, -4)));
-  EXPECT_FLOAT_EQ(4.0f, filters.MaximumPixelMovement());
+  EXPECT_EQ(gfx::Rect(-4, -4, 108, 108),
+            filters.ExpandRectForPixelMovement(test_rect));
 
   filters.Clear();
   filters.Append(FilterOperation::CreateReferenceFilter(
       sk_make_sp<OffsetPaintFilter>(10, 10, nullptr)));
   // max movement = 100.
-  EXPECT_FLOAT_EQ(100.f, filters.MaximumPixelMovement());
+  EXPECT_EQ(gfx::Rect(-100, -100, 300, 300),
+            filters.ExpandRectForPixelMovement(test_rect));
 
   // For filters that don't move pixels. HasFilterThatMovesPixels() = false.
   filters.Clear();
@@ -1026,7 +1032,7 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   filters.Append(FilterOperation::CreateContrastFilter(3.f));
   filters.Append(FilterOperation::CreateSaturatingBrightnessFilter(7.f));
 
-  EXPECT_FLOAT_EQ(0.f, filters.MaximumPixelMovement());
+  EXPECT_EQ(test_rect, filters.ExpandRectForPixelMovement(test_rect));
 }
 
 }  // namespace

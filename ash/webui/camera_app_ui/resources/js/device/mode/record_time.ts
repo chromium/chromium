@@ -104,7 +104,7 @@ abstract class RecordTimeBase {
    */
   stop({pause}: {pause: boolean}): void {
     speak(I18nString.STATUS_MSG_RECORDING_STOPPED);
-    if (this.tickTimeout) {
+    if (this.tickTimeout !== null) {
       clearInterval(this.tickTimeout);
       this.tickTimeout = null;
     }

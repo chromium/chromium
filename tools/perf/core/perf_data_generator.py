@@ -164,7 +164,7 @@ FYI_BUILDERS = {
     'android-pixel2-perf-fyi': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_chrome',
+            'performance_test_suite_android_clank_monochrome',
             'extra_args': [
                 '--output-format=histograms',
                 '--experimental-tbmv3-metrics',
@@ -448,24 +448,8 @@ BUILDERS = {
                 },
             },
             {
-                'name': 'resource_sizes_monochrome_public_minimal_apks',
-                'isolate': 'resource_sizes_monochrome_public_minimal_apks',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
-                'name': 'resource_sizes_system_webview_bundle',
-                'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
                 'resultdb': {
                     'has_native_resultdb_integration': True,
@@ -494,8 +478,7 @@ BUILDERS = {
             'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
-        'perf_trigger':
-        False,
+        'perf_trigger': False,
     },
     'android_arm64-builder-perf': {
         'tests': [
@@ -508,32 +491,8 @@ BUILDERS = {
                 },
             },
             {
-                'name': 'resource_sizes_monochrome_public_minimal_apks',
-                'isolate': 'resource_sizes_monochrome_public_minimal_apks',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
-                'name': 'resource_sizes_trichrome',
-                'isolate': 'resource_sizes_trichrome',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
-                'name': 'resource_sizes_system_webview_bundle',
-                'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
                 'resultdb': {
                     'has_native_resultdb_integration': True,
@@ -562,8 +521,7 @@ BUILDERS = {
             'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
-        'perf_trigger':
-        False,
+        'perf_trigger': False,
     },
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver'],
@@ -673,7 +631,7 @@ BUILDERS = {
     'android-go-perf': {
         'tests': [{
             'name': 'performance_test_suite',
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_monochrome',
         }],
         'platform':
         'android-chrome',
@@ -688,7 +646,7 @@ BUILDERS = {
     'android-go-perf-pgo': {
         'tests': [{
             'name': 'performance_test_suite',
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_monochrome',
         }],
         'platform':
         'android-chrome',
@@ -814,7 +772,7 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf': {
         'tests': [{
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
             ],
@@ -831,7 +789,7 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf-pgo': {
         'tests': [{
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
             ],
@@ -1616,10 +1574,7 @@ RESOURCE_SIZES_METADATA = BenchmarkMetadata(
 
 OTHER_BENCHMARKS = {
     'resource_sizes_monochrome_minimal_apks': RESOURCE_SIZES_METADATA,
-    'resource_sizes_monochrome_public_minimal_apks': RESOURCE_SIZES_METADATA,
-    'resource_sizes_trichrome': RESOURCE_SIZES_METADATA,
     'resource_sizes_trichrome_google': RESOURCE_SIZES_METADATA,
-    'resource_sizes_system_webview_bundle': RESOURCE_SIZES_METADATA,
     'resource_sizes_system_webview_google_bundle': RESOURCE_SIZES_METADATA,
 }
 

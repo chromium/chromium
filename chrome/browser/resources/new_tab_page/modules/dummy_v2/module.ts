@@ -11,7 +11,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 
 import {FooDataItem} from '../../foo.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
+import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {FooProxy} from './foo_proxy.js';
 import {getTemplate} from './module.html.js';
@@ -78,62 +78,50 @@ function createDummyElement(titleId: string): DummyModuleElement {
   return element;
 }
 
-export const dummyV2Descriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummyTitle')));
 
-export const dummyV2Descriptor02: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor02: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy2',
-    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy2Title')));
 
-export const dummyV2Descriptor03: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor03: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy3',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy3Title')));
 
-export const dummyV2Descriptor04: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor04: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy4',
-    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy4Title')));
 
-export const dummyV2Descriptor05: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor05: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy5',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy5Title')));
 
-export const dummyV2Descriptor06: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor06: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy6',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy6Title')));
 
-export const dummyV2Descriptor07: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor07: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy7',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy7Title')));
 
-export const dummyV2Descriptor08: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor08: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy8',
-    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy8Title')));
 
-export const dummyV2Descriptor09: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor09: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy9',
-    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy9Title')));
 
-export const dummyV2Descriptor10: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor10: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy10',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy10Title')));
 
-export const dummyV2Descriptor11: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor11: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy11',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy11Title')));
 
-export const dummyV2Descriptor12: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const dummyV2Descriptor12: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy12',
-    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy12Title')));

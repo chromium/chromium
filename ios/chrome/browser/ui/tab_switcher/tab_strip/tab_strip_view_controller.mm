@@ -238,15 +238,13 @@ const CGFloat kSymbolSize = 18;
     cell.delegate = self;
     cell.itemIdentifier = item.identifier;
     cell.titleLabel.text = item.title;
-    NSString* itemIdentifier = item.identifier;
-    [self.faviconDataSource
-        faviconForIdentifier:itemIdentifier
-                  completion:^(UIImage* icon) {
-                    // Only update the icon if the cell is not
-                    // already reused for another item.
-                    if ([cell hasIdentifier:itemIdentifier])
-                      cell.faviconView.image = icon;
-                  }];
+    [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
+      // Only update the icon if the cell is not
+      // already reused for another item.
+      if ([cell hasIdentifier:innerItem.identifier]) {
+        cell.faviconView.image = icon;
+      }
+    }];
     cell.selected = [cell hasIdentifier:self.selectedItemID];
   }
 }

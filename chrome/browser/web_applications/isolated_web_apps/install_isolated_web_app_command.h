@@ -16,21 +16,25 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
+class Profile;
+class PrefService;
 
 namespace content {
-class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -64,35 +68,30 @@ struct InstallIsolatedWebAppCommandError {
 // re-using web contents.
 class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  //
-  // |url_info| holds the origin information of the app. It is
-  // randomly generated for dev-proxy and the public key of signed bundle. It is
+  static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+  CreateDefaultResponseReaderFactory(const PrefService& prefs);
+
+  // |url_info| holds the origin information of the app. It is randomly
+  // generated for dev-proxy and the public key of signed bundle. It is
   // guarantee to be valid.
   //
-  // |location| holds information about the
-  // mode(dev-mod-proxy/signed-bundle) and the source.
+  // |location| holds information about the mode(dev-mod-proxy/signed-bundle)
+  // and the source.
   //
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
+  //
+  // `response_reader_factory` should be created via
+  // `CreateDefaultResponseReaderFactory` and is used to create the
+  // `IsolatedWebAppResponseReader` for the Web Bundle.
   explicit InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
-      content::BrowserContext& browser_context,
-      base::OnceCallback<
-          void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                              InstallIsolatedWebAppCommandError>)> callback);
-
-  // Same constructor as above, but additionally exposes the
-  // `response_reader_factory` for providing a mock factory in testing.
-  explicit InstallIsolatedWebAppCommand(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppLocation& location,
-      std::unique_ptr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
-      content::BrowserContext& browser_context,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
@@ -113,7 +112,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   void SetDataRetrieverForTesting(
@@ -123,6 +121,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
+  Profile& profile();
+  const PrefService& prefs();
+
   void DownloadIcons(WebAppInstallInfo install_info);
   void OnGetIcons(WebAppInstallInfo install_info,
                   IconsDownloadedResult result,
@@ -131,7 +132,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   void CheckTrustAndSignaturesOfBundle(const base::FilePath& path);
   void OnTrustAndSignaturesChecked(
-      absl::optional<IsolatedWebAppResponseReaderFactory::Error> error);
+      base::expected<void, UnusableSwbnFileError> status);
 
   void CreateStoragePartition();
 
@@ -166,7 +167,8 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
-  base::raw_ref<content::BrowserContext> browser_context_;
+  std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 

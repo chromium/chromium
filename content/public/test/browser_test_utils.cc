@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
@@ -35,6 +34,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -160,85 +160,6 @@
 
 namespace content {
 namespace {
-
-// Executes the passed |script| in the frame specified by |render_frame_host|.
-// If |result| is not NULL, stores the value that the evaluation of the script
-// in |result|.  Returns true on success.
-[[nodiscard]] bool ExecuteScriptHelper(RenderFrameHost* render_frame_host,
-                                       const std::string& script,
-                                       bool user_gesture,
-                                       int32_t world_id,
-                                       std::unique_ptr<base::Value>* result) {
-  // TODO(lukasza): Only get messages from the specific |render_frame_host|.
-  DOMMessageQueue dom_message_queue(render_frame_host);
-
-  std::u16string script16 = base::UTF8ToUTF16(script);
-  if (world_id == ISOLATED_WORLD_ID_GLOBAL && user_gesture) {
-    // Prerendering pages will never have user gesture.
-    CHECK(render_frame_host->GetLifecycleState() !=
-          RenderFrameHost::LifecycleState::kPrerendering);
-    render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-        script16, base::NullCallback(), world_id);
-  } else {
-    // Note that |user_gesture| here is ignored when the world is not main. We
-    // allow a value of |true| because it's the default, but in blink, the
-    // execution will occur with no user gesture.
-    render_frame_host->ExecuteJavaScriptForTests(script16, base::NullCallback(),
-                                                 world_id);
-  }
-
-  std::string json;
-  if (!dom_message_queue.WaitForMessage(&json)) {
-    DLOG(ERROR) << "Cannot communicate with DOMMessageQueue.";
-    return false;
-  }
-
-  // Nothing more to do for callers that ignore the returned JS value.
-  if (!result)
-    return true;
-
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.has_value()) {
-    *result = nullptr;
-    DLOG(ERROR) << parsed_json.error().message;
-    return false;
-  }
-  *result = base::Value::ToUniquePtrValue(std::move(*parsed_json));
-
-  return true;
-}
-
-bool ExecuteScriptWithUserGestureControl(RenderFrameHost* frame,
-                                         const std::string& script,
-                                         bool user_gesture) {
-  // TODO(lukasza): ExecuteScript should just call
-  // ExecuteJavaScriptWithUserGestureForTests and avoid modifying the original
-  // script (and at that point we should merge it with and remove
-  // ExecuteScriptAsync).  This is difficult to change, because many tests
-  // depend on the message loop pumping done by ExecuteScriptHelper below (this
-  // is fragile - these tests should wait on a more specific thing instead).
-
-  // TODO(nick): This function can't be replaced with a call to ExecJs(), since
-  // ExecJs calls eval() which might be blocked by the page's CSP.
-  std::string expected_response = "ExecuteScript-" + base::GenerateGUID();
-  std::string new_script = base::StringPrintf(
-      R"( %s;  // Original script.
-          window.domAutomationController.send('%s'); )",
-      script.c_str(), expected_response.c_str());
-
-  std::unique_ptr<base::Value> value;
-  if (!ExecuteScriptHelper(frame, new_script, user_gesture,
-                           ISOLATED_WORLD_ID_GLOBAL, &value) ||
-      !value.get()) {
-    return false;
-  }
-
-  DCHECK_EQ(base::Value::Type::STRING, value->type());
-  if (value->is_string())
-    DCHECK_EQ(expected_response, value->GetString());
-  return true;
-}
 
 void BuildSimpleWebKeyEvent(blink::WebInputEvent::Type type,
                             ui::DomKey key,
@@ -521,13 +442,12 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
 // no-video-input-devices otherwise.
 const char kHasVideoInputDeviceOnSystem[] = R"(
     (function() {
-      navigator.mediaDevices.enumerateDevices()
+      return navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
         if (devices.some((device) => device.kind == 'videoinput')) {
-          window.domAutomationController.send('has-video-input-device');
-        } else {
-          window.domAutomationController.send('no-video-input-devices');
+          return 'has-video-input-device';
         }
+        return 'no-video-input-devices';
       });
     })()
 )";
@@ -717,7 +637,11 @@ bool NavigateToURLFromRendererWithoutUserGesture(
 
 bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
                                     const GURL& url) {
-  return ExecJs(adapter, JsReplace("location = $1", url));
+  ExecuteScriptAsync(adapter, JsReplace("location = $1", url));
+  DidStartNavigationObserver observer(
+      WebContents::FromRenderFrameHost(adapter.render_frame_host()));
+  observer.Wait();
+  return observer.observed();
 }
 
 bool NavigateIframeToURL(WebContents* web_contents,
@@ -737,7 +661,7 @@ bool BeginNavigateIframeToURL(WebContents* web_contents,
       "var iframes = document.getElementById('%s');iframes.src='%s';"
       "\",0)",
       iframe_id.c_str(), url.spec().c_str());
-  return ExecuteScriptWithoutUserGesture(web_contents, script);
+  return ExecJs(web_contents, script, EXECUTE_SCRIPT_NO_USER_GESTURE);
 }
 
 void NavigateToURLBlockUntilNavigationsComplete(
@@ -1423,10 +1347,8 @@ void ScopedSimulateModifierKeyPress::KeyPressWithoutChar(
 }
 
 bool IsWebcamAvailableOnSystem(WebContents* web_contents) {
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents, kHasVideoInputDeviceOnSystem, &result));
-  return result == kHasVideoInputDevice;
+  return EvalJs(web_contents, kHasVideoInputDeviceOnSystem).ExtractString() ==
+         kHasVideoInputDevice;
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents) {
@@ -1435,21 +1357,6 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents) {
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_frame_host) {
   return render_frame_host;
-}
-
-bool ExecuteScript(const ToRenderFrameHost& adapter,
-                   const std::string& script) {
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  return ExecuteScriptWithUserGestureControl(adapter.render_frame_host(),
-                                             script, user_gesture);
-}
-
-bool ExecuteScriptWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                     const std::string& script) {
-  return ExecuteScriptWithUserGestureControl(adapter.render_frame_host(),
-                                             script, false);
 }
 
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
@@ -1468,41 +1375,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           const std::string& script) {
   adapter.render_frame_host()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
-}
-
-bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
-                                 const std::string& script, bool* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  if (ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                          ISOLATED_WORLD_ID_GLOBAL, &value) &&
-      value && value->is_bool()) {
-    *result = value->GetBool();
-    return true;
-  }
-  return false;
-}
-
-bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
-                                   const std::string& script,
-                                   std::string* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                           ISOLATED_WORLD_ID_GLOBAL, &value)) {
-    return false;
-  }
-  if (value && value->is_string()) {
-    *result = value->GetString();
-    return true;
-  }
-  return false;
 }
 
 // EvalJsResult methods.
@@ -1572,7 +1444,7 @@ namespace {
 // Parse a JS stack trace out of |js_error|, detect frames that match
 // |source_name|, and interleave the appropriate lines of source code from
 // |source| into the error report. This is meant to be useful for scripts that
-// are passed to ExecuteScript functions, and hence dynamically generated.
+// are passed to ExecJs/EvalJs functions, and hence dynamically generated.
 //
 // An adjustment of |column_adjustment_for_line_one| characters is subtracted
 // when mapping positions from line 1 of |source|. This is to offset the effect

@@ -22,11 +22,11 @@ source_set("bring_android_tabs") {
     "//components/segmentation_platform/public",
     "//components/sync/driver",
     "//components/sync_device_info",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
   ]
@@ -63,5 +63,34 @@ source_set("test_support") {
     "//components/segmentation_platform/embedder/default_model",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "bring_android_tabs_to_ios_service_unittest.mm" ]
+  deps = [
+    ":bring_android_tabs",
+    ":features",
+    ":metrics",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sessions:session_id",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/driver",
+    "//components/sync_device_info",
+    "//components/sync_sessions",
+    "//components/sync_sessions:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/sync",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }

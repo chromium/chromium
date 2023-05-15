@@ -624,12 +624,6 @@ bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
     return false;
   }
 
-  // Don't report actively sampled surfaces as encountered surfaces.
-  if (ukm::SourceIdObj::FromInt64(source_id).GetType() ==
-      ukm::SourceIdType::NO_URL_ID) {
-    return false;
-  }
-
   return surface_encounters_.IsNewEncounter(source_id,
                                             surface.ToUkmMetricHash());
 }

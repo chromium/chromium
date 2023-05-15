@@ -289,3 +289,9 @@ iron-list {
 :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
   transform: scaleX(-1);
 }
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -60,7 +60,7 @@
 <translation id="4249068189593983585">Tip pro Chrome. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
 <translation id="4633328489441962921">Chrome nemůže vyhledat dostupné aktualizace</translation>
-<translation id="4636900170638246267">Přihlaste se na tento webu a do Chromu.</translation>
+<translation id="4636900170638246267">Přihlaste se na tento web a do Chromu.</translation>
 <translation id="4698415050768537821">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Za účelem vylepšování aplikace odesílá Chrome do Googlu údaje o využití a selháních. <ph name="BEGIN_LINK" />Spravovat<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
@@ -87,6 +87,7 @@
 <translation id="6110625574506755980">Některé funkce Chromu už nebudou dostupné</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
+<translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6427126399757991875">Vaše organizace nastavuje Chrome…</translation>
 <translation id="6600954340915313787">Zkopírováno do Chromu</translation>

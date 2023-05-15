@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -48,7 +50,8 @@ class QuickUnlockStorageUnitTest : public testing::Test {
   ~QuickUnlockStorageUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override {}
+  void SetUp() override { UserDataAuthClient::InitializeFake(); }
+
   void TearDown() override {}
 
   void ExpireAuthToken() {
@@ -86,7 +89,7 @@ class QuickUnlockStorageTestApi {
   }
 
  private:
-  QuickUnlockStorage* quick_unlock_storage_;
+  raw_ptr<QuickUnlockStorage, ExperimentalAsh> quick_unlock_storage_;
 };
 
 // Verifies that marking the strong auth makes TimeSinceLastStrongAuth a > zero

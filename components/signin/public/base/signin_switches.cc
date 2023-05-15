@@ -14,7 +14,16 @@ namespace switches {
 // AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
 BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
              "GaiaIdCacheInAccountManagerFacade",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the
@@ -23,6 +32,18 @@ const char kClearTokenService[] = "clear-token-service";
 
 // Disables sending signin scoped device id to LSO with refresh token request.
 const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Enable experimental binding session credentials to the device.
+BASE_FEATURE(kEnableBoundSessionCrendentials,
+             "EnableBoundSessionCrendentials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBoundSessionCredentialsEnabled() {
+  return base::FeatureList::IsEnabled(
+      switches::kEnableBoundSessionCrendentials);
+}
+#endif
 
 // Enables fetching account capabilities and populating AccountInfo with the
 // fetch result.
@@ -39,9 +60,6 @@ BASE_FEATURE(kForceDisableExtendedSyncPromos,
 // Features to trigger the startup sign-in promo at boot.
 BASE_FEATURE(kForceStartupSigninPromo,
              "ForceStartupSigninPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIdentityStatusConsistency,
-             "IdentityStatusConsistency",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

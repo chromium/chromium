@@ -109,16 +109,16 @@ suite('searchResultRowTest', function() {
         'ctrl',
         keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'overview',
-        keys1[1]!.shadowRoot!.querySelector('div:has(> iron-icon)')!.ariaLabel);
+        'show windows',
+        keys1[1]!.shadowRoot!.querySelector('#key-icon')!.ariaLabel);
 
     const keys2: NodeListOf<InputKeyElement> =
         acceleratorElements[1]!.querySelectorAll('input-key');
     // Screenshot
     assertEquals(1, keys2.length);
     assertEquals(
-        'screenshot',
-        keys2[0]!.shadowRoot!.querySelector('div:has(> iron-icon)')!.ariaLabel);
+        'take screenshot',
+        keys2[0]!.shadowRoot!.querySelector('#key-icon')!.ariaLabel);
 
     // Select the row and verify that the keys are highlighted.
     assertFalse(keys1[0]!.highlighted);
@@ -174,5 +174,30 @@ suite('searchResultRowTest', function() {
         strictQuery(
             '#description', searchResultRowElement.shadowRoot, HTMLDivElement)
             .innerHTML);
+  });
+
+  test('Aria labels are correct', async () => {
+    searchResultRowElement = initSearchResultRowElement();
+    await flush();
+
+    // Standard accelerator info
+    searchResultRowElement.focusRowIndex = 2;
+    searchResultRowElement.listLength = 4;
+    searchResultRowElement.searchResult = SnapWindowLeftSearchResult;
+    await flush();
+    assertEquals(
+        'Search result 3 of 4: Snap Window Left, alt [. ' +
+            'Press Enter to navigate to shortcut.',
+        searchResultRowElement.ariaLabel);
+
+    // Text accelerator info
+    searchResultRowElement.focusRowIndex = 1;
+    searchResultRowElement.listLength = 5;
+    searchResultRowElement.searchResult = CycleTabsTextSearchResult;
+    await flush();
+    assertEquals(
+        'Search result 2 of 5: Click or tap shelf icons 1-8, ctrl + 1 through' +
+            ' 8. Press Enter to navigate to shortcut.',
+        searchResultRowElement.ariaLabel);
   });
 });

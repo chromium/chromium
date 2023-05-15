@@ -92,48 +92,32 @@ struct TraceFormatTraits<::absl::optional<T>,
 };
 
 // If T is serialisable into a trace, raw_ptr<T> is serialisable as well.
-template <class T>
-struct TraceFormatTraits<::base::raw_ptr<T>,
+template <class T, ::base::RawPtrTraits Traits>
+struct TraceFormatTraits<::base::raw_ptr<T, Traits>,
                          perfetto::check_traced_value_support_t<T>> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::raw_ptr<T>& value) {
-    if (!value) {
-      std::move(context).WritePointer(nullptr);
-      return;
-    }
-    perfetto::WriteIntoTracedValue(std::move(context), *value);
+                             const ::base::raw_ptr<T, Traits>& value) {
+    perfetto::WriteIntoTracedValue(std::move(context), value.get());
   }
 
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             ::base::raw_ptr<T>& value) {
-    if (!value) {
-      std::move(context).WritePointer(nullptr);
-      return;
-    }
-    perfetto::WriteIntoTracedValue(std::move(context), *value);
+                             ::base::raw_ptr<T, Traits>& value) {
+    perfetto::WriteIntoTracedValue(std::move(context), value.get());
   }
 };
 
 // If T is serialisable into a trace, raw_ref<T> is serialisable as well.
-template <class T>
-struct TraceFormatTraits<::base::raw_ref<T>,
+template <class T, ::base::RawPtrTraits Traits>
+struct TraceFormatTraits<::base::raw_ref<T, Traits>,
                          perfetto::check_traced_value_support_t<T>> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::raw_ref<T>& value) {
-    if (!value) {
-      std::move(context).WritePointer(nullptr);
-      return;
-    }
-    perfetto::WriteIntoTracedValue(std::move(context), *value);
+                             const ::base::raw_ref<T, Traits>& value) {
+    perfetto::WriteIntoTracedValue(std::move(context), value.get());
   }
 
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             ::base::raw_ref<T>& value) {
-    if (!value) {
-      std::move(context).WritePointer(nullptr);
-      return;
-    }
-    perfetto::WriteIntoTracedValue(std::move(context), *value);
+                             ::base::raw_ref<T, Traits>& value) {
+    perfetto::WriteIntoTracedValue(std::move(context), value.get());
   }
 };
 

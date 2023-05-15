@@ -116,8 +116,15 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "third_party/blink/public/mojom/remote_objects/remote_objects.mojom.h"
+#include "ui/android/delegated_frame_host_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif  // defined(USE_AURA)
 
 namespace content {
 namespace {
@@ -381,9 +388,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Future attempts to run script via GetAssociatedLocalFrame should succeed.
   // This timed out before the fix, since the message was dropped and no value
   // was retrieved.
-  base::Value result =
-      ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "'foo'");
-  EXPECT_EQ("foo", result.GetString());
+  EXPECT_EQ("foo", EvalJs(web_contents->GetPrimaryMainFrame(), "'foo'"));
 }
 
 // Test that when creating a new window, the main frame is correctly focused.
@@ -1018,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 
   // Simulate receiving a feature diff from the renderer process.
@@ -1039,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Verify that the document data was altered with the correct overrides.
   runtime_feature_state_controller_remote.FlushForTesting();
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 }
 
@@ -1068,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 
   // Simulate receiving a feature diff from the renderer process.
@@ -1085,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Verify that no feature overrides were added.
   runtime_feature_state_controller_remote.FlushForTesting();
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 }
 
@@ -1254,7 +1259,7 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
     std::string message;
     while (msg_queue->PopMessage(&message)) {
       base::TrimString(message, "\"", &message);
-      // Only count messages from beforeunload.  For example, an ExecuteScript
+      // Only count messages from beforeunload.  For example, an ExecJs
       // sends its own message to DOMMessageQueue, which we need to ignore.
       if (message == "ping")
         ++num_pings;
@@ -7230,6 +7235,105 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
+class ShouldShowLoadingUIDelegate : public WebContentsDelegate {
+ public:
+  void LoadingStateChanged(WebContents* source,
+                           bool should_show_loading_ui) final {
+    is_loading_values_.push_back(source->IsLoading());
+    did_show_loading_ui_values_.push_back(should_show_loading_ui);
+  }
+
+  const std::vector<bool>& is_loading_values() { return is_loading_values_; }
+  const std::vector<bool>& did_show_loading_ui_values() {
+    return did_show_loading_ui_values_;
+  }
+
+ private:
+  std::vector<bool> is_loading_values_;
+  std::vector<bool> did_show_loading_ui_values_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       NavigationApiInterceptsBrowserInitiatedSameDocument) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL same_doc_url = embedded_test_server()->GetURL("a.com", "/title1.html#a");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             "navigation.onnavigate = e => e.intercept("
+             "{ handler: () => new Promise(r => setTimeout(r, 100)) })"));
+  ASSERT_TRUE(NavigateToURL(shell(), same_doc_url));
+
+  ASSERT_EQ(delegate->is_loading_values().size(), 3ul);
+  ASSERT_EQ(delegate->did_show_loading_ui_values().size(), 3ul);
+
+  // First LoadingStateChanged called: start for a browser-initiated
+  // same-document navigation. NavigationApi hasn't intercepted yet, so the
+  // default same-document behavior of not showing loading UI applies.
+  EXPECT_TRUE(delegate->is_loading_values()[0]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[0]);
+
+  // Navigation commits, and it's a NavigationApi intercept. The commit message
+  // will not trigger DidStartLoading() (because is_loading() is already
+  // true), but when StartLoadingForAsyncNavigationApiCommit() is called, a
+  // LoadingStateChanged to enable loading UI is fired.
+  EXPECT_TRUE(delegate->is_loading_values()[1]);
+  EXPECT_TRUE(delegate->did_show_loading_ui_values()[1]);
+
+  // Navigation completes.
+  EXPECT_FALSE(delegate->is_loading_values()[2]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[2]);
+}
+
+// Like NavigationApiInterceptsBrowserInitiatedSameDocument, but the navigation
+// is fast enough that the browser never receives a
+// StartLoadingForAsyncNavigationApiCommit message from the renderer.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    NavigationApiInterceptsBrowserInitiatedSameDocumentFastHandler) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL same_doc_url = embedded_test_server()->GetURL("a.com", "/title1.html#a");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  // Intercept, but take only a short time to execute the handler.
+  // The renderer waits 50ms before sending a
+  // StartLoadingForAsyncNavigationApiCommit, and will not send it at all if,
+  // as in this case, the navigation completes before the timer fires.
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             "navigation.onnavigate = e => e.intercept("
+             "{ handler: () => new Promise(r => setTimeout(r, 10)) })"));
+  ASSERT_TRUE(NavigateToURL(shell(), same_doc_url));
+
+  ASSERT_EQ(delegate->is_loading_values().size(), 2ul);
+  ASSERT_EQ(delegate->did_show_loading_ui_values().size(), 2ul);
+
+  // First LoadingStateChanged called: start for a browser-initiated
+  // same-document navigation. NavigationApi hasn't intercepted yet, so the
+  // default same-document behavior of not showing loading UI applies.
+  EXPECT_TRUE(delegate->is_loading_values()[0]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[0]);
+
+  // Next, the navigation will commit due to the intercept. The commit will not
+  // trigger DidStartLoading() (because is_loading() is already
+  // true), and the renderer will complete its navigation before it would have
+  // called StartLoadingForAsyncNavigationApiCommit(), so we never enable the
+  // loading UI.
+
+  // Navigation completes.
+  EXPECT_FALSE(delegate->is_loading_values()[1]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[1]);
+}
+
 // Ensure that navigating with a frame tree of A(B(A)) results in the right
 // number of beforeunload messages sent.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
@@ -7634,6 +7738,179 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_NE(nullptr, pending_rfh->owner_);
 }
 
+// Tests that the devtools_navigation_token is set correctly after:
+// 1) Initialization of the RFH (initial empty document)
+// 2) First navigation
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_InitialNavigation) {
+  RenderFrameHostImplWrapper rfh(web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), absl::nullopt);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  TestNavigationManager nav_manager(web_contents(), url);
+  shell()->LoadURL(url);
+  ASSERT_TRUE(nav_manager.WaitForFirstYieldAfterDidStartNavigation());
+  base::UnguessableToken devtools_navigation_token =
+      NavigationRequest::From(nav_manager.GetNavigationHandle())
+          ->devtools_navigation_token();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_EQ(rfh.get(), web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), devtools_navigation_token);
+}
+
+// Tests that the devtools_navigation_token changes after a cross-document
+// navigation where the RFH is swapped.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_CrossDocumentNavigation) {
+  // This test requires that a same-site main frame navigation changes
+  // RenderFrameHosts, so we return early if that isn't possible.
+  if (!CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+    LOG(ERROR) << "Skipping test due to precondition not being met.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_a.has_value());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_b.has_value());
+
+  // The devtools_navigation_token for |rfh_b| should be different from
+  // |rfh_a|'s token.
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
+// Tests that the devtools_navigation_token changes after a cross-document
+// navigation where the RFH stays the same.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_SameRFHCrossDocumentNavigation) {
+  // This test requires that a same site main frame navigation reuses the
+  // current RFH, which will not happen if RenderDocument is enabled.
+  if (WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    LOG(ERROR) << "This test case is supposed to test behaviour when a "
+                  "same-site navigation reuses the current RFH, which will not "
+                  "happen if RenderDocument is enabled.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_a.has_value());
+
+  DisableProactiveBrowsingInstanceSwapFor(rfh_a.get());
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
+  ASSERT_EQ(rfh_a.get(), rfh_b.get());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_b.has_value());
+
+  // The devtools_navigation_token should change after the navigation commits.
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
+// Tests that the devtools_navigation_token is unchanged after a same document
+// navigation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_SameDocumentNavigation) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh(web_contents()->GetPrimaryMainFrame());
+  auto dnt = rfh->GetDevToolsNavigationToken();
+
+  GURL anchor_url = GURL(url.spec() + "#anchor");
+  TestNavigationManager nav_manager(web_contents(), anchor_url);
+  shell()->LoadURL(anchor_url);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_EQ(rfh.get(), web_contents()->GetPrimaryMainFrame());
+  auto new_dnt = rfh->GetDevToolsNavigationToken();
+
+  // The devtools_navigation_token should not change after a same-document
+  // navigation.
+  EXPECT_EQ(dnt, new_dnt);
+}
+
+// Tests that a BFCached RFH preserves its devtools_navigation_token
+// after being restored.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_BFCacheNavigation) {
+  // This test specifically wants to test with BackForwardCache enabled, so skip
+  // it if BackForwardCache is disabled.
+  if (!IsBackForwardCacheEnabled()) {
+    LOG(ERROR) << "Skipping test because BackForwardCache is not enabled.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_EQ(rfh_a.get(), web_contents()->GetPrimaryMainFrame());
+
+  // |rfh_a|'s devtools_navigation_token should not have changed after being
+  // restored from the BFCache.
+  EXPECT_EQ(rfh_a->GetDevToolsNavigationToken(), dnt);
+}
+
+// Tests that the devtools_navigation_token remains null after a synchronous
+// about:blank navigation in an iframe.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    DevToolsNavigationToken_SynchronousAboutBlankNavigation) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper subframe(
+      CreateSubframe(web_contents(), "", GURL(), true));
+  ASSERT_TRUE(subframe->is_initial_empty_document());
+  // Synchronous about:blank navigations are not strictly considered to be
+  // "same-document" navigations; but the synchronously committed about:blank
+  // document is still considered to be the initial empty document, and the
+  // devtools_navigation_token remains null.
+  EXPECT_EQ(subframe->GetDevToolsNavigationToken(), absl::nullopt);
+}
+
+// Tests that the devtools_navigation_token of an RFH is updated after a
+// navigation from a crashed RFH. In particular, this code tries to test the
+// early-commit-of-speculative-rfh code path.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_EarlyCommitAfterCrash) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  RenderProcessHost* process = rfh_a->GetProcess();
+  RenderProcessHostWatcher process_exit_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:
@@ -7726,6 +8003,56 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   EXPECT_EQ(expected_parent_ftn, rfh_a->owner_);
   EXPECT_EQ(expected_child_ftn, rfh_b->owner_);
   EXPECT_EQ(nullptr, rfh_c->owner_);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
+                       NewContentTimeoutIsNotSetWhenLeavingBFCacheWithSurface) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  RenderWidgetHostViewBase* rwhvb_a =
+      static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView());
+  bool timer_should_set =
+      !rwhvb_a->GetLocalSurfaceId().is_valid() || rwhvb_a->is_evicted();
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
+  RenderWidgetHostImpl* rwhi_a =
+      RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
+  EXPECT_EQ(rwhi_a->IsContentRenderingTimeoutRunning(), timer_should_set);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
+                       NewContentTimeoutIsSetWhenLeavingBFCacheWithoutSurface) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  RenderViewHostImpl* rvh_a =
+      static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
+  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
+  RenderWidgetHostImpl* rwhi_a =
+      RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
+  EXPECT_TRUE(rwhi_a->IsContentRenderingTimeoutRunning());
 }
 
 // Tests that when a RenderFrameHost is stored in BFCache, that the visibility
@@ -7898,6 +8225,80 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   RenderFrameHostImpl* activated_rfh = web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(prerender_frame_host, activated_rfh);
   EXPECT_EQ(expected_ftn, activated_rfh->owner_);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
+                       NewContentTimeoutIsNotSetInPrerender) {
+  GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Load a page in the prerender.
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
+      prerender_helper().GetPrerenderedMainFrameHost(host_id));
+  EXPECT_TRUE(prerender_frame_host);
+  RenderWidgetHostImpl* prerender_rwhi = RenderWidgetHostImpl::From(
+      prerender_frame_host->GetView()->GetRenderWidgetHost());
+  EXPECT_FALSE(prerender_rwhi->IsContentRenderingTimeoutRunning());
+
+  // Activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  RenderFrameHostImpl* activated_rfh = web_contents()->GetPrimaryMainFrame();
+  RenderWidgetHostImpl* activated_rwhi = RenderWidgetHostImpl::From(
+      activated_rfh->GetView()->GetRenderWidgetHost());
+  EXPECT_EQ(activated_rwhi, prerender_rwhi);
+  EXPECT_TRUE(activated_rwhi->IsContentRenderingTimeoutRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
+                       ActivationSurfaceRangeIncludesFallback) {
+  GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Load a page in the prerender.
+  prerender_helper().AddPrerender(prerender_url);
+
+  RenderWidgetHostViewBase* initial_view =
+      RenderWidgetHostImpl::From(web_contents()
+                                     ->GetPrimaryMainFrame()
+                                     ->GetView()
+                                     ->GetRenderWidgetHost())
+          ->GetView();
+
+  viz::SurfaceId initial_surface_id = initial_view->GetCurrentSurfaceId();
+  EXPECT_TRUE(initial_surface_id.is_valid());
+
+  // Activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  RenderWidgetHostViewBase* activated_view =
+      RenderWidgetHostImpl::From(web_contents()
+                                     ->GetPrimaryMainFrame()
+                                     ->GetView()
+                                     ->GetRenderWidgetHost())
+          ->GetView();
+
+  EXPECT_NE(activated_view, initial_view);
+
+#if defined(USE_AURA)
+  DelegatedFrameHost* activated_dfh =
+      static_cast<RenderWidgetHostViewAura*>(activated_view)
+          ->GetDelegatedFrameHostForTesting();
+  viz::SurfaceId fallback_surface_id =
+      activated_dfh->GetFallbackSurfaceIdForTesting();
+  EXPECT_TRUE(initial_surface_id.IsSameOrNewerThan(fallback_surface_id));
+#elif BUILDFLAG(IS_ANDROID)
+  ui::DelegatedFrameHostAndroid* activated_dfh =
+      static_cast<RenderWidgetHostViewAndroid*>(activated_view)
+          ->delegated_frame_host_for_testing();
+  viz::SurfaceId fallback_surface_id =
+      activated_dfh->GetFallbackSurfaceIdForTesting();
+  EXPECT_TRUE(initial_surface_id.IsSameOrNewerThan(fallback_surface_id))
+      << initial_surface_id.ToString() << " " << fallback_surface_id.ToString();
+#endif
 }
 
 using RenderFrameHostImplDeathTest = RenderFrameHostImplBrowserTest;

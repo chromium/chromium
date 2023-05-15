@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -45,8 +46,8 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
                       std::numeric_limits<uint64_t>::max(),
                   .event_source_trigger_data_cardinality =
                       std::numeric_limits<uint64_t>::max(),
-                  .navigation_source_randomized_response_rate = 0,
-                  .event_source_randomized_response_rate = 0,
+                  .randomized_response_epsilon =
+                      std::numeric_limits<double>::infinity(),
                   .max_reports_per_destination =
                       std::numeric_limits<int>::max(),
                   .max_attributions_per_navigation_source =
@@ -75,7 +76,7 @@ base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
     const StoredSource& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return source.common_info().source_time() + report_delay_;
+  return source.source_time() + report_delay_;
 }
 
 base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
@@ -96,7 +97,7 @@ ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
 }
 
-base::GUID ConfigurableStorageDelegate::NewReportID() const {
+base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DefaultExternalReportID();
 }
@@ -115,9 +116,17 @@ void ConfigurableStorageDelegate::ShuffleReports(
   }
 }
 
+double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+    attribution_reporting::mojom::SourceType,
+    base::TimeDelta expiry_deadline) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return randomized_response_rate_;
+}
+
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source,
+    base::Time source_time,
     base::Time event_report_window_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_;
@@ -137,6 +146,15 @@ absl::optional<base::Time> ConfigurableStorageDelegate::GetReportWindowTime(
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetReportWindowTimeForTesting(declared_window, source_time);
+}
+
+std::vector<AttributionStorageDelegate::NullAggregatableReport>
+ConfigurableStorageDelegate::GetNullAggregatableReports(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time,
+    absl::optional<base::Time> attributed_source_time) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return null_aggregatable_reports_;
 }
 
 void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {
@@ -160,6 +178,9 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       config_.aggregate_limit.max_reports_per_destination = max;
+      break;
+    case AttributionReport::Type::kNullAggregatable:
+      NOTREACHED();
       break;
   }
 }
@@ -212,13 +233,9 @@ void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
   reverse_reports_on_shuffle_ = reverse;
 }
 
-void ConfigurableStorageDelegate::set_randomized_response_rates(
-    double navigation,
-    double event) {
+void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.event_level_limit.navigation_source_randomized_response_rate =
-      navigation;
-  config_.event_level_limit.event_source_randomized_response_rate = event;
+  randomized_response_rate_ = rate;
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(
@@ -237,6 +254,12 @@ void ConfigurableStorageDelegate::set_trigger_data_cardinality(
   config_.event_level_limit.navigation_source_trigger_data_cardinality =
       navigation;
   config_.event_level_limit.event_source_trigger_data_cardinality = event;
+}
+
+void ConfigurableStorageDelegate::set_null_aggregatable_reports(
+    std::vector<NullAggregatableReport> null_aggregatable_reports) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  null_aggregatable_reports_ = std::move(null_aggregatable_reports);
 }
 
 }  // namespace content

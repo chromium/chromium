@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import android.os.SystemClock;
-import android.text.format.DateUtils;
 
 import androidx.annotation.Nullable;
 
@@ -162,19 +161,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
         if (selectionType == TabSelectionType.FROM_USER) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tab.StatusWhenSwitchedBackToForeground", status, TAB_STATUS_LIM);
-        }
-
-        // Record "tab age upon first display" metrics. previousTimestampMillis is persisted through
-        // cold starts.
-        if (mLastShownTimestamp == -1 && previousTimestampMillis > 0) {
-            long duration = System.currentTimeMillis() - previousTimestampMillis;
-            if (isOnBrowserStartup) {
-                RecordHistogram.recordCount1MHistogram("Tabs.ForegroundTabAgeAtStartup",
-                        (int) (duration / DateUtils.MINUTE_IN_MILLIS));
-            } else if (selectionType == TabSelectionType.FROM_USER) {
-                RecordHistogram.recordCount1MHistogram("Tab.AgeUponRestoreFromColdStart",
-                        (int) (duration / DateUtils.MINUTE_IN_MILLIS));
-            }
         }
 
         mLastShownTimestamp = now;

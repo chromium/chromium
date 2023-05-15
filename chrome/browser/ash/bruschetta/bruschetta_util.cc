@@ -34,12 +34,10 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
 }  // namespace
 
 const char kToolsDlc[] = "termina-tools-dlc";
+const char kUefiDlc[] = "edk2-ovmf-dlc";
 
 const char kBruschettaVmName[] = "bru";
 const char kBruschettaDisplayName[] = "Bruschetta";
-
-const char kBiosPath[] = "Downloads/CROSVM_CODE.fd";
-const char kPflashPath[] = "Downloads/CROSVM_VARS.google.fd";
 
 const char kBruschettaPolicyId[] = "glinux-latest";
 
@@ -51,7 +49,6 @@ const char* BruschettaResultString(const BruschettaResult res) {
     ENTRY(kUnknown);
     ENTRY(kSuccess);
     ENTRY(kDlcInstallError);
-    ENTRY(kBiosNotAccessible);
     ENTRY(kStartVmFailed);
     ENTRY(kTimeout);
     ENTRY(kForbiddenByPolicy);

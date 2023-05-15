@@ -114,4 +114,9 @@ void Recorder::AddEventsProcessor(
   delegating_events_processor_.AddEventsProcessor(std::move(events_processor));
 }
 
+void Recorder::OnProvideIndependentMetrics(
+    ChromeUserMetricsExtension* uma_proto) {
+  delegating_events_processor_.OnProvideIndependentMetrics(uma_proto);
+}
+
 }  // namespace metrics::structured

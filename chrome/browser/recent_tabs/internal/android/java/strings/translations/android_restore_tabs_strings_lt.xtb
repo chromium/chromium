@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lt">
+<translation id="1356944128023012143">Sinchronizuotų įrenginių ir pasirinktų tų įrenginių skirtukų, kuriuos bus galima atkurti atliekant naujus atkūrimo veiksmus, sąrašas uždarytas.</translation>
+<translation id="1816430105422765050">Pakeiskite į kitus sinchronizuotus įrenginius naudodami šį meniu elementą.</translation>
+<translation id="3347725959865138210">Pasirinkite įrenginį, iš kurio norite gauti skirtukus</translation>
+<translation id="3575801299326994724">Peržiūrėkite pasirinktus skirtukus, kuriuos norite atkurti iš šiuo metu pasirinkto įrenginio.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas, paskutinį kartą atnaujinta: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> skirtukas, paskutinį kartą atnaujinta: <ph name="TIME_SINCE_MODIFIED" />}few{<ph name="TABS_COUNT_MANY" /> skirtukai, paskutinį kartą atnaujinta: <ph name="TIME_SINCE_MODIFIED" />}many{<ph name="TABS_COUNT_MANY" /> skirtuko, paskutinį kartą atnaujinta: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> skirtukų, paskutinį kartą atnaujinta: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Atgal</translation>
+<translation id="3983305234037158273">Sinchronizuotus skirtukų atkūrimo įrenginius galima pakeisti palietus. Eikite ir peržiūrėkite ar atkurkite pasirinktus dabartinio įrenginio skirtukus paliesdami. Klaviatūra paslėpta.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Atidaryti <ph name="TABS_COUNT_ONE" /> skirtuką}one{Atidaryti <ph name="TABS_COUNT_MANY" /> skirtuką}few{Atidaryti <ph name="TABS_COUNT_MANY" /> skirtukus}many{Atidaryti <ph name="TABS_COUNT_MANY" /> skirtuko}other{Atidaryti <ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="4811934403802581334">Visi pasirinkti skirtukai iš šiuo metu pasirinkto įrenginio bus atkurti.</translation>
+<translation id="5336031759968328813">Peržiūrėti visus skirtukus</translation>
+<translation id="8725404154479306799">Gaukite skirtukus, kuriuos palikote senuose įrenginiuose</translation>
+</translationbundle>

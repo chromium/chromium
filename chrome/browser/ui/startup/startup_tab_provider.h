@@ -95,12 +95,6 @@ class StartupTabProvider {
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir) const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns the URLs given via the crosapi BrowserInitParams with
-  // kOpenWindowWithUrls action.
-  virtual StartupTabs GetCrosapiTabs() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if !BUILDFLAG(IS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
@@ -242,10 +236,6 @@ class StartupTabProviderImpl : public StartupTabProvider {
   CommandLineTabsPresent HasCommandLineTabs(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir) const override;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  StartupTabs GetCrosapiTabs() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;

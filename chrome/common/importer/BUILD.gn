@@ -100,6 +100,7 @@ source_set("importer") {
       "safari_importer_utils.h",
       "safari_importer_utils.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   } else if (is_win) {
     sources += [
       "edge_importer_utils_win.cc",

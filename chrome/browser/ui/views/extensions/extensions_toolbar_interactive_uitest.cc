@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
@@ -188,6 +191,13 @@ bool ExtensionsToolbarUITest::DidInjectScript(
   return extensions::browsertest_util::DidChangeTitle(
       *web_contents, /*original_title=*/u"OK",
       /*changed_title=*/u"success");
+}
+
+void ExtensionsToolbarUITest::NavigateTo(const GURL& url) {
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(observer.last_navigation_succeeded());
 }
 
 void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {

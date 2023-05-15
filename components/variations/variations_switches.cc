@@ -91,5 +91,10 @@ const char kVariationsSeedFetchInterval[] = "variations-seed-fetch-interval";
 const char kEnableFinchSeedDeltaCompression[] =
     "enable-finch-seed-delta-compression";
 
+// Accept an empty signature when loading a variations seed. This is for
+// testing purposes.
+const char kAcceptEmptySeedSignatureForTesting[] =
+    "accept-empty-variations-seed-signature";
+
 }  // namespace switches
 }  // namespace variations

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -17,12 +18,14 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,6 +37,43 @@ using testing::_;
 using testing::AtLeast;
 using testing::NiceMock;
 
+namespace {
+
+class MockDevicePickerProvider
+    : public global_media_controls::mojom::DevicePickerProvider {
+ public:
+  mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>
+  PassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  MOCK_METHOD(void, CreateItem, (const base::UnguessableToken& source_id));
+  MOCK_METHOD(void, ShowItem, ());
+  MOCK_METHOD(void, HideItem, ());
+  MOCK_METHOD(void, DeleteItem, ());
+  MOCK_METHOD(void,
+              OnMetadataChanged,
+              (const media_session::MediaMetadata& metadata));
+  MOCK_METHOD(void,
+              OnArtworkImageChanged,
+              (const gfx::ImageSkia& artwork_image));
+  MOCK_METHOD(void,
+              OnFaviconImageChanged,
+              (const gfx::ImageSkia& favicon_image));
+  MOCK_METHOD(
+      void,
+      AddObserver,
+      (mojo::PendingRemote<global_media_controls::mojom::DevicePickerObserver>
+           observer));
+  MOCK_METHOD(void, HideMediaUI, ());
+
+ private:
+  mojo::Receiver<global_media_controls::mojom::DevicePickerProvider> receiver_{
+      this};
+};
+
+}  // namespace
+
 class PresentationRequestNotificationProducerTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -44,46 +84,28 @@ class PresentationRequestNotificationProducerTest
   ~PresentationRequestNotificationProducerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
     ChromeRenderViewHostTestHarness::SetUp();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    crosapi_environment_.SetUp();
-#endif
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&media_router::MockMediaRouter::Create));
-    notification_service_ =
-        std::make_unique<MediaNotificationService>(profile(), false);
-    notification_producer_ =
-        notification_service_->presentation_request_notification_producer_
-            .get();
+
+    device_picker_host_ =
+        std::make_unique<PresentationRequestNotificationProducer>(
+            base::BindRepeating(&PresentationRequestNotificationProducerTest::
+                                    HasActiveNotificationsForWebContents,
+                                base::Unretained(this)),
+            base::UnguessableToken::Create());
 
     presentation_manager_ =
         std::make_unique<NiceMock<MockWebContentsPresentationManager>>();
-    notification_producer_->SetTestPresentationManager(
+    device_picker_host_->SetTestPresentationManager(
         presentation_manager_->GetWeakPtr());
+
+    device_picker_host_->BindProvider(item_provider_.PassRemote());
   }
 
   void TearDown() override {
-    notification_service_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    crosapi_environment_.TearDown();
-#endif
     media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  void SimulateDialogOpenedAndWait(
-      global_media_controls::test::MockMediaDialogDelegate* delegate) {
-    notification_service_->media_item_manager()->SetDialogDelegate(delegate);
-    task_environment()->RunUntilIdle();
-  }
-
-  void SimulateDialogClosedAndWait(
-      global_media_controls::test::MockMediaDialogDelegate* delegate) {
-    notification_service_->media_item_manager()->SetDialogDelegate(nullptr);
-    task_environment()->RunUntilIdle();
   }
 
   content::PresentationRequest CreatePresentationRequest() {
@@ -96,12 +118,11 @@ class PresentationRequestNotificationProducerTest
   void SimulateStartPresentationContextCreated() {
     auto context = std::make_unique<media_router::StartPresentationContext>(
         CreatePresentationRequest(), base::DoNothing(), base::DoNothing());
-    notification_producer_->OnStartPresentationContextCreated(
-        std::move(context));
+    device_picker_host_->OnStartPresentationContextCreated(std::move(context));
   }
 
   void SimulatePresentationsChanged(bool has_presentation) {
-    notification_producer_->OnPresentationsChanged(has_presentation);
+    device_picker_host_->OnPresentationsChanged(has_presentation);
   }
 
   content::RenderFrameHost* CreateChildFrame() {
@@ -116,129 +137,117 @@ class PresentationRequestNotificationProducerTest
     return child_frame;
   }
 
+  bool HasActiveNotificationsForWebContents(
+      content::WebContents* web_contents) {
+    return true;
+  }
+
  protected:
-  std::unique_ptr<MediaNotificationService> notification_service_;
-  raw_ptr<PresentationRequestNotificationProducer> notification_producer_ =
-      nullptr;
+  std::unique_ptr<PresentationRequestNotificationProducer> device_picker_host_;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
-  base::test::ScopedFeatureList feature_list_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
-#endif
+  MockDevicePickerProvider item_provider_;
 };
 
 TEST_F(PresentationRequestNotificationProducerTest,
        HideItemOnMediaRoutesChanged) {
   SimulateStartPresentationContextCreated();
   SimulatePresentationsChanged(true);
-  EXPECT_FALSE(notification_service_->media_item_manager()->HasOpenDialog());
+  EXPECT_CALL(item_provider_, DeleteItem());
   task_environment()->RunUntilIdle();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest, DismissNotification) {
   SimulateStartPresentationContextCreated();
-  auto item = notification_producer_->GetNotificationItem();
+  auto item = device_picker_host_->GetNotificationItem();
   ASSERT_TRUE(item);
 
-  notification_producer_->OnMediaItemUIDismissed(item->id());
-  EXPECT_FALSE(notification_producer_->GetNotificationItem());
+  device_picker_host_->OnPickerDismissed();
+  EXPECT_FALSE(device_picker_host_->GetNotificationItem());
 }
 
-TEST_F(PresentationRequestNotificationProducerTest, OnMediaDialogOpened) {
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-  // Open the dialog on a page without a default presentation request.
-  SimulateDialogOpenedAndWait(&delegate);
-  EXPECT_FALSE(notification_producer_->GetNotificationItem());
-  SimulateDialogClosedAndWait(&delegate);
+TEST_F(PresentationRequestNotificationProducerTest,
+       OnMediaDialogOpenedWithoutPresentationRequest) {
+  // Open the dialog on a page without a default presentation request. A dummy
+  // notification should not be created.
+  device_picker_host_->OnMediaUIOpened();
+  EXPECT_FALSE(device_picker_host_->GetNotificationItem());
+  device_picker_host_->OnMediaUIClosed();
+}
 
+TEST_F(PresentationRequestNotificationProducerTest,
+       OnMediaDialogOpenedWithPresentationRequest) {
   // Open the dialog on a page with default presentation request and there does
   // not exist a notification for non-default presentation request. A dummy
   // notification should be created.
   presentation_manager_->SetDefaultPresentationRequest(
       CreatePresentationRequest());
-  SimulateDialogOpenedAndWait(&delegate);
-  EXPECT_TRUE(notification_producer_->GetNotificationItem());
-  SimulateDialogClosedAndWait(&delegate);
+  device_picker_host_->OnMediaUIOpened();
+  EXPECT_TRUE(device_picker_host_->GetNotificationItem());
+  device_picker_host_->OnMediaUIClosed();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest,
        OnMediaDialogOpenedWithExistingItem) {
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-
   // Open the dialog on a page with default presentation request and there
   // exists a notification for non-default presentation request. The existing
   // notification should not be replaced.
   SimulateStartPresentationContextCreated();
-  auto id = notification_producer_->GetNotificationItem()->id();
   presentation_manager_->SetDefaultPresentationRequest(
       CreatePresentationRequest());
-  SimulateDialogOpenedAndWait(&delegate);
-  EXPECT_TRUE(notification_producer_->GetNotificationItem());
-  EXPECT_EQ(id, notification_producer_->GetNotificationItem()->id());
-  SimulateDialogClosedAndWait(&delegate);
+  device_picker_host_->OnMediaUIOpened();
+  EXPECT_TRUE(device_picker_host_->GetNotificationItem());
+  device_picker_host_->OnMediaUIClosed();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest, DeleteItem) {
   content::RenderFrameHost* child_frame = CreateChildFrame();
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-  SimulateDialogOpenedAndWait(&delegate);
-  // Simulate a PresentationRequest from |child_frame|.
-  notification_producer_->OnStartPresentationContextCreated(
+  device_picker_host_->OnMediaUIOpened();
+  // Simulate a PresentationRequest from `child_frame`.
+  device_picker_host_->OnStartPresentationContextCreated(
       std::make_unique<media_router::StartPresentationContext>(
           content::PresentationRequest(child_frame->GetGlobalId(),
                                        {GURL(), GURL()},
                                        url::Origin::Create(GURL())),
           base::DoNothing(), base::DoNothing()));
 
-  // Detach |child_frame|.
+  // Detach `child_frame`.
   content::RenderFrameHostTester::For(child_frame)->Detach();
 
-  SimulateDialogClosedAndWait(&delegate);
+  device_picker_host_->OnMediaUIClosed();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest,
        OnPresentationRequestWebContentsNavigated) {
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-
   // Navigating to another page should delete the notification.
   SimulateStartPresentationContextCreated();
-  SimulateDialogOpenedAndWait(&delegate);
-  EXPECT_CALL(
-      delegate,
-      HideMediaItem(notification_producer_->GetNotificationItem()->id()))
-      .Times(AtLeast(1));
+  device_picker_host_->OnMediaUIOpened();
+  EXPECT_CALL(item_provider_, DeleteItem());
   NavigateAndCommit(GURL("https://www.google.com/"));
-  EXPECT_FALSE(notification_producer_->GetNotificationItem());
-  SimulateDialogClosedAndWait(&delegate);
+  EXPECT_FALSE(device_picker_host_->GetNotificationItem());
+  device_picker_host_->OnMediaUIClosed();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest,
        OnPresentationRequestWebContentsDestroyed) {
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-
   // Removing the WebContents should delete the notification.
   SimulateStartPresentationContextCreated();
-  SimulateDialogOpenedAndWait(&delegate);
-  EXPECT_CALL(
-      delegate,
-      HideMediaItem(notification_producer_->GetNotificationItem()->id()))
-      .Times(AtLeast(1));
+  device_picker_host_->OnMediaUIOpened();
+  EXPECT_CALL(item_provider_, DeleteItem());
   DeleteContents();
-  EXPECT_FALSE(notification_producer_->GetNotificationItem());
-  SimulateDialogClosedAndWait(&delegate);
+  EXPECT_FALSE(device_picker_host_->GetNotificationItem());
+  device_picker_host_->OnMediaUIClosed();
 }
 
 TEST_F(PresentationRequestNotificationProducerTest,
        InvokeCallbackOnDialogClosed) {
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate> delegate;
-
-  // PRNP should invoke |mock_error_cb| after the media dialog is closed.
   base::MockCallback<content::PresentationConnectionErrorCallback>
       mock_error_cb;
-  EXPECT_CALL(mock_error_cb, Run);
   auto context = std::make_unique<media_router::StartPresentationContext>(
       CreatePresentationRequest(), base::DoNothing(), mock_error_cb.Get());
-  notification_service_->OnStartPresentationContextCreated(std::move(context));
-  SimulateDialogOpenedAndWait(&delegate);
-  SimulateDialogClosedAndWait(&delegate);
+  device_picker_host_->OnStartPresentationContextCreated(std::move(context));
+  device_picker_host_->OnMediaUIOpened();
+
+  // Closing the media UI should invoke the presentation error callback.
+  EXPECT_CALL(mock_error_cb, Run);
+  device_picker_host_->OnMediaUIClosed();
 }

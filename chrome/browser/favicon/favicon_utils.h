@@ -62,6 +62,11 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
                             SkColor active_background,
                             SkColor inactive_background);
 
+// Recolor the favicon kGoogleGrey900 or white, based on which gives the most
+// contrast against `background`.
+gfx::ImageSkia ThemeMonochromeFavicon(const gfx::ImageSkia& source,
+                                      SkColor background);
+
 }  // namespace favicon
 
 #endif  // CHROME_BROWSER_FAVICON_FAVICON_UTILS_H_

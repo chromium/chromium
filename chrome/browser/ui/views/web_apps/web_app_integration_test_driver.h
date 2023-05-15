@@ -298,6 +298,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 #endif
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);
+  void OpenAppSettingsFromCommand(Site site);
   void CreateShortcutsFromList(Site site);
   void NavigateBrowser(Site site);
   void NavigatePwa(Site app, Site to);
@@ -365,6 +366,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckWindowClosed();
   void CheckWindowCreated();
   void CheckPwaWindowCreated(Site site, Number number);
+  void CheckPwaWindowCreatedInProfile(Site site,
+                                      Number number,
+                                      ProfileName profile_name);
   void CheckWindowNotCreated();
   void CheckWindowControlsOverlay(Site site, IsOn is_on);
   void CheckWindowControlsOverlayToggle(Site site, IsShown is_shown);
@@ -375,6 +379,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckNotHasSubApp(Site subapp);
   void CheckHasSubApp(Site subapp);
   void CheckNoSubApps();
+  void CheckAppLoadedInTab(Site site);
 
  protected:
   // WebAppInstallManagerObserver:
@@ -404,6 +409,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
   std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
+
+  Profile* GetOrCreateProfile(ProfileName profile_name);
 
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(Site site);
@@ -448,6 +455,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 #endif
 
   void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);
+
+  void CheckPwaWindowCreatedImpl(Profile* profile, Site site, Number number);
 
   base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path);
 

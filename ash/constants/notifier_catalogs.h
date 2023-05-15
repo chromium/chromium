@@ -167,7 +167,7 @@ enum class NotificationCatalogName {
   kArcLowDiskSpacePostStop = 152,
   kMultiCapture = 153,
   kPrivacyHubCamera = 154,
-  kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn = 155,
+  // [Deprecated] kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn = 155,
   kEcheAppNetworkSetting = 156,
   kPrivacyHubMicAndCamera = 157,
   kArcVmDataMigration = 158,
@@ -258,6 +258,12 @@ enum class ToastCatalogName {
   kVideoConferenceTrayUseWhileDisabled = 43,
   kMaxValue = kVideoConferenceTrayUseWhileDisabled,
 };
+
+// A living catalog that registers anchored nudges.
+// Current values should not be renumbered or removed.
+// TODO(b/280309972): Add metrics for AnchoredNudge catalog.
+// To deprecate comment out the entry.
+enum class AnchoredNudgeCatalogName { kTest = 0, kMaxValue = kTest };
 
 }  // namespace ash
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 #define CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
@@ -137,11 +138,12 @@ class ManagedSessionService
 
   bool is_logged_in_observed_ = false;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   base::ObserverList<Observer> observers_;
 
-  session_manager::SessionManager* const session_manager_;
+  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
+      session_manager_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

@@ -212,10 +212,9 @@ sk_sp<SkSurface> MapPlatformSurface(HDC context) {
   BITMAP backing;
   const SkImageInfo size(PrepareAllocation(context, &backing));
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  return size.isEmpty()
-             ? nullptr
-             : SkSurface::MakeRasterDirect(size, backing.bmBits,
-                                           backing.bmWidthBytes, &props);
+  return size.isEmpty() ? nullptr
+                        : SkSurfaces::WrapPixels(size, backing.bmBits,
+                                                 backing.bmWidthBytes, &props);
 }
 
 SkBitmap MapPlatformBitmap(HDC context) {

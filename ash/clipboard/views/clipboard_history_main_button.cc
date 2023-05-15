@@ -6,7 +6,6 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -78,11 +77,6 @@ void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {
 void ClipboardHistoryMainButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  // Use the light mode as default because the light mode is the default mode
-  // of the native theme which decides the context menu's background color.
-  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
-  // fixed.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
 }
@@ -108,11 +102,6 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
-  // Use the color in light mode when dark/light mode is not enabled. As the
-  // background color of the context menu is from NativeTheme when the feature
-  // is not enabled, and light mode is the default color of NativeTheme. If
-  // dark/light mode is enabled, the background color of the context menus
-  // inside SystemUI will be overridden to align with current system color mode.
   const auto color_id =
       chromeos::features::IsJellyEnabled()
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)

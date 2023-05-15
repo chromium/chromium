@@ -66,6 +66,7 @@ class DualReadingListModel : public ReadingListModel,
   bool IsUrlSupported(const GURL& url) override;
   CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
   bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
+  void MarkAllForUploadToSyncServerIfNeeded() override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,

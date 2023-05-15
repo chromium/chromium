@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -101,14 +102,15 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
           icon_identifier_to_icon_info);
 
   // Pointer of the overflow icon view.
-  views::View* overflow_icon_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> overflow_icon_view_ = nullptr;
 
   // Number of apps that are not shown as icons in the container.
   int uncreated_app_count_ = 0;
 
   // If `this` is created with an incognito window, store the ui::ColorProvider
   // of one of the incognito windows to retrieve its icon's color.
-  const ui::ColorProvider* incognito_window_color_provider_ = nullptr;
+  raw_ptr<const ui::ColorProvider, ExperimentalAsh>
+      incognito_window_color_provider_ = nullptr;
 
   base::WeakPtrFactory<SavedDeskIconContainer> weak_ptr_factory_{this};
 };

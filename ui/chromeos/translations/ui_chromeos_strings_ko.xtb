@@ -166,7 +166,6 @@
 <translation id="23721837607121582">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">목록 보기로 전환</translation>
 <translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />개의 파일이 선택됨</translation>
 <translation id="2383454254762599978">휴지통으로 이동</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
 <translation id="2389832672041313158">버마어/미얀마어</translation>
@@ -185,7 +184,7 @@
 <translation id="2500392669976258912">구자라트어(표음)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">스캔</translation>
-<translation id="252641322760726369">실행기에서 파일에 빠르게 액세스하려면 파일을 길게 터치하고 <ph name="ICON" /> 아이콘을 탭한 다음 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
+<translation id="252641322760726369">앱 표시줄에서 파일에 빠르게 액세스하려면 파일을 길게 터치하고 <ph name="ICON" /> 아이콘을 탭한 다음 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="2534460670861217804">보안 HTTP 프록시</translation>
 <translation id="2541377937973966830">이 폴더의 콘텐츠는 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="2542049655219295786">Google 표</translation>
@@ -371,7 +370,7 @@
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
 <translation id="4134804435730168042">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}other{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}}</translation>
-<translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
+<translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 앱 표시줄에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="4157569377477607576">관리자 정책에서 권장되지 않는 사항:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
 <translation id="4176286497474237543">지금 휴지통 비우기</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">읽기 전용 기기</translation>
 <translation id="4826849268470072925">타밀어(ITRANS)</translation>
 <translation id="482932175346970750">브라우저에 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />를 입력합니다.</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />개의 항목이 선택됨</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6993826899923627728">항목이 휴지통에 있습니다</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
 <translation id="7008426324576352165">업로드를 완료하려면 조직에 추가 저장용량이 필요합니다.</translation>
 <translation id="7009985720488544166">관리자 정책에 의해 파일 <ph name="COUNT" />개의 이동이 차단되었습니다.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />(<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">위에 나열된 확장 프로그램을 찾습니다.</translation>
 <translation id="7256405249507348194">알 수 없는 오류(<ph name="DESC" />)입니다.</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
+<translation id="7291818353625820805">키를 반복하고 싶으신가요? 키보드 설정에서 악센트 표시를 사용 중지하세요.</translation>
 <translation id="7292816689782057017">관리자 정책에 따라 일부 위치에만 저장할 수 있습니다.</translation>
 <translation id="7294063083760278948">텔루구어(음역)</translation>
 <translation id="7295662345261934369">다른 사용자와 공유</translation>
@@ -822,7 +820,7 @@
 <translation id="7547009467130558110">운동화</translation>
 <translation id="7547780573915868306">리투아니아어</translation>
 <translation id="7547811415869834682">네덜란드어</translation>
-<translation id="7551643184018910560">실행기에 고정</translation>
+<translation id="7551643184018910560">앱 표시줄에 고정</translation>
 <translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정 중</translation>
@@ -926,7 +924,7 @@
 <translation id="8312871300878166382">폴더에 붙여넣기</translation>
 <translation id="8329978297633540474">일반 텍스트</translation>
 <translation id="8332007959299458842">최근에 연 Microsoft 파일이 Google Drive로 이동했습니다.</translation>
-<translation id="8335587457941836791">실행기에서 고정 해제</translation>
+<translation id="8335587457941836791">앱 표시줄에서 고정 해제</translation>
 <translation id="8335837413233998004">벨라루스어</translation>
 <translation id="8336153091935557858">어제 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">같은 이름을 가진 파일 또는 디렉터리가 이미 존재합니다.</translation>

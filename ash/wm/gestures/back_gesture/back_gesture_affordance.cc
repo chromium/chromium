@@ -8,24 +8,20 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -48,16 +44,6 @@ constexpr int kDistanceFromArrowToTouchPoint = 64;
 
 constexpr int kArrowSize = 20;
 constexpr int kBackgroundRadius = 20;
-
-// The background shadow for the circle.
-// TODO(michelefan@): Clean up the shadows after the
-// `chromeos::features::IsDarkLightModeEnabled()` is enabled by default.
-constexpr int kBackNudgeShadowOffsetY1 = 1;
-constexpr int kBackNudgeShadowBlurRadius1 = 2;
-constexpr SkColor kBackNudgeShadowColor1 = SkColorSetA(SK_ColorBLACK, 0x4D);
-constexpr int kBackNudgeShadowOffsetY2 = 2;
-constexpr int kBackNudgeShadowBlurRadius2 = 6;
-constexpr SkColor kBackNudgeShadowColor2 = SkColorSetA(SK_ColorBLACK, 0x26);
 
 // Radius of the ripple while x-axis movement of the affordance achieves
 // |kDistanceForFullRadius|.
@@ -130,7 +116,6 @@ class AffordanceView : public views::View {
     cc::PaintFlags ripple_flags;
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     ripple_flags.setColor(ColorUtil::GetSecondToneColor(
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::
@@ -159,34 +144,18 @@ class AffordanceView : public views::View {
         x_offset_ >= kDistanceForFullRadius ||
         state_ == BackGestureAffordance::State::COMPLETING;
 
-    if (chromeos::features::IsDarkLightModeEnabled())
-      // Draw highlight border circles.
-      DrawCircleHighlightBorder(this, canvas, center_point, kBackgroundRadius);
+    // Draw highlight border circles.
+    DrawCircleHighlightBorder(this, canvas, center_point, kBackgroundRadius);
 
     // Draw the arrow background circle.
     cc::PaintFlags bg_flags;
     bg_flags.setAntiAlias(true);
     bg_flags.setStyle(cc::PaintFlags::kFill_Style);
 
-    if (!chromeos::features::IsDarkLightModeEnabled()) {
-      gfx::ShadowValues shadows;
-      shadows.push_back(gfx::ShadowValue(
-          gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
-          kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
-      shadows.push_back(gfx::ShadowValue(
-          gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
-          kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
-      bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
-    }
-
-    bg_flags.setColor(is_activated
-                          ? DeprecatedGetControlsLayerColor(
-                                AshColorProvider::ControlsLayerType::
-                                    kControlBackgroundColorActive,
-                                kBackgroundColorAfterActivated)
-                          : DeprecatedGetBaseLayerColor(
-                                AshColorProvider::BaseLayerType::kOpaque,
-                                kBackgroundColorBeforeActivated));
+    const auto* color_provider = GetColorProvider();
+    bg_flags.setColor(color_provider->GetColor(
+        is_activated ? kColorAshControlBackgroundColorActive
+                     : kColorAshShieldAndBaseOpaque));
     canvas->DrawCircle(center_point, kBackgroundRadius, bg_flags);
 
     // Draw the arrow.
@@ -199,19 +168,14 @@ class AffordanceView : public views::View {
               is_rtl ? vector_icons::kForwardArrowIcon
                      : vector_icons::kBackArrowIcon,
               kArrowSize,
-              DeprecatedGetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColorPrimary,
-                  kArrowColorAfterActivated)),
+              color_provider->GetColor(kColorAshButtonIconColorPrimary)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     } else {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
               is_rtl ? vector_icons::kForwardArrowIcon
                      : vector_icons::kBackArrowIcon,
-              kArrowSize,
-              DeprecatedGetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColor,
-                  kArrowColorBeforeActivated)),
+              kArrowSize, color_provider->GetColor(kColorAshButtonIconColor)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     }
   }

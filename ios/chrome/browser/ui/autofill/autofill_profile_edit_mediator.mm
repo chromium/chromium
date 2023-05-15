@@ -8,7 +8,7 @@
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -43,6 +43,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The country code that has been selected.
 @property(nonatomic, strong) NSString* selectedCountryCode;
 
+// YES, when the mediator belongs to the migration prompt.
+@property(nonatomic, assign, readonly) BOOL isMigrationPrompt;
+
 @end
 
 @implementation AutofillProfileEditMediator {
@@ -53,7 +56,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)autofillProfile
-                     countryCode:(NSString*)countryCode {
+                     countryCode:(NSString*)countryCode
+               isMigrationPrompt:(BOOL)isMigrationPrompt {
   self = [super init];
 
   if (self) {
@@ -62,6 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _autofillProfile = autofillProfile;
     _delegate = delegate;
     _selectedCountryCode = countryCode;
+    _isMigrationPrompt = isMigrationPrompt;
 
     [self loadCountries];
   }
@@ -77,9 +82,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _consumer = consumer;
 
   [self sendAutofillProfileDataToConsumer];
-  [self updateRequirementsForCountryCode:self.selectedCountryCode];
-  [_consumer setAccountProfile:(_autofillProfile->source() ==
-                                autofill::AutofillProfile::Source::kAccount)];
+  if (self.selectedCountryCode) {
+    [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  } else {
+    [self updateRequirementsForCountry:base::SysUTF16ToNSString(
+                                           _autofillProfile->GetInfo(
+                                               autofill::ADDRESS_HOME_COUNTRY,
+                                               GetApplicationContext()
+                                                   ->GetApplicationLocale()))];
+  }
+
+  [_consumer setAccountProfile:[self isAccountProfile]];
 }
 
 #pragma mark - Public
@@ -106,6 +119,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Push the saved profile data to the consumer.
   [self sendAutofillProfileDataToConsumer];
+}
+
+- (void)didSaveProfileFromModal {
+  [self.delegate didSaveProfile];
 }
 
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
@@ -161,6 +178,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // search option.
   for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
+      if (([self isAccountProfile] || self.isMigrationPrompt) &&
+          !_personalDataManager->IsCountryEligibleForAccountStorage(
+              countriesVector[i]->country_code())) {
+        continue;
+      }
       CountryItem* countryItem =
           [[CountryItem alloc] initWithType:ItemTypeCountry];
       countryItem.text = base::SysUTF16ToNSString(countriesVector[i]->name());
@@ -185,9 +207,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
+  [self sendRequirementsToConsumer];
+}
+
+// Fetches and updates the required fields for the `country`.
+- (void)updateRequirementsForCountry:(NSString*)country {
+  for (CountryItem* countryItem in self.allCountries) {
+    if ([country isEqualToString:countryItem.text]) {
+      self.selectedCountryCode = countryItem.countryCode;
+      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+      countryItem.accessoryType = UITableViewCellAccessoryNone;
+    }
+  }
+
+  [self sendRequirementsToConsumer];
+}
+
+// Informs the consumer about the required fields corresponding to the
+// `self.selectedCountryCode`.
+- (void)sendRequirementsToConsumer {
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(self.selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
+  [self.consumer setNameRequired:country.requires_full_name()];
   [self.consumer setLine1Required:country.requires_line1()];
   [self.consumer setCityRequired:country.requires_city()];
   [self.consumer setStateRequired:country.requires_state()];
@@ -241,6 +284,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
     }
   }
+}
+
+// Returns YES if `autofillProfile` is an account profile.
+- (BOOL)isAccountProfile {
+  return _autofillProfile->source() ==
+         autofill::AutofillProfile::Source::kAccount;
 }
 
 @end

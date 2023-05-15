@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -53,10 +54,10 @@ class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
   void ParseExtensionPermissions(const Extension* extension);
 
   // Unowned, but guaranteed to outlive this object.
-  ExtensionRegistry* registry_;
+  raw_ptr<ExtensionRegistry, ExperimentalAsh> registry_;
 
   // Unowned, but guaranteed to outlive this object.
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

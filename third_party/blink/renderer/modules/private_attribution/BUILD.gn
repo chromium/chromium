@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("private_attribution") {
+  sources = [
+    "private_attribution.cc",
+    "private_attribution.h",
+    "window_private_attribution.cc",
+    "window_private_attribution.h",
+  ]
+}

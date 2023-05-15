@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
@@ -19,8 +20,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class NearbySharingService;
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace views {
 class WebView;
@@ -66,6 +72,11 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
   // keyed service.
   void BindInterface(
       mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver);
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
 
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(
@@ -91,12 +102,14 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
   // A pointer to the Sharesheet controller is provided by
   // |NearbyShareAction::LaunchAction| when this WebUI controller is created. It
   // is used to close the Sharesheet in |HandleClose|.
-  sharesheet::SharesheetController* sharesheet_controller_ = nullptr;
+  raw_ptr<sharesheet::SharesheetController, ExperimentalAsh>
+      sharesheet_controller_ = nullptr;
 
   std::vector<std::unique_ptr<Attachment>> attachments_;
-  NearbySharingService* nearby_service_;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

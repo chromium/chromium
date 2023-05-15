@@ -8,6 +8,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -61,7 +62,7 @@ class LoginPasswordViewTest : public LoginTestBase {
   }
   void OnEasyUnlockIconHovered() { easy_unlock_icon_hovered_called_ = true; }
 
-  LoginPasswordView* view_ = nullptr;
+  raw_ptr<LoginPasswordView, ExperimentalAsh> view_ = nullptr;
   absl::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   bool easy_unlock_icon_hovered_called_ = false;

@@ -11,8 +11,7 @@
 
 namespace blink {
 
-FileErrorCode FileReaderAccumulator::DidStartLoading(uint64_t size,
-                                                     uint64_t total_bytes) {
+FileErrorCode FileReaderAccumulator::DidStartLoading(uint64_t total_bytes) {
   bytes_loaded_ = 0;
   raw_data_ = ArrayBufferContents(static_cast<unsigned>(total_bytes), 1,
                                   ArrayBufferContents::kNotShared,

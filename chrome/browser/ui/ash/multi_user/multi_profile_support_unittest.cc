@@ -31,6 +31,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -122,7 +123,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
  public:
   MultiProfileSupportTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
   MultiProfileSupportTest(const MultiProfileSupportTest&) = delete;
   MultiProfileSupportTest& operator=(const MultiProfileSupportTest&) = delete;
@@ -278,7 +279,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   aura::Window::Windows windows_;
 
   // Owned by |user_manager_enabler_|.
-  FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ = nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

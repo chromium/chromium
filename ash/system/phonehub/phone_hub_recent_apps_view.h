@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +86,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
     views::ImageButton* get_error_button_for_test() { return error_button_; }
 
    private:
-    views::ImageButton* error_button_;
+    raw_ptr<views::ImageButton, ExperimentalAsh> error_button_;
   };
 
   class RecentAppButtonsView : public views::View {
@@ -129,7 +130,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
    private:
     std::vector<AppLoadingIcon*> app_loading_icons_;
-    PhoneHubMoreAppsButton* more_apps_button_ = nullptr;
+    raw_ptr<PhoneHubMoreAppsButton, ExperimentalAsh> more_apps_button_ =
+        nullptr;
     base::WeakPtrFactory<LoadingView> weak_ptr_factory_{this};
   };
 
@@ -159,15 +161,17 @@ class ASH_EXPORT PhoneHubRecentAppsView
   base::TimeTicks loading_animation_start_time_ = base::TimeTicks();
   base::TimeTicks error_button_start_time_ = base::TimeTicks();
 
-  RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
-  std::vector<views::View*> recent_app_button_list_;
-  phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler_ =
+  raw_ptr<RecentAppButtonsView, ExperimentalAsh> recent_app_buttons_view_ =
       nullptr;
-  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
-  PlaceholderView* placeholder_view_ = nullptr;
-  HeaderView* header_view_ = nullptr;
-  LoadingView* loading_view_ = nullptr;
-  PhoneConnectedView* connected_view_ = nullptr;
+  std::vector<views::View*> recent_app_button_list_;
+  raw_ptr<phonehub::RecentAppsInteractionHandler, ExperimentalAsh>
+      recent_apps_interaction_handler_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
+      nullptr;
+  raw_ptr<PlaceholderView, ExperimentalAsh> placeholder_view_ = nullptr;
+  raw_ptr<HeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<LoadingView, ExperimentalAsh> loading_view_ = nullptr;
+  raw_ptr<PhoneConnectedView, ExperimentalAsh> connected_view_ = nullptr;
 };
 
 }  // namespace ash

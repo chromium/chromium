@@ -14,7 +14,9 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/microphone_mute_switch_monitor.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -93,7 +95,7 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices,
+      const std::vector<KeyboardDevice>& devices,
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
@@ -122,8 +124,9 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
         base::BindOnce(&EventFactoryEvdev::DispatchPointingStickDevicesUpdated,
                        event_factory_evdev_, devices));
   }
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
-                                      bool has_haptic_touchpad) override {
+  void DispatchTouchpadDevicesUpdated(
+      const std::vector<TouchpadDevice>& devices,
+      bool has_haptic_touchpad) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchTouchpadDevicesUpdated,
@@ -409,7 +412,7 @@ void EventFactoryEvdev::DispatchUiEvent(Event* event) {
 }
 
 void EventFactoryEvdev::DispatchKeyboardDevicesUpdated(
-    const std::vector<InputDevice>& devices,
+    const std::vector<KeyboardDevice>& devices,
     base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchKeyboardDevicesUpdated");
   input_controller_.SetKeyboardKeyBitsMapping(std::move(key_bits_mapping));
@@ -447,7 +450,7 @@ void EventFactoryEvdev::DispatchPointingStickDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchTouchpadDevicesUpdated(
-    const std::vector<InputDevice>& devices,
+    const std::vector<TouchpadDevice>& devices,
     bool has_haptic_touchpad) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchTouchpadDevicesUpdated");
 

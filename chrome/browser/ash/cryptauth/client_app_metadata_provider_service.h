@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
@@ -98,9 +99,10 @@ class ClientAppMetadataProviderService
   int64_t SoftwareVersionCodeAsInt64();
   void InvokePendingCallbacks();
 
-  PrefService* pref_service_;
-  NetworkStateHandler* network_state_handler_;
-  instance_id::InstanceIDProfileService* instance_id_profile_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<instance_id::InstanceIDProfileService, ExperimentalAsh>
+      instance_id_profile_service_;
 
   bool instance_id_recreated_ = false;
   absl::optional<std::string> pending_gcm_registration_id_;

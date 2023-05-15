@@ -345,7 +345,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
   WinAccessibilityAPIUsageObserver();
   virtual ~WinAccessibilityAPIUsageObserver();
   virtual void OnMSAAUsed() = 0;
-  virtual void OnIAccessible2Used() = 0;
+  virtual void OnBasicIAccessible2Used() = 0;
+  virtual void OnAdvancedIAccessible2Used() = 0;
   virtual void OnScreenReaderHoneyPotQueried() = 0;
   virtual void OnAccNameCalled() = 0;
   virtual void OnBasicUIAutomationUsed() = 0;
@@ -1526,6 +1527,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // only use MSAA/IAccessible have a way to turn on accessibility.
   void NotifyObserverForMSAAUsage() const;
 
+  void NotifyAddAXModeFlagsForIA2(const uint32_t ax_modes) const;
   void NotifyAPIObserverForPatternRequest(PATTERNID pattern_id) const;
   void NotifyAPIObserverForPropertyRequest(PROPERTYID property_id) const;
 

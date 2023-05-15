@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
 #define CHROME_BROWSER_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -41,6 +42,10 @@ class ActiveTabPermissionGranter
   // tab-specific permissions to it until the next page navigation or refresh.
   void GrantIfRequested(const Extension* extension);
 
+  // Clears any tab-specific permissions for an extension with `id` if it has
+  // been granted (otherwise does nothing) on `tab_id_` and notifies renderers.
+  void ClearActiveExtensionAndNotify(const ExtensionId& id);
+
   // Clears tab-specific permissions for all extensions. Used only for testing.
   void RevokeForTesting();
 
@@ -58,9 +63,14 @@ class ActiveTabPermissionGranter
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Clears any tab-specific permissions for all extensions on |tab_id_| and
+  // Clears any tab-specific permissions for all extensions on `tab_id_` and
   // notifies renderers.
-  void ClearActiveExtensionsAndNotify();
+  void ClearGrantedExtensionsAndNotify();
+
+  // Clears any tab-specific permissions for all extensions in
+  // `granted_extensions_to_remove` on `tab_id_` and notifies renderers.
+  void ClearGrantedExtensionsAndNotify(
+      const ExtensionSet& granted_extensions_to_remove);
 
   // The tab ID for this tab.
   int tab_id_;

@@ -333,7 +333,7 @@ class BrowserCompositorInvalidateLayerTreePerfTest
 
     constexpr gfx::Size size(64, 64);
     viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        gpu_mailbox, GL_LINEAR, GL_TEXTURE_2D, next_sync_token, size,
+        gpu_mailbox, GL_TEXTURE_2D, next_sync_token, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     next_fence_sync_++;
 

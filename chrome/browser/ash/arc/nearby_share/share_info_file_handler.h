@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -175,7 +176,7 @@ class ShareInfoFileHandler
   bool file_sharing_started_ = false;
 
   // Unowned pointer to profile.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Runner for tasks that may require disk IO.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

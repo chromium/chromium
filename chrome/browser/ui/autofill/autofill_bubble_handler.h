@@ -21,6 +21,7 @@ class SaveUPIBubble;
 class SaveUPIBubbleController;
 class VirtualCardManualFallbackBubbleController;
 class VirtualCardEnrollBubbleController;
+class MandatoryReauthBubbleController;
 enum class IbanBubbleType;
 
 // TODO(crbug.com/1337392): consider removing this class and give the logic back
@@ -84,6 +85,11 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowVirtualCardEnrollBubble(
       content::WebContents* web_contents,
       VirtualCardEnrollBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowMandatoryReauthBubble(
+      content::WebContents* web_contents,
+      MandatoryReauthBubbleController* controller,
       bool is_user_gesture) = 0;
 
   // TODO(crbug.com/964127): Wait for the integration with sign in after local

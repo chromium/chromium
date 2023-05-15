@@ -49,5 +49,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.accessibility",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

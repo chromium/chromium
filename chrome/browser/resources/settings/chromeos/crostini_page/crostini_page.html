@@ -9,20 +9,20 @@
       <div class="start">
         $i18n{crostiniPageLabel}
         <div class="secondary" id="secondaryText">
-          <template is="dom-if" if="[[showCrostini]]" restamp>
+          <template is="dom-if" if="[[isCrostiniSupported_]]" restamp>
             <localized-link
                 localized-string="[[i18nAdvanced('crostiniSubtext')]]">
             </localized-link>
           </template>
-          <template is="dom-if" if="[[!showCrostini]]" restamp>
+          <template is="dom-if" if="[[!isCrostiniSupported_]]" restamp>
             <localized-link localized-string="[[i18nAdvanced(
                 'crostiniSubtextNotSupported')]]">
             </localized-link>
           </template>
         </div>
       </div>
-      <template is="dom-if" if="[[showCrostini]]" restamp>
-        <template is="dom-if" if="[[!allowCrostini]]" restamp>
+      <template is="dom-if" if="[[isCrostiniSupported_]]" restamp>
+        <template is="dom-if" if="[[!isCrostiniAllowed_]]" restamp>
           <cr-policy-indicator indicator-type="userPolicy">
           </cr-policy-indicator>
         </template>
@@ -149,4 +149,3 @@
     </os-settings-subpage>
   </template>
 </os-settings-animated-pages>
-

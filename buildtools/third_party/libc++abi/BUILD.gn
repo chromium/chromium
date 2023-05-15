@@ -2,14 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 
 source_set("libc++abi") {
   if (export_libcxxabi_from_executables) {
-    visibility = [
-      "//build/config:executable_deps",
-      "//build/config:rust_bin_deps",
-    ]
+    visibility = [ "//build/config:executable_deps" ]
   } else {
     visibility = [ "//buildtools/third_party/libc++" ]
   }
@@ -56,11 +54,19 @@ source_set("libc++abi") {
     sources += [ "trunk/src/cxa_demangle.cpp" ]
   }
 
+  defines = [ "LIBCXXABI_SILENT_TERMINATE" ]
+
   if (is_fuchsia || (is_posix && !is_apple)) {
     sources += [ "trunk/src/cxa_thread_atexit.cpp" ]
-  }
 
-  defines = [ "LIBCXXABI_SILENT_TERMINATE" ]
+    # Android's bionic libc added support for '__cxa_thread_atexit_impl' as of
+    # API level 23.
+    if (is_android &&
+        ((!android_64bit_target_cpu && android32_ndk_api_level >= 23) ||
+         (android_64bit_target_cpu && android64_ndk_api_level >= 23))) {
+      defines += [ "HAVE___CXA_THREAD_ATEXIT_IMPL" ]
+    }
+  }
 
   configs -= [
     "//build/config/compiler:chromium_code",

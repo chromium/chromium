@@ -53,7 +53,6 @@ build_webui("build") {
     "passwords_exporter.ts",
     "passwords_importer.ts",
     "passwords_section.ts",
-    "prefs/extension_controlled_icon.ts",
     "prefs/pref_toggle_button.ts",
     "settings_section.ts",
     "side_bar.ts",
@@ -68,7 +67,7 @@ build_webui("build") {
     "password_manager.ts",
     "passkeys_browser_proxy.ts",
     "password_manager_proxy.ts",
-    "prefs/extension_control_browser_proxy.ts",
+    "focus_config.ts",
     "router.ts",
     "searchable_label.ts",
     "show_password_mixin.ts",
@@ -98,9 +97,25 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "/shared/settings/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
+            target_gen_dir) ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "password-manager"
+    optimize_webui_in_files = [ "password_manager.js" ]
+    optimize_webui_external_paths =
+        [ "/shared/settings|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/settings_shared/tsc",
+              root_build_dir) ]
+  }
 }

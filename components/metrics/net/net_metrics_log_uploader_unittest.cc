@@ -82,11 +82,17 @@ class NetMetricsLogUploaderTest : public testing::Test {
 
   void DummyOnUploadComplete(int response_code,
                              int error_code,
-                             bool was_https) {}
+                             bool was_https,
+                             bool force_discard,
+                             base::StringPiece force_discard_reason) {
+    log_was_force_discarded_ = force_discard;
+  }
 
   void OnUploadCompleteReuseUploader(int response_code,
                                      int error_code,
-                                     bool was_https) {
+                                     bool was_https,
+                                     bool force_discard,
+                                     base::StringPiece force_discard_reason) {
     ++on_upload_complete_count_;
     if (on_upload_complete_count_ == 1) {
       ReportingInfo reporting_info;
@@ -94,6 +100,7 @@ class NetMetricsLogUploaderTest : public testing::Test {
       uploader_->UploadLog("dummy_data", "dummy_hash", "dummy_signature",
                            reporting_info);
     }
+    log_was_force_discarded_ = force_discard;
   }
 
   int on_upload_complete_count() const {
@@ -110,6 +117,8 @@ class NetMetricsLogUploaderTest : public testing::Test {
 
   void WaitForRequest() { loop_.Run(); }
 
+  bool log_was_force_discarded() { return log_was_force_discarded_; }
+
  private:
   std::unique_ptr<NetMetricsLogUploader> uploader_;
   int on_upload_complete_count_;
@@ -123,6 +132,7 @@ class NetMetricsLogUploaderTest : public testing::Test {
   base::RunLoop loop_;
   std::string upload_data_;
   net::HttpRequestHeaders headers_;
+  bool log_was_force_discarded_ = false;
 };
 
 void CheckReportingInfoHeader(net::HttpRequestHeaders headers,
@@ -155,6 +165,21 @@ TEST_F(NetMetricsLogUploaderTest, OnUploadCompleteReuseUploader) {
       pending_request_1, "");
 
   EXPECT_EQ(on_upload_complete_count(), 2);
+  EXPECT_FALSE(log_was_force_discarded());
+}
+
+// Verifies that when no server URLs are specified, the logs are forcibly
+// discarded.
+TEST_F(NetMetricsLogUploaderTest, ForceDiscard) {
+  CreateUploaderAndUploadToSecureURL(/*url=*/"");
+  WaitForRequest();
+
+  // Mimic the initial fetcher callback.
+  auto* pending_request_0 = test_url_loader_factory()->GetPendingRequest(0);
+  test_url_loader_factory()->SimulateResponseWithoutRemovingFromPendingList(
+      pending_request_0, "");
+
+  EXPECT_TRUE(log_was_force_discarded());
 }
 
 // Test that attempting to upload to an HTTP URL results in an encrypted

@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ATTRIBUTION_DATA_MODEL_H_
 #define CONTENT_PUBLIC_BROWSER_ATTRIBUTION_DATA_MODEL_H_
 
-#include <vector>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
@@ -40,7 +40,7 @@ class CONTENT_EXPORT AttributionDataModel {
   virtual ~AttributionDataModel() = default;
 
   virtual void GetAllDataKeys(
-      base::OnceCallback<void(std::vector<DataKey>)> callback) = 0;
+      base::OnceCallback<void(std::set<DataKey>)> callback) = 0;
 
   virtual void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                               base::OnceClosure callback) = 0;

@@ -8,7 +8,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.runners.model.InitializationError;
 
@@ -35,7 +35,7 @@ public class StartupPaintPreviewHelperTestRunner extends ChromeJUnit4ClassRunner
     @Override
     protected List<SkipCheck> getSkipChecks() {
         return addToList(super.getSkipChecks(),
-                new StartupPaintPreviewSkipCheck(InstrumentationRegistry.getTargetContext()));
+                new StartupPaintPreviewSkipCheck(ApplicationProvider.getApplicationContext()));
     }
 
     private static class StartupPaintPreviewSkipCheck extends RestrictionSkipCheck {

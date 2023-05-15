@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_NAVIGATION_REFERRER_H_
 #define IOS_WEB_PUBLIC_NAVIGATION_REFERRER_H_
 
+#include <ostream>
+
 #include "url/gurl.h"
 
 namespace web {
@@ -22,6 +24,9 @@ enum ReferrerPolicy {
   ReferrerPolicyLast = ReferrerPolicyStrictOriginWhenCrossOrigin
 };
 
+// For logging use only.
+std::ostream& operator<<(std::ostream& stream, ReferrerPolicy policy);
+
 // This struct holds a referrer URL, as well as the referrer policy to be
 // applied to this URL. When passing around referrers that will eventually end
 // up being used for URL requests, always use this struct.
@@ -32,6 +37,13 @@ struct Referrer {
   GURL url;
   ReferrerPolicy policy;
 };
+
+// Comparison operators for Referrer.
+bool operator==(const Referrer& lhs, const Referrer& rhs);
+bool operator!=(const Referrer& lhs, const Referrer& rhs);
+
+// For logging use only.
+std::ostream& operator<<(std::ostream& stream, const Referrer& referrer);
 
 }  // namespace web
 

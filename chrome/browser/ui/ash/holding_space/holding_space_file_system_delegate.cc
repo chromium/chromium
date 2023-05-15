@@ -495,12 +495,9 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
 
   // Get a list of the enabled Trash locations. Trash can be enabled and
   // disabled via policy, so ensure the latest list is retrieved.
-  file_manager::trash::TrashPathsMap enabled_trash_locations;
-  if (base::FeatureList::IsEnabled(features::kFilesTrash)) {
-    enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile(), /*base_path=*/base::FilePath());
-  }
+  file_manager::trash::TrashPathsMap enabled_trash_locations =
+      file_manager::trash::GenerateEnabledTrashLocationsForProfile(
+          profile(), /*base_path=*/base::FilePath());
 
   // Mark items that were moved to an enabled Trash location for removal.
   std::set<std::string> item_ids_to_remove;

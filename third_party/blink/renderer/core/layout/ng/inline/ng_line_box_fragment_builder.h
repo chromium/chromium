@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
@@ -23,8 +23,7 @@ class ComputedStyle;
 class NGInlineBreakToken;
 class NGLogicalLineItems;
 
-class CORE_EXPORT NGLineBoxFragmentBuilder final
-    : public NGContainerFragmentBuilder {
+class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
@@ -32,7 +31,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
                            scoped_refptr<const ComputedStyle> style,
                            const NGConstraintSpace& space,
                            WritingDirectionMode writing_direction)
-      : NGContainerFragmentBuilder(
+      : NGFragmentBuilder(
             node,
             style,
             space,

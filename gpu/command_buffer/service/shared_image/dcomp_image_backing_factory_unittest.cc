@@ -98,60 +98,6 @@ class DCompImageBackingFactoryTest : public testing::Test {
       shared_image_representation_factory_;
   std::unique_ptr<DCompImageBackingFactory> shared_image_factory_;
 
-  void RunFirstDrawCoversImageTest(uint32_t usage) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
-    std::unique_ptr<SharedImageBacking> backing =
-        shared_image_factory_->CreateSharedImage(
-            mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
-            gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-            false);
-    ASSERT_NE(nullptr, backing);
-    std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-        shared_image_manager_.Register(std::move(backing),
-                                       memory_type_tracker_.get());
-
-    std::unique_ptr<SkiaImageRepresentation> skia_representation =
-        shared_image_representation_factory_->ProduceSkia(mailbox,
-                                                          context_state_);
-
-    // First draw cannot be partial
-    {
-      std::vector<GrBackendSemaphore> begin_semaphores;
-      std::vector<GrBackendSemaphore> end_semaphores;
-      std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess> write_access =
-          skia_representation->BeginScopedWriteAccess(
-              1, SkSurfaceProps(), gfx::Rect(0, 0, 1, 1), &begin_semaphores,
-              &end_semaphores,
-              SkiaImageRepresentation::AllowUnclearedAccess::kYes, true);
-      EXPECT_EQ(nullptr, write_access);
-    }
-
-    {
-      std::vector<GrBackendSemaphore> begin_semaphores;
-      std::vector<GrBackendSemaphore> end_semaphores;
-      std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess> write_access =
-          skia_representation->BeginScopedWriteAccess(
-              1, SkSurfaceProps(), gfx::Rect(factory_ref->size()),
-              &begin_semaphores, &end_semaphores,
-              SkiaImageRepresentation::AllowUnclearedAccess::kYes, true);
-      EXPECT_NE(nullptr, write_access);
-      skia_representation->SetCleared();
-    }
-
-    // Subsequent draws can be partial
-    {
-      std::vector<GrBackendSemaphore> begin_semaphores;
-      std::vector<GrBackendSemaphore> end_semaphores;
-      std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess> write_access =
-          skia_representation->BeginScopedWriteAccess(
-              1, SkSurfaceProps(), gfx::Rect(0, 0, 1, 1), &begin_semaphores,
-              &end_semaphores,
-              SkiaImageRepresentation::AllowUnclearedAccess::kYes, true);
-      EXPECT_NE(nullptr, write_access);
-    }
-  }
-
   void RunDXGISwapChainAlphaTest(bool has_alpha) {
     Mailbox mailbox = Mailbox::GenerateForSharedImage();
     std::unique_ptr<SharedImageBacking> backing =
@@ -277,10 +223,8 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
 
   EXPECT_EQ(0u, end_semaphores.size());
   GrFlushInfo flush_info;
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state =
-      write_access->TakeEndState();
   EXPECT_EQ(GrSemaphoresSubmitted::kYes,
-            write_access->surface()->flush(flush_info, end_state.get()));
+            write_access->surface()->flush(flush_info, nullptr));
   skia_representation->SetCleared();
 
   std::unique_ptr<const SkImage::AsyncReadResult> readback_result;
@@ -391,14 +335,6 @@ TEST_F(DCompImageBackingFactoryTest,
 
     previous_serial = current_serial;
   }
-}
-
-TEST_F(DCompImageBackingFactoryTest, FirstDrawCoversImageDXGISwapChain) {
-  RunFirstDrawCoversImageTest(kDXGISwapChainUsage);
-}
-
-TEST_F(DCompImageBackingFactoryTest, FirstDrawCoversImageDCompSurface) {
-  RunFirstDrawCoversImageTest(kDCompSurfaceUsage);
 }
 
 // Ensure that creating a DXGI swap chain SI, we get a swap chain with the right
@@ -544,34 +480,20 @@ class DCompImageBackingFactoryVisualTreeTest
 
     EXPECT_EQ(0u, end_semaphores.size());
     GrFlushInfo flush_info;
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state =
-        write_access->TakeEndState();
     EXPECT_EQ(GrSemaphoresSubmitted::kYes,
-              write_access->surface()->flush(flush_info, end_state.get()));
+              write_access->surface()->flush(flush_info, nullptr));
 
     context_state_->gr_context()->submit(true);
   }
 
-  // Create a shared image, clear it to |color|,
-  void RunTest(uint32_t usage,
-               viz::SharedImageFormat format,
-               gfx::ColorSpace color_space,
-               bool has_alpha,
-               SkColor clear_color,
-               SkColor expected_window_color) {
-    // Bake the SDR white level into the color space so SharedImage backings can
-    // know about it.
-    if (color_space.IsAffectedBySDRWhiteLevel()) {
-      auto sk_color_space =
-          color_space.ToSkColorSpace(gfx::ColorSpace::kDefaultSDRWhiteLevel);
-      color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
-    }
-
-    DVLOG(2) << "usage = " << CreateLabelForSharedImageUsage(usage)
-             << ", format = " << format.ToString()
-             << ", color_space = " << color_space.ToString()
-             << ", has_alpha = " << has_alpha;
-
+  // Create a backing, fill |draw_area| with |draw_color|, and schedule the
+  // overlay
+  void ScheduleImageWithOneDraw(uint32_t usage,
+                                viz::SharedImageFormat format,
+                                const gfx::ColorSpace& color_space,
+                                bool has_alpha,
+                                const gfx::Rect& draw_area,
+                                SkColor draw_color) {
     Mailbox mailbox = Mailbox::GenerateForSharedImage();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
@@ -584,15 +506,11 @@ class DCompImageBackingFactoryVisualTreeTest
         shared_image_manager_.Register(std::move(backing),
                                        memory_type_tracker_.get());
 
-    {
-      std::unique_ptr<SkiaImageRepresentation> skia_representation =
-          shared_image_representation_factory_->ProduceSkia(mailbox,
-                                                            context_state_);
-      ASSERT_NE(nullptr, skia_representation);
-      FillAreaAndSubmit(skia_representation.get(), gfx::Rect(window_size()),
-                        clear_color);
-      skia_representation->SetCleared();
-    }
+    std::unique_ptr<SkiaImageRepresentation> skia_representation =
+        shared_image_representation_factory_->ProduceSkia(mailbox,
+                                                          context_state_);
+    FillAreaAndSubmit(skia_representation.get(), draw_area, draw_color);
+    skia_representation->SetCleared();
 
     {
       std::unique_ptr<OverlayImageRepresentation> overlay_representation =
@@ -606,6 +524,31 @@ class DCompImageBackingFactoryVisualTreeTest
       InitializeVisualTreeWithContent(layer_content.Get());
       CommitAndWait();
     }
+  }
+
+  // Runs a sanity check test that verifies backings with different color spaces
+  // are valid and contain the values we expect.
+  void RunFormatAndColorSpaceTest(uint32_t usage,
+                                  viz::SharedImageFormat format,
+                                  gfx::ColorSpace color_space,
+                                  bool has_alpha,
+                                  SkColor clear_color,
+                                  SkColor expected_window_color) {
+    // Bake the SDR white level into the color space so SharedImage backings can
+    // know about it.
+    if (color_space.IsAffectedBySDRWhiteLevel()) {
+      auto sk_color_space =
+          color_space.ToSkColorSpace(gfx::ColorSpace::kDefaultSDRWhiteLevel);
+      color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
+    }
+
+    DVLOG(2) << "usage = " << CreateLabelForSharedImageUsage(usage)
+             << ", format = " << format.ToString()
+             << ", color_space = " << color_space.ToString()
+             << ", has_alpha = " << has_alpha;
+
+    ScheduleImageWithOneDraw(usage, format, color_space, has_alpha,
+                             gfx::Rect(window_size()), clear_color);
 
     // CheckColors accounts for color space conversion shift
     gfx::test::CheckColors(
@@ -613,6 +556,41 @@ class DCompImageBackingFactoryVisualTreeTest
         gl::GLTestHelper::ReadBackWindowPixel(
             window(),
             gfx::Point(window_size_.width() / 4, window_size_.height() / 4)));
+  }
+
+  // Check that a backing whose first draw does not cover the entire surface has
+  // its untouched pixels initialized to transparent black.
+  void RunIncompleteFirstDrawTest(uint32_t usage) {
+    // First draw does not cover full surface
+    const SkColor expected_color = SK_ColorRED;
+    ScheduleImageWithOneDraw(usage, viz::SinglePlaneFormat::kRGBA_8888,
+                             gfx::ColorSpace::CreateSRGB(), true,
+                             gfx::Rect(1, 1), expected_color);
+
+    SkBitmap window_readback =
+        gl::GLTestHelper::ReadBackWindow(window(), window_size());
+
+    // The part that we drew should be our expected color
+    EXPECT_SKCOLOR_EQ(expected_color, gl::GLTestHelper::GetColorAtPoint(
+                                          window_readback, gfx::Point(0, 0)));
+
+    // The rest of the image should be the color of the window's redirection
+    // surface, since there's only one visual.
+    // Note this checks that we replicate the behavior of SoftwareRenderer--it
+    // is normally invalid to read a uninitialized portion of a SharedImage.
+    const SkColor redirection_surface_color = SK_ColorBLACK;
+    EXPECT_SKCOLOR_EQ(
+        redirection_surface_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(0, 1)));
+    EXPECT_SKCOLOR_EQ(
+        redirection_surface_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(1, 0)));
+    EXPECT_SKCOLOR_EQ(
+        redirection_surface_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(1, 1)));
+    EXPECT_SKCOLOR_EQ(
+        redirection_surface_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(99, 99)));
   }
 
   const gfx::Size& window_size() const { return window_size_; }
@@ -658,17 +636,19 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplay) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = test_color;
   for (auto format : formats) {
-    RunTest(kDCompSurfaceUsage, format, gfx::ColorSpace::CreateSRGB(), false,
-            test_color, expected_color);
+    RunFormatAndColorSpaceTest(kDCompSurfaceUsage, format,
+                               gfx::ColorSpace::CreateSRGB(), false, test_color,
+                               expected_color);
   }
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplayLinear) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_F16,
-          gfx::ColorSpace::CreateSCRGBLinear80Nits(), false, test_color,
-          expected_color);
+  RunFormatAndColorSpaceTest(kDCompSurfaceUsage,
+                             viz::SinglePlaneFormat::kRGBA_F16,
+                             gfx::ColorSpace::CreateSCRGBLinear80Nits(), false,
+                             test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
@@ -681,8 +661,9 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
   for (auto format : formats) {
-    RunTest(kDCompSurfaceUsage, format, gfx::ColorSpace::CreateSRGB(), true,
-            test_color, expected_color);
+    RunFormatAndColorSpaceTest(kDCompSurfaceUsage, format,
+                               gfx::ColorSpace::CreateSRGB(), true, test_color,
+                               expected_color);
   }
 }
 
@@ -690,9 +671,10 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DCompSurfaceCanDisplayLinearWithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_F16,
-          gfx::ColorSpace::CreateSCRGBLinear80Nits(), true, test_color,
-          expected_color);
+  RunFormatAndColorSpaceTest(kDCompSurfaceUsage,
+                             viz::SinglePlaneFormat::kRGBA_F16,
+                             gfx::ColorSpace::CreateSCRGBLinear80Nits(), true,
+                             test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplay) {
@@ -706,24 +688,27 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplay) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = test_color;
   for (auto format : formats) {
-    RunTest(kDXGISwapChainUsage, format, gfx::ColorSpace::CreateSRGB(), false,
-            test_color, expected_color);
+    RunFormatAndColorSpaceTest(kDXGISwapChainUsage, format,
+                               gfx::ColorSpace::CreateSRGB(), false, test_color,
+                               expected_color);
   }
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayLinear) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_F16,
-          gfx::ColorSpace::CreateSCRGBLinear80Nits(), false, test_color,
-          expected_color);
+  RunFormatAndColorSpaceTest(kDXGISwapChainUsage,
+                             viz::SinglePlaneFormat::kRGBA_F16,
+                             gfx::ColorSpace::CreateSCRGBLinear80Nits(), false,
+                             test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayHDR10) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
-          gfx::ColorSpace::CreateHDR10(), false, test_color, expected_color);
+  RunFormatAndColorSpaceTest(
+      kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
+      gfx::ColorSpace::CreateHDR10(), false, test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
@@ -736,8 +721,9 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
   for (auto format : formats) {
-    RunTest(kDXGISwapChainUsage, format, gfx::ColorSpace::CreateSRGB(), true,
-            test_color, expected_color);
+    RunFormatAndColorSpaceTest(kDXGISwapChainUsage, format,
+                               gfx::ColorSpace::CreateSRGB(), true, test_color,
+                               expected_color);
   }
 }
 
@@ -745,17 +731,19 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainCanDisplayLinearWithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_F16,
-          gfx::ColorSpace::CreateSCRGBLinear80Nits(), true, test_color,
-          expected_color);
+  RunFormatAndColorSpaceTest(kDXGISwapChainUsage,
+                             viz::SinglePlaneFormat::kRGBA_F16,
+                             gfx::ColorSpace::CreateSCRGBLinear80Nits(), true,
+                             test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainCanDisplayHDR10WithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
-          gfx::ColorSpace::CreateHDR10(), true, test_color, expected_color);
+  RunFormatAndColorSpaceTest(
+      kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
+      gfx::ColorSpace::CreateHDR10(), true, test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
@@ -799,16 +787,12 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
       CommitAndWait();
     }
 
-    std::vector<SkColor> window_readback =
+    SkBitmap window_readback =
         gl::GLTestHelper::ReadBackWindow(window(), window_size());
-    EXPECT_SKCOLOR_EQ(
-        SK_ColorRED,
-        window_readback[window_size().width() * middle_of_left_half.y() +
-                        middle_of_left_half.x()]);
-    EXPECT_SKCOLOR_EQ(
-        SK_ColorRED,
-        window_readback[window_size().width() * middle_of_right_half.y() +
-                        middle_of_right_half.x()]);
+    EXPECT_SKCOLOR_EQ(SK_ColorRED, gl::GLTestHelper::GetColorAtPoint(
+                                       window_readback, middle_of_left_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorRED, gl::GLTestHelper::GetColorAtPoint(
+                                       window_readback, middle_of_right_half));
   }
 
   // Next two draws will be partial, drawing different colors to each side
@@ -833,17 +817,23 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
     // No Commit is needed, but we should wait for swap chains to flip.
     CommitAndWait();
 
-    std::vector<SkColor> window_readback =
+    SkBitmap window_readback =
         gl::GLTestHelper::ReadBackWindow(window(), window_size());
-    EXPECT_SKCOLOR_EQ(
-        SK_ColorGREEN,
-        window_readback[window_size().width() * middle_of_left_half.y() +
-                        middle_of_left_half.x()]);
-    EXPECT_SKCOLOR_EQ(
-        SK_ColorBLUE,
-        window_readback[window_size().width() * middle_of_right_half.y() +
-                        middle_of_right_half.x()]);
+    EXPECT_SKCOLOR_EQ(SK_ColorGREEN, gl::GLTestHelper::GetColorAtPoint(
+                                         window_readback, middle_of_left_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorBLUE, gl::GLTestHelper::GetColorAtPoint(
+                                        window_readback, middle_of_right_half));
   }
+}
+
+TEST_F(DCompImageBackingFactoryVisualTreeTest,
+       DCompSurfaceIncompleteFirstDrawInitializesToTransparent) {
+  RunIncompleteFirstDrawTest(kDCompSurfaceUsage);
+}
+
+TEST_F(DCompImageBackingFactoryVisualTreeTest,
+       DXGISwapChainIncompleteFirstDrawInitializesToTransparent) {
+  RunIncompleteFirstDrawTest(kDXGISwapChainUsage);
 }
 
 }  // namespace gpu

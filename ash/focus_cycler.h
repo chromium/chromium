@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class Widget;
@@ -55,7 +56,7 @@ class ASH_EXPORT FocusCycler {
   std::vector<views::Widget*> widgets_;
 
   // See description above getter.
-  views::Widget* widget_activating_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_activating_;
 };
 
 }  // namespace ash

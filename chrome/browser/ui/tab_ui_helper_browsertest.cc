@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperWithPrerenderingTest,
 
   TabUIHelper* tab_ui_helper = TabUIHelper::FromWebContents(GetWebContents());
   std::u16string primary_title = tab_ui_helper->GetTitle();
-  gfx::Image primary_favicon = tab_ui_helper->GetFavicon();
+  ui::ImageModel primary_favicon = tab_ui_helper->GetFavicon();
   bool primary_should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
 
   // Set |create_by_session_restore_| to true to check if the value is changed

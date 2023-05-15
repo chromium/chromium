@@ -236,6 +236,33 @@
   .category-gap {
     height: 16px;
   }
+
+
+  #list-container.error-only {
+    flex: 1;
+  }
+
+  #list-container.error-only>:not(#groups) {
+    display: none;
+  }
+
+  #list-container.error-only>#groups {
+    display: block;
+    flex-grow: 0;
+    margin: auto;
+  }
+
+  #list-container.error-only>#groups> :not(emoji-error) {
+    display: none;
+  }
+
+  #list-container.error-only emoji-error {
+    display: block;
+  }
+
+  #list-container.no-gif emoji-group[category="gif"] {
+    display: none;
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -255,7 +282,7 @@
     gif-support$="[[gifSupport]]">
   </emoji-search>
 
-<div id="list-container">
+<div id="list-container" class$="[[computeListContainerClass(category, status)]]">
   <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
   <div class="side-padding">
     <div id="tabs" on-scroll="onGroupsScroll">

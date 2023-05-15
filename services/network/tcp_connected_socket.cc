@@ -4,10 +4,10 @@
 
 #include "services/network/tcp_connected_socket.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/net_errors.h"
@@ -23,8 +23,8 @@ namespace network {
 namespace {
 
 int ClampTCPBufferSize(int requested_buffer_size) {
-  return base::clamp(requested_buffer_size, 0,
-                     TCPConnectedSocket::kMaxBufferSize);
+  return std::clamp(requested_buffer_size, 0,
+                    TCPConnectedSocket::kMaxBufferSize);
 }
 
 // Sets the initial options on a fresh socket. Assumes |socket| is currently

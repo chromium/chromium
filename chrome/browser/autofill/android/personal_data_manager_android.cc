@@ -160,8 +160,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
           GetIconResourceID(card.CardIconStringForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
       ConvertUTF8ToJavaString(env, card.server_id()), card.instrument_id(),
-      ConvertUTF16ToJavaString(env,
-                               card.CardIdentifierStringForAutofillDisplay()),
+      ConvertUTF16ToJavaString(env, card.CardNameAndLastFourDigits()),
       ConvertUTF16ToJavaString(env, card.nickname()),
       url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
       static_cast<jint>(card.virtual_card_enrollment_state()),
@@ -239,7 +238,6 @@ PersonalDataManagerAndroid::CreateJavaProfileFromNative(
     const AutofillProfile& profile) {
   return Java_AutofillProfile_create(
       env, ConvertUTF8ToJavaString(env, profile.guid()),
-      ConvertUTF8ToJavaString(env, profile.origin()),
       profile.record_type() == AutofillProfile::LOCAL_PROFILE,
       static_cast<jint>(profile.source()),
       ConvertUTF16ToJavaString(
@@ -294,8 +292,6 @@ AutofillProfile PersonalDataManagerAndroid::CreateNativeProfileFromJava(
   if (!guid.empty())
     profile.set_guid(guid);
 
-  profile.set_origin(
-      ConvertJavaStringToUTF8(Java_AutofillProfile_getOrigin(env, jprofile)));
   MaybeSetInfoWithVerificationStatus(
       &profile, NAME_FULL, Java_AutofillProfile_getFullName(env, jprofile),
       Java_AutofillProfile_getFullNameStatus(env, jprofile));
@@ -386,6 +382,14 @@ jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj) {
   return personal_data_manager_->IsEligibleForAddressAccountStorage();
+}
+
+bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj,
+    const JavaParamRef<jstring>& country_code) const {
+  return personal_data_manager_->IsCountryEligibleForAccountStorage(
+      ConvertJavaStringToUTF8(env, country_code));
 }
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(

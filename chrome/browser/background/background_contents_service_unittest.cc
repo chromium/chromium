@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -79,8 +78,6 @@ class BackgroundContentsServiceTest : public testing::Test {
   ~BackgroundContentsServiceTest() override = default;
 
   void SetUp() override {
-    command_line_ =
-        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     BackgroundContentsService::DisableCloseBalloonForTesting(true);
   }
 
@@ -110,7 +107,6 @@ class BackgroundContentsServiceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<base::CommandLine> command_line_;
 };
 
 class BackgroundContentsServiceNotificationTest
@@ -130,6 +126,13 @@ class BackgroundContentsServiceNotificationTest
     BrowserWithTestWindowTest::SetUp();
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
+    background_service_ =
+        std::make_unique<BackgroundContentsService>(profile());
+  }
+
+  void TearDown() override {
+    background_service_.reset();
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
@@ -139,8 +142,7 @@ class BackgroundContentsServiceNotificationTest
       scoped_refptr<extensions::Extension> extension) {
     std::string notification_id = BackgroundContentsService::
         GetNotificationDelegateIdForExtensionForTesting(extension->id());
-    BackgroundContentsService::ShowBalloonForTesting(extension.get(),
-                                                     profile());
+    background_service_->ShowBalloonForTesting(extension.get());
     base::RunLoop run_loop;
     display_service_->SetNotificationAddedClosure(run_loop.QuitClosure());
     run_loop.Run();
@@ -149,17 +151,18 @@ class BackgroundContentsServiceNotificationTest
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+  std::unique_ptr<BackgroundContentsService> background_service_;
 };
 
 TEST_F(BackgroundContentsServiceTest, Create) {
   // Check for creation and leaks.
   TestingProfile profile;
-  BackgroundContentsService service(&profile, command_line_.get());
+  BackgroundContentsService service(&profile);
 }
 
 TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAdded) {
   TestingProfile profile;
-  BackgroundContentsService service(&profile, command_line_.get());
+  BackgroundContentsService service(&profile);
 
   GURL orig_url;
   GURL url("http://a/");
@@ -185,7 +188,7 @@ TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAdded) {
 
 TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAddedAndClosed) {
   TestingProfile profile;
-  BackgroundContentsService service(&profile, command_line_.get());
+  BackgroundContentsService service(&profile);
 
   GURL url("http://a/");
   auto owned_contents = std::make_unique<MockBackgroundContents>(&service);
@@ -204,7 +207,7 @@ TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAddedAndClosed) {
 // crash) then is restarted. Should not persist URL twice.
 TEST_F(BackgroundContentsServiceTest, RestartBackgroundContents) {
   TestingProfile profile;
-  BackgroundContentsService service(&profile, command_line_.get());
+  BackgroundContentsService service(&profile);
 
   GURL url("http://a/");
   {
@@ -232,7 +235,7 @@ TEST_F(BackgroundContentsServiceTest, RestartBackgroundContents) {
 // unregistering the BC when the extension is uninstalled.
 TEST_F(BackgroundContentsServiceTest, TestApplicationIDLinkage) {
   TestingProfile profile;
-  BackgroundContentsService service(&profile, command_line_.get());
+  BackgroundContentsService service(&profile);
 
   EXPECT_EQ(nullptr, service.GetAppBackgroundContents("appid"));
   MockBackgroundContents* contents =
@@ -279,7 +282,7 @@ TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloonShutdown) {
       GetNotificationDelegateIdForExtensionForTesting(extension->id());
 
   static_cast<TestingBrowserProcess*>(g_browser_process)->SetShuttingDown(true);
-  BackgroundContentsService::ShowBalloonForTesting(extension.get(), profile());
+  background_service_->ShowBalloonForTesting(extension.get());
   base::RunLoop().RunUntilIdle();
   static_cast<TestingBrowserProcess*>(g_browser_process)
       ->SetShuttingDown(false);

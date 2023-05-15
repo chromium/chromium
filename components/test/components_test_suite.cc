@@ -27,7 +27,7 @@
 #include "ui/base/ui_base_paths.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
 #include "components/test/ios_components_test_initializer.h"
 #else
 #include "content/public/common/content_client.h"
@@ -63,7 +63,7 @@ class ComponentsTestSuite : public base::TestSuite {
     url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
     gl::GLSurfaceTestSupport::InitializeOneOff();
 
     content::ForceInProcessNetworkService(true);
@@ -117,7 +117,7 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
       const ComponentsUnitTestEventListener&) = delete;
   ~ComponentsUnitTestEventListener() override = default;
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
   void OnTestStart(const testing::TestInfo& test_info) override {
     ios_initializer_.reset(new IosComponentsTestInitializer());
   }
@@ -125,12 +125,12 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
     ios_initializer_.reset();
 #endif
   }
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
  private:
   std::unique_ptr<IosComponentsTestInitializer> ios_initializer_;
 #endif
@@ -153,7 +153,7 @@ base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
       .is_broker_process = !is_test_child || force_broker,
   };
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   auto test_suite = std::make_unique<content::UnitTestTestSuite>(
       components_test_suite.release(),
       base::BindRepeating(content::UnitTestTestSuite::CreateTestContentClients),
@@ -166,7 +166,7 @@ base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ComponentsUnitTestEventListener());
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   return base::BindOnce(&content::UnitTestTestSuite::Run,
                         std::move(test_suite));
 #else

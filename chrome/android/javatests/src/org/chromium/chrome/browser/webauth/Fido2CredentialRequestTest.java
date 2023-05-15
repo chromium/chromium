@@ -183,6 +183,9 @@ public class Fido2CredentialRequestTest {
 
     private static class MockIntentSender implements WebAuthenticationDelegate.IntentSender {
         private Pair<Integer, Intent> mNextResult;
+        private boolean mInvokeCallbackImmediately = true;
+        private Callback<Pair<Integer, Intent>> mCallback;
+        private final ConditionVariable mShowIntentCalled = new ConditionVariable();
 
         void setNextResult(int responseCode, Intent intent) {
             mNextResult = new Pair(responseCode, intent);
@@ -192,15 +195,36 @@ public class Fido2CredentialRequestTest {
             setNextResult(Activity.RESULT_OK, intent);
         }
 
+        public void setInvokeCallbackImmediately(boolean invokeImmediately) {
+            mInvokeCallbackImmediately = invokeImmediately;
+        }
+
+        public void invokeCallback() {
+            Pair<Integer, Intent> result = mNextResult;
+            Callback<Pair<Integer, Intent>> callback = mCallback;
+            mNextResult = null;
+            mCallback = null;
+            callback.onResult(result);
+        }
+
+        public void blockUntilShowIntentCalled() {
+            mShowIntentCalled.block();
+        }
+
         @Override
         public boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback) {
             if (mNextResult == null) {
                 return false;
             }
-
-            Pair<Integer, Intent> result = mNextResult;
-            mNextResult = null;
-            callback.onResult(result);
+            if (mInvokeCallbackImmediately) {
+                Pair<Integer, Intent> result = mNextResult;
+                mNextResult = null;
+                callback.onResult(result);
+            } else {
+                assert mCallback == null;
+                mCallback = callback;
+            }
+            mShowIntentCalled.open();
             return true;
         }
     }
@@ -333,6 +357,7 @@ public class Fido2CredentialRequestTest {
         private List<WebAuthnCredentialDetails> mExpectedCredentialList;
         private boolean mInvokeCallbackImmediately = true;
         private Callback<byte[]> mCallback;
+        private int mCleanupCalled;
 
         @Override
         public void onCredentialsDetailsListReceived(RenderFrameHost frameHost,
@@ -358,8 +383,8 @@ public class Fido2CredentialRequestTest {
         }
 
         @Override
-        public void cancelRequest(RenderFrameHost frameHost) {
-            invokeCallback();
+        public void cleanupRequest(RenderFrameHost frameHost) {
+            mCleanupCalled++;
         }
 
         public void setSelectedCredentialId(byte[] credentialId) {
@@ -393,6 +418,10 @@ public class Fido2CredentialRequestTest {
 
             /* Return the first ID in the list if one has not been explicitly set. */
             mCallback.onResult(mExpectedCredentialList.get(0).mCredentialId);
+        }
+
+        public int getCleanupCalledCount() {
+            return mCleanupCalled;
         }
     }
 
@@ -1529,6 +1558,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     @Test
@@ -1544,11 +1574,11 @@ public class Fido2CredentialRequestTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        mCallback.blockUntilCalled();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR), mCallback.getStatus());
         Assert.assertNull(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     @Test
@@ -1595,6 +1625,7 @@ public class Fido2CredentialRequestTest {
         // The MockBrowserBridge will assert if onCredentialsDetailsListReceived is called.
         mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
         mFido2ApiCallHelper.invokeSuccessCallback();
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 0);
     }
 
     @Test
@@ -1611,8 +1642,109 @@ public class Fido2CredentialRequestTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         mRequest.cancelConditionalGetAssertion(mFrameHost);
+
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_conditionalUiCancelWhileRequestSentToPlatform_ignored() {
+        mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
+                new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.isConditional = true;
+
+        mIntentSender.setInvokeCallbackImmediately(false);
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mIntentSender.blockUntilShowIntentCalled();
+        mRequest.cancelConditionalGetAssertion(mFrameHost);
+        mIntentSender.invokeCallback();
+        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
+        Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_conditionalUiCancelWhileRequestSentToPlatformUserDeny_cancelled() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createErrorIntent(Fido2Api.NOT_ALLOWED_ERR, ""));
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
+                new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.isConditional = true;
+
+        mIntentSender.setInvokeCallbackImmediately(false);
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mIntentSender.blockUntilShowIntentCalled();
+        mRequest.cancelConditionalGetAssertion(mFrameHost);
+        mIntentSender.invokeCallback();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_conditionalUiRequestSentToPlatformUserDeny_doesNotComplete() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createErrorIntent(Fido2Api.NOT_ALLOWED_ERR, ""));
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
+                new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mIntentSender.blockUntilShowIntentCalled();
+        // Null status indicates the callback was not invoked.
+        Assert.assertNull(mCallback.getStatus());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_conditionalUiRetryAfterUserDeny_success() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createErrorIntent(Fido2Api.NOT_ALLOWED_ERR, ""));
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
+                new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mIntentSender.blockUntilShowIntentCalled();
+        // Null status indicates the callback was not invoked.
+        Assert.assertNull(mCallback.getStatus());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 0);
+
+        // Select credential again, and provide a success response this time.
+        mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
+        mMockBrowserBridge.invokeCallback();
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
+        Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     @Test
@@ -1632,6 +1764,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     @Test
@@ -1655,6 +1788,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR), mCallback.getStatus());
         Assert.assertNull(mCallback.getGetAssertionResponse());
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     @Test

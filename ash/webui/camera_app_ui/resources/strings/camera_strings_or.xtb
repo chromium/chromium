@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ଡିଭାଇସର ଷ୍ଟୋରେଜ ସ୍ପେସ କମ୍ ଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଯାଇଛି। ଅଧିକ ଭିଡିଓକୁ ରେକର୍ଡ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ସ୍ପେସ ଖାଲି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="2036868001356139588">ଟାଇମ୍‍ର ଅବଧି</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ସକ୍ରିୟ ଅଛି</translation>
-<translation id="2128052519899549250">ଟାଇମ-ଲେପ୍ସ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="2134029355740465625">ଭିଡିଓ ସେଟିଂସ</translation>
 <translation id="2144806332417375165">କଷ୍ଟମ୍ ଭିଡିଓ ପାରାମିଟରଗୁଡ଼ିକ</translation>
 <translation id="2175927920773552910">QR କୋଡ୍</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">ଡକ୍ୟୁମେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="414641094616694804">ଏହି କ୍ୟାମେରା ରିଜୋଲ୍ୟୁସନ ବଦଳାଇପାରିବ ନାହିଁ</translation>
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
-<translation id="4281620174117014503">ମଧ୍ୟମ ରିଜୋଲ୍ୟୁସନ</translation>
 <translation id="428234092390943511">ପୃଷ୍ଠା ଥମ୍ବନେଲ</translation>
 <translation id="4383571725254449280">କାର୍ଯ୍ୟଦକ୍ଷତା ଲଗଗୁଡ଼ିକ ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4445542136948522167">ଫଟୋ ଉଠାଇବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5320594929574852403">ବାମ ପଟକୁ ମୁଭ ହେଉଛି</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ଟାଇମ-ଲେପ୍ସ</translation>
 <translation id="5662366948659129155">ପୃଷ୍ଠା <ph name="COUNT" />କୁ ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="5671277269877808209">ବର୍ଗାକାର</translation>
+<translation id="574392208103952083">ମଧ୍ୟମ</translation>
 <translation id="5746169159649715125">PDF ଭାବରେ ସେଭ୍‍ କରନ୍ତୁ</translation>
 <translation id="5753488212459587150">ଏକ୍ସପର୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5759254179196327752">ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ଡକ୍ୟୁମେଣ୍ଟର ନିମ୍ନ-ଡାହାଣ ପଟ କୋଣ</translation>
+<translation id="7684446460490665873">ଟାଇମ ଲେପ୍ସ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7692090236657809299">ପ୍ୟାନ ଟିଲ୍ଟ ଜୁମକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7726641833034062494">ସାଧାରଣ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7748344063862150053">ଡକ୍ୟୁମେଣ୍ଟର ଶୀର୍ଷ-ଡାହାଣ ପଟ କୋଣ</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ</translation>
 <translation id="9045155556724273246">10 ସେକେଣ୍ଡ</translation>
 <translation id="906331135292332864">ଇମେଜର ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି...</translation>
+<translation id="9161584225258678723">ଟାଇମ ଲେପ୍ସ</translation>
 <translation id="922762992951083513">ମିରର ଚାଲୁ ଅଛି</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 </translationbundle>

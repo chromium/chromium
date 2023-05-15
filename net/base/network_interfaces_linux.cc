@@ -18,6 +18,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/escape.h"
@@ -26,10 +27,13 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "net/base/address_map_linux.h"
 #include "net/base/address_tracker_linux.h"
+#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -238,13 +242,27 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
       network.type = internal::GetInterfaceConnectionType(network.name);
     return ret;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  internal::AddressTrackerLinux tracker;
-  tracker.Init();
+  const AddressMapOwnerLinux* map_owner = nullptr;
+  absl::optional<internal::AddressTrackerLinux> temp_tracker;
+#if BUILDFLAG(IS_LINUX)
+  // If NetworkChangeNotifier already maintains a map owner in this process, use
+  // it.
+  if (base::FeatureList::IsEnabled(features::kAddressTrackerLinuxIsProxied)) {
+    map_owner = NetworkChangeNotifier::GetAddressMapOwner();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+  if (!map_owner) {
+    // If there is no existing map_owner, create an AdressTrackerLinux and
+    // initialize it.
+    temp_tracker.emplace();
+    temp_tracker->Init();
+    map_owner = &temp_tracker.value();
+  }
 
   return internal::GetNetworkListImpl(
-      networks, policy, tracker.GetOnlineLinks(), tracker.GetAddressMap(),
+      networks, policy, map_owner->GetOnlineLinks(), map_owner->GetAddressMap(),
       &internal::AddressTrackerLinux::GetInterfaceName);
 }
 

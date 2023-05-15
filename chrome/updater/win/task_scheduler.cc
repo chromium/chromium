@@ -44,7 +44,6 @@ const wchar_t kV2Library[] = L"taskschd.dll";
 // Text for times used in the V2 API of the Task Scheduler.
 const wchar_t kOneHourText[] = L"PT1H";
 const wchar_t kFiveHoursText[] = L"PT5H";
-const wchar_t kFifteenMinutesText[] = L"PT15M";
 const wchar_t kOneDayText[] = L"P1D";
 
 const size_t kNumDeleteTaskRetry = 3;
@@ -346,9 +345,10 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    hr = GetTaskTriggerType(registered_task.Get(), &info_storage.trigger_type);
+    hr =
+        GetTaskTriggerTypes(registered_task.Get(), &info_storage.trigger_types);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to get trigger type for task '" << task_name
+      LOG(ERROR) << "Failed to get trigger types for task '" << task_name
                  << "'. " << std::hex << hr << ": "
                  << logging::SystemErrorCodeToString(hr);
       return false;
@@ -421,7 +421,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   bool RegisterTask(const wchar_t* task_name,
                     const wchar_t* task_description,
                     const base::CommandLine& run_command,
-                    TriggerType trigger_type,
+                    int trigger_types,
                     bool hidden) override {
     CHECK(task_name);
     CHECK(task_description);
@@ -537,105 +537,114 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    TASK_TRIGGER_TYPE2 task_trigger_type = TASK_TRIGGER_EVENT;
-    base::win::ScopedBstr repetition_interval;
-    switch (trigger_type) {
-      case TRIGGER_TYPE_POST_REBOOT:
-        task_trigger_type = TASK_TRIGGER_LOGON;
-        break;
-      case TRIGGER_TYPE_NOW:
-        task_trigger_type = TASK_TRIGGER_REGISTRATION;
-        break;
-      case TRIGGER_TYPE_HOURLY:
-      case TRIGGER_TYPE_EVERY_FIVE_HOURS:
-        task_trigger_type = TASK_TRIGGER_DAILY;
-        if (trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
-          repetition_interval.Reset(::SysAllocString(kFiveHoursText));
-        } else if (trigger_type == TRIGGER_TYPE_HOURLY) {
-          repetition_interval.Reset(::SysAllocString(kOneHourText));
-        } else {
+    for (const TriggerType trigger_type :
+         {TRIGGER_TYPE_LOGON, TRIGGER_TYPE_NOW, TRIGGER_TYPE_HOURLY,
+          TRIGGER_TYPE_EVERY_FIVE_HOURS}) {
+      if (!(trigger_types & trigger_type)) {
+        continue;
+      }
+
+      TASK_TRIGGER_TYPE2 task_trigger_type = TASK_TRIGGER_EVENT;
+      base::win::ScopedBstr repetition_interval;
+      switch (trigger_type) {
+        case TRIGGER_TYPE_LOGON:
+          task_trigger_type = TASK_TRIGGER_LOGON;
+          break;
+        case TRIGGER_TYPE_NOW:
+          task_trigger_type = TASK_TRIGGER_REGISTRATION;
+          break;
+        case TRIGGER_TYPE_HOURLY:
+        case TRIGGER_TYPE_EVERY_FIVE_HOURS:
+          task_trigger_type = TASK_TRIGGER_DAILY;
+          if (trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
+            repetition_interval.Reset(::SysAllocString(kFiveHoursText));
+          } else if (trigger_type == TRIGGER_TYPE_HOURLY) {
+            repetition_interval.Reset(::SysAllocString(kOneHourText));
+          } else {
+            NOTREACHED() << "Unknown TriggerType?";
+          }
+          break;
+        default:
           NOTREACHED() << "Unknown TriggerType?";
+      }
+
+      Microsoft::WRL::ComPtr<ITrigger> trigger;
+      hr = trigger_collection->Create(task_trigger_type, &trigger);
+      if (FAILED(hr)) {
+        PLOG(ERROR) << "Can't create trigger of type " << task_trigger_type
+                    << ". " << std::hex << hr;
+        return false;
+      }
+
+      if (trigger_type == TRIGGER_TYPE_HOURLY ||
+          trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
+        Microsoft::WRL::ComPtr<IDailyTrigger> daily_trigger;
+        hr = trigger.As(&daily_trigger);
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't Query for registration trigger. " << std::hex
+                      << hr;
+          return false;
         }
-        break;
-      default:
-        NOTREACHED() << "Unknown TriggerType?";
-    }
 
-    Microsoft::WRL::ComPtr<ITrigger> trigger;
-    hr = trigger_collection->Create(task_trigger_type, &trigger);
-    if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't create trigger of type " << task_trigger_type
-                  << ". " << std::hex << hr;
-      return false;
-    }
+        hr = daily_trigger->put_DaysInterval(1);
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't put 'DaysInterval' to 1, " << std::hex << hr;
+          return false;
+        }
 
-    if (trigger_type == TRIGGER_TYPE_HOURLY ||
-        trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
-      Microsoft::WRL::ComPtr<IDailyTrigger> daily_trigger;
-      hr = trigger.As(&daily_trigger);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't Query for registration trigger. " << std::hex
-                    << hr;
-        return false;
+        Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
+        hr = trigger->get_Repetition(&repetition_pattern);
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't get 'Repetition'. " << std::hex << hr;
+          return false;
+        }
+
+        hr = repetition_pattern->put_Interval(repetition_interval.Get());
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't put 'Interval' to " << repetition_interval.Get()
+                      << ". " << std::hex << hr;
+          return false;
+        }
+
+        // The duration is the time to keep repeating intervals until the next
+        // daily trigger.
+        hr = repetition_pattern->put_Duration(
+            base::win::ScopedBstr(kOneDayText).Get());
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't put 'Duration' to " << kOneDayText << ". "
+                      << std::hex << hr;
+          return false;
+        }
+
+        // Start 5 minutes from the current time.
+        base::Time five_minutes_from_now(base::Time::NowFromSystemTime() +
+                                         base::Minutes(5));
+        base::win::ScopedBstr start_boundary(
+            GetTimestampString(five_minutes_from_now));
+        hr = trigger->put_StartBoundary(start_boundary.Get());
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't put 'StartBoundary' to " << start_boundary.Get()
+                      << ". " << std::hex << hr;
+          return false;
+        }
       }
 
-      hr = daily_trigger->put_DaysInterval(1);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'DaysInterval' to 1, " << std::hex << hr;
-        return false;
-      }
+      if (trigger_type == TRIGGER_TYPE_LOGON) {
+        Microsoft::WRL::ComPtr<ILogonTrigger> logon_trigger;
+        hr = trigger.As(&logon_trigger);
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't query trigger for 'ILogonTrigger'. " << std::hex
+                      << hr;
+          return false;
+        }
 
-      Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
-      hr = trigger->get_Repetition(&repetition_pattern);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't get 'Repetition'. " << std::hex << hr;
-        return false;
-      }
-
-      hr = repetition_pattern->put_Interval(repetition_interval.Get());
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'Interval' to " << repetition_interval.Get()
-                    << ". " << std::hex << hr;
-        return false;
-      }
-
-      // The duration is the time to keep repeating intervals until the next
-      // daily trigger.
-      hr = repetition_pattern->put_Duration(
-          base::win::ScopedBstr(kOneDayText).Get());
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'Duration' to " << kOneDayText << ". "
-                    << std::hex << hr;
-        return false;
-      }
-
-      // Start 5 minutes from the current time.
-      base::Time five_minutes_from_now(base::Time::NowFromSystemTime() +
-                                       base::Minutes(5));
-      base::win::ScopedBstr start_boundary(
-          GetTimestampString(five_minutes_from_now));
-      hr = trigger->put_StartBoundary(start_boundary.Get());
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'StartBoundary' to " << start_boundary.Get()
-                    << ". " << std::hex << hr;
-        return false;
-      }
-    }
-
-    if (trigger_type == TRIGGER_TYPE_POST_REBOOT) {
-      Microsoft::WRL::ComPtr<ILogonTrigger> logon_trigger;
-      hr = trigger.As(&logon_trigger);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't query trigger for 'ILogonTrigger'. " << std::hex
-                    << hr;
-        return false;
-      }
-
-      hr = logon_trigger->put_Delay(
-          base::win::ScopedBstr(kFifteenMinutesText).Get());
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'Delay'. " << std::hex << hr;
-        return false;
+        if (!is_system) {
+          hr = logon_trigger->put_UserId(user_name.Get());
+          if (FAILED(hr)) {
+            PLOG(ERROR) << "Can't put 'UserId'. " << std::hex << hr;
+            return false;
+          }
+        }
       }
     }
 
@@ -677,13 +686,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    VLOG(2) << "Registering Task with XML: " << [&task]() -> std::wstring {
-      base::win::ScopedBstr task_xml;
-      if (SUCCEEDED(task->get_XmlText(task_xml.Receive()))) {
-        return task_xml.Get();
-      }
-      return L"";
-    }();
+    base::win::ScopedBstr task_xml;
+    task->get_XmlText(task_xml.Receive());
+    VLOG(2) << "Registering Task with XML: " << task_xml.Get();
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
@@ -697,8 +702,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
         is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
         base::win::ScopedVariant::kEmptyVariant, &registered_task);
     if (FAILED(hr)) {
-      LOG(ERROR) << "RegisterTaskDefinition failed. " << std::hex << hr << ": "
-                 << logging::SystemErrorCodeToString(hr);
+      LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr << ": "
+                 << logging::SystemErrorCodeToString(hr)
+                 << ": Task XML: " << task_xml.Get();
       return false;
     }
 
@@ -1155,9 +1161,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return ERROR_SUCCESS;
   }
 
-  HRESULT GetTaskTriggerType(IRegisteredTask* task, TriggerType* trigger_type) {
+  HRESULT GetTaskTriggerTypes(IRegisteredTask* task, int* trigger_types) {
     CHECK(task);
-    CHECK(trigger_type);
+    CHECK(trigger_types);
 
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
     HRESULT hr = task->get_Definition(&task_info);
@@ -1175,60 +1181,71 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    Microsoft::WRL::ComPtr<ITrigger> trigger;
-    hr = trigger_collection->get_Item(1, &trigger);
+    LONG trigger_count = 0;
+    hr = trigger_collection->get_Count(&trigger_count);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to get trigger: "
+      LOG(ERROR) << "Failed to get trigger collection count: "
                  << logging::SystemErrorCodeToString(hr);
       return false;
     }
 
-    TASK_TRIGGER_TYPE2 task_trigger_type = {};
-    hr = trigger->get_Type(&task_trigger_type);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to get trigger type: "
-                 << logging::SystemErrorCodeToString(hr);
-      return false;
-    }
-
-    switch (task_trigger_type) {
-      case TASK_TRIGGER_LOGON:
-        *trigger_type = TRIGGER_TYPE_POST_REBOOT;
-        break;
-      case TASK_TRIGGER_REGISTRATION:
-        *trigger_type = TRIGGER_TYPE_NOW;
-        break;
-      case TASK_TRIGGER_DAILY: {
-        Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
-        hr = trigger->get_Repetition(&repetition_pattern);
-        if (FAILED(hr)) {
-          LOG(ERROR) << "Failed to get 'Repetition'. "
-                     << logging::SystemErrorCodeToString(hr);
-          return false;
-        }
-
-        base::win::ScopedBstr repetition_interval;
-        hr = repetition_pattern->get_Interval(repetition_interval.Receive());
-        if (FAILED(hr)) {
-          LOG(ERROR) << "Failed to get 'Interval': "
-                     << logging::SystemErrorCodeToString(hr);
-          return false;
-        }
-
-        if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
-                                             kFiveHoursText)) {
-          *trigger_type = TRIGGER_TYPE_EVERY_FIVE_HOURS;
-        } else if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
-                                                    kOneHourText)) {
-          *trigger_type = TRIGGER_TYPE_HOURLY;
-        } else {
-          NOTREACHED() << "Unknown TriggerType for interval: "
-                       << repetition_interval.Get();
-        }
-        break;
+    *trigger_types = 0;
+    for (LONG t = 1; t <= trigger_count; ++t) {
+      Microsoft::WRL::ComPtr<ITrigger> trigger;
+      hr = trigger_collection->get_Item(t, &trigger);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to get trigger: "
+                   << logging::SystemErrorCodeToString(hr);
+        return false;
       }
-      default:
-        NOTREACHED() << "Unknown task trigger type: " << task_trigger_type;
+
+      TASK_TRIGGER_TYPE2 task_trigger_type = {};
+      hr = trigger->get_Type(&task_trigger_type);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to get trigger type: "
+                   << logging::SystemErrorCodeToString(hr);
+        return false;
+      }
+
+      switch (task_trigger_type) {
+        case TASK_TRIGGER_LOGON:
+          *trigger_types |= TRIGGER_TYPE_LOGON;
+          break;
+        case TASK_TRIGGER_REGISTRATION:
+          *trigger_types |= TRIGGER_TYPE_NOW;
+          break;
+        case TASK_TRIGGER_DAILY: {
+          Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
+          hr = trigger->get_Repetition(&repetition_pattern);
+          if (FAILED(hr)) {
+            LOG(ERROR) << "Failed to get 'Repetition'. "
+                       << logging::SystemErrorCodeToString(hr);
+            return false;
+          }
+
+          base::win::ScopedBstr repetition_interval;
+          hr = repetition_pattern->get_Interval(repetition_interval.Receive());
+          if (FAILED(hr)) {
+            LOG(ERROR) << "Failed to get 'Interval': "
+                       << logging::SystemErrorCodeToString(hr);
+            return false;
+          }
+
+          if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
+                                               kFiveHoursText)) {
+            *trigger_types |= TRIGGER_TYPE_EVERY_FIVE_HOURS;
+          } else if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
+                                                      kOneHourText)) {
+            *trigger_types |= TRIGGER_TYPE_HOURLY;
+          } else {
+            NOTREACHED() << "Unknown TriggerType for interval: "
+                         << repetition_interval.Get();
+          }
+          break;
+        }
+        default:
+          NOTREACHED() << "Unknown task trigger type: " << task_trigger_type;
+      }
     }
 
     return S_OK;

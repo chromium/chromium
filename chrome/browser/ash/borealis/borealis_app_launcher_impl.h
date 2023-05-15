@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 class Profile;
 
@@ -33,7 +34,7 @@ class BorealisAppLauncherImpl : public BorealisAppLauncher {
               OnLaunchedCallback callback) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace borealis

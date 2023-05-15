@@ -11,13 +11,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @JNINamespace("media")
-@MainDex
 class HdrMetadata {
     private static final int MAX_CHROMATICITY = 50000; // Defined in CTA-861.3.
 

@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_TEST_API_H_
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash {
 
 class PowerButtonScreenshotController;
@@ -32,7 +34,7 @@ class PowerButtonScreenshotControllerTestApi {
   [[nodiscard]] bool TriggerVolumeUpTimer();
 
  private:
-  PowerButtonScreenshotController* controller_;
+  raw_ptr<PowerButtonScreenshotController, ExperimentalAsh> controller_;
 };
 
 }  // namespace ash

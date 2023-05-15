@@ -467,10 +467,10 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
       weak_ptr_factory_.GetWeakPtr(), frame_host));
   filter->set_first_disallowed_load_callback(std::move(disallowed_callback));
 
-  AsyncDocumentSubresourceFilter* raw_ptr = filter.get();
+  AsyncDocumentSubresourceFilter* filter_ptr = filter.get();
   frame_host_filter_map_[frame_host] = std::move(filter);
 
-  return raw_ptr;
+  return filter_ptr;
 }
 
 void ContentSubresourceFilterThrottleManager::

@@ -39,11 +39,13 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
   // If the user has navigated away without saving the modal, then the
   // |address_profile_save_prompt_callback_| is run here.
   if (!address_profile_save_prompt_callback_.is_null()) {
-    DCHECK(
-        user_decision_ !=
-            AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted &&
-        user_decision_ !=
-            AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);
+    DCHECK(user_decision_ !=
+               AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted &&
+           user_decision_ !=
+               AutofillClient::SaveAddressProfileOfferUserDecision::
+                   kEditAccepted &&
+           user_decision_ !=
+               AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
     RunSaveAddressProfilePromptCallback();
   }
 }
@@ -138,6 +140,13 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
+  if (address_profile_save_prompt_callback_.is_null()) {
+    // From the crash logs in crbug.com/1408890, it appears that there are
+    // multiple calls to this method when the edit button is pressed so return
+    // early if the callback has already been executed.
+    return;
+  }
+
   user_decision_ =
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted;
   RunSaveAddressProfilePromptCallback();
@@ -163,6 +172,12 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::AutoDecline() {
       AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined);
 }
 
+bool AutofillSaveUpdateAddressProfileDelegateIOS::Never() {
+  SetUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
+  RunSaveAddressProfilePromptCallback();
+  return true;
+}
+
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
     const ServerFieldType& type,
     const std::u16string& value) {
@@ -176,6 +191,11 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
 
   profile_.SetRawInfoWithVerificationStatus(type, value,
                                             VerificationStatus::kUserVerified);
+}
+
+void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfile(
+    AutofillProfile* profile) {
+  profile_ = *profile;
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
@@ -251,6 +271,9 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetUserDecision(
     // |user_decision_| now.
     return;
   }
+
+  DCHECK(user_decision_ !=
+         AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
   user_decision_ = user_decision;
 }
 

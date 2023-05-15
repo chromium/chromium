@@ -134,10 +134,13 @@
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "ui/base/ui_base_features.h"
 #else
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -234,7 +237,7 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
-         !IsIncognito() && IsFillingEnabled(url);
+         !IsOffTheRecord() && IsFillingEnabled(url);
 }
 
 bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
@@ -340,8 +343,8 @@ void ChromePasswordManagerClient::FocusedInputChanged(
       ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
   password_manager::ContentPasswordManagerDriver* content_driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
-  if (!PasswordAccessoryControllerImpl::ShouldAcceptFocusEvent(
-          web_contents(), content_driver, focused_field_type)) {
+  if (!ShouldAcceptFocusEvent(web_contents(), content_driver,
+                              focused_field_type)) {
     return;
   }
 
@@ -350,13 +353,8 @@ void ChromePasswordManagerClient::FocusedInputChanged(
 
   if (web_contents()->GetFocusedFrame()) {
     bool manual_generation_available =
-        password_manager_util::ManualPasswordGenerationEnabled(driver);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
-      manual_generation_available =
-          manual_generation_available &&
-          password_manager_.HaveFormManagersReceivedData(driver);
-    }
+        password_manager_util::ManualPasswordGenerationEnabled(driver) &&
+        password_manager_.HaveFormManagersReceivedData(driver);
     GetOrCreatePasswordAccessory()->RefreshSuggestionsForField(
         focused_field_type, manual_generation_available);
   }
@@ -428,7 +426,8 @@ void ChromePasswordManagerClient::ShowTouchToFill(
 
 scoped_refptr<device_reauth::DeviceAuthenticator>
 ChromePasswordManagerClient::GetDeviceAuthenticator() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
   return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
 #else
   return nullptr;
@@ -639,7 +638,7 @@ const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
 
 password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetProfilePasswordStore() const {
-  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // Always use EXPLICIT_ACCESS as the password manager checks IsOffTheRecord
   // itself when it shouldn't access the PasswordStore.
   return PasswordStoreFactory::GetForProfile(profile_,
                                              ServiceAccessType::EXPLICIT_ACCESS)
@@ -648,7 +647,7 @@ ChromePasswordManagerClient::GetProfilePasswordStore() const {
 
 password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetAccountPasswordStore() const {
-  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // Always use EXPLICIT_ACCESS as the password manager checks IsOffTheRecord
   // itself when it shouldn't access the PasswordStore.
   return AccountPasswordStoreFactory::GetForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
@@ -718,9 +717,7 @@ void ChromePasswordManagerClient::PromptUserToEnableAutosignin() {
 #endif
 }
 
-// TODO(https://crbug.com/1225171): If off-the-record Guest is not deprecated,
-// rename this function to IsOffTheRecord for better readability.
-bool ChromePasswordManagerClient::IsIncognito() const {
+bool ChromePasswordManagerClient::IsOffTheRecord() const {
   return web_contents()->GetBrowserContext()->IsOffTheRecord();
 }
 
@@ -848,9 +845,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     bool is_federated,
     const url::Origin& federated_origin,
     const std::u16string& login_user_name) const {
-  if (!base::FeatureList::IsEnabled(policy::features::kLoginEventReporting))
-    return;
-
   extensions::SafeBrowsingPrivateEventRouter* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           profile_);
@@ -864,11 +858,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kPasswordBreachEventReporting)) {
-    return;
-  }
-
   extensions::SafeBrowsingPrivateEventRouter* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           profile_);
@@ -972,6 +961,18 @@ ChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
       ->GetDelegateForFrame(frame_host);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+WebAuthnCredManDelegate*
+ChromePasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
+    PasswordManagerDriver* driver) {
+  auto* frame_host =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver)
+          ->render_frame_host();
+  return WebAuthnCredManDelegate::GetRequestDelegate(
+      content::WebContents::FromRenderFrameHost(frame_host));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 version_info::Channel ChromePasswordManagerClient::GetChannel() const {
   return chrome::GetChannel();
 }
@@ -995,29 +996,32 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           rfh, ui_data.form_data.url,
           BadMessageReason::
-              CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED))
+              CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED)) {
     return;
+  }
 #if BUILDFLAG(IS_ANDROID)
-  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
+  password_manager::ContentPasswordManagerDriver* driver =
+      driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
   // EnablePasswordManagerWithinFencedFrame is launched.
-  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver) {
+  CHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (!driver ||
+      !ShouldAcceptFocusEvent(web_contents(), driver,
+                              FocusedFieldType::kFillablePasswordField)) {
     return;
   }
 
   PasswordGenerationController* generation_controller =
-      PasswordGenerationController::GetIfExisting(web_contents());
-  DCHECK(generation_controller);
+      PasswordGenerationController::GetOrCreate(web_contents());
 
   gfx::RectF element_bounds_in_screen_space = TransformToRootCoordinates(
       password_generation_driver_receivers_.GetCurrentTargetFrame(),
       ui_data.bounds);
 
   generation_controller->OnAutomaticGenerationAvailable(
-      driver, ui_data, element_bounds_in_screen_space);
+      base::AsWeakPtr(driver), ui_data, element_bounds_in_screen_space);
 #else
   password_manager::ContentPasswordManagerDriver* driver =
       driver_factory_->GetDriverForFrame(rfh);
@@ -1025,7 +1029,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
   // EnablePasswordManagerWithinFencedFrame is launched.
-  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  CHECK(driver || rfh->IsNestedWithinFencedFrame());
   if (!driver)
     return;
 
@@ -1316,6 +1320,19 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   HideFillingUI();
 }
 
+void ChromePasswordManagerClient::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(IS_ANDROID)
+  PasswordGenerationController* generation_controller =
+      PasswordGenerationController::GetIfExisting(web_contents());
+  // If the render frame for which the password generation was offered is
+  // deleted then hide the UI.
+  if (generation_controller) {
+    generation_controller->RenderFrameDeleted(render_frame_host);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 void ChromePasswordManagerClient::WebContentsDestroyed() {
   // crbug/1090011
   // Drop the connection before the WebContentsObserver destructors are invoked.
@@ -1346,6 +1363,12 @@ void ChromePasswordManagerClient::HideFillingUI() {
   // Hides all the manual filling UI if the controller already exists.
   if (mf_controller)
     mf_controller->Hide();
+
+  PasswordGenerationController* generation_controller =
+      PasswordGenerationController::GetIfExisting(web_contents());
+  if (generation_controller) {
+    generation_controller->HideBottomSheetIfNeeded();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

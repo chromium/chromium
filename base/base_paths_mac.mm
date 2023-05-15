@@ -10,11 +10,11 @@
 #include <mach-o/dyld.h>
 #include <stdint.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -123,11 +123,11 @@ bool PathProviderMac(int key, base::FilePath* result) {
         return PathService::Get(base::DIR_MODULE, result);
       }
 #if BUILDFLAG(IS_IOS_MACCATALYST)
-      *result = base::mac::MainBundlePath()
+      *result = base::apple::MainBundlePath()
                     .Append(FILE_PATH_LITERAL("Contents"))
                     .Append(FILE_PATH_LITERAL("Resources"));
 #else
-      *result = base::mac::FrameworkBundlePath().Append(
+      *result = base::apple::FrameworkBundlePath().Append(
           FILE_PATH_LITERAL("Resources"));
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
       return true;

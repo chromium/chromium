@@ -22,10 +22,8 @@ from scripts import common
 _LINUX_SI_FILE_ALLOWLIST = {
     'chrome': [
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
-        'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
         'crtstuff.c',  # Added by libgcc due to USE_EH_FRAME_REGISTRY.
         'iostream.cpp',  # TODO(crbug.com/973554): Remove.
-        'spinlock.cc',  # TODO(crbug.com/973556): Remove.
     ],
     'nacl_helper_bootstrap': [],
 }
@@ -37,11 +35,8 @@ _LINUX_SI_FILE_ALLOWLIST['nacl_helper'] = _LINUX_SI_FILE_ALLOWLIST['chrome']
 _CROS_SI_FILE_ALLOWLIST = {
     'chrome': [
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
-        'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
         'iostream.cpp:',  # TODO(crbug.com/973554): Remove.
         '000100',   # libc++ uses init_priority 100 for iostreams.
-        'spinlock.cc',  # TODO(crbug.com/973556): Remove.
-        'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
     ],
     'nacl_helper_bootstrap': [],
 }

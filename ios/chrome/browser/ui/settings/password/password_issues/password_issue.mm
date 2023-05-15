@@ -34,6 +34,11 @@
     _username = base::SysUTF16ToNSString(credential.username);
     _URL = [[CrURL alloc] initWithGURL:credential.GetURL()];
     _compromisedDescriptionEnabled = enableCompromisedDescription;
+    absl::optional<GURL> changePasswordURL = credential.GetChangePasswordURL();
+    if (changePasswordURL.has_value()) {
+      _changePasswordURL =
+          [[CrURL alloc] initWithGURL:changePasswordURL.value()];
+    }
   }
   return self;
 }

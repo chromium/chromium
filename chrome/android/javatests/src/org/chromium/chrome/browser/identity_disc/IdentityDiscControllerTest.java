@@ -16,17 +16,17 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -377,7 +377,7 @@ public class IdentityDiscControllerTest {
 
         // If the button is tapped before native is initialized, the click shouldn't be recorded.
         identityDiscController.onClick();
-        verifyZeroInteractions(mTracker);
+        verifyNoMoreInteractions(mTracker);
     }
 
     private void leaveNTP() {

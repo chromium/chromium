@@ -14,8 +14,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +32,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * A utility class for the UI recording exceptions to the blocked list for site
@@ -183,13 +182,7 @@ public class AddExceptionPreference
         final Button okButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         okButton.setEnabled(false);
 
-        input.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
+        input.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // The intent is to capture a url pattern and register it as an exception.

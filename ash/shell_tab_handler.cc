@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "shell_tab_handler.h"
+#include "ash/shell_tab_handler.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/focus_cycler.h"

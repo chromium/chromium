@@ -57,8 +57,8 @@ absl::optional<std::string> ValidateCrosapi(int min_version = 0) {
 
   if (min_version == 0)
     return absl::nullopt;
-  int interface_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      crosapi::mojom::Login::Uuid_);
+  int interface_version = chromeos::LacrosService::Get()
+                              ->GetInterfaceVersion<crosapi::mojom::Login>();
   if (interface_version < min_version)
     return kUnsupportedByAsh;
 

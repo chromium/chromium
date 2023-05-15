@@ -9,6 +9,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -94,7 +95,7 @@ class ExtractIOTask : public IOTask {
   const storage::FileSystemURL parent_folder_;
 
   // Raw pointer not owned by this.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Speedometer used to calculate the remaining time to finish the operation.

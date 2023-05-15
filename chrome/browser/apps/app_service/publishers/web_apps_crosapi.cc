@@ -420,7 +420,8 @@ void WebAppsCrosapi::OnLoadIcon(IconType icon_type,
   }
   // We apply the masking effect here, as masking is not implemented in Lacros.
   // (There is no resource file in the Lacros side to apply the icon effects.)
-  ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon_value),
+  ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
+                   size_hint_in_dip, std::move(icon_value),
                    base::BindOnce(&WebAppsCrosapi::OnApplyIconEffects,
                                   weak_factory_.GetWeakPtr(), icon_type,
                                   std::move(callback)));

@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -74,8 +74,9 @@ const int kEstimatedBytesPerMegapixel = 100000;
 // processing and rendering lots of identical frames.
 constexpr base::TimeDelta kKeepAliveInterval = base::Seconds(2);
 
-// SDP format parameter name used to set the maximum framerate for an encoder.
-constexpr char kMaxFramerateKey[] = "max-fr";
+// Used to clamp the calculated frame durations to a set of reasonable values.
+constexpr auto kMinFrameDuration = base::Hertz(120);
+constexpr auto kMaxFrameDuration = base::Hertz(15);
 
 std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   using EncodeResult = WebrtcVideoEncoder::EncodeResult;
@@ -90,25 +91,6 @@ std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   }
   NOTREACHED();
   return "";
-}
-
-int GetFrameRateFromSdpFormatParam(const std::string& param_value) {
-  int conversion_result;
-  if (!base::StringToInt(param_value, &conversion_result)) {
-    LOG(ERROR) << "Failed to convert max-fr value to an int: " << param_value;
-    return kTargetFrameRate;
-  }
-
-  // Clamp the range to prevent a bad experience in case of a client bug.
-  // 1000 is the maximum allowable frame rate as capturing at a higher rate will
-  // cause problems in several components which expect at least 1 millisecond
-  // between frames. In reality, very few applications update their window
-  // faster than the current monitor refresh rate which is likely 60Hz - 144Hz
-  // so value > ~150 won't provide much value.
-  // A lower bound of 1 millisecond is needed because the framerate is used as
-  // the denominator when determining the period between frames so 0 will lead
-  // to divide by 0 bugs.
-  return base::clamp<int>(conversion_result, 1, 1000);
 }
 
 }  // namespace
@@ -173,12 +155,6 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
     default:
       LOG(FATAL) << "Unknown codec type: " << codec_type_;
   }
-
-  auto iter = format.parameters.find(kMaxFramerateKey);
-  if (iter != format.parameters.end()) {
-    target_frame_rate_ = GetFrameRateFromSdpFormatParam(iter->second);
-  }
-  target_frame_interval_ = base::Hertz(target_frame_rate_);
 }
 
 WebrtcVideoEncoderWrapper::~WebrtcVideoEncoderWrapper() {
@@ -235,7 +211,17 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     const std::vector<webrtc::VideoFrameType>* frame_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto now = base::TimeTicks::Now();
+  // Include all of the pre-processing steps in the total encode time.
+  auto encode_start = base::TimeTicks::Now();
+
+  // Calculate the frame interval before dropping or queueing frames.
+  base::Time frame_timestamp = base::Time::NowFromSystemTime();
+  if (!last_frame_received_timestamp_.is_null()) {
+    current_frame_interval_ = std::clamp(
+        base::TimeDelta(frame_timestamp - last_frame_received_timestamp_),
+        kMinFrameDuration, kMaxFrameDuration);
+  }
+  last_frame_received_timestamp_ = frame_timestamp;
 
   // Simulcast is unsupported, so only the first vector element is needed.
   bool key_frame_requested =
@@ -296,20 +282,13 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   }
 
   if (!screen_id_.has_value()) {
+    // Save the screen_id from the first encoded frame, otherwise we won't know
+    // which screen_id this encoder is associated with due to the current WebRTC
+    // architecture.
     screen_id_ = frame_stats_->screen_id;
-
-    // Now that we know which screen id this encoder is associated with, we can
-    // let that video stream know if a non-default framerate has been requested.
-    if (target_frame_rate_ != kTargetFrameRate) {
-      main_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoStreamEventRouter::OnTargetFramerateChanged,
-                         video_stream_event_router_, *screen_id_,
-                         target_frame_rate_));
-    }
   }
 
-  frame_stats_->encode_started_time = now;
+  frame_stats_->encode_started_time = encode_start;
 
   auto desktop_frame = video_frame_adapter->TakeDesktopFrame();
 
@@ -352,7 +331,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   // This is done to save on network bandwidth and CPU usage.
   if (desktop_frame->updated_region().is_empty() && !top_off_active_ &&
       !pending_key_frame_request_ &&
-      (now - latest_frame_encode_start_time_ < kKeepAliveInterval)) {
+      (encode_start - latest_frame_encode_start_time_ < kKeepAliveInterval)) {
     // Drop the frame. There is no need to track the update-rect as the
     // frame being dropped is empty.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -361,18 +340,15 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
                        weak_factory_.GetWeakPtr()));
     return WEBRTC_VIDEO_CODEC_OK;
   }
-  latest_frame_encode_start_time_ = now;
+  latest_frame_encode_start_time_ = encode_start;
 
   WebrtcVideoEncoder::FrameParams frame_params;
 
   // SetRates() must be called prior to Encode(), with a non-zero bitrate.
   DCHECK_NE(0, bitrate_kbps_);
   frame_params.bitrate_kbps = bitrate_kbps_;
-  frame_params.duration = target_frame_interval_;
-
-  // TODO(crbug.com/1192865): Copy the FPS estimator from the scheduler,
-  // instead of hard-coding this value here.
-  frame_params.fps = target_frame_rate_;
+  frame_params.duration = current_frame_interval_;
+  frame_params.fps = current_frame_interval_.ToHz();
 
   frame_params.vpx_min_quantizer =
       ShouldDropQualityForLargeFrame(*desktop_frame) ? kMaxQuantizer
@@ -579,7 +555,7 @@ bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
         updated_area * kEstimatedBytesPerMegapixel / kPixelsPerMegapixel;
     base::TimeDelta expected_send_delay =
         base::Seconds(expected_frame_size * 8 / (bitrate_kbps_ * 1000.0));
-    if (expected_send_delay > target_frame_interval_) {
+    if (expected_send_delay > current_frame_interval_) {
       should_drop_quality = true;
     }
   }

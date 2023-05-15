@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Descodificador d'imatges</translation>
 <translation id="1785415724048343560">Opció recomanada per gaudir de la millor experiència</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">De: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Els llocs web relacionats poden veure la teva activitat al grup</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic</translation>
 <translation id="3165022941318558018">Permet que un lloc web utilitzi galetes de tercers</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
-<translation id="3203366800380907218">Del web</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Silencia els llocs web que reprodueixen so</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3628308229821498208">Cerques suggerides</translation>
+<translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3721953990244350188">Ignora i mostra la següent acció disponible</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
 <translation id="5225463052809312700">Activa la càmera</translation>
-<translation id="5229337741799419985">Aquesta opció de configuració funciona sense identificar-te ni permetre que els llocs web vegin el teu historial de navegació</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Baixades actives</translation>
-<translation id="6701547804986694515">Els llocs web que visites poden desar informació a Chrome que validi que no ets un bot. Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment.</translation>
 <translation id="6722828510648505498">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Normalment bloqueges les notificacions. Per permetre-les, toca Detalls.</translation>
 <translation id="7366415735885268578">Afegeix un lloc</translation>
 <translation id="7383715096023715447">Configuració de <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Aquesta opció de configuració funciona sense identificar-te ni permetre que els llocs web vegin el teu historial de navegació, tot i que poden compartir una quantitat petita de dades com a part de la verificació</translation>
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
 <translation id="7425915948813553151">Tema fosc per als llocs web</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>
 <translation id="8823559166155093873">Bloqueja les galetes</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
 <translation id="8903921497873541725">Amplia</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
@@ -455,7 +454,7 @@
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
-<translation id="9201023452444595544">S'esborraran totes les dades sense connexió</translation>
+<translation id="9201023452444595544">S'esborraran totes les dades fora de línia</translation>
 <translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>

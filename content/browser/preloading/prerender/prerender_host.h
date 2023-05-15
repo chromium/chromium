@@ -82,6 +82,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kMaxValue = kRequestDestination,
   };
 
+  // Observes a triggered prerender. Note that the observer should overlive the
+  // prerender host instance, or be removed properly upon destruction.
   class Observer : public base::CheckedObserver {
    public:
     // Called on the page activation.
@@ -100,6 +102,14 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   static PrerenderHost* GetPrerenderHostFromFrameTreeNode(
       FrameTreeNode& frame_tree_node);
 
+  // Checks whether two headers are the same in a case-insensitive and
+  // order-insensitive way.
+  // TODO(https://crbug.com/1443922): Migrate this method into
+  // `HttpRequestHeaders`.
+  static bool IsActivationHeaderMatch(
+      const net::HttpRequestHeaders& potential_activation_headers,
+      const net::HttpRequestHeaders& prerender_headers);
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);
@@ -116,8 +126,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // now as it confuses WebContentsObserver instances because they can not
   // distinguish between the different FrameTrees.
 
-  void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool should_show_loading_ui) override {}
+  void LoadingStateChanged(LoadingState new_state) override {}
+  void DidStartLoading(FrameTreeNode* frame_tree_node) override {}
   void DidStopLoading() override;
   bool IsHidden() override;
   FrameTree* LoadingTree() override;
@@ -275,7 +285,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // PreloadingFailureReason for PreloadingAttempt associated with this
   // PrerenderHost.
   void SetTriggeringOutcome(PreloadingTriggeringOutcome outcome);
-  void SetEligibility(PreloadingEligibility eligibility);
   void SetFailureReason(PrerenderFinalStatus status);
 
   ActivationNavigationParamsMatch

@@ -618,8 +618,8 @@ class NET_EXPORT HttpServerProperties
   raw_ptr<const base::TickClock> tick_clock_;  // Unowned
   raw_ptr<base::Clock> clock_;                 // Unowned
 
-  // Cached value of kPartitionHttpServerPropertiesByNetworkIsolationKey
-  // feature. Cached to improve performance.
+  // Cached value of whether network state partitioning is enabled. Cached to
+  // improve performance.
   const bool use_network_anonymization_key_;
 
   // Set to true once initial properties have been retrieved from disk by

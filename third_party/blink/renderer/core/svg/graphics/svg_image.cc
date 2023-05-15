@@ -70,10 +70,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -395,20 +393,17 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   pattern_transform.setTranslate(tiling_info.phase.x() + spaced_tile.x(),
                                  tiling_info.phase.y() + spaced_tile.y());
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
-  {
-    DrawingRecorder recorder(builder->Context(), *builder,
-                             DisplayItem::Type::kSVGImage);
-    // When generating an expanded tile, make sure we don't draw into the
-    // spacing area.
-    if (!tiling_info.spacing.IsZero())
-      builder->Context().Clip(tile);
-    DrawForContainer(draw_info, builder->Context().Canvas(), cc::PaintFlags(),
-                     tile, tiling_info.image_rect);
+  PaintRecorder recorder;
+  cc::PaintCanvas* tile_canvas = recorder.beginRecording();
+  // When generating an expanded tile, make sure we don't draw into the
+  // spacing area.
+  if (!tiling_info.spacing.IsZero()) {
+    tile_canvas->clipRect(gfx::RectFToSkRect(tile));
   }
-
+  DrawForContainer(draw_info, tile_canvas, cc::PaintFlags(), tile,
+                   tiling_info.image_rect);
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
-      builder->EndRecording(), gfx::RectFToSkRect(spaced_tile),
+      recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(spaced_tile),
       SkTileMode::kRepeat, SkTileMode::kRepeat, &pattern_transform);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),

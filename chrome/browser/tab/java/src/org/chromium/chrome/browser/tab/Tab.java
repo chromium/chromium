@@ -200,6 +200,12 @@ public interface Tab extends TabLifecycle {
     boolean isUserInteractable();
 
     /**
+     *  Sets Parent for the current Tab and other tab related parent properties.
+     */
+
+    void reparentTab(Tab parent);
+
+    /**
      * Causes this tab to navigate to the specified URL.
      * @param params parameters describing the url load. Note that it is important to set correct
      *         page transition as it is used for ranking URLs in the history so the omnibox

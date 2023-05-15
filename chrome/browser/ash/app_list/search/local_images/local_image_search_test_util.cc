@@ -14,7 +14,7 @@ bool operator==(const ImageInfo& i1, const ImageInfo& i2) {
 }
 
 bool operator==(const FileSearchResult& f1, const FileSearchResult& f2) {
-  return f1.path == f2.path && f1.last_modified == f2.last_modified &&
+  return f1.last_modified == f2.last_modified &&
          std::abs(f1.relevance - f2.relevance) < 0.0000001;
 }
 

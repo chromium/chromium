@@ -81,8 +81,9 @@ class TestCommandHandler : public BrowserCommandHandler {
   ui::ElementContext GetUiElementContext() override { return kTestContext1; }
 
   CommandUpdater* GetCommandUpdater() override {
-    if (command_updater_)
+    if (command_updater_) {
       return command_updater_.get();
+    }
     return BrowserCommandHandler::GetCommandUpdater();
   }
 
@@ -108,6 +109,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     customize_chrome_side_panel_feature_supported_ = is_supported;
   }
 
+  void SetDefaultSearchProviderToGoogle(bool is_google) {
+    default_search_provider_is_google_ = is_google;
+  }
+
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
@@ -119,6 +124,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     return customize_chrome_side_panel_feature_supported_;
   }
 
+  bool DefaultSearchProviderIsGoogle() override {
+    return default_search_provider_is_google_;
+  }
+
  private:
   raw_ptr<user_education::TutorialService> tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
@@ -126,6 +135,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   bool tab_groups_feature_supported_ = true;
   bool has_tab_groups_ = false;
   bool customize_chrome_side_panel_feature_supported_ = true;
+  bool default_search_provider_is_google_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -162,13 +172,15 @@ class MockTutorialService : public TestTutorialService {
       : TestTutorialService(tutorial_registry, help_bubble_factory_registry) {}
   ~MockTutorialService() override = default;
 
-  MOCK_METHOD4(StartTutorial,
-               void(user_education::TutorialIdentifier,
-                    ui::ElementContext,
-                    base::OnceClosure,
-                    base::OnceClosure));
-  MOCK_METHOD2(LogStartedFromWhatsNewPage,
-               void(user_education::TutorialIdentifier, bool));
+  MOCK_METHOD(void,
+              StartTutorial,
+              (user_education::TutorialIdentifier,
+               ui::ElementContext,
+               base::OnceClosure,
+               base::OnceClosure));
+  MOCK_METHOD(void,
+              LogStartedFromWhatsNewPage,
+              (user_education::TutorialIdentifier, bool));
   MOCK_CONST_METHOD0(IsRunningTutorial, bool());
 };
 
@@ -177,9 +189,9 @@ class MockCommandHandler : public TestCommandHandler {
   explicit MockCommandHandler(Profile* profile) : TestCommandHandler(profile) {}
   ~MockCommandHandler() override = default;
 
-  MOCK_METHOD2(NavigateToURL, void(const GURL&, WindowOpenDisposition));
+  MOCK_METHOD(void, NavigateToURL, (const GURL&, WindowOpenDisposition));
 
-  MOCK_METHOD0(OpenFeedbackForm, void());
+  MOCK_METHOD(void, OpenFeedbackForm, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -554,9 +566,16 @@ TEST_F(BrowserCommandHandlerTest,
   command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(false);
   EXPECT_FALSE(
       CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
-
-  // If the browser has feature enabled, allow running command
   command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(true);
+
+  // If the search provider is not set to Google, dont run the command
+  command_handler_->SetDefaultSearchProviderToGoogle(false);
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
+  command_handler_->SetDefaultSearchProviderToGoogle(true);
+
+  // If the browser has feature enabled and google is default search
+  // provider, allow running command
   EXPECT_TRUE(
       CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
 
@@ -570,6 +589,9 @@ TEST_F(BrowserCommandHandlerTest,
     EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
     EXPECT_CALL(service, LogStartedFromWhatsNewPage(
                              kSidePanelCustomizeChromeTutorialId, true));
+    EXPECT_CALL(*command_handler_,
+                NavigateToURL(GURL(chrome::kChromeUINewTabPageURL),
+                              DispositionFromClick(*info)));
     EXPECT_TRUE(ExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial,
                                std::move(info)));
   }

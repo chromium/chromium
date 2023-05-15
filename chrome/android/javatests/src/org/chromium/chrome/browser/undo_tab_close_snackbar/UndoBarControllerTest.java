@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
 import android.widget.TextView;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;

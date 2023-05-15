@@ -19,6 +19,7 @@
 #include "services/network/cors/preflight_result.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -137,6 +138,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant);
+
+  // Clears the CORS preflight cache. The time range is always "all time" as
+  // the preflight cache max age is capped to 2hrs. in Chrome.
+  // It clears origins selectively when the url filter is not null, otherwise
+  // clears all its contents.
+  void ClearCorsPreflightCache(mojom::ClearDataFilterPtr url_filter);
+
+  PreflightCache& GetPreflightCacheForTesting() { return cache_; }
 
  private:
   class PreflightLoader;

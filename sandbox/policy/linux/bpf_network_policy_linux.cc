@@ -70,6 +70,7 @@ ResultExpr RestrictIoctlForNetworkService() {
       // TODO(crbug.com/1312226): remove these allowances when
       // AddressTrackerLinux no longer runs in the network service.
       .Cases({SIOCETHTOOL, SIOCGIWNAME, SIOCGIFNAME}, Allow())
+      .Case(SIOCGIFINDEX, Allow())  // For glibc's __inet6_scopeid_pton().
       .Default(RestrictIoctl());
 }
 
@@ -154,6 +155,7 @@ ResultExpr RestrictSocketForNetworkService() {
       Switch(type & ~kAllowedTypeFlags)
           .Case(SOCK_STREAM,
                 If(protocol == 0, Allow()).Else(CrashSIGSYSSocket()))
+          .Case(SOCK_DGRAM, Error(EPERM))  // For glibc's __inet6_scopeid_pton.
           .Default(CrashSIGSYSSocket());
 
   // Network service needs netlink sockets for address_tracker_linux.h for

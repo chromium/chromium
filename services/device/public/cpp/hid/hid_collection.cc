@@ -10,6 +10,7 @@
 
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/hid/hid_item_state_table.h"
 
@@ -214,12 +215,16 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
   DCHECK(max_output_report_bits);
   DCHECK(max_feature_report_bits);
   struct {
-    const std::unordered_map<uint8_t, HidReport>& reports;
-    size_t& max_report_bits;
+    const raw_ref<const std::unordered_map<uint8_t, HidReport>, ExperimentalAsh>
+        reports;
+    const raw_ref<size_t, ExperimentalAsh> max_report_bits;
   } report_lists[]{
-      {input_reports_, *max_input_report_bits},
-      {output_reports_, *max_output_report_bits},
-      {feature_reports_, *max_feature_report_bits},
+      {ToRawRef<ExperimentalAsh>(input_reports_),
+       ToRawRef<ExperimentalAsh>(*max_input_report_bits)},
+      {ToRawRef<ExperimentalAsh>(output_reports_),
+       ToRawRef<ExperimentalAsh>(*max_output_report_bits)},
+      {ToRawRef<ExperimentalAsh>(feature_reports_),
+       ToRawRef<ExperimentalAsh>(*max_feature_report_bits)},
   };
   auto collection_info = mojom::HidCollectionInfo::New();
   collection_info->usage =
@@ -227,8 +232,8 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
   collection_info->report_ids.insert(collection_info->report_ids.end(),
                                      report_ids_.begin(), report_ids_.end());
   for (const auto& entry : report_lists) {
-    entry.max_report_bits = 0;
-    for (const auto& report : entry.reports) {
+    *entry.max_report_bits = 0;
+    for (const auto& report : *entry.reports) {
       uint64_t report_bits = 0;
       for (const auto& item : report.second) {
         uint64_t report_size = item->GetReportSize();
@@ -255,8 +260,8 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
         report_bits += item_bits;
       }
       DCHECK_LE(report_bits, kMaxReasonableReportLengthBits);
-      entry.max_report_bits =
-          std::max(entry.max_report_bits, static_cast<size_t>(report_bits));
+      *entry.max_report_bits =
+          std::max(*entry.max_report_bits, static_cast<size_t>(report_bits));
     }
   }
 }
@@ -264,12 +269,17 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
 mojom::HidCollectionInfoPtr HidCollection::ToMojo() const {
   auto collection = mojom::HidCollectionInfo::New();
   struct {
-    const std::unordered_map<uint8_t, HidReport>& in;
-    std::vector<mojom::HidReportDescriptionPtr>& out;
+    const raw_ref<const std::unordered_map<uint8_t, HidReport>, ExperimentalAsh>
+        in;
+    const raw_ref<std::vector<mojom::HidReportDescriptionPtr>, ExperimentalAsh>
+        out;
   } report_lists[]{
-      {input_reports_, collection->input_reports},
-      {output_reports_, collection->output_reports},
-      {feature_reports_, collection->feature_reports},
+      {ToRawRef<ExperimentalAsh>(input_reports_),
+       ToRawRef<ExperimentalAsh>(collection->input_reports)},
+      {ToRawRef<ExperimentalAsh>(output_reports_),
+       ToRawRef<ExperimentalAsh>(collection->output_reports)},
+      {ToRawRef<ExperimentalAsh>(feature_reports_),
+       ToRawRef<ExperimentalAsh>(collection->feature_reports)},
   };
 
   collection->usage =
@@ -279,12 +289,12 @@ mojom::HidCollectionInfoPtr HidCollection::ToMojo() const {
   collection->collection_type = collection_type_;
 
   for (const auto& report_list : report_lists) {
-    for (const auto& report : report_list.in) {
+    for (const auto& report : *report_list.in) {
       auto report_description = mojom::HidReportDescription::New();
       report_description->report_id = report.first;
       for (const auto& item : report.second)
         report_description->items.push_back(item->ToMojo());
-      report_list.out.push_back(std::move(report_description));
+      report_list.out->push_back(std::move(report_description));
     }
   }
 

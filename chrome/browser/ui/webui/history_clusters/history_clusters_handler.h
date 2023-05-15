@@ -79,7 +79,9 @@ class HistoryClustersHandler : public mojom::PageHandler,
                     RemoveVisitsCallback callback) override;
   void HideVisits(std::vector<mojom::URLVisitPtr> visits,
                   HideVisitsCallback callback) override;
-  void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits) override;
+  void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits,
+                               const absl::optional<std::string>&
+                                   tab_group_name = absl::nullopt) override;
   void RecordVisitAction(mojom::VisitAction visit_action,
                          uint32_t visit_index,
                          mojom::VisitType visit_type) override;
@@ -129,7 +131,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   // Used only for hiding History visits. It's not used for querying History,
   // because we do our querying with HistoryClustersService.
-  base::raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<history::HistoryService> history_service_;
 
   // Used only for deleting History properly, and observing deletions that occur
   // from other tabs. It's not used for querying History, because we do our

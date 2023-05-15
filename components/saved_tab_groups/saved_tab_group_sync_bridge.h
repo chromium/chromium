@@ -46,10 +46,10 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
@@ -77,14 +77,14 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Adds `specifics` into local storage (SavedTabGroupModel, and
   // ModelTypeStore) and resolves any conflicts if `specifics` already exists
-  // locally. `notify_sync` is true when MergeSyncData is called and there is a
-  // conflict between the received and local data. Accordingly, after the
+  // locally. `notify_sync` is true when MergeFullSyncData is called and there
+  // is a conflict between the received and local data. Accordingly, after the
   // conflict has been resolved, we will want to update sync with this merged
   // data. `notify_sync` is false in cases that would cause a cycle such as when
-  // ApplySyncChanges is called. Additionally, the list of changes may not be
-  // complete and tabs may have been sent before their groups have arrived. In
-  // this case, the tabs are saved in the ModelTypeStore but not in the model
-  // (and instead cached in this class).
+  // ApplyIncrementalSyncChanges is called. Additionally, the list of changes
+  // may not be complete and tabs may have been sent before their groups have
+  // arrived. In this case, the tabs are saved in the ModelTypeStore but not in
+  // the model (and instead cached in this class).
   void AddDataToLocalStorage(const sync_pb::SavedTabGroupSpecifics& specifics,
                              syncer::MetadataChangeList* metadata_change_list,
                              syncer::ModelTypeStore::WriteBatch* write_batch,

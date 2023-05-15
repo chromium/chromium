@@ -17,10 +17,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
-#include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +32,7 @@ namespace signin {
 struct AccountsInCookieJarInfo;
 }  // namespace signin
 
-namespace syncer {
+namespace trusted_vault {
 
 // Provides interfaces to store/remove keys to/from file storage.
 // This class performs expensive operations and expected to be run from
@@ -81,7 +81,7 @@ class StandaloneTrustedVaultBackend
 
   // TrustedVaultDegradedRecoverabilityHandler::Delegate implementation.
   void WriteDegradedRecoverabilityState(
-      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+      const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
           degraded_recoverability_state) override;
   void OnDegradedRecoverabilityChanged() override;
 
@@ -134,8 +134,8 @@ class StandaloneTrustedVaultBackend
 
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
-  sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
-      const std::string& gaia_id);
+  trusted_vault_pb::LocalDeviceRegistrationInfo
+  GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
 
@@ -167,7 +167,8 @@ class StandaloneTrustedVaultBackend
 
   // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
   // found.
-  sync_pb::LocalTrustedVaultPerUser* FindUserVault(const std::string& gaia_id);
+  trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
+      const std::string& gaia_id);
 
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it. For the cases where
@@ -230,7 +231,7 @@ class StandaloneTrustedVaultBackend
   // in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
 
-  sync_pb::LocalTrustedVault data_;
+  trusted_vault_pb::LocalTrustedVault data_;
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
@@ -318,6 +319,6 @@ class StandaloneTrustedVaultBackend
       pending_get_is_recoverability_degraded_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_BACKEND_H_

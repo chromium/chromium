@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -117,7 +118,7 @@ class FileBrowserHandlerExecutor {
       const Extension* extension,
       int handler_pid);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<const Extension> extension_;
   const std::string action_id_;
   file_tasks::FileTaskFinishedCallback done_;

@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -554,7 +555,7 @@ class AccessibilityManager
       ::extensions::api::accessibility_private::DlcType dlc);
 
   // Profile which has the current a11y context.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ScopedObservation<session_manager::SessionManager,
@@ -590,7 +591,7 @@ class AccessibilityManager
 
   bool braille_ime_current_ = false;
 
-  ChromeVoxPanel* chromevox_panel_ = nullptr;
+  raw_ptr<ChromeVoxPanel, ExperimentalAsh> chromevox_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       chromevox_panel_widget_observer_;
 

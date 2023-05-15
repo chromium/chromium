@@ -73,11 +73,10 @@ std::tuple<double, double, double, double> AddPremultipliedColor(
     Color color,
     Color::ColorSpace color_space) {
   color.ConvertToColorSpace(color_space);
-  return std::make_tuple(
-      param0 + fraction * color.Param0() * color.FloatAlpha(),
-      param1 + fraction * color.Param1() * color.FloatAlpha(),
-      param2 + fraction * color.Param2() * color.FloatAlpha(),
-      alpha + fraction * color.FloatAlpha());
+  return std::make_tuple(param0 + fraction * color.Param0() * color.Alpha(),
+                         param1 + fraction * color.Param1() * color.Alpha(),
+                         param2 + fraction * color.Param2() * color.Alpha(),
+                         alpha + fraction * color.Alpha());
 }
 
 std::tuple<double, double, double> UnpremultiplyColor(double param0,

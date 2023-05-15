@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -176,11 +175,7 @@ void WaitUntilCondition(const base::RepeatingCallback<bool()>& condition,
 // Evaluates a boolean script expression in the signin frame.
 bool EvaluateBooleanScriptInSigninFrame(content::WebContents* web_contents,
                                         const std::string& script) {
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetSigninFrame(web_contents),
-      "window.domAutomationController.send(" + script + ");", &result));
-  return result;
+  return content::EvalJs(GetSigninFrame(web_contents), script).ExtractBool();
 }
 
 // Returns whether an element with id |element_id| exists in the signin page.
@@ -218,9 +213,7 @@ std::string GetButtonIdForSyncConfirmationDialogAction(
     case SyncConfirmationDialogAction::kConfirm:
       return "confirmButton";
     case SyncConfirmationDialogAction::kCancel:
-      return base::FeatureList::IsEnabled(switches::kTangibleSync)
-                 ? "notNowButton"
-                 : "cancelButton";
+      return "notNowButton";
   }
 }
 
@@ -436,7 +429,7 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"identifierId"});
   std::string js = "document.getElementById('identifierId').value = '" + email +
                    "'; document.getElementById('identifierNext').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 
   // Fill the password input field.
   std::string password_script = kGetPasswordFieldFromDiceSigninPage;
@@ -449,7 +442,7 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
       "Could not find Dice password field");
   js = password_script + ".value = '" + password + "';";
   js += "document.getElementById('passwordNext').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 }
 
 void SigninInOldGaiaFlow(content::WebContents* web_contents,
@@ -458,12 +451,12 @@ void SigninInOldGaiaFlow(content::WebContents* web_contents,
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"Email"});
   std::string js = "document.getElementById('Email').value = '" + email + ";" +
                    "document.getElementById('next').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"Passwd"});
   js = "document.getElementById('Passwd').value = '" + password + "';" +
        "document.getElementById('signIn').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 }
 
 void ExecuteJsToSigninInSigninFrame(content::WebContents* web_contents,

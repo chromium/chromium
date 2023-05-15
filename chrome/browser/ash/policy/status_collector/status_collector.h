@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -126,9 +127,10 @@ class StatusCollector {
   // activity time that is slightly in the future.
   base::TimeDelta max_stored_future_activity_interval_;
 
-  ash::system::StatisticsProvider* const statistics_provider_;
+  const raw_ptr<ash::system::StatisticsProvider, ExperimentalAsh>
+      statistics_provider_;
 
-  ash::CrosSettings* const cros_settings_;
+  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
 
   // Cached values of the reporting settings.
   bool report_version_info_ = false;
@@ -138,7 +140,7 @@ class StatusCollector {
   base::CallbackListSubscription version_info_subscription_;
   base::CallbackListSubscription boot_mode_subscription_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // Task runner in the creation thread where responses are sent to.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

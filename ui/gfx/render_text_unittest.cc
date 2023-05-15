@@ -6429,7 +6429,7 @@ TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
   // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\uf8ff");
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(u"\uf8ff", render_text->GetDisplayText());
 #else
   EXPECT_EQ(u"\ufffd", render_text->GetDisplayText());

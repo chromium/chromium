@@ -5654,6 +5654,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   // No new LocalSurfaceId should be allocated for the first navigation and the
   // timer should not fire.
   widget_host_->DidNavigate();
+  widget_host_->StartNewContentRenderingTimeout();
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   EXPECT_EQ(id0, id1);
   {
@@ -5668,6 +5669,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
 
   // Start the timer. Verify that a new LocalSurfaceId is allocated.
   widget_host_->DidNavigate();
+  widget_host_->StartNewContentRenderingTimeout();
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id2.is_valid());
   EXPECT_LT(id1.parent_sequence_number(), id2.parent_sequence_number());

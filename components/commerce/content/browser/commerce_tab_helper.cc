@@ -37,7 +37,28 @@ void CommerceTabHelper::DidFinishNavigation(
                                      previous_main_frame_url_);
   previous_main_frame_url_ = navigation_handle->GetURL();
 
+  // If navigating to a different document, expect DidStopLoading to be
+  // triggered.
+  if (!navigation_handle->IsSameDocument()) {
+    web_wrapper_->SetIsFirstLoadForNavigationFinished(false);
+  }
+
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+
+  // Some single-page webapps don't trigger load events for every navigation.
+  // Make sure we have the opportunity to observer that event.
+  if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    shopping_service_->DidFinishLoad(web_wrapper_.get());
+  }
+}
+
+void CommerceTabHelper::DidStopLoading() {
+  if (!shopping_service_) {
+    return;
+  }
+
+  web_wrapper_->SetIsFirstLoadForNavigationFinished(true);
+  shopping_service_->DidStopLoading(web_wrapper_.get());
 }
 
 void CommerceTabHelper::DidFinishLoad(
@@ -45,6 +66,8 @@ void CommerceTabHelper::DidFinishLoad(
     const GURL& validated_url) {
   if (!shopping_service_ || !render_frame_host->IsInPrimaryMainFrame())
     return;
+
+  web_wrapper_->SetIsFirstLoadForNavigationFinished(true);
 
   shopping_service_->DidFinishLoad(web_wrapper_.get());
 }

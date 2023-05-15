@@ -29,6 +29,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 
   // ShellToplevelWrapper overrides:
   bool Initialize() override;
+  bool IsSupportedOnAuraToplevel(uint32_t version) const override;
   void SetMaximized() override;
   void UnSetMaximized() override;
   void SetFullscreen() override;
@@ -67,6 +68,9 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                   float snap_ratio) override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
                        bool allow_haptic_feedback) override;
+  void SetPersistable(bool persistable) const override;
+  void SetShape(std::unique_ptr<ShapeRects> shape_rects) override;
+
   XDGToplevelWrapperImpl* AsXDGToplevelWrapper() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
@@ -119,6 +123,9 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 
   // Called when raster scale is changed.
   void OnConfigureRasterScale(double scale);
+
+  // Creates a wl_region from `shape_rects`.
+  wl::Object<wl_region> CreateAndAddRegion(const ShapeRects& shape_rects);
 
   // Ground surface for this toplevel wrapper.
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;

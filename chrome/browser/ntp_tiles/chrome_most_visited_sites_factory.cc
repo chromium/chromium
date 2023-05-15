@@ -36,8 +36,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
 #endif
@@ -61,7 +61,8 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
  private:
   const raw_ptr<Profile> profile_;
   raw_ptr<Observer> supervisor_observer_;
-  base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
+  base::ScopedObservation<supervised_user::SupervisedUserService,
+                          SupervisedUserServiceObserver>
       register_observation_{this};
 };
 
@@ -84,7 +85,7 @@ void SupervisorBridge::SetObserver(Observer* new_observer) {
 }
 
 bool SupervisorBridge::IsBlocked(const GURL& url) {
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   auto* url_filter = supervised_user_service->GetURLFilter();
   return url_filter->GetFilteringBehaviorForURL(url) ==

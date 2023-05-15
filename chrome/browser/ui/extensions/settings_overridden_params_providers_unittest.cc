@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
@@ -15,7 +16,6 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
 class SettingsOverriddenParamsProvidersUnitTest
     : public extensions::ExtensionServiceTestBase {
@@ -45,7 +45,7 @@ class SettingsOverriddenParamsProvidersUnitTest
   const extensions::Extension* AddExtensionControllingNewTab(
       const char* name = "ntp override") {
     base::Value::Dict chrome_url_overrides =
-        extensions::DictionaryBuilder().Set("newtab", "newtab.html").Build();
+        base::Value::Dict().Set("newtab", "newtab.html");
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)

@@ -9,6 +9,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -29,6 +33,10 @@ class ClipboardHistoryAsh : public mojom::ClipboardHistory {
       const gfx::Rect& anchor_point,
       ui::MenuSourceType menu_source_type,
       mojom::ClipboardHistoryControllerShowSource show_source) override;
+  void PasteClipboardItemById(
+      const base::UnguessableToken& item_id,
+      int event_flags,
+      mojom::ClipboardHistoryControllerShowSource paste_source) override;
 
  private:
   // This class supports any number of connections. This allows the client to

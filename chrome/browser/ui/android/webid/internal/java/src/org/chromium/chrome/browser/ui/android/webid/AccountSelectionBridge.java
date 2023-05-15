@@ -75,21 +75,24 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         mNativeView = 0;
     }
 
-    /* Shows the accounts in a bottom sheet UI allowing user to select one.
+    /**
+     * Shows the accounts in a bottom sheet UI allowing user to select one.
      *
      * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
      * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
      */
     @CalledByNative
     private void showAccounts(String topFrameForDisplay, String iframeForDisplay,
             String idpForDisplay, Account[] accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientIdMetadata, boolean isAutoReauthn) {
+            ClientIdMetadata clientIdMetadata, boolean isAutoReauthn, String rpContext) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(topFrameForDisplay, iframeForDisplay, idpForDisplay,
-                Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn);
+                Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn, rpContext);
     }
 
     @CalledByNative
@@ -116,14 +119,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
             AccountSelectionBridgeJni.get().onAccountSelected(mNativeView, idpConfigUrl,
-                    account.getStringFields(), account.getPictureUrl(), account.isSignIn());
+                    account.getStringFields(), account.getPictureUrl(), account.getHints(),
+                    account.isSignIn());
         }
     }
 
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,
-                String[] accountFields, GURL accountPictureUrl, boolean isSignedIn);
+                String[] accountFields, GURL accountPictureUrl, String[] accountHints,
+                boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
     }

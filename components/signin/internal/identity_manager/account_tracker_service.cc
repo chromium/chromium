@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -292,6 +293,8 @@ void AccountTrackerService::StartTrackingAccount(
     const CoreAccountId& account_id) {
   if (!base::Contains(accounts_, account_id)) {
     DVLOG(1) << "StartTracking " << account_id;
+    base::UmaHistogramBoolean("Signin.AccountTracker.IsAccountIdEmpty",
+                              account_id.empty());
     AccountInfo account_info;
     account_info.account_id = account_id;
     accounts_.insert(std::make_pair(account_id, account_info));

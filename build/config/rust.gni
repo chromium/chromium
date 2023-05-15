@@ -19,15 +19,9 @@ declare_args() {
   # should not be removed.
   # TODO(crbug.com/1386212): Mac
   # TODO(crbug.com/1271215): Windows
-  # TODO(crbug.com/1426472): use_clang_coverage
-  # TODO(crbug.com/1427362): using_sanitizer
-  # TODO(crbug.com/1427364): target_cpu != "x86"
-  # There is no specific bug for target_os == host_os since nor for
-  # !is_official_build, since this is just a matter of rolling things out
-  # slowly and carefully and there may be no actual bugs there.
-  enable_rust = is_linux && !is_official_build && !using_sanitizer &&
-                target_cpu != "x86" && !use_clang_coverage && is_clang &&
-                build_with_chromium
+  # TODO(crbug.com/1229419): is_official_build
+  enable_rust =
+      !is_mac && !is_ios && !is_win && !is_official_build && build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
@@ -35,25 +29,18 @@ declare_args() {
   # all Rust features enabled.
   enable_all_rust_features = false
 
-  # Use the Rust toolchain built in-tree. See //tools/rust.
-  use_chromium_rust_toolchain = true
-
-  # Build libstd locally with GN and use that instead of the prebuilts, where
-  # applicable. If this is false the prebuilt libstd will always be used. If
-  # true, the local build is only used with the Chromium Rust toolchain and only
-  # on supported platforms and GN targets.
-  enable_local_libstd = true
-
-  # Chromium currently has a Rust toolchain for Android and Linux, but
-  # if you wish to experiment on more platforms you can use this
-  # argument to specify an alternative toolchain.
-  # This should be an absolute path to a directory
-  # containing a 'bin' directory and others. Commonly
+  # Chromium provides a Rust toolchain in //third_party/rust-toolchain when
+  # checkout_rust is True (which is being rolled out by default over time).
+  #
+  # To use a custom toolchain instead, specify an absolute path to the root of
+  # a Rust sysroot, which will have a 'bin' directory and others. Commonly
   # <home dir>/.rustup/toolchains/nightly-<something>-<something>
   rust_sysroot_absolute = ""
 
-  # If you're using an external Rust toolchain, set this to a Rust
-  # the output of rustc -V.
+  # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
+  # set this to the output of `rustc -V`. Changing this string will cause all
+  # Rust targets to be rebuilt, which allows you to update your toolchain and
+  # not break incremental builds.
   rustc_version = ""
 
   # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
@@ -81,19 +68,16 @@ declare_args() {
   # it is the regular toolchain, but when that toolchain has sanitizers, then
   # this variable is changed to avoid them.
   host_toolchain_no_sanitizers = host_toolchain
+
+  # Force-enable `--color=always` for rustc, even when it would be disabled for
+  # a platform. Mostly applicable to Windows, where new versions can handle ANSI
+  # escape sequences but it's not reliable in general.
+  force_rustc_color_output = false
 }
 
+# Use a separate declare_args so these variables' defaults can depend on the
+# ones above.
 declare_args() {
-  # Use a separate declare_args so these variables' defaults can depend on the
-  # ones above.
-
-  # When true, uses the locally-built std in all Rust targets.
-  #
-  # As an internal implementation detail this can be overridden on specific
-  # targets (e.g. to run build.rs scripts while building std), but this
-  # generally should not be done.
-  use_local_std_by_default = enable_local_libstd && use_chromium_rust_toolchain
-
   # Individual Rust components.
 
   # Conversions between Rust types and C++ types.
@@ -109,42 +93,44 @@ declare_args() {
   enable_rust_mojo = enable_all_rust_features
 
   # Support for the 'gnrt' Rust tool.
-  enable_rust_gnrt = enable_all_rust_features
+  enable_rust_gnrt = host_toolchain == current_toolchain
 
   # Rust gtest interop
   enable_rust_gtest_interop = enable_all_rust_features
+
+  # Enable Boringssl Rust bindings generation
+  enable_rust_boringssl = enable_all_rust_features
 }
 
-# Platform support for "official" toolchains (Android or Chromium)
-android_toolchain_supports_platform =
-    (!is_nacl &&
-     (is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
-                     current_cpu == "x64" || current_cpu == "x86"))) ||
-    (is_linux && current_cpu == "x64")
+# Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
+# stdlibs that come with the specified custom toolchain.
+use_chromium_rust_toolchain = rust_sysroot_absolute == ""
+
+# Platform support for the Rust toolchain.
 chromium_toolchain_supports_platform = !is_nacl
 custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
 
-toolchain_has_rust =
-    enable_rust &&
-    ((use_chromium_rust_toolchain && chromium_toolchain_supports_platform) ||
-     (!use_chromium_rust_toolchain && android_toolchain_supports_platform) ||
-     (rust_sysroot_absolute != "" && custom_toolchain_supports_platform))
+# Not all target triples (GN toolchains) are supported by the Rust compiler.
+# Define if we support the current GN toolchain.
+toolchain_has_rust = false
 
 # The rustc_revision is used to introduce a dependency on the toolchain version
 # (so e.g. rust targets are rebuilt, and the standard library is re-copied when
 # the toolchain changes). It is left empty for custom toolchains.
 rustc_revision = ""
-if (toolchain_has_rust) {
+
+if (enable_rust) {
   if (use_chromium_rust_toolchain) {
-    update_rust_args = [ "--print-package-version" ]
-    rustc_revision = exec_script("//tools/rust/update_rust.py",
-                                 update_rust_args,
-                                 "trim string")
-  } else if (rust_sysroot_absolute != "") {
-    rustc_revision = rustc_version
+    toolchain_has_rust = chromium_toolchain_supports_platform
+    if (toolchain_has_rust) {
+      update_rust_args = [ "--print-package-version" ]
+      rustc_revision = exec_script("//tools/rust/update_rust.py",
+                                   update_rust_args,
+                                   "trim string")
+    }
   } else {
-    # Android toolchain version.
-    rustc_revision = "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
+    toolchain_has_rust = custom_toolchain_supports_platform
+    rustc_revision = rustc_version
   }
 }
 
@@ -160,22 +146,16 @@ build_rust_crash = toolchain_has_rust && enable_rust_crash
 # portability. In practice if an external toolchain was specified, it might
 # be an absolute path, but we'll do our best.
 if (enable_rust) {
-  if (rust_sysroot_absolute != "") {
-    rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
-    use_unverified_rust_toolchain = true
-  } else if (use_chromium_rust_toolchain) {
+  if (use_chromium_rust_toolchain) {
     rust_sysroot = "//third_party/rust-toolchain"
-    use_unverified_rust_toolchain = false
   } else {
-    if (host_os != "linux") {
-      assert(false,
-             "Attempt to use Android Rust toolchain on an unsupported platform")
-    }
-
-    rust_sysroot = "//third_party/android_rust_toolchain/toolchain"
-    use_unverified_rust_toolchain = false
-    extra_sysroot_libs += [ "libunwind.a" ]
+    rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
   }
+
+  # Prebuilt toolchains won't come with bindgen, so we unconditionally use the
+  # bindgen we ship with the Rust toolchain. This could be made configurable
+  # if folks want to supply a bindgen with their toolchain.
+  rust_bindgen_root = "//third_party/rust-toolchain"
 }
 
 # Figure out the Rust target triple (aka 'rust_abi_target')
@@ -194,6 +174,8 @@ if (is_linux || is_chromeos) {
   cpu = current_cpu
   if (cpu == "arm64") {
     cpu = "aarch64"
+  } else if (cpu == "x86") {
+    cpu = "i686"
   } else if (cpu == "x64") {
     cpu = "x86_64"
   }
@@ -273,16 +255,6 @@ if (current_cpu == "x86") {
 }
 
 assert(!toolchain_has_rust || rust_target_arch != "")
-
-# Must use Chromium Rust toolchain to get precisely matching LLVM versions
-# in order to enable LTO. Some say that LTO probably works if LLVM is "close
-# enough", but we don't want to take that risk.
-assert(!use_thin_lto || !enable_rust || use_chromium_rust_toolchain ||
-           use_unverified_rust_toolchain,
-       "Must use Chromium Rust toolchain for LTO")
-
-# Determine whether the local libstd can and should be built.
-local_libstd_supported = enable_local_libstd && use_chromium_rust_toolchain
 
 # Arguments for Rust invocation.
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,

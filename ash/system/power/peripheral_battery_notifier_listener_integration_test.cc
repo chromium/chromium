@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/power/peripheral_battery_listener.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -150,7 +151,7 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_2_;
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
   std::unique_ptr<PeripheralBatteryNotifier> battery_notifier_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
 

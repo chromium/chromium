@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
@@ -71,17 +70,6 @@ static constexpr char kConditionalUIRequestFiltered[] = R"((() => {
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
-
-std::u16string GetPlatformAuthenticatorLabel() {
-#if BUILDFLAG(IS_WIN)
-  int message = IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
-#elif BUILDFLAG(IS_MAC)
-  int message = IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
-#else
-  int message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
-#endif
-  return l10n_util::GetStringUTF16(message);
-}
 
 // Autofill integration tests. This file contains end-to-end tests for
 // integration between WebAuthn and Autofill. These tests are sensitive to focus
@@ -182,8 +170,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     ASSERT_LT(suggestion_index, suggestions.size())
         << "WebAuthn entry not found";
     EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
-              GetPlatformAuthenticatorLabel());
+    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
     EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
     // Click the credential.
@@ -229,8 +216,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     ASSERT_LT(suggestion_index, suggestions.size())
         << "WebAuthn entry not found";
     EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
-              GetPlatformAuthenticatorLabel());
+    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
     EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
     // Abort the request.
@@ -258,6 +244,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
                 autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE);
     }
   }
+
+  virtual std::u16string GetDeviceString() = 0;
 
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -295,6 +283,10 @@ class WebAuthnDevtoolsAutofillIntegrationTest
     virtual_device_factory_ = nullptr;
     scoped_auth_env_.reset();
     WebAuthnAutofillIntegrationTest::PostRunTestOnMainThread();
+  }
+
+  std::u16string GetDeviceString() override {
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE);
   }
 
  protected:
@@ -357,6 +349,10 @@ class WebAuthnWindowsAutofillIntegrationTest
     virtual_device_factory_ = nullptr;
     scoped_auth_env_.reset();
     WebAuthnAutofillIntegrationTest::PostRunTestOnMainThread();
+  }
+
+  std::u16string GetDeviceString() override {
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO);
   }
 
  protected:

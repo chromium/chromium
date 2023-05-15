@@ -113,13 +113,13 @@ ui::AXTreeUpdate CreateMockOCRResult(const gfx::RectF& image_bounds,
   text_node2.relative_bounds.bounds = text_bounds2;
   page_node.child_ids.push_back(text_node2.id);
 
-  ui::AXTreeUpdate initial_state;
-  initial_state.root_id = page_node.id;
-  initial_state.nodes = {page_node, text_node1, text_node2};
-  initial_state.has_tree_data = true;
-  initial_state.tree_data.title = "OCR results";
+  ui::AXTreeUpdate child_tree_update;
+  child_tree_update.root_id = page_node.id;
+  child_tree_update.nodes = {page_node, text_node1, text_node2};
+  child_tree_update.has_tree_data = true;
+  child_tree_update.tree_data.title = "OCR results";
 
-  return initial_state;
+  return child_tree_update;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -137,6 +137,7 @@ class TestPdfAccessibilityActionHandler
       const chrome_pdf::AccessibilityActionData& action_data) override {
     received_action_data_ = action_data;
   }
+  void LoadOrReloadAccessibility() override {}
 
   chrome_pdf::AccessibilityActionData received_action_data() {
     return received_action_data_;
@@ -2222,25 +2223,20 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   EXPECT_EQ(image.bounds, image_node->data().relative_bounds.bounds);
 
   // Simulate creating a child tree using OCR results.
-  pdf_accessibility_tree.IncrementNumberOfRemainingOcrRequests();
+  pdf_accessibility_tree.CreateOcrService();
+
   // Text bounds before applying the transform.
   constexpr gfx::RectF kTextBoundsBeforeTransform1 = {{8.0f, 8.0f},
                                                       {80.0f, 24.0f}};
   constexpr gfx::RectF kTextBoundsBeforeTransform2 = {{16.0f, 88.0f},
                                                       {40.0f, 56.0f}};
-  ui::AXTreeUpdate initial_state = CreateMockOCRResult(
+  ui::AXTreeUpdate child_tree_update = CreateMockOCRResult(
       image.bounds, kTextBoundsBeforeTransform1, kTextBoundsBeforeTransform2);
-  screen_ai::ScreenAIAXTreeSerializer serializer(
-      render_frame->GetRenderAccessibility()->GetTreeIDForPluginHost(),
-      std::move(initial_state.nodes));
   WaitForThreadTasks();
 
-  const ui::AXTree* child_tree = serializer.tree_for_testing();
-  ASSERT_TRUE(child_tree);
-  EXPECT_NE(child_tree->GetAXTreeID(), ui::AXTreeIDUnknown());
-  EXPECT_NE(child_tree->GetAXTreeID(), ax_tree_in_pdf.GetAXTreeID());
+  EXPECT_EQ(child_tree_update.tree_data.tree_id, ui::AXTreeIDUnknown());
   pdf_accessibility_tree.OnOcrDataReceived(
-      image_node->id(), image, paragraph_node->id(), child_tree->GetAXTreeID());
+      image_node->id(), image, paragraph_node->id(), child_tree_update);
   WaitForThreadTasks();
 
   // TODO(crbug.com/1423810): Convert these in-line comments into EXPECT() with
@@ -2277,15 +2273,10 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
   ASSERT_EQ(1u, paragraph_node->children().size());
 
-  ui::AXNode* host_node = paragraph_node->children()[0];
-  ASSERT_TRUE(host_node);
-  EXPECT_TRUE(
-      host_node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
-  ui::AXTreeID child_tree_id = ui::AXTreeID::FromString(
-      host_node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
-  ASSERT_EQ(child_tree_id, child_tree->GetAXTreeID());
-
-  ASSERT_TRUE(host_node->data().relative_bounds.transform.get());
+  ui::AXNode* region_node = paragraph_node->children()[0];
+  ASSERT_TRUE(region_node);
+  EXPECT_EQ(ax::mojom::Role::kRegion, region_node->GetRole());
+  ASSERT_EQ(2u, region_node->children().size());
 
   // Expected text bounds after applying the transform. These numbers are
   // expected to be kTextBoundsBeforeTransform * 1 / kScaleFactor.
@@ -2294,36 +2285,19 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   constexpr gfx::RectF kExpectedTextBoundRelativeToTreeBounds2 = {
       {20.0f, 110.0f}, {50.0f, 70.0f}};
 
-  // Check the child tree.
-  ui::AXNode* child_tree_host_node = child_tree->root();
-  ASSERT_TRUE(child_tree_host_node);
-  EXPECT_EQ(ax::mojom::Role::kRegion, child_tree_host_node->GetRole());
-  ASSERT_EQ(2u, child_tree_host_node->children().size());
-
-  ui::AXNode* child_tree_node = child_tree_host_node->children()[0];
-  ASSERT_TRUE(child_tree_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, child_tree_node->GetRole());
-  gfx::RectF bounds = child_tree_node->data().relative_bounds.bounds;
-  CompareRect(kTextBoundsBeforeTransform1, bounds);
-  // After applying the transform via RelativeToTreeBounds.
-  bounds = child_tree->RelativeToTreeBounds(child_tree_node, bounds,
-                                            /*offscreen=*/nullptr,
-                                            /*clip_bounds=*/true,
-                                            /*skip_container_offset=*/true);
-  bounds = ax_tree_in_pdf.RelativeToTreeBounds(host_node, bounds);
+  // Check the nodes from OCR results.
+  ui::AXNode* ocred_node = region_node->children()[0];
+  ASSERT_TRUE(ocred_node);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+  gfx::RectF bounds = ocred_node->data().relative_bounds.bounds;
+  // The bounds already got updated inside of OnOcrDataReceived().
   CompareRect(kExpectedTextBoundRelativeToTreeBounds1, bounds);
 
-  child_tree_node = child_tree_host_node->children()[1];
-  ASSERT_TRUE(child_tree_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, child_tree_node->GetRole());
-  bounds = child_tree_node->data().relative_bounds.bounds;
-  CompareRect(kTextBoundsBeforeTransform2, bounds);
-  // After applying the transform via RelativeToTreeBounds.
-  bounds = child_tree->RelativeToTreeBounds(child_tree_node, bounds,
-                                            /*offscreen=*/nullptr,
-                                            /*clip_bounds=*/true,
-                                            /*skip_container_offset=*/true);
-  bounds = ax_tree_in_pdf.RelativeToTreeBounds(host_node, bounds);
+  ocred_node = region_node->children()[1];
+  ASSERT_TRUE(ocred_node);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+  bounds = ocred_node->data().relative_bounds.bounds;
+  // The bounds already got updated inside of OnOcrDataReceived().
   CompareRect(kExpectedTextBoundRelativeToTreeBounds2, bounds);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

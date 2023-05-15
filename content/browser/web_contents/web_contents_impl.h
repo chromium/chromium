@@ -143,7 +143,6 @@ class WebContentsDelegate;
 class WebContentsImpl;
 class WebContentsView;
 struct AXEventNotificationDetails;
-struct LoadNotificationDetails;
 struct MHTMLGenerationParams;
 class PreloadingAttempt;
 
@@ -175,6 +174,8 @@ struct CONTENT_EXPORT CreatedWindow {
 };
 
 using PageVisibilityState = blink::mojom::PageVisibilityState;
+
+using ClipboardPasteData = content::ClipboardPasteData;
 
 class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                        public FrameTree::Delegate,
@@ -741,11 +742,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void IsClipboardPasteContentAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback) override;
   void IsClipboardPasteContentAllowedWrapperCallback(
       IsClipboardPasteContentAllowedCallback callback,
-      const absl::optional<std::string>& data);
+      absl::optional<ClipboardPasteData> clipboard_paste_data);
   void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,
@@ -1026,8 +1027,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // FrameTree::Delegate -------------------------------------------------------
 
-  void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool should_show_loading_ui) override;
+  void LoadingStateChanged(LoadingState new_state) override;
+  void DidStartLoading(FrameTreeNode* frame_tree_node) override;
   void DidStopLoading() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
@@ -1102,7 +1103,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
   // Update the web contents visibility.
-  void UpdateWebContentsVisibility(Visibility visibility);
+  void UpdateWebContentsVisibility(Visibility visibility) override;
 
   // Returns the PageVisibilityState for the primary page of this web contents,
   // taking the capturing state into account.
@@ -1721,12 +1722,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Notifies the delegate that the load progress was updated.
   void SendChangeLoadProgress();
 
-  // Notifies the delegate of a change in loading state.
-  // |details| is used to provide details on the load that just finished
-  // (but can be null if not applicable).
-  void LoadingStateChanged(bool should_show_loading_ui,
-                           LoadNotificationDetails* details);
-
   // Misc non-view stuff -------------------------------------------------------
 
   // Sets the history for a specified RenderViewHost to |history_length|
@@ -1962,11 +1957,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::unique_ptr<FindRequestManager> find_request_manager_;
 
   // Data for loading state ----------------------------------------------------
-
-  // Indicates whether the current navigation should show loading UI. Only valid
-  // if |is_loading_| is true and only tracks loads in the main frame.
-  // TODO(pbos): Check navigation requests and handles instead of caching this.
-  bool should_show_loading_ui_;
 
   // Indicates the process state of the primary main frame's renderer process.
   // If the process is not live due to a crash, this will be reflected by

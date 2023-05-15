@@ -11,6 +11,8 @@
 #include "ash/ash_export.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
@@ -37,22 +39,25 @@ enum IconType {
 enum class SignalStrength { NONE, WEAK, MEDIUM, STRONG };
 
 // Returns the color of an icon on the given |icon_type|.
-SkColor GetDefaultColorForIconType(IconType icon_type);
+SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
+                                   IconType icon_type);
 
 // Returns an image to represent either a fully connected network or a
 // disconnected network.
 const gfx::ImageSkia GetBasicImage(
+    const ui::ColorProvider* color_provider,
     IconType icon_type,
     chromeos::network_config::mojom::NetworkType network_type,
     bool connected);
 
 // Returns and caches an image for non VPN |network| which must not be null.
 // Use this for non virtual networks and for the default (tray) icon.
-// |icon_type| determines the color theme.
+// |color_provider| and |icon_type| are used to determine the color theme.
 // |badge_vpn| should be true if a VPN is also connected and a badge is desired.
 // |animating| is an optional out parameter that is set to true when the
 // returned image should be animated.
 ASH_EXPORT gfx::ImageSkia GetImageForNonVirtualNetwork(
+    const ui::ColorProvider* color_provider,
     const chromeos::network_config::mojom::NetworkStateProperties* network,
     IconType icon_type,
     bool badge_vpn,
@@ -61,39 +66,54 @@ ASH_EXPORT gfx::ImageSkia GetImageForNonVirtualNetwork(
 // Similar to above but for displaying only VPN icons, e.g. for the VPN menu
 // or Settings section.
 ASH_EXPORT gfx::ImageSkia GetImageForVPN(
+    const ui::ColorProvider* color_provider,
     const chromeos::network_config::mojom::NetworkStateProperties* vpn,
     IconType icon_type,
     bool* animating = nullptr);
 
 // Returns an image for Wi-Fi with no connections available, Wi-Fi icon with
 // a cross in the center.
-ASH_EXPORT gfx::ImageSkia GetImageForWiFiNoConnections(IconType icon_type);
+ASH_EXPORT gfx::ImageSkia GetImageForWiFiNoConnections(
+    const ui::ColorProvider* color_provider,
+    IconType icon_type);
 
 // Returns an image for an unactivated PSim when device is not logged in or in
 // OOBE.
 ASH_EXPORT gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
+    const ui::ColorProvider* color_provider,
     IconType icon_type);
 
 // Returns an image for a Wi-Fi network, either full strength or strike-through
 // based on |enabled|.
 ASH_EXPORT gfx::ImageSkia GetImageForWiFiEnabledState(
+    const ui::ColorProvider* color_provider,
     bool enabled,
     IconType = ICON_TYPE_DEFAULT_VIEW);
 
+// Returns an image for a Wi-Fi network, either full strength or strike-through
+// based on |enabled|. Note that this method uses the window background color
+// to color the image.
+ASH_EXPORT ui::ImageModel GetImageModelForWiFiEnabledState(
+    bool wifi_enabled,
+    IconType icon_type = ICON_TYPE_DEFAULT_VIEW);
+
 // Returns the connecting image for a shill network non-VPN type.
 gfx::ImageSkia GetConnectingImageForNetworkType(
+    const ui::ColorProvider* color_provider,
     chromeos::network_config::mojom::NetworkType network_type,
     IconType icon_type);
 
 // Returns the connected image for |connected_network| and |network_type| with a
 // connecting VPN badge.
 gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
+    const ui::ColorProvider* color_provider,
     const chromeos::network_config::mojom::NetworkStateProperties*
         connected_network,
     IconType icon_type);
 
 // Returns the disconnected image for a shill network type.
 gfx::ImageSkia GetDisconnectedImageForNetworkType(
+    const ui::ColorProvider* color_provider,
     chromeos::network_config::mojom::NetworkType network_type);
 
 // Returns the label for |network| when displayed in a list.

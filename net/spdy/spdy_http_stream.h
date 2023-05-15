@@ -39,6 +39,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
  public:
   static const size_t kRequestBodyBufferSize;
   // |spdy_session| must not be NULL.
+  // TODO(https://crbug.com/1426477): Remove `pushed_stream_id` argument.
   SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                  spdy::SpdyStreamId pushed_stream_id,
                  NetLogSource source_dependency,
@@ -157,6 +158,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // The ID of the pushed stream if one is claimed by this request.
   // In this case, the request fails if it cannot use that pushed stream.
   // Otherwise set to kNoPushedStreamFound.
+  // TODO(https://crbug.com/1426477): Remove.
   const spdy::SpdyStreamId pushed_stream_id_;
 
   bool is_reused_;
@@ -168,9 +170,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // After InitializeStream() is called but before OnClose() is called,
   //   |*stream_| is guaranteed to be valid.
   // After OnClose() is called, stream_ == nullptr.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION SpdyStream* stream_ = nullptr;
+  raw_ptr<SpdyStream> stream_ = nullptr;
 
   // False before OnClose() is called, true after.
   bool stream_closed_ = false;

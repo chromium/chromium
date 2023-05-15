@@ -63,7 +63,6 @@ suite('NewTabPageAppTest', () => {
         'getBackgroundImageLoadTime', Promise.resolve(0));
     moduleRegistry = installMock(ModuleRegistry);
     moduleResolver = new PromiseResolver();
-    moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
 
@@ -193,11 +192,15 @@ suite('NewTabPageAppTest', () => {
         // Dark mode themes with background images and removeScrim set should
         // apply background protection to the ogb.
         assertEquals(1, windowProxy.getCallCount('postMessage'));
-        const [_, {type, applyLightTheme, applyBackgroundProtection}] =
+        const [_, {type, applyLightTheme}] =
             windowProxy.getArgs('postMessage')[0];
         assertEquals('updateAppearance', type);
         assertEquals(true, applyLightTheme);
-        assertEquals(removeScrim, applyBackgroundProtection);
+        if (removeScrim) {
+          assertNotStyle($$(app, '#oneGoogleBarScrim')!, 'display', 'none');
+        } else {
+          assertStyle($$(app, '#oneGoogleBarScrim')!, 'display', 'none');
+        }
       });
     });
   });
@@ -605,6 +608,7 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
+        wideModulesEnabled: false,
       });
     });
 
@@ -692,12 +696,12 @@ suite('NewTabPageAppTest', () => {
         {
           descriptor:
               new ModuleDescriptor('foo', () => Promise.resolve(fooElement)),
-          element: fooElement,
+          elements: [fooElement],
         },
         {
           descriptor:
               new ModuleDescriptor('bar', () => Promise.resolve(barElement)),
-          element: barElement,
+          elements: [barElement],
         },
       ]);
       await counterfactualLoad();

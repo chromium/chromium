@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <d3d11_1.h>
-
 #include "ui/gl/dc_layer_tree.h"
+
+#include <d3d11_1.h>
 
 #include <utility>
 
@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -24,19 +25,8 @@ bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
 }
 
 bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
-  // TODO(tangm): when we have more overlays originating from
-  // SkiaOutputDeviceDComp, we should replace this with an explicit "needs swap
-  // chain presenter" flag on DCLayerOverlayParams.
-  switch (overlay->overlay_image->type()) {
-    case DCLayerOverlayType::kNV12Texture:
-    case DCLayerOverlayType::kNV12Pixmap:
-    case DCLayerOverlayType::kDCompSurfaceProxy:
-      return true;
-    case DCLayerOverlayType::kDCompVisualContent:
-      // Z-order of 0 indicates the backbuffer, which already has been presented
-      // and ready for the DComp tree.
-      return overlay->z_order != 0;
-  }
+  return overlay->overlay_image->type() !=
+         DCLayerOverlayType::kDCompVisualContent;
 }
 
 // TODO(http://crbug.com/1380822): Implement dcomp visual tree optimization.
@@ -209,7 +199,10 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     IDCompositionDevice2* dcomp_device,
     Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
     uint64_t dcomp_surface_serial,
-    const gfx::Vector2d& quad_rect_offset,
+    const gfx::Size& image_size,
+    const gfx::Rect& content_rect,
+    const gfx::Rect& quad_rect,
+    bool nearest_neighbor_filter,
     const gfx::Transform& quad_to_root_transform,
     const absl::optional<gfx::Rect>& clip_rect_in_root) {
   bool needs_commit = false;
@@ -269,16 +262,65 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK_EQ(hr, S_OK);
   }
 
-  if (offset_ != quad_rect_offset) {
-    offset_ = quad_rect_offset;
+  if (nearest_neighbor_filter_ != nearest_neighbor_filter) {
+    nearest_neighbor_filter_ = nearest_neighbor_filter;
     needs_commit = true;
+
+    hr = transform_visual_->SetBitmapInterpolationMode(
+        nearest_neighbor_filter_
+            ? DCOMPOSITION_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR
+            : DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
+    CHECK_EQ(hr, S_OK);
+  }
+
+  if (image_size_ != image_size || content_rect_ != content_rect ||
+      quad_rect_ != quad_rect) {
+    image_size_ = image_size;
+    content_rect_ = content_rect;
+    quad_rect_ = quad_rect;
+    needs_commit = true;
+
+    if (content_rect_.Contains(gfx::Rect(image_size_))) {
+      // No need to set clip to content if the whole image is inside the content
+      // rect region.
+      hr = content_visual_->SetClip(nullptr);
+      CHECK_EQ(hr, S_OK);
+    } else {
+      // Exclude content outside the content rect region.
+      const auto content_clip =
+          D2D1::RectF(content_rect_.x(), content_rect_.y(),
+                      content_rect_.right(), content_rect_.bottom());
+      hr = content_visual_->SetClip(content_clip);
+      CHECK_EQ(hr, S_OK);
+    }
+
+    // Transform the (clipped) content so that it fills |quad_rect_|'s bounds.
+    // |quad_rect_|'s offset is handled below, so we exclude it from the matrix.
+    const bool needs_offset = !content_rect_.OffsetFromOrigin().IsZero();
+    const bool needs_scale = quad_rect_.width() != content_rect_.width() ||
+                             quad_rect_.height() != content_rect_.height();
+    if (needs_offset || needs_scale) {
+      const float scale_x = static_cast<float>(quad_rect_.width()) /
+                            static_cast<float>(content_rect_.width());
+      const float scale_y = static_cast<float>(quad_rect_.height()) /
+                            static_cast<float>(content_rect_.height());
+      const D2D_MATRIX_3X2_F matrix =
+          D2D1::Matrix3x2F::Translation(-content_rect_.x(),
+                                        -content_rect_.y()) *
+          D2D1::Matrix3x2F::Scale(scale_x, scale_y);
+      hr = content_visual_->SetTransform(matrix);
+      CHECK_EQ(hr, S_OK);
+    } else {
+      hr = content_visual_->SetTransform(nullptr);
+      CHECK_EQ(hr, S_OK);
+    }
 
     // Visual offset is applied after transform so it is affected by the
     // transform, which is consistent with how the compositor maps quad rects to
     // their target space.
-    hr = content_visual_->SetOffsetX(offset_.x());
+    hr = content_visual_->SetOffsetX(quad_rect_.x());
     CHECK_EQ(hr, S_OK);
-    hr = content_visual_->SetOffsetY(offset_.y());
+    hr = content_visual_->SetOffsetY(quad_rect_.y());
     CHECK_EQ(hr, S_OK);
   }
 
@@ -308,7 +350,7 @@ void DCLayerTree::VisualTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
     gfx::Point* offset,
     gfx::Rect* clip_rect) const {
   *transform = transform_;
-  *offset = gfx::Point() + offset_;
+  *offset = quad_rect_.origin();
   *clip_rect = clip_rect_.value_or(gfx::Rect());
 }
 
@@ -333,6 +375,14 @@ bool DCLayerTree::VisualTree::UpdateTree(
   visual_subtrees.resize(overlays.size());
   // Build or update visual subtree for each overlay.
   for (size_t i = 0; i < overlays.size(); ++i) {
+    const bool is_root_plane = overlays[i]->z_order == 0;
+    if (!is_root_plane && overlays[i]->overlay_image) {
+      TRACE_EVENT2(
+          "gpu", "DCLayerTree::VisualTree::UpdateOverlay", "image_type",
+          DCLayerOverlayTypeToString(overlays[i]->overlay_image->type()),
+          "size", overlays[i]->content_rect.size().ToString());
+    }
+
     IUnknown* dcomp_visual_content =
         overlays[i]->overlay_image->dcomp_visual_content();
     // Find matching subtree for each overlay. If subtree is found, move it
@@ -368,8 +418,9 @@ bool DCLayerTree::VisualTree::UpdateTree(
         dc_layer_tree_->dcomp_device_.Get(),
         overlays[i]->overlay_image->dcomp_visual_content(),
         overlays[i]->overlay_image->dcomp_surface_serial(),
-        overlays[i]->quad_rect.OffsetFromOrigin(), overlays[i]->transform,
-        overlays[i]->clip_rect);
+        overlays[i]->overlay_image->size(), overlays[i]->content_rect,
+        overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
+        overlays[i]->transform, overlays[i]->clip_rect);
 
     // Zero z_order represents root layer.
     if (overlays[i]->z_order == 0) {
@@ -463,6 +514,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       root_params->overlay_image = DCLayerOverlayImage(
           root_surface->GetSize(), std::move(root_visual_content),
           root_surface->dcomp_surface_serial());
+      root_params->content_rect = gfx::Rect(root_params->overlay_image->size());
+      root_params->quad_rect = gfx::Rect(root_params->overlay_image->size());
       ScheduleDCLayer(std::move(root_params));
     } else {
       auto it = std::find_if(
@@ -544,7 +597,12 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       DLOG(ERROR) << "PresentToSwapChain failed";
       return false;
     }
+    // |SwapChainPresenter| may have changed the size of the overlay's quad
+    // rect, e.g. to present to a swap chain exactly the size of the display
+    // rect when the source video is larger.
     overlays[i]->transform = transform;
+    overlays[i]->content_rect = gfx::Rect(video_swap_chain->content_size());
+    overlays[i]->quad_rect.set_size(video_swap_chain->content_size());
     if (overlays[i]->clip_rect.has_value())
       overlays[i]->clip_rect = clip_rect;
     overlays[i]->overlay_image = DCLayerOverlayImage(

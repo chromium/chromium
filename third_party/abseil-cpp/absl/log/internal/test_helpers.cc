@@ -68,7 +68,7 @@ bool DiedOfQFatal(int exit_status) {
 #endif
 
 // -----------------------------------------------------------------------------
-// Helper for Log inititalization in test
+// Helper for Log initialization in test
 // -----------------------------------------------------------------------------
 
 void LogTestEnvironment::SetUp() {

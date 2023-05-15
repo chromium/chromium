@@ -90,6 +90,9 @@ class JavacOutputProcessor:
         re.compile(fileline_prefix + r'( error: symbol not found [\w.]+)$'),
     ]
 
+    self._filter_out_re = re.compile(r'.*warning.*Cannot use file \S+ because'
+                                     r' it is locked by another process')
+
     # Example: import org.chromium.url.GURL;
     self._import_re = re.compile(r'\s*import (?P<imported_class>[\w\.]+);$')
 
@@ -108,12 +111,14 @@ class JavacOutputProcessor:
   def Process(self, lines):
     """ Processes javac output.
 
+      - Removes unnecessary output.
       - Applies colors to output.
       - Suggests GN dep to add for 'unresolved symbol in Java import' errors.
       """
     lines = self._ElaborateLinesForUnknownSymbol(iter(lines))
     for line in lines:
-      yield self._ApplyColors(line)
+      if not self._filter_out_re.match(line):
+        yield self._ApplyColors(line)
     if self._suggested_deps:
 
       def yellow(text):

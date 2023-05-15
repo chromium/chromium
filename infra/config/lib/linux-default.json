@@ -1,14 +1,47 @@
 {
   "ci": {
+    "android-build-perf-developer": "Ubuntu-22.04",
+    "build-perf-android": "Ubuntu-22.04",
+    "build-perf-android-siso": "Ubuntu-22.04",
+    "build-perf-linux": "Ubuntu-22.04",
+    "build-perf-linux-siso": "Ubuntu-22.04",
+    "linux-build-perf-developer": "Ubuntu-22.04",
+    "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
-    "linux-ssd-rel-dev": "Ubuntu-22.04"
+    "linux-remote-ssd-rel-dev": "Ubuntu-22.04"
   },
   "try": {
+    "android-12-x64-rel": "Ubuntu-22.04",
+    "android-12-x64-rel-compilator": "Ubuntu-22.04",
+    "android-arm64-rel": "Ubuntu-22.04",
+    "android-arm64-rel-compilator": "Ubuntu-22.04",
+    "android-nougat-x86-rel": "Ubuntu-22.04",
+    "android-x64-cast": "Ubuntu-22.04",
+    "android_compile_dbg": "Ubuntu-22.04",
+    "android_cronet": "Ubuntu-22.04",
+    "chromeos-amd64-generic-rel": "Ubuntu-22.04",
+    "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
+    "chromeos-arm-generic-rel": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel-compilator": "Ubuntu-22.04",
+    "ios-simulator": "Ubuntu-22.04",
+    "lacros-amd64-generic-rel": "Ubuntu-22.04",
+    "lacros-arm-generic-rel": "Ubuntu-22.04",
+    "linux-chromeos-compile-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
+    "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
     "linux-rel-compilator": "Ubuntu-22.04",
+    "linux-wayland-rel": "Ubuntu-22.04",
+    "linux-wayland-rel-compilator": "Ubuntu-22.04",
+    "linux-x64-castos": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng": "Ubuntu-22.04",
-    "linux_chromium_tsan_rel_ng": "Ubuntu-22.04"
+    "linux_chromium_asan_rel_ng-compilator": "Ubuntu-22.04",
+    "linux_chromium_compile_dbg_ng": "Ubuntu-22.04",
+    "linux_chromium_tsan_rel_ng": "Ubuntu-22.04",
+    "linux_chromium_tsan_rel_ng-compilator": "Ubuntu-22.04",
+    "mac-rel": "Ubuntu-22.04",
+    "win-rel": "Ubuntu-22.04"
   }
 }

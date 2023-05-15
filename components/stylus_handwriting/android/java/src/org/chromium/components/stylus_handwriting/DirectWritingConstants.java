@@ -38,6 +38,11 @@ class DirectWritingConstants {
     static final int MSG_PERFORM_EDITOR_ACTION = 201;
 
     /**
+     * Update Edit field bounds to service when requested from service callback
+     */
+    public static final int MSG_UPDATE_EDIT_BOUNDS = 202;
+
+    /**
      * Do perform show keyboard via ImeAdapter
      */
     static final int MSG_PERFORM_SHOW_KEYBOARD = 301;

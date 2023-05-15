@@ -4343,6 +4343,42 @@
       }
     ]
   },
+  "ShowDisplaySizeScreenEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "ash.display_size_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowDisplaySizeScreenEnabled": false
+        },
+        "prefs": {
+          "ash.display_size_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowDisplaySizeScreenEnabled": true
+        },
+        "prefs": {
+          "ash.display_size_screen_oobe_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "RestoreOnStartup": {
     "os": [
       "win",
@@ -7785,38 +7821,7 @@
     ]
   },
   "SSLVersionMin": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "ssl.version_min": {
-            "location": "local_state",
-            "default_value": ""
-          }
-        }
-      },
-      {
-        "note": "Simple value",
-        "policies": {
-          "SSLVersionMin": "tls1.1"
-        },
-        "prefs": {
-          "ssl.version_min": {
-            "location": "local_state",
-            "value": "tls1.1"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "SSLVersionFallbackMin": {
     "reason_for_missing_test": "Policy was removed"
@@ -11689,10 +11694,6 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image",
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11723,10 +11724,6 @@
               "installer_image_x86_64": {
                 "url": "https://example.com/installer_image",
                 "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image",
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11741,44 +11738,6 @@
                   "url": "https://example.com/installer_image",
                   "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
                 },
-                "uefi_image": {
-                  "url": "https://example.com/uefi_image",
-                  "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
-                },
-                "vtpm": {
-                  "enabled": false,
-                  "policy_update_action": 1
-                },
-                "oem_strings": []
-              }
-            }
-          }
-        }
-      },
-      {
-        "note": "INSTALL_ALLOWED is downgraded if no uefi_image is set",
-        "policies": {
-          "BruschettaVMConfiguration": {
-            "vm-type": {
-              "name": "Standard Virtual Machine",
-              "enabled_state": "INSTALL_ALLOWED",
-              "installer_image_x86_64": {
-                "url": "https://example.com/installer_image",
-                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
-              },
-              "uefi_pflash_x86_64": {
-                "url": "https://example.com/uefi_pflash",
-                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
-              }
-            }
-          }
-        },
-        "prefs": {
-          "bruschetta.vm_configuration": {
-            "value": {
-              "vm-type": {
-                "name": "Standard Virtual Machine",
-                "enabled_state": 1,
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
@@ -11801,9 +11760,6 @@
               },
               "uefi_pflash_x86_64": {
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
-              },
-              "uefi_image_x86_64": {
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11828,10 +11784,6 @@
               "uefi_pflash_x86_64": {
                 "url": "invalid url",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
-              },
-              "uefi_image_x86_64": {
-                "url": "invalid url",
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11864,9 +11816,6 @@
               },
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image"
               }
             }
           }
@@ -11890,10 +11839,6 @@
               },
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
-                "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image",
                 "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
               }
             }
@@ -11929,10 +11874,6 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e9434"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image",
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1"
               }
             }
           }
@@ -11968,10 +11909,6 @@
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
               },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image",
-                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
-              },
               "vtpm": {
                 "enabled": true
               }
@@ -11986,10 +11923,6 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash_2",
                 "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image_2",
-                "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
               },
               "vtpm": {
                 "enabled": false,
@@ -12013,10 +11946,6 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash_2",
                 "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
-              },
-              "uefi_image_x86_64": {
-                "url": "https://example.com/uefi_image_2",
-                "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
               }
             },
             "vulnerable-vm-type": {
@@ -12039,10 +11968,6 @@
                   "url": "https://example.com/uefi_pflash",
                   "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
                 },
-                "uefi_image": {
-                  "url": "https://example.com/uefi_image",
-                  "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
-                },
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 1
@@ -12059,10 +11984,6 @@
                 "uefi_pflash": {
                   "url": "https://example.com/uefi_pflash_2",
                   "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
-                },
-                "uefi_image": {
-                  "url": "https://example.com/uefi_image_2",
-                  "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
                 },
                 "vtpm": {
                   "enabled": false,
@@ -12211,39 +12132,7 @@
     ]
   },
   "SmartLockSigninAllowed": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SmartLockSigninAllowed": false
-        },
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SmartLockSigninAllowed": true
-        },
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "InstantTetheringAllowed": {
     "os": [
@@ -16599,6 +16488,60 @@
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
             "default_value": false
+          }
+        }
+      }
+    ]
+  },
+  "LegacyTechReportAllowlist": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LegacyTechReportAllowlist": [
+            "https://www.example.com",
+            "www.example.com/path",
+            "192.168.0.1:8088/path",
+            "localhost"
+          ]
+        },
+        "policies_settings": {
+          "LegacyTechReportAllowlist": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.legachy_tech.urls": {
+            "value": [
+              "https://www.example.com",
+              "www.example.com/path",
+              "192.168.0.1:8088/path",
+              "localhost"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "LegacyTechReportAllowlist": []
+        },
+        "policies_settings": {
+          "LegacyTechReportAllowlist": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.legachy_tech.urls": {
+            "value": []
           }
         }
       }
@@ -21216,7 +21159,7 @@
         },
         "prefs": {
           "idle_timeout_actions": {
-            "value": [4, 5]
+            "value": [5, 6]
           }
         }
       }
@@ -21298,13 +21241,33 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
           "HighEfficiencyModeEnabled": true
         },
         "prefs": {
-          "performance_tuning.high_efficiency_mode.enabled": {
+          "performance_tuning.high_efficiency_mode.state": {
             "location": "local_state",
-            "value": true
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "HighEfficiencyModeEnabled": false
+        },
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "value": 0
           }
         }
       }
@@ -21560,41 +21523,7 @@
     ]
   },
   "HindiInscriptLayoutEnabled": {
-    "os": ["chromeos_ash"],
-    "note": "A user policy. Replaced by DeviceHindiInscriptLayoutEnabled (device policy) and to be deprecated",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "HindiInscriptLayoutEnabled": false
-        },
-        "prefs": {
-          "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "HindiInscriptLayoutEnabled": true
-        },
-        "prefs": {
-          "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceKeyboardBacklightColor": {
     "os": [
@@ -21854,80 +21783,10 @@
     ]
   },
   "UseMojoVideoDecoderForPepperAllowed": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "policy.use_mojo_video_decoder_for_pepper_allowed": {
-            "location": "local_state",
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": { "UseMojoVideoDecoderForPepperAllowed": true },
-        "prefs": {
-          "policy.use_mojo_video_decoder_for_pepper_allowed": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": { "UseMojoVideoDecoderForPepperAllowed": false },
-        "prefs": {
-          "policy.use_mojo_video_decoder_for_pepper_allowed": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "PPAPISharedImagesSwapChainAllowed": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "policy.ppapi_shared_images_swap_chain_allowed": {
-            "location": "local_state",
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": { "PPAPISharedImagesSwapChainAllowed": true },
-        "prefs": {
-          "policy.ppapi_shared_images_swap_chain_allowed": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": { "PPAPISharedImagesSwapChainAllowed": false },
-        "prefs": {
-          "policy.ppapi_shared_images_swap_chain_allowed": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "ForceEnablePepperVideoDecoderDevAPI": {
     "os": [
@@ -22151,41 +22010,7 @@
     "reason_for_missing_test": "Maps into an iOS-specific pref"
   },
   "DeviceHindiInscriptLayoutEnabled": {
-    "os": ["chromeos_ash"],
-    "note": "A device policy replacing HindiInscriptLayoutEnabled (a user policy)",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "settings.input.device_hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceHindiInscriptLayoutEnabled": false
-        },
-        "prefs": {
-          "settings.input.device_hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceHindiInscriptLayoutEnabled": true
-        },
-        "prefs": {
-          "settings.input.device_hindi_inscript_layout_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
   "KioskTroubleshootingToolsEnabled": {
     "os": [
@@ -22607,9 +22432,6 @@
   },
   "RealTimeDownloadProtectionRequestAllowed": {
     "os": [
-      "win",
-      "linux",
-      "mac",
       "chromeos_ash",
       "chromeos_lacros"
     ],
@@ -22720,13 +22542,8 @@
   },
   "ClientSidePhishingProtectionAllowed": {
     "os": [
-      "win",
-      "linux",
-      "mac",
       "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -22992,6 +22809,120 @@
           "ash.device.geolocation_allowed": {
             "location": "local_state",
             "value": 0
+          }
+        }
+      }
+    ]
+  },
+  "SafeBrowsingExtensionProtectionAllowed": {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.extension_protection_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingExtensionProtectionAllowed": true
+        },
+        "prefs": {
+          "safebrowsing.extension_protection_allowed_by_policy": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingExtensionProtectionAllowed": false
+        },
+        "prefs": {
+          "safebrowsing.extension_protection_allowed_by_policy": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  "AnonymousSearchEnabled": {
+    "reason_for_missing_test": "TODO(b/275929724): Feature not yet implemented"
+  },
+  "ReportAppInventory": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportAppInventory": [ "chrome_apps_and_extensions" ]
+        },
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "value": [ "chrome_apps_and_extensions" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportAppUsage": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_usage": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportAppUsage": [ "chrome_apps_and_extensions" ]
+        },
+        "prefs": {
+          "reporting.report_app_usage": {
+            "value": [ "chrome_apps_and_extensions" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportAppUsageCollectionRateMs": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "default_value": 900000
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportAppUsageCollectionRateMs": 300000
+        },
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "value": 300000
           }
         }
       }

@@ -13,8 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -53,6 +52,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -643,7 +643,9 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   fake_gaia_keys.encryption_key_version = 91;
   // Create a random-but-valid public key, the precisely value is not relevant.
   fake_gaia_keys.trusted_public_keys.push_back(
-      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes());
+      trusted_vault::SecureBoxKeyPair::GenerateRandom()
+          ->public_key()
+          .ExportToBytes());
   fake_gaia_.fake_gaia()->SetSyncTrustedVaultKeys(FakeGaiaMixin::kFakeUserEmail,
                                                   fake_gaia_keys);
 
@@ -699,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   {
     base::RunLoop loop;
     std::vector<uint8_t> actual_public_key;
-    static_cast<syncer::StandaloneTrustedVaultClient*>(
+    static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
         sync_service->GetSyncClientForTest()->GetTrustedVaultClient())
         ->GetLastAddedRecoveryMethodPublicKeyForTesting(
             base::BindLambdaForTesting([&](const std::vector<uint8_t>& key) {
@@ -2078,7 +2080,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
   std::unique_ptr<base::RunLoop> auth_needed_wait_loop_;
   // Unowned pointer - set to the LoginHandler of the frame displaying gaia.
-  LoginHandler* gaia_frame_login_handler_ = nullptr;
+  raw_ptr<LoginHandler, ExperimentalAsh> gaia_frame_login_handler_ = nullptr;
 
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.

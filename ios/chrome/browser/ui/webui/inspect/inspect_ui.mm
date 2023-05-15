@@ -9,22 +9,21 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
-#import "ios/chrome/browser/main/browser_list_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/grit/ios_resources.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -149,10 +148,13 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   }
 
   std::vector<base::Value> params;
+  std::string sender_frame_id = sender_frame->GetFrameId();
   web::WebFrame* main_web_frame =
       web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
-  params.push_back(base::Value(main_web_frame->GetFrameId()));
-  params.push_back(base::Value(sender_frame->GetFrameId()));
+  std::string main_web_frame_id =
+      main_web_frame ? main_web_frame->GetFrameId() : sender_frame_id;
+  params.push_back(base::Value(main_web_frame_id));
+  params.push_back(base::Value(sender_frame_id));
   params.push_back(base::Value(message.url.spec()));
   params.push_back(base::Value(base::SysNSStringToUTF8(message.level)));
   params.push_back(base::Value(base::SysNSStringToUTF8(message.message)));

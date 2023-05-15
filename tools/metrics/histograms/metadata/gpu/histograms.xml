@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2023-03-05">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -310,8 +310,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLE.MetalShader.CacheHitCount" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    An integer that is logged shortly after the gpu process starts up. The value
+    is the number of shaders that were needed and were available in the shader
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.ANGLE.MetalShader.CacheMissCount" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    An integer that is logged shortly after the gpu process starts up. The value
+    is the number of shaders that were needed and were not in the shader cache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.ANGLE.MetalShaderInBlobCache" enum="Boolean"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    A boolean that is logged for each shader program. A value of true means the
+    metallib for the shader existed in blob-cache. A value of false means the
+    metallib for the shader did not exist in blob-cache.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="2023-01-01">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -406,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -416,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3D12FeatureLevel" enum="D3D12FeatureLevel"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -426,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3D12HighestShaderModel2" enum="D3DShaderModel"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>amaiorano@google.com</owner>
@@ -442,7 +474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2023-09-24">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -550,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -619,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2023-08-20">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2023-10-22">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -693,7 +725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -749,7 +781,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GpuCount" units="gpus" expires_after="2023-08-20">
+<histogram name="GPU.GpuCount" units="gpus" expires_after="2023-10-22">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -770,7 +802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V4" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>zmo@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
   <summary>
@@ -818,16 +850,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationOrigin" enum="GpuTerminationOrigin"
-    expires_after="2023-05-29">
-  <owner>kbr@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: For monitoring unexpected shifts in GPU process exit statuses. -->
+
   <owner>rjkroege@chromium.org</owner>
   <owner>msisov@igalia.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The reason a GPU process is terminated. It works only when
     TERMINATION_STATUS_PROCESS_WAS_KILLED TerminationStatus is set. The goal of
     this histogram is to get spikes of the above mentioned case when
     Ozone/Wayland terminates the GPU process due to invalid data it received if
-    any. NOTE: this metric was expired from 2019-08-14 to crrev.com/c/4040947.
+    any. NOTE: this metric was expired from 2019-08-14 to 2022-11-30 and was
+    brought back by crrev.com/c/4040947.
   </summary>
 </histogram>
 
@@ -840,7 +875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -866,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -916,7 +951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IOSurface.CATransactionTimeUs" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -951,7 +986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -971,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
-    enum="MetalReadWriteTextureSupportTier" expires_after="2023-08-20">
+    enum="MetalReadWriteTextureSupportTier" expires_after="2023-10-22">
   <owner>cwallez@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1027,6 +1062,36 @@ chromium-metrics-reviews@google.com.
     The time that it takes to create a new MTLRenderPipelineState, including all
     retries. Recorded after every call to -[MTLDeviceProxy
     newRenderPipelineStateWithDescriptor:] completes.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.LoadTime" units="microseconds"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The amount of time (in microseconds) the gpu process takes to load the metal
+    shader lib cache. Logged after loading completes on a background thread.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.NumEntriesInCache" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The number of shader programs in the metal shader lib cache. Logged after
+    loading of the metal shader lib cache completes.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.WaitTime" units="microseconds"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The amount of time (in microseconds) the gpu process main thread is blocked
+    waiting for the metal shader lib cache to load.
   </summary>
 </histogram>
 
@@ -1100,7 +1165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -1124,7 +1189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PassthroughDoLinkProgramTime" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1158,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProgramCache.CacheHit" enum="BooleanSuccess"
-    expires_after="2023-01-01">
+    expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1197,7 +1262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
-    expires_after="2023-08-01">
+    expires_after="2023-10-15">
   <owner>sky@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1496,6 +1561,26 @@ chromium-metrics-reviews@google.com.
     <variant name=".compositor"/>
     <variant name=".main"/>
   </token>
+</histogram>
+
+<histogram name="GPU.WebGLDisplayType" enum="EGLDisplayType"
+    expires_after="2023-08-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Types of EGL displays used to back WebGL contexts. Recorded at context
+    creation time in the GPU process.
+  </summary>
+</histogram>
+
+<histogram name="GPU.WebGLDisplayTypeLarge" enum="EGLDisplayType"
+    expires_after="2023-08-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Types of EGL displays used to back large (area &gt;= 128*128) WebGL
+    contexts. Recorded at context creation time in the GPU process.
+  </summary>
 </histogram>
 
 <histogram name="GPU.WebGraphicsContext3D_Init_CanLoseContext"

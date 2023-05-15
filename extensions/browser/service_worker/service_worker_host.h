@@ -45,9 +45,12 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
       mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver);
 
   // mojom::ServiceWorkerHost:
-  void DidInitializeServiceWorkerContext(const ExtensionId& extension_id,
-                                         int64_t service_worker_version_id,
-                                         int worker_thread_id) override;
+  void DidInitializeServiceWorkerContext(
+      const ExtensionId& extension_id,
+      int64_t service_worker_version_id,
+      int worker_thread_id,
+      mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher)
+      override;
   void DidStartServiceWorkerContext(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,

@@ -32,23 +32,6 @@ using InsetValueSequence =
 
 namespace {
 
-double ComputeOffset(Element* source_element,
-                     LayoutBox* subject_layout,
-                     LayoutBox* source_layout,
-                     ScrollOrientation physical_orientation) {
-  MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
-  gfx::PointF point = gfx::PointF(subject_layout->LocalToAncestorPoint(
-      PhysicalOffset(), source_layout, flags));
-
-  // We can not call the regular clientLeft/Top functions here, because we
-  // may reach this function during style resolution, and clientLeft/Top
-  // also attempt to update style/layout.
-  if (physical_orientation == kHorizontalScroll)
-    return point.x() - source_element->ClientLeftNoLayout();
-  else
-    return point.y() - source_element->ClientTopNoLayout();
-}
-
 bool IsBlockDirection(ViewTimeline::ScrollAxis axis, WritingMode writing_mode) {
   switch (axis) {
     case ViewTimeline::ScrollAxis::kBlock:
@@ -261,20 +244,23 @@ ViewTimeline::ViewTimeline(Document* document,
 AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
     const Animation* animation,
     const Timing& timing) {
+  return CalculateIntrinsicIterationDuration(animation->GetRangeStartInternal(),
+                                             animation->GetRangeEndInternal(),
+                                             timing);
+}
+
+AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
+    const absl::optional<TimelineOffset>& rangeStart,
+    const absl::optional<TimelineOffset>& rangeEnd,
+    const Timing& timing) {
   absl::optional<AnimationTimeDelta> duration = GetDuration();
 
   // Only run calculation for progress based scroll timelines
   if (duration && timing.iteration_count > 0) {
     double active_interval = 1;
 
-    double start =
-        animation->GetRangeStartInternal()
-            ? ToFractionalOffset(animation->GetRangeStartInternal().value())
-            : 0;
-    double end =
-        animation->GetRangeEndInternal()
-            ? ToFractionalOffset(animation->GetRangeEndInternal().value())
-            : 1;
+    double start = rangeStart ? ToFractionalOffset(rangeStart.value()) : 0;
+    double end = rangeEnd ? ToFractionalOffset(rangeEnd.value()) : 1;
 
     active_interval -= start;
     active_interval -= (1 - end);
@@ -295,39 +281,36 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
   return AnimationTimeDelta();
 }
 
-absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
-    PaintLayerScrollableArea* scrollable_area,
-    ScrollOrientation physical_orientation) const {
+void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                                    ScrollOrientation physical_orientation,
+                                    TimelineState* state) const {
   // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
   // Any new call sites will require a similar safeguard.
   DCHECK(IsResolved());
   DCHECK(subject());
-  LayoutBox* layout_box = subject()->GetLayoutBox();
-  DCHECK(layout_box);
-  DCHECK(CurrentAttachment());
-  Element* source = CurrentAttachment()->ComputeSourceNoLayout();
-  Node* resolved_source = ResolvedSource();
-  DCHECK(source);
-  DCHECK(resolved_source);
-  LayoutBox* source_layout = resolved_source->GetLayoutBox();
-  DCHECK(source_layout);
 
+  subject_position_ = SubjectPosition();
+  subject_size_ = SubjectSize();
+
+  DCHECK(subject_position_);
+  target_offset_ = physical_orientation == kHorizontalScroll
+                       ? subject_position_->x()
+                       : subject_position_->y();
+
+  DCHECK(subject_size_);
   LayoutUnit viewport_size;
-
-  target_offset_ =
-      ComputeOffset(source, layout_box, source_layout, physical_orientation);
-
   if (physical_orientation == kHorizontalScroll) {
-    target_size_ = layout_box->Size().Width().ToDouble();
+    target_size_ = subject_size_->Width().ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Width();
   } else {
-    target_size_ = layout_box->Size().Height().ToDouble();
+    target_size_ = subject_size_->Height().ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Height();
   }
-
   viewport_size_ = viewport_size.ToDouble();
 
+  Element* source = CurrentAttachment()->ComputeSourceNoLayout();
+  DCHECK(source);
   TimelineInset inset = ResolveAuto(GetInset(), *source, GetAxis());
 
   // Update inset lengths if style dependent.
@@ -357,15 +340,47 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   double start_offset = target_offset_ - viewport_size_ + end_side_inset_;
   double end_offset = target_offset_ + target_size_ - start_side_inset_;
 
-  if (start_offset != start_offset_ || end_offset != end_offset_) {
-    start_offset_ = start_offset;
-    end_offset_ = end_offset;
+  state->scroll_offsets =
+      absl::make_optional<ScrollOffsets>(start_offset, end_offset);
+  state->view_offsets = absl::make_optional<ScrollOffsets>(
+      target_offset_, target_offset_ + target_size_);
+}
 
-    for (auto animation : GetAnimations())
-      animation->InvalidateNormalizedTiming();
+absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {
+  if (!subject()) {
+    return absl::nullopt;
+  }
+  LayoutBox* subject_layout_box = subject()->GetLayoutBox();
+  if (!subject_layout_box) {
+    return absl::nullopt;
   }
 
-  return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
+  return subject_layout_box->Size();
+}
+
+absl::optional<gfx::PointF> ViewTimeline::SubjectPosition() const {
+  if (!subject() || !ResolvedSource()) {
+    return absl::nullopt;
+  }
+  LayoutBox* subject_layout_box = subject()->GetLayoutBox();
+  LayoutBox* source_layout_box = ResolvedSource()->GetLayoutBox();
+  if (!subject_layout_box || !source_layout_box) {
+    return absl::nullopt;
+  }
+  MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
+  gfx::PointF subject_pos =
+      gfx::PointF(subject_layout_box->LocalToAncestorPoint(
+          PhysicalOffset(), source_layout_box, flags));
+
+  // We call LayoutObject::ClientLeft/Top directly and avoid
+  // Element::clientLeft/Top because:
+  //
+  // - We may reach this function during style resolution,
+  //   and clientLeft/Top also attempt to update style/layout.
+  // - Those functions return the unzoomed values, and we require the zoomed
+  //   values.
+  return gfx::PointF(subject_pos.x() - source_layout_box->ClientLeft().Round(),
+                     subject_pos.y() - source_layout_box->ClientTop().Round());
 }
 
 // https://www.w3.org/TR/scroll-animations-1/#named-range-getTime
@@ -556,7 +571,8 @@ CSSNumericValue* ViewTimeline::startOffset() const {
   if (!scroll_offsets)
     return nullptr;
 
-  return CSSUnitValues::px(scroll_offsets->start);
+  DCHECK(GetResolvedZoom());
+  return CSSUnitValues::px(scroll_offsets->start / GetResolvedZoom());
 }
 
 CSSNumericValue* ViewTimeline::endOffset() const {
@@ -564,21 +580,37 @@ CSSNumericValue* ViewTimeline::endOffset() const {
   if (!scroll_offsets)
     return nullptr;
 
-  return CSSUnitValues::px(scroll_offsets->end);
+  DCHECK(GetResolvedZoom());
+  return CSSUnitValues::px(scroll_offsets->end / GetResolvedZoom());
 }
 
 void ViewTimeline::UpdateSnapshot() {
   ScrollTimeline::UpdateSnapshot();
-  ResolveTimelineOffsets(false);
+  ResolveTimelineOffsets();
 }
 
-bool ViewTimeline::ValidateSnapshot() {
-  bool valid_snapshot = ScrollTimeline::ValidateSnapshot();
-  bool has_keyframe_update = ResolveTimelineOffsets(true);
-  return valid_snapshot && !has_keyframe_update;
+bool ViewTimeline::ValidateTimelineOffsets() {
+  bool has_keyframe_update = ResolveTimelineOffsets();
+  return !has_keyframe_update;
 }
 
-bool ViewTimeline::ResolveTimelineOffsets(bool invalidate_effect) const {
+bool ViewTimeline::CheckIfNeedsValidation() {
+  if (ScrollTimeline::CheckIfNeedsValidation()) {
+    return true;
+  }
+
+  if (subject_size_ != SubjectSize()) {
+    return true;
+  }
+
+  if (subject_position_ != SubjectPosition()) {
+    return true;
+  }
+
+  return false;
+}
+
+bool ViewTimeline::ResolveTimelineOffsets() const {
   bool has_keyframe_update = false;
   for (Animation* animation : GetAnimations()) {
     if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect())) {
@@ -592,9 +624,6 @@ bool ViewTimeline::ResolveTimelineOffsets(bool invalidate_effect) const {
               : 1;
       if (effect->Model()->ResolveTimelineOffsets(range_start, range_end)) {
         has_keyframe_update = true;
-        if (invalidate_effect) {
-          animation->InvalidateEffectTargetStyle();
-        }
       }
     }
   }
@@ -607,11 +636,6 @@ Animation* ViewTimeline::Play(AnimationEffect* effect,
     keyframe_effect->Model()->SetViewTimelineIfRequired(this);
   }
   return AnimationTimeline::Play(effect, exception_state);
-}
-
-void ViewTimeline::FlushStyleUpdate() {
-  ScrollTimeline::FlushStyleUpdate();
-  ResolveTimelineOffsets(/* invalidate_effect */ false);
 }
 
 void ViewTimeline::Trace(Visitor* visitor) const {

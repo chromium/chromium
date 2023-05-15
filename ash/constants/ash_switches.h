@@ -26,7 +26,6 @@ extern const char kAggressiveCacheDiscardThreshold[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowFailedPolicyFetchForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAllowOsInstall[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAllowRAInDevMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAlmanacApiUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAlwaysEnableHdcp[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppAutoLaunched[];
@@ -285,6 +284,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kProfileRequiresPolicy[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPublicAccountsSamlAclUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsAddFakeBluetoothDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsAddFakeCastDevices[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsShowLocaleTile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kRemoteRebootCommandTimeoutInSecondsForTesting[];
@@ -296,7 +296,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSamlPasswordChangeUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kScheduledRebootGracePeriodInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHoverPreviews[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowTaps[];
@@ -328,12 +327,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUseMyFilesInUserDataDirForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kWaitForInitialPolicyFetchForTest[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCameraEffectsSupportedByHardware[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPreventKioskAutolaunchForTesting[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -350,10 +349,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRevenBranding();
 // Returns true if client certificate authentication for the sign-in frame on
 // the Chrome OS sign-in screen is enabled.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSigninFrameClientCertsEnabled();
-
-// Returns true if we should show window previews when hovering over an app
-// on the shelf.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowShelfHoverPreviews();
 
 // Returns true if the Chromebook should ignore its wired connections when
 // deciding whether to run scans for tethering hosts. Should be used only for

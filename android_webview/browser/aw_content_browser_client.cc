@@ -1025,6 +1025,11 @@ std::string AwContentBrowserClient::GetUserAgent() {
   return android_webview::GetUserAgent();
 }
 
+blink::UserAgentMetadata AwContentBrowserClient::GetUserAgentMetadata() {
+  return embedder_support::GetUserAgentMetadata(
+      browser_context_->GetPrefService());
+}
+
 content::ContentBrowserClient::WideColorGamutHeuristic
 AwContentBrowserClient::GetWideColorGamutHeuristic() {
   if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport)) {
@@ -1102,7 +1107,14 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
-  return false;
+  // WebView only supports OS-level attribution and not web-attribution.
+  return operation == AttributionReportingOperation::kAny ||
+         operation == AttributionReportingOperation::kOsSource ||
+         operation == AttributionReportingOperation::kOsTrigger;
+}
+
+bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {
+  return false;  // WebView does not support web-only attribution.
 }
 
 }  // namespace android_webview

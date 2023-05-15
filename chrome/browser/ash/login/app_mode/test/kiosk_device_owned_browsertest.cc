@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
@@ -67,8 +66,6 @@ namespace ash {
 
 namespace {
 
-const test::UIPath kErrorMessageContinueButton = {"error-message",
-                                                  "continueButton"};
 const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
                                               "launchText"};
 
@@ -266,72 +263,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
   EXPECT_FALSE(ShelfTestApi().IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, ZoomSupport) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
-
-  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_TRUE(app_profile);
-
-  extensions::AppWindowRegistry* app_window_registry =
-      extensions::AppWindowRegistry::Get(app_profile);
-  extensions::AppWindow* window =
-      apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait();
-  ASSERT_TRUE(window);
-
-  test::JSChecker window_js(window->web_contents());
-  int original_width = window_js.GetInt("window.innerWidth");
-
-  content::DOMMessageQueue message_queue(window->web_contents());
-
-  // Inject window size observer that should notify this test when the app
-  // window size changes during zoom operations.
-  window_js.Evaluate(
-      base::StringPrintf("window.addEventListener('resize', function() {"
-                         "  window.domAutomationController.send({"
-                         "      'name': '%s',"
-                         "      'data': window.innerWidth"
-                         "  });"
-                         "});",
-                         kSizeChangedMessage));
-
-  native_app_window::NativeAppWindowViews* native_app_window_views =
-      static_cast<native_app_window::NativeAppWindowViews*>(
-          window->GetBaseWindow());
-  ui::AcceleratorTarget* accelerator_target =
-      static_cast<ui::AcceleratorTarget*>(native_app_window_views);
-
-  // Zoom in. Text is bigger and content window width becomes smaller.
-  accelerator_target->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_ADD, ui::EF_CONTROL_DOWN));
-
-  const int width_zoomed_in =
-      WaitForWidthChange(&message_queue, original_width);
-  ASSERT_LT(width_zoomed_in, original_width);
-
-  // Go back to normal. Window width is restored.
-  accelerator_target->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_0, ui::EF_CONTROL_DOWN));
-
-  const int width_zoom_normal =
-      WaitForWidthChange(&message_queue, width_zoomed_in);
-  ASSERT_EQ(width_zoom_normal, original_width);
-
-  // Zoom out. Text is smaller and content window width becomes larger.
-  accelerator_target->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_SUBTRACT, ui::EF_CONTROL_DOWN));
-
-  const int width_zoomed_out =
-      WaitForWidthChange(&message_queue, width_zoom_normal);
-  ASSERT_GT(width_zoomed_out, original_width);
-
-  // Terminate the app.
-  window->GetBaseWindow()->Close();
-  base::RunLoop().RunUntilIdle();
-}
-
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
   // Tests that the kiosk session is not considered to be logged in with a GAIA
   // account.
@@ -358,43 +289,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkDown) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
-                       LaunchAppWithNetworkConfigAccelerator) {
-  ScopedCanConfigureNetwork can_configure_network(true, false);
-
-  // Block app loading until the welcome screen is shown.
-  BlockAppLaunch(true);
-
-  // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  splash_waiter.Wait();
-
-  // A network error screen should be shown after authenticating.
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  // Simulate Ctrl+Alt+N accelerator.
-
-  LoginDisplayHost::default_host()->HandleAccelerator(
-      LoginAcceleratorAction::kAppLaunchNetworkConfig);
-  error_screen_waiter.Wait();
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
-
-  // Continue button should be visible since we are online.
-  test::OobeJS().ExpectVisiblePath(kErrorMessageContinueButton);
-
-  // Let app launching resume.
-  BlockAppLaunch(false);
-
-  // Click on [Continue] button.
-  test::OobeJS().TapOnPath(kErrorMessageContinueButton);
-
-  WaitForAppLaunchSuccess();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
-  // Mock network could not be configured.
-  ScopedCanConfigureNetwork can_configure_network(false, true);
+  ScopedCanConfigureNetwork can_configure_network(false);
 
   // Start app launch and wait for network connectivity timeout.
   StartAppLaunchFromLoginScreen(
@@ -410,48 +306,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   // Network becomes online and app launch is resumed.
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkPortal) {
-  // Mock network could be configured without the owner password.
-  ScopedCanConfigureNetwork can_configure_network(true, false);
-
-  // Start app launch with network portal state.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-
-  OobeScreenWaiter app_splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  app_splash_waiter.set_no_assert_last_screen();
-  app_splash_waiter.Wait();
-
-  // Network error should show up automatically since this test does not
-  // require owner auth to configure network.
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
-  SimulateNetworkOnline();
-  WaitForAppLaunchSuccess();
-}
-
-// TODO(b/231213239): Flaky seg faults
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  // Do not let the app be run to avoid race condition.
-  BlockAppLaunch(true);
-  splash_waiter.Wait();
-
-  base::RunLoop run_loop;
-  auto subscription =
-      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
-  settings_helper_.SetBoolean(
-      kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled, true);
-  LoginDisplayHost::default_host()->HandleAccelerator(
-      LoginAcceleratorAction::kAppLaunchBailout);
-  run_loop.Run();
-  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
-            KioskAppLaunchError::Get());
 }
 
 // Verifies available volumes for kiosk apps in kiosk session.

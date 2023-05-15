@@ -400,6 +400,10 @@ bool DesktopWindowTreeHostWin::IsActive() const {
   return message_handler_->IsActive();
 }
 
+void DesktopWindowTreeHostWin::PaintAsActiveChanged() {
+  message_handler_->PaintAsActiveChanged();
+}
+
 void DesktopWindowTreeHostWin::Maximize() {
   message_handler_->Maximize();
 }
@@ -563,10 +567,12 @@ void DesktopWindowTreeHostWin::SetOpacity(float opacity) {
   content_window()->layer()->SetOpacity(opacity);
 }
 
-void DesktopWindowTreeHostWin::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+void DesktopWindowTreeHostWin::SetAspectRatio(
+    const gfx::SizeF& aspect_ratio,
+    const gfx::Size& excluded_margin) {
   DCHECK(!aspect_ratio.IsEmpty());
-  message_handler_->SetAspectRatio(aspect_ratio.width() /
-                                   aspect_ratio.height());
+  message_handler_->SetAspectRatio(aspect_ratio.width() / aspect_ratio.height(),
+                                   excluded_margin);
 }
 
 void DesktopWindowTreeHostWin::SetWindowIcons(const gfx::ImageSkia& window_icon,

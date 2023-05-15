@@ -131,6 +131,7 @@ class SessionTest : public mojom::ResourceProvider,
   MOCK_METHOD(void, LogInfoMessage, (const std::string&));
   MOCK_METHOD(void, LogErrorMessage, (const std::string&));
   MOCK_METHOD(void, OnSourceChanged, ());
+  MOCK_METHOD(void, OnRemotingStateChanged, (bool is_remoting));
 
   MOCK_METHOD(void, OnGetVideoCaptureHost, ());
   MOCK_METHOD(void, OnGetNetworkContext, ());
@@ -210,24 +211,24 @@ class SessionTest : public mojom::ResourceProvider,
       if (cast_mode_ == "remoting") {
         audio_configs.emplace_back(MirrorSettings::GetDefaultAudioConfig(
             media::cast::RtpPayloadType::REMOTE_AUDIO,
-            media::cast::Codec::CODEC_AUDIO_REMOTE));
+            media::cast::Codec::kAudioRemote));
       } else {
         EXPECT_EQ("mirroring", cast_mode_);
         audio_configs.emplace_back(MirrorSettings::GetDefaultAudioConfig(
             media::cast::RtpPayloadType::AUDIO_OPUS,
-            media::cast::Codec::CODEC_AUDIO_OPUS));
+            media::cast::Codec::kAudioOpus));
       }
     }
     if (session_type_ != SessionType::AUDIO_ONLY) {
       if (cast_mode_ == "remoting") {
         video_configs.emplace_back(MirrorSettings::GetDefaultVideoConfig(
             media::cast::RtpPayloadType::REMOTE_VIDEO,
-            media::cast::Codec::CODEC_VIDEO_REMOTE));
+            media::cast::Codec::kVideoRemote));
       } else {
         EXPECT_EQ("mirroring", cast_mode_);
         video_configs.emplace_back(MirrorSettings::GetDefaultVideoConfig(
             media::cast::RtpPayloadType::VIDEO_VP8,
-            media::cast::Codec::CODEC_VIDEO_VP8));
+            media::cast::Codec::kVideoVp8));
       }
     }
 
@@ -288,6 +289,7 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetNetworkContext()).Times(1);
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+    EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
     EXPECT_CALL(*this, OnInitDone()).Times(1);
 
     session_ = std::make_unique<Session>(
@@ -360,6 +362,7 @@ class SessionTest : public mojom::ResourceProvider,
       EXPECT_CALL(*this, OnError(SessionError::ANSWER_TIME_OUT)).Times(0);
       // Expect to send OFFER message to fallback on mirroring.
       EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+      EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
       // The start of remoting is expected to fail.
       EXPECT_CALL(remoting_source_,
                   OnStartFailed(RemotingStartFailReason::INVALID_ANSWER_MESSAGE))
@@ -397,6 +400,7 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER"))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    EXPECT_CALL(*this, OnRemotingStateChanged(true)).Times(1);
     if (is_remote_playback_) {
       EXPECT_TRUE(video_host_ && video_host_->paused());
     }
@@ -422,6 +426,7 @@ class SessionTest : public mojom::ResourceProvider,
     // Expect to send OFFER message to fallback on mirroring.
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
     EXPECT_CALL(remoting_source_, OnStopped(reason)).Times(1);
+    EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
     remoter_->Stop(reason);
     task_environment_.RunUntilIdle();
     cast_mode_ = "mirroring";

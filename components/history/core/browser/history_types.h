@@ -18,6 +18,7 @@
 #include "base/containers/stack_container.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -1019,6 +1020,9 @@ struct Cluster {
   // removed.
   absl::optional<std::u16string> raw_label;
 
+  // Where the label came from. Determines in which ways we can use `raw_label`.
+  LabelSource label_source = LabelSource::kUnknown;
+
   // The positions within the label that match the search query, if it exists.
   // This depends on the user's search query, and should not be persisted.
   query_parser::Snippet::MatchPositions label_match_positions;
@@ -1083,7 +1087,7 @@ struct HistoryAddPageArgs {
                      bool consider_for_ntp_most_visited,
                      absl::optional<std::u16string> title = absl::nullopt,
                      absl::optional<Opener> opener = absl::nullopt,
-                     absl::optional<int64_t> bookmark_id = absl::nullopt,
+                     absl::optional<base::Uuid> bookmark_id = absl::nullopt,
                      absl::optional<VisitContextAnnotations::OnVisitFields>
                          context_annotations = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
@@ -1106,7 +1110,7 @@ struct HistoryAddPageArgs {
   bool consider_for_ntp_most_visited;
   absl::optional<std::u16string> title;
   absl::optional<Opener> opener;
-  absl::optional<int64_t> bookmark_id;
+  absl::optional<base::Uuid> bookmark_id;
   absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
 };
 

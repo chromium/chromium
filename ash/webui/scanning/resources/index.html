@@ -22,6 +22,10 @@
     html {
       background-color: var(--cros-bg-color);
     }
+
+    html:has(body.jelly-enabled) {
+      background-color: var(--cros-sys-app_base);
+    }
   </style>
   <body>
     <scanning-app></scanning-app>

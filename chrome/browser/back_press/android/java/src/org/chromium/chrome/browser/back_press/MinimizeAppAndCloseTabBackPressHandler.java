@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -32,6 +33,10 @@ import java.util.function.Predicate;
  * to manually minimize app and close tab if necessary.
  */
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
+    public static final BooleanCachedFieldTrialParameter SYSTEM_BACK =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
+
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
 
     // An always-enabled supplier since this handler is the final step of back press handling.
@@ -130,6 +135,10 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
             minimizeApp = true;
             shouldCloseTab = false;
         } else {
+            // TAB history handler has a higher priority and should navigate page back before
+            // minimizing app and closing tab.
+            assert !currentTab.canGoBack()
+                : "Tab should be navigated back before closing or exiting app";
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();
             if (nativePage != null) {
@@ -177,15 +186,13 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
     }
 
-    private static boolean shouldUseSystemBack() {
+    static boolean shouldUseSystemBack() {
         // https://developer.android.com/about/versions/12/behavior-changes-all#back-press
         // Starting from 12, root launcher activities are no longer finished on Back press.
         // Limiting to T, since some OEMs seem to still finish activity on 12.
         boolean isAtLeastT = (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                 >= VERSION_CODES.TIRAMISU;
-        return isAtLeastT
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
+        return isAtLeastT && SYSTEM_BACK.getValue();
     }
 
     static void setVersionForTesting(Integer version) {

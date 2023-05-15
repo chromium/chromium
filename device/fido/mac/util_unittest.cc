@@ -16,9 +16,7 @@
 
 using testing::ElementsAre;
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 namespace {
 
 static base::Time g_fake_now;
@@ -50,6 +48,4 @@ TEST(MakeAuthenticatorDataTest, UvBit) {
 }
 
 }  // namespace
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
+namespace ui {
 namespace {
 constexpr char kMaxDifferentPixels[] = "fuzzy_max_different_pixels";
 constexpr char kPixelDeltaThreshold[] = "fuzzy_pixel_delta_threshold";
@@ -16,8 +17,10 @@ constexpr char kEdgeThreshold[] = "sobel_edge_threshold";
 constexpr char kIgnoredBorderThickness[] = "fuzzy_ignored_border_thickness";
 }  // namespace
 
-namespace ui {
 namespace test {
+
+// SkiaGoldMatchingAlgorithm ---------------------------------------------------
+
 SkiaGoldMatchingAlgorithm::SkiaGoldMatchingAlgorithm() = default;
 
 SkiaGoldMatchingAlgorithm::~SkiaGoldMatchingAlgorithm() = default;
@@ -29,6 +32,8 @@ void SkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
       base::JoinString({"image_matching_algorithm", GetCommandLineSwitchName()},
                        ":"));
 }
+
+// ExactSkiaGoldMatchingAlgorithm ----------------------------------------------
 
 ExactSkiaGoldMatchingAlgorithm::ExactSkiaGoldMatchingAlgorithm() = default;
 
@@ -43,6 +48,8 @@ void ExactSkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
   // Do not call base class AppendAlgorithmToCmdline.
   // Nothing to append.
 }
+
+// FuzzySkiaGoldMatchingAlgorithm ----------------------------------------------
 
 FuzzySkiaGoldMatchingAlgorithm::~FuzzySkiaGoldMatchingAlgorithm() = default;
 
@@ -85,6 +92,8 @@ void FuzzySkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
                          ":"));
 }
 
+// SobelSkiaGoldMatchingAlgorithm ----------------------------------------------
+
 SobelSkiaGoldMatchingAlgorithm::~SobelSkiaGoldMatchingAlgorithm() = default;
 
 std::string SobelSkiaGoldMatchingAlgorithm::GetCommandLineSwitchName() const {
@@ -112,6 +121,28 @@ void SobelSkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
       base::JoinString({kEdgeThreshold, base::NumberToString(edge_threshold_)},
                        ":"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// PositiveIfOnlyImageAlgorithm ------------------------------------------------
+
+PositiveIfOnlyImageAlgorithm::PositiveIfOnlyImageAlgorithm() = default;
+
+PositiveIfOnlyImageAlgorithm::~PositiveIfOnlyImageAlgorithm() = default;
+
+void PositiveIfOnlyImageAlgorithm::AppendAlgorithmToCmdline(
+    base::CommandLine& cmd) const {
+  SkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(cmd);
+
+  // Disallow the user from triaging images.
+  cmd.AppendSwitchASCII("add-test-optional-key", "disallow_triaging:true");
+}
+
+std::string PositiveIfOnlyImageAlgorithm::GetCommandLineSwitchName() const {
+  return "positive_if_only_image";
+}
+
+#endif  // IS_CHROMEOS_ASH
 
 }  // namespace test
 }  // namespace ui

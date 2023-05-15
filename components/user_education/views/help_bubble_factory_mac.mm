@@ -14,6 +14,10 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace user_education {
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryMac)

@@ -61,7 +61,9 @@ cc_library(
         "//absl/synchronization:__pkg__",
     ],
     deps = [
+        "//absl/base",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/time",
     ],
@@ -71,10 +73,12 @@ cc_test(
     name = "kernel_timeout_internal_test",
     srcs = ["internal/kernel_timeout_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":kernel_timeout_internal",
         "//absl/base:config",
+        "//absl/random",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
     ],
@@ -234,6 +238,7 @@ cc_test(
     size = "large",
     srcs = ["mutex_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     shard_count = 25,
     deps = [
@@ -296,6 +301,7 @@ cc_test(
     size = "small",
     srcs = ["notification_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_lexan"],
     deps = [
@@ -343,11 +349,14 @@ cc_test(
     name = "waiter_test",
     srcs = ["internal/waiter_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":kernel_timeout_internal",
         ":synchronization",
         ":thread_pool",
+        "//absl/base:config",
+        "//absl/random",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
     ],

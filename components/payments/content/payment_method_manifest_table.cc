@@ -90,10 +90,6 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
   return true;
 }
 
-bool PaymentMethodManifestTable::IsSyncable() {
-  return false;
-}
-
 bool PaymentMethodManifestTable::MigrateToVersion(
     int version,
     bool* update_compatible_version) {

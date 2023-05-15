@@ -162,6 +162,7 @@ class PermissionsClient {
       permissions::PermissionRequestGestureType gesture_type,
       absl::optional<base::TimeDelta> prompt_display_duration,
       bool is_post_prompt,
+      const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_);
 #endif
 

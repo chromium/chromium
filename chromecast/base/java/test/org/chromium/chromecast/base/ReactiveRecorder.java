@@ -4,6 +4,7 @@
 
 package org.chromium.chromecast.base;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.not;
 
@@ -69,12 +70,12 @@ public class ReactiveRecorder {
         }
 
         public void end() {
-            Assert.assertThat(mRecord, emptyIterable());
+            assertThat(mRecord, emptyIterable());
         }
     }
 
     private Event pop() {
-        Assert.assertThat(mRecord, not(emptyIterable()));
+        assertThat(mRecord, not(emptyIterable()));
         return mRecord.remove(0);
     }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -42,6 +43,15 @@ class WebAuthnCredentialsSyncIdEqualsChecker
 };
 
 }  // namespace
+
+PasskeySyncActiveChecker::PasskeySyncActiveChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+PasskeySyncActiveChecker::~PasskeySyncActiveChecker() = default;
+
+bool PasskeySyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL);
+}
 
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)

@@ -45,7 +45,6 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "vmodule=metrics_reporter=2"})
 @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.WEB_FEED})
 public final class FeedManagementTest {
-    static final String TAG = "FeedMgmtInstTest";
     static final String PACKAGE_NAME = "org.chromium.chrome";
 
     private UserActionTester mActionTester;

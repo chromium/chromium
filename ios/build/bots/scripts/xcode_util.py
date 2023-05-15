@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 
+import iossim_util
 import mac_util
 import test_runner_errors
 
@@ -18,6 +19,15 @@ XcodeIOSSimulatorRuntimeRelPath = ('Contents/Developer/Platforms/'
                                    'iPhoneOS.platform/Library/Developer/'
                                    'CoreSimulator/Profiles/Runtimes')
 XcodeCipdFiles = ['.cipd', '.xcode_versions']
+
+# TODO(crbug.com/1441931): remove Legacy Download once iOS 15.5 is deprecated
+IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
+
+
+def convert_ios_version_to_cipd_ref(ios_version):
+  # Transform iOS version to the runtime version format required by
+  # mac_toolchain. e.g. "14.4" -> "ios-14-4"
+  return 'ios-' + ios_version.replace('.', '-')
 
 
 def _using_new_mac_toolchain(mac_toolchain):
@@ -97,9 +107,7 @@ def _install_runtime(mac_toolchain, install_path, xcode_build_version,
         LOGGER.warning('Removing %s in runtime cache folder.', dir_path)
         shutil.rmtree(dir_path)
 
-  # Transform iOS version to the runtime version format required my the tool.
-  # e.g. "14.4" -> "ios-14-4"
-  runtime_version = 'ios-' + ios_version.replace('.', '-')
+  runtime_version = convert_ios_version_to_cipd_ref(ios_version)
 
   cmd = [
       mac_toolchain,
@@ -297,7 +305,7 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
   # that something went wrong during the install process, and the Xcode should
   # be re-installed.
   if mac_util.is_macos_13_or_higher():
-    LOGGER.debug('checking if the cached Xcode is corruputed...')
+    LOGGER.debug('checking if the cached Xcode is corrupted...')
     for dir_name in XcodeCipdFiles:
       dir_path = os.path.join(xcode_app_path, dir_name)
       if os.path.exists(dir_path):
@@ -337,6 +345,44 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     move_runtime(runtime_cache_folder, xcode_app_path, into_xcode=True)
 
   return is_legacy_xcode_package
+
+
+def _install_runtime_dmg(mac_toolchain, install_path, ios_version):
+  runtime_version = convert_ios_version_to_cipd_ref(ios_version)
+  cmd = [
+      mac_toolchain, 'install-runtime-dmg', '-runtime-version', runtime_version,
+      '-output-dir', install_path
+  ]
+
+  LOGGER.debug('Installing runtime dmg with command: %s' % cmd)
+  output = subprocess.check_call(cmd, stderr=subprocess.STDOUT)
+  return output
+
+
+def get_runtime_dmg_name(runtime_dmg_folder):
+  runtime_dmg_name = glob.glob(os.path.join(runtime_dmg_folder, '*.dmg'))
+  return runtime_dmg_name[0]
+
+
+def is_runtime_builtin(ios_version):
+  runtime = iossim_util.get_simulator_runtime_info(ios_version)
+  if (runtime == None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):
+    return False
+  return True
+
+
+def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version):
+  if is_runtime_builtin(ios_version):
+    LOGGER.debug(
+        'Runtime is already built-in, no need to install from mac_toolchain')
+    return
+
+  # try to delete existing runtime first, in case it's not cleaned up properly
+  # from the previous swarming job
+  iossim_util.delete_simulator_runtime_and_wait(ios_version)
+
+  _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version)
+  iossim_util.add_simulator_runtime(get_runtime_dmg_name(runtime_cache_folder))
 
 
 def version():

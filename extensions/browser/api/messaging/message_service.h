@@ -30,6 +30,7 @@ class BrowserContext;
 }
 
 namespace extensions {
+enum class ChannelType;
 class ChannelEndpoint;
 class Extension;
 class ExtensionHost;
@@ -92,6 +93,7 @@ class MessageService : public BrowserContextKeyedAPI,
                               std::unique_ptr<MessagePort> opener_port,
                               const std::string& target_extension_id,
                               const GURL& source_url,
+                              ChannelType channel_type,
                               const std::string& channel_name);
 
   // Same as above, but opens a channel to the tab with the given ID.  Messages
@@ -103,6 +105,7 @@ class MessageService : public BrowserContextKeyedAPI,
                         int frame_id,
                         const std::string& document_id,
                         const std::string& extension_id,
+                        ChannelType channel_type,
                         const std::string& channel_name);
 
   void OpenChannelToNativeApp(const ChannelEndpoint& source,

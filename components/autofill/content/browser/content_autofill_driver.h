@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -120,7 +121,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // *must* set a non-null AutofillManager with set_autofill_manager().
   // Outside of unittests, this is done by ContentAutofillDriverFactory.
   ContentAutofillDriver(content::RenderFrameHost* render_frame_host,
-                        ContentAutofillRouter* autofill_router);
+                        ContentAutofillDriverFactory* owner);
   ContentAutofillDriver(const ContentAutofillDriver&) = delete;
   ContentAutofillDriver& operator=(const ContentAutofillDriver&) = delete;
   ~ContentAutofillDriver() override;
@@ -222,7 +223,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // ContentAutofillRouter to potentially a different ContentAutofillDriver and
   // then passed to AutofillAgent in the renderer.
   //
-  // These events are private to to avoid accidental in the browser.
+  // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through browser_events().
   std::vector<FieldGlobalId> FillOrPreviewForm(
       mojom::RendererFormDataAction action,
@@ -260,7 +261,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // page, so we validate calls accordingly. If we receive an unexpected call,
   // we shut down the renderer and log the bad message.
   //
-  // These events are private to to avoid accidental in the browser.
+  // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through renderer_events().
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override;
@@ -318,17 +319,14 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Returns the AutofillRouter and confirms that it may be accessed (we should
   // not be using the router if we're prerendering).
-  //
-  // Also DCHECKs that the driver is in a state where events may be handled.
   ContentAutofillRouter& autofill_router();
 
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
   const raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
 
-  // Weak ref to the AutofillRouter associated with the WebContents.
-  // Do not access directly, use autofill_router() instead.
-  const raw_ptr<ContentAutofillRouter> autofill_router_ = nullptr;
+  // The factory that created this driver. Outlives `this`.
+  const raw_ref<ContentAutofillDriverFactory> owner_;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the

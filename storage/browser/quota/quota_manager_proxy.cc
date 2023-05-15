@@ -447,17 +447,17 @@ void QuotaManagerProxy::NotifyBucketModified(
       client_id, bucket, delta, modification_time, std::move(manager_callback));
 }
 
-void QuotaManagerProxy::NotifyWriteFailed(const StorageKey& storage_key) {
+void QuotaManagerProxy::OnClientWriteFailed(const StorageKey& storage_key) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&QuotaManagerProxy::NotifyWriteFailed, this,
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::OnClientWriteFailed, this,
                                   storage_key));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->NotifyWriteFailed(storage_key);
+    quota_manager_impl_->OnClientWriteFailed(storage_key);
   }
 }
 
@@ -533,6 +533,33 @@ void QuotaManagerProxy::GetBucketUsageAndQuota(
   }
 
   quota_manager_impl_->GetBucketUsageAndQuota(bucket, std::move(respond));
+}
+
+void QuotaManagerProxy::GetBucketSpaceRemaining(
+    const BucketLocator& bucket,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::GetBucketSpaceRemaining,
+                                  this, bucket, std::move(callback_task_runner),
+                                  std::move(callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+
+  auto respond =
+      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+  if (!quota_manager_impl_) {
+    std::move(respond).Run(false);
+    return;
+  }
+
+  quota_manager_impl_->GetBucketSpaceRemaining(bucket, std::move(respond));
 }
 
 void QuotaManagerProxy::IsStorageUnlimited(

@@ -10,8 +10,9 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../../controls/settings_slider.js';
+import '/shared/settings/controls/settings_slider.js';
 import '../os_settings_icons.html.js';
+import './switch_access_action_assignment_pane.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -139,7 +140,7 @@ const SetupPageList: {[key in SetupPageId]?: SetupPage} = {
 
 interface SettingsSwitchAccessSetupGuideDialogElement {
   $: {
-    chooseSwitchCountIllustration: HTMLElement,
+    chooseSwitchCount: HTMLElement,
     closingInstructions: HTMLElement,
     titleText: HTMLElement,
     switchAccessSetupGuideDialog: CrDialogElement,
@@ -212,6 +213,11 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
         type: Number,
         value: 1,
       },
+
+      switchToAssign_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -232,6 +238,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
   private minScanSpeedLabelSec_: string;
   private minScanSpeedMs_: number;
   private switchCount_: number;
+  private switchToAssign_: SwitchAccessCommand|null;
 
   constructor() {
     super();
@@ -312,7 +319,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
   private initializeAssignmentPane_(action: SwitchAccessCommand): void {
     this.removeAssignmentPaneIfPresent_();
 
-    this.assignmentIllustrationElement.classList.add(action);
+    this.switchToAssign_ = action;
 
     const assignmentPane =
         document.createElement('settings-switch-access-action-assignment-pane');
@@ -326,7 +333,8 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
       this.assignmentContentsElement.removeChild(
           this.assignmentContentsElement.firstChild);
     }
-    this.assignmentIllustrationElement.className = 'illustration';
+
+    this.switchToAssign_ = null;
   }
 
   /**
@@ -466,16 +474,10 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
     const selected = this.$.switchCountGroup.selected;
     if (selected === 'one-switch') {
       this.switchCount_ = 1;
-      this.$.chooseSwitchCountIllustration.className =
-          'illustration one-switch';
     } else if (selected === 'two-switches') {
       this.switchCount_ = 2;
-      this.$.chooseSwitchCountIllustration.className =
-          'illustration two-switches';
     } else if (selected === 'three-switches') {
       this.switchCount_ = 3;
-      this.$.chooseSwitchCountIllustration.className =
-          'illustration three-switches';
     }
   }
 
@@ -517,10 +519,30 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
             .querySelector('.sa-setup-contents'));
   }
 
-  private get assignmentIllustrationElement(): HTMLElement {
-    return castExists(
-        this.shadowRoot!.getElementById(SetupElement.ASSIGN_SWITCH_CONTENT)!
-            .querySelector('.illustration'));
+  private getAssignSwitchIllo_(): string {
+    switch (this.switchToAssign_) {
+      case SwitchAccessCommand.SELECT:
+        return 'os-settings-illo:switch-access-setup-guide-assign-select';
+      case SwitchAccessCommand.NEXT:
+        return 'os-settings-illo:switch-access-setup-guide-assign-next';
+      case SwitchAccessCommand.PREVIOUS:
+        return 'os-settings-illo:switch-access-setup-guide-assign-previous';
+      default:
+        return '';
+    }
+  }
+
+  private getSwitchCountIllo_(): string {
+    switch (this.switchCount_) {
+      case 1:
+        return 'os-settings-illo:switch-access-setup-guide-choose-1-switch';
+      case 2:
+        return 'os-settings-illo:switch-access-setup-guide-choose-2-switches';
+      case 3:
+        return 'os-settings-illo:switch-access-setup-guide-choose-3-switches';
+      default:
+        return '';
+    }
   }
 }
 

@@ -31,7 +31,14 @@ def _parse_json_file(path):
     path (str): The path to a JSON file to parse.
   """
     with open(path, 'r') as json_file:
-        return json.load(json_file)
+        # Some JSON files erroroneously end with double curly brace, prefer to
+        # strip it out instead of throwing an error message.
+        json_string = json_file.read()
+        if json_string[0] == '{' and json_string[-2:] == '}}':
+            logging.warning(
+                'Found additional trailing curly brace for path: %s', path)
+            return json.loads(json_string[:-1])
+        return json.loads(json_string)
 
 
 def _get_paths_with_suffix(input_dir, suffix):
@@ -81,9 +88,6 @@ def write_parsed_scripts(task_output_dir, source_dir=_SRC_PATH):
         return None
 
     for file_path in scripts:
-        # TODO(crbug.com/1224786): Some of the raw script data is being saved
-        # with a trailing curly brace leading to invalid JSON. Bail out if this
-        # is encountered and ensure we log the file path.
         script_data = None
         try:
             script_data = _parse_json_file(file_path)
@@ -275,7 +279,7 @@ def convert_raw_coverage_to_istanbul(raw_coverage_dirs, source_dir,
   Raises:
     RuntimeError: If the underlying node command fails.
   """
-    return node.RunNode([
+    stdout = node.RunNode([
         os.path.join(_HERE_PATH, 'convert_to_istanbul.js'),
         '--source-dir',
         source_dir,
@@ -284,6 +288,7 @@ def convert_raw_coverage_to_istanbul(raw_coverage_dirs, source_dir,
         '--raw-coverage-dirs',
         *raw_coverage_dirs,
     ])
+    logging.info(stdout)
 
 
 def merge_istanbul_reports(istanbul_coverage_dir, source_dir, output_file):

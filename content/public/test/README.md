@@ -194,7 +194,6 @@ Override `SetUpOnMainThread()` to configure it like this:
   }
 ```
 
-
 ## Simulating a slow load
 
 Navigates to a page that takes 60 seconds to load.
@@ -206,6 +205,20 @@ Navigates to a page that takes 60 seconds to load.
 
 The embedded test server also registers [other default
 handlers][test-server-default-handlers] that may be useful.
+
+## Simulating a failed navigation
+
+Note that this is distinct from a navigation that results in an HTTP error,
+since those navigations still load arbitrary HTML from the server-supplied error
+page; a failed navigation is one that results in committing a Chrome-supplied
+error page, i.e. `RenderFrameHost::IsErrorDocument()` returns `true`.
+
+```c++
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(url, net::ERR_DNS_TIMED_OUT);
+  EXPECT_FALSE(NavigateToURLFromRenderer(web_contents, url));
+```
 
 [host-resolver-config]: README.md#Cross_origin-navigations
 [cross-site-iframe-factory]: https://source.chromium.org/chromium/chromium/src/+/main:content/test/data/cross_site_iframe_factory.html

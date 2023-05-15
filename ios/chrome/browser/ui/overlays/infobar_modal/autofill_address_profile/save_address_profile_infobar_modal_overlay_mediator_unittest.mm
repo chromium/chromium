@@ -6,7 +6,6 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
@@ -32,8 +31,10 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
+using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for SaveAddressProfileInfobarModalOverlayMediator.
 class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
@@ -41,7 +42,9 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
   SaveAddressProfileInfobarModalOverlayMediatorTest()
       : callback_installer_(&callback_receiver_,
                             {LegacyEditedProfileSaveAction::ResponseSupport(),
-                             CancelViewAction::ResponseSupport()}),
+                             EditedProfileSaveAction::ResponseSupport(),
+                             CancelViewAction::ResponseSupport(),
+                             NoThanksViewAction::ResponseSupport()}),
         mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile();
@@ -125,6 +128,17 @@ TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, LegacyEditAction) {
   [mediator_ saveEditedProfileWithData:@{}.mutableCopy];
 }
 
+// Tests that calling saveEditedProfileWithProfileData: triggers a
+// EditedProfileSaveAction response.
+TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, EditAction) {
+  autofill::AutofillProfile profile;
+  EXPECT_CALL(callback_receiver_,
+              DispatchCallback(request_.get(),
+                               EditedProfileSaveAction::ResponseSupport()));
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ saveEditedProfileWithProfileData:&profile];
+}
+
 // Tests that calling dismissInfobarModal triggers a CancelViewAction response.
 TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, CancelAction) {
   EXPECT_CALL(
@@ -132,4 +146,14 @@ TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, CancelAction) {
       DispatchCallback(request_.get(), CancelViewAction::ResponseSupport()));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
+}
+
+// Tests that calling noThanksButtonWasPressed triggers a NoThanksViewAction
+// response.
+TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, NoThanksViewAction) {
+  EXPECT_CALL(
+      callback_receiver_,
+      DispatchCallback(request_.get(), NoThanksViewAction::ResponseSupport()));
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ noThanksButtonWasPressed];
 }

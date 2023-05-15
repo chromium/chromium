@@ -12,6 +12,15 @@
   // Add a line at 80 characters.
   "editor.rulers": [80],
 
+  // Except for Java where we add a line at 100 characters per that style guide.
+  // The chrome java style guide:
+  // https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md
+  // does not override this and defers to the android style guide:
+  // https://source.android.com/docs/setup/contribute/code-style#limit-line-length
+  "[java]": {
+    "editor.rulers": [100]
+  },
+
   "extensions": {
     "recommendations": [
       // The GN language server from Microsoft.

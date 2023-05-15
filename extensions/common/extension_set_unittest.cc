@@ -29,10 +29,10 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
 #endif
   path = path.AppendASCII(name);
 
-  base::Value::Dict manifest;
-  manifest.Set("name", name);
-  manifest.Set("version", "1");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", name)
+                      .Set("version", "1")
+                      .Set("manifest_version", 2);
 
   if (!launch_url.empty())
     manifest.SetByDottedPath("app.launch.web_url", launch_url);

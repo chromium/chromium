@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -105,7 +106,7 @@ class ASH_EXPORT ShellTestApi {
   bool IsHUDShown();
 
  private:
-  Shell* shell_;  // not owned
+  raw_ptr<Shell, ExperimentalAsh> shell_;  // not owned
 };
 
 }  // namespace ash

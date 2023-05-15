@@ -134,6 +134,20 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
             return 1;
           }
 
+          // A box without first-line style may inherit from ancestors with
+          // first-line styles, such as when the box is a pseudo element. If
+          // this happens, consider it stopped the propagation.
+          if (style_variant_ == NGStyleVariant::kFirstLine &&
+              &layout_object->StyleRef() == style &&
+              &parent->StyleRef() != &parent_style) {
+            inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
+            const wtf_size_t size =
+                std::min(saved_decorating_boxes_->size(), decorations->size());
+            inline_context_->PushDecoratingBoxes(
+                base::make_span(saved_decorating_boxes_->begin(), size));
+            return size;
+          }
+
 #if DCHECK_IS_ON()
           ShowLayoutTree(layout_object);
 #endif
@@ -241,6 +255,11 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
     DCHECK(current.IsInlineBox());
     ancestor_items.push_back(current.Item());
   }
+}
+
+void NGInlinePaintContext::PushDecoratingBoxes(
+    const base::span<NGDecoratingBox>& boxes) {
+  decorating_boxes_.AppendRange(boxes.begin(), boxes.end());
 }
 
 NGInlinePaintContext::ScopedLineBox::ScopedLineBox(

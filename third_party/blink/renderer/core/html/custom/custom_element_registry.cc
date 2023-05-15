@@ -283,17 +283,9 @@ CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
 
 CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
     v8::Local<v8::Object> constructor) const {
-  struct HashTranslator {
-    STATIC_ONLY(HashTranslator);
-    static unsigned GetHash(const v8::Local<v8::Object>& constructor) {
-      return constructor->GetIdentityHash();
-    }
-    static bool Equal(const Member<V8CustomElementConstructor>& a,
-                      const v8::Local<v8::Object>& b) {
-      return a && a->CallbackObject() == b;
-    }
-  };
-  const auto it = constructor_map_.Find<HashTranslator>(constructor);
+  const auto it =
+      constructor_map_.Find<V8CustomElementConstructorHashTranslator>(
+          constructor);
   if (it == constructor_map_.end())
     return nullptr;
   return it->value;

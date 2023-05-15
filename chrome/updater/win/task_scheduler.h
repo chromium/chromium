@@ -30,13 +30,23 @@ enum class UpdaterScope;
 // before calling |Register|, or to verify its existence, or delete it.
 class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
  public:
-  // The type of trigger to register for this task.
+  // The types of trigger to register for this task. Multiple triggers types can
+  // be combined using the bitwise OR operator.
   enum TriggerType {
-    TRIGGER_TYPE_POST_REBOOT = 0,  // Only run once post-reboot.
-    TRIGGER_TYPE_NOW = 1,          // Run right now (mainly for tests).
-    TRIGGER_TYPE_HOURLY = 2,       // Run every hour.
-    TRIGGER_TYPE_EVERY_FIVE_HOURS = 3,
-    TRIGGER_TYPE_MAX,
+    // Run when the current user logs on (for user installs). Or when any user
+    // logs on (for system installs).
+    TRIGGER_TYPE_LOGON = 1 << 0,
+
+    // Run right now (mainly for tests).
+    TRIGGER_TYPE_NOW = 1 << 1,
+
+    // Run every hour.
+    TRIGGER_TYPE_HOURLY = 1 << 2,
+
+    // Run every five hours.
+    TRIGGER_TYPE_EVERY_FIVE_HOURS = 1 << 3,
+
+    TRIGGER_TYPE_MAX = 1 << 4,
   };
 
   // The log-on requirements for a task to be scheduled. Note that a task can
@@ -93,7 +103,7 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
     // User ID under which the task runs.
     std::wstring user_id;
 
-    TriggerType trigger_type = TRIGGER_TYPE_MAX;
+    int trigger_types = 0;
   };
 
   // Creates an instance of the task scheduler for the given `scope`.
@@ -147,11 +157,12 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   virtual bool HasTaskFolder(const wchar_t* folder_name) = 0;
 
   // Register the task to run the specified application and using the given
-  // |trigger_type|.
+  // `trigger_types`. `trigger_types` is a bitwise OR of one or more types in
+  // the `TriggerType` enum.
   virtual bool RegisterTask(const wchar_t* task_name,
                             const wchar_t* task_description,
                             const base::CommandLine& run_command,
-                            TriggerType trigger_type,
+                            int trigger_types,
                             bool hidden) = 0;
 
   // Returns true if the scheduled task specified by |task_name| can be started

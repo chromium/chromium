@@ -46,6 +46,27 @@ class TopControlsSwapPromise : public cc::SwapPromise {
   const float height_;
 };
 
+class LayerTreeCcWrapperScopedKeepSurfaceAlive
+    : public LayerTree::ScopedKeepSurfaceAlive {
+ public:
+  LayerTreeCcWrapperScopedKeepSurfaceAlive(
+      base::WeakPtr<LayerTreeCcWrapper> layer_tree,
+      const viz::SurfaceId& surface_id)
+      : layer_tree_(std::move(layer_tree)), range_(surface_id, surface_id) {
+    layer_tree_->AddSurfaceRange(range_);
+  }
+
+  ~LayerTreeCcWrapperScopedKeepSurfaceAlive() override {
+    if (layer_tree_) {
+      layer_tree_->RemoveSurfaceRange(range_);
+    }
+  }
+
+ private:
+  const base::WeakPtr<LayerTreeCcWrapper> layer_tree_;
+  const viz::SurfaceRange range_;
+};
+
 }  // namespace
 
 LayerTreeCcWrapper::LayerTreeCcWrapper(InitParams init_params)
@@ -170,6 +191,19 @@ void LayerTreeCcWrapper::ReleaseLayerTreeFrameSink() {
   host_->ReleaseLayerTreeFrameSink();
 }
 
+std::unique_ptr<LayerTree::ScopedKeepSurfaceAlive>
+LayerTreeCcWrapper::CreateScopedKeepSurfaceAlive(
+    const viz::SurfaceId& surface_id) {
+  return std::make_unique<LayerTreeCcWrapperScopedKeepSurfaceAlive>(
+      weak_factory_.GetWeakPtr(), surface_id);
+}
+
+const LayerTree::SurfaceRangesAndCounts&
+LayerTreeCcWrapper::GetSurfaceRangesForTesting() const {
+  const auto* const_host = host_.get();
+  return const_host->pending_commit_state()->surface_ranges;
+}
+
 void LayerTreeCcWrapper::BeginMainFrame(const viz::BeginFrameArgs& args) {
   client_->BeginFrame(args);
 }
@@ -196,6 +230,16 @@ void LayerTreeCcWrapper::DidSubmitCompositorFrame() {
 
 void LayerTreeCcWrapper::DidLoseLayerTreeFrameSink() {
   client_->DidLoseLayerTreeFrameSink();
+}
+
+void LayerTreeCcWrapper::AddSurfaceRange(
+    const viz::SurfaceRange& surface_range) {
+  host_->AddSurfaceRange(surface_range);
+}
+
+void LayerTreeCcWrapper::RemoveSurfaceRange(
+    const viz::SurfaceRange& surface_range) {
+  host_->RemoveSurfaceRange(surface_range);
 }
 
 std::unique_ptr<cc::BeginMainFrameMetrics>

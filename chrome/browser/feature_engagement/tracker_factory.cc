@@ -32,7 +32,12 @@ feature_engagement::Tracker* TrackerFactory::GetForBrowserContext(
 TrackerFactory::TrackerFactory()
     : ProfileKeyedServiceFactory(
           "feature_engagement::Tracker",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {}
 
 TrackerFactory::~TrackerFactory() = default;
 

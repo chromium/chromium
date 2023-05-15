@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2023-08-20">
+    enum="ContentSetting" expires_after="2023-10-22">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -993,6 +993,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.FeedSyncPromo" enum="FeedSyncPromo"
+    expires_after="2023-10-10">
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded when a user interacts with a Sync Promo inside the Feed, e.g.:
+    accepting the bottom sync promo, or closing the top Sync promos. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>
@@ -1019,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2023-09-03">
+    enum="FeedLoadStreamStatus" expires_after="2023-11-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1332,7 +1343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful"
-    enum="Boolean" expires_after="2023-07-19">
+    enum="Boolean" expires_after="2023-10-22">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1681,7 +1692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
-    units="follows" expires_after="2023-10-08">
+    units="follows" expires_after="2023-10-22">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

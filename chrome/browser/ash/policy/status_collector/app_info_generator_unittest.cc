@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -267,8 +268,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;
-  web_app::WebAppRegistrarMutable* app_registrar_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<web_app::WebAppRegistrarMutable, ExperimentalAsh> app_registrar_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   TestingPrefServiceSimple pref_service_;
 

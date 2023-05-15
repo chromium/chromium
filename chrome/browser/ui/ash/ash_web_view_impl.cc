@@ -219,9 +219,10 @@ void AshWebViewImpl::NavigationEntriesDeleted() {
 }
 
 void AshWebViewImpl::InitWebContents(Profile* profile) {
-  web_contents_ =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          profile, content::SiteInstance::Create(profile)));
+  auto web_contents_params = content::WebContents::CreateParams(
+      profile, content::SiteInstance::Create(profile));
+  web_contents_params.enable_wake_locks = params_.enable_wake_locks;
+  web_contents_ = content::WebContents::Create(web_contents_params);
 
   web_contents_->SetDelegate(this);
   Observe(web_contents_.get());

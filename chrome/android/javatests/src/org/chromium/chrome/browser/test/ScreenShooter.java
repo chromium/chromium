@@ -17,7 +17,8 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import org.json.JSONArray;
@@ -172,8 +173,10 @@ public class ScreenShooter extends TestWatcher {
         setFilterValue(filters, DISPLAY_SIZE_FILTER,
                 String.format(Locale.US, "%d X %d", Math.min(displaySize.x, displaySize.y),
                         Math.max(displaySize.x, displaySize.y)));
-        int orientation =
-                InstrumentationRegistry.getContext().getResources().getConfiguration().orientation;
+        int orientation = ApplicationProvider.getApplicationContext()
+                                  .getResources()
+                                  .getConfiguration()
+                                  .orientation;
         setFilterValue(filters, ORIENTATION_FILTER,
                 orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait");
         setFilterValue(filters, ANDROID_VERSION_FILTER, Build.VERSION.RELEASE);

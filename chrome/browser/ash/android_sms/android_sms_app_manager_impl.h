@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
@@ -86,10 +87,11 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
                             bool success);
   void HandleAppSetupFinished();
 
-  Profile* profile_;
-  AndroidSmsAppSetupController* setup_controller_;
-  app_list::AppListSyncableService* app_list_syncable_service_;
-  PrefService* pref_service_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AndroidSmsAppSetupController, ExperimentalAsh> setup_controller_;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // True if installation is in currently in progress.
   bool is_new_app_setup_in_progress_ = false;

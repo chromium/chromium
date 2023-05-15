@@ -203,7 +203,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
     return ax::mojom::blink::Role::kListItem;
   }
 
-  if (layout_object_->IsListMarkerIncludingAll()) {
+  if (layout_object_->IsListMarker()) {
     Node* list_item = layout_object_->GeneratingNode();
     if (list_item && ShouldIgnoreListItem(list_item))
       return ax::mojom::blink::Role::kNone;
@@ -523,7 +523,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (alt_text)
     return alt_text->empty();
 
-  if (layout_object_->IsListMarkerIncludingAll()) {
+  if (layout_object_->IsListMarker()) {
     // Ignore TextAlternative of the list marker for SUMMARY because:
     //  - TextAlternatives for disclosure-* are triangle symbol characters used
     //    to visually indicate the expansion state.
@@ -546,17 +546,11 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // Ignore a block flow (display:block, display:inline-block), unless it
-  // directly parents inline children and can have a caret inside of it.
+  // directly parents inline children.
   // This effectively trims a lot of uninteresting divs out of the tree.
   auto* block_flow = DynamicTo<LayoutBlockFlow>(*layout_object_);
   if (block_flow && block_flow->ChildrenInline() && block_flow->FirstChild()) {
-    // Require the ability to contain a caret -- this requirement is not
-    // strictly necessary, and could be removed, but caused about 20 test
-    // changes on each platform.
-    NGInlineCursor cursor(*block_flow);
-    if (cursor.HasRoot()) {
-      return false;
-    }
+    return false;
   }
 
   // By default, objects should be ignored so that the AX hierarchy is not
@@ -1177,8 +1171,9 @@ bool AXLayoutObject::IsDataTable() const {
       Color cell_color = computed_style->VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
       if (has_cell_spacing && table_bg_color != cell_color &&
-          cell_color.Alpha() != 1)
+          !cell_color.IsFullyTransparent()) {
         background_difference_cell_count++;
+      }
 
       // If we've found 10 "good" cells, we don't need to keep searching.
       if (bordered_cell_count >= 10 || background_difference_cell_count >= 10)
@@ -1448,8 +1443,9 @@ AXObject* AXLayoutObject::HeaderObject() const {
 
 void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
                                        Vector<int>& word_ends) const {
-  if (!layout_object_ || !layout_object_->IsListMarkerIncludingAll())
+  if (!layout_object_ || !layout_object_->IsListMarker()) {
     return;
+  }
 
   String text_alternative;
   if (ListMarker* marker = ListMarker::Get(layout_object_)) {
@@ -1458,8 +1454,9 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
   if (text_alternative.ContainsOnlyWhitespaceOrEmpty())
     return;
 
-  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
-  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
+  Vector<NGAbstractInlineTextBox::WordBoundaries> boundaries;
+  NGAbstractInlineTextBox::GetWordBoundariesForText(boundaries,
+                                                    text_alternative);
   word_starts.reserve(boundaries.size());
   word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {

@@ -99,24 +99,11 @@ a[href] {
 collapse-radio-button,
 controlled-radio-button,
 cr-radio-button {
-  min-height: var(--settings-row-min-height);
+  min-height: var(--cr-section-min-height);
 }
 
 cr-radio-group {
   width: 100%;
-}
-
-cr-radio-group:focus {
-  /* TODO(dbeam): why is this here? It looks weird and I'm not sure how to
-   * actually trigger it with mouse/keyboard/screenreader. */
-  background-color: var(--google-grey-300);
-  outline: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  cr-radio-group:focus {
-    background-color: var(--google-grey-800);
-  }
 }
 
 /* See also: .no-min-width below. */
@@ -161,7 +148,7 @@ cr-radio-group:focus {
 .list-item {
   align-items: center;
   display: flex;
-  min-height: var(--settings-row-min-height);
+  min-height: var(--cr-section-min-height);
   padding: 0;
 }
 
@@ -185,10 +172,6 @@ cr-radio-group:focus {
   flex: 1;
 }
 
-.list-item > label span[disabled] {
-  opacity: var(--settings-disabled-opacity);
-}
-
 /* This button has no ink ripple. */
 .list-button[is='action-link'] {
   align-items: center;
@@ -208,7 +191,7 @@ cr-radio-group:focus {
 /* A row with two lines of text. Often the lower line will be .secondary.
  */
 .two-line {
-  min-height: var(--settings-row-two-line-min-height);
+  min-height: var(--cr-section-two-line-min-height);
 }
 
 /* A settings-box is a horizontal row of text or controls within a
@@ -234,7 +217,7 @@ cr-radio-group:focus {
 }
 
 .settings-box.two-line {
-  min-height: var(--settings-row-two-line-min-height);
+  min-height: var(--cr-section-two-line-min-height);
 }
 
 .settings-box-text {
@@ -376,3 +359,10 @@ iron-list,
   direction: ltr;
   unicode-bidi: embed;
 }
+
+<if expr='chromeos_ash'>
+/* Override dialog title font specified in cros_color_overrides.css */
+:host-context(body.jelly-enabled) cr-dialog>[slot='title'] {
+  font: var(--cros-title-1-font);
+}
+</if>

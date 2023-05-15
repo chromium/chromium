@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -74,8 +75,8 @@ class ArcPaiStarter : public ArcAppListPrefs::Observer {
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
 
-  Profile* const profile_;
-  PrefService* const pref_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   std::vector<base::OnceClosure> onstart_callbacks_;
   // Set to true in case external component (Assistant) wants to lock PAI for
   // awhile.

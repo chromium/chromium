@@ -1057,7 +1057,7 @@ are declared in tools/grit/grit_rule.gni.
             Select &amp;All
           </message>
           <message name="IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE" desc="In Title Case: The name of the Partial Translate command in the content area context menu">
-            &amp;Translate to <ph name="LANGUAGE">$1<ex>English</ex></ph>
+            &amp;Translate Selection to <ph name="LANGUAGE">$1<ex>English</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="In Title Case: The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
@@ -1141,6 +1141,12 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
         <if expr="not use_titlecase">
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the passwords and autofill submenu">
+            &amp;Addresses and more
+          </message>
+          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
+            Passwords and &amp;autofill
+          </message>
           <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
             New &amp;tab
           </message>
@@ -1179,6 +1185,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
             &amp;Find and edit
+          </message>
+          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="The text label of the password manager for the passwords and autofill submenu">
+            &amp;Google Password Manager
+          </message>
+            <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
+            &amp;Payment methods
           </message>
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
             Save page &amp;as...
@@ -1230,6 +1242,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <if expr="use_titlecase">
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the passwords and autofill submenu">
+            &amp;Addresses and More
+          </message>
+          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="In Title Case: The text label of the passwords and autofill menu item">
+            Passwords and &amp;Autofill
+          </message>
           <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
             New &amp;Tab
           </message>
@@ -1268,6 +1286,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_FIND_AND_EDIT_MENU" desc="In Title Case: The text label of the Find and edit sub menu item">
             &amp;Find and Edit
+          </message>
+          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="In Title Case: The text label of the password manager for the passwords and autofill submenu">
+            &amp;Google Password Manager
+          </message>
+          <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the passwords and autofill submenu">
+            &amp;Payment Methods
           </message>
           <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
             Save Page &amp;As...
@@ -1493,9 +1517,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
         </message>
-        <message name="IDS_VIEW_PASSWORDS" desc="The show Password Manager menu in the app menu">
-          Password Manager
-        </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
         </message>
@@ -1545,9 +1566,6 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
-        </message>
-        <message name="IDS_VIEW_PASSWORDS" desc="In Title Case: The show Password Manager menu in the app menu">
-          Password Manager
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
@@ -2638,7 +2656,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE"
                desc="When a download has finished deep scanning and the result is safe, let the user know.">
-        Done, no issues found
+        Scan is done
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED"
                desc="When a download is blocked because of warnings, let the user know.">
@@ -2647,6 +2665,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE"
                desc="Malware warning for the user.">
         Malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS"
+        desc="Let the user know the download is suspicious and may need additional safety checks">
+        Suspicious
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS"
                desc="The label on the checkbox with which the user chooses to bypass blocked download.">
@@ -2670,11 +2692,11 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
                desc="Label for the button prompting for Deep Scanning">
-        Scan
+        Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN"
                desc="Label for the button prompting to bypass Deep Scanning">
-        Open
+        Open anyway
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN_NOW"
                desc="Label for the button prompting to open a download while deep scanning is in progress">
@@ -2812,13 +2834,27 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary of warning for a file blocked for being too large.">
         Your organization blocked this file because it is too big for a security check. You can open files up to 50 MB.
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
+               desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
+        This file might be a virus or malware.
+
+You can send it to Google to check if it's unsafe. Scans usually take a few seconds.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER"
+        desc="Additional text describing the process of deep scanning a download">
+        Analysis done by <ph name="LINK">$1<ex>Google Safe Browsing</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK"
+        desc="Text of link within IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER">
+        Google Safe Browsing
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">
         Try again
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
                desc="Prompt for Deep Scanning of a download">
-        Scan before opening
+        Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
                desc="Status text for a download item that is being scanned.">
@@ -2941,13 +2977,16 @@ are declared in tools/grit/grit_rule.gni.
         Retry <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW" desc="Text shown on the download bubble to allow users to never show the bubble at download completion">
-        Don't show when downloads are done
+        Don't show when downloads finish
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER" desc="Text shown on the download bubble to remind users they can customize whether the bubble appears from Chrome settings">
         You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>settings</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_LINK" desc="Link text to Chrome settings in the download bubble, within IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER">
         settings
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT" desc="Tooltip text for the download toolbar button, displayed when there are one or more downloads in progress.">
+        {COUNT, plural, =1 {1 download in progress} other {# downloads in progress}}
       </message>
 
       <!-- Tailored Warning in Download Bubble -->
@@ -5002,7 +5041,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <if expr="reven">
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_ATTACHED_DEVICE_INFO" desc="Permission string for accessing information of attached devices.">
-            Read attached device information and data
+            Read attached devices information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS Flex diagnostic tests
@@ -5011,7 +5050,7 @@ are declared in tools/grit/grit_rule.gni.
             Subscribe to ChromeOS Flex system events
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read ChromeOS Flex device information and device data
+            Read ChromeOS Flex device information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS Flex device and component serial numbers
@@ -5022,7 +5061,7 @@ are declared in tools/grit/grit_rule.gni.
         </if>
         <if expr="not reven">
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_ATTACHED_DEVICE_INFO" desc="Permission string for accessing information of attached devices.">
-            Read attached device information and data
+            Read attached devices information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS diagnostic tests
@@ -5031,7 +5070,7 @@ are declared in tools/grit/grit_rule.gni.
             Subscribe to ChromeOS system events
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read ChromeOS device information and device data
+            Read ChromeOS device information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS device and component serial numbers
@@ -5207,7 +5246,7 @@ are declared in tools/grit/grit_rule.gni.
           Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>3</ex></ph>?
         </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION" desc="The tooltip text of the request access button that appears on the toolbar when an extension requests access to the site">
-          Click to allow "<ph name="EXTENSIONS_REQUESTING_ACCESS">$1<ex>Extension A</ex></ph>" on <ph name="ORIGIN">$2<ex>google.com</ex></ph>:
+          Click to allow "<ph name="EXTENSIONS_REQUESTING_ACCESS">$1<ex>Extension A</ex></ph>" on <ph name="ORIGIN">$2<ex>google.com</ex></ph>
         </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS" desc="The tooltip text of the request access button that appears on the toolbar when an extension requests access to the site">
           Click to allow on <ph name="ORIGIN">$1<ex>google.com</ex></ph>:
@@ -5307,15 +5346,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (sentence case).">
             Inspect popup
           </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_CLICK" desc="The label in an extension's site access combobox to allow the extension access to the page only when the user click on the extension action (sentence case).">
-            When I click the extension
-          </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_SITE" desc="The label in an extension's site access combobox to always allow the extension access to the current origin (sentence case).">
-            Always on this site
-          </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_ALL_SITES" desc="The label in an extension's site access combobox to always allow the extension access on all sites (sentence case).">
-            Always on all sites
-          </message>
         </if>
         <if expr="use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE" desc="The label in an extension's context menu indicating the extension cannot access the current page. (title case)">
@@ -5392,15 +5422,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (title case).">
             Inspect Popup
-          </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_CLICK" desc="The label in an extension's site access combobox to allow the extension access to the page only when the user click on the extension action (title case).">
-            When I Click the Extension
-          </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_SITE" desc="The label in an extension's site access combobox to always allow the extension access to the current origin (title case).">
-            Always on This Site
-          </message>
-          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_ALL_SITES" desc="The label in an extension's site access combobox to always allow the extension access on all sites (title case).">
-            Always on All Sites
           </message>
         </if>
       </if>
@@ -5797,42 +5818,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA" desc="Longer explanation for section of extensions that can't access the current site's data">
         These extensions don't need to see and change information on this site.
       </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE" desc="Title of the site access tab in the Extensions Menu">
-        Permissions
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE" desc="Header for section of extensions that can access the current site's data. $1 is replaced with the current site.">
-        Allowed to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE" desc="Header for section of extensions that request access to the current site's data. $1 is replaced with the current site.">
-        Requesting to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT" desc="Text of the allow all extensions option in the user settings options inside the site access tab.">
-        To allow an extension, change your default setting below.
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT" desc="Text on the site access tab when no extensions have requested access to the current site's data. $1 is replaced with the current site.">
-        No extensions have requested to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT" desc="Text on the site access tab when the current site has restricted site access. $1 is replaced with the current site.">
-        No extensions are allowed to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_TITLE" desc="Title of the button in the site access tab used to show/hide the user settings options.">
-        Choose your default setting
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT" desc="Text of the allow all extensions option in the user settings options inside the site access tab.">
-        Allow all extensions to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT" desc="Text of the allow all extensions option in the user settings options inside the site access tab.">
-        Don't allow any extensions to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT" desc="Text of the allow all extensions option in the user settings options inside the site access tab.">
-        Customize permissions for each extension
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_TITLE" desc="Title of the installed extensions tab in the Extensions Menu">
-        Installed
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_DISCOVER_MORE_TITLE" desc="Text of the button in the installed extensions tab used to open the webstore page">
-        Discover more extensions
-      </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site setting toggle button when is on.">
         Extensions are allowed on this site
       </message>
@@ -5848,6 +5833,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE" desc="Title of the requests access section that lists the extensions requesting site access">
         Requests access
       </message>
+      <message name="IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site access toggle of an extensions menu item when is on.">
+        Allowed to request access
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_OFF_TOOLTIP" desc="Tooltip text for the site access toggle of an extensions menu item when is off.">
+        Not allowed to request access
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE" desc="Text of the site permissions button when extension doesn't have site access to the site">
+        No access needed
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME" desc="Accessibility string for the button that opens the chrome webstore.">
+        Open webstore
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK" desc="Text of the site permissions button when extension has site access only when clicked.">
+        Ask on every visit
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE" desc="Text of the site permissions button when extension always has site access to this site.">
+        Always on this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES" desc="Text of the site permissions button when extension always has site access to all sites.">
+        Always on all sites
+      </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON" desc="Text of the extension settings button in the site permissions page">
         Manage this extension
       </message>
@@ -5859,6 +5865,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_TOGGLE_OFF" desc="Accessible text for the the show requests toggle button in the site permissions page that controls when the extension cannot show site access requests in the toolbar.">
         Not allowed to show requests
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL" desc="Label for the site access section that lets the user select the extension site access.">
+        Site Permissions
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_CLICK_TEXT" desc="Text of the option in the site access section to allow the extension access to the page only when the user clicks on the extension action.">
+        Ask on every visit
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_SITE_TEXT" desc="Text of the option in the site access section to always allow the extension access to $1.">
+        Always on <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_ALL_SITES_TEXT" desc="Text of the option in the site access section to always allow the extension access to all sites.">
+        Always on all sites
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_CLICK_DESCRIPTION" desc="Description of the option in the site access section to allow the extension access to the page only when the user clicks on the extension action.">
+        Runs only after you click the extension
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_SITE_DESCRIPTION" desc="Description of the option in the site access section to always allow the extension access to $1.">
+        Runs automatically every time you visit this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_ALL_SITES_DESCRIPTION" desc="Description of the option in the site access section to always allow the extension access to all sites.">
+        Runs automatically on all sites you visit
       </message>
 
       <!-- Settings API bubble -->
@@ -6390,6 +6417,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_SESSION_CRASHED_BUBBLE_UMA_LINK_TEXT" desc="The text attached to the link that explains UMA optin option">
         usage statistics
+      </message>
+
+      <!-- IdleTimeout policy bubble -->
+      <message name="IDS_IDLE_BUBBLE_TITLE_CLEAR" desc="Title of a bubble that informs the user that Chrome cleared data automatically, because they were away from the computer for X minutes.">
+        Browsing data was automatically deleted
       </message>
 
       <!-- Storage Pressure Notification Infobar/Bubble -->
@@ -7045,7 +7077,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module.">
-        Don't show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+        Never show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
@@ -7118,6 +7150,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_QUEST_CART_ANNOTATION" desc="Annotation that shows in the ChromeCart tile in Quest module to let users know that this tile is from pending items in their shopping cart.">
         In your cart
+      </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_PLURAL" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when there is more than one product in cart.">
+        <ph name="PRODUCT_ITEM_COUNT">$1<ex>2</ex></ph> items in your cart <ph name="DISCOUNT_TEXT">$2<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$3<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$4<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$5<ex>3 days ago</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_SINGULAR" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when there is only one product in cart.">
+        1 item in your cart <ph name="DISCOUNT_TEXT">$1<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$2<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$3<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$4<ex>3 days ago</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when we don't know the product count in cart.">
+        Items in your cart <ph name="DISCOUNT_TEXT">$1<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$2<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$3<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$4<ex>3 days ago</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_CART_INFO" desc="Text shown in the body of the info dialog of the cart module.">
         You’re seeing carts that help you easily get back to items you left in shopping carts across the web.
@@ -7477,6 +7518,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Delete
       </message>
 
+      <!-- Reading List submenu in App Menu -->
+      <if expr="not use_titlecase">
+        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
+          &amp;Reading list
+        </message>
+        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
+          Add tab to reading list
+        </message>
+        <message name="IDS_READING_LIST_MENU_SHOW_UI">
+          Show reading list
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
+          &amp;Reading List
+        </message>
+        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
+          Add Tab to Reading List
+        </message>
+        <message name="IDS_READING_LIST_MENU_SHOW_UI">
+          Show Reading List
+        </message>
+      </if>
+
       <!-- Side panel strings -->
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
@@ -7484,14 +7549,26 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SIDE_PANEL_SELECTOR" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel header combobox is focused.">
         Side Panel Selector
       </message>
+      <message name="IDS_SIDE_PANEL_COMPANION_TITLE" desc="The name of the companion feature in the side panel combo box.">
+        Google
+      </message>
+      <message name="IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP" desc="The tooltip for the companion feature toolbar button.">
+        Google Search side panel
+      </message>
+      <message name="IDS_SIDE_PANEL_COMPANION_PROMO" desc="Text shown on promotional UI appearing next to the pinned companion button, which excourages users to try the feature.">
+        Get additional useful info as you explore this page
+      </message>
       <message name="IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE" desc="The name of the Customize Chrome feature in the side panel combo box.">
         Customize Chrome
       </message>
       <message name="IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN" desc="The label of the context menu item for unpinning a side panel toolbar button.">
         Unpin
       </message>
-      <message name="IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN" desc="The label of the context menu item for pinning a side panel toolbar button.">
-        Pin
+      <message name="IDS_SIDE_PANEL_HEADER_UNPIN_BUTTON_TOOLTIP" desc="The tooltip for unpinning a side panel toolbar button.">
+        Unpin from toolbar
+      </message>
+      <message name="IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP" desc="The tooltip for pinning a side panel toolbar button.">
+        Pin to toolbar
       </message>
 
       <!-- Bookmarks strings -->
@@ -7540,6 +7617,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_CREATE_NEW_FOLDER_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which creates a new folder in the bookmarks side panel.">
         Create New Folder
       </message>
+      <message name="IDS_BOOKMARKS_NEW_FOLDER_TOOLTIP" desc="Tooltip for the button which creates a new folder in the bookmarks side panel.">
+        New folder
+      </message>
       <message name="IDS_BOOKMARKS_EDIT_BOOKMARK_LIST_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which toggles the bulk edit state in the bookmarks side panel.">
         Edit Bookmark List
       </message>
@@ -7568,7 +7648,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Edit Bookmark
       </message>
       <message name="IDS_BOOKMARKS_EDIT_MOVE_TO_ANOTHER_FOLDER" desc="Tooltip for the button in the bookmarks side panel bulk edit mode that allows the user to move the selected bookmarks to a different folder.">
-        Move to another folder
+        Move
       </message>
       <message name="IDS_BOOKMARKS_EDIT_MORE" desc="Tooltip for the menu button in the bookmarks side panel bulk edit mode that shows more actions the user can take on selected bookmarks.">
         More
@@ -7618,6 +7698,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_BACK_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel folder header back button">
         Back to <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>
       </message>
+      <message name="IDS_BOOKMARKS_BACK_BUTTON_TOOLTIP" desc="Tooltip for the bookmarks side panel folder header back button">
+        Back
+      </message>
       <message name="IDS_BOOKMARKS_FORWARD_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel edit dialog button to view a folder's children">
         <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> folder
       </message>
@@ -7651,8 +7734,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Reading mode
         </message>
       </if>
+      <message name="IDS_READING_MODE_NOT_SELECTABLE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode, even when selecting text.">
+        Reading mode isn’t available on this page
+      </message>
       <message name="IDS_READING_MODE_EMPTY_STATE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode.">
-        Highlight the text you want to show in reading mode
+        Highlight the text you want to open in reading mode
       </message>
       <message name="IDS_READING_MODE_EMPTY_STATE_SUBHEADER" desc="Subheader for reading mode when the current webpage cannot be opened in reading mode.">
         Reading mode can't find the main content on this page
@@ -7819,6 +7905,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_SIDE_PANEL_HIDE" desc="The tooltip for the side panel button, when open">
         Hide side panel
       </message>
+      <message name="IDS_TOOLTIP_SIDE_PANEL" desc="The tooltip for the side panel button">
+        Side panel
+      </message>
       <if expr="is_macosx">
         <message name="IDS_TOOLTIP_CLOSE_TAB" desc="The tooltip for the close tab button">
           Close
@@ -7965,16 +8054,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
             <message name="IDS_INTENT_PICKER_SELECT_AN_APP_SUBTITLE" desc="The subtitle of a dialog containing a list of installed applications. The dialog allows the user to select an app to open a web link.">
               Select an app on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to open this link
             </message>
-            <message name="IDS_INTENT_CHIP_IPH_CHROME_OS" desc="The text for the In-Product Help bubble for the Intent Chip on ChromeOS devices.">
-              Open websites in apps installed on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
-            </message>
           </then>
           <else>
             <message name="IDS_INTENT_PICKER_SELECT_AN_APP_GENERIC_SUBTITLE" desc="The subtitle of a dialog containing a list of installed applications. The dialog allows the user to select an app to open a web link.">
               Select an app on your device to open this link
-            </message>
-            <message name="IDS_INTENT_CHIP_IPH_GENERIC" desc="The text for the In-Product Help bubble for the Intent Chip.">
-              Open websites in apps installed on your device
             </message>
           </else>
         </if>
@@ -8086,9 +8169,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_MUTE_TAB" desc="The accessible name for the Mute tab button.">
         Mute tab
       </message>
-      <message name="IDS_ACCNAME_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX" desc="The accessible name for the extension's site access combobox in the extensions menu.">
-        Site Access Option
-      </message>
       <message name="IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_LEADING_SCROLL_BUTTON" desc="The accessible name for the web app detailed install dialog scroll left button.">
         Scroll backward
       </message>
@@ -8123,6 +8203,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Feature Engagement Tracker strings -->
+      <message name="IDS_BACK_NAVIGATION_MENU_PROMO" desc="Text shown on the In-Product Help bubble for the back navigation menu.">
+        To go back more than 1 page, click and hold Back.
+      </message>
+      <message name="IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT" is_accessibility_with_no_ui="true" desc="Accessible text shown on the In-Product Help bubble for the back navigation menu.">
+        To go back more than 1 page, click and hold the Back button.
+      </message>
       <message name="IDS_BOOKMARK_PROMO_0" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
         Bookmark this page to easily find it later
       </message>
@@ -8771,6 +8857,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_FEEDBACK_INCLUDE_AUTOFILL_METADATA_CHECKBOX" desc="Checkbox for including autofill metadata on the bug report dialog box">
           Send <ph name="BEGIN_LINK1">&lt;a href="#" id="autofill-metadata-url"&gt;</ph>autofill metadata<ph name="END_LINK1">&lt;/a&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          (your autofill data won't be shared)
         </message>
         <message name="IDS_FEEDBACK_IWLWIFI_DEBUG_DUMP_EXPLAINER" desc="Displayed in the system information dialog instead of the actual contents of Intel WiFi debug logs, which are too large to display and too obscure and proprietary for users to understand.">
           &lt;Four files generated by Intel Wi-Fi firmware: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  The first three are binary files containing register dumps, and are asserted by Intel to contain no personal or device-identifying information.  The last file is an execution trace from the Intel firmware; it has been scrubbed of any personal or device-identifying information, but is too large to display here.  These files were generated in response to recent Wi-Fi problems with your device, and will be shared with Intel to help troubleshoot these problems.&gt;
@@ -9680,7 +9768,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
           This action will:
           <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
-           • Reset Chrome settings and Chrome shortcuts
+           • Reset some Chrome settings and Chrome shortcuts
            <ph name="LINE_BREAK">&lt;br&gt;</ph>
            • Disable extensions
            <ph name="LINE_BREAK">&lt;br&gt;</ph>
@@ -10710,16 +10798,27 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <ph name="APP_NAME">$1<ex>GMail</ex></ph> (unsupported app)
       </message>
 
+      <!-- Device Trust Consent dialog -->
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_TITLE" desc="Title of the dialog shown when user consent is required to share device signals.">
+          Share device signals?
+        </message>
+        <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_PROCEED_BUTTON" desc="Button text on a dialog shown when user consent is required to share device signals. When clicked, the button will record user's consent, share device signals and continue navigation.">
+          Share signals
+        </message>
+        <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON" desc="Button text on a dialog shown when user consent is required to share device signals. When clicked, the button will close all windows associated with current profile and return to profile picker.">
+          Close profile
+        </message>
+        <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_BODY_TEXT" desc="Message shown when user consent is required to share device signals.">
+        This profile is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. To continue using this managed profile, your organization requires you to share your device signals.
+
+Device signals can include information about your browser, OS, device, installed software, and files.
+
+If you choose not to share signals, this profile will be closed.
+        </message>
+      </if>
+
       <!--  Sync Confirmation section of the tab modal signin flow -->
-      <message name="IDS_SYNC_CONFIRMATION_TITLE" desc="Title of the sync confirmation dialog in the tab modal signin flow when Dice is enabled">
-        Turn on sync?
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE" desc="Title in the information about sync on the sync confirmation dialog when Unity is enabled">
-        Sync your bookmarks, passwords, history, and more on all your devices
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC" desc="Description in the information about sync on the sync confirmation dialog when Unity is enabled">
-        Google may use your history to personalize Search and other Google services
-      </message>
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_INFO" desc="Information about customizing Sync settings in the sync confirmation dialog when Unity is enabled">
         You can always choose what to sync in settings.
       </message>
@@ -10739,15 +10838,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation screen to open sync settings">
         Sync settings
       </message>
-      <if expr="chromeos_lacros">
-        <!--  TODO(crbug.com/1383167): Move to Chrome-specific resource file -->
-        <message name="IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED" desc="Title of the sync confirmation dialog/screen on lacros when sync is not forced.">
-          Turn on Chrome browser sync?
-        </message>
-        <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS" desc="Text in the information about sync on the sync confirmation dialog/screen on lacros.">
-          Your bookmarks, passwords, history, and more are synced on all your devices
-        </message>
-      </if>
 
       <!--  Tangible Sync version of the Sync Confirmation page -->
       <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE" desc="This string appears as a heading on a modal window that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The tone should be informative and inviting.">
@@ -10783,12 +10873,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
       </message>
 
+      <if expr="chromeos_lacros">
+        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK" translateable="false" desc="This string appears in the footer on a screen that asks users if they want to turn on sync if Apps data type sync is enabled. This string informs the user that apps sync is managed separately in device settings">
+          *You can always choose what to sync in settings. Google may personalize Search and other services based on your history. Keep in mind that device sync, which includes apps sync, is managed separately in <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>device settings<ph name="LINK_END">&lt;/a&gt;</ph>.*
+        </message>
+      </if>
+
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
       <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="This string appears as a heading on a pop-up dialog that shows up after users create a new profile. It welcomes users. The tone should be friendly and inviting.">
         Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT" desc="Information about sync on the sync confirmation dialog in the Signin Intercept flow. The second string is an exact copy of IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC with a period at the end.">
-        Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you're syncing. Google may use your history to personalize Search and other Google services.
       </message>
       <if expr="not use_titlecase">
         <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="This string appears as a button on a dialog that asks users if they want to turn on sync. When the user taps this button, they are opting in to the sync feature. 'Sync' is short for 'synchronization'.">
@@ -11219,9 +11312,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
           Sync is disabled by your administrator.
         </message>
-        <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
-          Sync has been stopped via the Google Dashboard.
-        </message>
+        <if expr="chromeos_ash">
+          <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
+            Sync has been stopped via the Google Dashboard.
+          </message>
+        </if>
         <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
           Confirm sync settings to start sync.
         </message>
@@ -12617,6 +12712,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Unnamed media source
       </message>
 
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_TITLE" desc="Title for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        Allow <ph name="APP_NAME">$1</ph> to see this tab?
+      </message>
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_TEXT" desc="Text for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        The site will be able to see the contents of this tab
+      </message>
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_ALLOW" desc="Used for the allow button on the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        Allow
+      </message>
+      <message name="IDS_SHARE_THIS_TAB_AUDIO_SHARE" desc="Text for the audio toggle on the tab-sharing dialog. If the toggle is enabled, tab audio will be shared; otherwise only video.">
+        Also allow tab audio
+      </message>
+
+
       <message name="IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TITLE" desc="Title for a confirmation dialog shown on the captured tab when capture of that tab is terminated due to enterprise policy.">
         Screen sharing has ended
       </message>
@@ -12732,7 +12841,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
       <message name="IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Spoken by screen readers when a tab group header that has not been named by the user gets focused but is not visually rendered. Example: 'Unnamed group - Google Search and 3 other tabs - Expanded'">
-      Unnamed group - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
+        Unnamed group - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
       </message>
       <message name="IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT" desc="Spoken by screen readers when a tab group header that has been named by the user gets focused but is not visually rendered. Example: 'Group MyGroupName - Google Search and 3 other tabs - Collapsed'">
         Group <ph name="GROUP_NAME">$2</ph> - <ph name="GROUP_CONTENTS">$3<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
@@ -12742,6 +12851,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_GROUP_AX_LABEL_EXPANDED" desc="Used as part of the accessibility label text of a group header for an expanded tab group.">
         Expanded
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has not been named by the user gets focused in the bookmarks bar. Example: 'Unnamed group - Opened'">
+        Unnamed group - <ph name="OPENED_STATE">$1</ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the bookmarks bar. Example: 'MyGroupName group - Closed'">
+        <ph name="GROUP_NAME">$1</ph> group - <ph name="OPENED_STATE">$2</ph>
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_OPENED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is opened in the tabstrip.">
+        Opened
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_CLOSED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is closed in the tabstrip.">
+        Closed
       </message>
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the right">
         Tab moved right
@@ -12917,6 +13038,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="FILE_INFO">$2<ex>file:123</ex></ph>
         <ph name="EVENT_NAME">$3<ex>Event Description</ex></ph>
       </message>
+      <if expr="chromeos_ash">
+        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the os://device-log page from ChromeOS which directs a user to a page showing Chrome browser specific device-log">
+          Looking for the browser device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="os-link-href"&gt;</ph><ph name="CHROME_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        </message>
+      </if>
+      <if expr="chromeos_lacros">
+        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the chrome://device-log page from ChromeOS which directs a user to a dialog showing OS specific device-log">
+          Looking for the system device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="os-link-href"&gt;</ph><ph name="OS_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        </message>
+      </if>
 
     <!-- WebUsb Notification -->
     <message name="IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
@@ -12927,19 +13058,31 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <if expr="not is_android">
-      <!-- WebHID Notification -->
-      <message name="IDS_WEBHID_DEVICE_CONNECTED_BY_EXTENSION_NOTIFICATION_TITLE" desc="Notification title shown to the user when a HID device is being accessed by an extension.">
-        An extension is using a HID device
+      <!-- WebHID System Tray Icon -->
+      <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_HID_SETTINGS" desc="Text for the WebHID system tray icon button that opens the HID settings page.">
+        HID settings
       </message>
-      <message name="IDS_WEBHID_DEVICE_CONNECTED_BY_EXTENSION_NOTIFICATION_MESSAGE" desc="Notification content shown to the user when a HID device is being accessed by an extension.">
-        Click to manage permissions for "<ph name="EXTENSION">$1<ex>Google Translate</ex></ph>"
+      <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_ABOUT_HID_DEVICE" desc="Text for the WebHID system tray icon button that opens the learn more page for the HID device.">
+        About HID devices
       </message>
-      <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE" desc="The text for WebHID system tray icon button for managing HID devices.">
-        Manage HID devices
-      </message>
-      <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE_WITH_PROFILE_NAME" desc="The text with profile name for WebHID system tray icon button for managing HID devices.">
-        Manage HID devices for <ph name="PROFILE_NAME">$1<ex>Nina@gmail.com</ex></ph>
-      </message>
+      <if expr="is_chromeos">
+        <then>
+          <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebHID pinned notification message.">
+            {NUM_EXTENSION, plural,
+            =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing HID devices}
+            =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
+            other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
+          </message>
+        </then>
+        <else>
+          <message name="IDS_DEVICE_CONNECTED_BY_EXTENSION" desc="Text for the WebHID system tray icon button that displays how many active connections for the extension and opens the extension's site setting page.">
+            {NUM_CONNECTION, plural,
+            =0 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" was accessing devices}
+            =1 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is accessing {0} device}
+            other {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is accessing {0} devices}}
+          </message>
+        </else>
+      </if>
     </if>
 
     <if expr="chromeos_ash">
@@ -14144,6 +14287,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE" desc="Title shown in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
       Also turn on Enhanced Safe Browsing for this Chrome profile?
     </message>
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY" desc="Body shown in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
+      Chrome&#x2019;s strongest security does more to protect you against dangerous websites, downloads, and extensions
+    </message>
     <message name="IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON" desc="The text on the accept button in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
       Turn on
     </message>
@@ -14158,11 +14304,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
       You&#x2019;re on Chrome&#x2019;s strongest security
     </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION_UPDATED" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
+      You have Chrome&#x2019;s strongest security against harmful websites
+    </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE" desc="Title shown in the Android message when the account tailored security setting changes for a consented primary account">
       Enhanced Safe Browsing is off
     </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
       You&#x2019;re getting standard protection
+    </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
+      You&#x2019;re getting standard security protection for this Chrome profile
     </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_OK_BUTTON" desc="The text on the ok button in the Android message when the account tailored security setting changes for a consented primary account">
       OK
@@ -14387,6 +14539,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
       Enhanced protection does more to block phishing and malware
     </message>
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION_UPDATED" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+      Enhanced Safe Browsing does more to protect you against dangerous websites, downloads, and extensions
+    </message>
     <if expr="use_titlecase">
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT" desc="Accept button on notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
         Continue
@@ -14429,8 +14584,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
       To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">$2</ph>privacy policy<ph name="END_LINK1">$3</ph> and <ph name="BEGIN_LINK2">$4</ph>terms of service<ph name="END_LINK2">$5</ph>.
     </message>
-    <message name="IDS_FAILURE_DIALOG_TITLE" desc="Header for failure dialog." translateable="false">
+    <message name="IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_TITLE" desc="Header for failure dialog which is shown to the user when their sign in status is signed in but they are not signed in to any account." translateable="false">
       Failed signing in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
+    </message>
+    <message name="IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider." translateable="false">
+      Continue
     </message>
     <message name="IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet when there are multiple identity providers. Sheet is shown to prompt user for sign in consent." translateable="false">
       Sign in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>
@@ -14645,6 +14803,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HIGH_EFFICIENCY_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Tab active again
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL" desc="In Title Case: Label for a page action chip that highlights the savings from Memory Saver mode">
+          <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> Saved
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL" desc="Label for a page action chip that highlights the savings from Memory Saver mode">
+          <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> saved
+        </message>
+      </if>
       <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory from inactive tabs and that this is a setting the user can control.">
         While this tab was inactive, Memory Saver freed up memory for other tasks. You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>Settings</ex></ph>.
       </message>
@@ -14660,6 +14828,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode.">
         While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks.
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="In Title Case: Label for a button on the page action chip that adds the current active site to the exclusion list when clicked">
+          Keep Site Active
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="Label for a button on a dialog that adds the current active site to the exclusion list when clicked">
+          Keep site active
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the memory savings from Memory Saver mode.">
+          Memory Saved
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="Label below a chart showing the memory savings from Memory Saver mode.">
+          Memory saved
+        </message>
+      </if>
     </if>
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location

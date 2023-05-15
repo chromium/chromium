@@ -87,6 +87,10 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
   // evaluating the OCSP/CRL response, etc) is considered equivalent to a
   // successful revocation check.
   bool allow_unable_to_check : 1;
+
+  // If set to true, enforce requirements specified in the Baseline
+  // Requirements such as maximum age of revocation responses.
+  bool enforce_baseline_requirements : 1;
 };
 
 // Checks the revocation status of |certs| according to |policy|, and adds

@@ -23,6 +23,7 @@
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
@@ -137,7 +138,7 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(
       extensions::MessagingEndpoint::ForNativeApp(
           VmSKForwardingNativeMessageHost::kHostName),
       std::move(native_message_port), extension_id, GURL(),
-      std::string() /* channel_name */);
+      extensions::ChannelType::kNative, std::string() /* channel_name */);
 }
 
 void VmSKForwardingNativeMessageHost::DeliverMessageToSKForwardingExtension(

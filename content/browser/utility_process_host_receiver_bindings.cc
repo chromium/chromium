@@ -15,6 +15,11 @@
 #include "content/browser/font_service.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/viz/host/gpu_client.h"
+#include "content/public/browser/gpu_client.h"
+#endif
+
 namespace content {
 
 void UtilityProcessHost::BindHostReceiver(
@@ -22,6 +27,13 @@ void UtilityProcessHost::BindHostReceiver(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (auto font_receiver = receiver.As<font_service::mojom::FontService>()) {
     ConnectToFontService(std::move(font_receiver));
+    return;
+  }
+#endif
+#if BUILDFLAG(IS_LINUX)
+  if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
+    gpu_client_ =
+        content::CreateGpuClient(std::move(gpu_receiver), base::DoNothing());
     return;
   }
 #endif

@@ -8,11 +8,14 @@
   --blue-300: rgb(var(--blue-300-rgb));
   --blue-500: rgb(66, 133, 244);
   --blue-600: rgb(26, 115, 232);
+  --red-300-rgb: 242, 139, 130;
+  --red-300: rgb(var(--red-300-rgb));
   --grey-100: rgb(241, 243, 244);
   --grey-200-rgb: 233, 234, 237;
   --grey-200: rgb(var(--grey-200-rgb));
   --grey-400: rgb(189, 193, 198);
   --grey-500: rgb(154, 160, 166);
+  --grey-600: rgb(128, 134, 139);
   --grey-700: rgb(95, 99, 104);
   --grey-900-rgb: 32, 33, 36;
   --grey-900: rgb(var(--grey-900-rgb));
@@ -38,6 +41,14 @@
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
   --border-radius-rounded-with-short-side: 9999999px;
+
+  /* These are calculated and overridden at runtime in views/camera/layout.ts */
+  --preview-content-height: 0;
+  --preview-content-left: 0;
+  --preview-content-top: 0;
+  --preview-content-width: 0;
+  --preview-viewport-height: 0;
+  --preview-viewport-width: 0;
 }
 
 html {
@@ -49,7 +60,7 @@ audio {
 }
 
 body {
-  background: var(--grey-900);
+  background: var(--cros-sys-app_base);
   bottom: 0;
   font-family: var(--default-font-family);
   height: 100%;
@@ -105,10 +116,15 @@ input[type=checkbox] {
 .menu-header .icon,
 .menu-item .icon,
 .menu-item.expandable::after {
+  align-items: center;
+  /* TODO(pihsun): Remove these two after all background image
+   * usage are removed. */
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
   flex-shrink: 0;
   height: 40px;
+  justify-content: center;
   width: 40px;
 }
 
@@ -225,7 +241,9 @@ body.doc-mode-reviewing #mode-selector {
 
 #mode-selector::before,
 #mode-selector::after {
-  background: linear-gradient(to right, var(--grey-900), transparent);
+  /* This is for "fading" effect when window is narrow and the mode selector
+   * overflows, so we use the same color as the background color here. */
+  background: linear-gradient(to right, var(--cros-sys-app_base), transparent);
   content: '';
   display: block;
   height: calc(100% - var(--scrollbar-height));
@@ -299,7 +317,7 @@ body:is(.taking.video, .should-handle-intent-result) #modes-group {
   transform: none;
 }
 
-#modes-group .mode-item:has(input:disabled) {
+#modes-group .mode-item:has(input[data-disabled=true]) {
   opacity: 0.38;
 }
 
@@ -309,7 +327,7 @@ div.mode-item>input {
 
 div.mode-item>span {
   border-radius: 16px/50%;
-  color: white;
+  color: var(--cros-sys-on_surface);
   display: inline-block;
   font-size: 14px;
   font-weight: 500;
@@ -328,16 +346,13 @@ div.mode-item>span {
 }
 
 .mode-item>input:checked + span {
-  background: white;
-  box-shadow: 0 2px 3px rgba(32, 33, 36, 0.3);
-  color: black;
-  text-shadow: none;
+  background: var(--cros-sys-primary);
+  color: var(--cros-sys-inverse_on_surface);
 }
 
 button.shutter {
   display: none;
   height: 60px;
-  outline-offset: 9px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
 }
@@ -359,34 +374,41 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 }
 
 #video-snapshot {
-  background-size: 44px 44px;
-  height: 44px;
-  width: 44px;
+  height: 46px;
+  width: 46px;
 }
 
 #start-takephoto,
 #video-snapshot {
-  background-image: url(/images/camera_shutter_photo_start.svg);
+  position: relative;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:hover {
-  background-image: url(/images/camera_shutter_photo_start_hover.svg);
+:is(#start-takephoto, #video-snapshot) svg-wrapper {
+  color: var(--cros-sys-inverse_surface);
+  --secondary-color: white;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:active {
-  background-image: url(/images/camera_shutter_photo_start_active.svg);
+:is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:hover::after {
+  background: var(--cros-sys-hover_on_prominent);
+  border-radius: 50%;
+  content: '';
+  display: block;
+  inset: 0;
+  position: absolute;
+}
+
+:is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:active
+  svg-wrapper {
+  color: var(--cros-sys-secondary);
 }
 
 body.taking #start-takephoto:active {
   transform: unset;
 }
 
-#stop-takephoto {
-  background-image: url(/images/camera_shutter_photo_stop.svg);
-}
-
-#stop-takephoto:hover {
-  background-image: url(/images/camera_shutter_photo_stop_hover.svg);
+#stop-takephoto svg-wrapper {
+  color: var(--cros-sys-inverse_surface);
+  --secondary-color: var(--cros-sys-secondary_container);
 }
 
 #recordvideo {
@@ -399,19 +421,17 @@ body.taking #start-takephoto:active {
 }
 
 #pause-recordvideo {
-  --size: 44px;
+  --size: 46px;
 }
 
 #recordvideo,
 #pause-recordvideo {
   --dot-size: 25%;
   --duration: 180ms;
-  --red: #f44336;
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
-  --white: #ffffff;
 
-  background: var(--white);
+  background: white;
   border-radius: 50%;
   height: var(--size);
   position: relative;
@@ -419,19 +439,22 @@ body.taking #start-takephoto:active {
   width: var(--size);
 }
 
-#recordvideo:hover,
-#pause-recordvideo:hover {
-  --red: #f44336;
-  --white: #e8eaed;
+:is(#recordvideo, #pause-recordvideo):hover::after {
+  background: var(--cros-sys-hover_on_prominent);
+  border-radius: 50%;
+  content: '';
+  display: block;
+  inset: 0;
+  position: absolute;
 }
 
-body.taking.video #recordvideo:hover {
-  --red: #d93025;
+body.taking.video #recordvideo:hover::after {
+  background: var(--cros-sys-hover_on_subtle);
 }
 
 #recordvideo .red-dot,
 #pause-recordvideo .red-dot {
-  background: var(--red);
+  background: var(--cros-ref-error40);
   border-radius: 50%;
   box-sizing: border-box;
   height: var(--dot-size);
@@ -453,7 +476,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
 }
 
 #recordvideo .white-square {
-  background: var(--white);
+  background: white;
   border-radius: 2px;
   height: 0;
   left: 50%;
@@ -475,16 +498,20 @@ body.taking.video #recordvideo .white-square {
 #pause-recordvideo .two-bars {
   --bar-size: 20px;
 
-  background-image: url(/images/camera_shutter_video_pause.svg);
   height: var(--bar-size);
   left: calc(50% - var(--bar-size) / 2);
+  overflow: hidden;
   position: absolute;
   top: calc(50% - var(--bar-size) / 2);
   width: var(--bar-size);
 }
 
+#pause-recordvideo .two-bars svg-wrapper {
+  color: var(--cros-sys-secondary_container);
+}
+
 body.video.recording.recording-ui-paused #recordvideo {
-  --size: 44px;
+  --size: 46px;
 }
 
 body.video.recording-ui-paused #pause-recordvideo {
@@ -492,7 +519,7 @@ body.video.recording-ui-paused #pause-recordvideo {
 }
 
 body.video.recording-ui-paused #pause-recordvideo .two-bars {
-  --bar-size: 0px;
+  --bar-size: 0;
 }
 
 body.video.taking #recordvideo {
@@ -506,22 +533,20 @@ body:not(.multi-camera) #switch-device {
 }
 
 #camera-mode {
-  background-image: url(/images/camera_mode_photo.svg);
   height: 40px;
   visibility: hidden;
   width: 40px;
+
+  :is(svg-wrapper) {
+    display: none;
+  }
 }
 
-body.scan #camera-mode {
-  background-image: url(/images/camera_mode_scan.svg);
-}
-
-body.video #camera-mode {
-  background-image: url(/images/camera_mode_video.svg);
-}
-
-body.portrait #camera-mode {
-  background-image: url(/images/camera_mode_portrait.svg);
+body:not(.scan):not(.video):not(.portrait) #camera-mode svg-wrapper.photo,
+body.scan #camera-mode svg-wrapper.scan,
+body.video #camera-mode svg-wrapper.video,
+body.portrait #camera-mode svg-wrapper.portrait {
+  display: unset;
 }
 
 body.mode-switching:not(.streaming) #camera-mode {
@@ -543,7 +568,6 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
-  background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
   outline-offset: 8px;
   width: var(--big-icon);
@@ -621,32 +645,70 @@ body:not(.enable-ptz) #open-ptz-panel {
   display: none;
 }
 
-#open-ptz-panel {
-  background-image: url(/images/camera_button_ptz_panel_off.svg);
+#open-mirror-panel,
+#open-grid-panel,
+#open-timer-panel,
+#open-ptz-panel,
+#toggle-mic {
+  border-radius: 12px;
 }
 
+#open-mirror-panel,
+#open-grid-panel,
+#toggle-mic {
+  .on-icon {
+    display: none;
+  }
+}
+
+body:not(.mic) #toggle-mic {
+  background: var(--cros-sys-error_container);
+  .off-icon {
+    color: var(--cros-sys-on_error_container);
+  }
+}
+
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel,
+body:is(.timer-3s, .timer-10s) #open-timer-panel,
 body.view-ptz-panel #open-ptz-panel {
-  background-image: url(/images/camera_button_ptz_panel_on.svg);
+  background: var(--cros-sys-primary_container);
 }
 
-body.timer-3s #open-timer-panel {
-  background-image: url(/images/camera_button_timer_on_3s.svg);
-}
-
-body.timer-10s #open-timer-panel {
-  background-image: url(/images/camera_button_timer_on_10s.svg);
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel,
+body.mic #toggle-mic {
+  .off-icon {
+    display: none;
+  }
+  .on-icon {
+    display: block;
+  }
 }
 
 #open-timer-panel {
-  background-image: url(/images/camera_button_timer_off.svg);
+  .on-3s-icon,
+  .on-10s-icon {
+    display: none;
+  }
 }
 
-body.grid #open-grid-panel {
-  background-image: url(/images/camera_button_grid_on.svg);
+body.timer-3s #open-timer-panel {
+  .off-icon {
+    display: none;
+  }
+  .on-3s-icon {
+    display: block;
+  }
 }
 
-#open-grid-panel {
-  background-image: url(/images/camera_button_grid_off.svg);
+body.timer-10s #open-timer-panel {
+  .off-icon {
+    display: none;
+  }
+  .on-10s-icon {
+    display: block;
+  }
 }
 
 body.scan #open-grid-panel,
@@ -657,22 +719,6 @@ body.scan #settings-photo-resolution,
 body.scan #settings-video-resolution,
 body.scan #preview-grid {
   display: none;
-}
-
-body.mirror #open-mirror-panel {
-  background-image: url(/images/camera_button_mirror_on.svg);
-}
-
-#open-mirror-panel {
-  background-image: url(/images/camera_button_mirror_off.svg);
-}
-
-#toggle-mic:checked {
-  background-image: url(/images/camera_button_mic_on.svg);
-}
-
-#toggle-mic {
-  background-image: url(/images/camera_button_mic_off.svg);
 }
 
 body.should-handle-intent-result #open-settings {
@@ -695,7 +741,6 @@ body.doc-mode-reviewing #open-settings {
 #view-photo-resolution-settings,
 #view-video-resolution-settings,
 #view-expert-settings,
-#view-message-dialog,
 #view-warning,
 #view-splash {
   bottom: 0;
@@ -723,7 +768,6 @@ body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
-body.view-message-dialog #view-message-dialog,
 body.view-warning #view-warning,
 body.view-splash #view-splash {
   opacity: 1;
@@ -781,18 +825,18 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 }
 
 #preview-viewport {
-  height: 0; /* Calculate at runtime. */
+  height: var(--preview-viewport-height);
   overflow: hidden;
   position: relative;
-  width: 0; /* Calculate at runtime. */
+  width: var(--preview-viewport-width);
 }
 
 .preview-content {
-  height: 0; /* Calculate at runtime. */
-  left: 0; /* Calculate at runtime. */
+  height: var(--preview-content-height);
+  left: var(--preview-content-left);
   position: relative;
-  top: 0; /* Calculate at runtime. */
-  width: 0; /* Calculate at runtime. */
+  top: var(--preview-content-top);
+  width: var(--preview-content-width);
 }
 
 body.streaming .preview-content {
@@ -1011,17 +1055,16 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
 
 #record-time {
   align-items: center;
-  backdrop-filter: blur(10px);
-  background-color: rgba(var(--grey-900-rgb), 0.6);
-  border-radius: 18px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  box-sizing: border-box;
   display: flex;
-  font-size: 13px;  /* TODO(b/189087290): Follow the carbon spec. */
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   height: 32px;
   justify-content: flex-start;
   line-height: 20px;
-  padding-inline-end: 10px;
-  padding-inline-start: 8px;
+  padding: 6px 12px;
   pointer-events: none;
 }
 
@@ -1032,7 +1075,7 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
 }
 
 #record-time .icon {
-  background-color: rgb(234, 67, 53);
+  background-color: var(--cros-ref-error40);
   border-radius: 50%;
   flex-shrink: 0;
   height: 6px;
@@ -1044,9 +1087,13 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   display: none;
 }
 
-#record-time #record-time-msg,
-#record-time [i18n-text=record_video_paused_msg] {
+#record-time #record-time-msg {
   color: white;
+  flex-shrink: 0;
+}
+
+#record-time [i18n-text=record_video_paused_msg] {
+  color: var(--cros-sys-on_surface);
   flex-shrink: 0;
 }
 
@@ -1059,9 +1106,9 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 #tooltip {
-  background: rgba(241, 243, 244, 0.8);
+  background: var(--cros-sys-on_surface);
   border-radius: 2px;
-  color: var(--grey-900);
+  color: var(--cros-sys-inverse_on_surface);
   font-size: 12px;
   left: 0;
   line-height: 22px;
@@ -1080,13 +1127,14 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 #toast {
-  background: rgb(30, 30, 35);
+  background: var(--cros-sys-base_elevated);
   border-radius: 16px;
-  color: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
+  color: var(--cros-sys-on_surface);
   font-size: 16px;
   line-height: 32px;
   opacity: 0;
-  padding: 0 16px;
+  padding: 8px 16px;
   pointer-events: none;
   z-index: 100;
 }
@@ -1109,13 +1157,11 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 .menu {
-  backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--cros-sys-base_elevated);
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-width: 360px;
-  opacity: 0.9;
   overflow-y: scroll;
   position: absolute;
   top: 0;
@@ -1128,11 +1174,8 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 .menu-header,
 .menu-item {
-  --hover-color: rgba(255, 255, 255, 0.06);
-  --toggled-color: rgb(140, 180, 245);
-
   align-items: center;
-  color: var(--grey-100);
+  color: white;
   display: flex;
   flex-shrink: 0;
   font-size: 13px;
@@ -1142,7 +1185,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 button.menu-item:hover,
 label.menu-item:hover {
-  background-color: var(--hover-color);
+  background: var(--cros-sys-hover_on_subtle);
 }
 
 .settings .menu-item {
@@ -1163,7 +1206,7 @@ label.menu-item:hover {
 }
 
 .menu-item .description {
-  color: rgb(189, 193, 198);
+  color: var(--cros-sys-secondary);
   margin-top: 5px;
 }
 
@@ -1182,7 +1225,7 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 
 .menu-item input::before {
   bottom: 13px;
-  box-shadow: 0 0 0 2px var(--grey-100);
+  box-shadow: 0 0 0 2px var(--cros-sys-on_surface);
   content: '';
   left: 13px;
   position: absolute;
@@ -1196,10 +1239,10 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 
 .menu-item input:checked::before {
   background-clip: padding-box;
-  background-color: var(--toggled-color);
+  background-color: var(--cros-sys-primary);
   border: 4px solid transparent;
   bottom: 12px;
-  box-shadow: 0 0 0 1px var(--toggled-color);
+  box-shadow: 0 0 0 1px var(--cros-sys-primary);
   left: 12px;
   right: 12px;
   top: 12px;
@@ -1212,7 +1255,6 @@ button.menu-item {
 
 .menu-header button.icon {
   /* Icon image is small enough and won't be covered by -1px */
-  background-image: url(/images/settings_button_back.svg);
   outline-offset: -1px;
 }
 
@@ -1221,36 +1263,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 .menu-header .icon:hover {
-  background-color: var(--hover-color);
-}
-
-#settings-gridtype .icon {
-  background-image: url(/images/settings_grid_type.svg);
-}
-
-#settings-timerdur .icon {
-  background-image: url(/images/settings_timer_duration.svg);
-}
-
-#settings-photo-resolution .icon,
-#settings-video-resolution .icon {
-  background-image: url(/images/settings_resolution.svg);
-}
-
-#settings-photo-aspect-ratio .icon {
-  background-image: url(/images/settings_aspect_ratio.svg);
-}
-
-#settings-expert .icon {
-  background-image: url(/images/settings_expert.svg);
-}
-
-#settings-feedback .icon {
-  background-image: url(/images/settings_feedback.svg);
-}
-
-#settings-help .icon {
-  background-image: url(/images/settings_help.svg);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 #view-warning,
@@ -1261,8 +1274,8 @@ html[dir=rtl] .menu-header .icon {
 }
 
 #view-warning {
-  background: var(--grey-900);
-  color: white;
+  background: var(--cros-sys-app_base);
+  color: var(--cros-sys-on_surface);
 }
 
 #view-warning #error-msg {
@@ -1273,91 +1286,33 @@ html[dir=rtl] .menu-header .icon {
 }
 
 .dialog {
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--cros-sys-scrim);
 }
 
-.dialog-popup {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  transform: translateY(20px);
-  transition: transform var(--fast2-duration);
-}
-
-.dialog .dialog-popup {
-  transform: translateY(0);
-}
-
-.dialog .dialog-msg {
-  color: var(--grey-900);
-  cursor: text;
-  font-size: 14px;
-  max-height: 320px;
-  max-width: 472px;
-  overflow: auto;
-  padding: 20px 0;
-  user-select: text;  /* Allow copying the message. */
-  white-space: pre-wrap;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar-thumb {
-  background: gray;
-  height: 6px;
-  width: 6px;
-}
-
-.dialog-buttons {
-  align-items: center;
-  display: flex;
-  justify-content: flex-end;
-  margin: 0 -2px;
-}
-
-.dialog-buttons button {
-  background-color: white;
-  border-style: solid;
-  color: var(--blue-600-dark);
-  font-size: 12px;
-  margin: 4px;
-  padding: 6px 18px;
-}
-
-body.keyboard-navigation .dialog-buttons button:focus {
-  background-color: var(--blue-300);
-  border-color: var(--blue-300);
-  color: white;
-}
-
-body.keyboard-navigation .dialog-buttons button:focus::after {
-  border: none;
-}
-
-.spinner {
-  background-image: url(/images/spinner.svg);
-  height: 32px;
-  visibility: hidden;
-  width: 32px;
-  z-index: 1;
-}
-
-body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
-  visibility: visible;
-}
-
+/*
+ * The icon on the splash screen is not using either data-svg or
+ * svg-wrapper, and is done with pure CSS, to avoid waiting on JS,
+ * and minimize the time before app load and the icon is displayed.
+ *
+ * We also provide fallback value for the background colors to
+ * minimize the flicker when JS is load, since the definition CSS
+ * of dynamic color tokens is also loaded by JS.
+ *
+ * TODO(pihsun): Remove background color fallback when dynamic color is default
+ * on, and the colors.css is moved into HTML.
+ */
 #view-splash {
-  background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
+  align-items: center;
+  background: var(--cros-sys-app_base, var(--grey-900));
+  display: flex;
+  justify-content: center;
+}
+
+#view-splash .icon {
+  -webkit-mask: url(/images/camera_mode_photo.svg);
+  background: var(--cros-sys-on_surface, var(--grey-200));
+  height: 40px;
+  width: 40px;
 }
 
 .hidden {
@@ -1374,8 +1329,8 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 
 .panel {
   backdrop-filter: blur(10px);
-  background: rgba(var(--grey-900-rgb), 0.9);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  background: var(--cros-sys-base_elevated);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
@@ -1389,7 +1344,7 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 }
 
 #option-title {
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   font-family: var(--default-font-family);
   font-size: 13px;
   font-weight: 400;
@@ -1408,7 +1363,7 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 }
 
 #options-container .menu-item span {
-  color: var(--grey-100);
+  color: var(--cros-sys-on_surface);
   margin-inline-start: 4px;
 }
 
@@ -1422,7 +1377,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 .label-item {
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   font: 500 13px/20px var(--default-font-family);
   margin: 9px 0 3px 0;
   padding-inline-start: 26px;
@@ -1434,7 +1389,7 @@ body:not(.video) #settings-video-resolution {
 
 .text-item {
   align-items: center;
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -1453,26 +1408,15 @@ body:not(.video) #settings-video-resolution {
 }
 
 .fps-button {
+  border-radius: 12px;
   height: 40px;
   margin-inline-end: 8px;
   margin-inline-start: 8px;
   width: 40px;
 }
 
-#view-video-resolution-settings .fps-30 {
-  background-image: url(/images/camera_button_fps_30_unchecked.svg);
-}
-
-#view-video-resolution-settings .fps-30.checked {
-  background-image: url(/images/camera_button_fps_30_checked.svg);
-}
-
-#view-video-resolution-settings .fps-60 {
-  background-image: url(/images/camera_button_fps_60_unchecked.svg);
-}
-
-#view-video-resolution-settings .fps-60.checked {
-  background-image: url(/images/camera_button_fps_60_checked.svg);
+.fps-button.checked {
+  background: var(--cros-sys-primary_container);
 }
 
 [tabindex] {
@@ -1484,7 +1428,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 [tabindex='0']:focus-visible {
-  outline: 2px solid var(--blue-300);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 .circle :is(button, input) {
@@ -1493,31 +1437,33 @@ body:not(.video) #settings-video-resolution {
 
 #nudge {
   align-items: center;
-  background: var(--grey-900);
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   gap: 8px;
-  opacity: 0.8;
-  padding: 8px 10px;
+  padding: 8px 16px;
   position: absolute;
   top: 68px;  /* 8px below |record_time| element */
   z-index: 2;
 }
 
 #nudge .warning-icon {
-  background: url(/images/circle_warning_icon.svg);
   height: 20px;
   width: 20px;
+
+  :is(svg-wrapper) {
+    color: var(--cros-sys-warning);
+  }
 }
 
 #nudge .warning-msg {
-  color: var(--grey-400);
+  color: var(--cros-sys-on_surface);
   font: 400 14px/20px Roboto;
 }
 
 .low-storage-dialog-popup {
-  background: var(--grey-900);
+  background: var(--cros-sys-base_elevated);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -1532,7 +1478,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-popup .dialog-description {
-  color: var(--grey-400);
+  color: var(--cros-sys-secondary);
   font: 400 14px/20px var(--default-font-family);
 }
 
@@ -1551,11 +1497,10 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-buttons .external-link-icon {
-  background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
 }
 
-#open-settings {
-  --color: white;
+#view-settings {
+  background: var(--cros-sys-scrim);
 }

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,7 @@ class MockSavedDeskController : public ash::SavedDeskController {
               (const, override));
   MOCK_METHOD(bool,
               LaunchAdminTemplate,
-              (const base::GUID& template_uuid, int64_t default_display_id),
+              (const base::Uuid& template_uuid, int64_t default_display_id),
               (override));
 };
 
@@ -85,9 +86,9 @@ class DesksAdminTemplateProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   ::test::TestAppListControllerDelegate list_controller_;
-  DesksAdminTemplateProvider* provider_ = nullptr;
+  raw_ptr<DesksAdminTemplateProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
 // Tests that when there isn't a admin template, the results will be empty.
@@ -110,7 +111,7 @@ TEST_F(DesksAdminTemplateProviderTest, Basic) {
   MockSavedDeskController mock;
 
   std::vector<ash::AdminTemplateMetadata> results = {ash::AdminTemplateMetadata{
-      .uuid = base::GUID::GenerateRandomV4(), .name = u"test admin template"}};
+      .uuid = base::Uuid::GenerateRandomV4(), .name = u"test admin template"}};
 
   EXPECT_CALL(mock, GetAdminTemplateMetadata()).WillOnce(Return(results));
   EXPECT_CALL(mock, LaunchAdminTemplate(results[0].uuid, _))

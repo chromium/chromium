@@ -80,5 +80,8 @@ interface SmartCardService {
   // SmartCardServiceClient::Error.
   GetReadersAndStartTracking() => (SmartCardGetReadersResult result);
 
-  // TODO(crbug.com/1386175): Expose SmartCardConnection
+  // Establishes a connection to the specified reader.
+  Connect(string reader, device.mojom.SmartCardShareMode share_mode,
+          device.mojom.SmartCardProtocols preferred_protocols) =>
+    (device.mojom.SmartCardConnectResult result);
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
@@ -117,19 +118,24 @@ class HostScannerImpl : public HostScanner,
   bool IsPotentialHotspotNotificationShowing();
   bool CanAvailableHostNotificationBeShown();
 
-  device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
-  NetworkStateHandler* network_state_handler_;
-  session_manager::SessionManager* session_manager_;
-  TetherHostFetcher* tether_host_fetcher_;
-  HostScanDevicePrioritizer* host_scan_device_prioritizer_;
-  TetherHostResponseRecorder* tether_host_response_recorder_;
-  GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker_;
-  NotificationPresenter* notification_presenter_;
-  DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map_;
-  HostScanCache* host_scan_cache_;
-  ConnectionPreserver* connection_preserver_;
-  base::Clock* clock_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
+  raw_ptr<HostScanDevicePrioritizer, ExperimentalAsh>
+      host_scan_device_prioritizer_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
+  raw_ptr<GmsCoreNotificationsStateTrackerImpl, ExperimentalAsh>
+      gms_core_notifications_state_tracker_;
+  raw_ptr<NotificationPresenter, ExperimentalAsh> notification_presenter_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
+      device_id_tether_network_guid_map_;
+  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
+  raw_ptr<ConnectionPreserver, ExperimentalAsh> connection_preserver_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   bool is_fetching_hosts_ = false;
   bool was_notification_showing_when_current_scan_started_ = false;

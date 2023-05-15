@@ -1,8 +1,22 @@
-<style include="os-feedback-shared">
+<style include="os-feedback-shared cros-color-overrides">
   :host {
     --cr-icon-button-margin-start: 20px;
     --cr-section-vertical-padding: 11px;
     --iron-icon-height: 40px;
+  }
+
+  :host-context(body.jelly-enabled) .label {
+    font: var(--cros-button-1-font);
+  }
+
+  :host-context(body.jelly-enabled) .sub-label {
+    font: var(--cros-button-2-font);
+  }
+
+  :host-context(body.jelly-enabled) cr-link-row {
+    background-color: var(--cros-sys-app_base);
+    border: none;
+    border-radius: 16px;
   }
 
   cr-link-row {
@@ -78,6 +92,7 @@
       <h2 id="helpResourcesLabel">[[i18n('helpResourcesLabel')]]</h2>
       <cr-link-row id="explore" start-icon="help-resources:explore"
           external using-slotted-label
+          button-aria-description=""
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('exploreAppLabel')]]</span>
           <span slot="sub-label"
@@ -86,6 +101,7 @@
       </cr-link-row>
       <cr-link-row id="diagnostics" start-icon="help-resources:diagnostics"
           external using-slotted-label
+          button-aria-description=""
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('diagnosticsAppLabel')]]</span>
           <span slot="sub-label"
@@ -95,6 +111,7 @@
       <cr-link-row id="chromebookCommunity"
           start-icon="help-resources2:chromebook-community"
           hidden="[[isOffline_(sendReportStatus)]]" external using-slotted-label
+          button-aria-description=""
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('askCommunityLabel')]]</span>
           <span slot="sub-label"

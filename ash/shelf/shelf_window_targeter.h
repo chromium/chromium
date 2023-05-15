@@ -6,6 +6,8 @@
 #define ASH_SHELF_SHELF_WINDOW_TARGETER_H_
 
 #include "ash/shelf/shelf_observer.h"
+#include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
@@ -18,6 +20,7 @@ class Shelf;
 // easier to drag the shelf out with touch while it is hidden.
 class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
                             public aura::WindowObserver,
+                            public ShellObserver,
                             public ShelfObserver {
  public:
   ShelfWindowTargeter(aura::Window* container, Shelf* shelf);
@@ -37,10 +40,32 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // ShelfObserver:
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
 
-  Shelf* shelf_;
+  // ShelfObserver:
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
+
+  // Updates `mouse_inset_size_for_shelf_visibility_` and
+  // `touch_inset_for_shelf_visibility_`, and runs
+  // `UpdateInsets()`.
+  void UpdateInsetsForVisibilityState(ShelfVisibilityState state);
+
+  // Updates targeter insets to insets specified by
+  // `mouse_size_for_shelf_visibility_` and `touch_size_for_shelf_visibility_`
+  // and the current shelf alighment.
+  void UpdateInsets();
+
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+
+  // The size of the insets above the shelf for mouse events for the current
+  // shelf visibility.
+  int mouse_inset_size_for_shelf_visibility_ = 0;
+
+  // The size of the insets above the shelf for touch events for the current
+  // shelf visibility.
+  int touch_inset_size_for_shelf_visibility_ = 0;
 };
 
 }  // namespace ash

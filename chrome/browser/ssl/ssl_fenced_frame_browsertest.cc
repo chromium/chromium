@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
   EXPECT_TRUE(IsShowingSSLInterstitial(web_contents()));
   const std::string javascript =
       "window.certificateErrorPageController.proceed();";
-  ASSERT_TRUE(ExecuteScript(web_contents(), javascript));
+  ASSERT_TRUE(ExecJs(web_contents(), javascript));
 
   Browser* app_browser = InstallAndOpenTestWebApp(
       embedded_test_server()->GetURL("/fenced_frames/basic.html"));

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/strings/strcat.h"
@@ -76,7 +75,6 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label = label_view->AddChildView(std::make_unique<views::Label>(
       display_name, CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
   auto secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
   label->SetEnabledColor(secondary_text_color);
@@ -114,7 +112,6 @@ void SharesheetTargetButton::OnThemeChanged() {
 
   if (!vector_icon_)
     return;
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   auto* color_provider = ash::AshColorProvider::Get();
   const auto icon_color = color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kIconColorProminent);

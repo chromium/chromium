@@ -37,6 +37,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
   // programmatically updated by Accept, Cancel, and Close).
   void SetAlertHasShown();
 
+  // Called by Cocoa to indicate that the alert can be closed and callbacks can
+  // be discarded.
+  void Dismiss() override;
+
  private:
   // Private destructor is called only through SendResultAndDestroy.
   ~AlertBridge() override;
@@ -55,6 +59,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
   // Set once the alert window is showing (needed because showing is done in a
   // posted task).
   bool alert_shown_ = false;
+
+  // Set once the alert has been dismissed.
+  bool alert_dismissed_ = false;
 
   // The callback to make when the dialog has finished running.
   ShowCallback callback_;

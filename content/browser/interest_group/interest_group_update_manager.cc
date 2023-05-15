@@ -274,6 +274,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     if (maybe_size_group) {
       ad.size_group = *maybe_size_group;
     }
+    const std::string* maybe_buyer_reporting_id =
+        ads_dict->FindString("buyerReportingId");
+    if (maybe_buyer_reporting_id) {
+      ad.buyer_reporting_id = *maybe_buyer_reporting_id;
+    }
+    const std::string* maybe_buyer_and_seller_reporting_id =
+        ads_dict->FindString("buyerAndSellerReportingId");
+    if (maybe_buyer_and_seller_reporting_id) {
+      ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+    }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
       std::string metadata;
@@ -284,6 +294,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         return absl::nullopt;
       }
       ad.metadata = std::move(metadata);
+    }
+    const std::string* maybe_ad_render_id = ads_dict->FindString("adRenderId");
+    if (maybe_ad_render_id) {
+      ad.ad_render_id = *maybe_ad_render_id;
     }
     ads.push_back(std::move(ad));
   }

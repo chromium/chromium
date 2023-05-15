@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/exo/frame_sink_resource_manager.h"
@@ -119,7 +120,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   bool ShouldSubmitFrameNow() const;
 
-  SurfaceTreeHost* surface_tree_host_;
+  raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
   std::unique_ptr<cc::LayerTreeFrameSink> frame_sink_;
 
   FrameSinkResourceManager resource_manager_;
@@ -133,9 +134,10 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool is_lost_ = false;
   bool delete_pending_ = false;
 
-  WMHelper::LifetimeManager* lifetime_manager_ = nullptr;
+  raw_ptr<WMHelper::LifetimeManager, ExperimentalAsh> lifetime_manager_ =
+      nullptr;
 
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
 
   base::queue<PendingBeginFrame> pending_begin_frames_;
 

@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -535,7 +536,8 @@ class UserSessionManager
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
   // Used to listen to network changes.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
+      network_connection_tracker_;
 
   // Authentication/user context.
   UserContext user_context_;

@@ -121,6 +121,10 @@ public class AwUncaughtExceptionTest {
         mBackgroundThread.getLooper();
         mActivityTestRule.createAwBrowserContext();
         mActivityTestRule.startBrowserProcess();
+
+        // Clearing the UI thread isn't really supported so we're not left in a state where we can
+        // cleanly finish the Activity after these tests.
+        mActivityTestRule.setFinishActivity(false);
     }
 
     @After
@@ -130,7 +134,6 @@ public class AwUncaughtExceptionTest {
             backgroundThreadLooper.quitSafely();
         }
         mBackgroundThread.join();
-        ThreadUtils.clearUiThreadForTesting();
         Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
     }
 

@@ -13,6 +13,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -156,7 +157,7 @@ class LaunchAppHelperTest : public ash::AshTestBase {
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
-  ToastManagerImpl* toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
 };
 
 TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {

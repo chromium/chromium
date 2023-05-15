@@ -5,7 +5,6 @@
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {constants} from '../foreground/js/constants.js';
 
 import {XfIcon} from './xf_icon.js';
 
@@ -22,31 +21,6 @@ async function getIcon(): Promise<XfIcon> {
 
 function getSpanFromIcon(icon: XfIcon): HTMLSpanElement {
   return icon.shadowRoot!.querySelector<HTMLSpanElement>('span')!;
-}
-
-export async function testIconType(done: () => void) {
-  const icon = await getIcon();
-  const span = getSpanFromIcon(icon);
-
-  // Check for all office icons, there should be a keep-color class.
-  icon.type = constants.ICON_TYPES.WORD;
-  await waitForElementUpdate(icon);
-  assertTrue(span.classList.contains('keep-color'));
-
-  icon.type = constants.ICON_TYPES.EXCEL;
-  await waitForElementUpdate(icon);
-  assertTrue(span.classList.contains('keep-color'));
-
-  icon.type = constants.ICON_TYPES.POWERPOINT;
-  await waitForElementUpdate(icon);
-  assertTrue(span.classList.contains('keep-color'));
-
-  // Check no keep-color class for other icon types.
-  icon.type = constants.ICON_TYPES.ANDROID_FILES;
-  await waitForElementUpdate(icon);
-  assertFalse(span.classList.contains('keep-color'));
-
-  done();
 }
 
 export async function testIconSize(done: () => void) {

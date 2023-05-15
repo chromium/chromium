@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/services/file_util/public/cpp/temporary_file_getter.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -76,6 +77,7 @@ class SandboxedDMGAnalyzer {
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
+  TemporaryFileGetter temp_file_getter_;
 
   base::WeakPtrFactory<SandboxedDMGAnalyzer> weak_ptr_factory_{this};
 };

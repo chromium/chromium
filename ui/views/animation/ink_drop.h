@@ -91,6 +91,9 @@ class VIEWS_EXPORT InkDrop {
   // Called by ink drop hosts when their size is changed.
   virtual void HostSizeChanged(const gfx::Size& new_size) = 0;
 
+  // Called by ink drop hosts when their theme is changed.
+  virtual void HostViewThemeChanged() = 0;
+
   // Called by ink drop hosts when their transform is changed.
   virtual void HostTransformChanged(const gfx::Transform& new_transform) = 0;
 

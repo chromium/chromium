@@ -5,16 +5,22 @@
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -30,6 +36,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_combination_cache.h"
+#include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -70,6 +77,123 @@ constexpr char kFramesAttemptingRequiredOverlaysHistogramName[] =
 constexpr char kFramesScalingRequiredOverlaysHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy."
     "FramesScalingRequiredOverlays";
+
+using OverlayProposedCandidateIndex =
+    std::vector<OverlayProposedCandidate>::size_type;
+using ConstOverlayProposedCandidateIterator =
+    std::vector<OverlayProposedCandidate>::const_iterator;
+
+// Appends candidates with display masks at the end of `test_candidates` if they
+// occlude any candidate in `test_candidates`. These candidates are in the list
+// between `rounded_corner_candidates_begin` and rounded_corner_candidates_end`.
+//
+// Returns the iterator to start of candidates with display mask in
+// `test_candidates`. If no candidates were added, it returns
+// `test_candidates.cend()`.
+ConstOverlayProposedCandidateIterator MaybeAppendOccludingMaskCandidates(
+    ConstOverlayProposedCandidateIterator candidates_wth_masks_begin,
+    ConstOverlayProposedCandidateIterator candidates_wth_masks_end,
+    std::vector<OverlayProposedCandidate>& test_candidates) {
+  // Keep track of the starting index of mask candidates in test_candidates`
+  // list.
+  OverlayProposedCandidateIndex begin_mask_candidates_index =
+      test_candidates.size();
+
+  for (auto& it = candidates_wth_masks_begin; it < candidates_wth_masks_end;
+       it++) {
+    auto mask_key = OverlayProposedCandidate::ToProposeKey(*it);
+    for (OverlayProposedCandidateIndex i = 0; i < begin_mask_candidates_index;
+         i++) {
+      const auto& keys = test_candidates[i].occluding_mask_keys;
+
+      // Append candidates with masks if they occludes any other overlay
+      // candidate in `test_candidates`.
+      if (keys.contains(mask_key)) {
+        test_candidates.push_back(*it);
+      }
+    }
+  }
+
+  return test_candidates.cbegin() + begin_mask_candidates_index;
+}
+
+// Returns true if `candidate` is occluded by any candidate with rounded-display
+// masks in `mask_candidates`.
+bool IsOccludedByMaskCandidates(
+    const OverlayProposedCandidate& candidate,
+    const std::vector<OverlayProposedCandidate*>& mask_candidates) {
+  if (candidate.occluding_mask_keys.empty()) {
+    return false;
+  }
+
+  return base::ranges::any_of(
+      mask_candidates.begin(), mask_candidates.end(),
+      [&candidate](const auto& iter) {
+        return candidate.occluding_mask_keys.contains(
+            OverlayProposedCandidate::ToProposeKey(*iter));
+      });
+}
+
+// Output of `ProcessOverlayTestResults()`.
+struct OverlayTestResults {
+  // True if any successfully test candidates is an underlays.
+  bool underlay_used = false;
+  // True if any test candidate was marked to be composited for UI correctness.
+  bool candidates_marked_for_compositing = false;
+};
+
+// Processes the `candidates` list by checking which overlay candidates can be
+// handled by DRM and based on that decide which candidates should be promoted
+// or composited to produce the most correct UI. Adjusts the `test_candidates`
+// lists accordingly by marking `overlay_handled`.
+OverlayTestResults ProcessOverlayTestResults(
+    std::vector<OverlayProposedCandidate>& test_candidates) {
+  std::vector<OverlayProposedCandidate*> failed_candidates_with_masks;
+  OverlayTestResults data;
+
+  for (auto& it : test_candidates) {
+    if (!it.candidate.overlay_handled &&
+        it.candidate.has_rounded_display_masks) {
+      failed_candidates_with_masks.push_back(&it);
+    }
+
+    if (it.candidate.overlay_handled && it.candidate.plane_z_order < 0) {
+      data.underlay_used = true;
+    }
+  }
+
+  bool has_promoting_overlays_without_masks = false;
+
+  // If some of the candidates with rounded-display masks fail to promote,
+  // composite other overlay(SingleOnTop) candidates that are occluded by these
+  // failed candidates with masks.
+  for (auto& it : test_candidates) {
+    if (it.strategy->GetUMAEnum() == OverlayStrategy::kSingleOnTop &&
+        !it.candidate.has_rounded_display_masks &&
+        it.candidate.overlay_handled) {
+      if (IsOccludedByMaskCandidates(it, failed_candidates_with_masks)) {
+        it.candidate.overlay_handled = false;
+        data.candidates_marked_for_compositing = true;
+      } else {
+        has_promoting_overlays_without_masks = true;
+      }
+    }
+  }
+
+  // If the only overlay(SingleOnTop) candidates that can be promoted are
+  // candidates with display masks, we can skip promoting them to overlays
+  // to save power.
+  if (!has_promoting_overlays_without_masks) {
+    for (auto& it : test_candidates) {
+      if (it.strategy->GetUMAEnum() == OverlayStrategy::kSingleOnTop) {
+        it.candidate.overlay_handled = false;
+        data.candidates_marked_for_compositing = true;
+      }
+    }
+  }
+
+  return data;
+}
 
 // Gets the minimum scaling amount used by either dimension for the src relative
 // to the dst.
@@ -113,6 +237,25 @@ void ScaleCandidateSrcRect(const gfx::RectF& org_src_rect,
       src_rect, 1.0f / candidate->resource_size_in_pixels.width(),
       1.0f / candidate->resource_size_in_pixels.height());
 }
+
+void SyncOverlayCandidates(
+    std::vector<OverlayProposedCandidate>& proposed_candidates,
+    std::vector<OverlayCandidate>& candidates,
+    bool copy_from_proposed_candidates) {
+  auto cand_it = candidates.begin();
+  auto proposed_it = proposed_candidates.begin();
+  while (cand_it != candidates.end()) {
+    if (copy_from_proposed_candidates) {
+      cand_it->overlay_handled = proposed_it->candidate.overlay_handled;
+    } else {
+      proposed_it->candidate.overlay_handled = cand_it->overlay_handled;
+    }
+
+    cand_it++;
+    proposed_it++;
+  }
+}
+
 }  // namespace
 
 static void LogStrategyEnumUMA(OverlayStrategy strategy) {
@@ -208,9 +351,9 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // contents.
   if (render_pass->copy_requests.empty() && !disable_overlay()) {
     success = AttemptWithStrategies(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_passes, &surface_damage_rect_list, output_surface_plane,
-        candidates, content_bounds, damage_rect);
+        output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
+        resource_provider, render_passes, &surface_damage_rect_list,
+        output_surface_plane, candidates, content_bounds, damage_rect);
   }
   LogCheckOverlaySupportMetrics();
 
@@ -517,7 +660,14 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
                                          tracker_config_, display_area) >= 0 ||
           !prioritization_config_.damage_rate_threshold));
 
-    if (it->candidate.requires_overlay || passes_min_threshold) {
+    // Candidates that have rounded-display mask textures must be promoted
+    // even though they do not pass the minimum threshold.
+    // These candidates do not have active damage. (rounded-displays do not have
+    // changing corner radii with each frame!) But given the requirement that
+    // these mask textures must be on top of for UI, we need to promote these
+    // textures for correctness.
+    if (it->candidate.requires_overlay ||
+        it->candidate.has_rounded_display_masks || passes_min_threshold) {
       it->relative_power_gain = track_data.GetModeledPowerGain(
           frame_sequence_number_, tracker_config_, display_area);
       ++it;
@@ -541,12 +691,25 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
   std::stable_sort(
       proposed_candidates->begin(), proposed_candidates->end(),
       [prio_config](const auto& a, const auto& b) {
-        // DRM/CDM HW overlay required:
-        // This comparison is for correctness over performance reasons. Some
-        // candidates must be an HW overlay to function. If both require an HW
-        // overlay we leave them in order so the topmost one gets the overlay.
+        // These following two comparisons are for correctness over performance
+        // reasons.
+        // - Candidates that are marked as `required_overlay` need be an HW
+        // overlay to function.
+        // - Candidates that have rounded_display masks need to be in overlay as
+        // they must be drawn on top of rest of UI.
+
+        // If both require a HW overlay we leave them in order so the topmost
+        // one gets the overlay.
         if (a.candidate.requires_overlay || b.candidate.requires_overlay) {
           return a.candidate.requires_overlay && !b.candidate.requires_overlay;
+        }
+
+        // Candidate that require_overlays get more priority over the candidates
+        // that have textures for the rounded_display masks.
+        if (a.candidate.has_rounded_display_masks ||
+            b.candidate.has_rounded_display_masks) {
+          return a.candidate.has_rounded_display_masks &&
+                 !b.candidate.has_rounded_display_masks;
         }
 
         // Opaque Power Metric:
@@ -565,6 +728,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
 
 bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -577,9 +741,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
   last_successful_strategy_ = nullptr;
   std::vector<OverlayProposedCandidate> proposed_candidates;
   for (const auto& strategy : strategies_) {
-    strategy->Propose(output_color_matrix, render_pass_backdrop_filters,
-                      resource_provider, render_pass_list,
-                      surface_damage_rect_list, primary_plane,
+    strategy->Propose(output_color_matrix, render_pass_filters,
+                      render_pass_backdrop_filters, resource_provider,
+                      render_pass_list, surface_damage_rect_list, primary_plane,
                       &proposed_candidates, content_bounds);
   }
 
@@ -616,9 +780,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     }
 
     bool used_overlay = candidate.strategy->Attempt(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_pass_list, surface_damage_rect_list, primary_plane, candidates,
-        content_bounds, candidate);
+        output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
+        resource_provider, render_pass_list, surface_damage_rect_list,
+        primary_plane, candidates, content_bounds, candidate);
     if (!used_overlay && candidate.candidate.requires_overlay) {
       // Check if we likely failed due to scaling capabilities, and if so, try
       // to adjust things to make it work. We do this by tracking what scale
@@ -646,9 +810,10 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
           ScaleCandidateSrcRect(org_src_rect, zoom_scale, &candidate.candidate);
           attempted_scaling_required_overlays = true;
           if (candidate.strategy->Attempt(
-                  output_color_matrix, render_pass_backdrop_filters,
-                  resource_provider, render_pass_list, surface_damage_rect_list,
-                  primary_plane, candidates, content_bounds, candidate)) {
+                  output_color_matrix, render_pass_filters,
+                  render_pass_backdrop_filters, resource_provider,
+                  render_pass_list, surface_damage_rect_list, primary_plane,
+                  candidates, content_bounds, candidate)) {
             used_overlay = true;
             break;
           } else {
@@ -742,11 +907,49 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     return false;
   }
 
+  // After sorting in `SortProposedOverlayCandidates()`, all the candidates with
+  // display masks will be in the beginning of `sorted_candidates`.
+  ConstOverlayProposedCandidateIterator first_candidate_without_masks =
+      base::ranges::find_if(
+          sorted_candidates.begin(), sorted_candidates.end(),
+          [](const OverlayProposedCandidate& candidate) {
+            return !candidate.candidate.has_rounded_display_masks;
+          });
+
+  int candidates_with_masks_count =
+      std::distance(sorted_candidates.begin(), first_candidate_without_masks);
+  int candidates_without_masks_count =
+      sorted_candidates.size() - candidates_with_masks_count;
+
+  // If `sorted_candidates` only contains candidates with masks, we can skip
+  // promoting them to overlays.
+  if (candidates_without_masks_count == 0) {
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
+    return false;
+  }
+
+  // Request a combination to test without candidates with display masks. We
+  // request a combination that is `candidates_with_masks_count` less so
+  // that we can safely(have enough planes to test combination) add candidates
+  // with masks to the test combination.
+  int max_overlays_without_mask_candidates =
+      std::max(0, max_overlays_considered_ - candidates_with_masks_count);
+
   OverlayCombinationToTest result =
       overlay_combination_cache_.GetOverlayCombinationToTest(
-          sorted_candidates, max_overlays_considered_);
+          base::make_span(first_candidate_without_masks,
+                          sorted_candidates.end()),
+          max_overlays_without_mask_candidates);
+
   std::vector<OverlayProposedCandidate> test_candidates =
       result.candidates_to_test;
+
+  ConstOverlayProposedCandidateIterator begin_rounded_corner_candidate =
+      MaybeAppendOccludingMaskCandidates(sorted_candidates.begin(),
+                                         first_candidate_without_masks,
+                                         test_candidates);
+
   UMA_HISTOGRAM_BOOLEAN(
       "Compositing.Display.OverlayProcessorUsingStrategy."
       "CandidateCombinationPreviouslySucceeded",
@@ -760,9 +963,15 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   for (auto it = test_candidates.begin(); it != test_candidates.end(); ++it) {
     switch (it->strategy->GetUMAEnum()) {
       case OverlayStrategy::kSingleOnTop:
-        // Ordering of on top candidates doesn't matter (they can't overlap), so
-        // they can all have z = 1.
-        it->candidate.plane_z_order = 1;
+        // SingleOnTop candidates without masks do not overlap with each other,
+        // so the ordering does not matter and they have plane_z_order=1,
+        // letting DRM decide how it wants to arrange these candidates.
+        // Whereas SingleOnTop candidates with masks can overlap with other
+        // SingleOnTop candidates and since they are drawn on top on other
+        // SingleOnTop candidates, without overlapping each other, they have
+        // plane_z_order=2.
+        it->candidate.plane_z_order =
+            it->candidate.has_rounded_display_masks ? 2 : 1;
         break;
       case OverlayStrategy::kUnderlay:
         testing_underlay = true;
@@ -793,22 +1002,28 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   }
   const int num_overlays_attempted = candidates.size();
 
-  bool underlay_used = false;
-  auto cand_it = candidates.begin();
-  auto test_it = test_candidates.begin();
-  while (cand_it != candidates.end()) {
-    // Update the test candidates so we can use EraseIf below, and so we can
-    // tell the OverlayCombinationCache which ones succeeded/failed.
-    test_it->candidate.overlay_handled = cand_it->overlay_handled;
-    if (cand_it->overlay_handled && cand_it->plane_z_order < 0) {
-      underlay_used = true;
-    }
-    cand_it++;
-    test_it++;
-  }
-  overlay_combination_cache_.DeclarePromotedCandidates(test_candidates);
+  // Update the test candidates so we can process the result, use EraseIf below
+  // and tell the OverlayCombinationCache which ones succeeded/failed.
+  SyncOverlayCandidates(test_candidates, candidates,
+                        /*copy_from_proposed_candidates=*/false);
 
-  // Remove failed candidates
+  // Decide which test_candidates to commit that will results in correct UI
+  // based on result of testing the combination.
+  OverlayTestResults output = ProcessOverlayTestResults(test_candidates);
+
+  // Only declare test candidates that do not have candidates with rounded
+  // display masks.
+  overlay_combination_cache_.DeclarePromotedCandidates(
+      base::make_span(test_candidates.begin(), begin_rounded_corner_candidate));
+
+  // Update `candidates` if it was decided to composite some test_candidates in
+  // `ProcessOverlayTestResults()`.
+  if (output.candidates_marked_for_compositing) {
+    SyncOverlayCandidates(test_candidates, candidates,
+                          /*copy_from_proposed_candidates=*/true);
+  }
+
+  // Remove failed candidates.
   base::EraseIf(candidates, [](auto& cand) { return !cand.overlay_handled; });
   base::EraseIf(test_candidates, [](auto& proposed) -> bool {
     return !proposed.candidate.overlay_handled;
@@ -825,7 +1040,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     return false;
   }
 
-  if (underlay_used && primary_plane) {
+  if (output.underlay_used && primary_plane) {
     // Using underlays means the primary plane needs blending enabled.
     primary_plane->enable_blending = true;
   }

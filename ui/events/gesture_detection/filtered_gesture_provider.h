@@ -48,9 +48,15 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
 
   // To be called upon asynchronous and synchronous ack of an event that was
   // forwarded after a successful call to |OnTouchEvent()|.
+  // |event_latency_metadata| is provided only if the touch event or
+  // corresponding touch event was blocked before sending to the Renderer. This
+  // definition of blocking is not related to the value of
+  // |is_source_touch_event_set_blocking|.
   void OnTouchEventAck(uint32_t unique_event_id,
                        bool event_consumed,
-                       bool is_source_touch_event_set_blocking);
+                       bool is_source_touch_event_set_blocking,
+                       const absl::optional<EventLatencyMetadata>&
+                           event_latency_metadata = absl::nullopt);
 
   void ResetGestureHandlingState();
 

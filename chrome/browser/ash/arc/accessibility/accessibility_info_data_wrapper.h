@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <string>
@@ -52,7 +53,7 @@ class AccessibilityInfoDataWrapper {
   virtual int32_t GetWindowId() const = 0;
 
  protected:
-  AXTreeSourceArc* tree_source_;
+  raw_ptr<AXTreeSourceArc, ExperimentalAsh> tree_source_;
   absl::optional<std::vector<AccessibilityInfoDataWrapper*>> cached_children_;
 
  private:

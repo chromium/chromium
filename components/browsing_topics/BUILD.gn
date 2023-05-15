@@ -1,9 +1,14 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("browsing_topics") {
   sources = [
+    "annotator.cc",
+    "annotator.h",
+    "annotator_impl.cc",
+    "annotator_impl.h",
     "browsing_topics_calculator.cc",
     "browsing_topics_calculator.h",
     "browsing_topics_page_load_data_tracker.cc",
@@ -30,7 +35,8 @@ source_set("browsing_topics") {
     "//components/history/content/browser",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/privacy_sandbox",
     "//content/public/browser",
     "//content/public/common:common",
@@ -65,6 +71,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "annotator_impl_unittest.cc",
     "browsing_topics_calculator_unittest.cc",
     "browsing_topics_page_load_data_tracker_unittest.cc",
     "browsing_topics_service_impl_unittest.cc",
@@ -84,9 +91,10 @@ source_set("unit_tests") {
     "//components/history/content/browser:browser",
     "//components/history/core/browser:browser",
     "//components/history/core/test",
-    "//components/optimization_guide/content/browser:browser",
-    "//components/optimization_guide/content/browser:test_support",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/privacy_sandbox:privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
@@ -96,5 +104,19 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common",
+    "//third_party/zlib/google:compression_utils",
+  ]
+}
+
+fuzzer_test("browsing_topics_annotator_fuzzer") {
+  sources = [ "annotator_fuzzer.cc" ]
+  deps = [
+    ":browsing_topics",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }

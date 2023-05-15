@@ -1,0 +1,14 @@
+Name: kotlinx-coroutines-guava
+Short Name: kotlinx-coroutines-guava
+URL: https://github.com/Kotlin/kotlinx.coroutines
+Version: 1.6.4
+License: Apache Version 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+
+Description:
+Coroutines support libraries for Kotlin
+
+Local Modifications:
+No modifications.

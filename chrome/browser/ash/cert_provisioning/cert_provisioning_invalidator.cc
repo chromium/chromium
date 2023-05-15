@@ -89,7 +89,7 @@ bool CertProvisioningInvalidationHandler::Register() {
 
   OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
 
-  invalidation_service_observation_.Observe(invalidation_service_);
+  invalidation_service_observation_.Observe(invalidation_service_.get());
 
   if (!invalidation_service_->UpdateInterestedTopics(this,
                                                      /*topics=*/{topic_})) {
@@ -113,7 +113,7 @@ void CertProvisioningInvalidationHandler::Unregister() {
       this, invalidation::TopicSet());
   DCHECK(topics_reset);
   DCHECK(invalidation_service_observation_.IsObservingSource(
-      invalidation_service_));
+      invalidation_service_.get()));
   invalidation_service_observation_.Reset();
 
   state_.is_registered = false;

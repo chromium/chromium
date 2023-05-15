@@ -113,8 +113,8 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
 
     assertTrue(settings.$.passwordToggle.checked);
-    assertTrue(!!settings.$.passwordToggle.shadowRoot!.querySelector(
-        '#extensionIcon'));
+    assertTrue(
+        !!settings.shadowRoot!.querySelector('extension-controlled-indicator'));
   });
 
   test('no extension control icon by default', async function() {
@@ -126,7 +126,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
     assertFalse(!!settings.$.passwordToggle.shadowRoot!.querySelector(
-        '#extensionIcon'));
+        'extension-controlled-indicator'));
   });
 
   test('pref updated externally', async function() {
@@ -251,13 +251,29 @@ suite('SettingsSectionTest', function() {
 
   // Add Shortcut banner is shown and clickable.
   test('showAddShortcutBanner', async function() {
+    loadTimeData.overrideValues({canAddShortcut: true});
+
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertTrue(isVisible(settings.$.addShortcutBanner));
-    settings.$.addShortcutBanner.click();
+    const addShortcutBanner =
+        settings.shadowRoot!.querySelector<HTMLElement>('#addShortcutBanner');
+    assertTrue(!!addShortcutBanner);
+    assertTrue(isVisible(addShortcutBanner));
+    addShortcutBanner.click();
     await passwordManager.whenCalled('showAddShortcutDialog');
+  });
+
+  // Add Shortcut banner is shown and clickable.
+  test('addShortcutBanner hidden', async function() {
+    loadTimeData.overrideValues({canAddShortcut: false});
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
   test('import hidden when policy disabled', async function() {
@@ -407,7 +423,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await passkeysProxy.whenCalled('passkeysHasPasskeys');
     flush();
-    assertFalse(isVisible(settings.$.managePasskeysRow));
+    assertFalse(!!settings.shadowRoot!.querySelector('#managePasskeysRow'));
   });
 
   test('managePasskeysShownWhenNeeded', async function() {
@@ -416,10 +432,11 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await passkeysProxy.whenCalled('passkeysHasPasskeys');
     flush();
-    const row = settings.$.managePasskeysRow;
-    assertTrue(isVisible(row));
+    const managePasskeysRow = settings.shadowRoot!.querySelector<HTMLElement>(
+                                  '#managePasskeysRow') as HTMLElement;
+    assertTrue(!!managePasskeysRow);
 
-    row.click();
+    managePasskeysRow.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals('chrome://settings/passkeys', url);
   });

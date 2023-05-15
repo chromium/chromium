@@ -6,6 +6,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -18,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash::video_conference {
@@ -77,9 +79,9 @@ class ToggleEffectsViewTest : public AshTestBase {
 
   // Each toggle button in the bubble view has this view ID, this just gets the
   // first one in the view tree.
-  views::View* GetFirstToggleEffectButton() {
-    return bubble_view()->GetViewByID(
-        video_conference::BubbleViewID::kToggleEffectsButton);
+  views::Button* GetFirstToggleEffectButton() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kToggleEffectsButton));
   }
 
   // Each toggle button icon in a toggle button has this view ID, this just gets
@@ -144,6 +146,30 @@ TEST_F(ToggleEffectsViewTest, ToggleUpdatesImage) {
                    .vector_icon()
                    ->name,
                ash::kPrivacyIndicatorsCameraIcon.name);
+}
+
+// Tests that a toggled ToggleButton's tooltip is updated.
+TEST_F(ToggleEffectsViewTest, TooltipIsUpdated) {
+  // Add one toggle effect.
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  LeftClickOn(toggle_bubble_button());
+
+  EXPECT_EQ(
+      GetFirstToggleEffectButton()->GetTooltipText(),
+      l10n_util::GetStringFUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+          l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+          l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
+
+  // Toggle it on, the tooltip should update.
+  LeftClickOn(GetFirstToggleEffectButton());
+
+  EXPECT_EQ(
+      GetFirstToggleEffectButton()->GetTooltipText(),
+      l10n_util::GetStringFUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+          l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+          l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON)));
 }
 
 }  // namespace ash::video_conference

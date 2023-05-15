@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_TOUCH_DELEGATE_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_TOUCH_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/touch_delegate.h"
 #include "components/exo/wayland/wayland_input_delegate.h"
 
@@ -45,10 +46,10 @@ class WaylandTouchDelegate : public WaylandInputDelegate, public TouchDelegate {
   wl_client* client() const;
 
   // The touch resource associated with the touch.
-  wl_resource* const touch_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> touch_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  SerialTracker* const serial_tracker_;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
 };
 
 }  // namespace wayland

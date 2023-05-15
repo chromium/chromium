@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -25,6 +26,7 @@
 #include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
+#include "base/cxx20_to_address.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/task/thread_pool.h"
@@ -1475,6 +1477,28 @@ TEST_F(RawPtrTest, CrossKindAssignment) {
               CountersMatch());
 }
 
+// Without the explicitly customized `raw_ptr::to_address()`,
+// `base::to_address()` will use the dereference operator. This is not
+// what we want; this test enforces extraction semantics for
+// `to_address()`.
+TEST_F(RawPtrTest, ToAddressDoesNotDereference) {
+  CountingRawPtr<int> ptr = nullptr;
+  int* raw = base::to_address(ptr);
+  std::ignore = raw;
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 1,
+                  .get_for_comparison_cnt = 0,
+                  .get_for_duplication_cnt = 0}),
+              CountersMatch());
+}
+
+TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
+  int* raw = nullptr;
+  raw_ptr<int> miracle = raw;
+  EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
+}
+
 }  // namespace
 
 namespace base {
@@ -2122,6 +2146,28 @@ TEST_F(BackupRefPtrTest, Duplicate) {
 }
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
+#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+TEST_F(BackupRefPtrTest, WriteAfterFree) {
+  constexpr uint64_t kPayload = 0x1234567890ABCDEF;
+
+  raw_ptr<uint64_t> ptr =
+      static_cast<uint64_t*>(allocator_.root()->Alloc(sizeof(uint64_t), ""));
+
+  // Now |ptr| should be quarantined.
+  allocator_.root()->Free(ptr);
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        // Write something different from |kQuarantinedByte|.
+        *ptr = kPayload;
+        // Write-after-Free should lead to crash
+        // on |PartitionAllocFreeForRefCounting|.
+        ptr = nullptr;
+      },
+      "");
+}
+#endif  // BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+
 namespace {
 constexpr uint8_t kCustomQuarantineByte = 0xff;
 static_assert(kCustomQuarantineByte !=
@@ -2138,13 +2184,20 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   uint8_t* native_ptr =
       static_cast<uint8_t*>(allocator_.root()->Alloc(sizeof(uint8_t), ""));
   *native_ptr = 0;
-  raw_ptr<uint8_t> smart_ptr = native_ptr;
+  {
+    raw_ptr<uint8_t> smart_ptr = native_ptr;
 
-  allocator_.root()->Free(smart_ptr);
-  // Access the allocation through the native pointer to avoid triggering
-  // dereference checks in debug builds.
-  EXPECT_EQ(*partition_alloc::internal::TagPtr(native_ptr),
-            kCustomQuarantineByte);
+    allocator_.root()->Free(smart_ptr);
+    // Access the allocation through the native pointer to avoid triggering
+    // dereference checks in debug builds.
+    EXPECT_EQ(*partition_alloc::internal::TagPtr(native_ptr),
+              kCustomQuarantineByte);
+
+    // Leaving |smart_ptr| filled with |kCustomQuarantineByte| can
+    // cause a crash because we have a DCHECK that expects it to be filled with
+    // |kQuarantineByte|. We need to ensure it is unquarantined before
+    // unregistering the hook.
+  }  // <- unquarantined here
 
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }

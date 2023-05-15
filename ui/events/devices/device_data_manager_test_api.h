@@ -9,6 +9,8 @@
 
 namespace ui {
 struct InputDevice;
+struct KeyboardDevice;
+struct TouchpadDevice;
 struct TouchscreenDevice;
 
 enum class StylusState;
@@ -36,10 +38,10 @@ class DeviceDataManagerTestApi {
   void NotifyObserversTouchpadDeviceConfigurationChanged();
   void OnDeviceListsComplete();
 
-  void SetKeyboardDevices(const std::vector<InputDevice>& devices);
+  void SetKeyboardDevices(const std::vector<KeyboardDevice>& devices);
   void SetMouseDevices(const std::vector<InputDevice>& devices);
   void SetPointingStickDevices(const std::vector<InputDevice>& devices);
-  void SetTouchpadDevices(const std::vector<InputDevice>& devices);
+  void SetTouchpadDevices(const std::vector<TouchpadDevice>& devices);
   void SetUncategorizedDevices(const std::vector<InputDevice>& devices);
 
   // |are_touchscreen_target_displays_valid| is only applicable to

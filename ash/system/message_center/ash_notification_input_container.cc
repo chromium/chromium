@@ -8,7 +8,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
@@ -72,15 +74,17 @@ int AshNotificationInputContainer::GetDefaultPlaceholderStringId() const {
 }
 
 void AshNotificationInputContainer::StyleTextfield() {
-  textfield()->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                         kNotificationBodyFontWeight,
-                                         gfx::Font::Weight::MEDIUM));
-  auto* color_provider = ash::AshColorProvider::Get();
-  textfield()->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive),
-      kTextfieldBackgroundCornerRadius));
+  if (!chromeos::features::IsJellyEnabled()) {
+    textfield()->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                           kNotificationBodyFontWeight,
+                                           gfx::Font::Weight::MEDIUM));
+    auto* color_provider = ash::AshColorProvider::Get();
+    textfield()->SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorInactive),
+        kTextfieldBackgroundCornerRadius));
+  }
 
   views::FocusRing::Install(textfield());
   views::InstallRoundRectHighlightPathGenerator(
@@ -126,6 +130,23 @@ void AshNotificationInputContainer::OnThemeChanged() {
   UpdateButtonImage();
   SetSendButtonHighlightPath();
   StyleTextfield();
+
+  if (chromeos::features::IsJellyEnabled()) {
+    textfield()->SetTextColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    textfield()->SetFontList(
+        ash::TypographyProvider::Get()->ResolveTypographyToken(
+            ash::TypographyToken::kCrosBody2));
+    textfield()->set_placeholder_text_color(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+    textfield()->set_placeholder_font_list(
+        ash::TypographyProvider::Get()->ResolveTypographyToken(
+            ash::TypographyToken::kCrosBody2));
+
+    textfield()->SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface),
+        kTextfieldBackgroundCornerRadius));
+  }
 }
 
 }  // namespace ash

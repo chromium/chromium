@@ -64,22 +64,24 @@ class Pbkdf2Implementation : public AlgorithmImplementation {
 
   Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                     const blink::WebCryptoKey& base_key,
-                    bool has_optional_length_bits,
-                    unsigned int optional_length_bits,
+                    absl::optional<unsigned int> length_bits,
                     std::vector<uint8_t>* derived_bytes) const override {
     crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-    if (!has_optional_length_bits)
+    if (!length_bits.has_value()) {
       return Status::ErrorPbkdf2DeriveBitsLengthNotSpecified();
+    }
 
-    if (optional_length_bits % 8)
+    if (*length_bits % 8) {
       return Status::ErrorPbkdf2InvalidLength();
+    }
 
     // According to RFC 2898 "dkLength" (derived key length) is
     // described as being a "positive integer", so it is an error for
     // it to be 0.
-    if (optional_length_bits == 0)
+    if (*length_bits == 0) {
       return Status::ErrorPbkdf2DeriveBitsLengthZero();
+    }
 
     const blink::WebCryptoPbkdf2Params* params = algorithm.Pbkdf2Params();
 
@@ -90,7 +92,7 @@ class Pbkdf2Implementation : public AlgorithmImplementation {
     if (!digest_algorithm)
       return Status::ErrorUnsupported();
 
-    unsigned int keylen_bytes = optional_length_bits / 8;
+    unsigned int keylen_bytes = *length_bits / 8;
     derived_bytes->resize(keylen_bytes);
 
     const std::vector<uint8_t>& password = GetSymmetricKeyData(base_key);
@@ -122,10 +124,10 @@ class Pbkdf2Implementation : public AlgorithmImplementation {
                                     key);
   }
 
-  Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
-                      bool* has_length_bits,
-                      unsigned int* length_bits) const override {
-    *has_length_bits = false;
+  Status GetKeyLength(
+      const blink::WebCryptoAlgorithm& key_length_algorithm,
+      absl::optional<unsigned int>* length_bits) const override {
+    *length_bits = absl::nullopt;
     return Status::Success();
   }
 };

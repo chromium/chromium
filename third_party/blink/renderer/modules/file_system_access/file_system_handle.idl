@@ -30,37 +30,40 @@ enum FileSystemHandleKind {
     ] Promise<PermissionState> requestPermission(
         optional FileSystemHandlePermissionDescriptor descriptor = {});
 
+    // TODO(https://crbug.com/1250534): Measure these methods once directory
+    // moves are supported.
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ]  Promise<void> move(USVString new_entry_name);
+    ] Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ]  Promise<void> move(FileSystemDirectoryHandle destination_directory);
+    ] Promise<void> move(FileSystemDirectoryHandle destination_directory);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
-                          USVString new_entry_name);
+    ] Promise<void> move(FileSystemDirectoryHandle destination_directory,
+                         USVString new_entry_name);
     [
         CallWith=ScriptState,
-        RaisesException
-    ]
-    Promise<void> remove(optional FileSystemRemoveOptions options = {});
+        RaisesException,
+        Measure
+    ] Promise<void> remove(optional FileSystemRemoveOptions options = {});
 
     [
         CallWith=ScriptState,
         RaisesException,
         Measure
-    ]
-    Promise<boolean> isSameEntry(FileSystemHandle other);
+    ] Promise<boolean> isSameEntry(FileSystemHandle other);
 
     [
         CallWith=ScriptState,
+        RaisesException,
+        Measure,
         RuntimeEnabled=FileSystemAccessAPIExperimental
     ] Promise<USVString> getUniqueId();
 };

@@ -11,10 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::IsNull;
 
 namespace reporting {
 namespace {
@@ -76,6 +79,10 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetInvalidDeviceSetting) {
   int int_value;
   EXPECT_FALSE(device_reporting_settings_->GetInteger(
       ::policy::key::kReportDeviceNetworkStatus, &int_value));
+
+  // Cannot get reporting enabled from an integer setting.
+  EXPECT_FALSE(device_reporting_settings_->GetReportingEnabled(
+      ::policy::key::kReportUploadFrequency, &bool_value));
 }
 
 TEST_F(DeviceReportingSettingsLacrosTest, GetBoolean) {
@@ -87,6 +94,19 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetBoolean) {
 
   bool value = false;
   ASSERT_TRUE(device_reporting_settings_->GetBoolean(
+      ::policy::key::kReportDeviceNetworkStatus, &value));
+  EXPECT_TRUE(value);
+}
+
+TEST_F(DeviceReportingSettingsLacrosTest, GetReportingEnabled) {
+  crosapi::mojom::DeviceSettingsPtr device_settings_ptr =
+      crosapi::mojom::DeviceSettings::New();
+  device_settings_ptr->report_device_network_status =
+      crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
+  delegate_->UpdateDeviceSettings(device_settings_ptr.get());
+
+  bool value = false;
+  ASSERT_TRUE(device_reporting_settings_->GetReportingEnabled(
       ::policy::key::kReportDeviceNetworkStatus, &value));
   EXPECT_TRUE(value);
 }
@@ -106,6 +126,14 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetInteger) {
   ASSERT_TRUE(device_reporting_settings_->GetInteger(
       ::policy::key::kReportUploadFrequency, &value));
   EXPECT_EQ(value, kUploadFrequency);
+}
+
+TEST_F(DeviceReportingSettingsLacrosTest, GetList) {
+  static constexpr char kTestSettingPath[] = "test_setting";
+  const base::Value::List* list_value = nullptr;
+  ASSERT_FALSE(
+      device_reporting_settings_->GetList(kTestSettingPath, &list_value));
+  EXPECT_THAT(list_value, IsNull());
 }
 
 TEST_F(DeviceReportingSettingsLacrosTest,

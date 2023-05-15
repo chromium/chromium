@@ -30,12 +30,12 @@ IconInfo& IconInfo::operator=(const IconInfo&) = default;
 IconInfo& IconInfo::operator=(IconInfo&&) noexcept = default;
 
 base::Value IconInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICT);
-  root.SetStringKey("url", url.spec());
-  root.SetKey("square_size_px",
-              square_size_px ? base::Value(*square_size_px) : base::Value());
-  root.SetStringKey("purpose", kPurposeStrings[static_cast<int>(purpose)]);
-  return root;
+  base::Value::Dict root;
+  root.Set("url", url.spec());
+  root.Set("square_size_px",
+           square_size_px ? base::Value(*square_size_px) : base::Value());
+  root.Set("purpose", kPurposeStrings[static_cast<int>(purpose)]);
+  return base::Value(std::move(root));
 }
 
 bool IconInfo::operator==(const IconInfo& other) const {

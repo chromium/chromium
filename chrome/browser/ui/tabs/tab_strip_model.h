@@ -769,6 +769,9 @@ class TabStripModel : public TabGroupController {
   // index would change.
   void GroupTab(int index, const tab_groups::TabGroupId& group);
 
+  // Disconnects any saved tab groups whose tabs are a subset of `indices`.
+  void DisconnectSavedTabGroups(const std::vector<int>& indices) const;
+
   // Changes the pinned state of the tab at `index`, moving it in the process if
   // necessary. Returns the new index of the tab.
   int SetTabPinnedImpl(int index, bool pinned);

@@ -19,7 +19,7 @@
 namespace ash {
 
 // It should be called when some memory configuration is changed.
-COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters();
+COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters(bool arc_enabled);
 
 namespace memory {
 

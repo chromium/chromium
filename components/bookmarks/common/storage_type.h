@@ -8,16 +8,18 @@
 namespace bookmarks {
 
 // Defines the data storage strategy used by a BookmarkModel.
+// Do not change the explicitly set values. This enum is saved in preference
+// kIosBookmarkLastUsedStorageReceivingBookmarks.
 enum class StorageType {
   // Local storage indicates that the data in the BookmarkModel can't be
   // explicitly attributed to an account and the behavior depends on the state
   // of sync-the-feature. If sync-the-feature is off - the model data is
   // local. If sync-the-feature is on - the model data is synced.
-  kLocalOrSyncable,
+  kLocalOrSyncable = 0,
   // Account storage indicates all data can be attributed to an account, which
   // also means the data will be removed from the BookmarkModel when the user
   // signs out.
-  kAccount,
+  kAccount = 1,
 };
 
 }  // namespace bookmarks

@@ -10,6 +10,7 @@ enum SelectionBoundType {
   LEFT,
   RIGHT,
   CENTER,
+  HIDDEN,
   EMPTY,
   LAST = EMPTY
 };
@@ -23,4 +24,3 @@ struct SelectionBound {
   gfx.mojom.PointF visible_edge_end;
   bool visible;
 };
-

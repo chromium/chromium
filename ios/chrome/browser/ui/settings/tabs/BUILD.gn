@@ -14,9 +14,9 @@ source_set("tabs") {
     ":tabs_ui",
     "//components/prefs",
     "//components/prefs/ios",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
   ]
@@ -32,9 +32,10 @@ source_set("tabs_ui") {
     "tabs_settings_table_view_controller_delegate.h",
   ]
   deps = [
+    ":tabs_constants",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
@@ -43,4 +44,28 @@ source_set("tabs_ui") {
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_ui",
     "//ui/base",
   ]
+}
+
+source_set("tabs_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tabs_settings_constants.h",
+    "tabs_settings_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "tabs_settings_egtest.mm" ]
+  deps = [
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

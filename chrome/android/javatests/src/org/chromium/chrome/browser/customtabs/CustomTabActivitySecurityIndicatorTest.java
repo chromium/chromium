@@ -15,8 +15,9 @@ import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -96,10 +97,10 @@ public class CustomTabActivitySecurityIndicatorTest {
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
         ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
+                AppCompatResources.getColorStateList(ApplicationProvider.getApplicationContext(),
                         R.color.default_icon_color_light_tint_list);
         ImageView expectedSecurityButton =
-                new ImageView(InstrumentationRegistry.getTargetContext());
+                new ImageView(ApplicationProvider.getApplicationContext());
         expectedSecurityButton.setImageResource(expectedSecurityIcon);
         ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 
@@ -134,10 +135,10 @@ public class CustomTabActivitySecurityIndicatorTest {
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
         ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
+                AppCompatResources.getColorStateList(ApplicationProvider.getApplicationContext(),
                         R.color.default_icon_color_light_tint_list);
         ImageView expectedSecurityButton =
-                new ImageView(InstrumentationRegistry.getTargetContext());
+                new ImageView(ApplicationProvider.getApplicationContext());
         expectedSecurityButton.setImageResource(expectedSecurityIcon);
         ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 

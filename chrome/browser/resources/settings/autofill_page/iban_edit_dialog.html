@@ -3,7 +3,7 @@
     /* Larger cr-input margin (by reserving space for error display). */
     --cr-input-error-display: block;
     margin-bottom: 0;
-    width: var(--settings-input-max-width);
+    width: var(--cr-default-input-max-width);
   }
 
   /* Override the padding-top (the space is set by save-to-this-device). */
@@ -26,7 +26,7 @@
   }
 
   #nicknameInput:not(:focus-within) #charCount {
-    --cr-input-width: var(--settings-input-max-width);
+    --cr-input-width: var(--cr-default-input-max-width);
     display: none;
     width: fit-content;
   }

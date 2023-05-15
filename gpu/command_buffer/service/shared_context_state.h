@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
+#include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -126,6 +127,10 @@ class GPU_GLES2_EXPORT SharedContextState
 
   void StoreVkPipelineCacheIfNeeded();
 
+  void UseShaderCache(
+      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use)
+      const;
+
   gl::GLShareGroup* share_group() { return share_group_.get(); }
   gl::GLContext* context() { return context_.get(); }
   gl::GLContext* real_context() { return real_context_.get(); }
@@ -143,7 +148,6 @@ class GPU_GLES2_EXPORT SharedContextState
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
   // Ganesh/Graphite contexts may only be used on the GPU main thread.
   GrDirectContext* gr_context() { return gr_context_; }
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   skgpu::graphite::Context* graphite_context() const {
     return graphite_context_;
   }
@@ -156,15 +160,6 @@ class GPU_GLES2_EXPORT SharedContextState
   skgpu::graphite::Recorder* viz_compositor_graphite_recorder() const {
     return viz_compositor_graphite_recorder_.get();
   }
-#else
-  skgpu::graphite::Context* graphite_context() const { return nullptr; }
-  skgpu::graphite::Recorder* gpu_main_graphite_recorder() const {
-    return nullptr;
-  }
-  skgpu::graphite::Recorder* viz_compositor_graphite_recorder() const {
-    return nullptr;
-  }
-#endif
   GrContextType gr_context_type() const { return gr_context_type_; }
   // Handles Skia-reported shader compilation errors.
   void compileError(const char* shader, const char* errors) override;
@@ -352,11 +347,9 @@ class GPU_GLES2_EXPORT SharedContextState
   const raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
   bool created_on_compositor_gpu_thread_ = false;
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   raw_ptr<skgpu::graphite::Context> graphite_context_ = nullptr;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
-#endif
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;

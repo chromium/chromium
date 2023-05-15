@@ -55,8 +55,6 @@ bool BatchAnnotationResult::HasOutputForType() const {
   switch (type()) {
     case AnnotationType::kUnknown:
       return false;
-    case AnnotationType::kPageTopics:
-      return !!topics();
     case AnnotationType::kContentVisibility:
       return !!visibility_score();
     case AnnotationType::kPageEntities:
@@ -68,14 +66,6 @@ base::Value BatchAnnotationResult::AsValue() const {
   base::Value::Dict result;
   result.Set("input", input());
   result.Set("type", AnnotationTypeToString(type()));
-
-  if (topics()) {
-    base::Value::List list;
-    for (const auto& wi : *topics()) {
-      list.Append(wi.AsValue());
-    }
-    result.Set("topics", std::move(list));
-  }
 
   if (entities()) {
     base::Value::List list;
@@ -102,13 +92,7 @@ std::string BatchAnnotationResult::ToJSON() const {
 
 std::string BatchAnnotationResult::ToString() const {
   std::string output = "nullopt";
-  if (topics_) {
-    std::vector<std::string> all_weighted_ids;
-    for (const WeightedIdentifier& wi : *topics_) {
-      all_weighted_ids.push_back(wi.ToString());
-    }
-    output = "{" + base::JoinString(all_weighted_ids, ",") + "}";
-  } else if (entities_) {
+  if (entities_) {
     std::vector<std::string> all_entities;
     for (const ScoredEntityMetadata& md : *entities_) {
       all_entities.push_back(md.ToString());
@@ -129,26 +113,6 @@ std::ostream& operator<<(std::ostream& stream,
                          const BatchAnnotationResult& result) {
   stream << result.ToString();
   return stream;
-}
-
-// static
-BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
-    const std::string& input,
-    absl::optional<std::vector<WeightedIdentifier>> topics) {
-  BatchAnnotationResult result;
-  result.input_ = input;
-  result.topics_ = topics;
-  result.type_ = AnnotationType::kPageTopics;
-
-  // Always sort the result (if present) by the given score.
-  if (result.topics_) {
-    std::sort(result.topics_->begin(), result.topics_->end(),
-              [](const WeightedIdentifier& a, const WeightedIdentifier& b) {
-                return a.weight() < b.weight();
-              });
-  }
-
-  return result;
 }
 
 //  static
@@ -193,7 +157,7 @@ BatchAnnotationResult BatchAnnotationResult::CreateEmptyAnnotationsResult(
 bool BatchAnnotationResult::operator==(
     const BatchAnnotationResult& other) const {
   return this->input_ == other.input_ && this->type_ == other.type_ &&
-         this->topics_ == other.topics_ && this->entities_ == other.entities_ &&
+         this->entities_ == other.entities_ &&
          this->visibility_score_ == other.visibility_score_;
 }
 

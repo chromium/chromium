@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
@@ -44,16 +45,15 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/supervised_user/core/common/features.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
@@ -179,13 +179,12 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     const std::string kId = crx_file::id_util::GenerateId(name);
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
-            .SetManifest(DictionaryBuilder()
+            .SetManifest(base::Value::Dict()
                              .Set("name", name)
                              .Set("description", "an extension")
                              .Set("manifest_version", 2)
                              .Set("version", "1.0.0")
-                             .Set("permissions", std::move(permissions))
-                             .Build())
+                             .Set("permissions", std::move(permissions)))
             .SetLocation(location)
             .SetID(kId)
             .Build();
@@ -263,20 +262,18 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   const char kVersion[] = "1.0.0.1";
   std::string id = crx_file::id_util::GenerateId("alpha");
   base::Value::Dict manifest =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", kName)
           .Set("version", kVersion)
           .Set("manifest_version", 3)
           .Set("description", "an extension")
-          .Set("host_permissions", ListBuilder()
+          .Set("host_permissions", base::Value::List()
                                        .Append("file://*/*")
                                        .Append("*://*.google.com/*")
                                        .Append("*://*.example.com/*")
                                        .Append("*://*.foo.bar/*")
-                                       .Append("*://*.chromium.org/*")
-                                       .Build())
-          .Set("permissions", ListBuilder().Append("tabs").Build())
-          .Build();
+                                       .Append("*://*.chromium.org/*"))
+          .Set("permissions", base::Value::List().Append("tabs"));
   base::Value::Dict manifest_copy = manifest.Clone();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -390,12 +387,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByDefault) {
   profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
 
   base::Value::Dict manifest =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "installed by default")
           .Set("version", "1.2")
           .Set("manifest_version", 3)
-          .Set("update_url", "https://clients2.google.com/service/update2/crx")
-          .Build();
+          .Set("update_url", "https://clients2.google.com/service/update2/crx");
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -418,12 +414,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByOem) {
   profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
 
   base::Value::Dict manifest =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "installed by OEM")
           .Set("version", "1.2")
           .Set("manifest_version", 3)
-          .Set("update_url", "https://clients2.google.com/service/update2/crx")
-          .Build();
+          .Set("update_url", "https://clients2.google.com/service/update2/crx");
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -508,7 +503,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
 // Tests the generation of the runtime host permissions entries.
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
-      "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
+      "all_urls", base::Value::List().Append(kAllHostsPermission),
       ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
@@ -558,7 +553,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
   // An extension that doesn't request any host permissions should not have
   // runtime access controls.
   scoped_refptr<const Extension> no_urls_extension = CreateExtension(
-      "no urls", ListBuilder().Build(), ManifestLocation::kInternal);
+      "no urls", base::Value::List(), ManifestLocation::kInternal);
   info = GenerateExtensionInfo(no_urls_extension->id());
   EXPECT_FALSE(info->permissions.runtime_host_permissions);
 }
@@ -569,7 +564,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
 TEST_F(ExtensionInfoGeneratorUnitTest,
        RuntimeHostPermissionsBeyondRequestedScope) {
   scoped_refptr<const Extension> extension =
-      CreateExtension("extension", ListBuilder().Append("http://*/*").Build(),
+      CreateExtension("extension", base::Value::List().Append("http://*/*"),
                       ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
@@ -614,10 +609,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
   scoped_refptr<const Extension> extension =
       CreateExtension("extension",
-                      ListBuilder()
+                      base::Value::List()
                           .Append("https://example.com/*")
-                          .Append("https://chromium.org/*")
-                          .Build(),
+                          .Append("https://chromium.org/*"),
                       ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
@@ -653,7 +647,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
 // correctly is treated as having access to all sites.
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsAllURLs) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
-      "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
+      "all_urls", base::Value::List().Append(kAllHostsPermission),
       ManifestLocation::kInternal);
 
   // Withholding host permissions should result in the extension being set to
@@ -692,10 +686,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsAllURLs) {
 TEST_F(ExtensionInfoGeneratorUnitTest, WithheldUrlsOverlapping) {
   scoped_refptr<const Extension> extension =
       CreateExtension("extension",
-                      ListBuilder()
+                      base::Value::List()
                           .Append("*://example.com/*")
-                          .Append("https://chromium.org/*")
-                          .Build(),
+                          .Append("https://chromium.org/*"),
                       ManifestLocation::kInternal);
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
@@ -833,7 +826,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 // permission. See crbug.com/850643.
 TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
   scoped_refptr<const Extension> extension =
-      CreateExtension("activeTab", ListBuilder().Append("activeTab").Build(),
+      CreateExtension("activeTab", base::Value::List().Append("activeTab"),
                       ManifestLocation::kInternal);
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -891,18 +884,16 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
     base::Value::Dict command_dict =
-        DictionaryBuilder()
+        base::Value::Dict()
             .Set("suggested_key",
-                 DictionaryBuilder().Set("default", "Ctrl+Shift+P").Build())
-            .Set("description", "Execute!")
-            .Build();
+                 base::Value::Dict().Set("default", "Ctrl+Shift+P"))
+            .Set("description", "Execute!");
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(test_case.name)
             .SetAction(test_case.action_type)
-            .SetManifestKey("commands", DictionaryBuilder()
-                                            .Set(test_case.command_key,
-                                                 std::move(command_dict))
-                                            .Build())
+            .SetManifestKey("commands",
+                            base::Value::Dict().Set(test_case.command_key,
+                                                    std::move(command_dict)))
             .SetManifestVersion(test_case.manifest_version)
             .Build();
     service()->AddExtension(extension.get());
@@ -960,8 +951,8 @@ class ExtensionInfoGeneratorUnitTestSupervised
   ExtensionInfoGeneratorUnitTestSupervised() = default;
   ~ExtensionInfoGeneratorUnitTestSupervised() override = default;
 
-  SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
+  SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate() {
+    return supervised_user_extensions_delegate_.get();
   }
 
   // ExtensionInfoGeneratorUnitTest:
@@ -978,11 +969,22 @@ class ExtensionInfoGeneratorUnitTestSupervised
     // Set up custodians (parents) for the child.
     supervised_user_test_util::AddCustodians(profile());
 
-    GetSupervisedUserService()->Init();
     // Set the pref to allow the child to request extension install.
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+
+    supervised_user_extensions_delegate_ =
+        std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
   }
+
+  void TearDown() override {
+    supervised_user_extensions_delegate_.reset();
+    ExtensionInfoGeneratorUnitTest::TearDown();
+  }
+
+ private:
+  std::unique_ptr<SupervisedUserExtensionsDelegate>
+      supervised_user_extensions_delegate_;
 };
 
 // Tests that when an extension is disabled pending permission updates, and the
@@ -1021,7 +1023,7 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
       extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
 
   // Simulate parent approval for the extension installation.
-  GetSupervisedUserService()->AddExtensionApproval(*extension);
+  GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
   // The extension should be enabled now.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
 

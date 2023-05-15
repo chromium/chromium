@@ -1887,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   // Send a braille dots key event and make sure that the braille IME is
   // activated.
   KeyEvent event;
-  event.command = extensions::api::braille_display_private::KEY_COMMAND_DOTS;
+  event.command = extensions::api::braille_display_private::KeyCommand::kDots;
   event.braille_dots = 0;
   braille_controller_.GetObserver()->OnBrailleKeyEvent(event);
   EXPECT_TRUE(IsBrailleImeCurrent());

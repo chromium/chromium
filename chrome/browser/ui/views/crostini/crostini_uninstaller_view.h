@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -68,11 +69,11 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   void RecordUninstallResultHistogram(UninstallResult result);
 
   State state_ = State::PROMPT;
-  views::Label* message_label_ = nullptr;
-  views::ProgressBar* progress_bar_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
 
   bool has_logged_result_ = false;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedClosureRunner destructor_callback_for_testing_;
 

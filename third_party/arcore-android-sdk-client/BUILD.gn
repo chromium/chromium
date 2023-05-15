@@ -8,12 +8,27 @@ android_aar_prebuilt("com_google_ar_core_java") {
   aar_path = "core-1.32.0.aar"
   info_path = "core-1.32.0.info"
   extract_native_libraries = true
-
-  # Don't merge the manifest by default so we can exclude it for targets like
-  # WebView. Note that you can still include the manifest changes by adding a
-  # dependency on "com_google_ar_core_java__ignored_manifest".
   ignore_manifest = true
-
   ignore_proguard_configs = true
   proguard_configs = [ "proguard.txt" ]
+
+  # Listing AndroidManifest_basesplit.xml twice is fine since the build system
+  # will ensure it's merged only once.
+  mergeable_android_manifests = [
+    "AndroidManifest_basesplit.xml",
+    "AndroidManifest_install_activity.xml",
+  ]
+}
+
+# <meta-data> that needs to go in the base module's AndroidManifest.xml.
+java_group("arcore_base_manifest_java") {
+  mergeable_android_manifests = [ "AndroidManifest_basesplit.xml" ]
+}
+
+# WebLayer uses this to remove ARCore tags, since it is the embedder that
+# requires them and not the webview apk.
+java_group("arcore_remove_manifest_java") {
+  # The _0 prefix is needed to have this manifest have a higher priority than
+  # the others.
+  mergeable_android_manifests = [ "AndroidManifest_0_remove.xml" ]
 }

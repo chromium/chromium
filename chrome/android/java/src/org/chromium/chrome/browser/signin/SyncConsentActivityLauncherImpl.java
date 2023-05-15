@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -96,6 +97,8 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
             return true;
         }
         if (signinManager.isSigninDisabledByPolicy()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Signin.SyncDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         return false;

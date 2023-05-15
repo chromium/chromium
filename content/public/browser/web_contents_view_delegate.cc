@@ -52,7 +52,7 @@ bool WebContentsViewDelegate::TakeFocus(bool reverse) {
   return false;
 }
 
-void* WebContentsViewDelegate::CreateRenderWidgetHostViewDelegate(
+void* WebContentsViewDelegate::GetDelegateForHost(
     RenderWidgetHost* render_widget_host,
     bool is_popup) {
   return nullptr;

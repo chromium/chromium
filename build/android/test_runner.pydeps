@@ -134,6 +134,7 @@
 ../gn_helpers.py
 ../print_python_deps.py
 ../skia_gold_common/__init__.py
+../skia_gold_common/output_managerless_skia_gold_session.py
 ../skia_gold_common/skia_gold_properties.py
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
@@ -209,6 +210,7 @@ pylib/results/presentation/test_results_presentation.py
 pylib/results/report_results.py
 pylib/symbols/__init__.py
 pylib/symbols/deobfuscator.py
+pylib/symbols/expensive_line_transformer.py
 pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
 pylib/utils/chrome_proxy_utils.py

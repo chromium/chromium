@@ -9,12 +9,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/data_pack.h"
-#include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/resource/scoped_file_writer.h"
@@ -31,7 +31,8 @@ namespace ui {
 // in a fallback file.
 //
 // The mapping file is recreated as necessary.
-class UI_DATA_PACK_EXPORT DataPackWithResourceSharing : public ResourceHandle {
+class COMPONENT_EXPORT(UI_DATA_PACK) DataPackWithResourceSharing
+    : public ResourceHandle {
  public:
   explicit DataPackWithResourceSharing(
       ResourceScaleFactor resource_scale_factor);

@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -494,6 +494,8 @@ CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
                                 UnitlessQuirk,
                                 CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeScrollStart(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeScrollStartTarget(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
@@ -548,6 +550,8 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange&,
                                              const CSSParserContext&);
 AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange&,
                                               const CSSParserContext&);
+
+CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange&, const CSSParserContext&);
 
 // When parsing a counter style name, it should be ASCII lowercased if it's an
 // ASCII case-insensitive match of any predefined counter style name.

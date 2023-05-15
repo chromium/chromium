@@ -186,10 +186,14 @@ export class MetadataBoxController {
 
       this.metadataModel_.get([entry], [sniffMimeType].concat(media))
           .then(items => {
-            this.metadataBox_.mediaMimeType = items[0][sniffMimeType] || '';
+            let mimeType = items[0][sniffMimeType] || '';
+            const newType = FileType.getType(entry, mimeType);
+            if (newType.encrypted) {
+              mimeType =
+                  util.strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
+            }
+            this.metadataBox_.mediaMimeType = mimeType;
             this.metadataBox_.metadataRendered('mime');
-          })
-          .then(() => {
             this.metadataBox_.fileLocation = this.getFileLocationLabel_(entry);
             this.metadataBox_.metadataRendered('location');
           });

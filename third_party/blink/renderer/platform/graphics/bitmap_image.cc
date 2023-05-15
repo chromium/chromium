@@ -138,6 +138,14 @@ PaintImage BitmapImage::CreatePaintImage() {
           .set_completion_state(completion_state)
           .set_reset_animation_sequence_id(reset_animation_sequence_id_);
 
+  sk_sp<PaintImageGenerator> gainmap_generator;
+  SkGainmapInfo gainmap_info;
+  if (decoder_->CreateGainmapGenerator(gainmap_generator, gainmap_info)) {
+    DCHECK(gainmap_generator);
+    builder = builder.set_gainmap_paint_image_generator(
+        std::move(gainmap_generator), gainmap_info);
+  }
+
   return builder.TakePaintImage();
 }
 

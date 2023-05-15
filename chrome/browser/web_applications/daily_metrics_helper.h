@@ -13,14 +13,12 @@
 class PrefRegistrySimple;
 class Profile;
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace web_app {
 
 struct DailyInteraction {
   // Required.
+  // TODO(crbug.com/1442799): Use manifest_identity_url here instead of
+  // start_url.
   GURL start_url;
   // Implied bool used = true;
   bool installed = false;
@@ -47,14 +45,11 @@ struct DailyInteraction {
 // Emits UKM metrics for existing records if the date has changed, removing them
 // from storage. Then stores the given record, updating any stored values for
 // that start_url (ie. replacing or summing as appropriate).
-void FlushOldRecordsAndUpdate(DailyInteraction& record,
-                              Profile* profile,
-                              syncer::SyncService* sync_service);
+void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile);
 
 // Emits UKM metrics for all existing records. Note that this is asynchronous
 // unless |SkipOriginCheckForTesting| has been called.
-void FlushAllRecordsForTesting(Profile* profile,
-                               syncer::SyncService* sync_service);
+void FlushAllRecordsForTesting(Profile* profile);
 
 // Skip the origin check, which is async and requires a history service.
 void SkipOriginCheckForTesting();

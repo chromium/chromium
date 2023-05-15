@@ -23,6 +23,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "Networking";
     case TaskType::kNetworkingUnfreezable:
       return "NetworkingUnfreezable";
+    case TaskType::kNetworkingUnfreezableImageLoading:
+      return "NetworkingUnfreezableImageLoading";
     case TaskType::kNetworkingControl:
       return "NetworkingControl";
     case TaskType::kLowPriorityScriptExecution:

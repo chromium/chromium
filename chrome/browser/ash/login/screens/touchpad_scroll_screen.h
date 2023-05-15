@@ -53,12 +53,13 @@ class TouchpadScrollScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+  ScreenSummary GetScreenSummary() override;
 
   // Called when the user changes the toggle button.
   void OnScrollUpdate(bool is_reverse_scroll);
 
   // Get user synced preferences for touchpad scroll direction.
-  bool GetUserSyncedPreferences();
+  bool GetNaturalScrollPrefValue();
 
   bool ignore_pref_sync_for_testing_ = false;
 

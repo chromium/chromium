@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 class HistogramSamples;
 }
@@ -41,7 +43,7 @@ class EnumHistogramChecker {
 
   // When not NULL, expected values are compared with actual values
   // minus base.
-  base::HistogramSamples* base_;
+  raw_ptr<base::HistogramSamples, ExperimentalAsh> base_;
 };
 
 }  // namespace ash

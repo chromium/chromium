@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -121,7 +122,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
  private:
   GURL gurl_;
   std::u16string title_;
-  content::WebUI* webui_ = nullptr;
+  raw_ptr<content::WebUI, ExperimentalAsh> webui_ = nullptr;
   ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = nullptr;
 };

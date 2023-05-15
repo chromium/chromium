@@ -754,7 +754,7 @@ bool MockDrmDevice::CreateDumbBuffer(const SkImageInfo& info,
   *stride = info.minRowBytes();
   void* pixels = new char[info.computeByteSize(*stride)];
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  buffers_.push_back(SkSurface::MakeRasterDirectReleaseProc(
+  buffers_.push_back(SkSurfaces::WrapPixels(
       info, pixels, *stride,
       [](void* pixels, void* context) { delete[] static_cast<char*>(pixels); },
       /*context=*/nullptr, &props));

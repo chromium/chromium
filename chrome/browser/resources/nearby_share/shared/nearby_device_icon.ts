@@ -16,8 +16,8 @@ import './nearby_shared_icons.html.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ShareTarget} from './mojo/nearby_share.mojom-webui.js';
 import {getTemplate} from './nearby_device_icon.html.js';
+import {ShareTarget} from './nearby_share.mojom-webui.js';
 
 export class NearbyDeviceIconElement extends PolymerElement {
   static get is() {

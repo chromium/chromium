@@ -8,20 +8,36 @@
 #include <base/posix/eintr_wrapper.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libudev.h>
 #include <linux/usb/video.h>
 #include <linux/uvcvideo.h>
 #include <linux/videodev2.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
-#include <sys/select.h>
 #include <cstdint>
 #include <utility>
 
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
-#include "xu_camera_service.h"
+#include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 namespace ash::cfm {
 
 namespace {
+static constexpr int kGuidSize = 16;
+static constexpr int kSubtypeOffset = 2;
+static constexpr int kVideoClass = 14;
+static constexpr int kVideoSubclass = 1;
+static constexpr int kXUSubtype = 6;
+
+typedef struct {
+  uint8_t klength;
+  uint8_t kType;
+  uint8_t kSubtype;
+  uint8_t kUnitId;
+  uint8_t kGuid[16];
+} kXuInterface;
 
 class RealDelegate : public XuCameraService::Delegate {
  public:
@@ -117,8 +133,8 @@ bool XuCameraService::ServiceRequestReceived(
   return true;
 }
 
-void XuCameraService::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe) {
+void XuCameraService::OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
+                                    const absl::optional<std::string>&) {
   receivers_.Add(
       this, mojo::PendingReceiver<mojom::XuCamera>(std::move(receiver_pipe)));
 }
@@ -131,14 +147,97 @@ void XuCameraService::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-// mojom:XuCamera implementation boilerplate
 void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
                                 const std::vector<uint8_t>& guid,
                                 GetUnitIdCallback callback) {
-  VLOG(4) << __func__;
-  NOTIMPLEMENTED();
-  guid_ = guid;
+  // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
+  auto unitId = guid_unitid_map_.find(guid);
+  if (unitId != guid_unitid_map_.end()) {
+    std::move(callback).Run(0, unitId->second);
+    return;
+  }
+
+  content::GetDeviceService().BindUsbDeviceManager(
+      usb_manager_.BindNewPipeAndPassReceiver());
+  device::mojom::UsbEnumerationOptionsPtr options =
+      device::mojom::UsbEnumerationOptions::New();
+  usb_manager_->GetDevices(
+      std::move(options),
+      base::BindOnce(&XuCameraService::OnGetDevices, weak_factory_.GetWeakPtr(),
+                     guid, std::move(callback)));
+}
+
+void XuCameraService::OnGetDevices(
+    const std::vector<uint8_t>& guid,
+    GetUnitIdCallback callback,
+    std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
+  for (const auto& device_info : devices) {
+    VLOG(4) << __func__ << ": VID:PID " << std::hex
+            << static_cast<int>(device_info->vendor_id) << ":" << std::hex
+            << static_cast<int>(device_info->product_id);
+    for (const auto& config : device_info->configurations) {
+      for (const auto& interface : config->interfaces) {
+        for (const auto& alternate : interface->alternates) {
+          if (alternate->class_code == kVideoClass &&
+              alternate->subclass_code == kVideoSubclass) {
+            /* extra_data.data() is additional raw data in byte form
+             * consisting of an array of interfaces. */
+            uint8_t* data_ptr = alternate->extra_data.data();
+            int end = alternate->extra_data.size();
+            int cur = 0;
+            kXuInterface curXuInterface;
+            while ((cur + kSubtypeOffset) < end) {
+              if (static_cast<int>(data_ptr[cur + kSubtypeOffset]) ==
+                      kXUSubtype &&
+                  (cur + (int)sizeof(curXuInterface)) < end) {
+                std::memcpy(&curXuInterface, &data_ptr[cur],
+                            sizeof(curXuInterface));
+                guid_unitid_map_.insert({ProcessGuid(curXuInterface.kGuid),
+                                         curXuInterface.kUnitId});
+              }
+              cur += static_cast<int>(data_ptr[cur]);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  auto unitId = guid_unitid_map_.find(guid);
+  if (unitId != guid_unitid_map_.end()) {
+    std::move(callback).Run(0, unitId->second);
+    return;
+  }
+
+  VLOG(4) << __func__ << ": UnitId not found";
   std::move(callback).Run(ENOSYS, '0');
+}
+
+std::vector<uint8_t> XuCameraService::ProcessGuid(
+    uint8_t unprocessed_guid[kGuidSize]) {
+  std::vector<uint8_t> guid(kGuidSize);
+  /* GUID consist of 5 combined values
+   * [0-3], [4-5], [6-7]. [8-9]. [10-15]
+   * The first 3 values are stored in little Endian and need to be
+   * converted to big endian form the correct GUID
+   */
+  guid[0] = unprocessed_guid[3];
+  guid[1] = unprocessed_guid[2];
+  guid[2] = unprocessed_guid[1];
+  guid[3] = unprocessed_guid[0];
+  guid[4] = unprocessed_guid[5];
+  guid[5] = unprocessed_guid[4];
+  guid[6] = unprocessed_guid[7];
+  guid[7] = unprocessed_guid[6];
+  guid[8] = unprocessed_guid[8];
+  guid[9] = unprocessed_guid[9];
+  guid[10] = unprocessed_guid[10];
+  guid[11] = unprocessed_guid[11];
+  guid[12] = unprocessed_guid[12];
+  guid[13] = unprocessed_guid[13];
+  guid[14] = unprocessed_guid[14];
+  guid[15] = unprocessed_guid[15];
+  return guid;
 }
 
 void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,

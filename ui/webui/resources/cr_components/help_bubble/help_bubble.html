@@ -1,10 +1,25 @@
 <style include="cr-hidden-style">
   :host {
-    border-radius: 8px;
-    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
+    /* Variable declarations. Some of these will change for the 2023 refresh. */
+    --help-bubble-border-radius: 8px;
+    --help-bubble-close-button-icon-size: 16px;
+    --help-bubble-close-button-size: 24px;
+    --help-bubble-element-spacing: 8px;
+    --help-bubble-padding: 16px 20px;
+
+    border-radius: var(--help-bubble-border-radius);
+    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15),
+                0 2px 3px rgba(60, 64, 67, 0.3);
     box-sizing: border-box;
     position: absolute;
     z-index: 1;
+  }
+
+  /* Values that are different for the 2023 refresh go here. */
+  :host-context([chrome-refresh-2023]):host {
+    --help-bubble-border-radius: 12px;
+    --help-bubble-close-button-size: 20px;
+    --help-bubble-padding: 20px;
   }
 
   #arrow {
@@ -14,14 +29,16 @@
     /* approx. */
     --help-bubble-arrow-radius: calc(var(--help-bubble-arrow-diameter) / 2);
     --help-bubble-arrow-edge-offset: 22px;
-    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-edge-offset) + var(--help-bubble-arrow-radius));
+    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-edge-offset) +
+                                     var(--help-bubble-arrow-radius));
     --help-bubble-arrow-border-radius: 2px;
     position: absolute;
   }
 
-  /* #inner-arrow is rotated and positioned in a container to simplify positioning */
+  /* #inner-arrow is rotated and positioned in a container to simplify
+   * positioning */
   #inner-arrow {
-    background-color: var(--help-bubble-background);
+    background-color: var(--color-feature-promo-bubble-background);
     height: var(--help-bubble-arrow-size);
     left: calc(0px - var(--help-bubble-arrow-size-half));
     position: absolute;
@@ -99,8 +116,8 @@
 
   #progress div {
     --help-bubble-progress-size: 8px;
-    background-color: var(--help-bubble-text-color);
-    border: 1px solid var(--help-bubble-text-color);
+    background-color: var(--color-feature-promo-bubble-foreground);
+    border: 1px solid var(--color-feature-promo-bubble-foreground);
     border-radius: 50%;
     display: inline-block;
     height: var(--help-bubble-progress-size);
@@ -110,7 +127,7 @@
   }
 
   #progress .total-progress {
-    background-color: var(--help-bubble-background);
+    background-color: var(--color-feature-promo-bubble-background);
   }
 
   #topBody,
@@ -129,25 +146,20 @@
     font-size: 18px;
     font-style: normal;
     font-weight: 500;
-    line-height: 22px;
+    line-height: 24px;
     margin: 0;
   }
 
-  /* Note: help bubbles have the same color treatment in both light and dark
-   * themes, which is why the values below do not change based on theme
-   * preference. */
   .help-bubble {
-    --help-bubble-background: var(--google-blue-700);
-    --help-bubble-element-spacing: 8px;
-    --help-bubble-text-color: var(--google-grey-200);
-    background-color: var(--help-bubble-background);
-    border-radius: 8px;
+    --cr-focus-outline-color: var(--color-feature-promo-bubble-foreground);
+    background-color: var(--color-feature-promo-bubble-background);
+    border-radius: var(--help-bubble-border-radius);
     box-sizing: border-box;
-    color: var(--help-bubble-text-color);
+    color: var(--color-feature-promo-bubble-foreground);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: var(--help-bubble-padding);
     position: relative;
     width: 340px;
   }
@@ -163,13 +175,52 @@
     margin-inline-start: 32px;
   }
 
+  /*
+   * The inkdrop color we get from the Chrome mixer doesn't have the correct
+   * alpha (alpha is generally applied by the control) so for now, compute the
+   * hover colors directly.
+   *
+   * The discrepancy in alpha matches the difference between light-on-dark and
+   * dark-on-light used in the Chrome color mixer.
+   */
+  cr-icon-button,
+  cr-button {
+    --help-bubble-button-foreground: var(--color-feature-promo-bubble-foreground);
+    --help-bubble-button-background: var(--color-feature-promo-bubble-background);
+    --help-bubble-button-hover-alpha: 10%;
+  }
+
+  cr-button.default-button {
+    --help-bubble-button-foreground: var(--color-feature-promo-bubble-default-button-foreground);
+    --help-bubble-button-background: var(--color-feature-promo-bubble-default-button-background);
+    --help-bubble-button-hover-alpha: 6%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    cr-icon-button,
+    cr-button {
+      --help-bubble-button-hover-alpha: 6%;
+    }
+
+    cr-button.default-button {
+      --help-bubble-button-hover-alpha: 10%;
+    }
+  }
+
+  cr-icon-button:hover,
+  #buttons cr-button:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--help-bubble-button-foreground)
+            var(--help-bubble-button-hover-alpha),
+        var(--help-bubble-button-background));
+  }
+
   cr-icon-button {
-    --cr-icon-button-fill-color: var(--help-bubble-text-color);
-    --cr-icon-button-hover-background-color:
-      rgba(var(--google-blue-300-rgb), .3);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    --cr-icon-button-stroke-color: var(--help-bubble-text-color);
+    --cr-icon-button-fill-color: var(--help-bubble-button-foreground);
+    --cr-icon-button-icon-size: var(--help-bubble-close-button-icon-size);
+    --cr-icon-button-size: var(--help-bubble-close-button-size);
+    --cr-icon-button-stroke-color: var(--help-bubble-button-foreground);
     box-sizing: border-box;
     display: block;
     flex: none;
@@ -181,54 +232,44 @@
     width: var(--cr-icon-button-size);
   }
 
-  cr-icon-button:focus {
-    border: 2px solid var(--help-bubble-text-color);
-  }
-
   #bodyIcon {
-    --body-icon-button-size: 24px;
-    --iron-icon-height: 18px;
-    --iron-icon-width: 18px;
-    background-color: var(--help-bubble-text-color);
+    --help-bubble-body-icon-image-size: 18px;
+    --help-bubble-body-icon-size: 24px;
+    --iron-icon-height: var(--help-bubble-body-icon-image-size);
+    --iron-icon-width: var(--help-bubble-body-icon-image-size);
+    background-color: var(--color-feature-promo-bubble-foreground);
     border-radius: 50%;
     box-sizing: border-box;
-    color: var(--help-bubble-background);
-    height: var(--body-icon-button-size);
+    color: var(--color-feature-promo-bubble-background);
+    height: var(--help-bubble-body-icon-size);
     margin-inline-end: var(--help-bubble-element-spacing);
-    padding: 3px;
+    padding: calc((var(--help-bubble-body-icon-size) -
+                   var(--help-bubble-body-icon-image-size)) / 2);
     text-align: center;
-    width: var(--body-icon-button-size);
+    width: var(--help-bubble-body-icon-size);
   }
 
   #buttons {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    margin-top: 24px;
+    margin-top: 16px;
   }
 
-  cr-button {
-    --text-color: var(--help-bubble-text-color);
-    border-color: var(--help-bubble-text-color);
+  #buttons cr-button {
+    --border-color: var(--color-feature-promo-bubble-foreground);
+    --focus-shadow-color: var(--color-feature-promo-bubble-foreground);
+    --text-color: var(--help-bubble-button-foreground);
+    background-color: var(--help-bubble-button-background);
   }
 
-  cr-button:not(:first-child) {
+  #buttons cr-button:focus {
+    border: 2px solid var(--color-feature-promo-bubble-background);
+    padding: 7px 15px;
+  }
+
+  #buttons cr-button:not(:first-child) {
     margin-inline-start: var(--help-bubble-element-spacing);
-  }
-
-  cr-button:focus {
-    border-color: var(--help-bubble-background);
-    box-shadow: 0 0 0 2px var(--help-bubble-text-color);
-  }
-
-  cr-button.default-button {
-    --text-color: var(--help-bubble-background);
-    background-color: var(--help-bubble-text-color);
-  }
-
-  cr-button.default-button:focus {
-    border: 2px solid var(--help-bubble-background);
-    box-shadow: 0 0 0 1px var(--help-bubble-text-color);
   }
 </style>
 
@@ -256,7 +297,6 @@
       [[bodyText]]
     </p>
     <cr-icon-button id="close" iron-icon="cr:close"
-        hidden$="[[!shouldShowCloseButton_(buttons, forceCloseButton)]]"
         aria-label$="[[closeButtonAltText]]" on-click="dismiss_"
         tabindex$="[[closeButtonTabIndex]]">
     </cr-icon-button>

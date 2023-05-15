@@ -9,6 +9,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/testing_pref_service.h"
@@ -86,6 +87,11 @@ TEST_F(AwMetricsServiceClientSampleRateTest, TestShouldSampleByClientUUID) {
     AwMetricsServiceTestClientForSampling::RegisterMetricsPrefs(
         prefs->registry());
     prefs->SetString(metrics::prefs::kMetricsClientID, test.client_uuid);
+    // Needed because RegisterMetricsProvidersAndInitState() checks for this.
+    // TODO(crbug/1293026): Move this to ctor/SetUp. This is currently needed
+    // because |client| will own the provider and destroy it when it goes out of
+    // scope, so need to re-create the provider.
+    metrics::SubprocessMetricsProvider::CreateInstance();
     auto client = std::make_unique<AwMetricsServiceTestClientForSampling>(
         std::make_unique<AwMetricsServiceClientSampleRateTestDelegate>());
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);

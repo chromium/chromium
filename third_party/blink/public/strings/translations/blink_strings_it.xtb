@@ -74,7 +74,7 @@
 <translation id="4975562563186953947">Elementi selezionati: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Riattiva audio</translation>
 <translation id="49969490063480558">Inserisci una parte dopo "<ph name="ATSIGN" />". Il valore "<ph name="INVALIDADDRESS" />" è incompleto.</translation>
-<translation id="5090250355906949916">dispositivo di scorrimento durata video</translation>
+<translation id="5090250355906949916">cursore durata video</translation>
 <translation id="509897012892853729">Canale blu</translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5164977714490026579">Il valore deve essere superiore o uguale a <ph name="MINIMUM" />.</translation>
@@ -104,14 +104,14 @@
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5966707198760109579">Settimana</translation>
 <translation id="5985507339671257014">0,5</translation>
-<translation id="6011459053400940133">dispositivo di scorrimento del volume</translation>
+<translation id="6011459053400940133">Cursore del volume</translation>
 <translation id="6015796118275082299">Anno</translation>
 <translation id="6165053282446038410">espanso, <ph name="COUNT" /> opzioni di completamento automatico disponibili.</translation>
 <translation id="6212595056017402527">pagina attuale</translation>
 <translation id="6281588256137006900">Luminosità</translation>
 <translation id="6310801910862476708">Esci da Picture in picture</translation>
 <translation id="6398862346408813489">Mostra il riquadro di selezione del mese</translation>
-<translation id="6404546809543547843">dispositivo di scorrimento durata audio</translation>
+<translation id="6404546809543547843">cursore durata audio</translation>
 <translation id="6443871981718447451">mostra menu sottotitoli codificati</translation>
 <translation id="6550675742724504774">Opzioni</translation>
 <translation id="6572309429103589720">Grammatica non valida</translation>
@@ -124,7 +124,7 @@
 <translation id="6719914554879143100">Pulsante di opzione selezionato. Nel gruppo, l'opzione <ph name="INDEX" /> di <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6820355525329141109">Impossibile caricare il plug-in</translation>
-<translation id="6831465880655513317">Selettore colori con dispositivo di scorrimento bidimensionale per selezionare saturazione e luminosità</translation>
+<translation id="6831465880655513317">Selettore colori con cursore bidimensionale per selezionare saturazione e luminosità</translation>
 <translation id="6843725295806269523">disattiva audio</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">scarica contenuti multimediali</translation>
@@ -144,7 +144,7 @@
 <translation id="775297008183122718">Valore non valido</translation>
 <translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">pausa</translation>
-<translation id="7852167693871241274">Dispositivo di scorrimento tonalità</translation>
+<translation id="7852167693871241274">Cursore tonalità</translation>
 <translation id="7888071071722539607">Aggiungi un simbolo "<ph name="ATSIGN" />" nell'indirizzo email. In "<ph name="INVALIDADDRESS" />" manca un simbolo "<ph name="ATSIGN" />".</translation>
 <translation id="795667975304826397">Nessun file selezionato</translation>
 <translation id="7962328325860248200">Elemento <ph name="ACCNAME" /> non selezionato</translation>

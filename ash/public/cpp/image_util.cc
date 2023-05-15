@@ -17,6 +17,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace ash {
 namespace image_util {
@@ -81,6 +82,31 @@ class EmptyImageSkiaSource : public gfx::CanvasImageSource {
 
 gfx::ImageSkia CreateEmptyImage(const gfx::Size& size) {
   return gfx::ImageSkia(std::make_unique<EmptyImageSkiaSource>(size), size);
+}
+
+gfx::ImageSkia ResizeAndCropImage(const gfx::ImageSkia& image_skia,
+                                  const gfx::Size& new_size) {
+  // Calculate the scale factors necessary to make each axis match its
+  // respective part of `new_size`.
+  const float scale_x =
+      new_size.width() / static_cast<float>(image_skia.width());
+  const float scale_y =
+      new_size.height() / static_cast<float>(image_skia.height());
+
+  // Whichever scale factor is larger is what we want to use, so that we are
+  // cropping excess instead of leaving empty space.
+  const float scale = std::max(scale_x, scale_y);
+
+  // Scale the image to the size that this scale factor indicates.
+  auto resized_image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+      image_skia, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+      gfx::ScaleToCeiledSize(image_skia.size(), scale));
+
+  // Crop any excess outside the bounds.
+  gfx::Rect cropped_bounds(resized_image_skia.size());
+  cropped_bounds.ClampToCenteredSize(new_size);
+  return gfx::ImageSkiaOperations::ExtractSubset(resized_image_skia,
+                                                 cropped_bounds);
 }
 
 void DecodeImageFile(DecodeImageCallback callback,

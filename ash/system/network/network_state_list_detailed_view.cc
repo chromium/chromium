@@ -16,6 +16,7 @@
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -178,7 +179,7 @@ class NetworkStateListDetailedView::InfoBubble
   }
 
   // Not owned.
-  NetworkStateListDetailedView* detailed_view_;
+  raw_ptr<NetworkStateListDetailedView, ExperimentalAsh> detailed_view_;
 };
 
 //------------------------------------------------------------------------------

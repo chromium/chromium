@@ -93,13 +93,87 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction"
-    enum="AccountConsistencyPromoAction" expires_after="2023-08-20">
+    enum="AccountConsistencyPromoAction" expires_after="2023-10-22">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the action taken by user after receiving the header
     from Gaia in the web sign-in flow. Currently only recorded on Android.
   </summary>
+</histogram>
+
+<histogram name="Signin.AccountConsistencyPromoAction.{PromoEvent}"
+    enum="SigninAccessPoint" expires_after="2023-10-22">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the action taken by user after receiving the header from Gaia in the
+    web sign-in flow. This histogram is another version of
+    |Signin.AccountConsistencyPromoAction|, where the original one logs the
+    promo events directly, and this histogram creates a variant for every promo
+    event, and logs its access points instead.
+  </summary>
+  <token key="PromoEvent">
+    <variant name="AddAccountCompleted"
+        summary="User has completed the account addition flow triggered from
+                 the bottom sheet."/>
+    <variant name="AddAccountCompletedWithNoDeviceAccount"
+        summary="User has added an account from a state without any on-device
+                 account."/>
+    <variant name="AddAccountStarted"
+        summary="User has tapped |Add account to device| from expanded
+                 account list."/>
+    <variant name="AddAccountStartedWithNoDeviceAccount"
+        summary="User has tapped |Sign In…| from the no-default-account
+                 promo, starting an add-account flow."/>
+    <variant name="AuthErrorShown"
+        summary="The auth error screen was shown to the user."/>
+    <variant name="DismissedBack"
+        summary="User has dismissed the promo by tapping back button."/>
+    <variant name="DismissedButton"
+        summary="User has dismissed the promo by tapping on the dismissal
+                 button in the bottom sheet."/>
+    <variant name="DismissedOther"
+        summary="User has dismissed the promo by other means."/>
+    <variant name="DismissedScrim"
+        summary="User has dismissed the promo by tapping on the scrim above
+                 the bottom sheet."/>
+    <variant name="DismissedSwipeDown"
+        summary="User has dismissed the promo by swiping down the bottom
+                 sheet."/>
+    <variant name="GenericErrorShown"
+        summary="The generic error screen was shown to the user."/>
+    <variant name="Shown" summary="The promo was shown to user."/>
+    <variant name="ShownWithNoDeviceAccount"
+        summary="The promo was shown to a user without an existing on-device
+                 account."/>
+    <variant name="SignedInWithAddedAccount"
+        summary="User has added an account and signed in with this account."/>
+    <variant name="SignedInWithDefaultAccount"
+        summary="User has selected the default account and signed in with it."/>
+    <variant name="SignedInWithNoDeviceAccount"
+        summary="User has signed in to Chrome, from a state without any
+                 on-device account."/>
+    <variant name="SignedInWithNonDefaultAccount"
+        summary="User has selected one of the non default accounts and signed
+                 in with it."/>
+    <variant name="SignInFailed"
+        summary="AuthenticationFlow failed to sign-in."/>
+    <variant name="SuppressedAlreadySignedIn"
+        summary="The web sign-in is not shown because the user is already
+                 signed in."/>
+    <variant name="SuppressedConsecutiveDismissals"
+        summary="The bottom sheet was suppressed as the user hit consecutive
+                 active dismissal limit."/>
+    <variant name="SuppressedNoAccounts"
+        summary="The promo was suppressed as there were no accounts on the
+                 device."/>
+    <variant name="SuppressedSigninNotAllowed"
+        summary="Promo is not shown due to sign-in being disallowed either by
+                 an enterprise policy or by |Allow Chrome sign-in| toggle."/>
+    <variant name="TimeoutErrorShown"
+        summary="The timeout error was shown to the user."/>
+  </token>
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
@@ -131,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountReconcilorState.OnGaiaResponse"
-    enum="SigninAccountReconcilorState" expires_after="2023-08-20">
+    enum="SigninAccountReconcilorState" expires_after="2023-10-22">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -157,7 +231,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountTracker.GaiaIdMigrationState"
-    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2023-08-20">
+    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2023-10-22">
   <owner>msarda@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -171,6 +245,20 @@ prefs when the profile is loaded.  -->
     removed).
 
     This is recorded on each profile load.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountTracker.IsAccountIdEmpty" enum="BooleanEmpty"
+    expires_after="2023-12-31">
+  <owner>sinhak@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Indicates if the account being tracked by AccountTracker has an empty
+    account id. This is recorded whenever AccountTracker starts tracking a new
+    account.
+
+    This histogram will be used to decide the severity of AccountTracker
+    receiving malformed account ids.
   </summary>
 </histogram>
 
@@ -195,7 +283,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AddAccountState" enum="SigninAndroidAddAccountState"
-    expires_after="2023-08-18">
+    expires_after="2023-10-22">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -226,7 +314,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGetAccountIdsTime" units="ms"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -496,7 +584,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccessTokenFinished" enum="GoogleServiceAuthError"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -512,9 +600,10 @@ prefs when the profile is loaded.  -->
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records whether sync was turned on/consented on a profile at least once.
-    This histogram is recorded upon profile load, and only for the case where
-    the user is fully signed out.
+    Records whether sync was turned on/consented on a profile at least once
+    since the last time all profile data was wiped out (e.g. the user chose to
+    clear data upon signout). This histogram is recorded upon profile load, and
+    only for the case where the user is fully signed out.
   </summary>
 </histogram>
 
@@ -524,10 +613,11 @@ prefs when the profile is loaded.  -->
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records whether sync was turned on/consented on a profile at least once.
-    This histogram is recorded upon profile load, and only if sync is off
-    (either the user is fully signed out, or the user is signed in without
-    turning sync on).
+    Records whether sync was turned on/consented on a profile at least once
+    since the last time all profile data was wiped out (e.g. the user chose to
+    clear data upon signout). This histogram is recorded upon profile load, and
+    only if sync is off (either the user is fully signed out, or the user is
+    signed in without turning sync on).
   </summary>
 </histogram>
 
@@ -647,7 +737,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSignedInState"
-    enum="IOSDeviceRestoreSignedinState" expires_after="2023-08-13">
+    enum="IOSDeviceRestoreSignedinState" expires_after="2023-10-15">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1154,6 +1244,17 @@ OAuth Multilogin call. -->
   <summary>Logs the original access point of each completed sign in.</summary>
 </histogram>
 
+<histogram name="Signin.SigninDisabledNotificationShown"
+    enum="SigninAccessPoint" expires_after="2023-09-22">
+  <owner>birnie@google.com</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the signin access point which was used when the
+    signin disabled notification was shown. This is on Android only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninReason" enum="SigninReason"
     expires_after="2023-10-08">
   <owner>msarda@chromium.org</owner>
@@ -1304,6 +1405,17 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncDisabledNotificationShown" enum="SigninAccessPoint"
+    expires_after="2023-09-22">
+  <owner>birnie@google.com</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the sync access point which was used when the sync
+    disabled notification was shown. This is on Android only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncErrorMessage{SyncErrorReason}"
     enum="SyncErrorPromptUIAction" expires_after="2023-09-12">
   <owner>triploblastic@chromium.org</owner>
@@ -1433,7 +1545,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthResult" enum="SigninReauthResult"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 

@@ -49,6 +49,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/wm/core/window_properties.h"
 #include "url/gurl.h"
 
 namespace {
@@ -317,10 +318,11 @@ desks_storage::DeskModel* ChromeSavedDeskDelegate::GetDeskModel() {
   return DesksClient::Get()->GetDeskModel();
 }
 
-bool ChromeSavedDeskDelegate::IsIncognitoWindow(aura::Window* window) const {
+bool ChromeSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  return browser_view && browser_view->GetIncognito();
+  return !(browser_view && browser_view->GetIncognito()) &&
+         window->GetProperty(wm::kPersistableKey);
 }
 
 absl::optional<gfx::ImageSkia>
@@ -420,7 +422,7 @@ bool ChromeSavedDeskDelegate::IsWindowSupportedForSavedDesk(
   }
 
   // Exclude incognito browser window.
-  return !IsIncognitoWindow(window);
+  return IsWindowPersistable(window);
 }
 
 std::string ChromeSavedDeskDelegate::GetAppShortName(
@@ -445,7 +447,8 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     return;
   }
 
-  app_launch_info->tab_group_infos = state->groups;
+  app_launch_info->tab_group_infos =
+      state->groups.value_or(std::vector<tab_groups::TabGroupInfo>());
   app_launch_info->urls = state->urls;
   app_launch_info->active_tab_index = state->active_index;
   app_launch_info->first_non_pinned_tab_index = state->first_non_pinned_index;

@@ -23,6 +23,8 @@ source_set("test_support") {
     "cros_hotspot_config_test_helper.h",
     "cros_hotspot_config_test_observer.cc",
     "cros_hotspot_config_test_observer.h",
+    "fake_cros_hotspot_config.cc",
+    "fake_cros_hotspot_config.h",
     "hotspot_enabled_state_test_observer.cc",
     "hotspot_enabled_state_test_observer.h",
   ]

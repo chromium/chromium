@@ -16,6 +16,7 @@
 #include "base/callback_list.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -57,6 +58,7 @@ namespace policy {
 
 class EnterpriseActivityStorage;
 class DeviceStatusCollectorState;
+class ReportingUserTracker;
 
 // TODO(b/216131674): Remove this.
 enum class CrosHealthdCollectionMode { kFull, kBattery };
@@ -148,6 +150,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Pool. Caller is responsible for passing already initialized |pref_service|.
   DeviceStatusCollector(
       PrefService* pref_service,
+      ReportingUserTracker* reporting_user_tracker,
       ash::system::StatisticsProvider* provider,
       ManagedSessionService* managed_session_service,
       const VolumeInfoFetcher& volume_info_fetcher,
@@ -165,6 +168,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Blocking Pool. Caller is responsible for passing already initialized
   // |pref_service|.
   DeviceStatusCollector(PrefService* pref_service,
+                        ReportingUserTracker* reporting_user_tracker,
                         ash::system::StatisticsProvider* provider,
                         ManagedSessionService* managed_session_service);
 
@@ -336,7 +340,9 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+
+  const raw_ptr<ReportingUserTracker> reporting_user_tracker_;
 
   // The last time an idle state check was performed.
   base::Time last_idle_check_;
@@ -416,7 +422,7 @@ class DeviceStatusCollector : public StatusCollector,
   PowerStatusCallback power_status_callback_;
 
   // Power manager client. Used to listen to power changed events.
-  chromeos::PowerManagerClient* const power_manager_;
+  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ਡੀਵਾਈਸ ਦੀ ਸਟੋਰੇਜ ਘੱਟ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੀ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ। ਹੋਰ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨੀ ਪਵੇਗੀ।</translation>
 <translation id="2036868001356139588">ਟਾਈਮਰ ਦੀ ਮਿਆਦ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ਕਿਰਿਆਸ਼ੀਲ</translation>
-<translation id="2128052519899549250">ਟਾਈਮ ਲੈਪਸ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="2134029355740465625">ਵੀਡੀਓ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2144806332417375165">ਵਿਉਂਤਬੱਧ ਵੀਡੀਓ ਮਾਪਦੰਡ</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">ਦਸਤਾਵੇਜ਼ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
 <translation id="414641094616694804">ਇਹ ਕੈਮਰਾ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨਹੀਂ ਬਦਲ ਸਕਦਾ</translation>
 <translation id="4269820728363426813">ਲਿੰਕ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
-<translation id="4281620174117014503">ਮੱਧਮ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="428234092390943511">ਪੰਨੇ ਦਾ ਲਘੂ-ਚਿੱਤਰ</translation>
 <translation id="4383571725254449280">ਪ੍ਰਿੰਟ ਕਾਰਗੁਜ਼ਾਰੀ ਲੌਗ</translation>
 <translation id="4445542136948522167">ਫ਼ੋਟੋ ਖਿੱਚਣਾ ਬੰਦ ਕਰੋ</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5320594929574852403">ਇਹ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ਟਾਈਮ ਲੈਪਸ</translation>
 <translation id="5662366948659129155">ਪੰਨਾ <ph name="COUNT" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5671277269877808209">ਵਰਗ</translation>
+<translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
 <translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5753488212459587150">ਮਾਹਰ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5759254179196327752">ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ਦਸਤਾਵੇਜ਼ ਦਾ ਹੇਠਲਾ-ਸੱਜਾ ਕੋਨਾ</translation>
+<translation id="7684446460490665873">ਟਾਈਮ ਲੈਪਸ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="7692090236657809299">ਪੈਨ, ਟੇਢਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨ ਦੇ ਵਿਕਲਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7726641833034062494">ਸਧਾਰਨ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="7748344063862150053">ਦਸਤਾਵੇਜ਼ ਦਾ ਉੱਪਰਲਾ-ਸੱਜਾ ਕੋਨਾ</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">ਦਸਤਾਵੇਜ਼ ਦੇ ਸਾਰੇ ਕਿਨਾਰਿਆਂ ਨੂੰ ਫ੍ਰੇਮ ਦੇ ਅੰਦਰ ਹੀ ਰੱਖੋ</translation>
 <translation id="9045155556724273246">10 ਸਕਿੰਟ</translation>
 <translation id="906331135292332864">ਚਿੱਤਰ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਹੈ...</translation>
+<translation id="9161584225258678723">ਟਾਈਮ ਲੈਪਸ</translation>
 <translation id="922762992951083513">ਪ੍ਰਤਿਬਿੰਬ ਚਾਲੂ ਹੈ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 </translationbundle>

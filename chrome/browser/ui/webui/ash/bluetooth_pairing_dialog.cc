@@ -19,6 +19,7 @@
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -27,6 +28,7 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -132,6 +134,7 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 
   AddBluetoothStrings(source);
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
+  source->AddBoolean("isJellyEnabled", ::chromeos::features::IsJellyEnabled());
 
   webui::SetupWebUIDataSource(
       source,
@@ -150,6 +153,12 @@ void BluetoothPairingDialogUI::BindInterface(
     mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
         receiver) {
   GetBluetoothConfigService(std::move(receiver));
+}
+
+void BluetoothPairingDialogUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_change_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothPairingDialogUI)

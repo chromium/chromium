@@ -4,11 +4,12 @@
 
 function testExtensionApi() {
   try {
-    chrome.tabs.getAllInWindow(null, function() {
-      window.domAutomationController.send(
-          !chrome.runtime.lastError);
+    return new Promise(resolve => {
+      chrome.tabs.getAllInWindow(null, function() {
+        resolve(!chrome.runtime.lastError);
+      });
     });
   } catch (e) {
-    window.domAutomationController.send(false);
+    return false;
   }
 }

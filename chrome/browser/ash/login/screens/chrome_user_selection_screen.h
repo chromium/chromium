@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -67,7 +68,8 @@ class ChromeUserSelectionScreen
   void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure);
 
-  policy::DeviceLocalAccountPolicyService* device_local_account_policy_service_;
+  raw_ptr<policy::DeviceLocalAccountPolicyService, ExperimentalAsh>
+      device_local_account_policy_service_;
 
   // Map from public session account IDs to their display names set by policy.
   typedef std::map<AccountId, std::string> DisplayNamesMap;

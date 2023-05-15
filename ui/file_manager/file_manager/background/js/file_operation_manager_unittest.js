@@ -106,13 +106,6 @@ volumeManagerFactory.getInstance = () => {
 let fileOperationManager;
 
 /**
- * Initializes the test environment.
- */
-export function setUp() {
-  loadTimeData.overrideValues({'FILES_TRASH_ENABLED': true});
-}
-
-/**
  * Tests the fileOperationUtil.resolvePath function.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */

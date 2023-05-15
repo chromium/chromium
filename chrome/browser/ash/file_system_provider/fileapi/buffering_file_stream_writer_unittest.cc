@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -92,9 +93,9 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
 
  private:
   int pending_bytes_;
-  std::vector<std::string>* write_log_;  // Not owned.
-  std::vector<int>* flush_log_;          // Not owned.
-  int* cancel_counter_;                  // Not owned.
+  raw_ptr<std::vector<std::string>, ExperimentalAsh> write_log_;  // Not owned.
+  raw_ptr<std::vector<int>, ExperimentalAsh> flush_log_;          // Not owned.
+  raw_ptr<int, ExperimentalAsh> cancel_counter_;                  // Not owned.
   net::Error write_error_;
 };
 

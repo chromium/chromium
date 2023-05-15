@@ -65,7 +65,12 @@ class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
   LookalikeUrlServiceFactory()
       : ProfileKeyedServiceFactory(
             "LookalikeUrlServiceFactory",
-            ProfileSelections::BuildForRegularAndIncognito()) {
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kOwnInstance)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kOwnInstance)
+                .Build()) {
     DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   }
 
@@ -277,8 +282,10 @@ LookalikeUrlService::CheckUrlForLookalikes(
     result.match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
     result.suggested_url = GURL();
 
+    // Domains that trigger spoof checking are allowlisted as if they were
+    // spoofing themselves, so pass in the spoofing URL as the canonical.
     if (lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
-            proto, url.GetWithEmptyPath(), result.suggested_url)) {
+            proto, url.GetWithEmptyPath(), url)) {
       result.is_allowlisted = true;
       if (stop_checking_on_allowlist_or_ignore) {
         return result;

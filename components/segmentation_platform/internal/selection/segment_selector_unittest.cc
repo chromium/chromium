@@ -77,9 +77,9 @@ class MockTrainingDataCollector : public TrainingDataCollector {
   MOCK_METHOD0(OnServiceInitialized, void());
   MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
   MOCK_METHOD3(OnDecisionTime,
-               void(proto::SegmentId id,
-                    scoped_refptr<InputContext> input_context,
-                    DecisionType type));
+               TrainingRequestId(proto::SegmentId id,
+                                 scoped_refptr<InputContext> input_context,
+                                 DecisionType type));
   MOCK_METHOD3(OnObservationTrigger,
                void(const absl::optional<ImmediaCollectionParam>& param,
                     TrainingRequestId request_id,

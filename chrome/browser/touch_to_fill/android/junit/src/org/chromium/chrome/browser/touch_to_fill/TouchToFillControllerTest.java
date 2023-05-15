@@ -96,7 +96,7 @@ public class TouchToFillControllerTest {
     private static final Credential CARL =
             new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
     private static final WebAuthnCredential DINO =
-            new WebAuthnCredential("dino@example.com", "12345");
+            new WebAuthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
@@ -133,9 +134,10 @@ class InputMethodManagerImpl : public InputMethodManager,
     const InputMethodDescriptor* LookupInputMethod(
         const std::string& input_method_id);
 
-    Profile* const profile_;
+    const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
-    InputMethodManagerImpl* const manager_;
+    const raw_ptr<InputMethodManagerImpl, DanglingUntriaged | ExperimentalAsh>
+        manager_;
 
     std::string last_used_input_method_id_;
 

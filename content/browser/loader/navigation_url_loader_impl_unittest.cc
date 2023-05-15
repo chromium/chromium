@@ -276,6 +276,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
             absl::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
             content::WeakDocumentPtr() /* initiator_document */,
+            GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             false /* allow_cookies_from_browser */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = absl::nullopt;

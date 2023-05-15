@@ -1,15 +1,4 @@
 dpapad@chromium.org
-khorimoto@chromium.org
-zentaro@chromium.org
-
-# Chrome OS Settings
-per-file *os_settings*=file://chrome/browser/resources/settings/chromeos/OWNERS
-
-# Reviewers for icon updates related to device subpages (ex. Audio, per-device
-# keyboard, etc).
-per-file icons.html=ashleydp@google.com
-per-file icons.html=gavinwill@chromium.org
-per-file icons.html=jimmyxgong@chromium.org
 
 # Happiness Tracking Surveys (HaTS)
 per-file hats_browser_proxy.ts=sauski@google.com

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
@@ -64,6 +65,10 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
   std::unique_ptr<TestingClearBrowsingDataHandler> handler_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> dse_factory_util_;
   raw_ptr<TemplateURLService> template_url_service;
+
+  const content::TestWebUI::CallData& GetCallData() {
+    return *test_web_ui_.call_data().back();
+  }
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
@@ -85,6 +90,7 @@ void ClearBrowsingDataHandlerUnitTest::SetUp() {
   handler_ = std::make_unique<TestingClearBrowsingDataHandler>(&test_web_ui_,
                                                                profile_.get());
   handler_->set_web_ui(&test_web_ui_);
+  handler_->RegisterMessages();
   handler_->AllowJavascript();
 
   browser_task_environment_.RunUntilIdle();
@@ -142,6 +148,25 @@ TemplateURL* ClearBrowsingDataHandlerUnitTest::AddSearchEngine(
   if (set_default)
     template_url_service->SetUserSelectedDefaultSearchProvider(url);
   return url;
+}
+
+TEST_F(ClearBrowsingDataHandlerUnitTest,
+       ClearBrowsingData_EmmitsDeleteMetrics) {
+  base::HistogramTester histogram_tester;
+  base::Value::List args;
+
+  args.Append("fooCallback");
+  args.Append(base::Value::List());
+  args.Append(1);
+
+  test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
+
+  const content::TestWebUI::CallData& call_data = GetCallData();
+  ASSERT_EQ(3u, call_data.args().size());
+
+  histogram_tester.ExpectBucketCount(
+      "Privacy.DeleteBrowsingData.Action",
+      browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog, 1);
 }
 
 TEST_F(ClearBrowsingDataHandlerUnitTest, UpdateSyncState_GoogleDse) {

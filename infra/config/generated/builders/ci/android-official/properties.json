@@ -61,5 +61,8 @@
     ]
   },
   "builder_group": "chromium",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

@@ -434,15 +434,6 @@ struct WebPreferences {
   // Whether lazy loading of frames and images is enabled.
   bool lazy_load_enabled;
 
-  // Specifies how close a lazily loaded iframe or image should be from the
-  // viewport before it should start being loaded in, depending on the effective
-  // connection type of the current network. Blink will use the default distance
-  // threshold for effective connection types that aren't specified here.
-  map<EffectiveConnectionType, int32>
-      lazy_frame_loading_distance_thresholds_px;
-  map<EffectiveConnectionType, int32>
-      lazy_image_loading_distance_thresholds_px;
-
   // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
   // sites.
   bool allow_mixed_content_upgrades;

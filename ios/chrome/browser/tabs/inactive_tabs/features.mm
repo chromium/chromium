@@ -8,8 +8,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,12 +32,16 @@ const char kTabInactivityThresholdThreeWeeksParam[] =
 const char kTabInactivityThresholdOneMinuteDemoParam[] =
     "tab-inactivity-threshold-one-minute-demo";
 
-bool IsInactiveTabsEnabled() {
+bool IsInactiveTabsAvailable() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(kTabInactivityThreshold)) {
+  return base::FeatureList::IsEnabled(kTabInactivityThreshold);
+}
+
+bool IsInactiveTabsEnabled() {
+  if (!IsInactiveTabsAvailable()) {
     return false;
   }
 
@@ -45,20 +49,13 @@ bool IsInactiveTabsEnabled() {
 }
 
 bool IsInactiveTabsExplictlyDisabledByUser() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kTabInactivityThreshold)) {
-    return false;
-  }
-
+  CHECK(IsInactiveTabsAvailable());
   return GetApplicationContext()->GetLocalState()->GetInteger(
              prefs::kInactiveTabsTimeThreshold) == kInactiveTabsDisabledByUser;
 }
 
 const base::TimeDelta InactiveTabsTimeThreshold() {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
 
   // Preference.
   PrefService* local_state = GetApplicationContext()->GetLocalState();
@@ -88,6 +85,6 @@ BASE_FEATURE(kShowInactiveTabsCount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShowInactiveTabsCountEnabled() {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
   return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
 }

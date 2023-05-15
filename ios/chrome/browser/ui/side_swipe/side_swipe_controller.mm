@@ -9,9 +9,11 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
@@ -27,8 +29,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -471,7 +471,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
         ->CancelPlaceholderForNextNavigation();
 
     // Redisplay the view if it was in overlay preview mode.
-    [_swipeDelegate sideSwipeRedisplayWebState:self.activeWebState];
+    [_swipeDelegate sideSwipeRedisplayTabView];
     [self.tabStripDelegate setHighlightsSelectedTab:NO];
     [self deleteGreyCache];
     [[NSNotificationCenter defaultCenter]
@@ -646,6 +646,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)resetContentView {
+  if (!_inSwipe) {
+    return;
+  }
   CGRect frame = [_swipeDelegate sideSwipeContentView].frame;
   frame.origin.x = 0;
   [_swipeDelegate sideSwipeContentView].frame = frame;

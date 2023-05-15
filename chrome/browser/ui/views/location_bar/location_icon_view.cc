@@ -76,8 +76,11 @@ LocationIconView::LocationIconView(
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
     views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
+          const auto* color_provider = host->GetColorProvider();
           const SkColor pressed_color =
-              host->GetColorProvider()->GetColor(kColorPageInfoIconPressed);
+              color_provider
+                  ? color_provider->GetColor(kColorPageInfoIconPressed)
+                  : gfx::kPlaceholderColor;
           const float pressed_alpha = SkColorGetA(pressed_color);
 
           return std::make_unique<views::FloodFillInkDropRipple>(
@@ -90,8 +93,10 @@ LocationIconView::LocationIconView(
 
     views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](views::View* host) {
+          const auto* color_provider = host->GetColorProvider();
           const SkColor hover_color =
-              host->GetColorProvider()->GetColor(kColorPageInfoIconHover);
+              color_provider ? color_provider->GetColor(kColorPageInfoIconHover)
+                             : gfx::kPlaceholderColor;
           const float hover_alpha = SkColorGetA(hover_color);
 
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
@@ -130,6 +135,10 @@ bool LocationIconView::ShouldShowSeparator() const {
   return !OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && ShouldShowLabel();
 }
 
+bool LocationIconView::ShouldShowLabelAfterAnimation() const {
+  return ShouldShowLabel();
+}
+
 bool LocationIconView::ShowBubble(const ui::Event& event) {
   return delegate_->ShowPageInfoDialog();
 }
@@ -152,8 +161,12 @@ void LocationIconView::AddedToWidget() {
 
 void LocationIconView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
-  UpdateIcon();
+  // Update the background before the icon since the vector icon
+  // depends on the container background color in certain cases.
+  // E.g. different icons corresponding to the SuperGIcon are set
+  // depending on the background color of the container.
   UpdateBackground();
+  UpdateIcon();
 }
 
 int LocationIconView::GetMinimumLabelTextWidth() const {
@@ -304,6 +317,8 @@ void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
+  } else {
+    IconLabelBubbleView::UpdateBackground();
   }
 }
 
@@ -314,10 +329,12 @@ void LocationIconView::OnIconFetched(const gfx::Image& image) {
 
 void LocationIconView::Update(bool suppress_animations) {
   UpdateTextVisibility(suppress_animations);
-  UpdateIcon();
   UpdateBorder();
-  SetAccessibleProperties(/*is_initialization*/ false);
+  // Update the background before the icon, since the vector icon
+  // can depend on the container background.
   UpdateBackground();
+  UpdateIcon();
+  SetAccessibleProperties(/*is_initialization*/ false);
   // The label text color may have changed in response to changes in security
   // level.
   UpdateLabelColors();

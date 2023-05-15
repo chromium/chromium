@@ -20,21 +20,27 @@ namespace {
 using OverlayProposedCandidateIndex =
     std::vector<OverlayProposedCandidate>::size_type;
 
-// Returns true if `rounded_corner_candidate` occludes any SingleOnTop
-// candidates in the list between `single_on_top_candidates_start` (inclusively)
-// and `single_on_top_candidates_end` (exclusively).
-bool OccludesAnyOtherSingleOnTopOverlayCandidate(
-    const OverlayProposedCandidate& rounded_corner_candidate,
-    const std::vector<OverlayProposedCandidate>* candidates,
+// Calculates and caches for the candidates in the list between
+// `single_on_top_candidates_start` (inclusively) and
+// `single_on_top_candidates_end` (exclusively) if they are occluded by
+// `candidate_with_display_masks`.
+//
+// Returns true if `candidate_with_display_masks` does occlude any other
+// candidate.
+bool CalculateOcclusionByRoundedDisplayMaskCandidate(
+    OverlayProposedCandidate& candidate_with_display_masks,
+    std::vector<OverlayProposedCandidate>* candidates,
     OverlayProposedCandidateIndex single_on_top_candidates_begin,
     OverlayProposedCandidateIndex single_on_top_candidates_end) {
-  DCHECK(rounded_corner_candidate.candidate.has_rounded_display_masks);
+  DCHECK(candidate_with_display_masks.candidate.has_rounded_display_masks);
 
   auto mask_bounds = OverlayProposedCandidate::GetRoundedDisplayMasksBounds(
-      rounded_corner_candidate);
+      candidate_with_display_masks);
+
+  bool intersects_candidate = false;
   for (OverlayProposedCandidateIndex i = single_on_top_candidates_begin;
        i < single_on_top_candidates_end; i++) {
-    const auto& overlap_candidate = candidates->at(i);
+    auto& overlap_candidate = candidates->at(i);
 
     // The rects are rounded as they're snapped by the compositor to pixel
     // unless it is AA'ed, in which case, it won't be overlaid.
@@ -47,12 +53,18 @@ bool OccludesAnyOtherSingleOnTopOverlayCandidate(
     // masks.
     for (const gfx::Rect& mask_bound : mask_bounds) {
       if (mask_bound.Intersects(overlap_rect)) {
-        return true;
+        intersects_candidate = true;
+
+        // Cache the occluding `candidate_with_display_masks` for the
+        // overlap_candidate.
+        overlap_candidate.occluding_mask_keys.insert(
+            OverlayProposedCandidate::ToProposeKey(
+                candidate_with_display_masks));
       }
     }
   }
 
-  return false;
+  return intersects_candidate;
 }
 
 }  // namespace
@@ -67,6 +79,7 @@ OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() = default;
 
 void OverlayStrategySingleOnTop::Propose(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -81,6 +94,7 @@ void OverlayStrategySingleOnTop::Propose(
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters,
       /*is_delegated_context=*/false, /*supports_clip_rect=*/false,
       /*supports_arbitrary_transform=*/false,
       /*supports_rounded_display_masks=*/true);
@@ -96,6 +110,10 @@ void OverlayStrategySingleOnTop::Propose(
     if (candidate_factory.FromDrawQuad(*quads_with_masks_iter, candidate) ==
             OverlayCandidate::CandidateStatus::kSuccess &&
         !candidate.has_mask_filter && candidate.has_rounded_display_masks) {
+      // Candidates with rounded-display masks should not overlap any other quad
+      // with rounded-display masks.
+      DCHECK(!candidate_factory.IsOccluded(candidate, quad_list->begin(),
+                                           quads_with_masks_iter));
       candidates_with_masks.emplace_back(quads_with_masks_iter, candidate,
                                          this);
       quads_with_masks_iter++;
@@ -129,7 +147,9 @@ void OverlayStrategySingleOnTop::Propose(
   // To save power we can skip promoting candidates with rounded display mask
   // rects if they do not occlude any other SingleOnTop candidate.
   for (auto& mask_candidate : candidates_with_masks) {
-    if (OccludesAnyOtherSingleOnTopOverlayCandidate(
+    // We mark all the SingleOnTop candidates that are occluded by any mask
+    // rounded-display masks to be later used in overlay processing.
+    if (CalculateOcclusionByRoundedDisplayMaskCandidate(
             mask_candidate, candidates, single_on_top_candidates_begin,
             candidates->size())) {
       candidates->push_back(mask_candidate);
@@ -139,6 +159,7 @@ void OverlayStrategySingleOnTop::Propose(
 
 bool OverlayStrategySingleOnTop::Attempt(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,

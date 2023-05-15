@@ -36,6 +36,7 @@ export class ReusedPasswordInfo {
 
 export interface CheckupDetailsSectionElement {
   $: {
+    backButton: HTMLElement,
     description: HTMLElement,
     moreActionsMenu: CrActionMenuElement,
     menuShowPassword: HTMLButtonElement,
@@ -133,11 +134,15 @@ export class CheckupDetailsSectionElement extends
         this.insecureCredentialsChangedListener_);
   }
 
-  override currentRouteChanged(route: Route, _: Route): void {
+  override currentRouteChanged(route: Route, oldRoute: Route): void {
     if (route.page !== Page.CHECKUP_DETAILS) {
       return;
     }
     this.insecurityType_ = route.details as unknown as CheckupSubpage;
+    // Focus back button when it's not direct navigation.
+    if (oldRoute !== undefined) {
+      this.$.backButton.focus();
+    }
   }
 
   private navigateBack_() {
@@ -287,6 +292,8 @@ export class CheckupDetailsSectionElement extends
   private onChangePasswordClick_(event: CustomEvent<number>) {
     this.clickedChangePasswordIds_.add(event.detail);
     this.notifyPath('clickedChangePasswordIds_.size');
+    PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
+        PasswordCheckInteraction.CHANGE_PASSWORD);
   }
 
   private clickedChangePassword_(item: chrome.passwordsPrivate.PasswordUiEntry):

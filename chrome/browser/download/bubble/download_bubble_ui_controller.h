@@ -14,7 +14,6 @@
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
-#include "content/public/browser/download_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -47,7 +46,6 @@ class DownloadBubbleUIController {
                            bool may_show_animation);
   void OnDownloadItemUpdated(download::DownloadItem* item);
   void OnDownloadItemRemoved(download::DownloadItem* item);
-  void OnDownloadManagerGoingDown();
   void OnOfflineItemsAdded(
       const OfflineContentProvider::OfflineItemList& items);
   void OnOfflineItemUpdated(const OfflineItem& item);
@@ -73,6 +71,9 @@ class DownloadBubbleUIController {
 
   // Returns whether the incognito icon should be shown for the download.
   bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;
+
+  // Returns whether the guest account icon should be shown for the download.
+  bool ShouldShowGuestIcon(const DownloadUIModel* model) const;
 
   // Schedules the ephemeral warning download to be canceled. It will only be
   // canceled if it continues to be an ephemeral warning that hasn't been acted
@@ -102,9 +103,7 @@ class DownloadBubbleUIController {
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
 
-  void set_manager_for_testing(content::DownloadManager* manager) {
-    download_manager_ = manager;
-  }
+  base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
 
  private:
   friend class DownloadBubbleUIControllerTest;
@@ -120,7 +119,6 @@ class DownloadBubbleUIController {
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<DownloadBubbleUpdateService> update_service_;
-  raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
   raw_ptr<OfflineItemModelManager, DanglingUntriaged> offline_manager_;
 
   // DownloadDisplayController and DownloadBubbleUIController have the same

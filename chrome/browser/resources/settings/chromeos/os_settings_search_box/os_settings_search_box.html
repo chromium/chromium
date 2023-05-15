@@ -20,7 +20,7 @@
   }
 
   :host-context(body.jelly-enabled):host {
-    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_base);
+    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -194,7 +194,7 @@
             <cr-button
                 id="reportSearchResultButton"
                 class="pill-button-with-icon"
-                hidden="[[searchResultsExist_]]"
+                hidden="[[shouldHideFeedbackButton_]]"
                 on-click="onSendFeedbackClick_">
                 <iron-icon
                     class="search-feedback-icon"

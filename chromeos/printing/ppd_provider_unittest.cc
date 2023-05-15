@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -86,9 +87,10 @@ const char kDefaultManufacturersJson[] = R"({
 // PpdProvider at construct time. Used throughout to activate testing
 // codepaths.
 struct PpdProviderComposedMembers {
-  FakePrinterConfigCache* config_cache = nullptr;
-  FakePrinterConfigCache* manager_config_cache = nullptr;
-  PpdMetadataManager* metadata_manager = nullptr;
+  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> config_cache = nullptr;
+  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> manager_config_cache =
+      nullptr;
+  raw_ptr<PpdMetadataManager, ExperimentalAsh> metadata_manager = nullptr;
 };
 
 class PpdProviderTest : public ::testing::Test {

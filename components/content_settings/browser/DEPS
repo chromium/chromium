@@ -9,6 +9,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/test",
   "+mojo/public",
+  "+net/base/schemeful_site.h",
   "+net/cookies",
   "+third_party/blink/public",
   "+components/privacy_sandbox",

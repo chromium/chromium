@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 
 class PrefRegistrySimple;
@@ -59,7 +60,7 @@ class PinStoragePrefs {
   std::string PinSecret() const;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   int unlock_attempt_count_ = 0;
 };
 

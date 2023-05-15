@@ -6,10 +6,27 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
+
 namespace ui {
 
 // static
 const int InputDevice::kInvalidId = 0;
+
+std::ostream& operator<<(std::ostream& os, const InputDeviceType value) {
+  switch (value) {
+    case InputDeviceType::INPUT_DEVICE_INTERNAL:
+      return os << "ui::InputDeviceType::INPUT_DEVICE_INTERNAL";
+    case InputDeviceType::INPUT_DEVICE_USB:
+      return os << "ui::InputDeviceType::INPUT_DEVICE_USB";
+    case InputDeviceType::INPUT_DEVICE_BLUETOOTH:
+      return os << "ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH";
+    case InputDeviceType::INPUT_DEVICE_UNKNOWN:
+      return os << "ui::InputDeviceType::INPUT_DEVICE_UNKNOWN";
+  }
+  return os << "ui::InputDeviceType::unknown_value("
+            << static_cast<unsigned int>(value) << ")";
+}
 
 InputDevice::InputDevice()
     : id(kInvalidId),
@@ -41,6 +58,21 @@ InputDevice::InputDevice(int id,
 InputDevice::InputDevice(const InputDevice& other) = default;
 
 InputDevice::~InputDevice() {
+}
+
+std::ostream& InputDevice::DescribeForLog(std::ostream& os) const {
+  return os << "class=ui::InputDevice id=" << id << std::endl
+            << " input_device_type=" << type << std::endl
+            << " name=\"" << name << "\"" << std::endl
+            << " phys=\"" << phys << "\"" << std::endl
+            << " enabled=" << enabled << std::endl
+            << " suspected_imposter=" << suspected_imposter << std::endl
+            << " sys_path=\"" << sys_path.AsUTF8Unsafe() << "\"" << std::endl
+            << " vendor_id=" << base::StringPrintf("%04X", vendor_id)
+            << std::endl
+            << " product_id=" << base::StringPrintf("%04X", product_id)
+            << std::endl
+            << " version=" << base::StringPrintf("%04X", version) << std::endl;
 }
 
 }  // namespace ui

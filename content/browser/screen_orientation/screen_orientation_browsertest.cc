@@ -77,43 +77,33 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
   }
 
   int GetOrientationAngle() {
-    int angle =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                                 "screen.orientation.angle")
-            .GetInt();
-    return angle;
+    return EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                  "screen.orientation.angle")
+        .ExtractInt();
   }
 
   std::string GetOrientationType() {
-    std::string type =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                                 "screen.orientation.type")
-            .GetString();
-    return type;
+    return EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                  "screen.orientation.type")
+        .ExtractString();
   }
 
   bool ScreenOrientationSupported() {
-    bool support =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                                 "'orientation' in screen")
-            .GetBool();
-    return support;
+    return EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                  "'orientation' in screen")
+        .ExtractBool();
   }
 
   bool WindowOrientationSupported() {
-    bool support =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                                 "'orientation' in window")
-            .GetBool();
-    return support;
+    return EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                  "'orientation' in window")
+        .ExtractBool();
   }
 
   int GetWindowOrientationAngle() {
-    int angle =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                                 "window.orientation")
-            .GetInt();
-    return angle;
+    return EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                  "window.orientation")
+        .ExtractInt();
   }
 };
 
@@ -488,8 +478,9 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), initial_url, 1);
 
-  EXPECT_TRUE(ExecuteScript(web_contents()->GetPrimaryMainFrame(),
-                            "screen.orientation.lock('portrait')"));
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     "screen.orientation.lock('portrait')",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Delegate did apply lock once.
   EXPECT_EQ(1, delegate.lock_count());

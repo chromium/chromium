@@ -59,10 +59,6 @@ class InProcessFuzzTest : virtual public InProcessBrowserTest {
   virtual int Fuzz(const uint8_t* data, size_t size) = 0;
 
  private:
-  int FuzzCallback(const uint8_t* data, size_t size);
-  void FuzzCaseFinished(int* result_storage,
-                        const base::RepeatingClosure& quit_closure,
-                        int result);
   std::vector<std::string> libfuzzer_command_line_;
 };
 

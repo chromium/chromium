@@ -30,7 +30,7 @@
 
 namespace blink {
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(kCanvasOverdrawOptimization);
+MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 
 class CanvasColorCache;
 class CanvasImageSource;
@@ -105,7 +105,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void save();
   void restore();
   // Push state on state stack and creates bitmap for subsequent draw ops.
-  void beginLayer();
+  void beginLayer(ExecutionContext* execution_context,
+                  const V8CanvasFilterInput* filter_init,
+                  ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer();
   void reset();          // Called by the javascript interface
@@ -740,7 +742,8 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
     BaseRenderingContext2D::OverdrawOp overdraw_op) {
-  if (UNLIKELY(!base::FeatureList::IsEnabled(kCanvasOverdrawOptimization))) {
+  if (UNLIKELY(
+          base::FeatureList::IsEnabled(kDisableCanvasOverdrawOptimization))) {
     return;
   }
 
@@ -850,8 +853,9 @@ void BaseRenderingContext2D::Draw(
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible())) {
     return;
+  }
 
   SkIRect clip_bounds;
   cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
@@ -1003,7 +1007,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
   const CanvasRenderingContext2DState& state = GetState();
   gfx::RectF canvas_rect = state.GetTransform().MapRect(local_rect);
 
-  if (UNLIKELY(!state.ShadowColor().IsTransparent())) {
+  if (UNLIKELY(!state.ShadowColor().IsFullyTransparent())) {
     gfx::RectF shadow_rect(canvas_rect);
     shadow_rect.Offset(state.ShadowOffset());
     shadow_rect.Outset(ClampTo<float>(state.ShadowBlur()));

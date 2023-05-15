@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -36,6 +37,26 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
+}
+
+struct FamilyMember {
+  std::string display_name;
+  std::string email;
+  std::string profile_url;
+  std::string profile_image_url;
+  std::string gaia_id;
+};
+void SetFamilyMemberAttributes(
+    kids_chrome_management::FamilyMember* mutable_member,
+    const FamilyMember& description,
+    kids_chrome_management::FamilyRole role) {
+  mutable_member->mutable_profile()->set_display_name(description.display_name);
+  mutable_member->mutable_profile()->set_email(description.email);
+  mutable_member->mutable_profile()->set_profile_url(description.profile_url);
+  mutable_member->mutable_profile()->set_profile_image_url(
+      description.profile_image_url);
+  mutable_member->set_role(role);
+  mutable_member->set_user_id(description.gaia_id);
 }
 
 }  // namespace
@@ -74,8 +95,8 @@ class ChildAccountServiceTest : public ::testing::Test {
   // Assumes a successful response from a family info fetch with the given list
   // of family members.
   void OnGetFamilyMembersSuccess(
-      const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
-    child_account_service_->OnGetFamilyMembersSuccess(members);
+      const kids_chrome_management::ListFamilyMembersResponse& family_members) {
+    child_account_service_->OnSuccess(family_members);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -139,43 +160,54 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
 }
 
 TEST_F(ChildAccountServiceTest, StartFetchingFamilyInfo) {
-  std::vector<FamilyInfoFetcher::FamilyMember> members;
-  members.push_back(FamilyInfoFetcher::FamilyMember(
-      "someObfuscatedGaiaId", FamilyInfoFetcher::HEAD_OF_HOUSEHOLD,
-      "Homer Simpson", "homer@simpson.com", "http://profile.url/homer",
-      "http://profile.url/homer/image"));
-  members.push_back(FamilyInfoFetcher::FamilyMember(
-      "anotherObfuscatedGaiaId", FamilyInfoFetcher::PARENT, "Marge Simpson",
-      /*email=*/std::string(), "http://profile.url/marge",
-      /*profile_image_url=*/std::string()));
+  kids_chrome_management::ListFamilyMembersResponse
+      list_family_members_response;
+  SetFamilyMemberAttributes(list_family_members_response.add_members(),
+                            {.display_name = "Marge Simpson"},
+                            kids_chrome_management::HEAD_OF_HOUSEHOLD);
+  SetFamilyMemberAttributes(list_family_members_response.add_members(),
+                            {.display_name = "Homer Simpson"},
+                            kids_chrome_management::PARENT);
 
-  OnGetFamilyMembersSuccess(members);
+  OnGetFamilyMembersSuccess(list_family_members_response);
 
-  EXPECT_EQ("Homer Simpson", profile_->GetPrefs()->GetString(
-                                 prefs::kSupervisedUserCustodianName));
   EXPECT_EQ("Marge Simpson", profile_->GetPrefs()->GetString(
+                                 prefs::kSupervisedUserCustodianName));
+  EXPECT_EQ("Homer Simpson", profile_->GetPrefs()->GetString(
                                  prefs::kSupervisedUserSecondCustodianName));
 }
 
 TEST_F(ChildAccountServiceTest, FieldsAreClearedForNonChildAccounts) {
-  std::vector<FamilyInfoFetcher::FamilyMember> members;
-  members.emplace_back("someObfuscatedGaiaId",
-                       FamilyInfoFetcher::HEAD_OF_HOUSEHOLD, "Homer Simpson",
-                       "homer@simpson.com", "http://profile.url/homer",
-                       "http://profile.url/homer/image");
-  members.emplace_back("anotherObfuscatedGaiaId", FamilyInfoFetcher::PARENT,
-                       "Marge Simpson", "marge@simpson.com",
-                       "http://profile.url/marge",
-                       "http://profile.url/marge/image");
+  {
+    kids_chrome_management::ListFamilyMembersResponse
+        list_family_members_response;
+    SetFamilyMemberAttributes(list_family_members_response.add_members(),
+                              {.display_name = "Marge Simpson",
+                               .email = "marge@simpsons.com",
+                               .profile_url = "http://profile.url/marge",
+                               .profile_image_url = "http://image.url/marge",
+                               .gaia_id = "obfuscatedGaiaId1"},
+                              kids_chrome_management::HEAD_OF_HOUSEHOLD);
+    SetFamilyMemberAttributes(list_family_members_response.add_members(),
+                              {.display_name = "Homer Simpson",
+                               .email = "homer@simpsons.com",
+                               .profile_url = "http://profile.url/homer",
+                               .profile_image_url = "http://image.url/homer",
+                               .gaia_id = "obfuscatedGaiaId2"},
+                              kids_chrome_management::PARENT);
 
-  OnGetFamilyMembersSuccess(members);
-  for (const char* property : supervised_user::kCustodianInfoPrefs) {
-    EXPECT_THAT(profile_->GetPrefs()->GetString(property), Not(IsEmpty()));
+    OnGetFamilyMembersSuccess(list_family_members_response);
+    for (const char* property : supervised_user::kCustodianInfoPrefs) {
+      EXPECT_THAT(profile_->GetPrefs()->GetString(property), Not(IsEmpty()));
+    }
   }
 
-  members.clear();
-  OnGetFamilyMembersSuccess(members);
-  for (const char* property : supervised_user::kCustodianInfoPrefs) {
-    EXPECT_THAT(profile_->GetPrefs()->GetString(property), IsEmpty());
+  {
+    kids_chrome_management::ListFamilyMembersResponse
+        list_family_members_response;
+    OnGetFamilyMembersSuccess(list_family_members_response);
+    for (const char* property : supervised_user::kCustodianInfoPrefs) {
+      EXPECT_THAT(profile_->GetPrefs()->GetString(property), IsEmpty());
+    }
   }
 }

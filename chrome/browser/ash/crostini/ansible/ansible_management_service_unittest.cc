@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
@@ -114,8 +115,9 @@ class AnsibleManagementServiceTest : public testing::Test,
   }
 
  private:
-  CrostiniManager* crostini_manager_;
-  AnsibleManagementService* ansible_management_service_;
+  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
+  raw_ptr<AnsibleManagementService, ExperimentalAsh>
+      ansible_management_service_;
   bool is_install_ansible_success_;
   bool is_apply_ansible_success_;
 

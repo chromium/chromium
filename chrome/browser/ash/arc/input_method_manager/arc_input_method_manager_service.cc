@@ -19,6 +19,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -160,7 +161,7 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
   }
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 // The default implmentation of WindowDelegate.
@@ -206,7 +207,7 @@ class ArcInputMethodManagerService::ArcInputMethodBoundsObserver
   }
 
  private:
-  ArcInputMethodManagerService* owner_;
+  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
 };
 
 class ArcInputMethodManagerService::InputMethodEngineObserver
@@ -279,7 +280,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
 
  private:
-  ArcInputMethodManagerService* const owner_;
+  const raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
 };
 
 class ArcInputMethodManagerService::InputMethodObserver
@@ -309,7 +310,7 @@ class ArcInputMethodManagerService::InputMethodObserver
   }
 
  private:
-  ArcInputMethodManagerService* const owner_;
+  const raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
 };
 
 class ArcInputMethodManagerService::TabletModeObserver
@@ -333,7 +334,7 @@ class ArcInputMethodManagerService::TabletModeObserver
     owner_->NotifyInputMethodManagerObservers(enabled);
   }
 
-  ArcInputMethodManagerService* owner_;
+  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
 };
 
 // static

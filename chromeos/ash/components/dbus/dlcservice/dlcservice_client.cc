@@ -19,9 +19,11 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -283,6 +285,23 @@ class DlcserviceClientImpl : public DlcserviceClient {
   }
 
   void CheckAndRunPendingTask() {
+    // If there are no pending tasks, we can call TaskEnded() now to allow new
+    // requests to run immediately.
+    if (pending_tasks_.empty()) {
+      TaskEnded();
+      return;
+    }
+
+    // Delay pending tasks and let new tasks get queued to ensure we don't spin
+    // the CPU with repeated calls when the DLC installer is busy.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DlcserviceClientImpl::DelayedPendingTask,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(3));
+  }
+
+  void DelayedPendingTask() {
     TaskEnded();
     if (!pending_tasks_.empty()) {
       std::move(pending_tasks_.front()).Run();
@@ -450,7 +469,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
   // DLC ID to `InstallationHolder` mapping.
   std::map<std::string, std::vector<InstallationHolder>> installation_holder_;
 
-  dbus::ObjectProxy* dlcservice_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> dlcservice_proxy_;
 
   // TODO(crbug.com/928805): Once platform dlcservice batches, can be removed.
   // Specifically when platform dlcservice doesn't return a busy status.

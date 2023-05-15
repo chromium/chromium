@@ -83,7 +83,9 @@ navigator.geolocation.watchPosition(async p => {
             // This should not be received. If it is, this enclosing function
             // will run with `isPageVisible` still `false` and the assertion at
             // the top of the function will fail.
-            respond(generateNextPosition());
+            let position = generateNextPosition();
+            let result = {position};
+            respond({position});
 
             // Wait for it to not be received, then continue. We also defer the
             // next queryNextPosition() here to stall until we've shown the
@@ -93,7 +95,9 @@ navigator.geolocation.watchPosition(async p => {
             await setMainWindowHidden(false);
             isPageVisible = true;
             respond = await interception;
-            respond(generateNextPosition());
+            position = generateNextPosition();
+            result = {position};
+            respond(result);
             break;
         }
         case 3:

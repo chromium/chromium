@@ -4,10 +4,10 @@
 
 #include "services/network/public/cpp/client_hints.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"

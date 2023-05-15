@@ -26,7 +26,6 @@ after discussions on the right group.
       <annotation id="download_bitmap"/>
       <annotation id="download_manager_service_retry"/>
       <annotation id="explore_sites"/>
-      <annotation id="family_info"/>
       <annotation id="kids_chrome_management_client_classify_url"/>
       <annotation id="minidump_uploader_android"/>
       <annotation id="oma_download_handler_android"/>
@@ -92,7 +91,6 @@ after discussions on the right group.
     </sender>
     <sender name="ChromeOS Recovery">
       <annotation id="cros_recovery_image_download"/>
-      <annotation id="download_recovery_component"/>
     </sender>
     <sender name="ChromeOS Printers Manager">
       <annotation id="printing_oauth2_first_token_request"/>
@@ -164,7 +162,6 @@ after discussions on the right group.
       <annotation id="password_requirements_spec_fetch"/>
       <annotation id="payment_manifest_downloader"/>
       <annotation id="proxy_config_settings"/>
-      <annotation id="video_tutorial_fetcher"/>
       <annotation id="qr_code_save"/>
       <annotation id="desktop_screenshot_save"/>
       <annotation id="safe_browsing_cache_collector"/>
@@ -228,7 +225,6 @@ after discussions on the right group.
       <annotation id="device_trust_key_rotation"/>
     </sender>
     <sender name="Recently Added">
-      <annotation id="share_preview_image_fetch"/>
       <annotation id="fast_pair_image_decoder"/>
       <annotation id="drivefs_http_client"/>
       <annotation id="pending_beacon_api"/>
@@ -291,6 +287,7 @@ after discussions on the right group.
       <annotation id="screensaver_image_downloader"/>
       <annotation id="back_navigation_cache_query"/>
       <annotation id="cws_info_service"/>
+      <annotation id="promise_app_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -309,7 +306,6 @@ after discussions on the right group.
   <group name="Apps and Content" hidden="true">
     <sender name="Chrome Cleanup">
       <annotation id="chrome_cleaner"/>
-      <annotation id="chrome_cleanup_report"/>
     </sender>
     <sender name="Extension and App Management">
       <annotation id="chrome_apps_socket_api"/>
@@ -350,10 +346,10 @@ after discussions on the right group.
       <annotation id="safe_browsing_binary_upload_app"/>
       <annotation id="safe_browsing_binary_upload_connector"/>
       <annotation id="safe_browsing_realtime_url_lookup"/>
-      <annotation id="safe_browsing_hashprefix_realtime_lookup"/>
+      <annotation id="safe_browsing_hashprefix_realtime_lookup_direct"/>
+      <annotation id="safe_browsing_hashprefix_realtime_lookup_ohttp"/>
       <annotation id="sct_auditing"/>
       <annotation id="sct_auditing_hashdance"/>
-      <annotation id="unwanted_software_report"/>
       <annotation id="ppapi_download_request"/>
       <annotation id="tailored_security_service"/>
     </sender>
@@ -384,6 +380,7 @@ after discussions on the right group.
       <annotation id="gaia_auth_log_out"/>
       <annotation id="gaia_auth_merge_sessions"/>
       <annotation id="gaia_auth_revoke_token"/>
+      <annotation id="gaia_auth_rotate_bound_cookies"/>
       <annotation id="gaia_auth_multilogin"/>
       <annotation id="gaia_cookie_manager_external_cc_result"/>
       <annotation id="gaia_create_reauth_proof_token_for_parent"/>

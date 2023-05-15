@@ -35,6 +35,16 @@ namespace gfx {
 
 namespace {
 
+struct SkShaderUniforms {
+  float offset = 0.f;
+  float multiplier = 0.f;
+  float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+  float pq_tonemap_a = 1.f;
+  float pq_tonemap_b = 1.f;
+  float hlg_ootf_gamma_minus_one = 0.f;
+  float hlg_dst_max_luminance_relative = 1.0f;
+};
+
 void InitStringStream(std::stringstream* ss) {
   ss->imbue(std::locale::classic());
   ss->precision(8);
@@ -147,9 +157,10 @@ float ToLinear(ColorSpace::TransferID id, float v) {
 // Returns true if tone mapping will be a non-identity operation. Computes the
 // constants used by the tone mapping algorithm described in
 // https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K
-bool ComputePQToneMapConstants(const gfx::ColorTransform::Options& options,
-                               float& a,
-                               float& b) {
+bool ComputePQToneMapConstants(
+    const gfx::ColorTransform::RuntimeOptions& options,
+    float& a,
+    float& b) {
   const auto hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
       options.src_hdr_metadata);
   const float src_max_lum_nits =
@@ -170,8 +181,9 @@ bool ComputePQToneMapConstants(const gfx::ColorTransform::Options& options,
   return false;
 }
 
-void ComputeHLGToneMapConstants(const gfx::ColorTransform::Options& options,
-                                float& gamma_minus_one) {
+void ComputeHLGToneMapConstants(
+    const gfx::ColorTransform::RuntimeOptions& options,
+    float& gamma_minus_one) {
   const float dst_max_luminance_nits =
       options.sdr_max_luminance_nits * options.dst_max_luminance_relative;
   gamma_minus_one =
@@ -207,8 +219,13 @@ class ColorTransformStep {
 
   // Return true if this is a null transform.
   virtual bool IsNull() { return false; }
-  virtual void Transform(ColorTransform::TriStim* color, size_t num) const = 0;
+  virtual void Transform(
+      ColorTransform::TriStim* color,
+      size_t num,
+      const ColorTransform::RuntimeOptions& options) const = 0;
   virtual void AppendSkShaderSource(std::stringstream* src) const = 0;
+  virtual void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
+                                 SkShaderUniforms* uniforms) const {}
 };
 
 class ColorTransformInternal : public ColorTransform {
@@ -222,11 +239,21 @@ class ColorTransformInternal : public ColorTransform {
   gfx::ColorSpace GetDstColorSpace() const override { return dst_; }
 
   void Transform(TriStim* colors, size_t num) const override {
+    const ColorTransform::RuntimeOptions options;
     for (const auto& step : steps_) {
-      step->Transform(colors, num);
+      step->Transform(colors, num, options);
+    }
+  }
+  void Transform(TriStim* colors,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+    for (const auto& step : steps_) {
+      step->Transform(colors, num, options);
     }
   }
   sk_sp<SkRuntimeEffect> GetSkRuntimeEffect() const override;
+  sk_sp<SkData> GetSkShaderUniforms(
+      const RuntimeOptions& options) const override;
   bool IsIdentity() const override { return steps_.empty(); }
   size_t NumberOfStepsForTesting() const override { return steps_.size(); }
 
@@ -245,7 +272,10 @@ class ColorTransformNull : public ColorTransformStep {
  public:
   ColorTransformNull* GetNull() override { return this; }
   bool IsNull() override { return true; }
-  void Transform(ColorTransform::TriStim* color, size_t num) const override {}
+  void Transform(ColorTransform::TriStim* color,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+  }
   void AppendSkShaderSource(std::stringstream* src) const override {}
 };
 
@@ -263,7 +293,9 @@ class ColorTransformMatrix : public ColorTransformStep {
 
   bool IsNull() override { return SkM44IsApproximatelyIdentity(matrix_); }
 
-  void Transform(ColorTransform::TriStim* colors, size_t num) const override {
+  void Transform(ColorTransform::TriStim* colors,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
       auto& color = colors[i];
       SkV4 mapped = matrix_.map(color.x(), color.y(), color.z(), 1);
@@ -306,7 +338,9 @@ class ColorTransformPerChannelTransferFn : public ColorTransformStep {
   explicit ColorTransformPerChannelTransferFn(bool extended)
       : extended_(extended) {}
 
-  void Transform(ColorTransform::TriStim* colors, size_t num) const override {
+  void Transform(ColorTransform::TriStim* colors,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
       ColorTransform::TriStim& c = colors[i];
       if (extended_) {
@@ -533,17 +567,14 @@ class ColorTransformSkTransferFn : public ColorTransformPerChannelTransferFn {
   skcms_TransferFunction fn_;
 };
 
-class ColorTransformHLGFromLinear : public ColorTransformPerChannelTransferFn {
+// Applies the HLG OETF formulation that maps [0, 12] to [0, 1].
+class ColorTransformHLG_OETF : public ColorTransformPerChannelTransferFn {
  public:
-  explicit ColorTransformHLGFromLinear(float sdr_white_level)
-      : ColorTransformPerChannelTransferFn(false),
-        sdr_scale_factor_(sdr_white_level /
-                          gfx::ColorSpace::kDefaultSDRWhiteLevel) {}
+  explicit ColorTransformHLG_OETF()
+      : ColorTransformPerChannelTransferFn(false) {}
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override {
-    v *= sdr_scale_factor_;
-
     // Spec: http://www.arib.or.jp/english/html/overview/doc/2-STD-B67v1_0.pdf
     constexpr float a = 0.17883277f;
     constexpr float b = 0.28466892f;
@@ -557,8 +588,7 @@ class ColorTransformHLGFromLinear : public ColorTransformPerChannelTransferFn {
   void AppendTransferShaderSource(std::stringstream* src,
                                   bool is_glsl) const override {
     std::string scalar_type = is_glsl ? "float" : "half";
-    *src << "  v = v * " << sdr_scale_factor_ << ";\n"
-         << "  v = max(0.0, v);\n"
+    *src << "  v = max(0.0, v);\n"
          << "  " << scalar_type << " a = 0.17883277;\n"
          << "  " << scalar_type << " b = 0.28466892;\n"
          << "  " << scalar_type << " c = 0.55991073;\n"
@@ -567,20 +597,15 @@ class ColorTransformHLGFromLinear : public ColorTransformPerChannelTransferFn {
             "  else\n"
             "    v = a * log(v - b) + c;\n";
   }
-
- private:
-  const float sdr_scale_factor_;
 };
 
 class ColorTransformPQFromLinear : public ColorTransformPerChannelTransferFn {
  public:
-  explicit ColorTransformPQFromLinear(float sdr_white_level)
-      : ColorTransformPerChannelTransferFn(false),
-        sdr_white_level_(sdr_white_level) {}
+  explicit ColorTransformPQFromLinear()
+      : ColorTransformPerChannelTransferFn(false) {}
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override {
-    v *= sdr_white_level_ / 10000.0f;
     v = max(0.0f, v);
     float m1 = (2610.0f / 4096.0f) / 4.0f;
     float m2 = (2523.0f / 4096.0f) * 128.0f;
@@ -593,9 +618,7 @@ class ColorTransformPQFromLinear : public ColorTransformPerChannelTransferFn {
   void AppendTransferShaderSource(std::stringstream* src,
                                   bool is_glsl) const override {
     std::string scalar_type = is_glsl ? "float" : "half";
-    *src << "  v *= " << sdr_white_level_
-         << " / 10000.0;\n"
-            "  v = max(0.0, v);\n"
+    *src << "  v = max(0.0, v);\n"
          << "  " << scalar_type << " m1 = (2610.0 / 4096.0) / 4.0;\n"
          << "  " << scalar_type << " m2 = (2523.0 / 4096.0) * 128.0;\n"
          << "  " << scalar_type << " c1 = 3424.0 / 4096.0;\n"
@@ -605,17 +628,13 @@ class ColorTransformPQFromLinear : public ColorTransformPerChannelTransferFn {
             "  v =  pow((c1 + c2 * pow(v, m1)) / \n"
             "           (1.0 + c3 * pow(v, m1)), m2);\n";
   }
-
- private:
-  const float sdr_white_level_;
 };
 
-class ColorTransformHLGToLinear : public ColorTransformPerChannelTransferFn {
+// Applies the HLG inverse OETF formulation that maps [0, 1] to [0, 1].
+class ColorTransformHLG_InvOETF : public ColorTransformPerChannelTransferFn {
  public:
-  explicit ColorTransformHLGToLinear(float sdr_white_level)
-      : ColorTransformPerChannelTransferFn(false),
-        sdr_scale_factor_(ColorSpace::kDefaultSDRWhiteLevel / sdr_white_level) {
-  }
+  explicit ColorTransformHLG_InvOETF()
+      : ColorTransformPerChannelTransferFn(false) {}
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override {
@@ -624,11 +643,12 @@ class ColorTransformHLGToLinear : public ColorTransformPerChannelTransferFn {
     constexpr float a = 0.17883277f;
     constexpr float b = 0.28466892f;
     constexpr float c = 0.55991073f;
-    if (v <= 0.5f)
+    if (v <= 0.5f) {
       v = v * v * 4.0f;
-    else
+    } else {
       v = exp((v - c) / a) + b;
-    return v * sdr_scale_factor_;
+    }
+    return v / 12.f;
   }
 
   void AppendTransferShaderSource(std::stringstream* src,
@@ -643,19 +663,14 @@ class ColorTransformHLGToLinear : public ColorTransformPerChannelTransferFn {
             "    v = v * v * 4.0;\n"
             "  else\n"
             "    v = exp((v - c) / a) + b;\n"
-            "  v = v * "
-         << sdr_scale_factor_ << ";\n";
+            "  v = v / 12.0;";
   }
-
- private:
-  const float sdr_scale_factor_;
 };
 
 class ColorTransformPQToLinear : public ColorTransformPerChannelTransferFn {
  public:
-  explicit ColorTransformPQToLinear(float sdr_white_level)
-      : ColorTransformPerChannelTransferFn(false),
-        sdr_white_level_(sdr_white_level) {}
+  explicit ColorTransformPQToLinear()
+      : ColorTransformPerChannelTransferFn(false) {}
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override {
@@ -667,7 +682,6 @@ class ColorTransformPQToLinear : public ColorTransformPerChannelTransferFn {
     float c3 = (2392.0f / 4096.0f) * 32.0f;
     float p = pow(v, 1.0f / m2);
     v = powf(max(p - c1, 0.0f) / (c2 - c3 * p), 1.0f / m1);
-    v *= 10000.0f / sdr_white_level_;
     return v;
   }
   void AppendTransferShaderSource(std::stringstream* src,
@@ -690,12 +704,8 @@ class ColorTransformPQToLinear : public ColorTransformPerChannelTransferFn {
     }
     *src << "  v2 = pow(max(pow(v2, 1.0 / m2) - c1, 0.0) /\n"
             "              (c2 - c3 * pow(v2, 1.0 / m2)), 1.0 / m1);\n"
-            "  v = v2 * 10000.0 / "
-         << sdr_white_level_ << ";\n";
+            "  v = v2;\n";
   }
-
- private:
-  const float sdr_white_level_;
 };
 
 class ColorTransformFromLinear : public ColorTransformPerChannelTransferFn {
@@ -841,7 +851,9 @@ class ColorTransformToLinear : public ColorTransformPerChannelTransferFn {
 // the U and V values.
 class ColorTransformFromBT2020CL : public ColorTransformStep {
  public:
-  void Transform(ColorTransform::TriStim* YUV, size_t num) const override {
+  void Transform(ColorTransform::TriStim* YUV,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
     for (size_t i = 0; i < num; i++) {
       float Y = YUV[i].x();
       float U = YUV[i].y() - 0.5;
@@ -868,12 +880,9 @@ class ColorTransformFromBT2020CL : public ColorTransformStep {
 };
 
 // Apply the HLG OOTF for a specified maximum luminance.
-class ColorTransformHLGOOTF : public ColorTransformStep {
+class ColorTransformHLG_OOTF : public ColorTransformStep {
  public:
-  explicit ColorTransformHLGOOTF(float gamma_minus_one,
-                                 float dst_max_luminance_relative)
-      : gamma_minus_one_(gamma_minus_one),
-        dst_max_luminance_relative_(dst_max_luminance_relative) {}
+  ColorTransformHLG_OOTF() = default;
 
   // The luminance vector in linear space.
   static constexpr float kLr = 0.2627;
@@ -881,13 +890,19 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
   static constexpr float kLb = 0.0593;
 
   // ColorTransformStep implementation:
-  void Transform(ColorTransform::TriStim* color, size_t num) const override {
+  void Transform(ColorTransform::TriStim* color,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+    const float dst_max_luminance_relative = options.dst_max_luminance_relative;
+    float gamma_minus_one = 0.f;
+    ComputeHLGToneMapConstants(options, gamma_minus_one);
+
     for (size_t i = 0; i < num; i++) {
       float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
       if (L > 0.f) {
-        color[i].Scale(powf(L, gamma_minus_one_));
+        color[i].Scale(powf(L, gamma_minus_one));
         // Scale the result to the full HDR range.
-        color[i].Scale(dst_max_luminance_relative_);
+        color[i].Scale(dst_max_luminance_relative);
       }
     }
   }
@@ -902,18 +917,19 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
          << "  }\n"
          << "}\n";
   }
-
- private:
-  // The gamma parameter for the power function specified in Rec 2100.
-  const float gamma_minus_one_;
-  const float dst_max_luminance_relative_;
+  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
+                         SkShaderUniforms* uniforms) const override {
+    uniforms->hlg_dst_max_luminance_relative =
+        options.dst_max_luminance_relative;
+    ComputeHLGToneMapConstants(options, uniforms->hlg_ootf_gamma_minus_one);
+  }
 };
 
 // Scale the color such that the luminance `input_max_value` maps to
 // `output_max_value`.
 class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
  public:
-  ColorTransformToneMapInRec2020Linear(float a, float b) : a_(a), b_(b) {}
+  ColorTransformToneMapInRec2020Linear() = default;
 
   // The luminance vector in linear space.
   static constexpr float kLr = 0.2627;
@@ -921,11 +937,17 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
   static constexpr float kLb = 0.0593;
 
   // ColorTransformStep implementation:
-  void Transform(ColorTransform::TriStim* color, size_t num) const override {
+  void Transform(ColorTransform::TriStim* color,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+    float a = 0.f;
+    float b = 0.f;
+    ComputePQToneMapConstants(options, a, b);
+
     for (size_t i = 0; i < num; i++) {
       float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
       if (L > 0.f)
-        color[i].Scale((1.f + a_ * L) / (1.f + b_ * L));
+        color[i].Scale((1.f + a * L) / (1.f + b * L));
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
@@ -934,16 +956,76 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
          << ", 0.0);\n"
          << "  half L = dot(color, luma_vec);\n"
          << "  if (L > 0.0) {\n"
-         << "    color.rgb *= (1.0 + pq_tonemap_a *L) / \n"
-         << "                 (1.0 + pq_tonemap_b *L);\n"
+         << "    color.rgb *= (1.0 + pq_tonemap_a * L) / \n"
+         << "                 (1.0 + pq_tonemap_b * L);\n"
          << "  }\n"
          << "}\n";
   }
+  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
+                         SkShaderUniforms* uniforms) const override {
+    ComputePQToneMapConstants(options, uniforms->pq_tonemap_a,
+                              uniforms->pq_tonemap_b);
+  }
+};
+
+// Converts from nits-relative (where 1.0 is `unity_nits` nits) to SDR-relative
+// (where 1.0 is SDR white). Use `RuntimeOptions::sdr_max_luminance_nits` for
+// the number of nits of SDR white.
+class ColorTransformNitsToSdrRelative : public ColorTransformStep {
+ public:
+  explicit ColorTransformNitsToSdrRelative(float unity_nits)
+      : unity_nits_(unity_nits) {}
+
+  // ColorTransformStep implementation:
+  void Transform(ColorTransform::TriStim* color,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+    const float factor = unity_nits_ / options.sdr_max_luminance_nits;
+    for (size_t i = 0; i < num; i++) {
+      color[i].Scale(factor);
+    }
+  }
+  void AppendSkShaderSource(std::stringstream* src) const override {
+    *src << "  color.rgb *= (" << unity_nits_
+         << " / sdr_max_luminance_nits);\n";
+  }
+  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
+                         SkShaderUniforms* uniforms) const override {
+    uniforms->sdr_max_luminance_nits = options.sdr_max_luminance_nits;
+  }
 
  private:
-  // Constants derived from `input_max_value` and `output_max_value`.
-  const float a_;
-  const float b_;
+  const float unity_nits_;
+};
+
+// Converts from SDR-relative (where 1.0 is SDR white) to nits-relative (where
+// 1.0 is `unity_nits` nits). Use `RuntimeOptions::sdr_max_luminance_nits` for
+// the number of nits of SDR white.
+class ColorTransformSdrToNitsRelative : public ColorTransformStep {
+ public:
+  explicit ColorTransformSdrToNitsRelative(float unity_nits)
+      : unity_nits_(unity_nits) {}
+
+  // ColorTransformStep implementation:
+  void Transform(ColorTransform::TriStim* color,
+                 size_t num,
+                 const ColorTransform::RuntimeOptions& options) const override {
+    const float factor = options.sdr_max_luminance_nits / unity_nits_;
+    for (size_t i = 0; i < num; i++) {
+      color[i].Scale(factor);
+    }
+  }
+  void AppendSkShaderSource(std::stringstream* src) const override {
+    *src << "  color.rgb *= (sdr_max_luminance_nits / " << unity_nits_
+         << ");\n";
+  }
+  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
+                         SkShaderUniforms* uniforms) const override {
+    uniforms->sdr_max_luminance_nits = options.sdr_max_luminance_nits;
+  }
+
+ private:
+  const float unity_nits_;
 };
 
 void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
@@ -980,18 +1062,19 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   switch (src.GetTransferID()) {
     case ColorSpace::TransferID::HLG:
-      if (options.tone_map_pq_and_hlg_to_dst) {
-        // Convert to linear with a maximum value of 1.
-        steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(
+      steps_.push_back(std::make_unique<ColorTransformHLG_InvOETF>());
+      if (!options.tone_map_pq_and_hlg_to_dst) {
+        steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(
             12.f * ColorSpace::kDefaultSDRWhiteLevel));
-      } else {
-        steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(
-            options.sdr_max_luminance_nits));
       }
       break;
     case ColorSpace::TransferID::PQ:
-      steps_.push_back(std::make_unique<ColorTransformPQToLinear>(
-          options.sdr_max_luminance_nits));
+      steps_.push_back(std::make_unique<ColorTransformPQToLinear>());
+      steps_.push_back(
+          std::make_unique<ColorTransformNitsToSdrRelative>(10000.f));
+      break;
+    case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
+      steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(80.f));
       break;
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
@@ -1003,8 +1086,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     }
     default: {
       skcms_TransferFunction src_to_linear_fn;
-      if (src.GetTransferFunction(&src_to_linear_fn,
-                                  options.sdr_max_luminance_nits)) {
+      if (src.GetTransferFunction(&src_to_linear_fn)) {
         steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
             src_to_linear_fn, src.HasExtendedSkTransferFn()));
       } else {
@@ -1027,23 +1109,17 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     switch (src.GetTransferID()) {
       case ColorSpace::TransferID::HLG: {
         // Apply the HLG OOTF for the specified maximum luminance.
-        float gamma_minus_one = 0.f;
-        ComputeHLGToneMapConstants(options, gamma_minus_one);
-        steps_.push_back(std::make_unique<ColorTransformHLGOOTF>(
-            gamma_minus_one, options.dst_max_luminance_relative));
+        steps_.push_back(std::make_unique<ColorTransformHLG_OOTF>());
         break;
       }
       case ColorSpace::TransferID::PQ: {
-        float a = 0.f;
-        float b = 0.f;
-        ComputePQToneMapConstants(options, a, b);
         const ColorSpace rec2020_linear(
             ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
             ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
         steps_.push_back(std::make_unique<ColorTransformMatrix>(
             Invert(rec2020_linear.GetPrimaryMatrix())));
         steps_.push_back(
-            std::make_unique<ColorTransformToneMapInRec2020Linear>(a, b));
+            std::make_unique<ColorTransformToneMapInRec2020Linear>());
         steps_.push_back(std::make_unique<ColorTransformMatrix>(
             rec2020_linear.GetPrimaryMatrix()));
         break;
@@ -1063,12 +1139,17 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   switch (dst.GetTransferID()) {
     case ColorSpace::TransferID::HLG:
-      steps_.push_back(std::make_unique<ColorTransformHLGFromLinear>(
-          options.sdr_max_luminance_nits));
+      steps_.push_back(std::make_unique<ColorTransformSdrToNitsRelative>(
+          gfx::ColorSpace::kDefaultSDRWhiteLevel));
+      steps_.push_back(std::make_unique<ColorTransformHLG_OETF>());
       break;
     case ColorSpace::TransferID::PQ:
-      steps_.push_back(std::make_unique<ColorTransformPQFromLinear>(
-          options.sdr_max_luminance_nits));
+      steps_.push_back(
+          std::make_unique<ColorTransformSdrToNitsRelative>(10000.f));
+      steps_.push_back(std::make_unique<ColorTransformPQFromLinear>());
+      break;
+    case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
+      steps_.push_back(std::make_unique<ColorTransformSdrToNitsRelative>(80.f));
       break;
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
@@ -1081,8 +1162,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     }
     default: {
       skcms_TransferFunction dst_from_linear_fn;
-      if (dst.GetInverseTransferFunction(&dst_from_linear_fn,
-                                         options.sdr_max_luminance_nits)) {
+      if (dst.GetInverseTransferFunction(&dst_from_linear_fn)) {
         steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
             dst_from_linear_fn, dst.HasExtendedSkTransferFn()));
       } else {
@@ -1134,6 +1214,7 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
 
   src << "uniform half offset;\n"
       << "uniform half multiplier;\n"
+      << "uniform half sdr_max_luminance_nits;\n"
       << "uniform half pq_tonemap_a;\n"
       << "uniform half pq_tonemap_b;\n"
       << "uniform half hlg_ootf_gamma_minus_one;\n"
@@ -1165,34 +1246,13 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
   return result.effect;
 }
 
-struct SkShaderUniforms {
-  float offset = 0.f;
-  float multiplier = 0.f;
-  float pq_tonemap_a = 1.f;
-  float pq_tonemap_b = 1.f;
-  float hlg_ootf_gamma_minus_one = 0.f;
-  float hlg_dst_max_luminance_relative = 1.0f;
-};
-
-// static
-sk_sp<SkData> ColorTransform::GetSkShaderUniforms(const ColorSpace& src,
-                                                  const ColorSpace& dst,
-                                                  float offset,
-                                                  float multiplier,
-                                                  const Options& options) {
+sk_sp<SkData> ColorTransformInternal::GetSkShaderUniforms(
+    const RuntimeOptions& options) const {
   SkShaderUniforms data;
-  data.offset = offset;
-  data.multiplier = multiplier;
-  data.hlg_dst_max_luminance_relative = options.dst_max_luminance_relative;
-  switch (src.GetTransferID()) {
-    case ColorSpace::TransferID::PQ:
-      ComputePQToneMapConstants(options, data.pq_tonemap_a, data.pq_tonemap_b);
-      break;
-    case ColorSpace::TransferID::HLG:
-      ComputeHLGToneMapConstants(options, data.hlg_ootf_gamma_minus_one);
-      break;
-    default:
-      break;
+  data.offset = options.offset;
+  data.multiplier = options.multiplier;
+  for (const auto& step : steps_) {
+    step->SetShaderUniforms(options, &data);
   }
   return SkData::MakeWithCopy(&data, sizeof(data));
 }

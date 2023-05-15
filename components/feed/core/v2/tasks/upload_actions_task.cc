@@ -109,48 +109,50 @@ class UploadActionsTask::Batch {
   size_t stale_count_ = 0;
 };
 
+UploadActionsTask::WireAction::WireAction(
+    feedwire::FeedAction action,
+    const LoggingParameters& logging_parameters,
+    bool upload_now)
+    : action(std::move(action)),
+      logging_parameters(logging_parameters),
+      upload_now(upload_now) {}
+
+UploadActionsTask::WireAction::WireAction(const WireAction&) = default;
+UploadActionsTask::WireAction::WireAction(WireAction&&) = default;
+UploadActionsTask::WireAction& UploadActionsTask::WireAction::operator=(
+    const WireAction&) = default;
+UploadActionsTask::WireAction& UploadActionsTask::WireAction::operator=(
+    WireAction&&) = default;
+UploadActionsTask::WireAction::~WireAction() = default;
+
 UploadActionsTask::UploadActionsTask(
+    const StreamType& stream_type,
     FeedStream* stream,
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
-    : stream_(*stream), callback_(std::move(callback)) {
+    : stream_type_(stream_type),
+      stream_(*stream),
+      callback_(std::move(callback)) {
   account_info_ = stream_->GetAccountInfo();
 }
 
 UploadActionsTask::UploadActionsTask(
-    feedwire::FeedAction action,
-    bool upload_now,
-    const LoggingParameters& logging_parameters,
+    WireAction wire_action,
+    const StreamType& stream_type,
     FeedStream* stream,
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
-    : UploadActionsTask(stream, std::move(callback)) {
-  upload_now_ = upload_now;
-  logging_parameters_ = logging_parameters;
-  wire_action_ = std::move(action);
-
-  auto* client_data = wire_action_->mutable_client_data();
-  client_data->set_timestamp_seconds(
-      (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
-  client_data->set_action_surface(
-      feedwire::ActionSurface::ANDROID_CHROME_NEW_TAB);
+    : UploadActionsTask(stream_type, stream, std::move(callback)) {
+  wire_action_ = std::move(wire_action);
 }
 
 UploadActionsTask::UploadActionsTask(
     std::vector<feedstore::StoredAction> pending_actions,
+    bool from_load_more,
+    const StreamType& stream_type,
     FeedStream* stream,
-    LaunchReliabilityLogger* launch_reliability_logger,
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
-    : UploadActionsTask(stream, std::move(callback)) {
+    : UploadActionsTask(stream_type, stream, std::move(callback)) {
   pending_actions_ = std::move(pending_actions);
-  launch_reliability_logger_ = launch_reliability_logger;
-}
-
-UploadActionsTask::UploadActionsTask(
-    FeedStream* stream,
-    LaunchReliabilityLogger* launch_reliability_logger,
-    base::OnceCallback<void(UploadActionsTask::Result)> callback)
-    : UploadActionsTask(stream, std::move(callback)) {
-  read_pending_actions_ = true;
-  launch_reliability_logger_ = launch_reliability_logger;
+  from_load_more_ = from_load_more;
 }
 
 UploadActionsTask::~UploadActionsTask() = default;
@@ -165,45 +167,54 @@ void UploadActionsTask::Run() {
 
   // From constructor 1: If there is an action to store, store it and maybe try
   // to upload all pending actions.
-  if (wire_action_) {
-    // Abort if we shouldn't be sending or storing this action.
-    if (logging_parameters_.email.empty()) {
-      Done(UploadActionsStatus::kAbortUploadForSignedOutUser);
-      return;
-    }
-    // Are logging parameters associated with a different account?
-    if (logging_parameters_.email != account_info_.email
-        // Is the datastore associated with a different account?
-        || stream_->GetMetadata().gaia() != account_info_.gaia) {
-      Done(UploadActionsStatus::kAbortUploadForWrongUser);
-      return;
-    }
-
-    StoredAction action;
-
-    feedstore::Metadata metadata = stream_->GetMetadata();
-    int32_t action_id = feedstore::GetNextActionId(metadata).GetUnsafeValue();
-    stream_->SetMetadata(std::move(metadata));
-    action.set_id(action_id);
-    wire_action_->mutable_client_data()->set_sequence_number(action_id);
-    *action.mutable_action() = std::move(*wire_action_);
-    // No need to set upload_attempt_count as it defaults to 0.
-    // WriteActions() sets the ID.
-    stream_->GetStore().WriteActions(
-        {std::move(action)},
-        base::BindOnce(&UploadActionsTask::OnStorePendingActionFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (wire_action_.has_value()) {
+    StorePendingAction();
     return;
   }
 
-  // From constructor 3: Read actions and upload.
-  if (read_pending_actions_) {
+  // From constructor 2: upload the pending actions. If not provided, read them
+  // first from the store.
+  if (pending_actions_.empty()) {
     ReadActions();
+  } else {
+    UploadPendingActions();
+  }
+}
+
+void UploadActionsTask::StorePendingAction() {
+  // Abort if we shouldn't be sending or storing this action.
+  if (wire_action_->logging_parameters.email.empty()) {
+    Done(UploadActionsStatus::kAbortUploadForSignedOutUser);
+    return;
+  }
+  // Are logging parameters associated with a different account?
+  if (wire_action_->logging_parameters.email != account_info_.email
+      // Is the datastore associated with a different account?
+      || stream_->GetMetadata().gaia() != account_info_.gaia) {
+    Done(UploadActionsStatus::kAbortUploadForWrongUser);
     return;
   }
 
-  // From constructor 2: Upload whatever was passed to us.
-  UploadPendingActions();
+  auto* client_data = wire_action_->action.mutable_client_data();
+  client_data->set_timestamp_seconds(
+      (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
+  client_data->set_action_surface(
+      feedwire::ActionSurface::ANDROID_CHROME_NEW_TAB);
+
+  StoredAction stored_action;
+
+  feedstore::Metadata metadata = stream_->GetMetadata();
+  int32_t action_id = feedstore::GetNextActionId(metadata).GetUnsafeValue();
+  stream_->SetMetadata(std::move(metadata));
+  stored_action.set_id(action_id);
+  wire_action_->action.mutable_client_data()->set_sequence_number(action_id);
+  *stored_action.mutable_action() = std::move(wire_action_->action);
+  // No need to set upload_attempt_count as it defaults to 0.
+  // WriteActions() sets the ID.
+  stream_->GetStore().WriteActions(
+      {std::move(stored_action)},
+      base::BindOnce(&UploadActionsTask::OnStorePendingActionFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UploadActionsTask::OnStorePendingActionFinished(bool write_ok) {
@@ -212,7 +223,7 @@ void UploadActionsTask::OnStorePendingActionFinished(bool write_ok) {
     return;
   }
 
-  if (!upload_now_) {
+  if (!wire_action_->upload_now) {
     Done(UploadActionsStatus::kStoredPendingAction);
     return;
   }
@@ -292,9 +303,14 @@ void UploadActionsTask::OnUpdateActionsFinished(
       batch->disown_feed_action_request();
   SetConsistencyToken(*request, consistency_token_);
 
-  if (launch_reliability_logger_) {
+  LaunchReliabilityLogger* launch_reliability_logger =
+      GetLaunchReliabilityLogger();
+  if (launch_reliability_logger) {
     last_network_request_id_ =
-        launch_reliability_logger_->LogActionsUploadRequestStart();
+        launch_reliability_logger->LogActionsUploadRequestStart();
+    if (from_load_more_) {
+      launch_reliability_logger->LogLoadMoreActionUploadRequestStarted();
+    }
   }
 
   stream_->GetNetwork().SendApiRequest<UploadActionsDiscoverApi>(
@@ -308,18 +324,20 @@ void UploadActionsTask::OnUploadFinished(
     FeedNetwork::ApiResult<feedwire::UploadActionsResponse> result) {
   last_network_response_info_ = result.response_info;
 
-  if (launch_reliability_logger_) {
-    launch_reliability_logger_->LogRequestSent(
+  LaunchReliabilityLogger* launch_reliability_logger =
+      GetLaunchReliabilityLogger();
+  if (launch_reliability_logger) {
+    launch_reliability_logger->LogRequestSent(
         last_network_request_id_, result.response_info.loader_start_time_ticks);
 
     if (result.response_info.status_code > 0) {
-      launch_reliability_logger_->LogResponseReceived(
+      launch_reliability_logger->LogResponseReceived(
           last_network_request_id_, /*server_receive_timestamp_ns=*/0l,
           /*server_send_timestamp_ns=*/0l,
           result.response_info.fetch_time_ticks);
     }
 
-    launch_reliability_logger_->LogRequestFinished(
+    launch_reliability_logger->LogRequestFinished(
         last_network_request_id_, result.response_info.status_code);
   }
 
@@ -371,6 +389,13 @@ void UploadActionsTask::Done(UploadActionsStatus status) {
   result.last_network_response_info = std::move(last_network_response_info_);
   std::move(callback_).Run(std::move(result));
   TaskComplete();
+}
+
+LaunchReliabilityLogger* UploadActionsTask::GetLaunchReliabilityLogger() const {
+  if (!stream_type_.IsValid()) {
+    return nullptr;
+  }
+  return &(stream_->GetLaunchReliabilityLogger(stream_type_));
 }
 
 }  // namespace feed

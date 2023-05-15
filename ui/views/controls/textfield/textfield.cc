@@ -235,7 +235,7 @@ Textfield::Textfield()
   cursor_view->GetViewAccessibility().OverrideIsIgnored(true);
   cursor_view_ = AddChildView(std::move(cursor_view));
   GetRenderText()->SetFontList(GetDefaultFontList());
-  UpdateBorder();
+  UpdateDefaultBorder();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
@@ -294,7 +294,8 @@ void Textfield::SetReadOnly(bool read_only) {
     SetColor(GetTextColor());
     UpdateBackgroundColor();
   }
-  UpdateBorder();
+
+  UpdateDefaultBorder();
   OnPropertyChanged(&read_only_, kPropertyEffectsPaint);
 }
 
@@ -559,7 +560,7 @@ void Textfield::SetInvalid(bool invalid) {
   if (invalid == invalid_)
     return;
   invalid_ = invalid;
-  UpdateBorder();
+  UpdateDefaultBorder();
   if (FocusRing::Get(this))
     FocusRing::Get(this)->SetInvalid(invalid);
   OnPropertyChanged(&invalid_, kPropertyEffectsNone);
@@ -575,7 +576,7 @@ void Textfield::SetObscuredGlyphSpacing(int spacing) {
 
 void Textfield::SetExtraInsets(const gfx::Insets& insets) {
   extra_insets_ = insets;
-  UpdateBorder();
+  UpdateDefaultBorder();
 }
 
 void Textfield::FitToLocalBounds() {
@@ -598,6 +599,13 @@ void Textfield::FitToLocalBounds() {
   bounds.set_x(GetMirroredXForRect(bounds));
   GetRenderText()->SetDisplayRect(bounds);
   UpdateAfterChange(TextChangeType::kNone, true);
+}
+
+bool Textfield::GetUseDefaultBorder() const {
+  return use_default_border_;
+}
+void Textfield::SetUseDefaultBorder(bool use_default_border) {
+  use_default_border_ = use_default_border;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -626,6 +634,7 @@ gfx::Size Textfield::GetMinimumSize() const {
 void Textfield::SetBorder(std::unique_ptr<Border> b) {
   FocusRing::Remove(this);
   View::SetBorder(std::move(b));
+  use_default_border_ = false;
 }
 
 ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
@@ -739,13 +748,18 @@ bool Textfield::OnKeyReleased(const ui::KeyEvent& event) {
 
 void Textfield::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::ET_GESTURE_TAP: {
       RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
         selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
         return;
       }
+
+      const size_t tap_pos =
+          GetRenderText()->FindCursorPosition(event->location()).caret_pos();
+      const bool should_toggle_menu = event->details().tap_count() == 1 &&
+                                      GetSelectedRange() == gfx::Range(tap_pos);
       if (selection_dragging_state_ != SelectionDraggingState::kNone) {
         // Selection has already been set in the preceding ET_GESTURE_TAP_DOWN
         // event, so handles should be shown without changing the selection.
@@ -771,8 +785,12 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         OnAfterUserAction();
       }
       CreateTouchSelectionControllerAndNotifyIt();
+      if (touch_selection_controller_ && should_toggle_menu) {
+        touch_selection_controller_->ToggleQuickMenu();
+      }
       event->SetHandled();
       break;
+    }
     case ui::ET_GESTURE_TAP_DOWN: {
       if (::features::IsTouchTextEditingRedesignEnabled() && HasFocus()) {
         if (event->details().tap_down_count() == 2) {
@@ -837,12 +855,14 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
               GetRenderText()->GetUpdatedDisplayOffset().x();
           show_touch_handles_after_scroll_ =
               touch_selection_controller_ != nullptr;
+          // Deactivate touch selection controller when scrolling.
+          DestroyTouchSelection();
         } else {
+          // Create touch selection controller to show a magnifier when
+          // selection dragging.
+          CreateTouchSelectionControllerAndNotifyIt();
           show_touch_handles_after_scroll_ = true;
         }
-        // Deactivate touch selection handles when scrolling or selection
-        // dragging.
-        DestroyTouchSelection();
         event->SetHandled();
       }
       break;
@@ -856,6 +876,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
           drag_start_location_x_ = event->location().x();
           drag_start_display_offset_ =
               GetRenderText()->GetUpdatedDisplayOffset().x();
+          DestroyTouchSelection();
           show_touch_handles_after_scroll_ = true;
         }
         switch (selection_dragging_state_) {
@@ -881,11 +902,11 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HasFocus()) {
+        selection_dragging_state_ = SelectionDraggingState::kNone;
         if (show_touch_handles_after_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
           show_touch_handles_after_scroll_ = false;
         }
-        selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
       }
       break;
@@ -1379,6 +1400,10 @@ gfx::Rect Textfield::GetBounds() {
 
 gfx::NativeView Textfield::GetNativeView() const {
   return GetWidget()->GetNativeView();
+}
+
+bool Textfield::IsSelectionDragging() const {
+  return selection_dragging_state_ != SelectionDraggingState::kNone;
 }
 
 void Textfield::ConvertPointToScreen(gfx::Point* point) {
@@ -2492,7 +2517,12 @@ void Textfield::UpdateBackgroundColor() {
   OnPropertyChanged(&model_ + kTextfieldBackgroundColor, kPropertyEffectsPaint);
 }
 
-void Textfield::UpdateBorder() {
+void Textfield::UpdateDefaultBorder() {
+  // Only update the border if SetBorder() has not been called. This is to avoid
+  // overriding any custom borders.
+  if (!use_default_border_) {
+    return;
+  }
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
   border->SetColorId(ui::kColorTextfieldOutline);
@@ -2565,9 +2595,6 @@ void Textfield::UpdateCursorVisibility() {
 gfx::Rect Textfield::CalculateCursorViewBounds() const {
   gfx::Rect location(GetRenderText()->GetUpdatedCursorBounds());
   location.set_x(GetMirroredXForRect(location));
-  location.set_height(
-      std::min(location.height(),
-               GetLocalBounds().height() - location.y() - location.y()));
   return location;
 }
 
@@ -2751,8 +2778,11 @@ void Textfield::OnEditFailed() {
 bool Textfield::ShouldShowCursor() const {
   // Show the cursor when the primary selected range is empty; secondary
   // selections do not affect cursor visibility.
+  // TODO(crbug.com/1434319): The cursor will be entirely hidden if partially
+  // occluded. It would be better if only the occluded part is hidden.
   return HasFocus() && !HasSelection(true) && GetEnabled() && !GetReadOnly() &&
-         !drop_cursor_visible_ && GetRenderText()->cursor_enabled();
+         !drop_cursor_visible_ && GetRenderText()->cursor_enabled() &&
+         GetLocalBounds().Contains(cursor_view_->bounds());
 }
 
 int Textfield::CharsToDips(int width_in_chars) const {
@@ -2815,7 +2845,7 @@ void Textfield::OnCursorBlinkTimerFired() {
 void Textfield::OnEnabledChanged() {
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
-  UpdateBorder();
+  UpdateDefaultBorder();
 }
 
 void Textfield::DropDraggedText(

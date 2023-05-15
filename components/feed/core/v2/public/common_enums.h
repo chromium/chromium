@@ -19,7 +19,7 @@ enum class FeedSignInUI : int {
   // Histogram recorded when a sync half sheet is shown from Feed, when sign-in
   // UI is not supported.
   kShowSyncHalfSheet = 0,
-  // Histogram recorded when asign in only flow is shown from Feed.
+  // Histogram recorded when a sign-in only flow is shown from Feed.
   kShowSignInOnlyFlow = 1,
   // Histogram recorded when a service disabled toast is shown from Feed.
   kShowSignInDisableToast = 2,
@@ -233,6 +233,21 @@ enum class FeedSortType : int {
   kSortedByLatest = 2,
 
   kMaxValue = kSortedByLatest,
+};
+
+// Values for the UMA ContentSuggestions.Feed.FeedSyncPromo histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This must be kept in sync with
+// FeedSyncPromo in enums.xml.
+enum class FeedSyncPromo : int {
+  // Histogram recorded when a signed out user taps on the Feed sync promo
+  // and the sync flow is shown.
+  kShowSyncFlow = 0,
+  // Histogram recorded when a signed out user taps on the Feed sync promo
+  // and a service disabled toast is shown.
+  kShowDisableToast = 1,
+
+  kMaxValue = kShowDisableToast,
 };
 
 }  // namespace feed

@@ -35,7 +35,7 @@ class DevToolsSettings {
   ~DevToolsSettings();
 
   void Register(const std::string& name, const RegisterOptions& options);
-  base::Value Get();
+  base::Value::Dict Get();
   absl::optional<base::Value> Get(const std::string& name);
   void Set(const std::string& name, const std::string& value);
   void Remove(const std::string& name);

@@ -46,8 +46,9 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
         return CHECK_DEREF(entry.GetDict().FindString(kManifestId));
       });
 
-  if (it != web_apps_list.end() && it->is_dict()) {
-    const std::string* run_on_os_login_str = it->FindStringKey(kRunOnOsLogin);
+  if (it != web_apps_list.end()) {
+    const std::string* run_on_os_login_str =
+        it->GetDict().FindString(kRunOnOsLogin);
     if (run_on_os_login_str && *run_on_os_login_str != kAllowed &&
         *run_on_os_login_str != kBlocked) {
       errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,

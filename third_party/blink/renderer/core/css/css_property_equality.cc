@@ -326,6 +326,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Cursor() == b.Cursor();
     case CSSPropertyID::kDisplay:
       return a.Display() == b.Display();
+    case CSSPropertyID::kContentVisibility:
+      return a.ContentVisibility() == b.ContentVisibility();
     case CSSPropertyID::kDominantBaseline:
       return a.DominantBaseline() == b.DominantBaseline();
     case CSSPropertyID::kEmptyCells:
@@ -440,6 +442,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridTemplateRows() == b.GridTemplateRows();
     case CSSPropertyID::kHeight:
       return a.Height() == b.Height();
+    case CSSPropertyID::kPopoverShowDelay:
+      return a.PopoverShowDelay() == b.PopoverShowDelay();
+    case CSSPropertyID::kPopoverHideDelay:
+      return a.PopoverHideDelay() == b.PopoverHideDelay();
     case CSSPropertyID::kHyphenateCharacter:
       return a.HyphenationString() == b.HyphenationString();
     case CSSPropertyID::kHyphenateLimitChars:
@@ -492,6 +498,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerMidResource() == b.MarkerMidResource();
     case CSSPropertyID::kMarkerStart:
       return a.MarkerStartResource() == b.MarkerStartResource();
+    case CSSPropertyID::kMask:
+      return base::ValuesEquivalent(a.MaskerResource(), b.MaskerResource());
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
     case CSSPropertyID::kMathShift:
@@ -613,6 +621,14 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollSnapStop() == b.ScrollSnapStop();
     case CSSPropertyID::kScrollSnapType:
       return a.GetScrollSnapType() == b.GetScrollSnapType();
+    case CSSPropertyID::kScrollStartX:
+      return a.ScrollStartX() == b.ScrollStartX();
+    case CSSPropertyID::kScrollStartY:
+      return a.ScrollStartY() == b.ScrollStartY();
+    case CSSPropertyID::kScrollStartTargetX:
+      return a.ScrollStartTargetX() == b.ScrollStartTargetX();
+    case CSSPropertyID::kScrollStartTargetY:
+      return a.ScrollStartTargetY() == b.ScrollStartTargetY();
     case CSSPropertyID::kShapeImageThreshold:
       return a.ShapeImageThreshold() == b.ShapeImageThreshold();
     case CSSPropertyID::kShapeMargin:
@@ -1081,6 +1097,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollPaddingBlockStart:
     case CSSPropertyID::kScrollPaddingInlineEnd:
     case CSSPropertyID::kScrollPaddingInlineStart:
+    case CSSPropertyID::kScrollStartBlock:
+    case CSSPropertyID::kScrollStartInline:
+    case CSSPropertyID::kScrollStartTargetBlock:
+    case CSSPropertyID::kScrollStartTargetInline:
     case CSSPropertyID::kInlineSize:
     case CSSPropertyID::kInsetBlock:
     case CSSPropertyID::kInsetInline:
@@ -1096,6 +1116,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return true;
 
     // No transitions on internal properties:
+    case CSSPropertyID::kInternalAlignContentBlock:
     case CSSPropertyID::kInternalAlignSelfBlock:
     case CSSPropertyID::kInternalEmptyLineHeight:
     case CSSPropertyID::kInternalFontSizeDelta:
@@ -1163,7 +1184,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kListStyle:
     case CSSPropertyID::kMargin:
     case CSSPropertyID::kMarker:
-    case CSSPropertyID::kMask:
     case CSSPropertyID::kOffset:
     case CSSPropertyID::kOutline:
     case CSSPropertyID::kOverflow:
@@ -1177,6 +1197,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceSelf:
     case CSSPropertyID::kScrollMargin:
     case CSSPropertyID::kScrollPadding:
+    case CSSPropertyID::kScrollStart:
+    case CSSPropertyID::kScrollStartTarget:
     case CSSPropertyID::kScrollTimeline:
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
@@ -1218,7 +1240,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerName:
     case CSSPropertyID::kContainerType:
-    case CSSPropertyID::kContentVisibility:
     case CSSPropertyID::kDirection:
     case CSSPropertyID::kTextCombineUpright:
     case CSSPropertyID::kTextOrientation:
@@ -1242,7 +1263,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAscentOverride:
     case CSSPropertyID::kBasePalette:
     case CSSPropertyID::kDescentOverride:
-    case CSSPropertyID::kEnd:
     case CSSPropertyID::kInvalid:
     case CSSPropertyID::kFallback:
     case CSSPropertyID::kFontDisplay:
@@ -1255,10 +1275,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPrefix:
     case CSSPropertyID::kRange:
     case CSSPropertyID::kSize:
-    case CSSPropertyID::kSource:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
-    case CSSPropertyID::kStart:
     case CSSPropertyID::kSuffix:
     case CSSPropertyID::kSymbols:
     case CSSPropertyID::kSyntax:

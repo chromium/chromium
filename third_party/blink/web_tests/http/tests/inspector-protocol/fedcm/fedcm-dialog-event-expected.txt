@@ -25,6 +25,7 @@ msg.params: {
         }
     ]
     dialogId : <string>
+    dialogType : AccountChooser
     title : Sign in
 }
 token: 1234

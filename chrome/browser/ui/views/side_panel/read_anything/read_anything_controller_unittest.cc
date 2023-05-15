@@ -14,23 +14,10 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/accessibility/accessibility_features.h"
 
 using testing::_;
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
-  MOCK_METHOD(void,
-              AccessibilityEventReceived,
-              (const content::AXEventNotificationDetails& details),
-              (override));
-  MOCK_METHOD(void,
-              OnActiveAXTreeIDChanged,
-              (const ui::AXTreeID& tree_id, const ukm::SourceId& ukm_source_id),
-              (override));
-  MOCK_METHOD(void,
-              OnAXTreeDestroyed,
-              (const ui::AXTreeID& tree_id),
-              (override));
   MOCK_METHOD(void,
               OnReadAnythingThemeChanged,
               (const std::string& font_name,
@@ -40,19 +27,15 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                ui::ColorId separator_color_id,
                ui::ColorId dropdown_color_id,
                ui::ColorId selection_color_id,
+               ui::ColorId focus_ring_color_id,
                read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing),
               (override));
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  MOCK_METHOD(void, ScreenAIServiceReady, (), (override));
-#endif
 };
 
 class ReadAnythingControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kReadAnythingWithScreen2x},
-                                          {});
     TestWithBrowserView::SetUp();
 
     model_ = std::make_unique<ReadAnythingModel>();
@@ -95,33 +78,14 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     controller_->OnLetterSpacingChanged(index);
   }
 
-  void MockModelInit(std::string font_name,
+  void MockModelInit(std::string language,
+                     std::string font_name,
                      double font_scale,
                      read_anything::mojom::Colors colors,
                      read_anything::mojom::LineSpacing line_spacing,
                      read_anything::mojom::LetterSpacing letter_spacing) {
-    model_->Init(font_name, font_scale, colors, line_spacing, letter_spacing);
-  }
-
-  void Activate(bool activate) { controller_->Activate(activate); }
-  void OnUIReady() { controller_->OnUIReady(); }
-  void OnUIDestroyed() { controller_->OnUIDestroyed(); }
-  bool AreWebContentsEmpty() { return controller_->web_contents() == nullptr; }
-
-  bool WebContentsContains(GURL url) {
-    return controller_->web_contents()->GetURL() == url;
-  }
-
-  void OnActiveWebContentsChanged() {
-    controller_->OnActiveWebContentsChanged();
-  }
-
-  void OnActiveAXTreeIDChanged() { controller_->OnActiveAXTreeIDChanged(); }
-
-  void NavigateToURL(GURL url) {
-    AddTab(browser(), url);
-    EXPECT_EQ(GetTabStripModel()->GetActiveWebContents()->GetURL(), url);
-    EXPECT_EQ(GetTabStripModel()->count(), 1);
+    model_->Init(language, font_name, font_scale, colors, line_spacing,
+                 letter_spacing);
   }
 
   std::string GetPrefFontName() {
@@ -154,13 +118,19 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
  protected:
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockReadAnythingModelObserver model_observer_;
 };
 
 TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
-  std::string expected_font_name = "Arial";
+  std::string expected_font_name = "Comic Neue";
 
+  // Initialize model with English so all fonts are available choices.
+  std::string font_name;
+  std::string language = "en";
+  MockModelInit(language, font_name, 4.5,
+                read_anything::mojom::Colors::kDefaultValue,
+                read_anything::mojom::LineSpacing::kDefaultValue,
+                read_anything::mojom::LetterSpacing::kDefaultValue);
   MockOnFontChoiceChanged(3);
 
   EXPECT_EQ(expected_font_name, GetPrefFontName());
@@ -186,7 +156,9 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language = "en";
+  MockModelInit(language, font_name, 4.5,
+                read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 
@@ -199,7 +171,9 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language = "en";
+  MockModelInit(language, font_name, 0.5,
+                read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 
@@ -301,88 +275,3 @@ TEST_F(ReadAnythingControllerTest, OnLetterSpacingChangedInvalidInput) {
 
   EXPECT_EQ(GetPrefsLetterSpacing(), 1);
 }
-
-TEST_F(ReadAnythingControllerTest, CallOnUIReadyTwiceNoCrash) {
-  OnUIReady();
-  OnUIDestroyed();
-  OnUIReady();
-}
-
-TEST_F(ReadAnythingControllerTest, Activated_DistillsContent) {
-  model_->AddObserver(&model_observer_);
-  GURL url("chrome://version");
-  NavigateToURL(url);
-
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(0);
-  Activate(true);
-  ASSERT_FALSE(AreWebContentsEmpty());
-  ASSERT_TRUE(WebContentsContains(url));
-
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(0);
-  OnActiveWebContentsChanged();
-  ASSERT_FALSE(AreWebContentsEmpty());
-  ASSERT_TRUE(WebContentsContains(url));
-
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(0);
-  OnActiveAXTreeIDChanged();
-  ASSERT_FALSE(AreWebContentsEmpty());
-  ASSERT_TRUE(WebContentsContains(url));
-}
-
-TEST_F(ReadAnythingControllerTest, NotActivated_DoesNotDistillContent) {
-  model_->AddObserver(&model_observer_);
-  NavigateToURL(GURL("chrome://version"));
-
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(1);
-  Activate(false);
-  ASSERT_TRUE(AreWebContentsEmpty());
-
-  // OnActiveWebContentsChanged and OnActiveAXTreeIDChanged should never be
-  // called after Activate(false) as the controller will be removed as web
-  // contents observer so PrimaryPageChanged will never be called until
-  // Activate(true) is called. However, since it is difficult to verify that
-  // the controller is removed as a web contents observer, instead test that
-  // even if these methods are called, nothing will be distilled.
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(1);
-  OnActiveWebContentsChanged();
-  ASSERT_TRUE(AreWebContentsEmpty());
-
-  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
-                                                       ukm::kInvalidSourceId))
-      .Times(1);
-  OnActiveAXTreeIDChanged();
-  ASSERT_TRUE(AreWebContentsEmpty());
-}
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-TEST_F(ReadAnythingControllerTest, OnUIReady_ScreenAIReadyCallsModel) {
-  model_->AddObserver(&model_observer_);
-  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentReadyForTesting();
-
-  EXPECT_CALL(model_observer_, ScreenAIServiceReady()).Times(1);
-
-  OnUIReady();
-}
-
-TEST_F(ReadAnythingControllerTest, OnUIReady_ScreenAINotReady) {
-  model_->AddObserver(&model_observer_);
-  screen_ai::ScreenAIInstallState::GetInstance()->ResetForTesting();
-
-  EXPECT_CALL(model_observer_, ScreenAIServiceReady()).Times(0);
-
-  OnUIReady();
-}
-#endif

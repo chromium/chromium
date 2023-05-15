@@ -416,7 +416,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return false;
   }
   virtual bool ShouldScrollOnMainThread() const { return false; }
-  void MainThreadScrollingDidChange();
 
   // Overlay scrollbars can "fade-out" when inactive. This value should only be
   // updated if BlinkControlsOverlayVisibility is true in the
@@ -605,7 +604,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Resolves into un-zoomed physical pixels a scroll |delta| based on its
   // ScrollGranularity units.
-  ScrollOffset ResolveScrollDelta(ui::ScrollGranularity, const ScrollOffset& delta);
+  ScrollOffset ResolveScrollDelta(ui::ScrollGranularity,
+                                  const ScrollOffset& delta);
+
+  void MainThreadScrollingDidChange();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,

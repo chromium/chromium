@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -529,6 +530,17 @@ void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
                          std::move(decline_virtual_card_callback));
 }
 
+void ChromeAutofillClient::ShowMandatoryReauthOptInPrompt(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {
+  MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
+  MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
+      ->ShowBubble(std::move(accept_mandatory_reauth_callback),
+                   std::move(cancel_mandatory_reauth_callback),
+                   std::move(close_mandatory_reauth_callback));
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -772,49 +784,6 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-bool ChromeAutofillClient::TryToShowFastCheckout(
-    const FormData& form,
-    const FormFieldData& field,
-    base::WeakPtr<AutofillManager> autofill_manager) {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->TryToStart(
-             web_contents()->GetLastCommittedURL(), form, field,
-             autofill_manager);
-#else
-  return false;
-#endif
-}
-
-void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
-#if BUILDFLAG(IS_ANDROID)
-  if (IsShowingFastCheckoutUI()) {
-    GetFastCheckoutClient()->Stop(/*allow_further_runs=*/allow_further_runs);
-  }
-#endif
-}
-
-bool ChromeAutofillClient::IsFastCheckoutSupported(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillManager& autofill_manager) {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->IsSupported(form, field, autofill_manager);
-#else
-  return false;
-#endif
-}
-
-bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->IsShowing();
-#else
-  return false;
-#endif
-}
-
 bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
@@ -1008,7 +977,8 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
       autofill_snackbar_controller_impl_ =
           std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
     }
-    autofill_snackbar_controller_impl_->Show();
+    autofill_snackbar_controller_impl_->Show(
+        AutofillSnackbarType::kVirtualCard);
   }
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
@@ -1034,10 +1004,12 @@ void ChromeAutofillClient::ShowAutofillProgressDialog(
 }
 
 void ChromeAutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
   DCHECK(autofill_progress_dialog_controller_);
   autofill_progress_dialog_controller_->DismissDialog(
-      show_confirmation_before_closing);
+      show_confirmation_before_closing,
+      std::move(no_interactive_authentication_callback));
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {
@@ -1109,9 +1081,9 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-void ChromeAutofillClient::ExecuteCommand(int id) {
+void ChromeAutofillClient::ExecuteCommand(Suggestion::FrontendId id) {
 #if BUILDFLAG(IS_ANDROID)
-  if (id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
+  if (id.as_popup_item_id() == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
     auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
     if (window) {
       SigninBridge::LaunchSigninActivity(

@@ -23,6 +23,8 @@ gfx::mojom::SelectionBoundType GfxSelectionBoundTypeToMojo(
       return gfx::mojom::SelectionBoundType::RIGHT;
     case gfx::SelectionBound::CENTER:
       return gfx::mojom::SelectionBoundType::CENTER;
+    case gfx::SelectionBound::HIDDEN:
+      return gfx::mojom::SelectionBoundType::HIDDEN;
     case gfx::SelectionBound::EMPTY:
       return gfx::mojom::SelectionBoundType::EMPTY;
   }
@@ -39,6 +41,8 @@ gfx::SelectionBound::Type MojoSelectionBoundTypeToGfx(
       return gfx::SelectionBound::RIGHT;
     case gfx::mojom::SelectionBoundType::CENTER:
       return gfx::SelectionBound::CENTER;
+    case gfx::mojom::SelectionBoundType::HIDDEN:
+      return gfx::SelectionBound::HIDDEN;
     case gfx::mojom::SelectionBoundType::EMPTY:
       return gfx::SelectionBound::EMPTY;
   }

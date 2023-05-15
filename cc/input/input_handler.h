@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -436,6 +437,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       const ScrollNode& scroll_node,
       const gfx::Vector2dF& scroll_delta,
       ui::ScrollGranularity granularity);
+
+  bool CurrentScrollNeedsFrameAlignment() const;
 
   // Used to set the pinch gesture active state when the pinch gesture is
   // handled on another layer tree. In a page with OOPIFs, only the main

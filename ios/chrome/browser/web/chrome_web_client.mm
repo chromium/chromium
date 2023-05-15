@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/web/chrome_web_client.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
-#import "base/mac/bundle_locations.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"
@@ -25,9 +25,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
@@ -43,6 +41,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
@@ -309,7 +309,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       password_manager::PasswordManagerJavaScriptFeature::GetInstance());
   features.push_back(LinkToTextJavaScriptFeature::GetInstance());
-  if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
     features.push_back(WebSelectionJavaScriptFeature::GetInstance());
   }
 
@@ -359,18 +359,20 @@ void ChromeWebClient::PrepareErrorPage(
       std::move(callback);
   NSError* final_underlying_error =
       base::ios::GetFinalUnderlyingErrorFromError(error);
-  if ([final_underlying_error.domain isEqual:kSafeBrowsingErrorDomain]) {
+  if ([final_underlying_error.domain
+          isEqualToString:kSafeBrowsingErrorDomain]) {
     // Only kUnsafeResourceErrorCode is supported.
     DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
-  } else if ([final_underlying_error.domain isEqual:kLookalikeUrlErrorDomain]) {
+  } else if ([final_underlying_error.domain
+                 isEqualToString:kLookalikeUrlErrorDomain]) {
     // Only kLookalikeUrlErrorCode is supported.
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
   } else if ([final_underlying_error.domain
-                 isEqual:kHttpsOnlyModeErrorDomain]) {
+                 isEqualToString:kHttpsOnlyModeErrorDomain]) {
     // Only kHttpsOnlyModeErrorCode is supported.
     DCHECK_EQ(kHttpsOnlyModeErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
@@ -402,16 +404,16 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
   return true;
 }
 
-bool ChromeWebClient::EnableWebInspector() const {
-  switch (GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return true;
-    case version_info::Channel::BETA:
-    case version_info::Channel::STABLE:
-      return false;
+bool ChromeWebClient::EnableWebInspector(
+    web::BrowserState* browser_state) const {
+  if (!web::features::IsWebInspectorSupportEnabled()) {
+    return false;
   }
+
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  return chrome_browser_state->GetPrefs()->GetBoolean(
+      prefs::kWebInspectorEnabled);
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
@@ -435,8 +437,9 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
-  return WebSessionStateTabHelper::FromWebState(web_state)
-      ->RestoreSessionFromCache();
+  return web::UseNativeSessionRestorationCache() &&
+         WebSessionStateTabHelper::FromWebState(web_state)
+             ->RestoreSessionFromCache();
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
@@ -509,7 +512,7 @@ bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
 
 bool ChromeWebClient::IsBrowserLockdownModeEnabled(
     web::BrowserState* browser_state) {
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     ChromeBrowserState* chrome_browser_state =
         ChromeBrowserState::FromBrowserState(browser_state);
     PrefService* prefs = chrome_browser_state->GetPrefs();

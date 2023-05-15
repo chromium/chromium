@@ -38,7 +38,7 @@ dialog:popover-open {
 
 /* Popovers using anchor positioning get their inset and anchor-scroll properties
    reset, to make it easier to position them. */
-[anchor]:popover-open {
+[popover][anchor] {
   inset:auto;
   anchor-scroll: implicit;
 }

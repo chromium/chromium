@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
@@ -206,16 +207,6 @@ class WaylandToplevel : public aura::WindowObserver {
       return;
     }
 
-    if (this == parent) {
-      // Some apps e.g. crbug/1210235 try to be their own parent. Ignore them.
-      auto* app_id = GetShellApplicationId(
-          shell_surface_data_->shell_surface->host_window());
-      LOG(WARNING)
-          << "Client attempts to add itself as a transient parent: app_id="
-          << app_id;
-      return;
-    }
-
     // This is a no-op if parent is not mapped.
     if (parent->shell_surface_data_ &&
         parent->shell_surface_data_->shell_surface->GetWidget())
@@ -321,9 +312,9 @@ class WaylandToplevel : public aura::WindowObserver {
     wl_array_release(&states);
   }
 
-  wl_resource* const xdg_toplevel_resource_;
-  wl_resource* const xdg_surface_resource_;
-  WaylandXdgSurface* shell_surface_data_;
+  const raw_ptr<wl_resource, ExperimentalAsh> xdg_toplevel_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> xdg_surface_resource_;
+  raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandToplevel> weak_ptr_factory_{this};
 };
 
@@ -458,8 +449,8 @@ class WaylandXdgToplevelDecoration {
     zxdg_toplevel_decoration_v1_send_configure(resource_, mode);
   }
 
-  wl_resource* const resource_;
-  WaylandToplevel* top_level_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<WaylandToplevel, ExperimentalAsh> top_level_;
   // Keeps track of the xdg-decoration mode on server side.
   uint32_t default_mode_ = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
 };
@@ -501,12 +492,12 @@ class WaylandPopup : aura::WindowObserver {
 
   void Grab() {
     if (!shell_surface_data_) {
-      wl_resource_post_error(resource_, XDG_POPUP_ERROR_INVALID_GRAB,
+      wl_resource_post_error(resource_.get(), XDG_POPUP_ERROR_INVALID_GRAB,
                              "the surface has already been destroyed");
       return;
     }
     if (shell_surface_data_->shell_surface->GetWidget()) {
-      wl_resource_post_error(resource_, XDG_POPUP_ERROR_INVALID_GRAB,
+      wl_resource_post_error(resource_.get(), XDG_POPUP_ERROR_INVALID_GRAB,
                              "grab must be called before construction");
       return;
     }
@@ -564,9 +555,9 @@ class WaylandPopup : aura::WindowObserver {
     // Nothing to do here as popups don't have additional configure state.
   }
 
-  wl_resource* const resource_;
-  wl_resource* const surface_resource_;
-  WaylandXdgSurface* shell_surface_data_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> surface_resource_;
+  raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
 };
 

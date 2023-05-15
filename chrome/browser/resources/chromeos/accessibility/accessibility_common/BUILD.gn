@@ -28,6 +28,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "accessibility_common_loader.js",
     "autoclick/autoclick.js",
     "background.html",
+    "dictation/context_checker.js",
     "dictation/dictation.js",
     "dictation/earcons/audio_end.wav",
     "dictation/earcons/audio_initiate.wav",
@@ -179,6 +180,7 @@ js_library("magnifier") {
 js_library("dictation") {
   sources = [ "dictation/dictation.js" ]
   deps = [
+    ":dictation_context_checker",
     ":dictation_editing_util",
     ":dictation_focus_handler",
     ":dictation_input_controller",
@@ -231,6 +233,7 @@ js_library("dictation_macros") {
     "dictation/macros/stop_listening_macro.js",
   ]
   deps = [
+    ":dictation_context_checker",
     ":dictation_input_controller",
     ":dictation_locale_info",
     "../common:event_generator",
@@ -280,6 +283,10 @@ js_library("dictation_editing_util") {
 
 js_library("dictation_locale_info") {
   sources = [ "dictation/locale_info.js" ]
+}
+
+js_library("dictation_context_checker") {
+  sources = [ "dictation/context_checker.js" ]
 }
 
 action("pumpkin_test_files") {

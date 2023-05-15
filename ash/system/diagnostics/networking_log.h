@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/diagnostics/async_log.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
+#include "base/gtest_prod_util.h"
 
 namespace ash {
 namespace diagnostics {
@@ -39,6 +40,12 @@ class ASH_EXPORT NetworkingLog {
   void UpdateNetworkState(mojom::NetworkPtr network);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NetworkHealthProviderTest, NetworkingLog);
+  friend class NetworkHealthProviderTest;
+
+  // Test only. Get the count of UpdateNetworkList() being called.
+  size_t update_network_list_call_count_for_testing() const;
+
   // Writes the `event_string` to the `event_log_`.
   void LogEvent(const std::string& event_string);
 
@@ -72,6 +79,7 @@ class ASH_EXPORT NetworkingLog {
   AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;
+  size_t update_network_list_call_count_for_testing_ = 0;
 };
 
 }  // namespace diagnostics

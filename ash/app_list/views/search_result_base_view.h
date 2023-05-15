@@ -7,6 +7,7 @@
 
 #include "ash/app_list/model/search/search_result_observer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
@@ -117,7 +118,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // Expected to be set by result view implementations that supports
   // extra result actions. It points to the view containing result actions
   // buttons. Owned by the views hierarchy.
-  SearchResultActionsView* actions_view_ = nullptr;
+  raw_ptr<SearchResultActionsView, ExperimentalAsh> actions_view_ = nullptr;
 
   // The index of this view within a |SearchResultContainerView| that holds it.
   absl::optional<int> index_in_container_;
@@ -128,7 +129,8 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // True if |result_| is selected as the default result which can be
   // activated by user by pressing ENTER key.
   bool is_default_result_ = false;
-  SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
+  raw_ptr<SearchResult, ExperimentalAsh> result_ =
+      nullptr;  // Owned by SearchModel::SearchResults.
 };
 
 }  // namespace ash

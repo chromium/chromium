@@ -125,7 +125,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   const raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
 
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
-  base::flat_set<viz::ResourceFormat> supported_formats_;
+  base::flat_set<viz::SharedImageFormat> supported_formats_;
 
   int32_t max_texture_size_ = 0;
   bool angle_texture_usage_ = false;

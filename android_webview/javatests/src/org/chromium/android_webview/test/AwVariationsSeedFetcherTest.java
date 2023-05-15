@@ -236,7 +236,6 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testScheduleWithCorrectFastModeSettings() {
         try {
-            AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
             AwVariationsSeedFetcher.scheduleIfNeeded();
             mScheduler.assertScheduled();
             JobInfo pendingJob = mScheduler.getPendingJob(JOB_ID);

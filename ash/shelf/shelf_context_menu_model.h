@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -55,7 +56,7 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
   // Add shelf auto-hide, shelf alignment, and wallpaper context menu items.
   void AddShelfAndWallpaperItems();
 
-  ShelfItemDelegate* delegate_;
+  raw_ptr<ShelfItemDelegate, ExperimentalAsh> delegate_;
   const int64_t display_id_;
   std::unique_ptr<ui::SimpleMenuModel> alignment_submenu_;
 };

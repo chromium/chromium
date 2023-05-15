@@ -491,6 +491,7 @@ source_set("platform_api_types") {
   ]
   public_deps = [
     ":platform_base",
+    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -637,16 +638,20 @@ source_set("platform_base_connection_info") {
     ":nearby_defines",
   ]
   sources = [
+    "src/internal/platform/ble_connection_info.cc",
     "src/internal/platform/bluetooth_connection_info.cc",
+    "src/internal/platform/connection_info.cc",
     "src/internal/platform/wifi_lan_connection_info.cc",
   ]
   public = [
+    "src/internal/platform/ble_connection_info.h",
     "src/internal/platform/bluetooth_connection_info.h",
     "src/internal/platform/connection_info.h",
     "src/internal/platform/wifi_lan_connection_info.h",
   ]
   public_deps = [
     ":platform_base",
+    ":platform_base_logging",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -727,6 +732,7 @@ source_set("platform_public_comm") {
     "src/internal/platform/ble.cc",
     "src/internal/platform/ble_v2.cc",
     "src/internal/platform/bluetooth_classic.cc",
+    "src/internal/platform/credential_storage_impl.cc",
     "src/internal/platform/file.cc",
     "src/internal/platform/wifi_direct.cc",
     "src/internal/platform/wifi_hotspot.cc",
@@ -738,6 +744,7 @@ source_set("platform_public_comm") {
     "src/internal/platform/ble_v2.h",
     "src/internal/platform/bluetooth_adapter.h",
     "src/internal/platform/bluetooth_classic.h",
+    "src/internal/platform/credential_storage_impl.h",
     "src/internal/platform/webrtc.h",
     "src/internal/platform/wifi_direct.h",
     "src/internal/platform/wifi_hotspot.h",
@@ -786,6 +793,8 @@ source_set("presence") {
     "src/presence/presence_service.h",
   ]
   public_deps = [
+    ":connections_metadata_proto",
+    ":platform_public_types",
     ":presence_internal",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
@@ -864,6 +873,8 @@ source_set("presence_internal") {
   ]
   public_deps = [
     ":connections_enums_proto",
+    ":connections_local_credential_proto",
+    ":connections_metadata_proto",
     ":platform_base",
     ":platform_base_uuid",
     ":platform_public_comm",
@@ -872,6 +883,7 @@ source_set("presence_internal") {
     ":presence_ldt_stub",
     ":presence_mediums",
     ":presence_types",
+    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]

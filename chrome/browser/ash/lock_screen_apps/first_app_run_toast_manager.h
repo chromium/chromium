@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -68,13 +69,13 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   //        portion of the dialog is rendered outside the app window bounds).
   void AdjustToastWidgetBounds();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // If set, the app window for which the manager is being run.
-  extensions::AppWindow* app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
 
   // The widget associated with the first run dialog, if the dialog is shown.
-  views::Widget* toast_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> toast_widget_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       toast_widget_observation_{this};

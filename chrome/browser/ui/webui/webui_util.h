@@ -45,6 +45,9 @@ void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id);
 
+// Adds string to use on HTML to enable Refresh 2023 styles for WebUI.
+void SetupChromeRefresh2023(content::WebUIDataSource* source);
+
 #if defined(TOOLKIT_VIEWS)
 
 // Returns whether WebContents should use dark mode colors depending on the

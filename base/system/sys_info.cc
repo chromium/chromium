@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -74,6 +75,47 @@ bool SysInfo::IsLowEndDevice() {
   }
 
   return IsLowEndDeviceImpl();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+bool IsAndroid4GbOr6GbDevice() {
+  // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller
+  // than the actual memory size, So we will use a small lowerbound than 4GB
+  // to discriminate real 4GB devices from lower memory ones.
+  constexpr int kLowerBoundMB = 3.2 * 1024;
+  constexpr int kUpperBoundMB = 6 * 1024;
+  static bool is_4gb_or_6g_device =
+      kLowerBoundMB <= base::SysInfo::AmountOfPhysicalMemoryMB() &&
+      base::SysInfo::AmountOfPhysicalMemoryMB() <= kUpperBoundMB;
+  return is_4gb_or_6g_device;
+}
+
+bool IsPartialLowEndModeOnMidRangeDevicesEnabled() {
+  // TODO(crbug.com/1434873): make the feature not enable on 32-bit devices
+  // before launching or going to high Stable %.
+  return IsAndroid4GbOr6GbDevice() &&
+         base::FeatureList::IsEnabled(
+             features::kPartialLowEndModeOnMidRangeDevices);
+}
+
+}  // namespace
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/1434873): This method is for chromium native code.
+// We need to update the java-side code, i.e.
+// base/android/java/src/org/chromium/base/SysUtils.java,
+// and to make the selected components in java to see this feature.
+bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::SysInfo::IsLowEndDevice() ||
+         IsPartialLowEndModeOnMidRangeDevicesEnabled();
+#else
+  return base::SysInfo::IsLowEndDevice();
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

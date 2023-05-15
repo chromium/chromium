@@ -10,6 +10,7 @@
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -98,10 +99,10 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   int GetCornerRadiusForSearchResultsState(SearchResultsState state);
 
   // Search result container used for productivity launcher.
-  AppListSearchView* search_view_ = nullptr;
+  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
 
   // View containing SearchCardView instances. Owned by view hierarchy.
-  views::View* root_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> root_view_ = nullptr;
 
   // The currently shown search results state. Used with productivity launcher.
   SearchResultsState current_search_results_state_ =

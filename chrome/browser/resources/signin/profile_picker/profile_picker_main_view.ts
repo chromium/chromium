@@ -74,13 +74,6 @@ export class ProfilePickerMainViewElement extends
           return loadTimeData.getBoolean('askOnStartup');
         },
       },
-
-      isTangibleSyncEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isTangibleSyncEnabled');
-        },
-      },
     };
   }
 
@@ -92,7 +85,6 @@ export class ProfilePickerMainViewElement extends
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
   private previousRoute_: Routes|null = null;
-  private isTangibleSyncEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -205,10 +197,6 @@ export class ProfilePickerMainViewElement extends
   private computeHideAskOnStartup_(): boolean {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
-  }
-
-  private getTangibleSyncStyleClass_() {
-    return this.isTangibleSyncEnabled_ ? 'tangible-sync-style' : '';
   }
 }
 

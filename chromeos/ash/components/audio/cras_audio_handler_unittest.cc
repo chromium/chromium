@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
@@ -565,7 +566,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
-  CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
+      nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
@@ -610,7 +612,8 @@ class HDMIRediscoverWaiter {
   }
 
  private:
-  CrasAudioHandlerTest* cras_audio_handler_test_;  // not owned
+  raw_ptr<CrasAudioHandlerTest, ExperimentalAsh>
+      cras_audio_handler_test_;  // not owned
   int grace_period_duration_in_ms_;
 };
 

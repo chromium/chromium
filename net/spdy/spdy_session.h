@@ -194,6 +194,7 @@ spdy::SpdyErrorCode NET_EXPORT_PRIVATE MapNetErrorToGoAwayStatus(Error err);
 
 // There is an enum of the same name in tools/metrics/histograms/enums.xml.
 // Be sure to add new values there also.
+// TODO(https://crbug.com/1426477): Remove.
 enum class SpdyPushedStreamFate {
   kTooManyPushedStreams = 0,
   kTimeout = 1,
@@ -394,13 +395,15 @@ class NET_EXPORT SpdySession
   // Returns OK if the stream is still available, and returns the stream in
   //   |*spdy_stream|.  If the stream is still open, updates its priority to
   //   |priority|.
+  // TODO(https://crbug.com/1426477): Remove.
   int GetPushedStream(const GURL& url,
                       spdy::SpdyStreamId pushed_stream_id,
                       RequestPriority priority,
-                      SpdyStream** spdy_stream);
+                      raw_ptr<SpdyStream>* spdy_stream);
 
   // Called when the pushed stream should be cancelled. If the pushed stream is
   // not claimed and active, sends RST to the server to cancel the stream.
+  // TODO(https://crbug.com/1426477): Remove.
   void CancelPush(const GURL& url);
 
   // Initialize the session with the given connection.
@@ -656,6 +659,7 @@ class NET_EXPORT SpdySession
   bool CloseOneIdleConnection() override;
 
   // Http2PushPromiseIndex::Delegate implementation:
+  // TODO(https://crbug.com/1426477): Remove.
   bool ValidatePushedStream(spdy::SpdyStreamId stream_id,
                             const GURL& url,
                             const HttpRequestInfo& request_info,
@@ -668,6 +672,7 @@ class NET_EXPORT SpdySession
   // Whether connection status monitoring is active or not.
   bool IsBrokenConnectionDetectionEnabled() const;
 
+  // TODO(https://crbug.com/1426477): Remove.
   static void RecordSpdyPushedStreamFateHistogram(SpdyPushedStreamFate value);
 
  private:
@@ -682,6 +687,7 @@ class NET_EXPORT SpdySession
   friend class SpdySessionTest;
   friend class SpdyStreamRequest;
 
+  // TODO(https://crbug.com/1426477): Remove.
   FRIEND_TEST_ALL_PREFIXES(RecordPushedStreamHistogramTest, VaryResponseHeader);
 
   using PendingStreamRequestQueue =
@@ -724,6 +730,7 @@ class NET_EXPORT SpdySession
   // |request->OnRequestComplete{Success,Failure}()| will be called
   // when the stream is created (unless it is cancelled). Otherwise,
   // no stream is created and the error is returned.
+  // TODO(https://crbug.com/1426477): Remove.
   int TryCreateStream(const base::WeakPtr<SpdyStreamRequest>& request,
                       base::WeakPtr<SpdyStream>* stream);
 
@@ -899,6 +906,7 @@ class NET_EXPORT SpdySession
 
   void RecordHistograms();
   void RecordProtocolErrorHistogram(SpdyProtocolErrorDetails details);
+  // TODO(https://crbug.com/1426477): Remove.
   static void RecordPushedStreamVaryResponseHeaderHistogram(
       const spdy::Http2HeaderBlock& headers);
 
@@ -908,8 +916,7 @@ class NET_EXPORT SpdySession
   void DcheckGoingAway() const;
 
   // Calls DcheckGoingAway(), then DCHECKs that |availability_state_|
-  // == STATE_DRAINING, |error_on_close_| has a valid value, and that there
-  // are no active streams or unclaimed pushed streams.
+  // == STATE_DRAINING and |error_on_close_| has a valid value.
   void DcheckDraining() const;
 
   // If the session is already draining, does nothing. Otherwise, moves
@@ -934,6 +941,7 @@ class NET_EXPORT SpdySession
   // pushed stream by GURL instead of stream ID could result in incorrect
   // behavior if a pushed stream was claimed but later another stream was pushed
   // for the same GURL.
+  // TODO(https://crbug.com/1426477): Remove.
   void CancelPushedStreamIfUnclaimed(spdy::SpdyStreamId stream_id);
 
   // BufferedSpdyFramerVisitorInterface:
@@ -1114,6 +1122,7 @@ class NET_EXPORT SpdySession
   spdy::SpdyStreamId stream_hi_water_mark_;  // The next stream id to use.
 
   // Used to ensure the server increments push stream ids correctly.
+  // TODO(https://crbug.com/1426477): Remove.
   spdy::SpdyStreamId last_accepted_push_stream_id_ = 0;
 
   // Queue, for each priority, of pending stream requests that have
@@ -1135,6 +1144,7 @@ class NET_EXPORT SpdySession
 
   // Not owned. |push_delegate_| outlives the session and handles server pushes
   // received by session.
+  // TODO(https://crbug.com/1426477): Remove.
   raw_ptr<ServerPushDelegate> push_delegate_;
 
   // Set of all created streams but that have not yet sent any frames.
@@ -1145,17 +1155,21 @@ class NET_EXPORT SpdySession
   // Number of pushed streams. All active streams are stored in
   // |active_streams_|, but it's better to know the number of push streams
   // without traversing the whole collection.
+  // TODO(https://crbug.com/1426477): Remove.
   size_t num_pushed_streams_ = 0u;
 
   // Number of active pushed streams in |active_streams_|, i.e. not in reserved
   // remote state. Streams in reserved state are not counted towards any
   // concurrency limits.
+  // TODO(https://crbug.com/1426477): Remove.
   size_t num_active_pushed_streams_ = 0u;
 
   // Number of bytes that has been pushed by the server.
+  // TODO(https://crbug.com/1426477): Remove.
   uint64_t bytes_pushed_count_ = 0u;
 
   // Number of bytes that has been pushed by the server but never claimed.
+  // TODO(https://crbug.com/1426477): Remove.
   uint64_t bytes_pushed_and_unclaimed_count_ = 0u;
 
   // The write queue.

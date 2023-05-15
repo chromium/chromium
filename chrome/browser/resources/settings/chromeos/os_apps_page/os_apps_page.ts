@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 import '../../settings_shared.css.js';
 import '../../settings_shared.css.js';
 import '../guest_os/guest_os_shared_usb_devices.js';
@@ -25,6 +25,7 @@ import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
 
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
@@ -34,7 +35,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -118,7 +118,13 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       /**
        * Show On startup settings and sub-page.
        */
-      showStartup: Boolean,
+      showStartup_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('showStartup');
+        },
+        readOnly: true,
+      },
 
       focusConfig_: {
         type: Object,
@@ -183,7 +189,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showPluginVm: boolean;
-  showStartup: boolean;
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
@@ -192,6 +197,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
   private showAppNotificationsRow_: boolean;
+  private showStartup_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

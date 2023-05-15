@@ -11,7 +11,6 @@ import org.chromium.base.annotations.CalledByNative;
  */
 public class FastCheckoutAutofillProfile {
     private final String mGUID;
-    private final String mOrigin;
     private final boolean mIsLocal;
     private final String mHonorificPrefix;
     private final String mFullName;
@@ -29,13 +28,12 @@ public class FastCheckoutAutofillProfile {
     private final String mLanguageCode;
 
     @CalledByNative
-    public FastCheckoutAutofillProfile(String guid, String origin, boolean isLocal,
-            String honorificPrefix, String fullName, String companyName, String streetAddress,
-            String region, String locality, String dependentLocality, String postalCode,
-            String sortingCode, String countryCode, String countryName, String phoneNumber,
-            String emailAddress, String languageCode) {
+    public FastCheckoutAutofillProfile(String guid, boolean isLocal, String honorificPrefix,
+            String fullName, String companyName, String streetAddress, String region,
+            String locality, String dependentLocality, String postalCode, String sortingCode,
+            String countryCode, String countryName, String phoneNumber, String emailAddress,
+            String languageCode) {
         mGUID = guid;
-        mOrigin = origin;
         mIsLocal = isLocal;
         mHonorificPrefix = honorificPrefix;
         mFullName = fullName;
@@ -56,11 +54,6 @@ public class FastCheckoutAutofillProfile {
     @CalledByNative
     public String getGUID() {
         return mGUID;
-    }
-
-    @CalledByNative
-    public String getOrigin() {
-        return mOrigin;
     }
 
     public boolean getIsLocal() {

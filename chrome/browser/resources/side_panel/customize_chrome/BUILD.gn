@@ -48,6 +48,7 @@ build_webui("build") {
 
   ts_composite = true
   ts_deps = [
+    "../shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
@@ -57,6 +58,9 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
-
-  enable_source_maps = enable_webui_inline_sourcemaps
+  ts_path_mappings =
+      [ "chrome://customize-chrome-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir) ]
 }

@@ -7,6 +7,7 @@
 
 #include "ash/keyboard/ui/keyboard_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/gestures/gesture_types.h"
 
@@ -82,7 +83,7 @@ class KEYBOARD_EXPORT KeyboardUI {
   KeyboardUIController* keyboard_controller() { return keyboard_controller_; }
 
  private:
-  KeyboardUIController* keyboard_controller_ = nullptr;
+  raw_ptr<KeyboardUIController, ExperimentalAsh> keyboard_controller_ = nullptr;
 };
 
 }  // namespace keyboard

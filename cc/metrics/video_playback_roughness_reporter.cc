@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -76,7 +75,7 @@ void VideoPlaybackRoughnessReporter::FrameSubmitted(
     // Adjust frame window size to fit about 1 second of playback
     const int win_size =
         base::ClampRound(info.intended_duration.value().ToHz());
-    frames_window_size_ = base::clamp(win_size, kMinWindowSize, kMaxWindowSize);
+    frames_window_size_ = std::clamp(win_size, kMinWindowSize, kMaxWindowSize);
   }
 
   frames_.push_back(info);

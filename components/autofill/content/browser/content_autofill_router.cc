@@ -81,7 +81,8 @@ ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
   return it != frames.end() ? (*it)->driver.get() : nullptr;
 }
 
-void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
+void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
+                                             bool driver_is_dying) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
     return;
 
@@ -93,7 +94,8 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
        form_forest_.frame_datas()) {
     AFCHECK(frame, continue);
     if (frame->driver == driver) {
-      form_forest_.EraseFrame(frame->frame_token);
+      form_forest_.EraseFormsOfFrame(frame->frame_token,
+                                     /*keep_frame=*/!driver_is_dying);
       break;
     }
   }
@@ -567,9 +569,10 @@ void ContentAutofillRouter::DidFillAutofillFormData(
 
   const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
   AFCHECK(browser_form, return);
-  DCHECK(!last_queried_target_ ||
-         last_queried_target_ == DriverOfFrame(browser_form->host_frame));
   auto* target = DriverOfFrame(browser_form->host_frame);
+  // Usually, `target == last_queried_target_`, but this is not guaranteed
+  // because ContentAutofillRouter may have learned about `form`'s parent form
+  // in between AskForValuesToFill() and DidFillAutofillFormData().
   AFCHECK(target, return );
   callback(target, *browser_form, timestamp);
 }

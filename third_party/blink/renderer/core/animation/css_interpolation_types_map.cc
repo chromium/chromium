@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/css_border_image_length_box_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_clip_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_content_visibility_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
@@ -234,6 +235,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSNumberInterpolationType>(used_property));
         break;
+      case CSSPropertyID::kPopoverShowDelay:
+      case CSSPropertyID::kPopoverHideDelay:
+        applicable_types->push_back(
+            std::make_unique<CSSTimeInterpolationType>(used_property));
+        break;
       case CSSPropertyID::kAccentColor:
       case CSSPropertyID::kBackgroundColor:
       case CSSPropertyID::kBorderBottomColor:
@@ -259,6 +265,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSPaintInterpolationType>(used_property));
         break;
       case CSSPropertyID::kOffsetPath:
+        applicable_types->push_back(
+            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
         applicable_types->push_back(
             std::make_unique<CSSRayInterpolationType>(used_property));
         [[fallthrough]];
@@ -410,6 +418,12 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
         applicable_types->push_back(
             std::make_unique<CSSDisplayInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kContentVisibility:
+        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
+        applicable_types->push_back(
+            std::make_unique<CSSContentVisibilityInterpolationType>(
+                used_property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());

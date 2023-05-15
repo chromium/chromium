@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
@@ -221,7 +222,8 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
 
   ~FakeDeviceLoader() override {}
 
-  TestRemoteDeviceLoaderFactory* remote_device_loader_factory_;
+  raw_ptr<TestRemoteDeviceLoaderFactory, ExperimentalAsh>
+      remote_device_loader_factory_;
 
   void Load(RemoteDeviceCallback callback) override {
     remote_device_loader_factory_->QueueCallback(std::move(callback));

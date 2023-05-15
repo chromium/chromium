@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//weblayer/variables.gni")
 
 template("system_webview_bundle") {
@@ -21,7 +22,7 @@ template("system_webview_bundle") {
 
   assert(_is_trichrome == defined(invoker.static_library_provider))
 
-  if (webview_includes_weblayer && weblayer_in_split) {
+  if (webview_includes_weblayer) {
     # TODO(crbug.com/1105096): If WebView starts using
     # //components/module_installer, it will probably make sense to refactor
     # chrome_feature_module() to be used here.
@@ -61,6 +62,11 @@ template("system_webview_bundle") {
       if (defined(invoker.weblayer_deps)) {
         deps += invoker.weblayer_deps
       }
+      if (enable_arcore) {
+        deps += [
+          "//third_party/arcore-android-sdk-client:arcore_remove_manifest_java",
+        ]
+      }
       aapt_locale_allowlist = platform_pak_locales
       proguard_enabled = !is_java_debug
       module_name = "weblayer"
@@ -82,14 +88,15 @@ template("system_webview_bundle") {
 
   android_app_bundle(target_name) {
     command_line_flags_file = "webview-command-line"
-    proguard_enabled = !is_java_debug
+    if (!is_java_debug) {
+      proguard_enabled = true
+      repackage_classes = "WV"
+    }
     enable_language_splits = true
     if (_is_trichrome) {
       min_sdk_version = 29
-    } else {
-      compress_shared_libraries = true
     }
-    if (webview_includes_weblayer && weblayer_in_split) {
+    if (webview_includes_weblayer) {
       extra_modules = [ _weblayer_module_desc ]
     }
     system_image_locale_allowlist = platform_pak_locales

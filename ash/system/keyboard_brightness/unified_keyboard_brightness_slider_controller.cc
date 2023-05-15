@@ -22,6 +22,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -117,7 +118,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
     return;
   }
 
-  UnifiedSystemTrayModel* const model_;
+  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
 
   base::WeakPtrFactory<UnifiedKeyboardBrightnessView> weak_factory_{this};
 };

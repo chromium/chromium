@@ -251,12 +251,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
                  /*edit_button_callback=*/{});
   }
 
-  absl::optional<std::u16string> footer_message =
-      controller_->GetFooterMessage();
-  if (footer_message) {
+  std::u16string footer_message = controller_->GetFooterMessage();
+  if (!footer_message.empty()) {
     SetFootnoteView(
         views::Builder<views::Label>()
-            .SetText(footer_message.value())
+            .SetText(footer_message)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
             .SetMultiLine(true)
             .Build());

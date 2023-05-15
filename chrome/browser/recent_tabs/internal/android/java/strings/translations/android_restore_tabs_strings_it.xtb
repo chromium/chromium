@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="it">
+<translation id="1356944128023012143">L'elenco dei dispositivi sincronizzati e delle schede selezionate da questi dispositivi da ripristinare al nuovo ripristino del flusso di lavoro è chiuso.</translation>
+<translation id="1816430105422765050">Passa ad altri dispositivi sincronizzati in questa voce di menu.</translation>
+<translation id="3347725959865138210">Scegli il dispositivo da cui vuoi recuperare le schede</translation>
+<translation id="3575801299326994724">Rivedi le schede selezionate da ripristinare dal dispositivo attualmente selezionato.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda, ultimo aggiornamento: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> schede, ultimo aggiornamento: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Indietro</translation>
+<translation id="3983305234037158273">Dispositivi sincronizzati per il ripristino delle schede che è possibile modificare al tocco. Naviga per controllare o ripristinare le schede selezionate del dispositivo attuale tramite tocco. Tastiera nascosta.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Apri <ph name="TABS_COUNT_ONE" /> scheda}other{Apri <ph name="TABS_COUNT_MANY" /> schede}}</translation>
+<translation id="4811934403802581334">Tutte le schede selezionate dal dispositivo attualmente selezionato verranno ripristinate.</translation>
+<translation id="5336031759968328813">Rivedi tutte le schede</translation>
+<translation id="8725404154479306799">Visualizza le schede lasciate aperte sui vecchi dispositivi</translation>
+</translationbundle>

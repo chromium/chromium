@@ -37,7 +37,7 @@ class CORE_EXPORT HTMLDocument : public Document {
  public:
   explicit HTMLDocument(
       const DocumentInit&,
-      DocumentClassFlags extended_document_classes = kDefaultDocumentClass);
+      DocumentClassFlags extended_document_classes = DocumentClassFlags());
   ~HTMLDocument() override;
 
   static HTMLDocument* CreateForTest(ExecutionContext& execution_context);

@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest, UpdateAppNameInLauncher) {
   ASSERT_TRUE(extension_app);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST, {});
+      ash::AcceleratorAction::kToggleAppList, {});
   ash::AppListTestApi app_list_test_api;
   app_list_test_api.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   browser_opened.Wait();
 
   // Verify that a launch no longer occurs.
-  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+  web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [](apps::AppLaunchParams&& params) -> content::WebContents* {
             NOTREACHED();

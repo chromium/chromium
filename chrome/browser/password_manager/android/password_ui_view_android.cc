@@ -308,7 +308,8 @@ static jlong JNI_PasswordUIView_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(controller);
 }
 
-void PasswordUIViewAndroid::OnSavedPasswordsChanged() {
+void PasswordUIViewAndroid::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   UpdatePasswordLists();
 }
 

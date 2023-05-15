@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -245,7 +246,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   }
 
  private:
-  Surface* const surface_;
+  const raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -591,6 +592,7 @@ void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
   if (pending_state_.clip_rect == clip_rect) {
     return;
   }
+  has_pending_contents_ = true;
   pending_state_.clip_rect = clip_rect;
 }
 
@@ -1074,6 +1076,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
   surface_hierarchy_content_bounds_ =
       gfx::Rect(gfx::ToCeiledSize(content_size_));
+
   if (state_.basic_state.input_region) {
     hit_test_region_ = *state_.basic_state.input_region;
     hit_test_region_.Intersect(surface_hierarchy_content_bounds_);

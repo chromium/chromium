@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -61,11 +62,12 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
       const std::string& callback_id,
       KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  KioskAppManager* kiosk_app_manager_;  // not owned.
+  raw_ptr<KioskAppManager, ExperimentalAsh> kiosk_app_manager_;  // not owned.
   bool initialized_;
   bool is_kiosk_enabled_;
   bool is_auto_launch_enabled_;
-  OwnerSettingsServiceAsh* const owner_settings_service_;  // not owned
+  const raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh>
+      owner_settings_service_;  // not owned
   base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
 };
 

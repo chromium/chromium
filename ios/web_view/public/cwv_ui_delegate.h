@@ -19,6 +19,18 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVWebViewConfiguration;
 @class CWVNavigationAction;
 
+typedef NS_ENUM(NSInteger, CWVPermissionDecision) {
+  CWVPermissionDecisionPrompt,
+  CWVPermissionDecisionGrant,
+  CWVPermissionDecisionDeny,
+} API_AVAILABLE(ios(15.0));
+
+typedef NS_ENUM(NSInteger, CWVMediaCaptureType) {
+  CWVMediaCaptureTypeCamera,
+  CWVMediaCaptureTypeMicrophone,
+  CWVMediaCaptureTypeCameraAndMicrophone,
+} API_AVAILABLE(ios(15.0));
+
 // UI delegate interface for a CWVWebView.  Embedders can implement the
 // functions in order to customize library behavior.
 CWV_EXPORT
@@ -36,6 +48,15 @@ CWV_EXPORT
 // Instructs the delegate to close |webView|. Called only for windows opened by
 // DOM.
 - (void)webViewDidClose:(CWVWebView*)webView;
+
+// Asks delegate grant or deny permission for microphone audio and camera video
+// access. If the delegate doesn't implement this method, the `webView` would
+// show the default prompt that asks for permissions.
+- (void)webView:(CWVWebView*)webView
+    requestMediaCapturePermissionForType:(CWVMediaCaptureType)type
+                         decisionHandler:
+                             (void (^)(CWVPermissionDecision decision))
+                                 decisionHandler API_AVAILABLE(ios(15.0));
 
 // Instructs the delegate to show UI in response to window.alert JavaScript
 // call.

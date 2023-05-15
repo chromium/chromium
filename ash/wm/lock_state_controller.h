@@ -13,6 +13,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/lock_state_observer.h"
 #include "ash/wm/session_state_animator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -216,7 +217,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   std::unique_ptr<base::ElapsedTimer> lock_duration_timer_;
 
   // Controller used to trigger the actual shutdown.
-  ShutdownController* shutdown_controller_;
+  raw_ptr<ShutdownController, ExperimentalAsh> shutdown_controller_;
 
   // Started when we request that the screen be locked.  When it fires, we
   // assume that our request got dropped.
@@ -248,7 +249,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   base::ObserverList<LockStateObserver>::Unchecked observers_;
 
   // To access the pref kLoginShutdownTimestampPrefName
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
 };

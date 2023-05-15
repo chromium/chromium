@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 
 #include <array>
-#include <bit>
 #include <climits>
 #include <cstddef>
 #include <iterator>
@@ -17,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/numeric/bits.h"
 
 namespace autofill {
 
@@ -229,7 +229,7 @@ class DenseSet {
               0ULL);
     size_t num_set_bits = 0;
     for (const auto word : words_) {
-      num_set_bits += std::popcount(word);
+      num_set_bits += absl::popcount(word);
     }
     return num_set_bits;
   }

@@ -1,10 +1,10 @@
 [
     {
         "duration": "900.0",
-        "name": "base_perftests/_gtest_"
+        "name": "sync_performance_tests/_gtest_"
     },
     {
         "duration": "900.0",
-        "name": "sync_performance_tests/_gtest_"
+        "name": "base_perftests/_gtest_"
     }
 ]

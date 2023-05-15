@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -89,7 +90,7 @@ class LockScreenApps : public KeyedService {
   void OnAllowedLockScreenAppsChanged();
 
   // The profile for which lock screen apps are enabled.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // Tracks kNoteTakingAppsLockScreenAllowlist pref for the profile for which
   // lock screen apps are enabled.

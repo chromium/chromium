@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<script>
+
+description("This tests that navigation timing entries don't require HTTP.");
+
+const entries = performance.getEntriesByType("navigation");
+shouldBe('entries.length', '1');
+shouldBe('entries[0].name', 'document.URL');
+shouldBe('new URL(entries[0].name).protocol', '"file:"');
+</script>

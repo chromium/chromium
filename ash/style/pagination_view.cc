@@ -244,6 +244,8 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
     return buttons_[page].get();
   }
 
+  int GetNumberOfIndicators() const { return buttons_.size(); }
+
   // Sets up scrolling if an invisible page is selected.
   void StartScroll(int start_page, int target_page) {
     // Scroll the indicator container by the distance of a indicator button size
@@ -294,7 +296,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
     }
   }
 
-  std::vector<base::raw_ptr<IndicatorButton>> buttons_;
+  std::vector<raw_ptr<IndicatorButton>> buttons_;
   absl::optional<InterpolationInterval<int>> scroll_interval_;
 };
 
@@ -577,7 +579,8 @@ void PaginationView::SelectedPageChanged(int old_selected, int new_selected) {
 
 void PaginationView::TotalPagesChanged(int previous_page_count,
                                        int new_page_count) {
-  const int current_indicator_num = indicator_container_->children().size();
+  const int current_indicator_num =
+      indicator_container_->GetNumberOfIndicators();
   new_page_count = new_page_count < kMinNumPages ? 0 : new_page_count;
   if (current_indicator_num == new_page_count) {
     return;

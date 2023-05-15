@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_TEST_WIDGET_ANIMATION_SMOOTHNESS_INSPECTOR_H_
 #define ASH_SHELF_TEST_WIDGET_ANIMATION_SMOOTHNESS_INSPECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace views {
@@ -36,7 +37,7 @@ class WidgetAnimationSmoothnessInspector : ui::LayerAnimationObserver {
 
  private:
   // Unowned
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 
   std::vector<gfx::Rect> bound_history_;
 };

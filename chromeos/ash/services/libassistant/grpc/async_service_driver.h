@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 
 namespace ash::libassistant {
@@ -27,7 +28,7 @@ class AsyncServiceDriver {
 
  protected:
   // Owned by |GrpcServicesInitializer|.
-  grpc::ServerBuilder* server_builder_;
+  raw_ptr<grpc::ServerBuilder, ExperimentalAsh> server_builder_;
 };
 
 }  // namespace ash::libassistant

@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 #include "ui/message_center/message_center_impl.h"
@@ -75,7 +76,7 @@ class DoNotDisturbManager : public message_center::MessageCenterObserver {
   }
 
  private:
-  ArcNotificationManager* const manager_;
+  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
 };
 
 class VisibilityManager : public message_center::MessageCenterObserver {
@@ -102,7 +103,7 @@ class VisibilityManager : public message_center::MessageCenterObserver {
     return MessageCenterVisibility::VISIBILITY_TRANSIENT;
   }
 
-  ArcNotificationManager* const manager_;
+  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
 };
 
 }  // namespace

@@ -8,6 +8,7 @@ Tests that Preload.prefetchStatusUpdated is dispatched for prefetch requests.
             loaderId : <string>
             url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
         }
+        prefetchStatus : PrefetchNotFinishedInTime
         prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
         status : Running
     }
@@ -22,6 +23,7 @@ Tests that Preload.prefetchStatusUpdated is dispatched for prefetch requests.
             loaderId : <string>
             url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
         }
+        prefetchStatus : PrefetchSuccessfulButNotUsed
         prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
         status : Ready
     }

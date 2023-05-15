@@ -225,6 +225,7 @@
 ./tools/webdriver/webdriver/bidi/modules/__init__.py
 ./tools/webdriver/webdriver/bidi/modules/_module.py
 ./tools/webdriver/webdriver/bidi/modules/browsing_context.py
+./tools/webdriver/webdriver/bidi/modules/input.py
 ./tools/webdriver/webdriver/bidi/modules/script.py
 ./tools/webdriver/webdriver/bidi/modules/session.py
 ./tools/webdriver/webdriver/bidi/transport.py

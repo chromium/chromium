@@ -108,6 +108,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  GrSurfaceOrigin surface_origin,
                                  SkAlphaType alpha_type,
                                  uint32_t usage,
+                                 base::StringPiece debug_label,
                                  gpu::SurfaceHandle surface_handle) override {
     ADD_FAILURE();
     return gpu::Mailbox();
@@ -120,6 +121,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      base::StringPiece debug_label,
       base::span<const uint8_t> pixel_data) override {
     ADD_FAILURE();
     return gpu::Mailbox();
@@ -132,6 +134,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     ADD_FAILURE();
     return gpu::Mailbox();
@@ -144,7 +147,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override {
+      uint32_t usage,
+      base::StringPiece debug_label) override {
     gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
     CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
 

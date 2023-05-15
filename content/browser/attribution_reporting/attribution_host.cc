@@ -34,6 +34,8 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,7 +96,7 @@ AttributionHost::AttributionHost(WebContents* web_contents)
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb)) {
+          network::features::kAttributionReportingCrossAppWeb)) {
     input_event_tracker_android_ =
         std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
   }
@@ -188,61 +190,42 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
-  attribution_manager->GetDataHostManager()->NotifyNavigationStartedForDataHost(
-      impression->attribution_src_token, navigation_info.source_origin,
-      impression->nav_type, navigation_info.is_within_fenced_frame,
-      navigation_info.initiator_root_frame_id);
+  attribution_manager->GetDataHostManager()
+      ->NotifyNavigationRegistrationStarted(
+          impression->attribution_src_token, navigation_info.source_origin,
+          impression->nav_type, navigation_info.is_within_fenced_frame,
+          navigation_info.initiator_root_frame_id,
+          navigation_handle->GetNavigationId());
 }
 
 void AttributionHost::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
-  auto it = navigation_info_map_.find(navigation_handle->GetNavigationId());
-  if (it == navigation_info_map_.end()) {
-    return;
-  }
-
-  const auto& impression = navigation_handle->GetImpression();
-  DCHECK(impression.has_value());
-
-  const std::vector<GURL>& redirect_chain =
-      navigation_handle->GetRedirectChain();
-  if (redirect_chain.size() < 2) {
-    return;
-  }
-
-  // The reporting origin should be the origin of the request responsible for
-  // initiating this redirect. At this point, the navigation handle reflects the
-  // URL being navigated to, so instead use the second to last URL in the
-  // redirect chain.
-  absl::optional<SuitableOrigin> reporting_origin =
-      SuitableOrigin::Create(redirect_chain[redirect_chain.size() - 2]);
-  if (!reporting_origin) {
-    return;
-  }
-
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  attribution_manager->GetDataHostManager()
-      ->NotifyNavigationRedirectRegistration(
-          impression->attribution_src_token,
-          navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
-          it->second.source_origin, it->second.input_event,
-          impression->nav_type, it->second.is_within_fenced_frame,
-          it->second.initiator_root_frame_id);
+  NotifyNavigationRegistrationData(navigation_handle,
+                                   /*is_final_response=*/false);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   ScopedMapDeleter<NavigationInfoMap> navigation_source_origin_it(
       &navigation_info_map_, navigation_handle->GetNavigationId());
 
+  NotifyNavigationRegistrationData(navigation_handle,
+                                   /*is_final_response=*/true);
+}
+
+void AttributionHost::NotifyNavigationRegistrationData(
+    NavigationHandle* navigation_handle,
+    bool is_final_response) {
+  auto it = navigation_info_map_.find(navigation_handle->GetNavigationId());
+
   // Observe only navigation toward a new document in the primary main frame.
   // Impressions should never be attached to same-document navigations but can
   // be the result of a bad renderer.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
-    DCHECK(!navigation_source_origin_it);
+    DCHECK(it == navigation_info_map_.end());
+  }
+  if (it == navigation_info_map_.end()) {
+    return;
   }
 
   const absl::optional<blink::Impression>& impression =
@@ -251,12 +234,37 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
+  // On redirect, the reporting origin should be the origin of the request
+  // responsible for initiating the redirect. At this point, the navigation
+  // handle reflects the URL being navigated to, so instead use the second to
+  // last URL in the redirect chain.
+  //
+  // On final response, the reporting origin should be the origin of the request
+  // responsible for initiating the last (and only if no redirections) request
+  // in the chain.
+  const size_t offset = is_final_response ? 1 : 2;
+  const std::vector<GURL>& redirect_chain =
+      navigation_handle->GetRedirectChain();
+  if (redirect_chain.size() < offset) {
+    return;
+  }
+  absl::optional<SuitableOrigin> reporting_origin =
+      SuitableOrigin::Create(redirect_chain[redirect_chain.size() - offset]);
+  if (!reporting_origin) {
+    return;
+  }
+
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
-  attribution_manager->GetDataHostManager()->NotifyNavigationFinished(
-      impression->attribution_src_token);
+  attribution_manager->GetDataHostManager()->NotifyNavigationRegistrationData(
+      impression->attribution_src_token,
+      navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
+      it->second.source_origin, it->second.input_event, impression->nav_type,
+      it->second.is_within_fenced_frame, it->second.initiator_root_frame_id,
+      navigation_handle->GetNavigationId(), impression->runtime_features,
+      is_final_response);
 }
 
 absl::optional<SuitableOrigin>
@@ -317,7 +325,7 @@ void AttributionHost::RegisterDataHost(
   attribution_manager->GetDataHostManager()->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
       render_frame_host->IsNestedWithinFencedFrame(), registration_type,
-      root_frame_host->GetGlobalId());
+      root_frame_host->GetGlobalId(), render_frame_host->navigation_id());
 }
 
 void AttributionHost::RegisterNavigationDataHost(

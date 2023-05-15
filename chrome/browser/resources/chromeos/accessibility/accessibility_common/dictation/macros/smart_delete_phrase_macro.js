@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
 import {Macro, MacroError} from './macro.js';
@@ -14,17 +15,13 @@ export class SmartDeletePhraseMacro extends Macro {
    * @param {string} phrase
    */
   constructor(inputController, phrase) {
-    super(MacroName.SMART_DELETE_PHRASE);
+    super(
+        MacroName.SMART_DELETE_PHRASE,
+        new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
     /** @private {!InputController} */
     this.inputController_ = inputController;
     /** @private {string} */
     this.phrase_ = phrase;
-  }
-
-  /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
   }
 
   /** @override */

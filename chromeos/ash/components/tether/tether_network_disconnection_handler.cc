@@ -32,7 +32,7 @@ TetherNetworkDisconnectionHandler::TetherNetworkDisconnectionHandler(
       disconnect_tethering_request_sender_(disconnect_tethering_request_sender),
       tether_session_completion_logger_(tether_session_completion_logger),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 TetherNetworkDisconnectionHandler::~TetherNetworkDisconnectionHandler() =

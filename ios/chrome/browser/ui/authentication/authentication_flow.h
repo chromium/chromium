@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 
@@ -36,11 +37,13 @@ class Browser;
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being
 //   presented.
+// * `accessPoint` is the sign-in access point
 // * `postSignInAction` represents the action to be taken once `identity` is
 //   signed in.
 // * `presentingViewController` is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController
     NS_DESIGNATED_INITIALIZER;
@@ -68,6 +71,9 @@ class Browser;
 
 // Identity to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;
+
+// Sign-in access point
+@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
 @end
 

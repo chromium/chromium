@@ -17,7 +17,7 @@ class Widget;
 
 namespace ash {
 
-class AuthMetricsRecorder;
+class AuthEventsRecorder;
 class LoginDataDispatcher;
 
 // Base test fixture for testing the views-based login and lock screens. This
@@ -89,7 +89,7 @@ class LoginTestBase : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   std::vector<LoginUserInfo> users_;
-  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
 }  // namespace ash

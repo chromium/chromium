@@ -7,8 +7,8 @@
 
 #import <string>
 
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 // Browser agent used to add or cancel a page placeholder for next navigation.
 class PagePlaceholderBrowserAgent

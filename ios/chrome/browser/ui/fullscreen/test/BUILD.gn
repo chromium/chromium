@@ -37,8 +37,8 @@ source_set("eg_app_support+eg2") {
     "fullscreen_app_interface.mm",
   ]
   deps = [
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/test/app:test_support",

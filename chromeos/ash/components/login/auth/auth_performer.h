@@ -30,8 +30,7 @@ class UserContext;
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
  public:
-  explicit AuthPerformer(
-      base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client);
+  explicit AuthPerformer(UserDataAuthClient* client);
 
   AuthPerformer(const AuthPerformer&) = delete;
   AuthPerformer& operator=(const AuthPerformer&) = delete;
@@ -89,6 +88,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   // Session will become authenticated upon success.
   void AuthenticateUsingKnowledgeKey(std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback);
+
+  // After attempting authentication with `AuthenticateUsingKnowledgeKey`, if
+  // attempt failed, record it in `AuthEventsRecorder`.
+  void MaybeRecordKnowledgeFactorAuthFailure(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
 
   // Attempts to authenticate session using Key in `context`.
   // It is expected that the `challenge_response_keys` field is correctly filled
@@ -170,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       AuthSessionStatusCallback callback,
       absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
 
-  const base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
+  const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};
 };
 

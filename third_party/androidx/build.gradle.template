@@ -16,6 +16,7 @@ dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
     compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-runtime-ktx:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-common:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-common-java8:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-livedata:{{androidx_dependency_version}}'

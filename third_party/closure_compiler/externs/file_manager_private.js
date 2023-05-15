@@ -285,6 +285,8 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   IS_ARBITRARY_SYNC_FOLDER: 'isArbitrarySyncFolder',
   SYNC_STATUS: 'syncStatus',
   PROGRESS: 'progress',
+  SHORTCUT: 'shortcut',
+  SYNC_COMPLETED_TIME: 'syncCompletedTime',
 };
 
 /**
@@ -372,6 +374,23 @@ chrome.fileManagerPrivate.IOTaskType = {
   RESTORE_TO_DESTINATION: 'restore_to_destination',
   TRASH: 'trash',
   ZIP: 'zip',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.fileManagerPrivate.PolicyErrorType = {
+  DLP: 'dlp',
+  ENTERPRISE_CONNECTORS: 'enterprise_connectors',
+  DLP_WARNING_TIMEOUT: 'dlp_warning_timeout',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.fileManagerPrivate.PolicyDialogType = {
+  WARNING: 'warning',
+  ERROR: 'error',
 };
 
 /**
@@ -514,7 +533,9 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isExternalMedia: (boolean|undefined),
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
- *   progress: (number|undefined)
+ *   progress: (number|undefined),
+ *   syncCompletedTime: (number|undefined),
+ *   shortcut: (boolean|undefined)
  * }}
  */
 chrome.fileManagerPrivate.EntryProperties;
@@ -873,6 +894,7 @@ chrome.fileManagerPrivate.ResumeParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
+ *   policyError: (!chrome.fileManagerPrivate.PolicyErrorType|undefined),
  *   sourceName: string,
  *   numRemainingItems: number,
  *   itemCount: number,
@@ -1691,6 +1713,14 @@ chrome.fileManagerPrivate.cancelIOTask = function(taskId) {};
 chrome.fileManagerPrivate.resumeIOTask = function(taskId, params) {};
 
 /**
+ * Shows a policy dialog for a task. Task ids are communicated to the Files App
+ * in each I/O task's progress status.
+ * @param {number} taskId
+ * @param {!chrome.fileManagerPrivate.PolicyDialogType} type
+ */
+chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type) {};
+
+/**
  * Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
  * progress status.
  */
@@ -1729,9 +1759,17 @@ chrome.fileManagerPrivate.openManageSyncSettings = function() {};
 chrome.fileManagerPrivate.parseTrashInfoFiles = function(entries, callback) {};
 
 /**
+ * Returns the current progress of the bulk pinning manager.
  * @param {function(!chrome.fileManagerPrivate.BulkPinProgress): void} callback
  */
 chrome.fileManagerPrivate.getBulkPinProgress = function(callback) {};
+
+/**
+ * Starts calculating the space required to pin all the items in a users My
+ * drive.
+ * @param {function(): void} callback
+ */
+chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = function(callback) {};
 
 /**
  * @type {!ChromeEvent}
@@ -1809,3 +1847,8 @@ chrome.fileManagerPrivate.onIOTaskProgressStatus;
  * @type {!ChromeEvent}
  */
 chrome.fileManagerPrivate.onMountableGuestsChanged;
+
+/**
+ * @type {!ChromeEvent}
+ */
+chrome.fileManagerPrivate.onBulkPinProgress;

@@ -10,6 +10,8 @@
 
 NSString* const kPrivacyTableViewId = @"kPrivacyTableViewId";
 
+NSString* const kPrivacyLockdownModeCellId = @"kPrivacyLockdownModeCellId";
+
 NSString* const kPrivacySafeBrowsingTableViewId =
     @"kPrivacySafeBrowsingTableViewId";
 

@@ -12,11 +12,11 @@ function insertExpectedResult(path, expected)
 {
     if (path.length < 2)
         return;
-    // It's expected that performance.eventCounts.size is non-zero.
-    if (getPropertyPath(path, path.length) == "performance.eventCounts.size")
-        return;
+
+    // Any special properties that may have exemptions should be added in
+    // resources/window-property-collector.js.
     var propertyDir = getPropertyPath(path, path.length - 1);
-    var cachedPropertyDir = "cached_" + propertyDir.replace('.', '_');
+    var cachedPropertyDir = "cached_" + propertyDir.replaceAll(".", "_").replaceAll("[0]", "_0");
     window[cachedPropertyDir] = eval("childWindow." + propertyDir);
     propertiesToVerify.push({
         'property': ["window", cachedPropertyDir, path[path.length - 1]].join("."),

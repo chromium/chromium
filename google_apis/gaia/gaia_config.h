@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
 
   // Constructs a new GaiaConfig from a parsed JSON dictionary.
   // Prefer GetInstance() over this constructor.
-  explicit GaiaConfig(base::Value parsed_config);
+  explicit GaiaConfig(base::Value::Dict parsed_config);
   GaiaConfig(const GaiaConfig&) = delete;
   GaiaConfig& operator=(const GaiaConfig&) = delete;
   ~GaiaConfig();
@@ -77,6 +77,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
       const base::CommandLine* command_line);
 
  private:
+  friend class GaiaUrlsOverriderForTesting;
   friend class GaiaUrlsTest;
   FRIEND_TEST_ALL_PREFIXES(GoogleAPIKeysTest, OverrideAllKeysUsingConfig);
 
@@ -92,7 +93,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
   // Re-reads the config from disk and resets the global instance of GaiaConfig.
   static void ResetInstanceForTesting();
 
-  base::Value parsed_config_;
+  base::Value::Dict parsed_config_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_CONFIG_H_

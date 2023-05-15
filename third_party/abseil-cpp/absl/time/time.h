@@ -84,6 +84,7 @@ struct timeval;
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/strings/string_view.h"
 #include "absl/time/civil_time.h"
@@ -219,7 +220,7 @@ class Duration {
 
   template <typename H>
   friend H AbslHashValue(H h, Duration d) {
-    return H::combine(std::move(h), d.rep_hi_, d.rep_lo_);
+    return H::combine(std::move(h), d.rep_hi_.Get(), d.rep_lo_);
   }
 
  private:
@@ -228,7 +229,79 @@ class Duration {
   friend constexpr Duration time_internal::MakeDuration(int64_t hi,
                                                         uint32_t lo);
   constexpr Duration(int64_t hi, uint32_t lo) : rep_hi_(hi), rep_lo_(lo) {}
-  int64_t rep_hi_;
+
+  // We store `rep_hi_` 4-byte rather than 8-byte aligned to avoid 4 bytes of
+  // tail padding.
+  class HiRep {
+   public:
+    // Default constructor default-initializes `hi_`, which has the same
+    // semantics as default-initializing an `int64_t` (undetermined value).
+    HiRep() = default;
+
+    HiRep(const HiRep&) = default;
+    HiRep& operator=(const HiRep&) = default;
+
+    explicit constexpr HiRep(const int64_t value)
+        :  // C++17 forbids default-initialization in constexpr contexts. We can
+           // remove this in C++20.
+#if defined(ABSL_IS_BIG_ENDIAN) && ABSL_IS_BIG_ENDIAN
+          hi_(0),
+          lo_(0)
+#else
+          lo_(0),
+          hi_(0)
+#endif
+    {
+      *this = value;
+    }
+
+    constexpr int64_t Get() const {
+      const uint64_t unsigned_value =
+          (static_cast<uint64_t>(hi_) << 32) | static_cast<uint64_t>(lo_);
+      // `static_cast<int64_t>(unsigned_value)` is implementation-defined
+      // before c++20. On all supported platforms the behaviour is that mandated
+      // by c++20, i.e. "If the destination type is signed, [...] the result is
+      // the unique value of the destination type equal to the source value
+      // modulo 2^n, where n is the number of bits used to represent the
+      // destination type."
+      static_assert(
+          (static_cast<int64_t>((std::numeric_limits<uint64_t>::max)()) ==
+           int64_t{-1}) &&
+              (static_cast<int64_t>(static_cast<uint64_t>(
+                                        (std::numeric_limits<int64_t>::max)()) +
+                                    1) ==
+               (std::numeric_limits<int64_t>::min)()),
+          "static_cast<int64_t>(uint64_t) does not have c++20 semantics");
+      return static_cast<int64_t>(unsigned_value);
+    }
+
+    constexpr HiRep& operator=(const int64_t value) {
+      // "If the destination type is unsigned, the resulting value is the
+      // smallest unsigned value equal to the source value modulo 2^n
+      // where `n` is the number of bits used to represent the destination
+      // type".
+      const auto unsigned_value = static_cast<uint64_t>(value);
+      hi_ = static_cast<uint32_t>(unsigned_value >> 32);
+      lo_ = static_cast<uint32_t>(unsigned_value);
+      return *this;
+    }
+
+   private:
+    // Notes:
+    //  - Ideally we would use a `char[]` and `std::bitcast`, but the latter
+    //    does not exist (and is not constexpr in `absl`) before c++20.
+    //  - Order is optimized depending on endianness so that the compiler can
+    //    turn `Get()` (resp. `operator=()`) into a single 8-byte load (resp.
+    //    store).
+#if defined(ABSL_IS_BIG_ENDIAN) && ABSL_IS_BIG_ENDIAN
+    uint32_t hi_;
+    uint32_t lo_;
+#else
+    uint32_t lo_;
+    uint32_t hi_;
+#endif
+  };
+  HiRep rep_hi_;
   uint32_t rep_lo_;
 };
 
@@ -1511,7 +1584,7 @@ ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Duration MakeNormalizedDuration(
 
 // Provide access to the Duration representation.
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr int64_t GetRepHi(Duration d) {
-  return d.rep_hi_;
+  return d.rep_hi_.Get();
 }
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr uint32_t GetRepLo(Duration d) {
   return d.rep_lo_;

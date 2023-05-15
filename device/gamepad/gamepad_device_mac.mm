@@ -4,8 +4,10 @@
 
 #include "device/gamepad/gamepad_device_mac.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
@@ -15,6 +17,10 @@
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_mac.h"
 #include "device/gamepad/xbox_hid_controller.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace device {
 
@@ -177,9 +183,8 @@ bool GamepadDeviceMac::AddButtonsAndAxes(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
-  base::ScopedCFTypeRef<CFArrayRef> elements_cf(IOHIDDeviceCopyMatchingElements(
-      device_ref_, nullptr, kIOHIDOptionsTypeNone));
-  NSArray* elements = base::mac::CFToNSCast(elements_cf);
+  base::ScopedCFTypeRef<CFArrayRef> elements(IOHIDDeviceCopyMatchingElements(
+      device_ref_, /*matching=*/nullptr, kIOHIDOptionsTypeNone));
   DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->buttons, 0, sizeof(gamepad->buttons));
@@ -189,8 +194,10 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
   std::vector<IOHIDElementRef> special_element(kSpecialUsagesLen, nullptr);
   size_t button_count = 0;
   size_t unmapped_button_count = 0;
-  for (id elem in elements) {
-    IOHIDElementRef element = reinterpret_cast<IOHIDElementRef>(elem);
+
+  for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+    IOHIDElementRef element =
+        (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
     if (!CheckCollection(element))
       continue;
 
@@ -256,9 +263,8 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
-  base::ScopedCFTypeRef<CFArrayRef> elements_cf(IOHIDDeviceCopyMatchingElements(
+  base::ScopedCFTypeRef<CFArrayRef> elements(IOHIDDeviceCopyMatchingElements(
       device_ref_, nullptr, kIOHIDOptionsTypeNone));
-  NSArray* elements = base::mac::CFToNSCast(elements_cf);
   DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->axes, 0, sizeof(gamepad->axes));
@@ -275,8 +281,9 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   size_t axis_count = 0;
   size_t unmapped_axis_count = 0;
 
-  for (id elem in elements) {
-    IOHIDElementRef element = reinterpret_cast<IOHIDElementRef>(elem);
+  for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+    IOHIDElementRef element =
+        (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
     if (!CheckCollection(element))
       continue;
 
@@ -303,8 +310,9 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   if (unmapped_axis_count > 0) {
     // Insert unmapped axes at unused axis indices.
     size_t axis_index = 0;
-    for (id elem in elements) {
-      IOHIDElementRef element = reinterpret_cast<IOHIDElementRef>(elem);
+    for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+      IOHIDElementRef element =
+          (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
       if (!CheckCollection(element))
         continue;
 

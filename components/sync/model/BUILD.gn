@@ -61,6 +61,7 @@ static_library("model") {
     "sync_metadata_store.h",
     "sync_metadata_store_change_list.cc",
     "sync_metadata_store_change_list.h",
+    "syncable_service.cc",
     "syncable_service.h",
     "syncable_service_based_bridge.cc",
     "syncable_service_based_bridge.h",

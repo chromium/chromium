@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 
 namespace chromeos {
@@ -44,7 +45,7 @@ class TestPrinterConfigurer : public PrinterConfigurer {
                                 PrinterSetupResult result);
 
  private:
-  TestCupsPrintersManager* manager_ = nullptr;
+  raw_ptr<TestCupsPrintersManager, ExperimentalAsh> manager_ = nullptr;
   base::flat_set<std::string> configured_printers_;
   base::flat_map<std::string, PrinterSetupResult> assigned_results_;
 };

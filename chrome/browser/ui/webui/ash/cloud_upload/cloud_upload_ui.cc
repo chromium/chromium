@@ -12,15 +12,18 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/cloud_upload_resources.h"
 #include "chrome/grit/cloud_upload_resources_map.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::cloud_upload {
 
 bool CloudUploadUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      Profile::FromBrowserContext(browser_context));
 }
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
@@ -32,6 +35,7 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"cancel", IDS_CANCEL},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);
@@ -54,6 +58,12 @@ void CloudUploadUI::BindInterface(
     factory_receiver_.reset();
   }
   factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void CloudUploadUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void CloudUploadUI::CreatePageHandler(

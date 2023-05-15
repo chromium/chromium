@@ -42,6 +42,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -496,7 +497,8 @@ class AppListViewTest : public views::ViewsTestBase {
   // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
 
-  AppListView* view_ = nullptr;  // Owned by native widget.
+  raw_ptr<AppListView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
@@ -851,7 +853,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  private:
   AshColorProvider ash_color_provider_;
-  AppListView* view_ = nullptr;          // Owned by native widget.
+  raw_ptr<AppListView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;

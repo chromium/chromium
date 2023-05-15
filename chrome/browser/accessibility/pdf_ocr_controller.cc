@@ -4,8 +4,8 @@
 
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
@@ -77,11 +77,6 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Annotator function of ScreenAI service requires AXScreenAIAnnotator to be
-  // ready to receive OCR accessibility tree data.
-  screen_ai::AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
-      profile_);
-
   component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
 
   // Trigger if the preference is already set.
@@ -103,7 +98,10 @@ void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
   // TODO(crbug.com/1393069): Need to wait for the Screen AI library to be
   // installed if not ready yet. Then, set the AXMode for PDF OCR only when the
   // Screen AI library is downloaded and ready.
-  DCHECK(web_contents);
+  if (!web_contents) {
+    CHECK_IS_TEST();
+    return;
+  }
   // `web_contents` should be a PDF Viewer Mimehandler.
   DCHECK_EQ(web_contents->GetContentsMimeType(), kHtmlMimeType);
 

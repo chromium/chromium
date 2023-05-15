@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -46,7 +46,8 @@ PasswordGenerationDialogViewAndroid::~PasswordGenerationDialogViewAndroid() {
 
 void PasswordGenerationDialogViewAndroid::Show(
     std::u16string& password,
-    base::WeakPtr<password_manager::PasswordManagerDriver> target_frame_driver,
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+        target_frame_driver,
     autofill::password_generation::PasswordGenerationType type) {
   generation_type_ = type;
   target_frame_driver_ = std::move(target_frame_driver);

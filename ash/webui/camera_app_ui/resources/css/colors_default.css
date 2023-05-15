@@ -1,0 +1,190 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file will override dynamic color tokens for a color scheme that is same
+ * as the theme before dynamic color.
+ * TODO(pihsun): Remove this file and all references once dynamic color is
+ * enabled by default.
+ */
+:root {
+  --cros-ref-error40: #f44336;
+  --cros-sys-app_base: var(--grey-900);
+  --cros-sys-base_elevated: var(--grey-900);
+  --cros-sys-error_container: rgba(var(--red-300-rgb), 0.3);
+  --cros-sys-focus_ring: var(--blue-300);
+  --cros-sys-highlight_shape: rgba(var(--blue-300-rgb), 0.3);
+  --cros-sys-hover_on_prominent: rgba(255, 255, 255, 0.08);
+  --cros-sys-hover_on_subtle: rgba(255, 255, 255, 0.06);
+  --cros-sys-illo-color3: var(--blue-300);
+  --cros-sys-inverse_on_surface: black;
+  --cros-sys-inverse_surface: var(--grey-200);
+  --cros-sys-on_background: var(--grey-200);
+  --cros-sys-on_error_container: var(--red-300);
+  --cros-sys-on_primary: var(--grey-900);
+  --cros-sys-on_primary_container: var(--grey-200);
+  --cros-sys-on_surface: var(--grey-200);
+  --cros-sys-primary: var(--blue-300);
+  --cros-sys-scrim: rgba(0, 0, 0, 0.6);
+  --cros-sys-scrim2: rgba(0, 0, 0, 0.6);
+  --cros-sys-secondary: var(--grey-400);
+  --cros-sys-secondary_container: var(--grey-600);
+  --cros-sys-separator: rgba(255, 255, 255, 0.14);
+  --cros-sys-warning: #ffb960;
+}
+
+.mode-item > input:checked + span {
+  background: white;
+  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
+}
+
+.mode-subgroup {
+  backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mode-subgroup > .item input:checked + div.label {
+  background: var(--grey-200);
+  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
+  color: var(--grey-900);
+}
+
+#open-mirror-panel,
+#open-grid-panel,
+#open-timer-panel,
+#open-ptz-panel,
+#toggle-mic {
+  border-radius: 50%;
+}
+
+#open-mirror-panel,
+#open-grid-panel {
+  /* Always use the "on" icon before jelly. */
+  .off-icon {
+    display: none;
+  }
+  .on-icon {
+    display: block;
+  }
+}
+
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel,
+body:is(.timer-10s, .timer-3s) #open-timer-panel,
+body.view-ptz-panel #open-ptz-panel {
+  /* Before jelly, the background size is slightly smaller at 36px */
+  background: radial-gradient(
+    rgba(var(--blue-300-rgb), 0.24) 18px,
+    transparent 19px
+  );
+  :is(svg-wrapper) {
+    color: var(--blue-300);
+  }
+}
+
+body:not(.mic) #toggle-mic {
+  /* Before jelly, the background size is slightly smaller at 36px */
+  background: radial-gradient(
+    var(--cros-sys-error_container) 18px,
+    transparent 19px
+  );
+}
+
+.barcode-scan-box::after {
+  border: var(--border-width) solid white;
+}
+
+.snackbar {
+  background: var(--grey-900);
+  color: var(--grey-200);
+}
+
+.panel {
+  background: rgba(var(--grey-900-rgb), 0.9);
+}
+
+button.shutter {
+  outline-offset: 9px;
+}
+
+.menu {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0.9;
+}
+
+#view-settings {
+  background: initial;
+}
+
+:is(#start-takephoto, #video-snapshot):enabled:active svg-wrapper {
+  color: var(--blue-500);
+}
+
+#view-document-review .document-pages {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#view-document-review .preview-area {
+  background: transparent;
+  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
+  border-radius: 0;
+}
+
+.document-fix-mode .dot::after {
+  background: rgba(var(--blue-300-rgb), 0.24);
+}
+
+.document-fix-mode .crop-area {
+  fill: rgba(var(--blue-300-rgb), 0.3);
+}
+
+.text-button.dark.secondary {
+  background: var(--grey-900);
+  border: 1px solid var(--grey-700);
+  color: var(--blue-300);
+}
+
+.text-button.dark.secondary:hover {
+  background: rgba(var(--blue-300-rgb), 0.08);
+}
+
+.text-button.dark.system-secondary {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.text-button.dark.system-secondary:hover,
+.text-button.dark.system-secondary:focus {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.icon-button {
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+
+#view-document-review .delete {
+  border-radius: 50%;
+}
+
+.fps-button {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+
+  :is(svg-wrapper) {
+    color: var(--grey-400);
+  }
+}
+
+.fps-button.checked {
+  background: var(--blue-300);
+
+  :is(svg-wrapper) {
+    color: var(--grey-900);
+  }
+}
+
+.review-views .button-group button[i18n-text=label_share] svg-wrapper {
+  color: var(--blue-300);
+}

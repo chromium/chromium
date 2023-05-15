@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, CallWindowClose) {
     // execute script in the renderer multiple times to ensure all the pipes
     // are appropriately flushed.
     for (int i = 0; i < 20; ++i)
-      ASSERT_TRUE(content::ExecuteScript(contents, "window.close();"));
+      ASSERT_TRUE(content::ExecJs(contents, "window.close();"));
     // Even though `window.close()` was called 20 times, the close handler
     // should only be invoked once.
     EXPECT_EQ(1u, close_count);

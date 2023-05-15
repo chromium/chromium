@@ -150,7 +150,6 @@ TEST_F(AutofillFeedbackDataUnitTest, CreatesCompleteReport) {
   auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
       kExpectedFeedbackDataJSON,
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-
   ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
   ASSERT_TRUE(expected_data->is_dict());
   EXPECT_EQ(autofill_feedback_data, expected_data->GetDict());

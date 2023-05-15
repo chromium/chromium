@@ -214,6 +214,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   std::unique_ptr<BluetoothDeviceFloss> CreateBluetoothDeviceFloss(
       FlossDeviceId device);
 
+  // Helper function to update device properties if necessary
+  void UpdateDeviceProperties(bool is_triggered_by_inquiry,
+                              const FlossDeviceId& device_found);
+
   // Handle responses to most method calls
   void OnMethodResponse(base::OnceClosure callback,
                         ErrorCallback error_callback,

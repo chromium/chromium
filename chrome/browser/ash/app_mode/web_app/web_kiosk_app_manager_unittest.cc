@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_update_observer.h"
 
 #include <sys/types.h>
@@ -185,7 +186,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxy* app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
 
   // A keyed service not owned by this class.
   raw_ptr<web_app::FakeWebAppProvider> fake_web_app_provider_;

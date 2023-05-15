@@ -4,10 +4,10 @@
 
 #include "media/capture/video/chromeos/camera_3a_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -61,7 +61,7 @@ Camera3AController::Camera3AController(
   capture_metadata_dispatcher_->AddResultMetadataObserver(this);
 
   auto max_regions = GetMetadataEntryAsSpan<int32_t>(
-      static_metadata_,
+      *static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_MAX_REGIONS);
   if (max_regions.empty()) {
     ae_region_supported_ = false;
@@ -73,7 +73,7 @@ Camera3AController::Camera3AController(
   }
 
   auto* af_modes = GetMetadataEntry(
-      static_metadata_,
+      *static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AF_AVAILABLE_MODES);
   if (af_modes) {
     for (const auto& m : (*af_modes)->data) {
@@ -82,7 +82,7 @@ Camera3AController::Camera3AController(
     }
   }
   auto* ae_modes = GetMetadataEntry(
-      static_metadata_,
+      *static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_AVAILABLE_MODES);
   if (ae_modes) {
     for (const auto& m : (*ae_modes)->data) {
@@ -91,7 +91,7 @@ Camera3AController::Camera3AController(
     }
   }
   auto* awb_modes = GetMetadataEntry(
-      static_metadata_,
+      *static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_AVAILABLE_MODES);
   if (awb_modes) {
     for (const auto& m : (*awb_modes)->data) {
@@ -104,7 +104,7 @@ Camera3AController::Camera3AController(
     // Because of line wrapping, multiple if-statements is more readable than a
     // super long boolean expression.
     auto available_modes = GetMetadataEntryAsSpan<uint8_t>(
-        static_metadata_,
+        *static_metadata_,
         cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AVAILABLE_MODES);
     if (available_modes.empty()) {
       return false;
@@ -127,7 +127,7 @@ Camera3AController::Camera3AController(
       return false;
     }
     auto ae_lock_available = GetMetadataEntryAsSpan<uint8_t>(
-        static_metadata_,
+        *static_metadata_,
         cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_LOCK_AVAILABLE);
     if (ae_lock_available.empty()) {
       return false;
@@ -176,7 +176,7 @@ Camera3AController::Camera3AController(
   }
 
   auto request_keys = GetMetadataEntryAsSpan<int32_t>(
-      static_metadata_,
+      *static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_REQUEST_AVAILABLE_REQUEST_KEYS);
   zero_shutter_lag_supported_ = base::Contains(
       request_keys,
@@ -531,7 +531,7 @@ void Camera3AController::SetPointOfInterest(gfx::Point point) {
 
   auto active_array_size = [&]() {
     auto rect = GetMetadataEntryAsSpan<int32_t>(
-        static_metadata_,
+        *static_metadata_,
         cros::mojom::CameraMetadataTag::ANDROID_SENSOR_INFO_ACTIVE_ARRAY_SIZE);
     DCHECK(!rect.empty());
     // (xmin, ymin, width, height)
@@ -545,10 +545,10 @@ void Camera3AController::SetPointOfInterest(gfx::Point point) {
 
   // (xmin, ymin, xmax, ymax, weight)
   std::vector<int32_t> region = {
-      base::clamp(point.x() - roi_radius, 0, active_array_size.width() - 1),
-      base::clamp(point.y() - roi_radius, 0, active_array_size.height() - 1),
-      base::clamp(point.x() + roi_radius, 0, active_array_size.width() - 1),
-      base::clamp(point.y() + roi_radius, 0, active_array_size.height() - 1),
+      std::clamp(point.x() - roi_radius, 0, active_array_size.width() - 1),
+      std::clamp(point.y() - roi_radius, 0, active_array_size.height() - 1),
+      std::clamp(point.x() + roi_radius, 0, active_array_size.width() - 1),
+      std::clamp(point.y() + roi_radius, 0, active_array_size.height() - 1),
       1,
   };
 

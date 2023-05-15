@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.favicon;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +19,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,15 +75,15 @@ public class FaviconHelper {
                                                       : R.drawable.default_favicon;
         }
 
-        private Bitmap createBitmap(Resources resources, int resourceId, boolean useDarkIcon) {
+        private Bitmap createBitmap(Context context, int resourceId, boolean useDarkIcon) {
+            Resources resources = context.getResources();
             Bitmap origBitmap = BitmapFactory.decodeResource(resources, resourceId);
             Bitmap tintedBitmap = Bitmap.createBitmap(
                     origBitmap.getWidth(), origBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(tintedBitmap);
-            @ColorInt
-            int tintColor = ApiCompatibilityUtils.getColor(resources,
-                    useDarkIcon ? R.color.default_icon_color_baseline
-                                : R.color.default_icon_color_light);
+            final @ColorInt int tintColor =
+                    context.getColor(useDarkIcon ? R.color.default_icon_color_baseline
+                                                 : R.color.default_icon_color_light);
             Paint p = new Paint();
             p.setColorFilter(new PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN));
             c.drawBitmap(origBitmap, 0f, 0f, p);
@@ -92,17 +92,17 @@ public class FaviconHelper {
 
         /**
          * Generate a default favicon bitmap for the given URL.
-         * @param resources The {@link Resources} to fetch the icons.
+         * @param context The {@link Context} to fetch the icons and tint.
          * @param url The URL of the page whose icon is being generated.
          * @param useDarkIcon Whether a dark icon should be used.
          * @return The favicon.
          */
-        public Bitmap getDefaultFaviconBitmap(Resources resources, GURL url, boolean useDarkIcon) {
+        public Bitmap getDefaultFaviconBitmap(Context context, GURL url, boolean useDarkIcon) {
             boolean isInternal = UrlUtilities.isInternalScheme(url);
             Bitmap bitmap = isInternal ? (useDarkIcon ? mChromeDarkBitmap : mChromeLightBitmap)
                                        : (useDarkIcon ? mDefaultDarkBitmap : mDefaultLightBitmap);
             if (bitmap != null) return bitmap;
-            bitmap = createBitmap(resources, getResourceId(url), useDarkIcon);
+            bitmap = createBitmap(context, getResourceId(url), useDarkIcon);
             if (isInternal && useDarkIcon) {
                 mChromeDarkBitmap = bitmap;
             } else if (isInternal) {
@@ -117,26 +117,25 @@ public class FaviconHelper {
 
         /**
          * Generate a default favicon drawable for the given URL.
-         * @param resources The {@link Resources} used to fetch the default icons.
+         * @param context The {@link Context} used to fetch the default icons and tint.
          * @param url The URL of the page whose icon is being generated.
          * @param useDarkIcon Whether a dark icon should be used.
          * @return The favicon.
          */
-        public Drawable getDefaultFaviconDrawable(
-                Resources resources, GURL url, boolean useDarkIcon) {
+        public Drawable getDefaultFaviconDrawable(Context context, GURL url, boolean useDarkIcon) {
             return new BitmapDrawable(
-                    resources, getDefaultFaviconBitmap(resources, url, useDarkIcon));
+                    context.getResources(), getDefaultFaviconBitmap(context, url, useDarkIcon));
         }
 
         /**
          * Gives the favicon for given resource id with current theme.
-         * @param resources The {@link Resources} used to fetch the default icons.
+         * @param context The {@link Context} used to fetch the default icons and tint.
          * @param resourceId The integer that represents the id of the icon.
          * @param useDarkIcon Whether a dark icon should be used.
          * @return The favicon
          */
-        public Bitmap getThemifiedBitmap(Resources resources, int resourceId, boolean useDarkIcon) {
-            return createBitmap(resources, resourceId, useDarkIcon);
+        public Bitmap getThemifiedBitmap(Context context, int resourceId, boolean useDarkIcon) {
+            return createBitmap(context, resourceId, useDarkIcon);
         }
 
         /** Clears any of the cached default drawables. */

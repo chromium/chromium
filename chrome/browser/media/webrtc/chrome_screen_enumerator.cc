@@ -141,10 +141,7 @@ void ChromeScreenEnumerator::EnumerateScreens(
     blink::mojom::MediaStreamType stream_type,
     ScreensCallback screens_callback) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK((base::FeatureList::IsEnabled(features::kGetDisplayMediaSet) &&
-          base::FeatureList::IsEnabled(
-              features::kGetDisplayMediaSetAutoSelectAllScreens)) ||
-         base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia));
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia));
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(

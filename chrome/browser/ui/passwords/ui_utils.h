@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -101,6 +102,7 @@ bool IsSyncingAutosignSetting(Profile* profile);
 GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
 
+#if !BUILDFLAG(IS_ANDROID)
 // Navigates to the Google Password Manager, i.e. passwords.google.com.
 void NavigateToGooglePasswordManager(
     Profile* profile,
@@ -115,6 +117,7 @@ void NavigateToManagePasswordsPage(
 
 // Navigates to Passwords Checkup page.
 void NavigateToPasswordCheckupPage(Profile* profile);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
     content::WebContents* web_contents);

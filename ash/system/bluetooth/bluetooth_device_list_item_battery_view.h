@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,8 +47,8 @@ class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
 
   absl::optional<uint8_t> last_shown_battery_percentage_;
 
-  views::Label* label_ = nullptr;
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
 };
 
 }  // namespace ash

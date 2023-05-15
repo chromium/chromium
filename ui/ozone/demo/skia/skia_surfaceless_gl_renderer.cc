@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/display/types/display_snapshot.h"
@@ -141,7 +142,7 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
   texture_info.fFormat = GL_BGRA8_EXT;
   GrBackendTexture backend_texture(size_.width(), size_.height(),
                                    GrMipMapped::kNo, texture_info);
-  sk_surface_ = SkSurface::MakeFromBackendTexture(
+  sk_surface_ = SkSurfaces::WrapBackendTexture(
       gr_context, backend_texture, kTopLeft_GrSurfaceOrigin, 0,
       kBGRA_8888_SkColorType, nullptr, nullptr);
   if (!sk_surface_) {

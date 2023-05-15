@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ClearAccounts" enum="KerberosErrorType"
-    expires_after="2023-08-13">
+    expires_after="2023-10-22">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>

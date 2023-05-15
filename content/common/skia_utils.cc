@@ -39,12 +39,11 @@ void InitializeSkia() {
     SkGraphics::Init();
   }
 
-  InitializeSkiaAnalyticAntialiasing();
-
   const int kMB = 1024 * 1024;
   size_t font_cache_limit;
 #if BUILDFLAG(IS_ANDROID)
-  font_cache_limit = base::SysInfo::IsLowEndDevice() ? kMB : 8 * kMB;
+  font_cache_limit =
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() ? kMB : 8 * kMB;
   SkGraphics::SetFontCacheLimit(font_cache_limit);
 #else
   if (cmd.HasSwitch(switches::kSkiaFontCacheLimitMb)) {
@@ -77,14 +76,6 @@ void InitializeSkia() {
 
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(
       kImageCacheSingleAllocationByteLimit);
-}
-
-void InitializeSkiaAnalyticAntialiasing() {
-  const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
-
-  if (cmd.HasSwitch(switches::kForceSkiaAnalyticAntialiasing)) {
-    SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
-  }
 }
 
 }  // namespace content

@@ -9,7 +9,7 @@
 
 #import <memory>
 
-#import "base/mac/bridging.h"
+#import "base/apple/bridging.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "crypto/rsa_private_key.h"
@@ -61,7 +61,7 @@ NSDictionary* MakeTestSSLCertErrorUserInfo() {
 base::ScopedCFTypeRef<SecTrustRef> CreateTestTrust(NSArray* cert_chain) {
   base::ScopedCFTypeRef<SecPolicyRef> policy(SecPolicyCreateBasicX509());
   SecTrustRef trust = nullptr;
-  SecTrustCreateWithCertificates(base::mac::NSToCFPtrCast(cert_chain), policy,
+  SecTrustCreateWithCertificates(base::apple::NSToCFPtrCast(cert_chain), policy,
                                  &trust);
   return base::ScopedCFTypeRef<SecTrustRef>(trust);
 }
@@ -153,8 +153,9 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   }];
 
   // Verify policies.
-  CFArrayRef policies = nullptr;
-  EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(), &policies));
+  base::ScopedCFTypeRef<CFArrayRef> policies;
+  EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(),
+                                                policies.InitializeInto()));
   EXPECT_EQ(1, CFArrayGetCount(policies));
   SecPolicyRef policy = (SecPolicyRef)CFArrayGetValueAtIndex(policies, 0);
   base::ScopedCFTypeRef<CFDictionaryRef> properties(
@@ -162,7 +163,6 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   NSString* name = static_cast<NSString*>(
       CFDictionaryGetValue(properties.get(), kSecPolicyName));
   EXPECT_NSEQ(kTestHost, name);
-  CFRelease(policies);
 }
 
 // Tests CreateServerTrustFromChain with nil chain.

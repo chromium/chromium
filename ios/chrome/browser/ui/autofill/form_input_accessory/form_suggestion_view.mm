@@ -6,11 +6,14 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "base/mac/foundation_util.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -151,6 +154,11 @@ const CGFloat kSuggestionHorizontalMargin = 6;
                                          numSuggestions:[self.suggestions count]
                                                delegate:self];
     [self.stackView addArrangedSubview:label];
+    if (idx == 0 && suggestion.featureForIPH.length > 0) {
+      // Track the first element.
+      [self.layoutGuideCenter referenceView:label
+                                  underName:kAutofillFirstSuggestionGuide];
+    }
   };
   [self.suggestions enumerateObjectsUsingBlock:setupBlock];
   if (self.trailingView) {

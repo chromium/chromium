@@ -479,8 +479,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   // Test for copy (nosync).
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file1,
-                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
+                from_file, to_file1, {CopyOrMoveOption::kPreserveLastModified},
                 NativeFileUtil::COPY_NOSYNC));
 
   base::File::Info file_info2;
@@ -492,8 +491,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   // Test for copy (sync).
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file2,
-                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
+                from_file, to_file2, {CopyOrMoveOption::kPreserveLastModified},
                 NativeFileUtil::COPY_SYNC));
 
   ASSERT_TRUE(FileExists(to_file2));
@@ -504,8 +502,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   // Test for move.
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file3,
-                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
+                from_file, to_file3, {CopyOrMoveOption::kPreserveLastModified},
                 NativeFileUtil::MOVE));
 
   ASSERT_TRUE(FileExists(to_file3));
@@ -555,8 +552,7 @@ TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::COPY_NOSYNC));
 #if BUILDFLAG(IS_POSIX)
   ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
@@ -568,8 +564,7 @@ TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::COPY_SYNC));
 #if BUILDFLAG(IS_POSIX)
   ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
@@ -581,8 +576,7 @@ TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::MOVE));
 #if BUILDFLAG(IS_POSIX)
   ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
@@ -657,9 +651,8 @@ TEST_F(NativeFileUtilTest, PreserveLastModifiedAndDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file1,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveLastModified,
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveLastModified,
+                 CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::COPY_NOSYNC));
   base::File::Info to_file_info;
   ASSERT_TRUE(FileExists(to_file1));
@@ -677,9 +670,8 @@ TEST_F(NativeFileUtilTest, PreserveLastModifiedAndDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file2,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveLastModified,
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveLastModified,
+                 CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::COPY_SYNC));
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::GetFileInfo(to_file2, &to_file_info));
@@ -695,9 +687,8 @@ TEST_F(NativeFileUtilTest, PreserveLastModifiedAndDestinationPermissions) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file3,
-                CopyOrMoveOptionSet(
-                    CopyOrMoveOption::kPreserveLastModified,
-                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                {CopyOrMoveOption::kPreserveLastModified,
+                 CopyOrMoveOption::kPreserveDestinationPermissions},
                 NativeFileUtil::MOVE));
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::GetFileInfo(to_file3, &to_file_info));

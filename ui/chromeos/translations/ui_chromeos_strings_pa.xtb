@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ਸੂਚੀ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ਫਾਈਲਾਂ ਚੁਣੀਆਂ</translation>
 <translation id="2383454254762599978">ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="2387458720915042159">ਪ੍ਰੌਕਸੀ ਕਨੈਕਸ਼ਨ ਕਿਸਮ</translation>
 <translation id="2389832672041313158">ਬਰਮੀ (ਮਿਆਂਮਾਰ)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ਡੀਵਾਈਸ ਸਿਰਫ਼-ਪੜ੍ਹਨਯੋਗ ਹੈ</translation>
 <translation id="4826849268470072925">ਤਮਿਲ ITRANS</translation>
 <translation id="482932175346970750">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ਟਾਈਪ ਕਰੋ</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ਆਈਟਮਾਂ ਚੁਣੀਆਂ ਗਈਆਂ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485316830061041779">ਜਰਮਨ</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">ਸਵੀਡਿਸ਼</translation>
 <translation id="6990081529015358884">ਤੁਹਾਡਾ ਸਪੇਸ ਖ਼ਤਮ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
 <translation id="6993826899923627728">ਇਹ ਆਈਟਮਾਂ ਤੁਹਾਡੀ ਰੱਦੀ ਵਿੱਚ ਹਨ</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ਫੋਲਡਰ ਚੁਣੇ</translation>
 <translation id="7008426324576352165">ਅੱਪਲੋਡ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਹੋਰ ਸਟੋਰੇਜ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="7009985720488544166">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ <ph name="COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਲਿਜਾਉਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +787,7 @@
 <translation id="7252604552361840748">ਉੱਪਰ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਲੱਭੋ</translation>
 <translation id="7256405249507348194">ਬੇਪਛਾਣ ਗੜਬੜ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ਉਪਲਬਧ ਸੇਵਾਵਾਂ</translation>
+<translation id="7291818353625820805">ਕੀ ਦੁਹਰਾਉਣ ਲਈ ਕੁੰਜੀਆਂ ਚਾਹੁੰਦੇ ਹੋ? ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਬੰਦ ਕਰੋ</translation>
 <translation id="7292816689782057017">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਕੁਝ ਟਿਕਾਣਿਆਂ 'ਤੇ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7294063083760278948">ਤੇਲਗੂ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="7295662345261934369">ਹੋਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>

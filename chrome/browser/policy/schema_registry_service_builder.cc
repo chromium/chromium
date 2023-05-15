@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -97,12 +96,6 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
         connector->GetDeviceCloudPolicyManager();
     if (cloud_manager)
       cloud_manager->SetSigninProfileSchemaRegistry(registry.get());
-
-    policy::DeviceActiveDirectoryPolicyManager* active_directory_manager =
-        connector->GetDeviceActiveDirectoryPolicyManager();
-    if (active_directory_manager) {
-      active_directory_manager->SetSigninProfileSchemaRegistry(registry.get());
-    }
   }
 #endif
 

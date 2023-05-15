@@ -221,6 +221,11 @@ class ContentSettingsPattern {
   // Returns a std::string representation of this pattern.
   std::string ToString() const;
 
+  // Returns a valid URL that matches the pattern if a host part is specified.
+  // If the pattern matches a file:// scheme, the path needs to be specified.
+  // Returns GURL() otherwise.
+  GURL ToRepresentativeUrl() const;
+
   // Returns scheme type of pattern.
   ContentSettingsPattern::SchemeType GetScheme() const;
 

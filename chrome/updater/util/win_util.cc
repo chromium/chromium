@@ -28,7 +28,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
@@ -44,6 +43,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -61,6 +61,7 @@
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -226,7 +227,8 @@ HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
                                        HANDLE* unique_event) {
   CHECK(unique_event);
 
-  const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
+  const std::wstring event_name =
+      base::ASCIIToWide(base::Uuid::GenerateRandomV4().AsLowercaseString());
   NamedObjectAttributes attr =
       GetNamedObjectAttributes(event_name.c_str(), scope);
 
@@ -355,6 +357,14 @@ std::wstring GetAppClientStateKey(const std::wstring& app_id) {
   return base::StrCat({CLIENT_STATE_KEY, app_id});
 }
 
+std::wstring GetAppCohortKey(const std::string& app_id) {
+  return GetAppCohortKey(base::ASCIIToWide(app_id));
+}
+
+std::wstring GetAppCohortKey(const std::wstring& app_id) {
+  return base::StrCat({COHORT_KEY, app_id});
+}
+
 std::wstring GetAppCommandKey(const std::wstring& app_id,
                               const std::wstring& command_id) {
   return base::StrCat(
@@ -423,11 +433,6 @@ base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
   return token_handle;
 }
 
-bool PathOwnedByUser(const base::FilePath& path) {
-  // TODO(crbug.com/1147094): Implement for Win.
-  return true;
-}
-
 HResultOr<bool> IsTokenAdmin(HANDLE token) {
   SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
   PSID administrators_group = nullptr;
@@ -436,8 +441,7 @@ HResultOr<bool> IsTokenAdmin(HANDLE token) {
                                   &administrators_group)) {
     return base::unexpected(HRESULTFromLastError());
   }
-  base::ScopedClosureRunner free_sid(
-      base::BindOnce([](PSID sid) { ::FreeSid(sid); }, administrators_group));
+  absl::Cleanup free_sid = [&] { ::FreeSid(administrators_group); };
   BOOL is_member = false;
   if (!::CheckTokenMembership(token, administrators_group, &is_member))
     return base::unexpected(HRESULTFromLastError());
@@ -470,54 +474,44 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
 HResultOr<bool> IsCOMCallerAdmin() {
   ScopedKernelHANDLE token;
 
+  HRESULT hr = ::CoImpersonateClient();
+  if (hr == RPC_E_CALL_COMPLETE) {
+    // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
+    return base::ok(::IsUserAnAdmin());
+  }
+
+  if (FAILED(hr)) {
+    return base::unexpected(hr);
+  }
+
   {
-    HRESULT hr = ::CoImpersonateClient();
-    if (hr == RPC_E_CALL_COMPLETE) {
-      // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
-      return base::ok(::IsUserAnAdmin());
-    }
-
-    if (FAILED(hr)) {
-      return base::unexpected(hr);
-    }
-
-    base::ScopedClosureRunner co_revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
-
+    absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       hr = HRESULTFromLastError();
-      LOG(ERROR) << __func__ << ": ::OpenThreadToken failed: " << std::hex
-                 << hr;
+      LOG(ERROR) << "::OpenThreadToken failed: " << std::hex << hr;
       return base::unexpected(hr);
     }
   }
 
-  HResultOr<bool> result = IsTokenAdmin(token.get());
-  if (!result.has_value()) {
-    HRESULT hr = result.error();
-    CHECK(FAILED(hr));
-    LOG(ERROR) << __func__ << ": IsTokenAdmin failed: " << std::hex << hr;
-  }
-  return result;
+  return IsTokenAdmin(token.get()).transform_error([](HRESULT error) {
+    CHECK(FAILED(error));
+    LOG(ERROR) << "IsTokenAdmin failed: " << std::hex << error;
+    return error;
+  });
 }
 
 bool IsUACOn() {
   // The presence of a split token definitively indicates that UAC is on. But
   // the absence of the token does not necessarily indicate that UAC is off.
   HResultOr<bool> is_split_token = IsUserRunningSplitToken();
-  if (is_split_token.has_value() && is_split_token.value())
-    return true;
-
-  return IsExplorerRunningAtMediumOrLower();
+  return (is_split_token.has_value() && is_split_token.value()) ||
+         IsExplorerRunningAtMediumOrLower();
 }
 
 bool IsElevatedWithUACOn() {
   HResultOr<bool> is_user_admin = IsUserAdmin();
-  if (is_user_admin.has_value() && !is_user_admin.value())
-    return false;
-
-  return IsUACOn();
+  return (!is_user_admin.has_value() || is_user_admin.value()) && IsUACOn();
 }
 
 std::string GetUACState() {
@@ -528,13 +522,13 @@ std::string GetUACState() {
     base::StringAppendF(&s, "IsUserAdmin: %d, ", is_user_admin.value());
 
   HResultOr<bool> is_user_non_elevated_admin = IsUserNonElevatedAdmin();
-  if (is_user_non_elevated_admin.has_value())
+  if (is_user_non_elevated_admin.has_value()) {
     base::StringAppendF(&s, "IsUserNonElevatedAdmin: %d, ",
                         is_user_non_elevated_admin.value());
+  }
 
-  base::StringAppendF(&s, "IsUACOn: %d, ", IsUACOn());
-  base::StringAppendF(&s, "IsElevatedWithUACOn: %d", IsElevatedWithUACOn());
-
+  base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d", IsUACOn(),
+                      IsElevatedWithUACOn());
   return s;
 }
 
@@ -566,12 +560,11 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
   CHECK(!file_path.empty());
 
   const HWND hwnd = CreateForegroundParentWindowForUAC();
-  const base::ScopedClosureRunner destroy_window(base::BindOnce(
-      [](HWND hwnd) {
-        if (hwnd)
-          ::DestroyWindow(hwnd);
-      },
-      hwnd));
+  const absl::Cleanup destroy_window = [&] {
+    if (hwnd) {
+      ::DestroyWindow(hwnd);
+    }
+  };
 
   SHELLEXECUTEINFO shell_execute_info = {};
   shell_execute_info.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -858,9 +851,8 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::ScopedTempDir temp_dir_owner;
   if (temp_dir_owner.Set(temp_dir)) {
     return temp_dir_owner;
-  } else {
-    return absl::nullopt;
   }
+  return absl::nullopt;
 }
 
 base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
@@ -1129,6 +1121,19 @@ void LogClsidEntries(REFCLSID clsid) {
       }
     }
   }
+}
+
+absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
+  if (!IsSystemInstall(scope)) {
+    return GetInstallDirectory(scope);
+  }
+  base::FilePath install_dir;
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &install_dir)) {
+    LOG(ERROR) << "Can't retrieve directory for DIR_PROGRAM_FILESX86.";
+    return absl::nullopt;
+  }
+  return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
 }  // namespace updater

@@ -8,21 +8,19 @@ var getIframe = function() { return document.querySelector('iframe'); };
 
 window.tests = {
   canReadClipboard: function() {
-    domAutomationController.send(document.execCommand('paste'));
+    return document.execCommand('paste');
   },
 
   canWriteClipboard: function() {
-    domAutomationController.send(document.execCommand('copy'));
+    return document.execCommand('copy');
   },
 
   canReadClipboardInAboutBlankFrame: function() {
-    domAutomationController.send(
-        getIframe().contentDocument.execCommand('paste'));
+    return getIframe().contentDocument.execCommand('paste');
   },
 
   canWriteClipboardInAboutBlankFrame: function() {
-    domAutomationController.send(
-        getIframe().contentDocument.execCommand('copy'));
+    return getIframe().contentDocument.execCommand('copy');
   },
 };
 

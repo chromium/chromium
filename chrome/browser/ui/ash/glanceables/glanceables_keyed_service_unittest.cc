@@ -59,12 +59,15 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
 
 TEST_F(GlanceablesKeyedServiceTest, RegistersClientsInAsh) {
   auto* const controller = Shell::Get()->glanceables_v2_controller();
+  EXPECT_FALSE(controller->GetClassroomClient());
   EXPECT_FALSE(controller->GetTasksClient());
 
   auto service = std::make_unique<GlanceablesKeyedService>(profile());
+  EXPECT_TRUE(controller->GetClassroomClient());
   EXPECT_TRUE(controller->GetTasksClient());
 
   service->Shutdown();
+  EXPECT_FALSE(controller->GetClassroomClient());
   EXPECT_FALSE(controller->GetTasksClient());
 }
 
@@ -72,6 +75,7 @@ TEST_F(GlanceablesKeyedServiceTest,
        DoesNotRegisterClientsInAshForNonPrimaryUser) {
   auto* const controller = Shell::Get()->glanceables_v2_controller();
   auto service = std::make_unique<GlanceablesKeyedService>(profile());
+  EXPECT_TRUE(controller->GetClassroomClient());
   EXPECT_TRUE(controller->GetTasksClient());
 
   const auto first_account_id = AccountId::FromUserEmail(kPrimaryProfileName);
@@ -84,9 +88,11 @@ TEST_F(GlanceablesKeyedServiceTest,
   session_controller_client()->AddUserSession(kSecondaryProfileName);
 
   session_controller_client()->SwitchActiveUser(second_account_id);
+  EXPECT_FALSE(controller->GetClassroomClient());
   EXPECT_FALSE(controller->GetTasksClient());
 
   session_controller_client()->SwitchActiveUser(first_account_id);
+  EXPECT_TRUE(controller->GetClassroomClient());
   EXPECT_TRUE(controller->GetTasksClient());
 }
 

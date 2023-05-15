@@ -1,0 +1,112 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/constants/ash_features.h"
+#include "ash/system/unified/power_button.h"
+#include "ash/system/unified/quick_settings_footer.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view.h"
+
+namespace ash {
+
+// Pixel tests for the quick settings Power button and menu.
+class PowerButtonPixelTest : public NoSessionAshTestBase {
+ public:
+  PowerButtonPixelTest() {
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, chromeos::features::kJelly}, {});
+  }
+
+  // AshTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams();
+  }
+
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+    UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
+    system_tray->ShowBubble();
+    button_ = system_tray->bubble()
+                  ->quick_settings_view()
+                  ->footer_for_testing()
+                  ->power_button_for_testing();
+  }
+
+ protected:
+  views::View* GetMenuView() {
+    return button_->GetMenuViewForTesting()->GetSubmenu();
+  }
+
+  PowerButton* GetPowerButton() { return button_; }
+
+  // Simulates mouse press event on the power button.
+  void SimulatePowerButtonPress() { LeftClickOn(button_->button_content_); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  // Owned by view hierarchy.
+  raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
+};
+
+TEST_F(PowerButtonPixelTest, NoSession) {
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_button",
+      /*revision_number=*/0, GetPowerButton()));
+
+  SimulatePowerButtonPress();
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_menu",
+      /*revision_number=*/0, GetMenuView()));
+}
+
+TEST_F(PowerButtonPixelTest, LoginSession) {
+  CreateUserSessions(1);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_button",
+      /*revision_number=*/0, GetPowerButton()));
+
+  SimulatePowerButtonPress();
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_menu",
+      /*revision_number=*/0, GetMenuView()));
+}
+
+TEST_F(PowerButtonPixelTest, LockScreenSession) {
+  CreateUserSessions(1);
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_button",
+      /*revision_number=*/0, GetPowerButton()));
+
+  SimulatePowerButtonPress();
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_menu",
+      /*revision_number=*/0, GetMenuView()));
+}
+
+TEST_F(PowerButtonPixelTest, GuestMode) {
+  SimulateGuestLogin();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_button",
+      /*revision_number=*/0, GetPowerButton()));
+
+  SimulatePowerButtonPress();
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "check_menu",
+      /*revision_number=*/0, GetMenuView()));
+}
+}  // namespace ash

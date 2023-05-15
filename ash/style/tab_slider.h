@@ -5,7 +5,10 @@
 #ifndef ASH_STYLE_TAB_SLIDER_H_
 #define ASH_STYLE_TAB_SLIDER_H_
 
+#include <cstddef>
+
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -44,14 +47,15 @@ class ASH_EXPORT TabSlider : public views::View {
   ~TabSlider() override;
 
   views::View* GetSelectorView();
+  TabSliderButton* GetButtonAtIndex(size_t index);
 
   // Add a button with the button's unique pointer. For example
   // AddButton(std::make_unique<SliderButtonType>(...)).
   template <typename T>
   T* AddButton(std::unique_ptr<T> button) {
-    T* raw_ptr = button.get();
+    T* button_ptr = button.get();
     AddButtonInternal(button.release());
-    return raw_ptr;
+    return button_ptr;
   }
 
   // Add a button with the button's ctor arguments. For example
@@ -91,7 +95,7 @@ class ASH_EXPORT TabSlider : public views::View {
   void OnEnabledStateChanged();
 
   // Owned by view hierarchy.
-  SelectorView* selector_view_;
+  raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
   std::vector<TabSliderButton*> buttons_;
 
   // Parameters for a custom layout. Set by either individual buttons, or

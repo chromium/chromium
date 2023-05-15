@@ -1,6 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
@@ -8,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
 
+import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -39,11 +43,11 @@ const CategoriesElementBase = HelpBubbleMixin(PolymerElement) as
 
 export interface CategoriesElement {
   $: {
-    backButton: HTMLElement,
-    classicChromeTile: HTMLElement,
-    uploadImageTile: HTMLElement,
     chromeWebStoreTile: HTMLElement,
     chromeColorsTile: HTMLElement,
+    classicChromeTile: HTMLElement,
+    heading: SpHeading,
+    uploadImageTile: HTMLElement,
   };
 }
 
@@ -118,7 +122,7 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   focusOnBackButton() {
-    this.$.backButton.focus();
+    this.$.heading.getBackButton().focus();
   }
 
   private onCollectionsRendered_() {

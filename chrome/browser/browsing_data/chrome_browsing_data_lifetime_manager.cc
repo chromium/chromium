@@ -24,6 +24,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -159,13 +160,20 @@ class BrowsingDataRemoverObserver
 uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    std::string data_type_str = data_type.GetString();
-    if (data_type_str ==
-        browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
-      result |= content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kHostedAppData) {
-      result |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
+    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+        browsing_data::NameToPolicyDataType(data_type.GetString());
+    if (!policy_data_type.has_value()) {
+      continue;
+    }
+    switch (*policy_data_type) {
+      case browsing_data::PolicyDataType::kCookiesAndOtherSiteData:
+        result |= content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
+        break;
+      case browsing_data::PolicyDataType::kHostedAppData:
+        result |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
+        break;
+      default:
+        break;
     }
   }
   return result;
@@ -174,29 +182,39 @@ uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
 uint64_t GetRemoveMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    std::string data_type_str = data_type.GetString();
-    if (data_type_str == browsing_data::policy_data_types::kBrowsingHistory) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kDownloadHistory) {
-      result |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kCachedImagesAndFiles) {
-      result |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kPasswordSignin) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
-    } else if (data_type_str == browsing_data::policy_data_types::kAutofill) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kSiteSettings) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kHostedAppData) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+        browsing_data::NameToPolicyDataType(data_type.GetString());
+    if (!policy_data_type.has_value()) {
+      continue;
+    }
+    switch (*policy_data_type) {
+      case browsing_data::PolicyDataType::kBrowsingHistory:
+        result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
+        break;
+      case browsing_data::PolicyDataType::kDownloadHistory:
+        result |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
+        break;
+      case browsing_data::PolicyDataType::kCookiesAndOtherSiteData:
+        result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+        break;
+      case browsing_data::PolicyDataType::kCachedImagesAndFiles:
+        result |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
+        break;
+      case browsing_data::PolicyDataType::kPasswordSignin:
+        result |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
+        break;
+      case browsing_data::PolicyDataType::kAutofill:
+        result |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
+        break;
+      case browsing_data::PolicyDataType::kSiteSettings:
+        result |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
+        break;
+      case browsing_data::PolicyDataType::kHostedAppData:
+        result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+        break;
+      case browsing_data::PolicyDataType::kNumTypes:
+        NOTREACHED();
+        break;
     }
   }
   return result;
@@ -207,13 +225,13 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings;
   for (const auto& setting : browsing_data_settings) {
     const auto* data_types =
-        setting.FindListKey(browsing_data::policy_fields::kDataTypes);
-    const auto time_to_live_in_hours =
-        setting.FindIntKey(browsing_data::policy_fields::kTimeToLiveInHours);
-
-    scheduled_removals_settings.push_back(
-        {GetRemoveMask(data_types->GetList()),
-         GetOriginTypeMask(data_types->GetList()), *time_to_live_in_hours});
+        setting.GetDict().FindList(browsing_data::policy_fields::kDataTypes);
+    const auto time_to_live_in_hours = setting.GetDict().FindInt(
+        browsing_data::policy_fields::kTimeToLiveInHours);
+    DCHECK(data_types);
+    scheduled_removals_settings.push_back({GetRemoveMask(*data_types),
+                                           GetOriginTypeMask(*data_types),
+                                           *time_to_live_in_hours});
   }
   return scheduled_removals_settings;
 }
@@ -245,19 +263,6 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
 }  // namespace
 
 namespace browsing_data {
-
-namespace policy_data_types {
-
-const char kBrowsingHistory[] = "browsing_history";
-const char kDownloadHistory[] = "download_history";
-const char kCookiesAndOtherSiteData[] = "cookies_and_other_site_data";
-const char kCachedImagesAndFiles[] = "cached_images_and_files";
-const char kPasswordSignin[] = "password_signin";
-const char kAutofill[] = "autofill";
-const char kSiteSettings[] = "site_settings";
-const char kHostedAppData[] = "hosted_app_data";
-
-}  // namespace policy_data_types
 
 namespace policy_fields {
 

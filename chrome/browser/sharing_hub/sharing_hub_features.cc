@@ -49,8 +49,7 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
 }
 
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
-  return (base::FeatureList::IsEnabled(kDesktopScreenshots) ||
-          share::AreUpcomingSharingFeaturesEnabled()) &&
+  return base::FeatureList::IsEnabled(kDesktopScreenshots) &&
          !ScreenshotsDisabledByPolicy(context);
 }
 

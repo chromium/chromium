@@ -219,4 +219,8 @@ gfx::CALayerResult OverlayProcessorInterface::GetCALayerErrorCode() const {
   return gfx::kCALayerSuccess;
 }
 
+gfx::RectF OverlayProcessorInterface::GetUnassignedDamage() const {
+  return gfx::RectF();
+}
+
 }  // namespace viz

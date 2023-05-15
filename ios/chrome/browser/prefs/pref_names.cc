@@ -15,6 +15,9 @@ const char kAppStoreRatingPolicyEnabled[] = "ios.app_store_rating_enabled";
 // Boolean that is true when Suggest support is enabled.
 const char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 
+// Boolean which indicates if the omnibox should be at the bottom of the screen.
+const char kBottomOmnibox[] = "ios.bottom_omnibox";
+
 // Boolean that is true when Browser Lockdown Mode is enabled.
 const char kBrowserLockdownModeEnabled[] = "ios.browser_lockdown_mode_enabled";
 
@@ -87,8 +90,25 @@ const char kIosBookmarkCachedFolderId[] = "ios.bookmark.cached_folder_id";
 // Caches the scroll position of Bookmarks.
 const char kIosBookmarkCachedTopMostRow[] = "ios.bookmark.cached_top_most_row";
 
-// Preference that keep information about where to create a new bookmark.
-const char kIosBookmarkFolderDefault[] = "ios.bookmark.default_folder";
+// Preference that keep information about the ID of the node of the last folder
+// in which user saved or moved bookmarks. Its value is
+// `kLastUsedBookmarkFolderNone` if no folder is explicitly set. The name does
+// not reflect the preference key. This is because this preference we used to
+// consider this folder to be the "default folder for bookmark". Today, we
+// instead consider the "default folder" to be the one selected when this
+// preference is set to `kLastUsedBookmarkFolderNone`. Related to
+// kIosBookmarkLastUsedStorageReceivingBookmarks.
+const char kIosBookmarkLastUsedFolderReceivingBookmarks[] =
+    "ios.bookmark.default_folder";
+
+// Preference that keep information about the storage type for
+// kIosBookmarkLastUsedFolderReceivingBookmarks. The value is based on
+// bookmarks::StorageType enum. This value should be ignored if the value of
+// `kIosBookmarkLastUsedFolderReceivingBookmarks` preference is
+// `kLastUsedBookmarkFolderNone`. Related to
+// `kIosBookmarkLastUsedFolderReceivingBookmarks`.
+const char kIosBookmarkLastUsedStorageReceivingBookmarks[] =
+    "ios.bookmark.bookmark_last_storage_receiving_bookmarks";
 
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in bookmark view.
@@ -103,6 +123,10 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 // the user.
 const char kIosBringAndroidTabsPromptDisplayed[] =
     "ios.bring_android_tabs.prompt_displayed";
+
+// Integer to record the last action that a user has taken on the CPE promo.
+const char kIosCredentialProviderPromoLastActionTaken[] =
+    "ios.credential_provider_promo_last_action_taken";
 
 // Boolean that is true when the CredentialProviderPromoEnabled policy is
 // enabled.
@@ -170,6 +194,11 @@ const char kIosShareChromeCount[] = "ios.share_chrome.count";
 // Preference to store the last time the user shared the chrome app.
 const char kIosShareChromeLastShare[] = "ios.share_chrome.last_share";
 
+// Preference to store the number of times the user opens the New Tab Page
+// with foreign history included in segments data (i.e. Most Visited Tiles).
+const char kIosSyncSegmentsNewTabPageDisplayCount[] =
+    "ios.sync_segments.ntp.display_count";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in the ntp feed top section.
 const char kIosNtpFeedTopPromoAlreadySeen[] =
@@ -232,6 +261,9 @@ const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
 // policy.
 const char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";
+
+// A boolean specifying whether Web Inspector support is enabled.
+const char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
 
 // An integer set to one of the NetworkPredictionSetting enum values indicating
 // network prediction settings.

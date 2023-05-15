@@ -105,6 +105,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
+import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -178,6 +179,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     private IncognitoReauthController mIncognitoReauthControllerMock;
     @Mock
     private ShoppingService mShoppingService;
+    @Mock
+    private AppBannerManager.Natives mAppBannerManagerJniMock;
 
     private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -231,6 +234,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         Mockito.when(mManagedBrowserUtilsJniMock.isBrowserManaged(mProfile)).thenReturn(false);
         Mockito.when(mManagedBrowserUtilsJniMock.getBrowserManagerName(mProfile)).thenReturn("");
 
+        mJniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
+        Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
+                .thenReturn(null);
+
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
@@ -256,7 +263,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         setBookmarkItemRowEnabled(false);
         setShoppingListItemRowEnabled(false);
         setDesktopSiteExceptionsEnabled(false);
-        setWebApkUniqueIdEnabled(false);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -277,10 +283,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void setDesktopSiteExceptionsEnabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(
                 ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enabled);
-    }
-
-    private void setWebApkUniqueIdEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.WEB_APK_UNIQUE_ID, enabled);
     }
 
     @Test

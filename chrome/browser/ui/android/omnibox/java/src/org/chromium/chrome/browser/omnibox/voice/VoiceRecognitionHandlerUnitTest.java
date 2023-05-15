@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -78,10 +77,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Tests for {@link VoiceRecognitionHandler}. For more tests specific to the
- * Assistant recognition and actions see
- * {@link AssistantVoiceRecognitionHandlerTest}
- * and {@link AssistantActionsHanlerTest} respectively.
+ * Tests for {@link VoiceRecognitionHandler}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
@@ -93,7 +89,6 @@ public class VoiceRecognitionHandlerUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock Intent mIntent;
-    private @Mock AssistantVoiceSearchService mAssistantVoiceSearchService;
     private @Mock Tab mTab;
     private @Mock VoiceRecognitionHandler.Observer mObserver;
     private @Mock AutocompleteController mAutocompleteController;
@@ -131,8 +126,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
         mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity));
-        mHandler = spy(new VoiceRecognitionHandler(
-                mDelegate, () -> mAssistantVoiceSearchService, mProfileSupplier));
+        mHandler = spy(new VoiceRecognitionHandler(mDelegate, mProfileSupplier));
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
@@ -189,18 +183,18 @@ public class VoiceRecognitionHandlerUnitTest {
      * Simulate voice response.
      *
      * @param resultCode The result code the caller will receive.
-     * @param text If present, specifies the content of the voice transcription.
-     * @param confidence If text is present, this parameter specifies the confidence of the voice
-     *         transcription.
-     * @param language If present, specifies the language of the transcription.
+     * @param text       If present, specifies the content of the voice
+     *                   transcription.
+     * @param confidence If text is present, this parameter specifies the confidence
+     *                   of the voice
+     *                   transcription.
      */
-    void setVoiceResult(
-            int resultCode, @Nullable String text, float confidence, @Nullable String language) {
+    void setVoiceResult(int resultCode, @Nullable String text, float confidence) {
         var intent = new Intent();
         var bundle = new Bundle();
         if (text != null) {
             bundle = RecognitionTestHelper.createDummyBundle(
-                    new String[] {text}, new float[] {confidence}, new String[] {language});
+                    new String[] {text}, new float[] {confidence});
         }
         intent.putExtras(bundle);
 
@@ -328,7 +322,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
         verify(mHandler, never()).recordVoiceSearchStartEvent(anyInt(), anyInt());
         verify(mObserver).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -342,7 +335,6 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, never()).recordVoiceSearchStartEvent(anyInt(), anyInt());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -356,7 +348,6 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, never()).recordVoiceSearchStartEvent(anyInt(), anyInt());
         verify(mObserver).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -382,7 +373,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testStartVoiceRecognition_StartsVoiceSearchWithSuccessfulIntent() {
-        setVoiceResult(Activity.RESULT_OK, /* text=*/null, /* confidence=*/0.f, /* language=*/null);
+        setVoiceResult(Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, times(1))
                 .recordVoiceSearchStartEvent(
@@ -400,8 +391,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testCallback_noVoiceSearchResultWithBadResultCode() {
-        setVoiceResult(Activity.RESULT_FIRST_USER, /* text=*/null, /* confidence=*/0.f,
-                /* language=*/null);
+        setVoiceResult(Activity.RESULT_FIRST_USER, /* text= */ null, /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP);
         verify(mHandler, times(1))
@@ -417,8 +407,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testCallback_noVoiceSearchResultCanceled() {
-        setVoiceResult(
-                Activity.RESULT_CANCELED, /* text=*/null, /* confidence=*/0.f, /* language=*/null);
+        setVoiceResult(Activity.RESULT_CANCELED, /* text= */ null, /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP);
         verify(mHandler, times(1))
@@ -434,7 +423,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testCallback_noVoiceSearchResultWithNullAutocompleteResult() {
-        setVoiceResult(Activity.RESULT_OK, /* text=*/null, /* confidence=*/0.f, /* language=*/null);
+        setVoiceResult(Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.SEARCH_WIDGET);
         verify(mHandler, times(1))
@@ -448,7 +437,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testCallback_noVoiceSearchResultWithNoMatch() {
-        setVoiceResult(Activity.RESULT_OK, /* text=*/"", /* confidence=*/1.f, /* language=*/null);
+        setVoiceResult(Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.f);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, times(1))
                 .recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX), anyInt());
@@ -463,8 +452,7 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testCallback_successWithLowConfidence() {
         float confidence =
                 VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD - 0.01f;
-        setVoiceResult(Activity.RESULT_OK, /* text=*/"testing", /* confidence=*/confidence,
-                /* language=*/null);
+        setVoiceResult(Activity.RESULT_OK, /* text= */ "testing", /* confidence= */ confidence);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, times(1))
@@ -480,7 +468,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
         verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
         RecognitionTestHelper.assertVoiceResultsAreEqual(
-                mVoiceResults.getValue(), new String[] {"testing"}, new float[] {confidence}, null);
+                mVoiceResults.getValue(), new String[] {"testing"}, new float[] {confidence});
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "VoiceInteraction.QueryDuration.Android"));
@@ -491,7 +479,7 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testCallback_successWithHighConfidence() {
         // Needs to run on the UI thread because we use the TemplateUrlService on success.
         setVoiceResult(Activity.RESULT_OK, /* text=*/"testing",
-                VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD, null);
+                VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, times(1))
                 .recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX), anyInt());
@@ -506,37 +494,10 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
         RecognitionTestHelper.assertVoiceResultsAreEqual(mVoiceResults.getValue(),
                 new String[] {"testing"},
-                new float[] {VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD},
-                null);
+                new float[] {VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD});
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "VoiceInteraction.QueryDuration.Android"));
-    }
-
-    @Test
-    @SmallTest
-    public void testCallback_successWithLanguages() {
-        // Needs to run on the UI thread because we use the TemplateUrlService on success.
-        mProfileSupplier.set(mProfile);
-        setVoiceResult(Activity.RESULT_OK, /* text=*/"testing",
-                VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD, "en-us");
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
-        verify(mHandler, times(1))
-                .recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX), anyInt());
-        verify(mHandler, times(1))
-                .recordVoiceSearchFinishEvent(
-                        eq(VoiceInteractionSource.OMNIBOX), eq(VoiceIntentTarget.SYSTEM));
-        verify(mHandler).recordVoiceSearchResult(eq(VoiceIntentTarget.SYSTEM), eq(true));
-        verify(mHandler).recordVoiceSearchConfidenceValue(eq(VoiceIntentTarget.SYSTEM),
-                eq(VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
-        verify(mHandler, times(1)).recordVoiceSearchResult(anyInt(), anyBoolean());
-        verify(mHandler, times(1)).recordVoiceSearchConfidenceValue(anyInt(), anyFloat());
-        verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
-        RecognitionTestHelper.assertVoiceResultsAreEqual(mVoiceResults.getValue(),
-                new String[] {"testing"},
-                new float[] {VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD},
-                new String[] {"en-us"});
-        verify(mDelegate, times(1)).loadUrlFromVoice(contains("&hl=en-us"));
     }
 
     @Test
@@ -550,13 +511,10 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testParseResults_MismatchedTextAndConfidenceScores() {
         Assert.assertNull(
                 mHandler.convertBundleToVoiceResults(RecognitionTestHelper.createDummyBundle(
-                        new String[] {"blah"}, new float[] {0f, 1f}, null)));
+                        new String[] {"blah"}, new float[] {0f, 1f})));
         Assert.assertNull(
                 mHandler.convertBundleToVoiceResults(RecognitionTestHelper.createDummyBundle(
-                        new String[] {"blah", "foo"}, new float[] {7f}, null)));
-        Assert.assertNull(
-                mHandler.convertBundleToVoiceResults(RecognitionTestHelper.createDummyBundle(
-                        new String[] {"blah", "foo"}, new float[] {7f, 1f}, new String[] {"foo"})));
+                        new String[] {"blah", "foo"}, new float[] {7f})));
     }
 
     @Test
@@ -566,9 +524,9 @@ public class VoiceRecognitionHandlerUnitTest {
         float[] confidences = new float[] {0.8f, 1.0f, 1.0f};
 
         List<VoiceResult> results = mHandler.convertBundleToVoiceResults(
-                RecognitionTestHelper.createDummyBundle(texts, confidences, null));
-
-        RecognitionTestHelper.assertVoiceResultsAreEqual(results, texts, confidences, null);
+                RecognitionTestHelper.createDummyBundle(texts, confidences));
+        Assert.assertEquals(3, results.size());
+        RecognitionTestHelper.assertVoiceResultsAreEqual(results, texts, confidences);
     }
 
     @Test
@@ -583,11 +541,11 @@ public class VoiceRecognitionHandlerUnitTest {
         String[] texts = new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};
         float[] confidences = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
         List<VoiceResult> results = mHandler.convertBundleToVoiceResults(
-                RecognitionTestHelper.createDummyBundle(texts, confidences, null));
+                RecognitionTestHelper.createDummyBundle(texts, confidences));
 
         RecognitionTestHelper.assertVoiceResultsAreEqual(results,
                 new String[] {"a", "www.b.co.uk", "engadget.com", "www.google.com"},
-                new float[] {1.0f, 1.0f, 1.0f, 1.0f}, null);
+                new float[] {1.0f, 1.0f, 1.0f, 1.0f});
     }
 
     @Test
@@ -642,7 +600,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testCallback_CalledTwice() {
-        setVoiceResult(Activity.RESULT_OK, /* text=*/"", /* confidence=*/1.f, /* language=*/"");
+        setVoiceResult(Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.f);
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP);
         verify(mHandler, never()).recordVoiceSearchUnexpectedResult(anyInt(), anyInt());
 

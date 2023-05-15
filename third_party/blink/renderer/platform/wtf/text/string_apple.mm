@@ -20,7 +20,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CoreFoundation.h>
+
+#include "base/apple/bridging.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace WTF {
 
@@ -29,24 +35,25 @@ String::String(NSString* str) {
     return;
   }
 
-  CFIndex size = CFStringGetLength(reinterpret_cast<CFStringRef>(str));
+  CFStringRef cf_str = base::apple::NSToCFPtrCast(str);
+
+  CFIndex size = CFStringGetLength(cf_str);
   if (size == 0) {
     impl_ = StringImpl::empty_;
   } else {
     Vector<LChar, 1024> lchar_buffer(size);
     CFIndex used_buf_len;
-    CFIndex convertedsize =
-        CFStringGetBytes(reinterpret_cast<CFStringRef>(str),
-                         CFRangeMake(0, size), kCFStringEncodingISOLatin1, 0,
-                         false, lchar_buffer.data(), size, &used_buf_len);
-    if ((convertedsize == size) && (used_buf_len == size)) {
+    CFIndex converted_size = CFStringGetBytes(
+        cf_str, CFRangeMake(0, size), kCFStringEncodingISOLatin1,
+        /*lossByte=*/0, /*isExternalRepresentation=*/false, lchar_buffer.data(),
+        size, &used_buf_len);
+    if ((converted_size == size) && (used_buf_len == size)) {
       impl_ = StringImpl::Create(lchar_buffer.data(), size);
       return;
     }
 
     Vector<UChar, 1024> uchar_buffer(size);
-    CFStringGetCharacters(reinterpret_cast<CFStringRef>(str),
-                          CFRangeMake(0, size),
+    CFStringGetCharacters(cf_str, CFRangeMake(0, size),
                           reinterpret_cast<UniChar*>(uchar_buffer.data()));
     impl_ = StringImpl::Create(uchar_buffer.data(), size);
   }

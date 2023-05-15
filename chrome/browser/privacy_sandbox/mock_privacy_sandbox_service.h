@@ -30,6 +30,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(bool, IsPromptOpenForBrowser, (Browser*), (override));
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+  MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
   MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
               GetSampleFirstPartySets,
               (),

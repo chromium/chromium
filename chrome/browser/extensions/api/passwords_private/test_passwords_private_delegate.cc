@@ -200,7 +200,8 @@ void TestPasswordsPrivateDelegate::ImportPasswords(
 
 void TestPasswordsPrivateDelegate::ContinueImport(
     const std::vector<int>& selected_ids,
-    ImportResultsCallback results_callback) {
+    ImportResultsCallback results_callback,
+    content::WebContents* web_contents) {
   continue_import_triggered_ = true;
 
   import_results_.status = api::passwords_private::ImportResultsStatus::

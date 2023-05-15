@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -80,13 +81,14 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   class LastWindowClosedObserver;
   std::unique_ptr<LastWindowClosedObserver> last_window_closed_observer_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> clock_;
 
   base::RepeatingCallback<void(Source)> logout_callback_;
   Source source_;
 
   base::TimeTicks logout_time_;
-  LogoutConfirmationDialog* dialog_ = nullptr;  // Owned by the Views hierarchy.
+  raw_ptr<LogoutConfirmationDialog, ExperimentalAsh> dialog_ =
+      nullptr;  // Owned by the Views hierarchy.
   base::OneShotTimer logout_timer_;
 
   int confirm_logout_count_for_test_ = 0;

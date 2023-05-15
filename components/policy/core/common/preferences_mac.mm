@@ -35,7 +35,7 @@ namespace {
 base::scoped_nsobject<_CFXPreferences> CreateCFXPrefs() {
   Class prefs_class = NSClassFromString(@"_CFXPreferences");
   if (!prefs_class) {
-    return {};
+    return base::scoped_nsobject<_CFXPreferences>{};
   }
 
   return base::scoped_nsobject<_CFXPreferences>([[prefs_class alloc] init]);
@@ -44,7 +44,7 @@ base::scoped_nsobject<_CFXPreferences> CreateCFXPrefs() {
 base::scoped_nsobject<CFPrefsManagedSource>
 CreateCFPrefsManagedSourceForMachine(CFStringRef application_id, id cfx_prefs) {
   if (!cfx_prefs) {
-    return {};
+    return base::scoped_nsobject<CFPrefsManagedSource>{};
   }
 
   Class source_class = NSClassFromString(@"CFPrefsManagedSource");
@@ -53,7 +53,7 @@ CreateCFPrefsManagedSourceForMachine(CFStringRef application_id, id cfx_prefs) {
           instancesRespondToSelector:@selector
           (initWithDomain:user:byHost:containerPath:containingPreferences:)] ||
       ![source_class instancesRespondToSelector:@selector(copyValueForKey:)]) {
-    return {};
+    return base::scoped_nsobject<CFPrefsManagedSource>{};
   }
 
   return base::scoped_nsobject<CFPrefsManagedSource>([[source_class alloc]

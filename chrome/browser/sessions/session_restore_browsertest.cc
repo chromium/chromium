@@ -502,12 +502,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   // The middle tab only should have visible disposition.
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    std::string document_visibility_state;
-    const char kGetStateJS[] =
-        "window.domAutomationController.send("
-        "window.document.visibilityState);";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        contents, kGetStateJS, &document_visibility_state));
+    const char kGetStateJS[] = "window.document.visibilityState;";
+    std::string document_visibility_state =
+        content::EvalJs(contents, kGetStateJS).ExtractString();
     if (i == 1) {
       EXPECT_EQ("visible", document_visibility_state);
     } else {
@@ -4001,7 +3998,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
       "meta.name = 'referrer';"
       "meta.content = 'no-referrer';"
       "document.head.appendChild(meta)";
-  EXPECT_TRUE(content::ExecuteScript(contents, kNoReferrerJS));
+  EXPECT_TRUE(content::ExecJs(contents, kNoReferrerJS));
 
   // Navigate the tab to url 3.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4012,20 +4009,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
 
   // Ensure that url2 is censored in navigation due to the no-referrer policy,
   // but url1 isn't.
-  bool url1_is_censored = false;
-  bool url2_is_censored = false;
-  const char kCheckEntry1Js[] =
-      "window.domAutomationController.send("
-      "navigation.entries()[0].url == null);";
-  const char kCheckEntry2Js[] =
-      "window.domAutomationController.send("
-      "navigation.entries()[1].url == null);";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(contents, kCheckEntry1Js,
-                                                   &url1_is_censored));
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(contents, kCheckEntry2Js,
-                                                   &url2_is_censored));
-  EXPECT_FALSE(url1_is_censored);
-  EXPECT_TRUE(url2_is_censored);
+  const char kCheckEntry1Js[] = "navigation.entries()[0].url == null;";
+  const char kCheckEntry2Js[] = "navigation.entries()[1].url == null;";
+  EXPECT_EQ(false, content::EvalJs(contents, kCheckEntry1Js));
+  EXPECT_EQ(true, content::EvalJs(contents, kCheckEntry2Js));
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
@@ -4044,12 +4031,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
   int entries_length =
       content::EvalJs(restored_contents, kCheckEntriesLength).ExtractInt();
   EXPECT_EQ(entries_length, 3);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      restored_contents, kCheckEntry1Js, &url1_is_censored));
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      restored_contents, kCheckEntry2Js, &url2_is_censored));
-  EXPECT_FALSE(url1_is_censored);
-  EXPECT_TRUE(url2_is_censored);
+  EXPECT_EQ(false, content::EvalJs(restored_contents, kCheckEntry1Js));
+  EXPECT_EQ(true, content::EvalJs(restored_contents, kCheckEntry2Js));
 }
 
 class TabbedAppSessionRestoreTest : public AppSessionRestoreTest {

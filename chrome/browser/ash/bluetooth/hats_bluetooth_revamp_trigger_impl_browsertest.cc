@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -100,7 +101,8 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  HatsBluetoothRevampTriggerImpl* bluetooth_revamp_trigger_;
+  raw_ptr<HatsBluetoothRevampTriggerImpl, ExperimentalAsh>
+      bluetooth_revamp_trigger_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

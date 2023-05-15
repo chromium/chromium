@@ -186,7 +186,6 @@ using EnableBrpPartitionMemoryReclaimer =
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
 using UseDedicatedAlignedPartition =
     base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-using AddDummyRefCount = base::StrongAlias<class AddDummyRefCountTag, bool>;
 using AlternateBucketDistribution =
     base::features::AlternateBucketDistributionMode;
 
@@ -199,7 +198,6 @@ BASE_EXPORT void ConfigurePartitions(
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    AddDummyRefCount add_dummy_ref_count,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
 #if BUILDFLAG(USE_STARSCAN)

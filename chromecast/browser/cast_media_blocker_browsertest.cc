@@ -68,11 +68,8 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
 
       const std::string command =
           "document.getElementsByTagName(\"" + media_type + "\")[0].paused";
-      const std::string js =
-          "window.domAutomationController.send(" + command + ");";
 
-      bool paused;
-      ASSERT_TRUE(ExecuteScriptAndExtractBool(web_contents_, js, &paused));
+      bool paused = EvalJs(web_contents_, command).ExtractBool();
 
       if (paused == blocked) {
         SUCCEED() << "Media element has been successfullly "

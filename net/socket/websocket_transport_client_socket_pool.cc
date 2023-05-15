@@ -44,10 +44,10 @@ WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
 WebSocketTransportClientSocketPool::~WebSocketTransportClientSocketPool() {
   // Clean up any pending connect jobs.
   FlushWithError(ERR_ABORTED, "");
-  DCHECK(pending_connects_.empty());
-  DCHECK_EQ(0, handed_out_socket_count_);
-  DCHECK(stalled_request_queue_.empty());
-  DCHECK(stalled_request_map_.empty());
+  CHECK(pending_connects_.empty());
+  CHECK_EQ(0, handed_out_socket_count_);
+  CHECK(stalled_request_queue_.empty());
+  CHECK(stalled_request_map_.empty());
 }
 
 // static
@@ -160,8 +160,12 @@ void WebSocketTransportClientSocketPool::CancelRequest(
   if (socket)
     ReleaseSocket(handle->group_id(), std::move(socket),
                   handle->group_generation());
-  if (!DeleteJob(handle))
+  if (DeleteJob(handle)) {
+    CHECK(!base::Contains(pending_callbacks_,
+                          reinterpret_cast<ClientSocketHandleID>(handle)));
+  } else {
     pending_callbacks_.erase(reinterpret_cast<ClientSocketHandleID>(handle));
+  }
 
   ActivateStalledRequest();
 }
@@ -331,7 +335,7 @@ void WebSocketTransportClientSocketPool::OnConnectJobComplete(
   ClientSocketHandle* const handle = connect_job_delegate->socket_handle();
 
   bool delete_succeeded = DeleteJob(handle);
-  DCHECK(delete_succeeded);
+  CHECK(delete_succeeded);
 
   connect_job_delegate = nullptr;
 
@@ -346,21 +350,24 @@ void WebSocketTransportClientSocketPool::InvokeUserCallbackLater(
     CompletionOnceCallback callback,
     int rv) {
   const auto handle_id = reinterpret_cast<ClientSocketHandleID>(handle);
-  DCHECK(!pending_callbacks_.count(handle_id));
+  CHECK(!pending_callbacks_.count(handle_id));
   pending_callbacks_.insert(handle_id);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebSocketTransportClientSocketPool::InvokeUserCallback,
-                     weak_factory_.GetWeakPtr(), handle_id, std::move(callback),
-                     rv));
+                     weak_factory_.GetWeakPtr(), handle_id,
+                     handle->GetWeakPtr(), std::move(callback), rv));
 }
 
 void WebSocketTransportClientSocketPool::InvokeUserCallback(
     ClientSocketHandleID handle_id,
+    base::WeakPtr<ClientSocketHandle> weak_handle,
     CompletionOnceCallback callback,
     int rv) {
-  if (pending_callbacks_.erase(handle_id))
+  if (pending_callbacks_.erase(handle_id)) {
+    CHECK(weak_handle);
     std::move(callback).Run(rv);
+  }
 }
 
 bool WebSocketTransportClientSocketPool::ReachedMaxSocketsLimit() const {
@@ -396,7 +403,7 @@ void WebSocketTransportClientSocketPool::AddJob(
       pending_connects_
           .insert(PendingConnectsMap::value_type(handle, std::move(delegate)))
           .second;
-  DCHECK(inserted);
+  CHECK(inserted);
 }
 
 bool WebSocketTransportClientSocketPool::DeleteJob(ClientSocketHandle* handle) {

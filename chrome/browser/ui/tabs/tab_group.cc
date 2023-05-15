@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/guid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"

@@ -1472,9 +1472,9 @@ TEST(CopyOrMoveOperationDelegateTest, StopRecursionOnCopyError) {
 }
 
 TEST(CopyOrMoveOperationDelegateTest, RemoveDestFileOnCopyError) {
-  FileSystemOperation::CopyOrMoveOptionSet options(
+  FileSystemOperation::CopyOrMoveOptionSet options = {
       storage::FileSystemOperation::CopyOrMoveOption::
-          kRemovePartiallyCopiedFilesOnError);
+          kRemovePartiallyCopiedFilesOnError};
   CopyOrMoveOperationDelegateTestHelper helper(
       "http://foo", kFileSystemTypePersistent, kFileSystemTypePersistent,
       options);
@@ -1512,9 +1512,9 @@ TEST(CopyOrMoveOperationDelegateTest, RemoveDestFileOnCopyError) {
 
 TEST(CopyOrMoveOperationDelegateTest,
      RemoveDestFileOnCrossFilesystemMoveError) {
-  FileSystemOperation::CopyOrMoveOptionSet options(
+  FileSystemOperation::CopyOrMoveOptionSet options = {
       storage::FileSystemOperation::CopyOrMoveOption::
-          kRemovePartiallyCopiedFilesOnError);
+          kRemovePartiallyCopiedFilesOnError};
   // Removing destination files on Move errors applies only to cross-filesystem
   // moves.
   CopyOrMoveOperationDelegateTestHelper helper(

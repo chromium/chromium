@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include <string>
 
 #include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -33,6 +34,7 @@ EditAddressProfileDialogControllerImpl::
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    const std::u16string& footer_message,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback,
     bool is_migration_to_account) {
@@ -45,6 +47,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   }
   address_profile_to_edit_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
+  footer_message_ = footer_message;
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   is_migration_to_account_ = is_migration_to_account;
@@ -56,6 +59,11 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE);
+}
+
+const std::u16string& EditAddressProfileDialogControllerImpl::GetFooterMessage()
+    const {
+  return footer_message_;
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()

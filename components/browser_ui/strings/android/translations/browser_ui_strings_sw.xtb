@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Kisimbuaji cha picha</translation>
 <translation id="1785415724048343560">Inapendekezwa kwa ajili ya hali bora ya utumiaji</translation>
 <translation id="1818308510395330587">Ili uruhusu <ph name="APP_NAME" /> itumie Uhalisia Ulioboreshwa, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Kutoka <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Tovuti zinazohusiana zinaweza kuona shughuli zako kwenye kikundi</translation>
 <translation id="1887786770086287077">Kipengele cha mahali kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Kata simu</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Tovuti zinaweza kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi</translation>
 <translation id="3165022941318558018">Ruhusu tovuti itumie vidakuzi vya washirika wengine</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> za data iliyohifadhiwa</translation>
-<translation id="3203366800380907218">Kutoka kwenye wavuti</translation>
 <translation id="321187648315454507">Ili uruhusu <ph name="APP_NAME" /> ikutumie arifa, washa pia arifa katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3248611290851046188">Tovuti hii hubaini mambo yanayokuvutia ambayo tovuti nyingine zinaweza kuyatumia ili kukuonyesha matangazo. Tovuti hii pia hupata mambo yanayokuvutia kutoka kwenye Chrome ili kukuonyesha matangazo faafu zaidi.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Zima sauti katika tovuti</translation>
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3628308229821498208">Utafutaji unaopendekezwa</translation>
+<translation id="3707034683772193706">Tovuti unayotembelea inaweza kuhifadhi kiasi kidogo cha maelezo kwenye Chrome, hasa ili kuthibitisha kuwa wewe si roboti</translation>
 <translation id="3721953990244350188">Ondoa na uonyeshe kitendo kinachofuata kinachopatikana</translation>
 <translation id="3744111561329211289">Usawazishaji wa chini chini</translation>
 <translation id="3763247130972274048">Gusa mara mbili kushoto au kulia kwenye video ili uruke kwa sekunde 10</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Anwani unazochagua zitashirikiwa na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ilitembelewa mara ya mwisho leo</translation>
 <translation id="5225463052809312700">Washa kamera</translation>
-<translation id="5229337741799419985">Mipangilio hii hufanya kazi bila kukutambulisha au kuruhusu tovuti zione historia yako ya kuvinjari</translation>
 <translation id="5234764350956374838">Ondoa</translation>
 <translation id="5264323282659631142">Ondoa '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Buruta kutoka juu na uguse kitufe cha kurudi nyuma ili uondoke kwenye skrini nzima.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6689172468748959065">Picha za wasifu</translation>
 <translation id="6697925417670533197">Faili zinazopakuliwa</translation>
-<translation id="6701547804986694515">Tovuti unayotembelea inaweza kuhifadhi maelezo kwenye Chrome yanayothibitisha kwamba wewe si roboti. Kadiri unavyoendelea kuvinjari, tovuti zinaweza kukagua kwenye Chrome na kuthibitisha kupitia tovuti uliyotembelea awali kwamba unaweza kuwa mtu halisi</translation>
 <translation id="6722828510648505498">Zuia vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
 <translation id="6746124502594467657">Songa chini</translation>
 <translation id="6749077623962119521">Ungependa kubadilisha ruhusa?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Huwa unazuia arifa. Ili uziruhusu, gusa Maelezo.</translation>
 <translation id="7366415735885268578">Ongeza tovuti</translation>
 <translation id="7383715096023715447">Mipangilio ya <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Mipangilio hii hufanya kazi bila kukutambulisha au kuruhusu tovuti zione historia yako ya kuvinjari, ingawa tovuti zinaweza kushiriki kiasi kidogo cha maelezo kama sehemu ya uthibitishaji</translation>
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7423538860840206698">Imezuiwa kusoma ubao wa kunakili</translation>
 <translation id="7425915948813553151">Mandhari meusi ya tovuti</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Zuia tovuti zisifikie vitambuzi vya mwendo</translation>
 <translation id="8823559166155093873">Zuia vidakuzi</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Kadiri unavyoendelea kuvinjari, tovuti zinaweza kukagua kwenye Chrome na kuthibitisha kupitia tovuti uliyotembelea awali kwamba unaweza kuwa mtu halisi</translation>
 <translation id="8899807382908246773">Matangazo yanayokatiza matumizi</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

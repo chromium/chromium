@@ -598,7 +598,9 @@ DamageTracker::GetViewTransitionContentSurfaceDamageInSharedElementLayerSpace(
   gfx::Rect layer_drawable_bounds = gfx::Rect(layer->bounds());
   if (view_transition_content_surface) {
     bool surface_is_new = false;
-    RectDataForSurface(view_transition_content_surface->id(), &surface_is_new);
+    auto& data = RectDataForSurface(view_transition_content_surface->id(),
+                                    &surface_is_new);
+    data.Update(layer_drawable_bounds, mailbox_id_);
     if (surface_is_new ||
         view_transition_content_surface->SurfacePropertyChanged() ||
         view_transition_content_surface->AncestorPropertyChanged()) {

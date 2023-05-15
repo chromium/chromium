@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,10 +68,14 @@ struct ModuleVerificationState {
   bool unknown_reloc_type;
 
   // The start of the code section of the in-memory binary.
-  uint8_t* mem_code_addr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION uint8_t* mem_code_addr;
 
   // The start of the code section of the on-disk binary.
-  uint8_t* disk_code_addr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION uint8_t* disk_code_addr;
 
   // The size of the binary's code section.
   uint32_t code_size;

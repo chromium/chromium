@@ -241,12 +241,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   bool image_complete_ : 1;
   bool suppress_error_events_ : 1;
-  // Tracks whether or not an image whose load was deferred was explicitly lazy
-  // (i.e., had developer-supplied `loading=lazy`). This matters because images
-  // that were not explicitly lazy but were deferred via automatic lazy image
-  // loading should continue to block the window load event, whereas explicitly
-  // lazy images should never block the window load event.
-  bool was_deferred_explicitly_ : 1;
 
   LazyImageLoadState lazy_image_load_state_;
 

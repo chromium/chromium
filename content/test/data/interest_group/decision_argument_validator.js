@@ -11,6 +11,9 @@ function scoreAd(
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
   validateDirectFromSellerSignals(directFromSellerSignals);
+  if (browserSignals.bidCurrency === 'USD') {
+    return {desirability: bid, incomingBidInSellerCurrency: bid * 0.91};
+  }
   return bid;
 }
 
@@ -36,7 +39,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 12) {
+  if (Object.keys(auctionConfig).length !== 13) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -109,6 +112,10 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Wrong perBuyerCurrencies ' +
         JSON.stringify(auctionConfig.perBuyerCurrencies);
   }
+  if (auctionConfig.sellerCurrency !== 'EUR') {
+    throw 'Wrong sellerCurrency ' +
+        JSON.stringify(auctionConfig.sellerCurrency);
+  }
 
   const perBuyerPrioritySignals = auctionConfig.perBuyerPrioritySignals;
   if (Object.keys(perBuyerPrioritySignals).length !== 2 ||
@@ -167,16 +174,25 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.bidCurrency !== 'USD')
       throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
-    if (Object.keys(browserSignals).length !== 7) {
+    if (Object.keys(browserSignals).length !== 9) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
-    validateBid(browserSignals.bid);
+    // Test configures sellerCurrency to EUR, and our scoreAd provides
+    // conversion, so bid should be in euros.
+    if (browserSignals.bidCurrency !== 'EUR')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
+    validateBid(browserSignals.bid / 0.91);
+
     if (browserSignals.desirability !== 2)
       throw 'Wrong desireability ' + browserSignals.desirability;
     if (browserSignals.highestScoringOtherBid !== 0) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
+    }
+    if (browserSignals.highestScoringOtherBidCurrency !== 'EUR') {
+      throw 'Wrong highestScoringOtherBidCurrency ' +
+          browserSignals.highestScoringOtherBidCurrency;
     }
   }
 }

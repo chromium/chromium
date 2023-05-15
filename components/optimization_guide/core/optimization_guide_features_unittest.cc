@@ -166,7 +166,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
               },
       },
       {
@@ -176,7 +176,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
               },
       },
       {
@@ -184,12 +184,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "1"},
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY", "1"},
               },
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, 1},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, 1},
               },
       },
       {
@@ -197,12 +197,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "0"},
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY", "0"},
               },
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
               },
       },
       {
@@ -210,12 +210,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "-2"},
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY", "-2"},
               },
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
               },
       },
       {
@@ -223,12 +223,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "-1"},
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY", "-1"},
               },
           .want =
               {
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, -1},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, -1},
               },
       },
       {
@@ -236,12 +236,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "1"},
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY", "1"},
                   {"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "-1"},
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, 1},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, 1},
                   {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, -1},
               },
       },
@@ -250,12 +250,12 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .enabled = true,
           .params =
               {
-                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2",
+                  {"OPTIMIZATION_TARGET_PAGE_VISIBILITY",
                    base::NumberToString(std::numeric_limits<int>::max())},
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
                    base::SysInfo::NumberOfProcessors()},
               },
       },

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/device_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_identifier.h"
@@ -94,7 +95,7 @@ class DeviceSectionTest : public testing::Test {
   ash::settings::SearchTagRegistry search_tag_registry_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 };
 
 // Verify registry updated with Audio search tags.
@@ -127,7 +128,7 @@ TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
 // Verify registry updated with regular settings search tags when flag is
 // disabled.
 TEST_F(DeviceSectionTest, SearchResultChangeBackWithoutFlag) {
-  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), pref_service());
 

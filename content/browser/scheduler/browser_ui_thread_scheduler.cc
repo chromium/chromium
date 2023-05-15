@@ -142,7 +142,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
                       internal::CreateBrowserTaskPrioritySettings())
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),
-      queue_data_(task_queues_.GetQueueData()),
+      queue_enabled_voters_(task_queues_.CreateQueueEnabledVoters()),
       handle_(task_queues_.GetHandle()) {
   CommonSequenceManagerSetup(owned_sequence_manager_.get());
   owned_sequence_manager_->SetDefaultTaskRunner(
@@ -156,7 +156,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
 BrowserUIThreadScheduler::BrowserUIThreadScheduler(
     base::sequence_manager::SequenceManager* sequence_manager)
     : task_queues_(BrowserThread::UI, sequence_manager),
-      queue_data_(task_queues_.GetQueueData()),
+      queue_enabled_voters_(task_queues_.CreateQueueEnabledVoters()),
       handle_(task_queues_.GetHandle()) {
   CommonSequenceManagerSetup(sequence_manager);
   g_browser_ui_thread_scheduler = this;

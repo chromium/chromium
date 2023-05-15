@@ -42,19 +42,6 @@ class PageEntitiesModelHandler : public PageContentAnnotationJobExecutor {
       const std::string& entity_id,
       PageEntitiesModelEntityMetadataRetrievedCallback callback) = 0;
 
-  // Callback to inform the caller that all requested entity metadata has been
-  // retrieved.
-  using PageEntitiesModelBatchEntityMetadataRetrievedCallback =
-      base::OnceCallback<void(
-          const base::flat_map<std::string,
-                               optimization_guide::EntityMetadata>&)>;
-
-  // Retrieves the metadata associated with each entry in |entity_ids|. Invokes
-  // |callback| when done.
-  virtual void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      PageEntitiesModelBatchEntityMetadataRetrievedCallback callback) = 0;
-
   // Runs |callback| now if a model is loaded or the next time |OnModelUpdated|
   // is called.
   virtual void AddOnModelUpdatedCallback(base::OnceClosure callback) = 0;

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/compute-pressure/#dom-pressurefactor
-enum PressureFactor { "thermal", "power-supply" };
-
 // https://wicg.github.io/compute-pressure/#dom-pressurestate
 enum PressureState {
   "nominal",
@@ -21,7 +18,6 @@ enum PressureState {
 ] interface PressureRecord {
   readonly attribute PressureSource source;
   readonly attribute PressureState state;
-  readonly attribute FrozenArray<PressureFactor> factors;
   readonly attribute DOMHighResTimeStamp time;
   [CallWith=ScriptState] object toJSON();
 };

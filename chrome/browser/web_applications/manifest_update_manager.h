@@ -123,6 +123,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   // manifest update.
   base::flat_set<AppId> GetAppsPendingWindowsClosingForTesting();
 
+  bool IsAppPendingPageAndManifestUrlLoadForTesting(const AppId& app_id);
+
  private:
   // This class is used to either observe the url loading or web_contents
   // destruction before manifest update tasks can be scheduled. Once any
@@ -147,14 +149,14 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
 
     GURL url;
     enum Stage {
-      kWaitingForPageLoad = 0,
+      kWaitingForPageLoadAndManifestUrl = 0,
       kCheckingManifestDiff = 1,
       kPendingAppWindowClose = 2,
-    } stage = kWaitingForPageLoad;
+    } stage = kWaitingForPageLoadAndManifestUrl;
     std::unique_ptr<PreUpdateWebContentsObserver> observer;
   };
 
-  void StartManifestCheckAfterPageLoad(
+  void StartCheckAfterPageAndManifestUrlLoad(
       const AppId& app_id,
       base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents);

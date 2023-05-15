@@ -87,6 +87,11 @@ export class SettingsAddressEditDialogElement extends
         value: false,
       },
 
+      accountAddressSourceNotice_: {
+        type: String,
+        computed: 'getAccountAddressSourceNotice_(address, accountInfo)',
+      },
+
       /**
        * True if honorifics are enabled.
        */
@@ -312,6 +317,17 @@ export class SettingsAddressEditDialogElement extends
 
     return this.accountInfo !== undefined &&
         this.accountInfo.isEligibleForAddressAccountStorage;
+  }
+
+  private getAccountAddressSourceNotice_(): string|undefined {
+    if (this.accountInfo) {
+      return this.i18n(
+          this.address.guid ? 'editAccountAddressSourceNotice' :
+                              'newAccountAddressSourceNotice',
+          this.accountInfo.email);
+    }
+
+    return undefined;
   }
 
   /**

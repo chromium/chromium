@@ -39,7 +39,11 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     Ad();
     Ad(GURL render_url,
        absl::optional<std::string> metadata,
-       absl::optional<std::string> size_group = absl::nullopt);
+       absl::optional<std::string> size_group = absl::nullopt,
+       absl::optional<std::string> buyer_reporting_id = absl::nullopt,
+       absl::optional<std::string> buyer_and_seller_reporting_id =
+           absl::nullopt,
+       absl::optional<std::string> ad_render_id = absl::nullopt);
     ~Ad();
 
     // Returns the approximate size of the contents of this InterestGroup::Ad,
@@ -52,6 +56,15 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     absl::optional<std::string> size_group;
     // Opaque JSON data, passed as an object to auction worklet.
     absl::optional<std::string> metadata;
+
+    // Optional alternative identifiers for reporting purposes that can be
+    // passed to reporting scripts in lieu of group name if they pass k-anon
+    // checks.
+    absl::optional<std::string> buyer_reporting_id;
+    absl::optional<std::string> buyer_and_seller_reporting_id;
+
+    // Optional alias to use for B&A auctions
+    absl::optional<std::string> ad_render_id;
 
     // Only used in tests, but provided as an operator instead of as
     // IsEqualForTesting() to make it easier to implement InterestGroup's
@@ -126,7 +139,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 129, R"(
+  static_assert(__LINE__ == 142, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
@@ -209,10 +222,11 @@ KAnonKeyForAdComponentBid(const blink::AdDescriptor& ad_descriptor);
 // Calculates the k-anonymity key for reporting the interest group name in
 // reportWin along with the given Ad.
 // We want to avoid providing too much identifying information for event level
-// reporting in reportWin. This key is used to check if including the interest
-// group name along with the interest group owner and ad URL would make the user
-// too identifiable. If this key is not k-anonymous then we do not provide the
-// interest group name to reportWin.
+// reporting in reportWin. This key is used to check if including the passed in
+// identifier --- either a specific explicit campaign ID or, as fallback
+// the interest group name  --- along with the interest group owner and ad URL
+// would make the user too identifiable. If this key is not k-anonymous then we
+// do not provide the interest group name to reportWin.
 std::string BLINK_COMMON_EXPORT
 KAnonKeyForAdNameReporting(const InterestGroup& group,
                            const InterestGroup::Ad& ad);

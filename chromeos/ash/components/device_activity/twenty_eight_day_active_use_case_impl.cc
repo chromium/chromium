@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -121,12 +122,21 @@ bool TwentyEightDayActiveUseCaseImpl::SetPsmIdentifiersToImport(
   // Clear previous values of id's to import.
   new_import_data_.clear();
 
-  base::Time last_known_ping_ts = GetLastKnownPingTimestamp();
+  // Normalize current ts and last known ts to midnight.
+  // Not doing so will cause missing imports depending on the HH/MM/SS.
+  base::Time cur_ts_midnight = cur_ts.UTCMidnight();
+  base::Time last_known_ping_ts_midnight =
+      GetLastKnownPingTimestamp().UTCMidnight();
+
+  // Iterate from days [cur_ts, cur_ts+27], which represents the 28 day window.
   for (int i = 0; i < static_cast<int>(kRollingWindowSize); i++) {
-    base::Time day_n = cur_ts + base::Days(i);
+    base::Time day_n = cur_ts_midnight + base::Days(i);
 
     // Only generate import data for new identifiers to import.
-    if (day_n < (last_known_ping_ts + base::Days(kRollingWindowSize))) {
+    // last_known_ping_ts + 27 gives us the last day we previously sent an
+    // import data request for.
+    if (day_n <=
+        (last_known_ping_ts_midnight + base::Days(kRollingWindowSize - 1))) {
       continue;
     }
 

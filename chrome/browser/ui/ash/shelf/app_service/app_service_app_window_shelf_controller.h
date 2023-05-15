@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
@@ -151,7 +152,7 @@ class AppServiceAppWindowShelfController
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
-  apps::AppServiceProxy* proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
   std::unique_ptr<AppServiceInstanceRegistryHelper>
       app_service_instance_helper_;
   std::unique_ptr<AppServiceAppWindowArcTracker> arc_tracker_;

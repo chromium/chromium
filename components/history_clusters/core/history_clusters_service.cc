@@ -123,10 +123,6 @@ HistoryClustersService::HistoryClustersService(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
-      context_clusterer_observer_(history_service,
-                                  template_url_service,
-                                  optimization_guide_decider,
-                                  engagement_score_provider),
       pref_service_(prefs) {
   if (prefs && is_journeys_enabled_) {
     // Log whether the user has Journeys enabled if they are eligible for it.
@@ -135,9 +131,21 @@ HistoryClustersService::HistoryClustersService(
         prefs->GetBoolean(prefs::kVisible));
   }
 
+  if (!is_journeys_enabled_) {
+    return;
+  }
+
+  // The remaining pieces are only needed for Journeys, so don't instantiate
+  // them if Journeys is not enabled.
+
   if (history_service_) {
     history_service_observation_.Observe(history_service);
   }
+
+  context_clusterer_observer_ =
+      std::make_unique<ContextClustererHistoryServiceObserver>(
+          history_service, template_url_service, optimization_guide_decider,
+          engagement_score_provider);
 
   backend_ = FileClusteringBackend::CreateIfEnabled();
   if (!backend_) {
@@ -159,7 +167,7 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
 void HistoryClustersService::Shutdown() {}
 
 bool HistoryClustersService::IsJourneysEnabled() const {
-  return is_journeys_enabled_;
+  return is_journeys_enabled_ && pref_service_->GetBoolean(prefs::kVisible);
 }
 
 // static
@@ -236,6 +244,12 @@ HistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
+  if (!IsJourneysEnabled()) {
+    // TODO(crbug/1441974): Make this into a CHECK after verifying all callers.
+    std::move(callback).Run({}, QueryClustersContinuationParams::DoneParams());
+    return nullptr;
+  }
+
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("HistoryClustersService::QueryClusters()");
     NotifyDebugMessage("  begin_time = " + GetDebugTime(begin_time));
@@ -256,31 +270,6 @@ HistoryClustersService::QueryClusters(
       weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
       backend_.get(), history_service_, clustering_request_source, begin_time,
       continuation_params, recluster, std::move(callback));
-}
-
-void HistoryClustersService::RepeatedlyUpdateClusters() {
-  // If `persist_on_query` is enabled, clusters are updated on query and not on
-  // a timer.
-  if (!GetConfig().persist_clusters_in_history_db ||
-      GetConfig().persist_on_query) {
-    return;
-  }
-
-  // Update clusters, both periodically and once after startup because:
-  // 1) To avoid having very stale (up to 90 days) clusters for the initial
-  //    period after startup.
-  // 2) Likewise, to avoid having very stale keywords.
-  // 3) Some users might not keep chrome running for the period.
-  update_clusters_after_startup_delay_timer_.Start(
-      FROM_HERE,
-      base::Minutes(
-          GetConfig()
-              .persist_clusters_in_history_db_after_startup_delay_minutes),
-      this, &HistoryClustersService::UpdateClusters);
-  update_clusters_period_timer_.Start(
-      FROM_HERE,
-      base::Minutes(GetConfig().persist_clusters_in_history_db_period_minutes),
-      this, &HistoryClustersService::UpdateClusters);
 }
 
 void HistoryClustersService::UpdateClusters() {
@@ -411,6 +400,31 @@ void HistoryClustersService::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   ClearKeywordCache();
+}
+
+void HistoryClustersService::RepeatedlyUpdateClusters() {
+  // If `persist_on_query` is enabled, clusters are updated on query and not on
+  // a timer.
+  if (!GetConfig().persist_clusters_in_history_db ||
+      GetConfig().persist_on_query) {
+    return;
+  }
+
+  // Update clusters, both periodically and once after startup because:
+  // 1) To avoid having very stale (up to 90 days) clusters for the initial
+  //    period after startup.
+  // 2) Likewise, to avoid having very stale keywords.
+  // 3) Some users might not keep chrome running for the period.
+  update_clusters_after_startup_delay_timer_.Start(
+      FROM_HERE,
+      base::Minutes(
+          GetConfig()
+              .persist_clusters_in_history_db_after_startup_delay_minutes),
+      this, &HistoryClustersService::UpdateClusters);
+  update_clusters_period_timer_.Start(
+      FROM_HERE,
+      base::Minutes(GetConfig().persist_clusters_in_history_db_period_minutes),
+      this, &HistoryClustersService::UpdateClusters);
 }
 
 void HistoryClustersService::StartKeywordCacheRefresh() {

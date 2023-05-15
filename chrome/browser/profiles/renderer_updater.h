@@ -15,12 +15,17 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+class BoundSessionCookieRefreshService;
 #endif
 
 class Profile;
@@ -72,6 +77,12 @@ class RendererUpdater : public KeyedService,
   // Update all renderers due to a configuration change.
   void UpdateAllRenderers();
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Creates bound session parameters that are subset of the dynamic
+  // renderer parameters.
+  chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const;
+#endif
+
   // Create renderer configuration that changes at runtime.
   chrome::mojom::DynamicParamsPtr CreateRendererDynamicParams() const;
 
@@ -83,10 +94,14 @@ class RendererUpdater : public KeyedService,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::OAuth2LoginManager* oauth2_login_manager_;
+  raw_ptr<ash::OAuth2LoginManager, ExperimentalAsh> oauth2_login_manager_;
   bool merge_session_running_;
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;
+#endif
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  const raw_ptr<BoundSessionCookieRefreshService>
+      bound_session_cookie_refresh_service_ = nullptr;
 #endif
 
   PrefChangeRegistrar pref_change_registrar_;

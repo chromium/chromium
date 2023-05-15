@@ -13,6 +13,7 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -197,7 +198,7 @@ class ASH_EXPORT ScheduledFeature
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  PrefService* active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
 
   base::flat_map<PrefService*, ScheduleSnapshot> per_user_schedule_snapshot_;
 
@@ -223,7 +224,7 @@ class ASH_EXPORT ScheduledFeature
   const std::string prefs_path_latitude_;
   const std::string prefs_path_longitude_;
 
-  GeolocationController* geolocation_controller_;
+  raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
 
   // Track if this is `GeolocationController::Observer` to make sure it is not
   // added twice if it is already an observer.
@@ -232,7 +233,7 @@ class ASH_EXPORT ScheduledFeature
   const Clock default_clock_;
   // May be reset in tests to override the time of "Now"; otherwise, points to
   // `default_clock_`. Should never be null.
-  const Clock* clock_ = nullptr;  // Not owned.
+  raw_ptr<const Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
 
   // Never persisted anywhere. Must stay in sync with the feature's current
   // "enabled" state.

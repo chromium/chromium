@@ -7,11 +7,13 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Common text sizes -->
     <dimen name="headline_size">22sp</dimen>
+    <dimen name="headline2_size">18sp</dimen>
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="text_size_medium">14sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
 
     <dimen name="headline_size_leading" tools:ignore="UnusedResources">28sp</dimen>
+    <dimen name="headline2_size_leading" tools:ignore="UnusedResources">24sp</dimen>
     <dimen name="text_size_large_leading" tools:ignore="UnusedResources">24sp</dimen>
     <dimen name="text_size_medium_leading" tools:ignore="UnusedResources">20sp</dimen>
     <dimen name="text_size_small_leading" tools:ignore="UnusedResources">16sp</dimen>

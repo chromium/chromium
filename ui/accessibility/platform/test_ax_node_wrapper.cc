@@ -4,11 +4,11 @@
 
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -581,9 +581,9 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       int scroll_y_min = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMin);
       int scroll_y_max = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax);
       int scroll_x =
-          base::clamp(data.target_point.x(), scroll_x_min, scroll_x_max);
+          std::clamp(data.target_point.x(), scroll_x_min, scroll_x_max);
       int scroll_y =
-          base::clamp(data.target_point.y(), scroll_y_min, scroll_y_max);
+          std::clamp(data.target_point.y(), scroll_y_min, scroll_y_max);
 
       ReplaceIntAttribute(node_->id(), ax::mojom::IntAttribute::kScrollX,
                           scroll_x);

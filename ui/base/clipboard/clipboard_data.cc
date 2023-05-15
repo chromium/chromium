@@ -8,25 +8,12 @@
 #include <ostream>
 #include <vector>
 
-#include "base/threading/thread_restrictions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
-
-// static
-std::vector<uint8_t> ClipboardData::EncodeBitmapData(const SkBitmap& bitmap) {
-  // Encoding a PNG can be a long CPU operation.
-  base::AssertLongCPUWorkAllowed();
-
-  std::vector<uint8_t> data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                    &data);
-  return data;
-}
 
 ClipboardData::ClipboardData() = default;
 
@@ -94,7 +81,7 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
   //   a.SetBitmapData(image);
   //
   //   ClipboardData b;
-  //   b.SetPngData(EncodeBitmapData(image));
+  //   b.SetPngData(clipboard_util::EncodeBitmapToPng(image));
   //
   // Avoid this scenario if possible.
   if (maybe_bitmap_.has_value() != that.maybe_bitmap_.has_value())

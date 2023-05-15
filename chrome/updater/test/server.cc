@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "net/http/http_status_code.h"
@@ -29,7 +30,7 @@ namespace updater {
 namespace test {
 namespace {
 
-std::string SerializeRequest(const net::test_server::HttpRequest& request) {
+std::string SerializeRequest(HttpRequest& request) {
   std::vector<std::string> request_strs;
 
   request_strs.push_back("Request:");
@@ -41,25 +42,8 @@ std::string SerializeRequest(const net::test_server::HttpRequest& request) {
         "    %s: %s", header.first.c_str(), header.second.c_str()));
   }
   request_strs.push_back("}");
-
-  if (request.has_content) {
-    const size_t dump_limit = std::min(request.content.size(), size_t{2048});
-    request_strs.push_back(
-        base::StringPrintf("Content (size=%zu):", request.content.size()));
-    std::string printable_content;
-    printable_content.reserve(dump_limit);
-    base::ranges::transform(request.content.begin(),
-                            request.content.begin() + dump_limit,
-                            std::back_inserter(printable_content),
-                            [](char c) { return std::isprint(c) ? c : '.'; });
-    request_strs.push_back(printable_content);
-    if (request.content.size() > dump_limit) {
-      request_strs.push_back(base::StringPrintf(
-          "<Skipped printing %zu bytes>", request.content.size() - dump_limit));
-    }
-  } else {
-    request_strs.push_back("Content: <no content>");
-  }
+  request_strs.push_back(
+      base::StringPrintf("Content: %s", GetPrintableContent(request).c_str()));
 
   return base::JoinString(request_strs, "\n  ");
 }
@@ -84,7 +68,7 @@ ScopedServer::~ScopedServer() {
     // matcher matches the empty request.
     ADD_FAILURE() << "Unmet expectation: ";
     base::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
-      matcher.Run(net::test_server::HttpRequest());
+      matcher.Run(HttpRequest());
     });
   }
 }
@@ -96,7 +80,8 @@ void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,
 }
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
-    const net::test_server::HttpRequest& request) {
+    const net::test_server::HttpRequest& req) {
+  HttpRequest request(req);
   VLOG(0) << "Handle request at path:" << request.relative_url;
   VLOG(3) << SerializeRequest(request);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();

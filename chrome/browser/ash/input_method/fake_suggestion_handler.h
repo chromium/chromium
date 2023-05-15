@@ -41,6 +41,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
                                  size_t delete_previous_utf16_len,
+                                 bool use_replace_surrounding_text,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

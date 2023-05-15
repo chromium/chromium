@@ -9,12 +9,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -108,7 +109,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates cookies being added on the web.
   void SigninAndSimulateCookies(ConsistencyPromoSigninMediator* mediator,
                                 id<SystemIdentity> identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(
+        identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
                                     withIdentity:identity]);
@@ -129,7 +132,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates a cookie error.
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
                               id<SystemIdentity> identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(
+        identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
     __block BOOL error_did_happen_called = NO;
     OCMExpect(
         [mediator_delegate_mock_
@@ -202,13 +207,16 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
       GetConsistencyPromoSigninMediator();
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.DismissedButton", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
+      "Signin.AccountConsistencyPromoAction.DismissedButton",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests start and interrupt.
@@ -218,13 +226,16 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
       GetConsistencyPromoSigninMediator();
   [mediator disconnectWithResult:SigninCoordinatorResultInterrupted];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.DismissedOther", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER, 1);
+      "Signin.AccountConsistencyPromoAction.DismissedOther",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests start and sign-in with default identity.
@@ -241,15 +252,16 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   EXPECT_EQ(0, pref_service_.GetInteger(prefs::kSigninWebSignDismissalCount));
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::
-          SIGNED_IN_WITH_DEFAULT_ACCOUNT,
-      1);
+      "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests start and sign-in with secondary identity.
@@ -264,15 +276,16 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   SigninAndSimulateCookies(mediator, identity2_);
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::
-          SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
-      1);
+      "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests start and sign-in with an added identity.
@@ -293,15 +306,16 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   SigninAndSimulateCookies(mediator, identity3);
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::
-          SIGNED_IN_WITH_ADDED_ACCOUNT,
-      1);
+      "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests start and sign-in with an error.
@@ -315,16 +329,21 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithError) {
   SigninAndSimulateError(mediator, identity1_);
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 3);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.DismissedButton", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
+      "Signin.AccountConsistencyPromoAction.DismissedButton",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.GenericErrorShown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.GenericErrorShown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests timeout error.
@@ -346,22 +365,27 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithTimeoutError) {
                           ConsistencyPromoSigninMediatorErrorTimeout]);
   // Wait for the time trigger.
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+
   // Expects show metric.
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
   // Expects timeout metric.
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.TimeoutErrorShown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN, 1);
+      "Signin.AccountConsistencyPromoAction.TimeoutErrorShown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
   // Closes the sign-in dialog.
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
   // Expects dismiss metric.
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 3);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.DismissedButton", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
+      "Signin.AccountConsistencyPromoAction.DismissedButton",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
 // Tests sign-in failed.
@@ -378,20 +402,25 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninFailed) {
   SigninWithMediator(mediator, identity1_, /*signin_success=*/NO);
   // Wait for the time trigger.
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+
   // Expects show metric.
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
-  // Expects timeout metric.
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  // Expects sign-in failure metric.
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignInFailed", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED, 1);
+      "Signin.AccountConsistencyPromoAction.SignInFailed",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
   // Closes the sign-in dialog.
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
   // Expects dismiss metric.
-  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 3);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.DismissedButton", 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.AccountConsistencyPromoAction",
-      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
+      "Signin.AccountConsistencyPromoAction.DismissedButton",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }

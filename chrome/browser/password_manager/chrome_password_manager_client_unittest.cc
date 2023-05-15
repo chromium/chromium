@@ -237,7 +237,7 @@ class FakePasswordAutofillAgent
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  void TouchToFillClosed(bool show_virtual_keyboard) override {}
+  void KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard) override {}
 
   void TriggerFormSubmission() override {}
 #endif
@@ -407,8 +407,7 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
 TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
+      /*types=*/{syncer::UserSelectableType::kPasswords});
   sync_service_->SetIsUsingExplicitPassphrase(false);
 
   ChromePasswordManagerClient* client = GetClient();
@@ -432,8 +431,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   // Report correctly if we aren't syncing passwords.
   sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kBookmarks));
+      /*types=*/{syncer::UserSelectableType::kBookmarks});
 
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
@@ -1073,7 +1071,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetOrCreate(web_contents());
   pwd_generation_controller->FocusedInputChanged(
-      FocusedFieldType::kFillablePasswordField, driver.get()->AsWeakPtr());
+      FocusedFieldType::kFillablePasswordField, base::AsWeakPtr(driver.get()));
 
   ChromePasswordManagerClient* client = GetClient();
 
@@ -1153,8 +1151,6 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        FocusedInputChangedFormsFetched) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      {password_manager::features::kUnifiedPasswordManagerErrorMessages});
   FormData observed_form_data = MakePasswordFormData();
   SetUpGenerationPreconditions(observed_form_data.url);
 

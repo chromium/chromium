@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -95,7 +96,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // Defines parameters for how to animate a given `preview`.
   struct PreviewAnimationParams {
-    HoldingSpaceTrayIconPreview* preview;
+    raw_ptr<HoldingSpaceTrayIconPreview, ExperimentalAsh> preview;
     base::TimeDelta delay;
   };
 
@@ -107,7 +108,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void EnsurePreviewLayerStackingOrder();
 
   // The shelf associated with this holding space tray icon.
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Whether or not this holding space tray icon is currently in drop target
   // state. When in drop target state, preview indices are offset from their
@@ -135,7 +136,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // A view that serves as a parent for previews' layers. Used to easily
   // translate all the previews within the icon during resize animation.
-  views::View* previews_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> previews_container_ = nullptr;
 
   // Helper to run icon resize animation.
   std::unique_ptr<ResizeAnimation> resize_animation_;

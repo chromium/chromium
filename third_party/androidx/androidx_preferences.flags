@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# AndroidX classes that are inflated via reflection.
+-keep public class androidx.preference.ListPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.Preference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceCategory {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceScreen {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+# Referenced by androidx.preference.PreferenceInflater.
+-keep public class androidx.preference.SwitchPreference {}

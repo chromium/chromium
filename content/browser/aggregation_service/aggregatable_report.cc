@@ -20,13 +20,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/parsing_utils.h"
@@ -316,7 +316,7 @@ absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
     const proto::AggregatableReportSharedInfo& proto) {
   base::Time scheduled_report_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(proto.scheduled_report_time()));
-  base::GUID report_id = base::GUID::ParseLowercase(proto.report_id());
+  base::Uuid report_id = base::Uuid::ParseLowercase(proto.report_id());
   url::Origin reporting_origin =
       url::Origin::Create(GURL(proto.reporting_origin()));
 
@@ -486,7 +486,7 @@ AggregationServicePayloadContents::~AggregationServicePayloadContents() =
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
-    base::GUID report_id,
+    base::Uuid report_id,
     url::Origin reporting_origin,
     DebugMode debug_mode,
     base::Value::Dict additional_fields,

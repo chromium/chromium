@@ -70,7 +70,12 @@ suite('<nearby-share-confirm-page>', () => {
       MAX_VALUE: true,
     };
 
-    for (const key of Object.keys(TransferStatus)) {
+    // TypeScript augments numerical enums with additional keys (reverse
+    // mappings), so need to filter those out when iterating over enum keys.
+    const keys =
+        (Object.keys(TransferStatus) as Array<keyof typeof TransferStatus>)
+            .filter(k => Number.isInteger(TransferStatus[k]));
+    for (const key of keys) {
       if (!nonErrorStates.hasOwnProperty(key)) {
         nearbyShareConfirmPage.set(
             'transferStatus',

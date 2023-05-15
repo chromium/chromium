@@ -15,6 +15,7 @@ include_rules = [
   "+components/prefs",
   "+components/signin/public/base",
   "+components/sync",
+  "+components/sync_sessions",
   "+components/sync_device_info",
   "+components/translate",
   "+components/unified_consent",

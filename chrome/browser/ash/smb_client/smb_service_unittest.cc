@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -307,14 +308,14 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   base::test::ScopedFeatureList scoped_feature_list_;
-  file_manager::FakeDiskMountManager* disk_mount_manager_ =
-      new file_manager::FakeDiskMountManager;
+  raw_ptr<file_manager::FakeDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_ = new file_manager::FakeDiskMountManager;
 
   // Not owned.
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
 
   // Not owned.
-  TestingProfile* ad_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> ad_profile_ = nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

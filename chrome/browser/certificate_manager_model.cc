@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/crypto_module_password_dialog_nss.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,8 +32,10 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"
+#include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/net_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -251,8 +254,19 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
   void RefreshSlotsUnlocked() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DVLOG(1) << "refresh listing certs...";
-    cert_db_->ListCertsInfo(base::BindOnce(&CertsSourcePlatformNSS::DidGetCerts,
-                                           weak_ptr_factory_.GetWeakPtr()));
+    cert_db_->ListCertsInfo(
+        base::BindOnce(&CertsSourcePlatformNSS::DidGetCerts,
+                       weak_ptr_factory_.GetWeakPtr()),
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+        SystemNetworkContextManager::IsUsingChromeRootStore()
+            ? net::NSSCertDatabase::NSSRootsHandling::kExclude
+            : net::NSSCertDatabase::NSSRootsHandling::kInclude
+#elif BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+        net::NSSCertDatabase::NSSRootsHandling::kExclude
+#else
+        net::NSSCertDatabase::NSSRootsHandling::kInclude
+#endif
+    );
   }
 
   void DidGetCerts(net::NSSCertDatabase::CertInfoList cert_info_list) {

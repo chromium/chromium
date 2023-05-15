@@ -6,6 +6,8 @@
 #define COMPONENTS_SEARCH_SEARCH_H_
 
 class TemplateURLService;
+class TemplateURL;
+class SearchTermsData;
 
 namespace search {
 
@@ -17,6 +19,9 @@ bool IsInstantExtendedAPIEnabled();
 bool DefaultSearchProviderIsGoogle(
     const TemplateURLService* template_url_service);
 
+// Returns whether supplied template URL is Google template URL.
+bool TemplateURLIsGoogle(const TemplateURL* template_url,
+                         const SearchTermsData& search_terms_data);
 }  // namespace search
 
 #endif  // COMPONENTS_SEARCH_SEARCH_H_

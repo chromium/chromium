@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -185,15 +186,16 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  ash::FakeCiceroneClient* fake_cicerone_client_;
-  ash::FakeSeneschalClient* fake_seneschal_client_;
+  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
+  raw_ptr<ash::FakeSeneschalClient, ExperimentalAsh> fake_seneschal_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_tester_;
-  StubNotificationDisplayService* notification_display_service_;
+  raw_ptr<StubNotificationDisplayService, ExperimentalAsh>
+      notification_display_service_;
 
   guest_os::GuestId default_container_id_;
   guest_os::GuestId custom_container_id_;

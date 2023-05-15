@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
 #define CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -41,7 +42,7 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   void UpdateLabel();
 
   const ash::login::SecurityTokenSessionController::Behavior behavior_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> clock_;
   const std::string domain_;
   base::TimeTicks end_time_;
   base::RepeatingTimer update_timer_;

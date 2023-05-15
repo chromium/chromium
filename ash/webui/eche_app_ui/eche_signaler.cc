@@ -39,14 +39,18 @@ namespace eche_app {
 EcheSignaler::EcheSignaler(
     EcheConnector* eche_connector,
     secure_channel::ConnectionManager* connection_manager,
-    AppsLaunchInfoProvider* apps_launch_info_provider)
+    AppsLaunchInfoProvider* apps_launch_info_provider,
+    EcheConnectionStatusHandler* eche_connection_status_handler)
     : eche_connector_(eche_connector),
       apps_launch_info_provider_(apps_launch_info_provider),
+      eche_connection_status_handler_(eche_connection_status_handler),
       connection_manager_(connection_manager) {
   connection_manager_->AddObserver(this);
+  eche_connection_status_handler_->AddObserver(this);
 }
 
 EcheSignaler::~EcheSignaler() {
+  eche_connection_status_handler_->RemoveObserver(this);
   connection_manager_->RemoveObserver(this);
   signaling_timeout_timer_.reset();
 }
@@ -166,6 +170,10 @@ void EcheSignaler::ProcessAndroidNetworkInfo(const proto::ExoMessage& message) {
 
   system_info_provider_->SetAndroidDeviceNetworkInfoChanged(
       is_different_network, remote_on_cellular);
+}
+
+void EcheSignaler::OnRequestCloseConnnection() {
+  signaling_timeout_timer_.reset();
 }
 
 void EcheSignaler::RecordSignalingTimeout() {

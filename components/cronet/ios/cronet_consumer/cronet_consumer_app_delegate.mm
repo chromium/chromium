@@ -9,6 +9,10 @@
 #include "base/format_macros.h"
 #import "cronet_consumer_view_controller.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation CronetConsumerAppDelegate {
   NSUInteger _counter;
 }

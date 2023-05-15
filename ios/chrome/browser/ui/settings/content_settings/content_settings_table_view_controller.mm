@@ -13,12 +13,12 @@
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_coordinator.h"
+#import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
@@ -51,6 +52,7 @@ NSString* kMailToInstanceChanged = @"MailToInstanceChanged";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSettings = kSectionIdentifierEnumZero,
+  SectionIdentifierDeveloperTools,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -58,6 +60,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsComposeEmail,
   ItemTypeSettingsShowLinkPreview,
   ItemTypeSettingsDefaultSiteMode,
+  ItemTypeSettingsWebInspector,
 };
 
 }  // namespace
@@ -71,6 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* _composeEmailDetailItem;
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
   TableViewDetailIconItem* _defaultSiteMode;
+  TableViewDetailIconItem* _webInspectorStateItem;
 }
 
 // PrefBackedBoolean for "Show Link Preview" setting state.
@@ -82,12 +86,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The item related to the default mode used to load the pages.
 @property(nonatomic, strong) TableViewDetailIconItem* defaultModeItem;
 
+// The item related to the switch for the "Web Inspector" setting.
+@property(nonatomic, strong) TableViewDetailIconItem* webInspectorItem;
+
 // The coordinator showing the view to choose the defaultMode.
 @property(nonatomic, strong)
     DefaultPageModeCoordinator* defaultModeViewCoordinator;
 
+// The coordinator showing the view to enable or disable Web Inspector.
+@property(nonatomic, strong)
+    WebInspectorStateCoordinator* webInspectorStateViewCoordinator;
+
 // The setting used to store the default mode.
 @property(nonatomic, strong) ContentSettingBackedBoolean* requestDesktopSetting;
+
+// PrefBackedBoolean for Web Inspector setting state.
+@property(nonatomic, strong) PrefBackedBoolean* webInspectorEnabled;
 
 // Helpers to create collection view items.
 - (id)blockPopupsItem;
@@ -127,6 +141,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              settingID:ContentSettingsType::REQUEST_DESKTOP_SITE
                               inverted:NO];
     [_requestDesktopSetting setObserver:self];
+
+    if (web::features::IsWebInspectorSupportEnabled()) {
+      _webInspectorEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:browserState->GetPrefs()
+                     prefName:prefs::kWebInspectorEnabled];
+      [_webInspectorEnabled setObserver:self];
+    }
   }
   return self;
 }
@@ -194,6 +215,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.defaultModeItem = [self defaultSiteMode];
   [model addItem:self.defaultModeItem
       toSectionWithIdentifier:SectionIdentifierSettings];
+
+  if (web::features::IsWebInspectorSupportEnabled()) {
+    self.webInspectorItem = [self webInspectorStateItem];
+    [model addSectionWithIdentifier:SectionIdentifierDeveloperTools];
+    [model addItem:self.webInspectorItem
+        toSectionWithIdentifier:SectionIdentifierDeveloperTools];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -291,6 +319,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _linkPreviewItem;
 }
 
+- (TableViewDetailIconItem*)webInspectorStateItem {
+  _webInspectorStateItem = [[TableViewDetailIconItem alloc]
+      initWithType:ItemTypeSettingsWebInspector];
+  _webInspectorStateItem.text =
+      l10n_util::GetNSString(IDS_IOS_WEB_INSPECTOR_LABEL);
+  _webInspectorStateItem.detailText = [self webInspectorStateDescription];
+  _webInspectorStateItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _webInspectorStateItem.accessibilityIdentifier = kSettingsWebInspectorCellId;
+  return _webInspectorStateItem;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -349,6 +389,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithBaseNavigationController:self.navigationController
                                    browser:_browser];
       [self.defaultModeViewCoordinator start];
+      break;
+    }
+    case ItemTypeSettingsWebInspector: {
+      self.webInspectorStateViewCoordinator =
+          [[WebInspectorStateCoordinator alloc]
+              initWithBaseNavigationController:self.navigationController
+                                       browser:_browser];
+      [self.webInspectorStateViewCoordinator start];
+      break;
     }
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -373,6 +422,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
              self.defaultModeItem) {
     self.defaultModeItem.detailText = [self defaultModeDescription];
     [self reconfigureCellsForItems:@[ self.defaultModeItem ]];
+  } else if (web::features::IsWebInspectorSupportEnabled() &&
+             observableBoolean == self.webInspectorEnabled) {
+    self.webInspectorItem.detailText = [self webInspectorStateDescription];
+    [self reconfigureCellsForItems:@[ self.webInspectorItem ]];
   } else {
     NOTREACHED();
   }
@@ -421,10 +474,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
              : l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE);
 }
 
+// Returns the string description for the current WebInspectorState.
+- (NSString*)webInspectorStateDescription {
+  return self.webInspectorEnabled.value
+             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+}
+
 - (void)settingsWillBeDismissed {
   [_disablePopupsSetting stop];
   [_requestDesktopSetting stop];
   [_linkPreviewEnabled stop];
+  [_webInspectorEnabled stop];
+  [_webInspectorStateViewCoordinator stop];
   _browser = nullptr;
 }
 

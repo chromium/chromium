@@ -11,6 +11,7 @@
 #include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "content/public/browser/device_service.h"
@@ -111,7 +112,7 @@ class ArcWakeLockBridge::WakeLockRequester {
   const device::mojom::WakeLockType type_;
 
   // Used to get wake locks. Not owned.
-  device::mojom::WakeLockProvider* const provider_;
+  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
 
   // Number of outstanding Android requests.
   int64_t wake_lock_count_ = 0;

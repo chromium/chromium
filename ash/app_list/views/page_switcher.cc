@@ -133,7 +133,7 @@ PageSwitcher::PageSwitcher(PaginationModel* model)
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kVerticalButtonPadding));
 
-  AddChildView(buttons_);
+  AddChildView(buttons_.get());
 
   TotalPagesChanged(0, model->total_pages());
   SelectedPageChanged(-1, model->selected_page());

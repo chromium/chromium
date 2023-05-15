@@ -73,7 +73,7 @@ message SourcesProto {
   optional bool one_drive_integration = 10;
 }
 
-// Properties for integrating with Chrome OS UI surfaces.
+// Properties for integrating with Chrome OS.
 message ChromeOSDataProto {
   required bool show_in_launcher = 1;
   required bool show_in_search = 2;
@@ -81,6 +81,8 @@ message ChromeOSDataProto {
   required bool is_disabled = 4;
   optional bool oem_installed = 5;
   optional bool handles_file_open_intents = 6;
+  // See explanation on IsolationDataProto for storing path as bytes.
+  optional bytes app_profile_path = 7;
 }
 
 message ClientDataProto {
@@ -148,12 +150,12 @@ message ManagementToExternalConfigInfo {
 // File paths are (de)serialized using Pickle to and from `base::FilePath` via
 // its (de)serialization methods `base::FilePath::WriteToPickle` and
 // `base::FilePath::ReadFromPickle`. Depending on the OS, file paths may either
-// use `std::string` or `std::wstring` internally. The Pickle format includes a
-// header representing the original data type of the file path, which means that
-// it is impossible to ever accidentally deserialize a `std::wstring` into a
-// `std::string` and vice versa. The (de)serialization code is also easier to
-// read than manually written code that converts bytes to and from
-// `std::wstring` / `std::string`.
+// use `std::string` or `std::wstring` internally, and are not guaranteed to be
+// safely convertible to UTF-8. The Pickle format includes a header representing
+// the original data type of the file path, which means that it is impossible to
+// ever accidentally deserialize a `std::wstring` into a `std::string` and vice
+// versa. The (de)serialization code is also easier to read than manually
+// written code that converts bytes to and from `std::wstring` / `std::string`.
 message IsolationDataProto {
   // Information needed to load data from an installed web bundle.
   message InstalledBundle {
@@ -413,4 +415,10 @@ message WebAppProto {
 
   // Contains web origins that are part of the app's extended scope.
   repeated WebAppScopeExtensionProto scope_extensions = 61;
+
+  // The same as scope_extensions but filtered to origins that have validated
+  // associations with this web app. See
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // for association requirements.
+  repeated WebAppScopeExtensionProto scope_extensions_validated = 62;
 }

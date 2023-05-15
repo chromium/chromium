@@ -16,7 +16,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -320,6 +320,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
   return !self.tableView.editing;
+}
+
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (itemType) {
+    case ItemTypeCardholderName:
+    case ItemTypeCardNumber:
+    case ItemTypeExpirationMonth:
+    case ItemTypeExpirationYear:
+    case ItemTypeNickname:
+    case ItemTypeCopiedToChrome:
+      return YES;
+  }
+  NOTREACHED();
+  return NO;
 }
 
 #pragma mark - Actions

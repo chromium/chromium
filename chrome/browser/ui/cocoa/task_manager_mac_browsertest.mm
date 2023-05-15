@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
 
   // Add 3 rows above the selection. The selected tab should not change.
   for (int i = 0; i < 3; ++i) {
-    ASSERT_TRUE(content::ExecuteScript(tabs[0], "window.open('title3.html');"));
+    ASSERT_TRUE(content::ExecJs(tabs[0], "window.open('title3.html');"));
     EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
   }
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows((rows += 3), pattern));
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
 
   // Add 2 rows below the selection. The selected tab should not change.
   for (int i = 0; i < 2; ++i) {
-    ASSERT_TRUE(content::ExecuteScript(tabs[2], "window.open('title3.html');"));
+    ASSERT_TRUE(content::ExecJs(tabs[2], "window.open('title3.html');"));
     EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
   }
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows((rows += 2), pattern));
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
 
   // Add a new row in the same process as the selection. The selected tab should
   // not change.
-  ASSERT_TRUE(content::ExecuteScript(tabs[1], "window.open('title3.html');"));
+  ASSERT_TRUE(content::ExecJs(tabs[1], "window.open('title3.html');"));
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows((rows += 1), pattern));
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
   // Add two new tasks to the same process as a.com
   int num_group_tasks = 1;
   for (int i = 0; i < 2; i++) {
-    ASSERT_TRUE(content::ExecuteScript(tabs[0], "window.open('title3.html');"));
+    ASSERT_TRUE(content::ExecJs(tabs[0], "window.open('title3.html');"));
     EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[0]));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows((rows += 1), pattern));
     EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[0]));

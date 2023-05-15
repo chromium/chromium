@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -63,10 +64,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   // all time.
   std::vector<std::string> globally_prohibited_technologies_;
 
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  TechnologyStateController* technology_state_controller_ = nullptr;
+  raw_ptr<TechnologyStateController, ExperimentalAsh>
+      technology_state_controller_ = nullptr;
   bool user_logged_in_ = false;
   bool user_policy_applied_ = false;
 };

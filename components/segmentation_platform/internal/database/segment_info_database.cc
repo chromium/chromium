@@ -5,8 +5,13 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/segmentation_platform/internal/logging.h"
+
+#include <sstream>
+#include <string>
 
 namespace segmentation_platform {
 
@@ -152,8 +157,14 @@ void SegmentInfoDatabase::SaveSegmentResult(
 
   // Update results.
   if (result.has_value()) {
+    VLOG(1) << "SaveSegmentResult: saving: "
+            << segmentation_platform::PredictionResultToDebugString(
+                   result.value())
+            << " for segment id: " << proto::SegmentId_Name(segment_id);
     segment_info->mutable_prediction_result()->CopyFrom(*result);
   } else {
+    VLOG(1) << "SaveSegmentResult: clearing prediction result for segment "
+            << proto::SegmentId_Name(segment_id);
     segment_info->clear_prediction_result();
   }
 

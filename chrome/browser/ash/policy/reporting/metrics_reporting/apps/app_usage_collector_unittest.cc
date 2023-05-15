@@ -57,7 +57,7 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
     // Disable sync so we disable UKM reporting and eliminate noise for testing
     // purposes.
     sync_service()->SetDisableReasons(
-        syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
     // Pre-install app so it can be used by tests to simulate usage.
     InstallOneApp(kTestAppId, ::apps::AppType::kArc, /*publisher_id=*/"",
@@ -99,8 +99,8 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
     const auto& usage_dict_pref =
         GetPrefService()->GetDict(::apps::kAppUsageTime);
     ASSERT_THAT(usage_dict_pref.Find(instance_id.ToString()), NotNull());
-    EXPECT_THAT(*usage_dict_pref.Find(instance_id.ToString())
-                     ->FindStringKey(::apps::kUsageTimeAppIdKey),
+    EXPECT_THAT(*usage_dict_pref.FindDict(instance_id.ToString())
+                     ->FindString(::apps::kUsageTimeAppIdKey),
                 StrEq(kTestAppId));
     EXPECT_THAT(base::ValueToTimeDelta(
                     usage_dict_pref.FindDict(instance_id.ToString())

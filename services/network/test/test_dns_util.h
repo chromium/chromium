@@ -22,7 +22,11 @@ class NetworkContext;
 // Struct containing the results passed to a network::mojom::ResolveHostClient's
 // OnComplete() method.
 struct DnsLookupResult {
-  DnsLookupResult();
+  DnsLookupResult(int32_t error,
+                  net::ResolveErrorInfo resolve_error_info,
+                  absl::optional<net::AddressList> resolved_addresses,
+                  absl::optional<net::HostResolverEndpointResults>
+                      endpoint_results_with_metadata);
   DnsLookupResult(const DnsLookupResult& dns_lookup_result);
   ~DnsLookupResult();
 

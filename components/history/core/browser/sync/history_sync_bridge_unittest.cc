@@ -348,17 +348,19 @@ class HistorySyncBridgeTest : public testing::Test {
     }
 
     // Note that because HISTORY is in ApplyUpdatesImmediatelyTypes(), the
-    // processor doesn't actually call MergeSyncData, but rather
-    // ApplySyncChanges.
+    // processor doesn't actually call MergeFullSyncData, but rather
+    // ApplyIncrementalSyncChanges.
     absl::optional<syncer::ModelError> error =
-        bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                   CreateAddEntityChangeList(specifics_vector));
+        bridge()->ApplyIncrementalSyncChanges(
+            std::move(metadata_changes),
+            CreateAddEntityChangeList(specifics_vector));
     if (error) {
-      ADD_FAILURE() << "ApplySyncChanges failed: " << error->ToString();
+      ADD_FAILURE() << "ApplyIncrementalSyncChanges failed: "
+                    << error->ToString();
     }
   }
 
-  void ApplySyncChanges(
+  void ApplyIncrementalSyncChanges(
       const std::vector<sync_pb::HistorySpecifics>& specifics_vector,
       const std::vector<std::string> extra_updated_metadata_storage_keys = {}) {
     // Populate a MetadataChangeList with the given updates/clears.
@@ -383,10 +385,12 @@ class HistorySyncBridgeTest : public testing::Test {
     }
 
     absl::optional<syncer::ModelError> error =
-        bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                   CreateAddEntityChangeList(specifics_vector));
+        bridge()->ApplyIncrementalSyncChanges(
+            std::move(metadata_changes),
+            CreateAddEntityChangeList(specifics_vector));
     if (error) {
-      ADD_FAILURE() << "ApplySyncChanges failed: " << error->ToString();
+      ADD_FAILURE() << "ApplyIncrementalSyncChanges failed: "
+                    << error->ToString();
     }
   }
 
@@ -1382,7 +1386,7 @@ TEST_F(HistorySyncBridgeTest, DownloadsUpdatedEntity) {
   sync_pb::HistorySpecifics remote_specifics =
       CreateSpecifics(base::Time::Now() - base::Seconds(5), "remote_cache_guid",
                       GURL("https://remote.com"));
-  ApplySyncChanges({remote_specifics});
+  ApplyIncrementalSyncChanges({remote_specifics});
 
   // Make sure it has neither a URL title nor a visit duration.
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
@@ -1393,7 +1397,7 @@ TEST_F(HistorySyncBridgeTest, DownloadsUpdatedEntity) {
   // The remote visit gets updated with a URL title and visit duration.
   remote_specifics.mutable_redirect_entries(0)->set_title("Title");
   remote_specifics.set_visit_duration_micros(1234);
-  ApplySyncChanges({remote_specifics});
+  ApplyIncrementalSyncChanges({remote_specifics});
 
   // Make sure these changes arrived in the backend.
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
@@ -1422,14 +1426,15 @@ TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {
   // The metadata for these entities should now be tracked.
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 2u);
 
-  // Simulate a successful commit, which results in an ApplySyncChanges() call
-  // to the bridge, updating the committed entities' metadata.
+  // Simulate a successful commit, which results in an
+  // ApplyIncrementalSyncChanges() call to the bridge, updating the committed
+  // entities' metadata.
   std::vector<std::string> updated_storage_keys;
   for (const auto& [storage_key, metadata] : GetPersistedEntityMetadata()) {
     processor()->MarkEntitySynced(storage_key);
     updated_storage_keys.push_back(storage_key);
   }
-  ApplySyncChanges({}, updated_storage_keys);
+  ApplyIncrementalSyncChanges({}, updated_storage_keys);
 
   // Now the metadata should not be tracked anymore.
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
@@ -1448,7 +1453,7 @@ TEST_F(HistorySyncBridgeTest, UntracksRemoteEntities) {
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 
   // Another remote entity comes in.
-  ApplySyncChanges(
+  ApplyIncrementalSyncChanges(
       {CreateSpecifics(base::Time::Now() - base::Seconds(5),
                        "remote_cache_guid", GURL("https://remote2.com"))});
 
@@ -1479,8 +1484,8 @@ TEST_F(HistorySyncBridgeTest, DoesNotUntrackEntityPendingCommit) {
 
   // Before the entity gets committed (and thus untracked), a remote entity
   // comes in.
-  ApplySyncChanges({CreateSpecifics(base::Time::Now(), "remote_cache_guid",
-                                    GURL("https://remote.com"))});
+  ApplyIncrementalSyncChanges({CreateSpecifics(
+      base::Time::Now(), "remote_cache_guid", GURL("https://remote.com"))});
 
   // The remote entity should have been untracked immediately, but the local
   // entity pending commit should still be tracked.

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
 #define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
@@ -71,11 +72,16 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
   // HotspotConfigurationHandler::Observer:
   void OnHotspotConfigurationChanged() override;
 
-  HotspotCapabilitiesProvider* hotspot_capabilities_provider_;
-  HotspotStateHandler* hotspot_state_handler_;
-  ash::HotspotController* hotspot_controller_;
-  HotspotConfigurationHandler* hotspot_configuration_handler_;
-  HotspotEnabledStateNotifier* hotspot_enabled_state_notifier_;
+  void NotifyObservers();
+
+  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
+      hotspot_capabilities_provider_;
+  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;
+  raw_ptr<ash::HotspotController, ExperimentalAsh> hotspot_controller_;
+  raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
+      hotspot_configuration_handler_;
+  raw_ptr<HotspotEnabledStateNotifier, ExperimentalAsh>
+      hotspot_enabled_state_notifier_;
 
   mojo::RemoteSet<mojom::CrosHotspotConfigObserver> observers_;
   mojo::ReceiverSet<mojom::CrosHotspotConfig> receivers_;

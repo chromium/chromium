@@ -14,6 +14,7 @@
 
 namespace media {
 
+class V4L2H265Picture;
 class VaapiH265Picture;
 class D3D11H265Picture;
 
@@ -28,6 +29,7 @@ class MEDIA_GPU_EXPORT H265Picture : public CodecPicture {
   H265Picture(const H265Picture&) = delete;
   H265Picture& operator=(const H265Picture&) = delete;
 
+  virtual V4L2H265Picture* AsV4L2H265Picture();
   virtual VaapiH265Picture* AsVaapiH265Picture();
   virtual D3D11H265Picture* AsD3D11H265Picture();
 

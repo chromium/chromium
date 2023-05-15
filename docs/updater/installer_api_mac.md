@@ -30,6 +30,8 @@ environment variables:
 
 -   `KS_TICKET_AP`: The ap value of the currently-installed version of the app.
  (Note: "ap" was called "tag" in Keystone.)
+-   `KS_TICKET_SERVER_URL`: The URL used for update-checking with the server,
+ regardless of what was in the Keystone ticket.
 -   `KS_TICKET_XC_PATH`: The absolute path to the installation of the app, based
  on its existence-checker value.
 -   `PATH`: '/bin:/usr/bin:/Path/To/ksadmin'.

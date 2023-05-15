@@ -29,7 +29,7 @@ namespace enterprise_reporting {
 
 namespace {
 
-std::string GetProfileName(raw_ptr<Profile> profile) {
+std::string GetProfileName(Profile* profile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // profile manager may not be available in test.
   if (!profile_manager)

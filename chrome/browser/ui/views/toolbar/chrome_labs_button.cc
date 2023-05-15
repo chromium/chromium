@@ -33,7 +33,7 @@
 #endif
 
 ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
-                                   const ChromeLabsBubbleViewModel* model)
+                                   const ChromeLabsModel* model)
     : ToolbarButton(base::BindRepeating(&ChromeLabsButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_view_(browser_view),
@@ -76,7 +76,7 @@ void ChromeLabsButton::ButtonPressed() {
   // On Chrome OS if we are still waiting for IsOwnerAsync to return abort
   // button clicks.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (is_waiting_to_show) {
+  if (is_waiting_to_show_) {
     return;
   }
 #endif
@@ -101,7 +101,7 @@ void ChromeLabsButton::ButtonPressed() {
     ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
             original_profile);
-    is_waiting_to_show = true;
+    is_waiting_to_show_ = true;
     service->IsOwnerAsync(base::BindOnce(
         [](ChromeLabsButton* button, base::WeakPtr<BrowserView> browser_view,
            ChromeLabsCoordinator* coordinator, bool is_owner) {
@@ -112,7 +112,7 @@ void ChromeLabsButton::ButtonPressed() {
               ? coordinator->Show(
                     ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType)
               : coordinator->Show();
-          button->is_waiting_to_show = false;
+          button->is_waiting_to_show_ = false;
         },
         this, browser_view_->GetAsWeakPtr(), chrome_labs_coordinator_.get()));
     return;
@@ -148,23 +148,6 @@ void ChromeLabsButton::UpdateDotIndicator() {
     new_experiments_indicator_->Show();
   else
     new_experiments_indicator_->Hide();
-}
-
-// static
-bool ChromeLabsButton::ShouldShowButton(const ChromeLabsBubbleViewModel* model,
-                                        Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kSafeMode) ||
-      !ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    return false;
-  }
-#endif
-
-  return base::ranges::any_of(model->GetLabInfo(),
-                              [&profile](const LabInfo& lab) {
-                                return IsChromeLabsFeatureValid(lab, profile);
-                              });
 }
 
 BEGIN_METADATA(ChromeLabsButton, ToolbarButton)

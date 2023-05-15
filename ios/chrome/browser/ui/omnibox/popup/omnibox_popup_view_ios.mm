@@ -18,9 +18,9 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
@@ -56,6 +56,11 @@ void OmniboxPopupViewIOS::UpdatePopupAppearance() {
 
 bool OmniboxPopupViewIOS::IsOpen() const {
   return [mediator_ hasResults];
+}
+
+std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
+    size_t line) {
+  return u"";
 }
 
 OmniboxEditModel* OmniboxPopupViewIOS::model() const {

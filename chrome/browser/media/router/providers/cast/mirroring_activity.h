@@ -75,6 +75,7 @@ class MirroringActivity : public CastActivity,
   void LogInfoMessage(const std::string& message) override;
   void LogErrorMessage(const std::string& message) override;
   void OnSourceChanged() override;
+  void OnRemotingStateChanged(bool is_remoting) override;
 
   // CastMessageChannel implementation
   void OnMessage(mirroring::mojom::CastMessagePtr message) override;
@@ -120,8 +121,14 @@ class MirroringActivity : public CastActivity,
  private:
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest,
+                           OnSourceChangedNotifiesMediaStatusObserver);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, ReportsNotEnabledByDefault);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, EnableRtcpReports);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Pause);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Play);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnRemotingStateChanged);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetTargetPlayoutDelay);
 
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
@@ -132,6 +139,14 @@ class MirroringActivity : public CastActivity,
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     host_ = std::move(host);
   }
+
+  void SetPlayState(mojom::MediaStatus::PlayState play_state);
+
+  void NotifyMediaStatusObserver();
+
+  // Invoked when mirroring is paused / resumed, for metrics.
+  void OnMirroringPaused();
+  void OnMirroringResumed();
 
   // Scrubs AES related data in messages with type "OFFER".
   static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
@@ -151,6 +166,11 @@ class MirroringActivity : public CastActivity,
   void ScheduleFetchMirroringStats();
   void FetchMirroringStats();
   void OnMirroringStats(base::Value json_stats);
+
+  // Checks if we should override the target playout delay if the
+  // kCastMirroringTargetPlayoutDelay switch has a value.
+  absl::optional<base::TimeDelta> GetTargetPlayoutDelay(
+      const absl::optional<base::TimeDelta>& source_playout_delay);
 
   std::unique_ptr<mirroring::MirroringServiceHost> host_;
 
@@ -186,6 +206,11 @@ class MirroringActivity : public CastActivity,
   // Sends media status updates with mirroring information needed for freezing
   // the session.
   mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
+
+  // Info for mirroring state transitions like pause / resume.
+  mojom::MediaStatusPtr media_status_;
+  int mirroring_pause_count_ = 0;
+  absl::optional<base::Time> mirroring_pause_timestamp_;
 
   // Set before and after a mirroring session is established, for metrics.
   absl::optional<base::Time> will_start_mirroring_timestamp_;

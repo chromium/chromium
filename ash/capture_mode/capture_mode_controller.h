@@ -93,6 +93,12 @@ class ASH_EXPORT CaptureModeController
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
   RecordingType recording_type() const { return recording_type_; }
+
+  // Returns the raw audio recording mode, without taking into account the
+  // `AudioCaptureAllowed` policy.
+  AudioRecordingMode audio_recording_mode() const {
+    return audio_recording_mode_;
+  }
   CaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
@@ -109,9 +115,9 @@ class ASH_EXPORT CaptureModeController
   // capture_mode_util::IsCaptureModeActive().
   bool IsActive() const;
 
-  // Returns true if audio recording is enabled. This takes into account the
+  // Returns the effective audio recording mode, taking into account the
   // `AudioCaptureAllowed` policy.
-  bool GetAudioRecordingEnabled() const;
+  AudioRecordingMode GetEffectiveAudioRecordingMode() const;
 
   // Returns true if audio recording is forced disabled by the
   // `AudioCaptureAllowed` policy.
@@ -127,12 +133,12 @@ class ASH_EXPORT CaptureModeController
   void SetType(CaptureModeType type);
   void SetRecordingType(RecordingType recording_type);
 
-  // Sets the audio recording flag, which will be applied to any future
+  // Sets the audio recording mode, which will be applied to any future
   // recordings (cannot be set mid recording), or to a future capture mode
   // session when Start() is called. The effective enabled state takes into
   // account the `AudioCaptureAllowed` policy.
-  void EnableAudioRecording(bool enable_audio_recording) {
-    enable_audio_recording_ = enable_audio_recording;
+  void SetAudioRecordingMode(AudioRecordingMode mode) {
+    audio_recording_mode_ = mode;
   }
 
   // Sets the flag to enable the demo tools feature, which will be applied to
@@ -147,6 +153,10 @@ class ASH_EXPORT CaptureModeController
 
   // Stops an existing capture session.
   void Stop();
+
+  // Called by the `capture_mode_session_` to notify the `observers_` when the
+  // capture mode session ends without starting any recording
+  void NotifyRecordingStartAborted();
 
   // Sets the user capture region. If it's non-empty and changed by the user,
   // update |last_capture_region_update_time_|.
@@ -280,7 +290,7 @@ class ASH_EXPORT CaptureModeController
   void StartVideoRecordingImmediatelyForTesting();
 
   // Restores the capture mode configurations that include the `type_`,
-  // `source_`, `enable_audio_recording_`, `recording_type_` and
+  // `source_`, `audio_recording_mode_`, `recording_type_` and
   // `enable_demo_tools_` if any of them gets overridden in the
   // projector-initiated capture mode session.
   void MaybeRestoreCachedCaptureConfigurations();
@@ -302,17 +312,6 @@ class ASH_EXPORT CaptureModeController
  private:
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
-
-  // Contains the cached normal capture mode configurations that will be used
-  // for configurations restoration when switching from the projector-initiated
-  // capture mode session if needed.
-  struct CaptureSessionConfigs {
-    CaptureModeType type;
-    CaptureModeSource source;
-    RecordingType recording_type;
-    bool audio_on;
-    bool demo_tools_enabled;
-  };
 
   // Called by |video_recording_watcher_| when the display on which recording is
   // happening changes its bounds such as on display rotation or device scale
@@ -345,8 +344,8 @@ class ASH_EXPORT CaptureModeController
   // session if it's active, or stop the video recording if one is in progress.
   void EndSessionOrRecording(EndRecordingReason reason);
 
-  // Returns the capture parameters for the capture operation that is about to
-  // be performed (i.e. the window to be captured, and the capture bounds). If
+  // The capture parameters for the capture operation that is about to be
+  // performed (i.e. the window to be captured, and the capture bounds). If
   // nothing is to be captured (e.g. when there's no window selected in a
   // kWindow source, or no region is selected in a kRegion source), then a
   // absl::nullopt is returned.
@@ -357,6 +356,7 @@ class ASH_EXPORT CaptureModeController
     // source).
     gfx::Rect bounds;
   };
+
   absl::optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
@@ -364,14 +364,15 @@ class ASH_EXPORT CaptureModeController
   // overlay on the video capturer so that it can be used to record the mouse
   // cursor. It gives the pending receiver end to that overlay on Viz, and the
   // other end should be owned by the `video_recording_watcher_`. If the given
-  // `should_record_audio` is true, it will setup the needed mojo connections to
-  // the Audio Service so that audio recording can be done by the recording
-  // service.
+  // `effective_audio_mode` (which takes into account the audio capture admin
+  // policy and the recording format type) is not `kOff`, it will setup the
+  // needed mojo connections to the Audio Service so that audio recording can be
+  // done by the recording service.
   void LaunchRecordingServiceAndStartRecording(
       const CaptureParams& capture_params,
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
           cursor_overlay,
-      bool should_record_audio);
+      AudioRecordingMode effective_audio_mode);
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();
@@ -418,15 +419,15 @@ class ASH_EXPORT CaptureModeController
   // folder is available or not.
   void OnCustomFolderAvailabilityChecked(bool available);
 
-  // Called back when the |video_file_handler_| flushes the remaining cached
-  // video chunks in its buffer. Called on the UI thread. |video_thumbnail| is
+  // Called back when the `video_file_handler_` flushes the remaining cached
+  // video chunks in its buffer. Called on the UI thread. `video_thumbnail` is
   // an RGB image provided by the recording service that can be used as a
-  // thumbnail of the video in the notification. If |in_projector_mode| is true
+  // thumbnail of the video in the notification. `behavior` will decide whether
   // the recording will not be shown in tote or notification.
   void OnVideoFileSaved(const base::FilePath& saved_video_file_path,
                         const gfx::ImageSkia& video_thumbnail,
                         bool success,
-                        bool in_projector_mode);
+                        CaptureModeBehavior* behavior);
 
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.
@@ -465,21 +466,18 @@ class ASH_EXPORT CaptureModeController
   // Called when the video record 3-seconds count down finishes.
   void OnVideoRecordCountDownFinished();
 
-  // Called when the Projector controller creates the DriveFS folder that will
-  // host the video file along with the associated metadata file created by the
-  // Projector session. Note that |file_path_no_extension| is the full path of
-  // the video file minus its (.webm) extension.
-  void OnProjectorContainerFolderCreated(
-      const CaptureParams& capture_params,
-      const base::FilePath& file_path_no_extension);
+  // Called when the client of capture mode requires creating its own folder to
+  // host the video file, and that folder has been created, and the desired full
+  // path of the video file (including the extension) is provided. Note that
+  // this path will be empty if the folder creation operation failed.
+  void OnCaptureFolderCreated(const CaptureParams& capture_params,
+                              const base::FilePath& capture_file_full_path);
 
   // Ends the capture session and starts the video recording for the given
-  // |capture_params|. The video will be saved to a file to the given
-  // |video_file_path|. |for_projector| will be true if this recording was
-  // initiated for a Projector session.
-  // This can only be called while the session is still active.
+  // `capture_params`. The video will be saved to a file to the given
+  // `video_file_path`. This can only be called while the session is still
+  // active.
   void BeginVideoRecording(const CaptureParams& capture_params,
-                           bool for_projector,
                            const base::FilePath& video_file_path);
 
   // Called to interrupt the ongoing video recording because it's not anymore
@@ -513,7 +511,7 @@ class ASH_EXPORT CaptureModeController
   // `proceed` is true, or to delete it when `proceed` is false.
   void OnDlpRestrictionCheckedAtVideoEnd(const gfx::ImageSkia& video_thumbnail,
                                          bool success,
-                                         bool in_projector_mode,
+                                         CaptureModeBehavior* behavior,
                                          bool proceed);
 
   // Encapsulates the policy check and calls into DLP manager to do DLP check.
@@ -578,12 +576,12 @@ class ASH_EXPORT CaptureModeController
 
   std::unique_ptr<CaptureModeSession> capture_mode_session_;
 
-  // Remember the user selected audio preference of whether to record audio or
-  // not for a video, between sessions. Initially, this value is set to false,
-  // ensuring that this is an opt-in feature. Note that this value will always
-  // be overwritten by the `AudioCaptureAllowed` policy, when
-  // `GetAudioRecordingEnabled()` is called.
-  bool enable_audio_recording_ = false;
+  // Remember the user selected preference for audio recording between sessions.
+  // Initially, this value is set to `kOff`, ensuring that this is an opt-in
+  // feature. Note that this value will always be overwritten by the
+  // `AudioCaptureAllowed` policy, when `GetEffectiveAudioRecordingMode()` is
+  // called.
+  AudioRecordingMode audio_recording_mode_ = AudioRecordingMode::kOff;
 
   // If true, the 3-second countdown UI will be skipped, and video recording
   // will start immediately.
@@ -645,8 +643,6 @@ class ASH_EXPORT CaptureModeController
 
   // True in the scope of BeginVideoRecording().
   bool is_initializing_recording_ = false;
-
-  absl::optional<CaptureSessionConfigs> cached_normal_session_configs_;
 
   // Remember the user preference of whether to enable demo tools feature or
   // not in video recording mode, between sessions. Initially, this value is set

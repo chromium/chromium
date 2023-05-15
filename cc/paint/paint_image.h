@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,7 +42,27 @@ class TextureBacking;
 
 enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
 
-enum class AuxImage { kDefault, kGainmap };
+enum class AuxImage : size_t { kDefault = 0, kGainmap = 1 };
+static constexpr std::array<AuxImage, 2> kAllAuxImages = {AuxImage::kDefault,
+                                                          AuxImage::kGainmap};
+constexpr size_t AuxImageIndex(AuxImage aux_image) {
+  return static_cast<size_t>(aux_image);
+}
+static constexpr size_t kAuxImageCount = 2;
+static constexpr size_t kAuxImageIndexDefault =
+    AuxImageIndex(AuxImage::kDefault);
+static constexpr size_t kAuxImageIndexGainmap =
+    AuxImageIndex(AuxImage::kGainmap);
+constexpr const char* AuxImageName(AuxImage aux_image) {
+  switch (aux_image) {
+    case AuxImage::kDefault:
+      return "default";
+      break;
+    case AuxImage::kGainmap:
+      return "gainmap";
+      break;
+  }
+}
 
 enum class YUVSubsampling { k410, k411, k420, k422, k440, k444, kUnknown };
 
@@ -326,7 +347,15 @@ class CC_PAINT_EXPORT PaintImage {
   }
 
   bool IsOpaque() const;
-  bool HasGainmap() const { return gainmap_paint_image_generator_.get(); }
+  bool HasGainmap() const {
+    DCHECK_EQ(gainmap_paint_image_generator_ != nullptr,
+              gainmap_info_.has_value());
+    return gainmap_paint_image_generator_.get();
+  }
+  const SkGainmapInfo& GetGainmapInfo() const {
+    DCHECK(HasGainmap());
+    return gainmap_info_.value();
+  }
 
   std::string ToString() const;
 
@@ -370,6 +399,8 @@ class CC_PAINT_EXPORT PaintImage {
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
+  absl::optional<SkGainmapInfo> gainmap_info_;
+
   sk_sp<TextureBacking> texture_backing_;
 
   Id id_ = 0;

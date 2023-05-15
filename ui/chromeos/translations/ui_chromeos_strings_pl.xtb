@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Przełącz na widok listy</translation>
 <translation id="2377590462528165447">Foldery (<ph name="NUMBER_OF_ITEMS" />) zostały udostępnione na Linuksie</translation>
-<translation id="2378075407703503998">Wybrano <ph name="SELCTED_FILE_COUNT" /> pliki(ów)</translation>
 <translation id="2383454254762599978">Przenieś do kosza</translation>
 <translation id="2387458720915042159">Typ połączenia z serwerem proxy</translation>
 <translation id="2389832672041313158">Birmański/myanmarski</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Urządzenie tylko do odczytu</translation>
 <translation id="4826849268470072925">Tamilski ITRANS</translation>
 <translation id="482932175346970750">Wpisz w przeglądarce <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
-<translation id="4839847978919684242">Wybrano <ph name="SELCTED_FILES_COUNT" /> elementy(ów)</translation>
 <translation id="4843566743023903107">Komputery Chromebase</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="485316830061041779">Niemiecki</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">Szwedzki</translation>
 <translation id="6990081529015358884">Nie masz już miejsca</translation>
 <translation id="6993826899923627728">Te elementy są w koszu</translation>
-<translation id="6998711733709403587">Wybrano <ph name="SELCTED_FOLDERS_COUNT" /> foldery(ów)</translation>
 <translation id="7008426324576352165">Aby ukończyć przesyłanie, Twoja organizacja potrzebuje więcej miejsca na dane.</translation>
 <translation id="7009985720488544166">Przenoszenie <ph name="COUNT" /> plików jest zablokowane przez zasady administratora</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">Znajdź rozszerzenie powyżej</translation>
 <translation id="7256405249507348194">Nierozpoznany błąd: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostępne usługi</translation>
+<translation id="7291818353625820805">Chcesz, żeby klawisze powtarzały ten sam znak? Wyłącz znaki akcentowane w Ustawieniach klawiatury</translation>
 <translation id="7292816689782057017">Zasady administratora nie pozwalają na zapisywanie w niektórych lokalizacjach.</translation>
 <translation id="7294063083760278948">Telugu – transliteracja</translation>
 <translation id="7295662345261934369">Udostępnij innym</translation>

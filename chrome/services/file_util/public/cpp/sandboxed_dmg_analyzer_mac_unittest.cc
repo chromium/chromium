@@ -102,7 +102,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {
 
   bool got_executable = false, got_dylib = false;
   for (const auto& binary : results.archived_binary) {
-    const std::string& file_name = binary.file_basename();
+    const std::string& file_name = binary.file_path();
     const google::protobuf::RepeatedPtrField<
         safe_browsing::ClientDownloadRequest_MachOHeaders>& headers =
         binary.image_headers().mach_o_headers();
@@ -149,7 +149,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {
           "2012CE4987B0FA4A5D285DF7E810560E841CFAB3054BC19E1AAB345F862A6C4E",
           actual_sha256);
     } else {
-      ADD_FAILURE() << "Unexpected result file " << binary.file_basename();
+      ADD_FAILURE() << "Unexpected result file " << binary.file_path();
     }
   }
 
@@ -179,7 +179,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMGNoPartitionName) {
 
   bool got_executable = false, got_dylib = false;
   for (const auto& binary : results.archived_binary) {
-    const std::string& file_name = binary.file_basename();
+    const std::string& file_name = binary.file_path();
     const google::protobuf::RepeatedPtrField<
         safe_browsing::ClientDownloadRequest_MachOHeaders>& headers =
         binary.image_headers().mach_o_headers();
@@ -226,7 +226,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMGNoPartitionName) {
           "2012CE4987B0FA4A5D285DF7E810560E841CFAB3054BC19E1AAB345F862A6C4E",
           actual_sha256);
     } else {
-      ADD_FAILURE() << "Unexpected result file " << binary.file_basename();
+      ADD_FAILURE() << "Unexpected result file " << binary.file_path();
     }
   }
 
@@ -293,8 +293,9 @@ TEST_F(SandboxedDMGAnalyzerTest, CanDeleteDuringExecution) {
   base::RunLoop run_loop;
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeDmgFile(_, _))
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeDmgFile(_, _, _))
       .WillOnce([&](base::File dmg_file,
+                    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeDmgFileCallback
                         callback) {
         EXPECT_TRUE(base::DeleteFile(temp_path));

@@ -22,14 +22,13 @@
 #import "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
@@ -45,9 +44,13 @@
 
 ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     WebOmniboxEditModelDelegate* edit_model_delegate,
-    ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state,
+    feature_engagement::Tracker* tracker)
     : edit_model_delegate_(edit_model_delegate),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      engagement_tracker_(tracker) {
+  CHECK(engagement_tracker_);
+}
 
 ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
 
@@ -88,6 +91,11 @@ SessionID ChromeOmniboxClientIOS::GetSessionID() const {
 bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
   return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
       browser_state_);
+}
+
+AutocompleteControllerEmitter*
+ChromeOmniboxClientIOS::GetAutocompleteControllerEmitter() {
+  return nullptr;
 }
 
 TemplateURLService* ChromeOmniboxClientIOS::GetTemplateURLService() {
@@ -155,8 +163,8 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
 
   if (!browser_state_->IsOffTheRecord() &&
       HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    feature_engagement::TrackerFactory::GetForBrowserState(browser_state_)
-        ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+    engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoCriterionMet);
   }
 }
 
@@ -222,6 +230,9 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
           [interaction donateInteractionWithCompletion:nil];
         }));
   }
+
+  engagement_tracker_->NotifyEvent(
+      feature_engagement::events::kOpenUrlFromOmnibox);
 }
 
 void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {

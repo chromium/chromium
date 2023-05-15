@@ -102,7 +102,7 @@ bool PasswordManagerClientHelper::ShouldPromptToEnableAutoSignIn() const {
   return password_bubble_experiment::
              ShouldShowAutoSignInPromptFirstRunExperience(
                  delegate_->GetPrefs()) &&
-         delegate_->IsAutoSignInEnabled() && !delegate_->IsIncognito();
+         delegate_->IsAutoSignInEnabled() && !delegate_->IsOffTheRecord();
 }
 
 bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
@@ -118,7 +118,7 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
   }
   if (!submitted_manager.IsMovableToAccountStore())
     return false;
-  if (delegate_->IsIncognito())
+  if (delegate_->IsOffTheRecord())
     return false;
   // It's not useful to store the password for the primary account inside
   // that same account.

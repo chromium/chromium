@@ -8,7 +8,7 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -60,7 +60,7 @@ public class HttpsFirstModeSettingTest {
         mSettingsActivityTestRule.startSettingsActivity();
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
         final String unlockedSummaryText =
-                InstrumentationRegistry.getContext().getResources().getString(
+                ApplicationProvider.getApplicationContext().getResources().getString(
                         R.string.settings_https_first_mode_summary);
 
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
@@ -78,7 +78,7 @@ public class HttpsFirstModeSettingTest {
 
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
         final String lockedSummaryText =
-                InstrumentationRegistry.getContext().getResources().getString(
+                ApplicationProvider.getApplicationContext().getResources().getString(
                         R.string.settings_https_first_mode_with_advanced_protection_summary);
 
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);

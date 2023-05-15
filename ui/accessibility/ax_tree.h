@@ -304,6 +304,12 @@ class AX_EXPORT AXTree {
       AXNode* node,
       const AXTreeUpdateState* update_state);
 
+  // Experimental version of the above method.
+  void NotifySubtreeWillBeReparentedOrDeletedExperimental(
+      AXNode* node,
+      const AXTreeUpdateState* update_state,
+      AXTreeObserver& observer);
+
   // Notify the delegate that |node| will be destroyed or reparented.
   void NotifyNodeWillBeReparentedOrDeleted(
       AXNode* node,

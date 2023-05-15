@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 import '../../settings_shared.css.js';
 import '../nearby_share_page/nearby_share_subpage.js';
 import '../os_settings_page/os_settings_animated_pages.js';

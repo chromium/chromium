@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -618,7 +619,7 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
       test_certificate_provider_extension_mixin_{&mixin_host_,
                                                  &user_extension_mixin_};
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOCK".

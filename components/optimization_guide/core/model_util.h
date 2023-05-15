@@ -51,6 +51,12 @@ GetModelOverrideForOptimizationTarget(
 // Checks all the files in |file_paths_to_check| exists.
 bool CheckAllPathsExist(const std::vector<base::FilePath>& file_paths_to_check);
 
+// Returns the relative filepath for |child| w.r.t. |parent|. For example, with
+// child="/foo/bar/baz/abc.txt"  and parent="/foo/bar/", this returns the
+// relative path "baz/abc.txt".
+base::FilePath ConvertToRelativePath(const base::FilePath& parent,
+                                     const base::FilePath& child);
+
 // Returns the hash of |model_cache_key| that can be used as key in a
 // persistent dict, or can be used as file paths.
 std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key);

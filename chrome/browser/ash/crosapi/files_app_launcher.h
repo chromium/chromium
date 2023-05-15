@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_FILES_APP_LAUNCHER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -43,7 +44,7 @@ class FilesAppLauncher : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  apps::AppServiceProxy* const proxy_;
+  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
 
   base::OnceClosure callback_;
 

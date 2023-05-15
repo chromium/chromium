@@ -14,14 +14,17 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_fallback_resources.h"
 #include "chrome/grit/office_fallback_resources_map.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::office_fallback {
 
 bool OfficeFallbackUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      Profile::FromBrowserContext(browser_context));
 }
 
 OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
@@ -37,11 +40,11 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
        IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),
       IDR_OFFICE_FALLBACK_MAIN_HTML);
-  source->DisableTrustedTypesCSP();
 }
 
 OfficeFallbackUI::~OfficeFallbackUI() = default;
@@ -76,6 +79,12 @@ void OfficeFallbackUI::CloseDialog(mojom::DialogChoice choice) {
       break;
   }
   ui::MojoWebDialogUI::CloseDialog(args);
+}
+
+void OfficeFallbackUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OfficeFallbackUI)

@@ -127,8 +127,8 @@ class TestUrlCheckerClient {
           slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      bool did_perform_real_time_check,
-      bool did_check_allowlist) {
+      bool did_perform_url_real_time_check,
+      bool did_check_url_real_time_allowlist) {
     if (slow_check_notifier) {
       *slow_check_notifier =
           base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
@@ -239,7 +239,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     threat_info->set_cache_expression_using_match_type(bad_url.host() + "/");
     threat_info->set_cache_expression_match_type(
         safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
-    verdict_cache_manager_->CacheRealTimeUrlVerdict(bad_url, response,
+    verdict_cache_manager_->CacheRealTimeUrlVerdict(response,
                                                     base::Time::Now());
   }
 

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
 #include "base/task/sequenced_task_runner.h"
@@ -92,7 +93,7 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // Member variables.
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   // Caches the total memory for reclaim_target_kb sanity check. The default
   // value is 32 GiB in case reading total memory failed.
@@ -321,8 +322,8 @@ void ResourcedClient::Initialize(dbus::Bus* bus) {
 }
 
 // static
-void ResourcedClient::InitializeFake() {
-  new FakeResourcedClient();
+FakeResourcedClient* ResourcedClient::InitializeFake() {
+  return new FakeResourcedClient();
 }
 
 // static

@@ -38,6 +38,8 @@ pub const O_ACCMODE: ::c_int = 3;
 pub const O_DIRECT: ::c_int = 0x8000;
 pub const O_DIRECTORY: ::c_int = 0x10000;
 pub const O_NOFOLLOW: ::c_int = 0x20000;
+pub const O_NOATIME: ::c_int = 0x40000;
+pub const O_PATH: ::c_int = 0o010000000;
 
 pub const O_APPEND: ::c_int = 8;
 pub const O_CREAT: ::c_int = 256;
@@ -49,9 +51,11 @@ pub const O_RSYNC: ::c_int = 0x10;
 pub const O_DSYNC: ::c_int = 0x10;
 pub const O_FSYNC: ::c_int = 0x10;
 pub const O_ASYNC: ::c_int = 0x1000;
+pub const O_LARGEFILE: ::c_int = 0x2000;
 pub const O_NDELAY: ::c_int = 0x80;
 
 pub const SOCK_NONBLOCK: ::c_int = 128;
+pub const PIDFD_NONBLOCK: ::c_int = 128;
 
 pub const EDEADLK: ::c_int = 45;
 pub const ENAMETOOLONG: ::c_int = 78;
@@ -72,6 +76,7 @@ pub const EL2HLT: ::c_int = 44;
 pub const EBADE: ::c_int = 50;
 pub const EBADR: ::c_int = 51;
 pub const EXFULL: ::c_int = 52;
+pub const FFDLY: ::c_int = 0o0100000;
 pub const ENOANO: ::c_int = 53;
 pub const EBADRQC: ::c_int = 54;
 pub const EBADSLT: ::c_int = 55;
@@ -147,6 +152,8 @@ pub const MAP_POPULATE: ::c_int = 0x10000;
 pub const MAP_NONBLOCK: ::c_int = 0x20000;
 pub const MAP_STACK: ::c_int = 0x40000;
 
+pub const NLDLY: ::tcflag_t = 0o0000400;
+
 pub const SOCK_STREAM: ::c_int = 2;
 pub const SOCK_DGRAM: ::c_int = 1;
 pub const SOCK_SEQPACKET: ::c_int = 5;
@@ -207,30 +214,39 @@ pub const RTLD_GLOBAL: ::c_int = 0x4;
 
 pub const SIGSTKSZ: ::size_t = 8192;
 pub const CBAUD: ::tcflag_t = 0o0010017;
+pub const CBAUDEX: ::tcflag_t = 0o0010000;
+pub const CIBAUD: ::tcflag_t = 0o002003600000;
 pub const TAB1: ::tcflag_t = 0x00000800;
 pub const TAB2: ::tcflag_t = 0x00001000;
 pub const TAB3: ::tcflag_t = 0x00001800;
+pub const TABDLY: ::tcflag_t = 0o0014000;
 pub const CR1: ::tcflag_t = 0x00000200;
 pub const CR2: ::tcflag_t = 0x00000400;
 pub const CR3: ::tcflag_t = 0x00000600;
 pub const FF1: ::tcflag_t = 0x00008000;
 pub const BS1: ::tcflag_t = 0x00002000;
+pub const BSDLY: ::tcflag_t = 0o0020000;
 pub const VT1: ::tcflag_t = 0x00004000;
 pub const VWERASE: usize = 14;
+pub const XTABS: ::tcflag_t = 0o0014000;
 pub const VREPRINT: usize = 12;
 pub const VSUSP: usize = 10;
+pub const VSWTC: usize = 7;
+pub const VTDLY: ::c_int = 0o0040000;
 pub const VSTART: usize = 8;
 pub const VSTOP: usize = 9;
 pub const VDISCARD: usize = 13;
 pub const VTIME: usize = 5;
 pub const IXON: ::tcflag_t = 0x00000400;
 pub const IXOFF: ::tcflag_t = 0x00001000;
+pub const OLCUC: ::tcflag_t = 0o0000002;
 pub const ONLCR: ::tcflag_t = 0x4;
 pub const CSIZE: ::tcflag_t = 0x00000030;
 pub const CS6: ::tcflag_t = 0x00000010;
 pub const CS7: ::tcflag_t = 0x00000020;
 pub const CS8: ::tcflag_t = 0x00000030;
 pub const CSTOPB: ::tcflag_t = 0x00000040;
+pub const CRDLY: ::c_int = 0o0003000;
 pub const CREAD: ::tcflag_t = 0x00000080;
 pub const PARENB: ::tcflag_t = 0x00000100;
 pub const PARODD: ::tcflag_t = 0x00000200;
@@ -246,6 +262,8 @@ pub const ISIG: ::tcflag_t = 0x00000001;
 pub const ICANON: ::tcflag_t = 0x00000002;
 pub const PENDIN: ::tcflag_t = 0x00004000;
 pub const NOFLSH: ::tcflag_t = 0x00000080;
+
+pub const MAP_HUGETLB: ::c_int = 0x80000;
 
 pub const B0: ::speed_t = 0o000000;
 pub const B50: ::speed_t = 0o000001;

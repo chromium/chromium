@@ -5,15 +5,17 @@
 source_set("inactive_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "metrics.h",
+    "metrics.mm",
     "utils.h",
     "utils.mm",
   ]
   deps = [
     ":features",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ntp:util",
-    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
 }
@@ -27,8 +29,8 @@ source_set("features") {
   public_deps = [ "//base" ]
   deps = [
     "//components/prefs",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ui/base",
   ]
 }
@@ -41,16 +43,16 @@ source_set("unit_tests") {
     ":features",
     ":inactive_tabs",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

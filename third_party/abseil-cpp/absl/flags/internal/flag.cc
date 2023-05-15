@@ -197,7 +197,7 @@ void FlagImpl::AssertValidType(FlagFastTypeId rhs_type_id,
   FlagFastTypeId lhs_type_id = flags_internal::FastTypeId(op_);
 
   // `rhs_type_id` is the fast type id corresponding to the declaration
-  // visibile at the call site. `lhs_type_id` is the fast type id
+  // visible at the call site. `lhs_type_id` is the fast type id
   // corresponding to the type specified in flag definition. They must match
   //  for this operation to be well-defined.
   if (ABSL_PREDICT_TRUE(lhs_type_id == rhs_type_id)) return;
@@ -238,7 +238,7 @@ void FlagImpl::StoreValue(const void* src) {
   switch (ValueStorageKind()) {
     case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
-      // Load the current value to avoid setting 'init' bit manualy.
+      // Load the current value to avoid setting 'init' bit manually.
       int64_t one_word_val = OneWordValue().load(std::memory_order_acquire);
       std::memcpy(&one_word_val, src, Sizeof(op_));
       OneWordValue().store(one_word_val, std::memory_order_release);

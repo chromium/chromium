@@ -4,13 +4,13 @@
 
 #include "ash/system/privacy_screen/privacy_screen_toast_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -82,8 +82,8 @@ class PrivacyScreenToastLabelView : public views::View {
 
     label_ = new views::Label();
     managed_view_ = new PrivacyScreenToastManagedView();
-    AddChildView(label_);
-    AddChildView(managed_view_);
+    AddChildView(label_.get());
+    AddChildView(managed_view_.get());
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
     const SkColor primary_text_color = color_provider->GetContentLayerColor(
@@ -108,8 +108,8 @@ class PrivacyScreenToastLabelView : public views::View {
   }
 
  private:
-  views::Label* label_;
-  PrivacyScreenToastManagedView* managed_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<PrivacyScreenToastManagedView, ExperimentalAsh> managed_view_;
 };
 
 PrivacyScreenToastView::PrivacyScreenToastView(
@@ -127,17 +127,10 @@ PrivacyScreenToastView::PrivacyScreenToastView(
   button_->SetVectorIcon(kPrivacyScreenIcon);
   button_->SetToggled(false);
   button_->AddObserver(this);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   label_ = new PrivacyScreenToastLabelView();
-  AddChildView(label_);
-
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
+  AddChildView(label_.get());
 }
 
 PrivacyScreenToastView::~PrivacyScreenToastView() {

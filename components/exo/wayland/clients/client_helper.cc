@@ -10,6 +10,7 @@
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <single-pixel-buffer-v1-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
@@ -82,6 +83,8 @@ DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)
 DEFAULT_DELETER(wp_content_type_manager_v1, wp_content_type_manager_v1_destroy)
 DEFAULT_DELETER(wp_content_type_v1, wp_content_type_v1_destroy)
+DEFAULT_DELETER(wp_single_pixel_buffer_manager_v1,
+                wp_single_pixel_buffer_manager_v1_destroy)
 DEFAULT_DELETER(wp_viewporter, wp_viewporter_destroy)
 DEFAULT_DELETER(zxdg_shell_v6, zxdg_shell_v6_destroy)
 DEFAULT_DELETER(xdg_wm_base, xdg_wm_base_destroy)

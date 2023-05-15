@@ -9,11 +9,20 @@ source_set("mac") {
   # build, if other component targets also depend on it, multiple copies of
   # the ObjC classes declared in the files below will cause warnings at
   # run-time.
-  visibility = [ "//media" ]
+  visibility = [
+    "//media",
+    "//media/audio",
+    "//media/device_monitors",
+    "//media/filters",
+  ]
 
   sources = [
+    "channel_layout_util_mac.cc",
+    "channel_layout_util_mac.h",
     "color_space_util_mac.h",
     "color_space_util_mac.mm",
+    "video_capture_device_avfoundation_helpers.h",
+    "video_capture_device_avfoundation_helpers.mm",
     "video_frame_mac.h",
     "video_frame_mac.mm",
     "videotoolbox_helpers.cc",
@@ -21,13 +30,17 @@ source_set("mac") {
   ]
   if (is_apple) {
     frameworks = [
+      "AudioToolbox.framework",
       "AVFoundation.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",  # Required by video_frame_mac.cc.
       "VideoToolbox.framework",
     ]
   }
-  configs += [ "//media:subcomponent_config" ]
+  configs += [
+    "//media:subcomponent_config",
+    "//build/config/compiler:enable_arc",
+  ]
 
   deps = [
     "//media/base",
@@ -37,8 +50,14 @@ source_set("mac") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "video_frame_mac_unittests.cc" ]
-  frameworks = [ "CoreVideo.framework" ]
+  sources = [
+    "channel_layout_util_mac_unittests.cc",
+    "video_frame_mac_unittests.cc",
+  ]
+  frameworks = [
+    "AudioToolbox.framework",
+    "CoreVideo.framework",
+  ]
   configs += [ "//media:media_config" ]
   deps = [
     "//media:test_support",

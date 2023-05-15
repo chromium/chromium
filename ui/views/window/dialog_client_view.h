@@ -20,7 +20,7 @@
 namespace views {
 
 class DialogDelegate;
-class LabelButton;
+class MdTextButton;
 class Widget;
 
 // DialogClientView provides adornments for a dialog's content view, including
@@ -49,8 +49,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   ~DialogClientView() override;
 
   // Accessors in case the user wishes to adjust these buttons.
-  LabelButton* ok_button() const { return ok_button_; }
-  LabelButton* cancel_button() const { return cancel_button_; }
+  MdTextButton* ok_button() const { return ok_button_; }
+  MdTextButton* cancel_button() const { return cancel_button_; }
   View* extra_view() const { return extra_view_; }
 
   void SetButtonRowInsets(const gfx::Insets& insets);
@@ -118,7 +118,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // (which must be pointed to by |member|).  Which action is chosen is based on
   // whether DialogDelegate::GetDialogButtons() includes |type|, and whether
   // |member| points to a button that already exists.
-  void UpdateDialogButton(LabelButton** member, ui::DialogButton type);
+  void UpdateDialogButton(MdTextButton** member, ui::DialogButton type);
 
   void ButtonPressed(ui::DialogButton type, const ui::Event& event);
 
@@ -152,10 +152,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // The dialog buttons.
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION LabelButton* ok_button_ = nullptr;
+  RAW_PTR_EXCLUSION MdTextButton* ok_button_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION LabelButton* cancel_button_ = nullptr;
+  RAW_PTR_EXCLUSION MdTextButton* cancel_button_ = nullptr;
 
   // The extra view shown in the row of buttons; may be NULL.
   raw_ptr<View, DanglingUntriaged> extra_view_ = nullptr;

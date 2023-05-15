@@ -1,8 +1,15 @@
-Tests that clearing object store works for IndexedDB with storageKey
+Tests that clearing object store works for IndexedDB with storage bucket
 
-Open database, object store and set value
+Open database, object store and set value for default bucket
 data value equals: "test-data"
 
 Clear object store for storage key
 data value after clear equals: undefined
+
+Open database, object store and set value for test-bucket bucket
+data value equals: "test-data"
+
+Clear object store for storage key
+data value after clear equals: undefined
+
 

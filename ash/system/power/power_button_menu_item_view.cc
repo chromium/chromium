@@ -50,7 +50,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImage(
-      ui::ImageModel::FromVectorIcon(icon_, kColorAshIconColorPrimary));
+      ui::ImageModel::FromVectorIcon(*icon_, kColorAshIconColorPrimary));
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_->SetText(title_text);

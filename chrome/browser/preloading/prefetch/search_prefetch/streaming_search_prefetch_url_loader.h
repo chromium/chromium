@@ -325,7 +325,8 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // The initiating prefetch request. Cleared when handing this request off to
   // the navigation stack.
-  raw_ptr<SearchPrefetchRequest, DanglingUntriaged> streaming_prefetch_request_;
+  raw_ptr<SearchPrefetchRequest, FlakyDanglingUntriaged>
+      streaming_prefetch_request_;
 
   // Whether we are serving from |body_content_|.
   bool serving_from_data_ = false;

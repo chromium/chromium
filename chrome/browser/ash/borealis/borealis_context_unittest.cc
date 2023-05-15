@@ -10,6 +10,7 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -85,7 +86,7 @@ class BorealisContextTest : public testing::Test,
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<borealis::BorealisContext> borealis_context_;
   std::unique_ptr<TestingProfile> profile_;
-  BorealisServiceFake* service_fake_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
   std::unique_ptr<BorealisDiskManagerDispatcher>
       borealis_disk_manager_dispatcher_;
   std::unique_ptr<BorealisShutdownMonitor> borealis_shutdown_monitor_;

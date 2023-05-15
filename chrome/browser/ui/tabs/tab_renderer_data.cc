@@ -9,14 +9,17 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -42,15 +45,24 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       security_interstitial_tab_helper->ShouldDisplayURL();
   TabRendererData data;
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(contents);
-  data.favicon = tab_ui_helper->GetFavicon().AsImageSkia();
+  data.favicon = tab_ui_helper->GetFavicon();
 
-  // Finding the relevant WebApp to get the correct home tab icon.
+  // Tabbed web apps should use the app icon on the home tab.
   Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
   if (app_browser && app_browser->app_controller()) {
     web_app::WebAppBrowserController* app_controller =
         app_browser->app_controller()->AsWebAppBrowserController();
-    if (app_controller && app_controller->DoesHomeTabIconExist()) {
-      data.favicon = app_controller->GetHomeTabIcon();
+    if (app_controller && web_app::IsPinnedHomeTab(model, index)) {
+      gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
+      if (!home_tab_icon.isNull()) {
+        data.is_monochrome_favicon = true;
+        data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
+      } else {
+        home_tab_icon = app_controller->GetFallbackHomeTabIcon();
+        if (!home_tab_icon.isNull()) {
+          data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
+        }
+      }
     }
   }
 
@@ -58,8 +70,8 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       ThumbnailTabHelper::FromWebContents(contents);
   if (thumbnail_tab_helper) {
     data.thumbnail = thumbnail_tab_helper->thumbnail();
-    data.is_tab_discarded = thumbnail_tab_helper->is_tab_discarded();
   }
+  data.is_tab_discarded = contents->WasDiscarded();
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();
@@ -84,6 +96,18 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
+  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
+      high_efficiency::GetDiscardReason(contents);
+
+  // Only show discard status for tabs that were proactively discarded to
+  // prevent confusion to users on why a tab was discarded. Also, the favicon
+  // discard animation may use resources so the animation should be limited
+  // to proactive discards to prevent performance issues.
+  data.should_show_discard_status =
+      high_efficiency::IsURLSupported(contents->GetURL()) &&
+      contents->WasDiscarded() && discard_reason.has_value() &&
+      discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
+
   return data;
 }
 
@@ -98,16 +122,18 @@ TabRendererData& TabRendererData::operator=(TabRendererData&& other) = default;
 TabRendererData::~TabRendererData() = default;
 
 bool TabRendererData::operator==(const TabRendererData& other) const {
-  return favicon.BackedBySameObjectAs(other.favicon) &&
-         thumbnail == other.thumbnail && network_state == other.network_state &&
-         title == other.title && visible_url == other.visible_url &&
+  return favicon == other.favicon && thumbnail == other.thumbnail &&
+         network_state == other.network_state && title == other.title &&
+         visible_url == other.visible_url &&
          last_committed_url == other.last_committed_url &&
          should_display_url == other.should_display_url &&
          crashed_status == other.crashed_status &&
          incognito == other.incognito && show_icon == other.show_icon &&
          pinned == other.pinned && blocked == other.blocked &&
          alert_state == other.alert_state &&
-         should_hide_throbber == other.should_hide_throbber;
+         should_hide_throbber == other.should_hide_throbber &&
+         is_tab_discarded == other.is_tab_discarded &&
+         should_show_discard_status == other.should_show_discard_status;
 }
 
 bool TabRendererData::IsCrashed() const {

@@ -14,13 +14,10 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
-#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 
 using base::android::JavaParamRef;
 
@@ -78,21 +75,6 @@ static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(JNIEnv* env,
 
 static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(JNIEnv* env) {
   return safe_browsing::IsSafeBrowsingPolicyManaged(*GetPrefService());
-}
-
-static jboolean JNI_SafeBrowsingBridge_HasAccountForLeakCheckRequest(
-    JNIEnv* env) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
-  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
-      identity_manager);
-}
-
-static jboolean JNI_SafeBrowsingBridge_IsLeakDetectionUnauthenticatedEnabled(
-    JNIEnv* env) {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kLeakDetectionUnauthenticated);
 }
 
 static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(JNIEnv* env) {

@@ -587,6 +587,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void SetLocalDeviceOriginatorCacheGuid(
       std::string local_device_originator_cache_guid);
 
+  // Notifies the history backend that it should consider adding foreign
+  // visits to local segments data.
+  void SetCanAddForeignVisitsToSegments(bool add_foreign_visits);
+
   void ProcessDBTask(
       std::unique_ptr<HistoryDBTask> task,
       scoped_refptr<base::SequencedTaskRunner> origin_loop,
@@ -781,6 +785,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   static int GetForeignVisitsToDeletePerBatchForTest();
 
+  sql::Database& GetDBForTesting();
+
  protected:
   ~HistoryBackend() override;
 
@@ -902,13 +908,27 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // id and returns it. If there is none found, returns 0.
   SegmentID GetLastSegmentID(VisitID from_visit);
 
-  // Update the segment information. This is called internally when a page is
-  // added. Return the segment id of the segment that has been updated.
-  SegmentID UpdateSegments(const GURL& url,
-                           VisitID from_visit,
-                           VisitID visit_id,
-                           ui::PageTransition transition_type,
-                           const base::Time ts);
+  // Assign segment information for a new visit. This is called internally when
+  // a page is added. Return the segment id of the segment that has been
+  // assigned to `visit_id`.
+  SegmentID AssignSegmentForNewVisit(const GURL& url,
+                                     VisitID from_visit,
+                                     VisitID visit_id,
+                                     ui::PageTransition transition_type,
+                                     const base::Time ts);
+
+  // Calculates the segment ID given a URL, visit ID, and page transition
+  // type(s). If necessary, this method will create a new segment and return its
+  // ID. Returns 0 if no segment ID can be calculated, or a new segment cannot
+  // be created.
+  SegmentID CalculateSegmentID(const GURL& url,
+                               VisitID from_visit,
+                               ui::PageTransition transition_type);
+
+  // Detects if `visit_row`'s segment has changed. If so, updates
+  // `visit_row`'s `segment_id`, and ensures segment visits are not double
+  // counted across the existing and new segments.
+  void UpdateSegmentForExistingForeignVisit(VisitRow& visit_row);
 
   // Favicons ------------------------------------------------------------------
 
@@ -1073,6 +1093,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Contains the local device Originator Cache GUID, a unique, sync-specific
   // identifier for the local device.
   std::string local_device_originator_cache_guid_;
+
+  // Whether segments data should include foreign history; Note that setting
+  // this to true doesn't guarantee segments data is synced, as feature
+  // `kSyncSegmentsData` may be enabled or disabled, or
+  // `kMaxNumNewTabPageDisplays` is reached.
+  bool can_add_foreign_visits_to_segments_ = false;
 };
 
 }  // namespace history

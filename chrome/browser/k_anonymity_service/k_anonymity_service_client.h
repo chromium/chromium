@@ -197,7 +197,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   url::Origin join_origin_;
   url::Origin query_origin_;
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<KAnonymityServiceClient> weak_ptr_factory_{this};
 };
 

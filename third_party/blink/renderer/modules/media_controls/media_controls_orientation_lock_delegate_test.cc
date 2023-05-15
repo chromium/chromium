@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
@@ -31,6 +30,7 @@
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -69,7 +69,8 @@ class MockWebMediaPlayerForOrientationLockDelegate final
 };
 
 class MockScreenOrientation final
-    : public device::mojom::blink::ScreenOrientation {
+    : public GarbageCollected<MockScreenOrientation>,
+      public device::mojom::blink::ScreenOrientation {
  public:
   MockScreenOrientation() = default;
 
@@ -84,20 +85,24 @@ class MockScreenOrientation final
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<device::mojom::blink::ScreenOrientation>
-          pending_receiver) {
-    receiver_.Bind(std::move(pending_receiver));
+          pending_receiver,
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    receiver_.Bind(std::move(pending_receiver), task_runner);
   }
 
   void Close() { receiver_.reset(); }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(receiver_); }
 
   MOCK_METHOD(void,
               LockOrientation,
               (device::mojom::ScreenOrientationLockType));
 
  private:
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<device::mojom::blink::ScreenOrientation> receiver_{
-      this};
+  // MockScreenOrientation is not tied to ExecutionContext.
+  HeapMojoAssociatedReceiver<device::mojom::blink::ScreenOrientation,
+                             MockScreenOrientation>
+      receiver_{this, nullptr};
 };
 
 void DidEnterFullscreen(Document* document) {
@@ -119,13 +124,18 @@ void DidExitFullscreen(Document* document) {
 class MockChromeClientForOrientationLockDelegate final
     : public EmptyChromeClient {
  public:
+  MockChromeClientForOrientationLockDelegate()
+      : mock_screen_orientation_(
+            MakeGarbageCollected<MockScreenOrientation>()) {}
+
   // ChromeClient overrides:
   void InstallSupplements(LocalFrame& frame) override {
     EmptyChromeClient::InstallSupplements(frame);
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(frame.DomWindow());
     ScreenOrientationClient().BindPendingReceiver(
-        screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
+        screen_orientation.BindNewEndpointAndPassDedicatedReceiver(),
+        frame.GetTaskRunner(TaskType::kInternalNavigationAssociated));
     ScreenOrientationController::From(*frame.DomWindow())
         ->SetScreenOrientationAssociatedRemoteForTests(
             std::move(screen_orientation));
@@ -163,11 +173,16 @@ class MockChromeClientForOrientationLockDelegate final
   }
 
   MockScreenOrientation& ScreenOrientationClient() {
-    return mock_screen_orientation_;
+    return *mock_screen_orientation_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(mock_screen_orientation_);
+    EmptyChromeClient::Trace(visitor);
   }
 
  private:
-  MockScreenOrientation mock_screen_orientation_;
+  Member<MockScreenOrientation> mock_screen_orientation_;
   display::ScreenInfos mock_screen_infos_ =
       display::ScreenInfos(display::ScreenInfo());
 };

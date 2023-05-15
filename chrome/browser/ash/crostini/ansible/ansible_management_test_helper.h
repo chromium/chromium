@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_MANAGEMENT_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_MANAGEMENT_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/ansible/mock_ansible_management_service.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
@@ -38,11 +39,11 @@ class AnsibleManagementTestHelper {
   void SendFailedApplySignal();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Owned by ash::DBusThreadManager
-  ash::FakeCiceroneClient* fake_cicerone_client_;
+  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
 };
 
 }  // namespace crostini

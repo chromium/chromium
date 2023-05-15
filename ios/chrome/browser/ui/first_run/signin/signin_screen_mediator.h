@@ -17,6 +17,10 @@ class PrefService;
 namespace signin {
 class IdentityManager;
 }  // namespace
+namespace signin_metrics {
+enum class AccessPoint : int;
+enum class PromoAction : int;
+}  // namespace signin_metrics
 namespace syncer {
 class SyncService;
 }  // syncer
@@ -45,7 +49,6 @@ class SyncService;
 // `localPrefService` application local pref.
 // `prefService` user pref.
 // `syncService` sync service.
-// `showFREConsent` YES if the screen needs to display the term of service.
 - (instancetype)
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
@@ -54,7 +57,8 @@ class SyncService;
                  localPrefService:(PrefService*)localPrefService
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
-                   showFREConsent:(BOOL)showFREConsent
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      promoAction:(signin_metrics::PromoAction)promoAction
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

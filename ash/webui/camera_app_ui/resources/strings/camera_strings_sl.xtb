@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Snemanje se je ustavilo zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite posneti več videoposnetkov, morate sprostiti prostor v napravi.</translation>
 <translation id="2036868001356139588">Trajanje časovnika</translation>
 <translation id="2064538373111010176">Fotoaparat <ph name="CAMERA" /> je aktiven</translation>
-<translation id="2128052519899549250">Snemanje videoposnetka s pospešeno reprodukcijo</translation>
 <translation id="2134029355740465625">Nastavitve videa</translation>
 <translation id="2144806332417375165">Parametri videoposnetkov po meri</translation>
 <translation id="2175927920773552910">Koda QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Dokument je zaznan</translation>
 <translation id="414641094616694804">Za ta fotoaparat ni mogoče spremeniti ločljivosti</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
-<translation id="4281620174117014503">Srednja ločljivost</translation>
 <translation id="428234092390943511">Sličica strani</translation>
 <translation id="4383571725254449280">Tiskanje dnevnikov delovanja</translation>
 <translation id="4445542136948522167">Ustavitev fotografiranja</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5320594929574852403">Premikanje proti levi</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Pospešena reprodukcija</translation>
 <translation id="5662366948659129155">Optično branje <ph name="COUNT" />. strani</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
+<translation id="574392208103952083">Srednji</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>
 <translation id="5753488212459587150">Omogoči poznavalski način</translation>
 <translation id="5759254179196327752">Optično branje dokumenta</translation>
@@ -122,7 +120,7 @@
 <translation id="6888362557094394345">Premikanje proti dnu</translation>
 <translation id="695140971690006676">Ponastavi vse</translation>
 <translation id="6965382102122355670">V redu</translation>
-<translation id="6965830616442491568">Pokončno</translation>
+<translation id="6965830616442491568">Portret</translation>
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="7134221860976209830">10-sekundni časovnik</translation>
 <translation id="7191890674911603392">Vrsta zapisa</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7670511624014457267">60 sličic/s</translation>
 <translation id="7671804233658741790">Spodnji desni kot dokumenta</translation>
+<translation id="7684446460490665873">Snemanje videoposnetka s pospešeno reprodukcijo</translation>
 <translation id="7692090236657809299">Omogočite premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="7726641833034062494">Snemanje običajnega videoposnetka</translation>
 <translation id="7748344063862150053">Zgornji desni kot dokumenta</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Postavite vse robove dokumenta znotraj okvira.</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Obdelava slike …</translation>
+<translation id="9161584225258678723">Pospešena reprodukcija</translation>
 <translation id="922762992951083513">Zrcaljenje vklopljeno</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 </translationbundle>

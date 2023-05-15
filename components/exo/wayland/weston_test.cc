@@ -10,6 +10,7 @@
 #include <weston-test-server-protocol.h>
 
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "components/exo/surface.h"
@@ -36,7 +37,7 @@ struct WestonTest::WestonTestState {
   WestonTestState(const WestonTestState&) = delete;
   WestonTestState& operator=(const WestonTestState&) = delete;
 
-  Server* server;
+  raw_ptr<Server, ExperimentalAsh> server;
 
   bool left_button_pressed = false;
   bool middle_button_pressed = false;
@@ -61,7 +62,7 @@ class ScopedEventDispatchDisabler {
   }
 
  private:
-  Server* server_;
+  raw_ptr<Server, ExperimentalAsh> server_;
 };
 
 namespace {

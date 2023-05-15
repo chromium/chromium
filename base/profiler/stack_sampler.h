@@ -94,7 +94,7 @@ class BASE_EXPORT StackSampler {
       StackSamplerTestDelegate* test_delegate = nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // How often to record the "Memory.StackSamplingProfiler.StackSampleSize" UMA
+  // How often to record the "Memory.StackSamplingProfiler.StackSampleSize2" UMA
   // histogram. Specifically, only 1 in kUMAHistogramDownsampleAmount calls to
   // RecordStackFrames will add a sample to the histogram. RecordStackFrames is
   // called many times a second. We don't need multiple samples per second to
@@ -130,7 +130,7 @@ class BASE_EXPORT StackSampler {
   const raw_ptr<StackSamplerTestDelegate> test_delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Counter for "Memory.StackSamplingProfiler.StackSampleSize" UMA histogram.
+  // Counter for "Memory.StackSamplingProfiler.StackSampleSize2" UMA histogram.
   // See comments above kUMAHistogramDownsampleAmount. Unsigned so that overflow
   // isn't undefined behavior.
   uint32_t stack_size_histogram_sampling_counter_ = 0;

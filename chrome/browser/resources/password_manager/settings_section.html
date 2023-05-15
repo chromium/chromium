@@ -29,10 +29,6 @@
     --cr-icon-button-margin-end: 10px;
   }
 
-  cr-link-row[hide-icon]::part(icon) {
-    opacity: 0;
-  }
-
   @media all and (display-mode: standalone) {
     #addShortcutBanner {
       display: none;
@@ -49,12 +45,25 @@
     border-bottom-right-radius: inherit;
   }
 </style>
-<h3 class="page-title">$i18n{settings}</h3>
+<h2 class="page-title">$i18n{settings}</h2>
 <div class="card">
-  <pref-toggle-button id="passwordToggle"
+  <pref-toggle-button id="passwordToggle" no-extension-indicator
       label="$i18n{savePasswordsLabel}"
       pref="{{prefs.credentials_enable_service}}">
   </pref-toggle-button>
+  <template is="dom-if"
+        if="[[prefs.credentials_enable_service.extensionId]]">
+    <div class="cr-row continuation">
+      <extension-controlled-indicator
+          id="passwordsExtensionIndicator"
+          extension-id="[[prefs.credentials_enable_service.extensionId]]"
+          extension-name="[[
+              prefs.credentials_enable_service.controlledByName]]"
+          extension-can-be-disabled="[[
+              prefs.credentials_enable_service.extensionCanBeDisabled]]">
+      </extension-controlled-indicator>
+    </div>
+  </template>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
@@ -97,15 +106,19 @@
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
     <passwords-exporter></passwords-exporter>
   </template>
-  <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
-      on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
-      sub-label="$i18n{addShortcutDescription}" role-description="button">
-  </cr-link-row>
-  <if expr="is_win or is_macosx">
-    <cr-link-row id="managePasskeysRow" external
-        class="cr-row settings-cr-link-row" hidden$="[[!hasPasskeys_]]"
-        on-click="onManagePasskeysClick_" label="$i18n{managePasskeysLabel}">
+  <template is="dom-if" if="[[canAddShortcut_]]">
+    <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
+        on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
+        sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
+  </template>
+  <if expr="is_win or is_macosx">
+    <template is="dom-if" if="[[hasPasskeys_]]" restamp>
+      <cr-link-row id="managePasskeysRow" external
+          class="cr-row settings-cr-link-row" on-click="onManagePasskeysClick_"
+          label="$i18n{managePasskeysLabel}">
+      </cr-link-row>
+    </template>
   </if>
 </div>
 <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>

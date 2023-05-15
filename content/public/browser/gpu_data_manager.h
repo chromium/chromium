@@ -50,13 +50,13 @@ class GpuDataManager {
   virtual gpu::GpuFeatureStatus GetFeatureStatus(
       gpu::GpuFeatureType feature) = 0;
 
-  // This indicator might change because we could collect more GPU info or
-  // because the GPU blocklist could be updated.
-  // If this returns false, any further GPU access, including establishing GPU
-  // channel, and GPU info collection, should be blocked.
-  // Can be called on any thread.
-  // If |reason| is not nullptr and GPU access is blocked, upon return, |reason|
-  // contains a description of the reason why GPU access is blocked.
+  // True if GPU is accelerated or running on SwiftShader. It means calling
+  // Graphics API in the GPU process is allowed. This indicator might change
+  // because we could collect more GPU info or because the GPU blocklist could
+  // be updated. If this returns false, some GPU process access, including GPU
+  // info collection, should be blocked. This function can be called on any
+  // thread. If |reason| is not nullptr and GPU access is blocked, upon return,
+  // |reason| contains a description of the reason why GPU access is blocked.
   virtual bool GpuAccessAllowed(std::string* reason) = 0;
 
   // Check if basic and context GPU info have been collected.

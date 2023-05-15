@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -81,11 +82,13 @@ class WifiSyncNotificationController
   void ShowAnnouncementNotificationIfEligible();
   bool IsWifiSyncSupported();
 
-  GlobalStateFeatureManager* wifi_sync_feature_manager_;
-  HostStatusProvider* host_status_provider_;
-  PrefService* pref_service_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  AccountStatusChangeDelegateNotifier* delegate_notifier_;
+  raw_ptr<GlobalStateFeatureManager, ExperimentalAsh>
+      wifi_sync_feature_manager_;
+  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<AccountStatusChangeDelegateNotifier, ExperimentalAsh>
+      delegate_notifier_;
 
   bool did_register_session_observers_ = false;
 

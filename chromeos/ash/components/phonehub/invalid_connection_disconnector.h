@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace base {
@@ -47,8 +48,9 @@ class InvalidConnectionDisconnector
   bool IsPhoneConnected() const;
   bool DoesPhoneStatusModelExist() const;
 
-  secure_channel::ConnectionManager* connection_manager_;
-  PhoneModel* phone_model_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
+  raw_ptr<PhoneModel, ExperimentalAsh> phone_model_;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

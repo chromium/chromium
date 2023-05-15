@@ -19,6 +19,10 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
 
+// TODO(b/274018437): Remove after figuring out the root cause of the bug
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 
@@ -60,6 +64,7 @@ GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
 GaiaPasswordChangedScreen::~GaiaPasswordChangedScreen() = default;
 
 void GaiaPasswordChangedScreen::ShowImpl() {
+  VLOG(1) << "GaiaPasswordChangedScreen::ShowImpl";
   DCHECK(context()->user_context);
   if (view_)
     view_->Show(context()->user_context->GetAccountId().GetUserEmail());
@@ -74,6 +79,7 @@ void GaiaPasswordChangedScreen::ShowImpl() {
 }
 
 void GaiaPasswordChangedScreen::HideImpl() {
+  VLOG(1) << "GaiaPasswordChangedScreen::HideImpl";
   DCHECK(!auth_performer_);
   DCHECK(!factor_editor_);
   DCHECK(!mount_performer_);
@@ -81,6 +87,8 @@ void GaiaPasswordChangedScreen::HideImpl() {
 
 void GaiaPasswordChangedScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
+  VLOG(1) << "GaiaPasswordChangedScreen::OnUserAction "
+          << "action_id= " << action_id;
   if (action_id == kUserActionCancelLogin) {
     RecordScreenAction(UserAction::kCancel);
     CancelPasswordChangedFlow();
@@ -105,6 +113,8 @@ void GaiaPasswordChangedScreen::OnUserAction(const base::Value::List& args) {
 
 void GaiaPasswordChangedScreen::AttemptAuthentication(
     const std::string& old_password) {
+  VLOG(1) << "GaiaPasswordChangedScreen::AttemptAuthentication "
+          << "auth_performer_= " << auth_performer_.get();
   RecordScreenAction(UserAction::kMigrateUserData);
   DCHECK(!context()->user_context->GetAuthSessionId().empty());
   auto* factor =
@@ -192,6 +202,8 @@ void GaiaPasswordChangedScreen::OnGetConfiguration(
 
 void GaiaPasswordChangedScreen::RecreateUser() {
   LOGIN_LOG(USER) << "Re-creating user.";
+  VLOG(1) << "GaiaPasswordChangedScreen::RecreateUser "
+          << "mount_performer_= " << mount_performer_.get();
   RecordScreenAction(UserAction::kResyncUserData);
   mount_performer_->RemoveUserDirectory(
       std::move(context()->user_context),
@@ -243,6 +255,8 @@ void GaiaPasswordChangedScreen::OnCookiesCleared() {
 }
 
 void GaiaPasswordChangedScreen::FinishWithResult(Result result) {
+  VLOG(1) << "GaiaPasswordChangedScreen::FinishWithResult "
+          << "result= " << static_cast<int>(result);
   weak_factory_.InvalidateWeakPtrs();
   auth_performer_.reset();
   factor_editor_.reset();

@@ -9,6 +9,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ExtensionApprovalsAfter} from './flows/extension_approvals_after.js';
 import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
+import {ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
@@ -32,10 +33,9 @@ class ParentAccessAfter extends PolymerElement {
   ready() {
     super.ready();
     this.renderFlowSpecificContent();
-  }
-
-  onShowAfterScreen() {
-    this.shadowRoot.querySelector('.action-button').focus();
+    this.addEventListener(ParentAccessEvent.ON_SCREEN_SWITCHED, () => {
+      this.shadowRoot.querySelector('.action-button').focus();
+    });
   }
 
   /** @override */

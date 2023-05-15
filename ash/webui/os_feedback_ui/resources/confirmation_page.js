@@ -5,6 +5,7 @@
 import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 

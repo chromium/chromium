@@ -6,6 +6,7 @@
 
 #include <limits.h>
 #include <mach/task.h>
+#include <mach/vm_region.h>
 #include <malloc/malloc.h>
 #include <stddef.h>
 
@@ -14,12 +15,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/blink_buildflags.h"
 
 namespace base {
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process) {}
-
-ProcessMetrics::~ProcessMetrics() {}
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
@@ -31,6 +31,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   NOTIMPLEMENTED();
   return TimeDelta();
 }
+
+// The blink code path pulls in process_metrics_posix.cc which
+// is used for the following implementations.
+#if !BUILDFLAG(USE_BLINK)
 
 size_t GetMaxFds() {
   static const rlim_t kSystemDefaultMaxFds = 256;
@@ -52,6 +56,13 @@ size_t GetMaxFds() {
 void IncreaseFdLimitTo(unsigned int max_descriptors) {
   // Unimplemented.
 }
+
+size_t ProcessMetrics::GetMallocUsage() {
+  malloc_statistics_t stats;
+  malloc_zone_statistics(nullptr, &stats);
+  return stats.size_in_use;
+}
+#endif  // !BUILDFLAG(USE_BLINK)
 
 // Bytes committed by the system.
 size_t GetSystemCommitCharge() {
@@ -95,10 +106,28 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   return true;
 }
 
-size_t ProcessMetrics::GetMallocUsage() {
-  malloc_statistics_t stats;
-  malloc_zone_statistics(nullptr, &stats);
-  return stats.size_in_use;
+MachVMRegionResult ParseOutputFromVMRegion(kern_return_t kr) {
+  if (kr == KERN_INVALID_ADDRESS) {
+    // We're at the end of the address space.
+    return MachVMRegionResult::Finished;
+  } else if (kr != KERN_SUCCESS) {
+    return MachVMRegionResult::Error;
+  }
+  return MachVMRegionResult::Success;
+}
+
+MachVMRegionResult GetBasicInfo(mach_port_t task,
+                                mach_vm_size_t* size,
+                                mach_vm_address_t* address,
+                                vm_region_basic_info_64* info) {
+  mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
+  mac::ScopedMachSendRight object_name;
+  kern_return_t kr =
+      vm_region_64(task, reinterpret_cast<vm_address_t*>(address),
+                   reinterpret_cast<vm_size_t*>(size), VM_REGION_BASIC_INFO_64,
+                   reinterpret_cast<vm_region_info_t>(info), &info_count,
+                   mac::ScopedMachSendRight::Receiver(object_name).get());
+  return ParseOutputFromVMRegion(kr);
 }
 
 }  // namespace base

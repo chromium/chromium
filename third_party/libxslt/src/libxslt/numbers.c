@@ -965,6 +965,7 @@ xsltFormatNumberConversion(xsltDecimalFormatPtr self,
     xmlChar *the_format, *prefix = NULL, *suffix = NULL;
     xmlChar *nprefix, *nsuffix = NULL;
     int	    prefix_length, suffix_length = 0, nprefix_length, nsuffix_length;
+    int     exp10;
     double  scale;
     int	    j, len = 0;
     int     self_grouping_len;
@@ -1303,7 +1304,18 @@ OUTPUT_NUMBER:
 
     /* Round to n digits */
     number = fabs(number);
-    scale = pow(10.0, (double)(format_info.frac_digits + format_info.frac_hash));
+    exp10 = format_info.frac_digits + format_info.frac_hash;
+    /* DBL_MAX_10_EXP should be 308 on IEEE platforms. */
+    if (exp10 > DBL_MAX_10_EXP) {
+        if (format_info.frac_digits > DBL_MAX_10_EXP) {
+            format_info.frac_digits = DBL_MAX_10_EXP;
+            format_info.frac_hash = 0;
+        } else {
+            format_info.frac_hash = DBL_MAX_10_EXP - format_info.frac_digits;
+        }
+        exp10 = DBL_MAX_10_EXP;
+    }
+    scale = pow(10.0, (double) exp10);
     number += .5 / scale;
     number -= fmod(number, 1 / scale);
 

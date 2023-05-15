@@ -33,7 +33,7 @@ class BookmarkPathCacheTest : public BookmarkIOSUnitTestSupport {
 TEST_F(BookmarkPathCacheTest, TestPathCache) {
   // Try to store and retrieve a cache.
   const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobile_node, @"f1");
+  const BookmarkNode* f1 = AddFolder(mobile_node, u"f1");
   int64_t folder_id = f1->id();
   int topmost_row = 23;
   [BookmarkPathCache cacheBookmarkTopMostRowWithPrefService:&prefs_
@@ -54,7 +54,7 @@ TEST_F(BookmarkPathCacheTest, TestPathCache) {
 TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
   // Try to store and retrieve a cache after the cached path is deleted.
   const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobile_node, @"f1");
+  const BookmarkNode* f1 = AddFolder(mobile_node, u"f1");
   int64_t folder_id = f1->id();
   int topmost_row = 23;
   [BookmarkPathCache cacheBookmarkTopMostRowWithPrefService:&prefs_

@@ -94,7 +94,10 @@ size_t EstimateBlinkInterestGroupSize(
     for (const auto& ad : group.ads.value()) {
       size += ad->render_url.GetString().length();
       size += ad->size_group.length();
+      size += ad->buyer_reporting_id.length();
+      size += ad->buyer_and_seller_reporting_id.length();
       size += ad->metadata.length();
+      size += ad->ad_render_id.length();
     }
   }
 
@@ -103,6 +106,7 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->render_url.GetString().length();
       size += ad->size_group.length();
       size += ad->metadata.length();
+      size += ad->ad_render_id.length();
     }
   }
 

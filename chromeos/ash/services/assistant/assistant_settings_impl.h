@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 #include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
@@ -65,8 +66,9 @@ class AssistantSettingsImpl : public AssistantSettings {
   AssistantController* assistant_controller();
   libassistant::mojom::SettingsController& settings_controller();
 
-  ServiceContext* const context_;
-  libassistant::mojom::SettingsController* settings_controller_ = nullptr;
+  const raw_ptr<ServiceContext, ExperimentalAsh> context_;
+  raw_ptr<libassistant::mojom::SettingsController, ExperimentalAsh>
+      settings_controller_ = nullptr;
 
   mojo::Remote<libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_remote_;

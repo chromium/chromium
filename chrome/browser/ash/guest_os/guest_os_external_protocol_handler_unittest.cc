@@ -110,18 +110,27 @@ class GuestOsExternalProtocolHandlerBorealisTest
 };
 
 TEST_F(GuestOsExternalProtocolHandlerBorealisTest, AllowedURL) {
-  EXPECT_TRUE(guest_os::GetHandler(
-      profile(),
-      GURL(borealis::kAllowedScheme + std::string(":") +
-           std::string(borealis::kURLAllowlist[0]) + std::string("9001"))));
+  EXPECT_TRUE(guest_os::GetHandler(profile(), GURL("steam://store/9001")));
+  EXPECT_TRUE(guest_os::GetHandler(profile(), GURL("steam://run/400")));
 }
 
 TEST_F(GuestOsExternalProtocolHandlerBorealisTest, DisallowedURL) {
-  EXPECT_FALSE(guest_os::GetHandler(
-      profile(), GURL(std::string("notborealisscheme:") +
-                      std::string(borealis::kURLAllowlist[0]))));
+  // Wrong scheme
+  EXPECT_FALSE(
+      guest_os::GetHandler(profile(), GURL("notborealisscheme://run/12345")));
+  // Action not in allow-list
+  EXPECT_FALSE(
+      guest_os::GetHandler(profile(), GURL("steam://uninstall/12345")));
+  // Invalid app id
+  EXPECT_FALSE(guest_os::GetHandler(profile(), GURL("steam://store/")));
   EXPECT_FALSE(guest_os::GetHandler(
       profile(),
-      GURL(borealis::kAllowedScheme + std::string(":notborealis/url"))));
+      GURL("steam://run/"
+           "1337133713371337133713371337133713371337133713371337133713371337133"
+           "7133713371337133713371337133713371337133713371337133713371337133713"
+           "3713371337133713371337133713371337133713371337133713371337133713371"
+           "3371337133713371337133713371337133713371337133713371337133713371337"
+           "1337133713371337133713371337133713371337133713371337133713371337133"
+           "7133713371337133713371337133713371337133713371337133713371337")));
 }
 }  // namespace guest_os

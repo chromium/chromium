@@ -17,7 +17,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "minidump/minidump_context.h"
 
 namespace crashpad {

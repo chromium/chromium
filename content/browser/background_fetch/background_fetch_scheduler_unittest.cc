@@ -9,9 +9,9 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/uuid.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 #include "content/browser/background_fetch/background_fetch_test_base.h"
@@ -116,7 +116,8 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
 
     int64_t sw_id = RegisterServiceWorkerForOrigin(storage_key.origin());
     BackgroundFetchRegistrationId registration_id(
-        sw_id, storage_key, base::GenerateGUID(), base::GenerateGUID());
+        sw_id, storage_key, base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     data_manager_->CreateRegistration(
         registration_id, std::move(fetch_requests),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(),

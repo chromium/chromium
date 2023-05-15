@@ -6,9 +6,8 @@ import 'chrome://nearby/nearby_discovery_page.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
-import {NearbyDiscoveryPageElement} from 'chrome://nearby/nearby_discovery_page.js';
-import {SelectShareTargetResult, ShareTarget, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
-import {ShareType} from 'chrome://nearby/shared/mojo/nearby_share_share_type.mojom-webui.js';
+import {SelectShareTargetResult, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/shared/nearby_share.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -57,7 +56,9 @@ suite('DiscoveryPageTest', function() {
    */
   function getShareTargetElements() {
     flush();
-    const selector = discoveryPageElement.shadowRoot.querySelector('#selector');
+    const selector =
+        /** @type {{items: !Array<NearbyDiscoveryPageElement>}} */ (
+            discoveryPageElement.shadowRoot.querySelector('#selector'));
 
     // If the device list isn't found, it's because the dom-if wrapping it
     // isn't showing because there are no elements.

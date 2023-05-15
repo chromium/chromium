@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -41,8 +43,11 @@ UsbPrinterNotification::UsbPrinterNotification(
       profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &kNotificationPrintingIcon;
-  rich_notification_data.accent_color = kSystemNotificationColorNormal;
-
+  if (chromeos::features::IsJellyEnabled()) {
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
+  } else {
+    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  }
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
       std::u16string(),  // title
@@ -88,7 +93,7 @@ void UsbPrinterNotification::Click(
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_->IsGuestSession()
               ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-              : profile_,
+              : profile_.get(),
           chromeos::settings::mojom::kPrintingDetailsSubpagePath);
     }
     return;

@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/logging.h"
@@ -445,6 +446,16 @@ base::TimeTicks LibInputEventConverter::Timestamp(const LibInputEvent& evt) {
   libinput_event_pointer* event = evt.PointerEvent();
   uint64_t time_usec = libinput_event_pointer_get_time_usec(event);
   return base::TimeTicks() + base::Microseconds(time_usec);
+}
+
+std::ostream& LibInputEventConverter::DescribeForLog(std::ostream& os) const {
+  os << "class=ui::LibInputEventConverter id=" << input_device_.id << std::endl
+     << " has_keyboard=" << has_keyboard_ << std::endl
+     << " has_mouse=" << has_mouse_ << std::endl
+     << " has_touchpad=" << has_touchpad_ << std::endl
+     << " has_touchscreen=" << has_touchscreen_ << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
 }
 
 }  // namespace ui

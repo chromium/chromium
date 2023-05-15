@@ -19,6 +19,7 @@ mojom("mojom") {
     "auction_worklet_service.mojom",
     "bidder_worklet.mojom",
     "private_aggregation_request.mojom",
+    "reject_reason.mojom",
     "seller_worklet.mojom",
   ]
   deps = [

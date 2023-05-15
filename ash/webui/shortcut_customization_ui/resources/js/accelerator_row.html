@@ -1,6 +1,7 @@
 <style include="shortcut-customization-shared">
   #container {
-    align-items: center;
+    align-items: flex-start;
+    column-gap: 24px;
     display: grid;
     grid-auto-rows: minmax(52px, auto);
     grid-template-columns: minmax(min-content, 286px) 50%;
@@ -8,12 +9,13 @@
 
   accelerator-view,
   text-accelerator {
-    grid-column-start: 2;
-    /* TODO(longbowei): Update value based on the input from PM/UX */
     line-height: 3.2;
-    margin-inline-start: 24px;
     padding-bottom: 10px;
     padding-top: 10px;
+  }
+
+  text-accelerator[is-only-text] {
+    line-height: initial;
   }
 
   accelerator-view:not(:first-of-type) {
@@ -25,20 +27,33 @@
     color: var(--cros-text-color-primary);
     display: flex;
     font: var(--cros-body-2-font);
+    height: 62px;
+    padding: 0; /* Remove padding coming from <th> tag. */
+    text-align: initial;
+  }
+
+  td {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    padding: 0;
   }
 </style>
 
-<div id="container">
-  <div id="descriptionText">[[description]]</div>
-  <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
-    <template is="dom-repeat" items="[[acceleratorInfos]]">
-      <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
-          action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]">
-      </accelerator-view>
+<tr id="container">
+  <th id="descriptionText" scope="row">[[description]]</th>
+  <td>
+    <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
+      <template is="dom-repeat" items="[[acceleratorInfos]]">
+        <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
+            action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]">
+        </accelerator-view>
+      </template>
     </template>
-  </template>
-  <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
-    <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]">
-    </text-accelerator>
-  </template>
-</div>
+    <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
+      <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]">
+      </text-accelerator>
+    </template>
+  </td>
+</tr>

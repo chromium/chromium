@@ -86,10 +86,6 @@
           </div>
         </template>
       </div>
-      <div class="list-item" role="listitem"
-          hidden$="[[hasSome_(installedLanguagePacks_)]]">
-        $i18n{noLanguagesAdded}
-      </div>
     </div>
     <template is="dom-if" if="[[enableLiveTranslate_]]">
       <settings-live-translate prefs="{{prefs}}"

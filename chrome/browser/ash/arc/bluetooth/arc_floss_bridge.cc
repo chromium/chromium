@@ -8,7 +8,6 @@
 
 #include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
@@ -45,7 +44,9 @@ floss::BluetoothAdapterFloss* ArcFlossBridge::GetAdapter() const {
 }
 
 void ArcFlossBridge::HandlePoweredOn() {
-  floss::FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
+  if (!floss::FlossDBusManager::Get()->GetAdapterClient()->HasObserver(this)) {
+    floss::FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
+  }
 }
 
 void ArcFlossBridge::OnSdpSearchResult(mojom::BluetoothAddressPtr remote_addr,
@@ -270,6 +271,30 @@ void ArcFlossBridge::SendCachedDevices() const {
     bluetooth_instance->OnDevicePropertiesChanged(
         mojom::BluetoothAddress::From(device->GetAddress()),
         GetDeviceProperties(mojom::BluetoothPropertyType::ALL, device));
+  }
+}
+
+void ArcFlossBridge::StartLEScanImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!bluetooth_adapter_) {
+    LOG(DFATAL) << "Bluetooth adapter does not exist.";
+    return;
+  }
+
+  if (ble_scan_session_) {
+    LOG(ERROR) << "LE scan already running.";
+    StartLEScanOffTimer();
+    discovery_queue_.Pop();
+    return;
+  }
+
+  ble_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
+      nullptr, weak_factory_.GetWeakPtr());
+}
+
+void ArcFlossBridge::ResetLEScanSession() {
+  if (ble_scan_session_) {
+    ble_scan_session_.reset();
   }
 }
 

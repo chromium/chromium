@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
@@ -26,8 +25,7 @@ class Extension;
 // the bottom of the app info dialog.
 class AppInfoFooterPanel
     : public AppInfoPanel,
-      public extensions::ExtensionUninstallDialog::Delegate,
-      public base::SupportsWeakPtr<AppInfoFooterPanel> {
+      public extensions::ExtensionUninstallDialog::Delegate {
  public:
   METADATA_HEADER(AppInfoFooterPanel);
   AppInfoFooterPanel(Profile* profile, const extensions::Extension* app);
@@ -78,15 +76,13 @@ class AppInfoFooterPanel
   // UI elements on the dialog. Elements are null if they are not displayed.
   raw_ptr<views::View> create_shortcuts_button_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View* pin_to_shelf_button_ = nullptr;
-  views::View* unpin_from_shelf_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> pin_to_shelf_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> unpin_from_shelf_button_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<views::View> remove_button_ = nullptr;
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
-
-  base::WeakPtrFactory<AppInfoFooterPanel> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoFooterPanel, AppInfoPanel)

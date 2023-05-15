@@ -69,7 +69,7 @@ class ScopedCurrentContext {
 
  private:
   const raw_ptr<gpu::SharedContextState> state_;
-  gl::GLSurface* surface_;
+  raw_ptr<gl::GLSurface> surface_;
 };
 
 void MoveCopyRequests(CopyOutputRequestQueue* from,

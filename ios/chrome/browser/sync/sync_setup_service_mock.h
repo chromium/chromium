@@ -7,6 +7,7 @@
 
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 
+#include "components/sync/base/user_selectable_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace web {
@@ -23,16 +24,18 @@ class SyncSetupServiceMock : public SyncSetupService {
   ~SyncSetupServiceMock() override;
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
   MOCK_METHOD(bool, CanSyncFeatureStart, (), (const override));
-  MOCK_METHOD(bool, IsSyncRequested, (), (const override));
-  MOCK_METHOD(bool, IsSyncingAllDataTypes, (), (const override));
-  MOCK_METHOD(bool, IsDataTypePreferred, (syncer::ModelType), (const override));
+  MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
+  MOCK_METHOD(bool,
+              IsDataTypePreferred,
+              (syncer::UserSelectableType),
+              (const override));
   MOCK_METHOD(bool, IsDataTypeActive, (syncer::ModelType), (const override));
-  MOCK_METHOD(bool, IsInitialSetupOngoing, (), (override));
   MOCK_METHOD(void, PrepareForFirstSyncSetup, (), (override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,
               (syncer::SyncFirstSetupCompleteSource),
               (override));
+  MOCK_METHOD(bool, IsInitialSyncFeatureSetupComplete, (), (const override));
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SETUP_SERVICE_MOCK_H_

@@ -87,14 +87,13 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
                                           out_network_anonymization_key))
     return false;
 
-  // If NetworkAnonymizationKeys are disabled for reporting and NEL, but the
+  // If network state partitionining is disabled, but the
   // NetworkAnonymizationKeys is non-empty, ignore the entry. The entry will
   // still be in the on-disk database, in case NAKs are re-enabled, it just
   // won't be loaded into memory. The entry could still be loaded with an empty
   // NetworkAnonymizationKey, but that would require logic to resolve conflicts.
   if (!out_network_anonymization_key->IsEmpty() &&
-      !base::FeatureList::IsEnabled(
-          features::kPartitionNelAndReportingByNetworkIsolationKey)) {
+      !NetworkAnonymizationKey::IsPartitioningEnabled()) {
     *out_network_anonymization_key = NetworkAnonymizationKey();
     return false;
   }

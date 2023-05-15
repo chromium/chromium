@@ -31,7 +31,7 @@ constexpr int kMaxRetryCount = 1 << 24;
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
 
-constexpr uint32_t kMaximumDeviceNumber = 20;
+constexpr uint32_t kMaximumDeviceNumber = 40;
 
 constexpr base::StringPiece kDecoderDevicePrefix = "/dev/video";
 constexpr base::StringPiece kMediaDevicePrefix = "/dev/media";
@@ -367,6 +367,14 @@ bool V4L2IoctlShim::EnumFrameSizes(uint32_t fourcc) const {
 void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   struct v4l2_format fmt;
 
+  if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
+    // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
+    //   after b/193237015 is resolved.
+    if (!EnumFrameSizes(queue->fourcc())) {
+      LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
+    }
+  }
+
   memset(&fmt, 0, sizeof(fmt));
   fmt.type = queue->type();
   fmt.fmt.pix_mp.pixelformat = queue->fourcc();
@@ -558,7 +566,8 @@ void V4L2IoctlShim::StreamOff(const enum v4l2_buf_type type) const {
 }
 
 void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                                v4l2_ext_controls* ext_ctrls) const {
+                                v4l2_ext_controls* ext_ctrls,
+                                bool immediate) const {
   // TODO(b/230021497): add compressed header probability related change
   // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
 
@@ -568,20 +577,14 @@ void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
   // instead are applied by the driver for the buffer associated with
   // the same request.", see:
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-ext-ctrls.html#description
-  ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
-  ext_ctrls->request_fd = queue->media_request_fd();
+  // Unmentioned in that documentation is that |V4L2_CTRL_WHICH_CUR_VAL| will
+  // force the request to be processed immediately instead of being queue.
+  if (immediate) {
+    ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
+  } else {
+    ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
+  }
 
-  const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, ext_ctrls);
-
-  LOG_ASSERT(ret) << "VIDIOC_S_EXT_CTRLS failed.";
-}
-
-void V4L2IoctlShim::SetExtCtrlsImmediate(
-    const std::unique_ptr<V4L2Queue>& queue,
-    v4l2_ext_controls* ext_ctrls) const {
-  // TODO(b/230021497): add compressed header probability related change
-  // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
-  ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
   ext_ctrls->request_fd = queue->media_request_fd();
 
   const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, ext_ctrls);

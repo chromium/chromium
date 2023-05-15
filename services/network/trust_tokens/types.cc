@@ -43,6 +43,10 @@ std::string ProtocolVersionToString(
       return "PrivateStateTokenV3PMB";
     case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
       return "PrivateStateTokenV3VOPRF";
+    case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb:
+      return "PrivateStateTokenV1PMB";
+    case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf:
+      return "PrivateStateTokenV1VOPRF";
   }
 }
 

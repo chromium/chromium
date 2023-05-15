@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
@@ -115,7 +116,7 @@ class MessageCenterUiControllerTest : public AshTestBase {
   }
   std::unique_ptr<MockDelegate> delegate_;
   std::unique_ptr<MessageCenterUiController> ui_controller_;
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 };
 
 TEST_F(MessageCenterUiControllerTest, BasicMessageCenter) {

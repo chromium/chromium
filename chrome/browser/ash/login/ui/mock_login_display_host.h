@@ -31,7 +31,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
 
   ~MockLoginDisplayHost() override;
 
-  MOCK_METHOD(LoginDisplay*, GetLoginDisplay, (), (override));
   MOCK_METHOD(ExistingUserController*,
               GetExistingUserController,
               (),

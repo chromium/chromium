@@ -53,6 +53,14 @@ AccessibilityOrientation AXSlider::Orientation() const {
   if (!style)
     return kAccessibilityOrientationHorizontal;
 
+  if (RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled()) {
+    if (IsHorizontalWritingMode(style->GetWritingMode())) {
+      return kAccessibilityOrientationHorizontal;
+    } else {
+      return kAccessibilityOrientationVertical;
+    }
+  }
+
   ControlPart style_appearance = style->EffectiveAppearance();
   switch (style_appearance) {
     case kSliderThumbHorizontalPart:
@@ -60,8 +68,12 @@ AccessibilityOrientation AXSlider::Orientation() const {
     case kMediaSliderPart:
       return kAccessibilityOrientationHorizontal;
 
-    case kSliderThumbVerticalPart:
     case kSliderVerticalPart:
+      return RuntimeEnabledFeatures::
+                     RemoveNonStandardAppearanceValueSliderVerticalEnabled()
+                 ? kAccessibilityOrientationHorizontal
+                 : kAccessibilityOrientationVertical;
+    case kSliderThumbVerticalPart:
     case kMediaVolumeSliderPart:
       return kAccessibilityOrientationVertical;
 

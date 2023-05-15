@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> kabilarni yuklab olish</translation>
 <translation id="2377319039870049694">Qator shaklida</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ta jild Linuxga ulashilgan</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ta fayl belgilandi</translation>
 <translation id="2383454254762599978">Chiqitdonga tashlash</translation>
 <translation id="2387458720915042159">Proksi-server orqali ulanish turi</translation>
 <translation id="2389832672041313158">Birma/Myanma</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">Oxirgi videolar yoʻq</translation>
 <translation id="3634507049637220048">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Administrator boshqaruvida, Batafsil</translation>
 <translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ta fayl tanlandi.</translation>
 <translation id="3685122418104378273">Google Disk‘ni mobil internet orqali sinxronlash birlamchi holatda o‘chirib qo‘yilgan.</translation>
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, <ph name="CONNECTION_STATUS" />, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">Qurilma faqat o‘qish rejimida</translation>
 <translation id="4826849268470072925">Tamil (ITRANS klaviaturasi)</translation>
 <translation id="482932175346970750">Brauzerda <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> manzilini yozing</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ta element tanlandi</translation>
 <translation id="4843566743023903107">Chromebase qurilmalari</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
@@ -578,6 +577,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> rasm</translation>
 <translation id="5534520101572674276">Hajm hisoblanmoqda...</translation>
 <translation id="554153475311314364">Grek tili transliteratsiyasi</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ta jild tanlandi</translation>
 <translation id="5580591966435005537">virtual mashina</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Toʻliq enli imlo tekshiruvi</translation>
@@ -600,6 +600,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5724172041621205163">Tay (Pattachote klaviaturasi)</translation>
 <translation id="57383366388012121">Avvalgi oy</translation>
 <translation id="5756666464756035725">Venger QWERTY klaviaturasi</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ta element tanlandi</translation>
 <translation id="5763377084591234761">Nemis (Shveytsariya)</translation>
 <translation id="5769519078756170258">Istisno host yoki domen</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -755,7 +756,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6989942356279143254">Shved</translation>
 <translation id="6990081529015358884">Bo‘sh joy juda kam qoldi</translation>
 <translation id="6993826899923627728">Bu fayllar chiqitdonda</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ta jild tanlandi</translation>
 <translation id="7008426324576352165">Yuklash uchun tashkilotingiz xotirasini kengaytiring.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ta faylni koʻchirishni administrator taqiqlagan</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +790,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7252604552361840748">Yuqoridagi kengaytmani toping</translation>
 <translation id="7256405249507348194">Noma’lum xatolik: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mavjud xizmatlar</translation>
+<translation id="7291818353625820805">Tugmalar takrorlanishini istaysizmi? Klaviatura sozlamalarida urgʻu belgilarini faolsizlantiring</translation>
 <translation id="7292816689782057017">Administrator siyosati tomonidan ayrim joylashuvlarga ruxsat taqiqlangan.</translation>
 <translation id="7294063083760278948">Telugu (transliteratsiya)</translation>
 <translation id="7295662345261934369">Boshqalar bilan ulashish</translation>

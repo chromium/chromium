@@ -58,6 +58,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -337,172 +338,161 @@ std::string GetPrinterType(PrinterClass type) {
 api::autotest_private::ShelfItemType GetShelfItemType(ash::ShelfItemType type) {
   switch (type) {
     case ash::TYPE_PINNED_APP:
-      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_PINNEDAPP;
+      return api::autotest_private::ShelfItemType::kPinnedApp;
     case ash::TYPE_BROWSER_SHORTCUT:
-      return api::autotest_private::ShelfItemType::
-          SHELF_ITEM_TYPE_BROWSERSHORTCUT;
+      return api::autotest_private::ShelfItemType::kBrowserShortcut;
     case ash::TYPE_APP:
-      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_APP;
+      return api::autotest_private::ShelfItemType::kApp;
     case ash::TYPE_UNPINNED_BROWSER_SHORTCUT:
-      return api::autotest_private::ShelfItemType::
-          SHELF_ITEM_TYPE_UNPINNEDBROWSERSHORTCUT;
+      return api::autotest_private::ShelfItemType::kUnpinnedBrowserShortcut;
     case ash::TYPE_DIALOG:
-      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_DIALOG;
+      return api::autotest_private::ShelfItemType::kDialog;
     case ash::TYPE_UNDEFINED:
-      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_NONE;
+      return api::autotest_private::ShelfItemType::kNone;
   }
   NOTREACHED();
-  return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_NONE;
+  return api::autotest_private::ShelfItemType::kNone;
 }
 
 api::autotest_private::ShelfItemStatus GetShelfItemStatus(
     ash::ShelfItemStatus status) {
   switch (status) {
     case ash::STATUS_CLOSED:
-      return api::autotest_private::ShelfItemStatus::SHELF_ITEM_STATUS_CLOSED;
+      return api::autotest_private::ShelfItemStatus::kClosed;
     case ash::STATUS_RUNNING:
-      return api::autotest_private::ShelfItemStatus::SHELF_ITEM_STATUS_RUNNING;
+      return api::autotest_private::ShelfItemStatus::kRunning;
     case ash::STATUS_ATTENTION:
-      return api::autotest_private::ShelfItemStatus::
-          SHELF_ITEM_STATUS_ATTENTION;
+      return api::autotest_private::ShelfItemStatus::kAttention;
   }
   NOTREACHED();
-  return api::autotest_private::ShelfItemStatus::SHELF_ITEM_STATUS_NONE;
+  return api::autotest_private::ShelfItemStatus::kNone;
 }
 
 api::autotest_private::AppType GetAppType(apps::AppType type) {
   switch (type) {
     case apps::AppType::kArc:
-      return api::autotest_private::AppType::APP_TYPE_ARC;
+      return api::autotest_private::AppType::kArc;
     case apps::AppType::kBuiltIn:
-      return api::autotest_private::AppType::APP_TYPE_BUILTIN;
+      return api::autotest_private::AppType::kBuiltIn;
     case apps::AppType::kCrostini:
-      return api::autotest_private::AppType::APP_TYPE_CROSTINI;
+      return api::autotest_private::AppType::kCrostini;
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
-      return api::autotest_private::AppType::APP_TYPE_EXTENSION;
+      return api::autotest_private::AppType::kExtension;
     case apps::AppType::kPluginVm:
-      return api::autotest_private::AppType::APP_TYPE_PLUGINVM;
+      return api::autotest_private::AppType::kPluginVm;
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-      return api::autotest_private::AppType::APP_TYPE_WEB;
+      return api::autotest_private::AppType::kWeb;
     case apps::AppType::kUnknown:
-      return api::autotest_private::AppType::APP_TYPE_NONE;
+      return api::autotest_private::AppType::kNone;
     case apps::AppType::kMacOs:
-      return api::autotest_private::AppType::APP_TYPE_MACOS;
+      return api::autotest_private::AppType::kMacOs;
     case apps::AppType::kStandaloneBrowser:
-      return api::autotest_private::AppType::APP_TYPE_STANDALONEBROWSER;
+      return api::autotest_private::AppType::kStandaloneBrowser;
     case apps::AppType::kRemote:
-      return api::autotest_private::AppType::APP_TYPE_REMOTE;
+      return api::autotest_private::AppType::kRemote;
     case apps::AppType::kBorealis:
-      return api::autotest_private::AppType::APP_TYPE_BOREALIS;
+      return api::autotest_private::AppType::kBorealis;
     case apps::AppType::kBruschetta:
-      return api::autotest_private::AppType::APP_TYPE_BRUSCHETTA;
+      return api::autotest_private::AppType::kBruschetta;
     case apps::AppType::kStandaloneBrowserExtension:
-      return api::autotest_private::AppType::APP_TYPE_NONE;
+      return api::autotest_private::AppType::kNone;
     case apps::AppType::kStandaloneBrowserChromeApp:
-      return api::autotest_private::AppType::APP_TYPE_EXTENSION;
+      return api::autotest_private::AppType::kExtension;
   }
   NOTREACHED();
-  return api::autotest_private::AppType::APP_TYPE_NONE;
+  return api::autotest_private::AppType::kNone;
 }
 
 api::autotest_private::AppInstallSource GetAppInstallSource(
     apps::InstallReason install_reason) {
   switch (install_reason) {
     case apps::InstallReason::kUnknown:
-      return api::autotest_private::AppInstallSource::
-          APP_INSTALL_SOURCE_UNKNOWN;
+      return api::autotest_private::AppInstallSource::kUnknown;
     case apps::InstallReason::kSystem:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SYSTEM;
+      return api::autotest_private::AppInstallSource::kSystem;
     case apps::InstallReason::kPolicy:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_POLICY;
+      return api::autotest_private::AppInstallSource::kPolicy;
     case apps::InstallReason::kOem:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_OEM;
+      return api::autotest_private::AppInstallSource::kOem;
     case apps::InstallReason::kDefault:
-      return api::autotest_private::AppInstallSource::
-          APP_INSTALL_SOURCE_DEFAULT;
+      return api::autotest_private::AppInstallSource::kDefault;
     case apps::InstallReason::kSync:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SYNC;
+      return api::autotest_private::AppInstallSource::kSync;
     case apps::InstallReason::kUser:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_USER;
+      return api::autotest_private::AppInstallSource::kUser;
     case apps::InstallReason::kSubApp:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SUBAPP;
+      return api::autotest_private::AppInstallSource::kSubApp;
     case apps::InstallReason::kKiosk:
-      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_KIOSK;
+      return api::autotest_private::AppInstallSource::kKiosk;
     case apps::InstallReason::kCommandLine:
-      return api::autotest_private::AppInstallSource::
-          APP_INSTALL_SOURCE_COMMANDLINE;
+      return api::autotest_private::AppInstallSource::kCommandLine;
   }
   NOTREACHED();
-  return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_NONE;
+  return api::autotest_private::AppInstallSource::kNone;
 }
 
 api::autotest_private::AppWindowType GetAppWindowType(ash::AppType type) {
   switch (type) {
     case ash::AppType::ARC_APP:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_ARCAPP;
+      return api::autotest_private::AppWindowType::kArcApp;
     case ash::AppType::SYSTEM_APP:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_SYSTEMAPP;
+      return api::autotest_private::AppWindowType::kSystemApp;
     case ash::AppType::CROSTINI_APP:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_CROSTINIAPP;
+      return api::autotest_private::AppWindowType::kCrostiniApp;
     case ash::AppType::CHROME_APP:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_EXTENSIONAPP;
+      return api::autotest_private::AppWindowType::kExtensionApp;
     case ash::AppType::BROWSER:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_BROWSER;
+      return api::autotest_private::AppWindowType::kBrowser;
     case ash::AppType::LACROS:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_LACROS;
+      return api::autotest_private::AppWindowType::kLacros;
     case ash::AppType::NON_APP:
-      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_NONE;
+      return api::autotest_private::AppWindowType::kNone;
       // TODO(oshima): Investigate if we want to have "extension" type.
   }
   NOTREACHED();
-  return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_NONE;
+  return api::autotest_private::AppWindowType::kNone;
 }
 
 api::autotest_private::AppReadiness GetAppReadiness(apps::Readiness readiness) {
   switch (readiness) {
     case apps::Readiness::kReady:
-      return api::autotest_private::AppReadiness::APP_READINESS_READY;
+      return api::autotest_private::AppReadiness::kReady;
     case apps::Readiness::kDisabledByBlocklist:
-      return api::autotest_private::AppReadiness::
-          APP_READINESS_DISABLEDBYBLACKLIST;
+      return api::autotest_private::AppReadiness::kDisabledByBlacklist;
     case apps::Readiness::kDisabledByPolicy:
-      return api::autotest_private::AppReadiness::
-          APP_READINESS_DISABLEDBYPOLICY;
+      return api::autotest_private::AppReadiness::kDisabledByPolicy;
     case apps::Readiness::kDisabledByUser:
-      return api::autotest_private::AppReadiness::APP_READINESS_DISABLEDBYUSER;
+      return api::autotest_private::AppReadiness::kDisabledByUser;
     case apps::Readiness::kTerminated:
-      return api::autotest_private::AppReadiness::APP_READINESS_TERMINATED;
+      return api::autotest_private::AppReadiness::kTerminated;
     case apps::Readiness::kUninstalledByUser:
-      return api::autotest_private::AppReadiness::
-          APP_READINESS_UNINSTALLEDBYUSER;
+      return api::autotest_private::AppReadiness::kUninstalledByUser;
     case apps::Readiness::kRemoved:
-      return api::autotest_private::AppReadiness::APP_READINESS_REMOVED;
+      return api::autotest_private::AppReadiness::kRemoved;
     case apps::Readiness::kUninstalledByNonUser:
-      return api::autotest_private::AppReadiness::
-          APP_READINESS_UNINSTALLEDBYMIGRATION;
+      return api::autotest_private::AppReadiness::kUninstalledByMigration;
     case apps::Readiness::kUnknown:
-      return api::autotest_private::AppReadiness::APP_READINESS_NONE;
+      return api::autotest_private::AppReadiness::kNone;
   }
   NOTREACHED();
-  return api::autotest_private::AppReadiness::APP_READINESS_NONE;
+  return api::autotest_private::AppReadiness::kNone;
 }
 
 api::autotest_private::HotseatState GetHotseatState(
     ash::HotseatState hotseat_state) {
   switch (hotseat_state) {
     case ash::HotseatState::kNone:
-      return api::autotest_private::HotseatState::HOTSEAT_STATE_NONE;
+      return api::autotest_private::HotseatState::kNone;
     case ash::HotseatState::kHidden:
-      return api::autotest_private::HotseatState::HOTSEAT_STATE_HIDDEN;
+      return api::autotest_private::HotseatState::kHidden;
     case ash::HotseatState::kShownClamshell:
-      return api::autotest_private::HotseatState::HOTSEAT_STATE_SHOWNCLAMSHELL;
+      return api::autotest_private::HotseatState::kShownClamShell;
     case ash::HotseatState::kShownHomeLauncher:
-      return api::autotest_private::HotseatState::
-          HOTSEAT_STATE_SHOWNHOMELAUNCHER;
+      return api::autotest_private::HotseatState::kShownHomeLauncher;
     case ash::HotseatState::kExtended:
-      return api::autotest_private::HotseatState::HOTSEAT_STATE_EXTENDED;
+      return api::autotest_private::HotseatState::kExtended;
   }
 
   NOTREACHED();
@@ -620,19 +610,21 @@ aura::Window* GetArcAppWindow(const std::string& package_name) {
 chromeos::WindowStateType GetExpectedWindowState(
     api::autotest_private::WMEventType event_type) {
   switch (event_type) {
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTNORMAL:
+    case api::autotest_private::WMEventType::kWmeventNormal:
       return chromeos::WindowStateType::kNormal;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMAXIMIZE:
+    case api::autotest_private::WMEventType::kWmeventMaximize:
       return chromeos::WindowStateType::kMaximized;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMINIMIZE:
+    case api::autotest_private::WMEventType::kWmeventMinimize:
       return chromeos::WindowStateType::kMinimized;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFULLSCREEN:
+    case api::autotest_private::WMEventType::kWmeventFullscreen:
       return chromeos::WindowStateType::kFullscreen;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT:
+    case api::autotest_private::WMEventType::kWmeventSnapPrimary:
+    case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return chromeos::WindowStateType::kPrimarySnapped;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
+    case api::autotest_private::WMEventType::kWmeventSnapSecondary:
+    case api::autotest_private::WMEventType::kWmeventSnapRight:
       return chromeos::WindowStateType::kSecondarySnapped;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFLOAT:
+    case api::autotest_private::WMEventType::kWmeventFloat:
       return chromeos::WindowStateType::kFloated;
     default:
       NOTREACHED();
@@ -642,19 +634,21 @@ chromeos::WindowStateType GetExpectedWindowState(
 
 ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
   switch (event_type) {
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTNORMAL:
+    case api::autotest_private::WMEventType::kWmeventNormal:
       return ash::WMEventType::WM_EVENT_NORMAL;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMAXIMIZE:
+    case api::autotest_private::WMEventType::kWmeventMaximize:
       return ash::WMEventType::WM_EVENT_MAXIMIZE;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMINIMIZE:
+    case api::autotest_private::WMEventType::kWmeventMinimize:
       return ash::WMEventType::WM_EVENT_MINIMIZE;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFULLSCREEN:
+    case api::autotest_private::WMEventType::kWmeventFullscreen:
       return ash::WMEventType::WM_EVENT_FULLSCREEN;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT:
+    case api::autotest_private::WMEventType::kWmeventSnapPrimary:
+    case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return ash::WMEventType::WM_EVENT_SNAP_PRIMARY;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
+    case api::autotest_private::WMEventType::kWmeventSnapSecondary:
+    case api::autotest_private::WMEventType::kWmeventSnapRight:
       return ash::WMEventType::WM_EVENT_SNAP_SECONDARY;
-    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFLOAT:
+    case api::autotest_private::WMEventType::kWmeventFloat:
       return ash::WMEventType::WM_EVENT_FLOAT;
     default:
       NOTREACHED();
@@ -668,29 +662,24 @@ api::autotest_private::WindowStateType ToWindowStateType(
     // Consider adding DEFAULT type to idl.
     case chromeos::WindowStateType::kDefault:
     case chromeos::WindowStateType::kNormal:
-      return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_NORMAL;
+      return api::autotest_private::WindowStateType::kNormal;
     case chromeos::WindowStateType::kMinimized:
-      return api::autotest_private::WindowStateType::
-          WINDOW_STATE_TYPE_MINIMIZED;
+      return api::autotest_private::WindowStateType::kMinimized;
     case chromeos::WindowStateType::kMaximized:
-      return api::autotest_private::WindowStateType::
-          WINDOW_STATE_TYPE_MAXIMIZED;
+      return api::autotest_private::WindowStateType::kMaximized;
     case chromeos::WindowStateType::kFullscreen:
-      return api::autotest_private::WindowStateType::
-          WINDOW_STATE_TYPE_FULLSCREEN;
+      return api::autotest_private::WindowStateType::kFullscreen;
     case chromeos::WindowStateType::kPrimarySnapped:
-      return api::autotest_private::WindowStateType::
-          WINDOW_STATE_TYPE_LEFTSNAPPED;
+      return api::autotest_private::WindowStateType::kPrimarySnapped;
     case chromeos::WindowStateType::kSecondarySnapped:
-      return api::autotest_private::WindowStateType::
-          WINDOW_STATE_TYPE_RIGHTSNAPPED;
+      return api::autotest_private::WindowStateType::kSecondarySnapped;
     case chromeos::WindowStateType::kPip:
-      return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_PIP;
+      return api::autotest_private::WindowStateType::kPip;
     case chromeos::WindowStateType::kFloated:
-      return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_FLOATED;
+      return api::autotest_private::WindowStateType::kFloated;
     default:
       NOTREACHED();
-      return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_NONE;
+      return api::autotest_private::WindowStateType::kNone;
   }
 }
 
@@ -705,16 +694,16 @@ std::string GetPngDataAsString(scoped_refptr<base::RefCountedMemory> png_data) {
 display::Display::Rotation ToRotation(
     api::autotest_private::RotationType rotation) {
   switch (rotation) {
-    case api::autotest_private::RotationType::ROTATION_TYPE_ROTATE0:
+    case api::autotest_private::RotationType::kRotate0:
       return display::Display::ROTATE_0;
-    case api::autotest_private::RotationType::ROTATION_TYPE_ROTATE90:
+    case api::autotest_private::RotationType::kRotate90:
       return display::Display::ROTATE_90;
-    case api::autotest_private::RotationType::ROTATION_TYPE_ROTATE180:
+    case api::autotest_private::RotationType::kRotate180:
       return display::Display::ROTATE_180;
-    case api::autotest_private::RotationType::ROTATION_TYPE_ROTATE270:
+    case api::autotest_private::RotationType::kRotate270:
       return display::Display::ROTATE_270;
-    case api::autotest_private::RotationType::ROTATION_TYPE_ROTATEANY:
-    case api::autotest_private::RotationType::ROTATION_TYPE_NONE:
+    case api::autotest_private::RotationType::kRotateAny:
+    case api::autotest_private::RotationType::kNone:
       break;
   }
   NOTREACHED();
@@ -753,17 +742,17 @@ api::autotest_private::Location ToLocationDictionary(const gfx::Point& point) {
 arc::mojom::ThemeStyleType ToThemeStyleType(
     const api::autotest_private::ThemeStyle& theme) {
   switch (theme) {
-    case api::autotest_private::ThemeStyle::THEME_STYLE_TONALSPOT:
+    case api::autotest_private::ThemeStyle::kTonalSpot:
       return arc::mojom::ThemeStyleType::TONAL_SPOT;
-    case api::autotest_private::ThemeStyle::THEME_STYLE_VIBRANT:
+    case api::autotest_private::ThemeStyle::kVibrant:
       return arc::mojom::ThemeStyleType::VIBRANT;
-    case api::autotest_private::ThemeStyle::THEME_STYLE_EXPRESSIVE:
+    case api::autotest_private::ThemeStyle::kExpressive:
       return arc::mojom::ThemeStyleType::EXPRESSIVE;
-    case api::autotest_private::ThemeStyle::THEME_STYLE_SPRITZ:
+    case api::autotest_private::ThemeStyle::kSpritz:
       return arc::mojom::ThemeStyleType::SPRITZ;
-    case api::autotest_private::ThemeStyle::THEME_STYLE_RAINBOW:
+    case api::autotest_private::ThemeStyle::kRainbow:
       return arc::mojom::ThemeStyleType::RAINBOW;
-    case api::autotest_private::ThemeStyle::THEME_STYLE_FRUITSALAD:
+    case api::autotest_private::ThemeStyle::kFruitSalad:
       return arc::mojom::ThemeStyleType::FRUIT_SALAD;
     default:
       return arc::mojom::ThemeStyleType::TONAL_SPOT;
@@ -794,15 +783,13 @@ Browser* GetFirstRegularBrowser() {
 ash::AppListViewState ToAppListViewState(
     api::autotest_private::LauncherStateType state) {
   switch (state) {
-    case api::autotest_private::LauncherStateType::LAUNCHER_STATE_TYPE_CLOSED:
+    case api::autotest_private::LauncherStateType::kClosed:
       return ash::AppListViewState::kClosed;
-    case api::autotest_private::LauncherStateType::
-        LAUNCHER_STATE_TYPE_FULLSCREENALLAPPS:
+    case api::autotest_private::LauncherStateType::kFullscreenAllApps:
       return ash::AppListViewState::kFullscreenAllApps;
-    case api::autotest_private::LauncherStateType::
-        LAUNCHER_STATE_TYPE_FULLSCREENSEARCH:
+    case api::autotest_private::LauncherStateType::kFullscreenSearch:
       return ash::AppListViewState::kFullscreenSearch;
-    case api::autotest_private::LauncherStateType::LAUNCHER_STATE_TYPE_NONE:
+    case api::autotest_private::LauncherStateType::kNone:
       break;
   }
   return ash::AppListViewState::kClosed;
@@ -811,11 +798,11 @@ ash::AppListViewState ToAppListViewState(
 ash::OverviewAnimationState ToOverviewAnimationState(
     api::autotest_private::OverviewStateType state) {
   switch (state) {
-    case api::autotest_private::OverviewStateType::OVERVIEW_STATE_TYPE_SHOWN:
+    case api::autotest_private::OverviewStateType::kShown:
       return ash::OverviewAnimationState::kEnterAnimationComplete;
-    case api::autotest_private::OverviewStateType::OVERVIEW_STATE_TYPE_HIDDEN:
+    case api::autotest_private::OverviewStateType::kHidden:
       return ash::OverviewAnimationState::kExitAnimationComplete;
-    case api::autotest_private::OverviewStateType::OVERVIEW_STATE_TYPE_NONE:
+    case api::autotest_private::OverviewStateType::kNone:
       break;
   }
   NOTREACHED();
@@ -873,15 +860,15 @@ void ConvertPointToHost(aura::Window* root_window, gfx::PointF* location) {
 
 int GetMouseEventFlags(api::autotest_private::MouseButton button) {
   switch (button) {
-    case api::autotest_private::MOUSE_BUTTON_LEFT:
+    case api::autotest_private::MouseButton::kLeft:
       return ui::EF_LEFT_MOUSE_BUTTON;
-    case api::autotest_private::MOUSE_BUTTON_RIGHT:
+    case api::autotest_private::MouseButton::kRight:
       return ui::EF_RIGHT_MOUSE_BUTTON;
-    case api::autotest_private::MOUSE_BUTTON_MIDDLE:
+    case api::autotest_private::MouseButton::kMiddle:
       return ui::EF_MIDDLE_MOUSE_BUTTON;
-    case api::autotest_private::MOUSE_BUTTON_BACK:
+    case api::autotest_private::MouseButton::kBack:
       return ui::EF_BACK_MOUSE_BUTTON;
-    case api::autotest_private::MOUSE_BUTTON_FORWARD:
+    case api::autotest_private::MouseButton::kForward:
       return ui::EF_FORWARD_MOUSE_BUTTON;
     default:
       NOTREACHED();
@@ -1306,7 +1293,7 @@ class EventGenerator {
   }
 
   std::unique_ptr<ui::SystemInputInjector> input_injector_;
-  aura::WindowTreeHost* host_;
+  raw_ptr<aura::WindowTreeHost, ExperimentalAsh> host_;
   base::TimeTicks next_event_timestamp_;
   const base::TimeDelta interval_;
   base::OnceClosure closure_;
@@ -2034,21 +2021,23 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
     crosapi::BrowserManager::State state) {
   switch (state) {
     case crosapi::BrowserManager::State::NOT_INITIALIZED:
-      return api::autotest_private::LACROS_STATE_NOTINITIALIZED;
+      return api::autotest_private::LacrosState::kNotInitialized;
     case crosapi::BrowserManager::State::MOUNTING:
-      return api::autotest_private::LACROS_STATE_MOUNTING;
+      return api::autotest_private::LacrosState::kMounting;
     case crosapi::BrowserManager::State::UNAVAILABLE:
-      return api::autotest_private::LACROS_STATE_UNAVAILABLE;
+      return api::autotest_private::LacrosState::kUnavailable;
     case crosapi::BrowserManager::State::STOPPED:
-      return api::autotest_private::LACROS_STATE_STOPPED;
+      return api::autotest_private::LacrosState::kStopped;
     case crosapi::BrowserManager::State::CREATING_LOG_FILE:
-      return api::autotest_private::LACROS_STATE_CREATINGLOGFILE;
+      return api::autotest_private::LacrosState::kCreatingLogFile;
+    case crosapi::BrowserManager::State::PRE_LAUNCHED:
+      return api::autotest_private::LacrosState::kPreLaunched;
     case crosapi::BrowserManager::State::STARTING:
-      return api::autotest_private::LACROS_STATE_STARTING;
+      return api::autotest_private::LacrosState::kStarting;
     case crosapi::BrowserManager::State::RUNNING:
-      return api::autotest_private::LACROS_STATE_RUNNING;
+      return api::autotest_private::LacrosState::kRunning;
     case crosapi::BrowserManager::State::TERMINATING:
-      return api::autotest_private::LACROS_STATE_TERMINATING;
+      return api::autotest_private::LacrosState::kTerminating;
   }
 }
 
@@ -2058,13 +2047,13 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
     crosapi::browser_util::LacrosMode lacrosMode) {
   switch (lacrosMode) {
     case crosapi::browser_util::LacrosMode::kDisabled:
-      return api::autotest_private::LacrosMode::LACROS_MODE_DISABLED;
+      return api::autotest_private::LacrosMode::kDisabled;
     case crosapi::browser_util::LacrosMode::kSideBySide:
-      return api::autotest_private::LacrosMode::LACROS_MODE_SIDEBYSIDE;
+      return api::autotest_private::LacrosMode::kSideBySide;
     case crosapi::browser_util::LacrosMode::kPrimary:
-      return api::autotest_private::LacrosMode::LACROS_MODE_PRIMARY;
+      return api::autotest_private::LacrosMode::kPrimary;
     case crosapi::browser_util::LacrosMode::kOnly:
-      return api::autotest_private::LacrosMode::LACROS_MODE_ONLY;
+      return api::autotest_private::LacrosMode::kOnly;
   }
 }
 
@@ -3958,6 +3947,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetShelfItemsFunction::Run() {
     result_item.status = GetShelfItemStatus(item.status);
     result_item.shows_tooltip = item.shows_tooltip;
     result_item.pinned_by_policy = item.pinned_by_policy;
+    result_item.pin_state_forced_by_type = item.pin_state_forced_by_type;
     result_item.has_notification = item.has_notification;
     result_items.emplace_back(std::move(result_item));
   }
@@ -4102,16 +4092,13 @@ AutotestPrivateGetShelfAlignmentFunction::Run() {
   api::autotest_private::ShelfAlignmentType alignment_type;
   switch (alignment) {
     case ash::ShelfAlignment::kBottom:
-      alignment_type = api::autotest_private::ShelfAlignmentType::
-          SHELF_ALIGNMENT_TYPE_BOTTOM;
+      alignment_type = api::autotest_private::ShelfAlignmentType::kBottom;
       break;
     case ash::ShelfAlignment::kLeft:
-      alignment_type =
-          api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_LEFT;
+      alignment_type = api::autotest_private::ShelfAlignmentType::kLeft;
       break;
     case ash::ShelfAlignment::kRight:
-      alignment_type =
-          api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_RIGHT;
+      alignment_type = api::autotest_private::ShelfAlignmentType::kRight;
       break;
     case ash::ShelfAlignment::kBottomLocked:
       // ShelfAlignment::kBottomLocked not supported by
@@ -4142,16 +4129,16 @@ AutotestPrivateSetShelfAlignmentFunction::Run() {
 
   ash::ShelfAlignment alignment;
   switch (params->alignment) {
-    case api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_BOTTOM:
+    case api::autotest_private::ShelfAlignmentType::kBottom:
       alignment = ash::ShelfAlignment::kBottom;
       break;
-    case api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_LEFT:
+    case api::autotest_private::ShelfAlignmentType::kLeft:
       alignment = ash::ShelfAlignment::kLeft;
       break;
-    case api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_RIGHT:
+    case api::autotest_private::ShelfAlignmentType::kRight:
       alignment = ash::ShelfAlignment::kRight;
       break;
-    case api::autotest_private::ShelfAlignmentType::SHELF_ALIGNMENT_TYPE_NONE:
+    case api::autotest_private::ShelfAlignmentType::kNone:
       return RespondNow(
           Error("Invalid None alignment; expected 'Bottom', 'Left', or "
                 "'Right'"));
@@ -4442,8 +4429,7 @@ AutotestPrivateWaitForDisplayRotationFunction::Run() {
          params->display_id})));
   }
 
-  if (params->rotation ==
-      api::autotest_private::RotationType::ROTATION_TYPE_ROTATEANY) {
+  if (params->rotation == api::autotest_private::RotationType::kRotateAny) {
     display::Display display;
     if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,
                                                                &display)) {
@@ -4629,12 +4615,10 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     }
 
     if (immersive_controller && immersive_controller->IsEnabled()) {
-      window_info.frame_mode =
-          api::autotest_private::FrameMode::FRAME_MODE_IMMERSIVE;
+      window_info.frame_mode = api::autotest_private::FrameMode::kImmersive;
       window_info.is_frame_visible = immersive_controller->IsRevealed();
     } else {
-      window_info.frame_mode =
-          api::autotest_private::FrameMode::FRAME_MODE_NORMAL;
+      window_info.frame_mode = api::autotest_private::FrameMode::kNormal;
       window_info.is_frame_visible = IsFrameVisible(widget);
     }
 
@@ -4676,8 +4660,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       DCHECK(!no_frame_header_widget ||
              no_frame_header_widget->GetNativeWindow()->GetType() !=
                  aura::client::WINDOW_TYPE_NORMAL);
-      window_info.frame_mode =
-          api::autotest_private::FrameMode::FRAME_MODE_NONE;
+      window_info.frame_mode = api::autotest_private::FrameMode::kNone;
       window_info.is_frame_visible = false;
     }
 
@@ -4744,10 +4727,15 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
   }
 
   if (params->change.event_type ==
-          api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT ||
+          api::autotest_private::WMEventType::kWmeventSnapPrimary ||
       params->change.event_type ==
-          api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT) {
-    const ash::WMEvent event(ToWMEventType(params->change.event_type));
+          api::autotest_private::WMEventType::kWmeventSnapSecondary ||
+      params->change.event_type ==
+          api::autotest_private::WMEventType::kWmeventSnapLeft ||
+      params->change.event_type ==
+          api::autotest_private::WMEventType::kWmeventSnapRight) {
+    const ash::WindowSnapWMEvent event(
+        ToWMEventType(params->change.event_type));
     ash::WindowState::Get(window)->OnWMEvent(&event);
   } else {
     const ash::WMEvent event(ToWMEventType(params->change.event_type));
@@ -4879,7 +4867,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
                           webapps::AppBannerManager::Observer>
       observation_{this};
   base::OnceCallback<void()> callback_;
-  webapps::AppBannerManager* app_banner_manager_;
+  raw_ptr<webapps::AppBannerManager, ExperimentalAsh> app_banner_manager_;
 };
 
 // Used to notify when a PWA is installed.
@@ -4922,7 +4910,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  web_app::WebAppProvider* provider_;
+  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_;
   base::OnceCallback<void(const web_app::AppId&)> callback_;
   base::WeakPtrFactory<
       AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver>

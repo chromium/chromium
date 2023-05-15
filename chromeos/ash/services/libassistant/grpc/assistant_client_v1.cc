@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -144,7 +145,7 @@ class AssistantClientV1::DeviceStateListener
   }
 
  private:
-  AssistantClientV1* assistant_client_ = nullptr;
+  raw_ptr<AssistantClientV1, ExperimentalAsh> assistant_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<DeviceStateListener> weak_factory_{this};
 };
@@ -199,9 +200,10 @@ class AssistantClientV1::DisplayConnectionImpl
   }
 
  private:
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
-  GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer_ = nullptr;
+  raw_ptr<GrpcServicesObserver<OnAssistantDisplayEventRequest>, ExperimentalAsh>
+      observer_ = nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<DisplayConnectionImpl> weak_factory_{this};
@@ -238,7 +240,7 @@ class AssistantClientV1::MediaManagerListener
   }
 
  private:
-  AssistantClientV1* assistant_client_ = nullptr;
+  raw_ptr<AssistantClientV1, ExperimentalAsh> assistant_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<MediaManagerListener> weak_factory_{this};
 };
@@ -303,7 +305,7 @@ class AssistantClientV1::AssistantManagerDelegateImpl
   }
 
  private:
-  AssistantClientV1* assistant_client_ = nullptr;
+  raw_ptr<AssistantClientV1, ExperimentalAsh> assistant_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AssistantManagerDelegateImpl> weak_factory_{this};
 };

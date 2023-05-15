@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="100506692671054486">nema prethodne komande</translation>
 <translation id="1009046985747440431">Pritisnite strelicu nagore ili nadole da biste se kretali. Da biste aktivirali, pritisnite Enter</translation>
 <translation id="1011903154582639569">Nađite taster, pa podignite prst da biste uneli</translation>
 <translation id="1012173283529841972">Stavka liste</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Svetloljubičasta</translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="3962990492275676168">Čitanje počinje od aktuelne lokacije</translation>
+<translation id="397094149579293440">nema izabranog teksta</translation>
 <translation id="3970951409746498040">Narandžastobraon</translation>
 <translation id="3989324057180830702">dugme za uključivanje/isključivanje</translation>
 <translation id="3991317907213946254">Bledobraon</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Nema prethodnog zaglavlja 1. nivoa</translation>
 <translation id="4787577491510559358">Opisuje formatiranje za trenutnu stavku</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">bez fokusiranog polja za tekst</translation>
 <translation id="4804818685124855865">Prekini vezu</translation>
 <translation id="481165870889056555">Objavljivanje naslova aktuelne stranice</translation>
 <translation id="4815668758102003883">Svetlotirkizna</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interni link</translation>
 <translation id="4909019435900810068">Pomeri unazad za jednu reč</translation>
 <translation id="4911349081560453449">Nema prethodnog polja za potvrdu</translation>
+<translation id="4919186071145887492">Komanda <ph name="COMMAND" /> nije uspela, probajte ponovo</translation>
 <translation id="492295894462528572">Predgovor</translation>
 <translation id="495046168593986294">Pomeri nagore</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953585991029886728">Izmena teksta</translation>
+<translation id="4964701498510730546">polje za tekst je prazno</translation>
 <translation id="4973717656530883744">Najmanje <ph name="X" /></translation>
 <translation id="4974612477719259470">Nema prethodnog dugmeta</translation>
 <translation id="4979404613699303341">Prethodno dugme</translation>
+<translation id="4981239367072766915">nepoznat unos</translation>
 <translation id="4982917827052020884">Započnimo sa nekoliko tastera koje ćete redovno koristiti. Taster Control može da se koristi za prekid aktuelnog govora. Taster Control se nalazi u donjem levom uglu tastature. Da biste nastavili, pritisnite taster Control.</translation>
 <translation id="4983588134362688868">Prelazak na vrh stranice</translation>
 <translation id="4986606102545753256">Prozor <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Opisuje trenutni status baterije</translation>
 <translation id="4997282455736854877">Dugme za izbor <ph name="NAME" /> je izabrano</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, izabrano je dugme za izbor stavke menija</translation>
+<translation id="5014131807708055994">Komanda <ph name="COMMAND" /> nije uspela, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Omogući evidentiranje govora</translation>
 <translation id="5041394372352067729">Pomeranje ekrana sa Brajevom azbukom u vrh stranice</translation>
 <translation id="5042770794184672516">Povećavanje jačine zvuka govora</translation>

@@ -180,16 +180,16 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  // TODO(crbug.com/1398845): Add unbranded CI for `old_updater`.
-  NOTIMPLEMENTED();
-#endif
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath old_updater_path =
-      exe_path.AppendASCII("old_updater")
-          .AppendASCII("chrome_linux64")
-          .AppendASCII(base::StrCat({kExecutableName, kExecutableSuffix}));
+  base::FilePath old_updater_path = exe_path.AppendASCII("old_updater");
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  old_updater_path = old_updater_path.AppendASCII("chromium_linux64");
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  old_updater_path = old_updater_path.AppendASCII("chrome_linux64");
+#endif
+  old_updater_path = old_updater_path.AppendASCII(
+      base::StrCat({kExecutableName, kExecutableSuffix}));
 
   base::CommandLine command_line(old_updater_path);
   command_line.AppendSwitch(kInstallSwitch);

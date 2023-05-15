@@ -80,7 +80,7 @@
             {
                 "domain": "Preload",
                 "include": ["enable", "disable"],
-                "include_events": ["prerenderAttemptCompleted", "prefetchStatusUpdated", "prerenderStatusUpdated"]
+                "include_events": ["prerenderAttemptCompleted", "prefetchStatusUpdated", "prerenderStatusUpdated", "preloadEnabledStateUpdated"]
             },
             {
                 "domain": "Runtime",
@@ -99,7 +99,8 @@
             },
             {
                 "domain": "Storage",
-              "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails", "getSharedStorageMetadata", "getSharedStorageEntries", "setSharedStorageEntry", "deleteSharedStorageEntry", "clearSharedStorageEntries", "resetSharedStorageBudget", "getStorageBucketList"]
+                "exclude": ["runBounceTrackingMitigations"],
+                "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails", "getSharedStorageMetadata", "getSharedStorageEntries", "setSharedStorageEntry", "deleteSharedStorageEntry", "clearSharedStorageEntries", "resetSharedStorageBudget", "getStorageBucketList"]
             },
             {
                 "domain": "SystemInfo",

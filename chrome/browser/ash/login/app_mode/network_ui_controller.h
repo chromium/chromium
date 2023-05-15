@@ -58,15 +58,12 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
   // `KioskAppLauncher::NetworkDelegate`
   void InitializeNetwork() override;
   bool IsNetworkReady() const override;
-  bool IsShowingNetworkConfigScreen() const override;
 
   NetworkUIState GetNetworkUiStateForTesting() const {
     return network_ui_state_;
   }
 
   static void SetCanConfigureNetworkCallbackForTesting(
-      base::RepeatingCallback<bool()>* callback);
-  static void SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
       base::RepeatingCallback<bool()>* callback);
 
  private:

@@ -16,7 +16,6 @@
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -26,7 +25,6 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
-#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
@@ -80,8 +78,6 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
   navigation_manager_->SetBrowserState(params.browser_state);
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
-  owner_->GetPageWorldWebFramesManager()->AddObserver(this);
-
   // Restore session history last because NavigationManagerImpl relies on
   // CRWWebController to restore history into the web view.
   if (session_storage) {
@@ -128,7 +124,6 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
 
 void WebStateImpl::RealizedWebState::TearDown() {
   [web_controller_ close];
-  owner_->GetPageWorldWebFramesManager()->RemoveObserver(this);
 
   // WebUI depends on web state so it must be destroyed first in case any WebUI
   // implementations depends on accessing web state during destruction.
@@ -851,17 +846,24 @@ void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
 void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     NSArray<NSNumber*>* permissions,
     PermissionDecisionHandler web_view_decision_handler) {
-  bool delegate_can_handle_decision = false;
   if (delegate_) {
     WebStatePermissionDecisionHandler web_state_decision_handler =
-        ^(BOOL allowed) {
-          allowed ? web_view_decision_handler(WKPermissionDecisionGrant)
-                  : web_view_decision_handler(WKPermissionDecisionDeny);
+        ^(PermissionDecision decision) {
+          switch (decision) {
+            case PermissionDecisionShowDefaultPrompt:
+              web_view_decision_handler(WKPermissionDecisionPrompt);
+              break;
+            case PermissionDecisionGrant:
+              web_view_decision_handler(WKPermissionDecisionGrant);
+              break;
+            case PermissionDecisionDeny:
+              web_view_decision_handler(WKPermissionDecisionDeny);
+              break;
+          }
         };
-    delegate_can_handle_decision = delegate_->HandlePermissionsDecisionRequest(
-        owner_, permissions, web_state_decision_handler);
-  }
-  if (!delegate_can_handle_decision) {
+    delegate_->HandlePermissionsDecisionRequest(owner_, permissions,
+                                                web_state_decision_handler);
+  } else {
     web_view_decision_handler(WKPermissionDecisionPrompt);
   }
 }
@@ -941,28 +943,6 @@ void WebStateImpl::RealizedWebState::RemoveWebView() {
 
 NavigationItemImpl* WebStateImpl::RealizedWebState::GetPendingItem() {
   return [web_controller_ lastPendingItemForNewNavigation];
-}
-
-#pragma mark - WebFramesManager::Observer methods
-
-void WebStateImpl::RealizedWebState::WebFrameBecameAvailable(
-    WebFramesManager* web_frames_manager,
-    WebFrame* web_frame) {
-  for (auto& observer : observers())
-    observer.WebFrameDidBecomeAvailable(owner_, web_frame);
-}
-
-void WebStateImpl::RealizedWebState::WebFrameBecameUnavailable(
-    WebFramesManager* web_frames_manager,
-    const std::string& frame_id) {
-  WebFrame* frame = web_frames_manager->GetFrameWithId(frame_id);
-  if (!frame) {
-    return;
-  }
-
-  for (auto& observer : observers()) {
-    observer.WebFrameWillBecomeUnavailable(owner_, frame);
-  }
 }
 
 #pragma mark - WebStateImpl::RealizedWebState private methods

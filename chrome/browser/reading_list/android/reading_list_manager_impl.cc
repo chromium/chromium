@@ -6,11 +6,11 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -56,7 +56,7 @@ ReadingListManagerImpl::ReadingListManagerImpl(
       performing_batch_update_(false) {
   DCHECK(reading_list_model_);
   root_ = std::make_unique<BookmarkNode>(
-      maximum_id_++, base::GUID::GenerateRandomV4(), GURL());
+      maximum_id_++, base::Uuid::GenerateRandomV4(), GURL());
   root_->SetTitle(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   DCHECK(root_->is_folder());
   reading_list_model_->AddObserver(this);
@@ -308,7 +308,7 @@ const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(
 
   // Add a new node.
   auto new_node = std::make_unique<BookmarkNode>(
-      maximum_id_++, base::GUID::GenerateRandomV4(), entry->URL());
+      maximum_id_++, base::Uuid::GenerateRandomV4(), entry->URL());
   bool success = SyncToBookmark(*entry, new_node.get());
   return success ? root_->Add(std::move(new_node)) : nullptr;
 }

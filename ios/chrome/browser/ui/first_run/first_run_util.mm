@@ -13,13 +13,14 @@
 #import "components/metrics/metrics_reporting_default_state.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
@@ -37,12 +38,11 @@ namespace {
 // Trampoline method for Bind to create the sentinel file.
 void CreateSentinel() {
   base::File::Error file_error;
-  FirstRun::SentinelResult sentinel_created =
+  startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
       FirstRun::CreateSentinel(&file_error);
-  base::UmaHistogramEnumeration("FirstRun.Sentinel.Created", sentinel_created,
-                                FirstRun::SentinelResult::SENTINEL_RESULT_MAX);
+  startup_metric_utils::RecordFirstRunSentinelCreation(sentinel_created);
   if (sentinel_created ==
-      FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR) {
+      startup_metric_utils::FirstRunSentinelCreationResult::kFileSystemError) {
     base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",
                                   -file_error, -base::File::FILE_ERROR_MAX);
   }

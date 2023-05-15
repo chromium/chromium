@@ -45,7 +45,7 @@
   const SCROLL_DELTA = (internals.runtimeFlags.percentBasedScrollingEnabled) ? 
       Math.floor(scroller.clientHeight * SCROLLBAR_SCROLL_PERCENTAGE) * 10 :
       SCROLLBAR_SCROLL_PIXELS * 10;
-  const MAX_SCROLLER_OFFSET = 1915;
+  const MAX_SCROLLER_OFFSET = 1900 + TRACK_WIDTH;
 
   promise_test (async () => {
     if(onMacPlatform)
@@ -62,15 +62,11 @@
     await waitUntil(() => { return scroller.scrollTop > SCROLL_DELTA; },
     `scroller.scrollTop = ${scroller.scrollTop} never went beyond ${SCROLL_DELTA}`);
     await mouseUpAt(down_arrow_x, down_arrow_y);
+    await waitForStableScrollOffset(scroller);
 
     // Since autoscroll for arrows happens at 800 px per second, verify that the
     // scrollTop has not reached the end.
     assert_less_than(scroller.scrollTop, MAX_SCROLLER_OFFSET, "Reached scroller end.");
-
-    await waitForCompositorCommit();
-    const current_offset = scroller.scrollTop;
-    await conditionHolds(() => { return scroller.scrollTop == current_offset; },
-    `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`);
   },"Test arrow autoscroll down and autoscroll stop.");
 
   promise_test (async () => {
@@ -85,16 +81,13 @@
     await waitUntil(() => { return scroller.scrollTop > SCROLL_DELTA; },
     `scroller.scrollTop = ${scroller.scrollTop} never went beyond ${SCROLL_DELTA}`);
     await mouseUpAt(trackscroll_x, trackscroll_y);
+    await waitForStableScrollOffset(scroller);
 
     // Verify that the track autoscroll actually stops as expected. Autoscroll velocity
     // in this particular case is 1480 px/sec (i.e 74 * 20). There is currently a bug in
     // the main thread autoscrolling code that causes autoscrolling to happen at a
     // much lower velocity (crbug.com/1053398)
     assert_less_than(scroller.scrollTop, 800, "Track autosroll did not end.");
-
-    const current_offset = scroller.scrollTop;
-    await conditionHolds(() => { return scroller.scrollTop == current_offset; }, 
-    `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`);
   },"Test track autoscroll down and autoscroll stop.");
 
   promise_test (async () => {
@@ -162,17 +155,17 @@
 
     // Without releasing the mouse, move away from the arrow.
     await mouseMoveTo(down_arrow_x, down_arrow_y - 20);
-
-    // Now that the mouse is away, record the scrolltop and ensure that no scrolling happens.
-    const current_scrolltop = scroller.scrollTop;
-    await conditionHolds(() => { return current_scrolltop == scroller.scrollTop; },
-    `Condition did not hold [scroller.scrollTop = ${scroller.scrollTop}]`);
+    // If there's an animation in flight, it will not be stopped abruptly by the
+    // mouse move, so wait for it to end.
+    await waitForStableScrollOffset(scroller);
+    assert_less_than(scroller.scrollTop, MAX_SCROLLER_OFFSET, "Reached scroller end.");
 
     // Now move back on the arrow and verify that auto-scrolling starts immediately. There
     // should not be the 250ms pause before starting autoscroll since the mouse was never released.
     await mouseMoveTo(down_arrow_x, down_arrow_y);
 
     // Allow some time for queued GSU's to fire.
+    const current_scrolltop = scroller.scrollTop;
     await waitFor(() => { return scroller.scrollTop >= current_scrolltop; },
     `Animation did not restart [scroller.scrollTop = ${scroller.scrollTop}]`);
 

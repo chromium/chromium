@@ -15,6 +15,7 @@
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
@@ -226,8 +227,9 @@ class ArcFileSystemOperationRunner
   void SetShouldDefer(bool should_defer);
 
   // Maybe nullptr in unittests.
-  content::BrowserContext* const context_;
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager
 
   // Indicates if this instance should enable/disable deferring by events.
   // Usually true, but set to false in unit tests.

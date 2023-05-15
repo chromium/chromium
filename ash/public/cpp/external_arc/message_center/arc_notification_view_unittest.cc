@@ -16,6 +16,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -207,7 +208,8 @@ class ArcNotificationViewTest : public AshTestBase {
 
   std::unique_ptr<MockArcNotificationSurface> surface_;
   std::unique_ptr<Notification> notification_;
-  ArcNotificationView* notification_view_ = nullptr;  // owned by its widget.
+  raw_ptr<ArcNotificationView, ExperimentalAsh> notification_view_ =
+      nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

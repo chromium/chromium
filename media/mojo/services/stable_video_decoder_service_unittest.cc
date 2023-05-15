@@ -26,6 +26,7 @@ using testing::Mock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
+using testing::WithArgs;
 
 namespace media {
 
@@ -200,7 +201,7 @@ class MockStableVideoDecoderClient : public stable::mojom::VideoDecoderClient {
 
   // stable::mojom::VideoDecoderClient implementation.
   MOCK_METHOD3(OnVideoFrameDecoded,
-               void(const scoped_refptr<VideoFrame>& frame,
+               void(stable::mojom::VideoFramePtr frame,
                     bool can_read_without_stalling,
                     const base::UnguessableToken& release_token));
   MOCK_METHOD1(OnWaiting, void(WaitingReason reason));
@@ -777,20 +778,23 @@ TEST_F(StableVideoDecoderServiceTest,
   scoped_refptr<VideoFrame> video_frame_to_send =
       CreateTestNV12GpuMemoryBufferVideoFrame();
   ASSERT_TRUE(video_frame_to_send);
-  scoped_refptr<VideoFrame> video_frame_received;
+  stable::mojom::VideoFramePtr video_frame_received;
   constexpr bool kCanReadWithoutStalling = true;
   EXPECT_CALL(
       *auxiliary_endpoints->mock_stable_video_decoder_client,
       OnVideoFrameDecoded(_, kCanReadWithoutStalling, token_for_release))
-      .WillOnce(SaveArg<0>(&video_frame_received));
+      .WillOnce(WithArgs<0>(
+          [&video_frame_received](stable::mojom::VideoFramePtr frame) {
+            video_frame_received = std::move(frame);
+          }));
   auxiliary_endpoints->video_decoder_client_remote->OnVideoFrameDecoded(
       video_frame_to_send, kCanReadWithoutStalling, token_for_release);
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
   ASSERT_TRUE(video_frame_received);
-  EXPECT_FALSE(video_frame_received->metadata().end_of_stream);
-  EXPECT_TRUE(video_frame_received->metadata().read_lock_fences_enabled);
-  EXPECT_TRUE(video_frame_received->metadata().power_efficient);
-  EXPECT_TRUE(video_frame_received->metadata().allow_overlay);
+  EXPECT_FALSE(video_frame_received->metadata.end_of_stream);
+  EXPECT_TRUE(video_frame_received->metadata.read_lock_fences_enabled);
+  EXPECT_TRUE(video_frame_received->metadata.power_efficient);
+  EXPECT_TRUE(video_frame_received->metadata.allow_overlay);
 }
 
 // Tests that a mojom::VideoDecoderClient::OnWaiting() call originating from the

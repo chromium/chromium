@@ -7,6 +7,10 @@
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
+:host(:not([is-last-device])) .bottom-divider {
+  border-bottom: var(--cr-separator-line);
+}
+
 .subsection {
   margin-bottom: 16px;
   padding-inline-start: var(--cr-section-indent-width);
@@ -16,7 +20,7 @@
   padding-inline-start: 0;
 }
 
-.device-name {
+.subsection-header {
   height: 24px;
   padding-inline-start: var(--cr-section-padding);
   padding-top: 12px;

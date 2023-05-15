@@ -13,7 +13,7 @@ import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 // <if expr="is_chromeos">
-import '../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 // </if>
 import './passwords_shared.css.js';
 

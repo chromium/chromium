@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PhoneHub.Adoption.FeatureStatusChangesSinceLogin"
-    enum="PhoneHubFeatureStatus" expires_after="2023-06-11">
+    enum="PhoneHubFeatureStatus" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Adoption.LoginFeatureStatus"
-    enum="PhoneHubFeatureStatus" expires_after="2023-06-11">
+    enum="PhoneHubFeatureStatus" expires_after="2023-12-31">
   <obsolete>
     There was a bug associated with the recording on this metric. During
     investigation, we decided that this metric is of no value and so it was
@@ -50,8 +50,30 @@ chromium-metrics-reviews@google.com.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.Attestation.GeneratingTime" units="ms"
+    expires_after="2024-04-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time to generate valid attestation before sending message to phone.
+    Emitted when a valid attestation is generated and ready to send CrosState
+    message to phone.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Attestation.GeneratingTime.Invalid" units="ms"
+    expires_after="2024-04-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time to generate an invalid attestation before sending message to phone.
+    Emitted when an invalid attestation is generated and ready to send CrosState
+    message to phone.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen"
-    units="ms" expires_after="2023-08-13">
+    units="ms" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -61,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.BubbleOpened.Connectable.Page" enum="PhoneHubScreen"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -73,7 +95,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.CameraRoll.AndroidHasStoragePermission"
     enum="PhoneHubCameraRollBooleanStorageAccessPermission"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -84,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.Content.Clicked{MediaType}"
-    enum="PhoneHubCameraRollContentClicked" expires_after="2023-06-11">
+    enum="PhoneHubCameraRollContentClicked" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -95,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.Content.Present" enum="BooleanPresent"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -106,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.Content.Shown{MediaType}"
-    enum="PhoneHubCameraRollContentShown" expires_after="2023-06-11">
+    enum="PhoneHubCameraRollContentShown" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -117,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.ContextMenu.Download{MediaType}"
-    enum="PhoneHubCameraRollContextMenuDownload" expires_after="2023-06-11">
+    enum="PhoneHubCameraRollContextMenuDownload" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -128,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.DownloadItem.Result"
-    enum="PhoneHubCameraRollDownloadResult" expires_after="2023-08-12">
+    enum="PhoneHubCameraRollDownloadResult" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -138,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.DownloadItem.TransferRate" units="KB/s"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -149,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.Latency.RefreshItems" units="ms"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -160,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.OptInEntryPoint"
-    enum="PhoneHubCameraRollOptInEntryPoint" expires_after="2023-08-13">
+    enum="PhoneHubCameraRollOptInEntryPoint" expires_after="2023-12-31">
   <owner>jianbing@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -172,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.OptInEvents"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-06-11">
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-12-31">
   <obsolete>
     No longer valid as combined feature onboarding flow replaced existing camera
     roll op-in flow. Deprecated 04/2022.
@@ -187,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -199,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Duration" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -209,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Latency" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -219,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -233,7 +255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.Connection.Result.FailureReason"
     enum="SecureChannelConnectionAttemptFailureReason"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -244,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connectivity.Latency" units="ms"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <obsolete>
     This metric is being deprecated for PhoneHub.Connection.Latency in order to
     capture latencies over 10 seconds. Deprecated 09/2022.
@@ -257,8 +279,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.InitialPhoneStatusSnapshot.Latency" units="ms"
+    expires_after="2023-12-31">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The duration of time between when the Chromebook sends CrosState request
+    message, and when the Chromebook completes processing returned
+    PhoneStatusSnapshot message. Emitted when PhoneStatusSnapshot is processed.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.InitialPhoneStatusSnapshot.Received"
+    enum="BooleanSuccess" expires_after="2023-12-31">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures success rate of Phone Hub PhoneStatusSnapshot processing during a
+    connection session. Emitted when Phone Hub is disconnected.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.InterstitialScreenEvent.{Screen}"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-06-11">
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Events for the given PhoneHub interstitial screen. {Screen}</summary>
@@ -285,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.LauncherButton.Loading.Latency" units="ms"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -297,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.MoreAppsButton.LoadingState"
-    enum="MoreAppsButtonLoadingState" expires_after="2023-06-11">
+    enum="MoreAppsButtonLoadingState" expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -310,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
-    enum="MultiDevice_FeatureState" expires_after="2023-06-11">
+    enum="MultiDevice_FeatureState" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -327,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
-    units="ms" expires_after="2023-06-11">
+    units="ms" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -340,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationAccessSetup.{AllStatusesOrLastStatus}"
-    enum="PhoneHubNotificationAccessSetupStatus" expires_after="2023-06-11">
+    enum="PhoneHubNotificationAccessSetupStatus" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -358,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationCount" units="notifications"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -368,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationInteraction"
-    enum="PhoneHubNotificationInteraction" expires_after="2023-08-13">
+    enum="PhoneHubNotificationInteraction" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -378,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationMessageLength" units="characters"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -388,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationOptInEvents"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-06-11">
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-12-31">
   <obsolete>
     No longer valid as combined feature onboarding flow replaced existing
     notification op-in flow. Deprecated 04/2022.
@@ -399,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.OptInEntryPoint" enum="PhoneHubOptInEntryPoint"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the UI surface with which users enable Phone Hub.</summary>
@@ -407,7 +450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PhoneHub.PermissionsOnboarding.DialogScreenEvents.{SetupScreen}Screen"
-    enum="PhoneHubPermissionsOnboardingScreenEvent" expires_after="2023-06-11">
+    enum="PhoneHubPermissionsOnboardingScreenEvent" expires_after="2023-12-31">
   <owner>jianbing@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -430,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.PermissionsOnboarding.SetUpMode.IntroScreenShown"
-    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-08-13">
+    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-12-31">
   <owner>mavishsu@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -442,7 +485,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PhoneHub.PermissionsOnboarding.SetUpMode.SetUpFinishedScreenShown"
-    enum="PhoneHubPermissionsOnboardingSetUpResult" expires_after="2023-08-13">
+    enum="PhoneHubPermissionsOnboardingSetUpResult" expires_after="2023-12-31">
   <owner>mavishsu@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -453,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.PermissionsOnboarding.SetUpMode.{ModeRecordingEvent}"
-    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-06-11">
+    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-12-31">
   <owner>jianbing@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -468,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.PhoneAvailabilityCheck.Latency" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -479,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.PhoneAvailabilityCheck.Result" enum="BooleanSuccess"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -491,14 +534,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
 </histogram>
 
 <histogram name="PhoneHub.RecentApps.State.OnBubbleOpened"
-    enum="RecentAppsViewUiState" expires_after="2023-08-13">
+    enum="RecentAppsViewUiState" expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -508,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.RecentApps.TransitionToFailed.Latency" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -519,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.RecentApps.TransitionToSuccess.Latency" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -530,7 +573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -540,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
-    expires_after="2023-06-11">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -554,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TabContinuationChipClicked" units="tab index"
-    expires_after="2023-08-13">
+    expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -565,7 +608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.TetherConnection.Result"
-    enum="PhoneHubTetherConnectionResult" expires_after="2023-08-13">
+    enum="PhoneHubTetherConnectionResult" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -575,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.{MessageType}.Result"
-    enum="PhoneHubMessageResult" expires_after="2023-06-11">
+    enum="PhoneHubMessageResult" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -597,7 +640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Usage.SentMessageTypeCount"
-    enum="PhoneHubMessageType" expires_after="2023-06-11">
+    enum="PhoneHubMessageType" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

@@ -13,6 +13,7 @@
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -79,13 +80,14 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
 
   void OnButtonPressed(SuggestionChipView* chip_view);
 
-  views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
+  raw_ptr<views::BoxLayout, ExperimentalAsh>
+      layout_manager_;  // Owned by view hierarchy.
 
   // Whether or not we have committed a query during this Assistant session.
   bool has_committed_query_ = false;
 
   // The suggestion chip that was pressed by the user. May be |nullptr|.
-  const SuggestionChipView* selected_chip_ = nullptr;
+  raw_ptr<const SuggestionChipView, ExperimentalAsh> selected_chip_ = nullptr;
 };
 
 }  // namespace ash

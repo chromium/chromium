@@ -76,8 +76,7 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
                        const CompositorPaintWorkletJob::AnimatedPropertyValues&
                            property_values) {
     BackgroundColorPaintDefinition definition;
-    definition.PaintForTest(animated_colors, offsets, property_values,
-                            scheduler::GetSingleThreadTaskRunnerForTesting());
+    definition.PaintForTest(animated_colors, offsets, property_values);
   }
 
  private:

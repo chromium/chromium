@@ -32,6 +32,7 @@
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_support_ios.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -315,29 +316,14 @@ std::string TestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
   return std::string();
 }
 
-int LaunchTests(TestLauncherDelegate* launcher_delegate,
-                size_t parallel_jobs,
-                int argc,
-                char** argv) {
+int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
+                        size_t parallel_jobs,
+                        int argc,
+                        char** argv) {
   DCHECK(!g_launcher_delegate);
   g_launcher_delegate = launcher_delegate;
 
-  base::CommandLine::Init(argc, argv);
-  AppendCommandLineSwitches();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  // TODO(tluk) Remove deprecation warning after a few releases. Deprecation
-  // warning issued version 79.
-  if (command_line->HasSwitch("single_process")) {
-    fprintf(stderr, "use --single-process-tests instead of --single_process");
-    exit(1);
-  }
-
-  if (command_line->HasSwitch(switches::kHelpFlag)) {
-    PrintUsage();
-    return 0;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   // The ContentMainDelegate is set for browser tests on Android by the
   // browser test target and is not created by the |launcher_delegate|.
@@ -377,13 +363,16 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   // custom system tracing service.
   tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   // This needs to be before trying to run tests as otherwise utility processes
   // end up being launched as a test, which leads to rerunning the test.
   // ContentMain is not run on Android in the test process, and is run via
   // java for child processes.
   if (command_line->HasSwitch(switches::kProcessType) ||
       command_line->HasSwitch(switches::kLaunchAsBrowser)) {
+#if BUILDFLAG(IS_IOS)
+    base::AtExitManager at_exit;
+#endif
     // The main test process has this initialized by the base::TestSuite. But
     // child processes don't have a TestSuite, and must initialize this
     // explicitly before ContentMain.
@@ -418,6 +407,8 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   base::AtExitManager at_exit;
   testing::InitGoogleTest(&argc, argv);
 
+  base::TimeTicks start_time(base::TimeTicks::Now());
+
   // The main test process has this initialized by the base::TestSuite. But
   // this process is just sharding the test off to each main test process, and
   // doesn't have a TestSuite, so must initialize this explicitly as the
@@ -446,7 +437,45 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   base::TestLauncher launcher(&delegate, parallel_jobs);
   const int result = launcher.Run() ? 0 : 1;
   launcher_delegate->OnDoneRunningTests();
+  fprintf(stdout, "Tests took %" PRId64 " seconds.\n",
+          (base::TimeTicks::Now() - start_time).InSeconds());
+  fflush(stdout);
   return result;
+}
+
+int LaunchTests(TestLauncherDelegate* launcher_delegate,
+                size_t parallel_jobs,
+                int argc,
+                char** argv) {
+  base::CommandLine::Init(argc, argv);
+  AppendCommandLineSwitches();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // TODO(tluk) Remove deprecation warning after a few releases. Deprecation
+  // warning issued version 79.
+  if (command_line->HasSwitch("single_process")) {
+    fprintf(stderr, "use --single-process-tests instead of --single_process");
+    exit(1);
+  }
+
+  if (command_line->HasSwitch(switches::kHelpFlag)) {
+    PrintUsage();
+    return 0;
+  }
+
+#if BUILDFLAG(IS_IOS)
+  // We need to spawn the UIApplication up for testing, that is done via
+  // RunTestsFromIOSApp. We do not want to do this for subprocesses that
+  // do not require a UIApplication.
+  if (!command_line->HasSwitch(switches::kProcessType) &&
+      !command_line->HasSwitch(switches::kLaunchAsBrowser)) {
+    base::InitIOSRunHook(base::BindOnce(&LaunchTestsInternal, launcher_delegate,
+                                        parallel_jobs, argc, argv));
+    return base::RunTestsFromIOSApp();
+  }
+#endif
+
+  return LaunchTestsInternal(launcher_delegate, parallel_jobs, argc, argv);
 }
 
 TestLauncherDelegate* GetCurrentTestLauncherDelegate() {

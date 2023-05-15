@@ -274,9 +274,9 @@ export class OutputFormatter {
       OutputFormatter.format(this.output_, {
         node,
         outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
-                  $tableCellAriaRowIndex, $tableCellRowIndex),
-                $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
-                  $tableCellColumnIndex))`,
+          $tableCellAriaRowIndex, $tableCellRowIndex),
+        $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
+          $tableCellColumnIndex))`,
         outputBuffer: buff,
         outputFormatLogger: formatLog,
       });

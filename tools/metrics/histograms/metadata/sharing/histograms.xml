@@ -193,6 +193,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.QRCodeGeneration.Duration" units="ms"
+    expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    The end-to-end time to encode a QR image.
+
+    This metric captures end-to-end time which may include the overhead of
+    spawning a utility process as well as the time needed to translate input
+    bytes into QR pixels (see also the &quot;BytesToQrPixels&quot; metric) and
+    into QR image (see also the &quot;QrPixelsToQrImage&quot; metric).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels" units="ms"
+    expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    The time to translate the sequence of input bytes into a vector of QR pixels
+    (this is not a QR _image_ just yet - see QrPixelsToQrImage metric for that).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage"
+    units="ms" expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    The time to translate QR pixels (a vector of light/dark QR pixels) into a QR
+    image (an upscaled `SkBitmap` with an optional Dino painted in the middle).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
     expires_after="M97">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -364,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
@@ -644,6 +693,20 @@ chromium-metrics-reviews@google.com.
     Number of ice servers fetched by network traversal API call. Logged after
     receiving response of API call.
   </summary>
+</histogram>
+
+<histogram name="Sharing.{ShareSurface}.ShareContentType"
+    enum="SharingContentTypeAndroid" expires_after="2023-10-13">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The content type being shared when using a share sheet. Recorded when share
+    is sent to share sheet for {ShareSurface}. Android only.
+  </summary>
+  <token key="ShareSurface">
+    <variant name="DefaultSharesheetAndroid" summary="System share sheet"/>
+    <variant name="SharingHubAndroid" summary="Chrome's sharing hub"/>
+  </token>
 </histogram>
 
 </histograms>

@@ -57,6 +57,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
   //
+  // `requested_ad_size` requested size for the ad auction (if any). Stored into
+  // the fenced frame config container size.
+  //
   // `ad_descriptor` URL of auction winning ad to render with optional
   // size. Null if there is no winner.
   //
@@ -73,6 +76,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       AuctionRunner* auction_runner,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_id,
+      absl::optional<blink::AdSize> requested_ad_size,
       absl::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,

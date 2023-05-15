@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -189,7 +190,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     std::string device_public_key_;
     multidevice::SoftwareFeature software_feature_;
     bool enabled_;
-    RemoteDeviceProvider* remote_device_provider_;
+    raw_ptr<RemoteDeviceProvider, ExperimentalAsh> remote_device_provider_;
     SetSoftwareFeatureStateCallback callback_;
   };
 
@@ -213,7 +214,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     std::string device_instance_id_;
     multidevice::SoftwareFeature software_feature_;
     FeatureStatusChange status_change_;
-    RemoteDeviceProvider* remote_device_provider_;
+    raw_ptr<RemoteDeviceProvider, ExperimentalAsh> remote_device_provider_;
     SetFeatureStatusCallback callback_;
   };
 
@@ -286,13 +287,15 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void StartSetSoftwareFeatureTimer();
   void OnSetSoftwareFeatureTimerFired();
 
-  signin::IdentityManager* identity_manager_;
-  gcm::GCMDriver* gcm_driver_;
-  PrefService* profile_prefs_;
-  const GcmDeviceInfoProvider* gcm_device_info_provider_;
-  ClientAppMetadataProvider* client_app_metadata_provider_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
+  raw_ptr<PrefService, ExperimentalAsh> profile_prefs_;
+  raw_ptr<const GcmDeviceInfoProvider, ExperimentalAsh>
+      gcm_device_info_provider_;
+  raw_ptr<ClientAppMetadataProvider, ExperimentalAsh>
+      client_app_metadata_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   std::unique_ptr<base::OneShotTimer> timer_;
   AttestationCertificatesSyncer::GetAttestationCertificatesFunction
       get_attestation_certificates_function_;

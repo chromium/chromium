@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 
 class ChromeBrowserState;
 

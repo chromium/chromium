@@ -20,7 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
-#include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -608,8 +608,7 @@ class CopyOrMoveIOTaskWithScansTest
     // Set a device management token. It is required to enable scanning.
     // Without it, FileTransferAnalysisDelegate::IsEnabled() always
     // returns absl::nullopt.
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
     // It is also required for FileTransferAnalysisDelegate::IsEnabled() to

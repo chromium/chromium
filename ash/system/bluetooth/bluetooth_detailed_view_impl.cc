@@ -23,6 +23,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -115,7 +116,7 @@ views::View* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
   header->SetInsideBorderInsets(kSubHeaderInsets);
   std::unique_ptr<views::Label> label = bubble_utils::CreateLabel(
       TypographyToken::kCrosBody2, l10n_util::GetStringUTF16(text_id),
-      cros_tokens::kColorSecondary);
+      cros_tokens::kCrosSysOnSurfaceVariant);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetSubpixelRenderingEnabled(false);
   header->AddChildView(std::move(label));
@@ -183,6 +184,8 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   toggle_icon_ = icon.get();
   toggle_row_->AddViewAndLabel(std::move(icon), u"");
   toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                        *toggle_row_->text_label());
 
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
       &BluetoothDetailedViewImpl::OnToggleClicked, weak_factory_.GetWeakPtr()));
@@ -220,9 +223,8 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
 
   views::Label* label = pair_new_device_view_->text_label();
   label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
-  // TODO(b/252872600): Apply the correct font to the label.
-  TrayPopupUtils::SetLabelFontList(
-      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                             *label);
 
   // The device list is a separate view because it cannot contain the "pair new
   // device" row.

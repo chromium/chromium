@@ -78,9 +78,9 @@ void UnifiedConsentService::OnPrimaryAccountChanged(
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   // Start observing pref changes when the user enters sync setup.
   // Note: Only |sync->IsSetupInProgress()| is used (i.e. no check for
-  // |IsFirstSetupComplete()|), because on Android |SetFirstSetupComplete()| is
-  // called automatically during the first setup, i.e. the value could change in
-  // the meantime.
+  // |IsInitialSyncFeatureSetupComplete()|), because on Android
+  // |SetFirstSetupComplete()| is called automatically during the first setup,
+  // i.e. the value could change in the meantime.
   if (sync->IsSetupInProgress() && !pref_service_->IsSyncing()) {
     StartObservingServicePrefChanges();
   } else {

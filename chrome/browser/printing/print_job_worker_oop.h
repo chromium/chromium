@@ -71,7 +71,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   virtual void OnDidRenderPrintedDocument(mojom::ResultCode result);
   virtual void OnDidDocumentDone(int job_id, mojom::ResultCode result);
-  virtual void OnDidCancel(scoped_refptr<PrintJob> job);
+  virtual void OnDidCancel(scoped_refptr<PrintJob> job,
+                           mojom::ResultCode cancel_reason);
 
   // `PrintJobWorker` overrides.
 #if BUILDFLAG(IS_WIN)
@@ -107,7 +108,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_data);
   void SendDocumentDone();
-  void SendCancel(scoped_refptr<PrintJob> job);
+  void SendCancel(base::OnceClosure on_did_cancel_callback);
 
   // Used to test spooling memory error handling.
   const bool simulate_spooling_memory_errors_;

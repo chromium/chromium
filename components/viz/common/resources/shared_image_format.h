@@ -242,7 +242,41 @@ inline constexpr SharedImageFormat kRGBA_1010102 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBA_1010102);
 inline constexpr SharedImageFormat kBGRA_1010102 =
     SharedImageFormat::SinglePlane(ResourceFormat::BGRA_1010102);
+
+// All known singleplanar formats.
+constexpr SharedImageFormat kAll[18] = {
+    kRGBA_8888,     kRGBA_4444,    kBGRA_8888,   kALPHA_8, kLUMINANCE_8,
+    kRGB_565,       kBGR_565,      kETC1,        kR_8,     kRG_88,
+    kLUMINANCE_F16, kRGBA_F16,     kR_16,        kRG_1616, kRGBX_8888,
+    kBGRX_8888,     kRGBA_1010102, kBGRA_1010102};
+
 }  // namespace SinglePlaneFormat
+
+// Constants for legacy single-plane representations of multiplanar formats.
+// TODO(crbug.com/1366495): Eliminate these once the codebase is completely
+// converted to using MultiplanarSharedImage.
+namespace LegacyMultiPlaneFormat {
+inline constexpr SharedImageFormat kYV12 =
+    SharedImageFormat::SinglePlane(ResourceFormat::YVU_420);
+inline constexpr SharedImageFormat kNV12 =
+    SharedImageFormat::SinglePlane(ResourceFormat::YUV_420_BIPLANAR);
+inline constexpr SharedImageFormat kNV12A =
+    SharedImageFormat::SinglePlane(ResourceFormat::YUVA_420_TRIPLANAR);
+inline constexpr SharedImageFormat kP010 =
+    SharedImageFormat::SinglePlane(ResourceFormat::P010);
+
+// All known legacy multiplanar formats.
+constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
+
+}  // namespace LegacyMultiPlaneFormat
+
+// The number of singleplanar and legacy multiplanar formats should correspond
+// exactly to the number of ResourceFormat types. Note that RESOURCE_FORMAT_MAX
+// uses zero-based indexing.
+constexpr auto kNumResourceFormatTypes = RESOURCE_FORMAT_MAX + 1;
+static_assert(std::size(SinglePlaneFormat::kAll) +
+                  std::size(LegacyMultiPlaneFormat::kAll) ==
+              kNumResourceFormatTypes);
 
 // Constants for common multi-planar formats.
 namespace MultiPlaneFormat {

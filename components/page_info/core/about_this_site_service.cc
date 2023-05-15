@@ -34,11 +34,8 @@ void RecordAboutThisSiteInteraction(AboutThisSiteInteraction interaction) {
 
 AboutThisSiteService::AboutThisSiteService(
     std::unique_ptr<Client> client,
-    TemplateURLService* template_url_service,
-    bool allow_missing_description)
-    : client_(std::move(client)),
-      template_url_service_(template_url_service),
-      allow_missing_description_(allow_missing_description) {}
+    TemplateURLService* template_url_service)
+    : client_(std::move(client)), template_url_service_(template_url_service) {}
 
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
@@ -71,7 +68,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
       decision == OptimizationGuideDecision::kUnknown
           ? AboutThisSiteStatus::kUnknown
           : about_this_site_validation::ValidateMetadata(
-                about_this_site_metadata, allow_missing_description_);
+                about_this_site_metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
                                 status);
   RecordAboutThisSiteInteraction(
@@ -101,15 +98,6 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   if (kShowSampleContent.Get()) {
     page_info::proto::SiteInfo site_info;
     if (url == GURL("https://example.com")) {
-      if (!allow_missing_description_) {
-        auto* description = site_info.mutable_description();
-        description->set_name("Example website");
-        description->set_subtitle("Website");
-        description->set_description(
-            "A domain used in illustrative examples in documents.");
-        description->mutable_source()->set_url("https://example.com");
-        description->mutable_source()->set_label("Example source");
-      }
       site_info.mutable_more_about()->set_url(
           "https://example.com/#more-about");
       return site_info;

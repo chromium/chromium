@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -543,7 +544,8 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
 
 std::string NetworkHealthProvider::AddNewNetwork(
     const network_mojom::DeviceStatePropertiesPtr& device) {
-  std::string observer_guid = base::GenerateGUID();
+  std::string observer_guid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   auto network = mojom::Network::New();
   network->observer_guid = observer_guid;
 
@@ -643,7 +645,7 @@ void NetworkHealthProvider::NotifyNetworkListObservers() {
     observer->OnNetworkListChanged(mojo::Clone(observer_guids), active_guid_);
   }
 
-  if (IsLoggingEnabled()) {
+  if (IsLoggingEnabled() && !active_guid_.empty()) {
     networking_log_ptr_->UpdateNetworkList(observer_guids, active_guid_);
   }
 }

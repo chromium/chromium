@@ -8,7 +8,6 @@
 
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/metrics/structured/cros_events_processor.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -16,6 +15,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
+#include "chrome/browser/metrics/structured/cros_events_processor.h"  // nogncheck
+#include "chrome/browser/metrics/structured/metadata_processor_ash.h"  // nogncheck
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/current_thread.h"
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"  // nogncheck
@@ -79,6 +80,9 @@ void ChromeStructuredMetricsRecorder::Initialize() {
         std::make_unique<cros_event::CrOSEventsProcessor>(
             cros_event::kResetCounterPath));
   }
+
+  Recorder::GetInstance()->AddEventsProcessor(
+      std::make_unique<MetadataProcessorAsh>());
 
   LogInitializationInStructuredMetrics(StructuredMetricsPlatform::kAshChrome);
 

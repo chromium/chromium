@@ -2052,8 +2052,8 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     SCOPED_TRACE(resolutions[i]);
 
     // Make a RasterSource that will draw a blue bitmap image.
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size.width(), size.height());
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size.width(), size.height()));
     ASSERT_NE(surface, nullptr);
     surface->getCanvas()->clear(SK_ColorBLUE);
     sk_sp<SkImage> blue_image = surface->makeImageSnapshot();

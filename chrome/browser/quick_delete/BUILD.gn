@@ -1,5 +1,5 @@
 # Copyright 2023 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
@@ -35,7 +35,9 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/drawable/quick_delete_animation.xml",
     "android/java/res/drawable/quick_delete_trash_bin_icon_24dp.xml",
+    "android/java/res/layout/quick_delete_animation_view.xml",
     "android/java/res/layout/quick_delete_dialog.xml",
   ]
   deps = [

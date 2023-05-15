@@ -63,9 +63,7 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   }
   source->AddBoolean("guestMode", profile->IsGuestSession());
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelUserNotesResources,

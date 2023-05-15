@@ -28,6 +28,7 @@ class AccountSelectionView {
     virtual void OnDismiss(
         content::IdentityRequestDialogController::DismissReason
             dismiss_reason) = 0;
+    virtual void OnSigninToIdP() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.
@@ -51,7 +52,7 @@ class AccountSelectionView {
 
   // Instructs the view to show the provided accounts to the user.
   // `top_frame_for_display` is the relying party's top frame URL and
-  // `iframe_url_for_display` is the relying party's iframe URL to display in
+  // `iframe_for_display` is the relying party's iframe URL to display in
   // the prompt. All IDP-specific information, including user accounts, is
   // stored in `idps_for_display`. `sign_in_mode` represents whether this is an
   // auto re-authn flow. If it is the auto re-authn flow, `idps_for_display`
@@ -61,7 +62,7 @@ class AccountSelectionView {
   // OnAccountSelected() or OnDismiss() gets invoked.
   virtual void Show(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) = 0;
@@ -71,11 +72,15 @@ class AccountSelectionView {
   // signed in but not respond with any user account during browser fetches.
   virtual void ShowFailureDialog(
       const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
   virtual std::string GetTitle() const = 0;
   virtual absl::optional<std::string> GetSubtitle() const = 0;
+
+  virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
+  virtual void CloseModalDialog() = 0;
 
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;

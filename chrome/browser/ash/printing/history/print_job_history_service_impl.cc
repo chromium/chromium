@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 #include "chrome/browser/printing/print_job.h"
@@ -80,8 +80,9 @@ void PrintJobHistoryServiceImpl::SavePrintJob(base::WeakPtr<CupsPrintJob> job) {
     return;
   }
 
-  printing::proto::PrintJobInfo print_job_info =
-      CupsPrintJobToProto(*job, /*id=*/base::GenerateGUID(), base::Time::Now());
+  printing::proto::PrintJobInfo print_job_info = CupsPrintJobToProto(
+      *job, /*id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      base::Time::Now());
   print_job_database_->SavePrintJob(
       print_job_info,
       base::BindOnce(&PrintJobHistoryServiceImpl::OnPrintJobSaved,

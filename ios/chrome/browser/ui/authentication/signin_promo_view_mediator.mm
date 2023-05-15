@@ -105,6 +105,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -184,6 +185,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
       break;
@@ -264,6 +266,7 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
       break;
@@ -343,6 +346,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -410,6 +414,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       return nullptr;
   }
 }
@@ -474,6 +479,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       return nullptr;
   }
 }
@@ -593,7 +599,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // For the top-of-feed promo, the user must have engaged with a feed first.
   if (accessPoint ==
           signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
-      ![[NSUserDefaults standardUserDefaults] boolForKey:kEngagedWithFeedKey]) {
+      (![[NSUserDefaults standardUserDefaults]
+           boolForKey:kEngagedWithFeedKey] ||
+       ShouldIgnoreFeedEngagementConditionForTopSyncPromo())) {
     return NO;
   }
 
@@ -641,7 +649,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)dealloc {
-  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState);
+  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState)
+      << base::SysNSStringToUTF8([self description]);
 }
 
 - (SigninPromoViewConfigurator*)createConfigurator {
@@ -894,12 +903,15 @@ const char* AlreadySeenSigninViewPreferenceKey(
   _authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:_browser
                       identity:self.identity
+                   accessPoint:self.accessPoint
               postSignInAction:PostSignInAction::
                                    kEnableBookmarkReadingListAccountStorage
       presentingViewController:_baseViewController];
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
+  __weak __typeof(self) weakSelf = self;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
     if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
+      weakSelf.signinInProgress = NO;
       [weakConsumer signinDidFinish];
     }
   }];

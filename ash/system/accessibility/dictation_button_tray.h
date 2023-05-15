@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_constants.h"
@@ -102,7 +103,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   void TextInputChanged(const ui::TextInputClient* client);
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
 
   // SODA download progress. A value of 0 < X < 100 indicates that download is
   // in-progress.

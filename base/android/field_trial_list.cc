@@ -11,6 +11,7 @@
 #include "base/base_jni_headers/FieldTrialList_jni.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -77,15 +78,39 @@ static ScopedJavaLocalRef<jstring> JNI_FieldTrialList_GetVariationParameter(
       env, parameters[ConvertJavaStringToUTF8(env, jparameter_key)]);
 }
 
+// JNI_FieldTrialList_LogActiveTrials() is static function, this makes friending
+// it a hassle because it must be declared in the file that the friend
+// declaration is in, but its declaration can't be included in multiple places
+// or things get messy and the linker gets mad. This helper class exists only to
+// friend the JNI function and is, in turn, friended by
+// FieldTrialListIncludingLowAnonymity which allows for the private
+// GetActiveFieldTrialGroups() to be reached.
+class AndroidFieldTrialListLogActiveTrialsFriendHelper {
+ private:
+  friend void ::JNI_FieldTrialList_LogActiveTrials(JNIEnv* env);
+
+  static bool AddObserver(base::FieldTrialList::Observer* observer) {
+    return base::FieldTrialListIncludingLowAnonymity::AddObserver(observer);
+  }
+
+  static void GetActiveFieldTrialGroups(
+      base::FieldTrial::ActiveGroups* active_groups) {
+    base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+        active_groups);
+  }
+};
+
 static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
   DCHECK(!g_trial_logger.IsCreated()); // This need only be called once.
 
   LOG(INFO) << "Logging active field trials...";
-  base::FieldTrialList::AddObserver(&g_trial_logger.Get());
+  AndroidFieldTrialListLogActiveTrialsFriendHelper::AddObserver(
+      &g_trial_logger.Get());
 
   // Log any trials that were already active before adding the observer.
   std::vector<base::FieldTrial::ActiveGroup> active_groups;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  AndroidFieldTrialListLogActiveTrialsFriendHelper::GetActiveFieldTrialGroups(
+      &active_groups);
   for (const base::FieldTrial::ActiveGroup& group : active_groups) {
     TrialLogger::Log(group.trial_name, group.group_name);
   }

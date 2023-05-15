@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list::federated {
 
@@ -26,6 +27,8 @@ constexpr char kHistogramReportStatus[] =
     "Apps.AppList.Search.Federated.ReportStatus";
 
 // Records launcher search backend federated analytics.
+// Requires that OnDefaultSearchIsGoogleSet() is called after class creation and
+// before any logging is triggered. Enforced by a CHECK().
 class FederatedMetricsManager : ash::AppListNotifier::Observer {
  public:
   using Result = ash::AppListNotifier::Result;
@@ -90,12 +93,20 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
                 const std::vector<Result>& shown,
                 const std::u16string& query) override;
 
+  // Default search engine is one criterion for determining whether logging
+  // will proceed.
+  // First called via AppListClientImpl::SetProfile(), and subsequently via
+  // AppListClientImpl::OnTemplateURLServiceChanged().
+  void OnDefaultSearchIsGoogleSet(bool is_google);
+
  private:
   // Whether the metrics manager is tracking an active search session.
   bool session_active_ = false;
   // Tracks the metric recorded when EndSearchSession() is called.
   ash::SearchSessionConclusion session_result_ =
       ash::SearchSessionConclusion::kQuit;
+
+  absl::optional<bool> is_default_search_engine_google_;
 
   // Note: There's no guarantee that the federated service will stay
   // available, so call `IsFederatedServiceAvailable()` before each attempt at

@@ -768,33 +768,6 @@ WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
   return kWebHistoryInertCommit;
 }
 
-static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
-    mojom::blink::SameDocumentNavigationType same_document_navigation_type,
-    WebFrameLoadType frame_load_type) {
-  // |SinglePageAppNavigationType| falls into this grid according to different
-  // combinations of |WebFrameLoadType| and |SameDocumentNavigationType|:
-  //
-  //                 HistoryApi           Default
-  //  kBackForward   illegal              otherFragmentNav
-  // !kBackForward   sameDocBack/Forward  historyPushOrReplace
-  switch (same_document_navigation_type) {
-    case mojom::blink::SameDocumentNavigationType::kFragment:
-      if (frame_load_type == WebFrameLoadType::kBackForward) {
-        return kSPANavTypeSameDocumentBackwardOrForward;
-      }
-      return kSPANavTypeOtherFragmentNavigation;
-    case mojom::blink::SameDocumentNavigationType::kHistoryApi:
-      // It's illegal to have both kHistoryApi and
-      // WebFrameLoadType::kBackForward.
-      DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
-      return kSPANavTypeHistoryPushStateOrReplaceState;
-    case mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept:
-      return kSPANavTypeNavigationApiIntercept;
-  }
-  NOTREACHED();
-  return kSPANavTypeSameDocumentBackwardOrForward;
-}
-
 void DocumentLoader::RunURLAndHistoryUpdateSteps(
     const KURL& new_url,
     HistoryItem* history_item,
@@ -826,12 +799,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     absl::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
-
-  SinglePageAppNavigationType single_page_app_navigation_type =
-      CategorizeSinglePageAppNavigation(same_document_navigation_type, type);
-  UMA_HISTOGRAM_ENUMERATION(
-      "RendererScheduler.UpdateForSameDocumentNavigationCount",
-      single_page_app_navigation_type, kSPANavTypeCount);
 
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -2498,8 +2465,14 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
+    auto required_permissions_for_fenced_frames =
+        FencedFrameProperties()
+            ? base::make_span(
+                  FencedFrameProperties()->required_permissions_to_load())
+            : base::span<const mojom::blink::PermissionsPolicyFeature>();
     security_init.ApplyPermissionsPolicy(
-        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_);
+        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
+        required_permissions_for_fenced_frames);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
@@ -2545,6 +2518,8 @@ void DocumentLoader::CommitNavigation() {
                                     *policy.deprecated_feature);
     }
   }
+
+  frame_->ClearScrollSnapshotClients();
 
   // Clear the user activation state.
   // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.
@@ -2654,48 +2629,47 @@ void DocumentLoader::CommitNavigation() {
     document->SetDeferredCompositorCommitIsAllowed(false);
   }
 
-  if (response_.ShouldPopulateResourceTiming() ||
-      is_error_page_for_failed_navigation_) {
-    // We only report resource timing info to the parent if:
-    // 1. The navigation is container-initiated (e.g. iframe changed src)
-    // 2. TAO passed.
-    if (parent_resource_timing_access_ !=
-            mojom::blink::ParentResourceTimingAccess::kDoNotReport &&
-        response_.TimingAllowPassed()) {
-      ResourceResponse response_for_parent(response_);
-      if (parent_resource_timing_access_ ==
-          mojom::blink::ParentResourceTimingAccess::
-              kReportWithoutResponseDetails) {
-        response_for_parent.SetType(network::mojom::FetchResponseType::kOpaque);
-      }
-
-      DCHECK(frame_->Owner());
-      DCHECK(GetRequestorOrigin());
-      resource_timing_info_for_parent_ = CreateResourceTimingInfo(
-          GetTiming().NavigationStart(), original_url_, &response_for_parent);
-
-      resource_timing_info_for_parent_->last_redirect_end_time =
-          document_load_timing_.RedirectEnd();
+  // We only report resource timing info to the parent if:
+  // 1. The navigation is container-initiated (e.g. iframe changed src)
+  // 2. TAO passed.
+  if ((response_.ShouldPopulateResourceTiming() ||
+       is_error_page_for_failed_navigation_) &&
+      parent_resource_timing_access_ !=
+          mojom::blink::ParentResourceTimingAccess::kDoNotReport &&
+      response_.TimingAllowPassed()) {
+    ResourceResponse response_for_parent(response_);
+    if (parent_resource_timing_access_ ==
+        mojom::blink::ParentResourceTimingAccess::
+            kReportWithoutResponseDetails) {
+      response_for_parent.SetType(network::mojom::FetchResponseType::kOpaque);
     }
 
-    // TimingAllowPassed only applies to resource
-    // timing reporting. Navigation timing is always same-origin with the
-    // document that holds to the timing entry, as navigation timing represents
-    // the timing of that document itself.
-    response_.SetTimingAllowPassed(true);
-    mojom::blink::ResourceTimingInfoPtr navigation_timing_info =
-        CreateResourceTimingInfo(base::TimeTicks(),
-                                 is_error_page_for_failed_navigation_
-                                     ? pre_redirect_url_for_failed_navigations_
-                                     : url_,
-                                 &response_);
-    navigation_timing_info->last_redirect_end_time =
-        document_load_timing_.RedirectEnd();
+    DCHECK(frame_->Owner());
+    DCHECK(GetRequestorOrigin());
+    resource_timing_info_for_parent_ = CreateResourceTimingInfo(
+        GetTiming().NavigationStart(), original_url_, &response_for_parent);
 
-    DCHECK(frame_->DomWindow());
-    DOMWindowPerformance::performance(*frame_->DomWindow())
-        ->CreateNavigationTimingInstance(std::move(navigation_timing_info));
+    resource_timing_info_for_parent_->last_redirect_end_time =
+        document_load_timing_.RedirectEnd();
   }
+
+  // TimingAllowPassed only applies to resource
+  // timing reporting. Navigation timing is always same-origin with the
+  // document that holds to the timing entry, as navigation timing represents
+  // the timing of that document itself.
+  response_.SetTimingAllowPassed(true);
+  mojom::blink::ResourceTimingInfoPtr navigation_timing_info =
+      CreateResourceTimingInfo(base::TimeTicks(),
+                               is_error_page_for_failed_navigation_
+                                   ? pre_redirect_url_for_failed_navigations_
+                                   : url_,
+                               &response_);
+  navigation_timing_info->last_redirect_end_time =
+      document_load_timing_.RedirectEnd();
+
+  DCHECK(frame_->DomWindow());
+  DOMWindowPerformance::performance(*frame_->DomWindow())
+      ->CreateNavigationTimingInstance(std::move(navigation_timing_info));
 
   {
     // Notify the browser process about the commit.

@@ -51,12 +51,6 @@ class ProximityAuthPrefManager {
   // user.
   virtual void SetPromotionShownCount(int count) = 0;
   virtual int GetPromotionShownCount() const = 0;
-
-  // Setter and getter for whether the "Signin with Smart Lock is disabled"
-  // message on the login screen has been shown.
-  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
-  virtual void SetHasShownLoginDisabledMessage(bool has_shown) = 0;
-  virtual bool HasShownLoginDisabledMessage() const = 0;
 };
 
 }  // namespace proximity_auth

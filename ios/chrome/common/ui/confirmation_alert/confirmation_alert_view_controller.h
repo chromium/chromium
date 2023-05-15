@@ -7,13 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// A11y Identifiers for testing.
-extern NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertTitleAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-
 @protocol ConfirmationAlertActionHandler;
 
 // A view controller useful to show modal alerts and confirmations. The main
@@ -72,6 +65,15 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingAfterImage;
 
+// Sets the custom size for the favicon.
+@property(nonatomic, assign) CGFloat customFaviconSideLength;
+
+// Sets the custom spacing of the stackview. Values for
+// `customSpacingBeforeImageIfNoNavigationBar` and `customSpacingAfterImage` are
+// honored around the image, so this applies to all the other items of the
+// stackview. Must be set before the view is loaded.
+@property(nonatomic, assign) CGFloat customSpacing;
+
 // When YES, the content is attached to the top of the view instead of being
 // centered.
 @property(nonatomic) BOOL topAlignedLayout;
@@ -87,9 +89,16 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // with a green checkmark. Must be set before the view is loaded. Default is NO.
 @property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
 
+// Set to YES to enclose the image in a frame with a shadow without a corner
+// green checkmark badge. Must be set before the view is loaded. Default is NO.
+@property(nonatomic, assign) BOOL imageEnclosedWithShadowWithoutBadge;
+
 // Set to NO to prevent the scroll view from showing a vertical scrollbar
 // indicator. Must be set before the view is loaded. Default is YES.
 @property(nonatomic) BOOL showsVerticalScrollIndicator;
+
+// Set to NO to prevent the scroll view from scrolling. Default is YES.
+@property(nonatomic) BOOL scrollEnabled;
 
 // When set, this value will be set as the accessibility label for the help
 // button.
@@ -125,6 +134,12 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // different style, or a UITextViewDelegate. The default implementation does
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
+
+// Detent that attempts to fit the preferred height of the content. Detent may
+// be inactive in some size classes, so it should be used together with at
+// least one other detent.
+- (UISheetPresentationControllerDetent*)
+    preferredHeightDetent API_AVAILABLE(ios(16));
 
 @end
 

@@ -104,7 +104,7 @@ class AudioSenderTest : public ::testing::Test {
     InitializeMediaLibrary();
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
 
-    audio_config_.codec = CODEC_AUDIO_OPUS;
+    audio_config_.codec = Codec::kAudioOpus;
     audio_config_.use_hardware_encoder = false;
     audio_config_.rtp_timebase = kDefaultAudioSamplingRate;
     audio_config_.channels = 2;

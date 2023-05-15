@@ -78,7 +78,8 @@ void LeakDetectionDelegateHelper::ProcessResults() {
         PasswordForm form_to_update = *form.get();
         form_to_update.password_issues.insert_or_assign(
             InsecureType::kLeaked,
-            InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+            InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                               TriggerBackendNotification(false)));
         store.UpdateLogin(form_to_update);
       }
       all_urls_with_leaked_credentials.push_back(form->url);

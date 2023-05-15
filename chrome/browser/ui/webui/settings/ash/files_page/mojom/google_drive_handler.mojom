@@ -19,6 +19,9 @@ struct Status {
 
   // The current stage the pin manager is going through.
   drivefs.pin_manager_types.mojom.Stage stage;
+
+  // Whether the stage returned is an error.
+  bool is_error;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
@@ -35,6 +38,14 @@ interface PageHandler {
   // Starts calculating the required space, updates will get sent via the `Page`
   // method exposed below.
   CalculateRequiredSpace();
+
+  // Returns the current size used by all the pinned files for DriveFS as a
+  // string. This string includes the units, e.g. 500 MB.
+  GetTotalPinnedSize() => (string? size);
+
+  // Unpins all files then force evicts them from the Drive cache (does not
+  // force evict hosted documents).
+  ClearPinnedFiles() => ();
 };
 
 // Interface for the Google drive settings page. Implemented in Javascript and

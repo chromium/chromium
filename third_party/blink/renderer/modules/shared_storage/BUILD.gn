@@ -15,6 +15,8 @@ blink_modules_sources("shared_storage") {
     "private_aggregation.h",
     "shared_storage.cc",
     "shared_storage.h",
+    "shared_storage_blink_mojom_traits.cc",
+    "shared_storage_blink_mojom_traits.h",
     "shared_storage_iterator.cc",
     "shared_storage_iterator.h",
     "shared_storage_operation_definition.cc",

@@ -4,12 +4,15 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace net {
 
@@ -18,8 +21,8 @@ namespace {
 class URLConversionTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    testData_.reset([[NSArray alloc]
-        initWithObjects:
+    test_data_ = [NSArray
+        arrayWithObjects:
             // Simple URL with protocol
             @"https://www.google.com/", @"https://www.google.com/",
 
@@ -201,30 +204,30 @@ class URLConversionTest : public ::testing::Test {
             @"http://john!<]:bar[@foo.com/path",
             @"http://john!%3C%5D:bar%5B@foo.com/path",
 
-            nil]);
+            nil];
   }
 
   // NSArray of NSString pairs used for running the tests.
   // Each pair is in the form <input value, expected result>.
-  base::scoped_nsobject<NSArray> testData_;
+  NSArray<NSString*>* __strong test_data_;
 };
 
 TEST_F(URLConversionTest, TestNSURLCreationFromStrings) {
-  for (NSUInteger i = 0; i < [testData_ count]; i += 2) {
-    NSString* inputStr = [testData_ objectAtIndex:i];
-    NSString* expected = [testData_ objectAtIndex:(i + 1)];
-    NSURL* url = NSURLWithGURL(GURL(base::SysNSStringToUTF8(inputStr)));
-    EXPECT_NSEQ(expected, [url absoluteString]);
+  for (NSUInteger i = 0; i < test_data_.count; i += 2) {
+    NSString* input = test_data_[i];
+    NSString* expected = test_data_[i + 1];
+    NSURL* url = NSURLWithGURL(GURL(base::SysNSStringToUTF8(input)));
+    EXPECT_NSEQ(expected, url.absoluteString);
   }
 }
 
 TEST_F(URLConversionTest, TestURLWithStringDoesNotModifyAlreadyEscapedURLs) {
-  for (NSUInteger i = 0; i < [testData_ count]; i += 2) {
-    NSString* inputStr = [testData_ objectAtIndex:i + 1];
-    NSURL* url = NSURLWithGURL(GURL(base::SysNSStringToUTF8(inputStr)));
-    NSString* expected = [testData_ objectAtIndex:i + 1];
+  for (NSUInteger i = 0; i < test_data_.count; i += 2) {
+    NSString* input = test_data_[i + 1];
+    NSURL* url = NSURLWithGURL(GURL(base::SysNSStringToUTF8(input)));
+    NSString* expected = test_data_[i + 1];
     // Test the expected URL is created.
-    EXPECT_NSEQ(expected, [url absoluteString]);
+    EXPECT_NSEQ(expected, url.absoluteString);
   }
 }
 

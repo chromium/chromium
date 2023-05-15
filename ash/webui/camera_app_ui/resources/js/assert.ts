@@ -14,7 +14,7 @@ export function assert(
     condition: boolean, optMessage?: string): asserts condition {
   if (!condition) {
     let message = 'Assertion failed';
-    if (optMessage) {
+    if (optMessage !== undefined) {
       message = message + ': ' + optMessage;
     }
     throw new Error(message);
@@ -65,7 +65,7 @@ export function assertInstanceof<T>(
   if (!(value instanceof ctor)) {
     assertNotReached(
         optMessage ??
-        'Value ' + value + ' is not a[n] ' + (ctor.name || typeof ctor));
+        'Value ' + value + ' is not a[n] ' + (ctor.name ?? typeof ctor));
   }
   return value;
 }

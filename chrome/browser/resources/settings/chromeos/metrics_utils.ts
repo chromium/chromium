@@ -33,7 +33,7 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kTouchpadSpeed,
     type: chrome.settingsPrivate.PrefType.NUMBER,
   },
-  // os_a11y_page/display_and_magnification_page.ts
+  // os_a11y_page/display_and_magnification_subpage.ts
   'settings.a11y.screen_magnifier_focus_following': {
     setting: Setting.kFullscreenMagnifierFocusFollowing,
     type: chrome.settingsPrivate.PrefType.BOOLEAN,

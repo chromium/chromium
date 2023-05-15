@@ -70,8 +70,8 @@ std::string GetStorageKeyFromVisitRow(const VisitRow& row) {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SyncHistoryDatabaseError {
-  kApplySyncChangesAddSyncedVisit = 0,
-  kApplySyncChangesWriteMetadata = 1,
+  kApplyIncrementalSyncChangesAddSyncedVisit = 0,
+  kApplyIncrementalSyncChangesWriteMetadata = 1,
   kOnDatabaseError = 2,
   kLoadMetadata = 3,
   // Deprecated (call sites were removed):
@@ -511,16 +511,17 @@ HistorySyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> HistorySyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> HistorySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // Since HISTORY is in ApplyUpdatesImmediatelyTypes(), MergeSyncData() should
-  // never be called.
+  // Since HISTORY is in ApplyUpdatesImmediatelyTypes(), MergeFullSyncData()
+  // should never be called.
   NOTREACHED();
   return {};
 }
 
-absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+HistorySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -575,8 +576,8 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
           // Updating didn't work, so actually add the data instead.
           if (!AddEntityInBackend(&id_remapper, specifics)) {
             // Something went wrong.
-            RecordDatabaseError(
-                SyncHistoryDatabaseError::kApplySyncChangesAddSyncedVisit);
+            RecordDatabaseError(SyncHistoryDatabaseError::
+                                    kApplyIncrementalSyncChangesAddSyncedVisit);
             break;
           }
         }
@@ -601,13 +602,13 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
       change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(
-        SyncHistoryDatabaseError::kApplySyncChangesWriteMetadata);
+        SyncHistoryDatabaseError::kApplyIncrementalSyncChangesWriteMetadata);
   }
 
-  // ApplySyncChanges() gets called both for incoming remote changes (i.e. for
-  // GetUpdates) and after a successful Commit. In either case, there's now
-  // likely some local metadata that's not needed anymore, so go and clean that
-  // up.
+  // ApplyIncrementalSyncChanges() gets called both for incoming remote changes
+  // (i.e. for GetUpdates) and after a successful Commit. In either case,
+  // there's now likely some local metadata that's not needed anymore, so go and
+  // clean that up.
   UntrackAndClearMetadataForSyncedEntities();
 
   return metadata_error;

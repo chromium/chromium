@@ -43,8 +43,6 @@ class LayoutBR : public LayoutText {
   // to return a rect that includes space to illustrate a newline.
   using LayoutText::LocalSelectionVisualRect;
 
-  int LineHeight(bool first_line) const;
-
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
     return type == kLayoutObjectBr || LayoutText::IsOfType(type);
@@ -57,9 +55,6 @@ class LayoutBR : public LayoutText {
 
   Position PositionForCaretOffset(unsigned) const final;
   absl::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
-
- protected:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 };
 
 template <>

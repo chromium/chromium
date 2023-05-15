@@ -31,10 +31,10 @@ source_set("bookmarks") {
     "//components/prefs",
     "//components/sync_bookmarks",
     "//components/undo",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",
@@ -60,8 +60,8 @@ source_set("bookmarks_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -74,11 +74,12 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/test:test_support",

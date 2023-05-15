@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_features.h"
@@ -46,7 +47,8 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
   void Init(dbus::Bus* bus) override;
 
  private:
-  dbus::ObjectProxy* wilco_dtc_supportd_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> wilco_dtc_supportd_proxy_ =
+      nullptr;
 
   base::WeakPtrFactory<WilcoDtcSupportdClientImpl> weak_ptr_factory_{this};
 };

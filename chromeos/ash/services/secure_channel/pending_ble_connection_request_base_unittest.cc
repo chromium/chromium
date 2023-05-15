@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/fake_client_connection_parameters.h"
@@ -105,7 +106,8 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
   }
 
  private:
-  FakeClientConnectionParameters* fake_client_connection_parameters_;
+  raw_ptr<FakeClientConnectionParameters, ExperimentalAsh>
+      fake_client_connection_parameters_;
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;

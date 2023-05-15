@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/idle_dialog.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 class Profile;
@@ -25,19 +26,21 @@ namespace enterprise_idle {
 // Actions run in order, based on their numerical value. Lower values run first.
 // Keep this enum sorted by priority.
 enum class ActionType {
+  kShowDialog = 0,  // Not an IdleTimeoutAction value. Added as a side-effect.
 #if !BUILDFLAG(IS_ANDROID)
-  kCloseBrowsers = 0,
-  kShowProfilePicker = 1,
+  kCloseBrowsers = 1,
+  kShowProfilePicker = 2,
 #endif  // !BUILDFLAG(IS_ANDROID)
-  kClearBrowsingHistory = 2,
-  kClearDownloadHistory = 3,
-  kClearCookiesAndOtherSiteData = 4,
-  kClearCachedImagesAndFiles = 5,
-  kClearPasswordSignin = 6,
-  kClearAutofill = 7,
-  kClearSiteSettings = 8,
-  kClearHostedAppData = 9,
-  kReloadPages = 10,
+  kClearBrowsingHistory = 3,
+  kClearDownloadHistory,
+  kClearCookiesAndOtherSiteData,
+  kClearCachedImagesAndFiles,
+  kClearPasswordSignin,
+  kClearAutofill,
+  kClearSiteSettings,
+  kClearHostedAppData,
+  kReloadPages,
+  kShowBubble,  // Not an IdleTimeoutAction value. Added as a side-effect.
 };
 
 // A mapping of names to enums, for the ConfigurationPolicyHandler to make
@@ -111,6 +114,9 @@ class ActionFactory {
 
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_for_testing_;
 };
+
+IdleDialog::ActionSet ActionsToActionSet(
+    const base::flat_set<ActionType>& action_types);
 
 }  // namespace enterprise_idle
 

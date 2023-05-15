@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace re2 {
 class RE2;
@@ -36,21 +37,18 @@ class NameMiddle : public AddressComponent {
   explicit NameMiddle(AddressComponent* parent);
   ~NameMiddle() override;
 
-  void GetAdditionalSupportedFieldTypes(
-      ServerFieldTypeSet* supported_types) const override;
+  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
  protected:
   // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|
   // type.
-  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      const std::string& type_name,
-      std::u16string* value) const override;
+  std::u16string GetValueForOtherSupportedType(
+      ServerFieldType field_type) const override;
 
   // Implements support for setting the |MIDDLE_NAME_INITIAL| type.
-  bool ConvertAndSetValueForAdditionalFieldTypeName(
-      const std::string& type_name,
-      const std::u16string& value,
-      const VerificationStatus& status) override;
+  void SetValueForOtherSupportedType(ServerFieldType field_type,
+                                     const std::u16string& value,
+                                     const VerificationStatus& status) override;
 };
 
 // Atomic component that represents the first part of a last name.
@@ -135,7 +133,7 @@ class NameFull : public AddressComponent {
   NameFull(const NameFull& other);
   ~NameFull() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
@@ -190,7 +188,7 @@ class NameFullWithPrefix : public AddressComponent {
   NameFullWithPrefix(const NameFullWithPrefix& other);
   ~NameFullWithPrefix() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()

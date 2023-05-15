@@ -64,12 +64,18 @@ RemoteDesktopPortalInjector::RemoteDesktopPortalInjector() {
 }
 
 RemoteDesktopPortalInjector::~RemoteDesktopPortalInjector() {
-  Cleanup();
+  DCHECK(!ei_);
 }
 
-void RemoteDesktopPortalInjector::Cleanup() {
-  if (ei_) {
-    ei_event_watcher_->StopProcessingEvents();
+void RemoteDesktopPortalInjector::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ei_pointer_enabled_ = false;
+  ei_keyboard_enabled_ = false;
+  ei_absolute_pointer_enabled_ = false;
+  if (ei_seat_) {
+    ei_seat_unbind_capabilities(ei_seat_, EI_DEVICE_CAP_KEYBOARD,
+                                EI_DEVICE_CAP_POINTER,
+                                EI_DEVICE_CAP_POINTER_ABSOLUTE, nullptr);
   }
   if (ei_keyboard_) {
     ei_device_unref(ei_keyboard_);
@@ -84,6 +90,7 @@ void RemoteDesktopPortalInjector::Cleanup() {
     ei_absolute_pointer_ = nullptr;
   }
   if (ei_seat_) {
+    ei_event_watcher_->StopProcessingEvents();
     ei_seat_unref(ei_seat_);
     ei_seat_ = nullptr;
   }
@@ -91,9 +98,6 @@ void RemoteDesktopPortalInjector::Cleanup() {
     ei_unref(ei_);
     ei_ = nullptr;
   }
-  ei_pointer_enabled_ = false;
-  ei_keyboard_enabled_ = false;
-  ei_absolute_pointer_enabled_ = false;
 }
 
 // static
@@ -113,7 +117,7 @@ void RemoteDesktopPortalInjector::ValidateGDPBusProxyResult(
     if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       return;
     }
-    LOG(ERROR) << "Error in input injection (without EI)";
+    LOG(ERROR) << "Error in input injection (without EI): " << error->message;
   }
 }
 
@@ -206,6 +210,7 @@ void RemoteDesktopPortalInjector::MovePointerBy(int delta_x, int delta_y) {
 }
 
 bool RemoteDesktopPortalInjector::InDeviceRegion(uint32_t x, uint32_t y) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& region : device_regions_) {
     if ((x >= region.x && x < region.x + region.w) &&
         (y >= region.y && y < region.y + region.h)) {
@@ -347,6 +352,7 @@ void RemoteDesktopPortalInjector::OnEiFdRequested(GObject* object,
 }
 
 void RemoteDesktopPortalInjector::HandleRegions(struct ei_device* device) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t idx = 0;
   struct ei_region* region;
 
@@ -364,26 +370,30 @@ void RemoteDesktopPortalInjector::HandleRegions(struct ei_device* device) {
 }
 
 void RemoteDesktopPortalInjector::OnEiSeatAddedEvent(struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ei_seat_) {
     return;
   }
 
   ei_seat_ = ei_seat_ref(ei_event_get_seat(event));
   HOST_LOG << "EI seat added: " << ei_seat_get_name(ei_seat_);
+
   ei_seat_bind_capability(ei_seat_, EI_DEVICE_CAP_POINTER);
   ei_seat_bind_capability(ei_seat_, EI_DEVICE_CAP_KEYBOARD);
   ei_seat_bind_capability(ei_seat_, EI_DEVICE_CAP_POINTER_ABSOLUTE);
 }
 
 void RemoteDesktopPortalInjector::OnEiSeatRemovedEvent(struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't need to close the devices, libei will give us the right events.
   if (ei_event_get_seat(event) == ei_seat_.get()) {
-    ei_seat_ = ei_seat_unref(ei_seat_);
+    ei_seat_unref(ei_seat_);
     ei_seat_ = nullptr;
   }
 }
 
 void RemoteDesktopPortalInjector::OnEiDeviceAddedEvent(struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct ei_device* device = ei_device_ref(ei_event_get_device(event));
 
   if (ei_device_has_capability(device, EI_DEVICE_CAP_POINTER)) {
@@ -413,6 +423,7 @@ void RemoteDesktopPortalInjector::OnEiDeviceAddedEvent(struct ei_event* event) {
 
 void RemoteDesktopPortalInjector::OnEiDeviceResumedEvent(
     struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct ei_device* event_device = ei_event_get_device(event);
   if (!event_device) {
     return;
@@ -438,6 +449,7 @@ void RemoteDesktopPortalInjector::OnEiDeviceResumedEvent(
 
 void RemoteDesktopPortalInjector::OnEiDevicePausedEvent(
     struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct ei_device* event_device = ei_event_get_device(event);
   if (!event_device) {
     return;
@@ -463,6 +475,7 @@ void RemoteDesktopPortalInjector::OnEiDevicePausedEvent(
 
 void RemoteDesktopPortalInjector::OnEiDeviceRemovedEvent(
     struct ei_event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct ei_device* event_device = ei_event_get_device(event);
   if (!event_device) {
     return;
@@ -498,7 +511,7 @@ void RemoteDesktopPortalInjector::HandleEiEvent(struct ei_event* event) {
       break;
     case EI_EVENT_DISCONNECT: {
       HOST_LOG << "EI disconnected";
-      Cleanup();
+      Shutdown();
       break;
     }
     case EI_EVENT_SEAT_ADDED:

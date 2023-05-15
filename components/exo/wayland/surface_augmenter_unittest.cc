@@ -4,6 +4,7 @@
 
 #include <surface-augmenter-client-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/test/client_util.h"
@@ -23,8 +24,9 @@ class ClientData : public test::TestClient::CustomData {
     if (augmented_sub_surface_)
       augmented_sub_surface_destroy(augmented_sub_surface_);
   }
-  augmented_surface* augmented_surface_ = nullptr;
-  augmented_sub_surface* augmented_sub_surface_ = nullptr;
+  raw_ptr<augmented_surface, ExperimentalAsh> augmented_surface_ = nullptr;
+  raw_ptr<augmented_sub_surface, ExperimentalAsh> augmented_sub_surface_ =
+      nullptr;
 };
 
 using SurfaceAugmenterTest = test::WaylandServerTest;

@@ -102,12 +102,6 @@ void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
   LayoutBox::WillBeRemovedFromTree();
 }
 
-bool LayoutMultiColumnSpannerPlaceholder::NeedsPreferredWidthsRecalculation()
-    const {
-  NOT_DESTROYED();
-  return layout_object_in_flow_thread_->NeedsPreferredWidthsRecalculation();
-}
-
 void LayoutMultiColumnSpannerPlaceholder::RecalcVisualOverflow() {
   NOT_DESTROYED();
   LayoutBox::RecalcVisualOverflow();

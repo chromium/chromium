@@ -76,8 +76,8 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  protected:
-  LayoutRectOutsets ComputeBorders() const override;
-  LayoutRectOutsets ComputePadding() const override;
+  NGPhysicalBoxStrut ComputeBorders() const override;
+  NGPhysicalBoxStrut ComputePadding() const override;
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,
@@ -117,6 +117,16 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                             const gfx::Rect& visual_rect,
                                             const PhysicalRect& paint_rect,
                                             const DisplayItemClient&);
+  void PaintCompositeBackgroundAttachmentFixed(const PaintInfo&,
+                                               const DisplayItemClient&,
+                                               const BoxDecorationData&);
+  void PaintBoxDecorationBackgroundWithDecorationData(
+      const PaintInfo&,
+      const gfx::Rect& visual_rect,
+      const PhysicalRect& paint_rect,
+      const DisplayItemClient&,
+      DisplayItem::Type,
+      const BoxDecorationData&);
 
   void PaintBoxDecorationBackgroundForBlockInInline(
       NGInlineCursor* children,

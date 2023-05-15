@@ -880,6 +880,8 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   // accordingly.
   auto model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model_override =
+      std::make_unique<QuickAppAccessModel>();
 
   AddSearchResultToModel("id21", AppListSearchResultType::kZeroStateFile,
                          search_model_override.get(), "Fake Title");
@@ -889,7 +891,8 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
                          search_model_override.get(), "Fake Title");
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model_override.get());
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(std::vector<std::string>({"id21", "id22", "id23"}), GetResultIds());

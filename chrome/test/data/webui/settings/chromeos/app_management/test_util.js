@@ -4,8 +4,9 @@
 
 'use strict';
 
-import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy, FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestAppManagementStore} from './test_store.js';
+import {FakePageHandler} from './fake_page_handler.js';
 
 /**
  * Create an app for testing purpose.

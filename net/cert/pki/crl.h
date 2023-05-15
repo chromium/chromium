@@ -207,16 +207,17 @@ GetCRLStatusForCert(const der::Input& cert_serial,
 //        6.3.3.
 //  * |verify_time_epoch_seconds|: The time as the difference in seconds from
 //        the POSIX epoch to use when checking revocation status.
-//  * |max_age_seconds|: The maximum age in seconds for a CRL, implemented as
-//        time since the |thisUpdate| field in the CRL TBSCertList. Responses
-//        older than |max_age_seconds| will be considered invalid.
+//  * |max_age_seconds|: If present, the maximum age in seconds for a CRL,
+//        implemented as time since the |thisUpdate| field in the CRL
+//        TBSCertList. Responses older than |max_age_seconds| will be
+//        considered invalid.
 [[nodiscard]] NET_EXPORT CRLRevocationStatus
 CheckCRL(std::string_view raw_crl,
          const ParsedCertificateList& valid_chain,
          size_t target_cert_index,
          const ParsedDistributionPoint& cert_dp,
          int64_t verify_time_epoch_seconds,
-         int64_t max_age_seconds);
+         absl::optional<int64_t> max_age_seconds);
 
 }  // namespace net
 

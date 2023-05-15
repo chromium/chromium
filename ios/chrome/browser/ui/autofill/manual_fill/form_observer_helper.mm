@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/form_observer_helper.h"
 
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

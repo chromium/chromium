@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -163,7 +164,7 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
     std::move(callback).Run(base::FilePath(std::move(result)));
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 };
 
 }  // namespace

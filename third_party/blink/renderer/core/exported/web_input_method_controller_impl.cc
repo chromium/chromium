@@ -201,7 +201,7 @@ bool WebInputMethodControllerImpl::IsVirtualKeyboardPolicyManual() const {
   return false;  // Default should always be automatic.
 }
 
-WebRange WebInputMethodControllerImpl::CompositionRange() {
+WebRange WebInputMethodControllerImpl::CompositionRange() const {
   if (IsEditContextActive()) {
     return GetInputMethodController()
         .GetActiveEditContext()

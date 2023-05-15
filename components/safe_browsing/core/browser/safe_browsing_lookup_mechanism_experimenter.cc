@@ -35,7 +35,6 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
     const SBThreatTypeSet& threat_types,
     network::mojom::RequestDestination request_destination,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    bool can_check_db,
     bool can_check_high_confidence_allowlist,
     std::string url_lookup_service_metric_suffix,
     const GURL& last_committed_url,
@@ -43,15 +42,16 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
     UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
     base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui) {
   auto url_real_time_mechanism = std::make_unique<UrlRealTimeMechanism>(
-      url, threat_types, request_destination, database_manager, can_check_db,
-      can_check_high_confidence_allowlist, url_lookup_service_metric_suffix,
-      last_committed_url, ui_task_runner_, url_lookup_service_on_ui,
-      webui_delegate, MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
+      url, threat_types, request_destination, database_manager,
+      /*can_check_db=*/true, can_check_high_confidence_allowlist,
+      url_lookup_service_metric_suffix, last_committed_url, ui_task_runner_,
+      url_lookup_service_on_ui, webui_delegate,
+      MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
   auto hash_database_mechanism = std::make_unique<HashDatabaseMechanism>(
-      url, threat_types, database_manager, can_check_db,
+      url, threat_types, database_manager,
       MechanismExperimentHashDatabaseCache::kHashDatabaseOnly);
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(
-      url, threat_types, database_manager, can_check_db, ui_task_runner_,
+      url, threat_types, database_manager, ui_task_runner_,
       hash_real_time_service_on_ui,
       MechanismExperimentHashDatabaseCache::kHashRealTimeOnly);
 

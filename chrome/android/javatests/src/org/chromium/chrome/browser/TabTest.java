@@ -6,7 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -111,7 +111,8 @@ public class TabTest {
         Assert.assertFalse(isShowingSadTab());
 
         // Stop the activity and simulate a killed renderer.
-        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.fireHomeScreenIntent(
+                ApplicationProvider.getApplicationContext());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeTabUtils.simulateRendererKilledForTesting(mTab));
 
@@ -119,7 +120,7 @@ public class TabTest {
         Assert.assertTrue(mTab.needsReload());
         Assert.assertFalse(isShowingSadTab());
 
-        ChromeApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.launchChrome(ApplicationProvider.getApplicationContext());
 
         // The tab should be restored and visible.
         CriteriaHelper.pollUiThread(() -> !mTab.isHidden());

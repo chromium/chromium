@@ -33,13 +33,13 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -52,6 +52,13 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_resources.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/sync_prefs.h"
+#endif
+
 namespace {
 const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
 const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
@@ -62,28 +69,38 @@ const char kSyncBenefitHistoryAndMoreStringName[] =
 const char kSyncBenefitIconNameKey[] = "iconName";
 const char kSyncBenefitTitleKey[] = "title";
 
-bool IsAnyTypeSyncable(PrefService& pref_service,
+bool IsAnyTypeSyncable(const syncer::SyncService* sync_service,
                        syncer::UserSelectableTypeSet types) {
+  if (!sync_service) {
+    return false;
+  }
   for (auto type : types) {
-    const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
-    if (!pref_service.IsManagedPreference(pref_name)) {
+    if (!sync_service->GetUserSettings()->IsTypeManagedByPolicy(type)) {
       return true;
     }
   }
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowAppsDisclaimerInLacros(Profile* profile) {
+  syncer::SyncPrefs prefs_ = syncer::SyncPrefs(profile->GetPrefs());
+  return prefs_.IsAppsSyncEnabledByOs() &&
+         base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing);
+}
+#endif
 }  // namespace
 
 // static
 std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
-    PrefService& pref_service) {
+    const syncer::SyncService* sync_service) {
   using syncer::UserSelectableType;
   base::Value::List sync_benefits_list;
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kBookmarks,
                                        UserSelectableType::kReadingList})) {
     std::string titleKey;
-    if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks})) {
+    if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kBookmarks})) {
       titleKey = kSyncBenefitBookmarksStringName;
     } else {
       titleKey = kSyncBenefitReadingListStringName;
@@ -95,7 +112,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     sync_benefits_list.Append(std::move(bookmarks));
   }
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kAutofill,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kAutofill,
                                        UserSelectableType::kPasswords})) {
     base::Value::Dict autofill;
     autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
@@ -103,7 +120,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     sync_benefits_list.Append(std::move(autofill));
   }
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kExtensions,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kExtensions,
                                        UserSelectableType::kApps})) {
     base::Value::Dict extensions;
     extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
@@ -151,9 +168,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
 
   AddStringResource(source, "syncLoadingConfirmationTitle",
                     IDS_SYNC_LOADING_CONFIRMATION_TITLE);
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   if (is_sync_allowed) {
     InitializeForSyncConfirmation(source, GetSyncConfirmationStyle(url));
@@ -162,8 +177,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
   }
 
   base::Value::Dict strings;
-  webui::SetLoadTimeDataDefaults(
-      g_browser_process->GetApplicationLocale(), &strings);
+  webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
+                                 &strings);
   source->AddLocalizedStrings(strings);
 
   if (url.query().find("debug") != std::string::npos) {
@@ -183,20 +198,24 @@ void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
     SyncConfirmationStyle style) {
-  int title_id = IDS_SYNC_CONFIRMATION_TITLE;
-  int info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE;
-  int info_desc_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC;
+  int info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+  int info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
   int undo_label_id = IDS_CANCEL;
-  int settings_label_id = IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL;
-  int illustration_id =
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG;
-  int illustration_dark_id =
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG;
-  std::string illustration_path = "images/sync_confirmation_illustration.svg";
-  std::string illustration_dark_path =
-      "images/sync_confirmation_illustration_dark.svg";
 
+  source->AddResourcePath("images/dialog_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_SVG);
+  source->AddResourcePath(
+      "images/dialog_illustration_dark.svg",
+      IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_DARK_SVG);
+  source->AddResourcePath("images/window_left_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
+  source->AddResourcePath("images/window_left_illustration_dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+  source->AddResourcePath("images/window_right_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
+  source->AddResourcePath("images/window_right_illustration_dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath(
       "sync_confirmation_app.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_APP_JS);
@@ -206,113 +225,87 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->SetDefaultResource(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_HTML);
 
-  bool isTangibleSync = base::FeatureList::IsEnabled(switches::kTangibleSync);
-  bool isSigninInterceptFre =
+  // TODO(crbug.com/1374702): Refactor SyncConfirmationStyle based on the
+  // purpose instead of what kind of container the page is displayed in.
+  bool is_modal_dialog;
+  bool is_promo;
+  switch (style) {
+    case SyncConfirmationStyle::kDefaultModal:
+      is_modal_dialog = true;
+      is_promo = false;
+      break;
+    case SyncConfirmationStyle::kSigninInterceptModal:
+      is_modal_dialog = true;
+      is_promo = true;
+      break;
+    case SyncConfirmationStyle::kWindow:
+      is_modal_dialog = false;
+      is_promo = true;
+      break;
+  }
+
+  bool is_signin_intercept_promo =
       style == SyncConfirmationStyle::kSigninInterceptModal;
-  source->AddBoolean("isModalDialog",
-                     style == SyncConfirmationStyle::kDefaultModal ||
-                         style == SyncConfirmationStyle::kSigninInterceptModal);
-  source->AddBoolean("isSigninInterceptFre", isSigninInterceptFre);
-  source->AddBoolean("isTangibleSync", isTangibleSync);
+  bool use_clickable_sync_info_desc = false;
+
+  source->AddBoolean("isModalDialog", is_modal_dialog);
 
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 
-  source->AddString("syncBenefitsList",
-                    GetSyncBenefitsListJSON(*profile_->GetPrefs()));
+  source->AddString(
+      "syncBenefitsList",
+      GetSyncBenefitsListJSON(SyncServiceFactory::GetForProfile(profile_)));
 
   // Default overrides without placeholders
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
-#endif
-  // TODO(crbug.com/1374702): Rename SyncConfirmationStyle enum based on the
-  // purpose instead of what kind of container the page is displayed in.
-  if (isSigninInterceptFre) {
-    DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
-    info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT;
-    confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;
-    undo_label_id = IDS_NO_THANKS;
-    illustration_path =
-        "images/sync_confirmation_signin_intercept_illustration.svg";
-    illustration_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_SIGNIN_INTERCEPT_ILLUSTRATION_SVG;
-    illustration_dark_path =
-        "images/sync_confirmation_signin_intercept_illustration_dark.svg";
-    illustration_dark_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_SIGNIN_INTERCEPT_ILLUSTRATION_DARK_SVG;
-  } else if (style == SyncConfirmationStyle::kWindow) {
-    undo_label_id = IDS_NO_THANKS;
-    settings_label_id = IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL;
-    illustration_path = "images/sync_confirmation_refreshed_illustration.svg";
-    illustration_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_SVG;
-    illustration_dark_path =
-        "images/sync_confirmation_refreshed_illustration_dark.svg";
-    illustration_dark_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG;
+  // The sign-in intercept feature isn't enabled on Lacros, so only this title
+  // will be used. Revisit the title when enabling it.
+  DCHECK(!is_signin_intercept_promo);
+  info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
+
+  if (ShouldShowAppsDisclaimerInLacros(profile_)) {
+    info_desc_id =
+        IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK;
+    use_clickable_sync_info_desc = true;
   }
-
-  if (isTangibleSync) {
-    title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE;
-    info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
-    settings_label_id = IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The sign-in intercept feature isn't enabled on Lacros. Revisit the title
-    // when enabling it.
-    DCHECK(!isSigninInterceptFre);
-    info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
-#else
-    info_title_id =
-        isSigninInterceptFre
-            ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
-            : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
 #endif
-
-    illustration_path = "images/tangible_sync_dialog_illustration.svg";
-    illustration_dark_path =
-        "images/tangible_sync_dialog_illustration_dark.svg";
-
-    illustration_id = IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_SVG;
-    illustration_dark_id =
-        IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_DARK_SVG;
-
-    source->AddResourcePath("images/tangible_sync_window_left_illustration.svg",
-                            IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
-    source->AddResourcePath(
-        "images/tangible_sync_window_left_illustration_dark.svg",
-        IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
-    source->AddResourcePath(
-        "images/tangible_sync_window_right_illustration.svg",
-        IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
-    source->AddResourcePath(
-        "images/tangible_sync_window_right_illustration_dark.svg",
-        IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  if (is_signin_intercept_promo) {
+    DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
+    info_title_id =
+        IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2;
+    confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;
+  }
+  if (is_promo) {
+    undo_label_id = IDS_NO_THANKS;
   }
 
   // Registering and resolving the strings with placeholders
-  if (isSigninInterceptFre) {
+  if (is_signin_intercept_promo) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile_->GetPath());
     DCHECK(entry);
     std::u16string gaia_name = entry->GetGAIANameToDisplay();
-    if (gaia_name.empty())
+    if (gaia_name.empty()) {
       gaia_name = entry->GetLocalProfileName();
+    }
     AddStringResourceWithPlaceholder(
         source, "syncConfirmationTitle",
         IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT, gaia_name);
   } else {
-    AddStringResource(source, "syncConfirmationTitle", title_id);
+    AddStringResource(source, "syncConfirmationTitle",
+                      IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE);
   }
 
   // Registering and resolving the strings without placeholders
   AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
   AddStringResource(source, "syncConfirmationConfirmLabel", confirm_label_id);
   AddStringResource(source, "syncConfirmationUndoLabel", undo_label_id);
-  AddStringResource(source, "syncConfirmationSettingsLabel", settings_label_id);
   AddStringResource(source, "syncConfirmationSyncInfoDesc", info_desc_id);
+  AddStringResource(source, "syncConfirmationSettingsLabel",
+                    IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
   AddStringResource(source, "syncConfirmationSettingsInfo",
                     IDS_SYNC_CONFIRMATION_SETTINGS_INFO);
   AddStringResource(source, kSyncBenefitBookmarksStringName,
@@ -326,8 +319,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   AddStringResource(source, kSyncBenefitHistoryAndMoreStringName,
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY_AND_MORE);
 
-  source->AddResourcePath(illustration_path, illustration_id);
-  source->AddResourcePath(illustration_dark_path, illustration_dark_id);
+  // Registering other variables that are computed above based on multiple
+  // factors (e.g. platform).
+  source->AddBoolean("useClickableSyncInfoDesc", use_clickable_sync_info_desc);
 }
 
 void SyncConfirmationUI::InitializeForSyncDisabled(

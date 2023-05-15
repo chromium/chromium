@@ -4,7 +4,6 @@
 
 #include "ash/projector/projector_annotation_tray.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/projector/projector_controller_impl.h"
@@ -202,15 +201,6 @@ void ProjectorAnnotationTray::ShowBubble() {
   bubble_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   // Add drawing tools
   {
     auto* marker_view_container =
@@ -233,7 +223,6 @@ void ProjectorAnnotationTray::ShowBubble() {
               l10n_util::GetStringUTF16(GetAccessibleNameForColor(color))));
       color_button->SetToggled(current_pen_color_ == color);
     }
-    setup_layered_view(marker_view_container);
   }
 
   // Show the bubble.

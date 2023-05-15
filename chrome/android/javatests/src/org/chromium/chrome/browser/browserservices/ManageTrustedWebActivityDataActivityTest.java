@@ -9,17 +9,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -34,6 +35,7 @@ import org.chromium.webapk.lib.common.WebApkConstants;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ManageTrustedWebActivityDataActivityTest {
     private static final String SETTINGS_ACTIVITY_NAME =
             "org.chromium.chrome.browser.settings.SettingsActivity";
@@ -42,7 +44,6 @@ public class ManageTrustedWebActivityDataActivityTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug.com/1283285")
     public void launchesWebApkSiteSettings() throws Exception {
         WebApkValidator.setDisableValidationForTesting(true);
         ManageTrustedWebActivityDataActivity.setCallingPackageForTesting(TEST_PACKAGE_NAME);
@@ -75,7 +76,7 @@ public class ManageTrustedWebActivityDataActivityTest {
         Intent intent = new Intent();
         intent.setAction(
                 "android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA");
-        intent.setPackage(InstrumentationRegistry.getTargetContext().getPackageName());
+        intent.setPackage(ApplicationProvider.getApplicationContext().getPackageName());
         intent.setData(uri);
         intent.putExtra(WebApkConstants.EXTRA_IS_WEBAPK, true);
         // The following flag is required because the test starts the intent outside of an activity.

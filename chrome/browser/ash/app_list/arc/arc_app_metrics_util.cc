@@ -6,42 +6,52 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_metrics_data.h"
 
 namespace {
 
 constexpr char kManualInstallHistogramBase[] =
     "Arc.AppInstall.Manual.InitialSession.";
 
+constexpr char kPolicyInstallHistogramBase[] =
+    "Arc.AppInstall.Policy.InitialSession.";
+
 }  // namespace
 
 namespace arc {
 
-ArcAppMetricsUtil::ArcAppMetricsUtil() = default;
+ArcAppMetricsUtil::ArcAppMetricsUtil() {
+  manual_install_data_ =
+      std::make_unique<ArcAppMetricsData>(kManualInstallHistogramBase);
+  policy_install_data_ =
+      std::make_unique<ArcAppMetricsData>(kPolicyInstallHistogramBase);
+}
 
 ArcAppMetricsUtil::~ArcAppMetricsUtil() = default;
 
-void ArcAppMetricsUtil::recordAppInstallStartTime(const std::string& app_name) {
-  install_start_time_map_[app_name] = base::TimeTicks::Now();
-  installs_requested_ = true;
+void ArcAppMetricsUtil::recordAppInstallStartTime(
+    const std::string& app_name,
+    bool is_controlled_by_policy) {
+  if (is_controlled_by_policy) {
+    policy_install_data_->recordAppInstallStartTime(app_name);
+  } else {
+    manual_install_data_->recordAppInstallStartTime(app_name);
+  }
 }
 
 void ArcAppMetricsUtil::maybeReportInstallTimeDelta(
-    const std::string& app_name) {
-  if (install_start_time_map_.count(app_name) == 1) {
-    const base::TimeTicks start_time = install_start_time_map_[app_name];
-    const base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramLongTimes(
-        base::StrCat({kManualInstallHistogramBase, "TimeDelta"}), time_delta);
-    install_start_time_map_.erase(app_name);
+    const std::string& app_name,
+    bool is_controlled_by_policy) {
+  if (is_controlled_by_policy) {
+    policy_install_data_->maybeReportInstallTimeDelta(app_name);
+  } else {
+    manual_install_data_->maybeReportInstallTimeDelta(app_name);
   }
 }
 
-void ArcAppMetricsUtil::reportIncompleteInstalls() {
-  if (installs_requested_) {
-    base::UmaHistogramExactLinear(
-        base::StrCat({kManualInstallHistogramBase, "NumAppsIncomplete"}),
-        install_start_time_map_.size(), /*exclusive_max=*/51);
-  }
+void ArcAppMetricsUtil::reportMetrics() {
+  policy_install_data_->reportMetrics();
+  manual_install_data_->reportMetrics();
 }
 
 }  // namespace arc

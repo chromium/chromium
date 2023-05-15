@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 
+#import "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,4 +59,29 @@ TEST_F(AutofillUtilTest, ExtractFillingResults) {
   EXPECT_FALSE(ExtractFillingResults(invalid_results1, &extracted_results));
   NSString* invalid_results2 = @"{\"1\":\"username\"\"2\":100}";
   EXPECT_FALSE(ExtractFillingResults(invalid_results2, &extracted_results));
+}
+
+// Test that the properties mask is extracted from the form field data.
+TEST_F(AutofillUtilTest, ExtractFormFieldData_PropertiesMask) {
+  base::Value::Dict field;
+  // Set mandatory field attributes.
+  field.Set("name", base::Value("email"));
+  field.Set("form_control_type", base::Value("text"));
+
+  // Set field attribute to get mask.
+  field.Set("unique_renderer_id", base::Value("1"));
+
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+  // Set test field property as user typed.
+  field_data_manager->UpdateFieldDataMap(
+      autofill::FieldRendererId(1), u"my@mail",
+      autofill::FieldPropertiesFlags::kUserTyped);
+
+  autofill::FormFieldData field_data;
+  autofill::ExtractFormFieldData(field, *field_data_manager, &field_data);
+
+  EXPECT_EQ(u"my@mail", field_data.user_input);
+  EXPECT_EQ(autofill::FieldPropertiesFlags::kUserTyped,
+            field_data.properties_mask);
 }

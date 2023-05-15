@@ -122,10 +122,8 @@ void FileManagerJsTestBase::RunTestURL(const std::string& file) {
   ASSERT_TRUE(web_contents);
 
   // The test might have finished loading.
-  bool is_test_loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "domAutomationController.send(window.__TEST_LOADED__);",
-      &is_test_loaded));
+  bool is_test_loaded =
+      content::EvalJs(web_contents, "window.__TEST_LOADED__;").ExtractBool();
 
   if (!is_test_loaded) {
     // Wait for the JS modules to be loaded and exported to window.

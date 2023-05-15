@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
@@ -70,7 +71,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
   // KeyedService:
   void Shutdown() override { multidevice_setup_service_.reset(); }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<MultiDeviceSetupService> multidevice_setup_service_;
 };
 

@@ -54,6 +54,7 @@ source_set("browser") {
 
   if (is_mac) {
     sources += [ "spellcheck_platform_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_android) {

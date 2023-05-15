@@ -104,31 +104,34 @@ class TabStyle {
 
   // Returns the preferred width of a single Tab, assuming space is
   // available.
-  virtual int GetStandardWidth() const;
+  virtual int GetStandardWidth() const = 0;
 
   // Returns the width for pinned tabs. Pinned tabs always have this width.
-  virtual int GetPinnedWidth() const;
+  virtual int GetPinnedWidth() const = 0;
 
   // Returns the overlap between adjacent tabs.
-  virtual int GetTabOverlap() const;
+  virtual int GetTabOverlap() const = 0;
 
   // Gets the size of the separator drawn between tabs, if any.
-  virtual gfx::Size GetSeparatorSize() const;
+  virtual gfx::Size GetSeparatorSize() const = 0;
 
   // Returns, for a tab of height |height|, how far the window top drag handle
   // can extend down into inactive tabs or the new tab button. This behavior
   // is not used in all cases.
-  virtual int GetDragHandleExtension(int height) const;
+  virtual int GetDragHandleExtension(int height) const = 0;
 
   // Gets the preferred size for tab previews, which could be screencaps, hero
   // or og:image images, etc.
-  virtual gfx::Size GetPreviewImageSize() const;
+  virtual gfx::Size GetPreviewImageSize() const = 0;
 
   // Returns the radius of the outer corners of the tab shape.
-  virtual int GetCornerRadius() const;
+  virtual int GetTopCornerRadius() const = 0;
+
+  // Returns the radius of the outer corners of the tab shape.
+  virtual int GetBottomCornerRadius() const = 0;
 
   // Opacity of the active tab background painted over inactive selected tabs.
-  virtual float GetSelectedTabOpacity() const;
+  virtual float GetSelectedTabOpacity() const = 0;
 
   // The largest valid value of TabStyle::GetZValue(). Currently,
   // GM2TabStyle::GetZValue is the only implementation, and it can't return

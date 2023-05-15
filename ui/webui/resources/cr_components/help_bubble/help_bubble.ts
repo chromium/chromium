@@ -104,7 +104,6 @@ export class HelpBubbleElement extends PolymerElement {
   progress: Progress|null = null;
   bodyIconName: string|null;
   bodyIconAltText: string;
-  forceCloseButton: boolean;
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
   debouncedUpdate: (() => void)|null = null;
@@ -299,11 +298,6 @@ export class HelpBubbleElement extends PolymerElement {
     return !!progress || !!titleText;
   }
 
-  private shouldShowCloseButton_(
-      buttons: HelpBubbleButtonParams[], forceCloseButton: boolean): boolean {
-    return buttons.length === 0 || forceCloseButton;
-  }
-
   private shouldShowBodyIcon_(bodyIconName: string): boolean {
     return bodyIconName !== null && bodyIconName !== '';
   }
@@ -330,7 +324,8 @@ export class HelpBubbleElement extends PolymerElement {
   }
 
   private getButtonClass_(isDefault: boolean): string {
-    return isDefault ? 'default-button' : '';
+    return isDefault ? 'default-button focus-outline-visible' :
+                       'focus-outline-visible';
   }
 
   private getButtonTabIndex_(index: number, isDefault: boolean): number {

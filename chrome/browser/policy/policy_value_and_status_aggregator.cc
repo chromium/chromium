@@ -19,16 +19,13 @@
 #include "components/policy/core/common/policy_logger.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/policy/status_provider/device_active_directory_policy_status_provider.h"
 #include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/policy/status_provider/device_local_account_policy_status_provider.h"
-#include "chrome/browser/policy/status_provider/user_active_directory_policy_status_provider.h"
 #include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider_chromeos.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -54,6 +51,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace {
 void AppendPolicyIdsToList(const base::Value::Dict& policy_values,
@@ -86,8 +87,6 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
           : nullptr;
   policy::UserCloudPolicyManagerAsh* user_cloud_policy =
       profile->GetUserCloudPolicyManagerAsh();
-  policy::ActiveDirectoryPolicyManager* active_directory_policy =
-      profile->GetActiveDirectoryPolicyManager();
   if (local_account_service) {
     return std::make_unique<DeviceLocalAccountPolicyStatusProvider>(
         user_manager->GetActiveUser()->GetAccountId().GetUserEmail(),
@@ -95,16 +94,18 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
   } else if (user_cloud_policy) {
     return std::make_unique<UserCloudPolicyStatusProviderChromeOS>(
         user_cloud_policy->core(), profile);
-  } else if (active_directory_policy) {
-    return std::make_unique<UserActiveDirectoryPolicyStatusProvider>(
-        active_directory_policy, profile);
   }
 #else  // BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManager* user_cloud_policy_manager =
+  policy::CloudPolicyManager* cloud_policy_manager =
       profile->GetUserCloudPolicyManager();
-  if (user_cloud_policy_manager) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (!cloud_policy_manager) {
+    cloud_policy_manager = profile->GetProfileCloudPolicyManager();
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAS(IS_LINUX)
+  if (cloud_policy_manager) {
     return std::make_unique<UserCloudPolicyStatusProvider>(
-        user_cloud_policy_manager->core(), profile);
+        cloud_policy_manager->core(), profile);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (profile->IsMainProfile()) {
@@ -125,11 +126,6 @@ std::unique_ptr<policy::PolicyStatusProvider>
 GetChromeOSDevicePolicyStatusProvider(
     Profile* profile,
     policy::BrowserPolicyConnectorAsh* connector) {
-  if (connector->GetDeviceActiveDirectoryPolicyManager()) {
-    return std::make_unique<DeviceActiveDirectoryPolicyStatusProvider>(
-        connector->GetDeviceActiveDirectoryPolicyManager(),
-        connector->GetEnterpriseDomainManager());
-  }
   return std::make_unique<DeviceCloudPolicyStatusProviderChromeOS>(connector);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

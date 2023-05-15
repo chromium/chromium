@@ -625,7 +625,10 @@ test("gl_unittests") {
   ]
 
   if (is_win) {
-    deps += [ "//media/base/win:test_support" ]
+    deps += [
+      "//media/base/win:test_support",
+      "//ui/base:pixel_diff_test_support",
+    ]
     libs = [ "dxguid.lib" ]
   }
 
@@ -643,7 +646,6 @@ group("gl_unittests_ozone") {
 if (is_android) {
   generate_jar_jni("surface_jni_headers") {
     classes = [ "android/view/Surface.class" ]
-    always_mangle = true
   }
 
   generate_jni("gl_jni_headers") {

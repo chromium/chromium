@@ -5,9 +5,10 @@
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 
 #include <xf86drmMode.h>
+
+#include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"

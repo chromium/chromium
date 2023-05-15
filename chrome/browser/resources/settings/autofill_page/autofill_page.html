@@ -11,7 +11,7 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
-            label="$i18n{passwords}" on-click="onPasswordsClick_"
+            label="[[passwordsTitle_]]" on-click="onPasswordsClick_"
             role-description="$i18n{subpageArrowRoleDescription}"
             external="[[enableNewPasswordManagerPage_]]">
           <span id="passwordManagerSubLabel" slot="sub-label">
@@ -26,39 +26,41 @@
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>
-      <template is="dom-if" route-path="/passwords">
-        <settings-subpage
-            associated-control="[[$$('#passwordManagerButton')]]"
-            page-title="$i18n{passwords}"
-            learn-more-url="$i18n{passwordManagerLearnMoreURL}"
-            search-label="$i18n{searchPasswords}"
-            search-term="{{passwordFilter_}}">
-          <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
-              focus-config="[[focusConfig_]]" prefs="{{prefs}}"
-              on-password-view-page-requested="onPasswordViewPageRequested_">
-          </passwords-section>
-        </settings-subpage>
-      </template>
-      <!-- TODO(crbug.com/1102294): Add a learn-more-url, which will cause the
-      (?) button to appear. -->
-      <template is="dom-if" route-path="/passwords/device" no-search>
-        <settings-subpage
-            page-title="$i18n{passwordsDevice}"
-            search-label="$i18n{searchPasswords}"
-            search-term="{{passwordFilter_}}">
-          <passwords-device-section id="passwordDeviceSection"
-              filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]"
-              on-password-view-page-requested="onPasswordViewPageRequested_">
-          </passwords-device-section>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/passwords/check">
-        <settings-subpage
-            associated-control="[[$$('#passwordManagerButton')]]"
-            page-title="$i18n{checkPasswords}"
-            learn-more-url="$i18n{passwordCheckLearnMoreURL}">
-          <settings-password-check prefs="{{prefs}}"></settings-password-check>
-        </settings-subpage>
+      <template is="dom-if" if="[[!enableNewPasswordManagerPage_]]">
+        <template is="dom-if" route-path="/passwords">
+          <settings-subpage
+              associated-control="[[$$('#passwordManagerButton')]]"
+              page-title="$i18n{passwords}"
+              learn-more-url="$i18n{passwordManagerLearnMoreURL}"
+              search-label="$i18n{searchPasswords}"
+              search-term="{{passwordFilter_}}">
+            <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
+                focus-config="[[focusConfig_]]" prefs="{{prefs}}"
+                on-password-view-page-requested="onPasswordViewPageRequested_">
+            </passwords-section>
+          </settings-subpage>
+        </template>
+        <!-- TODO(crbug.com/1102294): Add a learn-more-url, which will cause the
+        (?) button to appear. -->
+        <template is="dom-if" route-path="/passwords/device" no-search>
+          <settings-subpage
+              page-title="$i18n{passwordsDevice}"
+              search-label="$i18n{searchPasswords}"
+              search-term="{{passwordFilter_}}">
+            <passwords-device-section id="passwordDeviceSection"
+                filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]"
+                on-password-view-page-requested="onPasswordViewPageRequested_">
+            </passwords-device-section>
+          </settings-subpage>
+        </template>
+        <template is="dom-if" route-path="/passwords/check">
+          <settings-subpage
+              associated-control="[[$$('#passwordManagerButton')]]"
+              page-title="$i18n{checkPasswords}"
+              learn-more-url="$i18n{passwordCheckLearnMoreURL}">
+            <settings-password-check prefs="{{prefs}}"></settings-password-check>
+          </settings-subpage>
+        </template>
       </template>
       <if expr="is_win or is_macosx">
         <template is="dom-if" route-path="/passkeys">

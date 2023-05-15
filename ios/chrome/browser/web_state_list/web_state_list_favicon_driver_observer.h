@@ -10,8 +10,8 @@
 #include "base/scoped_observation.h"
 
 #include "components/favicon/core/favicon_driver_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 namespace web {
 class WebState;

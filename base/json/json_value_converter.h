@@ -502,15 +502,19 @@ class JSONValueConverter {
   }
 
   bool Convert(const base::Value& value, StructType* output) const {
-    const Value::Dict* dict = value.GetIfDict();
+    const base::Value::Dict* dict = value.GetIfDict();
     if (!dict)
       return false;
 
+    return Convert(*dict, output);
+  }
+
+  bool Convert(const base::Value::Dict& dict, StructType* output) const {
     for (size_t i = 0; i < fields_.size(); ++i) {
       const internal::FieldConverterBase<StructType>* field_converter =
           fields_[i].get();
       const base::Value* field =
-          dict->FindByDottedPath(field_converter->field_path());
+          dict.FindByDottedPath(field_converter->field_path());
       if (field) {
         if (!field_converter->ConvertField(*field, output)) {
           DVLOG(1) << "failure at field " << field_converter->field_path();

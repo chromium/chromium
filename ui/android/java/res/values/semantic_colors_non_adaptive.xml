@@ -175,4 +175,8 @@ found in the LICENSE file.
     <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_700</color>
     <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_600</color>
     <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_200</color>
+
+    <!-- NTP signed-out avatar colors-->
+    <color name="signed_out_avatar_color_light">@color/modern_grey_900</color>
+    <color name="signed_out_avatar_color_dark">@color/modern_grey_100</color>
 </resources>

@@ -25,7 +25,7 @@ namespace {
 // Set to 'true' to get debug protos.
 #define WRITE_DEBUG_PROTO false
 
-// TODO(crbug.com/1278249): Name test files with more context. E.g. what is it
+// TODO(crbug.com/1341655): Name test files with more context. E.g. what is it
 // testing? Which site is it? etc.
 // Test definitions for ProtoConvertorViewHierarchyTest.
 constexpr int kProtoConversionTestCasesCount = 5;
@@ -99,7 +99,7 @@ void ExpectBoundingBoxes(const T& box1,
   EXPECT_NEAR(box1.right(), box2.right(), max_diff.x());
 }
 
-// TODO(https://crbug.com/1278249): Consider making the comparison not sensitive
+// TODO(https://crbug.com/1341655): Consider making the comparison not sensitive
 // to order.
 template <class T>
 void ExpectLists(const T& list1, const T& list2) {
@@ -213,7 +213,7 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
         attribute_indices_map.erase(expected_attrib_index);
         continue;
       }
-      // TODO(https://crbug.com/1278249): Follow up why visibility is
+      // TODO(https://crbug.com/1341655): Follow up why visibility is
       // sometimes not passed.
       if (generated_attrib.name() != "/extras/styles/visibility")
         EXPECT_TRUE(attribute_found_in_expected) << generated_attrib.name();

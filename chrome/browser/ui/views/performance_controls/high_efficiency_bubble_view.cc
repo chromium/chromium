@@ -15,9 +15,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "components/performance_manager/public/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
@@ -26,6 +28,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -33,6 +36,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogBodyElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogOkButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
+                                      kHighEfficiencyDialogCancelButton);
 
 namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
@@ -52,6 +57,19 @@ void AddBubbleBodyText(
   dialog_model_builder->AddParagraph(
       label, std::u16string(),
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+}
+
+void AddSiteToExclusionListButton(
+    ui::DialogModel::Builder* dialog_model_builder,
+    HighEfficiencyBubbleDelegate* bubble_delegate) {
+  dialog_model_builder->AddCancelButton(
+      base::BindOnce(
+          &HighEfficiencyBubbleDelegate::OnAddSiteToExclusionListButtonClicked,
+          base::Unretained(bubble_delegate)),
+      ui::DialogModelButton::Params()
+          .SetLabel(l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST))
+          .SetId(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton));
 }
 }  // namespace
 
@@ -76,9 +94,10 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
                        .SetId(kHighEfficiencyDialogOkButton));
 
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
   HighEfficiencyChipTabHelper* const tab_helper =
-      HighEfficiencyChipTabHelper::FromWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+      HighEfficiencyChipTabHelper::FromWebContents(web_contents);
   const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
@@ -89,12 +108,15 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   const bool is_forced_incognito =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
       policy::IncognitoModeAvailability::kForced;
+  const bool show_memory_savings_chart = base::FeatureList::IsEnabled(
+      performance_manager::features::kMemorySavingsReportingImprovements);
 
   // Show bubble without Performance Settings Page Link since guest users or
   // forced incognito users are not allowed to navigate to the performance
   // settings page
   if (is_guest || is_forced_incognito) {
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
+    if (memory_savings > kMemoryUsageThresholdInBytes &&
+        !show_memory_savings_chart) {
       AddBubbleBodyText(&dialog_model_builder,
                         IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS,
                         {memory_savings_text});
@@ -110,7 +132,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
                 &HighEfficiencyBubbleDelegate::OnSettingsClicked,
                 base::Unretained(bubble_delegate)));
 
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
+    if (memory_savings > kMemoryUsageThresholdInBytes &&
+        !show_memory_savings_chart) {
       AddBubbleBodyText(&dialog_model_builder,
                         IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
                         {memory_savings_text, settings_link});
@@ -118,6 +141,18 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       AddBubbleBodyText(&dialog_model_builder, IDS_HIGH_EFFICIENCY_DIALOG_BODY,
                         {settings_link});
     }
+  }
+
+  if (memory_savings > 0 && show_memory_savings_chart) {
+    dialog_model_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<HighEfficiencyResourceView>(memory_savings),
+            views::BubbleDialogModelHost::FieldType::kText));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardExceptionsImprovements)) {
+    AddSiteToExclusionListButton(&dialog_model_builder, bubble_delegate);
   }
 
   auto dialog_model = dialog_model_builder.Build();
@@ -129,6 +164,12 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kHighEfficiency));
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardExceptionsImprovements)) {
+    bubble->SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL,
+                             !tab_helper->GetWasSiteAddedToExclusionList());
+  }
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));

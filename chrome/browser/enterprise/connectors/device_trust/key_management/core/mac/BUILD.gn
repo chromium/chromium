@@ -32,6 +32,8 @@ source_set("mac") {
     "//third_party/boringssl",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   frameworks = [
     "CoreFoundation.framework",
     "CryptoTokenKit.framework",
@@ -76,6 +78,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "Foundation.framework",

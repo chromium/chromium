@@ -27,6 +27,7 @@ namespace {
 
 void RunWithLocker(v8::Isolate* isolate, std::unique_ptr<v8::Task> task) {
   v8::Locker lock(isolate);
+  v8::Isolate::Scope isolate_scope(isolate);
   task->Run();
 }
 
@@ -41,6 +42,7 @@ class IdleTaskWithLocker : public v8::IdleTask {
   // v8::IdleTask implementation.
   void Run(double deadline_in_seconds) override {
     v8::Locker lock(isolate_);
+    v8::Isolate::Scope isolate_scope(isolate_);
     task_->Run(deadline_in_seconds);
   }
 

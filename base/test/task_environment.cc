@@ -209,12 +209,30 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     return current_mock_time_domain_->NowTicks();
   }
 
+  static LiveTicks GetLiveTicks() {
+    return current_mock_time_domain_->NowLiveTicks();
+  }
+
   void AdvanceClock(TimeDelta delta) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     {
       AutoLock lock(now_ticks_lock_);
       now_ticks_ += delta;
+      live_ticks_ += delta;
     }
+
+    if (thread_pool_) {
+      thread_pool_->ProcessRipeDelayedTasksForTesting();
+    }
+  }
+
+  void SuspendedAdvanceClock(TimeDelta delta) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    {
+      AutoLock lock(now_ticks_lock_);
+      now_ticks_ += delta;
+    }
+
     if (thread_pool_) {
       thread_pool_->ProcessRipeDelayedTasksForTesting();
     }
@@ -240,7 +258,8 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
       return false;
     }
 
-    return FastForwardToNextTaskOrCap(next_wake_up, TimeTicks::Max()) ==
+    return FastForwardToNextTaskOrCap(next_wake_up, TimeTicks::Max(),
+                                      /*advance_live_ticks=*/true) ==
            NextTaskSource::kMainThreadHasWork;
   }
 
@@ -251,6 +270,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     // This can be called from any thread.
     AutoLock lock(now_ticks_lock_);
     return now_ticks_;
+  }
+
+  LiveTicks NowLiveTicks() const {
+    AutoLock lock(now_ticks_lock_);
+    return live_ticks_;
   }
 
   // Used by FastForwardToNextTaskOrCap() to return which task source time was
@@ -265,13 +289,28 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     kThreadPoolOnly,
   };
 
+  void AdvanceTimesToNextTaskTimeOrCap(TimeTicks next_task_time,
+                                       bool advance_live_ticks) {
+    AutoLock lock(now_ticks_lock_);
+
+    TimeTicks next_now = std::max(now_ticks_, next_task_time);
+    if (advance_live_ticks) {
+      live_ticks_ += (next_now - now_ticks_);
+    }
+    now_ticks_ = next_now;
+  }
+
   // Advances time to the first of : next main thread delayed task, next thread
   // pool task, or |fast_forward_cap| (if it's not Max()). Ignores immediate
   // tasks, expected to be called after being just idle, racily scheduling
   // immediate tasks doesn't affect the outcome of this call.
+  // If `advance_live_ticks` is true, the mock `LiveTicks` will also be advanced
+  // by the same amount. If false, `LiveTicks` won't be advanced (behaving as if
+  // the system was suspended).
   NextTaskSource FastForwardToNextTaskOrCap(
       absl::optional<sequence_manager::WakeUp> next_main_thread_wake_up,
-      TimeTicks fast_forward_cap) {
+      TimeTicks fast_forward_cap,
+      bool advance_live_ticks) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Consider the next thread pool tasks iff they're running.
@@ -296,7 +335,6 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
 
     if (next_task_time && *next_task_time <= fast_forward_cap) {
       {
-        AutoLock lock(now_ticks_lock_);
         // It's possible for |next_task_time| to be in the past in the following
         // scenario:
         // Start with Now() == 100ms
@@ -311,7 +349,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
         // Hence we need std::max() to protect against this because construction
         // and enqueuing isn't atomic in time (LazyNow support in
         // base/task/thread_pool could help).
-        now_ticks_ = std::max(now_ticks_, *next_task_time);
+        AdvanceTimesToNextTaskTimeOrCap(*next_task_time, advance_live_ticks);
       }
 
       if (next_task_time == next_thread_pool_task_time) {
@@ -338,10 +376,9 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     }
 
     if (!fast_forward_cap.is_max()) {
-      AutoLock lock(now_ticks_lock_);
       // It's possible that Now() is already beyond |fast_forward_cap| when the
       // caller nests multiple FastForwardBy() calls.
-      now_ticks_ = std::max(now_ticks_, fast_forward_cap);
+      AdvanceTimesToNextTaskTimeOrCap(fast_forward_cap, advance_live_ticks);
     }
 
     return NextTaskSource::kNone;
@@ -358,7 +395,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
                 DanglingUntriaged>
       sequence_manager_;
 
-  // Protects |now_ticks_|
+  // Protects `now_ticks_` and `live_ticks_`
   mutable Lock now_ticks_lock_;
 
   // Only ever written to from the main sequence. Start from real Now() instead
@@ -366,6 +403,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   TimeTicks now_ticks_ GUARDED_BY(now_ticks_lock_){
       base::subtle::TimeTicksNowIgnoringOverride()
           .SnappedToNextTick(TimeTicks(), Milliseconds(1))};
+
+  // Only ever written to from the main sequence. Start from real Now() instead
+  // of zero to give a more realistic view to tests.
+  LiveTicks live_ticks_ GUARDED_BY(now_ticks_lock_){
+      base::subtle::LiveTicksNowIgnoringOverride()};
 };
 
 TaskEnvironment::MockTimeDomain*
@@ -399,7 +441,8 @@ TaskEnvironment::TaskEnvironment(
                           ? std::make_unique<subtle::ScopedTimeClockOverrides>(
                                 &MockTimeDomain::GetTime,
                                 &MockTimeDomain::GetTimeTicks,
-                                nullptr)
+                                nullptr,
+                                &MockTimeDomain::GetLiveTicks)
                           : nullptr),
       mock_clock_(mock_time_domain_ ? std::make_unique<TickClockBasedClock>(
                                           mock_time_domain_.get())
@@ -738,6 +781,15 @@ void TaskEnvironment::RunUntilIdle() {
 }
 
 void TaskEnvironment::FastForwardBy(TimeDelta delta) {
+  FastForwardByInternal(delta, /*advance_live_ticks=*/true);
+}
+
+void TaskEnvironment::SuspendedFastForwardBy(TimeDelta delta) {
+  FastForwardByInternal(delta, /*advance_live_ticks=*/false);
+}
+
+void TaskEnvironment::FastForwardByInternal(TimeDelta delta,
+                                            bool advance_live_ticks) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(mock_time_domain_);
   DCHECK_GE(delta, TimeDelta());
@@ -751,8 +803,8 @@ void TaskEnvironment::FastForwardBy(TimeDelta delta) {
     // FastForwardToNextTaskOrCap isn't affected by canceled tasks.
     sequence_manager_->ReclaimMemory();
   } while (mock_time_domain_->FastForwardToNextTaskOrCap(
-               sequence_manager_->GetNextDelayedWakeUp(), fast_forward_until) !=
-           MockTimeDomain::NextTaskSource::kNone);
+               sequence_manager_->GetNextDelayedWakeUp(), fast_forward_until,
+               advance_live_ticks) != MockTimeDomain::NextTaskSource::kNone);
 
   if (task_tracker_ && !could_run_tasks) {
     task_tracker_->DisallowRunTasks();
@@ -772,6 +824,13 @@ void TaskEnvironment::AdvanceClock(TimeDelta delta) {
   mock_time_domain_->AdvanceClock(delta);
 }
 
+void TaskEnvironment::SuspendedAdvanceClock(TimeDelta delta) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK(mock_time_domain_);
+  DCHECK_GE(delta, TimeDelta());
+  mock_time_domain_->SuspendedAdvanceClock(delta);
+}
+
 const TickClock* TaskEnvironment::GetMockTickClock() const {
   DCHECK(mock_time_domain_);
   return mock_time_domain_.get();
@@ -780,6 +839,11 @@ const TickClock* TaskEnvironment::GetMockTickClock() const {
 base::TimeTicks TaskEnvironment::NowTicks() const {
   DCHECK(mock_time_domain_);
   return mock_time_domain_->NowTicks();
+}
+
+base::LiveTicks TaskEnvironment::NowLiveTicks() const {
+  DCHECK(mock_time_domain_);
+  return mock_time_domain_->NowLiveTicks();
 }
 
 const Clock* TaskEnvironment::GetMockClock() const {

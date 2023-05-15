@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
@@ -40,7 +41,6 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-class ActiveDirectoryJoinDelegate;
 class DeviceCloudPolicyStoreAsh;
 class DMTokenStorage;
 class EnrollmentStatus;
@@ -81,7 +81,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       ash::attestation::AttestationFlow* attestation_flow,
       std::unique_ptr<CloudPolicyClient> client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       LicenseType license_type,
       DMAuth dm_auth,
@@ -139,7 +138,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_VALIDATION = 5,        // Policy validation.
     STEP_ROBOT_AUTH_FETCH = 6,  // Fetching device API auth code.
     UNUSED_ROBOT_AUTH_REFRESH = 7,  // Fetching device API refresh token.
-    STEP_AD_DOMAIN_JOIN = 8,        // Joining Active Directory domain.
+    UNUSED_AD_DOMAIN_JOIN = 8,      // Joining Active Directory domain.
     STEP_SET_FWMP_DATA = 9,      // Setting the firmware management parameters.
     STEP_LOCK_DEVICE = 10,       // Writing installation-time attributes.
     STEP_STORE_TOKEN = 11,       // Encrypting and storing DM token.
@@ -152,23 +151,16 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Handles the response to a request for server-backed state keys.
   void HandleStateKeysResult(const std::vector<std::string>& state_keys);
 
-  // Starts attestation based enrollment flow. If |is_initial_attempt| is true,
-  // uses existing certificate if any. Otherwise, uses a new certificate.
-  void StartAttestationBasedEnrollmentFlow(bool is_initial_attempt);
+  // Starts attestation based enrollment flow.
+  void StartAttestationBasedEnrollmentFlow();
 
-  // Checks the Attestation Features and gets a suitable certificate.
+  // Checks the Attestation Features and gets a fresh certificate.
   void OnGetFeaturesReady(
-      bool force_new_key,
       ash::attestation::AttestationFlow::CertificateCallback callback,
       const ash::attestation::AttestationFeatures* features);
 
   // Handles the response to a request for a registration certificate.
-  // |is_initial_attempt| indicates whether it is the first attempt to obtain
-  // valid enrollment certificate. If |is_initial_attempt| is true, then
-  // |StartAttestationBasedEnrollmentFlow| attempted to fetch existing
-  // certificate if any. Otherwise, it attempted to fetch a fresh certificate.
   void HandleRegistrationCertificateResult(
-      bool is_initial_attempt,
       ash::attestation::AttestationStatus status,
       const std::string& pem_certificate_chain);
 
@@ -178,13 +170,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Handles the policy validation result, proceeding with device lock if
   // successful.
   void HandlePolicyValidationResult(DeviceCloudPolicyValidator* validator);
-
-  // Start joining the Active Directory domain in case the device is enrolling
-  // into Active Directory management mode.
-  void StartJoinAdDomain();
-
-  // Handles successful Active Directory domain join.
-  void OnAdDomainJoined(const std::string& realm);
 
   // Updates the firmware management partition from TPM, setting the flags
   // according to enum FirmwareManagementParametersFlags from rpc.proto if
@@ -203,12 +188,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Handle callback from InstallAttributes::LockDevice() and retry on failure.
   void HandleLockDeviceResult(ash::InstallAttributes::LockResult lock_result);
-
-  // Initiates storing DM token. For Active Directory devices only.
-  void StartStoreDMToken();
-
-  // Called after StartStoreDMtoken() is done.
-  void HandleDMTokenStoreResult(bool success);
 
   // Initiates storing of robot auth token.
   void StartStoreRobotAuth();
@@ -229,15 +208,14 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Set |enrollment_step_| to |step|.
   void SetStep(EnrollmentStep step);
 
-  DeviceCloudPolicyStoreAsh* store_;
-  ash::InstallAttributes* install_attributes_;
-  ServerBackedStateKeysBroker* state_keys_broker_;
-  ash::attestation::AttestationFlow* attestation_flow_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
+  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
+  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
+  raw_ptr<ash::attestation::AttestationFlow, ExperimentalAsh> attestation_flow_;
   // Factory for SigningService to be used by |client_| to register with.
   std::unique_ptr<SigningServiceProvider> signing_service_provider_;
   std::unique_ptr<CloudPolicyClient> client_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   std::unique_ptr<DMTokenStorage> dm_token_storage_;
 

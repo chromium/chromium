@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 
 class KeyedService;
@@ -77,7 +78,7 @@ class SpeechRecognitionTestHelper {
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;
   // For on-device recognition. KeyedService owned by the test profile.
-  speech::FakeSpeechRecognitionService* fake_service_;
+  raw_ptr<speech::FakeSpeechRecognitionService, ExperimentalAsh> fake_service_;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_TEST_HELPER_H_

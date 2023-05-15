@@ -89,4 +89,8 @@ void VRDeviceBase::SetSupportedFeatures(
   device_data_.supported_features = features;
 }
 
+void VRDeviceBase::SetDeviceData(device::mojom::XRDeviceData&& device_data) {
+  device_data_ = std::move(device_data);
+}
+
 }  // namespace device

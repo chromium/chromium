@@ -254,11 +254,11 @@ void UnsentLogStore::StageNextLog() {
   DCHECK(has_staged_log());
 }
 
-void UnsentLogStore::DiscardStagedLog() {
+void UnsentLogStore::DiscardStagedLog(base::StringPiece reason) {
   DCHECK(has_staged_log());
   DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded,
-                 list_[staged_log_index_]->hash);
+                 list_[staged_log_index_]->hash, reason);
   list_.erase(list_.begin() + staged_log_index_);
   staged_log_index_ = -1;
 }

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -104,7 +105,7 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // Sets device state to the device having |device_path|.
   void SetDeviceState(const std::string& device_path, DeviceState state);
 
-  SystemNotificationManager* notification_manager_;
+  raw_ptr<SystemNotificationManager, ExperimentalAsh> notification_manager_;
 
   // Whether to use zero time delta for testing or not.
   const base::TimeDelta resume_time_delta_;

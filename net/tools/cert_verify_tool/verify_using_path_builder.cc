@@ -45,7 +45,7 @@ net::der::GeneralizedTime ConvertExplodedTime(
 
 bool AddPemEncodedCert(const net::ParsedCertificate* cert,
                        std::vector<std::string>* pem_encoded_chain) {
-  std::string der_cert(cert->der_cert().AsStringPiece());
+  std::string der_cert(cert->der_cert().AsStringView());
   std::string pem;
   if (!net::X509Certificate::GetPEMEncodedFromDER(der_cert, &pem)) {
     std::cerr << "ERROR: GetPEMEncodedFromDER failed\n";
@@ -69,7 +69,7 @@ bool DumpParsedCertificateChain(const base::FilePath& file_path,
 
 // Returns a hex-encoded sha256 of the DER-encoding of |cert|.
 std::string FingerPrintParsedCertificate(const net::ParsedCertificate* cert) {
-  std::string hash = crypto::SHA256HashString(cert->der_cert().AsStringPiece());
+  std::string hash = crypto::SHA256HashString(cert->der_cert().AsStringView());
   return base::HexEncode(hash.data(), hash.size());
 }
 

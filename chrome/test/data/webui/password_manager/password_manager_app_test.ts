@@ -178,4 +178,33 @@ suite('PasswordManagerAppTest', function() {
 
     await passwordManager.whenCalled('undoRemoveSavedPasswordOrException');
   });
+
+  test('import can be triggered from empty state', async function() {
+    // This is done to avoid flakiness.
+    Router.getInstance().navigateTo(Page.PASSWORDS);
+    await flushTasks();
+
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+
+    const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
+    assertTrue(!!passwordsSection);
+    const importLink = passwordsSection.$.importPasswords.querySelector('a');
+    assertTrue(!!importLink);
+
+    // Should redirect ot Settings page.
+    importLink.click();
+    await flushTasks();
+
+    assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
+    const settingsSection = app.shadowRoot!.querySelector('settings-section');
+    assertTrue(!!settingsSection);
+
+    const importer =
+        settingsSection.shadowRoot!.querySelector('passwords-importer');
+    assertTrue(!!importer);
+
+    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+  });
 });

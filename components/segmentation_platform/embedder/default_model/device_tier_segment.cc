@@ -65,11 +65,10 @@ void DeviceTierSegment::InitAndFetchModel(
       .fill_policy = proto::CustomInput::FILL_DEVICE_OS_VERSION_NUMBER,
       .name = "DeviceOSVersionNumber"});
 
-  // TODO(ritikagup@) : Enable this after implementing device_ppi.
-  // writer.AddCustomInput(MetadataWriter::CustomInput{
-  //   .tensor_length = 1,
-  //   .fill_policy = proto::CustomInput::FILL_DEVICE_PPI,
-  //   .name = "DeviceMaxPPI"});
+  writer.AddCustomInput(MetadataWriter::CustomInput{
+      .tensor_length = 1,
+      .fill_policy = proto::CustomInput::FILL_DEVICE_PPI,
+      .name = "DevicePPI"});
 
   //  Set OutputConfig.
   writer.AddOutputConfigForBinnedClassifier(
@@ -92,7 +91,7 @@ void DeviceTierSegment::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != 2) {
+  if (inputs.size() != 3) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
@@ -100,10 +99,12 @@ void DeviceTierSegment::ExecuteModelWithInput(
   float score = 0;
   float device_ram_in_gb = inputs[0] / 1024;
   float device_os_version = inputs[1];
-  if ((device_ram_in_gb >= 8 && device_os_version >= 10) ||
-      (device_ram_in_gb >= 6 && device_os_version >= 11)) {
+  float device_ppi = inputs[2];
+  if ((device_ram_in_gb >= 8 && device_os_version >= 10 && device_ppi > 370) ||
+      (device_ram_in_gb >= 6 && device_os_version >= 11 && device_ppi > 370)) {
     score = 3;
-  } else if ((device_ram_in_gb >= 6 && device_os_version < 11) ||
+  } else if ((device_ram_in_gb >= 6 &&
+              (device_os_version < 11 || device_ppi <= 370)) ||
              (device_ram_in_gb > 2 && device_os_version >= 10)) {
     score = 2;
   } else if (device_ram_in_gb >= 1 && device_os_version >= 1) {

@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -13,15 +12,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/prerender_test_util.h"
-#include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -139,84 +131,6 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
               app_id);
   }
-}
-
-class WebAppNavigatePrerenderingBrowserTest : public WebAppNavigateBrowserTest {
- public:
-  WebAppNavigatePrerenderingBrowserTest()
-      : app_browser_(browser()),
-        prerender_helper_(base::BindRepeating(
-            &WebAppNavigatePrerenderingBrowserTest::GetWebContents,
-            base::Unretained(this))) {}
-
-  ~WebAppNavigatePrerenderingBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(test_server_handle_ =
-                    embedded_test_server()->StartAndReturnHandle());
-  }
-
-  content::WebContents* GetWebContents() const {
-    return app_browser_->tab_strip_model()->GetActiveWebContents();
-  }
-
- protected:
-  content::test::PrerenderTestHelper& prerender_helper() {
-    return prerender_helper_;
-  }
-  void set_app_browser(Browser* browser) { app_browser_ = browser; }
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
-  content::test::PrerenderTestHelper prerender_helper_;
-  base::HistogramTester histogram_tester_;
-  net::test_server::EmbeddedTestServerHandle test_server_handle_;
-};
-
-// Tests that prerendering doesn't change the existing App ID. It also doesn't
-// call ManifestUpdateManager as a primary page is not changed.
-IN_PROC_BROWSER_TEST_F(WebAppNavigatePrerenderingBrowserTest,
-                       NotUpdateInPrerendering) {
-  const GURL example_url = embedded_test_server()->GetURL("/simple.html");
-
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = example_url;
-  web_app_info->scope = example_url;
-  web_app_info->user_display_mode = absl::make_optional<mojom::UserDisplayMode>(
-      mojom::UserDisplayMode::kStandalone);
-  AppId app_id = InstallWebApp(std::move(web_app_info));
-
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
-  set_app_browser(app_browser);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, example_url));
-
-  constexpr char kUpdateHistogramName[] = "Webapp.Update.ManifestUpdateResult";
-  histogram_tester().ExpectTotalCount(kUpdateHistogramName, 2);
-
-  content::WebContents* web_contents = GetWebContents();
-  const AppId* first_app_id = WebAppTabHelper::GetAppId(web_contents);
-  EXPECT_EQ(app_id, *first_app_id);
-
-  const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  content::test::PrerenderHostObserver host_observer(*web_contents, host_id);
-  // Prerendering doesn't update the existing App ID.
-  const AppId* app_id_on_prerendering = WebAppTabHelper::GetAppId(web_contents);
-  EXPECT_EQ(app_id, *app_id_on_prerendering);
-
-  // In prerendering navigation, it doesn't call ManifestUpdateManager.
-  // The total count of the histogram doesn't increase.
-  histogram_tester().ExpectTotalCount(kUpdateHistogramName, 2);
-
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-  EXPECT_TRUE(host_observer.was_activated());
-  const AppId* app_id_after_activation =
-      WebAppTabHelper::GetAppId(web_contents);
-  EXPECT_EQ(nullptr, app_id_after_activation);
 }
 
 }  // namespace web_app

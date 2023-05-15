@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {isCrostiniSupported, isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
@@ -182,6 +183,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
+  PASSPOINT_DETAIL: Route;
   PER_DEVICE_KEYBOARD: Route;
   PER_DEVICE_KEYBOARD_REMAP_KEYS: Route;
   PER_DEVICE_MOUSE: Route;
@@ -249,6 +251,11 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
     r.APN =
         createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
   }
+  if (loadTimeData.getBoolean('isPasspointSettingsEnabled')) {
+    r.PASSPOINT_DETAIL = createSubpage(
+        r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
+        Subpage.kPasspointDetails);
+  }
 
   // Bluetooth section.
   r.BLUETOOTH = createSection(
@@ -266,7 +273,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   }
 
   // MultiDevice section.
-  if (!loadTimeData.getBoolean('isGuest')) {
+  if (!isGuest()) {
     r.MULTIDEVICE = createSection(
         r.BASIC, routesMojom.MULTI_DEVICE_SECTION_PATH, Section.kMultiDevice);
     r.MULTIDEVICE_FEATURES = createSubpage(
@@ -280,7 +287,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   }
 
   // People section.
-  if (!loadTimeData.getBoolean('isGuest')) {
+  if (!isGuest()) {
     r.OS_PEOPLE = createSection(
         r.BASIC, routesMojom.PEOPLE_SECTION_PATH, Section.kPeople);
     r.ACCOUNT_MANAGER = createSubpage(
@@ -292,8 +299,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   }
 
   // Kerberos section.
-  if (loadTimeData.valueExists('isKerberosEnabled') &&
-      loadTimeData.getBoolean('isKerberosEnabled')) {
+  if (isKerberosEnabled()) {
     r.KERBEROS = createSection(
         r.BASIC, routesMojom.KERBEROS_SECTION_PATH, Section.kKerberos);
     r.KERBEROS_ACCOUNTS_V2 = createSubpage(
@@ -343,7 +349,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
       createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
 
   // Personalization section.
-  if (!loadTimeData.getBoolean('isGuest')) {
+  if (!isGuest()) {
     r.PERSONALIZATION = createSection(
         r.BASIC, routesMojom.PERSONALIZATION_SECTION_PATH,
         Section.kPersonalization);
@@ -439,8 +445,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   // Crostini section.
   r.CROSTINI = createSection(
       r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
-  if (loadTimeData.valueExists('showCrostini') &&
-      loadTimeData.getBoolean('showCrostini')) {
+  if (isCrostiniSupported()) {
     r.CROSTINI_DETAILS = createSubpage(
         r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
         Subpage.kCrostiniDetails);
@@ -536,7 +541,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
 
 
   // Files section.
-  if (!loadTimeData.getBoolean('isGuest')) {
+  if (!isGuest()) {
     r.FILES = createSection(
         r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
     r.SMB_SHARES = createSubpage(
@@ -558,8 +563,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
       Subpage.kPrintingDetails);
 
   // Reset section.
-  if (loadTimeData.valueExists('allowPowerwash') &&
-      loadTimeData.getBoolean('allowPowerwash')) {
+  if (isPowerwashAllowed()) {
     r.OS_RESET = createSection(
         r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
   }

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
@@ -49,7 +50,7 @@ class FileSystemURLParser {
 
  private:
   storage::FileSystemURL url_;
-  ProvidedFileSystemInterface* file_system_;
+  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
   base::FilePath file_path_;
 };
 
@@ -73,9 +74,9 @@ class LocalPathParser {
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::FilePath local_path_;
-  ProvidedFileSystemInterface* file_system_;
+  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
   base::FilePath file_path_;
 };
 

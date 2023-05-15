@@ -10,8 +10,8 @@ source_set("snackbar") {
     "snackbar_coordinator_delegate.h",
   ]
   deps = [
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/third_party/material_components_ios",

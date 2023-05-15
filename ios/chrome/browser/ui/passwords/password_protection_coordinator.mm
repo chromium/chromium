@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_view_controller.h"

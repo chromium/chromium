@@ -15,11 +15,10 @@
 # * Find the Rust standard library.
 # * Remap some generic allocator symbols to the specific allocator symbols
 #   in use.
-# This file does both those things. Any C++ target containing Rust .rlibs
-# should simply depend on :std within this file and it will be taken care of.
-# In practice, this will in future be taken care of by a standard template
-# used for each Rust source set, so that a typical user of Rust need not
-# think about it.
+# This file takes care of equivalent tasks for our C++ toolchains.
+# C++ targets should depend upon either local_stdlib_for_clang or
+# prebuilt_stdlib_for_clang to ensure that Rust code can be linked into their
+# C++ executables.
 #
 # This is obviously a bit fragile - rustc might do other magic in future.
 # But, linking with a final C++ toolchain is something often needed, and
@@ -27,9 +26,19 @@
 # officially possible.
 
 import("//build/config/compiler/compiler.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 
 if (toolchain_has_rust) {
+  # Equivalent of allocator symbols injected by rustc.
+  source_set("remap_alloc") {
+    sources = [
+      "immediate_crash.h",
+      "remap_alloc.cc",
+    ]
+  }
+
   # List of Rust stdlib rlibs which are present in the official Rust toolchain
   # we are using from the Android team. This is usually a version or two behind
   # nightly. Generally this matches the toolchain we build ourselves, but if
@@ -62,23 +71,13 @@ if (toolchain_has_rust) {
     "unwind",
   ]
 
-  # rlibs explicitly ignored when copying prebuilt sysroot libraries.
-  # find_std_rlibs.py rightfully errors out if an unexpected prebuilt lib is
-  # encountered, since it usually indicates we missed something. This ignore
-  # list is also passed to it. This has no effect on the local std build.
-  ignore_stdlib_files = []
-
   # proc_macro is special: we only run proc macros on the host, so we only want
   # it for our host toolchain.
   if (current_toolchain == host_toolchain_no_sanitizers) {
-    # Directs the local_std_for_rustc target to depend on proc_macro, and
+    # Directs the local stdlib_for_rustc target to depend on proc_macro, and
     # includes proc_macro in the prebuilts copied in find_stdlib. Otherwise it
     # is not built or copied.
     stdlib_files += [ "proc_macro" ]
-  } else {
-    # Explicitly ignore it from the prebuilts. Nothing needs to be done for the
-    # local std build.
-    ignore_stdlib_files += [ "proc_macro" ]
   }
 
   # Different Rust toolchains may add or remove files relative to the above
@@ -97,89 +96,46 @@ if (toolchain_has_rust) {
     "rustc_std_workspace_std",
   ]
 
-  action("find_stdlib") {
-    # Collect prebuilt Rust libraries from toolchain package and copy to a known
-    # location.
+  config("stdlib_dependent_libs") {
+    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # breaks. Normally, we specify lib files with the `.lib` suffix but
+    # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
+    # instead.
     #
-    # The Rust toolchain contains prebuilt rlibs for the standard library and
-    # its dependencies. However, they have unstable names: an unpredictable
-    # metadata hash is appended to the known crate name.
+    # Omitting the `.lib` suffix breaks linking as well, when clang drives
+    # the linking step of a C++ EXE that depends on Rust.
+    if (is_win) {
+      # The libc crate tries to link in the Windows CRT, but we specify the CRT
+      # library ourselves in //build/config/win:dynamic_crt and
+      # //build/config/win:static_crt because Rustc does not allow us to specify
+      # using the debug CRT: https://github.com/rust-lang/rust/issues/39016
+      #
+      # As such, we have disabled all #[link] directives from the libc crate, and
+      # we need to add any non-CRT libs here.
+      ldflags = [ "legacy_stdio_definitions.lib" ]
+    }
+  }
+  config("stdlib_public_dependent_libs") {
+    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # breaks. Normally, we specify lib files with the `.lib` suffix but
+    # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
+    # instead.
     #
-    # We must depend on these rlibs explicitly when rustc is not in charge of
-    # linking. However, it is difficult to construct GN rules to do so when the
-    # names can't be known statically.
-    #
-    # This action copies the prebuilt rlibs to a known location, removing the
-    # metadata part of the name. In the process it verifies we have all the
-    # libraries we expect and none that we don't. A depfile is generated so this
-    # step is re-run when any libraries change. The action script additionally
-    # verifies rustc matches the expected version, which is unrelated but this
-    # is a convenient place to do so.
-    #
-    # The action refers to `stdlib_files`, `skip_stdlib_files`, and the
-    # associated //build/config/rust.gni vars `removed_rust_stdlib_libs` and
-    # `added_rust_stdlib_libs` for which rlib files to expect.
-    # `extra_sysroot_libs` is also used to copy non-std libs, if any.
-    script = "find_std_rlibs.py"
-    depfile = "$target_out_dir/stdlib.d"
-    out_libdir = rebase_path(target_out_dir, root_build_dir)
-    out_depfile = rebase_path(depfile, root_build_dir)
-
-    # For the rustc sysroot we must include even the rlibs we don't pass to the
-    # C++ linker.
-    all_stdlibs_to_copy = stdlib_files + skip_stdlib_files
-    args = [
-      "--rust-bin-dir",
-      rebase_path("${rust_sysroot}/bin", root_build_dir),
-      "--output",
-      out_libdir,
-      "--depfile",
-      out_depfile,
-
-      # Due to limitations in Ninja's handling of .d files, we have to pick
-      # *the first* of our outputs. To make diagnostics more obviously
-      # related to the Rust standard library, we ensure libstd.rlib is first.
-      "--depfile-target",
-      stdlib_files[0],
-
-      # Create a dependency on the rustc version so this action is re-run when
-      # it changes. This argument is not actually read by the script.
-      "--rustc-revision",
-      rustc_revision,
-    ]
-
-    if (!use_unverified_rust_toolchain) {
-      args += [
-        "--stdlibs",
-        string_join(",", all_stdlibs_to_copy),
+    # Omitting the `.lib` suffix breaks linking as well, when clang drives
+    # the linking step of a C++ EXE that depends on Rust.
+    if (is_win) {
+      # These libs provide functions that are used by the stdlib. Rust crates
+      # will try to link them in with #[link] directives. However these don't get
+      # propagated to the linker if Rust isn't driving the linking (a C++ target
+      # that depends on a Rust rlib). So these need to be specified explicitly.
+      ldflags = [
+        "advapi32.lib",
+        "bcrypt.lib",
+        "kernel32.lib",
+        "ntdll.lib",
+        "userenv.lib",
+        "ws2_32.lib",
       ]
-
-      if (ignore_stdlib_files != []) {
-        args += [
-          "--ignore-stdlibs",
-          string_join(",", ignore_stdlib_files),
-        ]
-      }
-    }
-
-    if (extra_sysroot_libs != []) {
-      args += [
-        "--extra-libs",
-        string_join(",", extra_sysroot_libs),
-      ]
-    }
-
-    args += [
-      "--target",
-      rust_abi_target,
-    ]
-
-    outputs = []
-    foreach(lib, all_stdlibs_to_copy) {
-      outputs += [ "$target_out_dir/lib$lib.rlib" ]
-    }
-    foreach(lib, extra_sysroot_libs) {
-      outputs += [ "$target_out_dir/$lib" ]
     }
   }
 
@@ -188,138 +144,269 @@ if (toolchain_has_rust) {
   # our locally-built std. Both reside in root_out_dir: we must only have one of
   # each per GN toolchain anyway.
 
-  prebuilt_rustc_sysroot = "$root_out_dir/prebuilt_rustc_sysroot"
-  local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
   sysroot_lib_subdir = "lib/rustlib/$rust_abi_target/lib"
 
-  copy("prebuilt_rustc_sysroot") {
-    deps = [ ":find_stdlib" ]
-    sources = get_target_outputs(":find_stdlib")
-    outputs =
-        [ "$prebuilt_rustc_sysroot/$sysroot_lib_subdir/{{source_file_part}}" ]
-  }
+  if (use_chromium_rust_toolchain) {
+    local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
 
-  if (local_libstd_supported) {
     # All std targets starting with core build with our sysroot. It starts empty
     # and is incrementally built. The directory must exist at the start.
     generated_file("empty_sysroot_for_std_build") {
       outputs = [ "$local_rustc_sysroot/$sysroot_lib_subdir/.empty" ]
       contents = ""
-    }
-
-    config("local_stdlib_for_rustc") {
-      sysroot = rebase_path(local_rustc_sysroot, root_build_dir)
-      rustflags = [ "--sysroot=$sysroot" ]
+      visibility = [ ":*" ]
     }
 
     # Target to be depended on by std build targets. Creates the initially empty
     # sysroot.
     group("std_build_deps") {
       deps = [ ":empty_sysroot_for_std_build" ]
-      public_configs = [ ":local_stdlib_for_rustc" ]
+      public_configs = [ ":local_stdlib_sysroot" ]
+      visibility = [ "rules:*" ]
     }
-  } else {
-    not_needed([ "local_rustc_sysroot" ])
-  }
 
-  config("prebuilt_stdlib_for_rustc") {
-    # Match the output directory of :prebuilt_rustc_sysroot
-    sysroot = rebase_path(prebuilt_rustc_sysroot, root_build_dir)
-    rustflags = [ "--sysroot=$sysroot" ]
-  }
+    profiler_builtins_crates = [
+      "core",
+      "compiler_builtins",
+      "profiler_builtins",
+    ]
 
-  if (local_libstd_supported) {
-    # Use the sysroot generated by :local_rustc_sysroot, which transitively builds
-    # std. Only for use in specific tests for now.
-    group("local_std_for_rustc") {
-      assert(
-          enable_rust,
-          "Some C++ target is including Rust code even though enable_rust=false")
-      all_dependent_configs = [ ":local_stdlib_for_rustc" ]
+    # When using instrumentation, profiler_builtins and its deps must be built
+    # before other std crates. Other crates depend on this target so they are
+    # built in the right order.
+    group("profiler_builtins_group") {
+      deps = []
+      foreach(libname, profiler_builtins_crates) {
+        deps += [ "rules:$libname" ]
+      }
+      visibility = [ "rules:*" ]
+    }
 
+    config("local_stdlib_sysroot") {
+      sysroot = rebase_path(local_rustc_sysroot, root_build_dir)
+      rustflags = [ "--sysroot=$sysroot" ]
+      visibility = [ ":*" ]
+    }
+
+    # When given -Zsanitize=..., rustc insists on passing a sanitizer runtime to
+    # the linker it invokes. Unfortunately, our C++ ldflags already tell the
+    # linker to link against a C++ sanitizer runtime - which contains the same
+    # symbols. So, make a blank library.
+    # The list of relevant sanitizers here is taken from
+    # https://github.com/rust-lang/rust/blob/7e7483d26e3cec7a44ef00cf7ae6c9c8c918bec6/compiler/rustc_codegen_ssa/src/back/link.rs#L1148
+    template("rustc_sanitizer_runtime") {
+      rt_name = target_name
+      not_needed([ "invoker" ])
+      static_library("sanitizer_rt_$rt_name") {
+        sources = []
+        output_name = "librustc-nightly_rt.$rt_name"
+        output_dir = "$local_rustc_sysroot/$sysroot_lib_subdir"
+      }
+    }
+    rustc_sanitizer_runtimes = []
+    if (is_asan) {
+      rustc_sanitizer_runtime("asan") {
+      }
+      rustc_sanitizer_runtimes += [ ":sanitizer_rt_asan" ]
+    }
+    if (is_lsan) {
+      rustc_sanitizer_runtime("lsan") {
+      }
+      rustc_sanitizer_runtimes += [ ":sanitizer_rt_lsan" ]
+    }
+    if (is_msan) {
+      rustc_sanitizer_runtime("msan") {
+      }
+      rustc_sanitizer_runtimes += [ ":sanitizer_rt_msan" ]
+    }
+    if (is_tsan) {
+      rustc_sanitizer_runtime("tsan") {
+      }
+      rustc_sanitizer_runtimes += [ ":sanitizer_rt_tsan" ]
+    }
+    if (is_hwasan) {
+      rustc_sanitizer_runtime("hwasan") {
+      }
+      rustc_sanitizer_runtimes += [ ":sanitizer_rt_hwasan" ]
+    }
+
+    group("local_stdlib_libs") {
+      assert(toolchain_has_rust,
+             "Some C++ target is depending on Rust code even though " +
+                 "toolchain_has_rust=false. Usually this would mean" +
+                 "a NaCl target is depending on Rust, as there's no Rust " +
+                 "toolchain targetting NaCl.")
+      all_dependent_configs = [ ":stdlib_dependent_libs" ]
       deps = []
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
+      deps += rustc_sanitizer_runtimes
+      visibility = [ ":*" ]
     }
-  }
 
-  # Use the sysroot generated by :prebuilt_rustc_sysroot. Almost all Rust targets should depend
-  # on this.
-  group("prebuilt_std_for_rustc") {
-    assert(
-        enable_rust,
-        "Some C++ target is including Rust code even though enable_rust=false")
-    all_dependent_configs = [ ":prebuilt_stdlib_for_rustc" ]
-    deps = [ ":prebuilt_rustc_sysroot" ]
-  }
-
-  config("prebuilt_rust_stdlib_config") {
-    ldflags = []
-    lib_dir = rebase_path("$prebuilt_rustc_sysroot/$sysroot_lib_subdir",
-                          root_build_dir)
-    foreach(lib, stdlib_files) {
-      this_file = "$lib_dir/lib$lib.rlib"
-      ldflags += [ this_file ]
+    # Builds the stdlib and points the rustc `--sysroot` to them. Used by
+    # targets for which linking is driven by Rust (bins and dylibs).
+    group("stdlib_for_rustc") {
+      all_dependent_configs = [ ":local_stdlib_sysroot" ]
+      public_deps = [ ":local_stdlib_libs" ]
     }
-    if (is_win) {
-      # Our C++ builds already link against a wide variety of Windows API import libraries,
-      # but the Rust stdlib requires a few extra.
-      ldflags += [
-        "bcrypt.lib",
-        "userenv.lib",
+
+    # Builds and links against the Rust stdlib. Used by targets for which
+    # linking is driven by C++.
+    group("stdlib_for_clang") {
+      all_dependent_configs = [ ":stdlib_public_dependent_libs" ]
+      public_deps = [
+        ":local_stdlib_libs",
+        ":remap_alloc",
       ]
     }
-  }
+  } else {
+    action("find_stdlib") {
+      # Collect prebuilt Rust libraries from toolchain package and copy to a
+      # known location.
+      #
+      # The Rust toolchain contains prebuilt rlibs for the standard library and
+      # its dependencies. However, they have unstable names: an unpredictable
+      # metadata hash is appended to the known crate name.
+      #
+      # We must depend on these rlibs explicitly when rustc is not in charge of
+      # linking. However, it is difficult to construct GN rules to do so when
+      # the names can't be known statically.
+      #
+      # This action copies the prebuilt rlibs to a known location, removing the
+      # metadata part of the name. In the process it verifies we have all the
+      # libraries we expect and none that we don't. A depfile is generated so
+      # this step is re-run when any libraries change. The action script
+      # additionally verifies rustc matches the expected version, which is
+      # unrelated but this is a convenient place to do so.
+      #
+      # The action refers to `stdlib_files`, `skip_stdlib_files`, and the
+      # associated //build/config/rust.gni vars `removed_rust_stdlib_libs` and
+      # `added_rust_stdlib_libs` for which rlib files to expect.
+      # `extra_sysroot_libs` is also used to copy non-std libs, if any.
+      script = "find_std_rlibs.py"
+      depfile = "$target_out_dir/stdlib.d"
+      out_libdir = rebase_path(target_out_dir, root_build_dir)
+      out_depfile = rebase_path(depfile, root_build_dir)
 
-  config("local_rust_stdlib_config") {
-    ldflags = []
-    lib_dir =
-        rebase_path("$local_rustc_sysroot/$sysroot_lib_subdir", root_build_dir)
-    foreach(lib, stdlib_files) {
-      this_file = "$lib_dir/lib$lib.rlib"
-      ldflags += [ this_file ]
-    }
-    if (is_win) {
-      # Our C++ builds already link against a wide variety of Windows API import libraries,
-      # but the Rust stdlib requires a few extra.
-      ldflags += [
-        "bcrypt.lib",
-        "userenv.lib",
+      # For the rustc sysroot we must include even the rlibs we don't pass to
+      # the C++ linker.
+      all_stdlibs_to_copy = stdlib_files + skip_stdlib_files
+      args = [
+        "--rust-bin-dir",
+        rebase_path("${rust_sysroot}/bin", root_build_dir),
+        "--output",
+        out_libdir,
+        "--depfile",
+        out_depfile,
+
+        # Due to limitations in Ninja's handling of .d files, we have to pick
+        # *the first* of our outputs. To make diagnostics more obviously
+        # related to the Rust standard library, we ensure libstd.rlib is first.
+        "--depfile-target",
+        stdlib_files[0],
+
+        # Create a dependency on the rustc version so this action is re-run when
+        # it changes. This argument is not actually read by the script.
+        "--rustc-revision",
+        rustc_revision,
       ]
+
+      if (extra_sysroot_libs != []) {
+        args += [
+          "--extra-libs",
+          string_join(",", extra_sysroot_libs),
+        ]
+      }
+
+      args += [
+        "--target",
+        rust_abi_target,
+      ]
+
+      outputs = []
+      foreach(lib, all_stdlibs_to_copy) {
+        outputs += [ "$target_out_dir/lib$lib.rlib" ]
+      }
+      foreach(lib, extra_sysroot_libs) {
+        outputs += [ "$target_out_dir/$lib" ]
+      }
+
+      visibility = [ ":*" ]
     }
-  }
 
-  source_set("remap_alloc") {
-    sources = [
-      "immediate_crash.h",
-      "remap_alloc.cc",
-    ]
-  }
+    prebuilt_rustc_sysroot = "$root_out_dir/prebuilt_rustc_sysroot"
+    copy("prebuilt_rustc_copy_to_sysroot") {
+      deps = [ ":find_stdlib" ]
+      sources = get_target_outputs(":find_stdlib")
+      outputs =
+          [ "$prebuilt_rustc_sysroot/$sysroot_lib_subdir/{{source_file_part}}" ]
 
-  # TODO(crbug.com/1368806): rework this so when using locally-built std, we
-  # don't link the prebuilt std as well.
+      visibility = [ ":*" ]
+    }
 
-  # Provides std libs to non-rustc linkers.
-  group("link_prebuilt_std") {
-    assert(
-        enable_rust,
-        "Some C++ target is including Rust code even though enable_rust=false")
-    all_dependent_configs = [ ":prebuilt_rust_stdlib_config" ]
-    deps = [
-      ":prebuilt_rustc_sysroot",
-      ":remap_alloc",
-    ]
-  }
+    config("prebuilt_stdlib_sysroot") {
+      # Match the output directory of :prebuilt_rustc_copy_to_sysroot
+      sysroot = rebase_path(prebuilt_rustc_sysroot, root_build_dir)
+      rustflags = [ "--sysroot=$sysroot" ]
+      visibility = [ ":*" ]
+    }
 
-  if (local_libstd_supported) {
-    group("link_local_std") {
+    config("prebuilt_stdlib_libs") {
+      ldflags = []
+      lib_dir = rebase_path("$prebuilt_rustc_sysroot/$sysroot_lib_subdir",
+                            root_build_dir)
+
+      # We're unable to make these files regular gn dependencies because
+      # they're prebuilt. Instead, we'll pass them in the ldflags. This doesn't
+      # work for all types of build because ldflags propagate differently from
+      # actual dependencies and therefore can end up in different targets from
+      # the remap_alloc.cc above. For example, in a component build, we might
+      # apply the remap_alloc.cc file and these ldlags to shared object A,
+      # while shared object B (that depends upon A) might get only the ldflags
+      # but not remap_alloc.cc, and thus the build will fail. There is
+      # currently no known solution to this for the prebuilt stdlib - this
+      # problem does not apply with configurations where we build the stdlib
+      # ourselves, which is what we'll use in production.
+      foreach(lib, stdlib_files) {
+        this_file = "$lib_dir/lib$lib.rlib"
+        ldflags += [ this_file ]
+      }
+      if (is_win) {
+        # TODO(crbug.com/1434092): This should really be `libs`, however that
+        # breaks. Normally, we specify lib files with the `.lib` suffix but
+        # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
+        # instead.
+        #
+        # Omitting the `.lib` suffix breaks linking as well, when clang drives
+        # the linking step of a C++ EXE that depends on Rust.
+        ldflags += _windows_lib_deps
+      }
+      visibility = [ ":*" ]
+    }
+
+    # Use the sysroot generated by :prebuilt_rustc_copy_to_sysroot.
+    group("stdlib_for_rustc") {
       assert(
           enable_rust,
           "Some C++ target is including Rust code even though enable_rust=false")
-      all_dependent_configs = [ ":local_rust_stdlib_config" ]
+      all_dependent_configs = [ ":prebuilt_stdlib_sysroot" ]
+      deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
+    }
+
+    # Links the Rust stdlib. Used by targets for which linking is driven by
+    # C++.
+    group("stdlib_for_clang") {
+      assert(
+          enable_rust,
+          "Some C++ target is including Rust code even though enable_rust=false")
+      all_dependent_configs = [
+        ":prebuilt_stdlib_libs",
+        ":stdlib_public_dependent_libs",
+      ]
       deps = [
-        ":local_std_for_rustc",
+        ":prebuilt_rustc_copy_to_sysroot",
         ":remap_alloc",
       ]
     }

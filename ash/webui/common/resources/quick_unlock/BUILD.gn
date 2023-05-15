@@ -8,11 +8,7 @@ assert(is_chromeos_ash, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":lock_screen_constants",
-    ":pin_keyboard",
-    ":setup_pin_keyboard",
-  ]
+  deps = [ ":lock_screen_constants" ]
 }
 
 js_library("lock_screen_constants") {
@@ -21,24 +17,4 @@ js_library("lock_screen_constants") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("pin_keyboard") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
-}
-
-js_library("setup_pin_keyboard") {
-  deps = [
-    ":lock_screen_constants",
-    ":pin_keyboard",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/quick_unlock_private.js" ]
-  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
 }

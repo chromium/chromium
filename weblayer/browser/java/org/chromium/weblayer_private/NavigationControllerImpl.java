@@ -293,6 +293,11 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         mNavigationControllerClient.onPageLanguageDetermined(page.getClientPage(), language);
     }
 
+    @CalledByNative
+    private boolean isUrlAllowed(String url) {
+        return mTab.getBrowser().isUrlAllowed(url);
+    }
+
     private static final class NavigateParamsImpl extends INavigateParams.Stub {
         private boolean mReplaceCurrentEntry;
         private boolean mIntentProcessingDisabled;

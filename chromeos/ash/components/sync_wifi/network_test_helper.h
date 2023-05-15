@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_NETWORK_TEST_HELPER_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_NETWORK_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -65,8 +66,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
-  const user_manager::User* primary_user_;
-  const user_manager::User* secondary_user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> secondary_user_;
 
   TestingPrefServiceSimple local_state_;
 };

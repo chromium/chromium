@@ -119,6 +119,39 @@ class ProcessMap : public KeyedService {
   // on the web.
   bool IsPrivilegedExtensionProcess(const Extension& extension, int process_id);
 
+  // Returns true if the given `context_type` - associated with the given
+  // `extension`, if provided - is valid for the given `process`.
+  //
+  // Use this method to validate whether a context type claimed by the renderer
+  // is possible.
+  //
+  // Important notes:
+  // - This will return false for any invalid combinations. For instance, it is
+  //   never possible to have a web page context associated with an extension.
+  // - This relies on certain architectural guarantees. For instance, web pages
+  //   should never, ever share a process with an extension or with webui.
+  // - Multiple context types (with some difference in privilege levels) may be
+  //   valid for a given process and extension pairing. For instance, a
+  //   privileged extension process could host any of blessed extension
+  //   contexts, offscreen document contexts, and content script contexts. Thus,
+  //   a compromised renderer could, in theory, claim a more privileged context
+  //   (such as claiming to be a blessed extension context from an offscreen
+  //   document context). This *is not* a security bug; if the renderer is
+  //   compromised and could host blessed extension contexts, it could simply
+  //   create (or hijack) one.
+  // - This only looks at process-level guarantees. Thus, for contexts like
+  //   untrusted webui (chrome-untrusted:// pages), the caller is responsible
+  //   for doing additional verification (such as checking the origin).
+  //
+  // This method is preferable to GetMostLikelyContextType() as it allows the
+  // renderer to supply a context type to differentiate between possible
+  // contexts in the non-compromised-renderer case, whereas
+  // GetMostLikelyContextType() cannot (and has to just "pick" a possible
+  // context type).
+  bool CanProcessHostContextType(const Extension* extension,
+                                 const content::RenderProcessHost& process,
+                                 Feature::Context context_type);
+
   // Gets the most likely context type for the process with ID |process_id|
   // which hosts Extension |extension|, if any (may be nullptr). Context types
   // are renderer (JavaScript) concepts but the browser can do a decent job in

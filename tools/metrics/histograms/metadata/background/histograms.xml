@@ -91,32 +91,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundFetch.HasRequestsWithBody" enum="Boolean"
-    expires_after="2021-12-26">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether the background fetch contains any requests with a body.
-    Called before the fetch is started.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundFetch.Manager{BackgroundFetchManagerAPIsDuration}"
-    units="ms" expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the duration of the mojo call for the exposed BackgroundFetchManager
-    APIs. {BackgroundFetchManagerAPIsDuration}
-  </summary>
-  <token key="BackgroundFetchManagerAPIsDuration">
-    <variant name=".FetchDuration" summary="Duration of fetch"/>
-    <variant name=".GetDuration" summary="Duration of get"/>
-    <variant name=".GetIdsDuration" summary="Duration of getIds"/>
-  </token>
-</histogram>
-
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
     enum="BooleanEnabled" expires_after="2022-04-17">
   <owner>mvanouwerkerk@chromium.org</owner>

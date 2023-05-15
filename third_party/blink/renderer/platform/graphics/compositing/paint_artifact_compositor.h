@@ -42,34 +42,6 @@ class SynthesizedClip;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
 
-// This enum is used for histograms and should not be renumbered (see:
-// PaintArtifactCompositorUpdateReason in tools/metrics/histograms/enums.xml).
-enum class PaintArtifactCompositorUpdateReason {
-  kTest = 0,
-  kPaintArtifactCompositorNeedsFullUpdateChunksChanged = 1,
-  kPaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk = 2,
-  kPaintArtifactCompositorPrefersLCDText = 3,
-  kLocalFrameViewUpdateLayerDebugInfo = 4,
-  kLocalFrameViewBenchmarking = 5,
-  kDisplayLockContextNeedsPaintArtifactCompositorUpdate = 6,
-  kViewTransitionNotifyChanges = 7,
-  kFrameCaretSetVisible = 8,
-  kFrameCaretPaint = 9,
-  kInspectorOverlayAgentDisableFrameOverlay = 10,
-  kLinkHighlightImplNeedsCompositingUpdate = 11,
-  kPaintLayerScrollableAreaUpdateScrollOffset = 12,
-  kPaintPropertyTreeBuilderPaintPropertyChanged = 13,
-  kPaintPropertyTreeBuilderHasFixedPositionObjects = 14,
-  kPaintPropertyTreeBulderNonStackingContextScroll = 15,
-  kVisualViewportPaintPropertyTreeBuilderUpdate = 16,
-  kVideoPainterPaintReplaced = 17,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues = 18,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues = 19,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyValues = 20,
-  kPaintPropertyTreeBuilderPaintPropertyAddedOrRemoved = 21,
-  kCount = 22
-};
-
 class LayerListBuilder {
  public:
   void Add(scoped_refptr<cc::Layer>);
@@ -162,10 +134,17 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
+  //
+  // |anchor_scroll_container_nodes| is the set of scroll nodes whose scroll
+  // offset contributes to any anchor-scroll translation (namely, whose id is
+  // snapshotted in an AnchorScrollData). This is needed only when
+  // ScrollUnification is disabled.
   void Update(
       scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
+      const Vector<const TransformPaintPropertyNode*>&
+          anchor_scroll_container_nodes,
       Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
@@ -198,6 +177,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool DirectlySetScrollOffset(CompositorElementId,
                                const gfx::PointF& scroll_offset);
 
+  uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
+  // Returns true if the scroll node is currently composited in cc.
+  bool UsesCompositedScrolling(const ScrollPaintPropertyNode&) const;
+
   // The root layer of the tree managed by this object.
   cc::Layer* RootLayer() const { return root_layer_.get(); }
 
@@ -222,7 +205,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // do not affect compositing can use a fast-path in |UpdateRepaintedLayers|
   // (see comment above that function for more information), and should not call
   // SetNeedsUpdate.
-  void SetNeedsUpdate(PaintArtifactCompositorUpdateReason reason);
+  void SetNeedsUpdate() { needs_update_ = true; }
   bool NeedsUpdate() const { return needs_update_; }
   void ClearNeedsUpdateForTesting() { needs_update_ = false; }
 
@@ -355,10 +338,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
 
-  // ScrollTranslationNodes of the PaintArtifact that are painted.
+  // Scroll translation nodes of the PaintArtifact that are painted.
   // This member variable is only used in PaintArtifactCompositor::Update.
   // The value indicates if the scroll should be composited.
-  HashMap<const TransformPaintPropertyNode*, bool> scroll_translation_nodes_;
+  HashMap<const TransformPaintPropertyNode*, bool> painted_scroll_translations_;
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;

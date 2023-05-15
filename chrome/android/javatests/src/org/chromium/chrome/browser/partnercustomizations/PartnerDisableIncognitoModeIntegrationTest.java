@@ -11,7 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.PopupMenu;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -51,7 +51,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
         Bundle bundle = new Bundle();
         bundle.putBoolean(
                 TestPartnerBrowserCustomizationsProvider.INCOGNITO_MODE_DISABLED_KEY, enabled);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         context.getContentResolver().call(uri, "setIncognitoModeDisabled", null, bundle);
     }
 
@@ -126,8 +126,8 @@ public class PartnerDisableIncognitoModeIntegrationTest {
     @MediumTest
     @Feature({"DisableIncognitoMode"})
     public void testEnabledParentalControlsClosesIncognitoTabs() throws InterruptedException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         try {
             String[] testUrls = {

@@ -5,7 +5,6 @@
 #include "ash/wm/system_modal_container_layout_manager.h"
 
 #include <cmath>
-#include <memory>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -18,6 +17,8 @@
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
@@ -48,10 +49,7 @@ bool HasTransientAncestor(const aura::Window* window,
 
 SystemModalContainerLayoutManager::SystemModalContainerLayoutManager(
     aura::Window* container)
-    : container_(container) {
-  Shelf* shelf = RootWindowController::ForWindow(container_)->shelf();
-  shelf_observation_.Observe(shelf);
-}
+    : container_(container) {}
 
 SystemModalContainerLayoutManager::~SystemModalContainerLayoutManager() {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
@@ -196,13 +194,18 @@ bool SystemModalContainerLayoutManager::IsModalBackground(
          layout_manager->window_dimmer_->window() == window;
 }
 
-// This is invoked when the work area changes.
-//  * SystemModalContainerLayoutManager windows depend on
-//    changes to the accessibility panel insets, which are
-//    stored and handled globally via ShelfLayoutManager.
-void SystemModalContainerLayoutManager::WillChangeVisibilityState(
-    ShelfVisibilityState new_state) {
-  PositionDialogsAfterWorkAreaResize();
+void SystemModalContainerLayoutManager::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (display::Screen::GetScreen()->GetDisplayNearestWindow(container_).id() !=
+      display.id()) {
+    return;
+  }
+
+  if (changed_metrics & (display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                         display::DisplayObserver::DISPLAY_METRIC_WORK_AREA)) {
+    PositionDialogsAfterWorkAreaResize();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

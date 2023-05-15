@@ -36,7 +36,9 @@ namespace {
 // Not an enum class to ease cast to int.
 namespace syncable_prefs_ids {
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. When adding a new entry, append the
+// enumerator to the end. When removing an unused enumerator, comment it out,
+// making it clear the value was previously used.
 // Please also add new entries to `SyncablePref` enum in
 // tools/metrics/histograms/enums.xml.
 enum {
@@ -226,9 +228,13 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kCookieControlsMode, syncer::PREFERENCES}},
         {prefs::kSafeBrowsingEnabled,
          {syncable_prefs_ids::kSafeBrowsingEnabled, syncer::PREFERENCES}},
+// TODO(crbug.com/1434910): Maybe move to chrome_syncable_prefs_database.cc,
+// see bug.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {prefs::kSyncedDefaultSearchProviderGUID,
          {syncable_prefs_ids::kSyncedDefaultSearchProviderGUID,
           syncer::PREFERENCES}},
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {translate::TranslatePrefs::kPrefForceTriggerTranslateCount,
          {syncable_prefs_ids::kPrefForceTriggerTranslateCount,
           syncer::PREFERENCES}},

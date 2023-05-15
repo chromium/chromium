@@ -21,7 +21,6 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -134,7 +133,6 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -524,20 +522,12 @@ void FillNavigationParamsRequest(
   // Note: It's possible for initiator_base_url to be empty if this is an
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      common_params.initiator_base_url) {
-    if (!common_params.url.IsAboutSrcdoc() &&
-        !common_params.url.IsAboutBlank()) {
-      // TODO(crbug.com/1430232): Remove this once we know the cause of the
-      // associated CHECK failure.
-      SCOPED_CRASH_KEY_BOOL("new_base_url", "rfi_base_url_is_empty",
-                            common_params.initiator_base_url->is_empty());
-      base::debug::DumpWithoutCrashing();
-      navigation_params->fallback_base_url = WebURL();
-    } else {
-      navigation_params->fallback_base_url =
-          common_params.initiator_base_url.value();
-    }
+  if (common_params.initiator_base_url) {
+    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
+    CHECK(common_params.url.IsAboutSrcdoc() ||
+          common_params.url.IsAboutBlank());
+    navigation_params->fallback_base_url =
+        common_params.initiator_base_url.value();
   } else {
     navigation_params->fallback_base_url = WebURL();
   }
@@ -5098,16 +5088,6 @@ void RenderFrameImpl::BeginNavigation(
                url.possibly_invalid_spec(), "navigation_type",
                static_cast<int>(info->navigation_type));
 
-  if (GetWebFrame() && GetWebFrame()->DispatchedPagehideAndStillHidden()) {
-    // The navigation started after the pagehide event got dispatched. This
-    // navigation will be ignored by the browser, and we need to track that it's
-    // happening. Note that this problem is not unique to BackForwardCache/
-    // same-site BrowsingInstance swap, as navigations started after unload in
-    // normal scenarios will also be ignored by the browser.
-    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
-                              blink::ActionAfterPagehide::kNavigation);
-  }
-
   // When an MHTML Archive is present, it should be used to serve iframe
   // content instead of doing a network request. This should never be true for
   // the main frame.
@@ -5363,7 +5343,6 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
 void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
                                        SerializeAsMHTMLCallback callback) {
   TRACE_EVENT0("page-serialization", "RenderFrameImpl::SerializeAsMHTML");
-  base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Unpack payload.
   const WebString mhtml_boundary =
@@ -5407,20 +5386,11 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
   // Note: the MHTML footer is written by the browser process, after the last
   // frame is serialized by a renderer process.
 
-  // Note: we assume RenderFrameImpl::OnWriteMHTMLComplete and the rest of
-  // this function will be fast enough to not need to be accounted for in this
-  // metric.
-  base::TimeDelta main_thread_use_time = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES(
-      "PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame",
-      main_thread_use_time);
-
   MHTMLHandleWriterDelegate handle_delegate(
       *params,
       base::BindOnce(&RenderFrameImpl::OnWriteMHTMLComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(serialized_resources_uri_digests),
-                     main_thread_use_time),
+                     std::move(serialized_resources_uri_digests)),
       GetTaskRunner(blink::TaskType::kInternalDefault));
 
   if (save_status == mojom::MhtmlSaveStatus::kSuccess && has_some_data) {
@@ -5433,7 +5403,6 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
 void RenderFrameImpl::OnWriteMHTMLComplete(
     SerializeAsMHTMLCallback callback,
     std::unordered_set<std::string> serialized_resources_uri_digests,
-    base::TimeDelta main_thread_use_time,
     mojom::MhtmlSaveStatus save_status) {
   TRACE_EVENT1("page-serialization", "RenderFrameImpl::OnWriteMHTMLComplete",
                "frame save status", save_status);
@@ -5446,10 +5415,7 @@ void RenderFrameImpl::OnWriteMHTMLComplete(
       std::make_move_iterator(serialized_resources_uri_digests.end()));
 
   // Notify the browser process about completion using the callback.
-  // Note: we assume this method is fast enough to not need to be accounted for
-  // in PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame.
-  std::move(callback).Run(save_status, std::move(digests_of_new_parts),
-                          main_thread_use_time);
+  std::move(callback).Run(save_status, std::move(digests_of_new_parts));
 }
 
 #ifndef STATIC_ASSERT_ENUM
@@ -6301,7 +6267,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
     auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
     pip_mojom_opts->width = pip_options->width;
     pip_mojom_opts->height = pip_options->height;
-    pip_mojom_opts->initial_aspect_ratio = pip_options->initial_aspect_ratio;
+    // TODO(crbug.com/1444658): Remove this from mojom and the browser side.
+    pip_mojom_opts->initial_aspect_ratio = 0.0;
     // TODO(crbug.com/1410379): Remove this from mojom and the browser side.
     pip_mojom_opts->lock_aspect_ratio = false;
     params->pip_options = std::move(pip_mojom_opts);

@@ -84,6 +84,14 @@ Polymer({
       type: Boolean,
     },
 
+    /** @protected {boolean} */
+    isJellyEnabled_: {
+      type: Boolean,
+      value: () => {
+        return loadTimeData.getBoolean('isJellyEnabledForScanningApp');
+      },
+    },
+
     /**
      * The object URLs of the scanned images.
      * @type {!Array<string>}
@@ -581,6 +589,11 @@ Polymer({
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
         (this.actionToolbarWidth_ / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
+  },
+
+  /** @param {boolean} enabled */
+  setIsJellyEnabledForTesting(enabled) {
+    this.isJellyEnabled_ = enabled;
   },
 
   /**

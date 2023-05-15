@@ -130,6 +130,8 @@ class LocalDeviceEnvironment(environment.Environment):
     self._skip_clear_data = args.skip_clear_data
     self._tool_name = args.tool
     self._trace_output = None
+    # Must check if arg exist because this class is used by
+    # //third_party/catapult's browser_options.py
     if hasattr(args, 'trace_output'):
       self._trace_output = args.trace_output
     self._trace_all = None
@@ -138,9 +140,13 @@ class LocalDeviceEnvironment(environment.Environment):
     self._use_persistent_shell = args.use_persistent_shell
     self._disable_test_server = args.disable_test_server
 
-    devil_chromium.Initialize(
-        output_directory=constants.GetOutDirectory(),
-        adb_path=args.adb_path)
+    use_local_devil_tools = False
+    if hasattr(args, 'use_local_devil_tools'):
+      use_local_devil_tools = args.use_local_devil_tools
+
+    devil_chromium.Initialize(output_directory=constants.GetOutDirectory(),
+                              adb_path=args.adb_path,
+                              use_local_devil_tools=use_local_devil_tools)
 
     # Some things such as Forwarder require ADB to be in the environment path,
     # while others like Devil's bundletool.py require Java on the path.

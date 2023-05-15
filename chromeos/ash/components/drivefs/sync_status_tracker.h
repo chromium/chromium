@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 
@@ -210,7 +211,7 @@ struct SyncStatusTracker::Node {
   int64_t id = 0;
   PathToChildMap children;
   base::FilePath::StringType path_part;
-  Node* parent = nullptr;
+  raw_ptr<Node, ExperimentalAsh> parent = nullptr;
   NodeState state;
   base::Time last_update;
 };

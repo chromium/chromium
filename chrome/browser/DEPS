@@ -451,6 +451,7 @@ include_rules = [
   "+third_party/crashpad",
   "+third_party/cros_system_api",
   "+third_party/metrics_proto",
+  "+third_party/tflite_support",
   "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+chrome/services/machine_learning",

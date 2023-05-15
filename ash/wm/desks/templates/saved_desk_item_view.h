@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -78,7 +79,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   const DeskTemplate& saved_desk() const { return *saved_desk_; }
   SavedDeskNameView* name_view() const { return name_view_; }
-  const base::GUID& uuid() const { return saved_desk_->uuid(); }
+  const base::Uuid& uuid() const { return saved_desk_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.
@@ -97,10 +98,10 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   // Show replace dialog when found a name duplication.
   void MaybeShowReplaceDialog(ash::DeskTemplateType type,
-                              const base::GUID& uuid);
+                              const base::Uuid& uuid);
   // Rename current saved desk with new name, delete old saved desk with same
   // name by uuid. Used for callback functions for Replace Dialog.
-  void ReplaceSavedDesk(const base::GUID& uuid);
+  void ReplaceSavedDesk(const base::Uuid& uuid);
   void RevertSavedDeskName();
 
   // This allows us to update an existing saved desk view. Currently, this
@@ -169,8 +170,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // description instead.
   views::Label* time_view_ = nullptr;
   SavedDeskIconContainer* icon_container_view_ = nullptr;
-  IconButton* delete_button_ = nullptr;
-  PillButton* launch_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> delete_button_ = nullptr;
+  raw_ptr<PillButton, ExperimentalAsh> launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
 

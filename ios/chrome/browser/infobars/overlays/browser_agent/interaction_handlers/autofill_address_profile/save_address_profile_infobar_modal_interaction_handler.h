@@ -12,6 +12,7 @@
 class InfoBarIOS;
 
 namespace autofill {
+class AutofillProfile;
 class AutofillSaveUpdateAddressProfileDelegateIOS;
 }
 
@@ -28,8 +29,14 @@ class SaveAddressProfileInfobarModalInteractionHandler
   void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
   // Instructs the handler that the user has edited and then saved the profile.
+  void SaveEditedProfile(InfoBarIOS* infobar,
+                         autofill::AutofillProfile* profileData);
+
   virtual void SaveEditedProfile(InfoBarIOS* infobar,
                                  NSDictionary* profileData);
+
+  // Instructs the handler that the user chose not to migrate the profile.
+  virtual void NoThanksWasPressed(InfoBarIOS* infobar);
 
   // Instructs the handler to inform the delegate that the view has been
   // cancelled.

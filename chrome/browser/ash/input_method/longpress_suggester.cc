@@ -26,7 +26,8 @@ void LongpressSuggester::OnBlur() {
 }
 
 void LongpressSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<ime::AssistiveSuggestion>& suggestions) {
+    const std::vector<ime::AssistiveSuggestion>& suggestions,
+    const absl::optional<ime::SuggestionsTextContext>& context) {
   // Clipboard history updates are handled elsewhere, and diacritics suggestions
   // are not updated externally.
   return;

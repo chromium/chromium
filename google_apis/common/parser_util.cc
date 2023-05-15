@@ -8,9 +8,11 @@ namespace google_apis {
 
 bool IsResourceKindExpected(const base::Value& value,
                             const std::string& expected_kind) {
-  if (!value.is_dict())
+  const auto* dict = value.GetIfDict();
+  if (!dict) {
     return false;
-  const std::string* kind = value.FindStringKey(kApiResponseKindKey);
+  }
+  const std::string* kind = dict->FindString(kApiResponseKindKey);
   return kind && *kind == expected_kind;
 }
 

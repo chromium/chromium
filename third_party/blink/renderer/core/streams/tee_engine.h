@@ -29,7 +29,10 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
   TeeEngine& operator=(const TeeEngine&) = delete;
 
   // Create the streams and start copying data.
-  void Start(ScriptState*, ReadableStream*, ExceptionState&);
+  void Start(ScriptState*,
+             ReadableStream*,
+             bool clone_for_branch2,
+             ExceptionState&);
 
   // Branch1() and Branch2() are null until Start() is called.
   ReadableStream* Branch1() const { return branch_[0]; }
@@ -51,11 +54,17 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
   class PullAlgorithm;
   class CancelAlgorithm;
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-structuredclone
+  v8::MaybeLocal<v8::Value> StructuredClone(ScriptState*,
+                                            v8::Local<v8::Value> chunk,
+                                            ExceptionState&);
+
   Member<ReadableStream> stream_;
   Member<ReadableStreamDefaultReader> reader_;
   Member<StreamPromiseResolver> cancel_promise_;
   bool reading_ = false;
   bool read_again_ = false;
+  bool clone_for_branch2_ = false;
 
   // The standard contains a number of pairs of variables with one for each
   // stream. These are implemented as arrays here. While they are 1-indexed in

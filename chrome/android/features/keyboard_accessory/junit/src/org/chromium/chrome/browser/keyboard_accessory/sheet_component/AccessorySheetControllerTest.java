@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
@@ -232,11 +232,11 @@ public class AccessorySheetControllerTest {
         }
 
         assertThat(keyboardCallback, is(notNullValue()));
-        verifyZeroInteractions(mSheetVisibilityDelegate);
+        verifyNoMoreInteractions(mSheetVisibilityDelegate);
 
         keyboardCallback.run();
 
-        verifyZeroInteractions(mSheetVisibilityDelegate);
+        verifyNoMoreInteractions(mSheetVisibilityDelegate);
 
         mModel.set(ACTIVE_TAB_INDEX, 0);
 

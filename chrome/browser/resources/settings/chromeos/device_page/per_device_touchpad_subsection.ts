@@ -13,14 +13,15 @@ import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../controls/settings_radio_group.js';
-import '../../controls/settings_slider.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_radio_group.js';
+import '/shared/settings/controls/settings_slider.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -197,6 +198,16 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       touchpadIndex: {
         type: Number,
       },
+
+      isLastDevice: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
+      nodeIndex: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -241,6 +252,8 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private touchpadIndex: number;
+  private isLastDevice: boolean;
+  private nodeIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
@@ -319,6 +332,57 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private getTouchpadName(): string {
     return this.touchpad.isExternal ? this.touchpad.name :
                                       this.i18n('builtInTouchpadName');
+  }
+
+  private getAriaLabelledContent(stringName: string, link: string): string
+      |TrustedHTML {
+    const tempEl = document.createElement('div');
+    const localizedString = this.i18nAdvanced(stringName);
+    const linkUrl = this.i18n(link);
+    tempEl.innerHTML = localizedString;
+
+    const ariaLabelledByIds: string[] = ['touchpadName'];
+    tempEl.childNodes.forEach((node) => {
+      // Text nodes should be aria-hidden and associated with an element id
+      // that the anchor element can be aria-labelledby.
+      if (node.nodeType === Node.TEXT_NODE) {
+        const spanNode = document.createElement('span');
+        spanNode.textContent = node.textContent;
+        spanNode.id = `${this.nodeIndex++}`;
+        ariaLabelledByIds.push(spanNode.id);
+        spanNode.setAttribute('aria-hidden', 'true');
+        node.replaceWith(spanNode);
+        return;
+      }
+      // The single element node with anchor tags should also be aria-labelledby
+      // itself in-order with respect to the entire string.
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
+        const element = node as HTMLAnchorElement;
+        element.id = `${this.nodeIndex++}`;
+        ariaLabelledByIds.push(element.id);
+        return;
+      }
+
+      // Only text and <a> nodes are allowed.
+      assertNotReached(`${stringName} has invalid node types`);
+    });
+
+    const anchorTags = tempEl.querySelectorAll('a');
+    // In the event the localizedString contains only text nodes, populate the
+    // contents with the localizedString.
+    if (anchorTags.length === 0) {
+      return localizedString;
+    }
+
+    assert(
+        anchorTags.length === 1,
+        `${stringName} should contain exactly one anchor tag`);
+    const anchorTag = anchorTags[0];
+    anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
+    anchorTag.href = linkUrl;
+    anchorTag.target = '_blank';
+
+    return tempEl.innerHTML;
   }
 }
 

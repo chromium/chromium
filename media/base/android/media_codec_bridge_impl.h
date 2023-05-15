@@ -191,9 +191,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
   // The Java MediaCodecBridge instance.
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;
-
-  // Controls if we return real color space or hardcode sRGB.
-  const bool use_real_color_space_;
 };
 
 }  // namespace media

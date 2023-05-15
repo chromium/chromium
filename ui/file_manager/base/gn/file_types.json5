@@ -540,6 +540,14 @@
     "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   },
   {
+    "type": "document",
+    "icon": "excel",
+    "translationKey": "EXCEL_FILE_TYPE",
+    "subtype": "Excel",
+    "extensions": [".xlsm"],
+    "mime": "application/vnd.ms-excel.sheet.macroEnabled.12"
+  },
+  {
     "type": "archive",
     "icon": "tini",
     "translationKey": "TINI_FILE_TYPE",

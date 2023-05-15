@@ -8,6 +8,7 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
+import {constants} from '../../foreground/js/constants.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../actions/navigation.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';
@@ -87,10 +88,10 @@ function createAndroidApps(): [
 /** Create file data and volume data for volume. */
 function createVolumeFileData(
     volumeType: VolumeManagerCommon.VolumeType, volumeId: string,
-    label: string = '',
-    devicePath: string = ''): {fileData: FileData, volume: Volume} {
+    label: string = '', devicePath: string = '',
+    providerId: string = ''): {fileData: FileData, volume: Volume} {
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      volumeType, volumeId, label, devicePath);
+      volumeType, volumeId, label, devicePath, providerId);
   const {volumeManager} = window.fileManager;
   volumeManager.volumeInfoList.add(volumeInfo);
   const volumeEntry = new VolumeEntry(volumeInfo);
@@ -195,6 +196,13 @@ export async function testNavigationRoots(done: () => void) {
       smbVolume.fileData;
   initialState.volumes[smbVolume.volume.volumeId] = smbVolume.volume;
 
+  const odfsVolume = createVolumeFileData(
+      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:odfs', '', '',
+      constants.ODFS_EXTENSION_ID);
+  initialState.allEntries[odfsVolume.fileData.entry.toURL()] =
+      odfsVolume.fileData;
+  initialState.volumes[odfsVolume.volume.volumeId] = odfsVolume.volume;
+
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
@@ -207,20 +215,21 @@ export async function testNavigationRoots(done: () => void) {
   //  4.  My files
   //      * Android files - won't be included as root because it's inside
   //      MyFiles.
-  //  5.  Drive
-  //  6.  smb:file-share
-  //  7.  provided:prov1
-  //  8.  provided:prov2
+  //  5.  Google Drive
+  //  6.  ODFS
+  //  7.  smb:file-share
+  //  8.  provided:prov1
+  //  9.  provided:prov2
   //
-  //  9.  removable:hoge
-  // 10.  removable:fuga
-  // 11.  archive:a-rar  - mounted as archive
-  // 12.  mtp:a-phone
+  // 10.  removable:hoge
+  // 11.  removable:fuga
+  // 12.  archive:a-rar  - mounted as archive
+  // 13.  mtp:a-phone
   //
-  // 13.  android:app1
-  // 14.  android:app2
+  // 14.  android:app1
+  // 15.  android:app2
   //
-  // 15.  Trash
+  // 16.  Trash
 
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
@@ -256,11 +265,18 @@ export async function testNavigationRoots(done: () => void) {
     // Drive.
     {
       key: driveRootEntryFileData.entry.toURL(),
-      section: NavigationSection.CLOUD,
+      section: NavigationSection.GOOGLE_DRIVE,
       separator: true,
       type: NavigationType.DRIVE,
     },
-    // FSP, and SMB are grouped together.
+    // ODFS
+    {
+      key: odfsVolume.fileData.entry.toURL(),
+      section: NavigationSection.ODFS,
+      separator: true,
+      type: NavigationType.VOLUME,
+    },
+    // Other FSP, and SMB are grouped together.
     // smb:file-share.
     {
       key: smbVolume.fileData.entry.toURL(),
@@ -495,7 +511,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
     // Drive.
     {
       key: driveRootEntryFileData.entry.toURL(),
-      section: NavigationSection.CLOUD,
+      section: NavigationSection.GOOGLE_DRIVE,
       separator: true,
       type: NavigationType.DRIVE,
     },

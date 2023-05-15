@@ -45,17 +45,13 @@ struct OmniboxPopupSelection {
     // focused.
     KEYWORD_MODE = 2,
 
-    // FOCUSED_BUTTON_TAB_SWITCH state means the Switch Tab button is focused.
-    // Pressing enter will switch to the tab match.
-    FOCUSED_BUTTON_TAB_SWITCH = 3,
-
     // FOCUSED_BUTTON_ACTION state means an Action button (such as a Pedal)
     // is in focus.
-    FOCUSED_BUTTON_ACTION = 4,
+    FOCUSED_BUTTON_ACTION = 3,
 
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
-    FOCUSED_BUTTON_REMOVE_SUGGESTION = 5,
+    FOCUSED_BUTTON_REMOVE_SUGGESTION = 4,
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited

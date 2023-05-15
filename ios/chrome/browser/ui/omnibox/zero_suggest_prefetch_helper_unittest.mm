@@ -6,18 +6,19 @@
 
 #import "base/test/task_environment.h"
 #import "components/omnibox/browser/omnibox_client.h"
+#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #import "components/omnibox/browser/test_omnibox_view.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -39,8 +40,8 @@ class MockOmniboxEditModel : public OmniboxEditModel {
  public:
   MockOmniboxEditModel(OmniboxView* view,
                        OmniboxEditModelDelegate* edit_model_delegate,
-                       std::unique_ptr<OmniboxClient> client)
-      : OmniboxEditModel(view, edit_model_delegate, std::move(client)) {}
+                       OmniboxClient* client)
+      : OmniboxEditModel(view, edit_model_delegate, client) {}
 
   ~MockOmniboxEditModel() override = default;
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
@@ -63,11 +64,12 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get());
-
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    auto* omnibox_client_ptr = omnibox_client.get();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
+                                              std::move(omnibox_client));
     model_ = std::make_unique<MockOmniboxEditModel>(
-        view_.get(), edit_model_delegate_.get(),
-        std::make_unique<TestOmniboxClient>());
+        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr);
   }
 
   void CreateHelper() {

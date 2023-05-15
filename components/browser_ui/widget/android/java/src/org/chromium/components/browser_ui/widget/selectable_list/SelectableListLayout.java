@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -58,7 +59,9 @@ public class SelectableListLayout<E> extends FrameLayout
     private RecyclerView.Adapter mAdapter;
     private ViewStub mToolbarStub;
     private TextView mEmptyView;
+    private TextView mEmptyStateSubHeadingView;
     private View mEmptyViewWrapper;
+    private ImageView mEmptyImageView;
     private LoadingView mLoadingView;
     private RecyclerView mRecyclerView;
     private ItemAnimator mItemAnimator;
@@ -242,6 +245,40 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     /**
+     * Initializes the empty state view with an image, heading, and subheading.
+     * @param imageResId Image view to show when the selectable list is empty.
+     * @param emptyHeadingStringResId Heading string to show when the selectable list is empty.
+     * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
+     * @return The {@link TextView} displayed when the list is empty.
+     */
+    // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
+    public TextView initializeEmptyStateView(
+            int imageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
+        // Initialize and inflate empty state view stub.
+        ViewStub emptyViewStub = findViewById(R.id.empty_state_view_stub);
+        View emptyStateView = emptyViewStub.inflate();
+
+        // Initialize empty state resource.
+        mEmptyView = emptyStateView.findViewById(R.id.empty_state_text_title);
+        mEmptyStateSubHeadingView = emptyStateView.findViewById(R.id.empty_state_text_description);
+        mEmptyImageView = emptyStateView.findViewById(R.id.empty_state_icon);
+        mEmptyViewWrapper = emptyStateView.findViewById(R.id.empty_state_container);
+
+        // Set empty state properties.
+        setEmptyStateImageRes(imageResId);
+        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
+        return mEmptyView;
+    }
+
+    /**
+     * Sets the empty state view image when the selectable list is empty.
+     * @param imageResId The image view to show when the selectable list is empty.
+     */
+    public void setEmptyStateImageRes(int imageResId) {
+        mEmptyImageView.setImageResource(imageResId);
+    }
+
+    /**
      * Sets the view text when the selectable list is empty.
      * @param emptyStringResId The string to show when the selectable list is empty.
      */
@@ -249,6 +286,18 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyStringResId = emptyStringResId;
 
         mEmptyView.setText(mEmptyStringResId);
+    }
+
+    /**
+     * Sets the view text when the selectable list is empty.
+     * @param emptyStringResId Heading string to show when the selectable list is empty.
+     * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
+     */
+    public void setEmptyStateViewText(int emptyHeadingStringResId, int emptySubheadingStringResId) {
+        mEmptyStringResId = emptyHeadingStringResId;
+
+        mEmptyView.setText(mEmptyStringResId);
+        mEmptyStateSubHeadingView.setText(emptySubheadingStringResId);
     }
 
     /**

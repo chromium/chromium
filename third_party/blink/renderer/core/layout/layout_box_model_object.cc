@@ -169,7 +169,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   bool had_non_initial_backdrop_filter = HasNonInitialBackdropFilter();
   bool had_layer = HasLayer();
   bool layer_was_self_painting = had_layer && Layer()->IsSelfPaintingLayer();
-  bool was_horizontal_writing_mode = IsHorizontalWritingMode();
   bool could_contain_fixed = CanContainFixedPositionObjects();
   bool could_contain_absolute = CanContainAbsolutePositionObjects();
 
@@ -294,22 +293,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       SetChildNeedsLayout();
   }
 
-  if (old_style && was_horizontal_writing_mode != IsHorizontalWritingMode()) {
-    // Changing the getWritingMode() may change isOrthogonalWritingModeRoot()
-    // of children. Make sure all children are marked/unmarked as orthogonal
-    // writing-mode roots.
-    bool new_horizontal_writing_mode = IsHorizontalWritingMode();
-    for (LayoutObject* child = SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      if (!child->IsBox())
-        continue;
-      if (new_horizontal_writing_mode != child->IsHorizontalWritingMode())
-        To<LayoutBox>(child)->MarkOrthogonalWritingModeRoot();
-      else
-        To<LayoutBox>(child)->UnmarkOrthogonalWritingModeRoot();
-    }
-  }
-
   // The used style for body background may change due to computed style change
   // on the document element because of change of BackgroundTransfersToView()
   // which depends on the document element style.
@@ -350,10 +333,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     else
       element->RemoveAnchorScrollData();
   }
-
-  SetIsBackgroundAttachmentFixedObject(
-      !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
@@ -480,6 +459,14 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   SetCanContainAbsolutePositionObjects(
       ComputeIsAbsoluteContainer(&style_to_use));
   SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
+
+  bool is_background_attachment_fixed_object =
+      !BackgroundTransfersToView() &&
+      StyleRef().HasFixedAttachmentBackgroundImage();
+  SetIsBackgroundAttachmentFixedObject(is_background_attachment_fixed_object);
+  SetCanCompositeBackgroundAttachmentFixed(
+      is_background_attachment_fixed_object &&
+      ComputeCanCompositeBackgroundAttachmentFixed());
 }
 
 PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()
@@ -556,9 +543,9 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
     }
   }
   if (this_box && this_box->IsCustomItem() &&
-      (this_box->HasOverrideContainingBlockContentLogicalHeight() ||
-       this_box->HasOverridePercentageResolutionBlockSize()))
+      (this_box->HasOverrideContainingBlockContentLogicalHeight())) {
     return false;
+  }
 
   if ((logical_height_length.IsAutoOrContentOrIntrinsic() ||
        logical_height_length.IsFillAvailable()) &&
@@ -966,12 +953,7 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   // primaryFont is null.
   if (font_data)
     height = LayoutUnit(font_data->GetFontMetrics().Height());
-  LayoutUnit vertical_space =
-      LineHeight(true,
-                 current_style.IsHorizontalWritingMode() ? kHorizontalLine
-                                                         : kVerticalLine,
-                 kPositionOfInteriorLineBoxes) -
-      height;
+  LayoutUnit vertical_space = FirstLineHeight() - height;
   LayoutUnit y = PaddingTop() + BorderTop() + (vertical_space / 2);
   return current_style.IsHorizontalWritingMode()
              ? LayoutRect(x, y, caret_width, height)

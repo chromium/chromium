@@ -9,6 +9,7 @@
 
 #include "ash/system/power/power_status.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 
 namespace message_center {
 class MessageCenter;
@@ -77,7 +78,8 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   static const char kUsbNotificationId[];
 
-  message_center::MessageCenter* const message_center_;  // Unowned.
+  const raw_ptr<message_center::MessageCenter, ExperimentalAsh>
+      message_center_;  // Unowned.
   std::unique_ptr<BatteryNotification> battery_notification_;
   std::unique_ptr<DualRoleNotification> dual_role_notification_;
   NotificationState notification_state_ = NOTIFICATION_NONE;

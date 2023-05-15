@@ -605,7 +605,7 @@ class BASE_EXPORT SystemMetrics {
 #endif
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 enum class MachVMRegionResult {
   // There were no more memory regions between |address| and the end of the
   // virtual address space.
@@ -619,17 +619,6 @@ enum class MachVMRegionResult {
 };
 
 // Returns info on the first memory region at or after |address|, including
-// resident memory and share mode. On Success, |size| reflects the size of the
-// memory region.
-// |size| and |info| are output parameters, only valid on Success.
-// |address| is an in-out parameter, than represents both the address to start
-// looking, and the start address of the memory region.
-BASE_EXPORT MachVMRegionResult GetTopInfo(mach_port_t task,
-                                          mach_vm_size_t* size,
-                                          mach_vm_address_t* address,
-                                          vm_region_top_info_data_t* info);
-
-// Returns info on the first memory region at or after |address|, including
 // protection values. On Success, |size| reflects the size of the
 // memory region.
 // Returns info on the first memory region at or after |address|, including
@@ -639,6 +628,19 @@ BASE_EXPORT MachVMRegionResult GetBasicInfo(mach_port_t task,
                                             mach_vm_size_t* size,
                                             mach_vm_address_t* address,
                                             vm_region_basic_info_64* info);
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_MAC)
+// Returns info on the first memory region at or after |address|, including
+// resident memory and share mode. On Success, |size| reflects the size of the
+// memory region.
+// |size| and |info| are output parameters, only valid on Success.
+// |address| is an in-out parameter, than represents both the address to start
+// looking, and the start address of the memory region.
+BASE_EXPORT MachVMRegionResult GetTopInfo(mach_port_t task,
+                                          mach_vm_size_t* size,
+                                          mach_vm_address_t* address,
+                                          vm_region_top_info_data_t* info);
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace base

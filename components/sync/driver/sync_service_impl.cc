@@ -14,9 +14,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -70,6 +73,7 @@ enum SyncInitialState {
 };
 
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
+                            bool is_sync_feature_requested,
                             bool first_setup_complete,
                             bool is_regular_profile_for_uma) {
   SyncInitialState sync_state = CAN_START;
@@ -78,7 +82,7 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
   } else if (disable_reasons.Has(
                  SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     sync_state = NOT_ALLOWED_BY_POLICY;
-  } else if (disable_reasons.Has(SyncService::DISABLE_REASON_USER_CHOICE)) {
+  } else if (!is_sync_feature_requested) {
     if (first_setup_complete) {
       sync_state = NOT_REQUESTED;
     } else {
@@ -128,6 +132,24 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
       user_agent, std::move(pending_url_loader_factory));
 }
 
+base::TimeDelta GetDeferredInitDelay() {
+  if (base::FeatureList::IsEnabled(kDeferredSyncStartupCustomDelay)) {
+    return base::Seconds(kDeferredSyncStartupCustomDelayInSeconds.Get());
+  }
+
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(kSyncDeferredStartupTimeoutSeconds)) {
+    int timeout = 0;
+    if (base::StringToInt(
+            cmdline->GetSwitchValueASCII(kSyncDeferredStartupTimeoutSeconds),
+            &timeout)) {
+      DCHECK_GE(timeout, 0);
+      return base::Seconds(timeout);
+    }
+  }
+  return base::Seconds(10);
+}
+
 }  // namespace
 
 SyncServiceImpl::InitParams::InitParams() = default;
@@ -158,7 +180,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
       is_regular_profile_for_uma_(init_params.is_regular_profile_for_uma),
-      is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
@@ -172,14 +193,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   // If Sync is disabled via command line flag, then SyncServiceImpl
   // shouldn't be instantiated.
   DCHECK(IsSyncAllowedByFlag());
-
-  startup_controller_ = std::make_unique<StartupController>(
-      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
-                          base::Unretained(this)),
-      base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
-                          base::Unretained(this)),
-      base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,
-                     base::Unretained(this)));
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_);
@@ -206,9 +219,15 @@ void SyncServiceImpl::Initialize() {
   data_type_controllers_ =
       BuildDataTypeControllerMap(sync_client_->CreateDataTypeControllers(this));
 
+  // It's safe to pass a raw ptr, since SyncServiceImpl outlives
+  // SyncUserSettingsImpl.
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
-      GetRegisteredDataTypes());
+      GetRegisteredDataTypes(),
+      base::BindRepeating(
+          &SyncServiceImpl::
+              ShouldHonorBookmarksAndReadingListAccountStorageOptIn,
+          base::Unretained(this)));
 
   sync_prefs_.AddSyncPrefObserver(this);
 
@@ -244,23 +263,58 @@ void SyncServiceImpl::Initialize() {
   // Note: We need to record the initial state *after* calling
   // RegisterForAuthNotifications(), because before that the authenticated
   // account isn't initialized.
-  RecordSyncInitialState(GetDisableReasons(),
-                         user_settings_->IsFirstSetupComplete(),
-                         is_regular_profile_for_uma_);
+  RecordSyncInitialState(
+      GetDisableReasons(),
+      /*is_sync_feature_requested=*/
+      IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
+      user_settings_->IsInitialSyncFeatureSetupComplete(),
+      is_regular_profile_for_uma_);
+
+  if (base::FeatureList::IsEnabled(
+          kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
+      // Selected types may soon start depending on the signin state. This check
+      // should help avoid accidentally clearing stuff.
+      // For localsync, it can be assumed that all info is fully loaded.
+      (IsLocalSyncEnabled() ||
+       auth_manager_->IsActiveAccountInfoFullyLoaded())) {
+    // Call Stop() on controllers for non-preferred types to clear metadata.
+    // This allows clearing metadata for types disabled in previous run early-on
+    // during initialization.
+    ModelTypeSet preferred_types = GetDataTypesToConfigure();
+    for (auto& [type, controller] : data_type_controllers_) {
+      if (!preferred_types.Has(type)) {
+        controller->Stop(CLEAR_METADATA, base::DoNothing());
+      }
+    }
+  }
 
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
   // will set it, we need to set it here.
   // Local Sync bypasses the IsSyncRequested() check, so no need to set it in
   // that case.
-  // TODO(crbug.com/920158): Get rid of AUTO_START and remove this workaround.
-  if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled()) {
-    user_settings_->SetSyncRequestedIfNotSetExplicitly();
+  // TODO(crbug.com/1443438): Get rid of AUTO_START and remove this workaround.
+  if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled() &&
+      !sync_prefs_.IsSyncRequestedSetExplicitly()) {
+    SetSyncFeatureRequested();
   }
-  bool force_immediate = (start_behavior_ == AUTO_START &&
-                          !HasDisableReason(DISABLE_REASON_USER_CHOICE) &&
-                          !user_settings_->IsFirstSetupComplete());
-  startup_controller_->TryStart(force_immediate);
+
+  bool force_immediate =
+      (start_behavior_ == AUTO_START &&
+       !user_settings_->IsInitialSyncFeatureSetupComplete() &&
+       (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested()));
+  if (force_immediate) {
+    TryStart();
+  } else if (IsEngineAllowedToRun()) {
+    // Defer starting the engine, for browser startup performance. If another
+    // TryStart() happens in the meantime, this deferred task will no-op.
+    deferring_first_start_since_ = base::Time::Now();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                       weak_factory_.GetWeakPtr()),
+        GetDeferredInitDelay());
+  }
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -319,10 +373,7 @@ void SyncServiceImpl::AccountStateChanged() {
     // Either a new account was signed in, or the existing account's
     // |is_sync_consented| bit was changed. Start up or reconfigure.
     if (!engine_) {
-      // Note: We only get here after an actual sign-in (not during browser
-      // startup with an existing signed-in account), so no need for deferred
-      // startup.
-      startup_controller_->TryStart(/*force_immediate=*/true);
+      TryStart();
     } else {
       ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
     }
@@ -349,7 +400,7 @@ void SyncServiceImpl::CredentialsChanged() {
   }
 
   if (!engine_) {
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    TryStart();
   } else {
     // If the engine already exists, just propagate the new credentials.
     SyncCredentials credentials = auth_manager_->GetCredentials();
@@ -364,10 +415,7 @@ void SyncServiceImpl::CredentialsChanged() {
 }
 
 bool SyncServiceImpl::IsEngineAllowedToRun() const {
-  // USER_CHOICE does not prevent starting up the Sync transport.
-  DisableReasonSet disable_reasons = GetDisableReasons();
-  disable_reasons.Remove(DISABLE_REASON_USER_CHOICE);
-  return disable_reasons.Empty() && !auth_manager_->IsSyncPaused();
+  return GetDisableReasons().Empty() && !auth_manager_->IsSyncPaused();
 }
 
 void SyncServiceImpl::OnProtocolEvent(const ProtocolEvent& event) {
@@ -394,11 +442,28 @@ void SyncServiceImpl::OnDataTypeRequestsSyncStartup(ModelType type) {
     return;
   }
 
-  startup_controller_->OnDataTypeRequestsSyncStartup(type);
+  TryStart();
 }
 
-void SyncServiceImpl::StartUpSlowEngineComponents() {
-  DCHECK(IsEngineAllowedToRun());
+void SyncServiceImpl::TryStart() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void SyncServiceImpl::TryStartImpl() {
+  base::Time deferral_time;
+  std::swap(deferring_first_start_since_, deferral_time);
+
+  if (engine_ || !IsEngineAllowedToRun()) {
+    return;
+  }
+
+  if (!deferral_time.is_null()) {
+    base::UmaHistogramCustomTimes("Sync.Startup.TimeDeferred2",
+                                  base::Time::Now() - deferral_time,
+                                  base::Seconds(0), base::Minutes(2), 60);
+  }
 
   const CoreAccountInfo authenticated_account_info = GetAccountInfo();
 
@@ -421,7 +486,7 @@ void SyncServiceImpl::StartUpSlowEngineComponents() {
   DCHECK(engine_);
 
   // Clear any old errors the first time sync starts.
-  if (!user_settings_->IsFirstSetupComplete()) {
+  if (!user_settings_->IsInitialSyncFeatureSetupComplete()) {
     last_actionable_error_ = SyncProtocolError();
   }
 
@@ -559,14 +624,6 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
 
   sync_enabled_weak_factory_.InvalidateWeakPtrs();
 
-  startup_controller_ = std::make_unique<StartupController>(
-      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
-                          base::Unretained(this)),
-      base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
-                          base::Unretained(this)),
-      base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,
-                     base::Unretained(this)));
-
   // Clear various state.
   crypto_.Reset();
   expect_sync_configuration_aborted_ = false;
@@ -588,13 +645,30 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // preventing Sync startup (e.g. the user signed out).
       // Note that TryStart() is guaranteed to *not* have a synchronous effect
       // (it posts a task).
-      startup_controller_->TryStart(/*force_immediate=*/true);
+      TryStart();
       break;
     case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       // The only exception is browser shutdown: In this case, there's clearly
       // no point in starting up again.
       break;
   }
+}
+
+void SyncServiceImpl::SetSyncFeatureRequested() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_prefs_.SetSyncRequested(true);
+
+  // If the Sync engine was already initialized (probably running in transport
+  // mode), just reconfigure.
+  if (engine_ && engine_->IsInitialized()) {
+    ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+  } else {
+    // Otherwise try to start up. Note that there might still be other disable
+    // reasons remaining, in which case this will effectively do nothing.
+    TryStart();
+  }
+
+  NotifyObservers();
 }
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
@@ -623,9 +697,6 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
     if (!IsSignedIn()) {
       result.Put(DISABLE_REASON_NOT_SIGNED_IN);
     }
-    if (!user_settings_->IsSyncRequested()) {
-      result.Put(DISABLE_REASON_USER_CHOICE);
-    }
   }
 
   if (unrecoverable_error_reason_) {
@@ -644,21 +715,17 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
                                          : TransportState::DISABLED;
   }
 
-  if (!engine_ || !engine_->IsInitialized()) {
-    switch (startup_controller_->GetState()) {
-        // Note: If the engine is allowed to run, then we should generally have
-        // kicked off the startup process already, so NOT_STARTED should be
-        // impossible here. But it can happen during browser shutdown.
-      case StartupController::State::NOT_STARTED:
-      case StartupController::State::STARTING_DEFERRED:
-        DCHECK(!engine_);
-        return TransportState::START_DEFERRED;
-      case StartupController::State::STARTED:
-        DCHECK(engine_);
-        return TransportState::INITIALIZING;
-    }
-    NOTREACHED();
+  if (!engine_) {
+    // Starting the engine is allowed but didn't happen. Either this was
+    // deferred, or the service is shutting down and there's no sense in
+    // restarting. For the second case, doesn't matter much what to return.
+    return TransportState::START_DEFERRED;
   }
+
+  if (!engine_->IsInitialized()) {
+    return TransportState::INITIALIZING;
+  }
+
   DCHECK(engine_);
   // The DataTypeManager gets created once the engine is initialized.
   DCHECK(data_type_manager_);
@@ -816,9 +883,9 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
-  // Auto-start means IsFirstSetupComplete gets set automatically.
+  // Auto-start means IsInitialSyncFeatureSetupComplete gets set automatically.
   if (start_behavior_ == AUTO_START &&
-      !user_settings_->IsFirstSetupComplete()) {
+      !user_settings_->IsInitialSyncFeatureSetupComplete()) {
     // This will trigger a configure if it completes setup.
     user_settings_->SetFirstSetupComplete(
         SyncFirstSetupCompleteSource::ENGINE_INITIALIZED_WITH_AUTO_START);
@@ -1034,7 +1101,10 @@ void SyncServiceImpl::CryptoStateChanged() {
 
 void SyncServiceImpl::CryptoRequiredUserActionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeRecordTrustedVaultHistograms();
+}
 
+void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
   if (should_record_trusted_vault_error_shown_on_startup_ &&
       crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
     DCHECK(engine_);
@@ -1051,7 +1121,7 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
         // A 'first time sync configure' is an indication that the account was
         // added to the browser recently (sign in).
         base::UmaHistogramBoolean(
-            "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+            "Sync.TrustedVaultErrorShownOnFirstTimeSync2",
             user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
       }
     }
@@ -1115,6 +1185,14 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
+bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
+  // This can return true only on ChromeOS Ash, upon DISABLE_SYNC_ON_CLIENT.
+  // TODO(crbug.com/1443446): A simpler and more robust implementation for this
+  // state would be to use a dedicated pref.
+  return user_settings_->IsInitialSyncFeatureSetupComplete() &&
+         !IsLocalSyncEnabled() && !IsSyncFeatureConsideredRequested();
+}
+
 bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
   // TODO(crbug.com/856179): Arguably, IsSetupInProgress() shouldn't prevent
@@ -1130,7 +1208,7 @@ SyncServiceImpl::GetSetupInProgressHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (++outstanding_setup_in_progress_handles_ == 1) {
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    TryStart();
 
     NotifyObservers();
   }
@@ -1181,6 +1259,38 @@ void SyncServiceImpl::OnPreferredDataTypesPrefChange() {
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_client_.get();
+}
+
+bool SyncServiceImpl::IsSyncFeatureConsideredRequested() const {
+  CHECK(!IsLocalSyncEnabled());
+
+  if (sync_prefs_.IsSyncClientDisabledByPolicy()) {
+    return false;
+  }
+
+  const bool has_sync_consent = HasSyncConsent();
+  const bool is_sync_requested = sync_prefs_.IsSyncRequested();
+
+  // In most cases, the two values are identical. In this case there is no
+  // reason to evaluate the feature toggle or reconcile the two values.
+  if (has_sync_consent == is_sync_requested) {
+    return has_sync_consent;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, `has_sync_consent` should always be true, and what actually matters
+  // is `is_sync_requested`, which is set to false if the server reports
+  // DISABLE_SYNC_ON_CLIENT (e.g. reset via dashboard).
+  return is_sync_requested;
+#else
+  // On all platforms except Chrome Ash, `has_sync_consent` is the new way to
+  // determine whether sync-the-feature is considered requested, if the feature
+  // toggle is enabled and otherwise fall back to the legacy
+  // `is_sync_requested`.
+  return base::FeatureList::IsEnabled(kSyncIgnoreSyncRequestedPreference)
+             ? has_sync_consent
+             : is_sync_requested;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
@@ -1320,6 +1430,15 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
 }
 
+bool SyncServiceImpl::ShouldHonorBookmarksAndReadingListAccountStorageOptIn()
+    const {
+  // The special bookmarks&readinglist account-storage opt-in should be honored
+  // only in transport mode (not in full-sync mode). As a special case, it
+  // should not be honored while the setup for Sync-the-feature is in progress,
+  // so that the user can properly select the types they want to sync.
+  return !IsSetupInProgress() && UseTransportOnlyMode();
+}
+
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ModelTypeSet registered_types;
@@ -1332,8 +1451,11 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
 }
 
 ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
+  // Control types (in practice, NIGORI) are always supported. This special case
+  // is necessary because the NIGORI controller isn't in
+  // `data_type_controllers_`.
+  ModelTypeSet allowed_types = ControlTypes();
   // Collect the types from all controllers that support transport-only mode.
-  ModelTypeSet allowed_types;
   for (const auto& [type, controller] : data_type_controllers_) {
     if (controller->ShouldRunInTransportOnlyMode()) {
       allowed_types.Put(type);
@@ -1533,7 +1655,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    TryStart();
     NotifyObservers();
   }
 }
@@ -1542,34 +1664,9 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_first_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
     ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-  }
-}
-
-void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
-  // Ignore the notification if the service itself set the pref.
-  if (is_setting_sync_requested_) {
-    is_setting_sync_requested_ = false;
-    return;
-  }
-
-  if (is_sync_requested) {
-    // If the Sync engine was already initialized (probably running in transport
-    // mode), just reconfigure.
-    if (engine_ && engine_->IsInitialized()) {
-      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-    } else {
-      // Otherwise try to start up. Note that there might still be other disable
-      // reasons remaining, in which case this will effectively do nothing.
-      startup_controller_->TryStart(/*force_immediate=*/true);
-    }
-
-    NotifyObservers();
-  } else {
-    // This will notify the observers.
-    // TODO(crbug.com/856179): Evaluate whether we can get away without a
-    // full restart in this case (i.e. just reconfigure).
-    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                ResetEngineReason::kRequestedPrefChange);
+    // IsSyncFeatureEnabled() likely changed, it might be time to record
+    // histograms.
+    MaybeRecordTrustedVaultHistograms();
   }
 }
 
@@ -1791,18 +1888,11 @@ void SyncServiceImpl::StopAndClear() {
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();
 
-  // Clear the sync-requested bit, but avoid side effects in
-  // OnSyncRequestedPrefChange() by leveraging |is_setting_sync_requested_|.
-  //
-  // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
-  // |is_setting_sync_requested_| wouldn't get reset, so check.
-  if (user_settings_->IsSyncRequested()) {
-    CHECK(!is_setting_sync_requested_);
-    is_setting_sync_requested_ = true;
-    user_settings_->ClearSyncRequested();
-    // OnSyncRequestedPrefChange() should have cleared the flag.
-    CHECK(!is_setting_sync_requested_);
-  }
+#if BUILDFLAG(IS_IOS)
+  sync_prefs_.ClearBookmarksAndReadingListAccountStorageOptIn();
+#endif  // BUILDFLAG(IS_IOS)
+
+  sync_prefs_.SetSyncRequested(false);
 
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
@@ -1893,7 +1983,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
   }
 
   if (restart) {
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    TryStart();
   }
 }
 

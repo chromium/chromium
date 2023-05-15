@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -119,7 +120,7 @@ class PluginVmAvailabilitySubscription {
   void OnPolicyChanged();
   void OnImageExistsChanged();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Whether Plugin VM was previously allowed for the profile.
   bool is_allowed_;

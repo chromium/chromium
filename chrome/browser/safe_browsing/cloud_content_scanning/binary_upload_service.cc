@@ -206,6 +206,21 @@ void BinaryUploadService::Request::set_tab_url(const GURL& tab_url) {
   content_analysis_request_.mutable_request_data()->set_tab_url(tab_url.spec());
 }
 
+void BinaryUploadService::Request::set_printer_name(
+    const std::string& printer_name) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_print_metadata()
+      ->set_printer_name(printer_name);
+}
+
+void BinaryUploadService::Request::set_printer_type(
+    enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
+        printer_type) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_print_metadata()
+      ->set_printer_type(printer_type);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
 

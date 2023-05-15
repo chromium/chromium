@@ -29,7 +29,7 @@
 #include "sql/transaction.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 namespace history {
@@ -117,7 +117,7 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
 
 #if BUILDFLAG(IS_APPLE)
   // Exclude the history file from backups.
-  base::mac::SetBackupExclusion(history_name);
+  base::apple::SetBackupExclusion(history_name);
 #endif
 
   // Prime the cache.
@@ -509,6 +509,10 @@ TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {
 
 HistorySyncMetadataDatabase* HistoryDatabase::GetHistoryMetadataDB() {
   return &history_metadata_db_;
+}
+
+sql::Database& HistoryDatabase::GetDBForTesting() {
+  return db_;
 }
 
 sql::Database& HistoryDatabase::GetDB() {

@@ -239,9 +239,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     public void requestToShowTab(Tab tab, @TabSelectionType int type) {
         boolean isFromExternalApp =
                 tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
-        if (mVisibleTab != tab && tab != null && !tab.isNativePage()) {
-            TabSwitchMetrics.startTabSwitchLatencyTiming(type);
-        }
         if (mVisibleTab != null && mVisibleTab != tab && !mVisibleTab.needsReload()) {
             boolean attached = mVisibleTab.getWebContents() != null
                     && mVisibleTab.getWebContents().getTopLevelNativeWindow() != null;

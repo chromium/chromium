@@ -81,11 +81,14 @@ class UntrustedSource : public content::URLDataSource,
 
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;
-  raw_ptr<OneGoogleBarService> one_google_bar_service_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: All/TabSharingUIViewsBrowserTest.ChangeCapturedTabFavicon/0
+  // https://ci.chromium.org/ui/p/chromium-m113/builders/try/win-rel/958/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FTabSharingUIViewsBrowserTest.ChangeCapturedTabFavicon%2FAll.0+VHash%3Abdbee181b3e0309b
+  raw_ptr<OneGoogleBarService, FlakyDanglingUntriaged> one_google_bar_service_;
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
   absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_UNTRUSTED_SOURCE_H_

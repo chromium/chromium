@@ -3,20 +3,24 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+#include <jni.h>
 #include <algorithm>
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,8 +38,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+using base::MockCallback;
+using base::RepeatingCallback;
 using base::test::FeatureRef;
 using base::test::FeatureRefAndParams;
 using password_manager::MockPasswordFormManagerForUI;
@@ -142,6 +149,9 @@ class SaveUpdatePasswordMessageDelegateTest
   // expectations.
   MockPasswordEditDialog* PreparePasswordEditDialog();
 
+  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>&
+  GetMigrationWarningCallback();
+
   void TriggerDialogAcceptedCallback(const std::u16string& username,
                                      const std::u16string& password);
   void TriggerLegacyDialogAcceptedCallback(int selected_username_index);
@@ -187,6 +197,8 @@ class SaveUpdatePasswordMessageDelegateTest
   PasswordEditDialog::LegacyDialogAcceptedCallback
       legacy_dialog_accepted_callback_;
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
+  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>
+      mock_password_migration_warning_callback_;
 };
 
 class SaveUpdatePasswordMessageDelegateWithFeaturesTest
@@ -207,11 +219,8 @@ class SaveUpdatePasswordMessageDelegateWithFeaturesTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
-    : delegate_(base::WrapUnique(
-          new SaveUpdatePasswordMessageDelegate(base::BindRepeating(
-              &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
-              base::Unretained(this))))) {}
+SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
+    default;
 
 void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
@@ -221,6 +230,13 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
       true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
   NavigateAndCommit(GURL(kDefaultUrl));
+
+  // Using `new` and `WrapUnique` to access a non-public constructor.
+  delegate_ = base::WrapUnique(new SaveUpdatePasswordMessageDelegate(
+      base::BindRepeating(
+          &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
+          base::Unretained(this)),
+      mock_password_migration_warning_callback_.Get()));
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
@@ -361,6 +377,11 @@ MockPasswordEditDialog*
 SaveUpdatePasswordMessageDelegateTest::PreparePasswordEditDialog() {
   mock_password_edit_dialog_ = std::make_unique<MockPasswordEditDialog>();
   return mock_password_edit_dialog_.get();
+}
+
+base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>&
+SaveUpdatePasswordMessageDelegateTest::GetMigrationWarningCallback() {
+  return mock_password_migration_warning_callback_;
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
@@ -586,6 +607,25 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Tests that local password migration warning will show when the user clicks
+// "Save" button.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       TriggerLocalPasswordMigrationWarning_OnSaveClicked) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the

@@ -78,7 +78,7 @@ absl::optional<std::u16string> MapAppIdToShortName(
 // application starts or stops using the camera. `application_added` is true
 // when the application starts using the camera and false when the application
 // stops using the camera.
-void SendActiveApplicationsChangedNotification(bool application_added) {
+void SendActiveCameraApplicationsChangedNotification(bool application_added) {
   if (ash::features::IsCrosPrivacyHubEnabled()) {
     ash::PrivacyHubController* privacy_hub_controller =
         ash::Shell::Get()->privacy_hub_controller();
@@ -168,11 +168,12 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
   if (is_camera_used && !was_using_camera_already) {
     // App with id `app_id` started using camera.
     camera_using_app_ids_[active_user_account_id_].push_front(update.AppId());
-    SendActiveApplicationsChangedNotification(/*application_added=*/true);
+    SendActiveCameraApplicationsChangedNotification(/*application_added=*/true);
   } else if (!is_camera_used && was_using_camera_already) {
     // App with id `app_id` stopped using camera.
     base::Erase(camera_using_app_ids_[active_user_account_id_], update.AppId());
-    SendActiveApplicationsChangedNotification(/*application_added=*/false);
+    SendActiveCameraApplicationsChangedNotification(
+        /*application_added=*/false);
   }
 
   if (is_microphone_used && !was_using_microphone_already) {

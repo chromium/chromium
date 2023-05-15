@@ -420,7 +420,8 @@ void StandaloneBrowserExtensionApps::OnLoadIcon(uint32_t icon_effects,
                                                 apps::LoadIconCallback callback,
                                                 IconValuePtr icon_value) {
   // Apply masking effects here since masking is unimplemented in Lacros.
-  ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
+  ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
+                   static_cast<IconEffects>(icon_effects), size_hint_in_dip,
                    std::move(icon_value), std::move(callback));
 }
 

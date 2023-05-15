@@ -8,20 +8,6 @@ import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {$} from 'chrome://resources/ash/common/util.js';
 
-/**
- * The different types of power consumer types. Should be kept in sync with the
- * PowerConsumerType in ProcessDataCollector.
- * @enum {number}
- */
-const PowerConsumerType = {
-  SCREEN: 0,
-  KEYBOARD: 1,
-  CROSTINI: 2,
-  ARC: 3,
-  CHROME: 4,
-  SYSTEM: 5,
-};
-
 const devicePixelRatio = window.devicePixelRatio;
 
 /**
@@ -823,11 +809,6 @@ function showCpuFreqData({freqStateData, systemResumedData}) {
       'frequencyStateOccupancyPercentageHeader', 'MHz', 'cpu-freq-plots-div');
 }
 
-function showProcessUsageData(processUsageData) {
-  // TODO(crbug.com/851767): Add the code to create a suitable UI for this
-  // information.
-}
-
 function requestBatteryChargeData() {
   sendWithPromise('requestBatteryChargeData').then(showBatteryChargeData);
 }
@@ -838,10 +819,6 @@ function requestCpuIdleData() {
 
 function requestCpuFreqData() {
   sendWithPromise('requestCpuFreqData').then(showCpuFreqData);
-}
-
-function requestProcessUsageData() {
-  sendWithPromise('requestProcessUsageData').then(showProcessUsageData);
 }
 
 /**

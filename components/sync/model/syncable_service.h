@@ -66,6 +66,11 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   // Stop syncing the specified type and reset state.
   virtual void StopSyncing(ModelType type) = 0;
 
+  // Notifies the syncable service to stop syncing on browser shutdown. This is
+  // a separate method from StopSyncing() to let implementations do something
+  // different in case of shutdown.
+  virtual void OnBrowserShutdown(ModelType type);
+
   // SyncChangeProcessor interface.
   // Process a list of new SyncChanges and update the local data as necessary.
   // Returns: absl::nullopt if no error was encountered, otherwise a

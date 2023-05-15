@@ -19,14 +19,12 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer2_pages
 
-_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(),
-    'third_party', 'blink', 'perf_tests', 'speedometer')
+_PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
+                              'blink', 'perf_tests')
 
 
-@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript')
-class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
-  """Speedometer2 Benchmark.
+class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
+  """Abstract base Speedometer2 Benchmark class.
 
   Runs all the speedometer 2 suites by default. Add --suite=<regex> to filter
   out suites, and only run suites whose names are matched by the regular
@@ -40,16 +38,16 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
   iteration_count = None
 
   @classmethod
-  def Name(cls):
-    return 'speedometer2'
+  def GetStoryClass(cls):
+    raise NotImplementedError()
 
   def CreateStorySet(self, options):
     should_filter_suites = bool(options.suite)
+    story_cls = self.GetStoryClass()
     filtered_suite_names = list(
-        map(speedometer2_pages.Speedometer2Story.GetFullSuiteName,
-            speedometer2_pages.Speedometer2Story.GetSuites(options.suite)))
+        map(story_cls.GetFullSuiteName, story_cls.GetSuites(options.suite)))
 
-    ps = story.StorySet(base_dir=_SPEEDOMETER_DIR)
+    story_set = story.StorySet(base_dir=self._SOURCE_DIR)
 
     # For a smoke test one iteration is sufficient
     if self.enable_smoke_test_mode and not self.iteration_count:
@@ -57,13 +55,12 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
     else:
       iteration_count = self.iteration_count
 
-    ps.AddStory(
-        speedometer2_pages.Speedometer2Story(ps, should_filter_suites,
-                                             filtered_suite_names,
-                                             iteration_count))
-    return ps
+    story_set.AddStory(
+        story_cls(story_set, should_filter_suites, filtered_suite_names,
+                  iteration_count))
+    return story_set
 
-  def CreateCoreTimelineBasedMeasurementOptions(self):
+  def CreateCoreTimelinedMeasurementOptions(self):
     if not self.enable_systrace:
       return timeline_based_measurement.Options()
 
@@ -86,11 +83,11 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
 
       tbm_options = timeline_based_measurement.Options(
           overhead_level=cat_filter)
-      tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
+      tbm_options.SetTimelinedMetrics(['runtimeStatsTotalMetric'])
       return tbm_options
 
     tbm_options = timeline_based_measurement.Options(overhead_level=cat_filter)
-    tbm_options.SetTimelineBasedMetrics(['tracingMetric'])
+    tbm_options.SetTimelinedMetrics(['tracingMetric'])
     return tbm_options
 
   def SetExtraBrowserOptions(self, options):
@@ -113,7 +110,7 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
   def ProcessCommandLineArgs(cls, parser, args):
     if args.suite:
       try:
-        if not speedometer2_pages.Speedometer2Story.GetSuites(args.suite):
+        if not cls.GetStoryClass().GetSuites(args.suite):
           raise parser.error('--suite: No matches.')
       except re.error:
         raise parser.error('--suite: Invalid regex.')
@@ -128,9 +125,61 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript')
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer2.0')
+class Speedometer20(_Speedometer2):
+  """Speedometer2.0 benchmark.
+  Explicitly named version."""
+
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+
+  @classmethod
+  def GetStoryClass(cls):
+    return speedometer2_pages.Speedometer20Story
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer2.0'
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer2.1')
+class Speedometer21(_Speedometer2):
+  """Speedometer2.1 benchmark.
+  Explicitly named version."""
+
+  #TODO(cbruni): update path once new version is checked in.
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+
+  @classmethod
+  def GetStoryClass(cls):
+    return speedometer2_pages.Speedometer21Story
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer2.1'
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer2.0')
+class Speedometer2(Speedometer20):
+  """The latest version of the Speedometer2 benchmark."""
+  @classmethod
+  def GetStoryClass(cls):
+    return speedometer2_pages.Speedometer2Story
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer2'
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer2.0')
 class V8Speedometer2Future(Speedometer2):
-  """Speedometer2 benchmark with the V8 flag --future.
+  """The latest Speedometer2 benchmark with the V8 flag --future.
 
   Shows the performance of upcoming V8 VM features.
   """
@@ -143,26 +192,11 @@ class V8Speedometer2Future(Speedometer2):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
 
 
-@benchmark.Info(emails=['tmrts@chromium.org'], component='Blink>JavaScript')
-class Speedometer2PCScan(Speedometer2):
-  """Speedometer2 benchmark with the PCScanRendererOnly flag.
-
-  Shows the performance of upcoming PCScan feature.
-  """
-
-  @classmethod
-  def Name(cls):
-    return 'speedometer2-pcscan'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-        '--enable-features=PartitionAllocPCScanRendererOnly')
-
-
 @benchmark.Info(emails=['omerkatz@chromium.org'],
-                component='Blink>JavaScript>GarbageCollection')
+                component='Blink>JavaScript>GarbageCollection',
+                documentation_url='https://browserbench.org/Speedometer2.0')
 class Speedometer2MinorMC(Speedometer2):
-  """Speedometer2 benchmark with the MinorMC flag.
+  """The latest Speedometer2 benchmark with the MinorMC flag.
 
   Shows the performance of upcoming MinorMC young generation GC in V8.
   """

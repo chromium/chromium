@@ -28,6 +28,8 @@
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -2237,6 +2239,14 @@ void ExtensionPrefs::RegisterProfilePrefs(
   // TODO(archanasimha): move pref registration to where the variable is
   // defined.
   registry->RegisterIntegerPref(kCorruptedDisableCount.name, 0);
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  registry->RegisterBooleanPref(
+      prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
+  registry->RegisterDictionaryPref(
+      prefs::kSupervisedUserApprovedExtensions,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif  // #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if !BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(pref_names::kAppFullscreenAllowed, true);

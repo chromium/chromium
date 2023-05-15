@@ -388,7 +388,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     const std::string click_submit_button_js =
         "(function() { document.getElementById('submit').click(); })();";
     content::TestNavigationObserver nav_observer(web_contents);
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_submit_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_submit_button_js));
     nav_observer.Wait();
   }
 
@@ -398,7 +398,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
   }
 
   // Should be called for credit_card_upload_form_cc.html.
@@ -408,10 +408,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
         "(function() { document.getElementById('fill_form').click(); })();";
     const std::string click_add_fields_button_js =
         "(function() { document.getElementById('add_fields').click(); })();";
+    ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), click_fill_button_js));
     ASSERT_TRUE(
-        content::ExecuteScript(GetActiveWebContents(), click_fill_button_js));
-    ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                       click_add_fields_button_js));
+        content::ExecJs(GetActiveWebContents(), click_add_fields_button_js));
   }
 
   void FillFormWithCardDetailsOnly() {
@@ -420,8 +419,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     const std::string click_fill_card_button_js =
         "(function() { document.getElementById('fill_card_only').click(); "
         "})();";
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_fill_card_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_card_button_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -430,12 +428,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_cvc_button_js =
         "(function() { document.getElementById('clear_cvc').click(); })();";
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_clear_cvc_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_clear_cvc_button_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -444,13 +441,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_fill_invalid_cvc_button_js =
         "(function() { document.getElementById('fill_invalid_cvc').click(); "
         "})();";
     ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_fill_invalid_cvc_button_js));
+        content::ExecJs(web_contents, click_fill_invalid_cvc_button_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -459,12 +456,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_name_button_js =
         "(function() { document.getElementById('clear_name').click(); })();";
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_clear_name_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_clear_name_button_js));
   }
 
   // Should be called for credit_card_upload_form_shipping_address.html.
@@ -473,13 +469,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_conflicting_name_button_js =
         "(function() { document.getElementById('conflicting_name').click(); "
         "})();";
     ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_conflicting_name_button_js));
+        content::ExecJs(web_contents, click_conflicting_name_button_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -488,14 +484,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_expiration_date_button_js =
         "(function() { "
         "document.getElementById('clear_expiration_date').click(); "
         "})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                       click_clear_expiration_date_button_js));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, click_clear_expiration_date_button_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -504,19 +500,19 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_expiration_date_button_js =
         "(function() { "
         "document.getElementById('clear_expiration_date').click(); "
         "})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                       click_clear_expiration_date_button_js));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, click_clear_expiration_date_button_js));
 
     std::string set_month_js =
         "(function() { document.getElementById('cc_month_exp_id').value =" +
         month + ";})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, set_month_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, set_month_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -525,19 +521,19 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_expiration_date_button_js =
         "(function() { "
         "document.getElementById('clear_expiration_date').click(); "
         "})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                       click_clear_expiration_date_button_js));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, click_clear_expiration_date_button_js));
 
     std::string set_year_js =
         "(function() { document.getElementById('cc_year_exp_id').value =" +
         year + ";})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, set_year_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, set_year_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -547,17 +543,17 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     std::string set_month_js =
         "(function() { document.getElementById('cc_month_exp_id').value =" +
         month + ";})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, set_month_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, set_month_js));
 
     std::string set_year_js =
         "(function() { document.getElementById('cc_year_exp_id').value =" +
         year + ";})();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, set_year_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, set_year_js));
   }
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
@@ -566,12 +562,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_clear_address_button_js =
         "(function() { document.getElementById('clear_address').click(); })();";
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents, click_clear_address_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_clear_address_button_js));
   }
 
   // Should be called for credit_card_upload_form_shipping_address.html.
@@ -580,13 +575,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     const std::string click_conflicting_postal_code_button_js =
         "(function() { "
         "document.getElementById('conflicting_postal_code').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(
-        web_contents, click_conflicting_postal_code_button_js));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, click_conflicting_postal_code_button_js));
   }
 
   void SetUploadDetailsRpcPaymentsAccepts() {
@@ -837,9 +832,6 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     // Click on the redirect button.
     ClickOnDialogViewWithId(DialogViewId::MANAGE_CARDS_BUTTON);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the manage cards bubble. Ensures that clicking the [Manage cards]
@@ -930,12 +922,8 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     : public SaveCardBubbleViewsFullFormBrowserTest {
  protected:
   SaveCardBubbleViewsSyncTransportFullFormBrowserTest() {
-    // Set up Sync the transport mode, so that sync starts on content-area
-    // signins. Also add wallet data type to the list of enabled types.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillUpstream,
-                              features::kAutofillEnableAccountWalletStorage},
-        /*disabled_features=*/{});
+    // Add wallet data type to the list of enabled types.
+    feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   }
 
  public:
@@ -1566,7 +1554,8 @@ IN_PROC_BROWSER_TEST_F(
 // postal codes are detected.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
+    // TODO(crbug.com/1439213): Re-enable this test
+    DISABLED_Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 

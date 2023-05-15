@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_KEYBOARD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -43,7 +44,7 @@ class ASH_EXPORT AppListKeyboardController {
   bool HandleMovingFocusToAppsGrid(int column);
   bool HandleMovingFocusToRecents(int column);
 
-  AppListViewProvider* const view_provider_;
+  const raw_ptr<AppListViewProvider, ExperimentalAsh> view_provider_;
 };
 
 }  // namespace ash

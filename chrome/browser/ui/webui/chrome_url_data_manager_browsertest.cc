@@ -36,7 +36,9 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#else
 #include "chrome/browser/signin/signin_features.h"
 #endif
 
@@ -173,7 +175,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
+#else
     enabled_features.push_back(kForYouFre);
 #endif
     enabled_features.push_back(media::kUseMediaHistoryStore);
@@ -249,7 +253,10 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 //  2) Presence of TrustedTypes checks (see TrustedTypesEnabled test).
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
+// TODO:(https://crbug.com/1439754): Flakily crashes on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
     "chrome://app-service-internals",
+#endif
     "chrome://attribution-internals",
     "chrome://autofill-internals",
     "chrome://bookmarks",
@@ -308,7 +315,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://privacy-sandbox-dialog/?debug",
     "chrome://process-internals",
     "chrome://quota-internals",
-    "chrome://read-anything-side-panel.top-chrome",
+    "chrome-untrusted://read-anything-side-panel.top-chrome",
     "chrome://read-later.top-chrome",
     "chrome://reset-password",
     "chrome://safe-browsing",
@@ -362,17 +369,26 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1102129): DCHECK failure in
     // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
     // "chrome://arc-graphics-tracing",
+    "chrome://app-disabled",
+    "chrome://certificate-manager/",
     "chrome://cryptohome",
     "chrome://drive-internals",
+    "chrome://emoji-picker",
     "chrome://family-link-user-internals",
     "chrome://help-app",
     "chrome://linux-proxy-config",
     "chrome://multidevice-internals",
     "chrome://nearby-internals",
+    "chrome://network",
+    "chrome://office-fallback/",
+    "chrome://parent-access",
     "chrome://power",
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
+    "chrome://set-time",
     "chrome://slow",
+    "chrome://smb-credentials-dialog/",
+    "chrome://smb-share-dialog/",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",

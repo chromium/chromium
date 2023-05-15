@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "goma", "reclient")
+load("//lib/builders.star", "builder", "defaults", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
@@ -48,21 +48,10 @@ defaults.service_account.set("findit-builder@chops-service-accounts.iam.gservice
 
 # Builders are defined in lexicographic order by name
 
-# Same as findit_variable, except now with a specified recipe, as this is no
-# longer overridable with Buildbucket V2
-builder(
-    name = "findit-rerun",
-    executable = "recipe:findit/chromium/single_revision",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
-)
-
 # GoFindit builder to verify a culprit (go/gofindit-design-doc)
 builder(
     name = "gofindit-culprit-verification",
     executable = "recipe:gofindit/chromium/single_revision",
-    goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
@@ -33,13 +34,27 @@ class AutofillProgressDialogControllerImpl
 
   ~AutofillProgressDialogControllerImpl() override;
 
-  // Show a progress dialog for underlying autofill processes. The
+  // Show a progress dialog for underlying authorization processes. The
   // `autofill_progress_dialog_type` determines the type of the progress dialog
   // and `cancel_callback` is the function to invoke when the cancel button is
   // clicked.
   void ShowDialog(AutofillProgressDialogType autofill_progress_dialog_type,
                   base::OnceClosure cancel_callback);
-  void DismissDialog(bool show_confirmation_before_closing);
+
+  // Dismisses the progress dialog after the underlying authorization processes
+  // have completed. If `show_confirmation_before_closing` is true, the UI
+  // dismissal gets delayed and we show a confirmation screen to inform them
+  // user that the authentication succeeded. The confirmation is automatically
+  // dismissed after a short period of time and the progress dialog closes.
+  //
+  // It maybe be possible to authorize the filling without user interaction
+  // (purely based on risk signals, the user did not had to type a password,
+  // CVC, use biometrics, ...). If the authorization succeeded without user
+  // interaction, DismissDialog calls `no_interactive_authentication_callback`
+  // after closing the dialog.
+  void DismissDialog(bool show_confirmation_before_closing,
+                     base::OnceClosure no_interactive_authentication_callback =
+                         base::OnceClosure());
 
   // AutofillProgressDialogController.
   void OnDismissed(bool is_canceled_by_user) override;
@@ -66,6 +81,8 @@ class AutofillProgressDialogControllerImpl
   // The type of the progress dialog that is being displayed.
   AutofillProgressDialogType autofill_progress_dialog_type_ =
       AutofillProgressDialogType::kUnspecified;
+
+  base::OnceClosure no_interactive_authentication_callback_;
 };
 
 }  // namespace autofill

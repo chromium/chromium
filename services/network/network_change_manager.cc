@@ -81,6 +81,30 @@ void NetworkChangeManager::OnNetworkChanged(
 }
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+void NetworkChangeManager::BindNetworkInterfaceChangeListener(
+    mojo::PendingAssociatedReceiver<mojom::NetworkInterfaceChangeListener>
+        listener_receiver) {
+  interface_change_listener_receiver_.Bind(std::move(listener_receiver));
+}
+
+// NetworkInterfaceChangeListener implementation:
+void NetworkChangeManager::OnNetworkInterfacesChanged(
+    mojom::NetworkInterfaceChangeParamsPtr change_params) {
+  // network_change_notifier_ can be null in unit tests.
+  if (!network_change_notifier_) {
+    return;
+  }
+
+  net::NetworkChangeNotifierPassive* notifier =
+      static_cast<net::NetworkChangeNotifierPassive*>(
+          network_change_notifier_.get());
+
+  notifier->GetAddressMapOwner()->GetAddressMapCacheLinux()->ApplyDiffs(
+      change_params->address_map, change_params->online_links);
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 size_t NetworkChangeManager::GetNumClientsForTesting() const {
   return clients_.size();
 }

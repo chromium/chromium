@@ -20,9 +20,11 @@
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -158,6 +160,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   scoped_refptr<ResourceRequestBody> request_body;
   bool keepalive = false;
   bool browsing_topics = false;
+  bool ad_auction_headers = false;
   bool has_user_gesture = false;
   bool enable_load_timing = false;
   bool enable_upload_progress = false;
@@ -192,6 +195,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
   bool has_storage_access = false;
+  network::mojom::AttributionSupport attribution_reporting_support =
+      network::mojom::AttributionSupport::kWeb;
+  mojom::AttributionReportingEligibility attribution_reporting_eligibility =
+      mojom::AttributionReportingEligibility::kUnset;
+  network::AttributionReportingRuntimeFeatures
+      attribution_reporting_runtime_features;
 };
 
 // This does not accept |kDefault| referrer policy.

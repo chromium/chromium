@@ -6,11 +6,64 @@
  * #type=style
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-shared-style
+ * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #include=cr-shared-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
-html {
-  background-color: var(--cros-bg-color);
+:host {
+  /* Margin on hover for responsive layout adjusts based on padded-left minus
+     16px to align left. */
+  --active-status-hover-margin: calc(var(--padded-left) - 16px);
+}
+
+:host-context(body.jelly-enabled) .main-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+:host-context(body.jelly-enabled) .margin-border {
+  margin-inline: 16px;
+}
+
+:host-context(body.jelly-enabled) .data-container {
+  background-color: var(--cros-sys-app_base);
+  border-radius: 16px 16px 0 0;
+  flex: 1 1 auto;
+  margin-top: 16px;
+}
+
+:host-context(body.jelly-enabled) .file-icon-blue {
+  --iron-icon-fill-color: var(--cros-sys-progress);
+}
+
+:host-context(body.jelly-enabled) .file-icon-gray {
+  --iron-icon-fill-color: var(--cros-sys-secondary);
+}
+
+:host-context(body.jelly-enabled) .file-icon-green {
+  --iron-icon-fill-color: var(--cros-sys-positive);
+}
+
+:host-context(body.jelly-enabled) .file-icon-red {
+  --iron-icon-fill-color: var(--cros-sys-error);
+}
+
+:host-context(body.jelly-enabled) .file-icon-yellow {
+  --iron-icon-fill-color: var(--cros-sys-warning);
+}
+
+:host-context(body.jelly-enabled) #activeStatusContainer:hover {
+  background-color: var(--cros-sys-hover_on_subtle);
+}
+
+:host-context(body.jelly-enabled) #headerContainer {
+  align-items: center;
+  border-bottom: none;
+  display: flex;
+  flex: 0 1 auto;
+  height: 64px;
+  padding: 0;
 }
 
 .flex-center {
@@ -39,6 +92,26 @@ html {
 }
 
 @media (prefers-color-scheme: dark) {
+  :host-context(body.jelly-enabled) .file-icon-blue {
+    --iron-icon-fill-color: var(--cros-sys-progress);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-gray {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-green {
+    --iron-icon-fill-color: var(--cros-sys-positive);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-red {
+    --iron-icon-fill-color: var(--cros-sys-error);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-yellow {
+    --iron-icon-fill-color: var(--cros-sys-warning);
+  }
+
   .file-icon-blue {
     --iron-icon-fill-color: var(--google-blue-300);
   }
@@ -66,7 +139,26 @@ html {
   white-space: nowrap;
 }
 
+#activeStatusContainer:hover {
+  background-color: rgba(var(--google-blue-600-rgb), 0.06);
+  border-radius: 16px;
+  margin-inline-start: 16px;
+  padding-inline-start: 16px;
+}
+
 @media (min-width: 600px) and (max-width: 767px) {
+  :host {
+    --padded-left: 32px;
+  }
+
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin-inline: 20px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 20px;
+  }
+
   .date-column {
     width: 56px;
   }
@@ -79,12 +171,12 @@ html {
     width: 224px;
   }
 
-  .margin-border {
-    margin: 0px 40px 0px 40px;
+  :host-context(body:not(.jelly-enabled)) .margin-border {
+    margin-inline: 40px;
   }
 
   .padded-left {
-    margin-inline-start: 32px;
+    margin-inline-start: var(--padded-left);
   }
 
   .printer-name-column {
@@ -96,14 +188,23 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
-    border-radius: 16px;
-    margin-inline-start: 16px;
-    padding-left: 16px;
+    margin-inline-start: var(--active-status-hover-margin);
   }
 }
 
 @media (min-width: 768px) and (max-width: 959px) {
+  :host {
+    --padded-left: 40px;
+  }
+
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin-inline: 20px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 20px;
+  }
+
   .date-column {
     width: 82px;
   }
@@ -116,12 +217,12 @@ html {
     width: 264px;
   }
 
-  .margin-border {
-    margin: 0px 40px 0px 40px;
+  :host-context(body:not(.jelly-enabled)) .margin-border {
+    margin-inline: 40px;
   }
 
   .padded-left {
-    margin-inline-start: 40px;
+    margin-inline-start: var(--padded-left);
   }
 
   .printer-name-column {
@@ -133,14 +234,23 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
-    border-radius: 16px;
-    margin-inline-start: 16px;
-    padding-left: 16px;
+    margin-inline-start: var(--active-status-hover-margin);
   }
 }
 
 @media (min-width: 960px) and (max-width: 1279px) {
+  :host {
+    --padded-left: 48px;
+  }
+
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin-inline: 32px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 32px;
+  }
+
   .date-column {
     width: 82px;
   }
@@ -154,11 +264,11 @@ html {
   }
 
   .margin-border {
-    margin: 0px 64px 0px 64px;
+    margin-inline: 64px;
   }
 
   .padded-left {
-    margin-inline-start: 48px;
+    margin-inline-start: var(--padded-left);
   }
 
   .printer-name-column {
@@ -170,14 +280,23 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
-    border-radius: 16px;
-    margin-inline-start: 16px;
-    padding-left: 16px;
+    margin-inline-start: var(--active-status-hover-margin);
   }
 }
 
 @media (min-width: 1280px) {
+  :host {
+    --padded-left: 56px;
+  }
+
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin-inline: 72px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 72px;
+  }
+
   .date-column {
     width: 144px;
   }
@@ -190,12 +309,12 @@ html {
     width: 356px;
   }
 
-  .margin-border {
-    margin: 0px 144px 0px 144px;
+  :host-context(body:not(.jelly-enabled)) .margin-border {
+    margin-inline: 144px;
   }
 
   .padded-left {
-    margin-inline-start: 56px;
+    margin-inline-start: var(--padded-left);
   }
 
   .printer-name-column {
@@ -207,9 +326,6 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
-    border-radius: 16px;
-    margin-inline-start: 16px;
-    padding-left: 16px;
+    margin-inline-start: var(--active-status-hover-margin);
   }
 }

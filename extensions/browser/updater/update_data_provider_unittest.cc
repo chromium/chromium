@@ -116,13 +116,13 @@ class UpdateDataProviderTest : public ExtensionsTest {
     ASSERT_TRUE(AddFileToDirectory(temp_dir.GetPath(), bar_html, "world"));
 
     ExtensionBuilder builder;
-    DictionaryBuilder manifest_builder;
-    manifest_builder.Set("name", "My First Extension")
-        .Set("version", version)
-        .Set("manifest_version", 2);
+    auto manifest_builder = base::Value::Dict()
+                                .Set("name", "My First Extension")
+                                .Set("version", version)
+                                .Set("manifest_version", 2);
     if (!fingerprint.empty())
       manifest_builder.Set("differential_fingerprint", fingerprint);
-    builder.SetManifest(manifest_builder.Build());
+    builder.SetManifest(std::move(manifest_builder));
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
     builder.SetLocation(location);

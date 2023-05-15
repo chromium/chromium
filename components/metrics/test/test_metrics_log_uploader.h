@@ -24,7 +24,7 @@ class TestMetricsLogUploader
   ~TestMetricsLogUploader() override;
 
   // Mark the current upload complete with the given response code.
-  void CompleteUpload(int response_code);
+  void CompleteUpload(int response_code, bool force_discard = false);
 
   // Check if UploadLog has been called.
   bool is_uploading() const { return is_uploading_; }

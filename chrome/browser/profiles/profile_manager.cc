@@ -100,6 +100,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
@@ -120,8 +121,8 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
@@ -164,6 +165,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -981,7 +983,7 @@ base::FilePath ProfileManager::GetPrimaryUserProfilePath() {
   return profile_manager->user_data_dir().Append(
       profile_manager->GetInitialProfileDir());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   PrefService* local_state = g_browser_process->local_state();
@@ -1285,11 +1287,16 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 
   info->keep_alives[origin]++;
 
+  for (auto& observer : observers_) {
+    observer.OnKeepAliveAdded(profile, origin);
+  }
+
   VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
           << "). keep_alives=" << info->keep_alives;
 
   if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
       origin == ProfileKeepAliveOrigin::kProfileCreationFlow ||
+      origin == ProfileKeepAliveOrigin::kProfileStatistics ||
       (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
        base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
@@ -1491,6 +1498,15 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   // initializing the supervised flag if necessary).
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // After the ManagementPolicy has been set, update it for the Supervised User
+  // Extension Delegate, which has been created before the profile
+  // initialization and needs to obtain the new policies.
+  extensions::ManagementAPI::GetFactoryInstance()
+      ->Get(profile)
+      ->GetSupervisedUserExtensionsDelegate()
+      ->UpdateManagementPolicyRegistration();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif
 
   // Ensure NavigationPredictorKeyedService is started.
@@ -1957,6 +1973,13 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.gaia_id = account_info.gaia;
   init_params.user_name = username;
   init_params.is_consented_primary_account = is_consented_primary_account;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params.is_omitted =
+      base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppProfileIsolation) &&
+      Profile::IsWebAppProfilePath(profile->GetPath());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   init_params.is_ephemeral = IsForceEphemeralProfilesEnabled(profile);
   init_params.is_signed_in_with_credential_provider =

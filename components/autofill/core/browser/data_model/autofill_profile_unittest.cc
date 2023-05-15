@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -44,8 +45,7 @@ std::u16string GetSuggestionLabel(AutofillProfile* profile) {
 }
 
 void SetupTestProfile(AutofillProfile& profile) {
-  profile.set_guid(base::GenerateUuid());
-  profile.set_origin(kSettingsOrigin);
+  profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -65,21 +65,21 @@ std::vector<AutofillProfile*> ToRawPointerVector(
 // Based on existence of first name, last name, and address line 1.
 TEST(AutofillProfileTest, PreviewSummaryString) {
   // Case 0/null: ""
-  AutofillProfile profile0(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile0;
   // Empty profile - nothing to update.
   std::u16string summary0 = GetSuggestionLabel(&profile0);
   EXPECT_EQ(std::u16string(), summary0);
 
   // Case 0a/empty name and address, so the first two fields of the rest of the
   // data is used: "Hollywood, CA"
-  AutofillProfile profile00(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile00;
   test::SetProfileInfo(&profile00, "", "", "", "johnwayne@me.xyz", "Fox", "",
                        "", "Hollywood", "CA", "91601", "US", "16505678910");
   std::u16string summary00 = GetSuggestionLabel(&profile00);
   EXPECT_EQ(u"Hollywood, CA", summary00);
 
   // Case 1: "<address>" without line 2.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
@@ -87,7 +87,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"123 Zoo St., Hollywood", summary1);
 
   // Case 1a: "<address>" with line 2.
-  AutofillProfile profile1a(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1a;
   test::SetProfileInfo(&profile1a, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601",
                        "US", "16505678910");
@@ -95,7 +95,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"123 Zoo St., unit 5", summary1a);
 
   // Case 2: "<lastname>"
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
@@ -104,7 +104,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Mitchell Morrison, Hollywood", summary2);
 
   // Case 3: "<lastname>, <address>"
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "16505678910");
@@ -112,7 +112,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Mitchell Morrison, 123 Zoo St.", summary3);
 
   // Case 4: "<firstname>"
-  AutofillProfile profile4(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile4;
   test::SetProfileInfo(&profile4, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
@@ -120,7 +120,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Marion Mitchell, Hollywood", summary4);
 
   // Case 5: "<firstname>, <address>"
-  AutofillProfile profile5(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile5;
   test::SetProfileInfo(&profile5, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
                        "91601", "US", "16505678910");
@@ -128,7 +128,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Marion Mitchell, 123 Zoo St.", summary5);
 
   // Case 6: "<firstname> <lastname>"
-  AutofillProfile profile6(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile6;
   test::SetProfileInfo(&profile6, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
@@ -136,7 +136,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Marion Mitchell Morrison, Hollywood", summary6);
 
   // Case 7: "<firstname> <lastname>, <address>"
-  AutofillProfile profile7(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile7;
   test::SetProfileInfo(&profile7, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
@@ -145,7 +145,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
 
   // Case 7a: "<firstname> <lastname>, <address>" - same as #7, except for
   // e-mail.
-  AutofillProfile profile7a(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile7a;
   test::SetProfileInfo(&profile7a, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
@@ -164,13 +164,11 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
 
 TEST(AutofillProfileTest, AdjustInferredLabels) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.", "",
                        "Elysium", "CA", "91111", "US", "16502111111");
-  profiles.push_back(std::make_unique<AutofillProfile>(
-      base::GenerateUuid(), "http://www.example.com/"));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[1].get(), "Jane", "", "Doe",
                        "janedoe@tertium.com", "Pluto Inc.", "123 Letha Shore.",
                        "", "Dis", "CA", "91222", "US", "12345678910");
@@ -181,8 +179,7 @@ TEST(AutofillProfileTest, AdjustInferredLabels) {
   EXPECT_EQ(u"John Doe, 666 Erebus St.", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
 
-  profiles.push_back(
-      std::make_unique<AutofillProfile>(base::GenerateUuid(), kSettingsOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[2].get(), "John", "", "Doe",
                        "johndoe@tertium.com", "Underworld", "666 Erebus St.",
                        "", "Elysium", "CA", "91111", "US", "16502111111");
@@ -198,8 +195,7 @@ TEST(AutofillProfileTest, AdjustInferredLabels) {
 
   profiles.resize(2);
 
-  profiles.push_back(
-      std::make_unique<AutofillProfile>(base::GenerateUuid(), std::string()));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[2].get(), "John", "", "Doe",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.", "",
                        "Elysium", "CO",  // State is different
@@ -215,8 +211,7 @@ TEST(AutofillProfileTest, AdjustInferredLabels) {
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
   EXPECT_EQ(u"John Doe, 666 Erebus St., CO", labels[2]);
 
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[3].get(), "John", "", "Doe",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.", "",
                        "Elysium", "CO",  // State is different for some.
@@ -234,8 +229,7 @@ TEST(AutofillProfileTest, AdjustInferredLabels) {
   // information.
   EXPECT_EQ(u"John Doe, 666 Erebus St., CO, 16504444444", labels[3]);
 
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[4].get(), "John", "", "Doe",
                        "johndoe@styx.com",  // E-Mail is different for some.
                        "Underworld", "666 Erebus St.", "", "Elysium",
@@ -260,8 +254,7 @@ TEST(AutofillProfileTest, AdjustInferredLabels) {
 
 TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles.back().get(), "H.", "R.", "Giger",
                        "hrgiger@beispiel.com", "Beispiel Inc",
                        "Brandschenkestrasse 110", "", "Zurich", "", "8002",
@@ -293,8 +286,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
 
 TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles.back().get(), "Antoine", "", "de Saint-Exupéry",
                        "antoine@exemple.com", "Exemple Inc", "8 Rue de Londres",
                        "", "Paris", "", "75009", "FR", "+33 (0) 1 42 68 53 00");
@@ -327,8 +319,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
 
 TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles.back().get(), "Park", "", "Jae-sang",
                        "park@yeleul.com", "Yeleul Inc",
                        "Gangnam Finance Center", "152 Teheran-ro", "Gangnam-Gu",
@@ -371,8 +362,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
 
 TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles.back().get(), "Miku", "", "Hatsune",
                        "miku@rei.com", "Rei Inc", "Roppongi Hills Mori Tower",
                        "6-10-1 Roppongi, Minato-ku", "", "Tokyo", "106-6126",
@@ -408,8 +398,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
 
 TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles.back().get(), "ミク", "", "初音",
                        "miku@rei.com", "例", "港区六本木ヒルズ森タワー",
                        "六本木 6-10-1", "", "東京都", "106-6126", "JP",
@@ -441,13 +430,11 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
 
 TEST(AutofillProfileTest, CreateInferredLabels) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.", "",
                        "Elysium", "CA", "91111", "US", "16502111111");
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[1].get(), "Jane", "", "Doe",
                        "janedoe@tertium.com", "Pluto Inc.", "123 Letha Shore.",
                        "", "Dis", "CA", "91222", "US", "12345678910");
@@ -542,12 +529,10 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
 // distinguishing fields, but only if it makes sense given the suggested fields.
 TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "doe@example.com",
                        "", "88 Nowhere Ave.", "", "", "", "", "", "");
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[1].get(), "Johnny", "K", "Doe",
                        "doe@example.com", "", "88 Nowhere Ave.", "", "", "", "",
                        "", "");
@@ -579,12 +564,10 @@ TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
 // Test that we do not show duplicate fields in the labels.
 TEST(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "doe@example.com",
                        "", "88 Nowhere Ave.", "", "", "", "", "", "");
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[1].get(), "John", "", "Doe", "dojo@example.com",
                        "", "88 Nowhere Ave.", "", "", "", "", "", "");
 
@@ -605,16 +588,13 @@ TEST(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
 // Make sure that empty fields are not treated as distinguishing fields.
 TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "doe@example.com",
                        "Gogole", "", "", "", "", "", "", "");
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[1].get(), "John", "", "Doe", "doe@example.com",
                        "Ggoole", "", "", "", "", "", "", "");
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[2].get(), "John", "", "Doe",
                        "john.doe@example.com", "Goolge", "", "", "", "", "", "",
                        "");
@@ -642,8 +622,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
 // Test that labels that would otherwise have multiline values are flattened.
 TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateUuid(),
-                                                       test::kEmptyOrigin));
+  profiles.push_back(std::make_unique<AutofillProfile>());
   test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "doe@example.com",
                        "", "88 Nowhere Ave.", "Apt. 42", "", "", "", "", "");
 
@@ -660,19 +639,29 @@ TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }
 
+TEST(AutofillProfileTest, IsSubsetOf) {
+  AutofillProfileComparator comparator("en-US");
+  const AutofillProfile standard_profile = test::StandardProfile();
+  const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
+
+  EXPECT_FALSE(standard_profile.IsSubsetOf(comparator, subset_profile));
+  EXPECT_TRUE(subset_profile.IsSubsetOf(comparator, standard_profile));
+
+  // Profiles are subsets of themselves.
+  EXPECT_TRUE(standard_profile.IsSubsetOf(comparator, standard_profile));
+  EXPECT_TRUE(subset_profile.IsSubsetOf(comparator, subset_profile));
+}
+
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "M", "Fox", "", "", "", "", "",
                        "", "", "US", "");
 
-  AutofillProfile profile3 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "Genevieve", "Marie", "Fox", "", "", "", "",
                        "", "", "", "US", "");
 
@@ -680,264 +669,264 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
 
   // When a form has a NAME_FULL field rather than a NAME_MIDDLE field, consider
   // whether one profile's full name can be derived from the other's.
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile3, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
   // True because Genevieve M Fox can be derived from Genevieve Marie Fox.
-  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
+  EXPECT_TRUE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile3, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
 
   // When a form has a NAME_MIDDLE field rather than a NAME_FULL field, consider
   // a name's constituent parts.
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                             {NAME_MIDDLE}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_MIDDLE}));
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_MIDDLE}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_MIDDLE}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_MIDDLE}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile3, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile1, {NAME_MIDDLE}));
   // False because the middle name M doesn't equal the middle name Marie.
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                              {NAME_MIDDLE}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile3, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile2, {NAME_MIDDLE}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Cynthia", "", "Fox", "", "", "", "", "", "",
                        "", "US", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "");
 
   const AutofillProfileComparator comparator("en-US");
 
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FIRST}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FIRST}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FIRST}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FIRST}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fuller", "", "", "", "", "",
                        "", "", "US", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "");
 
   const AutofillProfileComparator comparator("en-US");
 
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_LAST}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_LAST}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_LAST}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_LAST}));
 }
 
 TEST(AutofillProfileTest,
      IsSubsetOfForFieldSet_DifferentStreetAddressesIgnored) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "274 Main St",
                        "", "", "", "", "US", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "",
                        "274 Main Street", "", "", "", "", "US", "");
 
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
+      comparator, profile2, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
+      comparator, profile1, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "274 Main St",
                        "", "Northhampton", "", "", "US", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "274 Main St",
                        "", "Sturbridge", "", "", "US", "");
 
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US",
+      comparator, profile2,
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US",
+      comparator, profile1,
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY}));
 }
 
 TEST(AutofillProfileTest,
      IsSubsetOfForFieldSet_PostalCodesWithAndWithoutSpaces) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "H3B 2Y5", "CA", "");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "H3B2Y5", "CA", "");
 
   const AutofillProfileComparator comparator("en-CA");
 
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-CA",
+  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
                                              {NAME_FULL, ADDRESS_HOME_ZIP}));
-  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-CA",
+  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
                                              {NAME_FULL, ADDRESS_HOME_ZIP}));
 }
 
 TEST(AutofillProfileTest,
      IsSubsetOfForFieldSet_PhoneNumbersWithAndWithoutSpacesAndPunctuation) {
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "CA", "+1 (514) 444-5454");
 
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "CA", "15144445454");
 
   const AutofillProfileComparator comparator("en-CA");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-CA", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-CA", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-CA", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-CA", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
 TEST(AutofillProfileTest,
      IsSubsetOfForFieldSet_PhoneNumbersWithAndWithoutCodes_US) {
   // Has country and city codes.
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "+1 (508) 444-5454");
 
   // Has a city code.
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "5084445454");
 
   // Has neither a country nor a city code.
-  AutofillProfile profile3 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "Genevieve", "", "Fox", "", "", "", "", "",
                        "", "", "US", "4445454");
 
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
 TEST(AutofillProfileTest,
      IsSubsetOfForFieldSet_PhoneNumbersWithAndWithoutCodes_BR) {
   // Has country and city codes.
-  AutofillProfile profile1 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Thiago", "", "Avila", "", "", "", "", "", "",
                        "", "", "BR", "5521987650000");
 
   // Has a city code.
-  AutofillProfile profile2 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Thiago", "", "Avila", "", "", "", "", "", "",
                        "", "", "BR", "21987650000");
 
   // Has neither a country nor a city code.
-  AutofillProfile profile3 =
-      AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "Thiago", "", "Avila", "", "", "", "", "", "",
                        "", "", "BR", "987650000");
 
   const AutofillProfileComparator comparator("pt-BR");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+}
+
+TEST(AutofillProfileTest, IsStrictSupersetOf) {
+  AutofillProfileComparator comparator("en-US");
+  const AutofillProfile standard_profile = test::StandardProfile();
+  const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
+  const AutofillProfile different_profile =
+      test::DifferentFromStandardProfile();
+
+  EXPECT_TRUE(standard_profile.IsStrictSupersetOf(comparator, subset_profile));
+  EXPECT_FALSE(subset_profile.IsStrictSupersetOf(comparator, standard_profile));
+  EXPECT_FALSE(
+      standard_profile.IsStrictSupersetOf(comparator, different_profile));
+
+  // Profiles are not strict supersets of themselves.
+  EXPECT_FALSE(
+      standard_profile.IsStrictSupersetOf(comparator, standard_profile));
+  EXPECT_FALSE(subset_profile.IsStrictSupersetOf(comparator, subset_profile));
 }
 
 TEST(AutofillProfileTest, TestFinalizeAfterImport) {
@@ -1041,14 +1030,12 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   SetupTestProfile(a);
 
   // Create an identical profile except that the new profile:
-  //   (1) Has a different origin,
-  //   (2) Has a different address line 2,
-  //   (3) Lacks a company name,
-  //   (4) Has a different full name, and
-  //   (5) Has a language code.
+  //   (1) Has a different address line 2,
+  //   (2) Lacks a company name,
+  //   (3) Has a different full name, and
+  //   (4) Has a language code.
   AutofillProfile b = a;
-  b.set_guid(base::GenerateUuid());
-  b.set_origin(kSettingsOrigin);
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LINE2, u"Unit 5, area 51",
                                      VerificationStatus::kObserved);
   b.SetRawInfoWithVerificationStatus(COMPANY_NAME, std::u16string(),
@@ -1062,7 +1049,6 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
 
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
-  EXPECT_EQ(kSettingsOrigin, a.origin());
   EXPECT_EQ("Unit 5, area 51",
             base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)));
   EXPECT_EQ(u"Fox", a.GetRawInfo(COMPANY_NAME));
@@ -1082,7 +1068,7 @@ TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   // to user verified.
   b.SetRawInfoWithVerificationStatus(NAME_FULL, b.GetRawInfo(NAME_FULL),
                                      VerificationStatus::kUserVerified);
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
   EXPECT_EQ(1u, a.use_count());
@@ -1090,7 +1076,7 @@ TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   // Now the profile is fully populated. Merging it again has no effect (except
   // for usage statistics).
   AutofillProfile c = a;
-  c.set_guid(base::GenerateUuid());
+  c.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   c.set_use_count(3);
   EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
   // Merge has not modified anything.
@@ -1148,13 +1134,13 @@ TEST(AutofillProfileTest, OverwriteName_DifferentCase) {
 }
 
 TEST(AutofillProfileTest, AssignmentOperator) {
-  AutofillProfile a(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile a;
   test::SetProfileInfo(&a, "Marion", "Mitchell", "Morrison", "marion@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
                        "91601", "US", "12345678910");
 
   // Result of assignment should be logically equal to the original profile.
-  AutofillProfile b(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile b;
   b = a;
   EXPECT_TRUE(a == b);
 
@@ -1164,7 +1150,7 @@ TEST(AutofillProfileTest, AssignmentOperator) {
 }
 
 TEST(AutofillProfileTest, Copy) {
-  AutofillProfile a(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile a;
   test::SetProfileInfo(&a, "Marion", "Mitchell", "Morrison", "marion@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
                        "91601", "US", "12345678910");
@@ -1175,20 +1161,15 @@ TEST(AutofillProfileTest, Copy) {
 }
 
 TEST(AutofillProfileTest, Compare) {
-  AutofillProfile a(base::GenerateUuid(), std::string());
-  AutofillProfile b(base::GenerateUuid(), std::string());
+  AutofillProfile a;
+  AutofillProfile b;
 
   // Empty profiles are the same.
   EXPECT_EQ(0, a.Compare(b));
 
   // GUIDs don't count.
-  a.set_guid(base::GenerateUuid());
-  b.set_guid(base::GenerateUuid());
-  EXPECT_EQ(0, a.Compare(b));
-
-  // Origins don't count.
-  a.set_origin("apple");
-  b.set_origin("banana");
+  a.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_EQ(0, a.Compare(b));
 
   // Different values produce non-zero results.
@@ -1241,6 +1222,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_DEPENDENT_STREET_NAME,
@@ -1284,15 +1266,17 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
 }
 
 TEST(AutofillProfileTest, IsPresentButInvalid) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile;
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
   EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
 
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
   EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
 
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"C");
   EXPECT_TRUE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
@@ -1314,8 +1298,7 @@ TEST(AutofillProfileTest, IsPresentButInvalid) {
 }
 
 TEST(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
-
+  AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
                      u"123 Super St.\n"
                      u"Apt. #42");
@@ -1326,8 +1309,7 @@ TEST(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
 }
 
 TEST(AutofillProfileTest, SetInfoPreservesLineBreaks) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
-
+  AutofillProfile profile;
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
                   u"123 Super St.\n"
                   u"Apt. #42",
@@ -1339,21 +1321,26 @@ TEST(AutofillProfileTest, SetInfoPreservesLineBreaks) {
 }
 
 TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
-
+  AutofillProfile profile;
   profile.SetRawInfo(EMAIL_ADDRESS, u"\tuser@example.com    ");
   EXPECT_EQ(u"\tuser@example.com    ", profile.GetRawInfo(EMAIL_ADDRESS));
 }
 
-TEST(AutofillProfileTest, SetInfoTrimsWhitespace) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
+TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
+  AutofillProfile profile;
 
+  profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  EXPECT_EQ(u"Red tree", profile.GetRawInfo(ADDRESS_HOME_LANDMARK));
+}
+
+TEST(AutofillProfileTest, SetInfoTrimsWhitespace) {
+  AutofillProfile profile;
   profile.SetInfo(EMAIL_ADDRESS, u"\tuser@example.com    ", "en-US");
   EXPECT_EQ(u"user@example.com", profile.GetRawInfo(EMAIL_ADDRESS));
 }
 
 TEST(AutofillProfileTest, FullAddress) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1389,49 +1376,6 @@ TEST(AutofillProfileTest, FullAddress) {
   EXPECT_FALSE(profile.GetInfo(full_address, "en-US").empty());
   profile.SetInfo(ADDRESS_HOME_COUNTRY, std::u16string(), "en-US");
   EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
-}
-
-TEST(AutofillProfileTest, SaveAdditionalInfo_Verified_MergeStructure) {
-  AutofillProfile a;
-  a.SetRawInfoWithVerificationStatus(NAME_FULL, u"Marion Mitchell Morrison",
-                                     VerificationStatus::kUserVerified);
-  a.FinalizeAfterImport();
-  ASSERT_FALSE(a.IsVerified());
-  a.set_origin(autofill::kSettingsOrigin);
-  ASSERT_TRUE(a.IsVerified());
-
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FIRST), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_MIDDLE), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_LAST), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
-  EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
-  EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
-
-  AutofillProfile b;
-  b.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Mitchell",
-                                     VerificationStatus::kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Marion",
-                                     VerificationStatus::kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
-                                     VerificationStatus::kObserved);
-  b.FinalizeAfterImport();
-  ASSERT_FALSE(b.IsVerified());
-
-  a.SaveAdditionalInfo(b, "en-US");
-
-  // After merging, the full name is presvered, but the substructure changed.
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FIRST), VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_MIDDLE),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_LAST), VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
-  EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Mitchell");
-  EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Marion");
-  EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
 }
 
 TEST(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
@@ -1678,30 +1622,6 @@ TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(server_metadata.use_date, server_profile.use_date());
 }
 
-// Tests that the profile is only deletable if it is not verified.
-TEST(AutofillProfileTest, IsDeletable) {
-  // Set up an arbitrary time, as setup the current time to just above the
-  // threshold later than that time.
-  const base::Time kArbitraryTime = base::Time::FromDoubleT(25000000000);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::Days(1));
-
-  // Created a profile that has not been used since over the deletion threshold.
-  AutofillProfile profile = test::GetFullProfile();
-  profile.set_use_date(kArbitraryTime);
-
-  // Make sure it's deletable.
-  EXPECT_TRUE(profile.IsDeletable());
-
-  // Set the profile as being verified.
-  profile.set_origin("Not empty");
-  ASSERT_TRUE(profile.IsVerified());
-
-  // Make sure it's not deletable.
-  EXPECT_FALSE(profile.IsDeletable());
-}
-
 // Tests that the |HasStructuredData| returns whether the profile has structured
 // data or not.
 TEST(AutofillProfileTest, HasStructuredData) {
@@ -1768,7 +1688,7 @@ TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
 }
 
 TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", nullptr, "Morrison",
                        "johnwayne@me.xyz", nullptr, "123 Zoo St.", nullptr,
                        "Hollywood", "CA", "91601", "US", "14155678910");

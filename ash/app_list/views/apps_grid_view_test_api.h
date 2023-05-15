@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/app_list/views/apps_grid_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 class Rect;
@@ -96,7 +97,7 @@ class AppsGridViewTestApi {
   AppListItemList* GetItemList() { return view_->item_list_; }
 
  private:
-  AppsGridView* view_;
+  raw_ptr<AppsGridView, ExperimentalAsh> view_;
 };
 
 }  // namespace test

@@ -12,9 +12,11 @@ import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,8 +47,8 @@ class DropdownItemViewInfoListManager {
         mSourceViewInfoList = Collections.emptyList();
         mManagedModel = managedModel;
 
-        mListActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_active_top_small_margin);
+        mListActiveOmniboxTopSmallMargin =
+                OmniboxResourceProvider.getActiveOmniboxTopSmallMargin(context);
         mListActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_list_active_top_big_margin);
         mListNonActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
@@ -83,11 +85,6 @@ class DropdownItemViewInfoListManager {
         }
     }
 
-    /** @return Whether the supplied view info is a header for the specific group of suggestions. */
-    private boolean isGroupHeaderWithId(DropdownItemViewInfo info, int groupId) {
-        return (info.type == OmniboxSuggestionUiType.HEADER && info.groupId == groupId);
-    }
-
     /** Clear all DropdownItemViewInfo lists. */
     void clear() {
         mSourceViewInfoList.clear();
@@ -100,7 +97,7 @@ class DropdownItemViewInfoListManager {
      * Specify the input list of DropdownItemViewInfo elements.
      *
      * @param sourceList Source list of ViewInfo elements.
-     * @param groupsDetails Group ID to GroupConfig map carrying group collapsed state information.
+     * @param groupsInfo Group ID to GroupConfig map carrying group collapsed state information.
      */
     void setSourceViewInfoList(
             @NonNull List<DropdownItemViewInfo> sourceList, @NonNull GroupsInfo groupsInfo) {
@@ -114,19 +111,17 @@ class DropdownItemViewInfoListManager {
                 ? SuggestionCommonProperties.FormFactor.TABLET
                 : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo previousItem = null;
-        boolean inDropdownItemBackgroundRoundingGroup = false;
-        int groupTopMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupTopMargin = OmniboxResourceProvider.getSuggestionGroupTopMargin(mContext);
         int groupBottomMargin = mContext.getResources().getDimensionPixelSize(
-                OmniboxFeatures.shouldShowSmallBottomMargin()
-                        ? R.dimen.omnibox_suggestion_group_vertical_small_bottom_margin
-                        : R.dimen.omnibox_suggestion_group_vertical_margin);
+                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
         int suggestionVerticalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_vertical_margin);
 
         GroupSection previousSection = null;
         GroupSection currentSection;
-        boolean useModernVisuals = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
+        boolean shouldShowModernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
+        boolean previousItemWasHeader = false;
 
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
@@ -135,23 +130,27 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
-            if (useModernVisuals && item.processor.allowBackgroundRounding()) {
+            if (shouldShowModernizeVisualUpdate && item.processor.allowBackgroundRounding()) {
                 var groupConfig = groupsDetails.get(item.groupId);
                 currentSection = groupConfig != null ? groupConfig.getSection()
                                                      : GroupSection.SECTION_DEFAULT;
                 var applyRounding = currentSection != previousSection;
-                var topMargin = applyRounding ? groupTopMargin : suggestionVerticalMargin;
+                int topMargin;
+                if (previousItemWasHeader) {
+                    topMargin = mContext.getResources().getDimensionPixelSize(
+                            R.dimen.omnibox_suggestion_group_vertical_margin);
+                } else {
+                    topMargin = applyRounding ? groupTopMargin : suggestionVerticalMargin;
+                }
                 var bottomMargin = applyRounding ? groupBottomMargin : suggestionVerticalMargin;
 
                 model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
                 // Do not have margin for the first suggestion, otherwise the first suggestion will
                 // have a big gap with the Omnibox.
-                if (useModernVisuals) {
-                    model.set(DropdownCommonProperties.TOP_MARGIN,
-                            previousItem == null
-                                    ? getSuggestionListTopMargin(item.processor.getViewTypeId())
-                                    : topMargin);
-                }
+                model.set(DropdownCommonProperties.TOP_MARGIN,
+                        previousItem == null
+                                ? getSuggestionListTopMargin(item.processor.getViewTypeId())
+                                : topMargin);
 
                 if (previousItem != null) {
                     previousItem.model.set(
@@ -162,6 +161,11 @@ class DropdownItemViewInfoListManager {
                 previousItem = item;
                 previousSection = currentSection;
             }
+
+            previousItemWasHeader = item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
+                    && shouldShowModernizeVisualUpdate
+                    && (OmniboxFeatures.shouldShowSmallestMargins()
+                            || OmniboxFeatures.shouldShowSmallerMargins());
 
             suggestionsList.add(item);
         }
@@ -187,11 +191,15 @@ class DropdownItemViewInfoListManager {
      */
     private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
         if (firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
-            return 0;
+            return OmniboxFeatures.shouldShowSmallerMargins() ? mListActiveOmniboxTopSmallMargin
+                                                              : 0;
         }
 
         if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            if (OmniboxFeatures.shouldShowSmallBottomMargin()) {
+            if (OmniboxFeatures.shouldShowSmallestMargins()) {
+                return 0;
+            } else if (OmniboxFeatures.shouldShowSmallBottomMargin()
+                    || OmniboxFeatures.shouldShowSmallerMargins()) {
                 return mListActiveOmniboxTopSmallMargin;
             } else {
                 return mListActiveOmniboxTopBigMargin;

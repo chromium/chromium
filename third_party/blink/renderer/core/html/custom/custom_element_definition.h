@@ -25,6 +25,7 @@ class ExceptionState;
 class HTMLElement;
 class HTMLFormElement;
 class QualifiedName;
+class V8CustomElementConstructor;
 
 enum class FormAssociationFlag {
   kNo,
@@ -45,6 +46,8 @@ class CORE_EXPORT CustomElementDefinition
     return "CustomElementDefinition";
   }
 
+  CustomElementRegistry& GetRegistry() { return *registry_; }
+
   const CustomElementDescriptor& Descriptor() { return descriptor_; }
 
   // TODO(yosin): To support Web Modules, introduce an abstract
@@ -55,8 +58,7 @@ class CORE_EXPORT CustomElementDefinition
   // CustomElementConstructor|.
   virtual ScriptValue GetConstructorForScript() = 0;
 
-  using ConstructionStack = HeapVector<Member<Element>, 1>;
-  ConstructionStack& GetConstructionStack() { return construction_stack_; }
+  virtual V8CustomElementConstructor* GetV8CustomElementConstructor() = 0;
 
   HTMLElement* CreateElementForConstructor(Document&);
   virtual HTMLElement* CreateAutonomousCustomElementSync(
@@ -110,25 +112,12 @@ class CORE_EXPORT CustomElementDefinition
   bool DisableInternals() const { return disable_internals_; }
   bool IsFormAssociated() const { return is_form_associated_; }
 
-  class CORE_EXPORT ConstructionStackScope final {
-    STACK_ALLOCATED();
-
-   public:
-    ConstructionStackScope(CustomElementDefinition&, Element&);
-    ConstructionStackScope(const ConstructionStackScope&) = delete;
-    ConstructionStackScope& operator=(const ConstructionStackScope&) = delete;
-    ~ConstructionStackScope();
-
-   private:
-    ConstructionStack& construction_stack_;
-    Element* element_;
-    size_t depth_;
-  };
-
  protected:
-  CustomElementDefinition(const CustomElementDescriptor&);
+  CustomElementDefinition(CustomElementRegistry&,
+                          const CustomElementDescriptor&);
 
-  CustomElementDefinition(const CustomElementDescriptor&,
+  CustomElementDefinition(CustomElementRegistry&,
+                          const CustomElementDescriptor&,
                           const HashSet<AtomicString>& observed_attributes,
                           const Vector<String>& disabled_features,
                           FormAssociationFlag form_association_flag);
@@ -141,8 +130,8 @@ class CORE_EXPORT CustomElementDefinition
                                      ExceptionState&);
 
  private:
+  Member<CustomElementRegistry> registry_;
   const CustomElementDescriptor descriptor_;
-  ConstructionStack construction_stack_;
   HashSet<AtomicString> observed_attributes_;
   bool has_style_attribute_changed_callback_;
   bool disable_shadow_ = false;

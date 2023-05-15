@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -173,9 +174,10 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcAppTest arc_test_;
   std::unique_ptr<TestingProfile> profile_;
-  TestingConsumerStatusReportingService*
+  raw_ptr<TestingConsumerStatusReportingService, ExperimentalAsh>
       test_consumer_status_reporting_service_;
-  TestingScreenTimeController* test_screen_time_controller_;
+  raw_ptr<TestingScreenTimeController, ExperimentalAsh>
+      test_screen_time_controller_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<EventBasedStatusReportingService> service_;
 };

@@ -25,6 +25,7 @@ import {AddPrinterDialogElement} from './cups_add_printer_dialog.js';
 import {getTemplate} from './cups_add_printer_manually_dialog.html.js';
 import {getErrorText, isNameAndAddressValid} from './cups_printer_dialog_util.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {PrinterStatusReason} from './printer_status.js';
 
 function getEmptyPrinter(): object {
   return {
@@ -43,7 +44,7 @@ function getEmptyPrinter(): object {
     },
     printerProtocol: 'ipp',
     printerQueue: 'ipp/print',
-    printerStatus: '',
+    printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
     printServerUri: '',
   };
 }

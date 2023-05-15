@@ -23,6 +23,7 @@ _templates_dir = "$target_gen_dir/templates"
 _gn_path = "//buildtools/linux64/gn"
 
 assert(!is_component_build)
+assert(is_cronet_build)
 
 declare_args() {
   # In integrated mode, CronetEngine will use the shared network task runner by
@@ -249,6 +250,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/DnsOptions.java",
     "api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
     "api/src/org/chromium/net/ExperimentalCronetEngine.java",
+    "api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java",
     "api/src/org/chromium/net/ExperimentalUrlRequest.java",
     "api/src/org/chromium/net/ICronetEngineBuilder.java",
     "api/src/org/chromium/net/InlineExecutionProhibitedException.java",
@@ -371,6 +373,7 @@ android_library("cronet_impl_fake_base_java") {
     "fake/java/org/chromium/net/test/FakeCronetController.java",
     "fake/java/org/chromium/net/test/FakeCronetEngine.java",
     "fake/java/org/chromium/net/test/FakeCronetProvider.java",
+    "fake/java/org/chromium/net/test/FakeRequestFinishedInfo.java",
     "fake/java/org/chromium/net/test/FakeUrlRequest.java",
     "fake/java/org/chromium/net/test/FakeUrlResponse.java",
     "fake/java/org/chromium/net/test/ResponseMatcher.java",
@@ -990,6 +993,7 @@ android_library("cronet_common_javatests") {
   sources = [
     "test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
     "test/javatests/src/org/chromium/net/CronetTestRule.java",
+    "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
     "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
   ]
@@ -1701,9 +1705,6 @@ action("dependencies_checks") {
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
   ]
-  if (is_cronet_build) {
-    args += [ "--is_cronet_build" ]
-  }
   deps = [ ":cronet" ]
 }
 

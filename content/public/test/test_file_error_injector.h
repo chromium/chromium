@@ -129,10 +129,15 @@ class TestFileErrorInjector
   size_t total_file_count_ = 0;
 
   // The factory we created. May outlive this class.
-  raw_ptr<DownloadFileWithErrorFactory> created_factory_ = nullptr;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: DownloadTest.DownloadHistoryCheck
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel/1540091/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FDownloadTest.DownloadHistoryCheck+VHash%3A282db19e8ac0a6be
+  raw_ptr<DownloadFileWithErrorFactory, FlakyDanglingUntriaged>
+      created_factory_ = nullptr;
 
   // The download manager we set the factory on.
-  raw_ptr<DownloadManagerImpl, DanglingUntriaged> download_manager_ = nullptr;
+  raw_ptr<DownloadManagerImpl, FlakyDanglingUntriaged> download_manager_ =
+      nullptr;
 };
 
 }  // namespace content

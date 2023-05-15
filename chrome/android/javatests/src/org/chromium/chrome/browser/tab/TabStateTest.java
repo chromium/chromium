@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -35,7 +35,7 @@ public class TabStateTest {
     @Before
     public void setUp() {
         mTestTabModelDirectory = new TestTabModelDirectory(
-                InstrumentationRegistry.getTargetContext(), "TabStateTest", null);
+                ApplicationProvider.getApplicationContext(), "TabStateTest", null);
     }
 
     @After

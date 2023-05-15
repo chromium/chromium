@@ -18,6 +18,17 @@ namespace base {
 // void SomeDangerousMethodThatShouldNeverCompile() {
 //   static_assert(base::AlwaysFalse<U>, "explanatory message here");
 // }
+//
+//
+// The issue of not being able to use static_assert(false, ...) in a
+// non-instantiated template was fixed in C++23. When Chromium switches to
+// building with C++23, remove this file and use false directly, and search
+// across the Chromium codebase for "AlwaysFalse", as there are other
+// implementations in places that cannot depend on this file.
+//
+// References:
+// - https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2593r0.html
+// - https://github.com/cplusplus/papers/issues/1251
 
 namespace internal {
 

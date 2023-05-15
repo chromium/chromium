@@ -209,6 +209,9 @@ bool GetDataFromImage(PVOID buffer,
   }
 
   // Lowercase |image_name|.
+  const auto tolower = [](auto c) {
+    return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
+  };
   for (size_t i = 0; i < image_name->size(); i++)
     (*image_name)[i] = tolower((*image_name)[i]);
 
@@ -235,7 +238,7 @@ bool GetDataFromImage(PVOID buffer,
 
   // Lowercase |section_basename|.
   for (size_t i = 0; i < temp_section_basename.size(); i++)
-    temp_section_basename[i] = towlower(temp_section_basename[i]);
+    temp_section_basename[i] = tolower(temp_section_basename[i]);
 
   // Convert section strings from UTF-16 to UTF-8.
   return UTF16ToUTF8(temp_section_path, section_path) &&

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग रुक गई है. ज़्यादा वीडियो रिकॉर्ड करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
 <translation id="2036868001356139588">टाइमर का कुल समय</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> चालू है</translation>
-<translation id="2128052519899549250">टाइम-लैप्स वाले मोड में वीडियो रिकॉर्ड करें</translation>
 <translation id="2134029355740465625">वीडियो सेटिंग</translation>
 <translation id="2144806332417375165">कस्टम वीडियो पैरामीटर</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">दस्तावेज़ मिल गया है</translation>
 <translation id="414641094616694804">कैमरे का रिज़ॉल्यूशन नहीं बदला जा सकता</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
-<translation id="4281620174117014503">मीडियम रिज़ॉल्यूशन</translation>
 <translation id="428234092390943511">पेज का थंबनेल</translation>
 <translation id="4383571725254449280">परफ़ॉर्मेंस लॉग प्रिंट करें</translation>
 <translation id="4445542136948522167">फ़ोटो न खींचें</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5320594929574852403">बाईं ओर जा रहा है</translation>
 <translation id="5374917190292010970">4K (2160 पिक्सल)</translation>
-<translation id="5577251651370645658">टाइम लैप्स</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> को स्कैन किया जा रहा है</translation>
 <translation id="5671277269877808209">वर्ग</translation>
+<translation id="574392208103952083">मीडियम</translation>
 <translation id="5746169159649715125">PDF के रूप में सेव करें</translation>
 <translation id="5753488212459587150">एक्सपर्ट मोड चालू करें</translation>
 <translation id="5759254179196327752">दस्तावेज़ स्कैन करें</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7670511624014457267">60 FPS (फ़्रेम प्रति सेकंड)</translation>
 <translation id="7671804233658741790">दस्तावेज़ का सबसे नीचे वाला दायां कोना</translation>
+<translation id="7684446460490665873">टाइम लैप्स वाले मोड में वीडियो रिकॉर्ड करें</translation>
 <translation id="7692090236657809299">'पैन करें, झुकाएं, और ज़ूम करें' को चालू करें</translation>
 <translation id="7726641833034062494">सामान्य वीडियो रिकॉर्ड करें</translation>
 <translation id="7748344063862150053">दस्तावेज़ का सबसे ऊपर वाला दायां कोना</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">दस्तावेज़ के सभी कोने फ़्रेम के अंदर रखें</translation>
 <translation id="9045155556724273246">10 सेकंड</translation>
 <translation id="906331135292332864">इमेज प्रोसेस हो रही है...</translation>
+<translation id="9161584225258678723">टाइम लैप्स</translation>
 <translation id="922762992951083513">'मिरर' बटन को चालू कर दिया गया है</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 </translationbundle>

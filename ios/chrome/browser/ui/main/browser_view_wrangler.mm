@@ -9,16 +9,18 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -28,8 +30,8 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,76 +42,6 @@ namespace {
 NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 }  // namespace
-
-// Internal implementation of BrowserInterface -- for the most part a wrapper
-// around BrowserCoordinator.
-@interface WrangledBrowser : NSObject <BrowserInterface>
-
-@property(nonatomic, weak, readonly) BrowserCoordinator* coordinator;
-
-- (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator;
-
-@end
-
-@implementation WrangledBrowser
-
-@synthesize inactiveBrowser = _inactiveBrowser;
-
-- (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator {
-  if (self = [super init]) {
-    DCHECK(coordinator.browser);
-    _coordinator = coordinator;
-  }
-  return self;
-}
-
-- (UIViewController*)viewController {
-  return self.coordinator.viewController;
-}
-
-- (BrowserViewController*)bvc {
-  return self.coordinator.viewController;
-}
-
-- (id<SyncPresenter>)syncPresenter {
-  return self.coordinator;
-}
-
-- (Browser*)browser {
-  return self.coordinator.browser;
-}
-
-- (ChromeBrowserState*)browserState {
-  return self.browser->GetBrowserState();
-}
-
-- (BOOL)userInteractionEnabled {
-  return self.coordinator.active;
-}
-
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
-  self.coordinator.active = userInteractionEnabled;
-}
-
-- (BOOL)incognito {
-  return self.browserState->IsOffTheRecord();
-}
-
-- (BOOL)playingTTS {
-  return self.coordinator.playingTTS;
-}
-
-- (void)setPrimary:(BOOL)primary {
-  [self.coordinator.viewController setPrimary:primary];
-}
-
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self.coordinator clearPresentedStateWithCompletion:completion
-                                       dismissOmnibox:dismissOmnibox];
-}
-
-@end
 
 @interface BrowserViewWrangler () {
   ChromeBrowserState* _browserState;
@@ -152,6 +84,7 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 @implementation BrowserViewWrangler
 
 @synthesize currentInterface = _currentInterface;
+@synthesize currentBrowserProvider = _currentBrowserProvider;
 
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                           sceneState:(SceneState*)sceneState
@@ -219,10 +152,24 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
     // Moves all tabs that might have become inactive since the last launch.
     MoveTabsFromActiveToInactive(_mainBrowser.get(), inactiveBrowser);
-    _mainInterface.inactiveBrowser = inactiveBrowser;
   } else {
     RestoreAllInactiveTabs(inactiveBrowser, _mainBrowser.get());
   }
+  _mainInterface.inactiveBrowser = inactiveBrowser;
+}
+
+#pragma mark - BrowserProviderInterface
+
+- (id<BrowserProvider>)mainBrowserProvider {
+  return self.mainInterface;
+}
+
+- (id<BrowserProvider>)incognitoBrowserProvider {
+  return self.incognitoInterface;
+}
+
+- (BOOL)hasIncognitoBrowserProvider {
+  return [self hasIncognitoInterface];
 }
 
 #pragma mark - BrowserViewInformation property implementations
@@ -241,14 +188,18 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     [self.currentInterface setPrimary:NO];
   }
 
+  BOOL incognito = self.incognitoInterface == interface;
+
   _currentInterface = interface;
+  _currentBrowserProvider =
+      incognito ? self.incognitoBrowserProvider : self.mainBrowserProvider;
 
   // Update the shared active URL for the new interface.
   DeviceSharingBrowserAgent::FromBrowser(_currentInterface.browser)
       ->UpdateForActiveBrowser();
 }
 
-- (id<BrowserInterface>)incognitoInterface {
+- (WrangledBrowser*)incognitoInterface {
   if (!_mainInterface)
     return nil;
   if (!_incognitoInterface) {

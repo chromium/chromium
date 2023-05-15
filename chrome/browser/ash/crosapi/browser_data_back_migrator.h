@@ -7,6 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -348,7 +350,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   const std::string user_id_hash_;
 
   // Local state prefs, not owned.
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 
   // Used to record how long the migration takes in UMA.
   base::TimeTicks migration_start_time_;

@@ -78,7 +78,7 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
     delete this;
   }
 
-  base::raw_ptr<ShelfView> shelf_view_;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
   base::OnceClosure on_animation_end_;
 };
 

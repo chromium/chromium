@@ -34,6 +34,7 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/video_layer.h"
+#include "cc/layers/view_transition_content_layer.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/image_animation_count.h"
@@ -5988,8 +5989,6 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAvoidRasterDuringElasticOverscroll};
   FakeContentLayerClient client_;
   raw_ptr<Layer> root_layer_;
   raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
@@ -10852,6 +10851,216 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
   scoped_refptr<FakePictureLayer> layer_on_main_;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestForceRecreateTilingForLCDText);
+
+class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
+    : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestDamagePropagatesFromViewTransitionSurface() {
+    SetUseLayerLists();
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 0:
+        break;
+      case 1:
+        // Damage unrelated layer and ensure that no other content is damaged.
+        unrelated_layer_->SetNeedsDisplayRect(gfx::Rect(0, 0, 5, 5));
+        break;
+      case 2:
+        // Damage view transition layer, ensure that the contributing VT pass
+        // is not redrawn.
+        view_transition_layer_->SetNeedsDisplayRect(gfx::Rect(0, 0, 5, 5));
+        break;
+      case 3:
+        // Damage layer which generates VT content. Ensure it propagates to VT
+        // layer's target.
+        layer_with_view_transition_content_->SetNeedsDisplayRect(
+            gfx::Rect(0, 0, 5, 5));
+    }
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(root_rect_.size());
+    LayerTreeHostTest::SetupTree();
+    auto* root = layer_tree_host()->root_layer();
+
+    layer_with_view_transition_content_ = SolidColorLayer::Create();
+    CopyProperties(root, layer_with_view_transition_content_.get());
+    layer_with_view_transition_content_->SetIsDrawable(true);
+    layer_with_view_transition_content_->SetBackgroundColor(
+        SkColor4f::FromColor(SK_ColorBLUE));
+    layer_with_view_transition_content_->SetBounds(
+        layer_with_view_transition_content_rect_.size());
+    layer_with_view_transition_content_->SetOffsetToTransformParent(
+        layer_with_view_transition_content_rect_.OffsetFromOrigin());
+    root->AddChild(layer_with_view_transition_content_);
+
+    resource_id_ = viz::ViewTransitionElementResourceId::Generate();
+    view_transition_layer_ = ViewTransitionContentLayer::Create(
+        resource_id_, /*is_live_content_layer=*/true);
+    CopyProperties(root, view_transition_layer_.get());
+    view_transition_layer_->SetIsDrawable(true);
+    view_transition_layer_->SetBounds(view_transition_layer_rect_.size());
+    view_transition_layer_->SetOffsetToTransformParent(
+        view_transition_layer_rect_.OffsetFromOrigin());
+    root->AddChild(view_transition_layer_);
+
+    unrelated_layer_ = SolidColorLayer::Create();
+    CopyProperties(root, unrelated_layer_.get());
+    unrelated_layer_->SetIsDrawable(true);
+    unrelated_layer_->SetBounds(unrelated_layer_rect_.size());
+    unrelated_layer_->SetOffsetToTransformParent(
+        unrelated_layer_rect_.OffsetFromOrigin());
+    unrelated_layer_->SetBackgroundColor(SkColor4f::FromColor(SK_ColorRED));
+    root->AddChild(unrelated_layer_);
+
+    auto& layer_with_view_transition_content_node = CreateEffectNode(
+        layer_with_view_transition_content_.get(), kContentsRootPropertyNodeId);
+    layer_with_view_transition_content_->SetEffectTreeIndex(
+        layer_with_view_transition_content_node.id);
+    layer_with_view_transition_content_node.view_transition_shared_element_id =
+        ViewTransitionElementId(1u);
+    layer_with_view_transition_content_node.view_transition_shared_element_id
+        .AddIndex(0u);
+    layer_with_view_transition_content_node
+        .view_transition_element_resource_id = resource_id_;
+    layer_with_view_transition_content_node.render_surface_reason =
+        RenderSurfaceReason::kViewTransitionParticipant;
+
+    auto& view_transition_layer_node = CreateEffectNode(
+        view_transition_layer_.get(), kContentsRootPropertyNodeId);
+    view_transition_layer_->SetEffectTreeIndex(view_transition_layer_node.id);
+    view_transition_layer_node.render_surface_reason =
+        RenderSurfaceReason::kBlendMode;
+
+    layer_tree_host()
+        ->property_trees()
+        ->effect_tree_mutable()
+        .AddTransitionPseudoElementEffectId(view_transition_layer_node.id);
+  }
+
+  void BeginTest() override { layer_tree_host()->SetNeedsCommit(); }
+
+  void WillSubmitCompositorFrame(LayerTreeHostImpl* host_impl,
+                                 const viz::CompositorFrame& frame) override {
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0: {
+        // First frame draws the entire tree with full damage.
+        ASSERT_EQ(frame.render_pass_list.size(), 3u);
+
+        const auto& vt_content_pass = frame.render_pass_list.at(0);
+        EXPECT_EQ(vt_content_pass->view_transition_element_resource_id,
+                  resource_id_);
+        EXPECT_EQ(vt_content_pass->output_rect,
+                  layer_with_view_transition_content_rect_);
+        EXPECT_TRUE(vt_content_pass->has_damage_from_contributing_content);
+
+        const auto& vt_layer_pass = frame.render_pass_list.at(1);
+        EXPECT_FALSE(
+            vt_layer_pass->view_transition_element_resource_id.IsValid());
+        EXPECT_EQ(vt_layer_pass->output_rect, view_transition_layer_rect_);
+        EXPECT_TRUE(vt_layer_pass->has_damage_from_contributing_content);
+
+        const auto& root_pass = frame.render_pass_list.back();
+        EXPECT_EQ(root_pass->damage_rect, root_rect_);
+        PostSetNeedsCommitToMainThread();
+        break;
+      }
+
+      case 1: {
+        // Second frame only damages unrelated layer.
+        ASSERT_EQ(frame.render_pass_list.size(), 3u);
+
+        const auto& vt_content_pass = frame.render_pass_list.at(0);
+        EXPECT_EQ(vt_content_pass->view_transition_element_resource_id,
+                  resource_id_);
+        EXPECT_EQ(vt_content_pass->output_rect,
+                  layer_with_view_transition_content_rect_);
+        EXPECT_FALSE(vt_content_pass->has_damage_from_contributing_content);
+
+        const auto& vt_layer_pass = frame.render_pass_list.at(1);
+        EXPECT_EQ(vt_layer_pass->output_rect, view_transition_layer_rect_);
+        EXPECT_FALSE(vt_layer_pass->has_damage_from_contributing_content);
+
+        const auto& root_pass = frame.render_pass_list.back();
+        EXPECT_EQ(root_pass->damage_rect,
+                  gfx::Rect(unrelated_layer_rect_.origin(), gfx::Size(5, 5)));
+        PostSetNeedsCommitToMainThread();
+        break;
+      }
+
+      case 2: {
+        // Third frame only damages the VT layer.
+        ASSERT_EQ(frame.render_pass_list.size(), 3u);
+
+        const auto& vt_content_pass = frame.render_pass_list.at(0);
+        EXPECT_EQ(vt_content_pass->view_transition_element_resource_id,
+                  resource_id_);
+        EXPECT_EQ(vt_content_pass->output_rect,
+                  layer_with_view_transition_content_rect_);
+        EXPECT_FALSE(vt_content_pass->has_damage_from_contributing_content);
+
+        const auto& vt_layer_pass = frame.render_pass_list.at(1);
+        EXPECT_EQ(vt_layer_pass->output_rect, view_transition_layer_rect_);
+        EXPECT_TRUE(vt_layer_pass->has_damage_from_contributing_content);
+
+        const auto& root_pass = frame.render_pass_list.back();
+        EXPECT_EQ(
+            root_pass->damage_rect,
+            gfx::Rect(view_transition_layer_rect_.origin(), gfx::Size(5, 5)));
+        PostSetNeedsCommitToMainThread();
+        break;
+      }
+
+      case 3: {
+        // Last frame damages the layer contributing to VT.
+        ASSERT_EQ(frame.render_pass_list.size(), 3u);
+
+        const auto& vt_content_pass = frame.render_pass_list.at(0);
+        EXPECT_EQ(vt_content_pass->view_transition_element_resource_id,
+                  resource_id_);
+        EXPECT_EQ(vt_content_pass->output_rect,
+                  layer_with_view_transition_content_rect_);
+        EXPECT_TRUE(vt_content_pass->has_damage_from_contributing_content);
+
+        const auto& vt_layer_pass = frame.render_pass_list.at(1);
+        EXPECT_EQ(vt_layer_pass->output_rect, view_transition_layer_rect_);
+        EXPECT_TRUE(vt_layer_pass->has_damage_from_contributing_content);
+
+        const auto& root_pass = frame.render_pass_list.back();
+
+        // TODO(khushalsagar): We shouldn't be damaging the area where
+        // layer_with_view_transition_content_ draws since the content is
+        // is instead drawn by view_transition_layer_.
+        gfx::Rect total_damage(
+            layer_with_view_transition_content_rect_.origin(), gfx::Size(5, 5));
+        total_damage.Union(
+            gfx::Rect(view_transition_layer_rect_.origin(), gfx::Size(5, 5)));
+        EXPECT_EQ(root_pass->damage_rect, total_damage);
+        EndTest();
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+ private:
+  scoped_refptr<SolidColorLayer> unrelated_layer_;
+  viz::ViewTransitionElementResourceId resource_id_;
+  scoped_refptr<ViewTransitionContentLayer> view_transition_layer_;
+  scoped_refptr<SolidColorLayer> layer_with_view_transition_content_;
+
+  // All rects are in the root coordinate space.
+  const gfx::Rect root_rect_ = gfx::Rect(0, 0, 50, 50);
+  const gfx::Rect layer_with_view_transition_content_rect_ =
+      gfx::Rect(0, 0, 10, 10);
+  const gfx::Rect view_transition_layer_rect_ = gfx::Rect(20, 20, 10, 10);
+  const gfx::Rect unrelated_layer_rect_ = gfx::Rect(40, 40, 10, 10);
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestDamagePropagatesFromViewTransitionSurface);
 
 }  // namespace
 }  // namespace cc

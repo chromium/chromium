@@ -3,10 +3,10 @@
 <translationbundle lang="da">
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Notifikationsindstillinger</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{for 1 dag siden}one{for # dag siden}other{for # dage siden}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 dag siden}one{# dag siden}other{# dage siden}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{For 1 minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}one{# min.}other{# min.}}</translation>
-<translation id="1178017578188974117">{DAYS,plural, =1{for 1 dag siden}one{for # dag siden}other{for # dage siden}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 dag siden}one{# dag siden}other{# dage siden}}</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
@@ -16,9 +16,9 @@
 <translation id="1368832886055348810">Venstre til højre</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1398853756734560583">Maksimér</translation>
-<translation id="1432724887402139994">{SECONDS,plural, =1{for 1 minut siden}one{for # minut siden}other{for # minutter siden}}</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 minut siden}one{# minut siden}other{# minutter siden}}</translation>
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
-<translation id="1523230076022876491">{MONTHS,plural, =1{for 1 måned siden}one{for # måned siden}other{for # måneder siden}}</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 måned siden}one{# måned siden}other{# måneder siden}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut og }one{# minutter og }other{# minutter og }}</translation>
 <translation id="1643823602425662293">Notifikation</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -66,7 +66,7 @@
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nyt</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{For 1 år siden}one{For # år siden}other{For # år siden}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 år siden}one{# år siden}other{# år siden}}</translation>
 <translation id="2878511608894704031">Slet alt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}one{om # dag}other{om # dage}}</translation>
 <translation id="2922712708897119705">Kolonnen <ph name="COLUMN_NAME" /> sorteres i faldende rækkefølge.</translation>
@@ -102,14 +102,14 @@
 <translation id="3994749195054421561">Kolonnen <ph name="COLUMN_NAME" /> sorteres i stigende rækkefølge.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulæst notifikation}one{# ulæst notifikation}other{# ulæste notifikationer}}</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{For 1 måned siden}one{For # måned siden}other{For # måneder siden}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 måned siden}one{# måned siden}other{# måneder siden}}</translation>
 <translation id="4289300219472526559">Start indtaling</translation>
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4306392492252714209">Fjern fra udklipsholder.</translation>
 <translation id="4491109536499578614">Billede</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4588090240171750605">Scroll til højre</translation>
-<translation id="4689010477870442157">{YEARS,plural, =1{for 1 år siden}one{for # år siden}other{for # år siden}}</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 år siden}one{# år siden}other{# år siden}}</translation>
 <translation id="4724120544754982507">Notifikationscenter, <ph name="UNREAD_NOTIFICATION_COUNT" /> ulæste notifikationer</translation>
 <translation id="4729257764711776855">nummer</translation>
 <translation id="4746179598275229723">Udvidelsen er frigjort</translation>
@@ -190,7 +190,7 @@
 <translation id="8086866675552927481">{MINUTES,plural, =1{om 1 min}one{om # min}other{om # min}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Nummer fra <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{for 1 time siden}one{for # time siden}other{for # timer siden}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 time siden}one{# time siden}other{# timer siden}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek. tilbage}one{# sek. tilbage}other{# sek. tilbage}}</translation>
 <translation id="8134065097954893699">Genindlæs siden</translation>
 <translation id="815598010540052116">Scroll Down</translation>
@@ -216,12 +216,12 @@
 <translation id="8867568208303837180">Sender...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8927924178504495502">{HOURS,plural, =1{for 1 time siden}one{for # time siden}other{for # timer siden}}</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 time siden}one{# time siden}other{# timer siden}}</translation>
 <translation id="8996630695507351249">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har internetforbindelse.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Skjul notifikation</translation>
 <translation id="9170848237812810038">&amp;Fortryd</translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="944069440740578670">Ulæste notifikationer</translation>
-<translation id="966963601246348639">{SECONDS,plural, =1{for 1 sekund siden}one{for # sekund siden}other{for # sekunder siden}}</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 sekund siden}one{# sekund siden}other{# sekunder siden}}</translation>
 </translationbundle>

@@ -53,7 +53,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   skpathutils::FillPathWithPaint(path, paint_stroke, &dst_path, nullptr);
 
   // Width and height should never be 0.
-  auto surface(SkSurface::MakeRasterN32Premul(w ? w : 1, h ? h : 1));
+  auto surface(
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(w ? w : 1, h ? h : 1)));
 
   surface->getCanvas()->drawPath(path, paint_fill);
   surface->getCanvas()->drawPath(path, paint_stroke);

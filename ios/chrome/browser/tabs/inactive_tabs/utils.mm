@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -64,7 +64,8 @@ void PerformBatchMigration(
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsEnabled());
+  CHECK_NE(active_browser, inactive_browser);
   PerformBatchMigration(
       active_browser, inactive_browser,
       base::BindOnce(^(WebStateList* active_web_state_list,
@@ -89,7 +90,8 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsEnabled());
+  CHECK_NE(active_browser, inactive_browser);
   PerformBatchMigration(
       active_browser, inactive_browser,
       base::BindOnce(^(WebStateList* active_web_state_list,
@@ -114,7 +116,8 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
                             Browser* active_browser) {
-  DCHECK(!IsInactiveTabsEnabled());
+  CHECK(!IsInactiveTabsEnabled());
+  CHECK_NE(active_browser, inactive_browser);
   // Record the number of tabs restored from the inactive browser after Inactive
   // Tabs has been disabled.
   base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",

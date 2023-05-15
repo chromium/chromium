@@ -54,6 +54,14 @@ static WTF::String StripStyleTags(const WTF::String& html) {
       stripped_html.Append(html.Substring(pos, html.length() - pos));
       break;
     }
+    // Bail out if it's not “<style>” or “<style ”; it's probably
+    // a false positive then.
+    if (style_start + 6 >= html.length() ||
+        (html[style_start + 6] != ' ' && html[style_start + 6] != '>')) {
+      stripped_html.Append(html.Substring(pos, style_start - pos));
+      pos = style_start + 6;
+      continue;
+    }
     wtf_size_t style_end = html.FindIgnoringCase("</style>", style_start);
     if (style_end == kNotFound) {
       LOG(FATAL) << "Mismatched <style> tag";

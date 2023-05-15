@@ -520,7 +520,6 @@ TEST(Expected, MemberSwap) {
   ex1.swap(ex2);
   ASSERT_FALSE(ex1.has_value());
   EXPECT_EQ(ex1.error(), 123);
-
   ASSERT_TRUE(ex2.has_value());
   EXPECT_EQ(ex2.value(), 42);
 }
@@ -532,7 +531,6 @@ TEST(Expected, FreeSwap) {
   swap(ex1, ex2);
   ASSERT_FALSE(ex1.has_value());
   EXPECT_EQ(ex1.error(), 123);
-
   ASSERT_TRUE(ex2.has_value());
   EXPECT_EQ(ex2.value(), 42);
 }
@@ -1056,7 +1054,6 @@ TEST(ExpectedVoid, MemberSwap) {
   ex1.swap(ex2);
   ASSERT_FALSE(ex1.has_value());
   EXPECT_EQ(ex1.error(), 123);
-
   ASSERT_TRUE(ex2.has_value());
 }
 
@@ -1067,7 +1064,6 @@ TEST(ExpectedVoid, FreeSwap) {
   swap(ex1, ex2);
   ASSERT_FALSE(ex1.has_value());
   EXPECT_EQ(ex1.error(), 123);
-
   ASSERT_TRUE(ex2.has_value());
 }
 

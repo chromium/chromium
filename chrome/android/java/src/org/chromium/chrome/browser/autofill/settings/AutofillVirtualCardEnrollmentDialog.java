@@ -8,7 +8,6 @@ import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
@@ -117,12 +116,20 @@ public class AutofillVirtualCardEnrollmentDialog {
                         VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK)));
         issuerLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        ((TextView) customView.findViewById(R.id.credit_card_identifier))
-                .setText(mContext.getString(
-                        R.string.autofill_virtual_card_enrollment_dialog_card_label,
-                        mVirtualCardEnrollmentFields.getCardIdentifierString()));
-        ((ImageView) customView.findViewById(R.id.credit_card_issuer_icon))
-                .setImageBitmap(mVirtualCardEnrollmentFields.getIssuerCardArt());
+        AutofillUiUtils.addCardDetails(mContext, customView,
+                mVirtualCardEnrollmentFields.getCardName(),
+                mVirtualCardEnrollmentFields.getCardNumber(),
+                mContext.getString(
+                        R.string.autofill_virtual_card_enrollment_dialog_card_container_title),
+                mVirtualCardEnrollmentFields.getCardArtUrl(),
+                mVirtualCardEnrollmentFields.getNetworkIconId(),
+                AutofillUiUtils.getVirtualCardEnrollmentDialogIconWidthId(),
+                AutofillUiUtils.getVirtualCardEnrollmentDialogIconHeightId(),
+                R.dimen.virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end,
+                /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
+                /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
+                /* showCustomIcon= */ true);
+
         return customView;
     }
 }

@@ -47,6 +47,11 @@ bool WeakReference::Flag::MaybeValid() const {
 void WeakReference::Flag::DetachFromSequence() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+void WeakReference::Flag::BindToCurrentSequence() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 #endif
 
 WeakReference::Flag::~Flag() = default;
@@ -94,6 +99,12 @@ WeakReference WeakReferenceOwner::GetRef() const {
 void WeakReferenceOwner::Invalidate() {
   flag_->Invalidate();
   flag_ = MakeRefCounted<WeakReference::Flag>();
+}
+
+void WeakReferenceOwner::BindToCurrentSequence() {
+#if DCHECK_IS_ON()
+  flag_->BindToCurrentSequence();
+#endif
 }
 
 WeakPtrFactoryBase::WeakPtrFactoryBase(uintptr_t ptr) : ptr_(ptr) {

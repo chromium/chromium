@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -127,7 +128,7 @@ class SMSClientImpl : public SMSClient {
     std::move(callback).Run(sms);
   }
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
 
   std::map<dbus::ObjectPath, std::unique_ptr<SMSReceiveHandler>>
       sms_receive_handlers_;

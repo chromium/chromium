@@ -137,6 +137,14 @@ NSArray* ExtractMenuElements(UIView* view,
   return [EditMenuAppInterface editMenuActionWithAccessibilityLabel:@"Copy"];
 }
 
++ (id<GREYMatcher>)editMenuCutButtonMatcher {
+  return [EditMenuAppInterface editMenuActionWithAccessibilityLabel:@"Cut"];
+}
+
++ (id<GREYMatcher>)editMenuPasteButtonMatcher {
+  return [EditMenuAppInterface editMenuActionWithAccessibilityLabel:@"Paste"];
+}
+
 + (NSArray*)editMenuActions {
   NSMutableArray* menuElements = [NSMutableArray array];
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {

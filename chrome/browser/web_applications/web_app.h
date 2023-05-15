@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -198,8 +199,12 @@ class WebApp {
 
   const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
 
-  const std::vector<ScopeExtensionInfo>& scope_extensions() const {
+  const base::flat_set<ScopeExtensionInfo>& scope_extensions() const {
     return scope_extensions_;
+  }
+
+  const base::flat_set<ScopeExtensionInfo>& validated_scope_extensions() const {
+    return validated_scope_extensions_;
   }
 
   RunOnOsLoginMode run_on_os_login_mode() const {
@@ -282,6 +287,10 @@ class WebApp {
 
   struct ExternalManagementConfig {
     ExternalManagementConfig();
+    ExternalManagementConfig(
+        bool is_placeholder,
+        const base::flat_set<GURL>& install_urls,
+        const base::flat_set<std::string>& additional_policy_ids);
     ~ExternalManagementConfig();
     ExternalManagementConfig(
         const ExternalManagementConfig& external_management_config);
@@ -402,7 +411,9 @@ class WebApp {
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
-  void SetScopeExtensions(std::vector<ScopeExtensionInfo> scope_extensions);
+  void SetScopeExtensions(base::flat_set<ScopeExtensionInfo> scope_extensions);
+  void SetValidatedScopeExtensions(
+      base::flat_set<ScopeExtensionInfo> validated_scope_extensions);
   void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
@@ -511,7 +522,8 @@ class WebApp {
   base::flat_set<std::string> disallowed_launch_protocols_;
   // TODO(crbug.com/1072058): No longer aiming to ship, remove.
   apps::UrlHandlers url_handlers_;
-  std::vector<ScopeExtensionInfo> scope_extensions_;
+  base::flat_set<ScopeExtensionInfo> scope_extensions_;
+  base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;
   GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
@@ -590,10 +602,23 @@ bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
 bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
 
+std::ostream& operator<<(
+    std::ostream& out,
+    const WebApp::ExternalManagementConfig& management_config);
 bool operator==(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
+
+namespace proto {
+
+bool operator==(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2);
+
+bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2);
+
+}  // namespace proto
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const blink::ParsedPermissionsPolicyDeclaration

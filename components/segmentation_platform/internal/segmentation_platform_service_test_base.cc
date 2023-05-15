@@ -125,7 +125,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   auto storage_service = std::make_unique<StorageService>(
       std::move(segment_db), std::move(signal_db),
       std::move(segment_storage_config_db), &test_clock_, ukm_data_manager,
-      all_segment_ids, model_provider_factory.get(), &pref_service_);
+      std::move(configs), model_provider_factory.get(), &pref_service_);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->storage_service = std::move(storage_service);
@@ -135,7 +135,6 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   params->history_service = history_service;
   params->task_runner = task_runner_;
   params->clock = &test_clock_;
-  params->configs = std::move(configs);
   params->field_trial_register = std::make_unique<MockFieldTrialRegister>();
   params->device_info_tracker = device_info_tracker_.get();
   params->input_delegate_holder =

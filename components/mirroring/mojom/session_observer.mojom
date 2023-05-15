@@ -46,4 +46,7 @@ interface SessionObserver {
 
   // Called when the source is changed.
   OnSourceChanged();
+
+  // Called when the session state toggles between remoting and mirroring
+  OnRemotingStateChanged(bool is_remoting);
 };

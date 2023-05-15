@@ -28,7 +28,7 @@ interface EndpointDiscoveryListener {
 };
 
 // Listener for lifecycle events associated with a connection to a remote
-// endpoint. Methods in this interface are called from utiltiiy process, and is
+// endpoint. Methods in this interface are called from utility process, and is
 // used by the browser process to listen for connection status associated with
 // remote endpoints.
 interface ConnectionLifecycleListener {
@@ -76,7 +76,7 @@ interface ConnectionLifecycleListener {
 };
 
 // Listener for payload status. Methods in this interface are called from
-// utiltiiy process, and is used by the browser process to listen for payload
+// utility process, and is used by the browser process to listen for payload
 // status associated with remote endpoints.
 interface PayloadListener {
   // Called when a Payload is received from a remote endpoint. Depending on the

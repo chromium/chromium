@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
@@ -56,9 +57,8 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
           profile, ConnectorsServiceFactory::GetForBrowserContext(profile))));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  policy::CloudPolicyStore* store = nullptr;
 
-  // Managed device.
+  policy::CloudPolicyStore* browser_cloud_policy_store = nullptr;
   if (management_service->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
     auto* browser_policy_connector =
@@ -67,28 +67,29 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
       auto* machine_policy_manager =
           browser_policy_connector->machine_level_user_cloud_policy_manager();
       if (machine_policy_manager) {
-        store = machine_policy_manager->store();
+        browser_cloud_policy_store = machine_policy_manager->store();
       }
     }
-  } else if (management_service->HasManagementAuthority(
-                 policy::EnterpriseManagementAuthority::CLOUD)) {
-    // Managed user.
-    if (!store) {
-      auto* user_policy_manager = profile->GetUserCloudPolicyManager();
-      if (user_policy_manager) {
-        auto* core = user_policy_manager->core();
-        if (core) {
-          store = core->store();
-        }
+  }
+
+  policy::CloudPolicyStore* user_cloud_policy_store = nullptr;
+  if (management_service->HasManagementAuthority(
+          policy::EnterpriseManagementAuthority::CLOUD)) {
+    policy::CloudPolicyManager* user_policy_manager =
+        profile->GetUserCloudPolicyManager();
+    if (!user_policy_manager) {
+      user_policy_manager = profile->GetProfileCloudPolicyManager();
+    }
+    if (user_policy_manager) {
+      auto* core = user_policy_manager->core();
+      if (core) {
+        user_cloud_policy_store = core->store();
       }
     }
-    // A user policy store should always be available when in a managed user
-    // context.
-    DCHECK(store);
   }
 
   decorators.push_back(std::make_unique<BrowserSignalsDecorator>(
-      store,
+      browser_cloud_policy_store, user_cloud_policy_store,
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile)));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

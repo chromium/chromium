@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

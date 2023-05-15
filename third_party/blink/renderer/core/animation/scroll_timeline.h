@@ -79,6 +79,16 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Animation*,
       const Timing&) override;
+
+  // TODO(kevers): Support range start and end for scroll-timelines that are not
+  // view timelines.
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& rangeStart,
+      const absl::optional<TimelineOffset>& rangeEnd,
+      const Timing& timing) override {
+    return CalculateIntrinsicIterationDuration(nullptr, timing);
+  }
+
   AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;
@@ -102,6 +112,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
+  float GetResolvedZoom() const { return timeline_state_snapshotted_.zoom; }
+
   bool Matches(TimelineAttachment,
                ReferenceType,
                Element* reference_element,
@@ -111,7 +123,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   // Mark every effect target of every Animation attached to this timeline
   // for style recalc.
-  void InvalidateEffectTargetStyle();
+  void InvalidateEffectTargetStyle() const;
 
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
@@ -135,11 +147,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
-  // Called when forcing a style update in response to a web-animations API call
-  // that require a fresh style (e.g. getKeyframes) Resolves scroll offsets and
-  // the resolved source so that timeline offsets can be properly computed.
-  virtual void FlushStyleUpdate();
-
   TimelineAttachment GetTimelineAttachment() const { return attachment_type_; }
 
   ScrollTimelineAttachment* CurrentAttachment() {
@@ -160,11 +167,34 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   void UpdateResolvedSource();
 
+  struct TimelineState {
+    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
+    // current_time.
+    TimelinePhase phase = TimelinePhase::kInactive;
+    absl::optional<base::TimeDelta> current_time;
+    absl::optional<ScrollOffsets> scroll_offsets;
+    // The view offsets will be null unless using a view timeline.
+    absl::optional<ScrollOffsets> view_offsets;
+    // Zoom factor applied to the scroll offsets.
+    float zoom = 1.0f;
+
+    bool HasConsistentLayout(const TimelineState& other) const {
+      return scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
+             view_offsets == other.view_offsets;
+    }
+
+    bool operator==(const TimelineState& other) const {
+      return phase == other.phase && current_time == other.current_time &&
+             scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
+             view_offsets == other.view_offsets;
+    }
+  };
+
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
-  virtual absl::optional<ScrollOffsets> CalculateOffsets(
-      PaintLayerScrollableArea* scrollable_area,
-      ScrollOrientation physical_orientation) const;
+  virtual void CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                                ScrollOrientation physical_orientation,
+                                TimelineState* state) const;
 
   // ScrollSnapshotClient:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
@@ -173,6 +203,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
+  bool CheckIfNeedsValidation() override;
+
+  virtual bool ValidateTimelineOffsets() { return true; }
 
   bool ComputeIsResolved() const;
 
@@ -180,24 +213,13 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
 
-  struct TimelineState {
-    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
-    // current_time.
-    TimelinePhase phase = TimelinePhase::kInactive;
-    absl::optional<base::TimeDelta> current_time;
-    absl::optional<ScrollOffsets> scroll_offsets;
-
-    bool operator==(const TimelineState& other) const {
-      return phase == other.phase && current_time == other.current_time &&
-             scroll_offsets == other.scroll_offsets;
-    }
-  };
-
   TimelineState ComputeTimelineState();
 
   TimelineAttachment attachment_type_;
   Member<Node> resolved_source_;
   bool is_resolved_ = false;
+  absl::optional<ScrollOffset> minimum_scroll_offset_;
+  absl::optional<ScrollOffset> maximum_scroll_offset_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -1238,7 +1239,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(speak_on_mute_detection_enabled);
   }
 
-  dbus::ObjectProxy* cras_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> cras_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Note: This should remain the last member so it'll be destroyed and

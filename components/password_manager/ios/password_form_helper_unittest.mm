@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"
@@ -23,7 +23,6 @@
 #include "components/password_manager/ios/test_helpers.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_client.h"
@@ -82,13 +81,18 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
     web::WebTestWithWebState::TearDown();
   }
 
+  web::WebFrame* GetMainFrame() {
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    return feature->GetWebFramesManager(web_state())->GetMainWebFrame();
+  }
+
   // Sets up unique form ids and returns true if successful.
   bool SetUpUniqueIDs() {
     __block web::WebFrame* main_frame = nullptr;
     bool success =
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-          main_frame =
-              web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+          main_frame = GetMainFrame();
           return main_frame != nullptr;
         });
     if (!success) {
@@ -104,7 +108,7 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
     // Run password forms search to set up unique IDs.
     __block bool complete = false;
     password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-        ->FindPasswordFormsInFrame(web::GetMainFrame(web_state()),
+        ->FindPasswordFormsInFrame(main_frame,
                                    base::BindOnce(^(NSString* forms) {
                                      complete = true;
                                    }));
@@ -186,7 +190,7 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
     LoadHtml(data.html_string);
     __block std::vector<FormData> forms;
     __block BOOL block_was_called = NO;
-    [helper_ findPasswordFormsInFrame:web::GetMainFrame(web_state())
+    [helper_ findPasswordFormsInFrame:GetMainFrame()
                     completionHandler:^(const std::vector<FormData>& result,
                                         uint32_t maxID) {
                       block_was_called = YES;
@@ -262,7 +266,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
 
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
-                                inFrame:web::GetMainFrame(web_state())
+                                inFrame:GetMainFrame()
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
@@ -302,7 +306,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillDataFillingFailure) {
 
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
-                                inFrame:web::GetMainFrame(web_state())
+                                inFrame:GetMainFrame()
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
@@ -337,7 +341,7 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
   __block int success_counter = 0;
   __block FormData result = FormData();
   [helper_ extractPasswordFormData:FormRendererId(1)
-                           inFrame:web::GetMainFrame(web_state())
+                           inFrame:GetMainFrame()
                  completionHandler:^(BOOL complete, const FormData& form) {
                    ++call_counter;
                    if (complete) {
@@ -356,7 +360,7 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
   result = FormData();
 
   [helper_ extractPasswordFormData:FormRendererId(404)
-                           inFrame:web::GetMainFrame(web_state())
+                           inFrame:GetMainFrame()
                  completionHandler:^(BOOL complete, const FormData& form) {
                    ++call_counter;
                    if (complete) {
@@ -394,7 +398,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordIntoFormWithUserTypedUsername) {
   __block bool called = NO;
   __block bool success = NO;
   [helper_ fillPasswordFormWithFillData:fill_data
-                                inFrame:web::GetMainFrame(web_state())
+                                inFrame:GetMainFrame()
                        triggeredOnField:password_field_id
                       completionHandler:^(BOOL res) {
                         called = YES;

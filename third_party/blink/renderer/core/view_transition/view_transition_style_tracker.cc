@@ -336,6 +336,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
     ViewTransitionState transition_state)
     : document_(document), state_(State::kCaptured), deserialized_(true) {
+  device_pixel_ratio_ = transition_state.device_pixel_ratio;
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
   snapshot_root_size_at_capture_ =
       transition_state.snapshot_root_size_at_capture;
@@ -343,7 +344,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   VectorOf<AtomicString> transition_names;
   transition_names.ReserveInitialCapacity(captured_name_count_);
   for (const auto& transition_state_element : transition_state.elements) {
-    AtomicString name(transition_state_element.tag_name.c_str());
+    auto name =
+        AtomicString::FromUTF8(transition_state_element.tag_name.c_str());
     transition_names.push_back(name);
 
     if (transition_state_element.is_root) {
@@ -379,10 +381,23 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
     element_data_map_.insert(name, std::move(element_data));
   }
+
+  // The aim of this flag is to serialize/deserialize SPA state using MPA
+  // machinery. The intent is to use SPA tests to test MPA implementation as
+  // well. To that end, if the flag is enabled we should invalidate styles and
+  // clear the view transition names, because the "true" MPA implementation
+  // would not have any style or names set.
+  if (RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
+    InvalidateHitTestingCache();
+    InvalidateStyle();
+    document_->GetStyleEngine().SetViewTransitionNames({});
+  }
 }
 
 ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
-  CHECK_EQ(state_, State::kFinished);
+  if (!RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
+    CHECK_EQ(state_, State::kFinished);
+  }
 }
 
 void ViewTransitionStyleTracker::AddConsoleError(
@@ -731,7 +746,6 @@ bool ViewTransitionStyleTracker::Start() {
   // initialized with the style system in the start phase.
   if (deserialized_) {
     DCHECK(document_->GetStyleEngine().ViewTransitionTags().empty());
-    DCHECK_GT(captured_name_count_, 0);
     found_new_names = true;
   }
 
@@ -1006,6 +1020,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
                                  ->StyleRef()
                                  .EffectiveZoom();
   if (device_pixel_ratio_ != device_pixel_ratio) {
+    // TODO(vmpstr): Changes to device pixel ratio are hard to deal with because
+    // of the cached content. We should just skip the transition here.
     device_pixel_ratio_ = device_pixel_ratio;
     needs_style_invalidation = true;
   }
@@ -1463,6 +1479,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
 
   ViewTransitionState transition_state;
 
+  transition_state.device_pixel_ratio = device_pixel_ratio_;
   DCHECK(snapshot_root_size_at_capture_);
   transition_state.snapshot_root_size_at_capture =
       *snapshot_root_size_at_capture_;
@@ -1488,9 +1505,11 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.snapshot_id = element_data->old_snapshot_id;
     element.paint_order = element_data->element_index;
     element.is_root = false;
-    // TODO(khushalsagar): Also writing mode.
 
-    DCHECK_GT(element.paint_order, 0);
+    // TODO(khushalsagar): Also writing mode.
+    // TODO(vmpstr): Also captured_rect_in_layout_space.
+
+    DCHECK(!old_root_data_ || element.paint_order > 0);
   }
 
   if (old_root_data_) {
@@ -1829,6 +1848,18 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
     }
     result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
+
+    // TODO(crbug.com/1432868): This captures a couple of common cases --
+    // box-shadow and no box shadow on the element. However, this isn't at all
+    // comprehensive. The paint system determines per element whether it
+    // should pixel snap or enclosing rect or something else. We need to think
+    // of a better way to fix this for all cases.
+    result.Move(box.FirstFragment().PaintOffset());
+    if (box.StyleRef().BoxShadow()) {
+      result = PhysicalRect(ToEnclosingRect(result));
+    } else {
+      result = PhysicalRect(ToPixelSnappedRect(result));
+    }
   }
   return result;
 }

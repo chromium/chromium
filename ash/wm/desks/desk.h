@@ -11,10 +11,11 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -80,7 +81,7 @@ class ASH_EXPORT Desk {
   // used to support per-desk z-orders for all-desk windows. Entries are stored
   // in ascending `order`.
   struct AllDeskWindowStackingData {
-    aura::Window* window = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
     // The z-order of the window.
     // Note: this is reversed from how child windows are ordered in
     // `aura::Window`, so an entry with `order == 0` means topmost.
@@ -100,7 +101,7 @@ class ASH_EXPORT Desk {
 
   int container_id() const { return container_id_; }
 
-  const base::GUID& uuid() const { return uuid_; }
+  const base::Uuid& uuid() const { return uuid_; }
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
@@ -160,7 +161,7 @@ class ASH_EXPORT Desk {
 
   // Sets the desks `uuid_` to the `new_guid` if `new_guid` is valid, used when
   // restoring desks on sign-in. If `new_guid` is invalid no change happens.
-  void SetGuid(base::GUID new_guid);
+  void SetGuid(base::Uuid new_guid);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not
   // active yet), by showing its containers on all root windows while setting
@@ -291,7 +292,7 @@ class ASH_EXPORT Desk {
   void ResumeContentUpdateNotification(bool notify_when_fully_resumed);
 
   // Uniquely identifies the desk.
-  base::GUID uuid_;
+  base::Uuid uuid_;
 
   // The associated container ID with this desk.
   const int container_id_;

@@ -7,11 +7,11 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/follow/follow_configuration.h"
 #import "ios/chrome/browser/follow/follow_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

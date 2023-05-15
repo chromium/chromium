@@ -12,7 +12,7 @@ message Resource {
   }
 
   optional string domain = 1;
-  repeated Category categories = 2;
+  repeated Category categories = 2 [packed = true];
 }
 
 // Contains ownership information about resources that are used in a 3rd party

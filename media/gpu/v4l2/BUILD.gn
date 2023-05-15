@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
+import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/libgav1/options.gni")
 import("//tools/generate_stubs/rules.gni")
@@ -27,6 +28,12 @@ source_set("v4l2") {
     "buffer_affinity_tracker.h",
     "generic_v4l2_device.cc",
     "generic_v4l2_device.h",
+    "legacy/v4l2_slice_video_decode_accelerator.cc",
+    "legacy/v4l2_slice_video_decode_accelerator.h",
+    "legacy/v4l2_stateful_workaround.cc",
+    "legacy/v4l2_stateful_workaround.h",
+    "legacy/v4l2_video_decode_accelerator.cc",
+    "legacy/v4l2_video_decode_accelerator.h",
     "v4l2_decode_surface.cc",
     "v4l2_decode_surface.h",
     "v4l2_decode_surface_handler.h",
@@ -38,16 +45,14 @@ source_set("v4l2") {
     "v4l2_framerate_control.h",
     "v4l2_image_processor_backend.cc",
     "v4l2_image_processor_backend.h",
-    "v4l2_slice_video_decode_accelerator.cc",
-    "v4l2_slice_video_decode_accelerator.h",
-    "v4l2_stateful_workaround.cc",
-    "v4l2_stateful_workaround.h",
+    "v4l2_stateful_video_decoder.cc",
+    "v4l2_stateful_video_decoder.h",
+    "v4l2_stateless_video_decoder.cc",
+    "v4l2_stateless_video_decoder.h",
     "v4l2_utils.cc",
     "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
     "v4l2_vda_helpers.h",
-    "v4l2_video_decode_accelerator.cc",
-    "v4l2_video_decode_accelerator.h",
     "v4l2_video_decoder.cc",
     "v4l2_video_decoder.h",
     "v4l2_video_decoder_backend.cc",
@@ -63,6 +68,13 @@ source_set("v4l2") {
     "v4l2_video_decoder_delegate_vp9.cc",
     "v4l2_video_decoder_delegate_vp9.h",
   ]
+
+  if (enable_hevc_parser_and_hw_decoder) {
+    sources += [
+      "v4l2_video_decoder_delegate_h265.cc",
+      "v4l2_video_decoder_delegate_h265.h",
+    ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -81,14 +93,6 @@ source_set("v4l2") {
     "EGL",
     "GLESv2",
   ]
-
-  if (use_v4l2_codec_aml) {
-    sources += [
-      "aml_v4l2_device.cc",
-      "aml_v4l2_device.h",
-    ]
-    defines += [ "AML_V4L2" ]
-  }
 
   configs += [ "//third_party/libyuv:libyuv_config" ]
 
@@ -147,8 +151,8 @@ source_set("v4l2_status") {
 source_set("unit_test") {
   testonly = true
   sources = [
+    "legacy/v4l2_stateful_workaround_unittest.cc",
     "v4l2_device_unittest.cc",
-    "v4l2_stateful_workaround_unittest.cc",
   ]
   deps = [
     ":v4l2",
@@ -166,6 +170,8 @@ executable("v4l2_stateless_decoder") {
   sources = [
     "test/h264_decoder.cc",
     "test/h264_decoder.h",
+    "test/h264_dpb.cc",
+    "test/h264_dpb.h",
     "test/upstream_pix_fmt.h",
     "test/v4l2_ioctl_shim.cc",
     "test/v4l2_ioctl_shim.h",

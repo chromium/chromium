@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_action.h"
@@ -60,9 +60,15 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   static ExtensionActionRunner* GetForWebContents(
       content::WebContents* web_contents);
 
-  // Executes the action for the given |extension| and |grant_tab_permissions|
-  // if true. Returns any further action (like showing a popup) that should be
-  // taken.
+  // Runs the given extension action. This may trigger a number of different
+  // behaviors, depending on the extension and state, including:
+  // - Running blocked actions (if the extension had withheld permissions)
+  // - Firing the action.onClicked event for the extension
+  // - Determining that a UI action should be taken, indicated by the return
+  //   result.
+  // If `grant_tab_permissions` is true and the action is appropriate, this will
+  // grant tab permissions for the extension to the active tab. This may not
+  // happen in all cases (such as when showing a side panel).
   ExtensionAction::ShowAction RunAction(const Extension* extension,
                                         bool grant_tab_permissions);
 
@@ -80,13 +86,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // callback will reload the page.
   void ShowReloadPageBubbleWithReloadPageCallback(
       const ExtensionId& extension_id);
-
-  // Notifies the ExtensionActionRunner that the user site setting for
-  // `origin` with `action_ids` has changed.
-  void HandleUserSiteSettingModified(
-      const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
-      const url::Origin& origin,
-      PermissionsManager::UserSiteSetting new_site_settings);
 
   // Notifies the ExtensionActionRunner that an extension has been granted
   // active tab permissions. This will run any pending injections for that
@@ -199,12 +198,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Reloads the current page.
   void OnReloadPageBubbleAccepted();
-
-  // Called when the reload page bubble is accepted. Updates user site setting
-  // of `origin` to `site_settings`.
-  void OnReloadPageBubbleAcceptedForUserSiteSettingsChange(
-      const url::Origin& origin,
-      extensions::PermissionsManager::UserSiteSetting site_settings);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(

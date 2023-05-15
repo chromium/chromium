@@ -139,6 +139,13 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
   MessagePumpTest() : message_pump_(MessagePump::Create(GetParam())) {}
 
  protected:
+#if defined(USE_GLIB)
+  // Because of a GLIB implementation quirk, the pump doesn't do the same things
+  // between each DoWork. In this case, it won't set/clear a ScopedDoWorkItem
+  // because we run a chrome work item in the runloop outside of GLIB's control,
+  // so we oscillate between setting and not setting PreDoWorkExpectations.
+  std::map<MessagePump::Delegate*, int> do_work_counts;
+#endif
   void AddPreDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
 #if BUILDFLAG(IS_WIN)
@@ -155,14 +162,35 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
       EXPECT_CALL(delegate, MockOnEndWorkItem).Times(AtMost(1));
     }
 #endif  // BUILDFLAG(IS_WIN)
+#if defined(USE_GLIB)
+    do_work_counts.try_emplace(&delegate, 0);
+    if (GetParam() == MessagePumpType::UI) {
+      if (++do_work_counts[&delegate] % 2) {
+        // The GLib MessagePump will do native work before chrome work on
+        // startup.
+        EXPECT_CALL(delegate, MockOnBeginWorkItem);
+        EXPECT_CALL(delegate, MockOnEndWorkItem);
+      }
+    }
+#endif  // defined(USE_GLIB)
   }
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
     // MessagePumpLibEvent checks for native notifications once after processing
     // a DoWork() but only instantiates a ScopedDoWorkItem that triggers
     // MessagePumpLibevent::OnLibeventNotification() which this test does not
     // so there are no post-work expectations at the moment.
+#endif
+#if defined(USE_GLIB)
+    if (GetParam() == MessagePumpType::UI) {
+      // The GLib MessagePump can create and destroy work items between DoWorks
+      // depending on internal state.
+      EXPECT_CALL(delegate, MockOnBeginWorkItem).Times(AtMost(1));
+      EXPECT_CALL(delegate, MockOnEndWorkItem).Times(AtMost(1));
+    }
+#endif  // defined(USE_GLIB)
   }
 
   std::unique_ptr<MessagePump> message_pump_;
@@ -182,6 +210,16 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
+
+  // MessagePumpGlib uses a work item between a HandleDispatch() call and
+  // passing control back to the chrome loop, which handles the Quit() despite
+  // us not necessarily doing any native work during that time.
+#if defined(USE_GLIB)
+  if (GetParam() == MessagePumpType::UI) {
+    AddPostDoWorkExpectations(delegate);
+  }
+#endif
+
   EXPECT_CALL(delegate, DoIdleWork()).Times(0);
 
   message_pump_->ScheduleWork();
@@ -215,10 +253,14 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
 
-  // PostDoWorkExpectations for the first DoWork.
+  // The `nested_delegate` will quit first.
+  AddPostDoWorkExpectations(nested_delegate);
+
+  // Return a delayed task with |yield_to_native| set, and exit.
   AddPostDoWorkExpectations(delegate);
 
   AddPreDoWorkExpectations(delegate);
+
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
@@ -245,8 +287,8 @@ TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
   }));
   AddPostDoWorkExpectations(delegate);
 
-  // Return a delayed task with |yield_to_native| set, and exit.
   AddPreDoWorkExpectations(delegate);
+  // Return a delayed task with |yield_to_native| set, and exit.
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     auto now = TimeTicks::Now();
@@ -357,9 +399,13 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
+
+  AddPostDoWorkExpectations(delegate);
+
 #if BUILDFLAG(IS_IOS)
   EXPECT_CALL(delegate, DoIdleWork).Times(AnyNumber());
 #endif
+
   message_pump_->Run(&delegate);
 }
 
@@ -382,6 +428,11 @@ TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
+
+  // We quit `nested_delegate` before `delegate`
+  AddPostDoWorkExpectations(nested_delegate);
+
+  AddPostDoWorkExpectations(delegate);
 
 #if BUILDFLAG(IS_IOS)
   EXPECT_CALL(nested_delegate, DoIdleWork).Times(AnyNumber());

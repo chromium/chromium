@@ -47,8 +47,10 @@ using password_manager::PasswordForm;
 using testing::Contains;
 using testing::Field;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
     syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 MATCHER_P3(HasPasswordValueAndUnsupportedFields,
            cryptographer,
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
   // Wait for data types to be ready for sync and trigger a sync cycle.
   // Otherwise, TriggerRefresh() would be no-op.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  GetSyncService(0)->TriggerRefresh(syncer::PASSWORDS);
+  GetSyncService(0)->TriggerRefresh({syncer::PASSWORDS});
 
   // After restart, the last sync cycle snapshot should be empty. Once a sync
   // request happened (e.g. by a poll), that snapshot is populated. We use the
@@ -403,18 +405,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 }
 
+// On ChromeOS, Sync-the-feature gets started automatically once a primary
+// account is signed in and the transport mode is not a thing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForNonSyncingPrimaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, Sync-the-feature gets started automatically once a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -438,6 +436,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       passwords_helper::GetAccountPasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The unconsented primary account isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -532,63 +531,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
-                       SwitchesStoresOnEnablingSync) {
-  AddTestPasswordToFakeServer();
-
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-  // On ChromeOS, Sync-the-feature starts automatically as soon as a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Sign in to a primary account, but don't enable Sync-the-feature.
-  // Note: This state shouldn't actually be reachable (the flow for setting a
-  // primary account also enables Sync), but still best to cover it here.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // Let the user opt in to the account-scoped password storage, and wait for it
-  // to become active.
-  OptInToAccountStorage(GetProfile(0)->GetPrefs(), GetSyncService(0));
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
-
-  // Make sure the password showed up in the account store.
-  password_manager::PasswordStoreInterface* account_store =
-      passwords_helper::GetAccountPasswordStoreInterface(0);
-  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
-
-  // Turn on Sync-the-feature.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
-      kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // Make sure the password is now in the profile store, but *not* in the
-  // account store anymore.
-  password_manager::PasswordStoreInterface* profile_store =
-      passwords_helper::GetProfilePasswordStoreInterface(0);
-  EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
-  EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
-
-  // Turn off Sync-the-feature again.
-  // Note: Turning Sync off without signing out isn't actually exposed to the
-  // user, so this generally shouldn't happen. Still best to cover it here.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // Now the password should be in both stores: The profile store does *not* get
-  // cleared when Sync gets disabled.
-  EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
-  EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
-}
-
 // The unconsented primary account isn't supported on ChromeOS so Sync won't
 // start up for an unconsented account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -616,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Turn on Sync-the-feature.
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -667,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Turn on Sync-the-feature.
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());

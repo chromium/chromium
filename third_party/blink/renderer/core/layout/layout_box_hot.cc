@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
@@ -194,6 +195,14 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (size_cache_status == NGLayoutCacheStatus::kNeedsLayout)
     return nullptr;
 
+  if (cached_layout_result->HasOrthogonalFallbackSizeDescendant() &&
+      View()->IsResizingInitialContainingBlock()) {
+    // There's an orthogonal writing-mode root somewhere inside that depends on
+    // the size of the initial containing block, and the initial containing
+    // block size is changing.
+    return nullptr;
+  }
+
   // If we need simplified layout, but the cached fragment's children are not
   // valid (see comment in `SetCachedLayoutResult`), don't return the fragment,
   // since it will be used to iteration the invalid children when running
@@ -364,6 +373,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         // relatively to the fragment.
         if (is_fragmented)
           return nullptr;
+
+        if (cached_layout_result->MinimalSpaceShortage()) {
+          // The fragmentation line has moved, and there was space shortage
+          // reported. This value is no longer valid.
+          return nullptr;
+        }
 
         // Fragmentation inside a nested multicol container depends on the
         // amount of remaining space in the outer fragmentation context, so if

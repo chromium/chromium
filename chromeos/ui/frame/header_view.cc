@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -57,7 +58,7 @@ class HeaderView::HeaderContentView : public views::View {
   }
 
  private:
-  HeaderView* header_view_;
+  raw_ptr<HeaderView, ExperimentalAsh> header_view_;
   views::PaintInfo::ScaleType scale_type_ =
       views::PaintInfo::ScaleType::kScaleWithEdgeSnapping;
 };
@@ -134,7 +135,7 @@ void HeaderView::SetAvatarIcon(const gfx::ImageSkia& avatar) {
     DCHECK_EQ(avatar.width(), avatar.height());
     if (!avatar_icon_) {
       avatar_icon_ = new views::ImageView();
-      AddChildView(avatar_icon_);
+      AddChildView(avatar_icon_.get());
     }
     avatar_icon_->SetImage(avatar);
   }

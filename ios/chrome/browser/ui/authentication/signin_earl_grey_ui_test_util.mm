@@ -73,7 +73,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
     [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
     ConditionBlock condition = ^bool {
       return [[SigninEarlGreyAppInterface primaryAccountGaiaID]
-          isEqual:fakeIdentity.gaiaID];
+          isEqualToString:fakeIdentity.gaiaID];
     };
     BOOL isSigned = base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForActionTimeout, condition);

@@ -27,7 +27,6 @@ class MediaCapsImpl : public mojom::MediaCaps {
 
   ~MediaCapsImpl() override;
 
-  void Initialize();
   void AddReceiver(mojo::PendingReceiver<mojom::MediaCaps> receiver);
   mojo::PendingRemote<mojom::MediaCaps> GetPendingRemote();
   void AddSupportedCodecProfileLevel(

@@ -40,10 +40,10 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/models/image_model.h"
@@ -163,11 +163,6 @@ TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
 
 class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest {
  public:
-  ShelfWidgetDarkLightModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kDarkLightMode);
-  }
-
   void SetUp() override {
     ShelfWidgetTest::SetUp();
 
@@ -175,9 +170,6 @@ class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest {
     // where shelf layers get recreated during the tablet mode transition.
     TabletModeController::SetUseScreenshotForTest(true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
@@ -479,7 +471,6 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
 
   // Now auto-hide (hidden) the shelf.
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  shelf_layout_manager->LayoutShelf();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf_layout_manager->visibility_state());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_layout_manager->auto_hide_state());
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
@@ -598,7 +589,6 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   // Change shelf alignment to verify that the targeter insets are updated.
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  shelf_layout_manager->LayoutShelf();
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
   {
     // Create a mouse-event targeting the right edge of the shelf widget. The
@@ -614,7 +604,6 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   // Now restore shelf alignment (bottom) and auto-hide (hidden) the shelf.
   shelf->SetAlignment(ShelfAlignment::kBottom);
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  shelf_layout_manager->LayoutShelf();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf_layout_manager->visibility_state());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_layout_manager->auto_hide_state());
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
@@ -660,7 +649,8 @@ class TransitionAnimationWaiter
     run_loop_->Quit();
   }
 
-  HotseatTransitionAnimator* hotseat_transition_animator_ = nullptr;
+  raw_ptr<HotseatTransitionAnimator, ExperimentalAsh>
+      hotseat_transition_animator_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -1137,8 +1127,8 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
   }
 
  private:
-  ShelfWidget* primary_shelf_widget_ = nullptr;
-  ShelfWidget* secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, ExperimentalAsh> primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, ExperimentalAsh> secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

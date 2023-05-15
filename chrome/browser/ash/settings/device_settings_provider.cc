@@ -84,6 +84,7 @@ const char* const kKnownSettings[] = {
     kDeviceDisplayResolution,
     kDeviceDockMacAddressSource,
     kDeviceEncryptedReportingPipelineEnabled,
+    kDeviceHindiInscriptLayoutEnabled,
     kDeviceHostnameTemplate,
     kDeviceHostnameUserConfigurable,
     kDeviceLoginScreenInputMethods,
@@ -1282,6 +1283,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.device_report_xdr_events());
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceReportXDREvents,
+                                 base::Value(container.enabled()));
+    }
+  }
+
+  if (policy.has_device_hindi_inscript_layout_enabled()) {
+    const em::DeviceHindiInscriptLayoutEnabledProto& container(
+        policy.device_hindi_inscript_layout_enabled());
+    if (container.has_enabled()) {
+      new_values_cache->SetValue(kDeviceHindiInscriptLayoutEnabled,
                                  base::Value(container.enabled()));
     }
   }

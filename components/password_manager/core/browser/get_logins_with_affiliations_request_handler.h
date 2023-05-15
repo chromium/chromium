@@ -29,6 +29,8 @@ struct PasswordForm;
 // Helper object which is used to obtain PasswordForms for a particular login
 // and affiliated logins parallelly. 'consumer' is notified about result
 // afterwards.
+// TODO(crbug.com/1432264): Rewrite the class according to comments in
+// crrev.com/c/chromium/src/+/4439696/comment/be22b57e_15a4f8ce/
 class GetLoginsWithAffiliationsRequestHandler
     : public base::RefCounted<GetLoginsWithAffiliationsRequestHandler> {
  public:
@@ -51,8 +53,15 @@ class GetLoginsWithAffiliationsRequestHandler
       std::vector<PasswordFormDigest>(const std::vector<std::string>&)>
   AffiliationsClosure();
 
-  // Returns a OnceCallback that calls 'HandleAffiliatedLoginsReceived()'.
-  base::OnceCallback<void(LoginsResultOrError)> AffiliatedLoginsClosure();
+  // Returns a OnceCallback that calls 'HandleGroupReceived()'. The
+  // callback returns the forms to be additionally requested from the password
+  // store.
+  base::OnceCallback<
+      std::vector<PasswordFormDigest>(const std::vector<std::string>&)>
+  GroupClosure();
+
+  // Returns a OnceCallback that calls 'HandleNonLoginsReceived()'.
+  base::OnceCallback<void(LoginsResultOrError)> NonFormLoginsClosure();
 
  private:
   friend class base::RefCounted<GetLoginsWithAffiliationsRequestHandler>;
@@ -70,10 +79,14 @@ class GetLoginsWithAffiliationsRequestHandler
   std::vector<PasswordFormDigest> HandleAffiliationsReceived(
       const std::vector<std::string>& realms);
 
-  // Receives all the affiliated logins from the password store or an error,
+  // Similar to |HandleAffiliationsReceived|, but only for grouping.
+  std::vector<PasswordFormDigest> HandleGroupReceived(
+      const std::vector<std::string>& realms);
+
+  // Receives affiliated and group logins from the password store or an error,
   // in case one occurred, processes `logins_or_error` and calls
   // `forms_received_`.
-  void HandleAffiliatedLoginsReceived(LoginsResultOrError logins_or_error);
+  void HandleNonFormLoginsReceived(LoginsResultOrError logins_or_error);
 
   void NotifyConsumer();
 
@@ -82,11 +95,15 @@ class GetLoginsWithAffiliationsRequestHandler
   // All the affiliations for 'requested_digest_'.
   base::flat_set<std::string> affiliations_;
 
+  // The group realms for 'requested_digest_'.
+  base::flat_set<std::string> group_;
+
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
+  raw_ptr<PasswordStoreInterface, FlakyDanglingUntriaged> store_;
 
-  // Closure which is released after being called 2 times.
+  // Closure which is released after being called 2 times (3 in case
+  // |kFillingAcrossGroupedSites| is enabled).
   base::RepeatingClosure forms_received_;
 
   // PasswordForms to be sent to consumer if the backend call made to retrieve

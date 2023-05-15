@@ -25,6 +25,8 @@ class EnergyMetricsProvider {
     uint64_t gpu_nanojoules;
     // The absolute energy of the DRAM (only available in server CPUs).
     uint64_t dram_nanojoules;
+    // The absolute energy of the entire system.
+    uint64_t psys_nanojoules;
     // The following metrics are emitted by AMD processors.
     // We don't know what they measure exactly.
     uint64_t vdd_nanojoules;

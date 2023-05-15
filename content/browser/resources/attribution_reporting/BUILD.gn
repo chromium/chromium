@@ -34,6 +34,7 @@ build_webui("build") {
     "$root_gen_dir/$aggregation_service_folder/aggregation_service.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/registration.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_registration_error.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_component_folder/source_registration_time_config.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_type.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.ts",

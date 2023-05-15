@@ -18,16 +18,6 @@ import org.chromium.net.ExperimentalCronetEngine;
 class ChromiumNativeTestSupport extends ChromiumPlatformOnlyTestSupport {
     private static final String TAG = ChromiumNativeTestSupport.class.getSimpleName();
 
-    /**
-     * Name of the file that contains the test server certificate in PEM format.
-     */
-    private static final String SERVER_CERT_PEM = "quic-chain.pem";
-
-    /**
-     * Name of the file that contains the test server private key in PKCS8 PEM format.
-     */
-    private static final String SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
-
     @Override
     public TestServer createTestServer(Context context, Protocol protocol) {
         switch (protocol) {
@@ -97,8 +87,7 @@ class ChromiumNativeTestSupport extends ChromiumPlatformOnlyTestSupport {
         @Override
         public boolean start() {
             try {
-                return org.chromium.net.Http2TestServer.startHttp2TestServer(
-                        mContext, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM);
+                return org.chromium.net.Http2TestServer.startHttp2TestServer(mContext);
             } catch (Exception e) {
                 Log.e(TAG, "Exception during Http2TestServer start", e);
                 return false;

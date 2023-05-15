@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -41,7 +42,7 @@ class MultiUserUtilTest : public ChromeAshTestBase {
 
     fake_user_manager_ = new FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     profile_.reset(IdentityTestEnvironmentProfileAdaptor::
                        CreateProfileForIdentityTestEnvironment()
@@ -85,7 +86,7 @@ class MultiUserUtilTest : public ChromeAshTestBase {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   // |fake_user_manager_| is owned by |user_manager_enabler_|.
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 

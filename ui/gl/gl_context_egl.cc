@@ -89,6 +89,7 @@
 #define EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE 0x3481
 #endif /* EGL_ANGLE_context_virtualization */
 
+using ui::GetEGLErrorString;
 using ui::GetLastEGLErrorString;
 
 namespace gl {
@@ -342,12 +343,16 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
       eglCreateContext(gl_display_->GetDisplay(), config_,
                        share_group() ? share_group()->GetHandle() : nullptr,
                        context_attributes.data());
+  if (context_) {
+    return true;
+  }
 
   // If EGL_KHR_no_config_context is in use and context creation failed,
   // it might indicate that an unsupported ES version was requested. Try
   // falling back to a lower version.
-  if (!context_ && gl_display_->ext->b_EGL_KHR_no_config_context &&
-      eglGetError() == EGL_BAD_MATCH) {
+  GLint error = eglGetError();
+  if (gl_display_->ext->b_EGL_KHR_no_config_context &&
+      (error == EGL_BAD_MATCH || error == EGL_BAD_ATTRIBUTE)) {
     // Set up the list of versions to try: 3.1 -> 3.0 -> 2.0
     std::vector<std::pair<EGLint, EGLint>> candidate_versions;
     if (context_client_major_version == 3 &&
@@ -373,18 +378,16 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
                            context_attributes.data());
       // Stop searching as soon as a context is successfully created.
       if (context_) {
-        break;
+        return true;
+      } else {
+        error = eglGetError();
       }
     }
   }
 
-  if (!context_) {
-    LOG(ERROR) << "eglCreateContext failed with error "
-               << GetLastEGLErrorString();
-    return false;
-  }
-
-  return true;
+  LOG(ERROR) << "eglCreateContext failed with error "
+             << GetEGLErrorString(error);
+  return false;
 }
 
 void GLContextEGL::Destroy() {
@@ -542,6 +545,12 @@ bool GLContextEGL::IsCurrent(GLSurface* surface) {
   if (surface) {
     if (surface->GetHandle() != eglGetCurrentSurface(EGL_DRAW))
       return false;
+  }
+
+  if (gl_display_) {
+    if (gl_display_->GetDisplay() != eglGetCurrentDisplay()) {
+      return false;
+    }
   }
 
   return true;

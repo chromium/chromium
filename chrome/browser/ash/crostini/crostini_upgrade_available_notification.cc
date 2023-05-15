@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -15,8 +16,10 @@
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace crostini {
 
@@ -84,7 +87,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
 
   CrostiniUpgradeAvailableNotificationClosed disposition_ =
       CrostiniUpgradeAvailableNotificationClosed::kUnknown;
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   base::WeakPtr<CrostiniUpgradeAvailableNotification> notification_;
   base::OnceClosure closure_;
 
@@ -106,7 +109,12 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.small_image = gfx::Image(gfx::CreateVectorIcon(
       vector_icons::kFileDownloadIcon, 64, gfx::kGoogleBlue800));
-  rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  if (chromeos::features::IsJellyEnabled()) {
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
+  } else {
+    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  }
+
   rich_notification_data.buttons.emplace_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_UPGRADE)));

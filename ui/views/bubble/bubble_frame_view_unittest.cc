@@ -642,6 +642,42 @@ TEST_F(BubbleFrameViewTest,
   EXPECT_EQ(window_bounds.bottom(), 500);
 }
 
+// Tests that bubbles with `use_anchor_window_bounds_` set to false will not
+// apply an offset to try to make them fit inside the anchor window bounds.
+TEST_F(BubbleFrameViewTest, BubbleNotUsingAnchorWindowBounds) {
+  TestBubbleFrameView frame(this);
+  gfx::Rect window_bounds;
+
+  frame.SetBubbleBorder(
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
+
+  // Test bubble not fitting anchor window on bottom and not fitting screen on
+  // right.
+  //     ________________________
+  //    |screen _________________|__________
+  //    |      |anchor window    |          |
+  //    |      |              ___|___       |
+  //    |      |_____________|bubble |______|
+  //    |                    |_______|
+  //    |________________________|
+
+  frame.SetAvailableAnchorWindowBounds(gfx::Rect(700, 200, 400, 400));
+  frame.set_use_anchor_window_bounds(false);
+  frame.SetArrow(BubbleBorder::TOP_LEFT);
+  window_bounds = frame.GetUpdatedWindowBounds(
+      gfx::Rect(800, 500, 0, 0),      // |anchor_rect|
+      BubbleBorder::Arrow::TOP_LEFT,  // |delegate_arrow|
+      gfx::Size(250, 250),            // |client_size|
+      true);                          // |adjust_to_fit_available_bounds|
+
+  // The window should be right aligned with the anchor_rect.
+  EXPECT_EQ(window_bounds.right(), 800);
+
+  // Bubble will not try to fit inside the anchor window.
+  EXPECT_EQ(BubbleBorder::TOP_RIGHT, frame.GetBorderArrow());
+  EXPECT_GT(window_bounds.bottom(), 500);
+}
+
 // Tests that the arrow is mirrored as needed to better fit the anchor window's
 // bounds.
 TEST_F(BubbleFrameViewTest, MirroringNotStickyForGetUpdatedWindowBounds) {

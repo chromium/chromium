@@ -17,8 +17,8 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/char_iterator.h"
@@ -61,6 +61,7 @@
 #include "pdf/parsed_params.h"
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/post_message_receiver.h"
@@ -178,7 +179,7 @@ class PerProcessInitializer final {
     return *instance;
   }
 
-  void Acquire() {
+  void Acquire(bool use_skia) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     DCHECK_GE(init_count_, 0);
@@ -186,7 +187,7 @@ class PerProcessInitializer final {
       return;
 
     DCHECK(!IsSDKInitializedViaPlugin());
-    InitializeSDK(/*enable_v8=*/true, FontMappingMode::kBlink);
+    InitializeSDK(/*enable_v8=*/true, use_skia, FontMappingMode::kBlink);
     SetIsSDKInitializedViaPlugin(true);
   }
 
@@ -332,7 +333,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
                                           base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
-  PerProcessInitializer::GetInstance().Acquire();
+  PerProcessInitializer::GetInstance().Acquire(params->use_skia);
   initialized_ = true;
 
   // Check if the PDF is being loaded in the PDF chrome extension. We only allow
@@ -503,8 +504,8 @@ void PdfViewWebPlugin::UpdateScroll(const gfx::PointF& scroll_position) {
                          0.0f);
 
   gfx::PointF scaled_scroll_position(
-      base::clamp(scroll_position.x(), 0.0f, max_x),
-      base::clamp(scroll_position.y(), 0.0f, max_y));
+      std::clamp(scroll_position.x(), 0.0f, max_x),
+      std::clamp(scroll_position.y(), 0.0f, max_y));
   scaled_scroll_position.Scale(device_scale_);
 
   engine_->ScrolledToXPosition(scaled_scroll_position.x());
@@ -1910,16 +1911,22 @@ void PdfViewWebPlugin::EnableAccessibility() {
   if (accessibility_state_ == AccessibilityState::kLoaded)
     return;
 
-  if (accessibility_state_ == AccessibilityState::kOff)
-    accessibility_state_ = AccessibilityState::kPending;
-
-  if (document_load_state_ == DocumentLoadState::kComplete)
-    LoadAccessibility();
+  LoadOrReloadAccessibility();
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
+}
+
+void PdfViewWebPlugin::LoadOrReloadAccessibility() {
+  if (accessibility_state_ == AccessibilityState::kOff) {
+    accessibility_state_ = AccessibilityState::kPending;
+  }
+
+  if (document_load_state_ == DocumentLoadState::kComplete) {
+    LoadAccessibility();
+  }
 }
 
 void PdfViewWebPlugin::OnViewportChanged(

@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "ash/public/cpp/session/user_info.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
-#include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -111,7 +111,7 @@ class UserSelectionScreen
   void SetUsersLoaded(bool loaded);
 
  protected:
-  UserBoardView* view_ = nullptr;
+  raw_ptr<UserBoardView, ExperimentalAsh> view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.
   std::map<AccountId, std::vector<std::string>>

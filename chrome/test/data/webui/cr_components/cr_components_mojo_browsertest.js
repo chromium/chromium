@@ -90,6 +90,10 @@ TEST_F('CrComponentsMostVisitedTest', 'Layouts', function() {
   runMochaSuite('Layouts');
 });
 
+TEST_F('CrComponentsMostVisitedTest', 'ReflowLayouts', function() {
+  runMochaSuite('Reflow Layouts');
+});
+
 TEST_F('CrComponentsMostVisitedTest', 'LoggingAndUpdates', function() {
   runMochaSuite('LoggingAndUpdates');
 });

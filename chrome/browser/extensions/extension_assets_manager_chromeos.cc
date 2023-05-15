@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -56,7 +57,7 @@ class ExtensionAssetsManagerHelper {
   struct PendingInstallInfo {
     base::FilePath unpacked_extension_root;
     base::FilePath local_install_dir;
-    Profile* profile;
+    raw_ptr<Profile, ExperimentalAsh> profile;
     ExtensionAssetsManager::InstallExtensionCallback callback;
   };
   typedef std::vector<PendingInstallInfo> PendingInstallList;
@@ -174,16 +175,15 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
 void ExtensionAssetsManagerChromeOS::UninstallExtension(
     const std::string& id,
     const std::string& profile_user_name,
-    const base::FilePath& extensions_install_dir,
-    const base::FilePath& extension_dir_to_delete,
+    const base::FilePath& local_install_dir,
+    const base::FilePath& extension_root,
     const base::FilePath& profile_dir) {
-  if (extensions_install_dir.IsParent(extension_dir_to_delete)) {
-    file_util::UninstallExtension(profile_dir, extensions_install_dir,
-                                  extension_dir_to_delete);
+  if (local_install_dir.IsParent(extension_root)) {
+    file_util::UninstallExtension(profile_dir, local_install_dir, id);
     return;
   }
 
-  if (GetSharedInstallDir().IsParent(extension_dir_to_delete)) {
+  if (GetSharedInstallDir().IsParent(extension_root)) {
     // In some test extensions installed outside local_install_dir emulate
     // previous behavior that just do nothing in this case.
     content::GetUIThreadTaskRunner({})->PostTask(

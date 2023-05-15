@@ -7,7 +7,9 @@
 
 #include "content/browser/renderer_host/render_process_host_impl.h"
 
+#include <algorithm>
 #include <limits>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -20,7 +22,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -38,7 +39,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -65,7 +65,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -184,6 +183,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -318,9 +318,11 @@ base::IDMap<RenderProcessHost*>& GetAllHosts() {
   return *s_all_hosts;
 }
 
-// Returns the global list of RenderProcessHostCreationObserver objects.
-std::vector<RenderProcessHostCreationObserver*>& GetAllCreationObservers() {
-  static base::NoDestructor<std::vector<RenderProcessHostCreationObserver*>>
+// Returns the global list of RenderProcessHostCreationObserver objects. Uses
+// std::list to ensure iterators remain valid if observers are created or
+// removed during iteration.
+std::list<RenderProcessHostCreationObserver*>& GetAllCreationObservers() {
+  static base::NoDestructor<std::list<RenderProcessHostCreationObserver*>>
       s_all_creation_observers;
   return *s_all_creation_observers;
 }
@@ -788,6 +790,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
   void FindRenderProcessesForSiteInstance(
       SiteInstanceImpl* site_instance,
+      absl::optional<size_t> main_frame_threshold,
       std::set<RenderProcessHost*>* foreground_processes,
       std::set<RenderProcessHost*>* background_processes) {
     auto result = map_.find(site_instance->GetSiteInfo());
@@ -812,6 +815,24 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       // not allow such hosts to be reused.  See https://crbug.com/780661.
       if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance))
         continue;
+
+      // If a threshold is specified, don't reuse `host` if it already hosts
+      // more main frames (including BFCached and prerendered) than the
+      // threshold.
+      if (main_frame_threshold) {
+        size_t main_frame_count = 0;
+        host->ForEachRenderFrameHost(base::BindRepeating(
+            [](size_t& main_frame_count, RenderFrameHost* render_frame_host) {
+              if (static_cast<RenderFrameHostImpl*>(render_frame_host)
+                      ->IsOutermostMainFrame()) {
+                ++main_frame_count;
+              }
+            },
+            std::ref(main_frame_count)));
+        if (main_frame_count >= *main_frame_threshold) {
+          continue;
+        }
+      }
 
       if (host->VisibleClientCount())
         foreground_processes->insert(host);
@@ -1426,8 +1447,8 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
         RenderProcessHostImpl::GetPlatformMaxRendererProcessCount();
     DCHECK_LE(kMinRendererProcessCount, kMaxRendererProcessCount);
 
-    max_count = base::clamp(max_count, kMinRendererProcessCount,
-                            kMaxRendererProcessCount);
+    max_count = std::clamp(max_count, kMinRendererProcessCount,
+                           kMaxRendererProcessCount);
     MAYBEVLOG(1) << __func__ << ": Calculated max " << max_count;
   }
   return max_count;
@@ -1657,10 +1678,6 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   // "Browser.RenderProcessHostImpl"
   TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
                   ChromeTrackEvent::kRenderProcessHost, *this);
-
-  base::UmaHistogramPercentage(
-      "BrowserRenderProcessHost.RoutingIDSpaceUsed",
-      100. * GetNextRoutingID() / std::numeric_limits<int32_t>::max());
 }
 
 bool RenderProcessHostImpl::Init() {
@@ -1753,7 +1770,7 @@ bool RenderProcessHostImpl::Init() {
       GetContentClient()->browser()->GetReducedUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      AttributionManager::GetOsSupport());
+      AttributionManager::GetSupport());
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
@@ -2034,11 +2051,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
   // overrides for a service worker.
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther,
-          url::Origin::Create(storage_key.top_level_site().GetURL()),
-          storage_key.origin(), storage_key.ToNetSiteForCookies(),
-          /*party_context=*/absl::nullopt, storage_key.nonce()),
+      storage_key.ToPartialNetIsolationInfo(),
       /*is_service_worker=*/true, GetID(), MSG_ROUTING_NONE,
       net::CookieSettingOverrides(), std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
@@ -2145,11 +2158,7 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GetID(), MSG_ROUTING_NONE, storage_key.origin(),
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RequestType::kOther,
-              url::Origin::Create(storage_key.top_level_site().GetURL()),
-              storage_key.origin(), storage_key.ToNetSiteForCookies(),
-              /*party_context=*/absl::nullopt, storage_key.nonce())),
+          storage_key.ToPartialNetIsolationInfo()),
       std::move(receiver));
 }
 
@@ -3137,10 +3146,9 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
   // Spare renderer actually hurts performance on low-memory devices.  See
   // https://crbug.com/843775 for more details.
   //
-  // The comparison below is using 1077 rather than 1024 because 1) this helps
+  // The comparison below is using 1077 rather than 1024 because this helps
   // ensure that devices with exactly 1GB of RAM won't get included because of
-  // inaccuracies or off-by-one errors and 2) this is the bucket boundary in
-  // Memory.Stats.Win.TotalPhys2.
+  // inaccuracies or off-by-one errors.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077)
     return false;
 
@@ -3152,6 +3160,15 @@ bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
     RenderProcessHost* render_process_host) {
   return render_process_host == SpareRenderProcessHostManager::GetInstance()
                                     .spare_render_process_host();
+}
+
+// static
+void RenderProcessHostImpl::ClearAllResourceCaches() {
+  for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
+    mojom::Renderer* renderer_interface =
+        iter.GetCurrentValue()->GetRendererInterface();
+    renderer_interface->PurgeResourceCache(base::DoNothing());
+  }
 }
 
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
@@ -3362,7 +3379,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableOriginTrialControlledBlinkFeatures,
     switches::kDisablePepper3DImageChromium,
     switches::kDisablePermissionsAPI,
-    switches::kDisablePPAPISharedImagesSwapChain,
     switches::kDisablePresentationAPI,
     switches::kDisableRTCSmoothnessAlgorithm,
     switches::kDisableScrollToTextFragment,
@@ -3371,7 +3387,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableSpeechAPI,
     switches::kDisableThreadedCompositing,
     switches::kDisableTouchDragDrop,
-    switches::kDisableUseMojoVideoDecoderForPepper,
     switches::kDisableV8IdleTasks,
     switches::kDisableVideoCaptureUseGpuMemoryBuffer,
     switches::kDisableWebGLImageChromium,
@@ -3408,7 +3423,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kForceGpuMemAvailableMb,
     switches::kForceHighContrast,
     switches::kForceRasterColorProfile,
-    switches::kForceSkiaAnalyticAntialiasing,
     switches::kForceVideoOverlays,
     switches::kFullMemoryCrashReport,
     switches::kGaiaUrl,
@@ -4628,6 +4642,20 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       }
       break;
     }
+    case SiteInstanceImpl::ProcessReusePolicy::
+        REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD: {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kProcessPerSiteUpToMainFrameThreshold));
+      size_t main_frame_threshold = base::checked_cast<size_t>(
+          features::kProcessPerSiteMainFrameThreshold.Get());
+      render_process_host = FindReusableProcessHostForSiteInstance(
+          site_instance, main_frame_threshold);
+      if (render_process_host) {
+        is_unmatched_service_worker = false;
+        render_process_host->StopTrackingProcessForShutdownDelay();
+      }
+      break;
+    }
     default: {
       break;
     }
@@ -5255,7 +5283,8 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 // static
 RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
-    SiteInstanceImpl* site_instance) {
+    SiteInstanceImpl* site_instance,
+    absl::optional<size_t> main_frame_threshold) {
   BrowserContext* browser_context = site_instance->GetBrowserContext();
   if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;
@@ -5270,7 +5299,8 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
           browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));
   if (pending_tracker) {
     pending_tracker->FindRenderProcessesForSiteInstance(
-        site_instance, &eligible_foreground_hosts, &eligible_background_hosts);
+        site_instance, main_frame_threshold, &eligible_foreground_hosts,
+        &eligible_background_hosts);
   }
 
   if (eligible_foreground_hosts.empty()) {
@@ -5281,7 +5311,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
             browser_context->GetUserData(kCommittedSiteProcessCountTrackerKey));
     if (committed_tracker) {
       committed_tracker->FindRenderProcessesForSiteInstance(
-          site_instance, &eligible_foreground_hosts,
+          site_instance, main_frame_threshold, &eligible_foreground_hosts,
           &eligible_background_hosts);
     }
   }
@@ -5296,7 +5326,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
             kDelayedShutdownSiteProcessCountTrackerKey));
     if (delayed_shutdown_tracker) {
       delayed_shutdown_tracker->FindRenderProcessesForSiteInstance(
-          site_instance, &eligible_foreground_hosts,
+          site_instance, main_frame_threshold, &eligible_foreground_hosts,
           &eligible_background_hosts);
     }
   }
@@ -5479,16 +5509,16 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
           std::move(allocator)));
 }
 
+void RenderProcessHostImpl::SetAttributionReportingSupport(
+    network::mojom::AttributionSupport attribution_support) {
+  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   child_process_->OnMemoryPressure(level);
-}
-
-void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
-    attribution_reporting::mojom::OsSupport os_support) {
-  GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
 }
 
 #endif

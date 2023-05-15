@@ -131,7 +131,7 @@ void DesktopCapturerLacros::Start(Callback* callback) {
 
   // Lacros can assume that Ash is at least M88.
   int version =
-      lacros_service->GetInterfaceVersion(crosapi::mojom::ScreenManager::Uuid_);
+      lacros_service->GetInterfaceVersion<crosapi::mojom::ScreenManager>();
   CHECK_GE(version, 1);
 
   if (capture_type_ == kScreen) {

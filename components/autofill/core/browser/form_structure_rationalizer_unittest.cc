@@ -191,8 +191,7 @@ class FormStructureRationalizerTest : public testing::Test {
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
   scoped_features_.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillRationalizeStreetAddressAndHouseNumber,
-       features::kAutofillEnableSupportForPhoneNumberTrunkTypes},
+      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes},
       /*disabled_features=*/{});
 }
 
@@ -285,22 +284,6 @@ TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
               ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
 }
 
-// Ensure that a tuple of (street-address, house number) is rewritten to (street
-// name, house number). We have seen several cases where the field preceding the
-// house number was not classified as a street name.
-TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndHouseNumber) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      CreateFormAndServerClassification({
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
-          {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
-      }),
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
-                          ADDRESS_HOME_HOUSE_NUMBER));
-}
-
 // Tests that phone number trunk types are rationalized correctly.
 TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
   // Different phone number representations spanned over one or more fields,
@@ -349,22 +332,6 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
   expected_types.insert(expected_types.end(), kCorrectTypes.begin(),
                         kCorrectTypes.end());
   EXPECT_THAT(GetTypes(*form_structure), ElementsAreArray(expected_types));
-}
-
-// Ensure that a tuple of (address-line1, house number) is rewritten to (street
-// name, house number). We have seen several cases where the field preceding the
-// house number was not classified as a street name.
-TEST_F(FormStructureRationalizerTest, RationalizeAddressLine1AndHouseNumber) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      CreateFormAndServerClassification({
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address1", "address1", ADDRESS_HOME_LINE1},
-          {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
-      }),
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
-                          ADDRESS_HOME_HOUSE_NUMBER));
 }
 
 // Tests that a form that has only one address predicted as

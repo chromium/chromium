@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
@@ -23,6 +24,8 @@ class View;
 // be edited. Used in the ManagePasswordsView.
 class ManagePasswordsDetailsView : public views::BoxLayoutView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
+
   // `password_form` is the password form to be displayed.
   // The view uses `username_exists_callback` to check if the currently entered
   // username in the edit mode already exists and hence should be considered an

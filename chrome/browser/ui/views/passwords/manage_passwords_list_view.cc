@@ -18,8 +18,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/view_class_properties.h"
 
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
@@ -37,7 +39,21 @@ std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
-  header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(title));
+  views::Label* title_label = header->AddChildView(
+      views::BubbleFrameView::CreateDefaultTitleLabel(title));
+
+  const int close_button_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
+      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedIcon) +
+      layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
+  const int title_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width() -
+      close_button_width;
+  title_label->SetMaximumWidth(title_width);
   return header;
 }
 
@@ -117,6 +133,10 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*state_icon=*/absl::nullopt));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
+
+  SetProperty(views::kElementIdentifierKey, kTopView);
 }
 
 ManagePasswordsListView::~ManagePasswordsListView() = default;
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsListView, kTopView);

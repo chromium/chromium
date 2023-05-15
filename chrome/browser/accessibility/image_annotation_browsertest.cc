@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
       "\";"
       "var outer = document.getElementById('outer');"
       "outer.insertBefore(image, outer.childNodes[0]);";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, javascript));
+  EXPECT_TRUE(content::ExecJs(web_contents, javascript));
 
   ui::AXTreeUpdate snapshot =
       content::GetAccessibilityTreeSnapshot(web_contents);

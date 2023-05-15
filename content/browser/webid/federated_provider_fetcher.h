@@ -91,7 +91,7 @@ class FederatedProviderFetcher {
   std::vector<FetchResult> fetch_results_;
 
   // Fetches the config and well-known files.
-  base::raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
+  raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
 
   base::WeakPtrFactory<FederatedProviderFetcher> weak_ptr_factory_{this};
 };

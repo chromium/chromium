@@ -120,29 +120,12 @@ D3D11AV1Accelerator::D3D11AV1Accelerator(
     MediaLog* media_log,
     ComD3D11VideoDevice video_device,
     std::unique_ptr<VideoContextWrapper> video_context)
-    : client_(client),
-      media_log_(media_log->Clone()),
-      video_device_(std::move(video_device)),
-      video_context_(std::move(video_context)) {
-  DCHECK(client);
-  DCHECK(media_log_);
-  client->SetDecoderCB(base::BindRepeating(
-      &D3D11AV1Accelerator::SetVideoDecoder, base::Unretained(this)));
-}
+    : D3DAccelerator(client,
+                     media_log,
+                     std::move(video_device),
+                     std::move(video_context)) {}
 
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
-
-void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
-                                        D3D11Status error) {
-  RecordFailure(fail_type, error.message(), error.code());
-}
-
-void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
-                                        const std::string& message,
-                                        D3D11Status::Codes reason) {
-  MEDIA_LOG(ERROR, media_log_)
-      << "DX11AV1Failure(" << fail_type << ")=" << message;
-}
 
 scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
     bool apply_grain) {
@@ -165,8 +148,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   auto params_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS);
   if (params_buffer.empty() || params_buffer.size() < sizeof(pic_params)) {
     RecordFailure("SubmitDecoderBuffers",
-                  logging::SystemErrorCodeToString(params_buffer.error()),
-                  D3D11Status::Codes::kGetPicParamBufferFailed);
+                  D3D11Status::Codes::kGetPicParamBufferFailed,
+                  params_buffer.error());
     return false;
   }
 
@@ -177,8 +160,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   auto tile_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL);
   if (tile_buffer.empty() || tile_buffer.size() < tile_size) {
     RecordFailure("SubmitDecoderBuffers",
-                  logging::SystemErrorCodeToString(tile_buffer.error()),
-                  D3D11Status::Codes::kGetSliceControlBufferFailed);
+                  D3D11Status::Codes::kGetSliceControlBufferFailed,
+                  tile_buffer.error());
     return false;
   }
 
@@ -191,8 +174,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   auto bitstream_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM);
   if (bitstream_buffer.empty() || bitstream_buffer.size() < bitstream_size) {
     RecordFailure("SubmitDecoderBuffers",
-                  logging::SystemErrorCodeToString(bitstream_buffer.error()),
-                  D3D11Status::Codes::kGetBitstreamBufferFailed);
+                  D3D11Status::Codes::kGetBitstreamBufferFailed,
+                  bitstream_buffer.error());
     return false;
   }
 
@@ -226,8 +209,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   const auto hr = video_context_->SubmitDecoderBuffers(video_decoder_.Get(),
                                                        kBuffersCount, buffers);
   if (FAILED(hr)) {
-    RecordFailure("SubmitDecoderBuffers", logging::SystemErrorCodeToString(hr),
-                  D3D11Status::Codes::kSubmitDecoderBuffersFailed);
+    RecordFailure("SubmitDecoderBuffers",
+                  D3D11Status::Codes::kSubmitDecoderBuffersFailed, hr);
     return false;
   }
 
@@ -247,7 +230,8 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     if (result.has_value()) {
       output_view = std::move(result).value();
     } else {
-      RecordFailure("AcquireOutputView", std::move(result).error());
+      RecordFailure("Picture AcquireOutputView failed",
+                    std::move(result).error().code());
       return DecodeStatus::kFail;
     }
     const auto hr = video_context_->DecoderBeginFrame(video_decoder_.Get(),
@@ -257,8 +241,8 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     } else if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
       base::PlatformThread::YieldCurrentThread();
     } else if (FAILED(hr)) {
-      RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
-                    D3D11Status::Codes::kDecoderBeginFrameFailed);
+      RecordFailure("DecoderBeginFrame",
+                    D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
       return DecodeStatus::kFail;
     }
   } while (true);
@@ -273,8 +257,8 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
 
   const auto hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
-    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
-                  D3D11Status::Codes::kDecoderEndFrameFailed);
+    RecordFailure("DecoderEndFrame", D3D11Status::Codes::kDecoderEndFrameFailed,
+                  hr);
     return DecodeStatus::kFail;
   }
 
@@ -284,10 +268,6 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
 bool D3D11AV1Accelerator::OutputPicture(const AV1Picture& pic) {
   const auto* pic_ptr = static_cast<const D3D11AV1Picture*>(&pic);
   return client_->OutputResult(pic_ptr, pic_ptr->picture_buffer());
-}
-
-void D3D11AV1Accelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
-  video_decoder_ = std::move(video_decoder);
 }
 
 void D3D11AV1Accelerator::FillPicParams(

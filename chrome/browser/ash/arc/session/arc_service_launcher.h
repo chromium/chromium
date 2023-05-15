@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -101,7 +102,7 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
 
   // |scheduler_configuration_manager_| outlives |this|.
-  ash::SchedulerConfigurationManagerBase* const
+  const raw_ptr<ash::SchedulerConfigurationManagerBase, ExperimentalAsh>
       scheduler_configuration_manager_;
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

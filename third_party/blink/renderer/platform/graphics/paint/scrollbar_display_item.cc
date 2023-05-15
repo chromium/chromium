@@ -23,7 +23,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
-    const TransformPaintPropertyNode* scroll_translation,
+    scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
     CompositorElementId element_id,
     RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
@@ -33,9 +33,11 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
                   outset,
                   paint_invalidation_reason,
                   /*draws_content*/ true),
-      data_(new Data{std::move(scrollbar), scroll_translation, element_id}) {
+      data_(new Data{std::move(scrollbar), std::move(scroll_translation),
+                     element_id}) {
   DCHECK(IsScrollbar());
-  DCHECK(!scroll_translation || scroll_translation->ScrollNode());
+  CHECK(!data_->scroll_translation_ ||
+        data_->scroll_translation_->ScrollNode());
 }
 
 PaintRecord ScrollbarDisplayItem::Paint() const {
@@ -116,7 +118,7 @@ bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(
 #if DCHECK_IS_ON()
 void ScrollbarDisplayItem::PropertiesAsJSONImpl(JSONObject& json) const {
   json.SetString("scrollTranslation",
-                 String::Format("%p", data_->scroll_translation_));
+                 String::Format("%p", data_->scroll_translation_.get()));
 }
 #endif
 
@@ -126,7 +128,7 @@ void ScrollbarDisplayItem::Record(
     DisplayItem::Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
-    const TransformPaintPropertyNode* scroll_translation,
+    scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
     CompositorElementId element_id) {
   PaintController& paint_controller = context.GetPaintController();
   // Must check PaintController::UseCachedItemIfPossible before this function.
@@ -134,8 +136,9 @@ void ScrollbarDisplayItem::Record(
          !paint_controller.UseCachedItemIfPossible(client, type));
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
-      client, type, std::move(scrollbar), visual_rect, scroll_translation,
-      element_id, client.VisualRectOutsetForRasterEffects(),
+      client, type, std::move(scrollbar), visual_rect,
+      std::move(scroll_translation), element_id,
+      client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
   paint_controller.RecordDebugInfo(client);
 }

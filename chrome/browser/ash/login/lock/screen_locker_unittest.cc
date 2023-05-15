@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -91,7 +92,7 @@ class ScreenLockerUnitTest : public testing::Test {
 
     fake_user_manager_ = new FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -192,10 +193,10 @@ class ScreenLockerUnitTest : public testing::Test {
   LoginScreenClientImpl login_screen_client_;
 
   // * SessionControllerClientImpl dependencies:
-  FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  Profile* user_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> user_profile_ = nullptr;
 
   ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   TestSessionController test_session_controller_;

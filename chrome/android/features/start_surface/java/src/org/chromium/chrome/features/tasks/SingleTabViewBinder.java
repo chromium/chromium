@@ -7,9 +7,11 @@ package org.chromium.chrome.features.tasks;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,6 +27,12 @@ class SingleTabViewBinder {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == TITLE) {
             view.setTitle(model.get(TITLE));
+        } else if (propertyKey == LATERAL_MARGIN) {
+            MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
+            int lateralMargin = model.get(LATERAL_MARGIN);
+            marginLayoutParams.setMarginStart(lateralMargin);
+            marginLayoutParams.setMarginEnd(lateralMargin);
+            view.setLayoutParams(marginLayoutParams);
         } else {
             assert false : "Unsupported property key";
         }

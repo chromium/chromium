@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "components/prefs/pref_member.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -136,7 +136,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
-  ChromeLabsBubbleViewModel* chrome_labs_model() const {
+  ChromeLabsModel* chrome_labs_model() const {
     return chrome_labs_model_.get();
   }
   DownloadToolbarButtonView* download_button() const {
@@ -287,7 +287,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   AppMenuIconController app_menu_icon_controller_;
 
-  std::unique_ptr<ChromeLabsBubbleViewModel> chrome_labs_model_;
+  std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
 
   // Controls whether or not a home button should be shown on the toolbar.
   BooleanPrefMember show_home_button_;

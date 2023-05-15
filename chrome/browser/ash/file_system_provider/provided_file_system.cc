@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 
 namespace net {
@@ -50,9 +50,13 @@ namespace file_system_provider {
 
 namespace {
 
+// Timeout in seconds, before a file system operation request is considered as
+// stale and hence aborted.
+constexpr base::TimeDelta kDefaultOperationTimeout = base::Seconds(10);
+
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
-  if (!features::IsUploadOfficeToCloudEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
   return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
@@ -161,9 +165,7 @@ ProvidedFileSystem::ProvidedFileSystem(
       base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
                           weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
-  request_manager_ = std::make_unique<OperationRequestManager>(
-      profile, file_system_info.provider_id().GetExtensionId(),
-      notification_manager_.get());
+  ConstructRequestManager();
 }
 
 ProvidedFileSystem::~ProvidedFileSystem() {
@@ -186,9 +188,7 @@ void ProvidedFileSystem::SetEventRouterForTesting(
 void ProvidedFileSystem::SetNotificationManagerForTesting(
     std::unique_ptr<NotificationManagerInterface> notification_manager) {
   notification_manager_ = std::move(notification_manager);
-  request_manager_ = std::make_unique<OperationRequestManager>(
-      profile_, file_system_info_.provider_id().GetExtensionId(),
-      notification_manager_.get());
+  ConstructRequestManager();
 }
 
 AbortCallback ProvidedFileSystem::RequestUnmount(
@@ -875,6 +875,12 @@ void ProvidedFileSystem::OnCloseFileCompleted(
 void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
                                                     base::File::Error error) {
   request_manager_->RejectRequest(request_id, RequestValue(), error);
+}
+
+void ProvidedFileSystem::ConstructRequestManager() {
+  request_manager_ = std::make_unique<OperationRequestManager>(
+      profile_, file_system_info_.provider_id().GetExtensionId(),
+      notification_manager_.get(), kDefaultOperationTimeout);
 }
 
 }  // namespace file_system_provider

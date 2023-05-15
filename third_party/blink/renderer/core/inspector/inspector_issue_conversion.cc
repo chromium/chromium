@@ -53,9 +53,6 @@ blink::protocol::String InspectorIssueCodeValue(
           ContentSecurityPolicyIssue;
     case mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue:
       return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
-    case mojom::blink::InspectorIssueCode::kTrustedWebActivityIssue:
-      CHECK(false);
-      return "";
     case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
       CHECK(false);
       return "";

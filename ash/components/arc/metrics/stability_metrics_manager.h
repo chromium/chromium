@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -56,7 +57,7 @@ class StabilityMetricsManager {
   ~StabilityMetricsManager();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 };
 
 }  // namespace arc

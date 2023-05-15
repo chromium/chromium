@@ -50,6 +50,7 @@
    "run_on_os_login_os_integration_state": "not set",
    "scope": "",
    "scope_extensions": [  ],
+   "scope_extensions_validated": [  ],
    "share_target": null,
    "shortcuts_menu_item_infos": [  ],
    "sources": [  ],

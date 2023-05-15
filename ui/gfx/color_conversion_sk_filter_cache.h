@@ -21,6 +21,8 @@ struct SkGainmapInfo;
 
 namespace gfx {
 
+class ColorTransform;
+
 class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
  public:
   ColorConversionSkFilterCache();
@@ -90,8 +92,19 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
     bool operator!=(const Key& other) const;
     bool operator<(const Key& other) const;
   };
+  struct Value {
+    Value();
+    Value(const Value&) = delete;
+    Value(Value&&);
+    Value& operator=(const Value&) = delete;
+    Value& operator=(Value&&);
+    ~Value();
 
-  base::flat_map<Key, sk_sp<SkRuntimeEffect>> cache_;
+    std::unique_ptr<ColorTransform> transform;
+    sk_sp<SkRuntimeEffect> effect;
+  };
+
+  base::flat_map<Key, Value> cache_;
 };
 
 }  // namespace gfx

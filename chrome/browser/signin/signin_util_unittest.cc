@@ -60,18 +60,80 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
+
+  // Active profile has "none" as a user level policy.
+  profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                 "none");
+  profile->GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
+  EXPECT_TRUE(
+      signin_util::GetProfileSeparationPolicyState(profile.get()).Empty());
+  EXPECT_TRUE(
+      signin_util::GetProfileSeparationPolicyState(profile.get(), "none")
+          .Empty());
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
+                                                         "primary_account"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_strict"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_keep_existing_data"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_strict_keep_existing_data"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData,
+                 ProfileSeparationPolicyState::kStrict}));
+
+  // Active profile has "none" as a machine level policy.
+  profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                 "none");
+  profile->GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
+  EXPECT_TRUE(
+      signin_util::GetProfileSeparationPolicyState(profile.get()).Empty());
+  EXPECT_TRUE(
+      signin_util::GetProfileSeparationPolicyState(profile.get(), "none")
+          .Empty());
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
+                                                         "primary_account"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_strict"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_keep_existing_data"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
+  EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
+                profile.get(), "primary_account_strict_keep_existing_data"),
+            ProfileSeparationPolicyStateSet(
+                {ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData,
+                 ProfileSeparationPolicyState::kStrict}));
 
   // Active profile has "primary_account" as a user level policy.
   profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -80,32 +142,32 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
 
   // Active profile has "primary_account_strict" as a user level
   // policy.
@@ -115,36 +177,36 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
 
   // Active profile has "primary_account" as a machine level policy.
   profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -153,38 +215,38 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
 
   // Active profile has "primary_account_keep_existing_data" as a
   // machine level policy.
@@ -194,42 +256,42 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
 
   // Active profile has "primary_account_strict" as a machine level
   // policy.
@@ -239,42 +301,42 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict}));
 
   // Active profile has "primary_account_strict_keep_existing_data"
   // as a machine level policy.
@@ -284,52 +346,80 @@ TEST_F(SigninUtilTest, GetProfileSeparationPolicyState) {
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get()),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(), "none"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(profile.get(),
                                                          "primary_account"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
   EXPECT_EQ(signin_util::GetProfileSeparationPolicyState(
                 profile.get(), "primary_account_strict_keep_existing_data"),
             ProfileSeparationPolicyStateSet(
-                ProfileSeparationPolicyState::kEnforcedByExistingProfile,
-                ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
-                ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-                ProfileSeparationPolicyState::kStrict,
-                ProfileSeparationPolicyState::kKeepsBrowsingData));
+                {ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                 ProfileSeparationPolicyState::kEnforcedOnMachineLevel,
+                 ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
+                 ProfileSeparationPolicyState::kStrict,
+                 ProfileSeparationPolicyState::kKeepsBrowsingData}));
 }
 
 TEST_F(SigninUtilTest, ProfileSeparationEnforcedByPolicy) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
 
   // No policy set on the active profile.
+  EXPECT_FALSE(signin_util::ProfileSeparationEnforcedByPolicy(profile.get(),
+                                                              std::string()));
+  EXPECT_FALSE(
+      signin_util::ProfileSeparationEnforcedByPolicy(profile.get(), "none"));
+  EXPECT_TRUE(signin_util::ProfileSeparationEnforcedByPolicy(
+      profile.get(), "primary_account"));
+  EXPECT_TRUE(signin_util::ProfileSeparationEnforcedByPolicy(
+      profile.get(), "primary_account_strict"));
+
+  // Active profile has "none" as a user level policy.
+  profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                 "none");
+  profile->GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
+  EXPECT_FALSE(signin_util::ProfileSeparationEnforcedByPolicy(profile.get(),
+                                                              std::string()));
+  EXPECT_FALSE(
+      signin_util::ProfileSeparationEnforcedByPolicy(profile.get(), "none"));
+  EXPECT_TRUE(signin_util::ProfileSeparationEnforcedByPolicy(
+      profile.get(), "primary_account"));
+  EXPECT_TRUE(signin_util::ProfileSeparationEnforcedByPolicy(
+      profile.get(), "primary_account_strict"));
+
+  // Active profile has "none" as a machine level policy.
+  profile->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                 "none");
+  profile->GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   EXPECT_FALSE(signin_util::ProfileSeparationEnforcedByPolicy(profile.get(),
                                                               std::string()));
   EXPECT_FALSE(

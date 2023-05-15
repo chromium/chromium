@@ -80,6 +80,9 @@ MdTextButton::MdTextButton(PressedCallback callback,
 MdTextButton::~MdTextButton() = default;
 
 void MdTextButton::SetProminent(bool is_prominent) {
+  if (is_prominent == (style_ == Style::kProminent)) {
+    return;
+  }
   SetStyle(is_prominent ? Style::kProminent : Style::kDefault);
   UpdateColors();
 }

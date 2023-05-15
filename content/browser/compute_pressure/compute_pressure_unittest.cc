@@ -27,15 +27,12 @@
 
 namespace content {
 
-using device::mojom::PressureFactor;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
 using device::mojom::PressureStatus;
 using device::mojom::PressureUpdate;
 
 namespace {
-
-constexpr base::TimeDelta kSampleInterval = base::Seconds(1);
 
 // Synchronous proxy to a device::mojom::PressureManager.
 class PressureManagerSync {
@@ -137,11 +134,7 @@ class FakePressureClient : public device::mojom::PressureClient {
 
 class ComputePressureTest : public RenderViewHostImplTestHarness {
  public:
-  ComputePressureTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kComputePressure);
-  }
-
+  ComputePressureTest() = default;
   ~ComputePressureTest() override = default;
 
   ComputePressureTest(const ComputePressureTest&) = delete;
@@ -181,8 +174,6 @@ class ComputePressureTest : public RenderViewHostImplTestHarness {
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
   const GURL kInsecureUrl{"http://example.com/compute_pressure.html"};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   mojo::Remote<device::mojom::PressureManager> pressure_manager_;
   std::unique_ptr<PressureManagerSync> pressure_manager_sync_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
@@ -196,48 +187,11 @@ TEST_F(ComputePressureTest, AddClient) {
             PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal,
-                        {PressureFactor::kThermal}, time);
+  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0], update);
-}
-
-TEST_F(ComputePressureTest, UpdatePressureFactors) {
-  FakePressureClient client;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
-            PressureStatus::kOk);
-
-  const base::Time time = base::Time::Now();
-  PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal,
-                         {PressureFactor::kPowerSupply}, time);
-
-  pressure_manager_overrider_->UpdateClients(update1);
-  client.WaitForUpdate();
-  ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0], update1);
-  client.updates().clear();
-
-  PressureUpdate update2(
-      PressureSource::kCpu, PressureState::kCritical,
-      {PressureFactor::kThermal, PressureFactor::kPowerSupply},
-      time + kSampleInterval);
-  pressure_manager_overrider_->UpdateClients(update2);
-  client.WaitForUpdate();
-  ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0], update2);
-  client.updates().clear();
-
-  PressureUpdate update3(PressureSource::kCpu, PressureState::kCritical,
-                         {PressureFactor::kThermal},
-                         time + kSampleInterval * 2);
-  pressure_manager_overrider_->UpdateClients(update3);
-  client.WaitForUpdate();
-  ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0], update3);
-  client.updates().clear();
 }
 
 TEST_F(ComputePressureTest, AddClientNotSupported) {

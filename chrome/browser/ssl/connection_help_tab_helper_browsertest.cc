@@ -118,13 +118,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
   // Check that the cert error details section is not hidden.
   std::string cert_error_is_hidden_js =
       "var certSection = document.getElementById('details-certerror'); "
-      "window.domAutomationController.send(certSection.className == "
-      "'hidden');";
-  bool cert_error_is_hidden;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      cert_error_is_hidden_js, &cert_error_is_hidden));
-  EXPECT_FALSE(cert_error_is_hidden);
+      "certSection.className == 'hidden';";
+  EXPECT_EQ(false, content::EvalJs(
+                       browser()->tab_strip_model()->GetActiveWebContents(),
+                       cert_error_is_hidden_js));
 }
 
 // Tests that if the help content site is opened with an error code that refers
@@ -147,11 +144,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
   // Check that the clock details section is not hidden.
   std::string clock_is_hidden_js =
       "var clockSection = document.getElementById('details-clock');  "
-      "window.domAutomationController.send(clockSection.className == "
-      "'hidden');";
-  bool clock_is_hidden;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), clock_is_hidden_js,
-      &clock_is_hidden));
-  EXPECT_FALSE(clock_is_hidden);
+      "clockSection.className == 'hidden';";
+  EXPECT_EQ(false, content::EvalJs(
+                       browser()->tab_strip_model()->GetActiveWebContents(),
+                       clock_is_hidden_js));
 }

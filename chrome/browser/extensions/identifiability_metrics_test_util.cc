@@ -84,9 +84,7 @@ void IdentifiabilityMetricsTestHelper::EnsureIdentifiabilityEventGenerated(
         var ctx = c.getContext("2d");
         var url = c.toDataURL();
       )";
-  // This uses ExecuteScript since some tests have CSP restrictions on JS
-  // execution that would block ExecJS.
-  EXPECT_TRUE(content::ExecuteScript(contents, kForceMetricScript));
+  EXPECT_TRUE(content::ExecJs(contents, kForceMetricScript));
 }
 
 // static

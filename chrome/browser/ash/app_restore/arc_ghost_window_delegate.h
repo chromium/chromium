@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_DELEGATE_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/client_controlled_shell_surface.h"
@@ -66,7 +67,7 @@ class ArcGhostWindowDelegate
   int64_t display_id_;
   double scale_factor_;
   chromeos::WindowStateType window_state_;
-  exo::ClientControlledShellSurface* shell_surface_;
+  raw_ptr<exo::ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
 
   base::ScopedObservation<ArcGhostWindowHandler,
                           ArcGhostWindowHandler::Observer>

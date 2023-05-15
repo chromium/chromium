@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -91,7 +92,7 @@ class TestMobileActivator : public MobileActivator {
  private:
   void DCheckOnThread(const BrowserThread::ID id) const {}
 
-  NetworkState* cellular_network_;
+  raw_ptr<NetworkState, ExperimentalAsh> cellular_network_;
 };
 
 class MobileActivatorTest : public testing::Test {

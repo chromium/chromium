@@ -1,0 +1,44 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("crash_handler") {
+  sources = [
+    "stream_data_source_factory.cc",
+    "stream_data_source_factory.h",
+    "user_stream_data_source.cc",
+    "user_stream_data_source.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:debugging_buildflags",
+    "//components/allocation_recorder/internal",
+    "//third_party/crashpad/crashpad/handler",
+    "//third_party/crashpad/crashpad/minidump",
+    "//third_party/crashpad/crashpad/snapshot",
+    "//third_party/crashpad/crashpad/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "stream_data_source_factory_unittest.cc",
+    "user_stream_data_source_unittest.cc",
+  ]
+
+  deps = [
+    ":crash_handler",
+    "//base",
+    "//base/test:test_support",
+    "//components/allocation_recorder/internal",
+    "//components/allocation_recorder/testing",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/crashpad/crashpad/minidump",
+    "//third_party/crashpad/crashpad/snapshot",
+    "//third_party/crashpad/crashpad/snapshot:test_support",
+  ]
+}

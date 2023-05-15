@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/disks/mount_point.h"
@@ -70,7 +71,8 @@ class DiskMounterImpl : public DiskMounter {
     std::move(callback_).Run(mount_point_->mount_path());
   }
 
-  ash::disks::DiskMountManager* const disk_mount_manager_;
+  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
+      disk_mount_manager_;
   base::OnceCallback<void(base::FilePath)> callback_;
   // The path passed to cros-disks to mount.
   std::string source_path_;

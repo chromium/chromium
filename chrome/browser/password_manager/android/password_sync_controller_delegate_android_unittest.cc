@@ -105,7 +105,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusDisabledOnStartup) {
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
@@ -119,7 +119,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledAfterStartup) {
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing());
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
 
@@ -162,7 +162,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
 
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing());
   sync_controller_delegate()->OnStateChanged(sync_service());

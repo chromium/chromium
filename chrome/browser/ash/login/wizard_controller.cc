@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
@@ -64,6 +63,8 @@
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
+#include "chrome/browser/ash/login/screens/display_size_screen.h"
+#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
+#include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -129,7 +131,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -143,6 +144,8 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -150,6 +153,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -599,12 +603,10 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                             weak_factory_.GetWeakPtr())));
 
-    if (ash::features::IsOobeQuickStartEnabled()) {
-      append(std::make_unique<QuickStartScreen>(
-          oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
-          base::BindRepeating(&WizardController::OnQuickStartScreenExit,
-                              weak_factory_.GetWeakPtr())));
-    }
+    append(std::make_unique<QuickStartScreen>(
+        oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnQuickStartScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   append(std::make_unique<NetworkScreen>(
@@ -745,6 +747,14 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<PackagedLicenseScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPackagedLicenseScreenExit,
                           weak_factory_.GetWeakPtr())));
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    append(std::make_unique<GaiaInfoScreen>(
+        oobe_ui->GetView<GaiaInfoScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnGaiaInfoScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   append(std::make_unique<GaiaScreen>(
       oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
@@ -797,12 +807,6 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUserCreationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  append(std::make_unique<ActiveDirectoryLoginScreen>(
-      oobe_ui->GetView<ActiveDirectoryLoginScreenHandler>()->AsWeakPtr(),
-      oobe_ui->GetErrorScreen(),
-      base::BindRepeating(&WizardController::OnActiveDirectoryLoginScreenExit,
-                          weak_factory_.GetWeakPtr())));
-
   append(std::make_unique<EduCoexistenceLoginScreen>(
       base::BindRepeating(&WizardController::OnEduCoexistenceLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -817,17 +821,15 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    append(std::make_unique<ConsolidatedConsentScreen>(
-        oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
-                            weak_factory_.GetWeakPtr())));
+  append(std::make_unique<ConsolidatedConsentScreen>(
+      oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
-    append(std::make_unique<GuestTosScreen>(
-        oobe_ui->GetView<GuestTosScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnGuestTosScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<GuestTosScreen>(
+      oobe_ui->GetView<GuestTosScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnGuestTosScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   if (switches::IsOsInstallAllowed()) {
     append(std::make_unique<OsInstallScreen>(
@@ -871,11 +873,23 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     append(std::make_unique<TouchpadScrollScreen>(
         oobe_ui->GetView<TouchpadScrollScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnTouchpadScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+  if (features::IsOobeDisplaySizeEnabled()) {
+    append(std::make_unique<DisplaySizeScreen>(
+        oobe_ui->GetView<DisplaySizeScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnDisplaySizeScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    append(std::make_unique<DrivePinningScreen>(
+        oobe_ui->GetView<DrivePinningScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnDrivePinningScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
 
@@ -887,7 +901,7 @@ void WizardController::ShowWelcomeScreen() {
 }
 
 void WizardController::ShowQuickStartScreen() {
-  CHECK(ash::features::IsOobeQuickStartEnabled());
+  CHECK(wizard_context_->quick_start_enabled);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
@@ -961,6 +975,10 @@ void WizardController::ShowGaiaPasswordChangedScreen(
   SetCurrentScreen(GetScreen<GaiaPasswordChangedScreen>());
 }
 
+void WizardController::ShowGaiaInfoScreen() {
+  SetCurrentScreen(GetScreen(GaiaInfoScreenView::kScreenId));
+}
+
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
   prescribed_enrollment_config_ =
@@ -974,6 +992,14 @@ void WizardController::ShowDemoModePreferencesScreen() {
 
 void WizardController::ShowDemoModeSetupScreen() {
   SetCurrentScreen(GetScreen(DemoSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowDrivePinningScreen() {
+  if (features::IsOobeDrivePinningEnabled()) {
+    SetCurrentScreen(GetScreen(DrivePinningScreenView::kScreenId));
+  } else {
+    OnDrivePinningScreenExit(DrivePinningScreen::Result::NOT_APPLICABLE);
+  }
 }
 
 void WizardController::ShowResetScreen() {
@@ -1112,7 +1138,23 @@ void WizardController::ShowChoobeScreen() {
 }
 
 void WizardController::ShowTouchpadScrollScreen() {
-  SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
+  // If the `OobeChoobe` or `OobeDisplaySize` feature is disabled, the
+  // DisplaySizeScreen object will not be created. In this case,
+  // `OnTouchpadScreenExit()` function is called with the exit result
+  // `kNotApplicable` to proceed to the next screen.
+  if (features::IsOobeTouchpadScrollEnabled()) {
+    SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
+  } else {
+    OnTouchpadScreenExit(TouchpadScrollScreen::Result::kNotApplicable);
+  }
+}
+
+void WizardController::ShowDisplaySizeScreen() {
+  if (features::IsOobeDisplaySizeEnabled()) {
+    SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
+  } else {
+    OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
+  }
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
@@ -1143,7 +1185,6 @@ void WizardController::ShowLacrosDataBackwardMigrationScreen() {
 }
 
 void WizardController::ShowGuestTosScreen() {
-  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   SetCurrentScreen(GetScreen(GuestTosScreenView::kScreenId));
 }
 
@@ -1171,7 +1212,11 @@ void WizardController::OnUserCreationScreenExit(
   switch (result) {
     case UserCreationScreen::Result::SIGNIN:
     case UserCreationScreen::Result::SKIPPED:
-      AdvanceToSigninScreen();
+      if (features::IsOobeGaiaInfoScreenEnabled()) {
+        ShowGaiaInfoScreen();
+      } else {
+        AdvanceToSigninScreen();
+      }
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
@@ -1199,16 +1244,42 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
     case GaiaScreen::Result::BACK:
+    case GaiaScreen::Result::BACK_CHILD:
     case GaiaScreen::Result::CANCEL: {
-      if (result == GaiaScreen::Result::BACK &&
-          wizard_context_->is_user_creation_enabled) {
-        // `Result::BACK` is only triggered when pressing back button. It goes
-        // back to UserCreationScreen if screen is enabled; otherwise, it
-        // behaves the same as `Result::CANCEL` which is triggered by pressing
-        // ESC key.
-        AdvanceToScreen(UserCreationView::kScreenId);
-        break;
+      if (features::IsOobeGaiaInfoScreenEnabled()) {
+        if (wizard_context_->is_user_creation_enabled) {
+          // `Result::BACK` and `Result::BACK_CHILD` are only triggered when
+          // pressing back button. It goes back to GaiaInfoScreenView if user
+          // creation is enabled; otherwise, it behaves the same as
+          // `Result::CANCEL` which is triggered by pressing ESC key.
+          // In the child flow the GaiaInfo screen is not shown, so in case of
+          // `Result::BACK_CHILD` we should go back to user creation screen
+          if (result == GaiaScreen::Result::BACK) {
+            if (wizard_context_->is_add_person_flow) {
+              AdvanceToScreen(UserCreationView::kScreenId);
+            } else {
+              AdvanceToScreen(GaiaInfoScreenView::kScreenId);
+            }
+            break;
+          }
+          if (result == GaiaScreen::Result::BACK_CHILD) {
+            AdvanceToScreen(UserCreationView::kScreenId);
+            break;
+          }
+        }
+      } else {
+        // TODO: delete this part after removing the feature flag
+        if (result == GaiaScreen::Result::BACK &&
+            wizard_context_->is_user_creation_enabled) {
+          // `Result::BACK` is only triggered when pressing back button. It goes
+          // back to UserCreationScreen if screen is enabled; otherwise, it
+          // behaves the same as `Result::CANCEL` which is triggered by pressing
+          // ESC key.
+          AdvanceToScreen(UserCreationView::kScreenId);
+          break;
+        }
       }
+
       // If a default redirection to third party IdP is set we can hide the
       // dialog.
       const bool gaia_page_defaults_to_saml = IsGaiaPageDefaultsToSAML();
@@ -1229,6 +1300,20 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       break;
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
+      break;
+  }
+}
+
+void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
+  OnScreenExit(GaiaInfoScreenView::kScreenId,
+               GaiaInfoScreen::GetResultString(result));
+  switch (result) {
+    case GaiaInfoScreen::Result::kBack:
+      AdvanceToScreen(UserCreationView::kScreenId);
+      break;
+    case GaiaInfoScreen::Result::kNext:
+    case GaiaInfoScreen::Result::kNotApplicable:
+      AdvanceToSigninScreen();
       break;
   }
 }
@@ -1290,22 +1375,11 @@ void WizardController::OnPasswordChangeScreenExit(
   }
 }
 
-void WizardController::OnActiveDirectoryLoginScreenExit() {
-  OnScreenExit(ActiveDirectoryLoginView::kScreenId, kDefaultExitReason);
-  LoginDisplayHost::default_host()->HideOobeDialog();
-}
-
 void WizardController::OnEduCoexistenceLoginScreenExit(
     EduCoexistenceLoginScreen::Result result) {
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
                EduCoexistenceLoginScreen::GetResultString(result));
-  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
-  // after being enabled during OOBE.
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    ShowConsolidatedConsentScreen();
-  } else {
-    ShowSyncConsentScreen();
-  }
+  ShowConsolidatedConsentScreen();
 }
 
 void WizardController::OnParentalHandoffScreenExit(
@@ -1319,6 +1393,11 @@ void WizardController::OnConsolidatedConsentScreenExit(
     ConsolidatedConsentScreen::Result result) {
   OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
                ConsolidatedConsentScreen::GetResultString(result));
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    GetScreen<DrivePinningScreen>()->CalculateRequiredSpace();
+  }
+
   if (wizard_context_->is_cloud_ready_update_flow) {
     AdvanceToScreen(HWDataCollectionView::kScreenId);
     return;
@@ -1445,18 +1524,16 @@ void WizardController::OnThemeSelectionScreenExit(
   OnScreenExit(ThemeSelectionScreenView::kScreenId,
                ThemeSelectionScreen::GetResultString(result));
 
-  // Since ThemeSelectionScreen is the last optional screen, either return to
-  // CHOOBE screen if return_to_choobe_screen is true, or reset
-  // choobe_flow_controller_.
-  if (features::IsOobeChoobeEnabled()) {
-    if (wizard_context_->return_to_choobe_screen) {
-      ShowChoobeScreen();
-      return;
-    }
-    choobe_flow_controller_.reset();
+  switch (result) {
+    case ThemeSelectionScreen::Result::kProceed:
+    case ThemeSelectionScreen::Result::kNotApplicable:
+      if (features::IsOobeChoobeEnabled()) {
+        ShowDisplaySizeScreen();
+      } else {
+        ShowMarketingOptInScreen();
+      }
+      break;
   }
-
-  ShowMarketingOptInScreen();
 }
 
 void WizardController::OnCryptohomeRecoveryScreenExit(
@@ -1492,7 +1569,7 @@ void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
   switch (result) {
     case ChoobeScreen::Result::SELECTED:
     case ChoobeScreen::Result::NOT_APPLICABLE:
-      ShowThemeSelectionScreen();
+      ShowTouchpadScrollScreen();
       break;
     case ChoobeScreen::Result::SKIPPED:
       choobe_flow_controller_.reset();
@@ -1505,9 +1582,27 @@ void WizardController::OnTouchpadScreenExit(
     TouchpadScrollScreen::Result result) {
   OnScreenExit(TouchpadScrollScreenView::kScreenId,
                TouchpadScrollScreen::GetResultString(result));
+
+  ShowDrivePinningScreen();
+}
+
+void WizardController::OnDrivePinningScreenExit(
+    DrivePinningScreen::Result result) {
+  OnScreenExit(DrivePinningScreenView::kScreenId,
+               DrivePinningScreen::GetResultString(result));
+
+  ShowThemeSelectionScreen();
+}
+
+void WizardController::OnDisplaySizeScreenExit(
+    DisplaySizeScreen::Result result) {
+  OnScreenExit(DisplaySizeScreenView::kScreenId,
+               DisplaySizeScreen::GetResultString(result));
+
   switch (result) {
-    case TouchpadScrollScreen::Result::kNotApplicable:
-    case TouchpadScrollScreen::Result::kNext:
+    case DisplaySizeScreen::Result::kNotApplicable:
+    case DisplaySizeScreen::Result::kNext:
+      choobe_flow_controller_.reset();
       ShowMarketingOptInScreen();
       break;
   }
@@ -1539,15 +1634,9 @@ void WizardController::OnScreenExit(OobeScreenId screen,
 }
 
 void WizardController::AdvanceToSigninScreen() {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
-    AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
-  } else {
-    // Reset Gaia.
-    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
-    AdvanceToScreen(GaiaView::kScreenId);
-  }
+  // Reset Gaia.
+  GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+  AdvanceToScreen(GaiaView::kScreenId);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1672,7 +1761,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 }
 
 void WizardController::OnUpdateCompleted() {
-  if (features::IsOobeConsolidatedConsentEnabled() && demo_setup_controller_) {
+  if (demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
     return;
   }
@@ -2387,13 +2476,14 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowArcVmDataMigrationScreen();
   } else if (screen_id == TouchpadScrollScreenView::kScreenId) {
     ShowTouchpadScrollScreen();
+  } else if (screen_id == GaiaInfoScreenView::kScreenId) {
+    ShowGaiaInfoScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||
-             screen_id == ActiveDirectoryLoginView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
              screen_id == RecoveryEligibilityView::kScreenId ||
@@ -2716,7 +2806,7 @@ bool WizardController::MaybeSetToPreviousScreen() {
   if (!base::Contains(previous_screens_, current_screen_)) {
     return false;
   }
-  auto* old_current_screen = current_screen_;
+  auto* old_current_screen = current_screen_.get();
   SetCurrentScreen(previous_screens_[current_screen_]);
   return old_current_screen != current_screen_;
 }
@@ -2741,7 +2831,6 @@ void WizardController::MaybeTakeTPMOwnership() {
     return;
   }
 
-  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }

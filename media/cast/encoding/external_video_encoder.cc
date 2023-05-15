@@ -146,8 +146,10 @@ class ExternalVideoEncoder::VEAClientImpl final
     // uint32_t bitrates
     const media::Bitrate bitrate = media::Bitrate::ConstantBitrate(
         base::saturated_cast<uint32_t>(start_bit_rate));
-    const media::VideoEncodeAccelerator::Config config(
+    media::VideoEncodeAccelerator::Config config(
         media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
+    config.content_type =
+        media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
     encoder_active_ = video_encode_accelerator_->Initialize(
         config, this, std::make_unique<media::NullMediaLog>());
     next_frame_id_ = first_frame_id;
@@ -258,11 +260,12 @@ class ExternalVideoEncoder::VEAClientImpl final
   }
 
  protected:
-  void NotifyError(VideoEncodeAccelerator::Error error) final {
+  void NotifyErrorStatus(const media::EncoderStatus& status) final {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-    DCHECK(error != VideoEncodeAccelerator::kInvalidArgumentError &&
-           error != VideoEncodeAccelerator::kIllegalStateError);
+    CHECK(!status.is_ok());
+    LOG(ERROR) << "NotifyErrorStatus() is called, code="
+               << static_cast<int32_t>(status.code())
+               << ", message=" << status.message();
 
     encoder_active_ = false;
 
@@ -324,10 +327,9 @@ class ExternalVideoEncoder::VEAClientImpl final
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (bitstream_buffer_id < 0 ||
         bitstream_buffer_id >= static_cast<int32_t>(output_buffers_.size())) {
-      NOTREACHED();
-      VLOG(1) << "BitstreamBufferReady(): invalid bitstream_buffer_id="
-              << bitstream_buffer_id;
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                         "invalid bitstream_buffer_id=" +
+                             base::NumberToString(bitstream_buffer_id)});
       return;
     }
     const char* output_buffer_memory = output_buffers_[bitstream_buffer_id]
@@ -335,10 +337,10 @@ class ExternalVideoEncoder::VEAClientImpl final
                                            .data();
     if (metadata.payload_size_bytes >
         output_buffers_[bitstream_buffer_id].second.size()) {
-      NOTREACHED();
-      VLOG(1) << "BitstreamBufferReady(): invalid payload_size = "
-              << metadata.payload_size_bytes;
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus(
+          {media::EncoderStatus::Codes::kInvalidOutputBuffer,
+           "invalid payload_size=" +
+               base::NumberToString(metadata.payload_size_bytes)});
       return;
     }
     if (metadata.key_frame) {
@@ -721,13 +723,13 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 
   VideoCodecProfile codec_profile;
   switch (video_config.codec) {
-    case CODEC_VIDEO_VP8:
+    case Codec::kVideoVp8:
       codec_profile = media::VP8PROFILE_ANY;
       break;
-    case CODEC_VIDEO_H264:
+    case Codec::kVideoH264:
       codec_profile = media::H264PROFILE_MAIN;
       break;
-    case CODEC_VIDEO_FAKE:
+    case Codec::kVideoFake:
       NOTREACHED() << "Fake software video encoder cannot be external";
       [[fallthrough]];
     default:

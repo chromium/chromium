@@ -762,28 +762,6 @@ void MediaRouterMojoImpl::OnRouteAdded(mojom::MediaRouteProviderId provider_id,
   routes_query_.NotifyObservers();
 }
 
-void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
-    mojom::MediaRouteProviderId provider_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const auto& provider = media_route_providers_[provider_id];
-  // Sink queries.
-  for (const auto& it : sinks_queries_) {
-    // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
-    // be passed here.
-    provider->StartObservingMediaSinks(it.first);
-  }
-
-  // Route updates.
-  if (routes_query_.HasObservers()) {
-    provider->StartObservingMediaRoutes();
-  }
-
-  // Route messages.
-  for (const auto& it : message_observers_) {
-    provider->StartListeningForRouteMessages(it.first);
-  }
-}
-
 void MediaRouterMojoImpl::DiscoverSinksNow() {
   for (const auto& provider : media_route_providers_) {
     provider.second->DiscoverSinksNow();

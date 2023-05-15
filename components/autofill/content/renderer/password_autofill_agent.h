@@ -139,7 +139,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
 #if BUILDFLAG(IS_ANDROID)
-  void TouchToFillClosed(bool show_virtual_keyboard) override;
+  void KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard) override;
   void TriggerFormSubmission() override;
 #endif
 
@@ -191,9 +191,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Returns whether the soft keyboard should be suppressed.
   bool ShouldSuppressKeyboard();
 
-  // Asks the agent to show the touch to fill UI for |control_element|. Returns
-  // whether the agent was able to do so.
-  bool TryToShowTouchToFill(
+  // Asks the agent to show the keyboard replacing surface for
+  // |control_element|. Returns whether the agent was able to do so.
+  bool TryToShowKeyboardReplacingSurface(
       const blink::WebFormControlElement& control_element);
 #endif
 
@@ -260,11 +260,13 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   class DeferringPasswordManagerDriver;
 
-  // Enumeration representing possible Touch To Fill states. This is used to
-  // make sure that Touch To Fill will only be shown in response to the first
-  // password form focus during a frame's life time and to suppress the soft
-  // keyboard when Touch To Fill is shown.
-  enum class TouchToFillState {
+  // Enumeration representing possible keyboard replacing surface states. A
+  // keyboard replacing surface can be either Touch To Fill UI or Android
+  // Credential Manager UI. This is used to make sure that keyboard replacing
+  // surface will only be shown in response to the first password form focus
+  // during a frame's life time and to suppress the soft keyboard when
+  // credential selector sheet is shown.
+  enum class KeyboardReplacingSurfaceState {
     kShouldShow,
     kIsShowing,
     kWasShown,
@@ -569,9 +571,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   FieldRendererId field_renderer_id_to_submit_;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Current state of Touch To Fill. This is reset during
+  // Current state of the keyboard replacing surface. This is reset during
   // CleanupOnDocumentShutdown.
-  TouchToFillState touch_to_fill_state_ = TouchToFillState::kShouldShow;
+  KeyboardReplacingSurfaceState keyboard_replacing_surface_state_ =
+      KeyboardReplacingSurfaceState::kShouldShow;
 #endif
 };
 

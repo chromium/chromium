@@ -66,8 +66,8 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -167,6 +167,8 @@ constexpr int kToolbarDividerWidth = 2;
 constexpr int kToolbarDividerHeight = 16;
 constexpr int kToolbarDividerCornerRadius = 1;
 constexpr int kToolbarDividerSpacing = 9;
+constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
+constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
 }  // namespace
 
@@ -342,11 +344,10 @@ void ToolbarView::Init() {
   }
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
-    chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
+    chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
-    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get(),
-                                           browser_->profile())) {
+    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
       chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
           browser_view_, chrome_labs_model_.get()));
 
@@ -361,11 +362,8 @@ void ToolbarView::Init() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    battery_saver_button_ =
-        AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
-  }
+  battery_saver_button_ =
+      AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
 
   if (cast)
     cast_ = AddChildView(std::move(cast));
@@ -692,9 +690,11 @@ void ToolbarView::Layout() {
   if (display_mode_ == DisplayMode::NORMAL) {
     LayoutCommon();
 
+#if BUILDFLAG(IS_MAC)
     if (features::IsChromeRefresh2023()) {
       UpdateClipPath();
     }
+#endif
   }
 
   // Call super implementation to ensure layout manager and child layouts
@@ -806,9 +806,6 @@ void ToolbarView::InitLayout() {
   }
 
   if (toolbar_divider_) {
-    SkColor color = GetColorProvider()->GetColor(ui::kColorSysOutline);
-    toolbar_divider_->SetBackground(
-        views::CreateRoundedRectBackground(color, kToolbarDividerCornerRadius));
     toolbar_divider_->SetProperty(views::kMarginsKey,
                                   gfx::Insets::VH(0, kToolbarDividerSpacing));
   }
@@ -819,10 +816,26 @@ void ToolbarView::InitLayout() {
 void ToolbarView::LayoutCommon() {
   DCHECK(display_mode_ == DisplayMode::NORMAL);
 
-  const gfx::Insets interior_margin =
+  gfx::Insets interior_margin =
       GetLayoutInsets(browser_view_->webui_tab_strip()
                           ? LayoutInset::WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN
                           : LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+
+  if (features::IsChromeRefresh2023() && !browser_view_->webui_tab_strip()) {
+    if (app_menu_button_->IsLabelPresentAndVisible()) {
+      // The interior margin in an expanded state should be more than in a
+      // collapsed state.
+      interior_margin.set_right(interior_margin.right() + 1);
+      app_menu_button_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
+    } else {
+      app_menu_button_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+    }
+  }
+
   layout_manager_->SetInteriorMargin(interior_margin);
 
   // Extend buttons to the window edge if we're either in a maximized or
@@ -836,6 +849,10 @@ void ToolbarView::LayoutCommon() {
 
   if (toolbar_divider_ && extensions_container_) {
     toolbar_divider_->SetVisible(extensions_container_->GetVisible());
+    const SkColor toolbar_extension_separator_color =
+        GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
+    toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
+        toolbar_extension_separator_color, kToolbarDividerCornerRadius));
   }
   // Cast button visibility is controlled externally.
 }

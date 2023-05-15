@@ -99,15 +99,16 @@ void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
     observer.OnNewScreencastPreconditionChanged(precondition);
 }
 
-const ash::PendingScreencastSet& ProjectorAppClientImpl::GetPendingScreencasts()
-    const {
+const ash::PendingScreencastContainerSet&
+ProjectorAppClientImpl::GetPendingScreencasts() const {
   return pending_screencast_manager_.GetPendingScreencasts();
 }
 
 void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
-    const ash::PendingScreencastSet& pending_screencast) {
-  for (auto& observer : observers_)
-    observer.OnScreencastsPendingStatusChanged(pending_screencast);
+    const ash::PendingScreencastContainerSet& pending_screencast_containers) {
+  for (auto& observer : observers_) {
+    observer.OnScreencastsPendingStatusChanged(pending_screencast_containers);
+  }
 }
 
 bool ProjectorAppClientImpl::ShouldDownloadSoda() const {

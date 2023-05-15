@@ -70,7 +70,7 @@ export class DocumentPreviewMode {
         {
           render: (el: HTMLElement) => {
             const {icon, label, container} = makeMenuItemElements();
-            icon.src = '/images/document_review_add_page.svg';
+            icon.setAttribute('name', 'document_review_add_page.svg');
             label.textContent = getI18nMessage(I18nString.ADD_NEW_PAGE_BUTTON);
             container.append(icon, label);
             el.append(container);
@@ -80,7 +80,7 @@ export class DocumentPreviewMode {
         {
           render: (el: HTMLElement) => {
             const {icon, label, container} = makeMenuItemElements();
-            icon.src = '/images/document_review_share.svg';
+            icon.setAttribute('name', 'review_share.svg');
             label.textContent = getI18nMessage(I18nString.LABEL_SHARE);
             container.append(icon, label);
             el.append(container);
@@ -91,7 +91,7 @@ export class DocumentPreviewMode {
           render: (el: HTMLElement) => {
             const {icon, label, container} = makeMenuItemElements();
             this.fixPageMenuItemLabel = label;
-            icon.src = '/images/document_review_fix_page.svg';
+            icon.setAttribute('name', 'document_review_fix_page.svg');
             label.textContent = getI18nMessage(I18nString.FIX_PAGE_BUTTON);
             container.append(icon, label);
             el.append(container);
@@ -106,7 +106,7 @@ export class DocumentPreviewMode {
       const fragment = instantiateTemplate('#doc-scan-menu-item-content');
       const container =
           dom.getFrom(fragment, '.menu-item-content', HTMLDivElement);
-      const icon = dom.getFrom(fragment, '.menu-item-icon', HTMLImageElement);
+      const icon = dom.getFrom(fragment, '.menu-item-icon', HTMLElement);
       const label = dom.getFrom(fragment, '.menu-item-label', HTMLDivElement);
       return {icon, label, container};
     }

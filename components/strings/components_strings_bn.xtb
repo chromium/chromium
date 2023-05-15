@@ -37,7 +37,6 @@
 <translation id="10614374240317010">কখনও সংরক্ষিত হয়নি</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ডেস্কটপ বুকমার্ক</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> নীতি সেট না করা পর্যন্ত <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> নীতি ব্যবহার করা যাবে না।</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ কখনও দেখতে চাই না</translation>
 <translation id="1070853536588271387">হাইব্রিড ও বিকল্প যানবাহন</translation>
 <translation id="1070901266639972381">রাত</translation>
@@ -176,7 +175,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> ভাষায় পৃষ্ঠা অনুবাদ করা যাবে না</translation>
 <translation id="1364822246244961190">এই নীতি ব্লক করা আছে তাই এর মান কাজ করবে না।</translation>
 <translation id="1368318639262510626">Dino গেম। কাঁটাগাছ ও টেরোড্যাক্টিলদের পাশ কাটিয়ে পিক্সেলে ভেঙে যাওয়া ডাইনোসর, ফাঁকা প্রান্তরের একদিক থেকে অন্যদিকে ছুটে বেড়াচ্ছে। অডিও কিউ শুনলে, বাধা টপকে যেতে স্পেস বিকল্পে ট্যাপ করুন।</translation>
-<translation id="136907351928231527">আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে এখানে সাইটের তালিকা দেখাতে এক সপ্তাহ পর্যন্ত সময় লাগতে পারে</translation>
 <translation id="1374468813861204354">প্রস্তাবনাগুলি</translation>
 <translation id="1375198122581997741">ভার্সন সম্পর্কে</translation>
 <translation id="1376836354785490390">কম দেখুন</translation>
@@ -192,6 +190,7 @@
 <translation id="1396259464226642517">এই ফলাফলটি কি প্রত্যাশিত ছিল? <ph name="BEGIN_LINK" />মতামত পাঠান<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">হালকা সবুজ</translation>
 <translation id="1406500794671479665">যাচাই করা হচ্ছে...</translation>
+<translation id="1406812885827747674">একবারের জন্য অনুমতি দিন</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408787208417187241">উপরে ট্রিপল স্টেপল</translation>
 <translation id="1410941016594047814">এনভেলপ ইনভাইট</translation>
@@ -307,6 +306,7 @@
 <translation id="1658918301167915956">ব্লুটুথ ডিভাইস</translation>
 <translation id="1662550410081243962">পেমেন্টের পদ্ধতিগুলি পূরণ করে সেভ করুন</translation>
 <translation id="1663943134801823270">Chrome থেকে কার্ড এবং ঠিকানাগুলি এসেছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> এ এগুলি পরিচালনা করতে পারবেন।</translation>
+<translation id="1668071460721346172">ইমেল রিসিভ করুন</translation>
 <translation id="1671391448414634642">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠা <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
 <translation id="1682696192498422849">আগে ছোট প্রান্ত</translation>
@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> ৪ সপ্তাহের বেশি পুরনো বিষয় Chrome অটোমেটিক মুছে দেয়। আপনি ব্রাউজ করার সাথে সাথে তালিকায় একই বিষয় আবার দেখানো হতে পারে। এছাড়াও আপনি এমন বিষয়গুলিকে ব্লক করতে পারেন যেগুলি আপনি Chrome-এ শেয়ার করতে চান না এবং Chrome-এর সেটিংসে যেকোনও সময় বিজ্ঞাপনের বিষয়গুলি বন্ধ করতে পারেন।</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
+<translation id="1699651774646344471">আপনার Google অ্যাকাউন্ট থেকে এখন ঠিকানা ব্যবহার করতে পারবেন</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">জুম লেভেল</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন।</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1807528111851433570">শুরুর শিট</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">আপনার CVC কার্ডের পিছনে আছে। আপনার সিগনেচার বক্সের উপরের ডানদিকে শেষ ৩টি সংখ্যা হল CVC নম্বর।</translation>
 <translation id="181000283860817563">একাধিক সাইটে দাম ট্র্যাক করুন</translation>
 <translation id="1810391395243432441">স্ক্রিন লক দিয়ে পাসওয়ার্ড সুরক্ষিত করুন</translation>
@@ -437,7 +439,9 @@
 <translation id="2003709556000175978">আপনার পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="2003775180883135320">উপরে কোয়াড পাঞ্চ</translation>
 <translation id="201174227998721785">Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করুন</translation>
+<translation id="2012276282211112603">এই মুহূর্তে, দেখানোর মতো কোনও বিষয় নেই</translation>
 <translation id="2019607688127825327">'অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন' বোতাম, Chrome সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে Enter প্রেস করুন</translation>
+<translation id="2021333772895814435">এই নীতি, ডিভাইস জুড়ে এটির জন্য সিঙ্ক করা অটোমেটিক বন্ধ করে দেয়: <ph name="ACTION_LIST" />।</translation>
 <translation id="202224654587969958">১২ x ১৯ ইঞ্চি</translation>
 <translation id="2025115093177348061">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="2025186561304664664">অটো কনফিগার করতে প্রক্সি সেট করা হয়৷</translation>
@@ -468,6 +472,7 @@
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="20817612488360358">সিস্টেম প্রক্সি সেটিংস ব্যবহার করার জন্য সেট আছে কিন্তু একটি সুনির্দিষ্ট প্রক্সি কনফিগারেশনও নির্দিষ্ট করা আছে৷</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
+<translation id="2083256696566019397">প্রতিটি ভিজিটের সময় অনুমতি দিন</translation>
 <translation id="2085876078937250610">সেভ করুন…</translation>
 <translation id="2088086323192747268">সিঙ্ক করার বোতাম ম্যানেজ করুন, Chrome সেটিংসে আপনি কী ধরনের তথ্য সিঙ্ক করবেন, তা ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="2091887806945687916">আওয়াজ</translation>
@@ -490,7 +495,6 @@
 <translation id="2119867082804433120">নিচে ডানদিকে পাঞ্চ করুন</translation>
 <translation id="2122719317867821810">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে এমন মান সেট করা হয়েছে যা একে অপরের সাথে ম্যাচ করে না এবং সেই মানকে এই নীতির মাধ্যমে ওভাররাইড করে দেওয়া হয়।</translation>
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
-<translation id="2128262927290305126">আপনার Google অ্যাকাউন্টে <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">পুরুষদের পোশাক</translation>
@@ -511,6 +515,7 @@
 <translation id="2166049586286450108">পূর্ণ প্রশাসক অ্যাক্সেস</translation>
 <translation id="2166378884831602661">এই সাইটটি একটি সুরক্ষিত সংযোগ দিতে পারছে না</translation>
 <translation id="2168151236314517198">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই কন্টেন্ট প্রিন্ট করার সুবিধা ব্লক করা হয়েছে</translation>
+<translation id="2176974405772725904">অ্যাকাউন্টে ঠিকানা সেভ করুন</translation>
 <translation id="2181821976797666341">নীতিসমূহ</translation>
 <translation id="2183608646556468874">ফোন নম্বর</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{১টি ঠিকানা}one{ #টি ঠিকানা}other{ #টি ঠিকানা}}</translation>
@@ -524,7 +529,6 @@
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
 <translation id="22081806969704220">ট্রে ৩</translation>
 <translation id="2210794033760923560">রিপোর্ট আপলোড করুন</translation>
-<translation id="2212579473415663542">এই ঠিকানাটি আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ করা আছে। আপনি যেকোনও ডিভাইসে সমস্ত Google প্রোডাক্টে ঠিকানা ব্যবহার করতে পারবেন।</translation>
 <translation id="2212735316055980242">নীতি পাওয়া যায়নি</translation>
 <translation id="2213606439339815911">এন্ট্রিগুলি আনা হচ্ছে...</translation>
 <translation id="2213612003795704869">পৃষ্ঠা প্রিন্ট করা হয়েছে</translation>
@@ -537,6 +541,7 @@
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2225927550500503913">ভার্চুয়াল কার্ড চালু করা হয়েছে</translation>
 <translation id="2226636330183131181">ওয়াই ফাই নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">এই ঠিকানাটি বর্তমানে Chrome-এ সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
@@ -639,6 +644,7 @@
 <translation id="2521736961081452453">ফর্ম তৈরি করুন</translation>
 <translation id="2523886232349826891">শুধুমাত্র এই ডিভাইসে সেভ করা যাবে</translation>
 <translation id="2524461107774643265">আরও তথ্য যোগ করুন</translation>
+<translation id="2526280916094749336">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="253493526287553278">প্রোমো কোড সংক্রান্ত বিবরণ দেখুন</translation>
@@ -655,6 +661,7 @@
 <translation id="2547466893236767989">ওয়েব ডিজাইন ও ডেভেলপমেন্ট</translation>
 <translation id="254947805923345898">নীতির মান সঠিক নয়।</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> একটি ভুল প্রতিক্রিয়া পাঠিয়েছে।</translation>
+<translation id="2551608178605132291">ঠিকানা: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">এখন থেকে কার্ড কনফার্ম করতে স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="2553853292994445426">আপনার সুরক্ষিত DNS সেটিংস চেক করে দেখুন। আপনি কনফিগার করা DNS সার্ভারটি সুরক্ষিত বলে হয়ত এটির সাথে এখন কানেক্ট করা যাচ্ছে না।</translation>
@@ -834,7 +841,6 @@
 <translation id="3029752078111257850">বিশ্ব সংবাদ</translation>
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037605927509011580">ইস!</translation>
-<translation id="3041450980936463495">আপনি Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা ব্যবহার করতে পারেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ আছে।</translation>
 <translation id="3041612393474885105">সার্টিফিকেট তথ্য</translation>
 <translation id="305162504811187366">টাইমস্ট্যাম্প, হোস্ট এবং ক্লায়েন্ট সেশন আইডি সহ Chrome রিমোট ডেস্কটপ ইতিহাস</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
@@ -853,6 +859,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />নিরাপদ DNS কনফিগারেশন চেক করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাঝের ট্রে</translation>
 <translation id="3109728660330352905">আপনার এই পৃষ্ঠাটি দেখার জন্য অনুমোদন নেই।</translation>
+<translation id="3112892588078695695">ফোন নম্বর: <ph name="PHONE" />।</translation>
 <translation id="3113284927548439113">থার্ড শিফ্ট</translation>
 <translation id="3114040155724590991">Android সিস্টেম আপডেট করা হচ্ছে
     আপনার অ্যাপ কাজ করা শুরু করতে স্বাভাবিকের চেয়ে বেশি সময় লাগতে পারে।</translation>
@@ -1028,6 +1035,7 @@
 <translation id="3531780078352352885">জব শিট</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> আপনার মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="3533328374079021623">মেলবক্স ৫</translation>
+<translation id="3536227077203206203">এই সময় অনুমতি দেওয়া আছে</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -1054,6 +1062,7 @@
 <translation id="3587738293690942763">মাঝারি</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}=1{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}one{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}other{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">৩০ দিনের বেশি পুরনো বিজ্ঞাপন সাজেস্ট করে এমন বিষয় ও সাইটকে Chrome অটোমেটিক মুছে দেয়। অথবা আপনি পছন্দ করেন না এমন নির্দিষ্ট বিষয় এবং সাইট ব্লক করতে পারবেন।</translation>
 <translation id="3603507503523709">অ্যাপ্লিকেশনটিকে আপনার অ্যাডমিনিস্ট্রেটর  ব্লক করেছে</translation>
 <translation id="3605899229568538311">৫ x ৫ ইঞ্চি</translation>
 <translation id="3608932978122581043">ফিড ওরিয়েন্টেশন</translation>
@@ -1183,6 +1192,7 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">আপনি Chrome সেটিংস থেকে যেকোনও সময় আপনার সিদ্ধান্ত পরিবর্তন করতে পারেন</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারবেন:<ph name="END_BOLD" /> ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার ভিজিট করেছেন এমন সাইট, তালিকায় আবার দেখা যেতে পারে। এছাড়াও আপনি একটি সাইটকে আপনার জন্য বিজ্ঞাপনের সাজেশন দেওয়া থেকে ব্লক করতে এবং Chrome সেটিংসে যেকোনও সময় সাইটের সাজেস্ট করা বিজ্ঞাপনগুলি বন্ধ করতে পারবেন।</translation>
 <translation id="3921869355029467742">আপনার নিরাপত্তা কোড লিখুন</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
 <translation id="393316646445601645">ইন্টারনেট ও টেলিকম</translation>
@@ -1225,6 +1235,7 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4040350669425716613">কলেজ ও বিশ্ববিদ্যালয়</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
+<translation id="4050392779074832022">আপনি এটি সমস্ত Google প্রোডাক্ট জুড়ে ব্যবহার করতে পারবেন</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4063063121357725926">আপনার কার্টের জন্য ডিসকাউন্ট খুঁজে পেতে Google-কে সাহায্য করুন</translation>
@@ -1347,6 +1358,8 @@
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{এই কার্ডটি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}one{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}other{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}}</translation>
 <translation id="4287495839370498922">Chrome-এ উন্নত বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="4287885627794386150">ট্রায়াল করা যেতে পারে কিন্তু অ্যাক্টিভ নেই</translation>
+<translation id="4290920330097335010">কখনও অনুমতি দেবেন না</translation>
+<translation id="4296207570293932800">নতুন বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার এখন উপলভ্য আছে</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
 <translation id="4298000214066716287">লগ্নিকরণ</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
@@ -1415,7 +1428,6 @@
 <translation id="4451135742916150903">HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="4451684391620232683">ব্যবহারকারীর কাছে টেক্সট উপস্থাপিত:</translation>
 <translation id="4452328064229197696">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
-<translation id="4460315069258617173">এই সাইটের ট্যাব বন্ধ না করা পর্যন্ত অনুমতি থাকবে</translation>
 <translation id="4464826014807964867">এমন ওয়েবসাইট যার ব্যাপারে আপনার সংস্থার কাছ থেকে তথ্য পাওয়া গেছে</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
@@ -1619,6 +1631,7 @@
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4953689047182316270">ব্যবহারযোগ্যতা সংক্রান্ত ইভেন্টে প্রতিবার্তা দিতে চায়</translation>
 <translation id="4958444002117714549">তালিকা প্রসারিত করুন</translation>
+<translation id="4960068118612257147">আপনি Chrome-এ বিজ্ঞাপন সম্পর্কিত সেটিংসে পরিবর্তন করতে পারবেন</translation>
 <translation id="4964505745997821360">স্বাস্থ্য বীমা</translation>
 <translation id="4968522289500246572">এই অ্যাপটি মোবাইল ডিভাইসের জন্য তৈরি করা হয়েছে এবং সঠিকভাবে ছোট বড় করা নাও যেতে পারে। এই অ্যাপ ব্যবহার করতে হয়ত সমস্যা হতে পারে বা এটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="4968665849807487749">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি চাইতে পারে</translation>
@@ -1661,6 +1674,7 @@
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="5051305769747448211">লাইভ কমেডি</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
+<translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে Windows Hello ব্যবহার করে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সম্পর্কে তথ্য স্টোর করে থাকতে পারে যা আপনি <ph name="LINK_TEXT" /> পারেন।</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>
 <translation id="5066056036849835175">প্রিন্ট করার ইতিহাস</translation>
@@ -1737,6 +1751,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5238301240406177137">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="5239623327352565343">লোকেশনের অনুমতি আছে</translation>
 <translation id="5242889659037569123">মালপত্র ও ভ্রমণ অ্যাক্সেসরিজ</translation>
 <translation id="5244732203286792411">লোড করা হচ্ছে...
@@ -1755,7 +1770,6 @@
 <translation id="5273881944177595304">ওয়েব অ্যাপ্লিকেশন ও অনলাইন টুল</translation>
 <translation id="5274025349362408263">বই ও সাহিত্য</translation>
 <translation id="5279286380302340275">ডাউনলোড ম্যানেজ করুন</translation>
-<translation id="5279453600310613955">না থাক</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ডকুমেন্ট প্রপার্টি</translation>
 <translation id="528468243742722775">শেষ</translation>
@@ -1794,7 +1808,6 @@
 <translation id="5344579389779391559">এই পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5347645913823149105">Chrome বোতামে ফন্ট কাস্টমাইজ করুন, Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করতে Enter প্রেস করুন</translation>
 <translation id="5355557959165512791">ওয়েবসাইটটির সার্টিফিকেট তুলে নেওয়ার কারণে আপনি এখন <ph name="SITE" /> এ যেতে পারবেন না। নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
-<translation id="5356345925629253198">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="5357848622083956825">ভিজ্যুয়াল আর্ট ও ডিজাইন</translation>
 <translation id="536296301121032821">নীতি সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে</translation>
 <translation id="5363309033720083897">আপনার অ্যাডমিনিস্ট্রেটরের তরফ থেকে অনুমোদিত সিরিয়াল পোর্ট</translation>
@@ -1885,7 +1898,6 @@
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> ৪ সপ্তাহের বেশি পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার ভিজিট করেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। এছাড়াও আপনি একটি সাইটকে আপনার জন্য বিজ্ঞাপনের সাজেশন দেওয়া থেকে ব্লক করতে পারেন এবং Chrome সেটিংসে যেকোনও সময় সাইটের সাজেস্ট করা বিজ্ঞাপনগুলি বন্ধ করতে পারেন।</translation>
 <translation id="5610142619324316209">সংযোগ পরীক্ষা করে দেখুন</translation>
 <translation id="5610807607761827392">আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কার্ড এবং ঠিকানাগুলি পরিচালনা করতে পারেন।</translation>
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
@@ -1973,6 +1985,7 @@
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
+<translation id="5840318881868981258">আপনার Google অ্যাকাউন্টে, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2020,7 +2033,6 @@
 <translation id="5967592137238574583">পরিচিতির তথ্য সম্পাদনা করুন</translation>
 <translation id="5967867314010545767">ইতিহাস থেকে সরান</translation>
 <translation id="5968022600320704045">কোনও সার্চ ফলাফল নেই</translation>
-<translation id="5968793460449681917">প্রতি ভিজিটে প্রয়োজন</translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
@@ -2066,6 +2078,7 @@
 <translation id="6051221802930200923">ওয়েবসাইটটি পিন করা সার্টিফিকেট ব্যবহার করার কারণে আপনি এখন <ph name="SITE" /> এ যেতে পারবেন না। নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
 <translation id="6051898664905071243">পৃষ্ঠার সংখ্যা:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053584886670442526">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ সেভ করা আছে।</translation>
 <translation id="6053735090575989697">Google কীভাবে আপনার ডেটা সুরক্ষিত রাখে সেই সম্পর্কে আমাদের গোপনীয়তা নীতি থেকে আরও জানুন।</translation>
 <translation id="6055888660316801977">ক্রেডেনশিয়াল শিটে উল্লেখ করা কোনও ক্রেডেনশিয়ালের সাথে সুরক্ষিত পেমেন্ট ক্রেডেনশিয়াল মিলছে না</translation>
 <translation id="6058977677006700226">আপনার সমস্ত ডিভাইসে কার্ডগুলি ব্যবহার করবেন?</translation>
@@ -2144,6 +2157,7 @@
 <translation id="6279183038361895380">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR" />| চাপুন</translation>
 <translation id="6280223929691119688">এই ঠিকানায় ডেলিভারি করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="6284292079994426700">২৬ x ৩৮ ইঞ্চি</translation>
+<translation id="6284517535531159884">ভ্যারিয়েশন সিডের ধরন</translation>
 <translation id="6285507000506177184">Chrome বোতামে ডাউনলোড ম্যানেজ করুন, Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="6289939620939689042">পৃষ্ঠার রঙ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2153,7 +2167,6 @@
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
 <translation id="6305205051461490394"><ph name="URL" /> এ পৌঁছানো যাচ্ছে না</translation>
 <translation id="6306713302480826305">এই ঠিকানাটি এটি এবং আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে মুছে ফেলা হবে</translation>
-<translation id="6311165245110979290">ভার্চুয়াল কার্ড উপলভ্য আছে</translation>
 <translation id="6312113039770857350">Webpage not available</translation>
 <translation id="6316226860534107313">স্কুটার ও মোপেড</translation>
 <translation id="63172326633386613">অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন</translation>
@@ -2244,6 +2257,7 @@
 <translation id="6513005815064132016">ক্যামেরার পজিশন ট্র্যাক করতে অনুমতি চাইতে পারে</translation>
 <translation id="6517596291481585650">সতর্কতা: এই নীতি কোনও তালিকা নয় বলে সেটি নীতি অনুযায়ী তালিকা হিসেবে মার্জ করা হয়নি।</translation>
 <translation id="6518133107902771759">যাচাই করুন</translation>
+<translation id="65203098586853226"><ph name="TARGET" />-এ <ph name="SOURCE" /> অনুবাদ করা হচ্ছে</translation>
 <translation id="6521745193039995384">অ্যাক্টিভ নয়</translation>
 <translation id="6529173248185917884">Seventh Roll</translation>
 <translation id="6529602333819889595">&amp;মুছে ফেলাকে আবার করুন</translation>
@@ -2253,6 +2267,7 @@
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6547208576736763147">বাঁদিকে ডুয়াল পাঞ্চ</translation>
 <translation id="6549443526281184652">পরিধান</translation>
+<translation id="6551873053534932690">অ্যাকাউন্টে ঠিকানা সেভ করবেন?</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
 <translation id="6556866813142980365">আবার করুন</translation>
 <translation id="6557715786897013164">১৪ x ১৭ ইঞ্চি</translation>
@@ -2317,6 +2332,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চাইছে</translation>
 <translation id="6718612893943028815">ক্যামেরা ব্যবহার করবেন?</translation>
 <translation id="6721678857435001674">আপনার নিরাপত্তা কী-এর কোম্পানির নাম এবং মডেলটি দেখুন</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ক্যামেরা</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে সেটি লিখুন।</translation>
@@ -2383,7 +2399,6 @@
 <translation id="6897140037006041989">ব্যবহারকারী এজেন্ট</translation>
 <translation id="6898699227549475383">সংস্থা (O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-সংখ্যার কোড লিখুন</translation>
-<translation id="6907293445143367439"><ph name="SITE_NAME" />-কে অনুমতি দিন:</translation>
 <translation id="6907458757809079309">ফিটনেস</translation>
 <translation id="6910240653697687763">আপনার MIDI ডিভাইসে <ph name="URL" /> পূর্ণ নিয়ন্ত্রণ পেতে চায়</translation>
 <translation id="691024665142758461">একাধিক ফাইল ডাউনলোড করুন</translation>
@@ -2440,6 +2455,7 @@
 <translation id="7030436163253143341">সার্টিফিকেটটি সঠিক নয়</translation>
 <translation id="7031646650991750659">কোন কোন Google Play অ্যাপ আপনি ইনস্টল করেছেন</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের গোপনীয়তা সেটিংস ম্যানেজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
+<translation id="7044081119134178347">এই সময় ক্যামেরার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">আমি <ph name="DOMAIN" />-এ সংযোগ করার চেষ্টা করেছেন, কিন্তু সার্ভার একটি সার্টিফিকেট উপস্থাপন করেছে যার বৈধতার সময়সীমা এত বেশী যে বিশ্বাসযোগ্য নয়।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূর্তে কার্ডটি সেভ করা যাবে না}one{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}other{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}}</translation>
@@ -2460,6 +2476,7 @@
 <translation id="7083258188081898530">ট্রে ৯</translation>
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="7096341143397839437">ইমেল: <ph name="EMAIL" />।</translation>
 <translation id="7096937462164235847">এই ওয়েবসাইটের পরিচয় যাচাই করা যায়নি।</translation>
 <translation id="7101893872976785596">ভূতের সিনেমা</translation>
 <translation id="7102079138917191645">নির্মাণ ও রক্ষণাবেক্ষণ</translation>
@@ -2538,6 +2555,7 @@
 <translation id="7256634549594854023">রিয়ার ট্রে</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="7260504762447901703">অ্যাক্সেস প্রত্যাহার করুন</translation>
+<translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7277998515889183784">মেক-আপ ও প্রসাধন</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -2562,7 +2580,6 @@
 <translation id="733923710415886693">সার্ভারের সার্টিফিকেটটি সার্টিফিকেটের স্বচ্ছতার মাধ্যমে প্রকাশ করা হয়নি।</translation>
 <translation id="7341357280245177602">ব্যবহার করা গাড়ি</translation>
 <translation id="7346048084945669753">অ্যাফিলিয়েট কিনা:</translation>
-<translation id="7349921148288539306">আপনি এই ট্যাব বন্ধ না করা পর্যন্ত অনুমতি বজায় থাকবে</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7353601530677266744">কম্যান্ড লাইন</translation>
 <translation id="7354880545102894991">কম খরচে এবং শেষ মুহূর্তের ভ্রমণ</translation>
@@ -2961,6 +2978,7 @@
 <translation id="8245703462678310750">ডাউনলোড দেখতে ফুল স্ক্রিন মোড বন্ধ করার জন্য ।<ph name="ACCELERATOR" />। প্রেস করে ধরে রাখুন।</translation>
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8249463483885748674">স্ট্যান্ডার্ড ও অ্যাডমিশন পরীক্ষা</translation>
+<translation id="8250094606476360498">এই ঠিকানাটি বর্তমানে এই ডিভাইসে সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
 <translation id="8252991034201168845">'অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন' বোতাম, ChromeOS সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে Enter প্রেস করুন</translation>
 <translation id="8253091569723639551">বিলিং ঠিকানা প্রয়োজন</translation>
 <translation id="8257387598443225809">এই অ্যাপটি মোবাইলের কথা ভেবে তৈরি করা হয়েছে</translation>
@@ -3030,6 +3048,7 @@
 <translation id="8416694386774425977">নেটওয়ার্ক কনফিগারেশনটি সঠিক নয় এবং ইমপোর্ট করা যায়নি৷
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">৫০০ x ৭৫০ মিমি</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
@@ -3038,7 +3057,6 @@
 <translation id="8433057134996913067">এটি বেশিরভাগ ওয়েবসাইট থেকে আপনাকে প্রস্থান করুন করবে।</translation>
 <translation id="8434840396568290395">পোষ্য</translation>
 <translation id="8437238597147034694">&amp;সরানোকে পূর্বাবস্থায় ফেরান</translation>
-<translation id="8438476240229491014">এই সেটিং মনে রাখবেন</translation>
 <translation id="8438786541497918448">ক্যামেরা ও মাইক্রোফোন ব্যবহার করবেন?</translation>
 <translation id="8438923942245957911">এই সাইটটি আপনার সংস্থা দ্বারা ফ্ল্যাগ করা হয়েছে</translation>
 <translation id="8443613539889492016">র‌্যাপ এবং হিপ-হপ</translation>
@@ -3086,6 +3104,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{অনুমতি রিসেট করুন}one{অনুমতি রিসেট করুন}other{অনুমতি রিসেট করুন}}</translation>
 <translation id="8555010941760982128">চেকআউটের সময় এই কোড ব্যবহার করুন</translation>
 <translation id="8557066899867184262">আপনার কার্ডের পিছনে CVC ছবিটি আছে।</translation>
+<translation id="8558347880669160417">এই সময় ক্যামেরা ও মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার ডিভাইসের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="8564182942834072828">আলাদা ডকুমেন্ট/সংগ্রহ না করা কপি</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
@@ -3202,11 +3221,11 @@
 <translation id="8870494189203302833">একই অর্ডার, সামনের দিক নীচে</translation>
 <translation id="8870700989640064057">গোপনীয় ফাইল প্রিন্ট করবেন?</translation>
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
+<translation id="8871603420762394026">বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য বিভিন্ন সাইটকে সাহায্য করতে Chrome এখন নানাবিধ সাইটের মধ্যে শুধুমাত্র খুব সীমিত তথ্য শেয়ার করে, যেমন কোনও বিজ্ঞাপন আপনাকে কখন দেখানো হয়েছিল।</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
 <translation id="8876033571432926051">ক্যাজুয়াল গেম</translation>
 <translation id="8877780815363510165">মাছ ধরা</translation>
 <translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
-<translation id="8890798179125483517">৪ সপ্তাহের বেশি পুরনো বিজ্ঞাপন সাজেস্ট করে এমন বিষয় ও সাইটকে Chrome অটোমেটিক মুছে দেয়। অথবা আপনি পছন্দ করেন না এমন নির্দিষ্ট বিষয় এবং সাইট ব্লক করতে পারেন।</translation>
 <translation id="8891727572606052622">ভুল প্রক্সি মোড৷</translation>
 <translation id="8894794286471754040">আগে দীর্ঘ প্রান্ত</translation>
 <translation id="8897428486789851669">সাঁতার শিক্ষা</translation>
@@ -3217,7 +3236,6 @@
 <translation id="8913778647360618320">পেমেন্ট পদ্ধতি ম্যানেজ করার বোতাম, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="8922013791253848639">এই সাইটে সবসময় বিজ্ঞাপন দেখানোর অনুমতি দিন</translation>
 <translation id="892588693504540538">উপরের ডানদিকে পাঞ্চ</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> মান প্রাসঙ্গিক নয় এবং <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> নীতি সেট না করা পর্যন্ত ব্যবহার করা যাবে না।</translation>
 <translation id="8930330541574156305">রিয়েল এস্টেট</translation>
 <translation id="8931333241327730545">আপনি কি আপনার Google অ্যাকাউন্টে এই কার্ড সেভ করতে চান?</translation>
 <translation id="8932102934695377596">আপনার ঘড়ির সময় পিছিয়ে রয়েছে</translation>
@@ -3357,6 +3375,7 @@
 <translation id="949314938206378263">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
+<translation id="961930410699694996">এই সময় লোকেশনের অনুমতি দেওয়া আছে</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">সকল ব্যবহারকারী</translation>
 <translation id="964050462028070434">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন…</translation>

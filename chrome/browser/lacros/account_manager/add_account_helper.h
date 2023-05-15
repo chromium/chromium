@@ -17,7 +17,7 @@
 
 namespace account_manager {
 struct Account;
-class AccountAdditionResult;
+class AccountUpsertionResult;
 class AccountManagerFacade;
 }  // namespace account_manager
 
@@ -71,7 +71,7 @@ class AddAccountHelper {
   // the profile.
   void OnShowAddAccountDialogCompleted(
       const base::FilePath& profile_path,
-      const account_manager::AccountAdditionResult& result);
+      const account_manager::AccountUpsertionResult& result);
 
   // Called as part of the account addition flow, if the profile does not
   // already exist.

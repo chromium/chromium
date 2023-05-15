@@ -21,7 +21,12 @@
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 #define EXPECT_EQ_BOOL(a, b) \
   EXPECT_EQ(static_cast<bool>(a), static_cast<bool>(b))
@@ -48,7 +53,7 @@ NSPopUpButton* GetPopup(NSSavePanel* panel) {
 namespace ui::test {
 
 // Helper test base to initialize SelectFileDialogImpl.
-class SelectFileDialogMacTest : public ::testing::Test,
+class SelectFileDialogMacTest : public PlatformTest,
                                 public SelectFileDialog::Listener {
  public:
   SelectFileDialogMacTest()
@@ -78,18 +83,17 @@ class SelectFileDialogMacTest : public ::testing::Test,
   // Helper method to create a dialog with the given `args`. Returns the created
   // NSSavePanel.
   NSSavePanel* SelectFileWithParams(FileDialogArguments args) {
-    base::scoped_nsobject<NSWindow> parent_window([[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                  styleMask:NSWindowStyleMaskTitled
-                    backing:NSBackingStoreBuffered
-                      defer:NO]);
-    [parent_window setReleasedWhenClosed:NO];
+    NSWindow* parent_window =
+        [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
+                                    styleMask:NSWindowStyleMaskTitled
+                                      backing:NSBackingStoreBuffered
+                                        defer:NO];
+    parent_window.releasedWhenClosed = NO;
     parent_windows_.push_back(parent_window);
 
     dialog_->SelectFile(args.type, args.title, args.default_path,
                         args.file_types, args.file_type_index,
-                        args.default_extension, parent_window.get(),
-                        args.params);
+                        args.default_extension, parent_window, args.params);
 
     // At this point, the Mojo IPC to show the dialog is queued up. Spin the
     // message loop to get the Mojo IPC to happen.
@@ -138,7 +142,7 @@ class SelectFileDialogMacTest : public ::testing::Test,
  private:
   scoped_refptr<SelectFileDialogImpl> dialog_;
 
-  std::vector<base::scoped_nsobject<NSWindow>> parent_windows_;
+  std::vector<NSWindow*> parent_windows_;
 };
 
 class SelectFileDialogMacOpenAndSaveTest
@@ -535,36 +539,6 @@ TEST_F(SelectFileDialogMacTest, DISABLED_DontCrashWithBogusExtension) {
   NSSavePanel* panel = SelectFileWithParams(args);
   // If execution gets this far, there was no crash.
   EXPECT_TRUE(panel);
-}
-
-// Test to ensure lifetime is sound if a reference to
-// the panel outlives the delegate.
-TEST_F(SelectFileDialogMacTest, Lifetime) {
-  base::scoped_nsobject<NSSavePanel> panel;
-  @autoreleasepool {
-    FileDialogArguments args;
-    // Set a type (Save dialogs do not have a delegate).
-    args.type = SelectFileDialog::SELECT_OPEN_MULTI_FILE;
-    panel.reset([SelectFileWithParams(args) retain]);
-
-    EXPECT_TRUE([panel isVisible]);
-    EXPECT_NE(nil, [panel delegate]);
-
-    // Newer versions of AppKit (>= 10.13) appear to clear out weak delegate
-    // pointers when dealloc is called on the delegate. Put a ref into the
-    // autorelease pool to simulate what happens on older versions.
-    [[[panel delegate] retain] autorelease];
-
-    // This will cause the `SelectFileDialogImpl` destructor to be called, and
-    // it will tear down the `SelectFileDialogBridge` via a Mojo IPC.
-    ResetDialog();
-
-    // The `SelectFileDialogBridge` destructor invokes `[panel cancel]`. That
-    // should close the panel, and run the completion handler.
-    EXPECT_EQ(nil, [panel delegate]);
-    EXPECT_FALSE([panel isVisible]);
-  }
-  EXPECT_EQ(nil, [panel delegate]);
 }
 
 }  // namespace ui::test

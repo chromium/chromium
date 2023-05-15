@@ -73,16 +73,16 @@ AutofillWalletUsageDataSyncBridge::CreateMetadataChangeList() {
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletUsageDataSyncBridge::MergeSyncData(
+AutofillWalletUsageDataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // There is no local data to write, so use ApplySyncChanges.
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  // There is no local data to write, so use ApplyIncrementalSyncChanges.
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
+AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,17 +114,10 @@ AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
         }
         VirtualCardUsageData remote = VirtualCardUsageDataFromUsageSpecifics(
             change->data().specifics.autofill_wallet_usage());
-        if (table && table->GetVirtualCardUsageData(change->storage_key())) {
-          if (!table->UpdateVirtualCardUsageData(remote)) {
-            return syncer::ModelError(
-                FROM_HERE,
-                "Failed to update virtual card usage data in table.");
-          }
-        } else {
-          if (!table->AddVirtualCardUsageData(remote)) {
-            return syncer::ModelError(
-                FROM_HERE, "Failed to add virtual card usage data in table.");
-          }
+        if (table && !table->AddOrUpdateVirtualCardUsageData(remote)) {
+          return syncer::ModelError(
+              FROM_HERE,
+              "Failed to add or update virtual card usage data in table.");
         }
       }
     }

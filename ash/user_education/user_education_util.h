@@ -8,19 +8,46 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "components/user_education/common/help_bubble_params.h"
 
 class AccountId;
 
+namespace ui {
+class ElementIdentifier;
+}  // namespace ui
+
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
+enum class HelpBubbleId;
 enum class TutorialId;
 struct UserSession;
 
 namespace user_education_util {
 
+// Returns extended properties for a help bubble having set `help_bubble_id`.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(HelpBubbleId help_bubble_id);
+
 // Returns the `AccountId` for the specified `user_session`. If the specified
 // `user_session` is `nullptr`, `EmptyAccountId()` is returned.
 ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
+
+// Returns help bubble ID from the specified `extended_properties`.
+ASH_EXPORT HelpBubbleId GetHelpBubbleId(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
+
+// Returns a matching view for the specified `element_id` in the root window
+// associated with the specified `display_id`, or `nullptr` if no match is
+// found. Note that if multiple matches exist, this method does *not* guarantee
+// which will be returned.
+ASH_EXPORT views::View* GetMatchingViewInRootWindow(
+    int64_t display_id,
+    ui::ElementIdentifier element_id);
 
 // Returns whether the primary user account is active.
 ASH_EXPORT bool IsPrimaryAccountActive();

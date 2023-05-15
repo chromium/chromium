@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -71,7 +72,8 @@ class ArcResizeLockManager : public KeyedService,
   virtual void ShowSplashScreenDialog(aura::Window* window,
                                       bool is_fully_locked);
 
-  ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
+  raw_ptr<ArcResizeLockPrefDelegate, DanglingUntriaged | ExperimentalAsh>
+      pref_delegate_{nullptr};
 
   // Using unique_ptr to allow unittest to override.
   std::unique_ptr<CompatModeButtonController> compat_mode_button_controller_;

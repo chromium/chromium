@@ -69,9 +69,9 @@ class VirtualKeyboardPrivateApiTest : public extensions::ExtensionApiTest {
     // Then copy the selected part to clipboard.
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     content::BoundingBoxUpdateWaiter select_waiter(web_contents);
-    ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
+    ASSERT_TRUE(ExecJs(web_contents, "selectPart1();"));
     select_waiter.Wait();
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
+    ASSERT_TRUE(ExecJs(web_contents, "copyToClipboard();"));
     base::RunLoop().RunUntilIdle();
   }
 };

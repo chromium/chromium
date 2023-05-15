@@ -104,7 +104,7 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
   if (!lacros_chrome_service)
     return;
   // The metrics reporting API was added in Chrome OS 89.
-  if (!lacros_chrome_service->IsMetricsReportingAvailable()) {
+  if (!lacros_chrome_service->IsSupported<crosapi::mojom::MetricsReporting>()) {
     LOG(WARNING) << "MetricsReporting API not available";
     return;
   }

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -46,7 +47,7 @@
 #define VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL 1024
 typedef struct VkDmaBufImageCreateInfo_ {
   VkStructureType sType;
-  const void* pNext;
+  raw_ptr<const void, ExperimentalAsh> pNext;
   int fd;
   VkFormat format;
   VkExtent3D extent;
@@ -193,8 +194,8 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   }
 
  private:
-  GbmSurfaceFactory* surface_factory_;
-  DrmThreadProxy* drm_thread_proxy_;
+  raw_ptr<GbmSurfaceFactory, ExperimentalAsh> surface_factory_;
+  raw_ptr<DrmThreadProxy, ExperimentalAsh> drm_thread_proxy_;
   gl::EGLDisplayPlatform native_display_;
 };
 

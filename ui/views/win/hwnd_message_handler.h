@@ -172,6 +172,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   void FrameTypeChanged();
 
+  void PaintAsActiveChanged();
+
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon);
 
@@ -185,7 +187,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void SetFullscreen(bool fullscreen, int64_t target_display_id);
 
   // Updates the aspect ratio of the window.
-  void SetAspectRatio(float aspect_ratio);
+  void SetAspectRatio(float aspect_ratio, const gfx::Size& excluded_mar);
 
   // Updates the window style to reflect whether it can be resized or maximized.
   void SizeConstraintsChanged();
@@ -649,6 +651,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // The aspect ratio for the window. This is only used for sizing operations
   // for the non-client area.
   absl::optional<float> aspect_ratio_;
+
+  // Size to exclude from aspect ratio calculation.
+  gfx::Size excluded_margin_;
 
   // The current DPI.
   int dpi_;

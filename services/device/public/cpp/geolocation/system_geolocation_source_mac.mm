@@ -67,7 +67,14 @@ void SystemGeolocationSourceMac::PermissionUpdated() {
 
 void SystemGeolocationSourceMac::PositionUpdated(
     const mojom::Geoposition& position) {
-  position_update_callback_.Run(position);
+  position_update_callback_.Run(
+      mojom::GeopositionResult::NewPosition(position.Clone()));
+}
+
+void SystemGeolocationSourceMac::PositionError(
+    const mojom::GeopositionError& error) {
+  position_update_callback_.Run(
+      mojom::GeopositionResult::NewError(error.Clone()));
 }
 
 void SystemGeolocationSourceMac::StartWatchingPosition(bool high_accuracy) {

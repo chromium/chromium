@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,12 +40,11 @@ class IsolatedWebAppValidator {
       base::OnceCallback<void(absl::optional<std::string>)> callback);
 
   // Validates that the metadata of the Isolated Web App is valid given the
-  // `web_bundle_id`. Returns `absl::nullopt` on success, or an error message if
-  // metadata is invalid.
-  [[nodiscard]] virtual absl::optional<std::string> ValidateMetadata(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const absl::optional<GURL>& primary_url,
-      const std::vector<GURL>& entries);
+  // `web_bundle_id`.
+  [[nodiscard]] virtual base::expected<void, UnusableSwbnFileError>
+  ValidateMetadata(const web_package::SignedWebBundleId& web_bundle_id,
+                   const absl::optional<GURL>& primary_url,
+                   const std::vector<GURL>& entries);
 
  private:
   std::unique_ptr<const IsolatedWebAppTrustChecker>

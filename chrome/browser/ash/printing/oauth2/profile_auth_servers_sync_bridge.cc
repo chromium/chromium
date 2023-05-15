@@ -176,7 +176,8 @@ ProfileAuthServersSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> ProfileAuthServersSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError>
+ProfileAuthServersSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Every local URI is considered unsynced until the contrary is proven, i.e.
@@ -217,7 +218,7 @@ absl::optional<syncer::ModelError> ProfileAuthServersSyncBridge::MergeSyncData(
 }
 
 absl::optional<syncer::ModelError>
-ProfileAuthServersSyncBridge::ApplySyncChanges(
+ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::set<std::string> added_local_uris;

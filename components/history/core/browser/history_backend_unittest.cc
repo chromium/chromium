@@ -44,11 +44,13 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
+#include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/history_client_fake_bookmarks.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/history/core/test/visit_annotations_test_utils.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -129,6 +131,41 @@ VisitContextAnnotations MakeContextAnnotations(bool omnibox_url_copied) {
   return result;
 }
 
+#if BUILDFLAG(IS_IOS)
+// Helper to create a SyncDeviceInfoMap where
+// `android_phone_originator_cache_guids` and `ios_phone_originator_cache_guids`
+// represent Originator Cache GUIDs that map to Android/Phone and iOS/Phone
+// device type/OS, respectively.
+SyncDeviceInfoMap MakeSyncDeviceInfo(
+    const std::vector<std::string>& android_phone_originator_cache_guids,
+    const std::vector<std::string>& ios_phone_originator_cache_guids,
+    const std::string& local_ios_phone_originator_cache_guid = "") {
+  SyncDeviceInfoMap sync_device_info;
+
+  for (const auto& android_phone_originator_cache_guid :
+       android_phone_originator_cache_guids) {
+    sync_device_info[android_phone_originator_cache_guid] =
+        std::make_pair(syncer::DeviceInfo::OsType::kAndroid,
+                       syncer::DeviceInfo::FormFactor::kPhone);
+  }
+
+  for (const auto& ios_phone_originator_cache_guid :
+       ios_phone_originator_cache_guids) {
+    sync_device_info[ios_phone_originator_cache_guid] =
+        std::make_pair(syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone);
+  }
+
+  if (!local_ios_phone_originator_cache_guid.empty()) {
+    sync_device_info[local_ios_phone_originator_cache_guid] =
+        std::make_pair(syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone);
+  }
+
+  return sync_device_info;
+}
+#endif
+
 }  // namespace
 
 class HistoryBackendTestBase;
@@ -171,6 +208,7 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::AddPageVisit;
   using HistoryBackend::DeleteAllHistory;
   using HistoryBackend::DeleteFTSIndexDatabases;
+  using HistoryBackend::GetDBForTesting;
   using HistoryBackend::HistoryBackend;
   using HistoryBackend::MarkVisitAsKnownToSync;
   using HistoryBackend::UpdateVisitDuration;
@@ -570,6 +608,34 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   base::Time GetRelativeTime(int relative_seconds) {
     static const base::Time time_now = base::Time::Now();
     return time_now + base::Seconds(relative_seconds);
+  }
+
+  // Helper to check if a segment (identified by `segment_id`) exists in
+  // `segments`.
+  bool HasSegmentWithID(SegmentID segment_id) {
+    sql::Statement s(backend_->GetDBForTesting().GetUniqueStatement(
+        "SELECT COUNT(*) FROM segments WHERE id = ?"));
+    s.BindInt64(0, segment_id);
+
+    if (!s.Step()) {
+      return false;
+    }
+
+    return s.ColumnInt(0) > 0;
+  }
+
+  // Helper to get the total number of visits from segment_usage matching
+  // `segment_id`.
+  int TotalNumVisitsForSegment(SegmentID segment_id) {
+    sql::Statement s(backend_->GetDBForTesting().GetUniqueStatement(
+        "SELECT SUM(visit_count) FROM segment_usage WHERE segment_id = ?"));
+    s.BindInt64(0, segment_id);
+
+    if (!s.Step()) {
+      return 0;
+    }
+
+    return s.ColumnInt(0);
   }
 };
 
@@ -4605,6 +4671,318 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
   ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
   EXPECT_TRUE(added_visit.is_known_to_sync);
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(HistoryBackendTest,
+       UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info =
+      MakeSyncDeviceInfo({"foreign"}, {}, "local");
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local");
+
+  VisitRow foreign_visit_1;
+  foreign_visit_1.visit_time = base::Time::Now();
+  foreign_visit_1.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit_1.originator_cache_guid = "foreign";
+  foreign_visit_1.is_known_to_sync = true;
+  foreign_visit_1.consider_for_ntp_most_visited = true;
+
+  VisitID foreign_visit_1_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit_1,
+      absl::nullopt, absl::nullopt);
+
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  VisitRow foreign_visit_2;
+  foreign_visit_2.visit_time = base::Time::Now();
+  foreign_visit_2.referring_visit = foreign_visit_1_id;
+  foreign_visit_2.transition = kLink;
+  foreign_visit_2.originator_cache_guid = "foreign";
+  foreign_visit_2.is_known_to_sync = true;
+  foreign_visit_2.consider_for_ntp_most_visited = true;
+
+  backend_->AddSyncedVisit(GURL("https://foobar.url"), u"Foobar",
+                           /*hidden=*/false, foreign_visit_2, absl::nullopt,
+                           absl::nullopt);
+
+  // Check that the visits were added.
+  VisitVector all_visits;
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
+                                     &all_visits);
+  ASSERT_EQ(2U, all_visits.size());
+
+  // Segments exist for both visits.
+  EXPECT_TRUE(HasSegmentWithID(all_visits[0].segment_id));
+  EXPECT_TRUE(HasSegmentWithID(all_visits[1].segment_id));
+
+  // The visits belong to the same segment.
+  EXPECT_EQ(all_visits[0].segment_id, all_visits[1].segment_id);
+  EXPECT_EQ(TotalNumVisitsForSegment(all_visits[0].segment_id), 2);
+
+  // Re-assign the second visit's referrer, which updates segments.
+  backend_->UpdateVisitReferrerOpenerIDs(all_visits[1].visit_id, 0, 0);
+
+  VisitVector updated_visits;
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
+                                     &updated_visits);
+
+  // The second visit no longer belongs to a segment, so the number of visits
+  // is decremented.
+  EXPECT_NE(updated_visits[0].segment_id, updated_visits[1].segment_id);
+  EXPECT_EQ(updated_visits[1].segment_id, 0);
+  EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[0].segment_id), 1);
+  EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 0);
+}
+
+TEST_F(HistoryBackendTest,
+       UpdateSyncedVisit_DoesNotDoubleCountVisitInSegments) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info =
+      MakeSyncDeviceInfo({"foreign"}, {}, "local");
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local");
+
+  VisitRow foreign_visit_1;
+  foreign_visit_1.visit_time = base::Time::Now();
+  foreign_visit_1.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit_1.originator_cache_guid = "foreign";
+  foreign_visit_1.is_known_to_sync = true;
+  foreign_visit_1.consider_for_ntp_most_visited = true;
+
+  VisitID foreign_visit_1_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit_1,
+      absl::nullopt, absl::nullopt);
+
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  VisitRow foreign_visit_2;
+  foreign_visit_2.visit_time = base::Time::Now();
+  foreign_visit_2.referring_visit = foreign_visit_1_id;
+  foreign_visit_2.transition = kLink;
+  foreign_visit_2.originator_cache_guid = "foreign";
+  foreign_visit_2.is_known_to_sync = true;
+  foreign_visit_2.consider_for_ntp_most_visited = true;
+
+  backend_->AddSyncedVisit(GURL("https://foobar.url"), u"Foobar",
+                           /*hidden=*/false, foreign_visit_2, absl::nullopt,
+                           absl::nullopt);
+
+  // Check that the visits were added.
+  VisitVector all_visits;
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
+                                     &all_visits);
+  ASSERT_EQ(2U, all_visits.size());
+
+  // Segments exist for both visits.
+  EXPECT_TRUE(HasSegmentWithID(all_visits[0].segment_id));
+  EXPECT_TRUE(HasSegmentWithID(all_visits[1].segment_id));
+
+  // The visits belong to the same segment.
+  EXPECT_EQ(all_visits[0].segment_id, all_visits[1].segment_id);
+  EXPECT_EQ(TotalNumVisitsForSegment(all_visits[0].segment_id), 2);
+
+  foreign_visit_2.transition = ui::PAGE_TRANSITION_TYPED;
+  backend_->UpdateSyncedVisit(GURL("https://foobar.url"), u"Foobar",
+                              /*hidden=*/false, foreign_visit_2, absl::nullopt,
+                              absl::nullopt);
+
+  VisitVector updated_visits;
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
+                                     &updated_visits);
+
+  // The second visit no longer belongs to the segment, so the number of visits
+  // is decremented.
+  EXPECT_NE(updated_visits[0].segment_id, updated_visits[1].segment_id);
+  EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[0].segment_id), 1);
+  EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 1);
+}
+
+TEST_F(HistoryBackendTest,
+       AddSyncedVisit_AddsVisitWithValidOriginatorCacheGuidToSegments) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info =
+      MakeSyncDeviceInfo({"foreign"}, {}, "local");
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local");
+
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit.originator_cache_guid = "foreign";
+  foreign_visit.is_known_to_sync = true;
+  foreign_visit.consider_for_ntp_most_visited = true;
+
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+
+  ASSERT_NE(added_id, kInvalidVisitID);
+
+  VisitRow added_visit;
+
+  ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_TRUE(added_visit.consider_for_ntp_most_visited);
+
+  // The visit belongs to a segment.
+  EXPECT_NE(added_visit.segment_id, 0);
+}
+
+TEST_F(
+    HistoryBackendTest,
+    AddSyncedVisit_DoesNotAddVisitToSegmentsWithMissingForeignDeviceInformation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {}, "local");
+  sync_device_info["foreign-invalid"] =
+      std::make_pair(syncer::DeviceInfo::OsType::kAndroid,
+                     syncer::DeviceInfo::FormFactor::kTablet);
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local");
+
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit.originator_cache_guid = "foreign-invalid";
+  foreign_visit.is_known_to_sync = true;
+  foreign_visit.consider_for_ntp_most_visited = true;
+
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+
+  ASSERT_NE(added_id, kInvalidVisitID);
+
+  VisitRow added_visit;
+
+  ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_TRUE(added_visit.consider_for_ntp_most_visited);
+
+  // The visit does not belong to a segment because its originator_cache_guid
+  // isn't known.
+  EXPECT_EQ(added_visit.segment_id, 0);
+}
+
+TEST_F(
+    HistoryBackendTest,
+    AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidLocalDeviceInformation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({"foreign"}, {});
+  sync_device_info["local-invalid"] =
+      std::make_pair(syncer::DeviceInfo::OsType::kIOS,
+                     syncer::DeviceInfo::FormFactor::kTablet);
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local-invalid");
+
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit.originator_cache_guid = "foreign";
+  foreign_visit.is_known_to_sync = true;
+  foreign_visit.consider_for_ntp_most_visited = true;
+
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+
+  ASSERT_NE(added_id, kInvalidVisitID);
+
+  VisitRow added_visit;
+
+  ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_TRUE(added_visit.consider_for_ntp_most_visited);
+
+  // The foreign visit does not belong to a segment because the local device
+  // information is invalid.
+  EXPECT_EQ(added_visit.segment_id, 0);
+}
+
+TEST_F(HistoryBackendTest,
+       AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidDeviceInformation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
+  SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {});
+  sync_device_info["foreign-invalid"] =
+      std::make_pair(syncer::DeviceInfo::OsType::kAndroid,
+                     syncer::DeviceInfo::FormFactor::kTablet);
+  sync_device_info["local-invalid"] =
+      std::make_pair(syncer::DeviceInfo::OsType::kIOS,
+                     syncer::DeviceInfo::FormFactor::kTablet);
+
+  backend_->SetSyncDeviceInfo(std::move(sync_device_info));
+  backend_->SetLocalDeviceOriginatorCacheGuid("local-invalid");
+
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  foreign_visit.originator_cache_guid = "foreign-invalid";
+  foreign_visit.is_known_to_sync = true;
+  foreign_visit.consider_for_ntp_most_visited = true;
+
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+
+  ASSERT_NE(added_id, kInvalidVisitID);
+
+  VisitRow added_visit;
+
+  ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_TRUE(added_visit.consider_for_ntp_most_visited);
+
+  // The visit does not belong to a segment.
+  EXPECT_EQ(added_visit.segment_id, 0);
+}
+#endif
 
 TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   const ui::PageTransition kLink = ui::PageTransitionFromInt(

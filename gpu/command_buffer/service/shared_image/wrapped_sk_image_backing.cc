@@ -26,31 +26,31 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace gpu {
 
 namespace {
 
-// Given a usage and debug label string from the client, construct a string we
-// can pass to debugging tools.
-std::string GetLabel(uint32_t usage, const std::string& debug_label) {
-  return std::string("WrappedSkImage(" + CreateLabelForSharedImageUsage(usage) +
-                     ")" + "_" + debug_label);
+// Given a debug label string from the client, construct a string we can pass to
+// debugging tools.
+std::string GetLabel(const std::string& debug_label) {
+  return std::string("WrappedSkImage_" + debug_label);
 }
 
 }  // namespace
 
 class WrappedSkImageBacking::SkiaImageRepresentationImpl
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   SkiaImageRepresentationImpl(SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
                               scoped_refptr<SharedContextState> context_state)
-      : SkiaImageRepresentation(context_state->gr_context(),
-                                manager,
-                                backing,
-                                tracker),
+      : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                      manager,
+                                      backing,
+                                      tracker),
         context_state_(std::move(context_state)) {}
 
   ~SkiaImageRepresentationImpl() override { DCHECK(write_surfaces_.empty()); }
@@ -226,13 +226,12 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
             fallback_color, mipmap, is_renderable, is_protected, nullptr,
-            nullptr, GetLabel(usage(), debug_label));
+            nullptr, GetLabel(debug_label));
 #else
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
-            mipmap, is_renderable, is_protected,
-            GetLabel(usage(), debug_label));
+            mipmap, is_renderable, is_protected, GetLabel(debug_label));
 #endif
 
     if (!texture.backend_texture.isValid()) {
@@ -248,9 +247,9 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
   return true;
 }
 
-bool WrappedSkImageBacking::InitializeWithData(const std::string& debug_label,
-                                               base::span<const uint8_t> pixels,
-                                               size_t stride) {
+bool WrappedSkImageBacking::InitializeWithData(
+    const std::string& debug_label,
+    base::span<const uint8_t> pixels) {
   DCHECK(format().is_single_plane());
   DCHECK(pixels.data());
 
@@ -270,14 +269,11 @@ bool WrappedSkImageBacking::InitializeWithData(const std::string& debug_label,
             GrMipMapped::kNo, GrProtected::kNo);
   } else {
     auto info = AsSkImageInfo();
-    if (!stride) {
-      stride = info.minRowBytes();
-    }
-    SkPixmap pixmap(info, pixels.data(), stride);
+    SkPixmap pixmap(info, pixels.data(), info.minRowBytes());
     textures_[0].backend_texture =
         context_state_->gr_context()->createBackendTexture(
             pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,
-            GetLabel(usage(), debug_label));
+            GetLabel(debug_label));
   }
 
   if (!textures_[0].backend_texture.isValid()) {
@@ -376,7 +372,7 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
         context_state_->GetCachedSkSurface(texture.promise_texture.get());
     if (!surface || final_msaa_count != surface_msaa_count_ ||
         surface_props != surface->props()) {
-      surface = SkSurface::MakeFromBackendTexture(
+      surface = SkSurfaces::WrapBackendTexture(
           context_state_->gr_context(), texture.backend_texture,
           surface_origin(), final_msaa_count, GetSkColorType(plane),
           color_space().ToSkColorSpace(), &surface_props);
@@ -393,7 +389,7 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
   return surfaces;
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 WrappedSkImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

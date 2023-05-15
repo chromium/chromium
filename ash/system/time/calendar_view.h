@@ -17,11 +17,11 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "calendar_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -43,7 +43,6 @@ namespace ash {
 class CalendarEventListView;
 class CalendarMonthView;
 class IconButton;
-class CalendarSurfaceLayerMask;
 class CalendarView;
 
 // The header of the calendar view, which shows the current month and year.
@@ -67,29 +66,10 @@ class CalendarHeaderView : public views::View {
   friend class CalendarViewTest;
 
   // The main header which shows the month name.
-  views::Label* const header_;
+  const raw_ptr<views::Label, ExperimentalAsh> header_;
 
   // The year header which follows the `header_`.
-  views::Label* const header_year_;
-};
-
-// Container view used for holding the event list view and / or the up next
-// view and animating them together.
-// Calculates the path for the `CalendarSurfaceLayerMask` to use.
-class CalendarSlidingSurface : public views::View {
- public:
-  METADATA_HEADER(CalendarSlidingSurface);
-  explicit CalendarSlidingSurface(CalendarView* calendar_view)
-      : calendar_view_(calendar_view) {}
-  CalendarSlidingSurface(const CalendarSlidingSurface& other) = delete;
-  CalendarSlidingSurface& operator=(const CalendarSlidingSurface& other) =
-      delete;
-  ~CalendarSlidingSurface() override = default;
-
-  SkPath GetPath() const;
-
- private:
-  CalendarView* const calendar_view_;
+  const raw_ptr<views::Label, ExperimentalAsh> header_year_;
 };
 
 // This view displays a scrollable calendar.
@@ -174,10 +154,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
       void OnTouchEvent(ui::TouchEvent* event) override;
 
      private:
-      ScrollContentsView* content_view_;
+      raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_;
     };
 
-    CalendarViewController* const controller_;
+    const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
     StylusEventHandler stylus_event_handler_;
 
     // Since we only record metrics once when we scroll through a particular
@@ -373,9 +353,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // that the calendar view can be in.
   void ClipScrollViewHeight(ScrollViewState state_to_change_to);
 
-  // Creates the `CalendarSurfaceLayerMask` if it doesn't already exist.
-  void MaybeCreateLayerMask();
-
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
@@ -385,7 +362,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   }
 
   // Unowned.
-  UnifiedSystemTrayController* controller_;
+  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   std::unique_ptr<CalendarViewController> calendar_view_controller_;
 
@@ -394,36 +371,33 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
-  ScrollContentsView* content_view_ = nullptr;
+  raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_ = nullptr;
 
   // The following is owned by `CalendarView`.
-  views::ScrollView* scroll_view_ = nullptr;
-  views::View* current_label_ = nullptr;
-  views::View* previous_label_ = nullptr;
-  views::View* next_label_ = nullptr;
-  views::View* next_next_label_ = nullptr;
-  CalendarMonthView* previous_month_ = nullptr;
-  CalendarMonthView* current_month_ = nullptr;
-  CalendarMonthView* next_month_ = nullptr;
-  CalendarMonthView* next_next_month_ = nullptr;
-  CalendarHeaderView* header_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> current_label_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> previous_label_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> next_label_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> next_next_label_ = nullptr;
+  raw_ptr<CalendarMonthView, ExperimentalAsh> previous_month_ = nullptr;
+  raw_ptr<CalendarMonthView, ExperimentalAsh> current_month_ = nullptr;
+  raw_ptr<CalendarMonthView, ExperimentalAsh> next_month_ = nullptr;
+  raw_ptr<CalendarMonthView, ExperimentalAsh> next_next_month_ = nullptr;
+  raw_ptr<CalendarHeaderView, ExperimentalAsh> header_ = nullptr;
   // Temporary header, used for animations.
-  CalendarHeaderView* temp_header_ = nullptr;
-  views::Button* reset_to_today_button_ = nullptr;
-  views::Button* settings_button_ = nullptr;
-  IconButton* managed_button_ = nullptr;
-  IconButton* up_button_ = nullptr;
-  IconButton* down_button_ = nullptr;
-  CalendarSlidingSurface* calendar_sliding_surface_ = nullptr;
-  CalendarEventListView* event_list_view_ = nullptr;
+  raw_ptr<CalendarHeaderView, ExperimentalAsh> temp_header_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> reset_to_today_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> managed_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
+  raw_ptr<CalendarEventListView, ExperimentalAsh> event_list_view_ = nullptr;
   // Owned by CalendarView.
-  CalendarUpNextView* up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
-  CalendarModel* calendar_model_ =
+  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
-
-  // Layer mask that sits over the scrollview and hides the content underneath.
-  std::unique_ptr<CalendarSurfaceLayerMask> calendar_surface_layer_mask_;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.

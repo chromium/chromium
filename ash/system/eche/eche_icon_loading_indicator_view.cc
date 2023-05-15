@@ -26,7 +26,7 @@ constexpr int kThrobberStrokeWidth = 3;
 
 EcheIconLoadingIndicatorView::EcheIconLoadingIndicatorView(views::View* parent)
     : parent_(parent) {
-  observed_session_.Observe(parent_);
+  observed_session_.Observe(parent_.get());
 
   // Don't let the loading indicator process events.
   SetCanProcessEventsWithinSubtree(false);

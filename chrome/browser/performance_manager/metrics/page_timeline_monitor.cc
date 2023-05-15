@@ -13,7 +13,6 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -25,8 +24,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
-#include "components/performance_manager/public/decorators/site_data_recorder.h"
-#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -36,10 +33,6 @@ PageTimelineMonitor::PageTimelineMonitor()
     // so that we cannot tie either the startup time of a specific tab or the
     // recording time of a specific slice to the browser startup time.
     : slice_id_counter_(base::RandInt(1, 32767)) {
-#if !BUILDFLAG(IS_ANDROID)
-  site_data_reader_callback_ =
-      base::BindRepeating(&SiteDataRecorder::Data::GetReaderForPageNode);
-#endif  // !BUILDFLAG(IS_ANDROID)
   collect_slice_timer_.Start(
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
@@ -121,6 +114,8 @@ void PageTimelineMonitor::CollectSlice() {
     bool has_notification_permission = false;
     bool is_capturing_media = false;
     bool is_connected_to_device = false;
+    bool updated_title_or_favicon_in_background = false;
+
     const auto* page_live_state_data =
         PageLiveStateDecorator::Data::FromPageNode(page_node);
     if (page_live_state_data) {
@@ -136,6 +131,8 @@ void PageTimelineMonitor::CollectSlice() {
       is_connected_to_device =
           page_live_state_data->IsConnectedToUSBDevice() ||
           page_live_state_data->IsConnectedToBluetoothDevice();
+      updated_title_or_favicon_in_background =
+          page_live_state_data->UpdatedTitleOrFaviconInBackground();
     }
 
     ukm::builders::PerformanceManager_PageTimelineState builder(source_id);
@@ -152,6 +149,8 @@ void PageTimelineMonitor::CollectSlice() {
                 .InMilliseconds()))
         .SetTotalForegroundTime(ukm::GetSemanticBucketMinForDurationTiming(
             curr_info->total_foreground_milliseconds))
+        .SetChangedFaviconOrTitleInBackground(
+            updated_title_or_favicon_in_background)
         .SetHasNotificationPermission(has_notification_permission)
         .SetIsCapturingMedia(is_capturing_media)
         .SetIsConnectedToDevice(is_connected_to_device)
@@ -161,14 +160,6 @@ void PageTimelineMonitor::CollectSlice() {
         .SetTabId(curr_info->tab_id);
 
 #if !BUILDFLAG(IS_ANDROID)
-    const auto* site_data_reader = site_data_reader_callback_.Run(page_node);
-    if (site_data_reader) {
-      builder.SetChangedFaviconOrTitleInBackground(
-          site_data_reader->UpdatesTitleInBackground() ==
-              SiteFeatureUsage::kSiteFeatureInUse ||
-          site_data_reader->UpdatesFaviconInBackground() ==
-              SiteFeatureUsage::kSiteFeatureInUse);
-    }
     bool high_efficiency_mode_active =
         (policies::HighEfficiencyModePolicy::GetInstance() &&
          policies::HighEfficiencyModePolicy::GetInstance()
@@ -192,13 +183,6 @@ bool PageTimelineMonitor::ShouldCollectSlice() const {
   // The default if not overridden by tests is to report ~1 out of 20 slices.
   return base::RandInt(0, 19) == 1;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void PageTimelineMonitor::SetSiteDataReaderCallbackForTesting(
-    SiteDataReaderCallback callback) {
-  site_data_reader_callback_ = callback;
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PageTimelineMonitor::SetShouldCollectSliceCallbackForTesting(
     base::RepeatingCallback<bool()> should_collect_slice_callback) {

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
@@ -20,6 +21,10 @@
 #else
 #include <CoreServices/CoreServices.h>
 #endif  // BUILDFLAG(IS_IOS)
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace net {
 
@@ -39,7 +44,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     // Dynamic UTTypes are made by the system in the event that there's a
     // non-identifiable mime type. For now, we should treat dynamic UTTypes as a
     // nonstandard format.
-    if ([uttype isDynamic] || uttype.preferredMIMEType == nil) {
+    if (uttype.dynamic || uttype.preferredMIMEType == nil) {
       return false;
     }
     *result = base::SysNSStringToUTF8(uttype.preferredMIMEType);
@@ -56,7 +61,8 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     }
     base::ScopedCFTypeRef<CFStringRef> uti(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                              ext_ref, nullptr));
+                                              ext_ref,
+                                              /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
@@ -85,7 +91,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
   if (@available(macOS 11, iOS 14, *)) {
     UTType* uttype =
         [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
-    if ([uttype isDynamic] || uttype.preferredFilenameExtension == nil) {
+    if (uttype.dynamic || uttype.preferredFilenameExtension == nil) {
       return false;
     }
     *ext = base::SysNSStringToUTF8(uttype.preferredFilenameExtension);
@@ -102,7 +108,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     }
     base::ScopedCFTypeRef<CFStringRef> uti(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mime_ref,
-                                              nullptr));
+                                              /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
@@ -180,7 +186,8 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
             continue;
           }
           extensions_found = true;
-          for (NSString* extension in base::mac::CFToNSCast(extensions_list)) {
+          for (NSString* extension in base::apple::CFToNSPtrCast(
+                   extensions_list)) {
             extensions->insert(base::SysNSStringToUTF8(extension));
           }
         }

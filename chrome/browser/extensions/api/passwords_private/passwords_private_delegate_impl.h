@@ -92,7 +92,8 @@ class PasswordsPrivateDelegateImpl
                        ImportResultsCallback results_callback,
                        content::WebContents* web_contents) override;
   void ContinueImport(const std::vector<int>& selected_ids,
-                      ImportResultsCallback results_callback) override;
+                      ImportResultsCallback results_callback,
+                      content::WebContents* web_contents) override;
   void ResetImporter(bool delete_file) override;
   void ExportPasswords(
       base::OnceCallback<void(const std::string&)> accepted_callback,
@@ -150,7 +151,8 @@ class PasswordsPrivateDelegateImpl
   ~PasswordsPrivateDelegateImpl() override;
 
   // password_manager::SavedPasswordsPresenter::Observer implementation.
-  void OnSavedPasswordsChanged() override;
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override;
 
   // web_app::WebAppInstallManagerObserver implementation.
   void OnWebAppInstalledWithOsHooks(const web_app::AppId& app_id) override;
@@ -194,6 +196,11 @@ class PasswordsPrivateDelegateImpl
       base::OnceCallback<void(const std::string&)> accepted_callback,
       content::WebContents* web_contents,
       bool authenticated);
+
+  // Callback for ContinueImport() after authentication check.
+  void OnImportPasswordsAuthResult(ImportResultsCallback results_callback,
+                                   const std::vector<int>& selected_ids,
+                                   bool authenticated);
 
   void OnAccountStorageOptInStateChanged();
 

@@ -66,7 +66,7 @@
       name: "AttributionReporting",
       permissions_policy_name: "attribution-reporting",
       feature_default: "EnableForAll",
-      depends_on: ["AttributionReporting"],
+      depends_on: ["AttributionReporting", "AttributionReportingCrossAppWeb"],
     },
     {
       name: "Autoplay",
@@ -329,6 +329,11 @@
       depends_on: ["SharedStorageAPI", "Fledge"],
     },
     {
+      name: "PrivateStateTokenIssuance",
+      permissions_policy_name: "private-state-token-issuance",
+      depends_on: ["PrivateStateTokens"],
+    },
+    {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
     },
@@ -386,7 +391,7 @@
     },
     {
       name: "TrustTokenRedemption",
-      permissions_policy_name: "trust-token-redemption",
+      permissions_policy_name: "private-state-token-redemption",
       depends_on: ["PrivateStateTokens"],
     },
     {

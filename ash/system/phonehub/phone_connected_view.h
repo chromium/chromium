@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/app_stream_connection_error_dialog.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/events/event.h"
 #include "ui/views/view.h"
@@ -43,8 +44,8 @@ class PhoneConnectedView : public PhoneHubContentView {
 
   void OnAppStreamErrorDialogButtonClicked(const ui::Event& event);
 
-  phonehub::PhoneHubManager* phone_hub_manager_;
-  QuickActionsView* quick_actions_view_;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
+  raw_ptr<QuickActionsView, ExperimentalAsh> quick_actions_view_;
   std::unique_ptr<AppStreamConnectionErrorDialog> app_stream_error_dialog_;
 };
 

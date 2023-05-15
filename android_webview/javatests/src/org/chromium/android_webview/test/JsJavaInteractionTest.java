@@ -720,6 +720,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"disable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostArrayBufferFeatureDisabled() throws Throwable {
         final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
@@ -744,7 +745,6 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostArrayBufferWorks() throws Throwable {
         final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
         verifyPostArrayBufferWorks(content);
@@ -753,7 +753,6 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostEmptyArrayBuffer() throws Throwable {
         final byte[] content = new byte[0];
         verifyPostArrayBufferWorks(content);
@@ -762,7 +761,6 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostLargeArrayBuffer() throws Throwable {
         final byte[] content = new byte[500 * 1000]; // 500 Kib
         new Random(42).nextBytes(content);
@@ -791,6 +789,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"disable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostNullOrUndefinedShouldThrowException() throws Throwable {
         verifyPostNullOrUndefinedShouldThrowException();
     }
@@ -798,7 +797,6 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostNullOrUndefinedShouldThrowExceptionWithArrayBufferFeature()
             throws Throwable {
         verifyPostNullOrUndefinedShouldThrowException();

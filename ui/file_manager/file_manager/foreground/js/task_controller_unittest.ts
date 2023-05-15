@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
@@ -97,7 +96,7 @@ export function setUp() {
 function createTaskController(fileSelectionHandler: FileSelectionHandler):
     TaskController {
   const taskController = new TaskController(
-      DialogType.FULL_PAGE, {
+      {
         getLocationInfo: function(_entry: Entry) {
           return VolumeManagerCommon.RootType.DRIVE;
         },

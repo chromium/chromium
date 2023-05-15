@@ -183,6 +183,7 @@ source_set("ui_lib_shared_headers") {
     "src/UILib/GREYScreenshotter.h",
     "src/UILib/Provider/GREYUIWindowProvider.h",
     "src/UILib/Visibility/GREYVisibilityChecker.h",
+    "src/UILib/Visibility/GREYVisibilityCheckerCacheEntry.h",
   ]
 }
 
@@ -218,7 +219,6 @@ source_set("ui_lib") {
     "src/UILib/Visibility/GREYQuickVisibilityChecker.m",
     "src/UILib/Visibility/GREYThoroughVisibilityChecker.h",
     "src/UILib/Visibility/GREYThoroughVisibilityChecker.m",
-    "src/UILib/Visibility/GREYVisibilityChecker+Private.h",
     "src/UILib/Visibility/GREYVisibilityChecker.h",
     "src/UILib/Visibility/GREYVisibilityChecker.m",
     "src/UILib/Visibility/GREYVisibilityCheckerCacheEntry.h",

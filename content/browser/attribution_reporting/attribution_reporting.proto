@@ -31,17 +31,33 @@ message AttributionEventLevelMetadata {
   optional int64 priority = 2;
 }
 
-message AttributionAggregatableMetadata {
+message AttributionCommonAggregatableMetadata {
   enum Coordinator {
     AWS_CLOUD = 0;
   }
 
+  enum SourceRegistrationTimeConfig {
+    INCLUDE = 0;
+    EXCLUDE = 1;
+  }
+
   optional Coordinator coordinator = 1;
-  optional string attestation_token = 2;
+  optional string verification_token = 2;
+  optional SourceRegistrationTimeConfig source_registration_time_config = 3;
+}
+
+message AttributionAggregatableMetadata {
+  optional AttributionCommonAggregatableMetadata common_data = 1;
 
   message Contribution {
     optional AttributionAggregationKey key = 1;
     optional uint32 value = 2;
   }
-  repeated Contribution contributions = 3;
+  repeated Contribution contributions = 2;
+}
+
+message AttributionNullAggregatableMetadata {
+  optional AttributionCommonAggregatableMetadata common_data = 1;
+  // Stored as microseconds since the Windows epoch (1601-01-01 00:00:00 UTC).
+  optional int64 fake_source_time = 2;
 }

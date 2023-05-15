@@ -9,20 +9,12 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
-import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -48,6 +40,10 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * Explicitly ending the session destroys the {@link Bundle}, making the previous session's data
  * unreadable.
+ *
+ * WARNING: This class should not be used for any other purpose. It is not a general-purpose
+ * encryption class. Moreover, the encryption scheme it implements is not cryptographically sound
+ * and needs to be migrated to another one. See https://crbug.com/1440828.
  */
 @AnyThread
 public class CipherFactory {
@@ -83,20 +79,11 @@ public class CipherFactory {
         LazyHolder.sInstance = cipherFactory;
     }
 
-    /**
-     * Synchronization primitive to prevent thrashing the cipher parameters between threads
-     * attempting to restore previous parameters and generate new ones.
-     */
+    /** Protects mData across threads. */
     private final Object mDataLock = new Object();
-
-    /** Used to generate data needed for the Cipher on a background thread. */
-    private FutureTask<CipherData> mDataGenerator;
 
     /** Holds data for cipher generation. */
     private CipherData mData;
-
-    /** Generates random data for the Ciphers. May be swapped out for tests. */
-    private ByteArrayGenerator mRandomNumberProvider;
 
     /** A list of observers for this class. */
     private Runnable mTestCipherDataGeneratedCallback;
@@ -108,8 +95,6 @@ public class CipherFactory {
 
     /**
      * Creates a secure Cipher for encrypting data.
-     * This function blocks until data needed to generate a Cipher has been created by the
-     * background thread.
      * @param opmode One of Cipher.{ENCRYPT,DECRYPT}_MODE.
      * @return A Cipher, or null if it is not possible to instantiate one.
      */
@@ -131,104 +116,29 @@ public class CipherFactory {
     }
 
     /**
-     * @return Whether a cipher has been generated.
-     */
-    public boolean hasCipher() {
-        synchronized (mDataLock) {
-            return mData != null;
-        }
-    }
-
-    /**
      * Returns data required for generating the Cipher.
-     * @param generateIfNeeded Generates data on the background thread, blocking until it is done.
+     * @param generateIfNeeded Generates data if needed.
      * @return Data to use for the Cipher, null if it couldn't be generated.
      */
     CipherData getCipherData(boolean generateIfNeeded) {
         synchronized (mDataLock) {
             if (mData == null && generateIfNeeded) {
-                // Ideally, this task should have been started way before this.
-                triggerKeyGenerationLocked();
-
-                // Grab the data from the task.
-                CipherData data;
-                try {
-                    data = mDataGenerator.get();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-
-                // Only the first thread is allowed to save the data.
-                if (mData == null) {
-                    mData = data;
-
-                    // Posting an asynchronous task to notify the observers.
-                    PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyCipherDataGenerated();
-                        }
-                    });
-                }
-            }
-        }
-        return mData;
-    }
-
-    /**
-     * Creates a Callable that generates the data required to create a Cipher. This is done on a
-     * background thread to prevent blocking on the I/O required for
-     * {@link ByteArrayGenerator#getBytes(int)}.
-     * @return Callable that generates the Cipher data.
-     */
-    private Callable<CipherData> createGeneratorCallable() {
-        return new Callable<CipherData>() {
-            @Override
-            public CipherData call() {
                 // Poll random data to generate initialization parameters for the Cipher.
-                byte[] iv;
-                try {
-                    iv = mRandomNumberProvider.getBytes(NUM_BYTES);
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't get generator data.");
-                    return null;
-                } catch (GeneralSecurityException e) {
-                    Log.e(TAG, "Couldn't get generator data.");
-                    return null;
-                }
-
                 try {
                     SecureRandom random = new SecureRandom();
 
+                    byte[] iv = new byte[NUM_BYTES];
+                    random.nextBytes(iv);
+
                     KeyGenerator generator = KeyGenerator.getInstance("AES");
                     generator.init(128, random);
-                    return new CipherData(generator.generateKey(), iv);
+                    mData = new CipherData(generator.generateKey(), iv);
                 } catch (GeneralSecurityException e) {
                     Log.e(TAG, "Couldn't get generator instances.");
                     return null;
                 }
             }
-        };
-    }
-
-    /**
-     * Generates the encryption key and IV on a background thread (if necessary).
-     * Should be explicitly called when the Activity determines that it will need a Cipher rather
-     * than immediately calling {@link CipherFactory#getCipher(int)}.
-     */
-    public void triggerKeyGeneration() {
-        synchronized (mDataLock) {
-            triggerKeyGenerationLocked();
-        }
-    }
-
-    private void triggerKeyGenerationLocked() {
-        if (mData != null) return;
-        if (mDataGenerator == null) {
-            mDataGenerator = new FutureTask<CipherData>(createGeneratorCallable());
-            AsyncTask.THREAD_POOL_EXECUTOR.execute(mDataGenerator);
+            return mData;
         }
     }
 
@@ -290,23 +200,5 @@ public class CipherFactory {
         return false;
     }
 
-    /**
-     * Overrides the random number generated that is normally used by the class.
-     * @param mockProvider Should be used to provide non-random data.
-     */
-    void setRandomNumberProviderForTests(ByteArrayGenerator mockProvider) {
-        mRandomNumberProvider = mockProvider;
-    }
-
-    void setTestCipherDataGeneratedCallback(Runnable callback) {
-        mTestCipherDataGeneratedCallback = callback;
-    }
-
-    private void notifyCipherDataGenerated() {
-        if (mTestCipherDataGeneratedCallback != null) mTestCipherDataGeneratedCallback.run();
-    }
-
-    private CipherFactory() {
-        mRandomNumberProvider = new ByteArrayGenerator();
-    }
+    private CipherFactory() {}
 }

@@ -8,11 +8,11 @@
 #include "ash/ash_export.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -33,10 +33,10 @@ class WMEvent;
 // with LockWindowState.
 class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
                                      public aura::WindowObserver,
-                                     public ShelfObserver,
+                                     public display::DisplayObserver,
                                      public KeyboardControllerObserver {
  public:
-  LockLayoutManager(aura::Window* window, Shelf* shelf);
+  explicit LockLayoutManager(aura::Window* window);
 
   LockLayoutManager(const LockLayoutManager&) = delete;
   LockLayoutManager& operator=(const LockLayoutManager&) = delete;
@@ -60,8 +60,9 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
 
-  // ShelfObserver:
-  void WillChangeVisibilityState(ShelfVisibilityState visibility) override;
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // KeyboardControllerObserver overrides:
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
@@ -72,13 +73,13 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   void AdjustWindowsForWorkAreaChange(const WMEvent* event);
 
   aura::Window* window() { return window_; }
-  aura::Window* root_window() { return root_window_; }
 
  private:
-  aura::Window* window_;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
-  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+  // An observer to update position of modals when display work area changes.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

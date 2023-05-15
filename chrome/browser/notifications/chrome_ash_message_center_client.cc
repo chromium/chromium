@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/feature_list.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/arc_application_notifier_controller.h"
@@ -53,7 +54,7 @@ class NotifierComparator {
   }
 
  private:
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator, ExperimentalAsh> collator_;
 };
 
 // This delegate forwards NotificationDelegate methods to their equivalent in
@@ -98,7 +99,7 @@ class ForwardingNotificationDelegate
   // The ID of the notification.
   const std::string notification_id_;
 
-  NotificationPlatformBridgeDelegate* delegate_;
+  raw_ptr<NotificationPlatformBridgeDelegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace

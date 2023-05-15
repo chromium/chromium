@@ -202,7 +202,7 @@ class VpnProviderApiTestLacros : public VpnProviderApiTestBase {
   bool InitTestShillController() {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kBindTestShillControllerMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";

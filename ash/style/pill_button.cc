@@ -341,15 +341,15 @@ void PillButton::Init() {
   }
 
   const int height = GetButtonHeight(type_);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                height / 2.f);
 
   if (chromeos::features::IsJellyrollEnabled() ||
       (type_ & kButtonColorVariant) == kPrimary) {
-    views::InstallRoundRectHighlightPathGenerator(
-        this, gfx::Insets(-kFocusRingPadding),
-        height / 2.f + kFocusRingPadding);
-  } else {
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  height / 2.f);
+    // Add padding around focus highlight only.
+    views::FocusRing::Get(this)->SetPathGenerator(
+        std::make_unique<views::RoundRectHighlightPathGenerator>(
+            gfx::Insets(-kFocusRingPadding), height / 2.f + kFocusRingPadding));
   }
 
   UpdateBackgroundColor();

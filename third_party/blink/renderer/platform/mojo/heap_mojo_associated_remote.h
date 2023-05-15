@@ -43,6 +43,7 @@ class HeapMojoAssociatedRemote {
   Proxy* operator->() const { return get(); }
   Proxy* get() const { return wrapper_->associated_remote().get(); }
   bool is_bound() const { return wrapper_->associated_remote().is_bound(); }
+  explicit operator bool() const { return is_bound(); }
   bool is_connected() const {
     return wrapper_->associated_remote().is_connected();
   }

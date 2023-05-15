@@ -466,6 +466,13 @@ s! {
         pub pi_fputypes: [::c_char; PI_FPUTYPE as usize],
         pub pi_clock: ::c_int,
     }
+
+    pub struct option {
+        pub name: *const ::c_char,
+        pub has_arg: ::c_int,
+        pub flag: *mut ::c_int,
+        pub val: ::c_int,
+    }
 }
 
 s_no_extra_traits! {
@@ -1273,8 +1280,8 @@ pub const FILENAME_MAX: ::c_uint = 1024;
 pub const L_tmpnam: ::c_uint = 25;
 pub const TMP_MAX: ::c_uint = 17576;
 
-pub const GRND_NONBLOCK: ::c_int = 0x0001;
-pub const GRND_RANDOM: ::c_int = 0x0002;
+pub const GRND_NONBLOCK: ::c_uint = 0x0001;
+pub const GRND_RANDOM: ::c_uint = 0x0002;
 
 pub const O_RDONLY: ::c_int = 0;
 pub const O_WRONLY: ::c_int = 1;
@@ -1327,7 +1334,6 @@ pub const F_LOCK: ::c_int = 1;
 pub const F_TEST: ::c_int = 3;
 pub const F_TLOCK: ::c_int = 2;
 pub const F_ULOCK: ::c_int = 0;
-pub const F_DUPFD_CLOEXEC: ::c_int = 37;
 pub const F_SETLK: ::c_int = 6;
 pub const F_SETLKW: ::c_int = 7;
 pub const F_GETLK: ::c_int = 14;
@@ -1441,6 +1447,7 @@ pub const MAP_RENAME: ::c_int = 0x20;
 pub const MAP_ALIGN: ::c_int = 0x200;
 pub const MAP_TEXT: ::c_int = 0x400;
 pub const MAP_INITDATA: ::c_int = 0x800;
+pub const MAP_32BIT: ::c_int = 0x80;
 pub const MAP_FAILED: *mut ::c_void = !0 as *mut ::c_void;
 
 pub const MCL_CURRENT: ::c_int = 0x0001;
@@ -1601,7 +1608,6 @@ pub const NI_NUMERICSCOPE: ::c_uint = 0x0040;
 
 pub const F_DUPFD: ::c_int = 0;
 pub const F_DUP2FD: ::c_int = 9;
-pub const F_DUP2FD_CLOEXEC: ::c_int = 36;
 pub const F_GETFD: ::c_int = 1;
 pub const F_SETFD: ::c_int = 2;
 pub const F_GETFL: ::c_int = 3;
@@ -1685,6 +1691,9 @@ pub const MADV_SEQUENTIAL: ::c_int = 2;
 pub const MADV_WILLNEED: ::c_int = 3;
 pub const MADV_DONTNEED: ::c_int = 4;
 pub const MADV_FREE: ::c_int = 5;
+pub const MADV_ACCESS_DEFAULT: ::c_int = 6;
+pub const MADV_ACCESS_LWP: ::c_int = 7;
+pub const MADV_ACCESS_MANY: ::c_int = 8;
 
 pub const AF_UNSPEC: ::c_int = 0;
 pub const AF_UNIX: ::c_int = 1;
@@ -1893,6 +1902,14 @@ pub const IPC_PRIVATE: key_t = 0;
 pub const IPC_RMID: ::c_int = 10;
 pub const IPC_SET: ::c_int = 11;
 pub const IPC_SEAT: ::c_int = 12;
+
+// sys/shm.h
+pub const SHM_R: ::c_int = 0o400;
+pub const SHM_W: ::c_int = 0o200;
+pub const SHM_RDONLY: ::c_int = 0o10000;
+pub const SHM_RND: ::c_int = 0o20000;
+pub const SHM_SHARE_MMU: ::c_int = 0o40000;
+pub const SHM_PAGEABLE: ::c_int = 0o100000;
 
 pub const SHUT_RD: ::c_int = 0;
 pub const SHUT_WR: ::c_int = 1;
@@ -2562,7 +2579,7 @@ pub const AT_SUN_FPTYPE: ::c_uint = 2027;
 // and 4 bytes everywhere else:
 #[cfg(target_arch = "sparc64")]
 const _CMSG_HDR_ALIGNMENT: usize = 8;
-#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[cfg(not(target_arch = "sparc64"))]
 const _CMSG_HDR_ALIGNMENT: usize = 4;
 
 const _CMSG_DATA_ALIGNMENT: usize = ::mem::size_of::<::c_int>();
@@ -2693,7 +2710,6 @@ extern "C" {
 
     pub fn abs(i: ::c_int) -> ::c_int;
     pub fn acct(filename: *const ::c_char) -> ::c_int;
-    pub fn atof(s: *const ::c_char) -> ::c_double;
     pub fn dirfd(dirp: *mut ::DIR) -> ::c_int;
     pub fn labs(i: ::c_long) -> ::c_long;
     pub fn rand() -> ::c_int;
@@ -3006,24 +3022,14 @@ extern "C" {
     ) -> ::c_int;
     #[cfg_attr(
         any(target_os = "solaris", target_os = "illumos"),
-        link_name = "__posix_getpwent_r"
+        link_name = "getpwent_r"
     )]
-    pub fn getpwent_r(
-        pwd: *mut passwd,
-        buf: *mut ::c_char,
-        buflen: ::size_t,
-        result: *mut *mut passwd,
-    ) -> ::c_int;
+    fn native_getpwent_r(pwd: *mut passwd, buf: *mut ::c_char, buflen: ::c_int) -> *mut passwd;
     #[cfg_attr(
         any(target_os = "solaris", target_os = "illumos"),
-        link_name = "__posix_getgrent_r"
+        link_name = "getgrent_r"
     )]
-    pub fn getgrent_r(
-        grp: *mut ::group,
-        buf: *mut ::c_char,
-        buflen: ::size_t,
-        result: *mut *mut ::group,
-    ) -> ::c_int;
+    fn native_getgrent_r(grp: *mut ::group, buf: *mut ::c_char, buflen: ::c_int) -> *mut ::group;
     #[cfg_attr(
         any(target_os = "solaris", target_os = "illumos"),
         link_name = "__posix_sigwait"
@@ -3135,18 +3141,9 @@ extern "C" {
     pub fn setpflags(flags: ::c_uint, value: ::c_uint) -> ::c_int;
 
     pub fn sysinfo(command: ::c_int, buf: *mut ::c_char, count: ::c_long) -> ::c_int;
-}
 
-#[link(name = "sendfile")]
-extern "C" {
-    pub fn sendfile(out_fd: ::c_int, in_fd: ::c_int, off: *mut ::off_t, len: ::size_t)
-        -> ::ssize_t;
-    pub fn sendfilev(
-        fildes: ::c_int,
-        vec: *const sendfilevec_t,
-        sfvcnt: ::c_int,
-        xferred: *mut ::size_t,
-    ) -> ::ssize_t;
+    pub fn faccessat(fd: ::c_int, path: *const ::c_char, amode: ::c_int, flag: ::c_int) -> ::c_int;
+
     // #include <link.h>
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     pub fn dl_iterate_phdr(
@@ -3191,6 +3188,28 @@ extern "C" {
     pub fn backtrace(buffer: *mut *mut ::c_void, size: ::c_int) -> ::c_int;
     pub fn backtrace_symbols(buffer: *const *mut ::c_void, size: ::c_int) -> *mut *mut ::c_char;
     pub fn backtrace_symbols_fd(buffer: *const *mut ::c_void, size: ::c_int, fd: ::c_int);
+
+    pub fn getopt_long(
+        argc: ::c_int,
+        argv: *const *mut c_char,
+        optstring: *const c_char,
+        longopts: *const option,
+        longindex: *mut ::c_int,
+    ) -> ::c_int;
+
+    pub fn sync();
+}
+
+#[link(name = "sendfile")]
+extern "C" {
+    pub fn sendfile(out_fd: ::c_int, in_fd: ::c_int, off: *mut ::off_t, len: ::size_t)
+        -> ::ssize_t;
+    pub fn sendfilev(
+        fildes: ::c_int,
+        vec: *const sendfilevec_t,
+        sfvcnt: ::c_int,
+        xferred: *mut ::size_t,
+    ) -> ::ssize_t;
 }
 
 #[link(name = "lgrp")]

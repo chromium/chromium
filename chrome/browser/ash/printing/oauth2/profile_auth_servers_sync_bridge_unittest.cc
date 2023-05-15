@@ -76,13 +76,13 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     }
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    absl::optional<syncer::ModelError> error = bridge_->MergeSyncData(
+    absl::optional<syncer::ModelError> error = bridge_->MergeFullSyncData(
         bridge_->CreateMetadataChangeList(), std::move(data_change_list));
     ASSERT_FALSE(error);
   }
 
-  void DoApplySyncChanges(const std::vector<std::string>& added,
-                          const std::vector<std::string>& deleted) {
+  void DoApplyIncrementalSyncChanges(const std::vector<std::string>& added,
+                                     const std::vector<std::string>& deleted) {
     syncer::EntityChangeList data_change_list;
     for (const std::string& uri : added) {
       data_change_list.push_back(
@@ -91,8 +91,9 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     for (const std::string& uri : deleted) {
       data_change_list.push_back(syncer::EntityChange::CreateDelete(uri));
     }
-    absl::optional<syncer::ModelError> error = bridge_->ApplySyncChanges(
-        bridge_->CreateMetadataChangeList(), std::move(data_change_list));
+    absl::optional<syncer::ModelError> error =
+        bridge_->ApplyIncrementalSyncChanges(
+            bridge_->CreateMetadataChangeList(), std::move(data_change_list));
     ASSERT_FALSE(error);
   }
 
@@ -160,7 +161,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, Initialization) {
   CreateBridge();
 }
 
-TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, MergeSyncData) {
+TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, MergeFullSyncData) {
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_3u_},
                                                   std::set<GURL>{}));
@@ -210,20 +211,21 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
   EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
 }
 
-TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, ApplySyncChanges) {
+TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
+       ApplyIncrementalSyncChanges) {
   CreateBridge();
   DoInitialMerge({});
 
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
                                                   std::set<GURL>{}));
-  DoApplySyncChanges(/*added=*/{uri_1_, uri_2_}, /*deleted=*/{});
+  DoApplyIncrementalSyncChanges(/*added=*/{uri_1_, uri_2_}, /*deleted=*/{});
   std::vector<std::string> uris = GetAllData();
   EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
 
   EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
                                   std::set{uri_3u_}, std::set{uri_1u_}));
-  DoApplySyncChanges(/*added=*/{uri_3_}, /*deleted=*/{uri_1_});
+  DoApplyIncrementalSyncChanges(/*added=*/{uri_3_}, /*deleted=*/{uri_1_});
   uris = GetAllData();
   EXPECT_EQ(uris, (std::vector{uri_2_, uri_3_}));
 }
@@ -264,7 +266,8 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
 
   EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
                                   std::set{uri_3u_}, std::set{uri_2u_}));
-  DoApplySyncChanges(/*added=*/{uri_1_, uri_3_}, /*deleted=*/{uri_2_, uri_4_});
+  DoApplyIncrementalSyncChanges(/*added=*/{uri_1_, uri_3_},
+                                /*deleted=*/{uri_2_, uri_4_});
 }
 
 }  // namespace

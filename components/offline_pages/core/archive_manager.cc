@@ -33,15 +33,6 @@ void EnsureArchivesDirCreatedImpl(const base::FilePath& archives_dir,
       LOG(ERROR) << "Failed to create offline pages archive directory: "
                  << base::File::ErrorToString(error);
     }
-    if (is_temp) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Temporary",
-          -error, -base::File::FILE_ERROR_MAX);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Persistent",
-          -error, -base::File::FILE_ERROR_MAX);
-    }
   }
 }
 

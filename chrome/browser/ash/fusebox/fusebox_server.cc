@@ -194,7 +194,9 @@ void FillInDirEntryProto(DirEntryProto* dir_entry_proto,
                          bool read_only) {
   dir_entry_proto->set_mode_bits(
       Server::MakeModeBits(info.is_directory, read_only));
-  dir_entry_proto->set_size(info.size);
+  // The base::File::Info comment says that info.size is "undefined when
+  // info.is_directory is true".
+  dir_entry_proto->set_size(info.is_directory ? 0 : info.size);
   dir_entry_proto->set_mtime(
       info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
@@ -784,6 +786,32 @@ storage::FileSystemURL Server::ResolveFilename(Profile* profile,
       ->CrackURLInFirstPartyContext(GURL(resolved.first));
 }
 
+base::FilePath Server::InverseResolveFSURL(
+    const storage::FileSystemURL& fs_url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::string fs_url_as_string = fs_url.ToGURL().spec();
+
+  // Find the longest registered (in the "called Server::RegisterFSURLPrefix"
+  // sense) FileSystemURL that is a prefix of fs_url.
+  size_t best_size = 0;
+  base::StringPiece best_subdir;
+  for (const auto& i : prefix_map_) {
+    if ((best_size < i.second.fs_url_prefix.size()) &&
+        base::StartsWith(fs_url_as_string, i.second.fs_url_prefix)) {
+      best_size = i.second.fs_url_prefix.size();
+      best_subdir = i.first;
+    }
+  }
+
+  if (best_size > 0) {
+    return storage::StringToFilePath(
+        base::StrCat({file_manager::util::kFuseBoxMediaSlashPath, best_subdir,
+                      fs_url_as_string.substr(best_size)}));
+  }
+
+  return base::FilePath();
+}
+
 base::Value Server::GetDebugJSON() {
   base::Value::Dict subdirs;
   subdirs.Set(kMonikerSubdir, base::Value("[special]"));
@@ -1144,11 +1172,10 @@ void Server::Rename(const RenameRequestProto& request_proto,
       base::BindOnce(&RunRenameCallbackBaseFileError, std::move(callback),
                      src_parsed->fs_context));
 
-  constexpr storage::FileSystemOperation::CopyOrMoveOptionSet options =
-      storage::FileSystemOperation::CopyOrMoveOptionSet(
-          storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
-          storage::FileSystemOperation::CopyOrMoveOption::
-              kRemovePartiallyCopiedFilesOnError);
+  constexpr storage::FileSystemOperation::CopyOrMoveOptionSet options = {
+      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
+      storage::FileSystemOperation::CopyOrMoveOption::
+          kRemovePartiallyCopiedFilesOnError};
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

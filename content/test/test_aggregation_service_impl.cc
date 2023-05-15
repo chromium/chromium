@@ -11,12 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -107,12 +108,10 @@ void TestAggregationServiceImpl::SetPublicKeys(
     const GURL& url,
     const base::FilePath& json_file,
     base::OnceCallback<void(bool)> callback) {
-  std::string error_msg;
-  absl::optional<PublicKeyset> keyset =
-      aggregation_service::ReadAndParsePublicKeys(json_file, clock_->Now(),
-                                                  &error_msg);
-  if (!keyset) {
-    LOG(ERROR) << error_msg;
+  base::expected<PublicKeyset, std::string> keyset =
+      aggregation_service::ReadAndParsePublicKeys(json_file, clock_->Now());
+  if (!keyset.has_value()) {
+    LOG(ERROR) << keyset.error();
     std::move(callback).Run(false);
     return;
   }
@@ -134,7 +133,7 @@ void TestAggregationServiceImpl::AssembleReport(
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
-      /*report_id=*/base::GUID::GenerateRandomV4(),
+      /*report_id=*/base::Uuid::GenerateRandomV4(),
       std::move(request.reporting_origin),
       request.is_debug_mode_enabled
           ? AggregatableReportSharedInfo::DebugMode::kEnabled

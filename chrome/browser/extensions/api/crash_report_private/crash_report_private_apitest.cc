@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -91,7 +92,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   const absl::optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
-  const Extension* extension_;
+  raw_ptr<const Extension, ExperimentalAsh> extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
   std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
 };
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
            "browser_version=1.2."
            "3.4&channel=Stable&column=456&"
-           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
+           "error_message=\\(MAC%20OUI%3D06%3A00%3A00%20IFACE%3D1\\)&"
            "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&num-experiments="
            "1&"
            "os=ChromeOS&prod=TestApp&renderer_process_uptime_ms=\\d+&"
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
   // Run the script in the |web_content| that has loaded |extension_| instead of
   // |ExecuteScriptInBackgroundPage| so
   // |chrome::FindBrowserWithWebContents(web_contents)| is not |nullptr|.
-  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+  EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = crash_endpoint_->WaitForReport();
   EXPECT_THAT(
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
       },
       () => window.domAutomationController.send(""));
   )";
-  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+  EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = endpoint.WaitForReport();
 
@@ -383,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
       },
       () => window.domAutomationController.send(""));
   )";
-  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+  EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = endpoint.WaitForReport();
 

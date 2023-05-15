@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "dbus/message.h"
@@ -43,10 +44,11 @@ class FakeRmadClientTest : public testing::Test {
   void TearDown() override { RmadClient::Shutdown(); }
 
   FakeRmadClient* fake_client_() {
-    return google::protobuf::down_cast<FakeRmadClient*>(client_);
+    return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
   }
 
-  RmadClient* client_ = nullptr;  // Unowned convenience pointer.
+  raw_ptr<RmadClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -163,7 +165,7 @@ class TestObserver : public RmadClient::Observer {
   }
 
  private:
-  RmadClient* client_;  // Not owned.
+  raw_ptr<RmadClient, ExperimentalAsh> client_;  // Not owned.
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;

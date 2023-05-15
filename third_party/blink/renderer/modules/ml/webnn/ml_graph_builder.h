@@ -25,6 +25,7 @@ class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
+class MLEluOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLLeakyReluOptions;
@@ -85,6 +86,27 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
       const uint32_t dilation,
       const uint32_t output_padding);
 
+  struct Size2D {
+    uint32_t height;
+    uint32_t width;
+  };
+
+  // Validate and calculate the output spatial dimensions of convTranspose2d
+  // given input sizes, filter sizes, padding, strides, dilations and output
+  // padding. Return the calculated output sizes in double precision floating
+  // point number if no errors.
+  static absl::optional<Size2D> ValidateAndCalculateConvTranspose2dOutputSizes(
+      const uint32_t input_height,
+      const uint32_t input_width,
+      const uint32_t filter_height,
+      const uint32_t filter_width,
+      const Vector<uint32_t>& padding,
+      const Vector<uint32_t>& strides,
+      const Vector<uint32_t>& dilations,
+      const Vector<uint32_t>& output_padding,
+      const V8MLAutoPad auto_pad,
+      String& error_message);
+
   // ml_graph_builder.idl
   MLOperand* input(String name,
                    const MLOperandDescriptor* desc,
@@ -133,6 +155,18 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* min(const MLOperand* a,
                  const MLOperand* b,
                  ExceptionState& exception_state);
+
+  // Element-wise unary operations
+  MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* ceil(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* floor(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* neg(const MLOperand* input, ExceptionState& exception_state);
+
+  MLOperand* elu(const MLOperand* input,
+                 const MLEluOptions* options,
+                 ExceptionState& exception_state);
+  MLActivation* elu(const MLEluOptions* options,
+                    ExceptionState& exception_state);
 
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,

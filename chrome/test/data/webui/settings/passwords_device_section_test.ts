@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IronListElement, PasswordMoveToAccountDialogElement, PasswordsDeviceSectionElement} from 'chrome://settings/lazy_load.js';
+import {IronListElement, PasswordsDeviceSectionElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -200,90 +200,6 @@ suite('PasswordsDeviceSection', function() {
         [createPasswordEntry({id: 10})]);
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceAndAccountPasswordList, []);
-  });
-
-  // Test checks that when the overflow menu is opened for any password not
-  // corresponding to the first signed-in account, an option to move it to that
-  // account is shown.
-  test(
-      'hasMoveToAccountOptionIfIsNotSignedInAccountPassword', async function() {
-        const nonGooglePasswordWithSameEmail = createPasswordEntry(
-            {username: SIGNED_IN_ACCOUNT.email, url: 'not-google.com'});
-        const googlePasswordWithDifferentEmail = createPasswordEntry(
-            {username: 'another-user', url: 'accounts.google.com'});
-        const passwordsDeviceSection = await createPasswordsDeviceSection(
-            syncBrowserProxy, passwordManager,
-            [nonGooglePasswordWithSameEmail, googlePasswordWithDifferentEmail]);
-        const passwordElements =
-            passwordsDeviceSection.shadowRoot!.querySelectorAll(
-                'password-list-item');
-
-        passwordElements[0]!.$.moreActionsButton.click();
-        flush();
-        let moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler
-                                      .$.menuMovePasswordToAccount;
-        assertFalse(moveToAccountOption.hidden);
-
-        passwordsDeviceSection.$.passwordsListHandler.$.menu.close();
-
-        passwordElements[1]!.$.moreActionsButton.click();
-        flush();
-        moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler.$
-                                  .menuMovePasswordToAccount;
-        assertFalse(moveToAccountOption.hidden);
-      });
-
-  // Test checks that when the overflow menu is opened for the password
-  // corresponding to the first signed-in account, no option to move it to the
-  // same account is shown.
-  test('hasNoMoveToAccountOptionIfIsSignedInAccountPassword', async function() {
-    const signedInGoogleAccountPassword = createPasswordEntry(
-        {username: SIGNED_IN_ACCOUNT.email, url: 'accounts.google.com'});
-    const passwordsDeviceSection = await createPasswordsDeviceSection(
-        syncBrowserProxy, passwordManager, [signedInGoogleAccountPassword]);
-    const password = passwordsDeviceSection.shadowRoot!.querySelectorAll(
-        'password-list-item')[0]!;
-
-    password.$.moreActionsButton.click();
-    flush();
-    const moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler.$
-                                    .menuMovePasswordToAccount;
-    assertTrue(moveToAccountOption.hidden);
-  });
-
-
-  // Test verifies that clicking the 'move to account' button displays the
-  // dialog and that clicking the "Move" button then moves the device copy.
-  test('verifyMovesCorrectIdToAccount', async function() {
-    // Create duplicated password that will be merged in the UI.
-    const passwordOnAccountAndDevice = createPasswordEntry(
-        {username: 'both', id: 2, inAccountStore: true, inProfileStore: true});
-    const passwordsDeviceSection = await createPasswordsDeviceSection(
-        syncBrowserProxy, passwordManager, [passwordOnAccountAndDevice]);
-
-    // At first the dialog is not shown.
-    assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.shadowRoot!
-                      .querySelector('#passwordMoveToAccountDialog'));
-
-    // Click the option in the overflow menu to move the password. Verify the
-    // dialog is now open.
-    const password = passwordsDeviceSection.shadowRoot!.querySelectorAll(
-        'password-list-item')[0]!;
-    password.$.moreActionsButton.click();
-    passwordsDeviceSection.$.passwordsListHandler.$.menuMovePasswordToAccount
-        .click();
-    flush();
-    const moveToAccountDialog =
-        passwordsDeviceSection.$.passwordsListHandler.shadowRoot!
-            .querySelector<PasswordMoveToAccountDialogElement>(
-                '#passwordMoveToAccountDialog');
-    assertTrue(!!moveToAccountDialog);
-
-    // Click the Move button in the dialog. The API should be called with the id
-    // of the entry. Verify the dialog disappears.
-    moveToAccountDialog.$.moveButton.click();
-    const movedId = await passwordManager.whenCalled('movePasswordsToAccount');
-    assertEquals(passwordOnAccountAndDevice.id, movedId[0]);
   });
 
   // Test verifies that Chrome navigates to the standard passwords page if the

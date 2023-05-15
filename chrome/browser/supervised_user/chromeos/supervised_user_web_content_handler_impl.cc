@@ -70,13 +70,17 @@ SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
     content::WebContents* web_contents,
     const GURL& url,
     favicon::LargeIconService& large_icon_service,
-    int frame_id)
-    : ChromeSupervisedUserWebContentHandlerBase(web_contents, frame_id),
+    int frame_id,
+    int64_t interstitial_navigation_id)
+    : ChromeSupervisedUserWebContentHandlerBase(web_contents,
+                                                frame_id,
+                                                interstitial_navigation_id),
       favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
           url.GetWithEmptyPath(),
           &large_icon_service)),
       profile_(
           *Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
+  CHECK(web_contents_);
   if (supervised_user::IsLocalWebApprovalsEnabled()) {
     // Prefetch the favicon which will be rendered as part of the web approvals
     // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
@@ -121,7 +125,6 @@ void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
                                                        std::u16string reason) {
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-
   chrome::ShowFeedbackPage(
       url, &profile_.get(), chrome::kFeedbackSourceSupervisedUserInterstitial,
       message, std::string() /* description_placeholder_text */,

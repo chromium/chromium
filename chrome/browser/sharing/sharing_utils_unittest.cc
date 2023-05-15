@@ -42,8 +42,7 @@ TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
   // PREFERENCES is actively synced.
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -89,8 +88,7 @@ TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
       syncer::SyncService::TransportState::DISABLED);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -101,8 +99,7 @@ TEST_F(SharingUtilsTest, SyncDisabled_Configuring) {
       syncer::SyncService::TransportState::CONFIGURING);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));

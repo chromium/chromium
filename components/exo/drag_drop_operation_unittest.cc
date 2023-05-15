@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -179,7 +180,8 @@ class DragDropOperationTestWithWebUITabStripTest
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
 
  private:
-  NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

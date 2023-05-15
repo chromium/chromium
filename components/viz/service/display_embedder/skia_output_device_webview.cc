@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
@@ -27,6 +28,7 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
+                       context_state->graphite_context(),
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       context_state_(context_state),
@@ -50,14 +52,14 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
 
 SkiaOutputDeviceWebView::~SkiaOutputDeviceWebView() = default;
 
-bool SkiaOutputDeviceWebView::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceWebView::Reshape(const SkImageInfo& image_info,
+                                      const gfx::ColorSpace& color_space,
+                                      int sample_count,
+                                      float device_scale_factor,
+                                      gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
+  gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
   if (!gl_surface_->Resize(size, device_scale_factor, color_space,
                            /*has_alpha=*/true)) {
     DLOG(ERROR) << "Failed to resize.";
@@ -65,7 +67,7 @@ bool SkiaOutputDeviceWebView::Reshape(
   }
 
   size_ = size;
-  sk_color_space_ = characterization.refColorSpace();
+  sk_color_space_ = image_info.refColorSpace();
   InitSkiaSurface(gl_surface_->GetBackingFramebufferObject());
   return !!sk_surface_;
 }
@@ -117,7 +119,7 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
                     : kBottomLeft_GrSurfaceOrigin;
 
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-  sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
+  sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
       sk_color_space_, &surface_props);
 

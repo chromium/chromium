@@ -5,7 +5,6 @@
 #include "ash/wm/window_mirror_view.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
@@ -13,7 +12,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/transform.h"
@@ -34,11 +32,8 @@ void EnsureAllChildrenAreVisible(ui::Layer* layer) {
 }  // namespace
 
 WindowMirrorView::WindowMirrorView(aura::Window* source,
-                                   bool trilinear_filtering_on_init,
                                    bool show_non_client_view)
-    : source_(source),
-      trilinear_filtering_on_init_(trilinear_filtering_on_init),
-      show_non_client_view_(show_non_client_view) {
+    : source_(source), show_non_client_view_(show_non_client_view) {
   source_->AddObserver(this);
   DCHECK(source);
 }
@@ -147,11 +142,6 @@ void WindowMirrorView::InitLayerOwner() {
   if (window_util::IsMinimizedOrTucked(source_) ||
       !desks_util::BelongsToActiveDesk(source_)) {
     EnsureAllChildrenAreVisible(mirror_layer);
-  }
-
-  if (trilinear_filtering_on_init_) {
-    mirror_layer->AddCacheRenderSurfaceRequest();
-    mirror_layer->AddTrilinearFilteringRequest();
   }
 
   Layout();

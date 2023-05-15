@@ -36,10 +36,6 @@ class HttpPostProvider : public base::RefCountedThreadSafe<HttpPostProvider> {
                               int content_length,
                               const char* content) = 0;
 
-  // Set whether the POST message can be batched in the network stack of the
-  // embedding application.
-  virtual void SetAllowBatching(bool allow_batching) = 0;
-
   // Returns true if the URL request succeeded. If the request failed,
   // error() may be non-zero and hence contain more information.
   virtual bool MakeSynchronousPost(int* net_error_code,

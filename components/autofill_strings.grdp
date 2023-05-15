@@ -166,8 +166,8 @@
     </message>
   </if>
 
-  <message name="IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item with an account profile that was created somewhere outside Chrome (e.g. Google Pay).">
-    You can now use addresses from your Google Account.
+  <message name="IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item with an account profile that was created somewhere outside Chrome (e.g. Google Pay)." formatter_data="android_java">
+    You can now use addresses from your Google Account
   </message>
 
   <!-- Autofill suggestion label separator -->
@@ -185,7 +185,7 @@
   <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME" desc="Second line label for the autofill credit card popup when the name is selected. This text will appear below the cardholder name. [CHAR_LIMIT=32]">
     <ph name="CREDIT_CARD">$1<ex>Visa  ••••5679</ex></ph>, expires on <ph name="EXPIRATION_DATE_ABBR">$2<ex>06/17</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR_LIMIT=32]" formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR_LIMIT=32]">
     Expires on <ph name="EXPIRATION_DATE_ABBR">$1<ex>06/17</ex></ph>
   </message>
 
@@ -215,9 +215,6 @@
   <message name="IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether credit cards should be saved and forms should be autofilled with it." formatter_data="android_java">
     Fills in payment forms with your saved payment methods
   </message>
-  <message name="IDS_AUTOFILL_EDIT_ACCOUNT_ADDRESS_SOURCE_NOTICE" desc="The footer message in the 'Add/Edit address' dialog warning the user that this address is stored in their account.">
-    This address is saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>). You can use address across Google products on any device.
-  </message>
   <message name="IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion." formatter_data="android_java">
     This address will be deleted from your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
@@ -228,25 +225,25 @@
     This address will be deleted from this device
   </message>
   <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be stored in their account.">
-    In your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
+    In your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
-    You can use it across Google products
+    You will be able to use it across Google products
   </message>
   <message name="IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address is stored in their account." formatter_data="android_java">
-    You can use saved addresses across Google products. This address is saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
+    You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address will be saved in their account." formatter_data="android_java">
-    You can use saved addresses across Google products. This address will be saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
-  </message>
-  <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE" desc="The description message used to notify the user that their address will be migrated to their account." formatter_data="android_java">
-    This address is saved only to Chrome. To use it across Google products, save it in your Google Account, (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
+    You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR" desc="The form error message shown to the user in case of multiple required fields missing.">
     Some required fields are empty. Fill them before saving.
+  </message>
+  <message name="IDS_AUTOFILL_LOCAL_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the 'no-cloud' address icon in Settings.">
+    Address is available only on this device
   </message>
   <if expr="not is_ios">
     <then>
@@ -380,11 +377,29 @@
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the old address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
     Old
   </message>
-  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to save a new address profile in their Google account." meaning="Don't have this address">
-    No thanks
-  </message>
   <message name="IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to migrate an existing address profile in their Google account." meaning="Don't migrate this address">
     No thanks
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE" desc="The footer message in the 'Save address' prompt informing the user that this address will be stored in their account.">
+    You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE" desc="The footer message in the 'Update address' prompt informing the user that this address is stored in their account.">
+    You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE" desc="The syncable profile prompt body text.">
+    This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE" desc="The local profile prompt body text.">
+    This address is currently saved to this device. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_PROMPT_ADDRESS_SECTION_A11Y_LABEL" desc="The 'Save address' prompt address summary section a11y announcement, accompanied with a label to make it clear that the content being read is an address.">
+    Address: <ph name="ADDRESS">$1<ex>345 Spear street</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_PROMPT_PHONE_SECTION_A11Y_LABEL" desc="The 'Save address' phone number section a11y announcement, accompanied with a label to make it clear that the content being read is a phone number.">
+    Phone number: <ph name="PHONE">$1<ex>+49 105 807 202 55</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_PROMPT_EMAIL_SECTION_A11Y_LABEL" desc="The 'Save address' email section a11y announcement, accompanied with a label to make it clear that the content being read is an email.">
+    Email: <ph name="EMAIL">$1<ex>alexpark@gmai.com</ex></ph>.
   </message>
   <!-- Used on Android: -->
   <if expr="is_android">

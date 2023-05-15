@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +42,7 @@ class ArcNetHostImplTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestBrowserContext> context_;
-  ArcNetHostImpl* const service_;
+  const raw_ptr<ArcNetHostImpl, ExperimentalAsh> service_;
 };
 
 TEST_F(ArcNetHostImplTest, SetAlwaysOnVpn_SetPackage) {

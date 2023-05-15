@@ -57,6 +57,8 @@ void SetLastFetchTime(Metadata& metadata,
                       const feed::StreamType& stream_type,
                       const base::Time& fetch_time);
 feedstore::Metadata MakeMetadata(const std::string& gaia);
+feedstore::DocView CreateDocView(uint64_t docid,
+                                 base::Time timestamp = base::Time::Now());
 
 // Mutations of Metadata. Metadata will need stored again after being changed,
 // call `FeedStream::SetMetadata()`.

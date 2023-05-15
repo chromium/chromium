@@ -56,6 +56,10 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
     is_device_owned_ = is_device_owned;
   }
 
+  void SetIsDeviceStatusKnown(bool is_device_status_known) {
+    is_device_status_known_ = is_device_status_known;
+  }
+
   bool is_log_store_set() const { return is_log_store_set_; }
   bool is_client_id_reset() const { return is_client_id_reset_; }
 
@@ -74,10 +78,14 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
 
   bool IsDeviceOwned() const override { return is_device_owned_; }
 
+  bool IsDeviceStatusKnown() const override { return is_device_status_known_; }
+
   void WaitForOwnershipStatus() override {
-    InitializeProfileMetricsState(
-        is_device_owned_ ? ash::DeviceSettingsService::OWNERSHIP_TAKEN
-                         : ash::DeviceSettingsService::OWNERSHIP_NONE);
+    if (IsDeviceStatusKnown()) {
+      InitializeProfileMetricsState(
+          is_device_owned_ ? ash::DeviceSettingsService::OWNERSHIP_TAKEN
+                           : ash::DeviceSettingsService::OWNERSHIP_NONE);
+    }
   }
 
  private:
@@ -86,6 +94,7 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
   bool is_managed_ = false;
   bool device_metrics_consent_ = true;
   bool is_device_owned_ = true;
+  bool is_device_status_known_ = true;
 };
 
 }  // namespace
@@ -483,6 +492,30 @@ TEST_F(PerUserStateManagerChromeOSTest, MultiUserUsesPrimaryUser) {
 
   // Profiles must be destructed on the UI thread.
   test_user2_profile.reset();
+}
+
+TEST_F(PerUserStateManagerChromeOSTest,
+       PerUserDisabledWhenOwnershipStatusUnknown) {
+  auto* test_user =
+      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/true,
+                         /*has_consented_to_metrics=*/true);
+
+  // Ownership status of device is unknown.
+  GetPerUserStateManager()->SetIsDeviceStatusKnown(false);
+
+  // Simulate user login.
+  LoginRegularUser(test_user);
+
+  // User log store is created async. Ensure that the log store loading
+  // finishes.
+  RunUntilIdle();
+
+  // Per-user should not run if ownership status is unknown.
+  EXPECT_FALSE(GetPerUserStateManager()
+                   ->GetCurrentUserReportingConsentIfApplicable()
+                   .has_value());
+  EXPECT_FALSE(GetPerUserStateManager()->is_log_store_set());
 }
 
 }  // namespace metrics

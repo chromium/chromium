@@ -43,7 +43,7 @@ class SyncUserSettingsClientAsh : public crosapi::mojom::SyncUserSettingsClient,
   void FlushMojoForTesting();
 
  private:
-  const base::raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   bool is_apps_sync_enabled_;
 

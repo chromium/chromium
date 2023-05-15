@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APPS_SECTION_H_
 
 #include "ash/public/cpp/message_center_ash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -59,9 +60,9 @@ class AppsSection : public OsSettingsSection,
 
   void UpdateAndroidSearchTags();
 
-  PrefService* pref_service_;
-  ArcAppListPrefs* arc_app_list_prefs_;
-  apps::AppServiceProxy* app_service_proxy_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

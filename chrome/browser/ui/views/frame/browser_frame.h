@@ -163,6 +163,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
                                   const gfx::Point& p,
                                   ui::MenuSourceType source_type) override;
 
+  // Returns whether MenuRunner is running or not. Useful to check if the system
+  // context menu is showing, when menu_runner_ is used.
+  bool IsMenuRunnerRunningForTesting() const;
+
   // Returns the menu model. BrowserFrame owns the returned model.
   // Note that in multi user mode this will upon each call create a new model.
   ui::MenuModel* GetSystemMenuModel();
@@ -176,6 +180,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
 
  protected:
   // views::Widget:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
   ui::ColorProviderManager::Key GetColorProviderKey() const override;
   absl::optional<SkColor> GetUserColor() const override;
 
@@ -192,9 +197,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
 
-  // Returns whether the browser should always use the dark theme no matter user
-  // makes any selection.
-  bool ShouldUseDarkTheme() const;
+  // Returns true if the browser instance belongs to an incognito profile.
+  bool IsIncognitoBrowser() const;
 
   raw_ptr<NativeBrowserFrame> native_browser_frame_;
 

@@ -26,9 +26,13 @@ class WebStateWrapper : public WebWrapper {
   explicit WebStateWrapper(web::WebState* web_state);
   WebStateWrapper(const WebStateWrapper&) = delete;
   WebStateWrapper operator=(const WebStateWrapper&) = delete;
-  ~WebStateWrapper() override = default;
+  ~WebStateWrapper() override;
 
   const GURL& GetLastCommittedURL() override;
+
+  bool IsFirstLoadForNavigationFinished() override;
+
+  void SetIsFirstLoadForNavigationFinished(bool finished);
 
   bool IsOffTheRecord() override;
 
@@ -36,10 +40,17 @@ class WebStateWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  base::WeakPtr<WebWrapper> GetWeakPtr();
+
   void ClearWebStatePointer();
 
  private:
-  base::raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState> web_state_;
+
+  // Whether the first load after a navigation has completed. This is useful
+  // when dealing with single-page apps that may not fire subsequent load
+  // events.
+  bool is_first_load_for_nav_finished_{false};
 };
 
 }  // namespace commerce

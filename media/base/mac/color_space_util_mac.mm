@@ -15,6 +15,10 @@
 #include "base/no_destructor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 namespace {
@@ -73,8 +77,7 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
 }
 
 gfx::ColorSpace::PrimaryID GetCoreVideoPrimary(CFTypeRef primaries_untyped) {
-  // The named primaries. Default to BT709.
-  auto primary_id = gfx::ColorSpace::PrimaryID::BT709;
+  auto primary_id = gfx::ColorSpace::PrimaryID::INVALID;
   if (!GetImageBufferProperty(primaries_untyped, GetSupportedImagePrimaries(),
                               &primary_id)) {
     DLOG(ERROR) << "Failed to find CVImageBufferRef primaries: "
@@ -153,7 +156,7 @@ gfx::ColorSpace::TransferID GetCoreVideoTransferFn(CFTypeRef transfer_untyped,
                                                    CFTypeRef gamma_untyped,
                                                    double* gamma) {
   // The named transfer function.
-  auto transfer_id = gfx::ColorSpace::TransferID::BT709;
+  auto transfer_id = gfx::ColorSpace::TransferID::INVALID;
   if (!GetImageBufferProperty(transfer_untyped, GetSupportedImageTransferFn(),
                               &transfer_id)) {
     DLOG(ERROR) << "Failed to find CVImageBufferRef transfer: "
@@ -163,19 +166,17 @@ gfx::ColorSpace::TransferID GetCoreVideoTransferFn(CFTypeRef transfer_untyped,
   if (transfer_id != gfx::ColorSpace::TransferID::CUSTOM)
     return transfer_id;
 
-  // If we fail to retrieve the gamma parameter, fall back to BT709.
-  constexpr auto kDefaultTransferFn = gfx::ColorSpace::TransferID::BT709;
   CFNumberRef gamma_number = base::mac::CFCast<CFNumberRef>(gamma_untyped);
   if (!gamma_number) {
     DLOG(ERROR) << "Failed to get gamma level.";
-    return kDefaultTransferFn;
+    return gfx::ColorSpace::TransferID::INVALID;
   }
 
   // CGFloat is a double on 64-bit systems.
   CGFloat gamma_double = 0;
   if (!CFNumberGetValue(gamma_number, kCFNumberCGFloatType, &gamma_double)) {
     DLOG(ERROR) << "Failed to get CVImageBufferRef gamma level as float.";
-    return kDefaultTransferFn;
+    return gfx::ColorSpace::TransferID::INVALID;
   }
 
   if (gamma_double == 2.2)
@@ -237,14 +238,10 @@ gfx::ColorSpace GetCoreVideoColorSpaceInternal(CFTypeRef primaries_untyped,
   auto transfer_id =
       GetCoreVideoTransferFn(transfer_untyped, gamma_untyped, &gamma);
 
-  // Use a matrix id that is coherent with a primary id. Useful when we fail to
-  // parse the matrix. Previously it was always defaulting to MatrixID::BT709
-  // See http://crbug.com/788236.
-  if (matrix_id == gfx::ColorSpace::MatrixID::INVALID) {
-    if (primary_id == gfx::ColorSpace::PrimaryID::BT470BG)
-      matrix_id = gfx::ColorSpace::MatrixID::BT470BG;
-    else
-      matrix_id = gfx::ColorSpace::MatrixID::BT709;
+  if (primary_id == gfx::ColorSpace::PrimaryID::INVALID ||
+      matrix_id == gfx::ColorSpace::MatrixID::INVALID ||
+      transfer_id == gfx::ColorSpace::TransferID::INVALID) {
+    return gfx::ColorSpace();
   }
 
   // It is specified to the decoder to use luma=[16,235] chroma=[16,240] via

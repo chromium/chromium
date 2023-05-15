@@ -455,7 +455,7 @@ inline void check_and_set(
 }
 
 AutofillProfile GetFullValidProfileForCanada() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Alice", "", "Wonderland", "alice@wonderland.ca",
                  "Fiction", "666 Notre-Dame Ouest", "Apt 8", "Montreal", "QC",
                  "H3B 2T9", "CA", "15141112233");
@@ -463,7 +463,7 @@ AutofillProfile GetFullValidProfileForCanada() {
 }
 
 AutofillProfile GetFullProfile() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                  "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                  "91111", "US", "16502111111");
@@ -471,7 +471,7 @@ AutofillProfile GetFullProfile() {
 }
 
 AutofillProfile GetFullProfile2() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "13105557889");
@@ -479,7 +479,7 @@ AutofillProfile GetFullProfile2() {
 }
 
 AutofillProfile GetFullCanadianProfile() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Wayne", "", "Gretzky", "wayne@hockey.com", "NHL",
                  "123 Hockey rd.", "Apt 8", "Moncton", "New Brunswick",
                  "E1A 0A6", "CA", "15068531212");
@@ -487,7 +487,7 @@ AutofillProfile GetFullCanadianProfile() {
 }
 
 AutofillProfile GetIncompleteProfile1() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "John", "H.", "Doe", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "");
@@ -495,15 +495,9 @@ AutofillProfile GetIncompleteProfile1() {
 }
 
 AutofillProfile GetIncompleteProfile2() {
-  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "", "", "", "jsmith@example.com", "", "", "", "", "",
                  "", "", "");
-  return profile;
-}
-
-AutofillProfile GetVerifiedProfile() {
-  AutofillProfile profile(GetFullProfile());
-  profile.set_origin(kSettingsOrigin);
   return profile;
 }
 
@@ -577,35 +571,52 @@ std::string GetStrippedValue(const char* value) {
 }
 
 IBAN GetIBAN() {
-  IBAN iban(base::GenerateUuid());
+  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
 
+IBAN GetIBAN2() {
+  IBAN iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_1)));
+  iban.set_nickname(u"My doctor's IBAN");
+  return iban;
+}
+
+IBAN GetIBANWithoutNickname() {
+  IBAN iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_2)));
+  return iban;
+}
+
 CreditCard GetCreditCard() {
-  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetCreditCard2() {
-  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Someone Else", "378282246310005" /* AmEx */,
                     NextMonth().c_str(), TenYearsFromNow().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetExpiredCreditCard() {
-  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), LastYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetIncompleteCreditCard() {
-  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
   return credit_card;
@@ -722,8 +733,11 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
 
   CreditCard credit_card =
       (record_type == CreditCard::LOCAL_CARD)
-          ? CreditCard(base::GenerateUuid(), kEmptyOrigin)
-          : CreditCard(record_type, base::GenerateUuid().substr(24));
+          ? CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                       kEmptyOrigin)
+          : CreditCard(
+                record_type,
+                base::Uuid::GenerateRandomV4().AsLowercaseString().substr(24));
   test::SetCreditCardInfo(
       &credit_card, "Justin Thyme", GetRandomCardNumber().c_str(),
       base::StringPrintf("%d", base::RandInt(1, 12)).c_str(),
@@ -1216,7 +1230,7 @@ void AddFieldPredictionsToForm(
   }
 }
 
-Suggestion CreateAutofillSuggestion(int frontend_id,
+Suggestion CreateAutofillSuggestion(Suggestion::FrontendId frontend_id,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
   Suggestion suggestion;

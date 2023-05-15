@@ -32,7 +32,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 namespace favicon {
@@ -1049,7 +1049,7 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
 
 #if BUILDFLAG(IS_APPLE)
   // Exclude the favicons file from backups.
-  base::mac::SetBackupExclusion(db_name);
+  base::apple::SetBackupExclusion(db_name);
 #endif
 
   // thumbnails table has been obsolete for a long time, remove any detritus.

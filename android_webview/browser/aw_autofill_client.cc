@@ -237,26 +237,6 @@ void AwAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   NOTIMPLEMENTED();
 }
 
-bool AwAutofillClient::IsFastCheckoutSupported(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    const autofill::AutofillManager& autofill_manager) {
-  return false;
-}
-
-bool AwAutofillClient::TryToShowFastCheckout(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    base::WeakPtr<autofill::AutofillManager> autofill_manager) {
-  return false;
-}
-
-void AwAutofillClient::HideFastCheckout(bool allow_further_runs) {}
-
-bool AwAutofillClient::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
   return false;
 }
@@ -377,7 +357,7 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-void AwAutofillClient::ExecuteCommand(int id) {
+void AwAutofillClient::ExecuteCommand(autofill::Suggestion::FrontendId id) {
   NOTIMPLEMENTED();
 }
 
@@ -463,7 +443,7 @@ void AwAutofillClient::ShowAutofillPopupImpl(
       label = ConvertUTF16ToJavaString(env, suggestions[i].labels[0][0].value);
 
     Java_AwAutofillClient_addToAutofillSuggestionArray(
-        env, data_array, i, name, label, suggestions[i].frontend_id);
+        env, data_array, i, name, label, suggestions[i].frontend_id.as_int());
   }
   ui::ViewAndroid* view_android = GetWebContents().GetNativeView();
   if (!view_android)

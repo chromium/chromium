@@ -23,6 +23,7 @@
 class Profile;
 class TabMatcher;
 class AutocompleteScoringModelService;
+class OnDeviceTailModelService;
 
 namespace content {
 class StoragePartition;
@@ -82,6 +83,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   signin::IdentityManager* GetIdentityManager() const override;
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
+  OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   bool IsOffTheRecord() const override;
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;

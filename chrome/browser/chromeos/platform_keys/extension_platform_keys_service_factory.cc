@@ -87,7 +87,12 @@ ExtensionPlatformKeysServiceFactory::GetInstance() {
 ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
     : ProfileKeyedServiceFactory(
           "ExtensionPlatformKeysService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(crosapi::KeystoreServiceFactoryAsh::GetInstance());
 #endif

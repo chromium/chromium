@@ -21,12 +21,7 @@ class WebGL1ConformanceIntegrationTest(
     return 'webgl1_conformance'
 
   def _GetSerialGlobs(self) -> Set[str]:
-    return super()._GetSerialGlobs() | {
-        # Very slow on Windows Debug Vulkan when run in parallel, to the point
-        # where a "Slow" expectation is not sufficient to guarantee stability.
-        # See crbug.com/crbug.com/1364333.
-        'conformance/uniforms/no-over-optimization-on-uniform-array*',
-    }
+    return super()._GetSerialGlobs() | set()
 
   def _GetSerialTests(self) -> Set[str]:
     return super()._GetSerialTests() | set()

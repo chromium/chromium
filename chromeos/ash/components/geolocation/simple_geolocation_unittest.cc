@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -141,7 +142,7 @@ class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
   std::string response_;
   const size_t require_retries_;
   size_t attempts_ = 0;
-  SimpleGeolocationProvider* provider_;
+  raw_ptr<SimpleGeolocationProvider, ExperimentalAsh> provider_;
 };
 
 class GeolocationReceiver {
@@ -410,7 +411,7 @@ class SimpleGeolocationWirelessTest
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
-  ShillManagerClient::TestInterface* manager_test_;
+  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
 };

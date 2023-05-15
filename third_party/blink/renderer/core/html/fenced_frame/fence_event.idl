@@ -12,6 +12,6 @@ enum FenceReportingDestination {
 
 dictionary FenceEvent {
   required DOMString eventType;
-  required DOMString eventData;
+  DOMString eventData;
   required sequence<FenceReportingDestination> destination;
 };

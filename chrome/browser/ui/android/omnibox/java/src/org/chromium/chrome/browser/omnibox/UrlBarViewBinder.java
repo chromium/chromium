@@ -95,8 +95,6 @@ class UrlBarViewBinder {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
         } else if (UrlBarProperties.URL_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
             view.setUrlTextChangeListener(model.get(UrlBarProperties.URL_TEXT_CHANGE_LISTENER));
-        } else if (UrlBarProperties.TEXT_CHANGED_LISTENER.equals(propertyKey)) {
-            view.setTextChangedListener(model.get(UrlBarProperties.TEXT_CHANGED_LISTENER));
         } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
             view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
         }

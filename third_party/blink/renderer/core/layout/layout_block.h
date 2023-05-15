@@ -135,10 +135,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   }
 
   // These two functions are overridden for inline-block.
-  LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
+  LayoutUnit FirstLineHeight() const override;
 
   bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
 
@@ -157,7 +154,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  virtual void UpdateBlockLayout(bool relayout_children);
+  virtual void UpdateBlockLayout();
 
   void InsertPositionedObject(LayoutBox*);
   static void RemovePositionedObject(LayoutBox*);
@@ -210,13 +207,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool HasDefiniteLogicalHeight() const;
 
  protected:
-  RecalcLayoutOverflowResult RecalcPositionedDescendantsLayoutOverflow();
-  bool RecalcSelfLayoutOverflow();
   void RecalcSelfVisualOverflow();
 
  public:
-  virtual RecalcLayoutOverflowResult RecalcChildLayoutOverflow();
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
   void RecalcChildVisualOverflow();
   void RecalcVisualOverflow() override;
 
@@ -256,16 +249,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual bool HasLineIfEmpty() const;
   // Returns baseline offset if we can get |SimpleFontData| from primary font.
   // Or returns no value if we can't get font data.
-  absl::optional<LayoutUnit> BaselineForEmptyLine(
-      LineDirectionMode line_direction) const;
+  absl::optional<LayoutUnit> BaselineForEmptyLine() const;
 
  protected:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
-  void ComputeChildPreferredLogicalWidths(
-      LayoutObject& child,
-      LayoutUnit& min_preferred_logical_width,
-      LayoutUnit& max_preferred_logical_width) const;
-
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
@@ -276,17 +262,8 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   bool RespectsCSSOverflow() const override;
 
- private:
-  void AddLayoutOverflowFromPositionedObjects();
-  void AddLayoutOverflowFromBlockChildren();
-
  protected:
-  virtual void ComputeVisualOverflow(
-      bool recompute_floats);
-  virtual void ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
-                                     bool recompute_floats = false);
-
-  virtual void AddLayoutOverflowFromChildren();
+  virtual void ComputeVisualOverflow();
   void AddVisualOverflowFromChildren();
   virtual void AddVisualOverflowFromBlockChildren();
 
@@ -303,8 +280,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     return IsInline() && IsAtomicInlineLevel();
   }
-
-  bool NeedsPreferredWidthsRecalculation() const override;
 
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
     NOT_DESTROYED();
@@ -329,9 +304,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
   TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
-
-  void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
-                                          LayoutUnit& max_logical_width) const;
 
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -1304,7 +1305,7 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
-  dbus::ObjectProxy* cicerone_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> cicerone_proxy_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

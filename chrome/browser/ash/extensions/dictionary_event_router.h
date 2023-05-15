@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_DICTIONARY_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_DICTIONARY_EVENT_ROUTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -36,7 +37,7 @@ class ExtensionDictionaryEventRouter
   void DispatchLoadedEventIfLoaded();
 
  private:
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   base::WeakPtr<SpellcheckService> service_;
   bool loaded_;
 };

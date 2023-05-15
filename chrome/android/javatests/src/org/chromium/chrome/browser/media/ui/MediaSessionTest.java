@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.media.ui;
 import android.content.Intent;
 import android.media.AudioManager;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -107,7 +107,8 @@ public class MediaSessionTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -122,10 +123,10 @@ public class MediaSessionTest {
     }
 
     private void simulateHeadsetUnplug() {
-        Intent i = new Intent(InstrumentationRegistry.getTargetContext(),
+        Intent i = new Intent(ApplicationProvider.getApplicationContext(),
                 ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
         i.setAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
-        InstrumentationRegistry.getContext().startService(i);
+        ApplicationProvider.getApplicationContext().startService(i);
     }
 }

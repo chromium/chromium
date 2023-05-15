@@ -74,6 +74,7 @@ namespace blink {
 class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
+class StyleContainmentScopeTree;
 class CSSFontSelector;
 class CSSPropertyValueSet;
 class CSSStyleSheet;
@@ -344,6 +345,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return *resolver_;
   }
 
+  StyleContainmentScopeTree& EnsureStyleContainmentScopeTree();
+  StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
+    return style_containment_scope_tree_;
+  }
+
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
 
   Font ComputeFont(Element& element,
@@ -436,7 +442,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void CollectFeaturesTo(RuleFeatureSet& features);
 
   void EnsureUAStyleForFullscreen();
-  void EnsureUAStyleForXrOverlay();
   void EnsureUAStyleForElement(const Element&);
   void EnsureUAStyleForPseudoElement(PseudoId);
   void EnsureUAStyleForForcedColors();
@@ -585,9 +590,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
-  enum class RebuildTransitionPseudoTree { kYes, kNo };
-  void RebuildLayoutTree(
-      RebuildTransitionPseudoTree rebuild_transition_pseudo_tree);
+  void RebuildLayoutTree(Element* size_container = nullptr);
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
   bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
@@ -658,7 +661,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   RuleSet* DefaultViewTransitionStyle() const;
   void InvalidateUAViewTransitionStyle();
 
-  const ActiveStyleSheetVector& ActiveUserStyleSheetsForDebug() const {
+  const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
   }
 
@@ -799,7 +802,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();
 
-  void RebuildLayoutTreeForTraversalRootAncestors(Element* parent);
+  void RebuildLayoutTreeForTraversalRootAncestors(Element* parent,
+                                                  Element* container_parent);
 
   // Separate path for layout tree rebuild for re-attaching children of a
   // fieldset size query container, or a size query container which must use
@@ -822,6 +826,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool AllowSkipStyleRecalcForScope() const;
 
   Member<Document> document_;
+
+  // Tree of style containment scopes. Is in charge of the document's quotes.
+  Member<StyleContainmentScopeTree> style_containment_scope_tree_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
   // using the @import directive are not included in this count. We use this

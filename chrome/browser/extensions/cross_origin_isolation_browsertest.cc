@@ -123,15 +123,7 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
   }
 
   bool IsCrossOriginIsolated(content::RenderFrameHost* host) {
-    bool result = false;
-    if (!content::ExecuteScriptAndExtractBool(
-            host, "window.domAutomationController.send(crossOriginIsolated)",
-            &result)) {
-      ADD_FAILURE() << "Script execution failed";
-      return false;
-    }
-
-    return result;
+    return content::EvalJs(host, "crossOriginIsolated").ExtractBool();
   }
 
   content::RenderFrameHost* GetBackgroundRenderFrameHost(
@@ -491,16 +483,12 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
       constexpr char kScript[] = R"(
         const expectBackgroundPage = %s;
         const hasBackgroundPage = !!chrome.extension.getBackgroundPage();
-        window.domAutomationController.send(
-            hasBackgroundPage === expectBackgroundPage);
+        hasBackgroundPage === expectBackgroundPage;
       )";
-      bool result = false;
-      ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-          host,
-          base::StringPrintf(kScript,
-                             expect_background_page ? "true" : "false"),
-          &result));
-      EXPECT_TRUE(result);
+      EXPECT_EQ(true, content::EvalJs(host, base::StringPrintf(
+                                                kScript, expect_background_page
+                                                             ? "true"
+                                                             : "false")));
     };
 
     test_get_background_page(coi_background_rfh, true);
@@ -520,12 +508,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
       constexpr char kScript[] = R"(
         const numTabsExpected = %d;
         const tabs = chrome.extension.getViews({type: 'tab'});
-        window.domAutomationController.send(tabs.length === numTabsExpected);
+        tabs.length === numTabsExpected;
       )";
-      bool result = false;
-      ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-          host, base::StringPrintf(kScript, num_tabs_expected), &result));
-      EXPECT_TRUE(result);
+      EXPECT_EQ(true, content::EvalJs(host, base::StringPrintf(
+                                                kScript, num_tabs_expected)));
     };
 
     verify_get_tabs(coi_background_rfh, 1);
@@ -610,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
     )";
 
     ResultCatcher catcher;
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         source, content::JsReplace(kScript, expected_response)));
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   };
@@ -699,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
       });
     )";
     ResultCatcher catcher;
-    ASSERT_TRUE(content::ExecuteScript(extension_tab, kScript));
+    ASSERT_TRUE(content::ExecJs(extension_tab, kScript));
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 }

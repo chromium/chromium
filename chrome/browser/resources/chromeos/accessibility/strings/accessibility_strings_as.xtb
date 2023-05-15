@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="100506692671054486">পূৰ্বৱৰ্তী কোনো নিৰ্দেশ নাই</translation>
 <translation id="1009046985747440431">নেভিগে’ট কৰিবলৈ up অথবা down কাঁড়চিহ্নত টিপক, সক্ৰিয় কৰিবলৈ enter টিপক</translation>
 <translation id="1011903154582639569">চাবিটো বিচাৰক আৰু তাৰপিছত লিখিবৰ কাৰণে উঠাওক</translation>
 <translation id="1012173283529841972">সূচীৰ বস্তু</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">লেভেণ্ডাৰ ব্লাশ্ব</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3962990492275676168">বর্তমানৰ অৱস্থানৰ পৰা পঢ়িবলৈ আৰম্ভ কৰক</translation>
+<translation id="397094149579293440">কোনো বাছনি কৰা পাঠ নাই</translation>
 <translation id="3970951409746498040">বালীয়া মুগা</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">মকেছিন</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">কোনো পূর্বৱর্তী স্তৰ ১ৰ শিৰোনাম নাই</translation>
 <translation id="4787577491510559358">বৰ্তমানৰ বস্তুটোৰ ফৰ্মেটিঙৰ বিষয়ে ঘোষণা কৰক</translation>
 <translation id="479989351350248267">সন্ধান কৰক</translation>
+<translation id="4802034228771424756">কোনো ফ’কাছ কৰা পাঠ ক্ষেত্ৰ নাই</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="481165870889056555">বৰ্তমানৰ পৃষ্ঠাটোৰ শিৰোনামটো কওক</translation>
 <translation id="4815668758102003883">শেঁতা সেউজ নীলা</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">আভ্যন্তৰীণ লিংক</translation>
 <translation id="4909019435900810068">এটা শব্দ পিছলৈ নিয়ক</translation>
 <translation id="4911349081560453449">কোনো পূর্বৱর্তী চেকবাকচ নাই</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> কৰিব পৰা নগ’ল, পুনৰ চেষ্টা কৰক</translation>
 <translation id="492295894462528572">প্ৰস্তাৱনা</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>
 <translation id="495170559598752135">কাৰ্যসমূহ</translation>
 <translation id="4953585991029886728">পাঠ সম্পাদনা কৰক</translation>
+<translation id="4964701498510730546">পাঠ ক্ষেত্ৰটো খালী আছে</translation>
 <translation id="4973717656530883744">সৰ্বনিম্ন <ph name="X" /></translation>
 <translation id="4974612477719259470">কোনো পূৰ্বৱৰ্তী বুটাম নাই</translation>
 <translation id="4979404613699303341">পূর্বৱর্তী বুটাম</translation>
+<translation id="4981239367072766915">অচিনাক্ত ইনপুট</translation>
 <translation id="4982917827052020884">আহক, আপুনি নিয়মীয়াকৈ ব্যৱহাৰ কৰিব লগা কেইটামান কীৰে আৰম্ভ কৰোঁ। বৰ্তমানৰ যিকোনো কথন বন্ধ কৰিবলৈ ক'ণ্ট্ৰল কীটো ব্যৱহাৰ কৰিব পাৰি। আপোনাৰ কীব'ৰ্ডখনৰ একেবাৰে তলৰ বাওঁফালে চুকত ক'ণ্ট্ৰল কীটো বিচাৰক। অব্যাহত ৰাখিবলৈ, ক'ণ্ট্ৰ'ল কীটো টিপক।</translation>
 <translation id="4983588134362688868">পৃষ্ঠাটোৰ ওপৰৰ অংশলৈ যাওক</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ৱিণ্ড'</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">বৰ্তমানৰ বেটাৰীৰ স্থিতিৰ বিষয়ে ঘোষণা কৰক</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ৰেডিঅ’ বুটাম বাছনি কৰা হৈছে</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, মেনুৰ বস্তুৰ ৰেডিঅ’ বুটাম বাছনি কৰা হৈছে</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> কৰিব পৰা নগ’ল, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">কথনৰ দ্বাৰা লগিং সক্ষম কৰক</translation>
 <translation id="5041394372352067729">ব্ৰেইল ডিছপ্লে' পৃষ্ঠাৰ ওপৰলৈ নিয়ক</translation>
 <translation id="5042770794184672516">কথনৰ ভলিউম বঢ়াওক</translation>
@@ -654,7 +661,7 @@
 <translation id="5381388086899614489">দীঘলীয়া ক্লিক</translation>
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
 <translation id="5402367795255837559">ব্ৰেইল</translation>
-<translation id="5402791055281059602">কোনো ম’ডেল সতর্কতা</translation>
+<translation id="5402791055281059602">কোনো মডেল সতর্কতা</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ছেমিকলন}one{#টা ছেমিকলন}other{#টা ছেমিকলন}}</translation>
 <translation id="5420259671171615858">মেনুবোৰ সন্ধান কৰক</translation>
 <translation id="5435274640623994081">ইয়েৰক’ন লগ ইন সক্ষম কৰক</translation>
@@ -828,7 +835,7 @@
 <translation id="6657128831881431364">প্ৰগতিৰ হাৰ নির্দেশ কৰা দণ্ড</translation>
 <translation id="6660819301598582123">অসমৰ এশিঙীয়া গঁড় পৃথিৱী বিখ্যাত।</translation>
 <translation id="667999046851023355">নথি</translation>
-<translation id="6688209025607531203">ম'ডেল বহিৰ্ভূত সতৰ্কবাণী</translation>
+<translation id="6688209025607531203">মডেল বহিৰ্ভূত সতৰ্কবাণী</translation>
 <translation id="6689672606256159458">গাঢ় ছেলম'ন</translation>
 <translation id="669617842401078250"><ph name="FILE_NAME" />ৰ ডাউনল'ড পজ কৰা হৈছে</translation>
 <translation id="6696967141280706829">পাতনি</translation>

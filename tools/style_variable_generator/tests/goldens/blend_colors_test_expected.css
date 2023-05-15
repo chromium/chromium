@@ -20,9 +20,9 @@ html:not(body) {
   --cros-highlight-color-hover-rgb: 0, 0, 0;
   --cros-highlight-color-hover: rgba(var(--cros-highlight-color-hover-rgb), 0.2);
 
-  --cros-foo-color: color-mix(in srgb, rgb(var(--cros-highlight-color-hover-rgb)) 20.0%, rgb(var(--cros-bg-color-rgb)));
+  --cros-foo-color: color-mix(in srgb, var(--cros-highlight-color-hover) 20.0%, var(--cros-bg-color));
 
-  --cros-bar-color: color-mix(in srgb, rgb(var(--cros-highlight-color-hover-rgb)) 20.0%, rgb(var(--cros-bg-color-rgb)));
+  --cros-bar-color: color-mix(in srgb, var(--cros-highlight-color-hover) 20.0%, var(--cros-bg-color));
 
   --cros-disabled-opacity: 0.38;
 }
@@ -35,8 +35,8 @@ html:not(body) {
   --cros-highlight-color-hover-rgb: 255, 255, 255;
   --cros-highlight-color-hover: rgba(var(--cros-highlight-color-hover-rgb), 0.4);
 
-  --cros-foo-color: color-mix(in srgb, rgb(var(--cros-highlight-color-hover-rgb)) 40.0%, rgb(var(--cros-bg-color-rgb)));
+  --cros-foo-color: color-mix(in srgb, var(--cros-highlight-color-hover) 40.0%, var(--cros-bg-color));
 
-  --cros-bar-color: color-mix(in srgb, rgb(var(--cros-highlight-color-hover-rgb)) 40.0%, rgb(var(--cros-bg-color-rgb)));
+  --cros-bar-color: color-mix(in srgb, var(--cros-highlight-color-hover) 40.0%, var(--cros-bg-color));
 }
 }

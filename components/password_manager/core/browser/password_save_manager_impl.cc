@@ -330,7 +330,7 @@ void PasswordSaveManagerImpl::Update(
 }
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
-  DCHECK(!client_->IsIncognito());
+  CHECK(!client_->IsOffTheRecord());
   if (account_store_form_saver_ && IsOptedInForAccountStorage() &&
       AccountStoreIsDefault()) {
     account_store_form_saver_->Blocklist(form_digest);
@@ -406,7 +406,8 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
   DCHECK(account_store_form_saver_);
 
   base::UmaHistogramEnumeration(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted", trigger);
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      trigger);
 
   // TODO(crbug.com/1032992): Moving credentials upon an update. FormFetch will
   // have an outdated credentials. Fix it if this turns out to be a product
@@ -803,7 +804,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
   // If we're doing an Update, we either autofilled correctly and need to
   // update the stats, or the user typed in a new password for autofilled
   // username.
-  DCHECK(!client_->IsIncognito());
+  CHECK(!client_->IsOffTheRecord());
 
   password_manager_util::UpdateMetadataForUsage(&pending_credentials_);
 

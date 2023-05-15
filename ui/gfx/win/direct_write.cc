@@ -62,9 +62,7 @@ void InitializeDirectWrite() {
 
   sk_sp<SkFontMgr> direct_write_font_mgr =
       SkFontMgr_New_DirectWrite(factory.Get());
-  if (!direct_write_font_mgr) {
-    direct_write_font_mgr = SkFontMgr_New_GDI();
-  }
+  CHECK(!!direct_write_font_mgr);
 
   // Override the default skia font manager. This must be called before any
   // use of the skia font manager is done (e.g. before any call to

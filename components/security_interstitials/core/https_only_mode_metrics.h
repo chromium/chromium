@@ -5,11 +5,36 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 
+#include <cstddef>
+#include "base/time/time.h"
+
 namespace security_interstitials::https_only_mode {
 
+// The main histogram that records events about HTTPS-First Mode and HTTPS
+// Upgrades.
 extern const char kEventHistogram[];
+// Same as kEventHistogram, but only recorded if the event happened on a
+// navigation where HFM was enabled due to the site engagement heuristic.
+extern const char kEventHistogramWithEngagementHeuristic[];
 
 extern const char kNavigationRequestSecurityLevelHistogram[];
+
+// Histogram that records enabled/disabled states for sites. If HFM gets enabled
+// or disabled due to Site Engagement on a site, records an entry.
+extern const char kSiteEngagementHeuristicStateHistogram[];
+
+// Histogram that records the current number of host that have HFM enabled due
+// to the site engagement heuristic. Includes hosts that have HTTP allowed.
+extern const char kSiteEngagementHeuristicHostCountHistogram[];
+// Histogram that records the accumulated number of host that have HFM enabled
+// at some point due to the site engagement heuristic. Includes hosts that have
+// HTTP allowed.
+extern const char kSiteEngagementHeuristicAccumulatedHostCountHistogram[];
+
+// Histogram that records the duration a host has HFM enabled due to the site
+// engagement heuristic. Only recorded for hosts removed from the HFM list.
+// Recorded at the time of navigation when HFM upgrades trigger.
+extern const char kSiteEngagementHeuristicEnforcementDurationHistogram[];
 
 // Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
 // upgraded, or is eligible to be upgraded but wasn't.
@@ -93,11 +118,57 @@ enum class NavigationRequestSecurityLevel {
   kMaxValue = kNonUniqueHostname,
 };
 
+// Recorded by the Site Engagement Heuristic logic, recording whether HFM should
+// be enabled on a site due to its HTTP and HTTPS site engagement scores. Only
+// recorded if the enabled/disabled state changes.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Values may be added to offer greater
+// specificity in the future. Keep in sync with SiteEngagementHeuristicState
+// in enums.xml.
+enum class SiteEngagementHeuristicState {
+  // HFM was not enabled and is now enabled on this site because its HTTPS score
+  // is high and HTTP score is low.
+  kEnabled = 0,
+  // HFM was enabled and is now disabled on this site because its HTTPS score is
+  // low or HTTP score is high.
+  kDisabled = 1,
+
+  kMaxValue = kDisabled,
+};
+
+// Stores the parameters to decide whether to show an interstitial for the
+// current site.
+struct HttpInterstitialState {
+  // Whether HTTPS-First Mode is enabled using the global UI toggle.
+  bool enabled_by_pref = false;
+
+  // Whether HTTPS-First Mode is enabled for the current site due to the
+  // site engagement heuristic.
+  bool enabled_by_engagement_heuristic = false;
+};
+
 // Helper to record an HTTPS-First Mode navigation event.
-void RecordHttpsFirstModeNavigation(Event event);
+void RecordHttpsFirstModeNavigation(
+    Event event,
+    const HttpInterstitialState& interstitial_state);
 
 // Helper to record a navigation request security level.
 void RecordNavigationRequestSecurityLevel(NavigationRequestSecurityLevel level);
+
+// Helper to record Site Engagement Heuristic enabled state.
+void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state);
+
+// Helper to record metrics about the number of hosts affected by the Site
+// Engagement Heuristic.
+// `current_count` is the number of hosts that currently have HFM enabled.
+// `accumulated_count` is the number of accumulated hosts that had HFM enabled
+// at some point.
+void RecordSiteEngagementHeuristicCurrentHostCounts(size_t current_count,
+                                                    size_t accumulated_count);
+
+void RecordSiteEngagementHeuristicEnforcementDuration(
+    base::TimeDelta enforcement_duration);
 
 }  // namespace security_interstitials::https_only_mode
 

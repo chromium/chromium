@@ -311,13 +311,14 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   // SiteInstance. Then immediately hang the renderer so that title3.html can't
   // load in this process.
   content::WebContentsAddedObserver web_contents_added_observer;
-  bool dummy_value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab1->GetPrimaryMainFrame(),
-      "window.open('title3.html', '_blank');\n"
-      "window.domAutomationController.send(false);\n"
-      "while(1);",
-      &dummy_value));
+  content::DOMMessageQueue message_queue;
+  content::ExecuteScriptAsync(tab1->GetPrimaryMainFrame(),
+                              "window.open('title3.html', '_blank');\n"
+                              "window.domAutomationController.send(false);\n"
+                              "while(1);");
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("false", message);
 
   // Blocks until a new WebContents appears as a result of window.open().
   WebContents* tab2 = web_contents_added_observer.GetWebContents();
@@ -636,15 +637,16 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, WebWorkerJSHeapMemory) {
       "    'postMessage(\"okay\");']);\n"
       "blobURL = window.URL.createObjectURL(blob);\n"
       "var worker = new Worker(blobURL);\n"
-      "worker.addEventListener('message', function(e) {\n"
-      "  window.domAutomationController.send(e.data);\n"  // e.data == "okay"
-      "});\n"
-      "worker.postMessage('go');\n",
+      "new Promise(resolve => {\n"
+      "  worker.addEventListener('message', function(e) {\n"
+      "    resolve(e.data);\n"  // e.data == "okay"
+      "  });\n"
+      "  worker.postMessage('go');\n"
+      "});\n",
       static_cast<unsigned long>(minimal_heap_size));
-  std::string ok;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), test_js, &ok));
-  ASSERT_EQ("okay", ok);
+  ASSERT_EQ("okay",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), test_js));
 
   // The worker has allocated objects of at least |minimal_heap_size| bytes.
   // Wait for the heap stats to reflect this.
@@ -670,12 +672,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
       "mem = new Array(%lu);\n"
       "for (var i = 0; i < mem.length; i += 16)\n"
       "  mem[i] = i;\n"
-      "window.domAutomationController.send(\"okay\");\n",
+      "\"okay\";\n",
       static_cast<unsigned long>(minimal_heap_size));
   std::string ok;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), test_js, &ok));
-  ASSERT_EQ("okay", ok);
+  ASSERT_EQ("okay",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), test_js));
 
   model()->ToggleColumnVisibility(ColumnSpecifier::V8_MEMORY);
 
@@ -805,19 +807,18 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_IdleWakeups) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   std::string test_js =
-    "function myWait() {\n"
-    "  setTimeout(function() { myWait(); }, 1)\n"
-    "}\n"
-    "myWait();\n"
-    "window.domAutomationController.send(\"okay\");\n";
+      "function myWait() {\n"
+      "  setTimeout(function() { myWait(); }, 1)\n"
+      "}\n"
+      "myWait();\n"
+      "\"okay\";\n";
 
-  std::string ok;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), test_js, &ok));
-  ASSERT_EQ("okay", ok);
+  ASSERT_EQ("okay",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), test_js));
 
-// The script above should trigger a lot of idle wakeups - up to 1000 per
-// second. Let's make sure we get at least 100 (in case the test runs slow).
+  // The script above should trigger a lot of idle wakeups - up to 1000 per
+  // second. Let's make sure we get at least 100 (in case the test runs slow).
   const int kMinExpectedWakeCount = 100;
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
       MatchTab("title1.html"), ColumnSpecifier::IDLE_WAKEUPS,
@@ -950,9 +951,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
 
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");
-  ASSERT_TRUE(content::ExecuteScript(
-      tab->GetPrimaryMainFrame(),
-      "frames[0][0].location.href = '" + d_url.spec() + "';"));
+  ASSERT_TRUE(
+      content::ExecJs(tab->GetPrimaryMainFrame(),
+                      "frames[0][0].location.href = '" + d_url.spec() + "';"));
 
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(0, MatchSubframe("http://c.com/")));
@@ -1082,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
 
   // Reload the subframe and verify it has re-appeared in the task manager.
   // This is a regression test for https://crbug.com/642958.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       browser()
           ->tab_strip_model()
           ->GetActiveWebContents()
@@ -1229,11 +1230,11 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   const std::string r_script =
       R"( document.getElementById('frame1').src='/title1.html';
           document.title='aac'; )";
-  ASSERT_TRUE(content::ExecuteScript(browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
-                                         ->GetPrimaryMainFrame(),
-                                     r_script));
+  ASSERT_TRUE(content::ExecJs(browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetPrimaryMainFrame(),
+                              r_script));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("aac")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   if (!ShouldExpectSubframes()) {

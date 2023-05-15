@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -104,7 +105,7 @@ class AppLauncher : public ProfileObserver,
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtrFactory<AppLauncher> weak_factory_{this};
 };
 

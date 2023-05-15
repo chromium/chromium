@@ -14,8 +14,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
-#include "ash/wm/window_state.h"
-#include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -155,13 +153,16 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
       // restrictive than |WindowState::CanSnap|.
       DCHECK(SplitViewController::Get(window)->IsWindowInSplitView(window));
       SplitViewController::Get(window)->SnapWindow(
-          window, is_desired_primary_snapped
-                      ? SplitViewController::SnapPosition::kPrimary
-                      : SplitViewController::SnapPosition::kSecondary);
+          window,
+          is_desired_primary_snapped
+              ? SplitViewController::SnapPosition::kPrimary
+              : SplitViewController::SnapPosition::kSecondary,
+          WindowSnapActionSource::kKeyboardShortcutToSnap);
     } else {
-      const WMEvent wm_event(is_desired_primary_snapped
-                                 ? WM_EVENT_SNAP_PRIMARY
-                                 : WM_EVENT_SNAP_SECONDARY);
+      const WindowSnapWMEvent wm_event(
+          is_desired_primary_snapped ? WM_EVENT_SNAP_PRIMARY
+                                     : WM_EVENT_SNAP_SECONDARY,
+          WindowSnapActionSource::kKeyboardShortcutToSnap);
       window_state->OnWMEvent(&wm_event);
     }
     window_state->ReadOutWindowCycleSnapAction(
@@ -220,8 +221,7 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
     const WindowStateType state_type,
     float snap_ratio) {
-  DCHECK(state_type == WindowStateType::kPrimarySnapped ||
-         state_type == WindowStateType::kSecondarySnapped);
+  DCHECK(chromeos::IsSnappedWindowStateType(state_type));
   gfx::Rect bounds_in_parent;
   if (ShouldAllowSplitView()) {
     bounds_in_parent =

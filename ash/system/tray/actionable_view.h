@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 
@@ -57,7 +58,7 @@ class ASH_EXPORT ActionableView : public views::Button {
   // Used by ButtonPressed() to determine whether |this| has been destroyed as a
   // result of performing the associated action. This is necessary because in
   // the not-destroyed case ButtonPressed() uses member variables.
-  bool* destroyed_ = nullptr;
+  raw_ptr<bool, ExperimentalAsh> destroyed_ = nullptr;
 
   // Defines the flavor of ink drop ripple/highlight that should be constructed.
   const TrayPopupInkDropStyle ink_drop_style_;

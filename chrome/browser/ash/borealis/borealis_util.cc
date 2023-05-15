@@ -32,7 +32,8 @@ const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
 const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
-const base::StringPiece kURLAllowlist[] = {"//store/", "//run/"};
+const re2::LazyRE2 kURLAllowlistRegex[] = {{"//store/[0-9]{1,32}"},
+                                           {"//run/[0-9]{1,32}"}};
 const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
@@ -198,8 +199,8 @@ bool IsExternalURLAllowed(const GURL& url) {
   if (url.scheme() != kAllowedScheme) {
     return false;
   }
-  for (auto& allowed_url : kURLAllowlist) {
-    if (base::StartsWith(url.GetContent(), allowed_url)) {
+  for (auto& allowed_url : kURLAllowlistRegex) {
+    if (re2::RE2::FullMatch(url.GetContent(), *allowed_url)) {
       return true;
     }
   }

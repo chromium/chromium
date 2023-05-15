@@ -24,6 +24,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Dump Sandbox File Statistics to Documents</string>
+			<key>Key</key>
+			<string>EnableDumpSandboxFileStatistics</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Dump Environment to Documents</string>
 			<key>Key</key>
 			<string>EnableDumpEnvironment</string>

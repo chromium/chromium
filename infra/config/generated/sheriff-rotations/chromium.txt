@@ -78,6 +78,7 @@ ci/Windows deterministic
 ci/android-archive-dbg
 ci/android-archive-rel
 ci/android-arm64-archive-rel
+ci/android-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
@@ -130,6 +131,7 @@ ci/win-archive-dbg
 ci/win-archive-rel
 ci/win-asan
 ci/win-official
+ci/win-presubmit
 ci/win32-archive-dbg
 ci/win32-archive-rel
 ci/win32-official

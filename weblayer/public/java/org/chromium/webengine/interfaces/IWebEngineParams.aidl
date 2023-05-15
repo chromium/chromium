@@ -9,4 +9,5 @@ parcelable IWebEngineParams {
     String persistenceId;
     boolean isIncognito;
     boolean isExternalIntentsEnabled;
+    @nullable List<String> allowedOrigins;
 }

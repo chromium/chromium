@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -157,11 +158,14 @@ class ASH_EXPORT TriView : public views::View {
 
   // Type spcific layout manager installed on |this|. Responsible for laying out
   // the container Views.
-  views::BoxLayout* box_layout_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
 
-  SizeRangeLayout* start_container_layout_manager_ = nullptr;
-  SizeRangeLayout* center_container_layout_manager_ = nullptr;
-  SizeRangeLayout* end_container_layout_manager_ = nullptr;
+  raw_ptr<SizeRangeLayout, ExperimentalAsh> start_container_layout_manager_ =
+      nullptr;
+  raw_ptr<SizeRangeLayout, ExperimentalAsh> center_container_layout_manager_ =
+      nullptr;
+  raw_ptr<SizeRangeLayout, ExperimentalAsh> end_container_layout_manager_ =
+      nullptr;
 
   // In order to detect direct manipulation of child views the
   // ViewHierarchyChanged() event override fails on a DCHECK. However, we need

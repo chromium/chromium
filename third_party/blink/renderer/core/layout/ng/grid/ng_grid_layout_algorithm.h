@@ -114,11 +114,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
-  void CalculateAlignmentBaselines(
-      const NGGridSizingSubtree& sizing_subtree,
-      GridTrackSizingDirection track_direction,
-      SizingConstraint sizing_constraint,
-      bool* opt_needs_additional_pass = nullptr) const;
+  void ComputeGridItemBaselines(const NGGridSizingSubtree& sizing_subtree,
+                                GridTrackSizingDirection track_direction,
+                                SizingConstraint sizing_constraint) const;
 
   std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridTrackCollection(
       const NGSubgriddedItemData& subgrid_data,
@@ -160,6 +158,23 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       bool* opt_needs_additional_pass = nullptr) const;
+
+  // Performs the final baseline alignment pass of a grid sizing subtree.
+  void ComputeBaselineAlignment(
+      const NGGridSizingSubtree& sizing_subtree,
+      const NGSubgriddedItemData& opt_subgrid_data,
+      const absl::optional<GridTrackSizingDirection>& opt_track_direction,
+      SizingConstraint) const;
+
+  // Helper that calls the method above for the entire grid sizing tree.
+  void CompleteFinalBaselineAlignment(
+      const NGGridSizingTree& sizing_tree) const;
+
+  // Helper which iterates over the sizing tree, and instantiates a subgrid
+  // algorithm to invoke the callback with.
+  template <typename CallbackFunc>
+  void ForEachSubgrid(const NGGridSizingSubtree& sizing_subtree,
+                      const CallbackFunc& callback_func) const;
 
   LayoutUnit ComputeSubgridContributionSize(
       const NGGridSizingSubtree& sizing_subtree,

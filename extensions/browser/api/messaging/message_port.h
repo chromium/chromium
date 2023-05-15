@@ -20,6 +20,7 @@ class RenderFrameHost;
 }
 
 namespace extensions {
+enum class ChannelType;
 struct Message;
 struct MessagingEndpoint;
 struct PortId;
@@ -65,6 +66,7 @@ class MessagePort {
 
   // Notifies the port that the channel has been opened.
   virtual void DispatchOnConnect(
+      ChannelType channel_type,
       const std::string& channel_name,
       absl::optional<base::Value::Dict> source_tab,
       const ExtensionApiFrameIdMap::FrameData& source_frame,

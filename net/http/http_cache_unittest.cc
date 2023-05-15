@@ -9167,6 +9167,117 @@ TEST_F(HttpCacheTest, UnknownRangeGET_3) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+// Testcase for https://crbug.com/1433305, validation of range request to a
+// cache 302, which is notably bodiless.
+TEST_F(HttpCacheTest, UnknownRangeGET_302) {
+  MockHttpCache cache;
+  std::string headers;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.status = "HTTP/1.1 302 Found";
+  transaction.response_headers =
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.org/\n",
+
+  transaction.data = "";
+  transaction.request_headers = "Range: bytes = 0-\r\n" EXTRA_HEADER;
+  transaction.test_mode = TEST_MODE_SYNC_CACHE_START |
+                          TEST_MODE_SYNC_CACHE_READ |
+                          TEST_MODE_SYNC_CACHE_WRITE;
+
+  // Write the empty resource to the cache.
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(
+      "HTTP/1.1 302 Found\n"
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.org/\n",
+      headers);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Make sure we are done with the previous transaction.
+  base::RunLoop().RunUntilIdle();
+
+  // Try to read from the cache. This should send a network request to
+  // validate it, and get a different redirect.
+  transaction.response_headers =
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.com/\n",
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(
+      "HTTP/1.1 302 Found\n"
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.com/\n",
+      headers);
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  // A new entry is created since this one isn't conditionalizable.
+  EXPECT_EQ(2, cache.disk_cache()->create_count());
+}
+
+// Testcase for https://crbug.com/1433305, validation of range request to a
+// cache 302, which is notably bodiless, where the 302 is replaced with an
+// actual body.
+TEST_F(HttpCacheTest, UnknownRangeGET_302_Replaced) {
+  MockHttpCache cache;
+  std::string headers;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.status = "HTTP/1.1 302 Found";
+  transaction.response_headers =
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.org/\n",
+
+  transaction.data = "";
+  transaction.test_mode = TEST_MODE_SYNC_CACHE_START |
+                          TEST_MODE_SYNC_CACHE_READ |
+                          TEST_MODE_SYNC_CACHE_WRITE;
+
+  // Write the empty resource to the cache.
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(
+      "HTTP/1.1 302 Found\n"
+      "Cache-Control: max-age=0\n"
+      "Content-Length: 0\n"
+      "Location: https://example.org/\n",
+      headers);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Make sure we are done with the previous transaction.
+  base::RunLoop().RunUntilIdle();
+
+  // Try to read from the cache. This should send a network request to
+  // validate it, and get a different response.
+  transaction.handler = &RangeTransactionServer::RangeHandler;
+  transaction.request_headers = "Range: bytes = -30\r\n" EXTRA_HEADER;
+  // Tail 30 bytes out of 80
+  transaction.data = "rg: 50-59 rg: 60-69 rg: 70-79 ";
+  transaction.status = "HTTP/1.1 206 Partial Content";
+  transaction.response_headers = "Content-Length: 10\n";
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(
+      "HTTP/1.1 206 Partial Content\n"
+      "Content-Range: bytes 50-79/80\n"
+      "Content-Length: 30\n",
+      headers);
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  // A new entry is created since this one isn't conditionalizable.
+  EXPECT_EQ(2, cache.disk_cache()->create_count());
+}
+
 // Tests that receiving Not Modified when asking for an open range doesn't mess
 // up things.
 TEST_F(HttpCacheTest, UnknownRangeGET_304) {

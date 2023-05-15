@@ -67,6 +67,10 @@ var CrExtensionsSidebarTest = class extends CrExtensionsBrowserTest {
   }
 };
 
+TEST_F('CrExtensionsSidebarTest', 'HrefVerification', function() {
+  this.runMochaTest(extension_sidebar_tests.TestNames.HrefVerification);
+});
+
 TEST_F('CrExtensionsSidebarTest', 'LayoutAndClickHandlers', function() {
   this.runMochaTest(extension_sidebar_tests.TestNames.LayoutAndClickHandlers);
 });

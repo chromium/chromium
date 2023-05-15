@@ -36,10 +36,13 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent",
     ":cryptohome_recovery_setup",
     ":device_disabled",
+    ":display_size",
+    ":drive_pinning",
     ":enable_kiosk",
     ":error_message",
     ":family_link_notice",
     ":fingerprint_setup",
+    ":gaia_info",
     ":gaia_signin",
     ":gesture_navigation",
     ":guest_tos",
@@ -194,6 +197,33 @@ js_library("device_disabled") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("display_size") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/display_size.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_next_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("drive_pinning") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/drive_pinning.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -466,7 +496,7 @@ js_library("os_trial") {
 
   externs_list = [
     "$externs_path/webview_tag.js",
-    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
@@ -487,7 +517,27 @@ js_library("pin_setup") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
-    "//ash/webui/common/resources/quick_unlock:setup_pin_keyboard",
+  ]
+  extra_deps = [ ":web_components" ]
+  externs_list = [
+    "$externs_path/quick_unlock_private.js",
+
+    # setup_pin_keyboard_externs.js is a temporary band-aid to let this
+    # closure-compiled JS library depend on the typescript file
+    # setup_pin_keyboard.ts. If you remove this dependency, consider deleting
+    # the externs file if it's not used elsewhere.
+    "//ash/webui/common/resources/quick_unlock/setup_pin_keyboard_externs.js",
+  ]
+  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
+}
+
+js_library("gaia_info") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_info.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -617,7 +667,7 @@ js_library("user_creation") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [
-    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
   extra_deps = [ ":web_components" ]
@@ -663,10 +713,13 @@ html_to_js("web_components") {
     "choobe.js",
     "consolidated_consent.js",
     "device_disabled.js",
+    "display_size.js",
+    "drive_pinning.js",
     "enable_kiosk.js",
     "error_message.js",
     "family_link_notice.js",
     "fingerprint_setup.js",
+    "gaia_info.js",
     "gaia_signin.js",
     "gesture_navigation.js",
     "guest_tos.js",

@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -96,7 +97,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;
 
   // The parent widget of the context menu.
-  views::Widget* widget_owner_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_owner_;
 
   // The event type which was used to show the menu.
   const ui::MenuSourceType source_type_;
@@ -106,7 +107,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
-  views::MenuItemView* root_ = nullptr;
+  raw_ptr<views::MenuItemView, ExperimentalAsh> root_ = nullptr;
 
   // Used to show the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

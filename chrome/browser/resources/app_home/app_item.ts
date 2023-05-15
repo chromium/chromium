@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -52,16 +53,54 @@ export class AppItemElement extends PolymerElement {
     this.fire_('on-menu-closed', {appItem: this});
   }
 
-  private handleContextMenu_(e: MouseEvent) {
-    this.fire_('on-menu-open-triggered', {
-      appItem: this,
-    });
-
-    this.$.menu.showAtPosition({top: e.clientY, left: e.clientX});
-    recordUserAction(AppHomeUserAction.CONTEXT_MENU_TRIGGERED);
+  private handleContextMenu_(e: Event) {
+    const position = this.getPositionForEvent_(e);
+    if (this.isValidPosition(position)) {
+      // Show custom context menu only if it is inside the area of the item that
+      // triggered it.
+      this.fire_('on-menu-open-triggered', {
+        appItem: this,
+      });
+      this.$.menu.showAtPosition(position);
+      recordUserAction(AppHomeUserAction.CONTEXT_MENU_TRIGGERED);
+    }
 
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  private isValidPosition(position: any) {
+    const rect =
+        this.shadowRoot!.getElementById(
+                            'objectContainer')!.getBoundingClientRect();
+    if (!rect) {
+      return false;
+    }
+
+    return (
+        position.top >= rect.top && position.top <= rect.bottom &&
+        position.left >= rect.left && position.left <= rect.right);
+  }
+
+  private getPositionForEvent_(e: Event) {
+    if (e instanceof MouseEvent) {
+      return {top: e.clientY, left: e.clientX};
+    } else {
+      // Events other than a MouseEvent do not have locations specified, so
+      // automatically default to the middle of the icon for the context menu to
+      // show up.
+      const rect =
+          this.shadowRoot!.getElementById(
+                              'iconContainer')!.getBoundingClientRect();
+      if (rect) {
+        return {
+          top: rect.top + (rect.height / 2),
+          left: rect.left + (rect.width / 2),
+        };
+      } else {
+        return {top: 0, left: 0};
+      }
+    }
   }
 
   private handleClick_(e: MouseEvent) {
@@ -180,7 +219,6 @@ export class AppItemElement extends PolymerElement {
           this.appInfo.id, UserDisplayMode.kStandalone);
       recordUserAction(AppHomeUserAction.OPEN_IN_WINDOW_CHECKED);
     }
-    this.closeContextMenu();
   }
 
   // Changing the app's launch mode.
@@ -198,7 +236,6 @@ export class AppItemElement extends PolymerElement {
           this.appInfo.id, RunOnOsLoginMode.kWindowed);
       recordUserAction(AppHomeUserAction.LAUNCH_AT_STARTUP_CHECKED);
     }
-    this.closeContextMenu();
   }
 
   private onCreateShortcutItemClick_() {

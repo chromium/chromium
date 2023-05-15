@@ -61,6 +61,14 @@
     @org.chromium.build.annotations.AlwaysInline *;
 }
 
+# Keep all logs (Log.VERBOSE = 2). R8 does not allow setting to 0.
+-maximumremovedandroidloglevel 1 class ** {
+   @org.chromium.build.annotations.DoNotStripLogs <methods>;
+}
+-maximumremovedandroidloglevel 1 @org.chromium.build.annotations.DoNotStripLogs class ** {
+   <methods>;
+}
+
 # Never merge classes horizontally or vertically with this annotation.
 # Relevant to classes being used as a key in maps or sets.
 -keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.build.annotations.DoNotClassMerge class *

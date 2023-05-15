@@ -807,7 +807,7 @@ body.check-select #cancel-selection-button-wrapper {
 
 /* Search button */
 body.check-select-v1 #search-button {
-  display: none;
+  visibility: hidden;
 }
 
 /* Search box */
@@ -826,10 +826,6 @@ body.check-select-v1 #search-button {
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
   caret-color: var(--cr-input-color);
-}
-
-body.check-select-v1 #search-box {
-  display: none;
 }
 
 .dialog-header.files-ng #search-box.has-cursor,
@@ -987,6 +983,11 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   text-align: center;
   user-select: none;
   z-index: 0;
+}
+
+/* This is only for refresh23 style. */
+button > .hover-layer {
+  display: none;
 }
 
 .dialog-footer button[disabled] {
@@ -1250,10 +1251,18 @@ body.check-select #read-only-indicator {
   font: var(--cros-body-2-font);
   margin-top: 16px;
   text-align: center;
+  /* Ensure links in label are on top when not hidden so a click is not
+  absorbed by an empty file-list. */
+  z-index: 999;
 }
 
 #empty-folder > .label > span#empty-folder-title {
   font-weight: bold;
+}
+
+#empty-folder > .label > span#empty-folder-desc > a {
+  color: var(--cros-text-color-prominent);
+  font: var(--cros-body-1-font);
 }
 
 #detail-table {
@@ -1395,7 +1404,7 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
@@ -1528,7 +1537,9 @@ body.files-ng .thumbnail-grid .thumbnail-item[lead] .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-highlight-color-hover);
 }
 
@@ -1537,7 +1548,9 @@ body.files-ng .thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-highlight-color);
 }
 
@@ -1659,14 +1672,27 @@ html[dir='rtl'] #default-tasks-list > li > .icon {
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
-body.files-ng #list-container list > li[lead] {
+body.files-ng #list-container list > li[lead],
+body.files-ng #list-container list > li[selected] .icon-badge,
+body.files-ng #list-container list > li:active .icon-badge,
+body.files-ng #list-container list > li.accepts .icon-badge,
+body.files-ng #list-container list > li[lead] .icon-badge {
   background-color: var(--cros-highlight-color-hover);
+}
+
+body.files-ng #list-container list > li[selected],
+body.files-ng #list-container list > li:active,
+body.files-ng #list-container list > li.accepts,
+body.files-ng #list-container list > li[lead] {
   border-radius: 2px;
 }
 
 body.files-ng #list-container list:focus > li[selected],
 body.files-ng #list-container list:focus > li.accepts[selected],
-body.files-ng #list-container list:focus > li[lead] {
+body.files-ng #list-container list:focus > li[lead],
+body.files-ng #list-container list:focus > li[selected] .icon-badge,
+body.files-ng #list-container list:focus > li.accepts[selected] .icon-badge,
+body.files-ng #list-container list:focus > li[lead] .icon-badge {
   background-color: var(--cros-highlight-color);
 }
 
@@ -2316,6 +2342,8 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 32px;
 }
 
+#list-container .list .encryption-status,
+#list-container .list .encryption-status xf-icon,
 #list-container .list .inline-status,
 #list-container .list .inline-status .progress,
 #list-container .list .inline-status xf-icon {
@@ -2329,15 +2357,26 @@ body.files-ng #list-container li .detail-thumbnail {
   justify-content: center;
 }
 
+#list-container .list li.encrypted:not([renaming]) .encryption-status,
+#list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
 }
 
+#list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned .inline-status xf-icon[type=offline] {
   --xf-icon-color: var(--cros-icon-color-secondary);
+}
+
+#list-container .list li.encrypted:not([renaming]) .filename-label {
+  flex-grow: 0;
+}
+
+#list-container .list li.encrypted:not([renaming]) .encryption-status {
+  flex-grow: 1;
 }
 
 #new-folder-button {

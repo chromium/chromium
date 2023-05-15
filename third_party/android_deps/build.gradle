@@ -119,6 +119,7 @@ dependencies {
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
 
@@ -184,25 +185,20 @@ dependencies {
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
-    String mockitoVersion = '5.1.1'
+    String mockitoVersion = '5.3.1'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
     // Depended on by downstream guava_java rewrite.
     androidTestCompile "org.checkerframework:checker-qual:3.25.0"
 
-    String robolectricVersion = '4.8.1'
+    String robolectricVersion = '4.10.2'
     // Use testCompile to avoid having support_android = true set on
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
     testCompile "org.robolectric:shadows-multidex:${robolectricVersion}"
     testCompile "org.robolectric:shadows-playservices:${robolectricVersion}"
     testCompile "org.robolectric:utils:${robolectricVersion}"
-
-    // TODO(1404995): Remove after robolectric is update to 4.9.2 as nothing
-    // else depends on this, so we want it removed when robolectric doesn't
-    //need it anymore.
-    testCompile "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

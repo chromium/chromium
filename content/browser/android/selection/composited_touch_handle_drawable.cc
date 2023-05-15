@@ -4,8 +4,9 @@
 
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
@@ -87,7 +88,7 @@ void CompositedTouchHandleDrawable::SetOrigin(const gfx::PointF& origin) {
 
 void CompositedTouchHandleDrawable::SetAlpha(float alpha) {
   DCHECK(layer_->parent());
-  alpha = base::clamp(alpha, 0.0f, 1.0f);
+  alpha = std::clamp(alpha, 0.0f, 1.0f);
   layer_->SetOpacity(alpha);
   layer_->SetHideLayerAndSubtree(!alpha);
 }

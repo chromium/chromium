@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/system_tray_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
@@ -44,7 +45,8 @@ class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
  private:
   // views::WebDialogView extends views::DialogDelegate, so fully qualified name
   // is needed.
-  login_screen_extension_ui::DialogDelegate* delegate_ = nullptr;
+  raw_ptr<login_screen_extension_ui::DialogDelegate, ExperimentalAsh>
+      delegate_ = nullptr;
 };
 
 }  // namespace login_screen_extension_ui

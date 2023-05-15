@@ -36,6 +36,7 @@ include_rules = [
   "+components/no_state_prefetch/renderer",
   "+components/offline_pages/buildflags",
   "+components/optimization_guide/content/renderer",
+  "+components/optimization_guide/core",
   "+components/page_load_metrics/common",
   "+components/page_load_metrics/renderer",
   "+components/paint_preview/buildflags",
@@ -57,6 +58,8 @@ include_rules = [
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
   "+components/services/screen_ai",
+  "+components/signin/public/base/signin_buildflags.h",
+  "+components/signin/public/base/signin_switches.h",
   "+components/spellcheck/renderer",
   "+components/spellcheck/spellcheck_buildflags.h",
   "+components/startup_metric_utils/common",
@@ -113,5 +116,8 @@ specific_include_rules = {
   "commerce_hint_agent_browsertest\.cc" : [
     "+chrome/browser/cart",
     "+chrome/browser/persisted_state_db/session_proto_db.h",
+  ],
+  "read_anything_app_controller\.cc" : [
+    "+third_party/re2/src/re2/re2.h",
   ],
 }

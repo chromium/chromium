@@ -43,12 +43,11 @@ CertProvisioningSchedulerUserServiceFactory::GetInstance() {
 
 CertProvisioningSchedulerUserServiceFactory::
     CertProvisioningSchedulerUserServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "CertProvisioningSchedulerUserService",
-          ProfileSelections::Builder()
-              .WithGuest(ProfileSelections::kRegularProfileDefault)
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
+    : ProfileKeyedServiceFactory("CertProvisioningSchedulerUserService",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kOriginalOnly)
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(platform_keys::PlatformKeysServiceFactory::GetInstance());
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }

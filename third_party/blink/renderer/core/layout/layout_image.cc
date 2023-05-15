@@ -402,7 +402,8 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
 
     // Our intrinsicSize is empty if we're laying out generated images with
     // relative width/height. Figure out the right intrinsic size to use.
-    if (intrinsic_sizing_info.size.IsEmpty() &&
+    if (!RuntimeEnabledFeatures::LayoutDisableBrokenIntrinsicSizeEnabled() &&
+        intrinsic_sizing_info.size.IsEmpty() &&
         !image_resource_->HasIntrinsicSize() && !IsListMarkerImage()) {
       if (HasOverrideContainingBlockContentLogicalWidth() &&
           HasOverrideContainingBlockContentLogicalHeight()) {
@@ -433,14 +434,6 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
     intrinsic_sizing_info.aspect_ratio = gfx::SizeF(1, 1);
     return;
   }
-}
-
-bool LayoutImage::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  if (LayoutReplaced::NeedsPreferredWidthsRecalculation())
-    return true;
-  SVGImage* svg_image = EmbeddedSVGImage();
-  return svg_image && svg_image->HasIntrinsicSizingInfo();
 }
 
 SVGImage* LayoutImage::EmbeddedSVGImage() const {

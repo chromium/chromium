@@ -11,6 +11,7 @@
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
@@ -95,7 +96,7 @@ class AssistantResponse::Processor {
   }
 
   // |response_| should outlive the Processor.
-  AssistantResponse* const response_;
+  const raw_ptr<AssistantResponse, ExperimentalAsh> response_;
   ProcessingCallback callback_;
 
   int processing_count_ = 0;

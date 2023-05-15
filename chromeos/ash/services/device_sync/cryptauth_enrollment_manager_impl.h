@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager.h"
@@ -159,7 +160,7 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   void OnEnrollmentFinished(bool success);
 
   // Used to determine the time.
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // Creates CryptAuthEnroller instances for each enrollment attempt.
   std::unique_ptr<CryptAuthEnrollerFactory> enroller_factory_;
@@ -173,12 +174,12 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
 
   //  Used to perform GCM registrations and also notifies when GCM push messages
   //  trigger re-enrollments. Not owned and must outlive this instance.
-  CryptAuthGCMManager* gcm_manager_;
+  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
 
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts.
   // Not owned and must outlive this instance.
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Schedules the time between enrollment attempts.
   std::unique_ptr<SyncScheduler> scheduler_;

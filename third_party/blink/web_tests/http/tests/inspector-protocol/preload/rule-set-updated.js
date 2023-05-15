@@ -47,30 +47,64 @@
     </html>
 `;
 
+  async function backendNodeIdToNodeId(dp, backendNodeId) {
+    const nodeIds = (await dp.DOM.pushNodesByBackendIdsToFrontend({
+                      backendNodeIds: [backendNodeId]
+                    })).result.nodeIds;
+    if (nodeIds.length !== 1) {
+      throw new Error('unreachable');
+    }
+    return nodeIds[0];
+  }
+
   async function testEnabled() {
     const {dp, session, page} = await testRunner.startBlank(
         `Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.`);
 
     await dp.Preload.enable();
+    await dp.DOM.enable();
 
-    await new Promise(resolve => {
-      let count = 5;
-      dp.Preload.onRuleSetUpdated(ruleSet => {
-        // Format sourceText.
-        ruleSet.params.ruleSet.sourceText =
-            ruleSet.params.ruleSet.errorType === undefined ?
-            JSON.parse(ruleSet.params.ruleSet.sourceText) :
-            // Prevent failures due to non visible differences coming from LF.
-            ruleSet.params.ruleSet.sourceText.replaceAll(/[\n ]+/g, '');
-        testRunner.log(ruleSet);
+    const loadHTMLPromise = page.loadHTML(html);
 
-        --count;
-        if (count === 0) {
-          resolve();
-        }
-      });
-      void page.loadHTML(html);
-    });
+    const selectors = [
+      '#prefetch',
+      '#prerender',
+      '#invalid-json',
+      '#not-object',
+      '#contains-invalid-rule',
+    ];
+
+    let ruleSets = [];
+    for (let count = 0; count < selectors.length; ++count) {
+      const {ruleSet} = (await dp.Preload.onceRuleSetUpdated()).params;
+
+      ruleSets.push(ruleSet);
+    }
+
+    await loadHTMLPromise;
+
+    const documentNodeId = (await dp.DOM.getDocument()).result.root.nodeId;
+    let mapNodeIdToSelector = {};
+    for (const selector of selectors) {
+      const nodeId =
+          (await dp.DOM.querySelector({nodeId: documentNodeId, selector}))
+              .result.nodeId;
+      mapNodeIdToSelector[nodeId] = selector;
+    }
+
+    for (const ruleSet of ruleSets) {
+      // Format sourceText.
+      ruleSet.sourceText = ruleSet.errorType === undefined ?
+          JSON.parse(ruleSet.sourceText) :
+          // Prevent failures due to non visible differences coming from LF.
+          ruleSet.sourceText.replaceAll(/[\n ]+/g, '');
+
+      // Supplement corresponding selector.
+      ruleSet._selector = mapNodeIdToSelector[await backendNodeIdToNodeId(
+          dp, ruleSet.backendNodeId)];
+
+      testRunner.log(ruleSet);
+    }
 
     session.evaluate('document.getElementById("prefetch").remove();');
     testRunner.log(await dp.Preload.onceRuleSetRemoved());

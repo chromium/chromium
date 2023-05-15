@@ -212,6 +212,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
                               int process_id,
                               int thread_id);
   void DidStartWorkerFail(const SequencedContextId& context_id,
+                          base::Time start_time,
                           blink::ServiceWorkerStatusCode status_code);
 
   // Records that the extension with |extension_id| and |version| successfully

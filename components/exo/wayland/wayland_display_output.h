@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 struct wl_client;
@@ -56,7 +57,7 @@ class WaylandDisplayOutput {
 
  private:
   const int64_t id_;
-  wl_global* global_ = nullptr;
+  raw_ptr<wl_global, ExperimentalAsh> global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
   bool had_registered_output_ = false;
   bool is_destructing_ = false;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_INK_DROP_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_INK_DROP_UTIL_H_
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -25,5 +26,11 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view);
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view);
 
 void ConfigureInkDropForToolbar(views::Button* host);
+
+// Sets the highlight color callback and ripple color callback for inkdrop when
+// the chrome refresh flag is on.
+void ConfigureToolbarInkdropForRefresh2023(views::View* host,
+                                           ChromeColorIds hover_color_id,
+                                           ChromeColorIds ripple_color_id);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_INK_DROP_UTIL_H_

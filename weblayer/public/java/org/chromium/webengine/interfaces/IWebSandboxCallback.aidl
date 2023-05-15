@@ -5,8 +5,9 @@
 package org.chromium.webengine.interfaces;
 
 import android.view.SurfaceControlViewHost.SurfacePackage;
+import org.chromium.webengine.interfaces.IProfileManagerDelegate;
 
 oneway interface IWebSandboxCallback {
-    void onBrowserProcessInitialized() = 1;
+    void onBrowserProcessInitialized(in IProfileManagerDelegate delegate) = 1;
     void onBrowserProcessInitializationFailure() = 2;
 }

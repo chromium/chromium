@@ -45,7 +45,7 @@ Helpers exist for common state changes, less common state changes can be sent
 #include "ash/wm/window_state.h"
 
 WindowState* window_state = WindowState::Get(window);
-WMEvent wm_event(WM_EVENT_SNAP_PRIMARY);
+WindowSnapWMEvent wm_event(WM_EVENT_SNAP_PRIMARY);
 window_state->OnWMEvent(&wm_event);
 // WindowState will compute the animation and target bounds and animate the
 // window to the left half.
@@ -62,6 +62,17 @@ desk. Only the windows associated with the active desk will be visible. On
 switching desks, the windows associated with the old active desk slide out, and
 the windows associated with the new active desk slide in. Desks can be created,
 accessed and destroyed using accelerators or a desk UI in overview mode.
+
+#### Float
+
+Float is another productivity feature that allows users to place one window per
+desk above others. This is done by moving the window to a container stacked
+above the desk containers.
+
+In tablet mode, floated windows have a fixed size and are always magnetized to
+the corners but can be dragged to other corners. The can also be tucked by
+flinging the window horizontally offscreen. You can bring the window back by
+pressing on the UI provided while tucked.
 
 #### Gestures
 

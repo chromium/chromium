@@ -25,6 +25,7 @@ source_set("app_service") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -69,6 +70,7 @@ source_set("app_service") {
     ]
 
     deps += [
+      "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
     ]

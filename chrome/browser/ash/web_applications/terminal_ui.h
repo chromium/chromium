@@ -18,7 +18,8 @@ class TerminalUIConfig : public content::WebUIConfig {
   ~TerminalUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 class TerminalUI : public ui::UntrustedWebUIController {

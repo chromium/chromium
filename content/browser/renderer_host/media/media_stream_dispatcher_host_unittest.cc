@@ -314,8 +314,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
         origin_(url::Origin::Create(GURL("https://test.com"))) {
     scoped_feature_list_
         .InitFromCommandLine(/*enable_features=*/
-                             "UserMediaCaptureOnFocus,GetDisplayMediaSet,"
-                             "GetDisplayMediaSetAutoSelectAllScreens",
+                             "UserMediaCaptureOnFocus,GetAllScreensMedia",
                              /*disable_features=*/"");
     audio_manager_ = std::make_unique<media::MockAudioManager>(
         std::make_unique<media::TestAudioThread>());
@@ -1298,8 +1297,7 @@ TEST_F(MediaStreamDispatcherHostTest, GetOpenDeviceSucceeds) {
   scoped_feature_list_.Reset();
   scoped_feature_list_
       .InitFromCommandLine(/*enable_features=*/
-                           "UserMediaCaptureOnFocus,GetDisplayMediaSet,"
-                           "GetDisplayMediaSetAutoSelectAllScreens,"
+                           "UserMediaCaptureOnFocus,GetAllScreensMedia,"
                            "MediaStreamTrackTransfer",
                            /*disable_features=*/"");
   base::RunLoop loop;
@@ -1426,7 +1424,7 @@ INSTANTIATE_TEST_SUITE_P(
 class MockContentBrowserClient : public ContentBrowserClient {
  public:
   MOCK_METHOD(bool,
-              IsGetDisplayMediaSetSelectAllScreensAllowed,
+              IsGetAllScreensMediaAllowed,
               (content::BrowserContext * context, const url::Origin& origin),
               (override));
 };
@@ -1477,8 +1475,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
-  EXPECT_CALL(content_browser_client_,
-              IsGetDisplayMediaSetSelectAllScreensAllowed(_, _))
+  EXPECT_CALL(content_browser_client_, IsGetAllScreensMediaAllowed(_, _))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(

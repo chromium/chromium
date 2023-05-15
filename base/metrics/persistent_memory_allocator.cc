@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -30,6 +31,9 @@
 #include <winbase.h>
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/mman.h>
+#if BUILDFLAG(IS_ANDROID)
+#include <sys/prctl.h>
+#endif
 #endif
 
 namespace {
@@ -960,8 +964,12 @@ LocalPersistentMemoryAllocator::LocalPersistentMemoryAllocator(
     size_t size,
     uint64_t id,
     base::StringPiece name)
-    : PersistentMemoryAllocator(AllocateLocalMemory(size),
-                                size, 0, id, name, false) {}
+    : PersistentMemoryAllocator(AllocateLocalMemory(size, name),
+                                size,
+                                0,
+                                id,
+                                name,
+                                false) {}
 
 LocalPersistentMemoryAllocator::~LocalPersistentMemoryAllocator() {
   DeallocateLocalMemory(const_cast<char*>(mem_base_), mem_size_, mem_type_);
@@ -969,7 +977,8 @@ LocalPersistentMemoryAllocator::~LocalPersistentMemoryAllocator() {
 
 // static
 PersistentMemoryAllocator::Memory
-LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size) {
+LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size,
+                                                    base::StringPiece name) {
   void* address;
 
 #if BUILDFLAG(IS_WIN)
@@ -982,8 +991,16 @@ LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size) {
   // MAP_SHARED is not available on Linux <2.4 but required on Mac.
   address = ::mmap(nullptr, size, PROT_READ | PROT_WRITE,
                    MAP_ANON | MAP_SHARED, -1, 0);
-  if (address != MAP_FAILED)
+  if (address != MAP_FAILED) {
+#if BUILDFLAG(IS_ANDROID)
+    // Allow the anonymous memory region allocated by mmap(MAP_ANON) to be
+    // identified in /proc/$PID/smaps.  This helps improve visibility into
+    // Chrome's memory usage on Android.
+    const std::string arena_name = base::StrCat({"persistent:", name});
+    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, address, size, arena_name.c_str());
+#endif
     return Memory(address, MEM_VIRTUAL);
+  }
 #else
 #error This architecture is not (yet) supported.
 #endif

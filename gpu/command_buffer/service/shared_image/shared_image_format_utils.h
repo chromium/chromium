@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gl2_types.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
@@ -18,6 +19,10 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include <vulkan/vulkan_core.h>
 #endif
+
+namespace skgpu::graphite {
+class TextureInfo;
+}
 
 namespace gpu {
 
@@ -106,6 +111,13 @@ GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
 GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
                                                int plane_index = 0);
 #endif
+
+// Returns the graphite::TextureInfo for a given `format`.
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
+    GrContextType gr_context_type,
+    viz::SharedImageFormat format,
+    int plane_index = 0,
+    bool mipmapped = false);
 
 }  // namespace gpu
 

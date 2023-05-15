@@ -94,7 +94,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
 
   TypingCommand(Document&,
                 CommandType,
-                const String& text = "",
+                const String& text = g_empty_string,
                 Options options = 0,
                 TextGranularity granularity = TextGranularity::kCharacter,
                 TextCompositionType = kTextCompositionNone);

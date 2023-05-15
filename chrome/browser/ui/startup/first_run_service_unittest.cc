@@ -190,8 +190,8 @@ TEST_P(FirstRunFieldTrialCreatorTest, SetUpFromClientSide) {
   EXPECT_EQ(true, kForYouFreCloseShouldProceed.Get());
   EXPECT_EQ(SigninPromoVariant::kSignIn, kForYouFreSignInPromoVariant.Get());
   EXPECT_EQ(GetParam().expect_study_enabled
-                ? (GetParam().expect_feature_enabled ? "ClientSideEnabled"
-                                                     : "ClientSideDisabled")
+                ? (GetParam().expect_feature_enabled ? "ClientSideEnabled-2"
+                                                     : "ClientSideDisabled-2")
                 : "",
             kForYouFreStudyGroup.Get());
 }
@@ -212,10 +212,14 @@ INSTANTIATE_TEST_SUITE_P(
                                      .channel = version_info::Channel::STABLE,
                                      .expect_study_enabled = false,
                                      .expect_feature_enabled = false},
-        FirstRunFieldTrialTestParams{.entropy_value = 0.01,
+        FirstRunFieldTrialTestParams{.entropy_value = 0.016,
                                      .channel = version_info::Channel::STABLE,
-                                     .expect_study_enabled = false,
-                                     .expect_feature_enabled = false}),
+                                     .expect_study_enabled = true,
+                                     .expect_feature_enabled = false},
+        FirstRunFieldTrialTestParams{.entropy_value = 0.009,
+                                     .channel = version_info::Channel::STABLE,
+                                     .expect_study_enabled = true,
+                                     .expect_feature_enabled = true}),
 
     [](const ::testing::TestParamInfo<FirstRunFieldTrialTestParams>& params) {
       return base::StringPrintf(

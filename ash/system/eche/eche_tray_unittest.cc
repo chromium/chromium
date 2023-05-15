@@ -20,6 +20,7 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -164,9 +165,10 @@ class EcheTrayTest : public AshTestBase {
 
  private:
   FakeConnectionStatusObserver fake_connection_status_observer_;
-  EcheTray* eche_tray_ = nullptr;  // Not owned
-  PhoneHubTray* phone_hub_tray_ = nullptr;  // Not owned
-  ToastManagerImpl* toast_manager_ = nullptr;
+  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;  // Not owned
+  raw_ptr<PhoneHubTray, ExperimentalAsh> phone_hub_tray_ =
+      nullptr;  // Not owned
+  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =

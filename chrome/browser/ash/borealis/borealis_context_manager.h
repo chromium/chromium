@@ -7,9 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace borealis {
@@ -21,7 +21,7 @@ class BorealisContextManager : public KeyedService {
   // An attempt to launch borealis. If the launch succeeds, holds a reference to
   // the context created for that launch, otherwise holds an error.
   using ContextOrFailure =
-      Expected<BorealisContext*, Described<BorealisStartupResult>>;
+      base::expected<BorealisContext*, Described<BorealisStartupResult>>;
 
   // Convenience definition for the callback provided by clients wanting to
   // launch borealis.

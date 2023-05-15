@@ -75,14 +75,7 @@ static_library("browser") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "active_directory_account_reconcilor_delegate.cc",
-      "active_directory_account_reconcilor_delegate.h",
-    ]
-    deps += [
-      "//chromeos/ash/components/install_attributes",
-      "//chromeos/crosapi/mojom",
-    ]
+    deps += [ "//chromeos/crosapi/mojom" ]
   }
 
   if (is_chromeos_lacros) {

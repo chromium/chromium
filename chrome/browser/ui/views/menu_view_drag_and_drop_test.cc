@@ -405,7 +405,8 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
 // menu automatically once the drag is complete, and does not ask the delegate
 // to stay open.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1443197): Re-enable this test for linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestInMenuDrag DISABLED_TestInMenuDrag
 #else
 #define MAYBE_TestInMenuDrag TestInMenuDrag

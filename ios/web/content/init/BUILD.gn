@@ -12,6 +12,8 @@ source_set("init") {
     "ios_content_client.h",
     "ios_content_main_runner.cc",
     "ios_content_main_runner.h",
+    "ios_content_renderer_client.cc",
+    "ios_content_renderer_client.h",
     "ios_main_delegate.cc",
     "ios_main_delegate.h",
   ]
@@ -22,6 +24,7 @@ source_set("init") {
     "//build:blink_buildflags",
     "//components/embedder_support:browser_util",
     "//components/embedder_support/origin_trials:origin_trials",
+    "//components/js_injection/renderer",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",

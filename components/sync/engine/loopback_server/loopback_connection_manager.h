@@ -30,7 +30,6 @@ class LoopbackConnectionManager : public ServerConnectionManager {
   // Overridden ServerConnectionManager functions.
   HttpResponse PostBuffer(const std::string& buffer_in,
                           const std::string& access_token,
-                          bool allow_batching,
                           std::string* buffer_out) override;
 
   // The loopback server that will handle the requests locally.

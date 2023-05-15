@@ -19,11 +19,19 @@ enum class HighEfficiencyBubbleActionType {
   kDismiss = 1,
   kMaxValue = kDismiss
 };
+
+enum class HighEfficiencyChipState {
+  kCollapsed = 0,
+  kExpandedEducation = 1,
+  kExpandedWithSavings = 2,
+  kMaxValue = kExpandedWithSavings
+};
 // End of enums for histograms.
 
 void RecordBatterySaverBubbleAction(BatterySaverBubbleActionType type);
 void RecordBatterySaverIPHOpenSettings(bool success);
 void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type);
 void RecordHighEfficiencyIPHEnableMode(bool success);
+void RecordHighEfficiencyChipState(HighEfficiencyChipState type);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="51">
+  <interface name="zaura_shell" version="53">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -705,7 +705,7 @@
     <!-- Version 33 additions -->
 
     <event name="insets" since="33">
-      <description summary="advertise the insets for the output">
+      <description summary="advertise the work area insets for the output">
         This event describes the insets for the output in logical screen
         coordinates, from which the work area can be calculated.
 
@@ -764,7 +764,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="50">
+  <interface name="zaura_toplevel" version="53">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1120,6 +1120,37 @@
       </description>
       <arg name="scale" type="uint" summary="Raster scale, in float format"/>
     </event>
+
+    <!-- Version 52 additions -->
+    <enum name="persistable">
+      <description summary="Describes whether or not the value is persistable">
+        Binary enum maps to boolean, describes whether or not a value is
+        persistable.
+      </description>
+      <entry name="not_persistable" value="0" summary="the value is not persistable"/>
+      <entry name="persistable" value="1" summary="the value is persistable"/>
+    </enum>
+
+    <request name="set_persistable" since="52">
+      <description summary="Describes if the window is persistable">
+      Request the persistable status of a window.  Sets the persistable status
+      of the window in its window properties.  Should be called before first
+      commit.
+      </description>
+      <arg name="persistable" type="uint" enum="persistable" summary="is the argument persistable"/>
+    </request>
+
+    <!-- Version 53 additions -->
+    <request name="set_shape" since="53">
+      <description summary="set the shape of the surface in DP">
+        Sets the shape of the toplevel window in DP. Passing NULL will reset the
+        shape of the window.
+
+        This should be used only in support of the existing (deprecated) Chrome
+        Apps SetShape API and not for any other purpose.
+      </description>
+      <arg name="region" type="object" interface="wl_region" allow-null="true"/>
+    </request>
   </interface>
 
   <interface name="zaura_popup" version="46">
@@ -1188,7 +1219,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_output_manager" version="2">
+  <interface name="zaura_output_manager" version="3">
     <description summary="aura shell interface to the output manager">
       A global responsible for ensuring clients have a complete view of a given
       output's state immediately following the bind of wl_output, and
@@ -1267,7 +1298,7 @@
     </event>
 
     <event name="insets" since="1">
-      <description summary="advertise the insets for the output">
+      <description summary="advertise the work area insets for the output">
         This event describes the insets for the output in logical screen
         coordinates, from which the work area can be calculated.
 
@@ -1355,6 +1386,22 @@
         a target when a new window is created without specific bounds.
       </description>
       <arg name="output" type="object" interface="wl_output" />
+    </event>
+
+    <!-- Version 3 additions -->
+    <event name="overscan_insets" since="3">
+      <description summary="advertise the overscan insets for the output">
+        This event describes the overscan insets for the output in physical
+        pixels.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="top" type="int" />
+      <arg name="left" type="int" />
+      <arg name="bottom" type="int" />
+      <arg name="right" type="int" />
     </event>
   </interface>
 </protocol>

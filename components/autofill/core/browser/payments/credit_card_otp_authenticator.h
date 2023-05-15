@@ -118,9 +118,9 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // Reset the authenticator to initial states.
   virtual void Reset();
 
- private:
-  friend class CreditCardOtpAuthenticatorTest;
+  std::string ContextTokenForTesting() const { return context_token_; }
 
+ private:
   // Display the OTP dialog UI.
   // Once user confirms the OTP, we wil invoke |OnUnmaskPromptAccepted(otp)|.
   // If user asks for a new OTP code, we will invoke

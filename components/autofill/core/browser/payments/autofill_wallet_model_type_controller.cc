@@ -6,11 +6,9 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
@@ -83,10 +81,6 @@ AutofillWalletModelTypeController::GetPreconditionState() const {
 
 bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
   if (type() != syncer::AUTOFILL_WALLET_DATA) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)) {
     return false;
   }
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "dbus/bus.h"
@@ -177,7 +178,7 @@ class UpstartClientImpl : public UpstartClient {
                << ": " << error_name << ": " << error_message;
   }
 
-  dbus::Bus* bus_ = nullptr;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

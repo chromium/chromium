@@ -11,23 +11,28 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "url/gurl.h"
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 namespace {
 
 class FakeOmniboxAction : public OmniboxAction {
  public:
   explicit FakeOmniboxAction(OmniboxActionId id)
-      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}, false),
-        id_(id) {}
+      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}), id_(id) {}
   OmniboxActionId ActionId() const override { return id_; }
 
  private:
@@ -85,36 +90,37 @@ AutocompleteMatch CreateACMatchWithScoringSignals(
     float site_engagement,
     bool allowed_to_be_default_match) {
   AutocompleteMatch match;
-  match.scoring_signals.set_typed_count(typed_count);
-  match.scoring_signals.set_visit_count(visit_count);
-  match.scoring_signals.set_elapsed_time_last_visit_secs(
+  match.scoring_signals = absl::make_optional<ScoringSignals>();
+  match.scoring_signals->set_typed_count(typed_count);
+  match.scoring_signals->set_visit_count(visit_count);
+  match.scoring_signals->set_elapsed_time_last_visit_secs(
       elapsed_time_last_visit_secs);
-  match.scoring_signals.set_shortcut_visit_count(shortcut_visit_count);
-  match.scoring_signals.set_shortest_shortcut_len(shortest_shortcut_len);
-  match.scoring_signals.set_is_host_only(is_host_only);
-  match.scoring_signals.set_num_bookmarks_of_url(num_bookmarks_of_url);
-  match.scoring_signals.set_first_bookmark_title_match_position(
+  match.scoring_signals->set_shortcut_visit_count(shortcut_visit_count);
+  match.scoring_signals->set_shortest_shortcut_len(shortest_shortcut_len);
+  match.scoring_signals->set_is_host_only(is_host_only);
+  match.scoring_signals->set_num_bookmarks_of_url(num_bookmarks_of_url);
+  match.scoring_signals->set_first_bookmark_title_match_position(
       first_bookmark_title_match_position);
-  match.scoring_signals.set_total_bookmark_title_match_length(
+  match.scoring_signals->set_total_bookmark_title_match_length(
       total_bookmark_title_match_length);
-  match.scoring_signals.set_num_input_terms_matched_by_bookmark_title(
+  match.scoring_signals->set_num_input_terms_matched_by_bookmark_title(
       num_input_terms_matched_by_bookmark_title);
-  match.scoring_signals.set_first_url_match_position(first_url_match_position);
-  match.scoring_signals.set_total_url_match_length(total_url_match_length);
-  match.scoring_signals.set_host_match_at_word_boundary(
+  match.scoring_signals->set_first_url_match_position(first_url_match_position);
+  match.scoring_signals->set_total_url_match_length(total_url_match_length);
+  match.scoring_signals->set_host_match_at_word_boundary(
       host_match_at_word_boundary);
-  match.scoring_signals.set_total_path_match_length(total_path_match_length);
-  match.scoring_signals.set_total_query_or_ref_match_length(
+  match.scoring_signals->set_total_path_match_length(total_path_match_length);
+  match.scoring_signals->set_total_query_or_ref_match_length(
       total_query_or_ref_match_length);
-  match.scoring_signals.set_total_title_match_length(total_title_match_length);
-  match.scoring_signals.set_has_non_scheme_www_match(has_non_scheme_www_match);
-  match.scoring_signals.set_num_input_terms_matched_by_title(
+  match.scoring_signals->set_total_title_match_length(total_title_match_length);
+  match.scoring_signals->set_has_non_scheme_www_match(has_non_scheme_www_match);
+  match.scoring_signals->set_num_input_terms_matched_by_title(
       num_input_terms_matched_by_title);
-  match.scoring_signals.set_num_input_terms_matched_by_url(
+  match.scoring_signals->set_num_input_terms_matched_by_url(
       num_input_terms_matched_by_url);
-  match.scoring_signals.set_length_of_url(length_of_url);
-  match.scoring_signals.set_site_engagement(site_engagement);
-  match.scoring_signals.set_allowed_to_be_default_match(
+  match.scoring_signals->set_length_of_url(length_of_url);
+  match.scoring_signals->set_site_engagement(site_engagement);
+  match.scoring_signals->set_allowed_to_be_default_match(
       allowed_to_be_default_match);
 
   return match;
@@ -549,29 +555,29 @@ TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
 
   match.MergeScoringSignals(other_match);
 
-  EXPECT_EQ(match.scoring_signals.typed_count(), 3);
-  EXPECT_EQ(match.scoring_signals.visit_count(), 10);
-  EXPECT_EQ(match.scoring_signals.elapsed_time_last_visit_secs(), 50);
-  EXPECT_EQ(match.scoring_signals.shortcut_visit_count(), 5);
-  EXPECT_EQ(match.scoring_signals.shortest_shortcut_len(), 2);
-  EXPECT_TRUE(match.scoring_signals.is_host_only());
-  EXPECT_EQ(match.scoring_signals.num_bookmarks_of_url(), 5);
-  EXPECT_EQ(match.scoring_signals.first_bookmark_title_match_position(), 1);
-  EXPECT_EQ(match.scoring_signals.total_bookmark_title_match_length(), 8);
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_bookmark_title(),
+  EXPECT_EQ(match.scoring_signals->typed_count(), 3);
+  EXPECT_EQ(match.scoring_signals->visit_count(), 10);
+  EXPECT_EQ(match.scoring_signals->elapsed_time_last_visit_secs(), 50);
+  EXPECT_EQ(match.scoring_signals->shortcut_visit_count(), 5);
+  EXPECT_EQ(match.scoring_signals->shortest_shortcut_len(), 2);
+  EXPECT_TRUE(match.scoring_signals->is_host_only());
+  EXPECT_EQ(match.scoring_signals->num_bookmarks_of_url(), 5);
+  EXPECT_EQ(match.scoring_signals->first_bookmark_title_match_position(), 1);
+  EXPECT_EQ(match.scoring_signals->total_bookmark_title_match_length(), 8);
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_bookmark_title(),
             3);
-  EXPECT_EQ(match.scoring_signals.first_url_match_position(), 2);
-  EXPECT_EQ(match.scoring_signals.total_url_match_length(), 5);
-  EXPECT_TRUE(match.scoring_signals.host_match_at_word_boundary());
-  EXPECT_EQ(match.scoring_signals.total_path_match_length(), 1);
-  EXPECT_EQ(match.scoring_signals.total_query_or_ref_match_length(), 2);
-  EXPECT_EQ(match.scoring_signals.total_title_match_length(), 5);
-  EXPECT_TRUE(match.scoring_signals.has_non_scheme_www_match());
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_title(), 2);
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_url(), 2);
-  EXPECT_EQ(match.scoring_signals.length_of_url(), 10);
-  EXPECT_EQ(match.scoring_signals.site_engagement(), 0.6f);
-  EXPECT_TRUE(match.scoring_signals.allowed_to_be_default_match());
+  EXPECT_EQ(match.scoring_signals->first_url_match_position(), 2);
+  EXPECT_EQ(match.scoring_signals->total_url_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals->host_match_at_word_boundary());
+  EXPECT_EQ(match.scoring_signals->total_path_match_length(), 1);
+  EXPECT_EQ(match.scoring_signals->total_query_or_ref_match_length(), 2);
+  EXPECT_EQ(match.scoring_signals->total_title_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals->has_non_scheme_www_match());
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_title(), 2);
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_url(), 2);
+  EXPECT_EQ(match.scoring_signals->length_of_url(), 10);
+  EXPECT_EQ(match.scoring_signals->site_engagement(), 0.6f);
+  EXPECT_TRUE(match.scoring_signals->allowed_to_be_default_match());
 }
 
 TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault) {
@@ -1104,6 +1110,137 @@ TEST_F(AutocompleteMatchTest, FilterOmniboxActions) {
       EXPECT_EQ(match.actions[index]->ActionId(),
                 test_case.resulting_actions[index])
           << "while testing variant: " << test_case.test_name;
+    }
+  }
+}
+
+TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+  const OmniboxAction::LabelStrings dummy_labels(u"", u"", u"", u"");
+
+  using ActionType = omnibox::ActionInfo::ActionType;
+  constexpr auto CALL = omnibox::ActionInfo_ActionType_CALL;
+  constexpr auto NAV = omnibox::ActionInfo_ActionType_DIRECTIONS;
+  constexpr auto REVS = omnibox::ActionInfo_ActionType_REVIEWS;
+
+  struct FilterOmniboxActionsTestData {
+    std::string test_name;
+    // This is what will get added to the AutocompleteMatch.
+    std::vector<ActionType> types_to_add;
+    // Whether to show Reviews (true) or Calls (false) first.
+    bool promote_reviews;
+    // Retention variant to apply. See ActionsInSuggestRemoveActionTypes.
+    const char* retention_variant;
+    // This is the expected result (and order).
+    std::vector<ActionType> types_to_expect;
+  } test_cases[]{
+      // clang-format off
+      // Retain all
+      {"retain all - no actions, promote reviews", {}, true, "", {}},
+      {"retain all - no actions, promote calls", {}, false, "", {}},
+      {"retain all - have no reviews, promote reviews",
+       {CALL, CALL, CALL}, true, "", {CALL, CALL, CALL}},
+      {"retain all - have reviews, promote reviews",
+       {CALL, CALL, REVS}, true, "", {REVS, CALL, CALL}},
+      {"retain all - have all types, promote reviews",
+       {CALL, NAV, REVS}, true, "", {REVS, NAV, CALL}},
+      {"retain all - have all types, promote calls",
+       {CALL, NAV, REVS}, false, "", {CALL, NAV, REVS}},
+      {"retain all - have multiple reviews, promote reviews",
+       {REVS, NAV, REVS}, true, "", {REVS, REVS, NAV}},
+      {"retain all - have multiple reviews, promote calls",
+       {REVS, NAV, REVS}, false, "", {NAV, REVS, REVS}},
+
+      // Prune calls.
+      {"prine calls - no actions, promote reviews",
+       {}, true, "call", {}},
+      {"prune calls - no actions, promote calls",
+       {}, false, "call", {}},
+      {"prune calls - have no reviews, promote reviews",
+       {CALL, CALL, CALL}, true, "call", {}},
+      {"prune calls - have reviews, promote reviews",
+       {CALL, CALL, REVS}, true, "call", {REVS}},
+      {"prune calls - have all types, promote reviews",
+       {CALL, NAV, REVS}, true, "call", {REVS, NAV}},
+      {"prune calls - have all types, promote calls",
+       {CALL, NAV, REVS}, false, "call", {NAV, REVS}},
+      {"prune calls - have multiple reviews, promote reviews",
+       {REVS, NAV, REVS}, true, "call", {REVS, REVS, NAV}},
+      {"prune calls - have multiple reviews, promote calls",
+       {REVS, NAV, REVS}, false, "call", {NAV, REVS, REVS}},
+
+      // Prune directions.
+      {"prune directions - no actions, promote reviews",
+       {}, true, "directions", {}},
+      {"prune directions - no actions, promote calls",
+       {}, false, "directions", {}},
+      {"prune directions - have no reviews, promote reviews",
+       {CALL, CALL, CALL}, true, "directions", {CALL, CALL, CALL}},
+      {"prune directions - have reviews, promote reviews",
+       {CALL, CALL, REVS}, true, "directions", {REVS, CALL, CALL}},
+      {"prune directions - have all types, promote reviews",
+       {CALL, NAV, REVS}, true, "directions", {REVS, CALL}},
+      {"prune directions - have all types, promote calls",
+       {CALL, NAV, REVS}, false, "directions", {CALL, REVS}},
+      {"prune directions - have multiple reviews, promote reviews",
+       {REVS, NAV, REVS}, true, "directions", {REVS, REVS}},
+      {"prune directions - have multiple reviews, promote calls",
+       {REVS, NAV, REVS}, false, "directions", {REVS, REVS}},
+
+      // Prune reviews.
+      {"prune reviews - no actions, promote reviews",
+       {}, true, "reviews", {}},
+      {"prune reviews - no actions, promote calls",
+       {}, false, "reviews", {}},
+      {"prune reviews - have no reviews, promote reviews",
+       {CALL, CALL, CALL}, true, "reviews", {CALL, CALL, CALL}},
+      {"prune reviews - have reviews, promote reviews",
+       {CALL, CALL, REVS}, true, "reviews", {CALL, CALL}},
+      {"prune reviews - have all types, promote reviews",
+       {CALL, NAV, REVS}, true, "reviews", {NAV, CALL}},
+      {"prune reviews - have all types, promote calls",
+       {CALL, NAV, REVS}, false, "reviews", {CALL, NAV}},
+      {"prune reviews - have multiple reviews, promote reviews",
+       {REVS, NAV, REVS}, true, "reviews", {NAV}},
+      {"prune reviews - have multiple reviews, promote calls",
+       {REVS, NAV, REVS}, true, "reviews", {NAV}},
+      // clang-format on
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kActionsInSuggest,
+        {{OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+          test_case.retention_variant},
+         {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name,
+          test_case.promote_reviews ? "true" : "false"}});
+    AutocompleteMatch match(provider.get(), 1, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+
+    // Populate match with requested actions.
+    for (auto& action_type : test_case.types_to_add) {
+      omnibox::ActionInfo info;
+      info.set_action_type(action_type);
+      match.actions.push_back(
+          base::MakeRefCounted<OmniboxActionInSuggest>(std::move(info)));
+    }
+
+    match.FilterAndSortActionsInSuggest();
+
+    EXPECT_EQ(match.actions.size(), test_case.types_to_expect.size())
+        << "while testing variant: " << test_case.test_name;
+
+    for (size_t index = 0u; index < match.actions.size(); ++index) {
+      const auto* action =
+          OmniboxActionInSuggest::FromAction(match.actions[index].get());
+      EXPECT_NE(nullptr, action)
+          << "while testing variant: " << test_case.test_name;
+
+      EXPECT_EQ(action->Type(), test_case.types_to_expect[index])
+          << "at position " << index
+          << " while testing variant: " << test_case.test_name;
     }
   }
 }

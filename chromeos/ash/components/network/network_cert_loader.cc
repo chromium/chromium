@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
@@ -270,7 +271,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   bool certificates_update_required_ = false;
 
   // The NSS certificate database from which the certificates should be loaded.
-  net::NSSCertDatabase* nss_database_ = nullptr;
+  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> nss_database_ = nullptr;
 
   // The slot from which certificates are listed.
   crypto::ScopedPK11Slot slot_;

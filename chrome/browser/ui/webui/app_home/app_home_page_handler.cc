@@ -72,6 +72,12 @@ namespace {
 
 const int kWebAppIconSize = 64;
 
+// Query string for showing the deprecation dialog with deletion options.
+const char kDeprecationDialogQueryString[] = "showDeletionDialog";
+// Query string for showing the force installed apps deprecation dialog.
+// Should match with kChromeUIAppsWithForceInstalledDeprecationDialogURL.
+const char kForceInstallDialogQueryString[] = "showForceInstallDialog";
+
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
 // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
@@ -121,6 +127,54 @@ AppHomePageHandler::~AppHomePageHandler() {
 
 Browser* AppHomePageHandler::GetCurrentBrowser() {
   return chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+}
+
+void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
+  content::WebContents* web_contents = web_ui_->GetWebContents();
+  std::string app_id;
+  auto event_ptr = app_home::mojom::ClickEvent::New();
+  event_ptr->button = 0.0;
+  event_ptr->alt_key = false;
+  event_ptr->ctrl_key = false;
+  event_ptr->meta_key = false;
+  event_ptr->shift_key = false;
+  if (net::GetValueForKeyInQuery(web_contents->GetLastCommittedURL(),
+                                 kDeprecationDialogQueryString, &app_id)) {
+    if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
+        !deprecated_app_ids_.empty()) {
+      TabDialogs::FromWebContents(web_contents)
+          ->ShowDeprecatedAppsDialog(
+              app_id, deprecated_app_ids_, web_contents,
+              base::BindOnce(
+                  &AppHomePageHandler::LaunchAppInternal,
+                  weak_ptr_factory_.GetWeakPtr(), app_id,
+                  extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
+                  std::move(event_ptr),
+                  /*force_launch_deprecated_apps=*/true));
+    }
+  } else if (net::GetValueForKeyInQuery(web_contents->GetLastCommittedURL(),
+                                        kForceInstallDialogQueryString,
+                                        &app_id)) {
+    if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
+        extensions::IsExtensionForceInstalled(profile_, app_id, nullptr)) {
+      if (extensions::IsPreinstalledAppId(app_id)) {
+        TabDialogs::FromWebContents(web_contents)
+            ->ShowForceInstalledPreinstalledDeprecatedAppDialog(app_id,
+                                                                web_contents);
+      } else {
+        TabDialogs::FromWebContents(web_contents)
+            ->ShowForceInstalledDeprecatedAppsDialog(
+                app_id, web_contents,
+                base::BindOnce(
+                    &AppHomePageHandler::LaunchAppInternal,
+                    weak_ptr_factory_.GetWeakPtr(), app_id,
+                    extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
+                    std::move(event_ptr),
+                    /*force_launch_deprecated_apps=*/true));
+      }
+    }
+  }
+  has_maybe_loaded_deprecated_apps_dialog_ = true;
 }
 
 void AppHomePageHandler::LaunchAppInternal(
@@ -591,6 +645,10 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
           const app_home::mojom::AppInfoPtr& rhs) {
          return lhs->name < rhs->name;
        });
+
+  if (!has_maybe_loaded_deprecated_apps_dialog_) {
+    LoadDeprecatedAppsDialogIfRequired();
+  }
   std::move(callback).Run(std::move(result));
 }
 

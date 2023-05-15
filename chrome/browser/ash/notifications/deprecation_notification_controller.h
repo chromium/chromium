@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_DEPRECATION_NOTIFICATION_CONTROLLER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -69,7 +70,9 @@ class DeprecationNotificationController {
   base::flat_set<ui::KeyboardCode> shown_key_notifications_;
 
   // MessageCenter for adding notifications.
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<message_center::MessageCenter,
+                DanglingUntriaged | ExperimentalAsh>
+      message_center_;
 };
 
 }  // namespace ash

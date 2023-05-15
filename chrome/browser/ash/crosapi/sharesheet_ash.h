@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
@@ -42,7 +43,7 @@ class SharesheetAsh : public mojom::Sharesheet {
   void CloseBubble(const std::string& window_id) override;
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   mojo::ReceiverSet<mojom::Sharesheet> receivers_;
   base::WeakPtrFactory<SharesheetAsh> weak_factory_{this};
 };

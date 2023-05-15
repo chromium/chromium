@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
@@ -99,6 +101,8 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
   void Trace(Visitor* visitor) const {
     visitor->Trace(text_finder_);
     visitor->Trace(frame_);
+    visitor->Trace(client_);
+    visitor->Trace(receiver_);
   }
 
  private:
@@ -109,11 +113,10 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
 
   const Member<WebLocalFrameImpl> frame_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::FindInPageClient> client_;
+  HeapMojoRemote<mojom::blink::FindInPageClient> client_{nullptr};
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<mojom::blink::FindInPage> receiver_{this};
+  HeapMojoAssociatedReceiver<mojom::blink::FindInPage, FindInPage> receiver_{
+      this, nullptr};
 };
 
 }  // namespace blink

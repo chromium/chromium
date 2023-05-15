@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.gesturenav;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -303,6 +303,7 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "https://crbug.com/1435090")
     public void testSwipeAndHoldOnNtp_EnterTabSwitcher() throws TimeoutException {
         // Clicking tab switcher button while swiping and holding the gesture navigation
         // bubble should reset the state and dismiss the UI.

@@ -257,37 +257,6 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     _Execute(use_concurrency, do_push_native, do_merge_dex)
     do_push_dex()
 
-  def check_device_configured():
-    if apk.GetTargetSdkVersion().isalpha():
-      # Assume pre-release SDK is always really new.
-      target_sdk_version = 99
-    else:
-      target_sdk_version = int(apk.GetTargetSdkVersion())
-    # Beta Q builds apply allowlist to targetSdk=28 as well.
-    if target_sdk_version >= 28 and device.build_version_sdk >= 28:
-      # In P, there are two settings:
-      #  * hidden_api_policy_p_apps
-      #  * hidden_api_policy_pre_p_apps
-      # In Q, there is just one:
-      #  * hidden_api_policy
-      if device.build_version_sdk == 28:
-        setting_name = 'hidden_api_policy_p_apps'
-      else:
-        setting_name = 'hidden_api_policy'
-      apis_allowed = ''.join(
-          device.RunShellCommand(['settings', 'get', 'global', setting_name],
-                                 check_return=True))
-      if apis_allowed.strip() not in '01':
-        msg = """\
-Cannot use incremental installs on Android P+ without first enabling access to
-non-SDK interfaces (https://developer.android.com/preview/non-sdk-q).
-
-To enable access:
-   adb -s {0} shell settings put global {1} 0
-To restore back to default:
-   adb -s {0} shell settings delete global {1}"""
-        raise Exception(msg.format(device.serial, setting_name))
-
   cache_path = _DeviceCachePath(device)
   def restore_cache():
     if not enable_device_cache:
@@ -328,8 +297,7 @@ To restore back to default:
   # Concurrency here speeds things up quite a bit, but DeviceUtils hasn't
   # been designed for multi-threading. Enabling only because this is a
   # developer-only tool.
-  setup_timer = _Execute(use_concurrency, create_lock_files, restore_cache,
-                         check_device_configured)
+  setup_timer = _Execute(use_concurrency, create_lock_files, restore_cache)
 
   _Execute(use_concurrency, do_install, do_push_files)
 

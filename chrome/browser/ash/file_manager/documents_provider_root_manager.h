@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
@@ -125,8 +126,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   // Notifies observers that an existing root is removed.
   void NotifyRootRemoved(const RootInfo& root_info);
 
-  Profile* const profile_;
-  arc::ArcFileSystemOperationRunner* const runner_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<arc::ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
   bool is_enabled_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::vector<RootInfo> current_roots_;

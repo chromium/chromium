@@ -9,6 +9,9 @@
       field_id: 2,
     },
   },
+  legacy_mappings: {
+    'cros-color-primary' : '$cros.sys.primary-container',
+  },
   colors: {
     /* Primary */
     primary: {
@@ -27,6 +30,9 @@
       light: "$white",
       dark: "blend(rgba($white.rgb, 0.04), $cros.ref.primary50)",
     },
+    'blend-opac': "blend($white, 40%, $cros.ref.primary50)",
+    'blend-a-ref-blend': "blend($white, 40%, $cros.sys.blend-opac)",
+    'blend-a-blend': "blend($white, 40%, blend($cros.sys.blend-opac, 2%, $white))",
   },
   opacities: {
     'disabled-opacity': 0.38,

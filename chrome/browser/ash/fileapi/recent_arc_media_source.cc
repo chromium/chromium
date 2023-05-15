@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -118,7 +119,7 @@ class RecentArcMediaSource::MediaRoot {
 
   // Set in the constructor.
   const std::string root_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const base::FilePath relative_mount_path_;
 
   // Set at the beginning of GetRecentFiles().

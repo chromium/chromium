@@ -61,6 +61,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,
                                           int file_length,
                                           bool is_encrypted,
+                                          bool is_directory,
                                           ArchiveAnalyzerResults* results) {
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
       new BinaryFeatureExtractor());
@@ -73,9 +74,11 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
   file->Read(0, dmg_header,
              DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
 
+  bool is_checked =
+      FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path) &&
+      !is_directory;
   current_entry_is_executable =
-      FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path) ||
-      MachOImageReader::IsMachOMagicValue(magic) ||
+      is_checked || MachOImageReader::IsMachOMagicValue(magic) ||
       DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(dmg_header),
@@ -97,7 +100,8 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
 
 #else
   current_entry_is_executable =
-      FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path);
+      FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path) &&
+      !is_directory;
 #endif  // BUILDFLAG(IS_MAC)
 
   if (FileTypePolicies::GetInstance()->IsArchiveFile(path)) {
@@ -153,9 +157,9 @@ safe_browsing::DownloadFileType_InspectionType GetFileType(
 void SetNameForContainedFile(
     const base::FilePath& path,
     ClientDownloadRequest::ArchivedBinary* archived_binary) {
-  std::string file_basename(path.AsUTF8Unsafe());
-  if (base::StreamingUtf8Validator::Validate(file_basename)) {
-    archived_binary->set_file_basename(file_basename);
+  std::string file_path(path.AsUTF8Unsafe());
+  if (base::StreamingUtf8Validator::Validate(file_path)) {
+    archived_binary->set_file_path(file_path);
   }
 }
 

@@ -9,6 +9,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/services/app_service/public/cpp",
   "+components/sync",
+  "+components/sync_device_info",
   "+components/tab_groups",
   "+components/version_info",
   "+third_party/re2",

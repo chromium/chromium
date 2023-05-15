@@ -25,7 +25,9 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
@@ -311,6 +313,13 @@ void ShareAndTranslateHostToVM(
   std::move(callback).Run(std::move(file_urls));
 }
 
+base::FilePath SubstituteFuseboxFilePath(const storage::FileSystemURL& url) {
+  if (fusebox::Server* server = fusebox::Server::GetInstance()) {
+    return server->InverseResolveFSURL(url);
+  }
+  return base::FilePath();
+}
+
 }  // namespace
 
 std::vector<base::FilePath> TranslateVMPathsToHost(
@@ -413,8 +422,13 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
 
   std::vector<FileInfo> list;
   for (auto& url : file_system_urls) {
-    base::FilePath path = url.path();
-    list.push_back({std::move(path), std::move(url)});
+    if (!file_manager::util::IsNonNativeFileSystemType(url.type())) {
+      base::FilePath path = url.path();
+      list.emplace_back(std::move(path), std::move(url));
+    } else if (base::FilePath path = SubstituteFuseboxFilePath(url);
+               !path.empty()) {
+      list.emplace_back(std::move(path), std::move(url));
+    }
   }
 
   ShareAndTranslateHostToVM(
@@ -453,8 +467,12 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
     if (!url.is_valid()) {
       LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
       continue;
+    } else if (!file_manager::util::IsNonNativeFileSystemType(url.type())) {
+      file_info.emplace_back(std::move(url.path()), base::FilePath());
+    } else if (base::FilePath path = SubstituteFuseboxFilePath(url);
+               !path.empty()) {
+      file_info.emplace_back(std::move(path), base::FilePath());
     }
-    file_info.push_back(ui::FileInfo(std::move(url.path()), base::FilePath()));
   }
   return file_info;
 }

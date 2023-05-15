@@ -8,10 +8,10 @@ PASS 'image-set(url("") calc(1dppx * (infinity + -infinity)))' as a specified va
 PASS 'image-set(url("") calc(1dppx * (-infinity + infinity)))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * (infinity - infinity)))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * infinity))' as a specified value should serialize as 'image-set(url("") calc(infinity * 1dppx))'.
-PASS 'image-set(url("") calc(1dppx * -infinity))' as a specified value should serialize as 'image-set(url("") calc(-infinity * 1dppx))'.
+FAIL 'image-set(url("") calc(1dppx * -infinity))' as a specified value should serialize as 'image-set(url("") calc(-infinity * 1dppx))'. assert_not_equals: 'image-set(url("") calc(1dppx * -infinity))' should be valid in backgroundImage. got disallowed value ""
 PASS 'image-set(url("") calc(1dppx * iNFinIty))' as a specified value should serialize as 'image-set(url("") calc(infinity * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * (infinity + infinity)))' as a specified value should serialize as 'image-set(url("") calc(infinity * 1dppx))'.
-PASS 'image-set(url("") calc(1dppx * (-infinity + -infinity)))' as a specified value should serialize as 'image-set(url("") calc(-infinity * 1dppx))'.
+FAIL 'image-set(url("") calc(1dppx * (-infinity + -infinity)))' as a specified value should serialize as 'image-set(url("") calc(-infinity * 1dppx))'. assert_not_equals: 'image-set(url("") calc(1dppx * (-infinity + -infinity)))' should be valid in backgroundImage. got disallowed value ""
 PASS 'image-set(url("") calc(1dppx * 1/infinity))' as a specified value should serialize as 'image-set(url("") calc(0dppx))'.
 PASS 'image-set(url("") calc(1dppx * infinity * infinity))' as a specified value should serialize as 'image-set(url("") calc(infinity * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * -infinity * -infinity))' as a specified value should serialize as 'image-set(url("") calc(infinity * 1dppx))'.
@@ -19,7 +19,7 @@ PASS 'image-set(url("") calc(1 * max(INFinity*3dppx, 0dppx)))' as a specified va
 PASS 'image-set(url("") calc(1 * min(inFInity*4dppx, 0dppx)))' as a specified value should serialize as 'image-set(url("") calc(0dppx))'.
 PASS 'image-set(url("") calc(1 * max(nAn*2dppx, 0dppx)))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
 PASS 'image-set(url("") calc(1 * min(nan*3dppx, 0dppx)))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
-FAIL 'image-set(url("") calc(1 * clamp(-INFINITY*0dppx, 0dppx, infiniTY*0dppx)))' as a specified value should serialize as 'image-set(url("") calc(0dppx))'. assert_equals: 'image-set(url("") calc(1 * clamp(-INFINITY*0dppx, 0dppx, infiniTY*0dppx)))' and 'image-set(url("") calc(0dppx))' should serialize the same in specified values. expected "image-set(url(\"\") calc(0dppx))" but got "image-set(url(\"\") calc(NaN * 1dppx))"
+PASS 'image-set(url("") calc(1 * clamp(-INFINITY*20dppx, 0dppx, infiniTY*10dppx)))' as a specified value should serialize as 'image-set(url("") calc(0dppx))'.
 PASS 'image-set(url("") calc(1dppx * max(NaN, min(0,10))))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * clamp(NaN, 0, 10)))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.
 PASS 'image-set(url("") calc(1dppx * max(0, min(10, NaN))))' as a specified value should serialize as 'image-set(url("") calc(NaN * 1dppx))'.

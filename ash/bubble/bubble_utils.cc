@@ -101,6 +101,14 @@ void ApplyStyle(views::Label* label,
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
                                        gfx::Font::Weight::MEDIUM));
       break;
+    case TypographyToken::kCrosDisplay7:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 18,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
+    case TypographyToken::kCrosHeadline1:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 15,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
     case TypographyToken::kCrosLabel1:
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
                                        gfx::Font::Weight::MEDIUM));

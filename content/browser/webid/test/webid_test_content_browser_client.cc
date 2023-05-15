@@ -5,6 +5,7 @@
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 
 #include "content/browser/webid/mdocs/mdoc_provider.h"
+#include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 
 namespace content {
 
@@ -31,6 +32,13 @@ WebIdTestContentBrowserClient::CreateMDocProvider() {
 void WebIdTestContentBrowserClient::SetMDocProvider(
     std::unique_ptr<MDocProvider> provider) {
   test_mdoc_provider_ = std::move(provider);
+}
+
+void WebIdTestContentBrowserClient::SetIdentityRegistry(
+    WebContents* web_contents,
+    FederatedIdentityModalDialogViewDelegate* delegate,
+    const url::Origin& url) {
+  IdentityRegistry::CreateForWebContents(web_contents, delegate, url);
 }
 
 }  // namespace content

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -124,7 +123,7 @@ CloudPolicyRefreshScheduler::~CloudPolicyRefreshScheduler() {
 void CloudPolicyRefreshScheduler::SetDesiredRefreshDelay(
     int64_t refresh_delay) {
   refresh_delay_ms_ =
-      base::clamp(refresh_delay, kRefreshDelayMinMs, kRefreshDelayMaxMs);
+      std::clamp(refresh_delay, kRefreshDelayMinMs, kRefreshDelayMaxMs);
   ScheduleRefresh();
 }
 

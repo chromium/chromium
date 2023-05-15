@@ -163,8 +163,10 @@ pub const F_OFD_SETLKW: ::c_int = 38;
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 24;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 32;
+pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 20;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
+pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 
 cfg_if! {
     if #[cfg(target_arch = "sparc")] {

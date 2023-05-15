@@ -87,6 +87,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
     bool min_pin_length_extension_support = false;
     bool always_uv = false;
+    // always_uv_for_up_false applies the alwaysUv logic for getAssertion, even
+    // when up=false. This does't seem correct, per CTAP 2.2, but some
+    // authenticators do it.
+    bool always_uv_for_up_false = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
     // as a fixed size area for the large blob.

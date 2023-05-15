@@ -23,7 +23,7 @@
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
     <template is="dom-if"
-        if="[[showPerDeviceMouseRow_(hasMouse_,
+        if="[[showPerDeviceMouseRow_(mice,
                                      isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
           on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
@@ -31,7 +31,7 @@
       </cr-link-row>
     </template>
     <template is="dom-if"
-        if="[[showPerDeviceTouchpadRow_(hasTouchpad_,
+        if="[[showPerDeviceTouchpadRow_(touchpads,
                                         isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceTouchpadRow"
           aria-label="$i18n{touchpadTitle}"
@@ -40,7 +40,7 @@
       </cr-link-row>
     </template>
     <template is="dom-if"
-        if="[[showPerDevicePointingStickRow_(hasPointingStick_,
+        if="[[showPerDevicePointingStickRow_(pointingSticks,
                                              isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDevicePointingStickRow"
           aria-label="$i18n{pointingStickTitle}"
@@ -155,7 +155,6 @@
   <template is="dom-if" route-path="/storage">
     <os-settings-subpage page-title="$i18n{storageTitle}">
       <settings-storage prefs="{{prefs}}"
-          show-crostini="[[showCrostini]]"
           android-enabled="[[androidEnabled_]]">
       </settings-storage>
     </os-settings-subpage>
@@ -176,7 +175,7 @@
         <cr-button id="restoreDefaultsButton" slot="subpage-title-extra"
             on-click="restoreDefaults"
             class="restore-defaults-button">
-        <iron-icon icon="os-settings:restore" class="restore-defaults-icon">
+        <iron-icon icon="os-settings:refresh" class="restore-defaults-icon">
         </iron-icon>
         <span>$i18n{keyboardRemapRestoreDefaultsLabel}</span>
     </cr-button>

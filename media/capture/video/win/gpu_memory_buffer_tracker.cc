@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
@@ -147,6 +148,9 @@ GpuMemoryBufferTracker::GetMemoryMappedAccess() {
 
 base::UnsafeSharedMemoryRegion
 GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "GpuMemoryBufferTracker::DuplicateAsUnsafeRegion");
+
   if (!buffer_) {
     return base::UnsafeSharedMemoryRegion();
   }

@@ -12,6 +12,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -24,7 +25,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
-#include "services/device/public/cpp/hid/hid_usage_and_page.h"
+#include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -314,18 +315,17 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       MaybeAddDevice(std::move(device), /*initial_enumeration=*/true);
   }
 
-  bool HasUnprotectedCollections(const device::mojom::HidDeviceInfo& device) {
-    for (const auto& collection : device.collections) {
-      if (!device::IsAlwaysProtected(*collection->usage)) {
-        return true;
-      }
-    }
-    return false;
+  // Returns true if `device` contains at least one unprotected report in any
+  // collection.
+  bool HasUnprotectedReports(const device::mojom::HidDeviceInfo& device) {
+    return base::ranges::any_of(device.collections, [](const auto& collection) {
+      return device::CollectionHasUnprotectedReports(*collection);
+    });
   }
 
   void MaybeAddDevice(device::mojom::HidDeviceInfoPtr device,
                       bool initial_enumeration) {
-    if (!HasUnprotectedCollections(*device) ||
+    if (!HasUnprotectedReports(*device) ||
         (!filters_.empty() &&
          !HidDeviceFilter::MatchesAny(*device, filters_))) {
       return;

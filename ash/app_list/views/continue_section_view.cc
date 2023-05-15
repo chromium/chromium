@@ -174,15 +174,6 @@ bool ContinueSectionView::ShouldShowPrivacyNotice() const {
 }
 
 bool ContinueSectionView::ShouldShowFilesSection() const {
-  // TODO(hongyulong): each admin template or each file is a continue task view
-  // in the continue task container view. If we set this container visible, the
-  // admin template and the file will show up at the same time. I think we may
-  // need to separate the visibility for admin template and file in the
-  // container view. Otherwise, when we have a admin template, and if
-  // `IsPrivacyNoticeAccepted` and `WasPrivacyNoticeShown` all return false,
-  // the file, privacy toast, admin template will co-exist unexpectedly.
-  // Thus, we need to make some changes for the condition in another CL after
-  // fully consideration.
   return (HasDesksAdminTemplates() || HasMinimumFilesToShow()) &&
          (nudge_controller_->IsPrivacyNoticeAccepted() ||
           nudge_controller_->WasPrivacyNoticeShown()) &&
@@ -294,7 +285,7 @@ void ContinueSectionView::AnimateShowContinueSection() {
 
 void ContinueSectionView::RemovePrivacyNotice() {
   if (privacy_toast_) {
-    RemoveChildViewT(privacy_toast_);
+    RemoveChildViewT(privacy_toast_.get());
     privacy_toast_ = nullptr;
   }
   UpdateElementsVisibility();
@@ -386,7 +377,7 @@ void ContinueSectionView::UpdateElementsVisibility() {
   if (view_delegate_->ShouldHideContinueSection()) {
     SetVisible(false);
     if (privacy_toast_) {
-      RemoveChildViewT(privacy_toast_);
+      RemoveChildViewT(privacy_toast_.get());
       privacy_toast_ = nullptr;
       nudge_controller_->SetPrivacyNoticeShown(false);
       privacy_notice_shown_timer_.AbandonAndStop();
@@ -457,7 +448,7 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
       privacy_toast_->layer()->GetAnimator()->AbortAllAnimations();
 
     if (privacy_toast_) {
-      RemoveChildViewT(privacy_toast_);
+      RemoveChildViewT(privacy_toast_.get());
       privacy_toast_ = nullptr;
     }
   }

@@ -1088,6 +1088,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   coordinator_->Show(extension_2_key);
   EXPECT_EQ(global_registry_->GetEntryForKey(extension_2_key),
             coordinator_->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_2_key),
+            global_registry_->active_entry());
 
   // Check that registering an entry on the active tab while the combobox
   // contains an item for the global entry still results in one item for an
@@ -1100,6 +1102,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   // right after registration.
   EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
             coordinator_->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
+            contextual_registries_[1]->active_entry());
 }
 
 // Test that the combobox shows the correct number of extension entries when
@@ -1360,7 +1364,7 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
   // Since the entry was never shown, its view was never created and
   // `returned_view` should be null.
   std::unique_ptr<views::View> returned_view =
-      global_registry_->DeregisterAndReturnView(extension_key);
+      SidePanelUtil::DeregisterAndReturnView(global_registry_, extension_key);
   EXPECT_FALSE(returned_view);
 
   // Register the entry and show it.
@@ -1369,7 +1373,8 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
 
   // Since the entry was shown, its view was created. Check that the correct
   // view is returned by checking its state that was set at creation time.
-  returned_view = global_registry_->DeregisterAndReturnView(extension_key);
+  returned_view =
+      SidePanelUtil::DeregisterAndReturnView(global_registry_, extension_key);
   ASSERT_TRUE(returned_view);
   EXPECT_EQ(22, static_cast<ViewWithCounter*>(returned_view.get())->counter());
 
@@ -1381,7 +1386,8 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
 
   // Since the entry was shown, its view was created. Check that the correct
   // view is returned by checking its state that was set at creation time.
-  returned_view = global_registry_->DeregisterAndReturnView(extension_key);
+  returned_view =
+      SidePanelUtil::DeregisterAndReturnView(global_registry_, extension_key);
   ASSERT_TRUE(returned_view);
   EXPECT_EQ(33, static_cast<ViewWithCounter*>(returned_view.get())->counter());
 }

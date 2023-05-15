@@ -50,7 +50,7 @@ class WaylandSeat {
   const struct wl_seat_listener wl_seat_listener_ {
     .capabilities = OnSeatCapabilitiesEvent, .name = OnSeatNameEvent
   };
-  base::raw_ptr<struct wl_seat> wl_seat_ = nullptr;
+  raw_ptr<struct wl_seat> wl_seat_ = nullptr;
   uint32_t seat_id_ = 0;
   std::unique_ptr<WaylandKeyboard> wayland_keyboard_;
   OnSeatPresentCallback seat_present_callback_;

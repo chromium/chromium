@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,7 +21,7 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 using base::TimeTicks;
@@ -98,11 +99,19 @@ void V4Database::CreateOnTaskRunner(
   if (!g_store_factory.Get())
     g_store_factory.Get() = std::make_unique<V4StoreFactory>();
 
-  if (!base::CreateDirectory(base_path))
+  // TODO(crbug/1434333): This is being used temporarily to investigate why this
+  // NOTREACHED is being triggered.
+  base::File::Error error = base::File::FILE_OK;
+  bool success = base::CreateDirectoryAndGetError(base_path, &error);
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.V4Database.DirectoryCreationResult", -error,
+      -base::File::FILE_ERROR_MAX);
+  if (!success) {
     NOTREACHED();
+  }
 
 #if BUILDFLAG(IS_APPLE)
-  base::mac::SetBackupExclusion(base_path);
+  base::apple::SetBackupExclusion(base_path);
 #endif
 
   std::unique_ptr<StoreMap> store_map = std::make_unique<StoreMap>();

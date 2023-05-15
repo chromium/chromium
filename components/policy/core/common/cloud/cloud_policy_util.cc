@@ -39,10 +39,10 @@
 #include <limits.h>  // For HOST_NAME_MAX
 #endif
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #if BUILDFLAG(IS_WIN)

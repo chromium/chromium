@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -120,9 +121,10 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
             CipherOutputStream cipherOutputStream = null;
             DataOutputStream dataOutputStream = null;
             AtomicFile atomicFile = null;
+            File file = getFile();
             try {
                 long startTime = SystemClock.elapsedRealtime();
-                atomicFile = new AtomicFile(mFile);
+                atomicFile = new AtomicFile(file);
                 fileOutputStream = atomicFile.startWrite();
                 cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
                 dataOutputStream = new DataOutputStream(cipherOutputStream);
@@ -140,14 +142,14 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
                         String.format(Locale.ENGLISH,
                                 "FileNotFoundException while attempting to save file %s "
                                         + "Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
                 return null;
             } catch (IOException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
                                 "IOException while attempting to save file %s. "
                                         + " Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } finally {
                 StreamUtil.closeQuietly(dataOutputStream);
                 StreamUtil.closeQuietly(cipherOutputStream);
@@ -194,8 +196,9 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
             CipherInputStream cipherInputStream = null;
             DataInputStream dataInputStream = null;
             long startTime = SystemClock.elapsedRealtime();
+            File file = getFile();
             try {
-                AtomicFile atomicFile = new AtomicFile(mFile);
+                AtomicFile atomicFile = new AtomicFile(file);
                 fileInputStream = atomicFile.openRead();
                 cipherInputStream = new CipherInputStream(fileInputStream, cipher);
                 dataInputStream = new DataInputStream(cipherInputStream);
@@ -213,13 +216,13 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
                         String.format(Locale.ENGLISH,
                                 "FileNotFoundException while attempting to restore "
                                         + " %s. Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } catch (IOException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
                                 "IOException while attempting to restore "
                                         + "%s. Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } finally {
                 StreamUtil.closeQuietly(dataInputStream);
                 StreamUtil.closeQuietly(cipherInputStream);

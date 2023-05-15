@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -133,19 +134,6 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   quirks_style_sheet_ = ParseUASheet(quirks_rules);
 
   InitializeDefaultStyles();
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  default_html_style_->CompactRulesIfNeeded();
-  default_mathml_style_->CompactRulesIfNeeded();
-  default_svg_style_->CompactRulesIfNeeded();
-  default_html_quirks_style_->CompactRulesIfNeeded();
-  default_print_style_->CompactRulesIfNeeded();
-  DCHECK(default_html_style_->UniversalRules().empty());
-  DCHECK(default_mathml_style_->UniversalRules().empty());
-  DCHECK(default_svg_style_->UniversalRules().empty());
-  DCHECK(default_html_quirks_style_->UniversalRules().empty());
-  DCHECK(default_print_style_->UniversalRules().empty());
-#endif
 }
 
 void CSSDefaultStyleSheets::PrepareForLeakDetection() {
@@ -158,7 +146,6 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   fullscreen_style_sheet_.Clear();
   popover_style_sheet_.Clear();
   selectmenu_style_sheet_.Clear();
-  webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -172,6 +159,46 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   default_view_source_style_.Clear();
 }
 
+void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // Universal bucket rules need to be checked against every single element,
+  // thus we want avoid them in UA stylesheets.
+  default_html_style_->CompactRulesIfNeeded();
+  DCHECK(default_html_style_->UniversalRules().empty());
+  default_html_quirks_style_->CompactRulesIfNeeded();
+  DCHECK(default_html_quirks_style_->UniversalRules().empty());
+
+  // The RuleSets below currently contain universal bucket rules.
+  // Ideally these should also be empty, DCHECK the current size to only
+  // consciously add more universal bucket rules.
+  if (mathml_style_sheet_) {
+    default_mathml_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_mathml_style_->UniversalRules().size(),
+              RuntimeEnabledFeatures::MathMLCoreEnabled() ? 24u : 0u);
+  }
+
+  if (svg_style_sheet_) {
+    default_svg_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_svg_style_->UniversalRules().size(), 1u);
+  }
+
+  if (media_controls_style_sheet_) {
+    default_media_controls_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_media_controls_style_->UniversalRules().size(), 4u);
+  }
+
+  if (fullscreen_style_sheet_) {
+    default_fullscreen_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_fullscreen_style_->UniversalRules().size(), 7u);
+  }
+
+  if (marker_style_sheet_) {
+    default_pseudo_element_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 1u);
+  }
+#endif
+}
+
 void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   // This must be called only from constructor / PrepareForLeakDetection.
   default_html_style_ = MakeGarbageCollected<RuleSet>();
@@ -180,6 +207,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_html_quirks_style_ = MakeGarbageCollected<RuleSet>();
   default_print_style_ = MakeGarbageCollected<RuleSet>();
   default_media_controls_style_ = MakeGarbageCollected<RuleSet>();
+  default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_.Clear();
   default_pseudo_element_style_.Clear();
 
@@ -187,6 +215,8 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
+
+  VerifyUniversalRuleCount();
 }
 
 RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
@@ -226,12 +256,16 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
     case NamespaceType::kMediaControls:
       default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval());
       break;
+    case NamespaceType::kFullscreen:
+      default_fullscreen_style_->AddRulesFromSheet(rules, ScreenEval());
+      break;
   }
   // Add to print and forced color for all namespaces.
   default_print_style_->AddRulesFromSheet(rules, PrintEval());
   if (default_forced_color_style_) {
     default_forced_color_style_->AddRulesFromSheet(rules, ForcedColorsEval());
   }
+  VerifyUniversalRuleCount();
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
@@ -327,7 +361,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!RuntimeEnabledFeatures::
           FormControlsVerticalWritingModeSupportEnabled() &&
       !form_controls_not_vertical_style_sheet_ &&
-      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element))) {
+      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
+       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element))) {
     form_controls_not_vertical_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(
             IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));
@@ -366,18 +401,6 @@ void CSSDefaultStyleSheets::SetMediaControlsStyleSheetLoader(
   media_controls_style_sheet_loader_.swap(loader);
 }
 
-bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForXrOverlay() {
-  if (webxr_overlay_style_sheet_) {
-    return false;
-  }
-
-  webxr_overlay_style_sheet_ = ParseUASheet(
-      UncompressResourceAsASCIIString(IDR_UASTYLE_WEBXR_OVERLAY_CSS));
-  AddRulesToDefaultStyleSheets(webxr_overlay_style_sheet_,
-                               NamespaceType::kHTML);
-  return true;
-}
-
 void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
   if (fullscreen_style_sheet_) {
     return;
@@ -387,7 +410,8 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
       UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_CSS) +
       LayoutTheme::GetTheme().ExtraFullscreenStyleSheet();
   fullscreen_style_sheet_ = ParseUASheet(fullscreen_rules);
-  AddRulesToDefaultStyleSheets(fullscreen_style_sheet_, NamespaceType::kHTML);
+  AddRulesToDefaultStyleSheets(fullscreen_style_sheet_,
+                               NamespaceType::kFullscreen);
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
@@ -416,10 +440,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_color_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
                                                    ForcedColorsEval());
   }
-  if (webxr_overlay_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(webxr_overlay_style_sheet_,
-                                                   ForcedColorsEval());
-  }
 
   return true;
 }
@@ -435,6 +455,9 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
   if (DefaultMathMLStyle()) {
     features.Merge(DefaultMathMLStyle()->Features());
   }
+  if (DefaultFullscreenStyle()) {
+    features.Merge(DefaultFullscreenStyle()->Features());
+  }
   if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
   }
@@ -448,9 +471,10 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_print_style_);
   visitor->Trace(default_view_source_style_);
   visitor->Trace(default_forced_color_style_);
-  visitor->Trace(default_media_controls_style_);
-  visitor->Trace(default_style_sheet_);
   visitor->Trace(default_pseudo_element_style_);
+  visitor->Trace(default_media_controls_style_);
+  visitor->Trace(default_fullscreen_style_);
+  visitor->Trace(default_style_sheet_);
   visitor->Trace(quirks_style_sheet_);
   visitor->Trace(svg_style_sheet_);
   visitor->Trace(mathml_style_sheet_);
@@ -460,7 +484,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(popover_style_sheet_);
   visitor->Trace(selectmenu_style_sheet_);
-  visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
 }

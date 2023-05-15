@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 buildflag_header("block_universal_links_buildflags") {
   header = "block_universal_links_buildflags.h"
@@ -77,6 +77,7 @@ source_set("navigation") {
 
 source_set("core") {
   deps = [
+    ":proto_util",
     "//base",
     "//components/url_formatter:url_formatter",
     "//ios/web/common:features",
@@ -84,6 +85,8 @@ source_set("core") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/security",
+    "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_util",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ui/base",
   ]
@@ -99,6 +102,7 @@ source_set("core") {
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
+    "referrer.cc",
     "synthesized_history_entry_data.h",
     "synthesized_history_entry_data.mm",
     "synthesized_session_restore.h",
@@ -126,18 +130,26 @@ source_set("navigation_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("navigation_js") {
+optimize_ts("navigation_js") {
   visibility = [ ":navigation_feature" ]
 
-  primary_script = "resources/navigation.js"
-  sources = [ "resources/navigation.js" ]
+  sources = [ "resources/navigation.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
-optimize_js("navigation_listeners_js") {
+optimize_ts("navigation_listeners_js") {
   visibility = [ ":navigation_feature" ]
 
-  primary_script = "resources/navigation_listeners.js"
-  sources = [ "resources/navigation_listeners.js" ]
+  sources = [ "resources/navigation_listeners.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("session_restore_feature") {
@@ -145,6 +157,7 @@ source_set("session_restore_feature") {
     "//base",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:scoped_wk_script_message_handler",
+    "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -185,6 +198,21 @@ source_set("navigation_manager_util") {
   sources = [
     "navigation_manager_util.h",
     "navigation_manager_util.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("proto_util") {
+  public_deps = [ "//ios/web/public/session/proto" ]
+  deps = [
+    "//base",
+    "//ios/web/public/navigation",
+  ]
+
+  sources = [
+    "proto_util.h",
+    "proto_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

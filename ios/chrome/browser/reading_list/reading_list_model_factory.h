@@ -24,9 +24,6 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
   ReadingListModelFactory(const ReadingListModelFactory&) = delete;
   ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
 
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
-
  private:
   friend class base::NoDestructor<ReadingListModelFactory>;
 

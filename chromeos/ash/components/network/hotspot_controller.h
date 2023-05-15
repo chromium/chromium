@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
@@ -126,10 +127,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   std::unique_ptr<HotspotControlRequest> current_request_;
   base::queue<std::unique_ptr<HotspotControlRequest>> queued_requests_;
   bool allow_hotspot_ = true;
-  HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
-  HotspotFeatureUsageMetrics* hotspot_feature_usage_metrics_ = nullptr;
-  HotspotStateHandler* hotspot_state_handler_ = nullptr;
-  TechnologyStateController* technology_state_controller_ = nullptr;
+  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
+      hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<HotspotFeatureUsageMetrics, ExperimentalAsh>
+      hotspot_feature_usage_metrics_ = nullptr;
+  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_ =
+      nullptr;
+  raw_ptr<TechnologyStateController, ExperimentalAsh>
+      technology_state_controller_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotController> weak_ptr_factory_{this};

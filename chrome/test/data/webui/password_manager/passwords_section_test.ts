@@ -4,8 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -129,6 +128,9 @@ suite('PasswordsSectionTest', function() {
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
+    assertEquals(
+        PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
 
@@ -178,7 +180,6 @@ suite('PasswordsSectionTest', function() {
         document.createElement('passwords-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getCredentialGroups');
-    await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
     const listEntries =

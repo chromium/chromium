@@ -288,6 +288,31 @@ UIResponder* GetFirstResponder() {
   return GetFirstResponderSubview(GetAnyKeyWindow());
 }
 
+UIResponder* GetFirstResponderInWindowScene(UIWindowScene* windowScene) {
+  DCHECK(NSThread.isMainThread);
+  if (!windowScene) {
+    return nil;
+  }
+
+  // First checking the key window for this window scene.
+  UIResponder* responder = GetFirstResponderSubview(windowScene.keyWindow);
+  if (responder) {
+    return responder;
+  }
+
+  for (UIWindow* window in windowScene.windows) {
+    if (window.isKeyWindow) {
+      continue;
+    }
+    responder = GetFirstResponderSubview(window);
+    if (responder) {
+      return responder;
+    }
+  }
+
+  return nil;
+}
+
 // Trigger a haptic vibration for the user selecting an action. This is a no-op
 // for devices that do not support it.
 void TriggerHapticFeedbackForImpact(UIImpactFeedbackStyle impactStyle) {

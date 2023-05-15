@@ -5,6 +5,7 @@
 #include "ash/system/tray/tray_item_view.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +54,7 @@ class TrayItemViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget`:
-  TrayItemView* tray_item_ = nullptr;
+  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
 };
 
 // Tests that scheduling a `TrayItemView`'s show animation while its hide

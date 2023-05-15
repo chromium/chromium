@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -82,7 +83,8 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
   void OnNotificationAdded() { notification_count_++; }
 
  protected:
-  user_manager::FakeUserManager* user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<CrostiniLowDiskNotification> low_disk_notification_;

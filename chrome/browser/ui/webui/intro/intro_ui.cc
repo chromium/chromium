@@ -118,14 +118,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  source->AddBoolean("isTangibleSyncEnabled",
-                     base::FeatureList::IsEnabled(switches::kTangibleSync));
-#endif
-
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   // Unretained ok: `this` owns the handler.
   auto intro_handler = std::make_unique<IntroHandler>(

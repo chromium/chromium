@@ -10,6 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
+#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -21,8 +23,8 @@ class ElementContext;
 namespace ash {
 
 class SessionController;
-class TutorialController;
 class UserEducationDelegate;
+class UserEducationFeatureController;
 
 enum class TutorialId;
 
@@ -57,8 +59,15 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // education services in the browser.
   std::unique_ptr<UserEducationDelegate> delegate_;
 
-  // The collection of controllers responsible for specific feature tutorials.
-  std::set<std::unique_ptr<TutorialController>> tutorial_controllers_;
+  // The controller responsible for creation/management of help bubbles.
+  UserEducationHelpBubbleController help_bubble_controller_{delegate_.get()};
+
+  // The controller responsible for creation/management of pings.
+  UserEducationPingController ping_controller_;
+
+  // The set of controllers responsible for specific user education features.
+  std::set<std::unique_ptr<UserEducationFeatureController>>
+      feature_controllers_;
 
   // Sessions are observed only until the primary user session is added at which
   // point tutorials are registered with user education services in the browser.

@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -249,8 +250,8 @@ class DeveloperToolsPolicyHandlerWithProfileTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  TestingProfile* primary_profile_;
-  TestingProfile* secondary_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
 };
 
 TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,

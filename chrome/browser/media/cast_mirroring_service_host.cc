@@ -104,17 +104,21 @@ CreateVideoCaptureHostOnIO(
 }
 
 void PauseVideoCaptureHostOnIO(media::mojom::VideoCaptureHost* host,
-                               base::UnguessableToken device_id) {
+                               base::UnguessableToken device_id,
+                               base::OnceClosure on_paused_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   host->Pause(device_id);
+  std::move(on_paused_callback).Run();
 }
 
 void ResumeVideoCaptureHostOnIO(media::mojom::VideoCaptureHost* host,
                                 base::UnguessableToken device_id,
                                 base::UnguessableToken session_id,
-                                media::VideoCaptureParams params) {
+                                media::VideoCaptureParams params,
+                                base::OnceClosure on_resumed_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   host->Resume(device_id, session_id, params);
+  std::move(on_resumed_callback).Run();
 }
 
 blink::mojom::MediaStreamType ConvertVideoStreamType(
@@ -477,6 +481,7 @@ void CastMirroringServiceHost::WebContentsDestroyed() {
   audio_stream_factory_.reset();
   gpu_client_.reset();
   RecordTabUIUsageMetricsIfNeededAndReset();
+  video_capture_host_ = nullptr;
 }
 
 void CastMirroringServiceHost::ShowCaptureIndicator() {
@@ -553,6 +558,11 @@ void CastMirroringServiceHost::SwitchMirroringSourceTab(
   source_media_id_ = media_id;
   source_media_id_.web_contents_id.disable_local_echo = true;
 
+  // Drop the reference to the VideoCaptureHost, since the weak_ptr will be
+  // invalidated. A new VideoCaptureHost will be created for the new source tab
+  // by the Mirroring Service.
+  video_capture_host_ = nullptr;
+
   // Observe the target WebContents for tab mirroring.
   DCHECK_EQ(source_media_id_.type, content::DesktopMediaID::TYPE_WEB_CONTENTS);
   Observe(GetContents(source_media_id_.web_contents_id));
@@ -601,24 +611,25 @@ void CastMirroringServiceHost::OpenOffscreenTab(
   Observe(offscreen_tab_->web_contents());
 }
 
-void CastMirroringServiceHost::Pause() {
+void CastMirroringServiceHost::Pause(base::OnceClosure on_paused_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_host_) {
     content::GetIOThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PauseVideoCaptureHostOnIO, video_capture_host_->impl(),
-                       ignored_token_),
+                       ignored_token_, std::move(on_paused_callback)),
         kPauseDelay);
   }
 }
 
-void CastMirroringServiceHost::Resume() {
+void CastMirroringServiceHost::Resume(base::OnceClosure on_resumed_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_host_) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ResumeVideoCaptureHostOnIO, video_capture_host_->impl(),
-                       ignored_token_, ignored_token_, ignored_params_));
+                       ignored_token_, ignored_token_, ignored_params_,
+                       std::move(on_resumed_callback)));
   }
 }
 

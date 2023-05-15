@@ -152,14 +152,6 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   ReplacedPainter(*this).Paint(paint_info);
 }
 
-bool LayoutReplaced::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  // If the height is a percentage and the width is auto, then the
-  // containingBlocks's height changing can cause this node to change it's
-  // preferred width because it maintains aspect ratio.
-  return HasRelativeLogicalHeight() && StyleRef().LogicalWidth().IsAuto();
-}
-
 static inline bool LayoutObjectHasIntrinsicAspectRatio(
     const LayoutObject* layout_object) {
   DCHECK(layout_object);
@@ -188,53 +180,6 @@ void LayoutReplaced::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ReplacedContentRect());
 }
 
-void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  NOT_DESTROYED();
-  // In cases where we apply size containment we don't need to compute sizing
-  // information, since the final result does not depend on it.
-  if (ShouldApplySizeContainment()) {
-    // Reset the size in case it was already populated.
-    intrinsic_sizing_info.size = gfx::SizeF();
-
-    const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
-    if (!aspect_ratio.IsAuto()) {
-      intrinsic_sizing_info.aspect_ratio.set_width(
-          aspect_ratio.GetRatio().width());
-      intrinsic_sizing_info.aspect_ratio.set_height(
-          aspect_ratio.GetRatio().height());
-    }
-
-    // If any of the dimensions are overridden, set those sizes.
-    if (HasOverrideIntrinsicContentLogicalWidth()) {
-      intrinsic_sizing_info.size.set_width(
-          OverrideIntrinsicContentLogicalWidth().ToFloat());
-    }
-    if (HasOverrideIntrinsicContentLogicalHeight()) {
-      intrinsic_sizing_info.size.set_height(
-          OverrideIntrinsicContentLogicalHeight().ToFloat());
-    }
-    return;
-  }
-
-  // Size overrides only apply if there is size-containment, which is checked
-  // above.
-  DCHECK(!HasOverrideIntrinsicContentLogicalWidth());
-  DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
-
-  ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
-
-  // Update our intrinsic size to match what was computed, so that
-  // when we constrain the size, the correct intrinsic size will be
-  // obtained for comparison against min and max widths.
-  if (!intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
-      !intrinsic_sizing_info.size.IsEmpty()) {
-    intrinsic_size_ = LayoutSize(intrinsic_sizing_info.size);
-    if (!IsHorizontalWritingMode())
-      intrinsic_size_ = intrinsic_size_.TransposedSize();
-  }
-}
-
 absl::optional<gfx::SizeF>
 LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
   if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
@@ -248,7 +193,7 @@ LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
 
 absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const LayoutSize* overridden_intrinsic_size) const {
-  scoped_refptr<BasicShape> object_view_box = StyleRef().ObjectViewBox();
+  const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
     return absl::nullopt;
 

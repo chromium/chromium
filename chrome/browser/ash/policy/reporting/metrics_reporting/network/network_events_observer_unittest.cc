@@ -15,9 +15,14 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -27,6 +32,7 @@
 
 using chromeos::network_health::mojom::NetworkState;
 using testing::Eq;
+using testing::StrEq;
 
 namespace reporting {
 namespace {
@@ -93,7 +99,7 @@ class NetworkEventsObserverTestHelper {
                                /*visible=*/true);
     service_client->AddService(kCellularServicePath, kCellularGuid,
                                "cellular-network-name", shill::kTypeCellular,
-                               shill::kStateReady, /*visible=*/true);
+                               shill::kStateAssociation, /*visible=*/true);
     service_client->SetServiceProperty(
         kCellularServicePath, shill::kIccidProperty, base::Value("test_iccid"));
     task_environment_.RunUntilIdle();
@@ -345,11 +351,14 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, FeatureDisabled) {
 
 struct NetworkConnectionStateTestCase {
   std::string test_name;
+  std::string service_path;
   std::string guid;
-  NetworkState input_state;
-  NetworkState other_state = NetworkState::kNotConnected;
+  std::string input_state;
+  std::string other_state = shill::kStateIdle;
   MetricEventType expected_event_type;
   NetworkConnectionState expected_state;
+  NetworkConnectionState other_expected_state =
+      NetworkConnectionState::NOT_CONNECTED;
 };
 
 class NetworkEventsObserverConnectionStateTest
@@ -358,6 +367,11 @@ class NetworkEventsObserverConnectionStateTest
   void SetUp() override { network_events_observer_test_helper_.SetUp(); }
 
   void TearDown() override { network_events_observer_test_helper_.TearDown(); }
+
+  ash::ShillServiceClient::TestInterface* service_client() {
+    return network_events_observer_test_helper_.network_handler_test_helper()
+        ->service_test();
+  }
 
   NetworkEventsObserverTestHelper network_events_observer_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -368,23 +382,29 @@ TEST_F(NetworkEventsObserverConnectionStateTest, PhysicalFeatureDisabled) {
       /*enabled_features=*/{kEnableVpnConnectionStateEventsReporting},
       /*disabled_features=*/{kEnableNetworkConnectionStateEventsReporting});
 
-  bool event_reported = false;
-
   NetworkEventsObserver network_events_observer;
-  MetricData result_metric_data;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
-                                                   NetworkState::kNotConnected);
+  service_client()->SetServiceProperty(kWifiServicePath, shill::kStateProperty,
+                                       base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 
-  network_events_observer.OnConnectionStateChanged(kVpnGuid,
-                                                   NetworkState::kNotConnected);
+  service_client()->SetServiceProperty(kVpnServicePath, shill::kStateProperty,
+                                       base::Value(shill::kStateOnline));
 
-  EXPECT_TRUE(event_reported);
+  MetricData metric_data = test_future.Take();
+  EXPECT_THAT(metric_data.event_data().type(),
+              Eq(MetricEventType::VPN_CONNECTION_STATE_CHANGE));
+  EXPECT_THAT(metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .network_connection_change_event_data()
+                  .connection_state(),
+              Eq(NetworkConnectionState::ONLINE));
+  EXPECT_TRUE(test_future.IsEmpty());
 }
 
 TEST_F(NetworkEventsObserverConnectionStateTest, VpnFeatureDisabled) {
@@ -394,23 +414,84 @@ TEST_F(NetworkEventsObserverConnectionStateTest, VpnFeatureDisabled) {
       /*disabled_features=*/
       {kEnableVpnConnectionStateEventsReporting});
 
-  bool event_reported = false;
+  NetworkEventsObserver network_events_observer;
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
+
+  service_client()->SetServiceProperty(kVpnServicePath, shill::kStateProperty,
+                                       base::Value(shill::kStateIdle));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(test_future.IsEmpty());
+
+  service_client()->SetServiceProperty(kWifiServicePath, shill::kStateProperty,
+                                       base::Value(shill::kStateIdle));
+
+  MetricData metric_data = test_future.Take();
+  EXPECT_THAT(metric_data.event_data().type(),
+              Eq(MetricEventType::NETWORK_STATE_CHANGE));
+  EXPECT_THAT(metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .network_connection_change_event_data()
+                  .connection_state(),
+              Eq(NetworkConnectionState::NOT_CONNECTED));
+  EXPECT_TRUE(test_future.IsEmpty());
+}
+
+TEST_F(NetworkEventsObserverConnectionStateTest, NewVpnConnection) {
+  static constexpr char kNewVpnServicePath1[] = "new-vpn-path1";
+  static constexpr char kNewVpnGuid1[] = "new-vpn-guid1";
+  static constexpr char kNewVpnServicePath2[] = "new-vpn-path2";
+  static constexpr char kNewVpnGuid2[] = "new-vpn-guid2";
+
+  scoped_feature_list_.InitAndEnableFeature(
+      kEnableVpnConnectionStateEventsReporting);
 
   NetworkEventsObserver network_events_observer;
-  MetricData result_metric_data;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kVpnGuid,
-                                                   NetworkState::kNotConnected);
+  service_client()->AddService(kNewVpnServicePath1, kNewVpnGuid1, "new-name1",
+                               shill::kTypeVPN, shill::kStateIdle,
+                               /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(event_reported);
+  // New connection added in disconnected state, nothing is reported.
+  ASSERT_TRUE(test_future.IsEmpty());
 
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
-                                                   NetworkState::kNotConnected);
+  // Change new connection state.
+  service_client()->SetServiceProperty(kNewVpnServicePath1,
+                                       shill::kStateProperty,
+                                       base::Value(shill::kStateReady));
 
-  EXPECT_TRUE(event_reported);
+  MetricData metric_data1 = test_future.Take();
+  const auto& connection_event_data1 =
+      metric_data1.telemetry_data()
+          .networks_telemetry()
+          .network_connection_change_event_data();
+  EXPECT_THAT(metric_data1.event_data().type(),
+              Eq(MetricEventType::VPN_CONNECTION_STATE_CHANGE));
+  EXPECT_THAT(connection_event_data1.guid(), StrEq(kNewVpnGuid1));
+  EXPECT_THAT(connection_event_data1.connection_state(),
+              Eq(NetworkConnectionState::CONNECTED));
+
+  service_client()->AddService(kNewVpnServicePath2, kNewVpnGuid2, "new-name2",
+                               shill::kTypeVPN, shill::kStateAssociation,
+                               /*visible=*/true);
+
+  // New connection added in connecting state should be reported.
+  MetricData metric_data2 = test_future.Take();
+  const auto& connection_event_data2 =
+      metric_data2.telemetry_data()
+          .networks_telemetry()
+          .network_connection_change_event_data();
+  EXPECT_THAT(metric_data2.event_data().type(),
+              Eq(MetricEventType::VPN_CONNECTION_STATE_CHANGE));
+  EXPECT_THAT(connection_event_data2.guid(), StrEq(kNewVpnGuid2));
+  EXPECT_THAT(connection_event_data2.connection_state(),
+              Eq(NetworkConnectionState::CONNECTING));
 }
 
 TEST_F(NetworkEventsObserverConnectionStateTest, TetherConnection) {
@@ -421,104 +502,141 @@ TEST_F(NetworkEventsObserverConnectionStateTest, TetherConnection) {
       /*disabled_features=*/
       {});
 
-  bool event_reported = false;
-
   NetworkEventsObserver network_events_observer;
-  MetricData result_metric_data;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kTetherGuid,
-                                                   NetworkState::kConnected);
+  service_client()->SetServiceProperty(kTetherServicePath,
+                                       shill::kStateProperty,
+                                       base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 }
 
-TEST_F(NetworkEventsObserverConnectionStateTest, InvalidGuid) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kEnableNetworkConnectionStateEventsReporting,
-                            kEnableVpnConnectionStateEventsReporting},
-      /*disabled_features=*/{});
+TEST_F(NetworkEventsObserverConnectionStateTest, WifiPortal) {
+  static constexpr char kNewWifiServicePath[] = "new-wifi-path";
+  static constexpr char kNewWifiGuid[] = "new-wifi-guid";
+
+  scoped_feature_list_.InitAndEnableFeature(
+      kEnableNetworkConnectionStateEventsReporting);
 
   NetworkEventsObserver network_events_observer;
-  bool event_reported = false;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
-  network_events_observer.OnConnectionStateChanged("invalid_guid",
-                                                   NetworkState::kOnline);
+  service_client()->AddService(kNewWifiServicePath, kNewWifiGuid, "new-name",
+                               shill::kTypeWifi, shill::kStateRedirectFound,
+                               /*visible=*/true);
 
-  ASSERT_FALSE(event_reported);
+  MetricData metric_data = test_future.Take();
+  const auto& connection_event_data =
+      metric_data.telemetry_data()
+          .networks_telemetry()
+          .network_connection_change_event_data();
+  EXPECT_THAT(metric_data.event_data().type(),
+              Eq(MetricEventType::NETWORK_STATE_CHANGE));
+  EXPECT_THAT(connection_event_data.guid(), Eq((kNewWifiGuid)));
+  EXPECT_THAT(connection_event_data.connection_state(),
+              Eq(NetworkConnectionState::PORTAL));
 }
 
 TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
   const NetworkConnectionStateTestCase& test_case = GetParam();
-  bool event_reported = false;
+  static constexpr char kNewWifiServicePath[] = "new-wifi-path";
+  static constexpr char kNewWifiGuid[] = "new-wifi-guid";
 
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kEnableNetworkConnectionStateEventsReporting,
                             kEnableVpnConnectionStateEventsReporting},
       /*disabled_features=*/{});
 
+  service_client()->AddService(kNewWifiServicePath, kNewWifiGuid, "new-name",
+                               shill::kTypeWifi, test_case.other_state,
+                               /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+
   NetworkEventsObserver network_events_observer;
-  MetricData result_metric_data;
-  auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {
-    event_reported = true;
-    result_metric_data = std::move(metric_data);
-  });
+  network_events_observer.SetReportingEnabled(true);
+  base::test::RepeatingTestFuture<MetricData> test_future;
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(test_case.guid,
-                                                   test_case.input_state);
+  service_client()->SetServiceProperty(test_case.service_path,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.input_state));
+  {
+    MetricData metric_data = test_future.Take();
+    const auto& connection_event_data =
+        metric_data.telemetry_data()
+            .networks_telemetry()
+            .network_connection_change_event_data();
+    EXPECT_THAT(metric_data.event_data().type(),
+                Eq(test_case.expected_event_type));
+    EXPECT_THAT(connection_event_data.guid(), Eq(test_case.guid));
+    EXPECT_THAT(connection_event_data.connection_state(),
+                Eq(test_case.expected_state));
+  }
 
-  ASSERT_TRUE(event_reported);
-  ASSERT_TRUE(result_metric_data.has_event_data());
-  EXPECT_THAT(result_metric_data.event_data().type(),
-              Eq(test_case.expected_event_type));
-  ASSERT_TRUE(result_metric_data.has_telemetry_data());
-  ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
-  ASSERT_TRUE(result_metric_data.telemetry_data()
-                  .networks_telemetry()
-                  .has_network_connection_change_event_data());
-  EXPECT_THAT(result_metric_data.telemetry_data()
-                  .networks_telemetry()
-                  .network_connection_change_event_data()
-                  .guid(),
-              Eq(test_case.guid));
-  EXPECT_THAT(result_metric_data.telemetry_data()
-                  .networks_telemetry()
-                  .network_connection_change_event_data()
-                  .connection_state(),
-              Eq(test_case.expected_state));
-
-  // Same event with different guid should be reported.
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
-                                                   test_case.input_state);
-  ASSERT_TRUE(event_reported);
+  // Same event for different service should be reported.
+  service_client()->SetServiceProperty(kNewWifiServicePath,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.input_state));
+  {
+    MetricData metric_data = test_future.Take();
+    const auto& connection_event_data =
+        metric_data.telemetry_data()
+            .networks_telemetry()
+            .network_connection_change_event_data();
+    EXPECT_THAT(metric_data.event_data().type(),
+                MetricEventType::NETWORK_STATE_CHANGE);
+    EXPECT_THAT(connection_event_data.guid(), Eq(kNewWifiGuid));
+    EXPECT_THAT(connection_event_data.connection_state(),
+                Eq(test_case.expected_state));
+  }
 
   // Duplicate events should not be reported
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(test_case.guid,
-                                                   test_case.input_state);
-  ASSERT_FALSE(event_reported);
+  service_client()->SetServiceProperty(test_case.service_path,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.input_state));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(test_future.IsEmpty());
 
   // Different event for same network should be reported.
-  network_events_observer.OnConnectionStateChanged(test_case.guid,
-                                                   test_case.other_state);
-  ASSERT_TRUE(event_reported);
+  service_client()->SetServiceProperty(test_case.service_path,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.other_state));
+  {
+    MetricData metric_data = test_future.Take();
+    const auto& connection_event_data =
+        metric_data.telemetry_data()
+            .networks_telemetry()
+            .network_connection_change_event_data();
+    EXPECT_THAT(metric_data.event_data().type(),
+                Eq(test_case.expected_event_type));
+    EXPECT_THAT(connection_event_data.guid(), Eq(test_case.guid));
+    EXPECT_THAT(connection_event_data.connection_state(),
+                Eq(test_case.other_expected_state));
+  }
 
-  // Same event with same guid should be reported if reporting state changed
-  // from disabled to enabled.
+  // Reporting disabled, no events should be reported.
   network_events_observer.SetReportingEnabled(/*is_enabled=*/false);
+  service_client()->SetServiceProperty(test_case.service_path,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.input_state));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(test_future.IsEmpty());
+
+  // Same last network reported event should be reported if reporting state
+  // changed from disabled to enabled.
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(test_case.guid,
-                                                   test_case.other_state);
-  ASSERT_TRUE(event_reported);
+  service_client()->SetServiceProperty(test_case.service_path,
+                                       shill::kStateProperty,
+                                       base::Value(test_case.other_state));
+
+  EXPECT_TRUE(test_future.Wait());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -526,32 +644,31 @@ INSTANTIATE_TEST_SUITE_P(
     NetworkEventsObserverConnectionStateTest,
     ::testing::ValuesIn<NetworkConnectionStateTestCase>(
         {{.test_name = "WifiOnline",
+          .service_path = kWifiServicePath,
           .guid = kWifiGuid,
-          .input_state = NetworkState::kOnline,
-          .other_state = NetworkState::kNotConnected,
+          .input_state = shill::kStateOnline,
           .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
           .expected_state = NetworkConnectionState::ONLINE},
          {.test_name = "CellularConnected",
+          .service_path = kCellularServicePath,
           .guid = kCellularGuid,
-          .input_state = NetworkState::kConnected,
+          .input_state = shill::kStateReady,
           .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
           .expected_state = NetworkConnectionState::CONNECTED},
-         {.test_name = "WifiPortal",
-          .guid = kWifiGuid,
-          .input_state = NetworkState::kPortal,
-          .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
-          .expected_state = NetworkConnectionState::PORTAL},
          {.test_name = "VpnConnecting",
+          .service_path = kVpnServicePath,
           .guid = kVpnGuid,
-          .input_state = NetworkState::kConnecting,
+          .input_state = shill::kStateAssociation,
           .expected_event_type = MetricEventType::VPN_CONNECTION_STATE_CHANGE,
           .expected_state = NetworkConnectionState::CONNECTING},
          {.test_name = "VpnNotConnected",
+          .service_path = kVpnServicePath,
           .guid = kVpnGuid,
-          .input_state = NetworkState::kNotConnected,
-          .other_state = NetworkState::kConnecting,
+          .input_state = shill::kStateIdle,
+          .other_state = shill::kStateConfiguration,
           .expected_event_type = MetricEventType::VPN_CONNECTION_STATE_CHANGE,
-          .expected_state = NetworkConnectionState::NOT_CONNECTED}}),
+          .expected_state = NetworkConnectionState::NOT_CONNECTED,
+          .other_expected_state = NetworkConnectionState::CONNECTING}}),
     [](const testing::TestParamInfo<
         NetworkEventsObserverConnectionStateTest::ParamType>& info) {
       return info.param.test_name;

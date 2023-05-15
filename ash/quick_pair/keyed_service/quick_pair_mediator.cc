@@ -41,8 +41,6 @@ namespace quick_pair {
 
 namespace {
 
-Mediator::Factory* g_test_factory = nullptr;
-
 constexpr base::TimeDelta kDismissedDiscoveryNotificationBanTime =
     base::Seconds(2);
 constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
@@ -50,12 +48,7 @@ constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
 
 }  // namespace
 
-// static
-std::unique_ptr<Mediator> Mediator::Factory::Create() {
-  if (g_test_factory) {
-    return g_test_factory->BuildInstance();
-  }
-
+std::unique_ptr<Mediator> Mediator::FactoryImpl::BuildInstance() {
   auto process_manager = std::make_unique<QuickPairProcessManagerImpl>();
   auto pairer_broker = std::make_unique<PairerBrokerImpl>();
   auto message_stream_lookup = std::make_unique<MessageStreamLookupImpl>();
@@ -68,11 +61,6 @@ std::unique_ptr<Mediator> Mediator::Factory::Create() {
       std::move(message_stream_lookup), std::move(pairer_broker),
       std::make_unique<UIBrokerImpl>(),
       std::make_unique<FastPairRepositoryImpl>(), std::move(process_manager));
-}
-
-// static
-void Mediator::Factory::SetFactoryForTesting(Factory* factory) {
-  g_test_factory = factory;
 }
 
 Mediator::Mediator(

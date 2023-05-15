@@ -32,6 +32,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   float max_label_score = -1;
   absl::optional<std::u16string> current_highest_scoring_label;
   absl::optional<std::u16string> current_highest_scoring_label_unquoted;
+  LabelSource label_source = LabelSource::kUnknown;
 
   // First try finding search terms to use as the cluster label.
   int num_search_visits = 0;
@@ -46,6 +47,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
             IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
             *current_highest_scoring_label_unquoted);
         max_label_score = visit.score;
+        label_source = LabelSource::kSearch;
       }
     }
   }
@@ -99,6 +101,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       current_highest_scoring_label = l10n_util::GetStringFUTF16(
           IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
           *current_highest_scoring_label_unquoted);
+      label_source = LabelSource::kSearch;
     }
   }
 
@@ -119,11 +122,12 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           if (entity_metadata_it == entity_metadata_map_->end()) {
             continue;
           }
-          max_label_score = new_score;
           current_highest_scoring_label =
               base::UTF8ToUTF16(entity_metadata_it->second.human_readable_name);
           current_highest_scoring_label_unquoted =
               current_highest_scoring_label;
+          max_label_score = new_score;
+          label_source = LabelSource::kContentDerivedEntity;
         }
         entity_to_score[entity.id] = new_score;
       }
@@ -142,6 +146,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
         current_highest_scoring_label = host;
         current_highest_scoring_label_unquoted = current_highest_scoring_label;
         max_label_score = hostname_score;
+        label_source = LabelSource::kHostname;
       }
     }
 
@@ -157,6 +162,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   if (current_highest_scoring_label) {
     cluster.label = *current_highest_scoring_label;
     cluster.raw_label = *current_highest_scoring_label_unquoted;
+    cluster.label_source = label_source;
   }
 }
 

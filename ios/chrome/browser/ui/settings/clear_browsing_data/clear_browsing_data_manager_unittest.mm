@@ -12,12 +12,11 @@
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/fake_browsing_data_remover.h"
@@ -25,6 +24,8 @@
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -198,11 +199,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
 // but sync is off.
 TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   // Ensure that sync is not running.
-  test_sync_service_->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+  test_sync_service_->SetHasSyncConsent(false);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   [manager_ loadModel:model_];
 
@@ -312,7 +313,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   [manager_ loadModel:model_];
 
@@ -342,7 +344,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -408,7 +411,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";

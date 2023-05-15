@@ -56,11 +56,10 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
       return ZX_VM_PERM_READ | ZX_VM_PERM_EXECUTE;
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
-    default:
-      PA_NOTREACHED();
-      [[fallthrough]];
     case PageAccessibilityConfiguration::kInaccessible:
       return 0;
+    default:
+      PA_NOTREACHED();
   }
 }
 

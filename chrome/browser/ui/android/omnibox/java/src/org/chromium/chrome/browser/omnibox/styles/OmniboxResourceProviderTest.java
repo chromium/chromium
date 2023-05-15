@@ -339,4 +339,19 @@ public class OmniboxResourceProviderTest {
         Assert.assertEquals(copyString,
                 OmniboxResourceProvider.getStringCacheForTesting().get(R.string.copy_link));
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    public void invalidateDrawableCache() {
+        Drawable drawable =
+                OmniboxResourceProvider.getDrawable(mActivity, R.drawable.btn_suggestion_refine);
+        ConstantState constantState = drawable.getConstantState();
+
+        Assert.assertEquals(constantState,
+                OmniboxResourceProvider.getDrawableCacheForTesting().get(
+                        R.drawable.btn_suggestion_refine));
+
+        OmniboxResourceProvider.invalidateDrawableCache();
+        Assert.assertEquals(0, OmniboxResourceProvider.getDrawableCacheForTesting().size());
+    }
 }

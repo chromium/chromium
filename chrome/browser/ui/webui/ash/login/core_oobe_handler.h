@@ -60,12 +60,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // BaseScreenHandler implementation:
+  void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-
-  // WebUIMessageHandler implementation.
-  void RegisterMessages() override;
 
   // VersionInfoUpdater::Delegate implementation:
   void OnOSVersionLabelTextUpdated(
@@ -104,6 +100,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleEnableShelfButtons(bool enable);
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
+  void HandleBackdropLoaded();
   void HandleLaunchHelpApp(int help_topic_id);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.

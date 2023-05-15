@@ -17,6 +17,7 @@
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -154,7 +155,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestBrowserContext> context_;
-  ArcMetricsService* service_;
+  raw_ptr<ArcMetricsService, ExperimentalAsh> service_;
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;
@@ -177,18 +178,8 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_FirstBoot) {
   base::HistogramTester tester;
   service()->ReportBootProgress(std::move(events), mojom::BootType::FIRST_BOOT);
   base::RunLoop().RunUntilIdle();
-  for (size_t i = 0; i < kBootEvents.size(); ++i) {
-    tester.ExpectUniqueSample(
-        std::string("Arc.") + kBootEvents[i] + ".FirstBoot", i,
-        1 /* count of the sample */);
-  }
-  // Confirm that Arc.AndroidBootTime.FirstBoot is also recorded, and has the
-  // same value as "Arc.boot_progress_enable_screen.FirstBoot".
-  std::unique_ptr<base::HistogramSamples> samples =
-      tester.GetHistogramSamplesSinceCreation(
-          "Arc." + std::string(kBootEvents.back()) + ".FirstBoot");
-  ASSERT_TRUE(samples.get());
-  tester.ExpectUniqueSample("Arc.AndroidBootTime.FirstBoot", samples->sum(), 1);
+  // Confirm that Arc.AndroidBootTime.FirstBoot is recorded.
+  tester.ExpectTotalCount("Arc.AndroidBootTime.FirstBoot", 1);
 }
 
 // Does the same but with negative values and FIRST_BOOT_AFTER_UPDATE.
@@ -212,18 +203,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_FirstBootAfterUpdate) {
   service()->ReportBootProgress(std::move(events),
                                 mojom::BootType::FIRST_BOOT_AFTER_UPDATE);
   base::RunLoop().RunUntilIdle();
-  for (size_t i = 0; i < kBootEvents.size(); ++i) {
-    const int expected = std::max<int>(0, i * 2 - 5);
-    tester.ExpectUniqueSample(
-        std::string("Arc.") + kBootEvents[i] + ".FirstBootAfterUpdate",
-        expected, 1);
-  }
-  std::unique_ptr<base::HistogramSamples> samples =
-      tester.GetHistogramSamplesSinceCreation(
-          "Arc." + std::string(kBootEvents.back()) + ".FirstBootAfterUpdate");
-  ASSERT_TRUE(samples.get());
-  tester.ExpectUniqueSample("Arc.AndroidBootTime.FirstBootAfterUpdate",
-                            samples->sum(), 1);
+  tester.ExpectTotalCount("Arc.AndroidBootTime.FirstBoot", 0);
 }
 
 // Does the same but with REGULAR_BOOT.
@@ -237,17 +217,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_RegularBoot) {
   service()->ReportBootProgress(std::move(events),
                                 mojom::BootType::REGULAR_BOOT);
   base::RunLoop().RunUntilIdle();
-  for (size_t i = 0; i < kBootEvents.size(); ++i) {
-    const int expected = std::max<int>(0, i * 2 - 5);
-    tester.ExpectUniqueSample(
-        std::string("Arc.") + kBootEvents[i] + ".RegularBoot", expected, 1);
-  }
-  std::unique_ptr<base::HistogramSamples> samples =
-      tester.GetHistogramSamplesSinceCreation(
-          "Arc." + std::string(kBootEvents.back()) + ".RegularBoot");
-  ASSERT_TRUE(samples.get());
-  tester.ExpectUniqueSample("Arc.AndroidBootTime.RegularBoot", samples->sum(),
-                            1);
+  tester.ExpectTotalCount("Arc.AndroidBootTime.FirstBoot", 0);
 }
 
 // Tests that no UMA is recorded when nothing is reported.
@@ -258,10 +228,6 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_EmptyResults) {
   base::HistogramTester tester;
   service()->ReportBootProgress(std::move(events), mojom::BootType::FIRST_BOOT);
   base::RunLoop().RunUntilIdle();
-  for (size_t i = 0; i < kBootEvents.size(); ++i) {
-    tester.ExpectTotalCount(std::string("Arc.") + kBootEvents[i] + ".FirstBoot",
-                            0);
-  }
   tester.ExpectTotalCount("Arc.AndroidBootTime.FirstBoot", 0);
 }
 
@@ -275,8 +241,6 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_InvalidBootType) {
   base::RunLoop().RunUntilIdle();
   for (const std::string& suffix :
        {".FirstBoot", ".FirstBootAfterUpdate", ".RegularBoot"}) {
-    tester.ExpectTotalCount("Arc." + (kBootEvents.front() + suffix), 0);
-    tester.ExpectTotalCount("Arc." + (kBootEvents.back() + suffix), 0);
     tester.ExpectTotalCount("Arc.AndroidBootTime" + suffix, 0);
   }
 }
@@ -462,6 +426,23 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
                            static_cast<base::HistogramBase::Sample>(0), 1);
   tester.ExpectBucketCount("Arc.Session.HasWebViewUsage",
                            static_cast<base::HistogramBase::Sample>(1), 2);
+}
+
+TEST_F(ArcMetricsServiceTest, ReportVpnServiceBuilderCompatApiUsage) {
+  base::HistogramTester tester;
+
+  service()->ReportVpnServiceBuilderCompatApiUsage(
+      mojom::VpnServiceBuilderCompatApiId::kVpnExcludeRoute);
+  service()->ReportVpnServiceBuilderCompatApiUsage(
+      mojom::VpnServiceBuilderCompatApiId::kVpnAddRoute);
+
+  tester.ExpectBucketCount(
+      "Arc.VpnServiceBuilderCompatApisCounter",
+      static_cast<int>(mojom::VpnServiceBuilderCompatApiId::kVpnExcludeRoute),
+      1);
+  tester.ExpectBucketCount(
+      "Arc.VpnServiceBuilderCompatApisCounter",
+      static_cast<int>(mojom::VpnServiceBuilderCompatApiId::kVpnAddRoute), 1);
 }
 
 class ArcVmArcMetricsServiceTest

@@ -9,9 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorConfig {
   // The keychain-access-group value used for WebAuthn credentials
@@ -25,8 +23,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorConfig {
   std::string metadata_secret;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_AUTHENTICATOR_CONFIG_H_

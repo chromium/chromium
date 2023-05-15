@@ -13,6 +13,10 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "net/base/address_map_cache_linux.h"
+#endif
+
 namespace net {
 
 // A NetworkChangeNotifier that needs to be told about network changes by some
@@ -48,6 +52,9 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   void GetCurrentMaxBandwidthAndConnectionType(
       double* max_bandwidth_mbps,
       ConnectionType* connection_type) const override;
+#if BUILDFLAG(IS_LINUX)
+  AddressMapOwnerLinux* GetAddressMapOwnerInternal() override;
+#endif
 
  private:
   friend class NetworkChangeNotifierPassiveTest;
@@ -66,6 +73,10 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   NetworkChangeCalculatorParamsPassive();
 
   THREAD_CHECKER(thread_checker_);
+
+#if BUILDFLAG(IS_LINUX)
+  AddressMapCacheLinux address_map_cache_;
+#endif
 
   mutable base::Lock lock_;
   NetworkChangeNotifier::ConnectionType

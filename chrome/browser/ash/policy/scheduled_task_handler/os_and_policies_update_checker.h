@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -119,7 +120,8 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
   UpdateCheckCompletionCallback update_check_completion_cb_;
 
   // Not owned.
-  ash::NetworkStateHandler* const network_state_handler_;
+  const raw_ptr<ash::NetworkStateHandler, ExperimentalAsh>
+      network_state_handler_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
@@ -135,7 +137,7 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
   base::OneShotTimer timeout_timer_;
 
   // Not owned.
-  ash::UpdateEngineClient* const update_engine_client_;
+  const raw_ptr<ash::UpdateEngineClient, ExperimentalAsh> update_engine_client_;
 
   base::WeakPtrFactory<OsAndPoliciesUpdateChecker> weak_factory_{this};
 };

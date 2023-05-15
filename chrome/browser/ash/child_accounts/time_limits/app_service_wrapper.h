@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -168,7 +169,7 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
 
   base::ObserverList<EventListener> listeners_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace app_time

@@ -53,8 +53,10 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (metric) {
     case views::INSETS_DIALOG:
-    case views::INSETS_DIALOG_SUBSECTION:
-      return gfx::Insets(kHarmonyLayoutUnit);
+    case views::INSETS_DIALOG_SUBSECTION: {
+      return features::IsChromeRefresh2023() ? gfx::Insets::VH(20, 20)
+                                             : gfx::Insets(kHarmonyLayoutUnit);
+    }
     case views::INSETS_CHECKBOX_RADIO_BUTTON: {
       gfx::Insets insets = LayoutProvider::GetInsetsMetric(metric);
       // Checkboxes and radio buttons should be aligned flush to the left edge.
@@ -86,7 +88,9 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       const gfx::Insets insets =
           LayoutProvider::GetInsetsMetric(views::INSETS_LABEL_BUTTON);
       const int horizontal_padding =
-          GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+          features::IsChromeRefresh2023()
+              ? 20
+              : GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
       // Hover button in page info requires double the height compared to the
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);

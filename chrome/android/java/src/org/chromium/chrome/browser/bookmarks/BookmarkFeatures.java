@@ -18,13 +18,14 @@ public class BookmarkFeatures {
 
     /** Returns whether an additional "add bookmark" item should be in the overflow menu. */
     public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
+        // TODO(wylieb): Remove the BOOKMARKS_REFRESH flag.
         return FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_REFRESH)
                 && ShoppingFeatures.isShoppingListEligible();
     }
 
     /** Returns whether the visual refresh should be used for the bookmark manager. */
-    public static boolean isBookmarksVisualRefreshEnabled() {
+    public static boolean isLegacyBookmarksVisualRefreshEnabled() {
         return isBookmarkMenuItemAsDedicatedRowEnabled();
     }
 

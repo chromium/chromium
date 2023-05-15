@@ -764,7 +764,9 @@ public class ExternalNavigationHandler {
         PermissionCallback permissionCallback = new PermissionCallback() {
             @Override
             public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                if (grantResults.length == 0) return;
+                assert permissionNeeded.equals(permissions[0]);
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && mDelegate.hasValidTab()) {
                     if (params.getRequiredAsyncActionTakenCallback() != null) {
                         params.getRequiredAsyncActionTakenCallback().onResult(
@@ -1004,7 +1006,7 @@ public class ExternalNavigationHandler {
 
         // Ensure the navigation was started with a user gesture so that inactive pages can't launch
         // apps unexpectedly, unless we trust the calling app for a CCT/TWA.
-        if (initialState.isRendererInitiated && !initialState.hasUserGesture()) {
+        if (initialState.isRendererInitiated && !initialState.hasUserGesture) {
             if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (debug()) Log.i(TAG, "Navigation chain started without a gesture.");
             return NavigationChainResult.REQUIRES_PROMPT;
@@ -1262,8 +1264,19 @@ public class ExternalNavigationHandler {
      */
     private boolean isCrossFrameRenavigation(ExternalNavigationParams params) {
         if (!ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) return false;
+
+        if (params.getRedirectHandler().navigationChainPerformedCrossFrameNavigation()) {
+            if (debug()) Log.i(TAG, "Navigation chain used cross-frame re-navigation.");
+            return true;
+        }
+
         if (params.isInitialNavigationInFrame() || !params.isCrossFrameNavigation()) return false;
+        // Server redirects can be seen as cross frame to the initial navigation in the frame, but
+        // are still controlled by the site in the frame.
+        if (params.isRedirect()) return false;
+
         if (debug()) Log.i(TAG, "Cross-frame re-navigation.");
+        params.getRedirectHandler().setPerformedCrossFrameNavigation();
         return true;
     }
 
@@ -1484,17 +1497,9 @@ public class ExternalNavigationHandler {
                 || ignoreBackForwardNav(params);
     }
 
-    private void recordIntentSelectorMetrics(GURL targetUrl, Intent targetIntent) {
-        if (UrlUtilities.hasIntentScheme(targetUrl)) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.Intent.IntentUriWithSelector", targetIntent.getSelector() != null);
-        }
-    }
-
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params, Intent targetIntent, GURL browserFallbackUrl,
             MutableBoolean canLaunchExternalFallbackResult) {
-        recordIntentSelectorMetrics(params.getUrl(), targetIntent);
         sanitizeQueryIntentActivitiesIntent(targetIntent);
 
         // Any subsequent navigations should cancel the existing AlertDialog.
@@ -1517,6 +1522,10 @@ public class ExternalNavigationHandler {
         // this app does support, and may still end up launching this app.
         boolean isIntentWithSupportedProtocol = UrlUtilities.hasIntentScheme(params.getUrl())
                 && UrlUtilities.isAcceptedScheme(intentDataUrl);
+
+        // Needs to be checked first as a failure for this reason is persisted through the
+        // navigation chain, and other failures should not cause this check to be skipped.
+        if (isCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         if (shouldBlockAllExternalAppLaunches(params, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1562,8 +1571,6 @@ public class ExternalNavigationHandler {
         if (preventDirectInstantAppsIntent(targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
-
-        if (isCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         QueryIntentActivitiesSupplier resolvingInfos =
                 new QueryIntentActivitiesSupplier(targetIntent);
@@ -2076,36 +2083,39 @@ public class ExternalNavigationHandler {
         Intent pickerIntent = new Intent(Intent.ACTION_PICK_ACTIVITY);
         pickerIntent.putExtra(Intent.EXTRA_INTENT, intent);
 
-        // Add the fake entry for the embedding app. This behavior is not well documented but works
-        // consistently across Android since L (and at least up to S).
-        PackageManager pm = context.getPackageManager();
-        ArrayList<ShortcutIconResource> icons = new ArrayList<>();
-        ArrayList<String> labels = new ArrayList<>();
-        String packageName = context.getPackageName();
-        String label = "";
-        ShortcutIconResource resource = new ShortcutIconResource();
-        try {
-            ApplicationInfo applicationInfo =
-                    pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            label = (String) pm.getApplicationLabel(applicationInfo);
-            Resources resources = pm.getResourcesForApplication(applicationInfo);
-            resource.packageName = packageName;
-            resource.resourceName = resources.getResourceName(applicationInfo.icon);
-            // This will throw a Resources.NotFoundException if the package uses resource
-            // name collapsing/stripping. The ActivityPicker fails to handle this exception, we have
-            // have to check for it here to avoid crashes.
-            resources.getDrawable(resources.getIdentifier(resource.resourceName, null, null), null);
-        } catch (NameNotFoundException | Resources.NotFoundException e) {
-            Log.w(TAG, "No icon resource found for package: " + packageName);
-            // Most likely the app doesn't have an icon and is just a test
-            // app. Android will just use a blank icon.
-            resource.packageName = "";
-            resource.resourceName = "";
+        if (!resolveInfoContainsSelf(resolvingInfos.getIncludingNonDefaultResolveInfos())) {
+            // Add the fake entry for the embedding app. This behavior is not well documented but
+            // works consistently across Android since L (and at least up to S).
+            PackageManager pm = context.getPackageManager();
+            ArrayList<ShortcutIconResource> icons = new ArrayList<>();
+            ArrayList<String> labels = new ArrayList<>();
+            String packageName = context.getPackageName();
+            String label = "";
+            ShortcutIconResource resource = new ShortcutIconResource();
+            try {
+                ApplicationInfo applicationInfo =
+                        pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+                label = (String) pm.getApplicationLabel(applicationInfo);
+                Resources resources = pm.getResourcesForApplication(applicationInfo);
+                resource.packageName = packageName;
+                resource.resourceName = resources.getResourceName(applicationInfo.icon);
+                // This will throw a Resources.NotFoundException if the package uses resource
+                // name collapsing/stripping. The ActivityPicker fails to handle this exception, we
+                // have have to check for it here to avoid crashes.
+                resources.getDrawable(
+                        resources.getIdentifier(resource.resourceName, null, null), null);
+            } catch (NameNotFoundException | Resources.NotFoundException e) {
+                Log.w(TAG, "No icon resource found for package: " + packageName);
+                // Most likely the app doesn't have an icon and is just a test
+                // app. Android will just use a blank icon.
+                resource.packageName = "";
+                resource.resourceName = "";
+            }
+            labels.add(label);
+            icons.add(resource);
+            pickerIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, labels);
+            pickerIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icons);
         }
-        labels.add(label);
-        icons.add(resource);
-        pickerIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, labels);
-        pickerIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icons);
 
         // Call startActivityForResult on the PICK_ACTIVITY intent, which will set the component of
         // the data result to the component of the chosen app.
@@ -2125,6 +2135,11 @@ public class ExternalNavigationHandler {
                         // Quirk of how we use the ActivityChooser - if the embedding app is
                         // chosen we get an intent back with ACTION_CREATE_SHORTCUT.
                         if (data.getAction().equals(Intent.ACTION_CREATE_SHORTCUT)) {
+                            // Ensure we don't loop asking the user to choose an app, then
+                            // re-asking when we navigate to the same URL.
+                            params.getRedirectHandler()
+                                    .setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
+
                             // It's pretty arbitrary whether to prefer the data URL or the fallback
                             // URL here. We could consider preferring the fallback URL, as the URL
                             // was probably intending to leave Chrome, but loading the URL the site

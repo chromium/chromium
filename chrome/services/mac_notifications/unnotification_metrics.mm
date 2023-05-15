@@ -13,6 +13,10 @@
 #include "base/strings/strcat.h"
 #include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace mac_notifications {
 
 namespace {

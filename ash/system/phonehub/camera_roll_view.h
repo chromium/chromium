@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/camera_roll_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -72,9 +73,11 @@ class ASH_EXPORT CameraRollView : public views::View,
   // Update the camera roll section to display the latest items.
   void Update();
 
-  phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
-  phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
-  CameraRollItemsView* items_view_ = nullptr;
+  raw_ptr<phonehub::CameraRollManager, ExperimentalAsh> camera_roll_manager_ =
+      nullptr;
+  raw_ptr<phonehub::UserActionRecorder, ExperimentalAsh> user_action_recorder_ =
+      nullptr;
+  raw_ptr<CameraRollItemsView, ExperimentalAsh> items_view_ = nullptr;
   bool content_present_metric_emitted_ = false;
 };
 

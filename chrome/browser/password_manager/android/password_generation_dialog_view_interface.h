@@ -12,7 +12,7 @@
 class PasswordGenerationController;
 
 namespace password_manager {
-class PasswordManagerDriver;
+class ContentPasswordManagerDriver;
 }  // namespace password_manager
 
 class PasswordGenerationDialogViewInterface {
@@ -27,7 +27,7 @@ class PasswordGenerationDialogViewInterface {
   // Used for metrics.
   virtual void Show(
       std::u16string& password,
-      base::WeakPtr<password_manager::PasswordManagerDriver>
+      base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) = 0;
 

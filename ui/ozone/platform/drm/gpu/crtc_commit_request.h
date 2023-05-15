@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -70,7 +71,7 @@ class CrtcCommitRequest {
   const uint32_t connector_id_ = 0;
   const drmModeModeInfo mode_ = {};
   const gfx::Point origin_;
-  HardwareDisplayPlaneList* plane_list_ = nullptr;
+  raw_ptr<HardwareDisplayPlaneList, ExperimentalAsh> plane_list_ = nullptr;
   const DrmOverlayPlaneList overlays_;
   const bool enable_vrr_ = false;
 };

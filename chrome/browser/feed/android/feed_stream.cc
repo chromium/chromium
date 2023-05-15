@@ -339,6 +339,13 @@ void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
       (static_cast<StreamKind>(stream_kind)));
 }
 
+void FeedStream::ContentViewed(JNIEnv* env, uint64_t docid) {
+  if (!feed_stream_api_) {
+    return;
+  }
+  feed_stream_api_->RecordContentViewed(docid);
+}
+
 void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,

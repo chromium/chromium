@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_LIST_OBSERVER_H_
 #define CHROME_BROWSER_UI_BROWSER_LIST_OBSERVER_H_
 
+#include "base/observer_list_types.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -13,7 +14,7 @@
 
 class Browser;
 
-class BrowserListObserver {
+class BrowserListObserver : public base::CheckedObserver {
  public:
   // Called immediately after a browser is added to the list
   virtual void OnBrowserAdded(Browser* browser) {}
@@ -30,9 +31,6 @@ class BrowserListObserver {
 
   // Called immediately after a browser becomes not active.
   virtual void OnBrowserNoLongerActive(Browser* browser) {}
-
- protected:
-  virtual ~BrowserListObserver() {}
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIST_OBSERVER_H_

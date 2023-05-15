@@ -11,4 +11,8 @@ html[chrome-refresh-2023] {
   --sp-card-block-padding: 8px;
   --sp-card-inline-padding: 16px;
   --sp-card-gap: 12px;
+
+  /* Override default WebUI vars from cr_shared_vars. */
+  --cr-primary-text-color: var(--color-side-panel-card-primary-foreground);
+  --cr-secondary-text-color: var(--color-side-panel-card-secondary-foreground);
 }

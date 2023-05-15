@@ -46,8 +46,12 @@ class POLICY_EXPORT PolicyLoaderWin
   // AsyncPolicyLoader implementation.
   void InitOnBackgroundThread() override;
   PolicyBundle Load() override;
+  void Reload(bool force) override;
 
  private:
+  // Called after critical policy section being entered.
+  void OnSectionEntered(bool force);
+
   // Parses Chrome policy from |gpo_dict| for the given |scope| and |level| and
   // merges it into |chrome_policy_map|.
   void LoadChromePolicy(const RegistryDict* gpo_dict,
@@ -75,6 +79,8 @@ class POLICY_EXPORT PolicyLoaderWin
   base::win::ObjectWatcher machine_policy_watcher_;
   bool user_policy_watcher_failed_;
   bool machine_policy_watcher_failed_;
+
+  base::WeakPtrFactory<PolicyLoaderWin> weak_factory_{this};
 };
 
 }  // namespace policy

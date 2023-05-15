@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_WINDOW_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_WINDOW_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -39,8 +40,8 @@ class DlpWindowObserver : public aura::WindowObserver {
   void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  aura::Window* window_;
-  Delegate* delegate_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace policy

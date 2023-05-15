@@ -6,6 +6,11 @@
 
 namespace commerce::flag_descriptions {
 
+const char kCommerceLocalPDPDetectionName[] = "Local Product Page Detection";
+const char kCommerceLocalPDPDetectionDescription[] =
+    "Allow Chrome to attempt to detect product pages on the client, without "
+    "server support.";
+
 const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
@@ -17,5 +22,13 @@ const char kChromeCartDomBasedHeuristicsName[] =
     "ChromeCart DOM-based heuristics";
 const char kChromeCartDomBasedHeuristicsDescription[] =
     "Enable DOM-based heuristics for ChromeCart.";
+
+const char kPriceInsightsName[] = "Price Insights";
+const char kPriceInsightsDescription[] = "Enable price insights experiment.";
+
+const char kPriceTrackingChipExperimentName[] =
+    "Price Tracking Chip Experiment";
+const char kPriceTrackingChipExperimentDescription[] =
+    "Enable price tracking chip experiment.";
 
 }  // namespace commerce::flag_descriptions

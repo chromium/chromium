@@ -361,12 +361,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_HostedAppLaunch) {
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
 
-    base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
-        open_result;
+    base::test::TestFuture<NSRunningApplication*, NSError*> open_result;
     base::mac::LaunchApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
                                  /*options=*/{}, open_result.GetCallback());
-    ASSERT_TRUE(open_result.Get<0>().has_value());
-    NSRunningApplication* shim_app = open_result.Get<0>().value();
+    ASSERT_TRUE(open_result.Get<0>());
+    NSRunningApplication* shim_app = open_result.Get<0>();
     ASSERT_TRUE(shim_app);
 
     base::Process shim_process(shim_app.processIdentifier);
@@ -438,12 +437,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
 
-    base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
-        open_result;
+    base::test::TestFuture<NSRunningApplication*, NSError*> open_result;
     base::mac::LaunchApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
                                  /*options=*/{}, open_result.GetCallback());
-    ASSERT_TRUE(open_result.Get<0>().has_value());
-    NSRunningApplication* shim_app = open_result.Get<0>().value();
+    ASSERT_TRUE(open_result.Get<0>());
+    NSRunningApplication* shim_app = open_result.Get<0>();
     ASSERT_TRUE(shim_app);
 
     base::Process shim_process(shim_app.processIdentifier);
@@ -664,12 +662,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
   ExtensionTestMessageListener launched_listener("Launched");
   base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
 
-  base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
-      open_result;
+  base::test::TestFuture<NSRunningApplication*, NSError*> open_result;
   base::mac::LaunchApplication(shim_path, shim_cmdline, /*url_specs=*/{},
                                /*options=*/{}, open_result.GetCallback());
-  ASSERT_TRUE(open_result.Get<0>().has_value());
-  NSRunningApplication* shim_app = open_result.Get<0>().value();
+  ASSERT_TRUE(open_result.Get<0>());
+  NSRunningApplication* shim_app = open_result.Get<0>();
   ASSERT_TRUE(shim_app);
 
   // Wait for the app to start (1). At this point there is no shim host.

@@ -55,10 +55,10 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
       browser, gaia_url, WindowOpenDisposition::SINGLETON_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  std::string inner_text;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.body.innerText);", &inner_text));
+  std::string inner_text =
+      content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                      "document.body.innerText;")
+          .ExtractString();
   // /echoheader returns "None" if the header isn't set.
   inner_text = (inner_text == "None") ? "" : inner_text;
   EXPECT_EQ(expected_header_value, inner_text);

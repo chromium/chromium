@@ -31,7 +31,7 @@ DeviceNameHandler::DeviceNameHandler(DeviceNameStore* device_name_store)
 DeviceNameHandler::~DeviceNameHandler() = default;
 
 void DeviceNameHandler::OnJavascriptAllowed() {
-  observation_.Observe(device_name_store_);
+  observation_.Observe(device_name_store_.get());
 }
 
 void DeviceNameHandler::OnJavascriptDisallowed() {

@@ -7,6 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
@@ -53,7 +54,7 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   void HandleDownloadResponse(base::FilePath file_path);
   void NotifyAllDownloadListeners(base::FilePath file_path);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

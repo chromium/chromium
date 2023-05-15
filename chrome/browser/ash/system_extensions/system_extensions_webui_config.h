@@ -19,7 +19,8 @@ class SystemExtensionsWebUIConfig : public content::WebUIConfig {
 
   // content::WebUIConfig
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
   void RegisterURLDataSource(content::BrowserContext* browser_context) override;
 
  private:

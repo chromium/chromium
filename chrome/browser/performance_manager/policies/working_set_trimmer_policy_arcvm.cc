@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/exo/wm_helper.h"
@@ -95,7 +96,7 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::BrowserContext* context =
-      context_for_testing_ ? context_for_testing_ : GetContext();
+      context_for_testing_ ? context_for_testing_.get() : GetContext();
   if (context) {
     auto* metrics_service =
         arc::ArcMetricsService::GetForBrowserContext(context);
@@ -223,7 +224,7 @@ void WorkingSetTrimmerPolicyArcVm::StartObservingUserInteractions() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::BrowserContext* context =
-      context_for_testing_ ? context_for_testing_ : GetContext();
+      context_for_testing_ ? context_for_testing_.get() : GetContext();
   DCHECK(context);
 
   // ArcMetricsService is created in OnPrimaryUserProfilePrepared() in

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -76,7 +76,8 @@ public class IncognitoHistoryLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mTestPage1 = mTestServer.getURL(TEST_PAGE_1);
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
 
@@ -110,6 +111,10 @@ public class IncognitoHistoryLeakageTest {
         return historyObserver.getHistoryQueryResults();
     }
 
+    /**
+     * A general class providing test parameters encapsulating different Activity type pairs
+     * spliced on Regular and Incognito mode between whom we want to test leakage.
+     */
     public static class AllTypesToAllTypes implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {
@@ -137,7 +142,7 @@ public class IncognitoHistoryLeakageTest {
     public void testBrowsingHistoryDoNotLeakFromIncognitoCustomTabActivity()
             throws TimeoutException {
         Intent intent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage1);
+                ApplicationProvider.getApplicationContext(), mTestPage1);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         List<HistoryItem> historyEntriesOfIncognitoMode =
                 getBrowsingHistory(mCustomTabActivityTestRule.getActivity().getActivityTab());

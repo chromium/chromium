@@ -30,6 +30,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
@@ -350,7 +351,7 @@ TEST_P(ImeMenuTrayTest, TestAccelerator) {
   ASSERT_FALSE(IsTrayBackgroundActive());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      TOGGLE_IME_MENU_BUBBLE, {});
+      AcceleratorAction::kToggleImeMenuBubble, {});
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -508,8 +509,8 @@ TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
                             "Touchscreen", gfx::Size(1024, 768), 0));
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(screens);
 
-  std::vector<ui::InputDevice> keyboard_devices;
-  keyboard_devices.push_back(ui::InputDevice(
+  std::vector<ui::KeyboardDevice> keyboard_devices;
+  keyboard_devices.push_back(ui::KeyboardDevice(
       1, ui::InputDeviceType::INPUT_DEVICE_USB, "external keyboard"));
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
 
@@ -532,9 +533,9 @@ TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   EXPECT_TRUE(MenuHasOnScreenKeyboardToggle());
 
   // The toggle should be hidden with internal keyboard.
-  keyboard_devices.push_back(ui::InputDevice(
+  keyboard_devices.push_back(ui::KeyboardDevice(
       1, ui::InputDeviceType::INPUT_DEVICE_USB, "external keyboard"));
-  keyboard_devices.push_back(ui::InputDevice(
+  keyboard_devices.push_back(ui::KeyboardDevice(
       1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "internal keyboard"));
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
 

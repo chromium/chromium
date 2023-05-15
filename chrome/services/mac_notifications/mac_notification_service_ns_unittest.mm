@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/barrier_closure.h"
-#include "base/mac/bundle_locations.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
@@ -29,6 +29,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // Make dynamic properties accessible for OCMock.
 @implementation NSUserNotificationCenter (Testing)
@@ -107,13 +111,11 @@ class MacNotificationServiceNSTest : public testing::Test {
         }]];
   }
 
-  base::scoped_nsobject<NSUserNotification> CreateNotification(
-      const std::string& notification_id,
-      const std::string& profile_id,
-      bool incognito) {
-    base::scoped_nsobject<NSUserNotification> toast(
-        [[NSUserNotification alloc] init]);
-    toast.get().userInfo = @{
+  NSUserNotification* CreateNotification(const std::string& notification_id,
+                                         const std::string& profile_id,
+                                         bool incognito) {
+    NSUserNotification* toast = [[NSUserNotification alloc] init];
+    toast.userInfo = @{
       kNotificationId : base::SysUTF8ToNSString(notification_id),
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
@@ -121,8 +123,8 @@ class MacNotificationServiceNSTest : public testing::Test {
     return toast;
   }
 
-  std::vector<base::scoped_nsobject<NSUserNotification>> SetupNotifications() {
-    std::vector<base::scoped_nsobject<NSUserNotification>> notifications = {
+  std::vector<NSUserNotification*> SetupNotifications() {
+    std::vector<NSUserNotification*> notifications = {
         CreateNotification("notificationId", "profileId", /*incognito=*/false),
         CreateNotification("notificationId", "profileId2", /*incognito=*/true),
         CreateNotification("notificationId2", "profileId", /*incognito=*/true),
@@ -132,7 +134,7 @@ class MacNotificationServiceNSTest : public testing::Test {
     NSMutableArray* notifications_ns =
         [NSMutableArray arrayWithCapacity:notifications.size()];
     for (const auto& notification : notifications)
-      [notifications_ns addObject:notification.get()];
+      [notifications_ns addObject:notification];
 
     [[[mock_notification_center_ expect] andReturn:notifications_ns]
         deliveredNotifications];
@@ -252,7 +254,7 @@ TEST_F(MacNotificationServiceNSTest, GetAllDisplayedNotifications) {
 
 TEST_F(MacNotificationServiceNSTest, CloseNotification) {
   auto notifications = SetupNotifications();
-  NSUserNotification* expected = notifications.back().get();
+  NSUserNotification* expected = notifications.back();
 
   // Expect to close the expected notification.
   base::RunLoop run_loop;
@@ -302,34 +304,6 @@ TEST_F(MacNotificationServiceNSTest, CloseAllNotifications) {
   service_remote_->CloseAllNotifications();
   run_loop.Run();
   [mock_notification_center_ verify];
-}
-
-TEST_F(MacNotificationServiceNSTest, LogsMetricsForAlerts) {
-  base::HistogramTester histogram_tester;
-  id mainBundleMock =
-      [OCMockObject partialMockForObject:base::mac::MainBundle()];
-
-  // Mock the alert style to "alert" and verify we log the correct metrics.
-  [[[mainBundleMock stub]
-      andReturn:@{@"NSUserNotificationAlertStyle" : @"alert"}] infoDictionary];
-  DisplayNotificationSync();
-  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
-                                      /*sample=*/true, /*expected_count=*/1);
-  [mainBundleMock stopMocking];
-}
-
-TEST_F(MacNotificationServiceNSTest, LogsMetricsForBanners) {
-  base::HistogramTester histogram_tester;
-  id mainBundleMock =
-      [OCMockObject partialMockForObject:base::mac::MainBundle()];
-
-  // Mock the alert style to "banner" and verify we log the correct metrics.
-  [[[mainBundleMock stub]
-      andReturn:@{@"NSUserNotificationAlertStyle" : @"banner"}] infoDictionary];
-  DisplayNotificationSync();
-  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
-                                      /*sample=*/true, /*expected_count=*/1);
-  [mainBundleMock stopMocking];
 }
 
 struct NotificationActionParams {

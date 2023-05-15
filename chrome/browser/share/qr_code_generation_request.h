@@ -9,8 +9,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // A wrapper class exposing the QR Code Mojo service to Java.
@@ -35,7 +35,10 @@ class QRCodeGenerationRequest {
   // Reference to Java QRCodeGenerationRequest containing a callback method.
   base::android::ScopedJavaGlobalRef<jobject> java_qr_code_generation_request_;
 
-  mojo::Remote<qrcode_generator::mojom::QRCodeGeneratorService> remote_;
+  // TODO(https://crbug.com/1431991): Remove this field once there is no
+  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
+  // `QRImageGenerator` class.
+  std::unique_ptr<qrcode_generator::QRImageGenerator> qrcode_service_;
 };
 
 #endif  // CHROME_BROWSER_SHARE_QR_CODE_GENERATION_REQUEST_H_

@@ -266,9 +266,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
   ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
             content::PreloadingEligibility::kPreloadingDisabled);
 
-  // Emulating Devtools attached to make PreloadingHoldback overridden.
-  ASSERT_NE(content::DevToolsAgentHost::GetOrCreateFor(GetActiveWebContents()),
-            nullptr);
+  // Emulating Devtools attached to make PreloadingHoldback overridden. Retain
+  // the returned host until the test finishes to avoid DevTools termination.
+  scoped_refptr<content::DevToolsAgentHost> dev_tools_agent_host =
+      content::DevToolsAgentHost::GetOrCreateFor(GetActiveWebContents());
+  ASSERT_TRUE(dev_tools_agent_host);
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");

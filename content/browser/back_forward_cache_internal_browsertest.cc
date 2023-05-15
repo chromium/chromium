@@ -3342,7 +3342,7 @@ class InjectCreateChildFrame : public DidCommitNavigationInterceptor {
       override {
     if (!was_called_ && navigation_request &&
         navigation_request->GetURL() == url_) {
-      EXPECT_TRUE(ExecuteScript(
+      EXPECT_TRUE(ExecJs(
           web_contents(),
           "document.body.appendChild(document.createElement('iframe'));"));
     }
@@ -3411,14 +3411,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // 4) Add a grandchild frame to `rfh_a`.  This shouldn't crash.
   RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 1);
-  EXPECT_TRUE(ExecuteScript(
-      rfh_a->child_at(0),
-      "document.body.appendChild(document.createElement('iframe'));"));
+  EXPECT_TRUE(
+      ExecJs(rfh_a->child_at(0),
+             "document.body.appendChild(document.createElement('iframe'));"));
   frame_observer.Wait();
   EXPECT_EQ(1U, rfh_a->child_at(0)->child_count());
 
   // Make sure the grandchild is live.
-  EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
+  EXPECT_TRUE(ExecJs(rfh_a->child_at(0)->child_at(0), "true"));
 }
 
 class BackForwardCacheBrowserTestWithFlagForScreenReader
@@ -3573,7 +3573,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
     ExpectRestored(FROM_HERE);
 
     ASSERT_TRUE(waiter_start.WaitForNotification());
-    EXPECT_EQ(waiter_start.event_render_frame_host(), rfh_a.get());
+    auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
+        waiter_start.event_browser_accessibility_manager()->delegate());
+    EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
   }
 }
 

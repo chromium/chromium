@@ -75,6 +75,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void DettachClient();
   void EvictChildSurface(const viz::SurfaceId& surface_id);
   void SetContainedSurfaces(const base::flat_set<viz::SurfaceId>& ids);
+  void InvalidateForOverlays();
 
   void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();

@@ -1155,6 +1155,24 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, TimeTicks time_ticks);
 
+// LiveTicks ------------------------------------------------------------------
+
+// Behaves similarly to `TimeTicks` (a monotonically non-decreasing clock time)
+// with the main difference being that `LiveTicks` is guaranteed not to advance
+// while the system is suspended.
+class BASE_EXPORT LiveTicks : public time_internal::TimeBase<LiveTicks> {
+ public:
+  constexpr LiveTicks() : TimeBase(0) {}
+  static LiveTicks Now();
+
+ private:
+  friend class time_internal::TimeBase<LiveTicks>;
+
+  // Please use Now() to create a new object. This is for internal use
+  // and testing.
+  constexpr explicit LiveTicks(int64_t us) : TimeBase(us) {}
+};
+
 // ThreadTicks ----------------------------------------------------------------
 
 // Represents a clock, specific to a particular thread, than runs only while the

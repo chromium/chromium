@@ -102,3 +102,32 @@ AccessibilityTest.define('PrivacySandboxNoticeRowDialogA11yTest', {
     },
   },
 });
+
+PrivacySandboxNoticeRestrictedDialogA11yTest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://privacy-sandbox-dialog/restricted?debug';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
+  }
+};
+
+AccessibilityTest.define('PrivacySandboxNoticeRestrictedDialogA11yTest', {
+  name: 'PrivacySandboxNoticeRestrictedDialogA11yTest',
+  tests: {
+    'NoticeRestricted': function() {
+      // Verify that notice restricted dialog was loaded.
+      const noticeApp = document.body.querySelector(
+          'privacy-sandbox-notice-restricted-dialog-app');
+      assertTrue(!!noticeApp);
+      assertTrue(!!noticeApp.shadowRoot.querySelector('#settingsButton'));
+      assertTrue(!!noticeApp.shadowRoot.querySelector('#ackButton'));
+    },
+  },
+});

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_GUEST_OS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_GUEST_OS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
@@ -50,7 +51,7 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
                                   bool success,
                                   const std::string& failure_reason);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ScopedObservation<CrosUsbDetector, CrosUsbDeviceObserver>
       cros_usb_device_observation_{this};
   // weak_ptr_factory_ should always be last member.

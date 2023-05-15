@@ -668,6 +668,16 @@ body.alternate-logo #logo {
     width: 100px;
   }""")
 
+  def testCssNested(self):
+    self.VerifyContentIsValid("""
+#logo {
+  background: radial-gradiant(blue 18px, transparent 19px);
+  .child {
+    background: radial-gradiant(red 10px, transparent 20px);
+  }
+}
+      """)
+
 
 if __name__ == '__main__':
   unittest.main()

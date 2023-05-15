@@ -34,6 +34,8 @@ struct TaskTiming {
 
 class FakeCalculator : public Calculator {
  public:
+  using Calculator::Calculator;
+
   void TaskOrEventFinishedOnUIThread(
       base::TimeTicks queue_time,
       base::TimeTicks execution_start_time,
@@ -100,7 +102,7 @@ class FakeWatcher : public Watcher {
  public:
   std::unique_ptr<Calculator> CreateCalculator() override {
     std::unique_ptr<FakeCalculator> calculator =
-        std::make_unique<FakeCalculator>();
+        std::make_unique<FakeCalculator>(nullptr);
     calculator_ = calculator.get();
     return calculator;
   }

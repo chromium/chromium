@@ -36,10 +36,10 @@
 #endif
 #include <libxslt/xslt.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"

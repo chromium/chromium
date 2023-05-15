@@ -9,10 +9,12 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/gesture_detection/bitset_32.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/types/event_type.h"
+#include "ui/latency/latency_info.h"
 
 namespace ui {
 
@@ -53,9 +55,18 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   PacketResult OnGesturePacket(const GestureEventDataPacket& packet);
 
   // OnTouchEventAck must be called upon receipt of every touch event ack.
+  // |event_latency_metadata| is provided only if the touch event or
+  // corresponding touch event was blocked before sending to the Renderer. This
+  // definition of blocking is not related to the value of
+  // |is_source_touch_event_set_blocking| since
+  // |is_source_touch_event_set_blocking| refers to the behavior of blocking
+  // future inputs, not whether the current event was dispatched blocking to the
+  // renderer.
   void OnTouchEventAck(uint32_t unique_touch_event_id,
                        bool event_consumed,
-                       bool is_source_touch_event_set_blocking);
+                       bool is_source_touch_event_set_blocking,
+                       const absl::optional<EventLatencyMetadata>&
+                           event_latency_metadata = absl::nullopt);
 
   // Whether there are any active gesture sequences still queued in the filter.
   bool IsEmpty() const;
@@ -101,7 +112,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   void CancelFlingIfNecessary(const GestureEventDataPacket& packet);
   void EndScrollIfNecessary(const GestureEventDataPacket& packet);
   void PopGestureSequence();
-  void SendAckedEvents();
+  void SendAckedEvents(
+      const absl::optional<EventLatencyMetadata>& event_latency_metadata);
   GestureSequence& Head();
   GestureSequence& Tail();
 

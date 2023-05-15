@@ -531,8 +531,7 @@ class RawPtrRewriter {
  public:
   RawPtrRewriter(OutputHelper* output_helper,
                  MatchFinder& finder,
-                 FilterFile& fields_to_exclude,
-                 FilterFile& paths_to_exclude)
+                 const RawPtrAndRefExclusionsOptions& exclusion_options)
       : match_finder(finder),
         field_decl_rewriter(output_helper, "raw_ptr<{0}> ", kRawPtrIncludePath),
         affected_expr_rewriter(output_helper, getRangeAndText_),
@@ -549,12 +548,10 @@ class RawPtrRewriter {
         union_field_decl_writer(output_helper, "union"),
         reinterpret_cast_struct_writer(output_helper,
                                        "reinterpret-cast-trivial-type"),
-        fields_to_exclude(fields_to_exclude),
-        paths_to_exclude(paths_to_exclude) {}
+        exclusion_options_(exclusion_options) {}
 
   void addMatchers() {
-    auto field_decl_matcher =
-        AffectedRawPtrFieldDecl(&paths_to_exclude, &fields_to_exclude);
+    auto field_decl_matcher = AffectedRawPtrFieldDecl(exclusion_options_);
 
     match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
 
@@ -840,16 +837,14 @@ class RawPtrRewriter {
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
   FilteredExprWriter reinterpret_cast_struct_writer;
-  FilterFile& fields_to_exclude;
-  FilterFile& paths_to_exclude;
+  const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
 class RawRefRewriter {
  public:
   RawRefRewriter(OutputHelper* output_helper,
                  MatchFinder& finder,
-                 FilterFile& fields_to_exclude,
-                 FilterFile& paths_to_exclude)
+                 const RawPtrAndRefExclusionsOptions& exclusion_options)
       : match_finder(finder),
         field_decl_rewriter(output_helper,
                             "const raw_ref<{0}> ",
@@ -869,12 +864,10 @@ class RawRefRewriter {
         constexpr_var_initializer_writer(output_helper,
                                          "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
-        fields_to_exclude(fields_to_exclude),
-        paths_to_exclude(paths_to_exclude) {}
+        exclusion_options_(exclusion_options) {}
 
   void addMatchers() {
-    auto field_decl_matcher =
-        AffectedRawRefFieldDecl(&paths_to_exclude, &fields_to_exclude);
+    auto field_decl_matcher = AffectedRawRefFieldDecl(exclusion_options_);
 
     match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
 
@@ -1160,8 +1153,7 @@ class RawRefRewriter {
   FilteredExprWriter constexpr_ctor_field_initializer_writer;
   FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
-  FilterFile& fields_to_exclude;
-  FilterFile& paths_to_exclude;
+  const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
 }  // namespace
@@ -1188,6 +1180,11 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<bool> enable_raw_ptr_rewrite(
       "enable_raw_ptr_rewrite", llvm::cl::init(false),
       llvm::cl::desc("Rewrite T* into raw_ptr<T>"));
+
+  llvm::cl::opt<bool> exclude_stack_allocated(
+      "exclude_stack_allocated", llvm::cl::init(true),
+      llvm::cl::desc("Exclude pointers/references to `STACK_ALLOCATED` objects "
+                     "from the rewrite"));
 
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
@@ -1216,19 +1213,24 @@ int main(int argc, const char* argv[]) {
         std::make_unique<FilterFile>(override_exclude_paths_param,
                                      override_exclude_paths_param.ArgStr.str());
   }
-  RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
-                                  fields_to_exclude, *paths_to_exclude);
 
+  chrome_checker::StackAllocatedPredicate stack_allocated_checker;
+  RawPtrAndRefExclusionsOptions exclusion_options{
+      &fields_to_exclude, paths_to_exclude.get(), exclude_stack_allocated,
+      &stack_allocated_checker};
+
+  RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
+                                  exclusion_options);
   if (rewrite_raw_ref_and_ptr || enable_raw_ptr_rewrite) {
     raw_ptr_rewriter.addMatchers();
   }
 
   RawRefRewriter raw_ref_rewriter(&output_helper, match_finder,
-                                  fields_to_exclude, *paths_to_exclude);
-
+                                  exclusion_options);
   if (rewrite_raw_ref_and_ptr || enable_raw_ref_rewrite) {
     raw_ref_rewriter.addMatchers();
   }
+
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =
       clang::tooling::newFrontendActionFactory(&match_finder, &output_helper);

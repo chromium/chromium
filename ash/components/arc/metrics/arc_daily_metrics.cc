@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -33,11 +34,11 @@ class DailyObserver : public metrics::DailyEvent::Observer {
 
   // Callback called when the daily event happen.
   void OnDailyEvent(metrics::DailyEvent::IntervalType type) override {
-    arc_daily_metrics_.OnDailyEvent(type);
+    arc_daily_metrics_->OnDailyEvent(type);
   }
 
  private:
-  ArcDailyMetrics& arc_daily_metrics_;
+  const raw_ref<ArcDailyMetrics, ExperimentalAsh> arc_daily_metrics_;
 };
 
 class KillCounts {

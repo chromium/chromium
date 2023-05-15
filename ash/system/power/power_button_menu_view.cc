@@ -62,8 +62,7 @@ PowerButtonMenuView::PowerButtonMenuView(
       kPowerButtonMenuCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : kPowerButtonMenuBorderType,
-      /*use_light_colors=*/false));
+          : kPowerButtonMenuBorderType));
   SetBackground(
       views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 
@@ -308,10 +307,6 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
   }
   menu_size.set_width(width);
   return menu_size;
-}
-
-void PowerButtonMenuView::OnThemeChanged() {
-  views::View::OnThemeChanged();
 }
 
 void PowerButtonMenuView::OnImplicitAnimationsCompleted() {

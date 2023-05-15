@@ -6,6 +6,7 @@
 #define ASH_STYLE_SYSTEM_TEXTFIELD_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -85,7 +86,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   Type type_;
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   // Indicates if the textfield should show focus ring.
   bool show_focus_ring_ = false;
   // Indicates if the textfield should show background.

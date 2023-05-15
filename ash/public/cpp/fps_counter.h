@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_FPS_COUNTER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_observer.h"
 
@@ -42,7 +43,7 @@ class ASH_PUBLIC_EXPORT FpsCounter : public ui::CompositorObserver {
   static void SetForceReportZeroAnimationForTest(bool value);
 
  private:
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
   int start_frame_number_ = 0;
   base::TimeTicks start_time_;
 };

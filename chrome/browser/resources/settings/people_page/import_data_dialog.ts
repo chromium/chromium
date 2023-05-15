@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../controls/settings_checkbox.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';

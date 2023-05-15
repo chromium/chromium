@@ -9,6 +9,7 @@
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
@@ -59,8 +60,8 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
   }
 
  private:
-  AssistantWebUiController* owner_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<AssistantWebUiController, ExperimentalAsh> owner_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };

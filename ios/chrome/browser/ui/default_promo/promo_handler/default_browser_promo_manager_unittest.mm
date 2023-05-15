@@ -4,14 +4,15 @@
 
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
 
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -73,7 +74,7 @@ class DefaultBrowserPromoManagerTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->SignIn(identity);
+        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   std::unique_ptr<TestChromeBrowserState> browser_state_;

@@ -207,8 +207,8 @@ export class FileHandlerPageElement extends HTMLElement {
   // Docs.
   private getDriveAppInfo(fileNames: string[]) {
     // TODO(b:254586358): i18n these names.
-    const fileName = fileNames[0] || '';
-    if (/\.xlsx?$/.test(fileName)) {
+    const fileName = (fileNames[0] || '').toLowerCase();
+    if (/\.xls[m,x]?$/.test(fileName)) {
       return {name: 'Google Sheets', icon: 'sheets', type: 'Excel'};
     } else if (/\.pptx?$/.test(fileName)) {
       return {name: 'Google Slides', icon: 'slides', type: 'Powerpoint'};

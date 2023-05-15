@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -51,25 +51,24 @@
   if (!_sessionsNeedSaving)
     return;
 
-  id<BrowserInterfaceProvider> interfaceProvider =
-      self.sceneState.interfaceProvider;
-  if (!interfaceProvider)
+  id<BrowserProviderInterface> browserProviderInterface =
+      self.sceneState.browserProviderInterface;
+  if (!browserProviderInterface) {
     return;
+  }
 
   // Since the app is about to be backgrounded or terminated, save the sessions
   // immediately.
-  Browser* mainBrowser = interfaceProvider.mainInterface.browser;
+  Browser* mainBrowser = browserProviderInterface.mainBrowserProvider.browser;
   SessionRestorationBrowserAgent::FromBrowser(mainBrowser)
       ->SaveSession(/*immediately=*/true);
-  if (IsInactiveTabsEnabled()) {
-    Browser* inactiveBrowser = interfaceProvider.mainInterface.inactiveBrowser;
-    if (inactiveBrowser) {
-      SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
-          ->SaveSession(/*immediately=*/true);
-    }
-  }
-  if (interfaceProvider.hasIncognitoInterface) {
-    Browser* incognitoBrowser = interfaceProvider.incognitoInterface.browser;
+  Browser* inactiveBrowser =
+      browserProviderInterface.mainBrowserProvider.inactiveBrowser;
+  SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
+      ->SaveSession(/*immediately=*/true);
+  if (browserProviderInterface.hasIncognitoBrowserProvider) {
+    Browser* incognitoBrowser =
+        browserProviderInterface.incognitoBrowserProvider.browser;
     SessionRestorationBrowserAgent::FromBrowser(incognitoBrowser)
         ->SaveSession(/*immediately=*/true);
   }
@@ -109,25 +108,28 @@
 #pragma mark - Utility
 
 - (SnapshotTabHelper*)snapshotHelperForActiveWebStateInMainBrowser {
-  id<BrowserInterfaceProvider> interfaceProvider =
-      self.sceneState.interfaceProvider;
-  if (!interfaceProvider)
+  id<BrowserProviderInterface> browserProviderInterface =
+      self.sceneState.browserProviderInterface;
+  if (!browserProviderInterface) {
     return nullptr;
+  }
 
-  return [self
-      snapshotHelperForActiveWebStateInBrowser:interfaceProvider.mainInterface
-                                                   .browser];
+  return [self snapshotHelperForActiveWebStateInBrowser:browserProviderInterface
+                                                            .mainBrowserProvider
+                                                            .browser];
 }
 
 - (SnapshotTabHelper*)snapshotHelperForActiveWebStateInIncognitoBrowser {
-  id<BrowserInterfaceProvider> interfaceProvider =
-      self.sceneState.interfaceProvider;
-  if (!interfaceProvider.hasIncognitoInterface)
+  id<BrowserProviderInterface> browserProviderInterface =
+      self.sceneState.browserProviderInterface;
+  if (!browserProviderInterface.hasIncognitoBrowserProvider) {
     return nullptr;
+  }
 
   return [self
-      snapshotHelperForActiveWebStateInBrowser:interfaceProvider
-                                                   .incognitoInterface.browser];
+      snapshotHelperForActiveWebStateInBrowser:browserProviderInterface
+                                                   .incognitoBrowserProvider
+                                                   .browser];
 }
 
 - (SnapshotTabHelper*)snapshotHelperForActiveWebStateInBrowser:

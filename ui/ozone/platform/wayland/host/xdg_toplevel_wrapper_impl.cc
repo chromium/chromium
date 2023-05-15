@@ -145,6 +145,11 @@ bool XDGToplevelWrapperImpl::Initialize() {
   return true;
 }
 
+bool XDGToplevelWrapperImpl::IsSupportedOnAuraToplevel(uint32_t version) const {
+  return aura_toplevel_ &&
+         zaura_toplevel_get_version(aura_toplevel_.get()) >= version;
+}
+
 void XDGToplevelWrapperImpl::SetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_maximized(xdg_toplevel_.get());
@@ -405,6 +410,19 @@ void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
   }
 }
 
+wl::Object<wl_region> XDGToplevelWrapperImpl::CreateAndAddRegion(
+    const std::vector<gfx::Rect>& shape) {
+  wl::Object<wl_region> region(
+      wl_compositor_create_region(connection_->compositor()));
+
+  for (const auto& rect : shape) {
+    wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
+                  rect.height());
+  }
+
+  return region;
+}
+
 XDGSurfaceWrapperImpl* XDGToplevelWrapperImpl::xdg_surface_wrapper() const {
   DCHECK(xdg_surface_wrapper_.get());
   return xdg_surface_wrapper_.get();
@@ -610,6 +628,26 @@ void XDGToplevelWrapperImpl::CommitSnap(
         NOTREACHED() << "Toplevel does not support UnsetSnap yet";
         return;
     }
+  }
+}
+
+void XDGToplevelWrapperImpl::SetPersistable(bool persistable) const {
+  auto persistable_enum = persistable
+                              ? ZAURA_TOPLEVEL_PERSISTABLE_PERSISTABLE
+                              : ZAURA_TOPLEVEL_PERSISTABLE_NOT_PERSISTABLE;
+
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION) {
+    zaura_toplevel_set_persistable(aura_toplevel_.get(), persistable_enum);
+  }
+}
+
+void XDGToplevelWrapperImpl::SetShape(std::unique_ptr<ShapeRects> shape_rects) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_SHAPE_SINCE_VERSION) {
+    zaura_toplevel_set_shape(
+        aura_toplevel_.get(),
+        shape_rects ? CreateAndAddRegion(*shape_rects).get() : nullptr);
   }
 }
 

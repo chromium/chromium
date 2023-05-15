@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,7 +50,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       ProgressIndicatorAnimationRegistry* registry,
       HoldingSpaceController* controller)
       : registry_(registry), controller_(controller) {
-    controller_observation_.Observe(controller_);
+    controller_observation_.Observe(controller_.get());
     if (controller_->model())
       OnHoldingSpaceModelAttached(controller_->model());
   }
@@ -64,7 +65,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override {
     model_ = model;
-    model_observation_.Observe(model_);
+    model_observation_.Observe(model_.get());
     UpdateAnimations(/*for_removal=*/false);
   }
 
@@ -288,7 +289,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
                const void* key, ProgressRingAnimation* animation) {
               if (!delegate)
                 return;
-              auto* registry = delegate->registry_;
+              auto* registry = delegate->registry_.get();
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
@@ -301,9 +302,9 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
             animation));
   }
 
-  ProgressIndicatorAnimationRegistry* const registry_;
-  HoldingSpaceController* const controller_;
-  HoldingSpaceModel* model_ = nullptr;
+  const raw_ptr<ProgressIndicatorAnimationRegistry, ExperimentalAsh> registry_;
+  const raw_ptr<HoldingSpaceController, ExperimentalAsh> controller_;
+  raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_ = nullptr;
 
   // The cumulative progress for the attached `model_`, calculated and cached
   // with each call to `UpdateAnimations()`. This is used to determine when

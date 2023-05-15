@@ -19,14 +19,16 @@ namespace cc {
 
 class CC_PAINT_EXPORT PaintOpBufferSerializer {
  public:
-  using SerializeCallback =
-      base::RepeatingCallback<size_t(const PaintOp&,
-                                     const PaintOp::SerializeOptions&,
-                                     const PaintFlags*,
-                                     const SkM44&,
-                                     const SkM44&)>;
+  // As this code is performance sensitive, a raw function pointer is used.
+  using SerializeCallback = size_t (*)(void*,
+                                       const PaintOp&,
+                                       const PaintOp::SerializeOptions&,
+                                       const PaintFlags*,
+                                       const SkM44&,
+                                       const SkM44&);
 
   PaintOpBufferSerializer(SerializeCallback serialize_cb,
+                          void* callback_data,
                           const PaintOp::SerializeOptions& options);
   virtual ~PaintOpBufferSerializer();
 
@@ -108,6 +110,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
+  raw_ptr<void> callback_data_;
   PaintOp::SerializeOptions options_;
 
   size_t serialized_op_count_ = 0;
@@ -125,11 +128,22 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
   size_t written() const { return written_; }
 
  private:
-  size_t SerializeToMemory(const PaintOp& op,
-                           const PaintOp::SerializeOptions& options,
-                           const PaintFlags* flags_to_serialize,
-                           const SkM44& current_ctm,
-                           const SkM44& original_ctm);
+  size_t SerializeToMemoryImpl(const PaintOp& op,
+                               const PaintOp::SerializeOptions& options,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm);
+
+  static size_t SerializeToMemory(void* instance,
+                                  const PaintOp& op,
+                                  const PaintOp::SerializeOptions& options,
+                                  const PaintFlags* flags_to_serialize,
+                                  const SkM44& current_ctm,
+                                  const SkM44& original_ctm) {
+    return reinterpret_cast<SimpleBufferSerializer*>(instance)
+        ->SerializeToMemoryImpl(op, options, flags_to_serialize, current_ctm,
+                                original_ctm);
+  }
 
   raw_ptr<void> memory_;
   const size_t total_;

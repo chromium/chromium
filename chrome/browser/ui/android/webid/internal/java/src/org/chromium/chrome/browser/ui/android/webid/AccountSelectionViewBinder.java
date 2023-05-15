@@ -296,7 +296,8 @@ class AccountSelectionViewBinder {
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == HeaderProperties.TOP_FRAME_FOR_DISPLAY
                 || key == HeaderProperties.IFRAME_FOR_DISPLAY
-                || key == HeaderProperties.IDP_FOR_DISPLAY || key == HeaderProperties.TYPE) {
+                || key == HeaderProperties.IDP_FOR_DISPLAY || key == HeaderProperties.TYPE
+                || key == HeaderProperties.RP_CONTEXT) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
@@ -316,7 +317,8 @@ class AccountSelectionViewBinder {
             }
 
             String title = computeHeaderTitle(resources, headerType, rpUrlForDisplayInTitle,
-                    model.get(HeaderProperties.IDP_FOR_DISPLAY));
+                    model.get(HeaderProperties.IDP_FOR_DISPLAY),
+                    model.get(HeaderProperties.RP_CONTEXT));
             headerTitleText.setText(title);
 
             // Make instructions for closing the bottom sheet part of the header's content
@@ -379,8 +381,8 @@ class AccountSelectionViewBinder {
         return R.string.verify_sheet_title_auto_reauthn;
     }
 
-    private static String computeHeaderTitle(
-            Resources resources, HeaderProperties.HeaderType type, String rpUrl, String idpUrl) {
+    private static String computeHeaderTitle(Resources resources, HeaderProperties.HeaderType type,
+            String rpUrl, String idpUrl, String rpContext) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
@@ -388,7 +390,20 @@ class AccountSelectionViewBinder {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
         @StringRes
-        int titleStringId = R.string.account_selection_sheet_title_explicit;
+        int titleStringId;
+        switch (rpContext) {
+            case "signup":
+                titleStringId = R.string.account_selection_sheet_title_explicit_signup;
+                break;
+            case "use":
+                titleStringId = R.string.account_selection_sheet_title_explicit_use;
+                break;
+            case "continue":
+                titleStringId = R.string.account_selection_sheet_title_explicit_continue;
+                break;
+            default:
+                titleStringId = R.string.account_selection_sheet_title_explicit_signin;
+        }
         return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 

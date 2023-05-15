@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/night_light_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -90,7 +91,8 @@ class NightLightClient : public ash::NightLightController::Observer,
   // The IP-based geolocation provider.
   ash::SimpleGeolocationProvider provider_;
 
-  ash::NightLightController* night_light_controller_ = nullptr;
+  raw_ptr<ash::NightLightController, ExperimentalAsh> night_light_controller_ =
+      nullptr;
 
   // Delay after which a new request is retried after a failed one.
   base::TimeDelta backoff_delay_;
@@ -98,7 +100,7 @@ class NightLightClient : public ash::NightLightController::Observer,
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // Optional Used in tests to override the time of "Now".
-  base::Clock* clock_ = nullptr;  // Not owned.
+  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
 
   // Last successful geoposition coordinates and its timestamp.
   base::Time last_successful_geo_request_time_;

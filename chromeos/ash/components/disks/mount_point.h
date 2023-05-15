@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
@@ -60,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) MountPoint {
   void OnUmountDone(UnmountCallback callback, MountError unmount_error);
 
   base::FilePath mount_path_;
-  DiskMountManager* const disk_mount_manager_;
+  const raw_ptr<DiskMountManager, ExperimentalAsh> disk_mount_manager_;
 
   base::WeakPtrFactory<MountPoint> weak_factory_{this};
 };

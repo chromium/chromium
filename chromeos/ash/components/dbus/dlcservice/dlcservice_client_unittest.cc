@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "dbus/mock_bus.h"
@@ -105,8 +106,9 @@ class DlcserviceClientTest : public testing::Test {
     return install_request;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  DlcserviceClient* client_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  raw_ptr<DlcserviceClient, ExperimentalAsh> client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   std::deque<std::unique_ptr<dbus::Response>> responses_;
@@ -467,6 +469,7 @@ TEST_F(DlcserviceClientTest, PendingTaskTest) {
 
   for (size_t i = 1; i < 100; ++i) {
     client_->DlcStateChangedForTest(signal.get());
+    task_environment_.FastForwardBy(base::Seconds(3));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(i <= kLoopCount ? i : kLoopCount, counter.load());
   }

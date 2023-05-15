@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
 
   void OnAccountAdditionFinishedForTesting(
-      const account_manager::AccountAdditionResult& result);
+      const account_manager::AccountUpsertionResult& result);
 
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
@@ -80,10 +80,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   // This method is called by `ash::SigninHelper` which passes `AccountKey`
   // of account that was added.
   void OnAccountAdditionFinished(
-      const account_manager::AccountAdditionResult& result);
+      const account_manager::AccountUpsertionResult& result);
   // A callback for `AccountManagerUI::ShowAccountAdditionDialog`.
   void OnAddAccountDialogClosed();
-  void FinishAddAccount(const account_manager::AccountAdditionResult& result);
+  void FinishAddAccount(const account_manager::AccountUpsertionResult& result);
   // Deletes `request` from `pending_access_token_requests_`, if present.
   void DeletePendingAccessTokenFetchRequest(AccessTokenFetcher* request);
 

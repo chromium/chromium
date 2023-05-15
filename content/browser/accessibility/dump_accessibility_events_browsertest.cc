@@ -114,10 +114,11 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(ui::AXMode mode) {
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
     auto [go_results, event_logs] = CaptureEvents(
-        base::BindOnce(&ExecuteScriptAndGetValue,
+        base::BindOnce([](RenderFrameHostImpl* frame,
+                          std::string script) { return EvalJs(frame, script); },
                        web_contents->GetPrimaryMainFrame(), "go()"),
         ui::kAXModeComplete);
-    run_go_again = go_results.is_bool() && go_results.GetBool();
+    run_go_again = go_results == true;
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.
     final_tree_.append(DumpUnfilteredAccessibilityTreeAsString());

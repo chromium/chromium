@@ -283,6 +283,30 @@ void FakePowerManagerClient::GetBacklightsForcedOff(
       FROM_HERE, base::BindOnce(std::move(callback), backlights_forced_off_));
 }
 
+void FakePowerManagerClient::GetBatterySaverModeState(
+    DBusMethodCallback<power_manager::BatterySaverModeState> callback) {
+  power_manager::BatterySaverModeState state;
+  state.set_enabled(battery_saver_mode_enabled_);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), state));
+}
+
+void FakePowerManagerClient::SetBatterySaverModeState(
+    const power_manager::SetBatterySaverModeStateRequest& request) {
+  bool changed = battery_saver_mode_enabled_ != request.enabled();
+  if (!changed) {
+    return;
+  }
+
+  battery_saver_mode_enabled_ = request.enabled();
+
+  power_manager::BatterySaverModeState state;
+  state.set_enabled(battery_saver_mode_enabled_);
+  for (auto& observer : observers_) {
+    observer.BatterySaverModeStateChanged(state);
+  }
+}
+
 void FakePowerManagerClient::GetSwitchStates(
     DBusMethodCallback<SwitchStates> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

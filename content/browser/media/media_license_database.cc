@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -158,15 +159,19 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenDatabase(
 
   // base::Unretained is safe becase |db_| is owned by |this|
   db_.set_error_callback(base::BindRepeating(
-      &MediaLicenseDatabase::OnDatabaseOpenError, base::Unretained(this)));
+      &MediaLicenseDatabase::OnDatabaseError, base::Unretained(this)));
+
   if (path_.empty()) {
     success = db_.OpenInMemory();
   } else {
     // Ensure `path`'s parent directory exists.
-    base::File::Error error = base::File::Error::FILE_OK;
+    auto error = base::File::Error::FILE_OK;
     if (!base::CreateDirectoryAndGetError(path_.DirName(), &error)) {
       DVLOG(1) << "Failed to open CDM database: "
                << base::File::ErrorToString(error);
+      base::UmaHistogramExactLinear(
+          "Media.EME.MediaLicenseDatabaseCreateDirectoryError", -error,
+          -base::File::FILE_ERROR_MAX);
       return MediaLicenseStorageHostOpenError::kBucketNotFound;
     }
     DCHECK_EQ(error, base::File::Error::FILE_OK);
@@ -220,16 +225,11 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenDatabase(
   return MediaLicenseStorageHostOpenError::kOk;
 }
 
-void MediaLicenseDatabase::OnDatabaseOpenError(int error,
-                                               sql::Statement* stmt) {
+void MediaLicenseDatabase::OnDatabaseError(int error, sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // This histogram is only logged when the db is closed because we want to only
-  // log errors which prevent the db from opening.
-  if (!db_.is_open()) {
-    sql::UmaHistogramSqliteResult(
-        "Media.EME.MediaLicenseDatabaseOpenSQLiteError", error);
-  }
+  sql::UmaHistogramSqliteResult("Media.EME.MediaLicenseDatabaseSQLiteError",
+                                error);
 }
 
 }  // namespace content

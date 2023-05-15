@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <ostream>
 #include <string>
 
 #include "ui/display/types/display_constants.h"
@@ -52,6 +53,8 @@ struct EVENTS_DEVICES_EXPORT TouchscreenDevice : public InputDevice {
   // may not have been updated. See
   // DeviceDataManager::AreTouchscreenTargetDisplaysValid() for details.
   int64_t target_display_id = display::kInvalidDisplayId;
+
+  std::ostream& DescribeForLog(std::ostream& os) const override;
 
   // NOTE: If adding fields please update mojo/input_devices.mojom.
 };

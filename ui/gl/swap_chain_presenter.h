@@ -126,43 +126,62 @@ class SwapChainPresenter : public base::PowerStateObserver {
       bool content_is_hdr,
       absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
 
-  gfx::Size GetMonitorSize();
+  // Get the size of the monitor on which the window handle is displayed.
+  gfx::Size GetMonitorSize() const;
 
   // Takes in input DC layer params and the video overlay quad. The swap chain
   // backbuffer size will be rounded to the monitor size if it is within a close
   // margin. The visual_transform will be calculated by what scaling factor is
   // needed to scale the swap chain backbuffer to the monitor size.
-  // The visual_clip_rect will be adjusted to the monitor size for fullscreen
+  // The visual_clip_rect will be adjusted to the monitor size for full screen
   // mode, and to the video overlay quad for letterboxing mode.
-  void AdjustTargetToOptimalSizeIfNeeded(const DCLayerOverlayParams& params,
-                                         const gfx::Rect& overlay_onscreen_rect,
-                                         gfx::Size* swap_chain_size,
-                                         gfx::Transform* visual_transform,
-                                         gfx::Rect* visual_clip_rect);
+  // The returned optional |dest_size| and |target_rect| have the same meaning
+  // as in AdjustTargetForFullScreenLetterboxing.
+  void AdjustTargetToOptimalSizeIfNeeded(
+      const DCLayerOverlayParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect,
+      absl::optional<gfx::Size>* dest_size,
+      absl::optional<gfx::Rect>* target_rect) const;
 
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
-  // get the fullscreen DWM optimizations.
+  // get the full screen DWM optimizations.
   bool AdjustTargetToFullScreenSizeIfNeeded(
       const gfx::Size& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
       gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect);
+      gfx::Rect* visual_clip_rect) const;
 
+  // If the returned optional |dest_size| and |target_rect| contain valid
+  // values, it means this is a good overlay for full screen letterboxing after
+  // some necessary adjustment or no size adjustment required. Otherwise, it's
+  // either not a letterboxing video or not a case for further optimizations for
+  // full screen letterboxing. |swap_chain_| will then run SetDestSize to
+  // |dest_size| and SetTargetRect to |target_rect| in order to make sure
+  // Desktop Window Manager(DWM) take over the letterboxing/positioning job, and
+  // turn off the topmost desktop plane at the same time.
   void AdjustTargetForFullScreenLetterboxing(
       const gfx::Size& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
       gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect);
+      gfx::Rect* visual_clip_rect,
+      absl::optional<gfx::Size>* dest_size,
+      absl::optional<gfx::Rect>* target_rect) const;
 
   // Returns optimal swap chain size for given layer.
-  gfx::Size CalculateSwapChainSize(const DCLayerOverlayParams& params,
-                                   gfx::Transform* visual_transform,
-                                   gfx::Rect* visual_clip_rect);
+  gfx::Size CalculateSwapChainSize(
+      const DCLayerOverlayParams& params,
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect,
+      absl::optional<gfx::Size>* dest_size,
+      absl::optional<gfx::Rect>* target_rect) const;
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -175,6 +194,18 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const gfx::Size& swap_chain_size,
       DXGI_FORMAT swap_chain_format,
       const gfx::Transform& transform_to_root);
+
+  // Try disabling the topmost desktop plane for a swap chain in the case of
+  // full screen. In DWM, the desktop plane can be turned off if the
+  // letterboxing info is set up properly for YUV swapchains, meaning that when
+  // the size of the window and the size of the monitor are the same and there
+  // is no other UI component overtop of the video.
+  // Otherwise, set the letterboxing info with swap chain size in order to
+  // restore the topmost desktop plane, which happens in scenarios like
+  // switching to underlay.
+  // Returns true on successful settings.
+  bool TryDisableDesktopPlane(const gfx::Size& dest_size,
+                              const gfx::Rect& target_rect);
 
   // Present to a decode swap chain created from compatible video decoder
   // buffers using given |nv12_image| with destination size |swap_chain_size|.

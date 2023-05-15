@@ -36,7 +36,7 @@
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
 #include "chrome/browser/lacros/identity_manager_lacros.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -612,9 +612,9 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
           [account, this](
               account_manager::AccountManagerFacade::AccountAdditionSource,
               base::OnceCallback<void(
-                  const account_manager::AccountAdditionResult&)> callback) {
+                  const account_manager::AccountUpsertionResult&)> callback) {
             std::move(callback).Run(
-                account_manager::AccountAdditionResult::FromAccount(account));
+                account_manager::AccountUpsertionResult::FromAccount(account));
             // Notify the mapper that an account has been added.
             profile_manager()
                 ->profile_manager()
@@ -847,9 +847,9 @@ TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {
           [account, this](
               account_manager::AccountManagerFacade::AccountAdditionSource,
               base::OnceCallback<void(
-                  const account_manager::AccountAdditionResult&)> callback) {
+                  const account_manager::AccountUpsertionResult&)> callback) {
             std::move(callback).Run(
-                account_manager::AccountAdditionResult::FromAccount(account));
+                account_manager::AccountUpsertionResult::FromAccount(account));
             // Notify the mapper that an account has been added.
             profile_manager()
                 ->profile_manager()

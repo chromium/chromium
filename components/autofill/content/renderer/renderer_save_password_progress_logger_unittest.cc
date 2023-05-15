@@ -62,7 +62,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
                                const gfx::RectF& bounds) override {}
 
 #if BUILDFLAG(IS_ANDROID)
-  void ShowTouchToFill(
+  void ShowKeyboardReplacingSurface(
       autofill::mojom::SubmissionReadinessState submission_readiness) override {
   }
 #endif

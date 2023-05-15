@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -47,6 +48,14 @@ constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 // doing so is bad for performance.
 constexpr int kDisableAccessibilitySupportDelaySecs = 2;
 
+// Used for validating the 'basic' bundle parameter for
+// --force-renderer-accessibility.
+const char kAXModeBundleBasic[] = "basic";
+
+// Used for validating the 'form-controls' bundle parameter for
+// --force-renderer-accessibility.
+const char kAXModeBundleFormControls[] = "form-controls";
+
 // Record a histogram for an accessibility mode when it is enabled.
 void RecordNewAccessibilityModeFlags(
     ui::AXMode::ModeFlagHistogramValue mode_flag) {
@@ -79,6 +88,32 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   force_renderer_accessibility_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceRendererAccessibility);
+  if (force_renderer_accessibility_) {
+#if BUILDFLAG(IS_WIN)
+    std::string ax_mode_bundle = base::WideToUTF8(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+            switches::kForceRendererAccessibility));
+#else
+    std::string ax_mode_bundle =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+            switches::kForceRendererAccessibility);
+#endif
+
+    // For backwards compatibility, allow parameter to be empty and do not force
+    // mode in that scenario.
+    if (!ax_mode_bundle.empty()) {
+      // Support --force-renderer-accessibility=[basic|form-controls|complete]
+      if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeBasic;
+      } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeFormControls;
+      } else {
+        // If AXMode is 'complete' or invalid, default to complete
+        // bundle.
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeComplete;
+      }
+    }
+  }
 
   ResetAccessibilityModeValue();
 
@@ -156,8 +191,17 @@ bool BrowserAccessibilityStateImpl::IsRendererAccessibilityEnabled() {
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityModeValue() {
   accessibility_mode_ = ui::AXMode();
-  if (force_renderer_accessibility_)
-    AddAccessibilityModeFlags(ui::kAXModeComplete);
+
+  // Use forced AXMode bundle if optional parameter has been provided.
+  // Otherwise, reset to kAXModeComplete by default.
+  if (force_renderer_accessibility_) {
+    if (force_renderer_accessibility_ax_mode_flags_.flags() !=
+        ui::AXMode::kNone) {
+      AddAccessibilityModeFlags(force_renderer_accessibility_ax_mode_flags_);
+    } else {
+      AddAccessibilityModeFlags(ui::kAXModeComplete);
+    }
+  }
 }
 
 void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
@@ -279,7 +323,7 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   // TODO(accessibility) Combine this with the AXMode we store in AXPlatformNode
   // into a single global AXMode tracker in ui/accessibility. The current
   // situation of storing in two places could lead to misalignment.
-  DCHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
+  CHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
       << "Accessibility modes in content and UI are misaligned.";
   return accessibility_mode_;
 }
@@ -363,6 +407,22 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
+  bool disallow_changes = false;
+
+  // If the --force-renderer-accessibility command line flag is present and an
+  // AXMode bundle has been provided as an argument, then the AXMode bundle
+  // should always be respected. Any attempts to set mode to flags other than
+  // the bundle should be ignored.
+  if (force_renderer_accessibility_ &&
+      (force_renderer_accessibility_ax_mode_flags_.flags() !=
+       ui::AXMode::kNone)) {
+    if (force_renderer_accessibility_ax_mode_flags_ != mode) {
+      return;
+    }
+
+    disallow_changes = true;
+  }
+
   // Adding an accessibility mode flag is generally the result of an
   // accessibility API call, so we should also reset the auto-disable
   // accessibility code. The only exception is in tests or when a user manually
@@ -387,6 +447,14 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
   // Proxy the AXMode to AXPlatformNode to enable accessibility.
   ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
+
+  // If the --force-renderer-accessibility command line flag is present and an
+  // AXMode bundle has been provided as an argument, then after setting the
+  // correct AXMode for AXPlatformNode, changes to the AXMode in AXPlatformNode
+  // should be disallowed.
+  if (disallow_changes) {
+    ui::AXPlatformNode::DisallowAXModeChanges();
+  }
 
   // Retrieve only newly added modes for the purposes of logging.
   int new_mode_flags = mode.flags() & (~previous_mode.flags());
@@ -453,8 +521,16 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
 void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
     ui::AXMode mode) {
-  if (force_renderer_accessibility_ && mode == ui::kAXModeComplete)
+  // Turning off accessibility or changing the mode will not be allowed if the
+  // --force-renderer-accessibility command line flag has been enabled and
+  // either 1) there is an attempt to turn off accessibility entirely or 2) an
+  // AXMode bundle parameter has been provided.
+  if (force_renderer_accessibility_ &&
+      (mode == ui::kAXModeComplete ||
+       force_renderer_accessibility_ax_mode_flags_.flags() !=
+           ui::AXMode::kNone)) {
     return;
+  }
 
   int raw_flags = accessibility_mode_.flags() ^
                   (mode.flags() & accessibility_mode_.flags());

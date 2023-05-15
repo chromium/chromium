@@ -89,6 +89,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       base::RepeatingCallback<void(const gfx::Size&)> cb) {
     swap_completed_with_size_for_testing_ = std::move(cb);
   }
+  cc::slim::LayerTree* GetLayerTreeForTesting() const { return host_.get(); }
 
   class SimpleBeginFrameObserver {
    public:
@@ -136,7 +137,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void DidLoseLayerTreeFrameSink() override;
 
   // WindowAndroidCompositor implementation.
-  std::unique_ptr<ReadbackRef> TakeReadbackRef() override;
+  std::unique_ptr<ReadbackRef> TakeReadbackRef(
+      const viz::SurfaceId& surface_id) override;
   void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) override;
   void SetNeedsAnimate() override;

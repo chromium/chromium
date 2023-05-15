@@ -39,17 +39,19 @@ namespace {
 static constexpr uint64_t kDefaultMemoryAllocation =
     16u * 1024uLL * 1024uLL;  // 16 MiB by default
 
-void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
-                          dbus::ExportedObject::ResponseSender response_sender,
-                          ::reporting::Status status) {
-  // Build StatusProto
-  ::reporting::StatusProto status_proto;
-  status.SaveTo(&status_proto);
+void SendStatusAsResponse(
+    std::unique_ptr<dbus::Response> response,
+    dbus::ExportedObject::ResponseSender response_sender,
+    ::reporting::UploadEncryptedRecordResponse response_message,
+    ::reporting::Status status) {
+  // Build `StatusProto` in `response_message`
+  status.SaveTo(response_message.mutable_status());
 
+  // Encode whole `response_message`
   dbus::MessageWriter writer(response.get());
-  writer.AppendProtoAsArrayOfBytes(status_proto);
+  writer.AppendProtoAsArrayOfBytes(response_message);
 
-  // Send Response
+  // Send `response`
   std::move(response_sender).Run(std::move(response));
 }
 
@@ -143,6 +145,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     dbus::ExportedObject::ResponseSender response_sender) {
   DCHECK(OnOriginThread());
   auto response = dbus::Response::FromMethodCall(method_call);
+  ::reporting::UploadEncryptedRecordResponse response_message;
 
   if (!::reporting::StorageSelector::is_uploader_required()) {
     // We should never get to here, since the provider is only exported
@@ -151,9 +154,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     ::reporting::Status status{
         ::reporting::error::FAILED_PRECONDITION,
         "Uploads are not expected in this configuration"};
-    LOG(ERROR) << "Uploads are not expected in this configuration";
+    LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
+                         std::move(response_message), status);
     return;
   }
 
@@ -169,7 +172,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
+                         std::move(response_message), status);
     return;
   }
 
@@ -182,7 +185,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
+                         std::move(response_message), status);
     return;
   }
 
@@ -191,26 +194,27 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
                               serialized_request_buf_size)) {
     ::reporting::Status status{
         ::reporting::error::INVALID_ARGUMENT,
-        "Failed to parse UploadEncryptedRecordRequest from array of bytes."};
+        "Failed to parse UploadEncryptedRecordRequest from array of "
+        "bytes."};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
+                         std::move(response_message), status);
     return;
   }
 
-  // Missive should always send the remaining storage capacity and new events
-  // rate. If not, probably an outdated version of missive is running. In this
-  // case, we ignore the effect of remaining storage capacity/new events rate
-  // and give it the max/min possible value.
+  // Missive should always send the remaining storage capacity and new
+  // events rate. If not, probably an outdated version of missive is
+  // running. In this case, we ignore the effect of remaining storage
+  // capacity/new events rate and give it the max/min possible value.
   const auto remaining_storage_capacity =
       request.has_remaining_storage_capacity()
           ? request.remaining_storage_capacity()
           : std::numeric_limits<uint64_t>::max();
   const auto new_events_rate =
       request.has_new_events_rate() ? request.new_events_rate() : 1U;
-  // Move events from |request| into a separate vector |records|, using more or
-  // less the same amount of memory that has been reserved above.
+  // Move events from |request| into a separate vector |records|, using more
+  // or less the same amount of memory that has been reserved above.
   auto records{::reporting::EventUploadSizeController::BuildEncryptedRecords(
       request.encrypted_record(),
       ::reporting::EventUploadSizeController(
@@ -222,11 +226,21 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();
   if (!missive_client) {
-    LOG(ERROR) << "No Missive client available";
-    SendStatusAsResponse(
-        std::move(response), std::move(response_sender),
-        ::reporting::Status(::reporting::error::FAILED_PRECONDITION,
-                            "No Missive client available"));
+    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
+                               "No Missive client available"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
+    return;
+  }
+
+  if (missive_client->is_disabled()) {
+    response_message.set_disable(true);  // Signal `missived` to disable itself.
+    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
+                               "Reporting disabled, unsupported API Key"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
     return;
   }
 
@@ -236,7 +250,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),
-                         std::move(response_sender))));
+                         std::move(response_sender),
+                         std::move(response_message))));
 }
 
 bool EncryptedReportingServiceProvider::OnOriginThread() const {

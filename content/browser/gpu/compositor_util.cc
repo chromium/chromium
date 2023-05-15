@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -221,13 +220,11 @@ const GpuFeatureData GetGpuFeatureData(
      DisableInfo::Problem(
          "WebGPU has been disabled via blocklist or the command line."),
      false},
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     {"skia_graphite",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE),
      !base::FeatureList::IsEnabled(features::kSkiaGraphite),
      DisableInfo::NotProblem(), false},
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   };
   DCHECK(index < std::size(kGpuFeatureData));
   *eof = (index == std::size(kGpuFeatureData) - 1);
@@ -441,7 +438,7 @@ int NumberOfRendererRasterThreads() {
     }
   }
 
-  return base::clamp(num_raster_threads, kMinRasterThreads, kMaxRasterThreads);
+  return std::clamp(num_raster_threads, kMinRasterThreads, kMaxRasterThreads);
 }
 
 bool IsZeroCopyUploadEnabled() {

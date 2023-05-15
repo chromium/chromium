@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -63,7 +64,7 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
   int64_t display_id() const { return display_id_; }
 
  private:
-  ChromeShelfController* controller_;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
 
   const ash::ShelfItem item_;
 

@@ -241,6 +241,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x12cf, 0x0490},  // Acer Cestus 325
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x1532, 0x008a},  // Razer Viper Mini
     {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
     {0x1532, 0x009b},  // Razer Pro Click Mini (Bluetooth)
     {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
@@ -882,6 +883,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
       {0x18d1, 0x5056},  // Google, bland PID (mrbland)
       {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
       {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
+      {0x18d1, 0x5061},  // Google, Jewel PID (starmie)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
@@ -936,6 +938,43 @@ EventDeviceInfo::ProbeLegacyAbsoluteDevice() const {
     return LegacyAbsoluteDeviceType::TOUCHSCREEN;
 
   return LegacyAbsoluteDeviceType::NONE;
+}
+std::ostream& operator<<(std::ostream& os, const EventDeviceType value) {
+  switch (value) {
+    case EventDeviceType::DT_KEYBOARD:
+      return os << "ui::EventDeviceType::DT_KEYBOARD";
+    case EventDeviceType::DT_MOUSE:
+      return os << "ui::EventDeviceType::DT_MOUSE";
+    case EventDeviceType::DT_POINTING_STICK:
+      return os << "ui::EventDeviceType::DT_POINTING_STICK";
+    case EventDeviceType::DT_TOUCHPAD:
+      return os << "ui::EventDeviceType::DT_TOUCHPAD";
+    case EventDeviceType::DT_TOUCHSCREEN:
+      return os << "ui::EventDeviceType::DT_TOUCHSCREEN";
+    case EventDeviceType::DT_MULTITOUCH:
+      return os << "ui::EventDeviceType::DT_MULTITOUCH";
+    case EventDeviceType::DT_MULTITOUCH_MOUSE:
+      return os << "ui::EventDeviceType::DT_MULTITOUCH_MOUSE";
+    case EventDeviceType::DT_ALL:
+      return os << "ui::EventDeviceType::DT_ALL";
+  }
+  return os << "ui::EventDeviceType::unknown_value("
+            << static_cast<unsigned int>(value) << ")";
+}
+
+std::ostream& operator<<(std::ostream& os, const KeyboardType value) {
+  switch (value) {
+    case KeyboardType::NOT_KEYBOARD:
+      return os << "ui::KeyboardType::NOT_KEYBOARD";
+    case KeyboardType::IN_BLOCKLIST:
+      return os << "ui::KeyboardType::IN_BLOCKLIST";
+    case KeyboardType::STYLUS_BUTTON_DEVICE:
+      return os << "ui::KeyboardType::STYLUS_BUTTON_DEVICE";
+    case KeyboardType::VALID_KEYBOARD:
+      return os << "ui::KeyboardType::VALID_KEYBOARD";
+  }
+  return os << "ui::KeyboardType::unknown_value("
+            << static_cast<unsigned int>(value) << ")";
 }
 
 }  // namespace ui

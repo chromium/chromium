@@ -9,15 +9,15 @@
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
@@ -66,6 +66,18 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // Coordinator for password issues displaying dismissed compromised
   // credentials.
   PasswordIssuesCoordinator* _dismissedPasswordIssuesCoordinator;
+
+  // Flag indicating if the coordinator should dismiss its view controller
+  // because the last password issue was resolved by a password deletion.
+  BOOL _shouldDismissOnAllIssuesGone;
+
+  // Flag indicating if the coordinator should dismiss its view controller after
+  // the view controller of a child coordinator is removed from the stack. When
+  // the issues and dismissed warnings are removed by the user, the coordinator
+  // should dismiss its view controller and go back to the previous screen. If
+  // there are child coordinators, this flag is used to dismiss the view
+  // controller after the children are dismissed.
+  BOOL _shouldDismissAfterChildCoordinatorRemoved;
 }
 
 // Main view controller for this coordinator.
@@ -99,6 +111,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)start {
   [super start];
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordIssuesMediator alloc]
         initForWarningType:_warningType
@@ -112,7 +125,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
-          initWithStyle:ChromeTableViewStyle()];
+          initWithWarningType:_warningType];
   passwordIssuesTableViewController.imageDataSource = self.mediator;
   self.viewController = passwordIssuesTableViewController;
 
@@ -139,7 +152,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   self.passwordDetails.delegate = nil;
   self.passwordDetails = nil;
 
-  [self stopDismissedPasswordIssuesCordinator];
+  [self stopDismissedPasswordIssuesCoordinator];
 }
 
 #pragma mark - PasswordIssuesPresenter
@@ -163,6 +176,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
                           reauthModule:self.reauthModule
                                context:ComputeDetailsContextFromWarningType(
                                            _warningType)];
+  self.passwordDetails.shouldDismissOnAllPasswordsGone =
+      !self.mediator.hasOneIssueLeft;
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }
@@ -179,6 +194,17 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [_dismissedPasswordIssuesCoordinator start];
 }
 
+- (void)dismissAfterAllIssuesGone {
+  // Early return if the last issue was not resolved by a password deletion, but
+  // by a password change. When the last issue is resolved by a password change,
+  // the details page has to be dismissed manually by the user.
+  if (_shouldDismissOnAllIssuesGone) {
+    [self navigateToPreviousViewController];
+  } else {
+    _shouldDismissAfterChildCoordinatorRemoved = YES;
+  }
+}
+
 #pragma mark - PasswordDetailsCoordinatorDelegate
 
 - (void)passwordDetailsCoordinatorDidRemove:
@@ -187,6 +213,13 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [self.passwordDetails stop];
   self.passwordDetails.delegate = nil;
   self.passwordDetails = nil;
+
+  [self onChildCoordinatorDidRemove];
+}
+
+- (void)passwordDetailsWillDeletePassword {
+  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
+  [self.delegate setShouldDismissOnAllIssuesGone];
 }
 
 #pragma mark - PasswordIssuesCoordinatorDelegate
@@ -194,16 +227,59 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 - (void)passwordIssuesCoordinatorDidRemove:
     (PasswordIssuesCoordinator*)coordinator {
   CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
-  [self stopDismissedPasswordIssuesCordinator];
+  [self stopDismissedPasswordIssuesCoordinator];
+
+  [self onChildCoordinatorDidRemove];
+}
+
+- (void)setShouldDismissOnAllIssuesGone {
+  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
 }
 
 #pragma mark - Private
 
-- (void)stopDismissedPasswordIssuesCordinator {
+- (void)stopDismissedPasswordIssuesCoordinator {
   [_dismissedPasswordIssuesCoordinator stop];
   _dismissedPasswordIssuesCoordinator.reauthModule = nil;
   _dismissedPasswordIssuesCoordinator.delegate = nil;
   _dismissedPasswordIssuesCoordinator = nil;
+}
+
+// Called after the view controller of a child coordinator of `self` was removed
+// from the navigation stack.
+- (void)onChildCoordinatorDidRemove {
+  // If the content of the view controller was gone while a child coordinator
+  // was presenting content, dismiss the view controller now that the child
+  // coordinator's vc was removed.
+  if (_shouldDismissAfterChildCoordinatorRemoved) {
+    CHECK_EQ(self.baseNavigationController.topViewController,
+             self.viewController);
+    _shouldDismissAfterChildCoordinatorRemoved = NO;
+    [self.baseNavigationController popViewControllerAnimated:NO];
+  }
+}
+
+// Navigates to the previous view controller in the navigation stack.
+- (void)navigateToPreviousViewController {
+  UINavigationController* baseNavigationController =
+      self.baseNavigationController;
+  NSInteger indexInNavigationController =
+      [baseNavigationController.viewControllers
+          indexOfObject:self.viewController];
+
+  // Nothing to do if viewController was already removed from the navigation
+  // stack.
+  if (indexInNavigationController == NSNotFound) {
+    return;
+  }
+
+  CHECK_GT(indexInNavigationController, 0);
+
+  // Go to previous view controller in navigation stack.
+  [baseNavigationController
+      popToViewController:baseNavigationController
+                              .viewControllers[indexInNavigationController - 1]
+                 animated:YES];
 }
 
 @end

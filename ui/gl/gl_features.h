@@ -28,6 +28,11 @@ GL_EXPORT BASE_DECLARE_FEATURE(kAndroidFrameDeadline);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+GL_EXPORT BASE_DECLARE_FEATURE(kWriteMetalShaderCacheToDisk);
+GL_EXPORT BASE_DECLARE_FEATURE(kUseBuiltInMetalShaderCache);
+#endif
+
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 
 GL_EXPORT bool UsePassthroughCommandDecoder();

@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -59,10 +60,14 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             browser,
             browser->profile(),
             BookmarkLaunchLocation::kSidePanelContextMenu,
-            bookmarks.front()->parent(),
+            bookmarks.size() > 0 ? bookmarks.front()->parent() : nullptr,
             bookmarks))),
         shopping_list_controller_(shopping_list_controller),
         bookmarks_(bookmarks) {
+    if (bookmarks.size() == 0) {
+      mojo::ReportBadMessage("BookmarkContextMenu has empty bookmarks");
+      return;
+    }
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       DCHECK(shopping_list_controller_);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
@@ -229,9 +234,9 @@ void BookmarksPageHandler::ExecuteRemoveFromBookmarksBarCommand(
 }
 
 void BookmarksPageHandler::ExecuteDeleteCommand(
-    int64_t node_id,
+    const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
-  ExecuteContextMenuCommand({node_id}, source, IDC_BOOKMARK_BAR_REMOVE);
+  ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_REMOVE);
 }
 
 void BookmarksPageHandler::ExecuteContextMenuCommand(

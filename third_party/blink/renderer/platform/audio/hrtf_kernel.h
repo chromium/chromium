@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -71,17 +72,12 @@ class HRTFKernel {
   CreateInterpolatedKernel(HRTFKernel* kernel1, HRTFKernel* kernel2, float x);
 
   FFTFrame* FftFrame() { return fft_frame_.get(); }
-
-  size_t FftSize() const { return fft_frame_->FftSize(); }
   float FrameDelay() const { return frame_delay_; }
-
-  float SampleRate() const { return sample_rate_; }
-  double Nyquist() const { return 0.5 * SampleRate(); }
 
  private:
   std::unique_ptr<FFTFrame> fft_frame_;
   float frame_delay_;
-  float sample_rate_;
+  const float sample_rate_;
 };
 
 typedef Vector<std::unique_ptr<HRTFKernel>> HRTFKernelList;

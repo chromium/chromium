@@ -29,7 +29,7 @@ PaintRecord& PaintRecord::operator=(const PaintRecord&) = default;
 
 PaintRecord::PaintRecord(sk_sp<PaintOpBuffer> buffer)
     : buffer_(std::move(buffer)) {
-  DCHECK(buffer_);
+  CHECK(buffer_);
 }
 
 // static

@@ -15,8 +15,10 @@ namespace test {
 
 AppListTestViewDelegate::AppListTestViewDelegate()
     : model_(std::make_unique<AppListTestModel>()),
-      search_model_(std::make_unique<SearchModel>()) {
-  model_provider_.SetActiveModel(model_.get(), search_model_.get());
+      search_model_(std::make_unique<SearchModel>()),
+      quick_app_access_model_(std::make_unique<QuickAppAccessModel>()) {
+  model_provider_.SetActiveModel(model_.get(), search_model_.get(),
+                                 quick_app_access_model_.get());
 }
 
 AppListTestViewDelegate::~AppListTestViewDelegate() = default;
@@ -74,7 +76,9 @@ void AppListTestViewDelegate::ReplaceTestModel(int item_count) {
   search_model_ = std::make_unique<SearchModel>();
   model_ = std::make_unique<AppListTestModel>();
   model_->PopulateApps(item_count);
-  model_provider_.SetActiveModel(model_.get(), search_model_.get());
+  quick_app_access_model_ = std::make_unique<QuickAppAccessModel>();
+  model_provider_.SetActiveModel(model_.get(), search_model_.get(),
+                                 quick_app_access_model_.get());
 }
 
 void AppListTestViewDelegate::SetSearchEngineIsGoogle(bool is_google) {

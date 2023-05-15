@@ -173,7 +173,7 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
   // Can be null in tests.
   arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
   if (arc_app_list_prefs_) {
-    arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
+    arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_.get());
   }
 
   if (web_app::IsWebAppsCrosapiEnabled()) {

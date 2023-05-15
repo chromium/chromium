@@ -7,6 +7,7 @@
 
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/widget/widget_observer.h"
@@ -76,7 +77,7 @@ class CameraAppWindowManager : public views::WidgetObserver {
   TransferState transfer_state_ = TransferState::kIdle;
 
   // The widget which has the camera usage ownership currently.
-  views::Widget* owner_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> owner_ = nullptr;
 
   // For the pending camera usage owner, there are three possible values:
   // 1. absl::nullopt: When there is no pending owner. Transfer can stop.

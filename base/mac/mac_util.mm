@@ -15,9 +15,9 @@
 #include <sys/utsname.h>
 #include <sys/xattr.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_aedesc.h"
@@ -96,7 +96,7 @@ class LoginItemsFileList {
   }
 
   ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForMainApp() {
-    NSURL* url = [NSURL fileURLWithPath:[base::mac::MainBundle() bundlePath]];
+    NSURL* url = [NSURL fileURLWithPath:[base::apple::MainBundle() bundlePath]];
     return GetLoginItemForApp(url);
   }
 

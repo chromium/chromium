@@ -8,8 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
@@ -27,7 +28,7 @@ class DesksAdminTemplateResult : public ChromeSearchResult {
  public:
   DesksAdminTemplateResult(Profile* profile,
                            AppListControllerDelegate* list_controller,
-                           const base::GUID& template_uuid,
+                           const base::Uuid& template_uuid,
                            const std::u16string& title,
                            const ui::ImageModel& icon);
 
@@ -40,9 +41,9 @@ class DesksAdminTemplateResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
-  base::GUID template_uuid_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  base::Uuid template_uuid_;
 };
 
 // Provides search results from the admin templates. The admin template is a new
@@ -63,8 +64,8 @@ class DesksAdminTemplateProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
 
  private:
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 };
 
 }  // namespace app_list

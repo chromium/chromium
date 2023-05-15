@@ -120,7 +120,7 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &enterprise_connectors::FakeContentAnalysisDelegate::Create,
@@ -131,7 +131,7 @@ void DeepScanningBrowserTestBase::SetUpDelegate() {
 }
 
 void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),

@@ -25,8 +25,8 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // The root directory for background download system, under browser state
 // directory.

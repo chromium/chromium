@@ -319,12 +319,7 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
     return;
   }
 
-  bool is_inside =
-      parent_style.ListStylePosition() == EListStylePosition::kInside ||
-      (IsA<HTMLLIElement>(parent_element) &&
-       !parent_style.IsInsideListElement());
-
-  if (is_inside) {
+  if (parent_style.MarkerShouldBeInside(parent_element)) {
     Document& document = parent_element.GetDocument();
     auto margins =
         ListMarker::InlineMarginsForInside(document, builder, parent_style);
@@ -589,8 +584,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   }
 
   // Blockify the child boxes of media elements. crbug.com/1379779.
-  if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled() &&
-      IsAtMediaUAShadowBoundary(element)) {
+  if (IsAtMediaUAShadowBoundary(element)) {
     builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 }

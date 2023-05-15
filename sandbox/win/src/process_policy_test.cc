@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/security_util.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/process_thread_interception.h"
 #include "sandbox/win/src/sandbox.h"
@@ -18,6 +19,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
+
+namespace {
+
+bool TestOpenProcess(DWORD desired_access, DWORD expected_access) {
+  base::win::ScopedHandle process(
+      ::OpenProcess(desired_access, FALSE, ::GetCurrentProcessId()));
+  if (!process.is_valid() ||
+      ::GetProcessId(process.get()) != ::GetCurrentProcessId()) {
+    return false;
+  }
+  return base::win::GetGrantedAccess(process.get()) == expected_access;
+}
+
+bool TestOpenThread(DWORD thread_id,
+                    DWORD desired_access,
+                    DWORD expected_access) {
+  base::win::ScopedHandle thread(
+      ::OpenThread(desired_access, FALSE, thread_id));
+  if (!thread.is_valid() || ::GetThreadId(thread.get()) != thread_id) {
+    return false;
+  }
+  return base::win::GetGrantedAccess(thread.get()) == expected_access;
+}
+
+}  // namespace
 
 SBOX_TESTS_COMMAND int Process_OpenToken(int argc, wchar_t** argv) {
   HANDLE token;
@@ -31,6 +57,44 @@ SBOX_TESTS_COMMAND int Process_OpenToken(int argc, wchar_t** argv) {
   }
 
   return SBOX_TEST_FAILED;
+}
+
+SBOX_TESTS_COMMAND int Process_OpenProcess(int argc, wchar_t** argv) {
+  if (!TestOpenProcess(PROCESS_ALL_ACCESS, PROCESS_ALL_ACCESS)) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+  if (!TestOpenProcess(MAXIMUM_ALLOWED, PROCESS_ALL_ACCESS)) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+
+  return SBOX_TEST_SUCCEEDED;
+}
+
+DWORD CALLBACK DummyThread(LPVOID) {
+  return 0;
+}
+
+SBOX_TESTS_COMMAND int Process_OpenThread(int argc, wchar_t** argv) {
+  DWORD thread_id = ::GetCurrentThreadId();
+  if (!TestOpenThread(thread_id, THREAD_ALL_ACCESS, THREAD_ALL_ACCESS)) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+  if (!TestOpenThread(thread_id, MAXIMUM_ALLOWED, THREAD_ALL_ACCESS)) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+  base::win::ScopedHandle thread(::CreateThread(
+      nullptr, 0, DummyThread, nullptr, CREATE_SUSPENDED, &thread_id));
+  if (!thread.is_valid() || !::TerminateThread(thread.get(), 0)) {
+    return SBOX_TEST_THIRD_ERROR;
+  }
+  if (!TestOpenThread(thread_id, THREAD_ALL_ACCESS, THREAD_ALL_ACCESS)) {
+    return SBOX_TEST_FOURTH_ERROR;
+  }
+  if (!TestOpenThread(thread_id, MAXIMUM_ALLOWED, THREAD_ALL_ACCESS)) {
+    return SBOX_TEST_FIFTH_ERROR;
+  }
+
+  return SBOX_TEST_SUCCEEDED;
 }
 
 SBOX_TESTS_COMMAND int Process_Crash(int argc, wchar_t** argv) {
@@ -111,6 +175,16 @@ TEST(ProcessPolicyTest, MAYBE_CreateProcessCrashy) {
 TEST(ProcessPolicyTest, OpenToken) {
   TestRunner runner;
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"Process_OpenToken"));
+}
+
+TEST(ProcessPolicyTest, OpenProcess) {
+  TestRunner runner;
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"Process_OpenProcess"));
+}
+
+TEST(ProcessPolicyTest, OpenThread) {
+  TestRunner runner;
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"Process_OpenThread"));
 }
 
 // This tests that the CreateThread works with CSRSS not locked down.

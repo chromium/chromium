@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/animation/tween.h"
@@ -57,7 +56,7 @@ static float MaximumDimension(const gfx::Vector2dF& delta) {
 
 static std::unique_ptr<TimingFunction> EaseInOutWithInitialSlope(double slope) {
   // Clamp slope to a sane value.
-  slope = base::clamp(slope, -1000.0, 1000.0);
+  slope = std::clamp(slope, -1000.0, 1000.0);
 
   // Based on CubicBezierTimingFunction::EaseType::EASE_IN_OUT preset
   // with first control point scaled.
@@ -191,8 +190,8 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
       case DurationBehavior::INVERSE_DELTA:
         duration = kInverseDeltaOffset +
                    std::abs(MaximumDimension(delta)) * kInverseDeltaSlope;
-        duration = base::clamp(duration, kInverseDeltaMinDuration,
-                               kInverseDeltaMaxDuration);
+        duration = std::clamp(duration, kInverseDeltaMinDuration,
+                              kInverseDeltaMaxDuration);
         break;
     }
     duration /= kDurationDivisor;
@@ -265,7 +264,7 @@ base::TimeDelta ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
   } else {
     double duration_in_milliseconds =
         kImpulseMillisecondsPerPixel * std::abs(MaximumDimension(delta));
-    duration_in_milliseconds = base::clamp(
+    duration_in_milliseconds = std::clamp(
         duration_in_milliseconds, kImpulseMinDurationMs, kImpulseMaxDurationMs);
     duration = base::Milliseconds(duration_in_milliseconds);
   }

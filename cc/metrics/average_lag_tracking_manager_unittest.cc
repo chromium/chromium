@@ -97,7 +97,7 @@ class AverageLagTrackingManagerTest : public testing::Test {
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
         kScrollIsNotInertial, scroll_update_type, delta, event_time,
         arrived_in_browser_main_timestamp,
-        base::IdType64<class ui::LatencyInfo>(trace_id));
+        base::IdType64<class ui::LatencyInfo>(trace_id), base::TimeTicks());
   }
 
   AverageLagTrackingManager average_lag_tracking_manager_;

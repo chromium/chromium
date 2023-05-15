@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
@@ -104,7 +105,7 @@ class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
                         base::Time not_valid_after,
                         std::string* pem_encoded_cert);
 
-  AttestationClient* const attestation_client_;
+  const raw_ptr<AttestationClient, ExperimentalAsh> attestation_client_;
   std::unique_ptr<AttestationFlow> attestation_flow_;
   std::set<std::string> renewals_in_progress_;
 

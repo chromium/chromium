@@ -75,7 +75,7 @@ class BrowserProcessBinder extends IWebSandboxService.Stub {
     private void onWebLayerReady(WebLayer webLayer, IWebSandboxCallback callback) {
         mWebLayer = webLayer;
         try {
-            callback.onBrowserProcessInitialized();
+            callback.onBrowserProcessInitialized(new ProfileManagerDelegate(webLayer));
         } catch (RemoteException e) {
         }
     }

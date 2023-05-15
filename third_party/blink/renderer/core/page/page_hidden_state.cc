@@ -30,12 +30,12 @@
 
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
 
+#include "third_party/blink/renderer/core/keywords.h"
+
 namespace blink {
 
 AtomicString PageHiddenStateString(bool hidden) {
-  if (hidden)
-    return "hidden";
-  return "visible";
+  return hidden ? keywords::kHidden : keywords::kVisible;
 }
 
 }  // namespace blink

@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -26,6 +27,7 @@
 #include "content/browser/media/media_license_storage_host.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
+#include "sql/sqlite_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -145,6 +147,12 @@ void MediaLicenseManager::DidGetBucket(
     // We could consider falling back to using an in-memory database in this
     // case, but failing here seems easier to reason about from a website
     // author's point of view.
+    sql::UmaHistogramSqliteResult(
+        "Media.EME.MediaLicenseDatabaseOpenSQLiteError",
+        result.error().sqlite_error);
+    base::UmaHistogramEnumeration(
+        "Media.EME.MediaLicenseDatabaseOpenQuotaError",
+        result.error().quota_error);
     MediaLicenseStorageHost::ReportDatabaseOpenError(
         MediaLicenseStorageHostOpenError::kBucketLocatorError, in_memory());
     DCHECK(bucket_locator.id.is_null());

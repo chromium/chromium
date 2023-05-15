@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/QueryTileUtils_jni.h"
 #endif
 
@@ -53,6 +54,11 @@ bool IsQueryTilesEnabled() {
 #if BUILDFLAG(IS_ANDROID)
 static jboolean JNI_QueryTileUtils_IsQueryTilesEnabled(JNIEnv* env) {
   return IsQueryTilesEnabled();
+}
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_QueryTileUtils_GetCountryCode(JNIEnv* env) {
+  return base::android::ConvertUTF8ToJavaString(env, GetCountryCode());
 }
 #endif
 

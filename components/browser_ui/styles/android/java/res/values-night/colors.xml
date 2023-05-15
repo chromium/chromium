@@ -14,4 +14,10 @@ found in the LICENSE file.
     <color name="control_highlight_color">@color/default_control_color_highlight_dark</color>
     <color name="switch_track_disabled_color_baseline">@color/switch_track_disabled_color_baseline_light</color>
     <color name="switch_thumb_disabled_color_baseline">@color/switch_thumb_disabled_color_baseline_dark</color>
+
+    <!-- Empty states colors -->
+    <color name="empty_state_icon_color">@color/material_primary_200</color>
+    <color name="empty_state_icon_bg_color">@color/material_primary_800</color>
+    <color name="empty_state_icon_bg_background_color">@color/material_primary_900</color>
+    <color name="empty_state_icon_bg_foreground_color">@color/material_primary_800</color>
 </resources>

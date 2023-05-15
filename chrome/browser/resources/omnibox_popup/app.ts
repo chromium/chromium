@@ -10,14 +10,14 @@ import {AutocompleteResult, PageCallbackRouter} from '//resources/cr_components/
 import {RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
 import {assert} from '//resources/js/assert_ts.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 
 // 675px ~= 449px (--ntp-realbox-primary-side-min-width) * 1.5 + some margin.
-const showSecondarySideMediaQueryList = window.matchMedia('(min-width: 675px)');
+const canShowSecondarySideMediaQueryList =
+    window.matchMedia('(min-width: 675px)');
 
 export interface OmniboxPopupAppElement {
   $: {
@@ -43,8 +43,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
        */
       canShowSecondarySide: {
         type: Boolean,
-        value: () => showSecondarySideMediaQueryList.matches &&
-            loadTimeData.getBoolean('showSecondarySide'),
+        value: () => canShowSecondarySideMediaQueryList.matches,
         reflectToAttribute: true,
       },
 
@@ -82,7 +81,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
     this.selectMatchAtLineListenerId_ =
         this.callbackRouter_.selectMatchAtLine.addListener(
             this.onSelectMatchAtLine_.bind(this));
-    showSecondarySideMediaQueryList.addEventListener(
+    canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
@@ -93,13 +92,12 @@ export class OmniboxPopupAppElement extends PolymerElement {
         this.omniboxAutocompleteResultChangedListenerId_);
     assert(this.selectMatchAtLineListenerId_);
     this.callbackRouter_.removeListener(this.selectMatchAtLineListenerId_);
-    showSecondarySideMediaQueryList.removeEventListener(
+    canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
-    this.canShowSecondarySide =
-        e.matches && loadTimeData.getBoolean('showSecondarySide');
+    this.canShowSecondarySide = e.matches;
   }
 
   private onOmniboxAutocompleteResultChanged_(result: AutocompleteResult) {

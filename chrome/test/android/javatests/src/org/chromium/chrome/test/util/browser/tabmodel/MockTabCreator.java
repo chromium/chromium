@@ -56,7 +56,7 @@ public class MockTabCreator extends TabCreator {
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
         Tab tab = new MockTab(0, mIsIncognito, TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
-        ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null);
+        ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null, false);
         mSelector.getModel(mIsIncognito)
                 .addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
         storeTabInfo(null, tab.getId());
@@ -73,11 +73,16 @@ public class MockTabCreator extends TabCreator {
         if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)) {
             CriticalPersistedTabData.build(tab, serializedCriticalPersistedTabData);
         }
-        ((TabImpl) tab).initialize(null, null, null, null, null, false, null);
+        ((TabImpl) tab).initialize(null, null, null, null, null, false, null, false);
         mSelector.getModel(mIsIncognito)
                 .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
         storeTabInfo(state, id);
         return tab;
+    }
+
+    @Override
+    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
+        return null;
     }
 
     @Override

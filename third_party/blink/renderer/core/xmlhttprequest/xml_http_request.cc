@@ -28,7 +28,6 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/header_util.h"
@@ -50,7 +49,7 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
+#include "third_party/blink/renderer/core/fetch/attribution_reporting_to_mojom.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -83,7 +82,6 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -255,7 +253,7 @@ class XMLHttpRequest::BlobLoader final
   }
 
   // FileReaderClient functions.
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override {
+  FileErrorCode DidStartLoading(uint64_t) override {
     return FileErrorCode::kOK;
   }
   FileErrorCode DidReceiveData(const char* data, unsigned length) override {
@@ -1078,6 +1076,9 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);
 
+  request.SetAttributionReportingEligibility(
+      attribution_reporting_eligibility_);
+
   probe::WillLoadXHR(&execution_context, method_, url_, async_,
                      request_headers_, with_credentials_);
 
@@ -1168,13 +1169,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
 
   if (!async_) {
     base::TimeDelta blocking_time = base::TimeTicks::Now() - start_time;
-    if (execution_context.IsWindow()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("XHR.Sync.BlockingTime.MainThread",
-                                 blocking_time);
-    } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("XHR.Sync.BlockingTime.WorkerThread",
-                                 blocking_time);
-    }
 
     probe::DidFinishSyncXHR(&execution_context, blocking_time);
 
@@ -1453,38 +1447,29 @@ void XMLHttpRequest::setPrivateToken(const PrivateToken* trust_token,
   }
 
   auto params = network::mojom::blink::TrustTokenParams::New();
-  if (!ConvertTrustTokenToMojom(*trust_token, &exception_state, params.get())) {
+  if (!ConvertTrustTokenToMojomAndCheckPermissions(
+          *trust_token, GetExecutionContext(), &exception_state,
+          params.get())) {
     DCHECK(exception_state.HadException());
     return;
   }
 
-  bool operation_requires_permissions_policy =
-      params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kRedemption ||
-      params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kSigning;
-  if (operation_requires_permissions_policy &&
-      !GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Trust Tokens redemption and signing require the "
-        "trust-token-redemption Permissions Policy feature.");
-    return;
-  }
-
-  if (params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kIssuance &&
-      !IsTrustTokenIssuanceAvailableInExecutionContext(
-          *GetExecutionContext())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Trust Tokens issuance is disabled except in "
-        "contexts with the TrustTokens Origin Trial enabled.");
-    return;
-  }
-
   trust_token_params_ = std::move(params);
+}
+
+void XMLHttpRequest::setAttributionReporting(
+    const AttributionReportingRequestOptions* options,
+    ExceptionState& exception_state) {
+  // These precondition checks are copied from |setRequestHeader|.
+  if (state_ != kOpened || send_flag_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The object's state must be OPENED.");
+    return;
+  }
+
+  attribution_reporting_eligibility_ =
+      ConvertAttributionReportingRequestOptionsToMojom(
+          *options, *GetExecutionContext(), exception_state);
 }
 
 bool XMLHttpRequest::HasContentTypeRequestHeader() const {

@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -24,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/install_static/install_details.h"
@@ -180,7 +180,8 @@ void ChromeCleanerFetcher::OnTemporaryDirectoryCreated(bool success) {
   DCHECK(!scoped_temp_dir_->GetPath().empty());
 
   base::FilePath temp_file = scoped_temp_dir_->GetPath().Append(
-      base::ASCIIToWide(base::GenerateGUID()) + L".tmp");
+      base::ASCIIToWide(base::Uuid::GenerateRandomV4().AsLowercaseString()) +
+      L".tmp");
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = download_url_;

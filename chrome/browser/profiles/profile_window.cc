@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
@@ -85,10 +86,20 @@ void UnblockExtensions(Profile* profile) {
 void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
                            Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile)
+  if (!profile) {
     return;
-  if (callback)
+  }
+  if (callback) {
     std::move(callback).Run(profile);
+  }
+}
+
+// Runs `callback` with a nullptr browser. Note: this takes the callback by
+// reference, so that this can be used without consuming the callback.
+void RunWithNullBrowser(base::OnceCallback<void(Browser*)>& callback) {
+  if (callback) {
+    std::move(callback).Run(nullptr);
+  }
 }
 
 }  // namespace
@@ -121,7 +132,7 @@ void FindOrCreateNewWindowForProfile(
                                 /*launch_mode_recorder=*/nullptr);
 }
 
-void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
+void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
@@ -129,6 +140,12 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser", "OpenBrowserWindowForProfile", "profile_path",
                profile->GetPath().AsUTF8Unsafe());
+  // `error_closure_runner` runs the callback  with nullptr to signal an error
+  // if the function reaches a return statement without consuming callback. If
+  // the callback is consumed by std::move(), then `callback` will be empty
+  // after that and the closure runner does nothing.
+  base::ScopedClosureRunner error_closure_runner(
+      base::BindOnce(&RunWithNullBrowser, std::ref(callback)));
   chrome::startup::IsProcessStartup process_startup =
       chrome::startup::IsProcessStartup::kNo;
   chrome::startup::IsFirstRun is_first_run = chrome::startup::IsFirstRun::kNo;
@@ -162,8 +179,9 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (unblock_extensions)
+  if (unblock_extensions) {
     UnblockExtensions(profile);
+  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // If |always_create| is false, and we have a |callback| to run, check
@@ -175,8 +193,9 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
     Browser* browser = chrome::FindTabbedBrowser(profile, false);
     if (browser) {
       browser->window()->Activate();
-      if (callback)
-        std::move(callback).Run(profile);
+      if (callback) {
+        std::move(callback).Run(browser);
+      }
       return;
     }
   }
@@ -189,8 +208,7 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
   // that fails, either something has crashed, or the observer will be cleaned
   // up when a different browser for this profile is opened.
   if (callback) {
-    new BrowserAddedForProfileObserver(
-        profile, base::BindOnce(std::move(callback), profile));
+    new BrowserAddedForProfileObserver(profile, std::move(callback));
   }
 
   // We already dealt with the case when |always_create| was false and a browser
@@ -211,7 +229,7 @@ void LoadProfileAsync(const base::FilePath& path,
 
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
-                     base::OnceCallback<void(Profile*)> callback) {
+                     base::OnceCallback<void(Browser*)> callback) {
   base::OnceCallback<void(Profile*)> open_browser_callback =
       base::BindOnce(&profiles::OpenBrowserWindowForProfile,
                      std::move(callback), always_create,
@@ -222,7 +240,7 @@ void SwitchToProfile(const base::FilePath& path,
       base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));
 }
 
-void SwitchToGuestProfile(base::OnceCallback<void(Profile*)> callback) {
+void SwitchToGuestProfile(base::OnceCallback<void(Browser*)> callback) {
   SwitchToProfile(ProfileManager::GetGuestProfilePath(),
                   /*always_create=*/false, std::move(callback));
 }
@@ -244,25 +262,48 @@ void CloseProfileWindows(Profile* profile) {
 
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
     Profile* profile,
-    base::OnceClosure callback)
-    : profile_(profile), callback_(std::move(callback)) {
+    base::OnceCallback<void(Browser*)> callback)
+    : profile_(profile->GetWeakPtr()), callback_(std::move(callback)) {
   DCHECK(callback_);
-  BrowserList::AddObserver(this);
+  browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
 BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() {}
 
 void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() == profile_) {
-    BrowserList::RemoveObserver(this);
-    // By the time the browser is added a tab (or multiple) are about to be
-    // added. Post the callback to the message loop so it gets executed after
-    // the tabs are created.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback_));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                  this);
+  if (browser_) {
+    // Do not run the callback twice.
+    return;
   }
+
+  if (browser->profile() != profile_.get()) {
+    // The profile has been deleted, or this is a different profile.
+    return;
+  }
+
+  browser_ = browser;
+  // By the time the browser is added a tab (or multiple) are about to be added.
+  // Post the callback to the message loop so it gets executed after the tabs
+  // are created.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserAddedForProfileObserver::NotifyBrowserCreatedAnDie,
+                     base::Unretained(this)));
+}
+
+void BrowserAddedForProfileObserver::OnBrowserRemoved(Browser* browser) {
+  // The browser was closed before the callback could run.
+  if (browser == browser_) {
+    browser_list_observation_.Reset();
+    browser_ = nullptr;
+  }
+}
+
+void BrowserAddedForProfileObserver::NotifyBrowserCreatedAnDie() {
+  // If the browser exists, the profile has to exist too.
+  CHECK(profile_ || !browser_);
+  std::move(callback_).Run(browser_);
+  delete this;
 }
 
 }  // namespace profiles

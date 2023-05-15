@@ -80,6 +80,12 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether app permissions are read-only in the App Management page.
+// Only applies on Android T+.
+BASE_FEATURE(kEnableReadOnlyPermissions,
+             "ArcEnableReadOnlyPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
              "ArcEnableUnifiedAudioFocus",
@@ -90,16 +96,17 @@ BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
              "ArcEnableUnmanagedToManagedTransitionFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls ARC Unspecialized Application Processes.
-// When enabled, Android creates a pool of processes
-// that will start applications so that zygote doesn't have to wake.
-BASE_FEATURE(kEnableUsap, "ArcEnableUsap", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to use virtio-blk for Android /data instead of using
 // virtio-fs.
 BASE_FEATURE(kEnableVirtioBlkForData,
              "ArcEnableVirtioBlkForData",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to allow Android apps to access external storage devices
+// like USB flash drives and SD cards.
+BASE_FEATURE(kExternalStorageAccess,
+             "ArcExternalStorageAccess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to pop up ghost window for ARC app before fixup finishes.
 BASE_FEATURE(kFixupWindowFeature,
@@ -249,11 +256,6 @@ BASE_FEATURE(kSyncInstallPriority,
              "ArcSyncInstallPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to update the O4C list via A2C2.
-BASE_FEATURE(kArcUpdateO4CListViaA2C2,
-             "ArcUpdateO4CListViaA2C2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
@@ -339,4 +341,21 @@ const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
 // Controls the time interval of ARC silence. The default value is 15 minutes.
 const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
     &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
+
+// Controls the feature to delay low memory kills of high priority apps when the
+// memory pressure is below foreground.
+BASE_FEATURE(kPriorityAppLmkDelay,
+             "ArcPriorityAppLmkDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the time to wait for inactivity of a high priority app before
+// considering it to be killed. The default value is 5 minutes.
+const base::FeatureParam<int> kPriorityAppLmkDelaySecond{
+    &kPriorityAppLmkDelay, "priority_app_lmk_delay_sec", 60 * 5};
+
+// Controls the list of apps to be considered as high priority that would have a
+// delay before considered to be killed.
+const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
+    &kPriorityAppLmkDelay, "priority_app_lmk_delay_list", ""};
+
 }  // namespace arc

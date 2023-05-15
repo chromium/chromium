@@ -6,8 +6,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -32,12 +30,6 @@ const char kGreenPDFPath[] = "/green.pdf";
 
 @implementation PDFTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kPDFSnapshot);
-  return config;
-}
-
 // Regression test for crbug/981893. Repro steps: open a PDF in a new
 // tab, switch back and forth betweeen the new tab and the old one by
 // swiping in the toolbar. The regression is a crash.
@@ -47,6 +39,11 @@ const char kGreenPDFPath[] = "/green.pdf";
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
                             @"toolbar to change tabs, which is a compact-"
                             @"only feature.");
+  }
+  if ([ChromeEarlGrey isSortingTabsByRecency]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
+                            @"on swiping in the toolbar to change tabs, which "
+                            @"is disabled when sorting tabs by recency.");
   }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

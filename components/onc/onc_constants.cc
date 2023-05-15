@@ -139,6 +139,7 @@ const char kSignalStrength[] = "SignalStrength";
 const char kSIMLockStatus[] = "SIMLockStatus";
 const char kSIMPresent[] = "SIMPresent";
 const char kSMDPAddress[] = "SMDPAddress";
+const char kSMDSAddress[] = "SMDSAddress";
 const char kSupportNetworkScan[] = "SupportNetworkScan";
 const char kTechnologyCdma1Xrtt[] = "CDMA1XRTT";
 const char kTechnologyEdge[] = "EDGE";

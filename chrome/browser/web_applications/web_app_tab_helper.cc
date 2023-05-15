@@ -9,6 +9,7 @@
 
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -163,6 +164,32 @@ void WebAppTabHelper::OnAssociatedAppChanged(
     const absl::optional<AppId>& new_app_id) {
   provider_->ui_manager().NotifyOnAssociatedAppChanged(
       web_contents(), previous_app_id, new_app_id);
+
+  // Tag WebContents for Task Manager.
+  // cases to consider:
+  // 1. non-app -> app (association added)
+  // 2. non-app -> non-app
+  // 3. app -> app (association changed)
+  // 4. app -> non-app (association removed)
+
+  if (new_app_id.has_value() && !new_app_id->empty()) {
+    // case 1 & 3:
+    // WebContents could already be tagged with TabContentsTag or WebAppTag,
+    // therefore we want to clear it.
+    task_manager::WebContentsTags::ClearTag(web_contents());
+    task_manager::WebContentsTags::CreateForWebApp(
+        web_contents(), new_app_id.value(),
+        provider_->registrar_unsafe().IsIsolated(new_app_id.value()));
+  } else {
+    // case 4:
+    if (previous_app_id.has_value() && !previous_app_id->empty()) {
+      // remove WebAppTag, add TabContentsTag.
+      task_manager::WebContentsTags::ClearTag(web_contents());
+      task_manager::WebContentsTags::CreateForTabContents(web_contents());
+    }
+    // case 2: do nothing
+  }
+
   UpdateAudioFocusGroupId();
 }
 

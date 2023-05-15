@@ -142,6 +142,7 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       is_scrollbar_freeze_root_(false),
       is_horizontal_scrollbar_frozen_(false),
       is_vertical_scrollbar_frozen_(false),
+      should_scroll_on_main_thread_(true),
       scrollbar_manager_(*this),
       has_last_committed_scroll_offset_(false),
       scroll_corner_(nullptr),
@@ -459,9 +460,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
     if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this)) {
-      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-          PaintArtifactCompositorUpdateReason::
-              kPaintLayerScrollableAreaUpdateScrollOffset);
+      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
     }
   }
 
@@ -645,7 +644,7 @@ void PaintLayerScrollableArea::VisibleSizeChanged() {
 PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   // LayoutContentRect is conceptually the same as the box's client rect.
-  LayoutSize layer_size(Layer()->Size());
+  LayoutSize layer_size = Size();
   LayoutUnit border_width = GetLayoutBox()->BorderWidth();
   LayoutUnit border_height = GetLayoutBox()->BorderHeight();
   NGPhysicalBoxStrut scrollbars;
@@ -674,14 +673,15 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
   const ComputedStyle* style = GetLayoutBox()->Style();
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
   layout_content_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
-  LayoutRectOutsets padding(MinimumValueForLength(style->ScrollPaddingTop(),
-                                                  layout_content_rect.Height()),
-                            MinimumValueForLength(style->ScrollPaddingRight(),
-                                                  layout_content_rect.Width()),
-                            MinimumValueForLength(style->ScrollPaddingBottom(),
-                                                  layout_content_rect.Height()),
-                            MinimumValueForLength(style->ScrollPaddingLeft(),
-                                                  layout_content_rect.Width()));
+  NGPhysicalBoxStrut padding(
+      MinimumValueForLength(style->ScrollPaddingTop(),
+                            layout_content_rect.Height()),
+      MinimumValueForLength(style->ScrollPaddingRight(),
+                            layout_content_rect.Width()),
+      MinimumValueForLength(style->ScrollPaddingBottom(),
+                            layout_content_rect.Height()),
+      MinimumValueForLength(style->ScrollPaddingLeft(),
+                            layout_content_rect.Width()));
   layout_content_rect.Contract(padding);
   return layout_content_rect;
 }
@@ -880,6 +880,12 @@ LayoutBox* PaintLayerScrollableArea::GetLayoutBox() const {
 
 PaintLayer* PaintLayerScrollableArea::Layer() const {
   return layer_;
+}
+
+LayoutSize PaintLayerScrollableArea::Size() const {
+  return layer_->IsRootLayer()
+             ? LayoutSize(GetLayoutBox()->GetFrameView()->Size())
+             : GetLayoutBox()->Size();
 }
 
 LayoutUnit PaintLayerScrollableArea::ScrollWidth() const {
@@ -1194,7 +1200,8 @@ mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
       !GetPageScrollbarTheme().UsesOverlayScrollbars()) {
     const Document& document = GetLayoutBox()->GetDocument();
     if (document.documentElement() &&
-        document.documentElement()->ComputedStyleRef().ColorScheme().empty() &&
+        document.documentElement()->GetComputedStyle() &&
+        document.documentElement()->GetComputedStyle()->ColorScheme().empty() &&
         document.GetStyleEngine().GetPageColorSchemes() ==
             static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal) &&
         document.GetPreferredColorScheme() ==
@@ -2412,20 +2419,23 @@ ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()
 }
 
 bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
-  if (HasBeenDisposed())
-    return true;
-
-  // Property tree state is not available until the PrePaint lifecycle stage.
-  // PaintPropertyTreeBuilder needs to get the old status during PrePaint.
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kInPrePaint);
-  const auto* properties = GetLayoutBox()->FirstFragment().PaintProperties();
-  if (!properties || !properties->Scroll() ||
-      properties->Scroll()->GetMainThreadScrollingReasons())
-    return true;
+            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+                ? DocumentLifecycle::kPaintClean
+                : DocumentLifecycle::kInPrePaint);
+  return HasBeenDisposed() || should_scroll_on_main_thread_;
+}
 
-  DCHECK(properties->ScrollTranslation());
-  return !properties->ScrollTranslation()->HasDirectCompositingReasons();
+void PaintLayerScrollableArea::SetShouldScrollOnMainThread(
+    bool scroll_on_main_thread) {
+  DCHECK_EQ(GetDocument()->Lifecycle().GetState(),
+            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+                ? DocumentLifecycle::kPaintClean
+                : DocumentLifecycle::kInPrePaint);
+  if (scroll_on_main_thread != should_scroll_on_main_thread_) {
+    should_scroll_on_main_thread_ = scroll_on_main_thread;
+    MainThreadScrollingDidChange();
+  }
 }
 
 bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
@@ -2457,6 +2467,8 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     if (!needs_composited_scrolling) {
       new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
     }
+    DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
+             ~cc::MainThreadScrollingReason::kNonCompositedReasons));
   }
   box->GetMutableForPainting().SetBackgroundPaintLocation(
       new_background_paint_location);
@@ -2506,8 +2518,6 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
     }
   }
 
-  DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
-           ~cc::MainThreadScrollingReason::kNonCompositedReasons));
   return needs_composited_scrolling;
 }
 
@@ -2796,7 +2806,10 @@ static bool ScrollControlNeedsPaintInvalidation(
 bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
     const Scrollbar& scrollbar) const {
   // Don't composite non-scrollable scrollbars.
-  if (!scrollbar.Maximum()) {
+  // TODO(crbug.com/1020913): !ScrollsOverflow() should imply
+  // !scrollbar.Maximum(), but currently that isn't always true due to
+  // different or incorrect rounding methods for scroll geometries.
+  if (!ScrollsOverflow() || !scrollbar.Maximum()) {
     return false;
   }
   if (scrollbar.IsCustomScrollbar()) {
@@ -3093,7 +3106,7 @@ void PaintLayerScrollableArea::TraceComputeScrollbarExistence(
         ctx.AddDebugAnnotation("early_exit", early_exit);
         ctx.AddDebugAnnotation("h_mode", static_cast<int>(h_mode));
         ctx.AddDebugAnnotation("v_mode", static_cast<int>(v_mode));
-        ctx.AddDebugAnnotation("layer_size", Layer()->Size().ToString());
+        ctx.AddDebugAnnotation("layer_size", Size().ToString());
         ctx.AddDebugAnnotation("overflow_rect", overflow_rect_.ToString());
         ctx.AddDebugAnnotation("is_root", Layer()->IsRootLayer());
         ctx.AddDebugAnnotation("is_main_frame",

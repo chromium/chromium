@@ -41,6 +41,7 @@
 #include "ash/wm/lock_state_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -208,7 +209,7 @@ class LoginShelfButton : public PillButton {
     SetEnabledTextColorIds(GetButtonTextColorId());
     SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(icon_, GetButtonIconColorId()));
+        ui::ImageModel::FromVectorIcon(*icon_, GetButtonIconColorId()));
   }
 
   void OnFocus() override {
@@ -219,7 +220,7 @@ class LoginShelfButton : public PillButton {
 
  private:
   const int text_resource_id_;
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 class KioskAppsButton : public views::MenuButton,
@@ -517,7 +518,7 @@ LoginShelfView::LoginShelfView(
       IDS_ASH_SHELF_SIGN_OUT_BUTTON, kShelfSignOutButtonIcon);
   kiosk_apps_button_ = new KioskAppsButton();
   kiosk_apps_button_->SetID(kApps);
-  AddChildView(kiosk_apps_button_);
+  AddChildView(kiosk_apps_button_.get());
   add_button(kCloseNote,
              base::BindRepeating(
                  &TrayAction::CloseLockScreenNote,
@@ -534,19 +535,11 @@ LoginShelfView::LoginShelfView(
                  },
                  this),
              IDS_ASH_SHELF_CANCEL_BUTTON, kShelfCancelButtonIcon);
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    add_button(kBrowseAsGuest,
-               base::BindRepeating(
-                   &LoginScreenController::ShowGuestTosScreen,
-                   base::Unretained(Shell::Get()->login_screen_controller())),
-               IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
-  } else {
-    add_button(kBrowseAsGuest,
-               base::BindRepeating(
-                   &LoginScreenController::LoginAsGuest,
-                   base::Unretained(Shell::Get()->login_screen_controller())),
-               IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
-  }
+  add_button(kBrowseAsGuest,
+             base::BindRepeating(
+                 &LoginScreenController::ShowGuestTosScreen,
+                 base::Unretained(Shell::Get()->login_screen_controller())),
+             IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
   add_button(kAddUser,
              base::BindRepeating(
                  &LoginScreenController::ShowGaiaSignin,
@@ -977,7 +970,8 @@ void LoginShelfView::UpdateButtonUnionBounds() {
 bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
   bool dialog_state_allowed = false;
   if (dialog_state_ == OobeDialogState::USER_CREATION ||
-      dialog_state_ == OobeDialogState::GAIA_SIGNIN) {
+      dialog_state_ == OobeDialogState::GAIA_SIGNIN ||
+      dialog_state_ == OobeDialogState::GAIA_INFO) {
     dialog_state_allowed = !login_screen_has_users_ && is_first_signin_step_;
   } else if (dialog_state_ == OobeDialogState::ERROR ||
              dialog_state_ == OobeDialogState::HIDDEN ||

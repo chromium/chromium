@@ -62,7 +62,6 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
   // WebAppCommandTemplate<NoopLock>:
   const LockDescription& lock_description() const override;
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 

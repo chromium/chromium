@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -296,11 +297,14 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   if (float_input.float_left_inline_size || float_input.float_right_inline_size)
     return false;
 
-  // Check if we have any percentage inline padding.
+  // Check if we have any percentage padding.
   const auto& style = node.Style();
-  if (style.MayHavePadding() && (style.PaddingStart().IsPercentOrCalc() ||
-                                 style.PaddingEnd().IsPercentOrCalc()))
+  if (style.MayHavePadding() && (style.PaddingTop().IsPercentOrCalc() ||
+                                 style.PaddingRight().IsPercentOrCalc() ||
+                                 style.PaddingBottom().IsPercentOrCalc() ||
+                                 style.PaddingLeft().IsPercentOrCalc())) {
     return false;
+  }
 
   if (node.HasAspectRatio() && (style.LogicalMinHeight().IsPercentOrCalc() ||
                                 style.LogicalMaxHeight().IsPercentOrCalc()))
@@ -318,6 +322,13 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalc() ||
                         style.LogicalMaxWidth().IsPercentOrCalc()))
     return false;
+
+  if (constraint_space.IsInFlexIntrinsicSizing() !=
+      node.GetLayoutBox()->IntrinsicLogicalWidthsInFlexIntrinsicSizing()) {
+    UseCounter::Count(node.GetDocument(),
+                      WebFeature::kFlexIntrinsicSizesCacheMiss);
+    return false;
+  }
 
   return true;
 }
@@ -911,12 +922,12 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     DCHECK(!physical_fragment.HasItems());
   }
 
-  CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !layout_result->PhysicalFragment().BreakToken() &&
       box_->Size() != old_box_size) {
     box_->SizeChanged();
   }
+  CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
 
 void NGBlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
@@ -953,10 +964,13 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
-  // In some scenarios, GridNG will run layout on its children during
+  // In some scenarios, GridNG and FlexNG will run layout on their items during
   // MinMaxSizes computation. Instead of running (and possible caching incorrect
   // results), when we're not performing layout, just use border + padding.
-  if (!is_in_perform_layout && IsGrid()) {
+  if (!is_in_perform_layout &&
+      (IsGrid() ||
+       (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection() &&
+        RuntimeEnabledFeatures::NewFlexboxSizingEnabled()))) {
     const NGFragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
@@ -979,14 +993,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // important.
 
     MinMaxSizes sizes;
-    // Some other areas of the code can query the intrinsic-sizes while outside
-    // of the layout phase.
-    // TODO(ikilpatrick): Remove this check.
-    if (!is_in_perform_layout) {
-      sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
-      return MinMaxSizesResult(sizes,
-                               /* depends_on_block_constraints */ false);
-    }
+    CHECK(is_in_perform_layout);
 
     // If we're computing MinMax after layout, we need to disable side effects
     // so that |Layout| does not update the |LayoutObject| tree and other global
@@ -1000,8 +1007,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
                 .InlineSize();
-    return MinMaxSizesResult(sizes,
-                             /* depends_on_block_constraints */ false);
+    return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   }
 
   // Returns if we are (directly) dependent on any block constraints.
@@ -1038,9 +1044,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // block constraints.
   if (can_use_cached_intrinsic_inline_sizes &&
       !box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints()) {
-    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGObject()
-                            ? box_->PreferredLogicalWidths()
-                            : box_->IntrinsicLogicalWidths(type);
+    MinMaxSizes sizes = box_->IntrinsicLogicalWidths(type);
     bool depends_on_block_constraints =
         box_->IntrinsicLogicalWidthsDependsOnBlockConstraints();
     return MinMaxSizesResult(sizes, depends_on_block_constraints);
@@ -1063,26 +1067,13 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       initial_block_size == box_->IntrinsicLogicalWidthsInitialBlockSize() &&
       !UseParentPercentageResolutionBlockSizeForChildren()) {
     DCHECK(box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
-    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGObject()
-                            ? box_->PreferredLogicalWidths()
-                            : box_->IntrinsicLogicalWidths(type);
+    MinMaxSizes sizes = box_->IntrinsicLogicalWidths(type);
     return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
   }
 
   box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
-  if (!CanUseNewLayout()) {
-    MinMaxSizes sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
-
-    // Update the cache bits for this legacy root (but not the intrinsic
-    // inline-sizes themselves).
-    box_->SetIntrinsicLogicalWidthsFromNG(
-        initial_block_size, self_depends_on_block_constraints,
-        /* child_depends_on_block_constraints */ true,
-        /* sizes */ nullptr);
-
-    return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
-  }
+  CHECK(CanUseNewLayout());
 
   const NGBoxStrut border_padding =
       fragment_geometry.border + fragment_geometry.padding;
@@ -1115,7 +1106,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   box_->SetIntrinsicLogicalWidthsFromNG(
       initial_block_size, depends_on_block_constraints,
       /* child_depends_on_block_constraints */
-      result.depends_on_block_constraints, &result.sizes);
+      result.depends_on_block_constraints,
+      constraint_space.IsInFlexIntrinsicSizing(), &result.sizes);
 
   if (IsNGTableCell()) {
     To<LayoutNGTableCell>(box_.Get())
@@ -1127,23 +1119,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // input %-block-size, or one of children said it depended on this.
   result.depends_on_block_constraints = depends_on_block_constraints;
   return result;
-}
-
-MinMaxSizes NGBlockNode::ComputeMinMaxSizesFromLegacy(
-    const MinMaxSizesType type,
-    const NGConstraintSpace& space) const {
-  BoxLayoutExtraInput extra_input(*box_);
-  SetupBoxLayoutExtraInput(space, *box_, &extra_input);
-
-  // Tables don't calculate their min/max content contribution the same way as
-  // other layout nodes. This is because width/min-width/etc have a different
-  // meaning for tables.
-  //
-  // Due to this the min/max content contribution is their min/max content size.
-  MinMaxSizes sizes = box_->IsTable() ? box_->PreferredLogicalWidths()
-                                      : box_->IntrinsicLogicalWidths(type);
-
-  return sizes;
 }
 
 NGLayoutInputNode NGBlockNode::NextSibling() const {
@@ -1797,9 +1772,24 @@ absl::optional<gfx::Transform> NGBlockNode::GetTransformForChildFragment(
   if (!child_layout_object->ShouldUseTransformFromContainer(box_))
     return absl::nullopt;
 
+  absl::optional<gfx::Transform> fragment_transform;
+  if (!child_fragment.IsOnlyForNode()) {
+    // If we're fragmented, there's no correct transform stored for
+    // us. Calculate it now.
+    fragment_transform.emplace();
+    fragment_transform->MakeIdentity();
+    child_fragment.Style().ApplyTransform(
+        *fragment_transform, box_, child_fragment.Size(),
+        ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
+        ComputedStyle::kIncludeMotionPath,
+        ComputedStyle::kIncludeIndependentTransformProperties);
+  }
+
   gfx::Transform transform;
-  child_layout_object->GetTransformFromContainer(box_, PhysicalOffset(),
-                                                 transform, &size);
+  child_layout_object->GetTransformFromContainer(
+      box_, PhysicalOffset(), transform, &size,
+      base::OptionalToPtr(fragment_transform));
 
   return transform;
 }

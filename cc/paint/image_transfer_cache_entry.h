@@ -60,10 +60,8 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
     // Constructor for YUVA images.
     Image(const SkPixmap yuva_pixmaps[],
-          SkYUVAInfo::PlaneConfig plane_config,
-          SkYUVAInfo::Subsampling subsampling,
-          const SkColorSpace* color_space,
-          SkYUVColorSpace yuv_color_space);
+          const SkYUVAInfo& yuva_info,
+          const SkColorSpace* color_space);
 
     // The pixmaps for each plane.
     std::array<const SkPixmap*, SkYUVAInfo::kMaxPlanes> pixmaps = {
@@ -144,7 +142,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   // - The colorspace of the resulting RGB image is sRGB.
   //
   // Returns true if the entry can be built, false otherwise.
-  bool BuildFromHardwareDecodedImage(GrDirectContext* context,
+  bool BuildFromHardwareDecodedImage(GrDirectContext* gr_context,
                                      std::vector<sk_sp<SkImage>> plane_images,
                                      SkYUVAInfo::PlaneConfig plane_config,
                                      SkYUVAInfo::Subsampling subsampling,
@@ -154,7 +152,8 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
 
   // ServiceTransferCacheEntry implementation:
   size_t CachedSize() const final;
-  bool Deserialize(GrDirectContext* context,
+  bool Deserialize(GrDirectContext* gr_context,
+                   skgpu::graphite::Recorder* graphite_recorder,
                    base::span<const uint8_t> data) final;
 
   const sk_sp<SkImage>& image() const { return image_; }
@@ -176,7 +175,8 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   bool fits_on_gpu() const;
 
  private:
-  raw_ptr<GrDirectContext> context_ = nullptr;
+  raw_ptr<GrDirectContext> gr_context_ = nullptr;
+  raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
   sk_sp<SkImage> image_;
 
   // The value of `size_` is computed during deserialization and never updated

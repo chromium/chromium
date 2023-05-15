@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -198,6 +197,56 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
   // DB creation histograms should be recorded.
   histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 1);
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 0);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion52ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(52), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT aggregatable_budget_consumed FROM sources"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(0, s.ColumnInt(0));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(200, s.ColumnInt(0));
+    ASSERT_FALSE(s.Step());
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT aggregatable_budget_consumed, "
+                              "num_aggregatable_reports FROM sources"));
+    ASSERT_TRUE(s.Step());
+    // First source has no budget consumed so hasn't made any reports.
+    ASSERT_EQ(0, s.ColumnInt(0));
+    ASSERT_EQ(0, s.ColumnInt(1));
+    ASSERT_TRUE(s.Step());
+    // Second source has budget consumed so we set their num reports to 1.
+    ASSERT_EQ(200, s.ColumnInt(0));
+    ASSERT_EQ(1, s.ColumnInt(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
 }  // namespace content

@@ -14,7 +14,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.function.Function;
 
-/** Responsible for hosting properties of BookmarkToolbar views. */
+/**
+ * Responsible for hosting properties of BookmarkToolbar views.
+ * TODO(https://crbug.com/1435024) Remove all skipEquality=true usage.
+ */
 class BookmarkToolbarProperties {
     /** Dependencies */
     static final WritableObjectPropertyKey<BookmarkModel> BOOKMARK_MODEL =
@@ -29,7 +32,7 @@ class BookmarkToolbarProperties {
     static final WritableObjectPropertyKey<String> TITLE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableObjectPropertyKey<Integer> BOOKMARK_UI_MODE =
-            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Boolean> SOFT_KEYBOARD_VISIBLE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableBooleanPropertyKey IS_DIALOG_UI = new WritableBooleanPropertyKey();

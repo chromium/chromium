@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -100,16 +101,16 @@ class SimpleWebViewDialog : public views::View,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<LocationBarModel> location_bar_model_;
   std::unique_ptr<CommandUpdaterImpl> command_updater_;
 
   // Controls
-  views::ImageButton* back_ = nullptr;
-  views::ImageButton* forward_ = nullptr;
-  ReloadButton* reload_ = nullptr;
-  LocationBarView* location_bar_ = nullptr;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> back_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> forward_ = nullptr;
+  raw_ptr<ReloadButton, ExperimentalAsh> reload_ = nullptr;
+  raw_ptr<LocationBarView, ExperimentalAsh> location_bar_ = nullptr;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
 
   // Will own the `web_view_` until it is added as a child to the to the simple
   // web view dialog.

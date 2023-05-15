@@ -5,8 +5,8 @@
 #ifndef UI_BASE_RESOURCE_TEMPORARY_SHARED_RESOURCE_PATH_CHROMEOS_H_
 #define UI_BASE_RESOURCE_TEMPORARY_SHARED_RESOURCE_PATH_CHROMEOS_H_
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "ui/base/resource/data_pack_export.h"
 
 namespace ui {
 
@@ -17,7 +17,8 @@ namespace ui {
 // back after it's verified in DataPackWithResourceSharing.
 // Note that the temporary shared resource file path might differ between ash
 // and lacros if the version is not up to date.
-base::FilePath UI_DATA_PACK_EXPORT GetPathForTemporarySharedResourceFile(
+COMPONENT_EXPORT(UI_DATA_PACK)
+base::FilePath GetPathForTemporarySharedResourceFile(
     const base::FilePath& shared_resource_path);
 
 }  // namespace ui

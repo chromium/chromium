@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -83,7 +82,7 @@ SavedDeskGridView::SavedDeskGridView()
 
 SavedDeskGridView::~SavedDeskGridView() = default;
 
-void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
+void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
   // Sort the `grid_items_` into alphabetical order based on saved desk name.
   // Note that this doesn't update the order of the child views, but just sorts
   // the vector. `Layout` is responsible for placing the views in the correct
@@ -97,7 +96,7 @@ void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
   // front of the grid, and sort the rest of the entries after it.
   auto rest = base::ranges::partition(
       grid_items_,
-      [&order_first_uuid](const base::GUID& uuid) {
+      [&order_first_uuid](const base::Uuid& uuid) {
         return uuid == order_first_uuid;
       },
       &SavedDeskItemView::uuid);
@@ -126,7 +125,7 @@ void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
 
 void SavedDeskGridView::AddOrUpdateEntries(
     const std::vector<const DeskTemplate*>& entries,
-    const base::GUID& order_first_uuid,
+    const base::Uuid& order_first_uuid,
     bool animate) {
   std::vector<SavedDeskItemView*> new_grid_items;
 
@@ -151,7 +150,7 @@ void SavedDeskGridView::AddOrUpdateEntries(
     AnimateGridItems(new_grid_items);
 }
 
-void SavedDeskGridView::DeleteEntries(const std::vector<base::GUID>& uuids,
+void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                       bool delete_animation) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
@@ -160,7 +159,7 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::GUID>& uuids,
           ->highlight_controller();
   DCHECK(highlight_controller);
 
-  for (const base::GUID& uuid : uuids) {
+  for (const base::Uuid& uuid : uuids) {
     auto iter = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
 
     if (iter == grid_items_.end())
@@ -249,7 +248,7 @@ bool SavedDeskGridView::IsAnimating() const {
   return bounds_animator_.IsAnimating();
 }
 
-SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::GUID& uuid) {
+SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::Uuid& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 

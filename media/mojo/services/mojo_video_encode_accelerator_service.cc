@@ -153,7 +153,7 @@ void MojoVideoEncodeAcceleratorService::Encode(
 
   if (frame->coded_size() != input_coded_size_ &&
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        "wrong input coded size, expected " +
                            input_coded_size_.ToString() + ", got " +
                            frame->coded_size().ToString()});
@@ -182,13 +182,13 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
   if (!encoder_)
     return;
   if (!region.IsValid()) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
                        "invalid shared memory region"});
     return;
   }
   if (bitstream_buffer_id < 0) {
     NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderInitializationError,
+        {EncoderStatus::Codes::kInvalidOutputBuffer,
          "bitstream_buffer_id=" + base::NumberToString(bitstream_buffer_id) +
              " must be >= 0"});
     return;
@@ -197,7 +197,7 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
   auto memory_size = region.GetSize();
   if (memory_size < output_buffer_size_) {
     NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderInitializationError,
+        {EncoderStatus::Codes::kInvalidOutputBuffer,
          "bitstream_buffer_id=" + base::NumberToString(bitstream_buffer_id) +
              " has a size of " + base::NumberToString(memory_size) +
              "B, different from expected " +

@@ -2956,6 +2956,7 @@ FUNCTION_SETS = [
       'GLES2/gl2chromium.h',
       'GLES2/gl2extchromium.h'
     ], [
+      "GL_ANGLE_renderability_validation",
       "GL_ANGLE_robust_resource_initialization",
       "GL_ANGLE_webgl_compatibility",
       "GL_ARB_texture_swizzle",

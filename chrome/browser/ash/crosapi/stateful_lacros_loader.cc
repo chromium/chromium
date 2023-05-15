@@ -19,25 +19,20 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
 
 namespace {
 
-std::string GetLacrosComponentName() {
-  return browser_util::GetLacrosComponentInfo().name;
-}
-
 // Returns whether lacros-chrome component is registered.
 bool CheckRegisteredMayBlock(
-    scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  return manager->IsRegisteredMayBlock(GetLacrosComponentName());
+    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    const std::string& lacros_component_name) {
+  return manager->IsRegisteredMayBlock(lacros_component_name);
 }
 
 // Checks the local disk structure to confirm whether a component is installed.
@@ -103,8 +98,9 @@ std::string CheckForComponentToPreloadMayBlock() {
 // If it is, delete the user directory, too, because it will be
 // uninstalled.
 bool CheckInstalledAndMaybeRemoveUserDirectory(
-    scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  if (!CheckRegisteredMayBlock(manager)) {
+    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    const std::string& lacros_component_name) {
+  if (!CheckRegisteredMayBlock(manager, lacros_component_name)) {
     return false;
   }
 
@@ -131,12 +127,14 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
 
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : StatefulLacrosLoader(manager, g_browser_process->component_updater()) {}
+    : StatefulLacrosLoader(manager,
+                           browser_util::GetLacrosComponentInfo().name) {}
 
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager,
-    component_updater::ComponentUpdateService* updater)
-    : component_manager_(manager), component_update_service_(updater) {
+    const std::string& lacros_component_name)
+    : component_manager_(manager),
+      lacros_component_name_(lacros_component_name) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CheckForComponentToPreloadMayBlock),
@@ -149,7 +147,7 @@ StatefulLacrosLoader::~StatefulLacrosLoader() = default;
 void StatefulLacrosLoader::Load(LoadCompletionCallback callback) {
   LOG(WARNING) << "Loading stateful lacros.";
   component_manager_->Load(
-      GetLacrosComponentName(),
+      lacros_component_name_,
       component_updater::CrOSComponentManager::MountPolicy::kMount,
       // If a compatible installation exists, use that and download any updates
       // in the background.
@@ -164,7 +162,7 @@ void StatefulLacrosLoader::Unload() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,
-                     component_manager_),
+                     component_manager_, lacros_component_name_),
       base::BindOnce(&StatefulLacrosLoader::OnCheckInstalledToUnload,
                      weak_factory_.GetWeakPtr()));
 }
@@ -190,37 +188,17 @@ void StatefulLacrosLoader::GetVersion(
   // installation of the stateful lacros-chrome binary in the background.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&IsInstalledMayBlock, GetLacrosComponentName()),
+      base::BindOnce(&IsInstalledMayBlock, lacros_component_name_),
       base::BindOnce(&StatefulLacrosLoader::OnCheckInstalledToGetVersion,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
-    base::OnceCallback<void(base::Version)> callback,
-    bool is_installed) {
-  if (!is_installed) {
-    version_ = base::Version();
-    std::move(callback).Run(version_.value());
-    return;
-  }
-
-  component_manager_->Load(
-      GetLacrosComponentName(),
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
-      base::BindOnce(&StatefulLacrosLoader::OnLoad, weak_factory_.GetWeakPtr(),
-                     base::BindOnce(
-                         [](base::OnceCallback<void(base::Version)> callback,
-                            base::Version version, const base::FilePath&) {
-                           std::move(callback).Run(version);
-                         },
-                         std::move(callback))));
 }
 
 void StatefulLacrosLoader::OnLoad(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   bool is_stateful_lacros_available =
       error == component_updater::CrOSComponentManager::Error::NONE &&
       !path.empty();
@@ -228,24 +206,65 @@ void StatefulLacrosLoader::OnLoad(
       << "Error loading lacros component image: " << static_cast<int>(error)
       << ", " << path;
 
-  // Update `version_` only when it is not yet calculated.
-  // To update `version_` you need to explicitly call `CalculateVersion()`
-  // instead of just calling `Load` tlo avoid unnecessary recalculation.
-  if (!version_.has_value()) {
-    if (is_stateful_lacros_available) {
-      version_ = browser_util::GetInstalledLacrosComponentVersion(
-          component_update_service_);
-    } else {
-      version_ = base::Version();
+  // If `version_` is already set, run `callback` immediately with the
+  // `version_` value. This code path is used in most cases except for the case
+  // where lacros selection is based on selection policy so that it skips the
+  // version comparison.
+  if (version_.has_value()) {
+    if (callback) {
+      std::move(callback).Run(version_.value(), path);
     }
+    return;
   }
 
+  component_manager_->GetVersion(
+      lacros_component_name_,
+      base::BindOnce(&StatefulLacrosLoader::OnGetVersionFromComponentManager,
+                     weak_factory_.GetWeakPtr(),
+                     base::BindOnce(
+                         [](LoadCompletionCallback callback,
+                            const base::FilePath& path, base::Version version) {
+                           if (callback) {
+                             std::move(callback).Run(std::move(version), path);
+                           }
+                         },
+                         std::move(callback), path)));
+}
+
+void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
+    base::OnceCallback<void(base::Version)> callback,
+    bool is_installed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_installed) {
+    version_ = base::Version();
+    std::move(callback).Run(version_.value());
+    return;
+  }
+
+  component_manager_->GetVersion(
+      lacros_component_name_,
+      base::BindOnce(&StatefulLacrosLoader::OnGetVersionFromComponentManager,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void StatefulLacrosLoader::OnGetVersionFromComponentManager(
+    base::OnceCallback<void(base::Version)> callback,
+    const base::Version& version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  LOG_IF(WARNING, version.IsValid())
+      << "Error getting version of lacros component image";
+
+  version_ = version;
   if (callback) {
-    std::move(callback).Run(version_.value(), path);
+    std::move(callback).Run(version_.value());
   }
 }
 
 void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!was_installed) {
     return;
   }
@@ -260,8 +279,10 @@ void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
 }
 
 void StatefulLacrosLoader::UnloadAfterCleanUp(const std::string& ignored_salt) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK(ash::SystemSaltGetter::Get()->GetRawSalt());
-  component_manager_->Unload(GetLacrosComponentName());
+  component_manager_->Unload(lacros_component_name_);
 }
 
 }  // namespace crosapi

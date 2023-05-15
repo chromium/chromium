@@ -11,13 +11,14 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -37,10 +37,29 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
+
+namespace {
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
+  preloading_data->SetIsNavigationInDomainCallback(
+      chrome_preloading_predictor::kOmniboxDirectURLInput,
+      base::BindRepeating(
+          [](content::NavigationHandle* navigation_handle) -> bool {
+            auto transition_type = navigation_handle->GetPageTransition();
+            return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+                   ui::PageTransitionCoreTypeIs(
+                       transition_type,
+                       ui::PageTransition::PAGE_TRANSITION_TYPED) &&
+                   ui::PageTransitionIsNewNavigation(
+                       navigation_handle->GetPageTransition());
+          }));
+}
+}  // namespace
 
 namespace {
 
@@ -207,6 +226,8 @@ void AutocompleteActionPredictor::StartPrerendering(
   content::PreloadingURLMatchCallback same_url_matcher =
       content::PreloadingData::GetSameURLMatcher(url);
 
+  SetIsNavigationInDomainCallback(preloading_data);
+
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Create new PreloadingAttempt and pass all the values corresponding to
     // this prerendering attempt for Prerender.
@@ -308,6 +329,7 @@ AutocompleteActionPredictor::RecommendAction(
 
     auto* preloading_data =
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
+    SetIsNavigationInDomainCallback(preloading_data);
 
     // We multiply confidence by 100 to pass the percentage and cast it into int
     // for logs.
@@ -413,7 +435,7 @@ void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatches(
 
       auto it = db_cache_.find(key);
       if (it == db_cache_.end()) {
-        row.id = base::GenerateGUID();
+        row.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
         row.number_of_hits = is_hit ? 1 : 0;
         row.number_of_misses = is_hit ? 0 : 1;
 

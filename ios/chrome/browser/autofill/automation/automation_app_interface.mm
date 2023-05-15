@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/autofill/automation/automation_app_interface.h"
 
-#import "base/guid.h"
 #import "base/json/json_reader.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/uuid.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
@@ -83,10 +83,10 @@ NSError* PrepareAutofillProfileWithValues(
         @"Unable to find autofill profile in parsed JSON value.");
   }
 
-  autofill::AutofillProfile profile(base::GenerateGUID(),
-                                    "https://www.example.com/");
-  autofill::CreditCard credit_card(base::GenerateGUID(),
-                                   "https://www.example.com/");
+  autofill::AutofillProfile profile;
+  autofill::CreditCard credit_card(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "https://www.example.com/");
 
   // For each type-value dictionary in the autofill profile list, validate it,
   // then add it to the appropriate profile.

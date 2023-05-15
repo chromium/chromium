@@ -331,9 +331,9 @@ TEST_F(TestPrintBackendTest, GetXmlPrinterCapabilitiesForXpsDriver) {
 
   // The default XML string set for valid printers should be valid, so verify
   // that we receive an XML string.
-  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-      kDefaultPrinterName);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(GetPrintBackend()
+                  ->GetXmlPrinterCapabilitiesForXpsDriver(kDefaultPrinterName)
+                  .has_value());
 
   result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
       kInvalidPrinterName);

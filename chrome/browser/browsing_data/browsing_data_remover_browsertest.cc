@@ -199,7 +199,10 @@ class BrowsingDataRemoverBrowserTest
 
     SetDataForType(type);
     EXPECT_EQ(1, GetSiteDataCount());
-    ExpectCookieTreeModelCount(1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // here.
     EXPECT_TRUE(HasDataForType(type));
 
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
@@ -221,7 +224,10 @@ class BrowsingDataRemoverBrowserTest
     // Opening a store of this type creates a site data entry.
     EXPECT_FALSE(HasDataForType(type));
     EXPECT_EQ(1, GetSiteDataCount());
-    ExpectCookieTreeModelCount(1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // here.
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
 
@@ -239,6 +245,19 @@ class BrowsingDataRemoverBrowserTest
     std::unique_ptr<CookiesTreeModel> model = GetCookiesTreeModel(GetProfile());
     EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
         << GetCookiesTreeModelInfo(model->GetRoot());
+  }
+
+  inline void ExpectCookieTreeModelCount(int expected3PSPDisabled,
+                                         int expected3PSPEnabled) {
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled.
+    if (base::FeatureList::IsEnabled(
+            net::features::kThirdPartyStoragePartitioning)) {
+      ExpectCookieTreeModelCount(expected3PSPEnabled);
+    } else {
+      ExpectCookieTreeModelCount(expected3PSPDisabled);
+    }
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
@@ -1475,8 +1494,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Expect all datatypes from above except SessionStorage and possibly
   // MediaLicense. SessionStorage is not supported by the CookieTreeModel yet.
   // MediaLicense is integrated into the quota node, which is not yet fully
-  // hooked into CookieTreeModel (see crbug.com/1307796).
-  ExpectCookieTreeModelCount(kStorageTypes.size() - 2);
+  // hooked into CookieTreeModel. When 3PSP is enabled, only Cookies and
+  // LocalStorage are counted. TODO(crbug.com/1307796): Use a different approach
+  // to determine presence of data that does not depend on UI code and has a
+  // better resolution when 3PSP is fully enabled.
+  ExpectCookieTreeModelCount(kStorageTypes.size() - 2, 3);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
@@ -1528,8 +1550,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
     EXPECT_TRUE(HasDataForType(type));
   }
   // Expect the datatypes from above except SessionStorage. SessionStorage is
-  // not supported by the CookieTreeModel yet.
-  ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1);
+  // not supported by the CookieTreeModel yet. When 3PSP is enabled, only
+  // Cookies and LocalStorage are counted. TODO(crbug.com/1307796): Use a
+  // different approach to determine presence of data that does not depend on UI
+  // code and has a better resolution when 3PSP is fully enabled.
+  ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1, 3);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);

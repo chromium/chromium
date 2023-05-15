@@ -7,8 +7,8 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desk.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/value_iterators.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -78,7 +78,7 @@ WMDesksPrivateFeatureAsh::WMDesksPrivateFeatureAsh() = default;
 WMDesksPrivateFeatureAsh::~WMDesksPrivateFeatureAsh() = default;
 
 void WMDesksPrivateFeatureAsh::GetDeskTemplateJson(
-    const base::GUID& template_uuid,
+    const base::Uuid& template_uuid,
     Profile* profile,
     GetDeskTemplateJsonCallback callback) {
   DesksClient::Get()->GetTemplateJson(
@@ -107,7 +107,7 @@ void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
   std::move(callback).Run({}, result.value());
 }
 
-void WMDesksPrivateFeatureAsh::RemoveDesk(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureAsh::RemoveDesk(const base::Uuid& desk_uuid,
                                           bool combine_desk,
                                           RemoveDeskCallback callback) {
   auto error = DesksClient::Get()->RemoveDesk(desk_uuid, combine_desk);
@@ -157,7 +157,7 @@ void WMDesksPrivateFeatureAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {
 }
 
 void WMDesksPrivateFeatureAsh::DeleteSavedDesk(
-    const base::GUID& desk_uuid,
+    const base::Uuid& desk_uuid,
     DeleteSavedDeskCallback callback) {
   DesksClient::Get()->DeleteDeskTemplate(
       desk_uuid,
@@ -170,13 +170,13 @@ void WMDesksPrivateFeatureAsh::DeleteSavedDesk(
 }
 
 void WMDesksPrivateFeatureAsh::RecallSavedDesk(
-    const base::GUID& desk_uuid,
+    const base::Uuid& desk_uuid,
     RecallSavedDeskCallback callback) {
   DesksClient::Get()->LaunchDeskTemplate(
       desk_uuid, base::BindOnce(
                      [](RecallSavedDeskCallback callback,
                         absl::optional<DesksClient::DeskActionError> error,
-                        const base::GUID& desk_Id) {
+                        const base::Uuid& desk_Id) {
                        if (error) {
                          std::move(callback).Run(GetStringError(error.value()),
                                                  {});
@@ -208,17 +208,17 @@ void WMDesksPrivateFeatureAsh::GetSavedDesks(GetSavedDesksCallback callback) {
 }
 
 void WMDesksPrivateFeatureAsh::GetActiveDesk(GetActiveDeskCallback callback) {
-  base::GUID desk_id = DesksClient::Get()->GetActiveDesk();
+  base::Uuid desk_id = DesksClient::Get()->GetActiveDesk();
   std::move(callback).Run({}, desk_id);
 }
 
-void WMDesksPrivateFeatureAsh::SwitchDesk(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureAsh::SwitchDesk(const base::Uuid& desk_uuid,
                                           SwitchDeskCallback callback) {
   auto error = DesksClient::Get()->SwitchDesk(desk_uuid);
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
-void WMDesksPrivateFeatureAsh::GetDeskByID(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureAsh::GetDeskByID(const base::Uuid& desk_uuid,
                                            GetDeskByIDCallback callback) {
   auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
   if (!result.has_value()) {

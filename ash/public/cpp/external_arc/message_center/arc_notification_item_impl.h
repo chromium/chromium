@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -58,8 +59,8 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
   void CancelPress() override;
 
  private:
-  ArcNotificationManager* const manager_;
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 
   // The snapshot of the latest notification.
   gfx::ImageSkia snapshot_;

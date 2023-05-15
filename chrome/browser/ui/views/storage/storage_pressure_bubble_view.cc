@@ -43,13 +43,13 @@ void RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue value) {
 namespace chrome {
 
 // static
-void ShowStoragePressureBubble(const url::Origin origin) {
-  StoragePressureBubbleView::ShowBubble(std::move(origin));
+void ShowStoragePressureBubble(const url::Origin& origin) {
+  StoragePressureBubbleView::ShowBubble(origin);
 }
 
 }  // namespace chrome
 
-void StoragePressureBubbleView::ShowBubble(const url::Origin origin) {
+void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser)
     return;
@@ -58,19 +58,18 @@ void StoragePressureBubbleView::ShowBubble(const url::Origin origin) {
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
           ->GetAppMenuButton(),
-      browser, std::move(origin));
+      browser, origin);
   views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
 
   RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kShown);
 }
 
-StoragePressureBubbleView::StoragePressureBubbleView(
-    views::View* anchor_view,
-    Browser* browser,
-    const url::Origin origin)
+StoragePressureBubbleView::StoragePressureBubbleView(views::View* anchor_view,
+                                                     Browser* browser,
+                                                     const url::Origin& origin)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
-      origin_(std::move(origin)),
+      origin_(origin),
       ignored_(true) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetTitle(IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_TITLE);

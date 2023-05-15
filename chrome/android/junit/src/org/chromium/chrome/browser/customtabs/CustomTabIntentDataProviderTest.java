@@ -250,19 +250,15 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void isAllowedThirdParty_noDefaultPolicy() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         // If no default-policy is present, it defaults to use-denylist.
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.dc.joker"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.joker"));
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.marvel.thanos"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.marvel.thanos"));
         assertTrue("Entry NOT in denylist should be accepted",
-                provider.isAllowedThirdParty("com.dc.batman"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.batman"));
     }
 
     @Test
@@ -273,19 +269,15 @@ public class CustomTabIntentDataProviderTest {
                     + "/denylist_entries/com.dc.joker|com.marvel.thanos"})
     public void
     isAllowedThirdParty_denylist() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.dc.joker"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.joker"));
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.marvel.thanos"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.marvel.thanos"));
         assertTrue("Entry NOT in denylist should be accepted",
-                provider.isAllowedThirdParty("com.dc.batman"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.batman"));
     }
 
     @Test
@@ -296,19 +288,15 @@ public class CustomTabIntentDataProviderTest {
                     + "/allowlist_entries/com.pixar.woody|com.disney.ariel"})
     public void
     isAllowedThirdParty_allowlist() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");
         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES.setForTesting(
                 "com.pixar.woody|com.disney.ariel");
         assertTrue("Entry in allowlist should be accepted",
-                provider.isAllowedThirdParty("com.pixar.woody"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.pixar.woody"));
         assertTrue("Entry in allowlist should be accepted",
-                provider.isAllowedThirdParty("com.disney.ariel"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.disney.ariel"));
         assertFalse("Entry NOT in allowlist should be rejected",
-                provider.isAllowedThirdParty("com.pixar.syndrome"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.pixar.syndrome"));
     }
 
     @Test
@@ -720,7 +708,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider.getActivitySideSheetDecorationType());
 
         // Decoration set higher than max
@@ -728,7 +716,7 @@ public class CustomTabIntentDataProviderTest {
                 CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX + 1);
         var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider2.getActivitySideSheetDecorationType());
     }
 
@@ -763,6 +751,42 @@ public class CustomTabIntentDataProviderTest {
         assertEquals("Decoration types do not match",
                 CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
                 dataProvider.getActivitySideSheetDecorationType());
+    }
+
+    @Test
+    public void testActivityRoundedCornersPosition_Default() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
+    }
+
+    @Test
+    public void testActivityRoundedCornersPosition_None() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
+    }
+
+    @Test
+    public void testActivityRoundedCornersPosition_Top() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
     }
 
     private Bundle createActionButtonInToolbarBundle() {

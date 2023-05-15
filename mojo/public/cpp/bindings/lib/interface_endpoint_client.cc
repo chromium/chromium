@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -262,6 +263,10 @@ class ResponderThunk : public MessageReceiverWithStatus {
           endpoint_client_->RaiseError();
         }
       } else {
+        // Instantiate a ScopedFizzleBlockShutdownTasks to allow this PostTask
+        // to fizzle if it happens after shutdown and the endpoint is bound to a
+        // BLOCK_SHUTDOWN sequence. ref. crbug.com/1442134
+        base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
         task_runner_->PostTask(
             FROM_HERE, base::BindOnce(&InterfaceEndpointClient::RaiseError,
                                       endpoint_client_));

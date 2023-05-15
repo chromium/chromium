@@ -379,22 +379,3 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 }
 
 @end
-
-// Test using synthesize restore.
-@interface RestoreWithLegacyTestCase : RestoreWithCacheTestCase
-@end
-
-@implementation RestoreWithLegacyTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(web::features::kSynthesizedRestoreSession);
-  config.features_disabled.push_back(web::kRestoreSessionFromCache);
-  return config;
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
-}
-
-@end

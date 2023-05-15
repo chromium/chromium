@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.partnercustomizations;
 import android.net.Uri;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,8 +97,8 @@ public class PartnerHomepageIntegrationTest {
     @MediumTest
     @Feature({"Homepage"})
     public void testHomepageButtonClick() throws InterruptedException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         try {
             // Load non-homepage URL.
             mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));

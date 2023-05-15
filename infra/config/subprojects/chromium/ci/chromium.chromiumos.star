@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "DEFAULT_HEALTH_SPEC")
-load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -63,9 +63,6 @@ ci.builder(
     # This builder gets triggered against multiple branches, so it shouldn't be
     # bootstrapped
     bootstrap = False,
-    # This should NOT be removed because the builder gets triggered
-    # against multiple branches. Some of the branches are running on Goma
-    goma_backend = goma.backend.RBE_PROD,
     notifies = ["chrome-lacros-engprod-alerts"],
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -915,7 +912,7 @@ ci.builder(
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "simple|release",
+        category = "default|cfm",
         short_name = "cfm",
     ),
     main_console_view = "main",

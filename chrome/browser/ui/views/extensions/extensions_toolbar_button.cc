@@ -18,14 +18,26 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace {
 
-const gfx::VectorIcon& kExtensionIcon = vector_icons::kExtensionIcon;
-const gfx::VectorIcon& kExtensionChromeRefreshIcon =
-    vector_icons::kExtensionChromeRefreshIcon;
+const gfx::VectorIcon& GetIcon(ExtensionsToolbarButton::State state) {
+  switch (state) {
+    case ExtensionsToolbarButton::State::kDefault:
+      return (features::IsChromeRefresh2023() ||
+              base::FeatureList::IsEnabled(
+                  extensions_features::kExtensionsMenuAccessControl))
+                 ? vector_icons::kExtensionChromeRefreshIcon
+                 : vector_icons::kExtensionIcon;
+    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+      return vector_icons::kExtensionOffIcon;
+    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+      return vector_icons::kExtensionOnIcon;
+  }
+}
 
 }  // namespace
 
@@ -50,8 +62,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
       views::ButtonController::NotifyAction::kOnPress);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
-  SetVectorIcon(features::IsChromeRefresh2023() ? kExtensionChromeRefreshIcon
-                                                : kExtensionIcon);
+  SetVectorIcon(GetIcon(state_));
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
 }
@@ -96,17 +107,27 @@ void ExtensionsToolbarButton::OnBoundsChanged(
   SetLayoutInsets(new_insets);
 }
 
+void ExtensionsToolbarButton::UpdateState(State state) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+  if (state == state_) {
+    return;
+  }
+
+  state_ = state;
+  SetVectorIcon(GetIcon(state_));
+}
+
 void ExtensionsToolbarButton::UpdateIcon() {
   if (browser_->app_controller()) {
     // TODO(pbos): Remove this once PWAs have ThemeProvider color support for it
     // and ToolbarButton can pick up icon sizes outside of a static lookup.
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      kExtensionIcon, extensions_container_->GetIconColor(),
+                      GetIcon(state_), extensions_container_->GetIconColor(),
                       GetIconSize()));
     return;
   }
-
   ToolbarButton::UpdateIcon();
 }
 
@@ -147,10 +168,15 @@ bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {
 
 int ExtensionsToolbarButton::GetIconSize() const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  return (touch_ui && !browser_->app_controller())
-             ? kDefaultTouchableIconSize
-             : (features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
-                                                : kDefaultIconSize);
+  if (touch_ui && !browser_->app_controller()) {
+    return kDefaultTouchableIconSize;
+  }
+
+  return features::IsChromeRefresh2023() ||
+                 base::FeatureList::IsEnabled(
+                     extensions_features::kExtensionsMenuAccessControl)
+             ? kDefaultIconSizeChromeRefresh
+             : kDefaultIconSize;
 }
 
 BEGIN_METADATA(ExtensionsToolbarButton, ToolbarButton)

@@ -9,13 +9,13 @@
   const TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');
   const tracingHelper = new TracingHelper(testRunner, session);
 
+  await dp.Network.enable();
   await tracingHelper.startTracing();
-  dp.Network.enable();
 
-  const requestsFromNetorkDomain = new Map();
+  const requestsFromNetworkDomain = new Map();
 
   dp.Network.onRequestWillBeSent(event => {
-    requestsFromNetorkDomain.set(
+    requestsFromNetworkDomain.set(
       event.params.requestId,
       {
         url: event.params.request.url,
@@ -64,9 +64,9 @@
   });
 
   for (const [requestId, request] of sortedEvents) {
-    const networkEvent = requestsFromNetorkDomain.get(requestId);
+    const networkEvent = requestsFromNetworkDomain.get(requestId);
     // Compare at tenths-of-milliseconds resolution.
-    const diff = Math.floor(networkEvent.timestamp / 100) - Math.floor(request.timestamp / 100);
+    const diff = Math.floor(Math.abs(networkEvent.timestamp - request.timestamp)  / 100);
     testRunner.log(`Queueing time difference of ${diff} for URL ${new URL(networkEvent.url).pathname}`);
   }
 

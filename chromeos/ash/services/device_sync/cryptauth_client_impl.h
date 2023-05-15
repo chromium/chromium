@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_api_call_flow.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
@@ -172,7 +173,7 @@ class CryptAuthClientImpl : public CryptAuthClient {
   // Constructs and executes the actual HTTP request.
   std::unique_ptr<CryptAuthApiCallFlow> api_call_flow_;
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   // Fetches the access token authorizing the API calls.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
@@ -223,7 +224,7 @@ class CryptAuthClientFactoryImpl : public CryptAuthClientFactory {
   std::unique_ptr<CryptAuthClient> CreateInstance() override;
 
  private:
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const cryptauth::DeviceClassifier device_classifier_;
 };

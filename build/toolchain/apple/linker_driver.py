@@ -129,7 +129,7 @@ class LinkerDriver(object):
 
         if self._object_path_lto is not None:
             compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
-                self._object_path_lto.name))
+                os.path.relpath(self._object_path_lto.name)))
         if self._get_linker_output() is None:
             raise ValueError(
                 'Could not find path to linker output (-o or --output)')

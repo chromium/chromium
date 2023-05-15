@@ -10,6 +10,7 @@ assert(is_chromeos_ash)
 
 mojom("mojo_bindings") {
   sources = [ "search.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [ "//mojo/public/mojom/base" ]
 }

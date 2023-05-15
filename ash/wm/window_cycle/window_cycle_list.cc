@@ -16,7 +16,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
@@ -29,10 +28,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
-#include "ui/display/display_observer.h"
-#include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -69,7 +65,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  aura::Window* tab_cycler_;
+  raw_ptr<aura::Window, ExperimentalAsh> tab_cycler_;
 };
 
 gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
@@ -378,7 +374,7 @@ void WindowCycleList::InitWindowCycleView() {
 
   views::Widget* widget = new views::Widget();
   views::Widget::InitParams params;
-  params.delegate = cycle_view_;
+  params.delegate = cycle_view_.get();
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.layer_type = ui::LAYER_NOT_DRAWN;

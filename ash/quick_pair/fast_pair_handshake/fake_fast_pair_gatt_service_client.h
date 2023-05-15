@@ -58,6 +58,13 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
                            absl::optional<ash::quick_pair::AccountKeyFailure>)>
                            write_account_key_callback) override;
 
+  void WritePersonalizedName(
+      const std::string& name,
+      const std::string& provider_address,
+      FastPairDataEncryptor* fast_pair_data_encryptor,
+      base::OnceCallback<void(absl::optional<PairFailure>)>
+          write_additional_data_callback) override;
+
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
 
@@ -72,6 +79,9 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
   void RunWriteAccountKeyCallback(
       absl::optional<AccountKeyFailure> failure = absl::nullopt);
 
+  void RunWritePersonalizedNameCallback(
+      absl::optional<PairFailure> failure = absl::nullopt);
+
  private:
   bool is_connected_ = false;
   base::OnceCallback<void(absl::optional<PairFailure>)>
@@ -82,6 +92,8 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
       passkey_write_response_callback_;
   base::OnceCallback<void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
       write_account_key_callback_;
+  base::OnceCallback<void(absl::optional<PairFailure>)>
+      write_personalized_name_callback_;
 };
 
 }  // namespace quick_pair

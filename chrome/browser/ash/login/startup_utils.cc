@@ -113,6 +113,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterBooleanPref(
       ash::quick_start::prefs::kShouldResumeQuickStartAfterReboot, false);
+  registry->RegisterDictionaryPref(
+      ash::quick_start::prefs::kResumeQuickStartAfterRebootInfo);
 }
 
 // static
@@ -131,8 +133,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   // initialized along with `kOobeOnboardingTime`.
   registry->RegisterBooleanPref(
       arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded, false);
-  if (switches::IsRevenBranding() &&
-      features::IsOobeConsolidatedConsentEnabled()) {
+  if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kRevenOobeConsolidatedConsentAccepted,
                                   false);
   }
@@ -141,6 +142,12 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kChoobeSelectedScreens);
     registry->RegisterListPref(prefs::kChoobeCompletedScreens);
   }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    registry->RegisterBooleanPref(prefs::kOobeDrivePinningEnabledDeferred,
+                                  false);
+  }
+
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 

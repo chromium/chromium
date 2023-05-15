@@ -37,6 +37,15 @@ bool CheckColoredRect(const SkBitmap& bitmap,
     }
   }
 
+  if (rect.IsEmpty()) {
+    LOG(ERROR) << "Empty color rectangle, body=" << body.ToString();
+    return false;
+  }
+
+  // Calculate rectangle to accommodate for pixel anti aliasing.
+  gfx::Rect anti_aliasing_rect = rect;
+  anti_aliasing_rect.Outset(1);
+
   // Verify that all pixels outside the found color rectangle are of
   // the specified background color, and the ones that are inside
   // the found rectangle are all of the rectangle color.
@@ -46,21 +55,25 @@ bool CheckColoredRect(const SkBitmap& bitmap,
       gfx::Point pt(x, y);
       if (rect.Contains(pt)) {
         if (color != rect_color) {
-          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << color
-                     << ", expected rect color=" << rect_color;
+          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << std::hex << color
+                     << ", expected rect color=" << std::hex << rect_color
+                     << ", color rect=" << rect.ToString();
           return false;
         }
       } else {
-        if (color != bkgr_color) {
-          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << color
-                     << ", expected bkgr color=" << bkgr_color;
+        // Expect background color unless the pixel is in anti aliasing
+        // rectangle which is adjacent to the actual color rectangle.
+        if (color != bkgr_color && !anti_aliasing_rect.Contains(pt)) {
+          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << std::hex << color
+                     << ", expected bkgr color=" << std::hex << bkgr_color
+                     << ", color rect=" << rect.ToString();
           return false;
         }
       }
     }
   }
 
-  return !rect.IsEmpty();
+  return true;
 }
 
 bool CheckColoredRect(const SkBitmap& bitmap,

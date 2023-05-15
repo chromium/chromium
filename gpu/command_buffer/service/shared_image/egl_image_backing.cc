@@ -44,11 +44,12 @@ class EGLImageBacking::TextureHolder : public base::RefCounted<TextureHolder> {
   friend class base::RefCounted<TextureHolder>;
 
   ~TextureHolder() {
-    if (texture_)
-      texture_->RemoveLightweightRef(!context_lost_);
+    if (texture_) {
+      texture_.ExtractAsDangling()->RemoveLightweightRef(!context_lost_);
+    }
   }
 
-  const raw_ptr<gles2::Texture, DanglingUntriaged> texture_ = nullptr;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   const scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   bool context_lost_ = false;
 };
@@ -265,7 +266,8 @@ EGLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> EGLImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+EGLImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -159,9 +160,10 @@ class PhoneHubAshNotificationView : public AshNotificationView {
 
  private:
   // Owned by view hierarchy.
-  views::View* action_buttons_row_ = nullptr;
-  views::View* reply_button_ = nullptr;
-  message_center::NotificationInputContainer* inline_reply_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> action_buttons_row_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> reply_button_ = nullptr;
+  raw_ptr<message_center::NotificationInputContainer, ExperimentalAsh>
+      inline_reply_ = nullptr;
 
   // Timer that fires to enable reply button after a brief period of time.
   base::OneShotTimer enable_reply_timer_;
@@ -267,7 +269,8 @@ class PhoneHubNotificationController::NotificationDelegate
   enum OngoingCallButton { BUTTON_HANGUP };
 
   // The parent controller, which owns this object.
-  PhoneHubNotificationController* controller_ = nullptr;
+  raw_ptr<PhoneHubNotificationController, ExperimentalAsh> controller_ =
+      nullptr;
 
   // The notification ID tracked by PhoneHub.
   const int64_t phone_hub_id_;

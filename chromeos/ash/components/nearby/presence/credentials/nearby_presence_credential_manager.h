@@ -27,6 +27,16 @@ class NearbyPresenceCredentialManager {
 
   // Kicks off the first time initialization flow for registering presence
   // with the Nearby Presence server. Returns the success of registration.
+  //
+  // The registration flow is as follows:
+  // 1. Register with the NP server to make itself known as a device associated
+  // with the user's GAIA.
+  // 2. Generate local device’s credential pairs in NP library and upload to
+  // the server.
+  // 3. Download remote devices’ shared credentials and save to NP library.
+  //
+  // Callers are expected to check |IsPresenceInitialized| and only call this
+  // function when it is false.
   virtual void RegisterPresence(
       base::OnceCallback<void(bool)> on_registered_callback) = 0;
 

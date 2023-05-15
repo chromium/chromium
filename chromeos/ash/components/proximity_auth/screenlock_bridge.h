@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
@@ -141,7 +142,8 @@ class ScreenlockBridge {
     // Invoked after the screen lock is dismissed.
     virtual void OnScreenDidUnlock(LockHandler::ScreenType screen_type) = 0;
 
-    // Invoked when the user focused on the lock screen changes.
+    // TODO(b/227674947): This method isn't being used anywhere and can be
+    // deleted. Invoked when the user focused on the lock screen changes.
     virtual void OnFocusedUserChanged(const AccountId& account_id) = 0;
 
    protected:
@@ -176,7 +178,7 @@ class ScreenlockBridge {
   ScreenlockBridge();
   ~ScreenlockBridge();
 
-  LockHandler* lock_handler_ = nullptr;  // Not owned
+  raw_ptr<LockHandler, ExperimentalAsh> lock_handler_ = nullptr;  // Not owned
 
   // The last focused user's id.
   AccountId focused_account_id_;

@@ -31,7 +31,12 @@ TranslateModelServiceFactory* TranslateModelServiceFactory::GetInstance() {
 TranslateModelServiceFactory::TranslateModelServiceFactory()
     : ProfileKeyedServiceFactory(
           "TranslateModelService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   if (translate::IsTFLiteLanguageDetectionEnabled())
     DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }

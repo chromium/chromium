@@ -2245,6 +2245,7 @@ TEST_F(RenderWidgetHostTest, NavigateInBackgroundShowsBlank) {
   // ClearDisplayedGraphics.
   host_->WasShown({} /* record_tab_switch_time_request */);
   host_->DidNavigate();
+  host_->StartNewContentRenderingTimeout();
   EXPECT_FALSE(host_->new_content_rendering_timeout_fired());
 
   // Hide then show. ClearDisplayedGraphics must be called.
@@ -2256,6 +2257,7 @@ TEST_F(RenderWidgetHostTest, NavigateInBackgroundShowsBlank) {
   // Hide, navigate, then show. ClearDisplayedGraphics must be called.
   host_->WasHidden();
   host_->DidNavigate();
+  host_->StartNewContentRenderingTimeout();
   host_->WasShown({} /* record_tab_switch_time_request */);
   EXPECT_TRUE(host_->new_content_rendering_timeout_fired());
 }
@@ -2351,8 +2353,10 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   NativeWebKeyboardEvent native_event(WebInputEvent::Type::kChar, 0,
                                       GetNextSimulatedEventTime());
   ui::LatencyInfo latency_info = ui::LatencyInfo();
+  ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
+  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
+                                           &event_latency_metadata);
 
   // Remove InputEventObserver.
   host_->RemoveInputEventObserver(&observer);
@@ -2360,7 +2364,9 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   // Confirm InputEventObserver is removed.
   EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
   latency_info = ui::LatencyInfo();
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
+  event_latency_metadata = ui::EventLatencyMetadata();
+  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
+                                           &event_latency_metadata);
 }
 
 #if BUILDFLAG(IS_ANDROID)

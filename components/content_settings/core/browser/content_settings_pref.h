@@ -98,7 +98,7 @@ class ContentSettingsPref {
   raw_ptr<PrefChangeRegistrar, DanglingUntriaged> registrar_;
 
   // Name of the dictionary preference managed by this class.
-  const raw_ref<const std::string> pref_name_;
+  const raw_ref<const std::string, DanglingUntriaged> pref_name_;
 
   bool off_the_record_;
 
@@ -113,9 +113,6 @@ class ContentSettingsPref {
   OriginIdentifierValueMap off_the_record_value_map_;
 
   NotifyObserversCallback notify_callback_;
-
-  // Used around accesses to the value map objects to guarantee thread safety.
-  mutable base::Lock lock_;
 
   base::ThreadChecker thread_checker_;
 };

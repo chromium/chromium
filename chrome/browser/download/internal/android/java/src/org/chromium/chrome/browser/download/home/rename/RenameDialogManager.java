@@ -3,15 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.download.home.rename;
 
-import static org.chromium.chrome.browser.download.home.metrics.UmaUtils.recordRenameAction;
-
 import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -77,8 +74,8 @@ public class RenameDialogManager {
     }
 
     public RenameDialogManager(Context context, ModalDialogManager modalDialogManager) {
-        mRenameDialogCoordinator = new RenameDialogCoordinator(context, modalDialogManager,
-                this::onRenameDialogClick, this::onRenameDialogDismiss);
+        mRenameDialogCoordinator =
+                new RenameDialogCoordinator(context, modalDialogManager, this::onRenameDialogClick);
 
         mRenameExtensionDialogCoordinator =
                 new RenameExtensionDialogCoordinator(context, modalDialogManager,
@@ -168,10 +165,6 @@ public class RenameDialogManager {
         });
     }
 
-    private void onRenameDialogDismiss(int dismissalCause) {
-        recordRenameAction(getRenameAction(false, dismissalCause));
-    }
-
     private void onRenameDialogClick(boolean isPositiveButton) {
         if (isPositiveButton) {
             mLastAttemptedName = mRenameDialogCoordinator.getCurSuggestedName();
@@ -206,24 +199,6 @@ public class RenameDialogManager {
     private void onRenameExtensionDialogDismiss(int dismissalCause) {
         if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
             processDialogState(RenameDialogState.RENAME_EXTENSION_DIALOG_CANCEL, dismissalCause);
-        }
-        recordRenameAction(getRenameAction(true, dismissalCause));
-    }
-
-    private @UmaUtils.RenameDialogAction int getRenameAction(
-            boolean isExtensionDialog, int dismissalCause) {
-        switch (dismissalCause) {
-            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                return isExtensionDialog
-                        ? UmaUtils.RenameDialogAction.RENAME_EXTENSION_DIALOG_CONFIRM
-                        : UmaUtils.RenameDialogAction.RENAME_DIALOG_CONFIRM;
-            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
-                return isExtensionDialog
-                        ? UmaUtils.RenameDialogAction.RENAME_EXTENSION_DIALOG_CANCEL
-                        : UmaUtils.RenameDialogAction.RENAME_DIALOG_CANCEL;
-            default:
-                return isExtensionDialog ? UmaUtils.RenameDialogAction.RENAME_EXTENSION_DIALOG_OTHER
-                                         : UmaUtils.RenameDialogAction.RENAME_DIALOG_OTHER;
         }
     }
 }

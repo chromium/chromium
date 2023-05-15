@@ -3,10 +3,14 @@ elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 elf_file_name=elf
 elf_mtime={redacted}
-elf_relocations_count=394087
 git_revision=abc123
 gn_args=var1=true var2="foo"
 out_directory=out/Release
+Section .arsc: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: has 100.0% of 35982248 bytes accounted for from 11 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 83704 bytes (0.2%)
 * 11 have source paths. Accounts for 35982248 bytes (100.0%).

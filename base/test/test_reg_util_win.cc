@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <windows.h>
@@ -63,7 +63,8 @@ std::wstring GenerateTempKeyPath(const std::wstring& test_key_root,
   return base::AsWString(base::StrCat(
       {base::AsStringPiece16(test_key_root), u"\\",
        base::NumberToString16(timestamp.ToInternalValue()), kTimestampDelimiter,
-       base::ASCIIToUTF16(base::GenerateGUID())}));
+       base::ASCIIToUTF16(
+           base::Uuid::GenerateRandomV4().AsLowercaseString())}));
 }
 
 }  // namespace

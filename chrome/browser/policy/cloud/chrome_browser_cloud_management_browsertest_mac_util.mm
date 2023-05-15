@@ -6,20 +6,24 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace policy {
 
 void PostAppControllerNSNotifications() {
   // Simulate the user clicking a window other than the dialog.
   // The Profile is not ready when the dialog is displayed, so it can't be
   // accessed.
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       postNotificationName:NSWindowDidResignMainNotification
                     object:nil];
 
-  // Simulate the user hiding Chrome via Cmd+h when the dialog is displayed.
+  // Simulate the user hiding Chrome via Cmd+H when the dialog is displayed.
   // The AppShimManager hasn't been created when the dialog is
   // displayed, so it must be skipped.
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       postNotificationName:NSApplicationWillHideNotification
                     object:nil];
 }

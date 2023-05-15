@@ -8,7 +8,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
@@ -252,6 +251,35 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
 bool IsTerminalState(WebTransportState state) {
   return state == WebTransportState::CLOSED ||
          state == WebTransportState::FAILED;
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NegotiatedHttpDatagramVersion {
+  kNone = 0,
+  kDraft04 = 1,
+  kRfc = 2,
+  kMaxValue = kRfc,
+};
+
+void RecordNegotiatedHttpDatagramSupport(quic::HttpDatagramSupport support) {
+  NegotiatedHttpDatagramVersion negotiated;
+  switch (support) {
+    case quic::HttpDatagramSupport::kNone:
+      negotiated = NegotiatedHttpDatagramVersion::kNone;
+      break;
+    case quic::HttpDatagramSupport::kDraft04:
+      negotiated = NegotiatedHttpDatagramVersion::kDraft04;
+      break;
+    case quic::HttpDatagramSupport::kRfc:
+      negotiated = NegotiatedHttpDatagramVersion::kRfc;
+      break;
+    case quic::HttpDatagramSupport::kRfcAndDraft04:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramEnumeration(
+      "Net.WebTransport.NegotiatedHttpDatagramVersion", negotiated);
 }
 
 }  // namespace
@@ -728,6 +756,7 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
 void DedicatedWebTransportHttp3Client::OnSessionReady(
     const spdy::Http2HeaderBlock& /*spdy_headers*/) {
   session_ready_ = true;
+  RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
 }
 
 void DedicatedWebTransportHttp3Client::OnSessionClosed(
@@ -752,7 +781,7 @@ void DedicatedWebTransportHttp3Client::
 
 void DedicatedWebTransportHttp3Client::OnDatagramReceived(
     absl::string_view datagram) {
-  visitor_->OnDatagramReceived(base::StringViewToStringPiece(datagram));
+  visitor_->OnDatagramReceived(datagram);
 }
 
 void DedicatedWebTransportHttp3Client::

@@ -128,6 +128,10 @@ const char kSystemDnsServers[] = "systemDnsServers";
 // blocking is enabled on the device.
 const char kThirdPartyBlockingEnabled[] = "thirdPartyBlockingEnabled";
 
+// Name of the signal for getting information about the managed user's
+// enrollment domain.
+const char kUserEnrollmentDomain[] = "userEnrollmentDomain";
+
 // Name of the signal for getting information about the windows domain
 // the device has joined.
 const char kWindowsMachineDomain[] = "windowsMachineDomain";

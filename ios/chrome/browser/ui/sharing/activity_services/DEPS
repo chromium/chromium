@@ -1,3 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
+]
+
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

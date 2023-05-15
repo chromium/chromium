@@ -11,12 +11,12 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/types/pass_key.h"
+#include "base/uuid.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
@@ -58,8 +58,9 @@ class ScopedCopyRegKey {
     std::wstring temp_key_name;
     base::win::RegKey exists_key(to.Handle(), key.c_str(), KEY_READ);
     if (exists_key.Valid()) {
-      temp_key_name =
-          base::StrCat({L"Temp-", base::ASCIIToWide(base::GenerateGUID())});
+      temp_key_name = base::StrCat(
+          {L"Temp-", base::ASCIIToWide(
+                         base::Uuid::GenerateRandomV4().AsLowercaseString())});
       LONG result =
           RegRenameKey(to.Handle(), key.c_str(), temp_key_name.c_str());
       if (result != ERROR_SUCCESS) {

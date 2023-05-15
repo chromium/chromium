@@ -25,10 +25,15 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,6 +51,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -86,6 +92,21 @@ constexpr base::TimeDelta kNudgeLabelShowingDuration = base::Seconds(6);
 // The minimum space we want to keep between the `nudge_label_` and the first
 // app in hotseat. Used to determine if `nudge_label_` should be shown.
 constexpr int kMinSpaceBetweenNudgeLabelAndHotseat = 24;
+
+// The durations and delay used for animating in the `quick_app_button_` and
+// `expandable_container_`.
+constexpr base::TimeDelta kQuickAppSlideSlideInDuration =
+    base::Milliseconds(200);
+constexpr base::TimeDelta kQuickAppButtonFadeInDelay = base::Milliseconds(50);
+constexpr base::TimeDelta kQuickAppButtonFadeInDuration =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kQuickAppContainerFadeInDuration =
+    base::Milliseconds(100);
+
+// The durations used for animating out the `quick_app_button_` and
+// `expandable_container_`.
+constexpr base::TimeDelta kQuickAppSlideOutDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kQuickAppFadeOutDuration = base::Milliseconds(100);
 
 }  // namespace
 
@@ -135,6 +156,13 @@ HomeButton::HomeButton(Shelf* shelf)
     quick_app_model_observation_.Observe(
         AppListModelProvider::Get()->quick_app_access_model());
   }
+
+  if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+    SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
+  }
 }
 
 HomeButton::~HomeButton() = default;
@@ -154,8 +182,32 @@ void HomeButton::Layout() {
   ShelfControlButton::Layout();
 
   if (expandable_container_) {
-    expandable_container_->SetSize(
-        gfx::Size(expandable_container_->GetPreferredSize().width(), height()));
+    if (shelf_->IsHorizontalAlignment()) {
+      expandable_container_->SetSize(gfx::Size(
+          expandable_container_->GetPreferredSize().width(), height()));
+    } else {
+      expandable_container_->SetSize(gfx::Size(
+          width(), expandable_container_->GetPreferredSize().height()));
+    }
+
+    if (quick_app_button_) {
+      if (shelf_->IsHorizontalAlignment()) {
+        expandable_container_->SetBorder(
+            views::CreateEmptyBorder(gfx::Insets::TLBR(
+                0,
+                ShelfControlButton::CalculatePreferredSize().width() +
+                    kQuickAppStartMargin,
+                0, 0)));
+      } else {
+        expandable_container_->SetBorder(
+            views::CreateEmptyBorder(gfx::Insets::TLBR(
+                ShelfControlButton::CalculatePreferredSize().height() +
+                    kQuickAppStartMargin,
+                0, 0, 0)));
+      }
+      expandable_container_->layer()->SetClipRect(
+          gfx::Rect(expandable_container_->size()));
+    }
   }
 }
 
@@ -381,8 +433,10 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags fg_flags;
     fg_flags.setAntiAlias(true);
     fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    fg_flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor));
+    fg_flags.setColor(GetColorProvider()->GetColor(
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshButtonIconColor));
 
     if (controller_.IsAssistantAvailable()) {
       // active: 100% alpha, inactive: 54% alpha
@@ -479,11 +533,18 @@ void HomeButton::CreateNudgeLabel() {
 
 void HomeButton::CreateQuickAppButton() {
   CreateExpandableContainer();
-  expandable_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0,
-                        ShelfControlButton::CalculatePreferredSize().width() +
-                            kQuickAppStartMargin,
-                        0, 0)));
+  if (shelf_->IsHorizontalAlignment()) {
+    expandable_container_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0,
+                          ShelfControlButton::CalculatePreferredSize().width() +
+                              kQuickAppStartMargin,
+                          0, 0)));
+  } else {
+    expandable_container_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        ShelfControlButton::CalculatePreferredSize().height() +
+            kQuickAppStartMargin,
+        0, 0, 0)));
+  }
 
   quick_app_button_ = expandable_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
@@ -613,28 +674,13 @@ void HomeButton::AnimateNudgeLabelSlideIn(views::AnimationBuilder& builder) {
   expandable_container_->SetVisible(true);
   shelf_->shelf_layout_manager()->LayoutShelf(false);
 
-  const int home_button_width =
-      ShelfControlButton::CalculatePreferredSize().width();
-  const int label_visible_width =
-      expandable_container_->width() - home_button_width;
-
-  gfx::Rect initial_container_clip_rect;
-  gfx::Transform initial_transform;
-
-  // Set up the initial label transform and expandable container clip rect.
-  if (base::i18n::IsRTL()) {
-    initial_transform.Translate(label_visible_width, 0);
-    initial_container_clip_rect =
-        gfx::Rect(label_visible_width, 0, home_button_width,
-                  expandable_container_->height());
-  } else {
-    initial_transform.Translate(-label_visible_width, 0);
-    initial_container_clip_rect =
-        gfx::Rect(0, 0, home_button_width, expandable_container_->height());
-  }
+  const gfx::Rect initial_container_clip_rect =
+      GetExpandableContainerClipRectToHomeButton();
+  const gfx::Transform initial_transform =
+      GetTransformForContainerChildBehindHomeButton();
 
   // Calculate the target clip rect on `expandable_container_`.
-  gfx::Rect container_target_clip_rect =
+  const gfx::Rect container_target_clip_rect =
       gfx::Rect(expandable_container_->size());
 
   // Set up the animation of the `nudge_label_`
@@ -655,25 +701,10 @@ void HomeButton::AnimateNudgeLabelSlideIn(views::AnimationBuilder& builder) {
 }
 
 void HomeButton::AnimateNudgeLabelSlideOut() {
-  const int home_button_width =
-      ShelfControlButton::CalculatePreferredSize().width();
-  const int label_visible_width =
-      expandable_container_->width() - home_button_width;
-
-  gfx::Transform target_transform;
-  gfx::Rect container_target_clip_rect;
-
-  // Calculate the target transform and clip rect.
-  if (base::i18n::IsRTL()) {
-    target_transform.Translate(label_visible_width, 0);
-    container_target_clip_rect =
-        gfx::Rect(label_visible_width, 0, home_button_width,
-                  expandable_container_->height());
-  } else {
-    target_transform.Translate(-label_visible_width, 0);
-    container_target_clip_rect =
-        gfx::Rect(0, 0, home_button_width, expandable_container_->height());
-  }
+  const gfx::Transform target_transform =
+      GetTransformForContainerChildBehindHomeButton();
+  const gfx::Rect container_target_clip_rect =
+      GetExpandableContainerClipRectToHomeButton();
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -749,13 +780,13 @@ void HomeButton::OnLabelFadeOutAnimationEnded() {
 }
 
 void HomeButton::RemoveNudgeLabel() {
-  RemoveChildViewT(expandable_container_);
+  RemoveChildViewT(expandable_container_.get());
   expandable_container_ = nullptr;
   nudge_label_ = nullptr;
 }
 
 void HomeButton::RemoveQuickAppButton() {
-  RemoveChildViewT(expandable_container_);
+  RemoveChildViewT(expandable_container_.get());
   expandable_container_ = nullptr;
   quick_app_button_ = nullptr;
 }
@@ -764,11 +795,6 @@ bool HomeButton::DoesIntersectRect(const views::View* target,
                                    const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
   gfx::Rect button_bounds = target->GetLocalBounds();
-
-  if (quick_app_button_) {
-    return gfx::Rect(gfx::Point(0, 0), CalculatePreferredSize())
-        .Intersects(rect);
-  }
 
   // If the `expandable_container_` is visible, set all the area within the
   // label bounds clickable.
@@ -804,13 +830,12 @@ void HomeButton::OnActiveAppListModelsChanged(AppListModel* model,
 
 void HomeButton::OnQuickAppShouldShowChanged(bool show_quick_app) {
   if (!show_quick_app && quick_app_button_) {
-    // TODO(b/266734005): Animate the hiding of the quick app button.
-    RemoveQuickAppButton();
+    AnimateQuickAppButtonOut();
   } else if (show_quick_app && !quick_app_button_) {
     if (nudge_label_) {
       RemoveNudgeLabel();
     }
-    CreateQuickAppButton();
+    AnimateQuickAppButtonIn();
   }
 }
 
@@ -824,6 +849,105 @@ void HomeButton::OnQuickAppIconChanged() {
       views::Button::STATE_NORMAL,
       AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
           gfx::Size(control_size, control_size)));
+}
+
+void HomeButton::AnimateQuickAppButtonIn() {
+  CreateQuickAppButton();
+
+  CHECK(quick_app_button_ && expandable_container_ && !nudge_label_);
+
+  const gfx::Rect initial_container_clip_rect =
+      GetExpandableContainerClipRectToHomeButton();
+  const gfx::Transform initial_transform =
+      GetTransformForContainerChildBehindHomeButton();
+
+  // Calculate the target clip rect on `expandable_container_`.
+  const gfx::Rect container_target_clip_rect =
+      gfx::Rect(expandable_container_->size());
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetTransform(quick_app_button_->layer(), initial_transform)
+      .SetClipRect(expandable_container_->layer(), initial_container_clip_rect)
+      .SetOpacity(quick_app_button_->layer(), 0)
+      .SetOpacity(expandable_container_->layer(), 0)
+      .Then()
+      .SetDuration(kQuickAppSlideSlideInDuration)
+      .SetClipRect(expandable_container_->layer(), container_target_clip_rect,
+                   gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(quick_app_button_->layer(), gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .At(kQuickAppButtonFadeInDelay)
+      .SetDuration(kQuickAppButtonFadeInDuration)
+      .SetOpacity(quick_app_button_->layer(), 1)
+      .At(base::TimeDelta())
+      .SetDuration(kQuickAppContainerFadeInDuration)
+      .SetOpacity(expandable_container_->layer(), 1);
+}
+
+void HomeButton::AnimateQuickAppButtonOut() {
+  const gfx::Transform target_transform =
+      GetTransformForContainerChildBehindHomeButton();
+  const gfx::Rect container_target_clip_rect =
+      GetExpandableContainerClipRectToHomeButton();
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&HomeButton::OnQuickAppButtonSlideOutDone,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&HomeButton::OnQuickAppButtonSlideOutDone,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kQuickAppSlideOutDuration)
+      .SetTransform(quick_app_button_->layer(), target_transform,
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetClipRect(expandable_container_->layer(), container_target_clip_rect,
+                   gfx::Tween::ACCEL_20_DECEL_100)
+      .At(base::TimeDelta())
+      .SetDuration(kQuickAppFadeOutDuration)
+      .SetOpacity(expandable_container_->layer(), 0)
+      .SetOpacity(quick_app_button_->layer(), 0);
+}
+
+void HomeButton::OnQuickAppButtonSlideOutDone() {
+  RemoveQuickAppButton();
+  shelf_->shelf_layout_manager()->LayoutShelf(true);
+}
+
+gfx::Transform HomeButton::GetTransformForContainerChildBehindHomeButton() {
+  const int home_button_width =
+      ShelfControlButton::CalculatePreferredSize().width();
+
+  const int container_visible_width =
+      expandable_container_->width() - home_button_width;
+
+  gfx::Transform target_transform;
+  if (shelf_->IsHorizontalAlignment()) {
+    target_transform.Translate(base::i18n::IsRTL() ? container_visible_width
+                                                   : -container_visible_width,
+                               0);
+  } else {
+    target_transform.Translate(
+        0, home_button_width - expandable_container_->height());
+  }
+  return target_transform;
+}
+
+gfx::Rect HomeButton::GetExpandableContainerClipRectToHomeButton() {
+  const int home_button_width =
+      ShelfControlButton::CalculatePreferredSize().width();
+  const int container_visible_width =
+      expandable_container_->width() - home_button_width;
+
+  gfx::Rect clip_rect =
+      gfx::Rect(base::i18n::IsRTL() ? container_visible_width : 0, 0,
+                home_button_width, home_button_width);
+
+  return clip_rect;
 }
 
 }  // namespace ash

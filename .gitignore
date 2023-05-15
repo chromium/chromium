@@ -211,6 +211,7 @@ vs-chromium-project.txt
 /components/gcm_driver.xml
 /components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
+/components/metrics/internal
 /components/ntp_tiles/resources/internal
 /components/optimization_guide/internal
 /components/resources/default_100_percent/google_chrome
@@ -317,6 +318,7 @@ vs-chromium-project.txt
 /tools/.bisect-builds-cache.json
 /tools/cygprofile/*.wprgo
 /tools/clang/dsymutil/bin/dsymutil
+/tools/clang/plugins/tests/*.txt.actual
 /tools/distcc
 /tools/gn/bin/linux
 /tools/gn/bin/mac
@@ -337,6 +339,7 @@ vs-chromium-project.txt
 /ui/file_manager/internal
 /ui/file_manager/tsconfig.json
 /ui/keyboard/keyboard_mojom_bindings.xml
+/ui/gl/resources/angle-metal
 /ui/surface/surface.xml
 /ui/surface/surface_gpu_tests.xml
 /ui/webui/internal

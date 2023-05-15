@@ -245,7 +245,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     UploadForDeepScanning(
         item,
         base::BindRepeating(
-            &DownloadProtectionService::MaybeCheckMetdataAfterDeepScanning,
+            &DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning,
             weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::UNKNOWN, std::move(settings.value()));
@@ -824,7 +824,7 @@ DownloadProtectionService::GetNavigationObserverManager(
       web_contents->GetBrowserContext());
 }
 
-void DownloadProtectionService::MaybeCheckMetdataAfterDeepScanning(
+void DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback,
     DownloadCheckResult result) {

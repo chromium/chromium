@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #include "extensions/browser/extension_function.h"
@@ -191,7 +192,7 @@ class InputImeEventRouter {
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace extensions

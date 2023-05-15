@@ -5,7 +5,6 @@
 #include "ash/wm/lock_state_controller.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -18,11 +17,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/shutdown_reason.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
-#include "ash/wm/session_state_animator.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -38,9 +35,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/wm/core/compound_event_filter.h"

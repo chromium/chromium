@@ -572,6 +572,8 @@ void ShellSurface::OnPostWindowStateTypeChange(
   Configure();
 
   if (widget_) {
+    // This may not be necessary.
+    set_bounds_is_dirty(true);
     UpdateWidgetBounds();
     UpdateShadow();
   }
@@ -691,6 +693,16 @@ ShellSurface::CreateNonClientFrameView(views::Widget* widget) {
 // ShellSurface, private:
 
 void ShellSurface::SetParentWindow(aura::Window* new_parent) {
+  if (new_parent && GetWidget() &&
+      new_parent == GetWidget()->GetNativeWindow()) {
+    // Some apps e.g. crbug/1210235 try to be their own parent. Ignore them to
+    // prevent chrome from locking up/crashing.
+    auto* app_id = GetShellApplicationId(host_window());
+    LOG(WARNING)
+        << "Client attempts to add itself as a transient parent: app_id="
+        << app_id;
+    return;
+  }
   if (parent()) {
     parent()->RemoveObserver(this);
     if (widget_) {

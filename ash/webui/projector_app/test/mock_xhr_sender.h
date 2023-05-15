@@ -22,8 +22,10 @@ namespace ash {
 // indexable text request is sent correctly.
 class MockXhrSender : public ProjectorXhrSender {
  public:
-  using OnSendCallback = base::OnceCallback<
-      void(const GURL&, const std::string&, const std::string&)>;
+  using OnSendCallback =
+      base::OnceCallback<void(const GURL&,
+                              projector::mojom::RequestType,
+                              const absl::optional<std::string>&)>;
 
   MockXhrSender(OnSendCallback quit_closure,
                 network::mojom::URLLoaderFactory* url_loader_factory);
@@ -32,14 +34,15 @@ class MockXhrSender : public ProjectorXhrSender {
   ~MockXhrSender() override;
 
   // ProjectorXhrSender:
-  void Send(const GURL& url,
-            const std::string& method,
-            const std::string& request_body,
-            bool use_credentials,
-            bool use_api_key,
-            SendRequestCallback callback,
-            const base::Value::Dict& headers,
-            const std::string& account_email) override;
+  void Send(
+      const GURL& url,
+      projector::mojom::RequestType method,
+      const absl::optional<std::string>& request_body,
+      bool use_credentials,
+      bool use_api_key,
+      SendRequestCallback callback,
+      const absl::optional<base::flat_map<std::string, std::string>>& headers,
+      const absl::optional<std::string>& account_email) override;
 
  private:
   // Quits the current run loop. Used to verify the MockXhrSender::Send getting

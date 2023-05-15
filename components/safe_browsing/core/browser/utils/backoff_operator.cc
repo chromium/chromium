@@ -24,7 +24,7 @@ size_t BackoffOperator::GetBackoffDurationInSeconds() const {
                         2 * next_backoff_duration_secs_);
 }
 
-void BackoffOperator::ReportError() {
+bool BackoffOperator::ReportError() {
   consecutive_failures_++;
 
   // Any successful request clears both |consecutive_failures_| as well as
@@ -43,10 +43,10 @@ void BackoffOperator::ReportError() {
   //    exponential backoff.
 
   if (consecutive_failures_ < num_failures_to_enforce_backoff_)
-    return;
+    return false;
 
   if (IsInBackoffMode()) {
-    return;
+    return false;
   }
 
   // Enter backoff mode, calculate duration.
@@ -55,6 +55,7 @@ void BackoffOperator::ReportError() {
                        this, &BackoffOperator::ResetFailures);
   last_backoff_start_time_ = base::Time::Now();
   did_successful_request_since_last_backoff_ = false;
+  return true;
 }
 
 void BackoffOperator::ReportSuccess() {

@@ -12,6 +12,10 @@
 
 class GrDirectContext;
 
+namespace skgpu::graphite {
+class Recorder;
+}  // namespace skgpu::graphite
+
 namespace cc {
 
 // To add a new transfer cache entry type:
@@ -70,8 +74,8 @@ class CC_PAINT_EXPORT ServiceTransferCacheEntry {
   static bool SafeConvertToType(uint32_t raw_type,
                                 TransferCacheEntryType* type);
 
-  // Returns true if the entry needs a GrContext during deserialization.
-  static bool UsesGrContext(TransferCacheEntryType type);
+  // Returns true if the entry needs a Skia GPU context during deserialization.
+  static bool UsesGpuContext(TransferCacheEntryType type);
 
   virtual ~ServiceTransferCacheEntry() = default;
 
@@ -84,8 +88,11 @@ class CC_PAINT_EXPORT ServiceTransferCacheEntry {
   virtual size_t CachedSize() const = 0;
 
   // Deserialize the cache entry from the given span of memory with the given
-  // context.
-  virtual bool Deserialize(GrDirectContext* context,
+  // context. At most one of |gr_context| or |graphite_recorder| must be
+  // non-null, but it is ok to pass null for both parameters for entry types
+  // which do not need a GPU context - see UsesGpuContext, or for testing.
+  virtual bool Deserialize(GrDirectContext* gr_context,
+                           skgpu::graphite::Recorder* graphite_recorder,
                            base::span<const uint8_t> data) = 0;
 };
 

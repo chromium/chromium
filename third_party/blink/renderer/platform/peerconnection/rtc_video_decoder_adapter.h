@@ -94,7 +94,8 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Returns true if there's VP9 HW support for spatial layers. Please note that
   // the response from this function implicitly assumes that HW decoding is
   // enabled and that VP9 decoding is supported in HW.
-  static bool Vp9HwSupportForSpatialLayers();
+  static bool Vp9HwSupportForSpatialLayers(
+      const media::VideoDecoderType decoder_type);
 
  private:
   class Impl;

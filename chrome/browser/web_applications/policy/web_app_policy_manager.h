@@ -107,6 +107,8 @@ class WebAppPolicyManager {
   void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
                              blink::mojom::ManifestPtr& manifest) const;
 
+  bool IsPreventCloseEnabled(const AppId& app_id) const;
+
  private:
   friend class WebAppPolicyManagerTest;
 
@@ -116,10 +118,11 @@ class WebAppPolicyManager {
     WebAppSetting& operator=(const WebAppSetting&) = default;
     ~WebAppSetting() = default;
 
-    bool Parse(const base::Value& dict, bool for_default_settings);
+    bool Parse(const base::Value::Dict& dict, bool for_default_settings);
     void ResetSettings();
 
     RunOnOsLoginPolicy run_on_os_login_policy;
+    bool prevent_close;
   };
 
   struct CustomManifestValues {

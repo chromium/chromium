@@ -34,7 +34,6 @@ namespace blink {
 class Document;
 class SVGElement;
 class SVGSVGElement;
-class SubtreeLayoutScope;
 
 class CORE_EXPORT SVGDocumentExtensions final
     : public GarbageCollected<SVGDocumentExtensions> {
@@ -66,7 +65,7 @@ class CORE_EXPORT SVGDocumentExtensions final
 
   void AddSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
   void RemoveSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
-  void InvalidateSVGRootsWithRelativeLengthDescendents(SubtreeLayoutScope*);
+  void InvalidateSVGRootsWithRelativeLengthDescendents();
 
   bool ZoomAndPanEnabled() const;
 

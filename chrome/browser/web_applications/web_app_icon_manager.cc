@@ -1211,10 +1211,8 @@ gfx::ImageSkia WebAppIconManager::GetMonochromeFavicon(
 
 void WebAppIconManager::OnWebAppInstalled(const AppId& app_id) {
   ReadFavicon(app_id);
-#if BUILDFLAG(IS_CHROMEOS)
-  // Notifications use a monochrome icon.
+  // Monochrome icons are used in tabbed apps and for ChromeOS notifications.
   ReadMonochromeFavicon(app_id);
-#endif
 }
 
 void WebAppIconManager::OnWebAppInstallManagerDestroyed() {

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -46,18 +47,20 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final BookmarkModel mBookmarkModel;
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
+    private final TabModelSelector mTabModelSelector;
 
     @BrowserUiUtils.HostSurface
     private int mHostSurface;
 
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
-            @BrowserUiUtils.HostSurface int hostSurface) {
+            @BrowserUiUtils.HostSurface int hostSurface, TabModelSelector tabModelSelector) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mHostSurface = hostSurface;
+        mTabModelSelector = tabModelSelector;
     }
     @Override
     public void downloadPage(String url) {
@@ -131,6 +134,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         Intent intent = new Intent(mActivityContext, creatorActivityClass);
         intent.putExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID, webFeedName.getBytes());
         intent.putExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT, entryPoint);
+        intent.putExtra(CreatorIntentConstants.CREATOR_TAB_ID, mTabModelSelector.getCurrentTabId());
         mActivityContext.startActivity(intent);
     }
 
@@ -150,7 +154,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
             SigninBottomSheetCoordinator signinCoordinator =
                     new SigninBottomSheetCoordinator(windowAndroid, bottomSheetController,
-                            Profile.getLastUsedRegularProfile(), null);
+                            Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
             signinCoordinator.show();
         }
     }
@@ -160,11 +164,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
      * interactions. Calls reportPageLoaded when navigation completes.
      */
     private class FeedTabNavigationObserver extends EmptyTabObserver {
-        private final boolean mInNewTab;
         private final Runnable mCallback;
 
         FeedTabNavigationObserver(boolean inNewTab, Runnable callback) {
-            mInNewTab = inNewTab;
             mCallback = callback;
         }
 

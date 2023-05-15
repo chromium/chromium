@@ -183,7 +183,7 @@ void X11SoftwareBitmapPresenter::Resize(const gfx::Size& pixel_size) {
                                          viewport_pixel_size_.height(),
                                          color_type, kOpaque_SkAlphaType);
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    surface_ = SkSurface::MakeRaster(info, &props);
+    surface_ = SkSurfaces::Raster(info, &props);
   }
 }
 

@@ -45,23 +45,7 @@ TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
 
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
-bool TestSyncUserSettings::IsSyncRequested() const {
-  return !service_->HasDisableReason(SyncService::DISABLE_REASON_USER_CHOICE);
-}
-
-void TestSyncUserSettings::SetSyncRequested() {
-  SyncService::DisableReasonSet disable_reasons = service_->GetDisableReasons();
-  disable_reasons.Remove(SyncService::DISABLE_REASON_USER_CHOICE);
-  service_->SetDisableReasons(disable_reasons);
-}
-
-void TestSyncUserSettings::ClearSyncRequested() {
-  SyncService::DisableReasonSet disable_reasons = service_->GetDisableReasons();
-  disable_reasons.Put(SyncService::DISABLE_REASON_USER_CHOICE);
-  service_->SetDisableReasons(disable_reasons);
-}
-
-bool TestSyncUserSettings::IsFirstSetupComplete() const {
+bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return first_setup_complete_;
 }
 
@@ -87,8 +71,18 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
   }
 }
 
+#if BUILDFLAG(IS_IOS)
+void TestSyncUserSettings::SetBookmarksAndReadingListAccountStorageOptIn(
+    bool value) {}
+#endif  // BUILDFLAG(IS_IOS)
+
 UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
   return selected_types_;
+}
+
+bool TestSyncUserSettings::IsTypeManagedByPolicy(
+    UserSelectableType type) const {
+  return managed_types_.Has(type);
 }
 
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
@@ -114,6 +108,11 @@ bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
 
 UserSelectableOsTypeSet TestSyncUserSettings::GetSelectedOsTypes() const {
   return selected_os_types_;
+}
+
+bool TestSyncUserSettings::IsOsTypeManagedByPolicy(
+    UserSelectableOsType type) const {
+  return managed_os_types_.Has(type);
 }
 
 void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,
@@ -168,7 +167,7 @@ bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
   if (!IsUsingExplicitPassphrase()) {
     // PASSWORDS and WIFI_CONFIGURATIONS are always encrypted.
-    return ModelTypeSet(PASSWORDS, WIFI_CONFIGURATIONS);
+    return {PASSWORDS, WIFI_CONFIGURATIONS};
   }
   // Some types can never be encrypted, e.g. DEVICE_INFO and
   // AUTOFILL_WALLET_DATA, so make sure we don't report them as encrypted.
@@ -239,6 +238,26 @@ void TestSyncUserSettings::SetFirstSetupComplete() {
 void TestSyncUserSettings::ClearFirstSetupComplete() {
   first_setup_complete_ = false;
 }
+
+void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,
+                                            bool managed) {
+  if (managed) {
+    managed_types_.Put(type);
+  } else {
+    managed_types_.Remove(type);
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TestSyncUserSettings::SetOsTypeIsManaged(UserSelectableOsType type,
+                                              bool managed) {
+  if (managed) {
+    managed_os_types_.Put(type);
+  } else {
+    managed_os_types_.Remove(type);
+  }
+}
+#endif
 
 void TestSyncUserSettings::SetPassphraseRequired(bool required) {
   passphrase_required_ = required;

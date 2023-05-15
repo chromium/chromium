@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/ui/presenters",
+  "+ios/chrome/browser/ui/alert_view",
+  "+ios/chrome/browser/ui/infobars/infobar_constants.h",
+  "+ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h",
+  "+ios/chrome/browser/ui/fullscreen",
+]

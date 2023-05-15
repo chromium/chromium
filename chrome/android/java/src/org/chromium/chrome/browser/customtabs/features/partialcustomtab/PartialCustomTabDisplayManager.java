@@ -18,6 +18,7 @@ import androidx.annotation.AnimRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -41,6 +42,7 @@ public class PartialCustomTabDisplayManager
     private final Activity mActivity;
     private final int mBreakPointDp;
     private final int mDecorationType;
+    private final int mRoundedCornersPosition;
     private final @Px int mUnclampedInitialHeight;
     private final @Px int mUnclampedInitialWidth;
     private final int mUnclampedBreakPointDp;
@@ -77,7 +79,8 @@ public class PartialCustomTabDisplayManager
             OnResizedCallback onResizedCallback, OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground, boolean showMaximizeButton,
-            int decorationType, int sideSheetPosition, int sideSheetAnimation) {
+            int decorationType, int sideSheetPosition, int sideSheetAnimation,
+            int roundedCornersPosition) {
         mActivity = activity;
         mUnclampedInitialHeight = initialHeight;
         mUnclampedInitialWidth = initialWidth;
@@ -90,6 +93,7 @@ public class PartialCustomTabDisplayManager
         mInteractWithBackground = interactWithBackground;
         mShowMaximizeButton = showMaximizeButton;
         mDecorationType = decorationType;
+        mRoundedCornersPosition = roundedCornersPosition;
         mSideSheetPosition = sideSheetPosition;
         mSideSheetAnimation = sideSheetAnimation;
 
@@ -178,8 +182,8 @@ public class PartialCustomTabDisplayManager
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
      */
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        mStrategy.handleCloseAnimation(finishRunnable);
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        return mStrategy.handleCloseAnimation(finishRunnable);
     }
 
     /**
@@ -211,7 +215,7 @@ public class PartialCustomTabDisplayManager
         mStrategy.destroy();
     }
 
-    private int calculateBreakPoint(int unclampedBreakPointDp) {
+    private static int calculateBreakPoint(int unclampedBreakPointDp) {
         return Math.max(unclampedBreakPointDp, WINDOW_WIDTH_COMPACT_CUTOFF_DP);
     }
 
@@ -268,7 +272,7 @@ public class PartialCustomTabDisplayManager
         @PartialCustomTabType
         int type = calculatePartialCustomTabType(activity, provider.getInitialActivityWidth(),
                 provider.getInitialActivityHeight(), displayWidthDpSupplier,
-                provider.getActivityBreakPoint());
+                calculateBreakPoint(provider.getActivityBreakPoint()));
 
         @AnimRes
         int start_anim_id = defaultResId;
@@ -291,6 +295,9 @@ public class PartialCustomTabDisplayManager
 
     private PartialCustomTabBaseStrategy createSizeStrategy(@PartialCustomTabType int type,
             boolean maximized, int sideSheetPosition, int sideSheetAnimation) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.PartialCustomTabType", type, PartialCustomTabType.COUNT);
+
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
                 return new PartialCustomTabBottomSheetStrategy(mActivity, mUnclampedInitialHeight,
@@ -303,7 +310,7 @@ public class PartialCustomTabDisplayManager
                         mOnResizedCallback, mOnActivityLayoutCallback, mFullscreenManager,
                         mIsTablet, mInteractWithBackground, mShowMaximizeButton, maximized,
                         sideSheetPosition, sideSheetAnimation, mHandleStrategyFactory,
-                        mDecorationType);
+                        mDecorationType, mRoundedCornersPosition);
             }
             case PartialCustomTabType.FULL_SIZE: {
                 return new PartialCustomTabFullSizeStrategy(mActivity, mOnResizedCallback,

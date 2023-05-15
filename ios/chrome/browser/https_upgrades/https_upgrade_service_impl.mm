@@ -7,8 +7,8 @@
 #import "base/containers/contains.h"
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

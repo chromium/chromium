@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/observer_list.h"
 
 namespace ash {
 
@@ -17,6 +18,14 @@ VideoConferenceTrayEffectsManager::VideoConferenceTrayEffectsManager() =
 
 VideoConferenceTrayEffectsManager::~VideoConferenceTrayEffectsManager() =
     default;
+
+void VideoConferenceTrayEffectsManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void VideoConferenceTrayEffectsManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void VideoConferenceTrayEffectsManager::RegisterDelegate(
     VcEffectsDelegate* delegate) {
@@ -93,6 +102,14 @@ VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   }
 
   return effects;
+}
+
+void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
+    VcEffectId effect_id,
+    bool is_supported) {
+  for (auto& observer : observers_) {
+    observer.OnEffectSupportStateChanged(effect_id, is_supported);
+  }
 }
 
 VideoConferenceTrayEffectsManager::EffectDataVector

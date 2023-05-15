@@ -73,8 +73,9 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
         // Wait for the status box to appear in case page just loaded.
         const statusSection = document.getElementById('status-section');
         if (statusSection.hidden) {
-          window.requestIdleCallback(readStatus);
-          return;
+          return new Promise(resolve => {
+            window.requestIdleCallback(resolve);
+          }).then(readStatus);
         }
 
         const policies = getPolicyFieldsets();
@@ -89,22 +90,23 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
           }
           statuses[legend.trim()] = entries;
         }
-        domAutomationController.send(JSON.stringify(statuses));
-      }
+        return JSON.stringify(statuses);
+      };
 
-      window.requestIdleCallback(readStatus);
+      return new Promise(resolve => {
+        window.requestIdleCallback(resolve);
+      }).then(readStatus);
     })();
   )JS";
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
-  std::string json;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(contents, javascript, &json));
+  std::string json = content::EvalJs(contents, javascript).ExtractString();
   absl::optional<base::Value> statuses = base::JSONReader::Read(json);
   ASSERT_TRUE(statuses.has_value() && statuses->is_dict());
-  const base::Value* actual_entries = statuses->FindDictKey(policy_legend);
-  ASSERT_TRUE(actual_entries && actual_entries->is_dict());
-  for (const auto entry : actual_entries->GetDict()) {
+  const base::Value::Dict* actual_entries =
+      statuses->GetDict().FindDict(policy_legend);
+  ASSERT_TRUE(actual_entries);
+  for (const auto entry : *actual_entries) {
     policy_status->insert_or_assign(entry.first, entry.second.GetString());
   }
 }

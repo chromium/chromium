@@ -53,11 +53,6 @@
 #include "chrome/browser/shell_integration.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/search/search.h"
@@ -283,24 +278,6 @@ CommandLineTabsPresent StartupTabProviderImpl::HasCommandLineTabs(
   return is_unknown ? CommandLineTabsPresent::kUnknown
                     : CommandLineTabsPresent::kNo;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-StartupTabs StartupTabProviderImpl::GetCrosapiTabs() const {
-  auto* init_params = chromeos::BrowserParamsProxy::Get();
-  if (init_params->InitialBrowserAction() !=
-          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls ||
-      !init_params->StartupUrls().has_value()) {
-    return {};
-  }
-
-  StartupTabs result;
-  for (const GURL& url : *init_params->StartupUrls()) {
-    if (ValidateUrl(url))
-      result.emplace_back(url);
-  }
-  return result;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(

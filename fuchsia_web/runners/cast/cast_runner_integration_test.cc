@@ -24,7 +24,6 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -33,6 +32,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/dynamic_component_host.h"
@@ -239,7 +239,7 @@ class TestCastComponent {
     component_.emplace(
         test_realm_services_.Connect<fuchsia::component::Realm>(),
         test::CastRunnerLauncher::kTestCollectionName,
-        base::GUID::GenerateRandomV4().AsLowercaseString(), component_url,
+        base::Uuid::GenerateRandomV4().AsLowercaseString(), component_url,
         base::BindOnce(&TestCastComponent::OnComponentTeardown,
                        base::Unretained(this)),
         std::move(services));

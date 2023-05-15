@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -623,6 +624,50 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                                         kExpectedStatus, 1);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        /*instance=*/nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  auto fake_porter = std::make_unique<FakePasswordManagerPorter>();
+  auto* fake_porter_ptr = fake_porter.get();
+  delegate->SetPorterForTesting(std::move(fake_porter));
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
+
+  const auto kExpectedStatus =
+      password_manager::ImportResults::Status::DISMISSED;
+  fake_porter_ptr->set_import_result_status(kExpectedStatus);
+
+  MockReauthCallback reauth_callback;
+  delegate->set_os_reauth_call(reauth_callback.Get());
+
+  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::IMPORT, _))
+      .WillOnce(testing::WithArg<1>(
+          [](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                 callback) { std::move(callback).Run(false); }));
+
+  base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback>
+      import_callback;
+  EXPECT_CALL(
+      import_callback,
+      Run(::testing::Field(&api::passwords_private::ImportResults::status,
+                           api::passwords_private::ImportResultsStatus::
+                               IMPORT_RESULTS_STATUS_DISMISSED)))
+      .Times(1);
+
+  delegate->ContinueImport(/*selected_ids=*/{1}, import_callback.Get(),
+                           web_contents.get());
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
+                                        kExpectedStatus, 1);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest,
        ContinueImportLogsImportResultsStatus) {
   std::unique_ptr<content::WebContents> web_contents =
@@ -649,7 +694,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                             api::passwords_private::ImportResultsStatus::
                                 IMPORT_RESULTS_STATUS_BAD_FORMAT)))
       .Times(1);
-  delegate->ContinueImport(/*selected_ids=*/{}, callback.Get());
+  delegate->ContinueImport(/*selected_ids=*/{}, callback.Get(),
+                           web_contents.get());
   task_environment()->RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
@@ -1112,10 +1158,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted",
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings,
-      2);
+          kExplicitlyTriggeredForMultiplePasswordsInSettings,
+      1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
@@ -1167,11 +1213,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
                            IMPORT_ENTRY_STATUS_INVALID_URL) ==
           static_cast<int>(password_manager::ImportEntry::Status::INVALID_URL),
       "");
-  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
-                                     IMPORT_ENTRY_STATUS_NON_ASCII_URL) ==
-                    static_cast<int>(
-                        password_manager::ImportEntry::Status::NON_ASCII_URL),
-                "");
   static_assert(
       static_cast<int>(api::passwords_private::ImportEntryStatus::
                            IMPORT_ENTRY_STATUS_LONG_URL) ==
@@ -1320,6 +1361,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 #endif
 
 TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
+  base::HistogramTester histogram_tester;
   // Set up a browser instance and simulate a navigation.
   Browser::CreateParams params(profile(), /*user_gesture=*/true);
   params.type = Browser::TYPE_NORMAL;
@@ -1358,6 +1400,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
 
   // Close the browser prior to TearDown.
   browser->tab_strip_model()->CloseAllTabs();
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.ShortcutMetric", 0, 1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
@@ -1392,6 +1436,22 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry2))));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, PasswordManagerAppInstalled) {
+  base::HistogramTester histogram_tester;
+  auto delegate = CreateDelegate();
+  static_cast<web_app::WebAppInstallManagerObserver*>(delegate.get())
+      ->OnWebAppInstalledWithOsHooks(web_app::kPasswordManagerAppId);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("PasswordManager.ShortcutMetric"),
+              base::BucketsAre(base::Bucket(1, 1)));
+
+  // Check that installing other app doesn't get recorded.
+  static_cast<web_app::WebAppInstallManagerObserver*>(delegate.get())
+      ->OnWebAppInstalledWithOsHooks(web_app::kYoutubeMusicAppId);
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.ShortcutMetric", 1, 1);
 }
 
 }  // namespace extensions

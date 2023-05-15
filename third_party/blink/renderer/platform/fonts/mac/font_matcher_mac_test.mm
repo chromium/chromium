@@ -9,6 +9,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace blink {
 
 void TestSystemFontContainsString(FontSelectionValue desired_weight,
@@ -24,7 +28,7 @@ TEST(FontMatcherMacTest, NoUniqueFontMatchOnUnavailableFont) {
   EXPECT_FALSE(font);
 }
 
-// If these font names are unavaiable on future Mac OS versions, please try to
+// If these font names are unavailable on future Mac OS versions, please try to
 // find replacements or remove individual lines.
 TEST(FontMatcherMacTest, MatchFullFontName) {
   const char* font_names[] = {"American Typewriter Condensed Light",
@@ -46,7 +50,7 @@ TEST(FontMatcherMacTest, MatchFullFontName) {
   }
 }
 
-// If these font names are unavaiable on future Mac OS versions, please try to
+// If these font names are unavailable on future Mac OS versions, please try to
 // find replacements or remove individual lines.
 TEST(FontMatcherMacTest, MatchPostscriptName) {
   const char* font_names[] = {

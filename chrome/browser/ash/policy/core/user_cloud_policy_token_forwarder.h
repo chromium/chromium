@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -88,8 +89,8 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info);
 
-  UserCloudPolicyManagerAsh* manager_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<UserCloudPolicyManagerAsh, ExperimentalAsh> manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
@@ -104,7 +105,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   std::unique_ptr<net::BackoffEntry> retry_backoff_;
 
   // Points to the base::DefaultClock by default.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
 
   base::WeakPtrFactory<UserCloudPolicyTokenForwarder> weak_ptr_factory_{this};
 };

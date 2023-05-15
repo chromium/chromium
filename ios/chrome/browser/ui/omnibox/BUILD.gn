@@ -39,25 +39,6 @@ source_set("omnibox_suggestion_icon_util") {
     "omnibox_suggestion_icon_util.mm",
   ]
   deps = [
-    "resources:answer_calculator",
-    "resources:answer_conversion",
-    "resources:answer_dictionary",
-    "resources:answer_stock",
-    "resources:answer_sunrise",
-    "resources:answer_translation",
-    "resources:answer_when_is",
-    "resources:favicon_fallback",
-    "resources:omnibox_popup_recent_query",
-    "resources:pedal_clear_browsing_data",
-    "resources:pedal_default_browser",
-    "resources:pedal_dino",
-    "resources:pedal_history",
-    "resources:pedal_incognito",
-    "resources:pedal_passwords",
-    "resources:pedal_payments",
-    "resources:pedal_safety_check",
-    "resources:pedal_settings",
-    "resources:search",
     "//base",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
@@ -111,6 +92,8 @@ source_set("omnibox_internal") {
   sources = [
     "chrome_omnibox_client_ios.h",
     "chrome_omnibox_client_ios.mm",
+    "fake_suggestions_database.cc",
+    "fake_suggestions_database.h",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
@@ -143,7 +126,6 @@ source_set("omnibox_internal") {
     ":omnibox_popup_shared",
     ":omnibox_suggestion_icon_util",
     ":omnibox_util",
-    "resources:omnibox_clear_icon",
     "//base",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
@@ -153,28 +135,30 @@ source_set("omnibox_internal") {
     "//components/security_state/core",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/https_upgrades",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/default_browser_promo",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/fullscreen",
@@ -228,14 +212,23 @@ source_set("eg_app_support+eg2") {
   sources = [
     "omnibox_app_interface.h",
     "omnibox_app_interface.mm",
+    "test_fake_suggestions_service.cc",
+    "test_fake_suggestions_service.h",
   ]
   deps = [
+    ":omnibox_internal",
+    ":resources_fake_suggestions_tests",
     "//base",
     "//components/google/core/common",
     "//components/history/core/browser",
+    "//components/omnibox/browser",
+    "//components/search_engines",
     "//components/variations:variations",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
@@ -243,6 +236,7 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//net:test_support",
+    "//services/network:test_support",
     "//ui/base",
     "//ui/base:test_support",
   ]
@@ -288,6 +282,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_view_ios_unittest.mm",
@@ -302,14 +297,14 @@ source_set("unit_tests") {
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/url:constants",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/common:uikit",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
@@ -324,6 +319,14 @@ bundle_data("resources_unit_tests") {
   sources = [ "//ios/chrome/test/data/omnibox/selected_ranges.txt" ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
+}
+
+bundle_data("resources_fake_suggestions_tests") {
+  visibility = [ ":eg_app_support+eg2" ]
+  testonly = true
+  sources = [ "//ios/chrome/test/data/omnibox/fake_suggestions_pedal.json" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("features") {

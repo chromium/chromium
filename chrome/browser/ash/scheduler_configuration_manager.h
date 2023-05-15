@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -49,7 +50,7 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   void OnPrefChange();
   void OnConfigurationSet(bool result, size_t num_cores_disabled);
 
-  DebugDaemonClient* debug_daemon_client_ = nullptr;
+  raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_ = nullptr;
   PrefChangeRegistrar observer_;
   bool debug_daemon_ready_ = false;
   absl::optional<std::pair<bool, size_t>> last_reply_;

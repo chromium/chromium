@@ -23,10 +23,13 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
@@ -77,7 +80,7 @@ constexpr uint32_t kMaxXdgShellVersion = 5;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
-constexpr uint32_t kMaxTextInputExtensionVersion = 8;
+constexpr uint32_t kMaxTextInputExtensionVersion = 10;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
@@ -129,6 +132,8 @@ WaylandConnection::~WaylandConnection() = default;
 bool WaylandConnection::Initialize() {
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
+  RegisterGlobalObjectFactory(FractionalScaleManager::kInterfaceName,
+                              &FractionalScaleManager::Instantiate);
   RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,
                               &GtkPrimarySelectionDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(GtkShell1::kInterfaceName,
@@ -332,8 +337,8 @@ std::vector<InputDevice> WaylandConnection::CreateMouseDevices() const {
   return devices;
 }
 
-std::vector<InputDevice> WaylandConnection::CreateKeyboardDevices() const {
-  std::vector<InputDevice> devices;
+std::vector<KeyboardDevice> WaylandConnection::CreateKeyboardDevices() const {
+  std::vector<KeyboardDevice> devices;
   if (const auto* keyboard = seat_->keyboard()) {
     devices.emplace_back(keyboard->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN,
                          "keyboard");
@@ -609,6 +614,10 @@ const gfx::PointF WaylandConnection::MaybeConvertLocation(
   gfx::PointF converted(location);
   converted.InvScale(window->applied_state().window_scale);
   return converted;
+}
+
+bool WaylandConnection::ShouldUseOverlayDelegation() const {
+  return IsWaylandOverlayDelegationEnabled() && !overlay_delegation_disabled_;
 }
 
 // static

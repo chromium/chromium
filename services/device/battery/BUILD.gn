@@ -57,6 +57,13 @@ if (!is_android) {
         "battery_status_manager_win.cc",
         "battery_status_manager_win.h",
       ]
+    } else if (is_ios) {
+      configs += [ "//build/config/compiler:enable_arc" ]
+      sources += [ "battery_status_manager_ios.mm" ]
+      frameworks = [
+        "CoreFoundation.framework",
+        "IOKit.framework",
+      ]
     } else {
       sources += [ "battery_status_manager_default.cc" ]
     }

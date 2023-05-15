@@ -6,13 +6,14 @@
 
 #import <algorithm>
 
-// TODO(crbug.com/636188): required to implement ViewHierarchyContainsWKWebView
+// TODO(crbug.com/636188): required to implement ViewHierarchyContainsWebView
 // for -drawViewHierarchyInRect:afterScreenUpdates:, remove once the workaround
 // is no longer needed.
 #import <WebKit/WebKit.h>
 
 #import "base/check_op.h"
 #import "base/functional/bind.h"
+#import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
@@ -39,12 +40,20 @@ struct SnapshotInfo {
 };
 
 // Returns YES if `view` or any view it contains is a WKWebView.
-BOOL ViewHierarchyContainsWKWebView(UIView* view) {
+BOOL ViewHierarchyContainsWebView(UIView* view) {
   if ([view isKindOfClass:[WKWebView class]])
     return YES;
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/1419001): Remove NSClassFromString and use the class
+  // directly when possible.
+  if ([view isKindOfClass:[NSClassFromString(@"RenderWidgetUIView") class]]) {
+    return YES;
+  }
+#endif  // USE_BLINK
   for (UIView* subview in view.subviews) {
-    if (ViewHierarchyContainsWKWebView(subview))
+    if (ViewHierarchyContainsWebView(subview)) {
       return YES;
+    }
   }
   return NO;
 }
@@ -226,7 +235,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
+  if (baseView.window && ViewHierarchyContainsWebView(baseView)) {
     // `-renderInContext:` is the preferred way to render a snapshot, but it's
     // buggy for WKWebView, which is used for some WebUI pages such as
     // "No internet" or "Site can't be reached". If a WKWebView-containing

@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> file dipilih</translation>
 <translation id="2383454254762599978">Pindahkan ke sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proxy</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Perangkat berstatus hanya-baca</translation>
 <translation id="4826849268470072925">ITRANS Tamil</translation>
 <translation id="482932175346970750">Ketik <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> di browser Anda</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Jerman</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">Swedia</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
 <translation id="6993826899923627728">Item ini ada di sampah Anda</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="7008426324576352165">Organisasi Anda memerlukan penyimpanan ekstra untuk menyelesaikan upload.</translation>
 <translation id="7009985720488544166">Pemindahan <ph name="COUNT" /> file diblokir oleh kebijakan administrator</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">Temukan ekstensi di atas</translation>
 <translation id="7256405249507348194">Kesalahan tidak dikenal: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Layanan yang tersedia</translation>
+<translation id="7291818353625820805">Ingin tombol diulang? Nonaktifkan tanda aksen di Setelan Keyboard</translation>
 <translation id="7292816689782057017">Kebijakan administrator membatasi penyimpanan ke beberapa lokasi.</translation>
 <translation id="7294063083760278948">Transliterasi Telugu</translation>
 <translation id="7295662345261934369">Bagikan kepada yang lain</translation>

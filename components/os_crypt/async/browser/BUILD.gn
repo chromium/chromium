@@ -18,6 +18,16 @@ component("browser") {
   defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+  deps = [ "//crypto" ]
+  public_deps = [ ":browser" ]
+}
+
 source_set("key_provider_interface") {
   sources = [ "key_provider.h" ]
 
@@ -33,6 +43,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":key_provider_interface",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/os_crypt/async/common",

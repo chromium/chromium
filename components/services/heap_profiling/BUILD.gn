@@ -33,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":heap_profiling",
     "//base",
+    "//base/test:test_support",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//testing/gtest",
   ]

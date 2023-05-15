@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_camera_client.h"
 #include "dbus/bus.h"
@@ -54,7 +55,7 @@ class ArcCameraClientImpl : public ArcCameraClient {
     std::move(callback).Run(response);
   }
 
-  dbus::ObjectProxy* proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
   base::WeakPtrFactory<ArcCameraClientImpl> weak_ptr_factory_{this};
 };
 

@@ -64,7 +64,7 @@
     display: none;
   }
 
-  cr-button[aria-checked='true'] iron-icon[icon='personalization:circle_checkmark'] {
+  cr-button[aria-pressed='true'] iron-icon[icon='personalization:circle_checkmark'] {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     bottom: -4px;
@@ -84,11 +84,10 @@
 </style>
 <div id="container">
   <div id="themeHeader">
-    <div id="themeTitle">$i18n{dynamicColorLabel}</div>
-    <div id="dynamicColorToggleDescription">$i18n{dynamicColorDescription}</div>
-    <!-- TODO(b/253089237): Add the translated aria label. -->
+    <div id="themeTitle" class="ellipsis">$i18n{dynamicColorLabel}</div>
+    <div id="dynamicColorToggleDescription" class="ellipsis">$i18n{dynamicColorDescription}</div>
     <cr-toggle checked="{{automaticSeedColorEnabled}}" id="dynamicColorToggle"
-        on-change="onToggleChanged_">
+        on-change="onToggleChanged_" aria-labelledby="dynamicColorToggleDescription">
     </cr-toggle>
   </div>
   <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
@@ -105,7 +104,8 @@
           tabindex$="[[getColorSchemeTabIndex_(colorScheme.scheme)]]"
           on-click="onClickColorSchemeButton_"
           data-color-scheme-id$="[[colorScheme.scheme]]"
-          aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.scheme, colorSchemeSelected_)]]">
+          aria-pressed$="[[getColorSchemeAriaPressed_(colorScheme.scheme, colorSchemeSelected_)]]"
+          aria-description$="[[getColorSchemeAriaDescription_(colorScheme.scheme)]]">
         <div class="container">
           <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
           <iron-icon class="checkmark" icon="personalization:circle_checkmark"></iron-icon>
@@ -120,12 +120,13 @@
       hidden$="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
-          tabindex$="[[getStaticColorTabIndex_(staticColor.hexVal)]]"
+          tabindex$="[[getStaticColorTabIndex_(staticColor.seedVal)]]"
           on-click="onClickStaticColorButton_"
-          aria-checked$="[[getStaticColorAriaChecked_(staticColor.hexVal, staticColorSelected_)]]">
+          aria-pressed$="[[getStaticColorAriaPressed_(staticColor.seedVal, staticColorSelected_)]]"
+          aria-description$="[[getStaticColorAriaDescription_(staticColor.enumVal)]]">
         <div class="container">
           <svg>
-            <circle style$="fill: [[staticColor.hexVal]]" cx="24" cy="24" r="24"></circle>
+            <circle style$="fill: [[staticColor.fillVal]]" cx="24" cy="24" r="24"></circle>
           </svg>
           <iron-icon icon="personalization:circle_checkmark"></iron-icon>
         </div>

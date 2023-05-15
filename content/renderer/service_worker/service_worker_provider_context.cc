@@ -39,6 +39,8 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
         remote_controller,
     const std::string& client_id,
+    blink::mojom::ServiceWorkerFetchHandlerBypassOption
+        fetch_handler_bypass_option,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_fallback_factory,
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorkerConnector>
@@ -46,8 +48,8 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto connector = base::MakeRefCounted<ControllerServiceWorkerConnector>(
-      std::move(remote_container_host), std::move(remote_controller),
-      client_id);
+      std::move(remote_container_host), std::move(remote_controller), client_id,
+      fetch_handler_bypass_option);
   connector->AddBinding(std::move(connector_receiver));
   ServiceWorkerSubresourceLoaderFactory::Create(
       std::move(connector),
@@ -182,6 +184,7 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
         base::BindOnce(&CreateSubresourceLoaderFactoryForProviderContext,
                        std::move(remote_container_host),
                        std::move(remote_controller_), client_id_,
+                       fetch_handler_bypass_option_,
                        fallback_loader_factory_->Clone(),
                        controller_connector_.BindNewPipeAndPassReceiver(),
                        subresource_loader_factory_.BindNewPipeAndPassReceiver(),

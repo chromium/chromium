@@ -158,11 +158,7 @@ base::FilePath InitialPrefsPath() {
   if (!base::PathService::Get(base::DIR_EXE, &dir_exe))
     return base::FilePath();
 
-  base::FilePath initial_prefs = dir_exe.AppendASCII(installer::kInitialPrefs);
-  if (base::PathIsReadable(initial_prefs))
-    return initial_prefs;
-
-  return dir_exe.AppendASCII(installer::kLegacyInitialPrefs);
+  return installer::InitialPreferences::Path(dir_exe);
 }
 
 }  // namespace internal

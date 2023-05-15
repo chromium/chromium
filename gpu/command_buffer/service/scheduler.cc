@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <vector>
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5_constexpr.h"
@@ -709,8 +708,8 @@ void Scheduler::RunNextTask() {
   auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto* thread_state = &per_thread_state_map_[task_runner];
 
-  const bool log_histograms =
-      base::ShouldLogHistogramForCpuReductionExperiment();
+  // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
+  const bool log_histograms = metrics_subsampler_.ShouldSample(0.001);
 
   if (log_histograms) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(

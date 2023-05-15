@@ -95,7 +95,7 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
   }
   local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
   local_printer_version_ =
-      service->GetInterfaceVersion(crosapi::mojom::LocalPrinter::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
   if (local_printer_version_ <
       int{crosapi::mojom::LocalPrinter::MethodMinVersions::
               kAddPrintJobObserverMinVersion}) {

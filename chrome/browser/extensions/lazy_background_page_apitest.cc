@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -349,17 +350,24 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
   // Verify that dev tools opened.
   content::DevToolsAgentHost::List targets =
       content::DevToolsAgentHost::GetOrCreateAll();
-  scoped_refptr<content::DevToolsAgentHost> service_worker_host;
+  scoped_refptr<content::DevToolsAgentHost> background_host;
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
-    if (host->GetType() != ChromeDevToolsManagerDelegate::kTypeBackgroundPage)
+    if (host->GetURL() != BackgroundInfo::GetBackgroundURL(extension.get())) {
       continue;
-    if (host->GetURL() == BackgroundInfo::GetBackgroundURL(extension.get())) {
-      EXPECT_FALSE(service_worker_host);
-      service_worker_host = host;
+    }
+    // There isn't really a tab corresponding to the extension background page,
+    // but this is how DevTools refers to a top-level web contents.
+    std::string expected_type =
+        base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
+            ? content::DevToolsAgentHost::kTypeTab
+            : ChromeDevToolsManagerDelegate::kTypeBackgroundPage;
+    if (host->GetType() == expected_type) {
+      EXPECT_FALSE(background_host);
+      background_host = host;
     }
   }
-  ASSERT_TRUE(service_worker_host);
-  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
+  ASSERT_TRUE(background_host);
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(background_host.get()));
 }
 
 // Tests that the lazy background page stays alive until all visible views are
@@ -417,10 +425,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_WaitForRequest) {
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
 
   // Abort the request.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(host->web_contents(),
-                                                   "abortRequest()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(host->web_contents(), "abortRequest()"));
   host_helper.WaitForHostDestroyed();
 
   // Lazy Background Page has been shut down.

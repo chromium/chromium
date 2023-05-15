@@ -32,6 +32,7 @@
 class OmniboxEditModelDelegate;
 class OmniboxViewMacTest;
 class OmniboxEditModel;
+class OmniboxController;
 
 class OmniboxView {
  public:
@@ -56,9 +57,10 @@ class OmniboxView {
   OmniboxView(const OmniboxView&) = delete;
   OmniboxView& operator=(const OmniboxView&) = delete;
 
-  // Used by the automation system for getting at the model from the view.
-  OmniboxEditModel* model() { return model_.get(); }
-  const OmniboxEditModel* model() const { return model_.get(); }
+  OmniboxEditModel* model();
+  const OmniboxEditModel* model() const;
+
+  OmniboxController* controller() { return controller_.get(); }
 
   // Called when any relevant state changes other than changing tabs.
   virtual void Update() = 0;
@@ -79,12 +81,16 @@ class OmniboxView {
   // the secure page lock). `color_vectors` is used for vector icons e.g. the
   // history clock or bookmark star. `color_bright_vectors` is used for special
   // vector icons e.g. the history cluster squiggle. Favicons aren't
-  // custom-colored.
+  // custom-colored. `dark_mode` returns the dark_mode version of an icon. This
+  // should usually be handled by `color_current_page_icon` but in cases where
+  // the icon has hardcoded colors this can be used to return a different icon.
+  // E.g., the SuperGIcon will return different icons in dark and light modes.
   ui::ImageModel GetIcon(int dip_size,
                          SkColor color_current_page_icon,
                          SkColor color_vectors,
                          SkColor color_bright_vectors,
-                         IconFetchedCallback on_icon_fetched) const;
+                         IconFetchedCallback on_icon_fetched,
+                         bool dark_mode) const;
 
   // The user text is the text the user has manually keyed in.  When present,
   // this is shown in preference to the permanent text; hitting escape will
@@ -313,9 +319,8 @@ class OmniboxView {
   friend class OmniboxViewMacTest;
   friend class TestOmniboxView;
 
-  // |model_| can be NULL in tests.
-  std::unique_ptr<OmniboxEditModel> model_;
   raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
+  std::unique_ptr<OmniboxController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

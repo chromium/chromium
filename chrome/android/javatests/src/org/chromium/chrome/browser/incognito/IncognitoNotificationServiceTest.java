@@ -14,7 +14,7 @@ import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 import android.util.Pair;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -70,10 +70,10 @@ public class IncognitoNotificationServiceTest {
     }
 
     private void sendClearIncognitoIntent() throws CanceledException {
-        PendingIntent clearIntent =
-                IncognitoNotificationServiceImpl
-                        .getRemoveAllIncognitoTabsIntent(InstrumentationRegistry.getTargetContext())
-                        .getPendingIntent();
+        PendingIntent clearIntent = IncognitoNotificationServiceImpl
+                                            .getRemoveAllIncognitoTabsIntent(
+                                                    ApplicationProvider.getApplicationContext())
+                                            .getPendingIntent();
         clearIntent.send();
     }
 
@@ -137,7 +137,7 @@ public class IncognitoNotificationServiceTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/1033835")
     public void testNoAliveProcess() throws Exception {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         final TestTabModelDirectory tabbedModeDirectory = new TestTabModelDirectory(
                 context, "tabs", String.valueOf(0));
 
@@ -223,14 +223,14 @@ public class IncognitoNotificationServiceTest {
 
         // Create an Incognito CCT now.
         Intent customTabIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), "about:blank");
+                ApplicationProvider.getApplicationContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
 
         // Click on "Close all Incognito tabs" notification.
-        PendingIntent clearIntent =
-                IncognitoNotificationServiceImpl
-                        .getRemoveAllIncognitoTabsIntent(InstrumentationRegistry.getTargetContext())
-                        .getPendingIntent();
+        PendingIntent clearIntent = IncognitoNotificationServiceImpl
+                                            .getRemoveAllIncognitoTabsIntent(
+                                                    ApplicationProvider.getApplicationContext())
+                                            .getPendingIntent();
         clearIntent.send();
 
         pollUiThreadForChromeActivityIncognitoTabCount(0);

@@ -154,7 +154,9 @@
 </style>
 
 <div id="searchShadow">
-  <cr-search-field id="search" label="Search Emojis" autofocus="true">
+  <cr-search-field id="search"
+    label="[[getSearchPlaceholderLabel(gifSupport)]]"
+    autofocus="true">
   </cr-search-field>
   <div id="category-button-group">
     <template is="dom-repeat" items="[[categoryMetadata]]">

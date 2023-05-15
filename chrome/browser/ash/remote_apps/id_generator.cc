@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/remote_apps/id_generator.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 
 namespace ash {
 
 std::string GuidIdGenerator::GenerateId() {
-  return base::GenerateGUID();
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 FakeIdGenerator::FakeIdGenerator(const std::vector<std::string>& ids)

@@ -18,9 +18,10 @@ import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -106,7 +107,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, times(1))
                 .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
@@ -126,7 +127,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, times(1))
                 .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
@@ -144,7 +145,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 createDefaultInfo(/* passesPrecondition = */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
         verify(mTracker, times(1))
@@ -168,7 +169,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 createDefaultInfo(/* passesPrecondition = */ false));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
         verify(mTracker, never())
@@ -191,7 +192,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         DefaultBrowserInfo2.setDefaultInfoForTests(null);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
         verify(mTracker, never())
@@ -220,7 +221,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     public void testEngagementNotTracked() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, never()).notifyEvent(EventConstants.STARTED_FROM_MAIN_INTENT);
     }
@@ -250,7 +251,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 createDefaultInfo(/* passesPrecondition = */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
         verify(mTracker, never())
@@ -287,7 +288,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         });
 
         Intent intent =
-                new Intent(InstrumentationRegistry.getTargetContext(), ReengagementActivity.class);
+                new Intent(ApplicationProvider.getApplicationContext(), ReengagementActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(ReengagementNotificationController.LAUNCH_NTP_ACTION);
         InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -310,7 +311,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     }
 
     private static boolean findNotification(@StringRes int title, @StringRes int description) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         StatusBarNotification[] notifications =
                 ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                         .getActiveNotifications();
@@ -333,7 +334,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     }
 
     private static boolean hasNotifications() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         StatusBarNotification[] notifications =
                 ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                         .getActiveNotifications();
@@ -351,7 +352,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     private static void closeReengagementNotifications() {
         if (!hasNotifications()) return;
 
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .cancel(ReengagementNotificationController.NOTIFICATION_TAG,
                         ReengagementNotificationController.NOTIFICATION_ID);

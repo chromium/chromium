@@ -160,50 +160,8 @@ static const char kTestShippingFormString[] = R"(
 // <select>.
 std::string GenerateTestShippingFormWithSelectMenu() {
   std::string out = kTestShippingFormString;
-
-  // Remove everything inside <select></select> tags including the tags.
-  std::string kSelectOpenTag("<select");
-  std::string kSelectCloseTag("</select>");
-  size_t open_tag_index = out.find(kSelectOpenTag);
-  while (open_tag_index != std::string::npos) {
-    size_t end_tag_index = out.find(kSelectCloseTag, open_tag_index);
-    if (end_tag_index == std::string::npos) {
-      return "";
-    }
-    out = out.substr(0u, open_tag_index) +
-          out.substr(end_tag_index + kSelectCloseTag.length());
-    open_tag_index = out.find(kSelectOpenTag, open_tag_index);
-  }
-
-  std::string kFormCloseTag("</form>");
-  size_t form_end_tag_index = out.find(kFormCloseTag);
-
-  // TODO(crbug.com/1422650): Remove "autocomplete" attributes once they are no
-  // longer necessary.
-  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
-  // slot is focused by default.
-  std::string form_suffix = R"(
-   <selectmenu id="state" tabindex="0" autocomplete="address-level1">
-     <button type="button" slot="button" behavior="button"
-             id="selectmenu-button-state">
-       Button
-     </button>
-     <option value="" selected="yes">--</option>
-     <option value="CA">California</option>
-     <option value="TX">Texas</option>
-   </selectmenu><br>
-   <selectmenu id="country" tabindex="1" autocomplete="country">
-     <button type="button" slot="button" behavior="button"
-             id="selectmenu-button-country">
-       Button
-     </button>
-     <option value="" selected="yes">--</option>
-     <option value="CA">Canada</option>
-     <option value="US">United States</option>
-   </selectmenu><br>
-  )";
-
-  return out.insert(form_end_tag_index, form_suffix);
+  RE2::GlobalReplace(&out, "<(/?)select", "<\\1selectmenu");
+  return out;
 }
 
 // Searches all frames of the primary page in |web_contents| and returns one
@@ -260,8 +218,9 @@ std::vector<FieldValue> GetFieldValues(
   std::vector<FieldValue> fields;
 
   for (const base::Value& field : r.value.GetList()) {
-    fields.push_back({.id = *field.FindStringKey("id"),
-                      .value = *field.FindStringKey("value")});
+    const auto& field_dict = field.GetDict();
+    fields.push_back({.id = *field_dict.FindString("id"),
+                      .value = *field_dict.FindString("value")});
   }
   return fields;
 }
@@ -348,21 +307,6 @@ bool IsFocusedField(const ElementExpr& e,
       return r;
   }
   return TriggerAndWaitForEvent(e, "focus", execution_target);
-}
-
-[[nodiscard]] AssertionResult FocusSelectOrSelectMenu(
-    const std::string& id,
-    bool is_selectmenu,
-    content::ToRenderFrameHost execution_target) {
-  // TODO(crbug.com/1422370): Focus <selectmenu> instead of button slot in
-  // <selectmenu> once button slot is focused by default when <selectmenu> is
-  // focused.
-  std::string dom_id_to_focus = id;
-  if (is_selectmenu) {
-    dom_id_to_focus = "selectmenu-button-" + id;
-  }
-
-  return FocusField(GetElementById(dom_id_to_focus), execution_target);
 }
 
 // Types the characters of `value` after focusing field `e`.
@@ -1020,18 +964,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return GetFieldValues(ElementExpr(*form + ".elements"), GetWebContents());
   }
 
-  std::vector<FieldValue> GetFormValuesIgnoringSelectMenuButtonSlot(
-      const ElementExpr& form = GetElementById("shipping")) {
-    std::vector<FieldValue> values = GetFormValues(form);
-    std::vector<FieldValue> out;
-    for (const FieldValue& value : values) {
-      if (!base::StartsWith(value.id, "selectmenu-button")) {
-        out.push_back(value);
-      }
-    }
-    return out;
-  }
-
   base::RepeatingClosure ExpectValues(
       const std::vector<FieldValue>& expected_values,
       const ElementExpr& form = GetElementById("shipping")) {
@@ -1264,31 +1196,28 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                               false, shift, false, false);
   }
 
-  // Returns a ValueWaiter which waits till `element_id`'s value changes to the
-  // passed-in `value`.
-  ValueWaiter ListenForChangeToSpecificValue(const std::string& element_id,
-                                             const std::string& value) {
+  void FillElementWithValue(const std::string& element_id,
+                            const std::string& value) {
+    // Sends "|element_id|:|value|" to |msg_queue| if the |element_id|'s
+    // value has changed to |value|.
     std::string script = base::StringPrintf(
         R"( (function() {
-          const field = document.getElementById('%s');
-          const listener = function(e) {
-            window.unblock = field.value === '%s';
-            if (window.unblock) {
-              field.removeEventListener('change', listener);
-            }
-          };
-          window.unblock = false;
-          field.addEventListener('change', listener);
-        })(); )",
+              const element_id = '%s';
+              const value = '%s';
+              const field = document.getElementById(element_id);
+              const listener = function() {
+                if (field.value === value) {
+                  field.removeEventListener('input', listener);
+                  domAutomationController.send(element_id +':'+ field.value);
+                }
+              };
+              field.addEventListener('input', listener, false);
+              return 'done';
+            })(); )",
         element_id.c_str(), value.c_str());
-    ExecuteScript(script);
-    return ListenForValueChange(element_id, "unblock", GetWebContents());
-  }
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
 
-  void FillElementWithValueAndBlur(const std::string& element_id,
-                                   const std::string& value) {
-    ValueWaiter value_waiter =
-        ListenForChangeToSpecificValue(element_id, value);
+    content::DOMMessageQueue msg_queue(GetWebContents());
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
@@ -1300,34 +1229,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
       bool shift = code_entry->character[1] == character;
       ui::DomCode dom_code = code_entry->dom_code;
-      SimulateKeyPress(dom_key, dom_code, shift);
+      content::SimulateKeyPress(GetWebContents(), dom_key, dom_code,
+                                ui::DomCodeToUsLayoutKeyboardCode(dom_code),
+                                false, shift, false, false);
     }
-    // Blur the focused field to force the change event for text fields.
-    ASSERT_TRUE(BlurFocusedField(GetWebContents()));
-
-    ASSERT_EQ(value, std::move(value_waiter).Wait());
-  }
-
-  // TODO(crbug.com/1422117): Merge with FillElementWithValueAndBlur() once
-  // typeahead support is implemented for <selectmenu>. `option_index` is the
-  // index of the option to select. Assumes that the option at index 0 is
-  // initially selected.
-  void FillSelectMenuElementWithValue(const std::string& element_id,
-                                      const std::string& value,
-                                      size_t option_index) {
-    ValueWaiter value_waiter =
-        ListenForChangeToSpecificValue(element_id, value);
-
-    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER, /*shift=*/false);
-
-    for (size_t i = 0; i < option_index; ++i) {
-      SimulateKeyPress(ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN,
-                       /*shift=*/false);
-    }
-
-    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER,
-                     /*shift=*/false);
-    ASSERT_EQ(value, std::move(value_waiter).Wait());
+    std::string reply;
+    ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
+    ASSERT_EQ("\"" + element_id + ":" + value + "\"", reply);
   }
 
   void DeleteElementValue(const ElementExpr& field) {
@@ -1478,10 +1386,6 @@ class AutofillInteractiveDisableAutofillSelectMenuTest
 // feature is disabled.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
                        DisableSelectMenuAutofilling) {
-  // TODO(crbug.com/1422650): Remove "autocomplete" attribute once it is no
-  // longer necessary.
-  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
-  // slot is focused by default.
   const char kFormWithSelectMenuString[] = R"(
     <!-- Disable extra network request for /favicon.ico -->
     <link rel="icon" href="data:,">
@@ -1489,11 +1393,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
       <label for="firstname">First name:</label>
       <input type="text" id="firstname" autocomplete="given-name"><br>
       <label for="state">State:</label>
-      <selectmenu id="state" tabindex="0" autocomplete="address-level1">
-        <button type="button" slot="button" behavior="button"
-                id="selectmenu-button-state">
-          Button
-        </button>
+      <selectmenu id="state" autocomplete="address-level1">
         <option value="" selected="yes">--</option>
         <option value="CA">California</option>
         <option value="TX">Texas</option>
@@ -1506,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  EXPECT_THAT(GetFormValuesIgnoringSelectMenuButtonSlot(),
+  EXPECT_THAT(GetFormValues(),
               ValuesAre({{"firstname", kDefaultAddressValues.first_name},
                          {"state", ""}}));
 }
@@ -1596,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
 
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
-  FillElementWithValueAndBlur("city", "Montreal");
+  FillElementWithValue("city", "Montreal");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
   EXPECT_THAT(GetFormValues(),
@@ -1613,17 +1513,12 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
       ui_test_utils::NavigateToURL(test->browser(), test->GetTestUrl()));
 
   // Modify a field.
-  ASSERT_TRUE(FocusSelectOrSelectMenu("state", should_test_selectmenu,
-                                      test->GetWebContents()));
+  ASSERT_TRUE(FocusField(GetElementById("state"), test->GetWebContents()));
   ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
-  if (should_test_selectmenu) {
-    test->FillSelectMenuElementWithValue("state", "CA", 1u);
-  } else {
-    test->FillElementWithValueAndBlur("state", "CA");
-  }
+  test->FillElementWithValue("state", "CA");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
-  EXPECT_THAT(test->GetFormValuesIgnoringSelectMenuButtonSlot(),
+  EXPECT_THAT(test->GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"state", "CA"})));
 }
 
@@ -1980,15 +1875,15 @@ IN_PROC_BROWSER_TEST_F(
   SetTestUrlResponse(kTestForm);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       "document.getElementById('firstname').type = 'password';"));
   // At this point, the IsPasswordFieldForAutofill() function returns true and
   // will continue to return true for the field, even when the type is changed
   // back to 'search'.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(),
-      "document.getElementById('firstname').type = 'search';"));
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents(),
+                      "document.getElementById('firstname').type = 'search';"));
 
   // Regression test for crbug.com/918351 whether the datalist becomes available
   // again.
@@ -2029,26 +1924,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
                            {.show_method = ShowMethod::ByChar('M')}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 // Test that a JavaScript onchange event is fired after auto-filling a form.
@@ -2083,26 +1963,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
   // The form should be filled.
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
@@ -2136,34 +2001,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
 
   EXPECT_EQ(2, content::EvalJs(GetWebContents(), "inputElementEvents.length;"));
 
-  std::vector<std::string> input_element_events;
-  input_element_events.resize(2);
+  std::vector<std::string> input_element_events = {
+      content::EvalJs(GetWebContents(), "inputElementEvents[0];")
+          .ExtractString(),
+      content::EvalJs(GetWebContents(), "inputElementEvents[1];")
+          .ExtractString(),
+  };
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[0]);",
-      &input_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[1]);",
-      &input_element_events[1]));
-
-  EXPECT_EQ("input", input_element_events[0]);
-  EXPECT_EQ("change", input_element_events[1]);
+  EXPECT_THAT(input_element_events, testing::ElementsAre("input", "change"));
 
   EXPECT_EQ(2,
             content::EvalJs(GetWebContents(), "selectElementEvents.length;"));
 
-  std::vector<std::string> select_element_events;
-  select_element_events.resize(2);
+  std::vector<std::string> select_element_events = {
+      content::EvalJs(GetWebContents(), "selectElementEvents[0];")
+          .ExtractString(),
+      content::EvalJs(GetWebContents(), "selectElementEvents[1];")
+          .ExtractString(),
+  };
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[0]);",
-      &select_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[1]);",
-      &select_element_events[1]));
-
-  EXPECT_EQ("input", select_element_events[0]);
-  EXPECT_EQ("change", select_element_events[1]);
+  EXPECT_THAT(select_element_events, testing::ElementsAre("input", "change"));
 }
 
 // Test that we can autofill forms distinguished only by their |id| attribute.
@@ -2373,7 +2230,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Dynamically construct the form.
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), "BuildForm();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), "BuildForm();"));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.show_method = ShowMethod::ByChar('M'),
@@ -2476,90 +2333,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Checks that all the events were fired for the input field.
-  bool input_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputfocus);",
-      &input_focus_triggered));
-  EXPECT_TRUE(input_focus_triggered);
-  bool input_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeydown);",
-      &input_keydown_triggered));
-  EXPECT_TRUE(input_keydown_triggered);
-  bool input_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputinput);",
-      &input_input_triggered));
-  EXPECT_TRUE(input_input_triggered);
-  bool input_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputchange);",
-      &input_change_triggered));
-  EXPECT_TRUE(input_change_triggered);
-  bool input_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeyup);",
-      &input_keyup_triggered));
-  EXPECT_TRUE(input_keyup_triggered);
-  bool input_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputblur);",
-      &input_blur_triggered));
-  EXPECT_TRUE(input_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputblur;"));
 
   // Checks that all the events were fired for the textarea field.
-  bool text_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textfocus);",
-      &text_focus_triggered));
-  EXPECT_TRUE(text_focus_triggered);
-  bool text_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeydown);",
-      &text_keydown_triggered));
-  EXPECT_TRUE(text_keydown_triggered);
-  bool text_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textinput);",
-      &text_input_triggered));
-  EXPECT_TRUE(text_input_triggered);
-  bool text_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textchange);",
-      &text_change_triggered));
-  EXPECT_TRUE(text_change_triggered);
-  bool text_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeyup);",
-      &text_keyup_triggered));
-  EXPECT_TRUE(text_keyup_triggered);
-  bool text_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textblur);",
-      &text_blur_triggered));
-  EXPECT_TRUE(text_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textblur;"));
 
   // Checks that all the events were fired for the select field.
-  bool select_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectfocus);",
-      &select_focus_triggered));
-  EXPECT_TRUE(select_focus_triggered);
-  bool select_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectinput);",
-      &select_input_triggered));
-  EXPECT_TRUE(select_input_triggered);
-  bool select_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectchange);",
-      &select_change_triggered));
-  EXPECT_TRUE(select_change_triggered);
-  bool select_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectblur);",
-      &select_blur_triggered));
-  EXPECT_TRUE(select_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
@@ -2785,8 +2578,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FormFillableOnReset) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').reset()"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').reset()"));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
@@ -2885,8 +2678,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   content::LoadStopObserver load_stop_observer(GetWebContents());
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').submit();"));
   // This will ensure the test didn't hang.
   load_stop_observer.Wait();
 }
@@ -2902,7 +2695,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   // When suggestions are shown, disable autocomplete for the active field.
   auto SetAutocompleteOff = [this]() {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.querySelector('input').autocomplete = 'off';"));
   };
@@ -3297,7 +3090,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 
   // We need the fencedframe element to have id set to a known value
   if (GetParam() != FrameType::kIFrame) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.getElementsByTagName('fencedframe')[0].id = 'crossFF';"));
   }
@@ -3322,7 +3115,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   std::string script_delete = base::StringPrintf(
       "document.body.removeChild(document.getElementById('%s'))",
       GetParam() == FrameType::kIFrame ? "crossFrame" : "crossFF");
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), script_delete));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), script_delete));
 
   // The popup should have disappeared with the iframe.
   EXPECT_FALSE(IsPopupShown());
@@ -3936,8 +3729,8 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   // the browser by a lot.
   AdvanceClock(base::Minutes(10));
   content::LoadStopObserver load_stop_observer(GetWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').submit();"));
   load_stop_observer.Wait();
 
   // Short hand for ExpectbucketCount:
@@ -3958,40 +3751,62 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
+// Shadow DOM tests consist of two cases:
+// - Case 0: the <form> is in the main DOM;
+// - Case 1: the <form> is in a shadow DOM.
+class AutofillInteractiveTestShadowDom
+    : public AutofillInteractiveTest,
+      public ::testing::WithParamInterface<size_t> {
+ public:
+  size_t case_num() const { return GetParam(); }
+
+  // Replaces "$1" in `str` with the `case_num()`.
+  std::string WithCaseNum(base::StringPiece str) const {
+    return base::ReplaceStringPlaceholders(
+        str, {base::NumberToString(case_num())}, nullptr);
+  }
+
+  ElementExpr JsElement(base::StringPiece js_expr) {
+    return ElementExpr(WithCaseNum(js_expr));
+  }
+
+  content::EvalJsResult Js(base::StringPiece js_code) {
+    return content::EvalJs(GetWebContents(), WithCaseNum(js_code));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
+                         AutofillInteractiveTestShadowDom,
+                         ::testing::Values(0, 1));
+
+// Tests that in a shadow-DOM-transcending form, Autofill detects labels
+// *outside* of the field's shadow DOM.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
+                       LabelInHostingDomOfField) {
   CreateTestProfile();
   GURL url =
       embedded_test_server()->GetURL("a.com", "/autofill/shadowdom.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
-
-  auto Js = [this](const std::string& code) {
-    return content::EvalJs(GetWebContents(), code);
-  };
-
-  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
-  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
-  EXPECT_EQ("Austin", Js("getCity()"));
-  EXPECT_EQ("TX", Js("getState()"));
-  EXPECT_EQ("78744", Js("getZip()"));
+  ASSERT_TRUE(AutofillFlow(JsElement("getNameElement($1)"), this));
+  EXPECT_EQ("Milton C. Waddams", Js("getName($1)"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress($1)"));
+  EXPECT_EQ("Austin", Js("getCity($1)"));
+  EXPECT_EQ("TX", Js("getState($1)"));
+  EXPECT_EQ("78744", Js("getZip($1)"));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOMNoInference) {
+// Tests that in a shadow-DOM-transcending form, Autofill detects labels
+// *inside* of the field's shadow DOM.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
+                       LabelInSameShadowDomAsField) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/shadowdom-no-inference.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
-
-  auto Js = [this](const std::string& code) {
-    return content::EvalJs(GetWebContents(), code);
-  };
-
-  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
-  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
-  EXPECT_EQ("TX", Js("getState()"));
+  ASSERT_TRUE(AutofillFlow(JsElement("getNameElement($1)"), this));
+  EXPECT_EQ("Milton C. Waddams", Js("getName($1)"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress($1)"));
+  EXPECT_EQ("TX", Js("getState($1)"));
 }
 
 // ChromeVox is only available on ChromeOS.

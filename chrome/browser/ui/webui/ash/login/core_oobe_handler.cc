@@ -131,10 +131,11 @@ void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   }
 }
 
-void CoreOobeHandler::RegisterMessages() {
+void CoreOobeHandler::DeclareJSCallbacks() {
   AddCallback("screenStateInitialize", &CoreOobeHandler::HandleInitialized);
   AddCallback("updateCurrentScreen",
               &CoreOobeHandler::HandleUpdateCurrentScreen);
+  AddCallback("backdropLoaded", &CoreOobeHandler::HandleBackdropLoaded);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
 
@@ -166,6 +167,10 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
     const std::string& screen_name) {
   const OobeScreenId screen(screen_name);
   GetOobeUI()->CurrentScreenChanged(screen);
+}
+
+void CoreOobeHandler::HandleBackdropLoaded() {
+  // TODO (b/269104621) Event picked up by b/269104621
 }
 
 void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {

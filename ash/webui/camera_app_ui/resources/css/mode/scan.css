@@ -37,7 +37,7 @@ body.enable-scan-barcode .barcode-scan-box {
   --offset: calc(var(--border-width) + var(--border-distance));
   border-radius: var(--inner-border-radius);
   bottom: var(--offset);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 9999px var(--cros-sys-scrim2);
   content: '';
   left: var(--offset);
   position: absolute;
@@ -49,7 +49,7 @@ body.enable-scan-barcode .barcode-scan-box {
 /* The corner borders of the scan box. */
 .barcode-scan-box::after {
   -webkit-mask: url(/images/barcode_scan_box_border_mask.svg);
-  border: var(--border-width) solid white;
+  border: var(--border-width) solid var(--cros-sys-illo-color3);
   border-radius: calc(var(--inner-border-radius) + var(--border-distance));
   box-sizing: border-box;
   content: '';
@@ -63,10 +63,10 @@ body.enable-scan-barcode .barcode-scan-box {
 /* TODO(b/172879638): Tune the position and layout after we finalized the
  * responsive window design. */
 .barcode-chip-container {
-  --chip-height: 32px;
+  --chip-height: 36px;
   --chip-max-width: 420px;
   --min-scanbox-distance: 40px;
-  --text-expand-button-height: 40px;
+  --text-expand-button-height: 48px;
   --text-line-height: 24px;
   --text-padding-vertical: 8px;
   /* Avoid collision with scan-box and preview-box */
@@ -96,29 +96,24 @@ body.enable-scan-barcode .barcode-scan-box {
 
 .barcode-chip-url {
   align-items: center;
-  background: var(--grey-900);
+  background: var(--cros-sys-base_elevated);
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
-  font: 400 15px Roboto;
+  font: 400 13px Roboto;
   height: var(--chip-height);
-  padding: 8px;
+  justify-content: center;
+  padding: 8px 16px;
 }
 
-.barcode-chip-url::before {
-  background: url(/images/barcode_url.svg) no-repeat;
-  content: '';
-  display: inline-block;
-  flex-shrink: 0;
-  height: 20px;
-  margin-inline-end: 6px;
-  vertical-align: middle;
-  width: 20px;
+.barcode-chip-url > svg-wrapper {
+  color: var(--cros-sys-primary);
+  margin-inline-end: 10px;
 }
 
 .barcode-chip-url > a {
-  color: var(--blue-300);
+  color: var(--cros-sys-primary);
   overflow: hidden;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -130,13 +125,17 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 .barcode-copy-button:hover {
-  /* TODO(b/172879638): Tweak color according to the final UX spec */
-  background: url(/images/barcode_copy.svg) center no-repeat, rgb(50, 51, 54);
+  /* Use linear-gradient to apply multiple background colors. */
+  background: linear-gradient(
+    0deg,
+    var(--cros-sys-hover_on_subtle),
+    var(--cros-sys-hover_on_subtle)
+  ), var(--cros-sys-base_elevated);
 }
 
 .barcode-copy-button {
-  background: url(/images/barcode_copy.svg) center no-repeat, var(--grey-900);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   height: var(--chip-height);
   inset-inline-start: calc(100% + 8px);
@@ -146,20 +145,24 @@ body.enable-scan-barcode .barcode-scan-box {
   z-index: 50;
 }
 
+.barcode-copy-button svg-wrapper {
+  color: var(--cros-sys-primary);
+}
+
 .barcode-chip-text {
   align-items: center;
-  background: var(--grey-900);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  border-radius: 20px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font: 400 15px Roboto;
-  padding: var(--text-padding-vertical) 20px;
+  padding: var(--text-padding-vertical) 16px;
 }
 
 #barcode-chip-text-content {
-  color: var(--grey-200);
+  color: var(--cros-sys-on_surface);
   line-height: var(--text-line-height);
   max-width: 100%;
   overflow: hidden;
@@ -177,23 +180,36 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_down.svg) center no-repeat;
   height: var(--text-expand-button-height);
+  margin-top: 8px;
   width: 100%;
+
+  .up-icon {
+    display: none;
+  }
 }
 
 .expanded #barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_up.svg) center no-repeat;
+  .up-icon {
+    display: block;
+  }
+  .down-icon {
+    display: none;
+  }
 }
 
 .snackbar {
   align-items: center;
-  background: var(--grey-900);
+  background: var(--cros-sys-inverse_surface);
   border-radius: 4px;
+  /*
+   * TODO(pihsun): Move the snackbar to the position as the design after jelly
+   * is default on.
+   */
   bottom: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  color: var(--grey-200);
+  color: var(--cros-sys-inverse_on_surface);
   display: flex;
   font-family: Roboto;
   font-size: 13px;
@@ -263,7 +279,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #preview-document-corner-overlay .corner div {
-  background: var(--blue-300);
+  background: var(--cros-sys-illo-color3);
 }
 
 #preview-document-corner-overlay .corner {
@@ -290,19 +306,19 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #preview-document-corner-overlay .side.line {
-  background: var(--blue-500);
+  background: var(--cros-sys-illo-color3);
   height: 1px;
   width: 1px;
 }
 
 #preview-document-corner-overlay .no-document-toast {
-  background: var(--grey-900);
-  border-radius: 6px;
-  color: var(--grey-400);
+  background: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  color: var(--cros-sys-on_surface);
   display: inline-block;
   font: normal 400 14px/20px Roboto;
   left: 50%;
-  padding: 8px 10px;
+  padding: 8px 16px;
   position: absolute;
   text-align: center;
   top: 22px;
@@ -316,13 +332,12 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 #back-to-review-document {
-  background-image: url(/images/settings_button_back.svg);
   visibility: hidden;
 }
 
 #document-page-count {
   align-items: center;
-  color: var(--grey-200);
+  color: var(--cros-sys-on_surface);
   display: flex;
   font-size: 12px;
   justify-content: center;
@@ -341,7 +356,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 #view-document-review .document-pages {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--cros-sys-base_elevated);
   counter-reset: page-count;
   overflow: auto;
   padding: 16px;
@@ -360,7 +375,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 #view-document-review .page.active {
-  background: rgba(var(--blue-300-rgb), 0.3);
+  background: var(--cros-sys-highlight_shape);
 }
 
 #view-document-review .delete-container {
@@ -373,7 +388,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 
 #view-document-review .delete-container::before {
   align-self: flex-start;
-  color: var(--grey-200);
+  color: var(--cros-sys-on_surface);
   content: counter(page-count);
   counter-increment: page-count;
   font-size: 13px;
@@ -381,8 +396,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 #view-document-review .delete {
-  background-image: url(/images/document_review_delete_page.svg);
-  border-radius: 50%;
+  border-radius: 12px;
   visibility: hidden;
 }
 
@@ -413,11 +427,13 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   min-width: 0;
   padding-inline-end: var(--preview-area-padding-inline-end);
   padding-inline-start: var(--preview-area-padding-inline-start);
+  padding-top: 8px;
   position: relative;
 }
 
 #view-document-review .preview-area {
-  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
+  background: var(--cros-sys-app_base_shaded);
+  border-radius: 12px;
   flex: 1;
   /* Default min-height of column direction flex items is auto. */
   min-height: 0;
@@ -450,7 +466,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 .document-preview-mode .separator {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--cros-sys-separator);
   height: 32px;
   width: 1px;
 }
@@ -471,27 +487,24 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 .document-preview-mode button[i18n-label=add_new_page_button] {
-  background-image: url(/images/document_review_add_page.svg);
   display: none;
 }
 
 .document-preview-mode button[i18n-label=label_share] {
-  background-image: url(/images/document_review_share.svg);
   display: none;
 }
 
 .document-preview-mode button[i18n-label=fix_page_button] {
-  background-image: url(/images/document_review_fix_page.svg);
   display: none;
-}
-
-.document-preview-mode #doc-scan-menu-button {
-  background-image: url(/images/more_horizontal.svg);
 }
 
 .document-preview-mode .menu-item-content {
   display: flex;
   gap: 16px;
+}
+
+.document-preview-mode .menu-item-icon {
+  margin: 0;
 }
 
 .document-fix-mode {
@@ -523,8 +536,10 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 .document-fix-mode .crop-area {
-  fill: rgba(var(--blue-300-rgb), 0.3);
-  stroke: var(--blue-500);
+  /* TODO(pihsun): Change this after the new token is added. */
+  fill: color-mix(in srgb, var(--cros-sys-illo-color3) 8%, transparent);
+  stroke: var(--cros-sys-illo-color3);
+  stroke-width: 2px;
 }
 
 .document-fix-mode .dot {
@@ -557,13 +572,14 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 .document-fix-mode .dot::before {
-  background: var(--blue-300);
+  background: var(--cros-sys-illo-color3);
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 .document-fix-mode .dot::after {
-  background: rgba(var(--blue-300-rgb), 0.24);
-  border: 2px solid var(--blue-300);
+  /* TODO(pihsun): Change this after the new token is added. */
+  background: color-mix(in srgb, var(--cros-sys-illo-color3) 8%, transparent);
+  border: 2px solid var(--cros-sys-illo-color3);
   box-sizing: border-box;
 }
 
@@ -581,14 +597,6 @@ body.keyboard-navigation .document-fix-mode .dot:focus::after {
   position: absolute;
   top: calc(100% - calc(var(--bottom-line) * 2));
   transform: translateX(-50%);
-}
-
-.document-fix-mode button[i18n-label=rotate_clockwise_button] {
-  background-image: url(/images/crop_document_clockwise_rotate.svg);
-}
-
-.document-fix-mode button[i18n-label=rotate_counterclockwise_button] {
-  background-image: url(/images/crop_document_counterclockwise_rotate.svg);
 }
 
 @media (min-width: 680px) {

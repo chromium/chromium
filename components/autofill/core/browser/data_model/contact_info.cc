@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -63,8 +64,8 @@ bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
   return name_->IsMergeableWithComponent(newer.GetStructuredName());
 }
 
-bool NameInfo::FinalizeAfterImport(bool profile_is_verified) {
-  name_->MigrateLegacyStructure(profile_is_verified);
+bool NameInfo::FinalizeAfterImport() {
+  name_->MigrateLegacyStructure();
   return name_->CompleteFullTree();
 }
 
@@ -102,7 +103,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
       !HonorificPrefixEnabled()) {
     return;
   }
-  bool success = name_->SetValueForTypeIfPossible(type, value, status);
+  bool success = name_->SetValueForType(type, value, status);
   DCHECK(success) << AutofillType::ServerFieldTypeToString(type);
 }
 
@@ -123,11 +124,11 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
-    bool token_equivalent =
-        AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL));
-    name_->SetValueForTypeIfPossible(
-        type.GetStorableType(), value, status,
-        /*invalidate_child_nodes=*/!token_equivalent);
+    // TODO(1440504): Move this logic to the data model.
+    AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL))
+        ? name_->SetValueForType(type.GetStorableType(), value, status)
+        : name_->SetValueForTypeAndResetSubstructure(type.GetStorableType(),
+                                                     value, status);
     return true;
   }
   return FormGroup::SetInfoWithVerificationStatusImpl(type, value, app_locale,
@@ -199,21 +200,9 @@ void EmailInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
 CompanyInfo::CompanyInfo() = default;
 
-CompanyInfo::CompanyInfo(const AutofillProfile* profile) : profile_(profile) {}
-
-CompanyInfo::CompanyInfo(const CompanyInfo& info) {
-  *this = info;
-}
+CompanyInfo::CompanyInfo(const CompanyInfo& info) = default;
 
 CompanyInfo::~CompanyInfo() = default;
-
-CompanyInfo& CompanyInfo::operator=(const CompanyInfo& info) {
-  if (this == &info)
-    return *this;
-
-  company_name_ = info.GetRawInfo(COMPANY_NAME);
-  return *this;
-}
 
 bool CompanyInfo::operator==(const CompanyInfo& other) const {
   return this == &other ||
@@ -224,8 +213,18 @@ void CompanyInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(COMPANY_NAME);
 }
 
+void CompanyInfo::GetMatchingTypes(const std::u16string& text,
+                                   const std::string& app_locale,
+                                   ServerFieldTypeSet* matching_types) const {
+  if (IsValid()) {
+    FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+  } else if (text.empty()) {
+    matching_types->insert(EMPTY_TYPE);
+  }
+}
+
 std::u16string CompanyInfo::GetRawInfo(ServerFieldType type) const {
-  return IsValidOrVerified(company_name_) ? company_name_ : std::u16string();
+  return company_name_;
 }
 
 void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
@@ -235,16 +234,15 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
   company_name_ = value;
 }
 
-bool CompanyInfo::IsValidOrVerified(const std::u16string& value) const {
+bool CompanyInfo::IsValid() const {
   static constexpr char16_t kBirthyearRe[] = u"^(19|20)\\d{2}$";
   static constexpr char16_t kSocialTitleRe[] =
       u"^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
       u"Frau|Herr|"
       u"Mlle|Mme|M\\.|"
       u"Dr\\.?|Prof\\.?)$";
-  return (profile_ && profile_->IsVerified()) ||
-         (!MatchesRegex<kBirthyearRe>(value) &&
-          !MatchesRegex<kSocialTitleRe>(value));
+  return !MatchesRegex<kBirthyearRe>(company_name_) &&
+         !MatchesRegex<kSocialTitleRe>(company_name_);
 }
 
 }  // namespace autofill

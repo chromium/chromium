@@ -72,7 +72,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   // UpdateDCLayerOverlays() adds the quad at |it| to the overlay list
   // |dc_layer_overlays|.
-  void UpdateDCLayerOverlays(const gfx::RectF& display_rect,
+  void UpdateDCLayerOverlays(DisplayResourceProvider* resource_provider,
+                             const gfx::RectF& display_rect,
                              AggregatedRenderPass* render_pass,
                              const QuadList::Iterator& it,
                              const gfx::Rect& quad_rectangle_in_root_space,

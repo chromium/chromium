@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -45,11 +46,11 @@ class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
   // Report a number of network connectivity drops during the previous session.
   void ReportPreviousSessionNetworkDrops();
 
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
   bool is_online_;
   int network_drops_ = 0;
 
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 };
 
 }  // namespace ash

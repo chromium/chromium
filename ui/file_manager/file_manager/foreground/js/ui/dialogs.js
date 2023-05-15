@@ -4,6 +4,8 @@
 
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
+import {util} from '../../../common/js/util.js';
+
 export class BaseDialog {
   constructor(parentNode) {
     this.parentNode_ = parentNode;
@@ -115,6 +117,13 @@ export class BaseDialog {
     this.okButton.setAttribute('tabindex', 0);
     this.okButton.className = 'cr-dialog-ok';
     this.okButton.textContent = BaseDialog.OK_LABEL;
+    // Add hover/ripple layer for button in FilesRefresh.
+    if (util.isJellyEnabled()) {
+      const hoverLayer = doc.createElement('div');
+      hoverLayer.className = 'hover-layer';
+      this.okButton.appendChild(hoverLayer);
+      this.okButton.appendChild(doc.createElement('paper-ripple'));
+    }
     this.okButton.addEventListener('click', this.onOkClick_.bind(this));
     this.buttons.appendChild(this.okButton);
 
@@ -122,6 +131,13 @@ export class BaseDialog {
     this.cancelButton.setAttribute('tabindex', 1);
     this.cancelButton.className = 'cr-dialog-cancel';
     this.cancelButton.textContent = BaseDialog.CANCEL_LABEL;
+    // Add hover/ripple layer for button in FilesRefresh.
+    if (util.isJellyEnabled()) {
+      const hoverLayer = doc.createElement('div');
+      hoverLayer.className = 'hover-layer';
+      this.cancelButton.appendChild(hoverLayer);
+      this.cancelButton.appendChild(doc.createElement('paper-ripple'));
+    }
     this.cancelButton.addEventListener('click', this.onCancelClick_.bind(this));
     this.buttons.appendChild(this.cancelButton);
 
@@ -177,12 +193,24 @@ export class BaseDialog {
 
   /** @param {string} label */
   setOkLabel(label) {
-    this.okButton.textContent = label;
+    if (util.isJellyEnabled()) {
+      // When Jelly is on, we have child elements inside the button, setting
+      // textContent of the button will remove all children.
+      this.okButton.childNodes[0].textContent = label;
+    } else {
+      this.okButton.textContent = label;
+    }
   }
 
   /** @param {string} label */
   setCancelLabel(label) {
-    this.cancelButton.textContent = label;
+    if (util.isJellyEnabled()) {
+      // When Jelly is on, we have child elements inside the button, setting
+      // textContent of the button will remove all children.
+      this.cancelButton.childNodes[0].textContent = label;
+    } else {
+      this.cancelButton.textContent = label;
+    }
   }
 
   setInitialFocusOnCancel() {

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 3
+// Next min version: 4
 
 module cros.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
 
 // Set of effects that can be enabled.
 // Used by EffectsConfig to indicate which effect the g3 shared library
@@ -79,4 +81,8 @@ struct EffectsConfig {
   // The type of segmentation model to use. Lower resolution models will reduce
   // the workload on the GPU.
   [MinVersion=2] SegmentationModel segmentation_model;
+
+  // The file path to use for the background image.
+  // Must be readable from within camera stack.
+  [MinVersion=3] mojo_base.mojom.RelativeFilePath? background_filepath;
 };

@@ -184,8 +184,8 @@ bool SendMouseMoveNotifyWhenDone(int screen_x,
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (root_location != root_current_location &&
-      g_ozone_ui_controls_test_helper->ButtonDownMask() == 0 &&
-      !g_ozone_ui_controls_test_helper->MustUseUiControlsForMoveCursorTo()) {
+      !g_ozone_ui_controls_test_helper->MustUseUiControlsForMoveCursorTo() &&
+      g_ozone_ui_controls_test_helper->ButtonDownMask() == 0) {
     // Move the cursor because EnterNotify/LeaveNotify are generated with the
     // current mouse position as a result of XGrabPointer()
     root_window->MoveCursorTo(root_location);

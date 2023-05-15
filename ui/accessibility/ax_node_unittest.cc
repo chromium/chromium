@@ -993,4 +993,57 @@ TEST(AXNodeTest, MenuItemCheckboxPosInSet) {
   EXPECT_EQ(tree.GetFromId(6)->GetSetSize(), 2);
 }
 
+TEST(AXNodeTest, TreeItemAsTreeItemParentPosInSetSetSize) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTree
+    ++++++3 kTreeItem intAttribute=kPosInSet,1 intAttribute=kSetSize,2
+    ++++++++4 kTreeItem intAttribute=kPosInSet,1 intAttribute=kSetSize,6
+    ++++++++5 kTreeItem intAttribute=kPosInSet,2 intAttribute=kSetSize,6
+    ++++++6 kTreeItem intAttribute=kPosInSet,2 intAttribute=kSetSize,2
+    ++++++++7 kTreeItem intAttribute=kPosInSet,3 intAttribute=kSetSize,6
+  )HTML"));
+
+  AXTree tree(update);
+
+  EXPECT_EQ(tree.GetFromId(3)->GetPosInSet(), 1);
+  EXPECT_EQ(tree.GetFromId(3)->GetSetSize(), 2);
+
+  EXPECT_EQ(tree.GetFromId(4)->GetPosInSet(), 1);
+  EXPECT_EQ(tree.GetFromId(4)->GetSetSize(), 6);
+
+  EXPECT_EQ(tree.GetFromId(5)->GetPosInSet(), 2);
+  EXPECT_EQ(tree.GetFromId(5)->GetSetSize(), 6);
+
+  EXPECT_EQ(tree.GetFromId(6)->GetPosInSet(), 2);
+  EXPECT_EQ(tree.GetFromId(6)->GetSetSize(), 2);
+
+  EXPECT_EQ(tree.GetFromId(7)->GetPosInSet(), 3);
+  EXPECT_EQ(tree.GetFromId(7)->GetSetSize(), 6);
+}
+
+TEST(AXNodeTest, GroupAsTreeItemParentPosInSetSetSize) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTree
+    ++++++3 kGroup
+    ++++++++4 kTreeItem intAttribute=kPosInSet,1 intAttribute=kSetSize,6
+    ++++++++5 kTreeItem intAttribute=kPosInSet,2 intAttribute=kSetSize,6
+    ++++++6 kTreeItem
+    ++++++++7 kGroup
+    ++++++++++8 kTreeItem intAttribute=kPosInSet,1 intAttribute=kSetSize,6
+  )HTML"));
+
+  AXTree tree(update);
+
+  EXPECT_EQ(tree.GetFromId(4)->GetPosInSet(), 1);
+  EXPECT_EQ(tree.GetFromId(4)->GetSetSize(), 6);
+
+  EXPECT_EQ(tree.GetFromId(5)->GetPosInSet(), 2);
+  EXPECT_EQ(tree.GetFromId(5)->GetSetSize(), 6);
+
+  EXPECT_EQ(tree.GetFromId(8)->GetPosInSet(), 1);
+  EXPECT_EQ(tree.GetFromId(8)->GetSetSize(), 6);
+}
+
 }  // namespace ui

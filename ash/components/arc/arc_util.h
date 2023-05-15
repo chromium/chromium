@@ -268,6 +268,10 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
     uint64_t android_data_size,
     uint64_t free_disk_space);
 
+// Returns true if ARC app permissions should be shown as read-only in the App
+// Management page.
+bool IsReadOnlyPermissionsEnabled();
+
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_

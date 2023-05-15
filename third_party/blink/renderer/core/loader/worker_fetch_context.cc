@@ -233,7 +233,7 @@ void WorkerFetchContext::AddResourceTiming(
 
 void WorkerFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const FetchParameters::ResourceWidth& resource_width,
+    const absl::optional<float> resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
   if (!GetResourceFetcherProperties().IsDetached())

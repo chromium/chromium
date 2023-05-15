@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -160,7 +161,7 @@ class TestImageClient {
   }
 
  private:
-  const HoldingSpaceImage* const image_;
+  const raw_ptr<const HoldingSpaceImage, ExperimentalAsh> image_;
   base::CallbackListSubscription image_subscription_;
   size_t image_change_count_ = 0;
 };

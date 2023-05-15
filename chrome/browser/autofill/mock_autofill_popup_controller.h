@@ -85,7 +85,7 @@ class MockAutofillPopupController
   MOCK_METHOD(void, SelectSuggestion, (absl::optional<size_t>), (override));
   MOCK_METHOD(PopupType, GetPopupType, (), (const override));
 
-  void set_suggestions(const std::vector<int>& ids) {
+  void set_suggestions(const std::vector<Suggestion::FrontendId>& ids) {
     for (const auto& id : ids) {
       // Accessibility requires all focusable AutofillPopupItemView to have
       // ui::AXNodeData with non-empty names. We specify dummy values and labels

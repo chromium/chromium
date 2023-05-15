@@ -448,6 +448,18 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     is_passthrough_ = false;
   }
   expecting_config_changes_ = stream->SupportsConfigChanges();
+  // AC3/EAC3 windows decoder supports input channel count in the range 1 (mono)
+  // to 8 (7.1 channel configuration), but output channel config are stereo, 5.1
+  // and 7.1. There will be channel config changes, so here force
+  // 'expecting_config_changes_' to true to use 'hw_channel_layout'.
+  // Refer to
+  // https://learn.microsoft.com/en-us/windows/win32/medfound/dolby-audio-decoder
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO) && BUILDFLAG(IS_WIN)
+  if (current_decoder_config_.codec() == AudioCodec::kAC3 ||
+      current_decoder_config_.codec() == AudioCodec::kEAC3) {
+    expecting_config_changes_ = true;
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO) && BUILDFLAG(IS_WIN)
 
   bool use_stream_params = !expecting_config_changes_ || !hw_params.IsValid() ||
                            hw_params.format() == AudioParameters::AUDIO_FAKE ||

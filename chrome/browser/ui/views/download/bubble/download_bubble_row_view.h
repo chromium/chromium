@@ -95,6 +95,8 @@ class DownloadBubbleRowView : public views::View,
     ui_info_ = ui_info;
   }
 
+  void SimulateMainButtonClickForTesting(const ui::Event& event);
+
  protected:
   // Overrides ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

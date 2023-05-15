@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -54,9 +55,12 @@ UnlockType GetUnlockTypeForEvent(
 
 LockUnlockReporter::LockUnlockReporter(
     std::unique_ptr<::reporting::UserEventReporterHelper> helper,
+    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock)
-    : clock_(clock), helper_(std::move(helper)) {
+    : clock_(clock),
+      helper_(std::move(helper)),
+      reporting_user_tracker_(reporting_user_tracker) {
   if (managed_session_service) {
     managed_session_observation_.Observe(managed_session_service);
   }
@@ -66,20 +70,23 @@ LockUnlockReporter::~LockUnlockReporter() = default;
 
 // static
 std::unique_ptr<LockUnlockReporter> LockUnlockReporter::Create(
+    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service) {
   return base::WrapUnique(new LockUnlockReporter(
       std::make_unique<::reporting::UserEventReporterHelper>(
           ::reporting::Destination::LOCK_UNLOCK_EVENTS),
-      managed_session_service));
+      reporting_user_tracker, managed_session_service));
 }
 
 // static
 std::unique_ptr<LockUnlockReporter> LockUnlockReporter::CreateForTest(
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
+    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock) {
-  return base::WrapUnique(new LockUnlockReporter(
-      std::move(reporter_helper), managed_session_service, clock));
+  return base::WrapUnique(
+      new LockUnlockReporter(std::move(reporter_helper), reporting_user_tracker,
+                             managed_session_service, clock));
 }
 
 void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
@@ -88,7 +95,7 @@ void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
   }
   const std::string& user_email =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
-  if (!helper_->ShouldReportUser(user_email)) {
+  if (!reporting_user_tracker_->ShouldReportUser(user_email)) {
     return;
   }
 

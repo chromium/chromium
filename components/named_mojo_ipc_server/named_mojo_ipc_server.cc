@@ -157,8 +157,10 @@ void NamedMojoIpcServerBase::OnClientConnected(
 #define INVALID_PROCESS_LOG LOG
 #endif
     if (!peer_process.IsValid()) {
-      INVALID_PROCESS_LOG(ERROR) << "Failed to open peer process";
-      return;
+      // With MojoIpcz, connections can be made without a process handle to the
+      // client, as long as the client has a process handle to the server, so we
+      // don't return here.
+      INVALID_PROCESS_LOG(WARNING) << "Failed to open peer process";
     }
 #undef INVALID_PROCESS_LOG
   }
@@ -176,6 +178,7 @@ void NamedMojoIpcServerBase::OnClientConnected(
 
   // Create non-isolated connection.
   mojo::OutgoingInvitation invitation;
+  invitation.set_extra_flags(options_.extra_send_invitation_flags);
   mojo::ScopedMessagePipeHandle message_pipe =
       invitation.AttachMessagePipe(*options_.message_pipe_id);
   mojo::OutgoingInvitation::Send(std::move(invitation), peer_process.Handle(),

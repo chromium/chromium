@@ -33,10 +33,12 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -228,6 +230,7 @@ TEST_F(HomeButtonWithQuickAppAccess, NonExistentApp) {
 // Test that when setting a quick app with no icon, the quick app button doesn't
 // show until an icon is loaded.
 TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsQuickAppVisible());
 
   const std::string quick_app_id = "Quick App Item";
@@ -247,6 +250,8 @@ TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
   item->SetDefaultIconAndColor(
       CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor());
   EXPECT_TRUE(IsQuickAppVisible());
+
+  histogram_tester.ExpectTotalCount("Apps.QuickAppIconLoadTime", 1);
 }
 
 // Test that the quick app button image changes when setting a new quick app
@@ -378,6 +383,174 @@ TEST_F(HomeButtonWithQuickAppAccess, EmptyAppId) {
   // Setting to an empty app id hides the quick app button.
   EXPECT_TRUE(Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(""));
   EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test that the quick app button animates when showing and hiding.
+TEST_F(HomeButtonWithQuickAppAccess, QuickAppButtonAnimation) {
+  EXPECT_FALSE(IsQuickAppVisible());
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  // The quick app button should be animating when shown.
+  EXPECT_TRUE(IsQuickAppVisible());
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(0.0f, quick_app_button->layer()->opacity());
+  EXPECT_EQ(1.0f, quick_app_button->layer()->GetTargetOpacity());
+  EXPECT_TRUE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  // Wait for quick app button to finish show animation.
+  ui::LayerAnimationStoppedWaiter quick_app_button_animation_waiter;
+  quick_app_button_animation_waiter.Wait(quick_app_button->layer());
+  EXPECT_FALSE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  const int quick_app_margin = 8;
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().x());
+  EXPECT_EQ(0, quick_app_button->bounds().y());
+
+  // Show the app list to begin the hide quick app button animation.
+  GetAppListTestHelper()->ShowAppList();
+  EXPECT_TRUE(IsQuickAppVisible());
+  EXPECT_EQ(1.0f, quick_app_button->layer()->opacity());
+  EXPECT_EQ(0.0f, quick_app_button->layer()->GetTargetOpacity());
+  EXPECT_TRUE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  quick_app_button_animation_waiter.Wait(quick_app_button->layer());
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test the left shelf quick app button position.
+TEST_F(HomeButtonWithQuickAppAccess, LeftShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  const int quick_app_margin = 8;
+
+  // Set shelf to left alignment and check quick app button bounds.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().y());
+  EXPECT_EQ(0, quick_app_button->bounds().x());
+
+  // Test launching the quick app on the left aligned shelf.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test the right shelf quick app button position.
+TEST_F(HomeButtonWithQuickAppAccess, RightShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  const int quick_app_margin = 8;
+
+  // Set shelf to right alignment and check quick app button bounds.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().y());
+  EXPECT_EQ(0, quick_app_button->bounds().x());
+
+  // Test launching the quick app on the right aligned shelf.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Change the quick app access model and test that the quick app button is
+// updated.
+TEST_F(HomeButtonWithQuickAppAccess, ModelChange) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model = std::make_unique<QuickAppAccessModel>();
+
+  // Switch to new models, and verify that the quick app button is hidden.
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model.get());
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Switch to original models, and verify the quick app button is shown again.
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, GetAppListTestHelper()->model(),
+      GetAppListTestHelper()->search_model(),
+      GetAppListTestHelper()->quick_app_access_model());
+  EXPECT_TRUE(IsQuickAppVisible());
+}
+
+// Test once the quick app is hidden due to button activation, that setting
+// the same quick app again will show it.
+TEST_F(HomeButtonWithQuickAppAccess, SetSameQuickAppAfterActivation) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+
+  // Activate and hide the quick app.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Set the same app as quick app and check that the button exists again.
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+}
+
+// Test once the quick app is hidden due to app list being shown, that
+// setting the same quick app again will show it.
+TEST_F(HomeButtonWithQuickAppAccess, SetSameQuickAppAfterAppListShown) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  // Open app list and expect quick app button to be hidden.
+  GetAppListTestHelper()->ShowAppList();
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Set the same app as quick app and check that the button exists again.
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
 }
 
 enum class TestAccessibilityFeature {

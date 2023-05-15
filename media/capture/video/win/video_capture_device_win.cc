@@ -919,8 +919,8 @@ bool VideoCaptureDeviceWin::CreateCapabilityMap() {
 void VideoCaptureDeviceWin::SetAntiFlickerInCaptureFilter(
     const VideoCaptureParams& params) {
   const PowerLineFrequency power_line_frequency = GetPowerLineFrequency(params);
-  if (power_line_frequency != PowerLineFrequency::FREQUENCY_50HZ &&
-      power_line_frequency != PowerLineFrequency::FREQUENCY_60HZ) {
+  if (power_line_frequency != PowerLineFrequency::k50Hz &&
+      power_line_frequency != PowerLineFrequency::k60Hz) {
     return;
   }
   ComPtr<IKsPropertySet> ks_propset;
@@ -936,8 +936,7 @@ void VideoCaptureDeviceWin::SetAntiFlickerInCaptureFilter(
     data.Property.Set = PROPSETID_VIDCAP_VIDEOPROCAMP;
     data.Property.Id = KSPROPERTY_VIDEOPROCAMP_POWERLINE_FREQUENCY;
     data.Property.Flags = KSPROPERTY_TYPE_SET;
-    data.Value =
-        (power_line_frequency == PowerLineFrequency::FREQUENCY_50HZ) ? 1 : 2;
+    data.Value = (power_line_frequency == PowerLineFrequency::k50Hz) ? 1 : 2;
     data.Flags = KSPROPERTY_VIDEOPROCAMP_FLAGS_MANUAL;
     hr = ks_propset->Set(PROPSETID_VIDCAP_VIDEOPROCAMP,
                          KSPROPERTY_VIDEOPROCAMP_POWERLINE_FREQUENCY, &data,

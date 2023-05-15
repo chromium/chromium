@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier_impl.h"
@@ -70,7 +71,7 @@ class FakeCryptAuthDeviceNotifier : public CryptAuthDeviceNotifier {
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   std::vector<Request> requests_;
 };
 
@@ -111,7 +112,8 @@ class FakeCryptAuthDeviceNotifierFactory
   std::vector<FakeCryptAuthDeviceNotifier*> instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;
-  CryptAuthClientFactory* last_client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
+      nullptr;
 };
 
 }  // namespace device_sync

@@ -33,8 +33,11 @@ namespace ash {
 
 namespace {
 
-// The padding of QsRevamp slider toast.
-constexpr auto kQsToastSliderViewPadding = gfx::Insets::TLBR(8, 8, 8, 12);
+using SliderType = UnifiedSliderBubbleController::SliderType;
+
+// The padding of QsRevamp toast.
+constexpr auto kQsSliderToastPadding = gfx::Insets::TLBR(8, 8, 8, 12);
+constexpr auto kQsToggleToastPadding = gfx::Insets(12);
 // The rounded corner radius of the QsRevamp `bubble_view_`.
 constexpr int kQsToastCornerRadius = 28;
 
@@ -48,13 +51,20 @@ bool IsAnyMainBubbleShown() {
   return false;
 }
 
-void ConfigureSliderViewStyle(UnifiedSliderView* slider_view) {
+void ConfigureSliderViewStyle(UnifiedSliderView* slider_view,
+                              SliderType slider_type) {
   if (features::IsQsRevampEnabled()) {
+    // Toggle toast has only a button and label. Slider toast has a slider, a
+    // button on the slider body, and possible trailing buttons.
+    const bool is_toggle_toast =
+        slider_type == SliderType::SLIDER_TYPE_MIC ||
+        slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE;
     auto* layout =
         slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            kQsToastSliderViewPadding, kSliderChildrenViewSpacing));
-    layout->SetFlexForView(slider_view->slider()->parent(), /*flex=*/1);
+            is_toggle_toast ? kQsToggleToastPadding : kQsSliderToastPadding,
+            kSliderChildrenViewSpacing));
+    layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     return;
@@ -110,11 +120,15 @@ void UnifiedSliderBubbleController::CloseBubble() {
     return;
   }
   bubble_widget_->Close();
-  tray_->SetTrayBubbleHeight(0);
+  tray_->NotifySecondaryBubbleHeight(0);
 }
 
 bool UnifiedSliderBubbleController::IsBubbleShown() const {
-  return !!bubble_widget_;
+  return !!bubble_widget_ && !bubble_widget_->IsClosed();
+}
+
+int UnifiedSliderBubbleController::GetBubbleHeight() const {
+  return !!slider_view_ ? slider_view_->height() : 0;
 }
 
 void UnifiedSliderBubbleController::BubbleViewDestroyed() {
@@ -258,7 +272,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // If the bubble already exists, update the content of the bubble and extend
   // the autoclose timer.
   if (bubble_widget_) {
-    DCHECK(bubble_view_);
+    CHECK(bubble_view_);
 
     if (slider_type_ != slider_type) {
       bubble_view_->RemoveAllChildViews();
@@ -267,7 +281,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
       CreateSliderController();
       UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
           bubble_view_->AddChildView(slider_controller_->CreateView()));
-      ConfigureSliderViewStyle(slider_view);
+      ConfigureSliderViewStyle(slider_view, slider_type);
       bubble_view_->Layout();
     }
 
@@ -280,7 +294,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   tray_->CloseSecondaryBubbles();
 
-  DCHECK(!bubble_view_);
+  CHECK(!bubble_view_);
 
   slider_type_ = slider_type;
   CreateSliderController();
@@ -298,13 +312,16 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   init_params.translucent = true;
   if (features::IsQsRevampEnabled()) {
     init_params.corner_radius = kQsToastCornerRadius;
+    // `bubble_view_` is fully rounded, so sets it to be true and paints the
+    // shadow on texture layer.
+    init_params.has_large_corner_radius = true;
   }
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);
-  UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
+  slider_view_ = static_cast<UnifiedSliderView*>(
       bubble_view_->AddChildView(slider_controller_->CreateView()));
-  ConfigureSliderViewStyle(slider_view);
+  ConfigureSliderViewStyle(slider_view_, slider_type);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
 
@@ -313,13 +330,12 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   // Notify value change accessibility event because the popup is triggered by
   // changing value using an accessor key like VolUp.
-  slider_view->slider()->NotifyAccessibilityEvent(
+  slider_view_->slider()->NotifyAccessibilityEvent(
       ax::mojom::Event::kValueChanged, true);
 
   StartAutoCloseTimer();
 
-  tray_->SetTrayBubbleHeight(
-      bubble_widget_->GetWindowBoundsInScreen().height());
+  tray_->NotifySecondaryBubbleHeight(slider_view_->height());
 }
 
 void UnifiedSliderBubbleController::CreateSliderController() {

@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
-#include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -43,12 +42,9 @@ class ExistingUserControllerForcedOnlineAuthTest
  public:
   ExistingUserControllerForcedOnlineAuthTest() {
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
-    mock_login_display_ = std::make_unique<MockLoginDisplay>();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     existing_user_controller_ = std::make_unique<ExistingUserController>();
 
-    ON_CALL(*mock_login_display_host_, GetLoginDisplay())
-        .WillByDefault(Return(mock_login_display_.get()));
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
         .WillByDefault(Return(existing_user_controller_.get()));
   }
@@ -77,7 +73,6 @@ class ExistingUserControllerForcedOnlineAuthTest
 
  private:
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
-  std::unique_ptr<MockLoginDisplay> mock_login_display_;
 
   // Required by ExistingUserController:
   ScopedCrosSettingsTestHelper settings_helper_;
@@ -94,10 +89,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 1);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(true);
@@ -115,10 +108,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)
@@ -136,10 +127,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(false);
@@ -156,10 +145,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }

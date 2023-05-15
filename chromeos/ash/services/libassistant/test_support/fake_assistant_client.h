@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_CLIENT_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -108,7 +109,8 @@ class FakeAssistantClient : public AssistantClient {
   chromeos::assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
   void GetAndNotifyTimerStatus();
 
-  GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+  raw_ptr<GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>,
+          ExperimentalAsh>
       timer_observer_;
 };
 

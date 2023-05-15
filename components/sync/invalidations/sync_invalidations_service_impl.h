@@ -8,8 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/invalidations/interested_data_types_manager.h"
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gcm {
 class GCMDriver;
@@ -21,6 +24,7 @@ class InstanceIDDriver;
 
 namespace syncer {
 class FCMHandler;
+class InterestedDataTypesHandler;
 class InvalidationsListener;
 
 // The non-test implementation of SyncInvalidationsService.
@@ -54,8 +58,11 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   FCMHandler* GetFCMHandlerForTesting();
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   std::unique_ptr<FCMHandler> fcm_handler_;
-  InterestedDataTypesManager data_types_manager_;
+  raw_ptr<InterestedDataTypesHandler> interested_data_types_handler_ = nullptr;
+  absl::optional<ModelTypeSet> interested_data_types_;
 };
 
 }  // namespace syncer

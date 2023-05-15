@@ -54,7 +54,7 @@ class UpdaterStatusAndValueProvider : public policy::PolicyStatusProvider,
   std::unique_ptr<GoogleUpdateState> updater_status_;
   std::unique_ptr<policy::PolicyMap> updater_policies_;
   std::string domain_;
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<UpdaterStatusAndValueProvider> weak_factory_{this};
 };
 

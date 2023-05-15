@@ -109,6 +109,9 @@ const char kOnboardingCompletedVersion[] = "onboarding_completed_version";
 // Last screen shown in the onboarding flow.
 const char kPendingOnboardingScreen[] = "onboarding_screen_pending";
 
+// Key of the obsolete token handle rotation flag.
+const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
+
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -139,6 +142,7 @@ const char* kObsoleteKeys[] = {
     kMinimalMigrationAttemptedObsolete,
     kGaiaIdMigrationObsolete,
     kOfflineSigninLimitObsolete,
+    kTokenHandleRotatedObsolete,
 };
 
 // Checks if values in |dict| correspond with |account_id| identity.

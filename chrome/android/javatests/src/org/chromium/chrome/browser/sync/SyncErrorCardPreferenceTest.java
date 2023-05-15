@@ -23,7 +23,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -33,8 +32,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -109,7 +106,6 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForAuthErrorWithUpmEnabled(boolean nightModeEnabled)
             throws Exception {
@@ -124,26 +120,6 @@ public class SyncErrorCardPreferenceTest {
         mSettingsActivityTestRule.startSettingsActivity();
         mRenderTestRule.render(getPersonalizedSyncPromoView(),
                 "sync_error_card_auth_error_with_new_title_and_upm");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAuthErrorWithUpmDisabled(boolean nightModeEnabled)
-            throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("AUTH_ERROR SyncError should be set",
-                                SyncSettingsUtils.SyncError.AUTH_ERROR,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_auth_error_with_new_title");
     }
 
     @Test

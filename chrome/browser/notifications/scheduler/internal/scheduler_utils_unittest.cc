@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/guid.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/test/fake_clock.h"
 #include "chrome/browser/notifications/scheduler/test/test_utils.h"
@@ -41,7 +41,8 @@ class SchedulerUtilsTest : public testing::Test {
     client_state->impressions.clear();
     auto type = client_state->type;
     for (const auto& time : times) {
-      client_state->impressions.emplace_back(type, base::GenerateGUID(), time);
+      client_state->impressions.emplace_back(
+          type, base::Uuid::GenerateRandomV4().AsLowercaseString(), time);
     }
   }
 

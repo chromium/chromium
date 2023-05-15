@@ -38,6 +38,8 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
         prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
   }
 
   void ResetPrefs(bool scout_reporting) {
@@ -182,5 +184,12 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsCsdPhishingProtectionAllowed) {
   prefs_.SetBoolean(prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy,
                     false);
   EXPECT_FALSE(IsCsdPhishingProtectionAllowed(prefs_));
+}
+
+TEST_F(SafeBrowsingPrefsTest, VerifySafeBrowsingExtensionProtectionAllowed) {
+  EXPECT_TRUE(IsSafeBrowsingExtensionProtectionAllowed(prefs_));
+  prefs_.SetBoolean(prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
+                    false);
+  EXPECT_FALSE(IsSafeBrowsingExtensionProtectionAllowed(prefs_));
 }
 }  // namespace safe_browsing

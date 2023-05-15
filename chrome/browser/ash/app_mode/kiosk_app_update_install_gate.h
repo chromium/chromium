@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 namespace extensions {
@@ -29,8 +30,8 @@ class KioskAppUpdateInstallGate : public extensions::InstallGate {
                      bool install_immediately) override;
 
  private:
-  Profile* const profile_;
-  extensions::ExtensionRegistry* const registry_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
 };
 
 }  // namespace ash

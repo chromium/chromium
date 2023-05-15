@@ -290,6 +290,7 @@ class PageInfoBubbleViewTestApi {
   void SetPermissionInfo(const PermissionInfoList& list) {
     for (const PageInfo::PermissionInfo& info : list) {
       presenter_->OnSitePermissionChanged(info.type, info.setting,
+                                          info.requesting_origin,
                                           /*is_one_time=*/false);
     }
     CreateView();
@@ -498,10 +499,9 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
   ukm_recorder.ExpectEntrySourceHasUrl(entry, origin_url);
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
             static_cast<int64_t>(permissions::PermissionSourceUI::OIB));
-  size_t num_values = 0;
-  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-            ContentSettingTypeToHistogramValue(
-                ContentSettingsType::NOTIFICATIONS, &num_values));
+  EXPECT_EQ(
+      *ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+      ContentSettingTypeToHistogramValue(ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }

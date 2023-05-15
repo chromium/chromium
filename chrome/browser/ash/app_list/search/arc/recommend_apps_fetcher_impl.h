@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -84,9 +85,10 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   absl::optional<base::Value> ParseResponse(base::StringPiece response);
 
-  RecommendAppsFetcherDelegate* delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
 
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
+      url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> app_list_loader_;
 
   int64_t android_id_ = 0;

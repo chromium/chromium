@@ -6,11 +6,11 @@
 
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 bool ShouldIncludeAppUpdate(const apps::AppUpdate& app_update) {
   return app_update.AppType() == apps::AppType::kArc &&
@@ -32,7 +32,8 @@ void LogOutHelper() {
 }
 
 bool EnrollmentCompleted() {
-  SupervisedUserService* service = SupervisedUserServiceFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+  supervised_user::SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
   return service->signout_required_after_supervision_enabled();
 }

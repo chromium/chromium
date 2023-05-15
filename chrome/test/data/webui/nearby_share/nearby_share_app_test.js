@@ -5,7 +5,6 @@
 import 'chrome://nearby/app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {NearbyShareAppElement} from 'chrome://nearby/app.js';
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -57,19 +56,42 @@ suite('ShareAppTest', function() {
   }
 
   suite('EnabledTests', function() {
-    setup(function() {
-      sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
-    });
-
     teardown(sharedTeardown);
 
     test('renders discovery page when enabled', async function() {
+      sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
+
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
       assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('discovery'));
+    });
+
+    [false, true].forEach(isJellyEnabled => {
+      test(
+          'Dynamic theme CSS is added when isJellyEnabled is set', async () => {
+            loadTimeData.overrideValues({
+              isJellyEnabled: isJellyEnabled,
+            });
+
+            sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
+
+            const colorLink = document.querySelector(
+                'link[href*=\'chrome://theme/colors.css\']');
+            const fontLink = document.querySelector(
+                'link[href*=\'chrome://theme/typography.css\']');
+            if (isJellyEnabled) {
+              assertTrue(!!colorLink);
+              assertTrue(!!fontLink);
+              assertTrue(document.body.classList.contains('jelly-enabled'));
+            } else {
+              assertEquals(null, colorLink);
+              assertEquals(null, fontLink);
+              assertFalse(document.body.classList.contains('jelly-enabled'));
+            }
+          });
     });
   });
 

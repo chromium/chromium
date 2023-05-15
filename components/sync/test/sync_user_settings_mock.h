@@ -19,20 +19,27 @@ class SyncUserSettingsMock : public SyncUserSettings {
  public:
   SyncUserSettingsMock();
   ~SyncUserSettingsMock() override;
-  MOCK_METHOD(bool, IsSyncRequested, (), (const override));
-  MOCK_METHOD(void, SetSyncRequested, (), (override));
-  MOCK_METHOD(void, ClearSyncRequested, (), (override));
-  MOCK_METHOD(bool, IsFirstSetupComplete, (), (const override));
+  MOCK_METHOD(bool, IsInitialSyncFeatureSetupComplete, (), (const override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,
               (SyncFirstSetupCompleteSource),
               (override));
   MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
   MOCK_METHOD(UserSelectableTypeSet, GetSelectedTypes, (), (const override));
+  MOCK_METHOD(bool,
+              IsTypeManagedByPolicy,
+              (UserSelectableType),
+              (const override));
   MOCK_METHOD(void,
               SetSelectedTypes,
               (bool, UserSelectableTypeSet),
               (override));
+#if BUILDFLAG(IS_IOS)
+  MOCK_METHOD(void,
+              SetBookmarksAndReadingListAccountStorageOptIn,
+              (bool),
+              (override));
+#endif  // BUILDFLAG(IS_IOS)
   MOCK_METHOD(UserSelectableTypeSet,
               GetRegisteredSelectableTypes,
               (),
@@ -43,6 +50,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(UserSelectableOsTypeSet,
               GetSelectedOsTypes,
               (),
+              (const override));
+  MOCK_METHOD(bool,
+              IsOsTypeManagedByPolicy,
+              (UserSelectableOsType),
               (const override));
   MOCK_METHOD(void,
               SetSelectedOsTypes,

@@ -11,34 +11,34 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithId(int id) {
+RemoteCommandBuilder& RemoteCommandBuilder::SetCommandId(int id) {
   result_.set_command_id(id);
   return *this;
 }
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithoutId() {
+RemoteCommandBuilder& RemoteCommandBuilder::ClearCommandId() {
   result_.clear_command_id();
   return *this;
 }
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithType(
+RemoteCommandBuilder& RemoteCommandBuilder::SetType(
     em::RemoteCommand::Type type) {
   result_.set_type(type);
   return *this;
 }
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithoutType() {
+RemoteCommandBuilder& RemoteCommandBuilder::ClearType() {
   result_.clear_type();
   return *this;
 }
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithPayload(
+RemoteCommandBuilder& RemoteCommandBuilder::SetPayload(
     const std::string& payload) {
   result_.set_payload(payload);
   return *this;
 }
 
-RemoteCommandBuilder& RemoteCommandBuilder::WithTargetDeviceId(
+RemoteCommandBuilder& RemoteCommandBuilder::SetTargetDeviceId(
     const std::string& value) {
   result_.set_target_device_id(value);
   return *this;
@@ -48,56 +48,55 @@ em::SignedData SignedDataBuilder::Build() {
   return BuildSignedData(command_.Build());
 }
 
-SignedDataBuilder& SignedDataBuilder::WithCommandId(int id) {
-  command_.WithId(id);
+SignedDataBuilder& SignedDataBuilder::SetCommandId(int id) {
+  command_.SetCommandId(id);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithoutCommandId() {
-  command_.WithoutId();
+SignedDataBuilder& SignedDataBuilder::ClearCommandId() {
+  command_.ClearCommandId();
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithCommandType(
+SignedDataBuilder& SignedDataBuilder::SetCommandType(
     em::RemoteCommand::Type type) {
-  command_.WithType(type);
+  command_.SetType(type);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithoutCommandType() {
-  command_.WithoutType();
+SignedDataBuilder& SignedDataBuilder::ClearCommandType() {
+  command_.ClearType();
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithCommandPayload(
+SignedDataBuilder& SignedDataBuilder::SetCommandPayload(
     const std::string& value) {
-  command_.WithPayload(value);
+  command_.SetPayload(value);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithTargetDeviceId(
+SignedDataBuilder& SignedDataBuilder::SetTargetDeviceId(
     const std::string& value) {
-  command_.WithTargetDeviceId(value);
+  command_.SetTargetDeviceId(value);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithSignedData(const std::string& value) {
+SignedDataBuilder& SignedDataBuilder::SetSignedData(const std::string& value) {
   signed_data.set_data(value);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithSignature(const std::string& value) {
+SignedDataBuilder& SignedDataBuilder::SetSignature(const std::string& value) {
   signed_data.set_signature(value);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithPolicyType(const std::string& value) {
+SignedDataBuilder& SignedDataBuilder::SetPolicyType(const std::string& value) {
   policy_data.set_policy_type(value);
   return *this;
 }
 
-SignedDataBuilder& SignedDataBuilder::WithPolicyValue(
-    const std::string& value) {
+SignedDataBuilder& SignedDataBuilder::SetPolicyValue(const std::string& value) {
   policy_data.set_policy_value(value);
   return *this;
 }

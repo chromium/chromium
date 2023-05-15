@@ -148,7 +148,7 @@ void ShellExtensionSystem::InstallUpdate(
 
 void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value& attributes) {
+    const base::Value::Dict& attributes) {
   NOTREACHED();
 }
 
@@ -157,13 +157,6 @@ bool ShellExtensionSystem::FinishDelayedInstallationIfReady(
     bool install_immediately) {
   NOTREACHED();
   return false;
-}
-
-void ShellExtensionSystem::OnExtensionRegisteredWithRequestContexts(
-    scoped_refptr<Extension> extension) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  registry->AddReady(extension);
-  registry->TriggerOnReady(extension.get());
 }
 
 }  // namespace extensions

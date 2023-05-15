@@ -17,6 +17,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "net/cert/x509_util.h"
@@ -79,14 +80,21 @@ ContentWebState::ContentWebState(const CreateParams& params,
   scoped_refptr<content::SiteInstance> site_instance;
   content::WebContents::CreateParams createParams(browser_context,
                                                   site_instance);
-  web_contents_ = content::WebContents::Create(createParams);
+  if (params.created_with_opener) {
+    ContentWebState* opener_web_state =
+        static_cast<ContentWebState*>(params.opener_web_state);
+    DCHECK(opener_web_state->child_web_contents_);
+    web_contents_ = std::move(opener_web_state->child_web_contents_);
+  } else {
+    web_contents_ = content::WebContents::Create(createParams);
+  }
+  web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
-  content::NavigationController& controller = web_contents_->GetController();
   certificate_policy_cache_ =
       std::make_unique<DummySessionCertificatePolicyCache>(
           params.browser_state);
   navigation_manager_ = std::make_unique<ContentNavigationManager>(
-      this, params.browser_state, controller);
+      this, params.browser_state, web_contents_->GetController());
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
 
   UIView* web_contents_view = web_contents_->GetNativeView();
@@ -134,7 +142,18 @@ WebStateDelegate* ContentWebState::GetDelegate() {
   return nullptr;
 }
 
-void ContentWebState::SetDelegate(WebStateDelegate* delegate) {}
+void ContentWebState::SetDelegate(WebStateDelegate* delegate) {
+  if (delegate == delegate_) {
+    return;
+  }
+  if (delegate_) {
+    delegate_->Detach(this);
+  }
+  delegate_ = delegate;
+  if (delegate_) {
+    delegate_->Attach(this);
+  }
+}
 
 bool ContentWebState::IsRealized() const {
   return session_storage_ == nil;
@@ -535,6 +554,21 @@ void ContentWebState::PrimaryMainFrameRenderProcessGone(
   for (auto& observer : observers_) {
     observer.RenderProcessGone(this);
   }
+}
+
+void ContentWebState::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  // TODO: Add a constructor that takes the new_contents.
+  child_web_contents_ = std::move(new_contents);
+  delegate_->CreateNewWebState(this, target_url, GetLastCommittedURL(),
+                               user_gesture);
+  DCHECK(!child_web_contents_);
 }
 
 }  // namespace web

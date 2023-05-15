@@ -537,7 +537,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   // Observer's name pointer to instance map. Can be raw_ptr as the instance is
   // owned `observers` above, and is removed from the map on destruction.
-  base::flat_map<const char*, base::raw_ptr<PageLoadMetricsObserverInterface>>
+  base::flat_map<const char*, raw_ptr<PageLoadMetricsObserverInterface>>
       observers_map_;
 
   PageLoadMetricsUpdateDispatcher metrics_update_dispatcher_;
@@ -559,6 +559,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       experimental_largest_contentful_paint_handler_;
 
   uint32_t soft_navigation_count_ = 0;
+
+  absl::optional<base::TimeTicks> receive_headers_start_;
 
   const internal::PageLoadTrackerPageType page_type_;
 

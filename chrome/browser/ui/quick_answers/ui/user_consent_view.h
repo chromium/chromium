@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class Label;
@@ -27,6 +29,8 @@ namespace quick_answers {
 // information if any of these two strings are empty.
 class UserConsentView : public views::View {
  public:
+  METADATA_HEADER(UserConsentView);
+
   static constexpr char kWidgetName[] = "UserConsentViewWidget";
 
   UserConsentView(const gfx::Rect& anchor_view_bounds,
@@ -40,8 +44,13 @@ class UserConsentView : public views::View {
 
   ~UserConsentView() override;
 
+  static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& anchor_view_bounds,
+      const std::u16string& intent_type,
+      const std::u16string& intent_text,
+      base::WeakPtr<QuickAnswersUiController> controller);
+
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
@@ -54,7 +63,6 @@ class UserConsentView : public views::View {
   void InitLayout();
   void InitContent();
   void InitButtonBar();
-  void InitWidget();
   void UpdateWidgetBounds();
 
   // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently

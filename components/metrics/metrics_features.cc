@@ -18,4 +18,8 @@ BASE_FEATURE(kReportingServiceFlushPrefsOnUploadInBackground,
              "ReportingServiceFlushPrefsOnUploadInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kSubprocessMetricsProviderLeaky,
+             "SubprocessMetricsProviderLeaky",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace metrics::features

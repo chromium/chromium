@@ -10,11 +10,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
@@ -22,10 +26,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
@@ -145,7 +146,7 @@ class DlpContentManagerAshTest : public testing::Test {
   DlpContentManagerAshTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {}
   ~DlpContentManagerAshTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -207,7 +208,7 @@ class DlpContentManagerAshTest : public testing::Test {
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
-  MockDlpRulesManager* mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ = nullptr;
   MockPrivacyScreenHelper mock_privacy_screen_helper_;
 
  private:
@@ -227,8 +228,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

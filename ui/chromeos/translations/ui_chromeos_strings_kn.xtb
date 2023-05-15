@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2383454254762599978">ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2387458720915042159">ಪ್ರಾಕ್ಸಿ ಪ್ರಕಾರ ಸಂಪರ್ಕ</translation>
 <translation id="2389832672041313158">ಬರ್ಮೀಸ್/ಮ್ಯಾನ್ಮಾರ್</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ಸಾಧನ ಓದಲು ಮಾತ್ರ ಆಗಿದೆ</translation>
 <translation id="4826849268470072925">ತಮಿಳು ITRANS</translation>
 <translation id="482932175346970750">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ಟೈಪ್ ಮಾಡಿ</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
@@ -563,7 +561,7 @@
 <translation id="5402367795255837559">ಬ್ರೈಲಿ</translation>
 <translation id="5411472733320185105">ಈ ಹೋಸ್ಟ್‌ಗಳಿಗೆ ಮತ್ತು ಡೊಮೇನ್‌ಗಳಿಗೆ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಪಯೋಗಿಸಬೇಡಿ:</translation>
 <translation id="541890217011173530">ಇಂಗ್ಲಿಷ್-ಆಧಾರಿತ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಸೊರಾನಿ ಕುರ್ದಿಶ್</translation>
-<translation id="5422221874247253874">ಪ್ರವೇಶ ಬಿಂದು</translation>
+<translation id="5422221874247253874">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್</translation>
 <translation id="5428105026674456456">ಸ್ಪ್ಯಾನಿಶ್</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ಗಾಗಿ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ.</translation>
 <translation id="5449551289610225147">ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -675,7 +673,7 @@
 <translation id="6327785803543103246">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂಅನ್ವೇಷಣೆ</translation>
 <translation id="6337014272874260727">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6339145975392024142">US ಅಂತರಾಷ್ಟ್ರೀಯ (PC)</translation>
-<translation id="6346310558342052870">ಪ್ರವೇಶ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="6346310558342052870">ಆ್ಯಕ್ಸೆಸ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6356685157277930264">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ವಿಂಡೋ</translation>
 <translation id="6358884629796491903">ಡ್ರ್ಯಾಗನ್‌</translation>
 <translation id="636254897931573416">ಅಮಾನ್ಯವಾದ ಡೊಮೇನ್ ಸಫಿಕ್ಸ್ ಹೊಂದಾಣಿಕೆಯ ಮೌಲ್ಯ</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">ಸ್ವೀಡಿಶ್</translation>
 <translation id="6990081529015358884">ನಿಮ್ಮ ಬಳಿ ಇದ್ದ ಸ್ಥಳ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="6993826899923627728">ಈ ಐಟಂಗಳು ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿವೆ</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7008426324576352165">ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಹೆಚ್ಚಿನ ಸಂಗ್ರಹಣೆಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7009985720488544166">ನಿರ್ವಾಹಕ ನೀತಿಯಿಂದ <ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">ಮೇಲಿನ ವಿಸ್ತರಣೆಯನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7256405249507348194">ಗುರುತಿಸದಿರುವ ದೋಷ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ಲಭ್ಯವಿರುವ ಸೇವೆಗಳು</translation>
+<translation id="7291818353625820805">ಕೀಗಳನ್ನು ಪುನರಾವರ್ತಿಸಲು ಬಯಸುವಿರಾ? ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="7292816689782057017">ನಿರ್ವಾಹಕರ ನೀತಿಯು ಕೆಲವು ಸ್ಥಳಗಳಲ್ಲಿ ಉಳಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
 <translation id="7294063083760278948">ತೆಲುಗು ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="7295662345261934369">ಇತರರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
@@ -1022,7 +1020,7 @@
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
 <translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> ಗೆ ಫೈಲ್ ಅನ್ನು ವರ್ಗಾಯಿಸುವುದು</translation>
 <translation id="912419004897138677">ಕೋಡೆಕ್</translation>
-<translation id="9130775360844693113">ಈ ಐಟಂಗಳಿಗೆ '<ph name="DESTINATION_NAME" />' ನ ಸದಸ್ಯರು ಪ್ರವೇಶ ಪಡೆದುಕೊಳ್ಳುವರು.</translation>
+<translation id="9130775360844693113">ಈ ಐಟಂಗಳಿಗೆ '<ph name="DESTINATION_NAME" />' ನ ಸದಸ್ಯರು ಆ್ಯಕ್ಸೆಸ್ ಪಡೆದುಕೊಳ್ಳುವರು.</translation>
 <translation id="9131598836763251128">ಒಂದು ಅಥವಾ ಹೆಚ್ಚು ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="9133055936679483811">ಜಿಪ್ ಮಾಡುವಿಕೆಯು ವಿಫಲವಾಗಿದೆ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9144340019284012223">ಕೆಟಲಾನ್</translation>

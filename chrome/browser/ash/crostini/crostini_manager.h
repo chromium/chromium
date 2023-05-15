@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -221,7 +222,7 @@ class CrostiniManager : public KeyedService,
   void MaybeUpdateCrostini();
 
   // Installs termina using the DLC service.
-  void InstallTermina(CrostiniResultCallback callback, bool is_initial_install);
+  void InstallTermina(CrostiniResultCallback callback);
 
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
   // basis. The callback passed to InstallTermina is still run upon completion.
@@ -256,8 +257,6 @@ class CrostiniManager : public KeyedService,
       std::string name,
       // Path to the disk image on the host.
       const base::FilePath& disk_path,
-      // Path to the wayland server's socket, per go/secure-exo-ids.
-      const base::FilePath& wayland_path,
       // The number of logical CPU cores that are currently disabled.
       size_t num_cores_disabled,
       // A callback to invoke with the result of the launch request.
@@ -822,7 +821,7 @@ class CrostiniManager : public KeyedService,
   // Best-effort attempt to premount the user's files.
   void MountCrostiniFilesBackground(guest_os::GuestInfo info);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string owner_id_;
 
   bool skip_restart_for_testing_ = false;

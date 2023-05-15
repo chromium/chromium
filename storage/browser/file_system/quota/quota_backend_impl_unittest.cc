@@ -143,21 +143,22 @@ class QuotaBackendImplTest : public testing::Test,
             true /* create */);
     ASSERT_TRUE(path.has_value());
 
-    ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(
-        GetUsageCachePath(origin, type), 0));
+    path = GetUsageCachePath(origin, type);
+    ASSERT_TRUE(path.has_value());
+    ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(*path, 0));
   }
 
   base::SequencedTaskRunner* file_task_runner() {
     return base::SingleThreadTaskRunner::GetCurrentDefault().get();
   }
 
-  base::FilePath GetUsageCachePath(const url::Origin& origin,
-                                   FileSystemType type) {
-    base::FileErrorOr<base::FilePath> path =
-        backend_->GetUsageCachePath(origin, type);
-    EXPECT_TRUE(path.has_value());
-    EXPECT_FALSE(path->empty());
-    return path.value();
+  base::FileErrorOr<base::FilePath> GetUsageCachePath(const url::Origin& origin,
+                                                      FileSystemType type) {
+    return backend_->GetUsageCachePath(origin, type)
+        .transform([](base::FilePath path) {
+          EXPECT_FALSE(path.empty());
+          return path;
+        });
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -265,20 +266,21 @@ TEST_P(QuotaBackendImplTest, CommitQuotaUsage) {
   FileSystemType type = kFileSystemTypeTemporary;
   InitializeForOriginAndType(kOrigin, type);
   quota_manager_proxy_->set_quota(10000);
-  base::FilePath path = GetUsageCachePath(kOrigin, type);
+  auto path = GetUsageCachePath(kOrigin, type);
+  ASSERT_TRUE(path.has_value());
 
   const int64_t kDelta1 = 1000;
   backend_->CommitQuotaUsage(kOrigin, type, kDelta1);
   EXPECT_EQ(kDelta1, quota_manager_proxy_->usage());
   int64_t usage = 0;
-  EXPECT_TRUE(file_system_usage_cache_.GetUsage(path, &usage));
+  EXPECT_TRUE(file_system_usage_cache_.GetUsage(*path, &usage));
   EXPECT_EQ(kDelta1, usage);
 
   const int64_t kDelta2 = -300;
   backend_->CommitQuotaUsage(kOrigin, type, kDelta2);
   EXPECT_EQ(kDelta1 + kDelta2, quota_manager_proxy_->usage());
   usage = 0;
-  EXPECT_TRUE(file_system_usage_cache_.GetUsage(path, &usage));
+  EXPECT_TRUE(file_system_usage_cache_.GetUsage(*path, &usage));
   EXPECT_EQ(kDelta1 + kDelta2, usage);
 
   EXPECT_EQ(2, quota_manager_proxy_->storage_modified_count());
@@ -289,15 +291,16 @@ TEST_P(QuotaBackendImplTest, DirtyCount) {
 
   FileSystemType type = kFileSystemTypeTemporary;
   InitializeForOriginAndType(kOrigin, type);
-  base::FilePath path = GetUsageCachePath(kOrigin, type);
+  auto path = GetUsageCachePath(kOrigin, type);
+  ASSERT_TRUE(path.has_value());
 
   backend_->IncrementDirtyCount(kOrigin, type);
   uint32_t dirty = 0;
-  ASSERT_TRUE(file_system_usage_cache_.GetDirty(path, &dirty));
+  ASSERT_TRUE(file_system_usage_cache_.GetDirty(*path, &dirty));
   EXPECT_EQ(1u, dirty);
 
   backend_->DecrementDirtyCount(kOrigin, type);
-  ASSERT_TRUE(file_system_usage_cache_.GetDirty(path, &dirty));
+  ASSERT_TRUE(file_system_usage_cache_.GetDirty(*path, &dirty));
   EXPECT_EQ(0u, dirty);
 }
 

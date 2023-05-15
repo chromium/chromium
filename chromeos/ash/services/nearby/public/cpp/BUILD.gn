@@ -39,6 +39,8 @@ static_library("test_support") {
     "fake_firewall_hole.h",
     "fake_firewall_hole_factory.cc",
     "fake_firewall_hole_factory.h",
+    "fake_nearby_presence.cc",
+    "fake_nearby_presence.h",
     "fake_nearby_process_manager.cc",
     "fake_nearby_process_manager.h",
     "fake_tcp_connected_socket.cc",

@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/windows_types.h"
 
 namespace ui {
@@ -94,7 +95,9 @@ class ScopedCoMemArray {
     size_ = size;
   }
 
-  T* mem_ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of, #union
+  RAW_PTR_EXCLUSION T* mem_ptr_ = nullptr;
   LONG size_ = 0;
 };
 

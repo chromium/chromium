@@ -41,7 +41,8 @@
   }
 
 </style>
-<div class="contents" title="[[tooltip_]]">
+<div class="contents" title="[[tooltip_]]" on-click="onActionClick_"
+                     on-keydown="onActionKeyDown_">
   <img id="action-icon" src$="[[action.iconUrl]]">
   <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
 </div>

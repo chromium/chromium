@@ -35,7 +35,7 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon);
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 // Returns the branded Google icon.
-UIImage* GetBrandedGoogleIcon();
+UIImage* GetBrandedGoogleIconForOmnibox();
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_SUGGESTION_ICON_UTIL_H_

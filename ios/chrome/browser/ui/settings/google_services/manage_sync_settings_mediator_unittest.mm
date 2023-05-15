@@ -10,12 +10,12 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "components/sync/base/pref_names.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -57,13 +57,6 @@ PrefService* SetPrefService() {
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
                                 true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncAutofill, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncBookmarks, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncTypedUrls, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncTabs, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncPasswords, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncReadingList, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncPreferences, true);
 
   return prefs;
 }
@@ -110,44 +103,22 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void FirstSetupSyncOnWithConsentEnabled() {
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
+    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
+    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsInitialSetupOngoing())
-        .WillByDefault(Return(false));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   }
 
-  void FirstSetupSyncOnWithConsentDisabled() {
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsInitialSetupOngoing())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_service_mock_, GetTransportState())
-        .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
-  }
-
   void FirstSetupSyncOff() {
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
+    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
+    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsInitialSetupOngoing())
-        .WillByDefault(Return(false));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
   }
@@ -358,53 +329,18 @@ TEST_F(ManageSyncSettingsMediatorTest,
   EXPECT_EQ(1UL, shown_sign_out_items.count);
 }
 
-// Tests Signout is shown when first setup is complete and sync engine is off.
-TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
-  // Set Sync disabled expectations.
-  FirstSetupSyncOnWithConsentDisabled();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  // "Turn off Sync" item is shown.
-  NSArray* hidden_sign_out_items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       SignOutSectionIdentifier];
-  EXPECT_EQ(1UL, hidden_sign_out_items.count);
-}
-
-// Tests data types are editable when first setup is complete and sync engine
-// is off.
-TEST_F(ManageSyncSettingsMediatorTest,
-       SyncEngineOffSyncEverythingAndDataTypeEditable) {
-  // Set Sync disabled expectations.
-  FirstSetupSyncOnWithConsentDisabled();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  NSArray* items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
-  for (TableViewItem* item in items) {
-    SyncSwitchItem* switch_item =
-        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
-    if (switch_item.type == AutocompleteWalletItemType) {
-      EXPECT_FALSE(switch_item.enabled);
-    } else {
-      EXPECT_TRUE(switch_item.enabled);
-    }
-  }
-}
-
 // Tests that the items are correct when a sync type list is managed.
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckItemsWhenSyncTypeListHasEnabledItems) {
   FirstSetupSyncOnWithConsentEnabled();
 
-  TestingPrefServiceSimple* pref_service =
-      static_cast<TestingPrefServiceSimple*>(pref_service_);
-  pref_service->SetManagedPref(syncer::prefs::kSyncBookmarks,
-                               std::make_unique<base::Value>(true));
-  pref_service->SetManagedPref(syncer::prefs::kSyncPasswords,
-                               std::make_unique<base::Value>(true));
+  // Set up a policy to disable bookmarks and passwords.
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsTypeManagedByPolicy(syncer::UserSelectableType::kBookmarks))
+      .WillByDefault(Return(true));
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsTypeManagedByPolicy(syncer::UserSelectableType::kPasswords))
+      .WillByDefault(Return(true));
 
   // Loads the Sync page.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];

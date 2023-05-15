@@ -13,8 +13,6 @@
 
   <release seq="1">
     <includes>
-      <include name="IDR_HELP_APP_HOST_INDEX_HTML" file="index.html"
-          type="BINDATA" />
       <include name="IDR_HELP_APP_HOST_INDEX_DARK_LIGHT_HTML"
           file="index_dark_light.html"
           type="BINDATA" />

@@ -33,10 +33,6 @@ class VideoDecoder {
   };
 
   VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-               std::unique_ptr<V4L2Queue> OUTPUT_queue,
-               std::unique_ptr<V4L2Queue> CAPTURE_queue);
-
-  VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                gfx::Size display_resolution);
 
   virtual ~VideoDecoder();
@@ -46,8 +42,6 @@ class VideoDecoder {
 
   // Initializes setup needed for decoding.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
-  void Initialize(bool is_resolution_changed = false);
-
   void CreateOUTPUTQueue(uint32_t compressed_fourcc);
   void CreateCAPTUREQueue(uint32_t num_buffers);
 
@@ -69,10 +63,6 @@ class VideoDecoder {
                                               uint8_t* u_plane,
                                               uint8_t* v_plane,
                                               const gfx::Size& size);
-
-  // Temporary variable to specify that the older,
-  // non split initialization should be use.
-  const bool needs_init;
 
  protected:
   void NegotiateCAPTUREFormat();
@@ -98,11 +88,11 @@ class VideoDecoder {
   // Whether the last decoded frame was visible.
   bool last_decoded_frame_visible_ = false;
 
-  // Number of buffers in CAPTURE queue varied by different codecs.
-  uint32_t number_of_buffers_in_capture_queue_;
-
   // resolution from the bitstream header
   gfx::Size display_resolution_;
+
+  // Whether V4L2_CTRL_WHICH_CUR_VAL is implemented correctly
+  bool cur_val_is_supported_ = true;
 };
 
 }  // namespace v4l2_test

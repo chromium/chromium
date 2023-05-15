@@ -81,12 +81,9 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     EXPECT_FALSE(transformer_.HasTransformedFrameSinkCallback(kSSRC));
   }
 
-  RTCEncodedVideoUnderlyingSink* CreateSink(
-      ScriptState* script_state,
-      webrtc::TransformableFrameInterface::Direction expected_direction =
-          webrtc::TransformableFrameInterface::Direction::kSender) {
+  RTCEncodedVideoUnderlyingSink* CreateSink(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-        script_state, transformer_.GetBroker(), expected_direction);
+        script_state, transformer_.GetBroker());
   }
 
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }
@@ -159,21 +156,36 @@ TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDataFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
-TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDirectionFails) {
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WritingSendFrameSucceeds) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* sink = CreateSink(
-      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  auto* sink = CreateSink(script_state);
 
-  // Write an encoded chunk with direction set to Receiver should fail as it
-  // doesn't match the expected direction of our sink.
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(script_state,
+              CreateEncodedVideoFrameChunk(
+                  script_state,
+                  webrtc::TransformableFrameInterface::Direction::kSender),
+              nullptr, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WritingReceiverFrameSucceeds) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(script_state);
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state,
               CreateEncodedVideoFrameChunk(
                   script_state,
                   webrtc::TransformableFrameInterface::Direction::kReceiver),
               nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  EXPECT_FALSE(dummy_exception_state.HadException());
 }
 
 }  // namespace blink

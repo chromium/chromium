@@ -1,0 +1,82 @@
+<style include="settings-shared network-shared">
+  /* Align the headline text on the page title. */
+  #headlineLink {
+    margin-inline-start: 36px;
+  }
+</style>
+<div class="settings-box first two-line">
+  <localized-link id="headlineLink" class="secondary"
+      localized-string="$i18n{passpointHeadlineText}"
+      link-url="$i18nRaw{wifiPasspointLearnMoreUrl}">
+  </localized-link>
+  <cr-button id="removeButton" on-click="onForgetTap_">
+    $i18n{passpointRemoveButton}
+  </cr-button>
+</div>
+<template is="dom-if" if="[[hasExpirationDate_(subscription_)]]">
+  <div class="settings-box first two-line single-column"
+      aria-labelledby="passpointExpirationLabel passpointExpirationDate">
+    <div id="passpointExpirationLabel" aria-hidden="true">
+      $i18n{passpointSubscriptionExpirationLabel}
+    </div>
+    <div id="passpointExpirationDate" class="secondary" aria-hidden="true">
+      [[getExpirationDate_(subscription_)]]
+    </div>
+  </div>
+</template>
+<div class="settings-box two-line single-column"
+    aria-labelledby="passpointSourceLabel passpointSourceText">
+  <div id="passpointSourceLabel" aria-hidden="true">
+    $i18n{passpointSourceLabel}
+  </div>
+  <div id="passpointSourceText" class="secondary" aria-hidden="true">
+    [[providerName_]]
+  </div>
+</div>
+<div class="settings-box two-line single-column"
+    aria-labelledby="passpointTrustedCALabel passpointCertificateName">
+  <div id="passpointTrustedCALabel" aria-hidden="true">
+    $i18n{passpointTrustedCALabel}
+  </div>
+  <div id="passpointCertificateName" class="secondary" aria-hidden="true">
+    [[certificateAuthorityName_]]
+  </div>
+</div>
+<cr-expand-button aria-label="$i18n{passpointDomainsA11yLabel}"
+    class="settings-box" expanded="{{domainsExpanded_}}">
+  $i18n{passpointDomainsLabel}
+</cr-expand-button>
+<div id="passpointDomainsList" class="list-frame vertical-list">
+  <iron-collapse opened="[[domainsExpanded_]]">
+    <template is="dom-repeat"
+        items="[[getPasspointDomainsList_(subscription_)]]">
+      <div class="list-item secondary">
+        [[item]]
+      </div>
+    </template>
+  </iron-collapse>
+</div>
+<!-- Removal dialog triggered by the "forget" button -->
+<template is="dom-if" if="[[showForgetDialog_]]" restamp>
+  <cr-dialog id="removalDialog" close-text="$i18n{close}" show-on-attach>
+    <div slot="title">
+      $i18nPolymer{passpointRemovalTitle}
+    </div>
+    <div slot="body">
+      <localized-link
+          localized-string="[[getRemovalDialogDescription_(subscription_)]]"
+          link-url="$i18nRaw{wifiPasspointLearnMoreUrl}">
+      </localized-link>
+    </div>
+    <div slot="button-container">
+      <cr-button id="removalCancelButton" class="cancel-button"
+          on-click="onRemovalDialogCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="removalConfirmButton" class="action-button"
+          on-click="onRemovalDialogConfirm_">
+        $i18n{confirm}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

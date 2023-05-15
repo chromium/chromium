@@ -177,9 +177,9 @@ TEST_F(PrivacySandboxTestUtilTest, StateKey_SiteDataUserDefault) {
 
     EXPECT_TRUE(user_rule_iterator->HasNext());
     auto rule = user_rule_iterator->Next();
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-    EXPECT_EQ(base::Value(state), rule.value);
+    EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+    EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+    EXPECT_EQ(base::Value(state), rule->value());
 
     // Nothing should have ended up in the managed provider, which will present
     // as a null iterator.
@@ -202,9 +202,9 @@ TEST_F(PrivacySandboxTestUtilTest, StateKey_SiteDataUserExceptions) {
 
   EXPECT_TRUE(user_rule_iterator->HasNext());
   auto rule = user_rule_iterator->Next();
-  EXPECT_EQ(kException, rule.primary_pattern.ToString());
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(base::Value(CONTENT_SETTING_BLOCK), rule.value);
+  EXPECT_EQ(kException, rule->primary_pattern.ToString());
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(base::Value(CONTENT_SETTING_BLOCK), rule->value());
 
   // Nothing should have ended up in the managed provider, which will present
   // as a null iterator.

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <string>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -28,17 +30,55 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
-#include "services/device/public/cpp/hid/hid_usage_and_page.h"
+#include "services/device/public/cpp/hid/hid_report_type.h"
+#include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace hid = extensions::api::hid;
 
-using device::HidDeviceFilter;
-
 namespace extensions {
 
 namespace {
+
+using ::device::HidDeviceFilter;
+using ::device::HidReportType;
+using ::device::IsAlwaysProtected;
+
+// Return true if all reports in `device` with `report_id` are protected.
+// Protected report IDs are not exposed in the API.
+bool IsReportIdProtected(const device::mojom::HidDeviceInfo& device,
+                         uint8_t report_id) {
+  // `report_id` is not protected if there is any report with `report_id` that
+  // is not protected.
+  constexpr HidReportType report_types[] = {
+      HidReportType::kInput, HidReportType::kOutput, HidReportType::kFeature};
+  bool found_matching_report = false;
+  for (const auto& report_type : report_types) {
+    auto* collection =
+        device::FindCollectionWithReport(device, report_id, report_type);
+    if (collection) {
+      found_matching_report = true;
+      if (!IsAlwaysProtected(*collection->usage, report_type)) {
+        return false;
+      }
+    }
+  }
+  if (!found_matching_report) {
+    // No reports with `report_id` were found in any collection. This indicates
+    // an error in the device's report descriptor, but the device may still be
+    // usable. Consider the report protected if `device` has any collection with
+    // a protected usage.
+    return base::ranges::any_of(device.collections, [](const auto& collection) {
+      return IsAlwaysProtected(*collection->usage, HidReportType::kInput) ||
+             IsAlwaysProtected(*collection->usage, HidReportType::kOutput) ||
+             IsAlwaysProtected(*collection->usage, HidReportType::kFeature);
+    });
+  }
+
+  // All reports matching `report_id` are protected.
+  return true;
+}
 
 void PopulateHidDeviceInfo(hid::HidDeviceInfo* output,
                            const device::mojom::HidDeviceInfo& input) {
@@ -51,18 +91,24 @@ void PopulateHidDeviceInfo(hid::HidDeviceInfo* output,
   output->max_feature_report_size = input.max_feature_report_size;
 
   for (const auto& collection : input.collections) {
-    // Don't expose sensitive data.
-    if (device::IsAlwaysProtected(*collection->usage)) {
+    // Omit a collection if all its reports are protected.
+    if (!device::CollectionHasUnprotectedReports(*collection)) {
       continue;
     }
+
+    // Omit IDs only used by protected reports.
+    std::vector<int> filtered_report_ids;
+    base::ranges::copy_if(collection->report_ids,
+                          std::back_inserter(filtered_report_ids),
+                          [&input](int report_id) {
+                            return !IsReportIdProtected(input, report_id);
+                          });
 
     hid::HidCollectionInfo api_collection;
     api_collection.usage_page = collection->usage->usage_page;
     api_collection.usage = collection->usage->usage;
 
-    api_collection.report_ids.insert(api_collection.report_ids.begin(),
-                                     collection->report_ids.begin(),
-                                     collection->report_ids.end());
+    api_collection.report_ids = std::move(filtered_report_ids);
 
     output->collections.push_back(std::move(api_collection));
   }

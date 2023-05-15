@@ -19,6 +19,7 @@
 #include "ash/components/arc/net/arc_app_metadata_provider.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -264,6 +265,16 @@ class ArcAppListPrefs : public KeyedService,
 
     // Notifies that installation of package started.
     virtual void OnInstallationStarted(const std::string& package_name) {}
+
+    // Notifies that package installation has a new progress percentage.
+    virtual void OnInstallationProgressChanged(const std::string& package_name,
+                                               float progress) {}
+
+    // Notifies that a package installation session has either become active
+    // (currently downloading or installing) or inactive (installation is
+    // pending or paused).
+    virtual void OnInstallationActiveChanged(const std::string& package_name,
+                                             bool active) {}
 
     // Notifies that installation of package finished. |succeed| is set to true
     // in case of success.
@@ -526,6 +537,10 @@ class ArcAppListPrefs : public KeyedService,
       std::vector<arc::mojom::ArcPackageInfoPtr> packages) override;
   void OnInstallationStarted(
       const absl::optional<std::string>& package_name) override;
+  void OnInstallationProgressChanged(const std::string& package_name,
+                                     float progress) override;
+  void OnInstallationActiveChanged(const std::string& package_name,
+                                   bool active) override;
   void OnInstallationFinished(
       arc::mojom::InstallationResultPtr result) override;
 
@@ -663,12 +678,14 @@ class ArcAppListPrefs : public KeyedService,
   // Updates kArcPackagesIsUpToDate pref.
   void UpdateArcPackagesIsUpToDatePref();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Owned by the BrowserContext.
-  PrefService* const prefs_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
-  arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>* const
+  const raw_ptr<
+      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
+      ExperimentalAsh>
       app_connection_holder_for_testing_;
 
   // List of observers.
@@ -715,7 +732,8 @@ class ArcAppListPrefs : public KeyedService,
   // To execute file operations in sequence.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
-  arc::ArcPackageSyncableService* sync_service_ = nullptr;
+  raw_ptr<arc::ArcPackageSyncableService, DanglingUntriaged | ExperimentalAsh>
+      sync_service_ = nullptr;
 
   bool default_apps_ready_ = false;
   std::unique_ptr<ArcDefaultAppList> default_apps_;

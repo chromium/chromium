@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_piece.h"
 #include "net/third_party/quiche/src/quiche/common/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,29 +26,23 @@ using List = quiche::structured_headers::List;
 using Parameters = quiche::structured_headers::Parameters;
 
 inline absl::optional<ParameterizedItem> ParseItem(base::StringPiece str) {
-  return quiche::structured_headers::ParseItem(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseItem(str);
 }
 inline absl::optional<Item> ParseBareItem(base::StringPiece str) {
-  return quiche::structured_headers::ParseBareItem(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseBareItem(str);
 }
 inline absl::optional<ParameterisedList> ParseParameterisedList(
     base::StringPiece str) {
-  return quiche::structured_headers::ParseParameterisedList(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseParameterisedList(str);
 }
 inline absl::optional<ListOfLists> ParseListOfLists(base::StringPiece str) {
-  return quiche::structured_headers::ParseListOfLists(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseListOfLists(str);
 }
 inline absl::optional<List> ParseList(base::StringPiece str) {
-  return quiche::structured_headers::ParseList(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseList(str);
 }
 inline absl::optional<Dictionary> ParseDictionary(base::StringPiece str) {
-  return quiche::structured_headers::ParseDictionary(
-      base::StringPieceToStringView(str));
+  return quiche::structured_headers::ParseDictionary(str);
 }
 
 inline absl::optional<std::string> SerializeItem(const Item& value) {

@@ -6,16 +6,25 @@ found in the LICENSE file.
 
 <style include="cr-shared-style oobe-dialog-host-styles">
   :host {
+    --oobe-welcome-dialog-horizontal-padding: 40px;
     box-sizing: border-box;
     height: var(--oobe-adaptive-dialog-height);
     padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
-    padding-inline-end: 40px;
-    padding-inline-start: 40px;
+    padding-inline-end: var(--oobe-welcome-dialog-horizontal-padding);
+    padding-inline-start: var(--oobe-welcome-dialog-horizontal-padding);
     padding-top: calc(
       var(--cr-button-height) + 2 *
         var(--oobe-adaptive-dialog-back-button-vertical-padding)
     );
     width: var(--oobe-adaptive-dialog-width);
+  }
+  :host(:host-context(.simon-enabled[orientation='vertical'])) {
+    padding-inline-start: calc(var(--oobe-adaptive-dialog-width) / 3);
+  }
+  :host(:host-context(.simon-enabled[orientation='horizontal'])) {
+    padding-inline-start: calc(
+      var(--oobe-welcome-dialog-horizontal-padding)
+      + var(--oobe-adaptive-dialog-width) / 2);
   }
 
   #dialog {
@@ -28,6 +37,9 @@ found in the LICENSE file.
     flex-grow: 1;
     min-height: 0;
   }
+  :host-context(.simon-enabled) #content {
+    flex-grow: 0;
+  }
   :host-context([orientation='vertical']) #content {
     grid-template-columns: auto;
     grid-template-rows: min-content auto min-content;
@@ -35,6 +47,9 @@ found in the LICENSE file.
   :host-context([orientation='horizontal']) #content {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  :host-context(.simon-enabled[orientation='horizontal']) #content {
+    grid-template-columns: auto;
   }
 
   #buttons {
@@ -45,6 +60,11 @@ found in the LICENSE file.
     align-items: center;
     align-self: center;
     justify-self: center;
+  }
+  :host-context(.simon-enabled[orientation='vertical']) #buttons {
+    align-items: normal;
+    align-self: start;
+    justify-self: start;
   }
   :host-context([orientation='horizontal']) #buttons {
     align-self: start;
@@ -62,6 +82,10 @@ found in the LICENSE file.
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
     justify-self: start;
+  }
+  :host-context(.simon-enabled) #bottomButtons {
+    justify-self: end;
+    margin-top: 72px;
   }
 
   #welcomeAnimation {
@@ -92,13 +116,16 @@ found in the LICENSE file.
     line-height: 44px;
     margin-bottom: 0;
   }
-
   :host-context([orientation='horizontal']) #title {
     margin-top: 48px;
   }
-
   :host-context([orientation='vertical']) #title {
     margin-top: 40px;
+  }
+  :host-context(.simon-enabled) #title {
+    font-size: 52px;
+    line-height: 60px;
+    margin-top: auto;
   }
 
   #subtitle {
@@ -108,13 +135,20 @@ found in the LICENSE file.
     line-height: 32px;
     margin-top: 16px;
   }
+  :host-context(.simon-enabled) #subtitle {
+    font-size: 22px;
+    line-height: 28px;
+    margin-top: 24px;
+  }
 
   :host-context([orientation='horizontal']) #subtitle {
     margin-bottom: 64px;
   }
-
   :host-context([orientation='vertical']) #subtitle {
     margin-bottom: 40px;
+  }
+  :host-context(.simon-enabled) #subtitle {
+    margin-bottom: 56px;
   }
 
   .welcome-header-text {
@@ -123,6 +157,10 @@ found in the LICENSE file.
   :host-context([orientation='vertical']) .welcome-header-text {
     align-self: center;
     text-align: center;
+  }
+  :host-context(.simon-enabled[orientation='vertical']) .welcome-header-text {
+    align-self: auto;
+    text-align: start;
   }
   :host-context([orientation='horizontal']) .welcome-header-text {
     text-align: start;
@@ -190,23 +228,25 @@ found in the LICENSE file.
       >
       </oobe-text-button>
     </div>
-    <div id="welcomeAnimationSlot">
-      <template is="dom-if" if="[[!isMeet_]]">
-        <oobe-cr-lottie
-          id="welcomeAnimation"
-          animation-url="animations/welcome_screen_animation.json"
-        >
-        </oobe-cr-lottie>
-      </template>
-      <template is="dom-if" if="[[isMeet_]]">
-        <img
-          src="/images/cfm/welcome.svg"
-          class="oobe-illustration"
-          id="remoraWelcomeImage"
-          aria-hidden="true"
-        >
-      </template>
-    </div>
+    <template is="dom-if" if="[[showAnimationSlot()]]">
+      <div id="welcomeAnimationSlot">
+        <template is="dom-if" if="[[!isMeet_]]">
+          <oobe-cr-lottie
+            id="welcomeAnimation"
+            animation-url="animations/welcome_screen_animation.json"
+          >
+          </oobe-cr-lottie>
+        </template>
+        <template is="dom-if" if="[[isMeet_]]">
+          <img
+            src="/images/cfm/welcome.svg"
+            class="oobe-illustration"
+            id="remoraWelcomeImage"
+            aria-hidden="true"
+          >
+        </template>
+      </div>
+    </template>
   </div>
 </div>
 <oobe-modal-dialog id="chromeVoxHint">

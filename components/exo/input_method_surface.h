@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_INPUT_METHOD_SURFACE_H_
 #define COMPONENTS_EXO_INPUT_METHOD_SURFACE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
@@ -37,7 +38,7 @@ class InputMethodSurface : public ClientControlledShellSurface {
   gfx::Rect GetBounds() const;
 
  private:
-  InputMethodSurfaceManager* const manager_;
+  const raw_ptr<InputMethodSurfaceManager, ExperimentalAsh> manager_;
   bool added_to_manager_ = false;
   // The bounds of this surface in DIP.
   gfx::Rect input_method_bounds_;

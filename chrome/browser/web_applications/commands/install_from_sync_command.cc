@@ -10,7 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -126,13 +126,6 @@ void InstallFromSyncCommand::OnShutdown() {
   ReportResultAndDestroy(
       params_.app_id,
       webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-}
-
-void InstallFromSyncCommand::OnSyncSourceRemoved() {
-  // Since this is a sync install command, if an uninstall is queued, just
-  // cancel this command.
-  ReportResultAndDestroy(params_.app_id,
-                         webapps::InstallResultCode::kHaltedBySyncUninstall);
 }
 
 const LockDescription& InstallFromSyncCommand::lock_description() const {

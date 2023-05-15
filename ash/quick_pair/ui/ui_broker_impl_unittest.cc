@@ -10,6 +10,7 @@
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter_impl.h"
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -91,7 +92,8 @@ class FakeFastPairPresenterFactory
   }
 
  protected:
-  FakeFastPairPresenter* fake_fast_pair_presenter_ = nullptr;
+  raw_ptr<FakeFastPairPresenter, ExperimentalAsh> fake_fast_pair_presenter_ =
+      nullptr;
 };
 
 }  // namespace
@@ -102,11 +104,14 @@ namespace quick_pair {
 class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
  public:
   void SetUp() override {
-    AshTestBase::SetUp();
-
     presenter_factory_ = std::make_unique<FakeFastPairPresenterFactory>();
     FastPairPresenterImpl::Factory::SetFactoryForTesting(
         presenter_factory_.get());
+
+    // We need to make sure that we register the test factory before calling
+    // `AshTestBase::SetUp()`, since the test setup will create the presenter
+    // behind the scenes.
+    AshTestBase::SetUp();
 
     ui_broker_ = std::make_unique<UIBrokerImpl>();
     ui_broker_->AddObserver(this);

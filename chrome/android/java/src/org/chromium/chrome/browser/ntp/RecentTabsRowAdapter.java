@@ -786,8 +786,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         Drawable image;
         if (url == null) {
             // URL is null for print jobs, for example.
-            image = mDefaultFaviconHelper.getDefaultFaviconDrawable(
-                    mActivity.getResources(), url, true);
+            image = mDefaultFaviconHelper.getDefaultFaviconDrawable(mActivity, url, true);
         } else {
             image = mFaviconCaches.get(locality).getFaviconImage(url);
             if (image == null) {
@@ -795,9 +794,9 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     @Override
                     public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
                         if (this != viewHolder.imageCallback) return;
-                        Drawable faviconDrawable = FaviconUtils.getIconDrawableWithFilter(bitmap,
-                                url, mIconGenerator, mDefaultFaviconHelper,
-                                mActivity.getResources(), mFaviconSize);
+                        Drawable faviconDrawable =
+                                FaviconUtils.getIconDrawableWithFilter(bitmap, url, mIconGenerator,
+                                        mDefaultFaviconHelper, mActivity, mFaviconSize);
                         mFaviconCaches.get(locality).putFaviconImage(url, faviconDrawable);
                         viewHolder.imageView.setImageDrawable(faviconDrawable);
                     }
@@ -813,8 +812,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                         break;
                 }
 
-                image = mDefaultFaviconHelper.getDefaultFaviconDrawable(
-                        mActivity.getResources(), url, true);
+                image = mDefaultFaviconHelper.getDefaultFaviconDrawable(mActivity, url, true);
             }
         }
         viewHolder.imageView.setImageDrawable(image);

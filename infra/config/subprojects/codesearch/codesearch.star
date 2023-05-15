@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "goma", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
@@ -34,7 +34,6 @@ try_.defaults.cq_group.set("cq")
 try_.defaults.executable.set("recipe:chromium_codesearch")
 try_.defaults.execution_timeout.set(9 * time.hour)
 try_.defaults.expiration_timeout.set(2 * time.hour)
-try_.defaults.goma_backend.set(goma.backend.RBE_PROD)
 try_.defaults.os.set(os.LINUX_DEFAULT)
 try_.defaults.pool.set("luci.chromium.try")
 try_.defaults.reclient_instance.set(reclient.instance.DEFAULT_UNTRUSTED)

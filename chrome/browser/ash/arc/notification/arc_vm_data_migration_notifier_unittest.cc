@@ -12,6 +12,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -109,7 +110,8 @@ class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* testing_profile_ = nullptr;  // Owned by |profile_manager_|.
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ =
+      nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 };

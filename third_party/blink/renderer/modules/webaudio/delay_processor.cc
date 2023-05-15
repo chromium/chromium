@@ -27,10 +27,83 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/modules/webaudio/delay_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 namespace blink {
+
+namespace {
+
+class DelayDSPKernel final : public AudioDSPKernel {
+ public:
+  explicit DelayDSPKernel(DelayProcessor* processor)
+      : AudioDSPKernel(processor),
+        delay_(processor->MaxDelayTime(),
+               processor->SampleRate(),
+               processor->RenderQuantumFrames()) {
+    DCHECK(processor);
+    DCHECK_GT(processor->SampleRate(), 0);
+  }
+
+  // Process the delay.  Basically dispatches to either ProcessKRate or
+  // ProcessARate.
+  void Process(const float* source,
+               float* destination,
+               uint32_t frames_to_process) override {
+    if (HasSampleAccurateValues() && IsAudioRate()) {
+      GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
+          delay_.DelayTimes(), frames_to_process);
+      delay_.ProcessARate(source, destination, frames_to_process);
+    } else {
+      delay_.SetDelayTime(GetDelayProcessor()->DelayTime().FinalValue());
+      delay_.ProcessKRate(source, destination, frames_to_process);
+    }
+  }
+
+  void ProcessOnlyAudioParams(uint32_t frames_to_process) override {
+    DCHECK_LE(frames_to_process, RenderQuantumFrames());
+
+    float values[RenderQuantumFrames()];
+
+    GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
+        values, frames_to_process);
+  }
+
+  void Reset() override { delay_.Reset(); }
+
+  double TailTime() const override {
+    // Account for worst case delay.
+    // Don't try to track actual delay time which can change dynamically.
+    return delay_.MaxDelayTime();
+  }
+
+  double LatencyTime() const override { return 0; }
+
+  bool RequiresTailProcessing() const override {
+    // Always return true even if the tail time and latency might both
+    // be zero. This is for simplicity; most interesting delay nodes
+    // have non-zero delay times anyway.  And it's ok to return true. It
+    // just means the node lives a little longer than strictly
+    // necessary.
+    return true;
+  }
+
+ private:
+  bool HasSampleAccurateValues() {
+    return GetDelayProcessor()->DelayTime().HasSampleAccurateValues();
+  }
+
+  bool IsAudioRate() { return GetDelayProcessor()->DelayTime().IsAudioRate(); }
+
+  DelayProcessor* GetDelayProcessor() {
+    return static_cast<DelayProcessor*>(Processor());
+  }
+
+  Delay delay_;
+};
+
+}  // namespace
 
 DelayProcessor::DelayProcessor(float sample_rate,
                                unsigned number_of_channels,

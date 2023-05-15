@@ -8,7 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -59,7 +59,9 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  WebFrame* frame =
+      feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+  feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -89,7 +91,7 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
 
   WebFrame* child_frame = nullptr;
   for (WebFrame* frame : web_frames) {
-    if (frame != GetMainFrame(web_state())) {
+    if (!frame->IsMainFrame()) {
       child_frame = frame;
       break;
     }
@@ -146,7 +148,9 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  WebFrame* frame =
+      feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+  feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -176,7 +180,7 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
 
   WebFrame* child_frame = nullptr;
   for (WebFrame* frame : web_frames) {
-    if (frame != GetMainFrame(web_state())) {
+    if (!frame->IsMainFrame()) {
       child_frame = frame;
       break;
     }

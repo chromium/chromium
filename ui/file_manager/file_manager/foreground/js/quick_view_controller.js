@@ -457,7 +457,8 @@ export class QuickViewController {
 
     try {
       const values = await Promise.all([
-        this.metadataModel_.get([entry], ['thumbnailUrl', 'modificationTime']),
+        this.metadataModel_.get(
+            [entry], ['thumbnailUrl', 'modificationTime', 'contentMimeType']),
         this.taskController_.getEntryFileTasks(entry),
         this.canDeleteEntry_(entry),
       ]);
@@ -528,7 +529,7 @@ export class QuickViewController {
    * @private
    */
   async getQuickViewParameters_(entry, items, tasks, canDelete) {
-    const typeInfo = FileType.getType(entry);
+    const typeInfo = FileType.getType(entry, items[0].contentMimeType);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const label = util.getEntryLabel(locationInfo, entry);
@@ -552,7 +553,8 @@ export class QuickViewController {
             assert(volumeInfo.volumeType)) >= 0;
 
     // Treat certain types on Drive as if they were local (try auto-play etc).
-    if (entryIsOnDrive && (type === 'audio' || type === 'video')) {
+    if (entryIsOnDrive && (type === 'audio' || type === 'video') &&
+        !typeInfo.encrypted) {
       localFile = true;
     }
 
@@ -584,6 +586,10 @@ export class QuickViewController {
         } else {
           console.warn(`Failed to fetch thumbnail: ${result.status}`);
         }
+      }
+      if (typeInfo.encrypted) {
+        params.type = 'encrypted';
+        return params;
       }
     }
 

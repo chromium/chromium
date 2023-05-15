@@ -31,6 +31,10 @@
 #include <CoreServices/CoreServices.h>
 #endif
 
+#if LEAK_SANITIZER
+#include <sanitizer/lsan_interface.h>
+#endif
+
 namespace net {
 
 class NetworkAnonymizationKey;
@@ -259,10 +263,8 @@ int ProxyResolverMac::GetProxyForURL(
 
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
       CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
-  CFArrayRef dummy_result =
-      CFNetworkCopyProxiesForURL(query_url_ref.get(), empty_dictionary);
-  if (dummy_result)
-    CFRelease(dummy_result);
+  base::ScopedCFTypeRef<CFArrayRef> dummy_result(
+      CFNetworkCopyProxiesForURL(query_url_ref.get(), empty_dictionary));
 
   // We cheat here. We need to act as if we were synchronous, so we pump the
   // runloop ourselves. Our caller moved us to a new thread anyway, so this is
@@ -274,6 +276,11 @@ int ProxyResolverMac::GetProxyForURL(
   base::ScopedCFTypeRef<CFRunLoopSourceRef> runloop_source(
       CFNetworkExecuteProxyAutoConfigurationURL(
           pac_url_ref.get(), query_url_ref.get(), ResultCallback, &context));
+#if LEAK_SANITIZER
+  // CFNetworkExecuteProxyAutoConfigurationURL leaks the returned
+  // CFRunLoopSourceRef. Filed as FB12170226.
+  __lsan_ignore_object(runloop_source.get());
+#endif
   if (!runloop_source)
     return ERR_FAILED;
 

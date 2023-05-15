@@ -67,14 +67,12 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AutofillProfilesFragmentTest {
-    private static final AutofillProfile sLocalOrSyncProfile =
-            new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
-                    "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US",
-                    "650-253-0000", "first@gmail.com", "en-US");
-    private static final AutofillProfile sAccountProfile = new AutofillProfile("",
-            "https://example.com", true, Source.ACCOUNT, "" /* honorific prefix */, "Artik Doe",
-            "Google", "999 Fourth St", "California", "Los Angeles", "", "90291", "", "US",
-            "650-253-0000", "artik@gmail.com", "en-US");
+    private static final AutofillProfile sLocalOrSyncProfile = new AutofillProfile("",
+            "" /* honorific prefix */, "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "",
+            "90291", "", "US", "650-253-0000", "first@gmail.com", "en-US");
+    private static final AutofillProfile sAccountProfile = new AutofillProfile("", true, Source.ACCOUNT,
+            "" /* honorific prefix */, "Artik Doe", "Google", "999 Fourth St", "California",
+            "Los Angeles", "", "90291", "", "US", "650-253-0000", "artik@gmail.com", "en-US");
 
     @Rule
     public final AutofillTestRule rule = new AutofillTestRule();
@@ -104,17 +102,17 @@ public class AutofillProfilesFragmentTest {
     @Before
     public void setUp() throws TimeoutException {
         mHelper.setProfile(sLocalOrSyncProfile);
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "" /* honorific prefix */, "John Doe", "Google", "111 Second St", "CA",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "second@gmail.com", "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "John Doe", "Google",
+                "111 Second St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
+                "second@gmail.com", "en-US"));
         // Invalid state should not cause a crash on the state dropdown list.
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "" /* honorific prefix */, "Bill Doe", "Google", "111 Third St", "XXXYYY",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "third@gmail.com", "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "Bill Doe", "Google",
+                "111 Third St", "XXXYYY", "Los Angeles", "", "90291", "", "US", "650-253-0000",
+                "third@gmail.com", "en-US"));
         // Full value for state should show up correctly on the dropdown list.
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "" /* honorific prefix */, "Bob Doe", "Google", "111 Fourth St", "California",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "Bob Doe", "Google",
+                "111 Fourth St", "California", "Los Angeles", "", "90291", "", "US", "650-253-0000",
+                "fourth@gmail.com", "en-US"));
     }
 
     @After
@@ -358,10 +356,9 @@ public class AutofillProfilesFragmentTest {
         String email = "test@account";
         setUpMockPrimaryAccount(email);
 
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, Source.ACCOUNT,
-                "" /* honorific prefix */, "Account Updated #0", "Google", "111 Fourth St",
-                "California", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "fourth@gmail.com", "en-US"));
+        mHelper.setProfile(new AutofillProfile("", true, Source.ACCOUNT, "" /* honorific prefix */,
+                "Account Updated #0", "Google", "111 Fourth St", "California", "Los Angeles", "",
+                "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
 
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
@@ -411,8 +408,8 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testEditInvalidAccountProfile() throws Exception {
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, Source.ACCOUNT,
-                "" /* honorific prefix */, "Account Updated #0", "Google",
+        mHelper.setProfile(new AutofillProfile("", true, Source.ACCOUNT, "" /* honorific prefix */,
+                "Account Updated #0", "Google",
                 "" /** Street address is required in US but already missing. */, "California",
                 "Los Angeles", "", "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
 

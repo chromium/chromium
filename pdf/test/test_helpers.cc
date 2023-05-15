@@ -48,7 +48,8 @@ testing::AssertionResult MatchesPngFile(
 
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
                                              SkColor color) {
-  auto surface = SkSurface::MakeRasterN32Premul(size.width(), size.height());
+  auto surface = SkSurfaces::Raster(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()));
   surface->getCanvas()->clear(color);
   return surface;
 }

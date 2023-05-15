@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -219,12 +220,13 @@ Visibility GetVisibility(Browser* browser, const std::string& node_id) {
     }(document.getElementById(')" + node_id + R"(')));)";
   // clang-format on
 
-  base::Value value = content::ExecuteScriptAndGetValue(rfh, jsFindVisibility);
+  content::EvalJsResult result = content::EvalJs(rfh, jsFindVisibility);
 
-  if (!value.is_bool())
+  if (result != true && result != false) {
     return VISIBILITY_ERROR;
+  }
 
-  return value.GetBool() ? VISIBLE : HIDDEN;
+  return result == true ? VISIBLE : HIDDEN;
 }
 
 bool Click(Browser* browser, const std::string& node_id) {
@@ -235,7 +237,7 @@ bool Click(Browser* browser, const std::string& node_id) {
   content::RenderFrameHost* rfh = GetRenderFrameHost(browser);
   if (!rfh)
     return false;
-  // We don't use ExecuteScriptAndGetValue for this one, since clicking
+  // We don't use EvalJs for this one, since clicking
   // the button/link may navigate away before the injected javascript can
   // reply, hanging the test.
   rfh->ExecuteJavaScriptForTests(u"document.getElementById('" +
@@ -1462,6 +1464,39 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       Histograms_UserMadeNoDecision) {
+  base::HistogramTester histograms;
+  std::string prefix;
+  SBThreatType threat_type = GetThreatType();
+  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+    prefix = "malware";
+  } else if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    prefix = "phishing";
+  } else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
+    prefix = "harmful";
+  } else {
+    NOTREACHED();
+  }
+  const std::string interaction_histogram =
+      "interstitial." + prefix + ".interaction";
+
+  // Histograms should start off empty.
+  histograms.ExpectTotalCount(interaction_histogram, 0);
+
+  // Navigate to the page and show warning.
+  GURL url = SetupWarningAndNavigate(browser());
+
+  // Close tab without making an explicit choice on interstitial.
+  chrome::CloseTab(browser());
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {
@@ -2049,7 +2084,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "document.body.webkitRequestFullscreen()";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2059,7 +2094,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "Notification.requestPermission(function(){})";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2069,7 +2104,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "navigator.mediaDevices.getDisplayMedia()";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript,
+                                content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2484,7 +2520,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(contents);
-  EXPECT_TRUE(content::ExecuteScript(contents, "alert('test')"));
+  EXPECT_TRUE(content::ExecJs(contents, "alert('test')"));
   observer.WaitForNavigationFinished();
   EXPECT_TRUE(WaitForReady(browser()));
 
@@ -2631,7 +2667,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"
       "document.getElementById('retry_submit_button').click()";
-  ASSERT_TRUE(content::ExecuteScript(contents, fill_and_submit));
+  ASSERT_TRUE(content::ExecJs(contents, fill_and_submit));
   ASSERT_TRUE(observer2.Wait());
   EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
   PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());

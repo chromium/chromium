@@ -65,8 +65,10 @@ class PermissionRequest {
     LOUD_REQUEST,
     QUIET_REQUEST,
     ALLOW_CONFIRMATION,
+    ALLOW_ONCE_CONFIRMATION,
     BLOCKED_CONFIRMATION,
     ACCESSIBILITY_ALLOWED_CONFIRMATION,
+    ACCESSIBILITY_ALLOWED_ONCE_CONFIRMATION,
     ACCESSIBILITY_BLOCKED_CONFIRMATION
   };
 
@@ -108,6 +110,10 @@ class PermissionRequest {
   // "[domain] wants to:".
   virtual std::u16string GetMessageTextFragment() const;
 #endif
+
+  // Returns true if the request has two origins and should use the two origin
+  // prompt. Returns false otherwise.
+  bool ShouldUseTwoOriginPrompt() const;
 
   // Called when the user has granted the requested permission.
   // If |is_one_time| is true the permission will last until all tabs of

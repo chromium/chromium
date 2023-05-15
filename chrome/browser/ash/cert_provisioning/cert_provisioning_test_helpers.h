@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
@@ -64,7 +65,8 @@ struct CertificateHelperForTesting {
   void GetCertificates(chromeos::platform_keys::TokenId token_id,
                        platform_keys::GetCertificatesCallback callback);
 
-  platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::MockPlatformKeysService, ExperimentalAsh>
+      platform_keys_service_ = nullptr;
   scoped_refptr<net::X509Certificate> template_cert_;
   net::CertificateList cert_list_;
 };
@@ -88,8 +90,8 @@ class ProfileHelperForTesting {
 
   TestingProfileManager testing_profile_manager_;
   FakeChromeUserManager fake_user_manager_;
-  TestingProfile* testing_profile_ = nullptr;
-  user_manager::User* user_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
+  raw_ptr<user_manager::User, ExperimentalAsh> user_ = nullptr;
 };
 
 }  // namespace cert_provisioning

@@ -8,6 +8,7 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -31,11 +32,11 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   ~PublicAccountComboboxModel() override = default;
 
   // ui::ComboboxModel:
-  size_t GetItemCount() const override { return items_.size(); }
+  size_t GetItemCount() const override { return items_->size(); }
 
   // ui::ComboboxModel:
   std::u16string GetItemAt(size_t index) const override {
-    return base::UTF8ToUTF16(items_[index].title);
+    return base::UTF8ToUTF16((*items_)[index].title);
   }
 
   // ui::ComboboxModel:
@@ -44,7 +45,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   // represent them as disabled items because they were presented in a similar
   // fashion before (i.e. the group name was visible but unclickable).
   bool IsItemEnabledAt(size_t index) const override {
-    return !items_[index].is_group;
+    return !(*items_)[index].is_group;
   }
 
   // ui::ComboboxModel:
@@ -53,7 +54,8 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   }
 
  private:
-  const std::vector<PublicAccountMenuView::Item>& items_;
+  const raw_ref<const std::vector<PublicAccountMenuView::Item>, ExperimentalAsh>
+      items_;
   const size_t default_index_;
 };
 
@@ -79,7 +81,7 @@ PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
 PublicAccountMenuView::~PublicAccountMenuView() = default;
 
 void PublicAccountMenuView::OnSelectedIndexChanged() {
-  on_select_.Run(items_[GetSelectedIndex().value()].value);
+  on_select_.Run((*items_)[GetSelectedIndex().value()].value);
 }
 
 }  // namespace ash

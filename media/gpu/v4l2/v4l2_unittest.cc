@@ -15,6 +15,7 @@
 #include "base/test/test_suite.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 
 #include <drm.h>
@@ -28,8 +29,6 @@ namespace media {
 namespace {
 
 const base::FilePath kDecoderDevicePrefix("/dev/dri/");
-
-#define V4L2_PIX_FMT_INVALID 0
 
 #define TOSTR(enumCase) \
   case enumCase:        \
@@ -186,8 +185,8 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   ASSERT_TRUE(device);
 
-  const auto fourcc_stateful =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(video_codec_profile, false);
+  const auto fourcc_stateful = V4L2Device::VideoCodecProfileToV4L2PixFmt(
+      video_codec_profile, /*slice_based=*/false);
   const bool is_stateful =
       device->Open(V4L2Device::Type::kDecoder, fourcc_stateful);
 
@@ -201,8 +200,8 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
   constexpr uint32_t desired_v4l2_pixel_formats[] = {V4L2_PIX_FMT_NV12,
                                                      V4L2_PIX_FMT_NV12M};
   std::vector<uint32_t> supported_v4l2_pixel_formats =
-      device->EnumerateSupportedPixelformats(
-          V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+      EnumerateSupportedPixFmts(base::BindRepeating(&V4L2Device::Ioctl, device),
+                                V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   int32_t chosen_v4l2_pixel_format = 0;
   for (const auto supported_v4l2_pixel_format : supported_v4l2_pixel_formats) {
     if (base::Contains(desired_v4l2_pixel_formats,

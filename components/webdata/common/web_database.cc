@@ -6,14 +6,17 @@
 
 #include <algorithm>
 
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "sql/transaction.h"
 
 // Current version number.  Note: when changing the current version number,
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 111;
+const int WebDatabase::kCurrentVersionNumber = 112;
 
 const int WebDatabase::kDeprecatedVersionNumber = 82;
 
@@ -21,6 +24,26 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
     FILE_PATH_LITERAL(":memory");
 
 namespace {
+
+// These values are logged as histogram buckets and most not be changed nor
+// reused.
+enum class WebDatabaseInitResult {
+  kSuccess = 0,
+  kCouldNotOpen = 1,
+  kDatabaseLocked = 2,
+  kCouldNotRazeIncompatibleVersion = 3,
+  kFailedToBeginInitTransaction = 4,
+  kMetaTableInitFailed = 5,
+  kCurrentVersionTooNew = 6,
+  kMigrationError = 7,
+  kFailedToCreateTable = 8,
+  kFailedToCommitInitTransaction = 9,
+  kMaxValue = kFailedToCommitInitTransaction
+};
+
+void LogInitResult(WebDatabaseInitResult result) {
+  base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
+}
 
 const int kCompatibleVersionNumber = 106;
 
@@ -40,7 +63,10 @@ const int kCompatibleVersionNumber = 106;
 sql::InitStatus FailedMigrationTo(int version_num) {
   LOG(WARNING) << "Unable to update web database to version " << version_num
                << ".";
-  NOTREACHED();
+  base::UmaHistogramExactLinear("WebDatabase.FailedMigrationToVersion",
+                                version_num,
+                                WebDatabase::kCurrentVersionNumber + 1);
+  LogInitResult(WebDatabaseInitResult::kMigrationError);
   return sql::INIT_FAILURE;
 }
 
@@ -91,26 +117,43 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
                                          : !db_.Open(db_name)) {
+    LogInitResult(WebDatabaseInitResult::kCouldNotOpen);
+    return sql::INIT_FAILURE;
+  }
+
+  // Dummy transaction to check whether the database is writeable and bail
+  // early if that's not the case.
+  if (!db_.Execute("BEGIN EXCLUSIVE") || !db_.Execute("COMMIT")) {
+    LogInitResult(WebDatabaseInitResult::kDatabaseLocked);
     return sql::INIT_FAILURE;
   }
 
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
-  sql::MetaTable::RazeIfIncompatible(
-      &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-      kCurrentVersionNumber);
+  if (!sql::MetaTable::RazeIfIncompatible(
+          &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
+          kCurrentVersionNumber)) {
+    LogInitResult(WebDatabaseInitResult::kCouldNotRazeIncompatibleVersion);
+    return sql::INIT_FAILURE;
+  }
 
   // Scope initialization in a transaction so we can't be partially
   // initialized.
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
+    LogInitResult(WebDatabaseInitResult::kFailedToBeginInitTransaction);
     return sql::INIT_FAILURE;
+  }
 
   // Version check.
-  if (!meta_table_.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber))
+  if (!meta_table_.Init(&db_, kCurrentVersionNumber,
+                        kCompatibleVersionNumber)) {
+    LogInitResult(WebDatabaseInitResult::kMetaTableInitFailed);
     return sql::INIT_FAILURE;
+  }
   if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
+    LogInitResult(WebDatabaseInitResult::kCurrentVersionTooNew);
     LOG(WARNING) << "Web database is too new.";
     return sql::INIT_TOO_NEW;
   }
@@ -124,8 +167,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // If the migration fails we return an error to caller and do not commit
   // the migration.
   sql::InitStatus migration_status = MigrateOldVersionsAsNeeded();
-  if (migration_status != sql::INIT_OK)
+  if (migration_status != sql::INIT_OK) {
     return migration_status;
+  }
 
   // Create the desired SQL tables if they do not already exist.
   // It's important that this happen *after* the migration code runs.
@@ -134,11 +178,18 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   for (const auto& table : tables_) {
     if (!table.second->CreateTablesIfNecessary()) {
       LOG(WARNING) << "Unable to initialize the web database.";
+      LogInitResult(WebDatabaseInitResult::kFailedToCreateTable);
       return sql::INIT_FAILURE;
     }
   }
 
-  return transaction.Commit() ? sql::INIT_OK : sql::INIT_FAILURE;
+  bool result = transaction.Commit();
+  if (!result) {
+    LogInitResult(WebDatabaseInitResult::kFailedToCommitInitTransaction);
+    return sql::INIT_FAILURE;
+  }
+  LogInitResult(WebDatabaseInitResult::kSuccess);
+  return sql::INIT_OK;
 }
 
 sql::InitStatus WebDatabase::MigrateOldVersionsAsNeeded() {

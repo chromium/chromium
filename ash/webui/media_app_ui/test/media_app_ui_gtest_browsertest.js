@@ -7,9 +7,7 @@
  */
 GEN('#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"');
 
-GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
 
@@ -44,18 +42,8 @@ var MediaAppUIGtestBrowserTest = class extends testing.Test {
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
 // eslint-disable-next-line no-var
-var MediaAppUIWithDarkLightModeGtestBrowserTest =
+var MediaAppUIWithLightModeGtestBrowserTest =
     class extends MediaAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        ...super.featureList.enabled,
-        'chromeos::features::kDarkLightMode',
-      ],
-    };
-  }
-
   /** @override */
   get testGenPreamble() {
     return () => {
@@ -67,36 +55,13 @@ var MediaAppUIWithDarkLightModeGtestBrowserTest =
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
 // eslint-disable-next-line no-var
-var MediaAppUIWithDarkLightModeDarkGtestBrowserTest =
+var MediaAppUIWithDarkModeGtestBrowserTest =
     class extends MediaAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        ...super.featureList.enabled,
-        'chromeos::features::kDarkLightMode',
-      ],
-    };
-  }
-
   /** @override */
   get testGenPreamble() {
     return () => {
       // Switch to dark mode.
       GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);');
-    };
-  }
-};
-
-// js2gtest fixtures require var here (https://crbug.com/1033337).
-// eslint-disable-next-line no-var
-var MediaAppUIWithoutDarkLightModeGtestBrowserTest =
-    class extends MediaAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['chromeos::features::kDarkLightMode'],
     };
   }
 };
@@ -152,13 +117,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
     ...(/** @type {{testCaseBodies: Object}} */ (MediaAppUIGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
-            MediaAppUIWithDarkLightModeGtestBrowserTest))
+            MediaAppUIWithLightModeGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
-            MediaAppUIWithDarkLightModeDarkGtestBrowserTest))
-        .testCaseBodies,
-    ...(/** @type {{testCaseBodies: Object}} */ (
-            MediaAppUIWithoutDarkLightModeGtestBrowserTest))
+            MediaAppUIWithDarkModeGtestBrowserTest))
         .testCaseBodies,
   };
   for (const f in MediaAppUIBrowserTest) {
@@ -209,20 +171,18 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
 });
 
 TEST_F(
-    'MediaAppUIWithDarkLightModeGtestBrowserTest', 'NotifyCurrentFileLight',
-    () => {
+    'MediaAppUIWithLightModeGtestBrowserTest', 'NotifyCurrentFileLight', () => {
       runMediaAppTest('NotifyCurrentFileLight');
     });
 
 TEST_F(
-    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest', 'NotifyCurrentFileDark',
-    () => {
+    'MediaAppUIWithDarkModeGtestBrowserTest', 'NotifyCurrentFileDark', () => {
       runMediaAppTest('NotifyCurrentFileDark');
     });
 
 TEST_F(
-    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest',
-    'NotifyCurrentFileAppIconDark', () => {
+    'MediaAppUIWithDarkModeGtestBrowserTest', 'NotifyCurrentFileAppIconDark',
+    () => {
       runMediaAppTest('NotifyCurrentFileAppIconDark');
     });
 
@@ -347,15 +307,9 @@ TEST_F('MediaAppUIGtestBrowserTest', 'GuestHasFocus', () => {
 });
 
 TEST_F(
-    'MediaAppUIWithDarkLightModeGtestBrowserTest',
-    'BodyHasCorrectBackgroundColorWithDarkLight', () => {
-      runMediaAppTest('BodyHasCorrectBackgroundColorWithDarkLight');
-    });
-
-TEST_F(
-    'MediaAppUIWithoutDarkLightModeGtestBrowserTest',
-    'BodyHasCorrectBackgroundColorWithoutDarkLight', () => {
-      runMediaAppTest('BodyHasCorrectBackgroundColorWithoutDarkLight');
+    'MediaAppUIWithLightModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorInLightMode', () => {
+      runMediaAppTest('BodyHasCorrectBackgroundColorInLightMode');
     });
 
 // Test cases injected into the guest context.

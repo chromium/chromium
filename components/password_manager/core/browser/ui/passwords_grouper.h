@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 
 namespace password_manager {
@@ -33,9 +34,11 @@ class PasswordsGrouper {
   // credentials are part of the same affiliated group so they will be grouped
   // together.
   // |forms| PasswordForms to be grouped.
+  // |passkeys| Passkey metadata to be grouped.
   // |callback| is called after the grouping is finished.
-  void GroupPasswords(std::vector<PasswordForm> forms,
-                      base::OnceClosure callback);
+  void GroupCredentials(std::vector<PasswordForm> password_forms,
+                        std::vector<PasskeyCredential> passkeys,
+                        base::OnceClosure callback);
 
   // Returns a list of affiliated groups created with the password grouping
   // info.
@@ -59,12 +62,25 @@ class PasswordsGrouper {
   using UsernamePasswordKey =
       base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
 
+  // Holds the set of credentials for a given credential group.
+  struct Credentials {
+    Credentials();
+    ~Credentials();
+
+    // Password forms grouped by username-password keys.
+    std::map<UsernamePasswordKey, std::vector<PasswordForm>> forms;
+
+    // List of passkeys associated to the group.
+    std::vector<PasskeyCredential> passkeys;
+  };
+
   // Returns a map of facet URI to group id. Stores branding information for the
   // affiliated group by updating |map_group_id_to_branding_info|.
   std::map<std::string, GroupId> MapFacetsToGroupId(
       const std::vector<GroupedFacets>& groups);
 
   void GroupPasswordsImpl(std::vector<PasswordForm> forms,
+                          std::vector<PasskeyCredential> passkeys,
                           const std::vector<GroupedFacets>& groups);
 
   void InitializePSLExtensionList(std::vector<std::string> psl_extension_list);
@@ -73,20 +89,19 @@ class PasswordsGrouper {
 
   // Structure used to keep track of the mapping between the credential's
   // sign-on realm and the group id.
-  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id;
+  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id_;
 
   // Structure used to keep track of the mapping between the group id and the
   // grouped facet's branding information.
-  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info;
+  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info_;
 
   // Structure used to keep track of the mapping between a group id and the
-  // grouped by username-password key password forms.
-  std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
-      map_group_id_to_forms;
+  // passwords and passkeys.
+  std::map<GroupId, Credentials> map_group_id_to_credentials_;
 
   // Structure to keep track of the blocked sites by user. They are not grouped
   // into affiliated groups.
-  std::vector<PasswordForm> blocked_sites;
+  std::vector<PasswordForm> blocked_sites_;
 
   // The set of domains that the server uses as an extension to the PSL.
   base::flat_set<std::string> psl_extensions_;

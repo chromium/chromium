@@ -43,7 +43,7 @@ void LayoutNGFrameSet::RemoveChild(LayoutObject* child) {
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
-void LayoutNGFrameSet::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGFrameSet::UpdateBlockLayout() {
   if (IsOutOfFlowPositioned())
     UpdateOutOfFlowBlockLayout();
   else

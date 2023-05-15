@@ -106,4 +106,22 @@ bool StructTraits<network::mojom::StructuredHeadersParameterizedItemDataView,
   return true;
 }
 
+// static
+bool StructTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
+                  net::structured_headers::ParameterizedMember>::
+    Read(network::mojom::StructuredHeadersParameterizedMemberDataView data,
+         net::structured_headers::ParameterizedMember* out) {
+  if (!data.ReadMember(&out->member)) {
+    return false;
+  }
+
+  out->member_is_inner_list = data.member_is_inner_list();
+
+  if (!data.ReadParameters(&out->params)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace mojo

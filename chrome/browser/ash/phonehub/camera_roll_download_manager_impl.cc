@@ -167,8 +167,8 @@ void CameraRollDownloadManagerImpl::OnPayloadFilesCreated(
   }
 
   const std::string& holding_space_item_id =
-      holding_space_keyed_service_->AddPhoneHubCameraRollItem(
-          file_path,
+      holding_space_keyed_service_->AddItemOfType(
+          HoldingSpaceItem::Type::kPhoneHubCameraRoll, file_path,
           ash::HoldingSpaceProgress(/*current_bytes=*/0,
                                     /*total_bytes=*/file_size_bytes));
   if (holding_space_item_id.empty()) {

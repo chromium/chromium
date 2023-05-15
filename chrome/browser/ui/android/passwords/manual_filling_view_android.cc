@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -209,14 +210,16 @@ void ManualFillingViewAndroid::ShowAccessorySheetTab(
         base::android::AttachCurrentThread(), obj, static_cast<int>(tab_type));
   }
 }
-
-void ManualFillingViewAndroid::OnAutomaticGenerationStatusChanged(
-    bool available) {
-  if (!available && java_object_internal_.is_null())
+void ManualFillingViewAndroid::OnAccessoryActionAvailabilityChanged(
+    ShouldShowAction shouldShowAction,
+    autofill::AccessoryAction action) {
+  if (!shouldShowAction && java_object_internal_.is_null()) {
     return;
+  }
   if (auto obj = GetOrCreateJavaObject()) {
-    Java_ManualFillingComponentBridge_onAutomaticGenerationStatusChanged(
-        base::android::AttachCurrentThread(), obj, available);
+    Java_ManualFillingComponentBridge_onAccessoryActionAvailabilityChanged(
+        base::android::AttachCurrentThread(), obj, shouldShowAction.value(),
+        static_cast<int>(action));
   }
 }
 
@@ -338,7 +341,9 @@ void JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
   // Bypass the generation controller when sending this status to the UI to
   // avoid setup overhead, since its logic is currently not needed for tests.
   ManualFillingControllerImpl::GetOrCreate(web_contents)
-      ->OnAutomaticGenerationStatusChanged(j_available);
+      ->OnAccessoryActionAvailabilityChanged(
+          ManualFillingController::ShouldShowAction(j_available),
+          autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 }
 
 // static

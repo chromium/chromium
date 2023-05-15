@@ -35,6 +35,10 @@
 
 class PrefService;
 
+#if BUILDFLAG(IS_ANDROID)
+class WebAuthnCredManDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 class AutofillDownloadManager;
 class LogManager;
@@ -340,7 +344,7 @@ class PasswordManagerClient {
   virtual void PromptUserToEnableAutosignin();
 
   // If this browsing session should not be persisted.
-  virtual bool IsIncognito() const;
+  virtual bool IsOffTheRecord() const;
 
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;
@@ -465,6 +469,12 @@ class PasswordManagerClient {
   // Returns the WebAuthnCredentialsDelegate for the given driver, if available.
   virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegateForDriver(
       PasswordManagerDriver* driver);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the WebAuthnCredManDelegate for the driver.
+  virtual WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
+      PasswordManagerDriver* driver);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns the Chrome channel for the installation.
   virtual version_info::Channel GetChannel() const;

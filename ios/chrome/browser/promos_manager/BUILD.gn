@@ -40,9 +40,9 @@ source_set("factory") {
     ":promos_manager",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -58,8 +58,8 @@ source_set("event_exporter_factory") {
     ":promos_manager",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 

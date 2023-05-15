@@ -114,14 +114,6 @@ class PkitsTest : public ::testing::Test {
     //   4.1.4 - Valid DSA Signatures Test4
     //   4.1.5 - Valid DSA Parameter Inheritance Test5
     //
-    // Expected to fail because Name constraints on rfc822Names are not
-    // supported:
-    //
-    //   4.13.21 - Valid RFC822 nameConstraints Test21
-    //   4.13.23 - Valid RFC822 nameConstraints Test23
-    //   4.13.25 - Valid RFC822 nameConstraints Test25
-    //   4.13.27 - Valid DN and RFC822 nameConstraints Test27
-    //
     // Expected to fail because Name constraints on
     // uniformResourceIdentifiers are not supported:
     //
@@ -137,9 +129,7 @@ class PkitsTest : public ::testing::Test {
       modified_info.user_constrained_policy_set = {};
       modified_info.should_validate = false;
       PkitsTestDelegate::RunTest(cert_ders, crl_ders, modified_info);
-    } else if (test_number == "4.13.21" || test_number == "4.13.23" ||
-               test_number == "4.13.25" || test_number == "4.13.27" ||
-               test_number == "4.13.34" || test_number == "4.13.36") {
+    } else if (test_number == "4.13.34" || test_number == "4.13.36") {
       PkitsTestInfo modified_info = info;
       modified_info.should_validate = false;
       PkitsTestDelegate::RunTest(cert_ders, crl_ders, modified_info);

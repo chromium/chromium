@@ -376,7 +376,9 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
   // enforce it?
   memory_system::Initializer()
       .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce)
+                                   PoissonAllocationSamplerInclusion::kEnforce,
+                               memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kIgnore)
       .Initialize(memory_system_);
 
   return absl::nullopt;

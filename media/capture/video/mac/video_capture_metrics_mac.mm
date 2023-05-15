@@ -8,6 +8,10 @@
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/video_capture_device_info.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 namespace {
@@ -54,7 +58,7 @@ void LogFirstCapturedVideoFrame(const AVCaptureDeviceFormat* bestCaptureFormat,
                                 const CMSampleBufferRef buffer) {
   if (bestCaptureFormat) {
     const CMFormatDescriptionRef requestedFormat =
-        [bestCaptureFormat formatDescription];
+        bestCaptureFormat.formatDescription;
     base::UmaHistogramEnumeration(
         "Media.VideoCapture.Mac.Device.RequestedPixelFormat",
         [VideoCaptureDeviceAVFoundation
@@ -77,10 +81,10 @@ void LogFirstCapturedVideoFrame(const AVCaptureDeviceFormat* bestCaptureFormat,
 
       const CVPixelBufferRef pixelBufferRef =
           CMSampleBufferGetImageBuffer(buffer);
-      bool is_io_sufrace =
+      bool is_io_surface =
           pixelBufferRef && CVPixelBufferGetIOSurface(pixelBufferRef);
       base::UmaHistogramBoolean(
-          "Media.VideoCapture.Mac.Device.CapturedIOSurface", is_io_sufrace);
+          "Media.VideoCapture.Mac.Device.CapturedIOSurface", is_io_surface);
     }
   }
 }

@@ -112,8 +112,8 @@ void* MappedMemoryManager::Alloc(unsigned int size,
     return nullptr;
 
   int32_t id = -1;
-  scoped_refptr<gpu::Buffer> shm =
-      cmd_buf->CreateTransferBuffer(safe_chunk_size, &id, option);
+  scoped_refptr<gpu::Buffer> shm = cmd_buf->CreateTransferBuffer(
+      safe_chunk_size, &id, /* alignment */ 0, option);
   if (id  < 0)
     return nullptr;
   DCHECK(shm.get());

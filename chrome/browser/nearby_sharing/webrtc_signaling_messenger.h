@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/send_message_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
@@ -40,7 +41,7 @@ class WebRtcSignalingMessenger
       StartReceivingMessagesCallback callback) override;
 
  private:
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

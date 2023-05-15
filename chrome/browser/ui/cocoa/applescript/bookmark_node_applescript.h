@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
 namespace bookmarks {
@@ -33,7 +33,7 @@ class BookmarkNode;
 @property(readonly) bookmarks::BookmarkModel* bookmarkModel;
 
 // Returns the GUID of the bookmark node.
-@property(readonly) base::GUID bookmarkGUID;
+@property(readonly) base::Uuid bookmarkGUID;
 
 // Does not actually create a folder/item but just sets its ID, the folder is
 // created in insertInBookmarksFolder: in the corresponding bookmarks folder.

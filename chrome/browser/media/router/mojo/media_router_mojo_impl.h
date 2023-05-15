@@ -97,11 +97,6 @@ class MediaRouterMojoImpl : public MediaRouterBase,
                                   mojo::PendingRemote<mojom::MediaRouteProvider>
                                       media_route_provider_remote) override;
 
-  // Issues 0+ calls to the provider given by |provider_id| to ensure its state
-  // is in sync with MediaRouter on a best-effort basis.
-  virtual void SyncStateToMediaRouteProvider(
-      mojom::MediaRouteProviderId provider_id);
-
  protected:
   // Standard constructor, used by
   // MediaRouterMojoImplFactory::GetApiForBrowserContext.

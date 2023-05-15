@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,15 +44,12 @@ class LockScreenBaseTest : public LoginManagerTest {
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
   LockScreenInputsTest() {
-    // The test is flaky when the darklight mode is enabled.
-    // https://crbug.com/1334877
-    //
     // TODO(b/241259026): This test currently relies on StubAuthenticator,
     // which doesn't work well with UseAuthFactors. We should instead use
     // FakeUserDataAuth, which is a mock at a lower level.
     scoped_feature_list_.InitWithFeatures(
-        {} /*enabled_features*/,
-        {chromeos::features::kDarkLightMode, features::kUseAuthFactors});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kUseAuthFactors});
 
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");

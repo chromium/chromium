@@ -141,6 +141,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   unsigned HierarchicalLevel() const final;
   void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
   AXObject* InPageLinkTarget() const override;
+  const AtomicString& EffectiveTarget() const override;
   AccessibilityOrientation Orientation() const override;
 
   AXObject* GetChildFigcaption() const override;
@@ -257,6 +258,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   const AtomicString& GetAttribute(const QualifiedName&) const override;
 
   // Modify or take an action on an object.
+  bool OnNativeBlurAction() final;
   bool OnNativeFocusAction() final;
   bool OnNativeIncrementAction() final;
   bool OnNativeDecrementAction() final;

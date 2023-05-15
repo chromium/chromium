@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -308,8 +309,11 @@ class JPEGImageReader final {
     // Retain ICC color profile markers for color management.
     setup_read_icc_profile(&info_);
 
-    // Keep APP1 blocks, for obtaining exif data.
-    jpeg_save_markers(&info_, kExifMarker, 0xFFFF);
+    // Keep APP1 blocks, for obtaining exif and XMP data.
+    jpeg_save_markers(&info_, JPEG_APP0 + 1, 0xFFFF);
+
+    // Keep APP2 blocks, for obtaining ICC and MPF data.
+    jpeg_save_markers(&info_, JPEG_APP0 + 2, 0xFFFF);
   }
 
   JPEGImageReader(const JPEGImageReader&) = delete;
@@ -965,6 +969,51 @@ Vector<SkISize> JPEGImageDecoder::GetSupportedDecodeSizes() const {
   // has side effects of actually doing the decode.
   DCHECK(IsDecodedSizeAvailable());
   return supported_decode_sizes_;
+}
+
+bool JPEGImageDecoder::GetGainmapInfoAndData(
+    SkGainmapInfo& out_gainmap_info,
+    scoped_refptr<SegmentReader>& out_gainmap_reader) const {
+  if (!reader_) {
+    return false;
+  }
+
+  // Extract the segments (including parameters) and create an
+  // SkJpegMetadataDecoder to use to examine gainmap capabilities.
+  std::vector<SkJpegMetadataDecoder::Segment> segments;
+  if (jpeg_decompress_struct* info = reader_->Info()) {
+    for (auto* marker = info->marker_list; marker; marker = marker->next) {
+      segments.emplace_back(
+          marker->marker,
+          SkData::MakeWithoutCopy(marker->data, marker->data_length));
+    }
+  } else {
+    return false;
+  }
+  auto metadata = SkJpegMetadataDecoder::Make(std::move(segments));
+  if (!metadata) {
+    return false;
+  }
+
+  // TODO(https://crbug.com/1404000): Add an early-out that uses only
+  // `segments` to determine if a gainmap is guaranteed to not be present.
+  auto base_image_data = data_->GetAsSkData();
+  DCHECK(base_image_data);
+
+  // Extract the SkGainmapInfo and the encoded gainmap image and return them.
+  // TODO(https://crbug.com/1404000): Rather than extract an SkData, extract
+  // the offsets and sizes of the subsets of `base_image_data`, and reference
+  // these directly.
+  sk_sp<SkData> gainmap_image_data;
+  SkGainmapInfo gainmap_info;
+  if (!metadata->findGainmapImage(base_image_data, gainmap_image_data,
+                                  gainmap_info)) {
+    return false;
+  }
+  out_gainmap_info = gainmap_info;
+  out_gainmap_reader =
+      SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
+  return true;
 }
 
 gfx::Size JPEGImageDecoder::GetImageCodedSize() const {

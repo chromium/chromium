@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -63,7 +64,7 @@ class Viewport : public SurfaceObserver {
   }
 
  private:
-  Surface* surface_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 void viewport_destroy(wl_client* client, wl_resource* resource) {

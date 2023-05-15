@@ -12,7 +12,7 @@ def _RunPythonUnitTests(input_api, output_api):
       input_api,
       output_api,
       directory='.',
-      files_to_check=[r'^.+_test\.py$'],
+      files_to_check=[r'^.+test\.py$'],
       run_on_python2=False)
   return input_api.RunTests(tests)
 

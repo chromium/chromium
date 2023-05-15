@@ -17,12 +17,14 @@
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
 <translation id="1335640173511558774">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Google ChromeOS Flex 条款。</translation>
+<translation id="1341711321000856656">您可切换到另一份 Chrome 个人资料以查看其中的密码</translation>
 <translation id="1363996462118479832">由于登录时发生错误，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
 <translation id="139993653570221430">如果您改变了想法，可随时在 Chrome 设置中做出相应更改。这些试用型功能与目前的广告投放方式一起运行，因此您不会马上看到变化。</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。}=1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的无痕式窗口。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的 # 个无痕式窗口。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome 曾连接到一部 HID 设备}=1{Google Chrome 已连接到一部 HID 设备}other{Google Chrome 已连接到多部 HID 设备}}</translation>
+<translation id="1492280395845991349">重新启动即可完成 Chrome 更新</translation>
 <translation id="1507198376417198979">自定义您的新 Chrome 个人资料</translation>
 <translation id="1516530951338665275">Google Chrome 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
@@ -80,6 +82,7 @@
 <translation id="2467438592969358367">Google Chrome 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2534507159460261402">Google Pay（已复制到 Chrome）</translation>
+<translation id="2556847002339236023">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。浏览数据已被删除，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="2559253115192232574">之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。Chrome 最多可共享 3 项兴趣信息。</translation>
 <translation id="2563121210305478421">重新启动 Chrome？</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
@@ -91,6 +94,7 @@
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2689103672227170538">此扩展程序更改了 Chrome 启动后系统显示的页面。</translation>
+<translation id="2712234843277364121">重新启动即可更新 - 您的标签页将会自动重新打开</translation>
 <translation id="2742320827292110288">警告：Google Chrome 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="2765403129283291972">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
 <translation id="2770231113462710648">将默认浏览器更改为：</translation>
@@ -110,6 +114,7 @@
 <translation id="2929907241665500097">Chrome 未能更新，因为出了点问题。<ph name="BEGIN_LINK" />请解决导致 Chrome 更新失败的问题<ph name="END_LINK" />。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="3019382870990049182">重新启动以更新 &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{多个 Google Chrome 扩展程序刚刚访问了 HID 设备}=1{多个 Google Chrome 扩展程序正在访问 HID 设备}other{多个 Google Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="303514781271618814">Chrome 团队正在探索新功能，以便网站只需使用您的较少数据就能提供同样的浏览体验</translation>
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
@@ -203,6 +208,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">此文件可能存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
+<translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
@@ -214,6 +220,7 @@
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4970947549776831107">Chrome 屏蔽了此文件，因为这类文件包含危险内容</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{一个 Google Chrome 扩展程序刚刚访问了 HID 设备}=1{一个 Google Chrome 扩展程序正在访问 1 部 HID 设备}other{一个 Google Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{您的管理员已将 Chrome 设置为，在闲置 1 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}other{您的管理员已将 Chrome 设置为，在闲置 # 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}}</translation>
 <translation id="5098668839038261629">若开启此选项，关闭所有窗口的同时您也会退出登录 Chrome 的帐号</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>
@@ -260,6 +267,7 @@
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6145313976051292476">在 Chrome 中打开 PDF 文件</translation>
 <translation id="6155960517327665396">省内存模式提高了 Chrome 的运行速度</translation>
+<translation id="6157638032135951407">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后删除 Chrome 数据，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
@@ -273,7 +281,9 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{您的管理员已将 Chromium 设置为，在闲置 1 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}other{您的管理员已将 Chromium 设置为，在闲置 # 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
+<translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
 <translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome 已自动关闭</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理器中</translation>
@@ -310,6 +320,7 @@
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>
 <translation id="7177959540995930968">您可在 Chrome 设置中详细了解这些功能。</translation>
+<translation id="7193885263065350793">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="7242029209006116544">您目前登录的帐号是一个受管理帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">使用此语言显示 Google Chrome 界面</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
@@ -403,6 +414,7 @@
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
+<translation id="9054037008353851982">重新启动即可更新 - 您的标签页将会自动重新打开</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
 <translation id="9138603949443464873">要想应用您的更改，请重新启动 Chrome</translation>
 <translation id="9195993889682885387">Chrome 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>

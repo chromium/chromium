@@ -137,6 +137,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojom::DidCommitProvisionalLoadParamsPtr params,
       blink::mojom::SameDocumentNavigationType same_document_navigation_type,
       bool should_replace_current_entry);
+  void SendStartLoadingForAsyncNavigationApiCommit();
 
   // With the current navigation logic this method is a no-op.
   // Simulates a renderer-initiated navigation to |url| starting in the

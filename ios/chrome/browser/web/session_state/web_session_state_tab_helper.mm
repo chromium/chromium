@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 
-#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
@@ -17,7 +16,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
@@ -75,22 +74,11 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 
 @end
 
-// static
-bool WebSessionStateTabHelper::IsEnabled() {
-  if (!base::FeatureList::IsEnabled(web::kRestoreSessionFromCache)) {
-    return false;
-  }
-
-  // This API is only available on iOS 15.
-  if (@available(iOS 15, *)) {
-    return true;
-  }
-  return false;
-}
-
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  CHECK(web::UseNativeSessionRestorationCache());
   web_state_->AddObserver(this);
+  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
   if (web_state_->IsRealized()) {
     CreateScrollingObserver();
   }
@@ -103,9 +91,6 @@ ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
 }
 
 bool WebSessionStateTabHelper::RestoreSessionFromCache() {
-  if (!IsEnabled())
-    return false;
-
   WebSessionStateCache* cache =
       WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
   NSData* data = [cache sessionStateDataForWebState:web_state_];
@@ -130,9 +115,6 @@ void WebSessionStateTabHelper::SaveSessionStateIfStale() {
 }
 
 void WebSessionStateTabHelper::SaveSessionState() {
-  if (!IsEnabled())
-    return;
-
   stale_ = false;
 
   NSData* data = web_state_->SessionStateData();
@@ -159,6 +141,7 @@ void WebSessionStateTabHelper::SaveSessionState() {
 
 void WebSessionStateTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
   if (scroll_observer_) {
     [web_state->GetWebViewProxy().scrollViewProxy
         removeObserver:scroll_observer_];
@@ -181,21 +164,22 @@ void WebSessionStateTabHelper::DidFinishNavigation(
   MarkStale();
 }
 
-void WebSessionStateTabHelper::WebFrameDidBecomeAvailable(
-    web::WebState* web_state,
+void WebSessionStateTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
   if (web_frame->IsMainFrame())
     return;
 
-  // -WebFrameDidBecomeAvailable is called much more often than navigations, so
+  // -WebFrameBecameAvailable is called much more often than navigations, so
   // check if either `item_count_` or `last_committed_item_index_` has changed
   // before marking a page as stale.
   web::NavigationManager* navigation_manager =
-      web_state->GetNavigationManager();
-  if (item_count_ == web_state->GetNavigationItemCount() &&
+      web_state_->GetNavigationManager();
+  if (item_count_ == web_state_->GetNavigationItemCount() &&
       last_committed_item_index_ ==
-          navigation_manager->GetLastCommittedItemIndex())
+          navigation_manager->GetLastCommittedItemIndex()) {
     return;
+  }
 
   MarkStale();
 }
@@ -221,9 +205,6 @@ void WebSessionStateTabHelper::OnScrollEvent() {
 }
 
 void WebSessionStateTabHelper::MarkStale() {
-  if (!IsEnabled())
-    return;
-
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
   item_count_ = web_state_->GetNavigationItemCount();

@@ -176,12 +176,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaErrorOr<mojom::BucketTableEntryPtr> DeleteBucketData(
       const BucketLocator& bucket);
 
-  // Returns the BucketLocator for the least recently used bucket. Will exclude
-  // buckets with ids in `bucket_exceptions`, buckets marked persistent, and
-  // origins that have the special unlimited storage policy. Returns a
-  // QuotaError if the operation has failed.
-  QuotaErrorOr<BucketLocator> GetLruEvictableBucket(
+  // Returns BucketLocators for the least recently used buckets, to clear at
+  // least `target_usage` space. Will exclude buckets with ids in
+  // `bucket_exceptions`, buckets marked persistent, and origins that have the
+  // special unlimited storage policy. Returns a QuotaError if the operation has
+  // failed. `usage_map` describes the amount of space used by each bucket; any
+  // bucket missing from this map will be considered to use only 1b.
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForEviction(
       blink::mojom::StorageType type,
+      int64_t target_usage,
+      const std::map<BucketLocator, int64_t>& usage_map,
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
 
@@ -215,20 +219,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Flushes previously scheduled commits.
   void CommitNow();
 
-  // The given callback will be invoked whenever the database encounters a full
-  // disk error.
-  void SetOnFullDiskErrorCallback(const base::RepeatingClosure& callback);
+  // The given callback will be invoked whenever the database encounters an
+  // error.
+  void SetDbErrorCallback(
+      const base::RepeatingCallback<void(int)>& db_error_callback);
 
   // Testing support for database corruption handling.
   //
   // Runs `corrupter` on the same sequence used to do database I/O,
   // guaranteeing that no other database operation is performed at the same
-  // time. `corrupter` receives the path to the underlying SQLite database as an
-  // argument. The underlying SQLite database is closed while `corrupter` runs,
-  // and reopened afterwards.
+  // time. `corrupter` receives the path to the underlying SQLite database
+  // as an argument. The underlying SQLite database is closed while
+  // `corrupter` runs, and reopened afterwards.
 
-  // Returns QuotaError::kNone if the database was successfully reopened after
-  // `corrupter` was run, or QuotaError::kDatabaseError otherwise.
+  // Returns QuotaError::kNone if the database was successfully reopened
+  // after `corrupter` was run, or QuotaError::kDatabaseError otherwise.
   QuotaError CorruptForTesting(
       base::OnceCallback<void(const base::FilePath&)> corrupter);
 
@@ -295,6 +300,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool is_recreating_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_disabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  int sqlite_error_code_ = 0;
+
   base::OneShotTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   friend class QuotaDatabaseTest;
@@ -307,7 +314,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
 
-  base::RepeatingClosure full_disk_error_callback_;
+  base::RepeatingCallback<void(int)> db_error_callback_;
 };
 
 }  // namespace storage

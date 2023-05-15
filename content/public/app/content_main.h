@@ -51,7 +51,9 @@ struct CONTENT_EXPORT ContentMainParams {
 
   // |sandbox_info| should be initialized using InitializeSandboxInfo from
   // content_main_win.h
-  sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
 #elif !BUILDFLAG(IS_ANDROID)
   int argc = 0;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:

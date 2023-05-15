@@ -8,10 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -201,7 +202,7 @@ class PluginVmInstaller : public KeyedService,
   // Called repeatedly.
   void OnDlcDownloadProgressUpdated(double progress);
   void OnDlcDownloadCompleted(
-      const ash::DlcserviceClient::InstallResult& install_result);
+      guest_os::GuestOsDlcInstallation::Result install_result);
 
   void StartDispatcher();
   void OnDispatcherStarted(bool success);
@@ -269,9 +270,10 @@ class PluginVmInstaller : public KeyedService,
 
   device::mojom::WakeLock* GetWakeLock();
 
-  Profile* profile_ = nullptr;
-  Observer* observer_ = nullptr;
-  download::BackgroundDownloadService* download_service_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Observer, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService, ExperimentalAsh>
+      download_service_ = nullptr;
   State state_ = State::kIdle;
   InstallingState installing_state_ = InstallingState::kInactive;
   std::string current_download_guid_;
@@ -284,6 +286,7 @@ class PluginVmInstaller : public KeyedService,
   double progress_ = 0;
   std::unique_ptr<PluginVmDriveImageDownloadService> drive_download_service_;
   std::unique_ptr<PluginVmLicenseChecker> license_checker_;
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> dlc_installation_;
   bool using_drive_download_service_ = false;
 
   bool skip_license_check_for_testing_ = false;

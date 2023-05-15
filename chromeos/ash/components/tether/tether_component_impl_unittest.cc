@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container_impl.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager_impl.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
@@ -59,11 +60,12 @@ class FakeAsynchronousShutdownObjectContainerFactory
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
       PrefService* pref_service) override {
-    return base::WrapUnique(fake_asynchronous_container_);
+    return base::WrapUnique(fake_asynchronous_container_.get());
   }
 
  private:
-  FakeAsynchronousShutdownObjectContainer* fake_asynchronous_container_;
+  raw_ptr<FakeAsynchronousShutdownObjectContainer, ExperimentalAsh>
+      fake_asynchronous_container_;
 };
 
 class FakeSynchronousShutdownObjectContainerFactory
@@ -88,11 +90,12 @@ class FakeSynchronousShutdownObjectContainerFactory
       session_manager::SessionManager* session_manager,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client) override {
-    return base::WrapUnique(fake_synchronous_container_);
+    return base::WrapUnique(fake_synchronous_container_.get());
   }
 
  private:
-  FakeSynchronousShutdownObjectContainer* fake_synchronous_container_;
+  raw_ptr<FakeSynchronousShutdownObjectContainer, ExperimentalAsh>
+      fake_synchronous_container_;
 };
 
 class FakeCrashRecoveryManagerFactory
@@ -109,11 +112,12 @@ class FakeCrashRecoveryManagerFactory
       NetworkStateHandler* network_state_handler,
       ActiveHost* active_host,
       HostScanCache* host_scan_cache) override {
-    return base::WrapUnique(fake_crash_recovery_manager_);
+    return base::WrapUnique(fake_crash_recovery_manager_.get());
   }
 
  private:
-  FakeCrashRecoveryManager* fake_crash_recovery_manager_;
+  raw_ptr<FakeCrashRecoveryManager, ExperimentalAsh>
+      fake_crash_recovery_manager_;
 };
 
 }  // namespace
@@ -207,15 +211,18 @@ class TetherComponentImplTest : public testing::Test {
   std::unique_ptr<FakeHostScanScheduler> fake_host_scan_scheduler_;
   std::unique_ptr<FakeTetherDisconnector> fake_tether_disconnector_;
 
-  FakeSynchronousShutdownObjectContainer* fake_synchronous_container_;
+  raw_ptr<FakeSynchronousShutdownObjectContainer, ExperimentalAsh>
+      fake_synchronous_container_;
   std::unique_ptr<FakeSynchronousShutdownObjectContainerFactory>
       fake_synchronous_container_factory_;
 
-  FakeAsynchronousShutdownObjectContainer* fake_asynchronous_container_;
+  raw_ptr<FakeAsynchronousShutdownObjectContainer, ExperimentalAsh>
+      fake_asynchronous_container_;
   std::unique_ptr<FakeAsynchronousShutdownObjectContainerFactory>
       fake_asynchronous_container_factory_;
 
-  FakeCrashRecoveryManager* fake_crash_recovery_manager_;
+  raw_ptr<FakeCrashRecoveryManager, ExperimentalAsh>
+      fake_crash_recovery_manager_;
   std::unique_ptr<FakeCrashRecoveryManagerFactory>
       fake_crash_recovery_manager_factory_;
 

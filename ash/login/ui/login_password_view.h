@@ -11,6 +11,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -79,7 +80,7 @@ class ASH_EXPORT LoginPasswordView
     }
 
    private:
-    LoginPasswordView* view_;
+    raw_ptr<LoginPasswordView, ExperimentalAsh> view_;
   };
 
   using OnPasswordSubmit =
@@ -204,15 +205,16 @@ class ASH_EXPORT LoginPasswordView
   // through the password and make the characters read out loud one by one).
   base::RetainingOneShotTimer hide_password_timer_;
 
-  LoginPasswordRow* password_row_ = nullptr;
-  LoginTextfield* textfield_ = nullptr;
-  ArrowButtonView* submit_button_ = nullptr;
-  DisplayPasswordButton* display_password_button_ = nullptr;
+  raw_ptr<LoginPasswordRow, ExperimentalAsh> password_row_ = nullptr;
+  raw_ptr<LoginTextfield, ExperimentalAsh> textfield_ = nullptr;
+  raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
+  raw_ptr<DisplayPasswordButton, ExperimentalAsh> display_password_button_ =
+      nullptr;
   // Could show either the caps lock icon or the easy unlock icon.
-  AlternateIconsView* left_icon_ = nullptr;
-  views::ImageView* capslock_icon_ = nullptr;
+  raw_ptr<AlternateIconsView, ExperimentalAsh> left_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> capslock_icon_ = nullptr;
   bool should_show_capslock_ = false;
-  EasyUnlockIcon* easy_unlock_icon_ = nullptr;
+  raw_ptr<EasyUnlockIcon, ExperimentalAsh> easy_unlock_icon_ = nullptr;
   bool should_show_easy_unlock_ = false;
 
   bool is_capslock_higlight_ = false;

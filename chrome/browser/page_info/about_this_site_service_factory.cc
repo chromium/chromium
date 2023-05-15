@@ -57,8 +57,7 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ChromeAboutThisSiteServiceClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           profile->IsOffTheRecord(), profile->GetPrefs()),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      page_info::IsMoreAboutThisSiteFeatureEnabled());
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {

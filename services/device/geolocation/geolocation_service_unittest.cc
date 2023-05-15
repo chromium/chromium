@@ -23,7 +23,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -105,7 +105,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
 // To align with user expectation we do not make Network Location Requests
 // on macOS unless the browser has Location Permission from the OS.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   fake_geolocation_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
 #endif

@@ -1281,15 +1281,14 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
   // Load the service worker.
   if (IsServiceWorkerOfflineSupported()) {
-    EXPECT_TRUE(content::ExecuteScript(
-        web_contents,
-        "navigator.serviceWorker.register('service_worker.js');"
-    ));
+    EXPECT_TRUE(content::ExecJs(
+        web_contents, "navigator.serviceWorker.register('service_worker.js');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   } else {
-    EXPECT_TRUE(content::ExecuteScript(
-        web_contents,
-        "navigator.serviceWorker.register("
-          "'service_worker_empty_fetch_handler.js');"));
+    EXPECT_TRUE(content::ExecJs(web_contents,
+                                "navigator.serviceWorker.register("
+                                "'service_worker_empty_fetch_handler.js');",
+                                content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   }
   tester_run_loop.Run();
 
@@ -1346,9 +1345,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_TRUE(!manager->task_queue_.paused_tasks_.empty());
 
   // Load the service worker with no fetch handler.
-  EXPECT_TRUE(content::ExecuteScript(web_contents,
-                                     "navigator.serviceWorker.register('"
-                                     "service_worker_no_fetch_handler.js');"));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "navigator.serviceWorker.register('"
+                              "service_worker_no_fetch_handler.js');",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   tester_run_loop.Run();
 
   // We should fail the check.
@@ -1409,14 +1409,15 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     sw_run_loop.Run();
 
     if (IsServiceWorkerOfflineSupported()) {
-      EXPECT_TRUE(content::ExecuteScript(
+      EXPECT_TRUE(content::ExecJs(
           web_contents,
-          "navigator.serviceWorker.register('service_worker.js');"));
+          "navigator.serviceWorker.register('service_worker.js');",
+          content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     } else {
-      EXPECT_TRUE(content::ExecuteScript(
-          web_contents,
-          "navigator.serviceWorker.register("
-            "'service_worker_empty_fetch_handler.js');"));
+      EXPECT_TRUE(content::ExecJs(web_contents,
+                                  "navigator.serviceWorker.register("
+                                  "'service_worker_empty_fetch_handler.js');",
+                                  content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     }
     tester_run_loop.Run();
 
@@ -1669,7 +1670,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     // Injecting a manifest URL but not navigating should flush the state.
     base::RunLoop run_loop;
     manager->SetQuitClosure(run_loop.QuitClosure());
-    EXPECT_TRUE(content::ExecuteScript(web_contents, "addManifestLinkTag()"));
+    EXPECT_TRUE(content::ExecJs(web_contents, "addManifestLinkTag()"));
     run_loop.Run();
 
     EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
@@ -1702,7 +1703,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     GURL manifest_url = embedded_test_server()->GetURL(
         "/banners/manifest_short_name_only.json");
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "changeManifestUrl('" + manifest_url.spec() + "');"));
     run_loop.Run();
 

@@ -258,7 +258,6 @@ const SearchConcept& GetDarkModeOffSearchConcept() {
 
 SearchTagRegistry::SearchConceptUpdates GetDarkModePrefChangedUpdates(
     bool dark_mode_on) {
-  DCHECK(ash::features::IsDarkLightModeEnabled());
   return {{&GetDarkModeOnSearchConcept(), dark_mode_on},
           {&GetDarkModeOffSearchConcept(), !dark_mode_on}};
 }
@@ -274,6 +273,21 @@ const SearchConcept& GetKeyboardBacklightSearchConcept() {
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT3,
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT4,
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT5,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT6,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT7,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT8,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT9,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT10,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT11,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT12,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT13,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT14,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT15,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT16,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT17,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT18,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT19,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT20,
           },
       .relative_url = "",
   });
@@ -305,13 +319,11 @@ SearchTagRegistry::SearchTagRegistry(
   updates.merge(GetWallpaperEnterpriseUpdates(
       enterprise_policy_delegate_->IsWallpaperEnterpriseManaged()));
 
-  if (::ash::features::IsDarkLightModeEnabled()) {
-    for (const auto& search_concept : GetDarkModeSearchConcepts()) {
-      updates[&search_concept] = true;
-    }
-    updates.merge(GetDarkModePrefChangedUpdates(
-        pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
+  for (const auto& search_concept : GetDarkModeSearchConcepts()) {
+    updates[&search_concept] = true;
   }
+  updates.merge(GetDarkModePrefChangedUpdates(
+      pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
 
   if (::ash::features::IsRgbKeyboardEnabled() &&
       Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
@@ -381,16 +393,12 @@ void SearchTagRegistry::RemoveObserver(Observer* observer) {
 }
 
 void SearchTagRegistry::BindObservers() {
-  if (IsAmbientModeAllowed() || ::ash::features::IsDarkLightModeEnabled()) {
-    pref_change_registrar_.Init(pref_service_);
-  }
-  if (::ash::features::IsDarkLightModeEnabled()) {
-    // base::Unretained is safe because |this| owns |pref_change_registrar_|.
-    pref_change_registrar_.Add(
-        ash::prefs::kDarkModeEnabled,
-        base::BindRepeating(&SearchTagRegistry::OnDarkModePrefChanged,
-                            base::Unretained(this)));
-  }
+  pref_change_registrar_.Init(pref_service_);
+  // base::Unretained is safe because |this| owns |pref_change_registrar_|.
+  pref_change_registrar_.Add(
+      ash::prefs::kDarkModeEnabled,
+      base::BindRepeating(&SearchTagRegistry::OnDarkModePrefChanged,
+                          base::Unretained(this)));
   if (IsAmbientModeAllowed()) {
     // base::Unretained is safe because |this| owns |pref_change_registrar_|.
     pref_change_registrar_.Add(

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
 #include "ash/constants/ash_pref_names.h"
@@ -215,7 +216,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   }
 
  protected:
-  FakeBiodClient* biod_;  // Non-owning pointer.
+  raw_ptr<FakeBiodClient, ExperimentalAsh> biod_;  // Non-owning pointer.
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
 
@@ -231,7 +232,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
   base::OnceClosure fingerprint_session_callback_;
 
-  QuickUnlockStorage* quick_unlock_storage_;
+  raw_ptr<QuickUnlockStorage, ExperimentalAsh> quick_unlock_storage_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
   std::unique_ptr<quick_unlock::TestApi> test_api_;

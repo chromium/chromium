@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_CAMERA_AUTOZOOM_TOAST_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -35,9 +36,9 @@ class ASH_EXPORT AutozoomToastView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  AutozoomToastController* controller_ = nullptr;
-  FeaturePodIconButton* button_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<AutozoomToastController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<FeaturePodIconButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 }  // namespace ash

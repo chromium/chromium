@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tukar kepada paparan senarai</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fail dipilih</translation>
 <translation id="2383454254762599978">Alihkan ke folder sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proksi</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Peranti dalam mod baca sahaja</translation>
 <translation id="4826849268470072925">ITRANS Tamil</translation>
 <translation id="482932175346970750">Taip <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dalam penyemak imbas anda</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Bahasa Jerman</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">Sweden</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
 <translation id="6993826899923627728">Item ini berada dalam folder sampah anda</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="7008426324576352165">Organisasi anda memerlukan lebih banyak storan untuk menyelesaikan muat naik.</translation>
 <translation id="7009985720488544166">Pengalihan <ph name="COUNT" /> fail disekat oleh dasar pentadbir</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">Cari sambungan di atas</translation>
 <translation id="7256405249507348194">Ralat yang tidak dikenal pasti: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Perkhidmatan yang tersedia</translation>
+<translation id="7291818353625820805">Mahu kekunci untuk mengulang? Matikan anda aksen dalam Tetapan Papan Kekunci</translation>
 <translation id="7292816689782057017">Dasar pentadbir mengehadkan penyimpanan ke sesetengah lokasi.</translation>
 <translation id="7294063083760278948">Alih Huruf Telugu</translation>
 <translation id="7295662345261934369">Kongsi dengan orang lain</translation>

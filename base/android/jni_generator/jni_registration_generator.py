@@ -534,11 +534,9 @@ ${KMETHODS}
           (open_namespace, body, close_namespace)))
 
   def _GetKMethodsString(self, clazz):
-    ret = []
-    for native in self.non_proxy_natives:
-      if (native.java_class_name == clazz
-          or (not native.java_class_name and clazz == self.class_name)):
-        ret += [self._GetKMethodArrayEntry(native)]
+    if clazz != self.class_name:
+      return ''
+    ret = [self._GetKMethodArrayEntry(n) for n in self.non_proxy_natives]
     return '\n'.join(ret)
 
   def _GetKMethodArrayEntry(self, native):
@@ -887,9 +885,8 @@ def main(argv):
                           help='Whether to maintain ForTesting JNI methods.')
   arg_parser.add_argument(
       '--package_prefix',
-      help=
-      'Adds a prefix to the classes fully qualified-name. Effectively changing a class name from'
-      'foo.bar -> prefix.foo.bar')
+      help='Adds a prefix to the classes fully qualified-name. Effectively '
+      'changing a class name from foo.bar -> prefix.foo.bar')
   args = arg_parser.parse_args(build_utils.ExpandFileArgs(argv[1:]))
 
   if not args.enable_proxy_mocks and args.require_mocks:

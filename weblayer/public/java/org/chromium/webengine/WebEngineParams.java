@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.webengine.interfaces.IWebEngineParams;
 
+import java.util.ArrayList;
+
 /**
  * Parameters for {@link WebSandbox#createFragment}.
  */
@@ -23,12 +25,16 @@ public class WebEngineParams {
 
     private boolean mIsExternalIntentsEnabled = true;
 
+    @Nullable
+    private ArrayList<String> mAllowedOrigins;
+
     IWebEngineParams getParcelable() {
         IWebEngineParams params = new IWebEngineParams();
         params.profileName = mProfileName;
         params.persistenceId = mPersistenceId;
         params.isIncognito = mIsIncognito;
         params.isExternalIntentsEnabled = mIsExternalIntentsEnabled;
+        params.allowedOrigins = mAllowedOrigins;
         return params;
     }
 
@@ -91,6 +97,30 @@ public class WebEngineParams {
         @NonNull
         public Builder setIsExternalIntentsEnabled(boolean isExternalIntentsEnabled) {
             mParams.mIsExternalIntentsEnabled = isExternalIntentsEnabled;
+            return this;
+        }
+
+        /**
+         * Sets whether a list of origins are allowed to be navigated to. If this is not set all
+         * origins will be allowed.
+         * @param allowedOrigins An ArrayList of origins the WebEngine can navigate to.
+         *         This does not support wild cards; full host strings must be provided.
+         *
+         * <pre>
+         * {@code
+         * ArrayList<String> allowList = new ArrayList<>();
+         * allowList.add("https://www.example.com");
+         * allowList.add("http://foo.com");
+         *
+         * new WebEngineParams.Builder()
+         * .setAllowedOrigins(allowList)
+         * .build();
+         * }
+         * </pre>
+         */
+        @NonNull
+        public Builder setAllowedOrigins(@Nullable ArrayList<String> allowedOrigins) {
+            mParams.mAllowedOrigins = allowedOrigins;
             return this;
         }
     }

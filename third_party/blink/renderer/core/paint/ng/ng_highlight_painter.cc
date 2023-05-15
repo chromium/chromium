@@ -40,42 +40,6 @@ using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
-DocumentMarkerVector ComputeMarkersToPaint(Node* node) {
-  // TODO(yoichio): Handle first-letter
-  auto* text_node = DynamicTo<Text>(node);
-  if (!text_node)
-    return DocumentMarkerVector();
-
-  DocumentMarkerController& document_marker_controller =
-      node->GetDocument().Markers();
-  return document_marker_controller.ComputeMarkersToPaint(*text_node);
-}
-
-DocumentMarkerVector MarkersFor(Node* node, DocumentMarker::MarkerType type) {
-  // TODO(crbug.com/17528) handle ::first-letter
-  const auto* text_node = DynamicTo<Text>(node);
-  if (!text_node)
-    return DocumentMarkerVector();
-
-  DocumentMarkerController& controller = node->GetDocument().Markers();
-
-  if (type == DocumentMarker::MarkerType::kCustomHighlight)
-    return controller.CustomHighlightMarkersNotOverlapping(*text_node);
-  return controller.MarkersFor(*text_node, DocumentMarker::MarkerTypes{type});
-}
-
-unsigned GetTextContentOffset(const Text& text, unsigned offset) {
-  // TODO(yoichio): Sanitize DocumentMarker around text length.
-  const Position position(text, std::min(offset, text.length()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
-  DCHECK(offset_mapping);
-  const absl::optional<unsigned>& ng_offset =
-      offset_mapping->GetTextContentOffset(position);
-  DCHECK(ng_offset.has_value());
-  return ng_offset.value();
-}
-
 // ClampOffset modifies |offset| fixed in a range of |text_fragment| start/end
 // offsets.
 // |offset| points not each character but each span between character.
@@ -111,8 +75,9 @@ void PaintRect(GraphicsContext& context,
                const PhysicalRect& rect,
                const Color color,
                const AutoDarkMode& auto_dark_mode) {
-  if (!color.Alpha())
+  if (color.IsFullyTransparent()) {
     return;
+  }
   if (rect.size.IsEmpty())
     return;
   const gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(rect);
@@ -135,8 +100,9 @@ Color SelectionBackgroundColor(const Document& document,
                                Color text_color) {
   const Color color = HighlightPaintingUtils::HighlightBackgroundColor(
       document, style, node, absl::nullopt, kPseudoIdSelection);
-  if (!color.Alpha())
+  if (color.IsFullyTransparent()) {
     return Color();
+  }
 
   // If the text color ends up being the same as the selection background,
   // invert the selection background.
@@ -229,10 +195,10 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
     if (pseudo_style->TextStrokeWidth() != originating_style.TextStrokeWidth())
       return true;
     // If there is a background color.
-    if (HighlightPaintingUtils::ResolveColor(
-            document, originating_style, pseudo_style.get(), pseudo,
-            GetCSSPropertyBackgroundColor(), {})
-            .Alpha() > 0) {
+    if (!HighlightPaintingUtils::ResolveColor(
+             document, originating_style, pseudo_style.get(), pseudo,
+             GetCSSPropertyBackgroundColor(), {})
+             .IsFullyTransparent()) {
       return true;
     }
     // If the ‘text-shadow’ is not ‘none’.
@@ -297,48 +263,12 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
   return false;
 }
 
-PseudoId PseudoFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return kPseudoIdSpellingError;
-    case DocumentMarker::kGrammar:
-      return kPseudoIdGrammarError;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
 HighlightLayerType LayerFor(DocumentMarker::MarkerType type) {
   switch (type) {
     case DocumentMarker::kSpelling:
       return HighlightLayerType::kSpelling;
     case DocumentMarker::kGrammar:
       return HighlightLayerType::kGrammar;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
-TextDecorationLine LineFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return TextDecorationLine::kSpellingError;
-    case DocumentMarker::kGrammar:
-      return TextDecorationLine::kGrammarError;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
-Color ColorFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
-    case DocumentMarker::kGrammar:
-      return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
     default:
       NOTREACHED();
       return {};
@@ -522,12 +452,20 @@ NGHighlightPainter::NGHighlightPainter(
   // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
   // TODO(crbug.com/17528) handle ::first-letter
   if (!fragment_item_.IsGeneratedText()) {
-    markers_ = ComputeMarkersToPaint(node_);
-    if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-      target_ = MarkersFor(node_, DocumentMarker::kTextFragment);
-      spelling_ = MarkersFor(node_, DocumentMarker::kSpelling);
-      grammar_ = MarkersFor(node_, DocumentMarker::kGrammar);
-      custom_ = MarkersFor(node_, DocumentMarker::kCustomHighlight);
+    const auto* text_node = DynamicTo<Text>(node_);
+    if (text_node) {
+      DocumentMarkerController& controller = node_->GetDocument().Markers();
+      markers_ = controller.ComputeMarkersToPaint(*text_node);
+      if (text_node &&
+          RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+        target_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::TextFragment());
+        spelling_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::Spelling());
+        grammar_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::Grammar());
+        custom_ = controller.CustomHighlightMarkersNotOverlapping(*text_node);
+      }
     }
   }
 
@@ -989,7 +927,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
           document, originating_style_, node_, layer.text_style.current_color,
           layer.id.PseudoId(), layer.id.PseudoArgument());
 
-      // TODO(dazabani@igalia.com) paint rects pixel-snapped in physical space,
+      // TODO(crbug.com/1434114) paint rects pixel-snapped in physical space,
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
       PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                 fragment_item_.LocalRect(text, clamped_start, clamped_end),
@@ -1007,7 +945,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
   }
 
   // Paint ::selection background.
-  // TODO(dazabani@igalia.com) generalise ::selection painting logic to support
+  // TODO(crbug.com/1434114) generalise ::selection painting logic to support
   // all highlights, then merge this branch into the loop above
   if (UNLIKELY(selection_)) {
     if (paint_marker_backgrounds) {
@@ -1027,7 +965,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
       if (part.layer != layer.id)
         continue;
 
-      // TODO(dazabani@igalia.com) expand range to include partial glyphs, then
+      // TODO(crbug.com/1434114) expand range to include partial glyphs, then
       // paint with clipping (NGTextPainter::PaintSelectedText)
 
       PaintDecorationsExceptLineThrough(part);
@@ -1041,7 +979,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
   }
 
   // Paint ::selection foreground, including its shadows.
-  // TODO(dazabani@igalia.com) generalise ::selection painting logic to support
+  // TODO(crbug.com/1434114) generalise ::selection painting logic to support
   // all highlights, then merge this branch into the loop above
   if (UNLIKELY(selection_)) {
     for (const HighlightPart& part : parts_) {
@@ -1059,6 +997,56 @@ void NGHighlightPainter::PaintHighlightOverlays(
         PaintSpellingGrammarDecorations(part);
       }
     }
+  }
+}
+
+unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
+                                                  unsigned offset) {
+  // TODO(yoichio): Sanitize DocumentMarker around text length.
+  const Position position(text, std::min(offset, text.length()));
+  const NGOffsetMapping* const offset_mapping =
+      NGOffsetMapping::GetFor(position);
+  DCHECK(offset_mapping);
+  const absl::optional<unsigned>& ng_offset =
+      offset_mapping->GetTextContentOffset(position);
+  DCHECK(ng_offset.has_value());
+  return ng_offset.value();
+}
+
+PseudoId NGHighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return kPseudoIdSpellingError;
+    case DocumentMarker::kGrammar:
+      return kPseudoIdGrammarError;
+    default:
+      NOTREACHED();
+      return {};
+  }
+}
+
+TextDecorationLine NGHighlightPainter::LineFor(
+    DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return TextDecorationLine::kSpellingError;
+    case DocumentMarker::kGrammar:
+      return TextDecorationLine::kGrammarError;
+    default:
+      NOTREACHED();
+      return {};
+  }
+}
+
+Color NGHighlightPainter::ColorFor(DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
+    case DocumentMarker::kGrammar:
+      return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
+    default:
+      NOTREACHED();
+      return {};
   }
 }
 
@@ -1081,7 +1069,7 @@ void NGHighlightPainter::ClipToPartDecorations(const PhysicalRect& part_rect) {
   // let’s clip to selection rect plus its height both above and below. This
   // should be enough to avoid clipping most decorations in the wild.
   //
-  // TODO(dazabani@igalia.com): take text-underline-offset and other
+  // TODO(crbug.com/1433400): take text-underline-offset and other
   // text-decoration properties into account?
   clip_rect.set_y(clip_rect.y() - clip_rect.height());
   clip_rect.set_height(3.0 * clip_rect.height());

@@ -20,6 +20,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -43,6 +44,8 @@ namespace views {
 
 namespace {
 constexpr gfx::Size kCheckboxInkDropSize = gfx::Size(24, 24);
+constexpr float kCheckboxIconDipSize = 16;
+constexpr int kCheckboxIconCornerRadius = 2;
 }
 
 class Checkbox::FocusRingHighlightPathGenerator
@@ -194,7 +197,22 @@ gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
     icon_state |= IconState::CHECKED;
   if (for_state != STATE_DISABLED)
     icon_state |= IconState::ENABLED;
-  return gfx::CreateVectorIcon(GetVectorIcon(), 16,
+
+  if (features::IsChromeRefresh2023()) {
+    const SkColor container_color = GetIconContainerColor(icon_state);
+    if (GetChecked()) {
+      const gfx::ImageSkia check_icon = gfx::CreateVectorIcon(
+          GetVectorIcon(), kCheckboxIconDipSize, GetIconImageColor(icon_state));
+
+      return gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+          kCheckboxIconDipSize, kCheckboxIconCornerRadius, container_color,
+          check_icon);
+    }
+    return gfx::CreateVectorIcon(GetVectorIcon(), kCheckboxIconDipSize,
+                                 container_color);
+  }
+
+  return gfx::CreateVectorIcon(GetVectorIcon(), kCheckboxIconDipSize,
                                GetIconImageColor(icon_state));
 }
 
@@ -237,9 +255,8 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
   // CR2023 is launched
   if (features::IsChromeRefresh2023()) {
     return (icon_state & IconState::ENABLED)
-               ? active_color
-               : GetColorProvider()->GetColor(
-                     ui::kColorCheckboxForegroundDisabled);
+               ? GetColorProvider()->GetColor(ui::kColorCheckboxCheck)
+               : GetColorProvider()->GetColor(ui::kColorCheckboxCheckDisabled);
   }
 
   return (icon_state & IconState::ENABLED)
@@ -248,9 +265,21 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
                                                    gfx::kDisabledControlAlpha);
 }
 
+SkColor Checkbox::GetIconContainerColor(int icon_state) const {
+  if (icon_state & IconState::CHECKED) {
+    return GetColorProvider()->GetColor(
+        (icon_state & IconState::ENABLED)
+            ? ui::kColorCheckboxContainer
+            : ui::kColorCheckboxContainerDisabled);
+  }
+  return GetColorProvider()->GetColor((icon_state & IconState::ENABLED)
+                                          ? ui::kColorCheckboxOutline
+                                          : ui::kColorCheckboxOutlineDisabled);
+}
+
 const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
   if (features::IsChromeRefresh2023()) {
-    return GetChecked() ? kCheckboxActiveCr2023Icon : kCheckboxNormalCr2023Icon;
+    return GetChecked() ? kCheckboxCheckCr2023Icon : kCheckboxNormalCr2023Icon;
   }
 
   return GetChecked() ? kCheckboxActiveIcon : kCheckboxNormalIcon;

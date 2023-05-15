@@ -82,9 +82,6 @@ public class DownloadNotificationService {
             "org.chromium.chrome.browser.download.IS_OFF_THE_RECORD";
     static final String EXTRA_OTR_PROFILE_ID =
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
-    // Used to propagate request state information for OfflineItems.StateAtCancel UMA.
-    static final String EXTRA_DOWNLOAD_STATE_AT_CANCEL =
-            "org.chromium.chrome.browser.download.OfflineItemsStateAtCancel";
 
     static final String EXTRA_NOTIFICATION_BUNDLE_ICON_ID = "Chrome.NotificationBundleIconIdExtra";
     static final String EXTRA_IS_AUTO_RESUMPTION =

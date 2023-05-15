@@ -7,10 +7,12 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -19,6 +21,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,6 +78,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
 
   void TearDown() override {
     // Make sure the tab helper id destroyed before any of its dependencies are.
+    tab_helper_ = nullptr;
     web_contents_->RemoveUserData(ShoppingListUiTabHelper::UserDataKey());
   }
 
@@ -96,12 +100,11 @@ class ShoppingListUiTabHelperTest : public testing::Test {
   }
 
   void SimulateNavigationCommitted(const GURL& url) {
-    content::WebContentsTester::For(web_contents_.get())
-        ->SetLastCommittedURL(url);
+    auto* web_content_tester =
+        content::WebContentsTester::For(web_contents_.get());
+    web_content_tester->SetLastCommittedURL(url);
+    web_content_tester->NavigateAndCommit(url);
 
-    content::LoadCommittedDetails details;
-    details.is_in_active_page = true;
-    tab_helper_->NavigationEntryCommitted(details);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -116,17 +119,36 @@ class ShoppingListUiTabHelperTest : public testing::Test {
     return tab_helper_->GetPendingTrackingStateForTesting();
   }
 
+  void EnableChipExperimentVariation(
+      base::test::ScopedFeatureList& feature_list,
+      commerce::PriceTrackingChipExperimentVariation variation) {
+    int variation_num = static_cast<int>(variation);
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    base::FieldTrialParams chip_experiment_param;
+    chip_experiment_param
+        [commerce::kCommercePriceTrackingChipExperimentVariationParam] =
+            base::NumberToString(variation_num);
+    enabled_features.emplace_back(
+        commerce::kCommercePriceTrackingChipExperiment, chip_experiment_param);
+    feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                               /*disabled_features*/ {});
+  }
+
  protected:
-  base::raw_ptr<ShoppingListUiTabHelper> tab_helper_;
+  raw_ptr<ShoppingListUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
-  base::raw_ptr<content::WebContents> web_contents_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+
+  // Must outlive `web_contents_`.
   content::TestWebContentsFactory test_web_contents_factory_;
+
+ protected:
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
@@ -271,6 +293,60 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
   // We should still be price tracking, but there should no longer be a pending
   // value.
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
+}
+
+// The following tests are for the chip experiment - chip delay variation.
+TEST_F(ShoppingListUiTabHelperTest, TestIconAvailableAfterLoading) {
+  base::test::ScopedFeatureList feature_list;
+  EnableChipExperimentVariation(
+      feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
+  ASSERT_FALSE(tab_helper_->IsPriceTracking());
+
+  AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
+                     kClusterId, true);
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+  SetupImageFetcherForSimpleImage();
+
+  shopping_service_->SetIsShoppingListEligible(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  // Simulate the navigation is committed and has stopped loading.
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kProductUrl), web_contents_);
+  simulator->SetKeepLoading(false);
+  simulator->Start();
+  simulator->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(tab_helper_->GetProductImage().IsEmpty());
+  EXPECT_TRUE(tab_helper_->ShouldShowPriceTrackingIconView());
+}
+
+TEST_F(ShoppingListUiTabHelperTest, TestIconNotAvailableDuringLoading) {
+  base::test::ScopedFeatureList feature_list;
+  EnableChipExperimentVariation(
+      feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
+  ASSERT_FALSE(tab_helper_->IsPriceTracking());
+
+  AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
+                     kClusterId, true);
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+  SetupImageFetcherForSimpleImage();
+
+  shopping_service_->SetIsShoppingListEligible(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  // Simulate the navigation is committed but has not stopped loading.
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kProductUrl), web_contents_);
+  simulator->SetKeepLoading(true);
+  simulator->Start();
+  simulator->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(tab_helper_->GetProductImage().IsEmpty());
+  EXPECT_FALSE(tab_helper_->ShouldShowPriceTrackingIconView());
 }
 
 }  // namespace commerce

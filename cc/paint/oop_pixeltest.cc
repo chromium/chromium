@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
@@ -182,7 +183,7 @@ class OopPixelTest : public testing::Test,
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
         options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
+        kPremul_SkAlphaType, flags, "TestLabel", gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -226,7 +227,6 @@ class OopPixelTest : public testing::Test,
                          options.requires_clear, &max_op_size_limit);
     }
     ri->EndRasterCHROMIUM();
-    ri->OrderingBarrierCHROMIUM();
 
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
 
@@ -261,7 +261,7 @@ class OopPixelTest : public testing::Test,
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         image_format, options.resource_size,
         color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "TestLabel",
         gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -276,7 +276,6 @@ class OopPixelTest : public testing::Test,
     ri->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
                     /*dst_plane_index=*/0, /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
-    ri->OrderingBarrierCHROMIUM();
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
   }
 
@@ -860,7 +859,6 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox src_mailbox = CreateMailboxSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
-  ri->OrderingBarrierCHROMIUM();
 
   UploadPixels(ri, src_mailbox, expected_bitmap.info(), expected_bitmap);
 
@@ -1751,7 +1749,7 @@ class OopTextBlobPixelTest
     SkSurfaceProps surface_props =
         UseLcdText() ? skia::LegacyDisplayGlobals::GetSkSurfaceProps(0)
                      : SkSurfaceProps(0, kUnknown_SkPixelGeometry);
-    auto surface = SkSurface::MakeRenderTarget(
+    auto surface = SkSurfaces::RenderTarget(
         context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
         kTopLeft_GrSurfaceOrigin, &surface_props);
 
@@ -2307,7 +2305,6 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
                                     : nullptr,
                                 SkYUVAInfo::PlaneConfig::kY_U_V,
                                 SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
-  ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size,
                       dest_color_space.ToSkColorSpace());
@@ -2387,7 +2384,6 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
                                 SkColorSpace::MakeSRGB().get(),
                                 SkYUVAInfo::PlaneConfig::kY_UV,
                                 SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
-  ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size);
 

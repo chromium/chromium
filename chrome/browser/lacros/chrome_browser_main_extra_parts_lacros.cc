@@ -163,8 +163,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   // controller service is available.
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    int remote_version = lacros_service->GetInterfaceVersion(
-        crosapi::mojom::TestController::Uuid_);
+    int remote_version =
+        lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
     if (static_cast<uint32_t>(remote_version) >=
         crosapi::mojom::TestController::
             kRegisterStandaloneBrowserTestControllerMinVersion) {

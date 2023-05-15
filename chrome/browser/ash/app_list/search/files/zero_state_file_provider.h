@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -60,11 +61,11 @@ class ZeroStateFileProvider : public SearchProvider,
   void OnFileSuggestionUpdated(ash::FileSuggestionType type) override;
 
   // The reference to profile to get ZeroStateFileProvider service.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   ash::ThumbnailLoader thumbnail_loader_;
 
-  const base::raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
+  const raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 
   base::TimeTicks query_start_time_;
 

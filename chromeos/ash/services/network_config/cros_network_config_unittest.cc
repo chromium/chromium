@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -3338,7 +3339,7 @@ TEST_F(CrosNetworkConfigTest, RequestNetworkScan) {
           },
           &wifi_scanning_));
     }
-    CrosNetworkConfig* cros_network_config_;
+    raw_ptr<CrosNetworkConfig, ExperimentalAsh> cros_network_config_;
     bool wifi_scanning_ = false;
   };
   ScanningObserver observer(cros_network_config());

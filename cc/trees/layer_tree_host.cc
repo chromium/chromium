@@ -409,8 +409,6 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   commit_completion_event_ = std::move(completion);
-  pending_commit_state()->previous_surfaces_visual_update_duration =
-      base::TimeDelta();
   return result;
 }
 
@@ -1590,13 +1588,6 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   pending_commit_state()->local_surface_id_from_parent =
       local_surface_id_from_parent;
 
-  // When we are switching to a new viz::LocalSurfaceId add our current visual
-  // update duration to that of previous surfaces, and clear out the total. So
-  // that we can begin to track the updates for this new Surface.
-  pending_commit_state()->previous_surfaces_visual_update_duration +=
-      pending_commit_state()->visual_update_duration;
-  pending_commit_state()->visual_update_duration = base::TimeDelta();
-
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has
   // advanced. Which means that child has changed visual properites, and the
@@ -1654,8 +1645,10 @@ bool LayerTreeHost::PaintContent(const LayerList& update_layer_list) {
 }
 
 void LayerTreeHost::AddSurfaceRange(const viz::SurfaceRange& surface_range) {
-  if (++pending_commit_state()->surface_ranges[surface_range] == 1)
+  if (++pending_commit_state()->surface_ranges[surface_range] == 1) {
     pending_commit_state()->needs_surface_ranges_sync = true;
+    SetNeedsCommit();
+  }
 }
 
 void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
@@ -1666,6 +1659,7 @@ void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
   if (--iter->second <= 0) {
     pending_commit_state()->surface_ranges.erase(iter);
     pending_commit_state()->needs_surface_ranges_sync = true;
+    SetNeedsCommit();
   }
 }
 
@@ -2046,11 +2040,6 @@ LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
 double LayerTreeHost::GetPercentDroppedFrames() const {
   DCHECK(IsMainThread());
   return proxy_->GetPercentDroppedFrames();
-}
-
-void LayerTreeHost::IncrementVisualUpdateDuration(
-    base::TimeDelta visual_update_duration) {
-  pending_commit_state()->visual_update_duration += visual_update_duration;
 }
 
 }  // namespace cc

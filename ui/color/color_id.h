@@ -253,12 +253,14 @@
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundTonal) \
   E_CPONLY(kColorButtonHoverBackgroundText) \
-  E_CPONLY(kColorMultitaskFeedbackButtonLabelBackground) \
-  E_CPONLY(kColorMultitaskFeedbackButtonLabelForeground) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
-  E_CPONLY(kColorCheckboxBackgroundDisabled) \
+  E_CPONLY(kColorCheckboxCheck) \
+  E_CPONLY(kColorCheckboxCheckDisabled) \
+  E_CPONLY(kColorCheckboxContainer) \
+  E_CPONLY(kColorCheckboxContainerDisabled) \
+  E_CPONLY(kColorCheckboxOutline) \
+  E_CPONLY(kColorCheckboxOutlineDisabled) \
   E_CPONLY(kColorCheckboxForegroundChecked) \
-  E_CPONLY(kColorCheckboxForegroundDisabled) \
   E_CPONLY(kColorCheckboxForegroundUnchecked) \
   E_CPONLY(kColorComboboxBackground) \
   E_CPONLY(kColorComboboxBackgroundDisabled) \
@@ -302,10 +304,12 @@
   E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
   E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleForegroundSecondary) \
   E_CPONLY(kColorLiveCaptionBubbleCheckbox) \
   E_CPONLY(kColorLiveCaptionBubbleLink) \
   E_CPONLY(kColorMenuBackground) \
   E_CPONLY(kColorMenuBorder) \
+  E_CPONLY(kColorMenuButtonBackground) \
   E_CPONLY(kColorMenuDropmarker) \
   E_CPONLY(kColorMenuIcon) \
   E_CPONLY(kColorMenuItemBackgroundAlertedInitial) \
@@ -456,12 +460,6 @@
   E_CPONLY(kColorAshOnboardingFocusRing) \
   \
   E_CPONLY(kColorAshPrivacyIndicatorsBackground) \
-  \
-  /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
-  E_CPONLY(kColorAshSystemUILightBorderColor1) \
-  E_CPONLY(kColorAshSystemUILightBorderColor2) \
-  E_CPONLY(kColorAshSystemUILightHighlightColor1) \
-  E_CPONLY(kColorAshSystemUILightHighlightColor2) \
   \
   E_CPONLY(kColorAshSystemUIMenuBackground) \
   E_CPONLY(kColorAshSystemUIMenuIcon) \

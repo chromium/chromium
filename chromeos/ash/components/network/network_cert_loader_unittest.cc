@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
@@ -283,7 +284,7 @@ class NetworkCertLoaderTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
 
-  NetworkCertLoader* cert_loader_;
+  raw_ptr<NetworkCertLoader, ExperimentalAsh> cert_loader_;
 
   // The NSSCertDatabse and underlying slots for the primary user (because
   // NetworkCertLoader uses device-wide certs and primary user's certs).

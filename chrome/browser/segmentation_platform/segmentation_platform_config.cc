@@ -13,7 +13,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
-#include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
@@ -37,9 +36,11 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
+#include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
+#include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #endif
 
 namespace segmentation_platform {
@@ -111,6 +112,16 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kWebAppInstallationPromoKey;
+  config->segmentation_uma_name = kWebAppInstallationPromoUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO);
+  config->on_demand_execution = true;
+  return config;
+}
+
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
@@ -132,6 +143,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
   configs.emplace_back(DeviceTierSegment::GetConfig());
+  configs.emplace_back(TabletProductivityUserModel::GetConfig());
 #endif
 
   configs.emplace_back(LowUserEngagementModel::GetConfig());
@@ -141,6 +153,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(CrossDeviceUserSegment::GetConfig());
   configs.emplace_back(ResumeHeavyUserModel::GetConfig());
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
+  configs.emplace_back(GetConfigForWebAppInstallationPromo());
 
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });
 

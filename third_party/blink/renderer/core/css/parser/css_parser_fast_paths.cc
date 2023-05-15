@@ -1193,6 +1193,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kAppearance:
       return (value_id >= CSSValueID::kCheckbox &&
               value_id <= CSSValueID::kTextarea) ||
+             (!RuntimeEnabledFeatures::
+                  RemoveNonStandardAppearanceValueEnabled() &&
+              value_id >= CSSValueID::kInnerSpinButton &&
+              value_id <= CSSValueID::kSearchfieldCancelButton) ||
              value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kBackfaceVisibility:
       return value_id == CSSValueID::kVisible ||
@@ -1338,8 +1342,14 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
         return value_id == CSSValueID::kWrap ||
                value_id == CSSValueID::kBalance;
       }
+      if (!RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled()) {
+        return value_id == CSSValueID::kWrap ||
+               value_id == CSSValueID::kNowrap ||
+               value_id == CSSValueID::kBalance;
+      }
       return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap ||
-             value_id == CSSValueID::kBalance;
+             value_id == CSSValueID::kBalance ||
+             value_id == CSSValueID::kPretty;
     case CSSPropertyID::kTransformBox:
       return value_id == CSSValueID::kFillBox ||
              value_id == CSSValueID::kViewBox;
@@ -1417,6 +1427,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
 CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kAlignmentBaseline,
     CSSPropertyID::kAll,
+    CSSPropertyID::kAppearance,
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,
     CSSPropertyID::kBackgroundRepeatX,

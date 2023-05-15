@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Pildi dekooder</translation>
 <translation id="1785415724048343560">Soovitatav parima kasutuskogemuse saamiseks</translation>
 <translation id="1818308510395330587">Selleks et rakendus <ph name="APP_NAME" /> saaks AR-i kasutada, lülitage sisse kaamera ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Allikast <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Seotud saidid näevad teie tegevusi grupis</translation>
 <translation id="1887786770086287077">Juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Saidid võivad kasutada küpsisefaile teie sirvimiskogemuse täiustamiseks, näiteks selleks, et hoida teid sisselogituna või jätta meelde teie ostukorvis olevad esemed</translation>
 <translation id="3165022941318558018">Saidil lubatakse kasutada kolmanda osapoole küpsisefaile</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> salvestatud andmeid</translation>
-<translation id="3203366800380907218">Veebist</translation>
 <translation id="321187648315454507">Selleks et lubada rakendusel <ph name="APP_NAME" /> teile märguandeid saata, lülitage märguanded sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">See sait defineerib huvid, mida muud saidid saavad teile reklaamide kuvamiseks kasutada. Samuti hangib see sait Chrome'ist teie huvid, et näidata teile asjakohasemaid reklaame.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Heli esitavad saidid vaigistatakse</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
+<translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
 <translation id="3721953990244350188">Loobu ja kuva järgmine saadaolev toiming</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5225463052809312700">Lülita kaamera sisse</translation>
-<translation id="5229337741799419985">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5264323282659631142">Eemalda „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Täisekraanilt väljumiseks lohistage ülaservast alla ja puudutage tagasinuppu.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6689172468748959065">Profiilifotod</translation>
 <translation id="6697925417670533197">Aktiivsed allalaadimised</translation>
-<translation id="6701547804986694515">Külastatav sait saab Chrome’iga salvestada teavet, mis kinnitab, et te pole robot. Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>
 <translation id="6722828510648505498">Sisselogimisviibad isikut tuvastavatest teenusest blokeeritakse.</translation>
 <translation id="6746124502594467657">Liiguta alla</translation>
 <translation id="6749077623962119521">Kas lähtestada load?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Tavaliselt blokeerite märguanded. Lubamiseks puudutage valikut Üksikasjad.</translation>
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7383715096023715447">Domeeni <ph name="DOMAIN" /> seaded</translation>
+<translation id="7406113532070524618">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu, kuid saidid võivad kontrollimistoimingu käigus jagada väikest hulka teavet</translation>
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Blokeeri saitide jaoks juurdepääs anduritele</translation>
 <translation id="8823559166155093873">Blokeeri küpsisefailid</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>
 <translation id="8899807382908246773">Sekkuvad reklaamid</translation>
 <translation id="8903921497873541725">Suurendab</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

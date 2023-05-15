@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -66,6 +67,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1443965")
     public void fullscreenCallbacksAreCalled() throws Exception {
         CountDownLatch enterFullscreenLatch = new CountDownLatch(1);
         CountDownLatch exitFullscreenLatch = new CountDownLatch(1);
@@ -98,6 +100,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1443965")
     public void fullscreenIsEndedWhenTabIsInactive() throws Exception {
         CountDownLatch enterFullscreenLatch = new CountDownLatch(1);
         CountDownLatch exitFullscreenLatch = new CountDownLatch(1);

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 
 #include <memory>
@@ -39,7 +38,6 @@ struct EnterpriseWelcomeTestParam {
   PixelTestParam pixel_test_param;
   bool profile_creation_required_by_policy = false;
   bool show_link_data_checkbox = false;
-  bool use_tangible_sync_style = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -52,69 +50,29 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const EnterpriseWelcomeTestParam kWindowTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcome"}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeDarkTheme",
-                          .use_dark_theme = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
+    {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeSmallWindow",
+    {.pixel_test_param = {.test_suffix = "SmallWindow",
                           .use_small_window = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeCR2023",
+    {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
-                          .use_fre_style = true},
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true},
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
-                          .use_right_to_left_language = true},
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
-                          .use_small_window = true},
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
-                          .use_chrome_refresh_2023_style = true},
-     .use_tangible_sync_style = true},
 };
 
 const EnterpriseWelcomeTestParam kDialogTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcome"}},
-    {.pixel_test_param = {.test_suffix =
-                              "EnterpriseWelcomeWithLinkDataCheckbox"},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "WithLinkDataCheckbox"},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix =
-                              "EnterpriseWelcomeWithProfileCreationRequired"},
+    {.pixel_test_param = {.test_suffix = "WithProfileCreationRequired"},
      .profile_creation_required_by_policy = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeDarkTheme",
-                          .use_dark_theme = true},
+    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
+    {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeCR2023",
+    {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre"},
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix =
-                              "EnterpriseWelcomeFreWithLinkDataCheckbox"},
-     .show_link_data_checkbox = true,
-     .use_tangible_sync_style = true},
-    {.pixel_test_param =
-         {.test_suffix = "EnterpriseWelcomeFreWithProfileCreationRequired"},
-     .profile_creation_required_by_policy = true,
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true},
-     .show_link_data_checkbox = true,
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
-                          .use_right_to_left_language = true},
-     .show_link_data_checkbox = true,
-     .use_tangible_sync_style = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
-                          .use_chrome_refresh_2023_style = true},
-     .use_tangible_sync_style = true},
 };
 
 // Creates a step to represent the enterprise-profile-welcome
@@ -180,13 +138,6 @@ class EnterpriseWelcomeUIWindowPixelTest
   EnterpriseWelcomeUIWindowPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (GetParam().use_tangible_sync_style) {
-      enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
-      enabled_features.push_back(switches::kTangibleSync);
-    } else {
-      disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
-    }
     InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
                           enabled_features, disabled_features);
   }
@@ -263,13 +214,6 @@ class EnterpriseWelcomeUIDialogPixelTest
   EnterpriseWelcomeUIDialogPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (GetParam().use_tangible_sync_style) {
-      enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
-      enabled_features.push_back(switches::kTangibleSync);
-    } else {
-      disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
-    }
     InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
                           enabled_features, disabled_features);
   }

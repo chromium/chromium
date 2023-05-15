@@ -21,6 +21,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class ModelTypeChangeProcessor;
@@ -47,10 +48,10 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // syncer::ModelTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -90,6 +91,8 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::Uuid& uuid) const;
 
+  absl::optional<base::Uuid> GetFloatingWorkspaceUuid();
+
  private:
   friend class DeskModelWrapper;
 
@@ -114,6 +117,8 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(std::unique_ptr<DeskEntries> initial_entries,
+                     std::unique_ptr<base::flat_map<std::string, base::Uuid>>
+                         floating_workspace_cache_guid_to_uuid,
                      const absl::optional<syncer::ModelError>& error);
   void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -122,7 +127,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Persists changes in sync store.
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
 
-  // Uploads data that only exists locally to Sync during MergeSyncData().
+  // Uploads data that only exists locally to Sync during MergeFullSyncData().
   void UploadLocalOnlyData(syncer::MetadataChangeList* metadata_change_list,
                            const syncer::EntityChangeList& entity_data);
 
@@ -132,11 +137,15 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // `desk_template_entries_` is keyed by UUIDs.
   DeskEntries desk_template_entries_;
 
+  // `floating_workspace_templates_uuid_` is keyed by cache_guids.
+  base::flat_map<std::string, base::Uuid> floating_workspace_templates_uuid_;
+
   // Whether local data and metadata have finished loading and this sync bridge
   // is ready to be accessed.
   bool is_ready_;
 
-  // In charge of actually persisting changes to disk, or loading previous data.
+  // In charge of actually persisting changes to disk, or loading previous
+  // data.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   // Account ID of the user this class will sync data for.

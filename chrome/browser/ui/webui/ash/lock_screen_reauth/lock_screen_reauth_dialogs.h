@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_DIALOGS_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_DIALOGS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -139,7 +140,7 @@ class LockScreenStartReauthDialog
       scoped_observation_{this};
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
 

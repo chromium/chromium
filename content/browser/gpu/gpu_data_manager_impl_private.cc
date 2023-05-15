@@ -600,13 +600,20 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowed(std::string* reason) const {
           *reason = "GPU process crashed too many times with SwiftShader.";
         } else {
           *reason = "GPU access is disabled ";
+          // just running with --disable-gpu only will go to
+          // GpuMode::SWIFTSHADER instead. Adding --disable-gpu and
+          // --disable-software-rasterizer makes GpuAccessAllowed false and it
+          // comes here.
           if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kDisableGpu))
-            *reason += "through commandline switch --disable-gpu.";
-          else if (hardware_disabled_explicitly_)
+                  switches::kDisableGpu)) {
+            *reason +=
+                "through commandline switch --disable-gpu and "
+                "--disable-software-rasterizer.";
+          } else if (hardware_disabled_explicitly_) {
             *reason += "in chrome://settings.";
-          else
+          } else {
             *reason += "due to frequent crashes.";
+          }
         }
       }
       return false;

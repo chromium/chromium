@@ -24,7 +24,6 @@ public class LayoutTab extends PropertyModel {
     // TODO(crbug.com/1070284): Make the following properties be part of the PropertyModel.
     // Begin section --------------
     // Public Layout constants.
-    public static final float CLOSE_BUTTON_WIDTH_DP = 36.f;
     public static final float SHADOW_ALPHA_ON_LIGHT_BG = 0.8f;
     public static final float SHADOW_ALPHA_ON_DARK_BG = 1.0f;
 
@@ -48,12 +47,6 @@ public class LayoutTab extends PropertyModel {
     public static final WritableFloatPropertyKey RENDER_X = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey RENDER_Y = new WritableFloatPropertyKey();
-
-    // The top left X offset of the clipped rectangle.
-    public static final WritableFloatPropertyKey CLIPPED_X = new WritableFloatPropertyKey();
-
-    // The top left Y offset of the clipped rectangle.
-    public static final WritableFloatPropertyKey CLIPPED_Y = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey CLIPPED_WIDTH = new WritableFloatPropertyKey();
 
@@ -80,10 +73,6 @@ public class LayoutTab extends PropertyModel {
 
     public static final WritableFloatPropertyKey STATIC_TO_VIEW_BLEND =
             new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey BRIGHTNESS = new WritableFloatPropertyKey();
-
-    public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey SHOULD_STALL = new WritableBooleanPropertyKey();
 
@@ -149,14 +138,14 @@ public class LayoutTab extends PropertyModel {
             new PropertyModel.WritableFloatPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE, X,
-            Y, RENDER_X, RENDER_Y, CLIPPED_X, CLIPPED_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA,
-            SATURATION, BORDER_ALPHA, BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP,
-            ORIGINAL_CONTENT_HEIGHT_IN_DP, MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT,
-            STATIC_TO_VIEW_BLEND, BRIGHTNESS, IS_VISIBLE, SHOULD_STALL, CAN_USE_LIVE_TEXTURE,
-            SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA, INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET,
-            SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT, BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA,
-            IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
-            TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA, CONTENT_OFFSET};
+            Y, RENDER_X, RENDER_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA, SATURATION, BORDER_ALPHA,
+            BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP,
+            MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, SHOULD_STALL,
+            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA,
+            INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET, SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT,
+            BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA, IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED,
+            BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR, TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA,
+            CONTENT_OFFSET};
 
     /**
      * Default constructor for a {@link LayoutTab}.
@@ -191,15 +180,11 @@ public class LayoutTab extends PropertyModel {
     public void init(int maxContentTextureWidth, int maxContentTextureHeight) {
         set(ALPHA, 1.0f);
         set(SATURATION, 1.0f);
-        set(BRIGHTNESS, 1.0f);
         set(BORDER_ALPHA, 1.0f);
         set(BORDER_SCALE, 1.0f);
-        set(CLIPPED_X, 0.0f);
-        set(CLIPPED_Y, 0.0f);
         set(CLIPPED_WIDTH, Float.MAX_VALUE);
         set(CLIPPED_HEIGHT, Float.MAX_VALUE);
         set(SCALE, 1.0f);
-        set(IS_VISIBLE, true);
         set(X, 0.0f);
         set(Y, 0.0f);
         set(RENDER_X, 0.0f);
@@ -276,17 +261,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * Set the clipping offset. This apply on the scaled content.
-     *
-     * @param clippedX The top left X offset of the clipped rectangle.
-     * @param clippedY The top left Y offset of the clipped rectangle.
-     */
-    public void setClipOffset(float clippedX, float clippedY) {
-        set(CLIPPED_X, clippedX);
-        set(CLIPPED_Y, clippedY);
-    }
-
-    /**
      * Set the clipping sizes. This apply on the scaled content.
      *
      * @param clippedWidth  The width of the clipped rectangle. Float.MAX_VALUE for no clipping.
@@ -295,20 +269,6 @@ public class LayoutTab extends PropertyModel {
     public void setClipSize(float clippedWidth, float clippedHeight) {
         set(CLIPPED_WIDTH, clippedWidth);
         set(CLIPPED_HEIGHT, clippedHeight);
-    }
-
-    /**
-     * @return The top left X offset of the clipped rectangle.
-     */
-    public float getClippedX() {
-        return get(CLIPPED_X);
-    }
-
-    /**
-     * @return The top left Y offset of the clipped rectangle.
-     */
-    public float getClippedY() {
-        return get(CLIPPED_Y);
     }
 
     /**
@@ -366,21 +326,6 @@ public class LayoutTab extends PropertyModel {
     public float getFinalContentWidth() {
         return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
     }
-
-    /**
-     * @return The height of the drawn content (clipped and scaled).
-     */
-    public float getFinalContentHeight() {
-        return Math.min(get(CLIPPED_HEIGHT), getScaledContentHeight());
-    }
-
-    /**
-     * @return The maximum width the content can be.
-     */
-    public float getMaxContentWidth() {
-        return get(MAX_CONTENT_WIDTH);
-    }
-
     /**
      * @return The maximum height the content can be.
      */
@@ -571,20 +516,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @param brightness The brightness value to apply to the tab.
-     */
-    public void setBrightness(float brightness) {
-        set(BRIGHTNESS, brightness);
-    }
-
-    /**
-     * @return The brightness of the tab.
-     */
-    public float getBrightness() {
-        return get(BRIGHTNESS);
-    }
-
-    /**
      * @param drawDecoration Whether or not to draw decoration.
      */
     public void setDrawDecoration(boolean drawDecoration) {
@@ -617,20 +548,6 @@ public class LayoutTab extends PropertyModel {
     public void setContentSize(int originalContentWidth, int originalContentHeight) {
         set(ORIGINAL_CONTENT_WIDTH_IN_DP, originalContentWidth * sPxToDp);
         set(ORIGINAL_CONTENT_HEIGHT_IN_DP, originalContentHeight * sPxToDp);
-    }
-
-    /**
-     * @param visible True if the {@link LayoutTab} is visible and need to be drawn.
-     */
-    public void setVisible(boolean visible) {
-        set(IS_VISIBLE, visible);
-    }
-
-    /**
-     * @return True if the {@link LayoutTab} is visible and will be drawn.
-     */
-    public boolean isVisible() {
-        return get(IS_VISIBLE);
     }
 
     /**

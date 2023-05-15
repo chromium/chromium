@@ -15,8 +15,8 @@ swipe the home page on the phone-->
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tab_switcher_module_container"
-    android:paddingStart="2dp"
-    android:paddingEnd="2dp"
+    android:paddingStart="@dimen/single_tab_card_start_padding"
+    android:paddingEnd="@dimen/single_tab_card_start_padding"
     android:visibility="gone"
     app:layout_scrollFlags="scroll"
     tools:ignore="MergeRootFrame">

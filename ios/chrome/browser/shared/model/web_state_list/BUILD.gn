@@ -1,0 +1,66 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("web_state_list") {
+  sources = [
+    "active_web_state_observation_forwarder.h",
+    "active_web_state_observation_forwarder.mm",
+    "all_web_state_observation_forwarder.h",
+    "all_web_state_observation_forwarder.mm",
+    "web_state_list.h",
+    "web_state_list.mm",
+    "web_state_list_delegate.h",
+    "web_state_list_observer.h",
+    "web_state_list_observer.mm",
+    "web_state_list_observer_bridge.h",
+    "web_state_list_observer_bridge.mm",
+    "web_state_opener.h",
+    "web_state_opener.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+    "//url",
+  ]
+  allow_circular_includes_from = [ "//ios/chrome/browser/web_state_list" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "active_web_state_observation_forwarder_unittest.mm",
+    "all_web_state_observation_forwarder_unittest.mm",
+    "web_state_list_unittest.mm",
+    "web_state_opener_unittest.mm",
+  ]
+  deps = [
+    ":web_state_list",
+    "//base",
+    "//base/test:test_support",
+    "//components/favicon/ios",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
+    "//ios/chrome/browser/web",
+    "//ios/web",
+    "//ios/web/public/session",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//net",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

@@ -767,10 +767,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // not in printing mode.
   virtual float GetPrintPageShrink(uint32_t page) = 0;
 
-  // Prints one page, and returns the calculated page shrinking factor
-  // (usually between 1/1.33 and 1/2).  Returns 0 if the page number is
-  // invalid or not in printing mode.
-  virtual float PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
+  // Prints one page.
+  virtual void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
 
   // Reformats the WebFrame for screen display.
   virtual void PrintEnd() = 0;

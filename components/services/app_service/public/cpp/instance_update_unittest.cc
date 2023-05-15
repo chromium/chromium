@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/instance_update.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -123,7 +124,7 @@ class InstanceUpdateTest : public testing::Test {
     }
   }
 
-  aura::Window* expect_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> expect_window_;
   bool expect_window_changed_;
   std::string expect_launch_id_;
   bool expect_launch_id_changed_;

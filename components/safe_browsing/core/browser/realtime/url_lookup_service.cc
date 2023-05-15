@@ -139,7 +139,8 @@ bool RealTimeUrlLookupService::CanSendPageLoadToken() const {
 }
 
 bool RealTimeUrlLookupService::CanCheckSubresourceURL() const {
-  return IsEnhancedProtectionEnabled(*pref_service_);
+  return IsEnhancedProtectionEnabled(*pref_service_) &&
+         CanPerformFullURLLookup();
 }
 
 bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {

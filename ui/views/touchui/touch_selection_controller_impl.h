@@ -41,13 +41,12 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
 
   // ui::TouchEditingControllerDeprecated:
   void SelectionChanged() override;
+  void ToggleQuickMenu() override;
 
   void ShowQuickMenuImmediatelyForTesting();
 
  private:
   friend class TouchSelectionControllerImplTest;
-
-  void OnHandleTapped(EditingHandleView* handle);
 
   void OnDragBegin(EditingHandleView* handle);
 
@@ -63,10 +62,11 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // system to that of the client view.
   void ConvertPointToClientView(EditingHandleView* source, gfx::Point* point);
 
-  // Convenience method to update a handle's selection bound and visibility.
-  void UpdateHandle(EditingHandleView* handle,
-                    const gfx::SelectionBound& bound_in_screen,
-                    bool should_show_handle);
+  // Convenience method to set a handle's selection bound and hide it if it is
+  // located out of client view.
+  void SetHandleBound(EditingHandleView* handle,
+                      const gfx::SelectionBound& bound,
+                      const gfx::SelectionBound& bound_in_screen);
 
   // Checks if handle should be shown for selection bound.
   // |bound| should be the clipped version of the selection bound.
@@ -102,6 +102,12 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // coordinates.
   gfx::Rect GetQuickMenuAnchorRect() const;
 
+  // Shows the touch selection magnifier (if there is one) at the focus bound.
+  void ShowMagnifier(const gfx::SelectionBound& focus_bound_in_screen);
+
+  // Hides the touch selection magnifier.
+  void HideMagnifier();
+
   // Convenience methods for testing.
   gfx::NativeView GetCursorHandleNativeView();
   gfx::SelectionBound::Type GetSelectionHandle1Type();
@@ -125,10 +131,10 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
-  // Whether tapping the cursor handle toggles showing and hiding the quick
-  // menu. If enabled, the menu won't be shown when the cursor handle is
-  // initially shown.
-  bool tap_cursor_to_toggle_menu_enabled_ = false;
+  // Whether to enable toggling the menu by tapping the cursor or cursor handle.
+  // If enabled, the menu defaults to being hidden when the cursor handle is
+  // initially created.
+  bool toggle_menu_enabled_ = false;
 
   // Whether the quick menu has been requested to be shown.
   bool quick_menu_requested_ = false;
@@ -152,6 +158,11 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // Selection bounds, clipped to client view's boundaries.
   gfx::SelectionBound selection_bound_1_clipped_;
   gfx::SelectionBound selection_bound_2_clipped_;
+
+  // Used to track whether the client is selection dragging. If the client's
+  // selection dragging state changes, then the handles need to be updated on
+  // the next selection change notification.
+  bool is_client_selection_dragging_ = false;
 };
 
 }  // namespace views

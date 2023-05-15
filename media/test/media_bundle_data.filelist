@@ -33,8 +33,15 @@ data/av1-monochrome-I-frame-320x240-8bpp
 data/av1-show_existing_frame.ivf
 data/av1-svc-L2T2.ivf
 data/bali_640x360_P420.yuv
+data/basketball_2_layers.vvc
 data/bbb-320x240-2video-2audio.mp4
 data/bbb.hevc
+data/bbb_15tiles_15slices.vvc
+data/bbb_360p.vvc
+data/bbb_9tiles.vvc
+data/bbb_9tiles_18slices.vvc
+data/bbb_chroma_qp_offset_lists.vvc
+data/bbb_scaling_lists.vvc
 data/bear-1280x720-a_frag-cenc-key_rotation.mp4
 data/bear-1280x720-a_frag-cenc.mp4
 data/bear-1280x720-a_frag-cenc_clear-all.mp4
@@ -224,6 +231,7 @@ data/bear.rm
 data/bear.swf
 data/bear.webm
 data/bear0.ts
+data/bear_180p.vvc
 data/bear_192kHz.wav
 data/bear_192x320_270.nv12.yuv
 data/bear_192x320_270.nv12.yuv.json
@@ -349,6 +357,7 @@ data/mse_player.html
 data/multi_frame_mse_player.html
 data/multiple_cdm_types.html
 data/multitrack-3video-2audio.webm
+data/multitrack-disabled.mp4
 data/negative-audio-timestamps.avi
 data/negative_ts.flac
 data/no_audio_video.webm

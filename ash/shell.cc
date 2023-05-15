@@ -30,10 +30,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_features.h"
@@ -133,6 +135,7 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
@@ -223,12 +226,14 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -253,6 +258,7 @@
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_port_observer.h"
 #include "ui/display/manager/touch_transform_setter.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -315,6 +321,7 @@ Shell* Shell::CreateInstance(ShellInitParams init_params) {
   instance_ = new Shell(std::move(init_params.delegate));
   instance_->Init(init_params.context_factory, init_params.local_state,
                   std::move(init_params.keyboard_ui_factory),
+                  std::move(init_params.quick_pair_mediator_factory),
                   init_params.dbus_bus);
   return instance_;
 }
@@ -680,6 +687,7 @@ Shell::~Shell() {
     DCHECK(rwc->GetHost()->dispatcher()->in_shutdown());
   }
 #endif
+  booting_animation_controller_.reset();
   login_unlock_throughput_recorder_.reset();
 
   hud_display::HUDDisplayView::Destroy();
@@ -736,6 +744,12 @@ Shell::~Shell() {
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(modality_filter_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
+
+  // Resets the implementation of clipboard history utility functions.
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+      base::NullCallback());
+  chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
+      base::NullCallback());
 
   // Resets the text context menu implementation factory.
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
@@ -943,6 +957,10 @@ Shell::~Shell() {
   // Removes itself as an observer of |pref_service_|.
   shelf_controller_.reset();
 
+  // `CameraEffectsController` depends on `AutozoomController`, so it must be
+  // destructed before it.
+  camera_effects_controller_.reset();
+
   // NightLightControllerImpl depends on the PrefService, the window tree host
   // manager, and `geolocation_controller_`, so it must be destructed before
   // them. crbug.com/724231.
@@ -1009,6 +1027,8 @@ Shell::~Shell() {
   display_change_observer_.reset();
   display_shutdown_observer_.reset();
 
+  display_port_observer_.reset();
+
   keyboard_controller_.reset();
 
   PowerStatus::Shutdown();
@@ -1051,8 +1071,6 @@ Shell::~Shell() {
   // before it.
   calendar_controller_.reset();
 
-  camera_effects_controller_.reset();
-
   audio_effects_controller_.reset();
 
   shell_delegate_.reset();
@@ -1083,6 +1101,8 @@ void Shell::Init(
     ui::ContextFactory* context_factory,
     PrefService* local_state,
     std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
+    std::unique_ptr<ash::quick_pair::Mediator::Factory>
+        quick_pair_mediator_factory,
     scoped_refptr<dbus::Bus> dbus_bus) {
   login_unlock_throughput_recorder_ =
       std::make_unique<LoginUnlockThroughputRecorder>();
@@ -1176,7 +1196,8 @@ void Shell::Init(
       shell_delegate_->CreateCaptureModeDelegate());
 
   if (features::IsGameDashboardEnabled()) {
-    game_dashboard_controller_ = std::make_unique<GameDashboardController>();
+    game_dashboard_controller_ = std::make_unique<GameDashboardController>(
+        shell_delegate_->CreateGameDashboardDelegate());
   }
 
   // Accelerometer file reader starts listening to tablet mode controller.
@@ -1197,8 +1218,8 @@ void Shell::Init(
   }
 
   native_cursor_manager_ = new NativeCursorManagerAsh;
-  cursor_manager_ =
-      std::make_unique<CursorManager>(base::WrapUnique(native_cursor_manager_));
+  cursor_manager_ = std::make_unique<CursorManager>(
+      base::WrapUnique(native_cursor_manager_.get()));
 
   InitializeDisplayManager();
 
@@ -1245,8 +1266,9 @@ void Shell::Init(
 
   // Fast Pair depends on the display manager, so initialize it after
   // display manager was properly initialized.
-  if (base::FeatureList::IsEnabled(features::kFastPair)) {
-    quick_pair_mediator_ = quick_pair::Mediator::Factory::Create();
+  if (base::FeatureList::IsEnabled(features::kFastPair) &&
+      quick_pair_mediator_factory) {
+    quick_pair_mediator_ = quick_pair_mediator_factory->BuildInstance();
   }
 
   // The WindowModalityController needs to be at the front of the input event
@@ -1361,7 +1383,8 @@ void Shell::Init(
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
-  AddPreTargetHandler(control_v_histogram_recorder_.get());
+  AddPreTargetHandler(control_v_histogram_recorder_.get(),
+                      ui::EventTarget::Priority::kAccessibility);
 
   // AcceleratorTracker should be placed before AcceleratorFilter to make sure
   // the accelerators won't be filtered out before getting AcceleratorTracker.
@@ -1544,7 +1567,16 @@ void Shell::Init(
     wm_mode_controller_ = std::make_unique<WmModeController>();
   }
 
+  if (features::IsHotspotEnabled()) {
+    hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
+  }
+
   window_tree_host_manager_->InitHosts();
+
+  if (ash::features::IsOobeSimonEnabled()) {
+    booting_animation_controller_ =
+        std::make_unique<BootingAnimationController>();
+  }
 
   // Create virtual keyboard after WindowTreeHostManager::InitHosts() since
   // it may enable the virtual keyboard immediately, which requires a
@@ -1636,6 +1668,24 @@ void Shell::Init(
                                                                      textfield);
           }));
 
+  // Sets the implementation of clipboard history utility functions.
+  // It is safe to pass `clipboard_history_controller_` raw pointer here.
+  // Because the function implementation is reset before
+  // `clipboard_history_controller_` is destroyed.
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
+      [](ClipboardHistoryControllerImpl* controller) {
+        return clipboard_history_util::GetItemDescriptorsFrom(
+            controller->history()->GetItems());
+      },
+      clipboard_history_controller_.get()));
+  chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
+      base::BindRepeating(
+          [](const base::UnguessableToken& id, int event_flags,
+             crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+            ClipboardHistoryController::Get()->PasteClipboardItemById(
+                id.ToString(), event_flags, show_source);
+          }));
+
   for (auto& observer : shell_observers_) {
     observer.OnShellInitialized();
   }
@@ -1692,6 +1742,12 @@ void Shell::InitializeDisplayManager() {
 
   display_color_manager_ =
       std::make_unique<DisplayColorManager>(display_manager_->configurator());
+
+  display_port_observer_ = std::make_unique<display::DisplayPortObserver>(
+      display_manager_->configurator(),
+      base::BindRepeating([](const std::vector<uint32_t>& port_nums) {
+        TypecdClient::Get()->SetTypeCPortsUsingDisplays(port_nums);
+      }));
 
   if (!display_initialized) {
     display_manager_->InitDefaultDisplay();

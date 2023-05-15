@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // PREFERENCES should now be throttled.
   EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)),
-            syncer::ModelTypeSet{syncer::PREFERENCES});
+            syncer::ModelTypeSet({syncer::PREFERENCES}));
 
   // Unthrottle PREFERENCES to verify that sync can resume.
   GetFakeServer()->SetThrottledTypes(syncer::ModelTypeSet());

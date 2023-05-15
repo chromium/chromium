@@ -11,6 +11,7 @@ import unittest
 
 import test_runner_errors
 import test_runner_test
+import iossim_util
 import xcode_util
 
 
@@ -244,6 +245,47 @@ class InstallTest(XcodeUtilTest):
     self.assertFalse(mock_install_runtime.called)
     self.assertFalse(mock_move_runtime.called)
 
+  def test_install_runtime_dmg_with_builtin_runtime(self):
+    with mock.patch('xcode_util.is_runtime_builtin', return_value=True):
+      with mock.patch('iossim_util.delete_simulator_runtime_and_wait'
+                     ) as mock_delete_simulator_runtime_and_wait:
+        with mock.patch(
+            'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
+          with mock.patch('iossim_util.add_simulator_runtime'
+                         ) as mock_add_simulator_runtime:
+            result = xcode_util.install_runtime_dmg(
+                mac_toolchain='mac_toolchain',
+                runtime_cache_folder='/path/to/runtime_cache_folder',
+                ios_version='15.0',
+            )
+
+    self.assertFalse(mock_delete_simulator_runtime_and_wait.called)
+    self.assertFalse(mock__install_runtime_dmg.called)
+    self.assertFalse(mock_add_simulator_runtime.called)
+
+  def test_install_runtime_dmg_with_non_builtin_runtime(self):
+    with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
+      with mock.patch('iossim_util.delete_simulator_runtime_and_wait'
+                     ) as mock_delete_simulator_runtime_and_wait:
+        with mock.patch(
+            'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
+          with mock.patch('iossim_util.add_simulator_runtime'
+                         ) as mock_add_simulator_runtime:
+            with mock.patch(
+                'xcode_util.get_runtime_dmg_name',
+                return_value='/path/to/runtime_cache_folder/test.dmg'):
+              result = xcode_util.install_runtime_dmg(
+                  mac_toolchain='mac_toolchain',
+                  runtime_cache_folder='/path/to/runtime_cache_folder',
+                  ios_version='15.0',
+              )
+
+    mock_delete_simulator_runtime_and_wait.assert_called_once_with('15.0')
+    mock__install_runtime_dmg.assert_called_once_with(
+        'mac_toolchain', '/path/to/runtime_cache_folder', '15.0')
+    mock_add_simulator_runtime.assert_called_once_with(
+        '/path/to/runtime_cache_folder/test.dmg')
+
 
 class HelperFunctionTests(XcodeUtilTest):
   """Test class for xcode_util misc util functions."""
@@ -345,6 +387,39 @@ Use "mac_toolchain help [command]" for more information about a command."""
     mock_rmtree.assert_called_with(
         os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
                      'iOS.simruntime'))
+
+  def test_is_runtime_builtin_with_builtin_runtime(self):
+    with mock.patch(
+        'iossim_util.get_simulator_runtime_info',
+        return_value={
+            'kind': 'Bundled with Xcode',
+        }):
+      result = xcode_util.is_runtime_builtin('15.0')
+
+    self.assertTrue(result)
+
+  def test_is_runtime_builtin_with_non_builtin_runtime(self):
+    with mock.patch(
+        'iossim_util.get_simulator_runtime_info',
+        return_value={
+            'kind': 'Disk Image',
+        }):
+      result = xcode_util.is_runtime_builtin('15.0')
+
+    self.assertFalse(result)
+
+  def test_is_runtime_builtin_with_no_runtime_info(self):
+    with mock.patch(
+        'iossim_util.get_simulator_runtime_info', return_value=None):
+      result = xcode_util.is_runtime_builtin('15.0')
+
+    self.assertFalse(result)
+
+  def test_convert_ios_version_to_cipd_ref(self):
+    expected_result = "ios-14-4"
+    actual_result = xcode_util.convert_ios_version_to_cipd_ref("14.4")
+    self.assertEqual(expected_result, actual_result)
+
 
 class MoveRuntimeTests(XcodeUtilTest):
   """Test class for xcode_util.move_runtime function."""
@@ -584,6 +659,17 @@ class MacToolchainInvocationTests(XcodeUtilTest):
         'mac_toolchain', 'install', '-kind', 'ios', '-xcode-version',
         'testxcodeversion', '-output-dir', 'test/path/Xcode.app',
         '-with-runtime=False'
+    ],
+                                         stderr=-2)
+
+  @mock.patch('subprocess.check_call', autospec=True)
+  def test_install_runtime_dmg(self, mock_check_output):
+    xcode_util._install_runtime_dmg(self.mac_toolchain,
+                                    self.runtime_cache_folder, self.ios_version)
+
+    mock_check_output.assert_called_with([
+        'mac_toolchain', 'install-runtime-dmg', '-runtime-version', 'ios-14-4',
+        '-output-dir', 'test/path/Runtime'
     ],
                                          stderr=-2)
 

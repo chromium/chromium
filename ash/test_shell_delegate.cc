@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
@@ -31,6 +32,11 @@ bool TestShellDelegate::CanShowWindowForUser(const aura::Window* window) const {
 std::unique_ptr<CaptureModeDelegate>
 TestShellDelegate::CreateCaptureModeDelegate() const {
   return std::make_unique<TestCaptureModeDelegate>();
+}
+
+std::unique_ptr<GameDashboardDelegate>
+TestShellDelegate::CreateGameDashboardDelegate() const {
+  return std::make_unique<TestGameDashboardDelegate>();
 }
 
 std::unique_ptr<GlanceablesDelegate>

@@ -46,41 +46,28 @@ SkColor ImageTopLeftColor(ui::ImageModel model) {
   return skia.bitmap()->getColor(0, 0);
 }
 
-std::unique_ptr<sharing_hub::PreviewView> BuildTestPreview(
-    share::DesktopSharePreviewVariant) {
+std::unique_ptr<sharing_hub::PreviewView> BuildTestPreview() {
   auto view = std::make_unique<sharing_hub::PreviewView>(
       share::ShareAttempt(nullptr, u"Title", GURL("https://www.chromium.org/"),
-                          BuildTestImage(SK_ColorRED)),
-      share::DesktopSharePreviewVariant::kEnabled16);
+                          BuildTestImage(SK_ColorRED)));
   return view;
 }
 
 TEST_F(PreviewViewTest, IncludesTitle) {
-  auto view = BuildTestPreview(share::DesktopSharePreviewVariant::kEnabled16);
+  auto view = BuildTestPreview();
   ASSERT_TRUE(FindLabelWithText(view.get(), u"Title"));
 }
 
 TEST_F(PreviewViewTest, IncludesURL) {
-  auto view = BuildTestPreview(share::DesktopSharePreviewVariant::kEnabled16);
+  auto view = BuildTestPreview();
   ASSERT_TRUE(FindLabelWithText(view.get(), u"https://www.chromium.org/"));
 }
 
 TEST_F(PreviewViewTest, IncludesImage) {
-  auto view = BuildTestPreview(share::DesktopSharePreviewVariant::kEnabled16);
-  ASSERT_TRUE(FindImage(view.get()));
-}
-
-TEST_F(PreviewViewTest, OnImageChangedReplacesImage) {
-  auto view = BuildTestPreview(share::DesktopSharePreviewVariant::kEnabled16);
-
-  auto* old_image = FindImage(view.get());
-  ASSERT_TRUE(old_image);
-  EXPECT_EQ(ImageTopLeftColor(old_image->GetImageModel()), SK_ColorRED);
-
-  view->OnImageChanged(BuildTestImage(SK_ColorGREEN));
-  auto* new_image = FindImage(view.get());
-  ASSERT_TRUE(new_image);
-  EXPECT_EQ(ImageTopLeftColor(new_image->GetImageModel()), SK_ColorGREEN);
+  auto view = BuildTestPreview();
+  auto* image = FindImage(view.get());
+  ASSERT_TRUE(image);
+  EXPECT_EQ(ImageTopLeftColor(image->GetImageModel()), SK_ColorRED);
 }
 
 }  // namespace

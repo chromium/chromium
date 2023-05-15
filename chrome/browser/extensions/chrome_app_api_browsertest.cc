@@ -48,13 +48,8 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
     return IsAppInstalledInFrame(GetIFrame());
   }
   bool IsAppInstalledInFrame(content::RenderFrameHost* frame) {
-    const char kGetAppIsInstalled[] =
-        "window.domAutomationController.send(window.chrome.app.isInstalled);";
-    bool result;
-    CHECK(content::ExecuteScriptAndExtractBool(frame,
-                                               kGetAppIsInstalled,
-                                               &result));
-    return result;
+    const char kGetAppIsInstalled[] = "window.chrome.app.isInstalled;";
+    return content::EvalJs(frame, kGetAppIsInstalled).ExtractBool();
   }
 
   std::string InstallStateInMainFrame() {
@@ -175,20 +170,20 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalledFromRemovedFrame) {
 
   constexpr char kScript[] =
       R"(var i = document.createElement('iframe');
-         i.onload = function() {
-           var frameApp = i.contentWindow.chrome.app;
-           document.body.removeChild(i);
-           var isInstalled = frameApp.isInstalled;
-           window.domAutomationController.send(
-               isInstalled === undefined);
-         };
-         i.src = '%s';
-         document.body.appendChild(i);)";
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::StringPrintf(kScript, app_url.spec().c_str()), &result));
-  EXPECT_TRUE(result);
+         new Promise(resolve => {
+           i.onload = function() {
+             var frameApp = i.contentWindow.chrome.app;
+             document.body.removeChild(i);
+             var isInstalled = frameApp.isInstalled;
+             resolve(isInstalled === undefined);
+           };
+           i.src = '%s';
+           document.body.appendChild(i);
+         });
+         )";
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      base::StringPrintf(kScript, app_url.spec().c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, InstallAndRunningState) {

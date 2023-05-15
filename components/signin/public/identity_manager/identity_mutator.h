@@ -44,7 +44,8 @@ class JniIdentityMutator {
   jint SetPrimaryAccount(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& primary_account_id,
-      jint consent_level);
+      jint consent_level,
+      jint access_point);
 
   // Called by java to clear the primary account, and return whether the
   // operation succeeded or not. Depending on |action|, the other accounts known

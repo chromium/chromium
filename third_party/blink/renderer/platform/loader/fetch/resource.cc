@@ -925,7 +925,7 @@ void Resource::SetCachePolicyBypassingCache() {
 }
 
 void Resource::ClearRangeRequestHeader() {
-  resource_request_.ClearHttpHeaderField("range");
+  resource_request_.ClearHttpHeaderField(http_names::kLowerRange);
 }
 
 void Resource::RevalidationSucceeded(

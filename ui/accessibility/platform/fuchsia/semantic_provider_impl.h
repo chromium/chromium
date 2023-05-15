@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_SEMANTIC_PROVIDER_IMPL_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_SEMANTIC_PROVIDER_IMPL_H_
 
-#include <fuchsia/accessibility/semantics/cpp/fidl.h>
+#include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
@@ -20,12 +20,30 @@
 
 namespace ui {
 
+namespace {
+
+class SemanticTreeEventHandler
+    : public fidl::AsyncEventHandler<
+          fuchsia_accessibility_semantics::SemanticTree> {
+ public:
+  explicit SemanticTreeEventHandler(
+      base::OnceCallback<void(fidl::UnbindInfo)> on_fidl_error_callback);
+  ~SemanticTreeEventHandler() override;
+
+  void on_fidl_error(fidl::UnbindInfo error) override;
+
+ private:
+  base::OnceCallback<void(fidl::UnbindInfo)> on_fidl_error_callback_;
+};
+
+}  // namespace
+
 // Clients instantiate this class, which connects to the Fuchsia semantics API.
 // This object must remain alive across the entire lifespan of the corresponding
 // fuchsia view.
 class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
     : public AXFuchsiaSemanticProvider,
-      public fuchsia::accessibility::semantics::SemanticListener {
+      public fidl::Server<fuchsia_accessibility_semantics::SemanticListener> {
  public:
   // Arguments:
   // |view_ref|: identifies the view providing semantics. Please consult
@@ -36,7 +54,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
   // During construction, this class connects to
   // |fuchsia.accessibility.semantics.SemanticsManager| to register itself as a
   // semantic provider.
-  AXFuchsiaSemanticProviderImpl(fuchsia::ui::views::ViewRef view_ref,
+  AXFuchsiaSemanticProviderImpl(fuchsia_ui_views::ViewRef view_ref,
                                 Delegate* delegate);
   ~AXFuchsiaSemanticProviderImpl() override;
 
@@ -44,11 +62,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
   bool semantic_updates_enabled() const { return semantic_updates_enabled_; }
 
   // AXFuchsiaSemanticProvider overrides.
-  bool Update(fuchsia::accessibility::semantics::Node node) override;
+  bool Update(fuchsia_accessibility_semantics::Node node) override;
   bool Delete(uint32_t node_id) override;
   bool Clear() override;
-  void SendEvent(
-      fuchsia::accessibility::semantics::SemanticEvent event) override;
+  void SendEvent(fuchsia_accessibility_semantics::SemanticEvent event) override;
   bool HasPendingUpdates() const override;
   float GetPixelScale() const override;
   void SetPixelScale(float pixel_scale) override;
@@ -85,16 +102,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
 
     // Adds an update or deletion to the batch. This fails if the batch is full
     // or if the new item is not the same type of the batch.
-    void Append(fuchsia::accessibility::semantics::Node node);
+    void Append(fuchsia_accessibility_semantics::Node node);
     void AppendDeletion(uint32_t delete_node_id);
 
     // Sends enqueued operations to SemanticsManager.
-    void Apply(
-        fuchsia::accessibility::semantics::SemanticTreePtr* semantic_tree);
+    void Apply(fidl::Client<fuchsia_accessibility_semantics::SemanticTree>*
+                   semantic_tree);
 
    private:
     Type type_;
-    std::vector<fuchsia::accessibility::semantics::Node> updates_;
+    std::vector<fuchsia_accessibility_semantics::Node> updates_;
     std::vector<uint32_t> delete_node_ids_;
   };
 
@@ -107,7 +124,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
 
   // Invoked whenever Fuchsia responds that a commit was received. This tries to
   // commit again if there are pending upedates or deletions.
-  void OnCommitComplete();
+  void OnCommitComplete(
+      fidl::Result<
+          fuchsia_accessibility_semantics::SemanticTree::CommitUpdates>&
+          result);
 
   // Mark all |child_ids| not reachable from |parent_id|, meaning:
   // - If |parent_id| was the only parent, the children are now disconnected
@@ -133,29 +153,29 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
   // have a parent or it has multiple parents, returns absl::nullopt.
   absl::optional<uint32_t> GetParentForNode(const uint32_t node_id);
 
-  // fuchsia::accessibility::semantics::SemanticListener:
+  // fuchsia_accessibility_semantics::SemanticListener:
   void OnAccessibilityActionRequested(
-      uint32_t node_id,
-      fuchsia::accessibility::semantics::Action action,
-      fuchsia::accessibility::semantics::SemanticListener::
-          OnAccessibilityActionRequestedCallback callback) override;
+      OnAccessibilityActionRequestedRequest& request,
+      OnAccessibilityActionRequestedCompleter::Sync& completer) override;
 
-  // fuchsia::accessibility::semantics::SemanticListener:
-  void HitTest(::fuchsia::math::PointF local_point,
-               HitTestCallback callback) override;
+  // fuchsia_accessibility_semantics::SemanticListener:
+  void HitTest(HitTestRequest& request,
+               HitTestCompleter::Sync& completer) override;
 
-  // fuchsia::accessibility::semantics::SemanticListener:
-  void OnSemanticsModeChanged(bool update_enabled,
-                              OnSemanticsModeChangedCallback callback) override;
-
-  fuchsia::ui::views::ViewRef view_ref_;
+  // fuchsia_accessibility_semantics::SemanticListener:
+  void OnSemanticsModeChanged(
+      OnSemanticsModeChangedRequest& request,
+      OnSemanticsModeChangedCompleter::Sync& completer) override;
 
   Delegate* const delegate_;
 
-  fidl::Binding<fuchsia::accessibility::semantics::SemanticListener>
+  absl::optional<
+      fidl::ServerBinding<fuchsia_accessibility_semantics::SemanticListener>>
       semantic_listener_binding_;
 
-  fuchsia::accessibility::semantics::SemanticTreePtr semantic_tree_;
+  fidl::Client<fuchsia_accessibility_semantics::SemanticTree> semantic_tree_;
+
+  absl::optional<SemanticTreeEventHandler> semantic_tree_event_handler_;
 
   bool semantic_updates_enabled_ = false;
 

@@ -10,6 +10,7 @@
 
 #include "ash/shell.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "components/exo/display.h"
@@ -30,8 +31,8 @@ struct UiControls::UiControlsState {
   UiControlsState(const UiControlsState&) = delete;
   UiControlsState& operator=(const UiControlsState&) = delete;
 
-  Server* server_;
-  const Seat* const seat_;
+  raw_ptr<Server, ExperimentalAsh> server_;
+  const raw_ptr<const Seat, ExperimentalAsh> seat_;
 
   // Keeps track of the IDs of pending requests for that we still need to emit
   // request_processed events. This is per wl_resource so that we can drop
@@ -100,6 +101,10 @@ void ResetInputs(UiControlsState* state) {
                                    touch_id, 0, 0);
     }
   }
+
+  // TODO(crbug.com/1431512): Fix this issue and the code below should not be
+  // necessary.
+  ui_controls::SendMouseMove(0, 0);
 }
 
 void ui_controls_send_key_events(struct wl_client* client,

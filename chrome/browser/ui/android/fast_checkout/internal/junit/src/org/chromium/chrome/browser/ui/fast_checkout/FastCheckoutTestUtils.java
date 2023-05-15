@@ -14,7 +14,7 @@ class FastCheckoutTestUtils {
     static FastCheckoutAutofillProfile createDetailedProfile(String guid, String name,
             String streetAddress, String city, String postalCode, String email,
             String phoneNumber) {
-        return new FastCheckoutAutofillProfile(guid, /* origin= */ "",
+        return new FastCheckoutAutofillProfile(guid,
                 /* isLocal= */ true, /* honorificPrefix= */ "", name,
                 /* companyName= */ "", /* streetAddress= */ streetAddress,
                 /* region= */ "", /* locality= */ "", /* dependentLocality= */ "",

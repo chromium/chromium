@@ -21,7 +21,7 @@ INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, las
 INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, last_modified, expiration, quota)
   VALUES('http://b/', 'http://b/', 0, 'bucket_b', 111, 13250042735631065, 13260999511438890, 9223372036854775807, 1000);
 INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, last_modified, expiration, quota)
-  VALUES('chrome-extension://abc/', 'chrome-extension://abc/', 1, 'default', 321, 13261163582572088, 13261079941303629, 9223372036854775807, 10000);
+  VALUES('chrome-extension://abc/', 'chrome-extension://abc/', 2, 'default', 321, 13261163582572088, 13261079941303629, 9223372036854775807, 10000);
 
 CREATE UNIQUE INDEX buckets_by_storage_key ON buckets(storage_key, type, name);
 

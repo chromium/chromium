@@ -6,7 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"

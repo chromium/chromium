@@ -1,6 +1,7 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 
 #include "base/functional/bind.h"
@@ -11,6 +12,10 @@
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace media {
 

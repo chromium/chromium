@@ -55,6 +55,9 @@ class IdleService : public KeyedService,
                           ui::IdlePollingService::Observer>
       polling_service_observation_{this};
 
+  class BrowserObserver;
+  std::unique_ptr<BrowserObserver> browser_observer_;
+
   base::WeakPtrFactory<IdleService> weak_ptr_factory_{this};
 };
 

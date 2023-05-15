@@ -25,7 +25,7 @@ class ExplicitlyAllowedNetworkPortsPolicyHandler final
   bool CheckListEntry(const base::Value& value) override;
 
   // Converts the values to integers.
-  void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
+  void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 };
 
 }  // namespace policy

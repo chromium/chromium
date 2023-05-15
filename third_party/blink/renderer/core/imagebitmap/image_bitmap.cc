@@ -427,7 +427,7 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
     info =
         info.makeWH(parsed_options.resize_width, parsed_options.resize_height);
   }
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info);
   if (!surface)
     return nullptr;
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
@@ -958,7 +958,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(dst_rect.width(), dst_rect.height());
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &props);
   sk_sp<SkImage> skia_image;
   if (surface) {
     paint_record.Playback(surface->getCanvas());

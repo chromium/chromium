@@ -146,6 +146,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
+  void ShowMandatoryReauthOptInPrompt(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
 #endif
@@ -206,16 +210,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool TryToShowFastCheckout(
-      const FormData& form,
-      const FormFieldData& field,
-      base::WeakPtr<AutofillManager> autofill_manager) override;
-  void HideFastCheckout(bool allow_further_runs) override;
-  bool IsFastCheckoutSupported(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillManager& autofill_manager) override;
-  bool IsShowingFastCheckoutUI() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
@@ -244,7 +238,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
-      bool show_confirmation_before_closing) override;
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
@@ -256,7 +251,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
-  void ExecuteCommand(int id) override;
+  void ExecuteCommand(Suggestion::FrontendId id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
@@ -291,6 +286,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif
+
+  AutofillProgressDialogControllerImpl*
+  AutofillProgressDialogControllerForTesting() {
+    return autofill_progress_dialog_controller_.get();
+  }
 
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);

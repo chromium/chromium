@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="100506692671054486">ningún comando anterior</translation>
 <translation id="1009046985747440431">Pulsa la flecha hacia arriba o hacia abajo para desplazarte, y la tecla Intro para activar la opción</translation>
 <translation id="1011903154582639569">Ve a una tecla y levanta el dedo para pulsarla</translation>
 <translation id="1012173283529841972">Elemento de lista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavanda rosácea</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3962990492275676168">Empieza a leer desde la ubicación actual</translation>
+<translation id="397094149579293440">no hay texto seleccionado</translation>
 <translation id="3970951409746498040">Arcilla</translation>
 <translation id="3989324057180830702">btn act</translation>
 <translation id="3991317907213946254">Mocasín</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">No hay ningún encabezado de nivel 1 anterior</translation>
 <translation id="4787577491510559358">Indica el formato del elemento actual</translation>
 <translation id="479989351350248267">buscar</translation>
+<translation id="4802034228771424756">no hay un campo de texto seleccionado</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="481165870889056555">Indica el título de la página actual</translation>
 <translation id="4815668758102003883">Turquesa pálido</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Enlace interno</translation>
 <translation id="4909019435900810068">Retroceder una palabra</translation>
 <translation id="4911349081560453449">No hay ninguna casilla anterior</translation>
+<translation id="4919186071145887492">No se ha podido <ph name="COMMAND" />, inténtalo de nuevo</translation>
 <translation id="492295894462528572">Prefacio</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953585991029886728">Edita texto</translation>
+<translation id="4964701498510730546">el campo de texto está vacío</translation>
 <translation id="4973717656530883744">Mínimo <ph name="X" /></translation>
 <translation id="4974612477719259470">No hay ningún botón anterior</translation>
 <translation id="4979404613699303341">Botón anterior</translation>
+<translation id="4981239367072766915">entrada no reconocida</translation>
 <translation id="4982917827052020884">Empecemos por algunas teclas que usarás habitualmente. La tecla Ctrl se puede utilizar para detener cualquier mensaje de voz. Está situada en la esquina inferior izquierda del teclado. Para continuar, pulsa la tecla Ctrl.</translation>
 <translation id="4983588134362688868">Accede al principio de la página</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ventana</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Indica el estado actual de la batería</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botón de opción seleccionado</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botón de selección de opción de menú seleccionado</translation>
+<translation id="5014131807708055994">No se ha podido <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Habilitar registro de voz</translation>
 <translation id="5041394372352067729">Mueve la pantalla braille a la parte superior de la página</translation>
 <translation id="5042770794184672516">Aumenta el volumen de voz</translation>
@@ -1047,7 +1054,7 @@
 <translation id="816818801578874684">Este es el primer encabezado. Pulsa la tecla de búsqueda + H para ir al siguiente encabezado.</translation>
 <translation id="8173092779156526980">Deslizar cuatro dedos hacia la izquierda</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{guion bajo}other{# guiones bajos}}</translation>
-<translation id="817529114347680055">Encender pantalla</translation>
+<translation id="817529114347680055">Encender la pantalla</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8184828902145951186">fila</translation>
 <translation id="8186185314313222077">activar pantalla completa</translation>

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -156,7 +157,7 @@ class BrowserManagerTest : public testing::Test {
 
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     auto fake_cros_component_manager =
         base::MakeRefCounted<FakeCrOSComponentManager>();
@@ -253,9 +254,10 @@ class BrowserManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   TestingProfile testing_profile_;
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  MockBrowserLoader* browser_loader_ = nullptr;
+  raw_ptr<MockBrowserLoader, ExperimentalAsh> browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
   raw_ptr<MockVersionServiceDelegate> version_service_delegate_;

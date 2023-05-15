@@ -233,7 +233,9 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   if (base::FeatureList::IsEnabled(
           translate::kSkipLanguageDetectionOnEmptyContent) &&
       page_contents_length_ == 0) {
-    language = translate::kUnknownLanguageCode;
+    // Use the page-provided language if available.
+    language = translate::DeterminePageLanguage(
+        content_language, html_lang, translate::kUnknownLanguageCode, false);
   } else if (translate::IsTFLiteLanguageDetectionEnabled()) {
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
@@ -471,9 +473,6 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
   target_lang_ = target_lang;
 
   ReportUserActionDuration(language_determined_time_, base::TimeTicks::Now());
-
-  GURL url(main_frame->GetDocument().Url());
-  ReportPageScheme(url.scheme());
 
   // Set up v8 isolated world.
   EnsureIsolatedWorldInitialized(world_id_);

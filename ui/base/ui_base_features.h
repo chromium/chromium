@@ -41,11 +41,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kElasticOverscroll);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUseToastManager);
-
-// Causes the Tinted Resource cache to only be cleared when Chrome goes to the
-// background.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kKeepAndroidTintedResources);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -137,6 +132,9 @@ bool IsShortcutCustomizationEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kLacrosResourcesFileSharing);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kAlwaysConfirmComposition);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Indicates whether DrmOverlayManager should used the synchronous API to
@@ -203,6 +201,12 @@ BASE_DECLARE_FEATURE(kEnableVariableRefreshRate);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsVariableRefreshRateEnabled();
 
+// Fixes b/265853952.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kWaylandKeepSelectionFix);
+// Fixes b/267944900.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kWaylandCancelComposition);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kWaylandScreenCoordinatesEnabled);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -214,6 +218,10 @@ bool IsLacrosColorManagementEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kChromeWebuiRefresh2023);
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeWebuiRefresh2023();
 
 // If you are not Omnibox developer, you don't need to query CR2023 level.
 // Otherwise, please ensure that Omnibox features are guarded by an OR; enabling
@@ -234,7 +242,14 @@ enum class ChromeRefresh2023Level {
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 ChromeRefresh2023Level GetChromeRefresh2023Level();
 
+#if !BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kWebUiSystemFont);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kMacClipboardWriteImageWithPng);
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_APPLE)
 // Font Smoothing, a CoreText technique, simulates optical sizes to enhance text
@@ -250,6 +265,7 @@ BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
 // nanoseconds instead of milliseconds.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseNanosecondsForMotionEvent);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

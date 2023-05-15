@@ -40,7 +40,9 @@ export const NavigationModelItemType = {
  *      - MY_FILES: My Files (which includes Downloads, Crostini and Arc++ as
  *                  its children).
  *      - REMOVABLE: Archives, MTPs, Media Views and Removables.
- *      - CLOUD: Drive and FSPs.
+ *      - GOOGLE_DRIVE: Just Google Drive.
+ *      - ODFS: Just ODFS.
+ *      - CLOUD: All other cloud: SMBs, FSPs and Documents Providers.
  *      - ANDROID_APPS: ANDROID picker apps.
  * @enum {string}
  */
@@ -48,6 +50,8 @@ export const NavigationSection = {
   TOP: 'top',
   MY_FILES: 'my_files',
   REMOVABLE: 'removable',
+  GOOGLE_DRIVE: 'google_drive',
+  ODFS: 'odfs',
   CLOUD: 'cloud',
   ANDROID_APPS: 'android_apps',
 };
@@ -509,10 +513,12 @@ export class NavigationListModel extends EventTarget {
    *    4.1. Downloads
    *    4.2. Play files (android volume) (if enabled).
    *    4.3. Linux files (crostini volume or fake item) (if enabled).
-   *  5. Drive volumes.
-   *  6. Other FSP (File System Provider) (when mounted).
-   *  7. Other volumes (MTP, ARCHIVE, REMOVABLE).
-   *  8. Add new services if (it exists).
+   *  5. Google Drive.
+   *  6. ODFS.
+   *  7. SMBs.
+   *  8. Other FSP (File System Provider) (when mounted).
+   *  9. Other volumes (MTP, ARCHIVE, REMOVABLE).
+   *  10. Add new services if (it exists).
    * @private
    */
   orderAndNestItems_() {
@@ -738,18 +744,28 @@ export class NavigationListModel extends EventTarget {
       }
     }
 
-    // Add Drive.
+    // Add Google Drive - the only Drive.
     let hasDrive = false;
     for (const driveItem of getVolumes(VolumeManagerCommon.VolumeType.DRIVE)) {
       driveItem.disabled =
           this.volumeManager_.isDisabled(VolumeManagerCommon.VolumeType.DRIVE);
       this.navigationItems_.push(driveItem);
-      driveItem.section = NavigationSection.CLOUD;
+      driveItem.section = NavigationSection.GOOGLE_DRIVE;
       hasDrive = true;
     }
     if (!hasDrive && this.fakeDriveItem_) {
       this.navigationItems_.push(this.fakeDriveItem_);
-      this.fakeDriveItem_.section = NavigationSection.CLOUD;
+      this.fakeDriveItem_.section = NavigationSection.GOOGLE_DRIVE;
+    }
+
+    // Add ODFS.
+    for (const provided of getVolumes(
+             VolumeManagerCommon.VolumeType.PROVIDED)) {
+      if (util.isOneDrive(provided.volumeInfo)) {
+        this.navigationItems_.push(provided);
+        provided.section = NavigationSection.ODFS;
+        break;
+      }
     }
 
     // Add SMB.
@@ -758,9 +774,13 @@ export class NavigationListModel extends EventTarget {
       provided.section = NavigationSection.CLOUD;
     }
 
-    // Add FSP.
+    // Add other FSPs.
     for (const provided of getVolumes(
              VolumeManagerCommon.VolumeType.PROVIDED)) {
+      // ODFS added already.
+      if (util.isOneDrive(provided.volumeInfo)) {
+        continue;
+      }
       this.navigationItems_.push(provided);
       provided.section = NavigationSection.CLOUD;
     }
@@ -857,7 +877,7 @@ export class NavigationListModel extends EventTarget {
     // query parameter to indicate the mode. As Trash is a fake volume, it is
     // not filtered out in the filtered volume manager so perform it here
     // instead.
-    if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
+    if (this.dialogType_ === DialogType.FULL_PAGE &&
         !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled() &&
         this.trashItem_) {
       this.navigationItems_.push(this.trashItem_);

@@ -49,6 +49,8 @@ static_library("help_app_ui") {
     "//ash/webui/resources:help_app_bundle_resources",
     "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
     "//ash/webui/resources:help_app_resources",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//ash/webui/web_applications",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
@@ -68,6 +70,8 @@ static_library("help_app_ui") {
 
 mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/"
 }
 
 source_set("unit_tests") {
@@ -101,7 +105,7 @@ group("closure_compile") {
 }
 
 js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
+  test_type = "mojo_webui"
 
   sources = [ "test/help_app_ui_gtest_browsertest.js" ]
 
@@ -138,9 +142,24 @@ source_set("browser_test_support") {
   ]
 }
 
+mojo_test_flags = mojom_js_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=" +
+                        rebase_path("resources", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/ash/webui/help_app_ui",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/search",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chromeos/ash/components/local_search_service/public/mojom",
+                            root_build_dir),
+                  ]
+
 js_type_check("closure_compile_test_lib") {
   testonly = true
-  closure_flags = system_app_closure_flags_strict
+  closure_flags = system_app_closure_flags_strict + mojo_test_flags
   deps = [
     ":test_driver_api_js",
     ":test_driver_js",
@@ -152,7 +171,7 @@ js_type_check("closure_compile_test_lib") {
 # checks and "could not determine type" errors which don't add a lot of value.
 js_type_check("closure_compile_browsertests") {
   testonly = true
-  closure_flags = system_app_closure_flags
+  closure_flags = system_app_closure_flags + mojo_test_flags
   deps = [
     ":test_help_app_guest_ui_browsertest_js",
     ":test_help_app_ui_browsertest_js",

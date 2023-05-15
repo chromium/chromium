@@ -119,15 +119,40 @@ void PasswordProtectionService::StartRequest(
         matching_reused_credentials,
     LoginReputationClientRequest::TriggerType trigger_type,
     bool password_field_exists) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   scoped_refptr<PasswordProtectionRequest> request(
       new PasswordProtectionRequestContent(
           web_contents, main_frame_url, password_form_action,
           password_form_frame_url, web_contents->GetContentsMimeType(),
           username, password_type, matching_reused_credentials, trigger_type,
           password_field_exists, this, GetRequestTimeoutInMS()));
-  request->Start();
+  StartRequestInternal(std::move(request));
+}
 
+void PasswordProtectionService::StartRequestForTesting(
+    WebContents* web_contents,
+    const GURL& main_frame_url,
+    const GURL& password_form_action,
+    const GURL& password_form_frame_url,
+    const std::string& username,
+    PasswordType password_type,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    LoginReputationClientRequest::TriggerType trigger_type,
+    bool password_field_exists) {
+  scoped_refptr<PasswordProtectionRequest> request =
+      PasswordProtectionRequestContent::CreateForTesting(
+          web_contents, main_frame_url, password_form_action,
+          password_form_frame_url, web_contents->GetContentsMimeType(),
+          username, password_type, matching_reused_credentials, trigger_type,
+          password_field_exists, this, GetRequestTimeoutInMS());
+
+  StartRequestInternal(std::move(request));
+}
+
+void PasswordProtectionService::StartRequestInternal(
+    scoped_refptr<PasswordProtectionRequest> request) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  request->Start();
   pending_requests_.insert(std::move(request));
 }
 

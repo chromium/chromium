@@ -723,6 +723,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:imageThumbnailBase64") {
     replacements->push_back(
         Replacement(TemplateURLRef::GOOGLE_IMAGE_THUMBNAIL_BASE64, start));
+  } else if (parameter == "google:processedImageDimensions") {
+    replacements->emplace_back(
+        Replacement(TemplateURLRef::GOOGLE_PROCESSED_IMAGE_DIMENSIONS, start));
   } else if (parameter == "google:imageURL") {
     replacements->push_back(Replacement(TemplateURLRef::GOOGLE_IMAGE_URL,
                                         start));
@@ -1360,6 +1363,14 @@ std::string TemplateURLRef::HandleReplacements(
         break;
       }
 
+      case GOOGLE_PROCESSED_IMAGE_DIMENSIONS: {
+        std::string dimensions = search_terms_args.processed_image_dimensions;
+        if (!dimensions.empty()) {
+          HandleReplacement(std::string(), dimensions, replacement, &url);
+        }
+        break;
+      }
+
       case GOOGLE_IMAGE_URL:
         if (search_terms_args.image_url.is_valid()) {
           HandleReplacement(std::string(), search_terms_args.image_url.spec(),
@@ -1498,6 +1509,8 @@ bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
         engine->created_by_policy(),
+        // Policy-enforced engines always win over policy-recommended engines.
+        engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
         // This makes extension-controlled engines win.
         engine->type(),

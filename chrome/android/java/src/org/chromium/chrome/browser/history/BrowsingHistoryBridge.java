@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.history;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -80,6 +82,10 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         }
         mRemovingItems = true;
         mHasPendingRemoveRequest = false;
+
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.HISTORY_PAGE_ENTRIES, DeleteBrowsingDataAction.MAX_VALUE);
+
         BrowsingHistoryBridgeJni.get().removeItems(
                 mNativeHistoryBridge, BrowsingHistoryBridge.this);
     }

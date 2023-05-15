@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -554,7 +555,7 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
   }
 
   // Owned by scoped_user_manager_.
-  FakeChromeUserManager* user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

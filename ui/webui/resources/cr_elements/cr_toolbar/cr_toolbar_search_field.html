@@ -116,6 +116,8 @@
       }
 
       :host-context([chrome-refresh-2023]) #searchTerm {
+        font-size: 12px;
+        font-weight: 500;
         margin: var(--cr-toolbar-search-field-term-margin, 0);
       }
 
@@ -245,6 +247,11 @@
 
       :host(:not([narrow]):not([showing-search])) #icon {
         opacity: var(--cr-toolbar-search-field-icon-opacity, .7);
+      }
+
+      :host-context([chrome-refresh-2023]):host(
+            :not([narrow]):not([showing-search])) #icon {
+        opacity: var(--cr-toolbar-search-field-icon-opacity, 1);
       }
 
       :host(:not([narrow])) #prompt {

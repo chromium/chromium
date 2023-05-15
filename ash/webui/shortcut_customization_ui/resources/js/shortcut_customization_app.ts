@@ -32,6 +32,9 @@ import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getCategoryNameStringId, isCustomizationDisabled, isSearchEnabled} from './shortcut_utils.js';
 
+const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
+const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
+
 export interface ShortcutCustomizationAppElement {
   $: {
     navigationPanel: NavigationViewPanelElement,
@@ -92,6 +95,11 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: false,
       },
+
+      keyboardSettingsLink: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -101,6 +109,7 @@ export class ShortcutCustomizationAppElement extends
   protected dialogAction: number;
   protected dialogSource: AcceleratorSource;
   protected showEditDialog: boolean;
+  protected keyboardSettingsLink: string;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
@@ -112,8 +121,13 @@ export class ShortcutCustomizationAppElement extends
       // Use dynamic color CSS and start listening to `ColorProvider` updates.
       // TODO(b/276493795): After the Jelly experiment is launched, replace
       // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      // Also add `theme/typography.css` to `index.html`.
       document.querySelector('link[href*=\'cros_styles.css\']')
           ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      const typographyLink = document.createElement('link');
+      typographyLink.href = 'chrome://theme/typography.css';
+      typographyLink.rel = 'stylesheet';
+      document.head.appendChild(typographyLink);
       document.body.classList.add('jelly-enabled');
       startColorChangeUpdater();
     }
@@ -123,6 +137,11 @@ export class ShortcutCustomizationAppElement extends
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+
+    this.keyboardSettingsLink =
+        loadTimeData.getBoolean('isInputDeviceSettingsSplitEnabled') ?
+        newKeyboardSettingsLink :
+        oldKeyboardSettingsLink;
 
     Router.getInstance().addObserver(this);
   }

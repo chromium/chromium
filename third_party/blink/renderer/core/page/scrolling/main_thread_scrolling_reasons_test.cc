@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -98,14 +99,24 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
     return GetScrollNode(layer)->main_thread_scrolling_reasons;
   }
 
+  uint32_t GetMainThreadScrollingReasons(
+      const ScrollPaintPropertyNode& scroll) const {
+    return GetFrame()
+        ->View()
+        ->GetPaintArtifactCompositor()
+        ->GetMainThreadScrollingReasons(scroll);
+  }
+
+  uint32_t GetMainThreadScrollingReasons(
+      const PaintLayerScrollableArea& scrollable_area) const {
+    return GetMainThreadScrollingReasons(*scrollable_area.GetLayoutBox()
+                                              ->FirstFragment()
+                                              .PaintProperties()
+                                              ->Scroll());
+  }
+
   uint32_t GetViewMainThreadScrollingReasons() const {
-    const auto* scroll = GetFrame()
-                             ->View()
-                             ->GetLayoutView()
-                             ->FirstFragment()
-                             .PaintProperties()
-                             ->Scroll();
-    return scroll->GetMainThreadScrollingReasons();
+    return GetMainThreadScrollingReasons(*GetFrame()->View()->LayoutViewport());
   }
 
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
@@ -148,7 +159,7 @@ TEST_P(MainThreadScrollingReasonsTest,
   ASSERT_TRUE(inner_scroll_node);
   EXPECT_MAIN_THREAD_SCROLLING_REASON(
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      inner_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*inner_scroll_node));
   const cc::Layer* inner_scroll_layer = CcLayerByCcElementId(
       root_layer, inner_scroll_node->GetCompositorElementId());
   ASSERT_TRUE(inner_scroll_layer);
@@ -166,7 +177,7 @@ TEST_P(MainThreadScrollingReasonsTest,
                                 ->Scroll();
   ASSERT_TRUE(outer_scroll_node);
   EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-      outer_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*outer_scroll_node));
   const cc::Layer* outer_scroll_layer = CcLayerByCcElementId(
       root_layer, outer_scroll_node->GetCompositorElementId());
   ASSERT_TRUE(outer_scroll_layer);
@@ -184,7 +195,7 @@ TEST_P(MainThreadScrollingReasonsTest,
   ASSERT_EQ(inner_scroll_node,
             inner_layout_view->FirstFragment().PaintProperties()->Scroll());
   EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-      inner_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*inner_scroll_node));
   ASSERT_EQ(inner_scroll_layer,
             CcLayerByCcElementId(root_layer,
                                  inner_scroll_node->GetCompositorElementId()));
@@ -195,7 +206,7 @@ TEST_P(MainThreadScrollingReasonsTest,
   ASSERT_EQ(outer_scroll_node,
             outer_layout_view->FirstFragment().PaintProperties()->Scroll());
   EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-      outer_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*outer_scroll_node));
   ASSERT_EQ(outer_scroll_layer,
             CcLayerByCcElementId(root_layer,
                                  outer_scroll_node->GetCompositorElementId()));
@@ -218,7 +229,7 @@ TEST_P(MainThreadScrollingReasonsTest,
             inner_layout_view->FirstFragment().PaintProperties()->Scroll());
   EXPECT_MAIN_THREAD_SCROLLING_REASON(
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      inner_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*inner_scroll_node));
   ASSERT_EQ(inner_scroll_layer,
             CcLayerByCcElementId(root_layer,
                                  inner_scroll_node->GetCompositorElementId()));
@@ -231,7 +242,7 @@ TEST_P(MainThreadScrollingReasonsTest,
             outer_layout_view->FirstFragment().PaintProperties()->Scroll());
   EXPECT_MAIN_THREAD_SCROLLING_REASON(
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      outer_scroll_node->GetMainThreadScrollingReasons());
+      GetMainThreadScrollingReasons(*outer_scroll_node));
   ASSERT_EQ(outer_scroll_layer,
             CcLayerByCcElementId(root_layer,
                                  outer_scroll_node->GetCompositorElementId()));
@@ -392,20 +403,6 @@ class NonCompositedMainThreadScrollingReasonsTest
   NonCompositedMainThreadScrollingReasonsTest() {
     RegisterMockedHttpURLLoad("two_scrollable_area.html");
     NavigateTo(base_url_ + "two_scrollable_area.html");
-  }
-
-  uint32_t GetMainThreadScrollingReasons(
-      const PaintLayerScrollableArea& scrollable_area) const {
-    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-      return GetScrollNode(scrollable_area)->main_thread_scrolling_reasons;
-    }
-    return scrollable_area.GetNonCompositedMainThreadScrollingReasons() |
-           scrollable_area.GetLayoutBox()
-               ->FirstFragment()
-               .PaintProperties()
-               ->ScrollTranslation()
-               ->ScrollNode()
-               ->GetMainThreadScrollingReasons();
   }
 
   void TestNonCompositedReasons(const AtomicString& style_class,

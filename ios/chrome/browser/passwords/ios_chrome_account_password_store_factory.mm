@@ -18,11 +18,11 @@
 #import "components/password_manager/core/browser/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliations_prefetcher_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

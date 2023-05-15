@@ -7,11 +7,13 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -156,10 +158,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   WaitForCounting();
   EXPECT_TRUE(IsSyncEnabled());
 
+  // Signout isn't possible on ChromeOS (Ash).
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Test that the counting restarts when password sync state changes.
@@ -207,8 +212,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   EXPECT_FALSE(IsSyncEnabled());
 
   // If password sync is not affected, the counter is not restarted.
-  syncer::UserSelectableTypeSet only_history(
-      syncer::UserSelectableType::kHistory);
+  syncer::UserSelectableTypeSet only_history = {
+      syncer::UserSelectableType::kHistory};
   sync_service->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                     only_history);
   sync_blocker = sync_service->GetSetupInProgressHandle();
@@ -226,10 +231,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   WaitForCounting();
   EXPECT_TRUE(IsSyncEnabled());
 
+  // Signout isn't possible on ChromeOS (Ash).
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Test that the counting restarts when history sync state changes.
@@ -278,8 +286,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   EXPECT_FALSE(IsSyncEnabled());
 
   // If the history deletion sync is not affected, the counter is not restarted.
-  syncer::UserSelectableTypeSet only_passwords(
-      syncer::UserSelectableType::kPasswords);
+  syncer::UserSelectableTypeSet only_passwords = {
+      syncer::UserSelectableType::kPasswords};
   sync_service->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                     only_passwords);
   sync_blocker = sync_service->GetSetupInProgressHandle();
@@ -290,9 +298,9 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   EXPECT_FALSE(CountingFinishedSinceLastAsked());
 
   // Same in this case.
-  syncer::UserSelectableTypeSet autofill_and_passwords(
+  syncer::UserSelectableTypeSet autofill_and_passwords = {
       syncer::UserSelectableType::kAutofill,
-      syncer::UserSelectableType::kPasswords);
+      syncer::UserSelectableType::kPasswords};
   sync_blocker = sync_service->GetSetupInProgressHandle();
   sync_service->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, autofill_and_passwords);
@@ -315,10 +323,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // notifications, one that history sync has stopped and another that it is
   // active again.
 
+  // Signout isn't possible on ChromeOS (Ash).
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace

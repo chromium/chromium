@@ -7,19 +7,31 @@
     margin-bottom: 54px;
   }
 
+  #simDetectError,
+  #simDetectErrorJelly {
+    height: 100%;
+    width: 100%;
+  }
+
   #simDetectError {
     background-image: url(chrome://resources/ash/common/cellular_setup/sim_detect_error.svg);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: contain;
-    height: 100%;
-    width: 100%;
   }
 
   @media(prefers-color-scheme: dark) {
     #simDetectError {
       background-image: url(chrome://resources/ash/common/cellular_setup/sim_detect_error_dark.svg);
     }
+  }
+
+  :host-context(body.jelly-enabled) #simDetectError {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #simDetectErrorJelly {
+    display: none;
   }
 
   #pageBody {
@@ -49,5 +61,9 @@
     </template>
     <div id="simDetectError" hidden$="[[!isSimDetectError]]">
     </div>
+    <iron-icon id="simDetectErrorJelly"
+        icon="cellular-setup-illo:sim-detect-error"
+        hidden$="[[!isSimDetectError]]">
+    </iron-icon>
   </div>
 </base-page>

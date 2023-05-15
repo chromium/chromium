@@ -63,14 +63,14 @@ bool VideoCaptureFormat::ComparePixelFormatPreference(
 VideoCaptureParams::VideoCaptureParams()
     : buffer_type(VideoCaptureBufferType::kSharedMemory),
       resolution_change_policy(ResolutionChangePolicy::FIXED_RESOLUTION),
-      power_line_frequency(PowerLineFrequency::FREQUENCY_DEFAULT) {}
+      power_line_frequency(PowerLineFrequency::kDefault) {}
 
 bool VideoCaptureParams::IsValid() const {
   return requested_format.IsValid() &&
          resolution_change_policy >= ResolutionChangePolicy::FIXED_RESOLUTION &&
          resolution_change_policy <= ResolutionChangePolicy::LAST &&
-         power_line_frequency >= PowerLineFrequency::FREQUENCY_DEFAULT &&
-         power_line_frequency <= PowerLineFrequency::FREQUENCY_MAX;
+         power_line_frequency >= PowerLineFrequency::kDefault &&
+         power_line_frequency <= PowerLineFrequency::k60Hz;
 }
 
 std::string VideoCaptureParams::SuggestedConstraints::ToString() const {

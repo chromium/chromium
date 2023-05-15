@@ -43,6 +43,7 @@
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -440,7 +441,13 @@ bool IsAppContainerEnabled() {
 }
 
 void SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
-#ifdef _WIN64
+  // Trigger feature list initialization here to ensure no population bias in
+  // the experimental and control groups.
+  [[maybe_unused]] const bool high_renderer_limits =
+      base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
+
+#if defined(ARCH_CPU_64_BITS)
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
   if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
@@ -460,7 +467,13 @@ void SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
     } else {
       memory_limit = 8 * GB;
     }
+
+    if (sandbox_type == Sandbox::kRenderer && high_renderer_limits) {
+      // Set limit to 1Tb.
+      memory_limit = 1024 * GB;
+    }
   }
+
   config->SetJobMemoryLimit(memory_limit);
 #else
   return;

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="100506692671054486">δεν υπάρχει προηγούμενη εντολή</translation>
 <translation id="1009046985747440431">Πατήστε το πάνω ή το κάτω βέλος για πλοήγηση και το πλήκτρο Enter για ενεργοποίηση.</translation>
 <translation id="1011903154582639569">Εντοπίστε ένα πλήκτρο και έπειτα σηκώστε το δάκτυλό σας για να πληκτρολογήσετε</translation>
 <translation id="1012173283529841972">Στοιχείο λίστας</translation>
@@ -460,6 +461,7 @@
 <translation id="3936394396199829062">Λεβάντα ρουζ</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
 <translation id="3962990492275676168">Έναρξη ανάγνωσης από την τρέχουσα τοποθεσία</translation>
+<translation id="397094149579293440">δεν έχει επιλεγεί κείμενο</translation>
 <translation id="3970951409746498040">Αμμώδες καφέ</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Μοκασίνι</translation>
@@ -566,6 +568,7 @@
 <translation id="4786285211967466855">Δεν υπάρχει προηγούμενη κεφαλίδα επιπέδου 1.</translation>
 <translation id="4787577491510559358">Ανακοίνωση μορφοποίησης για το τρέχον στοιχείο</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">δεν υπάρχει εστιασμένο πεδίο κειμένου</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
 <translation id="481165870889056555">Ανακοίνωση του τίτλου της τρέχουσας σελίδας</translation>
 <translation id="4815668758102003883">Ανοιχτό τιρκουάζ</translation>
@@ -588,13 +591,16 @@
 <translation id="489907760999452556">Ετικέτα "Εσωτερικός σύνδεσμος" (&lt;a&gt;)</translation>
 <translation id="4909019435900810068">Μετακίνηση προς τα πίσω κατά έναν χαρακτήρα</translation>
 <translation id="4911349081560453449">Δεν υπάρχει προηγούμενο πλαίσιο ελέγχου.</translation>
+<translation id="4919186071145887492">Δεν είναι δυνατή η εκτέλεση της εντολής <ph name="COMMAND" />, δοκιμάστε ξανά</translation>
 <translation id="492295894462528572">Εισαγωγή</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4953585991029886728">Επεξεργασία κειμένου</translation>
+<translation id="4964701498510730546">το πεδίο κειμένου είναι κενό</translation>
 <translation id="4973717656530883744">Ελάχ. <ph name="X" /></translation>
 <translation id="4974612477719259470">Δεν υπάρχει προηγούμενο κουμπί.</translation>
 <translation id="4979404613699303341">Προηγούμενο κουμπί</translation>
+<translation id="4981239367072766915">μη αναγνωρισμένη εισαγωγή</translation>
 <translation id="4982917827052020884">Ας ξεκινήσουμε με ορισμένα πλήκτρα που θα χρησιμοποιείτε συχνά. Μπορείτε να χρησιμοποιείτε το πλήκτρο Control για να διακόπτετε τυχόν τρέχουσα ομιλία. Βρείτε το πλήκτρο Control στην κάτω αριστερή γωνία του πληκτρολογίου σας. Για να συνεχίσετε, πιέστε το πλήκτρο Control.</translation>
 <translation id="4983588134362688868">Μετάβαση στην κορυφή της σελίδας</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, παράθυρο</translation>
@@ -602,6 +608,7 @@
 <translation id="4994420463726586413">Ανακοίνωση τρέχουσας κατάστασης μπαταρίας</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, επιλεγμένο κουμπί επιλογής</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, επιλεγμένο κουμπί επιλογής στοιχείου μενού</translation>
+<translation id="5014131807708055994">Δεν είναι δυνατή η εκτέλεση της εντολής <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Ενεργοποίηση καταγραφής ομιλίας</translation>
 <translation id="5041394372352067729">Μετακίνηση της οθόνης μπράιγ στο επάνω μέρος της σελίδας</translation>
 <translation id="5042770794184672516">Αύξηση έντασης ομιλίας</translation>

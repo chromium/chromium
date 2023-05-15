@@ -150,7 +150,7 @@ class DiceWebSigninInterceptionBubblePixelTest
     // `kSigninInterceptBubbleV2` feature is tested in
     // `DiceWebSigninInterceptionBubbleV2PixelTest`
     std::vector<base::test::FeatureRef> disabled_features = {
-        kSigninInterceptBubbleV2};
+        kSigninInterceptBubbleV2, kSyncPromoAfterSigninIntercept};
     if (GetParam().use_dark_theme) {
       enabled_features.push_back(features::kWebUIDarkMode);
     }
@@ -169,6 +169,10 @@ class DiceWebSigninInterceptionBubblePixelTest
     policy::ScopedManagementServiceOverrideForTesting browser_management(
         policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
         GetParam().management_authority);
+    policy::ScopedManagementServiceOverrideForTesting
+        platform_browser_management(
+            policy::ManagementServiceFactory::GetForPlatform(),
+            policy::EnterpriseManagementAuthority::NONE);
 
     SkColor primary_highlight_color =
         GetParam().primary_profile_color.toSkColor();

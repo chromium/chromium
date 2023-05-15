@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
@@ -27,12 +28,16 @@
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "net/base/load_timing_info.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace content {
 
@@ -57,6 +62,41 @@ const std::string ComposeNavigationTypeString(
              ? "SameOriginNavigation"
              : "CrossOriginNavigation";
 }
+
+bool IsEligibleForRaceNetworkRequestByOriginTrial(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  return version->origin_trial_tokens() &&
+         version->origin_trial_tokens()->contains(
+             "ServiceWorkerBypassFetchHandlerWithRaceNetworkRequest");
+}
+
+bool IsEligibleForRaceNetworkRequest(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler)) {
+    return false;
+  }
+  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
+      features::ServiceWorkerBypassFetchHandlerTarget::
+          kAllWithRaceNetworkRequest) {
+    return false;
+  }
+
+  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
+    // kFeatureOptIn means that the feature relies on the manual feature
+    // toggle from about://flags etc, which is triggered by developers.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
+      return true;
+    // If kAllowList, the allowlist should be specified. In this case,
+    // RaceNetworkRequest is allowed only when the sha256 checksum of the
+    // script is in the allowlist.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
+      return content::service_worker_loader_helpers::
+          FetchHandlerBypassedHashStrings()
+              .contains(version->sha256_script_checksum());
+  }
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -198,7 +238,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (container_host_->IsContainerForWindowClient()) {
     // The RaceNetworkRequest mode doesn't support Navigation Preload. If
     // RaceNetworkRequest is triggered, Navigation Preload never happens.
-    if (MaybeStartRaceNetworkRequest(context)) {
+    if (MaybeStartRaceNetworkRequest(context, active_worker)) {
       dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {
@@ -214,14 +254,23 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 }
 
 bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
-    scoped_refptr<ServiceWorkerContextWrapper> context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler)) {
+    scoped_refptr<ServiceWorkerContextWrapper> context,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  bool is_enabled_by_feature_flag = IsEligibleForRaceNetworkRequest(version);
+  bool is_enabled_by_origin_trial =
+      IsEligibleForRaceNetworkRequestByOriginTrial(version);
+
+  if (!(is_enabled_by_feature_flag || is_enabled_by_origin_trial)) {
     return false;
   }
-  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
-      features::ServiceWorkerBypassFetchHandlerTarget::
-          kAllWithRaceNetworkRequest) {
+
+  // Set fetch_handler_bypass_option to tell the renderer that
+  // RaceNetworkRequest is enabled.
+  version->set_fetch_handler_bypass_option(
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kRaceNetworkRequest);
+
+  // RaceNetworkRequest only supports GET method.
+  if (resource_request_.method != net::HttpRequestHeaders::kGetMethod) {
     return false;
   }
 
@@ -256,6 +305,16 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
   race_network_request_url_loader_ = std::move(url_loader);
   race_network_request_loader_client_ =
       std::move(race_network_request_url_loader_client);
+
+  if (is_enabled_by_origin_trial) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial);
+  } else if (is_enabled_by_feature_flag) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
+  }
 
   return true;
 }
@@ -356,6 +415,14 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
     return;
   }
+  // Use the response from ServiceWorker fetch handler, and cancel the
+  // connection for RaceNetworkRequest.
+  // TODO(crbug.com/1420517) RaceNetworkRequrest doesn't support fallback case.
+  // If the response from the fetch handler is fallback, the fallback resource
+  // fetch will start separately without using RaceNetworkRequest's result.
+  SetFetchResponseFrom(FetchResponseFrom::kServiceWorker);
+  race_network_request_url_loader_.reset();
+
   DCHECK_EQ(status_, Status::kStarted);
 
   ServiceWorkerMetrics::RecordFetchEventStatus(true /* is_main_resource */,
@@ -377,7 +444,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     container_host_->NotifyControllerLost();
     if (fallback_callback_) {
       std::move(fallback_callback_)
-          .Run(true /* reset_subresource_loader_params */);
+          .Run(true /* reset_subresource_loader_params */,
+               net::LoadTimingInfo());
     }
     return;
   }
@@ -405,20 +473,16 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
-    // TODO(falken): Propagate the timing info to the renderer somehow, or else
-    // Navigation Timing etc APIs won't know about service worker.
     if (fallback_callback_) {
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */);
+          .Run(false /* reset_subresource_loader_params */,
+               response_head_->load_timing);
     }
     return;
   }
 
   DCHECK_EQ(fetch_result,
             ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse);
-
-  // Use the response from ServiceWorker fetch handler.
-  set_fetch_response_from(FetchResponseFrom::kServiceWorker);
 
   // A response with status code 0 is Blink telling us to respond with
   // network error.
@@ -480,13 +544,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
         "redirect", "redirect url", redirect_info->new_url.spec());
-
-    response_head_->encoded_data_length = 0;
-    url_loader_client_->OnReceiveRedirect(*redirect_info,
-                                          response_head_.Clone());
-    // Our client is the navigation loader, which will start a new URLLoader for
-    // the redirect rather than calling FollowRedirect(), so we're done here.
-    TransitionToStatus(Status::kCompleted);
+    HandleRedirect(*redirect_info, response_head_);
     return;
   }
 
@@ -537,6 +595,16 @@ void ServiceWorkerMainResourceLoader::StartResponse(
                          "result", "no body");
 
   CommitEmptyResponseAndComplete();
+}
+
+void ServiceWorkerMainResourceLoader::HandleRedirect(
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHeadPtr& response_head) {
+  response_head->encoded_data_length = 0;
+  url_loader_client_->OnReceiveRedirect(redirect_info, response_head->Clone());
+  // Our client is the navigation loader, which will start a new URLLoader for
+  // the redirect rather than calling FollowRedirect(), so we're done here.
+  TransitionToStatus(Status::kCompleted);
 }
 
 // URLLoader implementation----------------------------------------
@@ -956,6 +1024,10 @@ void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {
   status_ = new_status;
   if (new_status == Status::kCompleted)
     completion_time_ = base::TimeTicks::Now();
+}
+
+bool ServiceWorkerMainResourceLoader::IsMainResourceLoader() {
+  return true;
 }
 
 ServiceWorkerMainResourceLoaderWrapper::ServiceWorkerMainResourceLoaderWrapper(

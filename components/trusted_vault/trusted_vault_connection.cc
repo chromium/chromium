@@ -4,7 +4,7 @@
 
 #include "components/trusted_vault/trusted_vault_connection.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 TrustedVaultKeyAndVersion::TrustedVaultKeyAndVersion(
     const std::vector<uint8_t>& key,
@@ -19,4 +19,4 @@ TrustedVaultKeyAndVersion& TrustedVaultKeyAndVersion::operator=(
 
 TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
 
-}  // namespace syncer
+}  // namespace trusted_vault

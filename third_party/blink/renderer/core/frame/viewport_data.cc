@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -18,10 +19,13 @@
 
 namespace blink {
 
-ViewportData::ViewportData(Document& document) : document_(document) {}
+ViewportData::ViewportData(Document& document)
+    : document_(document),
+      display_cutout_host_(document_->GetExecutionContext()) {}
 
 void ViewportData::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
+  visitor->Trace(display_cutout_host_);
 }
 
 void ViewportData::Shutdown() {
@@ -100,7 +104,9 @@ void ViewportData::UpdateViewportDescription() {
                 ->GetRemoteNavigationAssociatedInterfaces()) {
       // Bind the mojo interface.
       if (!display_cutout_host_.is_bound()) {
-        provider->GetInterface(&display_cutout_host_);
+        provider->GetInterface(
+            display_cutout_host_.BindNewEndpointAndPassReceiver(
+                provider->GetTaskRunner()));
         DCHECK(display_cutout_host_.is_bound());
       }
 

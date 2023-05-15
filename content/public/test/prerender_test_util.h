@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -127,8 +128,10 @@ class PrerenderTestHelper {
   //
   // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
   // the completion of prerendering.
-  int AddPrerender(const GURL& prerendering_url);
-  void AddPrerenderAsync(const GURL& prerendering_url);
+  int AddPrerender(const GURL& prerendering_url,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  void AddPrerenderAsync(const GURL& prerendering_url,
+                         int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
                                        const std::string& target_hint);
 

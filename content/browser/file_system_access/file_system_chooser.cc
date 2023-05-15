@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -35,28 +34,6 @@ constexpr int kMaxDescriptionLength = 64;
 // allowed to be. Any longer extensions will be stripped. This value should be
 // kept in sync with the extension length checks in the renderer.
 constexpr int kMaxExtensionLength = 16;
-
-std::string TypeToString(ui::SelectFileDialog::Type type) {
-  switch (type) {
-    case ui::SelectFileDialog::SELECT_OPEN_FILE:
-      return "OpenFile";
-    case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
-      return "OpenMultipleFiles";
-    case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
-      return "SaveFile";
-    case ui::SelectFileDialog::SELECT_FOLDER:
-      return "OpenDirectory";
-    default:
-      NOTREACHED();
-      return std::string();
-  }
-}
-
-void RecordFileSelectionResult(ui::SelectFileDialog::Type type, int count) {
-  base::UmaHistogramCounts1000("NativeFileSystemAPI.FileChooserResult", count);
-  base::UmaHistogramCounts1000(
-      "NativeFileSystemAPI.FileChooserResult." + TypeToString(type), count);
-}
 
 // Similar to base::FilePath::FinalExtension, but operates with the
 // understanding that the StringType passed in is an extension, not a path.
@@ -362,14 +339,12 @@ void FileSystemChooser::MultiFilesSelectedWithExtraInfo(
     }
   }
 
-  RecordFileSelectionResult(type_, result.size());
   std::move(callback_).Run(file_system_access_error::Ok(), std::move(result));
   delete this;
 }
 
 void FileSystemChooser::FileSelectionCanceled(void* params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordFileSelectionResult(type_, 0);
   std::move(callback_).Run(
       file_system_access_error::FromStatus(
           blink::mojom::FileSystemAccessStatus::kOperationAborted),

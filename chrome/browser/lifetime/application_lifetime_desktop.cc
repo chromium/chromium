@@ -113,8 +113,8 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // does not work on Lacros.
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::BrowserServiceHost>() &&
-      lacros_service->GetInterfaceVersion(
-          crosapi::mojom::BrowserServiceHost::Uuid_) >=
+      lacros_service
+              ->GetInterfaceVersion<crosapi::mojom::BrowserServiceHost>() >=
           static_cast<int>(
               crosapi::mojom::BrowserServiceHost::kRequestRelaunchMinVersion)) {
     lacros_service->GetRemote<crosapi::mojom::BrowserServiceHost>()

@@ -212,7 +212,7 @@ bool V4L2VideoEncodeAccelerator::Initialize(
 
   output_format_fourcc_ =
       V4L2Device::VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
-  if (!output_format_fourcc_) {
+  if (output_format_fourcc_ == V4L2_PIX_FMT_INVALID) {
     MEDIA_LOG(ERROR, media_log.get())
         << "invalid output_profile=" << GetProfileName(config.output_profile);
     return false;
@@ -782,7 +782,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
             ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
             : frame->IsMappable();
     if (!is_expected_storage_type) {
-      SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
+      SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
                      "Unexpected storage: " + VideoFrame::StorageTypeToString(
                                                   frame->storage_type())});
       return;
@@ -790,8 +790,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
 
     if (!ReconfigureFormatIfNeeded(*frame)) {
       SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
-                     "Unexpected storage: " + VideoFrame::StorageTypeToString(
-                                                  frame->storage_type())});
+                     "Unsupported frame: " + frame->AsHumanReadableString()});
       return;
     }
 
@@ -986,7 +985,7 @@ void V4L2VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   if (buffer.size() < output_buffer_byte_size_) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kInvalidOutputBuffer,
                    "Provided bitstream buffer too small"});
     return;
   }
@@ -1408,7 +1407,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
   switch (input_buf.Memory()) {
     case V4L2_MEMORY_USERPTR: {
       if (frame->storage_type() != VideoFrame::STORAGE_SHMEM) {
-        SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
+        SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
                        "VideoFrame doesn't have shared memory"});
         return false;
       }
@@ -1449,7 +1448,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     default:
       NOTREACHED();
       SetErrorState(
-          {EncoderStatus::Codes::kUnsupportedFrameFormat,
+          {EncoderStatus::Codes::kEncoderIllegalState,
            "Unknown input memory type: " +
                base::NumberToString(static_cast<int>(input_buf.Memory()))});
       return false;
@@ -1487,7 +1486,7 @@ bool V4L2VideoEncodeAccelerator::StartDevicePoll() {
 
   // Start up the device poll thread and schedule its first DevicePollTask().
   if (!device_poll_thread_.Start()) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kSystemAPICallError,
                    "StartDevicePoll(): Device thread failed to start"});
     return false;
   }
@@ -1542,7 +1541,7 @@ void V4L2VideoEncodeAccelerator::DevicePollTask(bool poll_device) {
 
   bool event_pending;
   if (!device_->Poll(poll_device, &event_pending)) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kSystemAPICallError,
                    "Failed to start device polloing"});
     return;
   }
@@ -1987,10 +1986,12 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   // Quantization parameter. The h264 qp range is 0-51.
   // Note: Webrtc default values are 24 and 37 respectively, see
   // h264_encoder_impl.cc.
-  // These values were copied from the VA-API encoder.
+  // These values were previously copied from the VA-API encoder.
+  // The MAX_QP parameter needed modification to 51 due to
+  // b/274867782 and b/241549978.
   // Ignore return values as these controls are optional.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 42)});
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 51)});
   // Don't set MIN_QP with other controls since it is not supported by
   // some devices and may prevent other controls from being set.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,

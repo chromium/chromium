@@ -81,12 +81,12 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
 
-absl::optional<base::Value> JSONToDictionary(int resource_id) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+base::Value::Dict JSONToDictionary(int resource_id) {
+  absl::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id));
-  DCHECK(value && value.has_value() && value->is_dict());
-  return value;
+  CHECK(value);
+  return std::move(*value);
 }
 
 const re2::RE2& GetSkipCartExtractionPattern() {
@@ -142,8 +142,6 @@ CartService::CartService(Profile* profile)
       domain_cart_url_mapping_(
           JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)),
       discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()),
-      metrics_tracker_(std::make_unique<CartMetricsTracker>(
-          chrome::FindTabbedBrowser(profile, false))),
       coupon_service_(CouponServiceFactory::GetForProfile(profile)),
       shopping_service_(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile)) {
@@ -352,6 +350,12 @@ void CartService::HasActiveCartForURL(const GURL& url,
                           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+bool CartService::IsCartEnabled() {
+  const base::Value::List& list =
+      profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  return !base::Contains(list, base::Value(kCartPrefsKey));
+}
+
 void CartService::ShouldShowDiscountConsent(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -505,7 +509,7 @@ void CartService::ShouldShowDiscountConsentCallback(
       should_show &=
           (last_dismissed_time == base::Time() ||
            reshow_time_delta.is_negative()) &&
-          last_dismissed_count <
+          last_dismissed_count <=
               commerce::kNtpChromeCartModuleDiscountConsentMaxDismissalCount
                   .Get();
     }
@@ -607,6 +611,10 @@ void CartService::OnDiscountURLFetched(
 
 void CartService::PrepareForNavigation(const GURL& cart_url,
                                        bool is_navigating) {
+  if (!metrics_tracker_) {
+    metrics_tracker_ = std::make_unique<CartMetricsTracker>(
+        chrome::FindTabbedBrowser(profile_, false));
+  }
   metrics_tracker_->PrepareToRecordUKM(cart_url);
   if (is_navigating || !commerce::IsRuleDiscountPartnerMerchant(cart_url) ||
       !IsCartDiscountEnabled()) {
@@ -645,7 +653,9 @@ void CartService::Shutdown() {
   // Delete content of all carts that are removed.
   cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
                                         weak_ptr_factory_.GetWeakPtr()));
-  metrics_tracker_->ShutDown();
+  if (metrics_tracker_) {
+    metrics_tracker_->ShutDown();
+  }
   if (discount_url_loader_) {
     discount_url_loader_->ShutDown();
   }
@@ -983,7 +993,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetMerchantName(domain);
   std::string* merchant_name_from_resource =
-      domain_name_mapping_->FindStringKey(domain);
+      domain_name_mapping_.FindString(domain);
   if (merchant_name_from_component.has_value()) {
     proto.set_merchant(*merchant_name_from_component);
     CommerceHeuristicsDataMetricsHelper::RecordMerchantNameSource(
@@ -1003,7 +1013,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
         commerce_heuristics::CommerceHeuristicsData::GetInstance()
             .GetMerchantCartURL(domain);
     std::string* fallback_url_from_resource =
-        domain_cart_url_mapping_->FindStringKey(domain);
+        domain_cart_url_mapping_.FindString(domain);
     if (fallback_url_from_component.has_value()) {
       proto.set_merchant_cart_url(*fallback_url_from_component);
     } else if (fallback_url_from_resource) {

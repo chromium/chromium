@@ -10,6 +10,7 @@ PASS public to private: success.
 PASS public to public: success.
 PASS treat-as-public to local: failed preflight.
 PASS treat-as-public to local: success.
+PASS treat-as-public to local (same-origin): no preflight required.
 PASS treat-as-public to private: failed preflight.
 PASS treat-as-public to private: success.
 PASS treat-as-public to public: success.

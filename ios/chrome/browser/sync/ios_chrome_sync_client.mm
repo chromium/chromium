@@ -35,7 +35,6 @@
 #import "components/sync_user_events/user_event_service.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -46,6 +45,7 @@
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
@@ -72,11 +72,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
   account_web_data_service_ =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)
-          ? ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
-                browser_state_, ServiceAccessType::IMPLICIT_ACCESS)
-          : nullptr;
+      ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
+          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
+  ;
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;

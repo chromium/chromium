@@ -198,17 +198,6 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
       local_state->GetBoolean(prefs::kKerberosEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1295308): Remove the following check after Chromad is
-// deprecated.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!auth_dynamic_params->allow_gssapi_library_load) {
-    policy::BrowserPolicyConnectorAsh* connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-    auth_dynamic_params->allow_gssapi_library_load =
-        connector->IsActiveDirectoryManaged();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   return auth_dynamic_params;
 }
 
@@ -947,12 +936,26 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+// static
 bool SystemNetworkContextManager::IsUsingChromeRootStore() {
+  // SystemNetworkContextManager::GetInstance() may be null in unit_tests. In
+  // that case just fall back to only using the feature flag.
+  return IsUsingChromeRootStoreImpl(
+      SystemNetworkContextManager::GetInstance()
+          ? SystemNetworkContextManager::GetInstance()->local_state_
+          : nullptr);
+}
+
+// static
+bool SystemNetworkContextManager::IsUsingChromeRootStoreImpl(
+    PrefService* local_state) {
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  const PrefService::Preference* chrome_root_store_enabled_pref =
-      local_state_->FindPreference(prefs::kChromeRootStoreEnabled);
-  if (chrome_root_store_enabled_pref->IsManaged()) {
-    return chrome_root_store_enabled_pref->GetValue()->GetBool();
+  if (local_state) {
+    const PrefService::Preference* chrome_root_store_enabled_pref =
+        local_state->FindPreference(prefs::kChromeRootStoreEnabled);
+    if (chrome_root_store_enabled_pref->IsManaged()) {
+      return chrome_root_store_enabled_pref->GetValue()->GetBool();
+    }
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
@@ -985,7 +988,7 @@ void SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts() {
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 void SystemNetworkContextManager::UpdateChromeRootStoreEnabled() {
   content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
-      IsUsingChromeRootStore(), base::DoNothing());
+      IsUsingChromeRootStoreImpl(local_state_), base::DoNothing());
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 

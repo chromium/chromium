@@ -9,7 +9,6 @@
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
-#include "components/media_message_center/notification_theme.h"
 
 namespace global_media_controls {
 class MediaItemManager;
@@ -69,6 +68,9 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // Updates the order of media items in the quick settings media view.
   void UpdateMediaItemOrder();
 
+  // Helper functions for testing.
+  QuickSettingsMediaView* media_view_for_testing() { return media_view_; }
+
  private:
   raw_ptr<UnifiedSystemTrayController> tray_controller_ = nullptr;
 
@@ -76,8 +78,6 @@ class ASH_EXPORT QuickSettingsMediaViewController
 
   std::unique_ptr<global_media_controls::MediaSessionItemProducer>
       media_session_item_producer_;
-
-  media_message_center::NotificationTheme notification_theme_;
 
   global_media_controls::MediaItemUIObserverSet media_item_ui_observer_set_{
       this};

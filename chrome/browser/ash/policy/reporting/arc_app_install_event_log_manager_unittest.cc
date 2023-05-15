@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -300,8 +301,10 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner>
       scoped_main_task_runner_;
 
-  base::TestSimpleTaskRunner* log_task_runner_ = nullptr;
-  base::TestMockTimeTaskRunner* main_task_runner_ = nullptr;
+  raw_ptr<base::TestSimpleTaskRunner, ExperimentalAsh> log_task_runner_ =
+      nullptr;
+  raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> main_task_runner_ =
+      nullptr;
 
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;

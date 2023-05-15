@@ -97,7 +97,7 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // SavedPasswordsPresenter::Observer:
   void OnEdited(const CredentialUIEntry& credential) override;
-  void OnSavedPasswordsChanged() override;
+  void OnSavedPasswordsChanged(const PasswordStoreChangeList& changes) override;
 
   // Notifies observers when insecure credentials have changed.
   void NotifyInsecureCredentialsChanged();

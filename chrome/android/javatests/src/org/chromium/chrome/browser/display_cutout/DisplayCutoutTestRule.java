@@ -9,7 +9,7 @@ import android.os.Build;
 import android.view.WindowManager.LayoutParams;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.json.JSONException;

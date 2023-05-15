@@ -69,6 +69,20 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       LoginReputationClientRequest::TriggerType trigger_type,
       bool password_field_exists);
 
+  // Same as above but uses a PasswordProtectionRequest that avoids sending
+  // real requests that can be used for testing.
+  void StartRequestForTesting(
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const GURL& password_form_action,
+      const GURL& password_form_frame_url,
+      const std::string& username,
+      PasswordType password_type,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      LoginReputationClientRequest::TriggerType trigger_type,
+      bool password_field_exists);
+
 #if defined(ON_FOCUS_PING_ENABLED)
   virtual void MaybeStartPasswordFieldOnFocusRequest(
       content::WebContents* web_contents,
@@ -129,6 +143,8 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       content::NavigationHandle& navigation_handle);
 
  protected:
+  void StartRequestInternal(scoped_refptr<PasswordProtectionRequest> request);
+
   void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
 
   bool IsModalWarningShowingInWebContents(content::WebContents* web_contents);

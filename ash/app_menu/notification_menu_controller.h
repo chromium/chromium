@@ -7,6 +7,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -64,14 +65,15 @@ class APP_MENU_EXPORT NotificationMenuController
   const std::string app_id_;
 
   // The top level MenuItemView. Owned by |AppMenuModelAdapter::menu_runner_|.
-  views::MenuItemView* const root_menu_;
+  const raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_;
 
   // Manages showing the menu. Owned by the view requesting a menu.
-  AppMenuModelAdapter* const app_menu_model_adapter_;
+  const raw_ptr<AppMenuModelAdapter, ExperimentalAsh> app_menu_model_adapter_;
 
   // The view which shows all active notifications for |app_id_|. Owned by the
   // views hierarchy.
-  NotificationMenuView* notification_menu_view_ = nullptr;
+  raw_ptr<NotificationMenuView, ExperimentalAsh> notification_menu_view_ =
+      nullptr;
 
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>

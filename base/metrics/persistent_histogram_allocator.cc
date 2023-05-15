@@ -8,6 +8,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -454,6 +455,34 @@ void PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     // continues to fail, some metric data will be lost but that is better
     // than crashing.
     return;
+  }
+
+  // TODO(crbug/1432981): Remove this. Used to investigate unexpected failures.
+  HistogramType type = existing->GetHistogramType();
+  if ((type == HistogramType::HISTOGRAM ||
+       type == HistogramType::LINEAR_HISTOGRAM ||
+       type == HistogramType::BOOLEAN_HISTOGRAM ||
+       type == HistogramType::CUSTOM_HISTOGRAM) &&
+      histogram->GetHistogramType() == type) {
+    const BucketRanges* existing_buckets =
+        static_cast<Histogram*>(existing)->bucket_ranges();
+    const BucketRanges* histogram_buckets =
+        static_cast<Histogram*>(histogram)->bucket_ranges();
+    DCHECK(existing_buckets->HasValidChecksum() &&
+           histogram_buckets->HasValidChecksum());
+
+    // If the buckets do not match, then the call to AddSamples() below should
+    // trigger a NOTREACHED(). This may be indicative that a child process is
+    // emitting a histogram with different parameters than the browser
+    // process, for example.
+    if (!existing_buckets->Equals(histogram_buckets)) {
+#if !BUILDFLAG(IS_NACL)
+      SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
+                                 existing->histogram_name());
+#endif  // !BUILDFLAG(IS_NACL)
+      existing->AddSamples(*histogram->SnapshotDelta());
+      return;
+    }
   }
 
   // Merge the delta from the passed object to the one in the SR.

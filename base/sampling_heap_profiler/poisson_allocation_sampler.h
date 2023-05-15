@@ -8,7 +8,6 @@
 #include <atomic>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/subsystem.h"
 #include "base/base_export.h"
@@ -103,15 +102,6 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   // Returns the current mean sampling interval, in bytes.
   size_t SamplingInterval() const;
-
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-  ALWAYS_INLINE static void RecordAlloc(
-      void* address,
-      size_t,
-      base::allocator::dispatcher::AllocationSubsystem,
-      const char* context);
-  ALWAYS_INLINE static void RecordFree(void* address);
-#endif
 
   ALWAYS_INLINE void OnAllocation(
       void* address,
@@ -215,10 +205,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   // RemoveSamplesObserver().
   std::vector<SamplesObserver*> observers_ GUARDED_BY(mutex_);
 
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-  static PoissonAllocationSampler* instance_;
-#endif
-
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
 
@@ -229,22 +215,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   FRIEND_TEST_ALL_PREFIXES(PoissonAllocationSamplerTest, MuteHooksWithoutInit);
   FRIEND_TEST_ALL_PREFIXES(SamplingHeapProfilerTest, HookedAllocatorMuted);
 };
-
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-// static
-ALWAYS_INLINE void PoissonAllocationSampler::RecordAlloc(
-    void* address,
-    size_t size,
-    base::allocator::dispatcher::AllocationSubsystem type,
-    const char* context) {
-  instance_->OnAllocation(address, size, type, context);
-}
-
-// static
-ALWAYS_INLINE void PoissonAllocationSampler::RecordFree(void* address) {
-  instance_->OnFree(address);
-}
-#endif
 
 ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
     void* address,

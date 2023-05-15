@@ -63,30 +63,33 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
       case H264NALU::kSPS: {
         int sps_id = -1;
         result = parser_.ParseSPS(&sps_id);
-        if (result == H264Parser::kUnsupportedStream)
-          return MP4Status::Codes::kInvalidSPS;
-
         if (result != H264Parser::kOk)
           return MP4Status::Codes::kInvalidSPS;
 
         id2sps_.insert_or_assign(sps_id,
                                  blob(nalu.data, nalu.data + nalu.size));
+        id2sps_ext_.erase(sps_id);
         sps_to_include.insert(sps_id);
         config_changed = true;
         break;
       }
 
       case H264NALU::kSPSExt: {
-        // SPS extensions are not supported yet.
+        int sps_id = -1;
+        result = parser_.ParseSPSExt(&sps_id);
+        if (result != H264Parser::kOk) {
+          return MP4Status::Codes::kFailedToParse;
+        }
+
+        id2sps_ext_.insert_or_assign(sps_id,
+                                     blob(nalu.data, nalu.data + nalu.size));
+        config_changed = true;
         break;
       }
 
       case H264NALU::kPPS: {
         int pps_id = -1;
         result = parser_.ParsePPS(&pps_id);
-        if (result == H264Parser::kUnsupportedStream)
-          return MP4Status::Codes::kInvalidPPS;
-
         if (result != H264Parser::kOk)
           return MP4Status::Codes::kInvalidPPS;
 
@@ -119,6 +122,7 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         if (!sps) {
           return MP4Status::Codes::kFailedToLookupSPS;
         }
+
         new_active_pps_id = pps->pic_parameter_set_id;
         new_active_sps_id = sps->seq_parameter_set_id;
         pps_to_include.insert(new_active_pps_id);
@@ -180,10 +184,15 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
 
     config_.sps_list.clear();
     config_.pps_list.clear();
+    config_.sps_ext_list.clear();
 
     // flat_set is iterated in key-order
-    for (int id : sps_to_include)
+    for (int id : sps_to_include) {
       config_.sps_list.push_back(id2sps_[id]);
+      if (id2sps_ext_.contains(id)) {
+        config_.sps_ext_list.push_back(id2sps_ext_[id]);
+      }
+    }
 
     for (int id : pps_to_include)
       config_.pps_list.push_back(id2pps_[id]);
@@ -195,6 +204,9 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         (active_sps->constraint_set2_flag ? (1 << 2) : 0) |
         (active_sps->constraint_set3_flag ? (1 << 3) : 0);
     config_.avc_level = active_sps->level_idc;
+    config_.chroma_format = active_sps->chroma_format_idc;
+    config_.bit_depth_luma_minus8 = active_sps->bit_depth_luma_minus8;
+    config_.bit_depth_chroma_minus8 = active_sps->bit_depth_chroma_minus8;
   }
 
   if (config_changed_out)

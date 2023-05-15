@@ -89,6 +89,7 @@ public class PrivacyGuideFragment extends Fragment {
         mTabLayout = mView.findViewById(R.id.tab_layout);
         new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
             tab.view.setClickable(false);
+            tab.view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
                 tab.view.setVisibility(View.GONE);
             }

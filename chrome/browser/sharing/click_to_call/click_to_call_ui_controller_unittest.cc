@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"

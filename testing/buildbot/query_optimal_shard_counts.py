@@ -24,14 +24,29 @@ _CLOUD_PROJECT_ID = 'chrome-trooper-analytics'
 DEFAULT_OVERHEAD_SEC = 60
 ANDROID_OVERHEAD_SEC = 60 * 2
 
-# Builders that should currently not be autosharded because they don't use GCE
-# swarming bots and have capacity issues.
-BUILDER_EXCLUDE_LIST = (
+# ===========================================================================
+# Excluding a builder and/or test suite from autosharding means:
+# - If it was already autosharded before and exists in the
+# autoshard_exceptions.json file, don't change the shard value any further.
+# - If it was never autosharded, never add it to autoshard_exceptions.json
+# ===========================================================================
+
+# All suites triggered by the builder will not be autosharded.
+BUILDER_EXCLUDE_SET = set([
     'mac-rel',
     'ios-simulator',
     'ios-simulator-full-configs',
     'android-arm64-rel',
-)
+])
+
+# Test suites will not be autosharded on all builders that run the test suite.
+# Example: 'browser_tests' -> turns of browser_tests on linux-rel and win-rel
+TEST_SUITE_EXCLUDE_SET = set([])
+
+# Test suite and try builder dicts that should not be autosharded any further.
+# Maps try builder to set of test suite
+# Example: {'linux-rel': {'browser_tests'}}
+BUILDER_TEST_SUITE_EXCLUDE_DICT = {}
 
 QUERY = """
   WITH
@@ -43,12 +58,11 @@ QUERY = """
         b.start_time,
       FROM
         `cr-buildbucket.chromium.builds` b
-      INNER JOIN `chrome-trooper-analytics.metrics.cq_builders` cq_builders
-        ON b.builder.builder = cq_builders.builder
       WHERE
         b.start_time > '{lookback_start_date}'
         AND b.start_time <= '{lookback_end_date}'
         AND b.builder.bucket = 'try'
+        AND JSON_VALUE(b.input.properties, '$.cq') = 'required'
         AND JSON_QUERY(b.output.properties, '$.rts_was_used') IS NULL
         AND b.status = 'SUCCESS'
     ),
@@ -173,7 +187,6 @@ QUERY = """
       FROM suite_durations
       WHERE
         waterfall_builder_group IS NOT NULL
-        AND try_builder NOT IN {builder_exclude_list}
       GROUP BY
         test_suite,
         waterfall_builder_group,
@@ -181,9 +194,26 @@ QUERY = """
         try_builder,
         shard_count
       HAVING
-        percentile_duration_minutes > {desired_runtime_min}
+        # Filters out suites that obviously don't need to be sharded more
+        # and prevents optimal_shard_count from being 0, causing a division
+        # by 0 error.
+        percentile_duration_minutes > 5
         AND sample_size > {min_sample_size}
       ORDER BY sample_size DESC, percentile_duration_minutes DESC
+    ),
+    # If a suite had its shards updated within the past lookback_days, there
+    # will be multiple rows for multiple shard counts. To be able to know which
+    # one to use, we'll attach a "most_used_shard_count" to indicate what
+    # shard_count is currently being used (a best guess).
+    most_used_shard_counts AS (
+        SELECT
+        ARRAY_AGG(
+          shard_count ORDER BY sample_size DESC)[OFFSET(0)]
+          AS most_used_shard_count,
+        test_suite,
+        try_builder
+      FROM long_poles
+      GROUP BY test_suite, try_builder
     ),
     # Using the percentile and estimated test overhead durations from the
     # long_poles query above, calculate the optimal shard_count per suite and
@@ -207,7 +237,8 @@ QUERY = """
     # Return optimal_shard_counts with a simulated shard duration and estimated
     # bot hour cost.
     SELECT
-      *,
+      o.*,
+      m.most_used_shard_count,
       ROUND(
         percentile_duration_minutes * shard_count / optimal_shard_count, 2)
         AS simulated_max_shard_duration,
@@ -217,7 +248,10 @@ QUERY = """
         60 * avg_num_builds_per_peak_hour,
         2) estimated_bot_hour_cost
     FROM
-      optimal_shard_counts
+      optimal_shard_counts o
+      INNER JOIN most_used_shard_counts m
+      ON o.try_builder = m.try_builder AND
+      o.test_suite = m.test_suite
 """
 
 _BQ_SETUP_INSTRUCTION = """
@@ -250,7 +284,6 @@ def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
       lookback_start_date=lookback_start_date,
       lookback_end_date=lookback_end_date,
       percentile=percentile,
-      builder_exclude_list=BUILDER_EXCLUDE_LIST,
       min_sample_size=min_sample_size,
   )
   args = [
@@ -258,7 +291,11 @@ def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
       "--max_rows=100000", "--nouse_legacy_sql", query
   ]
 
-  output = subprocess.check_output(args)
+  try:
+    output = subprocess.check_output(args)
+  except subprocess.CalledProcessError as e:
+    print(e.output)
+    raise (e)
   return json.loads(output)
 
 
@@ -299,9 +336,12 @@ def main(args):
                       default=15,
                       type=int,
                       help=('The desired max runtime minutes that all test '
-                            'suites should run at. Note that this is not the '
-                            'total shard duration, but the max shard runtime '
-                            'among all the shards for one triggered suite.'))
+                            'suites should run at, with a minimum of 5 '
+                            'minutes (query is set to filter for suites that '
+                            'take at least 5 minutes long. Note that this is '
+                            'not the total shard duration, but the max shard '
+                            'runtime among all the shards for one triggered '
+                            'suite.'))
   parser.add_argument('--percentile',
                       '-p',
                       default=80,
@@ -324,6 +364,9 @@ def main(args):
                             'overheads, estimated bot_cost, and more.'))
   opts = parser.parse_args(args)
 
+  if opts.desired_runtime < 5:
+    parser.error('Minimum --desired-runtime is 5 minutes.')
+
   if opts.lookback_start_date and opts.lookback_end_date:
     lookback_start_date = opts.lookback_start_date
     lookback_end_date = opts.lookback_end_date
@@ -345,7 +388,6 @@ def main(args):
 
   data = {}
   new_data = {}
-  verbose_new_data = {}
   if not opts.overwrite_output_file and os.path.exists(opts.output_file):
     with open(opts.output_file, 'r') as existing_output_file:
       print('Output file already exists. Will merge query results with existing'
@@ -355,29 +397,78 @@ def main(args):
   for r in results:
     builder_group = r['waterfall_builder_group']
     builder_name = r['waterfall_builder_name']
+    test_suite = r['test_suite']
+
+    excluded_tests = BUILDER_TEST_SUITE_EXCLUDE_DICT.get(r['try_builder'])
+    if (test_suite in TEST_SUITE_EXCLUDE_SET
+        or (excluded_tests and test_suite in excluded_tests)
+        or r['try_builder'] in BUILDER_EXCLUDE_SET):
+      continue
+
+    current_autoshard_val = data.get(builder_group,
+                                     {}).get(builder_name,
+                                             {}).get(test_suite,
+                                                     {}).get('shards')
+
+    # No autosharding needed.
+    if int(r['optimal_shard_count']) == int(r['shard_count']):
+      continue
+
+    # Shard values may have changed over the lookback period, so the query
+    # results could have multiple rows for each builder+test_suite. Logic below
+    # skips the rows that are for outdated shard counts.
+
+    # First check if this suite has been autosharded before
+    # If it has been autosharded before, we should only look at the row
+    # containing a matching 'shard_count' with the current autoshard value.
+    if current_autoshard_val:
+      # If this row does not match, skip it. This row is for an old shard count
+      # that is no longer being used.
+      if int(current_autoshard_val) != int(r['shard_count']):
+        continue
+    else:
+      # If a suite is not already being auosharded, we don't know what shard
+      # it's actually using at this time if the shard count has been updated
+      # within the past lookback_days. So our best guess for which shard count
+      # is being used is 'most_usd_shard_count'.
+      # So, if it doesn't match, skip this row, which is for an old shard count
+      # that is no longer being used.
+      if int(r['shard_count']) != int(r['most_used_shard_count']):
+        continue
+
+      # Query suggests we should decrease shard count
+      if int(r['optimal_shard_count']) < int(r['shard_count']):
+        # Only use lower shard count value if the suite was previously
+        # autosharded.
+        # This is because the suite could have been previously autosharded with
+        # more shards due to a test regression. If the regression is fixed, that
+        # suite should have those extra shards removed.
+        # There's many existing suites that already run pretty fast from
+        # previous manual shardings. Those technically can have fewer shards as
+        # well, but let's leave those alone until we have a good reason to
+        # change a bunch of suites at once.
+        if not data.get(builder_group, {}).get(builder_name, {}).get(
+            test_suite, {}):
+          continue
+
     shard_dict = {
-        r['test_suite']: {
+        test_suite: {
             'shards': r['optimal_shard_count'],
         },
     }
-    verbose_dict = shard_dict.copy()
     if opts.verbose:
-      suite_dict = verbose_dict[r['test_suite']]
-      suite_dict['current_shard_count'] = r['shard_count']
-      suite_dict['current_percentile_duration_minutes'] = r[
-          'percentile_duration_minutes']
-      suite_dict['simulated_max_shard_duration'] = r[
-          'simulated_max_shard_duration']
-      suite_dict['estimated_bot_hour_cost'] = r['estimated_bot_hour_cost']
-      suite_dict['try_builder'] = r['try_builder']
-      suite_dict['avg_num_builds_per_peak_hour'] = r[
-          'avg_num_builds_per_peak_hour']
-      suite_dict['avg_pending_time_sec'] = r['avg_pending_time_sec']
-      suite_dict['p50_pending_time_sec'] = r['p50_pending_time_sec']
-      suite_dict['p90_pending_time_sec'] = r['p90_pending_time_sec']
-      verbose_new_data.setdefault(builder_group,
-                                  {}).setdefault(builder_name,
-                                                 {}).update(shard_dict)
+      debug_dict = {
+          'avg_num_builds_per_peak_hour': r['avg_num_builds_per_peak_hour'],
+          'estimated_bot_hour_delta': r['estimated_bot_hour_cost'],
+          'prev_avg_pending_time_sec': r['avg_pending_time_sec'],
+          'prev_p50_pending_time_sec': r['p50_pending_time_sec'],
+          'prev_p90_pending_time_sec': r['p90_pending_time_sec'],
+          'prev_percentile_duration_minutes': r['percentile_duration_minutes'],
+          'prev_shard_count': r['shard_count'],
+          'simulated_max_shard_duration': r['simulated_max_shard_duration'],
+          'try_builder': r['try_builder'],
+      }
+      shard_dict[r['test_suite']]['debug'] = debug_dict
     data.setdefault(builder_group, {}).setdefault(builder_name,
                                                   {}).update(shard_dict)
     new_data.setdefault(builder_group, {}).setdefault(builder_name,
@@ -388,10 +479,7 @@ def main(args):
                            separators=(',', ': '),
                            sort_keys=True)
   print('Results from query:')
-  if opts.verbose:
-    print(json.dumps(verbose_new_data, indent=4, separators=(',', ': ')))
-  else:
-    print(json.dumps(new_data, indent=4, separators=(',', ': ')))
+  print(json.dumps(new_data, indent=4, separators=(',', ': ')))
 
   if opts.output_file:
     if opts.overwrite_output_file and os.path.exists(opts.output_file):

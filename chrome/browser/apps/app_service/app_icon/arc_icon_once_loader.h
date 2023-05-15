@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -87,7 +88,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   // |pending_requests_| to load icons.
   void MaybeLoadPendingIconRequest();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   bool stop_observing_called_ = false;
   std::map<SizeAndType, std::unique_ptr<SizeSpecificLoader>>
       size_specific_loaders_;

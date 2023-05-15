@@ -13,13 +13,16 @@
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -36,6 +39,7 @@
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -223,7 +227,7 @@ class ArcAppsPublisherTest : public testing::Test {
   ArcAppTest arc_test_;
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
-  arc::ArcIntentHelperBridge* intent_helper_;
+  raw_ptr<arc::ArcIntentHelperBridge, ExperimentalAsh> intent_helper_;
   std::unique_ptr<arc::FakeFileSystemInstance> file_system_instance_;
   std::unique_ptr<arc::ArcFileSystemBridge> arc_file_system_bridge_;
 };
@@ -347,6 +351,48 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
 
   ASSERT_EQ(arc::kPlayStoreAppId, preferred_apps().FindPreferredAppForUrl(
                                       GURL("https://play.google.com/foo")));
+}
+
+// Verifies that ARC permissions are published to App Service correctly.
+TEST_F(ArcAppsPublisherTest, PublishPermission) {
+  constexpr char kPackageName[] = "com.test.package";
+  constexpr char kActivityName[] = "com.test.package.activity";
+
+  const std::string kAppId =
+      ArcAppListPrefs::GetAppId(kPackageName, kActivityName);
+
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.push_back(
+      arc::mojom::AppInfo::New("Fake app", kPackageName, kActivityName));
+  arc_test()->app_instance()->SendRefreshAppList(apps);
+
+  std::vector<arc::mojom::ArcPackageInfoPtr> packages;
+
+  auto package = arc::mojom::ArcPackageInfo::New(
+      kPackageName, /*package_version=*/1, /*last_backup_android_id=*/1,
+      /*last_backup_time=*/1, /*sync=*/true);
+
+  base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
+      permissions;
+  permissions.emplace(
+      arc::mojom::AppPermission::LOCATION,
+      arc::mojom::PermissionState::New(/*granted=*/true, /*managed=*/true,
+                                       /*details=*/"While in use"));
+  package->permission_states = std::move(permissions);
+  packages.push_back(std::move(package));
+
+  arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
+
+  bool found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      kAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Permissions().size(), 1ul);
+        EXPECT_EQ(update.Permissions()[0]->permission_type,
+                  apps::PermissionType::kLocation);
+        EXPECT_TRUE(update.Permissions()[0]->value->IsPermissionEnabled());
+        EXPECT_TRUE(update.Permissions()[0]->is_managed);
+        EXPECT_EQ(update.Permissions()[0]->details, "While in use");
+      });
+  ASSERT_TRUE(found);
 }
 
 TEST_F(ArcAppsPublisherTest,
@@ -528,6 +574,12 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
 TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppService* service = app_service_proxy()->PromiseAppService();
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+
+  service->SetSkipAlmanacForTesting(true);
 
   std::string package_name = "com.example.this";
   apps::PackageId package_id =
@@ -535,15 +587,85 @@ TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
 
   // Verify that the promise app is not yet registered.
   const apps::PromiseApp* promise_app_before =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
-          package_id);
+      cache->GetPromiseAppForTesting(package_id);
   EXPECT_FALSE(promise_app_before);
 
   arc_test()->app_instance()->SendInstallationStarted(package_name);
 
   // Verify that the promise app is now registered.
   const apps::PromiseApp* promise_app_after =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
-          package_id);
+      cache->GetPromiseAppForTesting(package_id);
   EXPECT_TRUE(promise_app_after);
+}
+
+TEST_F(ArcAppsPublisherTest, OnInstallationProgressChanged_UpdatesPromiseApp) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+
+  std::string package_name = "com.example.this";
+  float progress_initial = 0.1;
+  float progress_next = 0.9;
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Add a promise app for testing.
+  std::unique_ptr<apps::PromiseApp> promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->progress = progress_initial;
+  cache->OnPromiseApp(std::move(promise_app));
+
+  // Check that the initial progress value is correct.
+  const apps::PromiseApp* promise_app_result =
+      cache->GetPromiseAppForTesting(package_id);
+  EXPECT_TRUE(promise_app_result);
+  EXPECT_TRUE(promise_app_result->progress.has_value());
+  EXPECT_EQ(promise_app_result->progress.value(), progress_initial);
+
+  // Send an update and check the progress value.
+  arc_test()->app_instance()->SendInstallationProgressChanged(package_name,
+                                                              progress_next);
+  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  EXPECT_TRUE(promise_app_result);
+  EXPECT_TRUE(promise_app_result->progress.has_value());
+  EXPECT_EQ(promise_app_result->progress.value(), progress_next);
+}
+
+TEST_F(ArcAppsPublisherTest, OnInstallationActiveChanged_UpdatesPromiseApp) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Add a promise app for testing.
+  std::unique_ptr<apps::PromiseApp> promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->status = apps::PromiseStatus::kPending;
+  cache->OnPromiseApp(std::move(promise_app));
+
+  // Check that the initial status is correct.
+  const apps::PromiseApp* promise_app_result =
+      cache->GetPromiseAppForTesting(package_id);
+  EXPECT_TRUE(promise_app_result);
+  EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
+
+  // Send an update and check the status.
+  arc_test()->app_instance()->SendInstallationActiveChanged(package_name, true);
+  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  EXPECT_TRUE(promise_app_result);
+  EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
+
+  // Send an update and check the status.
+  arc_test()->app_instance()->SendInstallationActiveChanged(package_name,
+                                                            false);
+  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  EXPECT_TRUE(promise_app_result);
+  EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 }

@@ -62,7 +62,8 @@ class CONTENT_EXPORT LockScreenStorageImpl : public LockScreenStorage {
   void InitForTesting(content::BrowserContext* browser_context,
                       const base::FilePath& base_path);
 
-  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
+      nullptr;
   base::SequenceBound<LockScreenStorageHelper> helper_;
 
   base::WeakPtrFactory<LockScreenStorageImpl> weak_factory_{this};

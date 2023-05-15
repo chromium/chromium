@@ -18,18 +18,20 @@ namespace web_app {
 class LockDescription;
 class AppLock;
 class AppLockDescription;
+struct SynchronizeOsOptions;
 
 // Used to call OsIntegrationManager::Synchronize() with an app_lock.
 class OsIntegrationSynchronizeCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  OsIntegrationSynchronizeCommand(const AppId& app_id,
-                                  base::OnceClosure synchronize_callback);
+  OsIntegrationSynchronizeCommand(
+      const AppId& app_id,
+      absl::optional<SynchronizeOsOptions> synchronize_options,
+      base::OnceClosure synchronize_callback);
   ~OsIntegrationSynchronizeCommand() override;
 
   // WebAppCommandTemplate<AppLock>:
   const LockDescription& lock_description() const override;
   void StartWithLock(std::unique_ptr<AppLock> app_lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 
@@ -40,6 +42,7 @@ class OsIntegrationSynchronizeCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLock> app_lock_;
 
   AppId app_id_;
+  absl::optional<SynchronizeOsOptions> synchronize_options_ = absl::nullopt;
   base::OnceClosure synchronize_callback_;
 
   base::WeakPtrFactory<OsIntegrationSynchronizeCommand> weak_factory_{this};

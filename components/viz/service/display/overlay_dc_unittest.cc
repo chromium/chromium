@@ -96,9 +96,8 @@ static ResourceId CreateResourceInLayerTree(
     const gfx::Size& size,
     bool is_overlay_candidate) {
   auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, SinglePlaneFormat::kRGBA_8888,
-      is_overlay_candidate);
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -1074,8 +1073,8 @@ TEST_P(DCLayerOverlayTest, PixelMovingForegroundFilter) {
   SharedQuadState* shared_quad_state_rpdq = pass->shared_quad_state_list.back();
   // The pixel-moving render pass draw quad itself (rpdq->rect) doesn't
   // intersect with kOverlayRect(0, 0, 256, 256), but the expanded draw quad
-  // (rpdq->rect(260, 260, 100, 100) + MaximumPixelMovement (2 * 10.f) = (240,
-  // 240, 140, 140)) does.
+  // (rpdq->rect(260, 260, 100, 100) + blur filter pixel movement (2 * 10.f) =
+  // (240, 240, 140, 140)) does.
 
   CreateRenderPassDrawQuadAt(pass.get(), shared_quad_state_rpdq, filter_rect,
                              filter_render_pass_id);
@@ -1111,7 +1110,7 @@ TEST_P(DCLayerOverlayTest, PixelMovingForegroundFilter) {
 
   EXPECT_EQ(1U, dc_layer_list.size());
   // Make sure the video is in an underlay mode if the overlay quad intersects
-  // with (rpdq->rect + MaximumPixelMovement()).
+  // with expanded rpdq->rect.
   EXPECT_EQ(-1, dc_layer_list.back().plane_z_order);
   EXPECT_EQ(gfx::Rect(0, 0, 360, 360), damage_rect_);
 }

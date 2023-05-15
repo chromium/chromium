@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
@@ -360,7 +361,7 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
   void Retry() override { NOTREACHED(); }
 
  private:
-  RecommendAppsFetcherDelegate* const delegate_;
+  const raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
 };
 
 std::unique_ptr<RecommendAppsFetcher> CreateRecommendAppsFetcher(
@@ -398,7 +399,7 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
   // The window was visible at some point in time.
   bool was_visible_ = false;
 
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Sets the `NativeWindowVisibilityObserver` to observe the
@@ -432,7 +433,7 @@ class NativeWindowVisibilityBrowserMainExtraParts
   }
 
  private:
-  NativeWindowVisibilityObserver* observer_;
+  raw_ptr<NativeWindowVisibilityObserver, ExperimentalAsh> observer_;
 };
 
 class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
@@ -652,17 +653,16 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleAppDownloadingScreen();
   }
 
-  HandleAssistantOptInScreen();
+  if (!features::IsOobeSkipAssistantEnabled()) {
+    HandleAssistantOptInScreen();
+  }
 
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
     HandleGestureNavigationScreen();
   }
 
-  if (features::IsDarkLightModeEnabled()) {
-    HandleThemeSelectionScreen();
-  }
-
+  HandleThemeSelectionScreen();
   HandleMarketingOptInScreen();
 }
 
@@ -974,10 +974,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
     HandleAppDownloadingScreen();
   }
 
-  if (features::IsDarkLightModeEnabled()) {
-    HandleThemeSelectionScreen();
-  }
-
+  HandleThemeSelectionScreen();
   WaitForActiveSession();
 }
 

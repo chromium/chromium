@@ -123,6 +123,8 @@ proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
       return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
     case PrinterErrorCode::CLIENT_UNAUTHORIZED:
       return proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED;
+    case PrinterErrorCode::EXPIRED_CERTIFICATE:
+      return proto::PrintJobInfo_PrinterErrorCode_EXPIRED_CERTIFICATE;
     default:
       // Be sure to update the above case statements whenever a new printer
       // error is introduced.

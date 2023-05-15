@@ -45,6 +45,10 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
               // TODO(crbug.com/1418376): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // ChromeOS creates various profiles (login, lock screen...) that
+              // do not display web content and thus do not need the
+              // client side phishing detection
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
 KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(

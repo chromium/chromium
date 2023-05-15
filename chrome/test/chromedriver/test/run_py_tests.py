@@ -35,9 +35,9 @@ import urllib.request
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
-_CLIENT_DIR = os.path.join(_PARENT_DIR, "client")
-_SERVER_DIR = os.path.join(_PARENT_DIR, "server")
-_TEST_DIR = os.path.join(_PARENT_DIR, "test")
+_CLIENT_DIR = os.path.join(_PARENT_DIR, 'client')
+_SERVER_DIR = os.path.join(_PARENT_DIR, 'server')
+_TEST_DIR = os.path.join(_PARENT_DIR, 'test')
 
 sys.path.insert(1, _PARENT_DIR)
 import chrome_paths
@@ -92,7 +92,6 @@ _NEGATIVE_FILTER = [
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1306504
     'ChromeSwitchesCapabilityTest.*',
     'ChromeExtensionsCapabilityTest.*',
-    'MobileEmulationCapabilityTest.*',
     # crbug.com/chromedriver/4379
     'ChromeDriverTest.testClickElementInAnotherFrame',
     # crbug.com/chromedriver/4362
@@ -545,7 +544,7 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
 
   def testUnsupportedPageLoadStrategyRaisesException(self):
     self.assertRaises(chromedriver.InvalidArgument,
-                      self.CreateDriver, page_load_strategy="unsupported")
+                      self.CreateDriver, page_load_strategy='unsupported')
 
   def testGetUrlOnInvalidUrl(self):
     # Make sure we don't return 'chrome-error://chromewebdata/' (see
@@ -594,7 +593,7 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
   def testWebSocketInvalidSessionId(self):
     self.CreateDriver(web_socket_url=True)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
-                      _CHROMEDRIVER_SERVER_URL, "random_session_id_123")
+                      _CHROMEDRIVER_SERVER_URL, 'random_session_id_123')
 
   def testWebSocketClosedCanReconnect(self):
     driver = self.CreateDriver(web_socket_url=True)
@@ -829,7 +828,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(arr, [1, 2, 3])
 
   def testExecuteScriptCallsToJson(self):
-    """Tests that own toJSON method of an object is called by the serialization process"""
+    """Tests that own toJSON method of an object
+       is called by the serialization process"""
     script = """
       const obj = {
         toJSON() {
@@ -843,7 +843,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(result, [1, 2, 3])
 
   def testExecuteScriptToJsonDataProperty(self):
-    """Tests that own toJSON method of an object is called by the serialization process"""
+    """Tests that own toJSON method of an object
+       is called by the serialization process"""
     script = """
       let obj = {};
       obj.toJSON = 'text';
@@ -852,7 +853,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     result = self._driver.ExecuteScript(script)
     self.assertEqual(result['toJSON'], 'text')
 
-  def testExecuteScriptStaleElement(self):
+  def testExecuteScriptStaleElement1(self):
     # Test the standard compliance of error handling
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
@@ -861,6 +862,32 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.ExecuteScript("return arguments[0];", div)
     with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return true;", div)
+
+  def testExecuteScriptStaleElement2(self):
+    # Test the standard compliance of error handling
+    div1 = self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'return document.getElementsByTagName("div")[0];')
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>new</div>";')
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return arguments[0];", div1)
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return true;", div1)
+
+  def testExecuteScriptNoSuchBackendNodeId(self):
+    # Test the standard compliance of error handling
+    div = self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'return document.getElementsByTagName("div")[0];')
+    components = div._id.split('_')
+    self.assertEqual(3, len(components))
+    components[2] = "1000000001" # very large backend_id
+    div._id = '_'.join(components)
+    with self.assertRaises(chromedriver.NoSuchElement):
+      self._driver.ExecuteScript("return arguments[0];", div)
+    with self.assertRaises(chromedriver.NoSuchElement):
       self._driver.ExecuteScript("return true;", div)
 
   def testExecuteScriptDetachedShadowRoot(self):
@@ -2779,18 +2806,22 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testElementReference(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.FindElement('css selector', '#link')
-    self.assertRegex(element._id, '\\w+_element_\\w+', msg='Element id format is incorrect')
+    self.assertRegex(element._id, '\\w+_element_\\w+',
+                     msg='Element id format is incorrect')
 
   def testElementReferenceViaScript(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
-    element = self._driver.ExecuteScript('return document.getElementById("link")')
-    self.assertRegex(element._id, '\\w+_element_\\w+', msg='Element id format is incorrect')
+    element = self._driver.ExecuteScript(
+        'return document.getElementById("link")')
+    self.assertRegex(element._id, '\\w+_element_\\w+',
+                     msg='Element id format is incorrect')
 
   def testElementReferenceNoNavigation(self):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w', msg='Element id format is incorrect')
+    self.assertRegex(div._id, '\\w+_element_\\w',
+                     msg='Element id format is incorrect')
 
   def testElementReferenceInNewWindow(self):
     # We need to run this test in a new tab so that it is isolated from previous
@@ -2802,7 +2833,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w', msg='Element id format is incorrect')
+    self.assertRegex(div._id, '\\w+_element_\\w',
+                     msg='Element id format is incorrect')
 
   def testFindElementWhenElementIsOverridden(self):
     self._driver.Load('about:blank')
@@ -3586,6 +3618,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         accept_insecure_certs=True,
         chrome_switches=['host-resolver-rules=MAP * 127.0.0.1',
             'enable-experimental-web-platform-features'])
+
 
   def testAddVirtualAuthenticator(self):
     def addAuthenticatorAndRegister(javascriptFragment, addArgs):
@@ -4833,6 +4866,16 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
   overridden in Chrome.
   """
 
+  def getHighEntropyClientHints(self, driver):
+    return driver.ExecuteScript('''
+                         return navigator.userAgentData.getHighEntropyValues([
+                          'architecture',
+                          'bitness',
+                          'model',
+                          'platformVersion',
+                          'fullVersionList',
+                          'wow64'])''')
+
   # Run in Legacy mode
   def testDeviceMetricsWithStandardWidth(self):
     driver = self.CreateDriver(
@@ -4869,7 +4912,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
         mobile_emulation = {'userAgent': 'Agent Smith'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
     body_tag = driver.FindElement('tag name', 'body')
-    self.assertEqual("Agent Smith", body_tag.GetText())
+    self.assertEqual('Agent Smith', body_tag.GetText())
 
   def testDeviceName(self):
     driver = self.CreateDriver(
@@ -5101,6 +5144,135 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(send_w3c_capability=False,
                                send_w3c_request=False)
     self.assertFalse(driver.w3c_compliant)
+
+  def testClientHintsMobileLegacy(self):
+    expected_ua = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Bui'
+    'ld/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chr'
+    'ome/18.0.1025.166 Mobile Safari/535.19'
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'deviceMetrics': {'width': 360, 'height': 640, 'pixelRatio': 3},
+            'userAgent': expected_ua
+            })
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsNonMobileLegacy(self):
+    expected_ua = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Bui'
+    'ld/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chr'
+    'ome/18.0.1025.166 Safari/535.19'
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'userAgent': expected_ua
+            })
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual("Android", driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(False, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsInferredMobileUA(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'deviceMetrics': {'width': 360, 'height': 640, 'pixelRatio': 3},
+            'clientHints': {
+                'platform': 'Android',
+                'platformVersion': '17',
+                'architecture': 'arm',
+                'bitness': '32',
+                'model': 'Special',
+            }
+        })
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 (Linux; Android 10; K) ',
+                          'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                          f'Chrome/{major_version}.0.0.0 Mobile ',
+                          'Safari/537.36'))
+
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('arm', hints['architecture'])
+    self.assertEqual('32', hints['bitness'])
+    self.assertEqual('Special', hints['model'])
+    self.assertEqual('17', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsInferredDesktopUA(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'clientHints': {
+                'platform': 'Windows',
+                'platformVersion': '12',
+                'architecture': 'x86',
+                'bitness': '64',
+            }
+        })
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 (Windows NT 10.0; Win64; x64) ',
+                          'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                           f'Chrome/{major_version}.0.0.0 Safari/537.36'))
+
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Windows', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(False, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('x86', hints['architecture'])
+    self.assertEqual('64', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('12', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsDeviceName(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {'deviceName': 'Nexus 5'})
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('Nexus 5', hints['model'])
+    self.assertEqual('6.0', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 ',
+                           '(Linux; Android 6.0; Nexus 5 Build/MRA58N) ',
+                           'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                           f'Chrome/{major_version}.0.0.0 ',
+                           'Mobile Safari/537.36'))
+    actual_ua = driver.ExecuteScript('return navigator.userAgent')
+    self.assertEqual(expected_ua, actual_ua)
 
 
 class ChromeDriverLogTest(ChromeDriverBaseTest):
@@ -5913,13 +6085,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.FindElement('css selector', '#link')
     self._driver.FindElements('tag name', 'br')
-    self.assertRegex(element._id, '\\w+_element_\\w+', msg='Element id format is incorrect')
+    self.assertRegex(element._id, '\\w+_element_\\w+',
+                     msg='Element id format is incorrect')
 
   def testElementReferenceNoNavigation(self):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w', msg='Element id format is incorrect')
+    self.assertRegex(div._id, '\\w+_element_\\w',
+                     msg='Element id format is incorrect')
 
   def testCompareClassicAndBidiIds(self):
     conn = self.createWebSocketConnection()
@@ -5928,7 +6102,8 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
     node_id = div._id
-    self.assertRegex(node_id, '\\w+_element_\\w', msg='Element id format is incorrect')
+    self.assertRegex(node_id, '\\w+_element_\\w',
+                     msg='Element id format is incorrect')
     pos = node_id.rfind('_')
     self.assertGreaterEqual(pos, 0, "Element Id format is incorrect")
     classic_backend_node_id = node_id[pos+1:]
@@ -5945,12 +6120,14 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     resp = conn.WaitForResponse(cmd_id)
-    shared_id = resp['result']['result']['value']['sharedId']
-    self.assertRegex(shared_id, '\\w+_element_\\w', msg='Shared id format is incorrect')
+    shared_id = resp['result']['result']['sharedId']
+    self.assertRegex(shared_id, '\\w+_element_\\w',
+                     msg='Shared id format is incorrect')
     pos = shared_id.rfind('_')
     bidi_backend_node_id = shared_id[pos+1:]
 
-    self.assertEqual(classic_backend_node_id, bidi_backend_node_id, "Classic and BiDi id mismatch")
+    self.assertEqual(classic_backend_node_id, bidi_backend_node_id,
+                     "Classic and BiDi id mismatch")
 
   def testClassicIdInBidi(self):
     conn = self.createWebSocketConnection()
@@ -6003,7 +6180,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     resp = conn.WaitForResponse(cmd_id)
-    node_id = resp['result']['result']['value']['sharedId']
+    node_id = resp['result']['result']['sharedId']
     div = webelement.WebElement(self._driver, node_id)
     div.Click()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
@@ -6035,8 +6212,10 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
   def testOpenMultipleTabsInJavaScript(self):
     """Regression test for crbug.com/chromedriver/4362"""
     self._http_server.SetDataForPath('/iframes.html',
-       bytes('<title>iframes</title><iframe src="about:blank"/> </body>', 'utf-8'))
-    script = 'for (let i=0; i<10; ++i){ window.open("%s"); }' % self.GetHttpUrlForFile('/iframes.html')
+       bytes('<title>iframes</title><iframe src="about:blank"/> </body>',
+             'utf-8'))
+    url = self.GetHttpUrlForFile('/iframes.html')
+    script = 'for (let i=0; i<10; ++i){ window.open("%s"); }' % url
     self._driver.ExecuteScript(script)
     handles = self._driver.GetWindowHandles()
     titles = []
@@ -6170,6 +6349,93 @@ class VendorSpecificTest(ChromeDriverBaseTestWithWebServer):
     # This command crashed ChromeDriver on Android
     self._driver.GetCastSinks(self._vendor_id)
 
+class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    port = self._https_server._server.server_port
+    self._url_prefix = (self._https_server.GetUrl("localhost") +
+        "/chromedriver/fedcm")
+
+    def respondWithWellKnownFile(request):
+      return {'Content-Type': 'application/json'}, bytes("""
+      {
+        "provider_urls": ["%s/fedcm.json"]
+      }
+      """ % self._url_prefix, 'utf-8')
+    self._https_server.SetCallbackForPath('/.well-known/web-identity',
+                                          respondWithWellKnownFile)
+
+    script_content = bytes("""
+      <script>
+      let promise = null;
+      function callFedCm() {
+        promise = navigator.credentials.get({
+          identity: {
+            providers: [{
+              configURL: '%s/fedcm.json',
+              clientId: '123',
+            }]
+          }
+        });
+      }
+      async function getResult() {
+        try {
+          return (await promise).token;
+        } catch (e) {
+          return "Error: " + e;
+        }
+      }
+      </script>
+      """ % self._url_prefix, 'utf-8')
+    self._https_server.SetDataForPath('/fedcm.html', script_content)
+
+    self._driver = self.CreateDriver(
+        accept_insecure_certs=True,
+        chrome_switches=['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
+            'enable-experimental-web-platform-features'])
+
+  def FedCmDialogCondition(self):
+    try:
+        self._driver.GetFedCmTitle()
+        return True
+    except:
+        return False
+
+  def testGetAccounts(self):
+    self._driver.Load(self._https_server.GetUrl() + '/fedcm.html')
+
+    self._driver.SetDelayEnabled(False)
+    self._driver.ResetCooldown()
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript('callFedCm()')
+    self.WaitForCondition(self.FedCmDialogCondition)
+    accounts = self._driver.GetAccounts()
+    self.assertEqual(2, len(accounts))
+    self.assertEqual({'title': 'Sign in to 127.0.0.1 with localhost'},
+                     self._driver.GetFedCmTitle())
+    self.assertEqual('AccountChooser', self._driver.GetDialogType())
+
+    self._driver.SelectAccount(0)
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('token', token)
+
+  def testDismissDialog(self):
+    self._driver.Load(self._https_server.GetUrl() + '/fedcm.html')
+
+    self._driver.ResetCooldown()
+    self._driver.SetDelayEnabled(False)
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript('callFedCm()')
+    self.WaitForCondition(self.FedCmDialogCondition)
+
+    self._driver.CancelFedCmDialog()
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('Error: NetworkError: Error retrieving a token.', token)
+
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
 
@@ -6274,9 +6540,12 @@ if __name__ == '__main__':
     if platform == 'linux':
       chrome_path = os.path.join(driver_path, 'chrome')
     elif platform == 'mac':
-      if os.path.exists(os.path.join(driver_path, 'Google Chrome for Testing.app')):
-          chrome_path = os.path.join(driver_path, 'Google Chrome for Testing.app',
-                                     'Contents', 'MacOS', 'Google Chrome for Testing')
+      if os.path.exists(os.path.join(driver_path,
+                                     'Google Chrome for Testing.app')):
+          chrome_path = os.path.join(driver_path,
+                                     'Google Chrome for Testing.app',
+                                     'Contents', 'MacOS',
+                                     'Google Chrome for Testing')
       elif os.path.exists(os.path.join(driver_path, 'Google Chrome.app')):
         chrome_path = os.path.join(driver_path, 'Google Chrome.app',
                                    'Contents', 'MacOS', 'Google Chrome')

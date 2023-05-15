@@ -519,28 +519,11 @@ void WebRtcTestBase::GenerateAndCloneCertificate(
   EXPECT_EQ("ok-generated-and-cloned", ExecuteJavascript(javascript, tab));
 }
 
-void WebRtcTestBase::VerifyStatsGeneratedCallback(
-    content::WebContents* tab) const {
-  EXPECT_EQ("ok-got-stats",
-            ExecuteJavascript("verifyLegacyStatsGenerated()", tab));
-}
-
 std::vector<std::string> WebRtcTestBase::VerifyStatsGeneratedPromise(
     content::WebContents* tab) const {
   std::string result = ExecuteJavascript("verifyStatsGeneratedPromise()", tab);
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
   return JsonArrayToVectorOfStrings(result.substr(3));
-}
-
-double WebRtcTestBase::MeasureGetStatsCallbackPerformance(
-    content::WebContents* tab) const {
-  std::string result = ExecuteJavascript(
-      "measureGetStatsCallbackPerformance()", tab);
-  EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
-  double ms;
-  if (!base::StringToDouble(result.substr(3), &ms))
-    return std::numeric_limits<double>::infinity();
-  return ms;
 }
 
 scoped_refptr<content::TestStatsReportDictionary>

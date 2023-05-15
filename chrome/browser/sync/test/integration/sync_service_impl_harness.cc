@@ -254,8 +254,9 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
   signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
 void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
   DCHECK(service_->IsSyncFeatureActive());
   signin::SetInvalidRefreshTokenForPrimaryAccount(
@@ -268,6 +269,7 @@ void SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   // The engine was off in the sync-paused state, so wait for it to start.
   AwaitSyncSetupCompletion();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool SyncServiceImplHarness::SetupSync(
     SetUserSettingsCallback user_settings_callback) {
@@ -299,7 +301,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   }
 
   // Now that auth is completed, request that sync actually start.
-  service()->GetUserSettings()->SetSyncRequested();
+  service()->SetSyncFeatureRequested();
 
   if (!AwaitEngineInitialization()) {
     return false;
@@ -331,16 +333,11 @@ void SyncServiceImplHarness::StopSyncServiceAndClearData() {
   service()->StopAndClear();
 }
 
-void SyncServiceImplHarness::StopSyncServiceWithoutClearingData() {
-  DVLOG(1) << "Requesting stop for service without clearing data.";
-  service()->GetUserSettings()->ClearSyncRequested();
-}
-
-bool SyncServiceImplHarness::StartSyncService() {
+bool SyncServiceImplHarness::EnableSyncFeature() {
   std::unique_ptr<syncer::SyncSetupInProgressHandle> blocker =
       service()->GetSetupInProgressHandle();
   DVLOG(1) << "Requesting start for service";
-  service()->GetUserSettings()->SetSyncRequested();
+  service()->SetSyncFeatureRequested();
 
   if (!AwaitEngineInitialization()) {
     LOG(ERROR) << "AwaitEngineInitialization failed.";
@@ -407,7 +404,7 @@ bool SyncServiceImplHarness::AwaitEngineInitialization() {
 }
 
 bool SyncServiceImplHarness::AwaitSyncSetupCompletion() {
-  CHECK(service()->GetUserSettings()->IsFirstSetupComplete())
+  CHECK(service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete())
       << "Waiting for setup completion can only succeed after the first setup "
       << "got marked complete. Did you call SetupSync on this client?";
   if (!SyncSetupChecker(service(), SyncSetupChecker::State::kFeatureActive)
@@ -535,7 +532,8 @@ bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
   }
 
   service()->GetUserSettings()->SetSelectedTypes(
-      true, service()->GetUserSettings()->GetRegisteredSelectableTypes());
+      /*sync_everything=*/true,
+      service()->GetUserSettings()->GetRegisteredSelectableTypes());
 
   if (AwaitSyncSetupCompletion()) {
     DVLOG(1)
@@ -556,7 +554,8 @@ bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
     return false;
   }
 
-  service()->StopAndClear();
+  service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   DVLOG(1) << "DisableSyncForAllDatatypes(): Disabled sync for all "
            << "datatypes on " << profile_debug_name_;
@@ -613,7 +612,5 @@ std::string SyncServiceImplHarness::GetClientInfoString(
 }
 
 bool SyncServiceImplHarness::IsSyncEnabledByUser() const {
-  return service()->GetUserSettings()->IsFirstSetupComplete() &&
-         !service()->HasDisableReason(
-             SyncServiceImpl::DISABLE_REASON_USER_CHOICE);
+  return service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }

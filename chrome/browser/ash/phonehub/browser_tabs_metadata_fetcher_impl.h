@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
@@ -67,7 +68,8 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
       base::OnceClosure done_closure,
       const gfx::ImageSkia& favicon);
 
-  favicon::HistoryUiFaviconRequestHandler* const favicon_request_handler_;
+  const raw_ptr<favicon::HistoryUiFaviconRequestHandler, ExperimentalAsh>
+      favicon_request_handler_;
   std::vector<BrowserTabsModel::BrowserTabMetadata> results_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 

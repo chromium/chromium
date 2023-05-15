@@ -89,8 +89,8 @@ void FakeDesktopMediaPickerFactory::SetTestFlags(TestFlags* test_flags,
   current_test_ = 0;
 }
 
-std::unique_ptr<DesktopMediaPicker>
-FakeDesktopMediaPickerFactory::CreatePicker() {
+std::unique_ptr<DesktopMediaPicker> FakeDesktopMediaPickerFactory::CreatePicker(
+    const content::MediaStreamRequest* request) {
   EXPECT_LE(current_test_, tests_count_);
   if (current_test_ >= tests_count_)
     return nullptr;

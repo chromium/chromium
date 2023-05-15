@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -113,6 +114,10 @@ class ClipboardBubbleTestWithParam
   ClipboardBubbleTestWithParam& operator=(const ClipboardBubbleTestWithParam&) =
       delete;
   ~ClipboardBubbleTestWithParam() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::DEFAULT};
 };
 
 TEST_P(ClipboardBubbleTestWithParam, BlockBubble) {
@@ -173,7 +178,8 @@ TEST_P(ClipboardBubbleButtonsTestWithParam, ProceedPressed) {
               CloseWidget(testing::_,
                           views::Widget::ClosedReason::kAcceptButtonClicked));
 
-  notifier.ProceedPressed(data_dst, base::DoNothing(), nullptr);
+  notifier.ProceedPressed(std::make_unique<ui::ClipboardData>(), data_dst,
+                          base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
 }
@@ -286,8 +292,10 @@ TEST_F(DlpClipboardNotifierTest, ProceedSavedHistory) {
                           views::Widget::ClosedReason::kAcceptButtonClicked))
       .Times(2);
 
-  notifier.ProceedPressed(url_dst, base::DoNothing(), nullptr);
-  notifier.ProceedPressed(default_dst, base::DoNothing(), nullptr);
+  notifier.ProceedPressed(std::make_unique<ui::ClipboardData>(), url_dst,
+                          base::DoNothing(), nullptr);
+  notifier.ProceedPressed(std::make_unique<ui::ClipboardData>(), default_dst,
+                          base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&default_dst));
@@ -309,8 +317,10 @@ TEST_F(DlpClipboardNotifierTest, ProceedSavedHistoryVMs) {
                           views::Widget::ClosedReason::kAcceptButtonClicked))
       .Times(2);
 
-  notifier.ProceedPressed(arc_dst, base::DoNothing(), nullptr);
-  notifier.ProceedPressed(crostini_dst, base::DoNothing(), nullptr);
+  notifier.ProceedPressed(std::make_unique<ui::ClipboardData>(), arc_dst,
+                          base::DoNothing(), nullptr);
+  notifier.ProceedPressed(std::make_unique<ui::ClipboardData>(), crostini_dst,
+                          base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&arc_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&crostini_dst));

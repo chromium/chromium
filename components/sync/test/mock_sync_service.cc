@@ -6,7 +6,12 @@
 
 namespace syncer {
 
-MockSyncService::MockSyncService() = default;
+MockSyncService::MockSyncService() {
+  // A sensible default is to return true, because in most cases it is used in
+  // combination with HasSyncConsent(), which defaults to false.
+  ON_CALL(*this, IsSyncFeatureConsideredRequested)
+      .WillByDefault(testing::Return(true));
+}
 
 MockSyncService::~MockSyncService() = default;
 

@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
-import("//build/rust/rust_target.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
 
 # This template allows for building Cargo crates within gn.
 #
@@ -22,7 +24,6 @@ import("//build/rust/rust_target.gni")
 # Arguments:
 #  sources
 #  crate_root
-#  epoch
 #  deps
 #  aliased_deps
 #  features
@@ -32,6 +33,20 @@ import("//build/rust/rust_target.gni")
 #    All just as in rust_static_library.gni
 #  library_configs/executable_configs
 #    All just as in rust_target.gni
+#
+#  epoch (optional)
+#    The major version of the library, which is used to differentiate between
+#    multiple versions of the same library name. This includes all leading 0s
+#    and the first non-zero value in the crate's version. This should be left
+#    as the default, which is "0", for first-party code unless there are
+#    multiple versions of a crate present. For third-party code, the version
+#    epoch (matching the directory it is found in) should be specified.
+#
+#    Examples:
+#      1.0.2 => epoch = "1"
+#      4.2.0 => epoch = "4"
+#      0.2.7 => epoch = "0.2"
+#      0.0.3 => epoch = "0.0.3"
 #
 #  dev_deps
 #    Same meaning as test_deps in rust_static_library.gni, but called
@@ -83,6 +98,15 @@ template("cargo_crate") {
     _crate_name = invoker.crate_name
   }
 
+  # Construct metadata from the crate epoch or an explicitly provided metadata
+  # field.
+  _rustc_metadata = ""
+  if (defined(invoker.rustc_metadata)) {
+    _rustc_metadata = invoker.rustc_metadata
+  } else if (defined(invoker.epoch)) {
+    _rustc_metadata = invoker.epoch
+  }
+
   # Executables need to have unique names. Work out a prefix.
   if (defined(invoker.build_root)) {
     _epochlabel = "vunknown"
@@ -120,8 +144,36 @@ template("cargo_crate") {
     _rustenv += [ "CARGO_PKG_DESCRIPTION=${invoker.cargo_pkg_description}" ]
   }
 
+  # cargo_crate() should set library_configs, executable_configs,
+  # proc_macro_configs. Not configs.
+  assert(!defined(invoker.configs))
+
+  # Work out what we're building.
+  _crate_type = "rlib"
+  if (defined(invoker.crate_type)) {
+    _crate_type = invoker.crate_type
+  }
+  if (_crate_type == "bin") {
+    _target_type = "rust_executable"
+    assert(!defined(invoker.epoch))
+    if (defined(invoker.executable_configs)) {
+      _configs = invoker.executable_configs
+    }
+  } else if (_crate_type == "proc-macro") {
+    _target_type = "rust_macro"
+    if (defined(invoker.proc_macro_configs)) {
+      _configs = invoker.proc_macro_configs
+    }
+  } else {
+    assert(_crate_type == "rlib")
+    _target_type = "rust_static_library"
+    if (defined(invoker.library_configs)) {
+      _configs = invoker.library_configs
+    }
+  }
+
   # The main target, either a Rust source set or an executable.
-  rust_target(target_name) {
+  target(_target_type, target_name) {
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [
@@ -130,39 +182,47 @@ template("cargo_crate") {
                                  "build_sources",
                                  "build_script_inputs",
                                  "build_script_outputs",
+                                 "epoch",
                                  "unit_test_target",
-                                 "target_type",
                                  "configs",
+                                 "executable_configs",
+                                 "library_configs",
+                                 "proc_macro_configs",
                                  "rustenv",
+                                 "dev_deps",
                                ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    # Work out what we're building.
-    crate_type = "rlib"
-    if (defined(invoker.crate_type)) {
-      crate_type = invoker.crate_type
-    }
+    rustc_metadata = _rustc_metadata
 
     # TODO(crbug.com/1422745): don't default to true. This requires changes to
     # third_party.toml and gnrt when generating third-party build targets.
     allow_unsafe = true
 
+    configs = []
+    if (defined(_configs)) {
+      configs += _configs
+    }
+
+    if (_crate_type == "rlib") {
+      # Forward configs for unit tests.
+      if (defined(invoker.executable_configs)) {
+        executable_configs = invoker.executable_configs
+      }
+    }
+
     if (!defined(rustflags)) {
       rustflags = []
     }
     rustenv = _rustenv
-    if (crate_type == "bin") {
-      target_type = "executable"
-      assert(!defined(invoker.epoch))
-    } else if (crate_type == "proc-macro") {
-      target_type = "rust_proc_macro"
-    } else {
-      assert(crate_type == "rlib")
-      target_type = "rust_library"
-    }
 
     if (!defined(build_native_rust_unit_tests)) {
-      build_native_rust_unit_tests = true
+      build_native_rust_unit_tests = _crate_type != "proc-macro"
+    }
+    if (build_native_rust_unit_tests) {
+      # Unit tests in a proc-macro crate type don't make sense, you can't
+      # compile executables against the `proc_macro` crate.
+      assert(_crate_type != "proc-macro")
     }
 
     # The unit tests for each target, if generated, should be unique as well.
@@ -184,11 +244,15 @@ template("cargo_crate") {
     }
     unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
 
-    if ((!defined(output_dir) || output_dir == "") && crate_type == "rlib") {
+    if ((!defined(output_dir) || output_dir == "") && _crate_type == "rlib") {
       # Cargo crate rlibs can be compiled differently for tests, and must not
       # collide with the production outputs. This does *not* override the
       # unit_test_output_dir, which is set above, as that target is not an rlib.
       output_dir = "$target_out_dir/$_orig_target_name"
+    }
+
+    if (defined(invoker.dev_deps)) {
+      test_deps = invoker.dev_deps
     }
 
     if (defined(invoker.build_root)) {
@@ -198,9 +262,6 @@ template("cargo_crate") {
       }
       if (!defined(sources)) {
         sources = []
-      }
-      if (defined(invoker.dev_deps)) {
-        test_deps = invoker.dev_deps
       }
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
@@ -239,13 +300,12 @@ template("cargo_crate") {
           ":${_build_script_name}($host_toolchain_no_sanitizers)"
       deps = [ build_script_target ]
 
-      # The build script output is always in the name-specific output dir. It
-      # may be built with a different toolchain when cross-compiling (the host
-      # toolchain) so we must find the path relative to that.
-      _build_script_target_out_dir =
-          get_label_info(build_script_target, "target_out_dir")
-      _build_script_exe =
-          "$_build_script_target_out_dir/$_orig_target_name/$_build_script_name"
+      # The build script may be built with a different toolchain when
+      # cross-compiling (the host toolchain) so we must find the path relative
+      # to that.
+      _build_script_root_out_dir =
+          get_label_info(build_script_target, "root_out_dir")
+      _build_script_exe = "$_build_script_root_out_dir/$_build_script_name"
       if (is_win) {
         _build_script_exe = "${_build_script_exe}.exe"
       }
@@ -293,19 +353,21 @@ template("cargo_crate") {
     }
 
     if (current_toolchain == host_toolchain_no_sanitizers) {
-      rust_target(_build_script_name) {
-        target_type = "executable"
+      rust_executable(_build_script_name) {
         sources = invoker.build_sources
         crate_root = invoker.build_root
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
 
-        # An rlib's build script may be built differently for tests and for
-        # production, so they must be in a name specific to the GN target. The
-        # ${_build_script_name}_output target looks for the exe in this
-        # location.
-        output_dir = "$target_out_dir/$_orig_target_name"
+        # The ${_build_script_name}_output target looks for the exe in this
+        # location. Due to how the Windows component build works, this has to
+        # be $root_out_dir for all EXEs. In component build, C++ links to the
+        # CRT as a DLL, and if Rust does not match, we can't link mixed target
+        # Rust EXE/DLLs, as the headers in C++ said something different than
+        # what Rust links. Since the CRT DLL is placed in the $root_out_dir,
+        # an EXE can find it if it's also placed in that dir.
+        output_dir = root_out_dir
         rustenv = _rustenv
         forward_variables_from(invoker,
                                [
@@ -313,8 +375,22 @@ template("cargo_crate") {
                                  "edition",
                                  "rustflags",
                                ])
-        executable_configs -= [ "//build/config/compiler:chromium_code" ]
-        executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+        configs -= [
+          "//build/config/compiler:chromium_code",
+
+          # Avoid generating profiling data for build scripts.
+          #
+          # TODO(crbug.com/1426472): determine for sure whether to remove this
+          # config. I'm not sure of the overlap between PGO instrumentation and
+          # code coverage instrumentation, but we definitely don't want build
+          # script coverage for PGO, while we might for test coverage metrics.
+          #
+          # If we do include build script output in test metrics, it could be
+          # misleading: exercising some code from a build script doesn't give us
+          # the same signal as an actual test.
+          "//build/config/coverage:default_coverage",
+        ]
+        configs += [ "//build/config/compiler:no_chromium_code" ]
       }
     } else {
       not_needed(invoker,
@@ -337,4 +413,5 @@ template("cargo_crate") {
 set_defaults("cargo_crate") {
   library_configs = default_compiler_configs
   executable_configs = default_executable_configs
+  proc_macro_configs = default_rust_proc_macro_configs
 }

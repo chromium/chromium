@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -21,7 +22,7 @@ class DeskActionContextMenu;
 class DeskActionView;
 class DeskNameView;
 class DeskPreviewView;
-class DesksBarView;
+class DeskBarViewBase;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -41,7 +42,9 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // which it resides.
   static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window);
 
-  DeskMiniView(DesksBarView* owner_bar, aura::Window* root_window, Desk* desk);
+  DeskMiniView(DeskBarViewBase* owner_bar,
+               aura::Window* root_window,
+               Desk* desk);
 
   DeskMiniView(const DeskMiniView&) = delete;
   DeskMiniView& operator=(const DeskMiniView&) = delete;
@@ -57,7 +60,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
 
-  DesksBarView* owner_bar() { return owner_bar_; }
+  DeskBarViewBase* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
   DeskPreviewView* desk_preview() { return desk_preview_; }
 
@@ -148,23 +151,23 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);
 
-  DesksBarView* const owner_bar_;
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> owner_bar_;
 
   // The root window on which this mini_view is created.
-  aura::Window* const root_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The associated desk. This can become null if the desk is deleted before the
   // mini view is done. Desk deletion is monitored by `OnDeskDestroyed`.
-  Desk* desk_;  // Not owned.
+  raw_ptr<Desk, ExperimentalAsh> desk_;  // Not owned.
 
   // The view that shows a preview of the desk contents.
-  DeskPreviewView* desk_preview_ = nullptr;
+  raw_ptr<DeskPreviewView, ExperimentalAsh> desk_preview_ = nullptr;
 
   // The editable desk name.
-  DeskNameView* desk_name_view_ = nullptr;
+  raw_ptr<DeskNameView, ExperimentalAsh> desk_name_view_ = nullptr;
 
   // Stores the hover interface for desk actions.
-  DeskActionView* desk_action_view_ = nullptr;
+  raw_ptr<DeskActionView, ExperimentalAsh> desk_action_view_ = nullptr;
 
   // The context menu that appears when `desk_preview_` is right-clicked or
   // long-pressed.

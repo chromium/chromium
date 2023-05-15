@@ -107,9 +107,9 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_sync_model_type_controller.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -246,11 +246,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
   account_web_data_service_ =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)
-          ? WebDataServiceFactory::GetAutofillWebDataForAccount(
-                profile_, ServiceAccessType::IMPLICIT_ACCESS)
-          : nullptr;
+      WebDataServiceFactory::GetAutofillWebDataForAccount(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
   web_data_service_thread_ = profile_web_data_service_
                                  ? profile_web_data_service_->GetDBTaskRunner()
                                  : nullptr;
@@ -288,7 +285,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
           identity_manager));
 #else
   trusted_vault_client_ =
-      std::make_unique<syncer::StandaloneTrustedVaultClient>(
+      std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
           profile_->GetPath().Append(kTrustedVaultFilename),
           profile_->GetPath().Append(kDeprecatedTrustedVaultFilename),
           identity_manager,

@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -1329,6 +1330,43 @@ void Internals::setMarker(Document* document,
     document->Markers().AddSpellingMarker(EphemeralRange(range));
   else
     document->Markers().AddGrammarMarker(EphemeralRange(range));
+}
+
+void Internals::removeMarker(Document* document,
+                             const Range* range,
+                             const String& marker_type,
+                             ExceptionState& exception_state) {
+  if (!document) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "No context document is available.");
+    return;
+  }
+
+  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  if (!type) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "The marker type provided ('" + marker_type + "') is invalid.");
+    return;
+  }
+
+  if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "internals.setMarker() currently only "
+                                      "supports spelling and grammar markers; "
+                                      "attempted to add marker of type '" +
+                                          marker_type + "'.");
+    return;
+  }
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  if (type == DocumentMarker::kSpelling) {
+    document->Markers().RemoveMarkersInRange(
+        EphemeralRange(range), DocumentMarker::MarkerTypes::Spelling());
+  } else {
+    document->Markers().RemoveMarkersInRange(
+        EphemeralRange(range), DocumentMarker::MarkerTypes::Grammar());
+  }
 }
 
 unsigned Internals::markerCountForNode(Text* text,
@@ -3339,6 +3377,12 @@ int Internals::selectPopupItemStyleFontHeight(Node* node, int item_index) {
 void Internals::resetTypeAheadSession(HTMLSelectElement* select) {
   DCHECK(select);
   select->ResetTypeAheadSessionForTesting();
+}
+
+void Internals::resetSelectMenuTypeAheadSession(
+    HTMLSelectMenuElement* selectmenu) {
+  DCHECK(selectmenu);
+  selectmenu->ResetTypeAheadSessionForTesting();
 }
 
 void Internals::forceCompositingUpdate(Document* document,

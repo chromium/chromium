@@ -19,12 +19,14 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1278833599417554002">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="1302523850133262269">Počkejte prosím, než Chrome nainstaluje nejnovější aktualizace systému.</translation>
 <translation id="1335640173511558774">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému Google ChromeOS Flex.</translation>
+<translation id="1341711321000856656">Přepnutím můžete zobrazit hesla z jiného profilu Chrome</translation>
 <translation id="1363996462118479832">ChromeOS vaše data nemohl synchronizovat z důvodu chyby při přihlášení.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">V tomto počítači je již nainstalována novější verze prohlížeče Google Chrome. Jestliže software nefunguje, odinstalujte prosím prohlížeč Google Chrome a zkuste to znovu.</translation>
 <translation id="139993653570221430">V nastavení Chromu můžete předvolby kdykoli upravit. Zkoušky probíhají souběžně se současným způsobem zobrazování reklam, takže změny neuvidíte hned.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou.}=1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Anonymní okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymní okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymního okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymních oken se znovu neotevře.}}</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome byl připojen k zařízení HID}=1{Google Chrome je připojen k zařízení HID}few{Google Chrome je připojen k zařízením HID}many{Google Chrome je připojen k zařízením HID}other{Google Chrome je připojen k zařízením HID}}</translation>
+<translation id="1492280395845991349">Aktualizaci Chromu dokončíte opětovným spuštěním</translation>
 <translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
  pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -85,6 +87,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
 <translation id="2534507159460261402">Google Pay (zkopírováno do Chromu)</translation>
+<translation id="2556847002339236023">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře. Údaje o prohlížení byly smazány. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="2559253115192232574">Později může navštívený web požádat Chrome o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy. Chrome může sdílet až 3 zájmy.</translation>
 <translation id="2563121210305478421">Restartovat Chrome?</translation>
 <translation id="2574930892358684005">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Chcete-li své procházení oddělit, Chrome vám může vytvořit vlastní profil.</translation>
@@ -96,6 +99,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2652691236519827073">Otevřít odkaz na nové kar&amp;tě Chrome</translation>
 <translation id="2665296953892887393">Pomozte aplikaci Google Chrome zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
 <translation id="2689103672227170538">Toto rozšíření změnilo stránku, která se zobrazí při spuštění prohlížeče Chrome.</translation>
+<translation id="2712234843277364121">Spustit znovu a aktualizovat – vaše karty se znovu otevřou</translation>
 <translation id="2742320827292110288">Upozornění: Google Chrome nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Chcete-li toto rozšíření v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="2765403129283291972">Chrome pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>
 <translation id="2770231113462710648">Změnit výchozí prohlížeč na:</translation>
@@ -115,6 +119,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2929907241665500097">Prohlížeč Chrome se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací Chromu a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="3019382870990049182">Spustit znovu a aktualizovat &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Rozšíření prohlížeče Google Chrome používala zařízení HID}=1{Rozšíření prohlížeče Google Chrome používají zařízení HID}few{Rozšíření prohlížeče Google Chrome používají # zařízení HID}many{Rozšíření prohlížeče Google Chrome používají # zařízení HID}other{Rozšíření prohlížeče Google Chrome používají # zařízení HID}}</translation>
 <translation id="303514781271618814">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
 <translation id="3038232873781883849">Čekání na instalaci…</translation>
@@ -208,6 +213,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Tento soubor může být nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
+<translation id="4828579605166583682">Google Chrome se pokouší nahradit stávající hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="4842397268809523050">Systém ChromeOS Flex nemůže synchronizovat data, protože ve vaší doméně není k dispozici Synchronizace.</translation>
 <translation id="4873783916118289636">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v Chromu</translation>
 <translation id="4891791193823137474">Nechat aplikaci Google Chrome spuštěnou na pozadí</translation>
@@ -219,6 +225,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4970947549776831107">Chrome tento soubor zablokoval, protože tento typ souboru je nebezpečný</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Rozšíření prohlížeče Google Chrome používalo zařízení HID}=1{Rozšíření prohlížeče Google Chrome používá 1 zařízení HID}few{Rozšíření prohlížeče Google Chrome používá # zařízení HID}many{Rozšíření prohlížeče Google Chrome používá # zařízení HID}other{Rozšíření prohlížeče Google Chrome používá # zařízení HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Váš administrátor nakonfiguroval Chrome tak, aby se po 1 minutě nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}few{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}many{Váš administrátor nakonfiguroval Chrome tak, aby se po # minuty nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}other{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="5098668839038261629">Když zapnete tuto možnost, budete také odhlášeni z Chromu</translation>
 <translation id="5132929315877954718">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Google Chrome.</translation>
@@ -269,6 +276,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6113794647360055231">Chrome je opět o něco lepší</translation>
 <translation id="6145313976051292476">Otevírání souborů PDF v Chromu</translation>
 <translation id="6155960517327665396">Prohlížeč Chrome byl zrychlen pomocí Spořiče paměti</translation>
+<translation id="6157638032135951407">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace smaže jeho data. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Pravidlo příchozího provozu pro aplikaci Google Chrome, které povolí provoz mDNS.</translation>
@@ -282,7 +290,9 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po 1 minutě nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}few{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minutách nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}many{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minuty nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}other{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minutách nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}}</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
+<translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
 <translation id="6493527311031785448">Google Chrome se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome byl automaticky ukončen</translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Ve Správci hesel Google na tomto zařízení</translation>
@@ -319,6 +329,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7155997830309522122">Pokud ano, upravte uložené heslo v prohlížeči Chrome tak, aby odpovídalo novému heslu.</translation>
 <translation id="7161904924553537242">Vítá vás Google Chrome</translation>
 <translation id="7177959540995930968">Další informace o těchto funkcích najdete v nastavení Chromu.</translation>
+<translation id="7193885263065350793">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Google Chrome</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
@@ -412,6 +423,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8989968390305463310">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozici aktualizace Chromu}=1{Je k dispozici aktualizace Chromu}few{Již # dny je k dispozici aktualizace Chromu}many{Již # dne je k dispozici aktualizace Chromu}other{Již # dní je k dispozici aktualizace Chromu}}</translation>
 <translation id="9053892488859122171">Systém ChromeOS Flex</translation>
+<translation id="9054037008353851982">Spustit znovu a aktualizovat – vaše karty se znovu otevřou</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9138603949443464873">Chcete-li změny použít, restartujte Chrome</translation>
 <translation id="9195993889682885387">Chrome dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>

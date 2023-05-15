@@ -56,23 +56,20 @@ class ScopedFfxConfig(AbstractContextManager):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        if self._new_value != self._old_value:
+        if self._new_value == self._old_value:
+            return False
 
-            # Allow removal of config to fail.
-            remove_cmd = run_ffx_command(['config', 'remove', self._name],
-                                         check=False)
-            if remove_cmd.returncode != 0:
-                logging.warning('Error when removing ffx config %s',
-                                self._name)
+        # Allow removal of config to fail.
+        remove_cmd = run_ffx_command(['config', 'remove', self._name],
+                                     check=False)
+        if remove_cmd.returncode != 0:
+            logging.warning('Error when removing ffx config %s', self._name)
 
-            if self._old_value is not None:
-                # Explicitly set the value back only if removing the new value
-                # doesn't already restore the old value.
-                if  self._old_value != \
-                    run_ffx_command(['config', 'get', self._name],
-                                    capture_output=True).stdout.strip():
-                    run_ffx_command(
-                        ['config', 'set', self._name, self._old_value])
+        # Explicitly set the value back only if removing the new value doesn't
+        # already restore the old value.
+        if self._old_value is not None and \
+           self._old_value != get_config(self._name):
+            run_ffx_command(['config', 'set', self._name, self._old_value])
 
         # Do not suppress exceptions.
         return False

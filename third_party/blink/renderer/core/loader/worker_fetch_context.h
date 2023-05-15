@@ -84,7 +84,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type) override;
   void PopulateResourceRequest(ResourceType,
-                               const FetchParameters::ResourceWidth&,
+                               const absl::optional<float> resource_width,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
 

@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -84,6 +85,10 @@ class FakeMetricReportingManagerDelegate
 
   bool IsDeprovisioned() const override { return false; }
 
+  bool IsAppServiceAvailableForProfile(Profile* profile) const override {
+    return false;
+  }
+
   std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
       EventType event_type,
       Destination destination,
@@ -98,7 +103,7 @@ class FakeMetricReportingManagerDelegate
   }
 
  private:
-  FakeNetworkDiagnostics* const fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
 
   std::unique_ptr<MetricReportQueue> metric_report_queue_;
 };
@@ -174,13 +179,13 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 
   std::unique_ptr<MetricReportQueue> metric_report_queue_;
-  HttpsLatencyTestReportQueue* report_queue_;
+  raw_ptr<HttpsLatencyTestReportQueue, ExperimentalAsh> report_queue_;
 };
 
 TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {

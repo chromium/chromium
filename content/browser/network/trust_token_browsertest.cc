@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   fail_to_execute_op_via_iframe("/issue", R"({"type": "token-request"})");
   std::string command = JsReplace(R"(
   (async () => {
-    return await document.hasPrivateToken($1, 'private-state-token');
+    return await document.hasPrivateToken($1);
   })();)",
                                   IssuanceOriginFromHost("a.test"));
 
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   fail_to_execute_op_via_iframe("/bad", R"({"type": "bad-type"})");
   command = JsReplace(R"(
   (async () => {
-    return await document.hasPrivateToken($1, 'private-state-token')
+    return await document.hasPrivateToken($1)
     || document.hasRedemptionRecord($1);
   })();)",
                       IssuanceOriginFromHost("a.test"));
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
   (async () => {
     await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    return await document.hasPrivateToken($1, 'private-state-token');
+    return await document.hasPrivateToken($1);
   })();)",
                                   IssuanceOriginFromHost("a.test"));
 
@@ -814,11 +814,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // context's list of associated issuers.
   for (int i = 0;
        i < network::kTrustTokenPerToplevelMaxNumberOfAssociatedIssuers; ++i) {
-    ASSERT_EQ(
-        "Success",
-        EvalJs(shell(),
-               "document.hasPrivateToken('https://a" + base::NumberToString(i) +
-                   ".test', 'private-state-token').then(()=>'Success');"));
+    ASSERT_EQ("Success", EvalJs(shell(), "document.hasPrivateToken('https://a" +
+                                             base::NumberToString(i) +
+                                             ".test').then(()=>'Success');"));
   }
 
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(
@@ -857,16 +855,11 @@ IN_PROC_BROWSER_TEST_F(
              JsReplace(command,
                        server_.GetURL("a.test", "/cross-site/b.test/issue"))));
 
-  EXPECT_EQ(
-      true,
-      EvalJs(shell(),
-             JsReplace("document.hasPrivateToken($1, 'private-state-token');",
-                       IssuanceOriginFromHost("b.test"))));
-  EXPECT_EQ(
-      false,
-      EvalJs(shell(),
-             JsReplace("document.hasPrivateToken($1, 'private-state-token');",
-                       IssuanceOriginFromHost("a.test"))));
+  EXPECT_EQ(true, EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
+                                            IssuanceOriginFromHost("b.test"))));
+  EXPECT_EQ(false,
+            EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
+                                      IssuanceOriginFromHost("a.test"))));
 
   // Expect two accesses for issues.
   EXPECT_EQ(2, access_count_);
@@ -900,16 +893,11 @@ IN_PROC_BROWSER_TEST_F(
              JsReplace(command,
                        server_.GetURL("a.test", "/cross-site/b.test/issue"))));
 
-  EXPECT_EQ(
-      true,
-      EvalJs(shell(),
-             JsReplace("document.hasPrivateToken($1, 'private-state-token');",
-                       IssuanceOriginFromHost("a.test"))));
-  EXPECT_EQ(
-      false,
-      EvalJs(shell(),
-             JsReplace("document.hasPrivateToken($1, 'private-state-token');",
-                       IssuanceOriginFromHost("b.test"))));
+  EXPECT_EQ(true, EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
+                                            IssuanceOriginFromHost("a.test"))));
+  EXPECT_EQ(false,
+            EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
+                                      IssuanceOriginFromHost("b.test"))));
 
   // Expect one access for issue.
   EXPECT_EQ(1, access_count_);
@@ -940,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(
       false,
       EvalJs(shell(),
-             JsReplace("document.hasPrivateToken($1, 'private-state-token');",
+             JsReplace("document.hasPrivateToken($1);",
                        url::Origin::Create(server_.base_url()).Serialize())));
 
   // Expect one access for issue.
@@ -989,11 +977,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(file_url.SchemeIsFile());
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
-  EXPECT_EQ(
-      "NotAllowedError",
-      EvalJs(
-          shell(),
-          R"(document.hasPrivateToken('https://issuer.example', 'private-state-token')
+  EXPECT_EQ("NotAllowedError",
+            EvalJs(shell(),
+                   R"(document.hasPrivateToken('https://issuer.example')
                               .catch(error => error.name);)"));
 
   EXPECT_EQ(0, access_count_);
@@ -1011,11 +997,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  EXPECT_EQ(
-      "Success",
-      EvalJs(
-          root->child_at(0)->current_frame_host(),
-          R"(document.hasPrivateToken('https://davids.website', 'private-state-token')
+  EXPECT_EQ("Success",
+            EvalJs(root->child_at(0)->current_frame_host(),
+                   R"(document.hasPrivateToken('https://davids.website')
                               .then(()=>'Success');)"));
 
   EXPECT_EQ(0, access_count_);
@@ -1023,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
 // An operation initiated from a secure context should succeed even if the
 // operation's associated request's initiator is opaque (e.g. from a sandboxed
-// iframe).
+// iframe with the right Permissions Policy).
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        OperationFromSecureSubframeWithOpaqueOrigin) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});

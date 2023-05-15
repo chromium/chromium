@@ -13,8 +13,9 @@ namespace media {
 
 class WallClockTimeSourceTest : public testing::Test {
  public:
-  WallClockTimeSourceTest() : tick_clock_(new base::SimpleTestTickClock()) {
-    time_source_.SetTickClockForTesting(tick_clock_.get());
+  WallClockTimeSourceTest()
+      : tick_clock_(new base::SimpleTestTickClock()),
+        time_source_(tick_clock_.get()) {
     AdvanceTimeInSeconds(1);
   }
 
@@ -57,8 +58,8 @@ class WallClockTimeSourceTest : public testing::Test {
   }
 
  protected:
-  WallClockTimeSource time_source_;
   std::unique_ptr<base::SimpleTestTickClock> tick_clock_;
+  WallClockTimeSource time_source_;
 };
 
 TEST_F(WallClockTimeSourceTest, InitialTimeIsZero) {

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PRIVATE_CPP_DATA_COLLECTOR_H_
 #define CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PRIVATE_CPP_DATA_COLLECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
@@ -64,7 +65,7 @@ class DataCollector
       mojo::ScopedMessagePipeHandle receiver) override;
 
   // Pointer to the delegate.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
   // The mojo receiver of service provider.
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_receiver_{this};

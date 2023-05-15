@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 
 #include "base/test/metrics/user_action_tester.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_service.h"
@@ -80,6 +82,9 @@ class ChromeMetricsServiceClientTestWithoutUKMProviders
   // Equivalent to ChromeMetricsServiceClient::Create
   static std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders>
   Create(metrics::MetricsStateManager* metrics_state_manager) {
+    // Needed because RegisterMetricsServiceProviders() checks for this.
+    metrics::SubprocessMetricsProvider::CreateInstance();
+
     std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders> client(
         new ChromeMetricsServiceClientTestWithoutUKMProviders(
             metrics_state_manager));
@@ -116,7 +121,7 @@ class MockSyncService : public syncer::TestSyncService {
     GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/history_enabled ? syncer::UserSelectableTypeSet(
-                                        syncer::UserSelectableType::kHistory)
+                                        {syncer::UserSelectableType::kHistory})
                                   : syncer::UserSelectableTypeSet());
 
     // It doesn't matter what exactly we set here, it's only relevant that the
@@ -350,12 +355,13 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::vector<ukm::SourceId> source_ids_;
-  ChromeMetricsServiceClient* chrome_metrics_service_client_;
+  raw_ptr<ChromeMetricsServiceClient, ExperimentalAsh>
+      chrome_metrics_service_client_;
 
   MockSyncService sync_service_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  TestingProfile* testing_profile_ = nullptr;
-  ash::multidevice_setup::FakeMultiDeviceSetupClient*
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;

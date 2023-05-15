@@ -6,9 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #import "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -25,8 +25,8 @@ namespace {
 NSString* GetPageScript(NSString* script_file_name) {
   DCHECK(script_file_name);
   NSString* path =
-      [base::mac::FrameworkBundle() pathForResource:script_file_name
-                                             ofType:@"js"];
+      [base::apple::FrameworkBundle() pathForResource:script_file_name
+                                               ofType:@"js"];
   DCHECK(path) << "Script file not found: "
                << base::SysNSStringToUTF8(script_file_name) << ".js";
   NSError* error = nil;

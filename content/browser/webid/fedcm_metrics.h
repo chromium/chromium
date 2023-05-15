@@ -56,8 +56,12 @@ enum class FedCmRequestIdTokenStatus {
   kNotSignedInWithIdp,
   kAccountsListEmpty,
   kWellKnownListEmpty,
+  kWellKnownInvalidContentType,
+  kConfigInvalidContentType,
+  kAccountsInvalidContentType,
+  kIdTokenInvalidContentType,
 
-  kMaxValue = kWellKnownListEmpty
+  kMaxValue = kIdTokenInvalidContentType
 };
 
 // This enum describes whether user sign-in states between IDP and browser
@@ -190,6 +194,10 @@ void RecordApprovedClientsExistence(bool has_approved_clients);
 
 // Records the size of the approved clients list if applicable.
 void RecordApprovedClientsSize(int size);
+
+// Records the net::Error received from the accounts list endpoint when the IDP
+// SignIn status is set to SignedOut due to no accounts received.
+void RecordIdpSignOutNetError(int response_code);
 
 }  // namespace content
 

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
@@ -76,7 +77,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   void OnUserCanceledUnsupportedAppsDialog();
 
   // Pointer to the widget (if any) that contains the current dialog.
-  views::Widget* dialog_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
 
   // When a caller creates an unsupported apps dialog, they provide a callback
   // for the result. Since we can only bind the callback once, we have to store

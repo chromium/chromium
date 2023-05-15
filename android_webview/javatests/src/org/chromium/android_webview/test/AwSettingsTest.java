@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -1991,6 +1992,50 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    public void testUserAgentOverrideWithDefaultUserAgentClientHints() throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        AwContents awContents = testContainerView.getAwContents();
+        AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+        final String customUserAgentString =
+                settings.getUserAgentString() + "UserAgentOverrideSuffix";
+        settings.setUserAgentString(customUserAgentString);
+
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                InstrumentationRegistry.getInstrumentation().getContext(),
+                ServerCertificate.CERT_OK);
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        try {
+            String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                    + "?url="
+                    + URLEncoder.encode(
+                            "/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
+            mActivityTestRule.loadUrlSync(
+                    awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            // Make sure the Sec-CH-UA-Mobile, Sec-CH-UA-Platform client hint returns the correct
+            // value. If use the mobile user agent, Sec-CH-UA-Mobile should return true, otherwise
+            // false.
+            if (customUserAgentString.indexOf(" Mobile") != -1) {
+                Assert.assertEquals("?1 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            } else {
+                Assert.assertEquals("?0 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            }
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
     public void testDomStorageEnabledWithTwoViews() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
@@ -2000,12 +2045,10 @@ public class AwSettingsTest {
                         views.getContainer1(), views.getClient1()));
     }
 
-    // Ideally, these three tests below should be combined into one, or tested using
-    // runPerViewSettingsTest. However, it seems the database setting cannot be toggled
-    // once set. Filed b/8186497.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseInitialValue() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2018,6 +2061,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseEnabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2031,6 +2075,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseDisabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -3391,10 +3436,10 @@ public class AwSettingsTest {
         mOverridenFactory = null;
     }
 
-    private static class EmptyDocumentPeristenceTestDependencyFactory
+    private static class EmptyDocumentPersistenceTestDependencyFactory
             extends TestDependencyFactory {
         private boolean mAllow;
-        public EmptyDocumentPeristenceTestDependencyFactory(boolean allow) {
+        public EmptyDocumentPersistenceTestDependencyFactory(boolean allow) {
             mAllow = allow;
         }
 
@@ -3407,7 +3452,7 @@ public class AwSettingsTest {
     }
 
     private void doAllowEmptyDocumentPersistenceTest(boolean allow) throws Throwable {
-        mOverridenFactory = new EmptyDocumentPeristenceTestDependencyFactory(allow);
+        mOverridenFactory = new EmptyDocumentPersistenceTestDependencyFactory(allow);
 
         final TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView mContainerView =

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/time/time.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
@@ -22,12 +21,10 @@ using ::attribution_reporting::mojom::SourceType;
 
 CommonSourceInfo::CommonSourceInfo(SuitableOrigin source_origin,
                                    SuitableOrigin reporting_origin,
-                                   base::Time source_time,
                                    SourceType source_type)
     : source_site_(net::SchemefulSite(source_origin)),
       source_origin_(std::move(source_origin)),
       reporting_origin_(std::move(reporting_origin)),
-      source_time_(source_time),
       source_type_(source_type) {}
 
 CommonSourceInfo::~CommonSourceInfo() = default;

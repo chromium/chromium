@@ -42,8 +42,8 @@ class FederatedIdentityApiPermissionContextTest : public testing::Test {
   Profile* profile() { return &profile_; }
 
  protected:
-  base::raw_ptr<FederatedIdentityApiPermissionContext> context_;
-  base::raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<FederatedIdentityApiPermissionContext> context_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   ContentSetting GetContentSetting(const GURL& rp_url) {
     return host_content_settings_map_->GetContentSetting(

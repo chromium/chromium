@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -42,8 +43,8 @@ public class MainActivityWithURLTest {
     @SmallTest
     @Feature({"Navigation"})
     public void testLaunchActivityWithURL() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         try {
             // Launch chrome
             mActivityTestRule.startMainActivityWithURL(

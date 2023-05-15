@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
+#import <algorithm>
+
 #import "base/check_op.h"
-#import "base/cxx17_backports.h"
 #import "base/ios/block_types.h"
 #import "base/logging.h"
 #import "base/mac/foundation_util.h"
@@ -521,7 +522,7 @@ enum class ScrollViewTracking {
   }
 
   progress += self.progressWhenInterrupted;
-  progress = base::clamp<CGFloat>(progress, 0, 1);
+  progress = std::clamp<CGFloat>(progress, 0, 1);
   self.animator.fractionComplete = progress;
   if (self.layoutTransitionState == LayoutTransitionState::Active) {
     [self.layoutSwitcherProvider.layoutSwitcher

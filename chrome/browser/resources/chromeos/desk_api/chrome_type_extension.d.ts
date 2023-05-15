@@ -44,7 +44,13 @@ declare namespace chrome.wmDesksPrivate {
   // Switches to the target desk.
   export function switchDesk(deskUuid: string, callback: VoidCallback): void;
 
+  // Retrieves desk information by its ID.
+  export function getDeskByID(
+      deskUuid: string, callback: GetDeskByIdCallback): void;
+
   export type VoidCallback = () => void;
 
   export type DeskIdCallback = (deskId: string) => void;
+
+  export type GetDeskByIdCallback = (desk: Desk) => void;
 }

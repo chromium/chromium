@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [300, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00"

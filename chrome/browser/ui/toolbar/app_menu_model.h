@@ -83,6 +83,8 @@ enum AppMenuAction {
   MENU_ACTION_MENU_OPENED = 56,
   // Only used by ExtensionsMenuModel sub menu.
   MENU_ACTION_VISIT_CHROME_WEB_STORE = 57,
+  MENU_ACTION_PASSWORD_MANAGER = 58,
+  MENU_ACTION_TRANSLATE_PAGE = 59,
   LIMIT_MENU_ACTION
 };
 
@@ -137,21 +139,27 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
+class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  explicit PasswordsAndAutofillSubMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate);
+
+  PasswordsAndAutofillSubMenuModel(const PasswordsAndAutofillSubMenuModel&) =
+      delete;
+  PasswordsAndAutofillSubMenuModel& operator=(
+      const PasswordsAndAutofillSubMenuModel&) = delete;
+
+  ~PasswordsAndAutofillSubMenuModel() override;
+};
+
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
  public:
-  FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                          Browser* browser,
-                          AppMenuIconController* app_menu_icon_controller);
+  explicit FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
 
   FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
   FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
 
   ~FindAndEditSubMenuModel() override;
-
- private:
-  void Build(Browser* browser);
-
-  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
 };
 
 // A menu model that builds the contents of the app menu.

@@ -19,7 +19,7 @@ class ActionTap : public Action {
   ~ActionTap() override;
 
   // Override from Action.
-  bool ParseFromJson(const base::Value& value) override;
+  bool ParseFromJson(const base::Value::Dict& value) override;
   bool InitFromEditor() override;
   bool RewriteEvent(const ui::Event& origin,
                     const bool is_mouse_locked,
@@ -31,6 +31,7 @@ class ActionTap : public Action {
       DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
   std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const override;
+  ActionType GetType() override;
 
  private:
   class ActionTapView;
@@ -51,7 +52,7 @@ class ActionTap : public Action {
   //     {}
   //   ]
   // }
-  bool ParseJsonFromKeyboard(const base::Value& value);
+  bool ParseJsonFromKeyboard(const base::Value::Dict& value);
   // Json value format:
   // {
   //   "id": 0,
@@ -67,7 +68,7 @@ class ActionTap : public Action {
   //     }
   //   ]
   // }
-  bool ParseJsonFromMouse(const base::Value& value);
+  bool ParseJsonFromMouse(const base::Value::Dict& value);
   bool RewriteKeyEvent(const ui::KeyEvent* key_event,
                        const gfx::RectF& content_bounds,
                        const gfx::Transform* rotation_transform,

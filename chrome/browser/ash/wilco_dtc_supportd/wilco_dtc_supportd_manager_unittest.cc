@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -89,7 +90,8 @@ class FakeWilcoDtcSupportdManagerDelegate final
  private:
   std::unique_ptr<TestingWilcoDtcSupportdBridgeWrapper>
       testing_wilco_dtc_supportd_bridge_wrapper_;
-  MockMojoWilcoDtcSupportdService* mojo_wilco_dtc_supportd_service_;
+  raw_ptr<MockMojoWilcoDtcSupportdService, ExperimentalAsh>
+      mojo_wilco_dtc_supportd_service_;
 };
 
 // Tests WilcoDtcSupportdManager class instance.
@@ -134,9 +136,10 @@ class WilcoDtcSupportdManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<TestUpstartClient> upstart_client_;
-  FakeChromeUserManager* fake_user_manager_{new FakeChromeUserManager()};
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_{
+      new FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_)};
+      base::WrapUnique(fake_user_manager_.get())};
   session_manager::SessionManager session_manager_;
   StrictMock<MockMojoWilcoDtcSupportdService> mojo_wilco_dtc_supportd_service_;
 };

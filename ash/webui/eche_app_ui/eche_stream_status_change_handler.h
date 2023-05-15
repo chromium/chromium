@@ -7,6 +7,7 @@
 
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -65,8 +66,9 @@ class EcheStreamStatusChangeHandler
   void NotifyStreamStatusChanged(mojom::StreamStatus status);
 
  private:
-  AppsLaunchInfoProvider* apps_launch_info_provider_;
-  EcheConnectionStatusHandler* eche_connection_status_handler_;
+  raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_;
+  raw_ptr<EcheConnectionStatusHandler, ExperimentalAsh>
+      eche_connection_status_handler_;
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};
   mojo::Remote<mojom::StreamActionObserver> observer_remote_;
   base::ObserverList<Observer> observer_list_;

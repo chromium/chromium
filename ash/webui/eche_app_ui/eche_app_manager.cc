@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
@@ -23,8 +24,10 @@
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
+#include "base/debug/stack_trace.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
@@ -88,10 +91,11 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
                                               connection_manager_.get(),
                                               connection_scheduler_.get())),
-      signaler_(
-          std::make_unique<EcheSignaler>(eche_connector_.get(),
-                                         connection_manager_.get(),
-                                         apps_launch_info_provider_.get())),
+      signaler_(std::make_unique<EcheSignaler>(
+          eche_connector_.get(),
+          connection_manager_.get(),
+          apps_launch_info_provider_.get(),
+          eche_connection_status_handler_.get())),
       message_receiver_(
           std::make_unique<EcheMessageReceiverImpl>(connection_manager_.get())),
       eche_presence_manager_(std::make_unique<EchePresenceManager>(
@@ -132,6 +136,9 @@ EcheAppManager::EcheAppManager(
   // assign system_info_provider_ to eche signaler
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
 
+  // Accessibility Provider doesn't require anything special.
+  accessibility_provider_ = std::make_unique<AccessibilityProvider>();
+
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     phone_hub_manager_->SetEcheConnectionStatusHandler(
         eche_connection_status_handler_.get());
@@ -149,6 +156,11 @@ void EcheAppManager::BindSignalingMessageExchangerInterface(
 void EcheAppManager::BindSystemInfoProviderInterface(
     mojo::PendingReceiver<mojom::SystemInfoProvider> receiver) {
   system_info_provider_->Bind(std::move(receiver));
+}
+
+void EcheAppManager::BindAccessibilityProviderInterface(
+    mojo::PendingReceiver<mojom::AccessibilityProvider> receiver) {
+  accessibility_provider_->Bind(std::move(receiver));
 }
 
 void EcheAppManager::BindUidGeneratorInterface(

@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_DESK_ACTION_VIEW_H_
 #define ASH_WM_DESKS_DESK_ACTION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -39,8 +40,8 @@ class DeskActionView : public views::BoxLayoutView {
   void SetCombineDesksButtonVisibility(bool visible);
 
  private:
-  CloseButton* combine_desks_button_;
-  CloseButton* close_all_button_;
+  raw_ptr<CloseButton, ExperimentalAsh> combine_desks_button_;
+  raw_ptr<CloseButton, ExperimentalAsh> close_all_button_;
 };
 
 }  // namespace ash

@@ -30,7 +30,7 @@ export function testSearchAction() {
   const currentOptions = {
     location: SearchLocation.THIS_FOLDER,
     recency: SearchRecency.ANYTIME,
-    type: chrome.fileManagerPrivate.FileCategory.ALL,
+    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
   };
   store.dispatch(updateSearch({
     query: undefined,
@@ -62,7 +62,7 @@ export function testSearchAction() {
   const freshRecencyOptions = {
     location: SearchLocation.THIS_FOLDER,
     recency: SearchRecency.LAST_WEEK,
-    type: chrome.fileManagerPrivate.FileCategory.ALL,
+    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
   };
   store.dispatch(updateSearch({
     query: undefined,

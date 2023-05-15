@@ -5,6 +5,7 @@
 import base64
 import json
 import logging
+import urllib.parse
 from datetime import datetime
 from requests.exceptions import HTTPError
 
@@ -124,6 +125,12 @@ class GerritCL(object):
         return self._data['change_id']
 
     @property
+    def id(self):
+        repo = urllib.parse.quote('chromium/src', safe='')
+        branch = 'main'
+        return f"{repo}~{branch}~{self.change_id}"
+
+    @property
     def owner_email(self):
         return self._data['owner']['email']
 
@@ -165,8 +172,7 @@ class GerritCL(object):
 
     def post_comment(self, message):
         """Posts a comment to the CL."""
-        path = '/a/changes/{change_id}/revisions/current/review'.format(
-            change_id=self.change_id, )
+        path = '/a/changes/{id}/revisions/current/review'.format(id=self.id)
         try:
             return self.api.post(path, {'message': message})
         except HTTPError as e:

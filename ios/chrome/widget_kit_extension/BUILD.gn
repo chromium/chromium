@@ -13,12 +13,16 @@ import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
-config("ios_available_lockscreen_extension") {
-  swiftflags = [ "-DIOS_AVAILABLE_LOCKSCREEN_EXTENSION" ]
+config("ios_available_lockscreen_widget") {
+  swiftflags = [ "-DIOS_AVAILABLE_LOCKSCREEN_WIDGET" ]
 }
 
-config("ios_enable_lockscreen_extension") {
-  swiftflags = [ "-DIOS_ENABLE_LOCKSCREEN_EXTENSION" ]
+config("ios_enable_lockscreen_widget") {
+  swiftflags = [ "-DIOS_ENABLE_LOCKSCREEN_WIDGET" ]
+}
+
+config("ios_enable_shortcuts_widget") {
+  swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
 }
 
 tweak_info_plist("tweak_info_plist") {
@@ -83,11 +87,16 @@ swift_source_set("widget_kit_extension_swift") {
   # Swift does not have the equivalent of __IPHONE_16_0, so use a
   # custom define instead.
   if (xcode_version_int >= 1400) {
-    configs += [ ":ios_available_lockscreen_extension" ]
+    configs += [ ":ios_available_lockscreen_widget" ]
   }
 
-  if (ios_enable_lockscreen_extension) {
-    configs += [ ":ios_enable_lockscreen_extension" ]
+  if (ios_enable_lockscreen_widget) {
+    configs += [ ":ios_enable_lockscreen_widget" ]
+  }
+
+  if (ios_enable_shortcuts_widget) {
+    configs += [ ":ios_enable_shortcuts_widget" ]
+    sources += [ "shortcuts_widget.swift" ]
   }
 
   frameworks = [

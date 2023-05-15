@@ -13,6 +13,7 @@
 #include "ash/wm/client_controlled_state.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_accelerators.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/hit_test.h"
@@ -62,7 +63,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ClientControlledShellSurface(Surface* surface,
                                bool can_minimize,
                                int container,
-                               bool default_scale_cancellation);
+                               bool default_scale_cancellation,
+                               bool supports_floated_state);
 
   ClientControlledShellSurface(const ClientControlledShellSurface&) = delete;
   ClientControlledShellSurface& operator=(const ClientControlledShellSurface&) =
@@ -317,7 +319,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   Orientation orientation_ = Orientation::LANDSCAPE;
   Orientation expected_orientation_ = Orientation::LANDSCAPE;
 
-  ash::ClientControlledState* client_controlled_state_ = nullptr;
+  raw_ptr<ash::ClientControlledState, ExperimentalAsh>
+      client_controlled_state_ = nullptr;
 
   chromeos::WindowStateType pending_window_state_ =
       chromeos::WindowStateType::kNormal;
@@ -368,6 +371,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   ash::ArcResizeLockType pending_resize_lock_type_ =
       ash::ArcResizeLockType::NONE;
+
+  // True if the window supports the floated state.
+  const bool supports_floated_state_;
 };
 
 }  // namespace exo

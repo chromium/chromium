@@ -603,6 +603,9 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
           frame_->GetDocument(),
           WebFeature::kDialogCloseWatcherCancelSkippedAndDefaultPrevented);
     }
+    if (!cancel_event->defaultPrevented()) {
+      dialog->close();
+    }
   }
 
   auto* target_node = event->GetEventPath()[0].Target()->ToNode();

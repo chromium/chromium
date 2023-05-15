@@ -24,10 +24,7 @@
     font: var(--cros-body-2-font);
     font-weight: 500;
     margin: 0;
-    overflow: hidden;
     padding: calc(var(--personalization-app-grid-item-spacing) / 2);
-    text-overflow: ellipsis;
-    white-space: nowrap;
     width: 100%;
   }
 
@@ -59,7 +56,7 @@
           on-keydown="onGridRowKeyDown_">
         <template is="dom-if"
             if="[[isGridRowTitleVisible_(row, photosBySection_)]]">
-          <p class="photo-row-info">
+          <p class="photo-row-info ellipsis">
             <span class="date">[[getGridRowDate_(row, photosBySection_)]]</span>
             <span class="location">
               [[getGridRowLocations_(row, photosBySection_)]]

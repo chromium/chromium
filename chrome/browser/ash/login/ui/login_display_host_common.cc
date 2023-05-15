@@ -21,6 +21,8 @@
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -58,7 +60,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -78,8 +80,9 @@ constexpr int64_t kPolicyServiceInitializationDelayMilliseconds = 100;
 
 void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
   for (auto& callback : callbacks) {
-    if (callback.is_null())
+    if (callback.is_null()) {
       continue;
+    }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
@@ -88,11 +91,13 @@ void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
 
 void PushFrontImIfNotExists(const std::string& input_method_id,
                             std::vector<std::string>* input_method_ids) {
-  if (input_method_id.empty())
+  if (input_method_id.empty()) {
     return;
+  }
 
-  if (!base::Contains(*input_method_ids, input_method_id))
+  if (!base::Contains(*input_method_ids, input_method_id)) {
     input_method_ids->insert(input_method_ids->begin(), input_method_id);
+  }
 }
 
 void SetGaiaInputMethods(const AccountId& account_id) {
@@ -199,9 +204,9 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
-  AuthMetricsRecorder::Get()->ResetLoginData();
-  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
-      AuthMetricsRecorder::AuthenticationSurface::kLogin);
+  AuthEventsRecorder::Get()->ResetLoginData();
+  AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLogin);
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() {
@@ -289,8 +294,9 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
       CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
           &LoginDisplayHostCommon::StartKiosk, weak_factory_.GetWeakPtr(),
           kiosk_app_id, is_auto_launch));
-  if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
+  if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {
     return;
+  }
 
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
     // If the `CrosSettings` are permanently untrusted, refuse to launch a
@@ -367,16 +373,18 @@ void LoginDisplayHostCommon::OnGaiaScreenReady() {
 }
 
 void LoginDisplayHostCommon::SetDisplayEmail(const std::string& email) {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->SetDisplayEmail(email);
+  }
 }
 
 void LoginDisplayHostCommon::SetDisplayAndGivenName(
     const std::string& display_name,
     const std::string& given_name) {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->SetDisplayAndGivenName(display_name,
                                                         given_name);
+  }
 }
 
 void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
@@ -397,26 +405,30 @@ void LoginDisplayHostCommon::LoadSigninWallpaper() {
 bool LoginDisplayHostCommon::IsUserAllowlisted(
     const AccountId& account_id,
     const absl::optional<user_manager::UserType>& user_type) {
-  if (!GetExistingUserController())
+  if (!GetExistingUserController()) {
     return true;
+  }
   return GetExistingUserController()->IsUserAllowlisted(account_id, user_type);
 }
 
 void LoginDisplayHostCommon::CancelPasswordChangedFlow() {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->CancelPasswordChangedFlow();
+  }
 
   OnCancelPasswordChangedFlow();
 }
 
 void LoginDisplayHostCommon::MigrateUserData(const std::string& old_password) {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->MigrateUserData(old_password);
+  }
 }
 
 void LoginDisplayHostCommon::ResyncUserData() {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->ResyncUserData();
+  }
 }
 
 bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
@@ -461,8 +473,9 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   }
 
   if (action == LoginAcceleratorAction::kCancelScreenAction) {
-    if (!GetOobeUI())
+    if (!GetOobeUI()) {
       return false;
+    }
     GetOobeUI()->GetCoreOobeView()->ForwardCancel();
     return true;
   }
@@ -473,16 +486,18 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
 void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {
   // If user stopped onboarding flow on TermsOfServiceScreen make sure that
   // next screen will be FamilyLinkNoticeView::kScreenId.
-  if (screen_id == TermsOfServiceScreenView::kScreenId)
+  if (screen_id == TermsOfServiceScreenView::kScreenId) {
     screen_id = FamilyLinkNoticeView::kScreenId;
+  }
   wizard_context_->screen_after_managed_tos = screen_id;
 }
 
 void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
     bool is_reset_allowed,
     absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
-  if (!is_reset_allowed)
+  if (!is_reset_allowed) {
     return;
+  }
   if (tpm_firmware_update_mode.has_value()) {
     // Force the TPM firmware update option to be enabled.
     g_browser_process->local_state()->SetInteger(
@@ -568,9 +583,10 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
 
   if (error == SigninError::kKnownUserFailedNetworkNotConnected ||
       error == SigninError::kKnownUserFailedNetworkConnected) {
-    if (!IsOobeUIDialogVisible())
+    if (!IsOobeUIDialogVisible()) {
       // Handled by Views UI.
       return;
+    }
     OfflineLoginScreen* offline_login_screen =
         GetWizardController()->GetScreen<OfflineLoginScreen>();
     if (GetWizardController()->current_screen() == offline_login_screen) {
@@ -651,8 +667,9 @@ void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {
 
 void LoginDisplayHostCommon::ShutdownDisplayHost() {
   LOG(WARNING) << "ShutdownDisplayHost";
-  if (shutting_down_)
+  if (shutting_down_) {
     return;
+  }
   shutting_down_ = true;
 
   Cleanup();
@@ -695,7 +712,7 @@ void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
 
 base::WeakPtr<quick_start::TargetDeviceBootstrapController>
 LoginDisplayHostCommon::GetQuickStartBootstrapController() {
-  DCHECK(features::IsOobeQuickStartEnabled());
+  CHECK(wizard_context_->quick_start_enabled);
   if (!bootstrap_controller_) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     DCHECK(profile);
@@ -705,16 +722,21 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             profile);
     DCHECK(service);
 
+    bool is_resume_after_update = g_browser_process->local_state()->GetBoolean(
+        quick_start::prefs::kShouldResumeQuickStartAfterReboot);
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
-            service->GetNearbyConnectionsManager());
+            quick_start::TargetDeviceConnectionBrokerFactory::Create(
+                service->GetNearbyConnectionsManager(),
+                service->GetQuickStartDecoder(), is_resume_after_update));
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }
 
 void LoginDisplayHostCommon::NotifyWizardCreated() {
-  if (on_wizard_controller_created_for_tests_)
+  if (on_wizard_controller_created_for_tests_) {
     on_wizard_controller_created_for_tests_.Run();
+  }
 }
 
 void LoginDisplayHostCommon::Cleanup() {

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -118,10 +119,10 @@ class ChildStatusCollector : public StatusCollector,
   void OnAppActivityReportSubmitted();
 
   // Mainly used to store activity periods for reporting. Not owned.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Profile of the user that the status is collected for.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // The last time an active state check was performed.
   base::Time last_active_check_;

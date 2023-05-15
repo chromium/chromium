@@ -23,19 +23,15 @@ SandboxedVfsDelegate::~SandboxedVfsDelegate() = default;
 
 base::File SandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
                                           int sqlite_requested_flags) {
-  base::FileErrorOr<base::File> result = filesystem_->OpenFile(
-      file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                     base::File::FLAG_WRITE);
-  if (!result.has_value())
-    return base::File();
-  return std::move(result.value());
+  return filesystem_
+      ->OpenFile(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                base::File::FLAG_READ | base::File::FLAG_WRITE)
+      .value_or(base::File());
 }
 
 int SandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
                                      bool sync_dir) {
-  if (!filesystem_->DeleteFile(file_path))
-    return SQLITE_IOERR_DELETE;
-  return SQLITE_OK;
+  return filesystem_->DeleteFile(file_path) ? SQLITE_OK : SQLITE_IOERR_DELETE;
 }
 
 absl::optional<sql::SandboxedVfs::PathAccessInfo>

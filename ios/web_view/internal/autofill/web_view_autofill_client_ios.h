@@ -103,16 +103,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool TryToShowFastCheckout(
-      const FormData& form,
-      const FormFieldData& field,
-      base::WeakPtr<AutofillManager> autofill_manager) override;
-  void HideFastCheckout(bool allow_further_runs) override;
-  bool IsFastCheckoutSupported(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillManager& autofill_manager) override;
-  bool IsShowingFastCheckoutUI() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
@@ -141,7 +131,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
-  void ExecuteCommand(int id) override;
+  void ExecuteCommand(Suggestion::FrontendId id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;

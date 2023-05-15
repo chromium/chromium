@@ -99,12 +99,11 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlockList) {
   EXPECT_EQ(blocked_page_title, contents->GetTitle());
 
   // Verify that the expected error page is being displayed.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "var textContent = document.body.textContent;"
-      "var hasError = textContent.indexOf('ERR_BLOCKED_BY_ADMINISTRATOR') >= 0;"
-      "domAutomationController.send(hasError);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                contents,
+                "var textContent = document.body.textContent;"
+                "var hasError = "
+                "textContent.indexOf('ERR_BLOCKED_BY_ADMINISTRATOR') >= 0;"
+                "hasError;"));
 }

@@ -1,4 +1,4 @@
-<style>
+<style include="cros-color-overrides">
   :host {
     --cr-toolbar-search-field-background:
         var(--cros-toolbar-search-bg-color);
@@ -11,20 +11,6 @@
     flex-basis: var(--cr-toolbar-field-width);
     transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
     width: var(--cr-toolbar-field-width);
-  }
-
-  cr-toolbar-search-field {
-    --cr-toolbar-search-field-border-radius: 20px;
-    --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
-    --cr-toolbar-search-field-input-icon-color:
-        var(--cros-icon-color-primary);
-    --cr-toolbar-search-field-input-text-color:
-        var(--cros-text-color-primary);
-    --cr-toolbar-search-field-input-caret-color: currentColor;
-    --cr-toolbar-search-field-prompt-color:
-        var(--cros-text-color-secondary);
-    --cr-toolbar-icon-button-focus-outline-color:
-        var(--cros-focus-ring-color);
   }
 
   :host(:focus-within) cr-toolbar-search-field {
@@ -49,6 +35,22 @@
     padding-bottom: var(--separator-height);
   }
 
+  :host-context(body.jelly-enabled) {
+    --cros-toolbar-search-bg-color: var(--cros-sys-input_field_on_shaded);
+  }
+
+  :host-context(body:not(.jelly-enabled)) cr-toolbar-search-field {
+    --cr-toolbar-search-field-input-icon-color:
+        var(--cros-icon-color-primary);
+    --cr-toolbar-search-field-input-text-color:
+        var(--cros-text-color-primary);
+    --cr-toolbar-search-field-input-caret-color: var(--cros-text-color-primary);
+    --cr-toolbar-search-field-prompt-color:
+        var(--cros-text-color-secondary);
+    --cr-toolbar-icon-button-focus-outline-color:
+        var(--cros-focus-ring-color);
+  }
+
   iron-dropdown {
     margin-top: 72px;
   }
@@ -70,11 +72,22 @@
     user-select: none;
   }
 
+  cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px;
+    --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
+  }
+
   #noSearchResultsContainer {
+    align-items: center;
     color: var(--cros-text-color-secondary);
-    height: 32px;
-    line-height: 32px;
+    display: flex;
+    height: 24px;
     margin-inline-start: 24px;
+    margin-top: 6px;
+  }
+
+  #noSearchResultsContainer[hidden] {
+    display: none;
   }
 
   /* The separator covers the top box shadow of the dropdown so that
@@ -133,4 +146,3 @@
     </div>
   </div>
 </iron-dropdown>
-

@@ -223,7 +223,7 @@
       <button class="mdc-button mdc-button--outline" id='next'>
         <span class="mdc-button__label">Next frame <i class="material-icons-outlined">skip_next</i></span>
       </button>
-      <button class="mdc-button mdc-button--raised" style="visibility:hidden" id='live'>
+      <button class="mdc-button mdc-button--raised" id='live'>
         <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Live <i class="material-icons-outlined">fast_forward</i></span>
       </button>
@@ -269,7 +269,7 @@
   <div class='section'>
     <!--We need to fix viewer size to avoid scroll position change when
       multiple displays are present. crbug.com/1358526-->
-    <div style="height:4000px;  border: 1px dotted gray;">
+    <div style="height:4000px;  border: 1px dotted gray; background-color: #f0f0f0">
         <canvas id='canvas' style="top :0px"></canvas>
     </div>
   </div>
@@ -416,7 +416,6 @@
     document.querySelector('#pause').addEventListener('click', () => {
       player.pause();
       pause.setAttribute('style', 'background:#000000;color:white');
-      live.setAttribute('style', 'visibility:visible');
     });
 
     document.querySelector('#play').addEventListener('click', () => {
@@ -434,9 +433,8 @@
 
     document.querySelector('#live').addEventListener('click', () => {
       player.freezeFrame(DrawFrame.frameBuffer.numFrames - 1);
-      player.play();
+      player.live();
       has_disconnected = false;
-      live.setAttribute('style', 'visibility:hidden');
       pause.removeAttribute('style');
     });
 
@@ -444,7 +442,6 @@
     scrubberFrame.addEventListener('input', () => {
       player.freezeFrame(scrubberFrame.value);
       pause.setAttribute('style', 'background:#000000;color:white');
-      live.setAttribute('style', 'visibility:visible');
     });
 
     const scrubberDraw = document.querySelector('#scrubberdraw');

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="100506692671054486">нема претходен коментар</translation>
 <translation id="1009046985747440431">Притиснете на стрелката за горе или долу за навигација, на Enter за да активирате</translation>
 <translation id="1011903154582639569">Најдете копче, а потоа подигнете го прстот за да пишувате</translation>
 <translation id="1012173283529841972">Ставка во список</translation>
@@ -15,7 +16,7 @@
 <translation id="1065552602950927991">Неважечко внесување</translation>
 <translation id="1066085461259044485">Шумскозелена</translation>
 <translation id="1087148255821848488">Тековниот стил на екранот е подредени преплетени рамки (interleave)</translation>
-<translation id="1087788677726983142">Сокриј ги филтрите за пренос на настани</translation>
+<translation id="1087788677726983142">Скриј ги филтрите за пренос на настани</translation>
 <translation id="1088402100970133699">Нема претходна ставка на списокот</translation>
 <translation id="1120743664840974483">{„a“: „алфа“, „b“: „браво“, „c“: „чарли“, „d“: „делта“, „e“: „ехо“, „f“: „фокстрот“, „g“: „голф“, „h“: „хотел“, „i“: „индија“, „j“: „џулиет“,„k“: „кило“, „l“: „лима“, „m“: „мајк“, „n“: „ноември“, „o“: „оскар“,„p“: „папа“, „q“: „квебек“, „r“: „ромео“, „s“: „сиера“, „t“: „танго“, „u“: „униформа“, „v“: „виктор“, „w“: „виски“,„x“: „ексреј“, „y“: „јенки“, „z“: „зулу“}</translation>
 <translation id="1120938014254001895">Повлечете нагоре со два прста</translation>
@@ -460,6 +461,7 @@
 <translation id="3936394396199829062">Боја на румена лаванда</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3962990492275676168">Започни со читање од тековната локација</translation>
+<translation id="397094149579293440">нема избран текст</translation>
 <translation id="3970951409746498040">Песочнокафеава</translation>
 <translation id="3989324057180830702">коп. за вкл./искл.</translation>
 <translation id="3991317907213946254">Боја на мокасини</translation>
@@ -566,6 +568,7 @@
 <translation id="4786285211967466855">Нема претходен наслов на ниво 1</translation>
 <translation id="4787577491510559358">Соопшти го форматирањето за тековната ставка</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">нема нагласено поле за текст</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
 <translation id="481165870889056555">Најави го насловот на тековната страница</translation>
 <translation id="4815668758102003883">Бледотиркизна</translation>
@@ -588,13 +591,16 @@
 <translation id="489907760999452556">Внатрешна врска</translation>
 <translation id="4909019435900810068">Преместете наназад за еден збор</translation>
 <translation id="4911349081560453449">Нема претходно поле за избор</translation>
+<translation id="4919186071145887492">Не може да се <ph name="COMMAND" />, обидете се повторно</translation>
 <translation id="492295894462528572">Предговор</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4953585991029886728">Измени текст</translation>
+<translation id="4964701498510730546">полето за текст е празно</translation>
 <translation id="4973717656530883744">Мин. <ph name="X" /></translation>
 <translation id="4974612477719259470">Нема претходно копче</translation>
 <translation id="4979404613699303341">Претходно копче</translation>
+<translation id="4981239367072766915">непрепознаено внесување</translation>
 <translation id="4982917827052020884">Да започнеме со неколку копчиња што ќе ги користите редовно. Копчето Control може да се користи за запирање тековен говор. Ќе го најдете во долниот лев агол од тастатурата. За да продолжите, притиснете го копчето Control.</translation>
 <translation id="4983588134362688868">Скокни до врвот на страницата</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, прозорец</translation>
@@ -602,10 +608,11 @@
 <translation id="4994420463726586413">Соопшти го тековниот статус на батеријата</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, избрано радиокопче</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, тркалезно копче за ставка на менито, избрано</translation>
+<translation id="5014131807708055994">Не може да се <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Овозможи евидентирање говор</translation>
 <translation id="5041394372352067729">Премести го брајовиот екран на врвот од страницата</translation>
 <translation id="5042770794184672516">Зголеми јачина на говор</translation>
-<translation id="5042992464904238023">Веб-содржини</translation>
+<translation id="5042992464904238023">Интернет-содржини</translation>
 <translation id="5045870649377683106">Сега, најдете го левото копче Shift, коешто е веднаш над копчето Control. За да продолжите, притиснете го левото копче Shift.</translation>
 <translation id="5050015258024679800">Заглавие на претходно ниво 4</translation>
 <translation id="5054047268577924192">Претходна ставка од листата</translation>

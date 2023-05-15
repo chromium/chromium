@@ -145,7 +145,8 @@ class CORE_EXPORT MatchResult {
   void FinishAddingUARules();
   void FinishAddingUserRules();
   void FinishAddingPresentationalHints();
-  void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
+  void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
+  void FinishAddingAuthorRulesForTreeScope();
 
   void AddCustomHighlightName(const AtomicString& custom_highlight_name) {
     custom_highlight_names_.insert(custom_highlight_name);
@@ -163,10 +164,10 @@ class CORE_EXPORT MatchResult {
     return depends_on_size_container_queries_;
   }
   void SetDependsOnStyleContainerQueries() {
-    depends_on_size_container_queries_ = true;
+    depends_on_style_container_queries_ = true;
   }
   bool DependsOnStyleContainerQueries() const {
-    return depends_on_size_container_queries_;
+    return depends_on_style_container_queries_;
   }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
@@ -235,6 +236,13 @@ class CORE_EXPORT MatchResult {
     return tree_scopes_;
   }
 
+  const TreeScope* CurrentTreeScope() const {
+    if (tree_scopes_.empty()) {
+      return nullptr;
+    }
+    return tree_scopes_.back();
+  }
+
   const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {
     SECURITY_DCHECK(tree_order < tree_scopes_.size());
     return *tree_scopes_[tree_order];
@@ -246,6 +254,7 @@ class CORE_EXPORT MatchResult {
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
+  bool depends_on_style_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};

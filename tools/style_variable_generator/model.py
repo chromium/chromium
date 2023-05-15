@@ -4,9 +4,16 @@
 
 import re
 import collections
-from style_variable_generator.color import Color
+from style_variable_generator.color import ColorRGB, ParseColor, ColorBlend, ColorRGBVar, ColorVar
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
+
+
+def full_token_name(name, context):
+    namespace = context['token_namespace']
+    if namespace:
+        return f'{namespace}.{name}'
+    return name
 
 
 class Modes:
@@ -136,6 +143,10 @@ class OpacityModel(ModeKeyedModel):
         super().__init__()
         self.variable_type = VariableType.OPACITY
 
+    def Add(self, name, value_obj, context):
+        name = full_token_name(name, context)
+        return super().Add(name, value_obj, context)
+
     # Returns a float from 0-1 representing the concrete value of |opacity|.
     def ResolveOpacity(self, opacity, mode):
         if opacity.a != -1:
@@ -163,14 +174,13 @@ class ColorModel(ModeKeyedModel):
         # created for each mode, suffixed by mode name.
         # (e.g my_color_light, my_color_debug)
         generate_per_mode = False
-
         # If a color has generate_inverted set, a |color_name|_inverted will be
         # generated which uses the dark color for light mode and vice versa.
         generate_inverted = False
         if isinstance(value_obj, dict):
             generate_per_mode = value_obj.pop('generate_per_mode', None)
             generate_inverted = value_obj.pop('generate_inverted', None)
-        elif self._CreateValue(value_obj).blended_colors:
+        elif isinstance(self._CreateValue(value_obj), ColorBlend):
             # A blended color could evaluate to different colors in different
             # modes, so add it to all the modes.
             value_obj = {mode: value_obj for mode in Modes.ALL}
@@ -211,20 +221,20 @@ class ColorModel(ModeKeyedModel):
 
     # Returns a Color that is the final RGBA value for |color| in |mode|.
     def _ResolveColorToRGBA(self, color, mode):
-        if color.var:
+        if isinstance(color, ColorVar):
             return self.ResolveToRGBA(color.var, mode)
 
-        if len(color.blended_colors) == 2:
+        if isinstance(color, ColorBlend) and len(color.blended_colors) == 2:
             return self._BlendColors(color.blended_colors[0],
                                      color.blended_colors[1], mode)
 
-        result = Color()
+        result = ColorRGB()
         assert color.opacity
         result.opacity = self.opacity_model.ResolveOpacity(color.opacity, mode)
 
         rgb = color
-        if color.rgb_var:
-            rgb = self.ResolveToRGBA(color.RGBVarToVar(), mode)
+        if isinstance(color, ColorRGBVar):
+            rgb = self.ResolveToRGBA(color.ToVar(), mode)
 
         (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
         return result
@@ -239,7 +249,7 @@ class ColorModel(ModeKeyedModel):
                 should_preblend = context.get('CSS',
                                               {}).get('preblend',
                                                       default_preblend)
-                if color.blended_colors and should_preblend:
+                if isinstance(color, ColorBlend) and should_preblend:
                     assert len(color.blended_colors) == 2
                     if name not in temp_model:
                         temp_model[name] = {}
@@ -270,13 +280,10 @@ class ColorModel(ModeKeyedModel):
         b_out = round(
             (b_a * alpha_a + b_b * alpha_b * (1 - alpha_a)) / alpha_out)
 
-        result = Color()
-        (result.r, result.g, result.b) = (r_out, g_out, b_out)
-        result.opacity = Opacity(alpha_out)
-        return result
+        return ColorRGB((r_out, g_out, b_out), Opacity(alpha_out))
 
     def _CreateValue(self, value):
-        return Color(value)
+        return ParseColor(value) or ColorRGB()
 
 
 class SimpleModel(collections.OrderedDict, Submodel):
@@ -291,6 +298,30 @@ class SimpleModel(collections.OrderedDict, Submodel):
         return [StyleVariable(self.variable_type, name, value_obj, context)]
 
 
+# A simple model where all variables are prefixed with the current namespace.
+class NamespacedModel(SimpleModel):
+    def Add(self, name, value_obj, context):
+        name = full_token_name(name, context)
+        return super().Add(name, value_obj, context)
+
+
+# A color model where all variables are prefixed with the current namespace.
+class NamespacedColorModel(ColorModel):
+    def Add(self, name, value_obj, context):
+        name = full_token_name(name, context)
+        return super().Add(name, value_obj, context)
+
+
+# A color model specifically for storing mappings of arbitrary css vars to some
+# known StyleVariable.
+class LegacyMappingsModel(ColorModel):
+    def Add(self, name, value_obj, context):
+        if isinstance(value_obj, dict):
+            raise ValueError(
+                'Legacy mappings can only be singular references.')
+        return super().Add(name, value_obj, context)
+
+
 class Model(object):
     def __init__(self):
         # A map of all variables to their |StyleVariable| object.
@@ -302,13 +333,13 @@ class Model(object):
         self.opacities = OpacityModel()
         self.submodels[VariableType.OPACITY] = self.opacities
 
-        self.colors = ColorModel(self.opacities)
+        self.colors = NamespacedColorModel(self.opacities)
         self.submodels[VariableType.COLOR] = self.colors
 
-        self.untyped_css = SimpleModel(VariableType.UNTYPED_CSS)
+        self.untyped_css = NamespacedModel(VariableType.UNTYPED_CSS)
         self.submodels[VariableType.UNTYPED_CSS] = self.untyped_css
 
-        self.legacy_mappings = SimpleModel(VariableType.LEGACY_MAPPING)
+        self.legacy_mappings = LegacyMappingsModel(self.opacities)
         self.submodels[VariableType.LEGACY_MAPPING] = self.legacy_mappings
 
         def CheckTypeFace(name, value_obj, context):
@@ -317,26 +348,24 @@ class Model(object):
             assert value_obj['font_weight']
             assert value_obj['line_height']
 
-        self.typefaces = SimpleModel(VariableType.TYPEFACE, CheckTypeFace)
+        self.typefaces = NamespacedModel(VariableType.TYPEFACE, CheckTypeFace)
         self.submodels[VariableType.TYPEFACE] = self.typefaces
 
         def CheckFontFamily(name, value_obj, context):
             assert name.startswith('font_family_')
 
-        self.font_families = SimpleModel(VariableType.FONT_FAMILY,
-                                         CheckFontFamily)
+        self.font_families = NamespacedModel(VariableType.FONT_FAMILY,
+                                             CheckFontFamily)
         self.submodels[VariableType.FONT_FAMILY] = self.font_families
 
     def Add(self, variable_type, name, value_obj, context):
         '''Adds a new variable to the submodel for |variable_type|.
         '''
         try:
-            full_name = self.FullTokenName(name, context)
-            added = self.submodels[variable_type].Add(full_name, value_obj,
-                                                      context)
+            added = self.submodels[variable_type].Add(name, value_obj, context)
         except ValueError as err:
             raise ValueError(
-                f'Error parsing {variable_type} "{full_name}": {value_obj}'
+                f'Error parsing {variable_type} "{name}": {value_obj}'
             ) from err
 
         for var in added:
@@ -344,11 +373,6 @@ class Model(object):
                 raise ValueError('Variable name "%s" is reused' % name)
             self.variable_map[var.name] = var
 
-    def FullTokenName(self, name, context):
-        namespace = context['token_namespace']
-        if namespace:
-            return f'{namespace}.{name}'
-        return name
 
     def PostProcess(self, default_preblend=True):
         '''Called after all variables have been added to perform operations that
@@ -382,13 +406,14 @@ class Model(object):
                                  (name, referrer))
 
         def CheckColor(color, name):
-            if color.var:
+            if isinstance(color, ColorVar):
                 CheckColorReference(color.var, name)
-            if color.rgb_var:
-                CheckColorReference(color.RGBVarToVar(), name)
-            if color.opacity and color.opacity.var:
+            if isinstance(color, ColorRGBVar):
+                CheckColorReference(color.ToVar(), name)
+            if isinstance(color,
+                          (ColorRGB, ColorRGBVar)) and color.opacity.var:
                 CheckOpacityReference(color.opacity.var, name)
-            if color.blended_colors:
+            if isinstance(color, ColorBlend):
                 assert len(color.blended_colors) == 2
                 CheckColor(color.blended_colors[0], name)
                 CheckColor(color.blended_colors[1], name)

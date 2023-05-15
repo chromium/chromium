@@ -135,12 +135,11 @@ void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
-                                   bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
   installer->InstallAsync(web_contents, shortcut_info, primary_icon,
-                          is_primary_icon_maskable, std::move(finish_callback));
+                          std::move(finish_callback));
 }
 
 // static
@@ -150,14 +149,13 @@ void WebApkInstaller::InstallWithProtoAsync(
     const std::u16string& short_name,
     webapps::ShortcutInfo::Source source,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     GURL& manifest_url,
     FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallWithProtoAsync(
-      std::move(serialized_webapk), short_name, source, primary_icon,
-      is_primary_icon_maskable, manifest_url, std::move(finish_callback));
+  installer->InstallWithProtoAsync(std::move(serialized_webapk), short_name,
+                                   source, primary_icon, manifest_url,
+                                   std::move(finish_callback));
 }
 
 // static
@@ -175,10 +173,9 @@ void WebApkInstaller::InstallAsyncForTesting(
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     FinishCallback callback) {
   installer->InstallAsync(web_contents, shortcut_info, primary_icon,
-                          is_primary_icon_maskable, std::move(callback));
+                          std::move(callback));
 }
 
 // static
@@ -188,12 +185,11 @@ void WebApkInstaller::InstallWithProtoAsyncForTesting(
     const std::u16string& short_name,
     webapps::ShortcutInfo::Source source,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     GURL& manifest_url,
     FinishCallback callback) {
-  installer->InstallWithProtoAsync(
-      std::move(serialized_webapk), short_name, source, primary_icon,
-      is_primary_icon_maskable, manifest_url, std::move(callback));
+  installer->InstallWithProtoAsync(std::move(serialized_webapk), short_name,
+                                   source, primary_icon, manifest_url,
+                                   std::move(callback));
 }
 
 // static
@@ -218,7 +214,6 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
     const std::string& primary_icon_data,
-    bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
@@ -230,12 +225,12 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     base::OnceCallback<void(bool)> callback) {
   GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &webapps::StoreUpdateRequestToFileInBackground, update_request_path,
-          shortcut_info, app_key, primary_icon_data, is_primary_icon_maskable,
-          splash_icon_data, package_name, version,
-          std::move(icon_url_to_murmur2_hash), is_manifest_stale,
-          is_app_identity_update_supported, std::move(update_reasons)),
+      base::BindOnce(&webapps::StoreUpdateRequestToFileInBackground,
+                     update_request_path, shortcut_info, app_key,
+                     primary_icon_data, splash_icon_data, package_name, version,
+                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+                     is_app_identity_update_supported,
+                     std::move(update_reasons)),
       std::move(callback));
 }
 
@@ -313,7 +308,6 @@ void WebApkInstaller::CreateJavaRef() {
 void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
-                                   bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
   DCHECK(!install_from_webapk_service_);
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -322,7 +316,6 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   install_shortcut_info_ =
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
   install_primary_icon_ = primary_icon;
-  is_primary_icon_maskable_ = is_primary_icon_maskable;
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
   source_ = install_shortcut_info_->source;
@@ -342,7 +335,6 @@ void WebApkInstaller::InstallWithProtoAsync(
     const std::u16string& short_name,
     webapps::ShortcutInfo::Source source,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     GURL& manifest_url,
     FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -351,7 +343,6 @@ void WebApkInstaller::InstallWithProtoAsync(
   short_name_ = short_name;
   manifest_url_ = manifest_url;
   install_primary_icon_ = primary_icon;
-  is_primary_icon_maskable_ = is_primary_icon_maskable;
   source_ = source;
   serialized_webapk_ = std::move(serialized_webapk);
   finish_callback_ = std::move(finish_callback);
@@ -604,7 +595,7 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
   // because in WebApk installs, we are using the icon data from |hashes|.
   webapps::BuildProto(
       *install_shortcut_info_, install_shortcut_info_->manifest_id,
-      std::string() /* primary_icon_data */, is_primary_icon_maskable_,
+      std::string() /* primary_icon_data */,
       std::string() /* splash_icon_data */, "" /* package_name */,
       "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
       false /* is_app_identity_update_supported */,

@@ -4,10 +4,10 @@
 
 #include "ui/gl/init/gl_initializer.h"
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
@@ -44,7 +44,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   // as app bundles. In that case, the .dylib is next to the executable.
   base::FilePath base_dir;
   if (base::mac::AmIBundled()) {
-    base_dir = base::mac::FrameworkBundlePath().Append("Libraries");
+    base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
   } else {
     if (!base::PathService::Get(base::FILE_EXE, &base_dir)) {
       LOG(ERROR) << "PathService::Get failed.";

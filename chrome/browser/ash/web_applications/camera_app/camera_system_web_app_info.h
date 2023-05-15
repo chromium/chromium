@@ -22,6 +22,7 @@ class CameraSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  bool UseSystemThemeColor() const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.

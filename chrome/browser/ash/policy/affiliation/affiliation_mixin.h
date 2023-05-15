@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -57,7 +58,8 @@ class AffiliationMixin final : public InProcessBrowserTestMixin {
  private:
   AffiliationTestHelper GetAffiliationTestHelper() const;
 
-  DevicePolicyCrosTestHelper* const policy_test_helper_;
+  const raw_ptr<DevicePolicyCrosTestHelper, ExperimentalAsh>
+      policy_test_helper_;
   bool affiliated_ = true;
   bool is_for_active_directory_ = false;
   AccountId account_id_;

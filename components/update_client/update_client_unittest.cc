@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -47,6 +46,7 @@
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client_errors.h"
@@ -59,7 +59,6 @@
 #include "url/gurl.h"
 
 namespace update_client {
-
 namespace {
 
 using base::FilePath;
@@ -228,9 +227,6 @@ class UpdateClientTest : public testing::Test {
 
   void RunThreads();
 
-  // Returns the full path to a test file.
-  static base::FilePath TestFilePath(const char* file);
-
   scoped_refptr<update_client::TestConfigurator> config() { return config_; }
   update_client::PersistedData* metadata() { return metadata_.get(); }
 
@@ -265,16 +261,6 @@ UpdateClientTest::UpdateClientTest() {
 void UpdateClientTest::RunThreads() {
   runloop_.Run();
   task_environment_.RunUntilIdle();
-}
-
-base::FilePath UpdateClientTest::TestFilePath(const char* file) {
-  base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-  return path.AppendASCII("components")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII("update_client")
-      .AppendASCII(file);
 }
 
 // Tests the scenario where one update check is done for one CRX. The CRX
@@ -362,7 +348,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -534,7 +520,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 
       FilePath path;
       EXPECT_TRUE(MakeTestFile(
-          TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+          GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
       Result result;
       result.error = 0;
@@ -580,7 +566,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -774,7 +760,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 
       FilePath path;
       EXPECT_TRUE(MakeTestFile(
-          TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+          GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
       Result result;
       result.error = 0;
@@ -814,7 +800,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1005,7 +991,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+            GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -1047,7 +1033,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1166,7 +1152,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1372,7 +1358,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         download_metrics.download_time_ms = 2000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -1419,7 +1405,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1698,7 +1684,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         download_metrics.download_time_ms = 2000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -1721,9 +1707,11 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
             // TODO(crbug.com/1349060) once Puffin patches are fully
             // implemented, we should remove this #if.
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"),
+            &path));
 #else
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx"),
+            &path));
 #endif
 
         result.error = 0;
@@ -1780,7 +1768,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2062,7 +2050,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
       FilePath path;
       EXPECT_TRUE(MakeTestFile(
-          TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+          GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
       Result result;
       result.error = 0;
@@ -2102,7 +2090,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2340,7 +2328,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         download_metrics.download_time_ms = 2000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -2372,7 +2360,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -2420,7 +2408,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2611,7 +2599,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2785,7 +2773,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+            GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -2827,7 +2815,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
   {
     EXPECT_FALSE(config()->GetPrefService()->FindPreference(
         "updateclientdata.apps.jebgalgnebhfojomionfpkfelancnnkf.pv"));
@@ -2968,7 +2956,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3105,7 +3093,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
@@ -3209,7 +3197,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   const std::vector<std::string> empty_id_list;
   update_client->Update(
@@ -3278,7 +3266,7 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   CrxComponent crx;
   crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
@@ -3401,7 +3389,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
 
@@ -3636,7 +3624,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         download_metrics.download_time_ms = 2000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
+            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -3684,7 +3672,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3827,7 +3815,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3994,7 +3982,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -4169,7 +4157,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(
-            MakeTestFile(TestFilePath("runaction_test_win.crx3"), &path));
+            MakeTestFile(GetTestFilePath("runaction_test_win.crx3"), &path));
 
         result.error = 0;
         result.response = path;
@@ -4232,7 +4220,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   update_client->Install(
       std::string("gjpmebpgbhcamgdgjcmnjfhggjpgcimm"),
@@ -4358,7 +4346,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     // we should remove this #if.
     PuffinComponentUnpacker::Unpack(
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
-        TestFilePath("runaction_test_win.crx3"),
+        GetTestFilePath("runaction_test_win.crx3"),
         config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
         base::BindOnce(
             [](base::FilePath* unpack_path, base::OnceClosure quit_closure,
@@ -4372,7 +4360,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 #else
     auto component_unpacker = base::MakeRefCounted<ComponentUnpacker>(
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
-        TestFilePath("runaction_test_win.crx3"), nullptr,
+        GetTestFilePath("runaction_test_win.crx3"), nullptr,
         config->GetUnzipperFactory()->Create(),
         config->GetPatcherFactory()->Create(), crx_file::VerifierFormat::CRX3);
 
@@ -4404,7 +4392,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   const std::vector<std::string> ids = {"gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
   update_client->Update(
@@ -4531,7 +4519,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   class Observer : public UpdateClient::Observer {
    public:
@@ -4712,7 +4700,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+            GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -4749,7 +4737,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -4856,7 +4844,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+            GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -4899,7 +4887,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   base::RepeatingClosure cancel;
 
@@ -5037,7 +5025,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
-            TestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
+            GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
         result.error = 0;
         result.response = path;
@@ -5080,7 +5068,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   base::RepeatingClosure cancel;
 
@@ -5198,7 +5186,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5347,7 +5335,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5457,7 +5445,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5588,7 +5576,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5676,7 +5664,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5850,7 +5838,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {

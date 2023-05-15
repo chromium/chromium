@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -20,10 +21,15 @@ class RandomSessionId {
   // SmartSetup on Android for interoperability.
   static constexpr size_t kLength = 6;
 
+  // Attempts to decode bytes from a Base64-encoded string. If the decoding is
+  // successful, it returns a new RandomSessionId containing those bytes.
+  static absl::optional<RandomSessionId> ParseFromBase64(
+      const std::string& encoded_random_session_id);
+
   RandomSessionId();
   explicit RandomSessionId(base::span<const uint8_t, kLength> bytes);
-  RandomSessionId(RandomSessionId&) = default;
-  RandomSessionId& operator=(RandomSessionId&) = default;
+  RandomSessionId(const RandomSessionId&) = default;
+  RandomSessionId& operator=(const RandomSessionId&) = default;
   ~RandomSessionId() = default;
 
   base::span<const uint8_t, kLength> AsBytes() const { return bytes_; }

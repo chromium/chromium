@@ -6,7 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +20,6 @@ namespace {
 const char kTokenHandlePref[] = "PasswordTokenHandle";
 const char kTokenHandleStatusPref[] = "TokenHandleStatus";
 const char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
-const char kTokenHandleRotated[] = "TokenHandleRotated";
 
 const char kHandleStatusValid[] = "valid";
 const char kHandleStatusInvalid[] = "invalid";
@@ -102,15 +101,6 @@ TokenHandleUtil::~TokenHandleUtil() = default;
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  bool token_rotated =
-      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
-  if (!token_rotated && known_user.GetIsEnterpriseManaged(account_id)) {
-    // Ignore not rotated token starting from M94 for enterprise users to avoid
-    // blocking them on the login screen. Rotation started in M91.
-    ClearTokenHandle(account_id);
-    return false;
-  }
-
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
   return token && !token->empty();
@@ -134,11 +124,7 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  bool token_rotated =
-      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
-  return !HasToken(account_id) || HasTokenStatusInvalid(account_id) ||
-         !token_rotated;
+  return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
 }
 
 // static
@@ -186,19 +172,8 @@ void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
   known_user.SetStringPref(account_id, kTokenHandlePref, handle);
   known_user.SetStringPref(account_id, kTokenHandleStatusPref,
                            kHandleStatusValid);
-  known_user.SetBooleanPref(account_id, kTokenHandleRotated, true);
   known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
                      base::TimeToValue(base::Time::Now()));
-}
-
-// static
-void TokenHandleUtil::ClearTokenHandle(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-
-  known_user.RemovePref(account_id, kTokenHandlePref);
-  known_user.RemovePref(account_id, kTokenHandleStatusPref);
-  known_user.RemovePref(account_id, kTokenHandleRotated);
-  known_user.RemovePref(account_id, kTokenHandleLastCheckedPref);
 }
 
 // static
@@ -237,18 +212,27 @@ TokenHandleUtil::TokenDelegate::~TokenDelegate() = default;
 
 void TokenHandleUtil::TokenDelegate::OnOAuthError() {
   std::move(callback_).Run(account_id_, INVALID);
-  NotifyDone();
+  NotifyDone(/*request_completed=*/true);
 }
 
 // Warning: NotifyDone() deletes `this`
-void TokenHandleUtil::TokenDelegate::NotifyDone() {
+void TokenHandleUtil::TokenDelegate::NotifyDone(bool request_completed) {
+  if (request_completed) {
+    RecordTokenCheckResponseTime();
+  }
   if (owner_)
     owner_->OnValidationComplete(token_);
 }
 
 void TokenHandleUtil::TokenDelegate::OnNetworkError(int response_code) {
   std::move(callback_).Run(account_id_, UNKNOWN);
-  NotifyDone();
+  NotifyDone(/*request_completed=*/response_code != -1);
+}
+
+void TokenHandleUtil::TokenDelegate::RecordTokenCheckResponseTime() {
+  const base::TimeDelta duration =
+      base::TimeTicks::Now() - tokeninfo_response_start_time_;
+  base::UmaHistogramTimes("Login.TokenCheckResponseTime", duration);
 }
 
 void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
@@ -260,11 +244,8 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
       outcome = (*expires_in < 0) ? INVALID : VALID;
   }
 
-  const base::TimeDelta duration =
-      base::TimeTicks::Now() - tokeninfo_response_start_time_;
-  UMA_HISTOGRAM_TIMES("Login.TokenCheckResponseTime", duration);
   std::move(callback_).Run(account_id_, outcome);
-  NotifyDone();
+  NotifyDone(/*request_completed=*/true);
 }
 
 }  // namespace ash

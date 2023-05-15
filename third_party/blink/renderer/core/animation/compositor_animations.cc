@@ -1066,6 +1066,26 @@ bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {
   auto* layout_box_model_object = target->GetLayoutBoxModelObject();
   if (!layout_box_model_object)
     return false;
+
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+        target->GetDocument().Lifecycle().GetState() <
+            DocumentLifecycle::kPaintClean) {
+      // TODO(crbug.com/1434728): This happens when we paint a scroll-driven
+      // animating background.
+      return false;
+    }
+    const auto* properties =
+        layout_box_model_object->FirstFragment().PaintProperties();
+    if (!properties || !properties->Scroll()) {
+      return false;
+    }
+    const auto* paint_artifact_compositor =
+        layout_box_model_object->GetFrameView()->GetPaintArtifactCompositor();
+    return paint_artifact_compositor &&
+           paint_artifact_compositor->UsesCompositedScrolling(
+               *properties->Scroll());
+  }
   return layout_box_model_object->UsesCompositedScrolling();
 }
 

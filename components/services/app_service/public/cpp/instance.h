@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/browser_context.h"
@@ -68,12 +69,12 @@ class Instance {
   // The unique id for instance.
   base::UnguessableToken instance_id_;
 
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   std::string launch_id_;
   InstanceState state_ = InstanceState::kUnknown;
   base::Time last_updated_time_;
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_ = nullptr;
 };
 
 }  // namespace apps

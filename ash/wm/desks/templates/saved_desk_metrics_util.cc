@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
-#include "ash/public/cpp/desk_template.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
-#include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
 

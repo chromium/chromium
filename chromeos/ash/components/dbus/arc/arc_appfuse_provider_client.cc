@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_appfuse_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -111,7 +112,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
     std::move(callback).Run(std::move(fd));
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   base::WeakPtrFactory<ArcAppfuseProviderClientImpl> weak_ptr_factory_{this};
 };

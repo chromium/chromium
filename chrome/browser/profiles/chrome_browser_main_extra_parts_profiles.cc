@@ -93,6 +93,7 @@
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -213,7 +214,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
-#include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
@@ -234,6 +234,7 @@
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
@@ -353,6 +354,7 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
+#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
@@ -376,6 +378,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/policy/cloud/profile_token_policy_web_signin_service_factory.h"
 #include "chrome/browser/signin/profile_token_web_signin_interceptor_factory.h"
 #endif
 
@@ -425,6 +428,10 @@
 #include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#endif
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "chrome/browser/net/nss_service_factory.h"
 #endif
 
 namespace chrome {
@@ -508,6 +515,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AutocompleteControllerEmitter::EnsureFactoryBuilt();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   AutocompleteScoringModelServiceFactory::GetInstance();
+  OnDeviceTailModelServiceFactory::GetInstance();
 #endif
   autofill::AutocompleteHistoryManagerFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
@@ -659,6 +667,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   HidConnectionTrackerFactory::GetInstance();
 #endif
   HistoryClustersServiceFactory::EnsureFactoryBuilt();
+#if !BUILDFLAG(IS_ANDROID)
+  HistoryClustersModuleServiceFactory::GetInstance();
+#endif
   HistoryServiceFactory::GetInstance();
   HistoryUiFaviconRequestHandlerFactory::GetInstance();
   HostContentSettingsMapFactory::GetInstance();
@@ -738,6 +749,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   NotificationPermissionsReviewServiceFactory::GetInstance();
   NotificationsEngagementServiceFactory::GetInstance();
   NotifierStateTrackerFactory::GetInstance();
+#if BUILDFLAG(USE_NSS_CERTS)
+  NssServiceFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   NTPResourceCacheFactory::GetInstance();
   NtpBackgroundServiceFactory::GetInstance();
@@ -773,6 +787,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   PasswordManagerSettingsServiceFactory::GetInstance();
   PasswordReuseManagerFactory::GetInstance();
   PasswordStoreFactory::GetInstance();
+  AccountPasswordStoreFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   PerformanceControlsHatsServiceFactory::GetInstance();
 #endif
@@ -787,9 +802,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::ManagementServiceFactory::GetInstance();
   PolicyBlocklistFactory::GetInstance();
   PredictionServiceFactory::GetInstance();
+
   PrimaryAccountPolicyManagerFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   ProfileTokenWebSigninInterceptorFactory::GetInstance();
+  policy::ProfileTokenPolicyWebSigninServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   PromoServiceFactory::GetInstance();
@@ -870,10 +887,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProtocolHandlerRegistryFactory::GetInstance();
 
   ReadingListModelFactory::GetInstance();
-#if BUILDFLAG(IS_ANDROID)
-  ReadingListManagerFactory::GetInstance();
-  ReadingListNotificationServiceFactory::GetInstance();
-#endif
 #if !BUILDFLAG(IS_ANDROID)
   RecipesServiceFactory::GetInstance();
 #endif

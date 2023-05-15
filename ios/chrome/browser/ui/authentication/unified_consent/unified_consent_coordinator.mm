@@ -5,11 +5,12 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
@@ -106,8 +107,9 @@
 
 - (BOOL)hasManagedSyncDataType {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  PrefService* prefService = browserState->GetPrefs();
-  return HasManagedSyncDataType(prefService);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  return HasManagedSyncDataType(syncService);
 }
 
 - (BOOL)hasAccountRestrictions {

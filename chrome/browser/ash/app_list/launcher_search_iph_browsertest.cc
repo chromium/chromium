@@ -66,7 +66,7 @@ constexpr char kIphConfigParamNameSessionRate[] = "session_rate";
 
 class ViewWaiter : public views::ViewObserver {
  public:
-  ViewWaiter(raw_ptr<views::View> observed_view, int view_id)
+  ViewWaiter(views::View* observed_view, int view_id)
       : observed_view_(observed_view), view_id_(view_id) {}
 
   void Run() {
@@ -94,12 +94,12 @@ class ViewWaiter : public views::ViewObserver {
 };
 
 bool IsLauncherSearchIphViewVisible() {
-  raw_ptr<ash::SearchBoxView> search_box_view = ash::GetSearchBoxView();
+  ash::SearchBoxView* search_box_view = ash::GetSearchBoxView();
   if (!search_box_view) {
     return false;
   }
 
-  raw_ptr<views::View> launcher_search_iph_view =
+  views::View* launcher_search_iph_view =
       search_box_view->GetViewByID(ash::LauncherSearchIphView::ViewId::kSelf);
   if (!launcher_search_iph_view) {
     return false;
@@ -108,7 +108,7 @@ bool IsLauncherSearchIphViewVisible() {
   return launcher_search_iph_view->GetVisible();
 }
 
-void Click(raw_ptr<views::View> view) {
+void Click(views::View* view) {
   ASSERT_TRUE(view);
 
   ui::test::EventGenerator event_generator(
@@ -166,7 +166,7 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
           /*wait_for_opening_animation=*/true);
     } else {
       ash::AcceleratorController::Get()->PerformActionIfEnabled(
-          ash::TOGGLE_APP_LIST, {});
+          ash::AcceleratorAction::kToggleAppList, {});
 
       // We dispatch mouse events to interact with UI. Wait animation completion
       // to reliably dispatch those events.
@@ -218,11 +218,11 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     ASSERT_TRUE(IsLauncherSearchIphViewVisible());
   }
 
-  raw_ptr<ash::ContentsView> GetFullscreenAppListContentsView() {
+  ash::ContentsView* GetFullscreenAppListContentsView() {
     return ash::GetAppListView()->app_list_main_view()->contents_view();
   }
 
-  raw_ptr<ash::AssistantZeroStateView> GetAssistantZeroStateView() {
+  ash::AssistantZeroStateView* GetAssistantZeroStateView() {
     if (IsClamshellModeTest()) {
       return static_cast<ash::AssistantZeroStateView*>(
           ash::GetAppListBubbleView()->GetViewByID(
@@ -234,7 +234,7 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
             ash::AssistantViewID::kZeroStateView));
   }
 
-  raw_ptr<ash::AppListToastView> GetAssistantLearnMoreToast() {
+  ash::AppListToastView* GetAssistantLearnMoreToast() {
     if (IsClamshellModeTest()) {
       return static_cast<ash::AppListToastView*>(
           ash::GetAppListBubbleView()->GetViewByID(
@@ -264,13 +264,9 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     }
   }
 
-  raw_ptr<AppListClientImpl> app_list_client_impl() {
-    return app_list_client_impl_;
-  }
+  AppListClientImpl* app_list_client_impl() { return app_list_client_impl_; }
 
-  raw_ptr<ash::SearchBoxView> search_box_view() {
-    return ash::GetSearchBoxView();
-  }
+  ash::SearchBoxView* search_box_view() { return ash::GetSearchBoxView(); }
 
  private:
   ash::TestAssistantService test_service_;
@@ -351,8 +347,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
 
   // Clicks Assistant button to open Assistant UI and confirm that IPH gets
   // dismissed.
-  raw_ptr<views::ImageButton> assistant_button =
-      search_box_view()->assistant_button();
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
@@ -364,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
 
   // Chip click is specified as EventUsed in the test config.
   base::UserActionTester user_action_tester;
-  raw_ptr<views::View> chip = search_box_view()->GetViewByID(
+  views::View* chip = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart);
   ASSERT_TRUE(chip);
   Click(chip);
@@ -391,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickAssistant) {
   // is 0 to distinguish this from other events.
   base::UserActionTester user_action_tester;
   ASSERT_EQ(0, user_action_tester.GetActionCount(kNotifyEventUserActionName));
-  raw_ptr<views::View> assistant_button = search_box_view()->GetViewByID(
+  views::View* assistant_button = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kAssistant);
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
@@ -433,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickLink) {
   OpenAppListAndWaitForIphView();
-  raw_ptr<views::View> link_label = search_box_view()->GetViewByID(
+  views::View* link_label = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kDescriptionLinkLabel);
 
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
@@ -464,8 +459,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
 
   OpenAppList();
 
-  raw_ptr<views::ImageButton> assistant_button =
-      search_box_view()->assistant_button();
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
@@ -473,23 +467,16 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
   ASSERT_TRUE(IsAssistantPageActive());
   ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
-  raw_ptr<ash::AppListToastView> learn_more_toast =
-      GetAssistantLearnMoreToast();
+  ash::AppListToastView* learn_more_toast = GetAssistantLearnMoreToast();
   EXPECT_FALSE(learn_more_toast->GetVisible());
   EXPECT_FALSE(learn_more_toast->IsDrawn());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
                        ShowAssistantLearnMoreToast) {
-  // TODO(b/276970723): Disables tablet mode variant for a crash.
-  if (IsTabletModeTest()) {
-    GTEST_SKIP() << "b/276970723";
-  }
-
   OpenAppList();
 
-  raw_ptr<views::ImageButton> assistant_button =
-      search_box_view()->assistant_button();
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
@@ -497,8 +484,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
   ASSERT_TRUE(IsAssistantPageActive());
   ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
-  raw_ptr<ash::AppListToastView> learn_more_toast =
-      GetAssistantLearnMoreToast();
+  ash::AppListToastView* learn_more_toast = GetAssistantLearnMoreToast();
   EXPECT_TRUE(learn_more_toast->GetVisible());
   EXPECT_TRUE(learn_more_toast->IsDrawn());
 }

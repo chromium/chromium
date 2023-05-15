@@ -51,12 +51,16 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
          requested_axis == kPhysicalAxisVertical);
 
   ContainerSelector selector(requested_axis);
+  const TreeScope* tree_scope =
+      context_element ? &context_element->GetTreeScope() : nullptr;
 
-  for (Element* container =
-           ContainerQueryEvaluator::FindContainer(context_element, selector);
-       container; container = ContainerQueryEvaluator::FindContainer(
-                      container->ParentOrShadowHostElement(), selector)) {
-    auto* evaluator = container->GetContainerQueryEvaluator();
+  for (Element* container = ContainerQueryEvaluator::FindContainer(
+           context_element, selector, tree_scope);
+       container;
+       container = ContainerQueryEvaluator::FindContainer(
+           container->ParentOrShadowHostElement(), selector, tree_scope)) {
+    ContainerQueryEvaluator* evaluator =
+        container->GetContainerQueryEvaluator();
     if (!evaluator) {
       continue;
     }

@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
@@ -64,7 +65,9 @@ const size_t kExtendedReturnCount = 8;
 // in the CrossCallReturn.
 union MultiType {
   uint32_t unsigned_int;
-  void* pointer;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION void* pointer;
   HANDLE handle;
   ULONG_PTR ulong_ptr;
 };

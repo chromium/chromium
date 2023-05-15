@@ -949,13 +949,29 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      r'/\b(absl|std)::(u16)?string_view\b',
+      r'/\babsl::string_view\b',
       (
-        'absl::string_view is banned and std::[u16]string_view are not allowed',
-        ' yet (https://crbug.com/691162). Use base::StringPiece[16] instead.',
+        'absl::string_view is a legacy spelling of std::string_view, which is ',
+        'not allowed yet (https://crbug.com/691162). Use base::StringPiece ',
+        'instead, unless std::string_view is needed to use with an external ',
+        'API.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::(u16)?string_view\b',
+      (
+        'std::[u16]string_view is not yet allowed (crbug.com/691162). Use ',
+        'base::StringPiece[16] instead, unless std::[u16]string_view is ',
+        'needed to use an external API.',
       ),
       True,
       [
+        # Needed to implement and test std::string_view interoperability.
+        r'base/strings/string_piece.*',
+        # Needed to use re2::RE2 regular expression library.
+        r'third_party/blink/common/interest_group/ad_display_size_utils.cc',
         # Needed to use liburlpattern API.
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
@@ -965,6 +981,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'net/test/embedded_test_server/.*',
         r'net/third_party/quiche/.*',
         r'services/network/web_transport\.cc',
+        # This code is in the process of being extracted into an external
+        # library, where //base will be unavailable.
+        r'net/cert/pki/.*',
+        r'net/der/.*',
+        # Needed to use APIs from the above.
+        r'net/cert/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -1131,15 +1153,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
-      r'/\bstd::(u16)?string_view\b',
-      (
-        'std::[u16]string_view is not yet allowed (crbug.com/691162). Use ',
-        'base::StringPiece[16] instead.',
-      ),
-      True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
-    ),
-    BanRule(
       r'/#include <(barrier|latch|semaphore|stop_token)>',
       (
         'The thread support library is banned. Use base/synchronization '
@@ -1163,7 +1176,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         ' char and std::string instead?',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+      [
+        # The demangler does not use this type but needs to know about it.
+        'base/third_party/symbolize/demangle\.cc',
+        # Don't warn in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/(\b(co_await|co_return|co_yield)\b|#include <coroutine>)',
@@ -1580,6 +1598,16 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       []
     ),
+    BanRule(
+      r'/#include <filesystem>',
+      (
+        'libc++ <filesystem> is banned per the Google C++ styleguide.',
+      ),
+      True,
+      # This fuzzing framework is a standalone open source project and
+      # cannot rely on Chromium base.
+      (r'third_party/centipede'),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
@@ -1652,6 +1680,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/allot_native_libraries.pydeps',
     'build/android/gyp/apkbuilder.pydeps',
     'build/android/gyp/assert_static_initializers.pydeps',
+    'build/android/gyp/binary_baseline_profile.pydeps',
     'build/android/gyp/bytecode_processor.pydeps',
     'build/android/gyp/bytecode_rewriter.pydeps',
     'build/android/gyp/check_flag_expectations.pydeps',
@@ -1745,7 +1774,8 @@ _KNOWN_ROBOTS = set(
                     'lacros-version-skew-roller', 'skylab-test-cros-roller',
                     'infra-try-recipes-tester', 'lacros-tracking-roller',
                     'lacros-sdk-version-roller', 'chrome-automated-expectation',
-                    'chromium-automated-expectation', 'chrome-branch-day')
+                    'chromium-automated-expectation', 'chrome-branch-day',
+                    'chromium-autosharder')
   ) | set('%s@skia-public.iam.gserviceaccount.com' % s
           for s in ('chromium-autoroll', 'chromium-release-autoroll')
   ) | set('%s@skia-corp.google.com.iam.gserviceaccount.com' % s
@@ -4981,19 +5011,13 @@ def CheckForTooLargeFiles(input_api, output_api):
     # files seems to be 1-2 MB, with a handful around 5-8 MB, so
     # anything over 20 MB is exceptional.
     TOO_LARGE_FILE_SIZE_LIMIT = 20 * 1024 * 1024
-    # Special exemption for a file that is slightly over the limit.
-    SPECIAL_FILE_SIZE_LIMIT = 25 * 1024 * 1024
-    SPECIAL_FILE_NAME = 'transport_security_state_static.json'
 
     too_large_files = []
     for f in input_api.AffectedFiles():
         # Check both added and modified files (but not deleted files).
         if f.Action() in ('A', 'M'):
             size = input_api.os_path.getsize(f.AbsoluteLocalPath())
-            limit = (SPECIAL_FILE_SIZE_LIMIT if
-                f.AbsoluteLocalPath().endswith(SPECIAL_FILE_NAME) else
-                TOO_LARGE_FILE_SIZE_LIMIT)
-            if size > limit:
+            if size > TOO_LARGE_FILE_SIZE_LIMIT:
                 too_large_files.append("%s: %d bytes" % (f.LocalPath(), size))
 
     if too_large_files:
@@ -6026,6 +6050,7 @@ def CheckStrings(input_api, output_api):
     # - If the CL contains removed messages in grd files but the corresponding
     #   .sha1 files aren't removed, warn the developer to remove them.
     unnecessary_screenshots = []
+    invalid_sha1 = []
     missing_sha1 = []
     missing_sha1_modified = []
     unnecessary_sha1_files = []
@@ -6037,18 +6062,33 @@ def CheckStrings(input_api, output_api):
     # break message extraction for translation, hence would block Chromium
     # translations until they are fixed.
     icu_syntax_errors = []
+    sha1_pattern = input_api.re.compile(r'^[a-fA-F0-9]{40}$',
+                                        input_api.re.MULTILINE)
 
     def _CheckScreenshotAdded(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
                                            message_id + '.png.sha1')
         if sha1_path not in new_or_added_paths:
             missing_sha1.append(sha1_path)
+        elif not _CheckValidSha1(sha1_path):
+          invalid_sha1.append(sha1_path)
 
     def _CheckScreenshotModified(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
                                            message_id + '.png.sha1')
         if sha1_path not in new_or_added_paths:
             missing_sha1_modified.append(sha1_path)
+        elif not _CheckValidSha1(sha1_path):
+          invalid_sha1.append(sha1_path)
+
+    def _CheckValidSha1(sha1_path):
+      return sha1_pattern.search(
+          next(
+                "\n".join(f.NewContents())
+                for f in input_api.AffectedFiles()
+                if f.LocalPath() == sha1_path
+          )
+      )
 
     def _CheckScreenshotRemoved(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
@@ -6246,14 +6286,8 @@ def CheckStrings(input_api, output_api):
                 modified_ids.add(key)
             elif old_id_to_msg_map[key].attrs['meaning'] != \
                 new_id_to_msg_map[key].attrs['meaning']:
-                # The message meaning changed. Ensure there is a screenshot for it.
-                sha1_path = input_api.os_path.join(screenshots_dir,
-                                                   key + '.png.sha1')
-                if sha1_path not in new_or_added_paths and not \
-                    input_api.os_path.exists(sha1_path):
-                    # There is neither a previous screenshot nor is a new one added now.
-                    # Require a screenshot.
-                    modified_ids.add(key)
+                # The message meaning changed. We later check for a screenshot.
+                modified_ids.add(key)
 
         if run_screenshot_check:
             # Check the screenshot directory for .png files. Warn if there is any.
@@ -6293,6 +6327,13 @@ def CheckStrings(input_api, output_api):
                     'To ensure the best translations, take screenshots of the relevant UI '
                     '(https://g.co/chrome/translation) and add these files to your '
                     'changelist:', sorted(missing_sha1)))
+
+        if invalid_sha1:
+            results.append(
+                output_api.PresubmitError(
+                    'The following files do not seem to contain valid sha1 hashes. '
+                    'Make sure they contain hashes created by '
+                    'tools/translate/upload_screenshots.py:', sorted(invalid_sha1)))
 
         if missing_sha1_modified:
             results.append(
@@ -6828,7 +6869,7 @@ def CheckNoJsInIos(input_api, output_api):
         return input_api.FilterSourceFile(
             affected_file,
             files_to_skip=input_api.DEFAULT_FILES_TO_SKIP +
-                          (r'^ios/third_party/*', r'^third_party/*'),
+                (r'^ios/third_party/*', r'^ios/tools/*', r'^third_party/*'),
             files_to_check=[r'^ios/.*\.js$', r'.*/ios/.*\.js$'])
 
     deleted_files = []

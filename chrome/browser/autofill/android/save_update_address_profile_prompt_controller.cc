@@ -4,14 +4,17 @@
 
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -19,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -30,12 +34,14 @@ namespace autofill {
 SaveUpdateAddressProfilePromptController::
     SaveUpdateAddressProfilePromptController(
         std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
+        autofill::PersonalDataManager* personal_data,
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
         bool is_migration_to_account,
         AutofillClient::AddressProfileSavePromptCallback decision_callback,
         base::OnceCallback<void()> dismissal_callback)
     : prompt_view_(std::move(prompt_view)),
+      personal_data_(personal_data),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
       is_migration_to_account_(is_migration_to_account),
@@ -85,14 +91,17 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   }
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  CHECK(!account_info.IsEmpty())
-      << "User must be logged in when address profile is going to be saved to "
-         "user's Google Account";
+  if (account_info.IsEmpty()) {
+    return std::u16string();
+  }
+
   // Notify user that their address is saved only in Chrome and can be migrated
   // to their Google account.
   if (is_migration_to_account_) {
     return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE,
+        personal_data_->IsSyncEnabledFor(syncer::UserSelectableType::kAutofill)
+            ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
+            : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
         base::UTF8ToUTF16(account_info.email));
   }
 
@@ -130,21 +139,27 @@ SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
   }
-  if (!original_profile_ &&
-      profile_.source() == AutofillProfile::Source::kAccount) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
-  }
 
   return l10n_util::GetStringUTF16(
       IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetAddress() {
-  return GetEnvelopeStyleAddress(profile_,
-                                 g_browser_process->GetApplicationLocale(),
-                                 /*include_recipient=*/true,
-                                 /*include_country=*/true);
+  if (is_migration_to_account_) {
+    const std::u16string name =
+        profile_.GetInfo(NAME_FULL_WITH_HONORIFIC_PREFIX,
+                         g_browser_process->GetApplicationLocale());
+    const std::u16string address = profile_.GetInfo(
+        ADDRESS_HOME_LINE1, g_browser_process->GetApplicationLocale());
+    const std::u16string separator =
+        !name.empty() && !address.empty() ? u"\n" : u"";
+    return base::StrCat({name, separator, address});
+  } else {
+    return GetEnvelopeStyleAddress(profile_,
+                                   g_browser_process->GetApplicationLocale(),
+                                   /*include_recipient=*/true,
+                                   /*include_country=*/true);
+  }
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetEmail() {

@@ -203,13 +203,15 @@
 ; Reads from /usr.
 (allow file-read-data
   (subpath "/usr/share/icu")
+  (subpath "/usr/share/locale")
 )
 
 ; Access to the home directory.
 (allow file-read-data
   (path (string-append (user-homedir-path "/Library/Preferences/") (param bundle-id) ".plist"))
   (path (user-homedir-path "/Library/Preferences/.GlobalPreferences.plist"))
-  (regex (user-homedir-path #"/Library/Preferences/ByHost/.GlobalPreferences.*"))
+  (path (user-homedir-path "/Library/Preferences/.GlobalPreferences_m.plist"))
+  (prefix (user-homedir-path "/Library/Preferences/ByHost/.GlobalPreferences"))
   (path (user-homedir-path "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"))
 )
 

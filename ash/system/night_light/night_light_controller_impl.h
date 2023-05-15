@@ -13,6 +13,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -295,7 +296,7 @@ class ASH_EXPORT NightLightControllerImpl
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  PrefService* active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
 
   // The animation duration of any upcoming future change.
   AnimationDuration animation_duration_ = AnimationDuration::kShort;

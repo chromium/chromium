@@ -6,10 +6,10 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
@@ -23,6 +23,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using credential_provider_promo::IOSCredentialProviderPromoAction;
 
 // Test fixture for testing the CredentialProviderPromoCoordinator class.
 class CredentialProviderPromoCoordinatorTest : public PlatformTest {
@@ -44,6 +46,13 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
         browser_->GetCommandDispatcher(), CredentialProviderPromoCommands);
   }
   ~CredentialProviderPromoCoordinatorTest() override { [coordinator_ stop]; }
+
+  // Returns the last action taken by the user on the promo that is stored in
+  // local state.
+  int LastActionTaken() {
+    return local_state_.Get()->GetInteger(
+        prefs::kIosCredentialProviderPromoLastActionTaken);
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -194,4 +203,52 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kRemindMeLater,
       1);
+}
+
+// Tests the flow when the trigger is the SetUpList. It should go directly to
+// LearnMore and the primary CTA should go to settings.
+TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
+      0);
+  // Trigger the promo with SetUpList. The primary CTA of the promo, when
+  // triggered from SetUpList, is 'go to settings'.
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SetUpList];
+
+  // Perform the action. Coordinator will record the action 'go to settings'.
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertPrimaryAction];
+
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
+      0);
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::
+          kGoToSettings,
+      1);
+}
+
+// Tests that the last action taken is recorded in local state.
+TEST_F(CredentialProviderPromoCoordinatorTest, LastActionTaken) {
+  // Trigger the promo with SetUpList. The primary CTA of the promo, when
+  // triggered from SetUpList, is 'go to settings'.
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SetUpList];
+  EXPECT_EQ(LastActionTaken(), -1);
+
+  // Perform the action. Coordinator will record the action 'go to settings'.
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertPrimaryAction];
+  EXPECT_EQ(LastActionTaken(),
+            static_cast<int>(IOSCredentialProviderPromoAction::kGoToSettings));
 }

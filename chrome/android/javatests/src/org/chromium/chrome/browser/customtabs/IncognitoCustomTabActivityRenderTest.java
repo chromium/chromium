@@ -10,8 +10,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,7 +88,7 @@ public class IncognitoCustomTabActivityRenderTest {
     private void prepareCCTIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), url);
+                ApplicationProvider.getApplicationContext(), url);
     }
 
     private void startActivity(String renderTestId, int mScreenOrientation) throws IOException {

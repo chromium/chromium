@@ -12,6 +12,11 @@
  * #css_wrapper_metadata_end */
 
  :host {
+    --chart-system-line-color: var(--cros-color-warning);
+    --chart-system-gradient-color: var(--google-yellow-50);
+    --chart-user-line-color: var(--cros-color-prominent);
+    --chart-user-gradient-color: var(--google-blue-50);
+
     --diagnostics-box-shadow: var(--cros-elevation-1-shadow);
     --diagnostics-box-shadow-elevation-2: var(--cros-elevation-2-shadow);
 
@@ -26,6 +31,11 @@
   }
 
   :host-context(body.jelly-enabled) {
+    --chart-system-line-color: var(--cros-sys-tertiary);
+    --chart-system-gradient-color: var(--cros-sys-tertiary_container);
+    --chart-user-line-color: var(--cros-sys-primary);
+    --chart-user-gradient-color: var(--cros-sys-primary_container);
+
     --diagnostics-box-shadow:
         0 1px 2px var(--cros-shadow-color-key),
         0 1px 3px var(--cros-shadow-color-ambient);
@@ -33,11 +43,26 @@
         0 1px 2px var(--cros-shadow-color-key),
         0 2px 6px var(--cros-shadow-color-ambient);
     --diagnostics-card-bg-color: var(--cros-sys-app_base);
-    --diagnostics-chip-bg-color: var(--cros-sys-app_base);
+    --diagnostics-chip-bg-color: var(--cros-sys-surface_variant);
+  }
+
+  :host-context(body.jelly-enabled) .diagnostics-chip {
+    color: var(--cros-sys-on_surface_variant);
   }
 
   :host-context(body.jelly-enabled) .grey-container {
     background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  :host-context(body.jelly-enabled) cr-button {
+    font: var(--cros-button-2-font);
+  }
+
+  :host-context(body.jelly-enabled) cr-button.action-button {
+    font: var(--cros-button-1-font);
+  }
+  :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+    border-radius: 20px;
   }
 
   hr {
@@ -120,6 +145,10 @@
     width: var(--container-max-width-nav);
   }
 
+  :host-context(body.jelly-enabled) .diagnostics-chip {
+    font: var(--cros-body-2-font);
+  }
+
   .diagnostics-chip {
     background-color: var(--diagnostics-chip-bg-color);
     border-radius: 16px;
@@ -172,6 +201,10 @@
     margin-bottom: 16px;
     margin-top: 12px;
     padding-inline: 20px;
+  }
+
+  :host-context(body.jelly-enabled) .diagnostics-caution-banner-font {
+    font: var(--cros-body-1-font);
   }
 
   .diagnostics-caution-banner-font {
@@ -287,6 +320,9 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --chart-system-gradient-color: rgba(var(--google-yellow-300-rgb), 0.2);
+      --chart-user-gradient-color: rgba(var(--google-blue-300-rgb), 0.2);
+
       --diagnostics-card-bg-color: var(--cros-bg-color-elevation-1);
       --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
     }

@@ -9,7 +9,6 @@ elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 elf_file_name=elf
 elf_mtime={redacted}
-elf_relocations_count=394087
 map_file_name=../../../test.map
 apk_file_name=Bundle.minimal.apks
 apk_split_name=base
@@ -38,6 +37,11 @@ apk_size=695
 apk_split_name=on_demand
 zipalign_padding=0
 Container <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>
+Section .arsc: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: has 100.0% of 35982248 bytes accounted for from 23 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 17 have source paths. Accounts for 35972442 bytes (100.0%).
@@ -107,6 +111,11 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 by
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/base.apk/smalltest.so (x86)>
+Section .arsc: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -161,6 +170,11 @@ Section .other: has 100.0% of 4194304 bytes accounted for from 10 symbols. 0 byt
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/base-hi.apk>
+Section .arsc: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -214,6 +228,11 @@ Section .other: has 100.0% of 696 bytes accounted for from 2 symbols. 0 bytes ar
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/base.apk>
+Section .arsc: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -270,6 +289,11 @@ Section .other: has 100.0% of 1050418 bytes accounted for from 3 symbols. 0 byte
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/not_on_demand.apk>
+Section .arsc: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -323,6 +347,11 @@ Section .other: has 100.0% of 696 bytes accounted for from 2 symbols. 0 bytes ar
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/on_demand.apk?>
+Section .arsc: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).

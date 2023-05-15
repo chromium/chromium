@@ -13,7 +13,6 @@ package sync_pb;
 
 import "components/sync/protocol/encryption.proto";
 import "components/sync/protocol/app_list_specifics.proto";
-import "components/sync/protocol/app_notification_specifics.proto";
 import "components/sync/protocol/app_setting_specifics.proto";
 import "components/sync/protocol/app_specifics.proto";
 import "components/sync/protocol/arc_package_specifics.proto";
@@ -33,7 +32,6 @@ import "components/sync/protocol/history_delete_directive_specifics.proto";
 import "components/sync/protocol/history_specifics.proto";
 import "components/sync/protocol/managed_user_setting_specifics.proto";
 import "components/sync/protocol/managed_user_shared_setting_specifics.proto";
-import "components/sync/protocol/managed_user_specifics.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
@@ -51,8 +49,6 @@ import "components/sync/protocol/send_tab_to_self_specifics.proto";
 import "components/sync/protocol/segmentation_specifics.proto";
 import "components/sync/protocol/session_specifics.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
-import "components/sync/protocol/synced_notification_app_info_specifics.proto";
-import "components/sync/protocol/synced_notification_specifics.proto";
 import "components/sync/protocol/theme_specifics.proto";
 import "components/sync/protocol/typed_url_specifics.proto";
 import "components/sync/protocol/user_consent_specifics.proto";
@@ -106,9 +102,6 @@ message EntitySpecifics {
     PreferenceSpecifics preference = 37702;
     TypedUrlSpecifics typed_url = 40781;
     ThemeSpecifics theme = 41210;
-    // TODO(crbug.com/1012648): |app_notification| isn't used by the client
-    // anymore, but the server still needs it for now.
-    AppNotification app_notification = 45184 [deprecated = true];
     PasswordSpecifics password = 45873;
     NigoriSpecifics nigori = 47745;
     ExtensionSpecifics extension = 48119;
@@ -119,29 +112,11 @@ message EntitySpecifics {
     ExtensionSettingSpecifics extension_setting = 96159;
     AppSettingSpecifics app_setting = 103656;
     HistoryDeleteDirectiveSpecifics history_delete_directive = 150251;
-    // TODO(crbug.com/1012648): |synced_notification| and
-    // |synced_notification_app_info| aren't used by the client anymore, but the
-    // server still needs them for now.
-    SyncedNotificationSpecifics synced_notification = 153108
-        [deprecated = true];
-    SyncedNotificationAppInfoSpecifics synced_notification_app_info = 235816
-        [deprecated = true];
     DeviceInfoSpecifics device_info = 154522;
-    // TODO(crbug.com/1009361): |experiments| isn't used by the client anymore,
-    // but the server still needs it for now.
-    ExperimentsSpecifics experiments = 161496 [deprecated = true];
     PriorityPreferenceSpecifics priority_preference = 163425;
     DictionarySpecifics dictionary = 170540;
-    FaviconTrackingSpecifics favicon_tracking = 181534 [deprecated = true];
-    FaviconImageSpecifics favicon_image = 182019 [deprecated = true];
     ManagedUserSettingSpecifics managed_user_setting = 186662;
-    // TODO(tschumann): Remove once server-side dependencies are resolved.
-    ManagedUserSpecifics managed_user = 194582 [deprecated = true];
-    // TODO(tschumann): Remove once server-side dependencies are resolved.
-    ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
-        [deprecated = true];
     AppListSpecifics app_list = 229170;
-    EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     AutofillWalletSpecifics autofill_wallet = 306270;
     WalletMetadataSpecifics wallet_metadata = 330441;
     ArcPackageSpecifics arc_package = 340906;
@@ -159,8 +134,6 @@ message EntitySpecifics {
     SharingMessageSpecifics sharing_message = 728866;
     AutofillOfferSpecifics autofill_offer = 774329;
     WorkspaceDeskSpecifics workspace_desk = 874841;
-    // This is not included in model_type.h because it's currently only used by
-    // the server and by Play Services. (crbug.com/1223853)
     WebauthnCredentialSpecifics webauthn_credential = 895275;
     HistorySpecifics history = 963985;
     PrintersAuthorizationServerSpecifics printers_authorization_server = 974304;
@@ -169,6 +142,21 @@ message EntitySpecifics {
     ContactInfoSpecifics contact_info = 1034378;
     SegmentationSpecifics segmentation = 1026052;
     PowerBookmarkSpecifics power_bookmark = 1073150;
+
+    // No-longer-supported data types, in various stages of removal.
+    // TODO(crbug.com/1395003): Eventually, these should all become "reserved"
+    // fields, or at least use "EmptySpecifics". But some of them are still
+    // needed by the server, e.g. to support older clients.
+    EmptySpecifics app_notification = 45184 [deprecated = true];
+    EmptySpecifics synced_notification = 153108 [deprecated = true];
+    EmptySpecifics synced_notification_app_info = 235816 [deprecated = true];
+    ExperimentsSpecifics experiments = 161496 [deprecated = true];
+    FaviconTrackingSpecifics favicon_tracking = 181534 [deprecated = true];
+    FaviconImageSpecifics favicon_image = 182019 [deprecated = true];
+    EmptySpecifics managed_user = 194582 [deprecated = true];
+    ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
+        [deprecated = true];
+    EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
   }
   reserved 218175;
   reserved "wifi_credential";

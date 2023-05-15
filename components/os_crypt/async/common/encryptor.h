@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -30,15 +31,16 @@ class KeyDataView;
 
 class EncryptorTestBase;
 class OSCryptAsync;
+class TestOSCryptAsync;
 
 // This class is used for data encryption. A thread-safe instance can be
 // obtained by calling `os_crypt_async::OSCryptAsync::GetInstance`.
-class Encryptor {
+class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
  public:
   // A class used by the Encryptor to hold an encryption key and carry out
   // encryption and decryption operations using the specified Algorithm and
   // encryption key.
-  class Key {
+  class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Key {
    public:
     // Moveable, not copyable.
     Key(Key&& other);
@@ -110,6 +112,7 @@ class Encryptor {
                                    std::string* plaintext) const;
 
  private:
+  friend class TestOSCryptAsync;
   friend class EncryptorTestBase;
   friend class OSCryptAsync;
   friend struct mojo::StructTraits<os_crypt_async::mojom::EncryptorDataView,

@@ -14,11 +14,13 @@ ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   return ProcessLock(SiteInfo(
-      GURL(), GURL(), false, false /* is_sandboxed */,
-      UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
-      web_exposed_isolation_info, /* is_guest */ false,
-      /* does_site_request_dedicated_process_for_coop */ false,
-      /* is_jit_disabled */ false, /* is_pdf */ false, /* is_fenced */ false));
+      GURL(), GURL(), /*requires_origin_keyed_process=*/false,
+      /*requires_origin_keyed_process_by_default=*/false,
+      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+      storage_partition_config, web_exposed_isolation_info,
+      /*is_guest=*/false,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false));
 }
 
 // static

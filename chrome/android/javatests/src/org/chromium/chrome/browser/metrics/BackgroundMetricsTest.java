@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;

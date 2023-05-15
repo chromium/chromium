@@ -47,7 +47,7 @@
   _urlLoadParams.web_params.url = _urlLoadParams.web_params.url.EmptyGURL();
 }
 
-- (void)openTabFromLaunchWithParams:(NSDictionary*)launchOptions
+- (void)openTabFromLaunchWithParams:(URLOpenerParams*)params
                  startupInformation:(id<StartupInformation>)startupInformation
                            appState:(AppState*)appState {
   // Stub.

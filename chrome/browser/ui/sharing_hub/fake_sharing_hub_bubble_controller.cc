@@ -30,16 +30,6 @@ FakeSharingHubBubbleController::GetFirstPartyActions() {
   return first_party_actions_;
 }
 
-bool FakeSharingHubBubbleController::ShouldUsePreview() {
-  return true;
-}
-
-base::CallbackListSubscription
-FakeSharingHubBubbleController::RegisterPreviewImageChangedCallback(
-    PreviewImageChangedCallback callback) {
-  return preview_changed_callbacks_.Add(callback);
-}
-
 base::WeakPtr<SharingHubBubbleController>
 FakeSharingHubBubbleController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

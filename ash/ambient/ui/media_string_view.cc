@@ -188,7 +188,7 @@ void MediaStringView::InitLayout() {
   text_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
   text_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   text_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  observed_view_.Observe(media_text_container_);
+  observed_view_.Observe(media_text_container_.get());
 
   media_text_ =
       media_text_container_->AddChildView(std::make_unique<views::Label>());

@@ -34,6 +34,11 @@ bool ShouldCreateDevToolsAgentHost(WebContents* wc) {
 }  // namespace
 
 // static
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForTab(WebContents* wc) {
+  return WebContentsDevToolsAgentHost::GetFor(wc);
+}
+
+// static
 scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetOrCreateForTab(
     WebContents* wc) {
   return WebContentsDevToolsAgentHost::GetOrCreateFor(wc);
@@ -42,8 +47,7 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetOrCreateForTab(
 class WebContentsDevToolsAgentHost::AutoAttacher
     : public protocol::TargetAutoAttacher {
  public:
-  explicit AutoAttacher(WebContents* web_contents)
-      : web_contents_(web_contents) {}
+  AutoAttacher() = default;
 
   void PortalActivated(const Portal& portal) {
     if (web_contents_ == portal.GetPortalHostContents())
@@ -69,6 +73,11 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     DispatchAutoAttach(host.get(), wait_for_debugger_on_start());
   }
 
+  void SetWebContents(WebContents* wc) {
+    web_contents_ = wc;
+    UpdateAssociatedPages();
+  }
+
  private:
   void UpdateAutoAttach(base::OnceClosure callback) override {
     UpdateAssociatedPages();
@@ -77,7 +86,7 @@ class WebContentsDevToolsAgentHost::AutoAttacher
 
   base::flat_set<scoped_refptr<DevToolsAgentHost>> UpdateAssociatedPages() {
     base::flat_set<scoped_refptr<DevToolsAgentHost>> hosts;
-    if (auto_attach()) {
+    if (auto_attach() && web_contents_) {
       auto* rfh = static_cast<RenderFrameHostImpl*>(
           web_contents_->GetPrimaryMainFrame());
       for (auto* portal : rfh->GetPortals()) {
@@ -113,7 +122,7 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn));
   }
 
-  WebContents* web_contents_;
+  WebContents* web_contents_ = nullptr;
 };
 
 // static
@@ -142,16 +151,40 @@ void WebContentsDevToolsAgentHost::AddAllAgentHosts(
 
 WebContentsDevToolsAgentHost::WebContentsDevToolsAgentHost(WebContents* wc)
     : DevToolsAgentHostImpl(base::UnguessableToken::Create().ToString()),
-      WebContentsObserver(wc),
-      auto_attacher_(std::make_unique<AutoAttacher>(wc)) {
-  DCHECK(web_contents());
-  bool inserted =
+      auto_attacher_(std::make_unique<AutoAttacher>()) {
+  InnerAttach(wc);
+  NotifyCreated();
+}
+
+void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
+  CHECK(!web_contents());
+  // With ConnectWebContents(), we may be attaching to a WC that has
+  // a different host created.
+  // TODO(caseq): find a better solution. See also a similar comment in
+  // RenderFrameDevToolsAgentHost::SetFrameTreeNode();
+  auto prev_entry = g_agent_host_instances.Get().find(wc);
+  if (prev_entry != g_agent_host_instances.Get().end()) {
+    CHECK_NE(prev_entry->second, this);
+    prev_entry->second->InnerDetach();
+  }
+  const bool inserted =
       g_agent_host_instances.Get().insert(std::make_pair(wc, this)).second;
-  DCHECK(inserted);
-  // Once created, persist till underlying WC is destroyed, so that
+  CHECK(inserted);
+  auto_attacher_->SetWebContents(wc);
+  Observe(wc);
+  // Once created, persist till underlying WC is detached, so that
   // the target id is retained.
   AddRef();
-  NotifyCreated();
+}
+
+void WebContentsDevToolsAgentHost::InnerDetach() {
+  DCHECK_EQ(this, FindAgentHost(web_contents()));
+  auto_attacher_->SetWebContents(nullptr);
+  g_agent_host_instances.Get().erase(web_contents());
+  Observe(nullptr);
+  // We may or may not be destruced here, depending on embedders
+  // potentially retaining references.
+  Release();
 }
 
 void WebContentsDevToolsAgentHost::PortalActivated(const Portal& portal) {
@@ -166,18 +199,15 @@ void WebContentsDevToolsAgentHost::PortalActivated(const Portal& portal) {
     g_agent_host_instances.Get()[new_wc] = this;
     Observe(portal.GetPortalContents());
   }
-  DCHECK(auto_attacher_);
   auto_attacher_->PortalActivated(portal);
 }
 
 void WebContentsDevToolsAgentHost::WillInitiatePrerender(FrameTreeNode* ftn) {
-  DCHECK(auto_attacher_);
   auto_attacher_->WillInitiatePrerender(ftn);
 }
 
 void WebContentsDevToolsAgentHost::UpdateChildFrameTrees(
     bool update_target_info) {
-  DCHECK(auto_attacher_);
   auto_attacher_->UpdateChildFrameTrees(update_target_info);
 }
 
@@ -194,12 +224,12 @@ WebContentsDevToolsAgentHost::~WebContentsDevToolsAgentHost() {
 }
 
 void WebContentsDevToolsAgentHost::DisconnectWebContents() {
-  NOTREACHED();
+  InnerDetach();
 }
 
 void WebContentsDevToolsAgentHost::ConnectWebContents(
     WebContents* web_contents) {
-  NOTREACHED();
+  InnerAttach(web_contents);
 }
 
 BrowserContext* WebContentsDevToolsAgentHost::GetBrowserContext() {
@@ -320,14 +350,18 @@ WebContentsDevToolsAgentHost::GetOrCreatePrimaryFrameAgent() {
 }
 
 void WebContentsDevToolsAgentHost::WebContentsDestroyed() {
-  DCHECK_EQ(this, FindAgentHost(web_contents()));
   auto retain_this = ForceDetachAllSessionsImpl();
-  auto_attacher_.reset();
-  g_agent_host_instances.Get().erase(web_contents());
-  Observe(nullptr);
-  // We may or may not be destruced here, depending on embedders
-  // potentially retaining references.
-  Release();
+  InnerDetach();
+}
+
+void WebContentsDevToolsAgentHost::RenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
+  CHECK(web_contents());
+  if (new_host == web_contents()->GetPrimaryMainFrame()) {
+    std::ignore = RevalidateSessionAccess();
+    // `this` is invalid at this point!
+  }
 }
 
 // DevToolsAgentHostImpl overrides.
@@ -337,9 +371,10 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
 
 bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                  bool acquire_wake_lock) {
-  // TODO(caseq): figure out if this can be a CHECK().
-  if (!web_contents())
+  if (web_contents() && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
+                            web_contents()->GetPrimaryMainFrame(), session)) {
     return false;
+  }
   session->SetBrowserOnly(true);
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::TargetHandler>(
@@ -351,8 +386,28 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
 }
 
 protocol::TargetAutoAttacher* WebContentsDevToolsAgentHost::auto_attacher() {
-  DCHECK(!!auto_attacher_ == !!web_contents());
+  DCHECK(auto_attacher_);
   return auto_attacher_.get();
+}
+
+scoped_refptr<WebContentsDevToolsAgentHost>
+WebContentsDevToolsAgentHost::RevalidateSessionAccess() {
+  scoped_refptr<WebContentsDevToolsAgentHost> retain_this(this);
+  WebContents* wc = web_contents();
+  if (!wc) {
+    return retain_this;
+  }
+  std::vector<DevToolsSession*> restricted_sessions;
+  for (DevToolsSession* session : sessions()) {
+    if (!RenderFrameDevToolsAgentHost::ShouldAllowSession(
+            wc->GetPrimaryMainFrame(), session)) {
+      restricted_sessions.push_back(session);
+    }
+  }
+  if (!restricted_sessions.empty()) {
+    ForceDetachRestrictedSessions(restricted_sessions);
+  }
+  return retain_this;
 }
 
 }  // namespace content

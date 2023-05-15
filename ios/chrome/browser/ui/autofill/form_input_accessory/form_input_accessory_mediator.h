@@ -10,8 +10,8 @@
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/branding_view_controller_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @class ChromeCoordinator;
@@ -35,6 +35,12 @@ class WebStateList;
 
 // The mediator detected that the keyboard input view should be reset.
 - (void)resetFormInputView;
+
+// The mediator shows autofill suggestion tip if needed.
+- (void)showAutofillSuggestionIPHIfNeeded;
+
+// The mediator notifies that the autofill suggestion has been selected.
+- (void)notifyAutofillSuggestionWithIPHSelected;
 
 @end
 

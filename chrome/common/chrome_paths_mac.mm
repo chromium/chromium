@@ -19,11 +19,14 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
-// Return a retained (NOT autoreleased) NSBundle* as the internal
-// implementation of chrome::OuterAppBundle(), which should be the only
-// caller.
+// Return an NSBundle* as the internal implementation of
+// chrome::OuterAppBundle(), which should be the only caller.
 NSBundle* OuterAppBundleInternal() {
   @autoreleasepool {
     if (!base::mac::AmIBundled()) {
@@ -33,7 +36,7 @@ NSBundle* OuterAppBundleInternal() {
 
     if (!base::mac::IsBackgroundOnlyProcess()) {
       // Shortcut: in the browser process, just return the main app bundle.
-      return [[NSBundle mainBundle] retain];
+      return NSBundle.mainBundle;
     }
 
     // From C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4, go up five
@@ -43,13 +46,13 @@ NSBundle* OuterAppBundleInternal() {
         framework_path.DirName().DirName().DirName().DirName().DirName();
     NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
 
-    return [[NSBundle bundleWithPath:outer_app_dir_ns] retain];
+    return [NSBundle bundleWithPath:outer_app_dir_ns];
   }
 }
 
 char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
   @autoreleasepool {
-    const char* product_dir_name = NULL;
+    const char* product_dir_name = nullptr;
 
     NSString* product_dir_name_ns =
         [chrome_bundle objectForInfoDictionaryKey:@"CrProductDirName"];
@@ -81,7 +84,7 @@ std::string ProductDirName() {
   // in the main app's bundle because it will be set differently on the canary
   // channel, and the autoupdate system dictates that there can be no
   // differences between channels within the versioned directory. This would
-  // normally use base::mac::FrameworkBundle(), but that references the
+  // normally use base::apple::FrameworkBundle(), but that references the
   // framework bundle within the versioned directory. Ordinarily, the profile
   // should not be accessed from non-browser processes, but those processes do
   // attempt to get the profile directory, so direct them to look in the outer
@@ -209,14 +212,12 @@ bool GetGlobalApplicationSupportDirectory(base::FilePath* result) {
 }
 
 NSBundle* OuterAppBundle() {
-  // Cache this. Foundation leaks it anyway, and this should be the only call
-  // to OuterAppBundleInternal().
   static NSBundle* bundle = OuterAppBundleInternal();
   return bundle;
 }
 
 bool ProcessNeedsProfileDir(const std::string& process_type) {
-  // For now we have no reason to forbid this on other MacOS as we don't
+  // For now we have no reason to forbid this on other macOS as we don't
   // have the roaming profile troubles there.
   return true;
 }

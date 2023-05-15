@@ -194,6 +194,11 @@ Polymer({
   },
 
   /** @private */
+  onResetApnMigratorClick_() {
+    this.browserProxy_.resetApnMigrator();
+  },
+
+  /** @private */
   showAddNewWifi_() {
     this.browserProxy_.showAddNewWifi();
   },

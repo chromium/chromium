@@ -33,10 +33,11 @@ namespace proto {
 class StoreEntry;
 }  // namespace proto
 
-// The HintCache backing store, which is responsible for storing all hints that
-// are locally available. While the HintCache itself may retain some hints in a
-// memory cache, all of its hints are initially loaded asynchronously by the
-// store. All calls to this store must be made from the same thread.
+// The backing store for hints and models, which is responsible for storing all
+// hints and models locally on-device. While the HintCache itself may retain
+// some hints in a memory cache, all of its hints are initially loaded
+// asynchronously by the store. All calls to this store must be made from the
+// same thread.
 class OptimizationGuideStore {
  public:
   using HintLoadedCallback =
@@ -89,14 +90,25 @@ class OptimizationGuideStore {
     kMaxValue = kDeprecatedHostModelFeatures,
   };
 
+  // Creates a hint store.
   OptimizationGuideStore(
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner,
       PrefService* pref_service);
-  // For tests only.
-  explicit OptimizationGuideStore(
+
+  // Creates a model store.
+  OptimizationGuideStore(
+      leveldb_proto::ProtoDatabaseProvider* database_provider,
+      const base::FilePath& database_dir,
+      const base::FilePath& base_model_store_dir,
+      scoped_refptr<base::SequencedTaskRunner> store_task_runner,
+      PrefService* pref_service);
+
+  // Creates a model store. For tests only.
+  OptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
+      const base::FilePath& base_model_store_dir,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner,
       PrefService* pref_service);
 
@@ -445,6 +457,11 @@ class OptimizationGuideStore {
 
   // The keys of the entries available within the store.
   std::unique_ptr<EntryKeySet> entry_keys_;
+
+  // The base model store dir where all the models are stored. Populated only
+  // when |this| is used as model store. Will be empty path for hint cache
+  // store.
+  const base::FilePath base_model_store_dir_;
 
   // The background task runner used to perform operations on the store.
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;

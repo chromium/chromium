@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/exo/surface_observer.h"
@@ -93,8 +94,8 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   void Analyze(base::TimeDelta tracing_period);
 
   // Unowned pointers.
-  ArcAppPerformanceTracing* const owner_;
-  aura::Window* const window_;
+  const raw_ptr<ArcAppPerformanceTracing, ExperimentalAsh> owner_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // Used for automatic observer adding/removing.
   std::unique_ptr<exo::ScopedSurface> scoped_surface_;

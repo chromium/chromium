@@ -521,7 +521,7 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
         *browser_context_impl->pref_service());
 
     if (is_safe_browsing_enabled) {
-      bool is_real_time_lookup_enabled =
+      bool is_url_real_time_lookup_enabled =
           safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(
               browser_context_impl->pref_service(),
               browser_context_impl->IsOffTheRecord(),
@@ -529,7 +529,7 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
 
       // |url_lookup_service| is used when real time url check is enabled.
       safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
-          is_real_time_lookup_enabled
+          is_url_real_time_lookup_enabled
               ? RealTimeUrlLookupServiceFactory::GetForBrowserContext(
                     browser_context)
               : nullptr;

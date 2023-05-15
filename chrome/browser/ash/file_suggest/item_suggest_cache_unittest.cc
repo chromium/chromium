@@ -8,6 +8,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -142,19 +144,20 @@ class ItemSuggestCacheTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  signin::IdentityTestEnvironment* identity_test_env_;
+  raw_ptr<signin::IdentityTestEnvironment, ExperimentalAsh> identity_test_env_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   ScopedFeatureList scoped_feature_list_;
-  const base::Feature& feature_ = kLauncherItemSuggest;
+  const raw_ref<const base::Feature, ExperimentalAsh> feature_{
+      kLauncherItemSuggest};
 
   const base::HistogramTester histogram_tester_;
 };
@@ -221,7 +224,7 @@ TEST_F(ItemSuggestCacheTest, ConvertJsonFailure) {
 
 TEST_F(ItemSuggestCacheTest, UpdateCacheDisabledByExperiment) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      feature_, {{"enabled", "false"}});
+      *feature_, {{"enabled", "false"}});
   std::unique_ptr<ItemSuggestCache> item_suggest_cache =
       std::make_unique<ItemSuggestCache>("en", profile_,
                                          shared_url_loader_factory_);
@@ -244,7 +247,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheDisabledByPolicy) {
 
 TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotHttps) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      feature_,
+      *feature_,
       {{"server_url", "http://appsitemsuggest-pa.googleapis.com/v1/items"}});
   std::unique_ptr<ItemSuggestCache> item_suggest_cache =
       std::make_unique<ItemSuggestCache>("en", profile_,
@@ -257,7 +260,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotHttps) {
 
 TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotGoogleDomain) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      feature_, {{"server_url", "https://foo.com"}});
+      *feature_, {{"server_url", "https://foo.com"}});
   std::unique_ptr<ItemSuggestCache> item_suggest_cache =
       std::make_unique<ItemSuggestCache>("en", profile_,
                                          shared_url_loader_factory_);

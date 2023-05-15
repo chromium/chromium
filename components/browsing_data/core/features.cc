@@ -14,4 +14,8 @@ BASE_FEATURE(kEnableBrowsingDataLifetimeManager,
 BASE_FEATURE(kDeprecateCookiesTreeModel,
              "DeprecateCookiesTreeModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataRetentionPoliciesDisableSyncTypesNeeded,
+             "DataRetentionPoliciesDisableSyncTypesNeeded",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace browsing_data::features

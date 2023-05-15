@@ -8,6 +8,8 @@
 #include <unknwn.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 namespace elevation_service {
 
 // Installs an implementation of IServerSecurity that allows code under test to
@@ -23,7 +25,9 @@ class ScopedMockContext {
 
  private:
   Microsoft::WRL::ComPtr<IUnknown> mock_call_context_;
-  IUnknown* original_call_context_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION IUnknown* original_call_context_ = nullptr;
 };
 
 }  // namespace elevation_service

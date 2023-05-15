@@ -193,8 +193,10 @@ s! {
 
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
+pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
 
 align_const! {
     #[cfg(target_endian = "little")]
@@ -325,8 +327,6 @@ pub const SYS_vmsplice: ::c_long = 75;
 pub const SYS_splice: ::c_long = 76;
 pub const SYS_tee: ::c_long = 77;
 pub const SYS_readlinkat: ::c_long = 78;
-pub const SYS_newfstatat: ::c_long = 79;
-pub const SYS_fstat: ::c_long = 80;
 pub const SYS_sync: ::c_long = 81;
 pub const SYS_fsync: ::c_long = 82;
 pub const SYS_fdatasync: ::c_long = 83;
@@ -409,8 +409,6 @@ pub const SYS_setgroups: ::c_long = 159;
 pub const SYS_uname: ::c_long = 160;
 pub const SYS_sethostname: ::c_long = 161;
 pub const SYS_setdomainname: ::c_long = 162;
-pub const SYS_getrlimit: ::c_long = 163;
-pub const SYS_setrlimit: ::c_long = 164;
 pub const SYS_getrusage: ::c_long = 165;
 pub const SYS_umask: ::c_long = 166;
 pub const SYS_prctl: ::c_long = 167;
@@ -772,8 +770,8 @@ pub const EXTPROC: ::tcflag_t = 0x00010000;
 pub const TCSANOW: ::c_int = 0;
 pub const TCSADRAIN: ::c_int = 1;
 pub const TCSAFLUSH: ::c_int = 2;
-pub const SIGSTKSZ: ::size_t = 8192;
-pub const MINSIGSTKSZ: ::size_t = 2048;
+pub const SIGSTKSZ: ::size_t = 16384;
+pub const MINSIGSTKSZ: ::size_t = 4096;
 pub const CBAUD: ::tcflag_t = 0o0010017;
 pub const CSIZE: ::tcflag_t = 0x00000030;
 pub const CS6: ::tcflag_t = 0x00000010;
@@ -857,17 +855,6 @@ pub const EPOLL_CLOEXEC: ::c_int = 0x80000;
 
 pub const EFD_CLOEXEC: ::c_int = 0x80000;
 pub const EFD_NONBLOCK: ::c_int = 0x800;
-
-extern "C" {
-    pub fn sysctl(
-        name: *mut ::c_int,
-        namelen: ::c_int,
-        oldp: *mut ::c_void,
-        oldlenp: *mut ::size_t,
-        newp: *mut ::c_void,
-        newlen: ::size_t,
-    ) -> ::c_int;
-}
 
 cfg_if! {
     if #[cfg(libc_align)] {

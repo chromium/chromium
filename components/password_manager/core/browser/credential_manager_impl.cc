@@ -121,7 +121,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     return;
   }
   // Return an empty credential for incognito mode.
-  if (client_->IsIncognito()) {
+  if (client_->IsOffTheRecord()) {
     // Callback with empty credential info.
     std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
     LogCredentialManagerGetResult(
@@ -154,7 +154,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
 }
 
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
-  return client_->IsAutoSignInEnabled() && !client_->IsIncognito();
+  return client_->IsAutoSignInEnabled() && !client_->IsOffTheRecord();
 }
 
 PasswordFormDigest CredentialManagerImpl::GetSynthesizedFormForOrigin() const {

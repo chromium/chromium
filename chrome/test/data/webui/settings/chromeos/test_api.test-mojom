@@ -27,6 +27,9 @@ interface LockScreenSettings {
   // Crashes if authentication succeeds.
   AuthenticateIncorrectly(string password) => ();
 
+  // Checks whether a control for recovery is available or not.
+  AssertRecoveryControlAvailability(bool is_available) => ();
+
   // Checks whether a control for recovery is visible or not.
   AssertRecoveryControlVisibility(bool is_visible) => ();
 
@@ -126,6 +129,9 @@ interface LockScreenSettings {
 
   // Asserts that the auto screen lock control is currently focused.
   AssertAutoLockScreenFocused() => ();
+
+  // Asserts when lock screen notification setting is not in focus.
+  AssertLockScreenNotificationFocused() => ();
 };
 
 // The interface used to control Google drive settings.
@@ -134,6 +140,14 @@ interface GoogleDriveSettings {
   // the supplied values.
   AssertBulkPinningSpace(string required_space,
       string remaining_space) => ();
+
+  // Asserts the values returned from the Google drive PageHandler match the
+  // values returned on the JS element.
+  AssertBulkPinningPinnedSize(string pinned_size) => ();
+
+  // Click the clear offline files button and then wait until the new size has
+  // updated correctly.
+  ClickClearOfflineFilesAndAssertNewSize(string new_size) => ();
 };
 
 // An interface that allows clients to manipulate the os settings ui. Served by

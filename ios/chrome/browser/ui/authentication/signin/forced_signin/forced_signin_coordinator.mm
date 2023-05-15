@@ -8,8 +8,8 @@
 
 #import "base/notreached.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -113,8 +113,12 @@
       return [[SigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
-                            showFREConsent:NO
-                                  delegate:self];
+                                  delegate:self
+                               accessPoint:signin_metrics::AccessPoint::
+                                               ACCESS_POINT_FORCED_SIGNIN
+                               promoAction:signin_metrics::PromoAction::
+                                               PROMO_ACTION_NO_SIGNIN_PROMO];
+    case kHistorySync:
     case kTangibleSync:
     case kDefaultBrowserPromo:
     case kStepsCompleted:

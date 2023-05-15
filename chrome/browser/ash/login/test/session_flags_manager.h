@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
-class Value;
 }  // namespace base
 
-namespace ash {
-namespace test {
+namespace ash::test {
 
 // Test helper that sets up command line for login tests. By default, it
 // initializes the command line so tests start on the login manager.
@@ -86,7 +85,8 @@ class SessionFlagsManager {
 
   void LoadStateFromBackingFile();
   void StoreStateToBackingFile();
-  base::Value GetSwitchesValueFromArgv(const std::vector<std::string>& argv);
+  base::Value::List GetSwitchesValueFromArgv(
+      const std::vector<std::string>& argv);
 
   // The mode this manager is running in.
   Mode mode_ = Mode::LOGIN_SCREEN;
@@ -112,7 +112,6 @@ class SessionFlagsManager {
   base::FilePath backing_file_;
 };
 
-}  // namespace test
-}  // namespace ash
+}  // namespace ash::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_FLAGS_MANAGER_H_

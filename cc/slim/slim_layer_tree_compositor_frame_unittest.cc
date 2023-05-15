@@ -31,10 +31,12 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/test/draw_quad_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -1908,6 +1910,265 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NonRootPassDamage) {
                                   viz::HasVisibleRect(viewport_),
                                   viz::HasTransform(gfx::Transform()))));
     EXPECT_EQ(pass->damage_rect, gfx::Rect(25, 25, 50, 50));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, SimpleRoundedCorner) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  solid_color_layer->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
+  solid_color_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(solid_color_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                        viz::HasRect(gfx::Rect(50, 50)),
+                        viz::HasTransform(
+                            gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  auto* quad = pass->quad_list.front();
+  auto* shared_quad_state = quad->shared_quad_state;
+  EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+  EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+  EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+            gfx::RRectF(10.0f, 10.0f, 50.0f, 50.0f, 20.0f));
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, RoundedCornerWithChild) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto rounded_corner_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
+  rounded_corner_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(rounded_corner_layer);
+
+  auto child = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kBlue);
+  child->SetPosition(gfx::PointF(10.0f, 10.0f));
+  rounded_corner_layer->AddChild(child);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kBlue),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasVisibleRect(gfx::Rect(40, 40)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(20.0f, 20.0f))),
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kRed),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                viz::HasVisibleRect(viewport_),
+                viz::HasTransform(gfx::Transform()))));
+
+  const gfx::RRectF expected_rounded_conrer_in_target(10.0f, 10.0f, 50.0f,
+                                                      50.0f, 20.0f);
+  {
+    auto* quad = pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              expected_rounded_conrer_in_target);
+  }
+
+  {
+    auto* quad = pass->quad_list.ElementAt(1u);
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              expected_rounded_conrer_in_target);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedRoundedCorner) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto rounded_corner_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
+  rounded_corner_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  gfx::Transform transform;
+  transform.Rotate(45);
+  rounded_corner_layer->SetTransform(transform);
+  root_layer->AddChild(rounded_corner_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+
+  auto& child_pass = frame.render_pass_list.front();
+  ASSERT_THAT(child_pass->quad_list,
+              ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                viz::HasRect(gfx::Rect(50, 50)),
+                                viz::HasVisibleRect(gfx::Rect(50, 50)),
+                                viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = child_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              gfx::RRectF(0.0f, 0.0f, 50.0f, 50.0f, 20.0f));
+  }
+
+  auto& root_pass = frame.render_pass_list.back();
+  gfx::Transform child_pass_transform =
+      gfx::Transform::MakeTranslation(25.0f, 25.0f);
+  child_pass_transform.PreConcat(transform);
+  child_pass_transform.PreConcat(
+      gfx::Transform::MakeTranslation(-25.0f, -25.0f));
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                        viz::HasRect(gfx::Rect(50, 50)),
+                        viz::HasTransform(child_pass_transform)),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = root_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_FALSE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, RoundedCornerOnParentAndChild) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto parent = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  parent->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
+  parent->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(parent);
+
+  auto child = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kBlue);
+  child->SetPosition(gfx::PointF(10.0f, 10.0f));
+  child->SetRoundedCorner(gfx::RoundedCornersF(15.0f));
+  parent->AddChild(child);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+
+  auto& child_pass = frame.render_pass_list.front();
+  ASSERT_THAT(child_pass->quad_list,
+              ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                viz::HasRect(gfx::Rect(50, 50)),
+                                viz::HasVisibleRect(gfx::Rect(40, 40)),
+                                viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = child_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              gfx::RRectF(0.0f, 0.0f, 50.0f, 50.0f, 15.0f));
+  }
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(
+          AllOf(
+              viz::IsCompositorRenderPassQuad(child_pass->id),
+              viz::HasRect(gfx::Rect(40, 40)),
+              viz::HasVisibleRect(gfx::Rect(40, 40)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(20.0f, 20.0f))),
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kRed),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                viz::HasVisibleRect(viewport_),
+                viz::HasTransform(gfx::Transform()))));
+
+  const gfx::RRectF expected_rounded_conrer_in_target(10.0f, 10.0f, 50.0f,
+                                                      50.0f, 20.0f);
+  {
+    auto* quad = root_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              expected_rounded_conrer_in_target);
+  }
+
+  {
+    auto* quad = root_pass->quad_list.ElementAt(1u);
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
+    EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+              expected_rounded_conrer_in_target);
+  }
+}
+
+// Testing that {Add|Remove}SurfaceRange should trigger a draw via
+// `SetNeedsDraw`, where the added or removed surface range should be reflected
+// in the metadata of the next frame's metadata.
+TEST_F(SlimLayerTreeCompositorFrameTest,
+       AddRemoveSurfaceRangesTriggerSetNeedsDraw) {
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+  surface_layer->SetContentsOpaque(true);
+  layer_tree_->SetRoot(surface_layer);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 6u, token));
+  cc::DeadlinePolicy deadline_policy = cc::DeadlinePolicy::UseDefaultDeadline();
+  surface_layer->SetOldestAcceptableFallback(start);
+  surface_layer->SetSurfaceId(end, deadline_policy);
+
+  // Add/remove a SurfaceRange different from the one of the `surface_layer`.
+  {
+    layer_tree_->AddSurfaceRange(viz::SurfaceRange(end, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end),
+                                              viz::SurfaceRange(end, end)));
+  }
+  {
+    layer_tree_->RemoveSurfaceRange(viz::SurfaceRange(end, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
+  }
+
+  // Add/remove a SurfaceRange that's the same as the one of the
+  // `surface_layer`. Since the ranges are the same, only one range entry is
+  // referenced in the metadata.
+  {
+    layer_tree_->AddSurfaceRange(viz::SurfaceRange(start, end));
+
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
+  }
+  {
+    layer_tree_->RemoveSurfaceRange(viz::SurfaceRange(start, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
   }
 }
 

@@ -13,7 +13,6 @@ class DexTest(unittest.TestCase):
     # pylint: disable=line-too-long
     output = """\
 some initial message
-Warning: Specification conversion: The following prefixes do not match any type: [Ljava/util/Desugar]
 Warning in ../../clank/third_party/google3/pg_confs/java_com_google_protobuf_lite_proguard.pgcfg:
 Rule matches the static final field `java.lang.String com.google.protobuf.BaseGeneratedExtensionRegistryLite.CONTAINING_TYPE_0`, which may have been inlined: -identifiernamestring class com.google.protobuf.*GeneratedExtensionRegistryLite {
   static java.lang.String CONTAINING_TYPE_*;
@@ -27,10 +26,12 @@ Missing class com.google.android.gms.feedback.ApplicationProperties (referenced 
     expected = """\
 some initial message
 Warning: some message
+Missing class com.google.android.gms.feedback.ApplicationProperties (referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension com.google.protobuf.BaseGeneratedExtensionRegistryLite.findLiteExtensionByNumber(com.google.protobuf.MessageLite, int))
 """
     # pylint: enable=line-too-long
-    filter_func = dex.CreateStderrFilter(
-        show_desugar_default_interface_warnings=False)
+    filters = (dex.DEFAULT_IGNORE_WARNINGS +
+               ('CONTAINING_TYPE_', 'libcore', 'PublicStopClientEvent'))
+    filter_func = dex.CreateStderrFilter(filters)
     self.assertEqual(filter_func(output), expected)
 
     # Test no preamble, not filtered.
@@ -40,7 +41,7 @@ Warning: some message
 
     # Test no preamble, filtered
     output = """\
-Warning: Specification conversion: The following prefixes do not ...
+Warning: PublicStopClientEvent is hungry.
 """
     expected = ''
     self.assertEqual(filter_func(output), expected)

@@ -103,14 +103,6 @@ bool HasMultipleWords(const std::u16string& text) {
   return false;
 }
 
-bool IsSearchEngineGoogle(const TemplateURL* template_url,
-                          const AutocompleteProviderClient* client) {
-  return template_url && client &&
-         template_url->GetEngineType(
-             client->GetTemplateURLService()->search_terms_data()) ==
-             SEARCH_ENGINE_GOOGLE;
-}
-
 }  // namespace
 
 // SearchProvider::Providers --------------------------------------------------
@@ -444,7 +436,7 @@ void SearchProvider::OnURLLoadComplete(
   // request we're constructing here for on-focus inputs.
   if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       request_succeeded) {
-    absl::optional<base::Value> data =
+    absl::optional<base::Value::List> data =
         SearchSuggestionParser::DeserializeJsonData(
             SearchSuggestionParser::ExtractJsonData(source,
                                                     std::move(response_body)));
@@ -532,7 +524,9 @@ void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
   // only about the common case: the Google default provider used in
   // non-keyword mode.
   if (!is_keyword &&
-      IsSearchEngineGoogle(providers_.GetDefaultProviderURL(), client())) {
+      search::TemplateURLIsGoogle(
+          providers_.GetDefaultProviderURL(),
+          client()->GetTemplateURLService()->search_terms_data())) {
     const base::TimeDelta elapsed_time =
         base::TimeTicks::Now() - time_suggest_request_sent_;
     if (success) {
@@ -993,6 +987,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     SearchSuggestionParser::SuggestResult verbatim(
         /*suggestion=*/trimmed_verbatim,
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
         /*subtypes=*/{}, /*from_keyword=*/false, verbatim_relevance,
         relevance_from_server,
         /*input_text=*/trimmed_verbatim);
@@ -1027,6 +1022,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         SearchSuggestionParser::SuggestResult verbatim(
             /*suggestion=*/trimmed_verbatim,
             AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+            /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
             /*subtypes=*/{}, /*from_keyword=*/true, keyword_verbatim_relevance,
             keyword_relevance_from_server,
             /*input_text=*/trimmed_verbatim);
@@ -1209,7 +1205,9 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
     }
     SearchSuggestionParser::SuggestResult history_suggestion(
         /*suggestion=*/trimmed_suggestion,
-        AutocompleteMatchType::SEARCH_HISTORY, {}, is_keyword, relevance,
+        AutocompleteMatchType::SEARCH_HISTORY,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
+        is_keyword, relevance,
         /*relevance_from_server=*/false, /*input_text=*/trimmed_input);
     // History results are synchronous; they are received on the last keystroke.
     history_suggestion.set_received_after_last_keystroke(false);
@@ -1350,17 +1348,13 @@ int SearchProvider::GetVerbatimRelevance(bool* relevance_from_server) const {
 }
 
 bool SearchProvider::ShouldCurbDefaultSuggestions() const {
-  // Only curb if the global experimental keyword feature is enabled, we're
-  // in keyword mode and we believe the user selected the mode explicitly.
+  // Only curb if we're in keyword mode and we believe the user selected the
+  // mode explicitly.
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-        (turl->starter_pack_id() > 0)) {
-      return true;
-    }
-    return InExplicitExperimentalKeywordMode(input_,
-                                             providers_.keyword_provider());
+    return (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+            (turl->starter_pack_id() > 0));
   } else {
     return false;
   }
@@ -1458,6 +1452,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   AutocompleteMatch match(this, navigation.relevance(), false,
                           navigation.type());
   match.destination_url = navigation.url();
+  match.suggest_type = navigation.suggest_type();
   for (const int subtype : navigation.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
   }

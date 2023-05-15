@@ -118,14 +118,14 @@ void ServiceController::Initialize(
     return;
   }
 
-  auto assistant_manager = libassistant_factory_.CreateAssistantManager(
+  auto assistant_manager = libassistant_factory_->CreateAssistantManager(
       ToLibassistantConfig(*config));
   assistant_client::AssistantManagerInternal* assistant_manager_internal =
       nullptr;
 
   if (!assistant::features::IsLibAssistantV2Enabled()) {
     assistant_manager_internal =
-        libassistant_factory_.UnwrapAssistantManagerInternal(
+        libassistant_factory_->UnwrapAssistantManagerInternal(
             assistant_manager.get());
   }
 

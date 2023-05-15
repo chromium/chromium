@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -37,7 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 
 namespace policy {
 namespace {
@@ -47,10 +48,10 @@ constexpr char kGaiaId[] = "12345";
 
 }  // namespace
 
-class MockController : public DlpFilesController {
+class MockController : public DlpFilesControllerAsh {
  public:
   explicit MockController(const DlpRulesManager& rules_manager)
-      : DlpFilesController(rules_manager) {}
+      : DlpFilesControllerAsh(rules_manager) {}
   MOCK_METHOD(void,
               RequestCopyAccess,
               (const storage::FileSystemURL&,
@@ -100,7 +101,7 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
-  MockDlpRulesManager* manager_;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> manager_;
   std::unique_ptr<DlpCopyOrMoveHookDelegate> hook_{
       std::make_unique<DlpCopyOrMoveHookDelegate>()};
   const storage::FileSystemURL source =
@@ -110,10 +111,11 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
   std::unique_ptr<MockDlpRulesManager> scoped_manager;
 
   std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* user_manager_{new ash::FakeChromeUserManager()};
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_{
+      new ash::FakeChromeUserManager()};
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_{
       std::make_unique<user_manager::ScopedUserManager>(
-          base::WrapUnique(user_manager_))};
+          base::WrapUnique(user_manager_.get()))};
   std::unique_ptr<MockController> controller_;
 };
 

@@ -9,7 +9,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
  * Manages notifications displayed while tracing and once tracing is complete.
@@ -102,11 +102,9 @@ public class TracingNotificationManager {
         String message = String.format(
                 MSG_ACTIVE_NOTIFICATION_MESSAGE, sTracingActiveNotificationBufferPercentage);
 
-        // We can't update the notification if accessibility is enabled as this may interfere with
-        // selecting the stop button, so choose a different message.
-        AccessibilityManager am =
-                (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (am.isEnabled() && am.isTouchExplorationEnabled()) {
+        // We can't update the notification if touch exploration is enabled as this may interfere
+        // with selecting the stop button, so choose a different message.
+        if (AccessibilityState.isTouchExplorationEnabled()) {
             message = MSG_ACTIVE_NOTIFICATION_ACCESSIBILITY_MESSAGE;
         }
 
@@ -131,11 +129,9 @@ public class TracingNotificationManager {
         assert (sTracingActiveNotificationBuilder != null);
         Context context = ContextUtils.getApplicationContext();
 
-        // Don't update the notification if accessibility is enabled as this may interfere with
+        // Don't update the notification if touch exploration is enabled as this may interfere with
         // selecting the stop button.
-        AccessibilityManager am =
-                (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (am.isEnabled() && am.isTouchExplorationEnabled()) return;
+        if (AccessibilityState.isTouchExplorationEnabled()) return;
 
         int newPercentage = Math.round(bufferUsagePercentage * 100);
         if (sTracingActiveNotificationBufferPercentage == newPercentage) return;

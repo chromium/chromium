@@ -6,7 +6,6 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -333,21 +332,13 @@ const CGFloat kSymbolSize = 20;
   [self.consumer reloadCellsForItems];
 }
 
-// Returns a boolean indicating whether leak detection feature is enabled.
-- (BOOL)isPasswordLeakCheckEnabled {
-  return self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
-         base::FeatureList::IsEnabled(
-             password_manager::features::kLeakDetectionUnauthenticated);
-}
-
 // Returns a boolean indicating if the switch should appear as "On" or "Off"
 // based on the sync preference, the sign in status, and if the user has
 // selected Standard Protection as the Safe Browsing option.
 - (BOOL)passwordLeakCheckItemOnState {
-  return [self isPasswordLeakCheckEnabled] &&
-         (self.safeBrowsingEnhancedProtectionPreference.value ||
-          (self.safeBrowsingStandardProtectionPreference.value &&
-           self.passwordLeakCheckPreference.value));
+  return self.safeBrowsingEnhancedProtectionPreference.value ||
+         (self.safeBrowsingStandardProtectionPreference.value &&
+          self.passwordLeakCheckPreference.value);
 }
 
 // Updates the detail text and on state of the leak check item based on the
@@ -355,19 +346,8 @@ const CGFloat kSymbolSize = 20;
 - (void)configureLeakCheckItem:(TableViewItem*)item {
   TableViewSwitchItem* leakCheckItem =
       base::mac::ObjCCastStrict<TableViewSwitchItem>(item);
-  leakCheckItem.enabled = self.inSafeBrowsingStandardProtection &&
-                          [self isPasswordLeakCheckEnabled];
+  leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
-
-  if (self.passwordLeakCheckPreference.value &&
-      ![self isPasswordLeakCheckEnabled] &&
-      self.safeBrowsingStandardProtectionPreference.value) {
-    // If the user is signed out and the sync preference is enabled, this
-    // informs that it will be turned on on sign in.
-    leakCheckItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_LEAK_CHECK_SIGNED_OUT_ENABLED_DESC);
-    return;
-  }
   leakCheckItem.detailText = l10n_util::GetNSString(
       IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
 }

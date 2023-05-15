@@ -63,6 +63,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) StructTraits<
     return input.GetTopFrameSite().value();
   }
 
+  static const net::SchemefulSite& frame_site(
+      const net::NetworkIsolationKey& input) {
+    return input
+        .GetFrameSiteForSerialization(
+            net::NetworkIsolationKey::SerializationPasskey())
+        .value();
+  }
+
   static bool is_cross_site(const net::NetworkIsolationKey& input) {
     absl::optional<bool> is_cross_site = input.GetIsCrossSiteForSerialization(
         net::NetworkIsolationKey::SerializationPasskey());

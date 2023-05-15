@@ -44,10 +44,10 @@ namespace extensions {
 namespace {
 
 // Helper for lazily attaching ExtensionIdSet to a RenderProcessHost.  Used to
-// track the set of extensions which have injected a JS content script into a
+// track the set of extensions which have injected a JS script into a
 // RenderProcessHost.
 //
-// We track content script injection per-RenderProcessHost:
+// We track script injection per-RenderProcessHost:
 // 1. This matches the real security boundary that Site Isolation uses (the
 //    boundary of OS processes) and follows the precedent of
 //    content::ChildProcessSecurityPolicy.
@@ -92,18 +92,20 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
                     ChromeTrackEvent::kRenderProcessHost, *process_);
   }
 
-  bool HasContentScript(const ExtensionId& extension_id) const {
-    return base::Contains(content_scripts_, extension_id);
+  bool HasScript(ContentScriptTracker::ScriptType script_type,
+                 const ExtensionId& extension_id) const {
+    return base::Contains(GetScripts(script_type), extension_id);
   }
 
-  void AddContentScript(const ExtensionId& extension_id) {
+  void AddScript(ContentScriptTracker::ScriptType script_type,
+                 const ExtensionId& extension_id) {
     TRACE_EVENT_INSTANT(
         "extensions",
-        "ContentScriptTracker::RenderProcessHostUserData::AddContentScript",
+        "ContentScriptTracker::RenderProcessHostUserData::AddScript",
         ChromeTrackEvent::kRenderProcessHost, *process_,
         ChromeTrackEvent::kChromeExtensionId,
         ExtensionIdForTracing(extension_id));
-    content_scripts_.insert(extension_id);
+    GetScripts(script_type).insert(extension_id);
   }
 
   void AddFrame(content::RenderFrameHost* frame) { frames_.insert(frame); }
@@ -111,6 +113,7 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   const std::set<content::RenderFrameHost*>& frames() const { return frames_; }
 
   const ExtensionIdSet& content_scripts() const { return content_scripts_; }
+  const ExtensionIdSet& user_scripts() const { return user_scripts_; }
 
  private:
   explicit RenderProcessHostUserData(content::RenderProcessHost& process)
@@ -121,12 +124,28 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
                       ChromeTrackEvent::kRenderProcessHost, *process_);
   }
 
+  const ExtensionIdSet& GetScripts(
+      ContentScriptTracker::ScriptType script_type) const {
+    switch (script_type) {
+      case ContentScriptTracker::ScriptType::kContentScript:
+        return content_scripts_;
+      case ContentScriptTracker::ScriptType::kUserScript:
+        return user_scripts_;
+    }
+  }
+  ExtensionIdSet& GetScripts(ContentScriptTracker::ScriptType script_type) {
+    return const_cast<ExtensionIdSet&>(
+        const_cast<const RenderProcessHostUserData*>(this)->GetScripts(
+            script_type));
+  }
+
   static const char* kUserDataKey;
 
-  // Set of extensions ids that have *ever* injected a content script into this
-  // particular renderer process.  This is the core data maintained by the
-  // ContentScriptTracker.
+  // The sets of extension ids that have *ever* injected a content script or
+  // user script into this particular renderer process.  This is the core data
+  // maintained by the ContentScriptTracker.
   ExtensionIdSet content_scripts_;
+  ExtensionIdSet user_scripts_;
 
   // Set of frames that are *currently* hosted in this particular renderer
   // process.  This is mostly used just to get GetLastCommittedURL of these
@@ -212,6 +231,7 @@ bool DoesContentScriptMatch(const UserScript& user_script,
 
 void HandleProgrammaticContentScriptInjection(
     base::PassKey<ContentScriptTracker> pass_key,
+    ContentScriptTracker::ScriptType script_type,
     content::RenderFrameHost* frame,
     const Extension& extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -224,7 +244,7 @@ void HandleProgrammaticContentScriptInjection(
   // RenderProcessHostUserData::GetOrCreate).
   auto& process_data =
       RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
-  process_data.AddContentScript(extension.id());
+  process_data.AddScript(script_type, extension.id());
 
   URLLoaderFactoryManager::WillProgrammaticallyInjectContentScript(
       pass_key, frame, extension);
@@ -480,14 +500,33 @@ void StoreExtensionsInjectingContentScripts(
   // RenderProcessHostUserData::GetOrCreate).
   auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
   for (const Extension* extension : extensions_injecting_content_scripts) {
-    process_data.AddContentScript(extension->id());
+    process_data.AddScript(ContentScriptTracker::ScriptType::kContentScript,
+                           extension->id());
   }
+}
+
+bool DidProcessRunScriptFromExtension(
+    ContentScriptTracker::ScriptType script_type,
+    const content::RenderProcessHost& process,
+    const ExtensionId& extension_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!extension_id.empty());
+
+  // Check if we've been notified about the content script injection via
+  // ReadyToCommitNavigation or WillExecuteCode methods.
+  const auto* process_data = RenderProcessHostUserData::Get(process);
+  if (!process_data) {
+    return false;
+  }
+
+  return process_data->HasScript(script_type, extension_id);
 }
 
 }  // namespace
 
 // static
-ExtensionIdSet ContentScriptTracker::GetExtensionsThatRanScriptsInProcess(
+ExtensionIdSet
+ContentScriptTracker::GetExtensionsThatRanContentScriptsInProcess(
     const content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -503,17 +542,16 @@ ExtensionIdSet ContentScriptTracker::GetExtensionsThatRanScriptsInProcess(
 bool ContentScriptTracker::DidProcessRunContentScriptFromExtension(
     const content::RenderProcessHost& process,
     const ExtensionId& extension_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!extension_id.empty());
+  return DidProcessRunScriptFromExtension(ScriptType::kContentScript, process,
+                                          extension_id);
+}
 
-  // Check if we've been notified about the content script injection via
-  // ReadyToCommitNavigation or WillExecuteCode methods.
-  const auto* process_data = RenderProcessHostUserData::Get(process);
-  if (!process_data) {
-    return false;
-  }
-
-  return process_data->HasContentScript(extension_id);
+// static
+bool ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+    const content::RenderProcessHost& process,
+    const ExtensionId& extension_id) {
+  return DidProcessRunScriptFromExtension(ScriptType::kUserScript, process,
+                                          extension_id);
 }
 
 // static
@@ -608,6 +646,7 @@ void ContentScriptTracker::RenderFrameDeleted(
 // static
 void ContentScriptTracker::WillExecuteCode(
     base::PassKey<ScriptExecutor> pass_key,
+    ScriptType script_type,
     content::RenderFrameHost* frame,
     const mojom::HostID& host_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -624,7 +663,8 @@ void ContentScriptTracker::WillExecuteCode(
     return;
   }
 
-  HandleProgrammaticContentScriptInjection(PassKey(), frame, *extension);
+  HandleProgrammaticContentScriptInjection(PassKey(), script_type, frame,
+                                           *extension);
 }
 
 // static
@@ -638,7 +678,10 @@ void ContentScriptTracker::WillExecuteCode(
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(extension.id()));
 
-  HandleProgrammaticContentScriptInjection(PassKey(), frame, extension);
+  // Declarative content scripts are only ever of a kContentScript type and
+  // never handle user scripts.
+  HandleProgrammaticContentScriptInjection(
+      PassKey(), ScriptType::kContentScript, frame, extension);
 }
 
 // static
@@ -667,7 +710,7 @@ void ContentScriptTracker::WillUpdateContentScriptsInRenderer(
                                      frame->GetLastCommittedURL());
       });
   if (any_frame_matches_content_scripts) {
-    process_data.AddContentScript(extension->id());
+    process_data.AddScript(ScriptType::kContentScript, extension->id());
   } else {
     TRACE_EVENT_INSTANT(
         "extensions",

@@ -12,6 +12,7 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -20,6 +21,7 @@
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -72,6 +74,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
     return shelf_->navigation_widget();
   }
   HotseatWidget* hotseat_widget() const { return shelf_->hotseat_widget(); }
+  DeskButtonWidget* desk_button_widget() const {
+    return shelf_->desk_button_widget();
+  }
   StatusAreaWidget* status_area_widget() const {
     return shelf_->status_area_widget();
   }
@@ -201,7 +206,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Callback returned by ForceShowHotseatInTabletMode().
   void ResetForceShowHotseat();
 
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
   gfx::Rect target_bounds_;
   ShelfBackgroundAnimator background_animator_;
 
@@ -209,14 +214,14 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   std::unique_ptr<ShelfLayoutManager> shelf_layout_manager_owned_;
 
   // Owned by the shelf container's window.
-  ShelfLayoutManager* shelf_layout_manager_;
+  raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_;
 
   // Sets shelf opacity to 0 after all animations have completed.
   std::unique_ptr<ui::ImplicitAnimationObserver> hide_animation_observer_;
 
   // |delegate_view_| is the contents view of this widget and is cleaned up
   // during CloseChildWindows of the associated RootWindowController.
-  DelegateView* delegate_view_;
+  raw_ptr<DelegateView, DanglingUntriaged | ExperimentalAsh> delegate_view_;
 
   // Animates the shelf background to/from the hotseat background during hotseat
   // transitions.
@@ -224,7 +229,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   // View containing the shelf items for Login/Lock/OOBE/Add User screens.
   // Owned by the views hierarchy.
-  LoginShelfView* login_shelf_view_;
+  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_;
 
   ScopedSessionObserver scoped_session_observer_;
 

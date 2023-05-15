@@ -47,22 +47,16 @@ export class DnsView extends DivView {
           div.textContent =
               `Resolved IP addresses of "${hostname}": ${resolvedAddresses}.`;
           div.style.fontWeight = 'bold';
-          if (result.endpoint_results_with_metadata.length > 0) {
-            result.endpoint_results_with_metadata.map(
-                (endpoint_result_with_metadata) => {
-                  const ipEndpoints = JSON.stringify(
-                      endpoint_result_with_metadata.ip_endpoints);
-                  const supportedProtocolAlpns =
-                      JSON.stringify(endpoint_result_with_metadata.metadata
-                                         .supported_protocol_alpns);
-                  const div = addNode(span, 'div');
-                  div.textContent = 'Supported protocol alpns of ' +
-                      `"${ipEndpoints}": ${supportedProtocolAlpns}.`;
-                  div.style.fontWeight = 'bold';
-                });
+          if (result.alternative_endpoints.length > 0) {
+            result.alternative_endpoints.forEach((endpoint) => {
+              const json = JSON.stringify(endpoint);
+              const div = addNode(span, 'div');
+              div.textContent = `Alternative endpoint: ${json}.`;
+              div.style.fontWeight = 'bold';
+            });
           } else {
             const div = addNode(span, 'div');
-            div.textContent = `No data on which protocols are supported.`;
+            div.textContent = `No alternative endpoints.`;
             div.style.fontWeight = 'bold';
           }
         })

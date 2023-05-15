@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -136,7 +137,7 @@ public class FeedSurfaceCoordinator
     private @Nullable FeedListContentManager mContentManager;
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable SurfaceScope mSurfaceScope;
-    private @Nullable FeedSurfaceScopeDependencyProvider mDependencyProvider;
+    private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private @Nullable HybridListRenderer mHybridListRenderer;
 
     // Used to handle things related to the main scrollable container of NTP surface.
@@ -679,7 +680,7 @@ public class FeedSurfaceCoordinator
         mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
+            mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
                     mActivity, mActivity, mShowDarkBackground);
 
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
@@ -699,7 +700,12 @@ public class FeedSurfaceCoordinator
                             "force-enable-feed-reliability-logging")) {
                 FeedLaunchReliabilityLogger launchLogger =
                         mSurfaceScope.getFeedLaunchReliabilityLogger();
-                mReliabilityLogger = new FeedReliabilityLogger(launchLogger);
+                FeedUserInteractionReliabilityLogger userInteractionLogger = null;
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)) {
+                    userInteractionLogger = mSurfaceScope.getFeedUserInteractionReliabilityLogger();
+                }
+                mReliabilityLogger = new FeedReliabilityLogger(launchLogger, userInteractionLogger);
                 launchLogger.logUiStarting(mSurfaceType, mEmbeddingSurfaceCreatedTimeNs);
             }
 
@@ -1062,6 +1068,13 @@ public class FeedSurfaceCoordinator
     @Override
     public void removeObserver(SurfaceCoordinator.Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    @Override
+    public void onApplicationStopped() {
+        if (mReliabilityLogger != null) {
+            mReliabilityLogger.onApplicationStopped();
+        }
     }
 
     @Override

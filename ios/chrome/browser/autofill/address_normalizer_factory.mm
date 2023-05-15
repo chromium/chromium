@@ -6,8 +6,8 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/validation_rules_storage_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"

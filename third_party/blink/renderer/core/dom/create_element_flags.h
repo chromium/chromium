@@ -68,6 +68,11 @@ class CreateElementFlags {
   }
 
   bool created_by_parser_ : 1;
+  bool async_custom_elements_ : 1;
+  bool custom_elements_ : 1;
+
+  bool already_started_ : 1;
+
   // This implements the HTML Standard concept of a "parser document" [1].
   // Contrary to the spec, this member can be null even when
   // |created_by_parser_| is true. This can happen in rare cases where the
@@ -79,11 +84,6 @@ class CreateElementFlags {
   // |parser_document_| for this information. See crbug.com/1086507.
   // [1]: https://html.spec.whatwg.org/C/#parser-document
   Document* parser_document_;
-
-  bool async_custom_elements_ : 1;
-  bool custom_elements_ : 1;
-
-  bool already_started_ : 1;
 };
 
 }  // namespace blink

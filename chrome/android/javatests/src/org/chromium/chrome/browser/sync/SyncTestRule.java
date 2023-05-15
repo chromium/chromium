@@ -18,7 +18,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.preference.TwoStatePreference;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import org.junit.Assert;
@@ -40,16 +40,13 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -59,13 +56,6 @@ import java.util.concurrent.Callable;
  * TODO(crbug.com/1168590): Support batching tests with SyncTestRule.
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
-    private static final String TAG = "SyncTestBase";
-
-    private static final Set<Integer> USER_SELECTABLE_TYPES = new HashSet<Integer>(
-            Arrays.asList(new Integer[] {UserSelectableType.AUTOFILL, UserSelectableType.BOOKMARKS,
-                    UserSelectableType.PASSWORDS, UserSelectableType.PREFERENCES,
-                    UserSelectableType.TABS, UserSelectableType.HISTORY}));
-
     /**
      * Simple activity that mimics a trusted vault key retrieval flow that succeeds immediately.
      */
@@ -131,7 +121,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
         @Override
         public Promise<PendingIntent> createKeyRetrievalIntent(CoreAccountInfo accountInfo) {
-            Context context = InstrumentationRegistry.getContext();
+            Context context = ApplicationProvider.getApplicationContext();
             Intent intent = new Intent(context, DummyKeyRetrievalActivity.class);
             return Promise.fulfilled(PendingIntent.getActivity(context, 0 /* requestCode */, intent,
                     IntentUtils.getPendingIntentMutabilityFlag(false)));
@@ -156,7 +146,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         @Override
         public Promise<PendingIntent> createRecoverabilityDegradedIntent(
                 CoreAccountInfo accountInfo) {
-            Context context = InstrumentationRegistry.getContext();
+            Context context = ApplicationProvider.getApplicationContext();
             Intent intent = new Intent(context, DummyRecoverabilityDegradedFixActivity.class);
             return Promise.fulfilled(PendingIntent.getActivity(context, 0 /* requestCode */, intent,
                     IntentUtils.getPendingIntentMutabilityFlag(false)));
@@ -372,7 +362,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     }
                     mSyncService = SyncService.get();
 
-                    mContext = InstrumentationRegistry.getTargetContext();
+                    mContext = ApplicationProvider.getApplicationContext();
                     mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
                 });
 

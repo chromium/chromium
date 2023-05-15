@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -22,6 +25,29 @@ static inline bool TransformOriginIsFixed(const ComputedStyle& style) {
   return style.TransformBox() == ETransformBox::kViewBox &&
          style.GetTransformOrigin().X().IsFixed() &&
          style.GetTransformOrigin().Y().IsFixed();
+}
+
+// static
+void TransformHelper::UpdateOffsetPath(SVGElement& element,
+                                       const ComputedStyle* old_style) {
+  const ComputedStyle& new_style = element.ComputedStyleRef();
+  OffsetPathOperation* new_offset = new_style.OffsetPath();
+  OffsetPathOperation* old_offset =
+      old_style ? old_style->OffsetPath() : nullptr;
+  if (!new_offset && !old_offset) {
+    return;
+  }
+  const bool had_resource_info = element.GetSVGResourceClient();
+  if (auto* reference_offset =
+          DynamicTo<ReferenceOffsetPathOperation>(new_offset)) {
+    reference_offset->AddClient(element.EnsureSVGResourceClient());
+  }
+  if (had_resource_info) {
+    if (auto* old_reference_offset =
+            DynamicTo<ReferenceOffsetPathOperation>(old_offset)) {
+      old_reference_offset->RemoveClient(*element.GetSVGResourceClient());
+    }
+  }
 }
 
 bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {

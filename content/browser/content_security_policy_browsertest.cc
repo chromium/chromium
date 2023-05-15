@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -166,43 +167,55 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
   struct {
     const char* csp;
     std::string element_name;
-    const GURL::Replacements& document_host;
-    const GURL::Replacements& element_host;
+    const raw_ref<const GURL::Replacements, ExperimentalAsh> document_host;
+    const raw_ref<const GURL::Replacements, ExperimentalAsh> element_host;
     bool expect_allowed;
   } test_cases[] = {
-      {"img-src 'none'", "img", none, none, false},
-      {"img-src file:", "img", none, none, true},
-      {"img-src 'self'", "img", none, none, true},
-      {"img-src 'none'", "img", none, add_localhost, false},
-      {"img-src file:", "img", none, add_localhost, true},
-      {"img-src 'self'", "img", none, add_localhost, true},
-      {"img-src 'none'", "img", add_localhost, none, false},
-      {"img-src file:", "img", add_localhost, none, true},
-      {"img-src 'self'", "img", add_localhost, none, true},
-      {"img-src 'none'", "img", add_localhost, add_localhost, false},
-      {"img-src file:", "img", add_localhost, add_localhost, true},
-      {"img-src 'self'", "img", add_localhost, add_localhost, true},
-      {"frame-src 'none'", "iframe", none, none, false},
-      {"frame-src file:", "iframe", none, none, true},
-      {"frame-src 'self'", "iframe", none, none, true},
-      {"frame-src 'none'", "iframe", none, add_localhost, false},
-      {"frame-src file:", "iframe", none, add_localhost, true},
+      {"img-src 'none'", "img", raw_ref(none), raw_ref(none), false},
+      {"img-src file:", "img", raw_ref(none), raw_ref(none), true},
+      {"img-src 'self'", "img", raw_ref(none), raw_ref(none), true},
+      {"img-src 'none'", "img", raw_ref(none), raw_ref(add_localhost), false},
+      {"img-src file:", "img", raw_ref(none), raw_ref(add_localhost), true},
+      {"img-src 'self'", "img", raw_ref(none), raw_ref(add_localhost), true},
+      {"img-src 'none'", "img", raw_ref(add_localhost), raw_ref(none), false},
+      {"img-src file:", "img", raw_ref(add_localhost), raw_ref(none), true},
+      {"img-src 'self'", "img", raw_ref(add_localhost), raw_ref(none), true},
+      {"img-src 'none'", "img", raw_ref(add_localhost), raw_ref(add_localhost),
+       false},
+      {"img-src file:", "img", raw_ref(add_localhost), raw_ref(add_localhost),
+       true},
+      {"img-src 'self'", "img", raw_ref(add_localhost), raw_ref(add_localhost),
+       true},
+      {"frame-src 'none'", "iframe", raw_ref(none), raw_ref(none), false},
+      {"frame-src file:", "iframe", raw_ref(none), raw_ref(none), true},
+      {"frame-src 'self'", "iframe", raw_ref(none), raw_ref(none), true},
+      {"frame-src 'none'", "iframe", raw_ref(none), raw_ref(add_localhost),
+       false},
+      {"frame-src file:", "iframe", raw_ref(none), raw_ref(add_localhost),
+       true},
       // TODO(antoniosartori): The following one behaves differently than
       // img-src.
-      {"frame-src 'self'", "iframe", none, add_localhost, true},
-      {"frame-src 'none'", "iframe", add_localhost, none, false},
-      {"frame-src file:", "iframe", add_localhost, none, true},
+      {"frame-src 'self'", "iframe", raw_ref(none), raw_ref(add_localhost),
+       true},
+      {"frame-src 'none'", "iframe", raw_ref(add_localhost), raw_ref(none),
+       false},
+      {"frame-src file:", "iframe", raw_ref(add_localhost), raw_ref(none),
+       true},
       // TODO(antoniosartori): The following one behaves differently than
       // img-src.
-      {"frame-src 'self'", "iframe", add_localhost, none, true},
-      {"frame-src 'none'", "iframe", add_localhost, add_localhost, false},
-      {"frame-src file:", "iframe", add_localhost, add_localhost, true},
-      {"frame-src 'self'", "iframe", add_localhost, add_localhost, true},
+      {"frame-src 'self'", "iframe", raw_ref(add_localhost), raw_ref(none),
+       true},
+      {"frame-src 'none'", "iframe", raw_ref(add_localhost),
+       raw_ref(add_localhost), false},
+      {"frame-src file:", "iframe", raw_ref(add_localhost),
+       raw_ref(add_localhost), true},
+      {"frame-src 'self'", "iframe", raw_ref(add_localhost),
+       raw_ref(add_localhost), true},
   };
 
   for (const auto& test_case : test_cases) {
     GURL document_url = net::FilePathToFileURL(TestFilePath("hello.html"))
-                            .ReplaceComponents(test_case.document_host);
+                            .ReplaceComponents(*test_case.document_host);
 
     // On windows, if `document_url` contains the host part "localhost", the
     // actual committed URL does not. So we omit EXPECT_TRUE and ignore the
@@ -211,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
 
     GURL element_url = net::FilePathToFileURL(TestFilePath(
         test_case.element_name == "iframe" ? "empty.html" : "blank.jpg"));
-    element_url = element_url.ReplaceComponents(test_case.element_host);
+    element_url = element_url.ReplaceComponents(*test_case.element_host);
     TestNavigationObserver load_observer(shell()->web_contents());
 
     EXPECT_TRUE(

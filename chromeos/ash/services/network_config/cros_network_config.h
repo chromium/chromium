@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
@@ -209,19 +210,26 @@ class CrosNetworkConfig
 
   const std::string& GetServicePathFromGuid(const std::string& guid);
 
-  NetworkStateHandler* network_state_handler_;  // Unowned
+  raw_ptr<NetworkStateHandler, ExperimentalAsh>
+      network_state_handler_;  // Unowned
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  NetworkDeviceHandler* network_device_handler_;               // Unowned
-  CellularInhibitor* cellular_inhibitor_;                      // Unowned
-  CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
-  ManagedNetworkConfigurationHandler*
-      network_configuration_handler_;                       // Unowned
-  NetworkConnectionHandler* network_connection_handler_;    // Unowned
-  NetworkCertificateHandler* network_certificate_handler_;  // Unowned
-  NetworkProfileHandler* network_profile_handler_;          // Unowned
-  TechnologyStateController* technology_state_controller_;  // Unowned
+  raw_ptr<NetworkDeviceHandler, ExperimentalAsh>
+      network_device_handler_;                                      // Unowned
+  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;  // Unowned
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_;  // Unowned
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_;  // Unowned
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;  // Unowned
+  raw_ptr<NetworkCertificateHandler, ExperimentalAsh>
+      network_certificate_handler_;  // Unowned
+  raw_ptr<NetworkProfileHandler, ExperimentalAsh>
+      network_profile_handler_;  // Unowned
+  raw_ptr<TechnologyStateController, ExperimentalAsh>
+      technology_state_controller_;  // Unowned
 
   mojo::RemoteSet<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       observers_;

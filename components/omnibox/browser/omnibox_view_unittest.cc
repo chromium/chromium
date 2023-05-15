@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,9 +41,13 @@ class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest() {
     edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get());
-    view_->SetModel(std::make_unique<TestOmniboxEditModel>(
-        view_.get(), edit_model_delegate_.get(), nullptr));
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    auto* omnibox_client_ptr = omnibox_client.get();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
+                                              std::move(omnibox_client));
+
+    view_->SetEditModel(std::make_unique<TestOmniboxEditModel>(
+        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr, nullptr));
 
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     client()->SetBookmarkModel(bookmark_model_.get());
@@ -172,7 +177,7 @@ TEST_F(OmniboxViewTest, GetIcon_Default) {
 
   ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor, base::DoNothing());
+      gfx::kPlaceholderColor, base::DoNothing(), false);
 
   EXPECT_EQ(expected_icon, icon);
 }
@@ -193,7 +198,7 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
 
   ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor, base::DoNothing());
+      gfx::kPlaceholderColor, base::DoNothing(), false);
 
   EXPECT_EQ(expected_icon, icon);
 }
@@ -209,7 +214,7 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
 
   view()->GetIcon(gfx::kFaviconSize, gfx::kPlaceholderColor,
                   gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-                  base::DoNothing());
+                  base::DoNothing(), false);
 
   EXPECT_EQ(client()->GetPageUrlForLastFaviconRequest(), kUrl);
 }

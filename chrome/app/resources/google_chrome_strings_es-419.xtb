@@ -17,12 +17,14 @@
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Chrome OS Flex.</translation>
+<translation id="1341711321000856656">Puedes cambiar a otro perfil de Chrome para ver las contraseñas.</translation>
 <translation id="1363996462118479832">Chrome OS no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este equipo ya cuenta con una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y descárgalo nuevamente.</translation>
 <translation id="139993653570221430">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome. Las pruebas se ejecutan junto a la publicación actual de anuncios, por lo que no verás cambios de inmediato.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales.}=1{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverá a abrir la ventana de incógnito.}other{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverán a abrir # ventanas de incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome estaba conectado a un dispositivo HID.}=1{Google Chrome está conectado a un dispositivo HID.}other{Google Chrome está conectado a dispositivos HID.}}</translation>
+<translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1516530951338665275">Google Chrome necesita acceso a la conexión Bluetooth para continuar con la 
  vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -81,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome desea exportar tus contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
 <translation id="2534507159460261402">Google Pay (copiada en Chrome)</translation>
+<translation id="2556847002339236023">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />. Se borraron los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.</translation>
 <translation id="2559253115192232574">Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran. Chrome puede compartir hasta 3 intereses.</translation>
 <translation id="2563121210305478421">¿Quieres reiniciar Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Para mantener separados los datos de navegación, Chrome puede crear un perfil individual para ti.</translation>
@@ -92,6 +95,7 @@
 <translation id="2652691236519827073">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
 <translation id="2665296953892887393">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Google Chrome.</translation>
 <translation id="2689103672227170538">Esta extensión cambió la página que se muestra al iniciar Chrome.</translation>
+<translation id="2712234843277364121">Reiniciar para actualizar: las pestañas se volverán a abrir</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede impedir que las extensiones guarden tu historial de navegación. Para inhabilitar esta extensión en modo Incógnito, anula la selección de esta opción.</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder a tu micrófono para este sitio</translation>
 <translation id="2770231113462710648">Cambiar el navegador predeterminado a:</translation>
@@ -111,6 +115,7 @@
 <translation id="2929907241665500097">No se actualizó Chrome porque se produjo un error. <ph name="BEGIN_LINK" />Soluciona los problemas de actualización y las actualizaciones con error de Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Las extensiones de Google Chrome tenían acceso a dispositivos HID}=1{Las extensiones de Google Chrome tienen acceso a dispositivos HID}other{Las extensiones de Google Chrome tienen acceso a # dispositivos HID}}</translation>
 <translation id="303514781271618814">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
@@ -204,6 +209,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
 <translation id="4771048833395599659">Chrome bloqueó este archivo porque podría ser peligroso.</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
+<translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="4842397268809523050">Chrome OS Flex no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="4873783916118289636">Revisa los controles de seguridad y privacidad más importantes en Chrome</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>
@@ -215,6 +221,7 @@
 <translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4970947549776831107">Chrome bloqueó este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensión de Google Chrome tenía acceso a dispositivos HID}=1{Una extensión de Google Chrome tiene acceso a 1 dispositivo HID}other{Una extensión de Google Chrome tiene acceso a # dispositivos HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{El administrador cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{El administrador cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="5098668839038261629">Si activas esta opción, saldrás de Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicaciones, juegos, extensiones y temas geniales para Google Chrome.</translation>
@@ -261,6 +268,7 @@
 <translation id="6113794647360055231">Chrome mejorado</translation>
 <translation id="6145313976051292476">Abrir archivos PDF en Chrome</translation>
 <translation id="6155960517327665396">El Ahorro de memoria hizo que Chrome sea más rápido</translation>
+<translation id="6157638032135951407">Tu organización borra los datos de Chrome cuando no se usan durante <ph name="TIMEOUT_DURATION" />. Esto puede incluir el historial, los datos de Autocompletar y las descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Versión Beta de Google Chrome</translation>
 <translation id="6235018212288296708">Regla de entrada para que Google Chrome permita el tráfico mDNS.</translation>
@@ -274,7 +282,9 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{El administrador borra los datos de navegación automáticamente si no los usas durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}other{El administrador borra los datos de navegación automáticamente si no los usas durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}}</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6418662306461808273">¿Deseas cambiar a un perfil existente de Chrome?</translation>
+<translation id="648319183876919572">La Navegación segura mejorada realiza más acciones para protegerte de descargas y sitios web peligrosos</translation>
 <translation id="6493527311031785448">Google Chrome está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome se cerró automáticamente</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso a la cámara para crear un mapa 3D de tu entorno.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Versión para desarrolladores de Google Chrome</translation>
 <translation id="659498884637196217">En el Administrador de contraseñas de Google en este dispositivo</translation>
@@ -311,6 +321,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7155997830309522122">En ese caso, edita la contraseña guardada en Chrome para que coincida con la nueva.</translation>
 <translation id="7161904924553537242">Bienvenido a Google Chrome</translation>
 <translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
+<translation id="7193885263065350793">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Este idioma se usa para mostrar la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
@@ -404,6 +415,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9053892488859122171">Sistema de Chrome OS Flex</translation>
+<translation id="9054037008353851982">Reiniciar para actualizar: las pestañas se volverán a abrir</translation>
 <translation id="911206726377975832">¿También eliminar datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar los cambios, vuelve a ejecutar Chrome</translation>
 <translation id="9195993889682885387">Chrome puede estimar tus intereses en función de tu historial de navegación de las últimas semanas. Esta información permanece en tu dispositivo.</translation>

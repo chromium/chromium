@@ -18,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -31,6 +30,10 @@
 #import "net/base/mac/url_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using ResponseStartedCallback =
     update_client::NetworkFetcher::ResponseStartedCallback;
@@ -91,7 +94,7 @@ using DownloadToFileCompleteCallback =
 
 @implementation CRUUpdaterNetworkDataDelegate {
   PostRequestCompleteCallback _postRequestCompleteCallback;
-  base::scoped_nsobject<NSMutableData> _downloadedData;
+  NSMutableData* __strong _downloadedData;
 }
 
 - (instancetype)
@@ -104,7 +107,7 @@ using DownloadToFileCompleteCallback =
           initWithResponseStartedCallback:std::move(responseStartedCallback)
                          progressCallback:progressCallback]) {
     _postRequestCompleteCallback = std::move(postRequestCompleteCallback);
-    _downloadedData.reset([[NSMutableData alloc] init]);
+    _downloadedData = [[NSMutableData alloc] init];
   }
   return self;
 }
@@ -222,7 +225,7 @@ using DownloadToFileCompleteCallback =
     willCacheResponse:(NSCachedURLResponse*)proposedResponse
     completionHandler:
         (void (^)(NSCachedURLResponse* _Nullable))completionHandler {
-  completionHandler(NULL);
+  completionHandler(nullptr);
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -326,25 +329,24 @@ void NetworkFetcher::PostRequest(
     PostRequestCompleteCallback post_request_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::scoped_nsobject<CRUUpdaterNetworkDataDelegate> delegate(
+  CRUUpdaterNetworkDataDelegate* delegate =
       [[CRUUpdaterNetworkDataDelegate alloc]
           initWithResponseStartedCallback:std::move(response_started_callback)
                          progressCallback:progress_callback
               postRequestCompleteCallback:std::move(
-                                              post_request_complete_callback)]);
+                                              post_request_complete_callback)];
 
   NSURLSession* session =
-      [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration
-                                                 defaultSessionConfiguration]
+      [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration
+                                                 .defaultSessionConfiguration
                                     delegate:delegate
                                delegateQueue:nil];
 
-  base::scoped_nsobject<NSMutableURLRequest> urlRequest(
-      [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)]);
-  [urlRequest setHTTPMethod:@"POST"];
-  base::scoped_nsobject<NSData> body(
-      [[NSData alloc] initWithBytes:post_data.c_str() length:post_data.size()]);
-  [urlRequest setHTTPBody:body];
+  NSMutableURLRequest* urlRequest =
+      [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
+  urlRequest.HTTPMethod = @"POST";
+  urlRequest.HTTPBody = [[NSData alloc] initWithBytes:post_data.c_str()
+                                               length:post_data.size()];
   [urlRequest addValue:base::SysUTF8ToNSString(content_type)
       forHTTPHeaderField:@"Content-Type"];
 
@@ -368,22 +370,22 @@ void NetworkFetcher::DownloadToFile(
     DownloadToFileCompleteCallback download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::scoped_nsobject<CRUUpdaterNetworkDownloadDelegate> delegate(
+  CRUUpdaterNetworkDownloadDelegate* delegate =
       [[CRUUpdaterNetworkDownloadDelegate alloc]
           initWithResponseStartedCallback:std::move(response_started_callback)
                          progressCallback:progress_callback
                                  filePath:file_path
            downloadToFileCompleteCallback:
-               std::move(download_to_file_complete_callback)]);
+               std::move(download_to_file_complete_callback)];
 
   NSURLSession* session =
-      [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration
-                                                 defaultSessionConfiguration]
+      [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration
+                                                 .defaultSessionConfiguration
                                     delegate:delegate
                                delegateQueue:nil];
 
-  base::scoped_nsobject<NSMutableURLRequest> urlRequest(
-      [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)]);
+  NSMutableURLRequest* urlRequest =
+      [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
 
   NSURLSessionDownloadTask* downloadTask =
       [session downloadTaskWithRequest:urlRequest];

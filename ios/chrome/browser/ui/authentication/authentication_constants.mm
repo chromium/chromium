@@ -22,3 +22,5 @@ NSString* const kAuthenticationHeaderImageName = @"unified_consent_header";
 
 NSString* const kSigninSyncScreenAccessibilityIdentifier =
     @"kSigninSyncScreenAccessibilityIdentifier";
+
+NSString* const kSigninSnackbarUndo = @"SigninSnackbarUndo";

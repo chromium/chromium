@@ -18,10 +18,10 @@
 The test verifies background-attachment:fixed gets invalidated after scroll even if they are composited.
 </div>
 <div id="composited-background-attachment-fixed"></div>
-<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../resources/text-based-repaint.js"></script>
 <script>
-document.body.offsetTop;
-runAfterLayoutAndPaint(function() {
-    scrollTo(0, 123);
-}, true);
+onload = runRepaintAndPixelTest;
+function repaintTest() {
+  scrollTo(0, 123);
+}
 </script>

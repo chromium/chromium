@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -82,7 +83,7 @@ class TestFocusController : public ui::EventHandler {
     }
   }
 
-  aura::Window* root_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_;
 };
 
 class KeyboardContainerObserver : public aura::WindowObserver {
@@ -105,8 +106,8 @@ class KeyboardContainerObserver : public aura::WindowObserver {
       run_loop_->QuitWhenIdle();
   }
 
-  aura::Window* window_;
-  base::RunLoop* const run_loop_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
 };
 
 class SetModeCallbackInvocationCounter {

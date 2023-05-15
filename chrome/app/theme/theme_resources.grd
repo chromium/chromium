@@ -271,8 +271,11 @@
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_DARK" file="common/save_card_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURELY_DARK" file="common/save_card_securely_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURELY" file="common/save_card_securely.png" />
+        <structure type="chrome_scaled_image" name="IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54" file="common/migrate_address_avatar50_x135_y54.png" />
+        <structure type="chrome_scaled_image" name="IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK" file="common/migrate_address_avatar50_x135_y54_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER" file="common/privacy_sandbox_confirmation_banner.png" />
         <structure type="chrome_scaled_image" name="IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER_DARK" file="common/privacy_sandbox_confirmation_banner_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MANDATORY_REAUTH_OPT_IN" file="common/autofill_mandatory_reauth_opt_in.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP" file="screen_capture_notification_grip.png" />
       <if expr="not is_android">
@@ -360,6 +363,7 @@
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_CONSENTED" file="common/safer_with_google_shield.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_CONSENTED_DARK" file="common/safer_with_google_shield_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED" file="common/tailored_security_unconsented.png" />
+        <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED_UPDATED" file="common/safer_with_google_shield.png" />
       </if>
     </structures>
   </release>

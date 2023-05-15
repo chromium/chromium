@@ -25,17 +25,17 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
-#include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -52,8 +52,8 @@ using testing::Return;
 using testing::SaveArg;
 
 MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
-  const sync_pb::LocalTrustedVaultDegradedRecoverabilityState& given_state =
-      arg;
+  const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
+      given_state = arg;
   return given_state.degraded_recoverability_value() ==
              expected_state.degraded_recoverability_value() &&
          given_state.last_refresh_time_millis_since_unix_epoch() ==
@@ -89,9 +89,10 @@ CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   return account_info;
 }
 
-bool WriteLocalTrustedVaultFile(const sync_pb::LocalTrustedVault& proto,
-                                const base::FilePath& path) {
-  sync_pb::LocalTrustedVaultFileContent file_proto;
+bool WriteLocalTrustedVaultFile(
+    const trusted_vault_pb::LocalTrustedVault& proto,
+    const base::FilePath& path) {
+  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       base::MD5String(file_proto.serialized_local_trusted_vault()));
@@ -99,7 +100,7 @@ bool WriteLocalTrustedVaultFile(const sync_pb::LocalTrustedVault& proto,
 }
 
 bool WriteLocalEncryptedTrustedVaultFile(
-    const sync_pb::LocalTrustedVault& proto,
+    const trusted_vault_pb::LocalTrustedVault& proto,
     const base::FilePath& path) {
   std::string encrypted_content;
   if (!OSCrypt::EncryptString(proto.SerializeAsString(), &encrypted_content)) {
@@ -108,14 +109,14 @@ bool WriteLocalEncryptedTrustedVaultFile(
   return base::WriteFile(path, encrypted_content);
 }
 
-sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
+trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     const base::FilePath& path) {
   std::string file_content;
-  sync_pb::LocalTrustedVault data_proto;
+  trusted_vault_pb::LocalTrustedVault data_proto;
   if (!base::ReadFileToString(path, &file_content)) {
     return data_proto;
   }
-  sync_pb::LocalTrustedVaultFileContent file_proto;
+  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   if (!file_proto.ParseFromString(file_content)) {
     return data_proto;
   }
@@ -295,16 +296,17 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldWriteDegradedRecoverabilityState) {
   SetPrimaryAccountWithUnknownAuthError(MakeAccountInfoWithGaiaId("user"));
-  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+  trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
   degraded_recoverability_state.set_degraded_recoverability_value(
-      sync_pb::DegradedRecoverabilityValue::kDegraded);
+      trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
       123);
   backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
 
   // Read the file from disk.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   EXPECT_THAT(proto.user(0).degraded_recoverability_state(),
               DegradedRecoverabilityStateEq(degraded_recoverability_state));
@@ -314,7 +316,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldInvokeGetIsRecoverabilityDegradedCallbackImmediately) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -345,7 +347,7 @@ TEST_F(
   // |pending_get_is_recoverability_degraded_| logic.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -387,7 +389,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // |pending_get_is_recoverability_degraded_| logic.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -425,7 +427,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordNotFoundWhenReadingFile) {
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRecordMD5DigestMismatchWhenReadingFile) {
-  sync_pb::LocalTrustedVaultFileContent file_proto;
+  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_md5_digest_hex_string("corrupted_md5_digest");
   ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
 
@@ -453,7 +455,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
   const std::string kCorruptedSerializedDataProto = "corrupted_proto";
-  sync_pb::LocalTrustedVaultFileContent file_proto;
+  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(kCorruptedSerializedDataProto);
   file_proto.set_md5_digest_hex_string(
       base::MD5String(kCorruptedSerializedDataProto));
@@ -476,9 +478,11 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
-  sync_pb::LocalTrustedVault initial_data;
-  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
-  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVault initial_data;
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
+      initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
+      initial_data.add_user();
   user_data1->set_gaia_id(account_info_1.gaia);
   user_data2->set_gaia_id(account_info_2.gaia);
   user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
@@ -507,11 +511,12 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldMigrateDataFromDeprecatedFile) {
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
   const int kLastKeyVersion = 1;
 
-  sync_pb::LocalTrustedVault initial_data;
+  trusted_vault_pb::LocalTrustedVault initial_data;
   // Migration from version 0 to version 1 makes test more complex, bypass it.
   initial_data.set_data_version(1);
 
-  sync_pb::LocalTrustedVaultPerUser* user_data = initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data =
+      initial_data.add_user();
   user_data->set_gaia_id(account_info.gaia);
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
   user_data->set_last_vault_key_version(kLastKeyVersion);
@@ -528,7 +533,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldMigrateDataFromDeprecatedFile) {
 
   // Ensure that backend completed file migration.
   EXPECT_FALSE(base::PathExists(deprecated_file_path()));
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(kLastKeyVersion));
@@ -538,8 +544,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {1, 2, 3, 4};
 
-  sync_pb::LocalTrustedVault initial_data;
-  sync_pb::LocalTrustedVaultPerUser* user_data = initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVault initial_data;
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data =
+      initial_data.add_user();
   user_data->set_gaia_id(account_info.gaia);
   user_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
@@ -573,7 +580,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
                                       /*expected_bucket_count=*/3);
 
   // Read the file from disk.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
@@ -590,9 +598,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
 
-  sync_pb::LocalTrustedVault initial_data;
-  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
-  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVault initial_data;
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
+      initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
+      initial_data.add_user();
   user_data1->set_gaia_id(account_info_1.gaia);
   user_data2->set_gaia_id(account_info_2.gaia);
   // Mimic |user_data1| to be affected by crbug.com/1267391 and |user_data2| to
@@ -609,7 +619,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->ReadDataFromDisk();
 
   // Read the file from disk.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   // Constant key should be added for the first user.
   EXPECT_THAT(proto.user(0).vault_key(),
@@ -627,9 +638,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
   const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
 
-  sync_pb::LocalTrustedVault initial_data;
-  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
-  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVault initial_data;
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
+      initial_data.add_user();
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
+      initial_data.add_user();
   user_data1->set_gaia_id(account_info_1.gaia);
   user_data1->set_keys_marked_as_stale_by_consumer(true);
   user_data2->set_gaia_id(account_info_2.gaia);
@@ -640,7 +653,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // and write new state.
   backend()->ReadDataFromDisk();
 
-  sync_pb::LocalTrustedVault new_data = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault new_data =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(new_data.user_size(), Eq(2));
   EXPECT_FALSE(new_data.user(0).keys_marked_as_stale_by_consumer());
   EXPECT_FALSE(new_data.user(1).keys_marked_as_stale_by_consumer());
@@ -714,7 +728,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
 
   // Read the file from disk and verify that keys were removed from disk
   // storage.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -740,7 +755,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Read the file from disk and verify that keys were removed from disk
   // storage.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -777,7 +793,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Read the file from disk and verify that keys were removed from disk
   // storage.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -830,7 +847,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
       /*expected_bucket_count=*/1);
 
   // Now the device should be registered.
-  sync_pb::LocalDeviceRegistrationInfo registration_info =
+  trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
   EXPECT_TRUE(registration_info.device_registered());
   EXPECT_TRUE(registration_info.has_private_key_material());
@@ -876,7 +893,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete);
 
   // Verify persisted file state.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   // Ensure that the failure is remembered, so there are no retries. This is a
   // regression test for crbug.com/1358015.
@@ -940,7 +958,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                      kInitialLastKeyVersion + 1));
 
   // Now the device should be registered.
-  sync_pb::LocalDeviceRegistrationInfo registration_info =
+  trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
   EXPECT_TRUE(registration_info.device_registered());
   EXPECT_TRUE(registration_info.has_private_key_material());
@@ -1488,7 +1506,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                      kServerConstantKeyVersion});
 
   // Now the device should be registered.
-  sync_pb::LocalDeviceRegistrationInfo registration_info =
+  trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
   EXPECT_TRUE(registration_info.device_registered());
   EXPECT_TRUE(registration_info.has_private_key_material());
@@ -1579,7 +1597,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
         .Run(TrustedVaultRegistrationStatus::kSuccess);
 
     // Now the device reregistration should be completed.
-    sync_pb::LocalDeviceRegistrationInfo registration_info =
+    trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
         backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
     EXPECT_TRUE(registration_info.device_registered());
     EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
@@ -1680,7 +1698,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                        kNewServerConstantKeyVersion});
 
     // Now the device reregistration should be completed.
-    sync_pb::LocalDeviceRegistrationInfo registration_info =
+    trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
         backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
     EXPECT_TRUE(registration_info.device_registered());
     EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
@@ -1688,7 +1706,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
     // Read the file from disk and verify that kNewServerConstantKeyVersion is
     // stored.
-    sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+    trusted_vault_pb::LocalTrustedVault proto =
+        ReadLocalTrustedVaultFile(file_path());
     ASSERT_THAT(proto.user_size(), Eq(1));
     EXPECT_THAT(proto.user(0).last_vault_key_version(),
                 Eq(kNewServerConstantKeyVersion));
@@ -1988,7 +2007,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->FetchKeys(account_info, base::DoNothing());
 
   {
-    sync_pb::LocalDeviceRegistrationInfo registration_info =
+    trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
         backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
     ASSERT_THAT(registration_info.device_registered_version(), Ne(1));
   }
@@ -1996,7 +2015,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(redo_device_registration_callback.is_null());
   std::move(redo_device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
-  sync_pb::LocalDeviceRegistrationInfo registration_info =
+  trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
   EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
 }
@@ -2078,7 +2097,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultVerifyDeviceRegistration);
+      syncer::kSyncTrustedVaultVerifyDeviceRegistration);
 
   base::test::SingleThreadTaskEnvironment environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -2144,4 +2163,4 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace trusted_vault

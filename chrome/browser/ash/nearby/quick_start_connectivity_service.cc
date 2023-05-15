@@ -36,4 +36,24 @@ QuickStartConnectivityService::GetNearbyConnectionsManager() {
   return nearby_connections_manager_->GetWeakPtr();
 }
 
+mojo::SharedRemote<mojom::QuickStartDecoder>
+QuickStartConnectivityService::GetQuickStartDecoder() {
+  DCHECK(nearby_process_manager_);
+
+  if (!nearby_process_reference_) {
+    nearby_process_reference_ =
+        nearby_process_manager_->GetNearbyProcessReference(base::BindOnce(
+            &QuickStartConnectivityService::OnNearbyProcessStopped,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  return nearby_process_reference_->GetQuickStartDecoder();
+}
+
+void QuickStartConnectivityService::OnNearbyProcessStopped(
+    nearby::NearbyProcessManager::NearbyProcessShutdownReason shutdown_reason) {
+  // TODO: b/280308935: Handle nearby process shutdown
+  nearby_process_reference_ = nullptr;
+}
+
 }  // namespace ash::quick_start

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="100506692671054486">ไม่มีคําสั่งก่อนหน้า</translation>
 <translation id="1009046985747440431">กดลูกศรขึ้นหรือลงเพื่อไปยังส่วนต่างๆ แล้วกด Enter เพื่อเปิดใช้งาน</translation>
 <translation id="1011903154582639569">หาแป้นแล้วยกนิ้วขึ้นพิมพ์</translation>
 <translation id="1012173283529841972">รายการ</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">สีชมพูลาเวนเดอร์บลัช</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3962990492275676168">เริ่มอ่านจากตำแหน่งปัจจุบัน</translation>
+<translation id="397094149579293440">ไม่ได้เลือกข้อความ</translation>
 <translation id="3970951409746498040">สีน้ำตาลแซนดีบราวน์</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">สีเนื้อมอคคาซิน</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">ไม่มีส่วนหัวระดับ 1 ก่อนหน้า</translation>
 <translation id="4787577491510559358">ประกาศการจัดรูปแบบของรายการปัจจุบัน</translation>
 <translation id="479989351350248267">ค้นหา</translation>
+<translation id="4802034228771424756">ไม่มีช่องข้อความที่โฟกัส</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="481165870889056555">แจ้งชื่อของหน้าเว็บปัจจุบัน</translation>
 <translation id="4815668758102003883">สีเทอร์ควอยซ์จาง</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ลิงก์ภายใน</translation>
 <translation id="4909019435900810068">เลื่อนไปข้างหลัง 1 คำ</translation>
 <translation id="4911349081560453449">ไม่มีช่องทำเครื่องหมายก่อนหน้า</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" />ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="492295894462528572">คำนำ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4953585991029886728">แก้ไขข้อความ</translation>
+<translation id="4964701498510730546">ช่องข้อความว่างเปล่า</translation>
 <translation id="4973717656530883744">ขั้นต่ำ <ph name="X" /></translation>
 <translation id="4974612477719259470">ไม่มีปุ่มก่อนหน้า</translation>
 <translation id="4979404613699303341">ปุ่มก่อนหน้า</translation>
+<translation id="4981239367072766915">อินพุตที่ไม่รู้จัก</translation>
 <translation id="4982917827052020884">เริ่มจาก 2-3 แป้นที่คุณจะใช้เป็นประจำ สามารถใช้แป้น Control เพื่อหยุดเสียงที่กำลังพูดอยู่ได้ แป้น Control จะอยู่ที่มุมซ้ายล่างของคีย์บอร์ด กดแป้น Control เพื่อดำเนินการต่อ</translation>
 <translation id="4983588134362688868">ข้ามไปที่ส่วนบนสุดของหน้าเว็บ</translation>
 <translation id="4986606102545753256">หน้าต่าง <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ประกาศสถานะปัจจุบันของแบตเตอรี่</translation>
 <translation id="4997282455736854877">ปุ่มตัวเลือก <ph name="NAME" /> ที่เลือกไว้</translation>
 <translation id="5012724933919010465">เลือกปุ่มตัวเลือกรายการในเมนู <ph name="NAME" /> แล้ว</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" />ไม่ได้ <ph name="REASON" /></translation>
 <translation id="5020651427400641814">เปิดใช้การบันทึกเสียงพูด</translation>
 <translation id="5041394372352067729">เลื่อนการแสดงผลเบรลล์ไปที่ด้านบนของหน้า</translation>
 <translation id="5042770794184672516">เพิ่มความดังเสียงพูด</translation>

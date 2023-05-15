@@ -44,12 +44,14 @@ CommandBuffer::State CommandBufferDirectLocked::WaitForGetOffsetInRange(
 scoped_refptr<Buffer> CommandBufferDirectLocked::CreateTransferBuffer(
     uint32_t size,
     int32_t* id,
+    uint32_t alignment,
     TransferBufferAllocationOption option) {
   if (fail_create_transfer_buffer_) {
     *id = -1;
     return nullptr;
   } else {
-    return CommandBufferDirect::CreateTransferBuffer(size, id, option);
+    return CommandBufferDirect::CreateTransferBuffer(size, id, alignment,
+                                                     option);
   }
 }
 

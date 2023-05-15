@@ -1271,6 +1271,9 @@ enum PositionType {
     // Whether or not this node is an image.
     boolean isImage;
 
+    // Whether the node contains hidden nodes.
+    boolean hasHiddenOffscreenNodes;
+
     // Aria auto complete.
     DOMString? autoComplete;
 

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
@@ -209,16 +210,6 @@ class WaylandToplevel : public aura::WindowObserver {
       return;
     }
 
-    if (this == parent) {
-      // Some apps e.g. crbug/1210235 try to be their own parent. Ignore them.
-      auto* app_id = GetShellApplicationId(
-          shell_surface_data_->shell_surface->host_window());
-      LOG(WARNING)
-          << "Client attempts to add itself as a transient parent: app_id="
-          << app_id;
-      return;
-    }
-
     // This is a no-op if parent is not mapped.
     if (parent->shell_surface_data_ &&
         parent->shell_surface_data_->shell_surface->GetWidget())
@@ -311,8 +302,8 @@ class WaylandToplevel : public aura::WindowObserver {
     wl_array_release(&states);
   }
 
-  wl_resource* const resource_;
-  WaylandXdgSurface* shell_surface_data_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandToplevel> weak_ptr_factory_{this};
 };
 
@@ -448,12 +439,12 @@ class WaylandPopup : aura::WindowObserver {
 
   void Grab() {
     if (!shell_surface_data_) {
-      wl_resource_post_error(resource_, ZXDG_POPUP_V6_ERROR_INVALID_GRAB,
+      wl_resource_post_error(resource_.get(), ZXDG_POPUP_V6_ERROR_INVALID_GRAB,
                              "the surface has already been destroyed");
       return;
     }
     if (shell_surface_data_->shell_surface->GetWidget()) {
-      wl_resource_post_error(resource_, ZXDG_POPUP_V6_ERROR_INVALID_GRAB,
+      wl_resource_post_error(resource_.get(), ZXDG_POPUP_V6_ERROR_INVALID_GRAB,
                              "grab must be called before construction");
       return;
     }
@@ -478,8 +469,8 @@ class WaylandPopup : aura::WindowObserver {
     // Nothing to do here as popups don't have additional configure state.
   }
 
-  wl_resource* const resource_;
-  WaylandXdgSurface* shell_surface_data_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
 };
 

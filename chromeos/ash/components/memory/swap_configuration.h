@@ -29,6 +29,31 @@ extern const base::FeatureParam<int> kCrOSRamVsSwapWeight;
 BASE_DECLARE_FEATURE(kCrOSTuneExtraFree);
 extern const base::FeatureParam<int> kCrOSExtraFreeMb;
 
+// Controls the threshold at which memory pressure signals are sent for
+// arc-disabled devices.
+COMPONENT_EXPORT(ASH_MEMORY)
+BASE_DECLARE_FEATURE(kCrOSMemoryPressureSignalStudyNonArc);
+
+COMPONENT_EXPORT(ASH_MEMORY)
+extern const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyNonArcCriticalBps;
+
+COMPONENT_EXPORT(ASH_MEMORY)
+extern const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyNonArcModerateBps;
+
+// Similar to above but for arc-enabled devices.
+COMPONENT_EXPORT(ASH_MEMORY)
+BASE_DECLARE_FEATURE(kCrOSMemoryPressureSignalStudyArc);
+
+COMPONENT_EXPORT(ASH_MEMORY)
+extern const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyArcCriticalBps;
+
+COMPONENT_EXPORT(ASH_MEMORY)
+extern const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyArcModerateBps;
+
 // This feature and params control the zram writeback behavior.
 COMPONENT_EXPORT(ASH_MEMORY) BASE_DECLARE_FEATURE(kCrOSEnableZramWriteback);
 
@@ -89,7 +114,7 @@ struct ZramWritebackParams {
 
 // Configure swap will configure any swap related experiments that this user may
 // be opted into.
-COMPONENT_EXPORT(ASH_MEMORY) void ConfigureSwap();
+COMPONENT_EXPORT(ASH_MEMORY) void ConfigureSwap(bool arc_enabled);
 
 }  // namespace ash
 

@@ -131,8 +131,9 @@ TextureHolder::TextureHolder(
       texture_passthrough_(std::move(texture_passthrough)) {}
 
 TextureHolder::~TextureHolder() {
-  if (texture_)
-    texture_->RemoveLightweightRef(!context_lost_);
+  if (texture_) {
+    texture_.ExtractAsDangling()->RemoveLightweightRef(!context_lost_);
+  }
 }
 
 void TextureHolder::MarkContextLost() {
@@ -321,8 +322,7 @@ GLOzoneImageRepresentationShared::CreateShared(
   if (texture_holders.empty()) {
     if (format.is_single_plane()) {
       // Create a single texture holder with format and size of the backing. For
-      // legacy multiplanar formats eg. ResourceFormat::YUV_420_BIPLANAR, the
-      // plane must be DEFAULT.
+      // legacy multiplanar formats, the plane must be DEFAULT.
       auto size = backing->size();
       auto buffer_format = ToBufferFormat(format);
       if (format.IsLegacyMultiplanar()) {

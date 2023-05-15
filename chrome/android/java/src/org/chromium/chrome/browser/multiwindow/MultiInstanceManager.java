@@ -523,6 +523,11 @@ public class MultiInstanceManager
     public void initialize(int instanceId, int taskId) {}
 
     /**
+     * Perform initialization tasks for the manager after the tab state is initialized.
+     */
+    public void onTabStateInitialized() {}
+
+    /**
      * @return True if tab model merging for Android N+ is enabled.
      */
     public boolean isTabModelMergingEnabled() {

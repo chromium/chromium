@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
@@ -128,10 +129,8 @@ bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
 }
 
 WebContents* GetInitiator(content::WebUI* web_ui) {
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return nullptr;
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   return dialog_controller->GetInitiator(web_ui->GetWebContents());
 }
 
@@ -332,9 +331,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));
 #endif
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      ::features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
   base::Value::Dict pdf_strings;
@@ -415,13 +412,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
   web_ui->AddMessageHandler(std::move(handler));
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register with print backend service manager; it is beneficial to have a
-  // the print backend service be present and ready for at least as long as
-  // this UI is around.
-  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
-  }
+  RegisterPrintBackendServiceManagerClient();
 #endif
 }
 
@@ -440,25 +431,32 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register with print backend service manager; it is beneficial to have a
-  // the print backend service be present and ready for at least as long as
-  // this UI is around.
-  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
-  }
+  RegisterPrintBackendServiceManagerClient();
 #endif
 }
 
 PrintPreviewUI::~PrintPreviewUI() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  UnregisterPrintBackendServiceManagerClient();
+#endif
+  ClearPreviewUIId();
+}
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+void PrintPreviewUI::RegisterPrintBackendServiceManagerClient() {
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    service_manager_client_id_ =
+        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
+  }
+}
+
+void PrintPreviewUI::UnregisterPrintBackendServiceManagerClient() {
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     PrintBackendServiceManager::GetInstance().UnregisterClient(
         service_manager_client_id_);
   }
-#endif
-  ClearPreviewUIId();
 }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 mojo::PendingAssociatedRemote<mojom::PrintPreviewUI>
 PrintPreviewUI::BindPrintPreviewUI() {
@@ -478,6 +476,10 @@ void PrintPreviewUI::ClearPreviewUIId() {
   g_print_preview_request_id_map.Get().Erase(*id_);
   g_print_preview_ui_id_map.Get().Remove(*id_);
   id_.reset();
+}
+
+base::WeakPtr<PrintPreviewUI> PrintPreviewUI::GetWeakPointer() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void PrintPreviewUI::GetPrintPreviewDataForIndex(

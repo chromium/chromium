@@ -4,6 +4,11 @@
 
 import './settings_ui/settings_ui.js';
 
+export {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
+export {ExtensionControlledIndicatorElement} from '/shared/settings/controls/extension_controlled_indicator.js';
+export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from '/shared/settings/controls/settings_boolean_control_mixin.js';
+export {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
+export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
@@ -40,12 +45,7 @@ export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerPage, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from './autofill_page/password_manager_proxy.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
-export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
-export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';
-export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from './controls/settings_boolean_control_mixin.js';
-export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
-export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
@@ -67,11 +67,13 @@ export {SettingsPeoplePageElement} from './people_page/people_page.js';
 export {MAX_SIGNIN_PROMO_IMPRESSION, SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
-export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
+export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
-export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from './performance_page/tab_discard_exception_dialog.js';
+export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
+export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
 export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
+export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard_exception_validation_mixin.js';
 export {PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {CanonicalTopic, FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_page/privacy_sandbox/privacy_sandbox_browser_proxy.js';
@@ -82,6 +84,7 @@ export {buildRouter, routes} from './route.js';
 export {Route, Router, SettingsRoutes} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
 export {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_page/safety_check_child.js';
+export {SafetyCheckExtensionsElement} from './safety_check_page/safety_check_extensions.js';
 export {SettingsSafetyCheckExtensionsChildElement} from './safety_check_page/safety_check_extensions_child.js';
 export {SettingsSafetyCheckNotificationPermissionsElement} from './safety_check_page/safety_check_notification_permissions.js';
 export {SettingsSafetyCheckPageElement} from './safety_check_page/safety_check_page.js';

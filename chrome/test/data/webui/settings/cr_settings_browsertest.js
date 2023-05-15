@@ -10,12 +10,14 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "build/config/coverage/buildflags.h"');
 GEN('#include "chrome/browser/preloading/preloading_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/content_settings/core/common/features.h"');
 GEN('#include "components/performance_manager/public/features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
+GEN('#include "components/password_manager/core/common/password_manager_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "content/public/common/content_features.h"');
@@ -268,10 +270,17 @@ TEST_F('CrSettingsMainPageTest', 'DISABLED_MainPage', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1420597): Clean up this test after Password Manager redesign
+// is launched.
 var CrSettingsAutofillPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/autofill_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -291,10 +300,17 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
+// launched.
 var CrSettingsPasswordsSectionTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/passwords_section_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -309,10 +325,17 @@ TEST_F('CrSettingsPasswordsSectionTest', 'MAYBE_All', function() {
 });
 GEN('#undef MAYBE_All');
 
+// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
+// launched.
 var CrSettingsPasswordsDeviceSectionTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/passwords_device_section_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -320,10 +343,17 @@ TEST_F('CrSettingsPasswordsDeviceSectionTest', 'All', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
+// launched.
 var CrSettingsPasswordEditDialogTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_edit_dialog_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -331,10 +361,17 @@ TEST_F('CrSettingsPasswordEditDialogTest', 'All', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
+// launched.
 var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -347,6 +384,13 @@ var CrSettingsSafetyCheckPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    // TODO(crbug.com/1420597): Clean up this after Password Manager redesign is
+    // launched.
+    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -479,8 +523,37 @@ var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPerformancePageTest', 'All', function() {
-  mocha.run();
+TEST_F('CrSettingsPerformancePageTest', 'Controls', function() {
+  runMochaSuite('PerformancePage');
+});
+
+TEST_F('CrSettingsPerformancePageTest', 'ExceptionList', function() {
+  runMochaSuite('TabDiscardExceptionList');
+});
+
+var CrSettingsPerformancePageMultistateTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'performance_manager::features::kHighEfficiencyMultistateMode',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsPerformancePageMultistateTest', 'Controls', function() {
+  runMochaSuite('PerformancePageMultistate');
+});
+
+TEST_F('CrSettingsPerformancePageMultistateTest', 'ExceptionList', function() {
+  runMochaSuite('TabDiscardExceptionList');
 });
 
 var CrSettingsBatteryPageTest = class extends CrSettingsBrowserTest {
@@ -596,6 +669,56 @@ TEST_F(
     });
 GEN('#endif');
 
+TEST_F(
+    'CrSettingsPrivacyPageTest', 'enableWebBluetoothNewPermissionsBackendTests',
+    function() {
+      runMochaSuite('enableWebBluetoothNewPermissionsBackend');
+    });
+
+var CrSettingsPrivacyPagePrivacySandboxRestrictedTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
+  }
+  get featuresWithParameters() {
+    return [{
+      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
+      parameters: [{name: 'force-restricted-user', value: true}]
+    }];
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyPagePrivacySandboxRestrictedTest', 'Restricted',
+    function() {
+      runMochaSuite('PrivacySandbox4EnabledButRestricted');
+    });
+
+var CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
+  }
+
+  get featuresWithParameters() {
+    return [{
+      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
+      parameters: [
+        {name: 'force-restricted-user', value: true},
+        {name: 'restricted-notice', value: true}
+      ]
+    }];
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest',
+    'RestrictedWithNotice', function() {
+      runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice');
+    });
+
 var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -615,6 +738,12 @@ var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
 TEST_F(
     'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxPageTests', function() {
       runMochaSuite('PrivacySandboxPageTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxRestrictedEnabledTests',
+    function() {
+      runMochaSuite('PrivacySandboxRestrictedEnabledTests');
     });
 
 TEST_F('CrSettingsPrivacySandboxPageTest', 'TopicsSubpageTests', function() {
@@ -665,12 +794,13 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)');
 GEN('#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest');
 GEN('#else');
 GEN('#define MAYBE_CookiesPageTest CookiesPageTest');
 GEN('#endif');
-// TODO(crbug.com/1409653): fix flakiness on Linux debug builds and re-enable.
+// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug and
+// Javascript code coverage builds and re-enable.
 TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
@@ -685,12 +815,13 @@ TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
 });
 GEN('#endif');
 
-GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)');
 GEN('#define MAYBE_PrivacySandboxSettings4Disabled2 DISABLED_PrivacySandboxSettings4Disabled');
 GEN('#else');
 GEN('#define MAYBE_PrivacySandboxSettings4Disabled2 PrivacySandboxSettings4Disabled');
 GEN('#endif');
-// TODO(crbug.com/1409653): fix flakiness on Linux debug builds and re-enable.
+// TODO(crbug.com/1409653): fix flakiness on Linux debug and Javascript code
+// coverage builds and re-enable.
 // The "MAYBE..." portion of the test has a 2 at the end because there is
 // already a macro with the same name defined in this file.
 TEST_F(
@@ -874,7 +1005,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
    'settings_category_default_radio_group_test.js',
  ],
  ['AntiAbusePage', 'anti_abuse_page_test.js'],
- ['CategoryDefaultSetting', 'category_default_setting_test.js'],
  ['CategorySettingExceptions', 'category_setting_exceptions_test.js'],
  ['Checkbox', 'checkbox_test.js'],
  ['ChooserExceptionList', 'chooser_exception_list_test.js'],
@@ -891,8 +1021,14 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['FileSystemSettingsListEntries', 'file_system_site_entry_test.js'],
  ['FileSystemSettingsListEntryItems', 'file_system_site_entry_item_test.js'],
  ['HelpPage', 'help_page_test.js'],
+ // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
+ // launched.
  ['PasswordView', 'password_view_test.js'],
+ // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
+ // launched.
  ['PasswordsExportDialog', 'passwords_export_dialog_test.js'],
+ // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
+ // launched.
  ['PasswordsImportDialog', 'passwords_import_dialog_test.js'],
  ['PaymentsSection', 'payments_section_test.js'],
  ['PaymentsSectionCardDialogs', 'payments_section_card_dialogs_test.js'],
@@ -946,6 +1082,8 @@ GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
 GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
+// TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
+// launched.
 [['PasswordsSectionCros', 'passwords_section_test_cros.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
@@ -997,6 +1135,13 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://settings/test_loader.html?module=settings/${module}`;
+    }
+
+    /** @override */
+    get featureListInternal() {
+      return {
+        disabled: ['password_manager::features::kPasswordManagerRedesign']
+      };
     }
   };
 

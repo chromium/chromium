@@ -17,6 +17,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-test-utils.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -254,7 +255,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       RegisterPrefs(&pref_service_)};
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
   // |test_wallpaper_controller_|.
@@ -411,25 +412,20 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsJpegBytes) {
-  test_wallpaper_controller()->ShowWallpaperImage(
-      CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED));
+  auto image = CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED);
+  test_wallpaper_controller()->ShowWallpaperImage(image);
+  scoped_refptr<base::RefCountedMemory> expected_jpeg_bytes =
+      gfx::Image(image).As1xPNGBytes();
 
-  scoped_refptr<base::RefCountedMemory> jpeg_bytes;
-
+  // Jpeg bytes of the preview image.
   base::RunLoop loop;
-  delegate()->GetWallpaperAsJpegBytes(base::BindLambdaForTesting(
-      [quit = loop.QuitClosure(),
-       &jpeg_bytes](scoped_refptr<base::RefCountedMemory> bytes) {
-        bytes.swap(jpeg_bytes);
+  test_wallpaper_controller()->LoadPreviewImage(base::BindLambdaForTesting(
+      [quit = loop.QuitClosure(), &expected_jpeg_bytes](
+          scoped_refptr<base::RefCountedMemory> preview_bytes) {
+        EXPECT_TRUE(preview_bytes->Equals(expected_jpeg_bytes));
         std::move(quit).Run();
       }));
   loop.Run();
-
-  // Jpeg bytes of the preview image.
-  scoped_refptr<base::RefCountedMemory> expected_jpeg_bytes =
-      test_wallpaper_controller()->GetPreviewImage();
-
-  EXPECT_TRUE(expected_jpeg_bytes->Equals(jpeg_bytes));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {

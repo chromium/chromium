@@ -16,11 +16,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

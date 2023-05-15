@@ -77,7 +77,7 @@ class WebAppPreloadInstaller {
                       const web_app::AppId& app_id,
                       webapps::InstallResultCode code);
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<WebAppPreloadInstaller> weak_ptr_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "content/public/browser/navigation_controller.h"
 
 class GURL;
 
@@ -75,6 +76,14 @@ class WebAppUrlLoader {
                        content::WebContents* web_contents,
                        UrlComparison url_comparison,
                        ResultCallback callback);
+
+  // Navigates |web_contents| based on |load_url_params|, compares the
+  // resolved URL with |url_comparison|, and runs callback with the result code.
+  virtual void LoadUrl(
+      const content::NavigationController::LoadURLParams& load_url_params,
+      content::WebContents* web_contents,
+      UrlComparison url_comparison,
+      ResultCallback callback);
 
   // Exposed for testing.
   static constexpr base::TimeDelta kSecondsToWaitForWebContentsLoad =

@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/power/power_data_collector.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -29,7 +30,7 @@ class PowerDataCollectorTest : public testing::Test {
   }
 
  protected:
-  PowerDataCollector* power_data_collector_ = nullptr;
+  raw_ptr<PowerDataCollector, ExperimentalAsh> power_data_collector_ = nullptr;
 };
 
 TEST_F(PowerDataCollectorTest, PowerChanged) {

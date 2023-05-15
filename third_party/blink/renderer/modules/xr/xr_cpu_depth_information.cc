@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_cpu_depth_information.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ostream_operators.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -100,9 +100,9 @@ float XRCPUDepthInformation::getDepthInMeters(
   gfx::PointF depth_coordinates =
       gfx::ScalePoint(norm_depth_coordinates, size_.width(), size_.height());
 
-  uint32_t column = base::clamp<uint32_t>(
+  uint32_t column = std::clamp<uint32_t>(
       static_cast<uint32_t>(depth_coordinates.x()), 0, size_.width() - 1);
-  uint32_t row = base::clamp<uint32_t>(
+  uint32_t row = std::clamp<uint32_t>(
       static_cast<uint32_t>(depth_coordinates.y()), 0, size_.height() - 1);
 
   auto checked_index =

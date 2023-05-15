@@ -9,7 +9,6 @@
   <release seq="1">
     <includes>
       <!-- Privileged app host contents. -->
-      <include name="IDR_MEDIA_APP_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML" file="index_dark_light.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_VIEWPDFHOST_HTML" file="viewpdfhost.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_LAUNCH_JS" file="${root_gen_dir}/ash/webui/media_app_ui/resources/js/launch.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />

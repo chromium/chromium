@@ -22,6 +22,7 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_accelerator.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -30,10 +31,10 @@ namespace media {
 
 constexpr int kRefFrameMaxCount = 16;
 
-class D3D11H264Accelerator;
 class MediaLog;
 
-class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
+class D3D11H264Accelerator : public D3DAccelerator,
+                             public H264Decoder::H264Accelerator {
  public:
   D3D11H264Accelerator(D3D11VideoDecoderClient* client,
                        MediaLog* media_log,
@@ -87,21 +88,6 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
   void PicParamsFromPic(DXVA_PicParams_H264* pic_param, D3D11H264Picture* pic);
 
-  void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
-
-  // Record a failure to DVLOG and |media_log_|.
-  void RecordFailure(const std::string& reason,
-                     D3D11Status::Codes code,
-                     HRESULT hr = S_OK) const;
-  void RecordFailure(D3D11Status error) const;
-
-  raw_ptr<D3D11VideoDecoderClient> client_;
-  raw_ptr<MediaLog> media_log_ = nullptr;
-
-  ComD3D11VideoDecoder video_decoder_;
-  ComD3D11VideoDevice video_device_;
-  std::unique_ptr<VideoContextWrapper> video_context_;
-
   // This information set at the beginning of a frame and saved for processing
   // all the slices.
   DXVA_PicEntry_H264 ref_frame_list_[kRefFrameMaxCount];
@@ -116,12 +102,6 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   size_t current_offset_ = 0;
   size_t bitstream_buffer_size_ = 0;
   raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
-
-  // This contains the subsamples (clear and encrypted) of the slice data
-  // in D3D11_VIDEO_DECODER_BUFFER_BITSTREAM buffer.
-  std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
-  // IV for the current frame.
-  std::vector<uint8_t> frame_iv_;
 };
 
 }  // namespace media

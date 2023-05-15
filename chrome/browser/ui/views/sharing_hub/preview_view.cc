@@ -18,40 +18,6 @@ namespace sharing_hub {
 
 namespace {
 
-struct LayoutVariant {
-  gfx::Insets interior_margin;
-  gfx::Insets default_margin;
-  gfx::Size image_size;
-
-  static LayoutVariant FromFeatureVariant(
-      share::DesktopSharePreviewVariant variant);
-};
-
-// These values are all directly from the Figma redlines. See
-// https://crbug.com/1314486 and https://crbug.com/1316473.
-constexpr LayoutVariant kVariant16{gfx::Insets::VH(8, 8),
-                                   gfx::Insets::VH(0, 16), gfx::Size(16, 16)};
-
-constexpr LayoutVariant kVariant40{gfx::Insets::VH(8, 8),
-                                   gfx::Insets::VH(0, 16), gfx::Size(40, 40)};
-
-constexpr LayoutVariant kVariant72{gfx::Insets::VH(8, 8),
-                                   gfx::Insets::VH(0, 16), gfx::Size(72, 72)};
-
-LayoutVariant LayoutVariant::FromFeatureVariant(
-    share::DesktopSharePreviewVariant variant) {
-  switch (variant) {
-    case share::DesktopSharePreviewVariant::kEnabled16:
-      return kVariant16;
-    case share::DesktopSharePreviewVariant::kEnabled40:
-      return kVariant40;
-    case share::DesktopSharePreviewVariant::kEnabled72:
-      return kVariant72;
-    case share::DesktopSharePreviewVariant::kDisabled:
-      NOTREACHED_NORETURN();
-  }
-}
-
 class UrlLabel : public views::Label {
  public:
   UrlLabel(GURL url, int context, int style)
@@ -92,22 +58,24 @@ class UrlLabel : public views::Label {
 //     View [FlexLayout, vertical]
 //       Label (title)
 //       Label (URL)
-PreviewView::PreviewView(share::ShareAttempt attempt,
-                         share::DesktopSharePreviewVariant feature_variant)
-    : feature_variant_(feature_variant) {
-  auto layout_variant = LayoutVariant::FromFeatureVariant(feature_variant);
+PreviewView::PreviewView(share::ShareAttempt attempt) {
+  // These values are all directly from the Figma redlines. See
+  // https://crbug.com/1314486 and https://crbug.com/1316473.
+  constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(8, 8);
+  constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
+  constexpr gfx::Size kImageSize{16, 16};
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(layout_variant.interior_margin)
-      .SetDefault(views::kMarginsKey, layout_variant.default_margin)
+      .SetInteriorMargin(kInteriorMargin)
+      .SetDefault(views::kMarginsKey, kDefaultMargin)
       .SetCollapseMargins(true);
 
   image_ =
       AddChildView(std::make_unique<views::ImageView>(attempt.preview_image));
-  image_->SetPreferredSize(layout_variant.image_size);
+  image_->SetPreferredSize(kImageSize);
 
   auto* labels_container = AddChildView(std::make_unique<views::View>());
   labels_container->SetProperty(
@@ -137,16 +105,5 @@ PreviewView::PreviewView(share::ShareAttempt attempt,
 }
 
 PreviewView::~PreviewView() = default;
-
-void PreviewView::TakeCallbackSubscription(
-    base::CallbackListSubscription subscription) {
-  subscription_ = std::move(subscription);
-}
-
-void PreviewView::OnImageChanged(ui::ImageModel model) {
-  image_->SetImage(model);
-  image_->SetImageSize(
-      LayoutVariant::FromFeatureVariant(feature_variant_).image_size);
-}
 
 }  // namespace sharing_hub

@@ -7083,4 +7083,140 @@ TEST_P(PaintPropertyTreeBuilderTest, DontPromoteTrivial3DWithLowEndDevice) {
   EXPECT_FALSE(effect_properties->Effect()->HasDirectCompositingReasons());
 }
 
+#define EXPECT_BACKGROUND_CLIP(properties, rect)                            \
+  do {                                                                      \
+    ASSERT_TRUE(properties);                                                \
+    ASSERT_TRUE(properties->BackgroundClip());                              \
+    EXPECT_EQ(rect, properties->BackgroundClip()->PaintClipRect().Rect());  \
+    EXPECT_EQ(rect, properties->BackgroundClip()->LayoutClipRect().Rect()); \
+  } while (false)
+
+TEST_P(PaintPropertyTreeBuilderTest, BackgroundClip) {
+  ScopedCompositeBackgroundAttachmentFixedForTest enabled(true);
+  SetPreferCompositingToLCDText(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        width: 300px;
+        height: 200px;
+        border: 20px solid black;
+        padding: 10px;
+        box-sizing: border-box;
+        background-image: linear-gradient(blue, red);
+        background-attachment: fixed;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(0, 0, 300, 200));
+
+  target->setAttribute(html_names::kStyleAttr, "background-clip: padding-box");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(20, 20, 260, 160));
+
+  target->setAttribute(html_names::kStyleAttr,
+                       "background-clip: padding-box; border-top-width: 15px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(20, 15, 260, 165));
+
+  target->setAttribute(html_names::kStyleAttr, "background-clip: content-box");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(30, 30, 240, 140));
+
+  target->setAttribute(html_names::kStyleAttr,
+                       "background-clip: content-box; padding-left: 25px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(45, 30, 225, 140));
+
+  target->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(0, 0, 300, 200));
+
+  target->setAttribute(html_names::kStyleAttr, "border-radius: 20px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(PaintPropertiesForElement("target"));
+
+  target->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(0, 0, 300, 200));
+
+  target->setAttribute(html_names::kStyleAttr, "box-shadow: 10px 20px blue");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(PaintPropertiesForElement("target"));
+
+  target->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
+                         gfx::RectF(0, 0, 300, 200));
+
+  target->setAttribute(html_names::kStyleAttr, "background-attachment: local");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(PaintPropertiesForElement("target"));
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, BackgroundClipFragmented) {
+  ScopedCompositeBackgroundAttachmentFixedForTest enabled(true);
+  SetPreferCompositingToLCDText(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        height: 600px;
+        border: 20px solid black;
+        padding: 10px;
+        box-sizing: border-box;
+        background-image: linear-gradient(blue, red);
+        background-attachment: fixed;
+        background-clip: content-box;
+      }
+    </style>
+    <div style="width: 300px; height: 200px; columns: 3; column-gap: 0">
+      <div id="target"></div>
+     </div>
+  )HTML");
+
+  auto* target = GetLayoutObjectByElementId("target");
+  ASSERT_EQ(3u, NumFragments(target));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 0).PaintProperties(),
+                         gfx::RectF(30, 30, 40, 170));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 1).PaintProperties(),
+                         gfx::RectF(130, 0, 40, 200));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 2).PaintProperties(),
+                         gfx::RectF(230, 0, 40, 170));
+
+  GetDocument().getElementById("target")->setAttribute(
+      html_names::kStyleAttr, "background-clip: padding-box");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(3u, NumFragments(target));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 0).PaintProperties(),
+                         gfx::RectF(20, 20, 60, 180));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 1).PaintProperties(),
+                         gfx::RectF(120, 0, 60, 200));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 2).PaintProperties(),
+                         gfx::RectF(220, 0, 60, 180));
+
+  GetDocument().getElementById("target")->setAttribute(
+      html_names::kStyleAttr, "background-clip: border-box");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(3u, NumFragments(target));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 0).PaintProperties(),
+                         gfx::RectF(0, 0, 100, 200));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 1).PaintProperties(),
+                         gfx::RectF(100, 0, 100, 200));
+  EXPECT_BACKGROUND_CLIP(FragmentAt(target, 2).PaintProperties(),
+                         gfx::RectF(200, 0, 100, 200));
+}
+
 }  // namespace blink

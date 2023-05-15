@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -48,8 +49,8 @@ class ASH_EXPORT ShelfPartyFeaturePodController
   void UpdateTile();
 
   // Owned by the views hierarchy.
-  FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<ShelfPartyFeaturePodController> weak_factory_{this};
 };

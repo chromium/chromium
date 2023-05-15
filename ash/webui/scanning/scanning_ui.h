@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/scanning/mojom/scanning.mojom-forward.h"
 #include "ash/webui/scanning/scanning_handler.h"
+#include "ash/webui/scanning/url_constants.h"
 #include "base/functional/callback.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -28,6 +31,16 @@ namespace ash {
 class AccessibilityFeatures;
 
 class ScanningAppDelegate;
+class ScanningUI;
+
+// The WebUIConfig for chrome://scanning.
+class ScanningUIConfig : public ChromeOSWebUIConfig<ScanningUI> {
+ public:
+  explicit ScanningUIConfig(CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIScanningAppHost,
+                            create_controller_func) {}
+};
 
 // The WebUI for chrome://scanning.
 class ScanningUI : public ui::MojoWebUIController {
@@ -35,10 +48,7 @@ class ScanningUI : public ui::MojoWebUIController {
   using BindScanServiceCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<scanning::mojom::ScanService>)>;
 
-  // |callback| should bind the pending receiver to an implementation of
-  // ash::scanning::mojom::ScanService.
   ScanningUI(content::WebUI* web_ui,
-             BindScanServiceCallback callback,
              std::unique_ptr<ScanningAppDelegate> scanning_app_delegate);
   ~ScanningUI() override;
 
@@ -62,6 +72,8 @@ class ScanningUI : public ui::MojoWebUIController {
           receiver);
 
  private:
+  // Callback to bind the pending receiver to an implementation of
+  // ash::scanning::mojom::ScanService.
   const BindScanServiceCallback bind_pending_receiver_callback_;
 
   std::unique_ptr<AccessibilityFeatures> accessibility_features_;

@@ -177,7 +177,8 @@ CookieControlsController::TabObserver::TabObserver(
           web_contents),
       cookie_controls_(cookie_controls) {}
 
-void CookieControlsController::TabObserver::OnSiteDataAccessed() {
+void CookieControlsController::TabObserver::OnSiteDataAccessed(
+    const AccessDetails& access_details) {
   cookie_controls_->PresentBlockedCookieCounter();
 }
 

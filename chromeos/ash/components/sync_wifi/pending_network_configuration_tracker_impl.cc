@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 
 #include "base/base64url.h"
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -84,7 +84,7 @@ std::string PendingNetworkConfigurationTrackerImpl::TrackPendingUpdate(
   base::Base64UrlEncode(serialized_specifics,
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encoded_specifics);
-  std::string change_guid = base::GenerateGUID();
+  std::string change_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   dict_.SetByDottedPath(GeneratePath(id, kChangeGuidKey), change_guid);
   dict_.SetByDottedPath(GeneratePath(id, kSpecificsKey), encoded_specifics);

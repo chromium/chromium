@@ -625,15 +625,9 @@ void PageContentAnnotationsService::OnURLQueried(
     return;
   }
 
-  base::TimeDelta min_magnitude_between_visits = base::TimeDelta::Max();
   bool did_store_content_annotations = false;
   for (const auto& visit_for_url : base::Reversed(url_result.visits)) {
     if (visit.nav_entry_timestamp != visit_for_url.visit_time) {
-      base::TimeDelta magnitude_between_visits =
-          (visit.nav_entry_timestamp - visit_for_url.visit_time).magnitude();
-      if (magnitude_between_visits < min_magnitude_between_visits) {
-        min_magnitude_between_visits = magnitude_between_visits;
-      }
       continue;
     }
 
@@ -645,19 +639,6 @@ void PageContentAnnotationsService::OnURLQueried(
   LogPageContentAnnotationsStorageStatus(
       did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound,
       annotation_type);
-  if (!did_store_content_annotations) {
-    DCHECK_NE(min_magnitude_between_visits, base::TimeDelta::Max());
-    base::UmaHistogramTimes(
-        "OptimizationGuide.PageContentAnnotationsService."
-        "ContentAnnotationsStorageMinMagnitudeForVisitNotFound",
-        min_magnitude_between_visits);
-
-    base::UmaHistogramTimes(
-        "OptimizationGuide.PageContentAnnotationsService."
-        "ContentAnnotationsStorageMinMagnitudeForVisitNotFound." +
-            PageContentAnnotationsTypeToString(annotation_type),
-        min_magnitude_between_visits);
-  }
 }
 
 void PageContentAnnotationsService::GetMetadataForEntityId(
@@ -667,16 +648,6 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
   model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
 #else
   std::move(callback).Run(absl::nullopt);
-#endif
-}
-
-void PageContentAnnotationsService::GetMetadataForEntityIds(
-    const base::flat_set<std::string>& entity_ids,
-    BatchEntityMetadataRetrievedCallback callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  model_manager_->GetMetadataForEntityIds(entity_ids, std::move(callback));
-#else
-  std::move(callback).Run({});
 #endif
 }
 
@@ -690,10 +661,7 @@ void PageContentAnnotationsService::OnURLVisited(
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
 
-  if (template_url_service_ &&
-      (optimization_guide::features::
-           ShouldPersistSearchMetadataForNonGoogleSearches() ||
-       google_util::IsGoogleSearchUrl(url_row.url()))) {
+  if (template_url_service_) {
     auto search_metadata =
         template_url_service_->ExtractSearchMetadata(url_row.url());
     if (search_metadata) {

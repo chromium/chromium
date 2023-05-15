@@ -60,7 +60,7 @@ function emitExpectedResult(path, expected)
     // Special cases where the properties might return something other than the
     // "expected" default (e.g. bool property defaulting to false). Please do
     // not add exceptions to this list without documenting them.
-    var propertyPath = path.join('.');
+    var propertyPath = getPropertyPath(path, path.length);
 
     // Properties that are skipped because they are unstable due to dependency
     // on system global state that is variable between test runs.
@@ -70,6 +70,8 @@ function emitExpectedResult(path, expected)
     case "navigator.connection.downlink":
     // performance.timeOrigin depends on when the page is loaded and is variable.
     case "performance.timeOrigin":
+    // It's expected that performance.eventCounts.size is non-zero.
+    case "performance.eventCounts.size":
         return;
     }
 
@@ -90,6 +92,8 @@ function emitExpectedResult(path, expected)
     case "navigator.platform":
     case "navigator.product":
     case "navigator.productSub":
+    case "navigator.userAgentData.brands[0].brand":
+    case "navigator.userAgentData.brands[0].version":
     case "navigator.vendor":
     case "screen.orientation.type":
         expected = "window." + propertyPath;
@@ -106,18 +110,21 @@ function emitExpectedResult(path, expected)
         expected = "'unsafe-none'";
         break;
 
-    // TODO(dcheng): Figure out why these become undefined...
-    case "location.hash":
-    case "location.host":
-    case "location.hostname":
+    // location's url is left intact on detach. The location getters will
+    // provide the appropriate components of our test url (about:blank).
     case "location.href":
-    case "location.origin":
-    case "location.pathname":
-    case "location.port":
-    case "location.protocol":
-    case "location.search":
-        expected = "undefined";
+        expected = "'about:blank'";
         break;
+    case "location.origin":
+        expected = "'null'";
+        break;
+    case "location.pathname":
+        expected = "'blank'";
+        break;
+    case "location.protocol":
+        expected = "'about:'";
+        break;
+
     case "navigator.mediaSession.playbackState":
         expected = "'none'";
         break;

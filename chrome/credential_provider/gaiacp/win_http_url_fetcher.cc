@@ -445,8 +445,8 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       continue;
 
     *request_result = std::move(extracted_param);
-    const base::Value* error_detail =
-        (*request_result)->FindDictKey(kErrorKeyInRequestResult);
+    const base::Value::Dict* error_detail =
+        (*request_result)->GetDict().FindDict(kErrorKeyInRequestResult);
     if (!error_detail)
       return S_OK;
 
@@ -454,7 +454,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
 
     // If error code is known, retry only on retryable server errors.
     absl::optional<int> error_code =
-        error_detail->FindIntKey(kHttpErrorCodeKeyNameInResponse);
+        error_detail->FindInt(kHttpErrorCodeKeyNameInResponse);
     if (error_code.has_value() &&
         !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {
       return E_FAIL;

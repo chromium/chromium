@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -125,11 +126,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   void AdjustForShelfAlignmentAndTextDirection(gfx::Vector2dF* vector_2df);
 
   // The shelf whose holding space tray icon this preview belongs.
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The view that contains all preview layers belonging to the holding space
   // icon.
-  views::View* const container_;
+  const raw_ptr<views::View, ExperimentalAsh> container_;
 
   // Owns the `ui::Layer` which paints the image representation of the
   // associated holding space item.

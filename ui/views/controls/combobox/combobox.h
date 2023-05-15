@@ -153,6 +153,8 @@ class VIEWS_EXPORT Combobox : public View,
   void SetSelectedRow(absl::optional<size_t> row) override;
   std::u16string GetTextForRow(size_t row) override;
 
+  void UpdateFont();
+
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
@@ -275,6 +277,11 @@ class VIEWS_EXPORT Combobox : public View,
   // ChildPreferredSizeChanged(). When false, the size of contents is defined by
   // the selected label
   bool size_to_largest_label_ = true;
+
+  // The font list to be used for the main dropdown of the combobox. Individual
+  // menu items on the dropdown may be defined separately by
+  // ComboboxMenuModel::GetLabelFontListAt.
+  gfx::FontList font_list_;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};

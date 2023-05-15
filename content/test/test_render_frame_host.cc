@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/run_loop.h"
+#include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -188,7 +188,8 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChild(
 TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
     const std::string& frame_name,
     const blink::ParsedPermissionsPolicy& allow) {
-  std::string frame_unique_name = base::GenerateGUID();
+  std::string frame_unique_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   OnCreateChildFrame(
       GetProcess()->GetNextRoutingID(), CreateStubFrameRemote(),
       CreateStubBrowserInterfaceBrokerReceiver(),
@@ -398,6 +399,10 @@ void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
   params->http_status_code = last_http_status_code();
   DidCommitSameDocumentNavigation(std::move(params),
                                   std::move(same_doc_params));
+}
+
+void TestRenderFrameHost::SendStartLoadingForAsyncNavigationApiCommit() {
+  StartLoadingForAsyncNavigationApiCommit();
 }
 
 void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(

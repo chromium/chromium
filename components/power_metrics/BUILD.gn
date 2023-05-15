@@ -29,6 +29,7 @@ static_library("power_metrics") {
       "smc_mac.h",
       "smc_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -40,32 +41,34 @@ static_library("power_metrics") {
     libs = [ "Setupapi.lib" ]
     ldflags = [ "/DELAYLOAD:setupapi.dll" ]
   }
+
+  if (is_linux) {
+    sources += [
+      "energy_metrics_provider_linux.cc",
+      "energy_metrics_provider_linux.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
+  sources = [ "energy_metrics_provider_unittest.cc" ]
+
+  deps = [
+    ":power_metrics",
+    "//testing/gtest",
+  ]
+
   if (is_mac) {
-    sources = [
+    sources += [
       "energy_impact_mac_unittest.mm",
       "resource_coalition_mac_unittest.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     data = [ "test/data/" ]
 
-    deps = [
-      ":power_metrics",
-      "//base",
-      "//testing/gtest",
-    ]
-  }
-
-  if (is_win) {
-    sources = [ "energy_metrics_provider_win_unittest.cc" ]
-
-    deps = [
-      ":power_metrics",
-      "//testing/gtest",
-    ]
+    deps += [ "//base" ]
   }
 }

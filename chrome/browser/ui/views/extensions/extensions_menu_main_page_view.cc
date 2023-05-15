@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -15,14 +16,17 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -39,6 +43,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "extensions/common/extension_urls.h"
+#endif
 
 namespace {
 
@@ -121,8 +129,8 @@ RequestsAccessSection::RequestsAccessSection() {
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
-    ExtensionsMenuNavigationHandler* navigation_handler)
-    : browser_(browser), navigation_handler_(navigation_handler) {
+    ExtensionsMenuHandler* menu_handler)
+    : browser_(browser), menu_handler_(menu_handler) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
   // TODO(crbug.com/1413883): Consider making the height dynamic.
@@ -167,9 +175,25 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetMultiLine(true)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)),
-                  // TODO(crbug.com/1390952): Move setting and toggle button
-                  // under close button. This will be done as part of adding
-                  // margins to the menu.
+// TODO(crbug.com/1390952): Move webstore, setting, and toggle
+// button under close button. This will be done as part of
+// adding margins to the menu.
+// Webstore button.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                  views::Builder<views::ImageButton>(
+                      views::CreateVectorImageButtonWithNativeTheme(
+                          base::BindRepeating(
+                              &chrome::ShowWebStore, browser_,
+                              extension_urls::kExtensionsMenuUtmSource),
+                          vector_icons::kGoogleChromeWebstoreIcon))
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME))
+                      .CustomConfigure(
+                          base::BindOnce([](views::ImageButton* view) {
+                            view->SizeToPreferredSize();
+                            InstallCircleHighlightPathGenerator(view);
+                          })),
+#endif
                   // Setting button.
                   views::Builder<views::ImageButton>(
                       views::CreateVectorImageButtonWithNativeTheme(
@@ -196,8 +220,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
                           base::BindRepeating(
-                              &ExtensionsMenuNavigationHandler::CloseBubble,
-                              base::Unretained(navigation_handler_))))),
+                              &ExtensionsMenuHandler::CloseBubble,
+                              base::Unretained(menu_handler_))))),
           // Contents.
           views::Builder<views::Separator>(),
           views::Builder<views::ScrollView>()
@@ -224,14 +248,22 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
+    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state,
+    ExtensionMenuItemView::SitePermissionsButtonAccess
+        site_permissions_button_access,
     int index) {
+  // base::Unretained() below is safe because `menu_handler_` lifetime is
+  // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, std::move(action_controller), site_permissions_button_state,
-      base::BindRepeating(
-          &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
-          base::Unretained(navigation_handler_), extension_id));
+      browser_, std::move(action_controller),
+      base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
+                          base::Unretained(menu_handler_), extension_id),
+      base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
+                          base::Unretained(menu_handler_), extension_id));
+  item->Update(site_access_toggle_state, site_permissions_button_state,
+               site_permissions_button_access);
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 
@@ -251,6 +283,9 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
 
   PermissionsManager::Get(browser_->profile())
       ->UpdateUserSiteSetting(origin, site_setting);
+
+  // TODO(crbug.com/1390952): Show reload message in menu if any extension needs
+  // a page refresh for the update to take effect.
 }
 
 void ExtensionsMenuMainPageView::Update(std::u16string current_site,

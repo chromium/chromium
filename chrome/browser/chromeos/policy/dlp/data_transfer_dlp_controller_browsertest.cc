@@ -40,6 +40,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -72,10 +73,11 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
 
-  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+  void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
+                      const ui::DataTransferEndpoint& data_dst,
                       base::RepeatingCallback<void()> reporting_cb) {
-    DlpClipboardNotifier::ProceedPressed(data_dst, std::move(reporting_cb),
-                                         GetWidget());
+    DlpClipboardNotifier::ProceedPressed(std::move(data), data_dst,
+                                         std::move(reporting_cb), GetWidget());
   }
 
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst) {
@@ -387,7 +389,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, DISABLED_WarnDestination) {
       &FakeDlpController::ReportWarningProceededEvent,
       base::Unretained(dlp_controller_.get()), data_src.get(),
       &default_endpoint, kMailUrl, "*", kRuleMetadata1, true);
-  helper_.ProceedPressed(default_endpoint, std::move(reporting_cb));
+
+  auto data = std::make_unique<ui::ClipboardData>();
+  data->set_text(base::UTF16ToUTF8(std::u16string(kClipboardText116)));
+
+  helper_.ProceedPressed(std::move(data), default_endpoint,
+                         std::move(reporting_cb));
   EXPECT_TRUE(!widget || widget->IsClosed());
 
   EXPECT_EQ(kClipboardText116, textfield_->GetText());

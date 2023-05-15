@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Controller for accessing helper functions for the singleton factory instance.
@@ -14,11 +17,12 @@ public class RestoreTabsControllerImpl {
     private RestoreTabsFeatureHelper mHelper;
     private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
-    public RestoreTabsControllerImpl(Profile profile,
+    public RestoreTabsControllerImpl(Context context, Profile profile,
             RestoreTabsControllerFactory.ControllerListener listener,
-            TabCreatorManager tabCreatorManager) {
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
         mHelper = new RestoreTabsFeatureHelperImpl();
-        mRestoreTabsCoordinator = new RestoreTabsCoordinator(profile, listener, tabCreatorManager);
+        mRestoreTabsCoordinator = new RestoreTabsCoordinator(
+                context, profile, listener, tabCreatorManager, bottomSheetController);
     }
 
     public void destroy() {
@@ -31,7 +35,7 @@ public class RestoreTabsControllerImpl {
         return mHelper;
     }
 
-    public void showBottomSheet() {
-        mRestoreTabsCoordinator.showOptions();
+    public void showHomeScreen() {
+        mRestoreTabsCoordinator.showHomeScreen();
     }
 }

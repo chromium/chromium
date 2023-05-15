@@ -25,11 +25,13 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsService.Relation;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
@@ -205,6 +207,7 @@ class ClientManager {
     private static class SessionParams {
         public final int uid;
         private CustomTabsCallback mCustomTabsCallback;
+        private EngagementSignalsCallback mEngagementSignalsCallback;
         public final DisconnectCallback disconnectCallback;
         public final PostMessageHandler postMessageHandler;
         public final PostMessageServiceConnection serviceConnection;
@@ -227,6 +230,8 @@ class ClientManager {
         private boolean mShouldGetPageLoadMetrics;
         private boolean mCustomTabIsInForeground;
         private boolean mWasSessionDisconnectStatusLogged;
+        private Supplier<Integer> mGreatestScrollPercentageSupplier;
+        private Supplier<Boolean> mEngagementSignalsAvailableSupplier;
 
         public SessionParams(Context context, int uid, CustomTabsCallback customTabsCallback,
                 DisconnectCallback callback, PostMessageHandler postMessageHandler,
@@ -309,6 +314,30 @@ class ClientManager {
 
         public void setCustomTabsCallback(CustomTabsCallback customTabsCallback) {
             mCustomTabsCallback = customTabsCallback;
+        }
+
+        public EngagementSignalsCallback getEngagementSignalsCallback() {
+            return mEngagementSignalsCallback;
+        }
+
+        public void setEngagementSignalsCallback(EngagementSignalsCallback callback) {
+            mEngagementSignalsCallback = callback;
+        }
+
+        public void setGreatestScrollPercentageSupplier(Supplier<Integer> supplier) {
+            mGreatestScrollPercentageSupplier = supplier;
+        }
+
+        public Supplier<Integer> getGreatestScrollPercentageSupplier() {
+            return mGreatestScrollPercentageSupplier;
+        }
+
+        public void setEngagementSignalsAvailableSupplier(Supplier<Boolean> supplier) {
+            mEngagementSignalsAvailableSupplier = supplier;
+        }
+
+        public Supplier<Boolean> getEngagementSignalsAvailableSupplier() {
+            return mEngagementSignalsAvailableSupplier;
         }
     }
 
@@ -731,6 +760,19 @@ class ClientManager {
         return callOnSession(session, false, params -> params.mShouldGetPageLoadMetrics);
     }
 
+    public void setGreatestScrollPercentageSupplierForSession(
+            CustomTabsSessionToken session, Supplier<Integer> supplier) {
+        callOnSession(session, params -> params.setGreatestScrollPercentageSupplier(supplier));
+    }
+
+    public int getGreatestScrollPercentageForSession(
+            CustomTabsSessionToken session, Bundle extras) {
+        return callOnSession(session, 0, params -> {
+            Supplier<Integer> supplier = params.getGreatestScrollPercentageSupplier();
+            return supplier != null ? supplier.get() : 0;
+        });
+    }
+
     /**
      * Returns the uid associated with the session, {@code -1} if there is no matching session.
      */
@@ -871,6 +913,26 @@ class ClientManager {
     public void setCustomTabIsInForeground(
             @Nullable CustomTabsSessionToken session, boolean isInForeground) {
         callOnSession(session, params -> { params.mCustomTabIsInForeground = isInForeground; });
+    }
+
+    public void setEngagementSignalsCallbackForSession(
+            CustomTabsSessionToken session, EngagementSignalsCallback callback) {
+        callOnSession(session, params -> params.setEngagementSignalsCallback(callback));
+    }
+
+    public @Nullable EngagementSignalsCallback getEngagementSignalsCallbackForSession(
+            CustomTabsSessionToken session) {
+        return callOnSession(session, null, SessionParams::getEngagementSignalsCallback);
+    }
+
+    public void setEngagementSignalsAvailableSupplierForSession(
+            CustomTabsSessionToken session, Supplier<Boolean> supplier) {
+        callOnSession(session, params -> params.setEngagementSignalsAvailableSupplier(supplier));
+    }
+
+    public @Nullable Supplier<Boolean> getEngagementSignalsAvailableSupplierForSession(
+            CustomTabsSessionToken session) {
+        return callOnSession(session, null, SessionParams::getEngagementSignalsAvailableSupplier);
     }
 
     private void logConnectionClosed(SessionParams sessionParams) {

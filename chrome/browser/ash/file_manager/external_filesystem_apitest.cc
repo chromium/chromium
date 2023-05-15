@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -124,7 +125,7 @@ class JSTestStarter : public content::TestNavigationObserver {
           self.testNameToRun = '$1';
         }
     )";
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         navigation_handle->GetRenderFrameHost(),
         base::ReplaceStringPlaceholders(kScript, {test_name_}, nullptr)));
 
@@ -573,7 +574,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
       create_drive_integration_service_;
   std::unique_ptr<DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
-  Profile* second_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> second_profile_ = nullptr;
   std::unordered_map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
 };

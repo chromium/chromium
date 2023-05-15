@@ -5,6 +5,7 @@
 #include "android_webview/browser/gfx/display_webview.h"
 
 #include "android_webview/browser/gfx/overlay_processor_webview.h"
+#include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
@@ -43,7 +44,8 @@ std::unique_ptr<DisplayWebView> DisplayWebView::Create(
   return base::WrapUnique(new DisplayWebView(
       settings, debug_settings, frame_sink_id, std::move(gpu_dependency),
       std::move(output_surface), std::move(overlay_processor),
-      std::move(scheduler), overlay_processor_webview_raw, frame_sink_manager));
+      std::move(scheduler), overlay_processor_webview_raw, frame_sink_manager,
+      root_frame_sink));
 }
 
 DisplayWebView::DisplayWebView(
@@ -56,7 +58,8 @@ DisplayWebView::DisplayWebView(
     std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor,
     std::unique_ptr<viz::DisplaySchedulerBase> scheduler,
     OverlayProcessorWebView* overlay_processor_webview,
-    viz::FrameSinkManagerImpl* frame_sink_manager)
+    viz::FrameSinkManagerImpl* frame_sink_manager,
+    RootFrameSink* root_frame_sink)
     : viz::Display(/*bitmap_manager=*/nullptr,
                    settings,
                    debug_settings,
@@ -68,6 +71,7 @@ DisplayWebView::DisplayWebView(
                    /*current_task_runner=*/nullptr),
       overlay_processor_webview_(overlay_processor_webview),
       frame_sink_manager_(frame_sink_manager),
+      root_frame_sink_(root_frame_sink),
       use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
           features::kWebViewNewInvalidateHeuristic)) {
   if (overlay_processor_webview_) {
@@ -103,8 +107,12 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
                            ++swapped_trace_id_);
     auto* resolved_data = aggregator_->GetLatestFrameData(surface_id);
     if (resolved_data) {
-      overlay_processor_webview_->ProcessForFrameSinkId(frame_sink_id,
-                                                        resolved_data);
+      if (!overlay_processor_webview_->ProcessForFrameSinkId(frame_sink_id,
+                                                             resolved_data)) {
+        // If we failed to update overlay buffer, we need to invalidate to make
+        // sure full draw happens.
+        root_frame_sink_->InvalidateForOverlays();
+      }
     }
   }
 }

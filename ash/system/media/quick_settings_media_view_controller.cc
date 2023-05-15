@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/system/media/media_color_theme.h"
 #include "ash/system/media/quick_settings_media_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -23,6 +23,11 @@ QuickSettingsMediaViewController::QuickSettingsMediaViewController(
       media_item_manager_(global_media_controls::MediaItemManager::Create()) {
   media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
+
+  // Return if this is called from tests and there is no media service.
+  if (!service) {
+    return;
+  }
 
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
   mojo::Remote<media_session::mojom::MediaControllerManager>
@@ -44,25 +49,6 @@ QuickSettingsMediaViewController::QuickSettingsMediaViewController(
 
   media_item_manager_->AddObserver(this);
   media_item_manager_->AddItemProducer(media_session_item_producer_.get());
-
-  notification_theme_.primary_text_color =
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary);
-  notification_theme_.secondary_text_color =
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary);
-  notification_theme_.enabled_icon_color =
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary);
-  notification_theme_.disabled_icon_color =
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorSecondary);
-  notification_theme_.separator_color =
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSeparatorColor);
-  notification_theme_.background_color =
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
 QuickSettingsMediaViewController::~QuickSettingsMediaViewController() {
@@ -80,7 +66,7 @@ QuickSettingsMediaViewController::ShowMediaItem(
   DCHECK(media_view_);
   auto media_item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
-      notification_theme_,
+      /*notification_theme=*/absl::nullopt, GetCrosMediaColorTheme(),
       media_message_center::MediaDisplayPage::kQuickSettingsMediaView);
   auto* media_item_ui_ptr = media_item_ui.get();
   media_item_ui_observer_set_.Observe(id, media_item_ui_ptr);

@@ -10,10 +10,6 @@
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
-namespace base {
-class UnguessableToken;
-}  // namespace base
-
 namespace content {
 
 class RenderFrameHost;
@@ -40,12 +36,8 @@ class CONTENT_EXPORT SpeculationHostImpl final
   ~SpeculationHostImpl() override;
 
   void UpdateSpeculationCandidates(
-      const base::UnguessableToken& devtools_navigation_token,
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
   void EnableNoVarySearchSupport() override;
-
-  // A non-nul devtools_navigation_token_ is expected to be always consistent.
-  absl::optional<base::UnguessableToken> devtools_navigation_token_;
 };
 
 }  // namespace content

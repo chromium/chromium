@@ -16,6 +16,7 @@
 #include "ash/system/camera/autozoom_toast_controller.h"
 #include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
+#include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_ui_controller.h"
@@ -48,6 +49,9 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -62,6 +66,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -90,8 +95,8 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
 
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
 
-  void SetTrayBubbleHeight(int height) {
-    message_popup_collection_->SetTrayBubbleHeight(height);
+  void NotifySecondaryBubbleHeight(int height) {
+    message_popup_collection_->SetBaselineOffset(height);
   }
 
   message_center::MessagePopupView* GetPopupViewForNotificationID(
@@ -112,7 +117,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   std::unique_ptr<MessageCenterUiController> const ui_controller_;
   std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
 
-  UnifiedSystemTray* const owner_;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> owner_;
 
   std::unique_ptr<NotificationGroupingController> grouping_controller_;
 };
@@ -157,7 +162,7 @@ bool UnifiedSystemTray::UiDelegate::ShowPopups() {
 }
 
 void UnifiedSystemTray::UiDelegate::HidePopups() {
-  message_popup_collection_->SetTrayBubbleHeight(0);
+  message_popup_collection_->SetBaselineOffset(0);
 }
 
 bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
@@ -188,6 +193,14 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                                               model_.get())) {
   SetPressedCallback(base::BindRepeating(&UnifiedSystemTray::OnButtonPressed,
                                          base::Unretained(this)));
+
+  if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+    SetProperty(views::kElementIdentifierKey, kUnifiedSystemTrayElementId);
+  }
+
   if (media::ShouldEnableAutoFraming()) {
     autozoom_toast_controller_ = std::make_unique<AutozoomToastController>(
         this, std::make_unique<AutozoomToastController::Delegate>());
@@ -235,6 +248,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, CameraMicTrayItemView::Type::kCamera));
     mic_view_ = AddTrayItemToContainer(std::make_unique<CameraMicTrayItemView>(
         shelf, CameraMicTrayItemView::Type::kMic));
+  }
+
+  if (features::IsHotspotEnabled()) {
+    hotspot_tray_view_ =
+        AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
   }
 
   if (features::IsSeparateNetworkIconsEnabled()) {
@@ -316,6 +334,10 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
   return slider_bubble_controller_->IsBubbleShown();
 }
 
+int UnifiedSystemTray::GetSliderBubbleHeight() const {
+  return slider_bubble_controller_->GetBubbleHeight();
+}
+
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
   if (message_center_bubble_) {
     return message_center_bubble_->IsMessageCenterVisible();
@@ -392,8 +414,11 @@ void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
   bubble_->ShowNetworkDetailedView(true /* force */);
 }
 
-void UnifiedSystemTray::SetTrayBubbleHeight(int height) {
-  ui_delegate_->SetTrayBubbleHeight(height);
+void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
+  ui_delegate_->NotifySecondaryBubbleHeight(height);
+  for (auto& observer : observers_) {
+    observer.OnSliderBubbleHeightChanged();
+  }
 }
 
 bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
@@ -479,7 +504,7 @@ const char* UnifiedSystemTray::GetClassName() const {
 
 absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
-  return absl::make_optional(TOGGLE_SYSTEM_TRAY_BUBBLE);
+  return absl::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
 }
 
 void UnifiedSystemTray::OnAnyBubbleVisibilityChanged(
@@ -657,6 +682,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
                        : base::EmptyString16());
+
+  if (hotspot_tray_view_) {
+    status.push_back(hotspot_tray_view_->GetVisible()
+                         ? hotspot_tray_view_->GetAccessibleNameString()
+                         : base::EmptyString16());
+  }
 
   // For privacy string, we use either `privacy_indicators_view_` or the combo
   // of `mic_view_` and `camera_view_`.

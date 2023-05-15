@@ -112,7 +112,7 @@ views::View* SaveCardBubbleViews::GetFootnoteViewForTesting() {
 }
 
 const std::u16string SaveCardBubbleViews::GetCardIdentifierString() const {
-  return controller_->GetCard().CardIdentifierStringForAutofillDisplay();
+  return controller_->GetCard().CardNameAndLastFourDigits();
 }
 
 SaveCardBubbleViews::~SaveCardBubbleViews() = default;

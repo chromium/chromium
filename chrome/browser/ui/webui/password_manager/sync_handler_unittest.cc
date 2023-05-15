@@ -69,9 +69,8 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
     auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
         "user@gmail.com", signin::ConsentLevel::kSync);
     ON_CALL(*sync_service(), HasSyncConsent).WillByDefault(Return(true));
-    ON_CALL(*sync_service()->GetMockUserSettings(), IsSyncRequested)
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+    ON_CALL(*sync_service()->GetMockUserSettings(),
+            IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service(), GetAccountInfo)
         .WillByDefault(Return(account_info));
@@ -147,9 +146,11 @@ TEST_F(SyncHandlerTest, HandleTrustedVaultBannerStateOfferOptIn) {
   ON_CALL(*sync_service(), GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   ON_CALL(*sync_service(), GetActiveDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*sync_service()->GetMockUserSettings(), GetEncryptedDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*sync_service()->GetMockUserSettings(), GetPassphraseType())
       .WillByDefault(Return(syncer::PassphraseType::kKeystorePassphrase));
   ON_CALL(*sync_service()->GetMockUserSettings(), IsPassphraseRequired())
@@ -239,7 +240,8 @@ TEST_F(SyncHandlerTest, AccountInfo) {
 
 TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {
   CreateTestSyncAccount();
-  ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
 
   base::Value::List args;

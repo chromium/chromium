@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/tray_network_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
@@ -17,8 +18,8 @@ namespace ash {
 
 class TrayNetworkStateModel;
 
-// This delegate provides UI code in ash, e.g. |VPNListView|, with access to the
-// list of VPN providers enabled in the primary user's profile. The delegate
+// This delegate provides UI code in ash, e.g. `VpnDetailedView`, with access to
+// the list of VPN providers enabled in the primary user's profile. The delegate
 // furthermore allows the UI code to request that a VPN provider show its "add
 // network" dialog and allows UI code to request to launch Arc VPN provider.
 class ASH_EXPORT VpnList : public TrayNetworkStateObserver {
@@ -81,7 +82,7 @@ class ASH_EXPORT VpnList : public TrayNetworkStateObserver {
   // called.
   void Update();
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   // Cache of VPN providers, including the built-in OpenVPN/L2TP provider and
   // other providers added by extensions in the primary user's profile.

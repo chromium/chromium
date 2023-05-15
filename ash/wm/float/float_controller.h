@@ -9,8 +9,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/gtest_prod_util.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
@@ -38,7 +41,8 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
                                    public display::DisplayObserver,
                                    public ShellObserver,
                                    public DesksController::Observer,
-                                   public chromeos::FloatControllerBase {
+                                   public chromeos::FloatControllerBase,
+                                   public ScreenRotationAnimatorObserver {
  public:
   // The possible corners that a floated window can be placed in tablet mode.
   // The default is `kBottomRight` and this is changed by dragging the window.
@@ -131,10 +135,16 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // chromeos::FloatControllerBase:
   void ToggleFloat(aura::Window* window) override;
+
+  // ScreenRotationAnimatorObserver:
+  void OnScreenCopiedBeforeRotation() override;
+  void OnScreenRotationAnimationFinished(ScreenRotationAnimator* animator,
+                                         bool canceled) override;
 
  private:
   class FloatedWindowInfo;
@@ -152,9 +162,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   // Floats/Unfloats `window`. Only one floating window is allowed per desk,
   // floating a new window on the same desk or moving a floated window to that
-  // desk will unfloat the other floated window (if any). Floating a window that
-  // is pinned to all desks will unfloat all other floated windows on other
-  // desks.
+  // desk will unfloat the other floated window (if any).
   // Note: currently window can only be floated from an active desk.
   void FloatImpl(aura::Window* window);
   void UnfloatImpl(aura::Window* window);
@@ -189,6 +197,10 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // Counts of how many floated window are moved to another desk within a
   // session. `kFloatWindowMoveToAnotherDeskCountsHistogramName`
   int floated_window_move_to_another_desk_counter_ = 0;
+
+  base::ScopedMultiSourceObservation<ScreenRotationAnimator,
+                                     ScreenRotationAnimatorObserver>
+      screen_rotation_observations_{this};
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};

@@ -13,6 +13,9 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_display.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1144,8 +1147,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   std::string kCSSTitlebarRect = GetCSSTitlebarRect();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
-  EXPECT_TRUE(
-      ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
   const std::string kRectListString =
       "var rect = [titlebarAreaXInt, titlebarAreaYInt, "
@@ -1177,8 +1179,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   new_bounds.set_height(new_bounds.height() + 20);
   ResizeWindowBoundsAndWait(new_bounds);
 
-  EXPECT_TRUE(
-      ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
   base::Value::List updated_rect_list = helper()->GetXYWidthHeightListValue(
       helper()->browser_view()->GetActiveWebContents(), kRectListString,
@@ -1201,8 +1202,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   std::string kCSSTitlebarRect = GetCSSTitlebarRect();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
-  EXPECT_TRUE(
-      ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
   const std::string kRectListString =
       "var rect = [titlebarAreaXInt, titlebarAreaYInt, "
@@ -1229,8 +1229,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   new_bounds.set_height(new_bounds.height() + 15);
   ResizeWindowBoundsAndWait(new_bounds);
 
-  EXPECT_TRUE(
-      ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
   base::Value::List updated_rect_list = helper()->GetXYWidthHeightListValue(
       helper()->browser_view()->GetActiveWebContents(), kRectListString,
@@ -1473,22 +1472,79 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that a download by a web app browser only shows the download UI in that
+// app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       DownloadIconVisibility) {
+                       DownloadIconVisibilityForAppDownload) {
   web_app::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
-  // There should be no visible Downloads icon.
+  Browser* non_app_browser = CreateBrowser(profile());
+
+  // There should be no visible Downloads icon prior to the download, in either
+  // the app browser or the non-app browser.
   WebAppToolbarButtonContainer* toolbar_button_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
   EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_FALSE(non_app_browser->window()
+                   ->GetDownloadBubbleUIController()
+                   ->GetDownloadDisplayController()
+                   ->download_display_for_testing()
+                   ->IsShowing());
 
+  // Download a file in the app browser.
   ui_test_utils::DownloadURL(
-      browser(), ui_test_utils::GetTestUrl(
-                     base::FilePath().AppendASCII("downloads"),
-                     base::FilePath().AppendASCII("a_zip_file.zip")));
+      helper()->app_browser(),
+      ui_test_utils::GetTestUrl(
+          base::FilePath().AppendASCII("downloads"),
+          base::FilePath().AppendASCII("a_zip_file.zip")));
 
+  // The download button is visible in the app browser.
   EXPECT_TRUE(toolbar_button_container->download_button()->GetVisible());
+
+  // The download button is not visible in the non-app browser.
+  EXPECT_FALSE(non_app_browser->window()
+                   ->GetDownloadBubbleUIController()
+                   ->GetDownloadDisplayController()
+                   ->download_display_for_testing()
+                   ->IsShowing());
+}
+
+// Test that a download by a regular browser does not show the download UI in an
+// app's window.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DownloadIconVisibilityForRegularDownload) {
+  web_app::AppId app_id = InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  Browser* non_app_browser = CreateBrowser(profile());
+
+  // There should be no visible Downloads icon prior to the download, in either
+  // the app browser or the non-app browser.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_FALSE(non_app_browser->window()
+                   ->GetDownloadBubbleUIController()
+                   ->GetDownloadDisplayController()
+                   ->download_display_for_testing()
+                   ->IsShowing());
+
+  // Download a file in the regular browser.
+  ui_test_utils::DownloadURL(
+      non_app_browser, ui_test_utils::GetTestUrl(
+                           base::FilePath().AppendASCII("downloads"),
+                           base::FilePath().AppendASCII("a_zip_file.zip")));
+
+  // The download button is not visible in the app browser.
+  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+
+  // The download button is visible in the non-app browser.
+  EXPECT_TRUE(non_app_browser->window()
+                  ->GetDownloadBubbleUIController()
+                  ->GetDownloadDisplayController()
+                  ->download_display_for_testing()
+                  ->IsShowing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

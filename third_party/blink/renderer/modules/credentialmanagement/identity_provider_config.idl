@@ -12,7 +12,7 @@ dictionary IdentityProviderConfig {
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
-  [RuntimeEnabled=FedCmLoginHint] LoginHint loginHint;
+  [RuntimeEnabled=FedCmLoginHint] DOMString loginHint;
 };
 
 // extends the IdentityProviderConfig with mDoc-specific attributes

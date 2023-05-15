@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"

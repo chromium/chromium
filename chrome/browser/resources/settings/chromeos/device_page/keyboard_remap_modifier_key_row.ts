@@ -11,16 +11,15 @@
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
-import '../../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 import '../../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 
 import {MetaKey, ModifierKey} from './input_device_settings_types.js';
 import {getTemplate} from './keyboard_remap_modifier_key_row.html.js';
@@ -33,7 +32,7 @@ enum KeyState {
   MODIFIER_REMAPPED = 'modifier-remapped',
 }
 
-type MetaKeyIcon = 'cr:search'|'os-settings:launcher'|'';
+type KeyIcon = 'cr:search'|'os-settings:launcher'|'os-settings:assistant'|'';
 const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
@@ -69,7 +68,6 @@ export class KeyboardRemapModifierKeyRowElement extends
 
       metaKey: {
         type: Number,
-        observer: 'onMetaKeyChanged',
       },
 
       key: {
@@ -84,9 +82,15 @@ export class KeyboardRemapModifierKeyRowElement extends
         type: Object,
       },
 
-      metaKeyIcon: {
+      keyIcon: {
         type: String,
         value: '',
+        computed: 'getKeyIcon(key, metaKey)',
+      },
+
+      removeTopBorder: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
     };
   }
@@ -94,12 +98,18 @@ export class KeyboardRemapModifierKeyRowElement extends
   protected keyLabel: string;
   private metaKeyLabel: string;
   private keyMapTargets: DropdownMenuOptionList;
-  private metaKeyIcon: MetaKeyIcon;
+  private keyIcon: KeyIcon;
   keyState: KeyState;
   pref: chrome.settingsPrivate.PrefObject;
   metaKey: MetaKey;
   key: ModifierKey;
   defaultRemappings: {[key: number]: ModifierKey};
+
+  override ready() {
+    super.ready();
+
+    this.setUpKeyMapTargets();
+  }
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
@@ -115,30 +125,21 @@ export class KeyboardRemapModifierKeyRowElement extends
         KeyState.MODIFIER_REMAPPED;
   }
 
-  private onMetaKeyChanged(): void {
-    if (this.key === ModifierKey.kMeta) {
-      this.metaKeyIcon = this.getMetaKeyIcon();
-    }
-    this.setUpKeyMapTargets();
-  }
-
   /**
-   * Populate the metaKey label required in the keyMapTargets menu dropdown.
+   * Populate the metaKey label according to metaKey.
    */
   private getMetaKeyLabel(): string {
     switch (this.metaKey) {
       case MetaKey.kCommand: {
-        return this.i18n('keyboardKeyCommand');
+        return this.i18n('perDeviceKeyboardKeyCommand');
       }
       case MetaKey.kExternalMeta: {
-        return this.i18n('keyboardKeyExternalMeta');
+        return this.i18n('perDeviceKeyboardKeyMeta');
       }
-      case MetaKey.kLauncher: {
-        return this.i18n('keyboardKeyLauncher');
-      }
-      case MetaKey.kSearch: {
-        return this.i18n('keyboardKeySearch');
-      }
+      // Launcher and Search key will display icon instead of text.
+      case MetaKey.kLauncher:
+      case MetaKey.kSearch:
+        return '';
     }
   }
 
@@ -148,22 +149,22 @@ export class KeyboardRemapModifierKeyRowElement extends
   private getKeyLabel(): string {
     switch (this.key) {
       case ModifierKey.kAlt: {
-        return this.i18n('keyboardKeyAlt');
+        return this.i18n('perDeviceKeyboardKeyAlt');
       }
       case ModifierKey.kAssistant: {
-        return this.i18n('keyboardKeyAssistant');
+        return this.i18n('perDeviceKeyboardKeyAssistant');
       }
       case ModifierKey.kBackspace: {
-        return this.i18n('keyboardKeyBackspace');
+        return this.i18n('perDeviceKeyboardKeyBackspace');
       }
       case ModifierKey.kCapsLock: {
-        return this.i18n('keyboardKeyCapsLock');
+        return this.i18n('perDeviceKeyboardKeyCapsLock');
       }
       case ModifierKey.kControl: {
-        return this.i18n('keyboardKeyCtrl');
+        return this.i18n('perDeviceKeyboardKeyCtrl');
       }
       case ModifierKey.kEscape: {
-        return this.i18n('keyboardKeyEscape');
+        return this.i18n('perDeviceKeyboardKeyEscape');
       }
       case ModifierKey.kMeta: {
         return this.getMetaKeyLabel();
@@ -178,46 +179,51 @@ export class KeyboardRemapModifierKeyRowElement extends
     this.keyMapTargets = [
       {
         value: ModifierKey.kMeta,
-        name: this.i18n('keyboardKeySearch'),
+        name: this.i18n('perDeviceKeyboardKeySearch'),
       },
       {
         value: ModifierKey.kControl,
-        name: this.i18n('keyboardKeyCtrl'),
+        name: this.i18n('perDeviceKeyboardKeyCtrl'),
       },
       {
         value: ModifierKey.kAlt,
-        name: this.i18n('keyboardKeyAlt'),
+        name: this.i18n('perDeviceKeyboardKeyAlt'),
       },
       {
         value: ModifierKey.kCapsLock,
-        name: this.i18n('keyboardKeyCapsLock'),
+        name: this.i18n('perDeviceKeyboardKeyCapsLock'),
       },
       {
         value: ModifierKey.kEscape,
-        name: this.i18n('keyboardKeyEscape'),
+        name: this.i18n('perDeviceKeyboardKeyEscape'),
       },
       {
         value: ModifierKey.kBackspace,
-        name: this.i18n('keyboardKeyBackspace'),
+        name: this.i18n('perDeviceKeyboardKeyBackspace'),
       },
       {
         value: ModifierKey.kAssistant,
-        name: this.i18n('keyboardKeyAssistant'),
+        name: this.i18n('perDeviceKeyboardKeyAssistant'),
       },
       {
         value: ModifierKey.kVoid,
-        name: this.i18n('keyboardKeyDisabled'),
+        name: this.i18n('perDeviceKeyboardKeyDisabled'),
       },
     ];
   }
 
-  private getMetaKeyIcon(): MetaKeyIcon {
-    if (this.metaKey === MetaKey.kSearch) {
-      return 'cr:search';
+  private getKeyIcon(): KeyIcon {
+    if (this.key === ModifierKey.kMeta) {
+      if (this.metaKey === MetaKey.kSearch) {
+        return 'cr:search';
+      }
+      if (this.metaKey === MetaKey.kLauncher) {
+        return 'os-settings:launcher';
+      }
+    } else if (this.key === ModifierKey.kAssistant) {
+      return 'os-settings:assistant';
     }
-    if (this.metaKey === MetaKey.kLauncher) {
-      return 'os-settings:launcher';
-    }
+
     return '';
   }
 }

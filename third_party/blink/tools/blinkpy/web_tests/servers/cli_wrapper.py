@@ -42,7 +42,6 @@ from blinkpy.common.host import Host
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
 from blinkpy.web_tests.port.factory import configuration_options
-from blinkpy.web_tests.port.factory import python_server_options
 from blinkpy.web_tests.servers.server_base import ServerError
 
 _log = logging.getLogger(__name__)
@@ -51,14 +50,6 @@ _log = logging.getLogger(__name__)
 class RawTextHelpFormatter(optparse.IndentedHelpFormatter):
     def format_description(self, description):
         return description
-
-
-def parse_python_server_options(argv=None):
-    parse = optparse.OptionParser()
-    for opt in python_server_options():
-        parse.add_option(opt)
-    option, args = parse.parse_args(argv)
-    return option, args
 
 
 def main(server_constructor,

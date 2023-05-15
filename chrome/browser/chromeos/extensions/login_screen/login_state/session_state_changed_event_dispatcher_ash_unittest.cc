@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 
 #include <memory>
@@ -129,7 +130,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<SessionStateChangedEventDispatcher> dispatcher_;

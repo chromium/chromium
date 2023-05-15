@@ -69,6 +69,7 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -664,10 +665,14 @@ const Profile* TestingProfile::GetOriginalProfile() const {
   return this;
 }
 
-void TestingProfile::SetIsSupervisedProfile() {
+void TestingProfile::SetIsSupervisedProfile(bool is_supervised_profile) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  GetPrefs()->SetString(prefs::kSupervisedUserId,
-                        supervised_user::kChildAccountSUID);
+  if (is_supervised_profile) {
+    GetPrefs()->SetString(prefs::kSupervisedUserId,
+                          supervised_user::kChildAccountSUID);
+  } else {
+    GetPrefs()->ClearPref(prefs::kSupervisedUserId);
+  }
 #else
   NOTREACHED() << "Supervised users are not enabled";
 #endif
@@ -846,14 +851,14 @@ policy::UserCloudPolicyManagerAsh*
 TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
 }
-
-policy::ActiveDirectoryPolicyManager*
-TestingProfile::GetActiveDirectoryPolicyManager() {
-  return nullptr;
-}
 #else
 policy::UserCloudPolicyManager* TestingProfile::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
+}
+
+policy::ProfileCloudPolicyManager*
+TestingProfile::GetProfileCloudPolicyManager() {
+  return profile_cloud_policy_manager_.get();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1057,7 +1062,16 @@ TestingProfile::Builder& TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
 #else
 TestingProfile::Builder& TestingProfile::Builder::SetUserCloudPolicyManager(
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
+  DCHECK_EQ(profile_cloud_policy_manager_, nullptr);
   user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+  return *this;
+}
+
+TestingProfile::Builder& TestingProfile::Builder::SetProfileCloudPolicyManager(
+    std::unique_ptr<policy::ProfileCloudPolicyManager>
+        profile_cloud_policy_manager) {
+  DCHECK_EQ(user_cloud_policy_manager_, nullptr);
+  profile_cloud_policy_manager_ = std::move(profile_cloud_policy_manager);
   return *this;
 }
 #endif

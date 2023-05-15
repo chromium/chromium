@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/tee_engine.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
@@ -20,6 +21,31 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+v8::MaybeLocal<v8::Value> TeeEngine::StructuredClone(
+    ScriptState* script_state,
+    v8::Local<v8::Value> chunk,
+    ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-structuredclone
+  v8::Context::Scope scope(script_state->GetContext());
+  v8::Isolate* isolate = script_state->GetIsolate();
+
+  // 1. Let serialized be ? StructuredSerialize(v).
+  scoped_refptr<SerializedScriptValue> serialized =
+      SerializedScriptValue::Serialize(
+          isolate, chunk,
+          SerializedScriptValue::SerializeOptions(
+              SerializedScriptValue::kNotForStorage),
+          exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      "chunk could not be cloned.");
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  // 2. Return ? StructuredDeserialize(serialized, the current Realm).
+  return serialized->Deserialize(isolate);
+}
 
 class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
  public:
@@ -105,7 +131,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
    private:
     void ChunkStepsBody(ScriptState* script_state,
-                        v8::Global<v8::Value> chunk) const {
+                        v8::Global<v8::Value> value) const {
       // 1. Set readAgain to false.
       engine_->read_again_ = false;
 
@@ -113,19 +139,44 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
                                      ExceptionState::kUnknownContext, "", "");
 
       // 2. Let chunk1 and chunk2 be chunk.
+      v8::Local<v8::Value> chunk[2];
+      chunk[0] = value.Get(script_state->GetIsolate());
+      chunk[1] = chunk[0];
+
       // 3. If canceled2 is false and cloneForBranch2 is true,
-      //   a. Let cloneResult be StructuredClone(chunk2).
-      //   b. If cloneResult is an abrupt completion,
-      //     i. Perform !
-      //     ReadableStreamDefaultControllerError(branch1.[[controller]],
-      //     cloneResult.[[Value]]).
-      //     ii. Perform !
-      //     ReadableStreamDefaultControllerError(branch2.[[controller]],
-      //     cloneResult.[[Value]]).
-      //     iii. Resolve cancelPromise with !
-      //     ReadableStreamCancel(stream, cloneResult.[[Value]]). iv. Return.
-      //   c. Otherwise, set chunk2 to cloneResult.[[Value]].
-      // TODO(ricea): Support cloneForBranch2
+      if (!engine_->canceled_[1] && engine_->clone_for_branch2_) {
+        //   a. Let cloneResult be StructuredClone(chunk2).
+        v8::MaybeLocal<v8::Value> clone_result_maybe =
+            engine_->StructuredClone(script_state, chunk[1], exception_state);
+        v8::Local<v8::Value> clone_result;
+        //   b. If cloneResult is an abrupt completion,
+        if (!clone_result_maybe.ToLocal(&clone_result)) {
+          CHECK(exception_state.HadException());
+          v8::Local<v8::Value> exception = exception_state.GetException();
+          //     i. Perform !
+          //     ReadableStreamDefaultControllerError(branch1.[[controller]],
+          //     cloneResult.[[Value]]).
+          ReadableStreamDefaultController::Error(
+              script_state, engine_->controller_[0], exception);
+          //     ii. Perform !
+          //     ReadableStreamDefaultControllerError(branch2.[[controller]],
+          //     cloneResult.[[Value]]).
+          ReadableStreamDefaultController::Error(
+              script_state, engine_->controller_[1], exception);
+          //     iii. Resolve cancelPromise with !
+          //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
+          engine_->cancel_promise_->Resolve(
+              script_state, ReadableStream::Cancel(
+                                script_state, engine_->stream_, exception));
+          //     iv. Return.
+          exception_state.ClearException();
+          return;
+        } else {
+          DCHECK(!exception_state.HadException());
+          //   c. Otherwise, set chunk2 to cloneResult.[[Value]].
+          chunk[1] = clone_result;
+        }
+      }
 
       // 4. If canceled1 is false, perform !
       // ReadableStreamDefaultControllerEnqueue(branch1.[[controller]], chunk1).
@@ -136,8 +187,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
             ReadableStreamDefaultController::CanCloseOrEnqueue(
                 engine_->controller_[branch])) {
           ReadableStreamDefaultController::Enqueue(
-              script_state, engine_->controller_[branch],
-              chunk.Get(script_state->GetIsolate()), exception_state);
+              script_state, engine_->controller_[branch], chunk[branch],
+              exception_state);
           if (exception_state.HadException()) {
             // Instead of returning a rejection, which is inconvenient here,
             // call ControllerError(). The only difference this makes is that it
@@ -225,14 +276,15 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
 
 void TeeEngine::Start(ScriptState* script_state,
                       ReadableStream* stream,
+                      bool clone_for_branch2,
                       ExceptionState& exception_state) {
-  // https://streams.spec.whatwg.org/#readable-stream-tee
-  //  1. Assert: ! IsReadableStream(stream) is true.
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaulttee
+  //  1. Assert: stream implements ReadableStream.
   DCHECK(stream);
-
-  // TODO(ricea):  2. Assert: Type(cloneForBranch2) is Boolean.
-
   stream_ = stream;
+
+  // 2. Assert: cloneForBranch2 is a boolean.
+  clone_for_branch2_ = clone_for_branch2;
 
   // 3. Let reader be ? AcquireReadableStreamDefaultReader(stream).
   reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,

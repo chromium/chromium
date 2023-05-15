@@ -166,7 +166,6 @@
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> 個のファイルを選択</translation>
 <translation id="2383454254762599978">ゴミ箱に移動</translation>
 <translation id="2387458720915042159">プロキシ接続タイプ</translation>
 <translation id="2389832672041313158">ビルマ語 / ミャンマー語</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">デバイスは読み取り専用です</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
 <translation id="482932175346970750">ブラウザに「<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />」と入力する</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> 個のアイテムを選択</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="485316830061041779">ドイツ語</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> 個のフォルダを選択しました</translation>
 <translation id="7008426324576352165">アップロードを完了するには、組織で追加のストレージが必要です。</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> 個のファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />（<ph name="ROOT_SUMMARY" />）</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">上記の拡張機能を見つける</translation>
 <translation id="7256405249507348194">不明なエラー: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">利用可能なサービス</translation>
+<translation id="7291818353625820805">キー入力を繰り返す場合は、キーボードの設定でアクセント記号をオフにします</translation>
 <translation id="7292816689782057017">管理者のポリシー設定により、一部の保存先の使用が制限されています。</translation>
 <translation id="7294063083760278948">テルグ語（文字変換）</translation>
 <translation id="7295662345261934369">他のユーザーと共有</translation>

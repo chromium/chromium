@@ -362,12 +362,12 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
   }
 
   auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
-      rph, worker_route_id_, origin, client_security_state_.Clone(),
+      rph, worker_route_id_, version->key(), client_security_state_.Clone(),
       std::move(coep_reporter_for_script_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
       GetId());
   auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
-      rph, worker_route_id_, origin, client_security_state_.Clone(),
+      rph, worker_route_id_, version->key(), client_security_state_.Clone(),
       std::move(coep_reporter_for_subresource_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
       GetId());
@@ -382,13 +382,11 @@ DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
 ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
   const url::Origin origin = url::Origin::Create(url_);
+  const auto* version = context_wrapper_->GetLiveVersion(version_id_);
   // TODO(crbug.com/1231019): make sure client_security_state is no longer
   // nullptr anywhere.
   auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(
-      rph, origin,
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 origin, origin,
-                                 net::SiteForCookies::FromOrigin(origin)),
+      rph, origin, version->key().ToPartialNetIsolationInfo(),
       /*coep_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
           ->CreateAuthCertObserverForServiceWorker(),

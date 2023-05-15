@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -76,7 +77,7 @@ class MultiCaptureLoginNotificationTest : public AshTestBase {
       multi_capture_login_notification_;
   AccountId active_user_account_id_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
 
   unsigned int notification_count_;
 };

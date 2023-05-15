@@ -1433,8 +1433,6 @@ class SignedExchangeReportingBrowserTest
     feature_list_.InitWithFeatures(
         // enabled_features
         {net::features::kPartitionNelAndReportingByNetworkIsolationKey,
-         // These last two are not strictly necessary, but make this test more
-         // robust against enabling NetworkIsolationKeys everywhere.
          net::features::kPartitionConnectionsByNetworkIsolationKey,
          net::features::kPartitionSSLSessionsByNetworkIsolationKey},
         // disabled_features

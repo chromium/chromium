@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
 #include <type_traits>
+#include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
@@ -67,9 +71,9 @@ template <typename ClassName,
 void TestPropertyForEntityIsDefinedIsOpaque(
     ClassName config,
     absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
-    absl::optional<
-        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>
-        RedactedClassName::*redacted_property,
+    const absl::optional<
+        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>& (
+        RedactedClassName::*redacted_property)() const,
     Entity entity,
     bool is_defined,
     bool is_opaque,
@@ -80,25 +84,25 @@ void TestPropertyForEntityIsDefinedIsOpaque(
   if (is_defined) {
     // If the config has a value for the property, check that the redacted
     // version does too.
-    ASSERT_TRUE((redacted_config.*redacted_property).has_value());
+    ASSERT_TRUE((redacted_config.*redacted_property)().has_value());
     if (is_opaque) {
       // If the value should be opaque, check that it is.
-      ASSERT_FALSE((redacted_config.*redacted_property)
+      ASSERT_FALSE((redacted_config.*redacted_property)()
                        ->potentially_opaque_value.has_value());
     } else {
       // If the value should be transparent, check that it is, and that the
       // value was copied correctly.
-      ASSERT_TRUE((redacted_config.*redacted_property)
+      ASSERT_TRUE((redacted_config.*redacted_property)()
                       ->potentially_opaque_value.has_value());
       ASSERT_TRUE(unredacted_redacted_equality_fn(
           (config.*property)->GetValueIgnoringVisibility(),
-          (redacted_config.*redacted_property)
+          (redacted_config.*redacted_property)()
               ->potentially_opaque_value.value()));
     }
   } else {
     // If the config doesn't have a value for the property, check that the
     // redacted version also doesn't.
-    ASSERT_FALSE((redacted_config.*redacted_property).has_value());
+    ASSERT_FALSE((redacted_config.*redacted_property)().has_value());
   }
 
   // Copy the config using mojom serialization/deserialization.
@@ -114,20 +118,20 @@ void TestPropertyForEntityIsDefinedIsOpaque(
   // Check that the value for the property in the copy is the same as the
   // original.
   if (is_defined) {
-    ASSERT_TRUE((copy.*redacted_property).has_value());
+    ASSERT_TRUE((copy.*redacted_property)().has_value());
     if (is_opaque) {
       ASSERT_FALSE(
-          (copy.*redacted_property)->potentially_opaque_value.has_value());
+          (copy.*redacted_property)()->potentially_opaque_value.has_value());
     } else {
       ASSERT_TRUE(
-          (copy.*redacted_property)->potentially_opaque_value.has_value());
+          (copy.*redacted_property)()->potentially_opaque_value.has_value());
       ASSERT_TRUE(redacted_redacted_equality_fn(
-          (redacted_config.*redacted_property)
+          (redacted_config.*redacted_property)()
               ->potentially_opaque_value.value(),
-          (copy.*redacted_property)->potentially_opaque_value.value()));
+          (copy.*redacted_property)()->potentially_opaque_value.value()));
     }
   } else {
-    ASSERT_FALSE((copy.*redacted_property).has_value());
+    ASSERT_FALSE((copy.*redacted_property)().has_value());
   }
 }
 
@@ -172,9 +176,9 @@ template <typename ClassName,
           typename RedactedToRedactedCompare>
 void TestProperty(
     absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
-    absl::optional<
-        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>
-        RedactedClassName::*redacted_property,
+    const absl::optional<
+        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>& (
+        RedactedClassName::*redacted_property)() const,
     TestType dummy_value,
     UnredactedToRedactedCompare unredacted_redacted_equality_fn,
     RedactedToRedactedCompare redacted_redacted_equality_fn) {
@@ -218,60 +222,6 @@ void TestProperty(
       config, property, redacted_property, Entity::kContent, true, true,
       unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
 }
-
-// Compare equality of two lists of nested configs.
-// Only compares the `mapped_url` field for convenience. (We don't need an
-// equality operator for configs outside of tests, so it would be wasteful to
-// declare it as default in the class declaration.)
-#define NESTED_CONFIG_EQ_FN(type1, accessor1, type2, accessor2)             \
-  [](const std::vector<type1>& a, const std::vector<type2>& b) {            \
-    if (a.size() != b.size()) {                                             \
-      return false;                                                         \
-    }                                                                       \
-    for (size_t i = 0; i < a.size(); ++i) {                                 \
-      if (!a[i].mapped_url_.has_value() && !b[i].mapped_url_.has_value()) { \
-        continue;                                                           \
-      } else if (a[i].mapped_url_.has_value() &&                            \
-                 b[i].mapped_url_.has_value()) {                            \
-        if (a[i].mapped_url_->accessor1 == b[i].mapped_url_->accessor2) {   \
-          continue;                                                         \
-        }                                                                   \
-        return false;                                                       \
-      } else {                                                              \
-        return false;                                                       \
-      }                                                                     \
-    }                                                                       \
-    return true;                                                            \
-  }
-
-// Compare equality of two lists of (urn, nested config) pairs.
-// Only compares the `mapped_url` field for convenience.
-#define NESTED_URN_CONFIG_PAIR_EQ_FN(type1, accessor1, type2, accessor2) \
-  [](const std::vector<std::pair<GURL, type1>>& a,                       \
-     const std::vector<std::pair<GURL, type2>>& b) {                     \
-    if (a.size() != b.size()) {                                          \
-      return false;                                                      \
-    }                                                                    \
-    for (size_t i = 0; i < a.size(); ++i) {                              \
-      if (a[i].first != b[i].first) {                                    \
-        return false;                                                    \
-      }                                                                  \
-      if (!a[i].second.mapped_url_.has_value() &&                        \
-          !b[i].second.mapped_url_.has_value()) {                        \
-        continue;                                                        \
-      } else if (a[i].second.mapped_url_.has_value() &&                  \
-                 b[i].second.mapped_url_.has_value()) {                  \
-        if (a[i].second.mapped_url_->accessor1 ==                        \
-            b[i].second.mapped_url_->accessor2) {                        \
-          continue;                                                      \
-        }                                                                \
-        return false;                                                    \
-      } else {                                                           \
-        return false;                                                    \
-      }                                                                  \
-    }                                                                    \
-    return true;                                                         \
-  }
 
 TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
   GURL test_url("test_url");
@@ -355,6 +305,27 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
       "");
 }
 
+// C++23: Can replace AndThen(opt, acc) with opt.and_then(acc).
+template <typename Opt, typename Acc>
+absl::optional<GURL> AndThen(const Opt& opt, Acc acc) {
+  return opt ? std::invoke(acc, *opt) : absl::nullopt;
+}
+
+// Projections for [un]redacted fenced frame configs to allow comparisons. These
+// only compare the `mapped_url` field for convenience. (We don't need an
+// equality operator for configs outside of tests, so it would be wasteful to
+// declare it as default in the class declaration.)
+absl::optional<GURL> Project(const FencedFrameConfig& config) {
+  return AndThen(config.mapped_url_, [](const FencedFrameProperty<GURL>& url) {
+    return url.GetValueForEntity(Entity::kEmbedder);
+  });
+}
+absl::optional<GURL> Project(const RedactedFencedFrameConfig& config) {
+  return AndThen(config.mapped_url(),
+                 &blink::FencedFrame::RedactedFencedFrameProperty<
+                     GURL>::potentially_opaque_value);
+}
+
 TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   GURL test_url("test_url");
 
@@ -364,10 +335,10 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   {
     auto eq_fn = [](const GURL& a, const GURL& b) { return a == b; };
     TestProperty(&FencedFrameConfig::mapped_url_,
-                 &RedactedFencedFrameConfig::mapped_url_, test_url, eq_fn,
+                 &RedactedFencedFrameConfig::mapped_url, test_url, eq_fn,
                  eq_fn);
     TestProperty(&FencedFrameProperties::mapped_url_,
-                 &RedactedFencedFrameProperties::mapped_url_, test_url, eq_fn,
+                 &RedactedFencedFrameProperties::mapped_url, test_url, eq_fn,
                  eq_fn);
   }
 
@@ -377,18 +348,18 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     auto eq_fn = [](const gfx::Size& a, const gfx::Size& b) { return a == b; };
 
     TestProperty(&FencedFrameConfig::container_size_,
-                 &RedactedFencedFrameConfig::container_size_, test_size, eq_fn,
+                 &RedactedFencedFrameConfig::container_size, test_size, eq_fn,
                  eq_fn);
     TestProperty(&FencedFrameProperties::container_size_,
-                 &RedactedFencedFrameProperties::container_size_, test_size,
+                 &RedactedFencedFrameProperties::container_size, test_size,
                  eq_fn, eq_fn);
 
     TestProperty(&FencedFrameConfig::content_size_,
-                 &RedactedFencedFrameConfig::content_size_, test_size, eq_fn,
+                 &RedactedFencedFrameConfig::content_size, test_size, eq_fn,
                  eq_fn);
     TestProperty(&FencedFrameProperties::content_size_,
-                 &RedactedFencedFrameProperties::content_size_, test_size,
-                 eq_fn, eq_fn);
+                 &RedactedFencedFrameProperties::content_size, test_size, eq_fn,
+                 eq_fn);
   }
 
   // Test `deprecated_should_freeze_initial_size`.
@@ -396,20 +367,20 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     auto eq_fn = [](const bool a, const bool b) { return a == b; };
     TestProperty(
         &FencedFrameConfig::deprecated_should_freeze_initial_size_,
-        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size_,
-        true, eq_fn, eq_fn);
+        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size, true,
+        eq_fn, eq_fn);
     TestProperty(
         &FencedFrameProperties::deprecated_should_freeze_initial_size_,
-        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size,
         true, eq_fn, eq_fn);
 
     TestProperty(
         &FencedFrameConfig::deprecated_should_freeze_initial_size_,
-        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size,
         false, eq_fn, eq_fn);
     TestProperty(
         &FencedFrameProperties::deprecated_should_freeze_initial_size_,
-        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size,
         false, eq_fn, eq_fn);
   }
 
@@ -423,45 +394,44 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     };
 
     TestProperty(&FencedFrameConfig::ad_auction_data_,
-                 &RedactedFencedFrameConfig::ad_auction_data_,
+                 &RedactedFencedFrameConfig::ad_auction_data,
                  test_ad_auction_data, eq_fn, eq_fn);
     TestProperty(&FencedFrameProperties::ad_auction_data_,
-                 &RedactedFencedFrameProperties::ad_auction_data_,
+                 &RedactedFencedFrameProperties::ad_auction_data,
                  test_ad_auction_data, eq_fn, eq_fn);
   }
 
   // Test `nested_configs`.
   {
     FencedFrameConfig test_nested_config(GenerateUrnUuid(), test_url);
+    // Returns a lambda that compares two ranges using the given `pred`.
+    const auto eq = [](const auto& pred) {
+      return [&](const auto& a, const auto& b) {
+        return std::ranges::equal(a, b, pred);
+      };
+    };
 
     {
       std::vector<FencedFrameConfig> test_nested_configs = {test_nested_config};
-      auto unredacted_redacted_eq_fn = NESTED_CONFIG_EQ_FN(
-          FencedFrameConfig, GetValueForEntity(Entity::kEmbedder),
-          RedactedFencedFrameConfig, potentially_opaque_value);
-      auto redacted_redacted_eq_fn = NESTED_CONFIG_EQ_FN(
-          RedactedFencedFrameConfig, potentially_opaque_value,
-          RedactedFencedFrameConfig, potentially_opaque_value);
+      const auto pred = [](const auto& a, const auto& b) {
+        return Project(a) == Project(b);
+      };
       TestProperty(&FencedFrameConfig::nested_configs_,
-                   &RedactedFencedFrameConfig::nested_configs_,
-                   test_nested_configs, unredacted_redacted_eq_fn,
-                   redacted_redacted_eq_fn);
+                   &RedactedFencedFrameConfig::nested_configs,
+                   test_nested_configs, eq(pred), eq(pred));
     }
 
     {
       GURL test_urn("urn:uuid:abcd");
       std::vector<std::pair<GURL, FencedFrameConfig>>
           test_nested_urn_config_pairs = {{test_urn, test_nested_config}};
-      auto unredacted_redacted_eq_fn = NESTED_URN_CONFIG_PAIR_EQ_FN(
-          FencedFrameConfig, GetValueForEntity(Entity::kEmbedder),
-          RedactedFencedFrameConfig, potentially_opaque_value);
-      auto redacted_redacted_eq_fn = NESTED_URN_CONFIG_PAIR_EQ_FN(
-          RedactedFencedFrameConfig, potentially_opaque_value,
-          RedactedFencedFrameConfig, potentially_opaque_value);
+      const auto pred = [](const auto& a, const auto& b) {
+        return std::make_pair(a.first, Project(a.second)) ==
+               std::make_pair(b.first, Project(b.second));
+      };
       TestProperty(&FencedFrameProperties::nested_urn_config_pairs_,
-                   &RedactedFencedFrameProperties::nested_urn_config_pairs_,
-                   test_nested_urn_config_pairs, unredacted_redacted_eq_fn,
-                   redacted_redacted_eq_fn);
+                   &RedactedFencedFrameProperties::nested_urn_config_pairs,
+                   test_nested_urn_config_pairs, eq(pred), eq(pred));
     }
   }
 
@@ -475,7 +445,7 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
              a.top_navigated == b.top_navigated;
     };
     TestProperty(&FencedFrameConfig::shared_storage_budget_metadata_,
-                 &RedactedFencedFrameConfig::shared_storage_budget_metadata_,
+                 &RedactedFencedFrameConfig::shared_storage_budget_metadata,
                  test_shared_storage_budget_metadata, eq_fn, eq_fn);
 
     auto pointer_value_eq_fn =
@@ -485,12 +455,11 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
                  a->budget_to_charge == b.budget_to_charge &&
                  a->top_navigated == b.top_navigated;
         };
-    TestProperty(
-        &FencedFrameProperties::shared_storage_budget_metadata_,
-        &RedactedFencedFrameProperties::shared_storage_budget_metadata_,
-        static_cast<base::raw_ptr<const SharedStorageBudgetMetadata>>(
-            &test_shared_storage_budget_metadata),
-        pointer_value_eq_fn, eq_fn);
+    TestProperty(&FencedFrameProperties::shared_storage_budget_metadata_,
+                 &RedactedFencedFrameProperties::shared_storage_budget_metadata,
+                 static_cast<raw_ptr<const SharedStorageBudgetMetadata>>(
+                     &test_shared_storage_budget_metadata),
+                 pointer_value_eq_fn, eq_fn);
   }
 }
 

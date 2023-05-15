@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/grit/ash_os_feedback_untrusted_resources.h"
 #include "ash/webui/grit/ash_os_feedback_untrusted_resources_map.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -52,7 +54,8 @@ OsFeedbackUntrustedUIConfig::OsFeedbackUntrustedUIConfig()
 OsFeedbackUntrustedUIConfig::~OsFeedbackUntrustedUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                   const GURL& url) {
   return std::make_unique<OsFeedbackUntrustedUI>(web_ui);
 }
 
@@ -84,6 +87,10 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);
 
+  // Resources for dynamic colors.
+  untrusted_source->AddBoolean("isJellyEnabledForOsFeedback",
+                               ash::features::IsJellyEnabledForOsFeedback());
+
   AddLocalizedStrings(untrusted_source);
 
   // Allow the chrome://os-feedback WebUI to embed the corresponding
@@ -105,5 +112,13 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
 
 OsFeedbackUntrustedUI::~OsFeedbackUntrustedUI() = default;
 
+void OsFeedbackUntrustedUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  CHECK(ash::features::IsJellyEnabledForOsFeedback());
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(OsFeedbackUntrustedUI)
 }  // namespace feedback
 }  // namespace ash

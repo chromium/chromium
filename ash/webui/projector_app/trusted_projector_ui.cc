@@ -61,8 +61,7 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   // The requested WebUI is hosting the Projector SWA.
-  web_ui->AddMessageHandler(
-      std::make_unique<ProjectorMessageHandler>(pref_service));
+  web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
   ProjectorAppClient::Get()->NotifyAppUIActive(true);
 }
 

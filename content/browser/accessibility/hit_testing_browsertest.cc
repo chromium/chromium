@@ -146,9 +146,8 @@ AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
                                             event_to_fire, 0, {});
   EXPECT_TRUE(event_waiter.WaitForNotification());
 
-  RenderFrameHostImpl* target_frame = event_waiter.event_render_frame_host();
   BrowserAccessibilityManager* target_manager =
-      target_frame->browser_accessibility_manager();
+      event_waiter.event_browser_accessibility_manager();
   int event_target_id = event_waiter.event_target_id();
   BrowserAccessibility* hit_node = target_manager->GetFromID(event_target_id);
   return hit_node;

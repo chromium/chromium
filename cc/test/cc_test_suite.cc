@@ -10,12 +10,7 @@
 #include "cc/base/histograms.h"
 #include "components/viz/test/paths.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
-#include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/gl/test/gl_surface_test_support.h"
-
-static bool AlwaysUseAAA(const SkPath&) {
-  return true;
-}
 
 namespace cc {
 
@@ -47,8 +42,6 @@ void CCTestSuite::Initialize() {
   base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
 
   SetClientNameForMetrics("Renderer");
-
-  SkGraphics::SetPathAnalyticAADecider(AlwaysUseAAA);
 }
 
 void CCTestSuite::Shutdown() {

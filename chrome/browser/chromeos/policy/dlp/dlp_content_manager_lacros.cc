@@ -100,7 +100,7 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
   }
 
   int dlp_mojo_version =
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Dlp::Uuid_);
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Dlp>();
   if (dlp_mojo_version < int{crosapi::mojom::Dlp::MethodMinVersions::
                                  kCheckScreenShareRestrictionMinVersion}) {
     LOG(WARNING) << "DLP mojo service version does not support screen share "

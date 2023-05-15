@@ -137,7 +137,7 @@ class BackgroundScriptExecutor {
   std::unique_ptr<ScriptResultQueue> script_result_queue_;
 
   // The associated Extension.
-  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
+  raw_ptr<const Extension, FlakyDanglingUntriaged> extension_ = nullptr;
 
   // The script to inject; cached mostly for logging purposes.
   std::string script_;

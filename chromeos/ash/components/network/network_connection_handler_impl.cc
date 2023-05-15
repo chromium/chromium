@@ -247,7 +247,7 @@ void NetworkConnectionHandlerImpl::Init(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
   configuration_handler_ = network_configuration_handler;
   managed_configuration_handler_ = managed_network_configuration_handler;
@@ -372,7 +372,8 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
       // If the SIM is active and the active SIM is locked, we are attempting to
       // connect to a locked SIM. A SIM must be unlocked before a connection can
       // succeed.
-      if (cellular_device && IsSimPrimary(network->iccid(), cellular_device) &&
+      if (cellular_device &&
+          cellular_utils::IsSimPrimary(network->iccid(), cellular_device) &&
           cellular_device->IsSimLocked()) {
         InvokeConnectErrorCallback(service_path, std::move(error_callback),
                                    kErrorSimLocked);

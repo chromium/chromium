@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/parental_controls_handler.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
@@ -12,15 +13,11 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
@@ -85,11 +82,10 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   }
 
   // As a last resort, launch browser to the family link site.
-  NavigateParams params(profile_, GURL(kFamilyLinkSiteURL),
-                        ui::PAGE_TRANSITION_FROM_API);
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kFamilyLinkSiteURL),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewWindow);
 }
 
 }  // namespace ash::settings

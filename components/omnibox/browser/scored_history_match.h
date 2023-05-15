@@ -24,6 +24,9 @@
 // An HistoryMatch that has a score as well as metrics defining where in the
 // history item's URL and/or page title matches have occurred.
 struct ScoredHistoryMatch : public history::HistoryMatch {
+  using ScoringSignals =
+      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+
   // ScoreMaxRelevance maps from an intermediate-score to the maximum
   // final-relevance score given to a URL for this intermediate score.
   // This is used to store the score ranges of relevance buckets.
@@ -165,7 +168,7 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // Signals used to score matches. These are propagated to the ACController
   // via ACMatch, and used by the ML Scorer as well as logged to
   // OmniboxEventProto in order to provide ML training data.
-  metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+  absl::optional<ScoringSignals> scoring_signals;
 
  private:
   friend class ScoredHistoryMatchPublic;

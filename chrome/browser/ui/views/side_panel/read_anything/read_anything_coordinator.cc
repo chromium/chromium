@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
@@ -21,6 +22,9 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/language/core/browser/language_model.h"
+#include "components/language/core/browser/language_model_manager.h"
+#include "components/language/core/common/locale_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -38,6 +42,13 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   Browser* browser = &GetBrowser();
   if (!browser->profile() || !browser->profile()->GetPrefs())
     return;
+
+  // Get user's default language to check for compatible fonts.
+  language::LanguageModel* language_model =
+      LanguageModelManagerFactory::GetForBrowserContext(browser->profile())
+          ->GetPrimaryModel();
+  std::string prefs_lang = language_model->GetLanguages().front().lang_code;
+  prefs_lang = language::ExtractBaseLanguage(prefs_lang);
 
   std::string prefs_font_name;
   prefs_font_name = browser->profile()->GetPrefs()->GetString(
@@ -63,7 +74,8 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
           prefs::kAccessibilityReadAnythingLetterSpacing));
 
   model_->Init(
-      /* font name = */ prefs_font_name,
+      /* lang code = */ prefs_lang,
+      /* font = */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
@@ -93,7 +105,8 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
       l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
-      ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
+      ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
+                                     ui::kColorIcon),
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
@@ -129,12 +142,16 @@ void ReadAnythingCoordinator::RemoveModelObserver(
 
 void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
   DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  controller_->Activate(true);
+  for (Observer& obs : observers_) {
+    obs.Activate(true);
+  }
 }
 
 void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  controller_->Activate(false);
+  for (Observer& obs : observers_) {
+    obs.Activate(false);
+  }
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
@@ -150,7 +167,8 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
       /* close_cb= */ base::RepeatingClosure(),
       /* contents_wrapper= */
       std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
+          /* webui_url= */ GURL(
+              chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
           /* browser_context= */ browser->profile(),
           /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
           /* webui_resizes_host= */ false,

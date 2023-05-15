@@ -108,7 +108,6 @@ chrome.inputMethodPrivate.AutoCapitalizeType = {
  *   spellCheck: boolean,
  *   shouldDoLearning: boolean,
  *   focusReason: !chrome.inputMethodPrivate.FocusReason,
- *   hasBeenPassword: boolean,
  *   appKey: (string|undefined)
  * }}
  */

@@ -18,7 +18,7 @@ NSString* GetCreditCardName(const CreditCard& credit_card,
                             const std::string& locale);
 
 // Returns |credit_card| card identifier string as an autoreleased NSString.
-NSString* GetCreditCardIdentifierString(const CreditCard& credit_card);
+NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card);
 
 // Returns |credit_card| nickname string as an autoreleased NSString.
 NSString* GetCreditCardNicknameString(const CreditCard& credit_card);

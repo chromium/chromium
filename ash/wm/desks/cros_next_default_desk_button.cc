@@ -8,9 +8,9 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -33,7 +33,7 @@ constexpr int kDefaultDeskButtonHeight = 28;
 
 }  // namespace
 
-CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DesksBarView* bar_view)
+CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DeskBarViewBase* bar_view)
     : CrOSNextDeskButtonBase(
           DesksController::Get()->desks()[0]->name(),
           /*set_text=*/true,

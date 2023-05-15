@@ -18,6 +18,7 @@
 #include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -108,7 +109,8 @@ class HoldingSpaceItemViewsSectionTest
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
 
-  TestHoldingSpaceItemViewsSection* item_views_section_ = nullptr;
+  raw_ptr<TestHoldingSpaceItemViewsSection, ExperimentalAsh>
+      item_views_section_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

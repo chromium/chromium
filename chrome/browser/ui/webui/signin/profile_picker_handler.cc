@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -401,6 +403,10 @@ void ProfilePickerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getProfileStatistics",
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileStatistics,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "closeProfileStatistics",
+      base::BindRepeating(&ProfilePickerHandler::HandleCloseProfileStatistics,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "selectNewAccount",
@@ -899,6 +905,16 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::Value::List& args) {
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);
   webui::DeleteProfileAtPath(*profile_path,
                              ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+
+  DCHECK(profile_statistics_keep_alive_);
+  profile_statistics_keep_alive_.reset();
+}
+
+void ProfilePickerHandler::HandleCloseProfileStatistics(
+    const base::Value::List& args) {
+  CHECK_EQ(0U, args.size());
+  DCHECK(profile_statistics_keep_alive_);
+  profile_statistics_keep_alive_.reset();
 }
 
 void ProfilePickerHandler::HandleGetProfileStatistics(
@@ -928,6 +944,9 @@ void ProfilePickerHandler::GatherProfileStatistics(Profile* profile) {
   if (!profile) {
     return;
   }
+
+  profile_statistics_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kProfileStatistics);
 
   ProfileStatisticsFactory::GetForProfile(profile)->GatherStatistics(
       base::BindRepeating(&ProfilePickerHandler::OnProfileStatisticsReceived,
@@ -988,12 +1007,18 @@ void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
 
 void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
                                                      bool open_settings,
-                                                     Profile* profile) {
+                                                     Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  DCHECK(browser->window());
+  Profile* profile = browser->profile();
   TRACE_EVENT1("browser", "ProfilePickerHandler::OnSwitchToProfileComplete",
                "profile_path", profile->GetPath().AsUTF8Unsafe());
-  Browser* browser = chrome::FindAnyBrowser(profile, false);
-  DCHECK(browser);
-  DCHECK(browser->window());
 
   // Measure startup time to display first web contents if the profile picker
   // was displayed on startup and if the initiating action is instrumented. For
@@ -1043,14 +1068,20 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
 }
 
 void ProfilePickerHandler::OnSwitchToProfileCompleteOpenCustomization(
-    Profile* profile) {
+    Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+
+  DCHECK(browser->window());
+  Profile* profile = browser->profile();
+
   TRACE_EVENT1(
       "browser",
       "ProfilePickerHandler::OnSwitchToProfileCompleteOpenCustomization",
       "profile_path", profile->GetPath().AsUTF8Unsafe());
-  Browser* browser = chrome::FindAnyBrowser(profile, false);
-  DCHECK(browser);
-  DCHECK(browser->window());
 
   // Measure startup time to display first web contents if the profile picker
   // was displayed on startup and if the initiating action is instrumented. For

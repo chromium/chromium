@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -92,6 +93,24 @@ class PaymentRequestV8TestingScope : public V8TestingScope {
  public:
   PaymentRequestV8TestingScope();
 };
+
+const uint8_t kSecurePaymentConfirmationCredentialId[] = {
+    0x63, 0x72, 0x65, 0x64, 0x65, 0x6E, 0x74, 0x69, 0x61, 0x6C};
+const uint8_t kSecurePaymentConfirmationChallenge[] = {
+    0x63, 0x68, 0x61, 0x6C, 0x6C, 0x65, 0x6E, 0x67, 0x65};
+
+// Creates and returns a minimal SecurePaymentConfirmationRequest object with
+// only required fields filled in to pass parsing.
+//
+// If include_payee_name is set to false, this function will not include the
+// payeeName field which is not required by IDL (and thus not required for
+// conversion to ScriptValue), but is required by the parsing code.
+SecurePaymentConfirmationRequest* CreateSecurePaymentConfirmationRequest(
+    const V8TestingScope& scope,
+    const bool include_payee_name = true);
+
+HeapVector<Member<PaymentMethodData>>
+BuildSecurePaymentConfirmationMethodDataForTest(const V8TestingScope& scope);
 
 }  // namespace blink
 

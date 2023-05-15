@@ -1024,5 +1024,58 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
 
   EXPECT_TRUE(called_multi);
 }
+
+TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
+  AppServiceProxy proxy(nullptr);
+
+  const char kAppId1[] = "abcdefg";
+  const GURL kTestUrl = GURL("https://www.example.com/");
+
+  std::vector<AppPtr> apps;
+  // A scheme-only filter that will be excluded by the |exclude_browsers|
+  // parameter.
+  AppPtr app = std::make_unique<App>(AppType::kWeb, kAppId1);
+  app->readiness = Readiness::kReady;
+  app->handles_intents = true;
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
+                                         kTestUrl.scheme(),
+                                         apps::PatternMatchType::kLiteral);
+  intent_filter->activity_name = "name 1";
+  intent_filter->activity_label = "same label";
+  app->intent_filters.push_back(std::move(intent_filter));
+
+  // A regular mime type file filter which we expect to match.
+  auto intent_filter2 = std::make_unique<apps::IntentFilter>();
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kAction,
+                                          apps_util::kIntentActionView,
+                                          apps::PatternMatchType::kLiteral);
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kFile,
+                                          "text/plain",
+                                          apps::PatternMatchType::kMimeType);
+  intent_filter2->activity_name = "name 2";
+  intent_filter2->activity_label = "same label";
+  app->intent_filters.push_back(std::move(intent_filter2));
+
+  apps.push_back(std::move(app));
+  proxy.OnApps(std::move(apps), AppType::kWeb, false);
+
+  std::vector<apps::IntentFilePtr> files;
+  auto file = std::make_unique<apps::IntentFile>(GURL("abc.txt"));
+  file->mime_type = "text/plain";
+  file->is_directory = false;
+  files.push_back(std::move(file));
+  apps::IntentPtr intent = std::make_unique<apps::Intent>(
+      apps_util::kIntentActionView, std::move(files));
+
+  std::vector<apps::IntentLaunchInfo> intent_launch_info =
+      proxy.GetAppsForIntent(intent, /*exclude_browsers=*/true);
+
+  // Check that we actually get back the 2nd filter, and not the excluded
+  // scheme-only filter which should have been discarded.
+  EXPECT_EQ(1U, intent_launch_info.size());
+  EXPECT_EQ("name 2", intent_launch_info[0].activity_name);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace apps

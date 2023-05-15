@@ -58,7 +58,6 @@ class MockConnectionManager : public ServerConnectionManager {
   // Overridden ServerConnectionManager functions.
   HttpResponse PostBuffer(const std::string& buffer_in,
                           const std::string& access_token,
-                          bool allow_batching,
                           std::string* buffer_out) override;
 
   // Control of commit response.

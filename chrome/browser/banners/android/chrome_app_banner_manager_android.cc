@@ -14,7 +14,10 @@
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -49,7 +52,16 @@ ChromeAppBannerManagerAndroid::ChromeAppBannerManagerAndroid(
     content::WebContents* web_contents)
     : AppBannerManagerAndroid(web_contents),
       content::WebContentsUserData<ChromeAppBannerManagerAndroid>(
-          *web_contents) {}
+          *web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  segmentation_platform_service_ =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
+
+  pref_service_ = profile->GetPrefs();
+}
 
 ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 
@@ -72,7 +84,15 @@ void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
     }
   }
 
-  AppBannerManagerAndroid::MaybeShowAmbientBadge();
+  ambient_badge_manager_ = std::make_unique<AmbientBadgeManager>(
+      web_contents(), GetAndroidWeakPtr(), segmentation_platform_service_,
+      pref_service_);
+  ambient_badge_manager_->MaybeShow(
+      validated_url_, GetAppName(),
+      CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
+          web_contents(), InstallTrigger::AMBIENT_BADGE)),
+      base::BindOnce(&ChromeAppBannerManagerAndroid::ShowBannerFromBadge,
+                     GetAndroidWeakPtr()));
 }
 
 void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

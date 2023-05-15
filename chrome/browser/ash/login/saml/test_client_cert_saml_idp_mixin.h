@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -54,7 +55,7 @@ class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
   HandleSamlWithClientCertsServerRequest(
       const net::test_server::HttpRequest& request);
 
-  FakeGaiaMixin* const gaia_mixin_;
+  const raw_ptr<FakeGaiaMixin, ExperimentalAsh> gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer saml_with_client_certs_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};

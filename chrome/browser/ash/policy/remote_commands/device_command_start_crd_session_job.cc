@@ -14,9 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -35,6 +37,9 @@
 namespace policy {
 
 namespace {
+
+using SessionParameters =
+    DeviceCommandStartCrdSessionJob::Delegate::SessionParameters;
 
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
@@ -58,6 +63,9 @@ const char kAckedUserPresenceFieldName[] = "ackedUserPresence";
 // The type of CRD session that the admin wants to start.
 const char kCrdSessionTypeFieldName[] = "crdSessionType";
 
+// The admin's email address.
+const char kAdminEmailFieldName[] = "adminEmail";
+
 // Result payload fields:
 
 // Integer value containing DeviceCommandStartCrdSessionJob::ResultCode
@@ -72,6 +80,14 @@ const char kResultMessageFieldName[] = "message";
 // Period in seconds since last user activity, if job finished with
 // FAILURE_NOT_IDLE result code.
 const char kResultLastActivityFieldName[] = "lastActivitySec";
+
+absl::optional<std::string> FindString(const base::Value::Dict& dict,
+                                       base::StringPiece key) {
+  if (!dict.contains(key)) {
+    return absl::nullopt;
+  }
+  return *dict.FindString(key);
+}
 
 void SendResultCodeToUma(CrdSessionType crd_session_type,
                          UserSessionType user_session_type,
@@ -175,7 +191,7 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
     OAuth2AccessTokenManager::ScopeSet scopes{
         GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
         kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
-    oauth_request_ = oauth_service_.StartAccessTokenRequest(scopes, this);
+    oauth_request_ = oauth_service_->StartAccessTokenRequest(scopes, this);
   }
 
  private:
@@ -196,7 +212,7 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
         .Run(ResultCode::FAILURE_NO_OAUTH_TOKEN, error.ToString());
   }
 
-  DeviceOAuth2TokenService& oauth_service_;
+  const raw_ref<DeviceOAuth2TokenService, ExperimentalAsh> oauth_service_;
   absl::optional<std::string> oauth_token_for_test_;
   DeviceCommandStartCrdSessionJob::OAuthTokenCallback success_callback_;
   DeviceCommandStartCrdSessionJob::ErrorCallback error_callback_;
@@ -204,6 +220,19 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
   // When deleted the token manager will cancel the request (and not call us).
   std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// DeviceCommandStartCrdSessionJob::Delegate::SessionParameters
+////////////////////////////////////////////////////////////////////////////////
+
+SessionParameters::SessionParameters() = default;
+SessionParameters::~SessionParameters() = default;
+
+SessionParameters::SessionParameters(const SessionParameters&) = default;
+SessionParameters& SessionParameters::operator=(const SessionParameters&) =
+    default;
+SessionParameters::SessionParameters(SessionParameters&&) = default;
+SessionParameters& SessionParameters::operator=(SessionParameters&&) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // DeviceCommandStartCrdSessionJob
@@ -249,6 +278,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   CrdSessionType crd_session_type =
       ToCrdSessionTypeOrDefault(root_dict.FindInt(kCrdSessionTypeFieldName),
                                 CrdSessionType::REMOTE_SUPPORT_SESSION);
+
+  admin_email_ = FindString(root_dict, kAdminEmailFieldName);
 
   curtain_local_user_session_ =
       (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
@@ -345,12 +376,14 @@ void DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync(
 void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
     const std::string& token) {
   CRD_DVLOG(1) << "Received OAuth token, now retrieving CRD access code";
-  Delegate::SessionParameters parameters{
-      .oauth_token = token,
-      .user_name = GetRobotAccountUserName(),
-      .terminate_upon_input = ShouldTerminateUponInput(),
-      .show_confirmation_dialog = ShouldShowConfirmationDialog(),
-      .curtain_local_user_session = curtain_local_user_session_};
+  SessionParameters parameters;
+  parameters.oauth_token = token;
+  parameters.user_name = GetRobotAccountUserName();
+  parameters.terminate_upon_input = ShouldTerminateUponInput();
+  parameters.show_confirmation_dialog = ShouldShowConfirmationDialog();
+  parameters.curtain_local_user_session = curtain_local_user_session_;
+  parameters.admin_email = admin_email_;
+
   delegate_->StartCrdHostAndGetCode(
       parameters,
       base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithSuccess,

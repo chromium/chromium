@@ -4,10 +4,10 @@
 
 #include "net/http/http_proxy_connect_job.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
@@ -305,7 +305,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   base::TimeDelta timeout = multiplier * http_rtt_estimate.value();
   // Ensure that connection timeout is between
   // |min_proxy_connection_timeout_| and |max_proxy_connection_timeout_|.
-  return base::clamp(
+  return std::clamp(
       timeout, GetProxyTimeoutExperiments()->min_proxy_connection_timeout(),
       GetProxyTimeoutExperiments()->max_proxy_connection_timeout());
 }

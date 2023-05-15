@@ -8,22 +8,25 @@
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -98,8 +101,8 @@ PasswordForm CreatePasswordForm() {
   _blockedSites = blockedSites;
 }
 
-- (std::vector<password_manager::CredentialUIEntry>)passwords {
-  return _passwords;
+- (std::vector<password_manager::AffiliatedGroup>)affiliatedGroups {
+  return _affiliatedGroups;
 }
 
 @end
@@ -108,8 +111,9 @@ PasswordForm CreatePasswordForm() {
 class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordsGrouping);
     BlockCleanupTest::SetUp();
-
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
@@ -119,6 +123,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
     browser_state_ = builder.Build();
 
     store_ =
@@ -157,6 +167,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
@@ -170,11 +181,15 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   PasswordForm form = CreatePasswordForm();
   store()->AddLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() passwords],
-              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
-
+  password_manager::CredentialUIEntry credential(form);
+  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
+      [consumer() affiliatedGroups];
+  EXPECT_EQ(1u, affiliatedGroups.size());
+  EXPECT_THAT(affiliatedGroups[0].GetCredentials(),
+              testing::ElementsAre(credential));
   // Remove form from the store.
   store()->RemoveLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
+  affiliatedGroups = [consumer() affiliatedGroups];
+  EXPECT_THAT(affiliatedGroups, testing::IsEmpty());
 }

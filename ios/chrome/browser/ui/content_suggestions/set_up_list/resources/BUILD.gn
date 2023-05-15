@@ -1,0 +1,263 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+group("resources") {
+  deps = [
+    ":set_up_list_sparkle0",
+    ":set_up_list_sparkle1",
+    ":set_up_list_sparkle10",
+    ":set_up_list_sparkle11",
+    ":set_up_list_sparkle12",
+    ":set_up_list_sparkle13",
+    ":set_up_list_sparkle14",
+    ":set_up_list_sparkle15",
+    ":set_up_list_sparkle16",
+    ":set_up_list_sparkle17",
+    ":set_up_list_sparkle18",
+    ":set_up_list_sparkle19",
+    ":set_up_list_sparkle2",
+    ":set_up_list_sparkle20",
+    ":set_up_list_sparkle21",
+    ":set_up_list_sparkle22",
+    ":set_up_list_sparkle23",
+    ":set_up_list_sparkle24",
+    ":set_up_list_sparkle25",
+    ":set_up_list_sparkle26",
+    ":set_up_list_sparkle27",
+    ":set_up_list_sparkle28",
+    ":set_up_list_sparkle29",
+    ":set_up_list_sparkle3",
+    ":set_up_list_sparkle30",
+    ":set_up_list_sparkle31",
+    ":set_up_list_sparkle32",
+    ":set_up_list_sparkle33",
+    ":set_up_list_sparkle34",
+    ":set_up_list_sparkle35",
+    ":set_up_list_sparkle4",
+    ":set_up_list_sparkle5",
+    ":set_up_list_sparkle6",
+    ":set_up_list_sparkle7",
+    ":set_up_list_sparkle8",
+    ":set_up_list_sparkle9",
+  ]
+}
+
+imageset("set_up_list_sparkle0") {
+  sources = [
+    "set_up_list_sparkle0.imageset/Contents.json",
+    "set_up_list_sparkle0.imageset/set_up_list_sparkle0.png",
+  ]
+}
+imageset("set_up_list_sparkle1") {
+  sources = [
+    "set_up_list_sparkle1.imageset/Contents.json",
+    "set_up_list_sparkle1.imageset/set_up_list_sparkle1.png",
+  ]
+}
+imageset("set_up_list_sparkle10") {
+  sources = [
+    "set_up_list_sparkle10.imageset/Contents.json",
+    "set_up_list_sparkle10.imageset/set_up_list_sparkle10.png",
+  ]
+}
+imageset("set_up_list_sparkle11") {
+  sources = [
+    "set_up_list_sparkle11.imageset/Contents.json",
+    "set_up_list_sparkle11.imageset/set_up_list_sparkle11.png",
+  ]
+}
+imageset("set_up_list_sparkle12") {
+  sources = [
+    "set_up_list_sparkle12.imageset/Contents.json",
+    "set_up_list_sparkle12.imageset/set_up_list_sparkle12.png",
+  ]
+}
+imageset("set_up_list_sparkle13") {
+  sources = [
+    "set_up_list_sparkle13.imageset/Contents.json",
+    "set_up_list_sparkle13.imageset/set_up_list_sparkle13.png",
+  ]
+}
+imageset("set_up_list_sparkle14") {
+  sources = [
+    "set_up_list_sparkle14.imageset/Contents.json",
+    "set_up_list_sparkle14.imageset/set_up_list_sparkle14.png",
+  ]
+}
+imageset("set_up_list_sparkle15") {
+  sources = [
+    "set_up_list_sparkle15.imageset/Contents.json",
+    "set_up_list_sparkle15.imageset/set_up_list_sparkle15.png",
+  ]
+}
+imageset("set_up_list_sparkle16") {
+  sources = [
+    "set_up_list_sparkle16.imageset/Contents.json",
+    "set_up_list_sparkle16.imageset/set_up_list_sparkle16.png",
+  ]
+}
+imageset("set_up_list_sparkle17") {
+  sources = [
+    "set_up_list_sparkle17.imageset/Contents.json",
+    "set_up_list_sparkle17.imageset/set_up_list_sparkle17.png",
+  ]
+}
+imageset("set_up_list_sparkle18") {
+  sources = [
+    "set_up_list_sparkle18.imageset/Contents.json",
+    "set_up_list_sparkle18.imageset/set_up_list_sparkle18.png",
+  ]
+}
+imageset("set_up_list_sparkle19") {
+  sources = [
+    "set_up_list_sparkle19.imageset/Contents.json",
+    "set_up_list_sparkle19.imageset/set_up_list_sparkle19.png",
+  ]
+}
+imageset("set_up_list_sparkle2") {
+  sources = [
+    "set_up_list_sparkle2.imageset/Contents.json",
+    "set_up_list_sparkle2.imageset/set_up_list_sparkle2.png",
+  ]
+}
+imageset("set_up_list_sparkle20") {
+  sources = [
+    "set_up_list_sparkle20.imageset/Contents.json",
+    "set_up_list_sparkle20.imageset/set_up_list_sparkle20.png",
+  ]
+}
+imageset("set_up_list_sparkle21") {
+  sources = [
+    "set_up_list_sparkle21.imageset/Contents.json",
+    "set_up_list_sparkle21.imageset/set_up_list_sparkle21.png",
+  ]
+}
+imageset("set_up_list_sparkle22") {
+  sources = [
+    "set_up_list_sparkle22.imageset/Contents.json",
+    "set_up_list_sparkle22.imageset/set_up_list_sparkle22.png",
+  ]
+}
+imageset("set_up_list_sparkle23") {
+  sources = [
+    "set_up_list_sparkle23.imageset/Contents.json",
+    "set_up_list_sparkle23.imageset/set_up_list_sparkle23.png",
+  ]
+}
+imageset("set_up_list_sparkle24") {
+  sources = [
+    "set_up_list_sparkle24.imageset/Contents.json",
+    "set_up_list_sparkle24.imageset/set_up_list_sparkle24.png",
+  ]
+}
+imageset("set_up_list_sparkle25") {
+  sources = [
+    "set_up_list_sparkle25.imageset/Contents.json",
+    "set_up_list_sparkle25.imageset/set_up_list_sparkle25.png",
+  ]
+}
+imageset("set_up_list_sparkle26") {
+  sources = [
+    "set_up_list_sparkle26.imageset/Contents.json",
+    "set_up_list_sparkle26.imageset/set_up_list_sparkle26.png",
+  ]
+}
+imageset("set_up_list_sparkle27") {
+  sources = [
+    "set_up_list_sparkle27.imageset/Contents.json",
+    "set_up_list_sparkle27.imageset/set_up_list_sparkle27.png",
+  ]
+}
+imageset("set_up_list_sparkle28") {
+  sources = [
+    "set_up_list_sparkle28.imageset/Contents.json",
+    "set_up_list_sparkle28.imageset/set_up_list_sparkle28.png",
+  ]
+}
+imageset("set_up_list_sparkle29") {
+  sources = [
+    "set_up_list_sparkle29.imageset/Contents.json",
+    "set_up_list_sparkle29.imageset/set_up_list_sparkle29.png",
+  ]
+}
+imageset("set_up_list_sparkle3") {
+  sources = [
+    "set_up_list_sparkle3.imageset/Contents.json",
+    "set_up_list_sparkle3.imageset/set_up_list_sparkle3.png",
+  ]
+}
+imageset("set_up_list_sparkle30") {
+  sources = [
+    "set_up_list_sparkle30.imageset/Contents.json",
+    "set_up_list_sparkle30.imageset/set_up_list_sparkle30.png",
+  ]
+}
+imageset("set_up_list_sparkle31") {
+  sources = [
+    "set_up_list_sparkle31.imageset/Contents.json",
+    "set_up_list_sparkle31.imageset/set_up_list_sparkle31.png",
+  ]
+}
+imageset("set_up_list_sparkle32") {
+  sources = [
+    "set_up_list_sparkle32.imageset/Contents.json",
+    "set_up_list_sparkle32.imageset/set_up_list_sparkle32.png",
+  ]
+}
+imageset("set_up_list_sparkle33") {
+  sources = [
+    "set_up_list_sparkle33.imageset/Contents.json",
+    "set_up_list_sparkle33.imageset/set_up_list_sparkle33.png",
+  ]
+}
+imageset("set_up_list_sparkle34") {
+  sources = [
+    "set_up_list_sparkle34.imageset/Contents.json",
+    "set_up_list_sparkle34.imageset/set_up_list_sparkle34.png",
+  ]
+}
+imageset("set_up_list_sparkle35") {
+  sources = [
+    "set_up_list_sparkle35.imageset/Contents.json",
+    "set_up_list_sparkle35.imageset/set_up_list_sparkle35.png",
+  ]
+}
+imageset("set_up_list_sparkle4") {
+  sources = [
+    "set_up_list_sparkle4.imageset/Contents.json",
+    "set_up_list_sparkle4.imageset/set_up_list_sparkle4.png",
+  ]
+}
+imageset("set_up_list_sparkle5") {
+  sources = [
+    "set_up_list_sparkle5.imageset/Contents.json",
+    "set_up_list_sparkle5.imageset/set_up_list_sparkle5.png",
+  ]
+}
+imageset("set_up_list_sparkle6") {
+  sources = [
+    "set_up_list_sparkle6.imageset/Contents.json",
+    "set_up_list_sparkle6.imageset/set_up_list_sparkle6.png",
+  ]
+}
+imageset("set_up_list_sparkle7") {
+  sources = [
+    "set_up_list_sparkle7.imageset/Contents.json",
+    "set_up_list_sparkle7.imageset/set_up_list_sparkle7.png",
+  ]
+}
+imageset("set_up_list_sparkle8") {
+  sources = [
+    "set_up_list_sparkle8.imageset/Contents.json",
+    "set_up_list_sparkle8.imageset/set_up_list_sparkle8.png",
+  ]
+}
+imageset("set_up_list_sparkle9") {
+  sources = [
+    "set_up_list_sparkle9.imageset/Contents.json",
+    "set_up_list_sparkle9.imageset/set_up_list_sparkle9.png",
+  ]
+}

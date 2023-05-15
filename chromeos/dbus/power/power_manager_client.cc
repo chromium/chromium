@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -208,6 +209,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
          &PowerManagerClientImpl::ScreenIdleStateChangedReceived},
         {power_manager::kInactivityDelaysChangedSignal,
          &PowerManagerClientImpl::InactivityDelaysChangedReceived},
+        {power_manager::kBatterySaverModeStateChanged,
+         &PowerManagerClientImpl::BatterySaverModeStateChangedReceived},
         {power_manager::kPeripheralBatteryStatusSignal,
          &PowerManagerClientImpl::PeripheralBatteryStatusReceived},
         {power_manager::kPowerSupplyPollSignal,
@@ -513,6 +516,32 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
+  void GetBatterySaverModeState(
+      DBusMethodCallback<power_manager::BatterySaverModeState> callback)
+      override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kGetBatterySaverModeState);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetBatterySaverModeState,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetBatterySaverModeState(
+      const power_manager::SetBatterySaverModeStateRequest& request) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kSetBatterySaverModeState);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kSetBatterySaverModeState;
+      return;
+    }
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
   void GetSwitchStates(DBusMethodCallback<SwitchStates> callback) override {
     dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
                                  power_manager::kGetSwitchStatesMethod);
@@ -787,6 +816,20 @@ class PowerManagerClientImpl : public PowerManagerClient {
       observer.InactivityDelaysChanged(proto);
   }
 
+  void BatterySaverModeStateChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::BatterySaverModeState proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Unable to decode protocol buffer from "
+                       << power_manager::kBatterySaverModeStateChanged
+                       << " signal";
+      return;
+    }
+    for (auto& observer : observers_) {
+      observer.BatterySaverModeStateChanged(proto);
+    }
+  }
+
   void PeripheralBatteryStatusReceived(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
     power_manager::PeripheralBatteryStatus protobuf_status;
@@ -918,6 +961,27 @@ class PowerManagerClientImpl : public PowerManagerClient {
       return;
     }
     std::move(callback).Run(state);
+  }
+
+  void OnGetBatterySaverModeState(
+      DBusMethodCallback<power_manager::BatterySaverModeState> callback,
+      dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kGetBatterySaverModeState;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    power_manager::BatterySaverModeState proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Error parsing response from "
+                       << power_manager::kGetBatterySaverModeState;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(proto);
   }
 
   void OnGetSwitchStates(DBusMethodCallback<SwitchStates> callback,
@@ -1362,7 +1426,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Origin thread (i.e. the UI thread in production).
   base::PlatformThreadId origin_thread_id_;
 
-  dbus::ObjectProxy* power_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> power_manager_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   absl::optional<bool> service_available_;

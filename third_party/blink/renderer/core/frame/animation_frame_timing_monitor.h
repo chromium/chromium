@@ -37,6 +37,9 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   class Client {
    public:
     virtual void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*) = 0;
+    virtual void ReportLongTaskTiming(base::TimeTicks start,
+                                      base::TimeTicks end,
+                                      ExecutionContext* context) = 0;
     virtual bool ShouldReportLongAnimationFrameTiming() const = 0;
     virtual bool RequestedMainFramePending() = 0;
     virtual ukm::UkmRecorder* MainFrameUkmRecorder() = 0;

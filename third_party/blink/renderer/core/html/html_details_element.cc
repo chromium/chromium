@@ -45,19 +45,6 @@
 
 namespace blink {
 
-namespace {
-
-bool IsFirstSummary(const Node& node) {
-  DCHECK(IsA<HTMLDetailsElement>(node.parentElement()));
-  if (!IsA<HTMLSummaryElement>(node))
-    return false;
-  return node.parentElement() &&
-         &node ==
-             Traversal<HTMLSummaryElement>::FirstChild(*node.parentElement());
-}
-
-}  // namespace
-
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
     : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
@@ -144,9 +131,13 @@ void HTMLDetailsElement::ManuallyAssignSlots() {
   HeapVector<Member<Node>> summary_nodes;
   HeapVector<Member<Node>> content_nodes;
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
-    if (!child.IsSlotable())
+    if (!child.IsSlotable()) {
+      CHECK(!IsA<HTMLSummaryElement>(child));
       continue;
-    if (IsFirstSummary(child)) {
+    }
+    bool is_first_summary =
+        summary_nodes.empty() && IsA<HTMLSummaryElement>(child);
+    if (is_first_summary) {
       summary_nodes.push_back(child);
     } else {
       content_nodes.push_back(child);

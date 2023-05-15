@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -147,10 +148,10 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   mojom::ShareIntentInfoPtr share_info_;
 
   // Unowned pointer.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Unowned pointer
-  aura::Window* arc_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> arc_window_ = nullptr;
 
   // Created and lives on the UI thread but is destructed on the IO thread.
   scoped_refptr<ShareInfoFileHandler> file_handler_;

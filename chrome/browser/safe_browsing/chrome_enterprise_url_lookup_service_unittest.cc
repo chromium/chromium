@@ -153,7 +153,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void MayBeCacheRealTimeUrlVerdict(
-      GURL url,
       RTLookupResponse::ThreatInfo::VerdictType verdict_type,
       RTLookupResponse::ThreatInfo::ThreatType threat_type,
       int cache_duration_sec,
@@ -168,7 +167,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     new_threat_info->set_cache_expression_using_match_type(cache_expression);
     new_threat_info->set_cache_expression_match_type(
         cache_expression_match_type);
-    enterprise_rt_service_->MayBeCacheRealTimeUrlVerdict(url, response);
+    enterprise_rt_service_->MayBeCacheRealTimeUrlVerdict(response);
   }
 
   void SetUpRTLookupResponse(
@@ -212,7 +211,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_ResponseIsAlreadyCached) {
   GURL url("http://example.test/");
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "example.test/",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
@@ -239,7 +238,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   ReferrerChain returned_referrer_chain;
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
@@ -278,7 +277,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
   test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
   // Can check allowlist if SafeBrowsingEnterpriseRealTimeUrlCheckMode is
   // disabled.

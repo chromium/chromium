@@ -12,6 +12,7 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy
       'confirm',
       'undo',
       'goToSettings',
+      'openDeviceSyncSettings',
       'initializedWithSize',
       'requestAccountInfo',
     ]);
@@ -27,6 +28,10 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy
 
   goToSettings(description: string[], confirmation: string) {
     this.methodCalled('goToSettings', [description, confirmation]);
+  }
+
+  openDeviceSyncSettings() {
+    this.methodCalled('openDeviceSyncSettings');
   }
 
   initializedWithSize(height: number[]) {

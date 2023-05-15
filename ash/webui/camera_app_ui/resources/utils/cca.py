@@ -30,14 +30,14 @@ def shell_join(cmd):
     return ' '.join(shlex.quote(c) for c in cmd)
 
 
-def run(args, cwd=None):
+def run(args):
     logging.debug(f'$ {shell_join(args)}')
-    subprocess.check_call(args, cwd=cwd)
+    subprocess.check_call(args)
 
 
-def check_output(args, cwd=None):
+def check_output(args):
     logging.debug(f'$ {shell_join(args)}')
-    return subprocess.check_output(args, cwd=cwd, text=True)
+    return subprocess.check_output(args, text=True)
 
 
 def run_node(args):
@@ -52,19 +52,37 @@ def build_preload_images_js(outdir):
         in_app_images = ast.literal_eval(
             re.search(r'in_app_images\s*=\s*(\[.*?\])', f.read(),
                       re.DOTALL).group(1))
+
+    preload_images_js_path = os.path.join(outdir, 'preload_images.js')
+    if os.path.exists(preload_images_js_path):
+        with open(preload_images_js_path) as f:
+            preload_images_js = f.read()
+    else:
+        preload_images_js = None
+
     with tempfile.NamedTemporaryFile('w') as f:
         f.writelines(
             os.path.abspath(f'images/{asset}') + '\n'
             for asset in in_app_images)
         f.flush()
-        cmd = [
-            'utils/gen_preload_images_js.py',
-            '--images_list_file',
-            f.name,
-            '--output_file',
-            os.path.join(outdir, 'preload_images.js'),
-        ]
-        subprocess.check_call(cmd)
+        with tempfile.NamedTemporaryFile('r') as temp_file:
+            cmd = [
+                'utils/gen_preload_images_js.py',
+                '--images_list_file',
+                f.name,
+                '--output_file',
+                temp_file.name,
+            ]
+            run(cmd)
+
+            new_preload_images_js = temp_file.read()
+            # Only write when the generated preload_images.js changes, to avoid
+            # changing mtime of the preload_images.js file when the images are
+            # not changed, so rsync won't copy the file again on deploy.
+            if new_preload_images_js == preload_images_js:
+                return
+            with open(preload_images_js_path, 'w') as output_file:
+                output_file.write(new_preload_images_js)
 
 
 CCA_OVERRIDE_PATH = '/etc/camera/cca'
@@ -108,9 +126,13 @@ def get_tsc_paths(board):
 
     resources_dir = os.path.join(target_gen_dir, 'ui/webui/resources/tsc/*')
 
+    lit_d_ts = os.path.join(
+        root_dir, 'third_party/material_web_components/lit_exports.d.ts')
+
     return {
         '//resources/*': [os.path.relpath(resources_dir)],
         'chrome://resources/*': [os.path.relpath(resources_dir)],
+        'chrome://resources/mwc/lit/index.js': [os.path.relpath(lit_d_ts)],
     }
 
 
@@ -139,6 +161,16 @@ def make_mojom_symlink(board):
         os.symlink(generated_mojom_dir, target)
 
 
+def get_tsc_references(board):
+    root_dir = get_chromium_root()
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+    mwc_tsconfig_path = os.path.join(
+        target_gen_dir,
+        'third_party/material_web_components/tsconfig_library.json')
+
+    return [{'path': os.path.relpath(mwc_tsconfig_path)}]
+
+
 def generate_tsconfig(board):
     cca_root = os.getcwd()
     # TODO(pihsun): This needs to be in sync with BUILD.gn, have some heuristic
@@ -164,14 +196,104 @@ def generate_tsconfig(board):
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
     # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
     tsconfig['compilerOptions']['allowJs'] = True
+    tsconfig['compilerOptions']['plugins'] = [{
+        "name": "ts-lit-plugin",
+        "strict": True
+    }]
+    tsconfig['references'] = get_tsc_references(board)
 
     with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
         json.dump(tsconfig, f)
 
 
+# Script to reload all CSS on the page by appending a different search
+# parameter to the URL each time this is run. Note that Date.now() has
+# milliseconds accuracy, so in practice multiple run of the cca.py deploy
+# script will have different search parameter.
+CSS_RELOAD_SCRIPT = """
+for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+    const url = new URL(link.href);
+    url.searchParams.set('cca-deploy-refresh', Date.now().toString());
+    link.href = url.toString();
+}
+console.log('All CSS reloaded');
+"""
+
+
+def can_only_reload_css(changed_files):
+    for file in changed_files:
+        # Ignore deployed_version.js since this always change every deploy, and
+        # doesn't affect anything other than the startup console log and toast.
+        if file.endswith('/deployed_version.js'):
+            continue
+        # Ignore folders.
+        if file.endswith('/'):
+            continue
+        # .css change is okay.
+        if file.endswith('.css'):
+            continue
+        return False
+    return True
+
+
+def reload_cca(device, changed_files):
+    try:
+        reload_script = "document.location.reload()"
+        if can_only_reload_css(changed_files):
+            reload_script = CSS_RELOAD_SCRIPT
+        run([
+            'ssh',
+            device,
+            '--',
+            'cca',
+            'open',
+            '&&',
+            'cca',
+            'eval',
+            shlex.quote(reload_script),
+            ">",
+            "/dev/null",
+        ])
+    except subprocess.CalledProcessError as e:
+        print('Failed to reload CCA on DUT, '
+              'please make sure that the DUT is logged in '
+              'and `cca setup` has been run on DUT.')
+
+
 # Use a fixed temporary output folder for deploy, so incremental compilation
 # works and deploy is faster.
 DEPLOY_OUTPUT_TEMP_DIR = '/tmp/cca-deploy-out'
+
+
+def rsync_to_device(device, src, target, *, extra_arguments=[]):
+    """Returns list of files that are changed."""
+    cmd = [
+        'rsync',
+        '--recursive',
+        '--inplace',
+        '--delete',
+        '--mkpath',
+        '--times',
+        # rsync by default use source file permission masked by target file
+        # system umask while transferring new files, and since workstation
+        # defaults to have file not readable by others, this makes deployed
+        # file not readable by Chrome.
+        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
+        # local umask, +r for read and +X for executable bit on folder), and
+        # set --perms so existing files that might have the wrong permission
+        # will have their permission fixed.
+        '--perms',
+        '--chmod=a+rX',
+        # Sets rsync output format to %n which prints file path that are
+        # changed. (By default rsync only copies file that have different size
+        # or modified time.)
+        '--out-format=%n',
+        *extra_arguments,
+        src,
+        f'{device}:{target}',
+    ]
+    output = check_output(cmd)
+    return [os.path.join(target, file) for file in output.splitlines()]
 
 
 def deploy(args):
@@ -206,41 +328,19 @@ def deploy(args):
 
     build_preload_images_js(js_out_dir)
 
-    deploy_new_tsc_files = [
-        'rsync',
-        '--recursive',
-        '--inplace',
-        '--delete',
-        '--mkpath',
-        '--exclude=tsconfig.tsbuildinfo',
-        # rsync by default use source file permission masked by target file
-        # system umask while transferring new files, and since workstation
-        # defaults to have file not readable by others, this makes deployed
-        # file not readable by Chrome.
-        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
-        # local umask, +r for read and +X for executable bit on folder), and
-        # set --perms so existing files that might have the wrong permission
-        # will have their permission fixed.
-        '--perms',
-        '--chmod=a+rX',
+    # Note that although we always rerun tsc, when the JS inputs are not
+    # changed, tsc also doesn't change the output file's mtime, so rsync will
+    # correctly skip those unchanged files.
+    changed_files = rsync_to_device(
+        args.device,
         f'{js_out_dir}/',
-        f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
-    ]
-    run(deploy_new_tsc_files)
+        f'{CCA_OVERRIDE_PATH}/js/',
+        extra_arguments=['--exclude=tsconfig.tsbuildinfo'])
 
     for dir in ['css', 'images', 'views', 'sounds']:
-        deploy_new_assets = [
-            'rsync',
-            '--recursive',
-            '--inplace',
-            '--delete',
-            '--mkpath',
-            '--perms',
-            '--chmod=a+rX',
-            f'{os.path.join(cca_root, dir)}/',
-            f'{args.device}:{CCA_OVERRIDE_PATH}/{dir}/',
-        ]
-        run(deploy_new_assets)
+        changed_files += rsync_to_device(args.device,
+                                         f'{os.path.join(cca_root, dir)}/',
+                                         f'{CCA_OVERRIDE_PATH}/{dir}/')
 
     current_time = time.strftime('%F %T%z')
     run([
@@ -257,6 +357,9 @@ def deploy(args):
     ])
 
     ensure_local_override_enabled(args.device, args.force)
+
+    if args.reload:
+        reload_cca(args.device, changed_files)
 
 
 def test(args):
@@ -284,6 +387,10 @@ def lint(args):
         run_node(cmd)
     except subprocess.CalledProcessError as e:
         print('ESLint check failed, return code =', e.returncode)
+    # TODO(pihsun): Add lit-analyzer to the check. It's not included in the
+    # chrome source tree and can be manually installed with `npm install -g
+    # lit-analyzer ts-lit-plugin`. Maybe this can be added as an optional check
+    # for now?
 
 
 def tsc(args):
@@ -443,7 +550,7 @@ def parse_args(args):
     deploy_parser = subparsers.add_parser('deploy',
                                           help='deploy to device',
                                           description='''Deploy CCA to device.
-            This script only works if there is no file added/deleted.
+            This script only works if there's no .cc / .grd changes.
             And please build Chrome at least once before running the command.'''
                                           )
     deploy_parser.add_argument('board')
@@ -451,6 +558,11 @@ def parse_args(args):
     deploy_parser.add_argument('--force',
                                help="Don't prompt for restarting Chrome.",
                                action='store_true')
+    deploy_parser.add_argument(
+        '--reload',
+        help='Try reloading CCA window after deploy. '
+        'Please run `cca setup` on DUT once before using this argument.',
+        action='store_true')
     deploy_parser.set_defaults(func=deploy)
 
     test_parser = subparsers.add_parser('test',

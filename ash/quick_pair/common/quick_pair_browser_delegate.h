@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   // PendingReceiver for it.
   virtual void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) = 0;
+
+ protected:
+  static void SetInstance(QuickPairBrowserDelegate* instance);
+  static void SetInstanceForTesting(QuickPairBrowserDelegate* instance);
 };
 
 }  // namespace quick_pair

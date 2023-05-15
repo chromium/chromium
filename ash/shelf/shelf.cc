@@ -18,6 +18,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -36,6 +37,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -248,7 +250,7 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
   }
 
  private:
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
 
 // Shelf::AutoDimEventHandler -----------------------------------------------
@@ -260,7 +262,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
  public:
   explicit AutoDimEventHandler(Shelf* shelf) : shelf_(shelf) {
     Shell::Get()->AddPreTargetHandler(this);
-    shelf_observation_.Observe(shelf_);
+    shelf_observation_.Observe(shelf_.get());
     UndimShelf();
   }
 
@@ -314,7 +316,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   }
 
   // ShelfObserver:
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override {
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override {
     // Shelf should be undimmed when it is shown.
     if (new_state != ShelfVisibilityState::SHELF_HIDDEN)
       UndimShelf();
@@ -322,7 +324,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
 
  private:
   // Unowned pointer to the shelf that owns this event handler.
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
   // OneShotTimer that dims shelf due to inactivity.
   base::OneShotTimer dim_shelf_timer_;
   // An observer that notifies the AutoDimHandler that shelf visibility has
@@ -332,6 +334,30 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   // Delay before dimming the shelf.
   const base::TimeDelta kDimDelay = base::Seconds(5);
 };
+
+// Shelf::ScopedDisableAutoHide ----------------------------------------------
+
+Shelf::ScopedDisableAutoHide::ScopedDisableAutoHide(Shelf* shelf)
+    : shelf_(shelf->GetWeakPtr()) {
+  CHECK(shelf);
+
+  ++shelf_->disable_auto_hide_;
+  if (shelf_->disable_auto_hide_ == 1) {
+    shelf_->UpdateVisibilityState();
+  }
+}
+
+Shelf::ScopedDisableAutoHide::~ScopedDisableAutoHide() {
+  if (!shelf_) {
+    return;
+  }
+
+  --shelf_->disable_auto_hide_;
+  CHECK_GE(shelf_->disable_auto_hide_, 0);
+  if (shelf_->disable_auto_hide_ == 0) {
+    shelf_->UpdateVisibilityState();
+  }
+}
 
 // Shelf ---------------------------------------------------------------------
 
@@ -396,6 +422,15 @@ void Shelf::CreateNavigationWidget(aura::Window* container) {
       std::make_unique<NavigationWidgetAnimationMetricsReporter>();
 }
 
+void Shelf::CreateDeskButtonWidget(aura::Window* container) {
+  CHECK(container);
+  CHECK(!desk_button_widget_);
+  CHECK(ash::features::IsDeskButtonEnabled());
+
+  desk_button_widget_ = std::make_unique<DeskButtonWidget>(this);
+  desk_button_widget_->Initialize(container);
+}
+
 void Shelf::CreateHotseatWidget(aura::Window* container) {
   DCHECK(container);
   DCHECK(!hotseat_widget_);
@@ -432,6 +467,9 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // Create the various shelf components.
   CreateHotseatWidget(shelf_container);
   CreateNavigationWidget(shelf_container);
+  if (ash::features::IsDeskButtonEnabled()) {
+    CreateDeskButtonWidget(shelf_container);
+  }
   if (features::IsUseLoginShelfWidgetEnabled()) {
     login_shelf_widget_ =
         std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
@@ -502,7 +540,7 @@ void Shelf::SetAlignment(ShelfAlignment alignment) {
   alignment_ = alignment;
   tooltip_->Close();
   if (needs_relayout) {
-    shelf_layout_manager_->LayoutShelf();
+    shelf_layout_manager_->HandleShelfAlignmentChange();
     Shell::Get()->NotifyShelfAlignmentChanged(GetWindow()->GetRootWindow(),
                                               old_alignment);
   }
@@ -552,7 +590,7 @@ ShelfBackgroundType Shelf::GetBackgroundType() const {
 
 void Shelf::UpdateVisibilityState() {
   if (shelf_layout_manager_)
-    shelf_layout_manager_->UpdateVisibilityState();
+    shelf_layout_manager_->UpdateVisibilityState(/*force_layout=*/false);
 }
 
 void Shelf::MaybeUpdateShelfBackground() {
@@ -728,17 +766,19 @@ void Shelf::WillDeleteShelfLayoutManager() {
   shelf_layout_manager_ = nullptr;
 }
 
-void Shelf::WillChangeVisibilityState(ShelfVisibilityState new_state) {
-  for (auto& observer : observers_)
-    observer.WillChangeVisibilityState(new_state);
+void Shelf::OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) {
+  if (!auto_dim_event_handler_ && switches::IsUsingShelfAutoDim()) {
+    auto_dim_event_handler_ = std::make_unique<AutoDimEventHandler>(this);
+  }
+
   if (new_state != SHELF_AUTO_HIDE) {
     auto_hide_event_handler_.reset();
   } else if (!auto_hide_event_handler_) {
     auto_hide_event_handler_ = std::make_unique<AutoHideEventHandler>(this);
   }
 
-  if (!auto_dim_event_handler_ && switches::IsUsingShelfAutoDim()) {
-    auto_dim_event_handler_ = std::make_unique<AutoDimEventHandler>(this);
+  for (auto& observer : observers_) {
+    observer.OnShelfVisibilityStateChanged(new_state);
   }
 }
 
@@ -787,6 +827,10 @@ WorkAreaInsets* Shelf::GetWorkAreaInsets() const {
   const aura::Window* window = GetWindow();
   DCHECK(window);
   return WorkAreaInsets::ForWindow(window->GetRootWindow());
+}
+
+base::WeakPtr<Shelf> Shelf::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

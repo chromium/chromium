@@ -89,6 +89,7 @@ fuzzer_test("gfx_png_image_fuzzer") {
   sources = [ "gfx_png_image_fuzzer.cc" ]
   deps = [
     "//base",
+    "//ui/base",
     "//ui/gfx",
   ]
   dict = "dicts/png.dict"
@@ -195,21 +196,6 @@ fuzzer_test("v8_regexp_parser_fuzzer") {
   dict = "dicts/regexp.dict"
   seed_corpus = "//v8/test/fuzzer/regexp/"
   libfuzzer_options = [ "max_len=64" ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
-
-fuzzer_test("v8_regexp_builtins_fuzzer") {
-  sources = []
-  deps = [ "//v8:regexp_builtins_fuzzer" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
@@ -467,19 +453,19 @@ fuzzer_test("libyuv_scale_fuzzer") {
   deps = [ "//third_party/libyuv" ]
 }
 
-proto_library("command_buffer_fuzzer_proto") {
-  sources = [ "command_buffer_fuzzer/cmd_buf_fuzz.proto" ]
+proto_library("command_buffer_lpm_fuzzer_proto") {
+  sources = [ "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.proto" ]
 
   use_protobuf_full = true
   deps = [ "//third_party/protobuf:protobuf_full" ]
 }
 
-fuzzer_test("command_buffer_fuzzer") {
+fuzzer_test("command_buffer_lpm_fuzzer") {
   sources = [
-    "command_buffer_fuzzer/cmd_buf_fuzz.cc",
-    "command_buffer_fuzzer/cmd_buf_fuzz.h",
-    "command_buffer_fuzzer/webgpu_support.cc",
-    "command_buffer_fuzzer/webgpu_support.h",
+    "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.cc",
+    "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h",
+    "command_buffer_lpm_fuzzer/webgpu_support.cc",
+    "command_buffer_lpm_fuzzer/webgpu_support.h",
   ]
 
   # This is a hack. These files should be pulled in as a result of the
@@ -503,7 +489,7 @@ fuzzer_test("command_buffer_fuzzer") {
   }
 
   deps = [
-    ":command_buffer_fuzzer_proto",
+    ":command_buffer_lpm_fuzzer_proto",
     "//base",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",

@@ -34,12 +34,12 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -356,18 +356,15 @@ public class ManualFillingTestHelper {
     }
 
     public static void createAutofillTestProfiles() throws TimeoutException {
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://www.example.com",
-                "" /* honorific prefix */, "Johnathan Smithonian-Jackson", "Acme Inc",
-                "1 Main\nApt A", "CA", "San Francisco", "", "94102", "", "US", "(415) 888-9999",
-                "john.sj@acme-mail.inc", "en"));
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://www.example.com",
-                "" /* honorific prefix */, "Jane Erika Donovanova", "Acme Inc", "1 Main\nApt A",
-                "CA", "San Francisco", "", "94102", "", "US", "(415) 999-0000",
-                "donovanova.j@acme-mail.inc", "en"));
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://www.example.com",
-                "" /* honorific prefix */, "Marcus McSpartangregor", "Acme Inc", "1 Main\nApt A",
-                "CA", "San Francisco", "", "94102", "", "US", "(415) 999-0000",
-                "marc@acme-mail.inc", "en"));
+        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
+                "Johnathan Smithonian-Jackson", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco",
+                "", "94102", "", "US", "(415) 888-9999", "john.sj@acme-mail.inc", "en"));
+        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
+                "Jane Erika Donovanova", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "",
+                "94102", "", "US", "(415) 999-0000", "donovanova.j@acme-mail.inc", "en"));
+        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
+                "Marcus McSpartangregor", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "",
+                "94102", "", "US", "(415) 999-0000", "marc@acme-mail.inc", "en"));
     }
 
     public static void disableServerPredictions() {

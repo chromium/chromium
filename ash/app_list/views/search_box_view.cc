@@ -31,6 +31,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -47,6 +48,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -175,38 +177,45 @@ void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
   base::UmaHistogramEnumeration("Apps.AppListSearchAutocomplete", match_type);
 }
 
+ui::ColorId GetFocusColorId(bool use_jelly_colors) {
+  return use_jelly_colors
+             ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
+             : ui::kColorAshFocusRing;
+}
+
 }  // namespace
 
-class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
+class SearchBoxView::FocusRingLayer : public ui::LayerOwner, ui::LayerDelegate {
  public:
-  FocusRingLayer() : Layer(ui::LAYER_TEXTURED) {
-    SetName("search_box/FocusRing");
-    SetFillsBoundsOpaquely(false);
-    set_delegate(this);
+  FocusRingLayer()
+      : LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
+    layer()->SetName("search_box/FocusRing");
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->set_delegate(this);
   }
   FocusRingLayer(const FocusRingLayer&) = delete;
   FocusRingLayer& operator=(const FocusRingLayer&) = delete;
-  ~FocusRingLayer() override {}
+  ~FocusRingLayer() override = default;
 
   void SetColor(SkColor color) {
     if (color == color_) {
       return;
     }
     color_ = color;
-    SchedulePaint(gfx::Rect(size()));
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
  private:
   // views::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, bounds().size());
+    ui::PaintRecorder recorder(context, layer()->size());
     gfx::Canvas* canvas = recorder.canvas();
 
     // When using strokes to draw a rect, the bounds set is the center of the
     // rect, which means that setting draw bounds to `bounds()` will leave half
     // of the border outside the layer that may not be painted. Shrink the draw
     // bounds by half of the width to solve this problem.
-    gfx::Rect draw_bounds(bounds().size());
+    gfx::Rect draw_bounds(layer()->size());
     draw_bounds.Inset(kSearchBoxFocusRingWidth / 2);
 
     cc::PaintFlags flags;
@@ -218,7 +227,7 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
   }
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
-    SchedulePaint(gfx::Rect(size()));
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   SkColor color_ = gfx::kPlaceholderColor;
@@ -229,12 +238,22 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              bool is_app_list_bubble)
     : delegate_(delegate),
       view_delegate_(view_delegate),
-      is_app_list_bubble_(is_app_list_bubble) {
+      is_app_list_bubble_(is_app_list_bubble),
+      is_jelly_enabled_(chromeos::features::IsJellyEnabled()) {
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
   SearchBoxModel* const search_box_model =
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
+
+  if (is_jelly_enabled_) {
+    auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosBody1);
+    SetPreferredStyleForSearchboxText(font_list,
+                                      cros_tokens::kCrosSysOnSurface);
+    SetPreferredStyleForAutocompleteText(font_list,
+                                         cros_tokens::kCrosSysOnSurfaceVariant);
+  }
 
   views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
       &SearchBoxView::CloseButtonPressed, base::Unretained(this)));
@@ -400,15 +419,23 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 }
 
 void SearchBoxView::UpdatePlaceholderTextStyle() {
+  SkColor primary_color =
+      is_jelly_enabled_
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary);
+  SkColor secondary_color =
+      is_jelly_enabled_
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorSecondary);
   if (is_app_list_bubble_) {
     // The bubble launcher text is always side-aligned.
     search_box()->set_placeholder_text_draw_flags(
         base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                             : gfx::Canvas::TEXT_ALIGN_LEFT);
     // Bubble launcher uses standard text colors (light-on-dark by default).
-    search_box()->set_placeholder_text_color(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorSecondary));
+    search_box()->set_placeholder_text_color(secondary_color);
     return;
   }
   // Fullscreen launcher centers the text when inactive.
@@ -418,9 +445,8 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
                                  : gfx::Canvas::TEXT_ALIGN_LEFT)
           : gfx::Canvas::TEXT_ALIGN_CENTER);
   // Fullscreen launcher uses custom colors (dark-on-light by default).
-  search_box()->set_placeholder_text_color(GetColorProvider()->GetColor(
-      is_search_box_active() ? kColorAshTextColorSecondary
-                             : kColorAshTextColorPrimary));
+  search_box()->set_placeholder_text_color(
+      is_search_box_active() ? secondary_color : primary_color);
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -445,9 +471,10 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
     if (search_box()->HasFocus() && IsTrimmedQueryEmpty(current_query_)) {
       gfx::Point icon_origin;
       views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
-      PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
-                    /*height=*/GetSearchBoxIconSize(),
-                    GetColorProvider()->GetColor(ui::kColorAshFocusRing));
+      PaintFocusBar(
+          canvas, gfx::Point(0, icon_origin.y()),
+          /*height=*/GetSearchBoxIconSize(),
+          GetColorProvider()->GetColor(GetFocusColorId(is_jelly_enabled_)));
     }
   }
 }
@@ -459,8 +486,7 @@ void SearchBoxView::OnPaintBorder(gfx::Canvas* canvas) {
         gfx::RoundedCornersF(corner_radius_),
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        false);
+            : views::HighlightBorder::Type::kHighlightBorder1);
   }
 }
 
@@ -481,10 +507,12 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             button_icon_color));
+  auto* focus_ring = views::FocusRing::Get(assistant_button());
+  focus_ring->SetColorId(GetFocusColorId(is_jelly_enabled_));
 
   if (focus_ring_layer_) {
     focus_ring_layer_->SetColor(
-        GetColorProvider()->GetColor(ui::kColorAshFocusRing));
+        GetColorProvider()->GetColor(GetFocusColorId(is_jelly_enabled_)));
   }
 
   UpdateSearchIcon();
@@ -497,7 +525,7 @@ void SearchBoxView::OnThemeChanged() {
 
 void SearchBoxView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (focus_ring_layer_)
-    focus_ring_layer_->SetBounds(bounds());
+    focus_ring_layer_->layer()->SetBounds(bounds());
 }
 
 void SearchBoxView::AddedToWidget() {
@@ -506,9 +534,9 @@ void SearchBoxView::AddedToWidget() {
   if (!is_app_list_bubble_) {
     focus_ring_layer_ = std::make_unique<FocusRingLayer>();
     focus_ring_layer_->SetColor(
-        GetColorProvider()->GetColor(ui::kColorAshFocusRing));
-    layer()->parent()->Add(focus_ring_layer_.get());
-    layer()->parent()->StackAtBottom(focus_ring_layer_.get());
+        GetColorProvider()->GetColor(GetFocusColorId(is_jelly_enabled_)));
+    layer()->parent()->Add(focus_ring_layer_->layer());
+    layer()->parent()->StackAtBottom(focus_ring_layer_->layer());
     UpdateSearchBoxFocusPaint();
   }
 }
@@ -553,9 +581,9 @@ void SearchBoxView::UpdateSearchBoxFocusPaint() {
   // Paints the focus ring if the search box is focused.
   if (search_box()->HasFocus() && !is_search_box_active() &&
       view_delegate_->KeyboardTraversalEngaged()) {
-    focus_ring_layer_->SetVisible(true);
+    focus_ring_layer_->layer()->SetVisible(true);
   } else {
-    focus_ring_layer_->SetVisible(false);
+    focus_ring_layer_->layer()->SetVisible(false);
   }
 }
 
@@ -656,14 +684,18 @@ SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
 
   if (is_app_list_bubble_) {
     return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshControlBackgroundColorInactive);
+        is_jelly_enabled_
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+            : kColorAshControlBackgroundColorInactive);
   }
 
   if (search_result_page_visible_)
     return SK_ColorTRANSPARENT;
 
   return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshShieldAndBase80);
+      is_jelly_enabled_
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80);
 }
 
 void SearchBoxView::ProcessAutocomplete(
@@ -855,8 +887,11 @@ bool SearchBoxView::IsValidAutocompleteText(
 }
 
 void SearchBoxView::UpdateTextColor() {
-  search_box()->SetTextColor(
-      GetColorProvider()->GetColor(kColorAshTextColorPrimary));
+  ui::ColorId color_id =
+      is_jelly_enabled_
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary;
+  search_box()->SetTextColor(GetColorProvider()->GetColor(color_id));
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {

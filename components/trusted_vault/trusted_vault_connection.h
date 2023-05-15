@@ -13,7 +13,7 @@
 
 struct CoreAccountInfo;
 
-namespace syncer {
+namespace trusted_vault {
 
 class SecureBoxKeyPair;
 class SecureBoxPublicKey;
@@ -165,6 +165,6 @@ class TrustedVaultConnection {
       IsRecoverabilityDegradedCallback callback) = 0;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_

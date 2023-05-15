@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -22,6 +22,8 @@
 namespace chromeos {
 
 namespace {
+
+namespace crosapi = ::crosapi::mojom;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class RemoteEventServiceStrategyAsh : public RemoteEventServiceStrategy {
@@ -33,15 +35,14 @@ class RemoteEventServiceStrategyAsh : public RemoteEventServiceStrategy {
   ~RemoteEventServiceStrategyAsh() override = default;
 
   // RemoteEventServiceStrategy:
-  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService()
-      override {
+  mojo::Remote<crosapi::TelemetryEventService>& GetRemoteService() override {
     return remote_event_service_;
   }
 
  private:
-  mojo::Remote<crosapi::mojom::TelemetryEventService> remote_event_service_;
+  mojo::Remote<crosapi::TelemetryEventService> remote_event_service_;
 
-  std::unique_ptr<crosapi::mojom::TelemetryEventService> event_service_;
+  std::unique_ptr<crosapi::TelemetryEventService> event_service_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -53,10 +54,8 @@ class RemoteEventServiceStrategyLacros : public RemoteEventServiceStrategy {
   ~RemoteEventServiceStrategyLacros() override = default;
 
   // RemoteEventServiceStrategy:
-  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService()
-      override {
-    return LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TelemetryEventService>();
+  mojo::Remote<crosapi::TelemetryEventService>& GetRemoteService() override {
+    return LacrosService::Get()->GetRemote<crosapi::TelemetryEventService>();
   }
 };
 #endif  // BUILDFLAG (IS_CHROMEOS_LACROS)
@@ -70,8 +69,7 @@ RemoteEventServiceStrategy::Create() {
   return std::make_unique<RemoteEventServiceStrategyAsh>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::TelemetryEventService>()) {
+  if (!LacrosService::Get()->IsAvailable<crosapi::TelemetryEventService>()) {
     return nullptr;
   }
   return std::make_unique<RemoteEventServiceStrategyLacros>();

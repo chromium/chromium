@@ -1,9 +1,15 @@
 Name: Mockito
 URL: https://github.com/mockito/mockito
-Version: v2.18.3
+Version: v5.2.0
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no
 License Android Compatible: yes
 Description: Mockito is a java mocking framework.
-Local Modifications: None
+Local Modifications:
+
+-Adds the file  local/src/subprojects/android/src/main/resources/mockito-extensions/org.mockito.plugins.MockMaker
+for use as an apk asset.
+-Made local changes to org/mockito/internal/junit/ExceptionFactory.java to remove opentest4j exception.
+-Removed java.time.* from local/src/main/java/org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java
+

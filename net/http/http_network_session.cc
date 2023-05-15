@@ -324,8 +324,6 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
       "max_num_migrations_to_non_default_network_on_path_degrading",
       quic_params->max_migrations_to_non_default_network_on_path_degrading);
   dict.Set("allow_server_migration", quic_params->allow_server_migration);
-  dict.Set("race_stale_dns_on_connection",
-           quic_params->race_stale_dns_on_connection);
   dict.Set("estimate_initial_rtt", quic_params->estimate_initial_rtt);
   dict.Set("server_push_cancellation", params_.enable_server_push_cancellation);
   dict.Set("initial_rtt_for_handshake_milliseconds",

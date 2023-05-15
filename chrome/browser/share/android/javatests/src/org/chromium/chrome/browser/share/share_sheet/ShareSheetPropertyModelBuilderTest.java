@@ -92,8 +92,6 @@ public final class ShareSheetPropertyModelBuilderTest {
     private ShareSheetPropertyModelBuilder mPropertyModelBuilder;
 
     class TestContext extends ContextWrapper {
-        private Context mWrapped;
-
         public TestContext(Context base) {
             super(base);
         }

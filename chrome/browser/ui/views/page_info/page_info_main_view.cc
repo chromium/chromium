@@ -37,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -64,23 +65,6 @@ enum class AboutThisSiteSeconaryIcon {
   kSidePanelIcon = 2,
   kNoIcon = 3,
 };
-
-// Return a secondary icon for the AboutThisSite row based on finch parameters.
-absl::optional<ui::ImageModel> GetAboutThisSiteSecondaryIcon() {
-  AboutThisSiteSeconaryIcon icon_id = static_cast<AboutThisSiteSeconaryIcon>(
-      page_info::kAboutThisSiteSecondaryIconId.Get());
-  switch (icon_id) {
-    case AboutThisSiteSeconaryIcon::kNewTabIcon:
-      return PageInfoViewFactory::GetLaunchIcon();
-    case AboutThisSiteSeconaryIcon::kArrowIcon:
-      return PageInfoViewFactory::GetOpenSubpageIcon();
-    case AboutThisSiteSeconaryIcon::kSidePanelIcon:
-      return PageInfoViewFactory::GetSidePanelIcon();
-    case AboutThisSiteSeconaryIcon::kNoIcon:
-      return absl::nullopt;
-  }
-  return PageInfoViewFactory::GetLaunchIcon();
-}
 
 }  // namespace
 
@@ -265,8 +249,9 @@ void PageInfoMainView::SetPermissionInfo(
     UpdateResetButton(permission_info_list);
     return;
   }
-
-  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  const int separator_padding = features::IsChromeRefresh2023() ? 20 : 0;
+  permissions_view_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(separator_padding));
 
   auto* scroll_view =
       permissions_view_->AddChildView(std::make_unique<views::ScrollView>());
@@ -351,7 +336,8 @@ void PageInfoMainView::SetPermissionInfo(
   // show reset button.
   reset_button_->SetVisible(false);
   UpdateResetButton(permission_info_list);
-  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  permissions_view_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(separator_padding));
 
   PreferredSizeChanged();
 }
@@ -387,7 +373,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
 
-  title_->SetText(presenter_->GetSiteNameOrAppNameToDisplay());
+  title_->SetText(presenter_->GetSubjectNameForDisplay());
 
   security_container_view_->RemoveAllChildViews();
   if (security_description->summary_style == SecuritySummaryColor::GREEN) {
@@ -519,6 +505,7 @@ void PageInfoMainView::SetAdPersonalizationInfo(
 void PageInfoMainView::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission) {
   presenter_->OnSitePermissionChanged(permission.type, permission.setting,
+                                      permission.requesting_origin,
                                       permission.is_one_time);
   // The menu buttons for the permissions might have longer strings now, so we
   // need to layout and size the whole bubble.
@@ -527,8 +514,8 @@ void PageInfoMainView::OnPermissionChanged(
 
 void PageInfoMainView::OnChosenObjectDeleted(
     const PageInfoUI::ChosenObjectInfo& info) {
-  presenter_->OnSiteChosenObjectDeleted(*info.ui_info,
-                                        info.chooser_object->value);
+  presenter_->OnSiteChosenObjectDeleted(
+      *info.ui_info, base::Value(info.chooser_object->value.Clone()));
   PreferredSizeChanged();
 }
 
@@ -578,7 +565,8 @@ void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::VH(0, kIconColumnWidth));
+      ->SetInteriorMargin(
+          gfx::Insets::VH(0, features::IsChromeRefresh2023() ? 20 : 16));
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_PRIMARY,
@@ -616,16 +604,13 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  RichHoverButton* about_this_site_button = nullptr;
-
-  if (page_info::IsMoreAboutThisSiteFeatureEnabled()) {
     const auto& description =
         info.has_description()
             ? base::UTF8ToUTF16(info.description().description())
             : l10n_util::GetStringUTF16(
                   IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-    about_this_site_button =
+    RichHoverButton* about_this_site_button =
         about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view, GURL more_info_url,
@@ -644,35 +629,12 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
             std::u16string(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
-            description, GetAboutThisSiteSecondaryIcon()));
+            description, PageInfoViewFactory::GetLaunchIcon()));
     about_this_site_button->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
-  } else {
-    // The kPageInfoAboutThisSiteDescriptionPlaceholder feature must only be
-    // enabled together with kPageInfoAboutThisSiteMoreInfo
-    DCHECK(info.has_description());
-    about_this_site_button =
-        about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view,
-                   const page_info::proto::SiteInfo& info) {
-                  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
-                      info.has_description());
-                  view->navigation_handler_->OpenAboutThisSitePage(info);
-                },
-                this, info),
-            PageInfoViewFactory::GetAboutThisSiteIcon(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER),
-            std::u16string(),
+    about_this_site_button->SetSubtitleMultiline(false);
 
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
-            base::UTF8ToUTF16(info.description().description()),
-            PageInfoViewFactory::GetOpenSubpageIcon()));
-    about_this_site_button->SetID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
-  }
-  about_this_site_button->SetSubtitleMultiline(false);
-  return about_this_site_section;
+    return about_this_site_section;
 }
 
 std::unique_ptr<views::View>

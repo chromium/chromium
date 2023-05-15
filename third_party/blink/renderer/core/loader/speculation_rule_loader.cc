@@ -79,8 +79,8 @@ void SpeculationRuleLoader::NotifyFinished() {
   }
 
   const auto& source_text = resource_->DecodedText();
-  auto* source =
-      MakeGarbageCollected<SpeculationRuleSet::Source>(source_text, base_url_);
+  auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+      source_text, base_url_, resource_->InspectorId());
   auto* rule_set =
       SpeculationRuleSet::Parse(source, document_->GetExecutionContext());
   CHECK(rule_set);

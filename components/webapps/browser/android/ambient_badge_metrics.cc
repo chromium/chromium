@@ -15,8 +15,6 @@ constexpr char kAmbientBadgeDisplayEventHistogram[] =
 constexpr char kAmbientBadgeDismissEventHistogram[] =
     "Webapp.AmbientBadge.Dismiss";
 constexpr char kAmbientBadgeClickEventHistogram[] = "Webapp.AmbientBadge.Click";
-constexpr char kAmbientBadgeMessageDismissReasonHistogram[] =
-    "Webapp.AmbientBadge.Messages.DismissReason";
 constexpr char kAmbientBadgeTerminateHistogram[] =
     "Webapp.AmbientBadge.Terminate";
 
@@ -35,12 +33,6 @@ void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type) {
 void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type) {
   base::UmaHistogramEnumeration(kAmbientBadgeClickEventHistogram, type,
                                 AddToHomescreenParams::AppType::COUNT);
-}
-
-void RecordAmbientBadgeMessageDismissReason(
-    messages::DismissReason dismiss_reason) {
-  base::UmaHistogramEnumeration(kAmbientBadgeMessageDismissReasonHistogram,
-                                dismiss_reason, messages::DismissReason::COUNT);
 }
 
 void RecordAmbientBadgeTeminateState(AmbientBadgeManager::State state) {

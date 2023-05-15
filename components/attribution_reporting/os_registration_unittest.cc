@@ -4,8 +4,9 @@
 
 #include "components/attribution_reporting/os_registration.h"
 
+#include <vector>
+
 #include "base/strings/string_piece.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -16,32 +17,55 @@ TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
   const struct {
     const char* description;
     base::StringPiece header;
-    GURL expected;
+    std::vector<GURL> expected;
   } kTestCases[] = {
       {
           "empty",
           "",
-          GURL(),
+          {},
       },
       {
           "invalid_url",
           R"("foo")",
-          GURL(),
+          {},
       },
       {
-          "not_string",
+          "integer",
           "123",
-          GURL(),
+          {},
+      },
+      {
+          "token",
+          "d",
+          {},
+      },
+      {
+          "byte_sequence",
+          ":YWJj:",
+          {},
       },
       {
           "valid_url_no_params",
           R"("https://d.test")",
-          GURL("https://d.test"),
+          {GURL("https://d.test")},
       },
       {
           "extra_params_ignored",
           R"("https://d.test"; y=1)",
-          GURL("https://d.test"),
+          {GURL("https://d.test")},
+      },
+      {
+          "inner_list",
+          R"(("https://d.test"))",
+          {},
+      },
+      {
+          "multiple",
+          R"(123, "https://d.test", "", "https://e.test")",
+          {
+              GURL("https://d.test"),
+              GURL("https://e.test"),
+          },
       },
   };
 
@@ -49,20 +73,6 @@ TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
     EXPECT_EQ(ParseOsSourceOrTriggerHeader(test_case.header),
               test_case.expected)
         << test_case.description;
-  }
-}
-
-TEST(OsSupport, GetSupportHeader) {
-  const struct {
-    mojom::OsSupport os_support;
-    const char* expected;
-  } kTestCases[] = {
-      {mojom::OsSupport::kDisabled, "web"},
-      {mojom::OsSupport::kEnabled, "web, os"},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(GetSupportHeader(test_case.os_support), test_case.expected);
   }
 }
 

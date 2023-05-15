@@ -130,11 +130,13 @@ public class SectionHeaderView extends LinearLayout {
 
     private boolean mTextsEnabled;
     private @Px int mToolbarHeight;
+    private @Px int mTouchSize;
     // Action ID for accessibility.
     private int mActionId = -1;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mTouchSize = getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
     }
 
     public void setToolbarHeight(@Px int toolbarHeight) {
@@ -191,16 +193,13 @@ public class SectionHeaderView extends LinearLayout {
             mTabLayout.addOnTabSelectedListener(mTabListener);
         }
 
-        int touchSize =
-                getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
-
         // #getHitRect() will not be valid until the first layout pass completes. Additionally, if
         // the header's enabled state changes, |mMenuView| will move slightly sideways, and the
         // touch target needs to be adjusted. This is a bit chatty during animations, but it should
         // also be fairly cheap.
         mMenuView.addOnLayoutChangeListener(
                 (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-                        int oldRight, int oldBottom) -> adjustMenuTouchDelegate(touchSize));
+                        int oldRight, int oldBottom) -> adjustTouchDelegate(mMenuView));
 
         // Ensures that the whole header doesn't get focused for a11y.
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -483,19 +482,19 @@ public class SectionHeaderView extends LinearLayout {
                                       .build());
     }
 
-    private void adjustMenuTouchDelegate(int touchSize) {
+    private void adjustTouchDelegate(View view) {
         Rect rect = new Rect();
-        mMenuView.getHitRect(rect);
+        view.getHitRect(rect);
 
-        int halfWidthDelta = Math.max((touchSize - mMenuView.getWidth()) / 2, 0);
-        int halfHeightDelta = Math.max((touchSize - mMenuView.getHeight()) / 2, 0);
+        int halfWidthDelta = Math.max((mTouchSize - view.getWidth()) / 2, 0);
+        int halfHeightDelta = Math.max((mTouchSize - view.getHeight()) / 2, 0);
 
         rect.left -= halfWidthDelta;
         rect.right += halfWidthDelta;
         rect.top -= halfHeightDelta;
         rect.bottom += halfHeightDelta;
 
-        setTouchDelegate(new TouchDelegate(rect, mMenuView));
+        setTouchDelegate(new TouchDelegate(rect, view));
     }
 
     private void displayMenu(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
@@ -544,6 +543,7 @@ public class SectionHeaderView extends LinearLayout {
         tab.setText(state.text);
         tab.view.setClickable(mTextsEnabled);
         tab.view.setEnabled(mTextsEnabled);
+        adjustTouchDelegate(tab.view);
 
         String contentDescription = state.text;
         if (state.hasUnreadContent && mTextsEnabled) {

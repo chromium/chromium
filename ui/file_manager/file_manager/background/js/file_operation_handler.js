@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {startIOTask} from '../../common/js/api.js';
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -72,6 +72,7 @@ export class FileOperationHandler {
     item.message = getMessageFromProgressEvent_(event);
     item.sourceMessage = event.sourceName;
     item.destinationMessage = event.destinationName;
+    item.policyError = getPolicyErrorFromIOTaskPolicyError_(event.policyError);
 
     switch (event.state) {
       case chrome.fileManagerPrivate.IOTaskState.QUEUED:
@@ -87,14 +88,38 @@ export class FileOperationHandler {
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
         break;
-      case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
       case chrome.fileManagerPrivate.IOTaskState.PAUSED:
+        // Check for policy errors - the task might be paused because of warning
+        // level restrictions.
+        if (item.policyError) {
+          item.state = ProgressItemState.PAUSED;
+          // TODO(b/279435843): Replace with translation strings.
+          const extraButtonText =
+              (event.itemCount === 1) ? `${event.type} anyway` : 'Review';
+          item.setExtraButton(ProgressItemState.PAUSED, extraButtonText, () => {
+            if (event.itemCount === 1) {
+              // Single item: the user can continue the action directly from
+              // the notification.
+              chrome.fileManagerPrivate.resumeIOTask(
+                  event.taskId,
+                  chrome.fileManagerPrivate.ResumeParams('', false));
+            } else {
+              // Multiple items: the user can continue the action from the
+              // review dialog.
+              chrome.fileManagerPrivate.showPolicyDialog(
+                  event.taskId,
+                  chrome.fileManagerPrivate.PolicyDialogType.WARNING);
+            }
+          });
+          break;
+        }
+        // Otherwise same is in-progress - fall through
+      case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
         item.state = ProgressItemState.PROGRESSING;
         break;
-
       case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
       case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
       case chrome.fileManagerPrivate.IOTaskState.ERROR:
@@ -121,8 +146,20 @@ export class FileOperationHandler {
         } else if (
             event.state === chrome.fileManagerPrivate.IOTaskState.CANCELLED) {
           item.state = ProgressItemState.CANCELED;
-        } else {
+        } else {  // ERROR
           item.state = ProgressItemState.ERROR;
+          // Check if there was a policy error.
+          // If more than one file was blocked, add the "Review" button.
+          if (item.policyError &&
+              item.policyError !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
+              event.itemCount > 1) {
+            // TODO(b/279435843): Replace with translation strings.
+            item.setExtraButton(ProgressItemState.ERROR, 'Review', () => {
+              chrome.fileManagerPrivate.showPolicyDialog(
+                  event.taskId,
+                  chrome.fileManagerPrivate.PolicyDialogType.ERROR);
+            });
+          }
         }
         break;
       case chrome.fileManagerPrivate.IOTaskState.NEED_PASSWORD:
@@ -259,4 +296,29 @@ function getMessageFromProgressEvent_(event) {
   }
 
   return '';
+}
+
+/**
+ * Converts fileManagerPrivate.PolicyErrorType to
+ * ProgressCenterItem.PolicyErrorType.
+ * @param {!chrome.fileManagerPrivate.PolicyErrorType|undefined} error
+ * @return {?PolicyErrorType} corresponding to the error type, or null if not
+ *     defined.
+ * @private
+ */
+function getPolicyErrorFromIOTaskPolicyError_(error) {
+  if (!error) {
+    return null;
+  }
+  switch (error) {
+    case chrome.fileManagerPrivate.PolicyErrorType.DLP:
+      return PolicyErrorType.DLP;
+    case chrome.fileManagerPrivate.PolicyErrorType.ENTERPRISE_CONNECTORS:
+      return PolicyErrorType.ENTERPRISE_CONNECTORS;
+    case chrome.fileManagerPrivate.PolicyErrorType.DLP_WARNING_TIMEOUT:
+      return PolicyErrorType.DLP_WARNING_TIMEOUT;
+    default:
+      console.warn(`Unexpected policy error type: ${error}`);
+      return null;
+  }
 }

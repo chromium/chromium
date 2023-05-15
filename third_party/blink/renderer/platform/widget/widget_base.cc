@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -408,7 +407,6 @@ void WidgetBase::UpdateVisualProperties(
   //   See also:
   //   https://docs.google.com/document/d/1G_fR1D_0c1yke8CqDMddoKrDGr3gy5t_ImEH4hKNIII/edit#
 
-  base::ElapsedTimer update_timer;
   VisualProperties visual_properties = visual_properties_from_browser;
   auto& screen_info = visual_properties.screen_infos.mutable_current();
 
@@ -437,8 +435,6 @@ void WidgetBase::UpdateVisualProperties(
                              screen_info.device_scale_factor));
 
   client_->UpdateVisualProperties(visual_properties);
-
-  LayerTreeHost()->IncrementVisualUpdateDuration(update_timer.Elapsed());
 }
 
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
@@ -637,7 +633,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
       viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>(
       compositor_frame_sink_client.InitWithNewPipeAndPassReceiver());
 
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
+  static const bool gpu_channel_always_allowed =
+      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
+  if (Platform::Current()->IsGpuCompositingDisabled() &&
+      !gpu_channel_always_allowed) {
     DCHECK(!for_web_tests);
     widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
                                   std::move(compositor_frame_sink_client));
@@ -688,16 +687,32 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
         params,
     LayerTreeFrameSinkCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
-    // GPU compositing was disabled after the check in
-    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
+  if (!gpu_channel_host) {
+    // Wait and try again. We may hear that the compositing mode has switched
+    // to software in the meantime.
     std::move(callback).Run(nullptr, nullptr);
     return;
   }
 
-  if (!gpu_channel_host) {
-    // Wait and try again. We may hear that the compositing mode has switched
-    // to software in the meantime.
+  static const bool gpu_channel_always_allowed =
+      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
+  if (Platform::Current()->IsGpuCompositingDisabled() &&
+      gpu_channel_always_allowed) {
+    widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
+                                  std::move(compositor_frame_sink_client));
+    widget_host_->RegisterRenderFrameMetadataObserver(
+        std::move(render_frame_metadata_observer_client_receiver),
+        std::move(render_frame_metadata_observer_remote));
+    std::move(callback).Run(
+        std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+            nullptr, nullptr, params.get()),
+        std::move(render_frame_metadata_observer));
+    return;
+  }
+
+  if (Platform::Current()->IsGpuCompositingDisabled()) {
+    // GPU compositing was disabled after the check in
+    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
     std::move(callback).Run(nullptr, nullptr);
     return;
   }
@@ -880,7 +895,6 @@ void WidgetBase::SetCompositorVisible(bool visible) {
 }
 
 void WidgetBase::UpdateVisualState() {
-  base::ElapsedTimer update_timer;
   // When recording main frame metrics set the lifecycle reason to
   // kBeginMainFrame, because this is the calller of UpdateLifecycle
   // for the main frame. Otherwise, set the reason to kTests, which is
@@ -891,7 +905,6 @@ void WidgetBase::UpdateVisualState() {
           : DocumentUpdateReason::kTest;
   client_->UpdateLifecycle(WebLifecycleUpdate::kAll, lifecycle_reason);
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(false);
-  LayerTreeHost()->IncrementVisualUpdateDuration(update_timer.Elapsed());
 }
 
 void WidgetBase::BeginMainFrame(base::TimeTicks frame_time) {

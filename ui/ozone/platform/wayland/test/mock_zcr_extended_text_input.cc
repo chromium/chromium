@@ -60,6 +60,20 @@ void SetFocusReason(wl_client* client, wl_resource* resource, uint32_t reason) {
   GetUserDataAs<MockZcrExtendedTextInput>(resource)->SetFocusReason(reason);
 }
 
+void SetSurroundingTextSupport(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t support) {
+  GetUserDataAs<MockZcrExtendedTextInput>(resource)->SetSurroundingTextSupport(
+      support);
+}
+
+void SetSurroundingTextOffsetUtf16(wl_client* client,
+                                   wl_resource* resource,
+                                   uint32_t offset) {
+  GetUserDataAs<MockZcrExtendedTextInput>(resource)
+      ->SetSurroundingTextOffsetUtf16(offset);
+}
+
 }  // namespace
 
 const struct zcr_extended_text_input_v1_interface
@@ -71,6 +85,8 @@ const struct zcr_extended_text_input_v1_interface
         &FinalizeVirtualKeyboardChanges,  // finalize_virtual_keyboard_changes
         &SetFocusReason,                  // set_focus_reason
         &SetInputType,                    // set_input_type
+        &SetSurroundingTextSupport,       // set_surrounding_text_support
+        &SetSurroundingTextOffsetUtf16,   // set_surrounding_text_offset_utf16
 };
 
 MockZcrExtendedTextInput::MockZcrExtendedTextInput(wl_resource* resource)

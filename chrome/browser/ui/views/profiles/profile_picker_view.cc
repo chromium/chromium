@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -102,13 +104,6 @@ class ProfilePickerWidget : public views::Widget {
   ~ProfilePickerWidget() override = default;
 
  private:
-  // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
-  void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override {
-    if (profile_picker_view_)
-      profile_picker_view_->OnNativeWidgetSizeChanged(new_size);
-    views::Widget::OnNativeWidgetSizeChanged(new_size);
-  }
-
   const raw_ptr<ProfilePickerView, DanglingUntriaged> profile_picker_view_;
 };
 
@@ -341,11 +336,11 @@ void ProfilePickerForceSigninDialog::DisplayErrorMessage() {
 // ProfilePickerView::NavigationFinishedObserver ------------------------------
 
 ProfilePickerView::NavigationFinishedObserver::NavigationFinishedObserver(
-    const GURL& url,
+    const GURL& requested_url,
     base::OnceClosure closure,
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      url_(url),
+      requested_url_(requested_url),
       closure_(std::move(closure)) {}
 
 ProfilePickerView::NavigationFinishedObserver::~NavigationFinishedObserver() =
@@ -356,6 +351,28 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
   if (!closure_ || !navigation_handle->HasCommitted()) {
     return;
   }
+
+  if (navigation_handle->GetRedirectChain()[0] != requested_url_) {
+    // Don't notify if the URL for the finishing navigation does not match.
+    // The navigation may have been replaced by a new one. We are mindful to
+    // allow redirections, which are necessary for example for Gaia sign-in
+    // pages (see crbug.com/1430681).
+    return;
+  }
+
+  if (navigation_handle->IsErrorPage() &&
+      requested_url_.SchemeIs(content::kChromeUIScheme)) {
+    // We observed some cases where the navigation to the intended page fails
+    // (see crbug.com/1442159).
+    // Loading the wrong URL may lead to crashes if we are expecting a certain
+    // WebUI page to be loaded in the web contents. For these cases we will not
+    // notify of the finished navigation to avoid crashing, but this negatively
+    // affects the user experience anyway.
+    // TODO(crbug.com/1444046): Improve the user experience for this error.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   std::move(closure_).Run();
 }
 
@@ -808,7 +825,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     case IDC_CLOSE_TAB:
     case IDC_CLOSE_WINDOW:
       // kEscKeyPressed is used although that shortcut is disabled (this is
-      // Ctrl-Shift-W instead).
+      // Ctrl/Cmd-W instead).
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
       break;
     case IDC_EXIT:
@@ -930,12 +947,8 @@ ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
 }
 
 ClearHostClosure ProfilePickerView::GetClearClosure() {
-  return ClearHostClosure(base::BindOnce(
-      &ProfilePickerView::Clear,
-      // The method contract indicates that it is the responsibility of the
-      // callers to make sure `this` is valid. As the callers are all owned by
-      // `this`, it should be a reasonable assumption.
-      base::Unretained(this)));
+  return ClearHostClosure(base::BindOnce(&ProfilePickerView::Clear,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

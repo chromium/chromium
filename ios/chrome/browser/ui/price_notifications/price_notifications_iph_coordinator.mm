@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
 
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 

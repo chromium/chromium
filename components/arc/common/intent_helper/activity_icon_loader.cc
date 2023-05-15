@@ -132,11 +132,11 @@ GetInstanceForRequestActivityIcons() {
     return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
   }
 
-  if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
+  if (service->GetInterfaceVersion<crosapi::mojom::Arc>() <
       int{crosapi::mojom::Arc::MethodMinVersions::
               kRequestActivityIconsMinVersion}) {
     VLOG(2) << "Ash Lacros-Arc version "
-            << service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_)
+            << service->GetInterfaceVersion<crosapi::mojom::Arc>()
             << " does not support RequestActivityIcons().";
     return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
   }

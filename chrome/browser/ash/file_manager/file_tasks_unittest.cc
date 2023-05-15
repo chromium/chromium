@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -250,7 +251,7 @@ class FileManagerFileTaskWithAppServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 
@@ -299,13 +300,6 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
     ASSERT_FALSE(resulting_tasks()->policy_default_handler_status);
     ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               0);
-  }
-
-  static void RestoreOriginalState(ResultingTasks* resulting_tasks) {
-    resulting_tasks->policy_default_handler_status = {};
-    for (auto& task : resulting_tasks->tasks) {
-      task.is_default = false;
-    }
   }
 
  protected:
@@ -363,16 +357,16 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, CheckNoPolicyAssignment) {
   CheckNoPolicyAssignment();
 }
 
-// Check that setting policy to a non-existent app yields an error.
+// Check that a policy set to a non-existent app is ignored.
 TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
        CheckAssignmentToNonExistentApp) {
   entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
                          "text/plain", false);
 
   UpdateDefaultHandlersPrefs({{".txt", kNonExistentAppId}});
-  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
-                                                     resulting_tasks()));
-  CheckConflictingPolicyAssignment();
+  ASSERT_FALSE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                      resulting_tasks()));
+  CheckNoPolicyAssignment();
 }
 
 // Check that assigning different apps to handle different file extensions
@@ -388,6 +382,21 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
   ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
                                                      resulting_tasks()));
   CheckConflictingPolicyAssignment();
+}
+
+// Check that legacy arc app format is parsed correctly.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, LegacyArcAppFormat) {
+  resulting_tasks()->tasks.emplace_back(
+      TaskDescriptor{"com.legacy.package/intentName", TASK_TYPE_ARC_APP,
+                     "view"},
+      /*task_title=*/"Task", GURL(), false, false, false);
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+
+  UpdateDefaultHandlersPrefs({{".txt", "com.legacy.package"}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckCorrectPolicyAssignment("com.legacy.package/intentName");
 }
 
 class FileManagerFileTaskPolicyDefaultHandlersTestPerAppType
@@ -856,7 +865,8 @@ class FileManagerFileTasksComplexTest : public testing::Test {
   ash::ScopedTestUserManager test_user_manager_;
   std::unique_ptr<TestingProfile> test_profile_;
   base::CommandLine command_line_;
-  extensions::ExtensionService* extension_service_;  // Owned by test_profile_;
+  raw_ptr<extensions::ExtensionService, ExperimentalAsh>
+      extension_service_;  // Owned by test_profile_;
 };
 
 }  // namespace file_manager::file_tasks

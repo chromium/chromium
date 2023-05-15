@@ -601,26 +601,28 @@ void WidgetInputHandlerManager::DispatchEvent(
     event->EventPointer()->SetTimeStamp(base::TimeTicks::Now());
   }
 
+  // TODO(b/224960731): Fix tests and add
+  // `DCHECK(!arrived_in_browser_main_timestamp.is_null())`.
+  //  We expect that `arrived_in_browser_main_timestamp` is always
+  //  found, but there are a lot of tests where this component is not set.
+  //  Currently EventMetrics knows how to handle null timestamp, so we
+  //  don't process it here.
+  const base::TimeTicks arrived_in_browser_main_timestamp =
+      event->Event()
+          .GetEventLatencyMetadata()
+          .arrived_in_browser_main_timestamp;
   std::unique_ptr<cc::EventMetrics> metrics;
   if (event->Event().IsGestureScroll()) {
     const auto& gesture_event =
         static_cast<const WebGestureEvent&>(event->Event());
     const bool is_inertial = gesture_event.InertialPhase() ==
                              WebGestureEvent::InertialPhaseState::kMomentum;
-
-    // TODO(b/224960731): It is not recommended to use LatencyInfo. So we need
-    // to create a separate field with "arrived_in_browser_main" timestamp in
-    // WebInputEvent and use it here.
-    base::TimeTicks arrived_in_browser_main_timestamp;
-    event->latency_info().FindLatency(
-        ui::LatencyComponentType::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-        &(arrived_in_browser_main_timestamp));
-    // TODO(b/224960731): Fix tests and add
-    // `DCHECK(!arrived_in_browser_main_timestamp.is_null())`.
-    //  We expect that `INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT` is always
-    //  found, but there are a lot of tests where this component is not set.
-    //  Currently EventMetrics knows how to handle null timestamp, so we
-    //  don't process it here.
+    //'scrolls_blocking_touch_dispatched_to_renderer' can be null. It is set
+    // by the Browser only if the corresponding TouchMove was blocking.
+    base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp =
+        event->Event()
+            .GetEventLatencyMetadata()
+            .scrolls_blocking_touch_dispatched_to_renderer;
 
     if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
       metrics = cc::ScrollUpdateEventMetrics::Create(
@@ -632,13 +634,15 @@ void WidgetInputHandlerManager::DispatchEvent(
           gesture_event.data.scroll_update.delta_y, event->Event().TimeStamp(),
           arrived_in_browser_main_timestamp,
           base::IdType64<class ui::LatencyInfo>(
-              event->latency_info().trace_id()));
+              event->latency_info().trace_id()),
+          blocking_touch_dispatched_to_renderer_timestamp);
       has_seen_first_gesture_scroll_update_after_begin_ = true;
     } else {
       metrics = cc::ScrollEventMetrics::Create(
           gesture_event.GetTypeAsUiEventType(),
           gesture_event.GetScrollInputType(), is_inertial,
-          event->Event().TimeStamp(), arrived_in_browser_main_timestamp);
+          event->Event().TimeStamp(), arrived_in_browser_main_timestamp,
+          blocking_touch_dispatched_to_renderer_timestamp);
       has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
   } else if (WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {
@@ -649,7 +653,8 @@ void WidgetInputHandlerManager::DispatchEvent(
         gesture_event.GetScrollInputType(), event->Event().TimeStamp());
   } else {
     metrics = cc::EventMetrics::Create(event->Event().GetTypeAsUiEventType(),
-                                       event->Event().TimeStamp());
+                                       event->Event().TimeStamp(),
+                                       arrived_in_browser_main_timestamp);
   }
 
   if (uses_input_handler_) {

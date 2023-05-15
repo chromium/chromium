@@ -133,6 +133,7 @@
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service.h"
@@ -286,6 +287,11 @@
 #include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/headless/headless_mode_metrics.h"  // nogncheck
+#include "chrome/browser/headless/headless_mode_util.h"     // nogncheck
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #include "chrome/browser/chrome_process_singleton.h"
@@ -537,7 +543,7 @@ class ChromeBrowserMainParts::ProfileInitManager
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
   // Raw pointer. This is safe because `ChromeBrowserMainParts` owns `this`.
-  const base::raw_ptr<ChromeBrowserMainParts> browser_main_;
+  const raw_ptr<ChromeBrowserMainParts> browser_main_;
 };
 
 ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(
@@ -545,21 +551,20 @@ ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(
     Profile* initial_profile)
     : browser_main_(browser_main) {
   // `initial_profile` is null when the profile picker is shown.
-  if (initial_profile)
+  if (initial_profile) {
     browser_main_->CallPostProfileInit(initial_profile);
+  }
 
-  if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
-    // Run `CallPostProfileInit()` on the other existing and future profiles.
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    // Register the observer first, in case `OnProfileAdded()` causes a
-    // creation.
-    profile_manager_observer_.Observe(profile_manager);
-    for (auto* profile : profile_manager->GetLoadedProfiles()) {
-      DCHECK(profile);
-      if (profile == initial_profile)
-        continue;
-      OnProfileAdded(profile);
+  // Run `CallPostProfileInit()` on the other existing and future profiles.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Register the observer first, in case `OnProfileAdded()` causes a creation.
+  profile_manager_observer_.Observe(profile_manager);
+  for (auto* profile : profile_manager->GetLoadedProfiles()) {
+    DCHECK(profile);
+    if (profile == initial_profile) {
+      continue;
     }
+    OnProfileAdded(profile);
   }
 }
 
@@ -608,6 +613,7 @@ ChromeBrowserMainParts::~ChromeBrowserMainParts() {
 
 void ChromeBrowserMainParts::SetupMetrics() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::SetupMetrics");
+  CHECK(metrics::SubprocessMetricsProvider::CreateInstance());
   metrics::MetricsService* metrics = browser_process_->metrics_service();
   metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
@@ -1281,6 +1287,12 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
   language::LanguageUsageMetrics::RecordPageLanguages(
       *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (headless::IsHeadlessMode()) {
+    headless::ReportHeadlessActionMetrics();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1728,10 +1740,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   variations::VariationsService* variations_service =
       browser_process_->variations_service();
-  // Only call PerformPreMainMessageLoopStartup() on VariationsService outside
-  // of integration (browser) tests.
-  if (!is_integration_test())
-    variations_service->PerformPreMainMessageLoopStartup();
+  variations_service->PerformPreMainMessageLoopStartup();
 
 #if BUILDFLAG(IS_ANDROID)
   // The profile picker is never shown on Android.

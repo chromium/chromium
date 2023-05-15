@@ -58,9 +58,8 @@ void TestNameParsing(const std::u16string& full_with_prefix,
                      const std::u16string& last_second) {
   SCOPED_TRACE(full_with_prefix);
   NameFullWithPrefix name;
-  name.SetValueForTypeIfPossible(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                 full_with_prefix,
-                                 VerificationStatus::kObserved);
+  name.SetValueForType(NAME_FULL_WITH_HONORIFIC_PREFIX, full_with_prefix,
+                       VerificationStatus::kObserved);
   name.CompleteFullTree();
 
   EXPECT_EQ(name.GetValueForType(NAME_FULL_WITH_HONORIFIC_PREFIX),
@@ -91,8 +90,8 @@ void TestLastNameParsing(const std::u16string& last_name,
   SCOPED_TRACE(last_name);
 
   NameLast last_name_component(nullptr);
-  last_name_component.SetValueForTypeIfPossible(NAME_LAST, last_name,
-                                                VerificationStatus::kObserved);
+  last_name_component.SetValueForType(NAME_LAST, last_name,
+                                      VerificationStatus::kObserved);
 
   last_name_component.CompleteFullTree();
 
@@ -118,7 +117,7 @@ TEST(AutofillStructuredName, ParseLastName) {
       {"Picasso", "", "", "Picasso"},
       // Ruiz is a common Spanish name and parsing into first and second last
       // name should be applied. "de la" are known surname prefixes and should
-      // be included into the subsequeny token.
+      // be included into the subsequent token.
       {"Ruiz de la Torro", "Ruiz", "", "de la Torro"},
       {"Ruiz Picasso", "Ruiz", "", "Picasso"},
       // "y" and "i" are known conjunctions.
@@ -210,7 +209,7 @@ TEST(AutofillStructuredName, ParseFullName) {
       // the same ordering as regular Japanese names ("last・first").
       // Foreign name in Japanese, Katakana
       {"ゲイツ・ビル", "", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
-      // 'KATAKANA MIDDLE DOT' is occasionally typoed as 'MIDDLE DOT' (U+00B7).
+      // 'KATAKANA MIDDLE DOT' is occasionally typo-ed as 'MIDDLE DOT' (U+00B7).
       {"ゲイツ·ビル", "", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
       // CJK names don't usually have a space in the middle, but most of the
       // time, the surname is only one character (in Chinese & Korean).
@@ -287,7 +286,7 @@ TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
 }
 
 // Test the detection of Hispanic/Latinx name characteristics.
-TEST(AutofillStructuredName, HasHispanicLatinxNameCharaceristics) {
+TEST(AutofillStructuredName, HasHispanicLatinxNameCharacteristics) {
   EXPECT_TRUE(HasHispanicLatinxNameCharaceristics("Pablo Ruiz Picasso"));
   EXPECT_FALSE(HasHispanicLatinxNameCharaceristics("Werner Heisenberg"));
   EXPECT_TRUE(HasHispanicLatinxNameCharaceristics("SomeName y SomeOtherName"));
@@ -318,32 +317,31 @@ TEST(AutofillStructuredName, ReduceToInitials) {
 TEST(AutofillStructuredName, GetNameMiddleInitial) {
   NameFull full_name;
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Michael",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"Michael",
+                            VerificationStatus::kObserved);
 
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"M");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Michael Myers",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"Michael Myers",
+                            VerificationStatus::kObserved);
 
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"MM");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"george walker",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"george walker",
+                            VerificationStatus::kObserved);
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"GW");
 
   // The the set value already has the characteristics of initials, the value
   // should be returned as it is.
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"GW",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"GW", VerificationStatus::kObserved);
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"GW");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"G. W.",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"G. W.",
+                            VerificationStatus::kObserved);
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"G. W.");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"G.-W.",
-                                      VerificationStatus::kObserved);
+  full_name.SetValueForType(NAME_MIDDLE, u"G.-W.",
+                            VerificationStatus::kObserved);
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"G.-W.");
 }
 
@@ -373,21 +371,21 @@ TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
             std::u16string());
 
-  EXPECT_TRUE(full_name_with_prefix.SetValueForTypeIfPossible(
+  EXPECT_TRUE(full_name_with_prefix.SetValueForType(
       NAME_MIDDLE_INITIAL, u"M", VerificationStatus::kObserved));
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE_INITIAL), u"M");
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE), u"M");
 }
 
-TEST(AutofillStructuredName, MergePermutatedNames) {
+TEST(AutofillStructuredName, MergePermutedNames) {
   NameFull one;
   NameFull two;
 
   // The first component has an observed substructure of the full name.
-  EXPECT_TRUE(one.SetValueForTypeIfPossible(NAME_FIRST, u"First",
-                                            VerificationStatus::kObserved));
-  EXPECT_TRUE(one.SetValueForTypeIfPossible(NAME_LAST, u"Last",
-                                            VerificationStatus::kObserved));
+  EXPECT_TRUE(
+      one.SetValueForType(NAME_FIRST, u"First", VerificationStatus::kObserved));
+  EXPECT_TRUE(
+      one.SetValueForType(NAME_LAST, u"Last", VerificationStatus::kObserved));
   one.CompleteFullTree();
 
   // The formatted full name has the canonical representation "FIRST LAST".
@@ -397,8 +395,8 @@ TEST(AutofillStructuredName, MergePermutatedNames) {
 
   // In contrast, the second component has a verified name in an alternative
   // representation "LAST, FIRST"
-  EXPECT_TRUE(two.SetValueForTypeIfPossible(NAME_FULL, u"Last, First",
-                                            VerificationStatus::kUserVerified));
+  EXPECT_TRUE(two.SetValueForType(NAME_FULL, u"Last, First",
+                                  VerificationStatus::kUserVerified));
   EXPECT_EQ(two.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
   EXPECT_TRUE(two.CompleteFullTree());
@@ -588,7 +586,7 @@ TEST(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
        .value = "Ruiz y Picasso",
        .status = VerificationStatus::kParsed}};
 
-  name_full_with_prefix.MigrateLegacyStructure(true);
+  name_full_with_prefix.MigrateLegacyStructure();
   name_full_with_prefix.CompleteFullTree();
 
   VerifyTestValues(&name_full_with_prefix, expectation);
@@ -795,40 +793,36 @@ TEST(AutofillStructuredName,
   VerifyTestValues(&two, merge_expectation);
 }
 
-TEST(AutofillStructuredName, TestCopyConstructuror) {
-  NameFull orginal;
+TEST(AutofillStructuredName, TestCopyConstructor) {
+  NameFull original;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
-  orginal.SetValueForTypeIfPossible(NAME_FULL, u"Mr Pablo Diego Ruiz y Picasso",
-                                    VerificationStatus::kUserVerified);
-  orginal.SetValueForTypeIfPossible(NAME_HONORIFIC_PREFIX, u"Mr",
-                                    VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_FIRST, u"Pablo Diego",
-                                    VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_MIDDLE, u"",
-                                    VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_LAST, u"Ruiz y Picasso",
-                                    VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_LAST_SECOND, u"Ruiz y Picasso",
-                                    VerificationStatus::kParsed);
+  original.SetValueForType(NAME_FULL, u"Mr Pablo Diego Ruiz y Picasso",
+                           VerificationStatus::kUserVerified);
+  original.SetValueForType(NAME_HONORIFIC_PREFIX, u"Mr",
+                           VerificationStatus::kObserved);
+  original.SetValueForType(NAME_FIRST, u"Pablo Diego",
+                           VerificationStatus::kObserved);
+  original.SetValueForType(NAME_MIDDLE, u"", VerificationStatus::kObserved);
+  original.SetValueForType(NAME_LAST, u"Ruiz y Picasso",
+                           VerificationStatus::kObserved);
+  original.SetValueForType(NAME_LAST_SECOND, u"Ruiz y Picasso",
+                           VerificationStatus::kParsed);
 
-  NameFull copy = orginal;
-  EXPECT_TRUE(orginal.SameAs(copy));
+  NameFull copy = original;
+  EXPECT_TRUE(original.SameAs(copy));
 }
 
 TEST(AutofillStructuredName,
      MigrationFromLegacyStructure_WithFullName_Unverified) {
   NameFull name;
-  name.SetValueForTypeIfPossible(NAME_FULL, u"Thomas Neo Anderson",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
-                                 VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_FULL, u"Thomas Neo Anderson",
+                       VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_FIRST, u"Thomas", VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_MIDDLE, u"Neo", VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_LAST, u"Anderson", VerificationStatus::kNoStatus);
 
-  name.MigrateLegacyStructure(false);
+  name.MigrateLegacyStructure();
 
   // Since the full name is set and the profile is not verified it is promoted
   // to observed. All other tokens are reset.
@@ -850,53 +844,16 @@ TEST(AutofillStructuredName,
             VerificationStatus::kParsed);
 }
 
-TEST(AutofillStructuredName,
-     MigrationFromLegacyStructure_WithFullName_Verified) {
-  NameFull name;
-  name.SetValueForTypeIfPossible(NAME_FULL, u"Thomas Neo Anderson",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
-                                 VerificationStatus::kNoStatus);
-
-  name.MigrateLegacyStructure(true);
-
-  // Since the full name is set and the profile is verified, it is promoted to
-  // kUserVerified. All other tokens are reset.
-  EXPECT_EQ(name.GetValueForType(NAME_FULL), u"Thomas Neo Anderson");
-  EXPECT_EQ(name.GetValueForType(NAME_FIRST), u"Thomas");
-  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), u"Neo");
-  EXPECT_EQ(name.GetValueForType(NAME_LAST), u"Anderson");
-  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND), u"Anderson");
-
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_FIRST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_MIDDLE),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_LAST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_LAST_SECOND),
-            VerificationStatus::kParsed);
-}
-
 TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   NameFull name;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
-  name.SetValueForTypeIfPossible(NAME_FULL, u"", VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
-                                 VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_FULL, u"", VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_FIRST, u"Thomas", VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_MIDDLE, u"Neo", VerificationStatus::kNoStatus);
+  name.SetValueForType(NAME_LAST, u"Anderson", VerificationStatus::kNoStatus);
 
-  name.MigrateLegacyStructure(false);
+  name.MigrateLegacyStructure();
 
   // Since the full name is not set, the substructure is set to observed.
   // This is an edge case that normally should not happen.
@@ -1031,8 +988,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(name.ValueForComparisonForTesting(subset_name),
-                          subset_name.ValueForComparisonForTesting(name));
+      CompareSortedTokens(name.GetValueForComparisonForTesting(subset_name),
+                          subset_name.GetValueForComparisonForTesting(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.

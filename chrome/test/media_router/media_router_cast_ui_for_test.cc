@@ -31,13 +31,9 @@ ui::MouseEvent CreateMousePressedEvent() {
 
 }  // namespace
 
-// static
-MediaRouterCastUiForTest* MediaRouterCastUiForTest::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  // No-op if an instance already exists for the WebContents.
-  MediaRouterCastUiForTest::CreateForWebContents(web_contents);
-  return MediaRouterCastUiForTest::FromWebContents(web_contents);
-}
+MediaRouterCastUiForTest::MediaRouterCastUiForTest(
+    content::WebContents* web_contents)
+    : MediaRouterUiForTestBase(web_contents) {}
 
 MediaRouterCastUiForTest::~MediaRouterCastUiForTest() {
   CHECK(!watch_callback_);
@@ -154,11 +150,6 @@ void MediaRouterCastUiForTest::OnDialogCreated() {
   GetDialogView()->KeepShownForTesting();
 }
 
-MediaRouterCastUiForTest::MediaRouterCastUiForTest(
-    content::WebContents* web_contents)
-    : MediaRouterUiForTestBase(web_contents),
-      content::WebContentsUserData<MediaRouterCastUiForTest>(*web_contents) {}
-
 void MediaRouterCastUiForTest::OnDialogModelUpdated(
     CastDialogView* dialog_view) {
   if (!watch_callback_ || watch_type_ == WatchType::kDialogShown ||
@@ -178,7 +169,7 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
                 return sink_view->sink().friendly_name ==
                            base::UTF8ToUTF16(*watch_sink_name_) &&
                        sink_view->sink().state == UIMediaSinkState::AVAILABLE &&
-                       sink_view->GetEnabled();
+                       sink_view->cast_sink_button_for_test()->GetEnabled();
               case WatchType::kAnyIssue:
                 return sink_view->sink().issue.has_value();
               case WatchType::kAnyRoute:
@@ -248,7 +239,5 @@ CastDialogView* MediaRouterCastUiForTest::GetDialogView() {
   return dialog_controller_->GetCastDialogCoordinatorForTesting()
       .GetCastDialogView();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterCastUiForTest);
 
 }  // namespace media_router

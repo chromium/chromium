@@ -9,7 +9,7 @@ Follow the steps below to dispatch alerts via the [DevTools Issues](https://deve
 This should be named `kFeatureName` and placed at the bottom of the file.
 If you have an existing `WebFeature` that can be used instead.
 
-## (2) [deprecation.json5](third_party/blink/renderer/core/frame/deprecation/deprecation.json5)
+## (2) [deprecation.json5](/third_party/blink/renderer/core/frame/deprecation/deprecation.json5)
 
 Add a new dictionary to `data` like follows:
 ```

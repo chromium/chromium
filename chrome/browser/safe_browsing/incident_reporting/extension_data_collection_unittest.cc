@@ -88,13 +88,12 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID(extension_id)
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", extension_name)
                            .Set("version", version)
                            .Set("manifest_version", 2)
                            .Set("description", description)
-                           .Set("update_url", update_url)
-                           .Build())
+                           .Set("update_url", update_url))
           .Build();
 
   // Install the extension on the faked extension service.

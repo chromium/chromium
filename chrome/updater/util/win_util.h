@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UTIL_WIN_UTIL_H_
 
 #include <windows.h>
+#include <wrl/client.h>
 #include <wrl/implements.h>
 
 #include <cstdint>
@@ -13,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -118,6 +120,21 @@ class DynamicIIDsImpl : public WrlRuntimeClass<Interface> {
   }
 };
 
+// Macro that makes it easier to derive from `DynamicIIDsImpl`.
+#define DYNAMICIIDSIMPL(interface)                      \
+  DynamicIIDsImpl<interface, __uuidof(interface##User), \
+                  __uuidof(interface##System)>
+
+// Macros that makes it easier to call the `IDispatchImpl` constructor.
+#define IID_MAP_ENTRY_USER(interface) \
+  { __uuidof(interface##User), __uuidof(interface) }
+#define IID_MAP_ENTRY_SYSTEM(interface) \
+  { __uuidof(interface##System), __uuidof(interface) }
+#define IID_MAPS_USERSYSTEM(interface) \
+  {IID_MAP_ENTRY_USER(interface)}, {   \
+    IID_MAP_ENTRY_SYSTEM(interface)    \
+  }
+
 // Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.
 // This is not a drop in replacement for the HRESULT_FROM_WIN32 macro.
 // The macro maps a NO_ERROR to S_OK, whereas the HRESULTFromLastError maps a
@@ -190,6 +207,11 @@ std::wstring GetAppClientsKey(const std::wstring& app_id);
 // `Software\{CompanyName}\Update\ClientState\{app_id}`.
 std::wstring GetAppClientStateKey(const std::string& app_id);
 std::wstring GetAppClientStateKey(const std::wstring& app_id);
+
+// Returns the registry path
+// `Software\{CompanyName}\Update\ClientState\{app_id}\cohort`.
+std::wstring GetAppCohortKey(const std::string& app_id);
+std::wstring GetAppCohortKey(const std::wstring& app_id);
 
 // Returns the registry path
 // `Software\{CompanyName}\Update\Clients\{app_id}\Commands\{command_id}`.
@@ -376,6 +398,31 @@ void ForEachServiceWithPrefix(
 // Logs CLSID entries in HKLM and HKCU under both the 64-bit and 32-bit hives
 // for the given CLSID.
 void LogClsidEntries(REFCLSID clsid);
+
+template <typename T, typename... TArgs>
+Microsoft::WRL::ComPtr<T> MakeComObjectOrCrash(TArgs&&... args) {
+  auto obj = Microsoft::WRL::Make<T>(std::forward<TArgs>(args)...);
+  CHECK(obj);
+  return obj;
+}
+
+template <typename T, typename I, typename... TArgs>
+[[nodiscard]] HRESULT MakeAndInitializeComObject(I** obj, TArgs&&... args) {
+  return Microsoft::WRL::MakeAndInitialize<T>(obj,
+                                              std::forward<TArgs>(args)...);
+}
+
+template <typename T, typename I, typename... TArgs>
+[[nodiscard]] HRESULT MakeAndInitializeComObject(Microsoft::WRL::ComPtr<I>& obj,
+                                                 TArgs&&... args) {
+  return MakeAndInitializeComObject<T>(static_cast<I**>(&obj),
+                                       std::forward<TArgs>(args)...);
+}
+
+// Returns the base install directory for the x86 versions of the updater.
+// Does not create the directory if it does not exist.
+[[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
+    UpdaterScope scope);
 
 }  // namespace updater
 

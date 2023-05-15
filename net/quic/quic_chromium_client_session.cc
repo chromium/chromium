@@ -991,7 +991,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     int cert_verify_flags,
     const quic::QuicConfig& config,
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
-    const char* const connection_description,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
@@ -1036,7 +1035,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::QUIC_SESSION)),
       logger_(std::make_unique<QuicConnectionLogger>(
           this,
-          connection_description,
           std::move(socket_performance_watcher),
           net_log_)),
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),

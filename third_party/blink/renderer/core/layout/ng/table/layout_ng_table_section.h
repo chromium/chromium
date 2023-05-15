@@ -30,7 +30,7 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock {
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout(bool relayout_children) override {
+  void UpdateBlockLayout() override {
     NOT_DESTROYED();
     NOTREACHED();
   }
@@ -92,6 +92,12 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock {
     NOT_DESTROYED();
     return type == kLayoutObjectTableSection ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
+  }
+
+  // Table section paints background specially.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
   }
 };
 

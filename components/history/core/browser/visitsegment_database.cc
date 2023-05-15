@@ -163,9 +163,9 @@ SegmentID VisitSegmentDatabase::CreateSegment(URLID url_id,
   return 0;
 }
 
-bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
-                                                     base::Time ts,
-                                                     int amount) {
+bool VisitSegmentDatabase::UpdateSegmentVisitCount(SegmentID segment_id,
+                                                   base::Time ts,
+                                                   int amount) {
   base::Time t = ts.LocalMidnight();
 
   sql::Statement select(GetDB().GetCachedStatement(SQL_FROM_HERE,
@@ -184,7 +184,7 @@ bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
     update.BindInt64(1, select.ColumnInt64(0));
 
     return update.Run();
-  } else {
+  } else if (amount > 0) {
     sql::Statement insert(GetDB().GetCachedStatement(SQL_FROM_HERE,
         "INSERT INTO segment_usage "
         "(segment_id, time_slot, visit_count) VALUES (?, ?, ?)"));
@@ -194,6 +194,8 @@ bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
 
     return insert.Run();
   }
+
+  return true;
 }
 
 std::vector<std::unique_ptr<PageUsageData>>
@@ -228,7 +230,9 @@ VisitSegmentDatabase::QuerySegmentUsage(
     int days_ago = (now - timeslot).InDays();
 
     // Score for this day in isolation.
-    float day_visits_score = 1.0f + log(static_cast<float>(visit_count));
+    float day_visits_score = visit_count <= 0.0f
+                                 ? 0.0f
+                                 : 1.0f + log(static_cast<float>(visit_count));
     // Recent visits count more than historical ones, so we multiply in a boost
     // related to how long ago this day was.
     // This boost is a curve that smoothly goes through these values:
@@ -358,7 +362,7 @@ bool VisitSegmentDatabase::MergeSegments(SegmentID from_segment_id,
   while (select.Step()) {
     base::Time ts = select.ColumnTime(0);
     int64_t visit_count = select.ColumnInt64(1);
-    IncreaseSegmentVisitCount(to_segment_id, ts, visit_count);
+    UpdateSegmentVisitCount(to_segment_id, ts, visit_count);
   }
 
   // Update all references in the visits database.

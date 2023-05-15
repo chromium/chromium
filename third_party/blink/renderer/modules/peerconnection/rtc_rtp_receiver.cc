@@ -564,8 +564,7 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
     // Set up writable.
     video_to_decoder_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-            script_state, encoded_video_transformer_,
-            webrtc::TransformableFrameInterface::Direction::kReceiver);
+            script_state, encoded_video_transformer_);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpReceiver::SetVideoUnderlyingSink,

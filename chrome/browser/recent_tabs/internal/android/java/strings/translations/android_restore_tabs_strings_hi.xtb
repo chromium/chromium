@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hi">
+<translation id="1356944128023012143">सिंक किए गए डिवाइसों और नई प्रक्रिया में वापस लाने के लिए उन डिवाइसों पर चुने गए टैब की सूची बंद कर दी गई है.</translation>
+<translation id="1816430105422765050">इस मेन्यू आइटम में जाकर, सिंक किए गए दूसरे डिवाइसों पर स्विच करें.</translation>
+<translation id="3347725959865138210">वह डिवाइस चुनें जिससे आपको टैब वापस लाने हैं</translation>
+<translation id="3575801299326994724">चुने गए टैब की समीक्षा करें, ताकि फ़िलहाल चुने गए डिवाइस पर उन्हें वापस लाया जा सके.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब, पिछली बार अपडेट करने का समय: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> टैब, पिछली बार अपडेट करने का समय: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> टैब, पिछली बार अपडेट करने का समय: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">वापस जाएं</translation>
+<translation id="3983305234037158273">टैब को वापस लाने के लिए, सिंक किए गए डिवाइसों को टच करके बदलने की सुविधा उपलब्ध है. मौजूदा डिवाइस को टच करके, चुने गए टैब की समीक्षा करें या उन्हें वापस लाएं. कीबोर्ड छिपा हुआ है.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब खोलें}one{<ph name="TABS_COUNT_MANY" /> टैब खोलें}other{<ph name="TABS_COUNT_MANY" /> टैब खोलें}}</translation>
+<translation id="4811934403802581334">फ़िलहाल चुने गए डिवाइस पर सभी चुने गए टैब वापस लाए जाएंगे.</translation>
+<translation id="5336031759968328813">सभी टैब की समीक्षा करें</translation>
+<translation id="8725404154479306799">पुराने डिवाइसों पर चुने गए टैब वापस पाएं</translation>
+</translationbundle>

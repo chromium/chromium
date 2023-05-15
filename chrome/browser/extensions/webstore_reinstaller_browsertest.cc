@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "chrome/browser/extensions/webstore_reinstaller.h"
@@ -14,7 +15,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 
@@ -67,12 +67,11 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
       ExtensionBuilder()
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kTestExtensionId)
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", kExtensionName)
                            .Set("description", "Foo")
                            .Set("manifest_version", 2)
-                           .Set("version", "1.0")
-                           .Build())
+                           .Set("version", "1.0"))
           .Build();
   extension_service()->AddExtension(extension.get());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());

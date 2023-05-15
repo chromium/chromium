@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -69,7 +70,7 @@ class FakeTaskRunner : public base::TaskRunner {
 
  private:
   // The vector of delays.
-  std::vector<int64_t>* delays_;
+  raw_ptr<std::vector<int64_t>, ExperimentalAsh> delays_;
 };
 
 // Implementation of CryptohomePkcs11Client used in these tests.

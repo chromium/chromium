@@ -17,12 +17,6 @@
 
 namespace ash {
 
-// The ID for a notification shown when the user enables camera via a HW switch
-// but it is still disabled in PrivacyHub.
-inline constexpr char
-    kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId[] =
-        "ash.media.privacy_hub.want_to_turn_off_camera";
-
 // Enumeration of camera switch states.
 enum class CameraSWPrivacySwitchSetting { kDisabled, kEnabled };
 
@@ -56,9 +50,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // media::CameraPrivacySwitchObserver:
-  void OnCameraHWPrivacySwitchStateChanged(
-      const std::string& device_id,
-      cros::mojom::CameraPrivacySwitchState state) override;
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
@@ -88,7 +79,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   bool is_camera_observer_added_ = false;
   int camera_count_ = -1;
   bool camera_used_while_deactivated_ = false;
-  PrivacyHubNotification turn_sw_switch_on_notification_;
 };
 
 }  // namespace ash

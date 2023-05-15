@@ -282,7 +282,7 @@ group("gn_all") {
 
     deps += root_extra_deps
 
-    if (enable_printing) {
+    if (enable_printing || enable_printing_unittests) {
       deps += [ "//printing:printing_unittests" ]
     }
 
@@ -637,7 +637,6 @@ group("gn_all") {
     if (is_win) {
       deps += [
         "//base:pe_image_test",
-        "//chrome/chrome_cleaner",
         "//chrome/chrome_elf:chrome_elf_unittests",
         "//chrome/chrome_elf:dll_hash_main",
         "//chrome/elevation_service:elevation_service_unittests",
@@ -862,8 +861,8 @@ group("all_rust") {
     # cross-compiling.
     if (enable_rust_gnrt && host_os == target_os && host_cpu == target_cpu) {
       deps += [
-        "//tools/crates/gnrt:gnrt_unittests",
         "//tools/crates/gnrt($host_toolchain)",
+        "//tools/crates/gnrt/lib:gnrt_unittests",
       ]
     }
   }
@@ -891,10 +890,6 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
       "//remoting/host:host",
       "//tools/traffic_annotation:annotations_xml",
     ]
-
-    if (is_win) {
-      deps += [ "//chrome/chrome_cleaner:shipped_binaries" ]
-    }
   }
 }
 
@@ -1632,10 +1627,11 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/catapult/devil/",
       "//third_party/catapult/dependency_manager/",
       "//third_party/catapult/third_party/typ/",
-      "//third_party/depot_tools/pylint-1.5",
+      "//third_party/depot_tools/pylint-2.7",
       "//third_party/depot_tools/pylint_main.py",
       "//third_party/depot_tools/pylintrc",
       "//third_party/ply/",
+      "//third_party/pyjson5/",
       "//third_party/wpt_tools/",
       "//tools/idl_parser/",
     ]
@@ -1768,6 +1764,7 @@ if (is_chromeos_ash && enable_js_type_check) {
       "chrome/browser/resources:closure_compile",
       "chrome/test/data/webui:closure_compile",
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
+      "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile_modules",
       "ui/file_manager:closure_compile",
     ]
   }

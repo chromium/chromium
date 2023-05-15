@@ -21,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -702,6 +704,11 @@ void TestControllerAsh::TtsSpeak(
   tts_crosapi_util::SpeakForTesting(std::move(ash_utterance));
 }
 
+void TestControllerAsh::IsSavedDeskStorageReady(
+    IsSavedDeskStorageReadyCallback callback) {
+  std::move(callback).Run(DesksClient::Get()->GetDeskModel()->IsReady());
+}
+
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
   // Delete the utterace event delegate object when the utterance is finished.
   ash_utterance_event_delegates_.erase(utterance_id);
@@ -756,7 +763,7 @@ class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
   base::OnceClosure closure_;
 
   // The test controller owns this object so is never invalid.
-  TestControllerAsh* test_controller_;
+  raw_ptr<TestControllerAsh, ExperimentalAsh> test_controller_;
 };
 
 TestShillControllerAsh::TestShillControllerAsh() {

@@ -40,8 +40,6 @@ namespace {
 // Error messages.
 constexpr char kInvalidTaskType[] = "Invalid task type: ";
 constexpr char kInvalidFileUrl[] = "Invalid file URL";
-constexpr char kInvalidAssignmentPolicyConflict[] =
-    "Invalid assignment (conflicts with policy): ";
 
 // Make a set of unique filename suffixes out of the list of file URLs.
 std::set<std::string> GetUniqueSuffixes(
@@ -302,14 +300,6 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   // cases where extensionless local files are part of the selection.
   if (suffixes.empty() && mime_types.empty()) {
     return RespondNow(WithArguments(true));
-  }
-
-  // Check that there are no conflicts with policy-assigned defaults.
-  for (const auto& suffix : suffixes) {
-    if (file_manager::file_tasks::GetPolicyDefaultHandlerForFileExtension(
-            profile, suffix)) {
-      return RespondNow(Error(kInvalidAssignmentPolicyConflict + suffix));
-    }
   }
 
   file_manager::file_tasks::TaskType task_type =

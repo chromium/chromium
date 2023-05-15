@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -28,6 +27,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -947,8 +947,8 @@ class MediaStreamManager::DeviceRequest {
                                               video_type_, is_secure);
   }
 
-  // This function checks if the request is for the getDisplayMediaSet API.
-  bool IsGetDisplayMediaSet() const {
+  // This function checks if the request is for the getAllScreensMedia API.
+  bool IsGetAllScreensMedia() const {
     return stream_controls_.video.stream_type ==
            blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   }
@@ -1078,7 +1078,7 @@ class MediaStreamManager::DeviceRequest {
   }
 
   void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
-    if (!IsGetDisplayMediaSet()) {
+    if (!IsGetAllScreensMedia()) {
       return;
     }
     switch (new_state) {
@@ -2372,7 +2372,7 @@ MediaStreamManager::AddRequest(std::unique_ptr<DeviceRequest> request) {
   // Create a label for this request and verify it is unique.
   std::string unique_label;
   do {
-    unique_label = base::GenerateGUID();
+    unique_label = base::Uuid::GenerateRandomV4().AsLowercaseString();
   } while (FindRequest(unique_label) != nullptr);
 
   SendLogMessage(
@@ -2535,7 +2535,7 @@ void MediaStreamManager::DeleteRequest(
   SendLogMessage(base::StringPrintf("DeleteRequest([label=%s])",
                                     request_it->first.c_str()));
 #if BUILDFLAG(IS_CHROMEOS)
-  if (request_it->second->IsGetDisplayMediaSet()) {
+  if (request_it->second->IsGetAllScreensMedia()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(NotifyMultiCaptureStopped, request_it->first));
@@ -2803,7 +2803,7 @@ DesktopMediaID MediaStreamManager::ResolveTabCaptureDeviceIdOnUIThread(
   // Resolve DesktopMediaID for the specified device id.
   return DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
       capture_device_id, requesting_process_id, requesting_frame_id,
-      url::Origin::Create(origin), nullptr, kRegistryStreamTypeTab);
+      url::Origin::Create(origin), kRegistryStreamTypeTab);
 }
 
 void MediaStreamManager::FinishTabCaptureRequestSetupWithDeviceId(
@@ -3000,7 +3000,7 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       request->stream_devices_set.Clone();
 
-  if (request->IsGetDisplayMediaSet()) {
+  if (request->IsGetAllScreensMedia()) {
     PanTiltZoomPermissionChecked(label, MediaStreamDevice(),
                                  /*pan_tilt_zoom_allowed=*/false);
     return;
@@ -3078,7 +3078,7 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
 
   request->PanTiltZoomPermissionChecked(label, pan_tilt_zoom_allowed);
 
-  if (request->IsGetDisplayMediaSet()) {
+  if (request->IsGetAllScreensMedia()) {
     return;
   }
 

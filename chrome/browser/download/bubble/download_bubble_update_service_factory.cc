@@ -28,7 +28,12 @@ DownloadBubbleUpdateService* DownloadBubbleUpdateServiceFactory::GetForProfile(
 DownloadBubbleUpdateServiceFactory::DownloadBubbleUpdateServiceFactory()
     : ProfileKeyedServiceFactory(
           "DownloadBubbleUpdateService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
   DependsOn(OfflineItemModelManagerFactory::GetInstance());
 }

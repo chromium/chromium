@@ -27,7 +27,7 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
       const InputDeviceSettingsPolicyHandler&) = delete;
   ~InputDeviceSettingsPolicyHandler();
 
-  void Initialize(PrefService* pref_service);
+  void Initialize(PrefService* local_state, PrefService* pref_service);
 
   const mojom::KeyboardPolicies& keyboard_policies() const {
     return keyboard_policies_;
@@ -51,6 +51,10 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
   // Used to track preferences which may be controlled by enterprise
   // policies.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Keeps track whether the policy handler was initialized with local state
+  // prefs or with a user pref service.
+  bool initialized_with_local_state_prefs_ = true;
 };
 
 }  // namespace ash

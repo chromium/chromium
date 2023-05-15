@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/desk_template.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -28,7 +27,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/i18n/time_formatting.h"
@@ -57,6 +55,7 @@
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -127,23 +126,30 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       saved_desk_->source() == DeskTemplateSource::kPolicy;
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
+  View* background_view = nullptr;
+  View* box_layout_view = nullptr;
   views::Builder<SavedDeskItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(saved_desk_name)
       .SetCallback(std::move(launch_template_callback))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
-          cros_tokens::kCrosSysSystemBaseElevated, kSaveDeskCornerRadius))
       .SetBorder(std::make_unique<views::HighlightBorder>(
           kSaveDeskCornerRadius,
           chromeos::features::IsJellyrollEnabled()
               ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-              : views::HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false))
+              : views::HighlightBorder::Type::kHighlightBorder1))
       // TODO(b/274025495): Update Shadow for SavedDeskItemView.
       .AddChildren(
+          views::Builder<View>()
+              .CopyAddressTo(&background_view)
+              .SetPreferredSize(kPreferredSize)
+              .SetUseDefaultFillLayout(true)
+              .SetBackground(views::CreateThemedRoundedRectBackground(
+                  cros_tokens::kCrosSysSystemBaseElevated,
+                  kSaveDeskCornerRadius)),
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
+              .CopyAddressTo(&box_layout_view)
               .SetInteriorMargin(
                   gfx::Insets::VH(kVerticalPaddingDp, kSaveDeskPaddingDp))
               // TODO(richui): Consider splitting some of the children into
@@ -226,9 +232,21 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .SetVisible(false))
       .BuildChildren();
 
-  // We need to ensure that the layer is non-opaque when animating.
   SetPaintToLayer();
+  // We need to ensure that the layer is non-opaque when animating.
   layer()->SetFillsBoundsOpaquely(false);
+
+  // Note this view needs to be set to paint to layer so other view won't
+  // paint over it.
+  box_layout_view->SetPaintToLayer();
+  box_layout_view->layer()->SetFillsBoundsOpaquely(false);
+
+  background_view->SetPaintToLayer();
+  background_view->layer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  background_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kSaveDeskCornerRadius));
+  background_view->layer()->SetFillsBoundsOpaquely(false);
 
   const int button_text_id = saved_desk_->type() == DeskTemplateType::kTemplate
                                  ? IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON
@@ -270,9 +288,12 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
-  focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
-  });
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<SavedDeskItemView>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -327,7 +348,7 @@ void SavedDeskItemView::SetDisplayName(const std::u16string& saved_desk_name) {
 }
 
 void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
-                                               const base::GUID& uuid) {
+                                               const base::Uuid& uuid) {
   // Show replace saved desk dialog. If accepted, replace old saved desk item
   // and commit name change.
   auto* controller = saved_desk_util::GetSavedDeskDialogController();
@@ -343,7 +364,7 @@ void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SavedDeskItemView::ReplaceSavedDesk(const base::GUID& uuid) {
+void SavedDeskItemView::ReplaceSavedDesk(const base::Uuid& uuid) {
   // Make sure we delete the saved desk we are replacing first, so that we don't
   // get saved desk name collisions. Passing `nullopt` as `record_for_type`
   // since we only record the delete operation when the user specifically

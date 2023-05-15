@@ -9,7 +9,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:textDirection="locale" >
 
   <TextView
       android:id="@+id/subtitle"
@@ -107,10 +108,14 @@ found in the LICENSE file.
     </LinearLayout>
   </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
-  <include
+  <TextView
+      android:id="@+id/autofill_address_profile_prompt_source_notice"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/address_prompt_end_margin"
       android:layout_marginTop="12dp"
-      layout="@layout/autofill_address_profile_prompt_source_notice" />
+      android:layout_marginStart="@dimen/dialog_padding_sides"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:breakStrategy="balanced"
+      tools:text="@string/autofill_save_in_account_prompt_address_source_notice" />
 </LinearLayout>

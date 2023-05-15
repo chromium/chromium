@@ -34,6 +34,11 @@ class IOSChromePasswordCheckManager;
 // Disconnects from all observers. Must be called before destroying.
 - (void)disconnect;
 
+// Returns whether there is only one password issue left. This is used to
+// determine how the Password Details view should be dismissed when the user
+// deletes the password associated with the remaining issue.
+- (BOOL)hasOneIssueLeft;
+
 @property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
 @end

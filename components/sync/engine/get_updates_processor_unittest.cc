@@ -220,7 +220,7 @@ TEST_F(GetUpdatesProcessorTest, InitialSyncRequest) {
   nudge_tracker.RecordInitialSyncRequired(AUTOFILL);
   nudge_tracker.RecordInitialSyncRequired(PREFERENCES);
 
-  ModelTypeSet initial_sync_types = ModelTypeSet(AUTOFILL, PREFERENCES);
+  const ModelTypeSet initial_sync_types = {AUTOFILL, PREFERENCES};
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
@@ -383,9 +383,8 @@ TEST_F(GetUpdatesProcessorTest, MoreToDownloadResponse) {
   StatusController status;
   std::unique_ptr<GetUpdatesProcessor> processor(
       BuildGetUpdatesProcessor(normal_delegate));
-  SyncerError error =
-      processor->ProcessResponse(gu_response, enabled_types(), &status);
-  EXPECT_EQ(error.value(), SyncerError::SERVER_MORE_TO_DOWNLOAD);
+  processor->ProcessResponse(gu_response, enabled_types(), &status);
+  EXPECT_TRUE(processor->HasMoreUpdatesToDownload());
 }
 
 // A simple scenario: No updates returned and nothing more to download.
@@ -418,7 +417,7 @@ class GetUpdatesProcessorApplyUpdatesTest : public GetUpdatesProcessorTest {
     autofill_handler_ = AddUpdateHandler(AUTOFILL);
   }
 
-  ModelTypeSet GetGuTypes() { return ModelTypeSet(AUTOFILL); }
+  ModelTypeSet GetGuTypes() { return {AUTOFILL}; }
 
   MockUpdateHandler* GetNonAppliedHandler() { return bookmarks_handler_; }
 

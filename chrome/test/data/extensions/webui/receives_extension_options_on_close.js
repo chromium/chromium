@@ -7,8 +7,7 @@
 if (!chrome || !chrome.test || !chrome.test.sendMessage) {
   console.error('chrome.test.sendMessage is unavailable on ' +
                 document.location.href);
-  domAutomationController.send(false);
-  return;
+  return false;
 }
 
 chrome.test.sendMessage('ready', function(reply) {
@@ -20,4 +19,4 @@ chrome.test.sendMessage('ready', function(reply) {
   document.body.appendChild(extensionoptions);
 });
 
-domAutomationController.send(true);
+return true;

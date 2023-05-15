@@ -10,47 +10,10 @@
 #include <cmath>
 #include <cstring>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 
 namespace media {
-
-namespace {
-
-// Converts [|start|, |end|) range with |encrypted_ranges| into a vector of
-// SubsampleEntry. |encrypted_ranges| must be with in the range defined by
-// |start| and |end|.
-// It is OK to pass in empty |encrypted_ranges|; this will return a vector
-// with single SubsampleEntry with clear_bytes set to the size of the buffer.
-std::vector<SubsampleEntry> EncryptedRangesToSubsampleEntry(
-    const uint8_t* start,
-    const uint8_t* end,
-    const Ranges<const uint8_t*>& encrypted_ranges) {
-  std::vector<SubsampleEntry> subsamples(encrypted_ranges.size());
-  const uint8_t* cur = start;
-  for (size_t i = 0; i < encrypted_ranges.size(); ++i) {
-    const uint8_t* encrypted_start = encrypted_ranges.start(i);
-    DCHECK_GE(encrypted_start, cur)
-        << "Encrypted range started before the current buffer pointer.";
-    subsamples[i].clear_bytes = encrypted_start - cur;
-
-    const uint8_t* encrypted_end = encrypted_ranges.end(i);
-    subsamples[i].cypher_bytes = encrypted_end - encrypted_start;
-
-    cur = encrypted_end;
-    DCHECK_LE(cur, end) << "Encrypted range is outside the buffer range.";
-  }
-
-  // If there is more data in the buffer but not covered by encrypted_ranges,
-  // then it must be in the clear.
-  if (cur < end)
-    subsamples.emplace_back(end - cur, 0);
-
-  return subsamples;
-}
-
-}  // namespace
 
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \

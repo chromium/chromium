@@ -183,7 +183,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
        request::GetContentMatcher(
-           base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
+           {base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())}),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority)},
       GetUpdateResponse(app_id, "", test_server->update_url().spec(),
@@ -193,12 +193,12 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   // is ignored by the client:
   // {errorCategory::kService, ServiceError::CHECK_FOR_UPDATE_ONLY}
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetContentMatcher(base::StringPrintf(
+                           request::GetContentMatcher({base::StringPrintf(
                                R"(.*"errorcat":4,"errorcode":4,)"
                                R"("eventresult":0,"eventtype":%d,)"
                                R"("nextversion":"%s","previousversion":"%s".*)",
                                event_type, to_version.GetString().c_str(),
-                               from_version.GetString().c_str())),
+                               from_version.GetString().c_str())}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }
@@ -221,15 +221,13 @@ void ExpectUpdateSequence(UpdaterScope scope,
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
        request::GetContentMatcher(
-           base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
-       request::GetContentMatcher(base::StringPrintf(
-           R"(.*%s)",
-           !install_data_index.empty()
-               ? base::StringPrintf(
-                     R"("data":\[{"index":"%s","name":"install"}],.*)",
-                     install_data_index.c_str())
-                     .c_str()
-               : "")),
+           {base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
+            install_data_index.empty()
+                ? ""
+                : base::StringPrintf(
+                      R"("data":\[{"index":"%s","name":"install"}],.*)",
+                      install_data_index.c_str())
+                      .c_str()}),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority)},
       GetUpdateResponse(app_id, install_data_index,
@@ -239,15 +237,15 @@ void ExpectUpdateSequence(UpdaterScope scope,
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({request::GetContentMatcher("")}, crx_bytes);
+  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetContentMatcher(base::StringPrintf(
+                           request::GetContentMatcher({base::StringPrintf(
                                R"(.*"eventresult":1,"eventtype":%d,)"
                                R"("nextversion":"%s","previousversion":"%s".*)",
                                event_type, to_version.GetString().c_str(),
-                               from_version.GetString().c_str())),
+                               from_version.GetString().c_str())}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }
@@ -473,6 +471,10 @@ void DeleteUpdaterDirectory(UpdaterScope scope) {
   ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
 }
 
+void DeleteFile(UpdaterScope /*scope*/, const base::FilePath& path) {
+  ASSERT_TRUE(base::DeleteFile(path));
+}
+
 void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   ASSERT_TRUE(global_prefs) << "No global prefs.";
@@ -600,7 +602,7 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
 
 void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetContentMatcher(R"(.*"eventtype":4.*)"),
+                           request::GetContentMatcher({R"(.*"eventtype":4.*)"}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }
@@ -615,7 +617,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
        request::GetContentMatcher(
-           base::StringPrintf(R"(.*"appid":"%s".*)", kUpdaterAppId)),
+           {base::StringPrintf(R"(.*"appid":"%s".*)", kUpdaterAppId)}),
        request::GetScopeMatcher(scope)},
       GetUpdateResponse(
           kUpdaterAppId, "", test_server->update_url().spec(),
@@ -628,14 +630,14 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({request::GetContentMatcher("")}, crx_bytes);
+  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetContentMatcher(base::StringPrintf(
+                           request::GetContentMatcher({base::StringPrintf(
                                R"(.*"eventresult":1,"eventtype":3,)"
                                R"("nextversion":"%s",.*)",
-                               kUpdaterVersion)),
+                               kUpdaterVersion)}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }

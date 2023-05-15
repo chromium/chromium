@@ -35,6 +35,17 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kShelfViewElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kUnifiedSystemTrayElementId);
 
+// Element Names ---------------------------------------------------------------
+
+// Name which may be set for the `HomeButton` during an interaction sequence to
+// uniquely identify a particular instance.
+constexpr char kHomeButtonElementName[] = "kHomeButtonElementName";
+
+// Name which may be set for the `UnifiedSystemTray` during an interaction
+// sequence to uniquely identify a particular instance.
+constexpr char kUnifiedSystemTrayElementName[] =
+    "kUnifiedSystemTrayElementName";
+
 }  // namespace ash
 
 #endif  // ASH_USER_EDUCATION_USER_EDUCATION_CONSTANTS_H_

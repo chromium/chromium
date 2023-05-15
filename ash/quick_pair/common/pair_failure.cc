@@ -115,6 +115,15 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
       stream << "[Failed to connect to discovered device after pairing when "
                 "the device is known to the adapter.]";
       break;
+    case PairFailure::kAdditionalDataCharacteristicWrite:
+      stream << "[Failed to write to Additional Data GATT characteristic.]";
+      break;
+    case PairFailure::kAdditionalDataCharacteristicDiscovery:
+      stream << "[Failed to find the Additional Data characteristic.]";
+      break;
+    case PairFailure::kAdditionalDataCharacteristicWriteTimeout:
+      stream << "[Timed out while writing to Additional Data characteristic.]";
+      break;
   }
 
   return stream;

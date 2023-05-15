@@ -69,6 +69,7 @@ class DefaultSearchManager {
   static const char kPrefetchLikelyNavigations[];
   static const char kIsActive[];
   static const char kStarterPackId[];
+  static const char kEnforcedByPolicy[];
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for

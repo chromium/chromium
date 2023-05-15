@@ -14,5 +14,5 @@ html {
   --primary-text-color: var(--cros-text-color-primary);
   --secondary-text-color: var(--cros-text-color-secondary);
   --app-management-controlled-by-spacing:
-      var(--settings-controlled-by-spacing);
+      var(--cr-controlled-by-spacing);
 }

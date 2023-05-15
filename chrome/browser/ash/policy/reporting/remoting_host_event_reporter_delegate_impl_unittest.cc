@@ -10,9 +10,13 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,9 +39,14 @@ namespace {
 // Production implementation of CRD event reporter for remoting host.
 class HostEventReporterDelegateImplTest : public ::testing::Test {
  protected:
+  void SetUp() override {
+    user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    reporting_user_tracker_ =
+        std::make_unique<policy::ReportingUserTracker>(user_manager_.get());
+  }
+
   std::unique_ptr<::reporting::UserEventReporterHelperTesting>
   GetReporterHelper(bool reporting_enabled,
-                    bool should_report_user,
                     bool is_kiosk_user,
                     ::reporting::Status status = ::reporting::Status()) {
     auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
@@ -62,8 +71,7 @@ class HostEventReporterDelegateImplTest : public ::testing::Test {
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
-            reporting_enabled, should_report_user, is_kiosk_user,
-            std::move(mock_queue));
+            reporting_enabled, is_kiosk_user, std::move(mock_queue));
     return reporter_helper;
   }
 
@@ -71,7 +79,17 @@ class HostEventReporterDelegateImplTest : public ::testing::Test {
 
   bool IsEmpty() const { return records_.IsEmpty(); }
 
+  ash::FakeChromeUserManager* user_manager() { return user_manager_.get(); }
+
+  policy::ReportingUserTracker* reporting_user_tracker() {
+    return reporting_user_tracker_.get();
+  }
+
  private:
+  ScopedTestingLocalState local_state{TestingBrowserProcess::GetGlobal()};
+  std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
+  std::unique_ptr<policy::ReportingUserTracker> reporting_user_tracker_;
+
   content::BrowserTaskEnvironment task_environment;
 
   std::unique_ptr<HostEventReporterImpl::Delegate> delegate_;
@@ -81,9 +99,11 @@ class HostEventReporterDelegateImplTest : public ::testing::Test {
 
 TEST_F(HostEventReporterDelegateImplTest, RegularCrdEvent) {
   static constexpr char kHostUser[] = "user@host.com";
+  user_manager()->AddUserWithAffiliation(AccountId::FromUserEmail(kHostUser),
+                                         /*is_affiliated=*/true);
   HostEventReporterDelegateImpl delegate(
-      GetReporterHelper(/*reporting_enabled=*/true, /*should_report_user=*/true,
-                        /*is_kiosk_user=*/false));
+      GetReporterHelper(/*reporting_enabled=*/true, /*is_kiosk_user=*/false),
+      reporting_user_tracker());
 
   {
     CRDRecord record;
@@ -102,8 +122,9 @@ TEST_F(HostEventReporterDelegateImplTest, RegularCrdEvent) {
 TEST_F(HostEventReporterDelegateImplTest, AnonymousCrdEvent) {
   static constexpr char kNonAffiliatedUser[] = "user@alien.com";
   HostEventReporterDelegateImpl delegate(GetReporterHelper(
-      /*reporting_enabled=*/true, /*should_report_user=*/false,
-      /*is_kiosk_user=*/false));
+                                             /*reporting_enabled=*/true,
+                                             /*is_kiosk_user=*/false),
+                                         reporting_user_tracker());
 
   {
     CRDRecord record;
@@ -122,8 +143,9 @@ TEST_F(HostEventReporterDelegateImplTest, AnonymousCrdEvent) {
 TEST_F(HostEventReporterDelegateImplTest, KioskCrdEvent) {
   static constexpr char kKioskUser[] = "user@host.com";
   HostEventReporterDelegateImpl delegate(GetReporterHelper(
-      /*reporting_enabled=*/true, /*should_report_user=*/false,
-      /*is_kiosk_user=*/true));
+                                             /*reporting_enabled=*/true,
+                                             /*is_kiosk_user=*/true),
+                                         reporting_user_tracker());
 
   {
     CRDRecord record;
@@ -142,8 +164,9 @@ TEST_F(HostEventReporterDelegateImplTest, KioskCrdEvent) {
 TEST_F(HostEventReporterDelegateImplTest, DisabledCrdEvent) {
   static constexpr char kHostUser[] = "user@host.com";
   HostEventReporterDelegateImpl delegate(GetReporterHelper(
-      /*reporting_enabled=*/false, /*should_report_user=*/true,
-      /*is_kiosk_user=*/false));
+                                             /*reporting_enabled=*/false,
+                                             /*is_kiosk_user=*/false),
+                                         reporting_user_tracker());
   {
     CRDRecord record;
     record.mutable_host_user()->set_user_email(kHostUser);
@@ -155,10 +178,12 @@ TEST_F(HostEventReporterDelegateImplTest, DisabledCrdEvent) {
 
 TEST_F(HostEventReporterDelegateImplTest, ErrorPostingCrdEvent) {
   static constexpr char kHostUser[] = "user@host.com";
-  HostEventReporterDelegateImpl delegate(GetReporterHelper(
-      /*reporting_enabled=*/true, /*should_report_user=*/true,
-      /*is_kiosk_user=*/false,
-      ::reporting::Status(::reporting::error::INTERNAL, "")));
+  HostEventReporterDelegateImpl delegate(
+      GetReporterHelper(
+          /*reporting_enabled=*/true,
+          /*is_kiosk_user=*/false,
+          ::reporting::Status(::reporting::error::INTERNAL, "")),
+      reporting_user_tracker());
   {
     CRDRecord record;
     record.mutable_host_user()->set_user_email(kHostUser);

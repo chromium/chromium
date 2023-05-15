@@ -50,7 +50,7 @@ NSString* SessionIdentifierForScene(UIScene* scene) {
     NSString* identifier = [[scene session] persistentIdentifier];
 
     DCHECK(identifier.length != 0);
-    DCHECK(![kSyntheticSessionIdentifier isEqual:identifier]);
+    DCHECK(![kSyntheticSessionIdentifier isEqualToString:identifier]);
     return identifier;
   }
   return kSyntheticSessionIdentifier;

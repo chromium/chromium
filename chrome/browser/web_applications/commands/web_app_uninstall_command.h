@@ -76,7 +76,6 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
 
   // WebAppCommandTemplate<AllAppsLock>:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;

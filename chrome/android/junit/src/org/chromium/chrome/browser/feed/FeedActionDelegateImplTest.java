@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -54,6 +55,9 @@ public final class FeedActionDelegateImplTest {
     @Mock
     private Context mActivityContext;
 
+    @Mock
+    private TabModelSelector mTabModelSelector;
+
     @Captor
     ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -65,7 +69,8 @@ public final class FeedActionDelegateImplTest {
 
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
-                mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET);
+                mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET,
+                mTabModelSelector);
     }
 
     @After

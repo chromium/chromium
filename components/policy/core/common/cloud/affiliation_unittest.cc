@@ -57,4 +57,26 @@ TEST(CloudManagementAffiliationTest, BothIdsEmpty) {
   EXPECT_FALSE(IsAffiliated(user_ids, device_ids));
 }
 
+TEST(CloudManagementAffiliationTest, UserAffiliated) {
+  base::flat_set<std::string> user_ids;
+  base::flat_set<std::string> device_ids;
+
+  // Empty affiliation IDs.
+  EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, "user@managed.com"));
+
+  user_ids.insert("aaaa");  // Only user affiliation IDs present.
+  EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, "user@managed.com"));
+
+  device_ids.insert("bbbb");  // Device and user IDs do not overlap.
+  EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, "user@managed.com"));
+
+  user_ids.insert("cccc");  // Device and user IDs do overlap.
+  device_ids.insert("cccc");
+  EXPECT_TRUE(IsUserAffiliated(user_ids, device_ids, "user@managed.com"));
+
+  // Invalid email overrides match of affiliation IDs.
+  EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, ""));
+  EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, "user"));
+}
+
 }  // namespace policy

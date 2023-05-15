@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DETAIL_SCREEN_TITLE;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DEVICE_MODEL_LIST;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.HOME_SCREEN_DELEGATE;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.NUM_TABS_DESELECTED;
@@ -22,6 +23,7 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.SELE
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.UNINITIALIZED;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISIBLE;
 
 import org.junit.After;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordin
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.TabItemProperties;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,19 +86,19 @@ public class RestoreTabsMediatorUnitTest {
         assertThat(mModel.get(HOME_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsPromoScreenCoordinator.Delegate.class));
         Assert.assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), UNINITIALIZED);
         Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
     }
 
     @Test
     public void testRestoreTabsMediator_onDismissed() {
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
+        ForeignSession session = new ForeignSession(
+                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
         when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showOptions();
+        mMediator.showHomeScreen();
         Assert.assertEquals(mModel.get(VISIBLE), true);
         mMediator.dismiss();
         Assert.assertEquals(mModel.get(VISIBLE), false);
@@ -103,13 +106,13 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_showOptionsUpdatesModel() {
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
+        ForeignSession session = new ForeignSession(
+                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
         when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showOptions();
+        mMediator.showHomeScreen();
         Assert.assertEquals(mModel.get(VISIBLE), true);
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(0));
@@ -148,8 +151,8 @@ public class RestoreTabsMediatorUnitTest {
         tabs.add(tab1);
         tabs.add(tab2);
 
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
+        ForeignSession session = new ForeignSession(
+                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         mModel.set(SELECTED_DEVICE, session);
 
         delegate.onAllTabsChosen();
@@ -161,10 +164,10 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_setDeviceListItemsNoSelection() {
-        ForeignSession session1 =
-                new ForeignSession("tag1", "John's iPhone 6", 32L, new ArrayList<>());
-        ForeignSession session2 =
-                new ForeignSession("tag2", "John's iPhone 7", 33L, new ArrayList<>());
+        ForeignSession session1 = new ForeignSession(
+                "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session2 = new ForeignSession(
+                "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session1);
         testSessions.add(session2);
@@ -176,10 +179,10 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_setDeviceListItemsSelection() {
-        ForeignSession session1 =
-                new ForeignSession("tag1", "John's iPhone 6", 32L, new ArrayList<>());
-        ForeignSession session2 =
-                new ForeignSession("tag2", "John's iPhone 7", 33L, new ArrayList<>());
+        ForeignSession session1 = new ForeignSession(
+                "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session2 = new ForeignSession(
+                "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session1);
         testSessions.add(session2);
@@ -188,13 +191,18 @@ public class RestoreTabsMediatorUnitTest {
 
         mMediator.setDeviceListItems(testSessions);
 
-        Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(1));
+        // Resulting selected device sorted based on recent modified time.
+        Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(0));
+        Assert.assertEquals(testSessions.get(0).tag, session2.tag);
+        Assert.assertEquals(testSessions.get(0).name, session2.name);
+        Assert.assertEquals(testSessions.get(0).modifiedTime, session2.modifiedTime);
+        Assert.assertEquals(testSessions.get(0).formFactor, session2.formFactor);
     }
 
     @Test
     public void testRestoreTabsMediator_setSelectedDeviceItem() {
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
+        ForeignSession session = new ForeignSession(
+                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         mMediator.setSelectedDeviceItem(session);
 
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), session);
@@ -224,7 +232,8 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSessionWindow> windows = new ArrayList<>();
         windows.add(window);
 
-        ForeignSession session = new ForeignSession("tag", "John's iPhone 6", 32L, windows);
+        ForeignSession session =
+                new ForeignSession("tag", "John's iPhone 6", 32L, windows, FormFactor.PHONE);
         mMediator.setSelectedDeviceItem(session);
 
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), session);
@@ -238,6 +247,8 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.setCurrentScreen(DEVICE_SCREEN);
 
         Assert.assertEquals(mModel.get(DETAIL_SCREEN_MODEL_LIST), mModel.get(DEVICE_MODEL_LIST));
+        Assert.assertEquals(
+                mModel.get(DETAIL_SCREEN_TITLE), R.string.restore_tabs_device_screen_sheet_title);
         Assert.assertNull(mModel.get(REVIEW_TABS_SCREEN_DELEGATE));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), DEVICE_SCREEN);
     }
@@ -273,7 +284,7 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSessionWindow> windows = new ArrayList<>();
         windows.add(window);
 
-        ForeignSession session = new ForeignSession("tag", "John's iPhone 6", 32L, windows);
+        ForeignSession session = new ForeignSession("tag", "John's iPhone 6", 32L, windows, 2);
         mModel.set(SELECTED_DEVICE, session);
         mMediator.setTabListItems();
 

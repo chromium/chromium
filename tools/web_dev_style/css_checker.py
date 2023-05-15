@@ -110,7 +110,8 @@ class CSSChecker(object):
       strip_rule = lambda t: _remove_disable(t).strip()
       for rule in re.finditer(r'{(.*?)}', contents, re.DOTALL):
         semis = [strip_rule(r) for r in rule.group(1).split(';')][:-1]
-        rules = [r for r in semis if ': ' in r]
+        # Ignore all nested rules.
+        rules = [r for r in semis if re.match(r'^[^{]+: ', r)]
         props = [r[0:r.find(':')] for r in rules]
         if props != sorted(props):
           errors.append('    %s;\n' % (';\n    '.join(rules)))
@@ -310,12 +311,12 @@ class CSSChecker(object):
           end += 1
         contents = contents[:start] + contents[end:]
 
-      multi_sels_reg = re.compile(r"""
+      multi_sels_reg = re.compile(
+          r"""
           (?:}\s*)?            # ignore 0% { blah: blah; }, from @keyframes
-          ([^,]+,(?=[^{}]+?{)  # selector junk {, not in a { rule }
+          ([^,]+,(?=[^{};]+?{)  # selector junk {, not in a { rule }
           .*[,{])\s*$          # has to end with , or {
-          """,
-          re.MULTILINE | re.VERBOSE)
+          """, re.MULTILINE | re.VERBOSE)
       errors = []
       for b in re.finditer(multi_sels_reg, contents):
         errors.append('    ' + b.group(1).strip().splitlines()[-1:][0])

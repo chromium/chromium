@@ -6,26 +6,25 @@
 
 DIPSRedirectChainInfo::DIPSRedirectChainInfo(const GURL& initial_url,
                                              const GURL& final_url,
-                                             int length)
+                                             size_t length,
+                                             bool is_partial_chain)
     : initial_url(initial_url),
       initial_site(GetSiteForDIPS(initial_url)),
       final_url(final_url),
       final_site(GetSiteForDIPS(final_url)),
       initial_and_final_sites_same(initial_site == final_site),
-      length(length) {}
+      length(length),
+      is_partial_chain(is_partial_chain) {}
 
 DIPSRedirectChainInfo::~DIPSRedirectChainInfo() = default;
-
 DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    DIPSRedirectType redirect_type,
-                                   CookieAccessType access_type,
-                                   int index,
+                                   SiteDataAccessType access_type,
                                    ukm::SourceId source_id,
                                    base::Time time)
     : DIPSRedirectInfo(url,
                        redirect_type,
                        access_type,
-                       index,
                        source_id,
                        time,
                        /*client_bounce_delay=*/base::TimeDelta(),
@@ -37,8 +36,7 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
 
 DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    DIPSRedirectType redirect_type,
-                                   CookieAccessType access_type,
-                                   int index,
+                                   SiteDataAccessType access_type,
                                    ukm::SourceId source_id,
                                    base::Time time,
                                    base::TimeDelta client_bounce_delay,
@@ -46,7 +44,6 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
     : url(url),
       redirect_type(redirect_type),
       access_type(access_type),
-      index(index),
       source_id(source_id),
       time(time),
       client_bounce_delay(client_bounce_delay),

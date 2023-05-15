@@ -63,11 +63,7 @@ if (current_cpu == "x86") {
   copy("nacl64") {
     # NOTE: This must match what //build/config/BUILDCONFIG.gn uses
     # as default toolchain for the corresponding x64 build.
-    if (is_clang) {
-      x64_toolchain = "//build/toolchain/win:win_clang_nacl_win64"
-    } else {
-      x64_toolchain = "//build/toolchain/win:nacl_win64"
-    }
+    x64_toolchain = "//build/toolchain/win:win_clang_nacl_win64"
     nacl64_label = ":nacl64($x64_toolchain)"
     nacl64_out_dir = get_label_info(nacl64_label, "root_out_dir")
     sources = [

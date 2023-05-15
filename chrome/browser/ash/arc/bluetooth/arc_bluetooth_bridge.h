@@ -22,6 +22,7 @@
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
@@ -58,6 +59,7 @@ class ArcBluetoothBridge
       public device::BluetoothAdapter::Observer,
       public device::BluetoothAdapterFactory::AdapterCallback,
       public device::BluetoothLocalGattService::Delegate,
+      public device::BluetoothLowEnergyScanSession::Delegate,
       public ConnectionObserver<mojom::AppInstance>,
       public ConnectionObserver<mojom::IntentHelperInstance>,
       public mojom::BluetoothHost {
@@ -222,6 +224,21 @@ class ArcBluetoothBridge
       const device::BluetoothDevice* device,
       const device::BluetoothLocalGattCharacteristic* characteristic) override;
 
+  // device::BluetoothLowEnergyScanSession::Delegate:
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override;
+
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override;
+
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override;
+
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override;
+
   // Bluetooth Mojo host interface
   void EnableAdapter(EnableAdapterCallback callback) override;
   void DisableAdapter(DisableAdapterCallback callback) override;
@@ -368,8 +385,11 @@ class ArcBluetoothBridge
   // StartLEScan() is only for LE devices.
   void StartDiscoveryImpl();
   void CancelDiscoveryImpl();
-  void StartLEScanImpl();
+  virtual void StartLEScanImpl();
   void StopLEScanImpl();
+
+  virtual void ResetLEScanSession();
+  void StartLEScanOffTimer();
 
   // The callback function triggered by le_scan_off_timer_.
   void StopLEScanByTimer();
@@ -605,7 +625,8 @@ class ArcBluetoothBridge
   void OnBluetoothConnectingSocketReady(
       ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisment_;
@@ -730,7 +751,7 @@ class ArcBluetoothBridge
     void OnConnectionClosed() override;
 
    private:
-    ArcBluetoothBridge* arc_bluetooth_bridge_;
+    raw_ptr<ArcBluetoothBridge, ExperimentalAsh> arc_bluetooth_bridge_;
   };
   BluetoothArcConnectionObserver bluetooth_arc_connection_observer_;
 

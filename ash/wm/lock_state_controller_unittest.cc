@@ -28,6 +28,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -335,14 +336,15 @@ class LockStateControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
-  TestSessionStateAnimator* test_animator_ = nullptr;   // not owned
+  raw_ptr<TestSessionStateAnimator, ExperimentalAsh> test_animator_ =
+      nullptr;  // not owned
 
  private:
   // Histogram value verifier.
   base::HistogramTester histograms_;
 
   // To access the pref kLoginShutdownTimestampPrefName
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 };
 
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't

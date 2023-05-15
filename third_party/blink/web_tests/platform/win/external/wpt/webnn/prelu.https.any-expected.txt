@@ -1,12 +1,13 @@
 This is a testharness.js-based test.
-FAIL prelu float32 1D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 2D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 3D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 4D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 5D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 broadcast 4D x 1D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 broadcast 4D x 2D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 broadcast 4D x 3D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
-FAIL prelu float32 broadcast 4D x 4D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (prelu) is not supported."
+PASS prelu float32 1D tensors / async
+FAIL prelu float32 2D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: Expected all dimensions of slope to be 1 except the last dimension."
+FAIL prelu float32 3D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: Expected all dimensions of slope to be 1 except the last dimension."
+FAIL prelu float32 4D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: Expected all dimensions of slope to be 1 except the last dimension."
+FAIL prelu float32 5D tensors / async promise_test: Unhandled rejection with value: object "NotSupportedError: Expected all dimensions of slope to be 1 except the last dimension."
+PASS prelu float32 broadcast 4D x 1D slope / async
+FAIL prelu float32 broadcast 4D x 1D slope of shape [1] / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input and slope should have the same last dimension."
+FAIL prelu float32 broadcast 4D x 2D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: Expected all dimensions of slope to be 1 except the last dimension."
+PASS prelu float32 broadcast 4D x 3D slope / async
+FAIL prelu float32 broadcast 4D x 4D slope / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input and slope should have the same last dimension."
 Harness: the test ran to completion.
 

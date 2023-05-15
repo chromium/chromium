@@ -11,8 +11,10 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/test/ash_test_color_generator.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace base {
@@ -176,6 +178,9 @@ class AppListTestHelper {
 
   test::AppListTestModel* model() { return &model_; }
   SearchModel* search_model() { return &search_model_; }
+  QuickAppAccessModel* quick_app_access_model() {
+    return &quick_app_access_model_;
+  }
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
  private:
@@ -184,7 +189,9 @@ class AppListTestHelper {
 
   test::AppListTestModel model_;
   SearchModel search_model_;
-  AppListControllerImpl* app_list_controller_ = nullptr;
+  QuickAppAccessModel quick_app_access_model_;
+  raw_ptr<AppListControllerImpl, ExperimentalAsh> app_list_controller_ =
+      nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
 
   AshTestColorGenerator icon_color_generator_{/*default_color=*/SK_ColorRED};

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
@@ -92,7 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
       HermesResponseStatus status);
 
   // Initialized to null and set once SetDevicePrefs() is called.
-  PrefService* device_prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> device_prefs_ = nullptr;
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

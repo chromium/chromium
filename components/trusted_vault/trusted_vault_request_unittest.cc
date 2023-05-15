@@ -28,7 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -422,4 +422,4 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
   }
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

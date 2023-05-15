@@ -219,6 +219,7 @@ source_set("common") {
     "mediastream/media_stream_controls.cc",
     "mediastream/media_stream_mojom_traits.cc",
     "mediastream/media_stream_request.cc",
+    "messaging/accelerated_static_bitmap_image_mojom_traits.cc",
     "messaging/cloneable_message.cc",
     "messaging/cloneable_message_mojom_traits.cc",
     "messaging/message_port_channel.cc",
@@ -276,6 +277,8 @@ source_set("common") {
     "switches.cc",
     "thread_safe_browser_interface_broker_proxy.cc",
     "unique_name/unique_name_helper.cc",
+    "url_pattern.cc",
+    "url_pattern_mojom_traits.cc",
     "use_counter/use_counter_feature.cc",
     "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
@@ -319,11 +322,13 @@ source_set("common") {
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/re2",
     "//ui/base:base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/display",
     "//ui/display/mojom",
     "//ui/events:events_base",
+    "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
 
@@ -402,6 +407,7 @@ source_set("common_unittests_sources") {
     "interest_group/ad_display_size_utils_unittest.cc",
     "interest_group/auction_config_mojom_traits_test.cc",
     "interest_group/interest_group_mojom_traits_test.cc",
+    "interest_group/interest_group_unittest.cc",
     "loader/inter_process_time_ticks_converter_unittest.cc",
     "loader/mime_sniffing_throttle_unittest.cc",
     "loader/referrer_utils_unittest.cc",
@@ -528,8 +534,8 @@ if (use_fuzzing_engine_with_lpm) {
     seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
   }
 
-  fuzzer_test("interest_group_parse_size_fuzzer") {
-    sources = [ "interest_group/interest_group_parse_size_fuzzer.cc" ]
+  fuzzer_test("ad_display_size_parser_fuzzer") {
+    sources = [ "interest_group/ad_display_size_parser_fuzzer.cc" ]
     deps = [
       ":common",
       "//content/public/common",

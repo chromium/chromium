@@ -178,7 +178,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       if (quota_info.temporary_usage <= kNegligibleUsage)
         return absl::nullopt;
 
-      dict.Set(kKeyOrigin, quota_info.host);
+      dict.Set(kKeyOrigin, quota_info.storage_key.origin().host());
       dict.Set(kKeyTotalUsage, ui::FormatBytes(quota_info.temporary_usage));
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
       break;

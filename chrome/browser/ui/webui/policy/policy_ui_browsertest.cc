@@ -394,7 +394,7 @@ void PolicyUITest::VerifyExportingPolicies(const base::Value::Dict& expected) {
   // Click on 'save policies' button.
   const std::string javascript =
       "document.getElementById('export-policies').click()";
-  EXPECT_TRUE(content::ExecuteScript(web_contents(), javascript));
+  EXPECT_TRUE(content::ExecJs(web_contents(), javascript));
 
   base::ThreadPoolInstance::Get()->FlushForTesting();
   // Open the created file.
@@ -457,8 +457,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
   expected_values.FindDict("policyValues")
       ->Set("extensions", base::Value::Dict());
 
-  base::Value::List popups_blocked_for_urls;
-  popups_blocked_for_urls.Append("aaa");
+  auto popups_blocked_for_urls = base::Value::List().Append("aaa");
   popups_blocked_for_urls.Append("bbb");
   popups_blocked_for_urls.Append("ccc");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
@@ -674,18 +673,21 @@ bool PolicyUIStatusTest::ReloadPolicies() {
       // Wait until reload button becomes enabled again, i.e. policies reloaded.
       function waitForPoliciesToReload() {
         if (reloadPoliciesBtn.disabled) {
-          window.requestIdleCallback(waitForPoliciesToReload);
+          return new Promise(resolve => {
+            window.requestIdleCallback(resolve);
+          }).then(waitForPoliciesToReload);
         } else {
-          domAutomationController.send(true);
+          return true;
         }
       }
-      window.requestIdleCallback(waitForPoliciesToReload);
+      return new Promise(resolve => {
+        window.requestIdleCallback(resolve);
+      }).then(waitForPoliciesToReload);
     })();
   )JS";
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
-  bool ignored;
-  return content::ExecuteScriptAndExtractBool(contents, javascript, &ignored);
+  return content::ExecJs(contents, javascript);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
@@ -1113,18 +1115,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   base::WriteFile(schema_path, json_data);
 
   // Build extension that contains the policy schema.
-  extensions::DictionaryBuilder storage;
-  storage.Set("managed_schema", schema_file);
+  auto storage = base::Value::Dict().Set("managed_schema", schema_file);
 
-  extensions::DictionaryBuilder manifest;
-  manifest.Set("name", "test")
-      .Set("version", "1")
-      .Set("manifest_version", 2)
-      .Set("storage", storage.Build());
+  auto manifest = base::Value::Dict()
+                      .Set("name", "test")
+                      .Set("version", "1")
+                      .Set("manifest_version", 2)
+                      .Set("storage", std::move(storage));
 
   extensions::ExtensionBuilder builder;
   builder.SetPath(temp_dir_.GetPath());
-  builder.SetManifest(manifest.Build());
+  builder.SetManifest(std::move(manifest));
   builder.SetLocation(
       extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 

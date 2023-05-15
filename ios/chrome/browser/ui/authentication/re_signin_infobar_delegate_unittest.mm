@@ -8,11 +8,12 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -63,7 +64,9 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    authentication_service->SignIn(chrome_identity);
+    authentication_service->SignIn(
+        chrome_identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   }
 
   web::WebTaskEnvironment task_environment_;

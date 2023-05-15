@@ -295,6 +295,9 @@ class VIEWS_EXPORT Label : public View,
   // Returns true if the label has a selection.
   bool HasSelection() const;
 
+  // Returns true if the label has the whole text selected.
+  bool HasFullSelection() const;
+
   // Selects the entire text. NO-OP if the label is not selectable.
   void SelectAll();
 
@@ -323,6 +326,9 @@ class VIEWS_EXPORT Label : public View,
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
   // Create a single RenderText instance to actually be painted.
@@ -398,7 +404,6 @@ class VIEWS_EXPORT Label : public View,
   // ui::SimpleMenuModel::Delegate overrides:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 

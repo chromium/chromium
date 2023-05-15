@@ -11,7 +11,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -53,7 +52,6 @@
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
-#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
@@ -305,7 +303,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void RemoveSpellCheckResolvedCallback();
   void RemoveWebPageOverlay();
   void ResolveBeforeInstallPromptPromise(const std::string& platform);
-  void RunIdleTasks(v8::Local<v8::Function> callback);
   void SendBluetoothManualChooserEvent(const std::string& event,
                                        const std::string& argument);
   void SetAcceptLanguages(const std::string& accept_languages);
@@ -489,7 +486,12 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
                 mutations.forEach(function(mutation) {
                   if (!target.classList.contains('reftest-wait') &&
                       !target.classList.contains('test-wait')) {
-                    window.testRunner.notifyDone();
+                    // This is the same as https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/test-wait.js
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(() => {
+                        window.testRunner.notifyDone();
+                      });
+                    });
                   }
                 });
               });
@@ -676,10 +678,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::RemoveWebPageOverlay)
       .SetMethod("resolveBeforeInstallPromptPromise",
                  &TestRunnerBindings::ResolveBeforeInstallPromptPromise)
-      // Immediately run all pending idle tasks, including all pending
-      // requestIdleCallback calls.  Invoke the callback when all
-      // idle tasks are complete.
-      .SetMethod("runIdleTasks", &TestRunnerBindings::RunIdleTasks)
       .SetMethod("selectionAsMarkup", &TestRunnerBindings::SelectionAsMarkup)
 
       // The Bluetooth functions are specified at
@@ -2043,15 +2041,6 @@ void TestRunnerBindings::ResolveBeforeInstallPromptPromise(
     app_banner_service_->ResolvePromise(platform);
     app_banner_service_.reset();
   }
-}
-
-void TestRunnerBindings::RunIdleTasks(v8::Local<v8::Function> v8_callback) {
-  if (invalid_)
-    return;
-  blink::scheduler::WebThreadScheduler* scheduler =
-      content::RenderThreadImpl::current()->GetWebMainThreadScheduler();
-  blink::scheduler::RunIdleTasksForTesting(
-      CHECK_DEREF(scheduler), WrapV8Closure(std::move(v8_callback)));
 }
 
 std::string TestRunnerBindings::PlatformName() {

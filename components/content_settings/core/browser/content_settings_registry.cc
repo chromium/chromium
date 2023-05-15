@@ -47,7 +47,7 @@ void ContentSettingsRegistry::ResetForTest() {
   Init();
 }
 
-ContentSettingsRegistry::~ContentSettingsRegistry() {}
+ContentSettingsRegistry::~ContentSettingsRegistry() = default;
 
 const ContentSettingsInfo* ContentSettingsRegistry::Get(
     ContentSettingsType type) const {
@@ -186,9 +186,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  // TODO(raymes): We're temporarily making midi sysex unsyncable while we roll
-  // out the kPermissionDelegation feature. We may want to make it syncable
-  // again sometime in the future. See https://crbug.com/879954 for details.
   Register(ContentSettingsType::MIDI_SYSEX, "midi-sysex", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},
            /*valid_settings=*/
@@ -441,7 +438,7 @@ void ContentSettingsRegistry::Init() {
            /*allowlisted_schemes=*/{},
            /*valid_settings=*/
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
+           WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);

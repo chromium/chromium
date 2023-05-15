@@ -6,6 +6,7 @@
 #define UI_EVENTS_DEVICES_INPUT_DEVICE_H_
 
 #include <stdint.h>
+#include <ostream>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -19,6 +20,9 @@ enum InputDeviceType {
   INPUT_DEVICE_BLUETOOTH,  // Known externally connected bluetooth input device.
   INPUT_DEVICE_UNKNOWN,    // Device that may or may not be an external device.
 };
+
+EVENTS_DEVICES_EXPORT std::ostream& operator<<(std::ostream& os,
+                                               const InputDeviceType value);
 
 // Represents an input device state.
 struct EVENTS_DEVICES_EXPORT InputDevice {
@@ -68,6 +72,9 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
   uint16_t vendor_id;
   uint16_t product_id;
   uint16_t version;
+
+  // Debugging method to describe internal state
+  virtual std::ostream& DescribeForLog(std::ostream& os) const;
 };
 
 }  // namespace ui

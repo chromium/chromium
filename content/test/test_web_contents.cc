@@ -291,7 +291,8 @@ void TestWebContents::NavigateAndFail(const GURL& url, int error_code) {
 
 void TestWebContents::TestSetIsLoading(bool value) {
   if (value) {
-    DidStartLoading(GetPrimaryMainFrame()->frame_tree_node(), true);
+    DidStartLoading(GetPrimaryMainFrame()->frame_tree_node());
+    LoadingStateChanged(LoadingState::LOADING_UI_REQUESTED);
   } else {
     for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
       RenderFrameHostImpl* current_frame_host =

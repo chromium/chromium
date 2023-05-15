@@ -64,7 +64,7 @@ class AcceleratorKeycodeLookupCacheTest : public testing::Test {
   std::unique_ptr<AcceleratorKeycodeLookupCache> lookup_cache_;
   std::unique_ptr<ui::StubKeyboardLayoutEngine> layout_engine_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
-  base::raw_ptr<TestInputMethodManager> input_method_manager_;
+  raw_ptr<TestInputMethodManager> input_method_manager_;
 };
 
 TEST_F(AcceleratorKeycodeLookupCacheTest, ImeChanged) {

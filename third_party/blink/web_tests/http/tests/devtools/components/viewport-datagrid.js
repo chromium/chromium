@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {DataGridTestRunner} from 'data_grid_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests ViewportDataGrid.\n`);
-  await TestRunner.loadLegacyModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
+  await TestRunner.loadLegacyModule('data_grid');
 
   function attach(parent, child, index) {
     var parentName = parent === root ? 'root' : parent.data.id;

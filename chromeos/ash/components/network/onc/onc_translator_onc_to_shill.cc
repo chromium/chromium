@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -137,10 +138,12 @@ class LocalTranslator {
                                 const StringTranslationEntry table[],
                                 const std::string& shill_property_name);
 
-  const chromeos::onc::OncValueSignature* onc_signature_;
-  const FieldTranslationEntry* field_translation_table_;
-  const base::Value::Dict* onc_object_;
-  base::Value::Dict* shill_dictionary_;
+  raw_ptr<const chromeos::onc::OncValueSignature, ExperimentalAsh>
+      onc_signature_;
+  raw_ptr<const FieldTranslationEntry, ExperimentalAsh>
+      field_translation_table_;
+  raw_ptr<const base::Value::Dict, ExperimentalAsh> onc_object_;
+  raw_ptr<base::Value::Dict, ExperimentalAsh> shill_dictionary_;
 };
 
 void LocalTranslator::TranslateFields() {

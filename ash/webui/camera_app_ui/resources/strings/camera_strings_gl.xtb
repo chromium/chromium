@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">A gravación detívose porque tes pouco espazo de almacenamento no dispositivo. Para gravar máis vídeos, terás que liberar espazo.</translation>
 <translation id="2036868001356139588">Duración do temporizador</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> (dispositivo activado)</translation>
-<translation id="2128052519899549250">Gravar vídeo de secuencia acelerada</translation>
 <translation id="2134029355740465625">Configuración de vídeo</translation>
 <translation id="2144806332417375165">Parámetros personalizados de vídeo</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Detectouse un documento</translation>
 <translation id="414641094616694804">Esta cámara non pode cambiar a resolución</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
-<translation id="4281620174117014503">Resolución media</translation>
 <translation id="428234092390943511">Miniatura da páxina</translation>
 <translation id="4383571725254449280">Rexistros de rendemento de impresión</translation>
 <translation id="4445542136948522167">Deixar de sacar foto</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5320594929574852403">Desprazándose cara á esquerda</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Secuencia acelerada</translation>
 <translation id="5662366948659129155">Escaneando páxina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Cadrado</translation>
+<translation id="574392208103952083">Medio</translation>
 <translation id="5746169159649715125">Gardar como PDF</translation>
 <translation id="5753488212459587150">Activar modo experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>
@@ -138,6 +136,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 fps</translation>
 <translation id="7671804233658741790">Esquina inferior dereita do documento</translation>
+<translation id="7684446460490665873">Gravar un vídeo de secuencia acelerada</translation>
 <translation id="7692090236657809299">Activar opcións de panorámica, inclinación e zoom</translation>
 <translation id="7726641833034062494">Gravar vídeo normal</translation>
 <translation id="7748344063862150053">Esquina superior dereita do documento</translation>
@@ -163,6 +162,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="9045010116236796332">Coloca todos os bordos do documento dentro do marco</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Procesando imaxe…</translation>
+<translation id="9161584225258678723">Secuencia acelerada</translation>
 <translation id="922762992951083513">Espello activado</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 </translationbundle>

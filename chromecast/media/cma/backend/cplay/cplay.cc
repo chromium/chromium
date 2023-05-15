@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -204,7 +203,7 @@ class WavOutputHandler : public OutputHandler {
                 clipped_data.size() * sizeof(clipped_data[0]));
     if (saturate_output) {
       for (size_t i = 0; i < clipped_data.size(); ++i) {
-        clipped_data[i] = base::clamp(clipped_data[i], -1.0f, 1.0f);
+        clipped_data[i] = std::clamp(clipped_data[i], -1.0f, 1.0f);
       }
     }
     wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(clipped_data.data()),

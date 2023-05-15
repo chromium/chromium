@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -13,7 +14,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -38,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -58,10 +60,11 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
 
-  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+  void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
+                      const ui::DataTransferEndpoint& data_dst,
                       base::RepeatingCallback<void()> reporting_cb) {
-    DlpClipboardNotifier::ProceedPressed(data_dst, std::move(reporting_cb),
-                                         GetWidget());
+    DlpClipboardNotifier::ProceedPressed(std::move(data), data_dst,
+                                         std::move(reporting_cb), GetWidget());
   }
 
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst) {
@@ -131,8 +134,8 @@ class FakeDlpController : public DataTransferDlpController,
     return false;
   }
 
-  views::Widget* widget_ = nullptr;
-  FakeClipboardNotifier* helper_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<FakeClipboardNotifier, ExperimentalAsh> helper_ = nullptr;
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
   bool force_paste_on_warn_ = false;
@@ -177,7 +180,8 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 
-    files_controller_ = std::make_unique<DlpFilesController>(*rules_manager_);
+    files_controller_ =
+        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
     ON_CALL(*rules_manager_, GetDlpFilesController)
         .WillByDefault(::testing::Return(files_controller_.get()));
 
@@ -217,12 +221,12 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                                 "PLACEHOLDER_IP"));
   }
 
-  MockDlpRulesManager* rules_manager_;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
-  std::unique_ptr<DlpFilesController> files_controller_;
+  std::unique_ptr<DlpFilesControllerAsh> files_controller_;
 };
 
 // Flaky on MSan bots: http://crbug.com/1178328

@@ -27,19 +27,11 @@ void BatchEntityMetadataTask::Execute(
   task_state_ = TaskState::kStarted;
 
   callback_ = std::move(callback);
-
-  if (features::ShouldUseBatchEntityMetadataSimplication()) {
-    entity_metadata_provider_->GetMetadataForEntityIds(
-        entity_ids_,
-        base::BindOnce(&BatchEntityMetadataTask::OnBatchEntityMetadataRetrieved,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    for (const auto& entity_id : entity_ids_) {
-      entity_metadata_provider_->GetMetadataForEntityId(
-          entity_id,
-          base::BindOnce(&BatchEntityMetadataTask::OnEntityMetadataRetrieved,
-                         weak_ptr_factory_.GetWeakPtr(), entity_id));
-    }
+  for (const auto& entity_id : entity_ids_) {
+    entity_metadata_provider_->GetMetadataForEntityId(
+        entity_id,
+        base::BindOnce(&BatchEntityMetadataTask::OnEntityMetadataRetrieved,
+                       weak_ptr_factory_.GetWeakPtr(), entity_id));
   }
 }
 

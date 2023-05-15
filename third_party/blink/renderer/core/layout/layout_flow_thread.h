@@ -96,11 +96,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   PaintLayerType LayerTypeRequired() const final;
 
-  bool NeedsPreferredWidthsRecalculation() const final {
-    NOT_DESTROYED();
-    return true;
-  }
-
   virtual void FlowThreadDescendantWasInserted(LayoutObject*) {
     NOT_DESTROYED();
   }

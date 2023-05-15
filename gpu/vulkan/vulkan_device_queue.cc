@@ -250,7 +250,8 @@ bool VulkanDeviceQueue::Initialize(
 
   if (allow_protected_memory) {
     if (!physical_device_info.feature_protected_memory) {
-      DLOG(ERROR) << "Protected memory is not supported";
+      LOG(DFATAL)
+          << "Protected memory is not supported. Vulkan is unavailable.";
       return false;
     }
     protected_memory_features_ = {
@@ -313,6 +314,12 @@ bool VulkanDeviceQueue::Initialize(
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
 
   allow_protected_memory_ = allow_protected_memory;
+
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "vulkan", base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+
   return true;
 }
 
@@ -477,11 +484,25 @@ std::unique_ptr<VulkanCommandPool> VulkanDeviceQueue::CreateCommandPool() {
 bool VulkanDeviceQueue::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  auto* dump = pmd->CreateAllocatorDump(
-      base::StringPrintf("gpu/vulkan/vma_allocator_%p", pmd));
+  std::string path =
+      base::StringPrintf("gpu/vulkan/vma_allocator_%p", vma_allocator());
+  // There are cases where the same VMA is used by several device queues. Make
+  // sure to not double count by using the VMA address in the path.
+  //
+  // This is still a success case, as the other device queue may disappear, so
+  // return true.
+  if (pmd->GetAllocatorDump(path)) {
+    return true;
+  }
+
+  auto* dump = pmd->CreateAllocatorDump(path);
   auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator());
+  // `allocated_size` is memory allocated from the device, used is what is
+  // actually used.
   dump->AddScalar("allocated_size", "bytes", allocated_used.first);
   dump->AddScalar("used_size", "bytes", allocated_used.second);
+  dump->AddScalar("fragmentation_size", "bytes",
+                  allocated_used.first - allocated_used.second);
   return true;
 }
 

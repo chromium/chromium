@@ -50,6 +50,9 @@ std::u16string GetNotificationTitle(const CastSink& sink,
 }
 
 std::u16string GetNotificationMessage(const CastRoute& route) {
+  if (route.freeze_info.is_frozen) {
+    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED);
+  }
   switch (route.content_source) {
     case ContentSource::kUnknown:
       return std::u16string();
@@ -85,6 +88,10 @@ void CastNotificationController::OnDevicesUpdated(
         kNotificationId, false /* by_user */);
     return;
   }
+
+  // The cast notification controller outlives cast sessions. Ensure
+  // `freeze_button_index_` starts reset when creating a new notification.
+  freeze_button_index_.reset();
 
   for (const auto& device : devices) {
     const CastSink& sink = device.sink;

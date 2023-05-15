@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -85,6 +86,16 @@ class BookmarkBridge {
     /** Returns whether the bridge has been destroyed. */
     private boolean isDestroyed() {
         return mIsDestroyed;
+    }
+
+    /**
+     * Gets the url for an image representing the given url.
+     * @param url The url to fetch the image for.
+     * @param callback The callback which will receive the image url.
+     */
+    public void getImageUrlForBookmark(GURL url, Callback<GURL> callback) {
+        BookmarkBridgeJni.get().getImageUrlForBookmark(
+                mNativeBookmarkBridge, BookmarkBridge.this, url, callback);
     }
 
     /**
@@ -205,19 +216,19 @@ class BookmarkBridge {
                     /*isManaged=*/false, /*dateAdded=*/0L, /*read=*/false);
         }
 
-        return BookmarkBridgeJni.get().getBookmarkByID(
+        return BookmarkBridgeJni.get().getBookmarkById(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
 
     /**
      * @return The top level folder's parents.
      */
-    public List<BookmarkId> getTopLevelFolderParentIDs() {
+    public List<BookmarkId> getTopLevelFolderParentIds() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderParentIDs(
+        BookmarkBridgeJni.get().getTopLevelFolderParentIds(
                 mNativeBookmarkBridge, BookmarkBridge.this, result);
         return result;
     }
@@ -228,12 +239,12 @@ class BookmarkBridge {
      * @return The top level folders. Note that special folders come first and normal top folders
      *         will be in the alphabetical order.
      */
-    public List<BookmarkId> getTopLevelFolderIDs(boolean getSpecial, boolean getNormal) {
+    public List<BookmarkId> getTopLevelFolderIds(boolean getSpecial, boolean getNormal) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderIDs(
+        BookmarkBridgeJni.get().getTopLevelFolderIds(
                 mNativeBookmarkBridge, BookmarkBridge.this, getSpecial, getNormal, result);
         return result;
     }
@@ -385,7 +396,7 @@ class BookmarkBridge {
      *
      * @return Child IDs of the given folder, with the specified type.
      */
-    public List<BookmarkId> getChildIDs(BookmarkId id) {
+    public List<BookmarkId> getChildIds(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
@@ -393,7 +404,7 @@ class BookmarkBridge {
             return searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);
         }
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getChildIDs(
+        BookmarkBridgeJni.get().getChildIds(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), result);
         return result;
     }
@@ -922,13 +933,15 @@ class BookmarkBridge {
     @NativeMethods
     public interface Natives {
         BookmarkModel getForProfile(Profile profile);
+        void getImageUrlForBookmark(long nativeBookmarkBridge, BookmarkBridge caller, GURL url,
+                Callback<GURL> callback);
         BookmarkId getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, boolean onlyEditable);
-        BookmarkItem getBookmarkByID(
+        BookmarkItem getBookmarkById(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void getTopLevelFolderParentIDs(
+        void getTopLevelFolderParentIds(
                 long nativeBookmarkBridge, BookmarkBridge caller, List<BookmarkId> bookmarksList);
-        void getTopLevelFolderIDs(long nativeBookmarkBridge, BookmarkBridge caller,
+        void getTopLevelFolderIds(long nativeBookmarkBridge, BookmarkBridge caller,
                 boolean getSpecial, boolean getNormal, List<BookmarkId> bookmarksList);
         BookmarkId getReadingListFolder(long nativeBookmarkBridge, BookmarkBridge caller);
         void getAllFoldersWithDepths(long nativeBookmarkBridge, BookmarkBridge caller,
@@ -941,7 +954,7 @@ class BookmarkBridge {
         String getBookmarkGuidByIdForTesting(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         int getChildCount(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void getChildIDs(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type,
+        void getChildIds(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type,
                 List<BookmarkId> bookmarksList);
         BookmarkId getChildAt(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, int index);

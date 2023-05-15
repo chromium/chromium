@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../controls/extension_controlled_indicator.js';
+import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
@@ -35,7 +35,8 @@ import {getTemplate} from './os_search_page.html.js';
 const OsSettingsSearchPageElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
-class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
+export class OsSettingsSearchPageElement extends
+    OsSettingsSearchPageElementBase {
   static get is() {
     return 'os-settings-search-page';
   }

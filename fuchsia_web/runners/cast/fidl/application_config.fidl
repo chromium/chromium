@@ -57,7 +57,7 @@ type ApplicationConfig = resource table {
     /// for the component to stop. Setting this value therefore allows the
     /// application's web content to out-live the component itself, for up to
     /// the specified duration.
-    12: shutdown_delay zx.duration;
+    12: shutdown_delay zx.Duration;
 };
 
 /// Service interface for working with application configurations.

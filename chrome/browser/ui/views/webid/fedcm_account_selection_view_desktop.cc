@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,8 +33,8 @@ int AccountSelectionView::GetBrandIconIdealSize() {
   // As only a single brand icon is selected and the user can have monitors with
   // different screen densities, make the ideal size be the size which works
   // with a high density display (if the OS supports high density displays).
-  float max_supported_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactors().back());
+  const float max_supported_scale =
+      ui::GetScaleForMaxSupportedResourceScaleFactor();
   return round(GetBrandIconMinimumSize() * max_supported_scale);
 }
 
@@ -47,6 +48,14 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   Close();
 
   TabStripModelObserver::StopObservingAll(this);
+
+  if (idp_signin_modal_dialog_) {
+    // Important to remove the observer here, so that we don't try to use it in
+    // FedCmModalDialogView's destructor to inform this
+    // FedCmAccountSelectionView, which would cause a use-after-free.
+    idp_signin_modal_dialog_->RemoveObserver();
+    CloseModalDialog();
+  }
 }
 
 void FedCmAccountSelectionView::Show(
@@ -56,6 +65,16 @@ void FedCmAccountSelectionView::Show(
         identity_provider_data_list,
     Account::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox) {
+  // If IDP sign-in modal dialog is open, we delay the showing of the accounts
+  // dialog until the modal dialog is destroyed.
+  if (idp_signin_modal_dialog_) {
+    show_accounts_dialog_callback_ = base::BindOnce(
+        &FedCmAccountSelectionView::Show, weak_ptr_factory_.GetWeakPtr(),
+        top_frame_etld_plus_one, iframe_etld_plus_one,
+        identity_provider_data_list, sign_in_mode, show_auto_reauthn_checkbox);
+    return;
+  }
+
   idp_display_data_list_.clear();
 
   size_t accounts_size = 0u;
@@ -64,7 +83,7 @@ void FedCmAccountSelectionView::Show(
     idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
-        identity_provider.accounts);
+        identity_provider.accounts, identity_provider.request_permission);
     // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
@@ -130,19 +149,24 @@ void FedCmAccountSelectionView::Show(
 
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
+    const absl::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
     const content::IdentityProviderMetadata& idp_metadata) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
+  absl::optional<std::u16string> iframe_etld_plus_one_u16 =
+      iframe_etld_plus_one ? absl::make_optional<std::u16string>(
+                                 base::UTF8ToUTF16(*iframe_etld_plus_one))
+                           : absl::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ = CreateBubbleWithAccessibleTitle(
-                         base::UTF8ToUTF16(top_frame_etld_plus_one),
-                         /*iframe_etld_plus_one=*/absl::nullopt,
-                         base::UTF8ToUTF16(idp_etld_plus_one),
-                         blink::mojom::RpContext::kSignIn,
-                         /*show_auto_reauthn_checkbox=*/false)
-                         ->GetWeakPtr();
+    bubble_widget_ =
+        CreateBubbleWithAccessibleTitle(
+            base::UTF8ToUTF16(top_frame_etld_plus_one),
+            iframe_etld_plus_one_u16, base::UTF8ToUTF16(idp_etld_plus_one),
+            blink::mojom::RpContext::kSignIn,
+            /*show_auto_reauthn_checkbox=*/false)
+            ->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
@@ -153,9 +177,9 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     }
   }
 
-  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(top_frame_etld_plus_one),
-                                     base::UTF8ToUTF16(idp_etld_plus_one),
-                                     idp_metadata);
+  GetBubbleView()->ShowFailureDialog(
+      base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
+      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
   if (create_bubble) {
     bubble_widget_->Show();
@@ -176,8 +200,9 @@ absl::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
 
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (!bubble_widget_)
+  if (!bubble_widget_ || idp_signin_modal_dialog_) {
     return;
+  }
 
   if (visibility == content::Visibility::VISIBLE) {
     bubble_widget_->Show();
@@ -277,6 +302,15 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
+
+  if (!idp_display_data.request_permission) {
+    // Return early if the dialog doesn't need to ask for the
+    // user's permission to share their id/email/name/picture.
+    delegate_->OnAccountSelected(idp_display_data.idp_metadata.config_url,
+                                 account);
+    return;
+  }
+
   state_ = (state_ == State::ACCOUNT_PICKER &&
             account.login_state == Account::LoginState::kSignUp)
                ? State::PERMISSION
@@ -335,6 +369,36 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 
   bubble_widget_->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void FedCmAccountSelectionView::OnSigninToIdP() {
+  delegate_->OnSigninToIdP();
+}
+
+content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
+    const GURL& url) {
+  idp_signin_modal_dialog_ = FedCmModalDialogView::ShowFedCmModalDialog(
+      delegate_->GetWebContents(), url, this);
+  input_protector_->VisibilityChanged(false);
+  bubble_widget_->Hide();
+  return idp_signin_modal_dialog_->GetWebViewWebContents();
+}
+
+void FedCmAccountSelectionView::CloseModalDialog() {
+  if (idp_signin_modal_dialog_) {
+    idp_signin_modal_dialog_->CloseFedCmModalDialog();
+  }
+}
+
+void FedCmAccountSelectionView::OnFedCmModalDialogViewDestroyed() {
+  // The underlying FedCmModalDialogView has been destroyed.
+  idp_signin_modal_dialog_ = nullptr;
+
+  if (show_accounts_dialog_callback_) {
+    std::move(show_accounts_dialog_callback_).Run();
+    input_protector_->VisibilityChanged(true);
+    bubble_widget_->Show();
+  }
 }
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(

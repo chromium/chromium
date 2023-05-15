@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
-#include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
@@ -89,10 +88,10 @@ void EnrollmentCertificateUploaderImpl::Start() {
     attestation_flow_ = default_attestation_flow_.get();
   }
 
-  GetCertificate(/*force_new_key=*/false);
+  GetCertificate();
 }
 
-void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
+void EnrollmentCertificateUploaderImpl::GetCertificate() {
   if (!policy_client_->is_registered()) {
     LOG(ERROR) << "CloudPolicyClient not registered.";
     RunCallbacks(Status::kInvalidClient);
@@ -106,19 +105,18 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
         DBusPrivacyCACallback(on_success, on_failure, from_here, status, data);
       },
       base::BindRepeating(
-          &EnrollmentCertificateUploaderImpl::CheckCertificateExpiry,
+          &EnrollmentCertificateUploaderImpl::UploadCertificateIfNeeded,
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure,
           weak_factory_.GetWeakPtr()),
       FROM_HERE);
-  AttestationFeatures::GetFeatures(base::BindOnce(
-      &EnrollmentCertificateUploaderImpl::OnGetFeaturesReady,
-      weak_factory_.GetWeakPtr(), force_new_key, std::move(callback)));
+  AttestationFeatures::GetFeatures(
+      base::BindOnce(&EnrollmentCertificateUploaderImpl::OnGetFeaturesReady,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EnrollmentCertificateUploaderImpl::OnGetFeaturesReady(
-    bool force_new_key,
     AttestationFlow::CertificateCallback callback,
     const AttestationFeatures* features) {
   if (!features) {
@@ -144,12 +142,16 @@ void EnrollmentCertificateUploaderImpl::OnGetFeaturesReady(
     return;
   }
 
-  VLOG_IF(1, force_new_key) << "Fetching certificate with new key";
+  // Always force a new key to obtain a fresh certificate.
+  // Expired certificates are rejected by the server. It is easier to force
+  // the certificate refresh rather than ensure certificate expiry status, since
+  // the certificate upload is not expected to happen too often. See b/163817801
+  // and b/216220722 for the context.
   attestation_flow_->GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(),   // Not used.
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/force_new_key, key_crypto_type,
+      /*force_new_key=*/true, key_crypto_type,
       /*key_name=*/kEnterpriseEnrollmentKey,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
@@ -169,40 +171,6 @@ void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(
   if (!Reschedule()) {
     RunCallbacks(Status::kFailedToFetch);
   }
-}
-
-void EnrollmentCertificateUploaderImpl::CheckCertificateExpiry(
-    const std::string& pem_certificate_chain) {
-  // Expiry threshold is 0 so no expiring soon certificates. The reason is that
-  // enrollmen certificates expire in 1 day so there's no anyhow optimal
-  // threshold to catch expiring certificates. Worst case scenario: upload
-  // expring certificate on start-up and re-upload new one on demand.
-  const CertificateExpiryStatus cert_status =
-      ::ash::attestation::CheckCertificateExpiry(
-          pem_certificate_chain,
-          /*expiry_threshold=*/base::TimeDelta());
-  switch (cert_status) {
-    case CertificateExpiryStatus::kExpiringSoon:
-    case CertificateExpiryStatus::kExpired:
-      LOG(WARNING) << "Existing certificate has expired.";
-      has_already_uploaded_ = false;
-      GetCertificate(/*force_new_key=*/true);
-      return;
-    case CertificateExpiryStatus::kValid:
-    case CertificateExpiryStatus::kInvalidPemChain:
-    case CertificateExpiryStatus::kInvalidX509:
-      // kInvalidPemChain and kInvalidX509 are not handled intentionally.
-      // Renewal is expensive so we only renew certificates with good evidence
-      // that they have expired or will soon expire; if we don't know, we don't
-      // renew.
-      LOG_IF(ERROR, cert_status != CertificateExpiryStatus::kValid)
-          << "Failed to parse certificate, cannot check expiry: "
-          << CertificateExpiryStatusToString(cert_status);
-      UploadCertificateIfNeeded(pem_certificate_chain);
-      return;
-  }
-
-  NOTREACHED() << "Unknown certificate status";
 }
 
 void EnrollmentCertificateUploaderImpl::UploadCertificateIfNeeded(

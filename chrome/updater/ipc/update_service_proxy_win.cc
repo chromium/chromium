@@ -43,10 +43,7 @@ using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
 
 // This class implements the IUpdaterObserver interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterObserver
-    : public DynamicIIDsImpl<IUpdaterObserver,
-                             __uuidof(IUpdaterObserverUser),
-                             __uuidof(IUpdaterObserverSystem)> {
+class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
  public:
   UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
@@ -212,10 +209,7 @@ class UpdaterObserver
 
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterCallback
-    : public DynamicIIDsImpl<IUpdaterCallback,
-                             __uuidof(IUpdaterCallbackUser),
-                             __uuidof(IUpdaterCallbackSystem)> {
+class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
  public:
   explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
       : callback_(std::move(callback)) {}
@@ -387,7 +381,7 @@ class UpdateServiceProxyImpl
       return;
     }
     auto callback_wrapper =
-        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
+        MakeComObjectOrCrash<UpdaterCallback>(base::BindOnce(
             [](base::OnceCallback<void(int)> callback, LONG status_code) {
               std::move(callback).Run(status_code);
             },
@@ -439,7 +433,7 @@ class UpdateServiceProxyImpl
     }
 
     auto callback_wrapper =
-        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
+        MakeComObjectOrCrash<UpdaterCallback>(base::BindOnce(
             [](base::OnceCallback<void(int)> callback, LONG status_code) {
               std::move(callback).Run(status_code);
             },
@@ -471,7 +465,7 @@ class UpdateServiceProxyImpl
       std::move(callback).Run();
       return;
     }
-    auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
+    auto callback_wrapper = MakeComObjectOrCrash<UpdaterCallback>(
         base::BindOnce([](base::OnceClosure callback,
                           LONG /*status_code*/) { std::move(callback).Run(); },
                        std::move(callback)));
@@ -500,7 +494,7 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
     HRESULT hr = get_interface()->CheckForUpdate(
         app_id_w.c_str(), static_cast<int>(priority),
@@ -543,7 +537,7 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
     HRESULT hr = get_interface()->Update(
         app_id_w.c_str(), install_data_index_w.c_str(),
@@ -565,7 +559,7 @@ class UpdateServiceProxyImpl
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
     if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
@@ -627,7 +621,7 @@ class UpdateServiceProxyImpl
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
     HRESULT hr = get_interface()->Install(
         app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
@@ -692,7 +686,7 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
     HRESULT hr = get_interface()->RunInstaller(
         app_id_w.c_str(), installer_path.value().c_str(),

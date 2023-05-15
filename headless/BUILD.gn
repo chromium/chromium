@@ -65,7 +65,6 @@ repack("resource_pack_data") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
@@ -76,7 +75,6 @@ repack("resource_pack_data") {
   deps = [
     "//components/resources:components_resources",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
@@ -206,6 +204,7 @@ devtools_domains = [
   "runtime",
   "security",
   "service_worker",
+  "storage",
   "target",
   "tracing",
 ]
@@ -421,8 +420,6 @@ component("headless_non_renderer") {
   deps = [
     ":backend_cdp_bindings",
     ":gen_devtools_client_api",
-    ":version_header",
-    ":version_header",
     "//base:base_static",
     "//base:base_static",
     "//build:branding_buildflags",
@@ -829,7 +826,10 @@ test("headless_browsertests") {
   }
 
   if (headless_enable_commands) {
-    deps += [ "//components/headless/command_handler" ]
+    deps += [
+      "//components/headless/command_handler",
+      "//components/headless/command_handler:switches",
+    ]
   }
 
   configs += [ ":headless_defines_config" ]
@@ -990,13 +990,4 @@ executable("headless_shell") {
   }
 
   configs += [ ":headless_defines_config" ]
-}
-
-process_version("version_header") {
-  template_file = "public/version.h.in"
-  sources = [
-    "//chrome/VERSION",
-    lastchange_file,
-  ]
-  output = "$target_gen_dir/public/version.h"
 }

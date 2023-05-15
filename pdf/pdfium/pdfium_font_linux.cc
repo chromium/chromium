@@ -4,11 +4,11 @@
 
 #include "pdf/pdfium/pdfium_font_linux.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -115,7 +115,7 @@ blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
   static_assert(blink::WebFontDescription::kWeight900 == 8, "Blink Weight max");
   constexpr int kMinimumWeight = 100;
   constexpr int kMaximumWeight = 900;
-  int normalized_weight = base::clamp(weight, kMinimumWeight, kMaximumWeight);
+  int normalized_weight = std::clamp(weight, kMinimumWeight, kMaximumWeight);
   normalized_weight = (normalized_weight / 100) - 1;
   return static_cast<blink::WebFontDescription::Weight>(normalized_weight);
 }

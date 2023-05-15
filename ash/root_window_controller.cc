@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/root_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
@@ -102,6 +103,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
@@ -497,7 +499,7 @@ class FillLayoutManager : public aura::LayoutManager {
     }
   }
 
-  aura::Window* container_;
+  raw_ptr<aura::Window, ExperimentalAsh> container_;
 };
 
 }  // namespace
@@ -931,7 +933,7 @@ void RootWindowController::CreateAmbientWidget() {
   DCHECK(!ambient_widget_);
 
   auto* ambient_controller = Shell::Get()->ambient_controller();
-  if (ambient_controller && ambient_controller->IsShown()) {
+  if (ambient_controller && ambient_controller->ShouldShowAmbientUi()) {
     ambient_widget_ = ambient_controller->CreateWidget(
         GetRootWindow()->GetChildById(kShellWindowId_AmbientModeContainer));
   }
@@ -1095,14 +1097,14 @@ void RootWindowController::InitLayoutManagers(
       lock_action_handler_container);
   lock_action_handler_container->SetLayoutManager(
       std::make_unique<LockActionHandlerLayoutManager>(
-          lock_action_handler_container, shelf_.get(),
+          lock_action_handler_container,
           lock_screen_action_background_controller_.get()));
 
   aura::Window* lock_container =
       GetContainer(kShellWindowId_LockScreenContainer);
   DCHECK(lock_container);
   lock_container->SetLayoutManager(
-      std::make_unique<LockLayoutManager>(lock_container, shelf_.get()));
+      std::make_unique<LockLayoutManager>(lock_container));
 
   aura::Window* always_on_top_container =
       GetContainer(kShellWindowId_AlwaysOnTopContainer);
@@ -1373,6 +1375,16 @@ void RootWindowController::CreateContainers() {
 
   CreateContainer(kShellWindowId_PowerButtonAnimationContainer,
                   "PowerButtonAnimationContainer", magnified_container);
+
+  // Make sure booting animation container is always on top of all other
+  // siblings under the `magnified_container`.
+  if (ash::features::IsOobeSimonEnabled()) {
+    aura::Window* booting_animation_container =
+        CreateContainer(kShellWindowId_BootingAnimationContainer,
+                        "BootingAnimationContainer", magnified_container);
+    booting_animation_container->SetLayoutManager(
+        std::make_unique<FillLayoutManager>(booting_animation_container));
+  }
 }
 
 aura::Window* RootWindowController::CreateContainer(int window_id,

@@ -29,6 +29,7 @@
 import mock
 import operator
 import optparse
+import time
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -1710,6 +1711,56 @@ class PortTest(LoggingTestCase):
         self.assertEqual(port.host.filesystem.cwd, '/')
         self.assertEqual(port.results_directory(), '/some-directory/results')
 
+    def _make_fake_test_result(self, host, results_directory):
+        host.filesystem.maybe_make_directory(results_directory)
+        host.filesystem.write_binary_file(results_directory + '/results.html',
+                                          'This is a test results file')
+
+    def test_rename_results_folder(self):
+        host = MockHost()
+        port = host.port_factory.get('test-mac-mac10.10')
+
+        self._make_fake_test_result(port.host, '/tmp/layout-test-results')
+        self.assertTrue(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
+        timestamp = time.strftime(
+            '%Y-%m-%d-%H-%M-%S',
+            time.localtime(
+                port.host.filesystem.mtime(
+                    '/tmp/layout-test-results/results.html')))
+        archived_file_name = '/tmp/layout-test-results' + '_' + timestamp
+        port.rename_results_folder()
+        self.assertFalse(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
+        self.assertTrue(port.host.filesystem.exists(archived_file_name))
+
+    def test_clobber_old_results(self):
+        host = MockHost()
+        port = host.port_factory.get('test-mac-mac10.10')
+
+        self._make_fake_test_result(port.host, '/tmp/layout-test-results')
+        self.assertTrue(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
+        port.clobber_old_results()
+        self.assertFalse(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
+
+    def test_limit_archived_results_count(self):
+        host = MockHost()
+        port = host.port_factory.get('test-mac-mac10.10')
+
+        for x in range(1, 31):
+            dir_name = '/tmp/layout-test-results' + '_' + str(x)
+            self._make_fake_test_result(port.host, dir_name)
+        port.limit_archived_results_count()
+        deleted_dir_count = 0
+        for x in range(1, 6):
+            dir_name = '/tmp/layout-test-results' + '_' + str(x)
+            self.assertFalse(port.host.filesystem.exists(dir_name))
+        for x in range(6, 31):
+            dir_name = '/tmp/layout-test-results' + '_' + str(x)
+            self.assertTrue(port.host.filesystem.exists(dir_name))
+
     def _assert_config_file_for_platform(self, port, platform, config_file):
         port.host.platform = MockPlatformInfo(os_name=platform)
         self.assertEqual(
@@ -1862,24 +1913,6 @@ class PortTest(LoggingTestCase):
                 port.used_expectations_files())
         finally:
             port.host.filesystem.chdir(original_dir)
-
-    def test_skia_gold_properties_initialization(self):
-        # The Gold code usually assumes that argparse is used, not optparse, so
-        # ensure that it still works with optparse here.
-        port = self.make_port()
-        expected_revision = 'a' * 40
-        expected_issue = '1234'
-        expected_patchset = '1'
-        expected_id = 'bbid'
-        port._options.git_revision = expected_revision
-        port._options.gerrit_issue = expected_issue
-        port._options.gerrit_patchset = expected_patchset
-        port._options.buildbucket_id = expected_id
-        properties = port.skia_gold_properties()
-        self.assertEqual(properties.git_revision, expected_revision)
-        self.assertEqual(properties.issue, expected_issue)
-        self.assertEqual(properties.patchset, expected_patchset)
-        self.assertEqual(properties.job_id, expected_id)
 
 
 class NaturalCompareTest(unittest.TestCase):

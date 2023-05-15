@@ -65,6 +65,9 @@ All changes to this list should go through Blink's feature review process: http:
     animation-iteration-count
     animation-name
     animation-play-state
+    animation-range-end
+    animation-range-start
+    animation-timeline
     animation-timing-function
     app-region
     appearance
@@ -326,6 +329,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scroll-timeline-attachment
+    scroll-timeline-axis
+    scroll-timeline-name
     scrollbar-gutter
     shape-image-threshold
     shape-margin
@@ -382,6 +388,10 @@ All changes to this list should go through Blink's feature review process: http:
     user-select
     vector-effect
     vertical-align
+    view-timeline-attachment
+    view-timeline-axis
+    view-timeline-inset
+    view-timeline-name
     view-transition-name
     visibility
     white-space-collapse
@@ -435,7 +445,13 @@ All changes to this list should go through Blink's feature review process: http:
         animation-iteration-count
         animation-name
         animation-play-state
+        animation-range-end
+        animation-range-start
+        animation-timeline
         animation-timing-function
+    animation-range
+        animation-range-end
+        animation-range-start
     background
         background-attachment
         background-clip
@@ -734,6 +750,10 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-padding-inline
         scroll-padding-inline-end
         scroll-padding-inline-start
+    scroll-timeline
+        scroll-timeline-attachment
+        scroll-timeline-axis
+        scroll-timeline-name
     text-decoration
         text-decoration-color
         text-decoration-line
@@ -747,6 +767,10 @@ All changes to this list should go through Blink's feature review process: http:
         transition-duration
         transition-property
         transition-timing-function
+    view-timeline
+        view-timeline-attachment
+        view-timeline-axis
+        view-timeline-name
     white-space
         text-wrap
         white-space-collapse

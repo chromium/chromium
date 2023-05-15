@@ -21,6 +21,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
@@ -59,6 +60,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -158,7 +160,7 @@ class PageFlipWaiter : public PaginationModelObserver {
   }
 
   std::unique_ptr<base::RunLoop> ui_run_loop_;
-  PaginationModel* model_ = nullptr;
+  raw_ptr<PaginationModel, ExperimentalAsh> model_ = nullptr;
   bool wait_ = false;
   std::string selected_pages_;
 };
@@ -185,7 +187,7 @@ class WindowDeletionWaiter : aura::WindowObserver {
   }
 
   base::RunLoop run_loop_;
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
@@ -226,7 +228,7 @@ class PostPageFlipTask : public PaginationModelObserver {
   void TransitionChanged() override {}
   void TransitionEnded() override {}
 
-  PaginationModel* model_;
+  raw_ptr<PaginationModel, ExperimentalAsh> model_;
   base::OnceClosure task_;
 };
 
@@ -249,7 +251,7 @@ class BoundsChangeCounter : public views::ViewObserver {
   int bounds_change_count() const { return bounds_change_count_; }
 
  private:
-  views::View* const observed_view_;
+  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
   int bounds_change_count_ = 0;
 };
 
@@ -295,6 +297,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     auto disabled_features = std::vector<base::test::FeatureRef>();
     if (use_drag_drop_refactor_) {
       enabled_features.push_back(app_list_features::kDragAndDropRefactor);
+    } else {
+      disabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
 
     if (folder_icon_refresh_) {
@@ -305,6 +309,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
     if (enable_shelf_party_) {
       enabled_features.push_back(features::kShelfParty);
+    } else {
+      disabled_features.push_back(features::kShelfParty);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -721,15 +727,16 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
   // clamshell mode.
-  AppsGridView* apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
 
   // May be owned by different parent views depending on tablet mode.
-  AppListFolderView* app_list_folder_view_ = nullptr;
-  SearchBoxView* search_box_view_ = nullptr;
+  raw_ptr<AppListFolderView, ExperimentalAsh> app_list_folder_view_ = nullptr;
+  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
 
   // These views exist in tablet mode.
-  PagedAppsGridView* paged_apps_grid_view_ = nullptr;
-  AppListView* app_list_view_ = nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView, ExperimentalAsh> paged_apps_grid_view_ = nullptr;
+  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+      nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
@@ -4961,9 +4968,11 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   model_override->PopulateApps(3);
 
   auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model = std::make_unique<QuickAppAccessModel>();
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model.get());
   UpdateLayout();
 
   // Verify that the view model size matches the new model.
@@ -4986,7 +4995,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
 
   // Switch model to original one, and verify the folder view gets closed.
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, GetTestModel(), GetAppListTestHelper()->search_model());
+      /*profile_id=*/1, GetTestModel(), GetAppListTestHelper()->search_model(),
+      GetAppListTestHelper()->quick_app_access_model());
   UpdateLayout();
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_EQ(2u, view_model->view_size());

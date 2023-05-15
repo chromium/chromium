@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
@@ -114,7 +114,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
 
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request),
-      resource_request.destination, base::GenerateGUID() /* client_id */,
+      resource_request.destination,
+      base::Uuid::GenerateRandomV4().AsLowercaseString() /* client_id */,
       std::move(preferred_version), base::DoNothing() /* prepare callback */,
       base::BindOnce(&ServiceWorkerOfflineCapabilityChecker::OnFetchResult,
                      base::Unretained(this)),

@@ -7,7 +7,7 @@
         display: flex;
       }
 
-      .list-item > div {
+      .list-item > div:not(.separator) {
         flex: 1;
       }
     </style>
@@ -47,14 +47,35 @@
 
     <div class="list-frame" id="sync-data-types">
       <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
-        <div id="appCheckboxLabel">
-          $i18n{appCheckboxLabel}
-        </div>
-        <cr-toggle checked="{{syncPrefs.appsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[syncPrefs.syncAllDataTypes]]"
-            aria-labelledby="appCheckboxLabel">
-        </cr-toggle>
+<if expr="not chromeos_lacros">
+      <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
+      <cr-toggle checked="{{syncPrefs.appsSynced}}"
+          on-change="onSingleSyncDataTypeChanged_"
+          disabled="[[syncPrefs.syncAllDataTypes]]"
+          aria-labelledby="appCheckboxLabel">
+      </cr-toggle>
+</if>
+<if expr="chromeos_lacros">
+      <div id="appCheckboxLabel" hidden="[[showSyncSettingsRevamp_]]">
+        $i18n{appCheckboxLabel}
+      </div>
+      <cr-link-row id="osSyncSettingsLink"
+          embedded
+          label="$i18n{appCheckboxLabel}"
+          sub-label="$i18n{appCheckboxSublabel}"
+          on-click="onOsSyncSettingsLinkClick_"
+          hidden="[[!showSyncSettingsRevamp_]]"
+          external>
+      </cr-link-row>
+      <div class="separator" hidden="[[!showSyncSettingsRevamp_]]"></div>
+      <cr-toggle id="appsSyncToggle"
+          checked="{{syncPrefs.appsSynced}}"
+          on-change="onSingleSyncDataTypeChanged_"
+          disabled="[[shouldAppsToggleBeDisabled_(
+            syncPrefs.syncAllDataTypes, showSyncSettingsRevamp_)]]"
+          aria-labelledby="appCheckboxLabel">
+      </cr-toggle>
+</if>
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.bookmarksRegistered]]">

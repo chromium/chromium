@@ -34,8 +34,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -708,7 +710,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   SetBluetoothManualChooser(false);
   SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
-  // Delete all cookies.
+  // Delete all cookies and Attribution Reporting data.
   {
     BrowserContext* browser_context =
         ShellContentBrowserClient::Get()->browser_context();
@@ -716,6 +718,16 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
         browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
+
+    if (auto* manager =
+            AttributionManager::FromBrowserContext(browser_context)) {
+      manager->ClearData(
+          /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+          /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
+          /*filter_builder=*/nullptr,
+          /*delete_rate_limit_data=*/true,
+          /*done=*/base::DoNothing());
+    }
   }
 
   ui::SelectFileDialog::SetFactory(nullptr);
@@ -858,14 +870,9 @@ void WebTestControlHost::CompositeAllFramesThen(
   // Only allow a single call to CompositeAllFramesThen(), without a call to
   // ResetBrowserAfterWebTest() in between. More than once risks overlapping
   // calls, due to the asynchronous nature of CompositeNodeQueueThen(), which
-  // can lead to use-after-free, e.g.
-  // https://clusterfuzz.com/v2/testcase-detail/4929420383748096
+  // can lead to use-after-free, e.g. crbug.com/899465.
   if (!composite_all_frames_node_storage_.empty() ||
       !composite_all_frames_node_queue_.empty()) {
-    // Using NOTREACHED + return here because we want to disallow the second
-    // call if this happens in release builds, while still catching this
-    // condition in debug builds.
-    NOTREACHED();
     return;
   }
   // Build the frame storage and depth first queue.

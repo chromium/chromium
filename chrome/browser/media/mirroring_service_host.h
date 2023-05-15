@@ -41,11 +41,11 @@ class MirroringServiceHost {
 
   // Makes a call to the VideoCaptureHost to pause the current mirroring
   // session.
-  virtual void Pause() = 0;
+  virtual void Pause(base::OnceClosure on_paused_callback) = 0;
 
   // Makes a call to the VideoCaptureHost to resume the current mirroring
   // session.
-  virtual void Resume() = 0;
+  virtual void Resume(base::OnceClosure on_resumed_callback) = 0;
 
   base::WeakPtr<MirroringServiceHost> GetWeakPtr();
 

@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
@@ -92,7 +93,7 @@ class AppPlatformMetricsService {
   // arrived to report noisy AppKMs events.
   void CheckForNoisyAppKMReportingInterval();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   int day_id_;
 

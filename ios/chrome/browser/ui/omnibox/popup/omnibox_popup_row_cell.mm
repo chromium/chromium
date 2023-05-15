@@ -570,29 +570,14 @@ BOOL IsMultilineSearchSuggestionEnabled() {
 
   self.accessibilityCustomActions = @[ trailingButtonAction ];
 
-  UIImage* trailingButtonImage = nil;
-
-  if (UseSymbolsInOmnibox()) {
-    trailingButtonImage =
-        self.suggestion.isTabMatch
-            ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
-                                         kTrailingButtonPointSize)
-            : DefaultSymbolWithPointSize(kRefineQuerySymbol,
-                                         kTrailingButtonPointSize);
-    trailingButtonImage =
-        trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
-  } else {
-    if (self.suggestion.isTabMatch) {
-      trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
-      trailingButtonImage =
-          trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
-    } else {
-      int trailingButtonResourceID = 0;
-      trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-      trailingButtonImage =
-          NativeReversibleImage(trailingButtonResourceID, YES);
-    }
-  }
+  UIImage* trailingButtonImage =
+      self.suggestion.isTabMatch
+          ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
+                                       kTrailingButtonPointSize)
+          : DefaultSymbolWithPointSize(kRefineQuerySymbol,
+                                       kTrailingButtonPointSize);
+  trailingButtonImage =
+      trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
 
   trailingButtonImage = [trailingButtonImage
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

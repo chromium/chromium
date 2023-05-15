@@ -54,14 +54,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
 
     menu_view_ = new SwitchAccessMenuView();
     menu_view_->SetBorder(views::CreateEmptyBorder(kBubbleMenuPadding));
-    bubble_view_->AddChildView(menu_view_);
-
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (!features::IsDarkLightModeEnabled()) {
-      menu_view_->SetPaintToLayer();
-      menu_view_->layer()->SetFillsBoundsOpaquely(false);
-    }
+    bubble_view_->AddChildView(menu_view_.get());
 
     widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     TrayBackgroundView::InitializeBubbleAnimations(widget_);

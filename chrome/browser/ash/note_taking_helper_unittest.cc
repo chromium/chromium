@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -76,7 +77,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/value_builder.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -304,20 +304,15 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       absl::optional<base::Value::List> permissions,
       absl::optional<base::Value::List> action_handlers) {
     base::Value::Dict manifest =
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", name)
             .Set("version", "1.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("background",
-                          extensions::DictionaryBuilder()
-                              .Set("scripts", extensions::ListBuilder()
-                                                  .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Build();
+            .Set("app", base::Value::Dict().Set(
+                            "background",
+                            base::Value::Dict().Set(
+                                "scripts",
+                                base::Value::List().Append("background.js"))));
 
     if (action_handlers)
       manifest.Set("action_handlers", std::move(*action_handlers));
@@ -373,8 +368,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       const std::string& app_name,
       Profile* profile) {
     return CreateAndInstallLockScreenAppWithPermissions(
-        id, app_name, extensions::ListBuilder().Append("lockScreen").Build(),
-        profile);
+        id, app_name, base::Value::List().Append("lockScreen"), profile);
   }
 
   scoped_refptr<const extensions::Extension>
@@ -383,14 +377,11 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       const std::string& app_name,
       absl::optional<base::Value::List> permissions,
       Profile* profile) {
-    base::Value::List lock_enabled_action_handler =
-        extensions::ListBuilder()
-            .Append(extensions::DictionaryBuilder()
-                        .Set("action", app_runtime::ToString(
-                                           app_runtime::ActionType::kNewNote))
-                        .Set("enabled_on_lock_screen", true)
-                        .Build())
-            .Build();
+    base::Value::List lock_enabled_action_handler = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("action",
+                 app_runtime::ToString(app_runtime::ActionType::kNewNote))
+            .Set("enabled_on_lock_screen", true));
 
     scoped_refptr<const extensions::Extension> keep_extension =
         CreateExtension(id, app_name, std::move(permissions),
@@ -482,7 +473,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
   // Pointer to the primary profile (returned by |profile()|) prefs - owned by
   // the profile.
-  sync_preferences::TestingPrefServiceSyncable* profile_prefs_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+      profile_prefs_ = nullptr;
 
  private:
   // Callback registered with the helper to record Chrome app launch requests.
@@ -574,10 +566,8 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
   ASSERT_FALSE(helper()->IsAppAvailable(profile()));
   ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
 
-  base::Value::List lock_disabled_action_handler =
-      extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
-          .Build();
+  base::Value::List lock_disabled_action_handler = base::Value::List().Append(
+      app_runtime::ToString(app_runtime::ActionType::kNewNote));
 
   // Install Keep app that does not support lock screen note taking - it should
   // be reported not to support lock screen note taking.
@@ -725,14 +715,12 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
   // "action_handlers": ["new_note"]
   scoped_refptr<const extensions::Extension> has_new_note = CreateExtension(
       kNewNoteId, kName, /*permissions=*/absl::nullopt,
-      extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
-          .Build());
+      base::Value::List().Append(
+          app_runtime::ToString(app_runtime::ActionType::kNewNote)));
   InstallExtension(has_new_note.get(), profile());
   // "action_handlers": []
-  scoped_refptr<const extensions::Extension> empty_array =
-      CreateExtension(kEmptyArrayId, kName, /*permissions=*/absl::nullopt,
-                      extensions::ListBuilder().Build());
+  scoped_refptr<const extensions::Extension> empty_array = CreateExtension(
+      kEmptyArrayId, kName, /*permissions=*/absl::nullopt, base::Value::List());
   InstallExtension(empty_array.get(), profile());
   // (no action handler entry)
   scoped_refptr<const extensions::Extension> none =
@@ -876,9 +864,8 @@ TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
 
   scoped_refptr<const extensions::Extension> extension = CreateExtension(
       kProdKeepExtensionId, "Keep", /*permissions=*/absl::nullopt,
-      extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
-          .Build());
+      base::Value::List().Append(
+          app_runtime::ToString(app_runtime::ActionType::kNewNote)));
   InstallExtension(extension.get(), profile());
 
   EXPECT_TRUE(AvailableAppsMatch(
@@ -1467,9 +1454,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
         kNotSupported}}));
 
   // Allowlist prod app by policy.
-  profile_prefs_->SetManagedPref(
-      prefs::kNoteTakingAppsLockScreenAllowlist,
-      extensions::ListBuilder().Append(prod_app->id()).Build());
+  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
+                                 base::Value::List().Append(prod_app->id()));
 
   // The preferred app's status hasn't changed, so the observers can remain
   // agnostic of the policy change.
@@ -1484,9 +1470,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
         kNotSupported}}));
 
   // Change allowlist so only dev app is allowlisted.
-  profile_prefs_->SetManagedPref(
-      prefs::kNoteTakingAppsLockScreenAllowlist,
-      extensions::ListBuilder().Append(dev_app->id()).Build());
+  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
+                                 base::Value::List().Append(dev_app->id()));
 
   // The preferred app status changed, so observers are expected to be notified.
   EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
@@ -1600,9 +1585,8 @@ TEST_F(NoteTakingHelperTest,
 
   // Changing policy before the app's lock screen availability has been reported
   // to NoteTakingHelper clients is not expected to fire observers.
-  profile_prefs_->SetManagedPref(
-      prefs::kNoteTakingAppsLockScreenAllowlist,
-      extensions::ListBuilder().Append(app->id()).Build());
+  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
+                                 base::Value::List().Append(app->id()));
   EXPECT_TRUE(observer.preferred_app_updates().empty());
 
   EXPECT_TRUE(AvailableAppsMatch(

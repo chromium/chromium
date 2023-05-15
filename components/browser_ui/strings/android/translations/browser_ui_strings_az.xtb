@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Təsvir dekodlaşdırıcısı</translation>
 <translation id="1785415724048343560">Ən yaxşı təcrübə üçün tövsiyə olunur</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
-<translation id="1864927262126810325">Mənbə: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Əlaqədar saytlar qrupdakı fəaliyyətinizi görə bilər</translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="1915307458270490472">Dəstəyi qoyun</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər</translation>
 <translation id="3165022941318558018">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verin</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saxlanılan data</translation>
-<translation id="3203366800380907218">Vebdən</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> tətbiqinə sizə bildiriş göndərmək icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> bildirişləri də aktiv edin.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Bu sayt digər saytların sizə reklam göstərmək üçün istifadə edə biləcəyi maraqları müəyyən edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan maraqlarınızı da əldə edir.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Səs oxudan saytları səssiz rejimə keçirin</translation>
 <translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3628308229821498208">Təklif edilən axtarışlar</translation>
+<translation id="3707034683772193706">Daxil olduğunuz sayt bot olmadığınızı doğrulamaq üçün Chrome ilə az miqdarda məlumat yadda saxlaya bilər</translation>
 <translation id="3721953990244350188">İmtina edin və növbəti əlçatan əməliyyatı göstərin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5216942107514965959">Son ziyarət bu gün olub</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
-<translation id="5229337741799419985">Bu ayar kimliyinizi müəyyən etmədən və ya saytlara brauzer tarixçəsini görmək imkanı vermədən işləyir</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" daxiletməsini silin</translation>
 <translation id="528192093759286357">Yuxarıdan sürüşdürün və tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
-<translation id="6701547804986694515">Daxil olduğunuz sayt bot olmadığınızı təsdiq edən Chrome ilə məlumatları yadda saxlaya bilər. Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="6722828510648505498">Kimlik xidmətlərindən daxil olma sorğularını bloklayın.</translation>
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Adətən bildirişləri bloklayırsınız. İcazə vermək üçün Detallar seçiminə toxunun.</translation>
 <translation id="7366415735885268578">Sayt əlavə edin</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> üçün ayarlar</translation>
+<translation id="7406113532070524618">Bu ayar kimliyi müəyyən etmir və ya saytlara brauzer tarixçəsini görmək imkanı vermir. Lakin saytlar doğrulamanın bir hissəsi kimi az miqdarda məlumat paylaşa bilər</translation>
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7423538860840206698">Buferdə oxu girişi blok edildi</translation>
 <translation id="7425915948813553151">Saytlar üçün tünd tema</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Saytların sensorlara girişini blok edin</translation>
 <translation id="8823559166155093873">Kukiləri bloklayın</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

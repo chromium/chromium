@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,8 +39,8 @@ constexpr char16_t kGivenName16[] = u"Given Name";
 class AuthPolicyCredentialsManagerTest : public testing::Test {
  public:
   AuthPolicyCredentialsManagerTest()
-      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : local_state_(TestingBrowserProcess::GetGlobal()),
+        user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
   AuthPolicyCredentialsManagerTest(const AuthPolicyCredentialsManagerTest&) =
       delete;
@@ -118,17 +119,18 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState local_state_;
+
   NetworkHandlerTestHelper network_handler_test_helper_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;
 
   // Owned by AuthPolicyCredentialsManagerFactory.
-  AuthPolicyCredentialsManager* authpolicy_credentials_manager_;
+  raw_ptr<AuthPolicyCredentialsManager, ExperimentalAsh>
+      authpolicy_credentials_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
-  ScopedTestingLocalState local_state_;
 };
 
 // Tests saving display and given name into user manager. No error means no

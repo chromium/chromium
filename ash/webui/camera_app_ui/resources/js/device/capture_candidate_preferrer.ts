@@ -431,7 +431,9 @@ export class CaptureCandidatePreferrer {
     const cameraInfo = this.cameraInfos.get(deviceId);
     assert(cameraInfo !== undefined);
     const enableMultiStreamRecording =
-        expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING);
+        expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING) ||
+        expert.isEnabled(
+            expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME);
 
     const candidates = [];
     const prefLevel = this.prefVideoResolutionLevelMap[deviceId];

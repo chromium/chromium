@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ResumeHeavyUser"/>
   <variant name="SearchUser"/>
   <variant name="ShoppingUser"/>
+  <variant name="TabletProductivityUser"/>
 </variants>
 
 <variants name="Index">
@@ -75,6 +76,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SearchUser"/>
   <variant name="ShoppingUser"/>
   <variant name="TabletProductivityUser"/>
+  <variant name="TabResumptionClassifier"/>
+  <variant name="WebAppInstallationPromo"/>
 </variants>
 
 <variants name="SegmentationModel">
@@ -97,9 +100,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SearchUserSegment"/>
   <variant name="Share"/>
   <variant name="ShoppingUser"/>
-  <variant name="TabletProductivityUserSegment"/>
+  <variant name="TabletProductivityUser"/>
+  <variant name="TabResumptionClassifier"/>
   <variant name="Unknown"/>
   <variant name="Voice"/>
+  <variant name="WebAppInstallationPromo"/>
 </variants>
 
 <variants name="SignalType">
@@ -634,9 +639,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records the reason why the segmentation platform was unable to return a
-    segment selection for {SegmentationKey}, or if a result was available.
-    Recorded when failure is hit when trying to compute selection, or when
-    reading the selected segment.
+    segment selection for {SegmentationKey}, or if a result was available. It
+    supports multi output segments and records the reason why segmentation
+    platform failed or was successful to return a result both when segments are
+    executed at chrome startup and from GetClassificationAPI for both on demand
+    and non-ondemand cases. Recorded when failure/success is hit when trying to
+    compute selection, or when reading the selected segment from prefs, or when
+    result for segment is updated in prefs.
   </summary>
   <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>
@@ -744,7 +753,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the post processed result for multi-output models. The value
     recorded is the index of the top label as defined in the list of labels in
-    metadata. Recorded whenever a new result is written into the prefs.
+    metadata. Recorded whenever a result is computed by executing model or
+    getting valid score from database.
   </summary>
   <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>
@@ -756,9 +766,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records change in the the post processed result from an old label to a new
-    label after a model evaluation completes. Recorded only if the selected
-    segment switches to a new value. Recorded only for the top label in the
-    result.
+    label after a model evaluation completes. Recorded only if the prefs for the
+    segment is expired and switches to a new value. Recorded only for the top
+    label in the result.
   </summary>
   <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>

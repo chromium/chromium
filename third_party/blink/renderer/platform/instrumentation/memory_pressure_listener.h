@@ -40,6 +40,10 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   // Can be overridden in web tests via internals.
   static bool IsLowEndDevice();
 
+  // Returns true when IsLowEndDevice() returns true or when the feature
+  // PartialLowEndModeOnMidEndDevices is enabled on Android devices.
+  static bool IsLowEndDeviceOrPartialLowEndModeEnabled();
+
   // Returns true when available memory is low.
   // This is not cheap and should not be called repeatedly.
   static bool IsCurrentlyLowMemory();

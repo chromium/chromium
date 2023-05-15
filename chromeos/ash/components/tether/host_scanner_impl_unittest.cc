@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -107,7 +108,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
       HostScanDevicePrioritizer* host_scan_device_prioritizer,
       TetherHostResponseRecorder* tether_host_response_recorder,
       ConnectionPreserver* connection_preserver) override {
-    EXPECT_EQ(expected_devices_, devices_to_connect);
+    EXPECT_EQ(*expected_devices_, devices_to_connect);
     FakeHostScannerOperation* operation = new FakeHostScannerOperation(
         devices_to_connect, device_sync_client, secure_channel_client,
         host_scan_device_prioritizer, tether_host_response_recorder,
@@ -117,7 +118,8 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
   }
 
  private:
-  const multidevice::RemoteDeviceRefList& expected_devices_;
+  const raw_ref<const multidevice::RemoteDeviceRefList, ExperimentalAsh>
+      expected_devices_;
   std::vector<FakeHostScannerOperation*> created_operations_;
 };
 

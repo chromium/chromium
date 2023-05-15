@@ -78,8 +78,7 @@ TEST_F(DMTokenRetrieverProviderTest, ReturnsUserDMTokenRetrieverForUserEvents) {
   // Verify it is a UserDMTokenRetriever by mocking profile based DM token
   // retrieval to return the test DM token and comparing the result of the
   // retrieval with this token.
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting(kDMToken));
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDMToken));
   test::TestEvent<StatusOr<std::string>> dm_token_retrieved_event;
   dm_token_retriever->RetrieveDMToken(dm_token_retrieved_event.cb());
   auto dm_token_result = dm_token_retrieved_event.result();

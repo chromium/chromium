@@ -60,10 +60,15 @@ bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id);
 // Does nothing for other app types.
 std::string TransformRawPolicyId(const std::string& raw_policy_id);
 
-// Returns |app_id| of the app that has a matching |policy_id| among
-// |policy_ids| or absl::nullopt if none matches.
-absl::optional<std::string> GetAppIdFromPolicyId(Profile*,
-                                                 const std::string& policy_id);
+// Returns |app_id|-s of apps that have a matching |policy_id| among
+// |policy_ids|.
+// In most circumstances this function returns no more than one app.
+// However, there are some special cases when there the candidate count might be
+// greater -- Web App placeholders (crbug.com/1427340) or multiple intents in a
+// single ARC package (b/276394178).
+// See go/cros-arc-multi-apps-sketch for a related discussion.
+std::vector<std::string> GetAppIdsFromPolicyId(Profile*,
+                                               const std::string& policy_id);
 
 // Returns the |policy_ids| field of the app with id equal to |app_id| or
 // absl::nullopt if there's no such app.

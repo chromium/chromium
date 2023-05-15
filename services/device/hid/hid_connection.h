@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "services/device/hid/hid_device_info.h"
+#include "services/device/public/cpp/hid/hid_report_type.h"
 
 namespace base {
 class RefCountedBytes;
@@ -52,9 +53,6 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
   void SetClient(Client* client);
 
   scoped_refptr<HidDeviceInfo> device_info() const { return device_info_; }
-  bool has_always_protected_collection() const {
-    return has_always_protected_collection_;
-  }
   bool closed() const { return closed_; }
 
   // Closes the connection. This must be called before the object is freed.
@@ -96,7 +94,7 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
       scoped_refptr<base::RefCountedBytes> buffer,
       WriteCallback callback) = 0;
 
-  bool IsReportIdProtected(uint8_t report_id, HidReportType report_type);
+  bool IsReportProtected(uint8_t report_id, HidReportType report_type) const;
   void ProcessInputReport(scoped_refptr<base::RefCountedBytes> buffer,
                           size_t size);
   void ProcessReadQueue();

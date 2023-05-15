@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="100506692671054486">der er ingen tidligere kommando</translation>
 <translation id="1009046985747440431">Tryk på pil op eller pil ned for at navigere, og tryk på Enter for at aktivere</translation>
 <translation id="1011903154582639569">Find en tast, og løft fingeren for at skrive</translation>
 <translation id="1012173283529841972">Punkt på listen</translation>
@@ -319,7 +320,7 @@
 <translation id="3082249673510793544">Rul tilbage</translation>
 <translation id="3084806535845658316">intet indtastningsekko</translation>
 <translation id="3086746722712840547">bmrk</translation>
-<translation id="308736057934395497">Dette forbedrer beskyttelsen af personlige oplysninger ved at slukke din skærm, så den ikke kan ses af andre. Du kan altid tænde skærmen igen ved at trykke på Søg + Lysstyrke op.</translation>
+<translation id="308736057934395497">Dette forbedrer privatlivsbeskyttelsen ved at slukke din skærm, så den ikke kan ses af andre. Du kan altid tænde skærmen igen ved at trykke på Søg + Lysstyrke op.</translation>
 <translation id="3090227230165225418">Vis notifikationer om downloads</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Næste orienteringspunkt</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Babylyserød</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3962990492275676168">Start læsning fra nuværende position</translation>
+<translation id="397094149579293440">ingen tekst er markeret</translation>
 <translation id="3970951409746498040">Sandfarvet</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Lys orangegul</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Der er ingen forrige niveau 1-overskrifter</translation>
 <translation id="4787577491510559358">Oplæs formatering for aktuelt element</translation>
 <translation id="479989351350248267">søg</translation>
+<translation id="4802034228771424756">der er ikke noget fokuseret tekstfelt</translation>
 <translation id="4804818685124855865">Afbryd</translation>
 <translation id="481165870889056555">Offentliggør titlen på den aktuelle side</translation>
 <translation id="4815668758102003883">Lys turkis</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Internt link</translation>
 <translation id="4909019435900810068">Gå ét ord tilbage</translation>
 <translation id="4911349081560453449">Der er ingen forrige afkrydsningsfelter</translation>
+<translation id="4919186071145887492">Det er ikke muligt at <ph name="COMMAND" />. Prøv igen</translation>
 <translation id="492295894462528572">Forord</translation>
 <translation id="495046168593986294">Rul op</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953585991029886728">Rediger tekst</translation>
+<translation id="4964701498510730546">tekstfeltet er tomt</translation>
 <translation id="4973717656530883744">Min. <ph name="X" /></translation>
 <translation id="4974612477719259470">Der er ingen forrige knapper</translation>
 <translation id="4979404613699303341">Knappen Forrige</translation>
+<translation id="4981239367072766915">ukendt input</translation>
 <translation id="4982917827052020884">Lad os starte med nogle taster, som du ofte vil bruge. Ctrl-tasten kan bruges til at stoppe igangværende oplæsning. Du finder Ctrl-tasten nederst til venstre på tastaturet. Tryk på Ctrl-tasten for at fortsætte.</translation>
 <translation id="4983588134362688868">Gå til toppen af siden</translation>
 <translation id="4986606102545753256">Vinduet <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Oplæs aktuel batteristatus</translation>
 <translation id="4997282455736854877">Alternativknappen <ph name="NAME" /> er valgt</translation>
 <translation id="5012724933919010465">Alternativknappen <ph name="NAME" /> til menupunktet er valgt</translation>
+<translation id="5014131807708055994">Det er ikke muligt at <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Aktivér talelogning</translation>
 <translation id="5041394372352067729">Flyt braille-visningen til toppen af siden</translation>
 <translation id="5042770794184672516">Skru op for talevolumen</translation>

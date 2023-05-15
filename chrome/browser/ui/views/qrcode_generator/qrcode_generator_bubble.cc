@@ -137,17 +137,20 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
 
   mojom::GenerateQRCodeRequestPtr request = mojom::GenerateQRCodeRequest::New();
   request->data = base::UTF16ToUTF8(textfield_url_->GetText());
-  request->should_render = true;
   request->center_image = mojom::CenterImage::CHROME_DINO;
   request->render_module_style = mojom::ModuleStyle::CIRCLES;
   request->render_locator_style = mojom::LocatorStyle::ROUNDED;
 
-  mojom::QRCodeGeneratorService* generator = qr_code_service_remote_.get();
-  // Rationale for Unretained(): Closing dialog closes the communication
-  // channel; callback will not run.
+  // Rationale for Unretained(): Closing dialog destroys `qrcode_service_` and
+  // `qrcode_service_override_` - the callback will not run (see also the doc
+  // comment of `QRImageGenerator::GenerateQRCode`).
   auto callback = base::BindOnce(
       &QRCodeGeneratorBubble::OnCodeGeneratorResponse, base::Unretained(this));
-  generator->GenerateQRCode(std::move(request), std::move(callback));
+  if (qrcode_service_override_.is_null()) {
+    qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
+  } else {
+    qrcode_service_override_.Run(std::move(request), std::move(callback));
+  }
 }
 
 void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
@@ -328,8 +331,9 @@ void QRCodeGeneratorBubble::Init() {
   // End controls row
 
   // Initialize Service
-  if (!qr_code_service_remote_)
-    qr_code_service_remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
+  if (!qrcode_service_ && qrcode_service_override_.is_null()) {
+    qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
+  }
 }
 
 void QRCodeGeneratorBubble::AddedToWidget() {
@@ -409,8 +413,10 @@ gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
 }
 
 void QRCodeGeneratorBubble::SetQRCodeServiceForTesting(
-    mojo::Remote<mojom::QRCodeGeneratorService>&& remote) {
-  qr_code_service_remote_ = std::move(remote);
+    base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
+                                 QRImageGenerator::ResponseCallback callback)>
+        qrcode_service_override) {
+  qrcode_service_override_ = std::move(qrcode_service_override);
 }
 
 void QRCodeGeneratorBubble::DownloadButtonPressed() {

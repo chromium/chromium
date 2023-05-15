@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/optional_ref.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -84,7 +85,7 @@ class WebHistoryService : public KeyedService {
   // TODO(dubroy): Extract the dictionary Value into a structured results
   // object.
   using QueryWebHistoryCallback =
-      base::OnceCallback<void(Request*, const base::Value*)>;
+      base::OnceCallback<void(Request*, base::optional_ref<base::Value::Dict>)>;
 
   using ExpireWebHistoryCallback = base::OnceCallback<void(bool success)>;
 
@@ -176,10 +177,10 @@ class WebHistoryService : public KeyedService {
                                  const net::PartialNetworkTrafficAnnotationTag&
                                      partial_traffic_annotation);
 
-  // Extracts a JSON-encoded HTTP response into a dictionary Value.
+  // Extracts a JSON-encoded HTTP response into a base::Value::Dict.
   // If `request`'s HTTP response code indicates failure, or if the response
   // body is not JSON, nullopt is returned.
-  static absl::optional<base::Value> ReadResponse(Request* request);
+  static absl::optional<base::Value::Dict> ReadResponse(Request* request);
 
   // Called by `request` when a web history query has completed. Unpacks the
   // response and calls `callback`, which is the original callback that was

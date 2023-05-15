@@ -14,10 +14,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -90,7 +90,7 @@ std::string GetOrCreateEduCoexistenceUserId() {
   PrefService* pref_service = profile->GetPrefs();
   std::string id = pref_service->GetString(prefs::kEduCoexistenceId);
   if (id.empty()) {
-    id = base::GenerateGUID();
+    id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     pref_service->SetString(prefs::kEduCoexistenceId, id);
   }
   return id;

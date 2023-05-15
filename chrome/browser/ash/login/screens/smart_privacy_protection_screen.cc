@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
@@ -48,7 +49,7 @@ bool SmartPrivacyProtectionScreen::MaybeSkip(WizardContext& context) {
   // SnoopingProtection and QuickDim. The screen should be skipped if none of
   // them is enabled.
   if (!context.skip_post_login_screens_for_tests &&
-      features::IsQuickDimEnabled()) {
+      features::IsQuickDimEnabled() && !DemoSession::IsDeviceInDemoMode()) {
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);

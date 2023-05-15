@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
@@ -53,7 +54,8 @@ class PlatformApi : public assistant_client::PlatformApi,
 
  private:
   // This is owned by |AudioInputController|.
-  assistant_client::AudioInputProvider* audio_input_provider_ = nullptr;
+  raw_ptr<assistant_client::AudioInputProvider, ExperimentalAsh>
+      audio_input_provider_ = nullptr;
 
   std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;
   std::unique_ptr<FakeAuthProvider> fake_auth_provider_;

@@ -364,22 +364,6 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   context.Restore();
 }
 
-bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
-  if (object.IsText() || !object.StyleRef().HasClipPath())
-    return false;
-  if (HasCompositeClipPathAnimation(object))
-    return true;
-  const auto* reference_clip =
-      DynamicTo<ReferenceClipPathOperation>(object.StyleRef().ClipPath());
-  if (!reference_clip)
-    return false;
-  LayoutSVGResourceClipper* resource_clipper =
-      ResolveElementReference(object, *reference_clip);
-  if (!resource_clipper)
-    return false;
-  return !resource_clipper->AsPath();
-}
-
 absl::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner,
     const bool is_in_block_fragmentation) {

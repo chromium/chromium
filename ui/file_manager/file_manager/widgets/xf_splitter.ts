@@ -166,7 +166,6 @@ function getCSS() {
       --xf-splitter-tracker-offset: 0px;
       display: flex;
       flex: none;
-      justify-content: center;
       margin: 0;
       position: relative;
       width: 100%;

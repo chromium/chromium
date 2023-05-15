@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -344,11 +345,12 @@ class CrosAudioConfigImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
+      nullptr;  // Not owned.
   std::unique_ptr<CrosAudioConfigImpl> cros_audio_config_;
   mojo::Remote<mojom::CrosAudioConfig> remote_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
-  FakeCrasAudioClient* fake_cras_audio_client_;
+  raw_ptr<FakeCrasAudioClient, ExperimentalAsh> fake_cras_audio_client_;
 };
 
 TEST_F(CrosAudioConfigImplTest, HandleExternalInputGainUpdate) {

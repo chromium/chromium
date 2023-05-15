@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
+import '/shared/settings/controls/extension_controlled_indicator.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -21,23 +22,22 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
 import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
+import {Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
-    addShortcutBanner: CrLinkRowElement,
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
     trustedVaultBanner: CrLinkRowElement,
-    managePasskeysRow: CrLinkRowElement,
   };
 }
 
-const SettingsSectionElementBase =
-    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SettingsSectionElementBase = RouteObserverMixin(
+    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
@@ -88,6 +88,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Object,
         value: TrustedVaultBannerState.NOT_SHOWN,
       },
+
+      canAddShortcut_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('canAddShortcut');
+        },
+      },
     };
   }
 
@@ -101,6 +108,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       null;
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
+
+  override ready() {
+    super.ready();
+
+    chrome.metricsPrivate.recordBoolean(
+        'PasswordManager.OpenedAsShortcut',
+        window.matchMedia('(display-mode: standalone)').matches);
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -148,6 +163,17 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
     this.setCredentialsChangedListener_ = null;
+  }
+
+  override currentRouteChanged(route: Route): void {
+    const param = route.queryParameters.get(UrlParam.START_IMPORT) || '';
+    if (param === 'true') {
+      const importer = this.shadowRoot!.querySelector('passwords-importer');
+      assert(importer);
+      importer.launchImport();
+      const params = new URLSearchParams();
+      Router.getInstance().updateRouterParams(params);
+    }
   }
 
   private getBlockedSitesDescription_() {

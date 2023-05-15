@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/core/page/focus_changed_observer.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/slot_scoped_traversal.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 
 namespace blink {
@@ -184,7 +183,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     Element* owner = nullptr;
     Element* owner_slot = nullptr;
     if (Element* element = DynamicTo<Element>(node))
-      owner_slot = SlotScopedTraversal::FindScopeOwnerSlot(*element);
+      owner_slot = FocusController::FindScopeOwnerSlot(*element);
 
     if (owner_slot)
       owner = owner_slot;
@@ -323,8 +322,9 @@ Element* ScopedFocusNavigation::Owner() const {
 ScopedFocusNavigation ScopedFocusNavigation::CreateFor(
     const Element& current,
     FocusController::OwnerMap& owner_map) {
-  if (HTMLSlotElement* slot = SlotScopedTraversal::FindScopeOwnerSlot(current))
+  if (HTMLSlotElement* slot = FocusController::FindScopeOwnerSlot(current)) {
     return ScopedFocusNavigation(*slot, &current, owner_map);
+  }
   if (HTMLSlotElement* slot =
           ScopedFocusNavigation::FindFallbackScopeOwnerSlot(current)) {
     return ScopedFocusNavigation(*slot, &current, owner_map);
@@ -1333,7 +1333,6 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
 Element* FocusController::FindFocusableElementInShadowHost(
     const Element& shadow_host) {
-  DCHECK(shadow_host.AuthorShadowRoot());
   // We have no behavior difference by focus trigger. Skip step 2.1.
 
   // 2.2. Otherwise, let possible focus delegates be the list of all
@@ -1347,6 +1346,18 @@ Element* FocusController::FindFocusableElementInShadowHost(
     if (auto* current_element = DynamicTo<Element>(current)) {
       if (current_element->IsFocusable())
         return current_element;
+    }
+  }
+  return nullptr;
+}
+
+// static
+HTMLSlotElement* FocusController::FindScopeOwnerSlot(const Element& current) {
+  Element* element = const_cast<Element*>(&current);
+  for (; element; element = element->parentElement()) {
+    HTMLSlotElement* slot_element = element->AssignedSlot();
+    if (slot_element) {
+      return slot_element;
     }
   }
   return nullptr;

@@ -35,6 +35,10 @@ static constexpr gfx::Size kInputVisibleSize(64, 48);
 static constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
 static constexpr VideoCodecProfile kValidOutputProfile = H264PROFILE_MAIN;
 
+MATCHER_P(ExpectEncoderStatusCode, expected_code, "encoder status code") {
+  return arg.code() == expected_code;
+}
+
 extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
@@ -66,7 +70,7 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
                void(unsigned int, const gfx::Size&, size_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
-  MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
+  MOCK_METHOD1(NotifyErrorStatus, void(const media::EncoderStatus&));
   MOCK_METHOD1(NotifyEncoderInfoChange,
                void(const media::VideoEncoderInfo& info));
 };
@@ -162,7 +166,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
 }
 
 // This test verifies that Initialize() fails when called with too large a
-// visible size, and NotifyError() gets pinged.
+// visible size.
 TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
        InitializeWithInvalidDimensionsFails) {
   auto mock_vea_client = std::make_unique<MockVideoEncodeAcceleratorClient>();
@@ -177,7 +181,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   base::RunLoop().RunUntilIdle();
 }
 // This test verifies that Initialize() fails when called with an invalid codec
-// profile, and NotifyError() gets pinged.
+// profile.
 // This test is tantamount to forcing the remote Fake VEA to fail upon init.
 TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
        InitializeWithUnsupportedProfileFails) {
@@ -207,7 +211,8 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       base::UnsafeSharedMemoryRegion::Create(kInvalidShMemSize);
 
   EXPECT_CALL(*mock_vea_client,
-              NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
+              NotifyErrorStatus(ExpectEncoderStatusCode(
+                  EncoderStatus::Codes::kInvalidOutputBuffer)));
 
   mojo_vea()->UseOutputBitstreamBuffer(
       BitstreamBuffer(17 /* id */, std::move(region), kInvalidShMemSize,
@@ -228,7 +233,8 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   base::UnsafeSharedMemoryRegion region =
       base::UnsafeSharedMemoryRegion::Create(kShMemSize);
   EXPECT_CALL(*mock_vea_client,
-              NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
+              NotifyErrorStatus(ExpectEncoderStatusCode(
+                  EncoderStatus::Codes::kInvalidOutputBuffer)));
 
   mojo_vea()->UseOutputBitstreamBuffer(
       BitstreamBuffer(kInvalidBistreamBufferId, std::move(region), kShMemSize,
@@ -310,7 +316,8 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client,
-                NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
+                NotifyErrorStatus(ExpectEncoderStatusCode(
+                    EncoderStatus::Codes::kInvalidInputFrame)));
 
     mojo_vea()->Encode(video_frame, is_keyframe);
     base::RunLoop().RunUntilIdle();

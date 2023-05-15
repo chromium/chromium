@@ -108,7 +108,7 @@ void NotifyCertsChangedInLacrosOnUIThread() {
 
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service ||
-      (service->GetInterfaceVersion(crosapi::mojom::CertDatabase::Uuid_) <
+      (service->GetInterfaceVersion<crosapi::mojom::CertDatabase>() <
        kOnCertsChangedInLacrosMinVersion)) {
     // Can happen if Ash is too old or in tests.
     return;

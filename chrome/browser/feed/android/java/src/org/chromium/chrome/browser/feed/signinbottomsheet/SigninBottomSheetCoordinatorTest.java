@@ -74,8 +74,9 @@ public class SigninBottomSheetCoordinatorTest {
                 .thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        mSigninCoordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroidMock, mBottomSheetControllerMock, mProfileMock, null);
+        mSigninCoordinator =
+                new SigninBottomSheetCoordinator(mWindowAndroidMock, mBottomSheetControllerMock,
+                        mProfileMock, null, null, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
     }
 
     @Test
@@ -89,11 +90,11 @@ public class SigninBottomSheetCoordinatorTest {
         })
                 .when(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO), any());
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
         verify(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO),
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any(SigninManager.SignInCallback.class));
         histogramWatcher.assertExpected();
     }
@@ -109,7 +110,7 @@ public class SigninBottomSheetCoordinatorTest {
         })
                 .when(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO), any());
         mSigninCoordinator.setAccountPickerBottomSheetCoordinator(
                 mAccountPickerBottomSheetCoordinatorMock);
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
@@ -118,18 +119,22 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Test
     public void testSignInNotAllowed() {
+        HistogramWatcher watchSigninDisabledToastShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Signin.SigninDisabledNotificationShown",
+                        SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         mSigninCoordinator.setToastOverrideForTesting();
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
         verify(mSigninManagerMock, never())
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), anyInt(), any());
+        watchSigninDisabledToastShownHistogram.assertExpected();
     }
 
     @Test
     public void testSigninCompleted_callSigninSuccessCallback() {
-        SigninBottomSheetCoordinator coordinator =
-                new SigninBottomSheetCoordinator(mWindowAndroidMock, mBottomSheetControllerMock,
-                        mProfileMock, mOnSigninSuccessCallbackMock);
+        SigninBottomSheetCoordinator coordinator = new SigninBottomSheetCoordinator(
+                mWindowAndroidMock, mBottomSheetControllerMock, mProfileMock, null,
+                mOnSigninSuccessCallbackMock, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
         doAnswer(invocation -> {
             SigninManager.SignInCallback callback = invocation.getArgument(2);
             callback.onSignInComplete();
@@ -144,9 +149,9 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Test
     public void testSigninAborted_doesNotCallSigninSuccessCallback() {
-        SigninBottomSheetCoordinator coordinator =
-                new SigninBottomSheetCoordinator(mWindowAndroidMock, mBottomSheetControllerMock,
-                        mProfileMock, mOnSigninSuccessCallbackMock);
+        SigninBottomSheetCoordinator coordinator = new SigninBottomSheetCoordinator(
+                mWindowAndroidMock, mBottomSheetControllerMock, mProfileMock, null,
+                mOnSigninSuccessCallbackMock, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
         doAnswer(invocation -> {
             SigninManager.SignInCallback callback = invocation.getArgument(2);
             callback.onSignInAborted();

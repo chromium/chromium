@@ -41,6 +41,7 @@ class AppIconReader {
   void OnUncompressedIconRead(int32_t size_in_dip,
                               IconEffects icon_effects,
                               IconType icon_type,
+                              const std::string& app_id,
                               LoadIconCallback callback,
                               AppIconDecoder* decoder,
                               IconValuePtr iv);

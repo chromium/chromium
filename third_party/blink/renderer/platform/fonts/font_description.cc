@@ -249,9 +249,9 @@ float FontDescription::AdjustedSpecifiedSize() const {
 
 FontDescription FontDescription::SizeAdjustedFontDescription(
     float size_adjust) const {
-  // TODO(crbug.com/451346): The font-size-adjust property and size-adjust
-  // descriptor currently don't work together. For sanity, if both are set, we
-  // ignore size-adjust. Fix it when shipping font-size-adjust.
+  // See note in: https://www.w3.org/TR/css-fonts-5/#font-size-adjust-prop
+  // When the font-size-adjust property is applied while a size-adjust
+  // descriptor is set, the latter must not have an effect
   if (HasSizeAdjust())
     return *this;
 
@@ -282,13 +282,14 @@ FontCacheKey FontDescription::CacheKey(
 #endif
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
                          options | font_selection_request_.GetHash() << 9,
-                         device_scale_factor_for_key, variation_settings_,
-                         font_palette_, font_variant_alternates_,
-                         is_unique_match, is_generic_family);
+                         device_scale_factor_for_key, size_adjust_,
+                         variation_settings_, font_palette_,
+                         font_variant_alternates_, is_unique_match,
+                         is_generic_family);
 #if BUILDFLAG(IS_ANDROID)
   if (const LayoutLocale* locale = Locale()) {
     if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))
-      cache_key.SetLocale(locale->LocaleForSkFontMgr());
+      cache_key.SetLocale(AtomicString(locale->LocaleForSkFontMgr()));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return cache_key;
@@ -394,12 +395,12 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   WTF::AddFloatToHash(hash, NormalizeSign(specified_size_));
   WTF::AddFloatToHash(hash, NormalizeSign(computed_size_));
   WTF::AddFloatToHash(hash, NormalizeSign(adjusted_size_));
-  WTF::AddFloatToHash(hash, NormalizeSign(size_adjust_.Value()));
   WTF::AddFloatToHash(hash, NormalizeSign(letter_spacing_));
   WTF::AddFloatToHash(hash, NormalizeSign(word_spacing_));
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[0]);
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[1]);
   WTF::AddIntToHash(hash, font_selection_request_.GetHash());
+  WTF::AddIntToHash(hash, size_adjust_.GetHash());
 
   return hash;
 }

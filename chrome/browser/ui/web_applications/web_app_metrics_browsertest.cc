@@ -12,14 +12,12 @@
 #include "base/numerics/clamped_math.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -32,11 +30,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -58,10 +51,6 @@
 #include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
 #endif
 
-namespace content {
-class BrowserContext;
-}
-
 namespace web_app {
 
 using UkmEntry = ukm::builders::WebApp_DailyInteraction;
@@ -79,16 +68,6 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
   WebAppMetricsBrowserTest(const WebAppMetricsBrowserTest&) = delete;
   WebAppMetricsBrowserTest& operator=(const WebAppMetricsBrowserTest&) = delete;
   ~WebAppMetricsBrowserTest() override = default;
-
-  void OnWillCreateBrowserContextServices(
-      content::BrowserContext* context) override {
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindLambdaForTesting(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<syncer::TestSyncService>();
-            }));
-  }
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -110,8 +89,7 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void ForceEmitMetricsNow() {
-    FlushAllRecordsForTesting(profile(),
-                              SyncServiceFactory::GetForProfile(profile()));
+    FlushAllRecordsForTesting(profile());
     // Ensure async call for origin check in daily_metrics_helper completes.
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
@@ -152,27 +130,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
       entry, UkmEntry::kBackgroundDurationName));
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, UkmEntry::kNumSessionsName));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
-                       AppSyncNotEnabled_RecordsNothing) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  SyncServiceFactory::GetForProfile(profile())
-      ->GetUserSettings()
-      ->SetSelectedTypes(/*sync_everything=*/false, /*types=*/{});
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SyncServiceFactory::GetForProfile(profile())
-      ->GetUserSettings()
-      ->SetSelectedOsTypes(/*sync_all_os_types=*/false, /*types=*/{});
-#endif
-
-  AddBlankTabAndShow(browser());
-  NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
-
-  ForceEmitMetricsNow();
-
-  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
-  ASSERT_EQ(entries.size(), 0U);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,

@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
   test_handler->AllowJavascriptForTesting();
 
   // Push onto window.history. Back should now be an in-page navigation.
-  ASSERT_TRUE(ExecuteScript(web_contents,
-                            "window.history.pushState({}, '', 'foo.html')"));
+  ASSERT_TRUE(
+      ExecJs(web_contents, "window.history.pushState({}, '', 'foo.html')"));
   shell()->GoBackOrForward(-1);
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
@@ -478,7 +478,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
    public:
     Config() : WebUIConfig(kChromeUIUntrustedScheme, "test-host") {}
     std::unique_ptr<WebUIController> CreateWebUIController(
-        WebUI* web_ui) final {
+        WebUI* web_ui,
+        const GURL& url) final {
       class Controller : public WebUIController {
        public:
         explicit Controller(WebUI* web_ui) : WebUIController(web_ui) {

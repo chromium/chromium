@@ -33,26 +33,30 @@ class TestOverlayStrategy : public OverlayProcessorStrategy {
 
   ~TestOverlayStrategy() override = default;
 
-  void Propose(const SkM44& output_color_matrix,
-               const OverlayProcessorInterface::FilterOperationsMap&
-                   render_pass_backdrop_filters,
-               DisplayResourceProvider* resource_provider,
-               AggregatedRenderPassList* render_pass_list,
-               SurfaceDamageRectList* surface_damage_rect_list,
-               const PrimaryPlane* primary_plane,
-               std::vector<OverlayProposedCandidate>* candidates,
-               std::vector<gfx::Rect>* content_bounds) override {}
+  void Propose(
+      const SkM44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_pass_list,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const PrimaryPlane* primary_plane,
+      std::vector<OverlayProposedCandidate>* candidates,
+      std::vector<gfx::Rect>* content_bounds) override {}
 
-  bool Attempt(const SkM44& output_color_matrix,
-               const OverlayProcessorInterface::FilterOperationsMap&
-                   render_pass_backdrop_filters,
-               DisplayResourceProvider* resource_provider,
-               AggregatedRenderPassList* render_pass_list,
-               SurfaceDamageRectList* surface_damage_rect_list,
-               const PrimaryPlane* primary_plane,
-               OverlayCandidateList* candidates,
-               std::vector<gfx::Rect>* content_bounds,
-               const OverlayProposedCandidate& proposed_candidate) override {
+  bool Attempt(
+      const SkM44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_pass_list,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const PrimaryPlane* primary_plane,
+      OverlayCandidateList* candidates,
+      std::vector<gfx::Rect>* content_bounds,
+      const OverlayProposedCandidate& proposed_candidate) override {
     return true;
   }
 
@@ -89,9 +93,8 @@ class OverlayProposedCandidateTest
     child_context_provider->BindToCurrentSequence();
 
     auto resource = TransferableResource::MakeGpu(
-        gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-        gpu::SyncToken(), gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888,
-        is_overlay_candidate);
+        gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+        gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
 
     ResourceId resource_id =
         child_resource_provider_.ImportResource(resource, base::DoNothing());
@@ -159,14 +162,16 @@ class OverlayProposedCandidateTest
       bool supports_rounded_display_masks = true) {
     return OverlayCandidateFactory(
         &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
-        primary_rect, /*is_delegated_context=*/true, has_clip_support,
-        has_arbitrary_transform_support, supports_rounded_display_masks);
+        primary_rect, &render_pass_filters_, /*is_delegated_context=*/true,
+        has_clip_support, has_arbitrary_transform_support,
+        supports_rounded_display_masks);
   }
 
   ClientResourceProvider child_resource_provider_;
   DisplayResourceProviderNull resource_provider_;
   SurfaceDamageRectList surface_damage_list_;
   SkM44 identity_;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters_;
 
   RoundedDisplayMasksInfo mask_info_;
   gfx::Rect expected_origin_mask_bounds_;

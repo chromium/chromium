@@ -313,7 +313,7 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       threat_source = "csd";
       break;
-    case safe_browsing::ThreatSource::REAL_TIME_CHECK:
+    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       threat_source = "rt";
       break;
     case safe_browsing::ThreatSource::UNKNOWN:

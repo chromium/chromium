@@ -12,8 +12,6 @@ namespace remoting::protocol {
 
 class VideoChannelStateObserver {
  public:
-  virtual void OnTargetFramerateChanged(int framerate) = 0;
-
   // Called after the encoded frame is sent via the WebRTC registered callback.
   // The result contains the frame ID assigned by WebRTC if successfully sent.
   // This is only called if the encoder successfully returned a non-null

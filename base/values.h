@@ -762,19 +762,8 @@ class BASE_EXPORT GSL_OWNER Value {
   // `nullptr` if the value is not found or doesn't have the type specified in
   // the function's name.
   //
-  // DEPRECATED: prefer `Value::Dict::FindBool()`.
-  absl::optional<bool> FindBoolKey(StringPiece key) const;
   // DEPRECATED: prefer `Value::Dict::FindInt()`.
   absl::optional<int> FindIntKey(StringPiece key) const;
-  // DEPRECATED: prefer `Value::Dict::FindString()`.
-  const std::string* FindStringKey(StringPiece key) const;
-  std::string* FindStringKey(StringPiece key);
-  // DEPRECATED: prefer `Value::Dict::FindDict()`.
-  const Value* FindDictKey(StringPiece key) const;
-  Value* FindDictKey(StringPiece key);
-  // DEPRECATED: prefer `Value::Dict::FindList()`.
-  const Value* FindListKey(StringPiece key) const;
-  Value* FindListKey(StringPiece key);
 
   // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
   // value to `value`. If `key` could not be found, a new element is inserted.
@@ -790,12 +779,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // `SetKey()`, this avoids un-necessary temporary `Value()` creation, as well
   // ambiguities in the value type.
   //
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetBoolKey(StringPiece key, bool val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetIntKey(StringPiece key, int val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetDoubleKey(StringPiece key, double val);
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, StringPiece val);
   // DEPRECATED: Prefer `Value::Dict::Set()`.
@@ -854,9 +837,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // dots.
   Value* FindListPath(StringPiece path);
   const Value* FindListPath(StringPiece path) const;
-
-  // DEPRECATED: prefer `Value::Dict::size()`.
-  size_t DictSize() const;
 
   // Note: Do not add more types. See the file-level comment above for why.
 

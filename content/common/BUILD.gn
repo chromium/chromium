@@ -201,7 +201,6 @@ source_set("common") {
     "//components/services/filesystem/public/mojom",
     "//components/tracing:startup_tracing",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
     "//content/public/common/zygote:buildflags",
@@ -298,6 +297,8 @@ source_set("common") {
       "cursors/webcursor_android.cc",
       "font_list_android.cc",
     ]
+
+    deps += [ "//cc/slim" ]
 
     if (use_seccomp_bpf) {
       sources += [
@@ -620,6 +621,7 @@ mojom("mojo_bindings") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
+    "//third_party/blink/public/mojom:mojom_modules",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/accessibility/mojom",
@@ -628,6 +630,7 @@ mojom("mojo_bindings") {
     "//ui/color:mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
+    "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
@@ -662,7 +665,10 @@ mojom("mojo_bindings") {
     ]
   }
 
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
+  overridden_deps = [
+    "//third_party/blink/public/mojom:mojom_core",
+    "//third_party/blink/public/mojom:mojom_modules",
+  ]
   component_deps = [ "//third_party/blink/public/common" ]
 
   component_output_prefix = "content_common_mojo_bindings"

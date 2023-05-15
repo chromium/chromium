@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.chromium.net.CronetTestRule.SERVER_CERT_PEM;
-import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -36,8 +34,7 @@ public class MockCertVerifierTest {
         // Load library first to create MockCertVerifier.
         System.loadLibrary("cronet_tests");
 
-        assertThat(Http2TestServer.startHttp2TestServer(
-                getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM)).isTrue();
+        assertThat(Http2TestServer.startHttp2TestServer(getContext())).isTrue();
     }
 
     @After

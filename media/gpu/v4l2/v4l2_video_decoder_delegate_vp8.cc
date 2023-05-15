@@ -12,9 +12,9 @@
 
 #include <linux/videodev2.h>
 
+#include <algorithm>
 #include <type_traits>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"

@@ -198,7 +198,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(4, NumberOfItemsInSection(0));
   CheckTextCellText(
-      @"This address is saved only to Chrome. To use it across Google "
+      @"This address is currently saved to Chrome. To use it across Google "
       @"products, save it in your Google Account, test@gmail.com.",
       0, 0);
   CheckTextCellText(@"Test", 0, 1);

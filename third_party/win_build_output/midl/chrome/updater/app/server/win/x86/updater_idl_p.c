@@ -354,6 +354,18 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 	/* Procedure get_statusCode */
 
 
+	/* Procedure get_statusCode */
+
+
+	/* Procedure get_statusCode */
+
+
+	/* Procedure get_state */
+
+
+	/* Procedure get_state */
+
+
 	/* Procedure get_state */
 
 			0x33,		/* FC_AUTO_HANDLE */
@@ -371,7 +383,19 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 20 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 22 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__ICompleteStatusSystem0000 */
+
+
+	/* Parameter __MIDL__ICompleteStatusUser0000 */
+
+
 	/* Parameter __MIDL__ICompleteStatus0000 */
+
+
+	/* Parameter __MIDL__IUpdateStateSystem0000 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0000 */
 
 
 	/* Parameter __MIDL__IUpdateState0000 */
@@ -386,12 +410,36 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 30 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 32 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 34 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure get_statusMessage */
+
+
+	/* Procedure get_statusMessage */
+
+
+	/* Procedure get_statusMessage */
+
+
+	/* Procedure get_appId */
+
+
+	/* Procedure get_appId */
 
 
 	/* Procedure get_appId */
@@ -411,7 +459,19 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 56 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 58 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__ICompleteStatusSystem0001 */
+
+
+	/* Parameter __MIDL__ICompleteStatusUser0001 */
+
+
 	/* Parameter __MIDL__ICompleteStatus0001 */
+
+
+	/* Parameter __MIDL__IUpdateStateSystem0001 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0001 */
 
 
 	/* Parameter __MIDL__IUpdateState0001 */
@@ -425,10 +485,28 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 66 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 68 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 70 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_nextVersion */
+
+
+	/* Procedure get_nextVersion */
+
 
 	/* Procedure get_nextVersion */
 
@@ -447,6 +525,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 92 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 94 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0002 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0002 */
+
+
 	/* Parameter __MIDL__IUpdateState0002 */
 
 /* 96 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
@@ -455,10 +539,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 102 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 104 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 106 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_downloadedBytes */
+
+
+	/* Procedure get_downloadedBytes */
+
 
 	/* Procedure get_downloadedBytes */
 
@@ -477,6 +573,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 128 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 130 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0003 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0003 */
+
+
 	/* Parameter __MIDL__IUpdateState0003 */
 
 /* 132 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -486,10 +588,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 138 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 140 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 142 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_totalBytes */
+
+
+	/* Procedure get_totalBytes */
+
 
 	/* Procedure get_totalBytes */
 
@@ -508,6 +622,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 164 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 166 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0004 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0004 */
+
+
 	/* Parameter __MIDL__IUpdateState0004 */
 
 /* 168 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -517,10 +637,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 174 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 176 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 178 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_installProgress */
+
+
+	/* Procedure get_installProgress */
+
 
 	/* Procedure get_installProgress */
 
@@ -539,6 +671,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 200 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 202 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0005 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0005 */
+
+
 	/* Parameter __MIDL__IUpdateState0005 */
 
 /* 204 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -548,10 +686,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 210 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 212 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 214 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_errorCategory */
+
+
+	/* Procedure get_errorCategory */
+
 
 	/* Procedure get_errorCategory */
 
@@ -570,6 +720,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 236 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 238 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0006 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0006 */
+
+
 	/* Parameter __MIDL__IUpdateState0006 */
 
 /* 240 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -579,10 +735,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 246 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 248 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 250 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_errorCode */
+
+
+	/* Procedure get_errorCode */
+
 
 	/* Procedure get_errorCode */
 
@@ -601,6 +769,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 272 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 274 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0007 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0007 */
+
+
 	/* Parameter __MIDL__IUpdateState0007 */
 
 /* 276 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -610,10 +784,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 282 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 284 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 286 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_extraCode1 */
+
+
+	/* Procedure get_extraCode1 */
+
 
 	/* Procedure get_extraCode1 */
 
@@ -632,6 +818,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 308 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 310 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0008 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0008 */
+
+
 	/* Parameter __MIDL__IUpdateState0008 */
 
 /* 312 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
@@ -641,10 +833,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 318 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 320 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 322 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_installerText */
+
+
+	/* Procedure get_installerText */
+
 
 	/* Procedure get_installerText */
 
@@ -663,6 +867,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 344 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 346 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0009 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0009 */
+
+
 	/* Parameter __MIDL__IUpdateState0009 */
 
 /* 348 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
@@ -671,10 +881,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 354 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 356 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 358 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_installerCommandLine */
+
+
+	/* Procedure get_installerCommandLine */
+
 
 	/* Procedure get_installerCommandLine */
 
@@ -693,11 +915,23 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 380 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 382 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter __MIDL__IUpdateStateSystem0010 */
+
+
+	/* Parameter __MIDL__IUpdateStateUser0010 */
+
+
 	/* Parameter __MIDL__IUpdateState0010 */
 
 /* 384 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
 /* 386 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 388 */	NdrFcShort( 0x24 ),	/* Type Offset=36 */
+
+	/* Return value */
+
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -888,6 +1122,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Procedure Run */
 
+
+	/* Procedure Run */
+
+
+	/* Procedure Run */
+
 /* 612 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
 /* 614 */	NdrFcLong( 0x0 ),	/* 0 */
@@ -905,10 +1145,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Parameter result */
 
+
+	/* Parameter result */
+
+
+	/* Parameter result */
+
 /* 636 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 638 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 640 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Return value */
+
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -2568,8 +2820,7 @@ static const unsigned short IUpdateStateUser_FormatStringOffsetTable[] =
     252,
     288,
     324,
-    360,
-    0
+    360
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdateStateUser_ProxyInfo =
@@ -2595,47 +2846,31 @@ static const MIDL_SERVER_INFO IUpdateStateUser_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(14) _IUpdateStateUserProxyVtbl = 
 {
-    0,
+    &IUpdateStateUser_ProxyInfo,
     &IID_IUpdateStateUser,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdateState::get_state */ ,
-    0 /* forced delegation IUpdateState::get_appId */ ,
-    0 /* forced delegation IUpdateState::get_nextVersion */ ,
-    0 /* forced delegation IUpdateState::get_downloadedBytes */ ,
-    0 /* forced delegation IUpdateState::get_totalBytes */ ,
-    0 /* forced delegation IUpdateState::get_installProgress */ ,
-    0 /* forced delegation IUpdateState::get_errorCategory */ ,
-    0 /* forced delegation IUpdateState::get_errorCode */ ,
-    0 /* forced delegation IUpdateState::get_extraCode1 */ ,
-    0 /* forced delegation IUpdateState::get_installerText */ ,
-    0 /* forced delegation IUpdateState::get_installerCommandLine */
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_state */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_appId */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_nextVersion */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_downloadedBytes */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_totalBytes */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_installProgress */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_errorCategory */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_errorCode */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_extraCode1 */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_installerText */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateUser::get_installerCommandLine */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdateStateUser_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdateStateUserStubVtbl =
+const CInterfaceStubVtbl _IUpdateStateUserStubVtbl =
 {
     &IID_IUpdateStateUser,
     &IUpdateStateUser_ServerInfo,
     14,
-    &IUpdateStateUser_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -2655,8 +2890,7 @@ static const unsigned short IUpdateStateSystem_FormatStringOffsetTable[] =
     252,
     288,
     324,
-    360,
-    0
+    360
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdateStateSystem_ProxyInfo =
@@ -2682,47 +2916,31 @@ static const MIDL_SERVER_INFO IUpdateStateSystem_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(14) _IUpdateStateSystemProxyVtbl = 
 {
-    0,
+    &IUpdateStateSystem_ProxyInfo,
     &IID_IUpdateStateSystem,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdateState::get_state */ ,
-    0 /* forced delegation IUpdateState::get_appId */ ,
-    0 /* forced delegation IUpdateState::get_nextVersion */ ,
-    0 /* forced delegation IUpdateState::get_downloadedBytes */ ,
-    0 /* forced delegation IUpdateState::get_totalBytes */ ,
-    0 /* forced delegation IUpdateState::get_installProgress */ ,
-    0 /* forced delegation IUpdateState::get_errorCategory */ ,
-    0 /* forced delegation IUpdateState::get_errorCode */ ,
-    0 /* forced delegation IUpdateState::get_extraCode1 */ ,
-    0 /* forced delegation IUpdateState::get_installerText */ ,
-    0 /* forced delegation IUpdateState::get_installerCommandLine */
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_state */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_appId */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_nextVersion */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_downloadedBytes */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_totalBytes */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_installProgress */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_errorCategory */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_errorCode */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_extraCode1 */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_installerText */ ,
+    (void *) (INT_PTR) -1 /* IUpdateStateSystem::get_installerCommandLine */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdateStateSystem_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdateStateSystemStubVtbl =
+const CInterfaceStubVtbl _IUpdateStateSystemStubVtbl =
 {
     &IID_IUpdateStateSystem,
     &IUpdateStateSystem_ServerInfo,
     14,
-    &IUpdateStateSystem_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -2785,8 +3003,7 @@ const CInterfaceStubVtbl _ICompleteStatusStubVtbl =
 static const unsigned short ICompleteStatusUser_FormatStringOffsetTable[] =
     {
     0,
-    36,
-    0
+    36
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ICompleteStatusUser_ProxyInfo =
@@ -2812,29 +3029,22 @@ static const MIDL_SERVER_INFO ICompleteStatusUser_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(5) _ICompleteStatusUserProxyVtbl = 
 {
-    0,
+    &ICompleteStatusUser_ProxyInfo,
     &IID_ICompleteStatusUser,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation ICompleteStatus::get_statusCode */ ,
-    0 /* forced delegation ICompleteStatus::get_statusMessage */
+    (void *) (INT_PTR) -1 /* ICompleteStatusUser::get_statusCode */ ,
+    (void *) (INT_PTR) -1 /* ICompleteStatusUser::get_statusMessage */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION ICompleteStatusUser_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
+const CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
 {
     &IID_ICompleteStatusUser,
     &ICompleteStatusUser_ServerInfo,
     5,
-    &ICompleteStatusUser_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -2845,8 +3055,7 @@ CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
 static const unsigned short ICompleteStatusSystem_FormatStringOffsetTable[] =
     {
     0,
-    36,
-    0
+    36
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ICompleteStatusSystem_ProxyInfo =
@@ -2872,29 +3081,22 @@ static const MIDL_SERVER_INFO ICompleteStatusSystem_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(5) _ICompleteStatusSystemProxyVtbl = 
 {
-    0,
+    &ICompleteStatusSystem_ProxyInfo,
     &IID_ICompleteStatusSystem,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation ICompleteStatus::get_statusCode */ ,
-    0 /* forced delegation ICompleteStatus::get_statusMessage */
+    (void *) (INT_PTR) -1 /* ICompleteStatusSystem::get_statusCode */ ,
+    (void *) (INT_PTR) -1 /* ICompleteStatusSystem::get_statusMessage */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION ICompleteStatusSystem_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _ICompleteStatusSystemStubVtbl =
+const CInterfaceStubVtbl _ICompleteStatusSystemStubVtbl =
 {
     &IID_ICompleteStatusSystem,
     &ICompleteStatusSystem_ServerInfo,
     5,
-    &ICompleteStatusSystem_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -3110,8 +3312,7 @@ const CInterfaceStubVtbl _IUpdaterCallbackStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterCallbackUser_FormatStringOffsetTable[] =
     {
-    612,
-    0
+    612
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterCallbackUser_ProxyInfo =
@@ -3137,27 +3338,21 @@ static const MIDL_SERVER_INFO IUpdaterCallbackUser_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(4) _IUpdaterCallbackUserProxyVtbl = 
 {
-    0,
+    &IUpdaterCallbackUser_ProxyInfo,
     &IID_IUpdaterCallbackUser,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdaterCallback::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterCallbackUser::Run */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdaterCallbackUser_table[] =
-{
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdaterCallbackUserStubVtbl =
+const CInterfaceStubVtbl _IUpdaterCallbackUserStubVtbl =
 {
     &IID_IUpdaterCallbackUser,
     &IUpdaterCallbackUser_ServerInfo,
     4,
-    &IUpdaterCallbackUser_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -3167,8 +3362,7 @@ CInterfaceStubVtbl _IUpdaterCallbackUserStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterCallbackSystem_FormatStringOffsetTable[] =
     {
-    612,
-    0
+    612
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterCallbackSystem_ProxyInfo =
@@ -3194,27 +3388,21 @@ static const MIDL_SERVER_INFO IUpdaterCallbackSystem_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(4) _IUpdaterCallbackSystemProxyVtbl = 
 {
-    0,
+    &IUpdaterCallbackSystem_ProxyInfo,
     &IID_IUpdaterCallbackSystem,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdaterCallback::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterCallbackSystem::Run */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdaterCallbackSystem_table[] =
-{
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdaterCallbackSystemStubVtbl =
+const CInterfaceStubVtbl _IUpdaterCallbackSystemStubVtbl =
 {
     &IID_IUpdaterCallbackSystem,
     &IUpdaterCallbackSystem_ServerInfo,
     4,
-    &IUpdaterCallbackSystem_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -3511,26 +3699,6 @@ PCInterfaceName const _updater_idl_InterfaceNamesList[] =
     0
 };
 
-const IID *  const _updater_idl_BaseIIDList[] = 
-{
-    &IID_IUpdateState,   /* forced */
-    0,
-    0,
-    &IID_IUpdaterCallback,   /* forced */
-    &IID_ICompleteStatus,   /* forced */
-    0,
-    &IID_ICompleteStatus,   /* forced */
-    0,
-    &IID_IUpdaterCallback,   /* forced */
-    &IID_IUpdateState,   /* forced */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-};
-
 
 #define _updater_idl_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_idl, pIID, n)
 
@@ -3551,7 +3719,7 @@ EXTERN_C const ExtendedProxyFileInfo updater_idl_ProxyFileInfo =
     (PCInterfaceProxyVtblList *) & _updater_idl_ProxyVtblList,
     (PCInterfaceStubVtblList *) & _updater_idl_StubVtblList,
     (const PCInterfaceName * ) & _updater_idl_InterfaceNamesList,
-    (const IID ** ) & _updater_idl_BaseIIDList,
+    0, /* no delegation */
     & _updater_idl_IID_Lookup, 
     15,
     2,

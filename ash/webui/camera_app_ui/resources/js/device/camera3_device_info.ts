@@ -128,7 +128,7 @@ export class Camera3DeviceInfo {
     const deviceId = deviceInfo.deviceId;
 
     const deviceOperator = DeviceOperator.getInstance();
-    if (!deviceOperator) {
+    if (deviceOperator === null) {
       throw new Error('Device operation is not supported');
     }
     const facing = await deviceOperator.getCameraFacing(deviceId);

@@ -27,28 +27,21 @@ namespace {
 
 // Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
 DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case viz::ResourceFormat::RGBA_F16:
-        return DXGI_FORMAT_R16G16B16A16_FLOAT;
-      case viz::ResourceFormat::BGRA_8888:
-        return DXGI_FORMAT_B8G8R8A8_UNORM;
-      case viz::ResourceFormat::RGBA_8888:
-        return DXGI_FORMAT_R8G8B8A8_UNORM;
-      case viz::ResourceFormat::RED_8:
-        return DXGI_FORMAT_R8_UNORM;
-      case viz::ResourceFormat::RG_88:
-        return DXGI_FORMAT_R8G8_UNORM;
-      case viz::ResourceFormat::R16_EXT:
-        return DXGI_FORMAT_R16_UNORM;
-      case viz::ResourceFormat::RG16_EXT:
-        return DXGI_FORMAT_R16G16_UNORM;
-      default:
-        break;
-    }
-  }
-
-  if (format == viz::MultiPlaneFormat::kNV12) {
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return DXGI_FORMAT_R16G16B16A16_FLOAT;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return DXGI_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kR_8) {
+    return DXGI_FORMAT_R8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
+    return DXGI_FORMAT_R8G8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
+    return DXGI_FORMAT_R16_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+    return DXGI_FORMAT_R16G16_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
 
@@ -58,40 +51,30 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
 
 // Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case viz::ResourceFormat::RGBA_8888:
-        return DXGI_FORMAT_R8G8B8A8_UNORM;
-      case viz::ResourceFormat::BGRA_8888:
-        return DXGI_FORMAT_B8G8R8A8_UNORM;
-      case viz::ResourceFormat::RGBA_F16:
-        return DXGI_FORMAT_R16G16B16A16_FLOAT;
-      case viz::ResourceFormat::YUV_420_BIPLANAR:
-        return DXGI_FORMAT_NV12;
-      default:
-        return DXGI_FORMAT_UNKNOWN;
-    }
-  }
-  if (format == viz::MultiPlaneFormat::kNV12) {
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return DXGI_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return DXGI_FORMAT_R16G16B16A16_FLOAT;
+  } else if (format == viz::MultiPlaneFormat::kNV12 ||
+             format == viz::LegacyMultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
+
   return DXGI_FORMAT_UNKNOWN;
 }
 
 // Typeless formats supported by CreateSharedImage(GMB) for XR.
 DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case viz::ResourceFormat::RGBA_8888:
-        return DXGI_FORMAT_R8G8B8A8_TYPELESS;
-      case viz::ResourceFormat::BGRA_8888:
-        return DXGI_FORMAT_B8G8R8A8_TYPELESS;
-      case viz::ResourceFormat::RGBA_F16:
-        return DXGI_FORMAT_R16G16B16A16_TYPELESS;
-      default:
-        return DXGI_FORMAT_UNKNOWN;
-    }
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return DXGI_FORMAT_R8G8B8A8_TYPELESS;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return DXGI_FORMAT_B8G8R8A8_TYPELESS;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return DXGI_FORMAT_R16G16B16A16_TYPELESS;
   }
+
   return DXGI_FORMAT_UNKNOWN;
 }
 
@@ -193,19 +176,13 @@ bool D3DImageBackingFactory::IsSwapChainSupported() {
 }
 
 // static
-bool D3DImageBackingFactory::ClearBackBufferToOpaque(
-    Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "GetBuffer failed: " << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
-  DCHECK(d3d11_texture);
+bool D3DImageBackingFactory::ClearTextureToColor(ID3D11Device* d3d11_device,
+                                                 ID3D11Texture2D* d3d11_texture,
+                                                 const SkColor4f& color) {
+  HRESULT hr = S_OK;
 
   Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target;
-  hr = d3d11_device->CreateRenderTargetView(d3d11_texture.Get(), nullptr,
+  hr = d3d11_device->CreateRenderTargetView(d3d11_texture, nullptr,
                                             &render_target);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateRenderTargetView failed: "
@@ -218,9 +195,24 @@ bool D3DImageBackingFactory::ClearBackBufferToOpaque(
   d3d11_device->GetImmediateContext(&d3d11_device_context);
   DCHECK(d3d11_device_context);
 
-  d3d11_device_context->ClearRenderTargetView(render_target.Get(),
-                                              SkColors::kBlack.vec());
+  d3d11_device_context->ClearRenderTargetView(render_target.Get(), color.vec());
+
   return true;
+}
+
+// static
+bool D3DImageBackingFactory::ClearBackBufferToColor(ID3D11Device* d3d11_device,
+                                                    IDXGISwapChain1* swap_chain,
+                                                    const SkColor4f& color) {
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "GetBuffer failed: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  DCHECK(d3d11_texture);
+
+  return ClearTextureToColor(d3d11_device, d3d11_texture.Get(), color);
 }
 
 D3DImageBackingFactory::SwapChainBackings
@@ -299,7 +291,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 
   // Explicitly clear front and back buffers to ensure that there are no
   // uninitialized pixels.
-  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
+  if (!ClearBackBufferToColor(d3d11_device_.Get(), swap_chain.Get(),
+                              SkColors::kBlack)) {
     return {nullptr, nullptr};
   }
 
@@ -312,7 +305,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
 
-  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
+  if (!ClearBackBufferToColor(d3d11_device_.Get(), swap_chain.Get(),
+                              SkColors::kBlack)) {
     return {nullptr, nullptr};
   }
 
@@ -356,7 +350,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    std::string debug_label_client,
+    std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
 
@@ -396,27 +390,23 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
       format.is_single_plane()) {
     DCHECK(usage & gpu::SHARED_IMAGE_USAGE_WEBGPU);
-    switch (format.resource_format()) {
-      // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
-      case viz::ResourceFormat::RGBA_8888:
-      case viz::ResourceFormat::RGBA_F16:
-        desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
-        break;
+    // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
+
+    if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+        format == viz::SinglePlaneFormat::kRGBA_F16) {
+      desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+    }
 
       // WebGPU can use BGRA_8888 for STORAGE_BINDING when BGRA_8888 is
       // supported as UAV.
-      case viz::ResourceFormat::BGRA_8888: {
-        if (SupportsBGRA8UnormStorage()) {
-          desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
-        } else {
-          LOG(ERROR)
-              << "D3D11_BIND_UNORDERED_ACCESS is not supported on BGRA_8888";
-          return nullptr;
-        }
-        break;
+    if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+      if (SupportsBGRA8UnormStorage()) {
+        desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+      } else {
+        LOG(ERROR)
+            << "D3D11_BIND_UNORDERED_ACCESS is not supported on BGRA_8888";
+        return nullptr;
       }
-      default:
-        break;
     }
   }
   if (is_shm_gmb) {
@@ -438,8 +428,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  const std::string debug_label =
-      "SharedImage_Texture2D" + CreateLabelForSharedImageUsage(usage);
+  debug_label = "D3DSharedImage_" + debug_label;
   d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 
@@ -524,8 +513,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::GetResourceFormat(buffer_format));
+  auto format = viz::GetSharedImageFormat(buffer_format);
   return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
                                color_space, surface_origin, alpha_type, usage);
 }
@@ -633,8 +621,7 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
     // R/RG based on channels in plane.
     const gfx::Size plane_size = GetPlaneSize(plane, size);
     const viz::SharedImageFormat plane_format =
-        viz::SharedImageFormat::SinglePlane(
-            viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format)));
+        viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, buffer_format));
     const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
     backing = D3DImageBacking::Create(
         mailbox, plane_format, plane_size, color_space, surface_origin,

@@ -9,12 +9,13 @@
 #include <memory>
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
@@ -59,60 +60,41 @@ bool IsColor(const gfx::ImageSkia& image, const uint32_t expect) {
 
 namespace wallpaper {
 
-class WallpaperResizerTest : public testing::Test,
-                             public WallpaperResizerObserver {
+class WallpaperResizerTest : public testing::Test {
  public:
-  WallpaperResizerTest() : worker_thread_("WallpaperResizerTest") {}
+  WallpaperResizerTest() = default;
 
   WallpaperResizerTest(const WallpaperResizerTest&) = delete;
   WallpaperResizerTest& operator=(const WallpaperResizerTest&) = delete;
 
-  ~WallpaperResizerTest() override {}
-
-  void SetUp() override { ASSERT_TRUE(worker_thread_.Start()); }
+  ~WallpaperResizerTest() override = default;
 
   gfx::ImageSkia Resize(const gfx::ImageSkia& image,
                         const gfx::Size& target_size,
                         WallpaperLayout layout) {
-    auto resizer = std::make_unique<WallpaperResizer>(
-        image, target_size,
-        WallpaperInfo("", layout, WallpaperType::kDefault,
-                      base::Time::Now().LocalMidnight()),
-        task_runner());
-    resizer->AddObserver(this);
-    resizer->StartResize();
-    WaitForResize();
-    resizer->RemoveObserver(this);
-    return resizer->image();
+    WallpaperResizer resizer(image, target_size,
+                             WallpaperInfo("", layout, WallpaperType::kDefault,
+                                           base::Time::Now().LocalMidnight()));
+    base::RunLoop loop;
+    resizer.StartResize(loop.QuitClosure());
+    loop.Run();
+    return resizer.image();
   }
-
-  scoped_refptr<base::TaskRunner> task_runner() {
-    return worker_thread_.task_runner();
-  }
-
-  void WaitForResize() {
-    active_runloop_ = std::make_unique<base::RunLoop>();
-    active_runloop_->Run();
-  }
-
-  void OnWallpaperResized() override { active_runloop_->Quit(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<base::RunLoop> active_runloop_;
-  base::Thread worker_thread_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(WallpaperResizerTest, BasicResize) {
   // Keeps in sync with WallpaperLayout enum.
   WallpaperLayout layouts[4] = {
-      WALLPAPER_LAYOUT_CENTER, WALLPAPER_LAYOUT_CENTER_CROPPED,
-      WALLPAPER_LAYOUT_STRETCH, WALLPAPER_LAYOUT_TILE,
+      WALLPAPER_LAYOUT_CENTER,
+      WALLPAPER_LAYOUT_CENTER_CROPPED,
+      WALLPAPER_LAYOUT_STRETCH,
+      WALLPAPER_LAYOUT_TILE,
   };
-  const int length = std::size(layouts);
 
-  for (int i = 0; i < length; i++) {
-    WallpaperLayout layout = layouts[i];
+  for (auto layout : layouts) {
     gfx::ImageSkia small_image(gfx::ImageSkiaRep(gfx::Size(10, 20), 1.0f));
 
     gfx::ImageSkia resized_small =
@@ -159,13 +141,11 @@ TEST_F(WallpaperResizerTest, ImageId) {
   WallpaperResizer resizer(
       image, gfx::Size(10, 20),
       WallpaperInfo("", WALLPAPER_LAYOUT_STRETCH, WallpaperType::kDefault,
-                    base::Time::Now().LocalMidnight()),
-      task_runner());
+                    base::Time::Now().LocalMidnight()));
   EXPECT_EQ(WallpaperResizer::GetImageId(image), resizer.original_image_id());
-  resizer.AddObserver(this);
-  resizer.StartResize();
-  WaitForResize();
-  resizer.RemoveObserver(this);
+  base::RunLoop loop;
+  resizer.StartResize(loop.QuitClosure());
+  loop.Run();
   EXPECT_EQ(WallpaperResizer::GetImageId(image), resizer.original_image_id());
 }
 

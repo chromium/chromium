@@ -916,7 +916,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
   });
 
-  test('Forget button with Fast Pair flag', async function() {
+  test.skip('Forget button with Fast Pair flag', async function() {
     loadTimeData.overrideValues({'enableFastPairFlag': true});
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);

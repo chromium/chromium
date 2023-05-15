@@ -204,8 +204,6 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
   std::string account_manager = connector->GetEnterpriseDomainManager();
 
   if (account_manager.empty())
-    account_manager = connector->GetRealm();
-  if (account_manager.empty())
     account_manager =
         chrome::GetAccountManagerIdentity(profile).value_or(std::string());
   if (account_manager.empty()) {

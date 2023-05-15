@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -81,7 +82,10 @@ class PrerenderManager : public content::WebContentsObserver,
   // from the on-going one. If the url given is already on-going, this function
   // will return the weak pointer to the on-going prerender handle.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderBookmark(
-      const GURL& prerendering_url);
+      const GURL& prerendering_url,
+      content::PreloadingPredictor predictor);
+  void StopPrerenderBookmark(
+      base::WeakPtr<content::PrerenderHandle> prerender_handle);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead

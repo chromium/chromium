@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module ash.ime.mojom;
 
@@ -105,6 +105,16 @@ struct SuggestionsRequest {
 struct SuggestionsResponse {
   // A list of suggestion candidates generated.
   array<SuggestionCandidate> candidates@0;
+};
+
+// Next ordinal: 1
+[Stable]
+struct SuggestionsTextContext {
+  // The last N chars from the text used to produce the suggestions.
+  string last_n_chars;
+
+  // The total length of the surrounding text used to produce suggestions.
+  uint32 surrounding_text_length;
 };
 
 // A URL-Keyed Metric (UKM) entry.
@@ -273,8 +283,13 @@ interface InputMethodHost {
   // This method does not modify the input field text.
   HandleAutocorrect@5(AutocorrectSpan autocorrect_span);
 
-  // Asks the system to display the given suggestions to the user.
-  DisplaySuggestions@6(array<SuggestionCandidate> suggestions);
+  // Asks the system to display the given suggestions to the user. The
+  // surrounding text given with the call was the text used to generate the
+  // suggestions. Listeners to this call can use this text to decide what they
+  // want to do with the suggestions given.
+  DisplaySuggestions@6(
+    array<SuggestionCandidate> suggestions,
+    [MinVersion=10] SuggestionsTextContext? context);
 
   // Asks the system to update the current candidates window state.
   // If `window` is null, then the candidates window is hidden.

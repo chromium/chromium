@@ -20,6 +20,11 @@ class FilePath;
 }
 
 namespace metrics::structured {
+namespace {
+
+using ::metrics::ChromeUserMetricsExtension;
+
+}
 
 // Recorder is a singleton to help communicate with the
 // StructuredMetricsProvider. It serves three purposes:
@@ -37,6 +42,10 @@ namespace metrics::structured {
 //
 // Recorder is embedded within StructuredMetricsClient for Ash Chrome and should
 // only be used in Ash Chrome.
+//
+// TODO(b/282031543): Remove this class and merge remaining logic into
+// structured_metrics_recorder.h since the Record() is exposed via
+// StructuredMetricsClient interface now.
 class Recorder {
  public:
   class RecorderImpl : public base::CheckedObserver {
@@ -91,6 +100,9 @@ class Recorder {
   // listen to recorded events.
   void AddEventsProcessor(
       std::unique_ptr<EventsProcessorInterface> events_processor);
+
+  // Modifies |uma_proto| before the log is sent.
+  void OnProvideIndependentMetrics(ChromeUserMetricsExtension* uma_proto);
 
  private:
   friend class base::NoDestructor<Recorder>;

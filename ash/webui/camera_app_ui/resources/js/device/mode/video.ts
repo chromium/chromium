@@ -45,6 +45,7 @@ import {getFpsRangeFromConstraints} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
 import {StreamManager} from '../stream_manager.js';
+import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';
@@ -86,8 +87,12 @@ const GRAB_GIF_FRAME_RATIO = 2;
 /**
  * Initial speed for time-lapse recording.
  */
-const TIME_LAPSE_INITIAL_SPEED = 5;
+export const TIME_LAPSE_INITIAL_SPEED = 5;
 
+/**
+ * Minimum bitrate multiplier for time lapse recording.
+ */
+const TIME_LAPSE_MIN_BITRATE_MULTIPLIER = 6;
 
 /**
  * Sets avc1 parameter used in video recording.
@@ -298,7 +303,13 @@ export class Video extends ModeBase {
   override async clear(): Promise<void> {
     await this.stopCapture();
     if (this.captureStream !== null) {
-      await StreamManager.getInstance().closeCaptureStream(this.captureStream);
+      if (expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING)) {
+        await StreamManager.getInstance().closeCaptureStream(
+            this.captureStream);
+      } else if (expert.isEnabled(
+                     expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+        StreamManagerChrome.getInstance().stopCaptureStream();
+      }
       this.captureStream = null;
     }
   }
@@ -512,7 +523,10 @@ export class Video extends ModeBase {
     }
     const preference = encoderPreference.get(loadTimeData.getBoard()) ??
         {profile: h264.Profile.HIGH, multiplier: 2};
-    const {profile, multiplier} = preference;
+    let {profile, multiplier} = preference;
+    if (this.recordingType === RecordType.TIME_LAPSE) {
+      multiplier = Math.max(multiplier, TIME_LAPSE_MIN_BITRATE_MULTIPLIER);
+    }
     const {width, height, frameRate} =
         getVideoTrackSettings(this.getVideoTrack());
     const resolution = new Resolution(width, height);
@@ -550,6 +564,7 @@ export class Video extends ModeBase {
     this.autoStopped = false;
     this.stopped = false;
 
+    this.recordingType = this.getToggledRecordOption();
     if (this.recordingType === RecordType.NORMAL ||
         this.recordingType === RecordType.TIME_LAPSE) {
       const canStart = await this.startMonitorStorage();
@@ -565,9 +580,16 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording sound is canceled');
     }
 
-    if (this.captureConstraints !== null && this.captureStream === null) {
-      this.captureStream = await StreamManager.getInstance().openCaptureStream(
-          this.captureConstraints);
+    if (this.captureStream === null) {
+      if (expert.isEnabled(
+              expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+        this.captureStream =
+            StreamManagerChrome.getInstance().getCaptureStream();
+      } else if (this.captureConstraints !== null) {
+        this.captureStream =
+            await StreamManager.getInstance().openCaptureStream(
+                this.captureConstraints);
+      }
     }
     if (this.recordingImageCapture === null) {
       this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());
@@ -595,7 +617,6 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording stopped');
     }
 
-    this.recordingType = this.getToggledRecordOption();
     // TODO(b/191950622): Remove complex state logic bind with this enable flag
     // after GIF recording move outside of expert mode and replace it with
     // |RECORD_TYPE_GIF|.
@@ -630,15 +651,25 @@ export class Video extends ModeBase {
         duration: this.gifRecordTime.inMilliseconds(),
       })];
     } else if (this.recordingType === RecordType.TIME_LAPSE) {
+      // TODO(b/279865370): Don't pause when the confirm dialog is shown.
+      window.addEventListener('beforeunload', beforeUnloadListener);
+
       this.recordTime.start({resume: false});
       let timeLapseSaver: TimeLapseSaver|null = null;
       try {
         assert(param !== null);
         timeLapseSaver = await this.captureTimeLapse(param);
       } finally {
-        // TODO(b/236800499): Handle video too short.
         state.set(state.State.RECORDING, false);
         this.recordTime.stop({pause: false});
+        window.removeEventListener('beforeunload', beforeUnloadListener);
+      }
+
+      if (this.recordTime.inMilliseconds() <
+          (MINIMUM_VIDEO_DURATION_IN_MILLISECONDS * TIME_LAPSE_INITIAL_SPEED)) {
+        toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
+        timeLapseSaver.cancel();
+        return [Promise.resolve()];
       }
 
       return [this.handler.onTimeLapseCaptureDone({
@@ -709,7 +740,7 @@ export class Video extends ModeBase {
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
-      if (this.mediaRecorder &&
+      if (this.mediaRecorder !== null &&
           (this.mediaRecorder.state === 'recording' ||
            this.mediaRecorder.state === 'paused')) {
         this.mediaRecorder.stop();
@@ -779,7 +810,6 @@ export class Video extends ModeBase {
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
     const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
-    const video = this.video.video;
 
     // Creates a saver given the initial speed.
     const saver = await TimeLapseSaver.create(
@@ -795,35 +825,45 @@ export class Video extends ModeBase {
     const frames = await new Promise<number>((resolve, reject) => {
       let frameCount = 0;
       let writtenFrameCount = 0;
-      // TODO(b/236800499): Investigate whether we should use async, or use
-      // reader.read().then() instead.
+
+      async function onError(error: unknown) {
+        await saver.cancel();
+        reject(error);
+      }
+      saver.setErrorCallback(onError);
+
       async function updateFrame(): Promise<void> {
         if (!state.get(state.State.RECORDING)) {
           resolve(writtenFrameCount);
           return;
         }
         if (state.get(state.State.RECORDING_PAUSED)) {
-          video.requestVideoFrameCallback(updateFrame);
+          state.addOneTimeObserver(state.State.RECORDING_PAUSED, updateFrame);
           return;
         }
-        if (frameCount % saver.speed === 0) {
-          try {
-            const {done, value: frame} = await reader.read();
-            if (done) {
-              resolve(writtenFrameCount);
-              return;
-            }
+        let frame: VideoFrame|null = null;
+        try {
+          const {done, value} = await reader.read();
+          if (done) {
+            resolve(writtenFrameCount);
+            return;
+          }
+          frame = value;
+          if (frameCount % saver.speed === 0) {
             saver.write(frame, frameCount);
             writtenFrameCount++;
+          }
+        } catch (e) {
+          onError(e);
+        } finally {
+          if (frame !== null) {
             frame.close();
-          } catch (e) {
-            reject(e);
           }
         }
         frameCount++;
-        video.requestVideoFrameCallback(updateFrame);
+        updateFrame();
       }
-      video.requestVideoFrameCallback(updateFrame);
+      updateFrame();
     });
 
     if (frames === 0) {
@@ -845,7 +885,7 @@ export class Video extends ModeBase {
         let noChunk = true;
 
         function onDataAvailable(event: BlobEvent) {
-          if (event.data && event.data.size > 0) {
+          if (event.data.size > 0) {
             noChunk = false;
             saver.write(event.data);
           }

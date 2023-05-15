@@ -8,7 +8,7 @@
 #import <set>
 #import <utility>
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"

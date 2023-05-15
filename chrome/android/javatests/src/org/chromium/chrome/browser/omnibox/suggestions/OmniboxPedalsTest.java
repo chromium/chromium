@@ -11,8 +11,8 @@ import android.app.Activity;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -33,12 +33,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
@@ -53,7 +53,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -61,12 +60,10 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
@@ -267,13 +264,6 @@ public class OmniboxPedalsTest {
                 .build();
     }
 
-    private AutocompleteMatch createDummyHistoryClustersAction(String name) {
-        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                .setDisplayText(name)
-                .setActions(List.of(new HistoryClustersAction("hint", name)))
-                .build();
-    }
-
     @Test
     @MediumTest
     public void testClearBrowsingDataOmniboxPedalSuggestion() throws InterruptedException {
@@ -343,6 +333,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1434836 - IncognitoTab version is flaky")
     public void testOpenIncognitoTabOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
                 newHistogramExpectations(OmniboxPedalType.LAUNCH_INCOGNITO);
@@ -441,27 +432,13 @@ public class OmniboxPedalsTest {
 
         checkPedalWasShown(OmniboxPedalType.VIEW_CHROME_HISTORY, /*expectShown=*/true);
 
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
-            // On the phone, the history setting page will be shown as a {@link Fragment}, but on
-            // the tablet, the history setting page will be shown as a native url. So we need to
-            // have a different way to verify if the history setting page is opened.
-            clickOnPedal();
-            CriteriaHelper.pollUiThread(() -> {
-                Tab tab = sActivityTestRule.getActivity().getActivityTab();
-                Criteria.checkThat(tab, Matchers.notNullValue());
-                Criteria.checkThat(tab.getUrl().getSpec(),
-                        Matchers.startsWith(UrlConstants.NATIVE_HISTORY_URL));
-            });
-
-            histogramWatcher.assertExpected();
-            return;
-        }
-
-        HistoryActivity historyActivity =
-                clickOnPedalToSettings(HistoryActivity.class, OmniboxPedalType.VIEW_CHROME_HISTORY);
-
-        // Make sure the history setting page was opened.
-        Assert.assertNotNull("Could not find the history activity", historyActivity);
+        clickOnPedal();
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = sActivityTestRule.getActivity().getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(
+                    tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
+        });
 
         histogramWatcher.assertExpected();
     }
@@ -568,37 +545,5 @@ public class OmniboxPedalsTest {
 
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
-    public void testHistoryClustersAction() throws Exception {
-        if (mIncognito) return;
-        mOmniboxUtils.requestFocus();
-        List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
-        suggestionsList.add(createDummyHistoryClustersAction("query"));
-
-        mOmniboxUtils.setSuggestions(
-                AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
-        mOmniboxUtils.checkSuggestionsShown();
-
-        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
-        Assert.assertNotNull("Should show", info);
-
-        clickOnPedal();
-
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
-            CriteriaHelper.pollUiThread(() -> {
-                Tab tab = sActivityTestRule.getActivity().getActivityTab();
-                Criteria.checkThat(tab, Matchers.notNullValue());
-                Criteria.checkThat(
-                        tab.getUrl().getSpec(), Matchers.startsWith("chrome://history/journeys"));
-            });
-        } else {
-            mTargetActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
-            Assert.assertNotNull("Could not find the history activity", mTargetActivity);
-        }
     }
 }

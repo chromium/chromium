@@ -97,9 +97,16 @@ TEST_F(AmbientUiSettingsTest, CrashesWithInvalidSettings) {
 
 TEST_F(AmbientUiSettingsTest, ToString) {
   EXPECT_THAT(AmbientUiSettings().ToString(), Eq("SlideShow"));
+  EXPECT_THAT(AmbientUiSettings(AmbientTheme::kFeelTheBreeze).ToString(),
+              Eq("FeelTheBreeze"));
   EXPECT_THAT(
       AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds).ToString(),
       Eq("Video.Clouds"));
+  // The video setting should be ignored.
+  EXPECT_THAT(
+      AmbientUiSettings(AmbientTheme::kSlideshow, AmbientVideo::kNewMexico)
+          .ToString(),
+      Eq("SlideShow"));
 }
 
 }  // namespace ash

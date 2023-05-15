@@ -20,10 +20,10 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -210,8 +210,10 @@ class SaveCardInfobarEGTestHelper
   // Access the PaymentsClient.
   static payments::PaymentsClient* GetPaymentsClient() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    web::WebFrame* main_frame =
-        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
+    web::WebFramesManager* frames_manager =
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state);
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
     DCHECK(web_state);
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()

@@ -269,12 +269,12 @@ TEST_F(SendTabToSelfBridgeTest, SyncAddOneEntry) {
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(1)));
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          std::move(remote_input));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(remote_input));
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 }
 
-TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesAddTwoSpecifics) {
+TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesAddTwoSpecifics) {
   InitializeBridge();
 
   const sync_pb::SendTabToSelfSpecifics specifics1 = CreateSpecifics(1);
@@ -287,12 +287,12 @@ TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesAddTwoSpecifics) {
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(2)));
 
-  auto error = bridge()->ApplySyncChanges(
+  auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes), EntityAddList({specifics1, specifics2}));
   EXPECT_FALSE(error);
 }
 
-TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesOneAdd) {
+TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
   InitializeBridge();
 
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
@@ -307,13 +307,13 @@ TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesOneAdd) {
       std::make_unique<syncer::InMemoryMetadataChangeList>();
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(std::move(metadata_change_list),
-                             std::move(add_changes));
+  bridge()->ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                        std::move(add_changes));
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 }
 
 // Tests that the send tab to self entry is correctly removed.
-TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesOneDeletion) {
+TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneDeletion) {
   InitializeBridge();
 
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
@@ -326,15 +326,15 @@ TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesOneDeletion) {
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(add_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
   syncer::EntityChangeList delete_changes;
   delete_changes.push_back(syncer::EntityChange::CreateDelete("guid1"));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(delete_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
   EXPECT_EQ(0ul, bridge()->GetAllGuids().size());
 }
 
@@ -362,8 +362,8 @@ TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   add_changes.push_back(
       syncer::EntityChange::CreateAdd("guid3", MakeEntityData(entry3)));
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(add_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
 
   ASSERT_EQ(3ul, bridge()->GetAllGuids().size());
 
@@ -380,12 +380,12 @@ TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 }
 
-TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesEmpty) {
+TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesEmpty) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(_)).Times(0);
 
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          syncer::EntityChangeList());
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), syncer::EntityChangeList());
   EXPECT_FALSE(error);
 }
 
@@ -398,8 +398,8 @@ TEST_F(SendTabToSelfBridgeTest, AddEntryAndRestartBridge) {
       bridge()->CreateMetadataChangeList();
   metadata_changes->UpdateModelTypeState(state);
 
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          EntityAddList({specifics}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), EntityAddList({specifics}));
   ASSERT_FALSE(error);
 
   ShutdownBridge();
@@ -418,7 +418,7 @@ TEST_F(SendTabToSelfBridgeTest, AddEntryAndRestartBridge) {
             bridge()->GetEntryByGUID(guids[0])->GetURL().spec());
 }
 
-TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesInMemory) {
+TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesInMemory) {
   InitializeBridge();
 
   const sync_pb::SendTabToSelfSpecifics specifics = CreateSpecifics(1);
@@ -427,7 +427,7 @@ TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesInMemory) {
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(1)));
 
-  auto error_on_add = bridge()->ApplySyncChanges(
+  auto error_on_add = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
@@ -439,7 +439,7 @@ TEST_F(SendTabToSelfBridgeTest, ApplySyncChangesInMemory) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
       syncer::EntityChange::CreateDelete(specifics.guid()));
-  auto error_on_delete = bridge()->ApplySyncChanges(
+  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
   EXPECT_FALSE(error_on_delete);
@@ -457,8 +457,8 @@ TEST_F(SendTabToSelfBridgeTest, ApplyDeleteNonexistent) {
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete("guid"));
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          std::move(entity_change_list));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), std::move(entity_change_list));
   EXPECT_FALSE(error);
 }
 
@@ -470,8 +470,8 @@ TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedInformsServer) {
   syncer::EntityChangeList remote_data;
   remote_data.push_back(
       syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
-  bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                          std::move(remote_data));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_data));
   ASSERT_THAT(bridge()->GetAllGuids(), UnorderedElementsAre("guid"));
 
   syncer::EntityData uploaded_opened_entity;
@@ -489,8 +489,8 @@ TEST_F(SendTabToSelfBridgeTest, DismissEntryInformsServer) {
   syncer::EntityChangeList remote_data;
   remote_data.push_back(
       syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
-  bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                          std::move(remote_data));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_data));
   ASSERT_THAT(bridge()->GetAllGuids(), UnorderedElementsAre("guid"));
 
   syncer::EntityData uploaded_dismissed_entity;
@@ -508,8 +508,8 @@ TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
 
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          EntityAddList({specifics}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), EntityAddList({specifics}));
   ASSERT_FALSE(error);
 
   EXPECT_CALL(*processor(), Put(_, _, _));
@@ -541,7 +541,7 @@ TEST_F(SendTabToSelfBridgeTest, ExpireEntryDuringInit) {
       bridge()->CreateMetadataChangeList();
   metadata_changes->UpdateModelTypeState(state);
 
-  auto error = bridge()->ApplySyncChanges(
+  auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes),
       EntityAddList({expired_specifics, not_expired_specifics}));
   ASSERT_FALSE(error);
@@ -579,7 +579,7 @@ TEST_F(SendTabToSelfBridgeTest, AddExpiredEntry) {
 
   EXPECT_CALL(*processor(), Delete(_, _));
 
-  auto error = bridge()->ApplySyncChanges(
+  auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes),
       EntityAddList({expired_specifics, not_expired_specifics}));
 
@@ -659,8 +659,8 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryAdded) {
 
   // There should only be one entry sent to the observers.
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(1)));
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          std::move(remote_input));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(remote_input));
 
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
 }
@@ -904,8 +904,8 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
   EXPECT_CALL(*mock_observer(),
               EntriesOpenedRemotely(
                   AllOf(SizeIs(1), UnorderedElementsAre(GuidIs("guid1")))));
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          std::move(remote_input));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(remote_input));
 
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
 }

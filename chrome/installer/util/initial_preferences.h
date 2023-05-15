@@ -23,13 +23,6 @@ class FilePath;
 
 namespace installer {
 
-#if !BUILDFLAG(IS_MAC)
-// This is the default name for the initial preferences file used to pre-set
-// values in the user profile at first run.
-const char kInitialPrefs[] = "initial_preferences";
-const char kLegacyInitialPrefs[] = "master_preferences";
-#endif
-
 // The initial preferences is a JSON file with the same entries as the
 // 'Default\Preferences' file. This function parses the distribution
 // section of the preferences file.
@@ -74,6 +67,16 @@ const char kLegacyInitialPrefs[] = "master_preferences";
 
 class InitialPreferences {
  public:
+#if !BUILDFLAG(IS_MAC)
+  // Find and return initial preferences's file path that is located in `dir`.
+  // It will fallback to the legacy file name if the new one is not available
+  // and `for_read` is set to true.
+  // Only available on Windows, Linux and CrOS. Mac has its own initial
+  // preferences file names which is implemented in
+  // `chrome/browser/mac/initial_prefs.h`.
+  static base::FilePath Path(const base::FilePath& dir, bool for_read = true);
+#endif  // !BUILDFLAG(IS_MAC)
+
   // Construct a initial preferences from the current process' current command
   // line. Equivalent to calling
   // InitialPreferences(*CommandLine::ForCurrentProcess()).

@@ -114,10 +114,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         return mModalDialogManager;
     }
 
-    public AndroidPermissionDelegate getAndroidPermissionDelegate() {
-        return mPermissionDelegate;
-    }
-
     @Override
     @SuppressWarnings("MissingSuperCall")
     public void onRequestPermissionsResult(

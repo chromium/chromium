@@ -442,7 +442,8 @@ class ChromeDriver(object):
     # make sure that we have ms on the both sides of inequality
     if (self._executor.HttpTimeout() * 500 < max_kv[1]):
       raise ChromeDriverException(
-        'Timeout "%s" for ChromeDriver exceeds 50%% of the HTTP connection timeout'
+        'Timeout "%s" for ChromeDriver exceeds 50%% of the '
+            'HTTP connection timeout'
          % max_kv[0])
     return self.ExecuteCommand(Command.SET_TIMEOUTS, params)
 
@@ -735,6 +736,29 @@ class ChromeDriver(object):
   def SetRPHRegistrationMode(self, mode):
     params = {'mode': mode}
     return self.ExecuteCommand(Command.SET_RPH_REGISTRATION_MODE, params)
+
+  def CancelFedCmDialog(self):
+    return self.ExecuteCommand(Command.CANCEL_FEDCM_DIALOG, {})
+
+  def SelectAccount(self, index):
+    params = {'accountIndex': index}
+    return self.ExecuteCommand(Command.SELECT_ACCOUNT, params)
+
+  def GetAccounts(self):
+    return self.ExecuteCommand(Command.GET_ACCOUNTS, {})
+
+  def GetFedCmTitle(self):
+    return self.ExecuteCommand(Command.GET_FEDCM_TITLE, {})
+
+  def GetDialogType(self):
+    return self.ExecuteCommand(Command.GET_DIALOG_TYPE, {})
+
+  def SetDelayEnabled(self, enabled):
+    params = {'enabled': enabled}
+    return self.ExecuteCommand(Command.SET_DELAY_ENABLED, params)
+
+  def ResetCooldown(self):
+    return self.ExecuteCommand(Command.RESET_COOLDOWN, {})
 
   def GetSessionId(self):
     if not hasattr(self, '_session_id'):

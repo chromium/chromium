@@ -34,8 +34,9 @@ class CONTENT_EXPORT PrefetchType {
 
   void SetProxyBypassedForTest();
 
-  // Whether prefetches of this type need to use the Prefetch Proxy.
-  bool IsProxyRequired() const { return use_prefetch_proxy_; }
+  // Whether cross-origin prefetches of this type need to use the Prefetch
+  // Proxy.
+  bool IsProxyRequiredWhenCrossOrigin() const { return use_prefetch_proxy_; }
 
   // Returns the eagerness of the prefetch based on the speculation rules API.
   blink::mojom::SpeculationEagerness GetEagerness() const { return eagerness_; }

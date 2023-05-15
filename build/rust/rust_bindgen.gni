@@ -11,18 +11,18 @@ if (is_win) {
   import("//build/toolchain/win/win_toolchain_data.gni")
 }
 
-_rustc_base_path = rust_sysroot
-
-# TODO(danakj): When we're using the Android prebuilt toolchain, there's no
-# bindgen present. bindgen is for the host platform so using the linux one will
-# work.
-if (!use_chromium_rust_toolchain) {
-  _rustc_base_path = "//third_party/rust-toolchain"
-}
-
-_bindgen_path = "${_rustc_base_path}/bin/bindgen"
+_bindgen_path = "${rust_bindgen_root}/bin/bindgen"
 if (is_win) {
   _bindgen_path = "${_bindgen_path}.exe"
+}
+
+# On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
+# ../lib.
+_libclang_path = rust_bindgen_root
+if (is_win) {
+  _libclang_path += "/bin"
+} else {
+  _libclang_path += "/lib"
 }
 
 # Template to build Rust/C bindings with bindgen.
@@ -42,6 +42,9 @@ if (is_win) {
 #   C compilation targets determine the correct list of -D and -I flags based
 #   on their dependencies and any configs applied. The same applies here. Set
 #   any configs here as if this were a C target.
+#
+# bindgen_flags: (optional)
+#    the additional bindgen flags which are passed to the executable
 #
 # Rust targets depending on the output must include! the generated file.
 #
@@ -76,16 +79,6 @@ template("rust_bindgen") {
     depfile = "$target_out_dir/${target_name}.d"
     outputs = [ out_gen_rs ]
 
-    lib_path = ""
-    if (is_linux) {
-      # Linux clang, and clang libs, use a shared libstdc++, which we must
-      # point to.
-      clang_ld_path = rebase_path(clang_base_path + "/lib", root_build_dir)
-      lib_path += "${clang_ld_path}:"
-    }
-    rust_ld_path = rebase_path(_rustc_base_path + "/lib", root_build_dir)
-    lib_path += "${rust_ld_path}"
-
     args = [
       "--exe",
       rebase_path(_bindgen_path),
@@ -95,9 +88,25 @@ template("rust_bindgen") {
       rebase_path(depfile, root_build_dir),
       "--output",
       rebase_path(out_gen_rs, root_build_dir),
-      "--ld-library-path",
-      lib_path,
+      "--libclang-path",
+      rebase_path(_libclang_path, root_build_dir),
     ]
+
+    if (is_linux) {
+      # Linux clang, and clang libs, use a shared libstdc++, which we must
+      # point to.
+      args += [
+        "--ld-library-path",
+        rebase_path(clang_base_path + "/lib", root_build_dir),
+      ]
+    }
+
+    if (defined(invoker.bindgen_flags)) {
+      args += [ "--bindgen-flags" ]
+      foreach(flag, invoker.bindgen_flags) {
+        args += [ flag ]
+      }
+    }
 
     args += [
       "--",
@@ -165,6 +174,19 @@ template("rust_bindgen") {
         "/clang:-fno-spell-checking",
         "/clang:-fallow-editor-placeholders",
       ]
+    }
+
+    if (is_cfi) {
+      # LLVM searches for a default CFI ignorelist at (exactly)
+      # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
+      # Even if we provide a custom -fsanitize-ignorelist, the absence
+      # of this default file will cause a fatal error. clang finds
+      # it within third_party/llvm-build, but for bindgen our cwd
+      # is the $out_dir. We _could_ create this file at the right
+      # location within the outdir using a "copy" target, but as
+      # we don't actually generate code within bindgen, the easier
+      # option is to tell bindgen to ignore all CFI ignorelists.
+      args += [ "-fno-sanitize-ignorelist" ]
     }
   }
 }

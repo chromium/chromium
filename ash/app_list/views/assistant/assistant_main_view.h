@@ -9,6 +9,7 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -52,10 +53,12 @@ class ASH_EXPORT AssistantMainView : public views::View,
  private:
   void InitLayout();
 
-  AssistantViewDelegate* const delegate_;
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
 
-  AssistantDialogPlate* dialog_plate_;     // Owned by view hierarchy.
-  AppListAssistantMainStage* main_stage_;  // Owned by view hierarchy.
+  raw_ptr<AssistantDialogPlate, ExperimentalAsh>
+      dialog_plate_;  // Owned by view hierarchy.
+  raw_ptr<AppListAssistantMainStage, ExperimentalAsh>
+      main_stage_;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

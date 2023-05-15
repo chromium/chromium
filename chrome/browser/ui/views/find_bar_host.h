@@ -124,6 +124,11 @@ class FindBarHost : public DropdownBarHost,
   void RegisterAccelerators() override;
   void UnregisterAccelerators() override;
 
+#if BUILDFLAG(IS_MAC)
+  // Get the host widget.
+  views::Widget* GetHostWidget() override;
+#endif
+
  protected:
   // Overridden from DropdownBarHost:
   void OnVisibilityChanged() override;

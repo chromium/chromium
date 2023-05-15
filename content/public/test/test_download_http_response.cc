@@ -6,7 +6,8 @@
 
 #include <inttypes.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -575,8 +576,8 @@ void TestDownloadHttpResponse::SendResponseBodyChunk() {
   }
 
   int64_t upper_bound =
-      base::clamp(response_sent_offset_ + kBufferSize,
-                  range_.first_byte_position(), range_.last_byte_position());
+      std::clamp(response_sent_offset_ + kBufferSize,
+                 range_.first_byte_position(), range_.last_byte_position());
   auto buffer_range =
       net::HttpByteRange::Bounded(response_sent_offset_, upper_bound);
 

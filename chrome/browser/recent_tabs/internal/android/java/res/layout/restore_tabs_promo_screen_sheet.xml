@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <!-- Header section -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/restore_tabs_fre_logo_height"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/restore_tabs_fre_logo"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        android:focusable="true">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.Headline"
+            android:text="@string/restore_tabs_promo_sheet_title"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/restore_tabs_promo_sheet_subtitle" />
+    </LinearLayout>
+    <!-- Selected Device  -->
+    <LinearLayout
+        android:id="@+id/restore_tabs_selected_device_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:paddingTop="@dimen/restore_tabs_promo_sheet_device_card_padding"
+        android:paddingBottom="@dimen/restore_tabs_promo_sheet_device_card_padding"
+        android:background="@drawable/restore_tabs_device_info_background"
+        android:orientation="horizontal">
+      <ImageView
+          android:id="@+id/restore_tabs_promo_sheet_device_icon"
+          android:layout_width="@dimen/restore_tabs_device_icon"
+          android:layout_height="@dimen/restore_tabs_device_icon"
+          app:tint="@macro/default_icon_color"
+          android:background="@null"
+          android:layout_marginStart="@dimen/restore_tabs_device_icon_margin_horizontal"
+          android:layout_marginEnd="@dimen/restore_tabs_device_icon_margin_horizontal"
+          android:layout_gravity="center_vertical"
+          android:importantForAccessibility="no" />
+      <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+          <TextView
+            android:id="@+id/restore_tabs_promo_sheet_device_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textAlignment="viewStart" />
+          <TextView
+            android:id="@+id/restore_tabs_promo_sheet_session_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:textAlignment="viewStart" />
+      </LinearLayout>
+      <ImageView
+          android:id="@+id/restore_tabs_expand_icon_device_selection"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/restore_tabs_promo_sheet_expand_option_icon_margin_start"
+          android:layout_marginEnd="@dimen/restore_tabs_promo_sheet_expand_option_icon_margin_end"
+          android:layout_gravity="center_vertical"
+          android:importantForAccessibility="no"
+          android:contentDescription="@string/restore_tabs_promo_sheet_expand_icon_device_info_description"
+          app:tint="@color/default_icon_color_secondary_tint_list" />
+    </LinearLayout>
+    <!-- Action buttons section -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/restore_tabs_button_open_tabs"
+        style="@style/FilledButton.Flat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"/>
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/restore_tabs_button_review_tabs"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="@string/restore_tabs_promo_sheet_review_tabs" />
+</LinearLayout>

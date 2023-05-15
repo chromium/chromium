@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
@@ -147,7 +148,7 @@ class DevicePolicyCloudExternalDataManagerTest
   }
 
  private:
-  PolicyService* policy_service_ = nullptr;
+  raw_ptr<PolicyService, ExperimentalAsh> policy_service_ = nullptr;
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
       policy_changed_repeating_future_;

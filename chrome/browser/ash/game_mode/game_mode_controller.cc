@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -59,7 +60,7 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     }
 
     auto* app_instance =
-        ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
+        ARC_GET_INSTANCE_FOR_METHOD(connection_.get(), GetAppCategory);
     if (!app_instance)
       return;
     VLOG(2) << "Fetch app category of package: " << pkg_name;
@@ -103,7 +104,8 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
         GameMode::ARC, signal_resourced);
   }
 
-  arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
+  raw_ptr<arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
+          ExperimentalAsh>
       connection_;
 
   std::unique_ptr<GameModeController::GameModeEnabler> enabler_;

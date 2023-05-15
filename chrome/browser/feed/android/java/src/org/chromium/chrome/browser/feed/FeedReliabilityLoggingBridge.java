@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.feed;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.PaginationResult;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverAboveTheFoldRenderResult;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 
@@ -15,7 +19,8 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 @JNINamespace("feed::android")
 public class FeedReliabilityLoggingBridge {
     private final long mNativePtr;
-    private FeedLaunchReliabilityLogger mLogger;
+    private FeedLaunchReliabilityLogger mLaunchLogger;
+    private @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
     private DiscoverAboveTheFoldRenderResult mRenderResult;
     private boolean mRenderingStarted;
     private DiscoverLaunchResult mLaunchResult;
@@ -26,13 +31,21 @@ public class FeedReliabilityLoggingBridge {
     }
 
     public FeedReliabilityLoggingBridge() {
-        // mLogger should be null until FeedStream.bind() calls setLogger(). We don't expect mLogger
-        // to be used until then.
+        // mLaunchLogger should be null until FeedStream.bind() calls setLogger(). We don't expect
+        // mLaunchLogger to be used until then.
         mNativePtr = FeedReliabilityLoggingBridgeJni.get().init(this);
     }
 
-    public void setLogger(FeedLaunchReliabilityLogger logger) {
-        mLogger = logger;
+    public void setLogger(FeedReliabilityLogger logger) {
+        if (logger != null) {
+            mLaunchLogger = logger.getLaunchLogger();
+            mUserInteractionLogger = logger.getUserInteractionLogger();
+        }
+        // The launch logger may not be provided if FeedReliabilityLogger is mocked in testing.
+        // In this case, use the default no-op instance.
+        if (mLaunchLogger == null) {
+            mLaunchLogger = new FeedLaunchReliabilityLogger() {};
+        }
     }
 
     public long getNativePtr() {
@@ -45,56 +58,58 @@ public class FeedReliabilityLoggingBridge {
 
     @CalledByNative
     public void logOtherLaunchStart(long timestamp) {
-        mLogger.logFeedLaunchOtherStart(timestamp);
+        mLaunchLogger.logFeedLaunchOtherStart(timestamp);
     }
 
     @CalledByNative
     public void logCacheReadStart(long timestamp) {
-        mLogger.logCacheReadStart(timestamp);
+        mLaunchLogger.logCacheReadStart(timestamp);
     }
 
     @CalledByNative
     public void logCacheReadEnd(long timestamp, int cacheReadResult) {
-        mLogger.logCacheReadEnd(timestamp, cacheReadResult);
+        mLaunchLogger.logCacheReadEnd(timestamp, cacheReadResult);
     }
 
     @CalledByNative
     public void logFeedRequestStart(int requestId, long timestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logFeedQueryRequestStart(timestamp);
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logFeedQueryRequestStart(
+                timestamp);
     }
 
     @CalledByNative
     public void logWebFeedRequestStart(int requestId, long timestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logWebFeedRequestStart(timestamp);
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logWebFeedRequestStart(
+                timestamp);
     }
 
     @CalledByNative
     public void logSingleWebFeedRequestStart(int requestId, long timestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logSingleWebFeedRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logSingleWebFeedRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logActionsUploadRequestStart(int requestId, long timestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logActionsUploadRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logActionsUploadRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logRequestSent(int requestId, long timestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logRequestSent(timestamp);
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logRequestSent(timestamp);
     }
 
     @CalledByNative
     public void logResponseReceived(int requestId, long serverRecvTimestamp,
             long serverSendTimestamp, long clientRecvTimestamp) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logResponseReceived(
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logResponseReceived(
                 serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
     }
 
     @CalledByNative
     public void logRequestFinished(int requestId, long timestamp, int canonicalStatus) {
-        mLogger.getNetworkRequestReliabilityLogger(requestId).logRequestFinished(
+        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logRequestFinished(
                 timestamp, canonicalStatus);
     }
 
@@ -103,7 +118,7 @@ public class FeedReliabilityLoggingBridge {
         // It's possible to be called multiple times per launch, so we only log "render start" from
         // the first call.
         if (!mRenderingStarted) {
-            mLogger.logAtfRenderStart(timestamp);
+            mLaunchLogger.logAtfRenderStart(timestamp);
             mRenderingStarted = true;
         }
 
@@ -116,7 +131,7 @@ public class FeedReliabilityLoggingBridge {
 
     @CalledByNative
     public void logLoadingIndicatorShown(long timestamp) {
-        mLogger.logLoadingIndicatorShown(timestamp);
+        mLaunchLogger.logLoadingIndicatorShown(timestamp);
     }
 
     @CalledByNative
@@ -129,16 +144,67 @@ public class FeedReliabilityLoggingBridge {
         }
     }
 
+    @CalledByNative
+    public void logLoadMoreStarted() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationStarted();
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreIndicatorShown() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationIndicatorShown();
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreActionUploadRequestStarted() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationActionUploadRequestStarted();
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreRequestSent() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationRequestSent();
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreResponseReceived(long serverRecvTimestamp, long serverSendTimestamp) {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationResponseReceived(
+                    serverRecvTimestamp, serverSendTimestamp);
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreRequestFinished(int canonicalStatus) {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationRequestFinished(canonicalStatus);
+        }
+    }
+
+    @CalledByNative
+    public void logLoadMoreEnded(boolean success) {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationEnded(
+                    success ? PaginationResult.SUCCESS_WITH_MORE_FEED : PaginationResult.FAILURE);
+        }
+    }
+
     public void onStreamUpdateFinished() {
-        if (!mLogger.isLaunchInProgress()) return;
+        if (!mLaunchLogger.isLaunchInProgress()) return;
 
         if (mRenderResult != null) {
-            mLogger.logAtfRenderEnd(System.nanoTime(), mRenderResult.getNumber());
+            mLaunchLogger.logAtfRenderEnd(System.nanoTime(), mRenderResult.getNumber());
             mRenderResult = null;
         }
 
         if (mLaunchResult != null) {
-            mLogger.logLaunchFinished(System.nanoTime(), mLaunchResult.getNumber());
+            mLaunchLogger.logLaunchFinished(System.nanoTime(), mLaunchResult.getNumber());
             mLaunchResult = null;
         }
 
@@ -146,10 +212,10 @@ public class FeedReliabilityLoggingBridge {
     }
 
     public void onStreamUpdateError() {
-        if (!mLogger.isLaunchInProgress()) return;
-        mLogger.logAtfRenderEnd(
+        if (!mLaunchLogger.isLaunchInProgress()) return;
+        mLaunchLogger.logAtfRenderEnd(
                 System.nanoTime(), DiscoverAboveTheFoldRenderResult.INTERNAL_ERROR.getNumber());
-        mLogger.logLaunchFinished(
+        mLaunchLogger.logLaunchFinished(
                 System.nanoTime(), DiscoverLaunchResult.FAILED_TO_RENDER.getNumber());
         mRenderingStarted = false;
         mRenderResult = null;

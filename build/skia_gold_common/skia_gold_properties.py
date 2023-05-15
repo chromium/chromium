@@ -13,14 +13,26 @@ import argparse
 import logging
 import optparse
 import os
-from typing import Union
+import subprocess
+import sys
+from typing import Optional, Union
+
+CHROMIUM_SRC_DIR = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 
 ParsedCmdArgs = Union[argparse.Namespace, optparse.Values]
 
 
+def _IsWin() -> bool:
+  return sys.platform == 'win32'
+
+
 class SkiaGoldProperties():
   def __init__(self, args: ParsedCmdArgs):
-    """Abstract class to validate and store properties related to Skia Gold.
+    """Class to validate and store properties related to Skia Gold.
+
+    The base implementation is usable on its own, but is meant to be overridden
+    as necessary.
 
     Args:
       args: The parsed arguments from an argparse.ArgumentParser.
@@ -86,9 +98,17 @@ class SkiaGoldProperties():
   def bypass_skia_gold_functionality(self) -> bool:
     return self._bypass_skia_gold_functionality
 
-  @staticmethod
-  def _GetGitOriginMainHeadSha1() -> str:
-    raise NotImplementedError()
+  def _GetGitOriginMainHeadSha1(self) -> Optional[str]:
+    try:
+      return subprocess.check_output(
+          ['git', 'rev-parse', 'origin/main'],
+          shell=_IsWin(),
+          cwd=self._GetGitRepoDirectory()).decode('utf-8').strip()
+    except subprocess.CalledProcessError:
+      return None
+
+  def _GetGitRepoDirectory(self) -> str:
+    return CHROMIUM_SRC_DIR
 
   def _GetGitRevision(self) -> str:
     if not self._git_revision:

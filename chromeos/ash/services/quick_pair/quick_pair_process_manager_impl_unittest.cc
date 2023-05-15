@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
@@ -53,7 +54,7 @@ class QuickPairProcessManagerImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_enviornment_;
-  FakeProcessShutdownController* shutdown_controller_;
+  raw_ptr<FakeProcessShutdownController, ExperimentalAsh> shutdown_controller_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
 };

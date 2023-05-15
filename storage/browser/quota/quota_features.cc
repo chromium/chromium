@@ -13,6 +13,12 @@ namespace {
 constexpr int64_t kMBytes = 1024 * 1024;
 }  // namespace
 
+// A kill switch for the new approach to storage eviction on low disk space. See
+// crbug.com/1382847
+BASE_FEATURE(kNewQuotaEvictionRoutine,
+             "NewQuotaEvictionRoutine",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables Storage Pressure Event.
 BASE_FEATURE(kStoragePressureEvent,
              "StoragePressureEvent",

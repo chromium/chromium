@@ -116,9 +116,8 @@ bool IsExtensionRequiredByPolicy(const Extension* extension, Profile* profile) {
          policy->MustRemainInstalled(extension, nullptr);
 }
 
-std::u16string GetCurrentSite(content::WebContents* web_contents) {
-  return url_formatter::IDNToUnicode(
-      url_formatter::StripWWW(web_contents->GetLastCommittedURL().host()));
+std::u16string GetCurrentSite(const GURL& url) {
+  return url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host()));
 }
 
 ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
@@ -590,7 +589,11 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
 void ExtensionContextMenuModel::CreatePageAccessItems(
     const Extension* extension,
     content::WebContents* web_contents) {
-  auto url = web_contents->GetLastCommittedURL();
+  const GURL& url = web_contents->GetLastCommittedURL();
+  // We store the origin to make sure it's the same when executing page access
+  // commands.
+  origin_ = url::Origin::Create(url);
+
   auto* permissions_manager = PermissionsManager::Get(profile_);
 
   if (base::FeatureList::IsEnabled(
@@ -609,15 +612,14 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
     // only show the page access submenu with change extension settings options
     // if the site settings is set to "customize by extension". Otherwise, shows
     // a message that informs the user about the site setting.
-    auto site_setting =
-        permissions_manager->GetUserSiteSetting(url::Origin::Create(url));
+    auto site_setting = permissions_manager->GetUserSiteSetting(origin_);
     switch (site_setting) {
       case PermissionsManager::UserSiteSetting::kGrantAllExtensions:
         AddItem(
             PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
-                GetCurrentSite(web_contents)));
+                GetCurrentSite(url)));
         add_page_access_secondary_buttons(this);
         return;
 
@@ -626,7 +628,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
             PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
-                GetCurrentSite(web_contents)));
+                GetCurrentSite(url)));
         add_page_access_secondary_buttons(this);
         return;
 
@@ -654,7 +656,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
             PAGE_ACCESS_RUN_ON_SITE,
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_SITE_V2,
-                GetCurrentSite(web_contents)),
+                GetCurrentSite(url)),
             kRadioGroup);
         page_access_submenu_->AddRadioItemWithStringId(
             PAGE_ACCESS_RUN_ON_ALL_SITES,
@@ -689,7 +691,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
         PAGE_ACCESS_RUN_ON_SITE,
         l10n_util::GetStringFUTF16(
             IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_SITE,
-            GetCurrentSite(web_contents)),
+            GetCurrentSite(url)),
         kRadioGroup);
     page_access_submenu_->AddRadioItemWithStringId(
         PAGE_ACCESS_RUN_ON_ALL_SITES,
@@ -710,8 +712,9 @@ void ExtensionContextMenuModel::HandlePageAccessCommand(
     int command_id,
     const Extension* extension) const {
   content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   LogPageAccessAction(command_id);
 
@@ -723,6 +726,11 @@ void ExtensionContextMenuModel::HandlePageAccessCommand(
   if (command_id == PAGE_ACCESS_LEARN_MORE) {
     OpenUrl(*browser_,
             GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL));
+    return;
+  }
+
+  // If the web contents have navigated to a different origin, do nothing.
+  if (!origin_.IsSameOriginWith(web_contents->GetLastCommittedURL())) {
     return;
   }
 

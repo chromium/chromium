@@ -22,4 +22,8 @@ struct DispatchFetchEventParams {
   // Whether this is a "fake" fetch event used to detect the offline capability
   // of the service worker. See more details at https://crbug.com/965802.
   bool is_offline_capability_check = false;
+
+  // Indicates if the RaceNetworkRequest is dispatched outside of the service
+  // worker. crbug.com/1420517 for more details.
+  bool did_start_race_network_request = false;
 };

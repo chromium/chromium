@@ -37,13 +37,14 @@ enum class FormInputAccessoryAction {
 };
 
 FormInputAccessoryAction UMAActionForAssistAction(NSString* assistAction) {
-  if ([assistAction isEqual:kFormSuggestionAssistButtonPreviousElement]) {
+  if ([assistAction
+          isEqualToString:kFormSuggestionAssistButtonPreviousElement]) {
     return FormInputAccessoryAction::kPreviousElement;
   }
-  if ([assistAction isEqual:kFormSuggestionAssistButtonNextElement]) {
+  if ([assistAction isEqualToString:kFormSuggestionAssistButtonNextElement]) {
     return FormInputAccessoryAction::kNextElement;
   }
-  if ([assistAction isEqual:kFormSuggestionAssistButtonDone]) {
+  if ([assistAction isEqualToString:kFormSuggestionAssistButtonDone]) {
     return FormInputAccessoryAction::kDone;
   }
   NOTREACHED();
@@ -253,11 +254,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
     return;
   }
 
-  web::WebFramesManager* framesManager =
-      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-          ->GetWebFramesManager(_webState);
-  web::WebFrame* frame = framesManager->GetFrameWithId(
-      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+  web::WebFrame* frame = [self webFrame];
 
   if (!frame) {
     completionHandler(false, false);
@@ -293,11 +290,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFramesManager* framesManager =
-        autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
-    web::WebFrame* frame = framesManager->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame = [self webFrame];
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
@@ -315,17 +308,22 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFramesManager* framesManager =
-        autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
-    web::WebFrame* frame = framesManager->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame = [self webFrame];
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
           ->SelectNextElementInFrame(frame);
     }
   }
+}
+
+// Attempts to fetch the frame object from its id. May return nil.
+- (web::WebFrame*)webFrame {
+  web::WebFramesManager* framesManager =
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(_webState);
+  return framesManager->GetFrameWithId(
+      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
 }
 
 @end

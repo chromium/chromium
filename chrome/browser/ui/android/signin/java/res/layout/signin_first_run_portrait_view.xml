@@ -16,8 +16,9 @@ found in the LICENSE file.
         android:layout_height="0dp"
         android:layout_alignParentTop="true"
         android:layout_above="@id/fre_footer_viewgroup"
+        android:fadeScrollbars="false"
         android:fillViewport="true"
-        android:requiresFadingEdge="vertical">
+        android:scrollIndicators="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"

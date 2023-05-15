@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/style/color_palette_controller.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -98,8 +99,11 @@ class ArcSystemUIBridgeTest : public testing::Test {
     ArcServiceManager::Get()->arc_bridge_service()->system_ui()->CloseInstance(
         &system_ui_instance_);
     bridge_->Shutdown();
-    bridge_->SetColorPaletteControllerForTesting(nullptr);
-    test_palette_.reset();
+    if (test_palette_) {
+      // Only run cleanup if simulating that Shell still exists.
+      bridge_->SetColorPaletteControllerForTesting(nullptr);
+      test_palette_.reset();
+    }
   }
 
   explicit ArcSystemUIBridgeTest(const ArcSystemUIBridge&) = delete;
@@ -110,11 +114,20 @@ class ArcSystemUIBridgeTest : public testing::Test {
   TestBrowserContext context_;
   FakeSystemUiInstance system_ui_instance_;
   std::unique_ptr<TestColorPaletteController> test_palette_;
-  ArcSystemUIBridge* const bridge_;
+  const raw_ptr<ArcSystemUIBridge, ExperimentalAsh> bridge_;
   base::test::MockLog log_;
 };
 
 TEST_F(ArcSystemUIBridgeTest, ConstructDestruct) {}
+
+TEST_F(ArcSystemUIBridgeTest, DestroyColorPaletteControllerFirst) {
+  // Simulate Shell destruction.
+  bridge_->OnShellDestroying();
+  // Delete the ColorPaletteController like Shell would.
+  test_palette_.reset();
+  // This would crash in `TearDown()` before https://crbug.com/1431544 was
+  // fixed.
+}
 
 TEST_F(ArcSystemUIBridgeTest, OnColorModeChanged) {
   EXPECT_FALSE(system_ui_instance_.dark_theme_status());

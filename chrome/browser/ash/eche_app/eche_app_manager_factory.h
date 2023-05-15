@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -71,7 +72,7 @@ class LaunchedAppInfo {
     absl::optional<int64_t> user_id_;
     gfx::Image icon_;
     std::u16string phone_name_;
-    AppsLaunchInfoProvider* apps_launch_info_provider_;
+    raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_;
   };
 
   LaunchedAppInfo() = delete;
@@ -102,7 +103,7 @@ class LaunchedAppInfo {
   absl::optional<int64_t> user_id_;
   gfx::Image icon_;
   std::u16string phone_name_;
-  AppsLaunchInfoProvider* apps_launch_info_provider_;
+  raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_;
 };
 
 // Factory to create a single EcheAppManager.

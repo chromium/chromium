@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_CHROMEOS_FRAME_SINK_DESKTOP_CAPTURER_H_
 #define REMOTING_HOST_CHROMEOS_FRAME_SINK_DESKTOP_CAPTURER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "remoting/host/chromeos/ash_mojom_video_consumer.h"
@@ -43,7 +44,7 @@ class FrameSinkDesktopCapturer : public webrtc::DesktopCapturer {
 
  private:
   absl::optional<viz::ClientFrameSinkVideoCapturer> video_capturer_;
-  AshProxy& ash_;
+  const raw_ref<AshProxy, ExperimentalAsh> ash_;
   AshMojomVideoConsumer video_consumer_;
   raw_ptr<DesktopCapturer::Callback> callback_ = nullptr;
 

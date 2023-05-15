@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_H_
 
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <ostream>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,16 +18,27 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/gurl.h"
 
+class GURL;
+class Profile;
+
 namespace webapps {
 enum class InstallResultCode;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace web_app {
 
 class AllAppsLock;
+class ExternallyManagedAppInstallTask;
 class WebAppInstallFinalizer;
 class WebAppCommandScheduler;
 class WebAppUiManager;
+class ExternallyManagedAppRegistrationTaskBase;
+class WebAppUrlLoader;
+class WebAppDataRetriever;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
@@ -66,6 +77,8 @@ class ExternallyManagedAppManager {
     webapps::InstallResultCode code;
     absl::optional<AppId> app_id;
     bool did_uninstall_and_replace = false;
+    // When adding fields, please update the `==` and `<<` operators to include
+    // the new field.
   };
 
   using OnceInstallCallback =
@@ -82,7 +95,7 @@ class ExternallyManagedAppManager {
       std::map<GURL /*install_url*/, InstallResult> install_results,
       std::map<GURL /*install_url*/, bool /*succeeded*/> uninstall_results)>;
 
-  ExternallyManagedAppManager();
+  explicit ExternallyManagedAppManager(Profile* profile);
   ExternallyManagedAppManager(const ExternallyManagedAppManager&) = delete;
   ExternallyManagedAppManager& operator=(const ExternallyManagedAppManager&) =
       delete;
@@ -101,7 +114,7 @@ class ExternallyManagedAppManager {
   // Fails if the same operation has been queued before. Should only be used in
   // response to a user action e.g. the user clicked an install button.
   virtual void InstallNow(ExternalInstallOptions install_options,
-                          OnceInstallCallback callback) = 0;
+                          OnceInstallCallback callback);
 
   // Queues an installation operation the end of current tasks. Runs its
   // callback with the URL in |install_options| and with the id of the installed
@@ -109,7 +122,7 @@ class ExternallyManagedAppManager {
   //
   // Fails if the same operation has been queued before.
   virtual void Install(ExternalInstallOptions install_options,
-                       OnceInstallCallback callback) = 0;
+                       OnceInstallCallback callback);
 
   // Adds a task to the queue of operations for each ExternalInstallOptions in
   // |install_options_list|. Runs |callback| with the URL of the corresponding
@@ -119,7 +132,7 @@ class ExternallyManagedAppManager {
   // succeeded.
   virtual void InstallApps(
       std::vector<ExternalInstallOptions> install_options_list,
-      const RepeatingInstallCallback& callback) = 0;
+      const RepeatingInstallCallback& callback);
 
   // Adds a task to the queue of operations for each GURL in
   // |uninstall_urls|. Runs |callback| with the URL of the corresponding
@@ -128,7 +141,7 @@ class ExternallyManagedAppManager {
   // whether or not the uninstallation actually succeeded.
   virtual void UninstallApps(std::vector<GURL> uninstall_urls,
                              ExternalInstallSource install_source,
-                             const UninstallCallback& callback) = 0;
+                             const UninstallCallback& callback);
 
   // Installs an app for each ExternalInstallOptions in
   // |desired_apps_install_options| and uninstalls any apps in
@@ -153,19 +166,33 @@ class ExternallyManagedAppManager {
   void SetRegistrationsCompleteCallbackForTesting(base::OnceClosure callback);
   void ClearSynchronizeRequestsForTesting();
 
-  virtual void Shutdown() = 0;
+  void Shutdown();
+
+  void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
+  void SetDataRetrieverFactoryForTesting(
+      base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory);
 
  protected:
   WebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppInstallFinalizer* finalizer() { return finalizer_; }
   WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
 
+  virtual void ReleaseWebContents();
+
+  virtual std::unique_ptr<ExternallyManagedAppInstallTask>
+  CreateInstallationTask(ExternalInstallOptions install_options);
+
+  virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
+  StartRegistration(GURL launch_url);
+
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
 
-  base::OnceClosure registrations_complete_callback_;
+  Profile* profile() { return profile_; }
 
  private:
+  struct TaskAndCallback;
+
   struct SynchronizeRequest {
     SynchronizeRequest(SynchronizeCallback callback,
                        std::vector<ExternalInstallOptions> pending_installs,
@@ -200,18 +227,64 @@ class ExternallyManagedAppManager {
                                        bool succeeded);
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
+  void PostMaybeStartNext();
+
+  void MaybeStartNext();
+  void MaybeStartNextOnLockAcquired(AllAppsLock& lock);
+
+  void StartInstallationTask(std::unique_ptr<TaskAndCallback> task);
+
+  bool RunNextRegistration();
+
+  void CreateWebContentsIfNecessary();
+
+  void OnInstalled(ExternallyManagedAppManager::InstallResult result);
+
+  void MaybeEnqueueServiceWorkerRegistration(
+      const ExternalInstallOptions& install_options);
+
+  bool IsShuttingDown();
+
+  base::OnceClosure registrations_complete_callback_;
+
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
       nullptr;
 
+  const raw_ptr<Profile> profile_;
+
+  bool is_in_shutdown_ = false;
+
   base::flat_map<ExternalInstallSource, SynchronizeRequest>
       synchronize_requests_;
+
+  // unique_ptr so that it can be replaced in tests.
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  // Allows tests to set the data retriever for install tasks.
+  base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>
+      data_retriever_factory_for_testing_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
+
+  std::unique_ptr<TaskAndCallback> current_install_;
+
+  base::circular_deque<std::unique_ptr<TaskAndCallback>> pending_installs_;
+
+  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
+      current_registration_;
+
+  base::circular_deque<GURL> pending_registrations_;
 
   RegistrationCallback registration_callback_;
 
   base::WeakPtrFactory<ExternallyManagedAppManager> weak_ptr_factory_{this};
 };
+
+// For logging and testing purposes.
+std::ostream& operator<<(
+    std::ostream& out,
+    const ExternallyManagedAppManager::InstallResult& install_result);
 
 }  // namespace web_app
 

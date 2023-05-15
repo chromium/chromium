@@ -9,6 +9,7 @@ per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
 per-file review_notification_permissions*=rainhard@chromium.org
 per-file review_notification_permissions*=sauski@google.com
+per-file review_notification_permissions*=sideyilmaz@chromium.org
 
 per-file memory_internals_ui*=erikchen@chromium.org
 

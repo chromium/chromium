@@ -9,9 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
@@ -81,11 +81,8 @@ webapps::AppBannerManager* WebLayerWebappsClient::GetAppBannerManager(
 
 bool WebLayerWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
-    const GURL& manifest_url,
     const GURL& manifest_id) {
-  if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId))
-    return current_install_ids_.count(manifest_id);
-  return current_installs_.count(manifest_url) > 0;
+  return current_install_ids_.count(manifest_id);
 }
 
 bool WebLayerWebappsClient::CanShowAppBanners(
@@ -99,12 +96,10 @@ void WebLayerWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
 void WebLayerWebappsClient::InstallWebApk(
     content::WebContents* web_contents,
     const webapps::AddToHomescreenParams& params) {
-  DCHECK(current_installs_.count(params.shortcut_info->manifest_url) == 0);
-  current_installs_.insert(params.shortcut_info->manifest_url);
+  DCHECK(current_install_ids_.count(params.shortcut_info->manifest_id) == 0);
   current_install_ids_.insert(params.shortcut_info->manifest_id);
   WebApkInstallScheduler::FetchProtoAndScheduleInstall(
       web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon,
       base::BindOnce(&WebLayerWebappsClient::OnInstallFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -114,15 +109,13 @@ void WebLayerWebappsClient::InstallShortcut(
     const webapps::AddToHomescreenParams& params) {
   const webapps::ShortcutInfo& info = *params.shortcut_info;
 
-  webapps::addShortcutToHomescreen(base::GenerateGUID(), info.url,
-                                   info.user_title, params.primary_icon,
-                                   params.has_maskable_primary_icon);
+  webapps::addShortcutToHomescreen(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), info.url,
+      info.user_title, params.primary_icon, info.is_primary_icon_maskable);
 }
 
-void WebLayerWebappsClient::OnInstallFinished(GURL manifest_url,
-                                              GURL manifest_id) {
-  DCHECK(current_installs_.count(manifest_url) == 1);
-  current_installs_.erase(manifest_url);
+void WebLayerWebappsClient::OnInstallFinished(GURL manifest_id) {
+  DCHECK(current_install_ids_.count(manifest_id) == 1);
   current_install_ids_.erase(manifest_id);
 }
 

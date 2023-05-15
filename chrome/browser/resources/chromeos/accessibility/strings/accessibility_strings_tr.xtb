@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="100506692671054486">daha önce komut yok</translation>
 <translation id="1009046985747440431">Gezinmek için yukarı veya aşağı oka, etkinleştirmek için Enter tuşuna basın</translation>
 <translation id="1011903154582639569">Bir tuşu bulun ve yazmak için elinizi o tuştan kaldırın</translation>
 <translation id="1012173283529841972">Liste öğesi</translation>
@@ -459,6 +460,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3936394396199829062">Lila</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="3962990492275676168">Mevcut konumdan okumaya başla</translation>
+<translation id="397094149579293440">seçili metin yok</translation>
 <translation id="3970951409746498040">Kumlu Kahverengi</translation>
 <translation id="3989324057180830702">açm/kap dğm</translation>
 <translation id="3991317907213946254">Mokasen</translation>
@@ -565,6 +567,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4786285211967466855">Önceki 1. düzey başlık yok</translation>
 <translation id="4787577491510559358">Mevcut öğenin biçimini söyler</translation>
 <translation id="479989351350248267">ara</translation>
+<translation id="4802034228771424756">odaklanılmış metin alanı yok</translation>
 <translation id="4804818685124855865">Bağlantıyı kes</translation>
 <translation id="481165870889056555">Mevcut sayfanın başlığını söyle</translation>
 <translation id="4815668758102003883">Açık Turkuaz</translation>
@@ -587,13 +590,16 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="489907760999452556">Dahili bağlantı</translation>
 <translation id="4909019435900810068">Bir kelime geri git</translation>
 <translation id="4911349081560453449">Önceki onay kutusu yok</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> komutu gerçekleştirilemiyor, tekrar deneyin</translation>
 <translation id="492295894462528572">Önsöz</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4953585991029886728">Metni düzenle</translation>
+<translation id="4964701498510730546">metin alanı boş</translation>
 <translation id="4973717656530883744">En az <ph name="X" /></translation>
 <translation id="4974612477719259470">Önceki düğme yok</translation>
 <translation id="4979404613699303341">Önceki düğmesi</translation>
+<translation id="4981239367072766915">tanınmayan giriş</translation>
 <translation id="4982917827052020884">Sık sık kullanacağınız birkaç tuşla başlayalım. Control tuşu, devam etmekte olan bir konuşmayı durdurmak için kullanılabilir. Klavyenizin sol alt köşesindeki Control tuşunu bulun. Devam etmek için Control tuşuna basın.</translation>
 <translation id="4983588134362688868">Sayfanın en üst kısmına atlar</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, pencere</translation>
@@ -601,6 +607,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4994420463726586413">Mevcut pil durumunu söyler</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, radyo düğmesi seçili</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menü öğesi radyo düğmesi seçili</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> gerçekleştirilemedi, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Konuşma kaydını etkinleştir</translation>
 <translation id="5041394372352067729">Braille ekranını sayfanın üstüne taşı</translation>
 <translation id="5042770794184672516">Konuşma ses düzeyini artır</translation>

@@ -55,9 +55,9 @@ const char kDataCollectorName[] = "name";
 const char kDataCollectorProtoEnum[] = "protoEnum";
 const char kDataCollectorIncluded[] = "isIncluded";
 
-const char kUrlGenerationResultSuccess[] = "success";
-const char kUrlGenerationResultUrl[] = "url";
-const char kUrlGenerationResultErrorMessage[] = "errorMessage";
+const char kSupportTokenGenerationResultSuccess[] = "success";
+const char kSupportTokenGenerationResultToken[] = "result";
+const char kSupportTokenGenerationResultErrorMessage[] = "errorMessage";
 
 }  // namespace support_tool_ui
 
@@ -213,20 +213,22 @@ std::string GetDataCollectionModuleQuery(
 }
 
 // Returns a URL generation result in the type Support Tool UI expects.
-// type UrlGenerationResult = {
+// type SupportTokenGenerationResult = {
 //   success: boolean,
-//   url: string,
+//   result: string,
 //   errorMessage: string,
 // }
-base::Value::Dict GetURLGenerationResult(bool success,
-                                         std::string url,
-                                         std::string error_message) {
+base::Value::Dict GetSupportTokenGenerationResult(bool success,
+                                                  std::string result,
+                                                  std::string error_message) {
   base::Value::Dict url_generation_response;
-  url_generation_response.Set(support_tool_ui::kUrlGenerationResultSuccess,
-                              success);
-  url_generation_response.Set(support_tool_ui::kUrlGenerationResultUrl, url);
-  url_generation_response.Set(support_tool_ui::kUrlGenerationResultErrorMessage,
-                              error_message);
+  url_generation_response.Set(
+      support_tool_ui::kSupportTokenGenerationResultSuccess, success);
+  url_generation_response.Set(
+      support_tool_ui::kSupportTokenGenerationResultToken, result);
+  url_generation_response.Set(
+      support_tool_ui::kSupportTokenGenerationResultErrorMessage,
+      error_message);
   return url_generation_response;
 }
 
@@ -348,8 +350,8 @@ base::Value::Dict GenerateCustomizedURL(
       GetIncludedDataCollectorTypes(data_collector_items);
   if (included_data_collectors.empty()) {
     // If there's no selected data collector to add, consider this as an error.
-    return GetURLGenerationResult(
-        /*success=*/false, /*url=*/std::string(), /*error_message=*/
+    return GetSupportTokenGenerationResult(
+        /*success=*/false, /*result=*/std::string(), /*error_message=*/
         "No data collectors included. Please select a data collector.");
   }
   GURL customized_url("chrome://support-tool");
@@ -360,6 +362,23 @@ base::Value::Dict GenerateCustomizedURL(
   customized_url = net::AppendQueryParameter(
       customized_url, support_tool_ui::kModuleQuery,
       GetDataCollectionModuleQuery(included_data_collectors));
-  return GetURLGenerationResult(/*success=*/true, /*url=*/customized_url.spec(),
-                                /*error_message=*/std::string());
+  return GetSupportTokenGenerationResult(/*success=*/true,
+                                         /*result=*/customized_url.spec(),
+                                         /*error_message=*/std::string());
+}
+
+base::Value::Dict GenerateSupportToken(
+    const base::Value::List* data_collector_items) {
+  base::Value::Dict url_generation_response;
+  std::set<support_tool::DataCollectorType> included_data_collectors =
+      GetIncludedDataCollectorTypes(data_collector_items);
+  if (included_data_collectors.empty()) {
+    // If there's no selected data collector to add, consider this as an error.
+    return GetSupportTokenGenerationResult(
+        /*success=*/false, /*result=*/std::string(), /*error_message=*/
+        "No data collectors included. Please select a data collector.");
+  }
+  return GetSupportTokenGenerationResult(
+      /*success=*/true, GetDataCollectionModuleQuery(included_data_collectors),
+      /*error_message=*/std::string());
 }

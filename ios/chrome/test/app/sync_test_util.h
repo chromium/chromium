@@ -16,6 +16,10 @@ namespace base {
 class Time;
 }  // namespace base
 
+namespace synced_sessions {
+struct DistantSession;
+}  // namespace synced_sessions
+
 namespace chrome_test_util {
 
 // Whether or not the fake sync server has already been setup by
@@ -52,6 +56,12 @@ void AddBookmarkToFakeSyncServer(std::string url, std::string title);
 void AddLegacyBookmarkToFakeSyncServer(std::string url,
                                        std::string title,
                                        std::string originator_client_item_id);
+
+// Injects a distant session into the fake sync server. Tabs in this session
+// will also be injected.
+// TODO(crbug.com/1434678): don't take a DistantSession; rewrite using entity
+// builder pattern.
+void AddSessionToFakeSyncServer(const synced_sessions::DistantSession& session);
 
 // Injects user demographics into the fake sync server.
 void AddUserDemographicsToSyncServer(

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_window.h"
 
 #include <stddef.h>
@@ -10,8 +9,11 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -100,6 +102,23 @@ class EmptyAcceleratorHandler : public ui::AcceleratorProvider {
   }
 };
 
+class BrowserAddedObserver : public BrowserListObserver {
+ public:
+  explicit BrowserAddedObserver(base::OnceCallback<void(Browser*)> callback)
+      : callback_(std::move(callback)) {
+    CHECK(callback_);
+    BrowserList::AddObserver(this);
+  }
+
+  void OnBrowserAdded(Browser* browser) override {
+    BrowserList::RemoveObserver(this);
+    std::move(callback_).Run(browser);
+  }
+
+ private:
+  base::OnceCallback<void(Browser*)> callback_;
+};
+
 }  // namespace
 
 class ProfileWindowBrowserTest : public InProcessBrowserTest {
@@ -139,7 +158,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
                         : CreateGuestBrowser();
       profile_ = new_browser->profile();
     } else {
-        new_browser = CreateIncognitoBrowser(profile_);
+      new_browser = CreateIncognitoBrowser(profile_);
     }
 
     return new_browser;
@@ -309,10 +328,43 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
-                                        true, false, false, profile);
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<Browser*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  ASSERT_TRUE(future.Get());
+  EXPECT_NE(browser(), future.Get());
+  EXPECT_EQ(profile, future.Get()->profile());
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+// Regression test for https://crbug.com/1433283
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenTwoBrowserWindowsForProfile) {
+  Profile* profile = browser()->profile();
+  size_t num_browsers = BrowserList::GetInstance()->size();
+  base::test::TestFuture<Browser*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  CreateBrowser(profile);
+  EXPECT_EQ(profile, future.Get()->profile());
+  EXPECT_EQ(num_browsers + 2, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenBrowserWindowForProfileBrowserDestroyed) {
+  Profile* profile = browser()->profile();
+  size_t num_browsers = BrowserList::GetInstance()->size();
+
+  BrowserAddedObserver browser_added_observer(base::BindLambdaForTesting(
+      [this](Browser* browser) { this->CloseBrowserAsynchronously(browser); }));
+
+  base::test::TestFuture<Browser*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  EXPECT_EQ(nullptr, future.Get());
+  EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -338,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)>(),
                                         true, false, false, profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
@@ -358,7 +410,7 @@ class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
  private:
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
-    AddLibrary(base::FilePath(
-        FILE_PATH_LITERAL("profile_window_browsertest.js")));
+    AddLibrary(
+        base::FilePath(FILE_PATH_LITERAL("profile_window_browsertest.js")));
   }
 };

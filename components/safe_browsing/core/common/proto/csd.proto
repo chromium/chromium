@@ -793,7 +793,9 @@ message ClientDownloadRequest {
   // A binary or archive contained in an archive (e.g., a .exe in a .zip
   // archive, or a .zip inside a .zip).
   message ArchivedBinary {
-    optional string file_basename = 1;
+    // The path of the entry within the archive. For example, if a .zip contains
+    // a directory foo with a file bar.exe inside, this will be "foo/bar.exe"
+    optional string file_path = 1;
     optional DownloadType download_type = 2;
     optional Digests digests = 3;
     optional int64 length = 4;
@@ -814,10 +816,9 @@ message ClientDownloadRequest {
   // Population that the reporting user is part of.
   optional ChromeUserPopulation population = 24;
 
-  // True if the .zip or DMG, etc, was 100% successfully unpacked.
-  // This field is in the process of being deprecated and replaced with
-  // `archive_summary.valid`.
-  optional bool archive_valid = 26;
+  // This field has been deprecated and replaced with
+  // `archive_summary.parser_status`.
+  optional bool DEPRECATED_archive_valid = 26 [deprecated = true];
 
   // True if this ClientDownloadRequest is from a allowlisted domain.
   optional bool skipped_url_allowlist = 28;
@@ -864,12 +865,10 @@ message ClientDownloadRequest {
   // protection for Advanced Protection users.
   optional bool request_ap_verdicts = 67;
 
-  // For archives files the number of files and directories contained within the
-  // archive.
-  // These fields are in the process of being deprecated and replaced with
+  // These fields have been deprecated and replaced with
   // `archive_summary.file_count` or `archive_summary.directory_count`.
-  optional int32 archive_file_count = 68;
-  optional int32 archive_directory_count = 69;
+  optional int32 DEPRECATED_archive_file_count = 68 [deprecated = true];
+  optional int32 DEPRECATED_archive_directory_count = 69 [deprecated = true];
 
   // Only for display on chrome://safe-browsing. The actual token is sent in the
   // "Authorization: Bearer" header
@@ -983,6 +982,10 @@ message ClientDownloadRequest {
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
+
+  // Fields 87-89 are reserved for server-side use and are never sent by the
+  // client.
+  reserved 87 to 89;
 }
 
 message ReferrerChainOptions {
@@ -1046,6 +1049,11 @@ message ReferrerChainEntry {
     //  * <a> link click
     //  * using window.history.pushState (i.e. back, forward button interaction)
     RENDERER_INITIATED_WITH_USER_GESTURE = 3;
+
+    // Navigation is initiated by the browser process and it is believed the
+    // navigation is the result of the user copy and paste the address from the
+    // browser into the address bar.
+    COPY_PASTE_USER_INITIATED = 4;
   }
 
   message ServerRedirect {

@@ -7,9 +7,9 @@
 #import "base/ios/ns_error_util.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/net/protocol_handler_util.h"
@@ -106,7 +106,8 @@ void BreadcrumbManagerTabHelper::DidFinishNavigation(
     error_code = net::ERR_FAILED;
     NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
     // Only errors with net::kNSErrorDomain have correct net error code.
-    if (final_error && [final_error.domain isEqual:net::kNSErrorDomain]) {
+    if (final_error &&
+        [final_error.domain isEqualToString:net::kNSErrorDomain]) {
       error_code = final_error.code;
     }
   }

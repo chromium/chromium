@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
+#include "ash/booting/booting_animation_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
@@ -21,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +44,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
-#include "chrome/browser/ash/login/ui/login_display_webui.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -288,7 +289,8 @@ struct ShowLoginWizardSwitchLanguageCallbackData {
       : first_screen(first_screen), startup_manifest(startup_manifest) {}
 
   const OobeScreenId first_screen;
-  const StartupCustomizationDocument* const startup_manifest;
+  const raw_ptr<const StartupCustomizationDocument, ExperimentalAsh>
+      startup_manifest;
 
   // lock UI while resource bundle is being reloaded.
   InputEventsBlocker events_blocker;
@@ -428,15 +430,13 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
                       media::AudioCodec::kPCM);
 
-  login_display_ = std::make_unique<LoginDisplayWebUI>();
-
   metrics::structured::NeutrinoDevicesLogWithLocalState(
       GetLocalState(),
       metrics::structured::NeutrinoDevicesLocation::kLoginDisplayHostWebUI);
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
-  VLOG(4) << "~LoginDisplayWebUI";
+  VLOG(4) << __func__;
 
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -468,10 +468,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, LoginDisplayHost:
-
-LoginDisplay* LoginDisplayHostWebUI::GetLoginDisplay() {
-  return login_display_.get();
-}
 
 ExistingUserController* LoginDisplayHostWebUI::GetExistingUserController() {
   if (!existing_user_controller_)
@@ -559,6 +555,20 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     NotifyWizardCreated();
     wizard_controller_->Init(first_screen);
   }
+
+  if (ash::features::IsOobeSimonEnabled()) {
+    auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
+    const bool should_show =
+        wizard_controller_->current_screen() == welcome_screen;
+    if (!should_show) {
+      return;
+    }
+    ash::Shell::Get()
+        ->booting_animation_controller()
+        ->ShowAnimationWithEndCallback(
+            base::BindOnce(&LoginDisplayHostWebUI::BootingAnimationFinished,
+                           weak_factory_.GetWeakPtr()));
+  }
 }
 
 WizardController* LoginDisplayHostWebUI::GetWizardController() {
@@ -584,8 +594,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   CreateExistingUserController();
 
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
-
-  CHECK(login_display_);
 
   ShowGaiaDialogCommon(EmptyAccountId());
 
@@ -697,6 +705,15 @@ void LoginDisplayHostWebUI::OnShowWebUITimeout() {
   ShowWebUI();
 }
 
+void LoginDisplayHostWebUI::BootingAnimationFinished() {
+  CHECK(features::IsOobeSimonEnabled());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &BootingAnimationController::Finish,
+          ash::Shell::Get()->booting_animation_controller()->GetWeakPtr()));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, ui::InputDeviceEventObserver
 void LoginDisplayHostWebUI::OnInputDeviceConfigurationChanged(
@@ -744,7 +761,7 @@ void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
                     "NotifyLoginOrLockScreenVisible";
 
-    // First screen shown.
+    // Notify that the OOBE page is ready and the first screen is shown.
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
     // TODO(crbug.com/1305245) - Remove once the issue is fixed.
@@ -888,7 +905,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   // `login_window_`. Closing `login_window_` could immediately invalidate the
   // `login_view_` pointer.
   if (login_view_) {
-    login_view_->SetUIEnabled(true);
+    login_view_->SetKeyboardEventsAndSystemTrayEnabled(true);
     ResetLoginView();
   }
 

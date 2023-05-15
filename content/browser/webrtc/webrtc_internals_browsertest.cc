@@ -167,7 +167,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
  protected:
   bool ExecuteJavascript(const string& javascript) {
-    return ExecuteScript(shell(), javascript);
+    return ExecJs(shell(), javascript);
   }
 
   void ExpectTitle(const std::string& expected_title) const {
@@ -217,34 +217,20 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
   // Verifies that the DOM element with id |id| exists.
   void VerifyElementWithId(const string& id) {
-    bool result = false;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(document.getElementById('" + id +
-            "') != null);",
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, EvalJs(shell(),
+                           "document.getElementById('" + id + "') != null;"));
   }
 
   // Verifies that the DOM element with id |id| does not exist.
   void VerifyNoElementWithId(const string& id) {
-    bool result = false;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(document.getElementById('" + id +
-            "') == null);",
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, EvalJs(shell(),
+                           "document.getElementById('" + id + "') == null;"));
   }
 
   // Verifies the JS Array of userMediaRequests matches |requests|.
   void VerifyMediaRequest(const std::vector<UserMediaRequestEntry>& requests) {
-    string json_requests;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(),
-                                      "window.domAutomationController.send("
-                                      "    JSON.stringify(userMediaRequests));",
-                                      &json_requests));
+    string json_requests =
+        EvalJs(shell(), "JSON.stringify(userMediaRequests);").ExtractString();
     base::Value::List list_request = base::test::ParseJsonList(json_requests);
 
     EXPECT_EQ(requests.size(), list_request.size());
@@ -270,13 +256,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       EXPECT_EQ(requests[i].video_constraints, *video);
     }
 
-    bool user_media_tab_existed = false;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractBool(shell(),
-                                    "window.domAutomationController.send("
-                                    "    document.querySelector("
-                                    "    '#user-media-tab-id') != null);",
-                                    &user_media_tab_existed));
+    bool user_media_tab_existed =
+        EvalJs(shell(), "document.querySelector('#user-media-tab-id') != null;")
+            .ExtractBool();
     EXPECT_EQ(!requests.empty(), user_media_tab_existed);
 
     if (user_media_tab_existed) {
@@ -306,9 +288,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
          << (i + 1)
          << "];"
             "var cell = row.lastChild;"
-            "window.domAutomationController.send(cell.firstChild.textContent);";
-      ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), ss.str(), &result));
-      EXPECT_EQ(pc.events_[i].type + pc.events_[i].value, result);
+            "cell.firstChild.textContent;";
+      EXPECT_EQ(pc.events_[i].type + pc.events_[i].value,
+                EvalJs(shell(), ss.str()));
     }
   }
 
@@ -371,16 +353,13 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                            const string& value) {
     VerifyElementWithId(table_id + "-" + name);
 
-    string result;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "var row = document.getElementById('" + table_id + "-" + name +
-            "');"
-            "var name = row.cells[0].textContent;"
-            "var value = row.cells[1].textContent;"
-            "window.domAutomationController.send(name + ':' + value)",
-        &result));
-    EXPECT_EQ(name + ":" + value, result);
+    EXPECT_EQ(name + ":" + value,
+              EvalJs(shell(), "var row = document.getElementById('" + table_id +
+                                  "-" + name +
+                                  "');"
+                                  "var name = row.cells[0].textContent;"
+                                  "var value = row.cells[1].textContent;"
+                                  "name + ':' + value"));
   }
 
   // Verifies that the graph data series consistent with pc.stats_.
@@ -409,33 +388,26 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   // Verifies that the graph data point at index |index| has value |value|.
   void VerifyGraphDataPoint(const string& pc_id, const string& graph_id,
                             int index, const string& value) {
-    bool result = false;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send("
-           "graphViews['" + pc_id + "-" + graph_id + "'] != null)",
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, EvalJs(shell(), "graphViews['" + pc_id + "-" + graph_id +
+                                        "'] != null"));
 
     std::stringstream ss;
-    ss << "var dp = peerConnectionDataStore['" << pc_id << "']"
-          ".getDataSeries('" << graph_id << "').dataPoints_[" << index << "];"
-          "window.domAutomationController.send(dp.value.toString())";
-    string actual_value;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(), ss.str(), &actual_value));
-    EXPECT_EQ(value, actual_value);
+    ss << "var dp = peerConnectionDataStore['" << pc_id
+       << "']"
+          ".getDataSeries('"
+       << graph_id << "').dataPoints_[" << index
+       << "];"
+          "dp.value.toString()";
+    EXPECT_EQ(value, EvalJs(shell(), ss.str()));
   }
 
   // Get the JSON string of the ssrc info from the page.
   string GetSsrcInfo(const string& ssrc_id) {
-    string result;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "window.domAutomationController.send(JSON.stringify("
-           "ssrcInfoManager.streamInfoContainer_['" + ssrc_id + "']))",
-        &result));
-    return result;
+    return EvalJs(shell(),
+                  "JSON.stringify("
+                  "ssrcInfoManager.streamInfoContainer_['" +
+                      ssrc_id + "'])")
+        .ExtractString();
   }
 
   int GetSsrcInfoBlockCount(Shell* shell) {
@@ -609,16 +581,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, BweCompoundGraph) {
   const string stats_id = "videobwe";
   ExecuteAndVerifyAddStats(pc, stats_type, stats_id, stats);
 
-  string graph_id =
-      pc.getIdString() + "-" + stats_id + "-bweCompound";
-  bool result = false;
+  string graph_id = pc.getIdString() + "-" + stats_id + "-bweCompound";
   // Verify that the bweCompound graph exists.
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send("
-        "   graphViews['" + graph_id + "'] != null)",
-        &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell(), "   graphViews['" + graph_id + "'] != null"));
 
   // Verify that the bweCompound graph contains multiple dataSeries.
   int count =
@@ -722,25 +687,23 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   }
 
   // Verifies each stats table having more than one rows.
-  bool result = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      shell2,
-      "var tableContainers = document.querySelector('#peer-connections-list')"
-      "    .getElementsByClassName('stats-table-container');"
-      "var result = true;"
-      "for (var i = 0; i < tableContainers.length && result; ++i) {"
-      "  var tables = tableContainers[i].getElementsByTagName('table');"
-      "  for (var j = 0; j < tables.length && result; ++j) {"
-      "    result = (tables[j].rows.length > 1);"
-      "  }"
-      "  if (!result) {"
-      "    console.log(tableContainers[i].innerHTML);"
-      "  }"
-      "}"
-      "window.domAutomationController.send(result);",
-      &result));
-
-  EXPECT_TRUE(result);
+  EXPECT_EQ(
+      true,
+      EvalJs(shell2,
+             "var tableContainers = "
+             "document.querySelector('#peer-connections-list')"
+             "    .getElementsByClassName('stats-table-container');"
+             "var result = true;"
+             "for (var i = 0; i < tableContainers.length && result; ++i) {"
+             "  var tables = tableContainers[i].getElementsByTagName('table');"
+             "  for (var j = 0; j < tables.length && result; ++j) {"
+             "    result = (tables[j].rows.length > 1);"
+             "  }"
+             "  if (!result) {"
+             "    console.log(tableContainers[i].innerHTML);"
+             "  }"
+             "}"
+             "result;"));
 
   count = GetSsrcInfoBlockCount(shell2);
   EXPECT_GT(count, 0);
@@ -763,12 +726,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
       ");"));
 
   // Verifies the peer connection data store can be created without stats.
-  string dump_json;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send("
-      "    JSON.stringify(peerConnectionDataStore));",
-      &dump_json));
+  string dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
+                         .ExtractString();
   VerifyPageDumpStructure(base::test::ParseJsonDict(dump_json),
                           2 /*peer_connection_number*/, 2 /*update_number*/,
                           0 /*stats_number*/);
@@ -781,11 +740,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
   stats.values["framerate"] = "30";
   ExecuteAndVerifyAddStats(pc_0, type, id, stats);
 
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send("
-      "    JSON.stringify(peerConnectionDataStore));",
-      &dump_json));
+  dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
+                  .ExtractString();
   VerifyStatsDump(base::test::ParseJsonDict(dump_json), pc_0, type, id, stats);
 }
 

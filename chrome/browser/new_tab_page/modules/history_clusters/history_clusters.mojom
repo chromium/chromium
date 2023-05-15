@@ -4,6 +4,7 @@
 
 module ntp.history_clusters.mojom;
 
+import "chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom";
 import "components/history_clusters/public/mojom/history_cluster_types.mojom";
 import "url/mojom/url.mojom";
 
@@ -12,11 +13,16 @@ interface PageHandler {
   // Get a series of relevant history clusters.
   GetClusters() => (array<history_clusters.mojom.Cluster> clusters);
 
+  // Get the most relevant cart for given `cluster`.
+  GetCartForCluster(history_clusters.mojom.Cluster cluster)
+    => (ntp.history_clusters.cart.mojom.Cart? cart);
+
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);
 
-  // Open the URLs as a new tab group and clobber the existing NTP.
-  OpenUrlsInTabGroup(array<url.mojom.Url> urls);
+  // Open the URLs as a new tab group and clobber the existing NTP. The new tab
+  // group has an optional name `tab_group_name`.
+  OpenUrlsInTabGroup(array<url.mojom.Url> urls, string? tab_group_name);
 
   // Dismisses a cluster by marking its associated visits as not relevant.
   DismissCluster(array<history_clusters.mojom.URLVisit> visits);

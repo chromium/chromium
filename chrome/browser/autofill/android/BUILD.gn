@@ -28,6 +28,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/customtabs/branding:java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/feedback/android:java_resources",

@@ -39,8 +39,6 @@ int64_t TimeValToMicroseconds(const struct timeval& tv) {
   return ret;
 }
 
-ProcessMetrics::~ProcessMetrics() = default;
-
 #if !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -16,9 +16,11 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -28,11 +30,13 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -109,7 +113,8 @@ void AddIssueToForm(PasswordForm* form,
   form->password_issues.insert_or_assign(
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
-                password_manager::IsMuted(is_muted)));
+                password_manager::IsMuted(is_muted),
+                password_manager::TriggerBackendNotification(false)));
 }
 
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
@@ -124,6 +129,13 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
+
     browser_state_ = builder.Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(
         IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
@@ -235,6 +247,50 @@ TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedReset) {
       ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
 
   EXPECT_NE(base::Time(), manager().GetLastPasswordCheckTime());
+}
+
+// Checks that insecure credential count metrics are logged after a check has
+// finished.
+TEST_F(IOSChromePasswordCheckManagerTest, InsecureCredentialCountsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm leaked_form = MakeSavedPassword(kExampleCom, kUsername116);
+  AddIssueToForm(&leaked_form, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(leaked_form);
+
+  PasswordForm phished_form =
+      MakeSavedPassword("https://site1.com", kUsername116);
+  AddIssueToForm(&phished_form, InsecureType::kPhished, base::Minutes(1));
+  store().AddLogin(phished_form);
+
+  PasswordForm weak_form = MakeSavedPassword("https://site1.com", kUsername116);
+  AddIssueToForm(&weak_form, InsecureType::kWeak, base::Minutes(1));
+  store().AddLogin(weak_form);
+
+  PasswordForm reused_form =
+      MakeSavedPassword("https://site2.com", kUsername116);
+  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(reused_form);
+
+  // Adding a muted warning. This shouldn't be counted in the unmuted histogram.
+  PasswordForm muted_form =
+      MakeSavedPassword("https://site32.com", kUsername216);
+  AddIssueToForm(&muted_form, InsecureType::kLeaked, base::Minutes(1),
+                 /*is_muted=*/true);
+  store().AddLogin(muted_form);
+
+  manager().StartPasswordCheck();
+  RunUntilIdle();
+
+  static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
+      ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
+
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                password_manager::kInsecureCredentialsCountHistogram),
+            2);
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                password_manager::kUnmutedInsecureCredentialsCountHistogram),
+            1);
 }
 
 // Tests whether adding and removing an observer works as expected.

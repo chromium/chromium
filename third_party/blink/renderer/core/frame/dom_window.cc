@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -45,6 +44,22 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
+
+namespace {
+
+String CoopReportOnlyErrorMessage(const String& property_name) {
+  String call;
+  if (property_name == "named") {
+    call = "window[\"name\"]";
+  } else if (property_name == "indexed") {
+    call = "window[i]";
+  } else {
+    call = "window." + property_name;
+  }
+  return "Cross-Origin-Opener-Policy policy would block the " + call + " call.";
+}
+
+}  // namespace
 
 DOMWindow::DOMWindow(Frame& frame)
     : frame_(frame),
@@ -627,7 +642,11 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
         location->Url() ? location->Url() : "", location->LineNumber(),
         location->ColumnNumber());
 
-    // TODO(https://crbug.com/1124251): Notify Devtool about the access attempt.
+    accessing_window->GetFrameConsole()->AddMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            CoopReportOnlyErrorMessage(property_name), location->Clone()));
 
     // If the reporting document hasn't specified any network report
     // endpoint(s), then it is likely not interested in receiving
@@ -669,17 +688,6 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
       source_frame->GetDocument()->UnloadEventInProgress();
   if (!unload_event_in_progress && source_frame && source_frame->GetPage() &&
       source_frame->GetPage()->DispatchedPagehideAndStillHidden()) {
-    // The postMessage call is done after the pagehide event got dispatched
-    // and the page is still hidden, which is not normally possible (this
-    // might happen if we're doing a same-site cross-RenderFrame navigation
-    // where we dispatch pagehide during the new RenderFrame's commit but
-    // won't unload/freeze the page after the new RenderFrame finished
-    // committing). We should track this case to measure how often this is
-    // happening, except for when the unload event is currently in progress,
-    // which means the page is not actually stored in the back-forward cache and
-    // this behavior is ok.
-    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
-                              ActionAfterPagehide::kSentPostMessage);
   }
   if (!IsCurrentlyDisplayedInFrame())
     return;

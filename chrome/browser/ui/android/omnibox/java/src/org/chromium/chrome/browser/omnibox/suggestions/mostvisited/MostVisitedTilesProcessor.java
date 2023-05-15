@@ -17,10 +17,8 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -29,7 +27,9 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -131,7 +131,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
                     () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
             tileModel.set(TileViewProperties.ON_CLICK, v -> {
-                SuggestionsMetrics.recordSuggestTileTypeUsed(itemIndex, isSearch);
+                OmniboxMetrics.recordSuggestTileTypeUsed(itemIndex, isSearch);
                 mSuggestionHost.onSuggestionClicked(suggestion, matchIndex, url);
             });
 

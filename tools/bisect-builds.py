@@ -80,6 +80,10 @@ SEARCH_PATTERN = {
 CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
 
+# Commands used for Android.
+_ANDROID_CHROME_INTENT = 'android.intent.action.MAIN'
+_ANDROID_CHROME_PACKAGE = 'org.chromium.chrome'
+
 ###############################################################################
 
 import glob
@@ -154,7 +158,10 @@ class PathContext(object):
       # below where these are patched.
       self.archive_name = 'chrome-win32.zip'
       self._archive_extract_dir = 'chrome-win32'
-      self._binary_name = 'chrome.exe'
+    elif self.platform == 'android':
+      self._binary_name = 'apks/ChromePublic.apk'
+      self.archive_name = 'chrome-android.zip'
+      self._archive_extract_dir = 'chrome-android'
     else:
       raise Exception('Invalid platform: %s' % self.platform)
 
@@ -181,6 +188,8 @@ class PathContext(object):
       self._listing_platform_dir = 'Win/'
     elif self.platform == 'win64':
       self._listing_platform_dir = 'Win_x64/'
+    elif self.platform == 'android':
+      self._listing_platform_dir = 'Android/'
 
   def GetASANPlatformDir(self):
     """ASAN builds are in directories like "linux-release", or have filenames
@@ -663,21 +672,30 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   # Run the build as many times as specified.
   testargs = ['--user-data-dir=%s' % profile] + args
   runcommand = []
-  for token in shlex.split(command):
-    if token == '%a':
-      runcommand.extend(testargs)
-    else:
-      runcommand.append(
-          token.replace('%p', os.path.abspath(context.GetLaunchPath(revision))).
-          replace('%s', ' '.join(testargs)))
+  # Ideally we'd use third_party/catapult for the adb command, but testers need
+  # the script to be more portable without the chromium repo.
+  if context.platform == 'android':
+    runcommand = ('adb install -d -r {} &&'
+                  ' adb shell am start -a {} -p {}'.format(
+                      os.path.abspath(context.GetLaunchPath(revision)),
+                      _ANDROID_CHROME_INTENT, _ANDROID_CHROME_PACKAGE))
+  else:
+    for token in shlex.split(command):
+      if token == '%a':
+        runcommand.extend(testargs)
+      else:
+        runcommand.append(
+            token.replace('%p', os.path.abspath(
+                context.GetLaunchPath(revision))).replace(
+                    '%s', ' '.join(testargs)))
   result = None
   try:
     for _ in range(num_runs):
-      subproc = subprocess.Popen(
-          runcommand,
-          bufsize=-1,
-          stdout=subprocess.PIPE,
-          stderr=subprocess.PIPE)
+      subproc = subprocess.Popen(runcommand,
+                                 shell=context.platform == 'android',
+                                 bufsize=-1,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
       (stdout, stderr) = subproc.communicate()
       result = (subproc.returncode, stdout, stderr)
       if subproc.returncode:
@@ -773,7 +791,11 @@ class DownloadJob(object):
     assert self.thread, 'DownloadJob must be started before Stop is called.'
     self.quit_event.set()
     self.thread.join()
-    os.unlink(self.zip_file)
+    # If a very small range is requested, with verification, then the same
+    # download may be requested twice, so the second delete will fail. Check for
+    # that.
+    if os.path.exists(self.zip_file):
+      os.unlink(self.zip_file)
 
   def WaitFor(self):
     """Prints a message and waits for the download to complete. The download
@@ -1195,8 +1217,18 @@ def main():
            '"--use-mock-keychain --disable-features=DialMediaRouteProvider.')
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
-  choices = ['mac', 'mac64', 'mac-arm', 'win', 'win64', 'linux', 'linux64',
-             'linux-arm', 'chromeos']
+  choices = [
+      'mac',
+      'mac64',
+      'mac-arm',
+      'win',
+      'win64',
+      'linux',
+      'linux64',
+      'linux-arm',
+      'chromeos',
+      'android',
+  ]
   parser.add_option('-a', '--archive',
                     choices=choices,
                     help='The buildbot archive to bisect [%s].' %

@@ -36,6 +36,7 @@ class ReadableStreamBytesConsumer::BytesConsumerReadRequest final
       consumer_->OnRejected();
       return;
     }
+    ScriptState::Scope scope(script_state);
     NonThrowableExceptionState exception_state;
     consumer_->OnRead(
         NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
@@ -64,8 +65,14 @@ class ReadableStreamBytesConsumer::BytesConsumerReadRequest final
 ReadableStreamBytesConsumer::ReadableStreamBytesConsumer(
     ScriptState* script_state,
     ReadableStream* stream)
-    : reader_(stream->GetReaderNotForAuthorCode(script_state)),
-      script_state_(script_state) {}
+    : script_state_(script_state) {
+  DCHECK(!ReadableStream::IsLocked(stream));
+
+  // Since the stream is not locked, AcquireDefaultReader cannot fail.
+  NonThrowableExceptionState exception_state(__FILE__, __LINE__);
+  reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,
+                                                 exception_state);
+}
 
 ReadableStreamBytesConsumer::~ReadableStreamBytesConsumer() {}
 

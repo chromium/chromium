@@ -611,9 +611,10 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
   // In these cases, we set `element_` to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
   // AutofillAgent relies on `element_` in many places.
-  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused() ||
-                               form_util::GetFormRendererId(element_.Form()) !=
-                                   form.unique_renderer_id)) {
+  if (!form.fields.empty() &&
+      (element_.IsNull() || !element_.Focused() ||
+       form_util::GetFormRendererId(form_util::GetOwningForm(element_)) !=
+           form.unique_renderer_id)) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);
@@ -822,9 +823,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   // mirrors the construction of the synthetic form in form_cache.cc, but
   // happens at submit-time so we can capture the modifications the user
   // has made, and doesn't depend on form_cache's internal state.
-  std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document);
 
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
@@ -832,8 +832,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   const ExtractMask extract_mask = static_cast<ExtractMask>(
       form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
 
-  return form_util::UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr, document,
+  return form_util::UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, document,
       field_data_manager_.get(), extract_mask, output, nullptr);
 }
 
@@ -945,7 +945,7 @@ void AutofillAgent::QueryAutofillSuggestions(
     // If we didn't find the cached form, at least let autocomplete have a shot
     // at providing suggestions.
     WebFormControlElementToFormField(
-        form.unique_renderer_id, element, nullptr,
+        form_util::GetOwningForm(element), element, nullptr,
         static_cast<ExtractMask>(form_util::EXTRACT_VALUE |
                                  form_util::EXTRACT_BOUNDS |
                                  GetExtractDatalistMask()),
@@ -1071,14 +1071,6 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     SendFocusedInputChangedNotificationToBrowser(focused_element);
   }
 
-  // PasswordGenerationAgent needs to know about focus changes, even if there is
-  // no focused element.
-  if (password_generation_agent_ &&
-      password_generation_agent_->FocusedNodeHasChanged(focused_element)) {
-    is_generation_popup_possibly_visible_ = true;
-    is_popup_possibly_visible_ = true;
-  }
-
   if (!IsKeyboardAccessoryEnabled() && focus_requires_scroll_)
     HandleFocusChangeComplete();
 
@@ -1179,7 +1171,7 @@ void AutofillAgent::FormControlElementClicked(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  password_autofill_agent_->TryToShowTouchToFill(element);
+  password_autofill_agent_->TryToShowKeyboardReplacingSurface(element);
 #endif
 
   ShowSuggestions(
@@ -1219,6 +1211,12 @@ void AutofillAgent::HandleFocusChangeComplete() {
   }
 
   focused_node_was_last_clicked_ = false;
+
+  if (password_generation_agent_ &&
+      password_generation_agent_->HandleFocusChangeComplete(focused_element)) {
+    is_generation_popup_possibly_visible_ = true;
+    is_popup_possibly_visible_ = true;
+  }
 
   SendPotentiallySubmittedFormToBrowser();
 }
@@ -1283,7 +1281,8 @@ void AutofillAgent::OnProvisionallySaveForm(
               WebFormControlElement field =
                   form_util::FindFormControlElementByUniqueRendererId(
                       doc, field_id, /*form_to_be_searched =*/FormRendererId());
-              return !field.IsNull() && form_util::IsWebElementFocusable(field);
+              return !field.IsNull() &&
+                     form_util::IsWebElementFocusableForAutofill(field);
             });
       }
       formless_elements_user_edited_.insert(

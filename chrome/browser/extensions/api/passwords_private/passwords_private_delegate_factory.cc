@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,8 +35,9 @@ PasswordsPrivateDelegateProxy::PasswordsPrivateDelegateProxy(
 PasswordsPrivateDelegateProxy::PasswordsPrivateDelegateProxy(
     BrowserContext* browser_context,
     scoped_refptr<PasswordsPrivateDelegate> delegate)
-    : browser_context_(browser_context),
-      scoped_instance_(std::move(delegate)) {}
+    : browser_context_(browser_context), scoped_instance_(std::move(delegate)) {
+  weak_instance_ = scoped_instance_->AsWeakPtr();
+}
 PasswordsPrivateDelegateProxy::~PasswordsPrivateDelegateProxy() = default;
 
 void PasswordsPrivateDelegateProxy::Shutdown() {
@@ -100,6 +102,7 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
               .Build()) {
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(PasswordsPrivateEventRouterFactory::GetInstance());
 }

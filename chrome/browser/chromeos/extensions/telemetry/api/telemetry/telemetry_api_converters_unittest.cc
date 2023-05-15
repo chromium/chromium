@@ -19,16 +19,14 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace chromeos::converters {
 
 namespace {
 
-namespace telemetry_api = ::chromeos::api::os_telemetry;
-namespace telemetry_service = ::crosapi::mojom;
+namespace cx_telem = ::chromeos::api::os_telemetry;
+namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
-
-namespace converters {
 
 TEST(TelemetryApiConverters, AudioInputNodeInfo) {
   constexpr uint64_t kId = 42;
@@ -37,14 +35,14 @@ TEST(TelemetryApiConverters, AudioInputNodeInfo) {
   constexpr bool kActive = true;
   constexpr uint8_t kNodeGain = 1;
 
-  auto input = telemetry_service::ProbeAudioInputNodeInfo::New();
-  input->id = crosapi::mojom::UInt64Value::New(kId);
+  auto input = crosapi::ProbeAudioInputNodeInfo::New();
+  input->id = crosapi::UInt64Value::New(kId);
   input->name = kName;
   input->device_name = kDeviceName;
-  input->active = crosapi::mojom::BoolValue::New(kActive);
-  input->node_gain = crosapi::mojom::UInt8Value::New(kNodeGain);
+  input->active = crosapi::BoolValue::New(kActive);
+  input->node_gain = crosapi::UInt8Value::New(kNodeGain);
 
-  auto result = ConvertPtr<telemetry_api::AudioInputNodeInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::AudioInputNodeInfo>(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -69,15 +67,14 @@ TEST(TelemetryApiConverters, AudioOutputNodeInfo) {
   constexpr bool kActive = true;
   constexpr uint8_t kNodeVolume = 242;
 
-  auto input = telemetry_service::ProbeAudioOutputNodeInfo::New();
-  input->id = crosapi::mojom::UInt64Value::New(kId);
+  auto input = crosapi::ProbeAudioOutputNodeInfo::New();
+  input->id = crosapi::UInt64Value::New(kId);
   input->name = kName;
   input->device_name = kDeviceName;
-  input->active = crosapi::mojom::BoolValue::New(kActive);
-  input->node_volume = crosapi::mojom::UInt8Value::New(kNodeVolume);
+  input->active = crosapi::BoolValue::New(kActive);
+  input->node_volume = crosapi::UInt8Value::New(kNodeVolume);
 
-  auto result =
-      ConvertPtr<telemetry_api::AudioOutputNodeInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::AudioOutputNodeInfo>(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -113,33 +110,33 @@ TEST(TelemetryApiConverters, AudioInfo) {
   constexpr bool kActiveOutput = false;
   constexpr uint8_t kNodeVolumeOutput = 212;
 
-  std::vector<telemetry_service::ProbeAudioInputNodeInfoPtr> input_node_info;
-  auto input_node = telemetry_service::ProbeAudioInputNodeInfo::New();
-  input_node->id = crosapi::mojom::UInt64Value::New(kIdInput);
+  std::vector<crosapi::ProbeAudioInputNodeInfoPtr> input_node_info;
+  auto input_node = crosapi::ProbeAudioInputNodeInfo::New();
+  input_node->id = crosapi::UInt64Value::New(kIdInput);
   input_node->name = kNameInput;
   input_node->device_name = kDeviceNameInput;
-  input_node->active = crosapi::mojom::BoolValue::New(kActiveInput);
-  input_node->node_gain = crosapi::mojom::UInt8Value::New(kNodeGainInput);
+  input_node->active = crosapi::BoolValue::New(kActiveInput);
+  input_node->node_gain = crosapi::UInt8Value::New(kNodeGainInput);
   input_node_info.push_back(std::move(input_node));
 
-  std::vector<telemetry_service::ProbeAudioOutputNodeInfoPtr> output_node_info;
-  auto output_node = telemetry_service::ProbeAudioOutputNodeInfo::New();
-  output_node->id = crosapi::mojom::UInt64Value::New(kIdOutput);
+  std::vector<crosapi::ProbeAudioOutputNodeInfoPtr> output_node_info;
+  auto output_node = crosapi::ProbeAudioOutputNodeInfo::New();
+  output_node->id = crosapi::UInt64Value::New(kIdOutput);
   output_node->name = kNameOutput;
   output_node->device_name = kDeviceNameOutput;
-  output_node->active = crosapi::mojom::BoolValue::New(kActiveOutput);
-  output_node->node_volume = crosapi::mojom::UInt8Value::New(kNodeVolumeOutput);
+  output_node->active = crosapi::BoolValue::New(kActiveOutput);
+  output_node->node_volume = crosapi::UInt8Value::New(kNodeVolumeOutput);
   output_node_info.push_back(std::move(output_node));
 
-  auto input = telemetry_service::ProbeAudioInfo::New();
-  input->output_mute = crosapi::mojom::BoolValue::New(kOutputMute);
-  input->input_mute = crosapi::mojom::BoolValue::New(kInputMute);
-  input->underruns = crosapi::mojom::UInt32Value::New(kUnderruns);
-  input->severe_underruns = crosapi::mojom::UInt32Value::New(kSevereUnderruns);
+  auto input = crosapi::ProbeAudioInfo::New();
+  input->output_mute = crosapi::BoolValue::New(kOutputMute);
+  input->input_mute = crosapi::BoolValue::New(kInputMute);
+  input->underruns = crosapi::UInt32Value::New(kUnderruns);
+  input->severe_underruns = crosapi::UInt32Value::New(kSevereUnderruns);
   input->output_nodes = std::move(output_node_info);
   input->input_nodes = std::move(input_node_info);
 
-  auto result = ConvertPtr<telemetry_api::AudioInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::AudioInfo>(std::move(input));
 
   ASSERT_TRUE(result.output_mute);
   EXPECT_EQ(kOutputMute, *result.output_mute);
@@ -193,24 +190,24 @@ TEST(TelemetryApiConverters, AudioInfo) {
 }
 
 TEST(TelemetryApiConverters, CpuArchitectureEnum) {
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kUnknown,
-            Convert(telemetry_service::ProbeCpuArchitectureEnum::kUnknown));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kX86_64,
-            Convert(telemetry_service::ProbeCpuArchitectureEnum::kX86_64));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kAarch64,
-            Convert(telemetry_service::ProbeCpuArchitectureEnum::kAArch64));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kArmv7l,
-            Convert(telemetry_service::ProbeCpuArchitectureEnum::kArmv7l));
+  EXPECT_EQ(cx_telem::CpuArchitectureEnum::kUnknown,
+            Convert(crosapi::ProbeCpuArchitectureEnum::kUnknown));
+  EXPECT_EQ(cx_telem::CpuArchitectureEnum::kX86_64,
+            Convert(crosapi::ProbeCpuArchitectureEnum::kX86_64));
+  EXPECT_EQ(cx_telem::CpuArchitectureEnum::kAarch64,
+            Convert(crosapi::ProbeCpuArchitectureEnum::kAArch64));
+  EXPECT_EQ(cx_telem::CpuArchitectureEnum::kArmv7l,
+            Convert(crosapi::ProbeCpuArchitectureEnum::kArmv7l));
 }
 
 TEST(TelemetryApiConverters, CpuCStateInfo) {
   constexpr char kName[] = "C0";
   constexpr uint64_t kTimeInStateSinceLastBootUs = 123456;
 
-  auto input = telemetry_service::ProbeCpuCStateInfo::New(
-      kName, telemetry_service::UInt64Value::New(kTimeInStateSinceLastBootUs));
+  auto input = crosapi::ProbeCpuCStateInfo::New(
+      kName, crosapi::UInt64Value::New(kTimeInStateSinceLastBootUs));
 
-  auto result = ConvertPtr<telemetry_api::CpuCStateInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::CpuCStateInfo>(std::move(input));
   ASSERT_TRUE(result.name);
   EXPECT_EQ(kName, *result.name);
 
@@ -223,23 +220,24 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   constexpr char kCpuCStateName[] = "C1";
   constexpr uint64_t kCpuCStateTime = (1 << 27) + 50000;
 
-  std::vector<telemetry_service::ProbeCpuCStateInfoPtr> expected_c_states;
-  expected_c_states.push_back(telemetry_service::ProbeCpuCStateInfo::New(
-      kCpuCStateName, telemetry_service::UInt64Value::New(kCpuCStateTime)));
+  std::vector<crosapi::ProbeCpuCStateInfoPtr> expected_c_states;
+  expected_c_states.push_back(crosapi::ProbeCpuCStateInfo::New(
+      kCpuCStateName, crosapi::UInt64Value::New(kCpuCStateTime)));
 
   constexpr uint32_t kMaxClockSpeedKhz = (1 << 30) + 10000;
   constexpr uint32_t kScalingMaxFrequencyKhz = (1 << 30) + 20000;
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 30000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 40000;
+  constexpr uint32_t kCoreId = 200;
 
-  auto input = telemetry_service::ProbeLogicalCpuInfo::New(
-      telemetry_service::UInt32Value::New(kMaxClockSpeedKhz),
-      telemetry_service::UInt32Value::New(kScalingMaxFrequencyKhz),
-      telemetry_service::UInt32Value::New(kScalingCurrentFrequencyKhz),
-      telemetry_service::UInt64Value::New(kIdleTime),
-      std::move(expected_c_states));
+  auto input = crosapi::ProbeLogicalCpuInfo::New(
+      crosapi::UInt32Value::New(kMaxClockSpeedKhz),
+      crosapi::UInt32Value::New(kScalingMaxFrequencyKhz),
+      crosapi::UInt32Value::New(kScalingCurrentFrequencyKhz),
+      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
+      crosapi::UInt32Value::New(kCoreId));
 
-  auto result = ConvertPtr<telemetry_api::LogicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::LogicalCpuInfo>(std::move(input));
   ASSERT_TRUE(result.max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
             static_cast<uint32_t>(*result.max_clock_speed_khz));
@@ -263,35 +261,38 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   ASSERT_TRUE(result.c_states[0].time_in_state_since_last_boot_us);
   EXPECT_EQ(kCpuCStateTime,
             *result.c_states[0].time_in_state_since_last_boot_us);
+  ASSERT_TRUE(result.core_id);
+  EXPECT_EQ(kCoreId, static_cast<uint32_t>(*result.core_id));
 }
 
 TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   constexpr char kCpuCStateName[] = "C2";
   constexpr uint64_t kCpuCStateTime = (1 << 27) + 90000;
 
-  std::vector<telemetry_service::ProbeCpuCStateInfoPtr> expected_c_states;
-  expected_c_states.push_back(telemetry_service::ProbeCpuCStateInfo::New(
-      kCpuCStateName, telemetry_service::UInt64Value::New(kCpuCStateTime)));
+  std::vector<crosapi::ProbeCpuCStateInfoPtr> expected_c_states;
+  expected_c_states.push_back(crosapi::ProbeCpuCStateInfo::New(
+      kCpuCStateName, crosapi::UInt64Value::New(kCpuCStateTime)));
 
   constexpr uint32_t kMaxClockSpeedKhz = (1 << 30) + 80000;
   constexpr uint32_t kScalingMaxFrequencyKhz = (1 << 30) + 70000;
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 60000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 50000;
+  constexpr uint32_t kCoreId = 200;
 
-  std::vector<telemetry_service::ProbeLogicalCpuInfoPtr> logical_cpus;
-  logical_cpus.push_back(telemetry_service::ProbeLogicalCpuInfo::New(
-      telemetry_service::UInt32Value::New(kMaxClockSpeedKhz),
-      telemetry_service::UInt32Value::New(kScalingMaxFrequencyKhz),
-      telemetry_service::UInt32Value::New(kScalingCurrentFrequencyKhz),
-      telemetry_service::UInt64Value::New(kIdleTime),
-      std::move(expected_c_states)));
+  std::vector<crosapi::ProbeLogicalCpuInfoPtr> logical_cpus;
+  logical_cpus.push_back(crosapi::ProbeLogicalCpuInfo::New(
+      crosapi::UInt32Value::New(kMaxClockSpeedKhz),
+      crosapi::UInt32Value::New(kScalingMaxFrequencyKhz),
+      crosapi::UInt32Value::New(kScalingCurrentFrequencyKhz),
+      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
+      crosapi::UInt32Value::New(kCoreId)));
 
   constexpr char kModelName[] = "i9";
 
-  auto input = telemetry_service::ProbePhysicalCpuInfo::New(
-      kModelName, std::move(logical_cpus));
+  auto input =
+      crosapi::ProbePhysicalCpuInfo::New(kModelName, std::move(logical_cpus));
 
-  auto result = ConvertPtr<telemetry_api::PhysicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::PhysicalCpuInfo>(std::move(input));
   ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
 
@@ -324,9 +325,11 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   EXPECT_EQ(
       kCpuCStateTime,
       *result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
+  ASSERT_TRUE(result.logical_cpus[0].core_id);
+  EXPECT_EQ(kCoreId, static_cast<uint32_t>(*result.logical_cpus[0].core_id));
 }
 
-TEST(TelemetryApiConverters, BatteryInfo) {
+TEST(TelemetryApiConverters, BatteryInfoWithoutSerialNumberPermission) {
   constexpr int64_t kCycleCount = 100000000000000;
   constexpr double_t kVoltageNow = 1234567890.123456;
   constexpr char kVendor[] = "Google";
@@ -342,19 +345,18 @@ TEST(TelemetryApiConverters, BatteryInfo) {
   constexpr char kManufacturerDate[] = "2020-07-30";
   constexpr double_t kTemperature = 7777777777777777;
 
-  telemetry_service::ProbeBatteryInfoPtr input =
-      telemetry_service::ProbeBatteryInfo::New(
-          telemetry_service::Int64Value::New(kCycleCount),
-          telemetry_service::DoubleValue::New(kVoltageNow), kVendor,
-          kSerialNumber, telemetry_service::DoubleValue::New(kChargeFullDesign),
-          telemetry_service::DoubleValue::New(kChargeFull),
-          telemetry_service::DoubleValue::New(kVoltageMinDesign), kModelName,
-          telemetry_service::DoubleValue::New(kChargeNow),
-          telemetry_service::DoubleValue::New(kCurrentNow), kTechnology,
-          kStatus, kManufacturerDate,
-          telemetry_service::UInt64Value::New(kTemperature));
+  crosapi::ProbeBatteryInfoPtr input = crosapi::ProbeBatteryInfo::New(
+      crosapi::Int64Value::New(kCycleCount),
+      crosapi::DoubleValue::New(kVoltageNow), kVendor, kSerialNumber,
+      crosapi::DoubleValue::New(kChargeFullDesign),
+      crosapi::DoubleValue::New(kChargeFull),
+      crosapi::DoubleValue::New(kVoltageMinDesign), kModelName,
+      crosapi::DoubleValue::New(kChargeNow),
+      crosapi::DoubleValue::New(kCurrentNow), kTechnology, kStatus,
+      kManufacturerDate, crosapi::UInt64Value::New(kTemperature));
 
-  auto result = ConvertPtr<telemetry_api::BatteryInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::BatteryInfo>(
+      std::move(input), /* has_serial_number_permission= */ false);
   ASSERT_TRUE(result.cycle_count);
   EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
 
@@ -363,7 +365,7 @@ TEST(TelemetryApiConverters, BatteryInfo) {
 
   ASSERT_TRUE(result.vendor);
   EXPECT_EQ(kVendor, *result.vendor);
-  // serial_number is not converted in ConvertPtr().
+  // serial_number is not converted in ConvertPtr() without permission.
   EXPECT_FALSE(result.serial_number);
 
   ASSERT_TRUE(result.charge_full_design);
@@ -399,6 +401,19 @@ TEST(TelemetryApiConverters, BatteryInfo) {
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
 }
 
+TEST(TelemetryApiConverters, BatteryInfoWithSerialNumberPermission) {
+  constexpr char kSerialNumber[] = "abcdef";
+
+  crosapi::ProbeBatteryInfoPtr input = crosapi::ProbeBatteryInfo::New();
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<cx_telem::BatteryInfo>(
+      std::move(input), /* has_serial_number_permission= */ true);
+
+  ASSERT_TRUE(result.serial_number);
+  EXPECT_EQ(kSerialNumber, result.serial_number);
+}
+
 TEST(TelemetryApiConverters, NonRemovableBlockDevice) {
   constexpr uint64_t kSize1 = 100000000000;
   constexpr char kName1[] = "TestName1";
@@ -408,24 +423,22 @@ TEST(TelemetryApiConverters, NonRemovableBlockDevice) {
   constexpr char kName2[] = "TestName2";
   constexpr char kType2[] = "TestType2";
 
-  auto first_element =
-      telemetry_service::ProbeNonRemovableBlockDeviceInfo::New();
-  first_element->size = telemetry_service::UInt64Value::New(kSize1);
+  auto first_element = crosapi::ProbeNonRemovableBlockDeviceInfo::New();
+  first_element->size = crosapi::UInt64Value::New(kSize1);
   first_element->name = kName1;
   first_element->type = kType1;
 
-  auto second_element =
-      telemetry_service::ProbeNonRemovableBlockDeviceInfo::New();
-  second_element->size = telemetry_service::UInt64Value::New(kSize2);
+  auto second_element = crosapi::ProbeNonRemovableBlockDeviceInfo::New();
+  second_element->size = crosapi::UInt64Value::New(kSize2);
   second_element->name = kName2;
   second_element->type = kType2;
 
-  std::vector<telemetry_service::ProbeNonRemovableBlockDeviceInfoPtr> input;
+  std::vector<crosapi::ProbeNonRemovableBlockDeviceInfoPtr> input;
   input.push_back(std::move(first_element));
   input.push_back(std::move(second_element));
 
-  auto result = ConvertPtrVector<telemetry_api::NonRemovableBlockDeviceInfo>(
-      std::move(input));
+  auto result =
+      ConvertPtrVector<cx_telem::NonRemovableBlockDeviceInfo>(std::move(input));
 
   ASSERT_EQ(result.size(), 2ul);
 
@@ -450,10 +463,10 @@ TEST(TelemetryApiConverters, OsVersion) {
   constexpr char kPatchNumber[] = "59.0";
   constexpr char kReleaseChannel[] = "stable-channel";
 
-  auto input = telemetry_service::ProbeOsVersion::New(
-      kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
+  auto input = crosapi::ProbeOsVersion::New(kReleaseMilestone, kBuildNumber,
+                                            kPatchNumber, kReleaseChannel);
 
-  auto result = ConvertPtr<telemetry_api::OsVersionInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::OsVersionInfo>(std::move(input));
   ASSERT_TRUE(result.release_milestone);
   EXPECT_EQ(*result.release_milestone, kReleaseMilestone);
 
@@ -471,13 +484,12 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
   constexpr uint64_t kAvailableSpace = 3000000000000000;
   constexpr uint64_t kTotalSpace = 9000000000000000;
 
-  telemetry_service::ProbeStatefulPartitionInfoPtr input =
-      telemetry_service::ProbeStatefulPartitionInfo::New(
-          telemetry_service::UInt64Value::New(kAvailableSpace),
-          telemetry_service::UInt64Value::New(kTotalSpace));
+  crosapi::ProbeStatefulPartitionInfoPtr input =
+      crosapi::ProbeStatefulPartitionInfo::New(
+          crosapi::UInt64Value::New(kAvailableSpace),
+          crosapi::UInt64Value::New(kTotalSpace));
 
-  auto result =
-      ConvertPtr<telemetry_api::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
   ASSERT_TRUE(result.available_space);
   EXPECT_EQ(kAvailableSpace, *result.available_space);
 
@@ -486,77 +498,79 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
 }
 
 TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
-  telemetry_service::ProbeStatefulPartitionInfoPtr input =
-      telemetry_service::ProbeStatefulPartitionInfo::New<
-          telemetry_service::UInt64ValuePtr, telemetry_service::UInt64ValuePtr>(
+  crosapi::ProbeStatefulPartitionInfoPtr input =
+      crosapi::ProbeStatefulPartitionInfo::New<crosapi::UInt64ValuePtr,
+                                               crosapi::UInt64ValuePtr>(
           nullptr, nullptr);
 
-  auto result =
-      ConvertPtr<telemetry_api::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
   ASSERT_FALSE(result.available_space);
   ASSERT_FALSE(result.total_space);
 }
 
 TEST(TelemetryApiConverters, NetworkStateEnum) {
   EXPECT_EQ(
-      telemetry_api::NetworkState::kUninitialized,
+      cx_telem::NetworkState::kUninitialized,
       Convert(chromeos::network_health::mojom::NetworkState::kUninitialized));
-  EXPECT_EQ(telemetry_api::NetworkState::kDisabled,
+  EXPECT_EQ(cx_telem::NetworkState::kDisabled,
             Convert(chromeos::network_health::mojom::NetworkState::kDisabled));
   EXPECT_EQ(
-      telemetry_api::NetworkState::kProhibited,
+      cx_telem::NetworkState::kProhibited,
       Convert(chromeos::network_health::mojom::NetworkState::kProhibited));
   EXPECT_EQ(
-      telemetry_api::NetworkState::kNotConnected,
+      cx_telem::NetworkState::kNotConnected,
       Convert(chromeos::network_health::mojom::NetworkState::kNotConnected));
   EXPECT_EQ(
-      telemetry_api::NetworkState::kConnecting,
+      cx_telem::NetworkState::kConnecting,
       Convert(chromeos::network_health::mojom::NetworkState::kConnecting));
-  EXPECT_EQ(telemetry_api::NetworkState::kPortal,
+  EXPECT_EQ(cx_telem::NetworkState::kPortal,
             Convert(chromeos::network_health::mojom::NetworkState::kPortal));
-  EXPECT_EQ(telemetry_api::NetworkState::kConnected,
+  EXPECT_EQ(cx_telem::NetworkState::kConnected,
             Convert(chromeos::network_health::mojom::NetworkState::kConnected));
-  EXPECT_EQ(telemetry_api::NetworkState::kOnline,
+  EXPECT_EQ(cx_telem::NetworkState::kOnline,
             Convert(chromeos::network_health::mojom::NetworkState::kOnline));
 }
 
 TEST(TelemetryApiConverters, NetworkTypeEnum) {
-  EXPECT_EQ(telemetry_api::NetworkType::kNone,
+  EXPECT_EQ(cx_telem::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kAll));
-  EXPECT_EQ(telemetry_api::NetworkType::kCellular,
+  EXPECT_EQ(cx_telem::NetworkType::kCellular,
             Convert(chromeos::network_config::mojom::NetworkType::kCellular));
-  EXPECT_EQ(telemetry_api::NetworkType::kEthernet,
+  EXPECT_EQ(cx_telem::NetworkType::kEthernet,
             Convert(chromeos::network_config::mojom::NetworkType::kEthernet));
-  EXPECT_EQ(telemetry_api::NetworkType::kNone,
+  EXPECT_EQ(cx_telem::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kMobile));
-  EXPECT_EQ(telemetry_api::NetworkType::kTether,
+  EXPECT_EQ(cx_telem::NetworkType::kTether,
             Convert(chromeos::network_config::mojom::NetworkType::kTether));
-  EXPECT_EQ(telemetry_api::NetworkType::kVpn,
+  EXPECT_EQ(cx_telem::NetworkType::kVpn,
             Convert(chromeos::network_config::mojom::NetworkType::kVPN));
-  EXPECT_EQ(telemetry_api::NetworkType::kNone,
+  EXPECT_EQ(cx_telem::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kWireless));
-  EXPECT_EQ(telemetry_api::NetworkType::kWifi,
+  EXPECT_EQ(cx_telem::NetworkType::kWifi,
             Convert(chromeos::network_config::mojom::NetworkType::kWiFi));
 }
 
-TEST(TelemetryApiConverters, NetworkInfo) {
+TEST(TelemetryApiConverters, NetworkInfoWithoutPermission) {
   constexpr char kIpv4Address[] = "1.1.1.1";
   const std::vector<std::string> kIpv6Addresses = {
       "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
       "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
   constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
 
   auto input = chromeos::network_health::mojom::Network::New();
   input->type = chromeos::network_config::mojom::NetworkType::kWiFi;
   input->state = chromeos::network_health::mojom::NetworkState::kOnline;
   input->ipv4_address = kIpv4Address;
   input->ipv6_addresses = kIpv6Addresses;
+  input->mac_address = kMacAddress;
   input->signal_strength =
       chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
 
-  auto result = ConvertPtr<telemetry_api::NetworkInfo>(std::move(input));
-  EXPECT_EQ(result.type, telemetry_api::NetworkType::kWifi);
-  EXPECT_EQ(result.state, telemetry_api::NetworkState::kOnline);
+  auto result = ConvertPtr<cx_telem::NetworkInfo>(
+      std::move(input), /* has_mac_address_permission= */ false);
+  EXPECT_EQ(result.type, cx_telem::NetworkType::kWifi);
+  EXPECT_EQ(result.state, cx_telem::NetworkState::kOnline);
 
   ASSERT_TRUE(result.ipv4_address);
   EXPECT_EQ(*result.ipv4_address, kIpv4Address);
@@ -564,8 +578,121 @@ TEST(TelemetryApiConverters, NetworkInfo) {
   ASSERT_EQ(result.ipv6_addresses.size(), 2LU);
   EXPECT_EQ(result.ipv6_addresses, kIpv6Addresses);
 
+  // mac_address is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result.mac_address);
+
   ASSERT_TRUE(result.signal_strength);
   EXPECT_EQ(static_cast<double_t>(*result.signal_strength), kSignalStrength);
+}
+
+TEST(TelemetryApiConverters, NetworkInfoWithPermission) {
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto input = chromeos::network_health::mojom::Network::New();
+  input->mac_address = kMacAddress;
+
+  auto result = ConvertPtr<cx_telem::NetworkInfo>(
+      std::move(input), /* has_mac_address_permission= */ true);
+
+  ASSERT_TRUE(result.mac_address);
+  EXPECT_EQ(*result.mac_address, kMacAddress);
+}
+
+TEST(TelemetryApiConverters, InternetConnectivityInfoWithoutPermission) {
+  constexpr char kIpv4Address[] = "1.1.1.1";
+  const std::vector<std::string> kIpv6Addresses = {
+      "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
+      "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
+  constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto network = chromeos::network_health::mojom::Network::New();
+  network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+  network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+  network->ipv4_address = kIpv4Address;
+  network->ipv6_addresses = kIpv6Addresses;
+  network->mac_address = kMacAddress;
+  network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+  auto input = chromeos::network_health::mojom::NetworkHealthState::New();
+  input->networks.push_back(std::move(network));
+
+  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
+      std::move(input), /* has_mac_address_permission= */ false);
+  ASSERT_EQ(result.networks.size(), 1UL);
+
+  auto result_network = std::move(result.networks.front());
+  EXPECT_EQ(result_network.type, cx_telem::NetworkType::kWifi);
+  EXPECT_EQ(result_network.state, cx_telem::NetworkState::kOnline);
+
+  ASSERT_TRUE(result_network.ipv4_address);
+  EXPECT_EQ(*result_network.ipv4_address, kIpv4Address);
+
+  ASSERT_EQ(result_network.ipv6_addresses.size(), 2LU);
+  EXPECT_EQ(result_network.ipv6_addresses, kIpv6Addresses);
+
+  // mac_address is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result_network.mac_address);
+
+  ASSERT_TRUE(result_network.signal_strength);
+  EXPECT_EQ(static_cast<double_t>(*result_network.signal_strength),
+            kSignalStrength);
+}
+
+TEST(TelemetryApiConverters, InternetConnectivityInfoWithPermission) {
+  constexpr char kIpv4Address[] = "1.1.1.1";
+  const std::vector<std::string> kIpv6Addresses = {
+      "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
+      "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
+  constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto network = chromeos::network_health::mojom::Network::New();
+  network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+  network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+  network->ipv4_address = kIpv4Address;
+  network->ipv6_addresses = kIpv6Addresses;
+  network->mac_address = kMacAddress;
+  network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+  // Networks with a type like kAll, kMobile and kWireless should not show
+  // up.
+  auto invalid_network = chromeos::network_health::mojom::Network::New();
+  invalid_network->type = chromeos::network_config::mojom::NetworkType::kAll;
+  invalid_network->state =
+      chromeos::network_health::mojom::NetworkState::kOnline;
+  invalid_network->mac_address = "00:00:5e:00:53:fu";
+  invalid_network->ipv4_address = "2.2.2.2";
+  invalid_network->ipv6_addresses = {"FE80:0000:CD00:729C:0CDE:1257:0000:211E"};
+  invalid_network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(100);
+
+  auto input = chromeos::network_health::mojom::NetworkHealthState::New();
+  input->networks.push_back(std::move(invalid_network));
+  input->networks.push_back(std::move(network));
+
+  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
+      std::move(input), /* has_mac_address_permission= */ true);
+  ASSERT_EQ(result.networks.size(), 1UL);
+
+  auto result_network = std::move(result.networks.front());
+  EXPECT_EQ(result_network.type, cx_telem::NetworkType::kWifi);
+  EXPECT_EQ(result_network.state, cx_telem::NetworkState::kOnline);
+
+  ASSERT_TRUE(result_network.ipv4_address);
+  EXPECT_EQ(*result_network.ipv4_address, kIpv4Address);
+
+  ASSERT_EQ(result_network.ipv6_addresses.size(), 2LU);
+  EXPECT_EQ(result_network.ipv6_addresses, kIpv6Addresses);
+
+  ASSERT_TRUE(result_network.mac_address);
+  EXPECT_EQ(*result_network.mac_address, kMacAddress);
+
+  ASSERT_TRUE(result_network.signal_strength);
+  EXPECT_EQ(static_cast<double_t>(*result_network.signal_strength),
+            kSignalStrength);
 }
 
 TEST(TelemetryApiConverters, TpmVersion) {
@@ -576,18 +703,17 @@ TEST(TelemetryApiConverters, TpmVersion) {
   constexpr uint64_t kFirmwareVersion = 1001;
   constexpr char kVendorSpecific[] = "info";
 
-  auto input = telemetry_service::ProbeTpmVersion::New();
-  input->gsc_version = telemetry_service::ProbeTpmGSCVersion::kCr50;
-  input->family = telemetry_service::UInt32Value::New(kFamily);
-  input->spec_level = telemetry_service::UInt64Value::New(kSpecLevel);
-  input->manufacturer = telemetry_service::UInt32Value::New(kManufacturer);
-  input->tpm_model = telemetry_service::UInt32Value::New(kTpmModel);
-  input->firmware_version =
-      telemetry_service::UInt64Value::New(kFirmwareVersion);
+  auto input = crosapi::ProbeTpmVersion::New();
+  input->gsc_version = crosapi::ProbeTpmGSCVersion::kCr50;
+  input->family = crosapi::UInt32Value::New(kFamily);
+  input->spec_level = crosapi::UInt64Value::New(kSpecLevel);
+  input->manufacturer = crosapi::UInt32Value::New(kManufacturer);
+  input->tpm_model = crosapi::UInt32Value::New(kTpmModel);
+  input->firmware_version = crosapi::UInt64Value::New(kFirmwareVersion);
   input->vendor_specific = kVendorSpecific;
 
-  auto result = ConvertPtr<telemetry_api::TpmVersion>(std::move(input));
-  EXPECT_EQ(telemetry_api::TpmGSCVersion::kCr50, result.gsc_version);
+  auto result = ConvertPtr<cx_telem::TpmVersion>(std::move(input));
+  EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, result.gsc_version);
   ASSERT_TRUE(result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*result.family));
   ASSERT_TRUE(result.spec_level);
@@ -607,13 +733,13 @@ TEST(TelemetryApiConverters, TpmStatus) {
   constexpr bool kOwned = false;
   constexpr bool kOwnerPasswortIsPresent = false;
 
-  auto input = telemetry_service::ProbeTpmStatus::New();
-  input->enabled = telemetry_service::BoolValue::New(kEnabled);
-  input->owned = telemetry_service::BoolValue::New(kOwned);
+  auto input = crosapi::ProbeTpmStatus::New();
+  input->enabled = crosapi::BoolValue::New(kEnabled);
+  input->owned = crosapi::BoolValue::New(kOwned);
   input->owner_password_is_present =
-      telemetry_service::BoolValue::New(kOwnerPasswortIsPresent);
+      crosapi::BoolValue::New(kOwnerPasswortIsPresent);
 
-  auto result = ConvertPtr<telemetry_api::TpmStatus>(std::move(input));
+  auto result = ConvertPtr<cx_telem::TpmStatus>(std::move(input));
   ASSERT_TRUE(result.enabled);
   EXPECT_EQ(kEnabled, *result.enabled);
   ASSERT_TRUE(result.owned);
@@ -628,16 +754,14 @@ TEST(TelemetryApiConverters, TpmDictionaryAttack) {
   constexpr bool kLockOutInEffect = true;
   constexpr uint32_t kLockoutSecondsRemaining = 5;
 
-  auto input = telemetry_service::ProbeTpmDictionaryAttack::New();
-  input->counter = telemetry_service::UInt32Value::New(kCounter);
-  input->threshold = telemetry_service::UInt32Value::New(kThreshold);
-  input->lockout_in_effect =
-      telemetry_service::BoolValue::New(kLockOutInEffect);
+  auto input = crosapi::ProbeTpmDictionaryAttack::New();
+  input->counter = crosapi::UInt32Value::New(kCounter);
+  input->threshold = crosapi::UInt32Value::New(kThreshold);
+  input->lockout_in_effect = crosapi::BoolValue::New(kLockOutInEffect);
   input->lockout_seconds_remaining =
-      telemetry_service::UInt32Value::New(kLockoutSecondsRemaining);
+      crosapi::UInt32Value::New(kLockoutSecondsRemaining);
 
-  auto result =
-      ConvertPtr<telemetry_api::TpmDictionaryAttack>(std::move(input));
+  auto result = ConvertPtr<cx_telem::TpmDictionaryAttack>(std::move(input));
   ASSERT_TRUE(result.counter);
   EXPECT_EQ(kCounter, static_cast<uint32_t>(*result.counter));
   ASSERT_TRUE(result.threshold);
@@ -669,41 +793,38 @@ TEST(TelemetryApiConverters, TpmInfo) {
   constexpr bool kLockOutInEffect = true;
   constexpr uint32_t kLockoutSecondsRemaining = 5;
 
-  auto tpm_version = telemetry_service::ProbeTpmVersion::New();
-  tpm_version->gsc_version = telemetry_service::ProbeTpmGSCVersion::kCr50;
-  tpm_version->family = telemetry_service::UInt32Value::New(kFamily);
-  tpm_version->spec_level = telemetry_service::UInt64Value::New(kSpecLevel);
-  tpm_version->manufacturer =
-      telemetry_service::UInt32Value::New(kManufacturer);
-  tpm_version->tpm_model = telemetry_service::UInt32Value::New(kTpmModel);
-  tpm_version->firmware_version =
-      telemetry_service::UInt64Value::New(kFirmwareVersion);
+  auto tpm_version = crosapi::ProbeTpmVersion::New();
+  tpm_version->gsc_version = crosapi::ProbeTpmGSCVersion::kCr50;
+  tpm_version->family = crosapi::UInt32Value::New(kFamily);
+  tpm_version->spec_level = crosapi::UInt64Value::New(kSpecLevel);
+  tpm_version->manufacturer = crosapi::UInt32Value::New(kManufacturer);
+  tpm_version->tpm_model = crosapi::UInt32Value::New(kTpmModel);
+  tpm_version->firmware_version = crosapi::UInt64Value::New(kFirmwareVersion);
   tpm_version->vendor_specific = kVendorSpecific;
 
-  auto tpm_status = telemetry_service::ProbeTpmStatus::New();
-  tpm_status->enabled = telemetry_service::BoolValue::New(kEnabled);
-  tpm_status->owned = telemetry_service::BoolValue::New(kOwned);
+  auto tpm_status = crosapi::ProbeTpmStatus::New();
+  tpm_status->enabled = crosapi::BoolValue::New(kEnabled);
+  tpm_status->owned = crosapi::BoolValue::New(kOwned);
   tpm_status->owner_password_is_present =
-      telemetry_service::BoolValue::New(kOwnerPasswortIsPresent);
+      crosapi::BoolValue::New(kOwnerPasswortIsPresent);
 
-  auto dictionary_attack = telemetry_service::ProbeTpmDictionaryAttack::New();
-  dictionary_attack->counter = telemetry_service::UInt32Value::New(kCounter);
-  dictionary_attack->threshold =
-      telemetry_service::UInt32Value::New(kThreshold);
+  auto dictionary_attack = crosapi::ProbeTpmDictionaryAttack::New();
+  dictionary_attack->counter = crosapi::UInt32Value::New(kCounter);
+  dictionary_attack->threshold = crosapi::UInt32Value::New(kThreshold);
   dictionary_attack->lockout_in_effect =
-      telemetry_service::BoolValue::New(kLockOutInEffect);
+      crosapi::BoolValue::New(kLockOutInEffect);
   dictionary_attack->lockout_seconds_remaining =
-      telemetry_service::UInt32Value::New(kLockoutSecondsRemaining);
+      crosapi::UInt32Value::New(kLockoutSecondsRemaining);
 
-  auto input = telemetry_service::ProbeTpmInfo::New();
+  auto input = crosapi::ProbeTpmInfo::New();
   input->version = std::move(tpm_version);
   input->status = std::move(tpm_status);
   input->dictionary_attack = std::move(dictionary_attack);
 
-  auto result = ConvertPtr<telemetry_api::TpmInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::TpmInfo>(std::move(input));
 
   auto version_result = std::move(result.version);
-  EXPECT_EQ(telemetry_api::TpmGSCVersion::kCr50, version_result.gsc_version);
+  EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, version_result.gsc_version);
   ASSERT_TRUE(version_result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*version_result.family));
   ASSERT_TRUE(version_result.spec_level);
@@ -741,91 +862,91 @@ TEST(TelemetryApiConverters, TpmInfo) {
 }
 
 TEST(TelemetryApiConverters, UsbVersion) {
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUnknown),
-            telemetry_api::UsbVersion::kUnknown);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbVersion::kUnknown),
+            cx_telem::UsbVersion::kUnknown);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb1),
-            telemetry_api::UsbVersion::kUsb1);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbVersion::kUsb1),
+            cx_telem::UsbVersion::kUsb1);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb2),
-            telemetry_api::UsbVersion::kUsb2);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbVersion::kUsb2),
+            cx_telem::UsbVersion::kUsb2);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb3),
-            telemetry_api::UsbVersion::kUsb3);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbVersion::kUsb3),
+            cx_telem::UsbVersion::kUsb3);
 }
 
 TEST(TelemetryApiConverters, UsbSpecSpeed) {
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::kUnknown),
-            telemetry_api::UsbSpecSpeed::kUnknown);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::kUnknown),
+            cx_telem::UsbSpecSpeed::kUnknown);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps),
-            telemetry_api::UsbSpecSpeed::kN1_5mbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k1_5Mbps),
+            cx_telem::UsbSpecSpeed::kN1_5mbps);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps),
-            telemetry_api::UsbSpecSpeed::kN12Mbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k12Mbps),
+            cx_telem::UsbSpecSpeed::kN12Mbps);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps),
-            telemetry_api::UsbSpecSpeed::kN480Mbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k480Mbps),
+            cx_telem::UsbSpecSpeed::kN480Mbps);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps),
-            telemetry_api::UsbSpecSpeed::kN5Gbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k5Gbps),
+            cx_telem::UsbSpecSpeed::kN5Gbps);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps),
-            telemetry_api::UsbSpecSpeed::kN10Gbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k10Gbps),
+            cx_telem::UsbSpecSpeed::kN10Gbps);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps),
-            telemetry_api::UsbSpecSpeed::kN20Gbps);
+  EXPECT_EQ(Convert(crosapi::ProbeUsbSpecSpeed::k20Gbps),
+            cx_telem::UsbSpecSpeed::kN20Gbps);
 }
 
 TEST(TelemetryApiConverters, FwupdVersionFormat) {
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kUnknown),
-            telemetry_api::FwupdVersionFormat::kPlain);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kUnknown),
+            cx_telem::FwupdVersionFormat::kPlain);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPlain),
-            telemetry_api::FwupdVersionFormat::kPlain);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kPlain),
+            cx_telem::FwupdVersionFormat::kPlain);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kNumber),
-            telemetry_api::FwupdVersionFormat::kNumber);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kNumber),
+            cx_telem::FwupdVersionFormat::kNumber);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPair),
-            telemetry_api::FwupdVersionFormat::kPair);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kPair),
+            cx_telem::FwupdVersionFormat::kPair);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kTriplet),
-            telemetry_api::FwupdVersionFormat::kTriplet);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kTriplet),
+            cx_telem::FwupdVersionFormat::kTriplet);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kBcd),
-            telemetry_api::FwupdVersionFormat::kBcd);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kBcd),
+            cx_telem::FwupdVersionFormat::kBcd);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe),
-            telemetry_api::FwupdVersionFormat::kIntelMe);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kIntelMe),
+            cx_telem::FwupdVersionFormat::kIntelMe);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2),
-            telemetry_api::FwupdVersionFormat::kIntelMe2);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kIntelMe2),
+            cx_telem::FwupdVersionFormat::kIntelMe2);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy),
-            telemetry_api::FwupdVersionFormat::kSurfaceLegacy);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kSurfaceLegacy),
+            cx_telem::FwupdVersionFormat::kSurfaceLegacy);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurface),
-            telemetry_api::FwupdVersionFormat::kSurface);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kSurface),
+            cx_telem::FwupdVersionFormat::kSurface);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kDellBios),
-            telemetry_api::FwupdVersionFormat::kDellBios);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kDellBios),
+            cx_telem::FwupdVersionFormat::kDellBios);
 
-  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kHex),
-            telemetry_api::FwupdVersionFormat::kHex);
+  EXPECT_EQ(Convert(crosapi::ProbeFwupdVersionFormat::kHex),
+            cx_telem::FwupdVersionFormat::kHex);
 }
 
 TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
   constexpr char kVersion[] = "MyVersion";
 
-  auto input = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
-      kVersion, crosapi::mojom::ProbeFwupdVersionFormat::kHex);
+  auto input = crosapi::ProbeFwupdFirmwareVersionInfo::New(
+      kVersion, crosapi::ProbeFwupdVersionFormat::kHex);
 
   auto result =
-      ConvertPtr<telemetry_api::FwupdFirmwareVersionInfo>(std::move(input));
+      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(std::move(input));
 
   EXPECT_EQ(result.version, kVersion);
-  EXPECT_EQ(result.version_format, telemetry_api::FwupdVersionFormat::kHex);
+  EXPECT_EQ(result.version_format, cx_telem::FwupdVersionFormat::kHex);
 }
 
 TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
@@ -835,14 +956,12 @@ TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
   constexpr uint8_t kProtocolId = 44;
   constexpr char kDriver[] = "MyDriver";
 
-  auto input = crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
-      crosapi::mojom::UInt8Value::New(kInterfaceNumber),
-      crosapi::mojom::UInt8Value::New(kClassId),
-      crosapi::mojom::UInt8Value::New(kSubclassId),
-      crosapi::mojom::UInt8Value::New(kProtocolId), kDriver);
+  auto input = crosapi::ProbeUsbBusInterfaceInfo::New(
+      crosapi::UInt8Value::New(kInterfaceNumber),
+      crosapi::UInt8Value::New(kClassId), crosapi::UInt8Value::New(kSubclassId),
+      crosapi::UInt8Value::New(kProtocolId), kDriver);
 
-  auto result =
-      ConvertPtr<telemetry_api::UsbBusInterfaceInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::UsbBusInterfaceInfo>(std::move(input));
 
   ASSERT_TRUE(result.interface_number);
   EXPECT_EQ(static_cast<uint8_t>(*result.interface_number), kInterfaceNumber);
@@ -863,12 +982,12 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   constexpr uint8_t kProtocolIdInterface = 44;
   constexpr char kDriverInterface[] = "MyDriver";
 
-  std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> interfaces;
-  interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
-      crosapi::mojom::UInt8Value::New(kInterfaceNumberInterface),
-      crosapi::mojom::UInt8Value::New(kClassIdInterface),
-      crosapi::mojom::UInt8Value::New(kSubclassIdInterface),
-      crosapi::mojom::UInt8Value::New(kProtocolIdInterface), kDriverInterface));
+  std::vector<crosapi::ProbeUsbBusInterfaceInfoPtr> interfaces;
+  interfaces.push_back(crosapi::ProbeUsbBusInterfaceInfo::New(
+      crosapi::UInt8Value::New(kInterfaceNumberInterface),
+      crosapi::UInt8Value::New(kClassIdInterface),
+      crosapi::UInt8Value::New(kSubclassIdInterface),
+      crosapi::UInt8Value::New(kProtocolIdInterface), kDriverInterface));
 
   constexpr uint8_t kClassId = 45;
   constexpr uint8_t kSubclassId = 46;
@@ -878,21 +997,21 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
 
   constexpr char kVersion[] = "MyVersion";
 
-  auto fwupd_version = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
-      kVersion, crosapi::mojom::ProbeFwupdVersionFormat::kPair);
+  auto fwupd_version = crosapi::ProbeFwupdFirmwareVersionInfo::New(
+      kVersion, crosapi::ProbeFwupdVersionFormat::kPair);
 
-  auto input = crosapi::mojom::ProbeUsbBusInfo::New();
-  input->class_id = crosapi::mojom::UInt8Value::New(kClassId);
-  input->subclass_id = crosapi::mojom::UInt8Value::New(kSubclassId);
-  input->protocol_id = crosapi::mojom::UInt8Value::New(kProtocolId);
-  input->vendor_id = crosapi::mojom::UInt16Value::New(kVendor);
-  input->product_id = crosapi::mojom::UInt16Value::New(kProductId);
+  auto input = crosapi::ProbeUsbBusInfo::New();
+  input->class_id = crosapi::UInt8Value::New(kClassId);
+  input->subclass_id = crosapi::UInt8Value::New(kSubclassId);
+  input->protocol_id = crosapi::UInt8Value::New(kProtocolId);
+  input->vendor_id = crosapi::UInt16Value::New(kVendor);
+  input->product_id = crosapi::UInt16Value::New(kProductId);
   input->interfaces = std::move(interfaces);
   input->fwupd_firmware_version_info = std::move(fwupd_version);
-  input->version = crosapi::mojom::ProbeUsbVersion::kUsb3;
-  input->spec_speed = crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
+  input->version = crosapi::ProbeUsbVersion::kUsb3;
+  input->spec_speed = crosapi::ProbeUsbSpecSpeed::k20Gbps;
 
-  auto result = ConvertPtr<telemetry_api::UsbBusInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::UsbBusInfo>(std::move(input));
 
   ASSERT_TRUE(result.class_id);
   EXPECT_EQ(static_cast<uint8_t>(*result.class_id), kClassId);
@@ -924,11 +1043,51 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   ASSERT_TRUE(result.fwupd_firmware_version_info);
   EXPECT_EQ(result.fwupd_firmware_version_info->version, kVersion);
   EXPECT_EQ(result.fwupd_firmware_version_info->version_format,
-            telemetry_api::FwupdVersionFormat::kPair);
+            cx_telem::FwupdVersionFormat::kPair);
 
-  EXPECT_EQ(result.version, telemetry_api::UsbVersion::kUsb3);
-  EXPECT_EQ(result.spec_speed, telemetry_api::UsbSpecSpeed::kN20Gbps);
+  EXPECT_EQ(result.version, cx_telem::UsbVersion::kUsb3);
+  EXPECT_EQ(result.spec_speed, cx_telem::UsbSpecSpeed::kN20Gbps);
 }
 
-}  // namespace converters
-}  // namespace chromeos
+TEST(TelemetryApiConverters, VpdInfoWithoutPermission) {
+  constexpr char kFirstPowerDate[] = "01/01/00";
+  constexpr char kModelName[] = "TestModel";
+  constexpr char kSkuNumber[] = "TestSKU";
+  constexpr char kSerialNumber[] = "TestNumber";
+
+  auto input = crosapi::ProbeCachedVpdInfo::New();
+  input->first_power_date = kFirstPowerDate;
+  input->model_name = kModelName;
+  input->sku_number = kSkuNumber;
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<cx_telem::VpdInfo>(
+      std::move(input), /* has_serial_number_permission= */ false);
+
+  ASSERT_TRUE(result.activate_date);
+  EXPECT_EQ(*result.activate_date, kFirstPowerDate);
+
+  ASSERT_TRUE(result.model_name);
+  EXPECT_EQ(*result.model_name, kModelName);
+
+  ASSERT_TRUE(result.sku_number);
+  EXPECT_EQ(*result.sku_number, kSkuNumber);
+
+  // serial_number is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result.serial_number);
+}
+
+TEST(TelemetryApiConverters, VpdInfoWithPermission) {
+  constexpr char kSerialNumber[] = "TestNumber";
+
+  auto input = crosapi::ProbeCachedVpdInfo::New();
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<cx_telem::VpdInfo>(
+      std::move(input), /* has_serial_number_permission= */ true);
+
+  ASSERT_TRUE(result.serial_number);
+  EXPECT_EQ(*result.serial_number, kSerialNumber);
+}
+
+}  // namespace chromeos::converters

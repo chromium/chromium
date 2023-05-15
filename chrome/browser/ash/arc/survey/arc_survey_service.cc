@@ -108,7 +108,7 @@ bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
 
   // Load trigger duration
   absl::optional<int> elapsed_time_survey_trigger_min =
-      root->FindIntKey(kJSONKeyElapsedTimeSurveyTriggerMin);
+      root->GetDict().FindInt(kJSONKeyElapsedTimeSurveyTriggerMin);
   if (elapsed_time_survey_trigger_min) {
     elapsed_time_survey_trigger_ =
         (elapsed_time_survey_trigger_min.value() >= 0)
@@ -118,17 +118,17 @@ bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
   }
 
   // Load package names
-  const base::Value* list = root->FindListKey(kJSONKeyPackageNames);
+  const base::Value::List* list =
+      root->GetDict().FindList(kJSONKeyPackageNames);
   if (!list) {
     VLOG(1) << "List of package names not found in the survey data.";
     return false;
   }
-  const base::Value::List& items = list->GetList();
-  if (items.empty()) {
+  if (list->empty()) {
     VLOG(1) << "List of package names is empty in the survey data.";
     return false;
   }
-  for (const auto& item : items) {
+  for (const auto& item : *list) {
     const std::string* package_name = item.GetIfString();
     if (!package_name) {
       VLOG(1) << "Non-string value found in list. Ignoring all results.";

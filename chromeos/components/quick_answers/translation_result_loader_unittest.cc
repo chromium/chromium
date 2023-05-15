@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -90,24 +91,47 @@ class TranslationResultLoaderTest : public testing::Test {
 };
 
 TEST_F(TranslationResultLoaderTest, Success) {
-  std::unique_ptr<QuickAnswer> expected_quick_answer =
-      std::make_unique<QuickAnswer>();
-  expected_quick_answer->first_answer_row.push_back(
-      std::make_unique<QuickAnswerResultText>(kTestTranslationResult));
-  expected_quick_answer->title.push_back(
-      std::make_unique<QuickAnswerText>(kTestTranslationTitle));
   test_url_loader_factory_.AddResponse(CreateTranslationRequest().spec(),
                                        kValidResponse);
 
-  EXPECT_CALL(
-      *mock_delegate_,
-      OnQuickAnswerReceived(QuickAnswerEqual(expected_quick_answer.get())));
+  base::RunLoop run_loop;
+  std::unique_ptr<QuickAnswersSession> session;
+  ON_CALL(*mock_delegate_, OnQuickAnswerReceived)
+      .WillByDefault(
+          [&session, &run_loop](
+              std::unique_ptr<QuickAnswersSession> quick_answers_session) {
+            session = std::move(quick_answers_session);
+            run_loop.Quit();
+          });
+
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
 
   fake_quick_answers_state_.SetConsentStatus(
       quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
+
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(session->quick_answer);
+  EXPECT_EQ(ResultType::kTranslationResult, session->quick_answer->result_type);
+  EXPECT_EQ(
+      kTestTranslationResult,
+      GetQuickAnswerTextForTesting(session->quick_answer->first_answer_row));
+  EXPECT_EQ(kTestTranslationTitle,
+            GetQuickAnswerTextForTesting(session->quick_answer->title));
+
+  ASSERT_TRUE(session->structured_result);
+  ASSERT_TRUE(session->structured_result->translation_result);
+  raw_ptr<TranslationResult> translation_result =
+      session->structured_result->translation_result.get();
+  EXPECT_EQ(kTestTranslationIntent.intent_text,
+            base::UTF16ToUTF8(translation_result->text_to_translate));
+  EXPECT_EQ(kTestTranslationResult,
+            base::UTF16ToUTF8(translation_result->translated_text));
+  EXPECT_EQ(kTestTranslationIntent.device_language,
+            translation_result->target_locale);
+  EXPECT_EQ(kTestTranslationIntent.source_language,
+            translation_result->source_locale);
 }
 
 TEST_F(TranslationResultLoaderTest, NetworkError) {

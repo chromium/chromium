@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -199,13 +198,13 @@ void AudioShifter::Pull(AudioBus* output,
   // This is the ratio we would need to get perfect sync after
   // |adjustment_time_| has passed.
   double slow_ratio = steady_ratio + time_difference / adjustment_time_;
-  slow_ratio = base::clamp(slow_ratio, 0.9, 1.1);
+  slow_ratio = std::clamp(slow_ratio, 0.9, 1.1);
   const base::TimeDelta adjustment_time =
       base::Seconds(output->frames() / rate_);
   // This is ratio we we'd need get perfect sync at the end of the
   // current output audiobus.
   double fast_ratio = steady_ratio + time_difference / adjustment_time;
-  fast_ratio = base::clamp(fast_ratio, 0.9, 1.1);
+  fast_ratio = std::clamp(fast_ratio, 0.9, 1.1);
 
   // If the current ratio is somewhere between the slow and the fast
   // ratio, then keep it. This means we don't have to recalculate the
@@ -219,7 +218,7 @@ void AudioShifter::Pull(AudioBus* output,
       // perfect sync in the alloted time. Clamp.
       double max_ratio = std::max(fast_ratio, slow_ratio);
       double min_ratio = std::min(fast_ratio, slow_ratio);
-      current_ratio_ = base::clamp(current_ratio_, min_ratio, max_ratio);
+      current_ratio_ = std::clamp(current_ratio_, min_ratio, max_ratio);
     } else {
       // The "direction" has changed. (From speed up to slow down or
       // vice versa, so we just take the slow ratio.

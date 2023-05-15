@@ -38,9 +38,14 @@ component("base") {
     "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color",
+    "//ui/color:color_headers",
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/native_theme",
   ]
 
   if (is_chromeos_lacros) {

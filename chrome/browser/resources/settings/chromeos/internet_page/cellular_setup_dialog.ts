@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './cellular_setup_dialog.html.js';
 import {CellularSetupSettingsDelegate} from './cellular_setup_settings_delegate.js';
 
-interface OsSettingsCellularSetupDialogElement {
+export interface OsSettingsCellularSetupDialogElement {
   $: {
     dialog: CrDialogElement,
   };
@@ -28,7 +28,7 @@ interface OsSettingsCellularSetupDialogElement {
 
 const OsSettingsCellularSetupDialogElementBase = I18nMixin(PolymerElement);
 
-class OsSettingsCellularSetupDialogElement extends
+export class OsSettingsCellularSetupDialogElement extends
     OsSettingsCellularSetupDialogElementBase {
   static get is() {
     return 'os-settings-cellular-setup-dialog' as const;

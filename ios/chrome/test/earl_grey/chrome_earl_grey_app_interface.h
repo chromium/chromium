@@ -40,6 +40,12 @@
 // operation failed.
 + (NSError*)clearBrowsingHistory;
 
+// Shuts down the network process in order to
+// avoid tests from hanging when clearing browser history. Uses a private WebKit
+// API and should be refactored or removed in the event that there's a different
+// way to address hanging.
++ (void)killWebKitNetworkProcess;
+
 // Clears all web state browsing data and waits to finish clearing before
 // returning. Returns nil on success, otherwise an NSError indicating why
 // the operation failed.
@@ -541,6 +547,9 @@
 
 // Returns whether UIButtonConfiguration changes are enabled.
 + (BOOL)isUIButtonConfigurationEnabled;
+
+// Returns whether TabGrid is sorted by recency (#tab-grid-recency-sort).
++ (BOOL)isSortingTabsByRecency;
 
 #pragma mark - ContentSettings
 

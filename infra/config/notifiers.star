@@ -72,6 +72,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "clank-engprod",
+    on_new_status = ["FAILURE", "INFRA_FAILURE"],
+    notify_emails = [
+        "clank-engprod+failures@google.com",
+    ],
+)
+
+luci.notifier(
     name = "cr-fuchsia",
     on_status_change = True,
     notify_emails = [
@@ -109,6 +117,14 @@ luci.notifier(
     on_new_status = ["FAILURE"],
     notify_emails = [
         "weblayer-sheriff@grotations.appspotmail.com",
+    ],
+)
+
+luci.notifier(
+    name = "chrome-build-perf",
+    on_new_status = ["FAILURE"],
+    notify_emails = [
+        "chrome-buld-team+alert@google.com",
     ],
 )
 

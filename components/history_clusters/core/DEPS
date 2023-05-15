@@ -5,6 +5,7 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",
+  "+components/search",
   "+components/search_engines",
   "+components/site_engagement/core",
   "+components/strings/grit/components_strings.h",

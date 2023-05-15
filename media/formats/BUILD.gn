@@ -15,6 +15,7 @@ source_set("formats") {
     "//media/ffmpeg",
     "//media/filters",
     "//media/muxers",
+    "//media/muxers:unit_tests",
   ]
 
   sources = [
@@ -32,6 +33,7 @@ source_set("formats") {
     "mp4/box_reader.h",
     "mp4/es_descriptor.cc",
     "mp4/es_descriptor.h",
+    "mp4/fourccs.cc",
     "mp4/fourccs.h",
     "mp4/mp4_stream_parser.cc",
     "mp4/mp4_stream_parser.h",
@@ -41,6 +43,8 @@ source_set("formats") {
     "mp4/sample_to_group_iterator.h",
     "mp4/track_run_iterator.cc",
     "mp4/track_run_iterator.h",
+    "mp4/writable_box_definitions.cc",
+    "mp4/writable_box_definitions.h",
     "mpeg/mpeg1_audio_stream_parser.cc",
     "mpeg/mpeg1_audio_stream_parser.h",
     "mpeg/mpeg_audio_stream_parser_base.cc",
@@ -315,6 +319,13 @@ source_set("unit_tests") {
         "dts/dts_util_unittest.cc",
         "mp4/dts_unittest.cc",
         "mp4/dtsx_unittest.cc",
+      ]
+    }
+
+    if (enable_platform_ac3_eac3_audio) {
+      sources += [
+        "mp4/ac3_unittest.cc",
+        "mp4/eac3_unittest.cc",
       ]
     }
 

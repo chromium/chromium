@@ -14,6 +14,10 @@
 - (void)didSelectCountry:(NSString*)country;
 
 // Notifies the class that conforms this delegate to set that whether the
+// name data is required or not.
+- (void)setNameRequired:(BOOL)nameRequired;
+
+// Notifies the class that conforms this delegate to set that whether the
 // address line 1 data is required or not.
 - (void)setLine1Required:(BOOL)line1Required;
 

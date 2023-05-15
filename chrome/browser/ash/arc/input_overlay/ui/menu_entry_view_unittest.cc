@@ -112,7 +112,6 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
         std::make_unique<DisplayOverlayController>(touch_injector_.get(),
                                                    /*first_launch=*/false);
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
-    menu_entry_view_->set_allow_reposition(true);
   }
 
   // Kept around to determine bounds(), not owned.
@@ -132,11 +131,9 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
         *arc_test_window_->GetWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
-    touch_injector_->set_allow_reposition(true);
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
         touch_injector_.get(), /*first_launch=*/false);
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
-    menu_entry_view_->set_allow_reposition(true);
   }
 
   void TearDown() override {

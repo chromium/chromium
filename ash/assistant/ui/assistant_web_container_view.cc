@@ -140,7 +140,7 @@ void AssistantWebContainerView::SetCanGoBackForTesting(bool can_go_back) {
 }
 
 AshWebView* AssistantWebContainerView::ContentsView() {
-  return contents_view_ptr_ ? contents_view_ptr_ : contents_view_.get();
+  return contents_view_ptr_ ? contents_view_ptr_.get() : contents_view_.get();
 }
 
 void AssistantWebContainerView::InitLayout() {
@@ -164,7 +164,7 @@ void AssistantWebContainerView::RemoveContents() {
   web_container_view_delegate_->UpdateBackButtonVisibility(
       GetWidget(),
       /*can_go_back=*/false);
-  RemoveChildViewT(contents_view_ptr_)->RemoveObserver(this);
+  RemoveChildViewT(contents_view_ptr_.get())->RemoveObserver(this);
   contents_view_ptr_ = nullptr;
 }
 

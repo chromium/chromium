@@ -75,12 +75,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return true;
   }
 
-  void UpdateBlockLayout(bool relayout_children) override {
-    NOT_DESTROYED();
-    NOTREACHED_NORETURN();
-  }
-
-  void ComputeVisualOverflow(bool recompute_floats) override;
+  void ComputeVisualOverflow() override;
 
   bool CanContainFirstFormattedLine() const;
 

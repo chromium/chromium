@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
@@ -121,6 +122,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   using PopupNavigationDelegateFactory =
       std::unique_ptr<blocked_content::PopupNavigationDelegate> (*)(
           NavigateParams);
+  using ClipboardPasteData = content::ClipboardPasteData;
 
   static PopupNavigationDelegateFactory&
   GetPopupNavigationDelegateFactoryForTesting();
@@ -247,9 +249,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
-  bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-      content::BrowserContext* context,
-      const url::Origin& origin) override;
+  bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                   const url::Origin& origin) override;
   bool IsFileAccessAllowed(const base::FilePath& path,
                            const base::FilePath& absolute_path,
                            const base::FilePath& profile_path) override;
@@ -773,7 +774,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents,
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback) override;
 
   bool IsClipboardCopyAllowed(content::BrowserContext* browser_context,
@@ -878,6 +879,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
 
+  std::unique_ptr<content::ResponsivenessCalculatorDelegate>
+  CreateResponsivenessCalculatorDelegate() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -892,6 +896,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
  private:
   friend class DisableWebRtcEncryptionFlagTest;
   friend class InProcessBrowserTest;
+
+  FRIEND_TEST_ALL_PREFIXES(ChromeSiteIsolationPolicyTest,
+                           IsolatedOriginsContainChromeOrigins);
 
   // Initializes `network_contexts_parent_directory_` and
   // `safe_browsing_service_` on the UI thread.
@@ -964,6 +971,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
 
+  // True if the Gaia origin should be isolated in a dedicated process.
+  static bool DoesGaiaOriginRequireDedicatedProcess();
+
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
   std::vector<std::unique_ptr<ChromeContentBrowserClientParts>> extra_parts_;
@@ -1002,9 +1012,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  base::FilePath GetChildProcessPath(
-      int child_flags,
-      const base::FilePath& helpers_path) override;
+  std::string GetChildProcessSuffix(int child_flags) override;
 #endif  // BUILDFLAG(IS_MAC)
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};

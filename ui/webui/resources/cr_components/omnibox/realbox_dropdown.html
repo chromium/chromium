@@ -8,7 +8,7 @@
     border-radius: calc(0.25 * var(--cr-realbox-height));
     box-shadow: var(--cr-realbox-shadow);
     display: flex;
-    gap: 10px;
+    gap: 16px;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
@@ -37,6 +37,7 @@
   .header {
     align-items: center;
     box-sizing: border-box;
+    cursor: pointer;
     display: flex;
     font-size: inherit;
     font-weight: inherit;
@@ -53,14 +54,12 @@
 
   .header .text {
     color: var(--color-realbox-results-foreground-dimmed);
-    cursor: default;
     font-size: .875em;
     font-weight: 500;
     overflow: hidden;
-    padding-inline-end: 8px;
-    padding-inline-start: 8px;
+    padding-inline-end: 6px;
+    padding-inline-start: 6px;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
@@ -69,46 +68,43 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
-  .header:-webkit-any(:hover, :focus-within) {
+  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
-    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
-    .header:-webkit-any(:hover, :focus-within) {
+    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
       background-color: Highlight;
     }
   }
 
-  .primary-side,
-  .secondary-side {
+  .primary-side {
     flex: 1;
     min-width: 0;
   }
 
   .secondary-side {
     display: var(--cr-realbox-secondary-side-display, none);
+    min-width: 0;
+    padding-block-end: 8px;
     padding-inline-end: 16px;
+    width: 314px;
   }
 
   .secondary-side .header {
-    padding-inline-end: 6px;
-    padding-inline-start: 6px;
-  }
-
-  .secondary-side .header .text {
-    padding: 0;
+    padding-inline-end: 0;
+    padding-inline-start: 0;
   }
 
   .secondary-side .matches {
     display: flex;
-    gap: 2px;
+    gap: 4px;
   }
 </style>
 <div id="content">
-  <template is="dom-repeat" items="[[sideTypes_(canShowSecondarySide)]]"
+  <template is="dom-repeat"
+      items="[[sideTypes_(showSecondarySide_)]]"
       as="side">
     <div class$="[[classForSide_(side)]]">
       <template is="dom-repeat" items="[[groupIdsForSide_(side, result.matches.*)]]"
@@ -118,12 +114,11 @@
               the dropdown from losing focus and closing as a result. -->
           <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
               on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
-              aria-hidden="true">
+              on-mousedown="onHeaderMousedown_" aria-hidden="true">
             <span class="text">[[headerForGroup_(groupId)]]</span>
             <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
                 title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
-                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
-                on-mousedown="onToggleButtonMouseDown_">
+                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]">
             </cr-icon-button>
           </h3>
         </template>

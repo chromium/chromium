@@ -31,55 +31,109 @@ suite('<settings-office-page>', function() {
     prefElement.remove();
   });
 
-  test('Checked when pref is true', function() {
-    page.setPrefValue('filebrowser.office.always_move', true);
+  test('Checked when always move to Drive pref is true', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_drive', true);
     flush();
 
     const alwaysMove =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#alwaysMove');
+            '#alwaysMoveToDrive');
     assert(alwaysMove);
     assertTrue(alwaysMove.checked);
   });
 
-  test('Unchecked when pref is false', function() {
-    page.setPrefValue('filebrowser.office.always_move', false);
+  test('Checked when always move to OneDrive pref is true', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_onedrive', true);
     flush();
 
     const alwaysMove =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#alwaysMove');
+            '#alwaysMoveToOneDrive');
+    assert(alwaysMove);
+    assertTrue(alwaysMove.checked);
+  });
+
+  test('Unchecked when always move to Drive pref is false', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_drive', false);
+    flush();
+
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMoveToDrive');
     assert(alwaysMove);
     assertFalse(alwaysMove.checked);
   });
 
-  test('Sets pref to true when clicked from false', function() {
-    page.setPrefValue('filebrowser.office.always_move', false);
+  test('Unchecked when always move to OneDrive pref is false', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_onedrive', false);
     flush();
 
     const alwaysMove =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#alwaysMove');
+            '#alwaysMoveToOneDrive');
+    assert(alwaysMove);
+    assertFalse(alwaysMove.checked);
+  });
+
+  test('Sets Drive pref to true when clicked from false', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_drive', false);
+    flush();
+
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMoveToDrive');
     assert(alwaysMove);
     assertFalse(alwaysMove.checked);
 
     alwaysMove.click();
     assertTrue(alwaysMove.checked);
-    assertTrue(page.getPref('filebrowser.office.always_move').value);
+    assertTrue(page.getPref('filebrowser.office.always_move_to_drive').value);
   });
 
-  test('Sets pref to false when clicked from true', function() {
-    page.setPrefValue('filebrowser.office.always_move', true);
+  test('Sets OneDrive pref to true when clicked from false', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_onedrive', false);
     flush();
 
     const alwaysMove =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#alwaysMove');
+            '#alwaysMoveToOneDrive');
+    assert(alwaysMove);
+    assertFalse(alwaysMove.checked);
+
+    alwaysMove.click();
+    assertTrue(alwaysMove.checked);
+    assertTrue(
+        page.getPref('filebrowser.office.always_move_to_onedrive').value);
+  });
+
+  test('Sets Drive pref to false when clicked from true', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_drive', true);
+    flush();
+
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMoveToDrive');
     assert(alwaysMove);
     assertTrue(alwaysMove.checked);
 
     alwaysMove.click();
     assertFalse(alwaysMove.checked);
-    assertFalse(page.getPref('filebrowser.office.always_move').value);
+    assertFalse(page.getPref('filebrowser.office.always_move_to_drive').value);
+  });
+
+  test('Sets OneDrive pref to false when clicked from true', function() {
+    page.setPrefValue('filebrowser.office.always_move_to_onedrive', true);
+    flush();
+
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMoveToOneDrive');
+    assert(alwaysMove);
+    assertTrue(alwaysMove.checked);
+
+    alwaysMove.click();
+    assertFalse(alwaysMove.checked);
+    assertFalse(
+        page.getPref('filebrowser.office.always_move_to_onedrive').value);
   });
 });

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {osPageVisibility, PageStatus, ProfileInfoBrowserProxyImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createPageAvailabilityForTesting, PageStatus, ProfileInfoBrowserProxyImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -116,7 +116,7 @@ suite('PeoplePageTests', function() {
       isAccountManagerEnabled: false,
     });
     peoplePage = document.createElement('os-settings-people-page');
-    peoplePage.pageVisibility = osPageVisibility;
+    peoplePage.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(peoplePage);
 
     await browserProxy.whenCalled('getProfileInfo');
@@ -251,7 +251,7 @@ suite('PeoplePageTests', function() {
       osProfileName: fakeOsProfileName,
     });
     peoplePage = document.createElement('os-settings-people-page');
-    peoplePage.pageVisibility = osPageVisibility;
+    peoplePage.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(peoplePage);
 
     await accountManagerBrowserProxy.whenCalled('getAccounts');

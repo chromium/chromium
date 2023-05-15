@@ -38,6 +38,10 @@ config("host_implementation") {
   defines = []
   if (is_win || is_linux) {
     defines += [ "HOST_IMPLEMENTATION" ]
+
+    if (is_chrome_branded && is_official_build) {
+      defines += [ "REMOTING_ENABLE_BREAKPAD" ]
+    }
   }
   if (is_win) {
     defines += host_predefines
@@ -52,9 +56,6 @@ config("host_implementation") {
       "ISOLATION_AWARE_ENABLED=1",
       "STRICT",
     ]
-    if (is_chrome_branded && is_official_build) {
-      defines += [ "REMOTING_ENABLE_BREAKPAD" ]
-    }
 
     if (remoting_multi_process != 0 && remoting_rdp_session != 0) {
       defines += [ "REMOTING_RDP_SESSION" ]

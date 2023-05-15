@@ -102,8 +102,9 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
   virtual void InitializeCapabilities(
       OutputSurface::Capabilities* capabilities) = 0;
-  virtual bool Reshape(const SkSurfaceCharacterization& characterization,
+  virtual bool Reshape(const SkImageInfo& image_info,
                        const gfx::ColorSpace& color_space,
+                       int sample_count,
                        float device_scale_factor,
                        gfx::OverlayTransform transform) = 0;
   virtual std::vector<std::unique_ptr<Image>> AllocateImages(

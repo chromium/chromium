@@ -9,20 +9,25 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
@@ -56,10 +61,12 @@ class LocaleItemView : public ActionableView {
     AddChildView(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
-    auto* color_provider = AshColorProvider::Get();
+    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
-    iso_code_label->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    iso_code_label->SetEnabledColorId(
+        is_jelly_enabled
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshTextColorPrimary);
     iso_code_label->SetAutoColorReadabilityEnabled(false);
     iso_code_label->SetText(base::i18n::ToUpper(
         base::UTF8ToUTF16(l10n_util::GetLanguage(iso_code))));
@@ -71,20 +78,27 @@ class LocaleItemView : public ActionableView {
 
     auto* display_name_view = TrayPopupUtils::CreateDefaultLabel();
     display_name_view->SetText(display_name);
-    display_name_view->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-    TrayPopupUtils::SetLabelFontList(
-        display_name_view, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+    if (is_jelly_enabled) {
+      display_name_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                            *display_name_view);
+    } else {
+      display_name_view->SetEnabledColorId(kColorAshTextColorPrimary);
+      TrayPopupUtils::SetLabelFontList(
+          display_name_view, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+    }
     display_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     tri_view->AddView(TriView::Container::CENTER, display_name_view);
 
     if (checked_) {
       views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView(
           /*use_wide_layout=*/false);
-      checked_image->SetImage(gfx::CreateVectorIcon(
-          kCheckCircleIcon, kMenuIconSize,
-          color_provider->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorProminent)));
+      checked_image->SetImage(ui::ImageModel::FromVectorIcon(
+          kCheckCircleIcon,
+          is_jelly_enabled
+              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
+              : kColorAshIconColorProminent,
+          kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
     SetAccessibleName(display_name_view->GetText());
@@ -113,7 +127,7 @@ class LocaleItemView : public ActionableView {
   }
 
  private:
-  LocaleDetailedView* locale_detailed_view_;
+  raw_ptr<LocaleDetailedView, ExperimentalAsh> locale_detailed_view_;
   const bool checked_;
 };
 

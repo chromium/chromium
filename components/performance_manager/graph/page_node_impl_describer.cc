@@ -52,13 +52,6 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set(
       "navigation_committed_time",
       TimeDeltaFromNowToValue(page_node_impl->navigation_committed_time_));
-  result.Set("usage_estimate_time",
-             TimeDeltaFromNowToValue(page_node_impl->usage_estimate_time_));
-  // TODO(pmonette): Instead of emitting a raw number, this could be a human
-  //                 readable string. E.g. "14.8 MiB" instead of "14523".
-  result.Set(
-      "private_footprint_kb_estimate",
-      base::NumberToString(page_node_impl->private_footprint_kb_estimate_));
   result.Set("has_nonempty_beforeunload",
              page_node_impl->has_nonempty_beforeunload_);
   result.Set("main_frame_url", page_node_impl->main_frame_url_.value().spec());
@@ -87,6 +80,15 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   }
   result.Set("freezing_vote",
              FreezingVoteToString(page_node_impl->freezing_vote()));
+
+  base::Value::Dict estimates;
+  estimates.Set(
+      "private_footprint_kb",
+      base::NumberToString(page_node_impl->EstimatePrivateFootprintSize()));
+  estimates.Set(
+      "resident_set_size_kb",
+      base::NumberToString(page_node_impl->EstimateResidentSetSize()));
+  result.Set("estimates", std::move(estimates));
 
   return result;
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
@@ -39,7 +40,7 @@ class BruschettaMountProviderTest : public testing::Test {
   guest_os::GuestId id_{guest_os::VmType::BRUSCHETTA, "vm_name", ""};
   guest_os::GuestInfo info_{id_, 32, "username", base::FilePath("/home/dir"),
                             "",  123};
-  FakeBruschettaLauncher* launcher_;
+  raw_ptr<FakeBruschettaLauncher, ExperimentalAsh> launcher_;
   BruschettaMountProvider provider_{&profile_, id_};
 };
 

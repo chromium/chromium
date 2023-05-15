@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -113,8 +112,8 @@ Image ResizedImageForMaxDimensionsSkiaRepresentation(const Image& image,
       (bitmap.width() > max_width || bitmap.height() > max_height)) {
     double scale = std::min(static_cast<double>(max_width) / bitmap.width(),
                             static_cast<double>(max_height) / bitmap.height());
-    int width = base::clamp<int>(scale * bitmap.width(), 1, max_width);
-    int height = base::clamp<int>(scale * bitmap.height(), 1, max_height);
+    int width = std::clamp<int>(scale * bitmap.width(), 1, max_width);
+    int height = std::clamp<int>(scale * bitmap.height(), 1, max_height);
     SkBitmap new_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_GOOD, width, height);
     return Image(ImageSkia(ImageSkiaRep(new_bitmap, 0.0f)));

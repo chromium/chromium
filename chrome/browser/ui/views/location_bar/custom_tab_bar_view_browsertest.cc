@@ -92,7 +92,7 @@ Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
 
   std::string script = "window.open('" + target_url.spec() +
                        "', 'popup', 'width=400 height=400');";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   nav_observer.Wait();
 
   return browser_change_observer.Wait();
@@ -104,7 +104,7 @@ void NavigateAndWait(content::WebContents* web_contents,
   content::TestNavigationObserver nav_observer(web_contents);
 
   std::string script = "window.location = '" + target_url.spec() + "';";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   nav_observer.Wait();
 }
 
@@ -119,7 +119,7 @@ void SetTitleAndLocation(content::WebContents* web_contents,
   TestTitleObserver title_observer(web_contents, title);
 
   std::string script = "document.title = '" + base::UTF16ToASCII(title) + "';";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
 
   title_observer.Wait();
 }
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(
     // Do a state replacing navigation, so we don't have any in scope urls in
     // history.
     content::TestNavigationObserver nav_observer(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "window.location.replace('http://example.com');"));
     nav_observer.Wait();
     EXPECT_TRUE(app_controller_->ShouldShowCustomTabBar());
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
       "        new Blob([], {type: 'text/html'})"
       "    ),"
       "    '_self');";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   nav_observer.Wait();
 
   EXPECT_EQ(

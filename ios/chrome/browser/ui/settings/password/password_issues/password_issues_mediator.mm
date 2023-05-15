@@ -14,14 +14,14 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -49,7 +49,8 @@ NSArray<PasswordIssue*>* GetSortedPasswordIssues(
 
   BOOL enable_compromised_description =
       IsPasswordCheckupEnabled() &&
-      warning_type == WarningType::kCompromisedPasswordsWarning;
+      (warning_type == WarningType::kCompromisedPasswordsWarning ||
+       warning_type == WarningType::kDismissedWarningsWarning);
 
   for (auto credential : insecure_credentials) {
     [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential
@@ -242,6 +243,15 @@ NSInteger GetDismissedWarningsCount(
   [self setConsumerHeader];
 
   [self providePasswordsToConsumer];
+}
+
+- (BOOL)hasOneIssueLeft {
+  if (_warningType == WarningType::kReusedPasswordsWarning) {
+    return _insecureCredentials.has_value() &&
+           _insecureCredentials->size() == 2;
+  }
+  return _insecureCredentials.has_value() &&
+         _insecureCredentials->size() == 1 && _dismissedWarningsCount == 0;
 }
 
 #pragma mark - PasswordCheckObserver

@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_parsers/definition_result_parser.h"
 #include "chromeos/components/quick_answers/search_result_parsers/kp_entity_result_parser.h"
 #include "chromeos/components/quick_answers/search_result_parsers/unit_conversion_result_parser.h"
@@ -14,6 +15,21 @@ namespace quick_answers {
 namespace {
 using base::Value;
 }  // namespace
+
+std::unique_ptr<StructuredResult> ResultParser::ParseInStructuredResult(
+    const base::Value::Dict& result) {
+  return nullptr;
+}
+
+bool ResultParser::PopulateQuickAnswer(
+    const StructuredResult& structured_result,
+    QuickAnswer* quick_answer) {
+  return false;
+}
+
+bool ResultParser::SupportsNewInterface() const {
+  return false;
+}
 
 const Value::Dict* ResultParser::GetFirstListElement(const Value::Dict& dict,
                                                      const std::string& path) {

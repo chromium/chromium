@@ -72,8 +72,9 @@ bool IsMallocZoneAlreadyStoredLocked(ChromeMallocZone* zone) {
   EnsureMallocZonesInitializedLocked();
   GetLock().AssertAcquired();
   for (int i = 0; i < g_zone_count; ++i) {
-    if (g_malloc_zones[i].context == reinterpret_cast<void*>(zone))
+    if (g_malloc_zones[i].context == reinterpret_cast<void*>(zone)) {
       return true;
+    }
   }
   return false;
 }
@@ -83,11 +84,13 @@ bool IsMallocZoneAlreadyStoredLocked(ChromeMallocZone* zone) {
 bool StoreMallocZone(ChromeMallocZone* zone) {
   base::AutoLock l(GetLock());
   EnsureMallocZonesInitializedLocked();
-  if (IsMallocZoneAlreadyStoredLocked(zone))
+  if (IsMallocZoneAlreadyStoredLocked(zone)) {
     return false;
+  }
 
-  if (g_zone_count == kMaxZoneCount)
+  if (g_zone_count == kMaxZoneCount) {
     return false;
+  }
 
   StoreZoneFunctions(zone, &g_malloc_zones[g_zone_count]);
   ++g_zone_count;

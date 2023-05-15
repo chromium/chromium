@@ -26,5 +26,5 @@ interface Geolocation {
   //
   // Overlapping calls to this method are prohibited and will be treated as a
   // connection error. Position updates may be throttled by the service.
-  QueryNextPosition() => (Geoposition geoposition);
+  QueryNextPosition() => (GeopositionResult result);
 };

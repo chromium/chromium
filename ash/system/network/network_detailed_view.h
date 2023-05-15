@@ -9,6 +9,7 @@
 #include "ash/login_status.h"
 #include "ash/system/network/network_info_bubble.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -91,15 +92,15 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   // Used to cache the login status on creation.
   const LoginStatus login_;
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
-  views::Button* info_button_ = nullptr;
-  views::Button* settings_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> info_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
 
   // A small bubble for displaying network info.
-  NetworkInfoBubble* info_bubble_ = nullptr;
+  raw_ptr<NetworkInfoBubble, ExperimentalAsh> info_bubble_ = nullptr;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   base::WeakPtrFactory<NetworkDetailedView> weak_ptr_factory_{this};
 };

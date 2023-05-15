@@ -52,7 +52,8 @@ class LayoutThemeMac final : public LayoutThemeDefault {
   bool SupportsSelectionForegroundColors() const override { return false; }
   bool IsAccentColorCustomized(
       mojom::blink::ColorScheme color_scheme) const override;
-  Color GetAccentColor(mojom::blink::ColorScheme color_scheme) const override;
+  Color GetSystemAccentColor(
+      mojom::blink::ColorScheme color_scheme) const override;
 
  protected:
   // Controls color values returned from FocusRingColor().

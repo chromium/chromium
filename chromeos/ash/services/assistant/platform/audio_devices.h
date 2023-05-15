@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ash/components/audio/audio_device.h"
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   base::ObserverList<Observer> observers_;
 
   // Owned by |AssistantManagerServiceImpl|.
-  CrasAudioHandler* const cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
 
   std::string locale_;
   absl::optional<uint64_t> hotword_device_id_;

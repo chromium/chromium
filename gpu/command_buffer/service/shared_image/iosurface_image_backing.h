@@ -13,6 +13,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_surface.h"
 
 namespace gl {
 class ScopedEGLSurfaceIOSurface;
@@ -44,6 +45,8 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   IOSurfaceBackingEGLState(
       Client* client,
       EGLDisplay egl_display,
+      gl::GLContext* gl_context,
+      gl::GLSurface* gl_surface,
       GLuint gl_target,
       std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures);
   GLenum GetGLTarget() const { return gl_target_; }
@@ -68,6 +71,9 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
 
   // The display for this GL representation.
   const EGLDisplay egl_display_;
+
+  scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gl::GLSurface> surface_;
 
   // The GL (not EGL) target to which this texture is to be bound.
   const GLuint gl_target_;
@@ -105,8 +111,8 @@ class GLTextureIOSurfaceRepresentation
   GLenum mode_ = 0;
 };
 
-// Skia representation for both GLTextureImageBackingHelper.
-class SkiaIOSurfaceRepresentation : public SkiaImageRepresentation {
+// Skia Ganesh representation for both GLTextureImageBackingHelper.
+class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
  public:
   SkiaIOSurfaceRepresentation(
       SharedImageManager* manager,
@@ -121,7 +127,7 @@ class SkiaIOSurfaceRepresentation : public SkiaImageRepresentation {
       base::RepeatingClosure begin_read_access_callback);
 
  private:
-  // SkiaImageRepresentation:
+  // SkiaGaneshImageRepresentation:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
@@ -252,6 +258,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   std::vector<std::unique_ptr<SharedEventAndSignalValue>> TakeSharedEvents();
 
  private:
+  class SkiaGraphiteIOSurfaceRepresentation;
+
   // SharedImageBacking:
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
@@ -276,7 +284,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       WGPUDevice device,
       WGPUBackendType backend_type,
       std::vector<WGPUTextureFormat> view_formats) final;
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
@@ -294,6 +306,12 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void IOSurfaceBackingEGLStateBeingDestroyed(
       IOSurfaceBackingEGLState* egl_state,
       bool have_context) override;
+
+  // Updates the read and write accesses tracker variables on BeginAccess and
+  // waits on `release_fence_` if fence is not null.
+  bool HandleBeginAccessSync(bool readonly);
+  // Updates the read and write accesses tracker variables on EndAccess.
+  void HandleEndAccessSync(bool readonly);
 
   bool IsPassthrough() const { return true; }
 

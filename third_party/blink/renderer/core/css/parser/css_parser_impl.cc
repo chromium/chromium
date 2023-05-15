@@ -772,7 +772,6 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleCharset:
       case CSSAtRuleID::kCSSAtRuleImport:
       case CSSAtRuleID::kCSSAtRuleNamespace:
-      case CSSAtRuleID::kCSSAtRuleScrollTimeline:
       case CSSAtRuleID::kCSSAtRuleTry:
       case CSSAtRuleID::kCSSAtRuleStylistic:
       case CSSAtRuleID::kCSSAtRuleStyleset:
@@ -2330,7 +2329,7 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
         auto percent =
             To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
 
-        if (!RuntimeEnabledFeatures::CSSViewTimelineEnabled() &&
+        if (!RuntimeEnabledFeatures::ScrollTimelineEnabled() &&
             range_name != TimelineOffset::NamedRange::kNone) {
           return nullptr;
         }

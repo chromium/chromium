@@ -335,7 +335,11 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
       return available_free_space;
     case ItemPosition::kCenter: {
       const LayoutUnit result = (available_free_space / 2);
-      return is_deprecated_webkit_box ? result.ClampNegativeToZero() : result;
+      return (!RuntimeEnabledFeatures::
+                  LayoutDisableWebkitBoxSafeAlignmentEnabled() &&
+              is_deprecated_webkit_box)
+                 ? result.ClampNegativeToZero()
+                 : result;
     }
     case ItemPosition::kBaseline:
     case ItemPosition::kLastBaseline:
@@ -878,6 +882,13 @@ void FlexLayoutAlgorithm::AlignChildren() {
         flex_item.needs_relayout_for_stretch_ = true;
       }
       LayoutUnit available_space = flex_item.AvailableAlignmentSpace();
+      if (RuntimeEnabledFeatures::LayoutFlexSafeAlignmentEnabled() &&
+          !is_webkit_box &&
+          flex_item.style_
+                  .ResolvedAlignSelf(ItemPosition::kStretch, &StyleRef())
+                  .Overflow() == OverflowAlignment::kSafe) {
+        available_space = available_space.ClampNegativeToZero();
+      }
       LayoutUnit baseline_offset;
       if (position == ItemPosition::kBaseline ||
           position == ItemPosition::kLastBaseline) {
@@ -1129,7 +1140,10 @@ LayoutUnit FlexLayoutAlgorithm::InitialContentPositionOffset(
     const StyleContentAlignmentData& data,
     unsigned number_of_items,
     bool is_reversed) {
-  if (available_free_space <= 0 && style.IsDeprecatedWebkitBox()) {
+  if (available_free_space <= 0 &&
+      (style.IsDeprecatedWebkitBox() ||
+       (RuntimeEnabledFeatures::LayoutFlexSafeAlignmentEnabled() &&
+        data.Overflow() == OverflowAlignment::kSafe))) {
     // -webkit-box only considers |available_free_space| if > 0.
     return LayoutUnit();
   }

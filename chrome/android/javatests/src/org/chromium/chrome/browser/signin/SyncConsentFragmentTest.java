@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -26,9 +27,9 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -129,6 +131,9 @@ public class SyncConsentFragmentTest {
 
     @Rule
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutoTestRule = new AutomotiveContextWrapperTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -571,8 +576,8 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertTrue(SyncService.get().hasSyncConsent());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
             assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertTrue(SyncService.get().hasKeepEverythingSynced());
         });
@@ -602,8 +607,8 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertTrue(SyncService.get().hasSyncConsent());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
             assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertFalse(SyncService.get().hasKeepEverythingSynced());
         });
@@ -637,8 +642,8 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertTrue(SyncService.get().hasSyncConsent());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
         });
         // Click the cancel button to exit the activity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -972,6 +977,94 @@ public class SyncConsentFragmentTest {
         // SyncConsentActivity is destroyed if the add account flow returns null account name.
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
         addAccountStateHistogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
+            throws IOException {
+        mAutoTestRule.setIsAutomotive(true);
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+
+        // Should display the sync page.
+        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        // Mimic a successful device lock creation.
+        SyncConsentFragment syncConsentFragment =
+                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
+                syncConsentFragment);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            syncConsentFragment.onDeviceLockReady();
+        });
+
+        // Wait for the sync consent to be set and the activity has finished.
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getIdentityManager()
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
+        mAutoTestRule.setIsAutomotive(true);
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+
+        // Should display the sync page.
+        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        // Mimic a refusal of the device lock.
+        SyncConsentFragment syncConsentFragment =
+                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
+                syncConsentFragment);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            syncConsentFragment.onDeviceLockRefused();
+            assertFalse(syncConsentFragment.getDeviceLockReadyForTesting());
+        });
+
+        // Check that the user is not consented to sync and the activity has finished.
+        CriteriaHelper.pollUiThread(() -> {
+            return !IdentityServicesProvider.get()
+                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
     }
 
     private void launchActivityWithFragment(Fragment fragment) {

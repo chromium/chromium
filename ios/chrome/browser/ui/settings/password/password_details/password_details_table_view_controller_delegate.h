@@ -51,6 +51,14 @@
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain;
 
+// Called by the view controller when the user wants to dismiss a compromised
+// password warning.
+- (void)dismissWarningForPassword:(PasswordDetails*)password;
+
+// Called by the view controller when the user wants to restore a dismissed
+// compromised password warning.
+- (void)restoreWarningForCurrentPassword;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_DELEGATE_H_

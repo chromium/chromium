@@ -2,7 +2,7 @@
 <html>
   <body>
     <script>
-      window.setTimeout(() => {
+      function invalidateStyle() {
         const img = document.querySelector('img');
         img.setAttribute('src', './big-image.png');
         const newStyle = document.createElement('style');
@@ -12,8 +12,17 @@
           }
         `;
         document.head.appendChild(newStyle);
-      }, 500);
+    }
+    function forceLayout() {
+        const img = document.querySelector('img');
+        const unused = img.offsetHeight;
+    }
 
+    function performActions() {
+        invalidateStyle();
+        forceLayout();
+    }
+    setTimeout(performActions, 1000)
     </script>
     <div>
       <img>

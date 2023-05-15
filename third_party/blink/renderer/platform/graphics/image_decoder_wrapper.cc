@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 
+#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
@@ -82,6 +83,21 @@ ImageDecoderWrapper::ImageDecoderWrapper(
       client_id_(client_id) {}
 
 ImageDecoderWrapper::~ImageDecoderWrapper() = default;
+
+namespace {
+
+bool IsLowEndDeviceOrPartialLowEndModeEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // Since ImageFrameGeneratorTest depends on Platform::Current(), use
+  // Platform::Current()->IsLowEndDevice() here.
+  return Platform::Current()->IsLowEndDevice() ||
+         base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+#else
+  return Platform::Current()->IsLowEndDevice();
+#endif
+}
+
+}  // namespace
 
 bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
                                  wtf_size_t* frame_count,
@@ -210,7 +226,7 @@ bool ImageDecoderWrapper::ShouldDecodeToExternalMemory(
   // On low-end devices, always use the external allocator, to avoid storing
   // duplicate copies of the data for partial decodes in the ImageDecoder's
   // cache.
-  if (Platform::Current()->IsLowEndDevice()) {
+  if (IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     DCHECK(!resume_decoding);
     return true;
   }

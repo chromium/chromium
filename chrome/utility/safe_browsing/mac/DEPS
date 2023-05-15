@@ -1,3 +1,5 @@
 include_rules = [
-  "+components/safe_browsing/core/common/proto/csd.pb.h",
+  "+components/safe_browsing/content/common",
+  "+components/safe_browsing/core/common/features.h",
+  "+components/safe_browsing/core/common/proto/csd.pb.h"
 ]

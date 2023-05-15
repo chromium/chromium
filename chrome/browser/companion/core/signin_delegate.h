@@ -23,8 +23,11 @@ class SigninDelegate {
   SigninDelegate(const SigninDelegate&) = delete;
   SigninDelegate& operator=(const SigninDelegate&) = delete;
 
-  // Returns whether the user needs to sign in.
+  // Returns whether the user is allowed to sign in.
   virtual bool AllowedSignin() = 0;
+
+  // Returns whether the user is already signed in.
+  virtual bool IsSignedIn() = 0;
 
   // Starts a signin and sync flow.
   virtual void StartSigninFlow() = 0;

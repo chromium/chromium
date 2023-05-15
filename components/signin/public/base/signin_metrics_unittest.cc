@@ -44,6 +44,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
     AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW,
     AccessPoint::ACCESS_POINT_READING_LIST,
+    AccessPoint::ACCESS_POINT_SET_UP_LIST,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -70,6 +71,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
     AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW,
     AccessPoint::ACCESS_POINT_READING_LIST,
+    AccessPoint::ACCESS_POINT_SET_UP_LIST,
 };
 
 class SigninMetricsTest : public ::testing::Test {
@@ -170,6 +172,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AccountConsistencyService";
       case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
         return "SearchCompanion";
+      case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+        return "SetUpList";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

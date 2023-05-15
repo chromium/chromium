@@ -52,6 +52,8 @@ source_set("task_runner_context") {
 source_set("test_callbacks_support") {
   testonly = true
   sources = [
+    "mock_clock.cc",
+    "mock_clock.h",
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
     "test_util.h",

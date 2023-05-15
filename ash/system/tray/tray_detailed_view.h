@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -146,31 +147,31 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Transition to main view from detailed view.
   void TransitionToMainView();
 
-  DetailedViewDelegate* const delegate_;
-  views::BoxLayout* box_layout_ = nullptr;
-  views::ScrollView* scroller_ = nullptr;
-  views::View* scroll_content_ = nullptr;
-  views::ProgressBar* progress_bar_ = nullptr;
+  const raw_ptr<DetailedViewDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroller_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> scroll_content_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
 
   // The container view for the top-most title row. Owned by views hierarchy.
-  TriView* tri_view_ = nullptr;
+  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
 
   // The back button that appears in the title row. Owned by views hierarchy.
-  views::Button* back_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> back_button_ = nullptr;
 
   // The label in the title row. Owned by views hierarchy.
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 
   // Owned by views hierarchy.
-  views::Label* sub_header_label_ = nullptr;
-  views::ImageView* sub_header_image_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> sub_header_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> sub_header_image_view_ = nullptr;
 
   // Owned by vector icon cache.
-  const gfx::VectorIcon* sub_header_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> sub_header_icon_ = nullptr;
 
   // The separator under the title row. Not all views have a separator. Owned by
   // views hierarchy.
-  views::Separator* title_separator_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> title_separator_ = nullptr;
 
   // Gets modified to false in the constructor of the view if it doesn't have a
   // separator.

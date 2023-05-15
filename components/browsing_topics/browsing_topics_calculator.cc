@@ -9,9 +9,9 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/semantic_tree.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -108,28 +108,17 @@ void RecordCalculatorResultMetrics(
 // Precondition: the annotation didn't fail in general (e.g. `ModelInfo` is
 // valid).
 void DeriveHostTopicsMapAndTopicHostsMap(
-    const std::vector<optimization_guide::BatchAnnotationResult>& results,
+    const std::vector<Annotation>& results,
     std::map<HashedHost, std::set<Topic>>& host_topics_map,
     std::map<Topic, std::set<HashedHost>>& topic_hosts_map) {
   DCHECK(host_topics_map.empty());
   DCHECK(topic_hosts_map.empty());
 
-  for (size_t i = 0; i < results.size(); ++i) {
-    const optimization_guide::BatchAnnotationResult& result = results[i];
-    const std::string& original_host = result.input();
+  for (const Annotation& annotation : results) {
+    HashedHost host = HashMainFrameHostForStorage(annotation.input);
 
-    const absl::optional<std::vector<optimization_guide::WeightedIdentifier>>&
-        annotation_result_topics = result.topics();
-    if (!annotation_result_topics)
-      continue;
-
-    HashedHost host = HashMainFrameHostForStorage(original_host);
-
-    for (const optimization_guide::WeightedIdentifier& annotation_result_topic :
-         *annotation_result_topics) {
-      // Note that `annotation_result_topic.weight()` is ignored. This is the
-      // intended use of the model for the Topics API.
-      Topic topic = Topic(annotation_result_topic.value());
+    for (int32_t topic_id : annotation.topics) {
+      Topic topic = Topic(topic_id);
 
       topic_hosts_map[topic].insert(host);
       host_topics_map[host].insert(topic);
@@ -193,13 +182,13 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service,
+    Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
       site_data_manager_(site_data_manager),
-      annotations_service_(annotations_service),
+      annotator_(annotator),
       calculate_completed_callback_(std::move(callback)),
       calculation_time_(base::Time::Now()) {
   history_data_start_time_ = DeriveHistoryDataStartTime(
@@ -370,38 +359,32 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
 
   // When the input is empty, we still want to wait for the model availability
   // status to be known, before querying the model version. Thus we simply
-  // always call `RequestAndNotifyWhenModelAvailable()` first. If the model
+  // always call `NotifyWhenModelAvailable()` first. If the model
   // availability status is already known, the function will be cheap and the
   // callback will be synchronously called.
-  annotations_service_->RequestAndNotifyWhenModelAvailable(
-      optimization_guide::AnnotationType::kPageTopics,
-      base::BindOnce(
-          &BrowsingTopicsCalculator::OnRequestModelCompleted,
-          weak_ptr_factory_.GetWeakPtr(),
-          std::vector<std::string>(raw_hosts.begin(), raw_hosts.end())));
+  annotator_->NotifyWhenModelAvailable(base::BindOnce(
+      &BrowsingTopicsCalculator::OnRequestModelCompleted,
+      weak_ptr_factory_.GetWeakPtr(),
+      std::vector<std::string>(raw_hosts.begin(), raw_hosts.end())));
 }
 
 void BrowsingTopicsCalculator::OnRequestModelCompleted(
-    std::vector<std::string> raw_hosts,
-    bool successful) {
-  // Ignore `successful`. In `OnGetTopicsForHostsCompleted()`, it will need to
-  // check the model again anyway in case there's a race.
+    std::vector<std::string> raw_hosts) {
   if (raw_hosts.empty()) {
     OnGetTopicsForHostsCompleted(/*results=*/{});
     return;
   }
 
-  annotations_service_->BatchAnnotate(
+  annotator_->BatchAnnotate(
       base::BindOnce(&BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
-      raw_hosts, optimization_guide::AnnotationType::kPageTopics);
+      raw_hosts);
 }
 
 void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
-    const std::vector<optimization_guide::BatchAnnotationResult>& results) {
+    const std::vector<Annotation>& results) {
   absl::optional<optimization_guide::ModelInfo> model_info =
-      annotations_service_->GetModelInfoForType(
-          optimization_guide::AnnotationType::kPageTopics);
+      annotator_->GetBrowsingTopicsModelInfo();
 
   if (!model_info) {
     OnCalculateCompleted(

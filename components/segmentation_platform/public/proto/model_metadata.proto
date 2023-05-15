@@ -137,18 +137,18 @@ message CustomInput {
     FILL_SYNC_DEVICE_INFO = 5;
 
     // Output is a tensor of length 1 consisting device RAM in MB.
-    // Output type: int
+    // Output type: float
     // Output length: 1
     FILL_DEVICE_RAM_MB = 6;
 
     // Output is a tensor of length 1 describing device OS level.
-    // Output type: int
+    // Output type: float
     // Output length: 1
     FILL_DEVICE_OS_VERSION_NUMBER = 7;
 
     // Output is a tensor of length 1 giving pixels per inch for the current
     // device used by the user.
-    // Output type: int
+    // Output type: float
     // Output length: 1
     FILL_DEVICE_PPI = 8;
   }

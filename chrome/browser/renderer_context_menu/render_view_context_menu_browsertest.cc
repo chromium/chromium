@@ -126,8 +126,8 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -316,13 +316,16 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     auto callback =
         [](std::vector<uint8_t>* response_image_data,
            gfx::Size* response_original_size,
+           gfx::Size* response_downscaled_size,
            std::string* response_file_extension,
            std::vector<lens::mojom::LatencyLogPtr>* response_log_data,
            base::OnceClosure quit, const std::vector<uint8_t>& image_data,
-           const gfx::Size& original_size, const std::string& file_extension,
+           const gfx::Size& original_size, const gfx::Size& downscaled_size,
+           const std::string& file_extension,
            std::vector<lens::mojom::LatencyLogPtr> log_data) {
           *response_image_data = image_data;
           *response_original_size = original_size;
+          *response_downscaled_size = downscaled_size;
           *response_file_extension = file_extension;
           *response_log_data = std::move(log_data);
           std::move(quit).Run();
@@ -331,17 +334,20 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     std::vector<uint8_t> response_image_data;
     gfx::Size response_original_size;
+    gfx::Size response_downscaled_size;
     std::string response_file_extension;
     std::vector<lens::mojom::LatencyLogPtr> response_log_data;
     chrome_render_frame->RequestImageForContextNode(
         0, request_size, request_image_format, chrome::mojom::kDefaultQuality,
         base::BindOnce(callback, &response_image_data, &response_original_size,
-                       &response_file_extension, &response_log_data,
-                       run_loop.QuitClosure()));
+                       &response_downscaled_size, &response_file_extension,
+                       &response_log_data, run_loop.QuitClosure()));
     run_loop.Run();
 
     ASSERT_EQ(expected_original_size.width(), response_original_size.width());
     ASSERT_EQ(expected_original_size.height(), response_original_size.height());
+    ASSERT_EQ(expected_size.width(), response_downscaled_size.width());
+    ASSERT_EQ(expected_size.height(), response_downscaled_size.height());
     ASSERT_EQ(expected_extension, response_file_extension);
 
     SkBitmap decoded_bitmap;
@@ -470,10 +476,9 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     // Prepare to load a pdf plugin inside.
     TestMimeHandlerViewGuest::RegisterTestGuestViewType(
         test_guest_view_manager_);
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents,
-                               "var l = document.getElementById('link1');"
-                               "l.click();"));
+    ASSERT_TRUE(content::ExecJs(web_contents,
+                                "var l = document.getElementById('link1');"
+                                "l.click();"));
 
     // Wait for the guest view of the PDF plugin to be created.
     auto* guest_view =
@@ -576,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
 
   // Block access to http://www.google.com/ in the URL filter.
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service->GetURLFilter();
@@ -616,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
 
   // Block access to http://www.google.com/ in the URL filter.
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service->GetURLFilter();
@@ -1200,19 +1205,12 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   // Verify that it's the correct tab.
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kCorrectReferrer|.
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kCorrectReferrer, actual_referrer);
+  ASSERT_EQ(kCorrectReferrer,
+            content::EvalJs(tab, "window.document.body.textContent;"));
 
   // Verify that the referrer on the page matches |kCorrectReferrer|.
-  std::string page_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kCorrectReferrer, page_referrer);
+  ASSERT_EQ(kCorrectReferrer,
+            content::EvalJs(tab, "window.document.referrer;"));
 }
 
 // Verify that "Open Link in Incognito Window " doesn't send referrer URL.
@@ -1228,8 +1226,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Set up referrer URL with fragment.
   const GURL kReferrerWithFragment("http://foo.com/test#fragment");
-  const std::string kNoneReferrer("None");
-  const std::string kEmptyReferrer("");
 
   // Set up menu with link URL.
   content::ContextMenuParams context_menu_params;
@@ -1250,20 +1246,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Verify that it's the correct tab.
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
-  // Verify that the text on the page matches |kNoneReferrer|.
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kNoneReferrer, actual_referrer);
+  // Verify that the text on the page is "None".
+  ASSERT_EQ("None", content::EvalJs(tab, "window.document.body.textContent;"));
 
-  // Verify that the referrer on the page matches |kEmptyReferrer|.
-  std::string page_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kEmptyReferrer, page_referrer);
+  // Verify that the referrer on the page is "".
+  ASSERT_EQ("", content::EvalJs(tab, "window.document.referrer;"));
 }
 
 // Check filename on clicking "Save Link As" via a "real" context menu.
@@ -1759,21 +1746,10 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
 
   // Verify that the header text echoed on the page doesn't reveal `kReferrer`.
-  const std::string kNoneReferrer("None");
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kNoneReferrer, actual_referrer);
+  ASSERT_EQ("None", content::EvalJs(tab, "window.document.body.textContent;"));
 
   // Verify that the javascript referrer is empty.
-  std::string page_referrer;
-  const std::string kEmptyReferrer("");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kEmptyReferrer, page_referrer);
+  ASSERT_EQ("", content::EvalJs(tab, "window.document.referrer;"));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2164,8 +2140,16 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
   }
 };
 
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ValidLensRegionSearchWithUnifiedSidePanel \
+  DISABLED_ValidLensRegionSearchWithUnifiedSidePanel
+#else
+#define MAYBE_ValidLensRegionSearchWithUnifiedSidePanel \
+  ValidLensRegionSearchWithUnifiedSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       ValidLensRegionSearchWithUnifiedSidePanel) {
+                       MAYBE_ValidLensRegionSearchWithUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
@@ -2209,8 +2193,17 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
                                    ".*ep=crs&re=df&s=4&st=\\d+&lm=.+"));
 }
 
-IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel \
+  DISABLED_ValidFullscreenLensRegionSearchWithUnifiedSidePanel
+#else
+#define MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel \
+  ValidFullscreenLensRegionSearchWithUnifiedSidePanel
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchByRegionWithUnifiedSidePanelBrowserTest,
+    MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.

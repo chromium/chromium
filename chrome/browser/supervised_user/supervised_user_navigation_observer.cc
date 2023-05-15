@@ -18,7 +18,6 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -26,6 +25,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,17 +51,19 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     content::WebContents* web_contents,
     GURL url,
     Profile* profile,
-    int frame_id) {
+    int frame_id,
+    int navigation_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<SupervisedUserWebContentHandlerImpl>(
       web_contents, url,
-      *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id);
+      *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id,
+      navigation_id);
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
-                                                               frame_id);
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      web_contents, frame_id, navigation_id);
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
-                                                               frame_id);
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      web_contents, frame_id, navigation_id);
 #endif
 }
 
@@ -144,7 +146,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   // interstitial in the frame, then interstitial is done.
   if (base::Contains(supervised_user_interstitials_, frame_id) &&
       navigation_id != supervised_user_interstitials_[frame_id]
-                           ->interstitial_navigation_id()) {
+                           ->web_content_handler()
+                           ->GetInterstitialNavigationId()) {
     OnInterstitialDone(frame_id);
   }
 
@@ -180,8 +183,10 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
         base::Contains(supervised_user_interstitials_,
                        render_frame_host->GetFrameTreeNodeId());
     int count = supervised_user_interstitials_.size();
-    if (main_frame_blocked)
+    if (main_frame_blocked) {
       count = 0;
+      supervised_user_service_->MarkFirstTimeInterstitialBannerShown();
+    }
 
     UMA_HISTOGRAM_COUNTS_1000("ManagedUsers.BlockedIframeCount", count);
   }
@@ -313,13 +318,13 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     const OnInterstitialResultCallback& callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto web_content_handler =
-      CreateWebContentHandler(web_contents(), url, profile, frame_id);
+  auto web_content_handler = CreateWebContentHandler(
+      web_contents(), url, profile, frame_id, navigation_id);
   CHECK(web_content_handler);
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
-      SupervisedUserInterstitial::Create(
-          web_contents(), std::move(web_content_handler),
-          *supervised_user_service_, url, reason, frame_id, navigation_id);
+      SupervisedUserInterstitial::Create(std::move(web_content_handler),
+                                         *supervised_user_service_, url,
+                                         reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
   bool already_requested = base::Contains(requested_hosts_, url.host());

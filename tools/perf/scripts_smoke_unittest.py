@@ -91,7 +91,6 @@ class ScriptsSmokeTest(unittest.TestCase):
     if 'ImportError: cannot import name small_profile_extender' in stdout:
       self.skipTest('small_profile_extender is missing')
     self.assertEqual(return_code, 0, stdout)
-    self.assertIn('kraken', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunPerformanceTestsTelemetry_end2end(self):

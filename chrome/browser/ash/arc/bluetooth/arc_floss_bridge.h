@@ -7,6 +7,7 @@
 #include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 
@@ -27,6 +28,8 @@ class ArcFlossBridge : public ArcBluetoothBridge,
 
   // ArcBluetoothBridge overrides
   void SendCachedDevices() const override;
+  void StartLEScanImpl() override;
+  void ResetLEScanSession() override;
 
   // Bluetooth Mojo host interface - Bluetooth SDP functions
   void GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
@@ -167,6 +170,9 @@ class ArcFlossBridge : public ArcBluetoothBridge,
   // Map of device+channel combinations to service UUIDs
   base::flat_map<std::pair<std::string, int32_t>, device::BluetoothUUID>
       uuid_lookups_{};
+
+  // LE scan session created by StartLEScanImpl()
+  std::unique_ptr<device::BluetoothLowEnergyScanSession> ble_scan_session_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcFlossBridge> weak_factory_{this};

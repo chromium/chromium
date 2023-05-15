@@ -116,7 +116,7 @@ TetherService::TetherService(
       timer_(std::make_unique<base::OneShotTimer>()) {
   tether_host_fetcher_->AddObserver(this);
   power_manager_client_->AddObserver(this);
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
 

@@ -18,7 +18,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -44,7 +43,6 @@
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -327,7 +325,6 @@ class LocalCardMigrationManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   syncer::TestSyncService sync_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
   raw_ptr<TestStrikeDatabase> strike_database_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
@@ -413,9 +410,6 @@ TEST_F(LocalCardMigrationManagerTest,
 
 // Trigger migration if user only signs in.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_SignInOnly) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
   // Mock Chrome Sync is disabled.
   local_card_migration_manager_->ResetSyncState(
       AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled);

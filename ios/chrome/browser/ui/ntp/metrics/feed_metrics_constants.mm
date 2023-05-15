@@ -89,14 +89,12 @@ const char kFollowCountAfterUnfollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
 const char kFollowCountWhenEngaged[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
-const char kActionOnNTP[] = "IOS.ContentSuggestions.ActionOnNTP";
-const char kActionOnStartSurface[] =
-    "IOS.ContentSuggestions.ActionOnStartSurface";
 const char kDiscoverIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.CardIndexOnSwitch";
 const char kFollowingIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.WebFeed.CardIndexOnSwitch";
 const char kFeedSignInUI[] = "ContentSuggestions.Feed.FeedSignInUI";
+const char kFeedSyncPromo[] = "ContentSuggestions.Feed.FeedSyncPromo";
 
 #pragma mark - User Actions
 
@@ -200,3 +198,7 @@ const char kShowSignInOnlyFlowFromFeed[] =
     "ContentSuggestions.Feed.SignIn.ShowSignInOnlyFlowFromFeed";
 const char kShowSignInDisableToastFromFeed[] =
     "ContentSuggestions.Feed.SignIn.ShowSignInDisableToastFromFeed";
+const char kShowSyncFlowFromFeed[] =
+    "ContentSuggestions.Feed.Sync.ShowSyncFlowFromFeed";
+const char kShowDisableToastFromFeed[] =
+    "ContentSuggestions.Feed.Sync.ShowDisableToastFromFeed";

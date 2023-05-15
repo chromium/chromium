@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_ZERO_STATE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_ZERO_STATE_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
 namespace app_list {
@@ -25,7 +26,7 @@ class AppZeroStateProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
 
  private:
-  AppSearchDataSource* const data_source_;
+  const raw_ptr<AppSearchDataSource, ExperimentalAsh> data_source_;
 };
 
 }  // namespace app_list

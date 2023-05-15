@@ -102,7 +102,7 @@ void DesktopMediaPickerController::OnInitialMediaListFound() {
 }
 
 void DesktopMediaPickerController::ShowPickerDialog() {
-  picker_ = picker_factory_->CreatePicker();
+  picker_ = picker_factory_->CreatePicker(nullptr);
   if (!picker_) {
     OnPickerDialogResults(
         "Desktop Capture API is not yet implemented for this platform.", {});

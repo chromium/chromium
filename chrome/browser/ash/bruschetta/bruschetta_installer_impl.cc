@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -71,7 +72,6 @@ const net::NetworkTrafficAnnotationTag kBruschettaTrafficAnnotation =
     )");
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
-    base::FilePath firmware_path,
     base::FilePath boot_disk_path,
     base::FilePath pflash_path,
     base::FilePath profile_path);
@@ -79,9 +79,8 @@ std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
 }  // namespace
 
 struct BruschettaInstallerImpl::Fds {
-  base::ScopedFD firmware;
   base::ScopedFD boot_disk;
-  base::ScopedFD pflash;
+  absl::optional<base::ScopedFD> pflash;
 };
 
 BruschettaInstallerImpl::BruschettaInstallerImpl(
@@ -144,32 +143,59 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
 }
 
 void BruschettaInstallerImpl::InstallToolsDlc() {
-  VLOG(2) << "Installing DLC";
-  NotifyObserver(State::kDlcInstall);
+  VLOG(2) << "Installing tools DLC";
+  NotifyObserver(State::kToolsDlcInstall);
 
-  dlcservice::InstallRequest request;
-  request.set_id(kToolsDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kToolsDlc,
       base::BindOnce(&BruschettaInstallerImpl::OnToolsDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void BruschettaInstallerImpl::OnToolsDlcInstalled(
-    const ash::DlcserviceClient::InstallResult& install_result) {
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  in_progress_dlc_.reset();
+
   if (MaybeClose()) {
     return;
   }
 
-  if (install_result.error != dlcservice::kErrorNone) {
+  if (!install_result.has_value()) {
     install_running_ = false;
-    Error(BruschettaInstallResult::kDlcInstallError);
-    LOG(ERROR) << "Failed to install tools dlc: " << install_result.error;
+    Error(BruschettaInstallResult::kToolsDlcInstallError);
+    LOG(ERROR) << "Failed to install tools dlc: " << install_result.error();
     return;
   }
 
-  DownloadFirmware();
+  InstallFirmwareDlc();
+}
+
+void BruschettaInstallerImpl::InstallFirmwareDlc() {
+  VLOG(2) << "Installing firmware DLC";
+  NotifyObserver(State::kFirmwareDlcInstall);
+
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kUefiDlc,
+      base::BindOnce(&BruschettaInstallerImpl::OnFirmwareDlcInstalled,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::DoNothing());
+}
+
+void BruschettaInstallerImpl::OnFirmwareDlcInstalled(
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  if (MaybeClose()) {
+    return;
+  }
+
+  if (!install_result.has_value()) {
+    install_running_ = false;
+    Error(BruschettaInstallResult::kFirmwareDlcInstallError);
+    LOG(ERROR) << "Failed to install firmware dlc: " << install_result.error();
+    return;
+  }
+
+  DownloadBootDisk();
 }
 
 void BruschettaInstallerImpl::StartDownload(GURL url,
@@ -221,7 +247,7 @@ void BruschettaInstallerImpl::DownloadStarted(
 }
 
 void BruschettaInstallerImpl::DownloadFailed() {
-  download_guid_ = base::GUID();
+  download_guid_ = base::Uuid();
   download_callback_.Reset();
 
   if (MaybeClose()) {
@@ -234,52 +260,15 @@ void BruschettaInstallerImpl::DownloadFailed() {
 
 void BruschettaInstallerImpl::DownloadSucceeded(
     const download::CompletionInfo& completion_info) {
-  download_guid_ = base::GUID();
+  download_guid_ = base::Uuid();
   std::move(download_callback_).Run(completion_info);
-}
-
-void BruschettaInstallerImpl::DownloadFirmware() {
-  VLOG(2) << "Downloading firmware";
-  // We need to generate the download GUID before notifying because the tests
-  // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
-  NotifyObserver(State::kFirmwareDownload);
-
-  const std::string* url =
-      config_.FindDict(prefs::kPolicyUefiKey)->FindString(prefs::kPolicyURLKey);
-  StartDownload(GURL(*url),
-                base::BindOnce(&BruschettaInstallerImpl::OnFirmwareDownloaded,
-                               weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BruschettaInstallerImpl::OnFirmwareDownloaded(
-    const download::CompletionInfo& completion_info) {
-  if (MaybeClose()) {
-    return;
-  }
-
-  const std::string* expected_hash = config_.FindDict(prefs::kPolicyUefiKey)
-                                         ->FindString(prefs::kPolicyHashKey);
-  if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
-                                        *expected_hash)) {
-    install_running_ = false;
-    Error(BruschettaInstallResult::kInvalidFirmware);
-    LOG(ERROR) << "Downloaded firmware image has incorrect hash";
-    LOG(ERROR) << "Actual   " << completion_info.hash256;
-    LOG(ERROR) << "Expected " << *expected_hash;
-    return;
-  }
-
-  firmware_path_ = completion_info.path;
-
-  DownloadBootDisk();
 }
 
 void BruschettaInstallerImpl::DownloadBootDisk() {
   VLOG(2) << "Downloading boot disk";
-  // We need to generate the download GUID before notifying because the tests
+  // We need to generate the download UUID before notifying because the tests
   // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
+  download_guid_ = base::Uuid::GenerateRandomV4();
   NotifyObserver(State::kBootDiskDownload);
 
   const std::string* url = config_.FindDict(prefs::kPolicyImageKey)
@@ -314,13 +303,20 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(
 
 void BruschettaInstallerImpl::DownloadPflash() {
   VLOG(2) << "Downloading pflash";
-  // We need to generate the download GUID before notifying because the tests
+  // We need to generate the download UUID before notifying because the tests
   // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
+  download_guid_ = base::Uuid::GenerateRandomV4();
   NotifyObserver(State::kPflashDownload);
 
-  const std::string* url = config_.FindDict(prefs::kPolicyPflashKey)
-                               ->FindString(prefs::kPolicyURLKey);
+  const base::Value::Dict* pflash = config_.FindDict(prefs::kPolicyPflashKey);
+  if (!pflash) {
+    VLOG(2) << "No pflash file set, skipping to OpenFds";
+
+    OpenFds();
+    return;
+  }
+
+  const std::string* url = pflash->FindString(prefs::kPolicyURLKey);
   StartDownload(GURL(*url),
                 base::BindOnce(&BruschettaInstallerImpl::OnPflashDownloaded,
                                weak_ptr_factory_.GetWeakPtr()));
@@ -355,8 +351,8 @@ void BruschettaInstallerImpl::OpenFds() {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&OpenFdsBlocking, firmware_path_, boot_disk_path_,
-                     pflash_path_, profile_->GetPath()),
+      base::BindOnce(&OpenFdsBlocking, boot_disk_path_, pflash_path_,
+                     profile_->GetPath()),
       base::BindOnce(&BruschettaInstallerImpl::OnOpenFds,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -364,38 +360,33 @@ void BruschettaInstallerImpl::OpenFds() {
 namespace {
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
-    base::FilePath firmware_path,
     base::FilePath boot_disk_path,
     base::FilePath pflash_path,
     base::FilePath profile_path) {
-  auto firmware_dest_path = profile_path.Append(kBiosPath);
-  VLOG(2) << "Copying " << firmware_path << " -> " << firmware_dest_path;
-  if (!base::CopyFile(firmware_path, firmware_dest_path)) {
-    PLOG(ERROR) << "Failed to move firmware image to destination";
-    return nullptr;
-  }
-
-  base::File firmware(firmware_dest_path,
-                      base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!firmware.IsValid()) {
-    PLOG(ERROR) << "Failed to open firmware";
-    return nullptr;
-  }
   base::File boot_disk(boot_disk_path,
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!boot_disk.IsValid()) {
     PLOG(ERROR) << "Failed to open boot disk";
     return nullptr;
   }
-  base::File pflash(pflash_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!pflash.IsValid()) {
-    PLOG(ERROR) << "Failed to open pflash";
-    return nullptr;
+
+  absl::optional<base::ScopedFD> pflash_fd;
+  if (pflash_path.empty()) {
+    pflash_fd = absl::nullopt;
+  } else {
+    base::File pflash(pflash_path,
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!pflash.IsValid()) {
+      PLOG(ERROR) << "Failed to open pflash";
+      return nullptr;
+    }
+    pflash_fd = base::ScopedFD(pflash.TakePlatformFile());
   }
+
   BruschettaInstallerImpl::Fds fds{
-      .firmware = base::ScopedFD(firmware.TakePlatformFile()),
       .boot_disk = base::ScopedFD(boot_disk.TakePlatformFile()),
-      .pflash = base::ScopedFD(pflash.TakePlatformFile())};
+      .pflash = std::move(pflash_fd),
+  };
   return std::make_unique<BruschettaInstallerImpl::Fds>(std::move(fds));
 }
 }  // namespace
@@ -466,6 +457,12 @@ void BruschettaInstallerImpl::InstallPflash() {
   VLOG(2) << "Installing pflash file for VM";
   NotifyObserver(State::kInstallPflash);
 
+  if (!fds_->pflash.has_value()) {
+    VLOG(2) << "No pflash file expected, skipping to StartVm";
+    StartVm();
+    return;
+  }
+
   auto* client = ash::ConciergeClient::Get();
   DCHECK(client) << "This code requires a ConciergeClient";
 
@@ -478,7 +475,7 @@ void BruschettaInstallerImpl::InstallPflash() {
   request.set_vm_name(vm_name_);
 
   client->InstallPflash(
-      std::move(fds_->pflash), request,
+      std::move(*fds_->pflash), request,
       base::BindOnce(&BruschettaInstallerImpl::OnInstallPflash,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -533,6 +530,7 @@ void BruschettaInstallerImpl::StartVm() {
   request.set_owner_id(std::move(user_hash));
   request.set_vm_username(vm_username);
   request.mutable_vm()->set_tools_dlc_id(kToolsDlc);
+  request.mutable_vm()->set_bios_dlc_id(kUefiDlc);
   request.set_start_termina(false);
   request.set_vtpm_proxy(launch_policy.vtpm_enabled);
 
@@ -547,18 +545,14 @@ void BruschettaInstallerImpl::StartVm() {
 
   request.set_timeout(240);
 
-  // fds and request.fds must have the same order.
-  std::vector<base::ScopedFD> fds;
-  request.add_fds(vm_tools::concierge::StartVmRequest::BIOS);
-  fds.push_back(std::move(fds_->firmware));
   request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
-  fds.push_back(std::move(fds_->boot_disk));
-  fds_.reset();
 
-  client->StartVmWithFds(
-      std::move(fds), request,
+  client->StartVmWithFd(
+      std::move(fds_->boot_disk), request,
       base::BindOnce(&BruschettaInstallerImpl::OnStartVm,
                      weak_ptr_factory_.GetWeakPtr(), launch_policy));
+
+  fds_.reset();
 }
 
 void BruschettaInstallerImpl::OnStartVm(
@@ -622,7 +616,7 @@ void BruschettaInstallerImpl::Error(BruschettaInstallResult error) {
   }
 }
 
-const base::GUID& BruschettaInstallerImpl::GetDownloadGuid() const {
+const base::Uuid& BruschettaInstallerImpl::GetDownloadGuid() const {
   return download_guid_;
 }
 

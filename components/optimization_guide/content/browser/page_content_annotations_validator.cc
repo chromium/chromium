@@ -67,7 +67,6 @@ PageContentAnnotationsValidator::PageContentAnnotationsValidator(
     : annotator_(annotator) {
   DCHECK(annotator);
   for (AnnotationType type : {
-           AnnotationType::kPageTopics,
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
        }) {
@@ -94,7 +93,6 @@ PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
 
   bool enabled_for_any_type = false;
   for (AnnotationType type : {
-           AnnotationType::kPageTopics,
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
        }) {

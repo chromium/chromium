@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS kann nicht aufgelöst werden</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1022433422498218992">Allgemeine Einstellungen</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
@@ -29,6 +30,7 @@
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="1207734034680156868">Vorschläge basieren auf deiner Beschreibung</translation>
+<translation id="121090498480012229">Medien wiedergeben oder pausieren</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
 <translation id="1264369926465113395">Wirf einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
@@ -63,6 +65,7 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1491076385728777984">Die Firmware auf „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
+<translation id="1499041187027566160">Lautstärke erhöhen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -91,6 +94,7 @@
 <translation id="1676557873873341166">Video wird aufgezeichnet</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
+<translation id="1708602061922134366">Google-Blau</translation>
 <translation id="1710499924611012470">Bedienungshilfen-Navigation</translation>
 <translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfe die Netzwerk- oder USB-Verbindung und versuche es noch einmal.</translation>
 <translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
@@ -105,12 +109,14 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Authentifizierungstyp</translation>
+<translation id="1776228893584526149">Farbton für Hintergrund</translation>
 <translation id="1782199038061388045">Übersetzung</translation>
 <translation id="1790209694022261219">Fenster und Desktops</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
+<translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
 <translation id="1852934301711881861">Chrome OS Flex installieren</translation>
 <translation id="1856388568474281774">Abwärtspfeil</translation>
@@ -119,10 +125,12 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Dunklen Modus ausschalten</translation>
 <translation id="1881188606372070653">Auf der Seite <ph name="BEGIN_LINK1" />Rechtliche Hinweise<ph name="END_LINK1" /> kannst du Inhaltsänderungen aus rechtlichen Gründen beantragen. Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Informationen, um unter Einhaltung der <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und der <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> von Google technische Probleme zu beheben und unsere Dienste zu optimieren.</translation>
+<translation id="1885577615937958993">Medien vorspulen</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1904932688895783618">Hier findest du hilfreiches Infomaterial:</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
+<translation id="1908394185991500139">Pfeil nach links</translation>
 <translation id="1923388006036088459">Akzentfarben</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -141,7 +149,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
-<translation id="209751264101900360">Von Sonnenauf- bis -untergang – Cloud Flow</translation>
 <translation id="2102231663024125441">Textbearbeitung</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +156,7 @@
 <translation id="2138109643290557664">Einfach treiben lassen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
+<translation id="2157660087437850958">Emoji-Auswahl</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
@@ -192,8 +200,10 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2498950423397131220">Unverankert</translation>
 <translation id="2505327257735685095">Aktuelles Hintergrundbild aktualisieren</translation>
+<translation id="2512979179176933762">Fenster anzeigen</translation>
 <translation id="2513396635448525189">Anmeldebild</translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="2521835766824839541">Vorheriger Titel</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Wird neu gestartet…</translation>
 <translation id="2533048460510040082">Vorgeschlagene Hilfeartikel</translation>
@@ -206,6 +216,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> ausgewählt</translation>
+<translation id="267442004702508783">Aktualisieren</translation>
 <translation id="2712812801627182647">TLS-Authentifizierungsschlüssel</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
@@ -225,6 +236,7 @@
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
+<translation id="2981143481017883351">Exklusive Chromebook-Assets jetzt verfügbar</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
@@ -261,12 +273,16 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Schlüsselrichtung</translation>
 <translation id="3294437725009624529">Gast</translation>
+<translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3340978935015468852">Einstellungen</translation>
+<translation id="3359218928534347896">Mikrofonstummschalten ein- oder ausschalten</translation>
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3386675685417744672">Exklusiv auf Chromebook</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -281,6 +297,7 @@
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
+<translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
@@ -324,6 +341,7 @@
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3885327323343477505">Bildschirmschoner ändern</translation>
 <translation id="391412459402535266">Gerät kann nicht getestet werden. Wechsle zum Testen in den Laptop-Modus.</translation>
+<translation id="3916998944874125962">Screenshot aufnehmen</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
@@ -333,7 +351,6 @@
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3969602104473960991">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
-<translation id="3974175076798940554">Exklusive Chromebook Plus-Assets sind jetzt verfügbar</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="3993704782688964914">„<ph name="DEVICE_NAME" />“ ist jetzt auf dem neuesten Stand</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
@@ -344,6 +361,7 @@
 <translation id="404928562651467259">Warnung</translation>
 <translation id="4054683689023980771">Bild wird heruntergeladen</translation>
 <translation id="4060260348856573701">Neuer APN</translation>
+<translation id="4079743696465895866">Exklusives Chromebook-Video auswählen</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -359,6 +377,7 @@
 <translation id="4159784952369912983">Violett</translation>
 <translation id="4170180284036919717">Foto aufnehmen</translation>
 <translation id="4170700058716978431">FEHLGESCHLAGEN</translation>
+<translation id="4171077696775491955">Helligkeit verringern</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4176659219503619100">Steuerfeld</translation>
 <translation id="420283545744377356">Bildschirmschoner deaktivieren</translation>
@@ -373,7 +392,6 @@
 <translation id="4275663329226226506">Medien</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4289849978083912975">Diashow</translation>
-<translation id="4293621540182258188">Von Sonnenauf- bis -untergang – Earth Flow</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4311195029067684288">Vollständig</translation>
@@ -386,6 +404,7 @@
 <translation id="4394049700291259645">Deaktivieren</translation>
 <translation id="439429847087949098">„<ph name="DEVICE_NAME" />“ wird neu gestartet</translation>
 <translation id="4415951057168511744">Aktueller Avatar</translation>
+<translation id="4422041425070339732">Abwärtspfeil</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ist deaktiviert</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
@@ -396,6 +415,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
+<translation id="4507392511610824664">Helligkeit erhöhen</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
 <translation id="4522570452068850558">Details</translation>
@@ -459,9 +479,9 @@
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4930320165497208503">Gehe zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Hälfte</translation>
 <translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
 <translation id="4971925105143343452">Teilweise</translation>
+<translation id="4972592110715526173">Modusänderung</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4985509611418653372">Ausführen</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -474,6 +494,7 @@
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
 <translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5087864757604726239">zurück</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -483,6 +504,7 @@
 <translation id="5166918508782100047">Einstellungen für die Funktion „Schnellinfo“</translation>
 <translation id="5168185087976003268">Akkuzustand</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
+<translation id="5180712487038406644">Ausdrucksstark</translation>
 <translation id="5190187232518914472">Die schönsten Erinnerungen immer vor Augen. Wenn du Alben hinzufügst oder bearbeiten möchtest, gehe zu <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Abmelden</translation>
@@ -517,6 +539,7 @@
 <translation id="5423849171846380976">Aktiviert</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
+<translation id="5456936324019847994">Es kann keine Verbindung zu aktivierten benutzerdefinierten APNs hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Noch {0} Versuch}other{Noch {0} Versuche}}</translation>
@@ -537,18 +560,20 @@
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5655283760733841251">Tastaturhelligkeit erhöhen</translation>
 <translation id="5659593005791499971">E-Mail</translation>
+<translation id="5662240986744577912">Datenschutzbildschirm aktivieren oder deaktivieren</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5695599963893094957">Drücke eine beliebige Taste auf der Tastatur. Du kannst maximal 4 Tasten gleichzeitig drücken.</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
+<translation id="5703716265115423771">Lautstärke verringern</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
+<translation id="5757187557809630523">nächster Titel</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
 <translation id="576835345334454681">Displayhelligkeit erhöhen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Informationen zum Bild</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
@@ -567,11 +592,11 @@
 <translation id="5907649332524363701">Tastenfarbe</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
-<translation id="5918201491776799918">Exklusive Chromebook Plus-Grafik auswählen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
+<translation id="5946538341867151940">Du bist noch nicht verbunden. Wenn dein Mobilfunkanbieter einen benutzerdefinierten APN empfiehlt, wähle die Option „Neuer APN“ aus, um die APN-Informationen einzugeben.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardhintergrund</translation>
 <translation id="6017514345406065928">Grün</translation>
@@ -584,6 +609,7 @@
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6058625436358447366">Gib zum Schluss dein altes und dein neues Passwort ein</translation>
 <translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
+<translation id="6073292342939316679">Tastaturhelligkeit verringern</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
@@ -601,6 +627,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Status „Vollbild“ beenden</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
@@ -611,6 +638,7 @@
 <translation id="6278428485366576908">Design</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Dunkles Design einschalten</translation>
+<translation id="6285899124799306373">Launcher öffnen</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="631063167932043783">Entdecken</translation>
 <translation id="6319207335391420837">Firmware von <ph name="DEVICE_NAME" /> aktualisieren</translation>
@@ -626,9 +654,11 @@
 <translation id="6382182670717268353">Bildschirmschoner – Vorschau</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
 <translation id="6394634179843537518">Datei hinzufügen</translation>
+<translation id="6401427872449207797">Browsersuche</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6412715219990689313">Eingebaute Tastatur</translation>
+<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
@@ -640,12 +670,14 @@
 <translation id="6494974875566443634">Anpassung</translation>
 <translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
 <translation id="650266656685499220">Gehe zu Google Fotos, um Alben zu erstellen</translation>
+<translation id="6505750420152840539">Sonnenaufgang bis Sonnenuntergang</translation>
 <translation id="6516990319416533844">Wenn du die Aufladegeschwindigkeit deines Akkus testen möchtest, warte zuerst, bis er ein wenig entladen ist</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6526200165918397681">An Hintergrund anpassen</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
 <translation id="6535178685492749208">Du bist offline. Dein Feedback wird später gesendet.</translation>
 <translation id="65587193855025101">Flachbett</translation>
+<translation id="6560196641871357166">Kräftig</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
 <translation id="6566314079205407217">Mehrseitiger Scan</translation>
 <translation id="6574762126505704998">Ausfüllen</translation>
@@ -661,6 +693,7 @@
 <translation id="6650062777702288430">Kana/alphanumerische Zeichen</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6673898378497337661">Tastaturhelligkeit erhöhen</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6723839937902243910">Leistung</translation>
@@ -686,6 +719,7 @@
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6943893908656559156">Remote-Identität (optional)</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
+<translation id="695776212669661671">Pfeil nach rechts</translation>
 <translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6965978654500191972">Gerät</translation>
@@ -727,7 +761,9 @@
 <translation id="7281657306185710294">Sanfte Brise</translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
+<translation id="7297726121602187087">Dunkelgrün</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305236594389852547">Diktierfunktion ein- oder ausschalten</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Experten im Chromebook-Hilfeforum fragen</translation>
 <translation id="7311368985037279727">Tastaturfarbe</translation>
@@ -749,6 +785,7 @@
 <translation id="7490813197707563893">MAC-Adresse</translation>
 <translation id="7491478667760509108">Status „Unverankert“ beenden</translation>
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
+<translation id="7501957181231305652">oder</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hilfeinhalte nicht verfügbar</translation>
@@ -761,13 +798,14 @@
 <translation id="7570674786725311828">USB-Touchscreen</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Mit Maus oder Pfeiltasten neu positionieren.</translation>
+<translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="763165478673169849">Zuletzt zurückgesetzt</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
+<translation id="765159867434478292">Unterteilen</translation>
 <translation id="7656388927906093505">Das Gerät ist eine Maus.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7665800271478495366">Avatar ändern</translation>
-<translation id="7675241868020048622">Aurora (Plus exklusiv)</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -798,6 +836,7 @@
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943235353293548836">Persistentes Keepalive-Intervall</translation>
+<translation id="7944562637040950644">Tastaturbeleuchtung ein- oder ausschalten</translation>
 <translation id="7953669802889559161">Eingaben</translation>
 <translation id="7955587717700691983">Bluetooth-Tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -824,7 +863,6 @@
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8151185429379586178">Entwickler-Tools</translation>
-<translation id="8153923300383192510">Exklusiv auf Chromebook Plus</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183974620058026102">Anhängen</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -840,7 +878,10 @@
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297006494302853456">Schwach</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
+<translation id="8312330582793120272">Medien abspielen</translation>
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>
+<translation id="8329018942023753850">Rechner App</translation>
+<translation id="8335869473001018124">Suche öffnen</translation>
 <translation id="8336739000755212683">Bild des Gerätekontos ändern</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8351855506390808906">Tastenbelegung des Touchpoints</translation>
@@ -872,7 +913,10 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
+<translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
+<translation id="86356131183441916">Hellviolett</translation>
+<translation id="8651481478098336970">Stummschalten</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL teilen:</translation>
 <translation id="8660881923941176839">Pfund</translation>
@@ -907,7 +951,9 @@
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
 <translation id="8898840733695078011">Signalstärke</translation>
+<translation id="8909114361904403025">Aufwärtspfeil</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
+<translation id="8912306040879976619">Tastaturbereiche</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8923267550422472772">Tag des Monats zum Zurücksetzen</translation>
@@ -924,6 +970,7 @@
 <translation id="8997710128084572139">Der Akkustand des Geräts liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
 <translation id="9003704114456258138">Frequenz</translation>
+<translation id="9024331582947483881">Vollbild</translation>
 <translation id="9025198690966128418">Als persönliches Gerät nutzen</translation>
 <translation id="902638246363752736">Tastatureinstellungen</translation>
 <translation id="9028832514430399253">Aktiviere die Ein-/Aus-Schaltfläche, um die Bildschirmschoner-Optionen auszuwählen</translation>
@@ -957,6 +1004,7 @@
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
 <translation id="960719561871045870">Betreibercode</translation>
+<translation id="979450713603643090">Hellrosa</translation>
 <translation id="982713511914535780">Entladetest ausführen</translation>
 <translation id="987264212798334818">Allgemein</translation>
 </translationbundle>

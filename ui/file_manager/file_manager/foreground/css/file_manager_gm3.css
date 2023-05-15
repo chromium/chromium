@@ -39,7 +39,6 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
-  font-size: 13px;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -168,7 +167,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 #directory-tree .tree-row > .file-row > .label {
   display: block;
   flex: auto;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
   margin-inline-start: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -176,7 +175,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 
 #directory-tree .tree-row .rename-placeholder {
   flex: auto;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
 }
 
 #directory-tree .tree-row .rename-placeholder > input {
@@ -255,20 +254,24 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 }
 
 #directory-tree .tree-row > .file-row > .align-right-icon {
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
-  border-radius: 16px;
-  border-style: none;
+  --ripple-opacity: 100%;
+  border: none;
+  border-radius: 20px;
   box-sizing: border-box;
   flex: none;
-  height: 32px;
-  left: 1px;
+  height: 40px;
   position: relative;
-  right: 1px;
-  width: 32px;
+  right: -12px; /* Same as padding inline end of side nav. */
+  width: 40px;
   z-index: 1;
 }
 
+html[dir='rtl'] #directory-tree .tree-row > .file-row > .align-right-icon {
+  left: -12px; /* Same as padding inline end of side nav. */
+}
 
 #directory-tree .tree-row > .file-row > .external-link-icon iron-icon {
   padding: 6px;
@@ -290,16 +293,13 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:focus {
-  border: 1px solid var(--cros-sys-focus_ring);
+  outline: 2px solid var(--cros-sys-focus_ring);
+  outline-offset: 2px;
 }
 
 #directory-tree .tree-row[active] > .file-row > .root-eject:focus {
-  border: 1px solid var(--cros-sys-inverse_primary);
-}
-
-#directory-tree .tree-row > .file-row > .root-eject:active {
-  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
-  border-width: 0;
+  outline: 2px solid var(--cros-sys-inverse_primary);
+  outline-offset: 2px;
 }
 
 #directory-tree .tree-row[active] > .file-row > .root-eject:active {
@@ -342,20 +342,19 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
 .dialog-header {
   align-items: center;
   background: none;
-  border-bottom: 1px solid var(--cros-separator-color);
+  border-bottom: 1px solid transparent;
   box-sizing: border-box;
   color: var(--cros-text-color-secondary);
   display: flex;
   flex: none;
   flex-direction: row;
-  font-size: 14px;
   height: 57px;
   overflow: hidden;
   transition: background 220ms ease;
 }
 
 body.check-select .dialog-header {
-  border-bottom: 1px solid var(--cros-separator-color);
+  border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
   color: var(--cros-sys-on_primary_container);
 }
@@ -457,6 +456,7 @@ body.check-select .dialog-header
 
 .dialog-header #tasks {
   color: var(--cros-sys-primary);
+  font: var(--cros-button-2-font);
   margin: 0 8px;
   padding-bottom: 0;
   padding-inline: 16px;
@@ -579,7 +579,7 @@ body:not(.check-select) #selection-menu-button {
 
 #files-selected-label {
   display: none;
-  font-weight: 500;
+  font: var(--cros-button-1-font);
 }
 
 body.files-ng #files-selected-label {
@@ -648,23 +648,19 @@ body.check-select #cancel-selection-button-wrapper {
 
 /* Search button */
 body.check-select-v1 #search-button {
-  display: none;
+  visibility: hidden;
 }
 
 /* Search box */
 #search-box {
   display: flex;
   flex: none;
-  font-size: 14px;
+  font: var(--cros-body-2-font);
 }
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
   caret-color: var(--cros-sys-primary);
   margin-inline-end: 16px;
-}
-
-body.check-select-v1 #search-box {
-  display: none;
 }
 
 .dialog-header.files-ng #search-box.has-cursor,
@@ -728,6 +724,7 @@ html[dir='rtl'] #search-box .clear {
 
 .dialog-header.files-ng #pinned-toggle-label {
   color: var(--cros-sys-on_surface);
+  font: var(--cros-button-2-font);
 }
 
 .dialog-header.files-ng cr-toggle {
@@ -777,8 +774,8 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 /* Container for the ok/cancel buttons. */
 .dialog-footer {
   align-items: center;
-  background-color: var(--cros-bg-color);
-  border-top: 1px solid var(--cros-separator-color);
+  background-color: var(--cros-sys-app_base);
+  border-top: 1px solid var(--cros-sys-separator);
   display: flex;
   flex: none;
   flex-direction: row;
@@ -794,118 +791,40 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer cr-input {
-  --cr-input-background-color: var(--cros-textfield-background-color);
-  --cr-input-border-radius: 0;
-  --cr-input-color: var(--cros-textfield-input-color);
-  --cr-input-error-color: var(--cros-textfield-label-color-error);
+  --cr-input-background-color: var(--cros-sys-input_field_on_base);
+  --cr-input-border-radius: 8px;
+  --cr-input-color: var(--cros-sys-on_surface);
+  --cr-input-error-color: var(--cros-sys-error);
   --cr-input-error-display: none;
-  --cr-input-focus-color: var(--cros-textfield-label-color-focus);
-  --cr-input-min-height: 32px;
+  --cr-input-focus-color: var(--cros-sys-primary);
+  --cr-input-min-height: 36px;
+  --cr-input-padding-end: 16px;
+  --cr-input-padding-start: 16px;
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
+  font: var(--cros-body-2-font);
   width: 100%;
+}
+
+.dialog-footer cr-input::part(input)::selection {
+  background-color: var(--cros-sys-highlight_text);
 }
 
 .dialog-footer .buttonbar {
   display: flex;
-  height: 32px;
-}
-
-/* Copy style from paper-button for buttons on the footer. */
-.dialog-footer button {
-  border: 0;
-  border-image: none;
-  border-radius: 4px;
-  box-sizing: border-box;
-  cursor: pointer;
-  margin: 0;
-  outline: none;
-  padding: 1px 16px;
-  position: relative;
-  text-align: center;
-  user-select: none;
-  z-index: 0;
-}
-
-.dialog-footer button[disabled] {
-  cursor: auto;
-  pointer-events: none;
-}
-
-.dialog-footer button {
-  font-weight: 500;
-}
-
-.dialog-footer button:hover {
-  border-image: none;  /* Overrides the definition of common.css. */
-}
-
-.dialog-footer cr-button,
-.dialog-footer button {
-  height: 32px;
-  margin: 0 4px;
-  min-width: 92px;
-}
-
-.dialog-footer cr-button[disabled],
-.dialog-footer cr-button[disabled]:hover,
-.dialog-footer button[disabled],
-.dialog-footer button[disabled]:hover {
-  background-color:
-      var(--cros-button-background-color-primary-disabled);
-  color: var(--cros-button-label-color-primary-disabled);
-}
-
-.dialog-footer .primary {
-  background-color: var(--cros-button-background-color-primary);
-  color: var(--cros-button-label-color-primary);
-}
-
-.dialog-footer .primary:hover {
-   background: var(--cros-button-background-color-primary-hover-preblended);
-}
-
-.dialog-footer .primary paper-ripple {
-  --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
-  color: var(--cros-button-ripple-color-primary);
-}
-
-.dialog-footer .primary:active {
-  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
-              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
-}
-
-.dialog-footer .secondary {
-  background: transparent;
-  border: 1px solid var(--cros-button-stroke-color-secondary);
-  color: var(--cros-button-label-color-secondary);
-  margin-inline-end: 8px;
-}
-
-.dialog-footer .secondary:hover {
-  background: var(--cros-button-background-color-secondary-hover);
-  border: 1px solid var(--cros-button-stroke-color-secondary-hover);
-}
-
-.dialog-footer .secondary paper-ripple {
-  --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
-  color: var(--cros-button-ripple-color-secondary);
-}
-
-.dialog-footer .secondary:active {
-  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
-              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+  height: 36px;
 }
 
 .dialog-footer .select {
-  background-color: var(--cros-textfield-background-color);
+  background-color: var(--cros-sys-input_field_on_base);
   border: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   margin-inline-start: 16px;
   max-width: 152px;
-  min-height: 32px;
+  min-height: 36px;
   min-width: 104px;
   outline: none;
-  padding: 0 36px 0 16px;
+  padding: 0 48px 0 16px;
   position: relative;
 }
 
@@ -913,22 +832,21 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   -webkit-mask-image: url(../images/files/ui/sort_desc.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-primary);
+  background-color: var(--cros-sys-secondary);
   content: '';
-  height: 32px;
+  height: 36px;
   position: absolute;
   right: 0;
-  width: 32px;
+  width: 36px;
 }
 
 .dialog-footer div.select:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 .dialog-footer div.select > span {
-  color: var(--cros-text-color-primary);
   display: inline-block;
-  line-height: 32px;
+  line-height: 36px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -937,8 +855,8 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer div.select > div.options {
-  background-color: var(--cros-bg-color-elevation-2);
-  border-radius: 4px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: 8px;
   bottom: calc(100% + 2px);
   box-shadow: var(--cros-elevation-2-shadow);
   left: 0;
@@ -954,27 +872,46 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer div.select > div.options option {
-  color: var(--cros-menu-label-color);
-  line-height: 32px;
-  min-height: 32px;
-  padding: 0 12px 0 16px;
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-button-2-font);
+  line-height: 36px;
+  min-height: 36px;
+  padding: 0 16px;
   vertical-align: middle;
 }
 
 .dialog-footer div.select > div.options option:hover,
 .dialog-footer div.select > div.options:not(:hover) option.selected {
-  background-color: var(--cros-menu-item-background-hover);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .dialog-footer select:hover {
   border-image: none;
 }
 
-html.focus-outline-visible .dialog-footer .primary:focus,
-html.focus-outline-visible .dialog-footer .secondary:focus,
 html.focus-outline-visible .dialog-footer select:focus {
-  outline: 2px solid var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
   outline-offset: 2px;
+}
+
+/** Reset the hover color when using keyboard to navigate the dropdown items. */
+html.focus-outline-visible .dialog-footer div.select > div.options option:hover,
+html.focus-outline-visible
+    .dialog-footer div.select > div.options:not(:hover) option.selected {
+  background-color: unset;
+}
+
+html.focus-outline-visible
+    .dialog-footer div.select > div.options option:hover::after,
+html.focus-outline-visible
+    .dialog-footer div.select > div.options:not(:hover) option.selected::after {
+  border: 2px solid var(--cros-sys-focus_ring);
+  border-radius: 4px;
+  content: '';
+  height: 32px; /* option height - 2 x border width */
+  left: 0;
+  position: absolute;
+  width: calc(100% - 4px); /* 2 x border width */
 }
 
 .progressable:not([progress]) .progress-bar,
@@ -1005,7 +942,6 @@ html.focus-outline-visible .dialog-footer select:focus {
   flex-direction: row;
   overflow: hidden;
   padding-bottom: 4px;
-  padding-inline-start: 8px;
   padding-top: 4px;
 }
 
@@ -1039,8 +975,7 @@ body.check-select #read-only-indicator {
 
 #read-only-label {
   flex: none;
-  font-size: 13px;
-  font-weight: 500;
+  font: var(--cros-button-1-font);
 }
 
 .filelist-panel {
@@ -1089,6 +1024,18 @@ body.check-select #read-only-indicator {
   margin-top: 16px;
   text-align: center;
   width: 320px;
+  /* Ensure links in label are on top when not hidden so a click is not
+  absorbed by an empty file-list. */
+  z-index: 999;
+}
+
+#empty-folder #empty-folder-title {
+  font: var(--cros-button-2-font);
+}
+
+#empty-folder > .label > span#empty-folder-desc > a {
+  color: var(--cros-text-color-prominent);
+  font: var(--cros-body-1-font);
 }
 
 #detail-table {
@@ -1174,15 +1121,17 @@ body.files-ng .banner-close {
      fully visible. */
   box-sizing: border-box;
   overflow-y: auto;
+  padding-inline: calc(20px - 16px); /* 16px is the padding of the thumbnail. */
   width: 100%;
 }
 
 body.files-ng grid .grid-title {
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
-  font-family: 'Roboto Medium';
+  font: var(--cros-button-2-font);
+  padding-bottom: 6px;
   padding-inline-start: 16px;
-  padding-top: 20px;
+  padding-top: 14px;
   /* Make sure clicking this area can unselect file grids. */
   pointer-events: none;
   width: 100%;
@@ -1232,7 +1181,7 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
@@ -1296,7 +1245,7 @@ body[type='full-page'] .detail-name .detail-icon:active {
 
 .thumbnail-bottom .filename-label {
   flex: auto;
-  font-weight: normal;
+  font: var(--cros-body-2-font);
   padding-inline-end: 8px;
 }
 
@@ -1340,6 +1289,7 @@ grid .thumbnail-bottom .detail-icon:active {
 }
 
 .thumbnail-grid .thumbnail-frame {
+  background-color: var(--cros-sys-app_base_shaded);
   height: 100%;
   width: 100%;
 }
@@ -1361,6 +1311,7 @@ grid .thumbnail-bottom .detail-icon:active {
 }
 
 .thumbnail-grid .thumbnail-bottom {
+  background-color: var(--cros-sys-app_base);
   color: var(--cros-sys-on_surface);
   height: 48px;
 }
@@ -1370,7 +1321,9 @@ grid .thumbnail-bottom .detail-icon:active {
 .thumbnail-grid .thumbnail-item[selected].directory
     .thumbnail-bottom,
 .thumbnail-grid .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-sys-surface_variant);
 }
 
@@ -1379,8 +1332,18 @@ grid .thumbnail-bottom .detail-icon:active {
 .thumbnail-grid:focus .thumbnail-item[selected].directory
     .thumbnail-bottom,
 .thumbnail-grid:focus .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-sys-secondary_container);
+}
+
+.thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[selected].directory
+    .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[lead].directory
+    .thumbnail-bottom {
   color: var(--cros-sys-on_secondary_container);
 }
 
@@ -1478,13 +1441,20 @@ html[dir='rtl'] #default-tasks-list > li > .icon {
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
-body.files-ng #list-container list > li[lead] {
+body.files-ng #list-container list > li[lead],
+body.files-ng #list-container list > li[selected] .icon-badge,
+body.files-ng #list-container list > li:active .icon-badge,
+body.files-ng #list-container list > li.accepts .icon-badge,
+body.files-ng #list-container list > li[lead] .icon-badge {
   background-color: var(--cros-sys-surface_variant);
 }
 
 body.files-ng #list-container list:focus > li[selected],
 body.files-ng #list-container list:focus > li.accepts[selected],
-body.files-ng #list-container list:focus > li[lead] {
+body.files-ng #list-container list:focus > li[lead],
+body.files-ng #list-container list:focus > li[selected] .icon-badge,
+body.files-ng #list-container list:focus > li.accepts[selected] .icon-badge,
+body.files-ng #list-container list:focus > li[lead] .icon-badge {
   background-color: var(--cros-sys-secondary_container);
 }
 
@@ -1523,7 +1493,7 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
   border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
   color: var(--cros-text-color-secondary);
-  font-family: 'Roboto Medium';
+  font: var(--cros-button-2-font);
   /* The desired height plus the border width. */
   height: calc(56px + 1px);
   padding-inline-start: 16px;
@@ -1608,7 +1578,7 @@ input.rename::selection,
 }
 
 input.rename {
-  font: inherit;
+  font: var(--cros-body-2-font);
   line-height: 1;
   text-align: inherit;
 }
@@ -1673,7 +1643,6 @@ li[renaming=''] .filename-label {
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
   flex: none;
-  font-family: 'Roboto Medium';
   /* The desired height plus the border bottom. */
   height: calc(48px + 1px);
   line-height: 20px;
@@ -1682,8 +1651,7 @@ li[renaming=''] .filename-label {
 /* Text label in a table header. */
 .table-header-label {
   color: inherit;
-  font-weight: normal;
-  line-height: 20px;
+  font: var(--cros-button-2-font);
   margin: 0 10px;
   margin-inline-end: 0;
   margin-inline-start: 32px;
@@ -1733,7 +1701,7 @@ li[renaming=''] .filename-label {
 #list-container list li .detail-icon {
   height: 48px;
   margin-inline-end: 20px;
-  margin-inline-start: 20px;
+  margin-inline-start: calc(18px - 2px); /* 2px is the border width of li. */
   width: 24px;
 }
 
@@ -1998,8 +1966,8 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
 #list-container li.table-row {
   background-color: var(--cros-sys-app_base);
   box-sizing: border-box;
+  font: var(--cros-body-2-font);
   height: 48px;
-  line-height: 20px;
 }
 
 .check-select #list-container list li[selected] .detail-thumbnail
@@ -2108,7 +2076,7 @@ html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
 }
 
 .check-select li[selected] .filename-label {
-  font-weight: 500;
+  font: var(--cros-button-2-font);
 }
 
 body.files-ng #list-container li .detail-checkmark {
@@ -2138,6 +2106,8 @@ body.files-ng #list-container li .detail-checkmark {
   color: var(--cros-sys-on_surface);
 }
 
+#list-container .list .encryption-status,
+#list-container .list .encryption-status xf-icon,
 #list-container .list .inline-status,
 #list-container .list .inline-status .progress,
 #list-container .list .inline-status xf-icon {
@@ -2151,15 +2121,26 @@ body.files-ng #list-container li .detail-checkmark {
   justify-content: center;
 }
 
+#list-container .list li.encrypted:not([renaming]) .encryption-status,
+#list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
 }
 
+#list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned .inline-status xf-icon[type=offline] {
   --xf-icon-color: currentColor;
+}
+
+#list-container .list li.encrypted:not([renaming]) .filename-label {
+  flex-grow: 0;
+}
+
+#list-container .list li.encrypted:not([renaming]) .encryption-status {
+  flex-grow: 1;
 }
 
 #new-folder-button {
@@ -2188,7 +2169,7 @@ body.files-ng #list-container li .detail-checkmark {
 }
 
 .install-linux-package-details-frame {
-  border: 1px solid var(--cros-separator-color);
+  border: 1px solid var(--cros-sys-separator);
   display: block;
   height: 150px;
   overflow: scroll;
@@ -2205,13 +2186,13 @@ body.files-ng #list-container li .detail-checkmark {
 }
 
 .cr-dialog-container.files-ng .install-linux-package-detail-label {
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
   display: inline;
   margin-inline-end: 5px;
 }
 
 .cr-dialog-container.files-ng .install-linux-package-detail-value {
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-secondary);
   display: inline;
   margin-bottom: 5px;
   white-space: pre-wrap;
@@ -2348,9 +2329,14 @@ files-toast {
   --ripple-opacity: 100%;
   --text-color: var(--cros-sys-on_surface);
   border-radius: 8px;
+  font: var(--cros-button-1-font);
   margin-inline: 4px;
   min-width: auto;
   padding-inline: 12px;
+}
+
+.file-type-filter-button:first-child {
+  margin-inline-start: 0;
 }
 
 .file-type-filter-button.active {
@@ -2390,24 +2376,21 @@ files-tooltip:not(:defined) {
 }
 
 #banners > *:not([hidden]) {
-  background-color: var(--cros-bg-color-elevation-1);
+  background-color: var(--cros-sys-app_base_shaded);
   border-radius: 8px;
-  box-shadow: var(--cros-elevation-1-shadow);
   height: auto;
-  margin-bottom: 4px;
   margin-inline-end: 16px;
-  margin-inline-start: 0;
-  margin-top: 16px;
+  margin-inline-start: 16px;
   max-height: 300px;
   min-height: 46px;
   opacity: 1;
-  padding-bottom: 12px;
+  padding-bottom: 13px;
   padding-inline-end: 8px;
   padding-inline-start: 0;
-  padding-top: 12px;
+  padding-top: 13px;
   visibility: visible;
 }
 
 #path-display-container {
-  background-color: var(--cros-sys-app_base_shaded);
+  background-color: var(--cros-sys-app_base);
 }

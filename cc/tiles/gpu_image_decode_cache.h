@@ -14,13 +14,16 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -36,6 +39,8 @@ class RasterContextProvider;
 }
 
 namespace cc {
+
+CC_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
 
 class RasterDarkModeFilter;
 
@@ -155,6 +160,9 @@ class CC_EXPORT GpuImageDecodeCache
   // Returns the GL texture ID backing the given SkImage.
   static GrGLuint GlIdFromSkImage(const SkImage* image);
 
+  static base::TimeDelta get_purge_interval();
+  static base::TimeDelta get_max_purge_age();
+
   // ImageDecodeCache overrides.
 
   // Finds the existing uploaded image for the provided DrawImage. Creates an
@@ -232,6 +240,15 @@ class CC_EXPORT GpuImageDecodeCache
   }
   bool NeedsDarkModeFilterForTesting(const DrawImage& draw_image);
 
+  bool HasPendingPurgeTaskForTesting() const {
+    base::AutoLock locker(lock_);
+    return has_pending_purge_task();
+  }
+
+  // Updating the |last_use| field of the associated |ImageData|.
+  void TouchCacheEntryForTesting(const DrawImage& draw_image)
+      LOCKS_EXCLUDED(lock_);
+
  private:
   enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
   using ImageTaskMap = base::flat_map<ClientId, scoped_refptr<TileTask>>;
@@ -294,6 +311,13 @@ class CC_EXPORT GpuImageDecodeCache
     // Release `data` and all entries in `images` and `pixmaps`.
     void ResetData();
 
+    // Check that images are non-nullptr only where pixmaps are non-empty.
+    void ValidateImagesMatchPixmaps() const {
+      for (int i = 0; i < SkYUVAInfo::kMaxPlanes; ++i) {
+        DCHECK_EQ(images[i] == nullptr, pixmaps[i].dimensions().isEmpty());
+      }
+    }
+
     std::unique_ptr<base::DiscardableMemory> data;
     sk_sp<SkImage> images[SkYUVAInfo::kMaxPlanes];
     SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
@@ -309,22 +333,37 @@ class CC_EXPORT GpuImageDecodeCache
     bool Lock();
     void Unlock();
 
-    void SetLockedData(DecodedAuxImageData aux_image_data, bool out_of_raster);
+    void SetLockedData(DecodedAuxImageData aux_image_data[kAuxImageCount],
+                       bool out_of_raster);
     void ResetData();
-    base::DiscardableMemory* data() const { return aux_image_data_.data.get(); }
+    bool HasData() const {
+      for (const auto& aux_image_data : aux_image_data_) {
+        if (aux_image_data.data) {
+          return true;
+        }
+      }
+      return false;
+    }
+    base::DiscardableMemory* data(AuxImage aux_image) const {
+      return aux_image_data_[AuxImageIndex(aux_image)].data.get();
+    }
 
     void SetBitmapImage(sk_sp<SkImage> image);
     void ResetBitmapImage();
 
-    sk_sp<SkImage> image(int plane = 0) const {
-      DCHECK(is_locked() || is_bitmap_backed_);
+    sk_sp<SkImage> image(int plane, AuxImage aux_image) const {
       DCHECK_LT(plane, SkYUVAInfo::kMaxPlanes);
-      return aux_image_data_.images[plane];
+      if (is_bitmap_backed_) {
+        DCHECK_EQ(aux_image, AuxImage::kDefault);
+      } else {
+        DCHECK(is_locked());
+      }
+      return aux_image_data_[AuxImageIndex(aux_image)].images[plane];
     }
 
-    const SkPixmap* pixmaps() const {
+    const SkPixmap* pixmaps(AuxImage aux_image) const {
       DCHECK(is_locked() || is_bitmap_backed_);
-      return aux_image_data_.pixmaps;
+      return aux_image_data_[AuxImageIndex(aux_image)].pixmaps;
     }
 
     bool can_do_hardware_accelerated_decode() const {
@@ -336,7 +375,9 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // Test-only functions.
-    sk_sp<SkImage> ImageForTesting() const { return aux_image_data_.images[0]; }
+    sk_sp<SkImage> ImageForTesting() const {
+      return aux_image_data_[kAuxImageIndexDefault].images[0];
+    }
 
     bool decode_failure = false;
     // Similar to |task|, but only is generated if there is no associated upload
@@ -358,7 +399,7 @@ class CC_EXPORT GpuImageDecodeCache
     void ReportUsageStats() const;
 
     const bool is_bitmap_backed_;
-    DecodedAuxImageData aux_image_data_;
+    DecodedAuxImageData aux_image_data_[kAuxImageCount];
 
     // Keeps tracks of images that could go through hardware decode acceleration
     // though they're possibly prevented from doing so because of a disabled
@@ -555,17 +596,27 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
-              const ImageInfo& info);
+              ImageInfo image_info[kAuxImageCount]);
 
     bool IsGpuOrTransferCache() const;
     bool HasUploadedData() const;
     void ValidateBudgeted() const;
 
+    const ImageInfo& GetImageInfo(AuxImage aux_image) const {
+      switch (aux_image) {
+        case AuxImage::kDefault:
+          return info;
+        case AuxImage::kGainmap:
+          return gainmap_info;
+      }
+    }
+
     // Return the memory that is used by this image when decoded. This should
     // also equal the memory that is used on the GPU when this is uploaded.
     // In some circumstances the GPU memory usage is slightly different (e.g,
-    // when a gainmap or HDR tonemapping is applied).
-    size_t GetSize() const;
+    // when a gainmap or HDR tonemapping is applied). This includes the memory
+    // used by all auxiliary images.
+    size_t GetTotalSize() const;
 
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
@@ -580,6 +631,10 @@ class CC_EXPORT GpuImageDecodeCache
     // The RGBA or YUVA image info for the decoded image. The dimensions may be
     // smaller than the original size if the image needs to be downscaled.
     const ImageInfo info;
+
+    // The RGBA or YUVA image info for the decoded gainmap image. This will
+    // return false from IsEmpty if and only if the image has a gainmap.
+    const ImageInfo gainmap_info;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.
@@ -830,6 +885,10 @@ class CC_EXPORT GpuImageDecodeCache
   // Purges any old entries from the PersistentCache if the feature to enable
   // this behavior is turned on.
   void MaybePurgeOldCacheEntries() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PostPurgeOldCacheEntriesTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DoPurgeOldCacheEntries(base::TimeDelta max_age)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PurgeOldCacheEntriesCallback() LOCKS_EXCLUDED(lock_);
 
   // Adds mips to an image if required.
   void UpdateMipsIfNeeded(const DrawImage& draw_image, ImageData* image_data)
@@ -838,6 +897,10 @@ class CC_EXPORT GpuImageDecodeCache
   static scoped_refptr<TileTask> GetTaskFromMapForClientId(
       const ClientId client_id,
       const ImageTaskMap& task_map);
+
+  bool has_pending_purge_task() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    return has_pending_purge_task_;
+  }
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;
@@ -849,10 +912,14 @@ class CC_EXPORT GpuImageDecodeCache
   SkYUVAPixmapInfo::SupportedDataTypes yuva_supported_data_types_;
   const bool enable_clipped_image_scaling_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+
   // All members below this point must only be accessed while holding |lock_|.
   // The exception are const members like |normal_max_cache_bytes_| that can
   // be accessed without a lock since they are thread safe.
   mutable base::Lock lock_;
+
+  bool has_pending_purge_task_ GUARDED_BY(lock_) = false;
 
   PersistentCache persistent_cache_ GUARDED_BY(lock_);
 
@@ -905,6 +972,7 @@ class CC_EXPORT GpuImageDecodeCache
   std::vector<uint32_t> ids_pending_deletion_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::WeakPtrFactory<GpuImageDecodeCache> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

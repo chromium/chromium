@@ -111,8 +111,8 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 
   // See structure of `accounts` at the top of the file.
   for (const auto dict : accounts) {
-    absl::optional<bool> is_available =
-        dict.second.FindBoolKey(account_manager::prefs::kIsAvailableInArcKey);
+    absl::optional<bool> is_available = dict.second.GetDict().FindBool(
+        account_manager::prefs::kIsAvailableInArcKey);
     if (!is_available.has_value() || !is_available.value())
       continue;
 
@@ -202,8 +202,8 @@ AccountAppsAvailability::AccountAppsAvailability(
   DCHECK(identity_manager_);
   DCHECK(prefs_);
 
-  account_manager_facade_observation_.Observe(account_manager_facade_);
-  identity_manager_observation_.Observe(identity_manager_);
+  account_manager_facade_observation_.Observe(account_manager_facade_.get());
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   if (IsPrefInitialized(prefs_)) {
     is_initialized_ = true;

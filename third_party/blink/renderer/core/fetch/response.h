@@ -32,10 +32,6 @@ class CORE_EXPORT Response final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Checks whether `status` is a null body status.
-  // Spec: https://fetch.spec.whatwg.org/#null-body-status
-  static bool IsNullBodyStatus(uint16_t status);
-
   // These "create" function which takes a ScriptState* must be called with
   // entering an appropriate V8 context.
   // From Response.idl:

@@ -1,0 +1,114 @@
+This is a testharness.js-based test.
+Found 110 tests; 78 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Property display value 'grid'
+PASS Property display value 'inline-grid'
+PASS Property display value 'inline'
+PASS Property display value 'block'
+PASS Property display value 'list-item'
+PASS Property display value 'inline-block'
+PASS Property display value 'table'
+PASS Property display value 'inline-table'
+PASS Property display value 'table-row-group'
+PASS Property display value 'table-header-group'
+PASS Property display value 'table-footer-group'
+PASS Property display value 'table-row'
+PASS Property display value 'table-column-group'
+PASS Property display value 'table-column'
+PASS Property display value 'table-cell'
+PASS Property display value 'table-caption'
+PASS Property display value 'none'
+PASS Property display value 'flex'
+PASS Property display value 'inline-flex'
+PASS Property display value 'contents'
+FAIL Property display value 'run-in' assert_true: 'run-in' is a supported value for display. expected true got false
+PASS Property display value 'flow'
+PASS Property display value 'flow-root'
+FAIL Property display value 'ruby' assert_true: 'ruby' is a supported value for display. expected true got false
+PASS Property display value 'flow list-item'
+PASS Property display value 'list-item flow'
+PASS Property display value 'flow-root list-item'
+PASS Property display value 'list-item flow-root'
+PASS Property display value 'block flow'
+PASS Property display value 'flow block'
+PASS Property display value 'flow-root block'
+PASS Property display value 'block flow-root'
+PASS Property display value 'flex block'
+PASS Property display value 'block flex'
+PASS Property display value 'grid block'
+PASS Property display value 'block grid'
+PASS Property display value 'table block'
+PASS Property display value 'block table'
+FAIL Property display value 'block ruby' assert_true: 'block ruby' is a supported value for display. expected true got false
+FAIL Property display value 'ruby block' assert_true: 'ruby block' is a supported value for display. expected true got false
+PASS Property display value 'block list-item'
+PASS Property display value 'list-item block'
+PASS Property display value 'flow block list-item'
+PASS Property display value 'block flow list-item'
+PASS Property display value 'flow list-item block'
+PASS Property display value 'block list-item flow'
+PASS Property display value 'list-item block flow'
+PASS Property display value 'list-item flow block'
+PASS Property display value 'flow-root block list-item'
+PASS Property display value 'block flow-root list-item'
+PASS Property display value 'flow-root list-item block'
+PASS Property display value 'block list-item flow-root'
+PASS Property display value 'list-item block flow-root'
+PASS Property display value 'list-item flow-root block'
+PASS Property display value 'inline flow'
+PASS Property display value 'flow inline'
+PASS Property display value 'flow-root inline'
+PASS Property display value 'inline flow-root'
+PASS Property display value 'flex inline'
+PASS Property display value 'inline flex'
+PASS Property display value 'grid inline'
+PASS Property display value 'inline grid'
+PASS Property display value 'table inline'
+PASS Property display value 'inline table'
+FAIL Property display value 'inline ruby' assert_true: 'inline ruby' is a supported value for display. expected true got false
+FAIL Property display value 'ruby inline' assert_true: 'ruby inline' is a supported value for display. expected true got false
+PASS Property display value 'inline list-item'
+PASS Property display value 'list-item inline'
+PASS Property display value 'flow inline list-item'
+PASS Property display value 'inline flow list-item'
+PASS Property display value 'flow list-item inline'
+PASS Property display value 'inline list-item flow'
+PASS Property display value 'list-item inline flow'
+PASS Property display value 'list-item flow inline'
+PASS Property display value 'flow-root inline list-item'
+PASS Property display value 'inline flow-root list-item'
+PASS Property display value 'flow-root list-item inline'
+PASS Property display value 'inline list-item flow-root'
+PASS Property display value 'list-item inline flow-root'
+PASS Property display value 'list-item flow-root inline'
+FAIL Property display value 'run-in flow' assert_true: 'run-in flow' is a supported value for display. expected true got false
+FAIL Property display value 'flow run-in' assert_true: 'flow run-in' is a supported value for display. expected true got false
+FAIL Property display value 'flow-root run-in' assert_true: 'flow-root run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in flow-root' assert_true: 'run-in flow-root' is a supported value for display. expected true got false
+FAIL Property display value 'flex run-in' assert_true: 'flex run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in flex' assert_true: 'run-in flex' is a supported value for display. expected true got false
+FAIL Property display value 'grid run-in' assert_true: 'grid run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in grid' assert_true: 'run-in grid' is a supported value for display. expected true got false
+FAIL Property display value 'table run-in' assert_true: 'table run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in table' assert_true: 'run-in table' is a supported value for display. expected true got false
+FAIL Property display value 'run-in ruby' assert_true: 'run-in ruby' is a supported value for display. expected true got false
+FAIL Property display value 'ruby run-in' assert_true: 'ruby run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in list-item' assert_true: 'run-in list-item' is a supported value for display. expected true got false
+FAIL Property display value 'list-item run-in' assert_true: 'list-item run-in' is a supported value for display. expected true got false
+FAIL Property display value 'flow run-in list-item' assert_true: 'flow run-in list-item' is a supported value for display. expected true got false
+FAIL Property display value 'run-in flow list-item' assert_true: 'run-in flow list-item' is a supported value for display. expected true got false
+FAIL Property display value 'flow list-item run-in' assert_true: 'flow list-item run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in list-item flow' assert_true: 'run-in list-item flow' is a supported value for display. expected true got false
+FAIL Property display value 'list-item run-in flow' assert_true: 'list-item run-in flow' is a supported value for display. expected true got false
+FAIL Property display value 'list-item flow run-in' assert_true: 'list-item flow run-in' is a supported value for display. expected true got false
+FAIL Property display value 'flow-root run-in list-item' assert_true: 'flow-root run-in list-item' is a supported value for display. expected true got false
+FAIL Property display value 'run-in flow-root list-item' assert_true: 'run-in flow-root list-item' is a supported value for display. expected true got false
+FAIL Property display value 'flow-root list-item run-in' assert_true: 'flow-root list-item run-in' is a supported value for display. expected true got false
+FAIL Property display value 'run-in list-item flow-root' assert_true: 'run-in list-item flow-root' is a supported value for display. expected true got false
+FAIL Property display value 'list-item run-in flow-root' assert_true: 'list-item run-in flow-root' is a supported value for display. expected true got false
+FAIL Property display value 'list-item flow-root run-in' assert_true: 'list-item flow-root run-in' is a supported value for display. expected true got false
+PASS position absolute affects computed display
+PASS position fixed affects computed display
+PASS float left affects computed display
+PASS float right affects computed display
+Harness: the test ran to completion.
+

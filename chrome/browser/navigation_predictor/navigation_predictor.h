@@ -17,6 +17,7 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "navigation_predictor_metrics_document_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -90,9 +91,9 @@ class NavigationPredictor
   // |ratio_area|.
   int GetLinearBucketForRatioArea(int value) const;
 
-  // Returns UserInteractionsData for the current page.
-  PageAnchorsMetricsObserver::UserInteractionsData& GetUserInteractionsData()
-      const;
+  // Returns `NavigationPredictorMetricsDocumentData` for the current page.
+  NavigationPredictorMetricsDocumentData&
+  GetNavigationPredictorMetricsDocumentData() const;
 
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;

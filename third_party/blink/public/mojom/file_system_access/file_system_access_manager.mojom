@@ -88,6 +88,8 @@ struct CommonFilePickerOptions {
 // tell what operations are being done by which document or worker.
 interface FileSystemAccessManager {
   // Opens the sandboxed filesystem for the origin of the current document or worker.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   GetSandboxedFileSystem() =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
@@ -95,6 +97,8 @@ interface FileSystemAccessManager {
   // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   ChooseEntries(FilePickerOptions options,
                 CommonFilePickerOptions common_options) =>
       (FileSystemAccessError result,

@@ -53,10 +53,9 @@ void TestZAuraOutputManager::SendOutputMetrics(
                                    insets.left(), insets.bottom(),
                                    insets.right());
 
-  const int32_t bit_cast_value =
-      base::bit_cast<uint32_t>(metrics.aura_device_scale_factor);
-  zaura_output_manager_send_device_scale_factor(resource(), output_resource,
-                                                bit_cast_value);
+  zaura_output_manager_send_device_scale_factor(
+      resource(), output_resource,
+      base::bit_cast<uint32_t>(metrics.aura_device_scale_factor));
 
   zaura_output_manager_send_logical_transform(resource(), output_resource,
                                               metrics.aura_logical_transform);

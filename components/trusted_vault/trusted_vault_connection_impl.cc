@@ -12,8 +12,8 @@
 #include "base/files/important_file_writer.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/protocol/vault.pb.h"
 #include "components/trusted_vault/download_keys_response_handler.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
@@ -23,13 +23,13 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
 // Returns security domain epoch if valid (>0) and nullopt otherwise.
 absl::optional<int> GetLastKeyVersionFromJoinSecurityDomainsResponse(
-    const sync_pb::JoinSecurityDomainsResponse response) {
+    const trusted_vault_pb::JoinSecurityDomainsResponse response) {
   if (response.security_domain().current_epoch() > 0) {
     return response.security_domain().current_epoch();
   }
@@ -40,13 +40,14 @@ absl::optional<int> GetLastKeyVersionFromJoinSecurityDomainsResponse(
 // error case and nullopt otherwise.
 absl::optional<int> GetLastKeyVersionFromAlreadyExistsResponse(
     const std::string& response_body) {
-  sync_pb::RPCStatus rpc_status;
+  trusted_vault_pb::RPCStatus rpc_status;
   rpc_status.ParseFromString(response_body);
-  for (const sync_pb::Proto3Any& status_detail : rpc_status.details()) {
+  for (const trusted_vault_pb::Proto3Any& status_detail :
+       rpc_status.details()) {
     if (status_detail.type_url() != kJoinSecurityDomainsErrorDetailTypeURL) {
       continue;
     }
-    sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+    trusted_vault_pb::JoinSecurityDomainsErrorDetail error_detail;
     error_detail.ParseFromString(status_detail.value());
     return GetLastKeyVersionFromJoinSecurityDomainsResponse(
         error_detail.already_exists_response());
@@ -66,10 +67,10 @@ std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
   return result;
 }
 
-sync_pb::SharedMemberKey CreateSharedMemberKey(
+trusted_vault_pb::SharedMemberKey CreateSharedMemberKey(
     const TrustedVaultKeyAndVersion& trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
-  sync_pb::SharedMemberKey shared_member_key;
+  trusted_vault_pb::SharedMemberKey shared_member_key;
   shared_member_key.set_epoch(trusted_vault_key_and_version.version);
 
   const std::vector<uint8_t>& trusted_vault_key =
@@ -82,10 +83,10 @@ sync_pb::SharedMemberKey CreateSharedMemberKey(
   return shared_member_key;
 }
 
-sync_pb::SecurityDomainMember CreateSecurityDomainMember(
+trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   std::string public_key_string;
   AssignBytesToProtoString(public_key.ExportToBytes(), &public_key_string);
 
@@ -101,23 +102,23 @@ sync_pb::SecurityDomainMember CreateSecurityDomainMember(
   switch (authentication_factor_type) {
     case AuthenticationFactorType::kPhysicalDevice:
       member.set_member_type(
-          sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
       break;
     case AuthenticationFactorType::kUnspecified:
       member.set_member_type(
-          sync_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED);
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED);
       break;
   }
   return member;
 }
 
-sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
+trusted_vault_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
     int last_trusted_vault_key_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type,
     absl::optional<int> authentication_factor_type_hint) {
-  sync_pb::JoinSecurityDomainsRequest request;
+  trusted_vault_pb::JoinSecurityDomainsRequest request;
   request.mutable_security_domain()->set_name(kSyncSecurityDomainName);
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
@@ -195,7 +196,7 @@ void ProcessJoinSecurityDomainsResponse(
     last_key_version =
         GetLastKeyVersionFromAlreadyExistsResponse(response_body);
   } else {
-    sync_pb::JoinSecurityDomainsResponse response;
+    trusted_vault_pb::JoinSecurityDomainsResponse response;
     response.ParseFromString(response_body);
     last_key_version =
         GetLastKeyVersionFromJoinSecurityDomainsResponse(response);
@@ -246,7 +247,7 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
       std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
       return;
   }
-  sync_pb::SecurityDomain security_domain;
+  trusted_vault_pb::SecurityDomain security_domain;
   if (!security_domain.ParseFromString(response_body) ||
       !security_domain.security_domain_details().has_sync_details()) {
     std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
@@ -407,4 +408,4 @@ TrustedVaultConnectionImpl::GetOrCreateURLLoaderFactory() {
   return url_loader_factory_;
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

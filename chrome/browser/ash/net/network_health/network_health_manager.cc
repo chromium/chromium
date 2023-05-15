@@ -14,6 +14,29 @@
 namespace ash {
 namespace network_health {
 
+// static
+NetworkHealthManager* NetworkHealthManager::GetInstance() {
+  static base::NoDestructor<NetworkHealthManager> instance;
+  return instance.get();
+}
+
+// static
+void NetworkHealthManager::NetworkDiagnosticsServiceCallback(
+    mojo::PendingReceiver<
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        receiver) {
+  ash::network_health::NetworkHealthManager::GetInstance()
+      ->BindDiagnosticsReceiver(std::move(receiver));
+}
+
+// static
+void NetworkHealthManager::NetworkHealthServiceCallback(
+    mojo::PendingReceiver<chromeos::network_health::mojom::NetworkHealthService>
+        receiver) {
+  ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
+      std::move(receiver));
+}
+
 NetworkHealthManager::NetworkHealthManager() {
   // Ensure that the NetworkHealthService instance is running.
   GetInProcessInstance();
@@ -61,11 +84,6 @@ void NetworkHealthManager::AddObserver(
     mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
         observer) {
   GetInProcessInstance()->AddObserver(std::move(observer));
-}
-
-NetworkHealthManager* NetworkHealthManager::GetInstance() {
-  static base::NoDestructor<NetworkHealthManager> instance;
-  return instance.get();
 }
 
 }  // namespace network_health

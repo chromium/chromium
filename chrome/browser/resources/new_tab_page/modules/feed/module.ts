@@ -12,7 +12,7 @@ import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/poly
 import {Article} from '../../feed.mojom-webui.js';
 import {I18nMixin} from '../../i18n_setup.js';
 import {InfoDialogElement} from '../info_dialog.js';
-import {ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
+import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {FeedProxy} from './feed_module_proxy.js';
 import {getTemplate} from './module.html.js';
@@ -58,9 +58,5 @@ async function createFeedElement(): Promise<HTMLElement> {
   return element;
 }
 
-const ID: string = 'feed';
 export const feedDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id=*/ ID, createFeedElement);
-export const feedV2Descriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
-    /*id=*/ ID,
-    /*height=*/ ModuleHeight.TALL, createFeedElement);
+    /*id=*/ 'feed', createFeedElement);

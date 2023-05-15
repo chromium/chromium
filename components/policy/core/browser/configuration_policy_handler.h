@@ -15,6 +15,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefValueMap;
 
@@ -158,16 +159,18 @@ class POLICY_EXPORT ListPolicyHandler : public TypeCheckingPolicyHandler {
 
   // Implement this method to apply the |filtered_list| of values of type
   // |list_entry_type_| as returned from CheckAndGetList() to |prefs|.
-  virtual void ApplyList(base::Value filtered_list, PrefValueMap* prefs) = 0;
+  virtual void ApplyList(base::Value::List filtered_list,
+                         PrefValueMap* prefs) = 0;
 
  private:
   // Checks whether the policy value is indeed a list, filters out all entries
   // that are not of type |list_entry_type_| or where CheckListEntry() returns
-  // false, and returns the |filtered_list| if not nullptr. Sets errors for
-  // filtered list entries if |errors| is not nullptr.
+  // false, and appends to |filtered_list| if present. If the value is missing,
+  // |filtered_list| is cleared. Sets errors for filtered list entries if
+  // |errors| is not nullptr.
   bool CheckAndGetList(const policy::PolicyMap& policies,
                        policy::PolicyErrorMap* errors,
-                       base::Value* filtered_list);
+                       absl::optional<base::Value::List>& filtered_list);
 
   // Expected value type for list entries. All other types are filtered out.
   base::Value::Type list_entry_type_;
@@ -531,6 +534,19 @@ class POLICY_EXPORT SimpleDeprecatingPolicyHandler
  private:
   std::unique_ptr<NamedPolicyHandler> legacy_policy_handler_;
   std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
+};
+
+// A schema policy handler for complex policies that only accept cloud sources.
+class POLICY_EXPORT CloudOnlyPolicyHandler
+    : public SchemaValidatingPolicyHandler {
+ public:
+  CloudOnlyPolicyHandler(const char* policy_name,
+                         Schema schema,
+                         SchemaOnErrorStrategy strategy);
+  ~CloudOnlyPolicyHandler() override;
+
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
 };
 
 }  // namespace policy

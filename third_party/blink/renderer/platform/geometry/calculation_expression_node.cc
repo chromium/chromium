@@ -4,9 +4,14 @@
 
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 
+#include <cfloat>
+#include <numeric>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/math_functions.h"
 
 namespace blink {
 
@@ -177,6 +182,53 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kRoundNearest:
+    case CalculationOperator::kRoundUp:
+    case CalculationOperator::kRoundDown:
+    case CalculationOperator::kRoundToZero:
+    case CalculationOperator::kMod:
+    case CalculationOperator::kRem: {
+      DCHECK_EQ(children.size(), 2u);
+      const auto* a =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(*children[0]);
+      const auto* b =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(*children[1]);
+      bool can_simplify = a && !a->Percent() && b && !b->Percent();
+      if (can_simplify) {
+        float value =
+            EvaluateSteppedValueFunction(op, a->Pixels(), b->Pixels());
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(value, 0));
+      } else {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            std::move(children), op);
+      }
+    }
+    case CalculationOperator::kHypot: {
+      DCHECK_GE(children.size(), 1u);
+      Vector<float> operand_pixels;
+      operand_pixels.reserve(children.size());
+      bool can_simplify = true;
+      for (auto& child : children) {
+        const auto* pixels_and_percent =
+            DynamicTo<CalculationExpressionPixelsAndPercentNode>(*child);
+        if (!pixels_and_percent || pixels_and_percent->Percent()) {
+          can_simplify = false;
+          break;
+        }
+        operand_pixels.push_back(pixels_and_percent->Pixels());
+      }
+      if (can_simplify) {
+        float value = 0;
+        for (float operand : operand_pixels) {
+          value = std::hypot(value, operand);
+        }
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(value, 0));
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
@@ -250,6 +302,26 @@ float CalculationExpressionOperationNode::Evaluate(
       // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
       return std::max(min, std::min(val, max));
     }
+    case CalculationOperator::kRoundNearest:
+    case CalculationOperator::kRoundUp:
+    case CalculationOperator::kRoundDown:
+    case CalculationOperator::kRoundToZero:
+    case CalculationOperator::kMod:
+    case CalculationOperator::kRem: {
+      DCHECK_EQ(children_.size(), 2u);
+      float a = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float b = children_[1]->Evaluate(max_value, anchor_evaluator);
+      return EvaluateSteppedValueFunction(operator_, a, b);
+    }
+    case CalculationOperator::kHypot: {
+      DCHECK_GE(children_.size(), 1u);
+      float value = 0;
+      for (scoped_refptr<const CalculationExpressionNode> operand : children_) {
+        float a = operand->Evaluate(max_value, anchor_evaluator);
+        value = std::hypot(value, a);
+      }
+      return value;
+    }
     case CalculationOperator::kInvalid:
       break;
       // TODO(crbug.com/1284199): Support other math functions.
@@ -290,7 +362,14 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:
-    case CalculationOperator::kClamp: {
+    case CalculationOperator::kClamp:
+    case CalculationOperator::kRoundNearest:
+    case CalculationOperator::kRoundUp:
+    case CalculationOperator::kRoundDown:
+    case CalculationOperator::kRoundToZero:
+    case CalculationOperator::kMod:
+    case CalculationOperator::kRem:
+    case CalculationOperator::kHypot: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -339,7 +418,14 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:
-    case CalculationOperator::kClamp: {
+    case CalculationOperator::kClamp:
+    case CalculationOperator::kRoundNearest:
+    case CalculationOperator::kRoundUp:
+    case CalculationOperator::kRoundDown:
+    case CalculationOperator::kRoundToZero:
+    case CalculationOperator::kMod:
+    case CalculationOperator::kRem:
+    case CalculationOperator::kHypot: {
       DCHECK(children_.size());
       auto first_child_type = children_.front()->ResolvedResultType();
       for (const auto& child : children_) {

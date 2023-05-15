@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -175,7 +176,8 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
     wait_for_value_state_.reset();
   }
 
-  ash::ShillServiceClient::TestInterface* const shill_service_client_test_;
+  const raw_ptr<ash::ShillServiceClient::TestInterface, ExperimentalAsh>
+      shill_service_client_test_;
 
   const std::string service_path_;
   const std::string property_name_;
@@ -340,7 +342,8 @@ class CrosNetworkConfigGuidsAvailableWaiter
   }
 
   base::RunLoop run_loop_;
-  ash::network_config::CrosNetworkConfig* const cros_network_config_;
+  const raw_ptr<ash::network_config::CrosNetworkConfig, ExperimentalAsh>
+      cros_network_config_;
   const std::set<std::string> expected_guids_;
 
   // Receiver for the CrosNetworkConfigObserver events.
@@ -755,10 +758,14 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   // Unowned pointers -- just pointers to the singleton instances.
-  ash::ShillManagerClient::TestInterface* shill_manager_client_test_ = nullptr;
-  ash::ShillServiceClient::TestInterface* shill_service_client_test_ = nullptr;
-  ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
-  ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
+  raw_ptr<ash::ShillManagerClient::TestInterface, ExperimentalAsh>
+      shill_manager_client_test_ = nullptr;
+  raw_ptr<ash::ShillServiceClient::TestInterface, ExperimentalAsh>
+      shill_service_client_test_ = nullptr;
+  raw_ptr<ash::ShillProfileClient::TestInterface, ExperimentalAsh>
+      shill_profile_client_test_ = nullptr;
+  raw_ptr<ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
+      shill_device_client_test_ = nullptr;
 
   AccountId test_account_id_;
 

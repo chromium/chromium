@@ -5,13 +5,13 @@
 #include <memory>
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/uuid.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
@@ -107,7 +107,7 @@ void AssociatedUserValidatorTest::CreateDefaultCloudPoliciesForUser(
 
   // Ensure user has policies and valid GCPW token.
   fake_user_policies_manager_->SetUserPolicyStaleOrMissing(sid, false);
-  std::string dm_token = base::GenerateGUID();
+  std::string dm_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
   fake_token_generator_->SetTokensForTesting({dm_token});
   EXPECT_EQ(S_OK, GenerateGCPWDmToken(sid));
 }
@@ -615,7 +615,7 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
 
   if (cloud_policies_enabled) {
     fake_user_policies_manager.SetUserPolicies((BSTR)sid, user_policies);
-    std::string dm_token = base::GenerateGUID();
+    std::string dm_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
     fake_token_generator.SetTokensForTesting({dm_token});
     ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
   }
@@ -751,7 +751,7 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
 
   if (upload_device_details_state == 2) {
-    std::string dm_token = base::GenerateGUID();
+    std::string dm_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
     fake_token_generator.SetTokensForTesting({dm_token});
     ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
   }

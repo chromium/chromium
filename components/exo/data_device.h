@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/seat_observer.h"
@@ -89,8 +90,8 @@ class DataDevice : public WMHelper::DragDropObserver,
   void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
                              ui::mojom::DragOperation& output_drag_op);
 
-  DataDeviceDelegate* const delegate_;
-  Seat* const seat_;
+  const raw_ptr<DataDeviceDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Seat, ExperimentalAsh> seat_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
   std::unique_ptr<ScopedSurface> focused_surface_;
 

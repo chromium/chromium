@@ -32,7 +32,7 @@
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsAvailable());
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _gridViewController = [[GridViewController alloc] init];
@@ -44,6 +44,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.blackColor;
 
   UIView* gridView = _gridViewController.view;
@@ -66,29 +67,10 @@
   [self.view addSubview:_navigationBar];
 
   // Add the bottom toolbar with the Close All Inactive button.
-  NSString* buttonTitle =
-      l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON);
-  __weak __typeof(self) weakSelf = self;
-  UIAction* closeAllInactiveAction =
-      [UIAction actionWithTitle:buttonTitle
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf didTapCloseAllInactive];
-                        }];
-  _closeAllInactiveButton =
-      [[UIBarButtonItem alloc] initWithPrimaryAction:closeAllInactiveAction];
-  _closeAllInactiveButton.accessibilityIdentifier = kInactiveTabGridIdentifier;
-
   _bottomBar = [[UIToolbar alloc] init];
   _bottomBar.barStyle = UIBarStyleBlack;
   _bottomBar.translucent = YES;
   _bottomBar.tintColor = [UIColor colorNamed:kRed500Color];
-  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-  _bottomBar.items = @[ flexibleSpace, _closeAllInactiveButton, flexibleSpace ];
   _bottomBar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_bottomBar];
 
@@ -109,6 +91,28 @@
     [_bottomBar.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
+
+  // Let the bottom bar lay itself out before setting the items, as otherwise it
+  // spits out AutoLayout constraints conflicts.
+  [_bottomBar layoutIfNeeded];
+  NSString* buttonTitle =
+      l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON);
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAllInactiveAction =
+      [UIAction actionWithTitle:buttonTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf didTapCloseAllInactive];
+                        }];
+  _closeAllInactiveButton =
+      [[UIBarButtonItem alloc] initWithPrimaryAction:closeAllInactiveAction];
+  _closeAllInactiveButton.accessibilityIdentifier = kInactiveTabGridIdentifier;
+  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+  _bottomBar.items = @[ flexibleSpace, _closeAllInactiveButton, flexibleSpace ];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -117,8 +121,23 @@
       CGRectGetMaxY(_navigationBar.frame) - CGRectGetMinY(self.view.bounds);
   CGFloat bottomInset =
       CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(_bottomBar.frame);
+  CGFloat leftInset = self.view.safeAreaInsets.left;
+  CGFloat rightInset = self.view.safeAreaInsets.right;
+
   _gridViewController.gridView.contentInset =
-      UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
+      UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _gridViewController.view);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  nil);
 }
 
 #pragma mark - UIBarPositioningDelegate

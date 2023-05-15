@@ -210,10 +210,8 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   void CreateStoragePartitionForUrl(const GURL& url) {
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
         IsolatedWebAppUrlInfo::Create(url);
-    if (!url_info.has_value()) {
-      CHECK(false) << "Can't  create url info for url " << url
-                   << ", error: " << url_info.error();
-    }
+    CHECK(url_info.has_value()) << "Can't create url info for url " << url
+                                << ", error: " << url_info.error();
 
     content::StoragePartition* current_storage_partition =
         profile()->GetStoragePartition(

@@ -44,7 +44,7 @@ const std::map<std::string, std::string> kExpectedDebugdLogs = {
      // file.
      "Sample Log.txt",
      // Redacted version of "Your email address is abc@abc.com"
-     "Your email address is <email: 1>"}};
+     "Your email address is (email: 1)"}};
 
 // The PII in the sample logs that `FakeDebugDaemonClient` returns in
 // `GetFeedbackLogs()` call.

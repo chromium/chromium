@@ -165,7 +165,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   template <typename ThenR, typename... ThenArgs>
   OnceCallback<ThenR(Args...)> Then(OnceCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
-    return BindOnce(
+    return base::BindOnce(
         internal::ThenHelper<
             OnceCallback, OnceCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
@@ -178,7 +178,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   OnceCallback<ThenR(Args...)> Then(
       RepeatingCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
-    return BindOnce(
+    return base::BindOnce(
         internal::ThenHelper<
             OnceCallback,
             RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),

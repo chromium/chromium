@@ -12,12 +12,16 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -117,6 +121,13 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Gets the initiator for the print preview dialog.
   virtual content::WebContents* GetInitiator();
 
+  // Initiates print after any content analysis checks have been passed
+  // successfully.
+  virtual void FinishHandlePrint(UserActionBuckets user_action,
+                                 base::Value::Dict settings,
+                                 scoped_refptr<base::RefCountedMemory> data,
+                                 const std::string& callback_id);
+
  private:
   friend class PrintPreviewPdfGeneratedBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewPdfGeneratedBrowserTest,
@@ -133,7 +144,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   friend class PrintPreviewHandlerFailingTest;
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewHandlerFailingTest,
                            GetPrinterCapabilities);
-
+  FRIEND_TEST_ALL_PREFIXES(ContentAnalysisPrintPreviewHandlerTest,
+                           LocalScanBeforePrinting);
   content::WebContents* preview_web_contents();
 
   PrintPreviewUI* print_preview_ui();
@@ -254,6 +266,17 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   //     error. None type implies no error.
   void OnPrintResult(const std::string& callback_id,
                      const base::Value& error);
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  // Called when enterprise policy returns a verdict.
+  // Calls FinishHandlePrint if it's allowed else calls OnPrintResult to report
+  // print not allowed.
+  void OnVerdictByEnterprisePolicy(UserActionBuckets user_action,
+                                   base::Value::Dict settings,
+                                   scoped_refptr<base::RefCountedMemory> data,
+                                   const std::string& callback_id,
+                                   bool allowed);
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Whether we have already logged a failed print preview.
   bool reported_failed_preview_ = false;

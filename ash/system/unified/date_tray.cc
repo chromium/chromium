@@ -4,8 +4,10 @@
 
 #include "ash/system/unified/date_tray.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
@@ -14,6 +16,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/time/time.h"
@@ -37,7 +40,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       /*cross_axis_margin=*/0);
-  scoped_unified_system_tray_observer_.Observe(unified_system_tray_);
+  scoped_unified_system_tray_observer_.Observe(unified_system_tray_.get());
 }
 
 DateTray::~DateTray() = default;
@@ -72,13 +75,35 @@ void DateTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
 }
 
+void DateTray::ShowBubble() {
+  // Never show System Tray bubble in kiosk app mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    return;
+  }
+
+  if (features::AreGlanceablesV2Enabled()) {
+    ShowGlanceableBubble();
+  }
+}
+
 void DateTray::CloseBubble() {
   if (!is_active()) {
     return;
   }
-  // Lets the `unified_system_tray_` close the bubble since it's the owner of
-  // the bubble view.
-  unified_system_tray_->CloseBubble();
+
+  if (features::AreGlanceablesV2Enabled()) {
+    HideGlanceableBubble();
+  } else {
+    // Lets the `unified_system_tray_` close the bubble since it's the owner of
+    // the bubble view.
+    unified_system_tray_->CloseBubble();
+  }
+}
+
+void DateTray::ClickedOutsideBubble() {
+  if (features::AreGlanceablesV2Enabled()) {
+    HideGlanceableBubble();
+  }
 }
 
 void DateTray::OnOpeningCalendarView() {
@@ -93,15 +118,32 @@ void DateTray::OnButtonPressed(const ui::Event& event) {
   // Lets the `unified_system_tray_` decide whether to show the bubble or not,
   // since it's the owner of the bubble view.
   if (is_active()) {
-    unified_system_tray_->CloseBubble();
+    CloseBubble();
     return;
   }
 
-  // Need to set the date tray as active before notifying the system tray of
-  // an action because we need the system tray to know that the date tray is
-  // already active when it is creating the `UnifiedSystemTrayBubble`.
+  if (features::AreGlanceablesV2Enabled()) {
+    // Hide the unified_system_tray_ bubble.
+    unified_system_tray_->CloseBubble();
+    // Open the glanceables bubble.
+    ShowGlanceableBubble();
+  } else {
+    // Need to set the date tray as active before notifying the system tray of
+    // an action because we need the system tray to know that the date tray is
+    // already active when it is creating the `UnifiedSystemTrayBubble`.
+    SetIsActive(true);
+    unified_system_tray_->OnDateTrayActionPerformed(event);
+  }
+}
+
+void DateTray::ShowGlanceableBubble() {
+  bubble_ = std::make_unique<GlanceableTrayBubble>(this);
   SetIsActive(true);
-  unified_system_tray_->OnDateTrayActionPerformed(event);
+}
+
+void DateTray::HideGlanceableBubble() {
+  bubble_.reset();
+  SetIsActive(false);
 }
 
 BEGIN_METADATA(DateTray, ActionableView)

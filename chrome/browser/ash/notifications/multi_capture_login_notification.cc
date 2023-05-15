@@ -42,8 +42,7 @@ bool IsMultiCaptureAllowed() {
   if (!browser_context) {
     return false;
   }
-  return capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
-      browser_context);
+  return capture_policy::IsGetAllScreensMediaAllowedForAnySite(browser_context);
 }
 
 void CreateAndShowNotification(bool is_multi_capture_allowed) {

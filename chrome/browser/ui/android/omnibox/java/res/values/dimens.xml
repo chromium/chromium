@@ -23,6 +23,7 @@ found in the LICENSE file.
 
     <dimen name="toolbar_edge_padding">8dp</dimen>
     <dimen name="toolbar_edge_padding_modern">16dp</dimen>
+    <dimen name="toolbar_edge_padding_modern_smaller">12dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
     <dimen name="location_bar_url_text_size">16sp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
@@ -55,6 +56,9 @@ found in the LICENSE file.
 
     <!-- Omnibox suggestions -->
     <dimen name="omnibox_suggestion_header_padding_start">20dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_start_modern">32dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_start_modern_smaller">28dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_start_modern_smallest">24dp</dimen>
     <dimen name="omnibox_suggestion_header_padding_top">12dp</dimen>
     <dimen name="omnibox_suggestion_header_padding_bottom">12dp</dimen>
     <dimen name="omnibox_suggestion_header_height">44dp</dimen>
@@ -65,12 +69,14 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_list_divider_line_padding">12dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
     <dimen name="omnibox_suggestion_list_active_top_small_margin">8dp</dimen>
+    <dimen name="omnibox_suggestion_list_active_top_smaller_margin">4dp</dimen>
     <dimen name="omnibox_suggestion_list_active_top_big_margin">16dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_small_margin">4dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_big_margin">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_small_bottom_padding">4dp</dimen>
     <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
+    <dimen name="omnibox_carousel_start_padding_reduction">4dp</dimen>
     <dimen name="omnibox_action_chips_container_height">48dp</dimen>
     <dimen name="omnibox_action_chip_spacing">8dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
@@ -79,7 +85,11 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_start">10dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_start_smaller">9dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_start_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_end">10dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_end_smaller">9dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_end_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_margin_start">16dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_margin_start_modern">12dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_margin_end">16dp</dimen>
@@ -96,8 +106,11 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
     <dimen name="omnibox_suggestion_vertical_margin">1dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing">16dp</dimen>
+    <dimen name="omnibox_suggestion_side_spacing_smaller">12dp</dimen>
+    <dimen name="omnibox_suggestion_side_spacing_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_group_vertical_margin">12dp</dimen>
-    <dimen name="omnibox_suggestion_group_vertical_small_bottom_margin">4dp</dimen>
+    <dimen name="omnibox_suggestion_group_vertical_smaller_margin">8dp</dimen>
+    <dimen name="omnibox_suggestion_group_vertical_smallest_margin">4dp</dimen>
 
     <dimen name="omnibox_suggestion_dropdown_bg_elevation">@dimen/default_elevation_1</dimen>
 

@@ -7,9 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/sync/sync_setup_service.h"
+#include "components/sync/base/user_selectable_type.h"
 
-class PrefService;
 namespace syncer {
 class SyncService;
 }
@@ -18,11 +17,11 @@ class SyncService;
 bool IsRestrictAccountsToPatternsEnabled();
 
 // Returns true if the `dataType` is managed by policies (i.e. is not syncable).
-bool IsManagedSyncDataType(PrefService* pref_service,
-                           SyncSetupService::SyncableDatatype dataType);
+bool IsManagedSyncDataType(syncer::SyncService* sync_service,
+                           syncer::UserSelectableType dataType);
 
 // Returns true if any data type is managed by policies (i.e. is not syncable).
-bool HasManagedSyncDataType(PrefService* pref_service);
+bool HasManagedSyncDataType(syncer::SyncService* sync_service);
 
 // true if sync is disabled.
 bool IsSyncDisabledByPolicy(syncer::SyncService* sync_service);

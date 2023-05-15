@@ -82,9 +82,8 @@ TEST_F(VPNFeaturePodControllerTest, Basics) {
   CreateTile();
   EXPECT_TRUE(feature_tile_->GetVisible());
   EXPECT_EQ(feature_tile_->GetTooltipText(), u"Show VPN settings");
-  EXPECT_TRUE(feature_tile_->drill_in_button()->GetVisible());
-  EXPECT_EQ(feature_tile_->drill_in_button()->GetTooltipText(),
-            u"Show VPN settings");
+  ASSERT_TRUE(feature_tile_->drill_in_arrow());
+  EXPECT_TRUE(feature_tile_->drill_in_arrow()->GetVisible());
 }
 
 }  // namespace ash

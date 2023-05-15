@@ -10,10 +10,9 @@
 
 import '../i18n_setup.js';
 // <if expr="is_chromeos">
-import '../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 // </if>
 import './password_edit_dialog.js';
-import './password_move_to_account_dialog.js';
 import './password_remove_dialog.js';
 import './password_list_item.js';
 import './password_edit_dialog.js';
@@ -22,7 +21,6 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
-import {StoredAccount, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -50,7 +48,6 @@ export interface PasswordsListHandlerElement {
     menu: CrActionMenuElement,
     menuCopyPassword: HTMLElement,
     menuEditPassword: HTMLElement,
-    menuMovePasswordToAccount: HTMLElement,
     menuRemovePassword: HTMLElement,
     removalNotification: HTMLElement,
     removalToast: CrToastElement,
@@ -93,15 +90,6 @@ export class PasswordsListHandlerElement extends
       },
 
       /**
-       * Whether an option for moving a password to the account should be
-       * offered in the overflow menu.
-       */
-      allowMoveToAccountOption: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * The model for any active menus or dialogs. The value is reset to null
        * whenever actions from the menus/dialogs are concluded.
        */
@@ -111,8 +99,6 @@ export class PasswordsListHandlerElement extends
       },
 
       showPasswordEditDialog_: {type: Boolean, value: false},
-
-      showPasswordMoveToAccountDialog_: {type: Boolean, value: false},
 
       showPasswordSendButton_: {
         type: Boolean,
@@ -135,15 +121,6 @@ export class PasswordsListHandlerElement extends
         value: '',
       },
 
-      /**
-       * The email of the first signed-in account, or the empty string if
-       * there's none.
-       */
-      firstSignedInAccountEmail_: {
-        type: String,
-        value: '',
-      },
-
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -160,15 +137,12 @@ export class PasswordsListHandlerElement extends
 
   savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
   isAccountStoreUser: boolean;
-  allowMoveToAccountOption: boolean;
 
   private activePassword_: PasswordListItemElement|null;
   private showPasswordEditDialog_: boolean;
-  private showPasswordMoveToAccountDialog_: boolean;
   private showSendPasswordButton_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private removalNotification_: string;
-  private firstSignedInAccountEmail_: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -185,18 +159,6 @@ export class PasswordsListHandlerElement extends
     this.addEventListener(
         PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME,
         this.onPasswordViewPageRequestedEvent);
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    const extractFirstAccountEmail = (accounts: StoredAccount[]) => {
-      this.firstSignedInAccountEmail_ =
-          accounts.length > 0 ? accounts[0].email : '';
-    };
-    SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
-        extractFirstAccountEmail);
-    this.addWebUiListener('stored-accounts-updated', extractFirstAccountEmail);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -288,14 +250,6 @@ export class PasswordsListHandlerElement extends
     this.activePassword_ = null;
   }
 
-  private onMovePasswordToAccountDialogClosed_() {
-    this.showPasswordEditDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
-    this.activePassword_ = null;
-  }
-
   private onMenuSendPasswordClick_() {
     // TODO(crbug.com/1298608): Implement the logic.
   }
@@ -374,40 +328,12 @@ export class PasswordsListHandlerElement extends
     this.$.copyToast.show();
   }
 
-  /**
-   * Should only be called when |activePassword_| has a device copy.
-   */
-  private onMenuMovePasswordToAccountClick_() {
-    this.$.menu.close();
-    this.showPasswordMoveToAccountDialog_ = true;
-  }
-
-  private onPasswordMoveToAccountDialogClosed_() {
-    this.showPasswordMoveToAccountDialog_ = false;
-    this.activePassword_ = null;
-
-    // The entry possibly disappeared, so don't reset the focus.
-    this.activeDialogAnchor_ = null;
-  }
-
   override onPasswordRemoveDialogClose() {
     super.onPasswordRemoveDialogClose();
     this.activePassword_ = null;
 
     // A removal possibly happened, so don't reset the focus.
     this.activeDialogAnchor_ = null;
-  }
-
-  /**
-   * Whether the move option should be present in the overflow menu.
-   */
-  private shouldShowMoveToAccountOption_(): boolean {
-    const isFirstSignedInAccountPassword = !!this.activePassword_ &&
-        this.activePassword_.entry.urls.signonRealm.includes(
-            'accounts.google.com') &&
-        this.activePassword_.entry.username === this.firstSignedInAccountEmail_;
-    // It's not useful to move a password for an account into that same account.
-    return this.allowMoveToAccountOption && !isFirstSignedInAccountPassword;
   }
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {

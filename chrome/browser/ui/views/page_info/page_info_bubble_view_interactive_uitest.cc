@@ -152,6 +152,7 @@ class PageInfoBubbleViewInteractiveUiTest : public InProcessBrowserTest {
                               PageInfoBubbleView::GetPageInfoBubbleForTesting())
                               ->presenter_for_testing();
     presenter->OnSitePermissionChanged(permission.type, permission.setting,
+                                       permission.requesting_origin,
                                        permission.is_one_time);
   }
 };

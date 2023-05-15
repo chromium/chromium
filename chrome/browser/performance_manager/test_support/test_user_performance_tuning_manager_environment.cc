@@ -4,9 +4,10 @@
 
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 
+#include "base/power_monitor/battery_state_sampler.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
-#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_toggle_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "components/prefs/pref_service.h"
 
@@ -42,7 +43,7 @@ void TestUserPerformanceTuningManagerEnvironment::SetUp(
   manager_.reset(new user_tuning::UserPerformanceTuningManager(
       local_state, nullptr,
       std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
-      std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
+      std::make_unique<FakeHighEfficiencyModeDelegate>()));
   manager_->Start();
 }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/authenticator.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
@@ -145,7 +146,7 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   // The connection to the remote device. It is expected to be in the CONNECTED
   // state at all times during authentication.
   // Not owned, and must outlive this instance.
-  Connection* const connection_;
+  const raw_ptr<Connection, ExperimentalAsh> connection_;
 
   // Handles SecureMessage crypto operations.
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;

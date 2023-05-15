@@ -106,11 +106,12 @@ std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
 V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
-                               const ClassicScript& classic_script) {
-  return GetCompileOptions(cache_options, classic_script.CacheHandler(),
-                           classic_script.SourceText().length(),
-                           classic_script.SourceLocationType(),
-                           classic_script.SourceUrl());
+                               const ClassicScript& classic_script,
+                               bool might_generate_compile_hints) {
+  return GetCompileOptions(
+      cache_options, classic_script.CacheHandler(),
+      classic_script.SourceText().length(), classic_script.SourceLocationType(),
+      classic_script.SourceUrl(), might_generate_compile_hints);
 }
 
 std::tuple<v8::ScriptCompiler::CompileOptions,
@@ -120,26 +121,30 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                const CachedMetadataHandler* cache_handler,
                                size_t source_text_length,
                                ScriptSourceLocationType source_location_type,
-                               const KURL& url) {
+                               const KURL& url,
+                               bool might_generate_compile_hints) {
   static const int kMinimalCodeLength = 1024;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
 
   auto no_code_cache_compile_options = v8::ScriptCompiler::kNoCompileOptions;
 
-  // Call FeatureList::IsEnabled only once.
-  static bool compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints);
+  if (might_generate_compile_hints && url.ProtocolIsInHTTPFamily()) {
+    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints));
 
-  if (compile_hints_enabled && url.ProtocolIsInHTTPFamily()) {
     // If we end up compiling the script without forced eager compilation, we'll
-    // also produce compile hints. This is orthogonal to various cache
-    // behaviors: if we don't want to create a code cache for some reason
+    // also produce compile hints. This is orthogonal to producing the code
+    // cache: if we don't want to create a code cache for some reason
     // (e.g., script too small, or not hot enough) we still want to produce
     // compile hints.
 
     // When we're forcing eager compilation, we cannot produce compile hints
     // (we won't gather data about which eagerly compiled functions are
     // actually used).
+
+    // We also disable reading the script from the code cache when producing
+    // compile hints. This is because we cannot generate compile hints for
+    // cached scripts (especially if they've been eagerly compiled by a
+    // ServiceWorker) and omitting cached scripts would deteriorate the data.
     no_code_cache_compile_options = v8::ScriptCompiler::kProduceCompileHints;
   }
 
@@ -181,7 +186,9 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                            no_cache_reason);
   }
 
-  if (HasCodeCache(cache_handler)) {
+  if (HasCodeCache(cache_handler) &&
+      no_code_cache_compile_options !=
+          v8::ScriptCompiler::kProduceCompileHints) {
     return std::make_tuple(v8::ScriptCompiler::kConsumeCodeCache,
                            ProduceCacheOptions::kNoProduceCache,
                            no_cache_reason);

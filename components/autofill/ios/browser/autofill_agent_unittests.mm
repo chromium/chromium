@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -23,7 +23,6 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/prefs/pref_service.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -315,8 +314,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(123)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_
@@ -365,8 +366,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(123)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_

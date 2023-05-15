@@ -362,6 +362,9 @@ void SequenceManagerImpl::CompleteInitializationOnBoundThread() {
         << "Can't register a second SequenceManagerImpl on the same thread.";
     thread_local_sequence_manager = this;
   }
+  for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
+    queue->CompleteInitializationOnBoundThread();
+  }
 }
 
 void SequenceManagerImpl::SetTimeDomain(TimeDomain* time_domain) {

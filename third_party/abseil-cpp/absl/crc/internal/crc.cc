@@ -438,7 +438,7 @@ CRC* CRC::Crc32c() {
 // This Concat implementation works for arbitrary polynomials.
 void CRC::Concat(uint32_t* px, uint32_t y, size_t ylen) {
   // https://en.wikipedia.org/wiki/Mathematics_of_cyclic_redundancy_checks
-  // The CRC of a message M is the remainder of polynomial divison modulo G,
+  // The CRC of a message M is the remainder of polynomial division modulo G,
   // where the coefficient arithmetic is performed modulo 2 (so +/- are XOR):
   //   R(x) = M(x) x**n (mod G)
   // (n is the degree of G)

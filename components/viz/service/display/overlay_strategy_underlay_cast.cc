@@ -43,6 +43,7 @@ OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() {}
 
 void OverlayStrategyUnderlayCast::Propose(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -57,7 +58,8 @@ void OverlayStrategyUnderlayCast::Propose(
   auto overlay_iter = quad_list.end();
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters);
 
   // Original code did reverse iteration.
   // Here we do forward but find the last one. which should be the same thing.
@@ -87,6 +89,7 @@ void OverlayStrategyUnderlayCast::Propose(
 
 bool OverlayStrategyUnderlayCast::Attempt(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -104,7 +107,8 @@ bool OverlayStrategyUnderlayCast::Attempt(
   gfx::Rect content_rect;
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters);
 
   for (const auto* quad : base::Reversed(quad_list)) {
     if (OverlayCandidate::IsInvisibleQuad(quad))

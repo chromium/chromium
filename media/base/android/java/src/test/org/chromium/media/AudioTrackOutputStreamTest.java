@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.media.AudioTrackOutputStream.AudioBufferInfo;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Tests for AudioTrackOutputStream.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 // Need sdk > Q for robolectric 4.6.
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class AudioTrackOutputStreamTest {

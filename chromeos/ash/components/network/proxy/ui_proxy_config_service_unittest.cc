@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -114,6 +115,8 @@ class UIProxyConfigServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-bb5f01d1-9cf8-4aba-9aa6-925608747b02");
     ConfigureService(kTestUserWifiConfig);
     ConfigureService(kTestSharedWifiConfig);
     ConfigureService(kTestUnconfiguredWifiConfig);

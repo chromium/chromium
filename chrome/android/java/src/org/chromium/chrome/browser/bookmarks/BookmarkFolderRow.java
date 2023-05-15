@@ -53,22 +53,8 @@ public class BookmarkFolderRow extends BookmarkRow {
             BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
         BookmarkItem item = super.setBookmarkId(bookmarkId, location, fromFilterView);
         mTitleView.setText(item.getTitle());
-
-        // Set description and icon.
-        if (item.getId().getType() == BookmarkType.READING_LIST) {
-            int unreadCount = mDelegate.getModel().getUnreadCount(bookmarkId);
-            mDescriptionView.setText(unreadCount > 0
-                            ? getResources().getQuantityString(
-                                    R.plurals.reading_list_unread_page_count, unreadCount,
-                                    unreadCount)
-                            : getResources().getString(R.string.reading_list_no_unread_pages));
-        } else {
-            int childCount = mDelegate.getModel().getTotalBookmarkCount(bookmarkId);
-            mDescriptionView.setText((childCount > 0)
-                            ? getResources().getQuantityString(
-                                    R.plurals.bookmarks_count, childCount, childCount)
-                            : getResources().getString(R.string.no_bookmarks));
-        }
+        mDescriptionView.setText(BookmarkUtils.getFolderDescriptionText(
+                bookmarkId, mDelegate.getModel(), getContext().getResources()));
 
         setIconDrawable(BookmarkUtils.getFolderIcon(getContext(), item.getId().getType()));
         return item;

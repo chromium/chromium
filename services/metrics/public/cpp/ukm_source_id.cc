@@ -99,7 +99,7 @@ std::string GetSourceIdTypeDebugString(SourceId source_id) {
       return "WEBAPK_ID";
     case SourceIdObj::Type::PAYMENT_APP_ID:
       return "PAYMENT_APP_ID";
-    case SourceIdObj::Type::DESKTOP_WEB_APP_ID:
+    case SourceIdObj::Type::DEPRECATED_DESKTOP_WEB_APP_ID:
       return "DESKTOP_WEB_APP_ID";
     case SourceIdObj::Type::WORKER_ID:
       return "WORKER_ID";

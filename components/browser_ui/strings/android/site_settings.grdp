@@ -366,20 +366,24 @@
     When on
   </message>
 
-  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="Summary text explaining that browsing is smoother when the 'anti-abuse' setting is enabled.">
-    Browsing is faster because a site is less likely to ask you to verify you're a real person
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="Summary text explaining that Chrome saves a small amount of data when the anti-abuse features are enabled.">
+    A site you visit can save a small amount of info with Chrome, mainly to validate you're not a bot
   </message>
 
-  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="Summary text explaining that the anti-abuse features do not reveal your browsing history.">
-    This setting works without identifying you or allowing sites to see your browsing history
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="Summary text explaining how the anti-abuse features work.">
+    As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_THREE" desc="Summary text explaining that browsing could be helped by the anti-abuse features.">
+    Browsing is faster because a site is less likely to ask you to verify you're a real person
   </message>
 
   <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="Header text for the section explaining additional things to consider when the 'anti-abuse' setting is enabled.">
     Things to consider
   </message>
 
-  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="Summary text explaining that sites can save info with Chrome when the 'anti-abuse' setting is enabled.">
-    A site you visit can save info with Chrome that validates you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
+  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="Summary text explaining that the anti-abuse features do not reveal a user's browsing history.">
+    This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
   </message>
 
   <!-- Augmented reality -->

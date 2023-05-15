@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -23,6 +24,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -168,8 +170,8 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* const root_;
-  VideoRecordingWatcher* const owner_;
+  const raw_ptr<aura::Window, ExperimentalAsh> root_;
+  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh> owner_;
 };
 
 // -----------------------------------------------------------------------------
@@ -177,23 +179,22 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
 
 VideoRecordingWatcher::VideoRecordingWatcher(
     CaptureModeController* controller,
+    CaptureModeBehavior* active_behavior,
     aura::Window* window_being_recorded,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
         cursor_capture_overlay,
-    bool projector_mode,
     bool is_recording_audio)
     : controller_(controller),
+      active_behavior_(active_behavior),
       cursor_manager_(Shell::Get()->cursor_manager()),
       window_being_recorded_(window_being_recorded),
       current_root_(window_being_recorded->GetRootWindow()),
       recording_source_(controller_->source()),
       cursor_capture_overlay_remote_(std::move(cursor_capture_overlay)),
-      is_in_projector_mode_(projector_mode),
       is_recording_audio_(is_recording_audio) {
-  DCHECK(controller_);
-  DCHECK(window_being_recorded_);
-  DCHECK(current_root_);
-  DCHECK(!is_in_projector_mode_ || features::IsProjectorEnabled());
+  CHECK(controller_);
+  CHECK(window_being_recorded_);
+  CHECK(current_root_);
 
   if (!window_being_recorded_->IsRootWindow()) {
     DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
@@ -239,41 +240,38 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
 
-  controller_->camera_controller()->OnRecordingStarted(is_in_projector_mode_);
-
-  if (is_in_projector_mode_) {
+  const bool should_create_recording_overlay =
+      active_behavior_->ShouldCreateRecordingOverlayController();
+  if (should_create_recording_overlay) {
     recording_overlay_controller_ =
         std::make_unique<RecordingOverlayController>(window_being_recorded_,
                                                      GetOverlayWidgetBounds());
   }
+
+  controller_->camera_controller()->OnRecordingStarted(active_behavior_);
 
   if (features::AreCaptureModeDemoToolsEnabled() &&
       controller_->enable_demo_tools()) {
     demo_tools_controller_ =
         std::make_unique<CaptureModeDemoToolsController>(this);
   }
-
-  if (features::IsProjectorEnabled()) {
-    ProjectorControllerImpl::Get()->OnRecordingStarted(current_root_,
-                                                       is_in_projector_mode_);
-  }
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
-  DCHECK(is_shutting_down_);
+  CHECK(is_shutting_down_);
 }
 
 void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
-  DCHECK(is_in_projector_mode_);
-  DCHECK(!is_shutting_down_);
-  DCHECK(recording_overlay_controller_);
+  CHECK(active_behavior_->ShouldCreateRecordingOverlayController());
+  CHECK(!is_shutting_down_);
+  CHECK(recording_overlay_controller_);
 
   recording_overlay_controller_->Toggle();
 }
 
 void VideoRecordingWatcher::ShutDown() {
   is_shutting_down_ = true;
-  DCHECK(window_being_recorded_);
+  CHECK(window_being_recorded_);
 
   window_size_change_throttle_timer_.Stop();
   cursor_events_throttle_timer_.Stop();
@@ -283,10 +281,6 @@ void VideoRecordingWatcher::ShutDown() {
   demo_tools_controller_.reset();
   dimmers_.clear();
   ReleaseLayer();
-
-  if (features::IsProjectorEnabled()) {
-    ProjectorControllerImpl::Get()->OnRecordingEnded(is_in_projector_mode_);
-  }
 
   window_being_recorded_->RemovePreTargetHandler(this);
   TabletModeController::Get()->RemoveObserver(this);
@@ -313,7 +307,7 @@ aura::Window* VideoRecordingWatcher::GetOnCaptureSurfaceWidgetParentWindow()
   return window_being_recorded_->IsRootWindow()
              ? window_being_recorded_->GetChildById(
                    kShellWindowId_MenuContainer)
-             : window_being_recorded_;
+             : window_being_recorded_.get();
 }
 
 gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {
@@ -373,7 +367,7 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (is_in_projector_mode_) {
+  if (recording_overlay_controller_) {
     recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
   }
 
@@ -448,10 +442,6 @@ void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(
   root_observer_ =
       std::make_unique<RecordedWindowRootObserver>(current_root_, this);
   controller_->OnRecordedWindowChangingRoot(window_being_recorded_, new_root);
-
-  if (is_in_projector_mode_) {
-    ProjectorControllerImpl::Get()->OnRecordedWindowChangingRoot(new_root);
-  }
 }
 
 void VideoRecordingWatcher::OnPaintLayer(const ui::PaintContext& context) {
@@ -497,8 +487,9 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
     uint32_t metrics) {
   // A change in the work area, could mean that the docked magnifier state has
   // changed, therefore we must update the overlay widget's bounds if any.
-  if (is_in_projector_mode_ && (metrics & DISPLAY_METRIC_WORK_AREA))
+  if (recording_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
     recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
+  }
 
   if (!(metrics &
         (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |

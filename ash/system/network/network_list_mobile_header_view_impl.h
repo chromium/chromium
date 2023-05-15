@@ -10,6 +10,7 @@
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
@@ -46,7 +47,7 @@ class ASH_EXPORT NetworkListMobileHeaderViewImpl
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
   // setup dialog open. This is null when the device is not eSIM-capable.
-  IconButton* add_esim_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> add_esim_button_ = nullptr;
 
   base::WeakPtrFactory<NetworkListMobileHeaderViewImpl> weak_factory_{this};
 };

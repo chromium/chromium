@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -70,11 +71,11 @@ struct AXRelativeBounds;
 namespace blink {
 
 class AccessibleNodeList;
-class AbstractInlineTextBox;
 class AXObject;
 class AXObjectCacheImpl;
 class LayoutObject;
 class LocalFrameView;
+class NGAbstractInlineTextBox;
 class Node;
 class ScrollableArea;
 
@@ -264,6 +265,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool is_computing_role_ = false;
   mutable bool is_updating_cached_values_ = false;
 #endif
+#if !defined(NDEBUG)
+  // Keep track of what the object used to be, to make it easier to debug
+  // situations involving detached objects.
+  String detached_object_debug_info_;
+#endif
 
 #if defined(AX_FAIL_FAST_BUILD)
   bool is_adding_children_ = false;
@@ -329,7 +335,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AccessibleNode* GetAccessibleNode() const;
-  virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
+  virtual NGAbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   static void TokenVectorFromAttribute(Element* element,
                                        Vector<String>&,
@@ -627,7 +633,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // <a href="#foo">, this will return the AXObject for the target.
   // The object returned should be unignored. If necessary, it will return
   // a descendant of the actual target.
-  virtual AXObject* InPageLinkTarget() const { return nullptr; }
+  virtual AXObject* InPageLinkTarget() const;
+  // Returns the value of the "target" attribute, e.g. <a href="example.com"
+  // target="blank">.
+  virtual const AtomicString& EffectiveTarget() const;
   virtual AccessibilityOrientation Orientation() const;
   virtual ax::mojom::blink::ListStyle GetListStyle() const {
     return ax::mojom::blink::ListStyle::kNone;
@@ -1133,6 +1142,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // When the parent on children during AddChildren(), take the opportunity to
   // check out ComputeParent() implementation. It should match.
   void EnsureCorrectParentComputation();
+
+  // Prints the entire AX subtree to the screen for debugging, with |this|
+  // highlighted via a "*" notation.
+  void ShowAXTreeForThis();
 #endif
 
   // Get or create the first ancestor that's not accessibility ignored.
@@ -1142,6 +1155,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Get or create the first ancestor that's included in the accessibility tree.
   // Works for all nodes, and may return nodes that are accessibility ignored.
   AXObject* ParentObjectIncludedInTree() const;
+
+  // Looks for the first ancestor AXObject (inclusive) that has an element, and
+  // returns that element.
+  Element* GetClosestElement() const;
 
   AXObject* ContainerWidget() const;
   bool IsContainerWidget() const;
@@ -1286,6 +1303,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // event listeners. These all return true if handled.
   virtual bool OnNativeDecrementAction();
   virtual bool OnNativeClickAction();
+  virtual bool OnNativeBlurAction();
   virtual bool OnNativeFocusAction();
   virtual bool OnNativeIncrementAction();
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;

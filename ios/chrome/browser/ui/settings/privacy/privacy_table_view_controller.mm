@@ -16,17 +16,16 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -46,6 +45,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -69,6 +69,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierWebServices,
   SectionIdentifierIncognitoAuth,
   SectionIdentifierIncognitoInterstitial,
+  SectionIdentifierLockdownMode,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -82,6 +83,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHTTPSOnlyMode,
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
+  ItemTypeLockdownMode,
 };
 
 // Only used in this class to openn the Sync and Google services settings.
@@ -204,6 +206,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
   [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
+  [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
@@ -223,12 +226,19 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Privacy Safe Browsing item.
   [model addItem:[self safeBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
-  [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
+
+  // Lockdown Mode item.
+  if (web::IsBrowserLockdownModeEnabled()) {
+    [model addItem:[self lockdownModeDetailItem]
+        toSectionWithIdentifier:SectionIdentifierLockdownMode];
+  }
 
   // Web Services item.
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
+
+  [model setFooter:[self showPrivacyFooterItem]
+      forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Incognito reauth item is added. If Incognito mode is disabled, or device
   // authentication is not supported, a disabled version is shown instead with
@@ -356,6 +366,19 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                        detailText:detailText
           accessibilityIdentifier:kSettingsPrivacySafeBrowsingCellId];
   return _safeBrowsingDetailItem;
+}
+
+- (TableViewItem*)lockdownModeDetailItem {
+  NSString* detailText =
+      _browserState->GetPrefs()->GetBoolean(prefs::kBrowserLockdownModeEnabled)
+          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  TableViewDetailIconItem* lockdownModeDetailItem =
+      [self detailItemWithType:ItemTypeLockdownMode
+                          titleId:IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE
+                       detailText:detailText
+          accessibilityIdentifier:kPrivacyLockdownModeCellId];
+  return lockdownModeDetailItem;
 }
 
 - (TableViewSwitchItem*)incognitoReauthItem {

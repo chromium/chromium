@@ -45,7 +45,7 @@ namespace autofill {
 namespace {
 
 // A constant value to use as an Autofill profile ID.
-const int kAutofillProfileId = 1;
+constexpr Suggestion::FrontendId kAutofillProfileId = Suggestion::FrontendId(1);
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -89,7 +89,7 @@ class MockAutofillClient : public TestAutofillClient {
                const std::vector<std::u16string>& lables),
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
-  MOCK_METHOD(void, ExecuteCommand, (int), (override));
+  MOCK_METHOD(void, ExecuteCommand, (Suggestion::FrontendId), (override));
   MOCK_METHOD(void,
               OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
@@ -158,7 +158,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (mojom::RendererFormDataAction action,
                const FormData& form,
                const FormFieldData& field,
-               int unique_id,
+               Suggestion::FrontendId unique_id,
                const AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
@@ -244,13 +244,6 @@ class AutofillExternalDelegateCardsFromAccountTest
 TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids =
-      testing::ElementsAre(kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -261,7 +254,12 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 
   EXPECT_CALL(
@@ -284,13 +282,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   IssueOnQuery();
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids =
-      testing::ElementsAre(kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -305,7 +296,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                             AutoselectFirstSuggestion(false));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "Signin_Impression_FromAutofillDropdown"));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 
   EXPECT_CALL(
@@ -328,10 +324,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   IssueOnQuery();
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      static_cast<int>(POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO));
-
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -344,11 +336,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                             AutoselectFirstSuggestion(false));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromAutofillDropdown"));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 
-  EXPECT_CALL(autofill_client_,
-              ExecuteCommand(autofill::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO));
+  EXPECT_CALL(autofill_client_, ExecuteCommand(Suggestion::FrontendId(
+                                    POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO)));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -371,17 +364,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   external_delegate_->SetCurrentDataListValues(data_list_items,
                                                data_list_items);
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids =
-      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -392,12 +374,20 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_DATALIST_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 
   // Try calling OnSuggestionsReturned with no Autofill values and ensure
   // the datalist items are still shown.
-  // The enum must be cast to an int to prevent compile errors on linux_rel.
 
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -406,8 +396,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(testing::ElementsAre(
-                  static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY))));
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_DATALIST_ENTRY));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 }
 
@@ -428,17 +417,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   external_delegate_->SetCurrentDataListValues(data_list_items,
                                                data_list_items);
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids =
-      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -449,7 +427,16 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_DATALIST_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 
   // This would normally get called from ShowAutofillPopup, but it is mocked so
@@ -459,7 +446,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   // Update the current data list and ensure the popup is updated.
   data_list_items.emplace_back();
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
                                     data_list_items, data_list_items));
 
@@ -481,18 +467,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   external_delegate_->SetCurrentDataListValues(data_list_values,
                                                data_list_labels);
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids =
-      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-                           static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -506,7 +480,17 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_DATALIST_ENTRY,
+                                     POPUP_ITEM_ID_DATALIST_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                                     POPUP_ITEM_ID_SEPARATOR,
+#endif
+                                     POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 }
 
@@ -524,15 +508,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   external_delegate_->SetCurrentDataListValues(data_list_values,
                                                data_list_labels);
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      // We are expecting only two data list entries.
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !BUILDFLAG(IS_ANDROID)
-      static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
-#endif
-      static_cast<int>(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -550,7 +525,14 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   autocomplete_items[1].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
   external_delegate_->OnSuggestionsReturned(field_id_, autocomplete_items,
                                             AutoselectFirstSuggestion(false));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(
+                  // We are expecting only two data list entries.
+                  POPUP_ITEM_ID_DATALIST_ENTRY, POPUP_ITEM_ID_DATALIST_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+                  POPUP_ITEM_ID_SEPARATOR,
+#endif
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 }
 
@@ -572,10 +554,9 @@ TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
   external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
                                             AutoselectFirstSuggestion(false));
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(testing::ElementsAre(static_cast<int>(
-                  POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE))));
+              SuggestionVectorIdsAre(
+                  POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE));
   EXPECT_EQ(open_args.element_bounds, gfx::RectF());
   EXPECT_EQ(open_args.text_direction, base::i18n::UNKNOWN_DIRECTION);
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
@@ -603,10 +584,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->OnSuggestionsReturned(field_id_, suggestions,
                                             AutoselectFirstSuggestion(false));
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(testing::ElementsAre(
-                  static_cast<int>(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))));
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
 }
 
@@ -617,8 +596,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(std::u16string(), -1,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(
+      std::u16string(), Suggestion::FrontendId(-1), Suggestion::BackendId());
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
@@ -626,7 +605,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
 
-  external_delegate_->DidAcceptSuggestion(Suggestion(-1), 0);
+  external_delegate_->DidAcceptSuggestion(
+      Suggestion(Suggestion::FrontendId(-1)), 0);
 }
 
 // Test that the Autofill delegate still allows previewing and filling
@@ -650,10 +630,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   external_delegate_->OnSuggestionsReturned(field_id_, suggestions,
                                             AutoselectFirstSuggestion(false));
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(testing::ElementsAre(
-                  static_cast<int>(POPUP_ITEM_ID_IBAN_ENTRY))));
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_IBAN_ENTRY));
 
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
@@ -687,10 +665,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->OnSuggestionsReturned(field_id_, suggestions,
                                             AutoselectFirstSuggestion(false));
 
-  // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(testing::ElementsAre(
-                  static_cast<int>(POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY))));
+              SuggestionVectorIdsAre(POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY));
 
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_,
@@ -735,7 +711,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(u"baz foo", 1,
+  external_delegate_->DidSelectSuggestion(u"baz foo", Suggestion::FrontendId(1),
                                           Suggestion::BackendId());
 
   // Ensure selecting an autocomplete entry will cause any previews to
@@ -889,8 +865,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
 // Test that autofill client will start the signin flow after the user accepted
 // the suggestion to sign in.
 TEST_F(AutofillExternalDelegateUnitTest, SigninPromoMenuItem) {
-  EXPECT_CALL(autofill_client_,
-              ExecuteCommand(autofill::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO));
+  EXPECT_CALL(autofill_client_, ExecuteCommand(Suggestion::FrontendId(
+                                    POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO)));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -942,8 +918,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),
-              OnSingleFieldSuggestionSelected(dummy_string,
-                                              POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
+              OnSingleFieldSuggestionSelected(
+                  dummy_string,
+                  Suggestion::FrontendId(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)))
       .Times(1);
   base::HistogramTester histogram_tester;
 
@@ -960,7 +937,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
               RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockMerchantPromoCodeManager(),
               OnSingleFieldSuggestionSelected(
-                  dummy_string, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY))
+                  dummy_string, Suggestion::FrontendId(
+                                    POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY)))
       .Times(1);
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY,
@@ -972,9 +950,10 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   // Test that IBANs get autofilled.
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, ummasked_iban_value));
-  EXPECT_CALL(*autofill_client_.GetMockIBANManager(),
-              OnSingleFieldSuggestionSelected(masked_iban_value,
-                                              POPUP_ITEM_ID_IBAN_ENTRY));
+  EXPECT_CALL(
+      *autofill_client_.GetMockIBANManager(),
+      OnSingleFieldSuggestionSelected(
+          masked_iban_value, Suggestion::FrontendId(POPUP_ITEM_ID_IBAN_ENTRY)));
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
           POPUP_ITEM_ID_IBAN_ENTRY, masked_iban_value,

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -91,7 +92,8 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       const assistant_client::OutputStreamFormat& stream_format);
 
   // Owned by |AssistantManagerServiceImpl|.
-  mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> platform_delegate_ =
+      nullptr;
 
   mojo::Remote<mojom::AudioOutputDelegate> audio_output_delegate_;
 

@@ -12,8 +12,10 @@
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
 #include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
 #include "ash/user_education/mock_user_education_delegate.h"
-#include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_ash_test_base.h"
+#include "ash/user_education/user_education_feature_controller.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
+#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -100,6 +102,20 @@ TEST_P(UserEducationControllerTest, HoldingSpaceTourControllerExists) {
   EXPECT_EQ(!!HoldingSpaceTourController::Get(), IsHoldingSpaceTourEnabled());
 }
 
+// Verifies that the user education help bubble controller exists iff user
+// education features are enabled.
+TEST_P(UserEducationControllerTest, UserEducationHelpBubbleControllerExists) {
+  EXPECT_EQ(!!UserEducationHelpBubbleController::Get(),
+            !!UserEducationController::Get());
+}
+
+// Verifies that the user education ping controller exists iff user education
+// features are enabled.
+TEST_P(UserEducationControllerTest, UserEducationPingControllerExists) {
+  EXPECT_EQ(!!UserEducationPingController::Get(),
+            !!UserEducationController::Get());
+}
+
 // Verifies that the Welcome Tour controller exists iff the feature is enabled.
 TEST_P(UserEducationControllerTest, WelcomeTourControllerExists) {
   EXPECT_EQ(!!WelcomeTourController::Get(), IsWelcomeTourEnabled());
@@ -128,7 +144,8 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
     auto* capture_mode_tour_controller = CaptureModeTourController::Get();
     ASSERT_TRUE(capture_mode_tour_controller);
     for (const auto& [tutorial_id, ignore] :
-         static_cast<TutorialController*>(capture_mode_tour_controller)
+         static_cast<UserEducationFeatureController*>(
+             capture_mode_tour_controller)
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
@@ -144,7 +161,8 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
     auto* holding_space_tour_controller = HoldingSpaceTourController::Get();
     ASSERT_TRUE(holding_space_tour_controller);
     for (const auto& [tutorial_id, ignore] :
-         static_cast<TutorialController*>(holding_space_tour_controller)
+         static_cast<UserEducationFeatureController*>(
+             holding_space_tour_controller)
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
@@ -159,7 +177,7 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
     auto* welcome_tour_controller = WelcomeTourController::Get();
     ASSERT_TRUE(welcome_tour_controller);
     for (const auto& [tutorial_id, ignore] :
-         static_cast<TutorialController*>(welcome_tour_controller)
+         static_cast<UserEducationFeatureController*>(welcome_tour_controller)
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,

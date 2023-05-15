@@ -147,13 +147,10 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
-  // The below methods include a test for the experiment
-  // `kSystemProfileSelectionDefaultNone` and will include a similar experiment
-  // for Guest Profile, these two experiment can be bypassed by setting the
-  // force_* to true. The naming of the functions follows the logic of
-  // `ProfileSelections` predefined experimental builders.
-  // - `force_guest_profile`: to force Guest Profile selection in experiment.
-  // - `force_system_profile`: to force System Profile selection in experiment.
+  // The below methods include parameters to enforce the value given to Regular
+  // Profile type for Guest/System Profile types. Guest and System Profiles are
+  // defaulted to return no profile (which leads to no service constructed in
+  // terms of KeyedServices).
   //
   // Returns the Original Profile for Regular Profile and redirects Incognito
   // to the Original Profile.

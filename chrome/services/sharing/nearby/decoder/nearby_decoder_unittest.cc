@@ -199,7 +199,8 @@ class NearbySharingDecoderTest : public testing::Test {
  public:
   NearbySharingDecoderTest() {
     decoder_ = std::make_unique<NearbySharingDecoder>(
-        remote_.BindNewPipeAndPassReceiver());
+        remote_.BindNewPipeAndPassReceiver(),
+        /*on_disconnect=*/base::DoNothing());
   }
 
   NearbySharingDecoder* decoder() const { return decoder_.get(); }

@@ -26,7 +26,7 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
 import android.widget.FrameLayout;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -198,7 +198,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount,
             int standardIndexSelected, int incognitoIndexSelected, boolean incognitoSelected) {
         Context context = new ContextThemeWrapper(
-                InstrumentationRegistry.getContext(), R.style.Theme_BrowserUI_DayNight);
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
@@ -752,7 +752,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(
-                    InstrumentationRegistry.getContext());
+                    ApplicationProvider.getApplicationContext());
         });
 
         mStartSurfaceSupplier = () -> mStartSurface;

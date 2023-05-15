@@ -73,7 +73,7 @@ RecordingTypeMenuView::RecordingTypeMenuView(
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD),
             ToInt(RecordingType::kGif));
 
-  capture_mode_util::MaybeSetHighlightBorder(
+  capture_mode_util::SetHighlightBorder(
       this, kCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow

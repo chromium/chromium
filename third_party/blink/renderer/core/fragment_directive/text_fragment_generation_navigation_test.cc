@@ -8,8 +8,6 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test_results.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
@@ -21,6 +19,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -75,8 +75,9 @@ void TextFragmentGenerationNavigationTest::SetUp() {
 }
 
 void TextFragmentGenerationNavigationTest::RunAsyncMatchingTasks() {
-  auto& scheduler = blink::scheduler::WebThreadScheduler::MainThreadScheduler();
-  blink::scheduler::RunIdleTasksForTesting(scheduler, WTF::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   RunPendingTasks();
 }
 

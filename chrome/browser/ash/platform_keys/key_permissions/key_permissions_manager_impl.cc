@@ -221,10 +221,8 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
   chaps::KeyPermissions key_permissions =
       CreateKeyPermissions(corporate_usage_allowed.value(), arc_usage_allowed);
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
   key_permissions_manager_->platform_keys_service_->SetAttributeForKey(
-      key_permissions_manager_->token_id_, std::move(public_key_str),
+      key_permissions_manager_->token_id_, std::move(public_key_spki_der),
       KeyAttributeType::kKeyPermissions,
       internal::KeyPermissionsProtoToBytes(key_permissions),
       base::BindOnce(&KeyPermissionsInChapsUpdater::OnKeyPermissionsUpdated,
@@ -402,10 +400,9 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
     return;
   }
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
   platform_keys_service_->GetAttributeForKey(
-      token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
+      token_id_, std::move(public_key_spki_der),
+      KeyAttributeType::kKeyPermissions,
       base::BindOnce(
           &KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), usage));
@@ -417,10 +414,9 @@ void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
   chaps::KeyPermissions key_permissions = CreateKeyPermissions(
       /*corporate_usage_allowed=*/true, AreCorporateKeysAllowedForArcUsage());
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
   platform_keys_service_->SetAttributeForKey(
-      token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
+      token_id_, std::move(public_key_spki_der),
+      KeyAttributeType::kKeyPermissions,
       internal::KeyPermissionsProtoToBytes(key_permissions),
       std::move(callback));
 }

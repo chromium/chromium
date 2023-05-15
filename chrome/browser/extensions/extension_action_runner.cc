@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
@@ -102,26 +103,48 @@ ExtensionActionRunner* ExtensionActionRunner::GetForWebContents(
 ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     const Extension* extension,
     bool grant_tab_permissions) {
-  if (grant_tab_permissions) {
-    int blocked_actions = GetBlockedActions(extension->id());
-    GrantTabPermissions({extension});
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
 
+  if (grant_tab_permissions && GetBlockedActions(extension->id())) {
     // If the extension had blocked actions before granting tab permissions,
     // granting active tab will have run the extension. Don't execute further
     // since clicking should run blocked actions *or* the normal extension
     // action, not both.
-    if (blocked_actions)
-      return ExtensionAction::ACTION_NONE;
+    GrantTabPermissions({extension});
+    return ExtensionAction::ACTION_NONE;
   }
 
-  // Anything that gets here should have a page or browser action, and not
-  // blocked actions.
+  // Anything that gets here should have a page or browser action, or toggle the
+  // extension's side panel, and not blocked actions.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    // This method is only called to execute an action by the user, so we can
+    // grant tab permissions unless `action` will toggle the side panel. Tab
+    // permissions are not granted in this case because:
+    //  - the extension's side panel entry can be opened through the side panel
+    //    itself which does not grant tab permissions
+    //  - extension side panels can persist through tab changes and so
+    //  permissions
+    //    granted for one tab shouldn't persist on that side panel across tab
+    //    changes.
+    // TODO(crbug.com/1435530): Evaluate if this is the best course of action.
+    SidePanelService* side_panel_service =
+        SidePanelService::Get(browser_context_);
+    if (side_panel_service &&
+        side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
+      return ExtensionAction::ACTION_TOGGLE_SIDE_PANEL;
+    }
+  }
+
+  if (grant_tab_permissions) {
+    GrantTabPermissions({extension});
+  }
+
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context_)
           ->GetExtensionAction(*extension);
   DCHECK(extension_action);
 
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
   if (!extension_action->GetIsVisible(tab_id))
     return ExtensionAction::ACTION_NONE;
 
@@ -177,119 +200,6 @@ void ExtensionActionRunner::GrantTabPermissions(
       extension_ids,
       base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                      weak_factory_.GetWeakPtr()));
-}
-
-void ExtensionActionRunner::HandleUserSiteSettingModified(
-    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
-    const url::Origin& origin,
-    PermissionsManager::UserSiteSetting new_site_settings) {
-  // Granting access to all extensions is only allowed iff feature is enabled.
-  DCHECK(
-      new_site_settings !=
-          PermissionsManager::UserSiteSetting::kGrantAllExtensions ||
-      base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
-
-  auto* registry = ExtensionRegistry::Get(browser_context_);
-  std::vector<const Extension*> extensions;
-  extensions.reserve(action_ids.size());
-  for (const auto& action_id : action_ids) {
-    const Extension* extension =
-        registry->enabled_extensions().GetByID(action_id);
-    DCHECK(extension);
-    extensions.push_back(extension);
-  }
-
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser_context_);
-  auto current_site_settings = permissions_manager->GetUserSiteSetting(origin);
-  DCHECK_NE(new_site_settings, current_site_settings);
-
-  bool refresh_required = false;
-  if (current_site_settings ==
-      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
-    // When the user blocks all the extensions, each extension's page access is
-    // set as "denied". Blocked actions in the ExtensionActionRunner are
-    // computed by checking if a page access is "withheld". Therefore, we
-    // always need a refresh since we don't know if there are any extensions
-    // that would have wanted to run if the page had not been restricted by the
-    // user.
-    refresh_required = true;
-  } else {
-    SitePermissionsHelper permissions_helper(
-        Profile::FromBrowserContext(browser_context_));
-
-    switch (new_site_settings) {
-      case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
-        DCHECK_EQ(current_site_settings,
-                  PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-        // Refresh the page if any extension that wants site access and needs a
-        // page refresh to run will gain site access.
-        refresh_required = base::ranges::any_of(
-            extensions,
-            [&permissions_helper, this](const Extension* extension) {
-              return permissions_helper.GetSiteInteraction(*extension,
-                                                           web_contents()) ==
-                         SitePermissionsHelper::SiteInteraction::kWithheld &&
-                     permissions_helper.PageNeedsRefreshToRun(
-                         GetBlockedActions(extension->id()));
-            });
-        break;
-      }
-      case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
-        // Refresh the page if any extension that had site access will lose it.
-        refresh_required = base::ranges::any_of(
-            extensions,
-            [&permissions_helper, this](const Extension* extension) {
-              return permissions_helper.GetSiteInteraction(*extension,
-                                                           web_contents()) ==
-                     SitePermissionsHelper::SiteInteraction::kGranted;
-            });
-        break;
-      }
-      case PermissionsManager::UserSiteSetting::kCustomizeByExtension: {
-        DCHECK_EQ(current_site_settings,
-                  PermissionsManager::UserSiteSetting::kGrantAllExtensions);
-        // Refresh the page if any extension that had site access will lose it.
-        // Since every extension currently has access via user site
-        // settings, only extensions with "on click" site access will lose
-        // access. This is because `PermissionsManager::UserSiteAccess` does not
-        // take into account user site settings, which means granting all
-        // extensions access doesn't change the extension's specific site
-        // access.
-        // TODO(emiliapaz): `PermissionsManager::UserSiteAccess` should take
-        // into account user site settings. This is not a problem now, because
-        // `SitePermissionsHelper::GetSiteAccess` is called only after checking
-        // a) user site setting is "customize by extension" or b) selecting site
-        // access is possible (e.g. is not a policy restricted site, extension
-        // requests host permissions). However, this can be easily wrongly
-        // called in the future. For this change, a major restructure in
-        // permissions struct and enums will be needed.
-        refresh_required = base::ranges::any_of(
-            extensions,
-            [&permissions_manager, this](const Extension* extension) {
-              return permissions_manager->GetUserSiteAccess(
-                         *extension, web_contents()->GetLastCommittedURL()) ==
-                     PermissionsManager::UserSiteAccess::kOnClick;
-            });
-        break;
-      }
-    }
-  }
-
-  if (refresh_required) {
-    std::vector<extensions::ExtensionId> extension_ids;
-    ShowReloadPageBubble(
-        extension_ids,
-        base::BindOnce(&ExtensionActionRunner::
-                           OnReloadPageBubbleAcceptedForUserSiteSettingsChange,
-                       weak_factory_.GetWeakPtr(), origin, new_site_settings));
-    return;
-  }
-
-  permissions_manager->UpdateUserSiteSetting(origin, new_site_settings);
-  // TODO(emiliapaz): Run blocked actions for extensions that have a blocked
-  // action but don't require a page refresh to run.
 }
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
@@ -533,24 +443,6 @@ void ExtensionActionRunner::ShowReloadPageBubbleWithReloadPageCallback(
 }
 
 void ExtensionActionRunner::OnReloadPageBubbleAccepted() {
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
-}
-
-void ExtensionActionRunner::OnReloadPageBubbleAcceptedForUserSiteSettingsChange(
-    const url::Origin& origin,
-    extensions::PermissionsManager::UserSiteSetting site_settings) {
-  // If the web contents have navigated to a different origin, do nothing.
-  if (origin != web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin())
-    return;
-
-  extensions::PermissionsManager::Get(browser_context_)
-      ->UpdateUserSiteSetting(origin, site_settings);
-
-  // TODO(emiliapaz): Updating site settings is an asynchronous process. Reload
-  // page could happen before the process is complete and the renderers may not
-  // be aware of the new permission state. Reload only after site settings
-  // finished updating. Also, see if we could have the same problem when
-  // reloading the page after site access change.
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 

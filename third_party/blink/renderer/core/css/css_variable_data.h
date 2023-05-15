@@ -128,12 +128,12 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
                               bool& has_line_height_units);
 
   // The maximum number of bytes for a CSS variable (including text
-  // that comes from var() substitution).
+  // that comes from var() substitution). This matches Firefox.
   //
   // If you change this, length_ below may need updates.
   //
   // https://drafts.csswg.org/css-variables/#long-variables
-  static const size_t kMaxVariableBytes = 1048576;
+  static const size_t kMaxVariableBytes = 2097152;
 
  private:
   CSSVariableData()
@@ -159,16 +159,16 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // balloon in size on Windows:
   // https://randomascii.wordpress.com/2010/06/06/bit-field-packing-with-visual-c/
 
-  // Enough for storing up to 1MB (and then some), cf. kMaxSubstitutionBytes.
-  // The remaining 5 bits are kept in reserve for future use.
-  const unsigned length_ : 21;
+  // Enough for storing up to 2MB (and then some), cf. kMaxSubstitutionBytes.
+  // The remaining 4 bits are kept in reserve for future use.
+  const unsigned length_ : 22;
   const unsigned is_animation_tainted_ : 1;       // bool.
   const unsigned needs_variable_resolution_ : 1;  // bool.
   const unsigned is_8bit_ : 1;                    // bool.
   unsigned has_font_units_ : 1;                   // bool.
   unsigned has_root_font_units_ : 1;              // bool.
   unsigned has_line_height_units_ : 1;            // bool.
-  const unsigned unused_ : 5;
+  const unsigned unused_ : 4;
 
   // The actual character data is stored after this.
 };

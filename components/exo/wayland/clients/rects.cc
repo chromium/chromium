@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
@@ -146,7 +147,7 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 }
 
 struct Frame {
-  ClientBase::Buffer* buffer = nullptr;
+  raw_ptr<ClientBase::Buffer, ExperimentalAsh> buffer = nullptr;
   base::TimeDelta wall_time;
   base::TimeDelta cpu_time;
   std::vector<base::TimeTicks> event_times;

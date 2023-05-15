@@ -51,8 +51,10 @@ base::flat_map<AudioContentType, double> LoadSavedVolumes(
   JSONFileValueDeserializer deserializer(storage_path);
   auto stored_data = deserializer.Deserialize(nullptr, nullptr);
   if (stored_data && stored_data->is_dict()) {
+    const auto& stored_data_dict = stored_data->GetDict();
     for (auto type : types) {
-      auto v = stored_data->FindDoublePath(ContentTypeToDbFSKey(type));
+      auto v =
+          stored_data_dict.FindDoubleByDottedPath(ContentTypeToDbFSKey(type));
       if (v) {
         volumes[type] = v.value();
       }
@@ -71,8 +73,10 @@ base::flat_map<AudioContentType, double> LoadSavedVolumes(
     return volumes;
   }
 
-  const base::Value* default_volume_dict =
-      cast_audio_config->FindDictKey(kKeyDefaultVolume);
+  const auto& cast_audio_config_dict = cast_audio_config->GetDict();
+
+  const base::Value::Dict* default_volume_dict =
+      cast_audio_config_dict.FindDict(kKeyDefaultVolume);
   if (!default_volume_dict) {
     LOG(INFO) << "No default volumes specified in " << path;
     return volumes;
@@ -80,7 +84,7 @@ base::flat_map<AudioContentType, double> LoadSavedVolumes(
 
   for (auto type : types) {
     std::string key = ContentTypeToDbFSKey(type);
-    auto v = default_volume_dict->FindDoublePath(key);
+    auto v = default_volume_dict->FindDoubleByDottedPath(key);
     if (v) {
       LOG(INFO) << "Using default volume for " << key << " of " << v.value();
       volumes[type] = v.value();

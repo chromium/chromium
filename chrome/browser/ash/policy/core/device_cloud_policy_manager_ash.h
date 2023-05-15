@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -52,6 +53,7 @@ class EuiccStatusUploader;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
 class ManagedSessionService;
+class ReportingUserTracker;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
@@ -117,6 +119,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   }
 
   DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
+  ReportingUserTracker* reporting_user_tracker() {
+    return reporting_user_tracker_.get();
+  }
 
   // Return the StatusUploader used to communicate device status to the
   // policy server.
@@ -211,7 +216,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Manages external data referenced by device policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
-  ServerBackedStateKeysBroker* state_keys_broker_;
+  raw_ptr<ServerBackedStateKeysBroker, DanglingUntriaged | ExperimentalAsh>
+      state_keys_broker_;
 
   // Helper object that handles updating the server with our current device
   // state.
@@ -230,10 +236,12 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  // PrefService instance to read the policy refresh rate from.
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+
   base::CallbackListSubscription state_keys_update_subscription_;
 
-  // PrefService instance to read the policy refresh rate from.
-  PrefService* local_state_;
+  std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
 
   std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
       enrollment_certificate_uploader_;

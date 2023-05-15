@@ -59,15 +59,15 @@ const float kNormalFrameTimeoutInFrameIntervals = 25.0f;
 
 // Min delta time between two frames allowed without being dropped if a max
 // frame rate is specified.
-constexpr base::TimeDelta kMinTimeInMsBetweenFrames =
+constexpr base::TimeDelta kMinTimeBetweenFrames =
     base::Milliseconds(VideoTrackAdapter::kMinTimeBetweenFramesMs);
 // If the delta between two frames is bigger than this, we will consider it to
 // be invalid and reset the fps calculation.
-constexpr base::TimeDelta kMaxTimeInMsBetweenFrames = base::Milliseconds(1000);
+constexpr base::TimeDelta kMaxTimeBetweenFrames = base::Milliseconds(1000);
 
-constexpr base::TimeDelta kFrameRateChangeIntervalInSeconds = base::Seconds(1);
+constexpr base::TimeDelta kFrameRateChangeInterval = base::Seconds(1);
 const double kFrameRateChangeRate = 0.01;
-constexpr base::TimeDelta kFrameRateUpdateIntervalInSeconds = base::Seconds(5);
+constexpr base::TimeDelta kFrameRateUpdateInterval = base::Seconds(5);
 
 struct ComputedSettings {
   gfx::Size frame_size;
@@ -108,8 +108,7 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
   // reported value.
   if (std::abs(settings->frame_rate - settings->last_updated_frame_rate) >
       settings->last_updated_frame_rate * kFrameRateChangeRate) {
-    if (now - settings->new_frame_rate_timestamp >
-        kFrameRateChangeIntervalInSeconds) {
+    if (now - settings->new_frame_rate_timestamp > kFrameRateChangeInterval) {
       settings->new_frame_rate_timestamp = now;
       settings->last_update_timestamp = now;
       settings->last_updated_frame_rate = settings->frame_rate;
@@ -121,8 +120,7 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
 
   // Update frame rate if it hasn't been updated in the last
   // kFrameRateUpdateIntervalInSeconds seconds.
-  if (now - settings->last_update_timestamp >
-      kFrameRateUpdateIntervalInSeconds) {
+  if (now - settings->last_update_timestamp > kFrameRateUpdateInterval) {
     settings->last_update_timestamp = now;
     settings->last_updated_frame_rate = settings->frame_rate;
     return true;
@@ -151,7 +149,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // Setting |max_frame_rate| to 0.0, means that no frame rate limitation
   // will be done.
   VideoFrameResolutionAdapter(
-      scoped_refptr<base::SingleThreadTaskRunner> render_message_loop,
+      scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
       const VideoTrackAdapterSettings& settings,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
@@ -245,9 +243,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 
   VideoTrackAdapterSettings settings_;
-  double frame_rate_;
-  base::TimeDelta last_time_stamp_;
-  double keep_frame_counter_;
+  double measured_input_frame_rate_ = MediaStreamVideoSource::kDefaultFrameRate;
+  base::TimeDelta last_time_stamp_ = base::TimeDelta::Max();
+  double fractional_frames_due_ = 0.0;
 
   ComputedSettings track_settings_;
   ComputedSettings source_format_settings_;
@@ -256,15 +254,12 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 };
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
-    scoped_refptr<base::SingleThreadTaskRunner> render_message_loop,
+    scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
     const VideoTrackAdapterSettings& settings,
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
-    : renderer_task_runner_(render_message_loop),
+    : renderer_task_runner_(reader_task_runner),
       media_stream_video_source_(media_stream_video_source),
-      settings_(settings),
-      frame_rate_(MediaStreamVideoSource::kDefaultFrameRate),
-      last_time_stamp_(base::TimeDelta::Max()),
-      keep_frame_counter_(0.0) {
+      settings_(settings) {
   DVLOG(1) << __func__ << " max_framerate "
            << settings.max_frame_rate().value_or(-1);
   DCHECK(renderer_task_runner_.get());
@@ -489,30 +484,26 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     const media::VideoFrame& frame,
     float source_frame_rate,
     media::VideoCaptureFrameDropReason* reason) {
-  DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
-  // Do not drop frames if max frame rate hasn't been specified.
+  // Never drop frames if the max frame rate has not been specified.
   if (!settings_.max_frame_rate().has_value()) {
     last_time_stamp_ = frame.timestamp();
     return false;
   }
 
-  const base::TimeDelta delta_ms = (frame.timestamp() - last_time_stamp_);
+  const base::TimeDelta delta = (frame.timestamp() - last_time_stamp_);
 
-  // Check if the time since the last frame is completely off.
-  if (delta_ms.is_negative() || delta_ms > kMaxTimeInMsBetweenFrames) {
-    DVLOG(3) << " reset timestamps";
+  // Keep the frame if the time since the last frame is completely off.
+  if (delta.is_negative() || delta > kMaxTimeBetweenFrames) {
     // Reset |last_time_stamp_| and fps calculation.
     last_time_stamp_ = frame.timestamp();
-    frame_rate_ = settings_.max_frame_rate().value_or(
-        MediaStreamVideoSource::kDefaultFrameRate);
-    DVLOG(1) << " frame rate filter initialized to " << frame_rate_ << " fps";
-    keep_frame_counter_ = 0.0;
+    measured_input_frame_rate_ = *settings_.max_frame_rate();
+    fractional_frames_due_ = 0.0;
     return false;
   }
 
-  if (delta_ms < kMinTimeInMsBetweenFrames) {
+  if (delta < kMinTimeBetweenFrames) {
     // We have seen video frames being delivered from camera devices back to
     // back. The simple EMA filter for frame rate calculation is too short to
     // handle that. https://crbug/394315
@@ -521,8 +512,6 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     // The time stamps are generated by Chrome and not the actual device.
     // Most likely the back to back problem is caused by software and not the
     // actual camera.
-    DVLOG(3) << "Drop frame since delta time since previous frame is "
-             << delta_ms.InMillisecondsF() << "ms.";
     *reason = media::VideoCaptureFrameDropReason::
         kResolutionAdapterTimestampTooCloseToPrevious;
     return true;
@@ -530,29 +519,37 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
 
   last_time_stamp_ = frame.timestamp();
 
-  // Calculate the frame rate using an exponential moving average (EMA) filter.
-  // Use a simple filter with 0.1 weight of the current sample.
-  frame_rate_ = 100 / delta_ms.InMillisecondsF() + 0.9 * frame_rate_;
-  DVLOG(3) << " delta_ms=" << delta_ms << ", frame_rate=" << frame_rate_
-           << " fps";
+  // Calculate the frame rate from the source using an exponential moving
+  // average (EMA) filter. Use a simple filter with 0.1 weight for the current
+  // sample.
+  double rate_for_current_frame = 1000.0 / delta.InMillisecondsF();
+  measured_input_frame_rate_ =
+      0.1 * rate_for_current_frame + 0.9 * measured_input_frame_rate_;
 
-  // Prefer to not drop frames.
-  if (*settings_.max_frame_rate() + 0.5f > frame_rate_) {
+  // Keep the frame if the input frame rate is lower than the requested frame
+  // rate or if it exceeds the target frame rate by no more than a small amount.
+  if (*settings_.max_frame_rate() + 0.5f > measured_input_frame_rate_) {
     return false;  // Keep this frame.
   }
 
-  // The input frame rate is higher than requested.
-  // Decide if we should keep this frame or drop it.
-  keep_frame_counter_ += *settings_.max_frame_rate() / frame_rate_;
-  if (keep_frame_counter_ >= 1) {
-    keep_frame_counter_ -= 1;
-    // Keep the frame.
-    return false;
+  // At this point, the input frame rate is known to be greater than the maximum
+  // requested frame rate by a potentially large amount. Accumulate the fraction
+  // of a frame that we should keep given the input rate. Drop the frame if a
+  // full frame has not been accumulated yet.
+  fractional_frames_due_ +=
+      *settings_.max_frame_rate() / measured_input_frame_rate_;
+  if (fractional_frames_due_ < 1.0) {
+    *reason = media::VideoCaptureFrameDropReason::
+        kResolutionAdapterFrameRateIsHigherThanRequested;
+    return true;
   }
-  DVLOG(3) << "Drop frame since frame rate is too high.";
-  *reason = media::VideoCaptureFrameDropReason::
-      kResolutionAdapterFrameRateIsHigherThanRequested;
-  return true;
+
+  // A full frame is due to be delivered. Keep the frame and remove it
+  // from the accumulator of due frames. The number of due frames stays in the
+  // [0.0, 1.0) range.
+  fractional_frames_due_ -= 1.0;
+
+  return false;
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(

@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -642,7 +641,7 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   // we can end up creating a larger buffer than we have data for, and the end
   // of the buffer will remain uninitialized after we copy/UnPreMultiply the
   // image data into it).
-  height = base::clamp(height, 0, bitmap.height());
+  height = std::clamp(height, 0, bitmap.height());
 
   // SkBitmap uses pre-multiplied alpha but the KMean clustering function
   // above uses non-pre-multiplied alpha. Transform the bitmap before we

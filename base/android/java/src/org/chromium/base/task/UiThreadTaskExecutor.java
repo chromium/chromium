@@ -6,8 +6,6 @@ package org.chromium.base.task;
 
 import android.os.Handler;
 
-import org.chromium.base.ThreadUtils;
-
 /**
  * This {@link TaskExecutor} is for tasks posted with UI Thread {@link TaskTraits}. It maps to
  * content::BrowserTaskExecutor in C++, except that in Java the UI thread is a base/ concept and
@@ -20,8 +18,7 @@ public class UiThreadTaskExecutor implements TaskExecutor {
     private final SingleThreadTaskRunner mUserVisibleTaskRunner;
     private final SingleThreadTaskRunner mUserBlockingTaskRunner;
 
-    public UiThreadTaskExecutor() {
-        Handler handler = ThreadUtils.getUiThreadHandler();
+    public UiThreadTaskExecutor(Handler handler) {
         mBestEffortTaskRunner = new SingleThreadTaskRunnerImpl(handler, TaskTraits.UI_BEST_EFFORT);
         mUserVisibleTaskRunner =
                 new SingleThreadTaskRunnerImpl(handler, TaskTraits.UI_USER_VISIBLE);

@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
@@ -98,7 +99,7 @@ class AnimationWaiter : public ui::LayerAnimationObserver,
   void Wait() { run_loop_.Run(); }
 
  private:
-  ui::Layer* layer_;
+  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
   base::RunLoop run_loop_;
 };
 
@@ -278,7 +279,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return media_controls_view_->GetArtworkClipPath();
   }
 
-  LockScreenMediaControlsView* media_controls_view_ = nullptr;
+  raw_ptr<LockScreenMediaControlsView, ExperimentalAsh> media_controls_view_ =
+      nullptr;
   std::unique_ptr<AnimationWaiter> animation_waiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
@@ -290,7 +292,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
 
   base::test::ScopedFeatureList feature_list;
 
-  LockContentsView* lock_contents_view_ = nullptr;
+  raw_ptr<LockContentsView, ExperimentalAsh> lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
 };
@@ -686,7 +688,6 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   const bool should_use_dark_color =
-      features::IsDarkLightModeEnabled() &&
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
       message_center::kProductIcon, kAppIconSize,

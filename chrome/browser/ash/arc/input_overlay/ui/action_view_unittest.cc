@@ -128,10 +128,18 @@ void CheckActionTapLabelPosition(TapLabelPosition label_position,
   }
 }
 
+}  // namespace
+
 class ActionViewTest : public views::ViewsTestBase {
- protected:
+ public:
   ActionViewTest() = default;
 
+  void SetRepositionController() {
+    move_action_view_->SetRepositionController();
+    tap_action_view_->SetRepositionController();
+  }
+
+ protected:
   void PressLeftMouseAtActionView(ActionView* action_view) {
     // Press down at the center of the touch point.
     local_location_ = action_view->touch_point()->bounds().CenterPoint();
@@ -141,7 +149,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view->touch_point()->ApplyMousePressed(press);
+    action_view->touch_point()->OnMousePressed(press);
   }
 
   void MouseDragActionViewBy(ActionView* action_view,
@@ -151,7 +159,7 @@ class ActionViewTest : public views::ViewsTestBase {
     auto drag =
         ui::MouseEvent(ui::ET_MOUSE_DRAGGED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    action_view->touch_point()->ApplyMouseDragged(drag);
+    action_view->touch_point()->OnMouseDragged(drag);
   }
 
   void ReleaseLeftMouse(ActionView* action_view) {
@@ -159,7 +167,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::MouseEvent(ui::ET_MOUSE_RELEASED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view->touch_point()->ApplyMouseReleased(release);
+    action_view->touch_point()->OnMouseReleased(release);
   }
 
   void TouchPressAtActionView(ActionView* action_view) {
@@ -173,7 +181,7 @@ class ActionViewTest : public views::ViewsTestBase {
         root_location_.x(), root_location_.y(), ui::EF_NONE,
         base::TimeTicks::Now(),
         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 0));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_begin);
+    action_view->touch_point()->OnGestureEvent(&scroll_begin);
   }
 
   void TouchMoveAtActionViewBy(ActionView* action_view,
@@ -184,7 +192,7 @@ class ActionViewTest : public views::ViewsTestBase {
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE,
                                                  move.x(), move.y()));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_update);
+    action_view->touch_point()->OnGestureEvent(&scroll_update);
   }
 
   void TouchReleaseAtActionView(ActionView* action_view) {
@@ -192,7 +200,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::GestureEvent(root_location_.x(), root_location_.y(), ui::EF_NONE,
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_end);
+    action_view->touch_point()->OnGestureEvent(&scroll_end);
   }
 
   void SetDisplayMode(DisplayMode display_mode) {
@@ -203,6 +211,7 @@ class ActionViewTest : public views::ViewsTestBase {
     return input_mapping_view_->GetIndexOf(view);
   }
 
+ protected:
   raw_ptr<ActionView> move_action_view_;
   raw_ptr<ActionView> tap_action_view_;
   raw_ptr<Action> move_action_;
@@ -220,10 +229,10 @@ class ActionViewTest : public views::ViewsTestBase {
         *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
-    touch_injector_->set_allow_reposition(true);
     touch_injector_->ParseActions(
-        *base::JSONReader::ReadAndReturnValueWithError(
-            kValidJsonActionMoveKey));
+        base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey)
+            .value()
+            .TakeDict());
     touch_injector_->RegisterEventRewriter();
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
         touch_injector_.get(), false);
@@ -237,6 +246,7 @@ class ActionViewTest : public views::ViewsTestBase {
     tap_action_view_ = tap_action_->action_view();
     move_action_ = actions[1].get();
     move_action_view_ = move_action_->action_view();
+    SetRepositionController();
     SetDisplayMode(DisplayMode::kView);
   }
 
@@ -578,5 +588,4 @@ TEST_F(ActionViewTest, TestActionViewReorder) {
   EXPECT_EQ(0u, *GetIndexOf(move_action_view_));
 }
 
-}  // namespace
 }  // namespace arc::input_overlay

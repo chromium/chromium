@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -49,7 +50,7 @@ class SearchTagRegistry {
     void ProcessPendingSearchTags(const std::vector<SearchConcept>& search_tags,
                                   bool is_pending_add);
 
-    SearchTagRegistry* registry_;
+    raw_ptr<SearchTagRegistry, ExperimentalAsh> registry_;
 
     // A SearchConcept along with a bool of the pending update state. If the
     // bool is true, the concept should be added; if the bool is false, the

@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -275,6 +276,281 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ContentScriptInjected() && !ExtensionWantsToRun());
   ASSERT_TRUE(ReloadPageAndWaitForLoad());
   EXPECT_TRUE(!ContentScriptInjected() && ExtensionWantsToRun());
+}
+
+// Provides test cases with an extension that executes a script programmatically
+// on every site it visits.
+class SitePermissionsHelperExecuteSciptBrowserTest
+    : public SitePermissionsHelperBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    // Loads an extension that executes a script on every page that is navigated
+    // to. Then loads a test page and confirms it is running on the page.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    extension_ = LoadExtension(test_data_dir_.AppendASCII(
+        "blocked_actions/revoke_execute_script_on_click"));
+    ASSERT_TRUE(extension_);
+
+    // Navigate to a page where the extension can run.
+    original_url_ = embedded_test_server()->GetURL("/simple.html");
+    ExtensionTestMessageListener listener("injection succeeded");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url_));
+    ASSERT_TRUE(active_web_contents());
+    ASSERT_TRUE(content::WaitForLoadStop(active_web_contents()));
+
+    permissions_manager_ = PermissionsManager::Get(profile());
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnAllSites);
+
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    ASSERT_TRUE(active_action_runner());
+    ASSERT_TRUE(ContentScriptInjected());
+    ASSERT_FALSE(ExtensionWantsToRun());
+
+    permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
+    original_nav_id_ =
+        active_nav_controller().GetLastCommittedEntry()->GetUniqueID();
+  }
+};
+
+// Tests that active tab is cleared when we revoke site permissions of an
+// extension that injects a script programmatically into the page. To fix
+// crbug.com/1433399.
+IN_PROC_BROWSER_TEST_F(
+    SitePermissionsHelperExecuteSciptBrowserTest,
+    UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {
+  // We want to control refreshes manually due to timing issues with permissions
+  // being updated across browser/renderer.
+  active_action_runner()->accept_bubble_for_testing(true);
+
+  {
+    // on all sites -> on click (revokes access)
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    ASSERT_FALSE(ContentScriptInjected());
+    ASSERT_TRUE(ExtensionWantsToRun());
+  }
+
+  ExtensionTestMessageListener listener("injection succeeded");
+  // on click -> on site (grants site access and active tab permission)
+  permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                        UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                    active_web_contents()),
+            SitePermissionsHelper::SiteInteraction::kGranted);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  ASSERT_TRUE(ContentScriptInjected());
+  ASSERT_FALSE(ExtensionWantsToRun());
+
+  {
+    // on site -> on-click (should remove site access and active tab
+    // permissions)
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+
+  {
+    // Confirm that unintended access isn't just waiting for a reload to allow
+    // it to run.
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    ASSERT_TRUE(ReloadPageAndWaitForLoad());
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+}
+
+// Tests that active tab is cleared when we revoke site permissions after
+// granting active tab permissions of an extension that injects a script
+// programmatically into the page.  To fix crbug.com/1433399.
+IN_PROC_BROWSER_TEST_F(
+    SitePermissionsHelperExecuteSciptBrowserTest,
+    UpdateSiteAccess_RevokingSitePermissionAfterGrantTab_AlsoClearsActiveTab) {
+  active_action_runner()->accept_bubble_for_testing(true);
+
+  {
+    // on all sites -> on click (revokes access)
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    ASSERT_FALSE(ContentScriptInjected());
+    ASSERT_TRUE(ExtensionWantsToRun());
+  }
+
+  ExtensionTestMessageListener listener("injection succeeded");
+  // Grant active tab independently.
+  active_action_runner()->RunAction(extension_, /*grant_tab_permissions=*/true);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  ASSERT_TRUE(ContentScriptInjected());
+  ASSERT_FALSE(ExtensionWantsToRun());
+
+  // on click -> on site (grants site access and redundantly active tab
+  // permission)
+  permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                        UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                    active_web_contents()),
+            SitePermissionsHelper::SiteInteraction::kGranted);
+  ASSERT_TRUE(ContentScriptInjected());
+  ASSERT_FALSE(ExtensionWantsToRun());
+
+  {
+    // on site -> on-click (should remove site access and active tab
+    // permissions)
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+
+  {
+    // Confirm that unintended access isn't just waiting for a reload to allow
+    // it to run.
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    ASSERT_TRUE(ReloadPageAndWaitForLoad());
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+}
+
+class SitePermissionsHelperContentScriptBrowserTest
+    : public SitePermissionsHelperBrowserTest {
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    // Loads an extension that injects a content script on every page that is
+    // navigated to on document_end. Then loads a test page and confirms it is
+    // running on the page.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    extension_ = LoadExtension(
+        test_data_dir_.AppendASCII("blocked_actions/content_script_at_end"));
+    ASSERT_TRUE(extension_);
+
+    // Navigate to a page where the extension can run.
+    original_url_ = embedded_test_server()->GetURL("/simple.html");
+    ExtensionTestMessageListener listener("injection succeeded");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url_));
+    ASSERT_TRUE(active_web_contents());
+    ASSERT_TRUE(content::WaitForLoadStop(active_web_contents()));
+
+    permissions_manager_ = PermissionsManager::Get(profile());
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnAllSites);
+
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    ASSERT_TRUE(active_action_runner());
+    ASSERT_TRUE(ContentScriptInjected());
+    ASSERT_FALSE(ExtensionWantsToRun());
+
+    permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
+    original_nav_id_ =
+        active_nav_controller().GetLastCommittedEntry()->GetUniqueID();
+  }
+};
+
+// Tests that active tab is cleared when we revoke site permissions of an
+// extension that injects a content script. To fix crbug.com/1433399.
+IN_PROC_BROWSER_TEST_F(
+    SitePermissionsHelperContentScriptBrowserTest,
+    UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {
+  // We want to control refreshes manually due to timing issues with permissions
+  // being updated across browser/renderer.
+  active_action_runner()->accept_bubble_for_testing(true);
+
+  // on all sites -> on click (revokes access)
+  permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                        UserSiteAccess::kOnClick);
+  ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnClick);
+  ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                    active_web_contents()),
+            SitePermissionsHelper::SiteInteraction::kWithheld);
+  ASSERT_TRUE(WaitForReloadToFinish());
+  ASSERT_FALSE(ContentScriptInjected());
+  ASSERT_TRUE(ExtensionWantsToRun());
+
+  ExtensionTestMessageListener listener("injection succeeded");
+  // on click -> on site (grants site access and active tab permission)
+  permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                        UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnSite);
+  ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                    active_web_contents()),
+            SitePermissionsHelper::SiteInteraction::kGranted);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  ASSERT_TRUE(ContentScriptInjected());
+  ASSERT_FALSE(ExtensionWantsToRun());
+
+  // on site -> on-click (should remove site access and active tab permissions)
+  permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                        UserSiteAccess::kOnClick);
+  EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnClick);
+  EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                    active_web_contents()),
+            SitePermissionsHelper::SiteInteraction::kWithheld);
+  ASSERT_TRUE(WaitForReloadToFinish());
+  EXPECT_FALSE(ContentScriptInjected());
+  EXPECT_TRUE(ExtensionWantsToRun());
+
+  // Confirm that unintended access isn't just waiting for a reload to allow it
+  // to run.
+  ASSERT_TRUE(ReloadPageAndWaitForLoad());
+  EXPECT_FALSE(ContentScriptInjected());
+  EXPECT_TRUE(ExtensionWantsToRun());
 }
 
 }  // namespace extensions

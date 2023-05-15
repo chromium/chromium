@@ -16,7 +16,7 @@ BASE_FEATURE(kFeature, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kPersistedDatabaseEnabled{
-    &kFeature, "persist_database", false};
+    &kFeature, "persist_database", true};
 
 // Set whether DIPS performs deletion.
 const base::FeatureParam<bool> kDeletionEnabled{&kFeature, "delete", false};
@@ -62,6 +62,6 @@ const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction{
 // is viewed as a bounce (provided all other criteria are equally met). The
 // interval starts every time a page finishes a navigation (a.k.a. a commit is
 // registered).
-const base::FeatureParam<base::TimeDelta> kBounceTimeout{
-    &kFeature, "bounce_timeout", base::Seconds(10)};
+const base::FeatureParam<base::TimeDelta> kClientBounceDetectionTimeout{
+    &kFeature, "client_bounce_detection_timeout", base::Seconds(10)};
 }  // namespace dips

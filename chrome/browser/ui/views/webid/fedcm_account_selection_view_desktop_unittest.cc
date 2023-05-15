@@ -75,6 +75,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowFailureDialog(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override {
     sheet_type_ = SheetType::kFailure;
@@ -129,8 +130,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   }
 
  private:
-  base::raw_ptr<views::Widget> widget_;
-  base::raw_ptr<TestBubbleView> bubble_view_;
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<TestBubbleView> bubble_view_;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -149,12 +150,13 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
                          const content::IdentityRequestAccount&) override {}
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason) override {}
+  void OnSigninToIdP() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
   content::WebContents* GetWebContents() override { return web_contents_; }
 
  private:
-  base::raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace
@@ -178,11 +180,12 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
-                            account_info.second);
+                            std::vector<std::string>(), account_info.second);
     }
     return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),
                                        content::ClientMetadata(GURL(), GURL()),
-                                       std::move(accounts));
+                                       std::move(accounts),
+                                       /*request_permission=*/true);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
@@ -204,7 +207,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         absl::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn}},
+          blink::mojom::RpContext::kSignIn, /* request_permission */ true}},
         mode, show_auto_reauthn_checkbox);
   }
 
@@ -321,7 +324,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
+                                kIdpEtldPlusOne,
                                 content::IdentityProviderMetadata());
   EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 
@@ -351,7 +355,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
+                                kIdpEtldPlusOne,
                                 content::IdentityProviderMetadata());
   EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 

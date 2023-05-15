@@ -10,6 +10,7 @@
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_bubble_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
@@ -52,9 +53,9 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
   void OnSpeechRateSelected(double speech_rate) override;
 
   // Owned by views hierarchy.
-  TrayBubbleView* bubble_view_ = nullptr;
-  views::Widget* bubble_widget_ = nullptr;
-  SelectToSpeakMenuView* menu_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<SelectToSpeakMenuView, ExperimentalAsh> menu_view_ = nullptr;
 
   std::unique_ptr<SelectToSpeakSpeedBubbleController> speed_bubble_controller_;
   double initial_speech_rate_ = 1.0;

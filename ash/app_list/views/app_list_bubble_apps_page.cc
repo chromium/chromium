@@ -687,7 +687,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
   bubble_utils::ApplyStyle(
       continue_label_, TypographyToken::kCrosAnnotation1,
       chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
           : kColorAshTextColorSecondary);
   continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

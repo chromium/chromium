@@ -9,10 +9,13 @@
 #include <string>
 #include <utility>
 
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -28,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -230,6 +234,31 @@ StyleColor ResolveFloodColor(ExecutionContext& execution_context,
   return StyleColor(parsed_color);
 }
 
+base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
+    const String property_name,
+    const Dictionary& dict,
+    ExceptionState& exception_state) {
+  // First try to get stdDeviation as a float.
+  absl::optional<float> single_float =
+      dict.Get<IDLFloat>(property_name, exception_state);
+  if (!exception_state.HadException() && single_float.has_value()) {
+    return gfx::PointF(*single_float, *single_float);
+  } else {
+    // Clear the exception if it exists in order to try again as a vector.
+    exception_state.ClearException();
+
+    absl::optional<Vector<float>> two_floats =
+        dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
+    if (exception_state.HadException() || !two_floats.has_value() ||
+        two_floats->size() != 2) {
+      return base::unexpected(String::Format(
+          "\"%s\" must either be a number or a array of two numbers",
+          property_name.Ascii().c_str()));
+    }
+    return gfx::PointF(two_floats->at(0), two_floats->at(1));
+  }
+}
+
 DropShadowFilterOperation* ResolveDropShadow(
     ExecutionContext& execution_context,
     const Dictionary& dict,
@@ -259,18 +288,21 @@ DropShadowFilterOperation* ResolveDropShadow(
     dy = *input;
   }
 
-  // TODO(crbug.com/1430524): `stdDeviation` should support separate X/Y values.
-  float blur = 2.0f;
+  // The shadow blur can have different standard deviations in the X and Y
+  // directions. `stdDeviation` can be specified as either a single number
+  // (same X & Y blur) or a vector of two numbers (different X & Y blurs).
+  gfx::PointF blur = {2.0f, 2.0f};
   if (dict.HasProperty("stdDeviation", no_throw)) {
-    absl::optional<float> input =
-        dict.Get<IDLFloat>("stdDeviation", exception_state);
-    if (exception_state.HadException() || !input.has_value()) {
+    base::expected<gfx::PointF, String> std_deviation =
+        ResolveFloatOrVec2f("stdDeviation", dict, exception_state);
+    if (exception_state.HadException() || !std_deviation.has_value()) {
       exception_state.ThrowTypeError(
-          "Failed to construct dropShadow filter, \"stdDeviation\" must be a "
-          "number.");
+          String::Format("Failed to construct dropShadow filter, %s.",
+                         std_deviation.error().Utf8().c_str()));
       return nullptr;
     }
-    blur = std::max(0.0f, *input);
+    blur = *std_deviation;
+    blur.SetToMax({0.0f, 0.0f});
   }
 
   StyleColor flood_color =
@@ -313,28 +345,17 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 
   // baseFrequency can be either a number or a list of numbers.
   if (dict.HasProperty("baseFrequency", no_throw)) {
-    // Try first to get baseFrequency as an array.
-    absl::optional<Vector<float>> base_frequency_array =
-        dict.Get<IDLSequence<IDLFloat>>("baseFrequency", exception_state);
-    // Clear the exception if it exists in order to try again as a float
-    exception_state.ClearException();
-    // An array size of one is parse-able as a float.
-    if (base_frequency_array.has_value() && base_frequency_array->size() == 2) {
-      base_frequency_x = base_frequency_array->at(0);
-      base_frequency_y = base_frequency_array->at(1);
-    } else {
-      // Otherwise, see if it the input can be interpreted as a float.
-      absl::optional<float> base_frequency_float =
-          dict.Get<IDLFloat>("baseFrequency", exception_state);
-      if (exception_state.HadException() || !base_frequency_float.has_value()) {
-        exception_state.ThrowTypeError(
-            "Failed to construct turbulence filter, \"baseFrequency\" must be "
-            "a number or list of two numbers.");
-        return nullptr;
-      }
-      base_frequency_x = *base_frequency_float;
-      base_frequency_y = *base_frequency_float;
+    base::expected<gfx::PointF, String> base_frequency =
+        ResolveFloatOrVec2f("baseFrequency", dict, exception_state);
+    if (exception_state.HadException() || !base_frequency.has_value()) {
+      exception_state.ThrowTypeError(
+          String::Format("Failed to construct turbulence filter, %s.",
+                         base_frequency.error().Utf8().c_str()));
+      return nullptr;
     }
+    base_frequency_x = base_frequency->x();
+    base_frequency_y = base_frequency->y();
+
     if (base_frequency_x < 0 || base_frequency_y < 0) {
       exception_state.ThrowTypeError(
           "Failed to construct turbulence filter, negative values for "
@@ -401,14 +422,24 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
       type, base_frequency_x, base_frequency_y, num_octaves, seed,
       stitch_tiles == kSvgStitchtypeStitch ? true : false);
 }
+
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
-    ExecutionContext* execution_context,
-    HeapVector<ScriptValue> filters,
+    const V8CanvasFilterInput& filter_init,
+    ExecutionContext& execution_context,
     ExceptionState& exception_state) {
-  FilterOperations operations;
+  HeapVector<ScriptValue> filters;
+  switch (filter_init.GetContentType()) {
+    case V8CanvasFilterInput::ContentType::kObject:
+      filters.push_back(filter_init.GetAsObject());
+      break;
+    case V8CanvasFilterInput::ContentType::kObjectArray:
+      filters = filter_init.GetAsObjectArray();
+      break;
+  }
 
+  FilterOperations operations;
   for (auto filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
     absl::optional<String> name =
@@ -452,7 +483,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       }
     } else if (name == "dropShadow") {
       if (FilterOperation* drop_shadow_operation = ResolveDropShadow(
-              *execution_context, filter_dict, exception_state)) {
+              execution_context, filter_dict, exception_state)) {
         operations.Operations().push_back(drop_shadow_operation);
       }
     } else if (name == "turbulence") {
@@ -471,7 +502,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
                 : String::Format(
                       "\"%s\" is not among supported CanvasFilter types.",
                       name->Utf8().c_str());
-        execution_context->AddConsoleMessage(
+        execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kRendering,
                 mojom::blink::ConsoleMessageLevel::kWarning, message));
@@ -480,7 +511,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
         const String& message =
             "CanvasFilter: too many errors, no more errors will be reported to "
             "the console for this process.";
-        execution_context->AddConsoleMessage(
+        execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kRendering,
                 mojom::blink::ConsoleMessageLevel::kWarning, message));

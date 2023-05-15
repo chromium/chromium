@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class SimpleMenuModel;
@@ -42,7 +43,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
     void SetPosition(const syncer::StringOrdinal& new_position);
 
    private:
-    AppListTestModel* const model_;
+    const raw_ptr<AppListTestModel, ExperimentalAsh> model_;
   };
 
   static const char kItemType[];
@@ -112,7 +113,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   void ItemActivated(AppListTestItem* item);
 
   int activate_count_ = 0;
-  AppListItem* last_activated_ = nullptr;
+  raw_ptr<AppListItem, ExperimentalAsh> last_activated_ = nullptr;
   int naming_index_ = 0;
 
   // The last sort order requested using `RequestAppListSort()`.

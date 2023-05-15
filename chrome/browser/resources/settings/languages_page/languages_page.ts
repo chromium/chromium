@@ -22,7 +22,7 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_languages_dialog.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
@@ -38,10 +38,10 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="is_win">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 // </if>
 
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';

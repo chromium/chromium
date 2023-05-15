@@ -44,12 +44,16 @@ NET_EXPORT bool VerifyNameInSubtree(const der::Input& name_rdn_sequence,
 
 // Helper functions:
 
-// Checks if |name_rdn_sequence| contains an emailAddress attribute type.
-// If the return value is true, |*contained_email_address| will be set to
-// indicate whether an emailAddress attribute was present.
+// Find all emailAddress attribute values in |name_rdn_sequence|.
+// Returns true if parsing was successful, in which case
+// |*contained_email_address| will contain zero or more values.  The values
+// returned in |*contained_email_addresses| will be UTF8 strings and have been
+// checked that they were valid strings for the string type of the attribute
+// tag, but otherwise have not been validated.
 // Returns false if there was a parsing error.
-[[nodiscard]] bool NameContainsEmailAddress(const der::Input& name_rdn_sequence,
-                                            bool* contained_email_address);
+[[nodiscard]] bool FindEmailAddressesInName(
+    const der::Input& name_rdn_sequence,
+    std::vector<std::string>* contained_email_addresses);
 
 }  // namespace net
 

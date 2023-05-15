@@ -24,6 +24,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
@@ -45,8 +46,12 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
 using pin_manager_types::mojom::Stage;
+
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::string ToString(Stage stage);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::string ToString(base::TimeDelta time_delta);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.
@@ -112,6 +117,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Stage of the setup process.
   Stage stage = Stage::kStopped;
 
+  base::TimeDelta time_spent_listing_items;
+  base::TimeDelta time_spent_pinning_files;
+
   // Has the PinManager ever emptied its set of tracking items?
   bool emptied_queue = false;
 
@@ -122,7 +130,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Returns whether required_space + some margin is less than free_space.
   bool HasEnoughFreeSpace() const;
 
-  // Returns whether the stage is a stopped or error stage.
+  // Returns whether the stage is a final error stage.
   bool IsError() const;
 };
 
@@ -133,7 +141,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
-    : public DriveFsHostObserver {
+    : public DriveFsHostObserver,
+      public ash::UserDataAuthClient::Observer {
  public:
   using Path = base::FilePath;
 
@@ -238,6 +247,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // manager accordingly.
   void SetOnline(bool online);
 
+  // Periodically check for free space.
+  // Used in testing to override the 60s delay in space checks.
+  void CheckFreeSpace();
+
  private:
   // Progress of a file being synced or to be synced.
   struct File {
@@ -298,12 +311,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Invoked on retrieval of free space at the beginning of the setup process.
   void OnFreeSpaceRetrieved1(int64_t free_space);
-
-  // Invoked once Docs offline has been enabled.
-  void OnDocsOfflineEnabled(drive::FileError error);
-
-  // Periodically check for free space.
-  void CheckFreeSpace();
 
   // Invoked on retrieval of free space during the periodic check.
   void OnFreeSpaceRetrieved2(int64_t free_space);
@@ -366,6 +373,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Report progress to all the observers.
   void NotifyProgress();
 
+  // ash::UserDataAuthClient::Observer
+  void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override;
+
   // Counts the files that have been marked as pinned and that are still being
   // tracked. Should always be equal to progress_.syncing_files. For debugging
   // only.
@@ -375,6 +385,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
         files_to_track_.cbegin(), files_to_track_.cend(),
         [](const Files::value_type& entry) { return entry.second.pinned; });
   }
+
+  // Maximum number of items that can be pinned but not cached yet at the same
+  // time.
+  static constexpr int kMaxQueueSize = 200;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -435,6 +449,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckFreeSpace);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CannotGetFreeSpace2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace2);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace3);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFreeSpaceRetrieved2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PeriodicSpaceCheck);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, SetOnline);

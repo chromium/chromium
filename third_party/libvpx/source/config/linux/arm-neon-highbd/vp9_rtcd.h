@@ -21,7 +21,7 @@ struct macroblockd;
 
 /* Encoder forward decls */
 struct macroblock;
-struct vp9_variance_vtable;
+struct vp9_sad_table;
 struct search_site_config;
 struct mv;
 union int_mv;
@@ -77,7 +77,7 @@ int vp9_diamond_search_sad_c(const struct macroblock* x,
                              int search_param,
                              int sad_per_bit,
                              int* num00,
-                             const struct vp9_variance_vtable* fn_ptr,
+                             const struct vp9_sad_table* sad_fn_ptr,
                              const struct mv* center_mv);
 int vp9_diamond_search_sad_neon(const struct macroblock* x,
                                 const struct search_site_config* cfg,
@@ -87,7 +87,7 @@ int vp9_diamond_search_sad_neon(const struct macroblock* x,
                                 int search_param,
                                 int sad_per_bit,
                                 int* num00,
-                                const struct vp9_variance_vtable* fn_ptr,
+                                const struct vp9_sad_table* sad_fn_ptr,
                                 const struct mv* center_mv);
 #define vp9_diamond_search_sad vp9_diamond_search_sad_neon
 

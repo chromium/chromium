@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
 #include <memory>
@@ -148,7 +148,7 @@ class TestExternallyManagedAppInstallTaskManager {
   bool should_save_requests_ = false;
 };
 
-class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
+class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
  public:
   struct TestTaskResult {
     webapps::InstallResultCode code;
@@ -159,7 +159,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
       Profile* profile,
       FakeWebAppProvider& provider,
       TestExternallyManagedAppInstallTaskManager& test_install_task_manager)
-      : ExternallyManagedAppManagerImpl(profile),
+      : ExternallyManagedAppManager(profile),
         provider_(provider),
         test_install_task_manager_(test_install_task_manager) {}
 
@@ -250,7 +250,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
   }
 
   void ReleaseWebContents() override {
-    ExternallyManagedAppManagerImpl::ReleaseWebContents();
+    ExternallyManagedAppManager::ReleaseWebContents();
 
     // May be called more than once, if ExternallyManagedAppManager finishes all
     // tasks before it is shutdown.
@@ -406,6 +406,15 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
 
 }  // namespace
 
+// Why is this called ExternallyManagedAppManagerImplTest and exists along side
+// ExternallyManagedAppManagerTest unit tests?
+// - Because ExternallyManagedAppManager used to be split up into
+//   ExternallyManagedAppManager and ExternallyManagedAppManagerImpl and each
+//   had tests written for them separately.
+// - These tests are too volumous and baked with their own test suite class
+//   semantics that there's no easy way to merge them together.
+// Let this file be legacy unit tests and prefer adding to the
+// ExternallyManagedAppManagerTest unit test suite instead.
 class ExternallyManagedAppManagerImplTest
     : public WebAppTest,
       public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
@@ -552,7 +561,7 @@ class ExternallyManagedAppManagerImplTest
     return externally_managed_app_manager_impl_->install_run_count();
   }
 
-  // Number of times ExternallyManagedAppManagerImpl::StartRegistration was
+  // Number of times ExternallyManagedAppManager::StartRegistration was
   // called. Reflects how many times we've tried to cache service worker
   // resources for a web app.
   size_t registration_run_count() {
@@ -872,27 +881,23 @@ TEST_P(ExternallyManagedAppManagerImplTest,
             foo_run_loop.Quit();
           }));
 
-  base::RunLoop().RunUntilIdle();
-  externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-      kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
+  foo_run_loop.Run();
 
   externally_managed_app_manager_impl().Install(
       GetInstallOptionsWithWebAppInfo(kFooWebAppUrl),
       base::BindLambdaForTesting(
           [&](const GURL& url,
               ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
                       result.code);
             EXPECT_EQ(kFooWebAppUrl, url);
 
-            EXPECT_EQ(2u, install_run_count());
+            EXPECT_EQ(1u, install_run_count());
             EXPECT_EQ(GetInstallOptionsWithWebAppInfo(kFooWebAppUrl),
                       last_install_options());
 
             bar_run_loop.Quit();
           }));
-  foo_run_loop.Run();
-  base::RunLoop().RunUntilIdle();
   bar_run_loop.Run();
 }
 
@@ -1011,15 +1016,13 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_SerialCallsSameApp) {
   }
 
   {
-    externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-        kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
     auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                       GetInstallOptions(kFooWebAppUrl));
 
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, code);
     EXPECT_EQ(kFooWebAppUrl, url);
 
-    EXPECT_EQ(2u, install_run_count());
+    EXPECT_EQ(1u, install_run_count());
   }
 }
 
@@ -1038,13 +1041,12 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
       base::BindLambdaForTesting(
           [&](const GURL& url,
               ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
                       result.code);
             EXPECT_EQ(kFooWebAppUrl, url);
 
-            // Both installation tasks run if the install was triggered
-            // by policy.
-            EXPECT_EQ(2u, install_run_count());
+            // Only the first installation task runs
+            EXPECT_EQ(1u, install_run_count());
             EXPECT_TRUE(first_callback_ran);
             run_loop.Quit();
           }));
@@ -1060,12 +1062,10 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
             EXPECT_EQ(1u, install_run_count());
             EXPECT_EQ(GetInstallOptions(kFooWebAppUrl), last_install_options());
             first_callback_ran = true;
-            externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-                kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
           }));
   run_loop.Run();
 
-  EXPECT_EQ(2u, install_run_count());
+  EXPECT_EQ(1u, install_run_count());
   EXPECT_EQ(GetInstallOptions(kFooWebAppUrl), last_install_options());
 }
 

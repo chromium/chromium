@@ -77,8 +77,8 @@ from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from scripts import common
-from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
-from skia_gold_infra import finch_skia_gold_session_manager
+from skia_gold_common.skia_gold_properties import SkiaGoldProperties
+from skia_gold_common import skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
 from run_wpt_tests import get_device
 
@@ -334,8 +334,8 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self._device.adb.Emu(['power', 'ac', 'on'])
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
-        finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
-            self._skia_gold_tmp_dir, FinchSkiaGoldProperties(self.options)))
+        skia_gold_session_manager.SkiaGoldSessionManager(
+            self._skia_gold_tmp_dir, SkiaGoldProperties(self.options)))
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
@@ -397,13 +397,21 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
       ]
 
   def process_and_upload_results(self, test_name_prefix):
+    artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
+                               self.layout_test_results_subdir)
+    if self.fs.exists(artifacts_dir):
+        self.fs.rmtree(artifacts_dir)
+    self.fs.maybe_make_directory(artifacts_dir)
+    logger.info('Recreated artifacts directory (%s)', artifacts_dir)
+
     processor = WPTResultsProcessor(
         self.host.filesystem,
         self.port,
-        artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
-                                   self.layout_test_results_subdir),
+        artifacts_dir=artifacts_dir,
         test_name_prefix=test_name_prefix)
-    processor.recreate_artifacts_dir()
+
+    processor.copy_results_viewer()
+
     with self.fs.open_text_file_for_reading(self._raw_log_path) as raw_logs:
         for event in map(json.loads, raw_logs):
             if event.get('action') != 'shutdown':
@@ -499,7 +507,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
                         help='Number of emulator to run.')
     common.add_emulator_args(parser)
     # Add arguments used by Skia Gold.
-    FinchSkiaGoldProperties.AddCommandLineArguments(parser)
+    SkiaGoldProperties.AddCommandLineArguments(parser)
 
   def _add_extra_arguments(self):
     parser = self._parser

@@ -592,6 +592,7 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
+    window->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
   } else if (crostini::IsCrostiniWindow(window)) {
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);

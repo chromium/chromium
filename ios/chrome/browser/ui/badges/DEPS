@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/popup_menu/public",
+  "+ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h",
+]

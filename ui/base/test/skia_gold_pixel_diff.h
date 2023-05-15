@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 
 namespace base {
@@ -17,6 +18,36 @@ class SkBitmap;
 
 namespace ui {
 namespace test {
+
+// Keys used to identify test environment information that can possibly affect
+// pixel output. If your test depends on some new environment information, add
+// it here and update |TestEnvironmentKeyToString|.
+enum class TestEnvironmentKey {
+  // Being default-provided keys. These should not by used by subtypes.
+
+  // The operating system name.
+  kSystem,
+  // The processor architecture.
+  kProcessor,
+
+  // Begin subtype-provided keys.\
+
+  // The version of the operating system.
+  // On Windows, this is the release ID string and is used to track the DWM
+  // version.
+  kSystemVersion,
+
+  // The vendor name of the GPU used for ths test.
+  kGpuDriverVendor,
+
+  // The GPU driver version.
+  kGpuDriverVersion,
+
+  // The GL_RENDERER string returned from the GLContext.
+  kGlRenderer,
+};
+
+using TestEnvironmentMap = base::flat_map<TestEnvironmentKey, std::string>;
 
 class SkiaGoldMatchingAlgorithm;
 // This is the utility class for Skia Gold pixeltest.
@@ -46,8 +77,13 @@ class SkiaGoldPixelDiff {
   // corpus The corpus (i.e. result group) that will be used to store the
   //   result in Gold. If omitted, will default to the generic corpus for
   //   results from gtest-based tests.
+  // test_environment A map containing any test-specific environment information
+  //   to determine whether a new screenshot is good or not. All the information
+  //   that can affect the output of pixels should be filled in. Eg: operating
+  //   system, graphics card, processor architecture, screen resolution, etc.
   void Init(const std::string& screenshot_prefix,
-            const std::string& corpus = std::string());
+            const std::string& corpus = std::string(),
+            TestEnvironmentMap test_environment = TestEnvironmentMap());
 
   bool CompareScreenshot(
       const std::string& screenshot_name,
@@ -66,7 +102,7 @@ class SkiaGoldPixelDiff {
   bool Initialized() const { return initialized_; }
 
  private:
-  void InitSkiaGold();
+  void InitSkiaGold(TestEnvironmentMap test_environment);
   // Prefix for every golden images.
   std::string prefix_;
   bool initialized_ = false;

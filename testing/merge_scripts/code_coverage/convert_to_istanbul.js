@@ -40,13 +40,17 @@ async function validateSourceMaps(instrumentedFilePath) {
   let result = consumer.originalPositionFor({line: 1, column: 0});
 
   let file = null
-  try {
-    file = await readFile(result.source, 'utf8');
-  } catch(error) {
-    if (error.code === 'ENOENT') {
-      exists = false
-    } else {
-      throw error;
+  if (!result || !result.source) {
+    exists = false
+  } else {
+    try {
+      file = await readFile(result.source, 'utf8');
+    } catch(error) {
+      if (error.code === 'ENOENT') {
+        exists = false
+      } else {
+        throw error;
+      }
     }
   }
 

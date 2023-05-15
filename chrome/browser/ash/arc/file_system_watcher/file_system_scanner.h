@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -111,7 +112,7 @@ class FileSystemScanner {
 
   const base::FilePath cros_dir_;
   const base::FilePath android_dir_;
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
 
   // The timestamp of the start of the last scan.
   base::Time previous_scan_time_;

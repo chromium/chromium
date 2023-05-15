@@ -79,7 +79,7 @@ void VmDiskManagementServiceProvider::GetDiskInfo(
       request.origin().container_name().empty() ||
       request.origin().owner_id().empty()) {
     OnGetDiskInfo(std::move(response), std::move(response_sender),
-                  ExpectedGetDiskInfoResponse::Unexpected(
+                  base::unexpected(
                       borealis::Described<borealis::BorealisGetDiskInfoResult>(
                           borealis::BorealisGetDiskInfoResult::kInvalidRequest,
                           "GetDiskInfoRequest failed: request has missing or "
@@ -121,7 +121,7 @@ void VmDiskManagementServiceProvider::RequestSpace(
       request.origin().owner_id().empty()) {
     OnRequestSpace(
         std::move(response), std::move(response_sender),
-        ExpectedRequestDeltaResponse::Unexpected(
+        base::unexpected(
             borealis::Described<borealis::BorealisResizeDiskResult>(
                 borealis::BorealisResizeDiskResult::kInvalidRequest,
                 "RequestSpaceRequest failed: request has missing or incomplete "
@@ -164,7 +164,7 @@ void VmDiskManagementServiceProvider::ReleaseSpace(
       request.origin().owner_id().empty()) {
     OnReleaseSpace(
         std::move(response), std::move(response_sender),
-        ExpectedRequestDeltaResponse::Unexpected(
+        base::unexpected(
             borealis::Described<borealis::BorealisResizeDiskResult>(
                 borealis::BorealisResizeDiskResult::kInvalidRequest,
                 "ReleaseSpaceRequest failed: request has missing or incomplete "
@@ -188,14 +188,14 @@ void VmDiskManagementServiceProvider::OnGetDiskInfo(
     dbus::ExportedObject::ResponseSender response_sender,
     ExpectedGetDiskInfoResponse response_or_error) {
   vm_tools::disk_management::GetDiskInfoResponse payload;
-  if (!response_or_error) {
+  if (!response_or_error.has_value()) {
     LOG(ERROR) << "GetDiskInfoRequest failed: "
-               << response_or_error.Error().description();
-    payload.set_error(int(response_or_error.Error().error()));
+               << response_or_error.error().description();
+    payload.set_error(int(response_or_error.error().error()));
   } else {
-    payload.set_available_space(response_or_error.Value().available_bytes);
-    payload.set_expandable_space(response_or_error.Value().expandable_bytes);
-    payload.set_disk_size(response_or_error.Value().disk_size);
+    payload.set_available_space(response_or_error.value().available_bytes);
+    payload.set_expandable_space(response_or_error.value().expandable_bytes);
+    payload.set_disk_size(response_or_error.value().disk_size);
   }
   // Reply to the original D-Bus method call.
   dbus::MessageWriter writer(response.get());
@@ -208,12 +208,12 @@ void VmDiskManagementServiceProvider::OnRequestSpace(
     dbus::ExportedObject::ResponseSender response_sender,
     ExpectedRequestDeltaResponse response_or_error) {
   vm_tools::disk_management::RequestSpaceResponse payload;
-  if (!response_or_error) {
+  if (!response_or_error.has_value()) {
     LOG(ERROR) << "RequestSpaceRequest failed: "
-               << response_or_error.Error().description();
-    payload.set_error(int(response_or_error.Error().error()));
+               << response_or_error.error().description();
+    payload.set_error(int(response_or_error.error().error()));
   } else {
-    payload.set_space_granted(response_or_error.Value());
+    payload.set_space_granted(response_or_error.value());
   }
   // Reply to the original D-Bus method call.
   dbus::MessageWriter writer(response.get());
@@ -226,12 +226,12 @@ void VmDiskManagementServiceProvider::OnReleaseSpace(
     dbus::ExportedObject::ResponseSender response_sender,
     ExpectedRequestDeltaResponse response_or_error) {
   vm_tools::disk_management::ReleaseSpaceResponse payload;
-  if (!response_or_error) {
+  if (!response_or_error.has_value()) {
     LOG(ERROR) << "ReleaseSpaceRequest failed: "
-               << response_or_error.Error().description();
-    payload.set_error(int(response_or_error.Error().error()));
+               << response_or_error.error().description();
+    payload.set_error(int(response_or_error.error().error()));
   } else {
-    payload.set_space_released(response_or_error.Value());
+    payload.set_space_released(response_or_error.value());
   }
   // Reply to the original D-Bus method call.
   dbus::MessageWriter writer(response.get());

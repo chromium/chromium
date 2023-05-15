@@ -49,6 +49,11 @@ namespace ash::full_restore {
 
 namespace {
 
+// This flag forces full session restore on startup regardless of potential
+// non-clean shutdown. It could be used in tests to ignore crashes on shutdown.
+constexpr char kForceFullRestoreAndSessionRestoreAfterCrash[] =
+    "force-full-restore-and-session-restore-after-crash";
+
 // If the reboot occurred due to DeviceScheduledRebootPolicy, change the title
 // to notify the user that the device was rebooted by the administrator.
 int GetRestoreNotificationTitleId(Profile* profile) {
@@ -341,12 +346,12 @@ void FullRestoreService::OnAppTerminating() {
 
 void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
   switch (action) {
-    case NEW_INCOGNITO_WINDOW:
-    case NEW_TAB:
-    case NEW_WINDOW:
-    case OPEN_CROSH:
-    case OPEN_DIAGNOSTICS:
-    case RESTORE_TAB:
+    case AcceleratorAction::kNewIncognitoWindow:
+    case AcceleratorAction::kNewTab:
+    case AcceleratorAction::kNewWindow:
+    case AcceleratorAction::kOpenCrosh:
+    case AcceleratorAction::kOpenDiagnostics:
+    case AcceleratorAction::kRestoreTab:
       MaybeCloseNotification();
       return;
     default:
@@ -412,6 +417,13 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                                       bool& show_notification) {
   if (!ShouldShowNotification())
     return;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kForceFullRestoreAndSessionRestoreAfterCrash)) {
+    LOG(WARNING) << "Full session restore was forced by a debug flag.";
+    Restore();
+    return;
+  }
 
   // If the system is restored from crash, create the crash lock for the browser
   // session restore to help set the browser saving flag.

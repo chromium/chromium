@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_SCREEN_AI_PROTO_VISUAL_ANNOTATOR_PROTO_CONVERTOR_H_
 
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
+#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace gfx {
@@ -23,6 +24,10 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
 // Resets the node id generator to start from 1 again.
 void ResetNodeIDForTesting();
+
+// Converts a serialized VisualAnnotation proto into a mojo struct.
+mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
+    const chrome_screen_ai::VisualAnnotation& annotation_proto);
 
 }  // namespace screen_ai
 

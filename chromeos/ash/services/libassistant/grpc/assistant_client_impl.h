@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_initializer.h"
@@ -109,7 +110,7 @@ class AssistantClientImpl : public AssistantClientV1 {
 
   // Entry point for Libassistant V2 APIs, through which V2 methods can be
   // invoked. Created and owned by |GrpcServicesInitializer|.
-  GrpcLibassistantClient& libassistant_client_;
+  const raw_ref<GrpcLibassistantClient, ExperimentalAsh> libassistant_client_;
 
   // Invoked when all LibAssistant services are ready to query.
   base::OnceClosure services_ready_callback_;

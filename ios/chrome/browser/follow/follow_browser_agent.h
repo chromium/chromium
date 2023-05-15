@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/follow/follow_service.h"
 #include "ios/chrome/browser/follow/follow_service_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
+#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 @class FeedMetricsRecorder;
 

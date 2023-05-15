@@ -11,15 +11,15 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 
-namespace sync_pb {
+namespace trusted_vault_pb {
 class LocalTrustedVaultDegradedRecoverabilityState;
 enum DegradedRecoverabilityValue : int;
-}  // namespace sync_pb
+}  // namespace trusted_vault_pb
 
-namespace syncer {
+namespace trusted_vault {
 // Refreshs the degraded recoverability state by scheduling the requests based
 // on the current state, heuristics and last refresh time.
 class TrustedVaultDegradedRecoverabilityHandler {
@@ -32,7 +32,7 @@ class TrustedVaultDegradedRecoverabilityHandler {
     virtual ~Delegate() = default;
 
     virtual void WriteDegradedRecoverabilityState(
-        const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+        const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
             degraded_recoverability_state) = 0;
     virtual void OnDegradedRecoverabilityChanged() = 0;
   };
@@ -42,7 +42,7 @@ class TrustedVaultDegradedRecoverabilityHandler {
       TrustedVaultConnection* connection,
       Delegate* delegate,
       const CoreAccountInfo& account_info,
-      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+      const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
           degraded_recoverability_state);
   TrustedVaultDegradedRecoverabilityHandler(
       const TrustedVaultDegradedRecoverabilityHandler&) = delete;
@@ -72,7 +72,7 @@ class TrustedVaultDegradedRecoverabilityHandler {
   // `current_refresh_period_` delay has elapsed.
   base::OneShotTimer next_refresh_timer_;
   base::TimeDelta current_refresh_period_;
-  sync_pb::DegradedRecoverabilityValue degraded_recoverability_value_;
+  trusted_vault_pb::DegradedRecoverabilityValue degraded_recoverability_value_;
   // The last time Refresh has executed, it's initially null until the first
   // Refresh() execution.
   base::TimeTicks last_refresh_time_;
@@ -86,6 +86,6 @@ class TrustedVaultDegradedRecoverabilityHandler {
       pending_get_is_recoverability_degraded_callback_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_

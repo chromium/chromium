@@ -132,3 +132,9 @@ class MacPort(base.Port):
                                             self.driver_name() + '.app',
                                             'Contents', 'MacOS',
                                             self.driver_name())
+
+    def _default_timeout_ms(self):
+        # increase timeout by 4x on older mac versions
+        if self._version in {'mac10.13', 'mac10.14'}:
+            return 4 * super()._default_timeout_ms()
+        return super()._default_timeout_ms()

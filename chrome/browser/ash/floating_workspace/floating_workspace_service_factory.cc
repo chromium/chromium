@@ -45,7 +45,7 @@ FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;
 
 KeyedService* FloatingWorkspaceServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  raw_ptr<FloatingWorkspaceService> service =
+  FloatingWorkspaceService* service =
       new FloatingWorkspaceService(Profile::FromBrowserContext(context));
   service->Init();
   return service;

@@ -12,17 +12,17 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/manager/display_manager_utilities.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/color_space.h"
@@ -96,9 +96,24 @@ bool IsWithinEpsilon(float a, float b) {
   return std::abs(a - b) < kEpsilon;
 }
 
+std::string PanelOrientationToString(PanelOrientation orientation) {
+  switch (orientation) {
+    case kNormal:
+      return "Normal";
+    case kBottomUp:
+      return "BottomUp";
+    case kLeftUp:
+      return "LeftUp";
+    case kRightUp:
+      return "RightUp";
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
-ManagedDisplayMode::ManagedDisplayMode() {}
+ManagedDisplayMode::ManagedDisplayMode() = default;
 
 ManagedDisplayMode::ManagedDisplayMode(const gfx::Size& size) : size_(size) {}
 
@@ -177,7 +192,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
   base::StringPiece main_spec = spec;
 
-  gfx::RoundedCornersF rounded_corners_radii;
+  gfx::RoundedCornersF panel_corners_radii;
   std::vector<base::StringPiece> parts = base::SplitStringPiece(
       main_spec, "~", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
@@ -195,7 +210,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
       radii[idx] = static_cast<float>(radius_in_int);
     }
 
-    rounded_corners_radii =
+    panel_corners_radii =
         (radii_part.size() == 1)
             ? gfx::RoundedCornersF{radii[0]}
             : gfx::RoundedCornersF{radii[0], radii[1], radii[2], radii[3]};
@@ -319,7 +334,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   display_info.SetRotation(rotation, Display::RotationSource::USER);
   display_info.set_zoom_factor(zoom_factor);
   display_info.SetBounds(bounds_in_native);
-  display_info.set_rounded_corners_radii(rounded_corners_radii);
+  display_info.set_panel_corners_radii(panel_corners_radii);
 
   if (!display_modes.size()) {
     display_modes.emplace_back(display_info.size_in_pixel(), 60.0f,
@@ -394,7 +409,7 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
     default;
 
-ManagedDisplayInfo::~ManagedDisplayInfo() {}
+ManagedDisplayInfo::~ManagedDisplayInfo() = default;
 
 void ManagedDisplayInfo::SetRotation(Display::Rotation rotation,
                                      Display::RotationSource source) {
@@ -451,7 +466,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   refresh_rate_ = native_info.refresh_rate_;
   is_interlaced_ = native_info.is_interlaced_;
   native_ = native_info.native_;
-  rounded_corners_radii_ = native_info.rounded_corners_radii_;
+  panel_corners_radii_ = native_info.panel_corners_radii_;
 
   drm_formats_and_modifiers_ = native_info.drm_formats_and_modifiers_;
   variable_refresh_rate_state_ = native_info.variable_refresh_rate_state_;
@@ -568,14 +583,15 @@ std::string ManagedDisplayInfo::ToString() const {
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] native bounds=%s, size=%s, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "corner_radii=%s",
+      "panel_corners_radii=%s, panel_orientation=%s",
       static_cast<long long int>(id_), bounds_in_native_.ToString().c_str(),
       size_in_pixel_.ToString().c_str(), device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
       touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
       : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
                                                              : "unknown",
-      rounded_corners_radii_.ToString().c_str());
+      panel_corners_radii_.ToString().c_str(),
+      PanelOrientationToString(panel_orientation_).c_str());
 
   return result;
 }

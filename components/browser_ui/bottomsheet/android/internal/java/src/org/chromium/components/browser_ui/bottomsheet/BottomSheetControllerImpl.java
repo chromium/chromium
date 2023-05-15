@@ -94,6 +94,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      */
     private final BackPressHandler mBackPressHandler;
 
+    /** Whether or not always use the fulll width of the container. */
+    private final boolean mAlwaysFullWidth;
+
     /**
      * An observer that observes changes to the bottom sheet content {@code
      * BottomSheetContent#mBackPressStateChangedSupplier} and updates the {@code
@@ -109,14 +112,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param alwaysFullWidth Whether bottom sheet is full-width.
      */
     public BottomSheetControllerImpl(final Supplier<ScrimCoordinator> scrim,
             Callback<View> initializedCallback, Window window,
-            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
+            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root,
+            boolean alwaysFullWidth) {
         mScrimCoordinatorSupplier = scrim;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
-
+        mAlwaysFullWidth = alwaysFullWidth;
         mSheetInitializer = () -> {
             initializeSheet(initializedCallback, window, keyboardDelegate, root);
         };
@@ -166,7 +171,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet = (BottomSheet) root.get().findViewById(R.id.bottom_sheet);
         initializedCallback.onResult(mBottomSheet);
 
-        mBottomSheet.init(window, keyboardDelegate);
+        mBottomSheet.init(window, keyboardDelegate, mAlwaysFullWidth);
         mBottomSheet.setAccessibilityUtil(mAccessibilityUtil);
 
         // Initialize the queue with a comparator that checks content priority.

@@ -54,14 +54,6 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
 }
 
 // static
-ukm::SourceId UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(
-    base::PassKey<web_app::DesktopWebAppUkmRecorder>,
-    const GURL& start_url) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(
-      start_url, SourceIdType::DESKTOP_WEB_APP_ID);
-}
-
-// static
 ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
     base::PassKey<content::FedCmMetrics>,
     const GURL& provider_url) {

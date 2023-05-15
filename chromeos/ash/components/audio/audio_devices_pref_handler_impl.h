@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
@@ -137,7 +138,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   base::Value::Dict input_device_user_priority_settings_;
   base::Value::Dict output_device_user_priority_settings_;
 
-  PrefService* local_state_;  // not owned
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;  // not owned
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;

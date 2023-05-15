@@ -1,0 +1,133 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.test.smoke.utilities;
+
+import org.hamcrest.Matchers;
+
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.R;
+import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
+import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
+import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
+
+import java.util.concurrent.Callable;
+
+/**
+ * FirstRunNavigator is used to Navigate through FRE page.
+ */
+public class FirstRunNavigator {
+    public static final long TIMEOUT_MS = 20000L;
+    public static final long UI_CHECK_INTERVAL = 1000L;
+
+    public FirstRunNavigator() {}
+
+    public void navigateThroughFRE() {
+        // Used in SyncConsentFirstRunFragment FRE page.
+        IUi2Locator noAddAccountButton = Ui2Locators.withAnyResEntry(R.id.negative_button);
+
+        // Used in SigninFirstRunFragment FRE page.
+        IUi2Locator signinSkipButton = Ui2Locators.withAnyResEntry(R.id.signin_fre_dismiss_button);
+        IUi2Locator signinContinueButton =
+                Ui2Locators.withAnyResEntry(R.id.signin_fre_continue_button);
+        IUi2Locator signinProgressSpinner =
+                Ui2Locators.withAnyResEntry(R.id.fre_native_and_policy_load_progress_spinner);
+
+        // Used in DefaultSearchEngineFirstRunFragment FRE page.
+        IUi2Locator defaultSearchEngineNextButton =
+                Ui2Locators.withAnyResEntry(R.id.button_primary);
+
+        // Url bar shown after the FRE is over.
+        IUi2Locator urlBar = Ui2Locators.withAnyResEntry(R.id.url_bar);
+
+        // When Play services is too old, android shows an alert.
+        IUi2Locator updatePlayServicesPanel = Ui2Locators.withResName("android:id/parentPanel");
+        IUi2Locator playServicesUpdateText =
+                Ui2Locators.withTextContaining("update Google Play services");
+
+        UiLocatorHelper uiLocatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper();
+
+        // These locators show up in one FRE page or another
+        IUi2Locator[] frePageDetectors = new IUi2Locator[] {
+                playServicesUpdateText,
+                signinSkipButton,
+                signinContinueButton,
+                signinProgressSpinner,
+                noAddAccountButton,
+                defaultSearchEngineNextButton,
+                urlBar,
+        };
+
+        // Manually go through FRE.
+        while (true) {
+            // Wait for an FRE page to show up.
+            waitUntilAnyVisible(frePageDetectors);
+            // Different FRE versions show up randomly and in different order,
+            // figure out which one we are on and proceed.
+            if (uiLocatorHelper.isOnScreen(urlBar)) {
+                // FRE is over.
+                break;
+            } else if (uiLocatorHelper.isOnScreen(playServicesUpdateText)) {
+                // If the update play services alert is a modal, dismiss it.
+                // Otherwise its just a toast/notification that should not
+                // interfere with the test.
+                if (uiLocatorHelper.isOnScreen(updatePlayServicesPanel)) {
+                    UiAutomatorUtils.getInstance().clickOutsideOf(updatePlayServicesPanel);
+                }
+            } else if (uiLocatorHelper.isOnScreen(noAddAccountButton)) {
+                // Do not add an account.
+                UiAutomatorUtils.getInstance().click(noAddAccountButton);
+            } else if (uiLocatorHelper.isOnScreen(signinSkipButton)) {
+                // Do not sign in with an account.
+                UiAutomatorUtils.getInstance().click(signinSkipButton);
+            } else if (uiLocatorHelper.isOnScreen(signinContinueButton)) {
+                // Sometimes there is only the continue button (eg: when signin is
+                // disabled.)
+                UiAutomatorUtils.getInstance().click(signinContinueButton);
+            } else if (uiLocatorHelper.isOnScreen(signinProgressSpinner)) {
+                // Do nothing and wait.
+            } else if (uiLocatorHelper.isOnScreen(defaultSearchEngineNextButton)) {
+                // Just press next on choosing the default SE.
+                UiAutomatorUtils.getInstance().click(defaultSearchEngineNextButton);
+            } else {
+                throw new RuntimeException("Unexpected FRE or Start page detected.");
+            }
+        }
+    }
+
+    public void waitUntilAnyVisible(IUi2Locator... locators) {
+        CriteriaHelper.pollInstrumentationThread(
+                toNotSatisfiedRunnable(
+                        ()
+                                -> {
+                            for (IUi2Locator locator : locators) {
+                                if (UiAutomatorUtils.getInstance().getLocatorHelper().isOnScreen(
+                                            locator)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        "No Chrome views on screen. (i.e. Chrome has crashed "
+                                + "on startup). Look at earlier logs for the actual "
+                                + "crash stacktrace."),
+                TIMEOUT_MS, UI_CHECK_INTERVAL);
+    }
+
+    private static Runnable toNotSatisfiedRunnable(
+            Callable<Boolean> criteria, String failureReason) {
+        return () -> {
+            try {
+                boolean isSatisfied = criteria.call();
+                Criteria.checkThat(failureReason, isSatisfied, Matchers.is(true));
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+}

@@ -92,7 +92,7 @@ public class ContextMenuHeaderMediatorTest {
                 .retrieveImageForContextMenu(
                         anyInt(), anyInt(), mRetrieveImageCallbackCaptor.capture());
         verify(mMockLargeIconBridgeJni, times(0))
-                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), any());
+                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), anyInt(), any());
 
         Assert.assertNotNull(
                 "Retrieve image callback is null.", mRetrieveImageCallbackCaptor.getValue());
@@ -119,7 +119,7 @@ public class ContextMenuHeaderMediatorTest {
 
         verify(mNativeDelegate, times(0)).retrieveImageForContextMenu(anyInt(), anyInt(), any());
         verify(mMockLargeIconBridgeJni, times(0))
-                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), any());
+                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), anyInt(), any());
 
         Assert.assertNotNull("Header image should be set for videos directly.",
                 model.get(ContextMenuHeaderProperties.IMAGE));
@@ -142,8 +142,8 @@ public class ContextMenuHeaderMediatorTest {
 
         verify(mNativeDelegate, times(0)).retrieveImageForContextMenu(anyInt(), anyInt(), any());
         verify(mMockLargeIconBridgeJni)
-                .getLargeIconForURL(
-                        anyLong(), any(), any(), anyInt(), mLargeIconCallbackCaptor.capture());
+                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), anyInt(),
+                        mLargeIconCallbackCaptor.capture());
 
         Assert.assertNotNull("LargeIconCallback is null.", mLargeIconCallbackCaptor.getValue());
         Assert.assertNull("Image should not be set for links before LarIconCallback triggers.",

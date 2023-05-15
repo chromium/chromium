@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -207,6 +208,18 @@ void AddStringsForDrive(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
   SET_STRING("DRIVE_MANAGE_MIRRORSYNC",
              IDS_FILE_BROWSER_DRIVE_MANAGE_MIRRORSYNC_LABEL);
+  SET_STRING("GOOGLE_DRIVE_SETTINGS_LINK",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL);
+  SET_STRING("DRIVE_MULTIPLE_FILES_SYNCING",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_MULTIPLE_FILES_SYNCING_LABEL);
+  SET_STRING("DRIVE_SINGLE_FILE_SYNCING",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL);
+  SET_STRING("DRIVE_ALL_FILES_SYNCED",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL);
+  SET_STRING("DRIVE_BULK_PINNING_OFFLINE",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL);
+  SET_STRING("DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE",
+             IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL);
 }
 
 void AddStringsForMediaView(base::Value::Dict* dict) {
@@ -336,6 +349,21 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ARCHIVE_MOUNT_MESSAGE", IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE);
   SET_STRING("ARCHIVE_MOUNT_INVALID_PATH",
              IDS_FILE_BROWSER_ARCHIVE_MOUNT_INVALID_PATH);
+  SET_STRING("BULK_PINNING_CONTINUE", IDS_FILE_BROWSER_BULK_PINNING_CONTINUE);
+  SET_STRING("BULK_PINNING_ERROR", IDS_FILE_BROWSER_BULK_PINNING_ERROR);
+  SET_STRING("BULK_PINNING_EXPLANATION",
+             IDS_FILE_BROWSER_BULK_PINNING_EXPLANATION);
+  SET_STRING("BULK_PINNING_GET_STARTED",
+             IDS_FILE_BROWSER_BULK_PINNING_GET_STARTED);
+  SET_STRING("BULK_PINNING_LISTING", IDS_FILE_BROWSER_BULK_PINNING_LISTING);
+  SET_STRING("BULK_PINNING_NOT_ENOUGH_SPACE",
+             IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE);
+  SET_STRING("BULK_PINNING_OFFLINE", IDS_FILE_BROWSER_BULK_PINNING_OFFLINE);
+  SET_STRING("BULK_PINNING_POINT_1", IDS_FILE_BROWSER_BULK_PINNING_POINT_1);
+  SET_STRING("BULK_PINNING_SPACE", IDS_FILE_BROWSER_BULK_PINNING_SPACE);
+  SET_STRING("BULK_PINNING_TITLE", IDS_FILE_BROWSER_BULK_PINNING_TITLE);
+  SET_STRING("BULK_PINNING_VIEW_STORAGE",
+             IDS_FILE_BROWSER_BULK_PINNING_VIEW_STORAGE);
   SET_STRING("CALCULATING_SIZE", IDS_FILE_BROWSER_CALCULATING_SIZE);
   SET_STRING("CAMERA_DIRECTORY_LABEL", IDS_FILE_BROWSER_CAMERA_DIRECTORY_LABEL);
   SET_STRING("CANCEL_ACTIVITY_LABEL", IDS_FILE_BROWSER_CANCEL_ACTIVITY_LABEL);
@@ -622,6 +650,7 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_METADATA_BOX_CREATION_TIME);
   SET_STRING("METADATA_BOX_DIMENSION", IDS_FILE_BROWSER_METADATA_BOX_DIMENSION);
   SET_STRING("METADATA_BOX_DURATION", IDS_FILE_BROWSER_METADATA_BOX_DURATION);
+  SET_STRING("METADATA_BOX_ENCRYPTED", IDS_FILE_BROWSER_METADATA_BOX_ENCRYPTED);
   SET_STRING("METADATA_BOX_EXIF_DEVICE_MODEL",
              IDS_FILE_BROWSER_METADATA_BOX_EXIF_DEVICE_MODEL);
   SET_STRING("METADATA_BOX_EXIF_DEVICE_SETTINGS",
@@ -1081,18 +1110,17 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
-  raw_ptr<user_manager::UserManager> user_manager =
-      user_manager::UserManager::Get();
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
     return false;
   }
 
-  raw_ptr<user_manager::User> user = user_manager->GetActiveUser();
+  user_manager::User* user = user_manager->GetActiveUser();
   if (!user) {
     return false;
   }
 
-  raw_ptr<Profile> profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     return false;
   }
@@ -1195,8 +1223,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_SEARCH_V2",
             base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
-  dict->Set("FILES_TRASH_ENABLED",
-            base::FeatureList::IsEnabled(ash::features::kFilesTrash));
   dict->Set("FILES_TRASH_DRIVE_ENABLED",
             base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
   dict->Set(
@@ -1223,7 +1249,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
 
   dict->Set("DRIVE_FS_BULK_PINNING",
-            base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning));
+            drive::util::IsDriveFsBulkPinningEnabled());
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(

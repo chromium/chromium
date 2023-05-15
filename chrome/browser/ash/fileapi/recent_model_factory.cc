@@ -24,7 +24,12 @@ RecentModel* RecentModelFactory::GetForProfile(Profile* profile) {
 RecentModelFactory::RecentModelFactory()
     : ProfileKeyedServiceFactory(
           "RecentModel",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(arc::ArcDocumentsProviderRootMapFactory::GetInstance());
 }
 

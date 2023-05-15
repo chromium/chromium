@@ -7,9 +7,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
@@ -17,6 +16,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -24,7 +24,7 @@ constexpr int kFocusRingRadius = 8;
 
 DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                bool set_text,
-                               DesksBarView* bar_view,
+                               DeskBarViewBase* bar_view,
                                base::RepeatingClosure pressed_callback,
                                int corner_radius)
     : LabelButton(pressed_callback, std::u16string()),
@@ -58,7 +58,11 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
-      [&](views::View* view) { return IsViewHighlighted(); });
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<DeskButtonBase>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
 }
 
 DeskButtonBase::~DeskButtonBase() = default;

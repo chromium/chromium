@@ -11,7 +11,6 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ManifestTest = testing::Test;
@@ -23,9 +22,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
   std::string error;
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kUnpacked,
-           DictionaryBuilder()
-               .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -37,9 +34,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
   std::string error;
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kCommandLine,
-           DictionaryBuilder()
-               .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -51,9 +46,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
   std::string error;
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kInternal,
-           DictionaryBuilder()
-               .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -63,7 +56,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kUnpacked, DictionaryBuilder().Build(),
+  Manifest(ManifestLocation::kUnpacked, base::Value::Dict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -73,7 +66,7 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kInternal, DictionaryBuilder().Build(),
+  Manifest(ManifestLocation::kInternal, base::Value::Dict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);

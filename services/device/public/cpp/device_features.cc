@@ -21,11 +21,6 @@ BASE_FEATURE(kWinrtGeolocationImplementation,
 BASE_FEATURE(kMacCoreLocationBackend,
              "MacCoreLocationBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables async calls to stopSensor and startSensor on a different thread than
-// the main thread.
-BASE_FEATURE(kAsyncSensorCalls,
-             "AsyncSensorCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Reduces the interval between WiFi polls to fetch new WiFi data sooner. This
 // can be useful in situations where new WiFi data is needed frequently.
 BASE_FEATURE(kCrOSGeolocationReducedWifiPollingInterval,

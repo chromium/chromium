@@ -46,11 +46,6 @@ class WeightedIdentifier {
 // The result of an execution, and all associated data.
 class BatchAnnotationResult {
  public:
-  // Creates a result for a page topics annotation.
-  static BatchAnnotationResult CreatePageTopicsResult(
-      const std::string& input,
-      absl::optional<std::vector<WeightedIdentifier>> topics);
-
   // Creates a result for a page entities annotation.
   static BatchAnnotationResult CreatePageEntitiesResult(
       const std::string& input,
@@ -73,9 +68,6 @@ class BatchAnnotationResult {
 
   const std::string& input() const { return input_; }
   AnnotationType type() const { return type_; }
-  const absl::optional<std::vector<WeightedIdentifier>>& topics() const {
-    return topics_;
-  }
   const absl::optional<std::vector<ScoredEntityMetadata>>& entities() const {
     return entities_;
   }
@@ -96,10 +88,6 @@ class BatchAnnotationResult {
 
   std::string input_;
   AnnotationType type_ = AnnotationType::kUnknown;
-
-  // Output for page topics annotations, set only if the |type_| matches and the
-  // execution was successful.
-  absl::optional<std::vector<WeightedIdentifier>> topics_;
 
   // Output for page entities annotations, set only if the |type_| matches and
   // the execution was successful.

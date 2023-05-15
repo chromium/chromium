@@ -374,6 +374,15 @@ class MockCWSInfoService : public extensions::CWSInfoServiceInterface {
               GetCWSInfo,
               (const Extension&),
               (const, override));
+  MOCK_METHOD(void, CheckAndMaybeFetchInfo, (), (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (CWSInfoServiceInterface::Observer*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (CWSInfoServiceInterface::Observer*),
+              (override));
 };
 
 class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
@@ -1217,9 +1226,6 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2Enabled) {
 }
 
 TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kExtensionsManifestV3Only);
   SetPref(
       true, pref_names::kManifestV2Availability,
       base::Value(static_cast<int>(internal::GlobalSettings::ManifestV2Setting::
@@ -1315,8 +1321,6 @@ TEST_F(ExtensionManagementServiceTest,
 
 // If ExtensionUnpublishedAvailability policy setting is
 // kDisableUnpublished, verify that:
-// - an extension is allowed if is being installed or has been installed
-//   within the last 24 hours from CWS
 // - an extension is allowed if it is currently published in CWS or if the
 //   CWS publish information is missing
 // - an extension is disallowed if it is not currently published in CWS
@@ -1333,19 +1337,6 @@ TEST_F(ExtensionManagementServiceTest,
   // Create mock CWSInfoService to verify when IsLiveInCWS check is called.
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
   SetCWSInfoService(&mock_cws_info_service);
-  // CWS publish state should not be queried if this extension is being
-  // installed or if it was recently installed (< 24 hours ago).
-  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
-  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
-      normal_extension.get()));
-  SetExtensionLastUpdateTime(normal_extension->id(),
-                             base::Time::Now() - base::Hours(23));
-  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
-      normal_extension.get()));
-  // CWS publish state should be queried if this extension was installed more
-  // than 1 day ago.
-  SetExtensionLastUpdateTime(normal_extension->id(),
-                             base::Time::Now() - base::Hours(25));
   EXPECT_CALL(mock_cws_info_service, IsLiveInCWS)
       .WillOnce(testing::Return(absl::optional<bool>(true)))
       .WillOnce(testing::Return(absl::optional<bool>(false)))

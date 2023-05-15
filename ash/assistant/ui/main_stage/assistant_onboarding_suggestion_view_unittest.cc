@@ -4,15 +4,12 @@
 
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
@@ -42,12 +39,9 @@ views::Label* GetLabel(AssistantOnboardingSuggestionView* suggestion_view) {
 using AssistantOnboardingSuggestionViewTest = AshTestBase;
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kDarkLightMode);
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, false);
   ASSERT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
@@ -130,55 +124,6 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
             SkColorSetA(gfx::kGoogleBlue300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_5)->GetEnabledColor(),
             gfx::kGoogleBlue200);
-}
-
-TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
-
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
-
-  AssistantOnboardingSuggestionView* suggestion_view_0 =
-      CreateSuggestionViewAt(0, widget.get());
-  AssistantOnboardingSuggestionView* suggestion_view_1 =
-      CreateSuggestionViewAt(1, widget.get());
-  AssistantOnboardingSuggestionView* suggestion_view_2 =
-      CreateSuggestionViewAt(2, widget.get());
-  AssistantOnboardingSuggestionView* suggestion_view_3 =
-      CreateSuggestionViewAt(3, widget.get());
-  AssistantOnboardingSuggestionView* suggestion_view_4 =
-      CreateSuggestionViewAt(4, widget.get());
-  AssistantOnboardingSuggestionView* suggestion_view_5 =
-      CreateSuggestionViewAt(5, widget.get());
-
-  EXPECT_EQ(suggestion_view_0->GetBackground()->get_color(),
-            gfx::kGoogleBlue050);
-  EXPECT_EQ(GetLabel(suggestion_view_0)->GetEnabledColor(),
-            gfx::kGoogleBlue800);
-
-  EXPECT_EQ(suggestion_view_1->GetBackground()->get_color(),
-            gfx::kGoogleRed050);
-  EXPECT_EQ(GetLabel(suggestion_view_1)->GetEnabledColor(), gfx::kGoogleRed800);
-
-  EXPECT_EQ(suggestion_view_2->GetBackground()->get_color(),
-            gfx::kGoogleYellow050);
-  EXPECT_EQ(GetLabel(suggestion_view_2)->GetEnabledColor(),
-            SkColorSetRGB(0xBF, 0x50, 0x00));
-
-  EXPECT_EQ(suggestion_view_3->GetBackground()->get_color(),
-            gfx::kGoogleGreen050);
-  EXPECT_EQ(GetLabel(suggestion_view_3)->GetEnabledColor(),
-            gfx::kGoogleGreen800);
-
-  EXPECT_EQ(suggestion_view_4->GetBackground()->get_color(),
-            SkColorSetRGB(0xF6, 0xE9, 0xF8));
-  EXPECT_EQ(GetLabel(suggestion_view_4)->GetEnabledColor(),
-            SkColorSetRGB(0x8A, 0x0E, 0x9E));
-
-  EXPECT_EQ(suggestion_view_5->GetBackground()->get_color(),
-            gfx::kGoogleBlue050);
-  EXPECT_EQ(GetLabel(suggestion_view_5)->GetEnabledColor(),
-            gfx::kGoogleBlue800);
 }
 
 }  // namespace ash

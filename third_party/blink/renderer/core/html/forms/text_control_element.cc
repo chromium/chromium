@@ -81,7 +81,7 @@ Position GetNextSoftBreak(const NGOffsetMapping& mapping,
     if (!cursor)
       return Position();
     if (break_token && !break_token->IsForcedBreak())
-      return mapping.GetFirstPosition(break_token->TextOffset());
+      return mapping.GetFirstPosition(break_token->StartTextOffset());
   }
   return Position();
 }

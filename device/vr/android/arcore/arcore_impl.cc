@@ -19,6 +19,7 @@
 #include "device/vr/android/arcore/arcore_math_utils.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/type_converters.h"
+#include "device/vr/create_anchor_request.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -2015,39 +2016,11 @@ std::unique_ptr<ArCore> ArCoreImplFactory::Create() {
   return std::make_unique<ArCoreImpl>();
 }
 
-CreateAnchorRequest::CreateAnchorRequest(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor,
-    ArCore::CreateAnchorCallback callback)
-    : native_origin_information_(native_origin_information.Clone()),
-      native_origin_from_anchor_(native_origin_from_anchor),
-      request_start_time_(base::TimeTicks::Now()),
-      callback_(std::move(callback)) {}
-CreateAnchorRequest::CreateAnchorRequest(CreateAnchorRequest&& other) = default;
-CreateAnchorRequest::~CreateAnchorRequest() = default;
-
-const mojom::XRNativeOriginInformation&
-CreateAnchorRequest::GetNativeOriginInformation() const {
-  return *native_origin_information_;
-}
-
-gfx::Transform CreateAnchorRequest::GetNativeOriginFromAnchor() const {
-  return native_origin_from_anchor_;
-}
-
-base::TimeTicks CreateAnchorRequest::GetRequestStartTime() const {
-  return request_start_time_;
-}
-
-ArCore::CreateAnchorCallback CreateAnchorRequest::TakeCallback() {
-  return std::move(callback_);
-}
-
 CreatePlaneAttachedAnchorRequest::CreatePlaneAttachedAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& native_origin_from_anchor,
     uint64_t plane_id,
-    ArCore::CreateAnchorCallback callback)
+    CreateAnchorCallback callback)
     : native_origin_information_(native_origin_information.Clone()),
       native_origin_from_anchor_(native_origin_from_anchor),
       plane_id_(plane_id),
@@ -2075,7 +2048,7 @@ base::TimeTicks CreatePlaneAttachedAnchorRequest::GetRequestStartTime() const {
   return request_start_time_;
 }
 
-ArCore::CreateAnchorCallback CreatePlaneAttachedAnchorRequest::TakeCallback() {
+CreateAnchorCallback CreatePlaneAttachedAnchorRequest::TakeCallback() {
   return std::move(callback_);
 }
 

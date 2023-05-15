@@ -168,6 +168,7 @@ void NearbyConnectorImpl::RecordNearbyDisconnectionForActiveBrokers(
       break;
 
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kPresenceMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
       disconnection_reason =
           util::NearbyDisconnectionReason::kNearbyProcessMojoDisconnection;

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_EXPRESSION_NODE_H_
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -22,6 +21,13 @@ enum class CalculationOperator {
   kMin,
   kMax,
   kClamp,
+  kRoundNearest,
+  kRoundUp,
+  kRoundDown,
+  kRoundToZero,
+  kMod,
+  kRem,
+  kHypot,
   kInvalid
 };
 

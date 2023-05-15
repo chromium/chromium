@@ -13,9 +13,9 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -401,16 +401,16 @@ class DesksOverviewHighlightControllerTest
     return GetHighlightController()->highlighted_view();
   }
 
-  const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+  const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     OverviewGrid* grid =
         GetOverviewSession()->GetGridWithRootWindow(root_window);
-    const DesksBarView* bar_view = grid->desks_bar_view();
+    const LegacyDeskBarView* bar_view = grid->desks_bar_view();
     DCHECK(bar_view->IsZeroState() ^ grid->IsDesksBarViewActive());
     return bar_view;
   }
 
  protected:
-  static void CheckDeskBarViewSize(const DesksBarView* view,
+  static void CheckDeskBarViewSize(const LegacyDeskBarView* view,
                                    const std::string& scope) {
     SCOPED_TRACE(scope);
     EXPECT_EQ(view->bounds().height(),

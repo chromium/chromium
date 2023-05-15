@@ -7,12 +7,12 @@
 #include <map>
 #include <memory>
 
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
@@ -133,8 +133,9 @@ class DevToolsFrontend::AgentHostClient
     auto it = extensions_api_.find(origin);
     if (it == extensions_api_.end())
       return;
-    std::string script = base::StringPrintf("%s(\"%s\")", it->second.c_str(),
-                                            base::GenerateGUID().c_str());
+    std::string script = base::StringPrintf(
+        "%s(\"%s\")", it->second.c_str(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
     content::DevToolsFrontendHost::SetupExtensionsAPI(frame, script);
   }
 

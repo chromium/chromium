@@ -13,11 +13,13 @@ TestMetricsLogUploader::TestMetricsLogUploader(
 
 TestMetricsLogUploader::~TestMetricsLogUploader() = default;
 
-void TestMetricsLogUploader::CompleteUpload(int response_code) {
+void TestMetricsLogUploader::CompleteUpload(int response_code,
+                                            bool force_discard) {
   DCHECK(is_uploading_);
   is_uploading_ = false;
   last_reporting_info_.Clear();
-  on_upload_complete_.Run(response_code, 0, false);
+  on_upload_complete_.Run(response_code, /*error_code=*/0, /*was_https=*/false,
+                          force_discard, /*force_discard_reason=*/"");
 }
 
 void TestMetricsLogUploader::UploadLog(const std::string& compressed_log_data,

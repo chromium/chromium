@@ -129,6 +129,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "add_to_homescreen_data_fetcher_unittest.cc",
+    "install_prompt_prefs_unittest.cc",
     "shortcut_info_unittest.cc",
     "webapk/webapk_icon_hasher_unittest.cc",
     "webapk/webapk_proto_builder_unittest.cc",
@@ -138,6 +139,7 @@ source_set("unit_tests") {
     "//base",
     "//components/favicon/content",
     "//components/favicon_base",
+    "//components/prefs:test_support",
     "//components/webapk:proto",
     "//components/webapps/browser",
     "//components/webapps/common:mojo_bindings",

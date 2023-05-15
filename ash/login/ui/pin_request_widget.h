@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace views {
@@ -41,7 +42,7 @@ class ASH_EXPORT PinRequestWidget {
     void SimulateValidationFinished(bool access_granted);
 
    private:
-    PinRequestWidget* const pin_request_widget_;
+    const raw_ptr<PinRequestWidget, ExperimentalAsh> pin_request_widget_;
   };
 
   PinRequestWidget(const PinRequestWidget&) = delete;

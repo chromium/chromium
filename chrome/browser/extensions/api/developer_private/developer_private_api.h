@@ -342,28 +342,6 @@ class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
   void OnComplete();
 };
 
-class DeveloperPrivateGetItemsInfoFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getItemsInfo",
-                             DEVELOPERPRIVATE_GETITEMSINFO)
-  DeveloperPrivateGetItemsInfoFunction();
-
-  DeveloperPrivateGetItemsInfoFunction(
-      const DeveloperPrivateGetItemsInfoFunction&) = delete;
-  DeveloperPrivateGetItemsInfoFunction& operator=(
-      const DeveloperPrivateGetItemsInfoFunction&) = delete;
-
- private:
-  ~DeveloperPrivateGetItemsInfoFunction() override;
-  ResponseAction Run() override;
-
-  void OnInfosGenerated(
-      std::vector<api::developer_private::ExtensionInfo> infos);
-
-  std::unique_ptr<ExtensionInfoGenerator> info_generator_;
-};
-
 class DeveloperPrivateGetExtensionsInfoFunction
     : public DeveloperPrivateAPIFunction {
  public:

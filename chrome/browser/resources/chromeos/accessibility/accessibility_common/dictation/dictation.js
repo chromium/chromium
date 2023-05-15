@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Context} from './context_checker.js';
 import {FocusHandler} from './focus_handler.js';
 import {InputController} from './input_controller.js';
 import {LocaleInfo} from './locale_info.js';
@@ -319,7 +320,8 @@ export class Dictation {
     const checkContextResult = macro.checkContext();
     if (!checkContextResult.canTryAction &&
         this.isContextCheckingFeatureEnabled_) {
-      this.showMacroExecutionFailed_(macro, transcript);
+      this.showMacroExecutionFailed_(
+          macro, transcript, checkContextResult.failedContext);
       return;
     }
 
@@ -489,15 +491,25 @@ export class Dictation {
    * @param {string} transcript The user's spoken transcript, shown so they
    *     understand the final speech recognized which might be helpful in
    *     understanding why the command failed.
+   * @param {!Context=} failedContext
    * @private
    */
-  showMacroExecutionFailed_(macro, transcript) {
+  showMacroExecutionFailed_(macro, transcript, failedContext) {
     MetricsUtils.recordMacroFailed(macro);
 
     this.interimText_ = '';
-    // TODO(crbug.com/1288964): Finalize string and internationalization.
+    let text = '';
+    if (!failedContext) {
+      text = chrome.i18n.getMessage(
+          'dictation_command_failed_generic', [transcript]);
+    } else {
+      const reason = Dictation.getFailedContextReason(failedContext);
+      text = chrome.i18n.getMessage(
+          'dictation_command_failed_with_reason', [transcript, reason]);
+    }
+
     this.uiController_.setState(UIState.MACRO_FAIL, {
-      text: `Failed to run command: ${transcript}`,
+      text,
       context: HintContext.STANDBY,
     });
   }
@@ -542,20 +554,53 @@ export class Dictation {
    * @private
    */
   handleRepeat_(macro) {
-    let newMacro = macro;
-    if (newMacro.getName() === MacroName.REPEAT && this.prevMacro_) {
-      // If this is the REPEAT macro, then we actually want the previously
-      // executed macro.
-      newMacro = this.prevMacro_;
+    if (macro.getName() !== MacroName.REPEAT) {
+      // If this macro is not the RepeatMacro, save it and return the existing
+      // macro.
+      this.prevMacro_ = macro;
+      return macro;
     }
 
-    this.prevMacro_ = newMacro;
-    return newMacro;
+    // Handle cases where `macro` is the RepeatMacro.
+    if (!this.prevMacro_) {
+      // If there is no previous macro, return the RepeatMacro.
+      return macro;
+    }
+
+    // Otherwise, return the previous macro.
+    return this.prevMacro_;
   }
 
   /** Disables Pumpkin for tests that use regex-based command parsing. */
   disablePumpkinForTesting() {
     this.speechParser_.disablePumpkinForTesting();
+  }
+
+  /**
+   * @param {!Context} context
+   * @return {string}
+   */
+  static getFailedContextReason(context) {
+    switch (context) {
+      case Context.INACTIVE_INPUT_CONTROLLER:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_inactive_input_controller');
+      case Context.EMPTY_EDITABLE:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_empty_editable');
+      case Context.NO_SELECTION:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_no_selection');
+      case Context.INVALID_INPUT:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_invalid_input');
+      case Context.NO_PREVIOUS_MACRO:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_no_previous_macro');
+    }
+
+    throw new Error(
+        'Cannot get error message for unsupported context: ' + context);
   }
 }
 

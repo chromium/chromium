@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
+class Browser;
 class Profile;
 
 // Handles the business logic for AvatarToolbarButton. This includes
@@ -30,7 +31,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
                                     public signin::IdentityManager::Observer,
                                     public syncer::SyncServiceObserver {
  public:
-  AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
+  AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
 
   AvatarToolbarButtonDelegate(const AvatarToolbarButtonDelegate&) = delete;
   AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
@@ -124,6 +125,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
       identity_manager_observation_{this};
 
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;

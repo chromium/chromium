@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/switch.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_list_header_view.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -17,6 +18,7 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/image_view.h"
@@ -53,6 +55,12 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
         vector_icon, cros_tokens::kCrosSysOnSurface));
     entry_row()->AddViewAndLabel(std::move(image_view),
                                  l10n_util::GetStringUTF16(label_id));
+    if (chromeos::features::IsJellyEnabled()) {
+      entry_row()->text_label()->SetEnabledColorId(
+          cros_tokens::kCrosSysOnSurface);
+      ash::TypographyProvider::Get()->StyleLabel(
+          ash::TypographyToken::kCrosButton1, *entry_row()->text_label());
+    }
     entry_row()->SetExpandable(true);
     entry_row()->AddRightView(qs_toggle.release());
   } else {

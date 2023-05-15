@@ -127,9 +127,6 @@ void PerFrameTranslateAgent::TranslateFrame(const std::string& translate_script,
                                                        : kAutoDetectionLanguage;
   target_lang_ = target_lang;
 
-  GURL url(render_frame()->GetWebFrame()->GetDocument().Url());
-  ReportPageScheme(url.scheme());
-
   EnsureIsolatedWorldInitialized(world_id_);
 
   if (!IsTranslateLibAvailable()) {

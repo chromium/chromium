@@ -10,6 +10,7 @@
 
 #include "ash/hud_display/ash_tracing_manager.h"
 #include "ash/hud_display/hud_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
@@ -69,10 +70,11 @@ class HUDSettingsView : public AshTracingManager::Observer, public views::View {
   std::vector<std::unique_ptr<HUDCheckboxHandler>> checkbox_handlers_;
 
   // Container for "Create Ui Dev Tools" button or "DevTools running" label.
-  views::LabelButton* ui_dev_tools_control_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> ui_dev_tools_control_button_ =
+      nullptr;
 
-  HUDActionButton* tracing_control_button_ = nullptr;
-  views::Label* tracing_status_message_ = nullptr;
+  raw_ptr<HUDActionButton, ExperimentalAsh> tracing_control_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> tracing_status_message_ = nullptr;
 
   base::WeakPtrFactory<HUDSettingsView> weak_factory_{this};
 };

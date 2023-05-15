@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // Navigate an about:blank page using JavaScript.
   BrowserChangeObserver added_observer(
       nullptr, BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::StringPrintf("location = '%s';", in_scope_1_.spec().c_str())));
   Browser* app_browser = added_observer.Wait();

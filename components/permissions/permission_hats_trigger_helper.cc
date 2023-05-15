@@ -13,6 +13,9 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
@@ -72,7 +75,15 @@ GetKeyToValueFilterPairMap(
       {permissions::kPermissionsPromptSurveyDisplayTimeKey,
        {prompt_parameters.survey_display_time,
         permissions::feature_params::kPermissionsPromptSurveyDisplayTime
-            .Get()}}};
+            .Get()}},
+      {permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+       {permissions::PermissionHatsTriggerHelper::
+            GetOneTimePromptsDecidedBucketString(
+                prompt_parameters.one_time_prompts_decided_bucket),
+        permissions::feature_params::
+            kPermissionPromptSurveyOneTimePromptsDecidedBucket.Get()}},
+      {permissions::kPermissionPromptSurveyUrlKey,
+       {prompt_parameters.url, ""}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -109,18 +120,21 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
-    std::string channel,
-    std::string survey_display_time,
-    absl::optional<base::TimeDelta> prompt_display_duration)
+    const std::string& channel,
+    const std::string& survey_display_time,
+    absl::optional<base::TimeDelta> prompt_display_duration,
+    OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
+    absl::optional<GURL> gurl)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
       prompt_disposition_reason(prompt_disposition_reason),
       gesture_type(gesture_type),
       channel(channel),
-
       survey_display_time(survey_display_time),
-      prompt_display_duration(prompt_display_duration) {}
+      prompt_display_duration(prompt_display_duration),
+      one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
+      url(gurl.has_value() ? gurl->spec() : "") {}
 
 PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     const PromptParametersForHaTS& other) = default;
@@ -147,7 +161,9 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionsPromptSurveyActionKey,
       kPermissionsPromptSurveyRequestTypeKey,
       kPermissionsPromptSurveyReleaseChannelKey,
-      kPermissionsPromptSurveyDisplayTimeKey};
+      kPermissionsPromptSurveyDisplayTimeKey,
+      kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+      kPermissionPromptSurveyUrlKey};
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);
 
   std::map<std::string, bool> bits_data;
@@ -170,6 +186,13 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
   }
 
   return SurveyProductSpecificData(bits_data, string_data);
+}
+
+// static
+void PermissionHatsTriggerHelper::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(
+      permissions::prefs::kOneTimePermissionPromptsDecidedCount, 0);
 }
 
 bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
@@ -196,6 +219,62 @@ bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
   }
 
   return true;
+}
+
+// static
+void PermissionHatsTriggerHelper::
+    IncrementOneTimePermissionPromptsDecidedIfApplicable(
+        ContentSettingsType type,
+        PrefService* pref_service) {
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
+      PermissionUtil::CanPermissionBeAllowedOnce(type)) {
+    pref_service->SetInteger(
+        prefs::kOneTimePermissionPromptsDecidedCount,
+        pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount) +
+            1);
+  }
+}
+
+// static
+PermissionHatsTriggerHelper::OneTimePermissionPromptsDecidedBucket
+PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucket(
+    PrefService* pref_service) {
+  int count =
+      pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount);
+  if (count <= 1) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_0_1;
+  } else if (count <= 3) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_2_3;
+  } else if (count <= 5) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_4_5;
+  } else if (count <= 10) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_6_10;
+  } else if (count <= 20) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_11_20;
+  } else {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_GT20;
+  }
+}
+
+// static
+std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
+    OneTimePermissionPromptsDecidedBucket bucket) {
+  switch (bucket) {
+    case BUCKET_0_1:
+      return "0_1";
+    case BUCKET_2_3:
+      return "2_3";
+    case BUCKET_4_5:
+      return "4_5";
+    case BUCKET_6_10:
+      return "6_10";
+    case BUCKET_11_20:
+      return "11_20";
+    case BUCKET_GT20:
+      return "GT20";
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace permissions

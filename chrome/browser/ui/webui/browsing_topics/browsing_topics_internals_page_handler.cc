@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -76,20 +74,19 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsState(
 
 void BrowsingTopicsInternalsPageHandler::GetModelInfo(
     browsing_topics::mojom::PageHandler::GetModelInfoCallback callback) {
-  optimization_guide::PageContentAnnotationsService* annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile_);
-  if (!annotations_service) {
-    DCHECK(!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics));
+  browsing_topics::BrowsingTopicsService* browsing_topics_service =
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
 
-    std::move(callback).Run(browsing_topics::mojom::WebUIGetModelInfoResult::
-                                NewOverrideStatusMessage(
-                                    "No PageContentAnnotationsService: the "
-                                    "\"BrowsingTopics\" feature is disabled."));
+  if (!browsing_topics_service) {
+    std::move(callback).Run(
+        browsing_topics::mojom::WebUIGetModelInfoResult::
+            NewOverrideStatusMessage("No BrowsingTopicsService: the "
+                                     "\"BrowsingTopics\" or other depend-on "
+                                     "features are disabled."));
     return;
   }
 
-  annotations_service->RequestAndNotifyWhenModelAvailable(
-      optimization_guide::AnnotationType::kPageTopics,
+  browsing_topics_service->GetAnnotator()->NotifyWhenModelAvailable(
       base::BindOnce(
           &BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -105,34 +102,31 @@ void BrowsingTopicsInternalsPageHandler::ClassifyHosts(
     return;
   }
 
-  optimization_guide::PageContentAnnotationsService* annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile_);
-  if (!annotations_service) {
-    DCHECK(!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics));
+  browsing_topics::BrowsingTopicsService* browsing_topics_service =
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
 
+  if (!browsing_topics_service) {
     std::move(callback).Run({});
     return;
   }
 
-  annotations_service->BatchAnnotate(
+  browsing_topics_service->GetAnnotator()->BatchAnnotate(
       base::BindOnce(
           &BrowsingTopicsInternalsPageHandler::OnGetTopicsForHostsCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      hosts, optimization_guide::AnnotationType::kPageTopics);
+      hosts);
 }
 
 void BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted(
-    browsing_topics::mojom::PageHandler::GetModelInfoCallback callback,
-    bool successful) {
-  optimization_guide::PageContentAnnotationsService* annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile_);
-  DCHECK(annotations_service);
+    browsing_topics::mojom::PageHandler::GetModelInfoCallback callback) {
+  browsing_topics::BrowsingTopicsService* browsing_topics_service =
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
+  DCHECK(browsing_topics_service);
 
   absl::optional<optimization_guide::ModelInfo> model_info =
-      annotations_service->GetModelInfoForType(
-          optimization_guide::AnnotationType::kPageTopics);
+      browsing_topics_service->GetAnnotator()->GetBrowsingTopicsModelInfo();
 
-  if (!successful || !model_info) {
+  if (!model_info) {
     std::move(callback).Run(browsing_topics::mojom::WebUIGetModelInfoResult::
                                 NewOverrideStatusMessage("Model unavailable."));
     return;
@@ -151,37 +145,15 @@ void BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted(
 
 void BrowsingTopicsInternalsPageHandler::OnGetTopicsForHostsCompleted(
     browsing_topics::mojom::PageHandler::ClassifyHostsCallback callback,
-    const std::vector<optimization_guide::BatchAnnotationResult>& results) {
-  optimization_guide::PageContentAnnotationsService* annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile_);
-  DCHECK(annotations_service);
-
-  absl::optional<optimization_guide::ModelInfo> model_info =
-      annotations_service->GetModelInfoForType(
-          optimization_guide::AnnotationType::kPageTopics);
-
-  if (!model_info) {
-    std::move(callback).Run({});
-    return;
-  }
-
+    const std::vector<browsing_topics::Annotation>& annotations) {
   std::vector<std::vector<browsing_topics::mojom::WebUITopicPtr>>
       webui_topics_for_hosts;
 
-  for (const optimization_guide::BatchAnnotationResult& result : results) {
+  for (const browsing_topics::Annotation& annotation : annotations) {
     std::vector<browsing_topics::mojom::WebUITopicPtr> webui_topics_for_host;
 
-    const absl::optional<std::vector<optimization_guide::WeightedIdentifier>>&
-        annotation_result_topics = result.topics();
-    if (!annotation_result_topics) {
-      webui_topics_for_hosts.emplace_back();
-      continue;
-    }
-
-    for (const optimization_guide::WeightedIdentifier& annotation_result_topic :
-         *annotation_result_topics) {
-      browsing_topics::Topic topic =
-          browsing_topics::Topic(annotation_result_topic.value());
+    for (int32_t topic_id : annotation.topics) {
+      browsing_topics::Topic topic = browsing_topics::Topic(topic_id);
       privacy_sandbox::CanonicalTopic canonical_topic =
           privacy_sandbox::CanonicalTopic(
               topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());

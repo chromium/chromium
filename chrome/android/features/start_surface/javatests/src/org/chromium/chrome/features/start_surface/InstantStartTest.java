@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -150,14 +151,12 @@ public class InstantStartTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
     // clang-format off
-    @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-        UiRestriction.RESTRICTION_TYPE_PHONE, UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrial-params=Study.Group:allow_to_refetch/true/thumbnail_aspect_ratio/2.0"})
+            "force-fieldtrial-params=Study.Group:thumbnail_aspect_ratio/2.0"})
     public void fetchThumbnailsPreNativeTest() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        Assert.assertTrue(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION.getValue());
 
         int tabId = 0;
         mThumbnailFetchCount = 0;
@@ -177,7 +176,7 @@ public class InstantStartTest {
         final Bitmap thumbnailBitmap =
                 StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(tabId);
         tabContentManager.getTabThumbnailWithCallback(
-                tabId, null, thumbnailFetchListener, false, false);
+                tabId, new Size(0, 0), thumbnailFetchListener, false, false);
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(mThumbnailFetchCount, greaterThan(0)));
 
@@ -200,7 +199,7 @@ public class InstantStartTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
 
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
@@ -231,7 +230,7 @@ public class InstantStartTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
 
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 

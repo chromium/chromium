@@ -1,16 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
-    <title>btn_stop_timer_1x</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <polygon id="path-1" points="44 29.6114286 42.3885714 28 36 34.3885714 29.6114286 28 28 29.6114286 34.3885714 36 28 42.3885714 29.6114286 44 36 37.6114286 42.3885714 44 44 42.3885714 37.6114286 36"></polygon>
-    </defs>
-    <g id="btn_stop_timer_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <circle id="Oval-3" fill="#BDC1C6" opacity="0.9" cx="36" cy="36" r="30"></circle>
-        <mask id="mask-2" fill="white">
-            <use xlink:href="#path-1"></use>
-        </mask>
-        <use id="ic_close_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
-    </g>
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M60 30C60 46.5686 46.5686 60 30 60C13.4314 60 0 46.5686 0 30C0 13.4314 13.4314 0 30 0C46.5686 0 60 13.4314 60 30Z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M38 23.88L36.12 22L30 28.12L23.88 22L22 23.88L28.12 30L22 36.12L23.88 38L30 31.88L36.12 38L38 36.12L31.88 30L38 23.88Z" fill="var(--secondary-color)"/>
 </svg>

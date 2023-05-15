@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/assistant/platform/audio_input_host.h"
 
 #include <string>
@@ -57,7 +58,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
       absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   mojo::Remote<libassistant::mojom::AudioInputController> remote_;
-  chromeos::PowerManagerClient* const power_manager_client_;
+  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
+      power_manager_client_;
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observer_;

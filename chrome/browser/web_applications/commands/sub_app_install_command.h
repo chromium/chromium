@@ -64,7 +64,6 @@ class SubAppInstallCommand
   // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
   void StartWithLock(
       std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
-  void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
 
  private:

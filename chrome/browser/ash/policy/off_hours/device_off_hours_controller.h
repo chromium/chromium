@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
@@ -135,7 +136,7 @@ class DeviceOffHoursController : public ash::SystemClockClient::Observer {
 
   // Used for testing purposes, otherwise it's an instance of
   // base::DefaultClock.
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // We start with the assumption that the system clock is synchronized with the
   // network time. This will be updated once actual synchronization attempts are

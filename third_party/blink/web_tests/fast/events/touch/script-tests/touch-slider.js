@@ -10,7 +10,7 @@ slider2.id = "slider2";
 slider2.setAttribute("type", "range");
 slider2.style.width = "30px";
 slider2.style.height = "200px";
-slider2.style.setProperty("-webkit-appearance", "slider-vertical");
+slider2.style.setProperty("writing-mode", "vertical-lr");
 var slider3 = document.createElement("input");
 slider3.id = "slider3";
 slider3.setAttribute("type", "range");

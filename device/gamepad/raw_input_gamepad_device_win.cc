@@ -13,7 +13,8 @@ extern "C" {
 }
 // clang-format on
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"

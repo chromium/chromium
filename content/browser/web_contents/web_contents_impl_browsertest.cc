@@ -83,6 +83,7 @@
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -91,7 +92,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
-#include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), kWebUIUrl));
 
-  EXPECT_TRUE(content::ExecuteScript(shell(), kJSCodeForAppendingFrame));
+  EXPECT_TRUE(content::ExecJs(shell(), kJSCodeForAppendingFrame));
 }
 
 // Test that creation of new RenderFrameHost objects sends the correct object
@@ -704,10 +704,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // initial load of push_state.html, and start and stop for
   // the "navigation" triggered by history.pushState(). However, the start
   // notification for the history.pushState() navigation should set
-  // should_show_loading_ui to false.
+  // should_show_loading_ui to false, as should all stop notifications.
   EXPECT_EQ("pushState", shell()->web_contents()->GetLastCommittedURL().ref());
   EXPECT_EQ(4, delegate->loadingStateChangedCount());
-  EXPECT_EQ(3, delegate->loadingStateShowLoadingUICount());
+  EXPECT_EQ(1, delegate->loadingStateShowLoadingUICount());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {
@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // present when the cross-site navigation later commits.
   // Note: the javascript function executed will not do the link click but
   // schedule it for afterwards. Since the BeforeUnload event is synchronous,
-  // clicking on the link right away would cause the ExecuteScript to never
+  // clicking on the link right away would cause the ExecJs to never
   // return.
   SetShouldProceedOnBeforeUnload(shell(), false, false);
   AppModalDialogWaiter dialog_waiter(shell());
@@ -3697,11 +3697,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContents* new_contents = nullptr;
   {
     ShellAddedObserver new_shell_observer;
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(clickLinkToSelfNoOpener());",
-        &success));
+    EXPECT_TRUE(ExecJs(shell(), "clickLinkToSelfNoOpener();"));
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
     // Delaying popup holds the initial load of |url|.
@@ -3741,10 +3737,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContents* new_contents = nullptr;
   {
     ShellAddedObserver new_shell_observer;
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickLinkToSelf());",
-        &success));
+    EXPECT_TRUE(ExecJs(shell(), "clickLinkToSelf();"));
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
     // Delaying popup holds the initial load of |url|.
@@ -3885,7 +3878,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   base::ScopedClosureRunner fullscreen_block =
       web_contents->ForSecurityDropFullscreen();
 
-  EXPECT_TRUE(ExecuteScript(main_frame, "document.body.requestFullscreen();"));
+  EXPECT_TRUE(ExecJs(main_frame, "document.body.requestFullscreen();",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   std::u16string title = title_watcher.WaitAndGetTitle();
   ASSERT_EQ(title, u"onfullscreenerror");
@@ -5190,14 +5184,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        IgnoreUnresponsiveRendererDuringPaste) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  ClipboardPasteData clipboard_paste_data =
+      ClipboardPasteData("random pasted text", std::string(), {});
 
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
   web_contents->IsClipboardPasteContentAllowed(
       GURL("https://google.com"), ui::ClipboardFormatType::PlainTextType(),
-      "random pasted text",
+      clipboard_paste_data,
       base::BindLambdaForTesting(
-          [&web_contents](const absl::optional<std::string>& data) {
-            EXPECT_TRUE(data);
+          [&web_contents](
+              absl::optional<ClipboardPasteData> clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
             EXPECT_TRUE(web_contents->ShouldIgnoreUnresponsiveRenderer());
           }));
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());

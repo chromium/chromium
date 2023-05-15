@@ -6,6 +6,8 @@
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,23 +37,55 @@ absl::optional<SkBitmap> ToSkBitmapN32(
   return sk_bitmap_n32;
 }
 
+blink::mojom::blink::SerializedStaticBitmapImagePtr
+ToSerializedAcceleratedImage(
+    scoped_refptr<blink::StaticBitmapImage> static_bitmap_image) {
+  static_bitmap_image->EnsureSyncTokenVerified();
+
+  auto image_info = static_bitmap_image->GetSkImageInfo();
+
+  auto result =
+      blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
+          blink::AcceleratedImageInfo{
+              static_bitmap_image->GetMailboxHolder(),
+              static_bitmap_image->GetUsage(), image_info,
+              static_bitmap_image->IsOriginTopLeft(),
+              static_bitmap_image->SupportsDisplayCompositing(),
+              static_bitmap_image->IsOverlayCandidate(),
+              WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
+                            static_bitmap_image)});
+  return result;
+}
+
 }  // namespace
 
-Vector<SkBitmap>
+Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr>
 StructTraits<blink::mojom::blink::TransferableMessage::DataView,
              blink::BlinkTransferableMessage>::
     image_bitmap_contents_array(const blink::BlinkCloneableMessage& input) {
-  Vector<SkBitmap> out;
+  Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr> out;
   out.ReserveInitialCapacity(
       input.message->GetImageBitmapContentsArray().size());
   for (auto& bitmap_contents : input.message->GetImageBitmapContentsArray()) {
-    // TransferableMessage::image_bitmap_contents_array is an array of
-    // skia.mojom.BitmapN32, so SkBitmap should be in N32 format.
-    auto bitmap_n32 = ToSkBitmapN32(bitmap_contents);
-    if (!bitmap_n32) {
-      return Vector<SkBitmap>();
+    if (!bitmap_contents->IsTextureBacked() ||
+        !base::FeatureList::IsEnabled(
+            blink::features::kAcceleratedStaticBitmapImageSerialization)) {
+      // Software images are passed as skia.mojom.BitmapN32,
+      // so SkBitmap should be in N32 format.
+      auto bitmap_n32 = ToSkBitmapN32(bitmap_contents);
+      if (!bitmap_n32) {
+        return Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr>();
+      }
+      out.push_back(blink::mojom::blink::SerializedStaticBitmapImage::NewBitmap(
+          bitmap_n32.value()));
+    } else {
+      blink::mojom::blink::SerializedStaticBitmapImagePtr serialized_image =
+          ToSerializedAcceleratedImage(bitmap_contents);
+      if (!serialized_image) {
+        return Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr>();
+      }
+      out.push_back(std::move(serialized_image));
     }
-    out.push_back(std::move(bitmap_n32.value()));
   }
   return out;
 }
@@ -64,11 +98,11 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
   Vector<blink::MessagePortDescriptor> stream_channels;
   blink::SerializedScriptValue::ArrayBufferContentsArray
       array_buffer_contents_array;
-  Vector<SkBitmap> sk_bitmaps;
+  Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr> images;
   if (!data.ReadMessage(static_cast<blink::BlinkCloneableMessage*>(out)) ||
       !data.ReadArrayBufferContentsArray(&array_buffer_contents_array) ||
-      !data.ReadImageBitmapContentsArray(&sk_bitmaps) ||
-      !data.ReadPorts(&ports) || !data.ReadStreamChannels(&stream_channels) ||
+      !data.ReadImageBitmapContentsArray(&images) || !data.ReadPorts(&ports) ||
+      !data.ReadStreamChannels(&stream_channels) ||
       !data.ReadUserActivation(&out->user_activation)) {
     return false;
   }
@@ -92,13 +126,25 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
   // the SkBitmaps need to be converted to StaticBitmapImages.
   blink::SerializedScriptValue::ImageBitmapContentsArray
       image_bitmap_contents_array;
-  for (auto& sk_bitmap : sk_bitmaps) {
-    const scoped_refptr<blink::StaticBitmapImage> bitmap_contents =
-        blink::ToStaticBitmapImage(sk_bitmap);
-    if (!bitmap_contents) {
+  for (auto& image : images) {
+    if (image->is_bitmap()) {
+      scoped_refptr<blink::StaticBitmapImage> bitmap_contents =
+          blink::ToStaticBitmapImage(image->get_bitmap());
+      if (!bitmap_contents) {
+        return false;
+      }
+      image_bitmap_contents_array.push_back(std::move(bitmap_contents));
+    } else if (image->is_accelerated_image()) {
+      scoped_refptr<blink::StaticBitmapImage> accelerated_image =
+          blink::WrapAcceleratedBitmapImage(
+              std::move(image->get_accelerated_image()));
+      if (!accelerated_image) {
+        return false;
+      }
+      image_bitmap_contents_array.push_back(std::move(accelerated_image));
+    } else {
       return false;
     }
-    image_bitmap_contents_array.push_back(bitmap_contents);
   }
   out->message->SetImageBitmapContentsArray(image_bitmap_contents_array);
   return true;

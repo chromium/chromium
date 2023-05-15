@@ -201,6 +201,8 @@ std::string DisplayTypeToString(
       return "Continue";
     case ash::SearchResultDisplayType::kRecentApps:
       return "RecentApps";
+    case ash::SearchResultDisplayType::kImage:
+      return "Image";
   }
   NOTREACHED();
 }

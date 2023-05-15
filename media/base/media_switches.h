@@ -97,6 +97,7 @@ MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
+MEDIA_EXPORT extern const char kAllowRAInDevMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {
@@ -138,7 +139,13 @@ MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
 
-MEDIA_EXPORT extern const char kDisableUseMojoVideoDecoderForPepper[];
+#if !BUILDFLAG(IS_ANDROID)
+// If enabled, overrides the target playout delay for a casting mirroring
+// session. The value will be parsed as milliseconds. Lowering this value will
+// result in a lower end to end latency, but could come at the cost of other
+// quality standards such as dropped frames or FPS.
+MEDIA_EXPORT extern const char kCastMirroringTargetPlayoutDelay[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace switches
 
@@ -149,6 +156,9 @@ namespace media {
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusDuckFlash);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusLossSuspendMediaSession);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioRendererAlgorithmParameters);
+MEDIA_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kAudioRendererAlgorithmStartingCapacityForEncrypted;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayIgnoreWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBresenhamCadence);
@@ -203,7 +213,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI);
 #if !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
 #endif
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsForChromeOS);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsSeamlessTransfer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsModernUI);
@@ -247,7 +256,11 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForHardwareVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneSoftwareVideoSharedImages);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneVideoCaptureSharedImages);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kShareThisTabDialog);
+MEDIA_EXPORT extern const base::FeatureParam<int>
+    kShareThisTabDialogActivationDelayMs;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenCastStreamingSession);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOverlayFullscreenVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundMutedAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);
@@ -297,6 +310,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiH264TemporalLayerHWEncoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVp8TemporalLayerHWEncoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVp9kSVCHWEncoding);
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+#if defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kV4L2FlatStatelessVideoDecoder);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kV4L2FlatStatefulVideoDecoder);
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoBlitColorAccuracy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVp9kSVCHWDecoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebContentsCaptureHiDpi);
@@ -316,7 +333,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kHlsPlayer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRequestSystemAudioFocus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioLatencyFromHAL);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePooledSharedImageVideoProvider);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseRealColorSpaceForAndroidVideo);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecSoftwareDecoder);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -412,7 +429,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoDecoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoEncoding);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMojoVideoDecoderForPepper);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMediaService);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseTaskRunnerForMojoVEAService);
@@ -442,17 +458,6 @@ MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 MEDIA_EXPORT bool IsOutOfProcessVideoDecodingEnabled();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
-enum class kCrosGlobalMediaControlsPinOptions {
-  kPin,
-  kNotPin,
-  kHeuristic,
-};
-
-// Feature param used to force default pin/unpin for global media controls in
-// CrOS.
-MEDIA_EXPORT extern const base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
-    kCrosGlobalMediaControlsPinParam;
 
 // Return bitmask of audio formats supported by EDID.
 MEDIA_EXPORT uint32_t GetPassthroughAudioFormats();

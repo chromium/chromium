@@ -5,11 +5,11 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/bits.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -4182,8 +4182,8 @@ error::Error GLES2DecoderPassthroughImpl::DoResizeCHROMIUM(
   static_assert(sizeof(GLuint) >= sizeof(int), "Unexpected GLuint size.");
   static const GLuint kMaxDimension =
       static_cast<GLuint>(std::numeric_limits<int>::max());
-  gfx::Size safe_size(base::clamp(width, 1U, kMaxDimension),
-                      base::clamp(height, 1U, kMaxDimension));
+  gfx::Size safe_size(std::clamp(width, 1U, kMaxDimension),
+                      std::clamp(height, 1U, kMaxDimension));
   if (offscreen_) {
     if (!ResizeOffscreenFramebuffer(safe_size)) {
       LOG(ERROR) << "GLES2DecoderPassthroughImpl: Context lost because "

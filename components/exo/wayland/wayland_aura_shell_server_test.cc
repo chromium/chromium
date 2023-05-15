@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <wayland-server-protocol-core.h>
+#include "base/memory/raw_ptr.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
@@ -89,9 +90,9 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
             zaura_shell, gained_active, lost_active);
       }};
 
-  Display* display_;
-  wl_surface* gained_active_ = nullptr;
-  wl_surface* lost_active_ = nullptr;
+  raw_ptr<Display, ExperimentalAsh> display_;
+  raw_ptr<wl_surface, ExperimentalAsh> gained_active_ = nullptr;
+  raw_ptr<wl_surface, ExperimentalAsh> lost_active_ = nullptr;
   int32_t activated_call_count_ = 0;
 
   test::ResourceKey surface_key_;
@@ -180,8 +181,8 @@ TEST_F(WaylandAuraShellServerTest,
   // Wait until all wayland events are sent.
   PostToClientAndWait([]() {});
 
-  EXPECT_EQ(nullptr, gained_active_);
-  EXPECT_EQ(nullptr, lost_active_);
+  EXPECT_EQ(nullptr, gained_active_.get());
+  EXPECT_EQ(nullptr, lost_active_.get());
   EXPECT_EQ(1, activated_call_count_);
 }
 

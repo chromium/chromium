@@ -8,6 +8,7 @@
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,7 +111,7 @@ class SmartLockAuthFactorModelUnittest : public AshTestBase {
   }
 
   std::unique_ptr<SmartLockAuthFactorModel> smart_lock_model_;
-  AuthFactorModel* model_ = nullptr;
+  raw_ptr<AuthFactorModel, ExperimentalAsh> model_ = nullptr;
   AuthIconView icon_;
   bool on_state_changed_called_ = false;
   bool arrow_button_tap_callback_called_ = false;

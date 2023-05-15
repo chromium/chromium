@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
 <translation id="1785415724048343560">Rekomenduojama siekiant užtikrinti geriausią patirtį</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Iš „<ph name="SOURCE_NAME" />“</translation>
 <translation id="187227595286001730">Susijusios svetainės gali matyti jūsų veiklą grupėje</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Baigti</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Svetainės gali naudoti slapukus naršymo kokybei pagerinti, pavyzdžiui, kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės</translation>
 <translation id="3165022941318558018">Leisti svetainėje naudoti trečiųjų šalių slapukus</translation>
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
-<translation id="3203366800380907218">Iš žiniatinklio</translation>
 <translation id="321187648315454507">Norėdami leisti „<ph name="APP_NAME" />“ siųsti pranešimus, taip pat įjunkite juos <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3248611290851046188">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus. Ši svetainė taip pat gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Nutildyti svetaines, kurios leidžia garsą</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3628308229821498208">Siūlomos paieškos</translation>
+<translation id="3707034683772193706">Svetainė, kurioje lankotės, gali išsaugoti nedidelį kiekį informacijos „Chrome“, kad būtų galima patvirtinti, jog nesate robotas</translation>
 <translation id="3721953990244350188">Atsisakyti ir rodyti kitą galimą veiksmą</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Pasirinkti kontaktai bus bendrinami su <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Paskutinį kartą lankytasi šiandien</translation>
 <translation id="5225463052809312700">Įjungti fotoaparatą</translation>
-<translation id="5229337741799419985">Šis nustatymas veikia jūsų neidentifikuojant ir neleidžiant svetainėms matyti jūsų naršymo istorijos</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6689172468748959065">Profilio nuotraukos</translation>
 <translation id="6697925417670533197">Aktyvūs atsisiuntimai</translation>
-<translation id="6701547804986694515">Svetainė, kurioje lankotės, sistemoje „Chrome“ gali išsaugoti informaciją, pagal kurią patvirtinama, kad esate ne robotas. Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>
 <translation id="6722828510648505498">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6749077623962119521">Iš naujo nustatyti leidimus?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Įprastai blokuojate pranešimus. Norėdami leisti, palieskite „Išsami informacija“.</translation>
 <translation id="7366415735885268578">Svetainės pridėjimas</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> nustatymai</translation>
+<translation id="7406113532070524618">Šis nustatymas veikia jūsų neidentifikuojant arba neleidžiant svetainėms matyti jūsų naršymo istorijos, bet svetainės gali bendrinti nedidelį kiekį informacijos vykdydamos patvirtinimą</translation>
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7423538860840206698">Neleidžiama skaityti iškarpinės</translation>
 <translation id="7425915948813553151">Tamsioji tema, skirta svetainėms</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Svetainės blokuojamos, kad nepasiektų jutiklių</translation>
 <translation id="8823559166155093873">Blokuoti slapukus</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>
 <translation id="8899807382908246773">Nepageidaujami skelbimai</translation>
 <translation id="8903921497873541725">Artinti</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

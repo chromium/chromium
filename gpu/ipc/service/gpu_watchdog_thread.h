@@ -7,6 +7,7 @@
 
 #include "base/atomicops.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_observer.h"
@@ -275,7 +276,9 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   base::TimeDelta remaining_watched_thread_ticks_;
 
   // The Windows thread hanndle of the watched GPU main thread.
-  void* watched_thread_handle_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* watched_thread_handle_ = nullptr;
 
   // After GPU hang detected, how many times has the GPU thread been allowed to
   // continue due to not enough thread time.

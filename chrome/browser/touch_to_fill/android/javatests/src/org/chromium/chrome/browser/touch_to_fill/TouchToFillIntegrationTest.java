@@ -90,7 +90,8 @@ public class TouchToFillIntegrationTest {
         // TODO(https://crbug.com/783819): Migrate Credential to GURL.
         sAna = new Credential("Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), false, false, 0);
         sBob = new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false, 0);
-        sCam = new WebAuthnCredential("cam@example.net", "12345");
+        sCam = new WebAuthnCredential(
+                "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {

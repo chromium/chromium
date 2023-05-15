@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -303,7 +303,7 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
 
   views::View* const permission_bubble_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier,
+          PermissionPromptBubbleBaseView::kMainViewId,
           views::ElementTrackerViews::GetInstance()->GetContextForView(
               browser_view));
   if (!permission_bubble_view) {
@@ -532,7 +532,7 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsFooterFrontendId(int frontend_id) {
+bool IsFooterFrontendId(PopupItemId frontend_id) {
   switch (frontend_id) {
     case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
     case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:

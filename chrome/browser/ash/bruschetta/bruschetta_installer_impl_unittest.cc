@@ -7,6 +7,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -45,7 +47,11 @@ using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
-constexpr int kMaxSteps = 26;
+constexpr int kMaxSteps = 24;
+
+// Total number of stopping points in ::ExpectStopOnStepN when we don't install
+// a pflash file.
+constexpr int kMaxStepsNoPflash = kMaxSteps - 7;
 
 const char kVmName[] = "vm-name";
 const char kVmConfigId[] = "test-config-id";
@@ -85,22 +91,23 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     image.Set(prefs::kPolicyHashKey, kVmConfigHash);
     base::Value::List oem_strings;
     oem_strings.Append("OEM string");
+
     base::Value::Dict config;
-    config.Set(prefs::kPolicyEnabledKey,
-               static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
-    config.Set(prefs::kPolicyNameKey, kVmConfigName);
-    config.Set(prefs::kPolicyVTPMKey, vtpm.Clone());
-    config.Set(prefs::kPolicyImageKey, image.Clone());
-    config.Set(prefs::kPolicyUefiKey, image.Clone());
-    config.Set(prefs::kPolicyPflashKey, image.Clone());
-    config.Set(prefs::kPolicyOEMStringsKey, oem_strings.Clone());
-    prefs_installable_.Set(kVmConfigId, config.Clone());
 
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
     config.Set(prefs::kPolicyNameKey, kVmConfigName);
     config.Set(prefs::kPolicyVTPMKey, vtpm.Clone());
-    prefs_not_installable_.Set(kVmConfigId, std::move(config));
+    config.Set(prefs::kPolicyOEMStringsKey, oem_strings.Clone());
+    prefs_not_installable_.Set(kVmConfigId, config.Clone());
+
+    config.Set(prefs::kPolicyEnabledKey,
+               static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
+    config.Set(prefs::kPolicyImageKey, image.Clone());
+    prefs_installable_no_pflash_.Set(kVmConfigId, config.Clone());
+
+    config.Set(prefs::kPolicyPflashKey, image.Clone());
+    prefs_installable_.Set(kVmConfigId, config.Clone());
   }
 
   void SetUp() override {
@@ -119,7 +126,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     ASSERT_TRUE(base::CreateDirectory(profile_.GetPath().Append("Downloads")));
 
-    ash::disks::DiskMountManager::InitializeForTesting(&disk_mount_manager_);
+    ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
 
     BruschettaServiceFactory::EnableForTesting(&profile_);
 
@@ -255,7 +262,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   // Generate expectations and actions for a test that runs the install and
   // stops at the nth point where stopping is possible, returning true if the
   // stop is due to an error and false if the stop is a cancel. Passing in
-  // kMaxSteps means letting the install run to completion. If out_reuslt is
+  // kMaxSteps means letting the install run to completion. If out_result is
   // passed in, will set it to the expected result (as reported to the observer
   // + metrics).
   //
@@ -263,7 +270,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   // things.
   bool ExpectStopOnStepN(int n,
                          Sequence seq = {},
-                         BruschettaInstallResult* out_result = nullptr) {
+                         BruschettaInstallResult* out_result = nullptr,
+                         bool use_pflash = true) {
     // Policy check step
     {
       if (out_result) {
@@ -279,18 +287,24 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(
-          InvokeWithoutArgs(PrefsCallback(prefs_installable_)));
+      if (use_pflash) {
+        expectation.WillOnce(
+            InvokeWithoutArgs(PrefsCallback(prefs_installable_)));
+      } else {
+        expectation.WillOnce(
+            InvokeWithoutArgs(PrefsCallback(prefs_installable_no_pflash_)));
+      }
     }
 
-    // DLC install step
+    // Tools DLC install step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kDlcInstallError;
+        *out_result = BruschettaInstallResult::kToolsDlcInstallError;
       }
       auto& expectation =
-          EXPECT_CALL(observer_,
-                      StateChanged(BruschettaInstaller::State::kDlcInstall))
+          EXPECT_CALL(
+              observer_,
+              StateChanged(BruschettaInstaller::State::kToolsDlcInstall))
               .Times(1)
               .InSequence(seq);
 
@@ -307,15 +321,15 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
           InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
     }
 
-    // Firmware image download step
+    // UEFI DLC install step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kDownloadError;
+        *out_result = BruschettaInstallResult::kFirmwareDlcInstallError;
       }
       auto& expectation =
           EXPECT_CALL(
               observer_,
-              StateChanged(BruschettaInstaller::State::kFirmwareDownload))
+              StateChanged(BruschettaInstaller::State::kFirmwareDlcInstall))
               .Times(1)
               .InSequence(seq);
 
@@ -324,22 +338,12 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return false;
       }
       if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadErrorCallback(true));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
-        return true;
-      }
-      if (out_result) {
-        *out_result = BruschettaInstallResult::kInvalidFirmware;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
+        MakeErrorPoint(expectation, seq, DlcCallback("Install Error"));
         return true;
       }
 
-      expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
+      expectation.WillOnce(
+          InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
     }
 
     // Boot disk download step
@@ -388,27 +392,29 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
               .Times(1)
               .InSequence(seq);
 
-      if (!n--) {
-        expectation.WillOnce(CancelCallback());
-        return false;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadErrorCallback(true));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
-        return true;
-      }
-      if (out_result) {
-        *out_result = BruschettaInstallResult::kInvalidPflash;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
-        return true;
-      }
+      if (use_pflash) {
+        if (!n--) {
+          expectation.WillOnce(CancelCallback());
+          return false;
+        }
+        if (!n--) {
+          MakeErrorPoint(expectation, seq, DownloadErrorCallback(true));
+          return true;
+        }
+        if (!n--) {
+          MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
+          return true;
+        }
+        if (out_result) {
+          *out_result = BruschettaInstallResult::kInvalidPflash;
+        }
+        if (!n--) {
+          MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
+          return true;
+        }
 
-      expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
+        expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
+      }
     }
 
     // Open files step
@@ -470,20 +476,23 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
               .Times(1)
               .InSequence(seq);
 
-      if (!n--) {
-        expectation.WillOnce(CancelCallback());
-        return false;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, InstallPflashCallback(absl::nullopt));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq, InstallPflashCallback(false));
-        return true;
-      }
+      if (use_pflash) {
+        if (!n--) {
+          expectation.WillOnce(CancelCallback());
+          return false;
+        }
+        if (!n--) {
+          MakeErrorPoint(expectation, seq,
+                         InstallPflashCallback(absl::nullopt));
+          return true;
+        }
+        if (!n--) {
+          MakeErrorPoint(expectation, seq, InstallPflashCallback(false));
+          return true;
+        }
 
-      expectation.WillOnce(InvokeWithoutArgs(InstallPflashCallback(true)));
+        expectation.WillOnce(InvokeWithoutArgs(InstallPflashCallback(true)));
+      }
     }
 
     // Start VM step
@@ -541,17 +550,19 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::RunLoop run_loop_, run_loop_2_;
 
-  base::Value::Dict prefs_installable_, prefs_not_installable_;
+  base::Value::Dict prefs_installable_no_pflash_, prefs_installable_,
+      prefs_not_installable_;
 
   TestingProfile profile_;
   std::unique_ptr<BruschettaInstaller> installer_;
 
   MockObserver observer_;
   // Pointer owned by DiskMountManager
-  ash::disks::MockDiskMountManager& disk_mount_manager_{
-      *new ash::disks::MockDiskMountManager};
+  const raw_ref<ash::disks::MockDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_{*new ash::disks::MockDiskMountManager};
 
-  download::test::TestDownloadService* download_service_;
+  raw_ptr<download::test::TestDownloadService, ExperimentalAsh>
+      download_service_;
   BruschettaDownloadClient download_client_{&profile_};
   bool destroy_installer_on_completion_ = true;
   base::HistogramTester histogram_tester_;
@@ -589,6 +600,17 @@ TEST_F(BruschettaInstallerTest, InstallSuccess) {
   EXPECT_FALSE(installer_);
 }
 
+TEST_F(BruschettaInstallerTest, InstallSuccessNoPflash) {
+  ExpectStopOnStepN(kMaxStepsNoPflash, {}, nullptr, false);
+
+  installer_->Install(kVmName, kVmConfigId);
+  run_loop_.Run();
+
+  histogram_tester_.ExpectBucketCount(kInstallResultMetric,
+                                      BruschettaInstallResult::kSuccess, 1);
+  EXPECT_FALSE(installer_);
+}
+
 TEST_F(BruschettaInstallerTest, TwoInstalls) {
   ExpectStopOnStepN(kMaxSteps);
 
@@ -613,6 +635,29 @@ TEST_F(BruschettaInstallerTest, MultipleCancelsNoOp) {
 TEST_P(BruschettaInstallerTest, StopDuringInstall) {
   BruschettaInstallResult expected_result;
   bool is_error = ExpectStopOnStepN(GetParam(), {}, &expected_result);
+
+  installer_->Install(kVmName, kVmConfigId);
+  run_loop_.Run();
+
+  if (is_error) {
+    // Installer should remain open in error state, tell it to close.
+    EXPECT_TRUE(installer_);
+    installer_->Cancel();
+    run_loop_2_.Run();
+
+    histogram_tester_.ExpectBucketCount(kInstallResultMetric, expected_result,
+                                        1);
+  }
+  EXPECT_FALSE(installer_);
+}
+
+TEST_P(BruschettaInstallerTest, StopDuringInstallNoPflash) {
+  if (GetParam() > kMaxStepsNoPflash) {
+    GTEST_SKIP();
+  }
+
+  BruschettaInstallResult expected_result;
+  bool is_error = ExpectStopOnStepN(GetParam(), {}, &expected_result, false);
 
   installer_->Install(kVmName, kVmConfigId);
   run_loop_.Run();
@@ -700,7 +745,7 @@ TEST_F(BruschettaInstallerTest, AllStepsTested) {
         &failures};
 
     testing::Mock::VerifyAndClearExpectations(&observer_);
-    testing::Mock::VerifyAndClearExpectations(&disk_mount_manager_);
+    testing::Mock::VerifyAndClearExpectations(&*disk_mount_manager_);
   }
 }
 

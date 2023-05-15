@@ -67,7 +67,7 @@ class BackgroundDownloadTaskHelperTest
 // TODO(crbug/1367306): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
   base::RunLoop loop;
-  std::string guid = base::GenerateUuid();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   Download("/test", guid,
            base::BindLambdaForTesting([&](bool success,
                                           const base::FilePath& file_path,
@@ -94,7 +94,7 @@ TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
 TEST_F(BackgroundDownloadTaskHelperTest,
        DISABLED_DownloadErrorNonSuccessHttpCode) {
   base::RunLoop loop;
-  std::string guid = base::GenerateUuid();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   Download("/notfound", guid,
            base::BindLambdaForTesting([&](bool success,
                                           const base::FilePath& file_path,
@@ -111,7 +111,7 @@ TEST_F(BackgroundDownloadTaskHelperTest,
 // TODO(crbug/1367306): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DataURL) {
   base::RunLoop loop;
-  std::string guid = base::GenerateUuid();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   DownloadParams params;
   params.request_params.url = GURL("data:text/plain;base64,Q2hyb21pdW0=");
   helper()->StartDownload(

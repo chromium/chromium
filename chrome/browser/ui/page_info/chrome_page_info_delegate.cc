@@ -21,6 +21,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -62,11 +63,27 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "ui/events/event.h"
 #else
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
+
+namespace {
+
+// Expected URL types for `UrlIdentity::CreateFromUrl()`.
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
+    .default_options = {UrlIdentity::DefaultFormatOptions::
+                            kOmitSchemePathAndTrivialSubdomains}};
+
+}  // namespace
 
 ChromePageInfoDelegate::ChromePageInfoDelegate(
     content::WebContents* web_contents)
@@ -202,14 +219,17 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
           : nullptr);
 }
 
-std::u16string ChromePageInfoDelegate::GetWebAppShortName() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-
-  if (browser && web_app::AppBrowserController::IsWebApp(browser)) {
-    return browser->app_controller()->GetAppShortName();
+bool ChromePageInfoDelegate::IsIsolatedWebApp() {
+  CHECK(web_contents_);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents_);
+  if (!provider) {
+    return false;
   }
 
-  return u"";
+  const web_app::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents_);
+  return app_id && provider->registrar_unsafe().IsIsolated(*app_id);
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
@@ -281,6 +301,13 @@ void ChromePageInfoDelegate::OnUIClosing() {
     sentiment_service_->PageInfoClosed();
 }
 #endif
+
+std::u16string ChromePageInfoDelegate::GetSubjectName(const GURL& url) {
+  CHECK(web_contents_);
+  return UrlIdentity::CreateFromUrl(GetProfile(), url, kUrlIdentityAllowedTypes,
+                                    kUrlIdentityOptions)
+      .name;
+}
 
 permissions::PermissionDecisionAutoBlocker*
 ChromePageInfoDelegate::GetPermissionDecisionAutoblocker() {

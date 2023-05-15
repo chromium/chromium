@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -44,8 +44,13 @@ suite('<os-settings-page>', function() {
 
   /** @return {OsSettingsPageElement} */
   function init() {
+    loadTimeData.overrideValues({
+      isKerberosEnabled: true,  // Simulate Kerberos enabled
+    });
+
     const element = document.createElement('os-settings-page');
     element.prefs = prefElement.prefs;
+    element.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(element);
     flush();
     return element;
@@ -55,9 +60,6 @@ suite('<os-settings-page>', function() {
     suiteSetup(() => {
       Router.getInstance().navigateTo(routes.BASIC);
       settingsPage = init();
-
-      // For Kerberos page
-      settingsPage.showKerberosSection = true;
     });
 
     suiteTeardown(() => {
@@ -94,9 +96,6 @@ suite('<os-settings-page>', function() {
       const idleRender =
           settingsPage.shadowRoot.querySelector('settings-idle-load');
       await idleRender.get();
-
-      // For reset page
-      settingsPage.showReset = true;
     });
 
     suiteTeardown(() => {
@@ -114,7 +113,7 @@ suite('<os-settings-page>', function() {
       'os-settings-reset-page',
     ];
     advancedPages.forEach((pageName) => {
-      test(`${pageName} exists`, async () => {
+      test(`${pageName} exists`, () => {
         const pageElement = settingsPage.shadowRoot.querySelector(pageName);
         assertTrue(!!pageElement, `Element <${pageName}> was not found.`);
       });
@@ -126,11 +125,6 @@ suite('<os-settings-page>', function() {
       Router.getInstance().navigateTo(routes.BASIC);
       loadTimeData.overrideValues({isGuest: true});
       settingsPage = init();
-
-      // For Kerberos page
-      settingsPage.showKerberosSection = true;
-      // For reset page
-      settingsPage.showReset = true;
 
       const idleRender =
           settingsPage.shadowRoot.querySelector('settings-idle-load');
@@ -159,7 +153,7 @@ suite('<os-settings-page>', function() {
       'os-settings-reset-page',
     ];
     visiblePages.forEach((pageName) => {
-      test(`${pageName} should exist`, async () => {
+      test(`${pageName} should exist`, () => {
         const pageElement = settingsPage.shadowRoot.querySelector(pageName);
         assertTrue(
             !!pageElement, `Element <${pageName}> should exist in Guest mode.`);
@@ -173,11 +167,59 @@ suite('<os-settings-page>', function() {
       'os-settings-files-page',
     ];
     hiddenPages.forEach((pageName) => {
-      test(`${pageName} should not exist`, async () => {
+      test(`${pageName} should not exist`, () => {
         const pageElement = settingsPage.shadowRoot.querySelector(pageName);
         assertEquals(
             null, pageElement,
             `Element <${pageName}> should not exist in Guest mode.`);
+      });
+    });
+  });
+
+  suite('Page availability', () => {
+    suiteSetup(async () => {
+      Router.getInstance().navigateTo(routes.BASIC);
+      settingsPage = init();
+
+      const idleRender =
+          settingsPage.shadowRoot.querySelector('settings-idle-load');
+      await idleRender.get();
+    });
+
+    suiteTeardown(() => {
+      settingsPage.remove();
+      CrSettingsPrefs.resetForTesting();
+      Router.getInstance().resetRouteForTesting();
+    });
+
+    [{
+      pageName: 'reset',
+      elementName: 'os-settings-reset-page',
+    },
+     {
+       pageName: 'kerberos',
+       elementName: 'settings-kerberos-page',
+     }].forEach(({pageName, elementName}) => {
+      test(`${pageName} page is controlled by pageAvailability`, () => {
+        // Make page available
+        settingsPage.pageAvailability = {
+          ...settingsPage.pageAvailability,
+          [pageName]: true,
+        };
+        flush();
+
+        let pageElement = settingsPage.shadowRoot.querySelector(elementName);
+        assertTrue(!!pageElement, `<${elementName}> should exist.`);
+
+        // Make page unavailable
+        settingsPage.pageAvailability = {
+          ...settingsPage.pageAvailability,
+          [pageName]: false,
+        };
+        flush();
+
+        pageElement = settingsPage.shadowRoot.querySelector(elementName);
+        assertEquals(null, pageElement, `<${elementName}> should not exist.`);
       });
     });
   });

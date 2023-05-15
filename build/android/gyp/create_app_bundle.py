@@ -94,10 +94,6 @@ def _ParseArgs(args):
       '--rtxt-out-path', help='Path to combined R.txt file for bundle.')
   parser.add_argument('--uncompressed-assets', action='append',
                       help='GN-list of uncompressed assets.')
-  parser.add_argument(
-      '--compress-shared-libraries',
-      action='store_true',
-      help='Whether to store native libraries compressed.')
   parser.add_argument('--compress-dex',
                       action='store_true',
                       help='Compress .dex files')
@@ -126,12 +122,29 @@ def _ParseArgs(args):
 
   options = parser.parse_args(args)
   options.module_zips = action_helpers.parse_gn_list(options.module_zips)
+
+  if len(options.module_zips) == 0:
+    parser.error('The module zip list cannot be empty.')
+  if len(options.module_zips) != len(options.module_names):
+    parser.error('# module zips != # names.')
+  if 'base' not in options.module_names:
+    parser.error('Missing base module.')
+
+  # Sort modules for more stable outputs.
+  per_module_values = list(
+      zip(options.module_names, options.module_zips,
+          options.uncompressed_assets, options.rtxt_in_paths,
+          options.pathmap_in_paths))
+  per_module_values.sort(key=lambda x: (x[0] != 'base', x[0]))
+  options.module_names = [x[0] for x in per_module_values]
+  options.module_zips = [x[1] for x in per_module_values]
+  options.uncompressed_assets = [x[2] for x in per_module_values]
+  options.rtxt_in_paths = [x[3] for x in per_module_values]
+  options.pathmap_in_paths = [x[4] for x in per_module_values]
+
   options.rtxt_in_paths = action_helpers.parse_gn_list(options.rtxt_in_paths)
   options.pathmap_in_paths = action_helpers.parse_gn_list(
       options.pathmap_in_paths)
-
-  if len(options.module_zips) == 0:
-    raise Exception('The module zip list cannot be empty.')
 
   # Merge all uncompressed assets into a set.
   uncompressed_list = []
@@ -178,15 +191,13 @@ def _MakeSplitDimension(value, enabled):
 
 
 def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
-                              compress_shared_libraries, split_dimensions,
-                              base_master_resource_ids):
+                              split_dimensions, base_master_resource_ids):
   """Generate a dictionary that can be written to a JSON BuildConfig.
 
   Args:
     uncompressed_assets: A list or set of file paths under assets/ that always
       be stored uncompressed.
     compressed_dex: Boolean, whether to compress .dex.
-    compress_shared_libraries: Boolean, whether to compress native libs.
     split_dimensions: list of split dimensions.
     base_master_resource_ids: Optional list of 32-bit resource IDs to keep
       inside the base module, even when split dimensions are enabled.
@@ -225,7 +236,7 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
               'splitDimension': split_dimensions,
           },
           'uncompressNativeLibraries': {
-              'enabled': not compress_shared_libraries,
+              'enabled': True,
           },
           'uncompressDexFiles': {
               'enabled': True,  # Applies only for P+.
@@ -404,10 +415,14 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
 
 
 def _GetManifestForModule(bundle_path, module_name):
-  return ElementTree.fromstring(
-      bundletool.RunBundleTool([
-          'dump', 'manifest', '--bundle', bundle_path, '--module', module_name
-      ]))
+  data = bundletool.RunBundleTool(
+      ['dump', 'manifest', '--bundle', bundle_path, '--module', module_name])
+  try:
+    return ElementTree.fromstring(data)
+  except ElementTree.ParseError:
+    sys.stderr.write('Failed to parse:\n')
+    sys.stderr.write(data)
+    raise
 
 
 def _GetComponentNames(manifest, tag_name):
@@ -521,7 +536,6 @@ def main(args):
     logging.info('Creating BundleConfig.pb.json')
     bundle_config = _GenerateBundleConfigJson(options.uncompressed_assets,
                                               options.compress_dex,
-                                              options.compress_shared_libraries,
                                               split_dimensions,
                                               base_master_resource_ids)
 

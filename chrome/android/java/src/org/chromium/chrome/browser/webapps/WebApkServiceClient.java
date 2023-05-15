@@ -57,13 +57,11 @@ public class WebApkServiceClient {
         @Override
         default void onConnected(IBinder api) {
             if (api == null) {
-                WebApkUmaRecorder.recordBindToWebApkServiceSucceeded(false);
                 return;
             }
 
             try {
                 useApi(IWebApkApi.Stub.asInterface(api));
-                WebApkUmaRecorder.recordBindToWebApkServiceSucceeded(true);
             } catch (RemoteException e) {
                 Log.w(TAG, "WebApkAPI use failed.", e);
             }

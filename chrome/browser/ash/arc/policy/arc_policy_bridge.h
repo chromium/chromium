@@ -15,6 +15,7 @@
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -205,10 +206,11 @@ class ArcPolicyBridge : public KeyedService,
   static void ActivateArcIfRequiredByPolicy(
       const policy::PolicyMap& policy_map);
 
-  content::BrowserContext* const context_;
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  policy::PolicyService* policy_service_ = nullptr;
+  raw_ptr<policy::PolicyService, ExperimentalAsh> policy_service_ = nullptr;
 
   bool is_managed_ = false;
   bool is_policy_service_observed = false;

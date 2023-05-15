@@ -56,6 +56,14 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
           void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
           write_account_key_callback) = 0;
 
+  // Writes `name` to the Additional Data characteristic as a personalized name.
+  virtual void WritePersonalizedName(
+      const std::string& name,
+      const std::string& provider_address,
+      FastPairDataEncryptor* fast_pair_data_encryptor,
+      base::OnceCallback<void(absl::optional<PairFailure>)>
+          write_additional_data_callback) = 0;
+
   // Returns whether or not this client has an active GATT connection.
   virtual bool IsConnected() = 0;
 };

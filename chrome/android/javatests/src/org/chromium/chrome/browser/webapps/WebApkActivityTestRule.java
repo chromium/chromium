@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.webapps;
 
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;
@@ -64,7 +65,7 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
      */
     public WebappActivity startWebApkActivity(final String startUrl) {
         Intent intent =
-                new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
+                new Intent(ApplicationProvider.getApplicationContext(), WebappActivity.class);
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "org.chromium.webapk.test");
         intent.putExtra(WebappConstants.EXTRA_URL, startUrl);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -90,7 +91,7 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
 
     private Intent createIntent(WebappInfo webApkInfo) {
         Intent intent =
-                new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
+                new Intent(ApplicationProvider.getApplicationContext(), WebappActivity.class);
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, webApkInfo.webApkPackageName());
         intent.putExtra(WebappConstants.EXTRA_ID, webApkInfo.id());
         intent.putExtra(WebappConstants.EXTRA_URL, webApkInfo.url());

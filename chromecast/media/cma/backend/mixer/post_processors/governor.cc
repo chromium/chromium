@@ -31,16 +31,16 @@ const char kClampMultiplierKey[] = "clamp_multiplier";
 }  // namespace
 
 Governor::Governor(const std::string& config, int input_channels)
-    : volume_(kNoVolume), slew_volume_() {
+    : volume_(kNoVolume) {
   status_.output_channels = input_channels;
   status_.rendering_delay_frames = 0;
   status_.ringing_time_frames = 0;
-  auto config_dict = base::JSONReader::Read(config);
+  auto config_dict = base::JSONReader::ReadDict(config);
   CHECK(config_dict) << "Governor config is not valid json: " << config;
-  auto onset_volume = config_dict->FindDoublePath(kOnsetVolumeKey);
+  auto onset_volume = config_dict->FindDouble(kOnsetVolumeKey);
   CHECK(onset_volume);
   onset_volume_ = onset_volume.value();
-  auto clamp_multiplier = config_dict->FindDoublePath(kClampMultiplierKey);
+  auto clamp_multiplier = config_dict->FindDouble(kClampMultiplierKey);
   CHECK(clamp_multiplier);
   clamp_multiplier_ = clamp_multiplier.value();
   CHECK_LE(onset_volume_, clamp_multiplier_);

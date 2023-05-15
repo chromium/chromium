@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -95,7 +96,8 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
   const AccountId account_id_;
   std::unique_ptr<Delegate> delegate_;
   base::ObserverList<Observer> observers_;

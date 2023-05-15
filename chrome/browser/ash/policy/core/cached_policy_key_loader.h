@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -75,7 +76,8 @@ class CachedPolicyKeyLoader {
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  ash::CryptohomeMiscClient* const cryptohome_misc_client_;
+  const raw_ptr<ash::CryptohomeMiscClient, ExperimentalAsh>
+      cryptohome_misc_client_;
   const AccountId account_id_;
   const base::FilePath user_policy_key_dir_;
   base::FilePath cached_policy_key_path_;

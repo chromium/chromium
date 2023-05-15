@@ -9,8 +9,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
 
 namespace blink {
@@ -71,11 +73,14 @@ namespace {
 
 // Returns the offset-path ray() value.
 // If the offset-path is not a ray(), returns nullptr.
-StyleRay* GetRay(const ComputedStyle& style) {
-  BasicShape* offset_path = style.OffsetPath();
-  if (!offset_path || offset_path->GetType() != BasicShape::kStyleRayType)
+const StyleRay* GetRay(const ComputedStyle& style) {
+  const auto* offset_shape =
+      DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
+  if (!offset_shape) {
     return nullptr;
-  return To<StyleRay>(style.OffsetPath());
+  }
+  const BasicShape& shape = offset_shape->GetBasicShape();
+  return DynamicTo<StyleRay>(shape);
 }
 
 class UnderlyingRayModeChecker
@@ -96,7 +101,7 @@ class UnderlyingRayModeChecker
 
 class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedRayChecker(scoped_refptr<StyleRay> style_ray)
+  InheritedRayChecker(scoped_refptr<const StyleRay> style_ray)
       : style_ray_(std::move(style_ray)) {
     DCHECK(style_ray_);
   }
@@ -107,7 +112,7 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
     return GetRay(*state.ParentStyle()) == style_ray_.get();
   }
 
-  const scoped_refptr<StyleRay> style_ray_;
+  scoped_refptr<const StyleRay> style_ray_;
 };
 
 InterpolationValue CreateValue(float angle, const RayMode& mode) {
@@ -123,10 +128,12 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
-  state.StyleBuilder().SetOffsetPath(
+  // TODO(sakhapov): handle coord box.
+  state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
       StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
                        ray_non_interpolable_value.Mode().Size(),
-                       ray_non_interpolable_value.Mode().Contain()));
+                       ray_non_interpolable_value.Mode().Contain()),
+      CoordBox::kBorderBox));
 }
 
 void CSSRayInterpolationType::Composite(
@@ -171,7 +178,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  StyleRay* inherited_ray = GetRay(*state.ParentStyle());
+  const StyleRay* inherited_ray = GetRay(*state.ParentStyle());
   if (!inherited_ray)
     return nullptr;
 
@@ -197,7 +204,7 @@ PairwiseInterpolationValue CSSRayInterpolationType::MaybeMergeSingles(
 InterpolationValue
 CSSRayInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  StyleRay* underlying_ray = GetRay(style);
+  const StyleRay* underlying_ray = GetRay(style);
   if (!underlying_ray)
     return nullptr;
 
@@ -209,10 +216,17 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
     const StyleResolverState* state,
     ConversionCheckers&) const {
   DCHECK(state);
-  if (!value.IsRayValue())
+  scoped_refptr<BasicShape> shape = nullptr;
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    if (list->First().IsRayValue()) {
+      shape = BasicShapeForValue(*state, list->First());
+    }
+  } else if (value.IsRayValue()) {
+    shape = BasicShapeForValue(*state, value);
+  }
+  if (!shape) {
     return nullptr;
-
-  scoped_refptr<BasicShape> shape = BasicShapeForValue(*state, value);
+  }
   return CreateValue(To<StyleRay>(*shape).Angle(),
                      RayMode(To<StyleRay>(*shape)));
 }

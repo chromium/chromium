@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Снимање је заустављено због недовољно меморијског простора на уређају. Да бисте снимили још видео снимака, треба да ослободите простор на уређају.</translation>
 <translation id="2036868001356139588">Трајање тајмера</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> је активна</translation>
-<translation id="2128052519899549250">Снимајте убрзани видео</translation>
 <translation id="2134029355740465625">Подешавања видео снимака</translation>
 <translation id="2144806332417375165">Прилагођени параметри видео снимака</translation>
 <translation id="2175927920773552910">QR кôд</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Документ је откривен</translation>
 <translation id="414641094616694804">Ова камера не може да промени резолуцију</translation>
 <translation id="4269820728363426813">Копирај адресу линка</translation>
-<translation id="4281620174117014503">Средња резолуција</translation>
 <translation id="428234092390943511">Сличица странице</translation>
 <translation id="4383571725254449280">Евиденције о учинку штампања</translation>
 <translation id="4445542136948522167">Заустави снимање слике</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5320594929574852403">Креће се улево</translation>
 <translation id="5374917190292010970">4K (2160 пиксела)</translation>
-<translation id="5577251651370645658">Убрзани видео</translation>
 <translation id="5662366948659129155">Скенира се <ph name="COUNT" />. страница</translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="574392208103952083">Средња</translation>
 <translation id="5746169159649715125">Сачувај као PDF</translation>
 <translation id="5753488212459587150">Омогући режим за стручњаке</translation>
 <translation id="5759254179196327752">Скенирање докумената</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670511624014457267">60 кадр/с</translation>
 <translation id="7671804233658741790">Доњи десни угао документа</translation>
+<translation id="7684446460490665873">Снимајте убрзани видео</translation>
 <translation id="7692090236657809299">Омогући померање, нагињање и зумирање</translation>
 <translation id="7726641833034062494">Снимите нормалан видео</translation>
 <translation id="7748344063862150053">Горњи десни угао документа</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Поставите све ивице документа у оквир</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="906331135292332864">Слика се обрађује…</translation>
+<translation id="9161584225258678723">Убрзани видео</translation>
 <translation id="922762992951083513">Пресликавање је укључено</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 </translationbundle>

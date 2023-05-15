@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
@@ -14,7 +15,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -151,7 +151,7 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
+  tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -174,9 +174,9 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
 
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
-  messaging_service()->DispatchOnConnect(script_context_set(), port_id,
-                                         channel_name, tab_connection_info,
-                                         external_connection_info, nullptr);
+  messaging_service()->DispatchOnConnect(
+      script_context_set(), port_id, ChannelType::kConnect, channel_name,
+      tab_connection_info, external_connection_info, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   ASSERT_TRUE(
@@ -185,12 +185,11 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "eventFired"));
   base::Value::Dict expected_sender =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("frameId", 0)
-          .Set("tab", DictionaryBuilder().Set("tabId", tab_id).Build())
+          .Set("tab", base::Value::Dict().Set("tabId", tab_id))
           .Set("url", source_url.spec())
-          .Set("id", extension()->id())
-          .Build();
+          .Set("id", extension()->id());
   EXPECT_EQ(ValueToString(base::Value(std::move(expected_sender))),
             GetStringPropertyFromObject(context->Global(), context, "sender"));
 }
@@ -367,7 +366,7 @@ TEST_F(NativeRendererMessagingServiceTest, Connect) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), expected_port_id, target,
-                                     kChannel));
+                                     ChannelType::kConnect, kChannel));
   gin::Handle<GinPort> new_port = messaging_service()->Connect(
       script_context(), target, "channel", SerializationFormat::kJson);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
@@ -386,7 +385,7 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  const std::string kChannel = "chrome.runtime.sendMessage";
+  const ChannelType kChannel = ChannelType::kSendMessage;
   PortId port_id(script_context()->context_id(), 0, true,
                  SerializationFormat::kJson);
   const char kEchoArgs[] =
@@ -398,9 +397,9 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
   // should be created, and should remain open until the response is sent.
   const Message message("\"hi\"", SerializationFormat::kJson, false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
-  EXPECT_CALL(
-      *ipc_message_sender(),
-      SendOpenMessageChannel(script_context(), port_id, target, kChannel));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), port_id, target,
+                                     kChannel, "chrome.runtime.sendMessage"));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
   v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
       script_context(), target, kChannel, message,
@@ -432,7 +431,7 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  const std::string kChannel = "chrome.runtime.sendMessage";
+  const ChannelType kChannel = ChannelType::kSendMessage;
   PortId port_id(script_context()->context_id(), 0, true,
                  SerializationFormat::kJson);
 
@@ -440,9 +439,9 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
   // be created, and should remain open until the response is sent.
   const Message message("\"hi\"", SerializationFormat::kJson, false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
-  EXPECT_CALL(
-      *ipc_message_sender(),
-      SendOpenMessageChannel(script_context(), port_id, target, kChannel));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), port_id, target,
+                                     kChannel, "chrome.runtime.sendMessage"));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
   v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
       script_context(), target, kChannel, message,
@@ -496,7 +495,7 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
+  tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -509,9 +508,9 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   // Open a receiver for the message.
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
-  messaging_service()->DispatchOnConnect(script_context_set(), port_id,
-                                         kChannel, tab_connection_info,
-                                         external_connection_info, nullptr);
+  messaging_service()->DispatchOnConnect(
+      script_context_set(), port_id, ChannelType::kSendMessage, kChannel,
+      tab_connection_info, external_connection_info, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
@@ -568,7 +567,7 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
     tab_connection_info.frame_id = 0;
     const int tab_id = 10;
     GURL source_url("http://example.com");
-    tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
+    tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
 
     ExtensionMsg_ExternalConnectionInfo external_connection_info;
     external_connection_info.target_id = extension()->id();
@@ -583,8 +582,9 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
     EXPECT_CALL(*ipc_message_sender(),
                 SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
     messaging_service()->DispatchOnConnect(
-        script_context_set(), port_id, messaging_util::kSendMessageChannel,
-        tab_connection_info, external_connection_info, nullptr);
+        script_context_set(), port_id, ChannelType::kSendMessage,
+        messaging_util::kSendMessageChannel, tab_connection_info,
+        external_connection_info, nullptr);
     ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
     EXPECT_TRUE(
         messaging_service()->HasPortForTesting(script_context(), port_id));

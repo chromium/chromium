@@ -276,26 +276,6 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
-bool WebViewAutofillClientIOS::IsFastCheckoutSupported(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillManager& autofill_manager) {
-  return false;
-}
-
-bool WebViewAutofillClientIOS::TryToShowFastCheckout(
-    const FormData& form,
-    const FormFieldData& field,
-    base::WeakPtr<AutofillManager> autofill_manager) {
-  return false;
-}
-
-void WebViewAutofillClientIOS::HideFastCheckout(bool allow_further_runs) {}
-
-bool WebViewAutofillClientIOS::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }
@@ -380,7 +360,7 @@ bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void WebViewAutofillClientIOS::ExecuteCommand(int id) {
+void WebViewAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
   NOTIMPLEMENTED();
 }
 

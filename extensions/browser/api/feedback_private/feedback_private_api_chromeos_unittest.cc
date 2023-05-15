@@ -13,7 +13,6 @@
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 
@@ -150,7 +149,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     auto mock = base::MakeRefCounted<MockFeedbackService>(browser_context());
 
     // scoped_refptr<FeedbackData> actual_feedback_data;
-    EXPECT_CALL(*mock, SendFeedback(_, _, _))
+    EXPECT_CALL(*mock, RedactThenSendFeedback(_, _, _))
         .WillOnce([&](const FeedbackParams& params,
                       scoped_refptr<FeedbackData> feedback_data,
                       SendFeedbackCallback callback) {
@@ -280,7 +279,7 @@ TEST_F(FeedbackPrivateApiUnittest, Redact) {
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
   EXPECT_EQ(*params.reader_id, result_reader_id);
-  EXPECT_EQ("[MAC OUI=11:22:33 IFACE=1]", result_string);
+  EXPECT_EQ("(MAC OUI=11:22:33 IFACE=1)", result_string);
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {

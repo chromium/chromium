@@ -182,7 +182,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 11) {
+    if (Object.keys(browserSignals).length !== 13) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -194,9 +194,15 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong renderUrl ' + browserSignals.renderUrl;
     if (browserSignals.bid !== 2)
       throw 'Wrong bid ' + browserSignals.bid;
+    if (browserSignals.bidCurrency !== 'USD')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
     if (browserSignals.highestScoringOtherBid !== 0) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
+    }
+    if (browserSignals.highestScoringOtherBidCurrency !== 'EUR') {
+      throw 'Wrong highestScoringOtherBidCurrency ' +
+          browserSignals.highestScoringOtherBidCurrency;
     }
     if (browserSignals.adCost !== 3)
       throw 'Wrong adCost ' + browserSignals.adCost;

@@ -72,7 +72,7 @@ class ReceiverSession {
   // |message_port_provider| creates a new MessagePort to be used for sending
   // and receiving Cast messages.
   static std::unique_ptr<ReceiverSession> Create(
-      const ReceiverConfig& av_constraints,
+      ReceiverConfig av_constraints,
       MessagePortProvider message_port_provider,
       Client* client = nullptr);
 

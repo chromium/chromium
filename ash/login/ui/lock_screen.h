@@ -13,6 +13,7 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/widget/widget.h"
@@ -39,7 +40,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
     void AddOnShownCallback(base::OnceClosure on_shown);
 
    private:
-    LockScreen* const lock_screen_;
+    const raw_ptr<LockScreen, ExperimentalAsh> lock_screen_;
   };
 
   // The UI that this instance is displaying.
@@ -99,7 +100,8 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   std::unique_ptr<views::Widget> widget_;
 
   // Unowned pointer to the LockContentsView hosted in lock window.
-  LockContentsView* contents_view_ = nullptr;
+  raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh>
+      contents_view_ = nullptr;
 
   bool is_shown_ = false;
 

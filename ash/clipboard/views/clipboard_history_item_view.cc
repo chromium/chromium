@@ -16,7 +16,9 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -85,21 +87,22 @@ std::unique_ptr<ClipboardHistoryItemView>
 ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const base::UnguessableToken& item_id,
     const ClipboardHistory* clipboard_history,
-    const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
   const auto* item = GetClipboardHistoryItemImpl(item_id, clipboard_history);
   const auto display_format = item->display_format();
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", display_format);
   switch (display_format) {
-    case ClipboardHistoryItem::DisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+      NOTREACHED_NORETURN();
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       return std::make_unique<ClipboardHistoryTextItemView>(
           item_id, clipboard_history, container);
-    case ClipboardHistoryItem::DisplayFormat::kPng:
-    case ClipboardHistoryItem::DisplayFormat::kHtml:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
-          item_id, clipboard_history, resource_manager, container);
-    case ClipboardHistoryItem::DisplayFormat::kFile:
+          item_id, clipboard_history, container);
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return std::make_unique<ClipboardHistoryFileItemView>(
           item_id, clipboard_history, container);
   }
@@ -213,8 +216,9 @@ void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(
         // The menu item is already selected so show the delete button if the
         // button is hidden.
         views::View* delete_button = contents_view_->delete_button();
-        if (!delete_button->GetVisible())
+        if (!delete_button->GetVisible()) {
           delete_button->SetVisible(true);
+        }
         break;
       }
       case PseudoFocus::kDeleteButton:

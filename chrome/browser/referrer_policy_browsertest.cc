@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html")));
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       tab,
       std::string("var frame = document.createElement('iframe');frame.src ='") +
           embedded_test_server()
@@ -674,17 +674,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
-  std::string title;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      frame,
-      "window.domAutomationController.send(document.title)",
-      &title));
+  std::string title = content::EvalJs(frame, "document.title").ExtractString();
   EXPECT_EQ("Referrer is " + https_server_.GetURL("/").spec(), title);
 
   // Reload the iframe.
   expected_title = u"reset";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
-  EXPECT_TRUE(content::ExecuteScript(tab, "document.title = 'reset'"));
+  EXPECT_TRUE(content::ExecJs(tab, "document.title = 'reset'"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
   frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
@@ -692,17 +688,14 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
 
   expected_title = u"loaded";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
-  EXPECT_TRUE(content::ExecuteScript(frame, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(frame, "location.reload()"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
   frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
 
   // Verify that the full url of the iframe was used as referrer.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      frame,
-      "window.domAutomationController.send(document.title)",
-      &title));
+  title = content::EvalJs(frame, "document.title").ExtractString();
   EXPECT_EQ(
       "Referrer is " + embedded_test_server()
                            ->GetURL("/referrer_policy/referrer-policy-log.html")

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Upptakan stöðvaðist sökum of lítils geymslurýmis í tækinu. Til að taka upp fleiri myndskeið þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="2036868001356139588">Tími niðurteljara</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er virk</translation>
-<translation id="2128052519899549250">Taka upp hraðmyndskeið</translation>
 <translation id="2134029355740465625">Stillingar myndskeiða</translation>
 <translation id="2144806332417375165">Sérstilltar færibreytur myndskeiðs</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Skjal greindist</translation>
 <translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
-<translation id="4281620174117014503">Miðlungsupplausn</translation>
 <translation id="428234092390943511">Smámynd síðu</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>
 <translation id="4445542136948522167">Hætta að taka mynd</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5320594929574852403">Færist til vinstri</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Hraðmynd</translation>
 <translation id="5662366948659129155">Skannar síðu <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Ferningur</translation>
+<translation id="574392208103952083">Miðlungs</translation>
 <translation id="5746169159649715125">Vista sem PDF</translation>
 <translation id="5753488212459587150">Nota ítarlegar stillingar</translation>
 <translation id="5759254179196327752">Skanna skjal</translation>
@@ -138,6 +136,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
 <translation id="7671804233658741790">Neðra, hægra horn skjals</translation>
+<translation id="7684446460490665873">Taka upp hraðmyndskeið</translation>
 <translation id="7692090236657809299">Virkja hliðrun, halla, aðdrátt</translation>
 <translation id="7726641833034062494">Taka upp venjulegt vídeó</translation>
 <translation id="7748344063862150053">Efra, hægra horn skjals</translation>
@@ -163,6 +162,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="9045010116236796332">Hafðu öll horn skjalsins innan rammans</translation>
 <translation id="9045155556724273246">10 sekúndur</translation>
 <translation id="906331135292332864">Vinnur úr mynd ...</translation>
+<translation id="9161584225258678723">Hraðmynd</translation>
 <translation id="922762992951083513">Kveikt á speglun</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 </translationbundle>

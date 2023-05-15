@@ -332,52 +332,46 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
   const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                               ->Get(browser_context())
                                               ->GetDelegate();
-
-  if (delegate) {
-    delegate->GetPermissionWarningsByManifestFunctionDelegate(
-        this, params->manifest_str);
-
-    // Matched with a Release() in OnParse().
-    AddRef();
-
-    // Response is sent async in OnParse().
-    return RespondLater();
-  } else {
+  if (!delegate) {
     // TODO(lfg) add error string
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
+
+  delegate->GetPermissionWarningsByManifestFunctionDelegate(
+      this, params->manifest_str);
+
+  // Matched with a Release() in OnParse().
+  AddRef();
+
+  // Response is sent async in OnParse().
+  return RespondLater();
 }
+
 void ManagementGetPermissionWarningsByManifestFunction::OnParse(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    Respond(Error(result.error()));
+  Respond([&]() -> ResponseValue {
+    if (!result.has_value()) {
+      return Error(result.error());
+    }
 
-    // Matched with AddRef() in Run().
-    Release();
-    return;
-  }
+    const base::Value::Dict* parsed_manifest = result->GetIfDict();
+    if (!parsed_manifest) {
+      return Error(keys::kManifestParseError);
+    }
 
-  const base::Value::Dict* parsed_manifest = result->GetIfDict();
-  if (!parsed_manifest) {
-    Respond(Error(keys::kManifestParseError));
-    Release();
-    return;
-  }
+    std::string error;
+    scoped_refptr<Extension> extension =
+        Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
+                          *parsed_manifest, Extension::NO_FLAGS, &error);
+    // TODO(lazyboy): Do we need to use |error|?
+    if (!extension) {
+      return Error(keys::kExtensionCreateError);
+    }
 
-  std::string error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
-                        *parsed_manifest, Extension::NO_FLAGS, &error);
-  // TODO(lazyboy): Do we need to use |error|?
-  if (!extension) {
-    Respond(Error(keys::kExtensionCreateError));
-    Release();
-    return;
-  }
-
-  std::vector<std::string> warnings = CreateWarningsList(extension.get());
-  Respond(ArgumentList(
-      management::GetPermissionWarningsByManifest::Results::Create(warnings)));
+    return ArgumentList(
+        management::GetPermissionWarningsByManifest::Results::Create(
+            CreateWarningsList(extension.get())));
+  }());
 
   // Matched with AddRef() in Run().
   Release();
@@ -1125,6 +1119,9 @@ ManagementAPI::~ManagementAPI() {
 }
 
 void ManagementAPI::Shutdown() {
+  // Ensure that SupervisedUserExtensionsDelegate is released prior to
+  // destruction to release the raw pointer to browser_context_.
+  supervised_user_extensions_delegate_.reset();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

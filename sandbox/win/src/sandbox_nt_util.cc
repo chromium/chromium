@@ -11,11 +11,13 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/win/pe_image.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -137,7 +139,6 @@ void InitGlobalNt() {
   INIT_NT(OpenFile);
   INIT_NT(OpenThread);
   INIT_NT(OpenProcess);
-  INIT_NT(OpenProcessToken);
   INIT_NT(OpenProcessTokenEx);
   INIT_NT(ProtectVirtualMemory);
   INIT_NT(QueryAttributesFile);
@@ -167,6 +168,21 @@ void InitGlobalNt() {
   sandbox::g_nt.Initialized = true;
 }
 
+// The TEB structure defined in winternl.h doesn't have the ClientId member.
+// Provide a partial definition here.
+struct PARTIAL_TEB {
+  PVOID NtTib[7];
+  PVOID EnvironmentPointer;
+  CLIENT_ID ClientId;
+  PVOID ActiveRpcHandle;
+  PVOID ThreadLocalStoragePointer;
+  PPEB ProcessEnvironmentBlock;
+};
+
+// Check PEB offset between the partial definition and the public one.
+static_assert(offsetof(PARTIAL_TEB, ProcessEnvironmentBlock) ==
+              offsetof(TEB, ProcessEnvironmentBlock));
+
 }  // namespace.
 
 namespace sandbox {
@@ -177,12 +193,14 @@ void* g_heap = nullptr;
 SANDBOX_INTERCEPT HANDLE g_shared_section;
 SANDBOX_INTERCEPT size_t g_shared_IPC_size = 0;
 SANDBOX_INTERCEPT size_t g_shared_policy_size = 0;
+SANDBOX_INTERCEPT size_t g_delegate_data_size = 0;
 
 void* volatile g_shared_policy_memory = nullptr;
 void* volatile g_shared_IPC_memory = nullptr;
+void* volatile g_shared_delegate_data = nullptr;
 
-// Both the IPC and the policy share a single region of memory in which the IPC
-// memory is first and the policy memory is last.
+// The IPC, policy and delegate data share a single region of memory with blocks
+// in that order.
 bool MapGlobalMemory() {
   if (!g_shared_IPC_memory) {
     void* memory = nullptr;
@@ -204,11 +222,19 @@ bool MapGlobalMemory() {
           GetNtExports()->UnmapViewOfSection(NtCurrentProcess, memory));
     }
     DCHECK_NT(g_shared_IPC_size > 0);
-    g_shared_policy_memory =
-        reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
+
+    if (g_shared_policy_size > 0) {
+      g_shared_policy_memory =
+          reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
+    }
+    // TODO(1435571) make this a read-only mapping in the child, distinct from
+    // the IPC & policy memory as it should be const.
+    if (g_delegate_data_size > 0) {
+      g_shared_delegate_data = reinterpret_cast<char*>(g_shared_IPC_memory) +
+                               g_shared_IPC_size + g_shared_policy_size;
+    }
   }
-  DCHECK_NT(g_shared_policy_memory);
-  DCHECK_NT(g_shared_policy_size > 0);
+
   return true;
 }
 
@@ -218,10 +244,22 @@ void* GetGlobalIPCMemory() {
   return g_shared_IPC_memory;
 }
 
-void* GetGlobalPolicyMemory() {
+void* GetGlobalPolicyMemoryForTesting() {
   if (!MapGlobalMemory())
     return nullptr;
   return g_shared_policy_memory;
+}
+
+absl::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
+  if (!g_delegate_data_size) {
+    return absl::nullopt;
+  }
+  if (!MapGlobalMemory()) {
+    return absl::nullopt;
+  }
+  return base::make_span(
+      reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
+      g_delegate_data_size);
 }
 
 const NtExports* GetNtExports() {
@@ -692,6 +730,10 @@ bool NtGetPathFromHandle(HANDLE handle,
   if (STATUS_SUCCESS != status)
     return false;
   return true;
+}
+
+CLIENT_ID GetCurrentClientId() {
+  return reinterpret_cast<PARTIAL_TEB*>(NtCurrentTeb())->ClientId;
 }
 
 }  // namespace sandbox

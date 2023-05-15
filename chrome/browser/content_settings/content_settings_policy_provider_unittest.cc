@@ -54,12 +54,12 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
       provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
   ASSERT_TRUE(rule_iterator);
   EXPECT_TRUE(rule_iterator->HasNext());
-  Rule rule = rule_iterator->Next();
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
 
   provider.ShutdownOnUIThread();
 }
@@ -76,12 +76,12 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
   std::unique_ptr<RuleIterator> rule_iterator(
       provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
   EXPECT_TRUE(rule_iterator->HasNext());
-  Rule rule = rule_iterator->Next();
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
 
   provider.ShutdownOnUIThread();
 }

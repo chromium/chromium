@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,8 +20,10 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,6 +41,11 @@ constexpr char kAggregatableDeduplicationKeys[] =
 constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
+constexpr char kAggregatableSourceRegistrationTime[] =
+    "aggregatable_source_registration_time";
+
+constexpr char kInclude[] = "include";
+constexpr char kExclude[] = "exclude";
 
 base::expected<AggregationCoordinator, TriggerRegistrationError>
 ParseAggregationCoordinator(const base::Value* value) {
@@ -84,10 +92,8 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     TriggerRegistrationError wrong_type,
     base::FunctionRef<base::expected<T, TriggerRegistrationError>(base::Value&)>
         build_element) {
-  std::vector<T> vec;
-
   if (!input_value) {
-    return vec;
+    return {};
   }
 
   base::Value::List* list = input_value->GetIfList();
@@ -95,6 +101,7 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     return base::unexpected(wrong_type);
   }
 
+  std::vector<T> vec;
   vec.reserve(list->size());
 
   for (auto& value : *list) {
@@ -102,11 +109,44 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     if (!element.has_value()) {
       return base::unexpected(element.error());
     }
-
     vec.push_back(std::move(*element));
   }
 
   return vec;
+}
+
+base::expected<mojom::SourceRegistrationTimeConfig, TriggerRegistrationError>
+ParseAggregatableSourceRegistrationTime(const base::Value* value) {
+  if (!value) {
+    return mojom::SourceRegistrationTimeConfig::kExclude;
+  }
+
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableSourceRegistrationTimeWrongType);
+  }
+
+  if (*str == kInclude) {
+    return mojom::SourceRegistrationTimeConfig::kInclude;
+  }
+
+  if (*str == kExclude) {
+    return mojom::SourceRegistrationTimeConfig::kExclude;
+  }
+
+  return base::unexpected(TriggerRegistrationError::
+                              kAggregatableSourceRegistrationTimeUnknownValue);
+}
+
+std::string SerializeAggregatableSourceRegistrationTime(
+    mojom::SourceRegistrationTimeConfig config) {
+  switch (config) {
+    case mojom::SourceRegistrationTimeConfig::kInclude:
+      return kInclude;
+    case mojom::SourceRegistrationTimeConfig::kExclude:
+      return kExclude;
+  }
 }
 
 }  // namespace
@@ -115,9 +155,9 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict registration) {
   auto filters = FilterPair::FromJSON(registration);
-  if (!filters.has_value())
+  if (!filters.has_value()) {
     return base::unexpected(filters.error());
-
+  }
   auto aggregatable_dedup_keys = ParseList<AggregatableDedupKey>(
       registration.Find(kAggregatableDeduplicationKeys),
       TriggerRegistrationError::kAggregatableDedupKeyListWrongType,
@@ -125,39 +165,50 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (!aggregatable_dedup_keys.has_value()) {
     return base::unexpected(aggregatable_dedup_keys.error());
   }
-
   auto event_triggers = ParseList<EventTriggerData>(
       registration.Find(kEventTriggerData),
       TriggerRegistrationError::kEventTriggerDataListWrongType,
       &EventTriggerData::FromJSON);
-  if (!event_triggers.has_value())
+  if (!event_triggers.has_value()) {
     return base::unexpected(event_triggers.error());
-
+  }
   auto aggregatable_trigger_data = ParseList<AggregatableTriggerData>(
       registration.Find(kAggregatableTriggerData),
       TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
       &AggregatableTriggerData::FromJSON);
-  if (!aggregatable_trigger_data.has_value())
+  if (!aggregatable_trigger_data.has_value()) {
     return base::unexpected(aggregatable_trigger_data.error());
-
+  }
   auto aggregatable_values =
       AggregatableValues::FromJSON(registration.Find(kAggregatableValues));
-  if (!aggregatable_values.has_value())
+  if (!aggregatable_values.has_value()) {
     return base::unexpected(aggregatable_values.error());
-
+  }
   auto aggregation_coordinator = ParseAggregationCoordinator(
       registration.Find(kAggregationCoordinatorIdentifier));
-  if (!aggregation_coordinator.has_value())
+  if (!aggregation_coordinator.has_value()) {
     return base::unexpected(aggregation_coordinator.error());
-
+  }
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
+
+  auto source_registration_time_config =
+      mojom::SourceRegistrationTimeConfig::kInclude;
+  if (base::FeatureList::IsEnabled(
+          kAttributionReportingNullAggregatableReports)) {
+    auto parsed_config = ParseAggregatableSourceRegistrationTime(
+        registration.Find(kAggregatableSourceRegistrationTime));
+    if (!parsed_config.has_value()) {
+      return base::unexpected(parsed_config.error());
+    }
+    source_registration_time_config = *parsed_config;
+  }
 
   return TriggerRegistration(
       std::move(*filters), debug_key, std::move(*aggregatable_dedup_keys),
       std::move(*event_triggers), std::move(*aggregatable_trigger_data),
       std::move(*aggregatable_values), debug_reporting,
-      *aggregation_coordinator);
+      *aggregation_coordinator, source_registration_time_config);
 }
 
 // static
@@ -178,7 +229,7 @@ TriggerRegistration::Parse(base::StringPiece json) {
   }
 
   if (!trigger.has_value()) {
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError4",
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError5",
                                   trigger.error());
   }
 
@@ -195,7 +246,8 @@ TriggerRegistration::TriggerRegistration(
     std::vector<AggregatableTriggerData> aggregatable_trigger_data,
     AggregatableValues aggregatable_values,
     bool debug_reporting,
-    aggregation_service::mojom::AggregationCoordinator aggregation_coordinator)
+    aggregation_service::mojom::AggregationCoordinator aggregation_coordinator,
+    mojom::SourceRegistrationTimeConfig source_registration_time_config)
     : filters(std::move(filters)),
       debug_key(debug_key),
       aggregatable_dedup_keys(std::move(aggregatable_dedup_keys)),
@@ -203,7 +255,8 @@ TriggerRegistration::TriggerRegistration(
       aggregatable_trigger_data(aggregatable_trigger_data),
       aggregatable_values(std::move(aggregatable_values)),
       debug_reporting(debug_reporting),
-      aggregation_coordinator(aggregation_coordinator) {}
+      aggregation_coordinator(aggregation_coordinator),
+      source_registration_time_config(source_registration_time_config) {}
 
 TriggerRegistration::~TriggerRegistration() = default;
 
@@ -239,6 +292,13 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   dict.Set(kAggregationCoordinatorIdentifier,
            aggregation_service::SerializeAggregationCoordinator(
                aggregation_coordinator));
+
+  if (base::FeatureList::IsEnabled(
+          kAttributionReportingNullAggregatableReports)) {
+    dict.Set(kAggregatableSourceRegistrationTime,
+             SerializeAggregatableSourceRegistrationTime(
+                 source_registration_time_config));
+  }
 
   return dict;
 }

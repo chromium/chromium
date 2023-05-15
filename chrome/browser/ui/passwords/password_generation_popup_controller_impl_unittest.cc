@@ -35,11 +35,16 @@ PasswordGenerationUIData CreatePasswordGenerationUIData() {
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
  public:
-  MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string&));
-  MOCK_METHOD3(GeneratedPasswordAccepted,
-               void(const autofill::FormData&,
-                    autofill::FieldRendererId,
-                    const std::u16string&));
+  MOCK_METHOD(void,
+              GeneratedPasswordAccepted,
+              (const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              GeneratedPasswordAccepted,
+              (const autofill::FormData&,
+               autofill::FieldRendererId,
+               const std::u16string&),
+              (override));
 };
 
 class PasswordGenerationPopupControllerImplTest

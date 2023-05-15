@@ -6,7 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
@@ -36,123 +36,28 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
-namespace sync_pb {
-
-// Makes the GMock matchers print out a readable version of the protobuf.
-void PrintTo(const HistorySpecifics& history, std::ostream* os) {
-  *os << "[ Visit time: " << history.visit_time_windows_epoch_micros()
-      << ", Originator: " << history.originator_cache_guid()
-      << ", Redirects: ( ";
-  for (int i = 0; i < history.redirect_entries_size(); i++) {
-    *os << history.redirect_entries(i).url() << " ";
-  }
-  *os << "), Transition: " << history.page_transition().core_transition()
-      << ", Referring visit: " << history.originator_referring_visit_id()
-      << ", Duration: " << history.visit_duration_micros() << " ]";
-}
-
-}  // namespace sync_pb
-
-namespace history {
-
-// Makes the GMock matchers print out a readable version of a VisitRow.
-void PrintTo(const VisitRow& row, std::ostream* os) {
-  *os << "[ VisitID: " << row.visit_id << ", Duration: " << row.visit_duration
-      << " ]";
-}
-
-}  // namespace history
-
-namespace {
-
+using history_helper::CoreTransitionIs;
+using history_helper::HasHttpResponseCode;
+using history_helper::HasOpenerVisit;
+using history_helper::HasReferrerURL;
+using history_helper::HasReferringVisit;
+using history_helper::HasVisitDuration;
+using history_helper::IsChainEnd;
+using history_helper::IsChainStart;
+using history_helper::ReferrerURLIs;
+using history_helper::StandardFieldsArePopulated;
+using history_helper::UrlIs;
+using history_helper::UrlsAre;
+using history_helper::VisitRowDurationIs;
+using history_helper::VisitRowIdIs;
 using testing::AllOf;
 using testing::Not;
 using testing::UnorderedElementsAre;
 
+namespace {
+
 const char kRedirectFromPath[] = "/redirect.html";
 const char kRedirectToPath[] = "/sync/simple.html";
-
-// Matchers for sync_pb::HistorySpecifics.
-
-MATCHER_P(UrlIs, url, "") {
-  if (arg.redirect_entries_size() != 1) {
-    return false;
-  }
-  return arg.redirect_entries(0).url() == url;
-}
-
-MATCHER_P2(UrlsAre, url1, url2, "") {
-  if (arg.redirect_entries_size() != 2) {
-    return false;
-  }
-  return arg.redirect_entries(0).url() == url1 &&
-         arg.redirect_entries(1).url() == url2;
-}
-
-MATCHER_P(CoreTransitionIs, transition, "") {
-  return arg.page_transition().core_transition() == transition;
-}
-
-MATCHER(IsChainStart, "") {
-  return !arg.redirect_chain_start_incomplete();
-}
-
-MATCHER(IsChainEnd, "") {
-  return !arg.redirect_chain_end_incomplete();
-}
-
-MATCHER(HasReferringVisit, "") {
-  return arg.originator_referring_visit_id() != 0;
-}
-
-MATCHER(HasOpenerVisit, "") {
-  return arg.originator_opener_visit_id() != 0;
-}
-
-MATCHER(HasReferrerURL, "") {
-  return !arg.referrer_url().empty();
-}
-
-MATCHER_P(ReferrerURLIs, referrer_url, "") {
-  return arg.referrer_url() == referrer_url;
-}
-
-MATCHER(HasVisitDuration, "") {
-  return arg.visit_duration_micros() > 0;
-}
-
-MATCHER(HasHttpResponseCode, "") {
-  return arg.http_response_code() > 0;
-}
-
-// Matchers for history::VisitRow.
-
-MATCHER_P(VisitRowIdIs, visit_id, "") {
-  return arg.visit_id == visit_id;
-}
-
-MATCHER_P(VisitRowDurationIs, duration, "") {
-  return arg.visit_duration == duration;
-}
-
-MATCHER(StandardFieldsArePopulated, "") {
-  // Checks all fields that should never be empty/unset/default. Some fields can
-  // be legitimately empty, or are set after an entity is first created.
-  // May be legitimately empty:
-  //   redirect_entries.title (may simply be empty)
-  //   redirect_entries.redirect_type (empty if it's not a redirect)
-  //   originator_referring_visit_id, originator_opener_visit_id (may not exist)
-  //   root_task_id, parent_task_id (not always set)
-  //   http_response_code (unset for replaced navigations)
-  // Populated later:
-  //   visit_duration_micros, page_language, password_state
-  return arg.visit_time_windows_epoch_micros() > 0 &&
-         !arg.originator_cache_guid().empty() &&
-         arg.redirect_entries_size() > 0 &&
-         arg.redirect_entries(0).originator_visit_id() > 0 &&
-         !arg.redirect_entries(0).url().empty() && arg.has_browser_type() &&
-         arg.window_id() > 0 && arg.tab_id() > 0 && arg.task_id() > 0;
-}
 
 GURL GetFileUrl(const char* file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -203,113 +108,6 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateFakeServerEntity(
       base::NumberToString(specifics.visit_time_windows_epoch_micros()), entity,
       /*creation_time=*/0,
       /*last_modified_time=*/0);
-}
-
-std::vector<sync_pb::HistorySpecifics> SyncEntitiesToHistorySpecifics(
-    std::vector<sync_pb::SyncEntity> entities) {
-  std::vector<sync_pb::HistorySpecifics> history;
-  for (sync_pb::SyncEntity& entity : entities) {
-    DCHECK(entity.specifics().has_history());
-    history.push_back(std::move(entity.specifics().history()));
-  }
-  return history;
-}
-
-// A helper class that waits for entries in the local history DB that match the
-// given matchers.
-// Note that this only checks URLs that were passed in - any additional URLs in
-// the DB (and their corresponding visits) are ignored.
-class LocalHistoryMatchChecker : public SingleClientStatusChangeChecker {
- public:
-  using Matcher = testing::Matcher<std::vector<history::VisitRow>>;
-
-  explicit LocalHistoryMatchChecker(syncer::SyncServiceImpl* service,
-                                    const std::map<GURL, Matcher>& matchers);
-  ~LocalHistoryMatchChecker() override;
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
-  // syncer::SyncServiceObserver implementation.
-  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
-
- private:
-  const std::map<GURL, Matcher> matchers_;
-};
-
-LocalHistoryMatchChecker::LocalHistoryMatchChecker(
-    syncer::SyncServiceImpl* service,
-    const std::map<GURL, Matcher>& matchers)
-    : SingleClientStatusChangeChecker(service), matchers_(matchers) {}
-
-LocalHistoryMatchChecker::~LocalHistoryMatchChecker() = default;
-
-bool LocalHistoryMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
-  for (const auto& [url, matcher] : matchers_) {
-    history::VisitVector visits =
-        typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url);
-    testing::StringMatchResultListener result_listener;
-    const bool matches =
-        testing::ExplainMatchResult(matcher, visits, &result_listener);
-    *os << result_listener.str();
-    if (!matches) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void LocalHistoryMatchChecker::OnSyncCycleCompleted(syncer::SyncService* sync) {
-  CheckExitCondition();
-}
-
-// A helper class that waits for the HISTORY entities on the FakeServer to match
-// a given GMock matcher.
-class ServerHistoryMatchChecker
-    : public fake_server::FakeServerMatchStatusChecker {
- public:
-  using Matcher = testing::Matcher<std::vector<sync_pb::HistorySpecifics>>;
-
-  explicit ServerHistoryMatchChecker(const Matcher& matcher);
-  ~ServerHistoryMatchChecker() override;
-  ServerHistoryMatchChecker(const ServerHistoryMatchChecker&) = delete;
-  ServerHistoryMatchChecker& operator=(const ServerHistoryMatchChecker&) =
-      delete;
-
-  // FakeServer::Observer overrides.
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                syncer::ModelTypeSet committed_model_types) override;
-
-  // StatusChangeChecker overrides.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
- private:
-  const Matcher matcher_;
-};
-
-ServerHistoryMatchChecker::ServerHistoryMatchChecker(const Matcher& matcher)
-    : matcher_(matcher) {}
-
-ServerHistoryMatchChecker::~ServerHistoryMatchChecker() = default;
-
-void ServerHistoryMatchChecker::OnCommit(
-    const std::string& committer_invalidator_client_id,
-    syncer::ModelTypeSet committed_model_types) {
-  if (committed_model_types.Has(syncer::HISTORY)) {
-    CheckExitCondition();
-  }
-}
-
-bool ServerHistoryMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
-  std::vector<sync_pb::HistorySpecifics> entities =
-      SyncEntitiesToHistorySpecifics(
-          fake_server()->GetSyncEntitiesByModelType(syncer::HISTORY));
-
-  testing::StringMatchResultListener result_listener;
-  const bool matches =
-      testing::ExplainMatchResult(matcher_, entities, &result_listener);
-  *os << result_listener.str();
-  return matches;
 }
 
 class SingleClientHistorySyncTest : public SyncTest {
@@ -387,13 +185,15 @@ class SingleClientHistorySyncTest : public SyncTest {
 
   bool WaitForServerHistory(
       testing::Matcher<std::vector<sync_pb::HistorySpecifics>> matcher) {
-    return ServerHistoryMatchChecker(matcher).Wait();
+    return history_helper::ServerHistoryMatchChecker(matcher).Wait();
   }
 
   bool WaitForLocalHistory(
       const std::map<GURL, testing::Matcher<std::vector<history::VisitRow>>>&
           matchers) {
-    return LocalHistoryMatchChecker(GetSyncService(0), matchers).Wait();
+    return history_helper::LocalHistoryMatchChecker(/*profile_index=*/0,
+                                                    GetSyncService(0), matchers)
+        .Wait();
   }
 
   content::WebContents* GetActiveWebContents() {

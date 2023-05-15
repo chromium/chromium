@@ -29,6 +29,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -48,7 +49,7 @@ struct DataForRecursion {
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
   gfx::Transform compound_transform_since_render_target;
-  raw_ptr<bool> subtree_has_rounded_corner;
+  raw_ptr<bool> subtree_has_overlapping_rounded_corner;
   raw_ptr<bool> subtree_has_gradient_mask;
 };
 
@@ -89,11 +90,18 @@ class PropertyTreeBuilderContext {
                              Layer* layer,
                              DataForRecursion* data_for_children) const;
 
-  bool UpdateRenderSurfaceIfNeeded(int parent_effect_tree_id,
-                                   DataForRecursion* data_for_children,
-                                   bool subtree_has_rounded_corner,
-                                   bool subtree_has_gradient_mask,
-                                   bool created_transform_node) const;
+  bool UpdateRenderSurfaceIfNeeded(
+      int parent_effect_tree_id,
+      DataForRecursion* data_for_children,
+      bool is_rounded_corner_layer_within_parent_bounds,
+      bool subtree_has_overlapping_rounded_corner,
+      bool subtree_has_gradient_mask,
+      bool created_transform_node) const;
+
+  // Returns true if the layer is a rounded corner layer that fits into the
+  // bounds of its parent after applying transforms, moving pixel filters and
+  // clipping bounds or it's a root layer with rounded corners.
+  bool IsRoundedCornerLayerWithinParentLayerBounds(const Layer* layer) const;
 
   raw_ptr<LayerTreeHost> layer_tree_host_;
   raw_ptr<Layer> root_layer_;
@@ -615,13 +623,15 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
 bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
     int parent_effect_tree_id,
     DataForRecursion* data_for_children,
-    bool subtree_has_rounded_corner,
+    bool is_rounded_corner_layer_within_parent_bounds,
+    bool subtree_has_overlapping_rounded_corner,
     bool subtree_has_gradient_mask,
     bool created_transform_node) const {
   // No effect node was generated for this layer.
   if (parent_effect_tree_id == data_for_children->effect_tree_parent) {
-    *data_for_children->subtree_has_rounded_corner = subtree_has_rounded_corner;
     *data_for_children->subtree_has_gradient_mask = subtree_has_gradient_mask;
+    *data_for_children->subtree_has_overlapping_rounded_corner =
+        subtree_has_overlapping_rounded_corner;
     return false;
   }
 
@@ -637,15 +647,17 @@ bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
   if (has_rounded_corner || has_gradient_mask)
     DCHECK(created_transform_node);
 
-  // If the subtree has a mask (either rounded corner or gradient), and this
+  // If the subtree has a node that doesn't fit this node and it has a rounded
+  // corner mask or it has a gradient mask (regardless it fits or not), and this
   // node also has a mask too, then this node needs to have a render surface to
   // prevent any intersections between the masks. Since GL renderer can only
   // handle a single rrect/gradient mask per quad at draw time, it would be
   // unable to handle intersections thus resulting in artifacts.
-  if (subtree_has_rounded_corner && has_rounded_corner)
+  if (subtree_has_overlapping_rounded_corner && has_rounded_corner) {
     effect_node->render_surface_reason = RenderSurfaceReason::kRoundedCorner;
-  else if (subtree_has_gradient_mask && has_gradient_mask)
+  } else if (subtree_has_gradient_mask && has_gradient_mask) {
     effect_node->render_surface_reason = RenderSurfaceReason::kGradientMask;
+  }
 
   // Inform the parent that its subtree has a mask (either rounded corner or
   // gradient) if one of the two scenario is true:
@@ -655,13 +667,46 @@ bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
   // The parent may have a rounded corner and would want to create a render
   // surface of its own to prevent blending artifacts due to intersecting
   // rounded corners.
-  *data_for_children->subtree_has_rounded_corner =
-      (subtree_has_rounded_corner && !effect_node->HasRenderSurface()) ||
-      has_rounded_corner;
+  *data_for_children->subtree_has_overlapping_rounded_corner =
+      (subtree_has_overlapping_rounded_corner &&
+       !effect_node->HasRenderSurface()) ||
+      (has_rounded_corner && !is_rounded_corner_layer_within_parent_bounds);
   *data_for_children->subtree_has_gradient_mask =
       (subtree_has_gradient_mask && !effect_node->HasRenderSurface()) ||
       has_gradient_mask;
   return effect_node->HasRenderSurface();
+}
+
+bool PropertyTreeBuilderContext::IsRoundedCornerLayerWithinParentLayerBounds(
+    const Layer* layer) const {
+  if (!layer || !layer->HasRoundedCorner()) {
+    return false;
+  }
+
+  // This is a root surface. Return early.
+  if (!layer->parent()) {
+    return true;
+  }
+
+  // TODO(1382038): support cases when the layer has transforms or pixel moving
+  // filters.
+  if (!layer->transform().IsIdentity() ||
+      layer->filters().HasFilterThatMovesPixels()) {
+    return false;
+  }
+
+  const auto* parent_layer = layer->parent();
+  // The parent clips subtree to its bounds. The |layer| must never span outside
+  // the parent layer's bounds.
+  if (parent_layer->masks_to_bounds()) {
+    return true;
+  }
+
+  const gfx::RectF current_layers_bounds =
+      gfx::RectF(layer->position(), gfx::SizeF(layer->bounds()));
+  const gfx::RectF parent_rect =
+      gfx::RectF(gfx::PointF(0, 0), gfx::SizeF(parent_layer->bounds()));
+  return parent_rect.Contains(current_layers_bounds);
 }
 
 void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
@@ -730,7 +775,7 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
   layer->set_property_tree_sequence_number(property_trees_->sequence_number());
 
   DataForRecursion data_for_children(data_from_parent);
-  *data_for_children.subtree_has_rounded_corner = false;
+  *data_for_children.subtree_has_overlapping_rounded_corner = false;
   *data_for_children.subtree_has_gradient_mask = false;
 
   bool created_render_surface =
@@ -756,19 +801,23 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
   data_for_children.not_axis_aligned_since_last_clip =
       !has_non_axis_aligned_clip;
 
-  bool subtree_has_rounded_corner = false;
+  bool subtree_has_overlapping_rounded_corner = false;
   bool subtree_has_gradient_mask = false;
   for (const scoped_refptr<Layer>& child : layer->children()) {
     if (layer->subtree_property_changed())
       child->SetSubtreePropertyChanged();
     BuildPropertyTreesInternal(child.get(), data_for_children);
-    subtree_has_rounded_corner |= *data_for_children.subtree_has_rounded_corner;
+    subtree_has_overlapping_rounded_corner |=
+        *data_for_children.subtree_has_overlapping_rounded_corner;
     subtree_has_gradient_mask |= *data_for_children.subtree_has_gradient_mask;
   }
 
+  const bool is_rounded_corner_layer_within_parent_bounds =
+      IsRoundedCornerLayerWithinParentLayerBounds(layer);
   created_render_surface = UpdateRenderSurfaceIfNeeded(
       data_from_parent.effect_tree_parent, &data_for_children,
-      subtree_has_rounded_corner, subtree_has_gradient_mask,
+      is_rounded_corner_layer_within_parent_bounds,
+      subtree_has_overlapping_rounded_corner, subtree_has_gradient_mask,
       created_transform_node);
 }
 
@@ -790,7 +839,7 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   }
 
   // Must outlive `data_for_recursion`.
-  bool subtree_has_rounded_corner;
+  bool subtree_has_overlapping_rounded_corner;
   bool subtree_has_gradient_mask;
 
   DataForRecursion data_for_recursion;
@@ -821,7 +870,8 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.clip_tree_parent =
       clip_tree_->Insert(root_clip, kRootPropertyNodeId);
 
-  data_for_recursion.subtree_has_rounded_corner = &subtree_has_rounded_corner;
+  data_for_recursion.subtree_has_overlapping_rounded_corner =
+      &subtree_has_overlapping_rounded_corner;
   data_for_recursion.subtree_has_gradient_mask = &subtree_has_gradient_mask;
 
   BuildPropertyTreesInternal(root_layer_, data_for_recursion);

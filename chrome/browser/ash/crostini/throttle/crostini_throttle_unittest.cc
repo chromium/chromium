@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -58,7 +59,7 @@ class CrostiniThrottleTest : public testing::Test {
         ++(test_->disable_cpu_restriction_counter_);
     }
 
-    CrostiniThrottleTest* test_;
+    raw_ptr<CrostiniThrottleTest, ExperimentalAsh> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

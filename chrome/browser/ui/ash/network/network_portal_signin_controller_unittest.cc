@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -67,7 +68,7 @@ class TestSigninController : public NetworkPortalSigninController {
   const std::string& tab_url() const { return tab_url_; }
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::string dialog_url_;
   std::string singleton_tab_url_;
   std::string tab_url_;
@@ -281,7 +282,8 @@ TEST_F(NetworkPortalSigninControllerTest,
   IncognitoModePrefs::SetAvailability(
       GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   ShowSignin();
-  EXPECT_EQ(controller_->dialog_url(), expected_url);
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProxyPref) {

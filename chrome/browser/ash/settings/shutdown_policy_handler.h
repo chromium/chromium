@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SETTINGS_SHUTDOWN_POLICY_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
@@ -38,9 +39,9 @@ class ShutdownPolicyHandler {
   void NotifyDelegateWithShutdownPolicy();
 
  private:
-  CrosSettings* cros_settings_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   base::CallbackListSubscription shutdown_policy_subscription_;
 

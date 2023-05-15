@@ -12,13 +12,13 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_tab_delegate.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/glue/sync_start_util.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

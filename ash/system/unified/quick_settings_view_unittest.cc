@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/cast_config_controller.h"
+#include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/feature_tiles_container_view.h"
@@ -20,42 +20,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
-
-// `CastConfigController` must be overridden so a `cast_config_` object exists.
-// This is required to make the cast tile visible in the
-// `CastAndAutoRotateCompactTiles` unit test. Cast features will not be used.
-class TestCastConfigController : public CastConfigController {
- public:
-  TestCastConfigController() = default;
-  TestCastConfigController(const TestCastConfigController&) = delete;
-  TestCastConfigController& operator=(const TestCastConfigController&) = delete;
-  ~TestCastConfigController() override = default;
-
-  // CastConfigController:
-  void AddObserver(Observer* observer) override {}
-  void RemoveObserver(Observer* observer) override {}
-  bool HasMediaRouterForPrimaryProfile() const override {
-    return has_media_router_;
-  }
-  bool HasSinksAndRoutes() const override { return has_sinks_and_routes_; }
-  bool HasActiveRoute() const override { return false; }
-  bool AccessCodeCastingEnabled() const override {
-    return access_code_casting_enabled_;
-  }
-  void RequestDeviceRefresh() override {}
-  const std::vector<SinkAndRoute>& GetSinksAndRoutes() override {
-    return sinks_and_routes_;
-  }
-  void CastToSink(const std::string& sink_id) override {}
-  void StopCasting(const std::string& route_id) override {}
-  void FreezeRoute(const std::string& route_id) override {}
-  void UnfreezeRoute(const std::string& route_id) override {}
-
-  bool has_media_router_ = true;
-  bool has_sinks_and_routes_ = false;
-  bool access_code_casting_enabled_ = false;
-  std::vector<SinkAndRoute> sinks_and_routes_;
-};
 
 class QuickSettingsViewTest : public AshTestBase {
  public:
@@ -103,6 +67,8 @@ class QuickSettingsViewTest : public AshTestBase {
   }
 
  private:
+  // This is required to make the cast tile visible in the
+  // `CastAndAutoRotateCompactTiles` unit test. Cast features will not be used.
   std::unique_ptr<TestCastConfigController> cast_config_;
   base::test::ScopedFeatureList feature_list_;
 };

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
@@ -103,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                            InstallProfileAlreadyConnected);
   FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, InstallProfileSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, InstallProfileFailure);
+  FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, RetryInstallProfile);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -168,12 +170,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& service_path,
       const std::string& error_name);
 
-  CellularConnectionHandler* cellular_connection_handler_;
-  CellularInhibitor* cellular_inhibitor_;
+  raw_ptr<CellularConnectionHandler, ExperimentalAsh>
+      cellular_connection_handler_;
+  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;
 
-  NetworkConnectionHandler* network_connection_handler_;
-  NetworkProfileHandler* network_profile_handler_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   // Maps profile dbus paths to unique pointer of InhibitLocks that are
   // pending to uninhibit.

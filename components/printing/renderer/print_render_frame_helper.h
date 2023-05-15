@@ -261,7 +261,9 @@ class PrintRenderFrameHelper
   void SetPrintPreviewUI(
       mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) override;
   void InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
+#endif
       bool has_selection) override;
   void PrintPreview(base::Value::Dict settings) override;
   void OnPrintPreviewDialogClosed() override;
@@ -388,12 +390,12 @@ class PrintRenderFrameHelper
   // |page_number| is zero-based.
   // When method is called, canvas should be setup to draw to |canvas_area|
   // with |scale_factor|.
-  static float RenderPageContent(blink::WebLocalFrame* frame,
-                                 uint32_t page_number,
-                                 const gfx::Rect& canvas_area,
-                                 const gfx::Rect& content_area,
-                                 double scale_factor,
-                                 cc::PaintCanvas* canvas);
+  static void RenderPageContent(blink::WebLocalFrame* frame,
+                                uint32_t page_number,
+                                const gfx::Rect& canvas_area,
+                                const gfx::Rect& content_area,
+                                double scale_factor,
+                                cc::PaintCanvas* canvas);
 
   // Helper methods -----------------------------------------------------------
 

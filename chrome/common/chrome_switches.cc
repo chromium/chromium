@@ -197,6 +197,9 @@ const char kDisableExtensions[] = "disable-extensions";
 // Disable extensions except those specified in a comma-separated list.
 const char kDisableExtensionsExcept[] = "disable-extensions-except";
 
+// Disables lazy loading of images and frames.
+const char kDisableLazyLoading[] = "disable-lazy-loading";
+
 // Disables print preview (For testing, and for users who don't like us. :[ )
 const char kDisablePrintPreview[] = "disable-print-preview";
 
@@ -590,6 +593,9 @@ const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 const char kThisTabCaptureAutoAccept[] = "auto-accept-this-tab-capture";
 const char kThisTabCaptureAutoReject[] = "auto-reject-this-tab-capture";
 
+// Custom delay for memory log. This should be used only for testing purpose.
+const char kTestMemoryLogDelayInMinutes[] = "test-memory-log-delay-in-minutes";
+
 // Passes the name of the current running automated test to Chrome.
 const char kTestName[] = "test-name";
 
@@ -643,6 +649,9 @@ const char kWebRtcRemoteEventLogUploadNoSuppression[] =
 // Override WebRTC IP handling policy to mimic the behavior when WebRTC IP
 // handling policy is specified in Preferences.
 const char kWebRtcIPHandlingPolicy[] = "webrtc-ip-handling-policy";
+
+// Specify the initial window user title: --window-name="My custom title"
+const char kWindowName[] = "window-name";
 
 // Specify the initial window position: --window-position=x,y
 const char kWindowPosition[] = "window-position";

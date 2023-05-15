@@ -12,6 +12,7 @@
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -113,7 +114,7 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   Delegate* delegate() { return delegate_; }
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

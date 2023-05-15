@@ -132,8 +132,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
       kBackgroundCornerRadius,
       is_jellyroll_enabled
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   // |mirror_container_| may be larger than |this|. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
@@ -186,8 +185,11 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // Set a pill shaped (fully rounded rect) highlight path to focus ring.
     focus_ring->SetPathGenerator(
         std::make_unique<views::PillHighlightPathGenerator>());
-    focus_ring->SetHasFocusPredicate(
-        [&](views::View* view) { return IsTabSliderFocused(); });
+    focus_ring->SetHasFocusPredicate(base::BindRepeating(
+        [](const WindowCycleView* cycle_view, const views::View* view) {
+          return cycle_view->IsTabSliderFocused();
+        },
+        base::Unretained(this)));
 
     const bool per_desk =
         Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();

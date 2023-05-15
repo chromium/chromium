@@ -119,25 +119,25 @@ void PredictorJankTracker::ReportJankyFrame(float janky_value,
                                             bool slow_scroll) {
   janky_frames_++;
   if (contains_missed_vsyncs && slow_scroll) {
-    UMA_HISTOGRAM_COUNTS_1000(
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.SlowScroll.MissedVsync."
-        "FrameAboveJankyThreshold",
-        static_cast<int>(janky_value * 100));
+        "FrameAboveJankyThreshold2",
+        static_cast<int>(janky_value * 100), 1, 1500, 50);
   } else if (contains_missed_vsyncs && !slow_scroll) {
-    UMA_HISTOGRAM_COUNTS_1000(
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.FastScroll.MissedVsync."
-        "FrameAboveJankyThreshold",
-        static_cast<int>(janky_value * 100));
+        "FrameAboveJankyThreshold2",
+        static_cast<int>(janky_value * 100), 1, 1500, 50);
   } else if (slow_scroll) {
-    UMA_HISTOGRAM_COUNTS_1000(
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.SlowScroll.NoMissedVsync."
-        "FrameAboveJankyThreshold",
-        static_cast<int>(janky_value * 100));
+        "FrameAboveJankyThreshold2",
+        static_cast<int>(janky_value * 100), 1, 1500, 50);
   } else {
-    UMA_HISTOGRAM_COUNTS_1000(
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.FastScroll.NoMissedVsync."
-        "FrameAboveJankyThreshold",
-        static_cast<int>(janky_value * 100));
+        "FrameAboveJankyThreshold2",
+        static_cast<int>(janky_value * 100), 1, 2000, 50);
   }
 }
 
@@ -173,7 +173,7 @@ void PredictorJankTracker::ResetCurrentScrollReporting() {
 
 void PredictorJankTracker::ReportJankyFramePercentage() {
   UMA_HISTOGRAM_PERCENTAGE(
-      "Event.Latency.ScrollUpdate.JankyFramePercentage",
+      "Event.Jank.PredictorJankyFramePercentage",
       static_cast<int>(100 * (janky_frames_ / total_frames_)));
   total_frames_ = 0;
   janky_frames_ = 0;

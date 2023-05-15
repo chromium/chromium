@@ -43,20 +43,21 @@ class MockAccessoryView
   MockAccessoryView(const MockAccessoryView&) = delete;
   MockAccessoryView& operator=(const MockAccessoryView&) = delete;
 
-  MOCK_METHOD0(Initialize, bool());
-  MOCK_METHOD0(Hide, void());
-  MOCK_METHOD0(Show, void());
-  MOCK_METHOD1(AxAnnounce, void(const std::u16string&));
-  MOCK_METHOD3(ConfirmDeletion,
-               void(const std::u16string&,
-                    const std::u16string&,
-                    base::OnceClosure));
+  MOCK_METHOD(bool, Initialize, ());
+  MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void, AxAnnounce, (const std::u16string&));
+  MOCK_METHOD(void,
+              ConfirmDeletion,
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceClosure));
 };
 
 Suggestion createPasswordEntry(std::string password,
                                std::string username,
                                std::string psl_origin) {
-  Suggestion s(/*value=*/username, /*label=*/psl_origin, /*icon=*/"",
+  Suggestion s(/*main_text=*/username, /*label=*/psl_origin, /*icon=*/"",
                PopupItemId::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
   s.additional_label = ASCIIToUTF16(password);
   return s;
@@ -72,9 +73,8 @@ std::vector<Suggestion> createSuggestions() {
 
 std::vector<Suggestion> createSuggestions(int clearItemOffset) {
   std::vector<Suggestion> suggestions = createSuggestions();
-  suggestions.emplace(
-      suggestions.begin() + clearItemOffset,
-      Suggestion("Clear", "", "", PopupItemId::POPUP_ITEM_ID_CLEAR_FORM));
+  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "", "",
+                      PopupItemId::POPUP_ITEM_ID_CLEAR_FORM);
   return suggestions;
 }
 

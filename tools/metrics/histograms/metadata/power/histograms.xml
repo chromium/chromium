@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AdaptiveChargingType">
-<!-- 
+<!--
     Variants describing the type of charging used to charge to full once the hold percent is reached in Adaptive Charging.
   -->
 
@@ -68,7 +68,8 @@ chromium-metrics-reviews@google.com.
 <variants name="UsageScenario">
 <!--
   Variants describing the usage scenario for a time interval. Consider updating
-  UsageScenario10Sec when updating this.
+  both "UsageScenario10Sec" in this file, and "UsageScenario" in
+  tools/metrics/histograms/metadata/browser/histograms.xml when updating this.
 -->
 
   <variant name="" summary="all intervals no matter the usage scenario"/>
@@ -537,7 +538,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -552,7 +553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.ShortInterval"
     enum="PerformanceMonitor.UsageScenario.ShortInterval"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -795,7 +796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BacklightLevel{PrivacyScreenState}{PowerSource}"
-    units="%" expires_after="2023-05-12">
+    units="%" expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -820,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryCapacity.{BatteryCapacityType}" units="mWh"
-    expires_after="2023-05-12">
+    expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -910,18 +911,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeMode5.TenMinutes"
+    enum="BatteryDischargeMode" expires_after="2024-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Battery discharge mode describing whether
+    Power.BatteryDischargeRateMilliwatts6.TenMinutes could be reported, and why.
+    Windows only.
+
+    This is reported when a 1 minute periodic timer fires and at least 10
+    minutes have elapsed since the last report or startup.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
     enum="BatteryDischargeMode" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
-    Battery discharge mode describing whether BatteryDischargeRateMilliwatts5
-    could be reported or not, and why.
+    Battery discharge mode describing whether
+    Power.BatteryDischargeRateMilliwatts6 could be reported, and why.
 
-    This is reported at the end of every valid 1 minute interval. An invalid
-    interval is one that deviate too much from 1 minute, which can be caused by
-    the computer going to sleep, or the OS sending multiple notifications in a
-    row.
+    On Windows and ChromeOS, this is reported when a 1 minute periodic timer
+    fires. On macOS, this is reported when an IOPMPowerSource state change
+    notification fires (typically every minute but may happen more frequently).
 
     This is recorded for {UsageScenario}.
 
@@ -932,12 +946,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
     device runs on battery.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryDischargeRateMilliwatts6.TenMinutes"
+    units="milliwatts" expires_after="2024-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Battery discharge in milliwatts over a 10 minutes interval. Windows only.
+
+    Example: Used capacity at the beginning of the interval: 1000 mWh, used
+    capacity at the end of the interval: 1010 mWh, Discharge: (1010-1000) = 10
+    mWh per 10 minutes, reported value: 60 mW.
+
+    Reported when &quot;discharging&quot; is reported to
+    Power.BatteryDischargeMode5.TenMinutes.
   </summary>
 </histogram>
 
@@ -948,14 +978,14 @@ chromium-metrics-reviews@google.com.
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
-    Battery discharge in milliwatts, example: - Used capacity at the beginning
-    of the interval: 1000 mWh; - Used capacity at the end of the interval: 1010
-    mWh; - Discharge: (1010-1000) = 10 mWh per minute - Reported value: 600 mW.
+    Battery discharge in milliwatts over a 1 minute interval.
 
-    This is reported at the end of every valid 1 minute interval. An invalid
-    interval is one that deviate too much from 1 minute, which can be caused by
-    the computer going to sleep, or the OS sending multiple notifications in a
-    row.
+    Example: Used capacity at the beginning of the interval: 1000 mWh, used
+    capacity at the end of the interval: 1010 mWh, Discharge: (1010-1000) = 10
+    mWh per 1 minute, reported value: 600 mW.
+
+    Reported when &quot;discharging&quot; is reported to
+    Power.BatteryDischargeMode5.
 
     This is recorded for {UsageScenario}.
 
@@ -1054,7 +1084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
-    expires_after="2023-05-12">
+    expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1069,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLifeWhileSuspended.{BatteryCapacityType}"
-    units="hour" expires_after="2023-05-12">
+    units="hour" expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1264,7 +1294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2023-10-08">
+    expires_after="2023-10-22">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1717,7 +1747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundThermalState.ChangeEvent.Android"
-    enum="DeviceThermalState" expires_after="2023-08-13">
+    enum="DeviceThermalState" expires_after="2023-10-15">
   <owner>carlscab@google.com</owner>
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
@@ -2054,7 +2084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -2166,14 +2196,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Actions performed while the power button menu is open.</summary>
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -2184,7 +2214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2023-09-03">
+    enum="PowerButtonPressType" expires_after="2024-05-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2195,7 +2225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInTabletMode"
-    enum="PowerButtonPressType" expires_after="2023-09-03">
+    enum="PowerButtonPressType" expires_after="2024-05-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2427,7 +2457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2437,7 +2467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2478,7 +2508,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimComponent.LoadComponentEvent"
     enum="PowerMLSmartDimComponentLoadComponentEvent"
-    expires_after="2023-06-04">
+    expires_after="2023-11-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -2489,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.VersionType"
-    enum="PowerMLSmartDimComponentVersionType" expires_after="2023-06-04">
+    enum="PowerMLSmartDimComponentVersionType" expires_after="2023-11-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>

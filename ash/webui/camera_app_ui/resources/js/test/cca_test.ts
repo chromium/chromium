@@ -3,13 +3,18 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as localStorage from '../models/local_storage.js';
+import {
+  TIME_LAPSE_MAX_DURATION,
+  TimeLapseSaver,
+} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
-import {Facing, Resolution} from '../type.js';
-import {sleep} from '../util.js';
+import {Facing, Mode, Resolution} from '../type.js';
+import {assertEnumVariant, FpsObserver, sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
 import {
@@ -250,7 +255,7 @@ export class CCATest {
   static async getFacing(): Promise<string> {
     const track = getPreviewVideoTrack();
     const deviceOperator = DeviceOperator.getInstance();
-    if (!deviceOperator) {
+    if (deviceOperator === null) {
       const facing = track.getSettings().facingMode;
       return facing ?? 'unknown';
     }
@@ -341,6 +346,20 @@ export class CCATest {
     const element = resolveVisibleElement(component, index);
     const {width, height} = element.getBoundingClientRect();
     return new Resolution(Math.round(width), Math.round(height));
+  }
+
+  /**
+   * Calculates the expected duration of the time-lapse video recorded for
+   * |recordDuration| seconds.
+   */
+  static getTimeLapseDuration(recordDuration: number): number {
+    let speed = TIME_LAPSE_INITIAL_SPEED;
+    let duration = recordDuration / speed;
+    while (duration >= TIME_LAPSE_MAX_DURATION) {
+      speed = TimeLapseSaver.getNextSpeed(speed);
+      duration = recordDuration / speed;
+    }
+    return duration;
   }
 
   /**
@@ -461,6 +480,17 @@ export class CCATest {
   }
 
   /**
+   * Switches to the specified camera mode.
+   */
+  static switchMode(mode: Mode): void {
+    assertEnumVariant(Mode, mode);
+    const modeSelector =
+        dom.get(`.mode-item>input[data-mode="${mode}"]`, HTMLInputElement);
+    assert(isVisibleElement(modeSelector), 'Mode selector is not visible');
+    modeSelector.click();
+  }
+
+  /**
    * Removes all the cached data in chrome.storage.local.
    */
   static removeCacheData(): void {
@@ -489,5 +519,9 @@ export class CCATest {
     assert(option !== undefined, 'Invalid SettingOption value.');
     const component = SETTING_OPTION_MAP[option].component;
     CCATest.click(component);
+  }
+
+  static getFpsObserver(): FpsObserver {
+    return new FpsObserver(getPreviewVideo());
   }
 }

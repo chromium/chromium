@@ -101,7 +101,7 @@ bool UpdatePower(std::unique_ptr<power_bookmarks::Power> power,
   return result;
 }
 
-bool DeletePower(base::GUID guid,
+bool DeletePower(base::Uuid guid,
                  power_bookmarks::PowerBookmarkService* service) {
   base::RunLoop run_loop;
   bool result = false;

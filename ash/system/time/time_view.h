@@ -11,6 +11,7 @@
 #include "ash/system/model/clock_observer.h"
 #include "ash/system/tray/actionable_view.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,8 +50,8 @@ class VerticalDateView : public views::View {
  private:
   friend class TimeViewTest;
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* text_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
 };
 
 // Tray view used to display the current date or time based on the passed in
@@ -138,24 +139,25 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   std::unique_ptr<views::View> vertical_view_;
 
   // Label text used for the normal horizontal shelf.
-  views::Label* horizontal_label_ = nullptr;
-  views::Label* horizontal_label_date_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> horizontal_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
+      horizontal_label_date_ = nullptr;
 
   // The horizontal and vertical date view for the `DateTray`.
   std::unique_ptr<views::View> horizontal_date_view_;
   std::unique_ptr<views::View> vertical_date_view_;
 
   // The time label is split into two lines for the vertical shelf.
-  views::Label* vertical_label_hours_ = nullptr;
-  views::Label* vertical_label_minutes_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> vertical_label_hours_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> vertical_label_minutes_ = nullptr;
 
   // The vertical date in a calendar icon view for the vertical shelf.
-  VerticalDateView* date_view_ = nullptr;
+  raw_ptr<VerticalDateView, ExperimentalAsh> date_view_ = nullptr;
 
   // Invokes UpdateText() when the displayed time should change.
   base::OneShotTimer timer_;
 
-  ClockModel* const model_;
+  const raw_ptr<ClockModel, ExperimentalAsh> model_;
 
   // The type (kDate or kTime) of this time view.
   const Type type_;

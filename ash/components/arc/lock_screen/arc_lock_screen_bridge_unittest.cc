@@ -9,6 +9,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_lock_screen_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +50,7 @@ class ArcLockScreenBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeLockScreenInstance lock_screen_instance_;
   TestBrowserContext context_;
-  ArcLockScreenBridge* bridge_ = nullptr;
+  raw_ptr<ArcLockScreenBridge, ExperimentalAsh> bridge_ = nullptr;
 };
 
 TEST_F(ArcLockScreenBridgeTest, ConstructDestruct) {

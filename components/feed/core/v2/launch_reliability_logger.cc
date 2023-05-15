@@ -111,6 +111,47 @@ void LaunchReliabilityLogger::LogRequestFinished(
   }
 }
 
+void LaunchReliabilityLogger::LogLoadMoreStarted() {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogLoadMoreStarted();
+  }
+}
+
+void LaunchReliabilityLogger::LogLoadMoreActionUploadRequestStarted() {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge()
+        .LogLoadMoreActionUploadRequestStarted();
+  }
+}
+
+void LaunchReliabilityLogger::LogLoadMoreRequestSent() {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogLoadMoreRequestSent();
+  }
+}
+
+void LaunchReliabilityLogger::LogLoadMoreResponseReceived(
+    int64_t server_receive_timestamp_ns,
+    int64_t server_send_timestamp_ns) {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogLoadMoreResponseReceived(
+        server_receive_timestamp_ns, server_send_timestamp_ns);
+  }
+}
+
+void LaunchReliabilityLogger::LogLoadMoreRequestFinished(int canonical_status) {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogLoadMoreRequestFinished(
+        canonical_status);
+  }
+}
+
+void LaunchReliabilityLogger::LogLoadMoreEnded(bool success) {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogLoadMoreEnded(success);
+  }
+}
+
 void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type) {
   for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces())
     OnStreamUpdate(type, *entry.surface);
@@ -125,7 +166,7 @@ void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type,
       logging_bridge.LogLoadingIndicatorShown(base::TimeTicks::Now());
       break;
     case StreamUpdateType::kLoadingMoreSpinner:
-      // TODO(iwells): log this with next-page flow
+      logging_bridge.LogLoadMoreIndicatorShown();
       break;
     case StreamUpdateType::kZeroState:
       logging_bridge.LogAboveTheFoldRender(

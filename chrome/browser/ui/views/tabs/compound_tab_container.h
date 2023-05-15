@@ -25,7 +25,7 @@ class CompoundTabContainer : public TabContainer,
  public:
   METADATA_HEADER(CompoundTabContainer);
 
-  CompoundTabContainer(raw_ref<TabContainerController> controller,
+  CompoundTabContainer(TabContainerController& controller,
                        TabHoverCardController* hover_card_controller,
                        TabDragContextBase* drag_context,
                        TabSlotController& tab_slot_controller,
@@ -155,8 +155,7 @@ class CompoundTabContainer : public TabContainer,
 
   // Returns the child TabContainer that should contain `view`. NB this can be
   // different from `view->parent()` e.g. while `view` is being dragged.
-  raw_ref<TabContainer, DanglingUntriaged> GetTabContainerFor(
-      TabSlotView* view) const;
+  TabContainer& GetTabContainerFor(TabSlotView* view) const;
 
   // Returns the child TabContainer that should handle text drag and drop events
   // at `point_in_local_coords`.

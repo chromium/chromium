@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -25,11 +26,15 @@ using ::base::JSONValueConverter;
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
-constexpr char kApiResponseNextPageTokenKey[] = "nextPageToken";
+constexpr char kApiResponseDueKey[] = "due";
 constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
 constexpr char kApiResponseUpdatedKey[] = "updated";
+constexpr char kApiResponseLinksKey[] = "links";
+constexpr char kApiResponseLinkTypeKey[] = "type";
+
+constexpr char kLinkTypeEmail[] = "email";
 
 constexpr char kTaskStatusCompleted[] = "completed";
 constexpr char kTaskStatusNeedsAction[] = "needsAction";
@@ -41,6 +46,22 @@ constexpr auto kTaskStatuses =
 bool ConvertTaskStatus(base::StringPiece input, Task::Status* output) {
   *output = kTaskStatuses.contains(input) ? kTaskStatuses.at(input)
                                           : Task::Status::kUnknown;
+  return true;
+}
+
+bool ConvertTaskDueDate(base::StringPiece input,
+                        absl::optional<base::Time>* output) {
+  base::Time due;
+  if (!util::GetTimeFromString(input, &due)) {
+    return false;
+  }
+  *output = due;
+  return true;
+}
+
+bool ConvertTaskLinkType(base::StringPiece input, TaskLink::Type* output) {
+  *output = input == kLinkTypeEmail ? TaskLink::Type::kEmail
+                                    : TaskLink::Type::kUnknown;
   return true;
 }
 
@@ -85,6 +106,14 @@ std::unique_ptr<TaskLists> TaskLists::CreateFrom(const base::Value& value) {
   return task_lists;
 }
 
+// ----- TaskLink -----
+
+// static
+void TaskLink::RegisterJSONConverter(JSONValueConverter<TaskLink>* converter) {
+  converter->RegisterCustomField<Type>(kApiResponseLinkTypeKey,
+                                       &TaskLink::type_, &ConvertTaskLinkType);
+}
+
 // ----- Task -----
 
 Task::Task() = default;
@@ -97,6 +126,10 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterCustomField<Status>(kApiResponseStatusKey, &Task::status_,
                                          &ConvertTaskStatus);
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
+  converter->RegisterCustomField<absl::optional<base::Time>>(
+      kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
+  converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
+                                               &Task::links_);
 }
 
 // static

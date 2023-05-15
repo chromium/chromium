@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">录制已停止，因为设备存储空间不足。若要录制更多视频，您需先释放设备上的空间。</translation>
 <translation id="2036868001356139588">定时器时长</translation>
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
-<translation id="2128052519899549250">录制延时摄影视频</translation>
 <translation id="2134029355740465625">视频设置</translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
 <translation id="2175927920773552910">二维码</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">检测到文件</translation>
 <translation id="414641094616694804">此相机无法更改分辨率</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
-<translation id="4281620174117014503">中等分辨率</translation>
 <translation id="428234092390943511">页面缩略图</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
 <translation id="4445542136948522167">停止拍照</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5320594929574852403">正在向左移动</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">延时摄影</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
 <translation id="5759254179196327752">扫描文件</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">文件右下角</translation>
+<translation id="7684446460490665873">录制延时摄影视频</translation>
 <translation id="7692090236657809299">启用平移、倾斜和缩放功能</translation>
 <translation id="7726641833034062494">录制一般视频</translation>
 <translation id="7748344063862150053">文件右上角</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">请将文件的各个边置于框内</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">正在处理图片…</translation>
+<translation id="9161584225258678723">延时摄影</translation>
 <translation id="922762992951083513">镜像已开启</translation>
 <translation id="945522503751344254">发送反馈</translation>
 </translationbundle>

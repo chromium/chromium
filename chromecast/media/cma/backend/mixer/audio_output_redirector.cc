@@ -8,7 +8,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -462,7 +461,7 @@ void AudioOutputRedirector::FinishBuffer() {
 
   // Hard limit to [1.0, -1.0].
   for (int s = 0; s < config_.num_output_channels * next_num_frames_; ++s) {
-    current_mix_data_[s] = base::clamp(current_mix_data_[s], -1.0f, 1.0f);
+    current_mix_data_[s] = std::clamp(current_mix_data_[s], -1.0f, 1.0f);
   }
 
   io_task_runner_->PostTask(

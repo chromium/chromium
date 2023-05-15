@@ -49,6 +49,8 @@ static_library("file_manager_ui") {
     "//ash/constants:constants",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",

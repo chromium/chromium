@@ -215,7 +215,7 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
           args.GetIsolate());
   guest_view_container->IssueRequest(std::move(request));
 
-  args.GetReturnValue().Set(v8::Boolean::New(context()->isolate(), true));
+  args.GetReturnValue().Set(true);
 }
 
 void GuestViewInternalCustomBindings::DestroyContainer(
@@ -282,7 +282,7 @@ void GuestViewInternalCustomBindings::RegisterDestructionCallback(
   guest_view_container->RegisterDestructionCallback(args[1].As<v8::Function>(),
                                                     args.GetIsolate());
 
-  args.GetReturnValue().Set(v8::Boolean::New(context()->isolate(), true));
+  args.GetReturnValue().Set(true);
 }
 
 void GuestViewInternalCustomBindings::RegisterView(

@@ -121,7 +121,7 @@ bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
   return warning_reasons_[reason];
 }
 
-bool CookieInclusionStatus::HasDowngradeWarning(
+bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
     CookieInclusionStatus::WarningReason* reason) const {
   if (!ShouldWarn())
     return false;
@@ -165,7 +165,7 @@ CookieInclusionStatus::GetBreakingDowngradeMetricsEnumValue(
 
   // Don't bother checking the return value because the default switch case
   // will handle if no reason was found.
-  HasDowngradeWarning(&reason);
+  HasSchemefulDowngradeWarning(&reason);
 
   switch (reason) {
     case WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE:

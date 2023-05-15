@@ -16,12 +16,12 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -102,11 +102,13 @@ class AuthenticationFlowTest : public PlatformTest {
   // Creates a new AuthenticationFlow with default values for fields that are
   // not directly useful.
   void CreateAuthenticationFlow(PostSignInAction postSignInAction,
-                                id<SystemIdentity> identity) {
+                                id<SystemIdentity> identity,
+                                signin_metrics::AccessPoint accessPoint) {
     view_controller_ = [OCMockObject niceMockForClass:[UIViewController class]];
     authentication_flow_ =
         [[AuthenticationFlow alloc] initWithBrowser:browser_.get()
                                            identity:identity
+                                        accessPoint:accessPoint
                                    postSignInAction:postSignInAction
                            presentingViewController:view_controller_];
     performer_ =
@@ -128,8 +130,10 @@ class AuthenticationFlowTest : public PlatformTest {
   }
 
   void SetSigninSuccessExpectations(id<SystemIdentity> identity,
+                                    signin_metrics::AccessPoint accessPoint,
                                     NSString* hosted_domain) {
     [[performer_ expect] signInIdentity:identity
+                          atAccessPoint:accessPoint
                        withHostedDomain:hosted_domain
                          toBrowserState:browser_state_.get()];
   }
@@ -161,7 +165,9 @@ class AuthenticationFlowTest : public PlatformTest {
 // Tests a Sign In of a normal account on the same profile with Sync
 // consent granted.
 TEST_F(AuthenticationFlowTest, TestSignInSimple) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, identity1_,
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -172,9 +178,8 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
       shouldHandleMergeCaseForIdentity:identity1_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(identity1_, nil);
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(
+      identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -189,7 +194,9 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
 // Tests that starting sync while the user is already signed in only.
 TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, identity1_,
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -199,12 +206,11 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
       shouldHandleMergeCaseForIdentity:identity1_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(identity1_, nil);
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(
+      identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity1_);
+      ->SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -220,7 +226,9 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
 // already signed in account, and asking the user whether data should be cleared
 // or merged.
 TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, identity1_,
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -245,12 +253,12 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
     [authentication_flow_ didClearData];
   }] clearDataFromBrowser:browser_.get() commandHandler:nil];
 
-  SetSigninSuccessExpectations(identity1_, nil);
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(
+      identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity2_);
+      ->SignIn(identity2_,
+               signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -264,7 +272,9 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
 
 // Tests the cancelling of a Sign In.
 TEST_F(AuthenticationFlowTest, TestCancel) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, identity1_,
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -292,7 +302,9 @@ TEST_F(AuthenticationFlowTest, TestCancel) {
 
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, identity1_,
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -319,7 +331,9 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 // Tests the managed sign in confirmation dialog is shown when signing in to
 // a managed identity.
 TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -335,9 +349,9 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
                              viewController:view_controller_
                                     browser:browser_.get()];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -353,13 +367,17 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
 // Tests sign-in only with a managed account. The managed account confirmation
 // dialog should not be shown.
 TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
-  CreateAuthenticationFlow(PostSignInAction::kNone, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
   }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -373,7 +391,9 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
 // Tests sign-in only with a managed account, and then starts sync. The managed
 // account confirmation dialog should be shown only in sync.
 TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -383,14 +403,15 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
       shouldHandleMergeCaseForIdentity:managed_identity_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -411,7 +432,9 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -421,14 +444,15 @@ TEST_F(AuthenticationFlowTest,
       shouldHandleMergeCaseForIdentity:managed_identity_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
@@ -461,7 +485,9 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -471,14 +497,15 @@ TEST_F(AuthenticationFlowTest,
       shouldHandleMergeCaseForIdentity:managed_identity_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:@""
@@ -508,7 +535,9 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
+  CreateAuthenticationFlow(
+      PostSignInAction::kCommitSync, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -518,14 +547,15 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
       shouldHandleMergeCaseForIdentity:managed_identity_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
-  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken

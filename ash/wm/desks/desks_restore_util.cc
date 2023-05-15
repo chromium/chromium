@@ -14,7 +14,6 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -23,9 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace ash {
-
-namespace desks_restore_util {
+namespace ash::desks_restore_util {
 
 namespace {
 
@@ -143,7 +140,7 @@ void RestorePrimaryUserDesks() {
     // It's possible that desks_guids_list is not yet populated.
     if (index < desks_guids_list.size()) {
       desks_controller->RestoreGuidOfDeskAtIndex(
-          base::GUID::ParseLowercase(desks_guids_list[index].GetString()),
+          base::Uuid::ParseLowercase(desks_guids_list[index].GetString()),
           index);
     }
 
@@ -287,14 +284,13 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
-    base::Value metrics_dict(base::Value::Type::DICT);
-    metrics_dict.SetIntKey(
-        kCreationTimeKey,
-        desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
-    metrics_dict.SetIntKey(kFirstDayVisitedKey, desk->first_day_visited());
-    metrics_dict.SetIntKey(kLastDayVisitedKey, desk->last_day_visited());
-    metrics_dict.SetBoolKey(kInteractedWithThisWeekKey,
-                            desk->interacted_with_this_week());
+    base::Value::Dict metrics_dict =
+        base::Value::Dict()
+            .Set(kCreationTimeKey,
+                 desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes())
+            .Set(kFirstDayVisitedKey, desk->first_day_visited())
+            .Set(kLastDayVisitedKey, desk->last_day_visited())
+            .Set(kInteractedWithThisWeekKey, desk->interacted_with_this_week());
     metrics_pref_data.Append(std::move(metrics_dict));
   }
 
@@ -337,6 +333,4 @@ void OverrideClockForTesting(base::Clock* test_clock) {
   g_override_clock_ = test_clock;
 }
 
-}  // namespace desks_restore_util
-
-}  // namespace ash
+}  // namespace ash::desks_restore_util

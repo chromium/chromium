@@ -1,0 +1,22 @@
+<!doctype html>
+<title>round() function extreme cases</title>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/numeric-testcommon.js"></script>
+
+<meta name=author content="sakhapov@chromium.org">
+<link rel=help href="https://drafts.csswg.org/css-values-4/#round-func">
+
+<div id=target></div>
+<script>
+test_math_used('round(10, 10)', '10', {type:'number'});
+
+test_math_used('round(1.49999999999999977795, 0.4999999999999999444888)', '1.49999999999999977795', {type:'number'});
+test_math_used('round(up, 1.49999999999999977795, 0.4999999999999999444888)', '1.49999999999999977795', {type:'number'});
+test_math_used('round(down, 1.49999999999999977795, 0.4999999999999999444888)', '0.999999999999999888978', {type:'number'});
+
+test_math_used('calc(round(9007199254741000, 3) - 9007199254740992)', '8', {type:'number'});
+test_math_used('calc(round(up, 9007199254741000, 3) - 9007199254740992)', '10', {type:'number'});
+test_math_used('calc(round(down, 9007199254741000, 3) - 9007199254740992)', '8', {type:'number'});
+</script>

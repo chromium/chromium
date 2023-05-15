@@ -38,7 +38,9 @@ class ClipboardApiTest : public ExtensionApiTest {
   bool ExecuteCommandInIframeInSelectedTab(const char* command);
 
  private:
-  bool ExecuteScriptInSelectedTab(const std::string& script);
+  bool ExecuteScriptInSelectedTab(
+      const std::string& script,
+      int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 };
 
 bool ClipboardApiTest::LoadHostedApp(const std::string& app_name,
@@ -69,14 +71,12 @@ bool ClipboardApiTest::LoadHostedApp(const std::string& app_name,
 }
 
 bool ClipboardApiTest::ExecuteCopyInSelectedTab() {
-  const char kScript[] =
-      "window.domAutomationController.send(document.execCommand('copy'))";
+  const char kScript[] = "document.execCommand('copy')";
   return ExecuteScriptInSelectedTab(kScript);
 }
 
 bool ClipboardApiTest::ExecutePasteInSelectedTab() {
-  const char kScript[] =
-      "window.domAutomationController.send(document.execCommand('paste'))";
+  const char kScript[] = "document.execCommand('paste')";
   return ExecuteScriptInSelectedTab(kScript);
 }
 
@@ -87,16 +87,15 @@ bool ClipboardApiTest::ExecuteCommandInIframeInSelectedTab(
       "document.body.appendChild(ifr);\n"
       "ifr.contentDocument.write('<script>parent.domAutomationController.send("
           "document.execCommand(\"%s\"))</script>');";
-  return ExecuteScriptInSelectedTab(base::StringPrintf(kScript, command));
+  return ExecuteScriptInSelectedTab(base::StringPrintf(kScript, command),
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
 }
 
-bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script) {
-  bool result;
-  CHECK(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        script,
-        &result));
-  return result;
+bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script,
+                                                  int options) {
+  return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                         script, options)
+      .ExtractBool();
 }
 
 }  // namespace

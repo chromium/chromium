@@ -4,21 +4,59 @@
 
 #include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
 
+#include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Headers that are part of the //chrome/browser target.
+//
+// Depending on //chrome/browser would cause a circular dependency because it
+// depends on //chrome/browser/ui which depends on this file's target. So we
+// suppress gn warnings.
+#include "chrome/browser/app_mode/app_mode_utils.h"         // nogncheck
+#include "chrome/browser/feedback/feedback_dialog_utils.h"  // nogncheck
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
+#include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "ash/webui/diagnostics_ui/diagnostics_ui.h"
+#include "ash/webui/eche_app_ui/eche_app_ui.h"
+#include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
+#include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
+#include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
+#include "ash/webui/help_app_ui/help_app_ui.h"
+#include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
+#include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "ash/webui/print_management/print_management_ui.h"
+#include "ash/webui/scanning/scanning_ui.h"
+#include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
+#include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
+#include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
+#include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -41,9 +79,11 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_ui.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -52,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/power_ui.h"
+#include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
@@ -76,107 +117,219 @@ class WebUI;
 class WebUIController;
 }  // namespace content
 
-namespace {
-using CreateWebUIControllerFunc =
-    std::unique_ptr<content::WebUIController> (*)(content::WebUI*);
+namespace ash {
+using CreateWebUIControllerFunc = base::RepeatingCallback<std::unique_ptr<
+    content::WebUIController>(content::WebUI*, const GURL& url)>;
+
+// Consider the following approaches when registering component
+// WebUIConfigs, in order of preference:
+//   1. Using a Delegate with MakeComponentConfigWithDelegate,
+//   2. Using custom arguments with MakeComponentConfigWithArgs,
+//   3. Using a custom MakeConfig() method (least preferred, avoid if possible).
 
 template <class Config, class Controller, class Delegate>
-std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
-  CreateWebUIControllerFunc create_controller_func =
-      [](content::WebUI* web_ui) -> std::unique_ptr<content::WebUIController> {
-    auto delegate = std::make_unique<Delegate>(web_ui);
-    return std::make_unique<Controller>(web_ui, std::move(delegate));
-  };
+std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithDelegate() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate = std::make_unique<Delegate>(web_ui);
+        return std::make_unique<Controller>(web_ui, std::move(delegate));
+      });
+
+  return std::make_unique<Config>(create_controller_func);
+}
+
+template <class Config, class Controller, typename... Args>
+std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithArgs(
+    Args&&... args) {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](const std::decay_t<Args>&... args, content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        return std::make_unique<Controller>(web_ui, args...);
+      },
+      args...);
 
   return std::make_unique<Config>(create_controller_func);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
+  return MakeComponentConfigWithArgs<ConnectivityDiagnosticsUIConfig,
+                                     ConnectivityDiagnosticsUI>(
+      /* BindNetworkDiagnosticsServiceCallback */
+      base::BindRepeating(&network_health::NetworkHealthManager::
+                              NetworkDiagnosticsServiceCallback),
+      /* BindNetworkHealthServiceCallback */
+      base::BindRepeating(
+          &network_health::NetworkHealthManager::NetworkHealthServiceCallback),
+      /* SendFeedbackReportCallback */
+      base::BindRepeating(
+          &chrome::ShowFeedbackDialogForWebUI,
+          chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
+      /*show_feedback_button=*/!chrome::IsRunningInAppMode());
+}
+
+std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        HoldingSpaceKeyedService* holding_space_keyed_service =
+            HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+                web_ui->GetWebContents()->GetBrowserContext());
+        // This directory stores routine and network event logs for a given
+        // |profile|.
+        static constexpr base::FilePath::CharType
+            kDiagnosticsLogDirectoryName[] = FILE_PATH_LITERAL("diagnostics");
+        return std::make_unique<DiagnosticsDialogUI>(
+            web_ui,
+            base::BindRepeating([](content::WebContents* web_contents)
+                                    -> std::unique_ptr<ui::SelectFilePolicy> {
+              return std::make_unique<ChromeSelectFilePolicy>(web_contents);
+            }),
+            holding_space_keyed_service->client(),
+            Profile::FromWebUI(web_ui)->GetPath().Append(
+                kDiagnosticsLogDirectoryName));
+      });
+
+  return std::make_unique<DiagnosticsDialogUIConfig>(create_controller_func);
+}
+
+std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        Profile* profile = Profile::FromWebUI(web_ui);
+        eche_app::EcheAppManager* manager =
+            eche_app::EcheAppManagerFactory::GetForProfile(profile);
+        return std::make_unique<eche_app::EcheAppUI>(web_ui, manager);
+      });
+
+  return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::CameraAppUIConfig, ash::CameraAppUI,
-                          ChromeCameraAppUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ArcGraphicsTracingUIConfig<
-                         ash::ArcGraphicsTracingMode::kFull>>());
-  map.AddWebUIConfig(std::make_unique<ash::ArcGraphicsTracingUIConfig<
-                         ash::ArcGraphicsTracingMode::kOverview>>());
-  map.AddWebUIConfig(std::make_unique<ash::ArcPowerControlUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::AssistantOptInUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::AudioUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::CertificateManagerDialogUIConfig>());
+      MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
+                                      ChromeCameraAppUIDelegate>());
+  map.AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
+  map.AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::cloud_upload::CloudUploadUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ColorInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ConfirmPasswordChangeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
+      std::make_unique<
+          ArcGraphicsTracingUIConfig<ArcGraphicsTracingMode::kFull>>());
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::FilesInternalsUIConfig, ash::FilesInternalsUI,
-                          ChromeFilesInternalsUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<ash::FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::HealthdInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::LauncherInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::LockScreenNetworkUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::LockScreenStartReauthUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ManageMirrorSyncUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::MultideviceInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<
-                     ash::multidevice_setup::MultiDeviceSetupDialogUIConfig>());
+      std::make_unique<
+          ArcGraphicsTracingUIConfig<ArcGraphicsTracingMode::kOverview>>());
+  map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
+  map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
+  map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<CertificateManagerDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
+  map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
+  map.AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
+  map.AddWebUIConfig(std::make_unique<CrostiniUpgraderUIConfig>());
+  map.AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
+  map.AddWebUIConfig(MakeDiagnosticsUIConfig());
+  map.AddWebUIConfig(std::make_unique<DriveInternalsUIConfig>());
+  map.AddWebUIConfig(MakeEcheAppUIConfig());
+  map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<FaceMLAppUIConfig, FaceMLAppUI,
+                                      ChromeFaceMLUserProvider>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
+                                      ChromeFilesInternalsUIDelegate>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<file_manager::FileManagerUIConfig,
+                                      file_manager::FileManagerUI,
+                                      ChromeFileManagerUIDelegate>());
+  map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithArgs<GuestOSInstallerUIConfig, GuestOSInstallerUI>(
+          base::BindRepeating(&guest_os::InstallerDelegateFactory)));
+  map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,
+                                      ChromeHelpAppUIDelegate>());
+  map.AddWebUIConfig(std::make_unique<HumanPresenceInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<InternetConfigDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<InternetDetailDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());
+  map.AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
+  map.AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,
+                                      ChromeMediaAppUIDelegate>());
+  map.AddWebUIConfig(std::make_unique<MultideviceInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<multidevice_setup::MultiDeviceSetupDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<NearbyInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<nearby_share::NearbyShareDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NetworkUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NotificationTesterUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
+      std::make_unique<office_fallback::OfficeFallbackUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OobeUIConfig>());
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::OSFeedbackUIConfig, ash::OSFeedbackUI,
-                          ash::ChromeOsFeedbackDelegate>());
-  map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());
+      MakeComponentConfigWithDelegate<OSFeedbackUIConfig, OSFeedbackUI,
+                                      ChromeOsFeedbackDelegate>());
+  map.AddWebUIConfig(std::make_unique<settings::OSSettingsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ParentAccessUIConfig>());
+  map.AddWebUIConfig(std::make_unique<PasswordChangeUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::reporting::EnterpriseReportingUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::SlowUIConfig>());
+      std::make_unique<reporting::EnterpriseReportingUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::smb_dialog::SmbCredentialsDialogUIConfig>());
+      std::make_unique<personalization_app::PersonalizationAppUIConfig>(
+          base::BindRepeating(
+              personalization_app::CreatePersonalizationAppUI)));
+  map.AddWebUIConfig(std::make_unique<PowerUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::smb_dialog::SmbShareDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::SysInternalsUIConfig>());
+      std::make_unique<printing::printing_manager::PrintManagementUIConfig>(
+          base::BindRepeating(
+              &printing::print_management::PrintingManagerFactory::
+                  CreatePrintManagementUIController)));
+  map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
+  map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::SystemExtensionsInternalsUIConfig>());
+      MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
+                                      ChromeScanningAppDelegate>());
+  map.AddWebUIConfig(std::make_unique<SetTimeUIConfig>());
+  map.AddWebUIConfig(MakeComponentConfigWithDelegate<
+                     ShimlessRMADialogUIConfig, ShimlessRMADialogUI,
+                     shimless_rma::ChromeShimlessRmaDelegate>());
+  map.AddWebUIConfig(std::make_unique<ShortcutCustomizationAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SlowTraceControllerConfig>());
+  map.AddWebUIConfig(std::make_unique<SlowUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::UrgentPasswordExpiryNotificationUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::VcTrayTesterUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::VmUIConfig>());
+      std::make_unique<smb_dialog::SmbCredentialsDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SystemExtensionsInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TrustedProjectorUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
+  map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());
+  map.AddWebUIConfig(std::make_unique<VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
-  map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
 #if !defined(USE_REAL_DBUS_CLIENTS)
-  map.AddWebUIConfig(std::make_unique<ash::DeviceEmulatorUIConfig>());
+  map.AddWebUIConfig(std::make_unique<DeviceEmulatorUIConfig>());
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}  // namespace
+}  // namespace ash
 
 void RegisterChromeOSChromeWebUIConfigs() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  RegisterAshChromeWebUIConfigs();
+  ash::RegisterAshChromeWebUIConfigs();
 #endif
 }

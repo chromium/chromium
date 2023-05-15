@@ -48,6 +48,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
@@ -418,7 +419,7 @@ class FakeChromeShelfItemFactory : public ChromeShelfItemFactory {
 
  private:
   Profile* GetPrimaryProfile() override { return profile_; }
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 // Simulates selection of the shelf item.
@@ -1289,13 +1290,16 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::unique_ptr<ash::ShelfModel> model_;
 
   // |item_delegate_manager_| owns |test_controller_|.
-  ash::ShelfItemDelegate* test_controller_ = nullptr;
+  raw_ptr<ash::ShelfItemDelegate, ExperimentalAsh> test_controller_ = nullptr;
 
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
+      nullptr;
 
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, ExperimentalAsh> extension_service_ =
+      nullptr;
 
-  app_list::AppListSyncableService* app_list_syncable_service_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_ = nullptr;
 
  private:
   TestBrowserWindow* CreateTestBrowserWindowAura() {
@@ -1438,9 +1442,9 @@ class ChromeShelfControllerLacrosPrimaryTest
  private:
   base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
-  StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item_ =
-      nullptr;
-  apps::AppServiceProxy* proxy_ = nullptr;
+  raw_ptr<StandaloneBrowserExtensionAppShelfItemController, ExperimentalAsh>
+      chrome_app_shelf_item_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
 };
 
 // A V1 windowed application.
@@ -1508,7 +1512,7 @@ class V2App {
   // The app window which represents the application. Note that the window
   // deletes itself asynchronously after window_->GetBaseWindow()->Close() gets
   // called.
-  extensions::AppWindow* window_;
+  raw_ptr<extensions::AppWindow, ExperimentalAsh> window_;
 };
 
 // The testing framework to test multi profile scenarios.
@@ -2427,6 +2431,17 @@ TEST_F(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
 
 // Test the V1 app interaction flow: run it, pin it, close it, unpin it.
 TEST_F(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
+  // Set the app type of extension1_ to a chrome app, as the default unknown app
+  // type is not allowed to be pinned.
+  std::vector<apps::AppPtr> apps;
+  apps::AppPtr app =
+      std::make_unique<apps::App>(apps::AppType::kChromeApp, extension1_->id());
+  apps.push_back(std::move(app));
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .OnApps(std::move(apps), apps::AppType::kChromeApp,
+              /*should_notify_initialized=*/false);
+
   InitShelfController();
 
   // The model should only contain the browser shortcut.

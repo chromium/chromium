@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/win/mf_helpers.h"
@@ -101,7 +102,7 @@ class MediaFoundationSimpleCdmPromise : public SimpleCdmPromise {
   }
 
  private:
-  PromiseState* promise_state_ = nullptr;
+  raw_ptr<PromiseState> promise_state_ = nullptr;
 };
 
 class MediaFoundationCdmSessionPromise : public NewSessionCdmPromise {
@@ -144,7 +145,7 @@ class MediaFoundationCdmSessionPromise : public NewSessionCdmPromise {
   }
 
  private:
-  PromiseState* promise_state_ = nullptr;
+  raw_ptr<PromiseState> promise_state_ = nullptr;
   SessionIdCB session_created_cb_;
 };
 
@@ -265,7 +266,7 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
   for (UINT i = 0; i < key_status_count; ++i) {
     key_status_array[i].cbKeyId = keys_info_[i]->key_id.size();
     key_status_array[i].pbKeyId = static_cast<BYTE*>(
-        CoTaskMemAlloc(sizeof(keys_info_[i]->key_id.size())));
+        CoTaskMemAlloc(keys_info_[i]->key_id.size() * sizeof(uint8_t)));
     if (key_status_array[i].pbKeyId == nullptr) {
       return E_OUTOFMEMORY;
     }

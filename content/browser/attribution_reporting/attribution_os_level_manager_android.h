@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/common/content_export.h"
 
@@ -24,26 +23,6 @@ namespace content {
 class CONTENT_EXPORT AttributionOsLevelManagerAndroid
     : public AttributionOsLevelManager {
  public:
-  class CONTENT_EXPORT ScopedOsSupportForTesting {
-   public:
-    explicit ScopedOsSupportForTesting(attribution_reporting::mojom::OsSupport);
-    ~ScopedOsSupportForTesting();
-
-    ScopedOsSupportForTesting(const ScopedOsSupportForTesting&) = delete;
-    ScopedOsSupportForTesting& operator=(const ScopedOsSupportForTesting&) =
-        delete;
-
-    ScopedOsSupportForTesting(ScopedOsSupportForTesting&&) = delete;
-    ScopedOsSupportForTesting& operator=(ScopedOsSupportForTesting&&) = delete;
-
-   private:
-    const attribution_reporting::mojom::OsSupport previous_;
-  };
-
-  // Returns whether OS-level attribution is enabled. `kDisabled` is returned
-  // before the result is returned from JNI.
-  static attribution_reporting::mojom::OsSupport GetOsSupport();
-
   AttributionOsLevelManagerAndroid();
   ~AttributionOsLevelManagerAndroid() override;
 
@@ -73,8 +52,6 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
   void OnRegistrationCompleted(JNIEnv* env, jint request_id, bool success);
 
  private:
-  void InitializeOsSupport() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   base::flat_map<int, base::OnceClosure> pending_data_deletion_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

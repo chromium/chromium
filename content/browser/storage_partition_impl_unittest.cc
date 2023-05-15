@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -52,6 +53,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_observer.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
@@ -1833,17 +1835,31 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager);
+
+  base::Time source_time;
+  base::RunLoop run_loop1;
+  ON_CALL(observer, OnSourceHandled)
+      .WillByDefault(
+          testing::DoAll(testing::SaveArg<1>(&source_time),
+                         base::test::RunClosure(run_loop1.QuitClosure())));
+
   attribution_manager->HandleSource(source, GlobalRenderFrameHostId());
   attribution_manager->HandleTrigger(DefaultTrigger(),
                                      GlobalRenderFrameHostId());
+  run_loop1.Run();
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop2;
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
       blink::StorageKey::CreateFirstParty(
           source.common_info().reporting_origin()),
-      now, now, run_loop.QuitClosure());
-  run_loop.Run();
+      now, source_time, run_loop2.QuitClosure());
+  run_loop2.Run();
 
   EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
@@ -1904,6 +1920,17 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
       browser_context()->GetDefaultStoragePartition());
 
   AttributionManager* attribution_manager = partition->GetAttributionManager();
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager);
+
+  base::RunLoop run_loop1;
+  base::Time source_time;
+  ON_CALL(observer, OnSourceHandled)
+      .WillByDefault(
+          testing::DoAll(testing::SaveArg<1>(&source_time),
+                         base::test::RunClosure(run_loop1.QuitClosure())));
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 5; i++) {
@@ -1927,11 +1954,12 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                            .Build(),
                                        GlobalRenderFrameHostId());
   }
+  run_loop1.Run();
 
   EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager).size());
 
   // Only those with a matching reporting origin should be deleted.
-  base::RunLoop run_loop;
+  base::RunLoop run_loop2;
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kPreserve);
   StoragePartition::StorageKeyPolicyMatcherFunction func =
@@ -1946,9 +1974,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
       });
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
-      filter_builder.get(), func, nullptr, false, now, now,
-      run_loop.QuitClosure());
-  run_loop.Run();
+      filter_builder.get(), func, nullptr, false, now, source_time,
+      run_loop2.QuitClosure());
+  run_loop2.Run();
   EXPECT_EQ(4u, GetAttributionReportsForTesting(attribution_manager).size());
 }
 

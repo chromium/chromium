@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthAttemptConsumer {
   //   * `OnUserAuthSuccess`
   virtual void OnUserAuthAttemptConfirmed(
       AuthHubConnector* connector,
-      base::raw_ptr<AuthFactorStatusConsumer>& out_consumer) = 0;
+      raw_ptr<AuthFactorStatusConsumer>& out_consumer) = 0;
 
   // AuthHub would call this method in edge-case scenario when authentication
   // was requested for account that is not present on the device.

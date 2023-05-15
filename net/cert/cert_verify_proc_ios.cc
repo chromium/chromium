@@ -20,6 +20,7 @@
 #include "net/cert/known_roots.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
 
 using base::ScopedCFTypeRef;
@@ -144,12 +145,10 @@ OSStatus CreateTrustPolicies(ScopedCFTypeRef<CFArrayRef>* policies) {
   if (!local_policies)
     return errSecAllocate;
 
-  SecPolicyRef ssl_policy = SecPolicyCreateBasicX509();
+  base::ScopedCFTypeRef<SecPolicyRef> ssl_policy(SecPolicyCreateBasicX509());
   CFArrayAppendValue(local_policies, ssl_policy);
-  CFRelease(ssl_policy);
-  ssl_policy = SecPolicyCreateSSL(true, nullptr);
+  ssl_policy.reset(SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
   CFArrayAppendValue(local_policies, ssl_policy);
-  CFRelease(ssl_policy);
 
   policies->reset(local_policies.release());
   return noErr;
@@ -505,6 +504,13 @@ int CertVerifyProcIOS::VerifyInternal(
 
   if (IsCertStatusError(verify_result->cert_status))
     return MapCertStatusToNetError(verify_result->cert_status);
+
+  if (TestRootCerts::HasInstance() &&
+      !verify_result->verified_cert->intermediate_buffers().empty() &&
+      TestRootCerts::GetInstance()->IsKnownRoot(x509_util::CryptoBufferAsSpan(
+          verify_result->verified_cert->intermediate_buffers().back().get()))) {
+    verify_result->is_issued_by_known_root = true;
+  }
 
   LogNameNormalizationMetrics(".IOS", verify_result->verified_cert.get(),
                               verify_result->is_issued_by_known_root);

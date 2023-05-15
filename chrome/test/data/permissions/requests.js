@@ -5,3 +5,18 @@
 function requestNotification() {
   Notification.requestPermission();
 }
+
+async function requestCamera() {
+  var constraints = {video: true};
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+}
+
+async function requestMicrophone() {
+  var constraints = {audio: true};
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+}
+
+async function requestCameraAndMicrophone() {
+  var constraints = {audio: true, video: true};
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+}

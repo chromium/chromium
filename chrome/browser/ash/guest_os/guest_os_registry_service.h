@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -239,6 +240,11 @@ class GuestOsRegistryService : public KeyedService {
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
+  // Apply a coloured badge to the app icon if Crostini multi-container
+  // feature is enabled.
+  void ApplyContainerBadge(const absl::optional<std::string>& app_id,
+                           gfx::ImageSkia* image_skia);
+
   // Returns the AppId that will be used to refer to the given GuestOs
   // application.
   static std::string GenerateAppId(const std::string& desktop_file_id,
@@ -259,11 +265,16 @@ class GuestOsRegistryService : public KeyedService {
   // Removes all the icons installed for an application.
   void RemoveAppData(const std::string& app_id);
 
-  // Apply container-specific badging to `icon`. This is run after the generic
-  // icon loading code.
-  void ApplyContainerBadge(SkColor badge_color,
-                           apps::LoadIconCallback callback,
-                           apps::IconValuePtr icon);
+  // Apply container-specific badging to `icon_out`. This is used by
+  // ApplyContainerBadge.
+  void ApplyContainerBadgeForImageSkiaIcon(SkColor badge_color,
+                                           gfx::ImageSkia* icon_out);
+
+  // Apply container-specific badging to `icon` before running the callback.
+  // This is run after the generic icon loading code.
+  void ApplyContainerBadgeWithCallback(SkColor badge_color,
+                                       apps::LoadIconCallback callback,
+                                       apps::IconValuePtr icon);
 
   // Call the callbacks |active_icon_requests_| for |app_id|.
   void InvokeActiveIconCallbacks(std::string app_id,
@@ -288,8 +299,8 @@ class GuestOsRegistryService : public KeyedService {
                            std::string png_icon_content);
 
   // Owned by the Profile.
-  Profile* const profile_;
-  PrefService* const prefs_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // Keeps root folder where Crostini app icons for different scale factors are
   // stored.
@@ -297,7 +308,7 @@ class GuestOsRegistryService : public KeyedService {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
 
   // Keeps record for icon request to avoid duplication. Each app may contain
   // several requests for different scale factors. Scale factor is defined by

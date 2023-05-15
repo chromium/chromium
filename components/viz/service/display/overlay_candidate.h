@@ -132,7 +132,29 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
       gfx::ProtectedVideoType::kClear;
 
 #if BUILDFLAG(IS_WIN)
-  bool maybe_video_fullscreen_letterboxing = false;
+  // Indication of the overlay to be detected as possible full screen
+  // letterboxing.
+  // During video display, sometimes the video image does not have the same
+  // shape or Picture Aspect Ratio as the display area. Letterboxing is the
+  // process of scaling a widescreen image to fit a specific display, like 4:3.
+  // The reverse case, scaling a 4:3 image to fit a widescreen display, is
+  // sometimes called pillarboxing. However here letterboxing is also used in a
+  // general sense, to mean scaling a video image to fit any given display area.
+  // Check out more information from
+  // https://learn.microsoft.com/en-us/windows/win32/medfound/picture-aspect-ratio#letterboxing.
+  // Two conditions to make possible_video_fullscreen_letterboxing be true:
+  // 1. Current page is in full screen mode which is decided by
+  // AggregatedFrame::page_fullscreen_mode.
+  // 2. IsPossibleFullScreenLetterboxing helper from
+  // DCLayerOverlayProcessor returns true, which basically means the draw
+  // quad beneath the overlay quad touches two sides of the screen while
+  // starting at display origin (0, 0). Then before swap chain presentation and
+  // with possible_video_fullscreen_letterboxing be true, some necessary
+  // adjustment is done in order to make the video be equidistant from the sides
+  // off the screen. That is, it needs to be CENTERED for the sides that are not
+  // touching the screen. At this point, Desktop Window Manager(DWM) considers
+  // the video as full screen letterboxing.
+  bool possible_video_fullscreen_letterboxing = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -160,7 +182,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is an estimate when 'EstimateOccludedDamage' function is used.
   float damage_area_estimate = 0.f;
 
-  // Damage in buffer space (extents bound by |resource_size_in_pixels|).
+  // Damage in viz Display space, the same space as |display_rect|;
   gfx::RectF damage_rect;
 
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;

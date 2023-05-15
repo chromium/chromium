@@ -82,6 +82,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void RefreshInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                 bool restore_slot,
                                 HermesResponseCallback callback) override;
+  void RefreshSmdxProfiles(const dbus::ObjectPath& euicc_path,
+                           const std::string& activation_code,
+                           bool restore_slot,
+                           RefreshSmdxProfilesCallback callback) override;
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
                               const std::string& root_smds,
                               HermesResponseCallback callback) override;
@@ -106,6 +110,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                                HermesResponseCallback callback);
   void DoRequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                   HermesResponseCallback callback);
+  void DoRefreshSmdxProfiles(const dbus::ObjectPath& euicc_path,
+                             const std::string& activation_code,
+                             RefreshSmdxProfilesCallback callback);
   void DoRequestPendingProfiles(const dbus::ObjectPath& euicc_path,
                                 HermesResponseCallback callback);
   void DoUninstallProfile(const dbus::ObjectPath& euicc_path,

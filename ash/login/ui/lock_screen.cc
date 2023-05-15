@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ambient/ambient_controller.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_debug_view.h"
@@ -25,7 +26,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/capture_controller.h"
@@ -39,16 +40,16 @@ LockScreen* instance_ = nullptr;
 
 // Record screen type for metrics.
 void RecordScreenType(LockScreen::ScreenType type) {
-  AuthMetricsRecorder::AuthenticationSurface screen_type;
+  AuthEventsRecorder::AuthenticationSurface screen_type;
   switch (type) {
     case LockScreen::ScreenType::kLogin:
-      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLogin;
+      screen_type = AuthEventsRecorder::AuthenticationSurface::kLogin;
       break;
     case LockScreen::ScreenType::kLock:
-      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLock;
+      screen_type = AuthEventsRecorder::AuthenticationSurface::kLock;
       break;
   }
-  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
+  AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
 }
 
 }  // namespace
@@ -151,6 +152,17 @@ void LockScreen::Show(ScreenType type) {
   Shell::Get()->wallpaper_controller()->AddFirstWallpaperAnimationEndCallback(
       base::BindOnce(&LockScreen::ShowWidgetUponWallpaperReady),
       instance_->widget_->GetNativeView());
+
+  // Notify the ambient controller that the login/lock screen has been created
+  // to make sure it can start showing the screensaver when the preconditions
+  // are met. This is needed as we cannot rely on the
+  // SessionManagerObserver::OnLoginOrLockScreenVisible callback in ash, as the
+  // DEPS rules don't allow depending on SessionManager in /ash. Note:
+  // AmbientController is created in shell and has the same lifetime as shell so
+  // should out-live the `LockScreen`.
+  if (Shell::Get()->ambient_controller()) {
+    Shell::Get()->ambient_controller()->OnLoginOrLockScreenCreated();
+  }
 }
 
 // static

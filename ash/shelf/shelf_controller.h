@@ -14,6 +14,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -93,7 +94,7 @@ class ASH_EXPORT ShelfController : public SessionObserver,
 
   // Observed to update notification badging on shelf items. Also used to get
   // initial notification badge information when shelf items are added.
-  apps::AppRegistryCache* cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> cache_ = nullptr;
 };
 
 }  // namespace ash

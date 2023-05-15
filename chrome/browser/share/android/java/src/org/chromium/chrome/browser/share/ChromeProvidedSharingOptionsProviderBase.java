@@ -253,6 +253,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
             mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
+            maybeAddCopyFirstPartyOption();
             maybeAddLongScreenshotFirstPartyOption();
             maybeAddPrintFirstPartyOption();
             maybeAddSendTabToSelfFirstPartyOption();
@@ -268,7 +269,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             maybeAddSendTabToSelfFirstPartyOption();
             maybeAddQrCodeFirstPartyOption();
             maybeAddPrintFirstPartyOption();
-            mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
+            maybeAddDownloadImageFirstPartyOption();
         }
     }
 
@@ -321,6 +322,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
+    }
+
+    protected void maybeAddDownloadImageFirstPartyOption() {
+        mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {

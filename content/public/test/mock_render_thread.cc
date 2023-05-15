@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/render_message_filter.mojom.h"
@@ -22,6 +21,7 @@
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -327,9 +327,9 @@ void MockRenderThread::ReleaseAllWebViews() {
   page_broadcasts_.clear();
 }
 
-attribution_reporting::mojom::OsSupport
-MockRenderThread::GetOsSupportForAttributionReporting() {
-  return attribution_reporting::mojom::OsSupport::kDisabled;
+network::mojom::AttributionSupport
+MockRenderThread::GetAttributionReportingSupport() {
+  return network::mojom::AttributionSupport::kWeb;
 }
 
 }  // namespace content

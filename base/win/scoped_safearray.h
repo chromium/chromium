@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/variant_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -106,7 +107,9 @@ class BASE_EXPORT ScopedSafearray {
       array_size_ = 0U;
     }
 
-    SAFEARRAY* safearray_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION SAFEARRAY* safearray_ = nullptr;
     VARTYPE vartype_ = VT_EMPTY;
     pointer array_ = nullptr;
     size_t array_size_ = 0U;
@@ -218,7 +221,9 @@ class BASE_EXPORT ScopedSafearray {
   bool operator!=(const ScopedSafearray& safearray2) const = delete;
 
  private:
-  SAFEARRAY* safearray_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION SAFEARRAY* safearray_;
 };
 
 }  // namespace win

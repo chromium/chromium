@@ -71,9 +71,11 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   void MessageTimeout();
   void MessageDeclined();
   void AutoDecline();
+  virtual bool Never();
 
   // Updates |profile_| |type| value to |value|.
   void SetProfileInfo(const ServerFieldType& type, const std::u16string& value);
+  void SetProfile(AutofillProfile* profile);
 
   const AutofillProfile* GetProfile() const;
   const AutofillProfile* GetOriginalProfile() const;

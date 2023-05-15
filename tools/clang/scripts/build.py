@@ -577,6 +577,9 @@ def main():
   parser.add_argument('--with-android', type=gn_arg, nargs='?', const=True,
                       help='build the Android ASan runtime (linux only)',
                       default=sys.platform.startswith('linux'))
+  parser.add_argument('--pic',
+                      action='store_true',
+                      help='Uses PIC when building LLVM')
   parser.add_argument('--with-fuchsia',
                       type=gn_arg,
                       nargs='?',
@@ -682,10 +685,13 @@ def main():
   cxxflags = []
   ldflags = []
 
-  targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
+  targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
   projects = 'clang;lld;clang-tools-extra'
   if args.bolt:
     projects += ';bolt'
+
+  pic_default = sys.platform == 'win32'
+  pic_mode = 'ON' if args.pic or pic_default else 'OFF'
 
   base_cmake_args = [
       '-GNinja',
@@ -694,8 +700,7 @@ def main():
       '-DLLVM_ENABLE_PROJECTS=' + projects,
       '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
-      # PIC needed for Rust build (links LLVM into shared object)
-      '-DLLVM_ENABLE_PIC=ON',
+      f'-DLLVM_ENABLE_PIC={pic_mode}',
       '-DLLVM_ENABLE_UNWIND_TABLES=OFF',
       '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',
@@ -1048,6 +1053,9 @@ def main():
     elif platform.machine() == 'riscv64':
       cmake_args.append(
           '-DLLVM_DEFAULT_TARGET_TRIPLE=riscv64-unknown-linux-gnu')
+    elif platform.machine() == 'loongarch64':
+      cmake_args.append(
+          '-DLLVM_DEFAULT_TARGET_TRIPLE=loongarch64-unknown-linux-gnu')
     else:
       cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu')
     cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')

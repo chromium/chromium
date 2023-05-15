@@ -135,7 +135,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   bool software_fallback_used_ = false;
 
   // Used to record UMA values.
-  bool legacy_hardware_video_decoder_path_initialized_ = false;
   bool mojo_video_decoder_path_initialized_ = false;
 
   // Used for UMA stats; not frame-accurate.

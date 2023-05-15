@@ -50,7 +50,8 @@ chromium-metrics-reviews@google.com.
     MobileOmniboxUse. For single tab card: is recorded every time when user
     clicks on the single tab card. For tab switcher button: is recorded every
     time when user clicks on the tab switcher button. For profile button: is
-    recorded when user clicks on the profile button. The histogram is logged on
+    recorded when user clicks on the profile button. For menu button: is
+    recorded when user clicks on the menu button. The histogram is logged on
     Start surface and is Android-only.
   </summary>
 </histogram>
@@ -66,6 +67,17 @@ chromium-metrics-reviews@google.com.
     background to foreground, or via back operations from a Tab etc. The
     histogram doesn't include the cases of showing overview page due to the
     transition between Start surface and Tab switcher.
+  </summary>
+</histogram>
+
+<histogram name="StartSurface.SpareTab.TimeBetweenShowAndCreate" units="ms"
+    expires_after="2023-09-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>hanxi@chromium.org</owner>
+  <summary>
+    Records the time between showing the start surface and starting the spare
+    tab creation. It does not include the time spent creating the spare tab.
+    Every time a spare tab is created for the start surface, this is recorded.
   </summary>
 </histogram>
 

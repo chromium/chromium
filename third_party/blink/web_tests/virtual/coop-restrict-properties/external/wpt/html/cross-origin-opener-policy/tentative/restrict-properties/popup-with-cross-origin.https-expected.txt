@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Cross-origin popup with empty coop assert_false: Popup is closed from opener? expected false got true
-FAIL Cross-origin popup with coop unsafe-none assert_false: Popup is closed from opener? expected false got true
-PASS Cross-origin popup with coop same-origin
-PASS Cross-origin popup with coop same-origin-allow-popups
-FAIL Cross-origin popup with coop restrict-properties assert_false: Popup is closed from opener? expected false got true
-Harness: the test ran to completion.
-

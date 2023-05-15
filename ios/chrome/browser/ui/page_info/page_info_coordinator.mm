@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 

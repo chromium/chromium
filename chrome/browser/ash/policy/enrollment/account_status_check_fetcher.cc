@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -95,7 +95,7 @@ AccountStatusCheckFetcher::AccountStatusCheckFetcher(
     : email_(canonicalized_email),
       service_(service),
       url_loader_factory_(url_loader_factory),
-      random_device_id_(base::GenerateGUID()) {}
+      random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 AccountStatusCheckFetcher::~AccountStatusCheckFetcher() = default;
 

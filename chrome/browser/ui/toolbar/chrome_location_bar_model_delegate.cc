@@ -38,6 +38,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -184,13 +185,17 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   GURL url;
   GetURL(&url);
 
-  if (url.SchemeIs(content::kChromeUIScheme))
+  if (url.SchemeIs(content::kChromeUIScheme)) {
     return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
                ? &omnibox::kProductChromeRefreshIcon
                : &omnibox::kProductIcon;
+  }
 
-  if (url.SchemeIs(extensions::kExtensionScheme))
-    return &omnibox::kExtensionAppIcon;
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
+               ? &vector_icons::kExtensionChromeRefreshIcon
+               : &omnibox::kExtensionAppIcon;
+  }
 #endif
 
   return nullptr;

@@ -45,12 +45,7 @@ FAIL .flexbox 11 assert_equals:
       <input type="text" class="test3" data-expected-height="140">
     </div>
 height expected 140 but got 100
-FAIL .flexbox 12 assert_equals: 
-<div class="flexbox">
-      <div class="spacer"></div>
-      <input type="range" class="test3" data-expected-height="140">
-    </div>
-height expected 140 but got 100
+PASS .flexbox 12
 FAIL .flexbox 13 assert_equals: 
 <div class="flexbox">
       <div class="spacer"></div>

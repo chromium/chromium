@@ -26,6 +26,9 @@ base::LazyInstance<AXPlatformNode::NativeWindowHandlerCallback>::Leaky
 AXMode AXPlatformNode::ax_mode_;
 
 // static
+bool AXPlatformNode::disallow_ax_mode_changes_;
+
+// static
 gfx::NativeViewAccessible AXPlatformNode::popup_focus_override_ = nullptr;
 
 // static
@@ -48,6 +51,11 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
 void AXPlatformNode::RegisterNativeWindowHandler(
     AXPlatformNode::NativeWindowHandlerCallback handler) {
   native_window_handler_.Get() = handler;
+}
+
+// static
+void AXPlatformNode::DisallowAXModeChanges() {
+  disallow_ax_mode_changes_ = true;
 }
 
 AXPlatformNode::AXPlatformNode() = default;
@@ -94,6 +102,10 @@ void AXPlatformNode::RemoveAXModeObserver(AXModeObserver* observer) {
 
 // static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
+  if (disallow_ax_mode_changes_) {
+    return;
+  }
+
   AXMode new_ax_mode(ax_mode_);
   new_ax_mode |= mode_flags;
 

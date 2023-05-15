@@ -26,7 +26,7 @@ dev_ui_components_resources.grd.
       <part file="security_interstitials_resources.grdp" />
       <part file="translate_resources.grdp" />
       <part file="version_ui_resources.grdp" />
-      <part file="web_app_default_offline.grdp" />
+      <part file="web_app_error_page.grdp" />
 
       <if expr="is_android">
         <part file="android_system_error_page_resources.grdp" />

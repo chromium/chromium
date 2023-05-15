@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"
@@ -197,7 +198,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
 
  protected:
-  DisplayInfoProvider* provider_;
+  raw_ptr<DisplayInfoProvider, ExperimentalAsh> provider_;
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {

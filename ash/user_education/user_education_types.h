@@ -7,13 +7,38 @@
 
 namespace ash {
 
-// Each value uniquely identifies an Ash feature tutorial.
+// Each value uniquely identifies a help bubble. Used to gate creation of new
+// help bubbles to avoid spamming the user.
+enum class HelpBubbleId {
+  kMinValue,
+  kTest = kMinValue,
+  kWelcomeTourExploreApp,
+  kWelcomeTourHomeButton,
+  kWelcomeTourSearchBox,
+  kWelcomeTourSettingsApp,
+  kWelcomeTourShelf,
+  kWelcomeTourStatusArea,
+  kMaxValue = kWelcomeTourStatusArea,
+};
+
+// Each value uniquely identifies a ping. Used to gate creation of new pings to
+// avoid spamming the user.
+enum class PingId {
+  kMinValue,
+  kTest1 = kMinValue,
+  kTest2,
+  kMaxValue = kTest2,
+};
+
+// Each value uniquely identifies a feature tutorial. Used to gate creation of
+// new feature tutorials to avoid spamming the user.
 enum class TutorialId {
   kMinValue,
   kCaptureModeTourPrototype1 = kMinValue,
   kCaptureModeTourPrototype2,
   kHoldingSpaceTourPrototype1,
   kHoldingSpaceTourPrototype2,
+  kTest,
   kWelcomeTourPrototype1,
   kMaxValue = kWelcomeTourPrototype1,
 };

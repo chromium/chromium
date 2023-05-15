@@ -51,6 +51,9 @@ int CachingCertVerifier::Verify(const CertVerifier::RequestParams& params,
   }
 
   base::Time start_time = base::Time::Now();
+  // Unretained is safe here as `verifier_` is owned by `this`. If `this` is
+  // deleted, `verifier_' will also be deleted and guarantees that any
+  // outstanding callbacks won't be called. (See CertVerifier::Verify comments.)
   CompletionOnceCallback caching_callback = base::BindOnce(
       &CachingCertVerifier::OnRequestFinished, base::Unretained(this),
       config_id_, params, start_time, std::move(callback), verify_result);

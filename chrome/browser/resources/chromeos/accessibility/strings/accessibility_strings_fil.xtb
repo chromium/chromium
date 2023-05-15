@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="100506692671054486">walang nakaraang command</translation>
 <translation id="1009046985747440431">Pindutin ang pataas o pababang arrow para mag-navigate; pindutin ang enter para i-activate.</translation>
 <translation id="1011903154582639569">Maghanap ng key, pagkatapos ay iangat para mag-type</translation>
 <translation id="1012173283529841972">Item sa listahan</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavender Blush</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3962990492275676168">Magsimulang magbasa mula sa kasalukuyang lokasyon</translation>
+<translation id="397094149579293440">walang napiling text</translation>
 <translation id="3970951409746498040">Sandy Brown</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Moccasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Walang nakaraang heading sa antas 1</translation>
 <translation id="4787577491510559358">Ianunsyo ang pag-format para sa kasalukuyang item</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">walang naka-focus na field ng text</translation>
 <translation id="4804818685124855865">I-disconnect</translation>
 <translation id="481165870889056555">Ianunsyo ang pamagat ng kasalukuyang page</translation>
 <translation id="4815668758102003883">Pale Turquoise</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Internal na link</translation>
 <translation id="4909019435900810068">Bumalik nang isang salita</translation>
 <translation id="4911349081560453449">Walang nakaraang checkbox</translation>
+<translation id="4919186071145887492">Hindi <ph name="COMMAND" />, subukan ulit</translation>
 <translation id="492295894462528572">Foreword</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4953585991029886728">I-edit ang text</translation>
+<translation id="4964701498510730546">walang laman ang field ng text</translation>
 <translation id="4973717656530883744">Min <ph name="X" /></translation>
 <translation id="4974612477719259470">Walang nakaraang button</translation>
 <translation id="4979404613699303341">Nakaraang button</translation>
+<translation id="4981239367072766915">hindi matukoy na input</translation>
 <translation id="4982917827052020884">Magsimula tayo sa ilang key na regular mong gagamitin. Magagamit ang Control key para ihinto ang anumang kasalukuyang pagsasalita. Hanapin ang Control key sa kaliwang sulok sa ibaba ng iyong keyboard. Para magpatuloy, pindutin ang Control key.</translation>
 <translation id="4983588134362688868">Pumunta sa itaas ng page</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, window</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Ianunsyo ang kasalukuyang status ng baterya</translation>
 <translation id="4997282455736854877">Pinili ang <ph name="NAME" />, radio button</translation>
 <translation id="5012724933919010465">Pinili ang <ph name="NAME" />, radio button ng item sa menu</translation>
+<translation id="5014131807708055994">Hindi <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">I-enable ang pag-log ng speech</translation>
 <translation id="5041394372352067729">Ilipat ang display ng braille sa itaas ng page</translation>
 <translation id="5042770794184672516">Lakasan ang volume ng speech</translation>

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -171,7 +172,7 @@ class ConnectionManagerImplTest : public testing::Test {
                                         expected_count);
   }
 
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
   multidevice::RemoteDeviceRef test_remote_device_;
   multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
@@ -179,7 +180,7 @@ class ConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<FakeSecureChannelClient> fake_secure_channel_client_;
   std::unique_ptr<ConnectionManagerImpl> connection_manager_;
   FakeObserver fake_observer_;
-  FakeConnectionAttempt* fake_connection_attempt_;
+  raw_ptr<FakeConnectionAttempt, ExperimentalAsh> fake_connection_attempt_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   base::HistogramTester histogram_tester_;
 };

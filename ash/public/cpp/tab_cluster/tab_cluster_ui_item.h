@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -35,7 +36,7 @@ class ASH_PUBLIC_EXPORT TabClusterUIItem {
     // The boundary strength of the cluster.
     double boundary_strength = 0.0;
     // The browser window that holds the tab's contents.
-    aura::Window* browser_window = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> browser_window = nullptr;
   };
 
   TabClusterUIItem();

@@ -122,12 +122,10 @@
 </if>
       <cr-link-row class="hr" id="help" on-click="onHelpClick_"
           label="$i18n{aboutGetHelpUsingChrome}"
-          button-aria-description="$i18n{opensInNewTab}"
           external></cr-link-row>
 <if expr="_google_chrome">
       <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
           hidden="[[!prefs.feedback_allowed.value]]"
-          button-aria-description="$i18n{opensInNewTab}"
           label="$i18n{aboutReportAnIssue}" external></cr-link-row>
       <cr-link-row class="hr" id="getTheMostOutOfChrome"
           on-click="onGetTheMostOutOfChromeClick_"

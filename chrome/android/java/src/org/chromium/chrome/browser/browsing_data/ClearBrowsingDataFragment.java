@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -46,6 +45,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -378,6 +378,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice,
                 CookieOrCacheDeletionChoice.MAX_CHOICE_VALUE);
 
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.CLEAR_BROWSING_DATA_DIALOG,
+                DeleteBrowsingDataAction.MAX_VALUE);
+
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
         @TimePeriod
@@ -421,10 +425,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         Activity activity = getActivity();
 
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
-        if (QuickDeleteController.isQuickDeleteEnabled()) {
-            options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
-                    activity.getString(R.string.clear_browsing_data_tab_period_15_minutes)));
-        }
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
                 activity.getString(R.string.clear_browsing_data_tab_period_hour)));
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,

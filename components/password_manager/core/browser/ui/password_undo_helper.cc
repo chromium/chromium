@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -22,9 +23,9 @@ enum PasswordOperationType {
 template <PasswordOperationType Type>
 class PasswordOperation : public UndoOperation {
  public:
-  PasswordOperation(raw_ptr<PasswordStoreInterface> profile_store,
-                    raw_ptr<PasswordStoreInterface> account_store,
-                    raw_ptr<UndoManager> undo_manager,
+  PasswordOperation(PasswordStoreInterface* profile_store,
+                    PasswordStoreInterface* account_store,
+                    UndoManager* undo_manager,
                     const password_manager::PasswordForm& form)
       : profile_store_(profile_store),
         account_store_(account_store),
@@ -88,9 +89,8 @@ class PasswordOperation : public UndoOperation {
 
 }  // namespace
 
-PasswordUndoHelper::PasswordUndoHelper(
-    raw_ptr<PasswordStoreInterface> profile_store,
-    raw_ptr<PasswordStoreInterface> account_store)
+PasswordUndoHelper::PasswordUndoHelper(PasswordStoreInterface* profile_store,
+                                       PasswordStoreInterface* account_store)
     : profile_store_(profile_store), account_store_(account_store) {}
 
 void PasswordUndoHelper::PasswordRemoved(

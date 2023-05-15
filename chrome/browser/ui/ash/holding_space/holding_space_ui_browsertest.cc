@@ -32,7 +32,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,6 +40,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_locale.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -665,8 +666,8 @@ class HoldingSpaceUiDragAndDropBrowserTest
     return GetStorageLocationFlags() & flag;
   }
 
-  DropSenderView* drop_sender_view_ = nullptr;
-  DropTargetView* drop_target_view_ = nullptr;
+  raw_ptr<DropSenderView, ExperimentalAsh> drop_sender_view_ = nullptr;
+  raw_ptr<DropTargetView, ExperimentalAsh> drop_target_view_ = nullptr;
 };
 
 // Flaky on ChromeOS bots: crbug.com/1338054
@@ -1440,7 +1441,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
           // Swap out the production download manager for the mock.
           context->SetDownloadManagerForTesting(
-              base::WrapUnique(download_manager_));
+              base::WrapUnique(download_manager_.get()));
 
           // Install a new download manager delegate after swapping out the
           // production download manager so it will properly register itself
@@ -1795,7 +1796,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     // Mock `download::DownloadItem::GetGuid()`.
     ON_CALL(*ash_download_item, GetGuid)
         .WillByDefault(testing::ReturnRefOfCopy(
-            base::GUID::GenerateRandomV4().AsLowercaseString()));
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
 
     // Mock `download::DownloadItem::GetId()`.
     ON_CALL(*ash_download_item, GetId).WillByDefault(testing::Invoke([]() {
@@ -1942,7 +1943,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     auto lacros_download_item = crosapi::mojom::DownloadItem::New();
 
     lacros_download_item->guid =
-        base::GUID::GenerateRandomV4().AsLowercaseString();
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
     lacros_download_item->state = state;
     lacros_download_item->full_path = file_path;
     lacros_download_item->target_file_path = target_file_path;
@@ -2037,8 +2038,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
   const DownloadTypeToUse download_type_to_use_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  testing::NiceMock<content::MockDownloadManager>* download_manager_ = nullptr;
-  content::DownloadManagerDelegate* download_manager_delegate_ = nullptr;
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>, ExperimentalAsh>
+      download_manager_ = nullptr;
+  raw_ptr<content::DownloadManagerDelegate, ExperimentalAsh>
+      download_manager_delegate_ = nullptr;
   base::ObserverList<content::DownloadManager::Observer>::Unchecked
       download_manager_observers_;
   testing::NiceMock<MockDownloadControllerClient> download_controller_client_;
@@ -2964,7 +2967,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
   ASSERT_FALSE(test_api().IsShowing());
   ash::CaptureModeTestApi capture_mode_test_api;
   capture_mode_test_api.SetRecordingType(recording_type());
-  capture_mode_test_api.StartForFullscreen(/*for_video=*/true);
+  capture_mode_test_api.StartForRegion(/*for_video=*/true);
+  capture_mode_test_api.SetUserSelectedRegion(gfx::Rect(200, 200));
   capture_mode_test_api.PerformCapture();
   // Record a 100 ms long video.
   base::RunLoop video_recording_time;

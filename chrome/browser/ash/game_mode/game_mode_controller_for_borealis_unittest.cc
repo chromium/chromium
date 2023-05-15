@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -36,7 +37,7 @@ class GameModeControllerForBorealisTest : public GameModeControllerTestBase {
 
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   std::unique_ptr<BorealisFeatures> features_;
-  BorealisServiceFake* borealis_service_fake_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> borealis_service_fake_;
 };
 
 TEST_F(GameModeControllerForBorealisTest,

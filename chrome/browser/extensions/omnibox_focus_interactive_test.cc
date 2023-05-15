@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestFrameNavigationObserver nav_observer(
       web_contents->GetPrimaryMainFrame());
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       web_contents, content::JsReplace("window.location = $1", web_url)));
   nav_observer.Wait();
   EXPECT_EQ(web_url, web_contents->GetLastCommittedURL());
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         subframe, content::JsReplace(kLinkClickingScriptTemplate, target_url)));
     nav_observer.Wait();
   }
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         web_contents,
         content::JsReplace(kLinkClickingScriptTemplate, target_url)));
     nav_observer.Wait();
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
   // The fenced frame navigation should not affect the view focus.
   GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
   content::TestNavigationManager navigation(web_contents, fenced_frame_url);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       web_contents->GetPrimaryMainFrame(),
       content::JsReplace(kAddFencedFrameScript, fenced_frame_url)));
   ASSERT_TRUE(navigation.WaitForNavigationFinished());

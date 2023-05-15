@@ -16,8 +16,11 @@ ProfilingClientParameters::ProfilingClientParameters(
     : channel(channel), process_type(process_type) {}
 
 DispatcherParameters::DispatcherParameters(
-    PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion)
+    PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
+    AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion)
     : poisson_allocation_sampler_inclusion(
-          poisson_allocation_sampler_inclusion) {}
+          poisson_allocation_sampler_inclusion),
+      allocation_trace_recorder_inclusion(allocation_trace_recorder_inclusion) {
+}
 
 }  // namespace memory_system

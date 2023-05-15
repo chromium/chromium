@@ -126,6 +126,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       AuctionRunner* auction,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_key,
+      absl::optional<blink::AdSize> requested_ad_size,
       absl::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,

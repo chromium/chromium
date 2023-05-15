@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 
+#import <set>
+
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -171,7 +174,8 @@ IOSChromePasswordCheckManager::GetInsecureCredentials() const {
   return insecure_credentials_manager_.GetInsecureCredentialEntries();
 }
 
-void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {
+void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   // Observing saved passwords to update possible kNoPasswords state.
   NotifyPasswordCheckStatusChanged();
   if (!std::exchange(is_initialized_, true) && start_check_on_init_) {
@@ -194,6 +198,8 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     browser_state_->GetPrefs()->SetTime(
         password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
         base::Time::Now());
+
+    LogInsecureCredentialsCountMetrics();
   }
   if (state != State::kRunning) {
     // If check was running
@@ -232,4 +238,38 @@ void IOSChromePasswordCheckManager::NotifyPasswordCheckStatusChanged() {
   for (auto& observer : observers_) {
     observer.PasswordCheckStatusChanged(GetPasswordCheckState());
   }
+}
+
+void IOSChromePasswordCheckManager::MuteCredential(
+    const CredentialUIEntry& credential) {
+  insecure_credentials_manager_.MuteCredential(credential);
+}
+
+void IOSChromePasswordCheckManager::UnmuteCredential(
+    const CredentialUIEntry& credential) {
+  insecure_credentials_manager_.UnmuteCredential(credential);
+}
+
+void IOSChromePasswordCheckManager::LogInsecureCredentialsCountMetrics() {
+  std::vector<CredentialUIEntry> insecure_credentials =
+      GetInsecureCredentials();
+  std::set<std::pair<std::u16string, std::u16string>> unique_entries;
+  std::set<std::pair<std::u16string, std::u16string>> unique_unmuted_entries;
+
+  for (const auto& credential : insecure_credentials) {
+    unique_entries.insert({credential.username, credential.password});
+    for (const auto& [insecure_type, insecure_metadata] :
+         credential.password_issues) {
+      if (!insecure_metadata.is_muted.value()) {
+        unique_unmuted_entries.insert(
+            {credential.username, credential.password});
+        break;
+      }
+    }
+  }
+
+  password_manager::LogCountOfInsecureUsernamePasswordPairs(
+      unique_entries.size());
+  password_manager::LogCountOfUnmutedInsecureUsernamePasswordPairs(
+      unique_unmuted_entries.size());
 }

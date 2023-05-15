@@ -11,6 +11,7 @@
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,13 +43,25 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
   ~MockSodaInstaller() override = default;
 
-  MOCK_CONST_METHOD0(GetSodaBinaryPath, base::FilePath());
-  MOCK_CONST_METHOD1(GetLanguagePath, base::FilePath(const std::string&));
-  MOCK_METHOD2(InstallLanguage, void(const std::string&, PrefService*));
-  MOCK_METHOD2(UninstallLanguage, void(const std::string&, PrefService*));
-  MOCK_CONST_METHOD0(GetAvailableLanguages, std::vector<std::string>());
-  MOCK_METHOD1(InstallSoda, void(PrefService*));
-  MOCK_METHOD1(UninstallSoda, void(PrefService*));
+  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
+  MOCK_METHOD(base::FilePath,
+              GetLanguagePath,
+              (const std::string&),
+              (const, override));
+  MOCK_METHOD(void,
+              InstallLanguage,
+              (const std::string&, PrefService*),
+              (override));
+  MOCK_METHOD(void,
+              UninstallLanguage,
+              (const std::string&, PrefService*),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetAvailableLanguages,
+              (),
+              (const, override));
+  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
+  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
 };
 
 const char kEnglishLocale[] = "en-US";
@@ -132,7 +145,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
   speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
  private:
-  Profile* testing_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> testing_profile_ = nullptr;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};

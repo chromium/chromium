@@ -21,6 +21,7 @@ import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
+import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
@@ -106,6 +107,13 @@ struct EnvironmentVariable {
 struct NetworkServiceParams {
   ConnectionType initial_connection_type = CONNECTION_UNKNOWN;
   ConnectionSubtype initial_connection_subtype = SUBTYPE_UNKNOWN;
+
+  // The initial AddressMapOwnerLinux::AddressMap and set of online links for
+  // the AddressMapCacheLinux in the network service.
+  // TODO(crbug.com/1312226): this should be non-optional once the kill switch
+  // is removed.
+  [EnableIf=use_network_interface_change_listener]
+  InitialAddressMap? initial_address_map;
 
   // A set of environment variables that should be set in the network
   // service when starting up.
@@ -365,4 +373,13 @@ interface NetworkService {
   // URLLoaderNetworkServiceObserver::OnDataUseUpdate. By default it's not
   // enabled.
   EnableDataUseUpdates(bool enable);
+};
+
+// Service that tests new process overhead on Android.
+// TODO(http://crbug.com/1395707): Remove this once
+// --disable-features=NetworkServiceInProcess2 is launched stable.
+[EnableIf=is_android, ServiceSandbox=sandbox.mojom.Sandbox.kNetwork]
+interface EmptyNetworkService {
+  // Test function to check if the service is available. Returns same `value`.
+  Ping(int32 value) => (int32 value);
 };

@@ -78,6 +78,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         Resources r = getResources();
         setTitle(String.format(r.getString(R.string.storage_management_activity_label),
                 r.getString(R.string.app_name)));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSiteDataSizeText = (TextView) findViewById(R.id.site_data_storage_size_text);
         mSiteDataSizeText.setText(R.string.storage_management_computing_size);
@@ -160,6 +161,12 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
 
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     @VisibleForTesting

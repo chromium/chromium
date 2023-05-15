@@ -41,6 +41,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 using views::Widget;
 
@@ -633,6 +634,35 @@ TEST_F(AppListBubblePresenterTest, CreatingChildWidgetDoesNotCloseBubble) {
 
   // Bubble stays open.
   EXPECT_TRUE(presenter->IsShowing());
+}
+
+TEST_F(AppListBubblePresenterTest, ClosingBubbleAlsoCloseChildWidget) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Create a new widget parented to the bubble, similar to an app uninstall
+  // confirmation dialog.
+  aura::Window* bubble_window =
+      presenter->bubble_widget_for_test()->GetNativeWindow();
+  std::unique_ptr<views::Widget> widget = TestWidgetBuilder()
+                                              .SetShow(true)
+                                              .SetParent(bubble_window)
+                                              .BuildOwnsNativeWidget();
+
+  // Open the bubble launcher and check the widget is showing.
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(base::Contains(wm::GetTransientChildren(bubble_window),
+                             widget->GetNativeWindow()));
+
+  // Close the bubble and reopen it.
+  presenter->Dismiss();
+  base::RunLoop().RunUntilIdle();
+
+  presenter->Show(GetPrimaryDisplay().id());
+  // The child widget is closed now.
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(base::Contains(wm::GetTransientChildren(bubble_window),
+                              widget->GetNativeWindow()));
 }
 
 // Regression test for https://crbug.com/1285443.

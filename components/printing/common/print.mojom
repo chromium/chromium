@@ -205,6 +205,7 @@ struct ScriptedPrintParams {
 
 // Interface implemented by a class that desires to render print documents for
 // Chrome print preview.
+[EnableIf=is_chromeos_ash]
 interface PrintRenderer {
   // Creates a preview document for print preview using the provided
   // `job_settings`.
@@ -313,8 +314,10 @@ interface PrintRenderFrame {
   // Tells the RenderFrame to initiate print preview for the entire document.
   // Optionally provides a `print_renderer` to render print documents.
   [EnableIf=enable_print_preview]
-  InitiatePrintPreview(pending_associated_remote<PrintRenderer>? print_renderer,
-                       bool has_selection);
+  InitiatePrintPreview(
+      [EnableIf=is_chromeos_ash]
+      pending_associated_remote<PrintRenderer>? print_renderer,
+      bool has_selection);
 
   // Sets PrintPreviewUI interface to notify the browser of preview actions.
   [EnableIf=enable_print_preview]
@@ -399,7 +402,7 @@ interface PrintManagerHost {
   // Tells the browser to set up the print preview requested by the script. It
   // runs a nested run loop in the renderer until print preview for
   // window.print() finishes.
-  [EnableIf=enable_print_preview, Sync]
+  [EnableIf=enable_print_preview]
   SetupScriptedPrintPreview() => ();
 
   // Tells the browser to show the print preview, when the document is

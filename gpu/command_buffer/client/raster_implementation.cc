@@ -260,11 +260,11 @@ class RasterImplementation::PaintOpSerializer {
     DCHECK(!written_bytes_);
   }
 
-  size_t Serialize(const cc::PaintOp& op,
-                   const cc::PaintOp::SerializeOptions& options,
-                   const cc::PaintFlags* flags_to_serialize,
-                   const SkM44& current_ctm,
-                   const SkM44& original_ctm) {
+  size_t SerializeImpl(const cc::PaintOp& op,
+                       const cc::PaintOp::SerializeOptions& options,
+                       const cc::PaintFlags* flags_to_serialize,
+                       const SkM44& current_ctm,
+                       const SkM44& original_ctm) {
     if (!valid())
       return 0;
 
@@ -315,6 +315,16 @@ class RasterImplementation::PaintOpSerializer {
     written_bytes_ += size;
     free_bytes_ -= size;
     return size;
+  }
+
+  static size_t Serialize(void* instance,
+                          const cc::PaintOp& op,
+                          const cc::PaintOp::SerializeOptions& options,
+                          const cc::PaintFlags* flags_to_serialize,
+                          const SkM44& current_ctm,
+                          const SkM44& original_ctm) {
+    return reinterpret_cast<PaintOpSerializer*>(instance)->SerializeImpl(
+        op, options, flags_to_serialize, current_ctm, original_ctm);
   }
 
   void SendSerializedData() {
@@ -1383,8 +1393,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                   &font_manager_, max_op_size_hint);
 
   cc::PaintOpBufferSerializer serializer(
-      base::BindRepeating(&PaintOpSerializer::Serialize,
-                          base::Unretained(&op_serializer)),
+      PaintOpSerializer::Serialize, &op_serializer,
       cc::PaintOp::SerializeOptions(
           &stashing_image_provider, &transfer_cache_serialize_helper,
           GetOrCreatePaintCache(), font_manager_.strike_server(),

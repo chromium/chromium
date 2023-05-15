@@ -12,9 +12,12 @@
 #include "base/check.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -125,7 +128,7 @@ SkColor NSSystemColorToSkColor(NSColor* color) {
   // System colors use the an NSNamedColorSpace called "System", so first step
   // is to convert the color into something that can be worked with.
   NSColor* device_color =
-      [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
+      [color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace];
   if (device_color)
     return NSDeviceColorToSkColor(device_color);
 
@@ -135,7 +138,7 @@ SkColor NSSystemColorToSkColor(NSColor* color) {
   // "-numberOfComponents not valid for the NSColor NSNamedColorSpace System
   // windowBackgroundColor; need to first convert colorspace." Hence the
   // conversion first to CGColor.
-  CGColorRef cg_color = [color CGColor];
+  CGColorRef cg_color = color.CGColor;
   const size_t component_count = CGColorGetNumberOfComponents(cg_color);
   if (component_count == 4)
     return CGColorRefToSkColor(cg_color);
@@ -171,10 +174,10 @@ base::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(SkColor color) {
 
 // Converts NSColor to ARGB
 SkColor NSDeviceColorToSkColor(NSColor* color) {
-  DCHECK([color colorSpace] == [NSColorSpace genericRGBColorSpace] ||
-         [color colorSpace] == [NSColorSpace deviceRGBColorSpace]);
+  DCHECK(color.colorSpace == NSColorSpace.genericRGBColorSpace ||
+         color.colorSpace == NSColorSpace.deviceRGBColorSpace);
   CGFloat red, green, blue, alpha;
-  color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
+  color = [color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace];
   [color getRed:&red green:&green blue:&blue alpha:&alpha];
   return SkColor4f{red, green, blue, alpha}.toSkColor();
 }
@@ -198,7 +201,7 @@ NSColor* SkColorToSRGBNSColor(SkColor color) {
   const CGFloat components[] = {
       SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
       SkColorGetB(color) / 255.0f, SkColorGetA(color) / 255.0f};
-  return [NSColor colorWithColorSpace:[NSColorSpace sRGBColorSpace]
+  return [NSColor colorWithColorSpace:NSColorSpace.sRGBColorSpace
                            components:components
                                 count:4];
 }
@@ -213,7 +216,7 @@ SkBitmap CGImageToSkBitmap(CGImageRef image) {
 SkBitmap NSImageToSkBitmapWithColorSpace(
     NSImage* image, bool is_opaque, CGColorSpaceRef color_space) {
   return NSImageOrNSImageRepToSkBitmapWithColorSpace(
-      image, nil, [image size], is_opaque, color_space);
+      image, /*image_rep=*/nil, image.size, is_opaque, color_space);
 }
 
 SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image_rep,
@@ -221,7 +224,7 @@ SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image_rep,
                                             bool is_opaque,
                                             CGColorSpaceRef color_space) {
   return NSImageOrNSImageRepToSkBitmapWithColorSpace(
-      nil, image_rep, size, is_opaque, color_space);
+      /*image=*/nil, image_rep, size, is_opaque, color_space);
 }
 
 NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
@@ -234,9 +237,7 @@ NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
     return nil;
 
   // Now convert to NSBitmapImageRep.
-  base::scoped_nsobject<NSBitmapImageRep> bitmap(
-      [[NSBitmapImageRep alloc] initWithCGImage:cgimage]);
-  return [bitmap.release() autorelease];
+  return [[NSBitmapImageRep alloc] initWithCGImage:cgimage];
 }
 
 NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& skiaBitmap,
@@ -244,14 +245,14 @@ NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& skiaBitmap,
   if (skiaBitmap.isNull())
     return nil;
 
-  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
+  NSImage* image = [[NSImage alloc] init];
   NSBitmapImageRep* imageRep =
       SkBitmapToNSBitmapImageRepWithColorSpace(skiaBitmap, colorSpace);
   if (!imageRep)
     return nil;
   [image addRepresentation:imageRep];
-  [image setSize:NSMakeSize(skiaBitmap.width(), skiaBitmap.height())];
-  return [image.release() autorelease];
+  image.size = NSMakeSize(skiaBitmap.width(), skiaBitmap.height());
+  return image;
 }
 
 }  // namespace skia

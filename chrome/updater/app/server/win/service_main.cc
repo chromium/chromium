@@ -7,6 +7,7 @@
 #include <atlsecurity.h>
 #include <sddl.h>
 
+#include <ios>
 #include <string>
 #include <type_traits>
 
@@ -17,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
@@ -28,11 +30,6 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
-
-bool IsInternalService() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-             kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
-}
 
 HRESULT RunWakeTask() {
   base::CommandLine run_updater_wake_command(
@@ -124,9 +121,10 @@ void ServiceMain::ServiceMainImpl(const base::CommandLine& command_line) {
   SetServiceStatus(SERVICE_RUNNING);
 
   // When the Run function returns, the service has stopped.
-  // `hr` can be either a HRESULT or a Windows error code.
+  // `hr` can be either an HRESULT or a Windows error code.
   const HRESULT hr = Run(command_line);
   if (hr != S_OK) {
+    VLOG(2) << "Run returned: " << std::hex << hr;
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
   }

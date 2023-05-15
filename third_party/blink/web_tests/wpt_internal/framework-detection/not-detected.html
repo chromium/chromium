@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+</script>
+<body>
+  <script>
+promise_test(async t => {
+  const recorder = internals.initializeUKMRecorder();
+  await new Promise(resolve => window.addEventListener("load", resolve));
+  await new Promise(resolve => t.step_timeout(resolve));
+  const entries = recorder.getMetrics(
+    "JavascriptFrameworkVersions",
+    ["NextJSVersion", "AngularVersion", "NuxtVersion", "VueVersion"]);
+  assert_equals(entries.length, 0);
+}, "By default, no framework should be detected");
+  </script>
+</body>

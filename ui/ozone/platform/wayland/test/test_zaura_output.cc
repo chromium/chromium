@@ -31,9 +31,8 @@ void TestZAuraOutput::Flush(const TestOutputMetrics& metrics) {
   zaura_output_send_insets(resource(), insets.top(), insets.left(),
                            insets.bottom(), insets.right());
 
-  const int32_t bit_cast_value =
-      base::bit_cast<uint32_t>(metrics.aura_device_scale_factor);
-  zaura_output_send_device_scale_factor(resource(), bit_cast_value);
+  zaura_output_send_device_scale_factor(
+      resource(), base::bit_cast<uint32_t>(metrics.aura_device_scale_factor));
 
   zaura_output_send_logical_transform(resource(),
                                       metrics.aura_logical_transform);

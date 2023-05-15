@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -91,7 +92,7 @@ class ThrottleService {
   content::BrowserContext* context() const { return context_; }
 
  private:
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   std::vector<std::unique_ptr<ThrottleObserver>> observers_;
 
   // True when the target should be throttled. Use optional<> to make sure this
@@ -99,7 +100,7 @@ class ThrottleService {
   // changed for the first time.
   absl::optional<bool> should_throttle_;
 
-  ThrottleObserver* last_effective_observer_{nullptr};
+  raw_ptr<ThrottleObserver, ExperimentalAsh> last_effective_observer_{nullptr};
   base::TimeTicks last_throttle_transition_;
   base::ObserverList<ServiceObserver> service_observers_;
   base::WeakPtrFactory<ThrottleService> weak_ptr_factory_{this};

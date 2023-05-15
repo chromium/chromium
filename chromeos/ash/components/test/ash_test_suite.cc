@@ -10,7 +10,6 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -51,8 +50,6 @@ void AshTestSuite::Initialize() {
 
   base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
   env_ = aura::Env::CreateInstance();
-
-  SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
 }
 
 void AshTestSuite::LoadTestResources() {

@@ -53,7 +53,7 @@ class LoggerImplTest : public testing::Test {
   std::string GetAttributeOfFirstEntry(const std::string& logs_json,
                                        const std::string& attribute) {
     base::Value logs = base::JSONReader::Read(logs_json).value();
-    return *logs.GetList()[0].FindStringKey(attribute);
+    return *logs.GetList()[0].GetDict().FindString(attribute);
   }
 };
 

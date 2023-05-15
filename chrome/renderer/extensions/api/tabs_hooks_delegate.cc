@@ -5,6 +5,7 @@
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -104,7 +105,7 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForTab(tab_id, messaging_util::kNoFrameId),
-      messaging_util::kSendRequestChannel, *message, parse_result.async_type,
+      ChannelType::kSendRequest, *message, parse_result.async_type,
       response_callback);
 
   return RequestResult(RequestResult::HANDLED);
@@ -144,7 +145,7 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context,
       MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
-      messaging_util::kSendMessageChannel, *message, parse_result.async_type,
+      ChannelType::kSendMessage, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())

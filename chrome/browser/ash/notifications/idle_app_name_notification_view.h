@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace extensions {
 class Extension;
 }  // namespace extensions
@@ -49,7 +51,7 @@ class IdleAppNameNotificationView {
                    const extensions::Extension* extension);
 
   // A reference to an existing message.
-  IdleAppNameNotificationDelegateView* view_;
+  raw_ptr<IdleAppNameNotificationDelegateView, ExperimentalAsh> view_;
 };
 
 }  // namespace ash

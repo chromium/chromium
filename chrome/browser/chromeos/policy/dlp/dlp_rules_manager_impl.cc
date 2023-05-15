@@ -15,7 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -60,6 +60,8 @@ struct MatchedRuleInfo {
 };
 
 constexpr char kWildCardMatching[] = "*";
+
+constexpr char kDrivePattern[] = "drive.google.com";
 
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
   static constexpr auto kRestrictionsMap =
@@ -122,6 +124,30 @@ DlpRulesManager::Component GetComponentMapping(const std::string& component) {
                                       : it->second;
 }
 
+// Creates a condition set for the given `url`.
+scoped_refptr<url_matcher::URLMatcherConditionSet> CreateConditionSet(
+    url_matcher::URLMatcher* matcher,
+    UrlConditionId condition_id,
+    const std::string& url) {
+  CHECK(matcher);
+
+  std::string scheme;
+  std::string host;
+  uint16_t port = 0;
+  std::string path;
+  std::string query;
+  bool match_subdomains = true;
+
+  if (!url_matcher::util::FilterToComponents(
+          url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
+    LOG(ERROR) << "Invalid pattern " << url;
+    return nullptr;
+  }
+  return url_matcher::util::CreateConditionSet(matcher, condition_id, scheme,
+                                               host, match_subdomains, port,
+                                               path, query, /*allow=*/true);
+}
+
 // Creates `urls` conditions, saves patterns strings mapping in
 // `patterns_mapping`, and saves conditions ids to rules ids mapping in `map`.
 void AddUrlConditions(url_matcher::URLMatcher* matcher,
@@ -132,26 +158,50 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
                       RuleId rule_id,
                       std::map<UrlConditionId, RuleId>& map) {
   DCHECK(urls);
-  std::string scheme;
-  std::string host;
-  uint16_t port = 0;
-  std::string path;
-  std::string query;
-  bool match_subdomains = true;
   for (const auto& list_entry : *urls) {
     std::string url = list_entry.GetString();
-    if (!url_matcher::util::FilterToComponents(
-            url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
-      LOG(ERROR) << "Invalid pattern " << url;
+
+    ++condition_id;
+    auto condition_set = CreateConditionSet(matcher, condition_id, url);
+    if (!condition_set) {
       continue;
     }
-    auto condition_set = url_matcher::util::CreateConditionSet(
-        matcher, ++condition_id, scheme, host, match_subdomains, port, path,
-        query, /*allow=*/true);
-
     conditions.push_back(std::move(condition_set));
     map[condition_id] = rule_id;
     patterns_mapping[condition_id] = url;
+  }
+}
+
+// Returns the URLs associated with the given component. An empty vector is
+// returned if there are none.
+std::vector<std::string> GetAssociatedUrlsConditions(
+    DlpRulesManager::Component component) {
+  switch (component) {
+    case DlpRulesManager::Component::kDrive:
+      return {kDrivePattern};
+    default:
+      return {};
+  }
+}
+
+// Add URL conditions associated with the given `component`.
+void AddAssociatedUrlConditions(
+    DlpRulesManager::Component component,
+    url_matcher::URLMatcher* matcher,
+    UrlConditionId& condition_id,
+    url_matcher::URLMatcherConditionSet::Vector& conditions,
+    std::map<UrlConditionId, std::string>& patterns_mapping,
+    RuleId rule_id,
+    std::map<UrlConditionId, RuleId>& map) {
+  base::Value::List destinations_urls;
+
+  for (const auto& url : GetAssociatedUrlsConditions(component)) {
+    destinations_urls.Append(url);
+  }
+
+  if (!destinations_urls.empty()) {
+    AddUrlConditions(matcher, condition_id, &destinations_urls, conditions,
+                     patterns_mapping, rule_id, map);
   }
 }
 
@@ -528,11 +578,9 @@ DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
   return reporting_manager_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 DlpFilesController* DlpRulesManagerImpl::GetDlpFilesController() const {
   return files_controller_.get();
 }
-#endif
 
 std::string DlpRulesManagerImpl::GetSourceUrlPattern(
     const GURL& source_url,
@@ -653,8 +701,13 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     if (destinations_components) {
       for (const auto& component : *destinations_components) {
         DCHECK(component.is_string());
-        components_rules_[GetComponentMapping(component.GetString())].insert(
-            rules_counter);
+        DlpRulesManager::Component component_mapping =
+            GetComponentMapping(component.GetString());
+        components_rules_[component_mapping].insert(rules_counter);
+        AddAssociatedUrlConditions(component_mapping, dst_url_matcher_.get(),
+                                   dst_url_condition_id, dst_conditions_,
+                                   dst_patterns_mapping_, rules_counter,
+                                   dst_url_rules_mapping_);
       }
     }
 
@@ -709,6 +762,10 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
             DCHECK(component.is_string());
             files_rule.add_destination_components(
                 GetComponentProtoMapping(component.GetString()));
+            for (const auto& url : GetAssociatedUrlsConditions(
+                     GetComponentMapping(component.GetString()))) {
+              files_rule.add_destination_urls(url);
+            }
           }
         }
 
@@ -747,7 +804,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
           request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
-        files_controller_ = std::make_unique<DlpFilesController>(*this);
+        files_controller_ = std::make_unique<DlpFilesControllerAsh>(*this);
       }
 #endif
     } else if (chromeos::DlpClient::Get() &&

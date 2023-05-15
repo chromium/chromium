@@ -47,9 +47,19 @@ void InstallAppLocallyCommand::StartWithLock(
   app_lock_ = std::move(app_lock);
 
   if (!app_lock_->registrar().IsInstalled(app_id_)) {
-    debug_log_.Set("command_result", "app_already_installed");
+    debug_log_.Set("command_result", "app_not_in_registry");
     ReportResultAndShutdown(CommandResult::kSuccess);
     return;
+  }
+
+  // Setting app to be locally installed before calling Synchronize() helps
+  // trigger the OS integration.
+  if (!app_lock_->registrar().IsLocallyInstalled(app_id_)) {
+    ScopedRegistryUpdate update(&app_lock_->sync_bridge());
+    WebApp* web_app_to_update = update->UpdateApp(app_id_);
+    if (web_app_to_update) {
+      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
+    }
   }
 
   // Install OS hooks first.
@@ -102,10 +112,10 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
   const base::Time& install_time = base::Time::Now();
   {
+    // Updating install time on app.
     ScopedRegistryUpdate update(&app_lock_->sync_bridge());
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
-      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
       web_app_to_update->SetInstallTime(install_time);
     }
   }
@@ -117,8 +127,6 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   debug_log_.Set("command_result", "success");
   ReportResultAndShutdown(CommandResult::kSuccess);
 }
-
-void InstallAppLocallyCommand::OnSyncSourceRemoved() {}
 
 void InstallAppLocallyCommand::OnShutdown() {
   ReportResultAndShutdown(CommandResult::kShutdown);

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_QUICK_ACTIONS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/views/view.h"
 
@@ -39,12 +40,13 @@ class ASH_EXPORT QuickActionsView : public views::View {
   std::vector<std::unique_ptr<QuickActionControllerBase>>
       quick_action_controllers_;
 
-  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
+      nullptr;
 
   // QuickActionItem for unit testing. Owned by this view.
-  QuickActionItem* enable_hotspot_ = nullptr;
-  QuickActionItem* silence_phone_ = nullptr;
-  QuickActionItem* locate_phone_ = nullptr;
+  raw_ptr<QuickActionItem, ExperimentalAsh> enable_hotspot_ = nullptr;
+  raw_ptr<QuickActionItem, ExperimentalAsh> silence_phone_ = nullptr;
+  raw_ptr<QuickActionItem, ExperimentalAsh> locate_phone_ = nullptr;
 };
 
 }  // namespace ash

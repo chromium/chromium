@@ -8,10 +8,15 @@
 #include <memory>
 #include <string>
 
-class Browser;
+class Profile;
+class GURL;
 
 namespace base {
 class FilePath;
+}
+
+namespace content {
+class WebContents;
 }
 
 namespace url {
@@ -26,21 +31,23 @@ namespace file_system_access_ui_helper {
 
 // Creates and returns a label where the place holder is replaced with `origin`.
 // If `show_emphasis` is true, the origin is formatted as emphasized text.
-std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
-                                               int message_id,
-                                               const url::Origin& origin,
-                                               int text_context,
-                                               bool show_emphasis);
+std::unique_ptr<views::View> CreateOriginLabel(
+    content::WebContents* web_contents,
+    int message_id,
+    const url::Origin& origin,
+    int text_context,
+    bool show_emphasis);
 
 // Creates and returns a label where the place holders are replaced with
 // `origin` and `path`. If `show_emphasis` is true, the origin and path are
 // formatted as emphasized text.
-std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
-                                                   int message_id,
-                                                   const url::Origin& origin,
-                                                   const base::FilePath& path,
-                                                   int text_context,
-                                                   bool show_emphasis);
+std::unique_ptr<views::View> CreateOriginPathLabel(
+    content::WebContents* web_contents,
+    int message_id,
+    const url::Origin& origin,
+    const base::FilePath& path,
+    int text_context,
+    bool show_emphasis);
 
 // Returns a human-readable string for use in titles of dialogs. Shows the drive
 // letter of a path if it is the root of a file system. Elides `path` to fit
@@ -54,10 +61,9 @@ std::u16string GetElidedPathForDisplayAsTitle(const base::FilePath& path);
 // dialog paragraph). See https://crbug.com/1354505 for context.
 std::u16string GetPathForDisplayAsParagraph(const base::FilePath& path);
 
-// Returns app's short name for Isolated Web Apps or the formatted origin for
-// all others.
-std::u16string GetFormattedOriginOrAppShortName(Browser* browser,
-                                                const url::Origin& origin);
+// Returns the displayable URL identity. For most URLs, it'll be the formatted
+// origin. For Isolated Web Apps and Extensions, it will be their name.
+std::u16string GetUrlIdentityName(Profile* profile, const GURL& url);
 
 }  // namespace file_system_access_ui_helper
 

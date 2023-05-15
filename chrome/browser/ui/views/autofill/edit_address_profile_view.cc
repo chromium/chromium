@@ -14,6 +14,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace autofill {
@@ -36,7 +38,10 @@ EditAddressProfileView::EditAddressProfileView(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined));
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
 
@@ -66,6 +71,17 @@ void EditAddressProfileView::ShowForWebContents(
 
   address_editor_view_ = AddChildView(std::make_unique<AddressEditorView>(
       std::move(address_editor_controller)));
+
+  const std::u16string& footer_message = controller_->GetFooterMessage();
+  if (!footer_message.empty()) {
+    AddChildView(
+        views::Builder<views::Label>()
+            .SetText(footer_message)
+            .SetTextStyle(views::style::STYLE_SECONDARY)
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
+  }
 }
 
 void EditAddressProfileView::Hide() {

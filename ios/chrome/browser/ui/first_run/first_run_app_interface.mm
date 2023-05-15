@@ -8,10 +8,9 @@
 #import "components/metrics/metrics_reporting_default_state.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/app/main_controller_private.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -41,7 +40,7 @@
 + (BOOL)isSyncFirstSetupComplete {
   return SyncSetupServiceFactory::GetForBrowserState(
              chrome_test_util::GetOriginalBrowserState())
-      ->IsFirstSetupComplete();
+      ->IsInitialSyncFeatureSetupComplete();
 }
 
 @end

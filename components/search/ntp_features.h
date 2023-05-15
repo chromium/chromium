@@ -24,7 +24,7 @@ BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
 BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
 BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanel);
-BASE_DECLARE_FEATURE(kCwsScrimRemoval);
+BASE_DECLARE_FEATURE(kCwsDarkLogo);
 BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
@@ -51,7 +51,7 @@ BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
 BASE_DECLARE_FEATURE(kNtpModulesFirstRunExperience);
 BASE_DECLARE_FEATURE(kNtpModulesLoad);
 BASE_DECLARE_FEATURE(kNtpModulesRedesigned);
-BASE_DECLARE_FEATURE(kNtpModulesRedesignedLayout);
+BASE_DECLARE_FEATURE(kNtpMostVisitedReflowOnOverflow);
 BASE_DECLARE_FEATURE(kNtpPhotosModule);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSoftOptOut);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInTitle);
@@ -75,6 +75,9 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 BASE_DECLARE_FEATURE(kNtpChromeCartInHistoryClusterModule);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleUseModelRanking);
+BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -116,9 +119,12 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 // Parameter for communicating the experiment group of the Drive module
 // experiment.
 extern const char kNtpDriveModuleExperimentGroupParam[];
-// Parameter determining the fake data data to request to surface a particular
+// Parameter determining the fake data to request to surface a particular
 // visual layout.
 extern const char kNtpHistoryClustersModuleDataParam[];
+// Parameter determining the fake data to request to surface a particular
+// cart tile layout in history cluster module.
+extern const char kNtpChromeCartInHistoryClustersModuleDataParam[];
 // Parameter determining the type of middle slot promo data to render.
 extern const char kNtpMiddleSlotPromoDismissalParam[];
 // Parameter determining the modules that are eligigle for HATS.

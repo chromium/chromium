@@ -123,6 +123,8 @@ base::Value::Dict Validator::MapObject(const OncValueSignature& signature,
       valid = ValidateToplevelConfiguration(&repaired);
     } else if (&signature == &kNetworkConfigurationSignature) {
       valid = ValidateNetworkConfiguration(&repaired);
+    } else if (&signature == &kCellularSignature) {
+      valid = ValidateCellular(&repaired);
     } else if (&signature == &kEthernetSignature) {
       valid = ValidateEthernet(&repaired);
     } else if (&signature == &kIPConfigSignature ||
@@ -714,6 +716,17 @@ bool Validator::ValidateNetworkConfiguration(base::Value::Dict* result) {
   }
 
   return !error_on_missing_field_ || all_required_exist;
+}
+
+bool Validator::ValidateCellular(base::Value::Dict* result) {
+  if (result->contains(::onc::cellular::kSMDPAddress) &&
+      result->contains(::onc::cellular::kSMDSAddress)) {
+    AddValidationIssue(
+        /*is_error=*/true,
+        R"(The "SMDPAddress" and "SMDSAddress" fields are mutually exclusive.)");
+    return false;
+  }
+  return true;
 }
 
 bool Validator::ValidateEthernet(base::Value::Dict* result) {

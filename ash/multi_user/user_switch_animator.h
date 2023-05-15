@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
@@ -101,7 +102,7 @@ class ASH_EXPORT UserSwitchAnimator {
   void BuildUserToWindowsListMap();
 
   // The owning window manager.
-  MultiUserWindowManagerImpl* owner_;
+  raw_ptr<MultiUserWindowManagerImpl, ExperimentalAsh> owner_;
 
   // The new user to set.
   AccountId new_account_id_;

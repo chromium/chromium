@@ -22,7 +22,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {CrosNetworkConfigRemote, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -74,7 +74,7 @@ class CellularRoamingToggleButtonElement extends
   disabled: boolean;
   managedProperties: ManagedProperties|undefined;
   private isRoamingAllowedForNetwork_: boolean;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {
     super();

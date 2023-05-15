@@ -220,6 +220,15 @@ gfx::Size SidePanel::GetMinimumSize() const {
                    min_height);
 }
 
+gfx::Size SidePanel::GetContentSizeUpperBound() const {
+  const int side_panel_width = width() > 0 ? width() : GetMinimumSize().width();
+  const int side_panel_height =
+      height() > 0 ? height() : browser_view_->height();
+
+  return gfx::Size(std::max(0, side_panel_width - kBorderInsets.width()),
+                   std::max(0, side_panel_height - kBorderInsets.height()));
+}
+
 void SidePanel::ChildVisibilityChanged(View* child) {
   UpdateVisibility();
 }

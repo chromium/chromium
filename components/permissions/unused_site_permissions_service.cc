@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -38,6 +39,15 @@ constexpr base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
 
 namespace permissions {
 namespace {
+// Reflects the maximum number of days between a permissions being revoked and
+// the time when the user regrants the permission through the unused site
+// permission module of Safete Check. The maximum number of days is determined
+// by `kRevocationCleanUpThreshold`.
+size_t kAllowAgainMetricsExclusiveMaxCount = 31;
+
+// Using a single bucket per day, following the value of
+// |kAllowAgainMetricsExclusiveMaxCount|.
+size_t kAllowAgainMetricsBuckets = 31;
 
 // Called on a background thread.
 UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
@@ -190,6 +200,16 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
   hcsm_->SetWebsiteSettingCustomScope(
       info.primary_pattern, info.secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+
+  // Record the days elapsed from auto-revocation to regrant.
+  base::Time revoked_time =
+      info.metadata.expiration -
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  base::UmaHistogramCustomCounts(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays",
+      (clock_->Now() - revoked_time).InDays(), 0,
+      kAllowAgainMetricsExclusiveMaxCount, kAllowAgainMetricsBuckets);
 }
 
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
@@ -439,6 +459,45 @@ UnusedSitePermissionsService::GetTrackedUnusedPermissionsForTesting() {
 
 void UnusedSitePermissionsService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+}
+
+// static
+absl::optional<uint32_t> UnusedSitePermissionsService::GetDaysSinceRevocation(
+    const GURL& origin,
+    ContentSettingsType content_settings_type,
+    base::Time current_time,
+    HostContentSettingsMap* hcsm) {
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm->GetWebsiteSetting(
+      origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &info));
+  if (!stored_value.is_dict()) {
+    return absl::nullopt;
+  }
+  base::Value::List* permission_type_list =
+      stored_value.GetDict().FindList(permissions::kRevokedKey);
+  if (!permission_type_list) {
+    return absl::nullopt;
+  }
+  base::Time revoked_time =
+      info.metadata.expiration -
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  ;
+  uint32_t days_since_revoked = (current_time - revoked_time).InDays();
+
+  for (auto& permission_type : *permission_type_list) {
+    auto type_int = permission_type.GetIfInt();
+    if (!type_int.has_value()) {
+      continue;
+    }
+    if (content_settings_type ==
+        static_cast<ContentSettingsType>(type_int.value())) {
+      return days_since_revoked;
+    }
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace permissions

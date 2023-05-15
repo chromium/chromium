@@ -43,7 +43,7 @@ NSProcessInfoThermalStateToDeviceThermalState(
 namespace base {
 
 struct ThermalStateObserverMac::ObjCStorage {
-  id thermal_state_update_observer_ = nil;
+  id thermal_state_update_observer = nil;
 };
 
 ThermalStateObserverMac::ThermalStateObserverMac(
@@ -68,7 +68,7 @@ ThermalStateObserverMac::ThermalStateObserverMac(
     state_update_callback.Run(state);
   };
 
-  objc_storage_->thermal_state_update_observer_ =
+  objc_storage_->thermal_state_update_observer =
       [[NSNotificationCenter defaultCenter]
           addObserverForName:NSProcessInfoThermalStateDidChangeNotification
                       object:nil
@@ -97,7 +97,7 @@ ThermalStateObserverMac::ThermalStateObserverMac(
 
 ThermalStateObserverMac::~ThermalStateObserverMac() {
   [[NSNotificationCenter defaultCenter]
-      removeObserver:objc_storage_->thermal_state_update_observer_];
+      removeObserver:objc_storage_->thermal_state_update_observer];
   notify_cancel(speed_limit_notification_token_);
 }
 

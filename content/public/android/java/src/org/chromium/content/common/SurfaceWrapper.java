@@ -14,13 +14,11 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * A wrapper for marshalling a Surface without self-destruction.
  */
 @JNINamespace("content")
-@MainDex
 public class SurfaceWrapper implements Parcelable {
     private final boolean mWrapsSurface;
     private Surface mSurface;

@@ -12,6 +12,7 @@
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -129,10 +130,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
  public:
   PersonalizationAppThemeProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
-                                          {});
-  }
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   PersonalizationAppThemeProviderImplTest(
       const PersonalizationAppThemeProviderImplTest&) = delete;
   PersonalizationAppThemeProviderImplTest& operator=(
@@ -211,12 +209,11 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   mojo::Remote<ash::personalization_app::mojom::ThemeProvider>
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;
@@ -363,23 +360,18 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
        GenerateSampleColorSchemes) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  ColorScheme color_scheme_buttons[] = {
-      ColorScheme::kTonalSpot,
-      ColorScheme::kNeutral,
-      ColorScheme::kVibrant,
-      ColorScheme::kExpressive,
-  };
-  std::vector<SampleColorScheme> samples;
-  for (auto scheme : color_scheme_buttons) {
-    samples.push_back({.scheme = scheme,
-                       .primary = SK_ColorRED,
-                       .secondary = SK_ColorGREEN,
-                       .tertiary = SK_ColorBLUE});
-  }
   base::MockOnceCallback<void(const std::vector<ash::SampleColorScheme>&)>
       generate_sample_color_schemes_callback;
+
+  // Matcher for the vector in the callback.
+  auto matcher = testing::UnorderedElementsAre(
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kTonalSpot),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kNeutral),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kVibrant),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kExpressive));
+
   base::RunLoop run_loop;
-  EXPECT_CALL(generate_sample_color_schemes_callback, Run(samples))
+  EXPECT_CALL(generate_sample_color_schemes_callback, Run(matcher))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   theme_provider()->GenerateSampleColorSchemes(

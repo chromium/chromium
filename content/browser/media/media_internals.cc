@@ -351,24 +351,30 @@ MediaInternals* MediaInternals::GetInstance() {
   return internals;
 }
 
-MediaInternals::MediaInternals() : can_update_(false), owner_ids_() {
-  // TODO(sandersd): Is there ever a relevant case where TERMINATED is sent
-  // without CLOSED also being sent?
-  registrar_.Add(this, NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 NotificationService::AllBrowserContextsAndSources());
-}
+MediaInternals::MediaInternals() = default;
 
 MediaInternals::~MediaInternals() {}
 
-void MediaInternals::Observe(int type,
-                             const NotificationSource& source,
-                             const NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderProcessHost* process = Source<RenderProcessHost>(source).ptr();
-  // TODO(sandersd): Send a termination event before clearing the log.
-  saved_events_by_process_.erase(process->GetID());
+void MediaInternals::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
+}
+
+void MediaInternals::RenderProcessExited(
+    RenderProcessHost* host,
+    const ChildProcessTerminationInfo& info) {
+  EraseSavedEvents(host);
+  host_observation_.RemoveObservation(host);
+}
+
+void MediaInternals::RenderProcessHostDestroyed(RenderProcessHost* host) {
+  // TODO(sandersd): Is there ever a relevant case where
+  // RenderProcessHostDestroyed is called without RenderProcessExited also being
+  // called?
+  EraseSavedEvents(host);
+  host_observation_.RemoveObservation(host);
 }
 
 // Converts the |event| to a |update|. Returns whether the conversion succeeded.
@@ -671,6 +677,12 @@ void MediaInternals::SaveEvent(int process_id,
       return event.id == id_to_remove;
     });
   }
+}
+
+void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(sandersd): Send a termination event before clearing the log.
+  saved_events_by_process_.erase(host->GetID());
 }
 
 void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,

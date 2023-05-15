@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
-    enum="BooleanEnabled" expires_after="2023-08-20">
+    enum="BooleanEnabled" expires_after="2023-10-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>anastasiian@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <owner>cros-lurs@google.com</owner>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.DialogDisplayHost"
     enum="SettingsPrivacySandboxDialogDisplayHostHash"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.DialogWindowTooSmall" enum="Boolean"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
-    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2023-08-20">
+    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2023-10-22">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -479,7 +479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.StartupState"
-    enum="SettingsPrivacySandboxStartupStates" expires_after="2023-08-20">
+    enum="SettingsPrivacySandboxStartupStates" expires_after="2023-10-22">
   <owner>sauski@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
-    enum="SafetyCheckSafeBrowsingStatus" expires_after="2023-08-20">
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2023-10-22">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check Safe Browsing check.</summary>
@@ -630,6 +630,45 @@ chromium-metrics-reviews@google.com.
     in Chrome settings. Recorded every time the user interacts with the
     respective UI element.
   </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.All"
+    units="days" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the number of days since the permission was revoked for any
+    permission type, up until the cleanup threshold for revoked permissions has
+    been reached. The metric is recorded when the user regrants a permission
+    that was previously revoked by the unused site permission module of
+    SafetyCheck.
+  </summary>
+  <token key="SourceUI">
+    <variant name="Prompt"/>
+    <variant name="Settings"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.{PermissionType}"
+    units="days" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the number of days since the permission was revoked for the
+    {PermissionType} permission type, up until the cleanup threshold for revoked
+    permissions has been reached. The metric is recorded when the user regrants
+    a permission that was previously revoked by the unused site permission
+    module of SafetyCheck.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="SourceUI">
+    <variant name="Prompt"/>
+    <variant name="Settings"/>
+  </token>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UpdatesResult"

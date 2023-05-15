@@ -86,10 +86,7 @@ using base::UserMetricsAction;
       if (!currentWebState) {
         return;
       }
-      BookmarkAddCommand* command =
-          [[BookmarkAddCommand alloc] initWithWebState:currentWebState
-                                  presentFolderChooser:NO];
-      [self.bookmarksCommandsHandler bookmark:command];
+      [self.bookmarksCommandsHandler bookmarkWithWebState:currentWebState];
       break;
     }
     case PopupMenuActionTranslate:

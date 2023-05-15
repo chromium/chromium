@@ -14,11 +14,12 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
@@ -40,7 +41,12 @@ namespace {
 class WebSessionStateTabHelperTest : public PlatformTest {
  public:
   WebSessionStateTabHelperTest()
-      : web_client_(std::make_unique<ChromeWebClient>()) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{web::kRestoreSessionFromCache},
+        /*disabled_features=*/{
+            web::features::kEnableSessionSerializationOptimizations});
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -66,6 +72,7 @@ class WebSessionStateTabHelperTest : public PlatformTest {
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -73,41 +80,8 @@ class WebSessionStateTabHelperTest : public PlatformTest {
   base::FilePath session_cache_directory_;
 };
 
-// Tests that APIs do nothing when the feature is disabled.
-TEST_F(WebSessionStateTabHelperTest, DisableFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(web::kRestoreSessionFromCache);
-
-  WebSessionStateTabHelper* helper =
-      WebSessionStateTabHelper::FromWebState(web_state());
-  ASSERT_FALSE(helper->IsEnabled());
-
-  // Nothing should be saved or restored when the feature is disabled.
-  ASSERT_FALSE(helper->RestoreSessionFromCache());
-
-  web_state()->GetView();
-  web_state()->SetKeepRenderProcessAlive(true);
-  GURL url(kChromeUIAboutNewTabURL);
-  web::NavigationManager::WebLoadParams params(url);
-  web_state()->GetNavigationManager()->LoadURLWithParams(params);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return !web_state()->IsLoading();
-  }));
-  helper->SaveSessionState();
-  FlushRunLoops();
-
-  // File should not be saved.
-  NSString* sessionID = web_state()->GetStableIdentifier();
-  base::FilePath filePath =
-      session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
-  ASSERT_FALSE(base::PathExists(filePath));
-}
-
 // Tests session state serialize and deserialize APIs.
 TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::kRestoreSessionFromCache);
-
   // Make sure the internal WKWebView is live.
   web_state()->GetView();
   web_state()->SetKeepRenderProcessAlive(true);
@@ -134,15 +108,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
       WebSessionStateTabHelper::FromWebState(web_state());
   helper->SaveSessionStateIfStale();
   FlushRunLoops();
-  if (@available(iOS 15, *)) {
-    ASSERT_TRUE(
-        WebSessionStateTabHelper::FromWebState(web_state())->IsEnabled());
-    ASSERT_TRUE(base::PathExists(filePath));
-  } else {
-    // On iOS 14, the feature is disabled.
-    EXPECT_FALSE(base::PathExists(filePath));
-    return;
-  }
+  ASSERT_TRUE(base::PathExists(filePath));
 
   // Create a new webState with a live WKWebView.
   web::WebState::CreateParams createParams(browser_state_.get());

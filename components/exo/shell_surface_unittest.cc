@@ -56,6 +56,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
+#include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -129,6 +130,14 @@ bool IsCaptureWindow(ShellSurface* shell_surface) {
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   return WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow() ==
          window;
+}
+
+cc::Region CreateRegion(ShellSurface::ShapeRects shape_rects) {
+  cc::Region shape_region;
+  for (const gfx::Rect& rect : shape_rects) {
+    shape_region.Union(rect);
+  }
+  return shape_region;
 }
 
 }  // namespace
@@ -1261,7 +1270,7 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
   EXPECT_EQ(buffer_size,
             shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
 
-  ash::WMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
+  ash::WindowSnapWMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
   // Enter snapped mode.
@@ -2897,6 +2906,18 @@ TEST_F(ShellSurfaceTest, SetRestoreInfo) {
                 app_restore::kRestoreWindowIdKey));
 }
 
+TEST_F(ShellSurfaceTest, SetNotPersistable) {
+  auto shell_surface = test::ShellSurfaceBuilder(gfx::Size(20, 30))
+                           .SetNoCommit()
+                           .BuildShellSurface();
+  shell_surface->SetPersistable(/*persistable=*/false);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_FALSE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      wm::kPersistableKey));
+}
+
 // Test that restore id is set correctly.
 TEST_F(ShellSurfaceTest, SetRestoreInfoWithWindowIdSource) {
   int32_t restore_session_id = 200;
@@ -2995,7 +3016,8 @@ TEST_F(ShellSurfaceTest, PostWindowChangeCallback) {
   // Make sure we are in a non-snapped state before testing state change.
   ASSERT_FALSE(state->IsSnapped());
 
-  auto snap_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
+  auto snap_event =
+      std::make_unique<ash::WindowSnapWMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
 
   // Trigger a snap event, this should cause a configure event.
   state->OnWMEvent(snap_event.get());
@@ -3096,6 +3118,94 @@ TEST_F(ShellSurfaceTest, MoveParentWithoutWidget) {
   // to another root window before widget is created. Make sure that
   // happened.
   EXPECT_NE(root_before, parent_widget->GetNativeWindow()->GetRootWindow());
+}
+
+// Assert SetShape() applies the shape to the host window's layer on commit.
+TEST_F(ShellSurfaceTest, SetShapeAppliedAfterSurfaceCommit) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  // Windows shadows should be applied.
+  EXPECT_NE(wm::kShadowElevationNone,
+            wm::GetShadowElevationConvertDefault(
+                shell_surface->GetWidget()->GetNativeWindow()));
+
+  // Create a window shape from two unique rects.
+  const cc::Region shape_region =
+      CreateRegion({{10, 10, 32, 32}, {20, 20, 32, 32}});
+
+  // Apply the shape to the surface. This should not yet be reflected on the
+  // host window's layer.
+  shell_surface->SetShape(shape_region);
+  const ShellSurfaceBase::ShapeRects* layer_shape_rects =
+      shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_FALSE(layer_shape_rects);
+
+  // After surface commit the shape should have been applied to the layer.
+  shell_surface->root_surface()->Commit();
+  layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_TRUE(layer_shape_rects);
+  EXPECT_EQ(shape_region, CreateRegion(*layer_shape_rects));
+
+  // Window shadows should be disabled when window shapes are set.
+  EXPECT_EQ(wm::kShadowElevationNone,
+            wm::GetShadowElevationConvertDefault(
+                shell_surface->GetWidget()->GetNativeWindow()));
+}
+
+// Assert SetShape() updates the host window's layer with the most recent shape
+// when the surface commits.
+TEST_F(ShellSurfaceTest, SetShapeUpdatesAndUnsetsCorrectlyAfterCommit) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  // Create several unique window shapes.
+  const cc::Region shape_region_1 =
+      CreateRegion({{5, 5, 32, 32}, {10, 10, 32, 32}});
+  const cc::Region shape_region_2 =
+      CreateRegion({{15, 15, 32, 32}, {20, 20, 32, 32}});
+  const cc::Region shape_region_3 =
+      CreateRegion({{25, 25, 32, 32}, {30, 40, 32, 32}});
+
+  // Apply two shapes to the surface without committing. Neither should be
+  // applied to the host window's layer.
+  shell_surface->SetShape(shape_region_1);
+  shell_surface->SetShape(shape_region_2);
+  const ShellSurfaceBase::ShapeRects* layer_shape_rects =
+      shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_FALSE(layer_shape_rects);
+
+  // After surface commit only the most recent shape should have been applied.
+  shell_surface->root_surface()->Commit();
+  layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_TRUE(layer_shape_rects);
+  EXPECT_EQ(shape_region_2, CreateRegion(*layer_shape_rects));
+
+  // Apply another shape to the surface. The layer shape should not change.
+  shell_surface->SetShape(shape_region_3);
+  layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_TRUE(layer_shape_rects);
+  EXPECT_EQ(shape_region_2, CreateRegion(*layer_shape_rects));
+
+  // The new shape should have been applied after the surface is committed.
+  shell_surface->root_surface()->Commit();
+  layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_TRUE(layer_shape_rects);
+  EXPECT_EQ(shape_region_3, CreateRegion(*layer_shape_rects));
+
+  // Setting a null shape should unset the host window's layer shape.
+  shell_surface->SetShape(absl::nullopt);
+  shell_surface->root_surface()->Commit();
+  layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
+  EXPECT_FALSE(layer_shape_rects);
 }
 
 }  // namespace exo

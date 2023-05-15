@@ -20,7 +20,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
+namespace trusted_vault {
 
 class TrustedVaultRegistrationVerifier {
  public:
@@ -47,6 +47,6 @@ class TrustedVaultRegistrationVerifier {
       ongoing_verify_registration_request_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_REGISTRATION_VERIFIER_H_

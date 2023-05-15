@@ -238,6 +238,14 @@ class BASE_EXPORT SysInfo {
   // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
 
+  // The same as IsLowEndDevice() except on Android.
+  //
+  // On Android this returns:
+  //   true when IsLowEndDevice() returns true.
+  //   true when the physical memory of the device is 4gb or 6gb and
+  //             the feature: kPartialLowEndModeOnMidEndDevices() is enabled.
+  static bool IsLowEndDeviceOrPartialLowEndModeEnabled();
+
 #if BUILDFLAG(IS_MAC)
   // Sets whether CPU security mitigations are enabled for the current process.
   // This is used to control the behavior of NumberOfProcessors(), see comment

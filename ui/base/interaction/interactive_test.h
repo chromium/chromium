@@ -696,10 +696,24 @@ InteractionSequence::StepBuilder InteractiveTestApi::AnyOf(
 // static
 template <typename... Args>
 InteractiveTestApi::StepBuilder InteractiveTestApi::Log(Args... args) {
-  auto step = Do([=]() {
-    auto info = COMPACT_GOOGLE_LOG_INFO;
-    ((info.stream() << args), ...);
-  });
+  auto step = Do(base::BindOnce(
+      [](std::remove_cvref_t<Args>... args) {
+        auto info = COMPACT_GOOGLE_LOG_INFO;
+        ((info.stream() <<
+          [&]() {
+            if constexpr (internal::IsCallbackValue<Args>) {
+              return std::move(args).Run();
+            } else if constexpr (internal::IsFunctionPointerValue<Args>) {
+              return (*args)();
+            } else if constexpr (internal::IsCallableValue<Args>) {
+              return args();
+            } else {
+              return args;
+            }
+          }()),
+         ...);
+      },
+      std::move(args)...));
   step.SetDescription("Log()");
   return step;
 }

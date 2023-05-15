@@ -21,7 +21,7 @@
    * point available to be shown.
    */
   :host([can-show-secondary-side][had-secondary-side]) {
-    --cr-realbox-width: calc(var(--cr-realbox-min-width) * 1.5);
+    --cr-realbox-width: 746px;
   }
 
   /**
@@ -206,7 +206,7 @@
     on-keydown="onInputWrapperKeydown_">
   <input id="input" type="search" autocomplete="off" spellcheck="false"
       aria-live="[[inputAriaLive_]]" role="combobox"
-      aria-expanded="[[matchesAreVisible]]" aria-controls="matches"
+      aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
       placeholder="$i18n{searchBoxHint}" on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_" on-input="onInputInput_"
       on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
@@ -229,6 +229,6 @@
       has-secondary-side="{{hasSecondarySide}}"
       on-match-focusin="onMatchFocusin_" on-match-click="onMatchClick_"
       on-match-remove="onMatchRemove_" on-header-focusin="onHeaderFocusin_"
-      hidden$="[[!matchesAreVisible]]">
+      hidden$="[[!dropdownIsVisible]]">
   </cr-realbox-dropdown>
 </div>

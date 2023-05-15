@@ -60,6 +60,7 @@ class EmailInputType final : public BaseTextInputType {
   String SanitizeValue(const String&) const override;
   String ConvertFromVisibleValue(const String&) const override;
   String VisibleValue() const override;
+  void MultipleAttributeChanged() override;
 
   String ConvertEmailAddressToUnicode(const String&) const;
   String FindInvalidAddress(const String&) const;

@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "dbus/bus.h"
 
@@ -31,11 +33,16 @@ struct ASH_EXPORT ShellInitParams {
   ~ShellInitParams();
 
   std::unique_ptr<ShellDelegate> delegate;
-  ui::ContextFactory* context_factory = nullptr;                 // Non-owning.
-  PrefService* local_state = nullptr;                            // Non-owning.
+  raw_ptr<ui::ContextFactory, ExperimentalAsh> context_factory =
+      nullptr;                                                  // Non-owning.
+  raw_ptr<PrefService, ExperimentalAsh> local_state = nullptr;  // Non-owning.
 
   // Factory for creating the virtual keyboard UI. Must be non-null.
   std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory;
+
+  // Factory for creating the quick_pair mediator.
+  std::unique_ptr<ash::quick_pair::Mediator::Factory>
+      quick_pair_mediator_factory;
 
   // Bus used by dbus clients. May be null in tests or when not running on a
   // device, in which case fake clients will be created.

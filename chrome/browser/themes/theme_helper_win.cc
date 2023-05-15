@@ -4,11 +4,21 @@
 
 #include "chrome/browser/themes/theme_helper_win.h"
 
+#include "chrome/browser/themes/custom_theme_supplier.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/theme_resources.h"
 
+int ThemeHelperWin::GetDefaultDisplayProperty(int id) const {
+  if (id == ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR) {
+    return !ShouldDefaultThemeUseMicaTitlebar();
+  }
+
+  return ThemeHelper::GetDefaultDisplayProperty(id);
+}
+
 bool ThemeHelperWin::ShouldUseNativeFrame(
     const CustomThemeSupplier* theme_supplier) const {
-  return ShouldCustomDrawSystemTitlebar() ||
+  return !ShouldAlwaysUseSystemTitlebar() ||
          !HasCustomImage(IDR_THEME_FRAME, theme_supplier);
 }

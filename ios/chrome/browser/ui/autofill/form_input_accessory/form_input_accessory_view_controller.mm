@@ -225,6 +225,7 @@
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
     self.formSuggestionView.formSuggestionViewDelegate = self;
+    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
     self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
   }
 }

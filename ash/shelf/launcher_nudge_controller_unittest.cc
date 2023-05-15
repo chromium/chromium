@@ -20,6 +20,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
@@ -84,7 +85,7 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
  private:
   base::RunLoop animation_run_loop_;
   base::RunLoop label_run_loop_;
-  HomeButton* const home_button_;
+  const raw_ptr<HomeButton, ExperimentalAsh> home_button_;
 
   // Counts the number of started/ended animations.
   int started_animation_count_ = 0;
@@ -141,9 +142,10 @@ class LauncherNudgeControllerTest : public AshTestBase {
     test_api_->RunMessageLoopUntilAnimationsDone();
   }
 
-  LauncherNudgeController* nudge_controller_;
+  raw_ptr<LauncherNudgeController, ExperimentalAsh> nudge_controller_;
   std::unique_ptr<TestNudgeAnimationObserver> observer_;
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 

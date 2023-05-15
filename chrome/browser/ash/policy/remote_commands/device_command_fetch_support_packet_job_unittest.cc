@@ -53,6 +53,10 @@ constexpr char kCommandPayload[] =
       }
     })";
 
+constexpr char kExpectedUploadParametersFormatter[] =
+    R"({"Command-ID":"%ld","File-Type":"support_file","Filename":"%s"}
+application/json)";
+
 em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
                                        base::TimeTicks command_start_time,
                                        std::string payload) {
@@ -149,7 +153,7 @@ TEST_F(DeviceCommandFetchSupportPacketTest, Success) {
 
   // Check the contents of LogUploadEvent that the job enqueued.
   std::string expected_upload_parameters =
-      base::StringPrintf(kUploadParametersFormatter, kUniqueID,
+      base::StringPrintf(kExpectedUploadParametersFormatter, kUniqueID,
                          exported_file.BaseName().value().c_str());
   EXPECT_EQ(
       expected_upload_parameters,

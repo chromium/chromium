@@ -149,6 +149,7 @@ class BASE_EXPORT TaskQueueImpl {
   bool BlockedByFence() const;
   void SetThrottler(TaskQueue::Throttler* throttler);
   void ResetThrottler();
+  std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter();
 
   void UnregisterTaskQueue();
 
@@ -286,6 +287,15 @@ class BASE_EXPORT TaskQueueImpl {
   // taking into account the desired run time of queued tasks and
   // policies enforced by the Throttler.
   void UpdateWakeUp(LazyNow* lazy_now);
+
+  void AddQueueEnabledVoter(bool voter_is_enabled,
+                            TaskQueue::QueueEnabledVoter& voter);
+  void RemoveQueueEnabledVoter(bool voter_is_enabled,
+                               TaskQueue::QueueEnabledVoter& voter);
+  void OnQueueEnabledVoteChanged(bool enabled);
+
+  // Called by the associated sequence manager when it becomes bound.
+  void CompleteInitializationOnBoundThread();
 
  protected:
   // Sets this queue's next wake up time to |wake_up| in the time domain.
@@ -479,6 +489,9 @@ class BASE_EXPORT TaskQueueImpl {
     // Whether or not the task queue should emit tracing events for tasks
     // posted to this queue when it is disabled.
     bool should_report_posted_tasks_when_disabled = false;
+
+    int enabled_voter_count = 0;
+    int voter_count = 0;
   };
 
   void PostTask(PostedTask task);
@@ -501,11 +514,6 @@ class BASE_EXPORT TaskQueueImpl {
 
   void MoveReadyImmediateTasksToImmediateWorkQueueLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
-
-  // Records the delay for some tasks in the main thread and the size of the
-  // |delayed_incoming_queue| pseudorandomly in a histogram.
-  void RecordQueuingDelayedTaskMetrics(const Task& pending_task,
-                                       LazyNow* lazy_now);
 
   // LazilyDeallocatedDeque use TimeTicks to figure out when to resize.  We
   // should use real time here always.
@@ -555,6 +563,11 @@ class BASE_EXPORT TaskQueueImpl {
       OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
 
   TaskQueue::QueuePriority DefaultPriority() const;
+
+  bool AreAllQueueEnabledVotersEnabled() const {
+    return main_thread_only().enabled_voter_count ==
+           main_thread_only().voter_count;
+  }
 
   QueueName name_;
   const raw_ptr<SequenceManagerImpl, DanglingUntriaged> sequence_manager_;
@@ -624,6 +637,8 @@ class BASE_EXPORT TaskQueueImpl {
   const bool should_monitor_quiescence_;
   const bool should_notify_observers_;
   const bool delayed_fence_allowed_;
+
+  base::WeakPtrFactory<TaskQueueImpl> voter_weak_ptr_factory_{this};
 };
 
 }  // namespace sequence_manager::internal

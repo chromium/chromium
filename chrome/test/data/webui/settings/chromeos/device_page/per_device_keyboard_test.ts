@@ -61,6 +61,8 @@ suite('<settings-per-device-keyboard>', () => {
     let subsections = perDeviceKeyboardPage.shadowRoot!.querySelectorAll(
         'settings-per-device-keyboard-subsection');
     assertEquals(fakeKeyboards.length, subsections.length);
+    assertFalse(subsections[0]!.get('isLastDevice'));
+    assertTrue(subsections[fakeKeyboards.length - 1]!.get('isLastDevice'));
 
     // Check the number of subsections when the keyboard list is updated.
     perDeviceKeyboardPage.set('keyboards', fakeKeyboards2);
@@ -68,6 +70,7 @@ suite('<settings-per-device-keyboard>', () => {
     subsections = perDeviceKeyboardPage.shadowRoot!.querySelectorAll(
         'settings-per-device-keyboard-subsection');
     assertEquals(fakeKeyboards2.length, subsections.length);
+    assertTrue(subsections[fakeKeyboards2.length - 1]!.get('isLastDevice'));
   });
 
   test(
@@ -179,7 +182,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot!.querySelector(
         '#noKeyboardsConnectedContainer')));
     assertEquals(
-        'No keyboard detected',
+        'No keyboard connected',
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<HTMLElement>(
                 '#noKeyboardsConnectedMessage')!.innerText.trim());

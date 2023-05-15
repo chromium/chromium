@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,11 +16,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -95,11 +96,10 @@ void SignedWebBundleReader::OnFileOpened(
   CHECK_EQ(state_, State::kInitializing);
 
   if (!file->IsValid()) {
-    FulfillWithError(
-        std::move(read_error_callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kParserInternalError,
-            base::File::ErrorToString(file->error_details())));
+    UnusableSwbnFileError error = UnusableSwbnFileError(
+        UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
+        base::File::ErrorToString(file->error_details()));
+    FulfillWithError(std::move(read_error_callback), std::move(error));
     return;
   }
 
@@ -117,13 +117,12 @@ void SignedWebBundleReader::OnFileDuplicated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  base::File::Error error = parser_->OpenFile(std::move(file));
-  if (error != base::File::FILE_OK) {
-    FulfillWithError(
-        std::move(read_error_callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kParserInternalError,
-            base::File::ErrorToString(error)));
+  base::File::Error file_error = parser_->OpenFile(std::move(file));
+  if (file_error != base::File::FILE_OK) {
+    UnusableSwbnFileError error = UnusableSwbnFileError(
+        UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
+        base::File::ErrorToString(file_error));
+    FulfillWithError(std::move(read_error_callback), std::move(error));
     return;
   }
 
@@ -143,20 +142,22 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
   CHECK_EQ(state_, State::kInitializing);
 
   if (error) {
-    FulfillWithError(std::move(read_error_callback), std::move(error));
+    FulfillWithError(std::move(read_error_callback),
+                     UnusableSwbnFileError(error));
     return;
   }
 
   auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
       std::move(raw_integrity_block));
+
   if (!integrity_block.has_value()) {
     FulfillWithError(
         std::move(read_error_callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kFormatError,
-            base::StringPrintf("Error while parsing the Signed Web Bundle's "
-                               "integrity block: %s",
-                               integrity_block.error().c_str())));
+        UnusableSwbnFileError(
+            UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError,
+            "Error while parsing the Signed Web Bundle's integrity "
+            "block: " +
+                integrity_block.error()));
     return;
   }
 
@@ -179,8 +180,11 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
 
   switch (action.type()) {
     case SignatureVerificationAction::Type::kAbort:
-      FulfillWithError(std::move(callback),
-                       AbortedByCaller({.message = action.abort_message()}));
+      FulfillWithError(
+          std::move(callback),
+          UnusableSwbnFileError(
+              UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
+              action.abort_message()));
       return;
     case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
       VerifySignatures(std::move(integrity_block), std::move(callback));
@@ -220,11 +224,10 @@ void SignedWebBundleReader::OnFileLengthRead(
     ReadErrorCallback callback,
     base::expected<uint64_t, base::File::Error> file_length) {
   if (!file_length.has_value()) {
-    FulfillWithError(
-        std::move(callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kParserInternalError,
-            base::File::ErrorToString(file_length.error())));
+    UnusableSwbnFileError error = UnusableSwbnFileError(
+        UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
+        base::File::ErrorToString(file_length.error()));
+    FulfillWithError(std::move(callback), std::move(error));
     return;
   }
 
@@ -253,7 +256,8 @@ void SignedWebBundleReader::OnSignaturesVerified(
       base::saturated_cast<int>(std::round(file_length / (1024.0 * 1024.0))));
 
   if (verification_error.has_value()) {
-    FulfillWithError(std::move(callback), *verification_error);
+    FulfillWithError(std::move(callback),
+                     UnusableSwbnFileError(*verification_error));
     return;
   }
 
@@ -279,7 +283,7 @@ void SignedWebBundleReader::OnMetadataParsed(
   CHECK_EQ(state_, State::kInitializing);
 
   if (error) {
-    FulfillWithError(std::move(callback), std::move(error));
+    FulfillWithError(std::move(callback), UnusableSwbnFileError(error));
     return;
   }
 
@@ -294,19 +298,18 @@ void SignedWebBundleReader::OnMetadataParsed(
                      // `parser_` will be deleted before `this` is deleted.
                      base::Unretained(this)));
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(base::ok());
 }
 
-void SignedWebBundleReader::FulfillWithError(
-    ReadErrorCallback callback,
-    ReadIntegrityBlockAndMetadataError error) {
+void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
+                                             UnusableSwbnFileError error) {
   state_ = State::kError;
 
   // This is an irrecoverable error state, thus we can safely delete `parser_`
   // here to free up resources.
   parser_.reset();
 
-  std::move(callback).Run(std::move(error));
+  std::move(callback).Run(base::unexpected(std::move(error)));
 }
 
 const absl::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
@@ -338,12 +341,11 @@ void SignedWebBundleReader::ReadResponse(
   if (entry_it == entries_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            base::unexpected(ReadResponseError::ForResponseNotFound(
-                base::StringPrintf("The Web Bundle does not contain a response "
-                                   "for the provided URL: %s",
-                                   url.spec().c_str())))));
+        base::BindOnce(std::move(callback),
+                       base::unexpected(ReadResponseError::ForResponseNotFound(
+                           "The Web Bundle does not contain a response for the "
+                           "provided URL: " +
+                           url.spec()))));
     return;
   }
 
@@ -481,9 +483,8 @@ void SignedWebBundleReader::DidReconnect(absl::optional<std::string> error) {
           FROM_HERE,
           base::BindOnce(
               std::move(response_callback),
-              base::unexpected(
-                  ReadResponseError::ForParserInternalError(base::StringPrintf(
-                      "Unable to open file: %s", error->c_str())))));
+              base::unexpected(ReadResponseError::ForParserInternalError(
+                  "Unable to open file: " + *error))));
     }
     return;
   }

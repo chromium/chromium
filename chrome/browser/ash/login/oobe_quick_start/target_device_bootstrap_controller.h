@@ -14,17 +14,14 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-class NearbyConnectionsManager;
-
 namespace ash::quick_start {
-
-class AuthenticatedConnection;
 
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
  public:
   explicit TargetDeviceBootstrapController(
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager);
+      std::unique_ptr<TargetDeviceConnectionBroker>
+          target_device_connection_broker);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;
@@ -93,23 +90,38 @@ class TargetDeviceBootstrapController
   void OnQRCodeVerificationRequested(
       const std::vector<uint8_t>& qr_code_data) override;
   void OnConnectionAuthenticated(
-      const std::string& source_device_id,
-      base::WeakPtr<AuthenticatedConnection> connection) override;
-  void OnConnectionRejected(const std::string& source_device_id) override;
-  void OnConnectionClosed(const std::string& source_device_id) override;
+      base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+          authenticated_connection) override;
+  void OnConnectionRejected() override;
+  void OnConnectionClosed(
+      TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
  private:
+  friend class TargetDeviceBootstrapControllerTest;
+
   void NotifyObservers();
   void OnStartAdvertisingResult(bool success);
   void OnStopAdvertising();
+
+  // If the target device successfully receives an ack message within a
+  // specified timeout, it prepares to automatically resume Quick Start after
+  // the update and closes the connection. If ack_successful is 'false', it
+  // closes the connection without preparing to automatically resume Quick Start
+  // after the update.
+  void OnNotifySourceOfUpdateResponse(bool ack_successful);
+
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
   std::string pin_;
   // TODO: Should we enforce one observer at a time here too?
   base::ObserverList<Observer> observers_;
-  bool prepare_for_update_on_connection_closed_ = false;
 
   Status status_;
+
+  base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+      authenticated_connection_;
+
+  int32_t session_id_;
 
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};

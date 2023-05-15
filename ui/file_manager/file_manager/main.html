@@ -14,6 +14,7 @@ found in the LICENSE file.
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
     <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
     <link rel="stylesheet" href="foreground/css/list.css">
     <link rel="stylesheet" href="foreground/css/table.css">
     <link rel="stylesheet" href="foreground/css/tree.css">
@@ -401,10 +402,14 @@ found in the LICENSE file.
                 </cr-input>
               </div>
             </div>
-            <cr-button id="cloud-button" class="icon-button menu-button" tabindex="0" hidden
+            <cr-button id="cloud-button" class="icon-button menu-button"
+                    hidden
+                    tabindex="0"
+                    aria-haspopup="true"
                     aria-label="Cloud Placeholder"
-                    command="#cloud" has-tooltip>
-              <xf-icon type="cloud"></xf-icon>
+                    has-tooltip>
+              <xf-icon type="cloud" slot="prefix-icon"></xf-icon>
+              <xf-icon slot="suffix-icon"></xf-icon>
             </cr-button>
             <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
                     aria-label="$i18n{REFRESH_BUTTON_LABEL}"
@@ -484,6 +489,7 @@ found in the LICENSE file.
         <!-- TODO(fukino): Turn this button into paper-button when the CommandButton supports paper-button. -->
         <button id="new-folder-button" class="primary"
                 visibleif="saveas-file folder" tabindex="0" disabled>
+          <div class="hover-layer"></div>
           <paper-ripple fit></paper-ripple>
           <span>$i18n{NEW_FOLDER_BUTTON_LABEL}</span>
         </button>
@@ -504,10 +510,12 @@ found in the LICENSE file.
       </div>
       <div class="right buttonbar">
         <button id="cancel-button" class="cancel secondary" tabindex="0">
+          <div class="hover-layer"></div>
           <paper-ripple fit></paper-ripple>
           <span>$i18n{CANCEL_LABEL}</span>
         </button>
         <button id="ok-button" class="ok primary" disabled tabindex="0">
+          <div class="hover-layer"></div>
           <paper-ripple fit></paper-ripple>
           <span></span>
         </button>

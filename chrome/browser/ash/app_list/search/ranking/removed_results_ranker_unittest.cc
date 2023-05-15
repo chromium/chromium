@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -68,7 +69,7 @@ class RemovedResultsRankerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<RemovedResultsRanker> ranker_;
 };

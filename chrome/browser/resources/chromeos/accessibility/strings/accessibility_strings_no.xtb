@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="100506692671054486">ingen tidligere kommandoer</translation>
 <translation id="1009046985747440431">Trykk på pil opp eller pil ned for å navigere og Enter for å aktivere</translation>
 <translation id="1011903154582639569">Finn en tast, og løft for å skrive</translation>
 <translation id="1012173283529841972">Listeelement</translation>
@@ -459,6 +460,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3936394396199829062">Lavendelbluss</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3962990492275676168">Begynn å lese fra nåværende plassering</translation>
+<translation id="397094149579293440">ingen tekst er markert</translation>
 <translation id="3970951409746498040">Sandbrun</translation>
 <translation id="3989324057180830702">Av/på-knapp</translation>
 <translation id="3991317907213946254">Moccasin</translation>
@@ -565,6 +567,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4786285211967466855">Det finnes ingen tidligere overskrifter på nivå 1</translation>
 <translation id="4787577491510559358">Les opp formatering for det gjeldende elementet</translation>
 <translation id="479989351350248267">søk</translation>
+<translation id="4802034228771424756">ikke fokus på noe tekstfelt</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="481165870889056555">Kunngjør tittelen på den nåværende siden</translation>
 <translation id="4815668758102003883">Blek turkis</translation>
@@ -587,13 +590,16 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="489907760999452556">Intern link</translation>
 <translation id="4909019435900810068">Flytt bakover ett ord</translation>
 <translation id="4911349081560453449">Det finnes ingen tidligere avmerkingsbokser</translation>
+<translation id="4919186071145887492">Kan ikke <ph name="COMMAND" />. Prøv på nytt</translation>
 <translation id="492295894462528572">Forord</translation>
 <translation id="495046168593986294">Rull opp</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953585991029886728">Rediger teksten</translation>
+<translation id="4964701498510730546">tekstfeltet er tomt</translation>
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Det finnes ingen tidligere knapper</translation>
 <translation id="4979404613699303341">Forrige-knappen</translation>
+<translation id="4981239367072766915">ukjente inndata</translation>
 <translation id="4982917827052020884">Vi begynner med noen taster du kommer til å bruke ofte. Ctrl-tasten kan brukes til å stoppe eventuell høytlesning som pågår. Du finner Ctrl-tasten i nedre venstre hjørne på tastaturet. For å fortsette, trykk på Ctrl-tasten.</translation>
 <translation id="4983588134362688868">Går til begynnelsen av siden</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, vindu</translation>
@@ -601,6 +607,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4994420463726586413">Les opp gjeldende batteristatus</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, alternativknappen valgt</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyelement med alternativknapp som er valgt</translation>
+<translation id="5014131807708055994">Kan ikke <ph name="COMMAND" /> – <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Slå på loggføring av tale</translation>
 <translation id="5041394372352067729">Flytt leselisten til toppen av siden</translation>
 <translation id="5042770794184672516">Øk talevolumet</translation>

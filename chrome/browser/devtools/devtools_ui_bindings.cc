@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -1228,7 +1228,7 @@ void DevToolsUIBindings::RegisterPreference(const std::string& name,
 }
 
 void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
-  base::Value settings = settings_.Get();
+  base::Value settings = base::Value(settings_.Get());
   std::move(callback).Run(&settings);
 }
 
@@ -1718,8 +1718,9 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
   auto it = extensions_api_.find(origin);
   if (it == extensions_api_.end())
     return;
-  std::string script = base::StringPrintf("%s(\"%s\")", it->second.c_str(),
-                                          base::GenerateGUID().c_str());
+  std::string script = base::StringPrintf(
+      "%s(\"%s\")", it->second.c_str(),
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
   content::DevToolsFrontendHost::SetupExtensionsAPI(frame, script);
 }
 

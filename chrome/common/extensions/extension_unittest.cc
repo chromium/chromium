@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -24,7 +25,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/mime_sniffer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -97,16 +97,14 @@ TEST(ExtensionTest, LocationPriorityTest) {
 }
 
 TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
-  DictionaryBuilder manifest;
   std::string unsanitized_name = "Test\n\n\n\n\n\n\n\n\n\n\n\nNew lines\u0085";
-  manifest.Set("name", unsanitized_name)
-      .Set("manifest_version", 2)
-      .Set("description", "some description");
+  auto manifest = base::Value::Dict()
+                      .Set("name", unsanitized_name)
+                      .Set("manifest_version", 2)
+                      .Set("description", "some description")
+                      .Set("version", "0.1");
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetManifest(manifest.Build())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").Build())
-          .Build();
+      ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("TestNew lines", extension->name());
   // Ensure that non-localized name is not sanitized.
@@ -114,16 +112,14 @@ TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
 }
 
 TEST(ExtensionTest, EnsureWhitespacesInExtensionNameAreCollapsed) {
-  DictionaryBuilder manifest;
   std::string unsanitized_name = "Test                        Whitespace";
-  manifest.Set("name", unsanitized_name)
-      .Set("manifest_version", 2)
-      .Set("description", "some description");
+  auto manifest = base::Value::Dict()
+                      .Set("name", unsanitized_name)
+                      .Set("manifest_version", 2)
+                      .Set("description", "some description")
+                      .Set("version", "0.1");
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetManifest(manifest.Build())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").Build())
-          .Build();
+      ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("Test Whitespace", extension->name());
   // Ensure that non-localized name is not sanitized.
@@ -135,14 +131,15 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
   auto run_rtl_test = [](const wchar_t* name, const wchar_t* expected) {
     SCOPED_TRACE(
         base::StringPrintf("Name: %ls, Expected: %ls", name, expected));
-    DictionaryBuilder manifest;
-    manifest.Set("name", base::WideToUTF8(name))
-        .Set("manifest_version", 2)
-        .Set("description", "some description")
-        .Set("version",
-             "0.1");  // <NOTE> Moved this here to avoid the MergeManifest call.
+    auto manifest = base::Value::Dict()
+                        .Set("name", base::WideToUTF8(name))
+                        .Set("manifest_version", 2)
+                        .Set("description", "some description")
+                        .Set("version",
+                             "0.1");  // <NOTE> Moved this here to avoid the
+                                      // MergeManifest call.
     scoped_refptr<const Extension> extension =
-        ExtensionBuilder().SetManifest(manifest.Build()).Build();
+        ExtensionBuilder().SetManifest(std::move(manifest)).Build();
     ASSERT_TRUE(extension);
     const int kResourceId = IDS_EXTENSION_PERMISSIONS_PROMPT_TITLE;
     const std::u16string expected_utf16 = base::WideToUTF16(expected);

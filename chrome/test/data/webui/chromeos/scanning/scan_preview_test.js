@@ -72,12 +72,29 @@ suite('scanPreviewTest', function() {
   let fakePrefersColorSchemeDarkMediaQuery;
 
   /**
+   * Type alias for SVGUseElement.
+   * @typedef {{href: {baseVal: string}}}
+   */
+  let SVGUseElement;
+
+  /**
    * @param {boolean} enabled
    * @return {!Promise}
    */
   function setFakePrefersColorSchemeDark(enabled) {
     assertTrue(!!scanPreview);
     fakePrefersColorSchemeDarkMediaQuery.matches = enabled;
+
+    return flushTasks();
+  }
+
+  /**
+   * @param {boolean} enabled
+   * @returns {!Promise}
+   */
+  function setJellyEnabled(enabled) {
+    assertTrue(!!scanPreview);
+    scanPreview.setIsJellyEnabledForTesting(enabled);
 
     return flushTasks();
   }
@@ -443,8 +460,10 @@ suite('scanPreviewTest', function() {
         });
   });
 
+  // TODO(b/276493795): After the Jelly experiment is launched, remove test.
   // Verify correct svg displayed when page is in dark mode.
   test('readyToScanSvgSetByColorScheme', async () => {
+    await setJellyEnabled(false);
     const srcBase = 'chrome://scanning/';
     const lightModeSvg = `${srcBase}svg/ready_to_scan.svg`;
     const darkModeSvg = `${srcBase}svg/ready_to_scan_dark.svg`;
@@ -453,10 +472,29 @@ suite('scanPreviewTest', function() {
 
     // Mock media query state for light mode.
     await setFakePrefersColorSchemeDark(false);
-    assertEquals(getReadyToScanSvg().src, lightModeSvg);
+    assertEquals(lightModeSvg, getReadyToScanSvg().src);
 
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
-    assertEquals(getReadyToScanSvg().src, darkModeSvg);
+    assertEquals(darkModeSvg, getReadyToScanSvg().src);
+  });
+
+  // Verify "loading scanners" dynamic SVG use when dynamic colors enabled.
+  test('jellyColors_LoadingScannersSvg', async () => {
+    await setJellyEnabled(true);
+    const dynamicSvg = `svg/illo_ready_to_scan.svg#illo_ready_to_scan`;
+
+    const getLoadingScannersSvgValue = () =>
+        (/** @type {!SVGUseElement} */ (
+             scanPreview.shadowRoot.querySelector('#readyToScanSvg > use'))
+             .href.baseVal);
+
+    // Setup UI to display no scanners div.
+    await setFakePrefersColorSchemeDark(false);
+    assertEquals(dynamicSvg, getLoadingScannersSvgValue());
+
+    // Mock media query state for dark mode.
+    await setFakePrefersColorSchemeDark(true);
+    assertEquals(dynamicSvg, getLoadingScannersSvgValue());
   });
 });

@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -34,7 +35,8 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     gfx::SurfaceOrigin origin,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
-    : SkiaOutputDevice(context_provider->GetGrContext(),
+    : SkiaOutputDevice(/*gr_context=*/nullptr,
+                       context_provider->GetGraphiteContext(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_provider_(context_provider) {
@@ -71,16 +73,16 @@ gpu::SurfaceHandle SkiaOutputDeviceDawn::GetChildSurfaceHandle() const {
   return child_window_.window();
 }
 
-bool SkiaOutputDeviceDawn::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
+                                   const gfx::ColorSpace& color_space,
+                                   int sample_count,
+                                   float device_scale_factor,
+                                   gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  size_ = gfx::SkISizeToSize(characterization.dimensions());
-  sk_color_space_ = characterization.refColorSpace();
-  sample_count_ = characterization.sampleCount();
+  size_ = gfx::SkISizeToSize(image_info.dimensions());
+  sk_color_space_ = image_info.refColorSpace();
+  sample_count_ = sample_count;
 
   wgpu::SwapChainDescriptor swap_chain_desc;
   swap_chain_desc.format = kSwapChainFormat;
@@ -131,7 +133,7 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
                                        sample_count_, /*stencilBits=*/0, info);
   DCHECK(backend_target.isValid());
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-  sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
+  sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
       context_provider_->GetGrContext(), backend_target,
       capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
           ? kTopLeft_GrSurfaceOrigin

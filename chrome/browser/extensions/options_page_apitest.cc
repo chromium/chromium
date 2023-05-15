@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/functional/bind.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,7 +16,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -29,12 +29,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
   extension_dir.WriteFile(FILE_PATH_LITERAL("options.html"),
                           "<html><body><div>Options Here</div></body></html>");
 
-  extension_dir.WriteManifest(DictionaryBuilder()
+  extension_dir.WriteManifest(base::Value::Dict()
                                   .Set("manifest_version", 2)
                                   .Set("name", "Options Test")
                                   .Set("options_page", "options.html")
-                                  .Set("version", "1")
-                                  .ToJSON());
+                                  .Set("version", "1"));
 
   scoped_refptr<const Extension> extension =
       InstallExtension(extension_dir.Pack(), 1);
@@ -57,8 +56,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
       button.click();
     })();)";
 
-  EXPECT_TRUE(content::ExecuteScript(tab_strip->GetActiveWebContents(),
-                                     kScriptClickOptionButton));
+  EXPECT_TRUE(content::ExecJs(tab_strip->GetActiveWebContents(),
+                              kScriptClickOptionButton));
   tab_add.Wait();
   ASSERT_EQ(2, tab_strip->count());
   content::WebContents* tab = tab_strip->GetWebContentsAt(1);
@@ -80,13 +79,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       "  chrome.test.sendMessage(tab ? 'tab' : 'embedded');\n"
       "});\n");
   extension_dir.WriteManifest(
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("manifest_version", 2)
           .Set("name", "Extension for options param test")
-          .Set("options_ui",
-               DictionaryBuilder().Set("page", "options.html").Build())
-          .Set("version", "1")
-          .ToJSON());
+          .Set("options_ui", base::Value::Dict().Set("page", "options.html"))
+          .Set("version", "1"));
 
   ExtensionTestMessageListener listener;
   scoped_refptr<const Extension> extension =

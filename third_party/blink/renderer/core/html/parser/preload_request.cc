@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -68,7 +68,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     const network::mojom::ReferrerPolicy referrer_policy,
     ResourceFetcher::IsImageSet is_image_set,
     const ExclusionInfo* exclusion_info,
-    const FetchParameters::ResourceWidth& resource_width,
+    absl::optional<float> resource_width,
+    absl::optional<float> resource_height,
     RequestType request_type) {
   // Never preload data URLs. We also disallow relative ref URLs which become
   // data URLs if the document's URL is a data URL. We don't want to create
@@ -84,7 +85,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
 
   return base::WrapUnique(new PreloadRequest(
       initiator_name, initiator_position, resource_url, base_url, resource_type,
-      resource_width, request_type, referrer_policy, is_image_set));
+      resource_width, resource_height, request_type, referrer_policy,
+      is_image_set));
 }
 
 Resource* PreloadRequest::Start(Document* document) {
@@ -117,9 +119,8 @@ Resource* PreloadRequest::Start(Document* document) {
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
           url, /*element=*/nullptr,
           /*request_id=*/absl::nullopt, /*log_issues=*/false)) {
-    resource_request.SetHttpHeaderField(
-        http_names::kAttributionReportingEligible,
-        kAttributionEligibleEventSourceAndTrigger);
+    resource_request.SetAttributionReportingEligibility(
+        network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
@@ -142,6 +143,7 @@ Resource* PreloadRequest::Start(Document* document) {
 
   params.SetDefer(defer_);
   params.SetResourceWidth(resource_width_);
+  params.SetResourceHeight(resource_height_);
   params.SetIntegrityMetadata(integrity_metadata_);
   params.SetContentSecurityPolicyNonce(nonce_);
   params.SetParserDisposition(kParserInserted);

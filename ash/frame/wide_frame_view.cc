@@ -13,6 +13,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
@@ -59,7 +60,7 @@ class WideFrameTargeter : public aura::WindowTargeter {
   }
 
  private:
-  chromeos::HeaderView* header_view_;
+  raw_ptr<chromeos::HeaderView, ExperimentalAsh> header_view_;
 };
 
 }  // namespace

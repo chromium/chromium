@@ -6,11 +6,18 @@
 #define COMPONENTS_METRICS_STRUCTURED_EVENTS_PROCESSOR_INTERFACE_H_
 
 #include "components/metrics/structured/event.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics::structured {
 
-// An interface allowing different classes to add fields to events after the
-// events are recorded by a client.
+namespace {
+
+using ::metrics::ChromeUserMetricsExtension;
+
+}
+
+// An interface allowing different classes to add fields and metadata to events
+// after the events are recorded by a client.
 class EventsProcessorInterface {
  public:
   EventsProcessorInterface() = default;
@@ -27,6 +34,11 @@ class EventsProcessorInterface {
 
   // Processes |event|. Note that this function may mutate |event|.
   virtual void OnEventsRecord(Event* event) = 0;
+
+  // Attach metadata when |ProvideIndependentMetrics| is called from the
+  // MetricsService. This will be called before events are attached.
+  virtual void OnProvideIndependentMetrics(
+      ChromeUserMetricsExtension* uma_proto) = 0;
 };
 
 }  // namespace metrics::structured

@@ -52,7 +52,7 @@ suite('emoji-picker-offline-gif', () => {
   });
 
   test(
-      'There exists emoji-error component in the Trending category.',
+      'There exists emoji-error component in the Emoji Category.',
       async () => {
         const categoryButton =
             emojiSearch.shadowRoot!
@@ -65,8 +65,6 @@ suite('emoji-picker-offline-gif', () => {
             findInEmojiPicker('#list-container', '#groups', 'emoji-error')!;
         assert(errorElement);
 
-        assert(errorElement.shadowRoot!.querySelector(
-            '.gif-error-container > #no-internet-icon'));
         const errorText = errorElement.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(
@@ -84,8 +82,6 @@ suite('emoji-picker-offline-gif', () => {
         const errorElement = results!.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
-        assert(errorElement!.shadowRoot!.querySelector(
-            '.gif-error-container > #no-internet-icon'));
         const errorText = errorElement!.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(

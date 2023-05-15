@@ -52,6 +52,7 @@ component("system_media_controls") {
       "mac/system_media_controls_mac.mm",
     ]
     deps += [ "//build:branding_buildflags" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     frameworks = [ "Foundation.framework" ]
     weak_frameworks = [ "MediaPlayer.framework" ]

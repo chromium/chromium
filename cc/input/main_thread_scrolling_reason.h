@@ -74,7 +74,8 @@ struct CC_EXPORT MainThreadScrollingReason {
   };
 
   static const uint32_t kNonCompositedReasons =
-      kNotOpaqueForTextAndLCDText | kCantPaintScrollingBackgroundAndLCDText;
+      kPreferNonCompositedScrolling | kNotOpaqueForTextAndLCDText |
+      kCantPaintScrollingBackgroundAndLCDText;
 
   // Returns true if the given MainThreadScrollingReason can be set by the main
   // thread.

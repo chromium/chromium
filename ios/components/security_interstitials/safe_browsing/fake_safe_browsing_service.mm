@@ -29,8 +29,8 @@ class FakeSafeBrowsingUrlCheckerImpl
                                        /*database_manager=*/nullptr,
                                        /*client=*/nullptr),
                                    base::WeakPtr<web::WebState>(),
-                                   /*real_time_lookup_enabled=*/false,
-                                   /*can_rt_check_subresource_url=*/false,
+                                   /*url_real_time_lookup_enabled=*/false,
+                                   /*can_urt_check_subresource_url=*/false,
                                    web::GetUIThreadTaskRunner({}),
                                    /*url_lookup_service_on_ui=*/nullptr) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
@@ -45,14 +45,14 @@ class FakeSafeBrowsingUrlCheckerImpl
       std::move(callback).Run(/*slow_check_notifier=*/nullptr,
                               /*proceed=*/false,
                               /*showed_interstitial=*/true,
-                              /*did_perform_real_time_check=*/false,
-                              /*did_check_allowlist=*/true);
+                              /*did_perform_url_real_time_check=*/false,
+                              /*did_check_url_real_time_allowlist=*/true);
       return;
     }
     std::move(callback).Run(/*slow_check_notifier=*/nullptr, /*proceed=*/true,
                             /*showed_interstitial=*/false,
-                            /*did_perform_real_time_check=*/false,
-                            /*did_check_allowlist=*/true);
+                            /*did_perform_url_real_time_check=*/false,
+                            /*did_check_url_real_time_allowlist=*/true);
   }
 };
 }  // namespace

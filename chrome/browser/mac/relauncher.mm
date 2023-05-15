@@ -18,11 +18,11 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_nsobject.h"
@@ -116,7 +116,7 @@ bool RelaunchAppWithHelper(const std::string& helper,
   // The first item of `args` is the path to the executable, but launch APIs
   // require the path to the bundle. Rather than try to derive the bundle path
   // from the executable path, substitute in the bundle path.
-  relaunch_args.push_back(base::mac::OuterBundlePath().value());
+  relaunch_args.push_back(base::apple::OuterBundlePath().value());
   for (size_t i = 1; i < args.size(); ++i) {
     // Strip any PSN arguments, as they apply to a specific process.
     if (args[i].compare(0, strlen(kPSNArg), kPSNArg) != 0 &&
@@ -339,16 +339,14 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
         {.activate = activate,
          .create_new_instance = true,
          .prompt_user_if_needed = true},
-        base::BindOnce(
-            [](base::expected<NSRunningApplication*, NSError*> result) {
-              if (!result.has_value()) {
-                LOG(ERROR) << "Failed to relaunch: "
-                           << base::SysNSStringToUTF8(
-                                  result.error().description);
-              }
+        base::BindOnce([](NSRunningApplication* app, NSError* error) {
+          if (error) {
+            LOG(ERROR) << "Failed to relaunch: "
+                       << base::SysNSStringToUTF8(error.description);
+          }
 
-              CFRunLoopStop(CFRunLoopGetMain());
-            }));
+          CFRunLoopStop(CFRunLoopGetMain());
+        }));
 
     // This is running the main thread.
     CFRunLoopRun();

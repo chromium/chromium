@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -210,7 +211,8 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
     return auth_zone;
   }
 
-  testing::NiceMock<MockClientIdsDatabase>* client_ids_database_;
+  raw_ptr<testing::NiceMock<MockClientIdsDatabase>, ExperimentalAsh>
+      client_ids_database_;
   std::map<GURL, AuthZoneMock*> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -310,7 +312,8 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
   EXPECT_EQ(cr.data, "data");
 }
 
-TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, ApplySyncChanges) {
+TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
+       ApplyIncrementalSyncChanges) {
   GURL url_1("https://ala.ma.kota/albo/psa");
   GURL url_2("https://other.server:1234");
 
@@ -327,8 +330,9 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, ApplySyncChanges) {
   syncer::ModelTypeSyncBridge* bridge =
       auth_zones_manager_->GetModelTypeSyncBridge();
 
-  absl::optional<syncer::ModelError> error = bridge->ApplySyncChanges(
-      bridge->CreateMetadataChangeList(), std::move(data_change_list));
+  absl::optional<syncer::ModelError> error =
+      bridge->ApplyIncrementalSyncChanges(bridge->CreateMetadataChangeList(),
+                                          std::move(data_change_list));
   EXPECT_FALSE(error);
 
   // Check if |url_1| is gone.

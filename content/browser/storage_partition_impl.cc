@@ -200,7 +200,8 @@ void BindStorageServiceFilesystemImpl(
     const base::FilePath& directory_path,
     mojo::PendingReceiver<storage::mojom::Directory> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<storage::FilesystemImpl>(directory_path),
+      std::make_unique<storage::FilesystemImpl>(
+          directory_path, storage::FilesystemImpl::ClientType::kUntrusted),
       std::move(receiver));
 }
 #endif
@@ -2881,20 +2882,6 @@ void StoragePartitionImpl::ResetURLLoaderFactories() {
 void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {
   DCHECK(initialized_);
   bluetooth_allowed_devices_map_->Clear();
-}
-
-void StoragePartitionImpl::ResetAttributionManagerForTesting(
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(initialized_);
-
-  // Reset the existing manager first to ensure that the underlying DB is only
-  // accessed by one instance at a time.
-  attribution_manager_.reset();
-
-  attribution_manager_ = AttributionManagerImpl::CreateWithNewDbForTesting(
-      this, partition_path_, special_storage_policy_);
-
-  std::move(callback).Run(/*success=*/!!attribution_manager_);
 }
 
 void StoragePartitionImpl::AddObserver(DataRemovalObserver* observer) {

@@ -24,7 +24,7 @@ ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
 
 ScopedClipboardHistoryPauseImpl::~ScopedClipboardHistoryPauseImpl() {
   if (clipboard_history_)
-    clipboard_history_->Resume(pause_id_);
+    clipboard_history_->Resume(*pause_id_);
 }
 
 }  // namespace ash

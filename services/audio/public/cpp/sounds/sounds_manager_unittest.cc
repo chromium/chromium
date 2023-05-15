@@ -12,7 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "base/test/test_message_loop.h"
+#include "base/test/task_environment.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_codecs.h"
@@ -43,7 +43,7 @@ class SoundsManagerTest : public testing::Test {
   }
 
  private:
-  base::TestMessageLoop message_loop_;
+  base::test::TaskEnvironment env_;
 };
 
 TEST_F(SoundsManagerTest, Play) {

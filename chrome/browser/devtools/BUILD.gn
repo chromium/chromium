@@ -17,6 +17,8 @@ if (!is_android) {
   import("$_inspector_protocol/inspector_protocol.gni")
 
   _protocol_generated = [
+    "protocol/autofill.cc",
+    "protocol/autofill.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/cast.cc",
@@ -28,6 +30,10 @@ if (!is_android) {
     "protocol/protocol.h",
     "protocol/security.cc",
     "protocol/security.h",
+    "protocol/storage.cc",
+    "protocol/storage.h",
+    "protocol/system_info.cc",
+    "protocol/system_info.h",
     "protocol/target.cc",
     "protocol/target.h",
   ]
@@ -104,6 +110,9 @@ static_library("devtools") {
 
     # Similar bandaid as the above. Since we cannot depend on
     # //chrome/browser:browser, we include indirect dependencies here.
+    "//chrome/browser/autofill:autofill",
+    "//components/autofill/content/browser:browser",
+    "//components/autofill/core/browser:browser",
     "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
@@ -230,6 +239,7 @@ static_library("devtools") {
 
   if (is_mac) {
     sources += [ "devtools_dock_tile_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   } else {
     sources += [ "devtools_dock_tile.cc" ]
   }
@@ -247,6 +257,8 @@ static_library("devtools") {
       "//third_party/inspector_protocol:crdtp",
     ]
     sources += [
+      "protocol/autofill_handler.cc",
+      "protocol/autofill_handler.h",
       "protocol/browser_handler.cc",
       "protocol/browser_handler.h",
       "protocol/cast_handler.cc",
@@ -257,6 +269,10 @@ static_library("devtools") {
       "protocol/page_handler.h",
       "protocol/security_handler.cc",
       "protocol/security_handler.h",
+      "protocol/storage_handler.cc",
+      "protocol/storage_handler.h",
+      "protocol/system_info_handler.cc",
+      "protocol/system_info_handler.h",
       "protocol/target_handler.cc",
       "protocol/target_handler.h",
     ]
@@ -293,7 +309,7 @@ static_library("test_support") {
     deps += [
       ":devtools",
       "//base",
-      "//chrome/browser:browser_process",
+      "//chrome/browser",
       "//chrome/browser/ui",
       "//content/public/browser",
       "//content/test:test_support",

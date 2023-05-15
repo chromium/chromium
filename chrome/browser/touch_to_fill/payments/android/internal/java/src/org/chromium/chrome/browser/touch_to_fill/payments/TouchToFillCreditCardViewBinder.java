@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -73,14 +76,14 @@ class TouchToFillCreditCardViewBinder {
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView cardName = view.findViewById(R.id.card_name);
+        ImageView icon = view.findViewById(R.id.favicon);
         if (propertyKey == CARD_ICON_ID) {
-            ImageView icon = view.findViewById(R.id.favicon);
-            int iconId = model.get(CARD_ICON_ID);
-            // Generally the resource id for the icon can only be zero in the tests.
-            // For production code a general card icon id is set by default in the CreditCard
-            // constructor if the card issuer is unknown.
-            icon.setImageDrawable(
-                    iconId != 0 ? AppCompatResources.getDrawable(view.getContext(), iconId) : null);
+            icon.setImageDrawable(getCardIcon(view.getContext(), model.get(CARD_ART_URL),
+                    model.get(CARD_ICON_ID), R.dimen.touch_to_fill_payments_favicon_width,
+                    R.dimen.touch_to_fill_payments_favicon_height, R.dimen.card_art_corner_radius,
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+        } else if (propertyKey == CARD_ART_URL) {
+            // Skip, because it is already handled in the `CARD_ICON_ID` case.
         } else if (propertyKey == NETWORK_NAME) {
             if (!model.get(NETWORK_NAME).isEmpty()) {
                 cardName.setContentDescription(
@@ -88,9 +91,11 @@ class TouchToFillCreditCardViewBinder {
             }
         } else if (propertyKey == CARD_NAME) {
             cardName.setText(model.get(CARD_NAME));
+            cardName.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
         } else if (propertyKey == CARD_NUMBER) {
             TextView cardNumber = view.findViewById(R.id.card_number);
             cardNumber.setText(model.get(CARD_NUMBER));
+            cardNumber.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
         } else if (propertyKey == CARD_EXPIRATION) {
             TextView expirationDate = view.findViewById(R.id.description_line_2);
             expirationDate.setText(model.get(CARD_EXPIRATION));
@@ -139,9 +144,10 @@ class TouchToFillCreditCardViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
-        } else if (propertyKey == CARD_ICON_ID || propertyKey == NETWORK_NAME
-                || propertyKey == CARD_NAME || propertyKey == CARD_NUMBER
-                || propertyKey == CARD_EXPIRATION || propertyKey == VIRTUAL_CARD_LABEL) {
+        } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_ART_URL
+                || propertyKey == NETWORK_NAME || propertyKey == CARD_NAME
+                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION
+                || propertyKey == VIRTUAL_CARD_LABEL) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

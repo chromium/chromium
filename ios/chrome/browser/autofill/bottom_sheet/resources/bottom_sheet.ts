@@ -14,12 +14,51 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 /**
  * The last HTML element that was blurred.
  */
-let lastBlurredElement_: HTMLElement|null;
+let lastBlurredElement_: HTMLElement|null = null;
 
 /**
  * The list of observed elements.
  */
 let observedElements_: Element[] = [];
+
+/*
+ * Prepare and send message to show bottom sheet.
+ * @private
+ */
+function showBottomSheet_(hasUserGesture: boolean): void {
+  let field = null;
+  let fieldType = '';
+  let fieldValue = '';
+  let form = null;
+
+  if (lastBlurredElement_ instanceof HTMLInputElement) {
+    field = lastBlurredElement_;
+    fieldType = lastBlurredElement_.type;
+    fieldValue = lastBlurredElement_.value;
+    form = lastBlurredElement_.form;
+  } else if (lastBlurredElement_ instanceof HTMLFormElement) {
+    form = lastBlurredElement_;
+  }
+
+  // TODO(crbug.com/1427221): convert these "gCrWeb.fill" and "gCrWeb.form"
+  // calls to import and call the functions directly once the conversion to
+  // TypeScript is done.
+  gCrWeb.fill.setUniqueIDIfNeeded(field);
+  gCrWeb.fill.setUniqueIDIfNeeded(form);
+
+  const msg = {
+    'frameID': gCrWeb.message.getFrameId(),
+    'formName': gCrWeb.form.getFormIdentifier(form),
+    'uniqueFormID': gCrWeb.fill.getUniqueID(form),
+    'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
+    'uniqueFieldID': gCrWeb.fill.getUniqueID(field),
+    'fieldType': fieldType,
+    'type': 'focus',
+    'value': fieldValue,
+    'hasUserGesture': hasUserGesture,
+  };
+  sendWebKitMessage('BottomSheetMessage', msg);
+}
 
 /**
  * Focus events for observed input elements are messaged to the main
@@ -36,47 +75,17 @@ function focusEventHandler_(event: Event): void {
   event.target.blur();
   lastBlurredElement_ = event.target;
 
-  let field = null;
-  let fieldType = '';
-  let fieldValue = '';
-  let form = null;
-
-  if (event.target instanceof HTMLInputElement) {
-    field = event.target;
-    fieldType = event.target.type;
-    fieldValue = event.target.value;
-    form = event.target.form;
-  } else if (event.target instanceof HTMLFormElement) {
-    form = event.target;
-  }
-
-  // TODO(crbug.com/1427221): convert these "gCrWeb.fill" and "gCrWeb.form"
-  // calls to import and call the functions directly once the conversion to
-  // TypeScript is done.
-  gCrWeb.fill.setUniqueIDIfNeeded(field);
-  gCrWeb.fill.setUniqueIDIfNeeded(form);
-
-  const msg = {
-    'frameID': gCrWeb.message.getFrameId(),
-    'formName': gCrWeb.form.getFormIdentifier(form),
-    'uniqueFormID': gCrWeb.fill.getUniqueID(form),
-    'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
-    'uniqueFieldID': gCrWeb.fill.getUniqueID(field),
-    'fieldType': fieldType,
-    'type': event.type,
-    'value': fieldValue,
-    'hasUserGesture': event.isTrusted,
-  };
-  sendWebKitMessage('BottomSheetMessage', msg);
+  showBottomSheet_(event.isTrusted);
 }
 
 /**
  * Attach event listeners for relevant elements on the focus event.
  * @private
  */
-function attachListeners_(): void {
-  for (const element of observedElements_) {
+function doAttachListeners_(elementsToObserve: Element[]): void {
+  for (const element of elementsToObserve) {
     element.addEventListener('focus', focusEventHandler_, true);
+    observedElements_.push(element);
   }
 }
 
@@ -97,15 +106,36 @@ function detachListeners_(): void {
  */
 function attachListeners(renderer_ids: number[]): void {
   // Build list of elements
+  let blurredElement: HTMLElement|null = null;
+  let elementsToObserve: Element[] = [];
   for (const renderer_id of renderer_ids) {
     const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
-    if (element) {
-      observedElements_.push(element);
+    // Only add element to list of observed elements if we aren't already
+    // observing it.
+    if (element && !observedElements_.find(elem => elem === element)) {
+      elementsToObserve.push(element);
+      if (document.activeElement === element) {
+        if (element.value != '') {
+          // The user has already started filling the active field, so bail out
+          // without attaching listeners.
+          return;
+        }
+        // Remove the focus on an element if it already has focus and we want to
+        // listen for the focus event on it.
+        element.blur();
+        blurredElement = element;
+      }
     }
   }
 
   // Attach the listeners once the IDs are set.
-  attachListeners_();
+  doAttachListeners_(elementsToObserve);
+
+  // Restore focus if it was removed.
+  if (blurredElement) {
+    lastBlurredElement_ = blurredElement;
+    showBottomSheet_(/*hasUserGesture=*/ false);
+  }
 }
 
 /**

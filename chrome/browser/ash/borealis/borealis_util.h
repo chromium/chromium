@@ -38,8 +38,6 @@ extern const char kBorealisDlcName[];
 extern const char kBorealisAppIdRegex[];
 // Base64-encoded allowed x-scheme for Borealis apps.
 extern const char kAllowedScheme[];
-// Base64-encoded allow list of URLs that can be handled by Borealis apps.
-extern const base::StringPiece kURLAllowlist[];
 // Error string to replace Proton version info in the event that a GameID
 // parsed with /usr/bin/get_compat_tool_versions.py in the Borealis VM does not
 // match the GameID expected based on extraction with kBorealisAppIdRegex.

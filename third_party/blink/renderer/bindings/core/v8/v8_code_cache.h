@@ -62,7 +62,9 @@ class CORE_EXPORT V8CodeCache final {
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
-  GetCompileOptions(mojom::blink::V8CacheOptions, const ClassicScript&);
+  GetCompileOptions(mojom::blink::V8CacheOptions,
+                    const ClassicScript&,
+                    bool might_generate_compile_hints = false);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
@@ -70,7 +72,8 @@ class CORE_EXPORT V8CodeCache final {
                     const CachedMetadataHandler*,
                     size_t source_text_length,
                     ScriptSourceLocationType,
-                    const KURL& url);
+                    const KURL& url,
+                    bool might_generate_compile_hints = false);
 
   static scoped_refptr<CachedMetadata> GetCachedMetadata(
       const CachedMetadataHandler* cache_handler,

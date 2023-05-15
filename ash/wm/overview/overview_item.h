@@ -14,6 +14,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -34,7 +35,9 @@ class OverviewItemView;
 class RoundedLabelWidget;
 class SystemShadow;
 
-// This class represents an item in overview mode.
+// This class represents an item in overview mode. It handles placing the window
+// in the correct bounds given by `OverviewGrid`, and owns a widget which
+// contains an item's overview specific ui (title, icon, close button, etc.).
 class ASH_EXPORT OverviewItem : public aura::WindowObserver,
                                 public WindowStateObserver {
  public:
@@ -46,8 +49,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   OverviewItem& operator=(const OverviewItem&) = delete;
 
   ~OverviewItem() override;
-
-  SystemShadow* shadow() { return shadow_.get(); }
 
   aura::Window* GetWindow();
 
@@ -152,13 +153,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // |window_|'s bounds change.
   void UpdateWindowDimensionsType();
 
-  // TODO(minch): Do not actually scale up the item to get the bounds.
-  // http://crbug.com/876567.
-  // Returns the bounds of the selected item, which will be scaled up a little
-  // bit and header view will be hidden after being selected. Note, the item
-  // will be restored back after scaled up.
-  gfx::Rect GetBoundsOfSelectedItem();
-
   // Increases the bounds of the dragged item.
   void ScaleUpSelectedItem(OverviewAnimationType animation_type);
 
@@ -166,7 +160,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void UpdateItemContentViewForMinimizedWindow();
 
   // Checks if this item is currently being dragged.
-  bool IsDragItem();
+  bool IsDragItem() const;
 
   // Inserts the window back to its original stacking order so that the order of
   // windows is the same as when entering overview.
@@ -199,10 +193,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void SetOpacity(float opacity);
   float GetOpacity();
 
-  OverviewAnimationType GetExitOverviewAnimationType();
-  OverviewAnimationType GetExitTransformAnimationType();
+  OverviewAnimationType GetExitOverviewAnimationType() const;
+  OverviewAnimationType GetExitTransformAnimationType() const;
 
-  // If kNewOverviewLayout is on, use this function for handling events.
+  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
+  // might want to process scroll events on the item.
   void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
 
   // Handles events forwarded from |overview_item_view_|.
@@ -278,25 +273,13 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
     return scrolling_bounds_;
   }
 
-  gfx::Rect GetShadowBoundsForTesting();
-  RoundedLabelWidget* cannot_snap_widget_for_testing() {
-    return cannot_snap_widget_.get();
-  }
-
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {
     target_bounds_ = target_bounds;
-  }
-  void set_animating_to_close_for_testing(bool val) {
-    animating_to_close_ = val;
   }
 
  private:
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
-
-  // The shadow should match the size of the transformed window or preview
-  // window if unclipped.
-  gfx::RectF GetUnclippedShadowBounds() const;
 
   // Functions to be called back when their associated animations complete.
   void OnWindowCloseAnimationCompleted();
@@ -366,7 +349,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   aura::Window::Windows GetWindowsForHomeGesture();
 
   // The root window this item is being displayed on.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The contained Window's wrapper.
   ScopedOverviewTransformWindow transform_window_;
@@ -393,7 +376,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // The view associated with |item_widget_|. Contains a title, close button and
   // maybe a backdrop. Forwards certain events to |this|.
-  OverviewItemView* overview_item_view_ = nullptr;
+  raw_ptr<OverviewItemView, ExperimentalAsh> overview_item_view_ = nullptr;
 
   // A widget with text that may show up on top of |transform_window_| to notify
   // users this window cannot be snapped.
@@ -405,11 +388,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Pointer to the Overview that owns the OverviewGrid containing |this|.
   // Guaranteed to be non-null for the lifetime of |this|.
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // Pointer to the OverviewGrid that contains |this|. Guaranteed to be non-null
   // for the lifetime of |this|.
-  OverviewGrid* overview_grid_;
+  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_;
 
   // True when the item is dragged and dropped on another desk's mini view. This
   // causes it to restore its transform immediately without any animations,

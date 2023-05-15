@@ -27,7 +27,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -44,10 +46,6 @@
 #include "components/crash/core/app/crash_export_thunks.h"
 #endif
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/crash/core/common/crash_key.h"  // nogncheck
-#endif
-
 namespace crash_reporter {
 
 namespace {
@@ -60,7 +58,8 @@ void AbslAbortHook(const char* file,
   // This simulates that a CHECK(false) was done at file:line instead of here.
   // This is used instead of base::ImmediateCrash() to give better error
   // messages locally (printed stack for one).
-  logging::CheckError::Check(file, line, "false").stream() << prefix_end;
+  logging::LogMessage check_failure(file, line, logging::LOGGING_FATAL);
+  check_failure.stream() << "Check failed: false. " << prefix_end;
 }
 
 base::FilePath* g_database_path;
@@ -136,17 +135,7 @@ bool InitializeCrashpadImpl(bool initial_client,
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-// TODO(pbos): Remove this exception for iOS once it's 100% on Crashpad and
-// depending on //components/crash/core/common:crash_key_lib does not cause a
-// forbidden dependency through crash_key_breakpad_ios.mm depending on
-// //components/previous_session_info. As of writing this //base crash keys are
-// set up in //ios/chrome/browser/crash_report/crash_helper.mm.
-#if BUILDFLAG(IS_IOS)
-  crashpad::AnnotationList::Register();
-#else
   InitializeCrashKeys();
-#endif  // BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_IOS)
   static crashpad::StringAnnotation<24> ptype_key("ptype");
   ptype_key.Set(browser_process ? base::StringPiece("browser")
@@ -333,12 +322,18 @@ void RequestSingleCrashUpload(const std::string& local_id) {
 #endif
 }
 
-base::FilePath GetCrashpadDatabasePath() {
+absl::optional<base::FilePath> GetCrashpadDatabasePath() {
 #if BUILDFLAG(IS_WIN)
-  return base::FilePath(GetCrashpadDatabasePath_ExportThunk());
+  base::FilePath::StringType::const_pointer path =
+      GetCrashpadDatabasePath_ExportThunk();
 #else
-  return base::FilePath(GetCrashpadDatabasePathImpl());
+  base::FilePath::StringType::const_pointer path =
+      GetCrashpadDatabasePathImpl();
 #endif
+  if (!path) {
+    return absl::nullopt;
+  }
+  return base::FilePath(path);
 }
 
 void ClearReportsBetween(const base::Time& begin, const base::Time& end) {

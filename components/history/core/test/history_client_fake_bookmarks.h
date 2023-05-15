@@ -42,7 +42,7 @@ class HistoryClientFakeBookmarks : public HistoryClient {
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<HistoryBackendClient> CreateBackendClient() override;
-  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+  void UpdateBookmarkLastUsedTime(const base::Uuid& bookmark_node_guid,
                                   base::Time time) override;
 
  private:

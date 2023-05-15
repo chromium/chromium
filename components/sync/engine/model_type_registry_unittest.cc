@@ -63,15 +63,15 @@ TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
 
   registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
                                           MakeInitialModelTypeState(THEMES)));
-  EXPECT_EQ(ModelTypeSet(THEMES), registry()->GetConnectedTypes());
+  EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetConnectedTypes());
 
   registry()->ConnectDataType(
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
-  EXPECT_EQ(ModelTypeSet(THEMES, SESSIONS), registry()->GetConnectedTypes());
+  EXPECT_EQ(ModelTypeSet({THEMES, SESSIONS}), registry()->GetConnectedTypes());
 
   registry()->DisconnectDataType(THEMES);
-  EXPECT_EQ(ModelTypeSet(SESSIONS), registry()->GetConnectedTypes());
+  EXPECT_EQ(ModelTypeSet({SESSIONS}), registry()->GetConnectedTypes());
 
   // Allow ModelTypeRegistry destruction to delete the
   // Sessions' ModelTypeSyncWorker.
@@ -91,7 +91,7 @@ TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
 
-  EXPECT_EQ(ModelTypeSet(THEMES), registry()->GetInitialSyncEndedTypes());
+  EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
 }
 
 }  // namespace

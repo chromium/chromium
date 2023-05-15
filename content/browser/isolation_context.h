@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 
 #include "base/types/id_type.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -28,11 +29,13 @@ class CONTENT_EXPORT IsolationContext {
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserContext* browser_context,
                    bool is_guest,
-                   bool is_fenced);
+                   bool is_fenced,
+                   OriginAgentClusterIsolationState default_isolation_state);
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserOrResourceContext browser_or_resource_context,
                    bool is_guest,
-                   bool is_fenced);
+                   bool is_fenced,
+                   OriginAgentClusterIsolationState default_isolation_state);
 
   // Also temporarily allow constructing an IsolationContext not associated
   // with a specific BrowsingInstance.  Callers can use this when they don't
@@ -72,6 +75,17 @@ class CONTENT_EXPORT IsolationContext {
 
   bool is_fenced() const { return is_fenced_; }
 
+  // Returns the default isolation state used in this BrowsingInstance, which is
+  // a snapshot of the default isolation within the BrowserContext at the time
+  // when this BrowsingInstance was created. Since the BrowserContext's default
+  // isolation state can change dynamically, and since it's important that the
+  // default isolation state remain consistent within a BrowsingInstance, it's
+  // important that all uses in the BrowsingInstance requiring default isolation
+  // reference this value.
+  const OriginAgentClusterIsolationState& default_isolation_state() const {
+    return default_isolation_state_;
+  }
+
  private:
   // When non-null, associates this context with a particular BrowsingInstance.
   const BrowsingInstanceId browsing_instance_id_;
@@ -85,6 +99,10 @@ class CONTENT_EXPORT IsolationContext {
   // Specifies whether the BrowsingInstance associated with this context is for
   // a <fencedframe>.
   const bool is_fenced_;
+
+  // A snapshot of the default OriginAgentClusterIsolationState at the time this
+  // IsolationContext was created.
+  const OriginAgentClusterIsolationState default_isolation_state_;
 };
 
 }  // namespace content

@@ -8,9 +8,9 @@
 
 #import <string>
 
-#import "base/guid.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/uuid.h"
 #import "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -319,7 +319,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
   EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
-  const BookmarkNode empty_node(/*id=*/0, base::GUID::GenerateRandomV4(),
+  const BookmarkNode empty_node(/*id=*/0, base::Uuid::GenerateRandomV4(),
                                 GURL("http://no-where/"));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), &empty_node));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), nullptr));
@@ -397,14 +397,14 @@ TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
   //            + Item 2
   const BookmarkNode* item1 =
       model->AddURL(root, 0, u"Item 1", GURL("http://item-1/"));
-  base::GUID item1_guid = item1->uuid();
+  base::Uuid item1_guid = item1->uuid();
   const BookmarkNode* folder1 = model->AddFolder(root, 1, u"Folder 1");
-  base::GUID folder1_guid = folder1->uuid();
+  base::Uuid folder1_guid = folder1->uuid();
   const BookmarkNode* folder2 = model->AddFolder(folder1, 0, u"Folder 2");
-  base::GUID folder2_guid = folder2->uuid();
+  base::Uuid folder2_guid = folder2->uuid();
   const BookmarkNode* item2 =
       model->AddURL(folder2, 0, u"Item 2", GURL("http://item-2/"));
-  base::GUID item2_guid = item2->uuid();
+  base::Uuid item2_guid = item2->uuid();
 
   // We didn't show the menu or any submenus, so it shouldn't contain these
   // items.

@@ -140,8 +140,8 @@ HttpServerProperties::HttpServerProperties(
     : tick_clock_(tick_clock ? tick_clock
                              : base::DefaultTickClock::GetInstance()),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
-      use_network_anonymization_key_(base::FeatureList::IsEnabled(
-          features::kPartitionHttpServerPropertiesByNetworkIsolationKey)),
+      use_network_anonymization_key_(
+          NetworkAnonymizationKey::IsPartitioningEnabled()),
       is_initialized_(pref_delegate.get() == nullptr),
       properties_manager_(
           pref_delegate

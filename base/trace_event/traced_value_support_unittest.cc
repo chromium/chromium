@@ -116,7 +116,11 @@ TEST(TracedValueSupportTest, RawPtr) {
   {
     // If the pointer is non-null, its dereferenced value will be serialised.
     int value = 42;
-    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>(&value)), "42");
+    raw_ptr<int> value_simple(&value);
+    raw_ptr<int, AllowPtrArithmetic> value_with_traits(&value);
+
+    EXPECT_EQ(perfetto::TracedValueToString(value), "42");
+    EXPECT_EQ(perfetto::TracedValueToString(value_with_traits), "42");
   }
 
   struct WithTraceSupport {
@@ -127,8 +131,37 @@ TEST(TracedValueSupportTest, RawPtr) {
 
   {
     WithTraceSupport value;
-    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<WithTraceSupport>(&value)),
-              "result");
+    raw_ptr<WithTraceSupport> value_simple(&value);
+    raw_ptr<WithTraceSupport, AllowPtrArithmetic> value_with_traits(&value);
+
+    EXPECT_EQ(perfetto::TracedValueToString(value_simple), "result");
+    EXPECT_EQ(perfetto::TracedValueToString(value_with_traits), "result");
+  }
+}
+
+TEST(TracedValueSupportTest, RawRef) {
+  {
+    int value = 42;
+    raw_ref<int> value_simple(value);
+    raw_ref<int, AllowPtrArithmetic> value_with_traits(value);
+
+    EXPECT_EQ(perfetto::TracedValueToString(value), "42");
+    EXPECT_EQ(perfetto::TracedValueToString(value_with_traits), "42");
+  }
+
+  struct WithTraceSupport {
+    void WriteIntoTrace(perfetto::TracedValue ctx) const {
+      std::move(ctx).WriteString("result");
+    }
+  };
+
+  {
+    WithTraceSupport value;
+    raw_ref<WithTraceSupport> value_simple(value);
+    raw_ref<WithTraceSupport, AllowPtrArithmetic> value_with_traits(value);
+
+    EXPECT_EQ(perfetto::TracedValueToString(value_simple), "result");
+    EXPECT_EQ(perfetto::TracedValueToString(value_with_traits), "result");
   }
 }
 

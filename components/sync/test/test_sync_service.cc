@@ -61,6 +61,11 @@ void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
   has_sync_consent_ = has_sync_consent;
 }
 
+void TestSyncService::SetSyncFeatureDisabledViaDashboard(
+    bool disabled_via_dashboard) {
+  sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
+}
+
 void TestSyncService::SetPersistentAuthError() {
   transport_state_ = TransportState::PAUSED;
 }
@@ -136,11 +141,15 @@ void TestSyncService::FireSyncCycleCompleted() {
     observer.OnSyncCycleCompleted(this);
 }
 
-SyncUserSettings* TestSyncService::GetUserSettings() {
+void TestSyncService::SetSyncFeatureRequested() {
+  sync_feature_disabled_via_dashboard_ = false;
+}
+
+TestSyncUserSettings* TestSyncService::GetUserSettings() {
   return &user_settings_;
 }
 
-const SyncUserSettings* TestSyncService::GetUserSettings() const {
+const TestSyncUserSettings* TestSyncService::GetUserSettings() const {
   return &user_settings_;
 }
 
@@ -186,6 +195,10 @@ base::Time TestSyncService::GetAuthErrorTime() const {
 bool TestSyncService::RequiresClientUpgrade() const {
   return detailed_sync_status_.sync_protocol_error.action ==
          syncer::UPGRADE_CLIENT;
+}
+
+bool TestSyncService::IsSyncFeatureDisabledViaDashboard() const {
+  return sync_feature_disabled_via_dashboard_;
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>
@@ -298,6 +311,10 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {}
+
+bool TestSyncService::IsSyncFeatureConsideredRequested() const {
+  return HasSyncConsent();
+}
 
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)

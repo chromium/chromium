@@ -56,18 +56,16 @@ https://github.com/microsoft/TypeScript/issues/30024
 Name: Type Definition for D3 library
 Short Name: @types/d3
 URL: https://www.npmjs.com/package/@types/d3
-Version: 5.16.0
+Version: 7.4.0
 License: MIT
-Security Critical: No. The types are only used when type checking the discards
-page.
+Security Critical: No. The types are only used when type checking in Chrome.
 
 Description:
 This package contains type definitions for d3.
 
 Local Modifications:
 See chromium_d3_types_index.patch, which is used to reduce the types to only
-the necessary parts of the library:
-d3-drag, d3-force, d3-scale-chromatic, d3-selection, d3-transition.
+the necessary parts of the library.
 
 Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record

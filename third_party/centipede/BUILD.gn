@@ -47,7 +47,8 @@ source_set("centipede_runner_no_main") {
 
 config("centipede_internal_config") {
   cflags = [
-    "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487
+    "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487,
+    "-Wno-unused-private-field",
   ]
 }
 
@@ -58,4 +59,77 @@ source_set("centipede_runner_main") {
 
 source_set("centipede_weak_sancov_stubs") {
   sources = [ "src/weak_sancov_stubs.cc" ]
+}
+
+executable("centipede") {
+  configs += [ ":centipede_internal_config" ]
+  configs -= fuzzing_engine_remove_configs
+  configs += fuzzing_engine_add_configs
+  deps = [
+    # Depend on fuzzing_engine_no_main so that we are automatically built in builds
+    # destined for ClusterFuzz.
+    "//testing/libfuzzer:fuzzing_engine",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/flags:parse",
+    "//third_party/abseil-cpp/absl/flags:reflection",
+    "//third_party/abseil-cpp/absl/log",
+    "//third_party/abseil-cpp/absl/log:check",
+    "//third_party/abseil-cpp/absl/log:globals",
+    "//third_party/abseil-cpp/absl/log:initialize",
+    "//third_party/boringssl",
+  ]
+  sources = [
+    "src/analyze_corpora.cc",
+    "src/blob_file.cc",
+    "src/byte_array_mutator.cc",
+    "src/byte_array_mutator.h",
+    "src/call_graph.cc",
+    "src/centipede.cc",
+    "src/centipede_callbacks.cc",
+    "src/centipede_default_callbacks.cc",
+    "src/centipede_interface.cc",
+    "src/centipede_main.cc",
+    "src/command.cc",
+    "src/config_file.cc",
+    "src/config_util.cc",
+    "src/control_flow.cc",
+    "src/corpus.cc",
+    "src/coverage.cc",
+    "src/defs.h",
+    "src/environment.cc",
+    "src/execution_request.cc",
+    "src/execution_request.h",
+    "src/execution_result.cc",
+    "src/execution_result.h",
+    "src/feature.cc",
+    "src/feature.h",
+    "src/hash.cc",
+    "src/knobs.cc",
+    "src/knobs.h",
+    "src/logging.cc",
+    "src/logging.h",
+    "src/minimize_crash.cc",
+    "src/remote_file.cc",
+    "src/reverse_pc_table.h",
+    "src/runner.cc",
+    "src/runner.h",
+    "src/runner_cmp_trace.h",
+    "src/runner_dl_info.cc",
+    "src/runner_dl_info.h",
+    "src/runner_fork_server.cc",
+    "src/runner_interceptors.cc",
+    "src/runner_interface.h",
+    "src/runner_sancov.cc",
+    "src/runner_utils.cc",
+    "src/runner_utils.h",
+    "src/rusage_profiler.cc",
+    "src/rusage_stats.cc",
+    "src/shard_reader.cc",
+    "src/shared_memory_blob_sequence.cc",
+    "src/shared_memory_blob_sequence.h",
+    "src/stats.cc",
+    "src/symbol_table.cc",
+    "src/util.cc",
+  ]
 }

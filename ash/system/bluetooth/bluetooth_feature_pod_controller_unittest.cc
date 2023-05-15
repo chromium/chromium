@@ -218,14 +218,13 @@ class BluetoothFeaturePodControllerTest
 
   std::u16string GetButtonTooltipText() {
     return IsQsRevampEnabled()
-               ? feature_tile_->GetTooltipText()
+               ? feature_tile_->icon_button()->GetTooltipText()
                : feature_pod_button_->icon_button()->GetTooltipText();
   }
 
   std::u16string GetDrillInTooltipText() {
-    return IsQsRevampEnabled()
-               ? feature_tile_->drill_in_button()->GetTooltipText()
-               : feature_pod_label_button()->GetTooltipText();
+    return IsQsRevampEnabled() ? feature_tile_->GetTooltipText()
+                               : feature_pod_label_button()->GetTooltipText();
   }
 
   const char* GetButtonIconName() {

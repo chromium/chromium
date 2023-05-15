@@ -1,7 +1,7 @@
 <style include="common cros-button-style">
-  #container {
-    border-radius: 16px;
-    display: grid;
+  :host-context(body.jelly-enabled) #container {
+    background-color: var(--cros-bg-color);
+    border: none;
     grid-template-areas:
       '. slot           slot    slot      .'
       '. image          image   image     .'
@@ -11,23 +11,12 @@
       '. .              .       .         .';
     grid-template-columns: 20px auto 192px auto 20px;
     grid-template-rows: auto auto 20px 192px 1fr 20px;
-    height: 100%;
   }
 
-  #container.zero-state-disabled {
-    grid-template-areas:
-      '. slot          .'
-      '. image         .'
-      '. .             .'
-      '. thumbnail     .'
-      '. mainpage-desc .'
-      '. .             .';
-    grid-template-columns: 20px minmax(0,1fr) 20px;
-    grid-template-rows: auto auto 20px 130px 1fr 18px;
-  }
-
-  #container.jelly-disabled {
+  #container {
     border: 1px solid var(--cros-separator-color);
+    border-radius: 16px;
+    display: grid;
     grid-template-areas:
       '. slot           slot    slot      .'
       '. image          image   image     .'
@@ -37,14 +26,23 @@
       '. .              .       .         .';
     grid-template-columns: 20px minmax(0, 1fr) 16px 106px 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+    height: 100%;
   }
 
-  #container.jelly-disabled.zero-state-disabled {
+  #container.zero-state-disabled {
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
-  :host-context(body.jelly-enabled) #container {
-    background-color: var(--cros-bg-color);
+  :host-context(body.jelly-enabled) #container.zero-state-disabled {
+    grid-template-areas:
+      '. slot          .'
+      '. image         .'
+      '. .             .'
+      '. thumbnail     .'
+      '. mainpage-desc .'
+      '. .             .';
+    grid-template-columns: 20px minmax(0,1fr) 20px;
+    grid-template-rows: auto auto 20px 130px 1fr 18px;
   }
 
   #ambientLabel {
@@ -82,36 +80,32 @@
     justify-content: space-between;
   }
 
-  #messageContainer.jelly-disabled .text {
-    color: var(--cros-text-color-secondary);
-    font: var(--cros-body-1-font);
-    line-height: 1.5;
-    margin-top: 12px;
-    text-align: center;
-    width: unset;
-  }
-
   #messageContainer .text {
     color: var(--cros-sys-on_primary_container, var(--cros-text-color-secondary));
     font: var(--cros-body-1-font);
     line-height: 1.5;
-    margin-top: 56px;
+    margin-top: 12px;
     position: relative;
     text-align: center;
+    width: unset;
+  }
+
+  :host-context(body.jelly-enabled) #messageContainer .text {
+    margin-top: 56px;
     width: 128px;
+  }
+
+  :host-context(body.jelly-enabled) #messageContainer cr-button {
+    margin-top: 8px;
   }
 
   #messageContainer cr-button {
     margin-bottom: 50px;
-    margin-top: 8px;
+    margin-top: 20px;
   }
 
   ambient-zero-state-svg {
     position: absolute;
-  }
-
-  #messageContainer.jelly-disabled cr-button {
-    margin-top: 20px;
   }
 
   #imageContainer,
@@ -131,25 +125,21 @@
     min-width: 278px;
   }
 
+  :host-context(body.jelly-enabled) .album-info-mainpage,
+  :host-context(body.jelly-enabled) #textPlaceholder {
+    align-items: center;
+  }
+
   .album-info-mainpage,
   #textPlaceholder {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     grid-area: mainpage-desc;
     justify-content: center;
   }
 
-  .jelly-disabled .album-info-mainpage,
-  .jelly-disabled #textPlaceholder {
-    align-items: flex-start;
-  }
-
   #textPlaceholder .placeholder:first-child {
     margin-top: 8px;
-  }
-
-  .album-info-mainpage:not(.jelly-disabled) span {
-    margin-inline: auto;
   }
 
   #imageContainer,
@@ -172,21 +162,21 @@
   #albumTitle {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-7-font);
-    margin-top: 10px;
+    margin-top: 4px;
   }
 
-  #albumTitle.jelly-disabled {
-    margin-top: 4px;
+  :host-context(body.jelly-enabled) #albumTitle {
+    margin-top: 10px;
   }
 
   #albumDescription {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
-    margin-top: 2px;
+    margin-top: 4px;
   }
 
-  #albumDescription.jelly-disabled {
-    margin-top: 4px;
+  :host-context(body.jelly-enabled) #albumDescription {
+    margin-top: 2px;
   }
 
   #collageContainer,
@@ -467,7 +457,7 @@
           <img class="preview-image disabled"
               src="//personalization/images/slideshow.png">
         </div>
-        <div class="jelly-disabled" id="messageContainer">
+        <div id="messageContainer">
           <span class="text" id="turnOnDescription">
             $i18n{ambientModeMainPageZeroStateMessage}
           </span>
@@ -491,7 +481,7 @@
                 on-keypress="onClickPreviewImage_">
           </div>
           <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
-              class="preview-text-container album-info-mainpage jelly-disabled"
+              class="preview-text-container album-info-mainpage"
               id="textContainer">
             <span aria-hidden="true"
                 id="albumTitle"

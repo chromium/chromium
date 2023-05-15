@@ -36,6 +36,11 @@
     flex-direction: column;
     min-height: 0;
   }
+
+  #emptyStateDemo {
+    align-items: center;
+    gap: 0;
+  }
 </style>
 
 <h1>Side panel shared components</h1>
@@ -110,6 +115,20 @@
   </sp-footer>
 </div>
 
+<h2>Empty state</h2>
+<div id="emptyStateDemo" class="demos">
+  <sp-empty-state
+      image-path="./empty.svg"
+      dark-image-path="./empty_dark.svg"
+      heading="There is no content"
+      body="Some more descriptive text explaining how to add content">
+  </sp-empty-state>
+  <cr-button class="floating-button">
+    <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
+    Add content
+  </cr-button>
+</div>
+
 <h2>Filter chips</h2>
 <div class="demos">
   <sp-filter-chip>
@@ -140,4 +159,18 @@
     <span>$100</span>
     <span slot="previous-badge">$200</span>
   </sp-list-item-badge>
+</div>
+
+<h2>Row of small icon buttons</h2>
+<div class="demos">
+  <div class="sp-icon-buttons-row">
+    <cr-icon-button iron-icon="cr:add"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:print"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert"></cr-icon-button>
+  </div>
+</div>
+
+<h2>Separator</h2>
+<div class="demos">
+  <hr class="sp-hr">
 </div>

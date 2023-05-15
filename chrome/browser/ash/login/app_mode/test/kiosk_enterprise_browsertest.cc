@@ -6,22 +6,30 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +37,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/components/native_app_window/native_app_window_views.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -48,6 +55,21 @@ const char kTestLoginToken[] = "fake-login-token";
 const char kTestAccessToken[] = "fake-access-token";
 const char kTestClientId[] = "fake-client-id";
 const char kTestAppScope[] = "https://www.googleapis.com/auth/userinfo.profile";
+const test::UIPath kErrorMessageContinueButton = {"error-message",
+                                                  "continueButton"};
+
+void PressConfigureNetworkAccelerator() {
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchNetworkConfig);
+}
+
+void WaitForOobeScreen(OobeScreenId screen) {
+  OobeScreenWaiter(screen).Wait();
+}
+
+void WaitForNetworkScreen() {
+  WaitForOobeScreen(ErrorScreenView::kScreenId);
+}
 
 }  // namespace
 
@@ -150,14 +172,12 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   EXPECT_TRUE(content::WaitForLoadStop(window->web_contents()));
 
   // Check whether the app can retrieve an OAuth2 access token.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      window->web_contents(),
-      "chrome.identity.getAuthToken({ 'interactive': false }, function(token) {"
-      "    window.domAutomationController.send(token);"
-      "});",
-      &result));
-  EXPECT_EQ(kTestAccessToken, result);
+  EXPECT_EQ(kTestAccessToken,
+            content::EvalJs(window->web_contents(),
+                            "new Promise(resolve => {"
+                            "  chrome.identity.getAuthToken({ 'interactive': "
+                            "    false }, resolve);"
+                            "});"));
 
   // Verify that the session is not considered to be logged in with a GAIA
   // account.
@@ -209,6 +229,72 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
   DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
   DCHECK_EQ(0, fake_cws()->GetUpdateCheckCountAndReset());
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
+}
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
+                       HittingNetworkAcceleratorShouldShowNetworkScreen) {
+  ScopedCanConfigureNetwork can_configure_network(true);
+
+  // Block app loading until the welcome screen is shown.
+  BlockAppLaunch(true);
+
+  // Start app launch and wait for network connectivity timeout.
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  PressConfigureNetworkAccelerator();
+
+  WaitForNetworkScreen();
+
+  // Continue button should be visible since we are online.
+  EXPECT_TRUE(test::OobeJS().IsVisible(kErrorMessageContinueButton));
+
+  // Let app launching resume.
+  BlockAppLaunch(false);
+
+  // Click on [Continue] button.
+  test::OobeJS().TapOnPath(kErrorMessageContinueButton);
+
+  WaitForAppLaunchSuccess();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    KioskEnterpriseTest,
+    LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
+  ScopedCanConfigureNetwork can_configure_network(true);
+
+  // Start app launch with network portal state.
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  WaitForNetworkScreen();
+
+  SimulateNetworkOnline();
+  WaitForAppLaunchSuccess();
+}
+
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, LaunchAppUserCancel) {
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  // Do not let the app be run to avoid race condition.
+  BlockAppLaunch(true);
+
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  base::test::TestFuture<void> termination_future_;
+  auto subscription = browser_shutdown::AddAppTerminatingCallback(
+      termination_future_.GetCallback());
+  settings_helper_.SetBoolean(
+      kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled, true);
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchBailout);
+  EXPECT_TRUE(termination_future_.Wait());
+
+  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
+            KioskAppLaunchError::Get());
 }
 
 class KioskEnterpriseEphemeralTest

@@ -12,12 +12,17 @@
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -49,7 +54,8 @@ constexpr int kMarginBetweenButtons = 8;
 RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
     RemovalConfirmationCallback confirm_callback,
     const std::u16string& result_title)
-    : confirm_callback_(std::move(confirm_callback)) {
+    : confirm_callback_(std::move(confirm_callback)),
+      is_jellyroll_enabled_(chromeos::features::IsJellyEnabled()) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
 
   SetPaintToLayer();
@@ -62,11 +68,30 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kDialogContentInsets));
 
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      is_jellyroll_enabled_
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)
+          : kColorAshShieldAndBase80,
+      kDialogRoundedCornerRadius));
+
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kDialogRoundedCornerRadius,
+      is_jellyroll_enabled_
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1));
+
   // Add dialog title.
   title_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE)));
-  title_->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
-  title_->SetTextStyle(views::style::STYLE_EMPHASIZED);
+  if (is_jellyroll_enabled_) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                          *title_);
+    title_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    title_->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
+    title_->SetTextStyle(views::style::STYLE_EMPHASIZED);
+    title_->SetEnabledColorId(kColorAshTextColorPrimary);
+  }
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetAutoColorReadabilityEnabled(false);
   // Needs to paint to layer so it's stacked above `this` view.
@@ -83,7 +108,13 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   body_->SetProperty(views::kMarginsKey,
                      gfx::Insets::TLBR(kMarginBetweenTitleAndBody, 0,
                                        kMarginBetweenBodyAndButtons, 0));
-  body_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  if (is_jellyroll_enabled_) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *body_);
+    body_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    body_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    body_->SetEnabledColorId(kColorAshTextColorPrimary);
+  }
   body_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_->SetMultiLine(true);
   body_->SetAllowCharacterBreak(true);
@@ -142,25 +173,6 @@ const char* RemoveQueryConfirmationDialog::GetClassName() const {
 gfx::Size RemoveQueryConfirmationDialog::CalculatePreferredSize() const {
   const int default_width = kDialogWidth;
   return gfx::Size(default_width, GetHeightForWidth(default_width));
-}
-
-void RemoveQueryConfirmationDialog::OnThemeChanged() {
-  views::WidgetDelegateView::OnThemeChanged();
-
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
-      kDialogRoundedCornerRadius));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kDialogRoundedCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
-  title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  body_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void RemoveQueryConfirmationDialog::GetAccessibleNodeData(

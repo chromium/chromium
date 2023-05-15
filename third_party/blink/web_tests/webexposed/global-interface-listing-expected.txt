@@ -3102,7 +3102,6 @@ interface GPUSupportedLimits
     getter maxComputeWorkgroupsPerDimension
     getter maxDynamicStorageBuffersPerPipelineLayout
     getter maxDynamicUniformBuffersPerPipelineLayout
-    getter maxFragmentCombinedOutputResources
     getter maxInterStageShaderComponents
     getter maxInterStageShaderVariables
     getter maxSampledTexturesPerShaderStage
@@ -5168,10 +5167,12 @@ interface IdentityCredential : Credential
     getter token
     method constructor
 interface IdentityProvider
+    static method close
     static method getUserInfo
     static method login
     static method logout
     static method register
+    static method resolve
     static method unregister
     attribute @@toStringTag
     method constructor
@@ -5514,9 +5515,11 @@ interface MLGraph
     method constructor
 interface MLGraphBuilder
     attribute @@toStringTag
+    method abs
     method add
     method averagePool2d
     method build
+    method ceil
     method clamp
     method concat
     method constant
@@ -5524,6 +5527,8 @@ interface MLGraphBuilder
     method conv2d
     method convTranspose2d
     method div
+    method elu
+    method floor
     method gemm
     method hardSwish
     method input
@@ -5532,6 +5537,7 @@ interface MLGraphBuilder
     method maxPool2d
     method min
     method mul
+    method neg
     method pad
     method prelu
     method relu
@@ -5797,7 +5803,6 @@ interface MediaDevices : EventTarget
     method enumerateDevices
     method getAllScreensMedia
     method getDisplayMedia
-    method getDisplayMediaSet
     method getSupportedConstraints
     method getUserMedia
     method setCaptureHandleConfig
@@ -6369,6 +6374,7 @@ interface Navigator
     method constructor
     method createHandwritingRecognizer
     method getBattery
+    method getEnvironmentIntegrity
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
@@ -7155,12 +7161,16 @@ interface PressureObserver
     method unobserve
 interface PressureRecord
     attribute @@toStringTag
-    getter factors
     getter source
     getter state
     getter time
     method constructor
     method toJSON
+interface PrivateAttribution
+    attribute @@toStringTag
+    method constructor
+    method getEncryptedMatchKey
+    method getHelperNetworks
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet
@@ -11470,6 +11480,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method open
     method overrideMimeType
     method send
+    method setAttributionReporting
     method setPrivateToken
     method setRequestHeader
     setter onreadystatechange
@@ -12361,6 +12372,7 @@ namespace console
     getter parent
     getter performance
     getter personalbar
+    getter privateAttribution
     getter scheduler
     getter screen
     getter screenLeft
@@ -12580,6 +12592,7 @@ namespace console
     setter parent
     setter performance
     setter personalbar
+    setter privateAttribution
     setter scheduler
     setter screen
     setter screenLeft

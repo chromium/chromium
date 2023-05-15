@@ -19,8 +19,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +36,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -123,9 +124,14 @@ public class SigninSignoutIntegrationTest {
     @LargeTest
     public void testSignIn() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        var signinHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SignIn.Completed", SigninAccessPoint.SETTINGS);
+        var syncHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SyncOptIn.Completed", SigninAccessPoint.SETTINGS);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+
         SyncConsentActivity syncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
@@ -135,6 +141,7 @@ public class SigninSignoutIntegrationTest {
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
+
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         verify(mSignInStateObserverMock).onSignedIn();
@@ -143,6 +150,10 @@ public class SigninSignoutIntegrationTest {
             Assert.assertEquals(coreAccountInfo,
                     mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
         });
+        signinHistogram.assertExpected(
+                "Signin should be recorded with the settings page as the access point.");
+        syncHistogram.assertExpected(
+                "Sync opt-in should be recorded with the settings page as the access point.");
     }
 
     @Test

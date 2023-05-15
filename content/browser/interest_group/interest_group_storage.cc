@@ -134,8 +134,18 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   if (ad.size_group) {
     dict.Set("size_group", ad.size_group.value());
   }
+  if (ad.buyer_reporting_id) {
+    dict.Set("buyer_reporting_id", ad.buyer_reporting_id.value());
+  }
+  if (ad.buyer_and_seller_reporting_id) {
+    dict.Set("buyer_and_seller_reporting_id",
+             ad.buyer_and_seller_reporting_id.value());
+  }
   if (ad.metadata)
     dict.Set("metadata", ad.metadata.value());
+  if (ad.ad_render_id) {
+    dict.Set("ad_render_id", ad.ad_render_id.value());
+  }
   return value;
 }
 blink::InterestGroup::Ad FromInterestGroupAdValue(
@@ -148,9 +158,23 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(
   if (maybe_size_group) {
     result.size_group = *maybe_size_group;
   }
+  const std::string* maybe_buyer_reporting_id =
+      dict.FindString("buyer_reporting_id");
+  if (maybe_buyer_reporting_id) {
+    result.buyer_reporting_id = *maybe_buyer_reporting_id;
+  }
+  const std::string* maybe_buyer_and_seller_reporting_id =
+      dict.FindString("buyer_and_seller_reporting_id");
+  if (maybe_buyer_and_seller_reporting_id) {
+    result.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+  }
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
     result.metadata = *maybe_metadata;
+  const std::string* maybe_ad_render_id = dict.FindString("ad_render_id");
+  if (maybe_ad_render_id) {
+    result.ad_render_id = *maybe_ad_render_id;
+  }
   return result;
 }
 

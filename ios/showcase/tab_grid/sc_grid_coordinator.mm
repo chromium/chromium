@@ -5,7 +5,6 @@
 #import "ios/showcase/tab_grid/sc_grid_coordinator.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
@@ -14,8 +13,19 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SCGridCoordinator ()<UINavigationControllerDelegate,
-                                GridImageDataSource>
+// This Showcase-only item returns a sample image as snapshot.
+@interface SCTabSwitcherItem : TabSwitcherItem
+@end
+
+@implementation SCTabSwitcherItem
+
+- (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion {
+  completion(self, [UIImage imageNamed:@"Sample-screenshot-portrait"]);
+}
+
+@end
+
+@interface SCGridCoordinator () <UINavigationControllerDelegate>
 @property(nonatomic, strong) ProtocolAlerter* alerter;
 @property(nonatomic, strong) GridViewController* gridViewController;
 @end
@@ -35,12 +45,11 @@
       static_cast<id<GridViewControllerDelegate>>(self.alerter);
   gridViewController.dragDropHandler =
       static_cast<id<TabCollectionDragDropHandler>>(self.alerter);
-  gridViewController.imageDataSource = self;
   self.alerter.baseViewController = gridViewController;
 
   NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 20; i++) {
-    TabSwitcherItem* item = [[TabSwitcherItem alloc]
+    TabSwitcherItem* item = [[SCTabSwitcherItem alloc]
         initWithIdentifier:[NSString stringWithFormat:@"item%d", i]];
     item.title = @"The New York Times - Breaking News";
     [items addObject:item];
@@ -58,27 +67,6 @@
 - (void)navigationController:(UINavigationController*)navigationController
        didShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
-}
-
-#pragma mark - GridImageDataSource
-
-- (void)snapshotForIdentifier:(NSString*)identifier
-                   completion:(void (^)(UIImage*))completion {
-  completion([UIImage imageNamed:@"Sample-screenshot-portrait"]);
-}
-
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  completion(nil);
-}
-
-- (void)preloadSnapshotsForVisibleGridItems:
-    (NSSet<NSString*>*)visibleGridItems {
-  // No-op here.
-}
-
-- (void)clearPreloadedSnapshots {
-  // No-op here.
 }
 
 @end

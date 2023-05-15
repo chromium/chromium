@@ -469,6 +469,7 @@ class MDnsTest : public TestWithTaskEnvironment {
   void ExpectPacket(const uint8_t* packet, unsigned size);
   void SimulatePacketReceive(const uint8_t* packet, unsigned size);
 
+  std::unique_ptr<base::Clock> test_clock_;  // Must outlive `test_client_`.
   std::unique_ptr<MDnsClientImpl> test_client_;
   IPEndPoint mdns_ipv4_endpoint_;
   StrictMock<MockMDnsSocketFactory> socket_factory_;
@@ -653,15 +654,17 @@ TEST_F(MDnsTest, CacheCleanupWithShortTTL) {
   // Use a nonzero starting time as a base.
   base::Time start_time = base::Time() + base::Seconds(1);
 
-  MockClock clock;
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
 
-  test_client_ = std::make_unique<MDnsClientImpl>(&clock, std::move(timer));
+  auto owned_clock = std::make_unique<MockClock>();
+  MockClock* clock = owned_clock.get();
+  test_clock_ = std::move(owned_clock);
+  test_client_ = std::make_unique<MDnsClientImpl>(clock, std::move(timer));
   ASSERT_THAT(test_client_->StartListening(&socket_factory_), test::IsOk());
 
   EXPECT_CALL(*timer_ptr, StartObserver(_, _)).Times(1);
-  EXPECT_CALL(clock, Now())
+  EXPECT_CALL(*clock, Now())
       .Times(3)
       .WillRepeatedly(Return(start_time))
       .RetiresOnSaturation();
@@ -696,10 +699,10 @@ TEST_F(MDnsTest, CacheCleanupWithShortTTL) {
   // Set the clock to 2.0s, which should clean up the 'privet' record, but not
   // the printer. The mock clock will change Now() mid-execution from 2s to 4s.
   // Note: expectations are FILO-ordered -- t+2 seconds is returned, then t+4.
-  EXPECT_CALL(clock, Now())
+  EXPECT_CALL(*clock, Now())
       .WillOnce(Return(start_time + base::Seconds(4)))
       .RetiresOnSaturation();
-  EXPECT_CALL(clock, Now())
+  EXPECT_CALL(*clock, Now())
       .WillOnce(Return(start_time + base::Seconds(2)))
       .RetiresOnSaturation();
 
@@ -716,14 +719,17 @@ TEST_F(MDnsTest, StopListening) {
 }
 
 TEST_F(MDnsTest, StopListening_CacheCleanupScheduled) {
-  base::SimpleTestClock clock;
+  auto owned_clock = std::make_unique<base::SimpleTestClock>();
+  base::SimpleTestClock* clock = owned_clock.get();
+  test_clock_ = std::move(owned_clock);
+
   // Use a nonzero starting time as a base.
-  clock.SetNow(base::Time() + base::Seconds(1));
+  clock->SetNow(base::Time() + base::Seconds(1));
   auto cleanup_timer = std::make_unique<base::MockOneShotTimer>();
   base::OneShotTimer* cleanup_timer_ptr = cleanup_timer.get();
 
   test_client_ =
-      std::make_unique<MDnsClientImpl>(&clock, std::move(cleanup_timer));
+      std::make_unique<MDnsClientImpl>(clock, std::move(cleanup_timer));
   ASSERT_THAT(test_client_->StartListening(&socket_factory_), test::IsOk());
   ASSERT_TRUE(test_client_->IsListening());
 

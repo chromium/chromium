@@ -72,7 +72,7 @@ found in the LICENSE file.
     <dimen name="sheet_tab_toolbar_height">70dp</dimen>
 
     <!-- Autofill address prompt dimensions -->
-    <dimen name="address_prompt_end_margin">8dp</dimen>
+    <dimen name="address_prompt_end_margin">16dp</dimen>
     <dimen name="address_prompt_edit_button_size">48dp</dimen>
     <dimen name="address_prompt_edit_button_padding">12dp</dimen>
 
@@ -161,11 +161,15 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
+    <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="ntp_logo_margin_bottom">23dp</dimen>
+    <dimen name="ntp_logo_height_shrink">85dp</dimen>
+    <dimen name="ntp_logo_vertical_margin_tablet">24dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
+    <dimen name="ntp_search_box_start_margin">44dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
@@ -219,11 +223,13 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
+    <!-- The size of the icon view, but not the size of the fetched image. -->
+    <dimen name="improved_bookmark_icon_size">48dp</dimen>
+    <!-- The size of the icon view and the size of the fetched image. -->
+    <dimen name="improved_bookmark_icon_visual_size">80dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
-     <!-- We intentionally use px to avoid showing fewer favicons in some UIs on higher density devices. -->
-     <dimen name="bookmark_refresh_min_start_icon_size" tools:ignore="PxUsage">32px</dimen>
      <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->
@@ -378,9 +384,6 @@ found in the LICENSE file.
     <dimen name="long_screenshots_button_padding">8dp</dimen>
     <dimen name="long_screenshots_button_margin">17dp</dimen>
 
-    <!-- Video tutorials dimensions -->
-    <dimen name="video_tutorial_try_now_iph_ntp_searchbox_y_inset">6dp</dimen>
-
     <!-- IPH shared highlighting builder padding top -->
     <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>
 
@@ -400,6 +403,8 @@ found in the LICENSE file.
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_width">32dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_height">20dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_art_width_new">40dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_art_height_new">24dp</dimen>
 
     <!-- Section tab dimensions -->
     <dimen name="section_tab_background_corner_radius">60dp</dimen>
@@ -407,4 +412,13 @@ found in the LICENSE file.
 
     <!-- Price Drop dimensions -->
     <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
+
+    <!-- Improved bookmark row folder dimensions. -->
+    <dimen name="improved_bookmark_row_outer_corner_radius">16dp</dimen>
+    <dimen name="improved_bookmark_row_inner_corner_radius">6dp</dimen>
+    <dimen name="improved_bookmark_row_size">80dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_outer_size">41dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_inner_size">39dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_inner_half_size">19.5dp</dimen>
+
 </resources>

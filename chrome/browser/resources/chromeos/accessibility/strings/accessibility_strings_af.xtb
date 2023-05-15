@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="100506692671054486">geen vorige opdrag nie</translation>
 <translation id="1009046985747440431">Druk op- of afpyl om te navigeer; Enter om te aktiveer</translation>
 <translation id="1011903154582639569">Soek 'n sleutel; lig dan op om te tik</translation>
 <translation id="1012173283529841972">Lysitem</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lilapienkrooi</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3962990492275676168">Begin om van huidige plek af te lees</translation>
+<translation id="397094149579293440">geen geselekteerde teks nie</translation>
 <translation id="3970951409746498040">Rooibruin</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mokkasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Geen vorige vlak 1-opskrif nie</translation>
 <translation id="4787577491510559358">Sê formatering van huidige item hardop</translation>
 <translation id="479989351350248267">deursoek</translation>
+<translation id="4802034228771424756">geen gefokusde teksveld nie</translation>
 <translation id="4804818685124855865">Ontkoppel</translation>
 <translation id="481165870889056555">Maak die titel van die huidige bladsy bekend</translation>
 <translation id="4815668758102003883">Ligturkoois</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interne skakel</translation>
 <translation id="4909019435900810068">Beweeg een woord terug</translation>
 <translation id="4911349081560453449">Geen vorige merkblokkie nie</translation>
+<translation id="4919186071145887492">Kan nie <ph name="COMMAND" /> nie; probeer weer</translation>
 <translation id="492295894462528572">Voorwoord</translation>
 <translation id="495046168593986294">Rollees op</translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4953585991029886728">Wysig teks</translation>
+<translation id="4964701498510730546">teksveld is leeg</translation>
 <translation id="4973717656530883744">Min. <ph name="X" /></translation>
 <translation id="4974612477719259470">Geen vorige knoppie nie</translation>
 <translation id="4979404613699303341">Vorige knoppie</translation>
+<translation id="4981239367072766915">invoer word nie herken nie</translation>
 <translation id="4982917827052020884">Kom ons begin met 'n paar sleutels wat jy gereeld sal gebruik. Die Control-sleutel kan gebruik word om enige huidige spraak te stop. Kry die Control-sleutel in jou sleutelbord se hoek links onder. Druk die Control-sleutel om voort te gaan.</translation>
 <translation id="4983588134362688868">Spring na die bokant van die bladsy</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, venster</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Sê huidige batterystatus hardop</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, radioknoppie gekies</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, kieslysitemradioknoppie is gekies</translation>
+<translation id="5014131807708055994">Kan nie <ph name="COMMAND" /> nie; <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Aktiveer spraakloginskrywings</translation>
 <translation id="5041394372352067729">Skuif braille-skerm na bokant van bladsy</translation>
 <translation id="5042770794184672516">Verhoog spraakvolume</translation>

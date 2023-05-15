@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -47,6 +49,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -62,9 +65,10 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
   ~WebAppTabStripBrowserTest() override = default;
 
   void SetUp() override {
-    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripSettings},
-                               {});
+    features_.InitWithFeatures(
+        {features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings,
+         blink::features::kDesktopPWAsTabStripCustomizations},
+        {});
     ASSERT_TRUE(embedded_test_server()->Start());
 
     WebAppControllerBrowserTest::SetUp();
@@ -308,75 +312,58 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoHomeTabIcons) {
+// Tests that the monochrome app icon is used on the home tab and it is
+// correctly colored.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
+  // Ensure we're not using the system theme on Linux.
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->profile());
+  theme_service->UseDefaultTheme();
+
   GURL start_url = embedded_test_server()->GetURL(
-      "/web_apps/get_manifest.html?tab_strip_no_home_tab_icon.json");
-  AppId app_id = InstallWebAppFromPage(browser(), start_url);
-
-  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  TabStripModel* tab_strip = app_browser->tab_strip_model();
-
-  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
-
-  EXPECT_EQ(tab_strip->count(), 1);
-  EXPECT_TRUE(tab_strip->IsTabPinned(0));
-  // The URL of the pinned home tab should include the query params.
-  content::WebContents* contents = tab_strip->GetWebContentsAt(0);
-
-  gfx::ImageSkia favicon = app_browser->app_controller()
-                               ->AsWebAppBrowserController()
-                               ->GetHomeTabIcon();
-  const SkBitmap* favicon_bitmap = favicon.bitmap();
-  const SkBitmap* expected_bitmap = app_browser->app_controller()
-                                        ->GetWindowAppIcon()
-                                        .Rasterize(nullptr)
-                                        .bitmap();
-
-  EXPECT_EQ(favicon_bitmap->width(), expected_bitmap->width());
-  EXPECT_EQ(favicon_bitmap->height(), expected_bitmap->height());
-  EXPECT_EQ(favicon_bitmap->getColor(0, 0), expected_bitmap->getColor(0, 0));
-
-  EXPECT_EQ(contents->GetVisibleURL(), start_url);
-  EXPECT_EQ(tab_strip->active_index(), 0);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, SelectingBestHomeTabIcon) {
-  GURL start_url = embedded_test_server()->GetURL(
-      "/web_apps/get_manifest.html?tab_strip_with_large_home_tab_icon.json");
-
-  AppId app_id = InstallWebAppFromPage(browser(), start_url);
-  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  TabStripModel* tab_strip = app_browser->tab_strip_model();
-
-  WebAppBrowserController* const web_app_browser_controller =
-      app_browser->app_controller()->AsWebAppBrowserController();
+      "/web_apps/get_manifest.html?tab_strip_fixed_home_scope.json");
 
   base::RunLoop run_loop;
-  base::CallbackListSubscription home_tab_callback_list_subscription =
-      web_app_browser_controller->AddHomeTabIconLoadCallbackForTesting(
-          run_loop.QuitClosure());
+  WebAppProvider::GetForTest(browser()->profile())
+      ->icon_manager()
+      .SetFaviconMonochromeReadCallbackForTesting(base::BindLambdaForTesting(
+          [&](const AppId& cached_app_id) { run_loop.Quit(); }));
+
+  AppId app_id = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
   run_loop.Run();
+
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  TabIcon* tab_icon = BrowserView::GetBrowserViewForBrowser(app_browser)
+                          ->tabstrip()
+                          ->tab_at(0)
+                          ->GetTabIconForTesting();
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   EXPECT_EQ(tab_strip->count(), 1);
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
-  // The URL of the pinned home tab should include the query params.
-  content::WebContents* contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(tab_strip->active_index(), 0);
 
-  gfx::ImageSkia favicon = web_app_browser_controller->GetHomeTabIcon();
-  const SkBitmap* favicon_bitmap = favicon.bitmap();
+  const SkBitmap* favicon_bitmap = tab_icon->GetThemedIconForTesting().bitmap();
 
   EXPECT_EQ(favicon_bitmap->width(), 16);
   EXPECT_EQ(favicon_bitmap->height(), 16);
+  EXPECT_EQ(gfx::kGoogleGrey900, favicon_bitmap->getColor(0, 0));
 
-  EXPECT_EQ(SkColorSetRGB(13, 9, 155), favicon_bitmap->getColor(0, 0));
-  EXPECT_EQ(SkColorSetRGB(36, 22, 23), favicon_bitmap->getColor(15, 0));
-  EXPECT_EQ(SkColorSetRGB(187, 185, 173), favicon_bitmap->getColor(0, 15));
-  EXPECT_EQ(SkColorSetRGB(65, 240, 80), favicon_bitmap->getColor(15, 15));
+  // Adding a new tab causes the home tab to be inactive and colored black (the
+  // app theme_color), so the icon should change color.
+  chrome::NewTab(app_browser);
 
-  EXPECT_EQ(contents->GetVisibleURL(), start_url);
-  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  favicon_bitmap = tab_icon->GetThemedIconForTesting().bitmap();
+
+  EXPECT_EQ(favicon_bitmap->width(), 16);
+  EXPECT_EQ(favicon_bitmap->height(), 16);
+  EXPECT_EQ(SK_ColorWHITE, favicon_bitmap->getColor(0, 0));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallFromNonHomeTabUrl) {
@@ -810,6 +797,44 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   // Non home tab should be closable.
   EXPECT_TRUE(
       controller->BeforeCloseTab(1, CloseTabSource::CLOSE_TAB_FROM_MOUSE));
+}
+
+// Tests that the home tab is not closable unless it is the only tab left in the
+// window. This is to ensure that window.close() does not close the home tab.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabCantBeClosedUsingJS) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  UnloadController unload_controller(app_browser);
+
+  // Check that the home tab can be closed since it is the only tab in the
+  // window.
+  EXPECT_TRUE(
+      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(0)));
+
+  // Open another tab.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  EXPECT_EQ(tab_strip->count(), 2);
+
+  // Check that the home tab can't be closed.
+  EXPECT_FALSE(
+      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(0)));
+
+  // Check that non home tab is closable.
+  EXPECT_TRUE(
+      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(1)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeSegmentWildcard) {

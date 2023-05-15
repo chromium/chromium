@@ -35,6 +35,7 @@ void MediaRouterUiForTestBase::TearDown() {
   if (IsDialogShown()) {
     HideDialog();
   }
+  torn_down_ = true;
 }
 
 void MediaRouterUiForTestBase::StartCasting(const std::string& sink_name) {
@@ -82,6 +83,10 @@ void MediaRouterUiForTestBase::OnDialogCreated() {
   }
 }
 
+MediaRouterUiForTestBase::~MediaRouterUiForTestBase() {
+  DCHECK(torn_down_);
+}
+
 MediaRouterUiForTestBase::MediaRouterUiForTestBase(
     content::WebContents* web_contents)
     : web_contents_(web_contents),
@@ -91,8 +96,6 @@ MediaRouterUiForTestBase::MediaRouterUiForTestBase(
   dialog_controller_->SetDialogCreationCallbackForTesting(base::BindRepeating(
       &MediaRouterUiForTestBase::OnDialogCreated, weak_factory_.GetWeakPtr()));
 }
-
-MediaRouterUiForTestBase::~MediaRouterUiForTestBase() = default;
 
 void MediaRouterUiForTestBase::WaitForAnyDialogShown() {
   base::RunLoop run_loop;

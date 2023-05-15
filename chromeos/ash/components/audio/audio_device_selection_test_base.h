@@ -7,6 +7,7 @@
 
 #include <inttypes.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -54,8 +55,10 @@ class AudioDeviceSelectionTestBase : public testing::Test {
   // Test services
   std::unique_ptr<ActiveNodeObserver> active_node_observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  CrasAudioHandler* cras_audio_handler_ = nullptr;         // Not owned.
-  FakeCrasAudioClient* fake_cras_audio_client_ = nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
+      nullptr;  // Not owned.
+  raw_ptr<FakeCrasAudioClient, ExperimentalAsh> fake_cras_audio_client_ =
+      nullptr;  // Not owned.
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   // Counters

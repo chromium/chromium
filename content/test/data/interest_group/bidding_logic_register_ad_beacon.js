@@ -25,6 +25,8 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
   browserSignals) {
   registerAdBeacon({
-    'click': browserSignals.interestGroupOwner + "/report_event.html"
+    'click': browserSignals.interestGroupOwner + "/report_event.html",
+    'reserved.top_navigation':
+      browserSignals.interestGroupOwner + "/report_event.html"
   });
 }

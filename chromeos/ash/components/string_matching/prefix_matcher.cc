@@ -74,13 +74,13 @@ bool PrefixMatcher::Match() {
 void PrefixMatcher::SentencePrefixMatch(MatchInfo& sentence_match_info) {
   // Since we are concatenating the tokens, we do not have whitespace
   // separation, and so we have to be careful with index calculation later on.
-  std::u16string query_sentence = base::StrCat(query_.tokens());
-  std::u16string text_sentence = base::StrCat(text_.tokens());
+  std::u16string query_sentence = base::StrCat(query_->tokens());
+  std::u16string text_sentence = base::StrCat(text_->tokens());
 
   // Queue to store the starting index of each token in the `text_sentence`.
   std::queue<size_t> text_token_indexes;
   size_t token_index = 0;
-  for (auto text_token : text_.tokens()) {
+  for (auto text_token : text_->tokens()) {
     text_token_indexes.push(token_index);
     token_index += text_token.size();
   }
@@ -102,26 +102,26 @@ void PrefixMatcher::SentencePrefixMatch(MatchInfo& sentence_match_info) {
     // Calculate the `relevance` score and `hits` and return if the found match
     // begins from the starting index of a token.
     DCHECK(text_token_indexes.front() == matched_index);
-    size_t text_pos = text_.tokens().size() - text_token_indexes.size();
+    size_t text_pos = text_->tokens().size() - text_token_indexes.size();
     size_t text_sentence_end_pos = matched_index + query_sentence.size();
 
     sentence_match_info.relevance = 0.0;
     sentence_match_info.current_match.set_start(
-        text_.mappings()[text_pos].start());
+        text_->mappings()[text_pos].start());
 
     while (!text_token_indexes.empty() &&
            text_token_indexes.front() < text_sentence_end_pos) {
       // Text size may be smaller than the token size as prefix matching is
       // allowed for the last token.
       size_t text_size =
-          std::min(text_.tokens()[text_pos].size(),
+          std::min(text_->tokens()[text_pos].size(),
                    text_sentence_end_pos - text_token_indexes.front());
       sentence_match_info.relevance +=
           matched_index == 0 ? kIsPrefixCharScore * text_size
                              : kIsFrontOfTokenCharScore +
                                    kIsWeakHitCharScore * (text_size - 1);
       sentence_match_info.current_match.set_end(
-          text_.mappings()[text_pos].start() + text_size);
+          text_->mappings()[text_pos].start() + text_size);
 
       ++text_pos;
       text_token_indexes.pop();
@@ -132,13 +132,14 @@ void PrefixMatcher::SentencePrefixMatch(MatchInfo& sentence_match_info) {
 }
 
 void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
-  const size_t num_query_token = query_.tokens().size();
-  const size_t num_text_token = text_.tokens().size();
+  const size_t num_query_token = query_->tokens().size();
+  const size_t num_text_token = text_->tokens().size();
 
   // Not a prefix match if `query_`  contains more tokens than  `text_` , or
   // if `query_`  is empty.
-  if (query_.tokens().empty() || num_query_token > num_text_token)
+  if (query_->tokens().empty() || num_query_token > num_text_token) {
     return;
+  }
 
   // We use `query_map` to allow fast match between query tokens and text
   // tokens. Queue stores the query token index and ensures the tokens to
@@ -146,14 +147,14 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
   // last query token as the last query token allows token prefix matching.
   base::flat_map<std::u16string, std::queue<size_t>> query_map;
   for (size_t i = 0; i < num_query_token - 1; ++i) {
-    query_map[query_.tokens()[i]].emplace(i);
+    query_map[query_->tokens()[i]].emplace(i);
   }
-  const std::u16string last_query_token = query_.tokens()[num_query_token - 1];
+  const std::u16string last_query_token = query_->tokens()[num_query_token - 1];
 
   size_t matched_num = 0;
   bool last_query_token_matched = false;
   for (size_t text_pos = 0; text_pos < num_text_token; ++text_pos) {
-    const std::u16string text_token = text_.tokens()[text_pos];
+    const std::u16string text_token = text_->tokens()[text_pos];
 
     if (query_map.contains(text_token)) {
       DCHECK(!query_map[text_token].empty());
@@ -195,9 +196,9 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
 void PrefixMatcher::UpdateInfoForTokenPrefixMatch(size_t query_pos,
                                                   size_t text_pos,
                                                   MatchInfo& token_match_info) {
-  const size_t hit_start_pos = text_.mappings()[text_pos].start();
+  const size_t hit_start_pos = text_->mappings()[text_pos].start();
   const size_t hit_end_pos =
-      text_.mappings()[text_pos].start() + query_.tokens()[query_pos].size();
+      text_->mappings()[text_pos].start() + query_->tokens()[query_pos].size();
 
   // Update the hits information.
   if (query_pos != token_match_info.last_query_pos + 1 ||
@@ -221,10 +222,10 @@ void PrefixMatcher::UpdateInfoForTokenPrefixMatch(size_t query_pos,
   // Update relevance score.
   token_match_info.relevance +=
       token_match_info.is_front
-          ? kIsPrefixCharScore * query_.tokens().at(query_pos).size()
+          ? kIsPrefixCharScore * query_->tokens().at(query_pos).size()
           : kIsFrontOfTokenCharScore +
                 kIsWeakHitCharScore *
-                    (query_.tokens().at(query_pos).size() - 1);
+                    (query_->tokens().at(query_pos).size() - 1);
   token_match_info.last_query_pos = query_pos;
   token_match_info.last_text_pos = text_pos;
 }

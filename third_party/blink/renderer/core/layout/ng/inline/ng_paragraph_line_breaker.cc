@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 
 #include <numeric>
+#include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
@@ -74,7 +76,7 @@ struct LineBreakResults {
       lines_.push_back(LineBreakResult{line_info.Width()});
       DCHECK_LE(lines_.size(), kMaxLinesToBalance);
       if (!break_token_ ||
-          (stop_at && break_token_->IsAtEqualOrAfter(*stop_at))) {
+          (stop_at && break_token_->Start() >= stop_at->Start())) {
         return Status::kFinished;
       }
       if (!--max_lines) {
@@ -96,7 +98,6 @@ struct LineBreakResults {
     while (lower + epsilon < upper) {
       const LayoutUnit middle = (upper + lower) / 2;
       const Status status = BreakLines(middle, num_lines, stop_at);
-      DCHECK_NE(status, Status::kNotApplicable);
       if (status != Status::kFinished) {
         lower = middle;
       } else {
@@ -142,21 +143,28 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
     const NGInlineNode& node,
     const NGConstraintSpace& space,
     const NGLineLayoutOpportunity& line_opportunity) {
-  const NGInlineItemsData& items_data = node.ItemsData(
-      /* use_first_line_style */ false);
-  // Bisecting can't balance if there were floating objects, block-in-inline, or
-  // forced line breaks.
-  for (const NGInlineItem& item : items_data.items) {
-    if (item.IsForcedLineBreak() ||
-        // Floats/exclusions require computing line heights, which is currently
-        // skipped during the bisect. See `LineBreakResults`.
-        item.Type() == NGInlineItem::kFloating ||
-        item.Type() == NGInlineItem::kInitialLetterBox ||
-        // Block-in-inline is similar to atomic inline for NG. It requires to
-        // bisect block-in-inline, before it and after it separately.
-        item.Type() == NGInlineItem::kBlockInInline) {
-      return absl::nullopt;
-    }
+  const base::ElapsedTimer timer;
+  const absl::optional<LayoutUnit> result =
+      AttemptParagraphBalancingCore(node, space, line_opportunity);
+  if (result) {
+    UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance", timer.Elapsed());
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
+  } else {
+    UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance.Fail",
+                        timer.Elapsed());
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalanceFail);
+  }
+  return result;
+}
+
+// static
+absl::optional<LayoutUnit>
+NGParagraphLineBreaker::AttemptParagraphBalancingCore(
+    const NGInlineNode& node,
+    const NGConstraintSpace& space,
+    const NGLineLayoutOpportunity& line_opportunity) {
+  if (node.IsBisectLineBreakDisabled()) {
+    return absl::nullopt;
   }
 
   const ComputedStyle& block_style = node.Style();
@@ -177,6 +185,8 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
     // Because this is an estimate, allow it to be `kMaxLinesToBalance * 2`.
+    const NGInlineItemsData& items_data = node.ItemsData(
+        /* use_first_line_style */ false);
     const wtf_size_t estimated_num_lines = EstimateNumLines(
         items_data.text_content, block_style.GetFont().PrimaryFont(),
         line_opportunity.AvailableInlineSize());

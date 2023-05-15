@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Dekoduesi i imazheve</translation>
 <translation id="1785415724048343560">Rekomandohet për përvojën më të mirë</translation>
 <translation id="1818308510395330587">Për të lejuar që <ph name="APP_NAME" /> të përdorë AR, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Nga <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Sajtet e lidhura mund ta shikojnë aktivitetin tënd në këtë grup</translation>
 <translation id="1887786770086287077">Qasja te vendndodhja është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Mbyll</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
 <translation id="3165022941318558018">Lejo që një sajt të përdorë kukit e palëve të treta</translation>
 <translation id="3198916472715691905">Të dhënat e ruajtura <ph name="STORAGE_AMOUNT" /></translation>
-<translation id="3203366800380907218">Nga uebi</translation>
 <translation id="321187648315454507">Për të lejuar që <ph name="APP_NAME" /> të të dërgojë njoftime, aktivizo gjithashtu njoftimet në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3248611290851046188">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama. Gjithashtu, ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Hiq zërin për sajtet që luajnë tinguj</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
+<translation id="3707034683772193706">Një sajt që ti viziton mund të ruajë një sasi të vogël informacionesh me Chrome, kryesisht për të vërtetuar që nuk je një robot</translation>
 <translation id="3721953990244350188">Hiq dhe shfaq veprimin tjetër të disponueshëm</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Kontaktet që zgjedh do të ndahen me <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
 <translation id="5225463052809312700">Aktivizo kamerën</translation>
-<translation id="5229337741799419985">Ky cilësim funksionon pa të identifikuar ty ose pa i lejuar sajtet që të shikojnë historikun tënd të shfletimit</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5264323282659631142">Hiqe "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Zvarrit nga lart dhe prek butonin e kthimit për të dalë nga ekrani i plotë.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>
-<translation id="6701547804986694515">Një sajt që ti viziton mund të ruajë informacione në Chrome që verifikojnë që nuk je një robot. Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>
 <translation id="6722828510648505498">Blloko kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="6749077623962119521">Të rivendosen lejet?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Ti i bllokon zakonisht njoftimet. Për t'i lejuar, trokit te "Detajet".</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7383715096023715447">Cilësimet për <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Ky cilësim funksionon pa të identifikuar ty ose pa i lejuar sajtet që të shikojnë historikun tënd të shfletimit, megjithëse sajtet mund të ndajnë një sasi të vogël informacionesh si pjesë e verifikimit</translation>
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7425915948813553151">Tema e errët për sajtet</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Bllokojua faqeve hapjen e sensorëve</translation>
 <translation id="8823559166155093873">Blloko kukit</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>
 <translation id="8899807382908246773">Reklamat ndërhyrëse</translation>
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

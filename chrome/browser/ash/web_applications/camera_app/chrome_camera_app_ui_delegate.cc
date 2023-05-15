@@ -29,6 +29,8 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -273,6 +275,14 @@ ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
 
   // Try triggering the HaTS survey when leaving the app.
   MaybeTriggerSurvey();
+}
+
+ash::HoldingSpaceClient* ChromeCameraAppUIDelegate::GetHoldingSpaceClient() {
+  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          Profile::FromWebUI(web_ui_));
+  CHECK(holding_space_keyed_service);
+  return holding_space_keyed_service->client();
 }
 
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {

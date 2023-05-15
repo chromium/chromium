@@ -284,12 +284,10 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 
   // The metainstaller is elevated because unpacking its files and running
   // updater.exe must happen from a secure directory.
-  HResultOr<DWORD> result =
-      RunElevated(command_line.GetProgram(), [&command_line]() {
-        base::CommandLine elevate_command_line = command_line;
-        elevate_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
-        return elevate_command_line.GetArgumentsString();
-      }());
+  base::CommandLine elevated_command_line = command_line;
+  elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
+  HResultOr<DWORD> result = RunElevated(
+      command_line.GetProgram(), elevated_command_line.GetArgumentsString());
 
   return result.has_value()
              ? ProcessExitResult(result.value())

@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFIER_TEST_UTILS_H_
 #define ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFIER_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
@@ -51,7 +52,7 @@ class MagnifierFocusTestHelper {
   gfx::Rect GetSecondButtonBoundsInRoot() const;
 
  private:
-  TestFocusView* focus_test_view_ = nullptr;
+  raw_ptr<TestFocusView, ExperimentalAsh> focus_test_view_ = nullptr;
 };
 
 // Defines a test helper for magnifiers unit tests that wants to verify their

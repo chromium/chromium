@@ -53,9 +53,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for the error message helper bridge.
- * */
+/** Unit tests for the error message helper bridge. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PasswordManagerErrorMessageHelperBridgeTest {

@@ -231,9 +231,8 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     private void createBackPressHandler(boolean systemBack) {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.BACK_GESTURE_REFACTOR, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", systemBack + "");
         FeatureList.setTestValues(testValues);
+        MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK.setForTesting(systemBack);
         if (systemBack) {
             MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.TIRAMISU);
         }

@@ -84,7 +84,7 @@ source_set("unit_tests") {
     "screen_ai_service_impl_unittest.cc",
   ]
 
-  # TODO(https://crbug.com/1278249): Enable after the protobuf issue is fixed.
+  # TODO(https://crbug.com/1443341): Enable after the protobuf issue is fixed.
   if (!is_win) {
     sources += [
       "proto/main_content_extractor_proto_convertor_unittest.cc",

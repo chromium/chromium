@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
@@ -65,7 +66,7 @@ class SettingsController::DeviceSettingsUpdater
   ~DeviceSettingsUpdater() override = default;
 
   void UpdateSettings(const std::string& locale, bool hotword_enabled) {
-    const std::string device_id = assistant_client_.GetDeviceId();
+    const std::string device_id = assistant_client_->GetDeviceId();
     if (device_id.empty())
       return;
 
@@ -92,11 +93,11 @@ class SettingsController::DeviceSettingsUpdater
 
     // Device settings update result is not handled because it is not included
     // in the SettingsUiUpdateResult.
-    parent_.UpdateSettings(update.SerializeAsString(), base::DoNothing());
+    parent_->UpdateSettings(update.SerializeAsString(), base::DoNothing());
   }
 
-  SettingsController& parent_;
-  AssistantClient& assistant_client_;
+  const raw_ref<SettingsController, ExperimentalAsh> parent_;
+  const raw_ref<AssistantClient, ExperimentalAsh> assistant_client_;
 };
 
 // Sends a 'get settings' requests to Libassistant,

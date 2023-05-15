@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_UNLOCK_MANAGER_IMPL_H_
 
 #include "ash/public/cpp/smartlock_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -201,7 +202,7 @@ class UnlockManagerImpl : public UnlockManager,
       GetRemoteStatusResultFailureReason reason);
 
   // Used to call into the embedder. Expected to outlive |this| instance.
-  ProximityAuthClient* proximity_auth_client_;
+  raw_ptr<ProximityAuthClient, ExperimentalAsh> proximity_auth_client_;
 
   // Starts running after resuming from suspension, and fires once enough time
   // has elapsed such that the BluetoothAdapter's presence and power values can
@@ -226,7 +227,7 @@ class UnlockManagerImpl : public UnlockManager,
 
   // Controls the proximity auth flow logic for a remote device. Not owned, and
   // expcted to outlive |this| instance.
-  RemoteDeviceLifeCycle* life_cycle_ = nullptr;
+  raw_ptr<RemoteDeviceLifeCycle, ExperimentalAsh> life_cycle_ = nullptr;
 
   // True if the manager is currently processing a user-initiated authentication
   // attempt, which is initiated when the user pod is clicked.

@@ -9,8 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"
@@ -92,7 +93,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     Owner& operator=(Owner&&);
 
     // The native window that opened the dialog.
-    aura::Window* window = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
     // Android task ID if the owner window is an Android app.
     absl::optional<int> android_task_id;
     // Lacros window ID if the owner window is a Lacros browser. This field
@@ -174,13 +175,13 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // If System Files App is enabled it stores the web contents associated with
   // System File App dialog. Not owned by this class. Set only while System
   // Files App dialog is opened.
-  content::WebContents* system_files_app_web_contents_;
+  raw_ptr<content::WebContents, ExperimentalAsh> system_files_app_web_contents_;
 
   // ID of the tab that spawned this dialog, used to route callbacks.
   RoutingID routing_id_;
 
   // Pointer to the profile the dialog is running in.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // Information about the dialog's owner, such as the window or app type.
   Owner owner_;
@@ -200,7 +201,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   std::vector<ui::SelectedFileInfo> selection_files_;
   int selection_index_ = 0;
   bool can_resize_ = true;
-  void* params_ = nullptr;
+  raw_ptr<void, ExperimentalAsh> params_ = nullptr;
   base::WeakPtrFactory<SelectFileDialogExtension> weak_factory_{this};
 };
 

@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -1189,7 +1188,7 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
   float min_scale = MinimumContentsScale();
 
   float clamped_ideal_source_scale =
-      base::clamp(ideal_source_scale_key(), min_scale, max_scale);
+      std::clamp(ideal_source_scale_key(), min_scale, max_scale);
   // Use clamped_ideal_source_scale if adjusted_raster_scale is too far away.
   constexpr float kFarAwayFactor = 32.f;
   if (adjusted_raster_scale < clamped_ideal_source_scale / kFarAwayFactor) {
@@ -1211,7 +1210,7 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
   }
 
   adjusted_raster_scale =
-      base::clamp(adjusted_raster_scale, min_scale, max_scale);
+      std::clamp(adjusted_raster_scale, min_scale, max_scale);
   return adjusted_raster_scale;
 }
 
@@ -1410,9 +1409,7 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
       float maximum_animation_scale =
           layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
               transform_tree_index());
-      if (!base::FeatureList::IsEnabled(
-              features::kAvoidRasterDuringElasticOverscroll) ||
-          (maximum_animation_scale != raster_contents_scale_.x() ||
+      if ((maximum_animation_scale != raster_contents_scale_.x() ||
            maximum_animation_scale != raster_contents_scale_.y())) {
         return true;
       }

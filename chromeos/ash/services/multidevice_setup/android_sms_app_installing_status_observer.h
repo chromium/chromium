@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
 
@@ -74,10 +75,11 @@ class AndroidSmsAppInstallingStatusObserver
   void UpdatePwaInstallationState();
   void ReenableIfAppropriate();
 
-  HostStatusProvider* host_status_provider_;
-  FeatureStateManager* feature_state_manager_;
-  AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate_;
-  PrefService* pref_service_;
+  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
+  raw_ptr<FeatureStateManager, ExperimentalAsh> feature_state_manager_;
+  raw_ptr<AndroidSmsAppHelperDelegate, ExperimentalAsh>
+      android_sms_app_helper_delegate_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
       this};
 };

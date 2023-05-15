@@ -128,7 +128,7 @@ void PersistedData::SetDateLastDataHelper(
   for (const auto& id : ids) {
     base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->Set("dlrc", datenum);
-    app_key->Set("pf", base::GenerateUuid());
+    app_key->Set("pf", base::Uuid::GenerateRandomV4().AsLowercaseString());
     if (GetInstallDate(id) == kDateFirstTime)
       app_key->Set("installdate", datenum);
     if (active_ids.find(id) != active_ids.end()) {

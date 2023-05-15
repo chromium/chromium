@@ -86,8 +86,13 @@ typedef NS_OPTIONS(NSUInteger, CWVNavigationType) {
   // KEYWORD for more details.
   CWVNavigationTypeKeywordGenerated = 10,
 
+  // Corresponds to a navigation causing the new web view to be created.
+  // It's only used in [web_view.UIDelegate
+  // webView:createWebViewWithConfiguration:forNavigationAction:]
+  CWVNavigationTypeNewWindow = 11,
+
   // ADDING NEW CORE VALUE? Be sure to update ui::PageTransition too.
-  CWVNavigationTypeLastCore = CWVNavigationTypeKeywordGenerated,
+  CWVNavigationTypeLastCore = CWVNavigationTypeNewWindow,
   CWVNavigationTypeCoreMask = 0xFF,
 
   // Qualifiers

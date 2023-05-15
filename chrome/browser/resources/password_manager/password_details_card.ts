@@ -20,7 +20,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_card.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
 
 export type PasswordRemovedEvent =
@@ -113,15 +113,27 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         .then(() => this.showToast_(this.i18n('passwordCopiedToClipboard')))
         .catch(() => {});
     this.extendAuthValidity_();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);
+  }
+
+  private onShowPasswordClick_() {
+    this.onShowHidePasswordButtonClick();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
   }
 
   private onCopyUsernameClick_() {
-    navigator.clipboard.writeText(this.password.username);
+    navigator.clipboard.writeText(this.password.username).catch(() => {});
     this.showToast_(this.i18n('usernameCopiedToClipboard'));
     this.extendAuthValidity_();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED);
   }
 
   private onDeleteClick_() {
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED);
     if (this.password.storedIn ===
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT) {
       this.showDeletePasswordDialog_ = true;
@@ -146,6 +158,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onEditClicked_() {
     this.showEditPasswordDialog_ = true;
     this.extendAuthValidity_();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED);
   }
 
   private onEditPasswordDialogClosed_() {

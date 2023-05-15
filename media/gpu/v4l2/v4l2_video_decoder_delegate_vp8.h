@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/vp8_decoder.h"
 
@@ -36,8 +37,8 @@ class V4L2VideoDecoderDelegateVP8 : public VP8Decoder::VP8Accelerator {
   scoped_refptr<V4L2DecodeSurface> VP8PictureToV4L2DecodeSurface(
       VP8Picture* pic);
 
-  V4L2DecodeSurfaceHandler* const surface_handler_;
-  V4L2Device* const device_;
+  raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;
+  raw_ptr<V4L2Device> const device_;
 };
 
 }  // namespace media

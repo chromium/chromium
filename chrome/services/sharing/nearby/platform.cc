@@ -4,7 +4,6 @@
 
 #include "third_party/nearby/src/internal/platform/implementation/platform.h"
 
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
@@ -12,6 +11,7 @@
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 #include "chrome/services/sharing/nearby/platform/atomic_uint32.h"
 #include "chrome/services/sharing/nearby/platform/ble_medium.h"
+#include "chrome/services/sharing/nearby/platform/ble_v2_medium.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 #include "chrome/services/sharing/nearby/platform/condition_variable.h"
@@ -38,6 +38,7 @@
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 #include "third_party/nearby/src/internal/platform/implementation/condition_variable.h"
 #include "third_party/nearby/src/internal/platform/implementation/count_down_latch.h"
+#include "third_party/nearby/src/internal/platform/implementation/credential_storage.h"
 #include "third_party/nearby/src/internal/platform/implementation/log_message.h"
 #include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 #include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
@@ -210,7 +211,22 @@ std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
 
 std::unique_ptr<ble_v2::BleMedium> ImplementationPlatform::CreateBleV2Medium(
     api::BluetoothAdapter& adapter) {
-  // Do nothing. ble_v2::BleMedium is not yet supported in Chrome Nearby.
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
+  // Ignore the provided |adapter| argument; it is a reference to the object
+  // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
+  // directly use the cached bluetooth::mojom::Adapter.
+  if (nearby_shared_remotes &&
+      nearby_shared_remotes->bluetooth_adapter.is_bound()) {
+    return std::make_unique<chrome::BleV2Medium>(
+        nearby_shared_remotes->bluetooth_adapter);
+  }
+  return nullptr;
+}
+
+// TODO(b/279611359): Wire into Chrome impl.
+std::unique_ptr<api::CredentialStorage>
+ImplementationPlatform::CreateCredentialStorage() {
   return nullptr;
 }
 

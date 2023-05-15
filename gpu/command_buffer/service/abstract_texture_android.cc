@@ -74,7 +74,7 @@ AbstractTextureAndroid::~AbstractTextureAndroid() {
   }
 
   if (texture_) {
-    texture_->RemoveLightweightRef(have_context_);
+    texture_.ExtractAsDangling()->RemoveLightweightRef(have_context_);
   }
 }
 

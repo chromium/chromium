@@ -216,12 +216,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // The physical offset from this PaintLayer to its ContainingLayer.
   // Does not include any scroll offset of the ContainingLayer. Also does not
   // include offsets for positioned elements.
-  const PhysicalOffset& LocationWithoutPositionOffset() const {
-#if DCHECK_IS_ON()
-    DCHECK(!needs_position_update_);
-#endif
-    return location_without_position_offset_;
-  }
+  //
+  // Do not use this function.  We're going to remove this.
+  const PhysicalOffset& LocationWithoutPositionOffset() const;
 
   // This is the scroll offset that's actually used to display to the screen.
   // It should only be used in paint/compositing type use cases (includes hit
@@ -230,18 +227,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // ScrollableArea.
   gfx::Vector2d PixelSnappedScrolledContentOffset() const;
 
-  // FIXME: size() should DCHECK(!needs_position_update_) as well, but that
-  // fails in some tests, for example, fast/repaint/clipped-relative.html.
-  const LayoutSize& Size() const { return size_; }
-
 #if DCHECK_IS_ON()
+  // Do not use this function.  We're going to remove this.
   bool NeedsPositionUpdate() const { return needs_position_update_; }
 #endif
 
   bool IsRootLayer() const { return is_root_layer_; }
 
-  bool UpdateSize();
-  void UpdateSizeAndScrollingAfterLayout();
+  void UpdateScrollingAfterLayout();
 
   void UpdateLayerPositionsAfterLayout();
 
@@ -271,6 +264,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
 
+  // Do not use this function.  We're going to remove this.
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
 
@@ -318,7 +312,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return position;
   }
 
-  // Note that this transform has the transform-origin baked in.
+  // Note that this transform has the transform-origin baked in. Due to this
+  // fact, this transform is pretty useless if we're fragmented, since each
+  // fragment has its own origin. Avoid calling this method if a box is
+  // fragmented. Ideally, we should have a DCHECK for being non-fragmented here,
+  // but that's going to fail currently. LayoutBox::MapVisualRectToContainer()
+  // calls this function without any checks, for instance.
   gfx::Transform* Transform() const { return transform_.get(); }
 
   // Returns *Transform(), or identity matrix if Transform() is nullptr.
@@ -396,6 +395,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                              const ComputedStyle& new_style);
   void UpdateClipPath(const ComputedStyle* old_style,
                       const ComputedStyle& new_style);
+  void UpdateOffsetPath(const ComputedStyle* old_style,
+                        const ComputedStyle& new_style);
 
   Node* EnclosingNode() const;
 
@@ -709,6 +710,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned has_visible_self_painting_descendant_ : 1;
 
 #if DCHECK_IS_ON()
+  // TODO(crbug.com/1432839): Remove this.
   unsigned needs_position_update_ : 1;
 #endif
 
@@ -777,13 +779,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Our (x,y) coordinates are in our containing layer's coordinate space,
   // excluding positioning offset and scroll.
+  // TODO(crbug.com/1432839): Remove this.
   PhysicalOffset location_without_position_offset_;
-
-  // The layer's size.
-  //
-  // If the associated LayoutBoxModelObject is a LayoutBox, it's its border
-  // box. Otherwise, this is the LayoutInline's lines' bounding box.
-  LayoutSize size_;
 
   // Cached normal flow values for absolute positioned elements with static
   // left/top values.

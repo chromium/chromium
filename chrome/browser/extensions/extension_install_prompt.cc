@@ -40,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -63,7 +64,8 @@ SkBitmap GetDefaultIconBitmapForMaxScaleFactor(bool is_app) {
   const gfx::ImageSkia& image = is_app ?
       extensions::util::GetDefaultAppIcon() :
       extensions::util::GetDefaultExtensionIcon();
-  return image.GetRepresentation(gfx::ImageSkia::GetMaxSupportedScale())
+  return image
+      .GetRepresentation(ui::GetScaleForMaxSupportedResourceScaleFactor())
       .GetBitmap();
 }
 

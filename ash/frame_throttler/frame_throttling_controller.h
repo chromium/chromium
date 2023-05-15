@@ -12,6 +12,7 @@
 #include "ash/frame_throttler/frame_throttling_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -153,7 +154,8 @@ class ASH_EXPORT FrameThrottlingController final
 
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager, ExperimentalAsh>
+      host_frame_sink_manager_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
   // Maps aura::WindowTreeHost* to a set of FrameSinkIds to be throttled.

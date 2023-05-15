@@ -143,7 +143,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
   // The currently observed `BeginFrameSource` which will notify us with
   // `OnBeginFrameDerivedImpl()`.
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
 
   // True if we submitted a compositor frame and are waiting for a call to
   // `DidReceiveCompositorFrameAck()`.
@@ -162,7 +162,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // The root window to which `this` holder becomes an observer to extend its
   // lifespan till all the in-flight resource to display compositor are
   // reclaimed.
-  base::raw_ptr<aura::Window> root_window_for_deletion_ = nullptr;
+  raw_ptr<aura::Window> root_window_for_deletion_ = nullptr;
 
   // Keeps track of resources that are currently available to be reused in a
   // compositor frame and the resources that are in-use by the display

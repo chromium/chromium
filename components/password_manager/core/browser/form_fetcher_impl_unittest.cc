@@ -168,14 +168,14 @@ PasswordForm CreateHTMLForm(const std::string& origin_url,
   return form;
 }
 
-PasswordForm CreateInsecureCredential(
+PasswordForm CreateLeakedCredential(
     const PasswordForm& form,
+    const InsecurityMetadata& insecurity_metadata,
     PasswordForm::Store store = PasswordForm::Store::kNotSet) {
   PasswordForm compromised = form;
   compromised.password_issues.clear();
   compromised.password_issues.insert(
-      {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+      {InsecureType::kLeaked, insecurity_metadata});
   compromised.in_store = store;
   return compromised;
 }
@@ -524,13 +524,16 @@ TEST_P(FormFetcherImplTest, InsecureCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   PasswordForm form = CreateNonFederated();
-  form.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
+  InsecurityMetadata leaked_metadata{base::Time(), IsMuted(false),
+                                     TriggerBackendNotification(true)};
+  form.password_issues.insert({InsecureType::kLeaked, leaked_metadata});
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(form));
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
                               /*account_store_results=*/{});
   EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
-              UnorderedElementsAre(Pointee(CreateInsecureCredential(form))));
+              UnorderedElementsAre(
+                  Pointee(CreateLeakedCredential(form, leaked_metadata))));
 }
 
 // Test that multiple calls of Fetch() are handled gracefully, and that they
@@ -898,8 +901,9 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
   Fetch();
   PasswordForm non_federated = CreateNonFederated();
   PasswordForm federated = CreateFederated();
-  federated.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
+  InsecurityMetadata leaked_metadata{base::Time(), IsMuted(false),
+                                     TriggerBackendNotification(true)};
+  federated.password_issues.insert({InsecureType::kLeaked, leaked_metadata});
   PasswordForm android_federated = CreateAndroidFederated();
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(non_federated));
@@ -960,7 +964,9 @@ TEST_P(FormFetcherImplTest, Clone_Insecure) {
   Fetch();
   // Pass empty results to make the state NOT_WAITING.
   PasswordForm form = CreateNonFederated();
-  form.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
+  InsecurityMetadata leaked_metadata{base::Time(), IsMuted(false),
+                                     TriggerBackendNotification(true)};
+  form.password_issues.insert({InsecureType::kLeaked, leaked_metadata});
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(form));
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
@@ -1075,7 +1081,7 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherResumesFetch) {
 
 // Check that results from both stores are merged.
 TEST_F(MultiStoreFormFetcherTest, MergeFromBothStores) {
-  const base::Time kLastUsedNow = base::Time::Now();
+  const base::Time kLastUsedNow = base::Time();
   const base::Time kLastUsedYesterday = kLastUsedNow - base::Days(1);
   Fetch();
   PasswordForm federated1 = CreateFederated("user", kLastUsedNow);
@@ -1248,8 +1254,10 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   Fetch();
   PasswordForm profile_form_insecure_credential =
       CreateHTMLForm("www.url.com", "username1", "pass");
+  InsecurityMetadata leaked_metadata{base::Time(), IsMuted(false),
+                                     TriggerBackendNotification(true)};
   profile_form_insecure_credential.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
+      {InsecureType::kLeaked, leaked_metadata});
   profile_form_insecure_credential.in_store =
       PasswordForm::Store::kProfileStore;
   std::vector<std::unique_ptr<PasswordForm>> profile_results;
@@ -1259,7 +1267,7 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   PasswordForm account_form_insecure_credential =
       CreateHTMLForm("www.url.com", "username1", "pass");
   account_form_insecure_credential.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
+      {InsecureType::kLeaked, leaked_metadata});
   std::vector<std::unique_ptr<PasswordForm>> account_results;
   account_form_insecure_credential.in_store =
       PasswordForm::Store::kAccountStore;

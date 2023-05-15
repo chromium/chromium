@@ -246,10 +246,10 @@ HRESULT IsCOMCallerAllowed() {
     return S_OK;
   }
 
-  HResultOr<bool> result = IsCOMCallerAdmin();
+  const HResultOr<bool> result = IsCOMCallerAdmin();
   if (!result.has_value()) {
     HRESULT hr = result.error();
-    LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
+    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << hr;
     return hr;
   }
 
@@ -470,6 +470,30 @@ bool ComServerApp::MigrateLegacyUpdaters(
       if (client_state_key.ReadValueDW(kRegValueDateOfLastRollcall,
                                        &date_last_rollcall) == ERROR_SUCCESS) {
         registration.dlrc = DaynumFromDWORD(date_last_rollcall);
+      }
+
+      base::win::RegKey cohort_key;
+      if (cohort_key.Open(root, GetAppCohortKey(app_id).c_str(),
+                          Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+        std::wstring cohort;
+        if (cohort_key.ReadValue(nullptr, &cohort) == ERROR_SUCCESS) {
+          registration.cohort = base::SysWideToUTF8(cohort);
+
+          std::wstring cohort_name;
+          if (cohort_key.ReadValue(kRegValueCohortName, &cohort_name) ==
+              ERROR_SUCCESS) {
+            registration.cohort_name = base::SysWideToUTF8(cohort_name);
+          }
+
+          std::wstring cohort_hint;
+          if (cohort_key.ReadValue(kRegValueCohortHint, &cohort_hint) ==
+              ERROR_SUCCESS) {
+            registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
+          }
+          VLOG(2) << "Cohort values: " << registration.cohort << ", "
+                  << registration.cohort_name << ", "
+                  << registration.cohort_hint;
+        }
       }
     }
 

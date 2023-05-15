@@ -14,6 +14,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -81,8 +82,9 @@ class ArcFileSystemWatcherService
       base::OnceClosure callback);
   void OnFileSystemChanged(const std::vector<std::string>& paths);
 
-  content::BrowserContext* const context_;
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   bool watching_file_system_changes_ = false;
 

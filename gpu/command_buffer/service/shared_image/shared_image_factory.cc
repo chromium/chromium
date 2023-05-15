@@ -137,6 +137,15 @@ SharedImageFactory::SharedImageFactory(
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL) {
+  auto shared_memory_backing_factory =
+      std::make_unique<SharedMemoryImageBackingFactory>();
+  factories_.push_back(std::move(shared_memory_backing_factory));
+
+  // if GL is disabled, it only needs SharedMemoryImageBackingFactory.
+  if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
+    return;
+  }
+
   scoped_refptr<gles2::FeatureInfo> feature_info;
   if (shared_context_state_) {
     feature_info = shared_context_state_->feature_info();
@@ -150,10 +159,6 @@ SharedImageFactory::SharedImageFactory(
     feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
                              use_passthrough, gles2::DisallowedFeatures());
   }
-
-  auto shared_memory_backing_factory =
-      std::make_unique<SharedMemoryImageBackingFactory>();
-  factories_.push_back(std::move(shared_memory_backing_factory));
 
   if (context_state) {
     auto wrapped_sk_image_factory =
@@ -449,8 +454,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            std::string debug_label) {
-  auto si_format =
-      viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(format));
+  auto si_format = viz::GetSharedImageFormat(format);
   gfx::GpuMemoryBufferType gmb_type = handle.type;
 
   bool use_compound = false;
@@ -466,8 +470,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       // For shared memory backed compound backings, we need to check if the
       // corresponding GPU backing can support the format and size for the given
       // plane rather than the original GMB format and size.
-      const auto plane_format = viz::SharedImageFormat::SinglePlane(
-          viz::GetResourceFormat(GetPlaneBufferFormat(plane, format)));
+      const auto plane_format =
+          viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, format));
       const gfx::Size plane_size = GetPlaneSize(plane, size);
       factory =
           GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, plane_format,

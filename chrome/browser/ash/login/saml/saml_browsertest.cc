@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <cstring>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -32,7 +37,6 @@
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -47,6 +51,7 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -352,7 +357,8 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  SecretInterceptingFakeUserDataAuthClient* cryptohome_client_;
+  raw_ptr<SecretInterceptingFakeUserDataAuthClient, ExperimentalAsh>
+      cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
@@ -625,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
 
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   // Make sure that the password is scraped correctly.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
       "$('gaia-signin').authenticator_.addEventListener('authCompleted',"
       "    function(e) {"
@@ -939,33 +945,34 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, NoticeUpdatedOnRedirect) {
   // Wait until the notice shown to the user is updated to contain
   // `kAdditionalIdPHost`.
   std::string js =
-      "var sendIfHostFound = function() {"
-      "  var found = $SamlNoticeMessagePath.textContent.indexOf('$Host') > -1;"
-      "  if (found)"
-      "    window.domAutomationController.send(true);"
-      "  return found;"
-      "};"
-      "var processEventsAndSendIfHostFound = function() {"
-      "  window.setTimeout(function() {"
-      "    if (sendIfHostFound()) {"
-      "      $('gaia-signin').authenticator_.removeEventListener("
-      "          'authDomainChange',"
-      "          processEventsAndSendIfHostFound);"
-      "    }"
-      "  }, 0);"
-      "};"
-      "if (!sendIfHostFound()) {"
-      "  $('gaia-signin').authenticator_.addEventListener("
-      "      'authDomainChange',"
-      "      processEventsAndSendIfHostFound);"
-      "}";
+      "new Promise(resolve => {"
+      "  var sendIfHostFound = function() {"
+      "    var found = $SamlNoticeMessagePath.textContent.indexOf('$Host') > "
+      "-1;"
+      "    if (found)"
+      "      resolve(true);"
+      "    return found;"
+      "  };"
+      "  var processEventsAndSendIfHostFound = function() {"
+      "    window.setTimeout(function() {"
+      "      if (sendIfHostFound()) {"
+      "        $('gaia-signin').authenticator_.removeEventListener("
+      "            'authDomainChange',"
+      "            processEventsAndSendIfHostFound);"
+      "      }"
+      "    }, 0);"
+      "  };"
+      "  if (!sendIfHostFound()) {"
+      "    $('gaia-signin').authenticator_.addEventListener("
+      "        'authDomainChange',"
+      "        processEventsAndSendIfHostFound);"
+      "  }"
+      "});";
   base::ReplaceSubstringsAfterOffset(
       &js, 0, "$SamlNoticeMessagePath",
       test::GetOobeElementPath(kSamlNoticeMessage));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Host", kAdditionalIdPHost);
-  bool dummy;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetLoginUI()->GetWebContents(), js, &dummy));
+  EXPECT_EQ(true, content::ExecJs(GetLoginUI()->GetWebContents(), js));
 
   // Verify that the notice is visible.
   test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
@@ -1126,7 +1133,7 @@ class SAMLPolicyTest : public SamlTestBase {
   // `device_state_` from `SamlTestBase` instead. Right now we have two ways to
   // do device policy updates in this fixture and they are not interchangeable
   // as they update different policy blobs.
-  policy::DevicePolicyBuilder* device_policy_;
+  raw_ptr<policy::DevicePolicyBuilder, ExperimentalAsh> device_policy_;
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   net::CookieList cookie_list_;
 
@@ -1154,12 +1161,10 @@ void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
   SamlTestBase::SetUpInProcessBrowserTestFixture();
 
   // Initialize device policy.
-  std::set<std::string> device_affiliation_ids;
-  device_affiliation_ids.insert(kAffiliationID);
   auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
       FakeSessionManagerClient::Get());
-  ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
-      &test_helper_, device_affiliation_ids)));
+  ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
+      &test_helper_, std::array{base::StringPiece(kAffiliationID)}));
 
   // Initialize user policy.
   provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
@@ -1184,8 +1189,7 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   // Give affiliated users appropriate affiliation IDs.
-  std::set<std::string> user_affiliation_ids;
-  user_affiliation_ids.insert(kAffiliationID);
+  const base::flat_set<std::string> user_affiliation_ids = {kAffiliationID};
   ChromeUserManager::Get()->SetUserAffiliation(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId),
@@ -1276,7 +1280,7 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
   LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
       "$('gaia-signin').authenticator_.addEventListener('ready', function() {"
       "  window.domAutomationController.send('ready');"
@@ -1615,28 +1619,20 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
   SetLoginVideoCaptureAllowedUrls({url0, url1, url2});
 
   // Trigger the permission check from the js side.
-  {
-    bool get_user_media_success = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {video: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_TRUE(get_user_media_success);
-  }
-  {
-    bool get_user_media_success = true;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {audio: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_FALSE(get_user_media_success);
-  }
+  ASSERT_EQ(true, content::EvalJs(SigninFrameJS().web_contents(),
+                                  "new Promise(resolve => {"
+                                  "  navigator.getUserMedia("
+                                  "    {video: true},"
+                                  "    function() { resolve(true); },"
+                                  "    function() { resolve(false); });"
+                                  "});"));
+  ASSERT_EQ(false, content::EvalJs(SigninFrameJS().web_contents(),
+                                   "new Promise(resolve => {"
+                                   "  navigator.getUserMedia("
+                                   "    {audio: true},"
+                                   "    function() { resolve(true); },"
+                                   "    function() { resolve(false); });"
+                                   "});"));
 
   // Check permissions directly by calling the `CheckMediaAccessPermission`.
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
@@ -1692,28 +1688,22 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
   ASSERT_TRUE(reauth_dialog_helper);
 
-  {
-    bool get_user_media_success = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        reauth_dialog_helper->SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {video: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_TRUE(get_user_media_success);
-  }
-  {
-    bool get_user_media_success = true;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        reauth_dialog_helper->SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {audio: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_FALSE(get_user_media_success);
-  }
+  ASSERT_EQ(true, content::EvalJs(
+                      reauth_dialog_helper->SigninFrameJS().web_contents(),
+                      "new Promise(resolve => {"
+                      "  navigator.getUserMedia("
+                      "    {video: true},"
+                      "    function() { resolve(true); },"
+                      "    function() { resolve(false); });"
+                      "});"));
+  ASSERT_EQ(false, content::EvalJs(
+                       reauth_dialog_helper->SigninFrameJS().web_contents(),
+                       "new Promise(resolve => {"
+                       "  navigator.getUserMedia("
+                       "    {audio: true},"
+                       "    function() { resolve(true); },"
+                       "    function() { resolve(false); });"
+                       "});"));
 
   // Check permissions directly by calling the `CheckMediaAccessPermission`.
   // Video devices should be allowed from the lock screen for specified urls.
@@ -1952,7 +1942,8 @@ class SAMLDeviceAttestationTest : public SamlTestBase {
       const std::vector<std::string>& allowed_urls);
 
   ScopedTestingCrosSettings settings_helper_;
-  StubCrosSettingsProvider* settings_provider_ = nullptr;
+  raw_ptr<StubCrosSettingsProvider, ExperimentalAsh> settings_provider_ =
+      nullptr;
 
   policy::DevicePolicyCrosTestHelper policy_helper_;
 

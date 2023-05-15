@@ -20,7 +20,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigRemote, FilterType, InhibitReason, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, FilterType, InhibitReason, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -89,7 +89,7 @@ class SettingsMultideviceTetherItemElement extends
   routes: OsSettingsRoutes|null;
   private activeNetworkState_: OncMojo.NetworkStateProperties|undefined;
   private deviceState_: OncMojo.DeviceStateProperties|undefined;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
   private showTechnologyBadge_: boolean;
 
   constructor() {

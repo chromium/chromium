@@ -6,6 +6,7 @@
 #define ASH_FAST_INK_CURSOR_CURSOR_VIEW_H_
 
 #include "ash/fast_ink/fast_ink_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -97,7 +98,7 @@ class CursorView : public FastInkView,
   SEQUENCE_CHECKER(paint_sequence_checker_);
 
   // UI thread state.
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
   SEQUENCE_CHECKER(ui_sequence_checker_);
   base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
 };

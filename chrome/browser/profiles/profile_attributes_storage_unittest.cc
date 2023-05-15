@@ -547,7 +547,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
       local_state->GetDict(prefs::kProfileAttributes);
   for (const auto kv : attributes) {
     const base::Value& info = kv.second;
-    const std::string* name = info.FindStringKey("name");
+    const std::string* name = info.GetDict().FindString("name");
     names.push_back(*name);
   }
 

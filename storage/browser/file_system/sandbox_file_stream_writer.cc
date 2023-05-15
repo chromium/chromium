@@ -167,29 +167,29 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
     return;
   }
 
+  BucketLocator bucket = url_.bucket().value_or(
+      BucketLocator::ForDefaultBucket(url_.storage_key()));
+  bucket.type = FileSystemTypeToQuotaStorageType(url_.type());
+
   DCHECK(quota_manager_proxy);
-  quota_manager_proxy->GetUsageAndQuota(
-      url_.storage_key(), FileSystemTypeToQuotaStorageType(url_.type()),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
+  quota_manager_proxy->GetBucketSpaceRemaining(
+      bucket, base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&SandboxFileStreamWriter::DidGetBucketSpaceRemaining,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SandboxFileStreamWriter::DidGetUsageAndQuota(
+void SandboxFileStreamWriter::DidGetBucketSpaceRemaining(
     net::CompletionOnceCallback callback,
-    blink::mojom::QuotaStatusCode status,
-    int64_t usage,
-    int64_t quota) {
+    storage::QuotaErrorOr<int64_t> space_remaining) {
   if (CancelIfRequested())
     return;
-  if (status != blink::mojom::QuotaStatusCode::kOk) {
-    LOG(WARNING) << "Got unexpected quota error : " << static_cast<int>(status);
-
+  if (!space_remaining.has_value()) {
+    LOG(WARNING) << "Got unexpected quota error";
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }
 
-  allowed_bytes_to_write_ = quota - usage;
+  allowed_bytes_to_write_ = space_remaining.value();
   std::move(callback).Run(net::OK);
 }
 
@@ -220,7 +220,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
     const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
-      quota_manager_proxy->NotifyWriteFailed(url_.storage_key());
+      quota_manager_proxy->OnClientWriteFailed(url_.storage_key());
     }
     if (CancelIfRequested())
       return;

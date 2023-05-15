@@ -30,7 +30,7 @@ The standard boilerplate for doing this is named
 In the header file, a nested struct is forward-declared for use by a
 `std::unique_ptr`:
 
-```
+```cpp
 class UtilityObjectMac {
   // ...
  private:
@@ -42,15 +42,15 @@ class UtilityObjectMac {
 and in the implementation `.mm` file, have that nested class host all the Obj-C
 instance variables:
 
-```
+```cpp
 struct UtilityObjectMac::ObjCStorage {
-  id appkit_token_;
-  NSWindow* window_;
+  id appkit_token;
+  NSWindow* window;
 };
 
 UtilityObjectMac::UtilityObjectMac()
     : objc_storage_(std::make_unique<ObjCStorage>()) {
-  objc_storage_->appkit_token_ = [NSFramework registerTheThing: //...
+  objc_storage_->appkit_token = [NSFramework registerTheThing: //...
   // ...
 ```
 
@@ -63,7 +63,7 @@ If none of these techniques will work, a double-declaration can be used. An
 example can be seen in
 [native_widget_types.h](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/native_widget_types.h):
 
-```
+```objectivec
 #ifdef __OBJC__
 @class NSCursor;
 @class NSEvent;

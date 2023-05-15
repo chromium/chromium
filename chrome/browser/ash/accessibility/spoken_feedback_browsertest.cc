@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
     // Press the accelerator that toggles the notification center.
     sm_.Call([this]() {
       EXPECT_TRUE(PerformAcceleratorAction(
-          AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+          AcceleratorAction::kToggleMessageCenterBubble));
     });
 
     // Verify the spoken feedback text.
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
 
   sm_.Call([this]() {
     EXPECT_TRUE(PerformAcceleratorAction(
-        AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+        AcceleratorAction::kToggleMessageCenterBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusShelf) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
 
     // Focus on the Shelf because voice text for focusing on Shelf is fixed.
     // Wait until voice announcements are finished.
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
 
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfNotificationBadgeAnnouncement) {
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 
   sm_.Call([this]() {
     EXPECT_TRUE(
-        PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
+        PerformAcceleratorAction(AcceleratorAction::kToggleSystemTrayBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleSystemTrayBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -969,19 +969,15 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeech("Battery");
 
-    // Avatar button. Disabled for guest account.
-    if (GetParam() != kTestAsGuestUser) {
+    // Guest mode sign out button.
+    if (GetParam() == kTestAsGuestUser) {
       sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-      sm_.ExpectSpeech("Button");
+      sm_.ExpectSpeech("Exit guest");
     }
 
     // Shutdown button.
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-    if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-      sm_.ExpectSpeech("Power menu");
-    } else {
-      sm_.ExpectSpeech("Shut down");
-    }
+    sm_.ExpectSpeech("Power menu");
     sm_.ExpectSpeech("Button");
 
     sm_.Replay();
@@ -1000,11 +996,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 
   // Shutdown button.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_B); });
-  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-    sm_.ExpectSpeech("Power menu");
-  } else {
-    sm_.ExpectSpeech("Shut down");
-  }
+  sm_.ExpectSpeech("Shut down");
   sm_.ExpectSpeech("Button");
 
   sm_.Replay();
@@ -1017,12 +1009,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ScreenBrightness) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_UP));
+    (PerformAcceleratorAction(AcceleratorAction::kBrightnessUp));
   });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_DOWN));
+    (PerformAcceleratorAction(AcceleratorAction::kBrightnessDown));
   });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
@@ -1035,8 +1027,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
   sm_.Call([this]() {
     // Volume slider does not fire valueChanged event on first key press because
     // it has no widget.
-    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
-    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
+    PerformAcceleratorAction(AcceleratorAction::kVolumeUp);
+    PerformAcceleratorAction(AcceleratorAction::kVolumeUp);
   });
   sm_.ExpectSpeechPattern("* percent*");
   sm_.Replay();
@@ -1129,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.ExpectSpeech("Click me");
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   sm_.ExpectSpeech(
@@ -1179,7 +1171,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   });
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   EnableChromeVox();
@@ -2012,40 +2004,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, KeyboardShortcutViewer) {
-  EnableChromeVox();
-  sm_.Call([this]() {
-    SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
-  });
-  sm_.ExpectSpeech("Shortcuts, window");
-
-  // Move through all tabs; make a few expectations along the way.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts, tab");
-  sm_.ExpectSpeech("1 of 6");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Accessibility, tab");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
-
-  // Moving forward again should dive into the list of shortcuts for the
-  // category.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Copy selected content to the clipboard, Ctrl plus c");
-  sm_.ExpectSpeech("List item");
-  sm_.ExpectSpeech("1 of 21");
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
-  sm_.ExpectSpeech("List");
-  sm_.ExpectSpeech("with 21 items");
-  sm_.Replay();
-}
-
 // Spoken feedback tests of the out-of-box experience.
 class OobeSpokenFeedbackTest : public OobeBaseTest {
  public:
@@ -2228,7 +2186,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // Enter overview first. This is how we reach the desk templates UI.
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   sm_.ExpectSpeech(
@@ -2284,4 +2242,55 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   sm_.Replay();
 }
 
+// TODO(jimmyxgong): Update this suite after the old keyboard shortcut viewer
+// app is removed.
+class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
+ public:
+  ShortcutsAppSpokenFeedbackTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        {features::kOnlyShowNewShortcutsApp});
+  }
+  ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
+      delete;
+  ShortcutsAppSpokenFeedbackTest& operator=(
+      const ShortcutsAppSpokenFeedbackTest&) = delete;
+  ~ShortcutsAppSpokenFeedbackTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest, KeyboardShortcutViewer) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+  });
+  sm_.ExpectSpeech("Shortcuts, window");
+
+  // Move through all tabs; make a few expectations along the way.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Popular Shortcuts, tab");
+  sm_.ExpectSpeech("1 of 6");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Accessibility, tab");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Popular Shortcuts");
+  sm_.ExpectSpeech("Tab");
+
+  // Moving forward again should dive into the list of shortcuts for the
+  // category.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Copy selected content to the clipboard, Ctrl plus c");
+  sm_.ExpectSpeech("List item");
+  sm_.ExpectSpeech("1 of 21");
+  sm_.ExpectSpeech("Popular Shortcuts");
+  sm_.ExpectSpeech("Tab");
+  sm_.ExpectSpeech("List");
+  sm_.ExpectSpeech("with 21 items");
+  sm_.Replay();
+}
 }  // namespace ash

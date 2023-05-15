@@ -29,10 +29,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -50,6 +52,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -538,6 +541,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   // The attempt to run the FRE should not be blocked
   EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
+  EXPECT_TRUE(IsProfileNameDefault());
 
   // However the FRE should be silently marked as finished due to policies
   // forcing to skip it.
@@ -547,7 +551,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros the silent finish happens right when the service is created.
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-  run_loop.Quit();  // For consistency with the dice code path.
+
+  // Quitting the loop for consistency with the dice code path. Posting the task
+  // is important to get the profile name resolution's timeout task to run
+  // before the assertions below.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
 #else
   fre_service()->OpenFirstRunIfNeeded(
       FirstRunService::EntryPoint::kOther,
@@ -570,6 +579,28 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   ProfilePicker::Hide();
   run_loop.Run();
+
+  absl::optional<std::u16string> expected_profile_name;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros we always have an account, the profile name will reflect it.
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  expected_profile_name = base::ASCIIToUTF16(account_info.email);
+#else
+  // On Dice platforms, we use a default enterprise name after skipped FREs.
+  if (!GetParam().should_open_fre) {
+    expected_profile_name = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+  }
+#endif
+
+  if (expected_profile_name.has_value()) {
+    EXPECT_EQ(*expected_profile_name, GetProfileName());
+  } else {
+    EXPECT_TRUE(IsProfileNameDefault());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -31,7 +31,8 @@ enum class QsButtonCatalogName {
   kPowerLockMenuButton = 15,
   kSupervisedButton = 16,
   kEolNoticeButton = 17,
-  kMaxValue = kEolNoticeButton
+  kPowerEmailMenuButton = 18,
+  kMaxValue = kPowerEmailMenuButton
 };
 
 // A catalog that registers all the features on the Quick Settings page. This
@@ -57,7 +58,8 @@ enum class QsFeatureCatalogName {
   kDarkMode = 14,
   kShelfParty = 15,
   kAutozoom = 16,
-  kMaxValue = kAutozoom
+  kHotspot = 17,
+  kMaxValue = kHotspot
 };
 
 // A catalog that registers all the sliders on the Quick Settings page (also

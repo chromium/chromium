@@ -29,9 +29,15 @@ suite('PasswordsAndForms', function() {
     const element = document.createElement('settings-autofill-page');
     element.prefs = prefsElement.prefs;
     document.body.appendChild(element);
+    flush();
 
-    element.shadowRoot!.querySelector<DomIf>(
-                           'dom-if[route-path="/passwords"]')!.if = true;
+    // Force-render all subppages.
+
+    if (!loadTimeData.getBoolean('enableNewPasswordManagerPage')) {
+      element.shadowRoot!
+          .querySelector<DomIf>('dom-if[route-path="/passwords"]')!.if = true;
+    }
+
     element.shadowRoot!.querySelector<DomIf>(
                            'dom-if[route-path="/payments"]')!.if = true;
     element.shadowRoot!.querySelector<DomIf>(
@@ -479,14 +485,6 @@ suite('PasswordsUITest', function() {
         Router.getInstance().setCurrentRoute(
             routes.PASSWORD_VIEW, new URLSearchParams('id=123'), false);
         await flushTasks();
-
-        // <if expr="is_chromeos">
-        if (!loadTimeData.getBoolean(
-                'useSystemAuthenticationForPasswordManager')) {
-          autofillSection.tokenRequestManager.resolve();
-          await flushTasks();
-        }
-        // </if>
 
         const eventDetail = {entry: {id: 123}} as unknown as
             PasswordListItemElement;

@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.SERVER_CERT_PEM;
-import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -37,7 +35,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
-import org.chromium.net.MetricsTestUtil.TestRequestFinishedListener;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -80,8 +77,7 @@ public class ExperimentalOptionsTest {
         mHangingUrlLatch = new CountDownLatch(1);
         CronetTestUtil.setMockCertVerifierForTesting(
                 mBuilder, QuicTestServer.createMockCertVerifier());
-        assertTrue(Http2TestServer.startHttp2TestServer(
-                getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, mHangingUrlLatch));
+        assertTrue(Http2TestServer.startHttp2TestServer(getContext(), mHangingUrlLatch));
     }
 
     @After
@@ -143,7 +139,6 @@ public class ExperimentalOptionsTest {
         cronetEngine.shutdown();
     }
 
-    @DisabledTest(message = "crbug.com/1021941")
     @Test
     @MediumTest
     @OnlyRunNativeCronet
@@ -165,7 +160,7 @@ public class ExperimentalOptionsTest {
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
         assertEquals("GET", callback.mResponseAsString);
 
-        assertFileContainsString(file, "CLIENT_RANDOM");
+        assertFileContainsString(file, "CLIENT_HANDSHAKE_TRAFFIC_SECRET");
         assertTrue(file.delete());
         assertFalse(file.exists());
         cronetEngine.shutdown();
@@ -272,7 +267,6 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    @DisabledTest(message = "https://crbug.com/1404719")
     // Experimental options should be specified through a JSON compliant string. When that is not
     // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
@@ -480,10 +474,23 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    public void testExperimentalOptions_allSet() throws Exception {
+    public void testExperimentalOptions_allSet_viaExperimentalEngine() throws Exception {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
-        mBuilder = new ExperimentalCronetEngine.Builder(mockBuilderImpl);
+        testExperimentalOptionsAllSetImpl(
+                new ExperimentalCronetEngine.Builder(mockBuilderImpl), mockBuilderImpl);
+    }
 
+    @Test
+    @MediumTest
+    @OnlyRunNativeCronet
+    public void testExperimentalOptions_allSet_viaNonExperimentalEngine() throws Exception {
+        MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
+        testExperimentalOptionsAllSetImpl(
+                new CronetEngine.Builder(mockBuilderImpl), mockBuilderImpl);
+    }
+
+    private static void testExperimentalOptionsAllSetImpl(
+            CronetEngine.Builder builder, MockCronetBuilderImpl mockBuilderImpl) throws Exception {
         QuicOptions quicOptions =
                 QuicOptions.builder()
                         .addAllowedQuicHost("quicHost1.com")
@@ -556,7 +563,7 @@ public class ExperimentalOptionsTest {
                                 toTelephoneKeyboardSequence("badPathErr"))
                         .build();
 
-        mBuilder.setDnsOptions(dnsOptions)
+        builder.setDnsOptions(dnsOptions)
                 .setConnectionMigrationOptions(connectionMigrationOptions)
                 .setQuicOptions(quicOptions)
                 .build();

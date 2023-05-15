@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MEDIA_QUICK_SETTINGS_MEDIA_VIEW_CONTAINER_H_
 #define ASH_SYSTEM_MEDIA_QUICK_SETTINGS_MEDIA_VIEW_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -37,7 +38,7 @@ class QuickSettingsMediaViewContainer : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   bool show_media_view_ = false;
 };

@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -216,7 +217,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
   auto source_and_dest_color_space = SkColorSpace::MakeSRGB();
 
   // Use dst texture as SkSurface back resource.
-  auto surface = SkSurface::MakeFromBackendTexture(
+  auto surface = SkSurfaces::WrapBackendTexture(
       gr_context, result_texture,
       gr_params.flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
       1, GetCompatibleSurfaceColorType(result_gl_texture_info.fFormat),

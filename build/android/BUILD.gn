@@ -40,6 +40,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",
+      "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
       "java/src/org/chromium/build/annotations/MainDex.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
@@ -117,10 +118,12 @@ python_library("devil_chromium_py") {
 group("apk_installer_data") {
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    data_deps = [
-      "//build/android/pylib/device/commands",
-      "//tools/android/md5sum",
-    ]
+    if (is_component_build) {
+      data_deps = [
+        "//build/android/pylib/device/commands",
+        "//tools/android/md5sum",
+      ]
+    }
     data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
   }
 }
@@ -152,12 +155,15 @@ python_library("test_runner_core_py") {
 
 group("test_runner_device_support") {
   testonly = true
+
+  # We hardcode using these tools from the public sdk in devil_chromium.json and
+  # in pylib's constants.
   data = [
-    "${android_sdk_build_tools}/aapt",
-    "${android_sdk_build_tools}/dexdump",
-    "${android_sdk_build_tools}/lib64/libc++.so",
-    "${android_sdk_build_tools}/split-select",
-    "${android_sdk_root}/platform-tools/adb",
+    "${public_android_sdk_build_tools}/aapt",
+    "${public_android_sdk_build_tools}/dexdump",
+    "${public_android_sdk_build_tools}/lib64/libc++.so",
+    "${public_android_sdk_build_tools}/split-select",
+    "${public_android_sdk_root}/platform-tools/adb",
   ]
   data_deps = [
     ":apk_installer_data",
@@ -167,11 +173,13 @@ group("test_runner_device_support") {
 
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    data_deps += [ "//tools/android/forwarder2" ]
+    if (!is_component_build) {
+      data_deps += [ "//tools/android/forwarder2" ]
+    }
     data += [ "//tools/android/avd/proto/" ]
     if (enable_chrome_android_internal) {
-       data += [ "//clank/tools/android/avd/proto/" ]
-     }
+      data += [ "//clank/tools/android/avd/proto/" ]
+    }
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }

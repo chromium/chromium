@@ -16,7 +16,7 @@ blink::scheduler::TaskPriority ToTaskQueuePriority(
     SequenceManagerTestDescription::QueuePriority priority) {
   using blink::scheduler::TaskPriority;
 
-  static_assert(static_cast<int>(TaskPriority::kPriorityCount) == 10,
+  static_assert(static_cast<int>(TaskPriority::kPriorityCount) == 11,
                 "Number of task priorities has changed in "
                 "blink::scheduler::TaskPriority.");
 
@@ -38,6 +38,8 @@ blink::scheduler::TaskPriority ToTaskQueuePriority(
       return TaskPriority::kHighPriorityContinuation;
     case SequenceManagerTestDescription::VERY_HIGH:
       return TaskPriority::kVeryHighPriority;
+    case SequenceManagerTestDescription::EXTREMELY_HIGH:
+      return TaskPriority::kExtremelyHighPriority;
     case SequenceManagerTestDescription::HIGHEST:
       return TaskPriority::kHighestPriority;
     case SequenceManagerTestDescription::CONTROL:

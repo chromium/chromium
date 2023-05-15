@@ -14,7 +14,7 @@ namespace {
 size_t SelectLimit(size_t default_limit,
                    size_t low_limit,
                    size_t very_low_limit) {
-  if (!base::SysInfo::IsLowEndDevice()) {
+  if (!base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     return default_limit;
   }
   // Use very low limit on 512MiB Android Go devices only.

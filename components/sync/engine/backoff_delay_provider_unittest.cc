@@ -37,11 +37,10 @@ TEST(BackoffDelayProviderTest, GetInitialDelay) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::FromDefaults());
   ModelNeutralState state;
-  state.last_get_key_result =
-      SyncerError::HttpError(net::HTTP_INTERNAL_SERVER_ERROR);
+  state.last_get_key_failed = true;
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
-  state.last_get_key_result = SyncerError();
+  state.last_get_key_failed = false;
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
@@ -74,11 +73,10 @@ TEST(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::WithShortInitialRetryOverride());
   ModelNeutralState state;
-  state.last_get_key_result =
-      SyncerError::HttpError(net::HTTP_INTERNAL_SERVER_ERROR);
+  state.last_get_key_failed = true;
   EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
-  state.last_get_key_result = SyncerError();
+  state.last_get_key_failed = false;
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));

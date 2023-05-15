@@ -59,7 +59,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("shortcut":"terminal",)"
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
-  auto extras = ExtrasFromShortcutId(*base::JSONReader::Read(shortcut));
+  auto extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(shortcut));
   EXPECT_EQ(3u, extras.size());
 
   // Container with multi-profile should include settings_profile.
@@ -81,7 +81,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("shortcut":"terminal",)"
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
-  extras = ExtrasFromShortcutId(*base::JSONReader::Read(shortcut));
+  extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(shortcut));
   EXPECT_EQ(4u, extras.size());
 }
 

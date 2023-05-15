@@ -24,6 +24,16 @@ class NetworkHealthManager {
  public:
   static NetworkHealthManager* GetInstance();
 
+  // These functions create or retrieve an existing NetworkHealthManager
+  // instance and bind a `receiver` to it.
+  static void NetworkDiagnosticsServiceCallback(
+      mojo::PendingReceiver<
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
+  static void NetworkHealthServiceCallback(
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService> receiver);
+
   NetworkHealthManager();
   ~NetworkHealthManager() = delete;
 

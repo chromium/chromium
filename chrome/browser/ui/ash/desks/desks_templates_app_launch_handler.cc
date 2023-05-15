@@ -176,9 +176,10 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
           window_iter.second;
 
-      absl::optional<std::vector<GURL>> urls = app_restore_data->urls;
-      if (!urls || urls->empty())
+      const std::vector<GURL>& urls = app_restore_data->urls;
+      if (urls.empty()) {
         continue;
+      }
 
       const gfx::Rect current_bounds =
           app_restore_data->current_bounds.value_or(gfx::Rect());
@@ -210,21 +211,21 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       absl::optional<int32_t> active_tab_index =
           app_restore_data->active_tab_index;
-      for (size_t i = 0; i < urls->size(); i++) {
-        chrome::AddTabAt(browser, urls->at(i), /*index=*/-1,
+      for (size_t i = 0; i < urls.size(); i++) {
+        chrome::AddTabAt(browser, urls[i], /*index=*/-1,
                          /*foreground=*/
                          (active_tab_index &&
                           base::checked_cast<int32_t>(i) == *active_tab_index));
       }
 
-      if (app_restore_data->tab_group_infos.has_value()) {
+      if (!app_restore_data->tab_group_infos.empty()) {
         chrome_desks_util::AttachTabGroupsToBrowserInstance(
-            app_restore_data->tab_group_infos.value(), browser);
+            app_restore_data->tab_group_infos, browser);
       }
 
       if (app_restore_data->first_non_pinned_tab_index.has_value() &&
           app_restore_data->first_non_pinned_tab_index.value() <=
-              static_cast<int>(urls->size())) {
+              static_cast<int>(urls.size())) {
         chrome_desks_util::SetBrowserPinnedTabs(
             app_restore_data->first_non_pinned_tab_index.value(), browser);
       }
@@ -300,15 +301,14 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
 
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
       if (!app_restore_data->active_tab_index.has_value() ||
-          !app_restore_data->urls.has_value()) {
+          app_restore_data->urls.empty()) {
         continue;
       }
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-          app_restore_data->urls.value(),
+          app_restore_data->urls,
           app_restore_data->current_bounds.value_or(gfx::Rect()),
-          app_restore_data->tab_group_infos.value_or(
-              std::vector<tab_groups::TabGroupInfo>()),
+          app_restore_data->tab_group_infos,
           chromeos::ToWindowShowState(
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),

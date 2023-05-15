@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
 base::Time GetItemStartTime(const download::DownloadItem* item);
@@ -42,5 +43,9 @@ bool IsItemPaused(const offline_items_collection::OfflineItem& item);
 // in.
 Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
                                     Profile* profile);
+
+// Gets a pointer to the web app id, if the browser is for a web app, otherwise
+// nullptr.
+const web_app::AppId* GetWebAppIdForBrowser(const Browser* browser);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UTILS_H_

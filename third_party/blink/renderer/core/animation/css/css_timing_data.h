@@ -42,7 +42,6 @@ class CSSTimingData {
 
   static Timing::Delay InitialDelayStart() { return Timing::Delay(); }
   static Timing::Delay InitialDelayEnd() { return Timing::Delay(); }
-  static absl::optional<double> InitialDuration() { return 0; }
   static scoped_refptr<TimingFunction> InitialTimingFunction() {
     return CubicBezierTimingFunction::Preset(
         CubicBezierTimingFunction::EaseType::EASE);
@@ -54,8 +53,8 @@ class CSSTimingData {
   }
 
  protected:
-  CSSTimingData();
-  explicit CSSTimingData(const CSSTimingData&);
+  explicit CSSTimingData(absl::optional<double> initial_duration);
+  CSSTimingData(const CSSTimingData&);
 
   Timing ConvertToTiming(size_t index) const;
   bool TimingMatchForStyleRecalc(const CSSTimingData&) const;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -143,7 +144,8 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  ShillServiceClient::TestInterface* shill_service_client_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh>
+      shill_service_client_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };

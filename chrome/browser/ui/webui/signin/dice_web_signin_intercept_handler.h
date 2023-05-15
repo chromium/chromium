@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_HANDLER_H_
 
-#include "content/public/browser/web_ui_message_handler.h"
-
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 // WebUI message handler for the Dice web signin intercept bubble.
 class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,

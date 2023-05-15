@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
@@ -229,7 +230,7 @@ class KerberosClientImpl : public KerberosClient {
   }
 
   // D-Bus proxy for the Kerberos daemon, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   // Signal callback lists.
   KerberosFilesChangedCallbackList kerberos_files_changed_callback_list_;

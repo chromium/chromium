@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Create WebSocket - Pass a non absolute URL: test Failed to construct 'WebSocket': The URL 'test' is invalid.
+FAIL Create WebSocket - Pass a non absolute URL: ? Failed to construct 'WebSocket': The URL '?' is invalid.
+FAIL Create WebSocket - Pass a non absolute URL: null Failed to construct 'WebSocket': The URL 'null' is invalid.
+FAIL Create WebSocket - Pass a non absolute URL: 123 Failed to construct 'WebSocket': The URL '123' is invalid.
+Harness: the test ran to completion.
+

@@ -10,7 +10,12 @@
 }
 
 #ptz-panel button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  /* Use linear-gradient to apply multiple background colors. */
+  background: linear-gradient(
+    0deg,
+    var(--cros-sys-hover_on_subtle),
+    var(--cros-sys-hover_on_subtle)
+  ), var(--cros-sys-base_elevated);
 }
 
 #reset-all-container {
@@ -28,8 +33,7 @@
   align-items: center;
   display: flex;
   height: 100%;
-  padding-inline-end: 16px;
-  padding-inline-start: 7px;
+  padding: 8px 16px;
 }
 
 #ptz-reset-all:focus::after {
@@ -37,20 +41,20 @@
 }
 
 #ptz-reset-all>.icon {
-  background-image: url(/images/ptz_reset_all.svg);
   height: 20px;
-  margin-inline-end: 10px;
+  margin-inline-end: 8px;
   width: 20px;
 }
 
 #ptz-reset-all>.text {
-  color: var(--grey-200);
+  color: var(--cros-sys-on_surface);
   font-family: var(--default-font-family);
+  font-size: 13px;
   font-weight: 500;
 }
 
 #ptz-panel-container {
-  --divider-color: rgba(255, 255, 255, 0.14);
+  --divider-color: var(--cros-sys-separator);
   --divider-width: 1px;
 
   border-radius: 20px;
@@ -65,7 +69,7 @@
   width: 48px;
 }
 
-#ptz-panel-container button:disabled::before {
+#ptz-panel-container button:disabled svg-wrapper {
   opacity: 0.38;
 }
 
@@ -73,9 +77,9 @@
   outline: none;
 }
 
-#ptz-panel-container>button:focus-visible::before {
+#ptz-panel-container>button:focus-visible svg-wrapper {
   border-radius: 50%;
-  outline: 2px solid var(--blue-300);
+  outline: 2px solid var(--cros-sys-focus_ring);
   outline-offset: 3px;
 }
 
@@ -86,32 +90,7 @@ body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
 }
 
 /* Icons. */
-
-#pan-left::before {
-  content: url(/images/ptz_pan_left.svg);
-}
-
-#pan-right::before {
-  content: url(/images/ptz_pan_right.svg);
-}
-
-#tilt-up::before {
-  content: url(/images/ptz_tilt_up.svg);
-}
-
-#tilt-down::before {
-  content: url(/images/ptz_tilt_down.svg);
-}
-
-#zoom-in::before {
-  content: url(/images/ptz_zoom_in.svg);
-}
-
-#zoom-out::before {
-  content: url(/images/ptz_zoom_out.svg);
-}
-
-#ptz-panel-container button::before {
+#ptz-panel-container svg-wrapper {
   height: var(--svg-height);
   left: calc(50% - var(--svg-width) / 2);
   position: absolute;
@@ -129,12 +108,12 @@ body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #ptz-panel-co
 }
 
 body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #pan-left,
-body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-in {
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-out {
   left: 0;
 }
 
 body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #pan-right,
-body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-out {
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-in {
   right: 0;
 }
 
@@ -253,7 +232,7 @@ body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up,
   width: 100%;
 }
 
-body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up, #pan-left, #pan-right)::before {
+body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up, #pan-left, #pan-right) svg-wrapper {
   left: var(--x);
   top: var(--y);
 }

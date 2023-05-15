@@ -35,14 +35,7 @@ var frameId_ = null;
  */
 __gCrWeb.message['getFrameId'] = function() {
   if (!frameId_) {
-    // Generate 128 bit unique identifier.
-    var components = new Uint32Array(4);
-    window.crypto.getRandomValues(components);
-    frameId_ = '';
-    for (var i = 0; i < components.length; i++) {
-      // Convert value to base16 string and append to the |frameId_|.
-      frameId_ += components[i].toString(16);
-    }
+    frameId_ = __gCrWeb.common.generateRandomId();
   }
   return /** @type {string} */ (frameId_);
 };

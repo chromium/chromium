@@ -669,3 +669,22 @@ TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
     last_locale = cur_locale;
   }
 }
+
+TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
+  base::i18n::SetICUDefaultLocale("ar");
+  ASSERT_EQ(true, base::i18n::IsRTL());
+  // Use a format string that contains Strong RTL Chars.
+  const std::u16string kFormatString(u"كلمة مرور $1");
+  std::vector<size_t> offsets;
+  std::u16string formatted_string =
+      l10n_util::FormatString(kFormatString, {u"Replacement"}, &offsets);
+  ASSERT_FALSE(offsets.empty());
+  // On Linux, an extra base::i18n::kRightToLeftMark character is appended for
+  // the text rendering engine to render the string correctly. This should be
+  // considered when computing the offsets.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(offsets[0], 11u);
+#else
+  EXPECT_EQ(offsets[0], 10u);
+#endif
+}

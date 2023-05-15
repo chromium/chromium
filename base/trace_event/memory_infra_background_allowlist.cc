@@ -109,6 +109,7 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "blink_objects/AdSubframe",
         "blink_objects/ArrayBufferContents",
         "blink_objects/AudioHandler",
+        "blink_objects/AudioWorkletProcessor",
         "blink_objects/ContextLifecycleStateObserver",
         "blink_objects/DetachedScriptState",
         "blink_objects/Document",

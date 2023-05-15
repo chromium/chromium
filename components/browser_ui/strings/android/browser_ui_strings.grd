@@ -464,17 +464,11 @@
       </message>
 
       <!-- Page Info popup -->
-      <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TITLE" desc="The title label of the 'About this site' subpage in Page Info bubble.">
-        From the web
-      </message>
       <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
         About this page
       </message>
       <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER" desc="The description of the 'About this page' row in the Page Info bubble if no more detailed description is available. 'It' refers to the page the user is currently visiting.">
         Learn about its source and topic
-      </message>
-      <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
-        From <ph name="SOURCE_NAME">%1$s<ex>Wikipedia</ex></ph>
       </message>
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
@@ -892,6 +886,9 @@
       <!-- Fullscreen -->
       <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
         Drag from top and touch the back button to exit full screen.
+      </message>
+      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_AUTOMOTIVE" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
+        Press the back button to exit full screen.
       </message>
 
       <!-- WebApk name/icon report abuse dialog -->

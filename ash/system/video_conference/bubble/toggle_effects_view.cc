@@ -8,14 +8,18 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,7 +65,8 @@ class ButtonContainer : public views::Button {
         toggled_(toggle_state),
         effect_id_(effect_id),
         enabled_vector_icon_(enabled_vector_icon),
-        disabled_vector_icon_(disabled_vector_icon) {
+        disabled_vector_icon_(disabled_vector_icon),
+        accessible_name_id_(accessible_name_id) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
     SetID(video_conference::BubbleViewID::kToggleEffectsButton);
@@ -85,10 +90,23 @@ class ButtonContainer : public views::Button {
     // `icon_` image set in `UpdateColorsAndBackground()`.
     icon_ = AddChildView(std::move(icon));
 
-    // Label is below the button.
-    label_ = AddChildView(std::make_unique<views::Label>(label_text));
+    auto label = std::make_unique<views::Label>(label_text);
+    label->SetID(video_conference::BubbleViewID::kToggleEffectLabel);
+    label->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton2,
+                                          *label);
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer);
+    label_ = AddChildView(std::move(label));
 
-    SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
+    SetTooltipText(l10n_util::GetStringFUTF16(
+        VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+        l10n_util::GetStringUTF16(accessible_name_id_),
+        l10n_util::GetStringUTF16(
+            toggled_ ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
+                     : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
+    SetAccessibleRole(ax::mojom::Role::kToggleButton);
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+
     UpdateColorsAndBackground();
 
     // Assign the ID, if present, to the outermost container view. Only used in
@@ -118,6 +136,12 @@ class ButtonContainer : public views::Button {
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
     UpdateColorsAndBackground();
+    SetTooltipText(l10n_util::GetStringFUTF16(
+        VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+        l10n_util::GetStringUTF16(accessible_name_id_),
+        l10n_util::GetStringUTF16(
+            toggled_ ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
+                     : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
   }
 
   void UpdateColorsAndBackground() {
@@ -145,11 +169,12 @@ class ButtonContainer : public views::Button {
   const VcEffectId effect_id_;
 
   // Owned by the views hierarchy.
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 
-  const gfx::VectorIcon* enabled_vector_icon_;
-  const gfx::VectorIcon* disabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> disabled_vector_icon_;
+  const int accessible_name_id_;
 
   base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};
 };

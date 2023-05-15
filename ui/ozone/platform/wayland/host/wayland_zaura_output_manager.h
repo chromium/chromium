@@ -114,6 +114,13 @@ class WaylandZAuraOutputManager
   static void OnActivated(void* data,
                           zaura_output_manager* output_manager,
                           wl_output* output);
+  static void OnOverscanInsets(void* data,
+                               zaura_output_manager* output_manager,
+                               wl_output* output,
+                               int32_t top,
+                               int32_t left,
+                               int32_t bottom,
+                               int32_t right);
 
   // `pending_output_metrics_map_` holds Metrics objects that are updated
   // incrementally as events arrive from the server. These Metrics objects are

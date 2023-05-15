@@ -634,8 +634,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   )HTML");
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
-  auto* scrollable_area =
-      To<LayoutBoxModelObject>(scroller)->GetScrollableArea();
+  auto* scrollable_area = scroller->GetScrollableArea();
 
   const auto* properties = scroller->FirstFragment().PaintProperties();
 
@@ -1769,6 +1768,30 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
   EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
             mojom::blink::ColorScheme::kDark);
+}
+
+// TODO(crbug.com/1020913): Actually this tests a situation that should not
+// exist but it does exist due to different or incorrect rounding methods for
+// scroll geometries. This test can be converted to test the correct behavior
+// when we fix the bug. For now it just ensures we won't crash.
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       NotScrollsOverflowWithScrollableScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller"
+         style="box-sizing: border-box; width: 54.6px; height: 99.9px;
+                padding: 20.1px; overflow: scroll; direction: rtl;
+                will-change: scroll-position">
+      <div style="width: 0; height: 20px"></div>
+    </div>
+  )HTML");
+
+  auto* scroller = GetLayoutBoxByElementId("scroller");
+  auto* scrollable_area = scroller->GetScrollableArea();
+  EXPECT_FALSE(scrollable_area->ScrollsOverflow());
+  ASSERT_TRUE(scrollable_area->HorizontalScrollbar());
+  EXPECT_TRUE(scrollable_area->HorizontalScrollbar()->Maximum());
 }
 
 }  // namespace blink

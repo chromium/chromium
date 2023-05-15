@@ -92,14 +92,12 @@ class ThemeManagerTest : public WebEngineBrowserTest,
             ->web_contents_for_test();
 
     for (const char* scheme : {kCssDark, kCssLight}) {
-      bool matches;
-      EXPECT_TRUE(ExecuteScriptAndExtractBool(
-          web_contents,
-          base::StringPrintf(
-              "window.domAutomationController.send(window."
-              "matchMedia('(prefers-color-scheme: %s)').matches)",
-              scheme),
-          &matches));
+      bool matches =
+          EvalJs(web_contents,
+                 base::StringPrintf(
+                     "window.matchMedia('(prefers-color-scheme: %s)').matches",
+                     scheme))
+              .ExtractBool();
 
       if (matches)
         return scheme;

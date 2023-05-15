@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_DEMO_TOOLS_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -113,9 +114,10 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
   void OnTouchDragged(const ui::PointerId& pointer_id,
                       const gfx::PointF& event_location_in_window);
 
-  VideoRecordingWatcher* const video_recording_watcher_;
+  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh>
+      video_recording_watcher_;
   views::UniqueWidgetPtr key_combo_widget_;
-  KeyComboView* key_combo_view_ = nullptr;
+  raw_ptr<KeyComboView, ExperimentalAsh> key_combo_view_ = nullptr;
 
   // The state of the modifier keys i.e. Shift/Ctrl/Alt/Launcher keys.
   int modifiers_ = 0;

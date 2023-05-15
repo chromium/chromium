@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/device_sync/cryptauth_device_activity_getter_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 
 #include <memory>
@@ -205,7 +206,7 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   mojom::NetworkRequestResult network_request_result_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
 };

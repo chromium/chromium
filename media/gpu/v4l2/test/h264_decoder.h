@@ -12,60 +12,21 @@
 #include <linux/media/h264-ctrls-upstream.h>
 #endif
 
-#include <map>
-#include <set>
+#include <queue>
 
 #include "base/files/memory_mapped_file.h"
+#include "media/gpu/v4l2/test/h264_dpb.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
-#include "media/video/h264_parser.h"
 
 namespace media {
 namespace v4l2_test {
-
-struct H264SliceMetadata;
 
 // PreviousRefPicOrder contains data regarding the picture
 // order counts for the previously decoded frame.
 struct PreviousRefPicOrder {
   int prev_ref_pic_order_cnt_msb = 0;
   int prev_ref_pic_order_cnt_lsb = 0;
-};
-
-// H264DPB is a class representing a Decoded Picture Buffer (DPB).
-// The DPB is a map of H264 picture slice metadata objects that
-// describe the pictures used in the H.264 decoding process.
-class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
- public:
-  H264DPB() = default;
-  ~H264DPB() = default;
-
-  H264DPB(const H264DPB&) = delete;
-  H264DPB& operator=(const H264DPB&) = delete;
-
-  // Returns number of Reference H264SliceMetadata elements
-  // in the DPB.
-  int CountRefPics();
-  // Deletes input H264SliceMetadata object from the DPB.
-  void Delete(const H264SliceMetadata& pic);
-  // Deletes any H264SliceMetadata object from DPB that is considered
-  // to be unused by the decoder.
-  // An H264SliceMetadata is unused if it has been outputted and is not a
-  // reference picture.
-  void DeleteUnused();
-  // Removes the reference picture marking from the lowest frame
-  // number H264SliceMetadata object in the DPB. This is used for implementing
-  // a sliding window DPB replacement algorithm.
-  void UnmarkLowestFrameNumWrapShortRefPic();
-  // Returns a vector of H264SliceMetadata objects that have not been output
-  // by the H264 Decoder.
-  std::vector<H264SliceMetadata*> GetNotOutputtedPicsAppending();
-  // Updates every H264SliceMetadata object in the DPB to indicate that they are
-  // not reference elements.
-  void MarkAllUnusedRef();
-  // Updates each H264SliceMetadata object in DPB's frame num wrap
-  // based on the max frame num.
-  void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
 };
 
 class H264Decoder : public VideoDecoder {
@@ -89,40 +50,29 @@ class H264Decoder : public VideoDecoder {
                                        const int frame_number) override;
 
  private:
-  H264Decoder(std::unique_ptr<H264Parser> parser,
-              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-              std::unique_ptr<V4L2Queue> OUTPUT_queue,
-              std::unique_ptr<V4L2Queue> CAPTURE_queue);
+  H264Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+              gfx::Size display_resolution,
+              const base::MemoryMappedFile& data_stream);
 
-  // Processes NALU's until reaching the end of the current frame.  To
-  // know the end of the current frame it may be necessary to start parsing
-  // the next frame.  If this occurs the NALU that was parsed needs to be
-  // held over until the next frame.  This is done in |pending_nalu_|
-  // Not every frame has a SPS/PPS associated with it.  The SPS/PPS must
-  // occur on an IDR frame.  Store the last seen slice header in
-  // |pending_slice_header_| so it will be available for the next frame.
-  H264Parser::Result ProcessNextFrame(
-      const int frame_number,
-      std::unique_ptr<H264SliceHeader>* resulting_slice_header);
+  // Processes NALU's until reaching the start of the new frame. Function
+  // starts by starting a new frame and transmitting control data through
+  // ioctl calls. The function will then parse and process each NALU until
+  // reaching the start of the next frame, at which point it will finish
+  // processing the picture and add it to the picture queue.
+  void ProcessNextFrame();
 
   // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
-  // data which indicates the beginning of a new frame.
+  // data which indicates the beginning of a new frame. Additionally
+  // this initializes the decode parameter's dpb parameter from the DPB.
   VideoDecoder::Result StartNewFrame(
-      int sps_id,
-      int pps_id,
-      H264SliceHeader* slice_hdr,
       H264SliceMetadata* slice_metadata,
-      v4l2_ctrl_h264_decode_params* v4l2_decode_param);
+      v4l2_ctrl_h264_decode_params* v4l2_decode_param,
+      bool is_OUTPUT_queue_new);
 
-  // Finishes frame processing for the current decoded frame. Transmits decode
-  // parameters via IOCTL Ext Ctrls. It continues to execute decoded ref
-  // picture marking process as defined in section 8.2.5. Finally, using
-  // the DPB, transmit H264 Slices to the device for the current frame.
-  VideoDecoder::Result FinishFrame(
-      const H264SliceHeader& curr_slice,
-      int frame_num,
-      v4l2_ctrl_h264_decode_params& v4l2_decode_param,
-      H264SliceMetadata& slice_metadata);
+  // Finishes frame processing for the current decoded frame. Performs decoded
+  // ref picture marking process as defined in section 8.2.5. Finally, using
+  // the DPB, transmit H264 Slices to the slice_ready_queue_.
+  void FinishPicture(H264SliceMetadata picture, const int sps_id);
 
   // Initializes H264 Slice Metadata based on slice header and
   // based on H264 specifications which it calculates its pic order count.
@@ -137,7 +87,24 @@ class H264Decoder : public VideoDecoder {
       const MmappedBuffer& buffer,
       std::set<uint32_t> queued_buffer_ids);
 
-  const std::unique_ptr<H264Parser> parser_;
+  // Calculates decoding parameters based on SPS corresponding to sps_id.
+  // If decoding parameters change, this can result in flushing the DPB.
+  void ProcessSPS(const int sps_id);
+
+  // Transmits the current slice data to the OUTPUT queue and transmits it
+  // to the device via an VIDIOC_QBUF ioctl call.
+  VideoDecoder::Result SubmitSlice();
+
+  // Moves all non output pictures in the DPB to the slice_ready_queue.
+  // Finishes by clearing the entire DPB.
+  void FlushDPB();
+
+  // Initializes the H.264 Decoder to Process the initial SPS NALU as well
+  // as to iterate until it reaches the start of a new frame for the
+  // ProcessNextFrame function to be able to work properly.
+  void InitializeDecoderLogic();
+
+  std::unique_ptr<H264Parser> parser_;
 
   // Previous pic order counts from previous frame
   PreviousRefPicOrder prev_pic_order_;
@@ -146,8 +113,25 @@ class H264Decoder : public VideoDecoder {
 
   H264DPB dpb_;
 
-  std::unique_ptr<H264NALU> pending_nalu_;
-  std::unique_ptr<H264SliceHeader> pending_slice_header_;
+  std::queue<H264SliceMetadata> slice_ready_queue_;
+
+  std::unique_ptr<H264SliceHeader> curr_slice_hdr_;
+
+  // Number of non-outputted pictures needed in DPB before a picture
+  // can be outputted.
+  size_t max_num_reorder_frames_;
+
+  // Decoding profile parameters
+  gfx::Size pic_size_;
+  VideoCodecProfile profile_;
+  uint8_t bit_depth_ = -1;
+
+  bool stream_finished_;
+
+  const base::MemoryMappedFile& data_stream_;
+
+  int prev_frame_num_ = -1;
+  int prev_frame_num_offset_ = -1;
 };
 
 }  // namespace v4l2_test

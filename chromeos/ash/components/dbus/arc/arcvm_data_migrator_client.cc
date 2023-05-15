@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/arc/fake_arcvm_data_migrator_client.h"
@@ -152,7 +153,7 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
   }
 
   base::ObserverList<Observer> observers_;
-  dbus::ObjectProxy* proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
   base::WeakPtrFactory<ArcVmDataMigratorClientImpl> weak_ptr_factory_{this};
 };
 

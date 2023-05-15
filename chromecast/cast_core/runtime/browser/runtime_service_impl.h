@@ -113,7 +113,7 @@ class RuntimeServiceImpl final
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::raw_ref<CastWebService> const web_service_;
+  raw_ref<CastWebService> const web_service_;
 
   // Allows metrics, histogram, action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.

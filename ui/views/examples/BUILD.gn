@@ -335,6 +335,9 @@ test("views_examples_unittests") {
       "//ui/wm",
     ]
   }
+  if (is_win) {
+    deps += [ "//ui/native_theme:native_theme_browser" ]
+  }
 
   if (is_fuchsia) {
     additional_manifest_fragments = [

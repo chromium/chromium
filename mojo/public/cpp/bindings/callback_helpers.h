@@ -26,13 +26,17 @@
 // connection error callback.
 //
 // Caveats:
-// 1) The default form of the callback, called when the original was dropped
-// before running, may not run on the thread you expected. If this is a problem
-// for your code, DO NOT USE these helpers.
+// 1) The default form of the callback (the one called when the original is
+//    dropped before running) will run on the thread where the callback's
+//    destructor runs - it may not run on the thread you expected. If this is a
+//    problem for your code, DO NOT USE these helpers. This is *not* a problem
+//    for callbacks for mojo asynchronous methods, because in this case the
+//    callback is run and destroyed on the same thread - the thread that
+//    mojo::Remote is bound to.
 // 2) There is no type information that indicates the wrapped object has special
-// destructor behavior.  It is therefore not recommended to pass these wrapped
-// callbacks into deep call graphs where code readers could be confused whether
-// or not the Run() mehtod should be invoked.
+//    destructor behavior.  It is therefore not recommended to pass these
+//    wrapped callbacks into deep call graphs where code readers could be
+//    confused whether or not the Run() method should be invoked.
 //
 // Example:
 //   foo->DoWorkAndReturnResult(

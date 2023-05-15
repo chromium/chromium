@@ -9,6 +9,8 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+import {PrinterStatus, PrinterStatusReason} from './printer_status.js';
+
 /**
  * Note: |printerPPDPath| refers to a PPD retrieved from the user at the
  * add-printer-manufacturer-model-dialog. |printerPpdReference| refers to either
@@ -31,7 +33,7 @@ export interface CupsPrinterInfo {
   };
   printerProtocol: string;
   printerQueue: string;
-  printerStatus: string;
+  printerStatusReason: PrinterStatusReason;
   printServerUri: string;
 }
 
@@ -163,6 +165,11 @@ export interface CupsPrintersBrowserProxy {
    * Opens the Scanning app in its own window.
    */
   openScanningApp(): void;
+
+  /**
+   * Sends a request to the printer with id |printerId| for its current status.
+   */
+  requestPrinterStatusUpdate(printerId: string): Promise<PrinterStatus>;
 }
 
 let instance: CupsPrintersBrowserProxy|null = null;
@@ -257,5 +264,9 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
 
   openScanningApp() {
     chrome.send('openScanningApp');
+  }
+
+  requestPrinterStatusUpdate(printerId: string) {
+    return sendWithPromise('requestPrinterStatus', printerId);
   }
 }

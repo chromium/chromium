@@ -14,6 +14,7 @@
 #include "ash/system/network/network_utils.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -207,7 +208,8 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-  NetworkDetailedNetworkViewImpl* network_detailed_network_view_;
+  raw_ptr<NetworkDetailedNetworkViewImpl, ExperimentalAsh>
+      network_detailed_network_view_;
   base::HistogramTester histogram_tester_;
 };
 

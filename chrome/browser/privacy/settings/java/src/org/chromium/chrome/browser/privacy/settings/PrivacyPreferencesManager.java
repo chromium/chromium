@@ -11,6 +11,23 @@ import org.chromium.components.minidump_uploader.util.CrashReportingPermissionMa
  */
 public interface PrivacyPreferencesManager extends CrashReportingPermissionManager {
     /**
+     * Observer for changes in privacy preferences.
+     */
+    interface Observer {
+        void onIsUsageAndCrashReportingPermittedChanged(boolean permitted);
+    }
+
+    /**
+     * Adds an {@link Observer}.
+     */
+    void addObserver(Observer observer);
+
+    /**
+     * Removes an {@link Observer}.
+     */
+    void removeObserver(Observer observer);
+
+    /**
      * Sets the usage and crash reporting preference ON or OFF.
      *
      * @param enabled A boolean corresponding whether usage and crash reports uploads are allowed.

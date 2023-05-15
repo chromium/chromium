@@ -11,6 +11,11 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace gfx {
 class ImageSkia;
@@ -83,11 +88,8 @@ class QuickAppAccessModel : public AppListItemObserver,
   // values.
   void ClearQuickApp();
 
-  // Whether the app list has shown for the currently set quick app.
-  bool app_list_shown_ = false;
-
-  // Whether the currently set quick app has been activated.
-  bool quick_app_activated_ = false;
+  // The time that the icon load is requested.
+  absl::optional<base::TimeTicks> icon_load_start_time_;
 
   base::ObserverList<Observer> observers_;
 

@@ -10,6 +10,7 @@
 namespace ash::quick_start::prefs {
 
 extern const char kShouldResumeQuickStartAfterReboot[];
+extern const char kResumeQuickStartAfterRebootInfo[];
 
 }  // namespace ash::quick_start::prefs
 

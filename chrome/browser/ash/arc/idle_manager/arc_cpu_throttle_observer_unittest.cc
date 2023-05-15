@@ -9,6 +9,7 @@
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
@@ -73,12 +74,12 @@ class ArcCpuThrottleObserverTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  ArcMetricsService* arc_metrics_service_ = nullptr;
+  raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_ = nullptr;
   ArcCpuThrottleObserver cpu_throttle_observer_;
   std::unique_ptr<ArcServiceManager> service_manager_;
   std::unique_ptr<ArcSessionManager> session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  ArcInstanceThrottle* test_instance_throttle_;
+  raw_ptr<ArcInstanceThrottle, ExperimentalAsh> test_instance_throttle_;
 };
 
 TEST_F(ArcCpuThrottleObserverTest, TestConstructDestruct) {}

@@ -44,9 +44,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
  private:
   // mojom::MediaRouter implementation.
-  void RegisterMediaRouteProvider(mojom::MediaRouteProviderId provider_id,
-                                  mojo::PendingRemote<mojom::MediaRouteProvider>
-                                      media_route_provider_remote) override;
   void OnSinksReceived(mojom::MediaRouteProviderId provider_id,
                        const std::string& media_source,
                        const std::vector<MediaSinkInternal>& internal_sinks,

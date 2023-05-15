@@ -5,23 +5,12 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
-import android.content.Context;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
-import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendReceiverBridgeImpl.JobId;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.signin.AccountUtils;
 
 import java.util.Optional;
@@ -34,7 +23,6 @@ import java.util.Optional;
 class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     private final PasswordStoreAndroidBackend mBackend;
     private final PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridge;
-
     PasswordStoreAndroidBackendDispatcherBridgeImpl(
             PasswordStoreAndroidBackendReceiverBridgeImpl backendReceiverBridge,
             PasswordStoreAndroidBackend backend) {
@@ -115,38 +103,5 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     private Optional<Account> getAccount(String syncingAccount) {
         if (syncingAccount == null) return Optional.empty();
         return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
-    }
-
-    // This method interacts with the UI and should be executed on the UI thread. Native dispatcher
-    // bridge however does not have JNIEnv for UI thread and calls this method on background thread.
-    // Operation is reposted on the default UI sequence for execution.
-    @CalledByNative
-    private void showErrorUi() {
-        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> showErrorUiOnMainThread());
-    }
-
-    private void showErrorUiOnMainThread() {
-        Context context = ContextUtils.getApplicationContext();
-        // The context can sometimes be null in tests.
-        if (context == null) return;
-        String title = context.getString(R.string.upm_error_notification_title);
-        String contents = context.getString(R.string.upm_error_notification_contents);
-        NotificationManagerProxy notificationManager = new NotificationManagerProxyImpl(context);
-        NotificationWrapperBuilder notificationWrapperBuilder =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(ChannelId.BROWSER,
-                                new NotificationMetadata(
-                                        NotificationUmaTracker.SystemNotificationType.UPM_ERROR,
-                                        null, NotificationConstants.NOTIFICATION_ID_UPM))
-                        .setAutoCancel(false)
-                        .setContentTitle(title)
-                        .setContentText(contents)
-                        .setSmallIcon(PasswordManagerResourceProviderFactory.create()
-                                              .getPasswordManagerIcon())
-                        .setTicker(contents)
-                        .setLocalOnly(true);
-        NotificationWrapper notification =
-                notificationWrapperBuilder.buildWithBigTextStyle(contents);
-        notificationManager.notify(notification);
     }
 }

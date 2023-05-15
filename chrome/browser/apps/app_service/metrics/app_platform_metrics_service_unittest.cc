@@ -1283,21 +1283,25 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
 
   // Set sync is not allowed.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
+  // Fast forward by 2 hours and verify no usage data is reported to UKM.
   task_environment_.FastForwardBy(base::Hours(2));
-
   VerifyNoAppUsageTimeUkm();
 
   // Set sync is allowed by setting an empty disable reason set.
   sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
 
-  task_environment_.FastForwardBy(base::Hours(1));
+  static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
+  task_environment_.FastForwardBy(kAppUsageDuration);
   ModifyInstance(app_constants::kChromeAppId,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
 
-  task_environment_.FastForwardBy(base::Hours(1));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/10800000,
+  // Fast forward by 2 hours and verify usage data reported to UKM only includes
+  // usage data since sync was last enabled.
+  task_environment_.FastForwardBy(base::Hours(2));
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId,
+                        (int)kAppUsageDuration.InMilliseconds(),
                         AppTypeName::kChromeBrowser);
 }
 
@@ -2118,8 +2122,8 @@ TEST_P(AppPlatformMetricsServiceTest,
   const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
   ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
-  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
-                   ->FindStringKey(kUsageTimeAppIdKey),
+  EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
+                   ->FindString(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
@@ -2148,7 +2152,7 @@ TEST_P(AppPlatformMetricsServiceTest,
 
   // Disable sync state.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Fast forward by two hours and verify usage info is cleared from the pref
   // store.
@@ -2177,8 +2181,8 @@ TEST_P(AppPlatformMetricsServiceTest,
   const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
   ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
-  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
-                   ->FindStringKey(kUsageTimeAppIdKey),
+  EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
+                   ->FindString(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
@@ -2202,8 +2206,8 @@ TEST_P(AppPlatformMetricsServiceTest,
       GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(updated_usage_dict_pref.size(), Eq(1UL));
   EXPECT_THAT(updated_usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
-  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
-                   ->FindStringKey(kUsageTimeAppIdKey),
+  EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
+                   ->FindString(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
@@ -2218,7 +2222,7 @@ TEST_P(AppPlatformMetricsServiceTest,
 TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
   // Disable sync state.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);
@@ -2782,7 +2786,7 @@ class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
   // Observers should be notified even when app sync is disabled.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   const std::string app_id(borealis::FakeAppId("borealis-fake"));
   EXPECT_CALL(
@@ -2798,7 +2802,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
   // Observers should be notified even when app sync is disabled.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Launch a pre-installed app and verify the observer is notified.
   const std::string& app_id = "a";
@@ -2817,7 +2821,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
   // Observers should be notified even when app sync is disabled.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Uninstall a pre-installed app and verify the observer is notified.
   const std::string& app_id = "a";
@@ -2835,7 +2839,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
   // Observers should be notified even when app sync is disabled.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);

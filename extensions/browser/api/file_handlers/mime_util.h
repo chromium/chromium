@@ -72,7 +72,10 @@ class MimeTypeCollector {
   // Called, when the |index|-th input file (or URL) got processed.
   void OnMimeTypeCollected(size_t index, const std::string& mime_type);
 
-  raw_ptr<content::BrowserContext> context_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: TabIndex/FilesAppBrowserTest.Test/tabindexFocus
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel/1539288/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FFilesAppBrowserTest.Test%2FTabIndex.tabindexFocus+VHash%3A282db19e8ac0a6be
+  raw_ptr<content::BrowserContext, FlakyDanglingUntriaged> context_;
   std::unique_ptr<std::vector<std::string>> result_;
   size_t left_;
   CompletionCallback callback_;

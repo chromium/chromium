@@ -159,7 +159,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats(
   }
 }
 
-void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
+void LayoutBlockFlow::ComputeVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
 

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
-import org.chromium.chrome.browser.browserservices.QualityEnforcer;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
@@ -48,7 +47,7 @@ public class TrustedWebActivityCoordinator {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             InstalledWebappRegistrar installedWebappRegistrar,
             ClientPackageNameProvider clientPackageNameProvider,
-            CustomTabsConnection customTabsConnection, QualityEnforcer enforcer) {
+            CustomTabsConnection customTabsConnection) {
         // We don't need to do anything with most of the classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;

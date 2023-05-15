@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_mirror_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -120,14 +121,13 @@ class DragWindowController::DragWindowDetails {
     widget_->set_focus_on_creation(false);
     widget_->Init(std::move(params));
 
-    // TODO(crbug.com/1026746): Change this to WindowPreviewView.
+    // TODO(b/252525521): Change this to WindowPreviewView.
     // WindowPreviewView can show transient children, but currently does not
     // show popups due to performance reasons. WindowPreviewView also needs to
     // be modified so that it can optionally be clipped to the main window's
     // bounds.
     widget_->SetContentsView(std::make_unique<WindowMirrorView>(
-        original_window, /*trilinear_filtering_on_init=*/false,
-        /*show_non_client_view=*/true));
+        original_window, /*show_non_client_view=*/true));
 
     aura::Window* window = widget_->GetNativeWindow();
     window->SetId(kShellWindowId_PhantomWindow);
@@ -150,7 +150,7 @@ class DragWindowController::DragWindowDetails {
   }
 
   // The root window of |widget_|.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // Contains a WindowMirrorView which is a copy of the original window.
   std::unique_ptr<views::Widget> widget_;

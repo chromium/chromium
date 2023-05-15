@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="100506692671054486">няма папярэдняй каманды</translation>
 <translation id="1009046985747440431">Для навігацыі па меню карыстайцеся Стрэлкай уверх і Стрэлкай уніз. Для актывацыі каманды націсніце Enter</translation>
 <translation id="1011903154582639569">Знайдзіце клавішу, а затым адніміце палец, каб увесці значэнне</translation>
 <translation id="1012173283529841972">Элемент спіса</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Ружова-лавандавы</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3962990492275676168">Пачаць чытанне з бягучага месца</translation>
+<translation id="397094149579293440">тэкст не выбраны</translation>
 <translation id="3970951409746498040">Пясочна-карычневы</translation>
 <translation id="3989324057180830702">кнпк-перакл</translation>
 <translation id="3991317907213946254">Балотны</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Няма папярэдняга загалоўка ўзроўню 1</translation>
 <translation id="4787577491510559358">Агучыць фармаціраванне бягучага элемента</translation>
 <translation id="479989351350248267">пошук</translation>
+<translation id="4802034228771424756">тэкставае поле не выбрана</translation>
 <translation id="4804818685124855865">Адключыцца</translation>
 <translation id="481165870889056555">Аб'яўляць назву бягучай старонкі</translation>
 <translation id="4815668758102003883">Бледна-бірузовы</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Унутраная спасылка</translation>
 <translation id="4909019435900810068">Перамясціць на адно слова назад</translation>
 <translation id="4911349081560453449">Няма папярэдняга поля для птушкі</translation>
+<translation id="4919186071145887492">Не ўдалося <ph name="COMMAND" />. Паўтарыце спробу.</translation>
 <translation id="492295894462528572">Уступ</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4953585991029886728">Рэдагаванне тэксту</translation>
+<translation id="4964701498510730546">тэкставае поле не запоўнена</translation>
 <translation id="4973717656530883744">Мінімум: <ph name="X" /></translation>
 <translation id="4974612477719259470">Няма папярэдняй кнопкі</translation>
 <translation id="4979404613699303341">Кнопка "Папярэдняе"</translation>
+<translation id="4981239367072766915">уваходныя даныя не распазнаны</translation>
 <translation id="4982917827052020884">Пачнём з тых клавіш, якія вам трэба будзе выкарыстоўваць пастаянна. Каб спыніць зачытванне тэксту ўголас, можна выкарыстоўваць клавішу Ctrl. Яна знаходзіцца ў левым ніжнім вугле клавіятуры. Каб працягнуць, націсніце клавішу Ctrl.</translation>
 <translation id="4983588134362688868">Перайсці ў пачатак старонкі</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, акно</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Агучыць бягучы стан акумулятара</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, выбрана кнопка-пераключальнік</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, кнопка-пераключальнік у пункце меню выбрана</translation>
+<translation id="5014131807708055994">Не ўдалося <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Уключыць вядзенне журнала маўлення</translation>
 <translation id="5041394372352067729">Перамясціць дысплэй Брайля ўверх старонкі</translation>
 <translation id="5042770794184672516">Павялічыць гучнасць маўлення</translation>

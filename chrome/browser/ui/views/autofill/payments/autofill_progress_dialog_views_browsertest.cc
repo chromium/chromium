@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,22 +29,6 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
   AutofillProgressDialogViewsBrowserTest& operator=(
       const AutofillProgressDialogViewsBrowserTest&) = delete;
 
-  // DialogBrowserTest:
-  void SetUpOnMainThread() override {
-    controller_ = std::make_unique<AutofillProgressDialogControllerImpl>(
-        browser()->tab_strip_model()->GetActiveWebContents());
-  }
-
-  void TearDownOnMainThread() override {
-    // Reset the controller explicitly to avoid that its raw pointer to the
-    // `WebContents` becomes dangling. This mirrors the behavior in production
-    // code in which `ChromeAutofillClient` owns the controller and is destroyed
-    // prior to the destruction of the respective `WebContents`.
-    controller_.reset();
-
-    DialogBrowserTest::TearDownOnMainThread();
-  }
-
   void ShowUi(const std::string& name) override {
     AutofillProgressDialogType autofill_progress_dialog_type_;
     CHECK_EQ(name, "VirtualCardUnmask");
@@ -62,11 +49,10 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
   }
 
   AutofillProgressDialogControllerImpl* controller() {
-    return controller_.get();
+    auto* client = ChromeAutofillClient::FromWebContentsForTesting(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    return client->AutofillProgressDialogControllerForTesting();
   }
-
- private:
-  std::unique_ptr<AutofillProgressDialogControllerImpl> controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
@@ -133,10 +119,16 @@ IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
   EXPECT_TRUE(dialog_views);
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       dialog_views->GetWidget());
-  dialog_views->Dismiss(/*show_confirmation_before_closing=*/true,
-                        /*is_canceled_by_user=*/false);
+  base::MockOnceClosure no_interactive_authentication_callback;
+  EXPECT_CALL(no_interactive_authentication_callback, Run).Times(1);
+  controller()->DismissDialog(
+      /*show_confirmation_before_closing=*/true,
+      /*no_interactive_authentication_callback=*/
+      no_interactive_authentication_callback.Get());
   destroyed_waiter.Wait();
   EXPECT_FALSE(GetDialogViews());
+  testing::Mock::VerifyAndClearExpectations(
+      &no_interactive_authentication_callback);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProgressDialog.CardUnmask.Shown", true, 1);
   histogram_tester.ExpectUniqueSample(

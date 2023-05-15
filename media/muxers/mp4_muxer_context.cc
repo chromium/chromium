@@ -4,6 +4,7 @@
 
 #include "media/muxers/mp4_muxer_context.h"
 
+#include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/output_position_tracker.h"
 
 namespace media {

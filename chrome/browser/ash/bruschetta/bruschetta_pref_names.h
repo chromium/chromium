@@ -18,7 +18,6 @@ extern const char kPolicyNameKey[];
 extern const char kPolicyEnabledKey[];
 extern const char kPolicyImageKey[];
 extern const char kPolicyPflashKey[];
-extern const char kPolicyUefiKey[];
 extern const char kPolicyURLKey[];
 extern const char kPolicyHashKey[];
 extern const char kPolicyVTPMKey[];

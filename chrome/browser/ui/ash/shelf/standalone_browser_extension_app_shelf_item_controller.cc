@@ -96,8 +96,9 @@ void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
 
   std::vector<aura::Window*> filtered_windows;
   for (aura::Window* window : windows_) {
-    if (filter_predicate.Run(window))
+    if (filter_predicate.is_null() || filter_predicate.Run(window)) {
       filtered_windows.push_back(window);
+    }
   }
 
   if (filtered_windows.size() == 0) {

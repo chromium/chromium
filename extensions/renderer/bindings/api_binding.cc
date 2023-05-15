@@ -231,11 +231,10 @@ APIBinding::APIBinding(const std::string& api_name,
 
   if (type_definitions) {
     for (const auto& type : *type_definitions) {
-      const base::Value::Dict* type_dict = type.GetIfDict();
-      CHECK(type_dict);
-      const std::string* id = type_dict->FindString("id");
+      const base::Value::Dict& type_dict = type.GetDict();
+      const std::string* id = type_dict.FindString("id");
       CHECK(id);
-      auto argument_spec = std::make_unique<ArgumentSpec>(type);
+      auto argument_spec = std::make_unique<ArgumentSpec>(type_dict);
       const std::set<std::string>& enum_values = argument_spec->enum_values();
       if (!enum_values.empty()) {
         // Type names may be prefixed by the api name. If so, remove the prefix.
@@ -254,8 +253,7 @@ APIBinding::APIBinding(const std::string& api_name,
       type_refs->AddSpec(*id, std::move(argument_spec));
       // Some types, like storage.StorageArea, have functions associated with
       // them. Cache the function signatures in the type map.
-      const base::Value::List* type_functions =
-          type_dict->FindList("functions");
+      const base::Value::List* type_functions = type_dict.FindList("functions");
       if (type_functions) {
         for (const auto& func : *type_functions) {
           const base::Value::Dict* func_dict = func.GetIfDict();

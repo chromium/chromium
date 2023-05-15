@@ -28,7 +28,8 @@ public class BookmarkToolbarCoordinator {
             SelectionDelegate selectionDelegate, SearchDelegate searchDelegate,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi, OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
-            BookmarkModel bookmarkModel, BookmarkOpener bookmarkOpener) {
+            BookmarkModel bookmarkModel, BookmarkOpener bookmarkOpener,
+            BookmarkUiPrefs bookmarkUiPrefs) {
         mToolbar = (BookmarkToolbar) selectableListLayout.initializeToolbar(
                 R.layout.bookmark_toolbar, selectionDelegate, 0, R.id.normal_menu_group,
                 R.id.selection_mode_menu_group, null, isDialogUi);
@@ -43,7 +44,8 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         mMediator = new BookmarkToolbarMediator(context, mModel, dragReorderableRecyclerViewAdapter,
-                bookmarkDelegateSupplier, selectionDelegate, bookmarkModel, bookmarkOpener);
+                bookmarkDelegateSupplier, selectionDelegate, bookmarkModel, bookmarkOpener,
+                bookmarkUiPrefs);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

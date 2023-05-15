@@ -31,6 +31,7 @@ NavigationRequestInfo::NavigationRequestInfo(
         devtools_accepted_stream_types,
     bool is_pdf,
     WeakDocumentPtr initiator_document,
+    const GlobalRenderFrameHostId& previous_render_frame_host_id,
     bool allow_cookies_from_browser)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
@@ -51,6 +52,7 @@ NavigationRequestInfo::NavigationRequestInfo(
       devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),
       initiator_document(std::move(initiator_document)),
+      previous_render_frame_host_id(previous_render_frame_host_id),
       allow_cookies_from_browser(allow_cookies_from_browser) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}

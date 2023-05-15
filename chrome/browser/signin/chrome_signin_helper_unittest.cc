@@ -82,7 +82,7 @@ class TestResponseAdapter : public signin::ResponseAdapter,
   bool IsOutermostMainFrame() const override {
     return is_outermost_main_frame_;
   }
-  GURL GetURL() const override { return GURL("https://accounts.google.com"); }
+  GURL GetUrl() const override { return GURL("https://accounts.google.com"); }
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_.get();
   }

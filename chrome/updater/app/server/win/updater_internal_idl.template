@@ -10,7 +10,18 @@ import "ocidl.idl";
 // For documentation, see the similar types defined in
 // updater::UpdateServiceInternal.
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537",
+      "system":"PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC"
+    },
+    "tokensToSuffix": ["IUpdaterInternalCallback"]
+  }
+)
 [
+  object,
+  oleautomation,
   uuid(PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65),
   helpstring("IUpdaterInternalCallback Interface"),
   pointer_default(unique)
@@ -18,28 +29,20 @@ import "ocidl.idl";
 interface IUpdaterInternalCallback : IUnknown {
   HRESULT Run([in] LONG result);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA",
+      "system":"PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475"
+    },
+    "tokensToSuffix": ["IUpdaterInternal", "IUpdaterInternalCallback"]
+  }
+)
 [
   object,
-  dual,
-  uuid(PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537),
-  helpstring("IUpdaterInternalCallbackUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterInternalCallbackUser : IUpdaterInternalCallback {
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC),
-  helpstring("IUpdaterInternalCallbackSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterInternalCallbackSystem : IUpdaterInternalCallback {
-};
-
-[
+  oleautomation,
   uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
   helpstring("IUpdaterInternal Interface"),
   pointer_default(unique)
@@ -48,30 +51,7 @@ interface IUpdaterInternal : IUnknown {
   HRESULT Run([in] IUpdaterInternalCallback* callback);
   HRESULT Hello([in] IUpdaterInternalCallback* callback);
 };
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA),
-  helpstring("IUpdaterInternalUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterInternalUser : IUnknown {
-  HRESULT Run([in] IUpdaterInternalCallbackUser* callback);
-  HRESULT Hello([in] IUpdaterInternalCallbackUser* callback);
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475),
-  helpstring("IUpdaterInternalSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterInternalSystem : IUnknown {
-  HRESULT Run([in] IUpdaterInternalCallbackSystem* callback);
-  HRESULT Hello([in] IUpdaterInternalCallbackSystem* callback);
-};
+END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-C6CE92DB-72CA-42EF-8C98-6EE92481B3C9),

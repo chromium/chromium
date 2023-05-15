@@ -85,8 +85,7 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
 
     // Responsible for modifying the resolution of the screen for the embedded
     // device. Set during the first (and only) call to CreateCastService().
-    base::raw_ptr<media::VideoPlaneController> video_plane_controller_ =
-        nullptr;
+    raw_ptr<media::VideoPlaneController> video_plane_controller_ = nullptr;
 
     std::atomic_bool is_buffering_enabled_{false};
   };

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Түзмөктүн сактагычында орун аз болгондуктан, видео тартуу токтоп калды. Көбүрөөк видео тартуу үчүн түзмөгүңүздөн орун бошотуңуз.</translation>
 <translation id="2036868001356139588">Таймердин узактыгы</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> жигердүү</translation>
-<translation id="2128052519899549250">Time Lapse режиминде видео тартуу</translation>
 <translation id="2134029355740465625">Видеонун параметрлери</translation>
 <translation id="2144806332417375165">Жеке видеонун параметрлери</translation>
 <translation id="2175927920773552910">QR коду</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Документ аныкталды</translation>
 <translation id="414641094616694804">Камеранын резолюциясын өзгөртүүгө болбойт</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
-<translation id="4281620174117014503">Орточо резолюция</translation>
 <translation id="428234092390943511">Беттин эскизи</translation>
 <translation id="4383571725254449280">Басып чыгаруу майнаптуулугунун таржымалы</translation>
 <translation id="4445542136948522167">Сүрөткө тартууну токтотуу</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5320594929574852403">Сол жакка жылууда</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Time Lapse</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> бет скандалууда</translation>
 <translation id="5671277269877808209">Чарчы</translation>
+<translation id="574392208103952083">Орточо</translation>
 <translation id="5746169159649715125">PDF катары сактоо</translation>
 <translation id="5753488212459587150">Адис режимин иштетүү</translation>
 <translation id="5759254179196327752">Документти скандоо</translation>
@@ -122,7 +120,7 @@
 <translation id="6888362557094394345">Төмөн жакка жылууда</translation>
 <translation id="695140971690006676">Баарын баштапкы абалга келтирүү</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Тигинен</translation>
+<translation id="6965830616442491568">Портрет</translation>
 <translation id="698156982839284926">3 секунд</translation>
 <translation id="7134221860976209830">10 секунддук таймер</translation>
 <translation id="7191890674911603392">Жаздыруу түрү</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7670511624014457267">60 кадр/сек</translation>
 <translation id="7671804233658741790">Документтин төмөнкү оң бурчу</translation>
+<translation id="7684446460490665873">Time Lapse режиминде видео тартуу</translation>
 <translation id="7692090236657809299">Жылдырып кароо, кыйшайтуу, чоңойтуп/кичирейтүүнү иштетүү</translation>
 <translation id="7726641833034062494">Кадимки видео жаздыруу</translation>
 <translation id="7748344063862150053">Документтин жогорку оң бурчу</translation>
@@ -155,7 +154,7 @@
 <translation id="8711011893539266636">Микрофондун үнүн өчүрүү/күйгүзүү. Үнсүз режим күйүк</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8732462232047530626">Метадайындарды алдын ала көрүү</translation>
-<translation id="8815966864175525708">Тигинен сүрөт тартуу режимине которулуу</translation>
+<translation id="8815966864175525708">Портрет тартууга өтүү</translation>
 <translation id="8828441885228359828">Видео тартууну улантуу</translation>
 <translation id="8870695351537079478">Видео тартылбай жатат</translation>
 <translation id="8880167521484863515">4–3</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Документтин бардык бурчтары алкактын ичинде болгондой кылып түздөңүз</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Сүрөт иштетилүүдө...</translation>
+<translation id="9161584225258678723">Time Lapse</translation>
 <translation id="922762992951083513">Чыгылдыруу күйүк</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 </translationbundle>

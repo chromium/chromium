@@ -40,6 +40,15 @@ class LaunchReliabilityLogger {
   void LogRequestFinished(NetworkRequestId id,
                           int combined_network_status_code);
 
+  void LogLoadMoreStarted();
+  void LogLoadMoreIndicatorShown();
+  void LogLoadMoreActionUploadRequestStarted();
+  void LogLoadMoreRequestSent();
+  void LogLoadMoreResponseReceived(int64_t server_receive_timestamp_ns,
+                                   int64_t server_send_timestamp_ns);
+  void LogLoadMoreRequestFinished(int combined_network_status_code);
+  void LogLoadMoreEnded(bool success);
+
   enum class StreamUpdateType {
     kNone,
     kInitialLoadingSpinner,

@@ -98,16 +98,6 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.new_vertical_scroll_direction;
   }
 
-  static base::TimeDelta previous_surfaces_visual_update_duration(
-      const cc::RenderFrameMetadata& metadata) {
-    return metadata.previous_surfaces_visual_update_duration;
-  }
-
-  static base::TimeDelta current_surface_visual_update_duration(
-      const cc::RenderFrameMetadata& metadata) {
-    return metadata.current_surface_visual_update_duration;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   static float bottom_controls_height(const cc::RenderFrameMetadata& metadata) {
     return metadata.bottom_controls_height;

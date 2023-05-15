@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/phonehub/fake_attestation_certificate_generator.h"
@@ -60,8 +61,9 @@ class CrosStateSenderTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
-  FakeAttestationCertificateGenerator* fake_attestation_certificate_generator_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<FakeAttestationCertificateGenerator, ExperimentalAsh>
+      fake_attestation_certificate_generator_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
 
  private:
   std::unique_ptr<CrosStateSender> cros_state_sender_;

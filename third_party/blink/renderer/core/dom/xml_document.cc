@@ -28,7 +28,9 @@
 namespace blink {
 
 XMLDocument::XMLDocument(const DocumentInit& initializer,
-                         DocumentClassFlags document_classes)
-    : Document(initializer, document_classes) {}
+                         DocumentClassFlags extended_document_classes)
+    : Document(initializer,
+               base::Union(DocumentClassFlags({DocumentClass::kXML}),
+                           extended_document_classes)) {}
 
 }  // namespace blink

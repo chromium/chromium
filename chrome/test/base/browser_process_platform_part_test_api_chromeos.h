@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_
 #define CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 class BrowserProcessPlatformPart;
@@ -34,7 +35,7 @@ class BrowserProcessPlatformPartTestApi {
   bool CanRestoreUrlsForProfile(const Profile* profile);
 
  private:
-  BrowserProcessPlatformPart* const platform_part_;
+  const raw_ptr<BrowserProcessPlatformPart, ExperimentalAsh> platform_part_;
 };
 
 #endif  // CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_

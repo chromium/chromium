@@ -60,7 +60,7 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
     ::policy::SetDMTokenForTesting(
-        ::policy::DMToken::CreateValidTokenForTesting(kDMToken));
+        ::policy::DMToken::CreateValidToken(kDMToken));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

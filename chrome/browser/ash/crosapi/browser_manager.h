@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -337,6 +338,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   static void DisableForTesting();
   static void EnableForTesting();
 
+  void KillLacrosForTesting();
+
  protected:
   // The actual Lacros launch mode.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -416,7 +419,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is creating a new log file to log to.
     CREATING_LOG_FILE,
 
-    // Lacros-chrome is launching.
+    // Lacros-chrome has been pre-launched at login screen, and it's waiting to
+    // be unblocked post-login.
+    PRE_LAUNCHED,
+
+    // Lacros-chrome is launching, or resuming a pre-launched instance.
     STARTING,
 
     // Mojo connection to lacros-chrome is established so, it's in
@@ -539,7 +546,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // BrowserManager must outlive this instance.
     ScopedKeepAlive(BrowserManager* manager, Feature feature);
 
-    BrowserManager* manager_;
+    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
     Feature feature_;
   };
 
@@ -550,7 +557,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     ~ScopedUnsetAllKeepAliveForTesting();
 
    private:
-    BrowserManager* manager_;
+    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
     std::set<BrowserManager::Feature> previous_keep_alive_features_;
   };
 
@@ -562,7 +569,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by |params.logfd|.
-  void StartWithLogFile(LaunchParamsFromBackground params);
+  void StartWithLogFile(bool launching_at_login_screen,
+                        LaunchParamsFromBackground params);
 
   // ash::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
@@ -671,7 +679,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // May be null in tests.
-  ComponentUpdateService* const component_update_service_;
+  const raw_ptr<ComponentUpdateService, ExperimentalAsh>
+      component_update_service_;
 
   // Delegate handling various concerns regarding the version service.
   std::unique_ptr<BrowserVersionServiceAsh::Delegate> version_service_delegate_;

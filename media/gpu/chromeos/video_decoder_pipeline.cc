@@ -35,6 +35,8 @@
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
+#include "media/gpu/v4l2/v4l2_stateless_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else
 #error Either VA-API or V4L2 must be used for decode acceleration on Chrome OS.
@@ -211,9 +213,16 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   } else {
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
-    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+    if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
+      create_decoder_function_cb =
+          base::BindOnce(&V4L2StatelessVideoDecoder::Create);
+    } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+      create_decoder_function_cb =
+          base::BindOnce(&V4L2StatefulVideoDecoder::Create);
+    } else {
+      create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+    }
 #else
     return nullptr;
 #endif
@@ -224,6 +233,41 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
       std::move(frame_converter), std::move(renderable_fourccs),
       std::move(media_log), std::move(create_decoder_function_cb),
       uses_oop_video_decoder);
+  return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
+      base::WrapUnique(pipeline));
+}
+
+// static
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    std::unique_ptr<MediaLog> media_log,
+    bool ignore_resolution_changes_to_smaller_for_testing) {
+  CreateDecoderFunctionCB create_decoder_function_cb;
+#if BUILDFLAG(USE_VAAPI)
+  create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
+    create_decoder_function_cb =
+        base::BindOnce(&V4L2StatelessVideoDecoder::Create);
+  } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    create_decoder_function_cb =
+        base::BindOnce(&V4L2StatefulVideoDecoder::Create);
+  } else {
+    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+  }
+#endif
+
+  auto* pipeline = new VideoDecoderPipeline(
+      gpu::GpuDriverBugWorkarounds(), std::move(client_task_runner),
+      std::make_unique<PlatformVideoFramePool>(),
+      /*frame_converter=*/nullptr,
+      VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+      std::move(media_log), std::move(create_decoder_function_cb),
+      /*uses_oop_video_decoder=*/false);
+
+  if (ignore_resolution_changes_to_smaller_for_testing)
+    pipeline->ignore_resolution_changes_to_smaller_for_testing_ = true;
+
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
 }
@@ -269,7 +313,13 @@ VideoDecoderPipeline::GetSupportedConfigs(
       break;
 #elif BUILDFLAG(USE_V4L2_CODEC)
     case VideoDecoderType::kV4L2:
-      configs = V4L2VideoDecoder::GetSupportedConfigs();
+      if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
+        configs = V4L2StatelessVideoDecoder::GetSupportedConfigs();
+      } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+        configs = V4L2StatefulVideoDecoder::GetSupportedConfigs();
+      } else {
+        configs = V4L2VideoDecoder::GetSupportedConfigs();
+      }
       break;
 #endif
     default:
@@ -348,8 +398,14 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
 
   decoder_weak_this_factory_.InvalidateWeakPtrs();
 
-  main_frame_pool_.reset();
+  // Destroy |frame_converter_| before |main_frame_pool_| and |decoder| because
+  // the former may have a raw pointer to the latter (in the unwrap-frame
+  // callback).
+  //
+  // TODO(andrescj): consider making the unwrap-frame callback work with WeakPtr
+  // instead.
   frame_converter_.reset();
+  main_frame_pool_.reset();
   decoder_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
   buffer_transcryptor_.reset();
@@ -503,6 +559,10 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   // |decoder_| may be Initialize()d multiple times (e.g. on |config| changes)
   // but can only be created once.
   if (!decoder_ && !create_decoder_function_cb_.is_null()) {
+    // Note: because we std::move(create_decoder_function_cb_), we only reach
+    // this code once. Therefore, we don't need to worry about this assignment
+    // potentially destroying an existing |decoder_| which means we don't have
+    // to call |frame_converter_|->SetUnwrapFrameCB() here.
     decoder_ =
         std::move(create_decoder_function_cb_)
             .Run(media_log_->Clone(), decoder_task_runner_, decoder_weak_this_);
@@ -517,8 +577,47 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     return;
   }
 
+  if (frame_converter_) {
+    MailboxVideoFrameConverter::UnwrapFrameCB unwrap_frame_cb;
+
+    if (uses_oop_video_decoder_) {
+      // Note: base::Unretained() is safe because either a) |decoder_| outlives
+      // the |frame_converter_| or b) we call
+      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
+      // before destroying |decoder_|.
+      unwrap_frame_cb = base::BindRepeating(
+          &OOPVideoDecoder::UnwrapFrame,
+          base::Unretained(static_cast<OOPVideoDecoder*>(decoder_.get())));
+    } else {
+      CHECK(main_frame_pool_);
+      PlatformVideoFramePool* platform_video_frame_pool =
+          main_frame_pool_->AsPlatformVideoFramePool();
+      // When a |frame_converter_| is used, the |main_frame_pool_| should always
+      // be a PlatformVideoFramePool.
+      CHECK(platform_video_frame_pool);
+
+      // Note: base::Unretained() is safe because either a) the
+      // |main_frame_pool_| outlives |frame_converter_| or b) we call
+      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
+      // before destroying |main_frame_pool_|.
+      unwrap_frame_cb =
+          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+                              base::Unretained(platform_video_frame_pool));
+    }
+
+    frame_converter_->set_unwrap_frame_cb(std::move(unwrap_frame_cb));
+  }
+
   estimated_num_buffers_for_renderer_ =
       EstimateRequiredRendererPipelineBuffers(low_delay);
+
+#if BUILDFLAG(USE_VAAPI)
+  if (ignore_resolution_changes_to_smaller_for_testing_) {
+    static_cast<VaapiVideoDecoder*>(decoder_.get())
+        ->set_ignore_resolution_changes_to_smaller_vp9_for_testing(  // IN-TEST
+            true);
+  }
+#endif
 
   decoder_->Initialize(
       config, /* low_delay=*/false, cdm_context,
@@ -540,6 +639,9 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     MEDIA_LOG(ERROR, media_log_)
         << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
         << static_cast<int>(status.code());
+    if (frame_converter_) {
+      frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+    }
     decoder_ = nullptr;
   }
   MEDIA_LOG(INFO, media_log_)
@@ -549,6 +651,9 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   if (decoder_ && decoder_->NeedsTranscryption()) {
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
+      if (frame_converter_) {
+        frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+      }
       decoder_ = nullptr;
       status = DecoderStatus::Codes::kUnsupportedEncryptionMode;
     } else {
@@ -891,6 +996,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // to the preferred formats. There's no need to allocate frames.
     // This is not compatible with VdVideoDecodeAccelerator, which
     // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
+    frame_converter_->set_unwrap_frame_cb(base::NullCallback());
     main_frame_pool_.reset();
     return *viable_candidate;
   }

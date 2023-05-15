@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -68,9 +67,10 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
                        const PrivateAggregationDebugModeOptions*,
                        ExceptionState&);
 
-  void OnOperationStarted(int64_t operation_id,
-                          mojo::PendingRemote<mojom::PrivateAggregationHost>
-                              private_aggregation_host);
+  void OnOperationStarted(
+      int64_t operation_id,
+      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
+          private_aggregation_host);
   void OnOperationFinished(int64_t operation_id);
 
   void OnWorkletDestroyed();

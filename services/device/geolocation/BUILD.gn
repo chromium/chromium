@@ -129,6 +129,7 @@ source_set("geolocation") {
       "wifi_data_provider_mac.h",
       "wifi_data_provider_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   } else if (is_win) {
     sources += [
       "wifi_data_provider_common_win.cc",

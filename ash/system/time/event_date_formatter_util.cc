@@ -8,11 +8,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
-#include "calendar_utils.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 

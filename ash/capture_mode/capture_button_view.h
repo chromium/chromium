@@ -7,6 +7,7 @@
 
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -19,6 +20,8 @@ class Separator;
 
 namespace ash {
 
+class CaptureModeBehavior;
+
 // Defines a view that will host the capture button which when pressed, the
 // screen capture operation will be performed. In the case of video recording,
 // if multiple recording formats are supported, it will display a drop down
@@ -29,7 +32,7 @@ class CaptureButtonView : public views::View {
 
   CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
                     views::Button::PressedCallback on_drop_down_pressed,
-                    bool is_in_projector_mode);
+                    CaptureModeBehavior* active_behavior);
   CaptureButtonView(const CaptureButtonView&) = delete;
   CaptureButtonView& operator=(const CaptureButtonView&) = delete;
   ~CaptureButtonView() override = default;
@@ -58,18 +61,23 @@ class CaptureButtonView : public views::View {
   void SetupButton(views::Button* button);
 
   // Bound to callbacks that will create a path generator for both the capture
-  // and the drop down buttons.
+  // and the drop down buttons. If `use_zero_insets` is true, no insets will be
+  // added to the resulting path generator. This is useful when using the path
+  // generator for the ink drop highlight which should not have any insets,
+  // unlike the focus ring which should be insetted a little to be drawn within
+  // the bounds of the view.
   std::unique_ptr<views::HighlightPathGenerator> CreateFocusRingPath(
-      views::View* view);
+      views::View* view,
+      bool use_zero_insets);
 
   // The button which when pressed, screen capture will be performed.
-  views::LabelButton* const capture_button_;
+  const raw_ptr<views::LabelButton, ExperimentalAsh> capture_button_;
 
   // Optional views that are created only, when multiple (i.e. more than one)
   // recording formats (e.g. webm, gif, .. etc.) are supported. They're visible
   // only if the current capture type is video recording.
-  views::Separator* separator_ = nullptr;
-  views::ImageButton* drop_down_button_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> drop_down_button_ = nullptr;
 };
 
 }  // namespace ash

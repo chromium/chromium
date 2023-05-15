@@ -42,10 +42,10 @@ class ScopedLockImpl {
                                                    base::TimeDelta timeout);
 
  private:
-  ScopedLockImpl(base::raw_ptr<pthread_mutex_t> mutex, int shm_fd)
+  ScopedLockImpl(raw_ptr<pthread_mutex_t> mutex, int shm_fd)
       : mutex_(mutex), shm_fd_(shm_fd) {}
 
-  base::raw_ptr<pthread_mutex_t> mutex_;
+  raw_ptr<pthread_mutex_t> mutex_;
   int shm_fd_;
 };
 

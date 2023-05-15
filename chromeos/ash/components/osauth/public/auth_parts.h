@@ -12,6 +12,7 @@
 
 namespace ash {
 
+class AuthHub;
 class AuthSessionStorage;
 class AuthFactorEngineFactory;
 
@@ -33,6 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
   virtual ~AuthParts() = default;
 
   virtual AuthSessionStorage* GetAuthSessionStorage() = 0;
+  virtual AuthHub* GetAuthHub() = 0;
 
   virtual void RegisterEngineFactory(
       std::unique_ptr<AuthFactorEngineFactory> factory) = 0;

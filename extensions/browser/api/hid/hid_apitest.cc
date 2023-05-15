@@ -261,6 +261,8 @@ device::mojom::HidDeviceInfoPtr CreateDeviceWithOneCollection(
   auto collection = device::mojom::HidCollectionInfo::New();
   collection->usage =
       device::mojom::HidUsageAndPage::New(1, device::mojom::kPageVendor);
+  auto report = device::mojom::HidReportDescription::New();
+  collection->input_reports.push_back(std::move(report));
   device_info->collections.push_back(std::move(collection));
   return device_info;
 }

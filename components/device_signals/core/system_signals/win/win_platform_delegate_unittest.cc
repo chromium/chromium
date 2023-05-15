@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "components/device_signals/test/win/scoped_executable_files.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +46,8 @@ class WinPlatformDelegateTest : public testing::Test {
     absolute_file_path_ = scoped_dir_.GetPath().Append(
         base::FilePath::FromUTF8Unsafe(kTestFileName));
     EXPECT_TRUE(
-        base::WriteFile(absolute_file_path_, "irrelevant file content"));
+        base::WriteFile(absolute_file_path_,
+                        base::Uuid::GenerateRandomV4().AsLowercaseString()));
 
     env_->SetVar(kEnvironmentVariableName,
                  scoped_dir_.GetPath().AsUTF8Unsafe());
@@ -65,19 +67,17 @@ class WinPlatformDelegateTest : public testing::Test {
 TEST_F(WinPlatformDelegateTest, ResolveFilePath_Success) {
   std::string directory_name = scoped_dir_.GetPath().BaseName().AsUTF8Unsafe();
 
-  std::array<std::string, 4> test_cases = {
-      absolute_file_path_.AsUTF8Unsafe(),
+  std::array<std::string, 2> test_cases = {
       base::StrCat({"%", kEnvironmentVariableName, "%\\", kTestFileName}),
       base::StrCat({"%", kEnvironmentVariableName, "%\\..\\", directory_name,
-                    "\\", kTestFileName}),
-
-      // Should work with directories too.
-      scoped_dir_.GetPath().AsUTF8Unsafe()};
+                    "\\", kTestFileName})};
 
   for (const auto& test_case : test_cases) {
     base::FilePath resolved_fp;
-    EXPECT_TRUE(platform_delegate_.ResolveFilePath(
-        base::FilePath::FromUTF8Unsafe(test_case), &resolved_fp));
+    const base::FilePath test_case_fp =
+        base::FilePath::FromUTF8Unsafe(test_case);
+    EXPECT_TRUE(platform_delegate_.ResolveFilePath(test_case_fp, &resolved_fp));
+    EXPECT_TRUE(base::ContentsEqual(absolute_file_path_, resolved_fp));
   }
 }
 

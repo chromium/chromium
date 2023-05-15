@@ -32,11 +32,12 @@
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "components/sync/driver/sync_user_settings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -174,6 +175,22 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   return base::ranges::equal(
       lhs, rhs,
       AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
+      &password_manager::AffiliatedGroup::GetCredentials,
+      &password_manager::AffiliatedGroup::GetCredentials);
+}
+
+template <typename T>
+bool AreIssuesEqual(const T& lhs, const T& rhs) {
+  return base::ranges::equal(
+      lhs, rhs, {}, &password_manager::CredentialUIEntry::password_issues,
+      &password_manager::CredentialUIEntry::password_issues);
+}
+
+bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
+                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
+  return base::ranges::equal(
+      lhs, rhs,
+      AreIssuesEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
       &password_manager::AffiliatedGroup::GetCredentials);
 }
@@ -847,6 +864,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     // UI should be updated so that any changes to just notes are visible.
     if (_passwords == passwords && _blockedSites == blockedSites &&
         AreStoresEqual(_passwords, passwords) &&
+        AreIssuesEqual(_passwords, passwords) &&
         AreNotesEqual(_passwords, passwords)) {
       return;
     }
@@ -885,6 +903,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     if (_affiliatedGroups == affiliatedGroups &&
         _blockedSites == blockedSites &&
         AreStoresEqual(_affiliatedGroups, affiliatedGroups) &&
+        AreIssuesEqual(_affiliatedGroups, affiliatedGroups) &&
         AreNotesEqual(_affiliatedGroups, affiliatedGroups)) {
       return;
     }
@@ -1936,9 +1955,8 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeCheckForProblemsButton:
       if (self.passwordCheckState != PasswordCheckStateRunning) {
         [self.delegate startPasswordCheck];
+        password_manager::LogStartPasswordCheckManually();
         self.shouldFocusAccessibilityOnPasswordCheckStatus = YES;
-        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                                PasswordCheckInteraction::kManualPasswordCheck);
       }
       break;
     case ItemTypeAddPasswordButton: {

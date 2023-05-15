@@ -27,6 +27,7 @@ Background Services
   Back/forward cache
   Background Fetch
   Background Sync
+  Bounce Tracking Mitigations
   Notifications
   Payment Handler
   Periodic Background Sync
@@ -67,6 +68,7 @@ Background Services
   Back/forward cache
   Background Fetch
   Background Sync
+  Bounce Tracking Mitigations
   Notifications
   Payment Handler
   Periodic Background Sync
@@ -107,6 +109,7 @@ Background Services
   Back/forward cache
   Background Fetch
   Background Sync
+  Bounce Tracking Mitigations
   Notifications
   Payment Handler
   Periodic Background Sync
@@ -147,6 +150,7 @@ Background Services
   Back/forward cache
   Background Fetch
   Background Sync
+  Bounce Tracking Mitigations
   Notifications
   Payment Handler
   Periodic Background Sync

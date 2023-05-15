@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -12,6 +13,10 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
+
+const char kMainHistoryClusterTileLinkUrl[] =
+    "https://store.google.com/product/pixel_7?hl=en-US";
+const char kHistoryClustersCartTileLinkUrl[] = "https://store.google.com/cart";
 }  // namespace
 
 class NewTabPageModulesInteractiveUiTest : public InteractiveBrowserTest {
@@ -28,14 +33,18 @@ class NewTabPageModulesInteractiveUiTest : public InteractiveBrowserTest {
     // account.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSignedOutNtpModulesSwitch);
+    const unsigned long kNumClusters = 1;
     const unsigned long kNumVisits = 2;
     const unsigned long kNumVisitsWithImages = 2;
     features.InitWithFeaturesAndParameters(
         {
             {ntp_features::kNtpHistoryClustersModule,
              {{ntp_features::kNtpHistoryClustersModuleDataParam,
-               base::StringPrintf("%lu,%lu", kNumVisits,
+               base::StringPrintf("%lu,%lu,%lu", kNumClusters, kNumVisits,
                                   kNumVisitsWithImages)}}},
+            {ntp_features::kNtpChromeCartInHistoryClusterModule,
+             {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,
+               "6"}}},
         },
         {});
     InteractiveBrowserTest::SetUp();
@@ -51,6 +60,33 @@ class NewTabPageModulesInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  InteractiveTestApi::MultiStep LoadNewTabPage() {
+    return Steps(InstrumentTab(kNewTabPageElementId, 0),
+                 NavigateWebContents(kNewTabPageElementId,
+                                     GURL(chrome::kChromeUINewTabPageURL)),
+                 WaitForWebContentsReady(kNewTabPageElementId,
+                                         GURL(chrome::kChromeUINewTabPageURL)));
+  }
+
+  InteractiveTestApi::MultiStep WaitForLinkToLoad(const DeepQuery& link,
+                                                  const char* url) {
+    StateChange tile_loaded;
+    tile_loaded.event = kElementReadyEvent;
+    tile_loaded.type = StateChange::Type::kExistsAndConditionTrue;
+    tile_loaded.where = link;
+    tile_loaded.test_function = base::StrCat(
+        {"(el) => { return el.clientWidth > 0 && el.clientHeight > "
+         "0 && el.getAttribute('href') == '",
+         url, "'; }"});
+    return WaitForStateChange(kNewTabPageElementId, std::move(tile_loaded));
+  }
+
+  InteractiveTestApi::MultiStep ClickElement(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    return Steps(MoveMouseTo(contents_id, element), ClickMouse());
+  }
+
  private:
   base::test::ScopedFeatureList features;
 };
@@ -63,33 +99,42 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveUiTest,
                                                  "ntp-history-clusters",
                                                  ".main-tile",
                                                  "a"};
-  StateChange main_history_cluster_tile_loaded;
-  main_history_cluster_tile_loaded.event = kElementReadyEvent;
-  main_history_cluster_tile_loaded.type =
-      StateChange::Type::kExistsAndConditionTrue;
-  main_history_cluster_tile_loaded.where = kMainHistoryClusterTileLink;
-  main_history_cluster_tile_loaded.test_function =
-      "(el) => { return el.clientWidth > 0 && el.clientHeight > 0 && "
-      "el.getAttribute('href') == "
-      "'https://store.google.com/product/pixel_7?hl=en-US'; }";
-
   RunTestSequence(
       // 1. Wait for new tab page to load.
-      InstrumentTab(kNewTabPageElementId, 0),
-      NavigateWebContents(kNewTabPageElementId,
-                          GURL(chrome::kChromeUINewTabPageURL)),
-      WaitForWebContentsReady(kNewTabPageElementId,
-                              GURL(chrome::kChromeUINewTabPageURL)),
+      LoadNewTabPage(),
       // 2. Wait for tile to load.
-      WaitForStateChange(kNewTabPageElementId,
-                         std::move(main_history_cluster_tile_loaded)),
+      WaitForLinkToLoad(kMainHistoryClusterTileLink,
+                        kMainHistoryClusterTileLinkUrl),
       // 3. Scroll to tile. Modules may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId, kMainHistoryClusterTileLink),
       // 4. Click the tile.
-      MoveMouseTo(kNewTabPageElementId, kMainHistoryClusterTileLink),
-      ClickMouse(),
+      ClickElement(kNewTabPageElementId, kMainHistoryClusterTileLink),
       // 5. Verify that the tab navigates to the tile's link.
-      WaitForWebContentsNavigation(
-          kNewTabPageElementId,
-          GURL("https://store.google.com/product/pixel_7?hl=en-US")));
+      WaitForWebContentsNavigation(kNewTabPageElementId,
+                                   GURL(kMainHistoryClusterTileLinkUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveUiTest,
+                       ClickingHistoryClustersCartTileNavigatesToCorrectPage) {
+  const DeepQuery kHistoryClustersCartTileLink = {
+      "ntp-app",
+      "ntp-modules",
+      "ntp-module-wrapper",
+      "ntp-history-clusters",
+      "ntp-history-clusters-cart-tile",
+      "a"};
+
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for tile to load.
+      WaitForLinkToLoad(kHistoryClustersCartTileLink,
+                        kHistoryClustersCartTileLinkUrl),
+      // 3. Scroll to tile. Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, kHistoryClustersCartTileLink),
+      // 4. Click the tile.
+      ClickElement(kNewTabPageElementId, kHistoryClustersCartTileLink),
+      // 5. Verify that the tab navigates to the tile's link.
+      WaitForWebContentsNavigation(kNewTabPageElementId,
+                                   GURL(kHistoryClustersCartTileLinkUrl)));
 }

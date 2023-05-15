@@ -5,18 +5,20 @@
 package org.chromium.chrome.browser.password_entry_edit;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -87,30 +89,18 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
 
         getView().findViewById(R.id.button_secondary).setOnClickListener((unusedView) -> dismiss());
 
-        mUsernameField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
+        mUsernameField.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 uiActionHandler.onUsernameTextChanged(charSequence.toString());
             }
-
-            @Override
-            public void afterTextChanged(Editable editable) {}
         });
 
-        mPasswordField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
+        mPasswordField.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 uiActionHandler.onPasswordTextChanged(charSequence.toString());
             }
-
-            @Override
-            public void afterTextChanged(Editable editable) {}
         });
     }
 

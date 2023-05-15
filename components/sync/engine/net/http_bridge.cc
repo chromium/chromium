@@ -25,7 +25,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -108,11 +107,6 @@ void HttpBridge::SetExtraRequestHeaders(const char* headers) {
   DCHECK(extra_headers_.empty())
       << "HttpBridge::SetExtraRequestHeaders called twice.";
   extra_headers_.assign(headers);
-}
-
-void HttpBridge::SetAllowBatching(bool allow_batching) {
-  DCHECK(!fetch_state_.url_loader);
-  allow_batching_ = allow_batching;
 }
 
 void HttpBridge::SetURL(const GURL& url) {
@@ -260,11 +254,6 @@ void HttpBridge::MakeAsynchronousPost() {
   fetch_state_.url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
-
-  if (allow_batching_ &&
-      network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation)) {
-    url_loader->SetAllowBatching();
-  }
 
   std::string request_to_send;
   compression::GzipCompress(request_content_, &request_to_send);

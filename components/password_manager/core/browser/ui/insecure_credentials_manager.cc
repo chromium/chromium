@@ -33,6 +33,9 @@
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 #endif
 
+using password_manager::IsMuted;
+using password_manager::TriggerBackendNotification;
+
 namespace password_manager {
 
 namespace {
@@ -120,7 +123,8 @@ void InsecureCredentialsManager::SaveInsecureCredential(
       CredentialUIEntry credential_to_update = credential;
       credential_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
-          InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+          InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                             TriggerBackendNotification(false)));
       presenter_->EditSavedCredentials(credential, credential_to_update);
     }
   }
@@ -170,13 +174,15 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
       credential.password_issues.insert(
           {password_manager::InsecureType::kWeak,
            password_manager::InsecurityMetadata(
-               base::Time(), password_manager::IsMuted(false))});
+               base::Time(), IsMuted(false),
+               TriggerBackendNotification(false))});
     }
     if (reused_passwords_.contains(credential.password)) {
       credential.password_issues.insert(
           {password_manager::InsecureType::kReused,
            password_manager::InsecurityMetadata(
-               base::Time(), password_manager::IsMuted(false))});
+               base::Time(), IsMuted(false),
+               TriggerBackendNotification(false))});
     }
   }
 
@@ -198,6 +204,8 @@ void InsecureCredentialsManager::RemoveObserver(Observer* observer) {
 void InsecureCredentialsManager::OnReuseCheckDone(
     base::ElapsedTimer timer_since_reuse_check_start,
     base::flat_set<std::u16string> reused_passwords) {
+  base::UmaHistogramTimes("PasswordManager.ReuseCheck.Time",
+                          timer_since_reuse_check_start.Elapsed());
   reused_passwords_ = std::move(reused_passwords);
   NotifyInsecureCredentialsChanged();
 }
@@ -236,7 +244,8 @@ void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
 
 // Re-computes the list of insecure credentials with passwords after obtaining a
 // new list of saved passwords.
-void InsecureCredentialsManager::OnSavedPasswordsChanged() {
+void InsecureCredentialsManager::OnSavedPasswordsChanged(
+    const PasswordStoreChangeList& changes) {
   NotifyInsecureCredentialsChanged();
 }
 

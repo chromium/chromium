@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/containers/flat_set.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -26,6 +27,14 @@ struct ProposedCandidateKey {
     return (tracking_id == other.tracking_id &&
             strategy_id == other.strategy_id);
   }
+
+  bool operator<(const ProposedCandidateKey& other) const {
+    if (tracking_id != other.tracking_id) {
+      return tracking_id < other.tracking_id;
+    }
+
+    return static_cast<int>(strategy_id) < static_cast<int>(other.strategy_id);
+  }
 };
 
 struct ProposedCandidateKeyHasher {
@@ -38,6 +47,15 @@ struct ProposedCandidateKeyHasher {
 // using a specific `OverlayProcessorStrategy`.
 class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
  public:
+  OverlayProposedCandidate(QuadList::Iterator it,
+                           OverlayCandidate overlay_candidate,
+                           OverlayProcessorStrategy* overlay_strategy);
+
+  OverlayProposedCandidate(const OverlayProposedCandidate&);
+  OverlayProposedCandidate& operator=(const OverlayProposedCandidate&);
+
+  ~OverlayProposedCandidate();
+
   // Returns the bounds of rounded display masks in target space that are
   // associated with the `proposed_candidate`.
   static std::array<
@@ -45,13 +63,6 @@ class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
       TextureDrawQuad::RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
   GetRoundedDisplayMasksBounds(
       const OverlayProposedCandidate& proposed_candidate);
-
-  OverlayProposedCandidate(QuadList::Iterator it,
-                           OverlayCandidate overlay_candidate,
-                           OverlayProcessorStrategy* overlay_strategy)
-      : quad_iter(it),
-        candidate(overlay_candidate),
-        strategy(overlay_strategy) {}
 
   static ProposedCandidateKey ToProposeKey(
       const OverlayProposedCandidate& proposed);
@@ -63,6 +74,9 @@ class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
 
   // heuristic sort element
   int relative_power_gain = 0;
+
+  // Keys of candidates with rounded display masks that occlude `this`.
+  base::flat_set<ProposedCandidateKey> occluding_mask_keys;
 };
 
 }  // namespace viz

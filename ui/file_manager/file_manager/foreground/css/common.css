@@ -397,14 +397,6 @@ html[dir='rtl'] .entry-name {
 }
 
 /* Common typography styles for ChromeOS. */
-.headline2 {
-  color: var(--cros-text-color-primary);
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 22px;
-}
-
 .button2 {
   color: var(--cros-text-color-primary);
   font-family: Roboto;
@@ -418,11 +410,4 @@ html[dir='rtl'] .entry-name {
   font-family: Roboto;
   font-size: 13px;
   line-height: 20px;
-}
-
-.annotation1-primary {
-  color: var(--cros-text-color-primary);
-  font-family: Roboto;
-  font-size: 12px;
-  line-height: 18px;
 }

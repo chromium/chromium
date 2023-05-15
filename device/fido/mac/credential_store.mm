@@ -4,10 +4,12 @@
 
 #include "device/fido/mac/credential_store.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
@@ -15,7 +17,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -27,6 +28,10 @@
 #include "device/fido/mac/keychain.h"
 #include "device/fido/mac/touch_id_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace device::fido::mac {
 
@@ -43,12 +48,13 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> DefaultKeychainQuery(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
-  CFDictionarySetValue(query, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(config.keychain_access_group));
+  CFDictionarySetValue(
+      query, kSecAttrAccessGroup,
+      base::SysUTF8ToCFStringRef(config.keychain_access_group));
   if (rp_id) {
     CFDictionarySetValue(
         query, kSecAttrLabel,
-        base::SysUTF8ToNSString(EncodeRpId(config.metadata_secret, *rp_id)));
+        base::SysUTF8ToCFStringRef(EncodeRpId(config.metadata_secret, *rp_id)));
   }
   return query;
 }
@@ -93,11 +99,11 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(keychain_access_group));
+                       base::SysUTF8ToCFStringRef(keychain_access_group));
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
   // Return the key reference and its attributes.
-  CFDictionarySetValue(query, kSecReturnRef, @YES);
-  CFDictionarySetValue(query, kSecReturnAttributes, @YES);
+  CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
+  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
 
   base::ScopedCFTypeRef<CFArrayRef> keychain_items;
   {
@@ -196,7 +202,7 @@ bool Credential::RequiresUvForSignature() const {
 }
 
 struct TouchIdCredentialStore::ObjCStorage {
-  base::scoped_nsobject<LAContext> authentication_context_;
+  LAContext* __strong authentication_context;
 };
 
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
@@ -206,7 +212,7 @@ TouchIdCredentialStore::~TouchIdCredentialStore() = default;
 
 void TouchIdCredentialStore::SetAuthenticationContext(
     LAContext* authentication_context) {
-  objc_storage_->authentication_context_.reset([authentication_context retain]);
+  objc_storage_->authentication_context = authentication_context;
 }
 
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
@@ -218,35 +224,39 @@ TouchIdCredentialStore::CreateCredential(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(params, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(config_.keychain_access_group));
+  CFDictionarySetValue(
+      params, kSecAttrAccessGroup,
+      base::SysUTF8ToCFStringRef(config_.keychain_access_group));
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(params, kSecAttrKeySizeInBits, @256);
-  CFDictionarySetValue(params, kSecAttrSynchronizable, @NO);
+  CFDictionarySetValue(params, kSecAttrKeySizeInBits,
+                       base::apple::NSToCFPtrCast(@256));
+  CFDictionarySetValue(params, kSecAttrSynchronizable, kCFBooleanFalse);
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
 
   CFDictionarySetValue(
       params, kSecAttrLabel,
-      base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)));
+      base::SysUTF8ToCFStringRef(EncodeRpId(config_.metadata_secret, rp_id)));
   auto credential_metadata =
       CredentialMetadata::FromPublicKeyCredentialUserEntity(
           user, discoverable == kDiscoverable);
   const std::vector<uint8_t> sealed_metadata = SealCredentialMetadata(
       config_.metadata_secret, rp_id, credential_metadata);
   CFDictionarySetValue(params, kSecAttrApplicationTag,
-                       [NSData dataWithBytes:sealed_metadata.data()
-                                      length:sealed_metadata.size()]);
+                       base::apple::NSToCFPtrCast([NSData
+                           dataWithBytes:sealed_metadata.data()
+                                  length:sealed_metadata.size()]));
   const std::vector<uint8_t> credential_id = GenerateRandomCredentialId();
-  CFDictionarySetValue(params, kSecAttrApplicationLabel,
-                       [NSData dataWithBytes:credential_id.data()
-                                      length:credential_id.size()]);
+  CFDictionarySetValue(
+      params, kSecAttrApplicationLabel,
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecPrivateKeyAttrs, private_key_params);
-  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
+  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
   // The credential can only be used for signing, and the device needs to be in
   // an unlocked state.
   auto flags =
@@ -259,9 +269,10 @@ TouchIdCredentialStore::CreateCredential(
           flags, /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
                        access_control);
-  if (objc_storage_->authentication_context_) {
-    CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         objc_storage_->authentication_context_);
+  if (objc_storage_->authentication_context) {
+    CFDictionarySetValue(
+        private_key_params, kSecUseAuthenticationContext,
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -306,29 +317,32 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(params, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(config_.keychain_access_group));
+  CFDictionarySetValue(
+      params, kSecAttrAccessGroup,
+      base::SysUTF8ToCFStringRef(config_.keychain_access_group));
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(params, kSecAttrKeySizeInBits, @256);
-  CFDictionarySetValue(params, kSecAttrSynchronizable, @NO);
+  CFDictionarySetValue(params, kSecAttrKeySizeInBits,
+                       base::apple::NSToCFPtrCast(@256));
+  CFDictionarySetValue(params, kSecAttrSynchronizable, kCFBooleanFalse);
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
 
   CFDictionarySetValue(
       params, kSecAttrLabel,
-      base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)));
+      base::SysUTF8ToCFStringRef(EncodeRpId(config_.metadata_secret, rp_id)));
   CFDictionarySetValue(params, kSecAttrApplicationTag,
-                       base::SysUTF8ToNSString(EncodeRpIdAndUserIdDeprecated(
+                       base::SysUTF8ToCFStringRef(EncodeRpIdAndUserIdDeprecated(
                            config_.metadata_secret, rp_id, user.id)));
-  CFDictionarySetValue(params, kSecAttrApplicationLabel,
-                       [NSData dataWithBytes:credential_id.data()
-                                      length:credential_id.size()]);
+  CFDictionarySetValue(
+      params, kSecAttrApplicationLabel,
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecPrivateKeyAttrs, private_key_params);
-  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
+  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
   // Credential can only be used when the device is unlocked. Private key is
   // available for signing after user authorization with biometrics or
   // password.
@@ -339,9 +353,10 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
           /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
                        access_control);
-  if (objc_storage_->authentication_context_) {
-    CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         objc_storage_->authentication_context_);
+  if (objc_storage_->authentication_context) {
+    CFDictionarySetValue(
+        private_key_params, kSecUseAuthenticationContext,
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -502,12 +517,13 @@ TouchIdCredentialStore::FindCredentialsImpl(
   // `kSecAttrLabel` attribute wouldn't match the encoded RP ID.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query =
       DefaultKeychainQuery(config_, rp_id);
-  if (objc_storage_->authentication_context_) {
-    CFDictionarySetValue(query, kSecUseAuthenticationContext,
-                         objc_storage_->authentication_context_);
+  if (objc_storage_->authentication_context) {
+    CFDictionarySetValue(
+        query, kSecUseAuthenticationContext,
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
-  CFDictionarySetValue(query, kSecReturnRef, @YES);
-  CFDictionarySetValue(query, kSecReturnAttributes, @YES);
+  CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
+  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
 
   base::ScopedCFTypeRef<CFArrayRef> keychain_items;
@@ -632,12 +648,14 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(config_.keychain_access_group));
+  CFDictionarySetValue(
+      query, kSecAttrAccessGroup,
+      base::SysUTF8ToCFStringRef(config_.keychain_access_group));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
-  CFDictionarySetValue(query, kSecAttrApplicationLabel,
-                       [NSData dataWithBytes:credential_id.data()
-                                      length:credential_id.size()]);
+  CFDictionarySetValue(
+      query, kSecAttrApplicationLabel,
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   OSStatus status = Keychain::GetInstance().ItemDelete(query);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
@@ -678,8 +696,9 @@ bool TouchIdCredentialStore::UpdateCredential(
       std::vector<uint8_t> sealed_metadata = SealCredentialMetadata(
           config_.metadata_secret, credential.rp_id, credential.metadata);
       CFDictionarySetValue(params, kSecAttrApplicationTag,
-                           [NSData dataWithBytes:sealed_metadata.data()
-                                          length:sealed_metadata.size()]);
+                           base::apple::NSToCFPtrCast([NSData
+                               dataWithBytes:sealed_metadata.data()
+                                      length:sealed_metadata.size()]));
       found_credential = true;
       break;
     }
@@ -693,12 +712,14 @@ bool TouchIdCredentialStore::UpdateCredential(
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecAttrAccessGroup,
-                       base::SysUTF8ToNSString(config_.keychain_access_group));
+  CFDictionarySetValue(
+      query, kSecAttrAccessGroup,
+      base::SysUTF8ToCFStringRef(config_.keychain_access_group));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
-  CFDictionarySetValue(query, kSecAttrApplicationLabel,
-                       [NSData dataWithBytes:credential_id.data()
-                                      length:credential_id.size()]);
+  CFDictionarySetValue(
+      query, kSecAttrApplicationLabel,
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   OSStatus status = Keychain::GetInstance().ItemUpdate(query, params);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";

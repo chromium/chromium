@@ -350,7 +350,7 @@ bool MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
     return false;
   }
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  return browser_client->IsGetDisplayMediaSetSelectAllScreensAllowed(
+  return browser_client->IsGetAllScreensMediaAllowed(
       render_frame_host->GetBrowserContext(),
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin());
 }
@@ -434,10 +434,7 @@ void MediaStreamDispatcherHost::GenerateStreams(
   // TODO(crbug/1379794): Move into ValidateControlsForGenerateStreams().
   if (controls.video.stream_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET &&
-      (!base::FeatureList::IsEnabled(features::kGetDisplayMediaSet) ||
-       !base::FeatureList::IsEnabled(
-           features::kGetDisplayMediaSetAutoSelectAllScreens)) &&
-      (!base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia))) {
+      !base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia)) {
     mojo::ReportBadMessage("This API has not been enabled");
     return;
   }

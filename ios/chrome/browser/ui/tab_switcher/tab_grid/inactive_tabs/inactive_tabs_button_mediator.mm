@@ -10,10 +10,10 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,10 +45,10 @@ using ScopedWebStateListObservation =
 - (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService {
-  DCHECK(IsInactiveTabsEnabled());
-  DCHECK(consumer);
-  DCHECK(webStateList);
-  DCHECK(prefService);
+  CHECK(IsInactiveTabsAvailable());
+  CHECK(consumer);
+  CHECK(webStateList);
+  CHECK(prefService);
   self = [super init];
   if (self) {
     _consumer = consumer;
@@ -73,8 +73,7 @@ using ScopedWebStateListObservation =
 
     // Push the info to the consumer.
     [_consumer updateInactiveTabsCount:_webStateList->count()];
-    NSInteger daysThreshold =
-        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    NSInteger daysThreshold = InactiveTabsTimeThreshold().InDays();
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
   }
   return self;

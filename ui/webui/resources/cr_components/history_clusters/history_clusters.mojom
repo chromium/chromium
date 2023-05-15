@@ -101,8 +101,9 @@ interface PageHandler {
   // resolves with whether the request succeeded in the History backend layer.
   RemoveVisits(array<URLVisit> visits) => (bool success);
 
-  // Requests to open the URLs in `visits` in a new tab group.
-  OpenVisitUrlsInTabGroup(array<URLVisit> visits);
+  // Requests to open the URLs in `visits` in a new tab group. The new tab group
+  // has an optional name `tab_group_name`.
+  OpenVisitUrlsInTabGroup(array<URLVisit> visits, string? tab_group_name);
 
   // Records visit actions.
   RecordVisitAction(VisitAction visit_action,

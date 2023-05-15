@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -100,7 +101,7 @@ class ASH_EXPORT WindowTransformAnimationObserver
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   WindowTransformAnimationObserver(const WindowTransformAnimationObserver&) =
       delete;
@@ -171,12 +172,10 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
     int horizontal_edge_inset,
     int vertical_edge_inset);
 
-// Returns true if `SnapGroupController::IsArm1AutomaticallyLockEnabled()`
-// returns true. In this case, an overview session will be shown on the other
-// half of the screen on window snapped in clamshell mode and a snap group will
-// be created automatically on two windows snapped. The `split_view_divider_`
-// will show to indicate that the two windows are in a snap-group state.
-bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell();
+// Returns true if the snap group is enabled in clamshell mode. The
+// `split_view_divider_` will show to indicate that the two windows are in a
+// snap-group state.
+bool IsSnapGroupEnabledInClamshellMode();
 
 // Returns the widget init params needed to create the widget.
 views::Widget::InitParams CreateWidgetInitParams(

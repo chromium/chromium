@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -124,7 +125,7 @@ class ASH_EXPORT DetachableBaseHandler
   // update.
   void NotifyBaseRequiresFirmwareUpdate(bool requires_update);
 
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 
   // Tablet mode state currently reported by power manager - tablet mode getting
   // turned on is used as a signal that the base is detached.

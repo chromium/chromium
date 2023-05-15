@@ -42,7 +42,6 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxStorageBuffersPerShaderStage() const;
   unsigned maxStorageTexturesPerShaderStage() const;
   unsigned maxUniformBuffersPerShaderStage() const;
-  unsigned maxFragmentCombinedOutputResources() const;
   uint64_t maxUniformBufferBindingSize() const;
   uint64_t maxStorageBufferBindingSize() const;
   unsigned minUniformBufferOffsetAlignment() const;

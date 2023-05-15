@@ -508,8 +508,8 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
 // display names in English locale. To save space, Chrome's copy of ICU
 // does not have the display name for a language unless it's in the
 // Accept-Language list.
-static const char* kServerLanguageList[] = {
-    "ach", "ak", "af", "en-CA", "zh", "yi", "fr-FR", "tl", "iw", "in", "xx"};
+static const char* kServerLanguageList[] = {"ak",    "af", "en-CA", "zh", "yi",
+                                            "fr-FR", "tl", "iw",    "in", "xx"};
 
 // Test the fetching of languages from the translate server
 TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {

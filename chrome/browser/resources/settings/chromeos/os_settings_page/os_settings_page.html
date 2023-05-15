@@ -151,11 +151,12 @@
       <os-settings-section page-title="$i18n{osPeoplePageTitle}"
           section="osPeople">
         <os-settings-people-page prefs="{{prefs}}"
-            page-visibility="[[pageVisibility]]">
+            page-availability="[[pageAvailability]]">
         </os-settings-people-page>
       </os-settings-section>
     </template>
-    <template is="dom-if" if="[[showKerberosSection]]" restamp>
+    <template is="dom-if"
+        if="[[shouldStampPage_(pageAvailability.kerberos)]]" restamp>
       <os-settings-section page-title="$i18n{kerberosPageTitle}"
           section="kerberos">
         <settings-kerberos-page></settings-kerberos-page>
@@ -163,8 +164,7 @@
     </template>
     <os-settings-section page-title="$i18n{devicePageTitle}"
         section="device">
-      <settings-device-page prefs="{{prefs}}"
-          show-crostini="[[showCrostini]]">
+      <settings-device-page prefs="{{prefs}}">
       </settings-device-page>
     </os-settings-section>
     <template is="dom-if" if="[[!isGuestMode_]]" restamp>
@@ -191,8 +191,7 @@
           have-play-store-app="[[havePlayStoreApp]]"
           show-android-apps="[[showAndroidApps]]"
           show-arcvm-manage-usb="[[showArcvmManageUsb]]"
-          show-plugin-vm="[[showPluginVm]]"
-          show-startup="[[showStartup]]">
+          show-plugin-vm="[[showPluginVm]]">
       </os-settings-apps-page>
     </os-settings-section>
     <os-settings-section page-title="$i18n{a11yPageTitle}"
@@ -246,12 +245,11 @@
       </os-settings-section>
       <os-settings-section page-title="$i18n{crostiniPageTitle}"
           section="crostini">
-        <settings-crostini-page prefs="{{prefs}}"
-            allow-crostini="[[allowCrostini_]]"
-            show-crostini="[[showCrostini]]">
+        <settings-crostini-page prefs="{{prefs}}">
         </settings-crostini-page>
       </os-settings-section>
-      <template is="dom-if" if="[[showReset]]">
+      <template is="dom-if"
+          if="[[shouldStampPage_(pageAvailability.reset)]]" restamp>
         <os-settings-section page-title="$i18n{resetPageTitle}"
             section="osReset">
           <os-settings-reset-page></os-settings-reset-page>

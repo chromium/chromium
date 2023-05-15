@@ -278,7 +278,7 @@ found in the LICENSE file.
             </p>
           </paper-tooltip>
         </div>
-        <cr-toggle id="button" checked="{{osSyncItemsStatus.osApps}}"
+        <cr-toggle id="appsTogglebutton" checked="{{osSyncItemsStatus.osApps}}"
           aria-label$="[[getAriaLabelToggleButtons_(locale,
             'syncConsentScreenOsSyncItemOptionAppsTitle' ,
             'syncConsentScreenOsSyncItemOptionAppsSubtitle')]]">
@@ -299,7 +299,7 @@ found in the LICENSE file.
               'syncConsentScreenOsSyncItemOptionSettingsSubtitle')]]
           </div>
         </div>
-        <cr-toggle id="button"
+        <cr-toggle id="settingsTogglebutton"
                    on-change="onSettingsSyncedChanged_"
                    checked="{{osSyncItemsStatus.osPreferences}}"
                    aria-label$="[[getAriaLabelToggleButtons_(locale,
@@ -322,7 +322,7 @@ found in the LICENSE file.
               'syncConsentScreenOsSyncItemOptionWifiSubtitle')]]
           </div>
         </div>
-        <cr-toggle id="button"
+        <cr-toggle id="wifiTogglebutton"
             checked="{{osSyncItemsStatus.osWifiConfigurations}}"
             aria-label$="[[getAriaLabelToggleButtons_(locale,
                       'syncConsentScreenOsSyncItemOptionWifiTitle' ,
@@ -344,7 +344,7 @@ found in the LICENSE file.
               'syncConsentScreenOsSyncItemOptionWallpaperSubtitle')]]
           </div>
         </div>
-        <cr-toggle id="button"
+        <cr-toggle id="wallpaperTogglebutton"
                    checked="{{osSyncItemsStatus.osWallpaper}}"
                    disabled="[[!osSyncItemsStatus.osPreferences]]"
                    aria-label$="[[getAriaLabelToggleButtons_(locale,

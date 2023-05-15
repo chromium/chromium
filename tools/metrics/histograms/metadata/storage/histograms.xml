@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestStorageAccess"
-    enum="RequestStorageResult" expires_after="2023-08-20">
+    enum="RequestStorageResult" expires_after="2023-10-22">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -287,22 +287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NativeFileSystemAPI.FileChooserResult.{Type}" units="units"
-    expires_after="2023-05-01">
-  <owner>asully@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    The number of files a user picked using the file picker in the File System
-    Access API. Recorded as 0 if the user cancelled the picker.
-  </summary>
-  <token key="Type">
-    <variant name="OpenDirectory" summary=""/>
-    <variant name="OpenFile" summary=""/>
-    <variant name="OpenMultipleFiles" summary=""/>
-    <variant name="SaveFile" summary=""/>
-  </token>
-</histogram>
-
 <histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
     expires_after="M77">
   <owner>costan@google.com</owner>
@@ -322,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.RegisterURLTimeWithoutPartitioningSupport"
-    units="ms" expires_after="M115">
+    units="ms" expires_after="2023-10-15">
   <owner>awillia@chromium.org</owner>
   <owner>chrome-owp-storage@chromium.org</owner>
   <summary>
@@ -334,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.RegisterURLTimeWithPartitioningSupport.{Type}"
-    units="ms" expires_after="M115">
+    units="ms" expires_after="2023-10-15">
   <owner>awillia@chromium.org</owner>
   <owner>chrome-owp-storage@chromium.org</owner>
   <summary>
@@ -348,6 +332,21 @@ chromium-metrics-reviews@google.com.
     <variant name="Frame" summary="frame execution contexts"/>
     <variant name="Worker" summary="worker execution contexts"/>
   </token>
+</histogram>
+
+<histogram name="Storage.Buckets.BucketCount" units="buckets"
+    expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Counts the number of storage buckets in existence for a StorageKey when a
+    new one is created (including the new one). This is intended to give an idea
+    of the number of buckets individual apps use. Note: the count in histogram
+    bucket 1 correlates to the total number of sites that use the buckets API
+    (per Chrome client). The count in histogram bucket N, divided by the size of
+    the bucket, correlates to the number of sites for that Chrome client which
+    use at least that many buckets.
+  </summary>
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.Durability"

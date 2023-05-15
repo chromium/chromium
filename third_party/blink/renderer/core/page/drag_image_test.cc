@@ -94,7 +94,7 @@ class TestImage : public Image {
   }
 
   static sk_sp<SkSurface> CreateSkSurface(gfx::Size size) {
-    return SkSurface::MakeRaster(
+    return SkSurfaces::Raster(
         SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType));
   }
 

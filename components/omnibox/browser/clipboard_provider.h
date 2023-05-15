@@ -64,7 +64,7 @@ class ClipboardProvider : public AutocompleteProvider {
   // extra tracking and match adding.
   void AddCreatedMatchWithTracking(
       const AutocompleteInput& input,
-      const AutocompleteMatch& match,
+      AutocompleteMatch match,
       const base::TimeDelta clipboard_contents_age);
 
   // Uses asynchronous clipboard APIs to check which content types have

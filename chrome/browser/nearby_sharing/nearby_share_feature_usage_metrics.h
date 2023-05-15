@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_FEATURE_USAGE_METRICS_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_FEATURE_USAGE_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 class PrefService;
@@ -26,7 +27,7 @@ class NearbyShareFeatureUsageMetrics final
   void RecordUsage(bool success);
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   ash::feature_usage::FeatureUsageMetrics feature_usage_metrics_;
 };
 

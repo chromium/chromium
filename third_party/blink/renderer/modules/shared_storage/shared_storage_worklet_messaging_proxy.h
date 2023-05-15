@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -30,7 +30,7 @@ class MODULES_EXPORT SharedStorageWorkletMessagingProxy final
  public:
   SharedStorageWorkletMessagingProxy(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
-      mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+      mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
       base::OnceClosure worklet_terminated_callback);
 
   void WorkerThreadTerminated() override;
@@ -42,7 +42,8 @@ class MODULES_EXPORT SharedStorageWorkletMessagingProxy final
 
   void InitializeSharedStorageWorkletServiceOnWorkletThread(
       WorkerThread* worker_thread,
-      mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver);
+      mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService>
+          receiver);
 
   void OnSharedStorageWorkletServiceDisconnectedOnWorkletThread();
 

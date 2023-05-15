@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_SCOPED_SUPPRESS_DRIVE_NOTIFICATIONS_FOR_PATH_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class ScopedSuppressDriveNotificationsForPath {
   ~ScopedSuppressDriveNotificationsForPath();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::FilePath relative_drive_path_;
 };
 

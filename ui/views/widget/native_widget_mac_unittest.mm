@@ -484,14 +484,14 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
 // Test minimized states triggered externally, implied visibility and restored
 // bounds whilst minimized.
 TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
-  Widget* widget = new Widget;
+  WidgetAutoclosePtr widget(new Widget);
   Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
-  PaintCountView* view = new PaintCountView();
-  widget->GetContentsView()->AddChildView(view);
+  auto* view = widget->GetContentsView()->AddChildView(
+      std::make_unique<PaintCountView>());
   NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
-  WidgetChangeObserver observer(widget);
+  WidgetChangeObserver observer(widget.get());
 
   widget->SetBounds(gfx::Rect(100, 100, 300, 300));
 
@@ -500,7 +500,7 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   {
     views::test::PropertyWaiter visibility_waiter(
-        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
         true);
     widget->Show();
     EXPECT_TRUE(visibility_waiter.Wait());
@@ -521,7 +521,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   // anything fancy to wait for it finish.
   {
     views::test::PropertyWaiter minimize_waiter(
-        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
         true);
     [ns_window performMiniaturize:nil];
     EXPECT_TRUE(minimize_waiter.Wait());
@@ -541,7 +542,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   {
     views::test::PropertyWaiter deminimize_waiter(
-        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
         false);
     [ns_window deminiaturize:nil];
     EXPECT_TRUE(deminimize_waiter.Wait());
@@ -558,7 +560,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   {
     views::test::PropertyWaiter minimize_waiter(
-        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
         true);
     widget->Minimize();
     EXPECT_TRUE(minimize_waiter.Wait());
@@ -573,7 +576,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   {
     views::test::PropertyWaiter deminimize_waiter(
-        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
         false);
     widget->Restore();  // If miniaturized, should deminiaturize.
     EXPECT_TRUE(deminimize_waiter.Wait());
@@ -588,7 +592,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   {
     views::test::PropertyWaiter deminimize_waiter(
-        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
         false);
     widget->Restore();  // If not miniaturized, does nothing.
     EXPECT_TRUE(deminimize_waiter.Wait());
@@ -600,8 +605,50 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   EXPECT_EQ(2, observer.lost_visible_count());
   EXPECT_EQ(restored_bounds, widget->GetRestoredBounds());
   EXPECT_EQ(3, view->paint_count());
+}
 
-  widget->CloseNow();
+// Tests that NativeWidgetMac::Show(ui::SHOW_STATE_MINIMIZED) minimizes the
+// widget (previously it ordered its window out).
+TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
+  WidgetAutoclosePtr widget(new Widget);
+  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(init_params));
+
+  auto* view = widget->GetContentsView()->AddChildView(
+      std::make_unique<PaintCountView>());
+  WidgetChangeObserver observer(widget.get());
+
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+
+  EXPECT_TRUE(view->IsDrawn());
+  EXPECT_EQ(0, view->paint_count());
+
+  {
+    views::test::PropertyWaiter visibility_waiter(
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
+        true);
+    widget->Show();
+    EXPECT_TRUE(visibility_waiter.Wait());
+  }
+
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(widget->IsVisible());
+
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
+        true);
+
+    NativeWidgetMac* native_widget =
+        static_cast<views::NativeWidgetMac*>(widget->native_widget());
+    gfx::Rect restore_bounds(100, 100, 300, 300);
+    native_widget->Show(ui::SHOW_STATE_MINIMIZED, restore_bounds);
+
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
+
+  EXPECT_TRUE(widget->IsMinimized());
 }
 
 TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {

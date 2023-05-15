@@ -128,6 +128,9 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
 
+// Deletes the file.
+void DeleteFile(UpdaterScope scope, const base::FilePath& path);
+
 // Deletes the updater executable directory. Does not do any kind of cleanup
 // related to service registration. The intent of this command is to replicate
 // a common mode of breaking the updater, so we can test how it recovers.

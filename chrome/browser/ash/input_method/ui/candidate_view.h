@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_CANDIDATE_VIEW_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -60,13 +61,13 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   // child views will be deleted when |this| is deleted.
 
   // The shortcut label renders shortcut numbers like 1, 2, and 3.
-  views::Label* shortcut_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> shortcut_label_ = nullptr;
   // The candidate label renders candidates.
-  views::Label* candidate_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> candidate_label_ = nullptr;
   // The annotation label renders annotations.
-  views::Label* annotation_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> annotation_label_ = nullptr;
   // The infolist icon.
-  views::View* infolist_icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> infolist_icon_ = nullptr;
 
   int shortcut_width_ = 0;
   int candidate_width_ = 0;

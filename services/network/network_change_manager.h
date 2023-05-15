@@ -11,10 +11,16 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "services/network/public/mojom/network_interface_change_listener.mojom.h"
+#endif
 
 namespace network {
 
@@ -24,7 +30,12 @@ namespace network {
 // to mojom::NetworkChangeManagerClients through mojo pipes.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
     : public mojom::NetworkChangeManager,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public net::NetworkChangeNotifier::NetworkChangeObserver
+#if BUILDFLAG(IS_LINUX)
+    ,
+      public mojom::NetworkInterfaceChangeListener
+#endif
+{
  public:
   // If |network_change_notifier| is not null, |this| will take ownership of it.
   // Otherwise, the global net::NetworkChangeNotifier will be used.
@@ -55,6 +66,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
       mojom::ConnectionSubtype new_connection_subtype) override;
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  void BindNetworkInterfaceChangeListener(
+      mojo::PendingAssociatedReceiver<mojom::NetworkInterfaceChangeListener>)
+      override;
+
+  // NetworkInterfaceChangeListener implementation:
+  void OnNetworkInterfacesChanged(
+      mojom::NetworkInterfaceChangeParamsPtr change_params) override;
+#endif
+
   size_t GetNumClientsForTesting() const;
 
  private:
@@ -67,6 +88,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
 
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   mojo::ReceiverSet<mojom::NetworkChangeManager> receivers_;
+#if BUILDFLAG(IS_LINUX)
+  mojo::AssociatedReceiver<mojom::NetworkInterfaceChangeListener>
+      interface_change_listener_receiver_{this};
+#endif
   std::vector<mojo::Remote<mojom::NetworkChangeManagerClient>> clients_;
   mojom::ConnectionType connection_type_;
 };

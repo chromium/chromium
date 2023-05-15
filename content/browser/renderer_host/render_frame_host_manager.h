@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -359,6 +360,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
       SiteInstanceImpl* instance,
       const scoped_refptr<BrowsingContextState>& browsing_context_state,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
+
+  // Similar to `CreateRenderFrameProxy` but also creates the minimal ancestor
+  // chain of proxies in `instance` to support a subframe. This only exists to
+  // support CoopRelatedGroup proxy creation and should not be used for other
+  // cases.
+  void CreateRenderFrameProxyAndAncestorChainIfNeeded(
+      SiteInstanceImpl* instance);
 
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
   // SiteInstances for which the current frame has proxies.  This method is
@@ -713,7 +721,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const UrlInfo& destination_url_info,
       bool destination_is_view_source_mode,
       ui::PageTransition transition,
-      bool is_failure,
+      NavigationRequest::ErrorPageProcess error_page_process,
       bool is_reload,
       bool is_same_document,
       IsSameSiteGetter& is_same_site,
@@ -736,7 +744,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       SiteInstanceImpl* dest_instance,
       SiteInstanceImpl* candidate_instance,
       ui::PageTransition transition,
-      bool is_failure,
+      NavigationRequest::ErrorPageProcess error_page_process,
       bool is_reload,
       bool is_same_document,
       IsSameSiteGetter& is_same_site,
@@ -769,7 +777,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       SiteInstanceImpl* current_instance,
       SiteInstanceImpl* dest_instance,
       ui::PageTransition transition,
-      bool is_failure,
+      NavigationRequest::ErrorPageProcess error_page_process,
       IsSameSiteGetter& is_same_site,
       bool dest_is_restore,
       bool dest_is_view_source_mode,
@@ -785,7 +793,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const UrlInfo& dest_url_info,
       SiteInstanceImpl* current_instance,
       SiteInstanceImpl* dest_instance,
-      bool is_failure,
+      NavigationRequest::ErrorPageProcess error_page_process,
       const BrowsingContextGroupSwap& browsing_context_group_swap);
 
   // Returns true if a navigation to |dest_url| that uses the specified
@@ -810,10 +818,11 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const GURL& dest_url);
 
   // Returns true if we can use `source_instance` for `dest_url_info`.
-  bool CanUseSourceSiteInstance(const UrlInfo& dest_url_info,
-                                SiteInstanceImpl* source_instance,
-                                bool was_server_redirect,
-                                bool is_failure);
+  bool CanUseSourceSiteInstance(
+      const UrlInfo& dest_url_info,
+      SiteInstanceImpl* source_instance,
+      bool was_server_redirect,
+      NavigationRequest::ErrorPageProcess error_page_process);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
@@ -853,17 +862,25 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool recovering_without_early_commit,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
-  // Traverse the opener chain and populate |opener_frame_trees| with
+  // Traverse the opener chain and populate `opener_frame_trees` with
   // all FrameTrees accessible by following frame openers of nodes in the
-  // given node's FrameTree. |opener_frame_trees| is ordered so that openers
+  // given node's FrameTree. `opener_frame_trees` is ordered so that openers
   // of smaller-indexed entries point to larger-indexed entries (i.e., this
   // node's FrameTree is at index 0, its opener's FrameTree is at index 1,
   // etc). If the traversal encounters a node with an opener pointing to a
   // FrameTree that has already been traversed (such as when there's a cycle),
-  // the node is added to |nodes_with_back_links|.
+  // the node is added to `nodes_with_back_links`.
+  //
+  // This function does not recursively iterate on trees living in a different
+  // BrowsingInstance from `site_instance`, which may have maintained an opener
+  // using COOP: restrict-properties. When such openers are encountered, they
+  // are added to `cross_browsing_context_group_openers`. Tests can set
+  // `site_instance` to null to iterate through all trees.
   void CollectOpenerFrameTrees(
+      SiteInstanceImpl* site_instance,
       std::vector<FrameTree*>* opener_frame_trees,
-      std::unordered_set<FrameTreeNode*>* nodes_with_back_links);
+      std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
+      std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers);
 
   // Create RenderFrameProxies and inactive RenderViewHosts in the given
   // SiteInstance for the current node's FrameTree.  Used as a helper function

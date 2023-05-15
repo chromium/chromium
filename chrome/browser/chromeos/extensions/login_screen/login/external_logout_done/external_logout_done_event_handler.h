@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_EXTERNAL_LOGOUT_DONE_EXTERNAL_LOGOUT_DONE_EVENT_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_EXTERNAL_LOGOUT_DONE_EXTERNAL_LOGOUT_DONE_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -37,7 +38,7 @@ class ExternalLogoutDoneEventHandler
   void SetEventRouterForTesting(EventRouter* event_router);
 
  private:
-  EventRouter* event_router_;
+  raw_ptr<EventRouter, ExperimentalAsh> event_router_;
   base::ScopedObservation<crosapi::LoginAsh,
                           crosapi::LoginAsh::ExternalLogoutDoneObserver>
       scoped_observation_{this};

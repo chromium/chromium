@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/data_with_timestamp.h"
 
 namespace base {
@@ -163,7 +164,7 @@ class ForegroundEidGenerator {
       const int64_t end_of_period_timestamp_ms,
       const int64_t current_timestamp_ms);
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
 

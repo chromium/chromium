@@ -11,9 +11,11 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -21,8 +23,10 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -228,8 +232,136 @@ IN_PROC_BROWSER_TEST_F(ResourceCacheTest, HostingRendererNavigateToSameOrigin) {
   histograms.ExpectTotalCount(kHistogramIPCRecvDelay, 1);
 }
 
+class ResourceCacheBFCacheTest : public ResourceCacheTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  ResourceCacheBFCacheTest() {
+    if (IsBackForwardCacheEnabled()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+          GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    } else {
+      feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+    }
+  }
+
+  bool IsBackForwardCacheEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, ResourceCacheBFCacheTest, testing::Bool());
+
+// Tests that an inactive renderer stops hosting a ResourceCache. The second
+// active renderer becomes a new host. Once the inactive renderer becomes
+// active, it should use the ResourceCache that is hosted by the second
+// renderer.
+// TODO(https://crbug.com/1434647): Flaky in trybots. Enable this test before
+// starting an experiment.
+IN_PROC_BROWSER_TEST_P(ResourceCacheBFCacheTest,
+                       DISABLED_HostingRendererNavigateToAnotherOriginAndBack) {
+  // Labels for renderers:
+  // * R1: RenderFrameHost lives in the first tab, navigated to `kUrl`.
+  // * R2: RenderFrameHost lives in the second tab, navigated to `kUrl`.
+  // * R3: RenderFrameHost lives in the first tab, navigated to
+  //      `kDifferentUrl`
+  // * R4: RenderFrameHost lives in the first tab, navigated back to `kUrl`.
+
+  const GURL kUrl = embedded_test_server()->GetURL("/simple_page.html");
+  const GURL kDifferentOriginUrl = embedded_test_server()->GetURL(
+      "different-origin.example.com", "/simple_page.html");
+  // Fetched in R1 and R2.
+  const GURL kScriptUrl = embedded_test_server()->GetURL("/cacheable.js");
+  // Fetched in R2 and R4.
+  const GURL kScriptUrl2 = embedded_test_server()->GetURL("/cacheable2.js");
+
+  base::HistogramTester histograms;
+
+  // Navigate to an origin in two tabs so that the first tab hosts a
+  // ResourceCache.
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* render_frame_host1 = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(render_frame_host1);
+
+  Shell* second_shell = CreateBrowser();
+
+  ASSERT_TRUE(NavigateToURL(second_shell, kUrl));
+  RenderFrameHostImpl* render_frame_host2 = static_cast<RenderFrameHostImpl*>(
+      second_shell->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(render_frame_host2);
+
+  ASSERT_TRUE(IsRenderFrameHostingRemoteCache(render_frame_host1));
+  ASSERT_FALSE(IsRenderFrameHostingRemoteCache(render_frame_host2));
+
+  ASSERT_TRUE(FetchScript(render_frame_host1, kScriptUrl));
+  ASSERT_TRUE(FetchScript(render_frame_host2, kScriptUrl));
+
+  // Histograms should be recorded with a cache hit because R1 and R2 fetched
+  // `kScriptUrl`.
+  FetchHistogramsFromChildProcesses();
+  histograms.ExpectUniqueSample(kHistogramIsInCacheScript, true, 1);
+  histograms.ExpectTotalCount(kHistogramIPCSendDelay, 1);
+  histograms.ExpectTotalCount(kHistogramIPCRecvDelay, 1);
+
+  // Navigate to a different origin in the first tab. This triggers
+  // ResourceCache migration.
+  RenderFrameHostImplWrapper render_frame_host1_wrapper(render_frame_host1);
+  ASSERT_TRUE(NavigateToURL(shell(), kDifferentOriginUrl));
+  RenderFrameHostImpl* render_frame_host3 = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(render_frame_host3);
+
+  if (IsBackForwardCacheEnabled()) {
+    ASSERT_FALSE(IsRenderFrameHostingRemoteCache(render_frame_host1));
+  } else {
+    // R1 may or may not be destroyed at this point. Wait for deletion if
+    // needed.
+    ASSERT_TRUE(render_frame_host1_wrapper.WaitUntilRenderFrameDeleted());
+  }
+  ASSERT_TRUE(IsRenderFrameHostingRemoteCache(render_frame_host2));
+  ASSERT_FALSE(IsRenderFrameHostingRemoteCache(render_frame_host3));
+
+  // This fetch should not count up kHistogramIsInCacheScript.
+  ASSERT_TRUE(FetchScript(render_frame_host2, kScriptUrl2));
+  FetchHistogramsFromChildProcesses();
+  histograms.ExpectUniqueSample(kHistogramIsInCacheScript, true, 1);
+
+  // Navigate back to the first origin in the first tab.
+  {
+    TestFrameNavigationObserver observer(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    shell()->web_contents()->GetController().GoBack();
+    observer.Wait();
+  }
+
+  RenderFrameHostImpl* render_frame_host4 = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(render_frame_host4);
+  if (IsBackForwardCacheEnabled()) {
+    ASSERT_EQ(render_frame_host1, render_frame_host4);
+  }
+
+  ASSERT_TRUE(IsRenderFrameHostingRemoteCache(render_frame_host2));
+  ASSERT_FALSE(IsRenderFrameHostingRemoteCache(render_frame_host4));
+
+  ASSERT_TRUE(FetchScript(render_frame_host4, kScriptUrl2));
+
+  // If R2 and R4 share the same process, histograms should not be incremented.
+  // If not, histograms should be recorded twice with a cache hit because R2 and
+  // R4 fetched `kScriptUrl2`, in addition to `kScriptUrl` in R1 and R2 above.
+  FetchHistogramsFromChildProcesses();
+  const int kExpectedHistogramCount =
+      render_frame_host2->GetProcess() == render_frame_host4->GetProcess() ? 1
+                                                                           : 2;
+  histograms.ExpectUniqueSample(kHistogramIsInCacheScript, true,
+                                kExpectedHistogramCount);
+  histograms.ExpectTotalCount(kHistogramIPCSendDelay, kExpectedHistogramCount);
+  histograms.ExpectTotalCount(kHistogramIPCRecvDelay, kExpectedHistogramCount);
+}
+
 // TODO(https://crbug.com/141426): Add following tests.
-// * HostingRendererNavigateToAnotherOrigin
 // * HostingRendererDisconnectedAndNoOtherRendererCanHost
 
 class ResourceCacheDisableSiteIsolationTest : public ResourceCacheTest {

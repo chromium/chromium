@@ -22,7 +22,6 @@ InstalledWebappGeolocationBridge::InstalledWebappGeolocationBridge(
     : context_(context),
       url_(url),
       high_accuracy_(false),
-      has_position_to_report_(false),
       receiver_(this, std::move(receiver)) {
   DCHECK(context_);
   receiver_.set_disconnect_handler(
@@ -55,8 +54,9 @@ void InstalledWebappGeolocationBridge::StopUpdates() {
 void InstalledWebappGeolocationBridge::SetHighAccuracy(bool high_accuracy) {
   high_accuracy_ = high_accuracy;
 
-  if (device::ValidateGeoposition(position_override_)) {
-    OnLocationUpdate(position_override_);
+  if (position_override_ && position_override_->is_position() &&
+      device::ValidateGeoposition(*position_override_->get_position())) {
+    OnLocationUpdate(position_override_.Clone());
     return;
   }
 
@@ -73,23 +73,26 @@ void InstalledWebappGeolocationBridge::QueryNextPosition(
 
   position_callback_ = std::move(callback);
 
-  if (has_position_to_report_)
+  if (current_position_) {
     ReportCurrentPosition();
+  }
 }
 
 void InstalledWebappGeolocationBridge::SetOverride(
-    const device::mojom::Geoposition& position) {
-  if (!position_callback_.is_null())
+    device::mojom::GeopositionResultPtr result) {
+  CHECK(result);
+  if (current_position_ && !position_callback_.is_null()) {
     ReportCurrentPosition();
+  }
 
-  position_override_ = position;
+  position_override_ = std::move(result);
   StopUpdates();
 
-  OnLocationUpdate(position_override_);
+  OnLocationUpdate(position_override_.Clone());
 }
 
 void InstalledWebappGeolocationBridge::ClearOverride() {
-  position_override_ = device::mojom::Geoposition();
+  position_override_.reset();
   StartListeningForUpdates();
 }
 
@@ -101,11 +104,11 @@ void InstalledWebappGeolocationBridge::OnConnectionError() {
 }
 
 void InstalledWebappGeolocationBridge::OnLocationUpdate(
-    const device::mojom::Geoposition& position) {
+    device::mojom::GeopositionResultPtr result) {
   DCHECK(context_);
+  CHECK(result);
 
-  current_position_ = position;
-  has_position_to_report_ = true;
+  current_position_ = std::move(result);
 
   if (!position_callback_.is_null())
     ReportCurrentPosition();
@@ -113,8 +116,8 @@ void InstalledWebappGeolocationBridge::OnLocationUpdate(
 
 void InstalledWebappGeolocationBridge::ReportCurrentPosition() {
   DCHECK(position_callback_);
-  std::move(position_callback_).Run(current_position_.Clone());
-  has_position_to_report_ = false;
+  CHECK(current_position_);
+  std::move(position_callback_).Run(std::move(current_position_));
 }
 
 void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
@@ -130,35 +133,38 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
     jdouble heading,
     jboolean has_speed,
     jdouble speed) {
-  device::mojom::Geoposition position;
-  position.latitude = latitude;
-  position.longitude = longitude;
-  position.timestamp = base::Time::FromDoubleT(time_stamp);
+  auto position = device::mojom::Geoposition::New();
+  position->latitude = latitude;
+  position->longitude = longitude;
+  position->timestamp = base::Time::FromDoubleT(time_stamp);
   if (has_altitude)
-    position.altitude = altitude;
+    position->altitude = altitude;
   if (has_accuracy)
-    position.accuracy = accuracy;
+    position->accuracy = accuracy;
   if (has_heading)
-    position.heading = heading;
+    position->heading = heading;
   if (has_speed)
-    position.speed = speed;
+    position->speed = speed;
 
   // If position is invalid, mark it as unavailable.
-  if (!device::ValidateGeoposition(position)) {
-    position.error_code =
-        device::mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
+  device::mojom::GeopositionResultPtr result;
+  if (device::ValidateGeoposition(*position)) {
+    result = device::mojom::GeopositionResult::NewPosition(std::move(position));
+  } else {
+    result = device::mojom::GeopositionResult::NewError(
+        device::mojom::GeopositionError::New(
+            device::mojom::GeopositionErrorCode::kPositionUnavailable,
+            /*error_message=*/"", /*error_technical=*/""));
   }
 
-  OnLocationUpdate(position);
+  OnLocationUpdate(std::move(result));
 }
 
 void InstalledWebappGeolocationBridge::OnNewErrorAvailable(JNIEnv* env,
                                                            jstring message) {
-  device::mojom::Geoposition position_error;
-  position_error.error_code =
-      device::mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-  position_error.error_message =
-      base::android::ConvertJavaStringToUTF8(env, message);
-
-  OnLocationUpdate(position_error);
+  OnLocationUpdate(device::mojom::GeopositionResult::NewError(
+      device::mojom::GeopositionError::New(
+          device::mojom::GeopositionErrorCode::kPositionUnavailable,
+          base::android::ConvertJavaStringToUTF8(env, message),
+          /*error_technical=*/"")));
 }

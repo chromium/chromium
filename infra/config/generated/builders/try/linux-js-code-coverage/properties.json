@@ -38,6 +38,9 @@
       ]
     }
   },
+  "$build/code_coverage": {
+    "use_javascript_coverage": true
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics"

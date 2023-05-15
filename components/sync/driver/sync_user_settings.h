@@ -36,24 +36,11 @@ class SyncUserSettings {
  public:
   virtual ~SyncUserSettings() = default;
 
-  // Whether the user wants Sync to run. This is false by default, but gets set
-  // to true early in the Sync setup flow, after the user has pressed "turn on
-  // Sync" but before they have actually confirmed the settings (that's
-  // IsFirstSetupComplete()). After Sync is enabled, this can get set to false
-  // by the Sync feature toggle in settings, or when Sync gets reset from the
-  // dashboard. This maps to DISABLE_REASON_USER_CHOICE.
-  virtual bool IsSyncRequested() const = 0;
-  virtual void SetSyncRequested() = 0;
-  // TODO(crbug.com/1219990): Remove this function (or make it private to
-  // SyncUserSettingsImpl) and migrate calling sites (primarily tests) to
-  // more appropriate APIs.
-  virtual void ClearSyncRequested() = 0;
-
-  // Whether the initial Sync setup has been completed, meaning the user has
-  // consented to Sync.
+  // Whether the initial Sync Feature setup has been completed, meaning the
+  // user has turned on Sync-the-Feature.
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean
   // anything. See |browser_defaults::kSyncAutoStarts|.
-  virtual bool IsFirstSetupComplete() const = 0;
+  virtual bool IsInitialSyncFeatureSetupComplete() const = 0;
   virtual void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) = 0;
 
   // The user's selected types. The "sync everything" flag means to sync all
@@ -63,8 +50,13 @@ class SyncUserSettings {
   // has never enabled Sync, or if only Sync-the-transport is running.
   virtual bool IsSyncEverythingEnabled() const = 0;
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
+  virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
+#if BUILDFLAG(IS_IOS)
+  // Enables the account storage for bookmark and reading list datatype.
+  virtual void SetBookmarksAndReadingListAccountStorageOptIn(bool value) = 0;
+#endif  // BUILDFLAG(IS_IOS)
   // Registered user selectable types are derived from registered model types.
   // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
@@ -74,6 +66,7 @@ class SyncUserSettings {
   // toggles in the OS Settings UI.
   virtual bool IsSyncAllOsTypesEnabled() const = 0;
   virtual UserSelectableOsTypeSet GetSelectedOsTypes() const = 0;
+  virtual bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const = 0;
   virtual void SetSelectedOsTypes(bool sync_all_os_types,
                                   UserSelectableOsTypeSet types) = 0;
   virtual UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const = 0;

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -110,7 +111,8 @@ class MediaPerceptionAPIManager::MediaPerceptionControllerClient
 
  private:
   // Provides access to methods for talking to core Chrome code.
-  MediaPerceptionAPIDelegate* delegate_;
+  raw_ptr<MediaPerceptionAPIDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // Receiver of the MediaPerceptionControllerClient to the message pipe.
   mojo::Receiver<
@@ -138,12 +140,20 @@ MediaPerceptionAPIManager::MediaPerceptionAPIManager(
     content::BrowserContext* context)
     : browser_context_(context),
       analytics_process_state_(AnalyticsProcessState::IDLE) {
-  scoped_observation_.Observe(ash::MediaAnalyticsClient::Get());
+  // `MediaAnalyticsClient` can be null in tests (browser_tests or
+  // extensions_browsertests).
+  if (auto* client = ash::MediaAnalyticsClient::Get()) {
+    scoped_observation_.Observe(client);
+  }
 }
 
 MediaPerceptionAPIManager::~MediaPerceptionAPIManager() {
   // Stop the separate media analytics process.
-  ash::UpstartClient::Get()->StopMediaAnalytics();
+  // `UpstartClient` can be null in tests (browser_tests or
+  // extensions_browsertests).
+  if (auto* client = ash::UpstartClient::Get()) {
+    client->StopMediaAnalytics();
+  }
 }
 
 void MediaPerceptionAPIManager::ActivateMediaPerception(

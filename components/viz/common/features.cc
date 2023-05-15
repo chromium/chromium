@@ -158,12 +158,12 @@ BASE_FEATURE(kDynamicSchedulerForClients,
 // * If this feature is disabled, then the default limit is 128 quads,
 //   unless there are 5 or more video elements present, in which case
 //   the limit is 300.
-// * If this feature is enabled, then these limits are 512 and 300 quads
-//   respectively, and can be overridden by the "default" and "many-videos"
+// * If this feature is enabled, then these limits are 512, and can be
+// overridden by the "default" and "many-videos"
 //   feature parameters.
 BASE_FEATURE(kCALayerNewLimit,
              "CALayerNewLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Set FeatureParam default to -1. CALayerOverlayProcessor choose the default in
 // ca_layer_overlay.cc When it's < 0.
 const base::FeatureParam<int> kCALayerNewLimitDefault{&kCALayerNewLimit,
@@ -177,6 +177,12 @@ BASE_FEATURE(kCanSkipRenderPassOverlay,
              "CanSkipRenderPassOverlay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Allow SkiaRenderer to skip drawing render passes that contain a single
+// RenderPassDrawQuad.
+BASE_FEATURE(kAllowBypassRenderPassQuads,
+             "AllowBypassRenderPassQuads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1357744): Solve the vulkan flakiness issue before enabling
 // this on Linux.
@@ -243,6 +249,30 @@ BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, and kOnBeginFrameAcks is also enabled, then if we issue an
+// CompositorFrameSinkClient::OnBeginFrame, while we are pending an Ack. If the
+// Ack arrives before the next OnBeginFrame we will send it immediately, instead
+// of batching it. This is to support a frame submission/draw that occurs right
+// near the OnBeginFrame boundary.
+BASE_FEATURE(kOnBeginFrameAllowLateAcks,
+             "OnBeginFrameAllowLateAcks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSharedBitmapToSharedImage,
+             "SharedBitmapToSharedImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
+// the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
+// resources during a scroll.
+BASE_FEATURE(kEnableADPFScrollBoost,
+             "EnableADPFScrollBoost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Specifies how long after the boost mode is set, it will expire.
+const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
+    &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
+    base::Milliseconds(200)};
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);

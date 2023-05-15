@@ -291,11 +291,20 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     }
 
     DCHECK(!new_pic_size.IsEmpty());
-    if (new_pic_size != pic_size_ || new_profile != profile_ ||
-        curr_frame_hdr_->bit_depth != bit_depth_) {
+
+    const bool is_pic_size_different = new_pic_size != pic_size_;
+    const bool is_pic_size_larger = new_pic_size.width() > pic_size_.width() ||
+                                    new_pic_size.height() > pic_size_.height();
+    const bool is_new_configuration_different_enough =
+        (ignore_resolution_changes_to_smaller_for_testing_
+             ? is_pic_size_larger
+             : is_pic_size_different) ||
+        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_;
+
+    if (is_new_configuration_different_enough) {
       DVLOG(1) << "New profile: " << GetProfileName(new_profile)
-               << ", New resolution: " << new_pic_size.ToString()
-               << ", New bit depth: "
+               << ", new resolution: " << new_pic_size.ToString()
+               << ", new bit depth: "
                << base::strict_cast<int>(curr_frame_hdr_->bit_depth);
 
       if (!curr_frame_hdr_->IsKeyframe() &&

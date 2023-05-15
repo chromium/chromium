@@ -56,7 +56,7 @@ void DeviceSettingsTestBase::SetUp() {
   device_policy_ = std::make_unique<policy::DevicePolicyBuilder>();
   user_manager_ = new FakeChromeUserManager();
   user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      base::WrapUnique(user_manager_));
+      base::WrapUnique(user_manager_.get()));
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
   ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);

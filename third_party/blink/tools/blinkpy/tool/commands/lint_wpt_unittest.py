@@ -11,9 +11,10 @@ from unittest import mock
 from typing import List
 
 from blinkpy.common import path_finder
+from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
-from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.tool.commands.update_metadata import TestConfigurations
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import metadata
@@ -47,7 +48,12 @@ class LintWPTTest(LoggingTestCase):
             'flag_specific': 'fake-flag',
             'product': 'content_shell',
         }]
-        self.command = LintWPT(self.tool, set(map(metadata.RunInfo, configs)))
+        configs = {
+            metadata.RunInfo(config):
+            self.tool.port_factory.get('test-linux-trusty')
+            for config in configs
+        }
+        self.command = LintWPT(self.tool, TestConfigurations(self.fs, configs))
         self.fs.write_text_file(self.finder.path_from_wpt_tests('lint.ignore'),
                                 '')
         self.fs.write_text_file(
@@ -71,8 +77,12 @@ class LintWPTTest(LoggingTestCase):
                         },
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
-                            ['variant.html?foo=bar/abc', {}],
-                            ['variant.html?foo=baz', {}],
+                            ['variant.html?foo=bar/abc', {
+                                'timeout': 'long'
+                            }],
+                            ['variant.html?foo=baz', {
+                                'timeout': 'long'
+                            }],
                         ],
                     },
                 },
@@ -95,17 +105,63 @@ class LintWPTTest(LoggingTestCase):
             stack.enter_context(self.tool.executive.patch_builtins())
             yield stack
 
-    def test_execute_basic(self):
+    def test_execute_basic_ok(self):
+        path = self.finder.path_from_wpt_tests('good_python.py')
+        self.fs.write_text_file(path, 'import os')
+        with self._patch_builtins():
+            exit_code = self.command.main([path])
+        self.assertEqual(exit_code, 0)
+        self.assertLog(['INFO: All files OK.\n'])
+
+    def test_execute_basic_test_file_error(self):
         path = self.finder.path_from_wpt_tests('bad_python.py')
         self.fs.write_text_file(path, 'invalid syntax should be detected')
         with self._patch_builtins():
             exit_code = self.command.main([path])
         self.assertNotEqual(exit_code, 0)
-        self.assertIn(
+        self.assertLog([
             'ERROR: bad_python.py:1: Unable to parse file (PARSE-FAILED)\n',
-            self.logMessages())
-        self.assertIn('INFO: There was 1 error (PARSE-FAILED: 1)\n',
-                      self.logMessages())
+            'INFO: \n',
+            'INFO: There was 1 error (PARSE-FAILED: 1)\n',
+            'INFO: \n',
+            'INFO: You must address all errors; for details on how to fix '
+            'them, see\n',
+            'INFO: https://web-platform-tests.org/writing-tests/'
+            'lint-tool.html\n',
+            'INFO: \n',
+            "INFO: However, for errors in test files, it's sometimes OK "
+            'to add lines to\n',
+            'INFO: `external/wpt/lint.ignore` to ignore them.\n',
+            'INFO: \n',
+            'INFO: For example, to make the lint tool ignore all '
+            "'PARSE-FAILED' errors in\n",
+            'INFO: the bad_python.py file, you could add the following line '
+            'to the\n',
+            'INFO: lint.ignore file:\n',
+            'INFO: \n',
+            'INFO: PARSE-FAILED: bad_python.py\n',
+        ])
+
+    def test_execute_basic_metadata_file_error(self):
+        path = self.finder.path_from_wpt_tests('reftest.html.ini')
+        self.fs.write_text_file(path, '[reftest.html]')
+        with self._patch_builtins():
+            exit_code = self.command.main([path])
+        self.assertNotEqual(exit_code, 0)
+        self.assertLog([
+            'ERROR: reftest.html.ini: Empty section should be removed: '
+            "'[reftest.html]' (META-EMPTY-SECTION)\n",
+            'INFO: \n',
+            'INFO: There was 1 error (META-EMPTY-SECTION: 1)\n',
+            'INFO: \n',
+            'INFO: You must address all errors; for details on how to fix '
+            'them, see\n',
+            'INFO: https://web-platform-tests.org/writing-tests/'
+            'lint-tool.html\n',
+            'INFO: \n',
+            'INFO: Errors for `*.ini` metadata files cannot be ignored and '
+            'must be fixed.\n',
+        ])
 
     def _check_metadata(self,
                         contents: str,
@@ -164,14 +220,14 @@ class LintWPTTest(LoggingTestCase):
         out_of_order_subtests, out_of_order_tests = self._check_metadata(
             """\
             [variant.html?foo=baz]
-              expected: TIMEOUT
+              expected: PRECONDITION_FAILED
               [subtest 2]
                 expected: NOTRUN
               [subtest 1]
-                expected: TIMEOUT
+                expected: PRECONDITION_FAILED
 
             [variant.html?foo=bar/abc]
-              expected: TIMEOUT
+              expected: PRECONDITION_FAILED
             """, 'variant.html.ini')
         name, description, path, _ = out_of_order_tests
         self.assertEqual(name, 'META-UNSORTED-SECTION')
@@ -201,13 +257,13 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-EMPTY-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(description,
-                         "Empty section can be removed: '[empty subtest]'")
+                         "Empty section should be removed: '[empty subtest]'")
         name, description, path, _ = empty_test
         self.assertEqual(name, 'META-EMPTY-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
             description,
-            "Empty section can be removed: '[variant.html?foo=baz]'")
+            "Empty section should be removed: '[variant.html?foo=baz]'")
 
     def test_metadata_nonexistent_test(self):
         error1, error2 = self._check_metadata(
@@ -400,34 +456,47 @@ class LintWPTTest(LoggingTestCase):
                          "Test key 'restart-after' always has value '@True'")
 
     def test_metadata_condition_checks_exclusive(self):
-        conds_unnecessary, unreachable_value = self._check_metadata("""\
-            [reftest.html]
+        always_flaky, always_ok, unreachable_value = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
               disabled:
                 if os == "win": flaky
                 if os == "win": flaky
                 flaky
               expected:
-                if os == "win": FAIL
-                if os == "win": [FAIL, PASS]
-                FAIL
-            """)
+                if os == "win": OK
+                if os == "win": OK
+                OK
+              [subtest]
+                expected:
+                  if os == "win": PASS
+                  if os == "win": [FAIL, PASS]
+                  FAIL
+            """, 'variant.html.ini')
         # Since the author should rewrite this key unconditionally as
         # `disabled: flaky` anyway, there's no need to say that the second
-        # condition is unreachable.
-        name, description, path, _ = conds_unnecessary
+        # condition is unreachable. Similar reasoning applies to skipping
+        # condition errors for `META-UNNECESSARY-KEY`.
+        name, description, path, _ = always_flaky
         self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
-        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(description,
                          "Test key 'disabled' always has value 'flaky'")
+        name, description, path, _ = always_ok
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Test '[variant.html?foo=baz]' key 'expected' "
+            "always resolves to an implied 'OK' and should be removed")
         # `META-CONDITIONS-UNNECESSARY` should determine necessity using all
         # values, even unreachable ones, as unreachable values may become
         # reachable if fixed.
         name, description, path, _ = unreachable_value
         self.assertEqual(name, 'META-UNREACHABLE-VALUE')
-        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
-            description,
-            "Test key 'expected' has an unused condition 'if os == \"win\"'")
+            description, "Subtest key 'expected' has "
+            "an unused condition 'if os == \"win\"'")
 
     def test_metadata_unreachable_value(self):
         shadowed_narrow, always_false, unused_default = self._check_metadata(
@@ -508,3 +577,119 @@ class LintWPTTest(LoggingTestCase):
             "Test key 'expected' condition 'if (os == \"mac\") or "
             "((os == \"linux\") and (\"contentshell\" != product))' "
             "compares 'product' against unrecognized value 'contentshell'")
+
+    def test_metadata_unnecessary_key(self):
+        always_enabled, always_pass, always_ok = self._check_metadata(
+            """\
+            disabled: @False
+            [variant.html?foo=baz]
+              expected:
+                if os == "mac": OK
+              [subtest]
+                expected:
+                  if os == "mac": PASS
+                  if os == "linux": PASS
+                  if os == "win": PASS
+            """, 'variant.html.ini')
+        name, description, path, _ = always_enabled
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Root key 'disabled' "
+            "always resolves to an implied '@False' and should be removed")
+        name, description, path, _ = always_ok
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Test '[variant.html?foo=baz]' key 'expected' "
+            "always resolves to an implied 'OK' and should be removed")
+        name, description, path, _ = always_pass
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Subtest '[subtest]' key 'expected' "
+            "always resolves to an implied 'PASS' and should be removed")
+
+    def test_metadata_single_element_lists(self):
+        unwrap_fuzzy, unwrap_bug, unwrap_exp = self._check_metadata("""\
+            fuzzy: [0;1]
+            [reftest.html]
+              bug: [crbug.com/123]
+              expected:
+                if os == "mac": [FAIL]
+            """)
+        name, description, path, _ = unwrap_fuzzy
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Root key 'fuzzy' has a single-element list "
+            "that should be unwrapped to '0;1'")
+        name, description, path, _ = unwrap_bug
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test '[reftest.html]' key 'bug' has a "
+            "single-element list that should be unwrapped to 'crbug.com/123'")
+        name, description, path, _ = unwrap_exp
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test '[reftest.html]' key 'expected' has "
+            "a single-element list that should be unwrapped to 'FAIL'")
+
+    def test_metadata_long_timeout(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              disabled:
+                if os == "mac": slow
+              expected:
+                # Already disabled
+                if os == "mac": TIMEOUT
+                # Does not need to be disabled because the test sometimes runs OK.
+                [TIMEOUT, OK]
+            [variant.html?foo=baz]
+              expected:
+                if os == "mac": TIMEOUT
+            """, 'variant.html.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-LONG-TIMEOUT')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "'variant.html?foo=baz' should be disabled when "
+            "it consistently times out even with 'timeout=long'")
+
+    def test_metadata_long_timeout_already_disabled(self):
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('__dir__.ini'),
+            'disabled: bulk disable of slow tests that timeout\n')
+        with self._patch_builtins():
+            errors = self._check_metadata("""\
+                [variant.html?foo=baz]
+                  expected: TIMEOUT
+                """)
+        self.assertEqual(errors, [])
+
+    def test_invalid_rules_in_ignorelist(self):
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('variant.html'), '')
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('lint.ignore'),
+            textwrap.dedent("""\
+                DOES-NOT-EXIST: variant.html
+                META-EMPTY-SECTION: variant.html
+                """))
+        nonexistent_error, must_fix_error = self.command.check_ignorelist(
+            self.finder.path_from_wpt_tests())
+        name, description, path, _ = nonexistent_error
+        self.assertEqual(name, 'IGNORELIST-BAD-RULE')
+        self.assertEqual(path, 'lint.ignore')
+        self.assertEqual(
+            description, "Rule 'DOES-NOT-EXIST' cannot be ignored "
+            'or does not exist')
+        name, description, path, _ = must_fix_error
+        self.assertEqual(name, 'IGNORELIST-BAD-RULE')
+        self.assertEqual(path, 'lint.ignore')
+        self.assertEqual(
+            description, "Rule 'META-EMPTY-SECTION' cannot be ignored "
+            'or does not exist')

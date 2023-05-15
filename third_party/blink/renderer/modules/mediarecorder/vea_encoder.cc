@@ -52,7 +52,8 @@ VEAEncoder::VEAEncoder(
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
-    bool use_native_input)
+    bool use_native_input,
+    bool is_screencast)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second > 0
@@ -64,6 +65,7 @@ VEAEncoder::VEAEncoder(
       bitrate_mode_(bitrate_mode),
       size_(size),
       use_native_input_(use_native_input),
+      is_screencast_(is_screencast),
       error_notified_(false),
       num_frames_after_keyframe_(0),
       force_next_frame_to_be_keyframe_(false),
@@ -127,10 +129,12 @@ void VEAEncoder::BitstreamBufferReady(
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
 
-void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
+void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
   DVLOG(3) << __func__;
-  UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.VEAError", error,
-                            media::VideoEncodeAccelerator::kErrorMax + 1);
+  CHECK(!status.is_ok());
+  DLOG(ERROR) << "NotifyErrorStatus() is called with code="
+              << static_cast<int>(status.code())
+              << ", message=" << status.message();
   on_error_cb_.Run();
   error_notified_ = true;
 }
@@ -230,7 +234,8 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         input_buffer->mapping.GetMemoryAsSpan<uint8_t>().data(),
         input_buffer->mapping.size(), frame->timestamp());
     if (!video_frame) {
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                         "Failed to create VideoFrame"});
       return;
     }
     libyuv::I420Copy(
@@ -306,11 +311,14 @@ void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_, bitrate, absl::nullopt,
       absl::nullopt, level_, false, storage_type,
-      media::VideoEncodeAccelerator::Config::ContentType::kCamera);
+      is_screencast_
+          ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
+          : media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ ||
       !video_encoder_->Initialize(config, this,
                                   std::make_unique<media::NullMediaLog>())) {
-    NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to initialize"});
   }
 }
 

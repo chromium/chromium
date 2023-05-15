@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.chromium.components.browser_ui.photo_picker.test">
+    <application>
+        <service
+            android:name="org.chromium.components.browser_ui.photo_picker.TestImageDecoderService"
+            android:exported="false"
+            android:isolatedProcess="true"
+            android:process=":decoder_service" />
+    </application>
+</manifest>

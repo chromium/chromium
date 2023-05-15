@@ -1060,9 +1060,12 @@ gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
 
 #if BUILDFLAG(IS_MAC)
 bool BrowserView::UsesImmersiveFullscreenMode() const {
+  const bool is_pwa =
+      base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs) &&
+      GetIsWebAppType();
+  const bool is_tabbed_window = GetSupportsTabStrip();
   return base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
-         (!GetIsWebAppType() ||
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs));
+         (is_pwa || is_tabbed_window);
 }
 
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
@@ -1307,8 +1310,6 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 #elif BUILDFLAG(IS_WIN)
   absl::optional<bool> on_current_workspace =
       native_win->GetHost()->on_current_workspace();
-  base::UmaHistogramBoolean("Windows.OnCurrentWorkspaceCached",
-                            on_current_workspace.has_value());
   if (on_current_workspace.has_value())
     return on_current_workspace.value();
 
@@ -1741,14 +1742,10 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool notify_download,
     bool force_update) {
-  DCHECK(!notify_download || exclusive_access_bubble_);
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
 
-  // Immersive mode has no exit bubble because it has a visible strip at the
-  // top that gives the user a hover target. In a public session we show the
-  // bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.
   if (is_trusted_pinned ||
       (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
@@ -1785,8 +1782,6 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     return;
   }
 
-  // Notification about download should only be considered for a bubble that
-  // exists already.
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }
@@ -2199,6 +2194,12 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
 
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
+}
+
+void BrowserView::ShowSidePanel(
+    absl::optional<SidePanelEntry::Id> entry_id,
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+  side_panel_coordinator_->Show(entry_id, open_trigger);
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {
@@ -3423,6 +3424,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.type = views::Widget::InitParams::TYPE_POPUP;
     params.child = true;
     params.parent = parent->GetNativeView();
+    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
     overlay_widget->Init(std::move(params));
     overlay_widget->SetNativeWindowProperty(kBrowserViewKey, this);

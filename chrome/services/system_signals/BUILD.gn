@@ -42,6 +42,8 @@ source_set("system_signals") {
 
     sources += [ "mac/mac_system_signals_service.mm" ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
+
     deps += [ "//components/device_signals/core/system_signals/mac" ]
   }
 
@@ -84,6 +86,7 @@ source_set("unit_tests") {
 
   if (is_mac) {
     sources += [ "mac/mac_system_signals_service_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux) {

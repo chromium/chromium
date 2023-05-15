@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MERCHANT_PROMO_CODE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MERCHANT_PROMO_CODE_MANAGER_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
@@ -44,11 +45,13 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries(const SuggestionsHandler* handler) override;
-  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
-                                            const std::u16string& value,
-                                            int frontend_id) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       int frontend_id) override;
+  void OnRemoveCurrentSingleFieldSuggestion(
+      const std::u16string& field_name,
+      const std::u16string& value,
+      Suggestion::FrontendId frontend_id) override;
+  void OnSingleFieldSuggestionSelected(
+      const std::u16string& value,
+      Suggestion::FrontendId frontend_id) override;
 
   // Initializes the instance with the given parameters. |personal_data_manager|
   // is a profile-scope data manager used to retrieve promo code offers from the
@@ -81,7 +84,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
     void OnOffersSuggestionsShown(
         const FieldGlobalId& field_global_id,
         const std::vector<const AutofillOfferData*>& offers);
-    void OnOfferSuggestionSelected(int frontend_id);
+    void OnOfferSuggestionSelected(Suggestion::FrontendId frontend_id);
 
    private:
     // The global id of the field that most recently had suggestions shown.

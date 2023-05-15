@@ -55,10 +55,6 @@ message DistilledPageProto {
   // Pagination info for this page.
   optional PaginationInfo pagination_info = 8;
 
-  message TimingInfo {
-    optional string name = 1;
-    optional double time = 2;
-  }
-
-  repeated TimingInfo timing_info = 9;
+  // Removed obsolete field.
+  reserved 9;
 }

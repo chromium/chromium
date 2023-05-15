@@ -90,6 +90,20 @@
     }                                                              \
   } while (0)
 
+#ifndef NDEBUG
+
+#define ABSL_RAW_DLOG(severity, ...) ABSL_RAW_LOG(severity, __VA_ARGS__)
+#define ABSL_RAW_DCHECK(condition, message) ABSL_RAW_CHECK(condition, message)
+
+#else  // NDEBUG
+
+#define ABSL_RAW_DLOG(severity, ...)                   \
+  while (false) ABSL_RAW_LOG(severity, __VA_ARGS__)
+#define ABSL_RAW_DCHECK(condition, message) \
+  while (false) ABSL_RAW_CHECK(condition, message)
+
+#endif  // NDEBUG
+
 #define ABSL_RAW_LOG_INTERNAL_INFO ::absl::LogSeverity::kInfo
 #define ABSL_RAW_LOG_INTERNAL_WARNING ::absl::LogSeverity::kWarning
 #define ABSL_RAW_LOG_INTERNAL_ERROR ::absl::LogSeverity::kError

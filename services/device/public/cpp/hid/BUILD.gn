@@ -25,10 +25,11 @@ source_set("hid") {
     "hid_report_descriptor_item.h",
     "hid_report_item.cc",
     "hid_report_item.h",
+    "hid_report_type.h",
+    "hid_report_utils.cc",
+    "hid_report_utils.h",
     "hid_switches.cc",
     "hid_switches.h",
-    "hid_usage_and_page.cc",
-    "hid_usage_and_page.h",
   ]
 
   deps = [

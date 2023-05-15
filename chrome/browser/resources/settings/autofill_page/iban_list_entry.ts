@@ -56,6 +56,10 @@ export class SettingsIbanListEntryElement extends
 
   iban: chrome.autofillPrivate.IbanEntry;
 
+  get dotsMenu(): HTMLElement {
+    return this.$.ibanMenu;
+  }
+
   /**
    * Opens the IBAN action menu.
    */

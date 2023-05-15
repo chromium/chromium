@@ -41,6 +41,7 @@ inline constexpr base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);
 BASE_DECLARE_FEATURE(kEnablePasswordManagerWithinFencedFrame);
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
+BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -49,24 +50,23 @@ BASE_DECLARE_FEATURE(kForceInitialSyncWhenDecryptionFails);
 BASE_DECLARE_FEATURE(kInferConfirmationPasswordField);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
-BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
-BASE_DECLARE_FEATURE(kIOSShowPasswordStorageInSaveInfobar);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
-#endif  // IS_IOS
+#endif                                            // IS_IOS
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
 #endif
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
-BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
 BASE_DECLARE_FEATURE(kSendPasswords);
-BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordManagerRedesign);
 #endif
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
+#endif
 BASE_DECLARE_FEATURE(kPasswordsGrouping);
 BASE_DECLARE_FEATURE(kPasswordsImportM2);
 BASE_DECLARE_FEATURE(kPasswordStrengthIndicator);
@@ -81,15 +81,13 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 BASE_DECLARE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid);
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
 BASE_DECLARE_FEATURE(kPasswordGenerationBottomSheet);
-BASE_DECLARE_FEATURE(kShowUPMErrorNotification);
 BASE_DECLARE_FEATURE(kUnifiedCredentialManagerDryRun);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerReenrollment);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
 BASE_DECLARE_FEATURE(kExploratorySaveUpdatePasswordStrings);
+BASE_DECLARE_FEATURE(kPasswordsInCredMan);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
@@ -128,35 +126,6 @@ inline constexpr base::FeatureParam<std::string> kRetriableGmsApiErrors = {
     &kUnifiedPasswordManagerAndroid, "retriable_api_errors",
     "7,17,20,22,11009"};
 
-// Enables fallback to the Chrome built-in backend if the operation executed on
-// the GMS Core backend returns with error. Errors listed in the
-// |kIgnoredGmsApiErrors| will not fallback and will be directly returned to the
-// caller to be addressed in a specific way.
-
-// Fallback on AddLogin and UpdateLogin operations. This is default behaviour
-// since M103.
-inline constexpr base::FeatureParam<bool> kFallbackOnModifyingOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_modifying_operations", true};
-
-// Fallback on RemoveLogin* operations.
-inline constexpr base::FeatureParam<bool> kFallbackOnRemoveOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_remove_operations", false};
-
-// Fallback on FillMatchingLogins which is needed to perform autofill and could
-// affect user experience.
-inline constexpr base::FeatureParam<bool>
-    kFallbackOnUserAffectingReadOperations = {
-        &kUnifiedPasswordManagerAndroid,
-        "fallback_on_user_affecting_read_operations", false};
-
-// Fallback on GetAllLogins* and GetAutofillableLogins operations which are
-// needed for certain features (e.g. PhishGuard) but do not affect the core
-// experience.
-inline constexpr base::FeatureParam<bool>
-    kFallbackOnNonUserAffectingReadOperations = {
-        &kUnifiedPasswordManagerAndroid,
-        "fallback_on_non_user_affecting_read_operations", false};
-
 inline constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
@@ -169,12 +138,6 @@ inline constexpr base::FeatureParam<UpmExperimentVariation>
     kUpmExperimentVariationParam{&kUnifiedPasswordManagerAndroid, "stage",
                                  UpmExperimentVariation::kEnableForSyncingUsers,
                                  &kUpmExperimentVariationOption};
-
-extern const base::FeatureParam<int> kMaxUPMReenrollments;
-extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
-
-extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts;
-extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction;
 
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
 #endif

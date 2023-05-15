@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -39,7 +40,7 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
 
     /* package */ void recordSessionMetrics() {
         if (mNumSessionViewsBound > 0) {
-            SuggestionsMetrics.recordSuggestionViewReuseStats(mNumSessionViewsCreated,
+            OmniboxMetrics.recordSuggestionViewReuseStats(mNumSessionViewsCreated,
                     100 * (mNumSessionViewsBound - mNumSessionViewsCreated)
                             / mNumSessionViewsBound);
         }
@@ -116,7 +117,7 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         // the creation of a view holder.
         try (TraceEvent tracing =
                         TraceEvent.scoped("OmniboxSuggestionsList.CreateView", "type:" + viewType);
-                TimingMetric metric = SuggestionsMetrics.recordSuggestionViewCreateTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime()) {
             return super.createView(parent, viewType);
         }
     }

@@ -16,10 +16,13 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "cc/base/switches.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op_writer.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_tile_task_runner.h"
@@ -170,7 +173,9 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
 
   void* MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_entry_size_ = serialized_size;
-    mapped_entry_.reset(new uint8_t[serialized_size]);
+    auto buffer =
+        PaintOpWriter::AllocateAlignedBuffer<uint8_t>(serialized_size);
+    mapped_entry_.swap(buffer);
     return mapped_entry_.get();
   }
 
@@ -270,7 +275,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
-  std::unique_ptr<uint8_t[]> mapped_entry_;
+  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
 };
 
 class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
@@ -4577,6 +4582,198 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
     GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
+    testing::Combine(testing::Values(kN32_SkColorType),
+                     testing::Values(true) /* use_transfer_cache */,
+                     testing::Bool() /* do_yuv_decode */,
+                     testing::Bool() /* allow_accelerated_jpeg_decoding */,
+                     testing::Bool() /* allow_accelerated_webp_decoding */,
+                     testing::Bool() /* advertise_accelerated_decoding */,
+                     testing::Values(false) /* enable_clipped_image_scaling */,
+                     testing::Bool() /* no_discardable_memory */));
+
+class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
+ public:
+  void SetUp() override {
+    GpuImageDecodeCacheTest::SetUp();
+
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    current_default_handle_ = std::make_unique<
+        base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>(
+        task_runner_);
+
+    cache_ = CreateCache();
+    client_id_ = cache_->GenerateClientId();
+
+    // We can't convert a lambda with capture to a raw function pointer, so we
+    // use a static variable here.
+    static auto lambda = [this]() {
+      return task_runner_->GetMockTickClock()->NowTicks();
+    };
+
+    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        nullptr, []() { return lambda(); }, nullptr);
+  }
+
+  void FastForwardBy(base::TimeDelta t) { task_runner_->FastForwardBy(t); }
+
+  // Creates and adds an image to the cache. For when we don't care about the
+  // particular image, just that it is saved in the cache.
+  void CreateAndUnrefImage(unsigned n = 1) {
+    while (n--) {
+      PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
+      DrawImage draw_image = CreateDrawImageInternal(image);
+      ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
+          client_id_, draw_image, ImageDecodeCache::TracingInfo());
+      EXPECT_TRUE(result.need_unref);
+      EXPECT_TRUE(result.task);
+      TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+      TestTileTaskRunner::ProcessTask(result.task.get());
+      cache_->TouchCacheEntryForTesting(draw_image);
+      cache_->UnrefImage(draw_image);
+    }
+  }
+
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
+      current_default_handle_ = nullptr;
+  std::unique_ptr<GpuImageDecodeCache> cache_ = nullptr;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  uint32_t client_id_;
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
+};
+
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeOneImage) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+
+  CreateAndUnrefImage();
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // We haven't fast forwarded enough, so the entry is still in the cache.
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
+  EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval());
+
+  // Cache has been emptied
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+}
+
+// Tests that we are able to purge multiple images from cache.
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeMultipleImages) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+
+  CreateAndUnrefImage(3);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // We haven't fast forwarded enough, so the entry is still in the cache.
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
+  EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval());
+
+  // Cache has been emptied
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+}
+
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Task posted, will run at 30s.
+  CreateAndUnrefImage(3);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Time is now 15s.
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // No task posted, since we already have a task.
+  CreateAndUnrefImage(4);
+
+  // We haven't fast forwarded enough, so the both old and new entries are
+  // still in the cache.
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 7u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Time is now 30s, our task runs, and posts a new one.
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // The original images are purged, the newer ones are not, since they are only
+  // 15s old.
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
+  EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Time is now 45s, second batch of images is now 30s old.
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // The images are old enough to be purged, but the task to purge them has not
+  // run yet.
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
+  EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Time is now 60s, images are 45s old.
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
+
+  // Cache has been emptied
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+}
+
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Task posted, will run at 30s.
+  CreateAndUnrefImage(3);
+
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  // Time is now 30s, cache is emptied.
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval());
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+
+  CreateAndUnrefImage(4);
+
+  // New task is posted.
+  ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
+  ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
+
+  FastForwardBy(GpuImageDecodeCache::get_purge_interval());
+
+  // Cache has been emptied
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+  EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    GpuImageDecodeCacheTestsOOPR,
+    GpuImageDecodeCachePurgeOnTimerTest,
     testing::Combine(testing::Values(kN32_SkColorType),
                      testing::Values(true) /* use_transfer_cache */,
                      testing::Bool() /* do_yuv_decode */,

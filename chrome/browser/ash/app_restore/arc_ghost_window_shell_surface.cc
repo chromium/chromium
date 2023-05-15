@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
@@ -47,10 +48,13 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
     int container,
     double scale_factor,
     const std::string& application_id)
-    : ClientControlledShellSurface(surface.get(),
-                                   /*can_minimize=*/true,
-                                   container,
-                                   /*default_scale_cancellation=*/true) {
+    : ClientControlledShellSurface(
+          surface.get(),
+          /*can_minimize=*/true,
+          container,
+          /*default_scale_cancellation=*/true,
+          /*supports_floated_state=*/arc::GetArcAndroidSdkVersionAsInt() !=
+              arc::kArcVersionP) {
   controller_surface_ = std::move(surface);
   buffer_ = std::make_unique<exo::Buffer>(
       aura::Env::GetInstance()
@@ -140,7 +144,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
       1 << views::CAPTION_BUTTON_ICON_MINIMIZE |
       1 << views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE |
       1 << views::CAPTION_BUTTON_ICON_CLOSE |
-      1 << views::CAPTION_BUTTON_ICON_BACK;
+      1 << views::CAPTION_BUTTON_ICON_BACK |
+      1 << views::CAPTION_BUTTON_ICON_FLOAT;
   shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 

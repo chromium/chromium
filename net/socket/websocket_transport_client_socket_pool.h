@@ -191,6 +191,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
                                CompletionOnceCallback callback,
                                int rv);
   void InvokeUserCallback(ClientSocketHandleID handle_id,
+                          base::WeakPtr<ClientSocketHandle> weak_handle,
                           CompletionOnceCallback callback,
                           int rv);
   bool ReachedMaxSocketsLimit() const;

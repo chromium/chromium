@@ -205,7 +205,7 @@ class SharingFCMSenderTest : public testing::Test {
 
 TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.ClearFCMRegistration();
 
   std::unique_ptr<crypto::ECPrivateKey> vapid_key =
@@ -239,7 +239,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
 
 TEST_F(SharingFCMSenderTest, NoVapidKey) {
   // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.SetFCMRegistration(SharingSyncPreference::FCMRegistration(
       kAuthorizedEntity, base::Time::Now()));
 

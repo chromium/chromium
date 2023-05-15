@@ -36,7 +36,7 @@ class VolumeListProviderLacros : public crosapi::mojom::VolumeListObserver {
       std::vector<crosapi::mojom::VolumePtr> volume_list) override;
 
   // Pointer to owner, so okay to keep as raw pointer.
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 
   // Receives mojo messages from ash-chrome.
   mojo::Receiver<crosapi::mojom::VolumeListObserver> receiver_{this};

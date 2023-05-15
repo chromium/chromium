@@ -873,12 +873,13 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
     if (child.layout_result) {
-      box.PropagateChildData(child.layout_result->PhysicalFragment(),
-                             child.rect.offset - rect.offset -
-                                 ComputeRelativeOffsetForInline(
-                                     space, child.PhysicalFragment()->Style()),
-                             ComputeRelativeOffsetForOOFInInline(
-                                 space, child.PhysicalFragment()->Style()));
+      box.PropagateFromLayoutResultAndFragment(
+          *child.layout_result,
+          child.rect.offset - rect.offset -
+              ComputeRelativeOffsetForInline(space,
+                                             child.PhysicalFragment()->Style()),
+          ComputeRelativeOffsetForOOFInInline(
+              space, child.PhysicalFragment()->Style()));
     }
 
     // |NGFragmentItems| has a flat list of all descendants, except

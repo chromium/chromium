@@ -376,7 +376,7 @@ void DeviceInfoSyncBridge::SetCommittedAdditionalInterestedDataTypesCallback(
 
 void DeviceInfoSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {
-  // Store the cache GUID, mainly in case MergeSyncData() is executed later.
+  // Store the cache GUID, mainly in case MergeFullSyncData() is executed later.
   local_cache_guid_ = request.cache_guid;
   // Garbage-collect old local cache GUIDs, for privacy reasons.
   device_info_prefs_->GarbageCollectExpiredCacheGuids();
@@ -403,7 +403,7 @@ DeviceInfoSyncBridge::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> DeviceInfoSyncBridge::MergeSyncData(
+absl::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -439,7 +439,7 @@ absl::optional<ModelError> DeviceInfoSyncBridge::MergeSyncData(
   return absl::nullopt;
 }
 
-absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
+absl::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK(!local_cache_guid_.empty());
@@ -567,7 +567,7 @@ DeviceInfoSyncBridge::OnCommitAttemptFailed(
 
 bool DeviceInfoSyncBridge::IsSyncing() const {
   // Both conditions are neecessary due to the following possible cases:
-  // 1. This method is called from MergeSyncData() when IsTrackingMetadata()
+  // 1. This method is called from MergeFullSyncData() when IsTrackingMetadata()
   // returns true but |all_data_| is not initialized.
   // 2. |all_data_| is initialized during loading data from the persistent
   // storage on startup but |change_processor| is not initialized yet. It
@@ -722,7 +722,7 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
     return;
   }
 
-  // In the regular case for sync being disabled, wait for MergeSyncData()
+  // In the regular case for sync being disabled, wait for MergeFullSyncData()
   // before initializing the LocalDeviceInfoProvider.
   if (!syncer::IsInitialSyncDone(
           metadata_batch->GetModelTypeState().initial_sync_state()) &&
@@ -750,7 +750,7 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // In rare cases a mismatch between cache GUIDs should cause all sync metadata
-  // dropped. In that case, MergeSyncData() will eventually follow.
+  // dropped. In that case, MergeFullSyncData() will eventually follow.
   if (!change_processor()->IsTrackingMetadata()) {
     // In this scenario, ApplyDisableSyncChanges() should have been exercised.
     // If OnSyncStarting() had already been called before, then it must have

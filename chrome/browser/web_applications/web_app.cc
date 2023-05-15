@@ -16,7 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -454,8 +454,13 @@ void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
 }
 
 void WebApp::SetScopeExtensions(
-    std::vector<ScopeExtensionInfo> scope_extensions) {
+    base::flat_set<ScopeExtensionInfo> scope_extensions) {
   scope_extensions_ = std::move(scope_extensions);
+}
+
+void WebApp::SetValidatedScopeExtensions(
+    base::flat_set<ScopeExtensionInfo> validated_scope_extensions) {
+  validated_scope_extensions_ = std::move(validated_scope_extensions);
 }
 
 void WebApp::SetLockScreenStartUrl(const GURL& lock_screen_start_url) {
@@ -632,7 +637,7 @@ base::Value WebApp::ClientData::AsDebugValue() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_web_app_data", system_web_app_data
                                       ? system_web_app_data->AsDebugValue()
-                                      : base::Value());
+                                      : base::Value::Dict());
 #endif
   return base::Value(std::move(root));
 }
@@ -663,6 +668,13 @@ base::Value WebApp::SyncFallbackData::AsDebugValue() const {
 }
 
 WebApp::ExternalManagementConfig::ExternalManagementConfig() = default;
+WebApp::ExternalManagementConfig::ExternalManagementConfig(
+    bool is_placeholder,
+    const base::flat_set<GURL>& install_urls,
+    const base::flat_set<std::string>& additional_policy_ids)
+    : is_placeholder(is_placeholder),
+      install_urls(install_urls),
+      additional_policy_ids(additional_policy_ids) {}
 
 WebApp::ExternalManagementConfig::~ExternalManagementConfig() = default;
 
@@ -717,7 +729,7 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
 bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {
     // Keep in order declared in web_app.h.
-    return std::make_tuple(
+    return std::tie(
         // Disable clang-format so diffs are clearer when fields are added.
         // clang-format off
         app.app_id_,
@@ -755,6 +767,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.disallowed_launch_protocols_,
         app.url_handlers_,
         app.scope_extensions_,
+        app.validated_scope_extensions_,
         app.lock_screen_start_url_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
@@ -782,12 +795,12 @@ bool WebApp::operator==(const WebApp& other) const {
         app.management_to_external_config_map_,
         app.tab_strip_,
         app.always_show_toolbar_in_fullscreen_,
-        app.current_os_integration_states_.SerializeAsString(),
+        app.current_os_integration_states_,
         app.isolation_data_
         // clang-format on
     );
   };
-  return (AsTuple(*this) == AsTuple(other));
+  return AsTuple(*this) == AsTuple(other);
 }
 
 bool WebApp::operator!=(const WebApp& other) const {
@@ -1016,6 +1029,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("scope_extensions", ConvertDebugValueList(scope_extensions_));
 
+  root.Set("scope_extensions_validated",
+           ConvertDebugValueList(validated_scope_extensions_));
+
   root.Set("user_display_mode",
            user_display_mode_.has_value()
                ? ConvertUserDisplayModeToString(*user_display_mode_)
@@ -1109,6 +1125,12 @@ bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
   return !(sync_fallback_data1 == sync_fallback_data2);
 }
 
+std::ostream& operator<<(
+    std::ostream& out,
+    const WebApp::ExternalManagementConfig& management_config) {
+  return out << management_config.AsDebugValue().DebugString();
+}
+
 bool operator==(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2) {
   return std::tie(management_config1.install_urls,
@@ -1123,6 +1145,21 @@ bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2) {
   return !(management_config1 == management_config2);
 }
+
+namespace proto {
+
+bool operator==(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2) {
+  return os_integration_state1.SerializeAsString() ==
+         os_integration_state2.SerializeAsString();
+}
+
+bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2) {
+  return !(os_integration_state1 == os_integration_state2);
+}
+
+}  // namespace proto
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const blink::ParsedPermissionsPolicyDeclaration

@@ -127,6 +127,8 @@ bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
   std::string stripped_path =
       StripDevToolsRevisionWithPrefix(path, "serve_rev/");
   stripped_path = StripDevToolsRevisionWithPrefix(stripped_path, "serve_file/");
+  stripped_path =
+      StripDevToolsRevisionWithPrefix(stripped_path, "serve_internal_file/");
   if (custom_devtools_frontend.SchemeIsFile()) {
     // Fetch from file system but strip all the params.
     StartFileRequest(PathWithoutParams(stripped_path), std::move(*callback));
@@ -363,11 +365,13 @@ void DevToolsDataSource::StartFileRequest(const std::string& path,
 void DevToolsDataSource::OnLoadComplete(
     std::list<PendingRequest>::iterator request_iter,
     std::unique_ptr<std::string> response_body) {
-  std::move(request_iter->callback)
-      .Run(response_body ? base::MakeRefCounted<base::RefCountedString>(
-                               std::move(*response_body))
-                         : CreateNotFoundResponse());
+  GotDataCallback callback = std::move(request_iter->callback);
   pending_requests_.erase(request_iter);
+  std::move(callback).Run(response_body
+                              ? base::MakeRefCounted<base::RefCountedString>(
+                                    std::move(*response_body))
+                              : CreateNotFoundResponse());
+  // `this` might no longer be valid after `callback` has run.
 }
 
 DevToolsDataSource::PendingRequest::PendingRequest() = default;

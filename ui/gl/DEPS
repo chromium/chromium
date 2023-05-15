@@ -22,6 +22,8 @@ specific_include_rules = {
     "+ui/base/win/hidden_window.h",
   ],
   "dcomp_presenter_unittest.cc": [
+    "+ui/base/test/skia_gold_matching_algorithm.h",
+    "+ui/base/test/skia_gold_pixel_diff.h",
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
   ],

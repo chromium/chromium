@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -56,16 +57,16 @@ class TestChildModalParent : public views::WidgetDelegateView,
 
   // The button to toggle showing and hiding the child window. The child window
   // does not block input to this button.
-  views::Button* button_;
+  raw_ptr<views::Button, ExperimentalAsh> button_;
 
   // The text field to indicate the keyboard focus.
-  views::Textfield* textfield_;
+  raw_ptr<views::Textfield, ExperimentalAsh> textfield_;
 
   // The host for the modal parent.
-  views::NativeViewHost* host_;
+  raw_ptr<views::NativeViewHost, ExperimentalAsh> host_;
 
   // The modal child widget.
-  views::Widget* modal_child_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> modal_child_ = nullptr;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SETTINGS_TEST_API_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class View;
@@ -34,6 +35,8 @@ class CaptureModeSettingsTestApi {
   CaptureModeMenuGroup* GetAudioInputMenuGroup();
   views::View* GetMicrophoneOption();
   views::View* GetAudioOffOption();
+  views::View* GetSystemAudioOption();
+  views::View* GetSystemAndMicrophoneAudioOption();
 
   // Returns the save-to settings menu group and the views for its options.
   CaptureModeMenuGroup* GetSaveToMenuGroup();
@@ -56,7 +59,7 @@ class CaptureModeSettingsTestApi {
 
  private:
   // Valid only while the settings menu is shown.
-  CaptureModeSettingsView* const settings_view_;
+  const raw_ptr<CaptureModeSettingsView, ExperimentalAsh> settings_view_;
 };
 
 }  // namespace ash

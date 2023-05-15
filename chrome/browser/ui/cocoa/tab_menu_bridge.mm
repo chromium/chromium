@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
 
@@ -45,7 +46,8 @@ void UpdateItemForWebContents(NSMenuItem* item,
   } else {
     item.title = base::SysUTF16ToNSString(tab_ui_helper->GetTitle());
   }
-  item.image = tab_ui_helper->GetFavicon().AsNSImage();
+  item.image = NSImageFromImageSkia(
+      tab_ui_helper->GetFavicon().Rasterize(&web_contents->GetColorProvider()));
 }
 
 void RemoveMenuItems(NSArray* menu_items) {

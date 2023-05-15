@@ -9,18 +9,20 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Enumeration of UI visibility states.
 enum class AmbientUiVisibility {
-  kShown,    // Screen saver is shown.
-  kPreview,  // Same as kShown, but do not lock screen or acquire wake lock.
-             // kPreview state is used to show a preview of the screen saver.
-             // Users should be able to exit from the preview mode directly.
-             // Hence, no need to lock the screen or acquire wake lock.
-  kHidden,   // Screen saver is closed; start inactivity timer to restart it.
-  kClosed,   // Screen saver is closed; all observers and timers are cancelled.
+  kShouldShow,  // Screen saver should be shown. May not be visible yet due to
+                // delay while preparing media (images/video).
+  kPreview,     // Same as kShown, but do not lock screen or acquire wake lock.
+                // kPreview state is used to show a preview of the screen saver.
+                // Users should be able to exit from the preview mode directly.
+                // Hence, no need to lock the screen or acquire wake lock.
+  kHidden,      // Screen saver is closed; start inactivity timer to restart it.
+  kClosed,  // Screen saver is closed; all observers and timers are cancelled.
 };
 
 // Enumeration of ambient UI modes. This is used for metrics reporting and
@@ -29,6 +31,23 @@ enum class AmbientUiMode {
   kLockScreenUi = 0,
   kInSessionUi = 1,
   kMaxValue = kInSessionUi,
+};
+
+// Controls movement of views like media text and clock to prevent screen burn
+// in.
+struct AmbientJitterConfig {
+  static constexpr int kDefaultStepSize = 2;
+  static constexpr int kDefaultMaxAbsTranslation = 10;
+
+  int step_size = kDefaultStepSize;
+  // Largest the UI can be globally displaced from its original position in
+  // both x and y directions. Bounds are inclusive. Requirements:
+  // * Range (max_translation - min_translation) must be >= the |step_size|.
+  // * Range must include 0 (the original unshifted position),
+  int x_min_translation = -kDefaultMaxAbsTranslation;
+  int x_max_translation = kDefaultMaxAbsTranslation;
+  int y_min_translation = -kDefaultMaxAbsTranslation;
+  int y_max_translation = kDefaultMaxAbsTranslation;
 };
 
 // The default time before starting Ambient mode on lock screen.
@@ -113,6 +132,17 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   float animation_playback_speed() const { return animation_playback_speed_; }
 
+  AmbientJitterConfig GetSlideshowPeripheralUiJitterConfig();
+
+  AmbientJitterConfig GetAnimationJitterConfig();
+
+  // Does not modify jitter calculators that have already been created. All
+  // jitter calculators created after this, such as if ambient is stopped and
+  // restarted, will have the new config.
+  void set_jitter_config_for_testing(const AmbientJitterConfig& jitter_config) {
+    jitter_config_for_testing_ = jitter_config;
+  }
+
  private:
   void NotifyAmbientUiVisibilityChanged();
 
@@ -135,6 +165,8 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   // Animation playback speed. Not used in slideshow mode.
   float animation_playback_speed_ = kAnimationPlaybackSpeed;
+
+  absl::optional<AmbientJitterConfig> jitter_config_for_testing_;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

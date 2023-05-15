@@ -34,6 +34,7 @@ import {TaskHistory} from './task_history.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
+import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
 
 /**
  * Office file handlers UMA values (must be consistent with OfficeFileHandler in
@@ -843,46 +844,9 @@ export const TaskPickerType = {
 } as const;
 type TypeTaskPickerType = typeof TaskPickerType[keyof typeof TaskPickerType];
 
-/**
- * List of file extensions to record in UMA.
- *
- * Note: since the data is recorded by list index, new items should be added
- * to the end of this list.
- *
- * The list must also match the FileBrowser ViewFileType entry in enums.xml.
- */
-export const UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
-  'other',     '.3ga',         '.3gp',
-  '.aac',      '.alac',        '.asf',
-  '.avi',      '.bmp',         '.csv',
-  '.doc',      '.docx',        '.flac',
-  '.gif',      '.jpeg',        '.jpg',
-  '.log',      '.m3u',         '.m3u8',
-  '.m4a',      '.m4v',         '.mid',
-  '.mkv',      '.mov',         '.mp3',
-  '.mp4',      '.mpg',         '.odf',
-  '.odp',      '.ods',         '.odt',
-  '.oga',      '.ogg',         '.ogv',
-  '.pdf',      '.png',         '.ppt',
-  '.pptx',     '.ra',          '.ram',
-  '.rar',      '.rm',          '.rtf',
-  '.wav',      '.webm',        '.webp',
-  '.wma',      '.wmv',         '.xls',
-  '.xlsx',     '.crdownload',  '.crx',
-  '.dmg',      '.exe',         '.html',
-  '.htm',      '.jar',         '.ps',
-  '.torrent',  '.txt',         '.zip',
-  'directory', 'no extension', 'unknown extension',
-  '.mhtml',    '.gdoc',        '.gsheet',
-  '.gslides',  '.arw',         '.cr2',
-  '.dng',      '.nef',         '.nrw',
-  '.orf',      '.raf',         '.rw2',
-  '.tini',
-]);
-
 /** Office file extensions. */
 const OFFICE_EXTENSIONS =
-    new Set(['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']);
+    new Set(['.doc', '.docx', '.xls', 'xlsm', '.xlsx', '.ppt', '.pptx']);
 
 export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
   iconType: string;

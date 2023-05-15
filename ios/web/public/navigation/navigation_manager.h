@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_MANAGER_H_
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_MANAGER_H_
 
+#import <Foundation/Foundation.h>
+
 #include <stddef.h>
 
 #include <memory>
@@ -16,9 +18,6 @@
 #include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/navigation/reload_type.h"
 #include "ui/base/page_transition_types.h"
-
-@class NSDictionary;
-@class NSData;
 
 namespace web {
 
@@ -54,7 +53,7 @@ class NavigationManager {
     bool is_renderer_initiated;
 
     // Any extra HTTP headers to add to the load.
-    NSDictionary* extra_headers;
+    NSDictionary<NSString*, NSString*>* extra_headers;
 
     // Any post data to send with the load. When setting this, you should
     // generally set a Content-Type header as well.

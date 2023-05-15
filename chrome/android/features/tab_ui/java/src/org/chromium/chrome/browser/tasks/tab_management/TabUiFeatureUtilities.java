@@ -95,6 +95,15 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * @return Whether we should delay the placeholder tab strip removal on startup.
+     * @param context The activity context.
+     */
+    public static boolean isDelayTempStripRemovalEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && ChromeFeatureList.sDelayTempStripRemoval.isEnabled();
+    }
+
+    /**
      * @return Whether the Grid Tab Switcher UI is enabled and available for use.
      * @param context The activity context.
      */

@@ -8,6 +8,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 TEST(RangeTest, FromNSRange) {
   NSRange nsr = NSMakeRange(10, 3);
   gfx::Range r(nsr);

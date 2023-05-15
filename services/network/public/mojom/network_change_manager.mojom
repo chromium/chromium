@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/network_interface_change_listener.mojom";
+
 // This needs to match the definition of net::ConnectionType.
 enum ConnectionType {
   CONNECTION_UNKNOWN = 0,  // A connection exists, but its type is unknown.
@@ -103,4 +105,10 @@ interface NetworkChangeManager {
       ConnectionType new_connection_type,
       bool connection_subtype_changed,
       ConnectionSubtype new_connection_subtype);
+
+  // Informs the network service to bind a NetworkInterfaceChangeListener, which
+  // will be informed of changes to the set of network interfaces.
+  [EnableIf=use_network_interface_change_listener]
+  BindNetworkInterfaceChangeListener(
+      pending_associated_receiver<NetworkInterfaceChangeListener> notifier);
 };

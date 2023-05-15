@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Rakaman anda terhenti kerana ruang storan peranti rendah. Untuk merakam lebih banyak video, anda perlu mengosongkan ruang pada peranti anda.</translation>
 <translation id="2036868001356139588">Tempoh pemasa</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
-<translation id="2128052519899549250">Rakam video selang masa</translation>
 <translation id="2134029355740465625">Tetapan video</translation>
 <translation id="2144806332417375165">Sesuaikan parameter video</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Dokumen dikesan</translation>
 <translation id="414641094616694804">Kamera ini tidak boleh menukar peleraian</translation>
 <translation id="4269820728363426813">Salin alamat pautan</translation>
-<translation id="4281620174117014503">Peleraian sederhana</translation>
 <translation id="428234092390943511">Lakaran kecil halaman</translation>
 <translation id="4383571725254449280">Cetak log prestasi</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5320594929574852403">Bergerak ke arah kiri</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Selang Masa</translation>
 <translation id="5662366948659129155">Mengimbas halaman <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Segi empat sama</translation>
+<translation id="574392208103952083">Sederhana</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
 <translation id="5753488212459587150">Dayakan mod pakar</translation>
 <translation id="5759254179196327752">Imbas dokumen</translation>
@@ -138,6 +136,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Penjuru kanan sebelah bawah dokumen</translation>
+<translation id="7684446460490665873">Rakam video selang masa</translation>
 <translation id="7692090236657809299">Dayakan sorot condong zum</translation>
 <translation id="7726641833034062494">Rakam video biasa</translation>
 <translation id="7748344063862150053">Penjuru kanan sebelah atas dokumen</translation>
@@ -163,6 +162,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="9045010116236796332">Pastikan keempat-empat sisi dokumen berada dalam bingkai</translation>
 <translation id="9045155556724273246">10 saat</translation>
 <translation id="906331135292332864">Memproses imej...</translation>
+<translation id="9161584225258678723">Selang Masa</translation>
 <translation id="922762992951083513">Cermin dihidupkan</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 </translationbundle>

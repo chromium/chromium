@@ -26,11 +26,8 @@ class RenderFrame;
 
 // Provides implementation of window.domAutomationController javascript object.
 // Javascript can call domAutomationController.send(...) to send arbitrary data
-// to the browser.  On the browser side, the data is received via one of the
-// following:
-// - Test code:
-//   - DOMMessageQueue class
-//   - ExecuteScriptAndExtractBool/String functions
+// to the browser.  On the browser side, the data is received via the
+// DOMMessageQueue class.
 class DomAutomationController : public gin::Wrappable<DomAutomationController>,
                                 public RenderFrameObserver {
  public:

@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+#include "base/test/bind.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzz_test.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,6 +51,15 @@ int HtmlInProcessFuzzTest::Fuzz(const uint8_t* data, size_t size) {
   std::string html_string(reinterpret_cast<const char*>(data), size);
   current_fuzz_case_ = html_string;
   GURL test_url = https_test_server_.GetURL("/test.html");
-  base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  base::RunLoop run_loop;
+  base::RepeatingCallback<void()> run_fuzz_case_lambda =
+      base::BindLambdaForTesting([&]() {
+        base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), test_url));
+        run_loop.QuitClosure().Run();
+      });
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_fuzz_case_lambda);
+  run_loop.Run();
   return 0;
 }

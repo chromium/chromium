@@ -70,6 +70,8 @@ class ContentAnalysisSdkManager {
   // Virtual to be overridden in tests.
   virtual void ResetClient(const content_analysis::sdk::Client::Config& config);
 
+  virtual void ResetAllClients();
+
   bool HasClientForTesting(
       const content_analysis::sdk::Client::Config& config) {
     return clients_.count(config) > 0;

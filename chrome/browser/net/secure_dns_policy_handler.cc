@@ -30,29 +30,14 @@ namespace {
 constexpr int kMinDohSaltSize = 8;
 constexpr int kMaxDohSaltSize = 32;
 
-// Returns true if the policy `kDnsOverHttpsSalt` has a valid value, otherwise
-// returns false. This method also evaluates if the combination of
-// `kDnsOverHttpsTemplatesWithIdentifiers` and the `kDnsOverHttpsSalt` policy
-// values is correct (i.e. both are set or both are unset). If an error occurs,
-// the error message will be appended to `errors`.
+// Returns true if the policy `kDnsOverHttpsSalt` is not set or if it has a
+// valid value, otherwise returns false. kDnsOverHttpsSalt` is only valid if
+// `kDnsOverHttpsTemplatesWithIdentifiers` is set. If an error occurs, the error
+// message will be appended to `errors`.
 bool CheckDnsOverHttpsSaltPolicy(const policy::PolicyMap& policies,
                                  policy::PolicyErrorMap* errors) {
-  bool templates_set = false;
-
-  if (policies.IsPolicySet(
-          policy::key::kDnsOverHttpsTemplatesWithIdentifiers)) {
-    const base::Value* templates =
-        policies.GetValue(policy::key::kDnsOverHttpsTemplatesWithIdentifiers,
-                          base::Value::Type::STRING);
-    templates_set = templates && !templates->GetString().empty();
-  }
   if (!policies.IsPolicySet(policy::key::kDnsOverHttpsSalt)) {
-    if (templates_set) {
-      errors->AddError(
-          policy::key::kDnsOverHttpsTemplatesWithIdentifiers,
-          IDS_POLICY_SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS_IRRELEVANT_ERROR);
-    }
-    return false;
+    return true;
   }
   const base::Value* salt =
       policies.GetValueUnsafe(policy::key::kDnsOverHttpsSalt);
@@ -63,26 +48,30 @@ bool CheckDnsOverHttpsSaltPolicy(const policy::PolicyMap& policies,
     return false;
   }
 
-  // The general case where the salt is set and empty is evaluated with the salt
-  // size requirements checks.
-  if (templates_set && salt->GetString().empty()) {
-    errors->AddError(
-        policy::key::kDnsOverHttpsTemplatesWithIdentifiers,
-        IDS_POLICY_SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS_IRRELEVANT_ERROR);
+  // Salt is optional.
+  if (salt->GetString().empty()) {
+    return true;
   }
-
   if (salt->GetString().size() < kMinDohSaltSize ||
       salt->GetString().size() > kMaxDohSaltSize) {
     errors->AddError(policy::key::kDnsOverHttpsSalt,
                      IDS_POLICY_SECURE_DNS_SALT_INVALID_SIZE_ERROR);
     return false;
   }
-
+  bool templates_set = false;
+  if (policies.IsPolicySet(
+          policy::key::kDnsOverHttpsTemplatesWithIdentifiers)) {
+    const base::Value* templates =
+        policies.GetValue(policy::key::kDnsOverHttpsTemplatesWithIdentifiers,
+                          base::Value::Type::STRING);
+    templates_set = templates && !templates->GetString().empty();
+  }
   if (!templates_set) {
     errors->AddError(policy::key::kDnsOverHttpsSalt,
-                     IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR);
+                     IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+                     policy::key::kDnsOverHttpsTemplatesWithIdentifiers);
+    return false;
   }
-
   return true;
 }
 #endif
@@ -238,7 +227,8 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     } else if (is_templates_with_identifiers_policy_valid_) {
       prefs->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                        templates_with_identifiers->GetString());
-      prefs->SetString(prefs::kDnsOverHttpsSalt, salt->GetString());
+      prefs->SetString(prefs::kDnsOverHttpsSalt,
+                       salt ? salt->GetString() : std::string());
     }
   }
 #endif

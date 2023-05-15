@@ -7,25 +7,26 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const reportingOrigin = getDefaultReportingOrigin();
+  const expectedTriggerDebugKey = '456';
 
-  await registerAttributionSrc(t, {
-    trigger: {
-      event_trigger_data: [{}],
-      debug_reporting: true,
-      debug_key: '456',
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: attributionDebugCookie,
+      trigger: {
+        debug_reporting: true,
+        debug_key: expectedTriggerDebugKey,
+        event_trigger_data: [{}],
+      },
     },
-    cookie: attributionDebugCookie,
-    reportingOrigin,
-  });
+  ]));
 
-  const payload = await pollVerboseDebugReports(reportingOrigin);
+  const payload = await pollVerboseDebugReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
   assert_equals(report.length, 1);
   assert_equals(report[0].type, 'trigger-no-matching-source');
   assert_own_property(report[0], 'body');
-  assert_equals(report[0].body.attribution_destination, `https://{{host}}`);
-  assert_equals(report[0].body.trigger_debug_key, '456');
+  assert_equals(report[0].body.attribution_destination, 'https://{{host}}');
+  assert_equals(report[0].body.trigger_debug_key, expectedTriggerDebugKey);
 }, 'Verbose debug report is received.');
 </script>

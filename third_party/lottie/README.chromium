@@ -14,6 +14,8 @@ The library imported here is the lottie-web library which is a javascript file t
 Local Modifications:
 The library has been modified to be able to run on javascript worker thread which provides performance benefits and some level of security sandboxing. The library has its document and window references removed. All XMLHttpRequest have also been removed. This means the animation will not load external assests like images and fonts. A wrapper function has been added to handle messages sent to the worker thread from the main thread.
 
+The code style has been updated to match chromium js style.
+
 Generating Minified Version:
 Minified version automatically generated at build time via the
 //third_party/lottie:minify target.

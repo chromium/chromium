@@ -13,10 +13,8 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
-#include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
@@ -378,6 +376,9 @@ Config::Config() {
 
     hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
         internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
+
+    named_new_tab_groups =
+        base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }
 
   // The `kUseUrlForDisplayCache` feature and child params.
@@ -388,6 +389,25 @@ Config::Config() {
     url_for_display_cache_size = GetFieldTrialParamByFeatureAsInt(
         internal::kUseUrlForDisplayCache, "url_for_display_cache_size",
         url_for_display_cache_size);
+  }
+
+  // The `kJourneysZeroStateFiltering` feature and child params.
+  {
+    apply_zero_state_filtering =
+        base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
+  }
+
+  // The `kNtpChromeCartInHistoryClusterModule` child params.
+  {
+    use_ntp_specific_intracluster_ranking = GetFieldTrialParamByFeatureAsBool(
+        ntp_features::kNtpChromeCartInHistoryClusterModule,
+        "use_ntp_specific_intracluster_ranking",
+        use_ntp_specific_intracluster_ranking);
+
+    ntp_visit_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
+        ntp_features::kNtpChromeCartInHistoryClusterModule,
+        "ntp_visit_duration_ranking_weight", ntp_visit_duration_ranking_weight);
+    DCHECK_GE(ntp_visit_duration_ranking_weight, 0.0f);
   }
 
   // Lonely features without child params.
@@ -492,20 +512,6 @@ bool IsApplicationLocaleSupportedByJourneys(
   // the list.
   return allowlist.empty() || base::Contains(allowlist, application_locale) ||
          base::Contains(allowlist, l10n_util::GetLanguage(application_locale));
-}
-
-bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
-                                PrefService* prefs) {
-  if (!service)
-    return false;
-
-  if (!service->IsJourneysEnabled())
-    return false;
-
-  if (!prefs->GetBoolean(history_clusters::prefs::kVisible))
-    return false;
-
-  return true;
 }
 
 const Config& GetConfig() {

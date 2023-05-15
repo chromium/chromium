@@ -87,6 +87,10 @@ base::Value::Dict GetDebugJSONDictForAnnotatedVisit(
   debug_visit.Set("visibility",
                   visit.content_annotations.model_annotations.visibility_score);
   debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
+  if (!visit.content_annotations.search_terms.empty()) {
+    debug_visit.Set("hasRelatedSearches",
+                    !visit.content_annotations.related_searches.empty());
+  }
   debug_visit.Set("hasUrlKeyedImage",
                   visit.content_annotations.has_url_keyed_image);
   return debug_visit;

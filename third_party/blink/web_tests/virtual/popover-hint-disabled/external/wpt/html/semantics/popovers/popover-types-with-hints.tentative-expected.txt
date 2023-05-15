@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS manuals do not close popovers
+FAIL autos close hints but not manuals assert_equals: hint open state is incorrect expected false but got true
+FAIL hint is not closed by pre-existing auto assert_equals: popover3 open state is incorrect expected false but got true
+FAIL If a popover=hint is shown, it should hide any other open popover=hint popovers, including ancestral popovers. (You can't nest popover=hint) assert_false: expected false got true
+FAIL If a popover=auto is shown, it should hide any open popover=hint, including if the popover=hint is an ancestral popover of the popover=auto. (You can't nest a popover=auto inside a popover=hint) assert_false: expected false got true
+FAIL If you: a) show a popover=auto (call it D), then b) show a descendent popover=hint of D (call it T), then c) hide D, then T should be hidden. (A popover=hint can be nested inside a popover=auto) assert_false: expected false got true
+PASS If you: a) show a popover=auto (call it D), then b) show a non-descendent popover=hint of D (call it T), then c) hide D, then T should be left showing. (Non-nested popover=hint can stay open when unrelated popover=autos are hidden)
+Harness: the test ran to completion.
+

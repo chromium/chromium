@@ -69,11 +69,17 @@ if (current_cpu == "x86") {
 
   # Place holder for mips64 support, not tested.
   android_abi_target = "mips64el-linux-android"
+} else if (current_cpu == "riscv64") {
+  android_app_abi = "riscv64"
+
+  # Place holder for riscv64 support, not tested.
+  android_abi_target = "riscv64-linux-android"
 } else {
   assert(false, "Unknown Android ABI: " + current_cpu)
 }
 
-if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el") {
+if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el" ||
+    target_cpu == "riscv64") {
   android_64bit_target_cpu = true
 } else if (target_cpu == "arm" || target_cpu == "x86" ||
            target_cpu == "mipsel") {
@@ -82,8 +88,10 @@ if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el") {
   assert(false, "Unknown target CPU: $target_cpu")
 }
 
-# Intentionally do not define android_app_secondary_abi_cpu and
-# android_app_secondary_abi for 32-bit target_cpu, since they are not used.
+# Do not define android_app_secondary_abi_cpu or android_app_secondary_abi for
+# target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
+# presence of this variable may be used in conjunction with android_64bit_target_cpu
+# to identify target_cpu's that are 32-bit-only or 64-bit-only.
 if (target_cpu == "arm64") {
   android_secondary_abi_cpu = "arm"
   android_app_secondary_abi = "armeabi-v7a"

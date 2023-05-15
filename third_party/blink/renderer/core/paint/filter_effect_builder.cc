@@ -288,9 +288,9 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             To<DropShadowFilterOperation>(*filter_operation).Shadow();
         gfx::PointF offset =
             gfx::ScalePoint(shadow.Location(), shorthand_scale_);
-        float radius = shadow.Blur() * shorthand_scale_;
+        gfx::PointF blur = gfx::ScalePoint(shadow.BlurXY(), shorthand_scale_);
         effect = MakeGarbageCollected<FEDropShadow>(
-            parent_filter, radius, radius, offset.x(), offset.y(),
+            parent_filter, blur.x(), blur.y(), offset.x(), offset.y(),
             shadow.GetColor().GetColor(), shadow.Opacity());
         break;
       }

@@ -9,7 +9,7 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import './office_page.js';
 import './smb_shares_page.js';

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/version.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,6 +26,10 @@ class MockCrOSComponentManager
                     UpdatePolicy update_policy,
                     LoadCallback load_callback));
   MOCK_METHOD1(Unload, bool(const std::string& name));
+  MOCK_CONST_METHOD2(
+      GetVersion,
+      void(const std::string& name,
+           base::OnceCallback<void(const base::Version&)> version_callback));
   MOCK_METHOD2(RegisterCompatiblePath,
                void(const std::string& name, const base::FilePath& path));
   MOCK_METHOD1(UnregisterCompatiblePath, void(const std::string& name));

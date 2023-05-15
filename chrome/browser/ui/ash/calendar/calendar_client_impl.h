@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_CALENDAR_CALENDAR_CLIENT_IMPL_H_
 
 #include "ash/calendar/calendar_client.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class CalendarClientImpl : public CalendarClient {
       const base::Time& end_time) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash

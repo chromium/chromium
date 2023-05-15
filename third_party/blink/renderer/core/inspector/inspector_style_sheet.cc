@@ -1791,6 +1791,10 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
   if (HasSourceURL())
     result->setHasSourceURL(true);
 
+  if (request_failed_to_load_.has_value()) {
+    result->setLoadingFailed(*request_failed_to_load_);
+  }
+
   if (style_sheet->ownerNode()) {
     result->setOwnerNode(
         IdentifiersFactory::IntIdForNode(style_sheet->ownerNode()));
@@ -1899,6 +1903,12 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
 
   SourceRange whole_rule_range(source_data->rule_header_range.start,
                                source_data->rule_body_range.end + 1);
+  auto type = rule->GetType();
+  if (type == CSSRule::kMediaRule || type == CSSRule::kSupportsRule ||
+      type == CSSRule::kScopeRule || type == CSSRule::kContainerRule) {
+    whole_rule_range.end = source_data->rule_header_range.end + 1;
+  }
+
   std::unique_ptr<protocol::CSS::RuleUsage> result =
       protocol::CSS::RuleUsage::create()
           .setStyleSheetId(Id())
@@ -2199,7 +2209,8 @@ const CSSRuleVector& InspectorStyleSheet::FlatRules() {
   return cssom_flat_rules_;
 }
 
-bool InspectorStyleSheet::ResourceStyleSheetText(String* result) {
+bool InspectorStyleSheet::ResourceStyleSheetText(String* result,
+                                                 bool* loadingFailed) {
   if (origin_ == protocol::CSS::StyleSheetOriginEnum::Injected ||
       origin_ == protocol::CSS::StyleSheetOriginEnum::UserAgent)
     return false;
@@ -2222,7 +2233,8 @@ bool InspectorStyleSheet::ResourceStyleSheetText(String* result) {
 
   bool base64_encoded;
   bool success = network_agent_->FetchResourceContent(
-      page_style_sheet_->OwnerDocument(), KURL(href), result, &base64_encoded);
+      page_style_sheet_->OwnerDocument(), KURL(href), result, &base64_encoded,
+      loadingFailed);
   return success && !base64_encoded;
 }
 
@@ -2275,11 +2287,15 @@ void InspectorStyleSheet::SyncTextIfNeeded() {
 
 void InspectorStyleSheet::UpdateText() {
   String text;
+  request_failed_to_load_.reset();
   bool success = InspectorStyleSheetText(&text);
   if (!success)
     success = InlineStyleSheetText(&text);
-  if (!success)
-    success = ResourceStyleSheetText(&text);
+  if (!success) {
+    bool loadingFailed = false;
+    success = ResourceStyleSheetText(&text, &loadingFailed);
+    request_failed_to_load_ = loadingFailed;
+  }
   if (!success)
     success = CSSOMStyleSheetText(&text);
   if (success)

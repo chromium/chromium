@@ -126,7 +126,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
       SkImageInfo::MakeN32(display_size.width(), display_size.height(), alpha);
 
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &props);
   DCHECK(surface);
 
   // If a frame is GPU backed, we need to use PaintCanvasVideoRenderer to read

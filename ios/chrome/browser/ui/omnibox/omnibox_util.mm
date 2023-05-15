@@ -114,3 +114,8 @@ UIImage* GetLocationBarSecurityIconForSecurityState(
       GetLocationBarSecurityIconTypeForSecurityState(security_level);
   return GetLocationBarSecurityIcon(iconType);
 }
+
+UIImage* GetLocationBarOfflineIcon() {
+  return DefaultSymbolTemplateWithPointSize(kDownloadPromptFillSymbol,
+                                            kSymbolLocationBarPointSize);
+}

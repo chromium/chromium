@@ -47,7 +47,6 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET);
   private androidSmsInfo_:
       AndroidSmsInfo = {origin: TEST_ANDROID_SMS_ORIGIN, enabled: true};
-  private smartLockSignInAllowed_: boolean = true;
 
   constructor() {
     super([
@@ -55,9 +54,6 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'getPageContentData',
       'setFeatureEnabledState',
       'setUpAndroidSms',
-      'getSmartLockSignInEnabled',
-      'setSmartLockSignInEnabled',
-      'getSmartLockSignInAllowed',
       'getAndroidSmsInfo',
       'attemptNotificationSetup',
       'cancelNotificationSetup',
@@ -67,9 +63,11 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'cancelCombinedFeatureSetup',
       'attemptFeatureSetupConnection',
       'cancelFeatureSetupConnection',
+      'showBrowserSyncSettings',
       'logPhoneHubPermissionSetUpScreenAction',
       'logPhoneHubPermissionOnboardingSetupMode',
       'logPhoneHubPermissionOnboardingSetupResult',
+      'getSmartLockSignInAllowed',
     ]);
   }
 
@@ -96,21 +94,6 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
 
   setUpAndroidSms(): void {
     this.methodCalled('setUpAndroidSms');
-  }
-
-  getSmartLockSignInEnabled(): Promise<boolean> {
-    this.methodCalled('getSmartLockSignInEnabled');
-    return Promise.resolve(true);
-  }
-
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void {
-    this.methodCalled('setSmartLockSignInEnabled', [enabled, authToken]);
-    webUIListenerCallback('smart-lock-signin-enabled-changed', enabled);
-  }
-
-  getSmartLockSignInAllowed(): Promise<boolean> {
-    this.methodCalled('getSmartLockSignInAllowed');
-    return Promise.resolve(this.smartLockSignInAllowed_);
   }
 
   getAndroidSmsInfo(): Promise<AndroidSmsInfo> {
@@ -159,6 +142,10 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
         Object.assign({}, this.data_));
   }
 
+  showBrowserSyncSettings() {
+    this.methodCalled('showBrowserSyncSettings');
+  }
+
   logPhoneHubPermissionSetUpScreenAction(
       screen: PhoneHubPermissionsSetupFlowScreens,
       action: PhoneHubPermissionsSetupAction): void {
@@ -180,6 +167,10 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       completedMode: PhoneHubPermissionsSetupFeatureCombination): void {
     this.methodCalled(
         'logPhoneHubPermissionOnboardingSetupResult', [completedMode]);
+  }
+
+  getSmartLockSignInAllowed(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   removeHostDevice(): void {}

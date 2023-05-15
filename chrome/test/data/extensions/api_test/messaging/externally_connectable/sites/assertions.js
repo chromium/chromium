@@ -168,10 +168,6 @@ function checkResponse(response, expectedMessage, isApp) {
   throw new ResultError(results.INCORRECT_RESPONSE_MESSAGE);
 }
 
-function sendToBrowser(msg) {
-  domAutomationController.send(msg);
-}
-
 function sendToBrowserForTlsChannelId(result) {
   // Because the TLS channel ID tests read the TLS either an error code or the
   // TLS channel ID string from the same value, they require the result code
@@ -207,13 +203,15 @@ window.actions = {
     var iframe = document.createElement('iframe');
     // When iframe has loaded, notify it of our tab location (probably
     // document.location) to use in its assertions, then continue.
-    iframe.addEventListener('load', function listener() {
-      iframe.removeEventListener('load', listener);
-      iframe.contentWindow.postMessage(tabLocationHref, '*');
-      sendToBrowser(true);
+    return new Promise(resolve => {
+      iframe.addEventListener('load', function listener() {
+        iframe.removeEventListener('load', listener);
+        iframe.contentWindow.postMessage(tabLocationHref, '*');
+        resolve(true);
+      });
+      iframe.src = src;
+      document.body.appendChild(iframe);
     });
-    iframe.src = src;
-    document.body.appendChild(iframe);
   }
 };
 
@@ -293,11 +291,9 @@ window.assertions = {
         return true;
       }
       console.error('Function did not throw exception: ' + fun);
-      sendToBrowser(false);
       return false;
     }
-    var result =
-        runIllegalFunction(chrome.runtime.connect) &&
+    return runIllegalFunction(chrome.runtime.connect) &&
         runIllegalFunction(function() {
           chrome.runtime.connect('');
         }) &&
@@ -319,8 +315,7 @@ window.assertions = {
         }) &&
         runIllegalFunction(function() {
           chrome.runtime.sendMessage('', 42);
-        }) &&
-        sendToBrowser(true);
+        });
   },
 
   areAnyRuntimePropertiesDefined: function(names) {
@@ -333,7 +328,7 @@ window.assertions = {
         }
       });
     }
-    sendToBrowser(result);
+    return result;
   },
 
   getTlsChannelIdFromPortConnect: function(extensionId, includeTlsChannelId,

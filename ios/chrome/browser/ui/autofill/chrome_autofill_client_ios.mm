@@ -40,7 +40,6 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/autofill_log_router_factory.h"
@@ -49,6 +48,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -401,26 +401,6 @@ void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
-bool ChromeAutofillClientIOS::IsFastCheckoutSupported(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillManager& autofill_manager) {
-  return false;
-}
-
-bool ChromeAutofillClientIOS::TryToShowFastCheckout(
-    const FormData& form,
-    const FormFieldData& field,
-    base::WeakPtr<AutofillManager> autofill_manager) {
-  return false;
-}
-
-void ChromeAutofillClientIOS::HideFastCheckout(bool allow_further_runs) {}
-
-bool ChromeAutofillClientIOS::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }
@@ -510,7 +490,7 @@ bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void ChromeAutofillClientIOS::ExecuteCommand(int id) {
+void ChromeAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
   NOTIMPLEMENTED();
 }
 

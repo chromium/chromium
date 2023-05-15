@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -157,7 +158,8 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
         exo_test_helper()->CreateGpuMemoryBuffer(size));
   }
 
-  ash::DragDropController* drag_drop_controller_ = nullptr;
+  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_ =
+      nullptr;
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
@@ -299,8 +301,8 @@ class WindowObserverHookChecker : public aura::WindowObserver {
               (override));
 
  private:
-  aura::Window* surface_window_ = nullptr;
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 };
 
 // Differently than the window observer class above, this one observers
@@ -320,7 +322,7 @@ class WindowObserverHookChecker2 : public aura::WindowObserver {
               (override));
 
  private:
-  aura::Window* surface_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
 };
 
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
@@ -476,6 +478,15 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   EXPECT_EQ(extended_drag_source_->GetDragSourceWindowForTesting(),
             source_window.get());
 
+  // Create an drag event instance to be dispatched manually
+  // and hold a dangling target pointer.
+  auto event = std::make_unique<ui::MouseEvent>(
+      ui::ET_MOUSE_DRAGGED, dragged_window->bounds().origin(),
+      dragged_window->bounds().origin(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::Event::DispatcherApi(event.get())
+      .set_target(shell_surface->GetWidget()->GetNativeWindow());
+
   // Make sure extended drag source gracefully handles |dragged_window|
   // visibility change (calls into dragged_window->Hide()) during while the drag
   // session is still alive.
@@ -486,6 +497,16 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   ui::test::EventGenerator generator(GetContext());
   generator.DragMouseBy(190, 190);
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
+
+  // Ensure that spurious calls to OnToplevelWindowDragEvent, mimic'ing
+  // a dispatch of an event holding a dangling target reference to
+  // ExtendedDragSource at this point, does not crash Ash.
+  //
+  // Note that this is a non-deterministic scenario where the user dragging
+  // surface is destroyed (eg retached) right before the respective `dragged`
+  // event is dispatched to ExtendedDragSource::OnToplevelWindowDragEvent() -
+  // crbug.com/1347192
+  extended_drag_source_->OnToplevelWindowDragEvent(event.get());
 }
 
 // Regression test for crbug.com/1330125.
@@ -599,9 +620,15 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
 }
 
 TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
-  // Create and map a toplevel shell surface.
-  auto shell_surface =
+  // The window where the extendd drag originates.
+  auto origin_shell_surface =
       exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* origin_surface = origin_shell_surface->root_surface();
+
+  // Create and map a toplevel shell surface.
+  auto shell_surface = exo::test::ShellSurfaceBuilder({32, 32})
+                           .SetNoCommit()
+                           .BuildShellSurface();
   auto* surface = shell_surface->root_surface();
 
   extended_drag_source_->Drag(surface, gfx::Vector2d());
@@ -614,12 +641,15 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 
   // Start a DragDropOperation.
   drag_drop_controller_->set_should_block_during_drag_drop(true);
-  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+  seat_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                    ui::mojom::DragEventSource::kTouch);
 
   base::RunLoop loop;
   drag_drop_controller_->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
+        if (!shell_surface->GetWidget()) {
+          surface->Commit();
+        }
         auto* toplevel_handler =
             ash::Shell::Get()->toplevel_window_event_handler();
         EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
@@ -642,6 +672,11 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   UpdateDisplay("400x300,800x600");
+  // The window where the extendd drag originates.
+  auto origin_shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* origin_surface = origin_shell_surface->root_surface();
+
   const gfx::Rect kOriginalWindowBounds(410, 10, 500, 200);
 
   // Create and map a toplevel shell surface, with the size larger than 2nd
@@ -649,13 +684,9 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder(kOriginalWindowBounds.size())
           .SetOrigin(kOriginalWindowBounds.origin())
+          .SetNoCommit()
           .BuildShellSurface();
   auto* surface = shell_surface->root_surface();
-  EXPECT_EQ(kOriginalWindowBounds,
-            shell_surface->GetWidget()->GetWindowBoundsInScreen());
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      shell_surface->GetWidget()->GetNativeWindow());
-  EXPECT_EQ(gfx::Rect(400, 0, 800, 600), display.bounds());
 
   uint32_t serial = 0;
   gfx::Rect drop_bounds;
@@ -685,7 +716,8 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 
   // Start a DragDropOperation.
   drag_drop_controller_->set_should_block_during_drag_drop(true);
-  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+
+  seat_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                    ui::mojom::DragEventSource::kMouse);
   // Just move to the middle to avoid snapping.
   int x_movement = 300;
@@ -698,10 +730,19 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   drag_drop_controller_->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
         if (x_movement == 300) {
+          // In real scenario, the surface is created after drag is started.
+          surface->Commit();
           auto* window_state = ash::WindowState::Get(
               shell_surface->GetWidget()->GetNativeWindow());
           EXPECT_EQ(gfx::PointF(110, 10),
                     window_state->drag_details()->initial_location_in_parent);
+          EXPECT_EQ(
+              kOriginalWindowBounds.size(),
+              shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+          auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+              shell_surface->GetWidget()->GetNativeWindow());
+          // It should stay at the initial position when created.
+          EXPECT_EQ(gfx::Rect(400, 0, 800, 600), display.bounds());
         }
         if (x_movement > 0) {
           x_movement -= kXDragDelta;
@@ -716,7 +757,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   loop.Run();
   EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
   EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
-  display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
 
   gfx::Size secondary_display_size(400, 300);
@@ -724,7 +765,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   EXPECT_EQ(move_count, origins.size());
 
   // Configure when dropped.
-  EXPECT_EQ(1u, serial);
+  EXPECT_EQ(2u, serial);
   // Upon drop, the window is shrunk horizontally.
   gfx::Rect expected_drop_bounds =
       gfx::Rect(origins.back(), kOriginalWindowBounds.size());

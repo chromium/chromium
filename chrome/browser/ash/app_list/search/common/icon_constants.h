@@ -16,6 +16,8 @@ constexpr int kSystemIconDimension = 20;
 constexpr int kAnswerCardIconDimension = 28;
 constexpr int kAppIconDimension = 32;
 constexpr int kImageIconDimension = 28;
+constexpr int kImageSearchWidth = 160;
+constexpr int kImageSearchHeight = 100;
 
 SkColor GetGenericIconColor();
 

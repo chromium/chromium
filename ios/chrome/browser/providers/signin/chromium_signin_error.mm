@@ -37,8 +37,9 @@ NSError* CreateMissingIdentitySigninError() {
 }
 
 SigninErrorCategory GetSigninErrorCategory(NSError* error) {
-  if (![error.domain isEqual:kChromiumSigninErrorDomain])
+  if (![error.domain isEqualToString:kChromiumSigninErrorDomain]) {
     return SigninErrorCategory::kUnknownError;
+  }
 
   switch (static_cast<ChromiumSigninErrorCode>(error.code)) {
     case ChromiumSigninErrorCode::kUserCancelled:

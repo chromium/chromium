@@ -5,10 +5,13 @@
 #include "ash/app_list/views/search_result_image_list_view.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_image_view.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -20,6 +23,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
@@ -30,9 +34,10 @@ constexpr int kPreferredTitleHorizontalMargins = 16;
 constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
-constexpr size_t kMaxImageResults = 4;
-
 }  // namespace
+
+using views::LayoutAlignment;
+using views::TableLayout;
 
 SearchResultImageListView::SearchResultImageListView(
     AppListViewDelegate* view_delegate)
@@ -58,17 +63,67 @@ SearchResultImageListView::SearchResultImageListView(
 
   // TODO(crbug.com/1352636) replace mock results with real results.
   int dummy_search_result_id = 0;
-  for (size_t i = 0; i < kMaxImageResults; ++i) {
+  for (size_t i = 0;
+       i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
     image_views_.emplace_back(new SearchResultImageView(
-        "dummy id" + base::NumberToString(++dummy_search_result_id)));
+        this, "dummy id" + base::NumberToString(++dummy_search_result_id)));
     image_views_.back()->SetPaintToLayer();
     image_views_.back()->layer()->SetFillsBoundsOpaquely(false);
     image_views_.back()->SetVisible(true);
     image_view_container_->AddChildView(image_views_.back());
   }
+
+  // TODO(crbug.com/1352636): replace mock results with real results.
+  std::vector<std::u16string> info_strings = {
+      u"3.46MB", u"Today 13:28", u"image/png", u"My files/Downloads/abc.png"};
+  std::vector<int> title_string_ids = {
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_SIZE,
+      IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED,
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE,
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION};
+  const views::Label::CustomFont title_font = {
+      views::Label::GetDefaultFontList().DeriveWithWeight(
+          gfx::Font::Weight::MEDIUM)};
+
+  auto append_image_info = [&](int idx) {
+    image_info_container_->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(title_string_ids[idx]), title_font));
+    image_info_container_->AddChildView(
+        std::make_unique<views::Label>(info_strings[idx]));
+  };
+
+  image_info_container_ = image_view_container_->AddChildView(
+      std::make_unique<views::TableLayoutView>());
+  image_info_container_->SetVisible(false);
+  image_info_container_->AddColumn(
+      LayoutAlignment::kStart, LayoutAlignment::kStretch,
+      TableLayout::kFixedSize, TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  image_info_container_->AddPaddingColumn(TableLayout::kFixedSize, 5);
+  image_info_container_->AddColumn(
+      LayoutAlignment::kStart, LayoutAlignment::kStretch, 1.0f,
+      TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  image_info_container_->AddRows(title_string_ids.size(), 1.0f);
+  for (size_t i = 0; i < title_string_ids.size(); ++i) {
+    append_image_info(i);
+  }
 }
 
 SearchResultImageListView::~SearchResultImageListView() = default;
+
+void SearchResultImageListView::SearchResultActivated(
+    SearchResultImageView* view,
+    int event_flags,
+    bool by_button_press) {
+  if (!view_delegate() || !view || !view->result()) {
+    return;
+  }
+
+  view_delegate()->OpenSearchResult(
+      view->result()->id(), event_flags,
+      AppListLaunchedFrom::kLaunchedFromSearchBox,
+      AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
+      !by_button_press && view->is_default_result() /* launch_as_default */);
+}
 
 SearchResultImageView* SearchResultImageListView::GetResultViewAt(
     size_t index) {
@@ -110,9 +165,32 @@ void SearchResultImageListView::OnSelectedResultChanged() {
   // TODO(crbug.com/1352636) once result selection spec is available.
   return;
 }
+
 int SearchResultImageListView::DoUpdate() {
   // TODO(crbug.com/1352636) once backend results are available.
-  return -1;
+  std::vector<SearchResult*> display_results =
+      SearchModel::FilterSearchResultsByFunction(
+          results(), base::BindRepeating([](const SearchResult& result) {
+            return result.display_type() == SearchResultDisplayType::kImage;
+          }),
+          ash::SharedAppListConfig::instance().image_search_max_results());
+
+  const size_t num_results = display_results.size();
+
+  for (size_t i = 0; i < image_views_.size(); ++i) {
+    SearchResultImageView* result_view = GetResultViewAt(i);
+    if (i < num_results) {
+      result_view->SetVisible(true);
+      result_view->SetResult(display_results[i]);
+      result_view->SizeToPreferredSize();
+    } else {
+      result_view->SetVisible(false);
+      result_view->SetResult(nullptr);
+    }
+  }
+  image_info_container_->SetVisible(num_results == 1);
+  SetVisible(num_results > 0);
+  return num_results;
 }
 
 BEGIN_METADATA(SearchResultImageListView, SearchResultContainerView)

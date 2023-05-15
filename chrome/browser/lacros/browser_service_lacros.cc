@@ -695,8 +695,9 @@ void BrowserServiceLacros::LaunchOrNewTabWithProfile(
     return;
   }
 
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
+  Browser* browser = chrome::FindTabbedBrowser(
+      profile, /*match_original_profiles=*/false, display::kInvalidDisplayId,
+      /*ignore_closing_browsers=*/true);
   if (browser != nullptr) {
     chrome::NewTab(browser);
     browser->SetFocusToLocationBar();

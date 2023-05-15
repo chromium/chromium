@@ -411,7 +411,6 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
-  scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
   AutocompleteMatch match;
@@ -465,7 +464,6 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
-  scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
   AutocompleteMatch match;
@@ -612,7 +610,6 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
   // Test `ExpandToFullWord`, specifically focussing on detecting and handling
   // the cases when `text` is a prefix of `match_text`.
 
-  scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
   const auto test = [&](const std::string& text, const std::string& match_text,

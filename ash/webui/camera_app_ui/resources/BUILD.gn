@@ -4,9 +4,9 @@
 
 import("//ash/webui/camera_app_ui/resources/images/images.gni")
 import("//ash/webui/camera_app_ui/resources/js/js.gni")
-import("//ash/webui/tools/ash_ts_library.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -42,6 +42,7 @@ mojo_files = [
   "media/capture/video/chromeos/mojom/camera3.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_app.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_common.mojom-webui.ts",
+  "media/capture/video/chromeos/mojom/camera_features.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.ts",
 ]
@@ -69,6 +70,7 @@ ts_library("build_ts") {
   deps = [
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 

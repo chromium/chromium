@@ -19,6 +19,7 @@ pub type blkcnt_t = ::c_long;
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
 pub type __u64 = ::c_ulonglong;
+pub type __s64 = ::c_longlong;
 
 s! {
     pub struct cmsghdr {
@@ -465,6 +466,7 @@ pub const POLLWRBAND: ::c_short = 0x200;
 pub const POLLWRNORM: ::c_short = 0x100;
 pub const PTHREAD_STACK_MIN: ::size_t = 16384;
 pub const RTLD_GLOBAL: ::c_int = 0x00100;
+pub const PIDFD_NONBLOCK: ::c_int = 0x800;
 
 // These are typed unsigned to match sigaction
 pub const SA_NOCLDSTOP: ::c_ulong = 0x1;
@@ -882,9 +884,35 @@ pub const SYS_pwritev2: ::c_long = 393;
 pub const SYS_pkey_mprotect: ::c_long = 394;
 pub const SYS_pkey_alloc: ::c_long = 395;
 pub const SYS_pkey_free: ::c_long = 396;
+// FIXME: should be a `c_long` too, but a bug slipped in.
 pub const SYS_statx: ::c_int = 397;
+pub const SYS_pidfd_send_signal: ::c_long = 424;
+pub const SYS_io_uring_setup: ::c_long = 425;
+pub const SYS_io_uring_enter: ::c_long = 426;
+pub const SYS_io_uring_register: ::c_long = 427;
+pub const SYS_open_tree: ::c_long = 428;
+pub const SYS_move_mount: ::c_long = 429;
+pub const SYS_fsopen: ::c_long = 430;
+pub const SYS_fsconfig: ::c_long = 431;
+pub const SYS_fsmount: ::c_long = 432;
+pub const SYS_fspick: ::c_long = 433;
 pub const SYS_pidfd_open: ::c_long = 434;
 pub const SYS_clone3: ::c_long = 435;
+pub const SYS_close_range: ::c_long = 436;
+pub const SYS_openat2: ::c_long = 437;
+pub const SYS_pidfd_getfd: ::c_long = 438;
+pub const SYS_faccessat2: ::c_long = 439;
+pub const SYS_process_madvise: ::c_long = 440;
+pub const SYS_epoll_pwait2: ::c_long = 441;
+pub const SYS_mount_setattr: ::c_long = 442;
+pub const SYS_quotactl_fd: ::c_long = 443;
+pub const SYS_landlock_create_ruleset: ::c_long = 444;
+pub const SYS_landlock_add_rule: ::c_long = 445;
+pub const SYS_landlock_restrict_self: ::c_long = 446;
+pub const SYS_memfd_secret: ::c_long = 447;
+pub const SYS_process_mrelease: ::c_long = 448;
+pub const SYS_futex_waitv: ::c_long = 449;
+pub const SYS_set_mempolicy_home_node: ::c_long = 450;
 
 cfg_if! {
     if #[cfg(libc_align)] {

@@ -17,14 +17,15 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
-#include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/user_chooser_detailed_view_controller.h"
+#include "ash/system/user/login_status.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -44,6 +45,23 @@ constexpr int kQuickSettingFooterItemBetweenSpacing = 8;
 constexpr int kImageLabelSpacing = 2;
 constexpr int kHorizontalSpacing = 12;
 constexpr int kPaddingReduction = 0;
+
+bool ShouldShowSignOutButton() {
+  auto* session_controller = Shell::Get()->session_controller();
+  // Don't show before login.
+  if (!session_controller->IsActiveUserSessionStarted()) {
+    return false;
+  }
+  // Show "Exit guest" or "Exit session" button for special account types.
+  if (session_controller->IsUserGuest() ||
+      session_controller->IsUserPublicAccount()) {
+    return true;
+  }
+  // For regular accounts, only show if there is more than one account on the
+  // device.
+  absl::optional<int> user_count = session_controller->GetExistingUsersCount();
+  return user_count.has_value() && user_count.value() > 1;
+}
 
 }  // namespace
 
@@ -65,6 +83,11 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
                  kPaddingReduction) {
   PowerStatus::Get()->AddObserver(this);
   SetImageLabelSpacing(kImageLabelSpacing);
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label());
+    return;
+  }
   SetUseDefaultLabelFont();
 }
 
@@ -155,8 +178,7 @@ void QsBatteryIconView::ConfigureIcon() {
 
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
-                    info, kUnifiedTrayBatteryIconSize, battery_icon_color,
-                    battery_icon_color)));
+                    info, kUnifiedTrayBatteryIconSize, battery_icon_color)));
 }
 
 QuickSettingsFooter::QuickSettingsFooter(
@@ -174,23 +196,27 @@ QuickSettingsFooter::QuickSettingsFooter(
       front_buttons_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal));
-  button_container_layout->set_between_child_spacing(16);
+  button_container_layout->set_between_child_spacing(8);
 
-  power_button_ =
-      front_buttons_container->AddChildView(std::make_unique<PowerButton>());
-  if (Shell::Get()->session_controller()->login_status() !=
-      LoginStatus::NOT_LOGGED_IN) {
-    auto* user_avatar_button = front_buttons_container->AddChildView(
-        std::make_unique<UserAvatarButton>(base::BindRepeating(
-            [](UnifiedSystemTrayController* controller) {
-              quick_settings_metrics_util::RecordQsButtonActivated(
-                  QsButtonCatalogName::kAvatarButton);
-              controller->ShowUserChooserView();
-            },
-            base::Unretained(controller))));
-    user_avatar_button->SetEnabled(
-        UserChooserDetailedViewController::IsUserChooserEnabled());
-    user_avatar_button->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
+  power_button_ = front_buttons_container->AddChildView(
+      std::make_unique<PowerButton>(controller));
+
+  if (ShouldShowSignOutButton()) {
+    sign_out_button_ =
+        front_buttons_container->AddChildView(std::make_unique<PillButton>(
+            base::BindRepeating(
+                [](UnifiedSystemTrayController* controller) {
+                  quick_settings_metrics_util::RecordQsButtonActivated(
+                      QsButtonCatalogName::kSignOutButton);
+                  controller->HandleSignOutAction();
+                },
+                base::Unretained(controller)),
+            user::GetLocalizedSignOutStringForStatus(
+                Shell::Get()->session_controller()->login_status(),
+                /*multiline=*/false),
+            PillButton::Type::kDefaultWithoutIcon,
+            /*icon=*/nullptr));
+    sign_out_button_->SetID(VIEW_ID_QS_SIGN_OUT_BUTTON);
   }
 
   // `PowerButton` should start aligned , also battery icons and

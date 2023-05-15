@@ -8,11 +8,8 @@
 #include "base/mac/scoped_sending_event.h"
 #include "base/message_loop/message_pump_mac.h"
 
-@interface ShellCrApplication : NSApplication<CrAppProtocol,
-                                              CrAppControlProtocol> {
- @private
-  BOOL _handlingSendEvent;
-}
+@interface ShellCrApplication
+    : NSApplication <CrAppProtocol, CrAppControlProtocol>
 
 // CrAppProtocol:
 - (BOOL)isHandlingSendEvent;

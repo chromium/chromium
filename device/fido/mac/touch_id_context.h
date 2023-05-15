@@ -13,13 +13,10 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/mac/credential_store.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 struct AuthenticatorConfig;
 
@@ -79,15 +76,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdContext {
 
   void RunCallback(bool success);
 
-  base::scoped_nsobject<LAContext> context_;
+  LAContext* __strong context_;
   Callback callback_;
   base::WeakPtrFactory<TouchIdContext> weak_ptr_factory_{this};
 
   friend class ScopedTouchIdTestEnvironment;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_TOUCH_ID_CONTEXT_H_

@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.R;
 
 /**
@@ -25,6 +28,43 @@ public class OmniboxPedal extends OmniboxAction {
         super(OmniboxActionType.PEDAL, hint,
                 pedalId == OmniboxPedalType.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
+    }
+
+    @Override
+    public void execute(@NonNull OmniboxActionDelegate delegate) {
+        switch (pedalId) {
+            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
+                delegate.openSettingsPage(SettingsFragment.MAIN);
+                break;
+            case OmniboxPedalType.CLEAR_BROWSING_DATA:
+                delegate.openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
+                break;
+            case OmniboxPedalType.UPDATE_CREDIT_CARD:
+                delegate.openSettingsPage(SettingsFragment.PAYMENT_METHODS);
+                break;
+            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
+                delegate.openSettingsPage(SettingsFragment.SAFETY_CHECK);
+                break;
+            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
+                delegate.openSettingsPage(SettingsFragment.SITE);
+                break;
+            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
+                delegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
+                break;
+            case OmniboxPedalType.VIEW_CHROME_HISTORY:
+                delegate.loadPageInCurrentTab(UrlConstants.HISTORY_URL);
+                break;
+            case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
+                delegate.loadPageInCurrentTab(UrlConstants.CHROME_DINO_URL);
+                break;
+            case OmniboxPedalType.MANAGE_PASSWORDS:
+                delegate.openPasswordManager();
+                break;
+            case OmniboxPedalType.LAUNCH_INCOGNITO:
+                delegate.openIncognitoTab();
+                break;
+        }
+        OmniboxMetrics.recordPedalUsed(pedalId);
     }
 
     /**

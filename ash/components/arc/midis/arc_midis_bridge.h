@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/components/arc/mojom/midis.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,7 +51,8 @@ class ArcMidisBridge : public KeyedService, public mojom::MidisHost {
       bool result);
   void OnMojoConnectionError();
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
   mojo::Remote<mojom::MidisHost> midis_host_remote_;
 
   // WeakPtrFactory to use for callbacks.

@@ -124,8 +124,10 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
 #if BUILDFLAG(IS_CHROMEOS)
   // Note: Don't set is_unsupported_ = true here. AllowGssapiLibraryLoad()
   // might change to true during a session.
-  if (!http_auth_preferences()->AllowGssapiLibraryLoad())
+  if (!http_auth_preferences() ||
+      !http_auth_preferences()->AllowGssapiLibraryLoad()) {
     return ERR_UNSUPPORTED_AUTH_SCHEME;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!auth_library_->Init(net_log)) {
     is_unsupported_ = true;
@@ -189,10 +191,10 @@ bool HttpAuthHandlerNegotiate::Init(
   }
   // GSSAPI does not provide a way to enter username/password to obtain a TGT,
   // however ChromesOS provides the user an opportunity to enter their
-  // credentials and generate a new TGT on OS level (see b/265922026). If the
+  // credentials and generate a new TGT on OS level (see b/260522530). If the
   // default credentials are not allowed for a particular site
   // (based on allowlist), fall back to a different scheme.
-  if (!AllowsExplicitCredentials() && !AllowsDefaultCredentials()) {
+  if (!AllowsDefaultCredentials()) {
     return false;
   }
 #endif

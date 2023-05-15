@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -21,6 +22,11 @@ class MenuEntryView : public views::ImageButton {
   using OnPositionChangedCallback =
       base::RepeatingCallback<void(bool, absl::optional<gfx::Point>)>;
 
+  static MenuEntryView* Show(
+      PressedCallback pressed_callback,
+      OnPositionChangedCallback on_position_changed_callback,
+      DisplayOverlayController* display_overlay_controller);
+
   MenuEntryView(PressedCallback pressed_callback,
                 OnPositionChangedCallback on_position_changed_callback,
                 DisplayOverlayController* display_overlay_controller);
@@ -31,7 +37,14 @@ class MenuEntryView : public views::ImageButton {
   // Change hover state for menu entry button.
   void ChangeHoverState(bool is_hovered);
 
+  // Callbacks related to reposition operations.
+  void OnFirstDraggingCallback();
+  void OnMouseDragEndCallback();
+  void OnGestureDragEndCallback();
+  void OnKeyReleasedCallback();
+
   // views::View:
+  void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -39,20 +52,9 @@ class MenuEntryView : public views::ImageButton {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
 
-  // Used for testing.
-  void set_allow_reposition(bool allow) { allow_reposition_ = allow; }
-
  private:
-  // Drag operations.
-  void OnDragStart(const ui::LocatedEvent& event);
-  void OnDragUpdate(const ui::LocatedEvent& event);
-  void OnDragEnd();
-
-  // TODO(b/260937747) For Alpha version, this view is not movable. Cancel
-  // located event and reset event target when the located event doesn't
-  // released on top of this view. This can be removed when removing the AlphaV2
-  // flag.
-  void MayCancelLocatedEvent(const ui::LocatedEvent& event);
+  void Init();
+  gfx::Point CalculatePosition() const;
 
   OnPositionChangedCallback on_position_changed_callback_;
 
@@ -61,22 +63,14 @@ class MenuEntryView : public views::ImageButton {
   // Set cusor type.
   void SetCursor(ui::mojom::CursorType cursor_type);
 
+  void SetRepositionController();
+
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 
-  // LocatedEvent's position when drag starts.
-  gfx::Point start_drag_event_pos_;
-  // This view's position when drag starts.
-  gfx::Point start_drag_view_pos_;
-  // If this view is in a dragging state.
-  bool is_dragging_ = false;
+  std::unique_ptr<RepositionController> reposition_controller_;
 
   // The current hover state for the menu entry.
   bool hover_state_ = false;
-
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_ = ash::features::IsArcInputOverlayAlphaV2Enabled() ||
-                           ash::features::IsArcInputOverlayBetaEnabled();
 };
 
 }  // namespace arc::input_overlay

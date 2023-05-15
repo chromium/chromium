@@ -120,8 +120,8 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
         base::android::ConvertUTF16ToJavaString(env, controller->GetEmail());
     ScopedJavaLocalRef<jstring> phone = base::android::ConvertUTF16ToJavaString(
         env, controller->GetPhoneNumber());
-    Java_SaveUpdateAddressProfilePrompt_setSaveDetails(env, java_object_,
-                                                       address, email, phone);
+    Java_SaveUpdateAddressProfilePrompt_setSaveOrMigrateDetails(
+        env, java_object_, address, email, phone);
   }
 }
 

@@ -4,6 +4,7 @@
 
 body {
   color: rgb(48, 57, 66);
+  font-size: 1em;
   margin: 15px;
 }
 p {
@@ -14,6 +15,7 @@ p {
   border: 1px solid #cecece;
   border-radius: 3px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
   padding: 19px;
 }
 #sb-title {
@@ -22,10 +24,12 @@ p {
 }
 h1,
 h2,
-h3,
 p {
   font-weight: normal;
   line-height: 1.5;
+}
+cr-tab-box {
+  font-size: 1.3rem;
 }
 table.request-response {
   border: 1px solid #cecece;

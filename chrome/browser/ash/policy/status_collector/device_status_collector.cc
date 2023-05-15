@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/interval_map.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
@@ -1552,6 +1553,7 @@ SampledData::~SampledData() = default;
 
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
+    ReportingUserTracker* reporting_user_tracker,
     ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service,
     const VolumeInfoFetcher& volume_info_fetcher,
@@ -1566,6 +1568,7 @@ DeviceStatusCollector::DeviceStatusCollector(
     base::Clock* clock)
     : StatusCollector(provider, ash::CrosSettings::Get(), clock),
       pref_service_(pref_service),
+      reporting_user_tracker_(reporting_user_tracker),
       firmware_fetch_error_(kFirmwareNotInitialized),
       volume_info_fetcher_(volume_info_fetcher),
       cpu_statistics_fetcher_(cpu_statistics_fetcher),
@@ -1687,7 +1690,7 @@ DeviceStatusCollector::DeviceStatusCollector(
   stats_reporting_pref_subscription_ =
       cros_settings_->AddSettingsObserver(ash::kStatsReportingPref, callback);
 
-  power_manager_observation_.Observe(power_manager_);
+  power_manager_observation_.Observe(power_manager_.get());
 
   // Fetch the current values of the policies.
   UpdateReportingSettings();
@@ -1724,10 +1727,12 @@ DeviceStatusCollector::DeviceStatusCollector(
 
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
+    ReportingUserTracker* reporting_user_tracker,
     ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service)
     : DeviceStatusCollector(
           pref_service,
+          reporting_user_tracker,
           provider,
           managed_session_service,
           DeviceStatusCollector::VolumeInfoFetcher(),
@@ -2198,7 +2203,7 @@ std::string DeviceStatusCollector::GetUserForActivityReporting() const {
   // constructing the ActiveTimePeriod protos sent as part of the report.
   std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
   if (primary_user->HasGaiaAccount() &&
-      !ash::ChromeUserManager::Get()->ShouldReportUser(primary_user_email)) {
+      !reporting_user_tracker_->ShouldReportUser(primary_user_email)) {
     return std::string();
   }
   return primary_user_email;
@@ -2472,7 +2477,7 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
       continue;
 
     em::DeviceUser* device_user = status->add_users();
-    if (ash::ChromeUserManager::Get()->ShouldReportUser(
+    if (reporting_user_tracker_->ShouldReportUser(
             user->GetAccountId().GetUserEmail())) {
       device_user->set_type(em::DeviceUser::USER_TYPE_MANAGED);
       device_user->set_email(user->GetAccountId().GetUserEmail());

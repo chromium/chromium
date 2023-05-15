@@ -92,6 +92,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":any_invocable",
         "//absl/base:base_internal",
         "//absl/base:core_headers",
         "//absl/meta:type_traits",
@@ -104,6 +105,7 @@ cc_test(
     srcs = ["function_ref_test.cc"],
     copts = ABSL_TEST_COPTS,
     deps = [
+        ":any_invocable",
         ":function_ref",
         "//absl/container:test_instance_tracker",
         "//absl/memory",

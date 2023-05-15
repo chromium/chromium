@@ -29,23 +29,6 @@ namespace web_app {
 
 class IsolatedWebAppValidator;
 
-// Simple struct used to represent errors related to the integrity block of the
-// Signed Web Bundle.
-struct IntegrityBlockError {
-  explicit IntegrityBlockError(std::string message)
-      : message(std::move(message)) {}
-
-  std::string message;
-};
-
-// Simple struct used to represent errors related to the metadata of the Signed
-// Web Bundle.
-struct MetadataError {
-  explicit MetadataError(std::string message) : message(std::move(message)) {}
-
-  std::string message;
-};
-
 // Factory for creating instances of `IsolatedWebAppResponseReader` that are
 // ready to read responses from the bundle. Instances returned by this class are
 // guaranteed to have previously read a valid integrity block and metadata, as
@@ -68,22 +51,9 @@ class IsolatedWebAppResponseReaderFactory {
   IsolatedWebAppResponseReaderFactory& operator=(
       const IsolatedWebAppResponseReaderFactory&) = delete;
 
-  using Error = absl::variant<
-      // Triggered when the integrity block of the Signed Web
-      // Bundle does not exist or parsing it fails.
-      web_package::mojom::BundleIntegrityBlockParseErrorPtr,
-      // Triggered when the integrity block is not valid for this Isolated Web
-      // App or when the user agent does not trust the Isolated Web App.
-      IntegrityBlockError,
-      // Triggered when signature verification fails.
-      web_package::SignedWebBundleSignatureVerifier::Error,
-      // Triggered when metadata parsing fails.
-      web_package::mojom::BundleMetadataParseErrorPtr,
-      // Triggered when the metadata is not valid for this Isolated Web App.
-      MetadataError>;
-
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>, Error>)>;
+      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                     UnusableSwbnFileError>)>;
 
   virtual void CreateResponseReader(
       const base::FilePath& web_bundle_path,
@@ -91,32 +61,7 @@ class IsolatedWebAppResponseReaderFactory {
       bool skip_signature_verification,
       Callback callback);
 
-  static std::string ErrorToString(const Error& error);
-
-  // This enum represents every error type that can occur during integrity block
-  // and metadata parsing, before responses are read from Signed Web Bundles.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ReadIntegrityBlockAndMetadataStatus {
-    kSuccess = 0,
-    // Integrity Block-related errors
-    kIntegrityBlockParserInternalError = 1,
-    kIntegrityBlockParserFormatError = 2,
-    kIntegrityBlockParserVersionError = 3,
-    kIntegrityBlockValidationError = 4,
-
-    // Signature verification errors
-    kSignatureVerificationError = 5,
-
-    // Metadata-related errors
-    kMetadataParserInternalError = 6,
-    kMetadataParserFormatError = 7,
-    kMetadataParserVersionError = 8,
-    kMetadataValidationError = 9,
-
-    kMaxValue = kMetadataValidationError
-  };
+  static std::string ErrorToString(const UnusableSwbnFileError& error);
 
  private:
   void OnIntegrityBlockRead(
@@ -138,11 +83,7 @@ class IsolatedWebAppResponseReaderFactory {
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
       Callback callback,
-      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-          read_integrity_block_and_metadata_error);
-
-  ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
-      const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
+      base::expected<void, UnusableSwbnFileError> status);
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;
   base::RepeatingCallback<

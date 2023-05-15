@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PALETTE_PALETTE_TRAY_TEST_API_H_
 
 #include "ash/system/palette/palette_tray.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -43,7 +44,8 @@ class PaletteTrayTestApi {
   void SetDisplayHasStylus() { palette_tray_->SetDisplayHasStylusForTesting(); }
 
  private:
-  PaletteTray* palette_tray_ = nullptr;
+  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_ =
+      nullptr;
 };
 
 }  // namespace ash

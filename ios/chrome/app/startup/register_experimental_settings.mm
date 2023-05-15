@@ -6,8 +6,8 @@
 
 #import <ostream>
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
-#import "base/mac/bundle_locations.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 

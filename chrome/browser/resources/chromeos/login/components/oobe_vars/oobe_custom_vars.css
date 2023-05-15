@@ -62,3 +62,7 @@
       /* Network screen */
       --oobe-network-row-height: 48px;
     }
+
+    html.simon-enabled {
+      --oobe-welcome-header-font-weight: 400; /* regular */
+    }

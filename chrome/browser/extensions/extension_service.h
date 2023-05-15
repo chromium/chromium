@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
@@ -89,7 +90,7 @@ enum class UnloadedExtensionReason;
 // various classes have on ExtensionService. This allows easy mocking.
 class ExtensionServiceInterface {
  public:
-  virtual ~ExtensionServiceInterface() {}
+  virtual ~ExtensionServiceInterface() = default;
 
   // Gets the object managing the set of pending extensions.
   virtual PendingExtensionManager* pending_extension_manager() = 0;
@@ -173,6 +174,7 @@ class ExtensionService : public ExtensionServiceInterface,
                          public content::RenderProcessHostCreationObserver,
                          public content::RenderProcessHostObserver,
                          public Blocklist::Observer,
+                         public CWSInfoService::Observer,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
                          public ExtensionRegistrar::Delegate,
@@ -313,7 +315,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
-                                           const base::Value& attributes);
+                                           const base::Value::Dict& attributes);
 
   // Disables the extension. If the extension is already disabled, just adds
   // the |disable_reasons| (a bitmask of disable_reason::DisableReason - there
@@ -524,6 +526,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Blocklist::Observer implementation.
   void OnBlocklistUpdated() override;
+
+  // CWSInfoService::Observer implementation.
+  void OnCWSInfoChanged() override;
 
   // UpgradeObserver implementation.
   void OnUpgradeRecommended() override;
@@ -773,6 +778,9 @@ class ExtensionService : public ExtensionServiceInterface,
                           ExtensionHostRegistry::Observer>
       host_registry_observation_{this};
 
+  base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
+      cws_info_service_observation_{this};
+
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;
   InstallGateRegistry install_delayer_registry_;
@@ -808,6 +816,8 @@ class ExtensionService : public ExtensionServiceInterface,
                            ExtensionsNotAllowlistedThenBlocklisted);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAllowlistUnitTest,
                            ExtensionsBlocklistedThenNotAllowlisted);
+  FRIEND_TEST_ALL_PREFIXES(OmahaAttributesHandlerUnitTest,
+                           NoUnsetBlocklistWhenSBBlocklistPolicyDisabled);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            GreylistedExtensionDisabled);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
@@ -830,6 +840,8 @@ class ExtensionService : public ExtensionServiceInterface,
                            ExtensionUninstalledWhenBlocklisted);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            ExtensionUninstalledWhenBlocklistFetching);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           ReloadBlocklistedExtensionWhenPolicyDisabled);
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
   friend class BlocklistStatesInteractionUnitTest;

@@ -5,13 +5,11 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -262,8 +260,8 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.new_parent) {
-    if (params.new_parent == settings_bubble_container_ ||
-        params.new_parent == accessibility_bubble_container_ ||
+    if (params.new_parent == settings_bubble_container_.get() ||
+        params.new_parent == accessibility_bubble_container_.get() ||
         IsPopupNotificationWindow(params.target)) {
       floating_window_observer_.ObserveWindow(params.target);
     }

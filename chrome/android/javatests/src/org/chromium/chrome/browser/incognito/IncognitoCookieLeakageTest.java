@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.incognito;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -66,7 +66,8 @@ public class IncognitoCookieLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mCookiesTestPage = mTestServer.getURL(COOKIES_SETTING_PATH);
 
         // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
@@ -97,6 +98,10 @@ public class IncognitoCookieLeakageTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * A class to provide the list of test parameters encapsulating Activity pairs, spliced on
+     * regular and Incognito mode, where cookie shouldn't leak.
+     */
     public static class IsolatedFlowsParams implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {

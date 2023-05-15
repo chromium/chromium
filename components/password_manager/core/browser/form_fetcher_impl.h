@@ -130,14 +130,6 @@ class FormFetcherImpl : public FormFetcher,
   // the form being managed by |this|.
   std::vector<const PasswordForm*> best_matches_;
 
-  // Convenience pointer to entry in |best_matches_| that is marked as
-  // preferred. This is only allowed to be null if there are no best matches at
-  // all, since there will always be one preferred login when there are multiple
-  // matches (when first saved, a login is marked preferred).
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const PasswordForm* preferred_match_ = nullptr;
-
   // Whether there were any blocklisted credentials obtained from the profile
   // and account password stores respectively.
   bool is_blocklisted_in_profile_store_ = false;

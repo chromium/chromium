@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,20 @@
 namespace password_manager {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PromoCardType {
+  // Password Checkup promo bubble.
+  kCheckup = 0,
+  // Password on the web promo bubble.
+  kWebPasswordManager = 1,
+  // Add shortcut promo bubble.
+  kAddShortcut = 2,
+  // Access passwords on iOS/Android promo bubble.
+  kAccessOnAnyDevice = 3,
+  kMaxValue = kAccessOnAnyDevice,
+};
 
 constexpr base::TimeDelta kPasswordCheckupPromoPeriod = base::Days(7);
 constexpr int kPromoDisplayLimit = 3;
@@ -52,6 +67,19 @@ base::Value::Dict CreatePromoCardPrefEntry(const std::string& id) {
   promo_card_pref_entry.Set(kNumberOfTimesShownKey, 0);
   promo_card_pref_entry.Set(kWasDismissedKey, false);
   return promo_card_pref_entry;
+}
+
+PromoCardType ConvertIdToType(const std::string& promo_id) {
+  if (promo_id == kCheckupPromoId) {
+    return PromoCardType::kCheckup;
+  } else if (promo_id == kWebPasswordManagerPromoId) {
+    return PromoCardType::kWebPasswordManager;
+  } else if (promo_id == kShortcutPromoId) {
+    return PromoCardType::kAddShortcut;
+  } else if (promo_id == kAccessOnAnyDevicePromoId) {
+    return PromoCardType::kAccessOnAnyDevice;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -108,9 +136,11 @@ void PromoCardInterface::OnPromoCardDismissed() {
   for (auto& promo_card_pref : update.Get()) {
     if (*promo_card_pref.GetDict().FindString(kIdKey) == GetPromoID()) {
       promo_card_pref.GetDict().Set(kWasDismissedKey, true);
-      return;
+      break;
     }
   }
+  base::UmaHistogramEnumeration("PasswordManager.PromoCard.Dismissed",
+                                ConvertIdToType(GetPromoID()));
 }
 
 void PromoCardInterface::OnPromoCardShown() {
@@ -124,9 +154,11 @@ void PromoCardInterface::OnPromoCardShown() {
                                     number_of_times_shown_);
       promo_card_pref.GetDict().Set(kLastTimeShownKey,
                                     base::TimeToValue(last_time_shown_));
-      return;
+      break;
     }
   }
+  base::UmaHistogramEnumeration("PasswordManager.PromoCard.Shown",
+                                ConvertIdToType(GetPromoID()));
 }
 
 PasswordCheckupPromo::PasswordCheckupPromo(

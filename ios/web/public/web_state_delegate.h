@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/functional/callback.h"
+#include "build/blink_buildflags.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 
@@ -60,13 +61,13 @@ class WebStateDelegate {
   virtual JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source);
 
-  // Returns whether the delegate is able to handle requests the user's
-  // permission to access `web::Permission`.
+  // Called when web resource requests the user's permission to access
+  // `web::Permission`.
   //
-  // If returned `true`, the delegate must use the `handler` function to answer
-  // to the permissions access request; otherwise, the delegate must NOT use the
-  // handler.
-  virtual bool HandlePermissionsDecisionRequest(
+  // The delegate should use the `handler` function to answer to the request to
+  // grant, deny media permissions or show the default prompt that asks for
+  // permissions.
+  virtual void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
       WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
@@ -107,6 +108,9 @@ class WebStateDelegate {
 
  private:
   friend class WebStateImpl;
+#if BUILDFLAG(USE_BLINK)
+  friend class ContentWebState;
+#endif
 
   // Called when `this` becomes the WebStateDelegate for `source`.
   void Attach(WebState* source);

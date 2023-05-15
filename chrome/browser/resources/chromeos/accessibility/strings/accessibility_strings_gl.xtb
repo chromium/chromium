@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="100506692671054486">ningún comando anterior</translation>
 <translation id="1009046985747440431">Preme a frecha cara arriba ou cara abaixo para desprazarte e Intro para activar a opción</translation>
 <translation id="1011903154582639569">Busca unha tecla e levanta o dedo para escribir</translation>
 <translation id="1012173283529841972">Elemento da lista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavanda rosado</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3962990492275676168">Comeza a ler a partir da localización actual</translation>
+<translation id="397094149579293440">non hai ningún texto seleccionado</translation>
 <translation id="3970951409746498040">Marrón area</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mocasín</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Non hai ningunha cabeceira anterior de nivel 1</translation>
 <translation id="4787577491510559358">Anuncia o formato do elemento actual</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">non hai ningún campo de texto enfocado</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="481165870889056555">Indica o título da páxina actual</translation>
 <translation id="4815668758102003883">Turquesa pálido</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Ligazón interna</translation>
 <translation id="4909019435900810068">Retroceder unha palabra</translation>
 <translation id="4911349081560453449">Non hai ningunha caixa de verificación anterior</translation>
+<translation id="4919186071145887492">Non se puido <ph name="COMMAND" />. Téntao de novo</translation>
 <translation id="492295894462528572">Limiar</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
 <translation id="495170559598752135">Accións</translation>
 <translation id="4953585991029886728">Edita texto</translation>
+<translation id="4964701498510730546">o campo de texto está baleiro</translation>
 <translation id="4973717656530883744">Mín. <ph name="X" /></translation>
 <translation id="4974612477719259470">Non hai ningún botón anterior</translation>
 <translation id="4979404613699303341">Botón anterior</translation>
+<translation id="4981239367072766915">non se recoñece a entrada</translation>
 <translation id="4982917827052020884">Comecemos por algunhas teclas que usarás con frecuencia. Podes usar Control, situada na esquina inferior esquerda do teclado, para deter a voz que estea soando. Para continuar, preme a tecla Control.</translation>
 <translation id="4983588134362688868">Salta á parte superior da páxina</translation>
 <translation id="4986606102545753256"><ph name="NAME" /> (ventá)</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Anuncia o estado actual da batería</translation>
 <translation id="4997282455736854877"><ph name="NAME" /> (botón de opción seleccionado)</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botón de opción do elemento do menú seleccionado</translation>
+<translation id="5014131807708055994">Non se puido <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Activar rexistro de voz</translation>
 <translation id="5041394372352067729">Move a liña braille á parte superior da páxina</translation>
 <translation id="5042770794184672516">Aumenta o volume da voz</translation>

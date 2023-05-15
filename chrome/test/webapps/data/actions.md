@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 163) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 166) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -106,14 +106,17 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_window_created |  |  | 24 | Implemented | A window was created. |  |
 | check_window_not_created |  |  | 127 | Implemented | A window was not created. | P2 |
 | check_pwa_window_created | Site, Number |  | 123 | Implemented | A given number of windows were created for the given pwa. |  |
+| check_pwa_window_created_in_profile | Site, Number, ProfileName |  | 165 | Implemented | A given number of windows were created for the given pwa in the given profile. |  |
 | check_window_display_minimal |  |  | 25 | Implemented | Check that the window is a PWA window, and has minimal browser controls. |  |
 | check_window_display_tabbed |  |  | 144 | Implemented | Check that the window is a PWA window, and has tabbed display mode. |  |
 | check_window_display_standalone |  |  | 26 | Implemented | Check that the window is a PWA window, and has no browser controls. |  |
 | close_custom_toolbar |  |  | 27 | Implemented | Press the 'x' button on the custom toolbar that is towards the top of the WebApp window. |  |
 | close_pwa |  |  | 28 | Implemented | Close the WebApp window. |  |
 | maybe_close_pwa |  |  | 143 | Implemented | Close the current app window if there is one open. |  |
-| open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
+| quit_app_shim | Site |  | 164 | Implemented | Closes the WebApp in all profiles by quitting the App Shim; Mac OS Only. |  |
+| open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) & open_app_settings_from_command($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
+| open_app_settings_from_command | Site |  | 163 | Implemented | Open app settings via its browser command. |  |
 | open_in_chrome |  |  | 71 | Implemented | Click on the 'open in chrome' link in the 3-dot menu of the app window | cliffordcheng@, P1 |
 | set_open_in_tab | Site | set_open_in_tab_from_app_settings($1) & set_open_in_tab_from_app_home($1) | 148 | Parameterized | All methods to toggle an app to open in a tab in the same window. | dibyapal@ |
 | set_open_in_tab_from_app_settings | Site |  | 149 | Implemented | Toggle the "open in window"  option in the chrome://app-settings/<app-id> page to disable an app from opening in a separate window, so that the app opens in a tab in the same window. | dibyapal@ |
@@ -124,14 +127,13 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | delete_platform_shortcut | Site |  | 74 | Implemented | Delete the shortcut that lives on the operating system. Win/Mac/Linux only. | P2 |
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | # Launching |
-| launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |
 | launch_from_launch_icon | Site |  | 35 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the launch icon in the omnibox (intent picker), |  |
 | launch_from_menu_option | Site |  | 69 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the "Launch _" menu option in the 3-dot menu. | cliffordcheng@, P1 |
 | launch_from_platform_shortcut | Site |  | 1 | Implemented | Launch an app from a platform shortcut on the user's desktop or start menu. | cliffordcheng@, P0 |
 | launch | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) & launch_from_platform_shortcut($1) | 64 | Parameterized |  |  |
 | launch_not_from_platform_shortcut | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) | 135 | Parameterized |  |   |
 | launch_from_browser | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) | 65 | Parameterized |  |  |
-| launch_from_shortcut_or_list | Site | launch_from_chrome_apps($1) & launch_from_platform_shortcut($1) | 66 | Parameterized | All ways to launch an app that are still available for 'browser' apps. |  |
+| check_app_loaded_in_tab | Site |  | 163 | Implemented | Verify that the web app was launched in a tab after being clicked from chrome://apps. |  |
 | # Navigation |
 | navigate_browser | Site |  | 37 | Implemented | Navigate the browser to one of the static sites provided by the testing framework. |  |
 | navigate_notfound_url |  |  | 38 | Implemented | Navigate to a url that returns a 404 server error. |  |
@@ -168,9 +170,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_no_sub_apps |  |  | 142 | Implemented | Assuming we navigated to the (potential) parent site, call subApps.list() and check if the list is empty. |  |
 
 ### App Home
-
-TODO(dibyapal): Move more app home based actions here once they are integrated to above actions or newly implemented.
-
 Actions that the user can take by going to chrome://apps and either left clicking an app or right clicking an app and then taking actions from the context menu that opens.
 
 | # Action base name | Argument Types | Output Actions | Unique Identifier | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
@@ -191,3 +190,4 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | uninstall_from_list | Site |  | 10 | Implemented | Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher' |  |
 | create_shortcuts_from_list | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
 | open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |
+| launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |

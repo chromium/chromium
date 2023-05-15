@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -330,7 +331,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       CertificateCallback callback,
       const ::attestation::FinishCertificateRequestReply& reply);
 
-  AttestationClient* attestation_client_;
+  raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
+      attestation_client_;
   std::unique_ptr<ServerProxy> server_proxy_;
 
   base::TimeDelta ready_timeout_;

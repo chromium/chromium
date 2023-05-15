@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -20,7 +21,7 @@ class MockObserver : public FileSuggestKeyedService::Observer {
  public:
   explicit MockObserver(FileSuggestKeyedService* file_suggest_service)
       : file_suggest_service_(file_suggest_service) {
-    file_suggest_service_observation_.Observe(file_suggest_service_);
+    file_suggest_service_observation_.Observe(file_suggest_service_.get());
   }
   MockObserver(const MockObserver&) = delete;
   MockObserver& operator=(const MockObserver&) = delete;
@@ -49,7 +50,7 @@ class MockObserver : public FileSuggestKeyedService::Observer {
                              base::Unretained(this)));
   }
 
-  FileSuggestKeyedService* const file_suggest_service_;
+  const raw_ptr<FileSuggestKeyedService, ExperimentalAsh> file_suggest_service_;
   base::RunLoop run_loop_;
   absl::optional<std::vector<FileSuggestData>> last_fetched_data_;
   base::ScopedObservation<FileSuggestKeyedService,

@@ -1,0 +1,32 @@
+<!--
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<html>
+<style>
+mark, li {
+  display:block
+}
+li.active:after {
+  content:"x";
+}
+</style>
+<ul role="menubar">
+  <li class="active">
+    <mark>Blog</mark>
+  </li>
+</ul>
+<p>Another sibling</p>
+<script>
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelector('li').className = '';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.title = 'done';
+        });
+      });
+    });
+  });
+</script>
+</html>

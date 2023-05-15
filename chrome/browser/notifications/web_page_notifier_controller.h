@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
@@ -42,7 +43,7 @@ class WebPageNotifierController : public NotifierController {
   std::unique_ptr<base::CancelableTaskTracker> favicon_tracker_;
 
   // Lifetime of parent must be longer than the source.
-  Observer* observer_;
+  raw_ptr<Observer, ExperimentalAsh> observer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WEB_PAGE_NOTIFIER_CONTROLLER_H_

@@ -10,9 +10,12 @@
 
 #include <memory>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace enterprise_connectors {
 
@@ -44,10 +47,9 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
 }
 
 bool SecureEnclaveHelperImpl::IsSecureEnclaveSupported() {
-  base::scoped_nsobject<TKTokenWatcher> token_watcher(
-      [[TKTokenWatcher alloc] init]);
-  return ([token_watcher.get().tokenIDs
-      containsObject:base::mac::CFToNSCast(kSecAttrTokenIDSecureEnclave)]);
+  TKTokenWatcher* token_watcher = [[TKTokenWatcher alloc] init];
+  return ([token_watcher.tokenIDs
+      containsObject:base::apple::CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]);
 }
 
 }  // namespace enterprise_connectors

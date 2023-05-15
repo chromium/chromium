@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection_attempt_base.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 
@@ -60,7 +61,7 @@ class NearbyInitiatorConnectionAttempt
       const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
           ConnectionFailedCallback& failure_callback) override;
 
-  NearbyConnectionManager* nearby_connection_manager_;
+  raw_ptr<NearbyConnectionManager, ExperimentalAsh> nearby_connection_manager_;
 };
 
 }  // namespace ash::secure_channel

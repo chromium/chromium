@@ -5,11 +5,11 @@
 #include <stddef.h>
 
 #include "base/big_endian.h"
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -121,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(Add)) {
   ResetSyncForPrimaryAccount();
   // Use a randomized URL to prevent test collisions.
   const std::u16string kHistoryUrl = ASCIIToUTF16(base::StringPrintf(
-      "http://www.add-history.google.com/%s", base::GenerateGUID().c_str()));
+      "http://www.add-history.google.com/%s",
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   size_t initial_count = GetTypedUrlsFromClient(0).size();
@@ -402,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsWithoutNewHistoryTypeSyncTest,
   ResetSyncForPrimaryAccount();
   // Use a randomized URL to prevent test collisions.
   const std::u16string kHistoryUrl = ASCIIToUTF16(base::StringPrintf(
-      "http://www.add-history.google.com/%s", base::GenerateGUID().c_str()));
+      "http://www.add-history.google.com/%s",
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   size_t initial_count = GetTypedUrlsFromClient(0).size();

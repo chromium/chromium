@@ -8,8 +8,13 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
+import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
+import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
@@ -110,6 +115,26 @@ export class ToolbarController {
      * @const
      */
     this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudButton_ = queryRequiredElement('#cloud-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudStatusIcon_ = queryRequiredElement(
+        '#cloud-button > xf-icon[slot="suffix-icon"]', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudButtonIcon_ = queryRequiredElement(
+        '#cloud-button > xf-icon[slot="prefix-icon"]', this.toolbar_);
 
     /**
      * @private {!Command}
@@ -225,6 +250,12 @@ export class ToolbarController {
      */
     this.a11y_ = a11y;
 
+    /**
+     * @private {!Store}
+     */
+    this.store_ = getStore();
+    this.store_.subscribe(this);
+
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
         this.onSelectionChanged_.bind(this));
@@ -254,6 +285,21 @@ export class ToolbarController {
     this.sharesheetButton_.addEventListener(
         'click', this.onSharesheetButtonClicked_.bind(this));
 
+    if (util.isDriveFsBulkPinningEnabled()) {
+      const cloudPanel = queryRequiredElement('xf-cloud-panel');
+      this.cloudButton_.addEventListener('click', () => {
+        this.cloudButton_.toggleAttribute('menu-shown', true);
+        this.cloudButton_.toggleAttribute('aria-expanded', true);
+        cloudPanel.showAt(this.cloudButton_);
+      });
+      cloudPanel.addEventListener(XfCloudPanel.events.PANEL_CLOSED, () => {
+        this.cloudButton_.toggleAttribute('menu-shown', false);
+        this.cloudButton_.toggleAttribute('aria-expanded', false);
+      });
+      /** @type {?boolean} */
+      this.bulkPinningPref_ = null;
+    }
+
     this.togglePinnedCommand_.addEventListener(
         'checkedChange', this.updatePinnedToggle_.bind(this));
 
@@ -280,7 +326,7 @@ export class ToolbarController {
    * Updates toolbar's UI elements which are related to current directory.
    * @private
    */
-  updateCurrentDirectoryButtons_() {
+  updateCurrentDirectoryButtons_(event) {
     this.updateRefreshCommand_();
 
     this.newFolderCommand_.canExecuteChange(this.listContainer_.currentList);
@@ -299,6 +345,21 @@ export class ToolbarController {
         !(locationInfo && locationInfo.isReadOnly &&
           locationInfo.rootType !== VolumeManagerCommon.RootType.CROSTINI &&
           locationInfo.rootType !== VolumeManagerCommon.RootType.GUEST_OS);
+
+    if (util.isSearchV2Enabled()) {
+      const newDirectory = event.newDirEntry;
+      if (newDirectory) {
+        const locationInfo = this.volumeManager_.getLocationInfo(newDirectory);
+        const bodyClassList =
+            this.filesSelectedLabel_.ownerDocument.body.classList;
+        if (locationInfo &&
+            locationInfo.rootType === VolumeManagerCommon.RootType.TRASH) {
+          bodyClassList.add('check-select-v1');
+        } else {
+          bodyClassList.remove('check-select-v1');
+        }
+      }
+    }
   }
 
   /** @private */
@@ -348,7 +409,7 @@ export class ToolbarController {
     // Trash should be shown.
     this.moveToTrashButton_.hidden = true;
     this.moveToTrashCommand.disabled = true;
-    if (!this.deleteButton_.hidden && util.isTrashEnabled()) {
+    if (!this.deleteButton_.hidden) {
       this.moveToTrashCommand.canExecuteChange(this.listContainer_.currentList);
     }
 
@@ -457,6 +518,77 @@ export class ToolbarController {
     if (!this.deleteButton_.hidden) {
       this.deleteButton_.hidden = !this.moveToTrashCommand.disabled;
       this.moveToTrashButton_.hidden = this.moveToTrashCommand.disabled;
+    }
+  }
+
+  /**
+   * Checks if the cloud icon should be showing or not based on the enablement
+   * of the user preferences, the feature flag and the existing stage.
+   * @param {!State} state latest state from the store.
+   */
+  onStateChanged(state) {
+    this.updateBulkPinning_(state);
+  }
+
+  /**
+   * Updates the visibility of the cloud button and the "Available offline"
+   * toggle based on whether the bulk pinning is enabled or not.
+   * @param {!State} state latest state from the store.
+   * @private
+   */
+  updateBulkPinning_(state) {
+    const bulkPinningPref = state.preferences?.driveFsBulkPinningEnabled;
+    const bulkPinning = state.bulkPinning;
+    // If the bulk pinning preference is enabled, the user should not be able to
+    // toggle items offline.
+    if (this.bulkPinningPref_ !== bulkPinningPref) {
+      this.bulkPinningPref_ = bulkPinningPref;
+      this.togglePinnedCommand_.canExecuteChange(
+          this.listContainer_.currentList);
+    }
+    if (!util.canBulkPinningCloudPanelShow(
+            bulkPinning?.stage, bulkPinningPref)) {
+      this.cloudButton_.hidden = true;
+      return;
+    }
+    this.updateBulkPinningIcon_(bulkPinning);
+    this.cloudButton_.hidden = false;
+  }
+
+  /**
+   * Encapsulates the logic to update the bulk pinning cloud icon and the sub
+   * icons that indicate the current stage it is in.
+   * @param {chrome.fileManagerPrivate.BulkPinProgress|undefined} progress
+   */
+  updateBulkPinningIcon_(progress) {
+    switch (progress?.stage) {
+      case chrome.fileManagerPrivate.BulkPinStage.SYNCING:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        if (progress.bytesToPin === 0 ||
+            progress.pinnedBytes / progress.bytesToPin === 1) {
+          this.cloudStatusIcon_.setAttribute(
+              'type', constants.ICON_TYPES.CLOUD_DONE);
+        } else {
+          this.cloudStatusIcon_.setAttribute(
+              'type', constants.ICON_TYPES.CLOUD_SYNC);
+        }
+        break;
+      case chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        this.cloudStatusIcon_.setAttribute(
+            'type', constants.ICON_TYPES.CLOUD_ERROR);
+        break;
+      case chrome.fileManagerPrivate.BulkPinStage.PAUSED:
+        this.cloudButtonIcon_.setAttribute(
+            'type', constants.ICON_TYPES.BULK_PINNING_OFFLINE);
+        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.removeAttribute('size');
+        break;
+      default:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.removeAttribute('size');
+        break;
     }
   }
 }

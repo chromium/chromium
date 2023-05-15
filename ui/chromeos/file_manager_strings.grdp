@@ -1105,13 +1105,13 @@
     1 folder selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_FILES_SELECTED" desc="Many files selected.">
-    <ph name="SELCTED_FILE_COUNT">$1<ex>13</ex></ph> files selected
+    <ph name="SELECTED_FILE_COUNT">$1<ex>13</ex></ph> files selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_DIRECTORIES_SELECTED" desc="Many directories selected.">
-    <ph name="SELCTED_FOLDERS_COUNT">$1<ex>2</ex></ph> folders selected
+    <ph name="SELECTED_FOLDERS_COUNT">$1<ex>2</ex></ph> folders selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_ENTRIES_SELECTED" desc="Many items (both files and directories) selected.">
-    <ph name="SELCTED_FILES_COUNT">$1<ex>21</ex></ph> items selected
+    <ph name="SELECTED_FILES_COUNT">$1<ex>21</ex></ph> items selected
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_ALBUM_TITLE" desc="Label for audio album title.">
     Album
@@ -1133,6 +1133,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_DURATION" desc="Label for audio/video duration.">
     Duration
+  </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_ENCRYPTED" desc="Type hint for a file, encrypted with CSE (https://support.google.com/a/answer/10741897).">
+    Encrypted <ph name='ORIGINAL_MIME_TYPE'>$1<ex>text/plain</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_EXIF_DEVICE_MODEL" desc="Label for the device model which created the image.">
     Device model
@@ -1748,5 +1751,57 @@
   </message>
   <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES" desc="The source of a system-generated notification from the Files app, as displayed to the user.">
   Files
+  </message>
+  <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL" translateable="false" desc="The text of the button in the Bulk pinning dialog that takes the user to the chromeOS settings page for Google Drive.">
+    Google Drive settings
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_MULTIPLE_FILES_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing <ph name="NUMBER_OF_FILES_SYNCING">$1<ex>1,687</ex></ph> files
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing 1 file
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" translateable="false" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
+    Your files are synced
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
+    You are currently offline. Sync will resume when the connection is back on.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_TITLE" translateable="false" desc="The title of the dialog offering the Google Drive bulk pinning feature">
+    Easily access your Google Drive files when you’re offline
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_EXPLANATION" translateable="false" desc="The main text of the dialog offering the Google Drive bulk pinning feature">
+    Your files in My Drive will sync to your Chromebook automatically so you can access them without an internet connection.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_POINT_1" translateable="false" desc="First bullet point of the dialog offering the Google Drive bulk pinning feature">
+    Files will be stored in the cloud and on this Chromebook.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" translateable="false" desc="Text in the dialog offering the Google Drive bulk pinning feature">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_LISTING" translateable="false" desc="Information message displayed when the Google Drive bulk pinning feature is computing the space requirements">
+    Calculating storage requirements…
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_ERROR" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature could not compute the space requirements">
+    An error occurred while calculating storage requirements.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE" translateable="false" desc="Error message displayed when there is not enough space to enable the Google Drive bulk pinning feature">
+    You don’t have enough storage available.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_VIEW_STORAGE" translateable="false" desc="Text of the 'View storage' link displayed next to the error message when there is not enough space to enable the Google Drive bulk pinning feature">
+    View storage
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because of lack of internet connection">
+    You are currently offline. Try again when you are connected to the internet.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_CONTINUE" translateable="false" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
+    Continue
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_GET_STARTED" translateable="false" desc="Text in the Get started button of the banner offering the Google Drive bulk pinning feature">
+    Get started
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
+    You don't have enough local storage to keep all your files available offline.
   </message>
 </grit-part>

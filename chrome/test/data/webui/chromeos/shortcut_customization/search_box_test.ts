@@ -9,11 +9,12 @@ import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_too
 import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
+import {CycleTabsTextSearchResult, fakeSearchResults, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
+import {AcceleratorState, MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -319,5 +320,130 @@ suite('searchBoxTest', function() {
 
     selectedRowInnerElement.click();
     assertFalse(dropdownElement.opened);
+  });
+
+  test('Search availability changed', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    await simulateSearch('query');
+
+    assertTrue(dropdownElement.opened);
+    assertEquals(3, searchBoxElement.searchResults.length);
+
+    // Add a new search result, but don't trigger the observer callback.
+    handler.setFakeSearchResult(
+        [...fakeSearchResults, TakeScreenshotSearchResult]);
+    assertTrue(dropdownElement.opened);
+    assertEquals(3, searchBoxElement.searchResults.length);
+
+    // Trigger the observer callback.
+    searchBoxElement.onSearchResultsAvailabilityChanged();
+    await waitForSearchResultsFetched();
+    // Check that the list updates when the dropdown is open, and the dropdown
+    // remains open.
+    assertTrue(dropdownElement.opened);
+    assertEquals(4, searchBoxElement.searchResults.length);
+
+    // User clicks outside the search box, closing the dropdown.
+    searchBoxElement.blur();
+    assertFalse(dropdownElement.opened);
+
+    // Reset the fake results.
+    handler.setFakeSearchResult(fakeSearchResults);
+
+    // Dropdown should still be closed, and the search results should not have
+    // updated yet.
+    assertFalse(dropdownElement.opened);
+    assertEquals(4, searchBoxElement.searchResults.length);
+
+    // Trigger the observer callback.
+    searchBoxElement.onSearchResultsAvailabilityChanged();
+    await waitForSearchResultsFetched();
+
+    // Check that the list updates when the dropdown is closed, and the dropdown
+    // remains closed.
+    assertFalse(dropdownElement.opened);
+    assertEquals(3, searchBoxElement.searchResults.length);
+
+    // The first item should be selected immediately when the search results
+    // change even if the change occurred while the dropdown was closed.
+    searchFieldElement.getSearchInput().focus();
+    await waitForListUpdate();
+    assertTrue(dropdownElement.opened);
+    const selectedRow = strictQuery(
+        'search-result-row[selected]', dropdownElement, SearchResultRowElement);
+    const selectedItem =
+        resultsListElement.selectedItem as (MojoSearchResult | undefined);
+    assertTrue(!!selectedItem);
+    assertEquals(
+        selectedRow.searchResult.acceleratorLayoutInfo.description,
+        selectedItem.acceleratorLayoutInfo.description);
+  });
+
+  test('Filter disabled search results', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    // This SearchResult is of standard layout, and contains two
+    // AcceleratorInfos. We disable one of them to verify that the disabled
+    // AcceleratorInfo is not shown.
+    const disabledFirstAcceleratorInfo =
+        TakeScreenshotSearchResult.acceleratorInfos[0]!;
+    disabledFirstAcceleratorInfo.state =
+        AcceleratorState.kDisabledByUnavailableKeys;
+
+    const partiallyDisabledSearchResult: MojoSearchResult = {
+      ...TakeScreenshotSearchResult,
+      acceleratorInfos: [
+        disabledFirstAcceleratorInfo,
+        TakeScreenshotSearchResult.acceleratorInfos[1]!,
+      ],
+    };
+
+    handler.setFakeSearchResult(
+        [partiallyDisabledSearchResult, CycleTabsTextSearchResult]);
+
+    await simulateSearch('query');
+
+    assertTrue(dropdownElement.opened);
+    assertEquals(2, searchBoxElement.searchResults.length);
+
+    // Check that the disabled AcceleratorInfo is not present in the
+    // acceleratorInfos list of the search result.
+    assertEquals(1, searchBoxElement.searchResults[0]?.acceleratorInfos.length);
+    assertEquals(
+        TakeScreenshotSearchResult.acceleratorInfos[1],
+        searchBoxElement.searchResults[0]?.acceleratorInfos[0]);
+
+    // Create a SearchResult that doesn't have any enabled AcceleratorInfos.
+    const disabledSecondAcceleratorInfo =
+        TakeScreenshotSearchResult.acceleratorInfos[1]!;
+    disabledSecondAcceleratorInfo.state =
+        AcceleratorState.kDisabledByUnavailableKeys;
+    const fullyDisabledSearchResult: MojoSearchResult = {
+      ...TakeScreenshotSearchResult,
+      acceleratorInfos:
+          [disabledFirstAcceleratorInfo, disabledSecondAcceleratorInfo],
+    };
+
+    handler.setFakeSearchResult(
+        [fullyDisabledSearchResult, CycleTabsTextSearchResult]);
+
+    searchBoxElement.onSearchResultsAvailabilityChanged();
+    await simulateSearch('query');
+
+    assertTrue(dropdownElement.opened);
+    assertEquals(1, searchBoxElement.searchResults.length);
+    assertEquals(
+        CycleTabsTextSearchResult.acceleratorLayoutInfo.description,
+        searchBoxElement.searchResults[0]?.acceleratorLayoutInfo.description);
+  });
+
+  test('Max query length has been set', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    assertTrue(!!searchFieldElement.getSearchInput().maxLength);
   });
 });

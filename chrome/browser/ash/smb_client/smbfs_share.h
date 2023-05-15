@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
@@ -130,7 +131,7 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   // Generate the input for stable mount ID hash (simplifies testing).
   std::string GenerateStableMountIdInput() const;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const SmbUrl share_url_;
   const std::string display_name_;
   MountOptions options_;

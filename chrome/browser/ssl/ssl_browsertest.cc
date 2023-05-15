@@ -572,7 +572,7 @@ class SSLUITestBase : public InProcessBrowserTest,
         NOTREACHED();
       }
     }
-    ASSERT_TRUE(content::ExecuteScript(tab, javascript));
+    ASSERT_TRUE(content::ExecJs(tab, javascript));
     return;
   }
 
@@ -1223,10 +1223,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, GoBackToMixedContent) {
       browser(), https_server_.GetURL("/ssl/google.html")));
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
   ssl_test_util::SecurityStateWebContentsObserver observer(tab);
-  ASSERT_TRUE(content::ExecuteScript(tab,
-                                     "var i = document.createElement('img');"
-                                     "i.src = 'http://example.test';"
-                                     "document.body.appendChild(i);"));
+  ASSERT_TRUE(content::ExecJs(tab,
+                              "var i = document.createElement('img');"
+                              "i.src = 'http://example.test';"
+                              "document.body.appendChild(i);"));
   observer.WaitForDidChangeVisibleSecurityState();
   ssl_test_util::CheckSecurityState(tab, CertError::NONE,
                                     security_state::WARNING,
@@ -1254,10 +1254,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentWithSameDocumentNavigation) {
       browser(), https_server_.GetURL("/ssl/google.html")));
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
   ssl_test_util::SecurityStateWebContentsObserver security_state_observer(tab);
-  ASSERT_TRUE(content::ExecuteScript(tab,
-                                     "var i = document.createElement('img');"
-                                     "i.src = 'http://example.test';"
-                                     "document.body.appendChild(i);"));
+  ASSERT_TRUE(content::ExecJs(tab,
+                              "var i = document.createElement('img');"
+                              "i.src = 'http://example.test';"
+                              "document.body.appendChild(i);"));
   security_state_observer.WaitForDidChangeVisibleSecurityState();
   ssl_test_util::CheckSecurityState(tab, CertError::NONE,
                                     security_state::WARNING,
@@ -2489,10 +2489,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The actual image (Google logo) is 276 pixels wide.
     EXPECT_EQ(276, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is set.
-    bool js_result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-    EXPECT_TRUE(js_result);
+    EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
   }
   {
     // Now visit the page with its iframe and subresources served over bad
@@ -2512,10 +2509,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The broken image width is zero.
     EXPECT_EQ(16, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is not set.
-    bool js_result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-    EXPECT_FALSE(js_result);
+    EXPECT_EQ(false, content::EvalJs(tab, "IsFooSet();"));
   }
 }
 
@@ -2546,10 +2540,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   // Load the insecure image.
-  bool js_result = false;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractBool(tab, "loadBadImage();", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "loadBadImage();"));
 
   // We should now have insecure content.
   ssl_test_util::CheckSecurityState(tab, CertError::NONE,
@@ -3008,7 +2999,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWaitForDOMNotification,
   set_expected_notification("\"mixed-image-loaded\"");
   observe(tab);
   set_run_loop(&run_loop);
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab,
       "var loaded = function () {"
       "  window.domAutomationController.send('mixed-image-loaded');"
@@ -3072,16 +3063,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
 
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
-  bool success = false;
   // Now navigate inside the frame.
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3093,10 +3080,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('badHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('badHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3104,16 +3088,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   // And the frame should be blocked.
-  bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
-  std::string is_evil_js(
-      "window.domAutomationController.send("
-      "document.getElementById('evilDiv') != null);");
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(content_frame, is_evil_js,
-                                                   &is_content_evil));
-  EXPECT_FALSE(is_content_evil);
+  std::string is_evil_js("document.getElementById('evilDiv') != null;");
+  EXPECT_EQ(false, content::EvalJs(content_frame, is_evil_js));
 
   // Now go back, our state should still be OK.
   {
@@ -3130,10 +3109,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('HTTPLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('HTTPLink');"));
     observer.Wait();
   }
 
@@ -3178,14 +3154,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBadFrameNavigation) {
   ProceedThroughInterstitial(tab);
 
   // Navigate to a good frame.
-  bool success = false;
   content::WindowedNotificationObserver observer(
       content::NOTIFICATION_LOAD_STOP,
       content::Source<content::NavigationController>(&tab->GetController()));
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-      &success));
-  ASSERT_TRUE(success);
+  ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
   observer.Wait();
 
   // We should still be authentication broken.
@@ -3210,14 +3182,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
 
   // Now navigate inside the frame to a secure HTTPS frame.
   {
-    bool success = false;
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3226,14 +3194,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
 
   // Now navigate to a bad HTTPS frame.
   {
-    bool success = false;
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('badHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('badHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3241,16 +3205,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
   ssl_test_util::CheckUnauthenticatedState(tab, AuthState::NONE);
 
   // And the frame should have been blocked (see bug #2316).
-  bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
-  std::string is_evil_js(
-      "window.domAutomationController.send("
-      "document.getElementById('evilDiv') != null);");
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(content_frame, is_evil_js,
-                                                   &is_content_evil));
-  EXPECT_FALSE(is_content_evil);
+  std::string is_evil_js("document.getElementById('evilDiv') != null;");
+  EXPECT_EQ(false, content::EvalJs(content_frame, is_evil_js));
 }
 
 enum class OffMainThreadFetchMode { kEnabled, kDisabled };
@@ -3388,8 +3347,8 @@ class SSLUIWorkerFetchTest
         expected_show_dangerous ? AuthState::RAN_INSECURE_CONTENT
                                 : AuthState::NONE);
     // Clears title.
-    ASSERT_TRUE(content::ExecuteScript(tab->GetPrimaryMainFrame(),
-                                       "document.title = \"\";"));
+    ASSERT_TRUE(
+        content::ExecJs(tab->GetPrimaryMainFrame(), "document.title = \"\";"));
 
     {
       // SetAllowRunningInsecureContent will reload the page.
@@ -3804,10 +3763,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContentsWithUserException) {
   // image is greater than 100.
   EXPECT_GT(content::EvalJs(tab, "ImageWidth();"), 100);
 
-  bool js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
 
   // Test that active subresources with the same certificate errors as
   // the main resources also get noted in |content_with_cert_errors_status|.
@@ -3816,10 +3772,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContentsWithUserException) {
       https_server_mismatched_.host_port_pair());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_mismatched_.GetURL(replacement_path)));
-  js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_COMMON_NAME_INVALID, AuthState::NONE);
 
@@ -4009,7 +3962,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptProceeds) {
       content::Source<content::NavigationController>(&tab->GetController()));
   const std::string javascript =
       "window.certificateErrorPageController.proceed();";
-  EXPECT_TRUE(content::ExecuteScript(tab, javascript));
+  EXPECT_TRUE(content::ExecJs(tab, javascript));
   observer.Wait();
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::NONE);
@@ -4034,7 +3987,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptGoesBack) {
       content::Source<content::NavigationController>(&tab->GetController()));
   const std::string javascript =
       "window.certificateErrorPageController.dontProceed();";
-  EXPECT_TRUE(content::ExecuteScript(tab, javascript));
+  EXPECT_TRUE(content::ExecJs(tab, javascript));
   observer.Wait();
   EXPECT_EQ("about:blank", tab->GetVisibleURL().spec());
 }
@@ -4092,7 +4045,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SubframeCertError) {
       "i.src = '%s';"
       "document.body.appendChild(i);",
       https_server_expired_.GetURL("/ssl/google.html").spec().c_str());
-  EXPECT_TRUE(content::ExecuteScript(tab, insert_frame));
+  EXPECT_TRUE(content::ExecJs(tab, insert_frame));
   observer.Wait();
 
   content::RenderFrameHost* child =
@@ -4283,16 +4236,17 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
       https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   GURL image = https_server_.GetURL("/ssl/google_files/logo.gif");
-  bool result = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      tab,
-      std::string("var img = document.createElement('img');img.src ='") +
-          image.spec() +
-          "';img.onload=function() { "
-          "window.domAutomationController.send(true); };"
-          "document.body.appendChild(img);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(
+      true,
+      EvalJs(tab,
+             std::string("var img = document.createElement('img');img.src ='") +
+                 image.spec() +
+                 "';"
+                 "new Promise(resolve => {"
+                 "  img.onload=function() { "
+                 "    resolve(true); };"
+                 "  document.body.appendChild(img);"
+                 "});"));
   EXPECT_FALSE(state->HasAllowException(
       https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
@@ -5264,7 +5218,7 @@ void SetupRestoredTabWithNavigation(
   WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
 
   content::TestNavigationObserver observer(tab);
-  EXPECT_TRUE(ExecuteScript(tab, "history.pushState({}, '', '');"));
+  EXPECT_TRUE(ExecJs(tab, "history.pushState({}, '', '');"));
   observer.Wait();
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -5308,8 +5262,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   content::TestNavigationObserver observer(tab);
-  ASSERT_TRUE(content::ExecuteScript(
-      tab, "location.replace(window.location.href + '#1')"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "location.replace(window.location.href + '#1')"));
   observer.Wait();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
@@ -5442,7 +5396,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SameDocumentHasSSLState) {
     content::TestNavigationObserver observer(tab);
     std::string script = "history.replaceState({}, '', '/server-redirect?" +
                          redirect_dest_url.spec() + "')";
-    EXPECT_TRUE(ExecuteScript(tab, script));
+    EXPECT_TRUE(ExecJs(tab, script));
     observer.Wait();
   }
 
@@ -5570,7 +5524,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SameDocumentNavigationAfterLoadSSLState) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(tab, "location.hash = Math.random()"));
+  ASSERT_TRUE(content::ExecJs(tab, "location.hash = Math.random()"));
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 }
 
@@ -5585,7 +5539,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_PushStateSSLState) {
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   content::TestNavigationObserver observer(tab);
-  EXPECT_TRUE(ExecuteScript(tab, "history.pushState({}, '', '');"));
+  EXPECT_TRUE(ExecJs(tab, "history.pushState({}, '', '');"));
   observer.Wait();
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
@@ -5769,9 +5723,9 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
   }
 
   // The first profile.
-  Profile* profile_1_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_1_;
   // The second profile.
-  Profile* profile_2_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_2_;
 
   // The NSSCertDatabase for |profile_1_|.
   net::NSSCertDatabase* profile_1_cert_db_;
@@ -5842,7 +5796,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreLocalhostCertErrors,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/ssl/google.html")));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(tab, "window.open()"));
+  ASSERT_TRUE(content::ExecJs(tab, "window.open()"));
 }
 
 class SSLUICaptivePortalListEnabledTest : public SSLUITest {
@@ -6084,7 +6038,7 @@ IN_PROC_BROWSER_TEST_F(
       "contains a form that targets an insecure endpoint "
       "'http://does-not-exist.test/ssl/google_files/logo.gif'. This endpoint "
       "should be made available over a secure connection.");
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
 
   // We shouldn't be displaying an interstitial.
@@ -6112,7 +6066,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
   nav_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   tab = browser()->tab_strip_model()->GetActiveWebContents();
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -6140,7 +6094,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6180,7 +6134,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6221,7 +6175,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6268,7 +6222,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ProceedThroughInsecureFormWarning) {
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6297,7 +6251,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, GoBackFromInsecureFormWarning) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), form_site_url));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6329,7 +6283,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureFormSubmissionWarning) {
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6365,7 +6319,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6403,7 +6357,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6448,7 +6402,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
 
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -6491,7 +6445,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6561,7 +6515,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -6612,7 +6566,7 @@ IN_PROC_BROWSER_TEST_F(MixedFormsPolicyTest, NoWarningOptOutPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), form_site_url));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(tab, "submitForm();"));
   nav_observer.Wait();
 
   // No interstitial should be shown, and we should be in the form action URL.
@@ -8005,8 +7959,8 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
   // Proceed through the interstitial and observe that the histogram is
   // recorded correctly.
   content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(content::ExecuteScript(
-      tab, "window.certificateErrorPageController.proceed();"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "window.certificateErrorPageController.proceed();"));
   nav_observer.Wait();
 }
 
@@ -8392,7 +8346,7 @@ IN_PROC_BROWSER_TEST_F(InsecureFormNavigationThrottleFencedFrameBrowserTest,
       "contains a form that targets an insecure endpoint "
       "'http://does-not-exist.test/ssl/google_files/logo.gif'. This endpoint "
       "should be made available over a secure connection.");
-  ASSERT_TRUE(content::ExecuteScript(fenced_frame, "submitForm();"));
+  ASSERT_TRUE(content::ExecJs(fenced_frame, "submitForm();"));
   observer.Wait();
 
   security_interstitials::SecurityInterstitialTabHelper* helper =

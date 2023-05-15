@@ -2,7 +2,7 @@ Name: Fuchsia SDK
 URL: https://fuchsia.dev/fuchsia-src/development/sdk/download
 Version: 0
 Security Critical: yes
-License: BSD 3-Clause, Apache 2.0, MIT
+License: BSD 2-Clause, Apache 2.0, MIT
 License File: sdk/LICENSE
 
 Description:

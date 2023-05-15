@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
@@ -24,10 +23,6 @@
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace syncer::sync_ui_util {
 
@@ -156,8 +151,6 @@ std::string GetDisableReasonsString(
     reason_strings.push_back("Enterprise policy");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN))
     reason_strings.push_back("Not signed in");
-  if (disable_reasons.Has(SyncService::DISABLE_REASON_USER_CHOICE))
-    reason_strings.push_back("User choice");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR))
     reason_strings.push_back("Unrecoverable error");
   return base::JoinString(reason_strings, ", ");
@@ -314,10 +307,6 @@ base::Value::Dict ConstructAboutInformation(
       section_summary->AddStringStat("User Actionable Error");
   Stat<std::string>* disable_reasons =
       section_summary->AddStringStat("Disable Reasons");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Stat<std::string>* os_feature_state =
-      section_summary->AddStringStat("Chrome OS Sync Feature");
-#endif
   Stat<bool>* feature_enabled =
       section_summary->AddBoolStat("Sync Feature Enabled");
   Stat<bool>* setup_in_progress =
@@ -401,8 +390,8 @@ base::Value::Dict ConstructAboutInformation(
       "Status from Last Completed Session", /*is_sensitive=*/false);
   Stat<std::string>* session_source =
       section_last_session->AddStringStat("Sync Source");
-  Stat<std::string>* get_key_result =
-      section_last_session->AddStringStat("GetKey Step Result");
+  Stat<bool>* get_key_failed =
+      section_last_session->AddBoolStat("GetKey Step Failed");
   Stat<std::string>* download_result =
       section_last_session->AddStringStat("Download Step Result");
   Stat<std::string>* commit_result =
@@ -452,9 +441,6 @@ base::Value::Dict ConstructAboutInformation(
                    /*is_good=*/user_actionable_error ==
                        SyncService::UserActionableError::kNone);
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  os_feature_state->Set("Enforced Enabled");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
   std::string auth_error_str = service->GetAuthError().ToString();
@@ -506,7 +492,8 @@ base::Value::Dict ConstructAboutInformation(
           token_status.connection_status == CONNECTION_OK);
   last_synced->Set(
       GetLastSyncedTimeString(service->GetLastSyncedTimeForDebugging()));
-  is_setup_complete->Set(service->GetUserSettings()->IsFirstSetupComplete());
+  is_setup_complete->Set(
+      service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   if (is_status_valid)
     is_syncing->Set(full_status.syncing);
   is_local_sync_enabled->Set(is_local_sync_enabled_state);
@@ -558,10 +545,10 @@ base::Value::Dict ConstructAboutInformation(
     if (snapshot.get_updates_origin() != sync_pb::SyncEnums::UNKNOWN_ORIGIN) {
       session_source->Set(ProtoEnumToString(snapshot.get_updates_origin()));
     }
-    SyncerError get_key_result_err =
-        snapshot.model_neutral_state().last_get_key_result;
-    get_key_result->Set(get_key_result_err.ToString(),
-                        /*is_good=*/!get_key_result_err.IsActualError());
+    const bool get_key_failed_state =
+        snapshot.model_neutral_state().last_get_key_failed;
+    get_key_failed->Set(get_key_failed_state,
+                        /*is_good=*/!get_key_failed_state);
     SyncerError download_result_err =
         snapshot.model_neutral_state().last_download_updates_result;
     download_result->Set(download_result_err.ToString(),

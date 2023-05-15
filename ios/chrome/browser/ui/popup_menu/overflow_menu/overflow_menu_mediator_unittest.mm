@@ -28,8 +28,6 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -39,6 +37,11 @@
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
@@ -48,10 +51,8 @@
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -83,7 +84,8 @@ void SetupSyncServiceEnabledExpectations(
     syncer::MockSyncService* sync_service) {
   ON_CALL(*sync_service, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-  ON_CALL(*sync_service->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_service->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*sync_service->GetMockUserSettings(), GetSelectedTypes())
       .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
@@ -386,7 +388,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   }
 
   // Checks that Tools Menu has the right number of items in each section.
-  CheckMediatorSetItems(8, @[
+  CheckMediatorSetItems(9, @[
     @(number_of_tab_actions),
     // Other actions, depending on configuration.
     @(number_of_action_items),
@@ -474,6 +476,10 @@ TEST_F(OverflowMenuMediatorTest, TestTextZoomDisabled) {
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
 
+  // FontSizeTabHelper requires a web frames manager.
+  web_state_->SetWebFramesManager(
+      FontSizeJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+      std::make_unique<web::FakeWebFramesManager>());
   FontSizeTabHelper::CreateForWebState(
       browser_->GetWebStateList()->GetWebStateAt(0));
 

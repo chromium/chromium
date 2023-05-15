@@ -216,8 +216,9 @@ std::string MakeContentOfSize(int size) {
   EXPECT_GE(size, 0);
   std::string result;
   result.reserve(size);
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; i++) {
     result.append(1, static_cast<char>(i % 256));
+  }
   return result;
 }
 
@@ -491,10 +492,6 @@ void OfflinePageRequestHandlerTest::SetUp() {
 void OfflinePageRequestHandlerTest::TearDown() {
   EXPECT_TRUE(private_archives_temp_base_dir_.Delete());
   EXPECT_TRUE(public_archives_temp_base_dir_.Delete());
-  // This check confirms that the model's maintenance tasks were not executed
-  // during the test run.
-  histogram_tester_->ExpectTotalCount("OfflinePages.ClearTemporaryPages.Result",
-                                      0);
 }
 
 void OfflinePageRequestHandlerTest::InterceptRequest(
@@ -519,8 +516,9 @@ void OfflinePageRequestHandlerTest::RunUntilIdle() {
 
 void OfflinePageRequestHandlerTest::WaitForAsyncOperation() {
   // No need to wait if async operation is not needed.
-  if (async_operation_completed_)
+  if (async_operation_completed_) {
     return;
+  }
   base::RunLoop run_loop;
   async_operation_completed_callback_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -587,8 +585,9 @@ std::string OfflinePageRequestHandlerTest::UseOfflinePageHeader(
     int64_t offline_id) {
   DCHECK_NE(OfflinePageHeader::Reason::NONE, reason);
   offline_page_header_.reason = reason;
-  if (offline_id)
+  if (offline_id) {
     offline_page_header_.id = base::NumberToString(offline_id);
+  }
   return offline_page_header_.GetCompleteHeaderString();
 }
 
@@ -704,8 +703,9 @@ void OfflinePageRequestHandlerTest::OnSavePageDone(SavePageResult result,
   last_offline_id_ = offline_id;
 
   async_operation_completed_ = true;
-  if (!async_operation_completed_callback_.is_null())
+  if (!async_operation_completed_callback_.is_null()) {
     std::move(async_operation_completed_callback_).Run();
+  }
 }
 
 OfflinePageItem OfflinePageRequestHandlerTest::GetPage(int64_t offline_id) {
@@ -797,8 +797,9 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
                      base::Unretained(this), request));
 
   // |url_loader_| may not be created.
-  if (!url_loader_)
+  if (!url_loader_) {
     return;
+  }
 
   url_loader_->SetTabIdGetterForTesting(base::BindRepeating(&GetTabId, kTabId));
 }
@@ -888,8 +889,9 @@ void OfflinePageURLLoaderBuilder::ReadCompleted(const ResponseInfo& response) {
   bool is_offline_page_set_in_navigation_data = false;
   offline_pages::OfflinePageNavigationUIData* offline_page_data =
       navigation_ui_data_->GetOfflinePageNavigationUIData();
-  if (offline_page_data && offline_page_data->is_offline_page())
+  if (offline_page_data && offline_page_data->is_offline_page()) {
     is_offline_page_set_in_navigation_data = true;
+  }
 
   test()->ReadCompleted(response, is_offline_page_set_in_navigation_data);
 }

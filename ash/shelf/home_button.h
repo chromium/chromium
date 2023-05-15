@@ -16,8 +16,10 @@
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace views {
@@ -60,7 +62,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
     ~ScopedNoClipRect();
 
    private:
-    ShelfNavigationWidget* const shelf_navigation_widget_;
+    const raw_ptr<ShelfNavigationWidget, ExperimentalAsh>
+        shelf_navigation_widget_;
     const gfx::Rect clip_rect_;
   };
 
@@ -199,6 +202,24 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   void OnQuickAppShouldShowChanged(bool quick_app_shown) override;
   void OnQuickAppIconChanged() override;
 
+  // Create and animate in the quick app button from behind the home button.
+  void AnimateQuickAppButtonIn();
+
+  // Animate out the quick app button, deleting the quick app button when
+  // completed.
+  void AnimateQuickAppButtonOut();
+
+  // Callback for the quick app button slide out animation.
+  void OnQuickAppButtonSlideOutDone();
+
+  // Returns a transform which will translate the child of the
+  // `expandable_container` to be placed behind the home button.
+  gfx::Transform GetTransformForContainerChildBehindHomeButton();
+
+  // Returns a clip rect which will clip the `expandable_container` to the
+  // bounds of the home button.
+  gfx::Rect GetExpandableContainerClipRectToHomeButton();
+
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};
 
@@ -207,7 +228,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   base::ScopedObservation<AppListModelProvider, AppListModelProvider::Observer>
       app_list_model_observation_{this};
 
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
@@ -217,12 +238,12 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   ui::LayerOwner nudge_ripple_layer_;
 
   // The label view and for launcher nudge animation.
-  views::Label* nudge_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> nudge_label_ = nullptr;
 
   // The container of `nudge_label_` or `quick_app_button_`. This is also
   // responsible for painting the background of the contents. This container can
   // expand visually by animation.
-  views::View* expandable_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> expandable_container_ = nullptr;
 
   // The timer that counts down to hide the nudge_label_ from showing state.
   base::OneShotTimer label_nudge_timer_;
@@ -235,7 +256,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // The app button which is shown next to the home button. Only shown when
   // set by SetQuickApp().
-  views::ImageButton* quick_app_button_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> quick_app_button_ = nullptr;
 
   base::ObserverList<NudgeAnimationObserver> observers_;
 

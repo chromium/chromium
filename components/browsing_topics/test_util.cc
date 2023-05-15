@@ -169,14 +169,14 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service,
+    Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     CalculateCompletedCallback callback,
     base::queue<uint64_t> rand_uint64_queue)
     : BrowsingTopicsCalculator(privacy_sandbox_settings,
                                history_service,
                                site_data_manager,
-                               annotations_service,
+                               annotator,
                                epochs,
                                std::move(callback)),
       rand_uint64_queue_(std::move(rand_uint64_queue)) {}
@@ -185,14 +185,14 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service,
+    Annotator* annotator,
     CalculateCompletedCallback callback,
     EpochTopics mock_result,
     base::TimeDelta mock_result_delay)
     : BrowsingTopicsCalculator(privacy_sandbox_settings,
                                history_service,
                                site_data_manager,
-                               annotations_service,
+                               annotator,
                                base::circular_deque<EpochTopics>(),
                                base::DoNothing()),
       use_mock_result_(true),
@@ -232,5 +232,44 @@ void TesterBrowsingTopicsCalculator::MockDelayReached() {
 
 MockBrowsingTopicsService::MockBrowsingTopicsService() = default;
 MockBrowsingTopicsService::~MockBrowsingTopicsService() = default;
+
+TestAnnotator::TestAnnotator() = default;
+TestAnnotator::~TestAnnotator() = default;
+
+void TestAnnotator::UseAnnotations(
+    const std::map<std::string, std::set<int32_t>>& annotations) {
+  annotations_ = annotations;
+}
+
+void TestAnnotator::UseModelInfo(
+    const absl::optional<optimization_guide::ModelInfo>& model_info) {
+  model_info_ = model_info;
+}
+
+void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
+                                  const std::vector<std::string>& inputs) {
+  std::vector<Annotation> annotations;
+  annotations.reserve(inputs.size());
+  for (const std::string& input : inputs) {
+    Annotation annotation(input);
+    auto iter = annotations_.find(input);
+    if (iter != annotations_.end()) {
+      annotation.topics =
+          std::vector<int32_t>{iter->second.begin(), iter->second.end()};
+    }
+    annotations.push_back(annotation);
+  }
+  std::move(callback).Run(annotations);
+}
+
+void TestAnnotator::NotifyWhenModelAvailable(base::OnceClosure callback) {
+  // Always run the callback so that tests do not hang.
+  std::move(callback).Run();
+}
+
+absl::optional<optimization_guide::ModelInfo>
+TestAnnotator::GetBrowsingTopicsModelInfo() const {
+  return model_info_;
+}
 
 }  // namespace browsing_topics

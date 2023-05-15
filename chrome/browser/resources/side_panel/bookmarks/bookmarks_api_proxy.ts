@@ -21,7 +21,7 @@ export interface BookmarksApiProxy {
       void;
   contextMenuAddToBookmarksBar(id: string, source: ActionSource): void;
   contextMenuRemoveFromBookmarksBar(id: string, source: ActionSource): void;
-  contextMenuDelete(id: string, source: ActionSource): void;
+  contextMenuDelete(ids: string[], source: ActionSource): void;
   copyBookmark(id: string): Promise<void>;
   createFolder(parentId: string, title: string):
       Promise<chrome.bookmarks.BookmarkTreeNode>;
@@ -101,8 +101,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.executeRemoveFromBookmarksBarCommand(BigInt(id), source);
   }
 
-  contextMenuDelete(id: string, source: ActionSource) {
-    this.handler.executeDeleteCommand(BigInt(id), source);
+  contextMenuDelete(ids: string[], source: ActionSource) {
+    this.handler.executeDeleteCommand(ids.map(id => BigInt(id)), source);
   }
 
   copyBookmark(id: string) {

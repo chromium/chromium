@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -20,12 +22,16 @@ namespace ash {
 
 // Creates a cue (draggable bar) at the top center of an app window when it is
 // activated in tablet mode. Only one cue exists at a time.
+// TODO(b/279220838): Rename to TabletModeMultitaskCueController for better
+// clarity.
 class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
                                           wm::ActivationChangeObserver,
                                           WindowStateObserver {
  public:
-  static constexpr int kCueHeight = 4;
+  // Cue layout values.
   static constexpr int kCueYOffset = 6;
+  static constexpr int kCueWidth = 48;
+  static constexpr int kCueHeight = 4;
 
   TabletModeMultitaskCue();
 
@@ -41,10 +47,21 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   // duration.
   void MaybeShowCue(aura::Window* active_window);
 
+  // Returns false if the cue cannot be shown on `window` (e.g., non-app
+  // windows), and true otherwise.
+  bool CanShowCue(aura::Window* window) const;
+
   // Dismisses the cue from the screen and cleans up the pointers and
-  // observers related to its parent window. `menu_opened` is true if we want to
-  // dismiss the cue because the tablet multitask menu has been opened.
-  void DismissCue(bool menu_opened = false);
+  // observers related to its parent window.
+  void DismissCue();
+
+  // Resets the position of the cue back to the top of `window_` if the cue is
+  // still visible.
+  void ResetPosition();
+
+  // If the cue is visible, checks to see if it is on the same window as the
+  // multitask menu, and shows it on the correct window if not.
+  void OnMenuOpened(aura::Window* active_window);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -62,12 +79,16 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
 
+  void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
   chromeos::MultitaskMenuNudgeController* nudge_controller_for_testing() {
     return &nudge_controller_;
   }
-  void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
 
  private:
+  friend class TabletModeMultitaskMenu;
+  FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuEventHandlerTest,
+                           CueCorrectWindowInSplitView);
+
   // Updates the bounds of the cue relative to the window if the window is
   // still available.
   void UpdateCueBounds();
@@ -77,7 +98,7 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void OnTimerFinished();
 
   // The app window that the cue is associated with.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // Handles showing the educational nudge for the tablet multitask menu.
   chromeos::MultitaskMenuNudgeController nudge_controller_;

@@ -128,11 +128,23 @@ void ContextProviderCommandBuffer::Release() const {
 gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // This is called on the thread the context will be used.
   DCHECK(context_sequence_checker_.CalledOnValidSequence());
+  CHECK(channel_);
 
   if (bind_tried_)
     return bind_result_;
 
   bind_tried_ = true;
+
+  // This is for no swiftshader and no software rasterization.
+  // Return kFatalFailure to indicate no retry is necessary. Should update
+  // Renderer Thread Impl or Blink so it won't keep retrying
+  // BindToCurrentSequence.
+  if (channel_->gpu_info().gl_implementation_parts.gl ==
+      gl::kGLImplementationDisabled) {
+    bind_result_ = gpu::ContextResult::kFatalFailure;
+    return bind_result_;
+  }
+
   // Any early-out should set this to a failure code and return it.
   bind_result_ = gpu::ContextResult::kSuccess;
 

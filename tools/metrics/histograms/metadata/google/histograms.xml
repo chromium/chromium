@@ -41,34 +41,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GoogleUpdate.Result.Session" enum="BooleanSuccess"
-    expires_after="2020-10-15">
-<!-- Name completed by histogram_suffixes name="GoogleUpdate.Result.UpdateType" -->
-
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Whether or not an update was successful when looking at the
-    Chrome version on the next session where there is no update in progress.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Result.TimeWindow" enum="BooleanSuccess"
-    expires_after="2020-10-15">
-<!-- Name completed by histogram_suffixes name="GoogleUpdate.Result.UpdateType" -->
-
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Whether or not an update was successful within a specific
-    server-configured window of time (e.g. an update may not occur right after
-    the user attempts to start it, but if they update sometime in the next X
-    days, we can possibly attribute it to the update flow we started). An
-    example window value could be on the order of days (e.g. 2 days since an
-    update started).
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.StartingUpdateState"
     enum="BooleanAlreadyUpdating" expires_after="2020-10-15">
   <owner>dtrainor@chromium.org</owner>

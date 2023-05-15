@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -51,6 +52,7 @@ import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
@@ -90,6 +92,7 @@ public class MainActivity
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
     private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
+    private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -141,6 +144,7 @@ public class MainActivity
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mForceEngagementSignalsCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
+    private CheckBox mSideSheetRoundedCornerCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -175,6 +179,13 @@ public class MainActivity
 
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR";
+
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT = 0;
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE = 1;
+    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP = 2;
+
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION";
 
     /**
      * Once per second, asks the framework for the process importance, and logs any change.
@@ -252,6 +263,38 @@ public class MainActivity
                                 // CustomTabsConnection#ON_ACTIVITY_LAYOUT_STATE_EXTRA
                                 + " state = " + args.getInt("state"));
             }
+        }
+    }
+
+    private class EngagementCallback implements EngagementSignalsCallback {
+        @Override
+        public void onVerticalScrollEvent(boolean isDirectionUp, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onVerticalScrollEvent: isDirectionUp = "
+                            + isDirectionUp);
+        }
+
+        @Override
+        public void onGreatestScrollPercentageIncreased(int scrollPercentage, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onGreatestScrollPercentageIncreased: "
+                            + "scrollPercentage = " + scrollPercentage);
+            try {
+                Log.w(TAG,
+                        "getGreatestScrollPercentage: "
+                                + getSession().getGreatestScrollPercentage(Bundle.EMPTY));
+            } catch (RemoteException e) {
+                Log.w(TAG, "The Service died while responding to the request.", e);
+            } catch (UnsupportedOperationException e) {
+                Log.w(TAG, "Engagement Signals API isn't supported by the browser.", e);
+            }
+        }
+
+        @Override
+        public void onSessionEnded(boolean didUserInteract, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onSessionEnded: didUserInteract = "
+                            + didUserInteract);
         }
     }
 
@@ -501,6 +544,9 @@ public class MainActivity
         mSideSheetMaxButtonCheckbox = findViewById(R.id.side_sheet_max_button_checkbox);
         mSideSheetMaxButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON, CHECKED) == CHECKED);
+        mSideSheetRoundedCornerCheckbox = findViewById(R.id.side_sheet_rounded_corner_checkbox);
+        mSideSheetRoundedCornerCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER, CHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -563,6 +609,7 @@ public class MainActivity
         mWarmupButton.setOnClickListener(this);
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
+        findViewById(R.id.test_asm_button).setOnClickListener(this);
     }
 
     private void initializeHeightSlider() {
@@ -694,24 +741,6 @@ public class MainActivity
 
         int viewId = v.getId();
         SharedPreferences.Editor editor = mSharedPref.edit();
-        // @CloseButtonPosition
-        int closeButtonPosition = mCloseButtonPositionToggle.getCheckedButtonId()
-                == R.id.end_button ? CustomTabsIntent.CLOSE_BUTTON_POSITION_END
-                : CustomTabsIntent.CLOSE_BUTTON_POSITION_START;
-        int sideSheetPosition =
-                mSideSheetPositionToggle.getCheckedButtonId() == R.id.side_sheet_end_button
-                ? ACTIVITY_SIDE_SHEET_POSITION_END
-                : ACTIVITY_SIDE_SHEET_POSITION_START;
-        int sideSheetAnimation =
-                mSideSheetAnimationToggle.getCheckedButtonId() == R.id.side_sheet_side_button
-                ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
-                : ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
-        int decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
-        if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_divider_button) {
-            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
-        } else if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_none_button) {
-            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
-        }
 
         if (viewId == R.id.connect_button) {
             if (mSharedPref.getStringSet(SHARED_PREF_SITES, null) != null) {
@@ -771,112 +800,139 @@ public class MainActivity
             boolean success = false;
             if (mClient != null) success = session.mayLaunchUrl(Uri.parse(url), null, null);
             if (!success) mMayLaunchButton.setEnabled(false);
+        } else if (viewId == R.id.test_asm_button) {
+            launchCct(url, editor);
+            new Handler().postDelayed(() -> launchCct("https://abc.xyz", editor), 5000);
         } else if (viewId == R.id.launch_button) {
-            CustomTabsSession session = getSession();
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
-            prepareMenuItems(builder);
-            prepareActionButton(builder);
-            boolean isPCCT = mCctType.equals("Partial CCT");
-            prepareAesthetics(builder, isPCCT);
-            CustomTabsIntent customTabsIntent = builder.build();
-            if (isPCCT) {
-                editor.putString(SHARED_PREF_CCT, "Partial CCT");
-                int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
-                int toolbarCornerRadiusPx = Math.round(
-                        toolbarCornerRadiusDp * getResources().getDisplayMetrics().density);
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION",
-                        closeButtonPosition);
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL",
-                        toolbarCornerRadiusPx);
-                int pcctInitialHeightPx = mPcctInitialHeightSlider.getProgress();
-                if (pcctInitialHeightPx != 0) {
-                    customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
-                            pcctInitialHeightPx);
-                }
-                int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
-                if (pcctInitialWidthPx != 0) {
-                    customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX",
-                            pcctInitialWidthPx);
-                }
-                int pcctBreakpointDp = mPcctBreakpointSlider.getProgress();
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP",
-                        pcctBreakpointDp);
-                if (mSideSheetMaxButtonCheckbox.isChecked()) {
-                    customTabsIntent.intent.putExtra(
-                            EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
-                }
-                if (!mPcctHeightResizableCheckbox.isChecked()) {
-                    customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
-                            ACTIVITY_HEIGHT_FIXED);
-                }
-                if (!mBackgroundInteractCheckbox.isChecked()) {
-                    customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
-                            BACKGROUND_INTERACT_OFF_VALUE);
-                }
-
-                customTabsIntent.intent.putExtra(
-                        EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
-                customTabsIntent.intent.putExtra(
-                        EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, sideSheetAnimation);
-                customTabsIntent.intent.putExtra(
-                        EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE, decorationType);
-            } else {
-                editor.putString(SHARED_PREF_CCT,
-                        mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
-                if (session != null && mBottomToolbarCheckbox.isChecked()) {
-                    prepareBottombar(builder);
-                    Intent broadcastIntent =
-                            new Intent(this, BottomBarManager.SwipeUpReceiver.class);
-                    PendingIntent pi = PendingIntent.getBroadcast(
-                            this, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
-                    customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION",
-                            pi);
-                }
-                // NOTE: opening in incognito may be restricted. This assumes it is not.
-                customTabsIntent.intent.putExtra(
-                        "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
-                        mCctType.equals("Incognito CCT"));
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION",
-                        closeButtonPosition);
-            }
-            if (mForceEngagementSignalsCheckbox.isChecked()) {
-                // NOTE: this may not work because this app is not a trusted 1st party app,
-                // and CCT requires that for this feature currently.
-                // Set the command-line-flag --cct-client-firstparty-override to fake 1st-party!
-                customTabsIntent.intent.putStringArrayListExtra(
-                        "org.chromium.chrome.browser.customtabs.EXPERIMENTS_ENABLE",
-                        new ArrayList<String>(
-                                List.of("CCTRealTimeEngagementSignals", "CCTBrandTransparency")));
-            }
-            configSessionConnection(session, customTabsIntent);
-            customTabsIntent.launchUrl(this, Uri.parse(url));
-
-            editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
-            editor.putInt(SHARED_PREF_WIDTH, mPcctInitialWidthSlider.getProgress());
-            editor.putInt(SHARED_PREF_BREAKPOINT, mPcctBreakpointSlider.getProgress());
-            editor.putInt(SHARED_PREF_PROGRESS, mToolbarCornerRadiusSlider.getProgress());
-            int toolbarCheck =
-                    session != null && mBottomToolbarCheckbox.isChecked() ? CHECKED : UNCHECKED;
-            editor.putInt(SHARED_PREF_BOTTOM_TOOLBAR, toolbarCheck);
-            editor.putInt(SHARED_PREF_CLOSE_POSITION, closeButtonPosition);
-            editor.putInt(SHARED_PREF_SIDE_SHEET_POSITION, sideSheetPosition);
-            editor.putInt(SHARED_PREF_SIDE_SHEET_ANIMATION, sideSheetAnimation);
-            editor.putInt(SHARED_PREF_HEIGHT_RESIZABLE,
-                    mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
-            editor.putInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON,
-                    mSideSheetMaxButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
-            editor.putInt(SHARED_PREF_DECORATION, decorationType);
-            editor.apply();
+            launchCct(url, editor);
         }
+    }
+
+    private void launchCct(String url, SharedPreferences.Editor editor) {
+        CustomTabsSession session = getSession();
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
+        prepareMenuItems(builder);
+        prepareActionButton(builder);
+        boolean isPCCT = mCctType.equals("Partial CCT");
+        prepareAesthetics(builder, isPCCT);
+        CustomTabsIntent customTabsIntent = builder.build();
+
+        // @CloseButtonPosition
+        int closeButtonPosition = mCloseButtonPositionToggle.getCheckedButtonId() == R.id.end_button
+                ? CustomTabsIntent.CLOSE_BUTTON_POSITION_END
+                : CustomTabsIntent.CLOSE_BUTTON_POSITION_START;
+        int sideSheetPosition =
+                mSideSheetPositionToggle.getCheckedButtonId() == R.id.side_sheet_end_button
+                ? ACTIVITY_SIDE_SHEET_POSITION_END
+                : ACTIVITY_SIDE_SHEET_POSITION_START;
+        int sideSheetAnimation =
+                mSideSheetAnimationToggle.getCheckedButtonId() == R.id.side_sheet_side_button
+                ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
+                : ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
+        int decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+        if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_divider_button) {
+            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+        } else if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_none_button) {
+            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+        }
+
+        if (isPCCT) {
+            editor.putString(SHARED_PREF_CCT, "Partial CCT");
+            int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
+            int toolbarCornerRadiusPx =
+                    Math.round(toolbarCornerRadiusDp * getResources().getDisplayMetrics().density);
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL",
+                    toolbarCornerRadiusPx);
+            int pcctInitialHeightPx = mPcctInitialHeightSlider.getProgress();
+            if (pcctInitialHeightPx != 0) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
+                        pcctInitialHeightPx);
+            }
+            int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
+            if (pcctInitialWidthPx != 0) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX",
+                        pcctInitialWidthPx);
+            }
+            int pcctBreakpointDp = mPcctBreakpointSlider.getProgress();
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP",
+                    pcctBreakpointDp);
+            if (mSideSheetMaxButtonCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(
+                        EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+            }
+            if (!mPcctHeightResizableCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
+                        ACTIVITY_HEIGHT_FIXED);
+            }
+            if (!mBackgroundInteractCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
+                        BACKGROUND_INTERACT_OFF_VALUE);
+            }
+            if (mSideSheetRoundedCornerCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+            }
+            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
+            customTabsIntent.intent.putExtra(
+                    EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, sideSheetAnimation);
+            customTabsIntent.intent.putExtra(
+                    EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE, decorationType);
+        } else {
+            editor.putString(
+                    SHARED_PREF_CCT, mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
+            if (session != null && mBottomToolbarCheckbox.isChecked()) {
+                prepareBottombar(builder);
+                Intent broadcastIntent = new Intent(this, BottomBarManager.SwipeUpReceiver.class);
+                PendingIntent pi = PendingIntent.getBroadcast(
+                        this, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION", pi);
+            }
+            // NOTE: opening in incognito may be restricted. This assumes it is not.
+            customTabsIntent.intent.putExtra(
+                    "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
+                    mCctType.equals("Incognito CCT"));
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
+        }
+        if (mForceEngagementSignalsCheckbox.isChecked()) {
+            // NOTE: this may not work because this app is not a trusted 1st party app,
+            // and CCT requires that for this feature currently.
+            // Set the command-line-flag --cct-client-firstparty-override to fake 1st-party!
+            customTabsIntent.intent.putStringArrayListExtra(
+                    "org.chromium.chrome.browser.customtabs.EXPERIMENTS_ENABLE",
+                    new ArrayList<String>(
+                            List.of("CCTRealTimeEngagementSignals", "CCTBrandTransparency")));
+        }
+        configSessionConnection(session, customTabsIntent);
+        customTabsIntent.launchUrl(this, Uri.parse(url));
+
+        editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
+        editor.putInt(SHARED_PREF_WIDTH, mPcctInitialWidthSlider.getProgress());
+        editor.putInt(SHARED_PREF_BREAKPOINT, mPcctBreakpointSlider.getProgress());
+        editor.putInt(SHARED_PREF_PROGRESS, mToolbarCornerRadiusSlider.getProgress());
+        int toolbarCheck =
+                session != null && mBottomToolbarCheckbox.isChecked() ? CHECKED : UNCHECKED;
+        editor.putInt(SHARED_PREF_BOTTOM_TOOLBAR, toolbarCheck);
+        editor.putInt(SHARED_PREF_CLOSE_POSITION, closeButtonPosition);
+        editor.putInt(SHARED_PREF_SIDE_SHEET_POSITION, sideSheetPosition);
+        editor.putInt(SHARED_PREF_SIDE_SHEET_ANIMATION, sideSheetAnimation);
+        editor.putInt(SHARED_PREF_HEIGHT_RESIZABLE,
+                mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON,
+                mSideSheetMaxButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER,
+                mSideSheetRoundedCornerCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(SHARED_PREF_DECORATION, decorationType);
+        editor.apply();
     }
 
     private void prepareAesthetics(CustomTabsIntent.Builder builder, boolean isPcct) {
@@ -995,6 +1051,15 @@ public class MainActivity
         mWarmupButton.setEnabled(true);
         mDisconnectButton.setEnabled(true);
         mMayLaunchButton.setEnabled(true);
+        try {
+            if (getSession().isEngagementSignalsApiAvailable(Bundle.EMPTY)) {
+                getSession().setEngagementSignalsCallback(new EngagementCallback(), Bundle.EMPTY);
+            }
+        } catch (RemoteException e) {
+            Log.w(TAG, "The Service died while responding to the request.", e);
+        } catch (UnsupportedOperationException e) {
+            Log.w(TAG, "Engagement Signals API isn't supported by the browser.", e);
+        }
     }
 
     @Override

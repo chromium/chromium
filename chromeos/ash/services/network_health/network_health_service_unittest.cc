@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -107,7 +108,7 @@ class NetworkHealthServiceTestImpl : public NetworkHealthService {
   void FireTimer() { mock_timer_->Fire(); }
 
  private:
-  base::MockRepeatingTimer* mock_timer_;
+  raw_ptr<base::MockRepeatingTimer, ExperimentalAsh> mock_timer_;
 };
 
 class NetworkHealthServiceTest : public ::testing::Test {

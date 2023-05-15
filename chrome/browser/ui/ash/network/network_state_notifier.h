@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -119,7 +120,8 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Shows the carrier account detail page for |network_id|.
   void ShowCarrierAccountDetail(const std::string& network_id);
 
-  SystemTrayClient* system_tray_client_ = nullptr;
+  raw_ptr<SystemTrayClient, DanglingUntriaged | ExperimentalAsh>
+      system_tray_client_ = nullptr;
 
   // The details of the connected VPN network if any, otherwise null.
   // Used for displaying the VPN disconnected notification.

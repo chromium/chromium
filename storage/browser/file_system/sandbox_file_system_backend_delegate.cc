@@ -99,15 +99,11 @@ base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
     FileSystemType type,
     OpenFileSystemMode mode) {
   const bool create = (mode == OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
-  base::File::Error error;
-  base::FileErrorOr<base::FilePath> path =
-      file_util->GetDirectoryForBucketAndType(bucket_locator, type, create);
-  error = path.has_value() ? base::File::FILE_OK : path.error();
+  return file_util->GetDirectoryForBucketAndType(bucket_locator, type, create)
+      .error_or(base::File::FILE_OK);
   // The reference of file_util will be derefed on the FILE thread
   // when the storage of this callback gets deleted regardless of whether
   // this method is called or not.
-
-  return error;
 }
 
 void DidOpenFileSystem(
@@ -428,17 +424,16 @@ int64_t SandboxFileSystemBackendDelegate::GetUsageOnFileTaskRunner(
 
   base::FilePath path;
   if (bucket_locator.has_value()) {
-    base::FileErrorOr<base::FilePath> result =
+    path =
         GetBaseDirectoryForBucketAndType(bucket_locator.value(), type, false);
-    if (!result.has_value() ||
-        !obfuscated_file_util()->delegate()->DirectoryExists(result.value()))
-      return 0;
-    path = result.value();
   } else {
     path = GetBaseDirectoryForStorageKeyAndType(storage_key, type, false);
-    if (path.empty() ||
-        !obfuscated_file_util()->delegate()->DirectoryExists(path))
+    if (path.empty()) {
       return 0;
+    }
+  }
+  if (!obfuscated_file_util()->delegate()->DirectoryExists(path)) {
+    return 0;
   }
   base::FilePath usage_file_path =
       path.Append(FileSystemUsageCache::kUsageFileName);

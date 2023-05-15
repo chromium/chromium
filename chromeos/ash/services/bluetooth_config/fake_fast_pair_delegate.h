@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 
@@ -56,8 +57,9 @@ class FakeFastPairDelegate : public FastPairDelegate {
   base::flat_map<std::string, DeviceImageInfo> mac_address_to_images_;
   base::flat_map<std::string, std::string> mac_address_to_nickname_;
   std::vector<std::string> forgotten_device_addresses_;
-  AdapterStateController* adapter_state_controller_ = nullptr;
-  DeviceNameManager* device_name_manager_ = nullptr;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_ =
+      nullptr;
+  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_ = nullptr;
 };
 
 }  // namespace ash::bluetooth_config

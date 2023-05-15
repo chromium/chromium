@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
@@ -261,13 +262,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // |CheckMembership| was performed, as |local_state_| gets deleted.
   // |local_state_| outlives the lifetime of this class.
   // Used local state prefs are initialized by |DeviceActivityController|.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // Abstract class used to generate the |psm_rlwe_client_|.
   std::unique_ptr<PsmDelegateInterface> psm_delegate_;
 
   // Singleton lives throughout class lifetime.
-  system::StatisticsProvider* const statistics_provider_;
+  const raw_ptr<system::StatisticsProvider, ExperimentalAsh>
+      statistics_provider_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // Client Generates protos used in request body of Oprf and Query requests.
@@ -276,7 +278,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // The churn_active_status is used for Churn Cohort and Observation use
   // cases to calculate the churn active status metadata.
-  ChurnActiveStatus* churn_active_status_ = nullptr;
+  raw_ptr<ChurnActiveStatus, ExperimentalAsh> churn_active_status_ = nullptr;
 };
 
 }  // namespace device_activity

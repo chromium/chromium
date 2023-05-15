@@ -43,7 +43,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OpenMainPage(base::OnceClosure initialized_callback) override;
   void OpenSecurityPage() override;
   void OpenPermissionPage(ContentSettingsType type) override;
-  void OpenAboutThisSitePage(const page_info::proto::SiteInfo& info) override;
   void OpenAdPersonalizationPage() override;
   void OpenCookiesPage() override;
   void CloseBubble() override;

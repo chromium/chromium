@@ -51,7 +51,7 @@ class RuntimeApplicationDispatcherImpl
       const std::string& session_id) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::raw_ref<ApplicationClient> const application_client_;
+  raw_ref<ApplicationClient> const application_client_;
 
   base::flat_map<std::string, std::unique_ptr<TEmbedderApplication>>
       loaded_apps_;

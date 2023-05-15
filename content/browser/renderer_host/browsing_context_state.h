@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
+#include "base/unguessable_token.h"
+#include "content/browser/coop_related_group.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -77,15 +79,17 @@ class CONTENT_EXPORT BrowsingContextState
                          std::unique_ptr<RenderFrameProxyHost>,
                          SiteInstanceGroupId::Hasher>;
 
-  // Currently browsing_instance_id| will be null iff the legacy mode is
-  // enabled, as is the legacy mode BrowsingContextState is 1:1 with
-  // FrameTreeNode and therefore doesn't have a dedicated associated
-  // BrowsingInstance.
-  // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
-  // legacy path is removed.
-  BrowsingContextState(blink::mojom::FrameReplicationStatePtr replication_state,
-                       raw_ptr<RenderFrameHostImpl> parent,
-                       absl::optional<BrowsingInstanceId> browsing_instance_id);
+  // Currently `browsing_instance_id` and `coop_related_group_id` will be null
+  // iff the legacy mode is enabled, as the legacy mode BrowsingContextState is
+  // 1:1 with FrameTreeNode and therefore doesn't have a dedicated associated
+  // BrowsingInstance or CoopRelatedGroup.
+  // TODO(crbug.com/1270671): Make `browsing_instance_id` and
+  // `coop_related_group_id` non-optional when the legacy path is removed.
+  BrowsingContextState(
+      blink::mojom::FrameReplicationStatePtr replication_state,
+      RenderFrameHostImpl* parent,
+      absl::optional<BrowsingInstanceId> browsing_instance_id,
+      absl::optional<base::UnguessableToken> coop_related_group_token);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -138,14 +142,18 @@ class CONTENT_EXPORT BrowsingContextState
   }
 
   // All proxies except outer delegate proxies should belong to the same
-  // BrowsingInstance as their BrowsingContextState. See the comment for the
-  // CHECK inside BrowsingContextState::GetRenderFrameProxyHost for more
-  // details. All proxy accessing/creating/deleting functionality assumes the
-  // same BrowsingInstance. However, in very select cases (i.e. outer
-  // delegates), the proxies will not have the same BrowsingInstance. As such,
-  // we use this enum to specify whether or not we need to check for a
-  // BrowsingInstance match when creating/deleting or accessing proxies from
-  // this BrowsingContextState.
+  // CoopRelatedGroup as their BrowsingContextState.
+  //
+  // When kSwapForCrossBrowsingInstanceNavigations is enabled, we might change
+  // BrowsingContextState during a navigation. To ensure that we haven't mixed
+  // up things, we CHECK that proxies are in the same CoopRelatedGroup. This
+  // includes proxies in the BrowsingInstance as well as proxies for COOP:
+  // restrict-properties related contexts. We do this CHECK in all functions for
+  // creating, deleting, and accessing proxies. See
+  // BrowsingContextState::GetRenderFrameProxyHostImpl() for an example.
+  //
+  // When we expect to be in one the exception cases we specify it via the
+  // ProxyAccessMode enum below, which will disable the CHECKs.
   enum class ProxyAccessMode {
     kRegular,
     kAllowOuterDelegate,
@@ -292,14 +300,15 @@ class CONTENT_EXPORT BrowsingContextState
   // main frame BrowsingContextState.
   const raw_ptr<RenderFrameHostImpl> parent_;
 
-  // ID of the BrowsingInstance to which this BrowsingContextState belongs.
-  // Currently browsing_instance_id| will be null iff the legacy mode is
-  // enabled, as is the legacy mode BrowsingContextState is 1:1 with
-  // FrameTreeNode and therefore doesn't have a dedicated associated
-  // BrowsingInstance.
-  // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
-  // legacy path is removed.
+  // ID of the BrowsingInstance and token of the CoopRelatedGroup to which this
+  // BrowsingContextState belongs. Currently `browsing_instance_id` and
+  // `coop_related_group_token` will be null iff the legacy mode is enabled, as
+  // the legacy mode BrowsingContextState is 1:1 with FrameTreeNode and
+  // therefore doesn't have a dedicated associated BrowsingInstance or
+  // CoopRelatedGroup. TODO(crbug.com/1270671): Make `browsing_instance_id` and
+  // `coop_related_group_token` non-optional when the legacy path is removed.
   const absl::optional<BrowsingInstanceId> browsing_instance_id_;
+  const absl::optional<base::UnguessableToken> coop_related_group_token_;
 
   base::WeakPtrFactory<BrowsingContextState> weak_factory_{this};
 };

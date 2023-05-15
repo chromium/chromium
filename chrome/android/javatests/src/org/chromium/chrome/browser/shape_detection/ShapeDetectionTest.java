@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.shape_detection;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -54,8 +54,8 @@ public class ShapeDetectionTest {
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
     @DisabledTest(message = "https://crbug.com/1139470")
     public void testBarcodeDetection() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         try {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             TabTitleObserver titleObserver =
@@ -79,8 +79,8 @@ public class ShapeDetectionTest {
     @LargeTest
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
     public void testTextDetection() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         try {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             TabTitleObserver titleObserver =

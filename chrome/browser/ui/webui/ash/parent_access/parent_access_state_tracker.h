@@ -29,11 +29,17 @@ class ParentAccessStateTracker {
     kAccessDeclined = 4,
     // State where the error page is shown.
     kError = 5,
-    kNumStates = 6
+    // State where parent has disabled permission requests.
+    kRequestsDisabled = 6,
+    kNumStates = 7
   };
 
+  // `flow_type` indicates which Parent Access flow type is being shown.
+  // `is_disabled` indicates if requests have been disabled by a parent. These
+  // parameters are used to determine the initial state of the flow.
   explicit ParentAccessStateTracker(
-      parent_access_ui::mojom::ParentAccessParams::FlowType flow_type);
+      parent_access_ui::mojom::ParentAccessParams::FlowType flow_type,
+      bool is_disabled);
   ParentAccessStateTracker(const ParentAccessStateTracker&) = delete;
   ParentAccessStateTracker& operator=(const ParentAccessStateTracker&) = delete;
   ~ParentAccessStateTracker();

@@ -10,7 +10,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace web {

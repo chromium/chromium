@@ -319,10 +319,6 @@ void DevToolsEyeDropper::OnFrameCaptured(
     DLOG(ERROR) << "Shared memory size was less than expected.";
     return;
   }
-  if (!info->color_space) {
-    DLOG(ERROR) << "Missing mandatory color space info.";
-    return;
-  }
 
   // The SkBitmap's pixels will be marked as immutable, but the installPixels()
   // API requires a non-const pointer. So, cast away the const.
@@ -342,7 +338,7 @@ void DevToolsEyeDropper::OnFrameCaptured(
   frame_.installPixels(
       SkImageInfo::MakeN32(content_rect.width(), content_rect.height(),
                            kPremul_SkAlphaType,
-                           info->color_space->ToSkColorSpace()),
+                           info->color_space.ToSkColorSpace()),
       pixels,
       media::VideoFrame::RowBytes(media::VideoFrame::kARGBPlane,
                                   info->pixel_format, info->coded_size.width()),

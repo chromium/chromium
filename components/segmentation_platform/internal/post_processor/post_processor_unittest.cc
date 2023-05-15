@@ -7,6 +7,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,6 +82,13 @@ proto::OutputConfig GetTestOutputConfigForBinnedClassifier() {
   writer.AddOutputConfigForBinnedClassifier(
       /*bins=*/{{0.2, kLowUsed}, {0.3, kMediumUsed}, {0.5, kHighUsed}},
       kUnderflowLabel);
+  return model_metadata.output_config();
+}
+
+proto::OutputConfig GetTestOutputConfigForGenericClassifier() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor({"Output1", "Output2", "Output3"});
   return model_metadata.output_config();
 }
 
@@ -301,6 +309,18 @@ TEST(PostProcessorTest, GetTTLForMultiClassWithNoLabels) {
       /*timestamp=*/base::Time::Now());
   EXPECT_EQ(base::Days(1) * kDefaultTTL,
             post_processor.GetTTLForPredictedResult(pred_result));
+}
+
+TEST(PostProcessorTest, GetAnnotatedNumericResult) {
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1, 0.2, 0.3},
+      GetTestOutputConfigForGenericClassifier(),
+      /*timestamp=*/base::Time::Now());
+  AnnotatedNumericResult result = PostProcessor().GetAnnotatedNumericResult(
+      pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(pred_result.SerializeAsString(), result.result.SerializeAsString());
+  EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
+  EXPECT_NEAR(0.1, *result.GetResultForLabel("Output1"), 0.001);
 }
 
 }  // namespace segmentation_platform

@@ -16,11 +16,17 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/content/browser/form_forest_test_api.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -271,8 +277,7 @@ std::vector<std::vector<T>> FlattenedPermutations(
 
 class MockContentAutofillDriver : public ContentAutofillDriver {
  public:
-  explicit MockContentAutofillDriver(content::RenderFrameHost* rfh)
-      : ContentAutofillDriver(rfh, /*autofill_router=*/nullptr) {}
+  using ContentAutofillDriver::ContentAutofillDriver;
 
   LocalFrameToken token() { return Token(render_frame_host()); }
 
@@ -325,10 +330,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
     CHECK(kOpaqueOrigin.opaque());
   }
 
-  void TearDown() override {
-    autofill_drivers_.clear();
-    RenderViewHostTestHarness::TearDown();
-  }
+  void TearDown() override { RenderViewHostTestHarness::TearDown(); }
 
  protected:
   MockContentAutofillDriver* NavigateMainFrame(
@@ -347,7 +349,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
         break;
     }
     simulator->Commit();
-    return GetOrCreateDriver(main_rfh());
+    return autofill_driver_injector_[main_rfh()];
   }
 
   // Creates a fresh child frame of |parent| with permissions |policy| and
@@ -373,7 +375,30 @@ class FormForestTest : public content::RenderViewHostTestHarness {
         content::RenderFrameHostTester::For(parent->render_frame_host())
             ->AppendChildWithPolicy(static_cast<std::string>(name),
                                     declared_policy);
-    return NavigateFrame(rfh, url);
+    // ContentAutofillDriverFactory::DidFinishNavigation() creates a driver for
+    // subframes only if
+    // `NavigationHandle::HasSubframeNavigationEntryCommitted()` is true. This
+    // is not the case for the first navigation. (In non-unit-tests, the first
+    // navigation creates a driver in
+    // ContentAutofillDriverFactory::BindAutofillDriver().) Therefore,
+    // we simulate *two* navigations here, and explicitly set the transition
+    // type for the second navigation.
+    std::unique_ptr<content::NavigationSimulator> simulator;
+    // First navigation: `HasSubframeNavigationEntryCommitted() == false`.
+    // Must be a different URL from the second navigation.
+    GURL about_blank("about:blank");
+    CHECK_NE(about_blank, url);
+    simulator =
+        content::NavigationSimulator::CreateRendererInitiated(about_blank, rfh);
+    simulator->Commit();
+    rfh = simulator->GetFinalRenderFrameHost();
+    // Second navigation: `HasSubframeNavigationEntryCommitted() == true`.
+    // Must set the transition type to ui::PAGE_TRANSITION_MANUAL_SUBFRAME.
+    simulator = content::NavigationSimulator::CreateRendererInitiated(url, rfh);
+    simulator->SetTransition(ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+    simulator->Commit();
+    rfh = simulator->GetFinalRenderFrameHost();
+    return autofill_driver_injector_[rfh];
   }
 
  private:
@@ -398,27 +423,12 @@ class FormForestTest : public content::RenderViewHostTestHarness {
         /*matches_opaque_src=*/false)};
   }
 
-  MockContentAutofillDriver* NavigateFrame(content::RenderFrameHost* rfh,
-                                           const GURL& url) {
-    rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(url, rfh);
-    return GetOrCreateDriver(rfh);
-  }
-
-  MockContentAutofillDriver* GetOrCreateDriver(content::RenderFrameHost* rfh) {
-    auto it = autofill_drivers_.find(rfh);
-    if (it == autofill_drivers_.end()) {
-      it = autofill_drivers_
-               .emplace(rfh, std::make_unique<MockContentAutofillDriver>(rfh))
-               .first;
-    }
-    return it->second.get();
-  }
-
   base::test::ScopedFeatureList feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::map<content::RenderFrameHost*,
-           std::unique_ptr<MockContentAutofillDriver>>
-      autofill_drivers_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
+  TestAutofillDriverInjector<MockContentAutofillDriver>
+      autofill_driver_injector_;
 };
 
 // Test fixture with a mocked frame/form tree.
@@ -675,9 +685,12 @@ TEST_F(FormForestTestUpdateTree, TriggerReparse) {
   MockFlattening({{"main1"}, {"child1"}});
   MockFlattening({{"main2"}, {"child2"}});
   FormForest ff;
+  EXPECT_CALL(*driver("main1"), TriggerReparse).Times(1);
+  UpdateTreeOfRendererForm(ff, "child1");
+  EXPECT_CALL(*driver("main1"), TriggerReparse).Times(0);
+  UpdateTreeOfRendererForm(ff, "main1");
   EXPECT_CALL(*driver("main1"), TriggerReparse).Times(0);
   UpdateTreeOfRendererForm(ff, "child1");
-  UpdateTreeOfRendererForm(ff, "main1");
   EXPECT_CALL(*driver("main2"), TriggerReparse).Times(1);
   UpdateTreeOfRendererForm(ff, "child2");
   EXPECT_CALL(*driver("main2"), TriggerReparse).Times(0);
@@ -1033,8 +1046,15 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
+class FormForestTestUpdateEraseFrame
+    : public FormForestTestUpdateTree,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool keep_frame() const { return GetParam(); }
+};
+
 // Tests that erasing a frame removes its form and fields.
-TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
+TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_FieldRemoval) {
   MockFormForest(
       {.forms = {
            {.name = "main",
@@ -1046,8 +1066,14 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
   UpdateTreeOfRendererForm(ff, "main");
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
-  ff.EraseFrame(GetMockedForm("leaf").host_frame);
-  frame_datas(mocked_forms_).erase(GetMockedForm("leaf").host_frame);
+  ff.EraseFormsOfFrame(GetMockedForm("leaf").host_frame,
+                       /*keep_frame=*/keep_frame());
+  if (!keep_frame()) {
+    frame_datas(mocked_forms_).erase(GetMockedForm("leaf").host_frame);
+  } else {
+    (*frame_datas(mocked_forms_).find(GetMockedForm("leaf").host_frame))
+        ->child_forms.clear();
+  }
   MockFlattening({{"main"}, {"inner"}});
   ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
@@ -1055,7 +1081,7 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
 
 // Tests that erasing a frame unsets the children's FrameData::parent_form
 // pointer.
-TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
+TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
   MockFormForest(
       {.forms = {
            {.name = "main",
@@ -1067,8 +1093,14 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
   UpdateTreeOfRendererForm(ff, "main");
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
-  ff.EraseFrame(GetMockedForm("inner").host_frame);
-  frame_datas(mocked_forms_).erase(GetMockedForm("inner").host_frame);
+  ff.EraseFormsOfFrame(GetMockedForm("inner").host_frame,
+                       /*keep_frame=*/keep_frame());
+  if (!keep_frame()) {
+    frame_datas(mocked_forms_).erase(GetMockedForm("inner").host_frame);
+  } else {
+    (*frame_datas(mocked_forms_).find(GetMockedForm("inner").host_frame))
+        ->child_forms.clear();
+  }
   driver("leaf")->set_sub_root(true);
   GetMockedFrame("leaf").parent_form = absl::nullopt;
   MockFlattening({{"main"}});
@@ -1080,6 +1112,10 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
   ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
+
+INSTANTIATE_TEST_SUITE_P(FormForestTest,
+                         FormForestTestUpdateEraseFrame,
+                         testing::Bool());
 
 // Parameterized with a source and an optional target form and field index.
 class FormForestTestUpdateFieldChange : public FormForestTestUpdateTree {
@@ -1313,7 +1349,7 @@ TEST_F(FormForestTestUpdateTree, Converge) {
 }
 
 // Tests that removing a frame from FormData::child_frames removes the fields
-// (but not the FrameData; this is taken care of by EraseFrame()).
+// (but not the FrameData; this is taken care of by EraseFormsOfFrame()).
 TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});

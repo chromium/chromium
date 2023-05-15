@@ -8,9 +8,10 @@ import android.annotation.SuppressLint;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -162,8 +163,8 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTP() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         try {
             final String testUrl = testServer.getURL("/chrome/test/data/android/omnibox/one.html");
 
@@ -189,8 +190,7 @@ public class OmniboxTest {
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPS() throws Exception {
         EmbeddedTestServer httpsTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getContext(),
-                ServerCertificate.CERT_OK);
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
         TabObserver observer = new EmptyTabObserver() {
             @Override
@@ -243,7 +243,7 @@ public class OmniboxTest {
         setNonDefaultSearchEngine();
 
         EmbeddedTestServer httpsTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
         TabObserver observer = new EmptyTabObserver() {
             @Override

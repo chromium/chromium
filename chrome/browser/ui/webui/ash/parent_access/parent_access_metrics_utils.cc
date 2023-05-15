@@ -9,6 +9,7 @@ namespace parent_access {
 
 namespace {
 constexpr char kParentAccessSuffixAll[] = "All";
+constexpr char kParentAccessSuffixExtensionApprovals[] = "ExtensionApprovals";
 constexpr char kParentAccessSuffixWebApprovals[] = "WebApprovals";
 }  // namespace
 
@@ -28,8 +29,9 @@ std::string GetHistogramTitleForFlowType(
           separator);
     case parent_access_ui::mojom::ParentAccessParams::FlowType::
         kExtensionAccess:
-      // TODO(b/262451256): Implement metrics for extension flow.
-      return std::string();
+      return base::JoinString(
+          {parent_access_histogram_base, kParentAccessSuffixExtensionApprovals},
+          separator);
   }
 }
 }  // namespace parent_access

@@ -7,12 +7,14 @@
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -23,29 +25,29 @@ namespace ash {
 
 namespace {
 
-ClipboardHistoryItem::DisplayFormat CalculateDisplayFormat(
+crosapi::mojom::ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     const ClipboardHistoryItem& item) {
   switch (item.main_format()) {
     case ui::ClipboardInternalFormat::kPng:
-      return ClipboardHistoryItem::DisplayFormat::kPng;
+      return crosapi::mojom::ClipboardHistoryDisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
       if ((item.data().markup_data().find("<img") == std::string::npos) &&
           (item.data().markup_data().find("<table") == std::string::npos)) {
-        return ClipboardHistoryItem::DisplayFormat::kText;
+        return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
       }
-      return ClipboardHistoryItem::DisplayFormat::kHtml;
+      return crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml;
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
-      return ClipboardHistoryItem::DisplayFormat::kText;
+      return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
     case ui::ClipboardInternalFormat::kFilenames:
-      return ClipboardHistoryItem::DisplayFormat::kFile;
+      return crosapi::mojom::ClipboardHistoryDisplayFormat::kFile;
     case ui::ClipboardInternalFormat::kCustom:
       return clipboard_history_util::ContainsFileSystemData(item.data())
-                 ? ClipboardHistoryItem::DisplayFormat::kFile
-                 : ClipboardHistoryItem::DisplayFormat::kText;
+                 ? crosapi::mojom::ClipboardHistoryDisplayFormat::kFile
+                 : crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
   }
 }
 
@@ -53,10 +55,12 @@ absl::optional<ui::ImageModel> DetermineDisplayImage(
     const ClipboardHistoryItem& item) {
   absl::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
-    case ClipboardHistoryItem::DisplayFormat::kText:
-    case ClipboardHistoryItem::DisplayFormat::kFile:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+      NOTREACHED_NORETURN();
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       break;
-    case ClipboardHistoryItem::DisplayFormat::kPng: {
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng: {
       gfx::Image image;
       if (const auto& maybe_png = item.data().maybe_png()) {
         image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
@@ -71,7 +75,7 @@ absl::optional<ui::ImageModel> DetermineDisplayImage(
       maybe_image = ui::ImageModel::FromImage(image);
       break;
     }
-    case ClipboardHistoryItem::DisplayFormat::kHtml:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       // The `ClipboardHistoryResourceManager` will update this preview once an
       // image model is rendered.
       maybe_image = clipboard_history_util::GetHtmlPreviewPlaceholder();
@@ -133,7 +137,8 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
 }
 
 absl::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
-  if (item.display_format() != ClipboardHistoryItem::DisplayFormat::kFile) {
+  if (item.display_format() !=
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     return absl::nullopt;
   }
 
@@ -152,10 +157,25 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       display_text_(DetermineDisplayText(*this)),
       icon_(DetermineIcon(*this)) {}
 
-ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
-    default;
+ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
+    : id_(other.id_),
+      data_(other.data_),
+      time_copied_(other.time_copied_),
+      main_format_(other.main_format_),
+      display_format_(other.display_format_),
+      display_image_(other.display_image_),
+      display_text_(other.display_text_),
+      icon_(other.icon_) {}
 
-ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&&) = default;
+ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
+    : id_(std::move(other.id_)),
+      data_(std::move(other.data_)),
+      time_copied_(std::move(other.time_copied_)),
+      main_format_(std::move(other.main_format_)),
+      display_format_(std::move(other.display_format_)),
+      display_image_(std::move(other.display_image_)),
+      display_text_(std::move(other.display_text_)),
+      icon_(std::move(other.icon_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 
@@ -168,6 +188,19 @@ ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
   if (data_.maybe_png() && !new_data.maybe_png())
     new_data.SetPngDataAfterEncoding(*data_.maybe_png());
   return std::exchange(data_, std::move(new_data));
+}
+
+void ClipboardHistoryItem::SetDisplayImage(
+    const ui::ImageModel& display_image) {
+  CHECK(display_image.IsImage());
+  display_image_ = display_image;
+  display_image_updated_callbacks_.Notify();
+}
+
+base::CallbackListSubscription
+ClipboardHistoryItem::AddDisplayImageUpdatedCallback(
+    base::RepeatingClosure callback) const {
+  return display_image_updated_callbacks_.Add(std::move(callback));
 }
 
 }  // namespace ash

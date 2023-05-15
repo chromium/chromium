@@ -34,7 +34,7 @@ DeviceNameStoreImpl::DeviceNameStoreImpl(
     : prefs_(prefs),
       handler_(handler),
       device_name_applier_(std::move(device_name_applier)) {
-  policy_handler_observation_.Observe(handler_);
+  policy_handler_observation_.Observe(handler_.get());
 
   if (g_browser_process->profile_manager())
     profile_manager_observer_.Observe(g_browser_process->profile_manager());

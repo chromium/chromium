@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
 #include "dbus/bus.h"
@@ -222,7 +223,7 @@ class SmbProviderClientImpl : public SmbProviderClient {
     return base::AsWeakPtr(this);
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 };
 
 }  // namespace

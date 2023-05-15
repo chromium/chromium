@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -95,12 +96,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
   std::u16string GetAccessibleWindowTitle() const override;
+  gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-
-  // Gets called when the native wiget changes size.
-  // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
-  virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) {}
 
   // Exposed for testing
   enum State {
@@ -134,9 +132,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       Profile* picker_profile,
       ClearHostClosure clear_host_callback);
 
-  // TODO(crbug.com/1380808): Make private once the cause of the bug is found.
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   friend class ProfilePicker;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
@@ -144,7 +139,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   class NavigationFinishedObserver : public content::WebContentsObserver {
    public:
-    NavigationFinishedObserver(const GURL& url,
+    NavigationFinishedObserver(const GURL& requested_url,
                                base::OnceClosure closure,
                                content::WebContents* contents);
     NavigationFinishedObserver(const NavigationFinishedObserver&) = delete;
@@ -157,7 +152,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
         content::NavigationHandle* navigation_handle) override;
 
    private:
-    const GURL url_;
+    const GURL requested_url_;
     base::OnceClosure closure_;
   };
 
@@ -231,9 +226,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerFlowController* GetProfilePickerFlowController() const;
 
   // Returns a closure that can be executed to clear (see
-  // `ProfilePickerView::Clear()`) the view. It is the owner's responsibility to
-  // make sure that the `ProfilePickerView` is still alive and that the callback
-  // is valid, before running it.
+  // `ProfilePickerView::Clear()`) the view. Uses a weak pointer internally, so
+  // it can be called after the view has been destroyed. It is different from
+  // `ProfilePicker::Hide()` because it only clears this specific instance of
+  // the picker view, whereas `Hide()` would close any picker view.
   ClearHostClosure GetClearClosure();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

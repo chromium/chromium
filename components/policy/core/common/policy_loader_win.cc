@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_loader_win.h"
+#include "base/feature_list.h"
+#include "components/policy/core/common/async_policy_loader.h"
 
 // Must be included before lm.h
 #include <windows.h>
@@ -14,12 +16,12 @@
 #include <stddef.h>
 #include <userenv.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -50,6 +52,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/registry_dict.h"
 #include "components/policy/core/common/schema.h"
+#include "components/policy/core/common/scoped_critical_policy_section.h"
 #include "components/policy/policy_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,6 +63,11 @@ namespace {
 const char kKeyMandatory[] = "policy";
 const char kKeyRecommended[] = "recommended";
 const char kKeyThirdParty[] = "3rdparty";
+
+// Kill switcher for critical policy section API usage.
+BASE_FEATURE(kCriticalPolicySection,
+             "CriticalPolicySection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The list of possible errors that can occur while collecting information about
 // the current enterprise environment.
@@ -127,7 +135,6 @@ bool IsDomainJoined() {
       &::NetGetJoinInformation;
   decltype(&::NetApiBufferFree) net_api_buffer_free_function =
       &::NetApiBufferFree;
-  bool got_function_addresses = false;
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   base::FilePath path;
   if (base::PathService::Get(base::DIR_SYSTEM, &path)) {
@@ -148,16 +155,12 @@ bool IsDomainJoined() {
           reinterpret_cast<decltype(&::NetApiBufferFree)>(
               ::GetProcAddress(net_api_library, "NetApiBufferFree"));
 
-      if (net_get_join_information_function && net_api_buffer_free_function) {
-        got_function_addresses = true;
-      } else {
+      if (!net_get_join_information_function || !net_api_buffer_free_function) {
         net_get_join_information_function = &::NetGetJoinInformation;
         net_api_buffer_free_function = &::NetApiBufferFree;
       }
     }
   }
-  base::UmaHistogramBoolean("EnterpriseCheck.NetGetJoinInformationAddress",
-                            got_function_addresses);
 
   LPWSTR buffer = nullptr;
   NETSETUP_JOIN_STATUS buffer_type = NetSetupUnknownStatus;
@@ -319,6 +322,29 @@ PolicyBundle PolicyLoaderWin::Load() {
   }
 
   return bundle;
+}
+
+void PolicyLoaderWin::Reload(bool force) {
+  if (!base::FeatureList::IsEnabled(kCriticalPolicySection)) {
+    AsyncPolicyLoader::Reload(force);
+    return;
+  }
+
+  // If we need to get management bit first, no need to enter the critical
+  // section as we won't actual read the policy.
+  if (NeedManagementBitBeforeLoad()) {
+    AsyncPolicyLoader::Reload(force);
+    return;
+  }
+
+  ScopedCriticalPolicySection::Enter(
+      base::BindOnce(&PolicyLoaderWin::OnSectionEntered,
+                     weak_factory_.GetWeakPtr(), force),
+      task_runner());
+}
+
+void PolicyLoaderWin::OnSectionEntered(bool force) {
+  AsyncPolicyLoader::Reload(force);
 }
 
 void PolicyLoaderWin::LoadChromePolicy(const RegistryDict* gpo_dict,

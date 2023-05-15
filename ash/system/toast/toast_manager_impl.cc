@@ -278,7 +278,6 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
   new_overlay = std::make_unique<ToastOverlay>(
       this, current_toast_data_->text, current_toast_data_->dismiss_text,
       *current_toast_data_->leading_icon, current_toast_data_->duration,
-      current_toast_data_->visible_on_lock_screen && locked_,
       current_toast_data_->persist_on_hover, root_window,
       current_toast_data_->dismiss_callback);
   new_overlay->Show(true);

@@ -130,8 +130,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
         GetCornerRadius(/*tablet_mode=*/true),
         is_jelly_enabled
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder2));
   }
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -167,10 +166,10 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
       std::make_unique<views::Label>(std::u16string()));
   if (is_jelly_enabled) {
     bubble_utils::ApplyStyle(subtitle_, TypographyToken::kCrosAnnotation1,
-                             kColorAshTextColorSecondary);
+                             cros_tokens::kCrosSysOnSurfaceVariant);
   } else {
     bubble_utils::ApplyStyle(subtitle_, TypographyToken::kCrosAnnotation1,
-                             cros_tokens::kCrosSysSecondary);
+                             kColorAshTextColorSecondary);
   }
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   subtitle_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
@@ -293,7 +292,7 @@ void ContinueTaskView::SetResult(SearchResult* result) {
 
   result_ = result;
   if (result_) {
-    search_result_observation_.Observe(result_);
+    search_result_observation_.Observe(result_.get());
     UpdateResult();
   }
 }

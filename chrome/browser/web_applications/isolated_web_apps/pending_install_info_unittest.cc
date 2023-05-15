@@ -43,7 +43,7 @@ class WebContentsContainer {
   content::WebContents& web_contents() { return *web_contents_; }
 
  private:
-  base::raw_ref<content::BrowserContext> context_;
+  raw_ref<content::BrowserContext> context_;
 
   std::unique_ptr<content::WebContents> web_contents_ =
       content::WebContents::Create(

@@ -171,6 +171,11 @@ gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(ResourceId id) {
   return gpu::ToBufferFormat(resource->transferable.format);
 }
 
+SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return resource->transferable.format;
+}
+
 const gfx::ColorSpace& DisplayResourceProvider::GetOverlayColorSpace(
     ResourceId id) {
   ChildResource* resource = GetResource(id);

@@ -48,12 +48,13 @@ class SerialChooserContext
 
   ~SerialChooserContext() override;
 
-  static base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port);
+  static base::Value::Dict PortInfoToValue(
+      const device::mojom::SerialPortInfo& port);
 
   // ObjectPermissionContextBase:
-  std::string GetKeyForObject(const base::Value& object) override;
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value::Dict& object) override;
+  bool IsValidObject(const base::Value::Dict& object) override;
+  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
   // ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;
 
@@ -63,7 +64,7 @@ class SerialChooserContext
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   void RevokeObjectPermission(const url::Origin& origin,
-                              const base::Value& object) override;
+                              const base::Value::Dict& object) override;
 
   // Serial-specific interface for granting, checking, and revoking permissions.
   void GrantPortPermission(const url::Origin& origin,
@@ -104,7 +105,7 @@ class SerialChooserContext
   bool CanApplyPortSpecificPolicy();
 
   void RevokeObjectPermissionInternal(const url::Origin& origin,
-                                      const base::Value& object,
+                                      const base::Value::Dict& object,
                                       bool revoked_by_website);
 
   // This raw pointer is safe because instances of this class are created by

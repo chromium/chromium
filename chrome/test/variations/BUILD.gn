@@ -1,0 +1,37 @@
+import("//build/config/python.gni")
+
+python_library("test_utils") {
+  testonly = true
+
+  data = [ "//chrome/test/variations/test_utils/" ]
+}
+
+python_library("fixtures") {
+  testonly = true
+
+  data = [
+    "//build/skia_gold_common/",
+    "//chrome/test/variations/fixtures/",
+  ]
+
+  data_deps = [ "//ui/base:goldctl" ]
+}
+
+python_library("variations_desktop_smoke_tests") {
+  testonly = true
+
+  data = [
+    "conftest.py",
+    "smoke_test.py",
+    "//chrome/test/data/variations/",
+    "//chrome/test/variations/run_variations_tests.py",
+  ]
+
+  data_deps = [
+    ":fixtures",
+    ":test_utils",
+    "//testing:run_isolated_script_test",
+    "//testing:test_scripts_shared",
+    "//third_party/catapult/third_party/gsutil:gsutil",
+  ]
+}

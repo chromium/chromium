@@ -589,6 +589,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
           Google Chrome wants to export your passwords. Type your Windows password to allow this.
         </message>
+        <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before overriding passwords during Import.">
+          Google Chrome is trying to replace existing passwords. Type your Windows password to allow this.
+        </message>
         <message name="IDS_INSTALL_HIGHER_VERSION" desc="Error displayed when higher version already exists.">
           This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.
         </message>
@@ -679,10 +682,6 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_MALWARE"
                desc="Subpage summary for malware warning for the user.">
         Chrome blocked this file because it has malware
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
-               desc="Subpage summary of warning for Deep Scanning.">
-        Chrome recommends scanning this file because it may be dangerous
       </message>
 
       <!-- Tailored Warning in Download Bubble Items -->
@@ -864,6 +863,10 @@ Permissions you've already given to websites and apps may apply to this account.
           Chrome Helper
         </message>
       </if>
+
+      <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
+        Google Password Manager
+      </message>
 
       <!-- Chrome sign-in page -->
       <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page">
@@ -1063,11 +1066,17 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <if expr="not is_android">
         <!-- WebHID system tray icon -->
-        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP" desc="Tooltip for the WebHID system tray icon when one or more HID devices are being accessed.">
+        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION" desc="Title for the WebHID system tray icon when one or more HID devices are being accessed by an extension.">
             {NUM_DEVICES, plural,
-            =0 {Google Chrome was connected to a HID device}
-            =1 {Google Chrome is connected to a HID device}
-            other {Google Chrome is connected to HID devices}}
+            =0 {A Google Chrome extension was accessing HID devices}
+            =1 {A Google Chrome extension is accessing 1 HID device}
+            other {A Google Chrome extension is accessing # HID devices}}
+        </message>
+        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS" desc="Title for the WebHID system tray icon when HID devices are being accessed by multiple extensions.">
+            {NUM_DEVICES, plural,
+            =0 {Google Chrome extensions were accessing HID devices}
+            =1 {Google Chrome extensions are accessing HID devices}
+            other {Google Chrome extensions are accessing # HID devices}}
         </message>
       </if>
 
@@ -1454,9 +1463,21 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY" desc="Title for the window picker dialog shown when desktop capture of a tab is requested by an app.">
         Share a Chrome tab
       </message>
-
-    <!-- Idle timeout dialog. -->
+      <!-- Idle timeout bubble. -->
     <if expr="not is_android and not is_chromeos">
+      <message name="IDS_IDLE_BUBBLE_TITLE_CLOSE" desc="Title of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
+        Chrome was automatically closed
+      </message>
+      <message name="IDS_IDLE_BUBBLE_BODY_CLOSE_AND_CLEAR" desc="Body of a bubble that informs the user that Chrome closed + cleared data automatically, because they were away from the computer for X minutes.">
+        Your organization closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. Browsing data was deleted. This could include history, autofill, and downloads.
+      </message>
+      <message name="IDS_IDLE_BUBBLE_BODY_CLEAR" desc="Body of a bubble that informs the user that Chrome cleared data automatically, because they were away from the computer for X minutes.">
+        Your organization deletes Chrome data when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. This could include history, autofill, and downloads.
+      </message>
+      <message name="IDS_IDLE_BUBBLE_BODY_CLOSE" desc="Body of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
+        Your organization closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>.
+      </message>
+    <!-- Idle timeout dialog. -->
       <message name="IDS_IDLE_TIMEOUT_CLOSE_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
         Chrome will soon close
       </message>
@@ -1794,6 +1815,18 @@ Permissions you've already given to websites and apps may apply to this account.
             Make Chrome faster
           </message>
         </if>
+      </if>
+
+      <!-- Payments settings DeviceAuthentication strings -->
+      <if expr="is_macosx">
+        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth.">
+          modify settings for filling payment methods.
+        </message>
+      </if>
+      <if expr="is_win">
+        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
+          Google Chrome is trying to modify settings for filling payment methods.
+        </message>
       </if>
     </messages>
   </release>

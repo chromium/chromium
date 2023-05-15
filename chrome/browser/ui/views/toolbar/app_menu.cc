@@ -198,7 +198,8 @@ class InMenuButtonBackground : public views::Background {
                       const gfx::Rect& bounds,
                       views::Button::ButtonState state) const {
     if (state == views::Button::STATE_HOVERED ||
-        state == views::Button::STATE_PRESSED) {
+        state == views::Button::STATE_PRESSED ||
+        state == views::Button::STATE_NORMAL) {
       gfx::Rect bounds_rect = bounds;
       ui::NativeTheme::ExtraParams params;
       if (type_ == ButtonType::kRoundedButton) {
@@ -211,10 +212,19 @@ class InMenuButtonBackground : public views::Background {
             gfx::Size(kCircularButtonSize, kCircularButtonSize));
         params.menu_item.corner_radius = kCircularButtonSize / 2;
       }
-      view->GetNativeTheme()->Paint(
-          canvas->sk_canvas(), view->GetColorProvider(),
-          ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
-          bounds_rect, params);
+      auto* provider = view->GetColorProvider();
+      if (features::IsChromeRefresh2023() &&
+          views::IsViewClass<views::Button>(view)) {
+        cc::PaintFlags flags;
+        flags.setColor(provider->GetColor(ui::kColorMenuButtonBackground));
+        canvas->DrawRoundRect(gfx::RectF(bounds_rect),
+                              params.menu_item.corner_radius, flags);
+      }
+      if (state != views::Button::STATE_NORMAL) {
+        view->GetNativeTheme()->Paint(
+            canvas->sk_canvas(), provider, ui::NativeTheme::kMenuItemBackground,
+            ui::NativeTheme::kHovered, bounds_rect, params);
+      }
     }
   }
 
@@ -257,8 +267,7 @@ class InMenuButton : public LabelButton {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-    SetBackground(std::make_unique<InMenuButtonBackground>(
-        InMenuButtonBackground::ButtonType::kNoBorder));
+    SetBackground(std::make_unique<InMenuButtonBackground>(type));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
@@ -919,10 +928,17 @@ bool AppMenu::IsShowing() const {
 }
 
 const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
-  return IsRecentTabsCommand(command_id)
-             ? recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
-                   command_id)
-             : nullptr;
+  if (IsRecentTabsCommand(command_id)) {
+    return recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
+        command_id);
+  }
+
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
+        ui::ResourceBundle::BoldFont);
+  }
+
+  return nullptr;
 }
 
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
@@ -1038,6 +1054,10 @@ bool AppMenu::IsItemChecked(int command_id) const {
 }
 
 bool AppMenu::IsCommandEnabled(int command_id) const {
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    return false;
+  }
+
   if (IsBookmarkCommand(command_id))
     return true;
 
@@ -1047,7 +1067,8 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   if (command_id == IDC_MORE_TOOLS_MENU)
     return true;
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) &&
+  if ((base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+       features::IsChromeRefresh2023()) &&
       command_id == IDC_EXTENSIONS_SUBMENU) {
     return true;
   }
@@ -1061,7 +1082,12 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU)
     return true;
 
-  const Entry& entry = command_id_to_entry_.find(command_id)->second;
+  // If `command_id` is not added to App Menu via MenuModel, you should handle
+  // it in the code above. `command_id_to_entry_` traces only MenuModel entries.
+  auto it = command_id_to_entry_.find(command_id);
+  CHECK(it != command_id_to_entry_.end());
+
+  const Entry& entry = it->second;
   return entry.first->IsEnabledAt(entry.second);
 }
 
@@ -1090,6 +1116,11 @@ bool AppMenu::GetAccelerator(int command_id,
                              ui::Accelerator* accelerator) const {
   if (IsBookmarkCommand(command_id))
     return false;
+
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    // This is a non-interactive title.
+    return false;
+  }
 
   if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
     // These have special child views; don't show the accelerator for them.

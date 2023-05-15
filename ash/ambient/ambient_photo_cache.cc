@@ -14,6 +14,7 @@
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -180,7 +181,7 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
   void DownloadPhoto(
       const std::string& url,
       base::OnceCallback<void(std::string&&)> callback) override {
-    access_token_controller_.RequestAccessToken(
+    access_token_controller_->RequestAccessToken(
         base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoInternal,
                        weak_factory_.GetWeakPtr(), url, std::move(callback)));
   }
@@ -196,7 +197,7 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
                callback) {
           if (!weak_ptr)
             return;
-          weak_ptr->access_token_controller_.RequestAccessToken(
+          weak_ptr->access_token_controller_->RequestAccessToken(
               std::move(callback));
         },
         weak_factory_.GetWeakPtr(),
@@ -283,7 +284,7 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         CreateSimpleURLLoader(url, access_token);
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        ambient_client_.GetURLLoaderFactory();
+        ambient_client_->GetURLLoaderFactory();
     auto* loader_ptr = simple_loader.get();
     auto* loader_factory_ptr = loader_factory.get();
 
@@ -303,7 +304,7 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         CreateSimpleURLLoader(url, access_token);
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        ambient_client_.GetURLLoaderFactory();
+        ambient_client_->GetURLLoaderFactory();
     auto* loader_ptr = simple_loader.get();
     auto* loader_factory_ptr = loader_factory.get();
 
@@ -395,8 +396,9 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   const base::FilePath root_directory_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  AmbientClient& ambient_client_;
-  AmbientAccessTokenController& access_token_controller_;
+  const raw_ref<AmbientClient, ExperimentalAsh> ambient_client_;
+  const raw_ref<AmbientAccessTokenController, ExperimentalAsh>
+      access_token_controller_;
   base::WeakPtrFactory<AmbientPhotoCacheImpl> weak_factory_{this};
 };
 

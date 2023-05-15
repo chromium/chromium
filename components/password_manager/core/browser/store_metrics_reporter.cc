@@ -424,9 +424,11 @@ void ReportPasswordIssuesMetrics(
 void ReportPasswordProtectedMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   for (const std::unique_ptr<PasswordForm>& form : forms) {
-    metrics_util::LogIsPasswordProtected(
-        form->password_value.size() >=
-        password_manager::kMinPasswordLengthToCheck);
+    if (!form->blocked_by_user && form->password_value.size() > 0) {
+      metrics_util::LogIsPasswordProtected(
+          form->password_value.size() >=
+          password_manager::kMinPasswordLengthToCheck);
+    }
   }
 }
 

@@ -18,6 +18,7 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
@@ -55,7 +56,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -663,7 +663,13 @@ class DebuggerExtensionApiTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
+// TODO(crbug/1434257): Flaky on Lacros and Linux.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_Debugger DISABLED_Debugger
+#else
+#define MAYBE_Debugger Debugger
+#endif
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, MAYBE_Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
 
@@ -742,7 +748,13 @@ class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
+// TODO(crbug/1440919): Flaky on Lacros and Linux.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_Debugger DISABLED_Debugger
+#else
+#define MAYBE_Debugger Debugger
+#endif
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, MAYBE_Debugger) {
   GURL url(embedded_test_server()->GetURL(
       "a.com", "/extensions/api_test/debugger/oopif.html"));
   GURL iframe_url(embedded_test_server()->GetURL(

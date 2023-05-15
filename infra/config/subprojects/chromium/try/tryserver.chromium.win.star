@@ -58,7 +58,7 @@ try_.builder(
 try_.builder(
     name = "win-libfuzzer-asan-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    executable = "recipe:chromium_libfuzzer_trybot",
+    executable = "recipe:chromium/fuzz",
     builderless = False,
     os = os.WINDOWS_ANY,
     main_list_view = "try",
@@ -156,7 +156,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_clang",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -166,7 +166,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_rust",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -215,6 +215,14 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        # TODO(https://crbug.com/1441206): Enable after resources verified.
+        experiment_percentage = 10,
+        location_filters = [
+            "sandbox/win/.+",
+            "sandbox/policy/win/.+",
+        ],
+    ),
     use_clang_coverage = True,
 )
 
@@ -302,4 +310,9 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "ui/gl/.+"),
         ],
     ),
+)
+
+try_.builder(
+    name = "win-cr23-rel",
+    mirrors = ["ci/win-cr23-rel"],
 )

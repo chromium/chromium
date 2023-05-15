@@ -248,6 +248,9 @@ public class WebEngineShellActivity
                     case 2:
                         intent = new Intent(activity, WebEngineNavigationTestActivity.class);
                         break;
+                    case 3:
+                        intent = new Intent(activity, WebEngineSinglePageActivity.class);
+                        break;
                     default:
                         assert false : "Unhandled item: " + String.valueOf(pos);
                         intent = null;

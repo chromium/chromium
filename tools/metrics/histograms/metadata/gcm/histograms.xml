@@ -102,14 +102,6 @@ chromium-metrics-reviews@google.com.
   <summary>Status code of loading from the persistent GCM store.</summary>
 </histogram>
 
-<histogram name="GCM.NumThrottledApps" units="units" expires_after="M85">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Number of applications hitting GCM per-app outstanding message limits at
-    startup time.
-  </summary>
-</histogram>
-
 <histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
     expires_after="M98">
   <owner>peter@chromium.org</owner>
@@ -153,58 +145,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2023-08-06">
+    enum="GCMRegistrationRequestStatus" expires_after="2023-10-22">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error
     case was split up in M56 (merged mid-beta to M55) to separate out the
     Response parsing failed, Internal server error, Quota exceeded, and Device
     has too many registrations cases.
-  </summary>
-</histogram>
-
-<histogram name="GCM.RemoveAccountMappingWhenLoading"
-    enum="BooleanDeletedOrNot" expires_after="2020-11-30">
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Number of times that account mapping entries are deleted from or kept in the
-    GCM store database while loading them in memory. Used during the account ID
-    migration from email to Gaia ID.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ResetStoreError" enum="GCMResetStoreError"
-    expires_after="M85">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Reports the problem encountered when resetting the GCM store.
-  </summary>
-</histogram>
-
-<histogram name="GCM.RestoredIncomingMessages" units="units"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Number of unacknowledged incoming messages restored from the persistent
-    store at startup.
-  </summary>
-</histogram>
-
-<histogram name="GCM.RestoredOutgoingMessages" units="units"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Number of pending outgoing messages restored from the persistent store at
-    startup.
-  </summary>
-</histogram>
-
-<histogram name="GCM.RestoredRegistrations" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Number of registrations restored from the persistent store at startup.
   </summary>
 </histogram>
 
@@ -237,16 +184,6 @@ chromium-metrics-reviews@google.com.
     net::OK. Logs net::OK if response header is not present. Otherwise, logs
     HTTP status code returned. Recorded when received response after message has
     been sent.
-  </summary>
-</histogram>
-
-<histogram name="GCM.StoreDestroySucceeded" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success indicates successfully destroying the GCM persistent store. Failure
-    indicates a failure destroying the persistence store. GCM store will be
-    destroyed when the profile has been signed out.
   </summary>
 </histogram>
 

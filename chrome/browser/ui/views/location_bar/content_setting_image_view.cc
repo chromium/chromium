@@ -34,6 +34,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -71,6 +72,9 @@ absl::optional<ViewID> GetViewID(
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
+                                      kMediaActivityIndicatorElementId);
 
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
@@ -128,12 +132,14 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
+    GetViewAccessibility().OverrideIsIgnored(true);
     critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
   UpdateImage();
   SetVisible(true);
+  GetViewAccessibility().OverrideIsIgnored(false);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
@@ -182,6 +188,11 @@ void ContentSettingImageView::Update() {
   }
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
+
+  if (content_setting_image_model_->image_type() ==
+      ContentSettingImageModel::ImageType::MEDIASTREAM) {
+    SetProperty(views::kElementIdentifierKey, kMediaActivityIndicatorElementId);
+  }
 }
 
 void ContentSettingImageView::SetIconColor(absl::optional<SkColor> color) {

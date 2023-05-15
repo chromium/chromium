@@ -26,12 +26,17 @@ class WallpaperControllerImpl;
 
 // Types of ColorSchemes. For a given seed color, each ColorScheme will generate
 // a different color palette/set of ref colors.
+// TODO(b/277378801): Remove this enum and use the one defined in
+// personalization_app.mojom instead.
 enum class ASH_EXPORT ColorScheme {
-  kStatic,  // TonalSpot but with a static color.
-  kTonalSpot,
-  kNeutral,
-  kExpressive,
-  kVibrant
+  kStatic = 0,  // TonalSpot but with a static color.
+  kTonalSpot = 1,
+  kNeutral = 2,
+  kExpressive = 3,
+  kVibrant = 4,
+
+  // Max value is needed for metrics.
+  kMaxValue = kVibrant,
 };
 
 // An encapsulation of the data which Ash provides for the generation of a color

@@ -526,15 +526,12 @@ RTCRtpHeaderExtensionParameters* ToRtpHeaderExtensionParameters(
   return header;
 }
 
-RTCRtpCodecParameters* ToRtpCodecParameters(
-    const webrtc::RtpCodecParameters& webrtc_codec) {
-  RTCRtpCodecParameters* codec = RTCRtpCodecParameters::Create();
-  codec->setPayloadType(webrtc_codec.payload_type);
-  codec->setMimeType(WTF::String::FromUTF8(webrtc_codec.mime_type()));
+void SetRtpCodec(RTCRtpCodec& codec, const webrtc::RtpCodec& webrtc_codec) {
+  codec.setMimeType(WTF::String::FromUTF8(webrtc_codec.mime_type()));
   if (webrtc_codec.clock_rate)
-    codec->setClockRate(webrtc_codec.clock_rate.value());
+    codec.setClockRate(webrtc_codec.clock_rate.value());
   if (webrtc_codec.num_channels)
-    codec->setChannels(webrtc_codec.num_channels.value());
+    codec.setChannels(webrtc_codec.num_channels.value());
   if (!webrtc_codec.parameters.empty()) {
     std::string sdp_fmtp_line;
     for (const auto& parameter : webrtc_codec.parameters) {
@@ -546,8 +543,21 @@ RTCRtpCodecParameters* ToRtpCodecParameters(
         sdp_fmtp_line += parameter.first + "=" + parameter.second;
       }
     }
-    codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
+    codec.setSdpFmtpLine(sdp_fmtp_line.c_str());
   }
+}
+
+RTCRtpCodec* ToRtpCodec(const webrtc::RtpCodec& webrtc_codec) {
+  RTCRtpCodec* codec = RTCRtpCodec::Create();
+  SetRtpCodec(*codec, webrtc_codec);
+  return codec;
+}
+
+RTCRtpCodecParameters* ToRtpCodecParameters(
+    const webrtc::RtpCodecParameters& webrtc_codec_parameters) {
+  RTCRtpCodecParameters* codec = RTCRtpCodecParameters::Create();
+  SetRtpCodec(*codec, webrtc_codec_parameters);
+  codec->setPayloadType(webrtc_codec_parameters.payload_type);
   return codec;
 }
 
@@ -1210,8 +1220,7 @@ void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
     // Set up writable.
     video_to_packetizer_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-            script_state, encoded_video_transformer_,
-            webrtc::TransformableFrameInterface::Direction::kSender);
+            script_state, encoded_video_transformer_);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpSender::SetVideoUnderlyingSink,

@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
@@ -38,7 +38,7 @@ absl::optional<base::Token> CropIdStringToToken(const String& crop_id) {
   if (!crop_id.ContainsOnlyASCIIOrEmpty()) {
     return absl::nullopt;
   }
-  const base::GUID guid = base::GUID::ParseCaseInsensitive(crop_id.Ascii());
+  const base::Uuid guid = base::Uuid::ParseCaseInsensitive(crop_id.Ascii());
   return guid.is_valid() ? absl::make_optional<base::Token>(GUIDToToken(guid))
                          : absl::nullopt;
 }

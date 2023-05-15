@@ -88,7 +88,6 @@ missing_new_fields,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing_new_fields,chrome/browser/ash/remote_apps/remote_apps_manager.cc
 missing_new_fields,chrome/browser/ash/smb_client/discovery/netbios_client.cc
 missing_new_fields,chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc
-missing_new_fields,chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc
 missing_new_fields,chrome/browser/autofill/autofill_gstatic_reader.cc
 missing_new_fields,chrome/browser/autofill/autofill_image_fetcher_impl.cc
 missing_new_fields,chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc
@@ -147,10 +146,8 @@ missing_new_fields,chrome/browser/sharing/web_push/web_push_sender.cc
 missing_new_fields,chrome/browser/spellchecker/spellcheck_hunspell_dictionary.cc
 missing_new_fields,chrome/browser/ssl/certificate_error_reporter.cc
 missing_new_fields,chrome/browser/ssl/sct_reporting_service.cc
-missing_new_fields,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 missing_new_fields,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc
 missing_new_fields,chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.cc
-missing_new_fields,chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.cc
 missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
 missing_new_fields,chrome/browser/sync_file_system/drive_backend/sync_engine.cc
 missing_new_fields,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
@@ -173,7 +170,6 @@ missing_new_fields,chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc
 missing_new_fields,chrome/browser/ui/webui/sanitized_image_source.cc
 missing_new_fields,chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc
 missing_new_fields,chrome/browser/ui/webui/whats_new/whats_new_util.cc
-missing_new_fields,chrome/browser/video_tutorials/internal/tutorial_fetcher.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/webrtc.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/wifi_lan_medium.cc
 missing_new_fields,chromeos/ash/components/device_activity/device_activity_client.cc

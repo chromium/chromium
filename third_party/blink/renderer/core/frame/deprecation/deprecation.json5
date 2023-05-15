@@ -3,7 +3,7 @@
   // The code for triggering DevTools Deprecation Issues is generated from here.
   //
   parameters: {
-    // The name of each deprecation is cannot contain any characters illegal in
+    // The name of each deprecation cannot contain any characters illegal in
     // a c++ enum.
     // name: {
     //   valid_type: "str",
@@ -529,6 +529,16 @@
         "kV8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       ],
       milestone: 96,
+    },
+    {
+      name: "WebSQL",
+      message: "Web SQL is deprecated. Please use SQLite WebAssembly or Indexed Database",
+      translation_note: "Warning displayed to developers when the Web SQL API is used to let them know this API is deprecated.",
+      web_features: [
+        "kOpenWebDatabase",
+      ],
+      chrome_status_feature: 5134293578285056,
+      milestone: 115,
     },
     {
       name: "WindowPlacementPermissionDescriptorUsed",

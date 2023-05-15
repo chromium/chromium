@@ -740,10 +740,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         return mWidth;
     }
 
-    public int getOrientation() {
-        return mOrientation;
-    }
-
     public @ColorInt int getBackgroundColor() {
         return TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
     }

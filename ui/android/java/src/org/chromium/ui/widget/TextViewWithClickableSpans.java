@@ -15,12 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.PopupMenu;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
  * ClickableSpan isn't accessible by default, so we create a subclass
@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
  */
 public class TextViewWithClickableSpans
         extends TextViewWithLeading implements View.OnLongClickListener {
-    private AccessibilityManager mAccessibilityManager;
     private PopupMenu mDisambiguationMenu;
 
     public TextViewWithClickableSpans(Context context) {
@@ -45,37 +44,20 @@ public class TextViewWithClickableSpans
         init();
     }
 
-    @CallSuper
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        ensureValidLongClickListenerState();
-    }
-
-    @CallSuper
-    @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.GONE) return;
-        ensureValidLongClickListenerState();
-    }
-
     private void init() {
         // This disables the saving/restoring since the saved text may be in the wrong language
         // (if the user just changed system language), and restoring spans doesn't work anyway.
         // See crbug.com/533362
         setSaveEnabled(false);
-        mAccessibilityManager = (AccessibilityManager)
-                getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-        ensureValidLongClickListenerState();
+        setOnLongClickListener(this);
     }
 
     @Override
     public boolean onLongClick(View v) {
         assert v == this;
-        if (!mAccessibilityManager.isTouchExplorationEnabled()) {
-            assert false : "Long click listener should have been removed if not in"
-                           + " accessibility mode.";
+        if (!AccessibilityState.isTouchExplorationEnabled()) {
+            // If no accessibility services that requested touch exploration are enabled, then this
+            // view should not consume the long click action.
             return false;
         }
         openDisambiguationMenu();
@@ -87,11 +69,6 @@ public class TextViewWithClickableSpans
         // Ensure that no one changes the long click listener to anything but this view.
         assert listener == this || listener == null;
         super.setOnLongClickListener(listener);
-    }
-
-    private void ensureValidLongClickListenerState() {
-        if (mAccessibilityManager == null) return;
-        setOnLongClickListener(mAccessibilityManager.isTouchExplorationEnabled() ? this : null);
     }
 
     @Override
@@ -111,7 +88,7 @@ public class TextViewWithClickableSpans
         boolean superResult = super.onTouchEvent(event);
 
         if (event.getAction() != MotionEvent.ACTION_UP
-                && mAccessibilityManager.isTouchExplorationEnabled()
+                && AccessibilityState.isTouchExplorationEnabled()
                 && !touchIntersectsAnyClickableSpans(event)) {
             handleAccessibilityClick();
             return true;

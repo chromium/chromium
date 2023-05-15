@@ -57,6 +57,10 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_WIN)
+    // Convert path to long format to avoid mixing long and 8.3 formats in test.
+    ASSERT_TRUE(temp_dir_.Set(base::MakeLongFilePath(temp_dir_.Take())));
+#endif  // BUILDFLAG(IS_WIN)
 
     // Register an external mount point to test support for virtual paths.
     // This maps the virtual path a native local path to make these tests work
@@ -1426,7 +1430,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
-  EXPECT_EQ(test_file_dir, dialog_params.default_path);
+  // Windows file system is case-insensitive.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      test_file_dir.value(), dialog_params.default_path.value()));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {

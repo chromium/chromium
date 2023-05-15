@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -143,6 +144,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
                      scoped_refptr<ServiceWorkerVersion> version,
                      blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
 
+  // ServiceWorkerResourceLoader overrides:
   // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
   void CommitResponseHeaders(
       const network::mojom::URLResponseHeadPtr& response_head) override;
@@ -161,6 +163,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Calls url_loader_client_->OnComplete(). |reason| will be recorded as an
   // argument of TRACE_EVENT.
   void CommitCompleted(int error_code, const char* reason) override;
+
+  // Calls url_loader_client_->OnReceiveRedirect().
+  void HandleRedirect(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHeadPtr& response_head) override;
+
+  bool IsMainResourceLoader() override;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -233,7 +242,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void TransitionToStatus(Status new_status);
 
   bool MaybeStartRaceNetworkRequest(
-      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 

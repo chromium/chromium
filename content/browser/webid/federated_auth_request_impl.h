@@ -15,12 +15,15 @@
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
@@ -34,6 +37,8 @@ class FederatedIdentityPermissionContextDelegate;
 class MDocProvider;
 class RenderFrameHost;
 
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
 // fulfill WebID-related requests.
 //
@@ -45,7 +50,8 @@ class RenderFrameHost;
 class CONTENT_EXPORT FederatedAuthRequestImpl
     : public DocumentService<blink::mojom::FederatedAuthRequest>,
       public FederatedIdentityPermissionContextDelegate::
-          IdpSigninStatusObserver {
+          IdpSigninStatusObserver,
+      public content::FederatedIdentityModalDialogViewDelegate {
  public:
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
@@ -54,6 +60,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       FederatedIdentityApiPermissionContextDelegate*,
       FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
+      IdentityRegistry*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
@@ -64,16 +71,22 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // blink::mojom::FederatedAuthRequest:
   void RequestToken(std::vector<blink::mojom::IdentityProviderGetParametersPtr>
                         idp_get_params_ptrs,
+                    MediationRequirement requirement,
                     RequestTokenCallback) override;
   void RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
+  void ResolveTokenRequest(const std::string& token,
+                           ResolveTokenRequestCallback callback) override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
   void SetIdpSigninStatus(const url::Origin& origin,
                           blink::mojom::IdpSigninStatus status) override;
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
+  void CloseModalDialogView() override;
+
+  void PreventSilentAccess(PreventSilentAccessCallback callback) override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
@@ -85,19 +98,21 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
 
+  // content::FederatedIdentityModalDialogViewDelegate:
+  void NotifyClose() override;
+  bool NotifyResolve(const std::string& token) override;
+
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
-                            bool auto_reauthn,
                             blink::mojom::RpContext rp_context);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
     IdentityProviderGetInfo& operator=(const IdentityProviderGetInfo& other);
 
     blink::mojom::IdentityProviderConfigPtr provider;
-    bool auto_reauthn{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
   };
 
@@ -105,7 +120,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     IdentityProviderInfo(const blink::mojom::IdentityProviderConfigPtr&,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
-                         bool auto_reauthn,
                          blink::mojom::RpContext rp_context);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
@@ -113,7 +127,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     blink::mojom::IdentityProviderConfigPtr provider;
     IdpNetworkRequestManager::Endpoints endpoints;
     IdentityProviderMetadata metadata;
-    bool auto_reauthn{false};
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     absl::optional<IdentityProviderData> data;
@@ -154,6 +167,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       FederatedIdentityApiPermissionContextDelegate*,
       FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
+      IdentityRegistry*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
@@ -189,6 +203,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       bool should_delay_callback);
 
   void MaybeShowAccountsDialog();
+  void ShowModalDialog(const GURL& url);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
@@ -290,6 +305,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
                                  const IdentityRequestAccount** out_account);
 
+  // Check if auto re-authn is available so we can skip fetching accounts if the
+  // auto re-authn flow is guaranteed to fail.
+  bool ShouldFailBeforeFetchingAccounts(const GURL& config_url);
+
+  // Check if the site requires user mediation due to a previous
+  // `preventSilentAccess` call.
+  bool RequiresUserMediation();
+  void SetRequiresUserMediation(bool requires_user_mediation);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
@@ -314,6 +338,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       auto_reauthn_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
+  raw_ptr<IdentityRegistry> identity_registry_ = nullptr;
 
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
@@ -363,6 +388,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
+
+  MediationRequirement mediation_requirement_;
 
   std::unique_ptr<MDocProvider> mdoc_provider_;
   RequestTokenCallback mdoc_request_callback_;

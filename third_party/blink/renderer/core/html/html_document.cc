@@ -63,7 +63,9 @@ namespace blink {
 
 HTMLDocument::HTMLDocument(const DocumentInit& initializer,
                            DocumentClassFlags extended_document_classes)
-    : Document(initializer, kHTMLDocumentClass | extended_document_classes) {
+    : Document(initializer,
+               base::Union(DocumentClassFlags({DocumentClass::kHTML}),
+                           extended_document_classes)) {
   ClearXMLVersion();
   if (IsSrcdocDocument()) {
     DCHECK(InNoQuirksMode());

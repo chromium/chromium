@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -129,7 +130,7 @@ class ExtensionInstallErrorObserver final {
            crx_installer->extension()->id() == extension_id_;
   }
 
-  const Profile* const profile_;
+  const raw_ptr<const Profile, ExperimentalAsh> profile_;
   const std::string extension_id_;
   content::WindowedNotificationObserver notification_observer_;
 };
@@ -178,7 +179,7 @@ class ExtensionUpdateAvailabilityObserver final
   void OnChromeUpdateAvailable() override {}
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string extension_id_;
   const base::Version awaited_version_;
   base::RunLoop run_loop_;

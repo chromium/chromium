@@ -88,8 +88,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
-    si_formats[0] = viz::SharedImageFormat::SinglePlane(
-        viz::GetResourceFormat(buffer_format.value()));
+    si_formats[0] = viz::GetSharedImageFormat(buffer_format.value());
     return VideoFrameResourceType::RGB;
   }
 
@@ -537,7 +536,8 @@ class VideoResourceUpdater::HardwarePlaneResource
     auto* sii = SharedImageInterface();
     mailbox_ = sii->CreateSharedImage(
         format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, gpu::kNullSurfaceHandle);
+        kPremul_SkAlphaType, shared_image_usage, "VideoResourceUpdater",
+        gpu::kNullSurfaceHandle);
     ContextGL()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }
@@ -945,7 +945,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
-      hardware_resource->mailbox(), GL_LINEAR, GL_TEXTURE_2D, sync_token,
+      hardware_resource->mailbox(), GL_TEXTURE_2D, sync_token,
       output_plane_resource_size, copy_si_format,
       false /* is_overlay_candidate */);
   transferable_resource.color_space = resource_color_space;
@@ -1011,7 +1011,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       const size_t height = video_frame->rows(i);
       const gfx::Size plane_size(width, height);
       auto transfer_resource = viz::TransferableResource::MakeGpu(
-          mailbox_holder.mailbox, GL_LINEAR, mailbox_holder.texture_target,
+          mailbox_holder.mailbox, mailbox_holder.texture_target,
           mailbox_holder.sync_token, plane_size, si_formats[i],
           video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
@@ -1298,9 +1298,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       auto* gl = ContextGL();
       GenerateCompositorSyncToken(gl, &sync_token);
       transferable_resource = viz::TransferableResource::MakeGpu(
-          hardware_resource->mailbox(), GL_LINEAR,
-          hardware_resource->texture_target(), sync_token,
-          hardware_resource->resource_size(), output_si_format,
+          hardware_resource->mailbox(), hardware_resource->texture_target(),
+          sync_token, hardware_resource->resource_size(), output_si_format,
           hardware_resource->overlay_candidate());
     }
 
@@ -1413,8 +1412,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         for (int row = 0; row < resource_size_pixels.height(); ++row) {
           uint16_t* dst = reinterpret_cast<uint16_t*>(
               &upload_pixels_[upload_image_stride * row]);
-          const uint16_t* src = reinterpret_cast<uint16_t*>(
-              video_frame->writable_data(i) + (video_stride_bytes * row));
+          const uint16_t* src = reinterpret_cast<const uint16_t*>(
+              video_frame->data(i) + (video_stride_bytes * row));
           half_float_maker->MakeHalfFloats(src, bytes_per_row / 2, dst);
         }
       } else if (needs_bit_downshifting) {
@@ -1422,7 +1421,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
                plane_si_format == viz::SinglePlaneFormat::kR_8);
         const int scale = 0x10000 >> (bits_per_channel - 8);
         libyuv::Convert16To8Plane(
-            reinterpret_cast<uint16_t*>(video_frame->writable_data(i)),
+            reinterpret_cast<const uint16_t*>(video_frame->data(i)),
             video_stride_bytes / 2, upload_pixels_.get(), upload_image_stride,
             scale, bytes_per_row, resource_size_pixels.height());
       } else {
@@ -1434,7 +1433,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
     // Copy pixels into texture. TexSubImage2D() is applicable because
     // |yuv_si_format| is LUMINANCE_F16, R16_EXT, LUMINANCE_8 or RED_8.
-    DCHECK(GLSupportsFormat(plane_si_format.resource_format()));
     {
       HardwarePlaneResource::ScopedTexture scope(gl, plane_resource);
 
@@ -1461,8 +1459,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   for (size_t i = 0; i < plane_resources.size(); ++i) {
     HardwarePlaneResource* plane_resource = plane_resources[i]->AsHardware();
     auto transferable_resource = viz::TransferableResource::MakeGpu(
-        plane_resource->mailbox(), GL_LINEAR, plane_resource->texture_target(),
-        sync_token, plane_resource->resource_size(),
+        plane_resource->mailbox(), plane_resource->texture_target(), sync_token,
+        plane_resource->resource_size(),
         i == 0 ? output_si_format
                : subplane_si_format.value_or(output_si_format),
         plane_resource->overlay_candidate());

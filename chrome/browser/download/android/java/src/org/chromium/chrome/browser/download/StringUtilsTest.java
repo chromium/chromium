@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -67,7 +67,7 @@ public class StringUtilsTest {
     @SmallTest
     @Feature({"Download"})
     public void testFormatRemainingTime() {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0 secs left", StringUtils.timeLeftForUi(context, 0));
         Assert.assertEquals(
                 "1 sec left", StringUtils.timeLeftForUi(context, DateUtils.SECOND_IN_MILLIS));
@@ -95,7 +95,7 @@ public class StringUtilsTest {
     @SmallTest
     @Feature({"Download"})
     public void testGetAvailableBytesForUi() {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB available", StringUtils.getAvailableBytesForUi(context, 0));
         Assert.assertEquals("0.50 KB available", StringUtils.getAvailableBytesForUi(context, 512));
         Assert.assertEquals("1.00 KB available", StringUtils.getAvailableBytesForUi(context, 1024));
@@ -109,7 +109,7 @@ public class StringUtilsTest {
     @SmallTest
     @Feature({"Download"})
     public void testDownloadUtilsGetStringForBytes() {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB", DownloadUtils.getStringForBytes(context, 0));
         Assert.assertEquals("0.50 KB", DownloadUtils.getStringForBytes(context, 512));
         Assert.assertEquals("1.00 KB", DownloadUtils.getStringForBytes(context, 1024));

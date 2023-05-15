@@ -131,7 +131,6 @@ source_set("headers") {
   ]
 
   sources = [
-    "action_after_pagehide.h",
     "associated_interfaces/associated_interface_provider.h",
     "associated_interfaces/associated_interface_registry.h",
     "blob/blob_utils.h",
@@ -236,6 +235,8 @@ source_set("headers") {
     "mediastream/media_stream_controls.h",
     "mediastream/media_stream_mojom_traits.h",
     "mediastream/media_stream_request.h",
+    "messaging/accelerated_image_info.h",
+    "messaging/accelerated_static_bitmap_image_mojom_traits.h",
     "messaging/cloneable_message.h",
     "messaging/cloneable_message_mojom_traits.h",
     "messaging/message_port_channel.h",
@@ -309,6 +310,7 @@ source_set("headers") {
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
     "unique_name/unique_name_helper.h",
+    "url_pattern.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",
     "user_agent/user_agent_brand_version_type.h",
@@ -356,6 +358,7 @@ source_set("headers") {
     "//cc",
     "//components/shared_highlighting/core/common",
     "//components/viz/common",
+    "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",

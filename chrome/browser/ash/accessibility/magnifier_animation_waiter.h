@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFIER_ANIMATION_WAITER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFIER_ANIMATION_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/test_utils.h"
 
 namespace ash {
@@ -29,7 +30,8 @@ class MagnifierAnimationWaiter {
  private:
   void OnTimer();
 
-  FullscreenMagnifierController* controller_;  // not owned
+  raw_ptr<FullscreenMagnifierController, ExperimentalAsh>
+      controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
 };
 

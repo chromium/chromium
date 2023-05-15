@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -28,7 +28,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.offlinepages.AutoFetchNotifier.NotificationAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -47,9 +46,6 @@ import org.chromium.ui.base.PageTransition;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -57,6 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for auto-fetch-on-net-error-page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageAutoFetchTest {
     private static final String TAG = "AutoFetchTest";
@@ -83,7 +80,6 @@ public class OfflinePageAutoFetchTest {
     private CallbackHelper mPageAddedHelper = new CallbackHelper();
     private OfflinePageItem mAddedPage;
     private WebServer mWebServer;
-    private Map<String, Integer> mInitialHistograms;
 
     private Intent mLastInProgressCancelButtonIntent;
     private Intent mLastInProgressDeleteIntent;
@@ -153,7 +149,6 @@ public class OfflinePageAutoFetchTest {
         AutoFetchNotifier.mTestHooks = new NotifierHooks();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mInitialHistograms = histogramSnapshot();
             mProfile = Profile.fromWebContents(activityTab().getWebContents());
             mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
 
@@ -216,9 +211,6 @@ public class OfflinePageAutoFetchTest {
         // Navigate away from the page, so that the auto-fetch request is allowed to complete,
         // and go back online.
         attemptLoadPage(UrlConstants.ABOUT_URL);
-        // The tab no longer has the requested URL active, so the in-progress notification should
-        // appear.
-        waitForInProgressNotification();
         OfflineTestUtil.clearIntercepts();
         forceConnectivityState(true);
         OfflineTestUtil.startRequestCoordinatorProcessing();
@@ -226,14 +218,12 @@ public class OfflinePageAutoFetchTest {
         // Wait for the background request to complete.
         waitForPageAdded();
         Assert.assertTrue(mAddedPage != null);
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:SHOWN", 1);
 
         // Simulate click on the complete notification, and ensure the offline page loads by
         // swapping out the live page contents.
         useAlternateWebServerResponse();
         sendBroadcast(mLastCompleteClickIntent);
 
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:TAPPED", 1);
         // A new tab should open, and it should load the offline page.
         pollInstrumentationThread(() -> {
             return getCurrentTabModel().getCount() == 2
@@ -259,9 +249,6 @@ public class OfflinePageAutoFetchTest {
         // Navigate away from the page, so that the auto-fetch request is allowed to complete,
         // and go back online.
         attemptLoadPage(UrlConstants.ABOUT_URL);
-        // The tab no longer has the requested URL active, so the in-progress notification should
-        // appear.
-        waitForInProgressNotification();
         OfflineTestUtil.clearIntercepts();
         forceConnectivityState(true);
         OfflineTestUtil.startRequestCoordinatorProcessing();
@@ -269,7 +256,6 @@ public class OfflinePageAutoFetchTest {
         // Wait for the background request to complete.
         waitForPageAdded();
         Assert.assertTrue(mAddedPage != null);
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:SHOWN", 1);
 
         // Navigate back to testUrl, this time there is no redirect.
         useDefaultWebServerResponse();
@@ -279,8 +265,6 @@ public class OfflinePageAutoFetchTest {
         // swapping out the live page contents.
         useAlternateWebServerResponse();
         sendBroadcast(mLastCompleteClickIntent);
-
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:TAPPED", 1);
 
         pollInstrumentationThread(() -> {
             // No new tab is opened, because the URL of the tab matches the original URL.
@@ -302,18 +286,15 @@ public class OfflinePageAutoFetchTest {
         attemptLoadPage(testUrl);
         waitForRequestCount(1);
         attemptLoadPage(UrlConstants.ABOUT_URL);
-        waitForInProgressNotification();
         OfflineTestUtil.clearIntercepts();
         forceConnectivityState(true);
         OfflineTestUtil.startRequestCoordinatorProcessing();
 
         // Wait for the background request to complete.
         waitForPageAdded();
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:SHOWN", 1);
 
         // Simulate swiping away the complete notification and wait for UMA change.
         sendBroadcast(mLastCompleteDeleteIntent);
-        waitForHistogram("OfflinePages.AutoFetch.CompleteNotificationAction:DISMISSED", 1);
     }
 
     @Test
@@ -359,7 +340,6 @@ public class OfflinePageAutoFetchTest {
 
         // The original request should remain. Allow the request to complete.
         closeTab(activityTab());
-        waitForInProgressNotification();
         OfflineTestUtil.clearIntercepts();
         forceConnectivityState(true);
         OfflineTestUtil.startRequestCoordinatorProcessing();
@@ -378,8 +358,6 @@ public class OfflinePageAutoFetchTest {
         waitForRequestCount(1);
 
         closeTab(activityTab());
-
-        waitForInProgressNotification();
     }
 
     @Test
@@ -393,13 +371,11 @@ public class OfflinePageAutoFetchTest {
         attemptLoadPage(testUrl);
         waitForRequestCount(1);
         closeTab(activityTab());
-        waitForInProgressNotification();
 
         // Simulate swiping the notification by sending the delete intent. This should trigger
         // deletion of the request.
         sendBroadcast(mLastInProgressDeleteIntent);
         waitForRequestCount(0);
-        waitForHistogram("OfflinePages.AutoFetch.InProgressNotificationAction:DISMISSED", 1);
     }
 
     @Test
@@ -423,11 +399,9 @@ public class OfflinePageAutoFetchTest {
         // in-progress notification is triggered for both requests, but only fires a single
         // notification.
         closeTab(activityTab());
-        waitForInProgressNotification();
         sendBroadcast(mLastInProgressCancelButtonIntent);
 
         waitForRequestCount(0);
-        waitForHistogram("OfflinePages.AutoFetch.InProgressNotificationAction:CANCEL_PRESSED", 1);
         // Ensure the cancellation preference is cleared.
         Assert.assertEquals(false, AutoFetchNotifier.autoFetchInProgressNotificationCanceled());
     }
@@ -435,11 +409,6 @@ public class OfflinePageAutoFetchTest {
     private void waitForRequestCount(int requestCount) {
         pollInstrumentationThread(
                 () -> OfflineTestUtil.getRequestsInQueue().length == requestCount);
-    }
-
-    // Wait until at least one auto-fetch request has shown an in-progress notification.
-    private void waitForInProgressNotification() {
-        waitForHistogram("OfflinePages.AutoFetch.InProgressNotificationAction:SHOWN", 1);
     }
 
     private void waitForPageAdded() throws Exception {
@@ -492,62 +461,6 @@ public class OfflinePageAutoFetchTest {
         OfflineTestUtil.waitForConnectivityState(connected);
     }
 
-    private void waitForHistogram(String histogramAndEnum, int delta) {
-        pollInstrumentationThread(()
-                                          -> histogramSnapshot().get(histogramAndEnum)
-                                - mInitialHistograms.get(histogramAndEnum)
-                        >= delta);
-    }
-
-    private static String histogramDiff(
-            Map<String, Integer> oldValues, Map<String, Integer> newValues) {
-        StringBuilder result = new StringBuilder();
-        String[] keys = newValues.keySet().toArray(new String[] {});
-        Arrays.sort(keys);
-        for (String key : keys) {
-            Integer oldValue = oldValues.get(key);
-            oldValue = oldValue == null ? 0 : oldValue;
-            int diff = newValues.get(key) - oldValue;
-            if (diff > 0) {
-                if (result.length() > 0) result.append("\n");
-                result.append(key);
-                result.append(" ");
-                result.append(diff);
-            }
-        }
-        return result.toString();
-    }
-
-    private static Map<String, Integer> histogramSnapshot() {
-        final Map<String, Integer> histograms = new HashMap<String, Integer>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Integer actions[] = new Integer[] {
-                    NotificationAction.SHOWN,
-                    NotificationAction.COMPLETE,
-                    NotificationAction.CANCEL_PRESSED,
-                    NotificationAction.DISMISSED,
-                    NotificationAction.TAPPED,
-            };
-            String[] actionNames = new String[] {
-                    "SHOWN",
-                    "COMPLETE",
-                    "CANCEL_PRESSED",
-                    "DISMISSED",
-                    "TAPPED",
-            };
-            for (String histogramName : new String[] {
-                         "OfflinePages.AutoFetch.InProgressNotificationAction",
-                         "OfflinePages.AutoFetch.CompleteNotificationAction",
-                 }) {
-                for (@NotificationAction int i = 0; i < NotificationAction.NUM_ENTRIES; i++) {
-                    int value = RecordHistogram.getHistogramValueCountForTesting(histogramName, i);
-                    histograms.put(histogramName + ":" + actionNames[i], value);
-                }
-            }
-        });
-        return histograms;
-    }
-
     private void sendBroadcast(Intent intent) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ContextUtils.getApplicationContext().sendBroadcast(intent); });
@@ -561,11 +474,10 @@ public class OfflinePageAutoFetchTest {
     private void logAdditionalContext() {
         TabModel tabModel = getCurrentTabModel();
         // Return early if the test setup didn't complete.
-        if (mInitialHistograms == null || tabModel == null) {
+        if (tabModel == null) {
             return;
         }
         Log.d(TAG, "Logging additional context");
-        Log.d(TAG, "Histogram Diff: " + histogramDiff(mInitialHistograms, histogramSnapshot()));
         int tabCount = tabModel.getCount();
         Log.d(TAG, "Tab Count: " + tabCount);
         for (int i = 0; i < tabCount; ++i) {

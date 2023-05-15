@@ -125,6 +125,11 @@ public class TabDelegate extends AsyncTabCreator {
     }
 
     @Override
+    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
+        return null;
+    }
+
+    @Override
     public Tab launchUrl(String url, @TabLaunchType int type) {
         return createNewTab(new LoadUrlParams(url), type, null);
     }

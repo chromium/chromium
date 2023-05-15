@@ -40,7 +40,7 @@ namespace {
 const std::map<std::string, std::string> kExpectedLogs = {
     {"Sample Log",
      // Redacted version of "Your email address is abc@abc.com"
-     "Your email address is <email: 1>"}};
+     "Your email address is (email: 1)"}};
 
 constexpr char kExpectedLogName[] = "Sample Log";
 

@@ -146,9 +146,10 @@ std::unique_ptr<UiResource> CreateUiResource(
   gpu::GpuMemoryBufferManager* gmb_manager =
       aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
 
-  resource->mailbox = sii->CreateSharedImage(
-      gpu_memory_buffer, gmb_manager, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+  resource->mailbox =
+      sii->CreateSharedImage(gpu_memory_buffer, gmb_manager, gfx::ColorSpace(),
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             usage, "FastInkHostUIResource");
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;

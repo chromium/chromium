@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Bildedekoder</translation>
 <translation id="1785415724048343560">Anbefalt for den beste opplevelsen</translation>
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
-<translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Relaterte nettsteder kan se aktiviteten din i gruppen</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Legg på</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din</translation>
 <translation id="3165022941318558018">La et nettsted bruke informasjonskapsler fra tredjeparter.</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> lagrede data</translation>
-<translation id="3203366800380907218">Fra nettet</translation>
 <translation id="321187648315454507">For at <ph name="APP_NAME" /> skal kunne sende deg varsler, må du også slå på varsler i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Dette nettstedet definerer interesser som andre nettsteder kan bruke til å vise deg annonser. Dette nettstedet mottar også interessene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="3707034683772193706">Nettsteder du besøker, kan lagre litt informasjon i Chrome – hovedsakelig for å bekrefte at du ikke er en robot</translation>
 <translation id="3721953990244350188">Avvis, og vis neste tilgjengelige handling</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Sist besøkt i dag</translation>
 <translation id="5225463052809312700">Slå på kameraet</translation>
-<translation id="5229337741799419985">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5264323282659631142">Fjern «<ph name="CHIP_LABEL" />»</translation>
 <translation id="528192093759286357">Dra ned fra toppen og trykk på tilbakeknappen for å avslutte fullskjerm.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6689172468748959065">Profilbilder</translation>
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
-<translation id="6701547804986694515">Nettsteder du besøker, kan lagre informasjon i Chrome som bekrefter at du ikke er en robot. Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="6722828510648505498">Blokker påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Du blokkerer vanligvis varsler. For å tillate dette trykker du på Detaljer.</translation>
 <translation id="7366415735885268578">Legg til et nettsted</translation>
 <translation id="7383715096023715447">Innstillinger for <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din, men nettsteder kan dele noe informasjon som en del av bekreftelsesprosessen</translation>
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
 <translation id="8823559166155093873">Blokkering av informasjonskapsler</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

@@ -24,13 +24,6 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (is_android) {
-    sources += [
-      "chrome_untrusted_web_ui_configs_android.cc",
-      "chrome_untrusted_web_ui_configs_android.h",
-    ]
-  }
-
   if (is_mac || is_win || is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "chrome_untrusted_web_ui_configs_desktop.cc",
@@ -60,12 +53,17 @@ source_set("configs") {
       "//ash/constants",
       "//ash/webui/color_internals:color_internals",
       "//ash/webui/demo_mode_app_ui",
+      "//ash/webui/diagnostics_ui:diagnostics_ui",
       "//ash/webui/eche_app_ui",
       "//ash/webui/face_ml_app_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/firmware_update_ui:firmware_update_ui",
+      "//ash/webui/guest_os_installer:guest_os_installer",
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
+      "//ash/webui/print_management",
+      "//ash/webui/scanning:scanning",
+      "//ash/webui/shimless_rma:shimless_rma",
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/system_extensions_internals_ui:system_extensions_internals_ui",
       "//chrome/browser/ash",

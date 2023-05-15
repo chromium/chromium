@@ -8,14 +8,12 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
-  autofill::CountryNames::SetLocaleString("en-US");
   JNIEnv* env = base::android::AttachCurrentThread();
-  autofill::AutofillProfile profile = autofill::test::GetVerifiedProfile();
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
 
   base::android::ScopedJavaLocalRef<jobject> scoped_profile =
       CreateFastCheckoutAutofillProfile(env, profile, "en-US");
@@ -26,7 +24,6 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
       CreateFastCheckoutAutofillProfileFromJava(env, java_profile, "en-US");
 
   EXPECT_EQ(profile.guid(), parsed_profile->guid());
-  EXPECT_EQ(profile.origin(), parsed_profile->origin());
   EXPECT_EQ(profile.language_code(), parsed_profile->language_code());
 
   const autofill::ServerFieldType types[] = {
@@ -56,7 +53,6 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
 }
 
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutCreditCard) {
-  autofill::CountryNames::SetLocaleString("en-US");
   JNIEnv* env = base::android::AttachCurrentThread();
   const autofill::CreditCard credit_cards[] = {
       autofill::test::GetCreditCard(), autofill::test::GetFullServerCard(),

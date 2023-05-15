@@ -1,4 +1,12 @@
 <style include="diagnostics-shared">
+  :host-context(body.jelly-enabled) #additionalMessage {
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #testStatusText {
+    font: var(--cros-body-2-font);
+  }
+
   #additionalMessage {
     color: var(--cros-text-color-primary);
     font-family: var(--diagnostics-roboto-font-family);
@@ -15,6 +23,11 @@
     height: 32px;
     margin-top: 12px;
     padding: 8px 16px;
+  }
+
+  :host-context(body.jelly-enabled) .button-container,
+  :host-context(body.jelly-enabled) .learn-more-button {
+    font: var(--cros-button-2-font);
   }
 
   .button-container,

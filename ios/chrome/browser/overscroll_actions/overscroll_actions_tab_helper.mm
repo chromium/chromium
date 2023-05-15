@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -184,9 +184,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, DISABLED_TestViewSourceReload) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_viewsource));
   observer.Wait();
 
-  ASSERT_TRUE(
-      content::ExecuteScript(browser()->tab_strip_model()->GetWebContentsAt(0),
-                             "window.location.reload();"));
+  ASSERT_TRUE(content::ExecJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                              "window.location.reload();"));
 
   content::LoadStopObserver observer2(
       browser()->tab_strip_model()->GetWebContentsAt(0));
@@ -214,9 +213,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
     GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
     ui_test_utils::UrlLoadObserver load_complete(
         url, content::NotificationService::AllSources());
-    EXPECT_TRUE(content::ExecuteScript(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.open('" + url.spec() + "');"));
+    EXPECT_TRUE(
+        content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "window.open('" + url.spec() + "');"));
     load_complete.Wait();
     EXPECT_EQ(2, browser()->tab_strip_model()->count());
   }
@@ -241,12 +240,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // Check whether the page is in view-source mode or not by checking if an
   // expected element on the page exists or not. In view-source mode it
   // should not be found.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.getElementById('bar') === null);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('bar') === null;"));
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 }
 
@@ -312,17 +308,15 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
             view_source_frame->GetSiteInstance());
 
   // Verify the contents of the view-source tab (should match title1.html).
-  std::string source_text;
   std::string view_source_extraction_script = R"(
       output = "";
       document.querySelectorAll(".line-content").forEach(function(elem) {
           output += elem.innerText;
       });
-      domAutomationController.send(output); )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      view_source_contents, view_source_extraction_script, &source_text));
-  EXPECT_EQ("<html><head></head><body>This page has no title.</body></html>",
-            source_text);
+      output; )";
+  EXPECT_EQ(
+      "<html><head></head><body>This page has no title.</body></html>",
+      content::EvalJs(view_source_contents, view_source_extraction_script));
 
   // Verify the title is derived from the subframe URL.
   GURL original_url = original_child_frame->GetLastCommittedURL();
@@ -349,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
 
   // Submit the form and verify that we arrived at the expected location.
   content::TestNavigationObserver form_post_observer(original_contents, 1);
-  EXPECT_TRUE(ExecuteScript(original_main_frame,
-                            "document.getElementById('form').submit();"));
+  EXPECT_TRUE(
+      ExecJs(original_main_frame, "document.getElementById('form').submit();"));
   form_post_observer.Wait();
   GURL target_url(embedded_test_server()->GetURL("a.com", "/echoall"));
 
@@ -367,12 +361,11 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_EQ(target_url, current_main_frame->GetLastCommittedURL());
 
   // Extract the response nonce.
-  std::string response_nonce;
-  std::string response_nonce_extraction_script = R"(
-      domAutomationController.send(
-          document.getElementById('response-nonce').innerText); )";
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      current_main_frame, response_nonce_extraction_script, &response_nonce));
+  std::string response_nonce_extraction_script =
+      "document.getElementById('response-nonce').innerText;";
+  std::string response_nonce =
+      EvalJs(current_main_frame, response_nonce_extraction_script)
+          .ExtractString();
 
   // Open view-source mode tab for the main frame.  This tries to mimic the
   // behavior of RenderViewContextMenu::ExecuteCommand when it handles
@@ -388,15 +381,15 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   // 2) the sources should contain the original response-nonce
   //    (i.e. no new network request should be made - the data should be
   //    retrieved from the cache)
-  std::string source_text;
   std::string view_source_extraction_script = R"(
       output = "";
       document.querySelectorAll(".line-content").forEach(function(elem) {
           output += elem.innerText;
       });
-      domAutomationController.send(output); )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      view_source_contents, view_source_extraction_script, &source_text));
+      output; )";
+  std::string source_text =
+      content::EvalJs(view_source_contents, view_source_extraction_script)
+          .ExtractString();
   EXPECT_THAT(source_text,
               HasSubstr("<h1>Request Body:</h1><pre>text=value</pre>"));
   EXPECT_THAT(source_text,
@@ -542,8 +535,8 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
 
   // Submit the form and verify that we arrived at the expected location.
   content::TestNavigationObserver form_post_observer(original_contents, 1);
-  EXPECT_TRUE(ExecuteScript(original_child_frame,
-                            "document.getElementById('form').submit();"));
+  EXPECT_TRUE(ExecJs(original_child_frame,
+                     "document.getElementById('form').submit();"));
   form_post_observer.Wait();
   original_child_frame = ChildFrameAt(original_contents, 0);
 
@@ -551,12 +544,11 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   EXPECT_EQ(target_url, original_child_frame->GetLastCommittedURL());
 
   // Extract the response nonce.
-  std::string response_nonce;
-  std::string response_nonce_extraction_script = R"(
-      domAutomationController.send(
-          document.getElementById('response-nonce').innerText); )";
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      original_child_frame, response_nonce_extraction_script, &response_nonce));
+  std::string response_nonce_extraction_script =
+      "document.getElementById('response-nonce').innerText;";
+  std::string response_nonce =
+      EvalJs(original_child_frame, response_nonce_extraction_script)
+          .ExtractString();
 
   // Open view-source mode tab for the subframe.  This tries to mimic the
   // behavior of RenderViewContextMenu::ExecuteCommand when it handles
@@ -572,15 +564,15 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   // 2) the sources should contain the original response-nonce
   //    (i.e. no new network request should be made - the data should be
   //    retrieved from the cache)
-  std::string source_text;
   std::string view_source_extraction_script = R"(
       output = "";
       document.querySelectorAll(".line-content").forEach(function(elem) {
           output += elem.innerText;
       });
-      domAutomationController.send(output); )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      view_source_contents, view_source_extraction_script, &source_text));
+      output; )";
+  std::string source_text =
+      content::EvalJs(view_source_contents, view_source_extraction_script)
+          .ExtractString();
   EXPECT_THAT(source_text,
               HasSubstr("<h1>Request Body:</h1><pre>text=value</pre>"));
   EXPECT_THAT(source_text,
@@ -722,19 +714,14 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, NavigationOmitsReferrer) {
 
   // Click the first link in the view-source markup.
   content::WebContentsAddedObserver nav_observer;
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementsByTagName('A')[0].click();"));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementsByTagName('A')[0].click();"));
   content::WebContents* new_contents = nav_observer.GetWebContents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
 
   // Validate that no referrer was sent.
-  std::string response_text;
-  std::string response_text_extraction_script =
-      "domAutomationController.send(document.body.innerText);";
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_contents, response_text_extraction_script, &response_text));
-  EXPECT_EQ("None", response_text);
+  EXPECT_EQ("None", EvalJs(new_contents, "document.body.innerText;"));
 }
 
 // Verify that JavaScript URIs are sanitized to about:blank.
@@ -746,15 +733,13 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, JavaScriptURISanitized) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Get the href of the second link in the view-source markup.
-  std::string link_href;
-  std::string link_href_extraction_script = R"(
-      domAutomationController.send(
-          document.getElementsByTagName('A')[1].href);)";
+  std::string link_href_extraction_script =
+      "document.getElementsByTagName('A')[1].href;";
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      link_href_extraction_script, &link_href));
-  EXPECT_EQ("about:blank", link_href);
+  EXPECT_EQ(
+      "about:blank",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      link_href_extraction_script));
 }
 
 // This test verifies that 'view-source' documents are not affected by vertical
@@ -766,24 +751,21 @@ IN_PROC_BROWSER_TEST_F(ViewSourcePermissionsPolicyTest,
       var all_features = document.featurePolicy.allowedFeatures();
       var vs = all_features.find((f) => f === 'vertical-scroll');
       console.log(vs);
-      domAutomationController.send("" + vs);)";
+      "" + vs;)";
   // Sanity-check: 'vertical-scroll' is disabled in the actual page (set by the
   // mock headers).
   GURL url(embedded_test_server()->GetURL(kTestHtml));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::string response;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), k_verify_feature,
-      &response));
-  EXPECT_EQ("undefined", response);
+  EXPECT_EQ("undefined",
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   k_verify_feature));
   // Ensure the policy is enabled in the view-source version.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL(content::kViewSourceScheme + std::string(":") + url.spec())));
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), k_verify_feature,
-      &response));
-  EXPECT_EQ("vertical-scroll", response);
+  EXPECT_EQ("vertical-scroll",
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   k_verify_feature));
 }
 
 namespace {

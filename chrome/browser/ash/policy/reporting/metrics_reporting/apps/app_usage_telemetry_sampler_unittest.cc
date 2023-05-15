@@ -116,8 +116,8 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
         profile_->GetPrefs()->GetDict(::apps::kAppUsageTime);
     const auto& instance_id_string = instance_id.ToString();
     ASSERT_THAT(usage_dict_pref.Find(instance_id_string), NotNull());
-    EXPECT_THAT(*usage_dict_pref.Find(instance_id_string)
-                     ->FindStringKey(::apps::kUsageTimeAppIdKey),
+    EXPECT_THAT(*usage_dict_pref.FindDict(instance_id_string)
+                     ->FindString(::apps::kUsageTimeAppIdKey),
                 StrEq(kTestAppId));
     EXPECT_THAT(base::ValueToTimeDelta(
                     usage_dict_pref.FindDict(instance_id_string)

@@ -49,7 +49,6 @@ class SplitViewDividerHandlerView : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
 
   // Handles the animations for starting and ending dragging.
   std::unique_ptr<SelectionAnimation> selection_animation_;

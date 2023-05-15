@@ -405,8 +405,7 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
   if (IsText()) {
     if (IsLayoutGeneratedText()) {
       // TODO(yosin): Until we have clients, we don't support bidi-level for
-      // ellipsis and soft hyphens.
-      NOTREACHED() << this;
+      // ellipsis and soft hyphens. crbug.com/1423660
       return 0;
     }
     const auto& layout_text = *To<LayoutText>(GetLayoutObject());
@@ -416,7 +415,7 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
       // In case of <br>, <wbr>, text-combine-upright, etc.
       return 0;
     }
-    const NGTextOffset offset = TextOffset();
+    const NGTextOffsetRange offset = TextOffset();
     auto* const item =
         base::ranges::find_if(*items, [offset](const NGInlineItem& item) {
           return item.StartOffset() <= offset.start &&

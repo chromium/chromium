@@ -1133,11 +1133,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsKeys": ["new_key"],
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "sizeGroup": "group_new",
-         "metadata": {"new_a": "b"}
+         "metadata": {"new_a": "b"},
+         "buyerReportingId": "new_brid",
+         "buyerAndSellerReportingId": "new_shrid",
+         "adRenderId": "123abc"
         }],
 "adComponents": [{"renderUrl": "https://example.com/component_url",
                   "sizeGroup": "group_new",
-                  "metadata": {"new_c": "d"}
+                  "metadata": {"new_c": "d"},
+                  "adRenderId": "456def"
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]}
@@ -1164,13 +1168,17 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
-      /*size_group=*/"group_old");
+      /*size_group=*/"group_old",
+      /*buyer_reporting_id=*/"old_brid",
+      /*buyer_and_seller_reporting_id=*/"old_shrid",
+      /*ad_render_id=*/"123abc");
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
-      /*size_group=*/"group_old");
+      /*size_group=*/"group_old",
+      /*ad_render_id=*/"456def");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(
@@ -1237,6 +1245,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].size_group, "group_new");
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+  ASSERT_TRUE(group.ads.value()[0].buyer_reporting_id.has_value());
+  EXPECT_EQ(*group.ads.value()[0].buyer_reporting_id, "new_brid");
+  ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
+  EXPECT_EQ(*group.ads.value()[0].buyer_and_seller_reporting_id, "new_shrid");
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
@@ -1451,6 +1463,52 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+}
+
+// For forward compatibility we should silently ignore fields that we don't
+// know about.
+TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"unsupportedField": "InInterestGroup",
+"ads": [{
+  "renderUrl": "https://example.com/new_render",
+  "unsupportedField": "InAd"
+        }],
+"adComponents": [{
+  "renderUrl": "https://example.com/new_component",
+  "unsupportedField": "InAdComponent"
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ad changed.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+            "https://example.com/new_component");
 }
 
 // Try to set the name -- for security, name and owner shouldn't be

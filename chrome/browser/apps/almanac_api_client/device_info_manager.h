@@ -98,7 +98,7 @@ class DeviceInfoManager {
                    DeviceInfo device_info,
                    base::SysInfo::HardwareInfo hardware_info);
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 
   // |weak_ptr_factory_| must be the last member of this class.
   base::WeakPtrFactory<DeviceInfoManager> weak_ptr_factory_{this};

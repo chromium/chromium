@@ -3,14 +3,10 @@
 <head>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<script src="wasm-constants.js"></script>
-<script src="wasm-module-builder.js"></script>
-<script src="wasm-limits-tests-common.js"></script>
 <script src="wasm-limits-tests.js"></script>
 </head>
 <body>
   <script>
-    test(TestBuffersAreCorrect, "wasm limits buffers are setup correctly");
     test(TestSyncCompile, "wasm sync compile test");
     test(NoParameters, "wasm no/invalid parameters passthrough");
     promise_test(NoParameters_Promise, "wasm no/invalid parameters passtrhough (promise APIs)");

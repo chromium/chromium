@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="demo.css">
     <style>
       cr-button[circle-ripple] {
+        border-radius: 50%;
         height: 60px;
         width: 60px;
       }
@@ -31,7 +32,6 @@
       <cr-button>Default button</cr-button>
       <cr-button class="action-button">Action button</cr-button>
       <cr-button class="tonal-button">Tonal button</cr-button>
-      <cr-button class="floating-button">Floating button</cr-button>
       <cr-button disabled>Disabled default button</cr-button>
       <cr-button disabled class="action-button">
         Disabled action button
@@ -47,23 +47,39 @@
         <cr-button class="action-button">Confirm</cr-button>
       </div>
       <div class="row">
-        <cr-button circle-ripple>1</cr-button>
-        <cr-button circle-ripple>2</cr-button>
-        <cr-button circle-ripple>3</cr-button>
-      </div>
-      <div class="row">
         <cr-button>
-          Manage
+          Default button
           <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
         </cr-button>
         <cr-button>
           <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-          Add current tab
+          Default button
         </cr-button>
+      </div>
+      <div class="row">
         <cr-button class="action-button">
           <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-          Add current tab
+          Action button
         </cr-button>
+        <cr-button class="tonal-button">
+          <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+          Tonal button
+        </cr-button>
+      </div>
+      <div class="row">
+        <cr-button class="floating-button">
+          <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+          Floating button
+        </cr-button>
+      </div>
+    </div>
+
+    <h1>Icons with centered, circle ripples (eg. keypads)</h1>
+    <div class="demos">
+      <div class="row">
+        <cr-button circle-ripple>1</cr-button>
+        <cr-button circle-ripple>2</cr-button>
+        <cr-button circle-ripple>3</cr-button>
       </div>
     </div>
 

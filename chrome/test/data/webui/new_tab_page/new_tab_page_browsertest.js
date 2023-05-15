@@ -373,14 +373,6 @@ TEST_F('NewTabPageModulesChromeCartModuleTest', 'All', function() {
   mocha.run();
 });
 
-var NewTabPageModulesChromeCartV2ModuleTest =
-    class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/cart_v2/module_test.js';
-  }
-};
-
 var NewTabPageModulesFeedModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
@@ -409,17 +401,13 @@ var NewTabPageModulesHistoryClustersModuleTest =
   }
 };
 
-// https://crbug.com/1428590: Flaky on LaCrOS.
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-GEN('#define MAYBE_Core DISABLED_Core');
-GEN('#else');
-GEN('#define MAYBE_Core Core');
-GEN('#endif');
-
-TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'MAYBE_Core', function() {
+TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'Core', function() {
   runMochaSuite('NewTabPageModulesHistoryClustersModuleTest core');
 });
-GEN('#undef MAYBE_Core');
+
+TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'Layouts', function() {
+  runMochaSuite('NewTabPageModulesHistoryClustersModuleTest layouts');
+});
 
 TEST_F(
     'NewTabPageModulesHistoryClustersModuleTest',
@@ -433,6 +421,13 @@ TEST_F(
     'UnloadMetricImageDisplayStateAll', function() {
       runMochaSuite(
           'NewTabPageModulesHistoryClustersModuleTest unload metric all images');
+    });
+
+TEST_F(
+    'NewTabPageModulesHistoryClustersModuleTest', 'CartTileRendering',
+    function() {
+      runMochaSuite(
+          'NewTabPageModulesHistoryClustersModuleTest cart tile rendering');
     });
 
 var NewTabPageModulesHistoryClustersModuleTileTest =
@@ -478,17 +473,39 @@ TEST_F(
       mocha.run();
     });
 
-// https://crbug.com/1227564: Flaky on Chrome OS.
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
+var NewTabPageModulesHistoryClustersModuleCartTileTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/history_clusters/cart/cart_tile_test.js';
+  }
+};
 
-TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'MAYBE_All', function() {
+TEST_F('NewTabPageModulesHistoryClustersModuleCartTileTest', 'All', function() {
   mocha.run();
 });
-GEN('#undef MAYBE_All');
+
+var NewTabPageModulesHistoryClustersV2ModuleTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/history_clusters_v2/module_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ntp_features::kNtpHistoryClustersModule',
+        'ntp_features::kNtpModulesRedesigned',
+      ],
+    };
+  }
+};
+
+TEST_F('NewTabPageModulesHistoryClustersV2ModuleTest', 'Core', function() {
+  runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest core');
+});
 
 GEN('#if !defined(OFFICIAL_BUILD)');
 

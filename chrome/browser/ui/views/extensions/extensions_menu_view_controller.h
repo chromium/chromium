@@ -8,8 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/views/view_observer.h"
 
 namespace views {
@@ -24,7 +25,7 @@ class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
 class ExtensionsMenuViewController
-    : public ExtensionsMenuNavigationHandler,
+    : public ExtensionsMenuHandler,
       public TabStripModelObserver,
       public ToolbarActionsModel::Observer,
       public extensions::PermissionsManager::Observer,
@@ -39,10 +40,15 @@ class ExtensionsMenuViewController
       const ExtensionsMenuViewController&) = delete;
   ~ExtensionsMenuViewController() override;
 
-  // ExtensionsMenuNavigationHandler:
+  // ExtensionsMenuHandler:
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
+  void OnSiteAccessSelected(
+      extensions::ExtensionId extension_id,
+      extensions::PermissionsManager::UserSiteAccess site_access) override;
+  void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
+                                 bool is_on) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
@@ -89,6 +95,15 @@ class ExtensionsMenuViewController
 
   // Updates current_page for the given `web_contents`.
   void UpdatePage(content::WebContents* web_contents);
+
+  // Updates `main_page` for the given `web_contents`.
+  void UpdateMainPage(ExtensionsMenuMainPageView* main_page,
+                      content::WebContents* web_contents);
+
+  // Updates `site_permissions_page` for the given `web_contents`.
+  void UpdateSitePermissionsPage(
+      ExtensionsMenuSitePermissionsPageView* site_permissions_page,
+      content::WebContents* web_contents);
 
   // Populates menu items in `main_page`.
   void PopulateMainPage(ExtensionsMenuMainPageView* main_page);

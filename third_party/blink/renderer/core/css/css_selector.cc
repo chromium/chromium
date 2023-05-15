@@ -330,7 +330,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoInRange:
     case kPseudoIncrement:
     case kPseudoIndeterminate:
-    case kPseudoInitial:
     case kPseudoInvalid:
     case kPseudoIs:
     case kPseudoIsHtml:
@@ -487,7 +486,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"in-range", CSSSelector::kPseudoInRange},
     {"increment", CSSSelector::kPseudoIncrement},
     {"indeterminate", CSSSelector::kPseudoIndeterminate},
-    {"initial", CSSSelector::kPseudoInitial},
     {"invalid", CSSSelector::kPseudoInvalid},
     {"last-child", CSSSelector::kPseudoLastChild},
     {"last-of-type", CSSSelector::kPseudoLastOfType},
@@ -644,11 +642,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if (IsTransitionPseudoElement(
           GetPseudoId(static_cast<CSSSelector::PseudoType>(match->type))) &&
       !RuntimeEnabledFeatures::ViewTransitionEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoInitial &&
-      !RuntimeEnabledFeatures::CSSInitialPseudoEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -812,7 +805,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoInRange:
     case kPseudoIncrement:
     case kPseudoIndeterminate:
-    case kPseudoInitial:
     case kPseudoInvalid:
     case kPseudoIs:
     case kPseudoLang:
@@ -1288,7 +1280,6 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoFirstChild:
     case CSSSelector::kPseudoLastChild:
     case CSSSelector::kPseudoFirstOfType:
-    case CSSSelector::kPseudoInitial:
     case CSSSelector::kPseudoLastOfType:
     case CSSSelector::kPseudoOnlyOfType:
     case CSSSelector::kPseudoHost:

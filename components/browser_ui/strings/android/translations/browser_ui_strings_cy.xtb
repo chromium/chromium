@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
 <translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">O <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Gall gwefannau cysylltiedig weld eich gweithgarwch yn y grŵp</translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa</translation>
 <translation id="3165022941318558018">Caniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data a storiwyd</translation>
-<translation id="3203366800380907218">O'r we</translation>
 <translation id="321187648315454507">I ganiatáu i <ph name="APP_NAME" /> anfon hysbysiadau atoch, trowch hysbysiadau ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
 <translation id="3248611290851046188">Mae'r wefan hon yn diffinio diddordebau y gall gwefannau eraill eu defnyddio i ddangos hysbysebion i chi. Mae'r wefan hon hefyd yn cael eich diddordebau o Chrome i ddangos hysbysebion mwy defnyddiol i chi.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
+<translation id="3707034683772193706">Gall gwefan rydych chi'n ymweld â hi gadw ychydig o wybodaeth gyda Chrome, yn bennaf i gadarnhau nad bot ydych chi</translation>
 <translation id="3721953990244350188">Diystyru a dangos y cam nesaf sydd ar gael</translation>
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
 <translation id="5225463052809312700">Troi'r camera ymlaen</translation>
-<translation id="5229337741799419985">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="5264323282659631142">Tynnu '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Llusgwch o'r brig a chyffyrddwch â'r botwm nôl i adael y sgrîn lawn.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
-<translation id="6701547804986694515">Gall gwefan rydych yn ymweld â hi gadw gwybodaeth gyda Chrome sy'n dilysu nad bot ydych chi. Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="6746124502594467657">Symud i lawr</translation>
 <translation id="6749077623962119521">Ailosod caniatadau?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Rydych fel arfer yn rhwystro hysbysiadau. I'w caniatáu, tapiwch Manylion.</translation>
 <translation id="7366415735885268578">Ychwanegu gwefan</translation>
 <translation id="7383715096023715447">Gosodiadau ar gyfer <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori, er y gall gwefannau rannu ychydig i wybodaeth fel rhan o'r dilysiad</translation>
 <translation id="7423098979219808738">Gofyn yn gyntaf</translation>
 <translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>
 <translation id="7425915948813553151">Thema dywyll ar gyfer gwefannau</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Rhwystro gwefannau rhag cael mynediad at synwyryddion</translation>
 <translation id="8823559166155093873">Rhwystro cwcis</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="8899807382908246773">Hysbysebion ymwthiol</translation>
 <translation id="8903921497873541725">Chwyddo</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

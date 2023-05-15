@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
 
@@ -220,15 +221,18 @@ void NavigateEvent::commit(ExceptionState& exception_state) {
 }
 
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
+  delayed_load_start_task_handle_ = PostDelayedCancellableTask(
+      *DomWindow()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+      WTF::BindOnce(&NavigateEvent::DelayedLoadStartTimerFired,
+                    WrapWeakPersistent(this)),
+      kDelayLoadStart);
+
   if (ShouldCommitImmediately()) {
     CommitNow();
     return;
   }
 
-  LocalFrame* frame = DomWindow()->GetFrame();
-  frame->GetLocalFrameHostRemote().StartLoadingForAsyncNavigationApiCommit();
-  frame->Loader().Progress().ProgressStarted();
-
+  DomWindow()->GetFrame()->Loader().Progress().ProgressStarted();
   FinalizeNavigationActionPromisesList();
 }
 
@@ -303,6 +307,8 @@ void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
     return;
   }
 
+  delayed_load_start_task_handle_.Cancel();
+
   CHECK_EQ(this, window->navigation()->ongoing_navigate_event_);
   window->navigation()->ongoing_navigate_event_ = nullptr;
 
@@ -338,6 +344,23 @@ void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
       cache->HandleLoadComplete(window->document());
     }
   }
+}
+
+void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
+  if (IsBeingDispatched()) {
+    preventDefault();
+  }
+  signal_->SignalAbort(script_state, error);
+  delayed_load_start_task_handle_.Cancel();
+}
+
+void NavigateEvent::DelayedLoadStartTimerFired() {
+  if (!DomWindow()) {
+    return;
+  }
+
+  auto& frame_host = DomWindow()->GetFrame()->GetLocalFrameHostRemote();
+  frame_host.StartLoadingForAsyncNavigationApiCommit();
 }
 
 void NavigateEvent::FinalizeNavigationActionPromisesList() {

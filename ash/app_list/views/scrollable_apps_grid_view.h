@@ -8,6 +8,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -70,6 +71,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   base::ScopedClosureRunner LockAppsGridOpacity() override;
+  bool ShouldContainerHandleDragEvents() override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {
@@ -92,7 +94,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetAutoScrollOffset() const;
 
   // The scroll view that contains this view (and other views).
-  views::ScrollView* const scroll_view_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
 
   // Timer to scroll the `scroll_view_`.
   base::OneShotTimer auto_scroll_timer_;

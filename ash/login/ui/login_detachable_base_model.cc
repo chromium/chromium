@@ -11,6 +11,7 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
@@ -54,7 +55,7 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
   void OnDetachableBaseRequiresUpdateChanged(bool requires_update) override {}
 
  private:
-  DetachableBaseHandler* detachable_base_handler_;
+  raw_ptr<DetachableBaseHandler, ExperimentalAsh> detachable_base_handler_;
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};
 };

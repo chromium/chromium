@@ -7,7 +7,7 @@
 <select id="select">
     <option>Canada</option>
     <option>Spain</option>
-    <option>United Arab Emerites</option>
+    <option>United Arab Emirates</option>
     <option>United States</option>
 </select>
 <script>
@@ -68,7 +68,7 @@ function test1() {
     internals.resetTypeAheadSession(popup);
     keyDown(' ');
     shouldBeTrue('internals.isSelectPopupVisible(popup)');
-    shouldBeEqualToString('popup.value', 'United Arab Emerites');
+    shouldBeEqualToString('popup.value', 'United Arab Emirates');
     popup.blur();
     finishJSTest();
 }

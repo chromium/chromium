@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
@@ -43,7 +44,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
   TPMAutoUpdateModePolicyHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {
     ash::SessionManagerClient::InitializeFakeInMemory();
   }
 
@@ -75,7 +76,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Set up fake install attributes to pretend the machine is enrolled.

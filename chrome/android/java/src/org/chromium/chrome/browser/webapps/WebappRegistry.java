@@ -205,9 +205,6 @@ public class WebappRegistry {
 
         String scope = storage.getScope();
 
-        // Scope shouldn't be empty.
-        assert (!scope.isEmpty());
-
         return scope;
     }
 

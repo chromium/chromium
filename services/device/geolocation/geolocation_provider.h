@@ -30,7 +30,7 @@ class GeolocationProvider {
  public:
   static GeolocationProvider* GetInstance();
 
-  typedef base::RepeatingCallback<void(const mojom::Geoposition&)>
+  typedef base::RepeatingCallback<void(const mojom::GeopositionResult&)>
       LocationUpdateCallback;
 
   // |enable_high_accuracy| is used as a 'hint' for the provider preferences for
@@ -41,6 +41,10 @@ class GeolocationProvider {
       bool enable_high_accuracy) = 0;
 
   virtual bool HighAccuracyLocationInUse() = 0;
+
+  // Sets the singleton GeolocationProvider that will be returned by
+  // GetInstance().
+  static void SetInstanceForTesting(GeolocationProvider* instance_for_testing);
 
   // Overrides the current location for testing.
   //
@@ -53,10 +57,12 @@ class GeolocationProvider {
   // a fake location. Neither step can be undone, breaking unit test isolation
   // (https://crbug.com/125931).
   virtual void OverrideLocationForTesting(
-      const mojom::Geoposition& position) = 0;
+      mojom::GeopositionResultPtr result) = 0;
 
  protected:
-  virtual ~GeolocationProvider() {}
+  virtual ~GeolocationProvider() = default;
+
+  static GeolocationProvider* instance_for_testing_;
 };
 
 }  // namespace device

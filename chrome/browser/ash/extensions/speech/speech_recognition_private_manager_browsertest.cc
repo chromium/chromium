@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -80,7 +81,7 @@ class SpeechRecognitionPrivateManagerTest
   }
 
  private:
-  SpeechRecognitionPrivateManager* manager_;
+  raw_ptr<SpeechRecognitionPrivateManager, ExperimentalAsh> manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

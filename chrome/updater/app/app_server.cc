@@ -35,14 +35,10 @@
 
 namespace updater {
 
-namespace {
-
 bool IsInternalService() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
-
-}  // namespace
 
 AppServer::AppServer() : external_constants_(CreateExternalConstants()) {}
 
@@ -70,13 +66,19 @@ base::OnceClosure AppServer::ModeCheck() {
 
   if (this_version < active_version) {
     global_prefs = nullptr;
-    uninstall_self_ = true;
     if (IsInternalService()) {
+      uninstall_self_ = true;
       return base::BindOnce(&AppServer::ActiveDutyInternal, this,
                             MakeInactiveUpdateServiceInternal());
     }
+
+#if BUILDFLAG(IS_WIN)
+    return base::BindOnce(&AppServer::Shutdown, this,
+                          static_cast<int>(UpdateService::Result::kInactive));
+#else
     return base::BindOnce(&AppServer::ActiveDuty, this,
                           MakeInactiveUpdateService());
+#endif
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
@@ -85,12 +87,19 @@ base::OnceClosure AppServer::ModeCheck() {
       global_prefs = nullptr;
       prefs_ = local_prefs;
       config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
-      return IsInternalService()
-                 ? base::BindOnce(&AppServer::ActiveDutyInternal, this,
-                                  MakeQualifyingUpdateServiceInternal(
-                                      config_, local_prefs))
-                 : base::BindOnce(&AppServer::ActiveDuty, this,
-                                  MakeInactiveUpdateService());
+      if (IsInternalService()) {
+        return base::BindOnce(
+            &AppServer::ActiveDutyInternal, this,
+            MakeQualifyingUpdateServiceInternal(config_, local_prefs));
+      }
+
+#if BUILDFLAG(IS_WIN)
+      return base::BindOnce(&AppServer::Shutdown, this,
+                            static_cast<int>(UpdateService::Result::kInactive));
+#else
+      return base::BindOnce(&AppServer::ActiveDuty, this,
+                            MakeInactiveUpdateService());
+#endif
     }
   }
 

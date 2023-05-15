@@ -105,6 +105,9 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -149,26 +152,16 @@ bool ContainsEvenAtEdge(const gfx::Rect& rect, const gfx::Point& point) {
 gfx::Point DetermineHotSpot(const Image& image,
                             bool hot_spot_specified,
                             const gfx::Point& specified_hot_spot) {
-  if (image.IsNull())
-    return gfx::Point();
-
-  gfx::Rect image_rect = image.Rect();
-
-  // Hot spot must be inside cursor rectangle.
   if (hot_spot_specified) {
-    if (image_rect.Contains(specified_hot_spot))
-      return specified_hot_spot;
-
-    return gfx::Point(ClampTo<int>(specified_hot_spot.x(), image_rect.x(),
-                                   image_rect.right() - 1),
-                      ClampTo<int>(specified_hot_spot.y(), image_rect.y(),
-                                   image_rect.bottom() - 1));
+    return specified_hot_spot;
   }
 
   // If hot spot is not specified externally, it can be extracted from some
   // image formats (e.g. .cur).
   gfx::Point intrinsic_hot_spot;
-  bool image_has_intrinsic_hot_spot = image.GetHotSpot(intrinsic_hot_spot);
+  const bool image_has_intrinsic_hot_spot =
+      image.GetHotSpot(intrinsic_hot_spot);
+  const gfx::Rect image_rect = image.Rect();
   if (image_has_intrinsic_hot_spot && image_rect.Contains(intrinsic_hot_spot))
     return intrinsic_hot_spot;
 
@@ -182,10 +175,9 @@ gfx::Point DetermineHotSpot(const Image& image,
 // Set to 50Hz, no need to be faster than common screen refresh rate
 static constexpr base::TimeDelta kCursorUpdateInterval = base::Milliseconds(20);
 
-static const int kMaximumCursorSize = 128;
-
 // The maximum size a cursor can be without falling back to the default cursor
 // when intersecting browser native UI.
+// https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#icon_size_limits.
 static const int kMaximumCursorSizeWithoutFallback = 32;
 
 // The minimum amount of time an element stays active after a ShowPress
@@ -584,11 +576,11 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         size.Scale(1 / scale);
       }
 
-      // Limit the size of cursors (in DIP) so that they cannot be used to cover
-      // UI elements in chrome.
-      if (size.IsEmpty() || size.width() > kMaximumCursorSize ||
-          size.height() > kMaximumCursorSize)
+      if (size.IsEmpty() ||
+          !ui::Cursor::AreDimensionsValidForWeb(
+              gfx::ToCeiledSize(gfx::ScaleSize(size, scale)), scale)) {
         continue;
+      }
 
       // For large cursors below the max size, limit their ability to cover UI
       // elements by removing them when they are not fully contained by the

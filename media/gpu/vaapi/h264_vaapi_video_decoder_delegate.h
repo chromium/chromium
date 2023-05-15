@@ -72,9 +72,6 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
 
  private:
   void FillVAPicture(VAPictureH264* va_pic, scoped_refptr<H264Picture> pic);
-  int FillVARefFramesFromDPB(const H264DPB& dpb,
-                             VAPictureH264* va_pics,
-                             int num_pics);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We need to hold onto this memory here because it's referenced by the

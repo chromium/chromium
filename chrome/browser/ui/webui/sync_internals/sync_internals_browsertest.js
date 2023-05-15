@@ -244,7 +244,7 @@ GEN('#else');
 TEST_F('SyncInternalsWebUITest', 'SyncDisabledByDefault', function() {
   assertTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
   assertTrue(
-      this.hasInDetails(true, 'Disable Reasons', 'Not signed in, User choice'));
+      this.hasInDetails(true, 'Disable Reasons', 'Not signed in'));
   assertTrue(this.hasInDetails(true, 'Username', ''));
 });
 

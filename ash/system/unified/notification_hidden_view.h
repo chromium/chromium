@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_HIDDEN_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_HIDDEN_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -35,9 +36,9 @@ class NotificationHiddenView : public views::View {
  private:
   void ChangeButtonPressed();
 
-  views::View* const container_;
-  views::Label* const label_;
-  views::Button* change_button_ = nullptr;
+  const raw_ptr<views::View, ExperimentalAsh> container_;
+  const raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Button, ExperimentalAsh> change_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_NOTIFIER_BROWSER_AGENT_H_
 
 #import "base/observer_list.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 

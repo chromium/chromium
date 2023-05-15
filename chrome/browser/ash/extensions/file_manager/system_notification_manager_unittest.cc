@@ -8,6 +8,7 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -275,9 +276,10 @@ class SystemNotificationManagerTest
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   // notification_display_service is owned by NotificationDisplayServiceFactory.
-  NotificationDisplayServiceImpl* notification_display_service_;
+  raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh>
+      notification_display_service_;
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouterImpl> device_event_router_;
 
@@ -287,10 +289,11 @@ class SystemNotificationManagerTest
  public:
   size_t notification_count;
   // notification_platform_bridge is owned by NotificationDisplayService.
-  TestNotificationPlatformBridgeDelegator* notification_platform_bridge;
+  raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh>
+      notification_platform_bridge;
 
   // Used for tests with IOTask:
-  io_task::IOTaskController* io_task_controller;
+  raw_ptr<io_task::IOTaskController, ExperimentalAsh> io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context;
 
   // Keep track of the task state transitions.
@@ -1198,6 +1201,108 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
 
   // The last status observed should be Cancelled.
   ASSERT_EQ(io_task::State::kCancelled, task_statuses[task_id].back());
+}
+
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressWarning) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Copying 2 items\x2026");
+
+  // Set the status to warning.
+  status.state = file_manager::io_task::State::kPaused;
+  status.policy_error = file_manager::io_task::PolicyErrorType::kDlp;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the same notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  EXPECT_EQ(notification_strings.title, u"Confirmation required");
+  EXPECT_EQ(notification_strings.message,
+            u"files may contain sensitive content");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0u, GetNotificationCount());
+}
+
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Copying src_file.txt\x2026");
+
+  // Set the security error value.
+  status.state = file_manager::io_task::State::kError;
+  status.policy_error =
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the same notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  EXPECT_EQ(notification_strings.title, u"files blocked");
+  EXPECT_EQ(notification_strings.message, u"File was blocked");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0u, GetNotificationCount());
 }
 
 std::u16string kGoogleDrive = u"Google Drive";

@@ -342,30 +342,28 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
-    bool is_opaque_ads_mode) {
+    base::span<const blink::mojom::PermissionsPolicyFeature>
+        required_permissions_to_load) {
   return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(),
-                              is_opaque_ads_mode);
+                              required_permissions_to_load);
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features,
-    bool is_opaque_ads_mode) {
+    base::span<const blink::mojom::PermissionsPolicyFeature>
+        required_permissions_to_load) {
   std::unique_ptr<PermissionsPolicy> new_policy =
       base::WrapUnique(new PermissionsPolicy(origin, features));
+
   for (const auto& feature : features) {
     new_policy->inherited_policies_[feature.first] = false;
   }
-  // TODO(crbug.com/1347953): this is a medium-term solution to allow
-  // attribution reporting inside an opaque ad. This will eventually be replaced
-  // by urn:uuid bound attributes as outlined in this document:
-  // https://docs.google.com/document/d/11QaI40IAr12CDFrIUQbugxmS9LfircghHUghW-EDzMk/edit?usp=sharing
-  if (is_opaque_ads_mode) {
-    for (const blink::mojom::PermissionsPolicyFeature feature :
-         blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
-      new_policy->inherited_policies_[feature] = true;
-    }
+  for (const blink::mojom::PermissionsPolicyFeature feature :
+       required_permissions_to_load) {
+    new_policy->inherited_policies_[feature] = true;
   }
+
   return new_policy;
 }
 

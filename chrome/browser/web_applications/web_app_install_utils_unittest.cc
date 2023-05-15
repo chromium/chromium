@@ -264,7 +264,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());
-  auto scope_extension = web_app_info.scope_extensions[0];
+  auto scope_extension = *web_app_info.scope_extensions.begin();
   EXPECT_EQ(scope_extension.origin,
             url::Origin::Create(GURL("https://scope_extensions_origin.com/")));
   EXPECT_FALSE(scope_extension.has_origin_wildcard);
@@ -601,7 +601,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());
-  auto scope_extension = web_app_info.scope_extensions[0];
+  auto scope_extension = *web_app_info.scope_extensions.begin();
   EXPECT_EQ(scope_extension.origin,
             url::Origin::Create(GURL("https://scope_extensions_origin.com/")));
   EXPECT_TRUE(scope_extension.has_origin_wildcard);

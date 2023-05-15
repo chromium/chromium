@@ -7,14 +7,30 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/guest_os_installer/mojom/guest_os_installer.mojom.h"
+#include "ash/webui/guest_os_installer/url_constants.h"
 #include "base/functional/bind.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {
+
+class GuestOSInstallerUI;
+
+// The WebUIConfig for chrome://guest-os-installer
+class GuestOSInstallerUIConfig
+    : public ChromeOSWebUIConfig<GuestOSInstallerUI> {
+ public:
+  explicit GuestOSInstallerUIConfig(
+      CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIGuestOSInstallerHost,
+                            create_controller_func) {}
+};
 
 // The WebUI for chrome://guest-os-installer
 class GuestOSInstallerUI
@@ -24,13 +40,10 @@ class GuestOSInstallerUI
   using DelegateFactory = base::RepeatingCallback<
       std::unique_ptr<ash::guest_os_installer::mojom::PageHandler>(
           GuestOSInstallerUI*,
-          const GURL&,
           mojo::PendingRemote<ash::guest_os_installer::mojom::Page>,
           mojo::PendingReceiver<ash::guest_os_installer::mojom::PageHandler>)>;
 
-  GuestOSInstallerUI(content::WebUI* web_ui,
-                     const GURL& url,
-                     DelegateFactory delegate_factory);
+  GuestOSInstallerUI(content::WebUI* web_ui, DelegateFactory delegate_factory);
 
   GuestOSInstallerUI(const GuestOSInstallerUI&) = delete;
   GuestOSInstallerUI& operator=(const GuestOSInstallerUI&) = delete;
@@ -52,8 +65,6 @@ class GuestOSInstallerUI
       page_factory_receiver_{this};
 
   std::unique_ptr<ash::guest_os_installer::mojom::PageHandler> handler_;
-
-  const GURL url_;
 
   const DelegateFactory delegate_factory_;
 

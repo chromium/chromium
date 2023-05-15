@@ -16,28 +16,6 @@ const char kNoVarySearchSpecProposalUrl[] =
 
 const char kRFC8941DictionaryDefinitionUrl[] =
     "https://www.rfc-editor.org/rfc/rfc8941.html#name-dictionaries";
-
-mojom::NoVarySearchParseError ConvertParseError(
-    const net::HttpNoVarySearchData::ParseErrorEnum& parse_error) {
-  switch (parse_error) {
-    case net::HttpNoVarySearchData::ParseErrorEnum::kOk:
-      return mojom::NoVarySearchParseError::kOk;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kDefaultValue:
-      return mojom::NoVarySearchParseError::kDefaultValue;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kNotDictionary:
-      return mojom::NoVarySearchParseError::kNotDictionary;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kUnknownDictionaryKey:
-      return mojom::NoVarySearchParseError::kUnknownDictionaryKey;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kNonBooleanKeyOrder:
-      return mojom::NoVarySearchParseError::kNonBooleanKeyOrder;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kParamsNotStringList:
-      return mojom::NoVarySearchParseError::kParamsNotStringList;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kExceptNotStringList:
-      return mojom::NoVarySearchParseError::kExceptNotStringList;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kExceptWithoutTrueParams:
-      return mojom::NoVarySearchParseError::kExceptWithoutTrueParams;
-  }
-}
 }  // namespace
 
 mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
@@ -47,9 +25,32 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
   const auto no_vary_search_data =
       net::HttpNoVarySearchData::ParseFromHeaders(headers);
   if (!no_vary_search_data.has_value()) {
+    using Input = net::HttpNoVarySearchData::ParseErrorEnum;
+    const auto map_error = [](Input error) {
+      using Output = mojom::NoVarySearchParseError;
+      switch (error) {
+        case Input::kOk:
+          return Output::kOk;
+        case Input::kDefaultValue:
+          return Output::kDefaultValue;
+        case Input::kNotDictionary:
+          return Output::kNotDictionary;
+        case Input::kUnknownDictionaryKey:
+          return Output::kUnknownDictionaryKey;
+        case Input::kNonBooleanKeyOrder:
+          return Output::kNonBooleanKeyOrder;
+        case Input::kParamsNotStringList:
+          return Output::kParamsNotStringList;
+        case Input::kExceptNotStringList:
+          return Output::kExceptNotStringList;
+        case Input::kExceptWithoutTrueParams:
+          return Output::kExceptWithoutTrueParams;
+      }
+      NOTREACHED_NORETURN();
+    };
     return mojom::NoVarySearchWithParseError::NewParseError(
-        ConvertParseError(no_vary_search_data.error()));
-  }
+        map_error(no_vary_search_data.error()));
+  };
 
   mojom::NoVarySearchPtr no_vary_search = network::mojom::NoVarySearch::New();
   no_vary_search->vary_on_key_order = no_vary_search_data->vary_on_key_order();
@@ -77,7 +78,7 @@ absl::optional<std::string> GetNoVarySearchConsoleMessage(
     case network::mojom::NoVarySearchParseError::kDefaultValue:
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
-          " is equivalent to the default search variance. No-Vary-Search"
+          " is equivalent to the default behavior. No-Vary-Search"
           " header can be safely removed. See No-Vary-Search specification for"
           " more information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
@@ -85,8 +86,8 @@ absl::optional<std::string> GetNoVarySearchConsoleMessage(
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
           " is not a dictionary as defined in RFC8941: %s. The header"
-          " will be ignored. Please fix this error. See No-Vary-Search"
-          " specification for more information: %s.",
+          " will be ignored. See No-Vary-Search specification for more"
+          " information: %s.",
           preloaded_url.spec().c_str(), kRFC8941DictionaryDefinitionUrl,
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kUnknownDictionaryKey:
@@ -94,29 +95,28 @@ absl::optional<std::string> GetNoVarySearchConsoleMessage(
           "No-Vary-Search header value received for prefetched url %s"
           " contains unknown dictionary keys. Valid dictionary keys are:"
           " \"params\", \"except\", \"key-order\". The header will be"
-          " ignored. Please fix this error. See No-Vary-Search"
-          " specification for more information: %s.",
+          " ignored. See No-Vary-Search specification for more"
+          " information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kNonBooleanKeyOrder:
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
           " contains a \"key-order\" dictionary value that is not a boolean."
-          " The header will be ignored. Please fix this error."
+          " The header will be ignored."
           " See No-Vary-Search specification for more information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kParamsNotStringList:
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
           " contains a \"params\" dictionary value that is not a list of"
-          " strings or a boolean. The header will be ignored. Please fix this"
-          " error."
+          " strings or a boolean. The header will be ignored."
           " See No-Vary-Search specification for more information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kExceptNotStringList:
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
           " contains an \"except\" dictionary value that is not a list of"
-          " strings. The header will be ignored. Please fix this error."
+          " strings. The header will be ignored."
           " See No-Vary-Search specification for more information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kExceptWithoutTrueParams:
@@ -124,8 +124,7 @@ absl::optional<std::string> GetNoVarySearchConsoleMessage(
           "No-Vary-Search header value received for prefetched url %s"
           " contains an \"except\" dictionary key, without the \"params\""
           " dictionary key being set to true. The header will be ignored."
-          " Please fix this error. See No-Vary-Search specification for"
-          " more information: %s.",
+          " See No-Vary-Search specification for more information: %s.",
           preloaded_url.spec().c_str(), kNoVarySearchSpecProposalUrl);
   }
 }
@@ -137,47 +136,45 @@ absl::optional<std::string> GetNoVarySearchHintConsoleMessage(
       return absl::nullopt;
     case network::mojom::NoVarySearchParseError::kDefaultValue:
       return base::StringPrintf(
-          "No-Vary-Search hint value is equivalent to the default search"
-          " variance. No-Vary-Search hint can be safely removed. See"
+          "No-Vary-Search hint value is equivalent to the default behavior."
+          " No-Vary-Search hint can be safely removed. See"
           " No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kNotDictionary:
       return base::StringPrintf(
           "No-Vary-Search hint value is not a dictionary as defined in"
-          " RFC8941: %s. Please fix this error. See No-Vary-Search"
-          " specification for more information: %s.",
+          " RFC8941: %s. See No-Vary-Search specification for more"
+          " information: %s.",
           kRFC8941DictionaryDefinitionUrl, kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kUnknownDictionaryKey:
       return base::StringPrintf(
           "No-Vary-Search hint value contains unknown dictionary keys."
           " Valid dictionary keys are: \"params\", \"except\", \"key-order\"."
-          " Please fix this error. See No-Vary-Search specification for more"
-          " information: %s.",
+          " See No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kNonBooleanKeyOrder:
       return base::StringPrintf(
           "No-Vary-Search hint value contains a \"key-order\" dictionary"
-          " value that is not a boolean. Please fix this error."
+          " value that is not a boolean."
           " See No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kParamsNotStringList:
       return base::StringPrintf(
           "No-Vary-Search hint value contains a \"params\" dictionary value"
-          " that is not a list of strings or a boolean. Please fix this error."
+          " that is not a list of strings or a boolean."
           " See No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kExceptNotStringList:
       return base::StringPrintf(
           "No-Vary-Search hint value contains an \"except\" dictionary value"
-          " that is not a list of strings. Please fix this error."
+          " that is not a list of strings."
           " See No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
     case network::mojom::NoVarySearchParseError::kExceptWithoutTrueParams:
       return base::StringPrintf(
           "No-Vary-Search hint value contains an \"except\" dictionary key"
           " without the \"params\" dictionary key being set to true."
-          " Please fix this error. See No-Vary-Search specification for"
-          " more information: %s.",
+          " See No-Vary-Search specification for more information: %s.",
           kNoVarySearchSpecProposalUrl);
   }
 }

@@ -74,6 +74,57 @@ class CORE_EXPORT ContainerSelector {
   bool has_style_query_{false};
 };
 
+class ScopedContainerSelector
+    : public GarbageCollected<ScopedContainerSelector> {
+ public:
+  ScopedContainerSelector(ContainerSelector selector,
+                          const TreeScope* tree_scope)
+      : selector_(selector), tree_scope_(tree_scope) {}
+
+  unsigned GetHash() const {
+    unsigned hash = selector_.GetHash();
+    WTF::AddIntToHash(hash, WTF::GetHash(tree_scope_.Get()));
+    return hash;
+  }
+
+  bool operator==(const ScopedContainerSelector& other) const {
+    return selector_ == other.selector_ && tree_scope_ == other.tree_scope_;
+  }
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  ContainerSelector selector_;
+  WeakMember<const TreeScope> tree_scope_;
+};
+
+struct ScopedContainerSelectorHashTraits
+    : WTF::MemberHashTraits<ScopedContainerSelector> {
+  static unsigned GetHash(
+      const Member<ScopedContainerSelector>& scoped_selector) {
+    return scoped_selector->GetHash();
+  }
+  static bool Equal(const Member<ScopedContainerSelector>& a,
+                    const Member<ScopedContainerSelector>& b) {
+    return *a == *b;
+  }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
+
+// Helper needed to allow calling Find() with a ScopedContainerSelector instead
+// of Member<ScopedContainerSelector>
+struct ScopedContainerSelectorHashTranslator {
+  STATIC_ONLY(ScopedContainerSelectorHashTranslator);
+
+  static unsigned GetHash(const ScopedContainerSelector& selector) {
+    return selector.GetHash();
+  }
+  static bool Equal(const Member<ScopedContainerSelector>& a,
+                    const ScopedContainerSelector& b) {
+    return a && *a == b;
+  }
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -93,7 +144,9 @@ struct HashTraits<blink::ContainerSelector>
 
 namespace blink {
 
-using ContainerSelectorCache = HeapHashMap<ContainerSelector, Member<Element>>;
+using ContainerSelectorCache = HeapHashMap<Member<ScopedContainerSelector>,
+                                           Member<Element>,
+                                           ScopedContainerSelectorHashTraits>;
 
 }  // namespace blink
 

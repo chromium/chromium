@@ -33,7 +33,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SE
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +58,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -125,15 +125,7 @@ public class TasksViewBinderUnitTest {
         assertTrue(isViewVisible(R.id.search_box));
 
         AtomicBoolean textChanged = new AtomicBoolean();
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                // do nothing.
-            }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // do nothing.
-            }
+        TextWatcher textWatcher = new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textChanged.set(true);

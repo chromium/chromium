@@ -4,12 +4,8 @@
 
 #include "chrome/updater/mac/privileged_helper/service.h"
 
-#include "base/memory/raw_ptr.h"
-#import "base/task/sequenced_task_runner.h"
-
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
-
 #include <pwd.h>
 #include <unistd.h>
 
@@ -27,7 +23,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
@@ -39,6 +35,10 @@
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface PrivilegedHelperServiceImpl
     : NSObject <PrivilegedHelperServiceProtocol> {
@@ -66,12 +66,15 @@
 #pragma mark PrivilegedHelperServiceProtocol
 - (void)setupSystemUpdaterWithBrowserPath:(NSString* _Nonnull)browserPath
                                     reply:(void (^_Nonnull)(int rc))reply {
-  auto cb = base::BindOnce(base::RetainBlock(^(const int rc) {
+  auto cb = base::BindOnce(^(const int rc) {
     VLOG(0) << "SetupSystemUpdaterWithUpdaterPath complete. Result: " << rc;
-    if (reply)
+    if (reply) {
       reply(rc);
-    _server->TaskCompleted();
-  }));
+    }
+    // This block is fired and then released, so this strong reference to the
+    // PrivilegedHelperServiceProtocol is OK.
+    self->_server->TaskCompleted();
+  });
 
   _server->TaskStarted();
   _callbackRunner->PostTask(
@@ -108,11 +111,10 @@
   newConnection.exportedInterface = [NSXPCInterface
       interfaceWithProtocol:@protocol(PrivilegedHelperServiceProtocol)];
 
-  base::scoped_nsobject<PrivilegedHelperServiceImpl> obj(
+  newConnection.exportedObject =
       [[PrivilegedHelperServiceImpl alloc] initWithService:_service.get()
                                                     server:_server
-                                            callbackRunner:_callbackRunner]);
-  newConnection.exportedObject = obj.get();
+                                            callbackRunner:_callbackRunner];
   [newConnection resume];
   return YES;
 }
@@ -195,8 +197,8 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::ScopedCFTypeRef<SecStaticCodeRef> code;
   base::ScopedCFTypeRef<CFErrorRef> errors;
   if (SecStaticCodeCreateWithPath(
-          base::mac::NSToCFCast(base::mac::FilePathToNSURL(updater_app_bundle)),
-          kSecCSDefaultFlags, code.InitializeInto()) != errSecSuccess) {
+          base::mac::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
+          code.InitializeInto()) != errSecSuccess) {
     return false;
   }
   if (SecRequirementCreateWithString(

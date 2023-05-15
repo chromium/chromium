@@ -12,6 +12,8 @@
 
 namespace arc {
 
+class ArcAppMetricsData;
+
 // Helper class to record metrics for app installs.
 class ArcAppMetricsUtil {
  public:
@@ -19,17 +21,19 @@ class ArcAppMetricsUtil {
   ~ArcAppMetricsUtil();
 
   // Records the install start time for a specific app.
-  void recordAppInstallStartTime(const std::string& app_name);
+  void recordAppInstallStartTime(const std::string& app_name,
+                                 bool is_controlled_by_policy);
 
   // Reports install time delta for an app to UMA.
-  void maybeReportInstallTimeDelta(const std::string& app_name);
+  void maybeReportInstallTimeDelta(const std::string& app_name,
+                                   bool is_controlled_by_policy);
 
   // Reports the number of incomplete app installs to UMA.
-  void reportIncompleteInstalls();
+  void reportMetrics();
 
  private:
-  bool installs_requested_ = false;
-  std::map<std::string, base::TimeTicks> install_start_time_map_;
+  std::unique_ptr<ArcAppMetricsData> manual_install_data_;
+  std::unique_ptr<ArcAppMetricsData> policy_install_data_;
 };
 
 }  // namespace arc

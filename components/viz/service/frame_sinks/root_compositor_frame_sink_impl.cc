@@ -70,7 +70,7 @@ class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
   }
 
   mojo::Remote<mojom::BeginFrameObserver> remote_observer_;
-  base::raw_ptr<BeginFrameSource> begin_frame_source_;
+  raw_ptr<BeginFrameSource> begin_frame_source_;
 };
 
 // static
@@ -430,6 +430,10 @@ void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
 
 void RootCompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
   support_->SetWantsAnimateOnlyBeginFrames();
+}
+
+void RootCompositorFrameSinkImpl::SetWantsBeginFrameAcks() {
+  support_->SetWantsBeginFrameAcks();
 }
 
 void RootCompositorFrameSinkImpl::SubmitCompositorFrame(

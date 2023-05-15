@@ -15,6 +15,10 @@ namespace webxr {
 
 class XrSessionCoordinator : public device::XrJavaCoordinator {
  public:
+  // Used to return the ContextUtils.applicationContext, which may not be the
+  // activity.
+  static base::android::ScopedJavaLocalRef<jobject> GetApplicationContext();
+
   explicit XrSessionCoordinator();
   ~XrSessionCoordinator() override;
 
@@ -37,7 +41,8 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       device::SurfaceDestroyedCallback destroyed_callback) override;
   void EndSession() override;
   bool EnsureARCoreLoaded() override;
-  base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override;
+  base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
+      override;
 
   // Methods called from the Java side.
   void OnDrawingSurfaceReady(

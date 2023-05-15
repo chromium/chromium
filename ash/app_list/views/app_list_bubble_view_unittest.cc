@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_list_bubble_view.h"
 
+#include <list>
 #include <memory>
 #include <string>
 #include <utility>
@@ -30,9 +31,12 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
+#include "ash/drag_drop/drag_drop_controller.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -40,7 +44,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -179,6 +185,45 @@ class AppListBubbleViewTest : public AshTestBase {
 
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
+
+class AppListBubbleViewDragTest : public AppListBubbleViewTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  AppListBubbleViewDragTest() = default;
+  ~AppListBubbleViewDragTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        app_list_features::kDragAndDropRefactor, GetParam());
+    AppListBubbleViewTest::SetUp();
+  }
+
+  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks) {
+    if (!GetParam()) {
+      while (!tasks->empty()) {
+        std::move(tasks->front()).Run();
+        tasks->pop_front();
+      }
+      return;
+    }
+
+    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+        base::BindLambdaForTesting([&]() {
+          auto task = std::move(tasks->front());
+          tasks->pop_front();
+          std::move(task).Run();
+        }),
+        base::DoNothing());
+    tasks->push_front(base::BindLambdaForTesting([&]() {
+      // Generate OnDragEnter() event for the host view.
+      GetEventGenerator()->MoveMouseBy(10, 10);
+    }));
+    // Start Drag and Drop Sequence by moving the mouse.
+    GetEventGenerator()->MoveMouseBy(10, 10);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+INSTANTIATE_TEST_SUITE_P(All, AppListBubbleViewDragTest, testing::Bool());
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {
   ShowAppList();
@@ -1214,7 +1259,7 @@ TEST_F(AppListBubbleViewTest, ClickOutsideFolderClosesFolder) {
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
-TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
+TEST_P(AppListBubbleViewDragTest, ReparentDragOutOfFolderClosesFolder) {
   AddFolderWithApps(3);
   ShowAppList();
 
@@ -1230,23 +1275,35 @@ TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
   generator->PressLeftButton();
   app_item->FireMouseDragTimerForTest();
 
-  gfx::Point outside_view =
-      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
-  generator->MoveMouseTo(outside_view);
-  folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
-
-  // Folder visually closed.
-  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
-
-  // Folder is still "visible" because the drag has not ended.
-  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+  // Drag item out of folder view.
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    gfx::Point outside_view =
+        folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+    generator->MoveMouseTo(outside_view);
+    generator->MoveMouseBy(10, 10);
+    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
+    // Folder visually closed.
+    EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+    if (!GetParam()) {
+      // Folder is still "visible" because the drag has not ended for the old
+      // drag and drop flow. On drag and drop refactor, the drag ends when
+      // exiting the view.
+      EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+    }
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {  // End the drag.
+    generator->ReleaseLeftButton();
+    EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+  }));
+  MaybeRunDragAndDropSequence(&tasks);
 
   // End the drag.
   generator->ReleaseLeftButton();
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
-TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
+TEST_P(AppListBubbleViewDragTest, DragItemInsideFolderDoesNotSelectItem) {
   AddFolderWithApps(3);
   ShowAppList();
 
@@ -1261,12 +1318,17 @@ TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
   generator->MoveMouseTo(first_app->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
   first_app->FireMouseDragTimerForTest();
-  generator->MoveMouseBy(100, 100);
-  generator->ReleaseLeftButton();
 
-  // Nothing is selected or focused.
-  EXPECT_FALSE(folder_view->items_grid_view()->has_selected_view());
-  EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
+  // Quickly drag and release the app.
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    generator->MoveMouseBy(100, 100);
+    generator->ReleaseLeftButton();
+    // Nothing is selected or focused.
+    EXPECT_FALSE(folder_view->items_grid_view()->has_selected_view());
+    EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
+  }));
+  MaybeRunDragAndDropSequence(&tasks);
 }
 
 TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
@@ -1561,6 +1623,51 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
   // The gradient mask should not obscure the focused app view.
   EXPECT_FALSE(gradient_mask_bounds_start.Intersects(app_view_bounds));
   EXPECT_FALSE(gradient_mask_bounds_end.Intersects(app_view_bounds));
+}
+
+TEST_P(AppListBubbleViewDragTest, AutoScrollOnTopOfTheBubble) {
+  // Show an app list with enough apps to fill the page and trigger a gradient
+  // at the bottom.
+  const int kTotalAppItems = 50;
+  AddAppItems(kTotalAppItems);
+  ShowAppList();
+  const int rows =
+      base::ClampFloor(1.0f * kTotalAppItems / GetAppsGridView()->cols());
+
+  // Focus the first item on the last row.
+  for (int i = 0; i < rows; i++) {
+    PressAndReleaseKey(ui::VKEY_DOWN);
+  }
+
+  // Drag the last app from the app grid.
+  AppListItemView* app_item =
+      GetAppsGridView()->GetItemViewAt(kTotalAppItems - 1);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(app_item->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  app_item->FireMouseDragTimerForTest();
+
+  gfx::Point top_of_the_bubble = GetBubblePresenter()
+                                     ->bubble_view_for_test()
+                                     ->GetBoundsInScreen()
+                                     .top_center();
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag app  outside of the bubble. The scroll timer should not be running.
+    gfx::Point bubble_view_outside(top_of_the_bubble);
+    bubble_view_outside.Offset(0, -20);
+    generator->MoveMouseTo(bubble_view_outside);
+    ASSERT_FALSE(GetAppsGridView()->auto_scroll_timer_for_test()->IsRunning());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Enter the apps grid bubble should start scrolling up.
+    generator->MoveMouseTo(top_of_the_bubble);
+    EXPECT_TRUE(GetAppsGridView()->auto_scroll_timer_for_test()->IsRunning());
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
+  MaybeRunDragAndDropSequence(&tasks);
 }
 
 // Verifies that hidden app list bubble view does not attempt to change its

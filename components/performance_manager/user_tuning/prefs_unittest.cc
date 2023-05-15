@@ -54,7 +54,7 @@ TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
 }
 
 TEST_F(HighEfficiencyModePrefMigrationTest,
-       MigrateDefaultNewPrefUserSetOldPref) {
+       MigrateDefaultNewPrefUserSetOldPrefEnabled) {
   // Set the old pref as-if set by the user.
   pref_service_.SetBoolean(kHighEfficiencyModeEnabled, true);
 
@@ -70,6 +70,30 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
   // "true" in the boolean pref maps to `2` (enabled on timer)
   EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
             static_cast<int>(HighEfficiencyModeState::kEnabledOnTimer));
+
+  // The old pref should be reset.
+  EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
+                  ->IsDefaultValue());
+  EXPECT_FALSE(pref_service_.GetBoolean(kHighEfficiencyModeEnabled));
+}
+
+TEST_F(HighEfficiencyModePrefMigrationTest,
+       MigrateDefaultNewPrefUserSetOldPrefDisabled) {
+  // Set the old pref as-if set by the user.
+  pref_service_.SetBoolean(kHighEfficiencyModeEnabled, false);
+
+  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
+            static_cast<int>(HighEfficiencyModeState::kDisabled));
+  EXPECT_TRUE(
+      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+
+  MigrateHighEfficiencyModePref(&pref_service_);
+
+  EXPECT_FALSE(
+      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+  // "false" in the boolean pref maps to `0` (disabled)
+  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
+            static_cast<int>(HighEfficiencyModeState::kDisabled));
 
   // The old pref should be reset.
   EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)

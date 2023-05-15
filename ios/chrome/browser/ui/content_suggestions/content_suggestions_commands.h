@@ -17,9 +17,6 @@
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;
-// Handles the actions following a tap on a trending query.
-- (void)loadSuggestedQuery:(QuerySuggestionConfig*)config;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_

@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -77,7 +78,8 @@ class CameraRollDownloadManagerImpl
   int CalculateItemTransferRate(const DownloadItem& download_item) const;
 
   const base::FilePath download_path_;
-  ash::HoldingSpaceKeyedService* holding_space_keyed_service_;
+  raw_ptr<ash::HoldingSpaceKeyedService, ExperimentalAsh>
+      holding_space_keyed_service_;
   // Performs blocking I/O operations for creating and deleting payload files.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

@@ -30,7 +30,7 @@ namespace {
 class PinnedTabContainerController final : public TabContainerController {
  public:
   explicit PinnedTabContainerController(
-      raw_ref<TabContainerController> base_controller,
+      TabContainerController& base_controller,
       CompoundTabContainer& compound_tab_container)
       : base_controller_(base_controller),
         compound_tab_container_(compound_tab_container) {}
@@ -98,7 +98,7 @@ class PinnedTabContainerController final : public TabContainerController {
 class UnpinnedTabContainerController final : public TabContainerController {
  public:
   explicit UnpinnedTabContainerController(
-      raw_ref<TabContainerController> base_controller,
+      TabContainerController& base_controller,
       CompoundTabContainer& compound_tab_container)
       : base_controller_(base_controller),
         compound_tab_container_(compound_tab_container) {}
@@ -215,7 +215,7 @@ class PinUnpinAnimationDelegate : public TabSlotAnimationDelegate {
 }  // namespace
 
 CompoundTabContainer::CompoundTabContainer(
-    const raw_ref<TabContainerController> controller,
+    TabContainerController& controller,
     TabHoverCardController* hover_card_controller,
     TabDragContextBase* drag_context,
     TabSlotController& tab_slot_controller,
@@ -360,7 +360,7 @@ Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
 }
 
 void CompoundTabContainer::ReturnTabSlotView(TabSlotView* view) {
-  GetTabContainerFor(view)->ReturnTabSlotView(view);
+  GetTabContainerFor(view).ReturnTabSlotView(view);
 }
 
 void CompoundTabContainer::ScrollTabToVisible(int model_index) {
@@ -528,7 +528,7 @@ CompoundTabContainer::GetTrailingElementForZOrdering() const {
 }
 
 void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
-  GetTabContainerFor(view)->OnTabSlotAnimationProgressed(view);
+  GetTabContainerFor(view).OnTabSlotAnimationProgressed(view);
 }
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
@@ -943,7 +943,7 @@ void CompoundTabContainer::AnimateTabTo(Tab* tab, gfx::Rect ideal_bounds) {
   } else {
     bounds_animator_.AnimateViewTo(tab, ideal_bounds,
                                    std::make_unique<PinUnpinAnimationDelegate>(
-                                       &GetTabContainerFor(tab).get(), tab));
+                                       &GetTabContainerFor(tab), tab));
   }
 }
 
@@ -955,13 +955,15 @@ gfx::Rect CompoundTabContainer::ConvertUnpinnedContainerIdealBoundsToLocal(
   return ideal_bounds;
 }
 
-raw_ref<TabContainer, DanglingUntriaged>
-CompoundTabContainer::GetTabContainerFor(TabSlotView* view) const {
-  if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader)
-    return unpinned_tab_container_;
+TabContainer& CompoundTabContainer::GetTabContainerFor(
+    TabSlotView* view) const {
+  if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader) {
+    return unpinned_tab_container_.get();
+  }
 
   Tab* tab = views::AsViewClass<Tab>(view);
-  return tab->data().pinned ? pinned_tab_container_ : unpinned_tab_container_;
+  return tab->data().pinned ? pinned_tab_container_.get()
+                            : unpinned_tab_container_.get();
 }
 
 TabContainer* CompoundTabContainer::GetTabContainerForDrop(

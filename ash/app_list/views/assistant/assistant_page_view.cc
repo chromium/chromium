@@ -25,6 +25,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -36,6 +37,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
@@ -133,7 +135,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
   }
 
  private:
-  AssistantPageView* const assistant_page_view_;
+  const raw_ptr<AssistantPageView, ExperimentalAsh> assistant_page_view_;
 };
 
 }  // namespace
@@ -292,10 +294,17 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
 
   // Animate the shadow's bounds through transform.
   {
-    gfx::Transform transform;
-    transform.Translate(from_rect.origin() - to_rect.origin());
-    transform.Scale(static_cast<float>(from_rect.width()) / to_rect.width(),
-                    static_cast<float>(from_rect.height()) / to_rect.height());
+    // `view_shadow_` can't be accurately scaled and translated because while
+    // its bounds need animation, the shadow size needs to remain the same. This
+    // causes the transformed shadow to be visually misplaced. To fix this,
+    // inset the `from_rect` so that the transformed shadow is completely hidden
+    // behind the view layer at the start of animation and slowly reveals itself
+    // when animating to the proper size.
+    gfx::Rect shadow_from_rect = from_rect;
+    shadow_from_rect.Inset(kShadowElevation);
+
+    const gfx::Transform transform = gfx::TransformBetweenRects(
+        gfx::RectF(to_rect), gfx::RectF(shadow_from_rect));
     view_shadow_->shadow()->layer()->SetTransform(transform);
 
     auto settings = contents_view()->CreateTransitionAnimationSettings(

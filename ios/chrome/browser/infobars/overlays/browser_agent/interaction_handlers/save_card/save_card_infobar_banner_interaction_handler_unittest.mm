@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_banner_interaction_handler.h"
 
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -22,7 +22,8 @@ class SaveCardInfobarBannerInteractionHandlerTest : public PlatformTest {
  public:
   SaveCardInfobarBannerInteractionHandlerTest()
       : delegate_factory_(),
-        card_(base::GenerateGUID(), "https://www.example.com/") {
+        card_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+              "https://www.example.com/") {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveCard,
         MockAutofillSaveCardInfoBarDelegateMobileFactory::

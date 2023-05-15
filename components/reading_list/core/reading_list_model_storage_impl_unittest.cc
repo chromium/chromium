@@ -65,7 +65,6 @@ TEST_F(ReadingListModelStorageImplTest, LoadEmpty) {
 
   const ReadingListModelStorage::LoadResultOrError result_or_error =
       LoadStorageAndWait(&storage, &clock_);
-
   ASSERT_TRUE(result_or_error.has_value());
   EXPECT_TRUE(result_or_error->first.empty());
   EXPECT_THAT(result_or_error->second, syncer::IsEmptyMetadataBatch());
@@ -87,7 +86,6 @@ TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
   const ReadingListModelStorage::LoadResultOrError load_result_or_error =
       LoadStorageAndWait(&other_storage, &clock_);
   ASSERT_TRUE(load_result_or_error.has_value());
-
   EXPECT_THAT(load_result_or_error->first,
               ElementsAre(EntryHasUrl(GURL("http://example.com/"))));
 }

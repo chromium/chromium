@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -21,90 +20,39 @@
 #include "components/update_client/patcher.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-class TestCallback {
- public:
-  TestCallback();
-
-  TestCallback(const TestCallback&) = delete;
-  TestCallback& operator=(const TestCallback&) = delete;
-
-  virtual ~TestCallback() = default;
-  void Set(update_client::UnpackerError error, int extra_code);
-
-  update_client::UnpackerError error_;
-  int extra_code_;
-  bool called_;
-};
-
-TestCallback::TestCallback()
-    : error_(update_client::UnpackerError::kNone),
-      extra_code_(-1),
-      called_(false) {}
-
-void TestCallback::Set(update_client::UnpackerError error, int extra_code) {
-  error_ = error;
-  extra_code_ = extra_code;
-  called_ = true;
-}
-
-base::FilePath test_file(const char* file) {
-  base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-  return path.AppendASCII("components")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII("update_client")
-      .AppendASCII(file);
-}
-
-}  // namespace
 
 namespace update_client {
 
 class ComponentUnpackerTest : public testing::Test {
  public:
-  ComponentUnpackerTest();
-  ~ComponentUnpackerTest() override;
+  ComponentUnpackerTest() = default;
+  ~ComponentUnpackerTest() override = default;
 
-  void UnpackComplete(const ComponentUnpacker::Result& result);
+  void UnpackComplete(const ComponentUnpacker::Result& result) {
+    result_ = result;
+    main_thread_task_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
+  }
 
  protected:
-  void RunThreads();
+  void RunThreads() { runloop_.Run(); }
 
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_ =
       base::SequencedTaskRunner::GetCurrentDefault();
   base::RunLoop runloop_;
   base::OnceClosure quit_closure_ = runloop_.QuitClosure();
-
   ComponentUnpacker::Result result_;
 };
-
-ComponentUnpackerTest::ComponentUnpackerTest() = default;
-
-ComponentUnpackerTest::~ComponentUnpackerTest() = default;
-
-void ComponentUnpackerTest::RunThreads() {
-  runloop_.Run();
-}
-
-void ComponentUnpackerTest::UnpackComplete(
-    const ComponentUnpacker::Result& result) {
-  result_ = result;
-  main_thread_task_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
-}
 
 TEST_F(ComponentUnpackerTest, UnpackFullCrx) {
   auto config = base::MakeRefCounted<TestConfigurator>();
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-          test_file("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
+          GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
           config->GetUnzipperFactory()->Create(),
           config->GetPatcherFactory()->Create(),
           crx_file::VerifierFormat::CRX3);
@@ -135,7 +83,7 @@ TEST_F(ComponentUnpackerTest, UnpackFileNotFound) {
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-          test_file("file-not-found.crx"), nullptr, nullptr, nullptr,
+          GetTestFilePath("file-not-found.crx"), nullptr, nullptr, nullptr,
           crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
@@ -153,8 +101,8 @@ TEST_F(ComponentUnpackerTest, UnpackFileHashMismatch) {
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
-          test_file("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr, nullptr,
-          nullptr, crx_file::VerifierFormat::CRX3);
+          GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
+          nullptr, nullptr, crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();
@@ -172,8 +120,8 @@ TEST_F(ComponentUnpackerTest, UnpackWithVerifiedContents) {
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(),
-          test_file("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"), nullptr,
-          config->GetUnzipperFactory()->Create(), nullptr,
+          GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
+          nullptr, config->GetUnzipperFactory()->Create(), nullptr,
           crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));

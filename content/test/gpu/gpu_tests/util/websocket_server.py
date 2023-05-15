@@ -133,8 +133,11 @@ async def StartWebsocketServer(server_instance: WebsocketServer) -> None:
     server_instance.connection_received_event.set()
     await connection_stopper
 
-  async with websockets.serve(HandleWebsocketConnection, '127.0.0.1',
-                              0) as server:
+  async with websockets.serve(HandleWebsocketConnection,
+                              '127.0.0.1',
+                              0,
+                              ping_interval=None,
+                              ping_timeout=None) as server:
     server_instance.event_loop = asyncio.get_running_loop()
     server_instance.server_port = server.sockets[0].getsockname()[1]
     server_instance.port_set_event.set()

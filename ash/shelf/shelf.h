@@ -10,8 +10,11 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_locking_manager.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 
 namespace aura {
@@ -91,13 +94,17 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     explicit ScopedAutoHideLock(Shelf* shelf) : shelf_(shelf) {
       ++shelf_->auto_hide_lock_;
     }
+
+    ScopedAutoHideLock(const ScopedAutoHideLock&) = delete;
+    ScopedAutoHideLock& operator=(const ScopedAutoHideLock&) = delete;
+
     ~ScopedAutoHideLock() {
       --shelf_->auto_hide_lock_;
       DCHECK_GE(shelf_->auto_hide_lock_, 0);
     }
 
    private:
-    Shelf* shelf_;
+    raw_ptr<Shelf, ExperimentalAsh> shelf_;
   };
 
   // Used to disable auto-hide shelf behavior while in scope. Note that
@@ -106,23 +113,17 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // in all cases.
   class ScopedDisableAutoHide {
    public:
-    explicit ScopedDisableAutoHide(Shelf* shelf) : shelf_(shelf) {
-      ++shelf_->disable_auto_hide_;
-      if (shelf_->disable_auto_hide_ == 1) {
-        shelf_->UpdateVisibilityState();
-      }
-    }
+    explicit ScopedDisableAutoHide(Shelf* shelf);
+    ScopedDisableAutoHide(const ScopedDisableAutoHide&) = delete;
+    ScopedDisableAutoHide& operator=(const ScopedDisableAutoHide&) = delete;
+    ~ScopedDisableAutoHide();
 
-    ~ScopedDisableAutoHide() {
-      --shelf_->disable_auto_hide_;
-      CHECK_GE(shelf_->disable_auto_hide_, 0);
-      if (shelf_->disable_auto_hide_ == 0) {
-        shelf_->UpdateVisibilityState();
-      }
-    }
+    Shelf* weak_shelf() { return shelf_.get(); }
 
    private:
-    Shelf* const shelf_;
+    // Save a `base::WeakPtr` to avoid a crash if `shelf_` is deallocated due to
+    // monitor disconnect.
+    base::WeakPtr<Shelf> const shelf_;
   };
 
   Shelf();
@@ -153,6 +154,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   static void UpdateShelfVisibility();
 
   void CreateNavigationWidget(aura::Window* container);
+  void CreateDeskButtonWidget(aura::Window* container);
   void CreateHotseatWidget(aura::Window* container);
   void CreateStatusAreaWidget(aura::Window* status_container);
   void CreateShelfWidget(aura::Window* root);
@@ -263,6 +265,9 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   ShelfNavigationWidget* navigation_widget() const {
     return navigation_widget_.get();
   }
+  DeskButtonWidget* desk_button_widget() const {
+    return desk_button_widget_.get();
+  }
   HotseatWidget* hotseat_widget() const { return hotseat_widget_.get(); }
   StatusAreaWidget* status_area_widget() const {
     return status_area_widget_.get();
@@ -307,7 +312,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
  protected:
   // ShelfLayoutManagerObserver:
   void WillDeleteShelfLayoutManager() override;
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnBackgroundUpdated(ShelfBackgroundType background_type,
                            AnimationChangeType change_type) override;
@@ -329,12 +334,15 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Returns work area insets object for the window with this shelf.
   WorkAreaInsets* GetWorkAreaInsets() const;
 
+  base::WeakPtr<Shelf> GetWeakPtr();
+
   // Layout manager for the shelf container window. Instances are constructed by
   // ShelfWidget and lifetimes are managed by the container windows themselves.
-  ShelfLayoutManager* shelf_layout_manager_ = nullptr;
+  raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_ = nullptr;
 
   // Pointers to shelf components.
   std::unique_ptr<ShelfNavigationWidget> navigation_widget_;
+  std::unique_ptr<DeskButtonWidget> desk_button_widget_;
   std::unique_ptr<HotseatWidget> hotseat_widget_;
   std::unique_ptr<StatusAreaWidget> status_area_widget_;
   // Null during display teardown, see WindowTreeHostManager::DeleteHost() and
@@ -392,6 +400,8 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   int disable_auto_hide_ = 0;
 
   std::unique_ptr<ShelfTooltipManager> tooltip_;
+
+  base::WeakPtrFactory<Shelf> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

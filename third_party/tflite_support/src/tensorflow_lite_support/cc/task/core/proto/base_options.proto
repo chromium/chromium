@@ -17,7 +17,7 @@ syntax = "proto2";
 
 package tflite.task.core;
 
-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
+import "tensorflow/lite/acceleration/configuration/configuration.proto";
 
 import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
 
@@ -44,11 +44,11 @@ message BaseOptions {
   // needs to be linked at build time.
   //
   // For example, `gpu_plugin` for GPU from:
-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
+  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
   // To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
   // https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
   //
   // See settings definition at:
-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
+  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
   optional tflite.proto.ComputeSettings compute_settings = 2;
 }

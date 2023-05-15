@@ -26,6 +26,7 @@ class LargeIconBridge {
       const base::android::JavaParamRef<jobject>& j_browser_context,
       const base::android::JavaParamRef<jobject>& j_page_url,
       jint min_source_size_px,
+      jint desired_source_size_px,
       const base::android::JavaParamRef<jobject>& j_callback);
 
  private:

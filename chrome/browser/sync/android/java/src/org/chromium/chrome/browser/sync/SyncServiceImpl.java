@@ -139,6 +139,11 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isTypeManagedByPolicy(@UserSelectableType int type) {
+        return SyncServiceImplJni.get().isTypeManagedByPolicy(mSyncServiceAndroidBridge, type);
+    }
+
+    @Override
     public boolean hasKeepEverythingSynced() {
         return SyncServiceImplJni.get().hasKeepEverythingSynced(mSyncServiceAndroidBridge);
     }
@@ -156,18 +161,14 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public boolean isFirstSetupComplete() {
-        return SyncServiceImplJni.get().isFirstSetupComplete(mSyncServiceAndroidBridge);
+    public boolean isInitialSyncFeatureSetupComplete() {
+        return SyncServiceImplJni.get().isInitialSyncFeatureSetupComplete(
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setSyncRequested() {
         SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean isSyncRequested() {
-        return SyncServiceImplJni.get().isSyncRequested(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -383,7 +384,6 @@ public class SyncServiceImpl extends SyncService {
         long init(SyncServiceImpl caller);
 
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
-        boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
         void setSyncRequested(long nativeSyncServiceAndroidBridge);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
@@ -392,11 +392,12 @@ public class SyncServiceImpl extends SyncService {
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
         boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
-        boolean isFirstSetupComplete(long nativeSyncServiceAndroidBridge);
+        boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
         void setFirstSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
+        boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
         void setSelectedTypes(long nativeSyncServiceAndroidBridge, boolean syncEverything,
                 int[] userSelectableTypeArray);
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);

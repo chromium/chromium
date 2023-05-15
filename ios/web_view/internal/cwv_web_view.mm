@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -31,7 +32,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #include "ios/web/public/favicon/favicon_url.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -375,7 +375,8 @@ BOOL gChromeContextMenuEnabled = NO;
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
                 completion:(void (^)(id, NSError*))completion {
-  web::WebFrame* mainFrame = web::GetMainFrame(_webState.get());
+  web::WebFrame* mainFrame =
+      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
     if (completion) {
       completion(nil, [NSError errorWithDomain:@"org.chromium.chromewebview"
@@ -537,9 +538,15 @@ BOOL gChromeContextMenuEnabled = NO;
 
   NSURLRequest* request =
       [[NSURLRequest alloc] initWithURL:net::NSURLWithGURL(URL)];
+
+  // The current implemention can't get the real navigation type for the
+  // navigation action which causes a new web view be created. So uses
+  // `CWVNavigationTypeNewWindow` before the real navigation type can be gotten
+  // here.
   CWVNavigationAction* navigationAction =
       [[CWVNavigationAction alloc] initWithRequest:request
-                                     userInitiated:initiatedByUser];
+                                     userInitiated:initiatedByUser
+                                    navigationType:CWVNavigationTypeNewWindow];
   CWVWebView* webView = [_UIDelegate webView:self
               createWebViewWithConfiguration:_configuration
                          forNavigationAction:navigationAction];
@@ -573,6 +580,52 @@ BOOL gChromeContextMenuEnabled = NO;
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   return _javaScriptDialogPresenter.get();
+}
+
+- (void)webState:(web::WebState*)webState
+    handlePermissions:(NSArray<NSNumber*>*)permissions
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
+    API_AVAILABLE(ios(15.0)) {
+  DCHECK(decisionHandler);
+  CWVMediaCaptureType mediaCaptureType;
+  BOOL cameraPermissionRequested =
+      [permissions containsObject:@(web::PermissionCamera)];
+  BOOL micPermissionRequested =
+      [permissions containsObject:@(web::PermissionMicrophone)];
+  if (cameraPermissionRequested && micPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeCameraAndMicrophone;
+  } else if (cameraPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeCamera;
+  } else if (micPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeMicrophone;
+  } else {
+    NOTREACHED() << "Unknown media permissions";
+  }
+
+  SEL selector = @selector(webView:
+      requestMediaCapturePermissionForType:decisionHandler:);
+  if ([_UIDelegate respondsToSelector:selector]) {
+    [_UIDelegate webView:self
+        requestMediaCapturePermissionForType:mediaCaptureType
+                             decisionHandler:^(CWVPermissionDecision decision) {
+                               switch (decision) {
+                                 case CWVPermissionDecisionPrompt:
+                                   decisionHandler(
+                                       web::
+                                           PermissionDecisionShowDefaultPrompt);
+                                   break;
+                                 case CWVPermissionDecisionGrant:
+                                   decisionHandler(
+                                       web::PermissionDecisionGrant);
+                                   break;
+                                 case CWVPermissionDecisionDeny:
+                                   decisionHandler(web::PermissionDecisionDeny);
+                                   break;
+                               }
+                             }];
+  } else {
+    decisionHandler(web::PermissionDecisionShowDefaultPrompt);
+  }
 }
 
 - (void)webState:(web::WebState*)webState

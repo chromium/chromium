@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
@@ -96,9 +97,8 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddJoinNetworkEntry() {
       l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK));
   views::Label* label = entry->text_label();
   label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
-  // TODO(b/253086997): Apply the correct font to the label.
-  TrayPopupUtils::SetLabelFontList(
-      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *label);
 
   return entry;
 }
@@ -113,7 +113,7 @@ NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
     wifi_top_container_->SetProperty(views::kMarginsKey,
                                      gfx::Insets::TLBR(6, 0, 0, 0));
   }
-  return (features::IsQsRevampEnabled() ? wifi_top_container_
+  return (features::IsQsRevampEnabled() ? wifi_top_container_.get()
                                         : scroll_content())
       ->AddChildView(
           std::make_unique<NetworkListWifiHeaderViewImpl>(/*delegate=*/this));
@@ -127,7 +127,7 @@ NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
             RoundedContainer::Behavior::kTopRounded));
     mobile_top_container_->SetBorderInsets(kTopContainerBorder);
   }
-  return (features::IsQsRevampEnabled() ? mobile_top_container_
+  return (features::IsQsRevampEnabled() ? mobile_top_container_.get()
                                         : scroll_content())
       ->AddChildView(
           std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
@@ -210,7 +210,7 @@ void NetworkDetailedNetworkViewImpl::ReorderMobileListView(size_t index) {
 
 void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
   if (first_list_view_ && first_list_view_->children().empty()) {
-    scroll_content()->RemoveChildViewT(first_list_view_);
+    scroll_content()->RemoveChildViewT(first_list_view_.get());
     first_list_view_ = nullptr;
   }
 }

@@ -721,7 +721,8 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   //  - A parent changing visibility updates child window visibility.
   //    * But only when changed via this function - ignore changes via the
   //      NSWindow API, or changes propagating out from here.
-  wants_to_be_visible_ = new_state != WindowVisibilityState::kHideWindow;
+  wants_to_be_visible_ = new_state != WindowVisibilityState::kHideWindow &&
+                         new_state != WindowVisibilityState::kMiniaturizeWindow;
 
   [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
   CHECK(!show_animation_);
@@ -742,6 +743,9 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
     [window_ orderOut:nil];
     DCHECK(!window_visible_);
+    return;
+  } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
+    [window_ miniaturize:nil];
     return;
   }
 
@@ -925,21 +929,27 @@ void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
 
 void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
     uint64_t fullscreen_overlay_widget_id,
-    uint64_t tab_widget_id,
-    EnableImmersiveFullscreenCallback callback) {
+    uint64_t tab_widget_id) {
   NativeWidgetNSWindowBridge* tab_widget_bridge = GetFromId(tab_widget_id);
   if (tab_widget_bridge) {
     NSWindow* tab_window = tab_widget_bridge->ns_window();
     immersive_mode_controller_ =
         std::make_unique<ImmersiveModeTabbedController>(
             ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
-            tab_window, std::move(callback));
+            tab_window);
   } else {
     immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
-        ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
-        std::move(callback));
+        ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window());
   }
   immersive_mode_controller_->Enable();
+
+  // It is possible for the fullscreen transition to complete before the
+  // immersive mode controller is created. Mark the transition as complete as
+  // needed here.
+  if (!fullscreen_controller_.IsInFullscreenTransition() &&
+      fullscreen_controller_.GetTargetFullscreenState()) {
+    immersive_mode_controller_->FullscreenTransitionCompleted();
+  }
 
   // Reveal locks can outlive immersive_mode_controller_, re-establish any
   // outstanding locks.
@@ -1443,9 +1453,16 @@ void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
   NSWindow* window = window_.get();
   NSWindowCollectionBehavior collectionBehavior = window.collectionBehavior;
   if (can_appear_in_existing_fullscreen_spaces) {
+    if (@available(macOS 13.0, *)) {
+      collectionBehavior &= ~NSWindowCollectionBehaviorPrimary;
+    }
     collectionBehavior |= NSWindowCollectionBehaviorFullScreenAuxiliary;
     collectionBehavior &= ~NSWindowCollectionBehaviorFullScreenPrimary;
   } else {
+    if (@available(macOS 13.0, *)) {
+      collectionBehavior |= NSWindowCollectionBehaviorPrimary;
+    }
+    collectionBehavior |= NSWindowCollectionBehaviorFullScreenPrimary;
     collectionBehavior &= ~NSWindowCollectionBehaviorFullScreenAuxiliary;
   }
   window.collectionBehavior = collectionBehavior;
@@ -1491,10 +1508,11 @@ void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
 }
 
 void NativeWidgetNSWindowBridge::SetAspectRatio(
-    const gfx::SizeF& aspect_ratio) {
+    const gfx::SizeF& aspect_ratio,
+    const gfx::Size& excluded_margin) {
   DCHECK(!aspect_ratio.IsEmpty());
-  [window_delegate_
-      setAspectRatio:aspect_ratio.width() / aspect_ratio.height()];
+  [window_delegate_ setAspectRatio:aspect_ratio.width() / aspect_ratio.height()
+                    excludedMargin:excluded_margin];
 }
 
 void NativeWidgetNSWindowBridge::SetCALayerParams(
@@ -1690,29 +1708,6 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   // after the frame from the compositor arrives.
   if (content_resized && ![window_ isOpaque])
     invalidate_shadow_on_frame_swap_ = true;
-}
-
-void NativeWidgetNSWindowBridge::MoveChildrenTo(
-    NativeWidgetNSWindowBridge* target,
-    bool anchored_only) {
-  // Make a copy of `child_windows_` because it will be updated during the loop.
-  std::vector<NativeWidgetNSWindowBridge*> child_windows(child_windows_);
-  for (NativeWidgetNSWindowBridge* child : child_windows) {
-    if (child != target) {
-      // If anchored_only is true, skip windows that are not anchored to the
-      // target window.
-      if (anchored_only) {
-        bool contained = false;
-        child->host()->BubbleAnchorViewContainedInWidget(target->id_,
-                                                         &contained);
-        if (!contained) {
-          continue;
-        }
-      }
-      child->SetParent(target->id_);
-      child->host()->OnWindowParentChanged(target->id_);
-    }
-  }
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {

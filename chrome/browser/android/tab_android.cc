@@ -270,7 +270,7 @@ bool TabAndroid::IsHidden() {
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
 }
 
-bool TabAndroid::isHardwareKeyboardAvailable(raw_ptr<TabAndroid> tab_android) {
+bool TabAndroid::isHardwareKeyboardAvailable(TabAndroid* tab_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabUtils_isHardwareKeyboardAvailable(
       env, tab_android->GetJavaObject());

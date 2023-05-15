@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -123,11 +124,11 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
 
   base::OneShotTimer stop_tracing_timer_;
 
-  exo::WMHelper* const wm_helper_;
+  const raw_ptr<exo::WMHelper, ExperimentalAsh> wm_helper_;
 
   const ArcGraphicsTracingMode mode_;
 
-  aura::Window* arc_active_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
 
   // Time filter for tracing, since ARC++ window was activated last until
   // tracing is stopped.

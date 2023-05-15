@@ -181,7 +181,7 @@ absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   LayoutTheme& layout_theme = LayoutTheme::GetTheme();
   if (layout_theme.IsAccentColorCustomized(color_scheme)) {
-    return layout_theme.GetAccentColor(color_scheme).Rgb();
+    return layout_theme.GetSystemAccentColor(color_scheme).Rgb();
   }
 
   return absl::nullopt;
@@ -310,7 +310,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   // FIXME: the normal Aura theme doesn't care about this, so we should
   // investigate if we really need fillContentArea.
   extra_params.menu_list.fill_content_area =
-      !style.HasBackgroundImage() && background_color.Alpha();
+      !style.HasBackgroundImage() && !background_color.IsFullyTransparent();
 
   SetupMenuListArrow(document, style, rect, extra_params);
 
@@ -375,7 +375,12 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                            const ComputedStyle& style) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.slider.vertical =
-      style.EffectiveAppearance() == kSliderVerticalPart;
+      (RuntimeEnabledFeatures::
+           FormControlsVerticalWritingModeSupportEnabled() &&
+       !IsHorizontalWritingMode(style.GetWritingMode())) ||
+      (!RuntimeEnabledFeatures::
+           RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
+       style.EffectiveAppearance() == kSliderVerticalPart);
   extra_params.slider.in_drag = false;
 
   PaintSliderTicks(layout_object, paint_info, rect);
@@ -383,7 +388,12 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   extra_params.slider.zoom = style.EffectiveZoom();
   extra_params.slider.thumb_x = 0;
   extra_params.slider.thumb_y = 0;
-  extra_params.slider.right_to_left = !style.IsLeftToRightDirection();
+  extra_params.slider.right_to_left =
+      !RuntimeEnabledFeatures::
+                  FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+              extra_params.slider.vertical
+          ? true
+          : !style.IsLeftToRightDirection();
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     Element* thumb_element = input->UserAgentShadowRoot()
                                  ? input->UserAgentShadowRoot()->getElementById(
@@ -415,7 +425,12 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.slider.vertical =
-      style.EffectiveAppearance() == kSliderThumbVerticalPart;
+      (RuntimeEnabledFeatures::
+           FormControlsVerticalWritingModeSupportEnabled() &&
+       !IsHorizontalWritingMode(style.GetWritingMode())) ||
+      (!RuntimeEnabledFeatures::
+           RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
+       style.EffectiveAppearance() == kSliderThumbVerticalPart);
   extra_params.slider.in_drag = element.IsActive();
   extra_params.slider.zoom = style.EffectiveZoom();
 

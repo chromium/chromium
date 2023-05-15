@@ -452,6 +452,11 @@ test("gl_tests") {
     }
   }
 
+  # Simply loading the Vulkan driver leaks crbug.com/1134681
+  if (is_linux && !is_lsan) {
+    sources += [ "command_buffer/service/shared_image/angle_vulkan_image_backing_factory_unittest.cc" ]
+  }
+
   if (use_dawn) {
     deps += [
       "//third_party/dawn/src/dawn:cpp",
@@ -652,6 +657,10 @@ test("gpu_unittests") {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
 
+  if (is_mac) {
+    sources += [ "ipc/service/built_in_shader_cache_unittest.cc" ]
+  }
+
   # On official builds angle doesn't build null backend that is required for
   # unit tests. We don't check directly for angle_enable_null to avoid
   # accidental skipping all the tests if angle logic to build null backend will
@@ -828,101 +837,82 @@ test("command_buffer_perftests") {
   assert_no_deps = [ "//chrome" ]
 }
 
-fuzzer_test("gpu_fuzzer") {
+# We allow validating command decoder fuzzer on linux for better coverage.
+if (enable_validating_command_decoder || is_linux) {
+  fuzzer_test("gpu_fuzzer") {
+    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
+
+    deps = [
+      ":gles2",
+      ":gpu",
+      "//base",
+      "//base:i18n",
+      "//base/third_party/dynamic_annotations",
+      "//ui/gfx/geometry",
+      "//ui/gl",
+      "//ui/gl:test_support",
+    ]
+
+    libfuzzer_options = [ "max_len=16384" ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+}
+
+fuzzer_test("gpu_angle_passthrough_fuzzer") {
   sources = [ "command_buffer/tests/fuzzer_main.cc" ]
+
+  defines = [
+    "GPU_FUZZER_USE_ANGLE",
+    "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
+  ]
 
   deps = [
     ":gles2",
     ":gpu",
     "//base",
-    "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
 
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
   libfuzzer_options = [ "max_len=16384" ]
+}
+
+fuzzer_test("gpu_swangle_passthrough_fuzzer") {
+  sources = [ "command_buffer/tests/fuzzer_main.cc" ]
+
+  defines = [
+    "GPU_FUZZER_USE_ANGLE",
+    "GPU_FUZZER_USE_SWANGLE",
+    "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
+  ]
+
+  deps = [
+    ":gles2",
+    ":gpu",
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+    "//ui/gl:test_support",
+  ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  libfuzzer_options = [ "max_len=16384" ]
 }
 
 if (is_linux || is_chromeos) {
-  fuzzer_test("gpu_angle_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [ "GPU_FUZZER_USE_ANGLE" ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
-  fuzzer_test("gpu_angle_passthrough_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [
-      "GPU_FUZZER_USE_ANGLE",
-      "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
-    ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
-  fuzzer_test("gpu_swangle_passthrough_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [
-      "GPU_FUZZER_USE_ANGLE",
-      "GPU_FUZZER_USE_SWANGLE",
-      "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
-    ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
   fuzzer_test("gpu_raster_fuzzer") {
     sources = [ "command_buffer/tests/fuzzer_main.cc" ]
 
@@ -952,31 +942,6 @@ if (is_linux || is_chromeos) {
       "GPU_FUZZER_USE_ANGLE",
       "GPU_FUZZER_USE_RASTER_DECODER",
       "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
-    ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
-  fuzzer_test("gpu_raster_angle_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [
-      "GPU_FUZZER_USE_RASTER_DECODER",
-      "GPU_FUZZER_USE_ANGLE",
     ]
 
     deps = [

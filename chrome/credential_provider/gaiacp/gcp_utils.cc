@@ -21,12 +21,12 @@
 #include <stdlib.h>
 #include <wbemidl.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <memory>
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -949,21 +949,22 @@ std::wstring GetSelectedLanguage() {
   return GetLanguageSelector().matched_candidate();
 }
 
-void SecurelyClearDictionaryValue(absl::optional<base::Value>* value) {
-  SecurelyClearDictionaryValueWithKey(value, kKeyPassword);
+void SecurelyClearDictionaryValue(base::optional_ref<base::Value::Dict> dict) {
+  SecurelyClearDictionaryValueWithKey(dict, kKeyPassword);
 }
 
-void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
-                                         const std::string& password_key) {
-  if (!value || !(*value) || !((*value)->is_dict()))
+void SecurelyClearDictionaryValueWithKey(
+    base::optional_ref<base::Value::Dict> dict,
+    const std::string& password_key) {
+  if (!dict.has_value()) {
     return;
-
-  const std::string* password_value = (*value)->FindStringKey(password_key);
-  if (password_value) {
-    SecurelyClearString(*const_cast<std::string*>(password_value));
   }
 
-  (*value).reset();
+  if (auto* password_value = dict->FindString(password_key)) {
+    SecurelyClearString(*password_value);
+  }
+
+  dict->clear();
 }
 
 void SecurelyClearString(std::wstring& str) {
@@ -985,33 +986,26 @@ std::string SearchForKeyInStringDictUTF8(
     const std::initializer_list<base::StringPiece>& path) {
   DCHECK_GT(path.size(), 0UL);
 
-  absl::optional<base::Value> json_obj =
-      base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!json_obj || !json_obj->is_dict()) {
+  absl::optional<base::Value::Dict> json_obj =
+      base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!json_obj) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
     return std::string();
   }
   const std::string* value =
-      json_obj->GetDict().FindStringByDottedPath(base::JoinString(path, "."));
+      json_obj->FindStringByDottedPath(base::JoinString(path, "."));
   return value ? *value : std::string();
 }
 
-std::wstring GetDictString(const base::Value& dict, const char* name) {
+std::wstring GetDictString(const base::Value::Dict& dict, const char* name) {
   DCHECK(name);
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.GetDict().FindString(name);
+  const std::string* value = dict.FindString(name);
   return value ? base::UTF8ToWide(*value) : std::wstring();
 }
 
-std::wstring GetDictString(const std::unique_ptr<base::Value>& dict,
-                           const char* name) {
-  return GetDictString(*dict, name);
-}
-
-std::string GetDictStringUTF8(const base::Value& dict, const char* name) {
+std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name) {
   DCHECK(name);
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.GetDict().FindString(name);
+  const std::string* value = dict.FindString(name);
   return value ? *value : std::string();
 }
 
@@ -1022,15 +1016,14 @@ HRESULT SearchForListInStringDictUTF8(
     std::vector<std::string>* output) {
   DCHECK_GT(path.size(), 0UL);
 
-  absl::optional<base::Value> json_obj =
-      base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!json_obj || !json_obj->is_dict()) {
+  absl::optional<base::Value::Dict> json_obj =
+      base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!json_obj) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
     return E_FAIL;
   }
 
-  auto* value =
-      json_obj->GetDict().FindListByDottedPath(base::JoinString(path, "."));
+  auto* value = json_obj->FindListByDottedPath(base::JoinString(path, "."));
   if (value) {
     for (const base::Value& entry_val : *value) {
       const base::Value::Dict& entry = entry_val.GetDict();
@@ -1043,11 +1036,6 @@ HRESULT SearchForListInStringDictUTF8(
     }
   }
   return S_OK;
-}
-
-std::string GetDictStringUTF8(const std::unique_ptr<base::Value>& dict,
-                              const char* name) {
-  return GetDictStringUTF8(*dict, name);
 }
 
 base::FilePath::StringType GetInstallParentDirectoryName() {
@@ -1075,13 +1063,10 @@ base::Version GetMinimumSupportedChromeVersion() {
 }
 
 bool ExtractKeysFromDict(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::vector<std::pair<std::string, std::string*>>& needed_outputs) {
-  if (!dict.is_dict())
-    return false;
-
   for (const std::pair<std::string, std::string*>& output : needed_outputs) {
-    const std::string* output_value = dict.FindStringKey(output.first);
+    const std::string* output_value = dict.FindString(output.first);
     if (!output_value) {
       LOGFN(ERROR) << "Could not extract value '" << output.first
                    << "' from server response";
@@ -1205,20 +1190,20 @@ void GetOsVersion(std::string* version) {
 
 HRESULT GenerateDeviceId(std::string* device_id) {
   // Build the json data encapsulating different device ids.
-  base::Value device_ids_dict(base::Value::Type::DICT);
+  base::Value::Dict device_ids_dict;
 
   // Add the serial number to the dictionary.
   std::wstring serial_number = GetSerialNumber();
-  if (!serial_number.empty())
-    device_ids_dict.SetStringKey("serial_number",
-                                 base::WideToUTF8(serial_number));
+  if (!serial_number.empty()) {
+    device_ids_dict.Set("serial_number", base::WideToUTF8(serial_number));
+  }
 
   // Add machine_guid to the dictionary.
   std::wstring machine_guid;
   HRESULT hr = GetMachineGuid(&machine_guid);
-  if (SUCCEEDED(hr) && !machine_guid.empty())
-    device_ids_dict.SetStringKey("machine_guid",
-                                 base::WideToUTF8(machine_guid));
+  if (SUCCEEDED(hr) && !machine_guid.empty()) {
+    device_ids_dict.Set("machine_guid", base::WideToUTF8(machine_guid));
+  }
 
   std::string device_id_str;
   bool json_write_result =

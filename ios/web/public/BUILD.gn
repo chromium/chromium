@@ -19,6 +19,7 @@ source_set("public") {
   ]
 
   deps = [
+    "//build:blink_buildflags",
     "//components/sessions:session_id",
     "//ios/third_party/webkit",
     "//ios/web/common",

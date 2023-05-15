@@ -835,6 +835,63 @@ TEST_F(PdfViewWebPluginTest,
   plugin_->EnableAccessibility();
 }
 
+TEST_F(PdfViewWebPluginTest,
+       LoadOrReloadAccessibilityBeforeDocumentLoadComplete) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->LoadOrReloadAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       LoadOrReloadAccessibilityBeforeDocumentLoadCompleteRepeated) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->LoadOrReloadAccessibility();
+  plugin_->LoadOrReloadAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       LoadOrReloadAccessibilityAfterDocumentLoadComplete) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->LoadOrReloadAccessibility();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       LoadOrReloadAccessibilityAfterDocumentLoadCompleteRepeated) {
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+  plugin_->LoadOrReloadAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->LoadOrReloadAccessibility();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       LoadOrReloadAccessibilityResetsAccessibilityPageIndex) {
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+  plugin_->LoadOrReloadAccessibility();
+  EXPECT_EQ(plugin_->next_accessibility_page_index_for_testing(), 0);
+  plugin_->set_next_accessibility_page_index_for_testing(5);
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->LoadOrReloadAccessibility();
+  EXPECT_EQ(plugin_->next_accessibility_page_index_for_testing(), 0);
+}
+
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithNoPermissions) {
   EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
                 kContentRestrictionPaste | kContentRestrictionPrint,

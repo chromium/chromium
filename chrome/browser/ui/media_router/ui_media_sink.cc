@@ -26,6 +26,9 @@ std::u16string UIMediaSink::GetStatusTextForDisplay() const {
   if (state == UIMediaSinkState::DISCONNECTING) {
     return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_DISCONNECTING);
   }
+  if (freeze_info.is_frozen) {
+    return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_PAUSED);
+  }
   if (!status_text.empty()) {
     return status_text;
   }

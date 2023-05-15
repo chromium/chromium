@@ -839,8 +839,8 @@ struct BoxBorderPainter::ComplexBorderInfo {
                 const BorderEdge& edge_a = border_painter.Edge(a);
                 const BorderEdge& edge_b = border_painter.Edge(b);
 
-                const unsigned alpha_a = edge_a.GetColor().Alpha();
-                const unsigned alpha_b = edge_b.GetColor().Alpha();
+                const unsigned alpha_a = edge_a.GetColor().AlphaAsInteger();
+                const unsigned alpha_b = edge_b.GetColor().AlphaAsInteger();
                 if (alpha_a != alpha_b)
                   return alpha_a < alpha_b;
 
@@ -873,7 +873,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
     unsigned current_alpha = 0;
     for (BoxSide side : sorted_sides) {
       const BorderEdge& edge = border_painter.Edge(side);
-      const unsigned edge_alpha = edge.GetColor().Alpha();
+      const unsigned edge_alpha = edge.GetColor().AlphaAsInteger();
 
       DCHECK_GT(edge_alpha, 0u);
       DCHECK_GE(edge_alpha, current_alpha);
@@ -906,7 +906,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(style_, element_role_));
 
   // outer stripe
-  const LayoutRectOutsets outer_third_outsets =
+  const NGPhysicalBoxStrut outer_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeOuter);
   FloatRoundedRect outer_third_rect =
       RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
@@ -917,7 +917,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
                           color, auto_dark_mode);
 
   // inner stripe
-  const LayoutRectOutsets inner_third_outsets =
+  const NGPhysicalBoxStrut inner_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
   FloatRoundedRect inner_third_rect =
       RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
@@ -960,7 +960,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
   // This is faster than the normal complex border path only if it avoids
   // creating transparency layers (when the border is translucent).
   if (FirstEdge().BorderStyle() == EBorderStyle::kSolid &&
-      !outer_.IsRounded() && has_alpha_) {
+      !outer_.IsRounded() && has_transparency_) {
     DCHECK(visible_edge_set_ != kAllBorderEdges);
     // solid, rectangular border => one drawPath()
     Path path;
@@ -999,7 +999,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       is_uniform_width_(true),
       is_uniform_color_(true),
       is_rounded_(false),
-      has_alpha_(false) {
+      has_transparency_(false) {
   style.GetBorderEdgeInfo(edges_, sides_to_include);
   ComputeBorderProperties();
 
@@ -1030,10 +1030,10 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const ComputedStyle& style,
                                    const PhysicalRect& border_rect,
                                    int width,
-                                   const LayoutRectOutsets& inner_outsets)
+                                   const NGPhysicalBoxStrut& inner_outsets)
     : context_(context),
       border_rect_(border_rect),
-      outer_outsets_(inner_outsets + LayoutUnit(width)),
+      outer_outsets_(inner_outsets + NGPhysicalBoxStrut(LayoutUnit(width))),
       style_(style),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
@@ -1044,7 +1044,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       is_uniform_width_(true),
       is_uniform_color_(true),
       is_rounded_(false),
-      has_alpha_(false) {
+      has_transparency_(false) {
   DCHECK(style.HasOutline());
 
   BorderEdge edge(width,
@@ -1077,12 +1077,14 @@ void BoxBorderPainter::ComputeBorderProperties() {
       continue;
     }
 
-    DCHECK_GT(edge.GetColor().Alpha(), 0);
+    DCHECK_GT(edge.GetColor().AlphaAsInteger(), 0);
 
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));
 
-    has_alpha_ |= edge.GetColor().HasAlpha();
+    if (!edge.GetColor().IsOpaque()) {
+      has_transparency_ = true;
+    }
 
     if (visible_edge_count_ == 1) {
       first_visible_edge_ = i;
@@ -1511,7 +1513,7 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
   // Draw inner border line
   {
     GraphicsContextStateSaver state_saver(context_);
-    const LayoutRectOutsets inner_outsets =
+    const NGPhysicalBoxStrut inner_outsets =
         DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
     FloatRoundedRect inner_clip =
         RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
@@ -1526,15 +1528,12 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
   {
     GraphicsContextStateSaver state_saver(context_);
     PhysicalRect used_border_rect = border_rect_;
-    LayoutRectOutsets outer_outsets =
+    NGPhysicalBoxStrut outer_outsets =
         DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeOuter);
 
     if (BleedAvoidanceIsClipping(bleed_avoidance_)) {
       used_border_rect.Inflate(LayoutUnit(1));
-      outer_outsets.SetTop(outer_outsets.Top() - 1);
-      outer_outsets.SetRight(outer_outsets.Right() - 1);
-      outer_outsets.SetBottom(outer_outsets.Bottom() - 1);
-      outer_outsets.SetLeft(outer_outsets.Left() - 1);
+      outer_outsets.Inflate(LayoutUnit(-1));
     }
 
     FloatRoundedRect outer_clip =
@@ -2021,22 +2020,22 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
   }
 }
 
-LayoutRectOutsets BoxBorderPainter::DoubleStripeOutsets(
+NGPhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
     BorderEdge::DoubleBorderStripe stripe) const {
   return outer_outsets_ -
-         LayoutRectOutsets(
+         NGPhysicalBoxStrut(
              Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kLeft).GetDoubleBorderStripeWidth(stripe));
 }
 
-LayoutRectOutsets BoxBorderPainter::CenterOutsets() const {
+NGPhysicalBoxStrut BoxBorderPainter::CenterOutsets() const {
   return outer_outsets_ -
-         LayoutRectOutsets(Edge(BoxSide::kTop).UsedWidth() * 0.5,
-                           Edge(BoxSide::kRight).UsedWidth() * 0.5,
-                           Edge(BoxSide::kBottom).UsedWidth() * 0.5,
-                           Edge(BoxSide::kLeft).UsedWidth() * 0.5);
+         NGPhysicalBoxStrut(Edge(BoxSide::kTop).UsedWidth() * 0.5,
+                            Edge(BoxSide::kRight).UsedWidth() * 0.5,
+                            Edge(BoxSide::kBottom).UsedWidth() * 0.5,
+                            Edge(BoxSide::kLeft).UsedWidth() * 0.5);
 }
 
 bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,

@@ -32,7 +32,7 @@ StorageService::StorageService(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
-    const base::flat_set<proto::SegmentId>& all_segment_ids,
+    std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
     PrefService* profile_prefs)
     : StorageService(
@@ -50,7 +50,7 @@ StorageService::StorageService(
               task_runner),
           clock,
           ukm_data_manager,
-          all_segment_ids,
+          std::move(configs),
           model_provider_factory,
           profile_prefs) {}
 
@@ -62,12 +62,20 @@ StorageService::StorageService(
         signal_storage_config_db,
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
-    const base::flat_set<proto::SegmentId>& all_segment_ids,
+    std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
     PrefService* profile_prefs)
-    : default_model_manager_(
-          std::make_unique<DefaultModelManager>(model_provider_factory,
-                                                all_segment_ids)),
+    : config_holder_(std::make_unique<ConfigHolder>(std::move(configs))),
+      cached_result_provider_(
+          std::make_unique<CachedResultProvider>(profile_prefs,
+                                                 config_holder_->configs())),
+      cached_result_writer_(std::make_unique<CachedResultWriter>(
+          std::make_unique<ClientResultPrefs>(profile_prefs),
+          clock)),
+
+      default_model_manager_(std::make_unique<DefaultModelManager>(
+          model_provider_factory,
+          config_holder_->all_segment_ids())),
       segment_info_database_(std::make_unique<SegmentInfoDatabase>(
           std::move(segment_db),
           std::make_unique<SegmentInfoCache>())),
@@ -78,7 +86,7 @@ StorageService::StorageService(
           clock)),
       ukm_data_manager_(ukm_data_manager),
       database_maintenance_(std::make_unique<DatabaseMaintenanceImpl>(
-          all_segment_ids,
+          config_holder_->all_segment_ids(),
           clock,
           segment_info_database_.get(),
           signal_database_.get(),
@@ -93,8 +101,10 @@ StorageService::StorageService(
     std::unique_ptr<SignalDatabase> signal_database,
     std::unique_ptr<SignalStorageConfig> signal_storage_config,
     std::unique_ptr<DefaultModelManager> default_model_manager,
+    std::unique_ptr<ConfigHolder> config_holder,
     UkmDataManager* ukm_data_manager)
-    : default_model_manager_(std::move(default_model_manager)),
+    : config_holder_(std::move(config_holder)),
+      default_model_manager_(std::move(default_model_manager)),
       segment_info_database_(std::move(segment_info_database)),
       signal_database_(std::move(signal_database)),
       signal_storage_config_(std::move(signal_storage_config)),

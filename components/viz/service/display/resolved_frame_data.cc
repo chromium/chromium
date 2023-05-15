@@ -262,17 +262,6 @@ FrameDamageType ResolvedFrameData::GetFrameDamageType() const {
   DCHECK(valid_);
   DCHECK(used_in_aggregation_);
 
-  // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
-  // However, we dont use |damage_rect| because when we transition from
-  // interpolated frame we would end up using the |damage_rect| from the
-  // original non interpolated frame.
-  // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
-  // out a small bounds on the damage given an animation that happens in
-  // SurfaceAnimationManager.
-  if (surface_->HasSurfaceAnimationDamage()) {
-    return FrameDamageType::kFull;
-  }
-
   if (previous_frame_index_ == frame_index_) {
     // This is the same frame as the one used last aggregation.
     return FrameDamageType::kNone;

@@ -32,6 +32,9 @@ enum CrosSysColorIds : ui::ColorId {
   kCrosSysOnPrimary,
   kCrosSysPrimaryContainer,
   kCrosSysOnPrimaryContainer,
+  kCrosSysBlendOpac,
+  kCrosSysBlendARefBlend,
+  kCrosSysBlendABlend,
   kCrosSysColorsEnd,
 };
 

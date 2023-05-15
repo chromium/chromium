@@ -262,7 +262,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(ReauthPurpose::VIEW_PASSWORD,
                                      ReauthPurpose::COPY_PASSWORD,
                                      ReauthPurpose::EDIT_PASSWORD,
-                                     ReauthPurpose::EXPORT),
+                                     ReauthPurpose::EXPORT,
+                                     ReauthPurpose::IMPORT),
                      testing::Bool()));
 
 }  // namespace password_manager

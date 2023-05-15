@@ -10,6 +10,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -129,7 +130,7 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
         std::move(progress_callback_), std::move(callback_));
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<storage::FileSystemOperationContext> context_;
   const storage::FileSystemURL src_url_;
   const storage::FileSystemURL dest_url_;
@@ -234,7 +235,7 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
     }
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const base::FilePath path_;
   base::FilePath drive_path_;
   Id id_ = Id::kNone;

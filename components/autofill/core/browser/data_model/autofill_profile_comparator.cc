@@ -180,19 +180,6 @@ int32_t NormalizingIterator::GetNextChar() {
   return iter_.get();
 }
 
-// Sorts |profiles| by ranking score.
-void SortProfilesByRankingScore(std::vector<AutofillProfile*>* profiles) {
-  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
-  base::Time comparison_time = AutofillClock::Now();
-  if (profiles->size() > 1) {
-    std::sort(
-        profiles->begin(), profiles->end(),
-        [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-          return a->HasGreaterRankingThan(b, comparison_time);
-        });
-  }
-}
-
 }  // namespace
 
 // The values corresponding to those types are visible in the settings.
@@ -788,33 +775,6 @@ bool AutofillProfileComparator::IsMergeCandidate(
 }
 
 // static
-absl::optional<AutofillProfile>
-AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-    const AutofillProfile& new_profile,
-    const std::vector<AutofillProfile*>& existing_profiles,
-    const std::string& app_locale) {
-  // Make a copy of the existing profiles for this function to have no side
-  // effects.
-  std::vector<AutofillProfile*> existing_profiles_copies = existing_profiles;
-
-  // Sort the profiles by ranking score.
-  SortProfilesByRankingScore(&existing_profiles_copies);
-
-  // Find and return the first profile that classifies as a merge candidate. If
-  // not profile classifies, return |absl::nullopt|.
-  AutofillProfileComparator comparator(app_locale);
-  auto merge_candidate = base::ranges::find_if(
-      existing_profiles_copies, [&](const AutofillProfile* existing_profile) {
-        return comparator.IsMergeCandidate(*existing_profile, new_profile,
-                                           app_locale);
-      });
-
-  return merge_candidate != existing_profiles_copies.end()
-             ? absl::make_optional(**merge_candidate)
-             : absl::nullopt;
-}
-
-// static
 std::string AutofillProfileComparator::MergeProfile(
     const AutofillProfile& new_profile,
     const std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
@@ -829,22 +789,15 @@ std::string AutofillProfileComparator::MergeProfile(
     existing_profile_copies.push_back(*profile.get());
 
   // Sort the existing profiles in decreasing order of ranking score, so the
-  // "best" profiles are checked first. Put the verified profiles last so the
-  // non verified profiles get deduped among themselves before reaching the
-  // verified profiles.
-  // TODO(crbug.com/620521): Remove the check for verified from the sort.
+  // "best" profiles are checked first.
   // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
   base::Time comparison_time = AutofillClock::Now();
-  if (existing_profile_copies.size() > 1) {
-    std::sort(
-        existing_profile_copies.begin(), existing_profile_copies.end(),
-        [comparison_time](const AutofillProfile& a, const AutofillProfile& b) {
-          if (a.IsVerified() != b.IsVerified()) {
-            return !a.IsVerified();
-          }
-          return a.HasGreaterRankingThan(&b, comparison_time);
-        });
-  }
+  base::ranges::sort(
+      existing_profile_copies,
+      [comparison_time](const AutofillProfile& a, const AutofillProfile& b) {
+        return a.HasGreaterRankingThan(&b, comparison_time);
+      });
+
   // Set to true if |existing_profile_copies| already contains an equivalent
   // profile.
   bool matching_profile_found = false;
@@ -861,10 +814,6 @@ std::string AutofillProfileComparator::MergeProfile(
         new_profile.source() == existing_profile.source() &&
         comparator.AreMergeable(new_profile, existing_profile) &&
         existing_profile.SaveAdditionalInfo(new_profile, app_locale)) {
-      // Unverified profiles should always be updated with the newer data,
-      // whereas verified profiles should only ever be overwritten by verified
-      // data.  If an automatically aggregated profile would overwrite a
-      // verified profile, just drop it.
       matching_profile_found = true;
       guid = existing_profile.guid();
 

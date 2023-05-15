@@ -12,25 +12,19 @@ namespace blink {
 class Element;
 class HTMLImageElement;
 class LocalFrame;
-class KURL;
 
 // Contains helper functions to deal with the lazy loading logic of images.
 class LazyImageHelper final {
   STATIC_ONLY(LazyImageHelper);
 
  public:
-  enum class Eligibility {
-    kDisabled,
-    kEnabledFullyDeferred,
-  };
-
   static void StartMonitoring(Element* element);
   static void StopMonitoring(Element* element);
 
-  static Eligibility DetermineEligibilityAndTrackVisibilityMetrics(
-      LocalFrame& frame,
-      HTMLImageElement* html_image,
-      const KURL& url);
+  static bool ShouldDeferImageLoad(LocalFrame& frame,
+                                   HTMLImageElement* html_image);
+
+  static void StartMonitoringVisibilityMetrics(HTMLImageElement* html_image);
 
   static void RecordMetricsOnLoadFinished(HTMLImageElement* image_element);
 };

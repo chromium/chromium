@@ -31,6 +31,29 @@ namespace content {
 
 namespace {
 static PrefetchService* g_prefetch_service_for_testing = nullptr;
+
+// Sets ServingPageMetrics for all prefetches that might match under
+// No-Vary-Search hint.
+void SetMetricsForPossibleNoVarySearchHintMatches(
+    const std::map<GURL, base::WeakPtr<PrefetchContainer>>& all_prefetches,
+    const GURL& nav_url,
+    PrefetchServingPageMetricsContainer& serving_page_metrics_container) {
+  for (const auto& itr : all_prefetches) {
+    if (!itr.second) {
+      continue;
+    }
+    if (!itr.second->HasPrefetchBeenConsideredToServe() &&
+        itr.second->GetNoVarySearchHint() &&
+        itr.second->GetNoVarySearchHint()->AreEquivalent(
+            nav_url, itr.second->GetURL())) {
+      // In this case we need to set serving page metrics in case we end up
+      // using the prefetch after No-Vary-Search header is received.
+      itr.second->SetServingPageMetrics(
+          serving_page_metrics_container.GetWeakPtr());
+      itr.second->UpdateServingPageMetrics();
+    }
+  }
+}
 }  // namespace
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
@@ -105,6 +128,9 @@ void PrefetchDocumentManager::DidStartNavigation(
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << navigation_handle->GetURL()
              << ": skipped (PrefetchContainer not found)";
+    SetMetricsForPossibleNoVarySearchHintMatches(
+        all_prefetches_, navigation_handle->GetURL(),
+        *serving_page_metrics_container);
     return;
   }
 
@@ -113,6 +139,9 @@ void PrefetchDocumentManager::DidStartNavigation(
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << *prefetch_iter->second
              << ": skipped (already used for another navigation)";
+    SetMetricsForPossibleNoVarySearchHintMatches(
+        all_prefetches_, navigation_handle->GetURL(),
+        *serving_page_metrics_container);
     return;
   }
 
@@ -131,8 +160,6 @@ void PrefetchDocumentManager::DidStartNavigation(
 }
 
 void PrefetchDocumentManager::ProcessCandidates(
-    const absl::optional<base::UnguessableToken>&
-        initiator_devtools_navigation_token,
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Filter out candidates that can be handled by |PrefetchService| and
@@ -141,63 +168,54 @@ void PrefetchDocumentManager::ProcessCandidates(
   // to handle all prefetches and the prefetch proxy code in chrome/browser/ is
   // removed, then we can move the logic of which speculation candidates this
   // code can handle up a layer to |SpeculationHostImpl|.
-  const url::Origin& referring_origin =
-      render_frame_host().GetLastCommittedOrigin();
-
-  // `initiator_devtools_navigation_token_` is expected to be consistent since
-  // all candidates should be in the same document.
-  if (!initiator_devtools_navigation_token_.has_value()) {
-    initiator_devtools_navigation_token_ = initiator_devtools_navigation_token;
-  } else if (initiator_devtools_navigation_token.has_value()) {
-    CHECK_EQ(*initiator_devtools_navigation_token_,
-             *initiator_devtools_navigation_token);
-  }
+  net::SchemefulSite referring_site(
+      render_frame_host().GetLastCommittedOrigin());
 
   std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
-                         network::mojom::NoVarySearchPtr>>
+                         network::mojom::NoVarySearchPtr,
+                         blink::mojom::SpeculationInjectionWorld>>
       prefetches;
 
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
-        bool is_same_origin = referring_origin.IsSameOriginWith(candidate->url);
-        bool private_prefetch =
-            candidate->requires_anonymous_client_ip_when_cross_origin &&
-            !is_same_origin;
-
         // This code doesn't not support speculation candidates with the action
         // of |blink::mojom::SpeculationAction::kPrefetchWithSubresources|. See
         // https://crbug.com/1296309.
-
-        if (candidate->action == blink::mojom::SpeculationAction::kPrefetch) {
-          // TODO(https://crbug.com/1414582): Change this check to look at site
-          // instead of origin.
-          bool use_isolated_network_context = !is_same_origin;
-          bool use_prefetch_proxy = !is_same_origin && private_prefetch;
-          prefetches.emplace_back(
-              candidate->url,
-              PrefetchType(use_isolated_network_context, use_prefetch_proxy,
-                           candidate->eagerness),
-              *candidate->referrer, candidate->no_vary_search_expected.Clone());
-          return true;
+        if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
+          return false;
         }
-        return false;
+
+        net::SchemefulSite prefetch_site(candidate->url);
+
+        prefetches.emplace_back(
+            candidate->url,
+            PrefetchType(
+                /*use_isolated_network_context=*/referring_site !=
+                    prefetch_site,
+                /*use_prefetch_proxy=*/
+                candidate->requires_anonymous_client_ip_when_cross_origin,
+                candidate->eagerness),
+            *candidate->referrer, candidate->no_vary_search_hint.Clone(),
+            candidate->injection_world);
+        return true;
       };
 
   base::EraseIf(candidates, should_process_entry);
 
   if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
-    for (auto& [prefetch_url, prefetch_type, referrer,
-                no_vary_search_expected] : prefetches) {
-      if (prefetch_type.IsProxyRequired() &&
-          prefetch_url.host() == *host_to_bypass)
+    for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+                world] : prefetches) {
+      if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
+          prefetch_url.host() == *host_to_bypass) {
         prefetch_type.SetProxyBypassedForTest();
+      }
     }
   }
 
-  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
-       prefetches) {
+  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+              world] : prefetches) {
     PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
-                devtools_observer);
+                world, devtools_observer);
   }
 }
 
@@ -206,6 +224,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
+    blink::mojom::SpeculationInjectionWorld world,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Skip any prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(url);
@@ -228,7 +247,8 @@ void PrefetchDocumentManager::PrefetchUrl(
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), url, prefetch_type, referrer,
-      std::move(no_vary_search_expected), weak_method_factory_.GetWeakPtr());
+      std::move(no_vary_search_expected), world,
+      weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
     container->SetNoVarySearchHelper(no_vary_search_helper_);
@@ -273,45 +293,30 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
       return false;
     case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
     case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
-    case PrefetchStatus::kPrefetchNotEligibleGoogleDomain:
     case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
     case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
-    case PrefetchStatus::kPrefetchPositionIneligible:
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
     case PrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
     case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
-    case PrefetchStatus::kPrefetchUsedNoProbe:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchNotFinishedInTime:
     case PrefetchStatus::kPrefetchFailedNetError:
     case PrefetchStatus::kPrefetchFailedNon2XX:
     case PrefetchStatus::kPrefetchFailedMIMENotSupported:
-    case PrefetchStatus::kNavigatedToLinkNotOnSRP:
-    case PrefetchStatus::kSubresourceThrottled:
-    case PrefetchStatus::kPrefetchUsedNoProbeWithNSP:
-    case PrefetchStatus::kPrefetchUsedProbeSuccessWithNSP:
-    case PrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP:
-    case PrefetchStatus::kPrefetchUsedNoProbeNSPAttemptDenied:
-    case PrefetchStatus::kPrefetchUsedProbeSuccessNSPAttemptDenied:
-    case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPAttemptDenied:
-    case PrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted:
-    case PrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
-    case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
     case PrefetchStatus::kPrefetchIsStale:
-    case PrefetchStatus::kPrefetchIsStaleWithNSP:
-    case PrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
-    case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-    case PrefetchStatus::kPrefetchFailedRedirectsDisabled_DEPRECATED:
     case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+    case PrefetchStatus::
+        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return true;
   }
 }

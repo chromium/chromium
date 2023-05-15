@@ -501,7 +501,9 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
 
 }  // namespace
 
-void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
+void InitializeSDK(bool enable_v8,
+                   bool use_skia,
+                   FontMappingMode font_mapping_mode) {
   FPDF_LIBRARY_CONFIG config;
   config.version = 4;
   config.m_pUserFontPaths = nullptr;
@@ -509,9 +511,7 @@ void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
   config.m_pPlatform = nullptr;
   config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
   config.m_RendererType =
-      base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)
-          ? FPDF_RENDERERTYPE_SKIA
-          : FPDF_RENDERERTYPE_AGG;
+      use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
 
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {

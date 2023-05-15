@@ -153,7 +153,7 @@ std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
   return role_name;
 }
 
-// TODO(https://crbug.com/1278249): Consider merging the following functions
+// TODO(https://crbug.com/1443341): Consider merging the following functions
 // into a template, e.g. using std::is_same.
 void AddAttribute(const std::string& name,
                   int value,
@@ -199,7 +199,7 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   uie.set_id(id);
 
   // Attributes.
-  // TODO(https://crbug.com/1278249): Get attribute strings from a Google3
+  // TODO(https://crbug.com/1443341): Get attribute strings from a Google3
   // export, also the experimental ones for the unittest.
   AddAttribute("axnode_id", static_cast<int>(node->id()), uie);
   const std::string& display_value =
@@ -314,7 +314,7 @@ std::string SnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   ui::AXTree tree(snapshot);
 
   // To be computed based on the max dimensions of all elements in the tree.
-  // TODO(https://crbug.com/1278249): Consider using combination of scroll
+  // TODO(https://crbug.com/1443341): Consider using combination of scroll
   // max and view port size to find the tree dimensions. Screen2x is getting the
   // size from the screenshot image of the tree.
   gfx::SizeF tree_dimensions;

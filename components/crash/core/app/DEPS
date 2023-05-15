@@ -1,7 +1,7 @@
 include_rules = [
   "+sandbox",
   "+third_party/breakpad",
-
+  "+components/allocation_recorder/crash_handler",
   "+components/stability_report/user_stream_data_source.h",
   "+components/crash/android/jni_headers",
   "+components/gwp_asan/buildflags/buildflags.h",

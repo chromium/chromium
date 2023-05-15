@@ -42,10 +42,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     const SimpleFontData* font_data = font.PrimaryFont();
     ASSERT_TRUE(font_data);
 
-    TextRun text_run(
-        text, 0, 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        TextDirection::kLtr, false);
+    TextRun text_run(text);
     text_run.SetNormalizeSpace(true);
     gfx::RectF text_bounds = font.SelectionRectForText(
         text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
@@ -79,8 +76,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     Font font = Font(font_description);
 
     gfx::PointF location(0, 0);
-    TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
-                     TextDirection::kLtr, false);
+    TextRun text_run(text);
     text_run.SetNormalizeSpace(true);
 
     TextRunPaintInfo text_run_paint_info(text_run);

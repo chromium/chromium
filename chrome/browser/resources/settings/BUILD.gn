@@ -6,7 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-import("//ui/webui/webui_features.gni")
 import("./settings.gni")
 
 assert(!is_android, "Android does not use these settings")
@@ -91,7 +90,6 @@ build_webui("build") {
     "autofill_page/password_list_item.ts",
     "autofill_page/password_preview_item.ts",
     "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
-    "autofill_page/password_move_to_account_dialog.ts",
     "autofill_page/password_remove_confirmation_dialog.ts",
     "autofill_page/password_remove_dialog.ts",
     "autofill_page/password_view.ts",
@@ -108,14 +106,7 @@ build_webui("build") {
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
-    "controls/controlled_button.ts",
-    "controls/controlled_radio_button.ts",
-    "controls/extension_controlled_indicator.ts",
     "controls/settings_checkbox.ts",
-    "controls/settings_dropdown_menu.ts",
-    "controls/settings_radio_group.ts",
-    "controls/settings_slider.ts",
-    "controls/settings_toggle_button.ts",
     "downloads_page/downloads_page.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",
@@ -123,7 +114,8 @@ build_webui("build") {
     "on_startup_page/startup_urls_page.ts",
     "performance_page/battery_page.ts",
     "performance_page/performance_page.ts",
-    "performance_page/tab_discard_exception_dialog.ts",
+    "performance_page/tab_discard_exception_add_dialog.ts",
+    "performance_page/tab_discard_exception_edit_dialog.ts",
     "performance_page/tab_discard_exception_entry.ts",
     "performance_page/tab_discard_exception_list.ts",
     "people_page/people_page.ts",
@@ -156,8 +148,6 @@ build_webui("build") {
     "privacy_page/privacy_sandbox/privacy_sandbox_interest_item.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_page.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.ts",
-    "privacy_page/secure_dns.ts",
-    "privacy_page/secure_dns_input.ts",
     "privacy_page/security_keys_bio_enroll_dialog.ts",
     "privacy_page/security_keys_credential_management_dialog.ts",
     "privacy_page/security_keys_pin_field.ts",
@@ -174,6 +164,7 @@ build_webui("build") {
     "reset_page/reset_profile_banner.ts",
     "reset_page/reset_profile_dialog.ts",
     "safety_check_page/safety_check_child.ts",
+    "safety_check_page/safety_check_extensions.ts",
     "safety_check_page/safety_check_extensions_child.ts",
     "safety_check_page/safety_check_notification_permissions.ts",
     "safety_check_page/safety_check_page.ts",
@@ -197,7 +188,6 @@ build_webui("build") {
     "site_favicon.ts",
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites.ts",
-    "site_settings/category_default_setting.ts",
     "site_settings/category_setting_exceptions.ts",
     "site_settings/chooser_exception_list_entry.ts",
     "site_settings/chooser_exception_list.ts",
@@ -263,9 +253,6 @@ build_webui("build") {
   if (is_win || is_mac) {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
-  if (is_chromeos) {
-    web_component_files += [ "controls/password_prompt_dialog.ts" ]
-  }
   if (is_chrome_branded) {
     web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
   }
@@ -289,9 +276,6 @@ build_webui("build") {
     "autofill_page/show_password_mixin.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
-    "controls/cr_policy_pref_mixin.ts",
-    "controls/pref_control_mixin.ts",
-    "controls/settings_boolean_control_mixin.ts",
     "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
@@ -304,8 +288,10 @@ build_webui("build") {
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
+    "performance_page/discard_timer_options.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
+    "performance_page/tab_discard_exception_validation_mixin.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
@@ -317,6 +303,7 @@ build_webui("build") {
     "route.ts",
     "router.ts",
     "safety_check_page/safety_check_browser_proxy.ts",
+    "safety_check_page/safety_check_extensions_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
     "settings.ts",
@@ -392,9 +379,7 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
   ]
   if (is_chromeos) {
     ts_definitions +=
@@ -457,6 +442,4 @@ build_webui("build") {
               "$root_gen_dir/chrome/browser/resources/settings_shared/tsc",
               root_build_dir) ]
   }
-
-  enable_source_maps = enable_webui_inline_sourcemaps
 }

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
@@ -196,12 +197,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
   // constructor.
-  ash::platform_keys::PlatformKeysService* const fixed_platform_keys_service_ =
-      nullptr;
+  const raw_ptr<ash::platform_keys::PlatformKeysService, ExperimentalAsh>
+      fixed_platform_keys_service_ = nullptr;
   // Can be nullptr, should not be used directly, use GetKeyPermissions()
   // instead. Stores a pointer to a specific KeyPermissionsService if it was
   // specified in constructor.
-  ash::platform_keys::KeyPermissionsService* const
+  const raw_ptr<ash::platform_keys::KeyPermissionsService, ExperimentalAsh>
       fixed_key_permissions_service_ = nullptr;
 
   // Container to keep outstanding challenges alive. The challenges should be

@@ -15,14 +15,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
@@ -94,7 +95,9 @@ class FamilyUserAppMetricsTest
 
     EXPECT_EQ(IsFamilyLink(), profile()->IsChild());
 
-    supervised_user_service()->Init();
+    supervised_user_extensions_delegate_ =
+        std::make_unique<extensions::SupervisedUserExtensionsDelegateImpl>(
+            profile());
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
@@ -130,9 +133,7 @@ class FamilyUserAppMetricsTest
     const extensions::Extension* extension3 = InstallCRX(path, expected_state);
     ASSERT_TRUE(extension3);
     if (IsFamilyLink()) {
-      supervised_user_service()->UpdateApprovedExtensionForTesting(
-          extension3->id(),
-          SupervisedUserService::ApprovedExtensionChange::kAdd);
+      supervised_user_extensions_delegate()->AddExtensionApproval(*extension3);
     }
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension3->id()));
     EXPECT_FALSE(
@@ -201,14 +202,17 @@ class FamilyUserAppMetricsTest
         apps::InstanceParams(/*app_id=*/"a", window_.get()));
   }
 
-  SupervisedUserService* supervised_user_service() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
+  extensions::SupervisedUserExtensionsDelegate*
+  supervised_user_extensions_delegate() {
+    return supervised_user_extensions_delegate_.get();
   }
 
   bool IsFamilyLink() const { return GetParam(); }
 
   std::unique_ptr<FamilyUserAppMetricsDerivedForTest> family_user_app_metrics_;
   std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<extensions::SupervisedUserExtensionsDelegate>
+      supervised_user_extensions_delegate_;
 };
 
 // Tests the UMA metrics that count the number of installed and enabled

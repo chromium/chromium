@@ -198,7 +198,7 @@ typedef uint32_t IpczTransportActivityFlags;
 
 // If set, the driver encountered an unrecoverable error using the transport and
 // ipcz should discard it. Note that the driver is free to issue such
-// notifications many times as long as it remans active, but ipcz will generally
+// notifications many times as long as it remains active, but ipcz will generally
 // request deactivation ASAP once an error is signaled.
 #define IPCZ_TRANSPORT_ACTIVITY_ERROR IPCZ_FLAG_BIT(0)
 
@@ -230,7 +230,7 @@ extern "C" {
 // `options` is currently unused and must be null.
 //
 // NOTE: It is the driver's responsibility to ensure that calls to this function
-// for the same value of `transport` are mututally exclusive. Overlapping calls
+// for the same value of `transport` are mutually exclusive. Overlapping calls
 // are unsafe and will result in undefined behavior.
 typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
     IpczHandle transport,                    // in
@@ -341,8 +341,8 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // =============
   //
   // Deserializes a driver object from a collection of bytes and transmissible
-  // driver objects which which was originally produced by Serialize() and
-  // received on the calling node via `transport`.
+  // driver objects which was originally produced by Serialize() and received on
+  // the calling node via `transport`.
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
   // that `handle` is unmodified. Otherwise `handle` must contain a valid driver
@@ -424,7 +424,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED once finished. Beyond that point,
   // the activity handler must no longer be invoked for that transport.
   //
-  // Note that even after deactivatoin, ipcz may continue to call into the
+  // Note that even after deactivation, ipcz may continue to call into the
   // transport until it's closed with an explicit call to the driver's Close()
   // by ipcz.
   IpczResult(IPCZ_API* DeactivateTransport)(
@@ -613,10 +613,10 @@ typedef uint32_t IpczConnectNodeFlags;
 
 // ipcz may periodically allocate shared memory regions to facilitate
 // communication between two nodes. In many runtime environments, even within
-// a security sandbox, the driver can do do this safely and directly by
-// interfacing with the OS. In some environments however, direct allocation is
-// not possible. In such cases a node must delegate this responsibility to some
-// other trusted node in the system, typically the broker node.
+// a security sandbox, the driver can do this safely and directly by interfacing
+// with the OS. In some environments however, direct allocation is not possible.
+// In such cases a node must delegate this responsibility to some other trusted
+// node in the system, typically the broker node.
 //
 // Specifying this flag ensures that all shared memory allocation elicited by
 // the connecting node will be delegated to the connectee.
@@ -912,7 +912,7 @@ struct IPCZ_ALIGN(8) IpczTrapConditions {
   IpczTrapConditionFlags flags;
 
   // See IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS. If that flag is not set in `flags`,
-  // this field is ignord.
+  // this field is ignored.
   size_t min_local_parcels;
 
   // See IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES. If that flag is not set in `flags`,
@@ -1252,7 +1252,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // `portal`. Everything put into a portal can be retrieved in the same order
   // by a corresponding get operation on the opposite portal. Depending on the
   // driver and the state of the relevant portals, the data and handles may
-  // be delivered and retreivable immediately by the remote portal, or they may
+  // be delivered and retrievable immediately by the remote portal, or they may
   // be delivered asynchronously.
   //
   // `flags` is unused and must be IPCZ_NO_FLAGS.
@@ -1273,7 +1273,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the provided data and handles were successfull placed
+  //    IPCZ_RESULT_OK if the provided data and handles were successfully placed
   //        into the portal as a new parcel.
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` is null but
@@ -1425,7 +1425,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // Normally the data consumed by this call is copied directly to the address
   // given by the `data` argument, and `*num_bytes` specifies how many bytes of
-  // storage are available there.  If an application wishes to read directly
+  // storage are available there. If an application wishes to read directly
   // from parcel memory instead, a two-phase get operation can be used by
   // calling BeginGet() and EndGet() as defined below.
   //
@@ -1443,7 +1443,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // If this call succeeds and `parcel` is non-null, then `*parcel` is populated
   // with a new parcel handle which the application can use to report
-  // application-level validation failures regarding the retreived parcel (see
+  // application-level validation failures regarding the retrieved parcel (see
   // Reject()).
   //
   // `options` is ignored and must be null.

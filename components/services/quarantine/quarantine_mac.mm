@@ -7,6 +7,7 @@
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -14,12 +15,15 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/quarantine/common.h"
 #include "components/services/quarantine/common_mac.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace quarantine {
 
@@ -62,7 +66,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
   }
 
   base::ScopedCFTypeRef<MDItemRef> md_item(
-      MDItemCreate(kCFAllocatorDefault, base::mac::NSToCFCast(file_path)));
+      MDItemCreate(kCFAllocatorDefault, base::apple::NSToCFPtrCast(file_path)));
   if (!md_item) {
     LOG(WARNING) << "MDItemCreate failed for path " << file.value();
     return false;
@@ -85,7 +89,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
 
   if (list.count) {
     return MDItemSetAttribute(md_item, kMDItemWhereFroms,
-                              base::mac::NSToCFCast(list));
+                              base::apple::NSToCFPtrCast(list));
   }
 
   return true;

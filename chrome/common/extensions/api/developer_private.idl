@@ -140,6 +140,7 @@ namespace developerPrivate {
     boolean suspiciousInstall;
     boolean corruptInstall;
     boolean updateRequired;
+    boolean publishedInStoreRequired;
     boolean blockedByPolicy;
     boolean reloading;
     boolean custodianApprovalRequired;
@@ -653,15 +654,6 @@ namespace developerPrivate {
     [supportsPromises] static void getExtensionSize(DOMString id,
                                                     StringCallback callback);
 
-    // Returns information of all the extensions and apps installed.
-    // |includeDisabled| : include disabled items.
-    // |includeTerminated| : include terminated items.
-    // |callback| : Called with items info.
-    [deprecated="Use getExtensionsInfo"] static void getItemsInfo(
-        boolean includeDisabled,
-        boolean includeTerminated,
-        ItemsInfoCallback callback);
-
     // Returns the current profile's configuration.
     [supportsPromises] static void getProfileConfiguration(
         ProfileInfoCallback callback);
@@ -837,18 +829,6 @@ namespace developerPrivate {
         ExtensionSiteAccessUpdate[] updates,
         optional VoidCallback callback);
 
-    [nocompile, deprecated="Use management.setEnabled"]
-        static void enable(DOMString id,
-                           boolean enabled,
-                           optional VoidCallback callback);
-    [nocompile, deprecated="Use updateExtensionConfiguration"]
-        static void allowIncognito(DOMString extensionId,
-                                   boolean allow,
-                                   optional VoidCallback callback);
-    [nocompile, deprecated="Use updateExtensionConfiguration"]
-        static void allowFileAccess(DOMString extensionId,
-                                    boolean allow,
-                                    optional VoidCallback callback);
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,
                             optional VoidCallback callback);

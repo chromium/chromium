@@ -7,10 +7,17 @@ package org.chromium.ui.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
@@ -18,7 +25,10 @@ import androidx.core.content.ContextCompat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -28,6 +38,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.ui.permissions.PermissionCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +54,237 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectFileDialogTest {
+    // A callback that fires when the file selection pipeline shuts down as a result of an action.
+    public final CallbackHelper mOnActionCallback = new CallbackHelper();
+
     @Mock
     FileUtils.Natives mFileUtilsMocks;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+    }
+
+    /**
+     * Argument matcher that matches Intents using |filterEquals| method.
+     */
+    private static class IntentArgumentMatcher implements ArgumentMatcher<Intent> {
+        private final Intent mIntent;
+
+        public IntentArgumentMatcher(Intent intent) {
+            mIntent = intent;
+        }
+
+        @Override
+        public boolean matches(Intent other) {
+            return mIntent.filterEquals(other);
+        }
+
+        @Override
+        public String toString() {
+            return mIntent.toString();
+        }
+    }
+
+    private class TestSelectFileDialog extends SelectFileDialog {
+        // Counts how often the upload attempts are aborted.
+        private int mFileSelectionAborted;
+
+        // Counts how often the upload results in some files being uploaded.
+        private int mFileSelectionSuccess;
+
+        TestSelectFileDialog(long nativeDialog) {
+            super(nativeDialog);
+            mFileSelectionSuccess = 0;
+        }
+
+        @Override
+        protected void onFileSelected(
+                long nativeSelectFileDialogImpl, String filePath, String displayName) {
+            mFileSelectionSuccess++;
+            mOnActionCallback.notifyCalled();
+        }
+
+        @Override
+        protected void onMultipleFilesSelected(long nativeSelectFileDialogImpl,
+                String[] filePathArray, String[] displayNameArray) {
+            mFileSelectionSuccess++;
+            mOnActionCallback.notifyCalled();
+        }
+
+        @Override
+        protected void onFileNotSelected(long nativeSelectFileDialogImpl) {
+            mFileSelectionAborted++;
+            mOnActionCallback.notifyCalled();
+        }
+
+        private void resetFileSelectionAttempts() {
+            mFileSelectionAborted = 0;
+            mFileSelectionSuccess = 0;
+        }
+    }
+
+    @Test
+    public void testFileSelectionUserActions() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        when(windowAndroid.hasPermission(Manifest.permission.CAMERA)).thenReturn(false);
+
+        // Start with a simple camera capture event (which should fail because the CAMERA permission
+        // is denied).
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                new String[] {"image/jpeg"}, /*capture=*/true, /*multiple=*/false, windowAndroid);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // The CANCEL event should also fail and not result in any files being selected.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.CANCEL, new Uri[0]);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // The PHOTOS_SELECTED event without images should have the same result.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.PHOTOS_SELECTED, new Uri[0]);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Test LAUNCH_CAMERA, which requires a bit of mocking to make sure the permissions are
+        // setup correctly (ensure that the requests for the CAMERA permission are denied).
+        Mockito.doAnswer((invocation) -> {
+                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
+                   callback.onRequestPermissionsResult(new String[] {Manifest.permission.CAMERA},
+                           new int[] {PackageManager.PERMISSION_DENIED});
+                   return null;
+               })
+                .when(windowAndroid)
+                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                        (PermissionCallback) any());
+
+        // Test LAUNCH_CAMERA when permission is denied. Note: this is different from the other
+        // events because the MediaPicker dialog stays open and the pipeline should not shut down
+        // (so onFileNotSelected should not be called). See https://crbug.com/1381455 for details.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.LAUNCH_CAMERA, new Uri[0]);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        assertEquals(callCount, mOnActionCallback.getCallCount());
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Setup for another LAUNCH_CAMERA test, this time with the CAMERA permission enabled.
+        Mockito.doAnswer((invocation) -> {
+                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
+                   callback.onRequestPermissionsResult(new String[] {Manifest.permission.CAMERA},
+                           new int[] {PackageManager.PERMISSION_GRANTED});
+                   return null;
+               })
+                .when(windowAndroid)
+                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                        (PermissionCallback) any());
+
+        // Since the permission is now allowed, the LAUNCH_CAMERA event should keep the pipeline
+        // open.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.LAUNCH_CAMERA, new Uri[0]);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        assertEquals(callCount, mOnActionCallback.getCallCount());
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Test the LAUNCH_GALLERY event (which normally opens the Files app). However, by default
+        // the showIntent will fail on the mock WindowAndroid object, so the file selection should
+        // be aborted.
+        selectFileDialog.setFileTypesForTests(new ArrayList<String>(Arrays.asList("image/jpeg")));
+
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.LAUNCH_GALLERY, new Uri[0]);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Force WindowAndroid#showIntent to succeed and make sure the pipeline remains open when
+        // the test reruns.
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+        Mockito.doAnswer((invocation) -> {
+                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                   assertEquals("*/*", getContentIntent.getType());
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                   return true;
+               })
+                .when(windowAndroid)
+                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(), anyInt());
+
+        // Rerun the test. Because showIntent now reports success, the upload should still be in
+        // progress.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.LAUNCH_GALLERY, new Uri[0]);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        assertEquals(callCount, mOnActionCallback.getCallCount());
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
+    public void testFileSelectionPermissionInterrupted() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        when(windowAndroid.hasPermission(Manifest.permission.CAMERA)).thenReturn(false);
+
+        IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
+        when(windowAndroid.canResolveActivity(
+                     ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
+                .thenReturn(true);
+
+        // Setup the request callback to simulate an interrupted permission flow.
+        Mockito.doAnswer((invocation) -> {
+                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
+                   callback.onRequestPermissionsResult(new String[] {}, new int[] {});
+                   return null;
+               })
+                .when(windowAndroid)
+                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                        (PermissionCallback) any());
+
+        // Ensure permission request in selectFile can handle interrupted permission flow.
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                new String[] {"image/jpeg"}, /*capture=*/true, /*multiple=*/false, windowAndroid);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Ensure permission request in onPhotoPickerUserAction can handle interrupted permission
+        // flow.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.onPhotoPickerUserAction(
+                PhotoPickerListener.PhotoPickerAction.LAUNCH_CAMERA, new Uri[0]);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        assertEquals(callCount, mOnActionCallback.getCallCount());
+        selectFileDialog.resetFileSelectionAttempts();
     }
 
     /**

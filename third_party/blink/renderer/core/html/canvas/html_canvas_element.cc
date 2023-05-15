@@ -125,7 +125,7 @@ namespace {
 // TODO(https://crbug.com/1298812): Investigate why this fails on Windows.
 BASE_FEATURE(kOneCopyCanvasCapture,
              "OneCopyCanvasCapture",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -1768,7 +1768,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // is re-applied, it needs to remove clip from canvas and restore it after the
   // image is drawn.
   canvas->restoreToCount(1);
-  canvas->save();
 
   // TODO(jochin): Consider using ResourceProvider()->RestoreBackBuffer() here
   // to avoid all of this clip stack manipulation.

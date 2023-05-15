@@ -102,7 +102,7 @@ class LayerTreeHostBlendingPixelTest
     const int kLaneWidth = width;
     const int kLaneHeight = height / kCSSTestColorsCount;
     sk_sp<SkSurface> backing_store =
-        SkSurface::MakeRasterN32Premul(width, height);
+        SkSurfaces::Raster(SkImageInfo::MakeN32Premul(width, height));
     SkCanvas* canvas = backing_store->getCanvas();
     canvas->clear(SK_ColorTRANSPARENT);
     for (int i = 0; i < kCSSTestColorsCount; ++i) {
@@ -130,8 +130,8 @@ class LayerTreeHostBlendingPixelTest
   void SetupMaskLayer(scoped_refptr<Layer> layer) {
     gfx::Size bounds = layer->bounds();
 
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(bounds.width(), bounds.height());
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
     SkCanvas* canvas = surface->getCanvas();
     SkPaint paint;
     paint.setColor(SK_ColorWHITE);

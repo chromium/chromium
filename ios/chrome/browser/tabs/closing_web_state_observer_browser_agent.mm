@@ -9,9 +9,9 @@
 #import "components/sessions/ios/ios_restore_live_tab.h"
 #import "components/sessions/ios/ios_webstate_live_tab.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -91,18 +91,12 @@ void ClosingWebStateObserverBrowserAgent::WebStateReplacedAt(
   SnapshotTabHelper::FromWebState(old_web_state)->RemoveSnapshot();
 }
 
-void ClosingWebStateObserverBrowserAgent::WillDetachWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  RecordHistoryForWebStateAtIndex(web_state, index);
-}
-
 void ClosingWebStateObserverBrowserAgent::WillCloseWebStateAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool user_action) {
+  RecordHistoryForWebStateAtIndex(web_state, index);
   if (user_action) {
     SnapshotTabHelper::FromWebState(web_state)->RemoveSnapshot();
   }

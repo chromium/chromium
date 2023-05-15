@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -99,7 +100,8 @@ class AboutHandlerTest : public testing::Test {
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
-  ash::FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_;
   std::unique_ptr<base::SimpleTestClock> clock_;
 };
 

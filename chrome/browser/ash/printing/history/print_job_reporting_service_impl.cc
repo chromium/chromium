@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 
 #include <memory>
@@ -183,7 +184,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   const std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
       report_queue_;
 
-  CrosSettings* const cros_settings_;
+  const raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
 
   base::WeakPtrFactory<PrintJobReportingServiceImpl> weak_factory_{this};
 };

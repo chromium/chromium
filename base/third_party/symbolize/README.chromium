@@ -28,6 +28,10 @@ Local modifications:
 - 005-expose-file-helpers.patch: expose helpers for working with symbol files.
 - 006-use-sandbox-hook-for-open-object-file.patch: use the sandbox hook for
   the exposed helper for opening object files. This patch should be upstreamed.
-- 007-clang-format.patch: apply clang-format to make PRESUBMIT.py happy.
-- 008-sys-types-h.patch: include <sys/types.h> to get ssize_t on non-glibc
-  platforms
+- 007-sys-types-h.patch: include <sys/types.h> to get ssize_t on non-glibc
+  platforms.
+- 008-include-cstdlib.patch: include <cstdlib> for abort() rather than relying
+  on transitive includes.
+- 009-clone-absl-demangle.patch: Clone the demangling implementation from
+  abseil-cpp, which is itself a fork of https://github.com/google/glog/.
+- 010-clang-format.patch: format the source files using Chrome formatting rules.

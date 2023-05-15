@@ -14,6 +14,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -124,7 +125,7 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   // Callback for the hide animation.
   void OnHideAnimationEnded();
 
-  AppListControllerImpl* const controller_;
+  const raw_ptr<AppListControllerImpl, ExperimentalAsh> controller_;
 
   // Whether the view is showing or animating to show. Note that the
   // `bubble_widget_` may be null during the zero state search called in
@@ -132,10 +133,10 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   bool is_target_visibility_show_ = false;
 
   // Owned by native widget.
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // Owned by views.
-  AppListBubbleView* bubble_view_ = nullptr;
+  raw_ptr<AppListBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 
   // The page to show after the views are constructed.
   AppListBubblePage target_page_ = AppListBubblePage::kApps;

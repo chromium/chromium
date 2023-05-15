@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_sessions/local_session_event_router.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
 
 class ChromeBrowserState;

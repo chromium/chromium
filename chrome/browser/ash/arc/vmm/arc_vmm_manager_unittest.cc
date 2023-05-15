@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
+#include <memory>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -20,10 +24,6 @@ namespace arc {
 
 namespace {
 using SwapOperation = vm_tools::concierge::SwapOperation;
-
-// The time gap between "enable" and "swapout" operation. It's depends on the
-// time set in ArcVmmManager.
-constexpr auto kSwapoutGap = base::Seconds(5);
 
 // Customized FakeConciergeClient to add more complex logic on SwapVm function.
 class TestConciergeClient : public ash::FakeConciergeClient {
@@ -48,6 +48,10 @@ class TestConciergeClient : public ash::FakeConciergeClient {
         disable_count_++;
         response.set_success(true);
         break;
+      case SwapOperation::FORCE_ENABLE:
+        force_enable_count_++;
+        response.set_success(true);
+        break;
       default:
         response.set_success(false);
         response.set_failure_reason("Unknown operation");
@@ -60,12 +64,15 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   int enable_count() { return enable_count_; }
   int swap_out_count() { return swap_out_count_; }
   int disable_count() { return disable_count_; }
+  int force_enable_count() { return force_enable_count_; }
 
  private:
   int enable_count_ = 0;
   int swap_out_count_ = 0;
   int disable_count_ = 0;
+  int force_enable_count_ = 0;
 };
+
 }  // namespace
 
 class ArcVmmManagerTest : public testing::Test {
@@ -94,6 +101,20 @@ class ArcVmmManagerTest : public testing::Test {
     manager_->set_user_id_hash("test_user_hash_id");
   }
 
+  void InitAggressiveBallonResponse() {
+    vm_tools::concierge::AggressiveBalloonResponse response;
+    response.set_success(true);
+    client()->set_aggressive_balloon_response(response);
+  }
+
+  void SetTrimCall(bool trim_result) {
+    manager()->trim_call_ = base::BindLambdaForTesting(
+        [trim_result](ArcVmWorkingSetTrimExecutor::ResultCallback callback,
+                      ArcVmReclaimType reclaim_type, int page_limit) {
+          std::move(callback).Run(trim_result, "");
+        });
+  }
+
   ArcVmmManager* manager() { return manager_; }
   TestConciergeClient* client() { return concierge_client_.get(); }
 
@@ -106,54 +127,84 @@ class ArcVmmManagerTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
   std::unique_ptr<TestConciergeClient> concierge_client_;
-  ArcVmmManager* manager_ = nullptr;
+  raw_ptr<ArcVmmManager, ExperimentalAsh> manager_ = nullptr;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };
 
-TEST_F(ArcVmmManagerTest, SwapSuccess) {
+TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
   InitVmmManager();
-  manager()->SetSwapState(true);
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  // Send "ENABLE".
+  EXPECT_EQ(0, client()->enable_count());
+  manager()->SetSwapState(SwapState::ENABLE);
   base::RunLoop().RunUntilIdle();
-  // Send "ENABLE" first.
+
   EXPECT_EQ(1, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
-  EXPECT_EQ(0, client()->disable_count());
-
-  // After seconds, send "SWAPOUT".
-  task_environment_.FastForwardBy(kSwapoutGap);
-  EXPECT_EQ(1, client()->enable_count());
-  EXPECT_EQ(1, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 }
 
-TEST_F(ArcVmmManagerTest, ObservationAndScheduler) {
-  base::test::ScopedFeatureList features_;
-  // The feature companion with some paremeter. Although the test will use
-  // the default value, keep the empty parameter here for better readability.
-  features_.InitAndEnableFeatureWithParameters(kVmmSwapPolicy, {{}});
+TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
   InitVmmManager();
+  SetTrimCall(false);
+  InitAggressiveBallonResponse();
 
-  // Should enabled observation.
-  EXPECT_NE(manager()->system_state_observation_for_testing(), nullptr);
-
+  // Send "ENABLE".
+  EXPECT_EQ(0, client()->enable_count());
+  manager()->SetSwapState(SwapState::ENABLE);
   base::RunLoop().RunUntilIdle();
-  // Mark ARC is inactive.
-  manager()->system_state_observation_for_testing()->ThrottleInstance(true);
 
-  // Haven't start swap out.
-  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
+}
 
-  // Should trigger the swap out state after 1 hour.
-  task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_EQ(1, client()->enable_count());
-  EXPECT_EQ(1, client()->swap_out_count());
+TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
+  InitVmmManager();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  base::RunLoop().RunUntilIdle();
+  // Send "FORCE_ENABLE".
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
+}
+
+// This test verify the weak ptr safety in scheduler.
+TEST_F(ArcVmmManagerTest, WeakPtrRef) {
+  class TestClass {
+   public:
+    void add(int x) { value += x; }
+
+    int value = 0;
+
+    base::WeakPtrFactory<TestClass> weak_ptr_factory_{this};
+  };
+
+  TestClass* test_class = new TestClass;
+  auto cb = base::BindRepeating(
+      [](base::WeakPtr<TestClass> c, int v) {
+        if (c) {
+          c->add(v);
+        }
+      },
+      test_class->weak_ptr_factory_.GetWeakPtr());
+
+  EXPECT_EQ(test_class->value, 0);
+  cb.Run(1);
+  EXPECT_EQ(test_class->value, 1);
+
+  delete test_class;
+  cb.Run(2);
+  // Expect no crash here.
 }
 
 }  // namespace arc

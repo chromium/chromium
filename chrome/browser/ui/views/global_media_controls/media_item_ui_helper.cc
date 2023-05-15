@@ -63,6 +63,10 @@ absl::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     content::BrowserContext* context) {
+  if (!media_router::MediaRouterEnabled(context)) {
+    return absl::nullopt;
+  }
+
   // Return absl::nullopt if the item is not a local media session.
   if (!item || item->SourceType() !=
                    media_message_center::SourceType::kLocalMediaSession) {

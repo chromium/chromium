@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -48,7 +49,7 @@ class ArcAppsPrivateAPI : public extensions::BrowserContextKeyedAPI,
   // extensions::BrowserContextKeyedAPI:
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       scoped_prefs_observation_{this};

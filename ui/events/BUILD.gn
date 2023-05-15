@@ -98,6 +98,7 @@ component("events_base") {
   sources = [
     "base_event_utils.cc",
     "base_event_utils.h",
+    "event_latency_metadata.h",
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
@@ -496,6 +497,7 @@ component("gesture_detection") {
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/latency",
   ]
 
   defines = [ "GESTURE_DETECTION_IMPLEMENTATION" ]
@@ -523,8 +525,6 @@ static_library("test_support") {
     "test/keyboard_layout.h",
     "test/motion_event_test_utils.cc",
     "test/motion_event_test_utils.h",
-    "test/platform_event_source_test_api.cc",
-    "test/platform_event_source_test_api.h",
     "test/scoped_event_waiter.cc",
     "test/scoped_event_waiter.h",
     "test/test_event.cc",
@@ -699,6 +699,7 @@ if (use_blink) {
 
     if (use_ozone) {
       deps += [
+        "//ui/events/devices:unittests",
         "//ui/events/ozone:unittests",
         "//ui/events/ozone/layout",
       ]

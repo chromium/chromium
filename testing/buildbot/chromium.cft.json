@@ -561,6 +561,24 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "env_chromium_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/"
+      },
+      {
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -818,6 +836,24 @@
         },
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
+      },
+      {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "leveldb_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -1256,7 +1292,8 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
@@ -1498,7 +1535,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
         ],
@@ -1512,11 +1548,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1712,8 +1743,7 @@
           "--flag-specific=highdpi",
           "--skipped=always",
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
@@ -1725,11 +1755,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1750,8 +1775,7 @@
           "--flag-specific=highdpi",
           "--skipped=always",
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
@@ -1763,11 +1787,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_wpt_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1810,7 +1829,6 @@
           "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "check_flakiness_for_new_tests": false,
@@ -1823,11 +1841,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1839,7 +1852,6 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "quickrun_shards": 18,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1849,8 +1861,7 @@
         "args": [
           "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
@@ -1862,11 +1873,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_wpt_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2011,8 +2017,7 @@
           "--num-retries=3",
           "--skipped=always",
           "--flag-specific=skia-vulkan-swiftshader",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
@@ -2024,11 +2029,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2475,7 +2475,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -2494,7 +2493,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -2644,6 +2642,25 @@
         },
         "test": "display_unittests",
         "test_id_prefix": "ninja://ui/display:display_unittests/"
+      },
+      {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "env_chromium_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -2877,7 +2894,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 12,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2919,6 +2935,25 @@
         },
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
+      },
+      {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "leveldb_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -3403,7 +3438,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
@@ -3564,7 +3598,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
         ],
         "check_flakiness_for_new_tests": false,
@@ -3577,11 +3610,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3594,7 +3622,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -4243,24 +4270,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "chrome_cleaner_unittests",
-        "test_id_prefix": "ninja://chrome/chrome_cleaner:chrome_cleaner_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "chrome_elf_unittests",
         "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
       },
@@ -4331,7 +4340,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -4371,7 +4379,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "quickrun_shards": 18,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -4557,6 +4564,25 @@
         },
         "test": "elevation_service_unittests",
         "test_id_prefix": "ninja://chrome/elevation_service:elevation_service_unittests/"
+      },
+      {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19045"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "env_chromium_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -4916,6 +4942,25 @@
         },
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
+      },
+      {
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19045"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "leveldb_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -5694,7 +5739,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}",
           "--target",
           "Release_x64",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
@@ -5709,11 +5753,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -5726,7 +5765,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },

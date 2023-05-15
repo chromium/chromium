@@ -197,6 +197,13 @@ class TestImporter(object):
 
         return 0
 
+    def log_try_job_results(self, try_job_results) -> None:
+        if try_job_results:
+            _log.info('Failing builder results:')
+            for builder, try_job_status in try_job_results.items():
+                if try_job_status.status != 'COMPLETED' or try_job_status.result != 'SUCCESS':
+                    _log.info(f'{builder}: {try_job_status}')
+
     def update_expectations_for_cl(self) -> bool:
         """Performs the expectation-updating part of an auto-import job.
 
@@ -215,6 +222,10 @@ class TestImporter(object):
 
         if not cl_status:
             _log.error('No initial try job results, aborting.')
+            issue_number = self.git_cl.get_issue_number()
+            try_job_results = self.git_cl.latest_try_jobs(issue_number,
+                                                          cq_only=False)
+            self.log_try_job_results(try_job_results)
             self.git_cl.run(['set-close'])
             return False
 

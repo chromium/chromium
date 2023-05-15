@@ -12,6 +12,7 @@
 #include <process.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/win/access_token.h"
 #include "sandbox/win/src/acl.h"
@@ -25,6 +26,7 @@
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace {
@@ -145,6 +147,12 @@ TargetServicesBase::TargetServicesBase() {}
 ResultCode TargetServicesBase::Init() {
   process_state_.SetInitCalled();
   return SBOX_ALL_OK;
+}
+
+absl::optional<base::span<const uint8_t>>
+TargetServicesBase::GetDelegateData() {
+  CHECK(process_state_.InitCalled());
+  return sandbox::GetGlobalDelegateData();
 }
 
 // Failure here is a breach of security so the process is terminated.

@@ -225,6 +225,7 @@ class AppMenuHandlerImpl
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
+        mDelegate.onMenuShown();
         return true;
     }
 

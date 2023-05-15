@@ -20,21 +20,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#endif
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -57,19 +53,16 @@ class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
+class AttributionOsLevelManager;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
 
 struct GlobalRenderFrameHostId;
+struct OsRegistration;
 struct SendResult;
 struct StoreSourceResult;
-
-#if BUILDFLAG(IS_ANDROID)
-class AttributionOsLevelManager;
-struct OsRegistration;
-#endif
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
@@ -105,15 +98,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
+      std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       StoragePartitionImpl* storage_partition,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
-
-  static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
-      StoragePartitionImpl* storage_partition,
-      const base::FilePath& user_data_directory,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-
-  static attribution_reporting::mojom::OsSupport GetOsSupport();
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -155,25 +142,17 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       attribution_reporting::mojom::SourceRegistrationError) override;
 
   void GetAllDataKeys(
-      base::OnceCallback<void(std::vector<DataKey>)> callback) override;
+      base::OnceCallback<void(std::set<DataKey>)> callback) override;
 
   void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                       base::OnceClosure callback) override;
 
-#if BUILDFLAG(IS_ANDROID)
-
   void HandleOsRegistration(OsRegistration,
                             GlobalRenderFrameHostId render_frame_id) override;
-
-  AttributionOsLevelManager* GetOsLevelManager() {
-    return attribution_os_level_manager_.get();
-  }
 
   void NotifyOsRegistration(const OsRegistration&,
                             bool is_debug_key_allowed,
                             attribution_reporting::mojom::OsRegistrationResult);
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   friend class AttributionManagerImplTest;
@@ -191,6 +170,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
+      std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   void MaybeEnqueueEvent(SourceOrTrigger);
@@ -257,14 +237,12 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void OnClearDataComplete();
 
-#if BUILDFLAG(IS_ANDROID)
-  void OverrideOsLevelManagerForTesting(
-      std::unique_ptr<AttributionOsLevelManager>);
   void ProcessNextOsEvent();
   void OnOsRegistration(const OsRegistration&,
                         bool is_debug_key_allowed,
                         bool success);
-#endif  // BUILDFLAG(IS_ANDROID)
+
+  DestinationThrottler throttler_;
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
@@ -311,17 +289,14 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // We keep track of pending reports timings in memory to record metrics
   // when the browser becomes unavailable to send reports due to becoming
   // offline or being shutdown.
-  base::flat_map<AttributionReport::AggregatableAttributionData::Id,
-                 PendingReportTimings>
+  base::flat_map<AttributionReport::Id, PendingReportTimings>
       pending_aggregatable_reports_;
 
   base::ObserverList<AttributionObserver> observers_;
 
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<AttributionOsLevelManager> attribution_os_level_manager_;
+  const std::unique_ptr<AttributionOsLevelManager> os_level_manager_;
 
   base::circular_deque<OsRegistration> pending_os_events_;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

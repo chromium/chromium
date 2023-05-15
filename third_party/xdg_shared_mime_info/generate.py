@@ -31,8 +31,8 @@ mime_types = {}
 
 # Fetch and save local copy of xml.
 filename = 'freedesktop.org.xml.in'
-url = ('https://raw.githubusercontent.com/freedesktop/xdg-shared-mime-info/'
-       'HEAD/data/%s' % filename)
+url = ('https://gitlab.freedesktop.org/xdg/shared-mime-info/-/raw/master/data/%s'
+       % filename)
 xml = urllib.request.urlopen(url).read()
 with open(os.path.join(current_dir, filename), 'wb') as f:
   f.write(xml)

@@ -162,6 +162,8 @@ class TouchToFillCreditCardMediator {
                         .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
                                 card.getIssuerIconDrawableId())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
+                                card.getCardArtUrl())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())
@@ -187,9 +189,7 @@ class TouchToFillCreditCardMediator {
         } else {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                    mContext.getString(
-                                    R.string.autofill_credit_card_two_line_label_from_card_number)
-                            .replace("$1", card.getFormattedExpirationDate(mContext)));
+                    card.getFormattedExpirationDateWithTwoDigitYear(mContext));
         }
         return creditCardModelBuilder.build();
     }

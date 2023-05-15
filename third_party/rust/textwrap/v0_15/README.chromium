@@ -1,6 +1,0 @@
-Name: textwrap
-URL: https://crates.io/crates/textwrap
-Description: Powerful library for word wrapping, indenting, and dedenting strings
-Version: 0.15.0
-Security Critical: yes
-License: MIT

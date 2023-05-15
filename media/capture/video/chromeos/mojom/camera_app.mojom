@@ -38,6 +38,7 @@ enum CaptureIntent {
   DEFAULT = 0,
   VIDEO_RECORD = 1,
   STILL_CAPTURE = 2,
+  PORTRAIT_CAPTURE = 3,
 };
 
 // Interface to let Chrome Camera App (Remote) get specific CameraAppDevice from

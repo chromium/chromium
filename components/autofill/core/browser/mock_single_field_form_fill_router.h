@@ -46,11 +46,13 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, int),
+              (const std::u16string&,
+               const std::u16string&,
+               Suggestion::FrontendId),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, int),
+              (const std::u16string&, Suggestion::FrontendId),
               (override));
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_LIST_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_LIST_TEST_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -33,7 +34,7 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
  private:
   void ConfigureWebAppProvider();
 
-  web_app::TestWebAppUrlLoader* url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader, ExperimentalAsh> url_loader_ = nullptr;
 };
 
 // Test util constants --------------------------------------------------------

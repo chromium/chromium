@@ -1177,11 +1177,9 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
   auto on_lookup_done = base::BindRepeating(
       [](Barrier barrier,
          storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-        if (bucket_info.has_value()) {
-          barrier.Run(bucket_info->ToBucketLocator());
-        } else {
-          barrier.Run(absl::nullopt);
-        }
+        barrier.Run(bucket_info.has_value()
+                        ? absl::make_optional(bucket_info->ToBucketLocator())
+                        : absl::nullopt);
       },
       barrier);
 

@@ -1,6 +1,7 @@
 // Common functions that are unfortunately missing on illumos and
 // Solaris, but often needed by other crates.
 
+use core::cmp::min;
 use unix::solarish::*;
 
 const PTEM: &[u8] = b"ptem\0";
@@ -168,4 +169,52 @@ pub unsafe fn forkpty(
     }
 
     0
+}
+
+pub unsafe fn getpwent_r(
+    pwd: *mut passwd,
+    buf: *mut ::c_char,
+    buflen: ::size_t,
+    result: *mut *mut passwd,
+) -> ::c_int {
+    let old_errno = *::___errno();
+    *::___errno() = 0;
+    *result = native_getpwent_r(
+        pwd,
+        buf,
+        min(buflen, ::c_int::max_value() as ::size_t) as ::c_int,
+    );
+
+    let ret = if (*result).is_null() {
+        *::___errno()
+    } else {
+        0
+    };
+    *::___errno() = old_errno;
+
+    ret
+}
+
+pub unsafe fn getgrent_r(
+    grp: *mut ::group,
+    buf: *mut ::c_char,
+    buflen: ::size_t,
+    result: *mut *mut ::group,
+) -> ::c_int {
+    let old_errno = *::___errno();
+    *::___errno() = 0;
+    *result = native_getgrent_r(
+        grp,
+        buf,
+        min(buflen, ::c_int::max_value() as ::size_t) as ::c_int,
+    );
+
+    let ret = if (*result).is_null() {
+        *::___errno()
+    } else {
+        0
+    };
+    *::___errno() = old_errno;
+
+    ret
 }

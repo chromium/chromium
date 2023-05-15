@@ -141,7 +141,7 @@ class AccessCodeCastIntegrationBrowserTest
                                ChannelOpenedCallback callback,
                                cast_channel::CastSocketOpenParams open_params);
 
-  raw_ptr<AccessCodeCastPrefUpdater> GetPrefUpdater();
+  AccessCodeCastPrefUpdater* GetPrefUpdater();
 
   void AddScreenplayTag(const std::string& screenplay_tag);
 
@@ -158,6 +158,10 @@ class AccessCodeCastIntegrationBrowserTest
       "screenplay-a7ecd49d-f138-40b0-a830-3c1ebb4f4c5a";
   static constexpr char kAccessCodeCastSavedDeviceScreenplayTag[] =
       "screenplay-5aba818e-1cca-4c41-811a-4bf704cbe820";
+
+  base::Time GetDeviceAddedTime() { return device_added_time_; }
+
+  void UpdateDeviceAddedTime(const MediaSinkInternal& cast_sink);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -201,6 +205,8 @@ class AccessCodeCastIntegrationBrowserTest
 
   mojom::RouteRequestResultCode result_code_ =
       mojom::RouteRequestResultCode::OK;
+
+  base::Time device_added_time_;
 
   base::WeakPtrFactory<AccessCodeCastIntegrationBrowserTest> weak_ptr_factory_{
       this};

@@ -53,9 +53,15 @@ void SetCurrentlyInBackground(bool background) {
   if (background) {
     key.Set("yes");
     [[MainThreadFreezeDetector sharedInstance] stop];
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:@"yes"
+                         forKey:base::SysUTF8ToNSString(kCrashedInBackground)];
   } else {
     key.Clear();
     [[MainThreadFreezeDetector sharedInstance] start];
+    [[PreviousSessionInfo sharedInstance]
+        removeReportParameterForKey:base::SysUTF8ToNSString(
+                                        kCrashedInBackground)];
   }
 }
 
@@ -63,32 +69,60 @@ void SetMemoryWarningCount(int count) {
   static crash_reporter::CrashKeyString<16> key(kMemoryWarningCount);
   if (count) {
     key.Set(base::NumberToString(count));
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:base::SysUTF8ToNSString(
+                                    base::NumberToString(count))
+                         forKey:base::SysUTF8ToNSString(kMemoryWarningCount)];
   } else {
     key.Clear();
+    [[PreviousSessionInfo sharedInstance]
+        removeReportParameterForKey:base::SysUTF8ToNSString(
+                                        kMemoryWarningCount)];
   }
 }
 
 void SetMemoryWarningInProgress(bool value) {
   static crash_reporter::CrashKeyString<4> key(kMemoryWarningInProgress);
-  if (value)
+  if (value) {
     key.Set("yes");
-  else
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:@"yes"
+                         forKey:base::SysUTF8ToNSString(
+                                    kMemoryWarningInProgress)];
+
+  } else {
     key.Clear();
+    [[PreviousSessionInfo sharedInstance]
+        removeReportParameterForKey:base::SysUTF8ToNSString(
+                                        kMemoryWarningInProgress)];
+  }
 }
 
 void SetCrashedAfterAppWillTerminate() {
   static crash_reporter::CrashKeyString<4> key(kCrashedAfterAppWillTerminate);
   key.Set("yes");
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterValue:@"yes"
+                       forKey:base::SysUTF8ToNSString(
+                                  kCrashedAfterAppWillTerminate)];
 }
 
 void SetCurrentFreeMemoryInKB(int value) {
   static crash_reporter::CrashKeyString<16> key(kFreeMemoryInKB);
   key.Set(base::NumberToString(value));
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterValue:base::SysUTF8ToNSString(
+                                  base::NumberToString(value))
+                       forKey:base::SysUTF8ToNSString(kFreeMemoryInKB)];
 }
 
 void SetCurrentFreeDiskInKB(int value) {
   static crash_reporter::CrashKeyString<16> key(kFreeDiskInKB);
   key.Set(base::NumberToString(value));
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterValue:base::SysUTF8ToNSString(
+                                  base::NumberToString(value))
+                       forKey:base::SysUTF8ToNSString(kFreeDiskInKB)];
 }
 
 void SetCurrentTabIsPDF(bool value) {

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">A sua gravação parou devido a espaço de armazenamento insuficiente do dispositivo. Para gravar mais vídeos, tem de libertar espaço no dispositivo.</translation>
 <translation id="2036868001356139588">Duração do temporizador</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ativa</translation>
-<translation id="2128052519899549250">Gravar vídeo com Time Lapse</translation>
 <translation id="2134029355740465625">Definições de vídeo</translation>
 <translation id="2144806332417375165">Parâmetros de vídeo personalizados</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Documento detetado</translation>
 <translation id="414641094616694804">Não é possível alterar a resolução desta câmara</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
-<translation id="4281620174117014503">Resolução média</translation>
 <translation id="428234092390943511">Miniatura da página</translation>
 <translation id="4383571725254449280">Imprimir registos de desempenho</translation>
 <translation id="4445542136948522167">Parar de tirar foto</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5320594929574852403">A mover para a esquerda</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Time Lapse</translation>
 <translation id="5662366948659129155">A digitalizar a página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrado</translation>
+<translation id="574392208103952083">Médio</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5753488212459587150">Ativar modo Especialista</translation>
 <translation id="5759254179196327752">Digitalizar documento</translation>
@@ -138,6 +136,7 @@ Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Canto inferior direito do documento</translation>
+<translation id="7684446460490665873">Gravar vídeo com Time Lapse</translation>
 <translation id="7692090236657809299">Ativar deslocamento, inclinação, zoom</translation>
 <translation id="7726641833034062494">Gravar vídeo normal</translation>
 <translation id="7748344063862150053">Canto superior direito do documento</translation>
@@ -163,6 +162,7 @@ Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou
 <translation id="9045010116236796332">Posicione todas as margens do documento dentro da moldura</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">A processar a imagem…</translation>
+<translation id="9161584225258678723">Time Lapse</translation>
 <translation id="922762992951083513">Espelho ativado</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 </translationbundle>

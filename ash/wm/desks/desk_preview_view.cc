@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
@@ -14,9 +13,9 @@
 #include "ash/style/style_util.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -37,8 +36,8 @@
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
@@ -191,7 +190,7 @@ void MirrorLayerTree(
 
     // Define what to use for layer ordering.
     struct LayerOrderData {
-      ui::Layer* layer;
+      raw_ptr<ui::Layer, ExperimentalAsh> layer;
       // z-order in target desk.
       size_t primary_key;
       // z-order in active desk.
@@ -357,7 +356,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   wallpaper_preview_layer->SetFillsBoundsOpaquely(false);
   wallpaper_preview_layer->SetRoundedCornerRadius(GetRoundedCorner());
   wallpaper_preview_layer->SetIsFastRoundedCorner(true);
-  AddChildView(wallpaper_preview_);
+  AddChildView(wallpaper_preview_.get());
 
   if (!chromeos::features::IsJellyrollEnabled()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
@@ -371,7 +370,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   contents_view_layer->SetName("Desk mirrored contents view");
   contents_view_layer->SetRoundedCornerRadius(GetRoundedCorner());
   contents_view_layer->SetIsFastRoundedCorner(true);
-  AddChildView(desk_mirrored_contents_view_);
+  AddChildView(desk_mirrored_contents_view_.get());
 
   highlight_overlay_ = AddChildView(std::make_unique<views::View>());
   highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -465,10 +464,6 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   Layout();
 }
 
-const char* DeskPreviewView::GetClassName() const {
-  return "DeskPreviewView";
-}
-
 void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Avoid failing accessibility checks if we don't have a name.
   views::Button::GetAccessibleNodeData(node_data);
@@ -523,7 +518,7 @@ void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
-  DesksBarView* owner_bar = mini_view_->owner_bar();
+  DeskBarViewBase* owner_bar = mini_view_->owner_bar();
 
   switch (event->type()) {
     // Only long press can trigger drag & drop.
@@ -620,5 +615,8 @@ void DeskPreviewView::OnViewHighlighted() {
 void DeskPreviewView::OnViewUnhighlighted() {
   mini_view_->UpdateFocusColor();
 }
+
+BEGIN_METADATA(DeskPreviewView, views::Button)
+END_METADATA
 
 }  // namespace ash

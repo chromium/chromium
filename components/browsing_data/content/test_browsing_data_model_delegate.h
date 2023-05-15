@@ -24,6 +24,9 @@ class TestBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
   void RemoveDataKey(BrowsingDataModel::DataKey data_key,
                      BrowsingDataModel::StorageTypeSet storage_types,
                      base::OnceClosure callback) override;
+  absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
+      BrowsingDataModel::DataKey data_key,
+      BrowsingDataModel::StorageType storage_type) const override;
 
  private:
   std::map<BrowsingDataModel::DataKey, BrowsingDataModel::StorageTypeSet>

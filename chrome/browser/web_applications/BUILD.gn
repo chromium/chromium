@@ -24,16 +24,18 @@ source_set("web_applications") {
     "commands/install_app_locally_command.h",
     "commands/install_from_info_command.cc",
     "commands/install_from_info_command.h",
-    "commands/install_from_manifest_command.cc",
-    "commands/install_from_manifest_command.h",
     "commands/install_from_sync_command.cc",
     "commands/install_from_sync_command.h",
     "commands/install_placeholder_command.cc",
     "commands/install_placeholder_command.h",
+    "commands/install_preloaded_verified_app_command.cc",
+    "commands/install_preloaded_verified_app_command.h",
     "commands/manifest_update_check_command.cc",
     "commands/manifest_update_check_command.h",
     "commands/manifest_update_finalize_command.cc",
     "commands/manifest_update_finalize_command.h",
+    "commands/navigate_and_trigger_install_dialog_command.cc",
+    "commands/navigate_and_trigger_install_dialog_command.h",
     "commands/os_integration_synchronize_command.cc",
     "commands/os_integration_synchronize_command.h",
     "commands/run_on_os_login_command.cc",
@@ -61,14 +63,16 @@ source_set("web_applications") {
     "externally_managed_app_install_task.h",
     "externally_managed_app_manager.cc",
     "externally_managed_app_manager.h",
-    "externally_managed_app_manager_impl.cc",
-    "externally_managed_app_manager_impl.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
     "install_bounce_metric.cc",
     "install_bounce_metric.h",
+    "isolated_web_apps/error/uma_logging.cc",
+    "isolated_web_apps/error/uma_logging.h",
+    "isolated_web_apps/error/unusable_swbn_file_error.cc",
+    "isolated_web_apps/error/unusable_swbn_file_error.h",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command.cc",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command.h",
     "isolated_web_apps/install_isolated_web_app_command.cc",
@@ -77,6 +81,8 @@ source_set("web_applications") {
     "isolated_web_apps/install_isolated_web_app_from_command_line.h",
     "isolated_web_apps/isolated_web_app_dev_mode.cc",
     "isolated_web_apps/isolated_web_app_dev_mode.h",
+    "isolated_web_apps/isolated_web_app_error_page.cc",
+    "isolated_web_apps/isolated_web_app_error_page.h",
     "isolated_web_apps/isolated_web_app_location.cc",
     "isolated_web_apps/isolated_web_app_location.h",
     "isolated_web_apps/isolated_web_app_reader_registry.cc",
@@ -392,6 +398,7 @@ source_set("web_applications") {
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/sync",
+    "//components/ukm",
     "//components/user_manager",
     "//components/web_package",
     "//components/webapps/browser",
@@ -522,6 +529,8 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_provider.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
+    "test/fake_web_contents_manager.cc",
+    "test/fake_web_contents_manager.h",
     "test/mock_data_retriever.cc",
     "test/mock_data_retriever.h",
     "test/mock_file_utils_wrapper.cc",
@@ -598,6 +607,7 @@ source_set("web_applications_unit_tests") {
     "commands/externally_managed_install_command_unittest.cc",
     "commands/fetch_installability_for_chrome_management_unittest.cc",
     "commands/fetch_manifest_and_install_command_unittest.cc",
+    "commands/install_app_locally_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_placeholder_command_unittest.cc",
     "commands/manifest_update_check_command_unittest.cc",
@@ -611,6 +621,8 @@ source_set("web_applications_unit_tests") {
     "external_install_options_unittest.cc",
     "externally_managed_app_manager_impl_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
+    "isolated_web_apps/error/uma_logging_unittest.cc",
+    "isolated_web_apps/error/unusable_swbn_file_error_unittest.cc",
     "isolated_web_apps/install_isolated_web_app_command_unittest.cc",
     "isolated_web_apps/install_isolated_web_app_from_command_line_unittest.cc",
     "isolated_web_apps/isolated_web_app_dev_mode_unittest.cc",
@@ -785,14 +797,16 @@ source_set("web_applications_browser_tests") {
     "commands/externally_managed_install_command_browsertest.cc",
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
-    "commands/install_from_manifest_command_browsertest.cc",
     "commands/install_from_sync_command_browsertest.cc",
+    "commands/install_preloaded_verified_app_command_browsertest.cc",
+    "commands/navigate_and_trigger_install_dialog_command_browsertest.cc",
     "commands/update_protocol_handler_approval_command_browsertest.cc",
     "externally_installed_web_app_prefs_browsertest.cc",
-    "externally_managed_app_manager_impl_browsertest.cc",
+    "externally_managed_app_manager_browsertest.cc",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command_browsertest.cc",
     "isolated_web_apps/install_isolated_web_app_from_command_line_browsertest.cc",
     "isolated_web_apps/isolated_web_app_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "policy/web_app_policy_manager_browsertest.cc",
@@ -834,6 +848,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/site_engagement/content",
     "//components/user_manager",
     "//components/web_package",
     "//components/web_package/test_support",
@@ -889,15 +904,25 @@ source_set("app_service_browser_tests") {
     "//chrome/test:test_support_ui",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants:constants" ]
+  }
+
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
+    deps += [
+      "//chromeos/lacros:lacros",
+      "//chromeos/startup",
+    ]
   }
 }
 
 source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "web_app_notifications_interactive_uitest.cc" ]
+  sources = [
+    "isolated_web_apps/isolated_web_app_interactive_uitest.cc",
+    "web_app_notifications_interactive_uitest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -923,6 +948,7 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/web_applications/app_service:test_support",
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/user_manager",
     ]
   }
 }

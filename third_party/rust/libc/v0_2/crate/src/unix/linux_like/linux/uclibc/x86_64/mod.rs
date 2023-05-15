@@ -20,6 +20,7 @@ pub type wchar_t = ::c_int;
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
 pub type __u64 = ::c_ulong;
+pub type __s64 = ::c_long;
 
 s! {
     pub struct ipc_perm {
@@ -329,6 +330,9 @@ pub const __SIZEOF_PTHREAD_COND_T: usize = 48;
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
+pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
+pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
+pub const PIDFD_NONBLOCK: ::c_int = 04000;
 
 cfg_if! {
     if #[cfg(target_os = "l4re")] {

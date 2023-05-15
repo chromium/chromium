@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -105,7 +106,7 @@ class TestExternalCache : public ExternalCache {
                           const std::string& crx_path,
                           const std::string& version);
 
-  ExternalCacheDelegate* const delegate_;
+  const raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
   const bool always_check_for_updates_;
 
   absl::optional<net::BackoffEntry::Policy> backoff_policy_;

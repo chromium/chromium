@@ -38,6 +38,14 @@ bool HitTestRect(aura::Window* window, const gfx::PointF& screen_location) {
   return hit_region.Contains(screen_location);
 }
 
+// Returns the toplevel window for `target`, or active window if there isn't
+// one. Note this can be the multitask menu, since we drag up in the menu
+// coordinates.
+aura::Window* GetTargetWindow(aura::Window* target) {
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(target);
+  return widget ? widget->GetNativeWindow() : window_util::GetActiveWindow();
+}
+
 }  // namespace
 
 TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler()
@@ -67,23 +75,24 @@ void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
 }
 
 void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
+  multitask_cue_->ResetPosition();
   multitask_menu_.reset();
 }
 
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     ui::GestureEvent* event) {
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window) {
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  aura::Window* window = GetTargetWindow(target);
+  if (!window) {
     return;
   }
 
-  aura::Window* target = static_cast<aura::Window*>(event->target());
   gfx::PointF screen_location = event->location_f();
   wm::ConvertPointToScreen(target, &screen_location);
 
   // Save the window coordinates to pass to the menu.
   gfx::PointF window_location = event->location_f();
-  aura::Window::ConvertPointToTarget(target, active_window, &window_location);
+  aura::Window::ConvertPointToTarget(target, window, &window_location);
 
   const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
@@ -93,12 +102,11 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         return;
       }
       is_drag_active_ = false;
-      if (details.scroll_y_hint() > 0 &&
-          HitTestRect(active_window, screen_location)) {
-        // We may need to recreate `multitask_menu_` on the new active window.
+      if (details.scroll_y_hint() > 0 && HitTestRect(window, screen_location)) {
+        // We may need to recreate `multitask_menu_` on the new target window.
         multitask_menu_ =
-            std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-        multitask_cue_->DismissCue(/*menu_opened=*/true);
+            std::make_unique<TabletModeMultitaskMenu>(this, window);
+        multitask_cue_->OnMenuOpened(window);
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
         is_drag_active_ = true;
@@ -108,6 +116,8 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
                      .Contains(screen_location)) {
         // If the menu is open and scroll up begins, only handle events inside
         // the menu to avoid consuming scroll events outside the menu.
+        // TODO(b/279816982): Fix the cue reappearing when the menu is dismissed
+        // by swiping up or not dragging far enough.
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
         event->SetHandled();
         is_drag_active_ = true;
@@ -137,7 +147,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
       // created the multitask menu, however occasionally ET_SCROLL_FLING_START
       // may fire first (https://crbug.com/821237).
-      MaybeCreateMultitaskMenu(active_window);
+      MaybeCreateMultitaskMenu(window);
       multitask_menu_->Animate(details.velocity_y() > 0);
       event->SetHandled();
       break;
@@ -151,11 +161,10 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
 }
 
 void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
-    aura::Window* active_window) {
+    aura::Window* window) {
   if (!multitask_menu_) {
-    multitask_menu_ =
-        std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-    multitask_cue_->DismissCue(/*menu_opened=*/true);
+    multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(this, window);
+    multitask_cue_->OnMenuOpened(window);
   }
 }
 

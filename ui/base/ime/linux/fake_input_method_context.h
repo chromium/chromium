@@ -28,17 +28,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
                    TextInputType new_type,
                    TextInputClient::FocusReason reason) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
-  void SetSurroundingText(const std::u16string& text,
-                          const gfx::Range& text_range,
-                          const gfx::Range& selection_range) override;
+  void SetSurroundingText(
+      const std::u16string& text,
+      const gfx::Range& text_range,
+      const gfx::Range& selection_range,
+      const absl::optional<GrammarFragment>& fragment,
+      const absl::optional<AutocorrectInfo>& autocorrect) override;
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning,
                       bool can_compose_inline) override;
-  void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 };
 

@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 
+#include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
@@ -31,10 +32,57 @@ PassthroughDiscardableManager::PassthroughDiscardableManager(
     : cache_(DiscardableCache::NO_AUTO_EVICT),
       cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
                             ? preferences.force_gpu_mem_discardable_limit_bytes
-                            : DiscardableCacheSizeLimit()) {}
+                            : DiscardableCacheSizeLimit()) {
+  // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
+  // (Android Webview).  Don't register a dump provider in these cases.
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "gpu::PassthroughDiscardableManager",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+}
 
 PassthroughDiscardableManager::~PassthroughDiscardableManager() {
   DCHECK(cache_.empty());
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
+
+bool PassthroughDiscardableManager::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  using base::trace_event::MemoryAllocatorDump;
+  using base::trace_event::MemoryDumpLevelOfDetail;
+
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+    std::string dump_name =
+        base::StringPrintf("gpu/discardable_cache/cache_0x%" PRIXPTR,
+                           reinterpret_cast<uintptr_t>(this));
+    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, total_size_);
+
+    if (!cache_.empty()) {
+      MemoryAllocatorDump* dump_avg_size =
+          pmd->CreateAllocatorDump(dump_name + "/avg_image_size");
+      dump_avg_size->AddScalar("average_size", MemoryAllocatorDump::kUnitsBytes,
+                               total_size_ / cache_.size());
+    }
+
+    // Early out, no need for more detail in a BACKGROUND dump.
+    return true;
+  }
+
+  for (const auto& entry : cache_) {
+    std::string dump_name = base::StringPrintf(
+        "gpu/discardable_cache/cache_0x%" PRIXPTR "/entry_0x%" PRIXPTR,
+        reinterpret_cast<uintptr_t>(this),
+        reinterpret_cast<uintptr_t>(entry.second.unlocked_texture.get()));
+    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, entry.second.size);
+  }
+  return true;
 }
 
 void PassthroughDiscardableManager::InitializeTexture(

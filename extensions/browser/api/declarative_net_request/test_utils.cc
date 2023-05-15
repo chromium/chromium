@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
@@ -23,7 +24,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -391,10 +391,10 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
 
   // Serialize |rules|.
-  ListBuilder builder;
+  base::Value::List builder;
   for (const auto& rule : rules)
     builder.Append(rule.ToValue());
-  JSONFileValueSerializer(source.json_path()).Serialize(builder.Build());
+  JSONFileValueSerializer(source.json_path()).Serialize(std::move(builder));
 
   // Index ruleset.
   auto parse_flags = FileBackedRulesetSource::kRaiseErrorOnInvalidRules |

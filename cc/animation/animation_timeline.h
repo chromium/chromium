@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_export.h"
 #include "cc/base/protected_sequence_synchronizer.h"
+#include "cc/paint/element_id.h"
 
 namespace base {
 class TimeTicks;
@@ -80,6 +81,7 @@ class CC_ANIMATION_EXPORT AnimationTimeline
   }
 
   virtual bool IsScrollTimeline() const;
+  virtual bool IsLinkedToScroller(ElementId scroller) const;
 
   // ProtectedSequenceSynchronizer implementation
   bool IsOwnerThread() const override;

@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -1040,7 +1039,7 @@ float PDFiumPage::PreProcessAndTransformInPageCoordX(float x) {
   // If `x` < 0, scroll to the left side of the page.
   // If `x` > page width, scroll to the right side of the page.
   return TransformPageToScreenX(
-      base::clamp(x, 0.0f, FPDF_GetPageWidthF(GetPage())));
+      std::clamp(x, 0.0f, FPDF_GetPageWidthF(GetPage())));
 }
 
 float PDFiumPage::PreProcessAndTransformInPageCoordY(float y) {

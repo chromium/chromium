@@ -14,23 +14,6 @@
 
 namespace password_manager {
 
-namespace {
-
-// Object which holds a vector of MovePasswordToAccountStoreHelper.
-class MovePasswordOperations {
- public:
-  void ClearAllOperations() { helpers_.clear(); }
-
-  void AddHelper(std::unique_ptr<MovePasswordToAccountStoreHelper> helper) {
-    helpers_.push_back(std::move(helper));
-  }
-
- private:
-  std::vector<std::unique_ptr<MovePasswordToAccountStoreHelper>> helpers_;
-};
-
-}  // namespace
-
 MovePasswordToAccountStoreHelper::MovePasswordToAccountStoreHelper(
     const PasswordForm& form,
     PasswordManagerClient* client,
@@ -61,25 +44,6 @@ void MovePasswordToAccountStoreHelper::OnFetchCompleted() {
   save_manager->MoveCredentialsToAccountStore(trigger_);
   std::move(done_callback_).Run();
   // |this| might be deleted now!
-}
-
-void MovePasswordsToAccountStore(
-    const std::vector<PasswordForm>& forms,
-    PasswordManagerClient* client,
-    metrics_util::MoveToAccountStoreTrigger trigger) {
-  std::unique_ptr<MovePasswordOperations> operations =
-      std::make_unique<MovePasswordOperations>();
-
-  const raw_ptr<MovePasswordOperations> raw_helper = operations.get();
-
-  auto repeating_callback = base::BarrierClosure(
-      forms.size(), base::BindOnce(&MovePasswordOperations::ClearAllOperations,
-                                   base::Owned(std::move(operations))));
-
-  for (const auto& form : forms) {
-    raw_helper->AddHelper(std::make_unique<MovePasswordToAccountStoreHelper>(
-        form, client, trigger, repeating_callback));
-  }
 }
 
 }  // namespace password_manager

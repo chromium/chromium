@@ -247,6 +247,13 @@ ui::TextInputType GetTextInputTypeFromWebContents(WebContents* web_contents) {
   return !!state ? state->type : ui::TEXT_INPUT_TYPE_NONE;
 }
 
+const ui::mojom::TextInputState* GetTextInputStateFromWebContents(
+    WebContents* web_contents) {
+  return static_cast<WebContentsImpl*>(web_contents)
+      ->GetTextInputManager()
+      ->GetTextInputState();
+}
+
 bool GetTextInputTypeForView(WebContents* web_contents,
                              RenderWidgetHostView* view,
                              ui::TextInputType* type) {
@@ -298,6 +305,11 @@ void SendImeSetCompositionTextToWidget(
     int selection_end) {
   RenderWidgetHostImpl::From(rwh)->ImeSetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end);
+}
+
+void SendTextInputStateChangedToWidget(RenderWidgetHost* rwh,
+                                       ui::mojom::TextInputStatePtr state) {
+  RenderWidgetHostImpl::From(rwh)->TextInputStateChanged(std::move(state));
 }
 
 bool DestroyRenderWidgetHost(int32_t process_id,

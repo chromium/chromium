@@ -22,8 +22,8 @@ bool ValidateCrosapi() {
     return false;
   }
 
-  int interface_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      crosapi::mojom::Power::Uuid_);
+  int interface_version = chromeos::LacrosService::Get()
+                              ->GetInterfaceVersion<crosapi::mojom::Power>();
   if (interface_version <
       int(crosapi::mojom::Power::kReportActivityMinVersion)) {
     return false;

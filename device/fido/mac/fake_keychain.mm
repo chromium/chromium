@@ -4,8 +4,10 @@
 
 #include "device/fido/mac/fake_keychain.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
+#include "base/strings/sys_string_conversions.h"
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
@@ -17,16 +19,15 @@
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/keychain.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 FakeKeychain::FakeKeychain(const std::string& keychain_access_group)
-    : Keychain(),
-      keychain_access_group_(
-          CFStringCreateWithCString(kCFAllocatorDefault,
-                                    keychain_access_group.data(),
-                                    kCFStringEncodingUTF8)) {}
+    : keychain_access_group_(
+          base::SysUTF8ToCFStringRef(keychain_access_group)) {}
 FakeKeychain::~FakeKeychain() {
   // Avoid shutdown leak of error string in Security.framework.
   // See https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
@@ -73,8 +74,9 @@ base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
               params_copy, kSecPrivateKeyAttrs)));
   DCHECK(CFEqual(base::mac::GetValueFromDictionary<CFBooleanRef>(
                      private_key_params, kSecAttrIsPermanent),
-                 @YES));
-  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @NO);
+                 kCFBooleanTrue));
+  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent,
+                       kCFBooleanFalse);
   CFDictionaryRemoveValue(private_key_params, kSecAttrAccessControl);
   CFDictionaryRemoveValue(private_key_params, kSecUseAuthenticationContext);
   CFDictionarySetValue(params_copy, kSecPrivateKeyAttrs, private_key_params);
@@ -92,8 +94,7 @@ base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
       CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
                                     params));
   CFDictionarySetValue(keychain_item, kSecValueRef, private_key.get());
-  items_.emplace_back(
-      base::ScopedCFTypeRef<CFDictionaryRef>(keychain_item.release()));
+  items_.emplace_back(keychain_item.release());
 
   return private_key;
 }
@@ -114,7 +115,7 @@ OSStatus FakeKeychain::ItemCopyMatching(CFDictionaryRef query,
 
   // Filter the items based on `query`.
   base::ScopedCFTypeRef<CFMutableArrayRef> items(
-      CFArrayCreateMutable(NULL, items_.size(), &kCFTypeArrayCallBacks));
+      CFArrayCreateMutable(nullptr, items_.size(), &kCFTypeArrayCallBacks));
   for (auto& item : items_) {
     // Each `Keychain` instance is expected to operate only on items of a single
     // keychain-access-group, which is tied to the `Profile`.
@@ -225,6 +226,4 @@ ScopedFakeKeychain::~ScopedFakeKeychain() {
   ClearInstanceOverride();
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

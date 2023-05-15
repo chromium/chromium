@@ -9,6 +9,8 @@
 
 #include "ash/webui/file_manager/file_manager_ui_delegate.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
+#include "ash/webui/file_manager/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,8 +27,19 @@ namespace ash {
 namespace file_manager {
 
 class FileManagerPageHandler;
+class FileManagerUI;
 
-// WebUI controller for chrome://file-manager.
+// The WebUIConfig for chrome://file-manager.
+class FileManagerUIConfig : public SystemWebAppUIConfig<FileManagerUI> {
+ public:
+  explicit FileManagerUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(ash::file_manager::kChromeUIFileManagerHost,
+                             SystemWebAppType::FILE_MANAGER,
+                             create_controller_func) {}
+};
+
+// The WebUI for chrome://file-manager.
 class FileManagerUI : public ui::MojoWebDialogUI,
                       public mojom::PageHandlerFactory {
  public:

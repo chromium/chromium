@@ -623,4 +623,9 @@ void CrostiniInstaller::OnAvailableDiskSpace(absl::optional<int64_t> bytes) {
             state_ == State::ERROR);
 }
 
+// static
+void CrostiniInstaller::EnsureFactoryBuilt() {
+  CrostiniInstallerFactory::GetInstance();
+}
+
 }  // namespace crostini

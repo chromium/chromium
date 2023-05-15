@@ -15,8 +15,11 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
         remote_container_host,
     mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
         remote_controller,
-    const std::string& client_id)
-    : client_id_(client_id) {
+    const std::string& client_id,
+    blink::mojom::ServiceWorkerFetchHandlerBypassOption
+        fetch_handler_bypass_option)
+    : client_id_(client_id),
+      fetch_handler_bypass_option_(fetch_handler_bypass_option) {
   container_host_.Bind(std::move(remote_container_host));
   container_host_.set_disconnect_handler(base::BindOnce(
       &ControllerServiceWorkerConnector::OnContainerHostConnectionClosed,

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/pciguard/fake_pciguard_client.h"
 #include "dbus/bus.h"
@@ -38,7 +39,7 @@ class PciguardClientImpl : public PciguardClient {
                          const std::string& signal_name,
                          bool success);
 
-  dbus::ObjectProxy* pci_guard_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> pci_guard_proxy_ = nullptr;
   base::WeakPtrFactory<PciguardClientImpl> weak_ptr_factory_{this};
 };
 

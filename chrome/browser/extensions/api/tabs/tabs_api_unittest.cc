@@ -303,12 +303,11 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   scoped_refptr<const Extension> extension_with_permission =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "Extension with tabs permission")
                   .Set("version", "1.0")
                   .Set("manifest_version", 2)
-                  .Set("permissions", ListBuilder().Append("tabs").Build())
-                  .Build())
+                  .Set("permissions", base::Value::List().Append("tabs")))
           .Build();
   base::Value::List tabs_list_with_permission = RunTabsQueryFunction(
       profile(), extension_with_permission.get(), kTitleAndURLQueryInfo);
@@ -353,14 +352,12 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
   // An extension with "host" permission will only see the third tab.
   scoped_refptr<const Extension> extension_with_permission =
       ExtensionBuilder()
-          .SetManifest(
-              DictionaryBuilder()
-                  .Set("name", "Extension with tabs permission")
-                  .Set("version", "1.0")
-                  .Set("manifest_version", 2)
-                  .Set("permissions",
-                       ListBuilder().Append("*://www.google.com/*").Build())
-                  .Build())
+          .SetManifest(base::Value::Dict()
+                           .Set("name", "Extension with tabs permission")
+                           .Set("version", "1.0")
+                           .Set("manifest_version", 2)
+                           .Set("permissions", base::Value::List().Append(
+                                                   "*://www.google.com/*")))
           .Build();
 
   {
@@ -405,15 +402,15 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 // Test that using the PDF extension for tab updates is treated as a
 // renderer-initiated navigation. crbug.com/660498
 TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
-  DictionaryBuilder manifest;
-  manifest.Set("name", "pdfext")
-      .Set("description", "desc")
-      .Set("version", "0.1")
-      .Set("manifest_version", 2)
-      .Set("permissions", ListBuilder().Append("tabs").Build());
+  auto manifest = base::Value::Dict()
+                      .Set("name", "pdfext")
+                      .Set("description", "desc")
+                      .Set("version", "0.1")
+                      .Set("manifest_version", 2)
+                      .Set("permissions", base::Value::List().Append("tabs"));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.Build())
+          .SetManifest(std::move(manifest))
           .SetID(extension_misc::kPdfExtensionId)
           .Build();
   ASSERT_TRUE(extension);
@@ -513,14 +510,12 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
   // An extension with access to www.example.com.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(
-              DictionaryBuilder()
-                  .Set("name", "Extension with a host permission")
-                  .Set("version", "1.0")
-                  .Set("manifest_version", 2)
-                  .Set("permissions",
-                       ListBuilder().Append("http://www.example.com/*").Build())
-                  .Build())
+          .SetManifest(base::Value::Dict()
+                           .Set("name", "Extension with a host permission")
+                           .Set("version", "1.0")
+                           .Set("manifest_version", 2)
+                           .Set("permissions", base::Value::List().Append(
+                                                   "http://www.example.com/*")))
           .Build();
   auto function = base::MakeRefCounted<TabsUpdateFunction>();
   function->set_extension(extension);

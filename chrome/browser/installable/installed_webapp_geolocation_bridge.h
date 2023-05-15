@@ -35,7 +35,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
   void StopUpdates();
 
   // Enables and disables geolocation override.
-  void SetOverride(const device::mojom::Geoposition& position);
+  void SetOverride(device::mojom::GeopositionResultPtr result);
   void ClearOverride();
 
   // Called by JNI on its thread looper.
@@ -60,7 +60,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
 
   void OnConnectionError();
 
-  void OnLocationUpdate(const device::mojom::Geoposition& position);
+  void OnLocationUpdate(device::mojom::GeopositionResultPtr result);
   void ReportCurrentPosition();
 
   // Owns this object.
@@ -69,19 +69,17 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
   // The callback passed to QueryNextPosition.
   QueryNextPositionCallback position_callback_;
 
-  // Valid if SetOverride() has been called and ClearOverride() has not
-  // subsequently been called.
-  device::mojom::Geoposition position_override_;
+  // Set if SetOverride() has been called and ClearOverride() has not
+  // subsequently been called, `nullptr` otherwise.
+  device::mojom::GeopositionResultPtr position_override_;
 
-  device::mojom::Geoposition current_position_;
+  device::mojom::GeopositionResultPtr current_position_;
 
   const GURL url_;
 
   // Whether this instance is currently observing location updates with high
   // accuracy.
   bool high_accuracy_;
-
-  bool has_position_to_report_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

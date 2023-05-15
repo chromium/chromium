@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="100506692671054486">ບໍ່ມີຄຳສັ່ງກ່ອນໜ້າ</translation>
 <translation id="1009046985747440431">ກົດປຸ່ມລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນໄປມາ, ກົດປຸ່ມ Enter ເພື່ອເປີດການນຳໃຊ້</translation>
 <translation id="1011903154582639569">ຊອກຫາປຸ່ມ, ຈາກນັ້ນຍົກຂຶ້ນເມື່ອພິມ</translation>
 <translation id="1012173283529841972">ລາຍ​ການ​​ລາຍ​ຊື່</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ສີມ່ວງລາເວັນເດີບລັຊ</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3962990492275676168">ເລີ່ມອ່ານຈາກທີ່ຕັ້ງປະຈຸບັນ</translation>
+<translation id="397094149579293440">ບໍ່ມີຂໍ້ຄວາມທີ່ເລືອກໄວ້</translation>
 <translation id="3970951409746498040">ສີນໍ້າຕານຊາຍ</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">ສີເນື້ອໂມຄາຊິນ</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">ບໍ່ມີຫົວຂໍ້ລະດັບ 1 ກ່ອນໜ້າ</translation>
 <translation id="4787577491510559358">ປະກາດການຈັດຮູບແບບສຳລັບລາຍການປັດຈຸບັນ</translation>
 <translation id="479989351350248267">ຄົ້ນ​ຫາ</translation>
+<translation id="4802034228771424756">ບໍ່ມີຊ່ອງຂໍ້ຄວາມທີ່ໂຟກັສ</translation>
 <translation id="4804818685124855865">ຕັດເຊື່ອມຕໍ່</translation>
 <translation id="481165870889056555">ປະກາດຫົວຂໍ້ຂອງໜ້າປະຈຸບັນ</translation>
 <translation id="4815668758102003883">ສີຟ້າອົມຂຽວອ່ອນ</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ລິ້ງພາຍໃນ</translation>
 <translation id="4909019435900810068">ຍ້າຍກັບຫຼັງໜຶ່ງຄຳສັບ</translation>
 <translation id="4911349081560453449">ບໍ່ມີກ່ອງໝາຍກ່ອນໜ້າ</translation>
+<translation id="4919186071145887492">ບໍ່ສາມາດ <ph name="COMMAND" /> ໄດ້, ກະລຸນາລອງໃໝ່</translation>
 <translation id="492295894462528572">ຄຳນຳ</translation>
 <translation id="495046168593986294">ເລື່ອນຂຶ້ນ</translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4953585991029886728">​ແກ້ໄຂຂໍ້​ຄວາມ​</translation>
+<translation id="4964701498510730546">ຊ່ອງຂໍ້ຄວາມຫວ່າງເປົ່າ</translation>
 <translation id="4973717656530883744"><ph name="X" /> ຕໍ່າສຸດ</translation>
 <translation id="4974612477719259470">ບໍ່ມີປຸ່ມກ່ອນໜ້າ</translation>
 <translation id="4979404613699303341">ປຸ່ມ​ຜ່ານ​ມາ​</translation>
+<translation id="4981239367072766915">ອິນພຸດທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="4982917827052020884">ມາເລີ່ມດ້ວຍປຸ່ມສອງສາມປຸ່ມທີ່ທ່ານຈະໃຊ້ເລື້ອຍໆ. ສາມາດໃຊ້ປຸ່ມ Control ເພື່ອຢຸດສຽງເວົ້າປັດຈຸບັນຕ່າງໆໄດ້. ຊອກຫາປຸ່ມ Control ຢູ່ແຈລຸ່ມສຸດເບື້ອງຊ້າຍຂອງແປ້ນພິມຂອງທ່ານ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດປຸ່ມ Control.</translation>
 <translation id="4983588134362688868">ໂດດໄປຫາດ້ານເທິງຂອງໜ້າ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ໜ້າ​ຕ່າງ</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ປະກາດສະຖານະແບັດເຕີຣີປັດຈຸບັນ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ເລືອກປຸ່ມຕົວເລືອກລາຍການໃນເມນູແລ້ວ</translation>
+<translation id="5014131807708055994">ບໍ່ສາມາດ <ph name="COMMAND" /> ໄດ້, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ເປີດນຳໃຊ້ການບັນທຶກຄວາມໄວ</translation>
 <translation id="5041394372352067729">ຍ້າຍ​ການສະ​ແດງຕົວໜັງສືນູນໄປດ້ານ​ເທິງຂອງ​ຫນ້າ</translation>
 <translation id="5042770794184672516">ເພີ່ມລະດັບສຽງເວົ້າ</translation>

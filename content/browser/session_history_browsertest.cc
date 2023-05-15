@@ -93,8 +93,8 @@ class SessionHistoryTest : public ContentBrowserTest {
   // Navigate session history using history.go(distance).
   void JavascriptGo(const std::string& distance) {
     TestNavigationObserver observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(ToRenderFrameHost(shell()->web_contents()),
-                              "history.go('" + distance + "')"));
+    EXPECT_TRUE(ExecJs(ToRenderFrameHost(shell()->web_contents()),
+                       "history.go('" + distance + "')"));
     observer.Wait();
   }
 

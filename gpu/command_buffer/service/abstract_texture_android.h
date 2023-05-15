@@ -71,7 +71,7 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid
   bool have_context_ = true;
 
   std::unique_ptr<TextureBase> texture_for_testing_;
-  raw_ptr<gles2::Texture, DanglingUntriaged> texture_ = nullptr;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };

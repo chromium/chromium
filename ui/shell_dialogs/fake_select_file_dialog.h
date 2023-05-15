@@ -109,8 +109,8 @@ class FakeSelectFileDialog : public SelectFileDialog {
   std::u16string title_;
   FileTypeInfo file_types_;
   std::string default_extension_;
-  raw_ptr<void> params_;
-  raw_ptr<const GURL> caller_;
+  raw_ptr<void, DanglingUntriaged> params_;
+  raw_ptr<const GURL, DanglingUntriaged> caller_;
   base::WeakPtrFactory<FakeSelectFileDialog> weak_ptr_factory_{this};
 };
 

@@ -298,6 +298,58 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
   return shortcut_menu_item_infos;
 }
 
+ShortcutLocations::ShortcutLocations() = default;
+ShortcutLocations::~ShortcutLocations() = default;
+
+base::Value ShortcutLocations::ToDebugValue() const {
+  base::Value::Dict debug_log;
+  debug_log.Set("on_desktop", on_desktop);
+  debug_log.Set("in_quick_launch_bar", in_quick_launch_bar);
+  debug_log.Set("in_startup", in_startup);
+  std::string menu_loc;
+  switch (applications_menu_location) {
+    case APP_MENU_LOCATION_NONE:
+      menu_loc = "LOC_NONE";
+      break;
+    case APP_MENU_LOCATION_SUBDIR_CHROMEAPPS:
+      menu_loc = "SUBDIR_CHROMEAPPS";
+      break;
+    case APP_MENU_LOCATION_HIDDEN:
+      menu_loc = "HIDDEN";
+      break;
+  }
+  debug_log.Set("menu_location", menu_loc);
+  return base::Value(std::move(debug_log));
+}
+
+ShortcutLocations MergeLocations(
+    const ShortcutLocations& user_specified_locations,
+    const ShortcutLocations& creation_locations) {
+  ShortcutLocations merged_locations;
+  merged_locations.on_desktop =
+      creation_locations.on_desktop || user_specified_locations.on_desktop;
+  merged_locations.in_quick_launch_bar =
+      creation_locations.in_quick_launch_bar ||
+      user_specified_locations.in_quick_launch_bar;
+  merged_locations.in_startup =
+      creation_locations.in_startup || user_specified_locations.in_startup;
+  return merged_locations;
+}
+
+bool operator==(const ShortcutLocations& location1,
+                const ShortcutLocations& location2) {
+  return (location1.on_desktop == location2.on_desktop) &&
+         (location1.in_quick_launch_bar == location2.in_quick_launch_bar) &&
+         (location1.in_startup == location2.in_startup) &&
+         (location1.applications_menu_location ==
+          location2.applications_menu_location);
+}
+
+bool operator!=(const ShortcutLocations& location1,
+                const ShortcutLocations& location2) {
+  return !(location1 == location2);
+}
+
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
   if (shortcut_info.app_id.empty()) {
     return GenerateApplicationNameFromURL(shortcut_info.url);

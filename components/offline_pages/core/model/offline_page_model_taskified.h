@@ -163,8 +163,6 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   // latter are executed only once per Chrome session.
   void ScheduleMaintenanceTasks();
   void RunMaintenanceTasks(base::Time now, bool first_run);
-  void OnClearCachedPagesDone(size_t deleted_page_count,
-                              ClearStorageTask::ClearStorageResult result);
   void OnPersistentPageConsistencyCheckDone(
       bool success,
       const std::vector<PublishedArchiveId>& ids_of_deleted_pages);

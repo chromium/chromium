@@ -56,7 +56,9 @@ PasswordForm CreateInsecureCredential(
   PasswordForm compromised =
       CreateForm(kSignonRealm, username, password, store);
   compromised.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), muted)});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), muted,
+                          TriggerBackendNotification(false))});
   return compromised;
 }
 
@@ -252,7 +254,9 @@ TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
   form2.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
   PasswordForm form3 = CreateForm(kSignonRealm, kUsername3, kPassword3);
   form3.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   ExpectGetLoginsCall({form1, form2, form3});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),

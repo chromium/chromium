@@ -5,8 +5,9 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 
 namespace ash::quick_start {
 
@@ -14,15 +15,18 @@ namespace ash::quick_start {
 std::unique_ptr<TargetDeviceConnectionBroker>
 TargetDeviceConnectionBrokerFactory::Create(
     base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-    absl::optional<RandomSessionId> session_id) {
-  RandomSessionId id = session_id ? *session_id : RandomSessionId();
-
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
+    bool is_resume_after_update) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(id);
+    return test_factory_->CreateInstance(nearby_connections_manager,
+                                         std::move(quick_start_decoder),
+                                         is_resume_after_update);
   }
 
+  auto connection_factory = std::make_unique<Connection::Factory>();
   return std::make_unique<TargetDeviceConnectionBrokerImpl>(
-      id, nearby_connections_manager);
+      nearby_connections_manager, std::move(connection_factory),
+      std::move(quick_start_decoder), is_resume_after_update);
 }
 
 // static

@@ -15,6 +15,7 @@
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -70,7 +71,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -1317,17 +1318,18 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
   const struct {
     ui::PageTransition page_transition;
     download::DownloadDangerType expected_danger_type;
-    const DownloadTestCase& template_download_test_case;
+    const raw_ref<const DownloadTestCase, ExperimentalAsh>
+        template_download_test_case;
   } kTestCases[] = {
       {// Benign file type. Results in a danger type of NOT_DANGEROUS. Page
        // transition type is irrelevant.
        ui::PAGE_TRANSITION_LINK, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-       kSafeFile},
+       ToRawRef<ExperimentalAsh>(kSafeFile)},
 
       {// File type is ALLOW_ON_USER_GESTURE. PAGE_TRANSITION_LINK doesn't
        // cause file to be marked as safe.
        ui::PAGE_TRANSITION_LINK, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       kAllowOnUserGesture},
+       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE. PAGE_TRANSITION_TYPED doesn't
        // cause file to be marked as safe. TYPED can be used for certain
@@ -1335,29 +1337,33 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
        // initiated by a user. Hence a resulting download may not be
        // intentional.
        ui::PAGE_TRANSITION_TYPED, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       kAllowOnUserGesture},
+       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_TYPED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, kAllowOnUserGesture},
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_GENERATED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, kAllowOnUserGesture},
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
-       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, kAllowOnUserGesture},
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
 
       {// File type is DANGEROUS. PageTransition is irrelevant.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_TYPED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE, kDangerousFile},
+       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       ToRawRef<ExperimentalAsh>(kDangerousFile)},
   };
 
   // Test assumptions:
@@ -1377,7 +1383,8 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
     // transition was LINK. If the expectation is that the page transition type
     // causes the download to be considered safe, then download_test_case needs
     // to be adjusted accordingly.
-    DownloadTestCase download_test_case = test_case.template_download_test_case;
+    DownloadTestCase download_test_case =
+        *test_case.template_download_test_case;
     download_test_case.expected_danger_type = test_case.expected_danger_type;
     if (test_case.expected_danger_type ==
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
@@ -1840,8 +1847,7 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsLocalFile) {
 #endif  // BUILDFLAG(IS_WIN)
        "text/plain", FILE_PATH_LITERAL(""),
 
-       FILE_PATH_LITERAL("overridden/xyz"),
-       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+       FILE_PATH_LITERAL("xyz.txt"), DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
        EXPECT_CRDOWNLOAD}};
 
@@ -2836,12 +2842,12 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
       : profile_(std::make_unique<TestingProfile>()),
         user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_))) {}
+            base::WrapUnique(user_manager_.get()))) {}
 
-  class MockFilesController : public policy::DlpFilesController {
+  class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
     explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-        : DlpFilesController(rules_manager) {}
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,
@@ -2898,9 +2904,10 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
 };
 

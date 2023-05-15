@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -77,7 +78,7 @@ class SlowHandler : public WebUIMessageHandler {
   void HandleEnable(const base::Value::List& args);
   void LoadComplete(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 };
 

@@ -100,7 +100,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 TabletModeTuckEducation::TabletModeTuckEducation(aura::Window* floated_window) {
   // Observe for end of floating crossfade animation to begin education.
   window_ = floated_window;
-  window_observation_.Observe(window_);
+  window_observation_.Observe(window_.get());
 }
 
 TabletModeTuckEducation::~TabletModeTuckEducation() = default;

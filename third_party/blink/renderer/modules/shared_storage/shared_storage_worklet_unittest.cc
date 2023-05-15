@@ -27,12 +27,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/messaging/blink_cloneable_message_mojom_traits.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -91,55 +96,6 @@ struct AppendParams {
   std::u16string key;
   std::u16string value;
 };
-
-std::vector<uint8_t> CreateSerializedDict(
-    const std::map<std::string, std::string>& dict) {
-#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-  gin::V8Initializer::LoadV8Snapshot();
-#endif
-
-  gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 gin::ArrayBufferAllocator::SharedInstance());
-
-  std::unique_ptr<gin::IsolateHolder> isolate_holder =
-      std::make_unique<gin::IsolateHolder>(
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          gin::IsolateHolder::kSingleThread,
-          gin::IsolateHolder::IsolateType::kBlinkMainThread);
-
-  v8::Isolate* isolate = isolate_holder->isolate();
-
-  v8::Isolate::Scope isolate_scope(isolate);
-  v8::HandleScope handle_scope(isolate);
-
-  v8::Global<v8::Context> global_context =
-      v8::Global<v8::Context>(isolate, v8::Context::New(isolate));
-  v8::Local<v8::Context> context = global_context.Get(isolate);
-  v8::Context::Scope context_scope(context);
-
-  v8::Local<v8::Object> v8_value = v8::Object::New(isolate);
-  gin::Dictionary gin_dict(isolate, v8_value);
-  for (auto const& [key, val] : dict) {
-    gin_dict.Set<std::string>(key, val);
-  }
-
-  v8::ValueSerializer serializer(isolate);
-
-  bool wrote_value;
-  CHECK(serializer.WriteValue(context, v8_value).To(&wrote_value));
-  CHECK(wrote_value);
-
-  std::pair<uint8_t*, size_t> buffer = serializer.Release();
-
-  std::vector<uint8_t> serialized_data(buffer.first,
-                                       buffer.first + buffer.second);
-
-  DCHECK_EQ(serialized_data.size(), buffer.second);
-
-  free(buffer.first);
-
-  return serialized_data;
-}
 
 std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
     std::vector<std::pair<std::u16string, std::u16string>> input) {
@@ -302,6 +258,10 @@ class MockMojomPrivateAggregationHost
        blink::mojom::blink::AggregationServiceMode,
        blink::mojom::blink::DebugModeDetailsPtr),
       (override));
+  MOCK_METHOD(void,
+              SetDebugModeDetailsOnNullReport,
+              (blink::mojom::blink::DebugModeDetailsPtr),
+              (override));
 
  private:
   mojo::ReceiverSet<blink::mojom::blink::PrivateAggregationHost> receiver_set_;
@@ -309,9 +269,22 @@ class MockMojomPrivateAggregationHost
 
 }  // namespace
 
-class SharedStorageWorkletTest : public testing::Test {
+class SharedStorageWorkletTest : public PageTestBase {
  public:
   SharedStorageWorkletTest() = default;
+
+  void TearDown() override {
+    // Shut down the worklet gracefully. Otherwise, there could the a data race
+    // on accessing the base::FeatureList: the worklet thread may access the
+    // feature during SharedStorageWorkletGlobalScope::FinishOperation() or
+    // SharedStorageWorkletGlobalScope::NotifyContextDestroyed(), which can
+    // occur after the (maybe implicit) ScopedFeatureList is destroyed in the
+    // main thread.
+    shared_storage_worklet_service_.reset();
+    EXPECT_TRUE(worklet_terminated_future_.Wait());
+
+    PageTestBase::TearDown();
+  }
 
   AddModuleResult AddModule(const std::string& script_content,
                             std::string mime_type = "application/javascript") {
@@ -340,25 +313,25 @@ class SharedStorageWorkletTest : public testing::Test {
 
   SelectURLResult SelectURL(const std::string& name,
                             const std::vector<GURL>& urls,
-                            const std::vector<uint8_t>& serialized_data) {
+                            blink::CloneableMessage serialized_data) {
     InitializeWorkletServiceOnce();
 
     base::test::TestFuture<bool, const std::string&, uint32_t> future;
     shared_storage_worklet_service_->RunURLSelectionOperation(
-        name, urls, serialized_data, MaybeInitNewRemotePAHost(),
+        name, urls, std::move(serialized_data), MaybeInitNewRemotePAHost(),
         future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
   }
 
   RunResult Run(const std::string& name,
-                const std::vector<uint8_t>& serialized_data) {
+                blink::CloneableMessage serialized_data) {
     InitializeWorkletServiceOnce();
 
     base::test::TestFuture<bool, const std::string&> future;
-    shared_storage_worklet_service_->RunOperation(name, serialized_data,
-                                                  MaybeInitNewRemotePAHost(),
-                                                  future.GetCallback());
+    shared_storage_worklet_service_->RunOperation(
+        name, std::move(serialized_data), MaybeInitNewRemotePAHost(),
+        future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>()};
   }
@@ -386,6 +359,15 @@ class SharedStorageWorkletTest : public testing::Test {
         std::move(pending_pa_host_remote));
   }
 
+  CloneableMessage CreateSerializedUndefined() {
+    return CreateSerializedDictOrUndefined(nullptr);
+  }
+
+  CloneableMessage CreateSerializedDict(
+      const std::map<std::string, std::string>& dict) {
+    return CreateSerializedDictOrUndefined(&dict);
+  }
+
  protected:
   mojo::Remote<mojom::SharedStorageWorkletService>
       shared_storage_worklet_service_;
@@ -406,6 +388,45 @@ class SharedStorageWorkletTest : public testing::Test {
   bool worklet_service_initialized_ = false;
 
  private:
+  CloneableMessage CreateSerializedDictOrUndefined(
+      const std::map<std::string, std::string>* dict) {
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    v8::MicrotasksScope microtasksScope(script_state->GetContext(),
+                                        v8::MicrotasksScope::kRunMicrotasks);
+
+    v8::Isolate* isolate = script_state->GetIsolate();
+
+    scoped_refptr<SerializedScriptValue> serialized_value;
+    if (dict) {
+      v8::Local<v8::Object> v8_value = v8::Object::New(isolate);
+      gin::Dictionary gin_dict(isolate, v8_value);
+      for (auto const& [key, val] : *dict) {
+        gin_dict.Set<std::string>(key, val);
+      }
+
+      serialized_value = SerializedScriptValue::SerializeAndSwallowExceptions(
+          isolate, v8_value);
+    } else {
+      serialized_value = SerializedScriptValue::UndefinedValue();
+    }
+
+    BlinkCloneableMessage original;
+    original.message = std::move(serialized_value);
+    original.sender_agent_cluster_id = base::UnguessableToken::Create();
+
+    mojo::Message message =
+        mojom::CloneableMessage::SerializeAsMessage(&original);
+    mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+    message = mojo::Message::CreateFromMessageHandle(&handle);
+    DCHECK(!message.IsNull());
+
+    CloneableMessage converted;
+    mojom::CloneableMessage::DeserializeFromMessage(std::move(message),
+                                                    &converted);
+    return converted;
+  }
+
   void InitializeWorkletServiceOnce() {
     if (worklet_service_initialized_) {
       return;
@@ -415,7 +436,10 @@ class SharedStorageWorkletTest : public testing::Test {
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver();
 
     messaging_proxy_ = MakeGarbageCollected<SharedStorageWorkletMessagingProxy>(
-        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(receiver),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        CrossVariantMojoReceiver<
+            mojom::blink::SharedStorageWorkletServiceInterfaceBase>(
+            std::move(receiver)),
         worklet_terminated_future_.GetCallback());
 
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
@@ -662,7 +686,7 @@ TEST_F(SharedStorageWorkletTest, RegisterOperation_AlreadyRegistered) {
 
 TEST_F(SharedStorageWorkletTest, SelectURL_BeforeAddModuleFinish) {
   SelectURLResult select_url_result =
-      SelectURL("test-operation", /*urls=*/{}, /*serialized_data=*/{});
+      SelectURL("test-operation", /*urls=*/{}, CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(select_url_result.error_message,
@@ -681,8 +705,8 @@ TEST_F(SharedStorageWorkletTest, SelectURL_OperationNameNotRegistered) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  SelectURLResult select_url_result =
-      SelectURL("unregistered-operation", /*urls=*/{}, /*serialized_data=*/{});
+  SelectURLResult select_url_result = SelectURL(
+      "unregistered-operation", /*urls=*/{}, CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(select_url_result.error_message,
@@ -704,7 +728,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_FunctionError) {
   EXPECT_TRUE(add_module_result.success);
 
   SelectURLResult select_url_result =
-      SelectURL("test-operation", /*urls=*/{}, /*serialized_data=*/{});
+      SelectURL("test-operation", /*urls=*/{}, CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(select_url_result.error_message,
@@ -728,7 +752,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_FulfilledSynchronously) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -754,7 +778,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_RejectedAsynchronously) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(select_url_result.error_message, testing::HasSubstr("error 123"));
@@ -780,7 +804,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_FulfilledAsynchronously) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -803,7 +827,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_StringConvertedToUint32) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -826,7 +850,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_NumberOverflow) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -849,7 +873,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_NonNumericStringConvertedTo0) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -870,7 +894,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_DefaultUndefinedResultConvertedTo0) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -895,7 +919,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_NoExplicitAsync) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
@@ -918,7 +942,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_ReturnValueOutOfRange) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(
@@ -948,7 +972,7 @@ TEST_F(SharedStorageWorkletTest, SelectURL_ReturnValueToUint32Error) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_FALSE(select_url_result.success);
   EXPECT_THAT(
@@ -977,7 +1001,6 @@ TEST_F(SharedStorageWorkletTest,
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/
                 CreateSerializedDict({{"customField", "customValue"}}));
 
   EXPECT_TRUE(select_url_result.success);
@@ -992,7 +1015,7 @@ TEST_F(SharedStorageWorkletTest,
 }
 
 TEST_F(SharedStorageWorkletTest, Run_BeforeAddModuleFinish) {
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1010,7 +1033,8 @@ TEST_F(SharedStorageWorkletTest, Run_OperationNameNotRegistered) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("unregistered-operation", /*serialized_data=*/{});
+  RunResult run_result =
+      Run("unregistered-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1030,7 +1054,7 @@ TEST_F(SharedStorageWorkletTest, Run_FunctionError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1048,7 +1072,7 @@ TEST_F(SharedStorageWorkletTest, Run_FulfilledSynchronously) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1070,7 +1094,7 @@ TEST_F(SharedStorageWorkletTest, Run_RejectedAsynchronously) {
   test_client_->clear_result_ =
       ClearResult{.success = false, .error_message = "error 123"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1089,7 +1113,7 @@ TEST_F(SharedStorageWorkletTest, Run_FulfilledAsynchronously) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1109,7 +1133,7 @@ TEST_F(SharedStorageWorkletTest, Run_Microtask) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1130,10 +1154,8 @@ TEST_F(SharedStorageWorkletTest, Run_ValidateDataParamViaConsoleLog) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result =
-      Run("test-operation",
-          /*serialized_data=*/
-          CreateSerializedDict({{"customField", "customValue"}}));
+  RunResult run_result = Run(
+      "test-operation", CreateSerializedDict({{"customField", "customValue"}}));
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1159,14 +1181,13 @@ TEST_F(SharedStorageWorkletTest, SelectURLAndRunOnSameRegisteredOperation) {
   SelectURLResult select_url_result =
       SelectURL("test-operation",
                 /*urls=*/{GURL("https://foo0.com"), GURL("https://foo1.com")},
-                /*serialized_data=*/{});
+                CreateSerializedUndefined());
 
   EXPECT_TRUE(select_url_result.success);
   EXPECT_TRUE(select_url_result.error_message.empty());
   EXPECT_EQ(select_url_result.index, 1u);
 
-  RunResult run_result = Run("test-operation",
-                             /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1240,7 +1261,7 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_EQ(run_result.error_message, "");
@@ -1319,7 +1340,7 @@ TEST_F(SharedStorageWorkletTest,
   EXPECT_THAT(add_module_result.error_message,
               testing::HasSubstr("ReferenceError: a is not defined"));
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_EQ(run_result.error_message, "");
@@ -1338,7 +1359,7 @@ TEST_F(SharedStorageWorkletTest, Set_MissingKey) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1360,7 +1381,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidKey_Empty) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1383,7 +1404,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidKey_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1406,7 +1427,7 @@ TEST_F(SharedStorageWorkletTest, Set_MissingValue) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1428,7 +1449,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidValue_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1451,7 +1472,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidOptions) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1478,7 +1499,7 @@ TEST_F(SharedStorageWorkletTest, Set_ClientError) {
   test_client_->set_result_ =
       SetResult{.success = false, .error_message = "error 123"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1501,7 +1522,7 @@ TEST_F(SharedStorageWorkletTest, Set_Success) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1530,7 +1551,7 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_True) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1558,7 +1579,7 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1587,7 +1608,7 @@ TEST_F(SharedStorageWorkletTest, Set_KeyAndValueConvertedToString) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1620,7 +1641,7 @@ TEST_F(SharedStorageWorkletTest, Set_ParamConvertedToStringError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1641,7 +1662,7 @@ TEST_F(SharedStorageWorkletTest, Append_MissingKey) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1663,7 +1684,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidKey_Empty) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1686,7 +1707,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidKey_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1709,7 +1730,7 @@ TEST_F(SharedStorageWorkletTest, Append_MissingValue) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1731,7 +1752,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidValue_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1757,7 +1778,7 @@ TEST_F(SharedStorageWorkletTest, Append_ClientError) {
   test_client_->append_result_ =
       AppendResult{.success = false, .error_message = "error 123"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1780,7 +1801,7 @@ TEST_F(SharedStorageWorkletTest, Append_Success) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1803,7 +1824,7 @@ TEST_F(SharedStorageWorkletTest, Delete_MissingKey) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1825,7 +1846,7 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_Empty) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1848,7 +1869,7 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -1874,7 +1895,7 @@ TEST_F(SharedStorageWorkletTest, Delete_ClientError) {
   test_client_->delete_result_ =
       DeleteResult{.success = false, .error_message = "error 123"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1896,7 +1917,7 @@ TEST_F(SharedStorageWorkletTest, Delete_Success) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1921,7 +1942,7 @@ TEST_F(SharedStorageWorkletTest, Clear_ClientError) {
   test_client_->clear_result_ =
       ClearResult{.success = false, .error_message = "error 123"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -1942,7 +1963,7 @@ TEST_F(SharedStorageWorkletTest, Clear_Success) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -1963,7 +1984,7 @@ TEST_F(SharedStorageWorkletTest, Get_MissingKey) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message,
@@ -1985,7 +2006,7 @@ TEST_F(SharedStorageWorkletTest, Get_InvalidKey_Empty) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -2008,7 +2029,7 @@ TEST_F(SharedStorageWorkletTest, Get_InvalidKey_TooLong) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(
@@ -2037,7 +2058,7 @@ TEST_F(SharedStorageWorkletTest, Get_ClientError) {
                 .error_message = "error 123",
                 .value = std::u16string()};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -2067,7 +2088,7 @@ TEST_F(SharedStorageWorkletTest, Get_NotFound) {
                 .error_message = std::string(),
                 .value = std::u16string()};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2098,7 +2119,7 @@ TEST_F(SharedStorageWorkletTest, Get_Success) {
                 .error_message = std::string(),
                 .value = u"value0"};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2127,7 +2148,7 @@ TEST_F(SharedStorageWorkletTest, Length_ClientError) {
   test_client_->length_result_ =
       LengthResult{.success = false, .error_message = "error 123", .length = 0};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -2154,7 +2175,7 @@ TEST_F(SharedStorageWorkletTest, Length_Success) {
   test_client_->length_result_ = LengthResult{
       .success = true, .error_message = std::string(), .length = 123};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2180,7 +2201,7 @@ TEST_F(SharedStorageWorkletTest, Entries_OneEmptyBatch_Success) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2214,7 +2235,7 @@ TEST_F(SharedStorageWorkletTest, Entries_FirstBatchError_Failure) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2250,7 +2271,7 @@ TEST_F(SharedStorageWorkletTest, Entries_TwoBatches_Success) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2297,7 +2318,7 @@ TEST_F(SharedStorageWorkletTest, Entries_SecondBatchError_Failure) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2343,7 +2364,7 @@ TEST_F(SharedStorageWorkletTest, Keys_OneBatch_Success) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2393,7 +2414,7 @@ TEST_F(SharedStorageWorkletTest, Keys_ManuallyCallNext) {
 
   base::test::TestFuture<bool, const std::string&> run_future;
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       run_future.GetCallback());
   shared_storage_worklet_service_.FlushForTesting();
 
@@ -2454,7 +2475,7 @@ TEST_F(SharedStorageWorkletTest, RemainingBudget_ClientError) {
   test_client_->remaining_budget_result_ = RemainingBudgetResult{
       .success = false, .error_message = "error 123", .bits = 0};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
@@ -2481,7 +2502,7 @@ TEST_F(SharedStorageWorkletTest, RemainingBudget_Success) {
   test_client_->remaining_budget_result_ = RemainingBudgetResult{
       .success = true, .error_message = std::string(), .bits = 2.0};
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2505,7 +2526,7 @@ TEST_F(SharedStorageWorkletTest, ContextAttribute_Undefined) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2533,7 +2554,7 @@ TEST_F(SharedStorageWorkletTest, ContextAttribute_String) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2566,7 +2587,7 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
@@ -2588,7 +2609,7 @@ TEST_F(SharedStorageWorkletTest, Crypto_GetRandomValues) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
 
@@ -2612,7 +2633,7 @@ TEST_F(SharedStorageWorkletTest, Crypto_RandomUUID) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
 
@@ -2660,7 +2681,7 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
 
@@ -2676,15 +2697,6 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_shared_storage", "true"}}}},
         /*disabled_features=*/{});
-  }
-
-  void TearDown() override {
-    // Shut down the worklet gracefully. Otherwise, the
-    // `private_aggregation_feature_` may be destroyed before the worklet thread
-    // (e.g. SharedStorageWorkletGlobalScope::NotifyContextDestroyed()) and some
-    // feature state assertions could fail.
-    shared_storage_worklet_service_.reset();
-    EXPECT_TRUE(worklet_terminated_future_.Wait());
   }
 
   // `error_message` being `nullptr` indicates no error is expected.
@@ -2715,7 +2727,7 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
               EXPECT_TRUE(debug_mode_details == expected_debug_mode_details);
             }));
 
-    RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+    RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
     EXPECT_EQ(run_result.success, (error_message == nullptr));
 
@@ -2749,7 +2761,7 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
           .Times(0);
     }
 
-    RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+    RunResult run_result = Run("test-operation", CreateSerializedUndefined());
     EXPECT_FALSE(run_result.success);
 
     if (expect_use_counter) {
@@ -2805,7 +2817,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   EXPECT_TRUE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_EQ(run_result.error_message, "");
@@ -2829,7 +2841,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   EXPECT_FALSE(add_module_result.success);
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_TRUE(run_result.success);
   EXPECT_EQ(run_result.error_message, "");
@@ -3007,10 +3019,11 @@ TEST_F(SharedStoragePrivateAggregationTest,
                         mojom::blink::DebugModeDetails::New());
           }));
 
-  RunResult run_result = Run("send-histogram-report", /*serialized_data=*/{});
+  RunResult run_result =
+      Run("send-histogram-report", CreateSerializedUndefined());
   EXPECT_TRUE(run_result.success);
 
-  RunResult run_result2 = Run("enable-debug-mode", /*serialized_data=*/{});
+  RunResult run_result2 = Run("enable-debug-mode", CreateSerializedUndefined());
   EXPECT_TRUE(run_result2.success);
 
   mock_private_aggregation_host_->FlushForTesting();
@@ -3049,7 +3062,7 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
                           /*debug_key=*/mojom::blink::DebugKey::New(1234u)));
           }));
 
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
   EXPECT_TRUE(run_result.success);
 
   mock_private_aggregation_host_->FlushForTesting();
@@ -3089,7 +3102,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
           }));
 
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
       base::DoNothing());
 
   // Trigger the disconnect handler.

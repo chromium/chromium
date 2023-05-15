@@ -47,9 +47,6 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
 gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
                                          SkColor color);
 
-// Returns true if `win1` is stacked (not directly) below `win2`.
-bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
-
 // Configures `window` with the specified title and color.
 void DecorateWindow(aura::Window* window,
                     const std::u16string& title,

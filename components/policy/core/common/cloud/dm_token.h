@@ -15,7 +15,7 @@ namespace policy {
 // Represents a DM token with a status, which can be:
 // Valid:
 //    A valid token to be used to make requests. Its value cannot be empty or
-//    equal to |kInvalidTokenValue|.
+//    equal to `kInvalidTokenValue`.
 // Invalid:
 //    The token explicitly marks this browser as unenrolled. The browser
 //    should not sync policies or try to get a new DM token if it is set to
@@ -25,14 +25,9 @@ namespace policy {
 //    enrollment token is present.
 class POLICY_EXPORT DMToken {
  public:
-  enum class Status { kValid, kInvalid, kEmpty };
-
-  static DMToken CreateValidTokenForTesting(const std::string& value);
-  static DMToken CreateInvalidTokenForTesting();
-  static DMToken CreateEmptyTokenForTesting();
-
-  DMToken();
-  DMToken(Status status, const base::StringPiece value);
+  static DMToken CreateValidToken(const std::string& value);
+  static DMToken CreateInvalidToken();
+  static DMToken CreateEmptyToken();
 
   DMToken(const DMToken& other) = default;
   DMToken(DMToken&& other) = default;
@@ -51,6 +46,10 @@ class POLICY_EXPORT DMToken {
   bool is_empty() const;
 
  private:
+  enum class Status { kValid, kInvalid, kEmpty };
+
+  DMToken(Status status, const base::StringPiece value);
+
   Status status_;
   std::string value_;
 };

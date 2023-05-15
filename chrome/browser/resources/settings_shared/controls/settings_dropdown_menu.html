@@ -1,0 +1,43 @@
+<style
+<if expr="not chromeos_ash">
+  include="md-select"
+</if>
+<if expr="chromeos_ash">
+  include="md-select cros-color-overrides"
+</if>
+>
+  :host {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  /* When settings-dropdown-menu is start-aligned, we probably want policy
+   * indicator to be be displayed after the dropdown.
+   * Setting --settings-dropdown-menu-policy-order to 1 will do the job.
+   */
+  cr-policy-pref-indicator {
+    height: var(--iron-icon-width, 24px);
+    margin: 0 var(--cr-controlled-by-spacing);
+    order: var(--settings-dropdown-menu-policy-order, 0);
+    width: var(--iron-icon-width, 24px);
+  }
+
+  /* Hide "Custom" value when unselectable. */
+  option:disabled {
+    display: none;
+  }
+</style>
+<template is="dom-if" if="[[pref.controlledBy]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+<select class="md-select" id="dropdownMenu" on-change="onChange_"
+    aria-label$="[[label]]"
+    disabled="[[shouldDisableMenu_(disabled, menuOptions.*, pref.*)]]">
+  <template is="dom-repeat" items="[[menuOptions]]">
+    <option value="[[item.value]]">[[item.name]]</option>
+  </template>
+  <option value="[[notFoundValue]]"
+      disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]">
+    $i18n{custom}
+  </option>
+</select>

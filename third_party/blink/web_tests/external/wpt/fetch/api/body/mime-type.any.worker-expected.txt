@@ -5,5 +5,19 @@ FAIL Request: removing implicit Content-Type assert_equals: expected "" but got 
 FAIL Response: removing implicit Content-Type assert_equals: expected "" but got "application/x-www-form-urlencoded;charset=utf-8"
 FAIL Request: setting missing Content-Type assert_equals: expected "test/test" but got ""
 FAIL Response: setting missing Content-Type assert_equals: expected "test/test" but got ""
+PASS Request: MIME type for Blob from empty body
+PASS Response: MIME type for Blob from empty body
+PASS Request: MIME type for Blob from empty body with Content-Type
+PASS Response: MIME type for Blob from empty body with Content-Type
+PASS Request: MIME type for Blob
+PASS Response: MIME type for Blob
+PASS Request: MIME type for Blob with non-empty type
+PASS Response: MIME type for Blob with non-empty type
+PASS Request: Extract a MIME type with clone
+FAIL Response: Extract a MIME type with clone assert_equals: expected "text/html" but got "text/plain"
+PASS Request: Content-Type in headers wins Blob"s type
+PASS Response: Content-Type in headers wins Blob"s type
+FAIL Request: setting missing Content-Type in headers and it wins Blob"s type assert_equals: expected "text/html" but got "text/plain"
+FAIL Response: setting missing Content-Type in headers and it wins Blob"s type assert_equals: expected "text/html" but got "text/plain"
 Harness: the test ran to completion.
 

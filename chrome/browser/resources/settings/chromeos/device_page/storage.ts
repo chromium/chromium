@@ -16,6 +16,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isCrostiniSupported} from '../common/load_time_booleans.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
@@ -66,8 +67,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         readonly: true,
       },
 
-      showCrostini: Boolean,
-
       isEphemeralUser_: {
         type: Boolean,
         value() {
@@ -91,7 +90,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     return ['handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)'];
   }
 
-  showCrostini: boolean;
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private route_: Route;
@@ -310,7 +308,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    * @param enabled True if Crostini is enabled.
    */
   private handleCrostiniEnabledChanged_(enabled: boolean): void {
-    this.showCrostiniStorage_ = enabled && this.showCrostini;
+    this.showCrostiniStorage_ = enabled && isCrostiniSupported();
   }
 
   /**

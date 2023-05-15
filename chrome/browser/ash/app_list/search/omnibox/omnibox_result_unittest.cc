@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -240,7 +241,7 @@ class OmniboxResultTest : public testing::Test {
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel, ExperimentalAsh> bookmark_model_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="en-GB">
+<translation id="1356944128023012143">List of synced devices and selected tabs from those devices to be restored on fresh restore workflow is closed.</translation>
+<translation id="1816430105422765050">Change to other synced devices under this menu item.</translation>
+<translation id="3347725959865138210">Choose the device from which you'd like to get tabs</translation>
+<translation id="3575801299326994724">Review the selected tabs to be restored from the currently selected device.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab, last updated: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> tabs, last updated: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Back</translation>
+<translation id="3983305234037158273">Synced devices for tab restoration available to be changed on touch. Navigate to review or restore selected tabs for the current device on touch. Keyboard hidden.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Open <ph name="TABS_COUNT_ONE" /> tab}other{Open <ph name="TABS_COUNT_MANY" /> tabs}}</translation>
+<translation id="4811934403802581334">All selected tabs from the currently selected device will be restored.</translation>
+<translation id="5336031759968328813">Review all tabs</translation>
+<translation id="8725404154479306799">Get tabs that you left on old devices</translation>
+</translationbundle>

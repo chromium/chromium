@@ -15,9 +15,13 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -43,7 +47,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kDialogVerticalMargin = 50;
+// Offset to place dialog in the vertical center of bubble due to
+// PhoneStatusView.
+constexpr int kDialogVerticalOffset = 25;
 
 constexpr int kDialogWidth = 330;
 
@@ -101,6 +107,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     title_->SetTextStyle(views::style::STYLE_EMPHASIZED);
     title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_->SetAutoColorReadabilityEnabled(false);
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                            *title_);
+    }
 
     title_->SetPaintToLayer();
     title_->layer()->SetFillsBoundsOpaquely(false);
@@ -161,6 +172,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
     body_->SetPaintToLayer();
     body_->layer()->SetFillsBoundsOpaquely(false);
+
+    // TODO(b/254874005): Migrate the |body_| font to Google Sans. Use the same
+    // TypographyProvider StyleLabel() but use ash::Typography::kCrosBody.
 
     // Add button row.
     auto* button_row = AddChildView(std::make_unique<views::View>());
@@ -224,8 +238,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         kDialogRoundedCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+        views::HighlightBorder::Type::kHighlightBorder1));
     title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
@@ -252,11 +265,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   StartTetheringCallback start_tethering_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::StyledLabel* body_ = nullptr;
-  views::Button* cancel_button_ = nullptr;
-  views::Button* accept_button_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::StyledLabel, ExperimentalAsh> body_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
 };
 
 }  // namespace
@@ -283,10 +296,10 @@ AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
   widget_->Init(std::move(params));
 
   // The |dialog| ownership is passed to the window hierarchy.
-  widget_observations_.AddObservation(widget_);
+  widget_observations_.AddObservation(widget_.get());
   widget_observations_.AddObservation(parent);
 
-  view_observations_.AddObservation(host_view_);
+  view_observations_.AddObservation(host_view_.get());
   view_observations_.AddObservation(widget_->GetContentsView());
 }
 
@@ -304,20 +317,16 @@ void AppStreamConnectionErrorDialog::UpdateBounds() {
     return;
   }
 
-  gfx::Point anchor_point_in_screen(host_view_->width() / 2, 0);
+  gfx::Point anchor_point_in_screen(host_view_->width() / 2,
+                                    host_view_->height() / 2);
   views::View::ConvertPointToScreen(host_view_, &anchor_point_in_screen);
 
-  const int offset_for_frame_insets =
-      widget_->non_client_view() && widget_->non_client_view()->frame_view()
-          ? widget_->non_client_view()->frame_view()->GetInsets().top()
-          : 0;
-  const int vertical_offset = kDialogVerticalMargin - offset_for_frame_insets;
-
   gfx::Size dialog_size = widget_->GetContentsView()->GetPreferredSize();
-  widget_->SetBounds(
-      gfx::Rect(gfx::Point(anchor_point_in_screen.x() - dialog_size.width() / 2,
-                           anchor_point_in_screen.y() + vertical_offset),
-                dialog_size));
+  widget_->SetBounds(gfx::Rect(
+      gfx::Point(anchor_point_in_screen.x() - dialog_size.width() / 2,
+                 anchor_point_in_screen.y() - dialog_size.height() / 2 -
+                     kDialogVerticalOffset),
+      dialog_size));
 }
 
 void AppStreamConnectionErrorDialog::OnWidgetDestroying(views::Widget* widget) {

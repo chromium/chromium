@@ -75,6 +75,60 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
   return result;
 }
 
+// Converts base::Value to an equivalent Foundation object, parsing,
+// `value_result` up to a depth of `max_depth`.
+id NSObjectFromValueResult(const base::Value* value_result, int max_depth) {
+  if (!value_result) {
+    return nil;
+  }
+
+  id result = nil;
+
+  if (max_depth < 0) {
+    DLOG(WARNING) << "JS maximum recursion depth exceeded.";
+    return result;
+  }
+
+  if (value_result->is_string()) {
+    result = base::SysUTF8ToNSString(value_result->GetString());
+    DCHECK([result isKindOfClass:[NSString class]]);
+  } else if (value_result->is_int()) {
+    result = [NSNumber numberWithInt:value_result->GetInt()];
+    DCHECK([result isKindOfClass:[NSNumber class]]);
+  } else if (value_result->is_double()) {
+    result = [NSNumber numberWithDouble:value_result->GetDouble()];
+    DCHECK([result isKindOfClass:[NSNumber class]]);
+  } else if (value_result->is_bool()) {
+    result = [NSNumber numberWithBool:value_result->GetBool()];
+    DCHECK([result isKindOfClass:[NSNumber class]]);
+  } else if (value_result->is_none()) {
+    result = [NSNull null];
+    DCHECK([result isKindOfClass:[NSNull class]]);
+  } else if (value_result->is_dict()) {
+    NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+    for (const auto pair : value_result->GetDict()) {
+      NSString* key = base::SysUTF8ToNSString(pair.first);
+      id wk_result = NSObjectFromValueResult(&pair.second, max_depth - 1);
+      if (wk_result) {
+        [dictionary setValue:wk_result forKey:key];
+      }
+    }
+    result = [dictionary copy];
+  } else if (value_result->is_list()) {
+    NSMutableArray* array = [[NSMutableArray alloc] init];
+    for (const base::Value& value : value_result->GetList()) {
+      id wk_result = NSObjectFromValueResult(&value, max_depth - 1);
+      if (wk_result) {
+        [array addObject:wk_result];
+      }
+    }
+    result = [array copy];
+  } else {
+    NOTREACHED();  // Convert other types as needed.
+  }
+  return result;
+}
+
 // Runs completion_handler with an error representing that no web view currently
 // exists so Javascript could not be executed.
 void NotifyCompletionHandlerNullWebView(void (^completion_handler)(id,
@@ -99,6 +153,10 @@ int const kMaximumParsingRecursionDepth = 10;
 
 std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result) {
   return ::ValueResultFromWKResult(wk_result, kMaximumParsingRecursionDepth);
+}
+
+id NSObjectFromValueResult(const base::Value* value_result) {
+  return ::NSObjectFromValueResult(value_result, kMaximumParsingRecursionDepth);
 }
 
 void ExecuteJavaScript(WKWebView* web_view,

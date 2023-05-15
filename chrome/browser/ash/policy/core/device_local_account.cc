@@ -26,14 +26,6 @@ namespace policy {
 
 namespace {
 
-const char kPublicAccountDomainPrefix[] = "public-accounts";
-const char kKioskAppAccountDomainPrefix[] = "kiosk-apps";
-const char kArcKioskAppAccountDomainPrefix[] = "arc-kiosk-apps";
-const char kSAMLPublicAccountDomainPrefix[] = "saml-public-accounts";
-const char kWebKioskAppAccountDomainPrefix[] = "web-kiosk-apps";
-
-const char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
-
 bool GetString(const base::Value::Dict& dict,
                const char* key,
                std::string* result) {
@@ -123,77 +115,23 @@ DeviceLocalAccount::~DeviceLocalAccount() {}
 
 std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
                                              DeviceLocalAccount::Type type) {
-  std::string domain_prefix;
-  switch (type) {
-    case DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-      domain_prefix = kPublicAccountDomainPrefix;
-      break;
-    case DeviceLocalAccount::TYPE_KIOSK_APP:
-      domain_prefix = kKioskAppAccountDomainPrefix;
-      break;
-    case DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
-      domain_prefix = kArcKioskAppAccountDomainPrefix;
-      break;
-    case DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
-      domain_prefix = kSAMLPublicAccountDomainPrefix;
-      break;
-    case DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
-      domain_prefix = kWebKioskAppAccountDomainPrefix;
-      break;
-    case DeviceLocalAccount::TYPE_COUNT:
-      NOTREACHED();
-      break;
-  }
-  return gaia::CanonicalizeEmail(
-      base::HexEncode(account_id.c_str(), account_id.size()) + "@" +
-      domain_prefix + kDeviceLocalAccountDomainSuffix);
+  return ::policy::GenerateDeviceLocalAccountUserId(
+      account_id, static_cast<DeviceLocalAccountType>(type));
 }
 
 bool IsDeviceLocalAccountUser(const std::string& user_id,
                               DeviceLocalAccount::Type* type) {
-  // For historical reasons, the guest user ID does not contain an @ symbol and
-  // therefore, cannot be parsed by gaia::ExtractDomainName().
-  if (user_id == user_manager::GuestAccountId().GetUserEmail())
-    return false;
-  const std::string domain = gaia::ExtractDomainName(user_id);
-  if (!base::EndsWith(domain, kDeviceLocalAccountDomainSuffix,
-                      base::CompareCase::SENSITIVE))
-    return false;
-
-  const std::string domain_prefix = domain.substr(
-      0, domain.size() - std::size(kDeviceLocalAccountDomainSuffix) + 1);
-
-  if (domain_prefix == kPublicAccountDomainPrefix) {
-    if (type)
-      *type = DeviceLocalAccount::TYPE_PUBLIC_SESSION;
-    return true;
+  auto ret = ::policy::GetDeviceLocalAccountType(user_id);
+  if (type) {
+    if (ret.has_value()) {
+      *type = static_cast<DeviceLocalAccount::Type>(ret.value());
+    } else if (ret == base::unexpected(
+                          GetDeviceLocalAccountTypeError::kUnknownDomain)) {
+      *type = DeviceLocalAccount::TYPE_COUNT;
+    }
   }
-  if (domain_prefix == kKioskAppAccountDomainPrefix) {
-    if (type)
-      *type = DeviceLocalAccount::TYPE_KIOSK_APP;
-    return true;
-  }
-  if (domain_prefix == kArcKioskAppAccountDomainPrefix) {
-    if (type)
-      *type = DeviceLocalAccount::TYPE_ARC_KIOSK_APP;
-    return true;
-  }
-  if (domain_prefix == kSAMLPublicAccountDomainPrefix) {
-    if (type)
-      *type = DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION;
-    return true;
-  }
-  if (domain_prefix == kWebKioskAppAccountDomainPrefix) {
-    if (type)
-      *type = DeviceLocalAccount::TYPE_WEB_KIOSK_APP;
-    return true;
-  }
-
-  // |user_id| is a device-local account but its type is not recognized.
-  NOTREACHED();
-  if (type)
-    *type = DeviceLocalAccount::TYPE_COUNT;
-  return true;
+  return ret != base::unexpected(
+                    GetDeviceLocalAccountTypeError::kNoDeviceLocalAccountUser);
 }
 
 void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,

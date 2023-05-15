@@ -12,15 +12,9 @@ import("//build/config/ios/ios_sdk.gni")
 assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
 
 declare_args() {
-  # Enable widget extensions.
+  # Enable notification center widget extensions.
   ios_enable_content_widget_extension = true
   ios_enable_search_widget_extension = true
-
-  # Enable iOS 14, WidgetKit extension.
-  ios_enable_widget_kit_extension = true
-
-  # Enable iOS 16 lockscreen extensions.
-  ios_enable_lockscreen_extension = true
 
   # Enable share extension.
   ios_enable_share_extension = true
@@ -30,6 +24,15 @@ declare_args() {
 
   # Enable intents extension.
   ios_enable_intents_extension = false
+
+  # Enable iOS 14, WidgetKit extension.
+  ios_enable_widget_kit_extension = true
+
+  # Enable iOS 16 lockscreen widget in WidgetKit extension.
+  ios_enable_lockscreen_widget = true
+
+  # Enable iOS shortcut widget in WidgetKit extension.
+  ios_enable_shortcuts_widget = false
 
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.

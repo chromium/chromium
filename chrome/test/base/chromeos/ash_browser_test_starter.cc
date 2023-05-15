@@ -9,8 +9,10 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -42,6 +44,41 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   env->SetVar("XDG_RUNTIME_DIR", scoped_temp_dir_xdg_.GetPath().AsUTF8Unsafe());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // Put lacros logs in CAS outputs on bots.
+  if (command_line->HasSwitch(switches::kTestLauncherSummaryOutput)) {
+    std::string test_name = base::JoinString(
+        {::testing::UnitTest::GetInstance()
+             ->current_test_info()
+             ->test_suite_name(),
+         ::testing::UnitTest::GetInstance()->current_test_info()->name()},
+        ".");
+    base::FilePath output_file_path =
+        command_line->GetSwitchValuePath(switches::kTestLauncherSummaryOutput);
+    base::FilePath test_output_folder =
+        output_file_path.DirName().Append(test_name);
+    // Handle retry logic. When a test fail and retry, we need to use a new
+    // folder for user data dir.
+    int retry_count = 1;
+    while (base::PathExists(test_output_folder) && retry_count < 5) {
+      test_output_folder = output_file_path.DirName().Append(
+          test_name + ".retry_" + base::NumberToString(retry_count));
+      ++retry_count;
+    }
+    // Unlikely the path still exist. But in case it happens, we would let
+    // the browser test framework to create the tmp folder as usual.
+    if (!base::PathExists(test_output_folder)) {
+      command_line->AppendSwitchPath(switches::kUserDataDir,
+                                     test_output_folder);
+    }
+  } else {
+    LOG(WARNING)
+        << "By default, lacros logs are in some random folder. If you need "
+        << "lacros log, please run with --test-launcher-summary-output. e.g. "
+        << "Run with --test-launcher-summary-output=/tmp/default/output.json. "
+        << "For each lacros in a test, the log will be in "
+        << "/tmp/default/test_suite.test_name folder.";
+  }
+
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
        ash::features::kLacrosOnly},

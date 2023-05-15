@@ -16,9 +16,9 @@ import android.content.IntentFilter;
 import android.provider.Settings;
 
 import androidx.preference.Preference;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

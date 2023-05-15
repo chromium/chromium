@@ -16,6 +16,7 @@ class WebSocketWrapper {
 
   setWebSocket(s) {
     this.socket = s;
+    s.send('{"type": "CONNECTION_ACK"}');
     for (let qm of this.queued_messages) {
       s.send(qm);
     }
@@ -76,6 +77,10 @@ class WebSocketWrapper {
     }
   }
 
+  sendTestStarted() {
+    this._sendMessage('{"type": "TEST_STARTED"}');
+  }
+
   sendTestFinished() {
     this._clearPendingHeartbeat();
     this._sendMessage('{"type": "TEST_FINISHED"}');
@@ -83,9 +88,12 @@ class WebSocketWrapper {
 }
 
 if (window.parent.wrapper !== undefined) {
-  const wrapper = window.parent.wrapper;
+  var wrapper = window.parent.wrapper;
+  var inIframe = true;
+  window.wrapper = window.parent.wrapper;
 } else {
-  const wrapper = new WebSocketWrapper();
+  var wrapper = new WebSocketWrapper();
+  var inIframe = false;
   window.wrapper = wrapper;
 }
 
@@ -96,41 +104,86 @@ function connectWebsocket(port) {
   });
 }
 
-var testHarness = {};
-testHarness._allTestSucceeded = true;
-testHarness._messages = '';
-testHarness._failures = 0;
-testHarness._finished = false;
-testHarness._originalLog = window.console.log;
-
-testHarness.log = function(msg) {
-  wrapper.sendHeartbeatThrottled();
-  testHarness._messages += msg + "\n";
-  testHarness._originalLog.apply(window.console, [msg]);
+function wrapFunctionInHeartbeat(prototype, key) {
+  const old = prototype[key];
+  // Some functions are specific to a WebGL version, so don't try to wrap
+  // functions that don't exist in the current version's context prototype.
+  if (old === undefined) {
+    return;
+  }
+  prototype[key] = function (...args) {
+    wrapper.sendHeartbeatThrottled();
+    return old.call(this, ...args);
+  }
 }
 
-testHarness.reportResults = function(url, success, msg) {
-  wrapper.sendHeartbeatThrottled();
-  testHarness._allTestSucceeded = testHarness._allTestSucceeded && !!success;
-  if(!success) {
-    testHarness._failures++;
-    if(msg) {
-      testHarness.log(msg);
-    }
+if (inIframe) {
+  // Wrap a subset of GL calls in heartbeats to ensure that longer-running tests
+  // still send them regularly.
+  const wrappedFunctions = [
+      // conformance/uniforms/no-over-optimization-on-uniform-array-*
+      'getUniform',
+      'getUniformLocation',
+      // conformance/uniforms/uniform-samplers-test.html
+      'uniform1i',
+      'uniform1iv',
+      // conformance2/sync/sync-webgl-specific.html
+      'clientWaitSync',
+      'getSyncParameter',
+  ];
+  for (const funcName of wrappedFunctions) {
+    wrapFunctionInHeartbeat(WebGLRenderingContext.prototype, funcName);
+    wrapFunctionInHeartbeat(WebGL2RenderingContext.prototype, funcName);
   }
-};
-testHarness.notifyFinished = function(url) {
-  wrapper.sendTestFinished();
-  testHarness._finished = true;
-};
-testHarness.navigateToPage = function(src) {
-  wrapper.sendHeartbeatThrottled();
-  var testFrame = document.getElementById("test-frame");
-  testFrame.src = src;
-};
+}
+
+if (!inIframe) {
+  var testHarness = {};
+
+  testHarness.reset = function() {
+    testHarness._allTestSucceeded = true;
+    testHarness._messages = '';
+    testHarness._failures = 0;
+    testHarness._totalTests = 0;
+    testHarness._finished = false;
+  }
+  testHarness.reset();
+
+  testHarness._originalLog = window.console.log;
+
+  testHarness.log = function(msg) {
+    wrapper.sendHeartbeatThrottled();
+    testHarness._messages += msg + "\n";
+    testHarness._originalLog.apply(window.console, [msg]);
+  }
+
+  testHarness.reportResults = function(url, success, msg) {
+    wrapper.sendHeartbeatThrottled();
+    testHarness._allTestSucceeded = testHarness._allTestSucceeded && !!success;
+    testHarness._totalTests++;
+    if(!success) {
+      testHarness._failures++;
+      if(msg) {
+        testHarness.log(msg);
+      }
+    }
+  };
+
+  testHarness.notifyFinished = function(url) {
+    wrapper.sendTestFinished();
+    testHarness._finished = true;
+  };
+
+  testHarness.navigateToPage = function(src) {
+    wrapper.sendHeartbeatThrottled();
+    var testFrame = document.getElementById("test-frame");
+    testFrame.src = src;
+  };
+} else {
+  var testHarness = window.parent.testHarness;
+}
 
 window.webglTestHarness = testHarness;
-window.parent.webglTestHarness = testHarness;
 window.console.log = testHarness.log;
 window.onerror = function(message, url, line) {
   testHarness.reportResults(null, false, message);

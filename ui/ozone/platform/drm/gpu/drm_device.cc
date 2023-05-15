@@ -15,6 +15,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
@@ -173,7 +174,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
 
   void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
 
-  DrmDevice::PageFlipManager* page_flip_manager_;
+  raw_ptr<DrmDevice::PageFlipManager, ExperimentalAsh> page_flip_manager_;
 
   base::MessagePumpLibevent::FdWatchController controller_;
 

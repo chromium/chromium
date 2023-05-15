@@ -7,8 +7,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
@@ -35,9 +35,6 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
 
   switch (entry_point) {
     case LensEntrypoint::ContextMenu:
-      if (!base::FeatureList::IsEnabled(kUseLensToSearchForImage)) {
-        flag_enabled = NO;
-      }
       availability_metric_name = kIOSLensContextMenuSupportStatusHistogramName;
       break;
     case LensEntrypoint::Keyboard:

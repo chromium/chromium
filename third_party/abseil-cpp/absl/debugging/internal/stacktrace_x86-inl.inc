@@ -40,7 +40,7 @@ using absl::debugging_internal::AddressIsReadable;
 
 #if defined(__linux__) && defined(__i386__)
 // Count "push %reg" instructions in VDSO __kernel_vsyscall(),
-// preceeding "syscall" or "sysenter".
+// preceding "syscall" or "sysenter".
 // If __kernel_vsyscall uses frame pointer, answer 0.
 //
 // kMaxBytes tells how many instruction bytes of __kernel_vsyscall

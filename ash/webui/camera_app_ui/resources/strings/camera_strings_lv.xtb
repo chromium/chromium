@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Ierakstīšana tika apturēta, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu ierakstīt vairāk videoklipu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="2036868001356139588">Taimera ilgums</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktīva</translation>
-<translation id="2128052519899549250">Ierakstīt intervāla fotografēšanas videoklipu</translation>
 <translation id="2134029355740465625">Video iestatījumi</translation>
 <translation id="2144806332417375165">Pielāgoti video parametri</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Konstatēts dokuments</translation>
 <translation id="414641094616694804">Šai kamerai nevar mainīt izšķirtspēju</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
-<translation id="4281620174117014503">Vidēja izšķirtspēja</translation>
 <translation id="428234092390943511">Lapas sīktēls</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
 <translation id="4445542136948522167">Pārtraukt fotoattēla uzņemšanu</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5320594929574852403">Pārvietojas pa kreisi</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Intervāla fotografēšana</translation>
 <translation id="5662366948659129155">Notiek <ph name="COUNT" />. lapas skenēšana</translation>
 <translation id="5671277269877808209">Kvadrāts</translation>
+<translation id="574392208103952083">Vidējs</translation>
 <translation id="5746169159649715125">Saglabāt kā PDF failu</translation>
 <translation id="5753488212459587150">Iespējot eksperta režīmu</translation>
 <translation id="5759254179196327752">Skenēt dokumentu</translation>
@@ -138,6 +136,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7670511624014457267">60 kadri/s</translation>
 <translation id="7671804233658741790">Dokumenta apakšējais labais stūris</translation>
+<translation id="7684446460490665873">Ierakstīt intervāla fotografēšanas videoklipu</translation>
 <translation id="7692090236657809299">Iespējot pārvietošanu/noliekšanu/tālummaiņu</translation>
 <translation id="7726641833034062494">Ierakstīt parastu videoklipu</translation>
 <translation id="7748344063862150053">Dokumenta augšējais labais stūris</translation>
@@ -163,6 +162,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="9045010116236796332">Novietojiet visas dokumenta malas kadrā.</translation>
 <translation id="9045155556724273246">10 sekundes</translation>
 <translation id="906331135292332864">Notiek attēla apstrāde…</translation>
+<translation id="9161584225258678723">Intervāla fotografēšana</translation>
 <translation id="922762992951083513">Spogulis ieslēgts</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 </translationbundle>

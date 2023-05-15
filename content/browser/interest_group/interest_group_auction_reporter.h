@@ -109,7 +109,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     //
     // TODO(mmenke):  Figure out how to make this survive the auction (perhaps
     // pass ownership to the constructor).
-    base::raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
+    raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
 
     std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
 
@@ -118,11 +118,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // returned by the component seller. Otherwise, it's the bid from the
     // bidder.
     double bid;
+    double bid_in_seller_currency;
 
     // Score this seller assigned the bid.
     double score;
 
     double highest_scoring_other_bid;
+    absl::optional<double> highest_scoring_other_bid_in_seller_currency;
     absl::optional<url::Origin> highest_scoring_other_bid_owner;
 
     absl::optional<uint32_t> scoring_signals_data_version;
@@ -148,6 +150,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     // Bid returned by the bidder.
     double bid;
+
+    // Currency the bid is in.
+    absl::optional<blink::AdCurrency> bid_currency;
 
     // Ad cost returned by the bidder.
     absl::optional<double> ad_cost;
@@ -302,9 +307,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Invoked once a seller's ReportResult() call has completed. Either starts
   // loading the component seller worklet, If the winning bid is from a
   // component seller and it was the top-level seller worklet that completed,
-  // or starts loading the bidder worklet, otherwise.
+  // or starts loading the bidder worklet, otherwise. `winning_bid` and
+  // `highest_scoring_other_bid` are in appropriate currency for private
+  // aggregation depending on the currency mode.
   void OnSellerReportResultComplete(
       const SellerWinningBidInfo* seller_info,
+      double winning_bid,
+      double highest_scoring_other_bid,
       const absl::optional<std::string>& signals_for_winner,
       const absl::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
@@ -325,8 +334,12 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   void OnBidderWorkletReceived(const std::string& signals_for_winner);
 
   // Invoked the winning bidder's ReportWin() call has completed. Invokes
-  // OnReportingComplete().
+  // OnReportingComplete(). `winning_bid` and `highest_scoring_other_bid` are in
+  // appropriate currency for private aggregation depending on the currency
+  // mode.
   void OnBidderReportWinComplete(
+      double winning_bid,
+      double highest_scoring_other_bid,
       const absl::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       PrivateAggregationRequests pa_requests,

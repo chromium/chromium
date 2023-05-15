@@ -60,6 +60,8 @@ MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
     EXPECT_FALSE(request->GetMessageTextFragment().empty());
     EXPECT_FALSE(permissions::GetIconId(request_type).is_empty());
 #endif
+    EXPECT_EQ(request->ShouldUseTwoOriginPrompt(),
+              request_type == permissions::RequestType::kStorageAccess);
   }
 }
 

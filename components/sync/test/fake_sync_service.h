@@ -25,6 +25,7 @@ class FakeSyncService : public SyncService {
 
   // Dummy methods.
   // SyncService implementation.
+  void SetSyncFeatureRequested() override;
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;
@@ -48,6 +49,7 @@ class FakeSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
+  bool IsSyncFeatureDisabledViaDashboard() const override;
   void DataTypePreconditionChanged(syncer::ModelType type) override;
   SyncTokenStatus GetSyncTokenStatusForDebugging() const override;
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
@@ -77,6 +79,9 @@ class FakeSyncService : public SyncService {
 
   // KeyedService implementation.
   void Shutdown() override;
+
+ protected:
+  bool IsSyncFeatureConsideredRequested() const override;
 
  private:
   GURL sync_service_url_;

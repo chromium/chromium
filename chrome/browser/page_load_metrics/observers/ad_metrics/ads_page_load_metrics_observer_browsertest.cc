@@ -920,10 +920,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create a second frame that will not receive activation.
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "createAdFrame('/ad_tagging/ad.html', '');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "createAdFrame('/ad_tagging/ad.html', '');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Wait for the frames resources to be loaded as we only log histograms for
   // frames that have non-zero bytes. Four resources in the main frame and one
@@ -935,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   content::RenderFrameHost* ad_frame =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string no_op_script = "// No-op script";
-  EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
+  EXPECT_TRUE(ExecJs(ad_frame, no_op_script));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -971,10 +973,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create two same-origin ad frames.
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "createAdFrame('/ad_tagging/ad.html', '');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "createAdFrame('/ad_tagging/ad.html', '');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Wait for the frames resources to be loaded as we only log histograms for
   // frames that have non-zero bytes. Four resources in the main frame and one
@@ -988,12 +992,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   content::RenderFrameHost* ad_frame =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string no_op_script = "// No-op script";
-  EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
+  EXPECT_TRUE(ExecJs(ad_frame, no_op_script));
 
   // Activate the other frame directly by executing a dummy script.
   content::RenderFrameHost* ad_frame_2 =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 1);
-  EXPECT_TRUE(ExecuteScript(ad_frame_2, no_op_script));
+  EXPECT_TRUE(ExecJs(ad_frame_2, no_op_script));
 
   // Ensure both frames are marked active.
   ASSERT_TRUE(
@@ -1356,9 +1360,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create a second frame that will not receive activation.
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents,
-      "createAdFrame('/ad_tagging/multiple_mimes.html', 'test');"));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, "createAdFrame('/ad_tagging/multiple_mimes.html', 'test');",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   waiter->AddMinimumCompleteResourcesExpectation(8);
   waiter->Wait();

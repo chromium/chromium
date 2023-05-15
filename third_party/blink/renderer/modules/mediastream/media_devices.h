@@ -78,10 +78,6 @@ class MODULES_EXPORT MediaDevices final
 
   ScriptPromise getAllScreensMedia(ScriptState*, ExceptionState&);
 
-  ScriptPromise getDisplayMediaSet(ScriptState*,
-                                   const DisplayMediaStreamOptions*,
-                                   ExceptionState&);
-
   ScriptPromise getDisplayMedia(ScriptState*,
                                 const DisplayMediaStreamOptions*,
                                 ExceptionState&);

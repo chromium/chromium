@@ -17,12 +17,14 @@
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1335640173511558774">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Google ChromeOS Flex 條款》。</translation>
+<translation id="1341711321000856656">你可以切換查看其他 Chrome 設定檔的密碼</translation>
 <translation id="1363996462118479832">登入時發生錯誤，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="137466361146087520">Google Chrome 測試版</translation>
 <translation id="1399397803214730675">這台電腦已安裝較新的 Google Chrome 版本，如果軟體無法順利運作，請解除安裝 Google Chrome，然後再試一次。</translation>
 <translation id="139993653570221430">你隨時可以前往 Chrome 設定變更這個選項。系統會同時執行試用功能和目前放送廣告的方式，因此你不會立即看到變化。</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但無痕式視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但有 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome 曾連線至 HID 裝置}=1{Google Chrome 已連線至 HID 裝置}other{Google Chrome 已連線至 HID 裝置}}</translation>
+<translation id="1492280395845991349">重新啟動即可完成 Chrome 更新程序</translation>
 <translation id="1507198376417198979">自訂新的 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
@@ -81,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2534507159460261402">Google Pay (已複製到 Chrome)</translation>
+<translation id="2556847002339236023">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。瀏覽資料已刪除，當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="2559253115192232574">在此之後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。Chrome 最多可以分享 3 個感興趣的主題。</translation>
 <translation id="2563121210305478421">要重新啟動 Chrome 嗎？</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。如要分開保存你的瀏覽資料，建議在 Chrome 中建立專屬設定檔。</translation>
@@ -92,6 +95,7 @@
 <translation id="2652691236519827073">在新的 Chrome 分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2689103672227170538">這個擴充功能已變更 Chrome 啟動時所顯示的網頁。</translation>
+<translation id="2712234843277364121">重新啟動即可更新 - 你的分頁將會重新開啟</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="2765403129283291972">Chrome 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
@@ -111,6 +115,7 @@
 <translation id="2929907241665500097">發生錯誤，Chrome 未能更新。<ph name="BEGIN_LINK" />請修正 Chrome 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="3019382870990049182">重新啟動以更新 ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome 擴充功能當時正在存取 HID 裝置}=1{Google Chrome 擴充功能正在存取 HID 裝置}other{Google Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="303514781271618814">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗</translation>
 <translation id="3037838751736561277">Google Chrome 正在背景模式中執行。</translation>
 <translation id="3038232873781883849">正在等待安裝...</translation>
@@ -204,6 +209,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">這個檔案可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
+<translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">你的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="4873783916118289636">查看 Chrome 中最重要的隱私權和安全性控制項</translation>
 <translation id="4891791193823137474">讓 Google Chrome 在背景執行</translation>
@@ -215,6 +221,7 @@
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4970947549776831107">這個類型的檔案有安全疑慮，因此 Chrome 已封鎖這個檔案</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome 擴充功能當時正在存取 HID 裝置}=1{Google Chrome 擴充功能正在存取 1 部 HID 裝置}other{Google Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{根據管理員規定，Chrome 閒置 1 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}other{根據管理員規定，Chrome 閒置 # 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="5098668839038261629">如果啟用此選項，系統也會將你從 Chrome 登出</translation>
 <translation id="5132929315877954718">幫你的 Google Chrome 物色各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
@@ -263,6 +270,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
 <translation id="6155960517327665396">記憶體節省模式可以提升 Chrome 運作速度</translation>
+<translation id="6157638032135951407">由於 Chrome 資料閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其刪除。當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 測試版</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
@@ -276,7 +284,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{根據管理員規定，如果 Chromium 閒置 1 分鐘，系統就會自動刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}other{根據管理員規定，如果 Chromium 閒置 # 分鐘，系統就會自動刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}}</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
+<translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
 <translation id="6493527311031785448">Google Chrome 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
@@ -313,6 +323,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7155997830309522122">如果是的話，請編輯你儲存在 Chrome 中的密碼，使其與新密碼相符。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7177959540995930968">你可以前往 Chrome 設定進一步瞭解這些功能。</translation>
+<translation id="7193885263065350793">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">這是 Google Chrome UI 的顯示語言</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
@@ -406,6 +417,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
+<translation id="9054037008353851982">重新啟動即可更新 - 你的分頁將會重新開啟</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>
 <translation id="9138603949443464873">如要套用變更，請重新啟動 Chrome</translation>
 <translation id="9195993889682885387">Chrome 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>

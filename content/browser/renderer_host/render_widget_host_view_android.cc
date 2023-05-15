@@ -1135,13 +1135,8 @@ void RenderWidgetHostViewAndroid::ShowWithVisibility(
     PageVisibilityState page_visibility) {
   // We can transition from `PageVisibilityState::kHiddenButPainting` to
   // `PageVisibilityState::kVisible` while `is_showing_`. We only want to
-  // support updating visibility requests for this transition. So for the non
-  // `features::kOnShowWithPageVisibility` path, still exit early based on
-  // `is_showing_` to prevent non-request work from being re-ran.
-  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility) &&
-      page_visibility_ == page_visibility) {
-    return;
-  } else if (is_showing_) {
+  // support updating visibility requests for this transition.
+  if (page_visibility_ == page_visibility) {
     return;
   }
 
@@ -1975,13 +1970,7 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
   if (!show)
     return;
 
-  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility)) {
-    OnShowWithPageVisibility(page_visibility_);
-  } else {
-    if (!host() || !host()->is_hidden())
-      return;
-    NotifyHostAndDelegateOnWasShown(TakeContentToVisibleTimeRequest(host()));
-  }
+  OnShowWithPageVisibility(page_visibility_);
 }
 
 void RenderWidgetHostViewAndroid::HideInternal() {
@@ -2112,9 +2101,20 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
+  // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
+  // the future inputs.
+  const bool is_source_touch_event_set_non_blocking =
+      InputEventResultStateIsSetNonBlocking(ack_result);
+  // |was_touch_blocked| indicates whether the current event was dispatched
+  // blocking to the Renderer.
+  const bool was_touch_blocked =
+      ui::WebInputEventTraits::ShouldBlockEventStream(touch.event);
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetNonBlocking(ack_result));
+      is_source_touch_event_set_non_blocking,
+      was_touch_blocked
+          ? absl::make_optional(touch.event.GetEventLatencyMetadata())
+          : absl::nullopt);
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()
@@ -2856,7 +2856,6 @@ void RenderWidgetHostViewAndroid::TakeFallbackContentFrom(
     return;
   delegated_frame_host_->TakeFallbackContentFrom(
       view_android->delegated_frame_host_.get());
-  host()->GetContentRenderingTimeoutFrom(view_android->host());
 }
 
 void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
@@ -3271,6 +3270,14 @@ void RenderWidgetHostViewAndroid::SetWebContentsAccessibility(
 void RenderWidgetHostViewAndroid::SetNeedsBeginFrameForFlingProgress() {
   if (sync_compositor_)
     sync_compositor_->RequestOneBeginFrame();
+}
+
+const cc::slim::SurfaceLayer* RenderWidgetHostViewAndroid::GetSurfaceLayer()
+    const {
+  if (!delegated_frame_host_) {
+    return nullptr;
+  }
+  return delegated_frame_host_->content_layer();
 }
 
 void RenderWidgetHostViewAndroid::BeginRotationBatching() {

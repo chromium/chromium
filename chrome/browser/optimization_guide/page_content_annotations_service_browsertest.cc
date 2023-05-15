@@ -29,7 +29,6 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
-#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -53,18 +52,8 @@ using ::testing::UnorderedElementsAre;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Different platforms may execute float models slightly differently, and this
-// results in a pretty big difference in the scores. This matcher offers up to
-// 0.1 of absolute difference in score, but the topic itself must match.
-// See crbug.com/1307251.
+// results in a noticeable difference in the scores. See crbug.com/1307251.
 const double kMaxScoreErrorBetweenPlatforms = 0.1;
-testing::Matcher<WeightedIdentifier> CrossPlatformMatcher(
-    const WeightedIdentifier& wi) {
-  return testing::AllOf(
-      testing::Property(&WeightedIdentifier::value, wi.value()),
-      testing::Property(
-          &WeightedIdentifier::weight,
-          testing::DoubleNear(wi.weight(), kMaxScoreErrorBetweenPlatforms)));
-}
 
 class TestPageContentAnnotationsObserver
     : public PageContentAnnotationsService::PageContentAnnotationsObserver {
@@ -223,131 +212,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceValidationBrowserTest,
   EXPECT_NE(nullptr, PageContentAnnotationsServiceFactory::GetForProfile(
                          browser()->profile()));
 }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-class PageContentAnnotationsServicePageTopicsBrowserTest
-    : public InProcessBrowserTest {
- public:
-  PageContentAnnotationsServicePageTopicsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints, features::kPageContentAnnotations},
-        {features::kPreventLongRunningPredictionModels});
-  }
-  ~PageContentAnnotationsServicePageTopicsBrowserTest() override = default;
-
-  void LoadPageTopicsV2Model() {
-    proto::Any any_metadata;
-    any_metadata.set_type_url(
-        "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-    proto::PageTopicsModelMetadata page_topics_model_metadata;
-    page_topics_model_metadata.set_version(123);
-    page_topics_model_metadata.add_supported_output(
-        proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
-    auto* output_params =
-        page_topics_model_metadata.mutable_output_postprocessing_params();
-    auto* category_params = output_params->mutable_category_params();
-    category_params->set_max_categories(5);
-    category_params->set_min_none_weight(0.8);
-    category_params->set_min_category_weight(0.1);
-    category_params->set_min_normalized_weight_within_top_n(0.1);
-    page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
-    base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
-    base::FilePath model_file_path =
-        source_root_dir.AppendASCII("components")
-            .AppendASCII("test")
-            .AppendASCII("data")
-            .AppendASCII("optimization_guide")
-            .AppendASCII("page_topics_128_model.tflite");
-
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->OverrideTargetModelForTesting(
-            proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
-            optimization_guide::TestModelInfoBuilder()
-                .SetModelFilePath(model_file_path)
-                .SetModelMetadata(any_metadata)
-                .Build());
-
-    PageContentAnnotationsService* service =
-        PageContentAnnotationsServiceFactory::GetForProfile(
-            browser()->profile());
-    ASSERT_TRUE(service);
-
-    base::RunLoop run_loop;
-    service->RequestAndNotifyWhenModelAvailable(
-        AnnotationType::kPageTopics,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, bool success) {
-              EXPECT_TRUE(success);
-              run_loop->Quit();
-            },
-            &run_loop));
-    run_loop.Run();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
-                       E2EWithGoldenTestData) {
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(service);
-  LoadPageTopicsV2Model();
-
-  std::vector<BatchAnnotationResult> results;
-  base::RunLoop run_loop;
-  service->BatchAnnotate(
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             std::vector<BatchAnnotationResult>* out_results,
-             const std::vector<BatchAnnotationResult>& results) {
-            *out_results = results;
-            run_loop->Quit();
-          },
-          &run_loop, &results),
-      std::vector<std::string>{
-          "youtube.com",
-          "chrome.com",
-          "music.youtube.com",
-      },
-      AnnotationType::kPageTopics);
-  run_loop.Run();
-
-  ASSERT_EQ(results.size(), 3U);
-
-  EXPECT_EQ(results[0].input(), "youtube.com");
-  EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
-  ASSERT_TRUE(results[0].topics());
-  EXPECT_THAT(*results[0].topics(),
-              testing::ElementsAreArray({
-                  CrossPlatformMatcher(WeightedIdentifier(250, 0.601997)),
-                  CrossPlatformMatcher(WeightedIdentifier(43, 0.915914)),
-              }));
-
-  EXPECT_EQ(results[1].input(), "chrome.com");
-  EXPECT_EQ(results[1].type(), AnnotationType::kPageTopics);
-  ASSERT_TRUE(results[1].topics());
-  EXPECT_THAT(*results[1].topics(),
-              testing::ElementsAreArray({
-                  CrossPlatformMatcher(WeightedIdentifier(223, 0.209933)),
-                  CrossPlatformMatcher(WeightedIdentifier(43, 0.474946)),
-                  CrossPlatformMatcher(WeightedIdentifier(148, 0.881723)),
-              }));
-
-  EXPECT_EQ(results[2].input(), "music.youtube.com");
-  EXPECT_EQ(results[2].type(), AnnotationType::kPageTopics);
-  ASSERT_TRUE(results[2].topics());
-  EXPECT_THAT(*results[2].topics(),
-              testing::ElementsAreArray({
-                  CrossPlatformMatcher(WeightedIdentifier(250, 0.450154)),
-                  CrossPlatformMatcher(WeightedIdentifier(1, 0.518014)),
-                  CrossPlatformMatcher(WeightedIdentifier(43, 0.596481)),
-                  CrossPlatformMatcher(WeightedIdentifier(23, 0.827426)),
-              }));
-}
-#endif
 
 class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -570,31 +434,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
           &run_loop),
       std::vector<std::string>{"this is a test"},
       AnnotationType::kContentVisibility);
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       PageTopicsDomainPreProcessing) {
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
-  base::RunLoop run_loop;
-  service->BatchAnnotate(
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const std::vector<BatchAnnotationResult>& results) {
-            ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "www.chromium.org");
-            EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
-            // Intentionally does not test the output of model inference, since
-            // that is well covered in the unittests for
-            // PageContentAnnotationsModelManager.
-            run_loop->Quit();
-          },
-          &run_loop),
-      std::vector<std::string>{"www.chromium.org"},
-      AnnotationType::kPageTopics);
 
   run_loop.Run();
 }

@@ -181,6 +181,25 @@ class NET_EXPORT NetworkAnonymizationKey {
       const base::Value& value,
       NetworkAnonymizationKey* out_network_anonymization_key);
 
+  // Determine whether network state partitioning is enabled. This is true if
+  // any of the features
+  //
+  // * `SplitHostCacheByNetworkIsolationKey`
+  // * `PartitionConnectionsByNetworkIsolationKey`
+  // * `PartitionHttpServerPropertiesByNetworkIsolationKey`
+  // * `PartitionSSLSessionsByNetworkIsolationKey`
+  // * `PartitionNelAndReportingByNetworkIsolationKey`
+  //
+  // is enabled, or if `PartitionByDefault()` has been called.
+  static bool IsPartitioningEnabled();
+
+  // Default partitioning to enabled, regardless of feature settings. This must
+  // be called before any calls to `IsPartitioningEnabled()`.
+  static void PartitionByDefault();
+
+  // Clear partitioning-related globals.
+  static void ClearGlobalsForTesting();
+
  private:
   NetworkAnonymizationKey(
       const SchemefulSite& top_frame_site,

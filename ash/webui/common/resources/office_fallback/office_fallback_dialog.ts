@@ -3,12 +3,22 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogChoice} from './office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from './office_fallback_browser_proxy.js';
 import {getTemplate} from './office_fallback_dialog.html.js';
+
+window.addEventListener('load', () => {
+  const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
+  const theme = jellyEnabled ? 'refresh23' : 'legacy';
+  document.documentElement.setAttribute('theme', theme);
+  startColorChangeUpdater();
+});
 
 /**
  * The OfficeFallbackElement represents the dialog that allows the user to
@@ -79,9 +89,9 @@ export class OfficeFallbackElement extends HTMLElement {
     const instructionsMessageElement =
         fragment.querySelector('#instructions-message')! as HTMLElement;
 
-    titleElement.innerText = this.titleText;
-    reasonMessageElement.innerText = this.reasonMessage;
-    instructionsMessageElement.innerHTML = this.instructionsMessage;
+    titleElement.textContent = this.titleText;
+    reasonMessageElement.textContent = this.reasonMessage;
+    instructionsMessageElement.textContent = this.instructionsMessage;
     return template;
   }
 

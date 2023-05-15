@@ -11,6 +11,7 @@
 #include <cstdarg>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/pointer.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/wayland/server_util.h"
@@ -55,7 +56,7 @@ class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
   void OnConstraintActivated() override { SendLocked(); }
   void OnAlreadyConstrained() override {
     wl_resource_post_error(
-        constraint_resource_,
+        constraint_resource_.get(),
         ZWP_POINTER_CONSTRAINTS_V1_ERROR_ALREADY_CONSTRAINED,
         "A pointer constraint was already requested for this wl_pointer "
         "on this wl_surface.");
@@ -77,9 +78,9 @@ class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
     zwp_locked_pointer_v1_send_unlocked(constraint_resource_);
   }
 
-  wl_resource* const constraint_resource_;
-  Pointer* pointer_;
-  Surface* const surface_;
+  const raw_ptr<wl_resource, ExperimentalAsh> constraint_resource_;
+  raw_ptr<Pointer, ExperimentalAsh> pointer_;
+  const raw_ptr<Surface, ExperimentalAsh> surface_;
   bool is_persistent_;
 };
 

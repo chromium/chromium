@@ -113,6 +113,22 @@ class TestQuietNotificationPermissionUiSelector
  private:
   Decision canned_decision_;
 };
+
+class ChipExpansionObserver : OmniboxChipButton::Observer {
+ public:
+  explicit ChipExpansionObserver(OmniboxChipButton* chip) {
+    observation_.Observe(chip);
+  }
+
+  void WaitForChipToExpand() { loop_.Run(); }
+
+  void OnExpandAnimationEnded() override { loop_.Quit(); }
+
+  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+      observation_{this};
+  base::RunLoop loop_;
+};
+
 }  // namespace
 
 class PermissionChipInteractiveTest : public InProcessBrowserTest {
@@ -2127,6 +2143,12 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permissions::PermissionRequestObserver observer(web_contents);
 
+  LocationBarView* location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  ASSERT_TRUE(location_bar);
+  ChipController* chip_controller = location_bar->chip_controller();
+  ChipExpansionObserver chip_expansion_observer(chip_controller->chip());
+
   EXPECT_FALSE(manager->IsRequestInProgress());
 
   EXPECT_TRUE(content::ExecJs(
@@ -2136,16 +2158,13 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
   // Wait until a permission request is shown.
   observer.Wait();
 
+  // Wait until chip finished expanding
+  chip_expansion_observer.WaitForChipToExpand();
+
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
   EXPECT_TRUE(manager->view_for_testing());
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  LocationBarView* location_bar = browser_view->GetLocationBarView();
-  ASSERT_TRUE(location_bar);
-
-  ChipController* chip = location_bar->chip_controller();
-  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   // At first, we verify that the same document navigation on both, top level
   // and embedded frames will not end up resolving or hiding the current active
@@ -2158,7 +2177,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
   main_frame_navigation_observer.Wait();
 
   EXPECT_TRUE(manager->IsRequestInProgress());
-  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(chip_controller->IsAnimating());
 
   // Same document navigation on the child frame.
   content::TestNavigationObserver embedded_frame_navigation_observer(
@@ -2167,13 +2187,13 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
   embedded_frame_navigation_observer.Wait();
 
   EXPECT_TRUE(manager->IsRequestInProgress());
-  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   // Second, we verify that cross-origin navigation of the embedded iframe will
   // not end up resolving or hiding the current active permission request chip.
   ASSERT_TRUE(NavigateToURLFromRenderer(subframe, embedded_url));
   EXPECT_TRUE(manager->IsRequestInProgress());
-  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   manager->Accept();
 

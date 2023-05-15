@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "content/public/common/url_constants.h"
 
 namespace {
@@ -20,11 +21,11 @@ HighEfficiencyChipTabHelper::HighEfficiencyChipTabHelper(
       content::WebContentsUserData<HighEfficiencyChipTabHelper>(*contents) {}
 
 bool HighEfficiencyChipTabHelper::ShouldChipBeVisible() const {
-  return was_discarded_ && is_page_supported_;
+  return was_discarded_ && is_site_supported_ && IsProactiveDiscard();
 }
 
 bool HighEfficiencyChipTabHelper::ShouldIconAnimate() const {
-  return was_discarded_ && !was_animated_;
+  return was_discarded_ && !was_animated_ && IsProactiveDiscard();
 }
 
 void HighEfficiencyChipTabHelper::SetWasAnimated() {
@@ -49,6 +50,14 @@ uint64_t HighEfficiencyChipTabHelper::GetMemorySavingsInBytes() const {
                    kKiloByte;
 }
 
+void HighEfficiencyChipTabHelper::SetSiteWasAddedToExclusionList() {
+  was_site_added_to_exclusion_list_ = true;
+}
+
+bool HighEfficiencyChipTabHelper::GetWasSiteAddedToExclusionList() const {
+  return was_site_added_to_exclusion_list_;
+}
+
 void HighEfficiencyChipTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Pages can only be discarded while they are in the background, and we only
@@ -63,33 +72,20 @@ void HighEfficiencyChipTabHelper::DidStartNavigation(
     // them causes the state to get reset.
     return;
   }
-  discard_reason_ = GetDiscardReason(navigation_handle);
-  was_discarded_ =
-      discard_reason_.has_value() &&
-      discard_reason_.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
+  discard_reason_ =
+      high_efficiency::GetDiscardReason(navigation_handle->GetWebContents());
+  was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
   was_animated_ = false;
   was_chip_hidden_ = false;
-  is_page_supported_ = DoesChipSupportPage(navigation_handle->GetURL());
+  was_site_added_to_exclusion_list_ = false;
+  is_site_supported_ =
+      high_efficiency::IsURLSupported(navigation_handle->GetURL());
 }
 
-bool HighEfficiencyChipTabHelper::DoesChipSupportPage(const GURL& url) const {
-  return !url.SchemeIs(content::kChromeUIScheme);
-}
-
-absl::optional<mojom::LifecycleUnitDiscardReason>
-HighEfficiencyChipTabHelper::GetDiscardReason(
-    content::NavigationHandle* navigation_handle) const {
-  if (navigation_handle->ExistingDocumentWasDiscarded()) {
-    auto* pre_discard_resource_usage = performance_manager::user_tuning::
-        UserPerformanceTuningManager::PreDiscardResourceUsage::FromWebContents(
-            navigation_handle->GetWebContents());
-    return pre_discard_resource_usage == nullptr
-               ? absl::nullopt
-               : absl::make_optional<mojom::LifecycleUnitDiscardReason>(
-                     pre_discard_resource_usage->discard_reason());
-  }
-
-  return absl::nullopt;
+bool HighEfficiencyChipTabHelper::IsProactiveDiscard() const {
+  return discard_reason_.has_value() &&
+         discard_reason_.value() ==
+             mojom::LifecycleUnitDiscardReason::PROACTIVE;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HighEfficiencyChipTabHelper);

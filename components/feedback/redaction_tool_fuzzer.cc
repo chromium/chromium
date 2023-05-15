@@ -41,6 +41,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   redaction::RedactionTool redactor(first_party_extension_ids.get());
+  redactor.EnableCreditCardRedaction(true);
   redactor.Redact(provider.ConsumeRemainingBytesAsString());
   return 0;
 }

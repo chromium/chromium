@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
@@ -136,6 +137,48 @@ void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
       base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
 }
 
+int g_cache_hit_count = 0;
+int g_cache_miss_count = 0;
+
+base::Lock& GetCacheStatsLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+void RecordCacheUse() {
+  base::AutoLock lock(GetCacheStatsLock());
+  base::UmaHistogramCounts100("GPU.ANGLE.MetalShader.CacheHitCount",
+                              g_cache_hit_count);
+  base::UmaHistogramCounts100("GPU.ANGLE.MetalShader.CacheMissCount",
+                              g_cache_miss_count);
+}
+
+void ANGLEPlatformImpl_recordShaderCacheUse(bool in_cache) {
+  static bool did_schedule_log = false;
+  bool post_task = false;
+  {
+    base::AutoLock lock(GetCacheStatsLock());
+    if (!did_schedule_log) {
+      did_schedule_log = true;
+      post_task = true;
+    }
+    if (in_cache) {
+      ++g_cache_hit_count;
+    } else {
+      ++g_cache_miss_count;
+    }
+  }
+  if (post_task) {
+    // Record the stats soonish after the first call. Ideally this would be
+    // logged along with startup, but that's rather complex to determine from
+    // here (as well as pluming through to browser side).
+    // The 90 seconds comes from the 99 percentile of startup time on macos.
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&RecordCacheUse), base::Seconds(90));
+  }
+}
+
 }  // anonymous namespace
 
 NO_SANITIZE("cfi-icall")
@@ -171,6 +214,8 @@ bool InitializePlatform(EGLDisplay display) {
       ANGLEPlatformImpl_monotonicallyIncreasingTime;
   platformMethods->updateTraceEventDuration =
       ANGLEPlatformImpl_updateTraceEventDuration;
+  platformMethods->recordShaderCacheUse =
+      ANGLEPlatformImpl_recordShaderCacheUse;
 
   // Initialize the delegate to allow posting tasks in the Chromium thread pool.
   // The thread pool is not available in some unittests.

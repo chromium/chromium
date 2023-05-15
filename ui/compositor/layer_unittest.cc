@@ -588,8 +588,8 @@ TEST(LayerStandaloneTest, ReleaseMailboxOnDestruction) {
 
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   layer->SetTransferableResource(resource,
                                  base::BindOnce(ReturnMailbox, &callback_run),
@@ -1122,8 +1122,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   bool callback1_run = false;
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback1_run),
@@ -1148,8 +1148,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
 
   bool callback2_run = false;
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback2_run),
@@ -1175,8 +1175,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   // Back to a texture, without changing the bounds of the layer or the texture.
   bool callback3_run = false;
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback3_run),
@@ -1523,8 +1523,8 @@ TEST_F(LayerWithNullDelegateTest, EmptyDamagedRect) {
   std::unique_ptr<Layer> root = CreateLayer(LAYER_SOLID_COLOR);
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   root->SetTransferableResource(resource, std::move(callback),
                                 gfx::Size(10, 10));
@@ -2444,8 +2444,8 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
 
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   bool release_callback_run = false;
 
@@ -2474,8 +2474,8 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(mirror->has_external_content());
 
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
   release_callback_run = false;
 

@@ -1,0 +1,23 @@
+{
+  "aggregatable_deduplication_keys": [
+    {
+      "deduplication_key": "555",
+      "filters": {
+        "x": ["x"]
+      }
+    },
+    {
+      "deduplication_key": "666",
+      "filters": {
+          "x": ["y"]
+      }
+    },
+    {
+      "deduplication_key": "777",
+      "filters": {
+        "x": ["z"]
+      }
+    }
+  ],
+  "expect_deduplicated": true
+}

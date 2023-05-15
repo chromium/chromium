@@ -6,7 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.HTTP_REFERRER;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -49,7 +49,7 @@ public class HTTPSTabsOpenedFromExternalAppTest {
     @Feature({"Navigation"})
     public void testReferrerPolicyHttpReferrerHttpsNavigationsPolicyDefault() {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         try {
             String url = mTestServer.getURL("/chrome/test/data/android/about.html");
             TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(

@@ -8,8 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import android.app.Activity;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -111,7 +111,7 @@ public class TabbedModeTabPersistencePolicyTest {
                                 return new GURL("https://www.google.com");
                             }
                         };
-                        tab.initialize(null, null, null, null, null, false, null);
+                        tab.initialize(null, null, null, null, null, false, null, false);
                         return tab;
                     }
                 };

@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,7 +42,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   std::unique_ptr<TestBrowserContext> context_;
-  ArcVolumeMounterBridge* bridge_ = nullptr;
+  raw_ptr<ArcVolumeMounterBridge, ExperimentalAsh> bridge_ = nullptr;
 };
 
 TEST_F(ArcVolumeMounterBridgeTest, ConstructDestruct) {

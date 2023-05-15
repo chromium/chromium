@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -109,7 +110,7 @@ class TestSigninHelper : public SigninHelper {
   ~TestSigninHelper() override;
 
  private:
-  SigninHelperTest* test_fixture_;
+  raw_ptr<SigninHelperTest, ExperimentalAsh> test_fixture_;
 };
 
 }  // namespace
@@ -250,8 +251,10 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   void OnAccountRemoved(const account_manager::Account& account) override {}
 
-  account_manager::AccountManager* account_manager_ = nullptr;
-  crosapi::AccountManagerMojoService* account_manager_mojo_service_ = nullptr;
+  raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
+      nullptr;
+  raw_ptr<crosapi::AccountManagerMojoService, ExperimentalAsh>
+      account_manager_mojo_service_ = nullptr;
   int signin_helper_created_count_ = 0;
   int signin_helper_deleted_count_ = 0;
   int on_token_upserted_call_count_ = 0;
@@ -387,7 +390,8 @@ class SigninHelperTestWithArcAccountRestrictions
   absl::optional<account_manager::Account> on_account_available_in_arc_account_;
   absl::optional<account_manager::Account>
       on_account_unavailable_in_arc_account_;
-  ash::AccountAppsAvailability* account_apps_availability_;
+  raw_ptr<ash::AccountAppsAvailability, ExperimentalAsh>
+      account_apps_availability_;
   base::test::ScopedFeatureList feature_list_;
 };
 

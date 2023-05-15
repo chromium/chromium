@@ -10,8 +10,9 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -87,7 +88,6 @@ public class AutofillPopupTest {
     private static final String PHONE_NUMBER = "4158889999";
     private static final String EMAIL = "john@acme.inc";
     private static final String LANGUAGE_CODE = "";
-    private static final String ORIGIN = "https://www.example.com";
 
     private static final String TEST_SERVER_DIR = "components/test/data/autofill";
     private static final String BASIC_PAGE_DATA = "autofill_basic_page_data.html";
@@ -142,7 +142,7 @@ public class AutofillPopupTest {
         );
         Features.getInstance().enable(ChromeFeatureList.AUTOFILL_ALLOW_NON_HTTP_ACTIVATION);
         mServer = new EmbeddedTestServer();
-        mServer.initializeNative(InstrumentationRegistry.getContext(),
+        mServer.initializeNative(ApplicationProvider.getApplicationContext(),
                 EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.addDefaultHandlers(TEST_SERVER_DIR);
         mServer.start();
@@ -184,10 +184,10 @@ public class AutofillPopupTest {
 
         // Add an Autofill profile.
         mHelper = new AutofillTestHelper();
-        AutofillProfile profile = new AutofillProfile("" /* guid */, ORIGIN,
-                "" /* honorific prefix */, FIRST_NAME + " " + LAST_NAME, COMPANY_NAME,
-                STREET_ADDRESS_TEXTAREA, STATE, CITY, DEPENDENT_LOCALITY, ZIP_CODE, SORTING_CODE,
-                COUNTRY, PHONE_NUMBER, EMAIL, LANGUAGE_CODE);
+        AutofillProfile profile = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
+                FIRST_NAME + " " + LAST_NAME, COMPANY_NAME, STREET_ADDRESS_TEXTAREA, STATE, CITY,
+                DEPENDENT_LOCALITY, ZIP_CODE, SORTING_CODE, COUNTRY, PHONE_NUMBER, EMAIL,
+                LANGUAGE_CODE);
         mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesToSuggest());
 

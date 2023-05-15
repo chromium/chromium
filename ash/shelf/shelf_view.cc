@@ -43,6 +43,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_label.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
@@ -56,6 +57,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -159,7 +161,7 @@ class BoundsAnimatorDisabler {
   // The previous animation duration.
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
-  views::BoundsAnimator* bounds_animator_;
+  raw_ptr<views::BoundsAnimator, ExperimentalAsh> bounds_animator_;
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
@@ -262,7 +264,7 @@ class ShelfView::ViewOpacityResetter : public views::ViewObserver {
   }
 
  private:
-  views::View* view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
 };
@@ -281,7 +283,7 @@ class ShelfView::FadeInAnimationDelegate
     shelf_view_->OnFadeInAnimationEnded();
   }
 
-  ShelfView* shelf_view_ = nullptr;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
 };
 
 // AnimationDelegate used when deleting an item. This steadily decreased the
@@ -312,7 +314,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   void AnimationCanceled(const Animation* animation) override {}
 
  private:
-  ShelfView* shelf_view_;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
   std::unique_ptr<views::View> view_;
 };
 
@@ -339,8 +341,8 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
   }
 
  private:
-  ShelfView* shelf_view_;
-  views::View* view_;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
 };
 
 // static
@@ -365,16 +367,20 @@ ShelfView::ShelfView(ShelfModel* model,
   shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
 
   if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
     SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
   }
 
   announcement_view_ = new views::View();
-  AddChildView(announcement_view_);
+  AddChildView(announcement_view_.get());
 
   if (base::FeatureList::IsEnabled(features::kShelfParty)) {
     const int button_size = GetButtonSize();
@@ -385,7 +391,7 @@ ShelfView::ShelfView(ShelfModel* model,
         all_pinned_items_are_partying_label_->GetPreferredSize(
             {{/* Unbounded */}, button_size}));
     all_pinned_items_are_partying_label_->SetVisible(false);
-    AddChildView(all_pinned_items_are_partying_label_);
+    AddChildView(all_pinned_items_are_partying_label_.get());
   }
 }
 
@@ -686,11 +692,11 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
 void ShelfView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (!details.is_add) {
-    if (details.child == current_ghost_view_) {
+    if (details.child == current_ghost_view_.get()) {
       current_ghost_view_ = nullptr;
       current_ghost_view_index_ = absl::nullopt;
     }
-    if (details.child == last_ghost_view_) {
+    if (details.child == last_ghost_view_.get()) {
       last_ghost_view_ = nullptr;
       current_ghost_view_index_ = absl::nullopt;
     }
@@ -1014,7 +1020,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
-          this, shelf_button_delegate_ ? shelf_button_delegate_ : this);
+          this, shelf_button_delegate_ ? shelf_button_delegate_.get() : this);
       button->SetImage(item.image);
       button->SetNotificationBadgeColor(item.notification_badge_color);
       button->ReflectItemStatus(item);
@@ -1220,8 +1226,13 @@ void ShelfView::EndDrag(bool cancel,
       // and it might have moved within the bounds. In that case the item need
       // to animate back to its correct location.
       AnimateToIdealBounds();
-      bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
-                                             std::move(animation_delegate));
+      // TODO(crbug/1442378): Remove the check below once the bounds animator
+      // works better with zero animation duration.
+      if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+        bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
+                                               std::move(animation_delegate));
+      }
+
     } else {
       drag_and_drop_view->SetSize(pre_drag_and_drop_size_);
     }
@@ -1989,7 +2000,7 @@ bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
 
   // Note that |drag_and_drop_shelf_id_| is set only when the current drag view
   // is from app list, which can not be dragged to the unpinned app side.
-  return !ShelfItemForView(drag_view)->pinned_by_policy &&
+  return !ShelfItemForView(drag_view)->IsPinStateForced() &&
          drag_and_drop_shelf_id_ == ShelfID() && can_change_pin_state;
 }
 
@@ -2239,9 +2250,13 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // it. When done we'll fade the view in.
   AnimateToIdealBounds();
   DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-  bounds_animator_->SetAnimationDelegate(
-      view, std::unique_ptr<gfx::AnimationDelegate>(
-                new StartFadeAnimationDelegate(this, view)));
+  // TODO(crbug/1442378): Remove the check below once the bounds animator works
+  // better with zero animation duration.
+  if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+    bounds_animator_->SetAnimationDelegate(
+        view, std::unique_ptr<gfx::AnimationDelegate>(
+                  new StartFadeAnimationDelegate(this, view)));
+  }
 }
 
 void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
@@ -2291,9 +2306,13 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     // of the views to their target location.
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
     auto* const view_ptr = view.get();
-    bounds_animator_->SetAnimationDelegate(
-        view_ptr,
-        std::make_unique<FadeOutAnimationDelegate>(this, std::move(view)));
+    // TODO(crbug/1442378): Remove the check below once the bounds animator
+    // works better with zero animation duration.
+    if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+      bounds_animator_->SetAnimationDelegate(
+          view_ptr,
+          std::make_unique<FadeOutAnimationDelegate>(this, std::move(view)));
+    }
   } else {
     // Ensures that |view| is not used after destruction.
     StopAnimatingViewIfAny(view.get());

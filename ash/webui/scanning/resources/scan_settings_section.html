@@ -1,4 +1,8 @@
 <style include="scanning-shared scanning-fonts">
+  :host-context(body.jelly-enabled) ::slotted([slot=label]) {
+    font: var(--cros-body-2-font);
+  }
+
   #selectDiv {
     align-items: center;
     display: flex;

@@ -12,7 +12,7 @@
 
 set -e  # makes the script quit on any command failure
 
-PLATFORMS="linux,win,android"
+PLATFORMS="linux,android,ash,cros,win"
 if [ "$1" != "" ]
 then
   PLATFORMS="$1"
@@ -99,6 +99,18 @@ force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
+    ash)
+        cat <<EOF
+target_os = "chromeos"
+dcheck_always_on = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
     mac)
         cat <<EOF
 target_os = "mac"
@@ -155,6 +167,7 @@ main_rewrite() {
     time tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool rewrite_templated_container_fields \
+        --generate-compdb \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out

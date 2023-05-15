@@ -9,6 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
 
 namespace syncer {
@@ -21,19 +22,6 @@ class SyncSetupInProgressHandle;
 // to allow the complex sync setup flow on iOS.
 class SyncSetupService : public KeyedService {
  public:
-  // The set of user-selectable datatypes handled by Chrome for iOS.
-  // TODO(crbug.com/1067280): Use syncer::UserSelectableType instead.
-  using SyncableDatatype = enum {
-    kSyncBookmarks,
-    kSyncOmniboxHistory,
-    kSyncPasswords,
-    kSyncOpenTabs,
-    kSyncAutofill,
-    kSyncPreferences,
-    kSyncReadingList,
-    kNumberOfSyncableDatatypes
-  };
-
   explicit SyncSetupService(syncer::SyncService* sync_service);
 
   SyncSetupService(const SyncSetupService&) = delete;
@@ -41,52 +29,38 @@ class SyncSetupService : public KeyedService {
 
   ~SyncSetupService() override;
 
-  // Returns the `syncer::ModelType` associated to the given
-  // `SyncableDatatypes`.
-  static syncer::ModelType GetModelType(SyncableDatatype datatype);
-
-  // Returns whether the user wants Sync to run.
-  // TODO(crbug.com/1291946): Callers should typically use CanSyncFeatureStart()
-  // or IsSyncFeatureEnabled() instead.
-  virtual bool IsSyncRequested() const;
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
 
-  // Returns all currently enabled datatypes.
-  syncer::ModelTypeSet GetPreferredDataTypes() const;
   // Returns whether the given datatype has been enabled for sync and its
   // initialization is complete (SyncEngineHost::OnEngineInitialized has been
   // called).
   virtual bool IsDataTypeActive(syncer::ModelType datatype) const;
   // Returns whether the given datatype is enabled by the user.
-  virtual bool IsDataTypePreferred(syncer::ModelType datatype) const;
+  // TODO(crbug.com/1429249): Rename to get rid of the `preferred` terminology.
+  virtual bool IsDataTypePreferred(syncer::UserSelectableType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
   // any time, but will only be meaningful if `CanSyncFeatureStart` is true and
-  // `IsSyncingAllDataTypes` is false. Changes won't take effect in the sync
+  // `IsSyncEverythingEnabled` is false. Changes won't take effect in the sync
   // backend before the next call to `CommitChanges`.
-  void SetDataTypeEnabled(syncer::ModelType datatype, bool enabled);
+  void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
 
   // Returns whether the user needs to enter a passphrase or enable sync to make
   // tab sync work.
   bool UserActionIsRequiredToHaveTabSyncWork();
 
   // Returns whether all datatypes are being synced.
-  virtual bool IsSyncingAllDataTypes() const;
+  virtual bool IsSyncEverythingEnabled() const;
   // Sets whether all datatypes should be synced or not. Changes won't take
   // effect before the next call to `CommitChanges`.
-  virtual void SetSyncingAllDataTypes(bool sync_all);
+  virtual void SetSyncEverythingEnabled(bool sync_all);
 
   // Returns whether all sync data is being encrypted.
   virtual bool IsEncryptEverythingEnabled() const;
 
-  // Returns true if the initial sync setup is currently ongoing.
-  // Returns false if it is either finished or not started.
-  // This method is guaranteed not to start the sync backend so it can be
-  // called at start-up.
-  virtual bool IsInitialSetupOngoing();
-
   // Pauses sync allowing the user to configure what data to sync before
   // actually starting to sync data with the server.
+  // TODO(crbug.com/1438800): Rename to PrepareForSyncSetup().
   virtual void PrepareForFirstSyncSetup();
 
   // Sets the first setup complete flag. This method doesn't commit sync
@@ -97,7 +71,7 @@ class SyncSetupService : public KeyedService {
       syncer::SyncFirstSetupCompleteSource source);
 
   // Returns true if the user finished the Sync setup flow.
-  bool IsFirstSetupComplete() const;
+  virtual bool IsInitialSyncFeatureSetupComplete() const;
 
   // Commits all the pending configuration changes to Sync.
   void CommitSyncChanges();

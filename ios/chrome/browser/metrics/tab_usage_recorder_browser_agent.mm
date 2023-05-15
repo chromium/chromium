@@ -9,12 +9,12 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -179,8 +179,9 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
 }
 
 void TabUsageRecorderBrowserAgent::RecordPrimaryBrowserChange(
-    bool primary_browser,
-    web::WebState* active_web_state) {
+    bool primary_browser) {
+  web::WebState* active_web_state =
+      web_state_list_ ? web_state_list_->GetActiveWebState() : nullptr;
   if (primary_browser) {
     // User just came back to this tab model, so record a tab selection even
     // though the current tab was reselected.

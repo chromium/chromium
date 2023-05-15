@@ -7,6 +7,7 @@
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/login/ui/login_user_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -55,15 +56,16 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
     auto* container = new views::View();
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container->AddChildView(public_account_view_);
-    container->AddChildView(focusable_view_);
+    container->AddChildView(public_account_view_.get());
+    container->AddChildView(focusable_view_.get());
     SetWidget(CreateWidgetWithContent(container));
   }
 
   LoginUserInfo user_;
 
-  LoginPublicAccountUserView* public_account_view_ = nullptr;
-  views::View* focusable_view_ = nullptr;
+  raw_ptr<LoginPublicAccountUserView, ExperimentalAsh> public_account_view_ =
+      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> focusable_view_ = nullptr;
 
   int user_view_tap_count_ = 0;
   int public_account_tap_count_ = 0;

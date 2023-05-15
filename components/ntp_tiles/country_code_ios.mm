@@ -7,9 +7,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/ntp_tiles/country_code_ios.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 std::string ntp_tiles::GetDeviceCountryCode() {
-  NSLocale *current_locale = [NSLocale currentLocale];
-  NSString *country_code = [current_locale objectForKey:NSLocaleCountryCode];
+  NSString* country_code =
+      [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
 
   return base::SysNSStringToUTF8(country_code);
 }

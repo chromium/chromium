@@ -134,6 +134,7 @@ cros_toolchain("nacl_bootstrap") {
     cc = cros_nacl_helper_arm32_cc
     cxx = cros_nacl_helper_arm32_cxx
     ld = cros_nacl_helper_arm32_ld
+
     # Avoid accidental use of Arm64 sysroot because of SYSROOT
     # env variable set in ChromeOS builds.
     toolchain_args.sysroot = cros_nacl_helper_arm32_sysroot
@@ -278,6 +279,12 @@ if (also_build_lacros_chrome_for_architecture != "") {
       also_build_lacros_chrome_for_architecture = ""
       chromeos_is_browser_only = true
       use_clang_coverage = false
+
+      # Do not propagate AFDO settings from Ash build to Lacros build.
+      # Specifically, Lacros uses PGO by default, so this would
+      # conflict.
+      clang_use_default_sample_profile = false
+      clang_sample_profile_path = ""
     }
     if (!lacros_use_chromium_toolchain) {
       # These are args for the template.

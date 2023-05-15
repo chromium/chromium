@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_response_converter.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -84,7 +85,12 @@ bool FidoDevice::IsStatusForUnrecognisedCredentialID(
   return status == CtapDeviceResponseCode::kCtap2ErrInvalidCredential ||
          status == CtapDeviceResponseCode::kCtap2ErrNoCredentials ||
          status == CtapDeviceResponseCode::kCtap2ErrLimitExceeded ||
-         status == CtapDeviceResponseCode::kCtap2ErrRequestTooLarge;
+         status == CtapDeviceResponseCode::kCtap2ErrRequestTooLarge ||
+         // Some alwaysUv devices return this, even for up=false. See
+         // crbug.com/1443039.
+         (base::FeatureList::IsEnabled(
+              kWebAuthnPinRequiredMeansNotRecognized) &&
+          status == CtapDeviceResponseCode::kCtap2ErrPinRequired);
 }
 
 }  // namespace device

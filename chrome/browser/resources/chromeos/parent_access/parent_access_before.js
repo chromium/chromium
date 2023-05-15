@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionApprovalsBefore} from './flows/extension_approvals_before.js';
+import {ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from './parent_access_ui_handler.js';
@@ -29,6 +30,9 @@ class ParentAccessBefore extends PolymerElement {
   ready() {
     super.ready();
     this.renderFlowSpecificContent();
+    this.addEventListener(ParentAccessEvent.ON_SCREEN_SWITCHED, () => {
+      this.shadowRoot.querySelector('.action-button').focus();
+    });
   }
 
   /** @override */
@@ -46,10 +50,11 @@ class ParentAccessBefore extends PolymerElement {
 
   /** @private */
   showParentAccessUI_() {
-    this.dispatchEvent(new CustomEvent('show-authentication-flow', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+        new CustomEvent(ParentAccessEvent.SHOW_AUTHENTICATION_FLOW, {
+          bubbles: true,
+          composed: true,
+        }));
   }
 }
 

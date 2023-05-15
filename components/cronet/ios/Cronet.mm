@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #import "base/task/single_thread_task_runner.h"

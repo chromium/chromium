@@ -19,6 +19,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.os.UserManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,11 +31,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -156,7 +161,7 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinAndTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
@@ -179,7 +184,9 @@ public class SigninManagerImplTest {
         assertFalse(mSigninManager.isSignOutAllowed());
 
         mSigninManager.finishSignInAfterPolicyEnforced();
-        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+        verify(mIdentityMutator)
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
         verify(mSyncService).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
@@ -198,7 +205,7 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinNoTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
         assertTrue(mSigninManager.isSigninAllowed());
@@ -206,15 +213,16 @@ public class SigninManagerImplTest {
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signin(AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.UNKNOWN, callback);
+                SigninAccessPoint.START_PAGE, callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
-
-        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
+        verify(mIdentityMutator)
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN, SigninAccessPoint.START_PAGE);
 
         verify(mSyncService, never()).setSyncRequested();
-        // Signin should be complete and callback should be invoked.
+        // Signin should be complete qand callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
 
@@ -449,7 +457,8 @@ public class SigninManagerImplTest {
         };
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
-                .setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.UNKNOWN);
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
@@ -484,7 +493,8 @@ public class SigninManagerImplTest {
         };
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
-                .setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
@@ -521,5 +531,32 @@ public class SigninManagerImplTest {
         when(mProfile.isChild()).thenReturn(true);
 
         assertFalse(mSigninManager.isSignOutAllowed());
+    }
+
+    @Test
+    public void signInShouldBeSupportedForNonDemoUsers() {
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
+
+        // Make sure that the user is not a demo user.
+        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        UserManager userManager = Mockito.mock(UserManager.class);
+        Mockito.when(userManager.isDemoUser()).thenReturn(false);
+        shadowApplication.setSystemService(Context.USER_SERVICE, userManager);
+
+        assertTrue(mSigninManager.isSigninSupported(/*requireUpdatedPlayServices=*/true));
+        assertTrue(mSigninManager.isSigninSupported(/*requireUpdatedPlayServices=*/false));
+    }
+
+    @Test
+    public void signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable() {
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
+
+        // Make sure that the user is not a demo user.
+        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        UserManager userManager = Mockito.mock(UserManager.class);
+        Mockito.when(userManager.isDemoUser()).thenReturn(false);
+        shadowApplication.setSystemService(Context.USER_SERVICE, userManager);
+
+        assertFalse(mSigninManager.isSigninSupported(/*requireUpdatedPlayServices=*/true));
     }
 }

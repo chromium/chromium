@@ -179,25 +179,6 @@ base::OnceClosure GetDeferredQuitTaskForRunLoop(base::RunLoop* run_loop) {
                         kNumQuitDeferrals);
 }
 
-base::Value ExecuteScriptAndGetValue(RenderFrameHost* render_frame_host,
-                                     const std::string& script) {
-  base::RunLoop run_loop;
-  base::Value result;
-
-  render_frame_host->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, base::Value* out_result,
-             base::Value value) {
-            *out_result = std::move(value);
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitWhenIdleClosure(), &result));
-  run_loop.Run();
-
-  return result;
-}
-
 bool AreAllSitesIsolatedForTesting() {
   return SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
 }

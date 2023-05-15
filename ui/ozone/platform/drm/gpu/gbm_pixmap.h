@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -53,7 +54,7 @@ class GbmPixmap : public gfx::NativePixmap {
  private:
   ~GbmPixmap() override;
 
-  GbmSurfaceFactory* const surface_manager_;
+  const raw_ptr<GbmSurfaceFactory, ExperimentalAsh> surface_manager_;
   const std::unique_ptr<GbmBuffer> buffer_;
   const scoped_refptr<DrmFramebuffer> framebuffer_;
 };

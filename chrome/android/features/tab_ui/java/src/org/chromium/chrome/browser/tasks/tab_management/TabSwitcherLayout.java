@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -97,6 +99,7 @@ public class TabSwitcherLayout extends Layout {
     private boolean mIsInitialized;
 
     private float mBackgroundAlpha;
+    private int mTabListTopOffset;
 
     private int mFrameCount;
     private long mStartTime;
@@ -106,7 +109,10 @@ public class TabSwitcherLayout extends Layout {
 
     private boolean mAndroidViewFinishedShowing;
 
-    interface PerfListener {
+    /**
+     * Notified when the animation is complete.
+     */
+    public interface PerfListener {
         void onAnimationDone(
                 int frameRendered, long elapsedMs, long maxFrameInterval, int dirtySpan);
     }
@@ -227,18 +233,25 @@ public class TabSwitcherLayout extends Layout {
             boolean quick = mGridTabListDelegate.prepareTabSwitcherView();
 
             // Skip animation when there is no tab in current tab model, we don't show the shrink
-            // tab animatio.
+            // tab animation.
             boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
             final boolean shouldAnimate = animate && !isCurrentTabModelEmpty;
 
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
                 showOverviewWithTranslateUp(shouldAnimate);
+            } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
+                    && GTS_ACCESSIBILITY_SUPPORT.getValue()
+                    && ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+                // Intentionally disable the shrinking animation when touch exploration is enabled.
+                // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
+                // Chrome is in a temporary no "valid" focus target state. This result in focus
+                // shifting to the omnibox and triggers visual jank and accessibility announcement
+                // of the URL. Disable the animation and run immediately to avoid this state.
+                showOverviewWithTabShrink(false, () -> null, true);
             } else {
                 mDeferredAnimationRunnable = () -> {
                     showOverviewWithTabShrink(shouldAnimate,
-                            ()
-                                    -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(false),
-                            quick);
+                            () -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(), quick);
                 };
                 mGridTabListDelegate.runAnimationOnNextLayout(() -> {
                     if (mDeferredAnimationRunnable != null) {
@@ -402,16 +415,9 @@ public class TabSwitcherLayout extends Layout {
         if (skipSlowZooming) {
             showShrinkingAnimation &= quick;
         }
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())) {
-            // Intentionally disable the shrinking animation when accessibility is enabled.
-            // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
-            // I think we are in a temporary no "valid" focus target state, so the focus shifts
-            // to the omnibox and triggers an accessibility announcement of the URL and a
-            // keyboard hiding event. Disable the animation to avoid this temporary state.
-            showShrinkingAnimation &= !ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-        }
 
-        if (!showShrinkingAnimation || target.get() == null) {
+        final Rect targetRect = target.get();
+        if (!showShrinkingAnimation || targetRect == null) {
             mController.showTabSwitcherView(animate);
             return;
         }
@@ -433,13 +439,13 @@ public class TabSwitcherLayout extends Layout {
 
         // Step 1: zoom out the source tab
         Supplier<Float> scaleStartValueSupplier = () -> 1.0f;
-        Supplier<Float> scaleEndValueSupplier = () -> target.get().width() / (getWidth() * mDpToPx);
+        Supplier<Float> scaleEndValueSupplier = () -> targetRect.width() / (getWidth() * mDpToPx);
 
         Supplier<Float> xStartValueSupplier = () -> 0f;
-        Supplier<Float> xEndValueSupplier = () -> target.get().left / mDpToPx;
+        Supplier<Float> xEndValueSupplier = () -> targetRect.left / mDpToPx;
 
         Supplier<Float> yStartValueSupplier = () -> 0f;
-        Supplier<Float> yEndValueSupplier = () -> target.get().top / mDpToPx;
+        Supplier<Float> yEndValueSupplier = () -> targetRect.top / mDpToPx;
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scaleStartValueSupplier, scaleEndValueSupplier, ZOOMING_DURATION,
@@ -460,6 +466,7 @@ public class TabSwitcherLayout extends Layout {
                         : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
+        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -522,6 +529,7 @@ public class TabSwitcherLayout extends Layout {
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
+        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -617,7 +625,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private Rect getThumbnailLocationOfCurrentTab() {
-        return mGridTabListDelegate.getThumbnailLocationOfCurrentTab(true);
+        return mGridTabListDelegate.getThumbnailLocationOfCurrentTab();
     }
 
     private TabListDelegate getGridTabListDelegate() {
@@ -631,7 +639,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     @VisibleForTesting
-    void setPerfListenerForTesting(PerfListener perfListener) {
+    public void setPerfListenerForTesting(PerfListener perfListener) {
         mPerfListenerForTesting = perfListener;
     }
 
@@ -687,7 +695,7 @@ public class TabSwitcherLayout extends Layout {
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
                 isTabGtsAnimationEnabled() ? mGridTabListDelegate.getResourceId() : 0,
-                mBackgroundAlpha, mGridTabListDelegate.getTabListTopOffset());
+                mBackgroundAlpha, mTabListTopOffset);
         mFrameCount++;
         if (mLastFrameTime != 0) {
             long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;

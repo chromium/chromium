@@ -10,10 +10,18 @@ import time
 
 from devil.utils import cmd_helper
 from pylib import constants
+from pylib.constants import host_paths
+from .expensive_line_transformer import ExpensiveLineTransformer
+from .expensive_line_transformer import ExpensiveLineTransformerPool
 
-_STACK_TOOL = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..',
-                          'third_party', 'android_platform', 'development',
-                          'scripts', 'stack')
+_STACK_TOOL = os.path.join(host_paths.ANDROID_PLATFORM_DEVELOPMENT_SCRIPTS_PATH,
+                           'stack')
+_MINIMUM_TIMEOUT = 10.0
+_PER_LINE_TIMEOUT = .005  # Should be able to process 200 lines per second.
+_PROCESS_START_TIMEOUT = 20.0
+_MAX_RESTARTS = 4  # Should be plenty unless tool is crashing on start-up.
+_POOL_SIZE = 1
+_PASSTHROUH_ON_FAILURE = True
 ABI_REG = re.compile('ABI: \'(.+?)\'')
 
 
@@ -84,3 +92,46 @@ class Symbolizer:
       if not include_stack and 'Stack Data:' in line:
         break
       yield line
+
+
+class PassThroughSymbolizer(ExpensiveLineTransformer):
+  def __init__(self, device_abi):
+    self._command = None
+    super().__init__(_PROCESS_START_TIMEOUT, _MINIMUM_TIMEOUT,
+                     _PER_LINE_TIMEOUT)
+    if not os.path.exists(_STACK_TOOL):
+      logging.warning('%s: %s missing. Unable to resolve native stack traces.',
+                      PassThroughSymbolizer.name, _STACK_TOOL)
+      return
+    arch = _DeviceAbiToArch(device_abi)
+    if not arch:
+      logging.warning('%s: No device_abi can be found.',
+                      PassThroughSymbolizer.name)
+      return
+    self._command = [
+        _STACK_TOOL, '--arch', arch, '--output-directory',
+        constants.GetOutDirectory(), '--more-info', '--pass-through', '--flush',
+        '--quiet', '-'
+    ]
+    self.start()
+
+  @property
+  def name(self):
+    return "symbolizer"
+
+  @property
+  def command(self):
+    return self._command
+
+
+class PassThroughSymbolizerPool(ExpensiveLineTransformerPool):
+  def __init__(self, device_abi):
+    self._device_abi = device_abi
+    super().__init__(_MAX_RESTARTS, _POOL_SIZE, _PASSTHROUH_ON_FAILURE)
+
+  def CreateTransformer(self):
+    return PassThroughSymbolizer(self._device_abi)
+
+  @property
+  def name(self):
+    return "symbolizer-pool"

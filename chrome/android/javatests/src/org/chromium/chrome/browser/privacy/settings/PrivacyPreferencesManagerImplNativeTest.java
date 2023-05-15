@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.privacy.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -37,7 +37,7 @@ public class PrivacyPreferencesManagerImplNativeTest {
     @Feature({"Android-AppBase"})
     public void testSyncUsageAndCrashReporting() {
         PermissionContext context =
-                new PermissionContext(InstrumentationRegistry.getTargetContext());
+                new PermissionContext(ApplicationProvider.getApplicationContext());
         SharedPreferences pref = ContextUtils.getAppSharedPreferences();
         PrivacyPreferencesManagerImpl preferenceManager =
                 new PrivacyPreferencesManagerImpl(context);
@@ -59,7 +59,7 @@ public class PrivacyPreferencesManagerImplNativeTest {
     @UiThreadTest
     public void testSetUsageAndCrashReporting() {
         PermissionContext context =
-                new PermissionContext(InstrumentationRegistry.getTargetContext());
+                new PermissionContext(ApplicationProvider.getApplicationContext());
         SharedPreferences pref = ContextUtils.getAppSharedPreferences();
         PrivacyPreferencesManagerImpl preferenceManager =
                 new PrivacyPreferencesManagerImpl(context);

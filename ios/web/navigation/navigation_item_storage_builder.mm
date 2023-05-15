@@ -29,7 +29,6 @@ CRWNavigationItemStorage* NavigationItemStorageBuilder::BuildStorage(
   }
   storage.timestamp = navigation_item.GetTimestamp();
   storage.title = navigation_item.GetTitle();
-  storage.displayState = navigation_item.GetPageDisplayState();
   storage.userAgentType = navigation_item.GetUserAgentType();
   storage.HTTPRequestHeaders = navigation_item.GetHttpRequestHeaders();
   return storage;
@@ -61,7 +60,6 @@ NavigationItemStorageBuilder::BuildNavigationItemImpl(
   item->referrer_ = navigation_item_storage.referrer;
   item->timestamp_ = navigation_item_storage.timestamp;
   item->title_ = navigation_item_storage.title;
-  item->page_display_state_ = navigation_item_storage.displayState;
   // Use reload transition type to avoid incorrect increase for typed count.
   item->transition_type_ = ui::PAGE_TRANSITION_RELOAD;
   item->user_agent_type_ = navigation_item_storage.userAgentType;

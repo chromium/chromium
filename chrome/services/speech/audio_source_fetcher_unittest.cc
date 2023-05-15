@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -159,7 +160,8 @@ class AudioSourceFetcherImplTest
 
  private:
   base::test::TaskEnvironment task_environment;
-  MockAudioSourceConsumer* speech_recognition_recognizer_;
+  raw_ptr<MockAudioSourceConsumer, ExperimentalAsh>
+      speech_recognition_recognizer_;
   bool is_server_based_;
 };
 

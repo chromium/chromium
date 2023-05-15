@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/locale_settings.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,14 +28,10 @@ namespace {
 
 bool ContainsVisibleElement(content::WebContents* contents,
                             const std::string& id) {
-  bool result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "var elem = document.getElementById('" + id +
-          "');"
-          "domAutomationController.send(!!elem && !elem.hidden);",
-      &result));
-  return result;
+  return content::EvalJs(contents, "var elem = document.getElementById('" + id +
+                                       "');"
+                                       "!!elem && !elem.hidden;")
+      .ExtractBool();
 }
 
 }  // namespace
@@ -41,7 +40,14 @@ bool ContainsVisibleElement(content::WebContents* contents,
 // before the browser start.
 class PolicyWebStoreIconTest : public PolicyTest {
  public:
-  PolicyWebStoreIconTest() = default;
+  PolicyWebStoreIconTest() {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+    // The new chrome://apps (App Home) page does not have the web store app, so
+    // the test only works for the old implementation. In the future, this test
+    // can be entirely removed.
+    feature_list_.InitAndDisableFeature(features::kDesktopPWAsAppHomePage);
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  }
   ~PolicyWebStoreIconTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -51,6 +57,9 @@ class PolicyWebStoreIconTest : public PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PolicyTest::SetUpCommandLine(command_line);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PolicyWebStoreIconTest, AppsWebStoreIconHidden) {

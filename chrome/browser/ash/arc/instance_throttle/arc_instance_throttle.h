@@ -12,6 +12,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -111,7 +112,7 @@ class ArcInstanceThrottle : public KeyedService,
   bool never_enforce_quota_ = false;
 
   // Owned by ArcServiceManager.
-  ArcBridgeService* const bridge_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
 };
 
 }  // namespace arc

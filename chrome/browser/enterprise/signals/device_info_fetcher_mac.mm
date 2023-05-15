@@ -5,26 +5,17 @@
 #include "chrome/browser/enterprise/signals/device_info_fetcher_mac.h"
 
 #import <Foundation/Foundation.h>
-
-#include <IOKit/IOKitLib.h>
 #include <MacTypes.h>
 #include <dlfcn.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <sys/sysctl.h>
-#include <sys/types.h>
 
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_ioobject.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
 
 namespace enterprise_signals {

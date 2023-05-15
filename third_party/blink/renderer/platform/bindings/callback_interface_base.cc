@@ -37,8 +37,7 @@ CallbackInterfaceBase::CallbackInterfaceBase(
     v8::MaybeLocal<v8::Context> creation_context =
         callback_object->GetCreationContext();
     if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
-            incumbent_script_state_->GetContext(), creation_context,
-            BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
+            incumbent_script_state_->GetContext(), creation_context)) {
       callback_relevant_script_state_ =
           ScriptState::From(creation_context.ToLocalChecked());
     }

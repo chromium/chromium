@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <set>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -72,9 +73,11 @@ Calculator::Congestion::Congestion(base::TimeTicks start_time,
   DCHECK_LE(start_time, end_time);
 }
 
-Calculator::Calculator()
+Calculator::Calculator(
+    std::unique_ptr<ResponsivenessCalculatorDelegate> delegate)
     : last_calculation_time_(base::TimeTicks::Now()),
-      most_recent_activity_time_(last_calculation_time_)
+      most_recent_activity_time_(last_calculation_time_),
+      delegate_(std::move(delegate))
 #if BUILDFLAG(IS_ANDROID)
       ,
       application_status_listener_(
@@ -146,8 +149,9 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
                                     StartupStage startup_stage) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  constexpr size_t kMaxCongestedSlices =
+  static constexpr size_t kMaxCongestedSlices =
       kMeasurementPeriod / kCongestionThreshold;
+  static constexpr size_t kBucketCount = 50;
   DCHECK_LE(num_congested_slices, kMaxCongestedSlices);
   switch (congestion_type) {
     case CongestionType::kExecutionOnly: {
@@ -174,15 +178,19 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
       }
       UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion",
                                   num_congested_slices, 1, kMaxCongestedSlices,
-                                  50);
+                                  kBucketCount);
+      if (delegate_) {
+        delegate_->OnResponsivenessEmitted(num_congested_slices, 1,
+                                           kMaxCongestedSlices, kBucketCount);
+      }
       if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
         UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Initial",
                                     num_congested_slices, 1,
-                                    kMaxCongestedSlices, 50);
+                                    kMaxCongestedSlices, kBucketCount);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Periodic",
                                     num_congested_slices, 1,
-                                    kMaxCongestedSlices, 50);
+                                    kMaxCongestedSlices, kBucketCount);
       }
       break;
     }
@@ -276,6 +284,11 @@ void Calculator::CalculateResponsivenessIfNecessary(
   is_suspended |= !is_application_visible_;
 #endif
   if (is_suspended) {
+    // Notify the delegate that the interval ended so that it can reset its
+    // accumulated data for the current interval.
+    if (delegate_) {
+      delegate_->OnMeasurementIntervalEnded();
+    }
     last_calculation_time_ = current_time;
     GetExecutionCongestionOnUIThread().clear();
     GetCongestionOnUIThread().clear();
@@ -314,6 +327,10 @@ void Calculator::CalculateResponsivenessIfNecessary(
                                      new_calculation_time));
     congestion_from_multiple_threads.push_back(TakeCongestionsOlderThanTime(
         &congestion_on_io_thread_, new_calculation_time));
+  }
+
+  if (delegate_) {
+    delegate_->OnMeasurementIntervalEnded();
   }
 
   CalculateResponsiveness(CongestionType::kExecutionOnly,

@@ -6,6 +6,7 @@
 #define ASH_STYLE_ICON_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/image_button.h"
@@ -163,10 +164,10 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   bool IsToggledOn() const;
 
   const Type type_;
-  const gfx::VectorIcon* icon_ = nullptr;
-  const gfx::VectorIcon* toggled_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> toggled_icon_ = nullptr;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   // True if this button is togglable.
   bool is_togglable_ = false;

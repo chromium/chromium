@@ -71,8 +71,7 @@ class SingleClientOfferSyncTest : public SyncTest {
   bool TriggerGetUpdatesAndWait() {
     const base::Time now = base::Time::Now();
     // Trigger a sync and wait for the new data to arrive.
-    TriggerSyncForModelTypes(
-        0, syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_OFFER));
+    TriggerSyncForModelTypes(0, {syncer::AUTOFILL_WALLET_OFFER});
     return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
                                                syncer::AUTOFILL_WALLET_OFFER)
         .Wait();
@@ -102,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
@@ -113,9 +112,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
 }
 
 // Ensures that offer data should get cleared from the database when sync is
-// (temporarily) stopped, e.g. due to the Sync feature toggle in Android
-// settings.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
+// (temporarily) stopped, e.g. due to a persistent auth error.
+//
+// Excluded on Android because SyncServiceImplHarness doesn't have the ability
+// to mimic sync-paused on Android due to https://crbug.com/1373448.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
 
@@ -124,17 +126,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
   // Make sure the offer data is in the DB.
   ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
-  // Stop sync, the offer data should be gone.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  // Pause sync, the offer data should be gone.
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   WaitForNumberOfOffers(0, pdm);
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
-  // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  // Resume (unpause) sync, the data should come back.
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
   EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

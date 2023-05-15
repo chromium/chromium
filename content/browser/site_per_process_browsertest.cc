@@ -20,7 +20,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -219,7 +218,7 @@ using CrashVisibility = CrossProcessFrameConnector::CrashVisibility;
 void PostMessageAndWaitForReply(FrameTreeNode* sender_ftn,
                                 const std::string& post_message_script,
                                 const std::string& reply_status) {
-  // Subtle: msg_queue needs to be declared before the ExecuteScript below, or
+  // Subtle: msg_queue needs to be declared before the EvalJs below, or
   // else it might miss the message of interest.  See https://crbug.com/518729.
   DOMMessageQueue msg_queue(sender_ftn->current_frame_host());
 
@@ -11657,7 +11656,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Start a cross-site navigation.  Using a renderer-initiated navigation
   // rather than a browser-initiated one is important here, since
   // https://crbug.com/825677 was triggered only when replaceState ran while
-  // having a user gesture, which will be the case here since ExecuteScript
+  // having a user gesture, which will be the case here since ExecJs
   // runs with a user gesture.
   EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1", url2)));
   EXPECT_TRUE(cross_site_navigation.WaitForRequestStart());
@@ -12763,9 +12762,16 @@ IN_PROC_BROWSER_TEST_P(InnerWebContentsAttachTest, PrepareFrame) {
   auto* child_node = web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_frame_url));
   if (test_beforeunload) {
-    EXPECT_TRUE(ExecJs(child_node,
-                       "window.addEventListener('beforeunload', (e) => {"
-                       "e.returnValue = ''; return e; });"));
+    if (base::FeatureList::IsEnabled(
+            blink::features::kBeforeunloadEventCancelByPreventDefault)) {
+      EXPECT_TRUE(ExecJs(child_node,
+                         "window.addEventListener('beforeunload', (e) => {"
+                         "e.preventDefault(); return e; });"));
+    } else {
+      EXPECT_TRUE(ExecJs(child_node,
+                         "window.addEventListener('beforeunload', (e) => {"
+                         "e.returnValue = 'Not empty string'; return e; });"));
+    }
   }
   auto* original_child_frame = child_node->current_frame_host();
   RenderFrameDeletedObserver original_child_frame_observer(
@@ -12998,6 +13004,128 @@ IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
             second_child->current_frame_host()->GetProcess());
 }
 
+class SitePerProcessWithMainFrameThresholdTest
+    : public SitePerProcessBrowserTest {
+ public:
+  static constexpr size_t kThreshold = 2;
+
+  SitePerProcessWithMainFrameThresholdTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kProcessPerSiteUpToMainFrameThreshold,
+        {{"ProcessPerSiteMainFrameThreshold",
+          base::StringPrintf("%zu", kThreshold)}});
+  }
+  ~SitePerProcessWithMainFrameThresholdTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that a RenderProcessHost is reused up to a certain threshold against
+// number of main frames, if the corresponding SiteInstance requires a dedicated
+// process. Subframes are irrelevant to the threshold. Once the number of main
+// frame reaches to the threshold, a new RenderProcessHost should be created and
+// the existing RenderProcessHost should not be reused.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
+                       ReuseProcessUpToThreshold) {
+  const GURL kUrl =
+      embedded_test_server()->GetURL("foo.test", "/page_with_iframe.html");
+  const GURL kOtherUrl =
+      embedded_test_server()->GetURL("bar.test", "/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* main_frame_in_main_shell =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe_in_main_shell =
+      main_frame_in_main_shell->child_at(0)->current_frame_host();
+  ASSERT_EQ(main_frame_in_main_shell->GetProcess(),
+            subframe_in_main_shell->GetProcess());
+
+  std::vector<Shell*> shells;
+  for (size_t i = 0; i < kThreshold - 1; ++i) {
+    Shell* new_shell = CreateBrowser();
+    // Navigate to a different site first so that the new shell has  a non empty
+    // site info before navigating to the target site.
+    // TODO(https://crbug.com/1434900): Remove this workaround once we figure
+    // out how to handle navigation from an empty site to a new site.
+    ASSERT_TRUE(NavigateToURL(new_shell, kOtherUrl));
+    ASSERT_TRUE(NavigateToURL(new_shell, kUrl));
+    RenderFrameHostImpl* new_frame =
+        static_cast<WebContentsImpl*>(new_shell->web_contents())
+            ->GetPrimaryMainFrame();
+    // Currently the reuse policy is only applied for sites that require a
+    // dedicated process, and if this not the case, the two main frames won't
+    // share a process due to being under the process limit.
+    if (main_frame_in_main_shell->GetSiteInstance()
+            ->RequiresDedicatedProcess()) {
+      ASSERT_EQ(main_frame_in_main_shell->GetProcess(),
+                new_frame->GetProcess());
+    } else {
+      ASSERT_NE(main_frame_in_main_shell->GetProcess(),
+                new_frame->GetProcess());
+    }
+    shells.emplace_back(new_shell);
+  }
+
+  Shell* non_shared_shell = CreateBrowser();
+  // TODO(https://crbug.com/1434900): Remove this workaround once we figure
+  // out how to handle navigation from an empty site to a new site.
+  ASSERT_TRUE(NavigateToURL(non_shared_shell, kOtherUrl));
+  ASSERT_TRUE(NavigateToURL(non_shared_shell, kUrl));
+  RenderFrameHostImpl* main_frame_in_non_shared_frame =
+      static_cast<WebContentsImpl*>(non_shared_shell->web_contents())
+          ->GetPrimaryMainFrame();
+  ASSERT_NE(main_frame_in_main_shell->GetProcess(),
+            main_frame_in_non_shared_frame->GetProcess());
+  shells.emplace_back(non_shared_shell);
+
+  for (auto*& shell : shells) {
+    shell->Close();
+  }
+}
+
+// Tests that opening a new tab from an existing page via ctrl-click reuses a
+// process when both pages are the same-site.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
+                       ReuseProcessOpenTabByCtrlClickLink) {
+  const GURL kUrl = embedded_test_server()->GetURL(
+      "foo.test", "/ctrl-click-subframe-link.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* main_frame =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(main_frame,
+                     "window.domAutomationController.send(ctrlClickLink());"));
+  Shell* popup = new_shell_observer.GetShell();
+  ASSERT_EQ(main_frame->GetProcess(),
+            static_cast<WebContentsImpl*>(popup->web_contents())
+                ->GetPrimaryMainFrame()
+                ->GetProcess());
+}
+
+// Tests that opening a new tab from an existing page via window.open reuses a
+// process when both pages are the same-site.
+// TODO(https://crbug.com/1434900): Change this test to use 'noopener' once we
+// figure out how to handle navigation from an empty site to a new site.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
+                       ReuseProcessWithOpener) {
+  const GURL kUrl = embedded_test_server()->GetURL("foo.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* main_frame =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(
+      ExecJs(main_frame, "popup = window.open('/title1.html', '_blank');"));
+  Shell* popup = new_shell_observer.GetShell();
+  ASSERT_EQ(main_frame->GetProcess(),
+            static_cast<WebContentsImpl*>(popup->web_contents())
+                ->GetPrimaryMainFrame()
+                ->GetProcess());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestDelayingSitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -13023,6 +13151,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          DisableProcessReusePolicyTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessWithMainFrameThresholdTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,

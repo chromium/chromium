@@ -13,7 +13,6 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -93,7 +92,7 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
     return;
   }
 
-  level = base::clamp(level, 0.0f, 1.0f);
+  level = std::clamp(level, 0.0f, 1.0f);
   // The input level value is in the kMedia (MUSIC) volume table domain.
   float mapped_level =
       MapIntoDifferentVolumeTableDomain(AudioContentType::kMedia, type, level);
@@ -129,7 +128,7 @@ void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   }
 
   // The input limit is in the kMedia (MUSIC) volume table domain.
-  limit = base::clamp(limit, 0.0f, 1.0f);
+  limit = std::clamp(limit, 0.0f, 1.0f);
   float limit_db = VolumeToDbFSCached(AudioContentType::kMedia, limit);
   AudioSinkManager::Get()->SetOutputLimitDb(type, limit_db);
 }

@@ -1,9 +1,16 @@
 <style include="cr-shared-style">
+  ::slotted([slot=bottom-nav-content-drawer]) {
+    position: absolute;
+  }
+
+  ::slotted([slot=bottom-nav-content-panel]) {
+    position: fixed;
+  }
+
   ::slotted([slot=bottom-nav-content-drawer]),
   ::slotted([slot=bottom-nav-content-panel]) {
     bottom: 24px;
     inset-inline-start: 16px;
-    position: fixed;
   }
 
   ::slotted([slot=banner]) {
@@ -23,6 +30,7 @@
     display: grid;
     grid-template-areas: var(--areas-nav-banner);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto auto 1fr;
     width: 100%;
   }
 
@@ -30,6 +38,7 @@
     display: grid;
     grid-template-areas: var(--areas-no-header-nav-banner);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto 1fr;
     width: 100%;
   }
 
@@ -37,6 +46,7 @@
     display: grid;
     grid-template-areas: var(--areas-nav);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto 1fr;
     width: 100%;
   }
 
@@ -58,6 +68,11 @@
     position: sticky;
     top: 56px;
     z-index: 3;
+  }
+
+  #container {
+    height: 100%;
+    overflow: hidden;
   }
 
   cr-drawer {
@@ -85,10 +100,13 @@
   }
 
   #navigationBody {
+    box-sizing: border-box;
     grid-area: main;
-    justify-self: center;
+    height: 100%;
     min-width: 0;
+    overflow: overlay;
     padding-inline: var(--container-padding-nav);
+    width: 100%;
   }
 
   .left-aligned {

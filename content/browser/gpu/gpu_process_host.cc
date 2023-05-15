@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -264,7 +263,6 @@ static const char* const kSwitchNames[] = {
     switches::kRunAllCompositorStagesBeforeDraw,
     switches::kSkiaFontCacheLimitMb,
     switches::kSkiaResourceCacheLimitMb,
-    switches::kForceSkiaAnalyticAntialiasing,
     switches::kTestGLLib,
     switches::kTraceToConsole,
     switches::kUseAdapterLuid,
@@ -760,7 +758,7 @@ GpuProcessHost::~GpuProcessHost() {
       UMA_HISTOGRAM_ENUMERATION("GPU.GPUProcessTerminationStatus2",
                                 ConvertToGpuTerminationStatus(info.status),
                                 GpuTerminationStatus::MAX_ENUM);
-      int exit_code = base::clamp(info.exit_code, 0, 100);
+      int exit_code = std::clamp(info.exit_code, 0, 100);
 #if !BUILDFLAG(IS_ANDROID)
       if (info.status != base::TERMINATION_STATUS_NORMAL_TERMINATION &&
           info.status != base::TERMINATION_STATUS_STILL_RUNNING &&

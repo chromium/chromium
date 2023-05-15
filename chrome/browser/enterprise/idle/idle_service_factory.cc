@@ -38,6 +38,7 @@ void IdleServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimeDeltaPref(prefs::kIdleTimeout, base::TimeDelta());
   registry->RegisterListPref(prefs::kIdleTimeoutActions);
+  registry->RegisterBooleanPref(prefs::kIdleTimeoutShowBubbleOnStartup, false);
 }
 
 bool IdleServiceFactory::ServiceIsCreatedWithBrowserContext() const {

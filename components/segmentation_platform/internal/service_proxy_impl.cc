@@ -80,7 +80,7 @@ ServiceProxyImpl::ServiceProxyImpl(
     SegmentInfoDatabase* segment_db,
     DefaultModelManager* default_manager,
     SignalStorageConfig* signal_storage_config,
-    std::vector<std::unique_ptr<Config>>* configs,
+    const std::vector<std::unique_ptr<Config>>* configs,
     const PlatformOptions& platform_options,
     base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>*
         segment_selectors)

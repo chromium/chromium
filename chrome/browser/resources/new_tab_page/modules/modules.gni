@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("./cart/cart.gni")
-import("./cart_v2/cart_v2.gni")
 import("./drive/drive.gni")
 import("./drive_v2/drive_v2.gni")
 import("./feed/feed.gni")
 import("./history_clusters/history_clusters.gni")
+import("./history_clusters_v2/history_clusters_v2.gni")
 import("./photos/photos.gni")
 import("./recipes/recipes.gni")
 import("./recipes_v2/recipes_v2.gni")
@@ -37,11 +37,11 @@ modules_web_component_files =
       "modules/module_header.ts",
       "modules/modules.ts",
       "modules/module_wrapper.ts",
-    ] + cart_web_component_files + cart_v2_web_component_files +
-    drive_web_component_files + drive_v2_web_component_files +
-    feed_web_component_files + photos_web_component_files +
-    recipes_v2_web_component_files + recipes_web_component_files +
-    history_clusters_web_component_files
+    ] + cart_web_component_files + drive_web_component_files +
+    drive_v2_web_component_files + feed_web_component_files +
+    photos_web_component_files + recipes_v2_web_component_files +
+    recipes_web_component_files + history_clusters_web_component_files +
+    history_clusters_v2_web_component_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files

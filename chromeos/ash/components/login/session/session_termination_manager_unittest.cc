@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -32,7 +33,7 @@ class SessionTerminationManagerTest : public testing::Test {
   }
 
  protected:
-  chromeos::FakePowerManagerClient* power_client_;
+  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh> power_client_;
   SessionTerminationManager session_termination_manager_;
 };
 

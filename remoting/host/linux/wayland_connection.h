@@ -49,10 +49,10 @@ class WaylandConnection {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::string wl_socket_;
-  base::raw_ptr<struct wl_display> display_ = nullptr;
-  base::raw_ptr<struct wl_proxy> wrapped_display_ = nullptr;
-  base::raw_ptr<struct wl_event_queue> event_queue_ = nullptr;
-  base::raw_ptr<struct wl_registry> registry_ = nullptr;
+  raw_ptr<struct wl_display> display_ = nullptr;
+  raw_ptr<struct wl_proxy> wrapped_display_ = nullptr;
+  raw_ptr<struct wl_event_queue> event_queue_ = nullptr;
+  raw_ptr<struct wl_registry> registry_ = nullptr;
   const struct wl_registry_listener wl_registry_listener_ = {
       .global = OnGlobalEvent,
       .global_remove = OnGlobalRemoveEvent,

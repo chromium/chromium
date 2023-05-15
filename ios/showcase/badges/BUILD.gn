@@ -12,7 +12,7 @@ source_set("badges") {
   deps = [
     ":badges_constants",
     "//ios/chrome/browser/infobars:badge_state_public",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/badges",

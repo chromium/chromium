@@ -17,9 +17,9 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.common.collect.ImmutableMap;
 

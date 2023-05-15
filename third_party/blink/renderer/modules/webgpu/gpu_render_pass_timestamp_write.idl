@@ -4,6 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
+// TODO(dawn:1800): Remove after a deprecation period;
 dictionary GPURenderPassTimestampWrite {
     required GPUQuerySet querySet;
     required GPUSize32 queryIndex;

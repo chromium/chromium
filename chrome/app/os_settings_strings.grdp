@@ -310,9 +310,20 @@
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
     Apps
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL" translateable="false" desc="Disclaimer shown under label for the checkbox which enables syncing of apps across devices.">
-    <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
-    Web apps are synced with Chrome browser on non-Chrome OS devices
+  <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of apps across devices.">
+    Apps installed from the Play Store and web apps from Chrome browser
+  </message>
+  <message name="IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of settings across devices.">
+    Keyboard and mouse behavior, language preferences, and more
+  </message>
+  <message name="IDS_OS_SETTINGS_SYNC_WIFI_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of Wi-Fi networks  across devices.">
+    Saved networks and passwords so you can connect instantly
+  </message>
+  <message name="IDS_OS_SETTINGS_SYNC_WALLPAPER_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of wallpaper across devices.">
+    Desktop backgrounds match across devices
+  </message>
+  <message name="IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP" desc="Tooltip shown next to the apps toggle in OS sync settings.">
+    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps will be synced through Chrome even if other browser sync features are turned off.
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PRINTERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of printers across devices.">
     Printers
@@ -888,6 +899,7 @@
   <message name="IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE" desc="Label for the checkbox which enables disconnecting from Google Drive account.">
     Disconnect Google Drive account
   </message>
+  <!-- TODO(b/276391980): Remove translateable="false" when all the strings have been defined. -->
   <message name="IDS_SETTINGS_GOOGLE_DRIVE" translateable="false" desc="Label for the settings link that takes the user to the page where they can manage their Google Drive settings.">
     Google Drive
   </message>
@@ -913,16 +925,49 @@
     Keep your files available when you're offline
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_SUBTITLE" translateable="false" desc="Subtitle for the everything offline feature in Settings: Files: Google Drive.">
-    This will store your Google Drive files on this Chromebook so you can view and edit them without an internet connection. This will use about 12.2 GB leaving 96.8 GB available.
+    This will store your Google Drive files on this Chromebook so you can view and edit them without an internet connection.
   </message>
-  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_TITLE" translateable="false" desc="Title for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_REQUIRED_SUBTITLE" translateable="false" desc="Subtitle to display the required and remaining space if all the google drive files are made available offline">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE_LEFT">$2<ex>96.7 GB</ex></ph> available.
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_TITLE" translateable="false" desc="Title for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
     Offline Storage
   </message>
-  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_SUBTITLE" translateable="false" desc="Subtitle for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
-    Using 0 GB
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_CALCULATING_SUBTITLE" translateable="false" desc="Subtitle for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+    Calculating...
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ERROR_SUBTITLE" translateable="false" desc="Subtitle for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+    Unknown
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ACTION" translateable="false" desc="Button for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
     Clear offline storage
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_TITLE" translateable="false" desc="Title text for the Offline Storage confirmation dialog where users can clear their offline storage in Settings: Files: Google Drive.">
+    Clear offline storage?
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_BODY" translateable="false" desc="Title text for the Offline Storage confirmation dialog where users can clear their offline storage in Settings: Files: Google Drive.">
+    This will remove <ph name="OFFLINE_STORAGE_SIZE">$1<ex>5.0 GB</ex></ph> of space used by your offline files.
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL" translateable="false" desc="Button for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    Turn off
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_TITLE_TEXT" translateable="false" desc="Title text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    Are you sure you want to turn off automatic syncing?
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BODY_TEXT" translateable="false" desc="Body text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    New Google Drive files will no longer be synced automatically, but files that are already synced will remain available.
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_TITLE_TEXT" translateable="false" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the user doesn't have enough free space in Settings: Files: Google Drive.">
+    Low disk space
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_BODY_TEXT" translateable="false" desc="Body text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the user doesn't have enough free space in Settings: Files: Google Drive.">
+    Cannot enable this feature due to insufficient disk space.
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_UNEXPECTED_ERROR_TITLE_TEXT" translateable="false" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but an unexpected error occurred in Settings: Files: Google Drive.">
+    An unexpected error occurred
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_UNEXPECTED_ERROR_BODY_TEXT" translateable="false" desc="Body text for the confirmation dialog that spawns when attempting to turn on bulk pinning but an unexpected error occurred in Settings: Files: Google Drive.">
+    Cannot enable this feature as an unexpected error has occurred.
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES" desc="In Downloads Settings, the title of the SMB shares setting section.">
     Network file shares
@@ -962,6 +1007,19 @@
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_SUCCESS_MESSAGE" desc="The message shown when a new SMB share is successfully mounted.">
     Share mounted successfully.
+  </message>
+  <!-- TODO(b/254586358): Finalise Office files strings -->
+  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Office files settings.">
+    Office
+  </message>
+  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Office subpage.">
+    Office files
+  </message>
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
+    Ask before moving Microsoft files to Google Drive
+  </message>
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to OneDrive without asking for confirmation.">
+    Ask before moving Microsoft files to OneDrive
   </message>
 
   <!-- Accessibility -->
@@ -2867,6 +2925,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the touchpad haptic click sensitivity.">
     Firm
   </message>
+  <message name="IDS_SETTINGS_LEARN_MORE_LABEL" translateable="false" desc="In Device Settings, the learn more label for the cr toggle button.">
+    Learn more
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">
@@ -2884,11 +2945,20 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER" desc="In CUPS printing settings subpage, text for the link adding a new CUPS printer.">
     Add printer
   </message>
-    <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_DETECTED_OR_NEW_PRINTER" desc="In CUPS printing settings subpage, explanatory text for the nearby printers list.">
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER_MANUALLY" desc="In CUPS printing settings subpage, text for the link adding a new CUPS printer." translateable="false">
+    Add printer manually
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_DETECTED_OR_NEW_PRINTER" desc="In CUPS printing settings subpage, explanatory text for the nearby printers list.">
     Save detected printers to your profile, or add a new printer. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_READY_SUBTEXT" desc="In CUPS printing settings subpage, explanatory text for the nearby printers list." translateable="false">
+    Connected printers will automatically appear here and ready to use or save to your profile.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS" desc="In CUPS printing settings subpage, title for the nearby printers list.">
     Add printers to your profile
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_READY" desc="In CUPS printing settings subpage, title for the nearby printers list." translateable="false">
+    Available printers ready to use
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_COUNT_MANY" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them on the number of printers showing on the screen that are available to save.">
     There are <ph name="PRINTER_COUNT">$1<ex>3</ex></ph> printers available to save.
@@ -2938,6 +3008,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_SAVED_PRINTERS_TITLE" desc="Text for the title of the user's saved printers list.">
     Your saved printers
   </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_SAVED_PRINTERS_SUBTEXT" desc="Subtext of the user's saved printers list." translateable="false">
+    Saved printers will appear here for easier managing and access.
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_SAVED_PRINTERS_COUNT_MANY" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them on the number of printers previously saved by the user.">
     You have <ph name="PRINTER_COUNT">$1<ex>3</ex></ph> saved printers.
   </message>
@@ -2946,6 +3019,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_SAVED_PRINTERS_COUNT_NONE" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them they have no printers previously saved.">
     You have no saved printers.
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_TITLE" desc="In CUPS printing settings subpage, this title helps users when their local printer is not shown on the page." translateable="false">
+    Don't see your printers below?
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_DESCRIPTION" desc="In CUPS printing settings subpage, this description helps users when trying to connect to a local printer." translateable="false">
+    Make sure your printer is connected to the same Wi-Fi network as your Chromebook or via a USB cable. For more help, check compatibility and help information.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_SHOW_MORE" desc="Text for the button to show more printers when there are more printers than currently displayed to the user.">
     Show more
@@ -3559,7 +3638,7 @@ Press an assigned switch or key to remove assignment.
     Forget this subscription?
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
-    By forgetting this network you will also remove the Passpoint subscription and its associated networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    By forgetting this network you will also remove the Passpoint subscription and its associated networks.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy
@@ -3710,6 +3789,54 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_IMEI" desc="A11y label for the network device info popup dialog that's read out when both EID and IMEI is displayed.">
     Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DETAILS" desc="Name of the settings page which displays details about Passpoint.">
+    Passpoint provider details
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SECTION_LABEL" desc="Label of the section that contains the list of Passpoint subscriptions.">
+    Passpoint subscriptions
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_PROVIDER_LABEL" desc="Label of the link to the Passpoint provider details page.">
+    Passpoint provider
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_SUBSCRIPTION" desc="Label of the button used to remove a subscription from the Passpoint detail page.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_HEADLINE" desc="Headline text describing how Passpoint subscription is synced with the user account.">
+    Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION" desc="Label of the subscription expiration date.">
+    Expiry date
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE" desc="Label of the source that installed the Passpoint subscription.">
+    Passpoint provider
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA" desc="Label of the subscription trusted certificate authority used to authenticate the server.">
+    Trusted CA
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA" desc="Text displayed when the subscription relies on system CA certificates for server authentication.">
+    System CAs
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS" desc="Label for the list of domains included in the Passpoint subscription.">
+    Domains
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL" desc="Label for the button that toggles showing the Passpoint domains. Only visible by screen reader software.">
+    Show domains
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE" desc="Title of the dialog displayed when the remove button is clicked on Passpoint details page.">
+    Remove subscription from device
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION" desc="Text of the dialog displayed when the remove button is clicked on Passpoint details page.">
+    <ph name="SUBSCRIPTION_NAME">$1<ex>My Passpoint Provider</ex></ph> will be removed from this device only. To make changes to your subscription, contact the subscription provider. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y" desc="A11y label that describes the Learn more link leading to the Passpoint user guide.">
+    Learn more about Passpoint subscriptions
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y" desc="A11y label for the Cancel button of the dialog displayed when a Passpoint network is removed.">
+    Cancel forgetting subscription
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y" desc="A11y label for the Confirm button of the dialog displayed when a Passpoint network is removed.">
+    Confirm subscription removal
   </message>
 
   <!-- Users Page (OS Settings) -->
@@ -4136,6 +4263,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_MESSAGE" desc="Text for the notification informing the user that local data recovery will be disabled">
     You will not be able to recover local data if you forget your password or PIN.
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_RECOVERY_NOT_SUPPORTED_MESSAGE" desc="Text for the notification informing the user that local data recovery not supported">
+    Local data recovery is currently not supported.
+  </message>
 
   <!-- Kerberos section (OS settings) -->
   <message name="IDS_OS_SETTINGS_KERBEROS" desc="Name of a section in the OS settings page." meaning="Manage Kerberos authetication tickets.">
@@ -4216,7 +4346,10 @@ Press an assigned switch or key to remove assignment.
     Failed to parse configuration
   </message>
   <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains too many nested groups. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
-    Too many nested groups: <ph name="ERROR_LINE">$1<ex>[appdefaults]</ex></ph>
+    Too many nested groups: <ph name="ERROR_LINE">$1<ex>A{ (after many opening curly braces that haven't been closed yet)</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_LINE_TOO_LONG" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a line that is too long. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+    Line is too long: <ph name="ERROR_LINE">$1<ex># A very long comment line...</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL" desc="Label of the action button on the 'Refresh a Kerberos tickets' dialog.">
     Refresh
@@ -4714,39 +4847,82 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SET_DATE_TIME" desc="Label for the button that shows the dialog for setting the system date and time.">
     Set date and time
   </message>
+  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_TITLE" desc="Title for the dialog, that pops up when user wants to access precise location for better time zone resolution, but the system geoocation access is disabled. This dialog asks if the user wants to enable the system geolocation access.">
+    Turn on precise location access?
+  </message>
+  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_BODY" desc="Description text of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes, if the user accepts the dialog.">
+    This allows apps and websites with the location permission and ChromeOS to use the location determined by your Wi-Fi or mobile networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_CANCEL_BUTTON" desc="Label of the cancel button, that dismisses the geolocation dialog.">
+    Cancel
+  </message>
 
   <!-- Per Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
     Built-in Keyboard
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL" desc="In per-device keyboard Settings, the label of the Remap Keyboard Keys row.">
-    Remap keyboard keys
+    Customize keyboard keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_SUB_LABEL" desc="Sub-label with number of remapped keys for the Remap Keyboard Keys row.">
     {COUNT, plural,
-     =1 {1 remapped key}
-     other {{COUNT} remapped keys}}
+     =0 {No keys customized}
+     =1 {1 customized key}
+     other {{COUNT} customized keys}}
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION" desc="In Keyboard remap keys subpage, the description label above remapping keys to describe the actions user can perform.">
-    For each key listed below, choose the action you want it to perform
+    For <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph>, choose an action for each key
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
-    Convert F keys to ChromeOS top-row keys
+    Use function keys as Chromebook top row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
-    Change the behavior of F keys to ChromeOS top-row actions
+    F keys will now have the behavior as your Chromebook top row keys.
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES" desc="In Device Settings, the checkbox label to enable the meta key to switch the behavior of the top-row keys.">
-    Enable System/Launcher key to switch the behavior of the top-row keys
+    Use the launcher key to change behavior of Chromebook top row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
-    Hold the key to switch between F keys and ChromeOS actions
+    Hold the launcher key to change between the function keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the restore defaults button label.">
-    Restore defaults
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the reset keys button label.">
+    Reset keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
-    No keyboard detected
+    No keyboard connected
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS" desc="The link to view and customize the keyboard shortut.">
+    View and customize keyboard shortcuts
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Alt key.">
+    alt
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ASSISTANT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Assistant key.">
+    assistant
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_BACKSPACE" desc="In keyboard remap keys subpage, the dropdown list item for the Backspace key.">
+    backspace
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_CAPS_LOCK" desc="In keyboard remap keys subpage, the label and dropdown list item for the Caps Lock key.">
+    caps lock
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_CTRL" desc="In keyboard remap keys subpage, the label and dropdown list item for the Ctrl key.">
+    ctrl
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE" desc="In keyboard remap keys subpage, the dropdown list item for the Escape key.">
+    escape
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND" desc="In keyboard remap keys subpage, the dropdown list item for the external Command key on Apple keyboards when there's no internal keyboard on the device.">
+    command
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META" desc="In keyboard remap keys subpage, the dropdown list item for the Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
+    meta
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
+    search
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
+    disabled
   </message>
 
   <!-- Device Keyboard page (OS settings) -->
@@ -4793,7 +4969,10 @@ Press an assigned switch or key to remove assignment.
     Treat top-row keys as function keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
-    Enable auto-repeat
+    Press and hold to automatically repeat the key
+  </message>
+    <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL" desc="The checkbox label for enabling keyboard auto-repeat.">
+    If you hold down a key, the key's character will repeat
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY" desc="The label for the slider for the delay before auto-repeat begins. The delay is the amount of time a key must be held down before auto-repeating begins.">
     Delay before repeat
@@ -4834,6 +5013,16 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
     Hold the Search key to switch the behavior of the top-row keys
   </message>
+  <message name="IDS_SETTINGS_KEYBOARD_HOLDING_KEYS" desc="In Device Settings, a label for a section containing settings for key repeat and holding down keys">
+  Repeat keys and accent marks
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics">
+  Show accent marks and special characters
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS_SUB_LABEL" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics - longer descriptive sublabel">
+Press &amp; hold keyboard keys to see accent marks and special characters. This turns off repeat key press for alphabet keys. Only available for English (US).
+  </message>
+
 
   <!-- Apps Section Page -->
   <message name="IDS_SETTINGS_APPS_TITLE" desc="The title of Apps section.">
@@ -5095,6 +5284,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
     Location access
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
+    Allow apps and websites and the system time zone to use the location determined by Google Location Service. If location access is turned off, your location may still be visible through your IP address.
   </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -45,8 +46,7 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICertificateManagerHost);
-
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
 
   AddCertificateManagerStrings(source);
   source->AddBoolean(
@@ -58,7 +58,6 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_CERT_MANAGER_DIALOG_HTML);
-  source->DisableContentSecurityPolicy();
 
   web_ui->AddMessageHandler(
       std::make_unique<certificate_manager::CertificatesHandler>());

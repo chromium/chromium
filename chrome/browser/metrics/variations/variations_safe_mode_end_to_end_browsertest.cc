@@ -42,6 +42,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include <sys/wait.h>
+#endif
+
 namespace variations {
 
 class VariationsSafeModeEndToEndBrowserTestHelper
@@ -117,8 +121,6 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
     sub_test.AppendSwitch(::switches::kRunManualTestsFlag);
     sub_test.AppendSwitch(::switches::kSingleProcessTests);
     sub_test.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
-    sub_test.AppendSwitch("alsologtostdout");
-    sub_test.AppendSwitch("alsologtostderr");
 
     // Assign the test environment to be on the Canary channel. This ensures
     // compatibility with the crashing study in the seed.
@@ -140,49 +142,26 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
     return copy_of_local_state_file;
   }
 
-  bool IsSuccessfulSubTestOutput(const std::string& output) {
-    static const char* const kSubTestSuccessStrings[] = {
-        "Running 1 test from 1 test suite",
-        "OK ] VariationsSafeModeEndToEndBrowserTestHelper.MANUAL_SubTest",
-        "1 test from VariationsSafeModeEndToEndBrowserTestHelper",
-        "1 test from 1 test suite ran",
-    };
-    auto is_in_output = [&](const char* s) {
-      return base::Contains(output, s);
-    };
-    return base::ranges::all_of(kSubTestSuccessStrings, is_in_output);
-  }
-
-  bool IsCrashingSubTestOutput(const std::string& output) {
-    const char* const kSubTestCrashStrings[] = {
-        "Running 1 test from 1 test suite",
-        "VariationsSafeModeEndToEndBrowserTestHelper.MANUAL_SubTest",
-        "crash_for_testing",
-    };
-    auto is_in_output = [&](const char* s) {
-      return base::Contains(output, s);
-    };
-    return base::ranges::all_of(kSubTestCrashStrings, is_in_output);
-  }
-
   void RunAndExpectSuccessfulSubTest(
       const base::CommandLine& sub_test_command) {
     std::string output;
-    base::GetAppOutputAndError(sub_test_command, &output);
-    EXPECT_TRUE(IsSuccessfulSubTestOutput(output))
-        << "Did not find success signals in output:\n"
-        << output;
+    int exit_code;
+    base::GetAppOutputWithExitCode(sub_test_command, &output, &exit_code);
+    EXPECT_EQ(0, exit_code) << "Did not get successful exit code";
   }
 
   void RunAndExpectCrashingSubTest(const base::CommandLine& sub_test_command) {
     std::string output;
-    base::GetAppOutputAndError(sub_test_command, &output);
-    EXPECT_FALSE(IsSuccessfulSubTestOutput(output))
-        << "Expected crash but found success signals in output:\n"
-        << output;
-    EXPECT_TRUE(IsCrashingSubTestOutput(output))
-        << "Did not find crash signals in output:\n"
-        << output;
+    int exit_code;
+    base::GetAppOutputWithExitCode(sub_test_command, &output, &exit_code);
+#if BUILDFLAG(IS_POSIX)
+    ASSERT_TRUE(WIFSIGNALED(exit_code));
+    // Posix only defines 7-bit exit codes.
+    EXPECT_EQ(0x7E57C0D3 & 0x7F, WTERMSIG(exit_code))
+        << "Did not get crash exit code";
+#else
+    EXPECT_EQ(0x7E57C0D3, exit_code) << "Did not get crash exit code";
+#endif
   }
 
   std::unique_ptr<PrefService> LoadLocalState(const base::FilePath& path) {
@@ -210,16 +189,7 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   base::FilePath local_state_file_;
 };
 
-// TODO(crbug.com/1344852): test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ExtendedSafeSeedEndToEnd DISABLED_ExtendedSafeSeedEndToEnd
-// TODO(crbug.com/1400987): times out waiting for output on Win-Official.
-#elif BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
-#define MAYBE_ExtendedSafeSeedEndToEnd DISABLED_ExtendedSafeSeedEndToEnd
-#else
-#define MAYBE_ExtendedSafeSeedEndToEnd ExtendedSafeSeedEndToEnd
-#endif
-TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeSeedEndToEnd) {
+TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
   base::CommandLine sub_test = SetUpSubTest();
 
   // Initial sub-test run should be successful.
@@ -252,16 +222,7 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeSeedEndToEnd) {
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 
-// TODO(crbug.com/1344852): test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ExtendedNullSeedEndToEnd DISABLED_ExtendedNullSeedEndToEnd
-// TODO(crbug.com/1400987): times out waiting for output on Win-Official.
-#elif BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
-#define MAYBE_ExtendedNullSeedEndToEnd DISABLED_ExtendedNullSeedEndToEnd
-#else
-#define MAYBE_ExtendedNullSeedEndToEnd ExtendedNullSeedEndToEnd
-#endif
-TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedNullSeedEndToEnd) {
+TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   base::CommandLine sub_test = SetUpSubTest();
 
   // Initial sub-test run should be successful.

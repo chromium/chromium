@@ -8,7 +8,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "crypto/hmac.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -71,4 +71,4 @@ bool VerifyRotationProof(const std::vector<uint8_t>& trusted_vault_key,
       .has_value();
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

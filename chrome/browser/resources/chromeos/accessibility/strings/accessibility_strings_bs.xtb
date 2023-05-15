@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="100506692671054486">nema nijedne prethodne komande</translation>
 <translation id="1009046985747440431">Pritisnite strelicu nagore ili nadolje za kretanje; pritisnite tipku Enter za aktiviranje</translation>
 <translation id="1011903154582639569">Pronađite tipku, a zatim podignite da unesete</translation>
 <translation id="1012173283529841972">Stavka liste</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavanda ljubičasta</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="3962990492275676168">Početak čitanja od trenutne lokacije</translation>
+<translation id="397094149579293440">nijedan tekst nije odabran</translation>
 <translation id="3970951409746498040">Pješčano smeđa</translation>
 <translation id="3989324057180830702">dgm u/i</translation>
 <translation id="3991317907213946254">Puder tamna</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Nema prethodnog naslova 1. nivoa</translation>
 <translation id="4787577491510559358">Najava formatiranja za trenutnu stavku</translation>
 <translation id="479989351350248267">pretraži</translation>
+<translation id="4802034228771424756">nijedno tekstualno polje nije fokusirano</translation>
 <translation id="4804818685124855865">Prekini vezu</translation>
 <translation id="481165870889056555">Objavljuje naslov trenutne stranice</translation>
 <translation id="4815668758102003883">Svijetlotirkizna</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interni link</translation>
 <translation id="4909019435900810068">Pomjeri nazad za jednu riječ</translation>
 <translation id="4911349081560453449">Nema prethodnog polja za potvrdu</translation>
+<translation id="4919186071145887492">Nije moguće izvršiti komandu <ph name="COMMAND" />. Pokušajte ponovo</translation>
 <translation id="492295894462528572">Predgovor</translation>
 <translation id="495046168593986294">Klizni prema gore</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953585991029886728">Uredi tekst</translation>
+<translation id="4964701498510730546">tekstualno polje je prazno</translation>
 <translation id="4973717656530883744">Min. <ph name="X" /></translation>
 <translation id="4974612477719259470">Nema prethodnog dugmeta</translation>
 <translation id="4979404613699303341">Prethodno dugme</translation>
+<translation id="4981239367072766915">neprepoznat unos</translation>
 <translation id="4982917827052020884">Započnimo s nekoliko tipki koje ćete redovno koristiti. Tipka Ctrl se može koristiti za zaustavljanje govora koji je u toku. Tipku Crtl ćete pronaći u donjem lijevom uglu tastature. Da nastavite, pritisnite tipku Ctrl.</translation>
 <translation id="4983588134362688868">Pređite na vrh stranice</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, prozor</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Najava trenutnog statusa baterije</translation>
 <translation id="4997282455736854877">Odabrali ste dugme za izbor <ph name="NAME" /></translation>
 <translation id="5012724933919010465">Odabrano je dugme za izbor stavke menija <ph name="NAME" /></translation>
+<translation id="5014131807708055994">Nije moguće izvršiti komandu <ph name="COMMAND" />. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Omogući zapisivanje govora</translation>
 <translation id="5041394372352067729">Pomjeranje Brailleovog ekrana na vrh stranice</translation>
 <translation id="5042770794184672516">Povećaj jačinu govora</translation>
@@ -884,7 +891,7 @@
 <translation id="7062635574500127092">Tirkizna</translation>
 <translation id="7086377898680121060">Posvijetli</translation>
 <translation id="7088743565397416204">Dvaput dodirnite da aktivirate stavku u fokusu</translation>
-<translation id="7088960765736518739">Prekidač za pristup</translation>
+<translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7090715360595433170">To također može biti efikasnije od prevlačenja jednim prstom ulijevo i udesno.</translation>
 <translation id="7091296112653361280">Drap boja</translation>
 <translation id="7095834689119144465">Uredi samo numerički tekst</translation>

@@ -16,6 +16,21 @@ import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 
+// The context type associated with a running JS context.
+// This should match the values in Feature::Context.
+enum ContextType {
+  kPrivilegedExtension,
+  kUnprivilegedExtension,
+  kContentScript,
+  kWebPage,
+  kPrivilegedWebPage,
+  kWebUi,
+  kUntrustedWebUi,
+  kLockscreenExtension,
+  kOffscreenExtension,
+  kUserScript,
+};
+
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {
   // The ID of the requesting injection host.
@@ -49,6 +64,11 @@ struct RequestParams {
   // in which case extension_id will indicate the ID of the associated
   // extension. Or, they can originate from hosted apps or normal web pages.
   url.mojom.Url source_url;
+  // The context type associated with the sender. Note that this is *not* to
+  // be treated as a security boundary (since it might come from a compromised
+  // renderer), but can be used to differentiate between different types of
+  // contexts within the same renderer (e.g. content script vs web page).
+  ContextType context_type;
   // Unique request id to match requests and responses.
   int32 request_id;
   // True if request has a callback specified.

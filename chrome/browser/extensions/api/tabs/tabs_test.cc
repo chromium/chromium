@@ -2163,7 +2163,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
         R"( window.name = 'old-contents';
             chrome.windows.create({url: '%s', setSelfAsOpener: true}); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecuteScript(old_contents, script));
+    ASSERT_TRUE(content::ExecJs(old_contents, script));
     new_contents = observer.GetWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
@@ -2174,13 +2174,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
   GURL web_url2 = embedded_test_server()->GetURL("/title2.html");
   {
     content::TestNavigationObserver nav_observer(new_contents, 1);
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         new_contents, "window.location = '" + web_url1.spec() + "';"));
     nav_observer.Wait();
   }
   {
     content::TestNavigationObserver nav_observer(old_contents, 1);
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         old_contents, "window.location = '" + web_url2.spec() + "';"));
     nav_observer.Wait();
   }
@@ -2235,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
         R"( window.name = 'old-contents';
             chrome.windows.create({url: '%s'}); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecuteScript(old_contents, script));
+    ASSERT_TRUE(content::ExecJs(old_contents, script));
     new_contents = observer.GetWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
@@ -2247,11 +2247,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
                        new_contents->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // Verify that the |new_contents| doesn't have |window.opener| set.
-  bool opener_as_bool = true;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      new_contents, "window.domAutomationController.send(!!window.opener)",
-      &opener_as_bool));
-  EXPECT_FALSE(opener_as_bool);
+  EXPECT_EQ(false, EvalJs(new_contents, "!!window.opener"));
 
   // TODO(lukasza): http://crbug.com/786411: Verify that |new_contents| can NOT
   // find |old_contents| using window.open/name.  This is currently broken,
@@ -2319,7 +2315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     content::WebContents* new_contents = nullptr;
     {
       content::WebContentsAddedObserver observer;
-      ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+      ASSERT_TRUE(content::ExecJs(web_contents, script));
       new_contents = observer.GetWebContents();
     }
     ASSERT_TRUE(new_contents);

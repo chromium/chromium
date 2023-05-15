@@ -61,7 +61,7 @@ constexpr int kCloseWindowDelayInMilliseconds = 150;
 
 // The maximum difference of the side length between backdrop view and
 // transformed window in order to apply the corner radius on the window.
-constexpr int kLengthDiffToApplyCornerRadiusOnWindow = 12;
+constexpr int kLengthDiffToApplyCornerRadiusOnWindow = 24;
 
 // Layer animation observer that is attached to a clip animation. Removes the
 // clip and then self destructs after the animation is finished.
@@ -101,7 +101,7 @@ class RemoveClipObserver : public ui::ImplicitAnimationObserver,
   }
 
   // Guaranteed to be not null for the duration of |this|.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Clips |window| to |clip_rect|. If |clip_rect| is empty and there is an
@@ -161,7 +161,7 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
   }
 
  private:
-  ui::Layer* layer_;
+  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
 };
 
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
@@ -575,16 +575,42 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   auto* backdrop_view = overview_item_->overview_item_view()->backdrop_view();
   const bool is_backdrop_view_visible =
       backdrop_view && backdrop_view->GetVisible();
+
+  bool has_rounding = false;
+  if (is_backdrop_view_visible) {
+    switch (type_) {
+      case OverviewGridWindowFillMode::kLetterBoxed:
+        has_rounding =
+            backdrop_view->height() - GetTransformedBounds().height() <
+            kLengthDiffToApplyCornerRadiusOnWindow;
+        break;
+      case OverviewGridWindowFillMode::kPillarBoxed:
+        has_rounding = backdrop_view->width() - GetTransformedBounds().width() <
+                       kLengthDiffToApplyCornerRadiusOnWindow;
+        break;
+      case OverviewGridWindowFillMode::kNormal:
+        break;
+    }
+  } else {
+    has_rounding = true;
+  }
+
   if (!is_backdrop_view_visible ||
-      (backdrop_view->height() - GetTransformedBounds().height() <
-           kLengthDiffToApplyCornerRadiusOnWindow &&
+      (type_ == OverviewGridWindowFillMode::kLetterBoxed &&
+       backdrop_view->height() - GetTransformedBounds().height() <
+           kLengthDiffToApplyCornerRadiusOnWindow) ||
+      (type_ == OverviewGridWindowFillMode::kPillarBoxed &&
        backdrop_view->width() - GetTransformedBounds().width() <
            kLengthDiffToApplyCornerRadiusOnWindow)) {
     radii = gfx::RoundedCornersF(0, 0, kOverviewItemCornerRadius / scale,
                                  kOverviewItemCornerRadius / scale);
   }
 
-  layer->SetRoundedCornerRadius(radii);
+  layer->SetRoundedCornerRadius(
+      has_rounding
+          ? gfx::RoundedCornersF(0, 0, kOverviewItemCornerRadius / scale,
+                                 kOverviewItemCornerRadius / scale)
+          : gfx::RoundedCornersF(0));
 }
 
 void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(

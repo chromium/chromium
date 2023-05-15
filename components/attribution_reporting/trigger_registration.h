@@ -16,6 +16,7 @@
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,7 +47,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
       AggregatableValues aggregatable_values,
       bool debug_reporting,
       aggregation_service::mojom::AggregationCoordinator
-          aggregation_coordinator);
+          aggregation_coordinator,
+      mojom::SourceRegistrationTimeConfig source_registration_time_config);
 
   ~TriggerRegistration();
 
@@ -67,6 +69,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   bool debug_reporting = false;
   aggregation_service::mojom::AggregationCoordinator aggregation_coordinator =
       aggregation_service::mojom::AggregationCoordinator::kDefault;
+  attribution_reporting::mojom::SourceRegistrationTimeConfig
+      source_registration_time_config =
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
 };
 
 }  // namespace attribution_reporting

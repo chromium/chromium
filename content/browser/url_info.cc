@@ -4,6 +4,8 @@
 
 #include "content/browser/url_info.h"
 
+#include "content/browser/isolation_context.h"
+
 namespace content {
 
 // We use NavigationRequest::navigation_id_ to provide sandbox id values; this
@@ -27,7 +29,10 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       is_pdf(init.is_pdf_),
       common_coop_origin(init.common_coop_origin_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
-  DCHECK(!requests_origin_keyed_process() || requests_origin_agent_cluster());
+  // We can check this for the explicit header case here, and it is checked more
+  // generally (including implicit cases) in SiteInfo::CreateInternal().
+  DCHECK(!requests_origin_keyed_process_by_header() ||
+         requests_origin_agent_cluster_by_header());
   DCHECK(init.is_sandboxed_ ||
          init.unique_sandbox_id_ == kInvalidUniqueSandboxId);
 }
@@ -46,6 +51,18 @@ bool UrlInfo::IsIsolated() const {
   if (!web_exposed_isolation_info)
     return false;
   return web_exposed_isolation_info->is_isolated();
+}
+
+bool UrlInfo::RequestsOriginKeyedProcess(
+    const IsolationContext& context) const {
+  // An origin-keyed process should be used if (1) the UrlInfo requires it or
+  // (2) the UrlInfo would have used an origin agent cluster based on the lack
+  // of header, and the given IsolationContext is in a mode that uses
+  // origin-keyed processes by default (i.e., kOriginKeyedProcessesByDefault).
+  return (origin_isolation_request &
+          OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader) ||
+         (requests_default_origin_agent_cluster_isolation() &&
+          context.default_isolation_state().requires_origin_keyed_process());
 }
 
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;

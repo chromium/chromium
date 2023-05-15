@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -284,7 +285,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     return in_progress_request_->is_outermost_main_frame_;
   }
 
-  GURL GetURL() const override { return in_progress_request_->response_url_; }
+  GURL GetUrl() const override { return in_progress_request_->response_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
@@ -472,8 +473,15 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    if (!switches::IsBoundSessionCredentialsEnabled()) {
+      return false;
+    }
+#else
     return false;
+#endif
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Most requests from guest web views are ignored.

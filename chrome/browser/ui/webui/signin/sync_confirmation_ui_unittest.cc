@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,25 +65,22 @@ const TestParam kGetSyncBenefitsListJSONParams[] = {
                                  "syncConfirmationExtensions"}},
 };
 
-void DisableTypes(sync_preferences::TestingPrefServiceSyncable& pref_service,
+void DisableTypes(syncer::TestSyncService& test_sync_service,
                   syncer::UserSelectableTypeSet types) {
   for (auto type : types) {
-    std::string path = syncer::SyncPrefs::GetPrefNameForType(type);
-    pref_service.SetManagedPref(path, base::Value(false));
+    test_sync_service.GetUserSettings()->SetTypeIsManaged(type, true);
   }
 }
 
 class SyncConfirmationUITest : public testing::TestWithParam<TestParam> {};
 
 TEST_P(SyncConfirmationUITest, GetSyncBenefitsListJSON) {
-  auto pref_service =
-      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-  syncer::SyncPrefs::RegisterProfilePrefs(pref_service->registry());
+  syncer::TestSyncService test_sync_service;
 
-  DisableTypes(*pref_service.get(), GetParam().disabled_types);
+  DisableTypes(test_sync_service, GetParam().disabled_types);
 
   std::string benefits_json =
-      SyncConfirmationUI::GetSyncBenefitsListJSON(*pref_service.get());
+      SyncConfirmationUI::GetSyncBenefitsListJSON(&test_sync_service);
   for (auto expected_key : GetParam().expected_benefit_substr) {
     EXPECT_THAT(benefits_json, HasSubstr(expected_key));
   }

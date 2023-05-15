@@ -327,6 +327,8 @@ TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
   // accordingly.
   auto model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model_override =
+      std::make_unique<QuickAppAccessModel>();
 
   for (int i = 0; i < 4; ++i) {
     const std::string id = base::StringPrintf("other_id%d", i);
@@ -336,7 +338,8 @@ TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
   }
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model_override.get());
   GetRecentAppsView()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(std::vector<std::string>(

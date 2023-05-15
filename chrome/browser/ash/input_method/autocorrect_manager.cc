@@ -43,7 +43,7 @@ constexpr int kDistanceUntilUnderlineHides = 3;
 constexpr int kMaxValidationTries = 4;
 constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
 constexpr base::TimeDelta kFastInteractionPeriod = base::Milliseconds(500);
-constexpr int kUndoWindowShowSettingMaxCount = 10;
+constexpr int kUndoWindowShowSettingMaxCount = 5;
 constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 
 bool IsVkAutocorrect() {
@@ -785,22 +785,28 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (event.code() == ui::DomCode::ARROW_UP) {
+  if (event.code() == ui::DomCode::ESCAPE) {
+    HideUndoWindow();
+    return true;
+  }
+  if (event.code() == ui::DomCode::ARROW_UP ||
+      event.code() == ui::DomCode::TAB) {
     HighlightButtons(/*should_highlight_undo=*/true,
                      /*should_highlight_learn_more=*/false);
     return true;
   }
-  if (event.code() == ui::DomCode::TAB) {
-    if (!pending_autocorrect_->undo_button_highlighted) {
-      HighlightButtons(/*should_highlight_undo=*/true,
-                       /*should_highlight_learn_more=*/false);
-      return true;
-    }
-    if (pending_autocorrect_->learn_more_button_visible) {
-      HighlightButtons(/*should_highlight_undo=*/false,
-                       /*should_highlight_learn_more=*/true);
-      return true;
-    }
+  if (event.code() == ui::DomCode::ARROW_LEFT &&
+      pending_autocorrect_->learn_more_button_highlighted) {
+    HighlightButtons(/*should_highlight_undo=*/true,
+                     /*should_highlight_learn_more=*/false);
+    return true;
+  }
+  if (event.code() == ui::DomCode::ARROW_RIGHT &&
+      pending_autocorrect_->undo_button_highlighted &&
+      pending_autocorrect_->learn_more_button_visible) {
+    HighlightButtons(/*should_highlight_undo=*/false,
+                     /*should_highlight_learn_more=*/true);
+    return true;
   }
   if (event.code() == ui::DomCode::ENTER) {
     if (pending_autocorrect_->undo_button_highlighted) {
@@ -905,7 +911,16 @@ void AutocorrectManager::OnSurroundingTextChanged(
 
   // If cursor is inside autocorrect range (inclusive), show undo window and
   // record relevant metrics.
-  if (cursor_pos >= range.start() && cursor_pos <= range.end() &&
+  // On Lacros, the async behaviors accidentally delay the update of autocorrect
+  // range after the onSurroundingTextChanged. When users delete a few
+  // characters of the suggested words, this code still uses the outdated range,
+  // hence allowing the undo window to show.
+  // TODO(b/278616918): Consider remove the
+  // IsAutocorrectSuggestionInSurroundingText logic once async behaviors are
+  // corrected.
+  if (IsAutocorrectSuggestionInSurroundingText(
+          text, range, pending_autocorrect_->suggested_text) &&
+      cursor_pos >= range.start() && cursor_pos <= range.end() &&
       selection_range.is_empty()) {
     ShowUndoWindow(range, text);
   } else {
@@ -1145,6 +1160,8 @@ void AutocorrectManager::HighlightButtons(
     LOG(ERROR) << "Failed to highlight undo button.";
     return;
   }
+  learn_more_button_.announce_string =
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE);
   suggestion_handler_->SetButtonHighlighted(
       context_id_, learn_more_button_, should_highlight_learn_more, &error);
   if (!error.empty()) {
@@ -1203,7 +1220,7 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ = IsAutoCorrectDisabled(info);
+  disabled_by_rule_ = IsAssistiveInputDisabled(info.tab_url);
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -30,6 +31,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -44,22 +46,67 @@
 
 namespace {
 
-AutocompleteMatchType::Type GetAutocompleteMatchType(const std::string& type) {
-  if (type == "CALCULATOR")
-    return AutocompleteMatchType::CALCULATOR;
-  if (type == "ENTITY")
-    return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
-  if (type == "TAIL")
-    return AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
-  if (type == "PERSONALIZED_QUERY")
-    return AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED;
-  if (type == "PROFILE")
-    return AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
-  if (type == "NAVIGATION")
-    return AutocompleteMatchType::NAVSUGGEST;
-  if (type == "PERSONALIZED_NAVIGATION")
-    return AutocompleteMatchType::NAVSUGGEST_PERSONALIZED;
-  return AutocompleteMatchType::SEARCH_SUGGEST;
+// Converts a suggestion type name found in the JSON response to an equivalent
+// omnibox::SuggestType enum value.
+omnibox::SuggestType GetSuggestType(const std::string& type) {
+  if (type == "CALCULATOR") {
+    return omnibox::TYPE_CALCULATOR;
+  }
+  if (type == "ENTITY") {
+    return omnibox::TYPE_ENTITY;
+  }
+  if (type == "TAIL") {
+    return omnibox::TYPE_TAIL;
+  }
+  if (type == "PERSONALIZED_QUERY") {
+    return omnibox::TYPE_PERSONALIZED_QUERY;
+  }
+  if (type == "PROFILE") {
+    return omnibox::TYPE_PROFILE;
+  }
+  if (type == "NAVIGATION") {
+    return omnibox::TYPE_NAVIGATION;
+  }
+  if (type == "PERSONALIZED_NAVIGATION") {
+    return omnibox::TYPE_PERSONALIZED_NAVIGATION;
+  }
+  if (type == "CHROME_QUERY_TILES") {
+    return omnibox::TYPE_CHROME_QUERY_TILES;
+  }
+  if (type == "CATEGORICAL_QUERY") {
+    return omnibox::TYPE_CATEGORICAL_QUERY;
+  }
+  return omnibox::TYPE_QUERY;
+}
+
+// Converts an omnibox::SuggestType enum value to an equivalent
+// AutocompleteMatchType::Type enum values.
+AutocompleteMatchType::Type GetAutocompleteMatchType(
+    omnibox::SuggestType suggest_type) {
+  switch (suggest_type) {
+    case omnibox::TYPE_CALCULATOR:
+      return AutocompleteMatchType::CALCULATOR;
+    case omnibox::TYPE_ENTITY:
+      return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+    case omnibox::TYPE_TAIL:
+      return AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
+    case omnibox::TYPE_PERSONALIZED_QUERY:
+      return AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED;
+    case omnibox::TYPE_PROFILE:
+      return AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
+    case omnibox::TYPE_NAVIGATION:
+      return AutocompleteMatchType::NAVSUGGEST;
+    case omnibox::TYPE_PERSONALIZED_NAVIGATION:
+      return AutocompleteMatchType::NAVSUGGEST_PERSONALIZED;
+    default: {
+      // Use `ACMatchType::SEARCH_SUGGEST_ENTITY` for categorical suggestions.
+      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
+          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+        return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+      }
+      return AutocompleteMatchType::SEARCH_SUGGEST;
+    }
+  }
 }
 
 // Convert the supplied Json::Value representation of list-of-lists-of-integers
@@ -186,10 +233,12 @@ SearchSuggestionParser::Result::Result(bool from_keyword,
                                        int relevance,
                                        bool relevance_from_server,
                                        AutocompleteMatchType::Type type,
+                                       omnibox::SuggestType suggest_type,
                                        std::vector<int> subtypes,
                                        const std::string& deletion_url)
     : from_keyword_(from_keyword),
       type_(type),
+      suggest_type_(suggest_type),
       subtypes_(std::move(subtypes)),
       relevance_(relevance),
       relevance_from_server_(relevance_from_server),
@@ -205,6 +254,7 @@ SearchSuggestionParser::Result::~Result() {}
 SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
+    omnibox::SuggestType suggest_type,
     std::vector<int> subtypes,
     bool from_keyword,
     int relevance,
@@ -212,6 +262,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& input_text)
     : SuggestResult(suggestion,
                     type,
+                    suggest_type,
                     std::move(subtypes),
                     suggestion,
                     /*match_contents_prefix=*/std::u16string(),
@@ -228,6 +279,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
 SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
+    omnibox::SuggestType suggest_type,
     std::vector<int> subtypes,
     const std::u16string& match_contents,
     const std::u16string& match_contents_prefix,
@@ -244,6 +296,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
              relevance,
              relevance_from_server,
              type,
+             suggest_type,
              std::move(subtypes),
              deletion_url),
       suggestion_(suggestion),
@@ -337,6 +390,7 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
     const AutocompleteSchemeClassifier& scheme_classifier,
     const GURL& url,
     AutocompleteMatchType::Type match_type,
+    omnibox::SuggestType suggest_type,
     std::vector<int> subtypes,
     const std::u16string& description,
     const std::string& deletion_url,
@@ -348,6 +402,7 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
              relevance,
              relevance_from_server,
              match_type,
+             suggest_type,
              std::move(subtypes),
              deletion_url),
       url_(url),
@@ -505,7 +560,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
 }
 
 // static
-absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
+absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     base::StringPiece json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
@@ -516,8 +571,8 @@ absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
 
     absl::optional<base::Value> data =
         base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (data) {
-      return data;
+    if (data && data->is_list()) {
+      return std::move(data->GetList());
     }
   }
   return absl::nullopt;
@@ -525,16 +580,12 @@ absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
 
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
-    const base::Value& root_val,
+    const base::Value::List& root_list,
     const AutocompleteInput& input,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
-  if (!root_val.is_list())
-    return false;
-  const auto& root_list = root_val.GetList();
-
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
     return false;
@@ -678,6 +729,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     AutocompleteMatchType::Type match_type =
         AutocompleteMatchType::SEARCH_SUGGEST;
+    omnibox::SuggestType suggest_type = omnibox::TYPE_QUERY;
 
     // Legacy code: if the server sends us a single subtype ID, place it beside
     // other subtypes.
@@ -688,8 +740,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     if (suggest_types && index < suggest_types->size() &&
         (*suggest_types)[index].is_string()) {
-      match_type =
-          GetAutocompleteMatchType((*suggest_types)[index].GetString());
+      suggest_type = GetSuggestType((*suggest_types)[index].GetString());
+      match_type = GetAutocompleteMatchType(suggest_type);
     }
 
     std::string deletion_url;
@@ -715,9 +767,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
           }
         }
         results->navigation_results.push_back(NavigationResult(
-            scheme_classifier, url, match_type, subtypes[index], title,
-            deletion_url, is_keyword_result, relevance, relevances != nullptr,
-            input.text()));
+            scheme_classifier, url, match_type, suggest_type, subtypes[index],
+            title, deletion_url, is_keyword_result, relevance,
+            relevances != nullptr, input.text()));
       }
     } else {
       std::u16string annotation;
@@ -793,7 +845,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       bool should_prefetch = int_index == prefetch_index;
       bool should_prerender = int_index == prerender_index;
       results->suggest_results.push_back(SuggestResult(
-          suggestion, match_type, subtypes[index], match_contents,
+          suggestion, match_type, suggest_type, subtypes[index], match_contents,
           match_contents_prefix, annotation, std::move(entity_info),
           deletion_url, is_keyword_result, relevance, relevances != nullptr,
           should_prefetch, should_prerender, trimmed_input));

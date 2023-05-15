@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -52,10 +51,6 @@
 namespace infobars {
 class InfoBarAndroid;
 }
-
-constexpr char kTabUnderVisibleTime[] = "Tab.TabUnder.VisibleTime";
-constexpr char kTabUnderVisibleTimeBefore[] = "Tab.TabUnder.VisibleTimeBefore";
-constexpr char kPopupToTabUnder[] = "Tab.TabUnder.PopupToTabUnderTime";
 
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -135,8 +130,6 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   base::SimpleTestTickClock* raw_clock() { return &raw_clock_; }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
 #if BUILDFLAG(IS_ANDROID)
   messages::MessageWrapper* message_wrapper() {
     return framebust_blocked_message_delegate_->message_for_testing();
@@ -151,7 +144,6 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  base::HistogramTester histogram_tester_;
   base::SimpleTestTickClock raw_clock_;
   std::vector<std::unique_ptr<content::WebContents>> popups_;
 #if BUILDFLAG(IS_ANDROID)
@@ -160,211 +152,6 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
       framebust_blocked_message_delegate_;
 #endif
 };
-
-TEST_F(PopupOpenerTabHelperTest, LogVisibleTime) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  raw_clock()->Advance(base::Minutes(1));
-
-  web_contents()->WasHidden();
-
-  NavigateAndCommitWithoutGesture(GURL("https://example.test/"));
-
-  raw_clock()->Advance(base::Minutes(1));
-  web_contents()->WasShown();
-  raw_clock()->Advance(base::Seconds(1));
-
-  DeleteContents();
-
-  histogram_tester()->ExpectUniqueSample(
-      "Tab.VisibleTime", base::Seconds(60 + 1).InMilliseconds(), 1);
-}
-
-TEST_F(PopupOpenerTabHelperTest, SimpleTabUnder_LogsMetrics) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-
-  // Spend 1s on the page before doing anything.
-  raw_clock()->Advance(base::Seconds(1));
-
-  // Popup and then navigate 50ms after.
-  SimulatePopup();
-  raw_clock()->Advance(base::Milliseconds(50));
-  NavigateAndCommitWithoutGesture(GURL("https://example.test/"));
-
-  // Spent 100 ms on the opener before closing it.
-  raw_clock()->Advance(base::Minutes(1));
-  web_contents()->WasShown();
-  raw_clock()->Advance(base::Milliseconds(100));
-  DeleteContents();
-
-  histogram_tester()->ExpectUniqueSample(kTabUnderVisibleTimeBefore, 1050, 1);
-  histogram_tester()->ExpectUniqueSample(kTabUnderVisibleTime, 100, 1);
-  histogram_tester()->ExpectUniqueSample(kPopupToTabUnder, 50, 1);
-}
-
-TEST_F(PopupOpenerTabHelperTest, TabUnderAfterRedirect_LogsMetrics) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-
-  // Popup and then navigate 50ms after.
-  SimulatePopup();
-  raw_clock()->Advance(base::Milliseconds(50));
-
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://first.test"), main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Start();
-
-  // Foreground the tab before the navigation redirects cross process. Note that
-  // currently, this time does not get accounted for in the visibility metrics,
-  // though we may want to include it in the future.
-  web_contents()->WasShown();
-  raw_clock()->Advance(base::Milliseconds(10));
-
-  simulator->Redirect(GURL("https://example.test/"));
-  raw_clock()->Advance(base::Milliseconds(15));
-
-  simulator->Commit();
-
-  // Spent 100 additional ms on the opener before closing it.
-  raw_clock()->Advance(base::Milliseconds(100));
-  DeleteContents();
-
-  histogram_tester()->ExpectUniqueSample(kTabUnderVisibleTime, 115, 1);
-  histogram_tester()->ExpectUniqueSample(kPopupToTabUnder, 60, 1);
-}
-
-TEST_F(PopupOpenerTabHelperTest, FirstNavigation_NoLogging) {
-  SimulatePopup();
-  web_contents()->WasHidden();
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-}
-
-TEST_F(PopupOpenerTabHelperTest, VisibleNavigation_NoLogging) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-  web_contents()->WasShown();
-  NavigateAndCommitWithoutGesture(GURL("https://example.test/"));
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-}
-
-// This is counter intuitive, but we want to log metrics in the dry-run state if
-// we would have blocked the navigation. So, even though the user ends up
-// aborting the navigation, it still counts as a tab-under for metrics purposes,
-// because we would have intervened.
-TEST_F(PopupOpenerTabHelperTest, AbortedNavigationAfterStart_LogsMetrics) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://example.test/"), main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Fail(net::ERR_ABORTED);
-
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 1);
-}
-
-// See comment in the AbortedNavigation case above.
-TEST_F(PopupOpenerTabHelperTest, FailedNavigation_NoLogging) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://example.test/"), main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Fail(net::ERR_CONNECTION_RESET);
-
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 1);
-}
-
-// Aborts the navigation before the cross-origin redirect.
-TEST_F(PopupOpenerTabHelperTest, AbortedNavigationBeforeRedirect_LogsMetrics) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://first.test/path"), main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Start();
-  simulator->Fail(net::ERR_ABORTED);
-
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-}
-
-TEST_F(PopupOpenerTabHelperTest, SameOriginNavigation_NoLogging) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/path"));
-
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-}
-
-TEST_F(PopupOpenerTabHelperTest, HasUserGesture_NoLogging) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-
-  SimulatePopup();
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://example.test/"), main_rfh());
-  simulator->SetHasUserGesture(true);
-  simulator->Commit();
-
-  raw_clock()->Advance(base::Minutes(1));
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-}
-
-TEST_F(PopupOpenerTabHelperTest, OpenPopupNoRedirect_NoLogging) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-  SimulatePopup();
-  DeleteContents();
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-  histogram_tester()->ExpectTotalCount(kPopupToTabUnder, 0);
-}
-
-// Same as simple tab-under case, but this one starts the navigation before
-// issuing the popup. Currently, this case is not supported.
-TEST_F(PopupOpenerTabHelperTest, SimulateTabUnderNavBeforePopup_LogsMetrics) {
-  NavigateAndCommitWithoutGesture(GURL("https://first.test/"));
-
-  // Start navigating, then popup, then commit.
-  raw_clock()->Advance(base::Milliseconds(50));
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://example.test/"), main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Start();
-  SimulatePopup();
-  simulator->Commit();
-
-  // Spent 100 ms on the opener before closing it.
-  raw_clock()->Advance(base::Minutes(1));
-  web_contents()->WasShown();
-  raw_clock()->Advance(base::Milliseconds(100));
-  DeleteContents();
-
-  // No histograms are logged because:
-  // 1. The navigation starts in the foreground.
-  // 2. The popup is issued before the navigation, and the popup metrics only
-  //    log for navigations after the popup.
-  histogram_tester()->ExpectTotalCount(kTabUnderVisibleTime, 0);
-  histogram_tester()->ExpectTotalCount(kPopupToTabUnder, 0);
-}
 
 // Navigate to a site without pop-ups, verify the user popup settings are not
 // logged to ukm.

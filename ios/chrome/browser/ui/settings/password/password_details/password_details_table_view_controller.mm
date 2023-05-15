@@ -13,8 +13,8 @@
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
@@ -51,15 +52,16 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
 using base::UmaHistogramEnumeration;
+using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
+using password_manager::features::IsPasswordCheckupEnabled;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
-using password_manager::metrics_util::PasswordCheckInteraction;
 using password_manager::metrics_util::PasswordNoteAction;
 using password_manager::metrics_util::ReauthResult;
+
+namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
@@ -92,9 +94,28 @@ const CGFloat kRecommendationSymbolSize = 22;
 const int kMinNoteCharAmountForWarning = 901;
 
 // Returns the index of a password in the `passwords` array.
-int GetPasswordIndex(int section) {
+NSUInteger GetPasswordIndex(NSUInteger section) {
   // Only one password at position 0 shows if no grouping applied.
   return IsPasswordGroupingEnabled() ? section : 0;
+}
+
+// Returns true if the "Dismiss Warning" button should be shown.
+bool ShouldAllowToDismissWarning(DetailsContext context) {
+  switch (context) {
+    case DetailsContext::kGeneral:
+    case DetailsContext::kCompromisedIssues:
+      return IsPasswordCheckupEnabled();
+    case DetailsContext::kDismissedWarnings:
+    case DetailsContext::kReusedIssues:
+    case DetailsContext::kWeakIssues:
+      return false;
+  }
+}
+
+// Returns true if the "Restore Warning" button should be shown.
+bool ShouldAllowToRestoreWarning(DetailsContext context) {
+  return IsPasswordCheckupEnabled() &&
+         context == DetailsContext::kDismissedWarnings;
 }
 
 }  // namespace
@@ -239,10 +260,9 @@ int GetPasswordIndex(int section) {
   }
 
   if (self.tableView.editing) {
-    // If site, password or username value was changed show confirmation dialog
-    // before saving password. Editing mode will be exited only if user confirm
-    // saving.
-    if ([self fieldsDidChange]) {
+    // If password value was changed show confirmation dialog before saving.
+    // Editing mode will be exited only if user confirms saving.
+    if ([self passwordsDidChange]) {
       DCHECK(self.handler);
       // TODO(crbug.com/1401035): Show Password Edit Dialog when Password
       // Grouping is enabled.
@@ -398,6 +418,28 @@ int GetPasswordIndex(int section) {
   return item;
 }
 
+- (TableViewTextItem*)dismissWarningItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:PasswordDetailsItemTypeDismissWarningButton];
+  item.text = l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING);
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
+- (TableViewTextItem*)restoreWarningItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:PasswordDetailsItemTypeRestoreWarningButton];
+  item.text = l10n_util::GetNSString(IDS_IOS_RESTORE_WARNING);
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
 - (TableViewTextItem*)deleteButtonItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
   TableViewTextItem* item = [[TableViewTextItem alloc]
@@ -505,12 +547,17 @@ int GetPasswordIndex(int section) {
       if (!self.tableView.editing) {
         int passwordIndex = GetPasswordIndex(indexPath.section);
         DCHECK(self.applicationCommandsHandler);
-        DCHECK(self.passwords[passwordIndex].changePasswordURL.has_value());
+        PasswordDetails* passwordDetails = self.passwords[passwordIndex];
+        DCHECK(passwordDetails.changePasswordURL.has_value());
+
+        CHECK(password_manager::ShouldRecordPasswordCheckUserAction(
+            passwordDetails.context, passwordDetails.compromised));
+
+        password_manager::LogChangePasswordOnWebsite(
+            GetWarningTypeForDetailsContext(passwordDetails.context));
+
         OpenNewTabCommand* command = [OpenNewTabCommand
-            commandWithURLFromChrome:self.passwords[passwordIndex]
-                                         .changePasswordURL.value()];
-        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                                PasswordCheckInteraction::kChangePassword);
+            commandWithURLFromChrome:passwordDetails.changePasswordURL.value()];
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
@@ -521,15 +568,27 @@ int GetPasswordIndex(int section) {
       [textFieldCell.textView becomeFirstResponder];
       break;
     }
+    case PasswordDetailsItemTypeDismissWarningButton:
+      if (!self.tableView.editing) {
+        [self didTapDismissWarningButtonAtPasswordIndex:GetPasswordIndex(
+                                                            indexPath.section)];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+      }
+      break;
+    case PasswordDetailsItemTypeRestoreWarningButton:
+      if (!self.tableView.editing) {
+        [self didTapRestoreWarningButtonAtPasswordIndex:GetPasswordIndex(
+                                                            indexPath.section)];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+      }
+      break;
     case PasswordDetailsItemTypeDeleteButton:
       if (self.tableView.editing) {
         UITableViewCell* cell =
             [self.tableView cellForRowAtIndexPath:indexPath];
         [self didTapDeleteButton:cell
                  atPasswordIndex:GetPasswordIndex(indexPath.section)];
-        [self.tableView
-            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
-                          animated:YES];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
     case PasswordDetailsItemTypeMoveToAccountButton:
@@ -538,9 +597,7 @@ int GetPasswordIndex(int section) {
             [self.tableView cellForRowAtIndexPath:indexPath];
         [self didTapMoveButton:cell
                atPasswordIndex:GetPasswordIndex(indexPath.section)];
-        [self.tableView
-            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
-                          animated:YES];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
     case PasswordDetailsItemTypeChangePasswordRecommendation:
@@ -578,8 +635,6 @@ int GetPasswordIndex(int section) {
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
-    case PasswordDetailsItemTypeNote:
-      return YES;
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeUsername:
@@ -588,6 +643,7 @@ int GetPasswordIndex(int section) {
     case PasswordDetailsItemTypeMoveToAccountButton:
       return !self.editing;
     case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeNote:
       return self.editing;
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
@@ -682,6 +738,8 @@ int GetPasswordIndex(int section) {
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeDismissWarningButton:
+    case PasswordDetailsItemTypeRestoreWarningButton:
     case PasswordDetailsItemTypeDeleteButton:
       break;
   }
@@ -711,17 +769,18 @@ int GetPasswordIndex(int section) {
   _passwords = passwords;
   _pageTitle = title;
 
+  [self updateNavigationTitle];
+  // Update the model even if all passwords are deleted and the view controller
+  // will be dismissed. UIKit could still trigger events that execute CHECK in
+  // this file that would fail if `_passwords` and the model are not in sync.
+  [self reloadData];
+
   if (![passwords count]) {
     // onAllPasswordsDeleted() mustn't be called twice.
     if (hadPasswords) {
       [self.handler onAllPasswordsDeleted];
     }
-    return;
   }
-
-  [self updateNavigationTitle];
-
-  [self reloadData];
 }
 
 - (void)setIsBlockedSite:(BOOL)isBlockedSite {
@@ -888,7 +947,7 @@ int GetPasswordIndex(int section) {
 // Reveals password to the user.
 - (void)showPasswordFor:(ReauthenticationReason)reason {
   switch (reason) {
-    case ReauthenticationReasonShow:
+    case ReauthenticationReasonShow: {
       self.passwordShown = YES;
       self.passwordDetailsInfoItems[_passwordIndexToReveal]
           .passwordTextItem.textFieldValue =
@@ -902,11 +961,18 @@ int GetPasswordIndex(int section) {
       [self reconfigureCellsForItems:@[
         self.passwordDetailsInfoItems[_passwordIndexToReveal].passwordTextItem
       ]];
-      if (self.passwords[_passwordIndexToReveal].compromised) {
-        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                                PasswordCheckInteraction::kShowPassword);
+
+      PasswordDetails* passwordDetails = self.passwords[_passwordIndexToReveal];
+      DetailsContext detailsContext = passwordDetails.context;
+      // When details was opened from the Password Manager, only log password
+      // check actions if the password is compromised.
+      if (password_manager::ShouldRecordPasswordCheckUserAction(
+              detailsContext, passwordDetails.compromised)) {
+        password_manager::LogRevealPassword(
+            GetWarningTypeForDetailsContext(detailsContext));
       }
       break;
+    }
     case ReauthenticationReasonCopy: {
       NSString* copiedString =
           self.passwords[IsPasswordGroupingEnabled()
@@ -962,25 +1028,6 @@ int GetPasswordIndex(int section) {
     [self.tableView
         deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
                       animated:YES];
-  }
-}
-
-- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
-  switch (static_cast<PasswordDetailsItemType>(itemType)) {
-    case PasswordDetailsItemTypeUsername:
-    case PasswordDetailsItemTypePassword:
-    case PasswordDetailsItemTypeNote:
-      return YES;
-    case PasswordDetailsItemTypeWebsite:
-    case PasswordDetailsItemTypeFederation:
-    case PasswordDetailsItemTypeChangePasswordButton:
-    case PasswordDetailsItemTypeChangePasswordRecommendation:
-    case PasswordDetailsItemTypeDeleteButton:
-    case PasswordDetailsItemTypeMoveToAccountButton:
-    case PasswordDetailsItemTypeMoveToAccountRecommendation:
-    case PasswordDetailsItemTypeNoteFooter:
-      return NO;
   }
 }
 
@@ -1072,20 +1119,13 @@ int GetPasswordIndex(int section) {
   return NO;
 }
 
-- (BOOL)fieldsDidChange {
+- (BOOL)passwordsDidChange {
   DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     if (![self.passwords[i].password
             isEqualToString:self.passwordDetailsInfoItems[i]
-                                .passwordTextItem.textFieldValue] ||
-        ![self.passwords[i].username
-            isEqualToString:self.passwordDetailsInfoItems[i]
-                                .usernameTextItem.textFieldValue] ||
-        (IsPasswordNotesWithBackupEnabled() &&
-         ![self.passwords[i].note
-             isEqualToString:self.passwordDetailsInfoItems[i]
-                                 .passwordNoteItem.text])) {
+                                .passwordTextItem.textFieldValue]) {
       return YES;
     }
   }
@@ -1094,8 +1134,10 @@ int GetPasswordIndex(int section) {
 
 // Updates the title displayed in the navigation bar.
 - (void)updateNavigationTitle {
-  if (!self.pageTitle || self.pageTitle.length == 0) {
-    self.pageTitle = self.passwords[0].origins[0];
+  if (self.pageTitle.length == 0) {
+    // When no pageTitle is supplied, use origin of first password.
+    PasswordDetails* firstPassword = self.passwords.firstObject;
+    self.pageTitle = firstPassword.origins.firstObject;
   }
   _titleLabel.text = self.pageTitle;
 }
@@ -1133,7 +1175,8 @@ int GetPasswordIndex(int section) {
 
     [model addSectionWithIdentifier:SectionIdentifierSite];
     [model addSectionWithIdentifier:SectionIdentifierPassword];
-    if (passwordDetails.compromised) {
+    if (passwordDetails.compromised ||
+        passwordDetails.context == DetailsContext::kDismissedWarnings) {
       [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
     if (passwordDetails.shouldOfferToMoveToAccount) {
@@ -1182,12 +1225,21 @@ int GetPasswordIndex(int section) {
         [model setFooter:footer forSectionWithIdentifier:sectionForPassword];
       }
 
-      if (passwordDetails.isCompromised) {
+      if (passwordDetails.isCompromised ||
+          passwordDetails.context == DetailsContext::kDismissedWarnings) {
         [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:sectionForCompromisedInfo];
 
         if (passwordDetails.changePasswordURL.has_value()) {
           [model addItem:[self changePasswordItem]
+              toSectionWithIdentifier:sectionForCompromisedInfo];
+        }
+
+        if (ShouldAllowToDismissWarning(passwordDetails.context)) {
+          [model addItem:[self dismissWarningItem]
+              toSectionWithIdentifier:sectionForCompromisedInfo];
+        } else if (ShouldAllowToRestoreWarning(passwordDetails.context)) {
+          [model addItem:[self restoreWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
       }
@@ -1262,6 +1314,29 @@ int GetPasswordIndex(int section) {
                             selector:@selector(authValidityTimerFired:)
                             userInfo:nil
                              repeats:NO];
+}
+
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (static_cast<PasswordDetailsItemType>(itemType)) {
+    case PasswordDetailsItemTypeUsername:
+    case PasswordDetailsItemTypePassword:
+      return YES;
+    case PasswordDetailsItemTypeWebsite:
+    case PasswordDetailsItemTypeFederation:
+    case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
+    case PasswordDetailsItemTypeDismissWarningButton:
+    case PasswordDetailsItemTypeRestoreWarningButton:
+    case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
+    case PasswordDetailsItemTypeNoteFooter:
+    case PasswordDetailsItemTypeNote:
+      return NO;
+  }
 }
 
 #pragma mark - Actions
@@ -1409,10 +1484,28 @@ int GetPasswordIndex(int section) {
   }
 }
 
+- (void)didTapDismissWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.delegate);
+
+  password_manager::LogMuteCompromisedWarning();
+
+  [self.delegate dismissWarningForPassword:self.passwords[passwordIndex]];
+}
+
+- (void)didTapRestoreWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.delegate);
+
+  password_manager::LogUnmuteCompromisedWarning();
+
+  [self.delegate restoreWarningForCurrentPassword];
+}
+
 - (void)didTapDeleteButton:(UITableViewCell*)cell
-           atPasswordIndex:(int)passwordIndex {
-  DCHECK(passwordIndex >= 0);
-  DCHECK(self.handler);
+           atPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.handler);
   [self.handler
       showPasswordDeleteDialogWithPasswordDetails:self.passwords[passwordIndex]
                                        anchorView:cell];
@@ -1538,26 +1631,34 @@ int GetPasswordIndex(int section) {
 - (void)passwordEditingConfirmed {
   DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
-    NSString* oldUsername = self.passwords[i].username;
-    NSString* oldPassword = self.passwords[i].password;
-    NSString* oldNote = self.passwords[i].note;
-    self.passwords[i].username =
-        self.passwordDetailsInfoItems[i].usernameTextItem.textFieldValue;
-    self.passwords[i].password =
-        self.passwordDetailsInfoItems[i].passwordTextItem.textFieldValue;
+    PasswordDetails* password = self.passwords[i];
+    NSString* oldUsername = password.username;
+    NSString* oldPassword = password.password;
+    NSString* oldNote = password.note;
+
+    PasswordDetailsInfoItem* passwordDetailsInfoItem =
+        self.passwordDetailsInfoItems[i];
+    password.username = passwordDetailsInfoItem.usernameTextItem.textFieldValue;
+    password.password = passwordDetailsInfoItem.passwordTextItem.textFieldValue;
     if (IsPasswordNotesWithBackupEnabled()) {
-      self.passwords[i].note =
-          self.passwordDetailsInfoItems[i].passwordNoteItem.text;
-      [self logChangeBetweenOldNote:oldNote currentNote:self.passwords[i].note];
+      password.note = passwordDetailsInfoItem.passwordNoteItem.text;
+      [self logChangeBetweenOldNote:oldNote currentNote:password.note];
     }
     [self.delegate passwordDetailsViewController:self
-                          didEditPasswordDetails:self.passwords[i]
+                          didEditPasswordDetails:password
                                  withOldUsername:oldUsername
                                      oldPassword:oldPassword
                                          oldNote:oldNote];
-    if (self.passwords[i].compromised) {
-      UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                              PasswordCheckInteraction::kEditPassword);
+
+    if (oldUsername != password.username || oldPassword != password.password) {
+      DetailsContext detailsContext = password.context;
+      // When details was opened from the Password Manager, only log password
+      // check actions if the password is compromised.
+      if (password_manager::ShouldRecordPasswordCheckUserAction(
+              detailsContext, password.compromised)) {
+        password_manager::LogEditPassword(
+            GetWarningTypeForDetailsContext(detailsContext));
+      }
     }
   }
   [self.delegate didFinishEditingPasswordDetails];

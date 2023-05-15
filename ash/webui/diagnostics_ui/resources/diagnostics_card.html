@@ -7,6 +7,10 @@
     --diagnostics-card-icon-bg-color: var(--cros-sys-highlight_shape);
   }
 
+  :host-context(body.jelly-enabled) ::slotted([slot=title]) {
+    font: var(--cros-button-1-font);
+  }
+
   ::slotted([slot=chip]) {
     background-color: var(--diagnostics-chip-bg-color);
     border-radius: 16px;

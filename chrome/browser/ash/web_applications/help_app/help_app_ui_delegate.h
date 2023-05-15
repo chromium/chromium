@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -40,9 +41,10 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
                          callback) override;
+  absl::optional<std::string> OpenUrlInBrowser(const GURL& url) override;
 
  private:
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
   std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 

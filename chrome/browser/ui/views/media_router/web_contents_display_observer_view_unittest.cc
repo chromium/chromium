@@ -18,7 +18,7 @@ namespace media_router {
 
 class MockCallback {
  public:
-  MOCK_METHOD0(OnDisplayChanged, void());
+  MOCK_METHOD(void, OnDisplayChanged, (), ());
 };
 
 class TestWebContentsDisplayObserverView

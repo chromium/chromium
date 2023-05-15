@@ -65,9 +65,9 @@ class VSyncSoftwareOutputDevice : public SoftwareOutputDevice {
 }  // namespace
 
 TEST(SoftwareOutputSurfaceTest, NoVSyncProvider) {
+  cc::FakeOutputSurfaceClient output_surface_client;
   auto output_surface = std::make_unique<SoftwareOutputSurface>(
       std::make_unique<SoftwareOutputDevice>());
-  cc::FakeOutputSurfaceClient output_surface_client;
   output_surface->BindToClient(&output_surface_client);
 
   // Verify the callback is never called.
@@ -81,9 +81,9 @@ TEST(SoftwareOutputSurfaceTest, NoVSyncProvider) {
 }
 
 TEST(SoftwareOutputSurfaceTest, VSyncProviderUpdates) {
+  cc::FakeOutputSurfaceClient output_surface_client;
   auto output_surface = std::make_unique<SoftwareOutputSurface>(
       std::make_unique<VSyncSoftwareOutputDevice>());
-  cc::FakeOutputSurfaceClient output_surface_client;
   output_surface->BindToClient(&output_surface_client);
 
   int update_vsync_parameters_call_count = 0;

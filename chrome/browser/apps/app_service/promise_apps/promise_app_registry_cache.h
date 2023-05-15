@@ -30,10 +30,17 @@ class PromiseAppRegistryCache {
   // Find the promise app with the same package_id as the delta and apply
   // the changes for the fields specified by the delta object. If there is no
   // promise app with a matching package_id, then create a new promise app.
+  // This method should only be called publicly through Promise App Service.
+  // Alternatively, this may be used to add a promise app to the cache directly
+  // in unit tests and bypass any API calls that would have been triggered by
+  // Promise App Service.
   void OnPromiseApp(PromiseAppPtr delta);
 
   // Retrieve a copy of all the registered promise apps.
   std::vector<PromiseAppPtr> GetAllPromiseApps() const;
+
+  // Check that a promise app with `package_id` is registered in the cache.
+  bool HasPromiseApp(const PackageId& package_id);
 
   // For testing only. Retrieve a read-only pointer to the promise app with the
   // specified package_id. Returns nullptr if the promise app does not exist. Do
@@ -41,9 +48,6 @@ class PromiseAppRegistryCache {
   const PromiseApp* GetPromiseAppForTesting(const PackageId& package_id) const;
 
  private:
-  friend class PromiseAppRegistryCacheTest;
-  friend class PublisherTest;
-
   // Retrieve the registered promise app with the specified package_id. Returns
   // nullptr if the promise app does not exist.
   PromiseApp* FindPromiseApp(const PackageId& package_id) const;

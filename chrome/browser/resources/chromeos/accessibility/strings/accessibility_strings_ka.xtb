@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="100506692671054486">წინა ბრძანება არ არის</translation>
 <translation id="1009046985747440431">ნავიგაციისთვის დააჭირეთ კლავიშს ქვემოთ ან ზემოთ მიმართული ისრით, ხოლო გასააქტიურებლად — კლავიშს „enter“</translation>
 <translation id="1011903154582639569">იპოვეთ კლავიში, შემდეგ კი აუშვით თითი ასაკრეფად</translation>
 <translation id="1012173283529841972">სიის ელემენტი</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">მოვარდისფრო ლავანდისფერი</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3962990492275676168">მიმდინარე მდებარეობიდან წაკითხვის დაწყება</translation>
+<translation id="397094149579293440">ტექსტი არჩეული არ არის</translation>
 <translation id="3970951409746498040">ქვიშისფერი</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">მოკასინისფერი</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">წინა 1-ლი დონის სათაური არ არის</translation>
 <translation id="4787577491510559358">მიმდინარე ერთეულის ფორმატირების გამოცხადება</translation>
 <translation id="479989351350248267">ძიება</translation>
+<translation id="4802034228771424756">ფოკუსში მოქცეული ტექსტური ველი არ არის</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="481165870889056555">მიმდინარე გვერდის სათაურის გამოცხადება</translation>
 <translation id="4815668758102003883">მკრთალი ფირუზისფერი</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">შიდა ბმული</translation>
 <translation id="4909019435900810068">ერთი სიტყვით უკან გადასვლა</translation>
 <translation id="4911349081560453449">წინა მოსანიშნი ველი არ არის</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> ვერ მოხერხდა, ცადეთ ხელახლა</translation>
 <translation id="492295894462528572">წინასიტყვაობა</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4953585991029886728">ტექსტის რედაქტირება</translation>
+<translation id="4964701498510730546">ტექსტური ველი ცარიელია</translation>
 <translation id="4973717656530883744">მინ <ph name="X" /></translation>
 <translation id="4974612477719259470">წინა ღილაკი არ არის</translation>
 <translation id="4979404613699303341">წინა ღილაკი</translation>
+<translation id="4981239367072766915">შენატანი ამოცნობილი არ არის</translation>
 <translation id="4982917827052020884">დავიწყოთ რამდენიმე კლავიშით, რომლებსაც რეგულარულად გამოიყენებთ. Control კლავიშის მეშვეობით შესაძლებელია მეტყველების შეჩერება. ამ კლავიშის პოვნა შესაძლებელია კლავიატურის ქვედა მარცხენა კუთხეში. გასაგრძელებლად დააჭირეთ კლავიშს Control.</translation>
 <translation id="4983588134362688868">გადასვლა გვერდის დასაწყისში</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ფანჯარა</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ბატარეის ამჟამინდელი სტატუსის გამოცხადება</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, რადიო ღილაკი არჩეულია</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, მენიუს ერთეული არჩევანის ღილაკი არჩეული</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> ვერ მოხერხდა, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">მეტყველების აღრიცხვის ჩართვა</translation>
 <translation id="5041394372352067729">გადაადგილეთ ბრაილი ეკრანის საწყის გვერდზე</translation>
 <translation id="5042770794184672516">მეტყველების ხმის აწევა</translation>

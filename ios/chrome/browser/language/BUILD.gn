@@ -21,8 +21,8 @@ source_set("language") {
     "//components/language/core/language_model",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -39,7 +39,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/language/core/language_model",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//testing/gmock:gmock",

@@ -27,7 +27,8 @@
                   "fuchsia_x64"
                 ],
                 "config": "chromium"
-              }
+              },
+              "run_tests_serially": true
             }
           },
           {

@@ -28,7 +28,6 @@ import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
-import org.chromium.net.MetricsTestUtil.TestRequestFinishedListener;
 import org.chromium.net.impl.CronetMetrics;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -261,6 +260,22 @@ public class RequestFinishedInfoTest {
         MetricsTestUtil.assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
         assertTrue(metrics.getSentByteCount() == 0);
         assertTrue(metrics.getReceivedByteCount() == 0);
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
+    public void testRequestFinishedListenerThrowInTerminalCallback() throws Exception {
+        TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
+        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        callback.setFailure(TestUrlRequestCallback.FailureType.THROW_SYNC,
+                TestUrlRequestCallback.ResponseStep.ON_SUCCEEDED);
+        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        requestFinishedListener.blockUntilDone();
     }
 
     @Test

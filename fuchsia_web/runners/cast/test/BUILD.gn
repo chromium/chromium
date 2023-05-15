@@ -55,7 +55,6 @@ source_set("integration") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider:fuchsia.tracing.provider_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition:fuchsia.ui.composition_hlcpp",

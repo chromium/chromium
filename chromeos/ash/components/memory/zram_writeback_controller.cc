@@ -65,14 +65,9 @@ std::unique_ptr<ZramWritebackController> ZramWritebackController::Create() {
 
 ZramWritebackController::~ZramWritebackController() = default;
 
-void ZramWritebackController::OnEnableWriteback(bool result, int64_t size_mb) {
-  if (!result) {
-    LOG(ERROR) << "Unable to enable zram writeback";
-    return;
-  }
-
+void ZramWritebackController::OnEnableWriteback(int64_t size) {
   // Finally we can complete the policy initialization.
-  CompleteInitialization(backend_->GetZramDiskSizeBytes() >> 20, size_mb);
+  CompleteInitialization(backend_->GetZramDiskSizeBytes() >> 20, size);
 }
 
 void ZramWritebackController::ResetCurrentlyWritingBack() {
@@ -81,10 +76,9 @@ void ZramWritebackController::ResetCurrentlyWritingBack() {
   current_writeback_limit_ = 0;
 }
 
-void ZramWritebackController::CompleteInitialization(
-    uint64_t zram_size_mb,
-    uint64_t writeback_size_mb) {
-  policy_->Initialize(zram_size_mb, writeback_size_mb);
+void ZramWritebackController::CompleteInitialization(uint64_t zram_size,
+                                                     uint64_t writeback_size) {
+  policy_->Initialize(zram_size, writeback_size);
   timer_.Start(FROM_HERE, policy_->GetWritebackTimerInterval(),
                base::BindRepeating(&ZramWritebackController::PeriodicWriteback,
                                    weak_factory_.GetWeakPtr()));
@@ -134,11 +128,11 @@ void ZramWritebackController::OnWritebackComplete(ZramWritebackMode mode,
 
   // Move on to the next writeback phase.
   if (current_writeback_mode_ == ZramWritebackMode::kModeHugeIdle &&
-      policy_->CanWritebackIdle())
+      policy_->CanWritebackIdle()) {
     current_writeback_mode_ = ZramWritebackMode::kModeIdle;
-  else if ((current_writeback_mode_ == ZramWritebackMode::kModeIdle ||
-            current_writeback_mode_ == ZramWritebackMode::kModeHugeIdle) &&
-           policy_->CanWritebackHuge()) {
+  } else if ((current_writeback_mode_ == ZramWritebackMode::kModeIdle ||
+              current_writeback_mode_ == ZramWritebackMode::kModeHugeIdle) &&
+             policy_->CanWritebackHuge()) {
     current_writeback_mode_ = ZramWritebackMode::kModeHuge;
   } else {
     // We're done.

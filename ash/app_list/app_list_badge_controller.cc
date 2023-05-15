@@ -127,7 +127,7 @@ void AppListBadgeController::SetActiveModel(AppListModel* model) {
   model_observation_.Reset();
 
   if (model_)
-    model_observation_.Observe(model_);
+    model_observation_.Observe(model_.get());
 }
 
 }  // namespace ash

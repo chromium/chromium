@@ -922,8 +922,9 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     // TODO(https://crbug.com/1252410): Remove this code with M-100.
     const int kSoftwareBackedRsaMinVersion = 16;
     if (!chromeos::LacrosService::Get() ||
-        (chromeos::LacrosService::Get()->GetInterfaceVersion(
-             KeystoreService::Uuid_) < kSoftwareBackedRsaMinVersion)) {
+        (chromeos::LacrosService::Get()
+             ->GetInterfaceVersion<KeystoreService>() <
+         kSoftwareBackedRsaMinVersion)) {
       std::move(callback).Run(
           /*public_key_spki_der=*/std::vector<uint8_t>(),
           crosapi::mojom::KeystoreError::kUnsupportedKeyType);

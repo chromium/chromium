@@ -41,7 +41,8 @@ public class LauncherShortcutActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String intentAction = getIntent().getAction();
+        Intent intent = getIntent();
+        String intentAction = intent.getAction();
 
         // Exit early if the original intent action isn't for opening a new tab.
         if (!intentAction.equals(ACTION_OPEN_NEW_TAB)
@@ -51,6 +52,12 @@ public class LauncherShortcutActivity extends Activity {
         }
 
         Intent newIntent = getChromeLauncherActivityIntent(this, intentAction);
+        // Retain FLAG_ACTIVITY_MULTIPLE_TASK in the intent if present, to support multi-instance
+        // launch behavior.
+        if ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0) {
+            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+
         startActivity(newIntent);
         finish();
     }

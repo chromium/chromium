@@ -8,11 +8,16 @@
 #include <memory>
 
 #include "content/public/browser/webui_config.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace ash {
 namespace feedback {
@@ -24,7 +29,8 @@ class OsFeedbackUntrustedUIConfig : public content::WebUIConfig {
   ~OsFeedbackUntrustedUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // WebUI for chrome-untrusted://os-feedback, intended to be used by the file
@@ -35,6 +41,17 @@ class OsFeedbackUntrustedUI : public ui::UntrustedWebUIController {
   OsFeedbackUntrustedUI(const OsFeedbackUntrustedUI&) = delete;
   OsFeedbackUntrustedUI& operator=(const OsFeedbackUntrustedUI&) = delete;
   ~OsFeedbackUntrustedUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
+ private:
+  // The color change handler notifies the WebUI when the color provider
+  // changes.
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace feedback

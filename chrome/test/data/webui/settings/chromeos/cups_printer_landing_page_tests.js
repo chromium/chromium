@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry, getPrinterEntries} from './cups_printer_test_utils.js';
@@ -652,6 +653,51 @@ suite('CupsSavedPrintersTests', function() {
     assertEquals(
         deepLinkElement, activeDeepLink,
         'First saved printer menu button should be focused for settingId=1401.');
+  });
+
+  test('SavedPrintersStatusUpdates', async () => {
+    createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1'),
+      createCupsPrinterInfo('test2', '2', 'id2'),
+      createCupsPrinterInfo('test3', '3', 'id3'),
+    ]);
+
+    cupsPrintersBrowserProxy.addPrinterStatus(
+        'id1', PrinterStatusReason.NO_ERROR, PrinterStatusSeverity.ERROR);
+    cupsPrintersBrowserProxy.addPrinterStatus(
+        'id2', PrinterStatusReason.PRINTER_UNREACHABLE,
+        PrinterStatusSeverity.ERROR);
+
+    await cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList');
+    await flushTasks();
+
+    savedPrintersElement =
+        page.shadowRoot.querySelector('settings-cups-saved-printers');
+    assertTrue(!!savedPrintersElement);
+
+    // For each of the 3 saved printers verify it gets the correct printer
+    // status reason based on the printer status previously set.
+    const printerListEntries = getPrinterEntries(savedPrintersElement);
+    assertEquals(3, printerListEntries.length);
+    for (const entry of printerListEntries) {
+      let expectedPrinterStatusReason;
+      const printerInfo = entry.printerEntry.printerInfo;
+      switch (printerInfo.printerId) {
+        case 'id1':
+          expectedPrinterStatusReason = PrinterStatusReason.NO_ERROR;
+          break;
+        case 'id2':
+          expectedPrinterStatusReason = PrinterStatusReason.PRINTER_UNREACHABLE;
+          break;
+        case 'id3':
+          expectedPrinterStatusReason = PrinterStatusReason.UNKNOWN_REASON;
+          break;
+        default:
+          assertNotReached();
+      }
+      assertEquals(
+          expectedPrinterStatusReason, printerInfo.printerStatusReason);
+    }
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', function() {

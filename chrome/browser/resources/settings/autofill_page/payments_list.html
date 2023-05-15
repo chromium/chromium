@@ -27,7 +27,8 @@
       </div>
       <div class="vertical-list list-with-header" role="rowgroup">
         <template is="dom-repeat" items="[[creditCards]]">
-          <settings-credit-card-list-entry credit-card="[[item]]">
+          <settings-credit-card-list-entry id="[[getCreditCardId_(index)]]"
+              class="payment-method" credit-card="[[item]]">
           </settings-credit-card-list-entry>
         </template>
       </div>
@@ -35,7 +36,8 @@
       </div>
       <div class="vertical-list list-with-header" role="rowgroup">
         <template is="dom-repeat" items="[[ibans]]">
-          <settings-iban-list-entry iban="[[item]]">
+          <settings-iban-list-entry id="[[getIbanId_(index)]]"
+              class="payment-method" iban="[[item]]">
           </settings-iban-list-entry>
         </template>
       </div>

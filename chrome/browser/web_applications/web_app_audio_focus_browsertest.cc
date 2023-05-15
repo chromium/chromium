@@ -47,24 +47,15 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
   }
 
   bool IsPaused(content::WebContents* web_contents) {
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "isPaused()",
-                                                     &result));
-    return result;
+    return content::EvalJs(web_contents, "isPaused()").ExtractBool();
   }
 
   bool WaitForPause(content::WebContents* web_contents) {
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents, "waitForPause()", &result));
-    return result;
+    return content::EvalJs(web_contents, "waitForPause()").ExtractBool();
   }
 
   bool StartPlaying(content::WebContents* web_contents) {
-    bool result = false;
-    return content::ExecuteScriptAndExtractBool(web_contents, "startPlaying()",
-                                                &result) &&
-           result;
+    return content::EvalJs(web_contents, "startPlaying()").ExtractBool();
   }
 
   content::WebContents* AddTestPageTabAtIndex(int index) {

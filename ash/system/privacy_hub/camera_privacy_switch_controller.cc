@@ -53,30 +53,10 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
   }
 }
 
-PrivacyHubNotificationController* GetPrivacyHubNotificationController() {
-  return Shell::Get()->system_notification_controller()->privacy_hub();
-}
-
 }  // namespace
 
 CameraPrivacySwitchController::CameraPrivacySwitchController()
-    : switch_api_(std::make_unique<VCDPrivacyAdapter>()),
-      turn_sw_switch_on_notification_(
-          kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-          NotificationCatalogName::kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn,
-          PrivacyHubNotificationDescriptor{
-              SensorDisabledNotificationDelegate::SensorSet{},
-              IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
-              std::vector<int>{IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON},
-              std::vector<int>{
-                  IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
-              base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-                  base::BindRepeating([]() {
-                    PrivacyHubNotificationController::
-                        SetAndLogSensorPreferenceFromNotification(
-                            SensorDisabledNotificationDelegate::Sensor::kCamera,
-                            false);
-                  }))}) {
+    : switch_api_(std::make_unique<VCDPrivacyAdapter>()) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -116,33 +96,9 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
   switch_api_->SetCameraSWPrivacySwitch(pref_val);
 
-  if (features::IsVideoConferenceEnabled()) {
-    // The `VideoConferenceTrayController` shows this info as a toast.
-    return;
-  }
-
-  turn_sw_switch_on_notification_.Hide();
-
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    // Always remove the sensor disabled notification if the sensor was unmuted.
-    if (pref_val == CameraSWPrivacySwitchSetting::kEnabled) {
-      GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
-          SensorDisabledNotificationDelegate::Sensor::kCamera);
-    }
-    return;
-  }
-
-  if (active_applications_using_camera_count_ == 0) {
-    return;
-  }
-
-  if (pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
-    camera_used_while_deactivated_ = true;
-    GetPrivacyHubNotificationController()->ShowSoftwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kCamera);
-  } else {
-    camera_used_while_deactivated_ = false;
-    GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
+  // Always remove the sensor disabled notification if the sensor was unmuted.
+  if (pref_val == CameraSWPrivacySwitchSetting::kEnabled) {
+    PrivacyHubNotificationController::Get()->RemoveSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
 }
@@ -166,27 +122,6 @@ void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
     std::unique_ptr<CameraPrivacySwitchAPI> switch_api) {
   DCHECK(switch_api);
   switch_api_ = std::move(switch_api);
-}
-
-void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
-    const std::string& device_id,
-    cros::mojom::CameraPrivacySwitchState state) {
-  if (features::IsVideoConferenceEnabled() ||
-      features::IsPrivacyIndicatorsEnabled()) {
-    return;
-  }
-
-  // Issue a notification if camera is disabled by HW switch, but not by the SW
-  // switch and there are multiple cameras.
-  if (state == cros::mojom::CameraPrivacySwitchState::ON &&
-      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled &&
-      camera_count_ > 1) {
-    turn_sw_switch_on_notification_.Show();
-  }
-  if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-    // Clear the notification that might have been displayed earlier
-    turn_sw_switch_on_notification_.Hide();
-  }
 }
 
 void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
@@ -218,21 +153,25 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
     return;
   }
 
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
+
   if (features::IsPrivacyIndicatorsEnabled()) {
     // NOTE: This logic mirrors the logic in
     // `MicrophonePrivacySwitchController`.
     if (active_applications_using_camera_count_ == 0) {
       // Always remove the notification when active applications go to 0.
-      GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
+      privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
           SensorDisabledNotificationDelegate::Sensor::kCamera);
     } else if (application_added) {
       if (camera_muted_by_sw) {
-        GetPrivacyHubNotificationController()->ShowSoftwareSwitchNotification(
+        privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
             SensorDisabledNotificationDelegate::Sensor::kCamera);
       }
     } else {
       // Application removed, update the notifications message.
-      GetPrivacyHubNotificationController()->UpdateSoftwareSwitchNotification(
+      privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
           SensorDisabledNotificationDelegate::Sensor::kCamera);
     }
     return;
@@ -245,14 +184,14 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   if (active_applications_using_camera_count_ == 0 &&
       camera_used_while_deactivated_) {
     camera_used_while_deactivated_ = false;
-    GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
+    privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else if (application_added) {
     camera_used_while_deactivated_ = true;
-    GetPrivacyHubNotificationController()->ShowSoftwareSwitchNotification(
+    privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else {
-    GetPrivacyHubNotificationController()->UpdateSoftwareSwitchNotification(
+    privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
 }

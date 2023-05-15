@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/mock_assistive_delegate.h"
@@ -36,7 +37,7 @@ class UndoWindowTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  UndoWindow* undo_window_;
+  raw_ptr<UndoWindow, ExperimentalAsh> undo_window_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   AssistiveWindowButton undo_button_;

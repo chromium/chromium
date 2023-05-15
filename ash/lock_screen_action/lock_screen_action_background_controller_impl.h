@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
@@ -64,8 +65,9 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
   // lock screen action background.
   // The widget is owned by its native (aura) window - it will be deleted when
   // the window gets closed/destroyed.
-  views::Widget* background_widget_ = nullptr;
-  LockScreenActionBackgroundView* contents_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> background_widget_ = nullptr;
+  raw_ptr<LockScreenActionBackgroundView, ExperimentalAsh> contents_view_ =
+      nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

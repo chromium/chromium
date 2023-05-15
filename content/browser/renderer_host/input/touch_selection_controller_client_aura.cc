@@ -194,11 +194,10 @@ void TouchSelectionControllerClientAura::UpdateClientSelectionBounds(
     const gfx::SelectionBound& end,
     ui::TouchSelectionControllerClient* client,
     ui::TouchSelectionMenuClient* menu_client) {
-  if (client != active_client_ &&
-      (start.type() == gfx::SelectionBound::EMPTY || !start.visible()) &&
-      (end.type() == gfx::SelectionBound::EMPTY || !end.visible()) &&
-      (manager_selection_start_.type() != gfx::SelectionBound::EMPTY ||
-       manager_selection_end_.type() != gfx::SelectionBound::EMPTY)) {
+  if (client != active_client_ && (!start.HasHandle() || !start.visible()) &&
+      (!end.HasHandle() || !end.visible()) &&
+      (manager_selection_start_.HasHandle() ||
+       manager_selection_end_.HasHandle())) {
     return;
   }
 
@@ -297,18 +296,16 @@ void TouchSelectionControllerClientAura::UpdateQuickMenu() {
   }
 }
 
-void TouchSelectionControllerClientAura::ShowMagnifier(
-    const gfx::PointF& position) {
+void TouchSelectionControllerClientAura::UpdateMagnifier() {
   if (auto* magnifier_runner =
           ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    magnifier_runner->ShowMagnifier(rwhva_->GetNativeView(), position);
-  }
-}
-
-void TouchSelectionControllerClientAura::CloseMagnifier() {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    magnifier_runner->CloseMagnifier();
+    if (handle_drag_in_progress_) {
+      magnifier_runner->ShowMagnifier(
+          rwhva_->GetNativeView(),
+          GetTouchSelectionController()->GetFocusBound());
+    } else {
+      magnifier_runner->CloseMagnifier();
+    }
   }
 }
 
@@ -395,16 +392,18 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
     case ui::INSERTION_HANDLE_DRAG_STARTED:
       handle_drag_in_progress_ = true;
       UpdateQuickMenu();
+      UpdateMagnifier();
       break;
     case ui::SELECTION_HANDLE_DRAG_STOPPED:
     case ui::INSERTION_HANDLE_DRAG_STOPPED:
       handle_drag_in_progress_ = false;
       UpdateQuickMenu();
-      CloseMagnifier();
+      UpdateMagnifier();
       break;
     case ui::SELECTION_HANDLES_MOVED:
     case ui::INSERTION_HANDLE_MOVED:
       UpdateQuickMenu();
+      UpdateMagnifier();
       break;
     case ui::INSERTION_HANDLE_TAPPED:
       quick_menu_requested_ = !quick_menu_requested_;
@@ -420,10 +419,7 @@ void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
-    const gfx::PointF& position) {
-  DCHECK(handle_drag_in_progress_);
-  ShowMagnifier(position);
-}
+    const gfx::PointF& position) {}
 
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,

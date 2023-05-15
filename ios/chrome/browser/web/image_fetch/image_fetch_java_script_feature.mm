@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,7 +55,7 @@ ImageFetchJavaScriptFeature* ImageFetchJavaScriptFeature::GetInstance() {
 void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
                                                int call_id,
                                                const GURL& url) {
-  web::WebFrame* main_frame = GetMainFrame(web_state);
+  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!main_frame) {
     return;
   }

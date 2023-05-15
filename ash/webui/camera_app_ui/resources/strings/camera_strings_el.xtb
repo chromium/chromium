@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Η εγγραφή σας διακόπηκε λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να εγγράψετε περισσότερα βίντεο, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
 <translation id="2036868001356139588">Διάρκεια χρονομέτρου</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ενεργή</translation>
-<translation id="2128052519899549250">Εγγραφή βίντεο με time-lapse</translation>
 <translation id="2134029355740465625">Ρυθμίσεις βίντεο</translation>
 <translation id="2144806332417375165">Προσαρμοσμένες παράμετροι βίντεο</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Εντοπίστηκε έγγραφο.</translation>
 <translation id="414641094616694804">Δεν είναι δυνατή η αλλαγή ανάλυσης αυτής της κάμερας</translation>
 <translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
-<translation id="4281620174117014503">Μεσαία ανάλυση</translation>
 <translation id="428234092390943511">Μικρογραφία σελίδας</translation>
 <translation id="4383571725254449280">Εκτύπωση αρχείου καταγραφής απόδοσης</translation>
 <translation id="4445542136948522167">Διακοπή λήψης φωτογραφίας</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5320594929574852403">Μετακινείται με κατεύθυνση προς τα αριστερά</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Time-lapse</translation>
 <translation id="5662366948659129155">Σάρωση σελίδας <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Τετράγωνο</translation>
+<translation id="574392208103952083">Μέτριο</translation>
 <translation id="5746169159649715125">Αποθήκευση ως PDF</translation>
 <translation id="5753488212459587150">Ενεργοποίηση λειτουργίας Expert</translation>
 <translation id="5759254179196327752">Σάρωση εγγράφου</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670511624014457267">60 καρέ ανά δευτερόλεπτο</translation>
 <translation id="7671804233658741790">Κάτω δεξιά γωνία του εγγράφου</translation>
+<translation id="7684446460490665873">Εγγραφή βίντεο με time lapse</translation>
 <translation id="7692090236657809299">Ενεργοποίηση μετακίνησης, κλίσης, εστίασης</translation>
 <translation id="7726641833034062494">Εγγραφή κανονικού βίντεο</translation>
 <translation id="7748344063862150053">Επάνω δεξιά γωνία του εγγράφου</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Τοποθετήστε όλες τις άκρες του εγγράφου μέσα στο πλαίσιο.</translation>
 <translation id="9045155556724273246">10 δευτερόλεπτα</translation>
 <translation id="906331135292332864">Επεξεργασία εικόνας…</translation>
+<translation id="9161584225258678723">Time Lapse</translation>
 <translation id="922762992951083513">Κατοπτρισμός ενεργός</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 </translationbundle>

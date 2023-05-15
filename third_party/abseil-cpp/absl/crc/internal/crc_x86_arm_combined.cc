@@ -515,7 +515,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       }
 
       for (size_t i = 1; i < bs; i++) {
-        // Prefetch data for next itterations.
+        // Prefetch data for next iterations.
         for (size_t j = 0; j < num_crc_streams; j++) {
           PrefetchToLocalCache(
               reinterpret_cast<const char*>(crc_streams[j] + kPrefetchHorizon));

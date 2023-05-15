@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Źródło: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Powiązane witryny mają dostęp do danych o Twojej aktywności w tej grupie</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Strony mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
 <translation id="3165022941318558018">Zezwól witrynie na używanie plików cookie innych firm</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
-<translation id="3203366800380907218">Z sieci</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy. Witryna wykorzystuje też gromadzone przez Chrome informacje o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
+<translation id="3707034683772193706">Witryna, którą odwiedzasz, może zapisywać w Chrome niewielką ilość informacji, głównie po to, żeby potwierdzić, że nie jesteś botem.</translation>
 <translation id="3721953990244350188">Zamknij i pokaż kolejne dostępne działanie</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="5225463052809312700">Włącz kamerę</translation>
-<translation id="5229337741799419985">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania.</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5264323282659631142">Usuń: „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
-<translation id="6701547804986694515">Strona, którą odwiedzasz, może zapisywać w Chrome informacje potwierdzające, że nie jesteś botem. Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>
 <translation id="6722828510648505498">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="6746124502594467657">W dół</translation>
 <translation id="6749077623962119521">Zresetować uprawnienia?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7383715096023715447">Ustawienia domeny <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania, chociaż witryny mogą w ramach weryfikacji udostępniać niewielką ilość informacji.</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Blokuj stronom dostęp do czujników</translation>
 <translation id="8823559166155093873">Blokuj pliki cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>
 <translation id="8899807382908246773">Uciążliwe reklamy</translation>
 <translation id="8903921497873541725">Powiększ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

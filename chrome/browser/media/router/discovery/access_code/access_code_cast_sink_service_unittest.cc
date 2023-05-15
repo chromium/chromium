@@ -20,6 +20,7 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
@@ -362,7 +363,7 @@ TEST_F(AccessCodeCastSinkServiceTest, ValidDiscoveryDeviceAndCode) {
 
   // Channel successfully opens.
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
-                                                        "123456", true);
+                                                        cast_sink1, true);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
   FastForwardUiAndIoTasks();
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -397,19 +398,22 @@ TEST_F(AccessCodeCastSinkServiceTest, NonOKResultCode) {
 TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedSuccess) {
   // Validate callback calls for OnChannelOpened for success.
   MockAddSinkResultCallback mock_callback;
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
-  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("123456")));
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("cast:<id1>")));
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
-                                                        "123456", true);
+                                                        cast_sink1, true);
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedFailure) {
   // Validate callback calls for OnChannelOpened for failure.
   MockAddSinkResultCallback mock_callback;
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
   EXPECT_CALL(mock_callback,
               Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, Eq(absl::nullopt)));
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
-                                                        "123456", false);
+                                                        cast_sink1, false);
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
@@ -1572,6 +1576,78 @@ TEST_F(AccessCodeCastSinkServiceTest, RecordRouteDurationNonAccessCodeDevice) {
   // The cast sink was not added by an access code so no histogram should be
   // recorded.
   histogram_tester.ExpectTotalCount("AccessCodeCast.Session.RouteDuration", 0);
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, RestartExpirationTimerDoesntResetTimer) {
+  // Test to check that expiration timers are not reset when they are re-added
+  // to the media router.
+  SetDeviceDurationPrefForTest(base::Seconds(1000));
+  FastForwardUiAndIoTasks();
+
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+  FastForwardUiAndIoTasks();
+
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+
+  content::RunAllTasksUntilIdle();
+
+  // Advance the expiration timer by 500 seconds before restarting the service.
+  task_environment_.FastForwardBy(base::Seconds(500));
+
+  EXPECT_EQ(access_code_cast_sink_service_->CalculateDurationTillExpiration(
+                cast_sink1.id()),
+            base::Seconds(500));
+
+  // Shutdown the access code cast sink service.
+  access_code_cast_sink_service_->Shutdown();
+  access_code_cast_sink_service_.reset();
+
+  access_code_cast_sink_service_ =
+      base::WrapUnique(new AccessCodeCastSinkService(
+          &profile_, router_.get(), cast_media_sink_service_impl_.get(),
+          discovery_network_monitor_.get(), GetTestingPrefs()));
+  access_code_cast_sink_service_->SetTaskRunnerForTest(mock_time_task_runner_);
+
+  // On service recreation the duration should be the same and NOT be reset.
+  EXPECT_EQ(access_code_cast_sink_service_->CalculateDurationTillExpiration(
+                cast_sink1.id()),
+            base::Seconds(500));
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, AddRouteCallsHandleMediaRoute) {
+  // Test that adding a route will properly call HandleMediaRouteAdded and
+  // metrics.
+  SetDeviceDurationPrefForTest(base::Seconds(10));
+
+  // Initialize histogram tester so we can ensure metrics are collected.
+  base::HistogramTester histogram_tester;
+
+  MediaSinkInternal access_code_sink = CreateCastSink(1);
+  access_code_sink.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  mock_cast_media_sink_service_impl()->AddSinkForTest(access_code_sink);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  MediaRoute media_route_cast = CreateRouteForTesting(access_code_sink.id());
+  std::vector<MediaRoute> route_list = {media_route_cast};
+
+  // Simulate that this cast sink has an open route.
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
+      route_list);
+  FastForwardUiAndIoTasks();
+
+  // The cast sink was added by an access code so the histogram should be
+  // recorded.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
 }
 
 }  // namespace media_router

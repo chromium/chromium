@@ -8,6 +8,7 @@ import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 visibility = [
+  "//ui/file_manager/file_manager/common/js:util",
   "//ui/file_manager/file_manager/externs/*",
   "//ui/file_manager/file_manager/foreground/*",
   "//ui/file_manager/file_manager/test/*",
@@ -1209,6 +1210,8 @@ js_library("toolbar_controller") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/ts:state",
+    "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }
 

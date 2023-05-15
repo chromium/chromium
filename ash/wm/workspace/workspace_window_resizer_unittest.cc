@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -242,7 +243,7 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
 
-  WorkspaceWindowResizer* workspace_resizer_ = nullptr;
+  raw_ptr<WorkspaceWindowResizer, ExperimentalAsh> workspace_resizer_ = nullptr;
 };
 
 // Assertions around attached window resize dragging from the right with 2
@@ -656,7 +657,7 @@ TEST_F(WorkspaceWindowResizerTest, DragSnapped) {
   window_->Show();
   AllowSnap(window_.get());
 
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect snapped_bounds = window_->bounds();
@@ -681,7 +682,7 @@ TEST_F(WorkspaceWindowResizerTest, ResizeSnapped) {
   window_->SetBounds(kInitialBounds);
   window_->Show();
 
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect snapped_bounds = window_->bounds();
@@ -739,7 +740,7 @@ TEST_F(WorkspaceWindowResizerTest, ResizeRestoreSnappedWindow) {
   window_->Show();
 
   // Snap the window to the left.
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   gfx::Rect snapped_bounds = window_->bounds();
 
@@ -2212,7 +2213,7 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   EXPECT_EQ(window_size, touch_resize_window_->bounds().size());
 
   // Snap a window and do the same test.
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   ASSERT_TRUE(window_state->IsSnapped());
   const gfx::Rect snapped_bounds = window_state->window()->bounds();
@@ -2625,7 +2626,7 @@ TEST_F(PortraitWorkspaceWindowResizerTest, ResizeSnapped) {
   const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
 
-  const WMEvent snap_top(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_top(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_top);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected_snap_bounds =

@@ -298,9 +298,6 @@ EXTENSIONS_EXPORT extern const char kGoogleSlidesDemoAppId[];
 // The extension id of the Google Keep application.
 EXTENSIONS_EXPORT extern const char kGoogleKeepAppId[];
 
-// The extension id of the office PWA.
-EXTENSIONS_EXPORT extern const char kOfficePwaAppId[];
-
 // The extension id of the Youtube application.
 EXTENSIONS_EXPORT extern const char kYoutubeAppId[];
 
@@ -343,6 +340,9 @@ EXTENSIONS_EXPORT extern const char kSigninProfileTestExtensionId[];
 
 // The id of the testing extension allowed in guest mode.
 EXTENSIONS_EXPORT extern const char kGuestModeTestExtensionId[];
+
+// The id of the Chrome OS XKB extension.
+EXTENSIONS_EXPORT extern const char kChromeOSXKB[];
 
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,

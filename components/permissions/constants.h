@@ -42,6 +42,16 @@ extern const char kPermissionsPromptSurveyRequestTypeKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyDisplayTimeKey[];
 
+// The key in `Product Specific String Data` under which the 'one time prompts
+// decided' count bucket of the user taking the prompt HaTS survey is recorded.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyOneTimePromptsDecidedBucketKey[];
+
+// The key in `Product Specific String Data` under which the URL on which the
+// prompt HaTS survey was triggered is recorded.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyUrlKey[];
+
 // The key in `Product Specific Bits Data` under which whether the prompt was
 // triggered by a user gestured is recorded in the prompt HaTS survey.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

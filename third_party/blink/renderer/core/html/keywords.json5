@@ -109,5 +109,10 @@
     // https://github.com/whatwg/html/pull/5465
     "open",
     "closed",
+
+    // visibilityState
+    // https://w3c.github.io/page-visibility/#visibilitystate-enum
+    "hidden",
+    "visible",
   ],
 }

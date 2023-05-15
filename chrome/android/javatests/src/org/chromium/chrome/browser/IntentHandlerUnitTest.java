@@ -22,7 +22,7 @@ import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -447,7 +447,7 @@ public class IntentHandlerUnitTest {
     public void testExtraHeadersVerifiedOrigin() throws Exception {
         // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 context, "https://www.google.com/");
 
@@ -479,7 +479,7 @@ public class IntentHandlerUnitTest {
     public void testExtraHeadersNonVerifiedOrigin() throws Exception {
         // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 context, "https://www.google.com/");
 
@@ -510,7 +510,7 @@ public class IntentHandlerUnitTest {
     @UiThreadTest
     @Feature({"Android-AppBase"})
     public void testReferrerUrl_customTabIntentWithSession() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 context, "https://www.google.com/");
         Assert.assertTrue(CustomTabsConnection.getInstance().newSession(
@@ -540,7 +540,7 @@ public class IntentHandlerUnitTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testGeneratedReferrer() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String packageName = context.getPackageName();
         String referrer = IntentHandler.constructValidReferrerForAuthority(packageName).getUrl();
         Assert.assertEquals("android-app://" + packageName, referrer);
@@ -637,7 +637,7 @@ public class IntentHandlerUnitTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testCreateTrustedOpenNewTabIntent() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
 
         Assert.assertEquals(intent.getAction(), Intent.ACTION_VIEW);
@@ -702,7 +702,7 @@ public class IntentHandlerUnitTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIncognitoIntent_trusted() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
         assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
     }

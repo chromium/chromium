@@ -366,7 +366,9 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'pinned',
     'syncStatus',
     'progress',
+    'syncCompletedTime',
     'contentMimeType',
+    'shortcut',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -454,6 +456,18 @@ filelist.renderFileTypeIcon = (doc, entry, locationInfo, opt_mimeType) => {
 };
 
 /**
+ * Renders a div beside the row icon that is used to surface badges for
+ * individual items in the grid and list view.
+ * @param {!Document} doc Owner document.
+ * @returns {!HTMLDivElement}
+ */
+filelist.renderIconBadge = (doc) => {
+  const divElement = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  divElement.classList.add('icon-badge');
+  return divElement;
+};
+
+/**
  * Render filename label for grid and list view.
  * @param {!Document} doc Owner document.
  * @param {!Entry|!FilesAppEntry} entry The Entry object to render.
@@ -474,7 +488,25 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
+ * Renders the drive encryption status (CSE files) in the detail table.
+ * @param {!Document} doc Owner document.
+ * @return {!HTMLDivElement} Created element.
+ */
+filelist.renderEncryptionStatus = (doc) => {
+  const box = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  box.className = 'encryption-status';
+
+  const encryptedIcon = doc.createElement('xf-icon');
+  encryptedIcon.size = 'extra_small';
+  encryptedIcon.type = 'encrypted';
+  box.appendChild(encryptedIcon);
+
+  return box;
+};
+
+/**
  * Renders the drive inline status in the detail table.
+ * @param {!Document} doc Owner document.
  * @return {!HTMLDivElement} Created element.
  */
 filelist.renderInlineStatus = (doc) => {
@@ -519,6 +551,10 @@ filelist.updateListItemExternalProps =
       }
 
       li.classList.toggle('pinned', externalProps.pinned);
+      li.classList.toggle(
+          'encrypted',
+          FileType.isEncrypted(entry, externalProps.contentMimeType));
+      li.classList.toggle('shortcut', !!externalProps.shortcut);
 
       const iconDiv = li.querySelector('.detail-icon');
       if (!iconDiv) {
@@ -550,9 +586,17 @@ filelist.updateListItemExternalProps =
             'aria-label',
             externalProps.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
 
-        const {syncStatus} = externalProps;
-        let progress = externalProps.progress ?? 0;
+        let {syncStatus} = externalProps;
         if (util.isInlineSyncStatusEnabled() && syncStatus) {
+          let progress = externalProps.progress ?? 0;
+          const {syncCompletedTime} = externalProps;
+
+          // Hold "completed" state for 300ms to give users a chance to see it.
+          if (syncCompletedTime && Date.now() - syncCompletedTime < 300) {
+            syncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+            progress = 1.0;
+          }
+
           switch (syncStatus) {
             case chrome.fileManagerPrivate.SyncStatus.QUEUED:
             case chrome.fileManagerPrivate.SyncStatus.ERROR:
@@ -564,6 +608,20 @@ filelist.updateListItemExternalProps =
                   'aria-label',
                   `${str('IN_PROGRESS_LABEL')} - ${
                       (progress * 100).toFixed(0)}%`);
+              break;
+            case chrome.fileManagerPrivate.SyncStatus.NOT_FOUND:
+              // Files can have a sync status of "not_found" even though they
+              // are actually "queued". This can happen due to a delay in the
+              // "queued" status being communicated from DriveFS. In this case
+              // though, they would also be considered dirty (meaning they have
+              // unsynced changes so will eventually get queued for syncing).
+              // Hence, let's display a status "not_found" that is also "dirty"
+              // as "queued".
+              if (externalProps.dirty) {
+                progress = 0;
+                syncStatus = chrome.fileManagerPrivate.SyncStatus.QUEUED;
+                inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
+              }
               break;
             default:
               break;

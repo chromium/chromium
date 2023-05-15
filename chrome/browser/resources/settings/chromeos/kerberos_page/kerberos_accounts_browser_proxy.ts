@@ -74,6 +74,7 @@ export enum KerberosConfigErrorCode {
   SECTION_NOT_SUPPORTED = 7,
   KRB5_FAILED_TO_PARSE = 8,
   TOO_MANY_NESTED_GROUPS = 9,
+  LINE_TOO_LONG = 10,
 }
 
 export interface KerberosAccountsBrowserProxy {

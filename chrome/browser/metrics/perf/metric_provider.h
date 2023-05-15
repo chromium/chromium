@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
@@ -131,7 +132,7 @@ class MetricProvider {
 
   // The profile manager that manages user profiles with their sync settings, we
   // do not own this object and only hold a reference to it.
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
 
   // Called when |cached_profile_data_| is populated.
   base::RepeatingClosure cache_updated_callback_;

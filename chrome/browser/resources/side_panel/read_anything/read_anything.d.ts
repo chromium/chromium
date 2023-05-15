@@ -68,6 +68,10 @@ declare namespace chrome {
     // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
 
+    // Returns true if select-to-distill works on the web page. Used to
+    // determine which empty state to display.
+    function isSelectable(): boolean;
+
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
     // in the main pane. The selection can either be forward or backwards.

@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/private_aggregation/private_aggregation_h
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
+import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "url/mojom/url.mojom";
 
 // Used to denote a shared storage's key, value, or the [key, value] pair. This
@@ -124,13 +125,13 @@ interface SharedStorageWorkletService {
   // When the operation succeeds, the return value `index` will be set to the
   // uint32 value that the promise resolves to; otherwise it will be set to 0.
   RunURLSelectionOperation(string name, array<url.mojom.Url> urls,
-                           array<uint8> serialized_data,
+                           CloneableMessage serialized_data,
                            pending_remote<PrivateAggregationHost>? pa_host)
     => (bool success, string error_message, uint32 index);
 
   // Handle sharedStorage.runOperation(): run the operation previously
   // registered by registerOperation() with matching `name`.
-  RunOperation(string name, array<uint8> serialized_data,
+  RunOperation(string name, CloneableMessage serialized_data,
                pending_remote<PrivateAggregationHost>? pa_host)
     => (bool success, string error_message);
 };

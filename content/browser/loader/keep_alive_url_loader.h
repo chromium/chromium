@@ -27,6 +27,7 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class KeepAliveURLLoaderService;
+class PolicyContainerHost;
 
 // A URLLoader for loading a fetch keepalive request via the browser process,
 // including both `fetch(..., {keepalive: true})` and `navigator.sendBeacon()`
@@ -52,7 +53,7 @@ class KeepAliveURLLoaderService;
 // maintained by the browser instead of by a renderer.
 //
 // Design Doc:
-// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoader
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient {
@@ -65,6 +66,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // `forwarding_client` should handle request loading results from the network
   // service if it is still connected.
   // `delete_callback` is a callback to delete this object.
+  // `policy_container_host` must not be null.
   KeepAliveURLLoader(
       int32_t request_id,
       uint32_t options,
@@ -72,6 +74,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
+      scoped_refptr<PolicyContainerHost> policy_container_host,
       base::PassKey<KeepAliveURLLoaderService>);
   ~KeepAliveURLLoader() override;
 
@@ -91,10 +94,16 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
+    virtual void OnReceiveRedirectForwarded(KeepAliveURLLoader* loader) = 0;
+    virtual void OnReceiveRedirectProcessed(KeepAliveURLLoader* loader) = 0;
     virtual void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) = 0;
     virtual void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) = 0;
-    virtual void OnCompleteForwarded(KeepAliveURLLoader* loader) = 0;
-    virtual void OnCompleteProcessed(KeepAliveURLLoader* loader) = 0;
+    virtual void OnCompleteForwarded(
+        KeepAliveURLLoader* loader,
+        const network::URLLoaderCompletionStatus& completion_status) = 0;
+    virtual void OnCompleteProcessed(
+        KeepAliveURLLoader* loader,
+        const network::URLLoaderCompletionStatus& completion_status) = 0;
 
    protected:
     virtual ~TestObserver() = default;
@@ -131,12 +140,19 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
+  // Returns net::OK to allow following the redirect. Otherwise, returns
+  // corresponding error code.
+  net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
   void OnNetworkConnectionError();
   void OnRendererConnectionError();
   void DeleteSelf();
 
   // The ID to identify the request being loaded by this loader.
-  int32_t request_id_;
+  const int32_t request_id_;
+
+  // The request to be loaded by this loader.
+  // Set in the constructor and updated when redirected.
+  network::ResourceRequest resource_request_;
 
   // Connection with the network service:
   // Connects to the receiver network::URLLoader implemented in the network
@@ -149,9 +165,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Connection with a renderer:
   // Connects to the receiver URLLoaderClient implemented in the renderer.
-  // It is the client to forward the URLLoader response from the network
-  // service to.
-  // It may be disconnected if the renderer is dead.
+  // It is the client that this loader may forward the URLLoader response from
+  // the network service, i.e. message received by `loader_receiver_`, to.
+  // It may be disconnected if the renderer is dead. In such case, subsequent
+  // URLLoader response may be handled in browser.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
   // A callback to delete this loader object and clean up resource.
@@ -159,6 +176,16 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Whether `OnReceiveResponse()` has been called.
   bool has_received_response_ = false;
+
+  // A refptr to keep the `PolicyContainerHost` from the RenderFrameHost that
+  // initiates this loader alive until `this` is destroyed.
+  // It is never null.
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
+
+  // Records the initial request URL to help veryfing redirect request.
+  const GURL initial_url_;
+  // Records the latest URL to help veryfing redirect request.
+  GURL last_url_;
 
   // For testing only:
   // Not owned.

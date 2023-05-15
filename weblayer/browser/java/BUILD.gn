@@ -9,15 +9,6 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//weblayer/variables.gni")
 
-_bundle_utils_output =
-    "$target_gen_dir/org/chromium/weblayer_private/WebLayerBundleUtils.java"
-
-jinja_template("weblayer_bundle_utils") {
-  input = "WebLayerBundleUtils.java.jinja2"
-  output = _bundle_utils_output
-  variables = "weblayer_in_split=$weblayer_in_split"
-}
-
 android_resources("weblayer_resources") {
   sources = [
     "res/drawable/weblayer_tab_indicator.xml",
@@ -124,7 +115,7 @@ android_library("java") {
     "org/chromium/weblayer_private/ContentViewRenderView.java",
     "org/chromium/weblayer_private/ContentViewWithAutofill.java",
     "org/chromium/weblayer_private/CookieManagerImpl.java",
-    "org/chromium/weblayer_private/CrashReporterControllerImpl.java",
+    "org/chromium/weblayer_private/CrashReporterController.java",
     "org/chromium/weblayer_private/DownloadCallbackProxy.java",
     "org/chromium/weblayer_private/DownloadImpl.java",
     "org/chromium/weblayer_private/ErrorPageCallbackProxy.java",
@@ -188,7 +179,6 @@ android_library("java") {
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
     "org/chromium/weblayer_private/settings/WebLayerAccessibilitySettingsDelegate.java",
     "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
-    _bundle_utils_output,
   ]
   resources_package = "org.chromium.weblayer_private"
 
@@ -197,7 +187,6 @@ android_library("java") {
     ":base_module_java",
     ":gms_bridge_java",
     ":interfaces_java",
-    ":weblayer_bundle_utils",
     ":weblayer_resources",
     "//base:base_java",
     "//base:jni_java",
@@ -259,7 +248,7 @@ android_library("java") {
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/navigation_interception/android:navigation_interception_java",
-    "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//components/page_info/android:java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:service_java",
@@ -593,8 +582,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IContextMenuParams.aidl",
     "org/chromium/weblayer_private/interfaces/ICookieChangedCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/ICookieManager.aidl",
-    "org/chromium/weblayer_private/interfaces/ICrashReporterController.aidl",
-    "org/chromium/weblayer_private/interfaces/ICrashReporterControllerClient.aidl",
     "org/chromium/weblayer_private/interfaces/IDownload.aidl",
     "org/chromium/weblayer_private/interfaces/IDownloadCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IErrorPageCallbackClient.aidl",

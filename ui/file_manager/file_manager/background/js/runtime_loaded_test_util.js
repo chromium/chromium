@@ -81,6 +81,7 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
   const result = {
     attributes: attributes,
     text: element.textContent,
+    innerText: element.innerText,
     value: element.value,
     // The hidden attribute is not in the element.attributes even if
     // element.hasAttribute('hidden') is true.

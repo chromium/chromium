@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -360,14 +361,16 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.from_keyword = true;
   }
 
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
     // Propagate scoring signals to AC Match for ML Model training data.
     // `allowed_to_be_default_match` is set in this function, after the ACMatch
     // is constructed, rather than in ScoredHistoryMatch. We have to propagate
     // that signal to `scoring_signals` in addition to all signals calculated in
     // the ScoredHistoryMatch.
+    DCHECK(history_match.scoring_signals.has_value());
     match.scoring_signals = history_match.scoring_signals;
-    match.scoring_signals.set_allowed_to_be_default_match(
+    match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
   }
   match.RecordAdditionalInfo("typed count", info.typed_count());

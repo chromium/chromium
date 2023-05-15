@@ -28,7 +28,12 @@ ExtensionSyncServiceFactory* ExtensionSyncServiceFactory::GetInstance() {
 ExtensionSyncServiceFactory::ExtensionSyncServiceFactory()
     : ProfileKeyedServiceFactory(
           "ExtensionSyncService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());

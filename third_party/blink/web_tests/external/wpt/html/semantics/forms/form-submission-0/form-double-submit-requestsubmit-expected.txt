@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: true, preventDefaultSubmitButton: false, passSubmitter: true
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: true, preventDefaultSubmitButton: false, passSubmitter: false
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: true, passSubmitter: true
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: true, passSubmitter: false
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: false, passSubmitter: true
+PASS test runTest with submitterType: input, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: false, passSubmitter: false
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: true, preventDefaultSubmitButton: false, passSubmitter: true
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: true, preventDefaultSubmitButton: false, passSubmitter: false
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: true, passSubmitter: true
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: true, passSubmitter: false
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: false, passSubmitter: true
+PASS test runTest with submitterType: button, preventDefaultRequestSubmit: false, preventDefaultSubmitButton: false, passSubmitter: false
+PASS test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: true, preventDefault: true, passSubmitter: true
+PASS test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: true, preventDefault: true, passSubmitter: false
+FAIL test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: true, preventDefault: false, passSubmitter: true assert_equals: expected (object) null but got (string) "v3"
+PASS test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: true, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: false, preventDefault: false, passSubmitter: true
+PASS test runTest2 with submitterType: input, callRequestSubmit: true, callSubmit: false, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: true, preventDefault: true, passSubmitter: true
+PASS test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: true, preventDefault: true, passSubmitter: false
+FAIL test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: true, preventDefault: false, passSubmitter: true assert_equals: expected (object) null but got (string) "v3"
+PASS test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: true, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: false, preventDefault: false, passSubmitter: true
+PASS test runTest2 with submitterType: input, callRequestSubmit: false, callSubmit: false, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: true, preventDefault: true, passSubmitter: true
+PASS test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: true, preventDefault: true, passSubmitter: false
+FAIL test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: true, preventDefault: false, passSubmitter: true assert_equals: expected (object) null but got (string) "v3"
+PASS test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: true, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: false, preventDefault: false, passSubmitter: true
+PASS test runTest2 with submitterType: button, callRequestSubmit: true, callSubmit: false, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: true, preventDefault: true, passSubmitter: true
+PASS test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: true, preventDefault: true, passSubmitter: false
+FAIL test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: true, preventDefault: false, passSubmitter: true assert_equals: expected (object) null but got (string) "v3"
+PASS test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: true, preventDefault: false, passSubmitter: false
+PASS test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: false, preventDefault: false, passSubmitter: true
+PASS test runTest2 with submitterType: button, callRequestSubmit: false, callSubmit: false, preventDefault: false, passSubmitter: false
+Harness: the test ran to completion.
+

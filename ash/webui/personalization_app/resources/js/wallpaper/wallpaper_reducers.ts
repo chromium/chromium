@@ -12,7 +12,7 @@ import {PersonalizationState} from '../personalization_state.js';
 import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
-import {findAlbumById, isDefaultImage, isFilePath} from './utils.js';
+import {findAlbumById, isDefaultImage, isFilePath, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 
@@ -43,7 +43,7 @@ function backdropReducer(
 
 function loadingReducer(
     state: WallpaperState['loading'], action: Actions,
-    _: PersonalizationState): WallpaperState['loading'] {
+    globalState: PersonalizationState): WallpaperState['loading'] {
   switch (action.name) {
     case WallpaperActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS:
       return {
@@ -141,10 +141,15 @@ function loadingReducer(
         },
       };
     case WallpaperActionName.SET_SELECTED_IMAGE:
-      if (state.setImage === 0) {
-        return {...state, selected: false};
+      if (globalState.wallpaper.pendingSelected && action.image &&
+          !isImageEqualToSelected(
+              globalState.wallpaper.pendingSelected, action.image)) {
+        // If the user is in the process of selecting a new image, but the
+        // received image does not match what the user last selected, make sure
+        // loading.selected stays true.
+        return state;
       }
-      return state;
+      return {...state, selected: false};
     case WallpaperActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
       return {...state, refreshWallpaper: true};
     case WallpaperActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:

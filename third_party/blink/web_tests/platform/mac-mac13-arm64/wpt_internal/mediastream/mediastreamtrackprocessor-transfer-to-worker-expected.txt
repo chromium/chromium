@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Test we can transfer a Video MediaStreamTrackProcessor stream
-PASS Test we can transfer an Audio MediaStreamTrackProcessor stream
-Harness: the test ran to completion.
-

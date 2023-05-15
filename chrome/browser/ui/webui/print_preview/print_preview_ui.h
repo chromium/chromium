@@ -206,6 +206,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // OnJavascriptDisallowed().
   void ClearPreviewUIId();
 
+  base::WeakPtr<PrintPreviewUI> GetWeakPointer();
+
  protected:
   // Alternate constructor for tests
   PrintPreviewUI(content::WebUI* web_ui,
@@ -257,6 +259,15 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                             int32_t request_id,
                             mojom::PrintCompositor::Status status,
                             base::ReadOnlySharedMemoryRegion region);
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Registers this PrintPreviewUI with the PrintBackendServiceManager. It is
+  // beneficial to have the Print Backend service be present and ready for at
+  // least as long as this UI is around.
+  void RegisterPrintBackendServiceManagerClient();
+
+  void UnregisterPrintBackendServiceManagerClient();
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

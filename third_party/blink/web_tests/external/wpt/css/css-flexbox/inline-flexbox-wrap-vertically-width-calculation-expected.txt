@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+PASS .inline-flexbox 1
+FAIL .inline-flexbox 2 assert_equals: 
+<div class="inline-flexbox column align-content-flex-start wrap" style="height: 35px" data-expected-width="80" data-expected-height="35">
+  <div style="width: 10px; height: 20px" data-offset-x="0" data-offset-y="0"></div>
+  <div style="width: 50px; height: 10px" data-offset-x="0" data-offset-y="20"></div>
+  <div style="width: 80px; height: 10px" data-offset-x="50" data-offset-y="0"></div>
+  <div style="width: 40px; height: 20px" data-offset-x="50" data-offset-y="10"></div>
+</div>
+width expected 80 but got 130
+PASS .inline-flexbox 3
+FAIL .inline-flexbox 4 assert_equals: 
+<div class="inline-flexbox column align-content-flex-start wrap writing-mode-vertical" style="width: 200px" data-expected-width="200" data-expected-height="70">
+  <div style="width: 50px; height: 20px" data-offset-x="150" data-offset-y="0"></div>
+  <div style="width: 100px; height: 70px" data-offset-x="50" data-offset-y="0"></div>
+  <div style="width: 30px; height: 50px" data-offset-x="20" data-offset-y="0"></div>
+  <div style="width: 100px; height: 30px" data-offset-x="100" data-offset-y="70"></div>
+</div>
+height expected 70 but got 100
+PASS .inline-flexbox 5
+FAIL .inline-flexbox 6 assert_equals: 
+<div class="inline-flexbox column align-content-flex-start wrap-reverse" style="height: 35px" data-expected-width="80" data-expected-height="35">
+  <div style="width: 10px; height: 20px" data-offset-x="70" data-offset-y="0"></div>
+  <div style="width: 50px; height: 10px" data-offset-x="30" data-offset-y="20"></div>
+  <div style="width: 80px; height: 10px" data-offset-x="-50" data-offset-y="0"></div>
+  <div style="width: 40px; height: 20px" data-offset-x="-10" data-offset-y="10"></div>
+</div>
+width expected 80 but got 130
+PASS .inline-flexbox 7
+FAIL .inline-flexbox 8 assert_equals: 
+<div class="inline-flexbox column align-content-flex-start wrap-reverse writing-mode-vertical" style="width: 200px" data-expected-width="200" data-expected-height="70">
+  <div style="width: 50px; height: 20px" data-offset-x="150" data-offset-y="50"></div>
+  <div style="width: 100px; height: 50px" data-offset-x="50" data-offset-y="20"></div>
+  <div style="width: 30px; height: 70px" data-offset-x="20" data-offset-y="0"></div>
+  <div style="width: 100px; height: 30px" data-offset-x="100" data-offset-y="-30"></div>
+</div>
+height expected 70 but got 100
+PASS .inline-flexbox 9
+FAIL .inline-flexbox 10 assert_equals: 
+<div class="inline-flexbox column-reverse align-content-flex-start wrap" style="height: 35px" data-expected-width="80" data-expected-height="35">
+  <div style="width: 10px; height: 20px" data-offset-x="0" data-offset-y="15"></div>
+  <div style="width: 50px; height: 10px" data-offset-x="0" data-offset-y="5"></div>
+  <div style="width: 80px; height: 10px" data-offset-x="50" data-offset-y="25"></div>
+  <div style="width: 40px; height: 20px" data-offset-x="50" data-offset-y="5"></div>
+</div>
+width expected 80 but got 130
+PASS .inline-flexbox 11
+FAIL .inline-flexbox 12 assert_equals: 
+<div class="inline-flexbox column-reverse align-content-flex-start wrap writing-mode-vertical" style="width: 200px" data-expected-width="200" data-expected-height="70">
+  <div style="width: 50px; height: 20px" data-offset-x="0" data-offset-y="0"></div>
+  <div style="width: 100px; height: 70px" data-offset-x="50" data-offset-y="0"></div>
+  <div style="width: 30px; height: 50px" data-offset-x="150" data-offset-y="0"></div>
+  <div style="width: 100px; height: 30px" data-offset-x="0" data-offset-y="70"></div>
+</div>
+height expected 70 but got 100
+PASS .inline-flexbox 13
+FAIL .inline-flexbox 14 assert_equals: 
+<div class="inline-flexbox column-reverse align-content-flex-start wrap-reverse" style="height: 35px" data-expected-width="80" data-expected-height="35">
+  <div style="width: 10px; height: 20px" data-offset-x="70" data-offset-y="15"></div>
+  <div style="width: 50px; height: 10px" data-offset-x="30" data-offset-y="5"></div>
+  <div style="width: 80px; height: 10px" data-offset-x="-50" data-offset-y="25"></div>
+  <div style="width: 40px; height: 20px" data-offset-x="-10" data-offset-y="5"></div>
+</div>
+width expected 80 but got 130
+PASS .inline-flexbox 15
+FAIL .inline-flexbox 16 assert_equals: 
+<div class="inline-flexbox column-reverse align-content-flex-start wrap-reverse writing-mode-vertical" style="width: 200px" data-expected-width="200" data-expected-height="70">
+  <div style="width: 50px; height: 20px" data-offset-x="0" data-offset-y="50"></div>
+  <div style="width: 100px; height: 50px" data-offset-x="50" data-offset-y="20"></div>
+  <div style="width: 30px; height: 30px" data-offset-x="150" data-offset-y="40"></div>
+  <div style="width: 100px; height: 70px" data-offset-x="0" data-offset-y="-50"></div>
+</div>
+height expected 70 but got 120
+Harness: the test ran to completion.
+

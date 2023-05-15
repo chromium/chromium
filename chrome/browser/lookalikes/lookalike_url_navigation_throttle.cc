@@ -102,7 +102,7 @@ bool IsLookalikeUrl(Profile* profile,
 
 BASE_FEATURE(kPrewarmLookalikeCheck,
              "PrewarmLookalikeCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
     content::NavigationHandle* navigation_handle)
@@ -130,7 +130,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillRedirectRequest() {
   if (base::FeatureList::IsEnabled(kPrewarmLookalikeCheck) &&
       redirect_lookup_cache_checks_ <
           base::GetFieldTrialParamByFeatureAsInt(
-              kPrewarmLookalikeCheck, "redirect_lookup_cache_limit", 10)) {
+              kPrewarmLookalikeCheck, "redirect_lookup_cache_limit", 2)) {
     redirect_lookup_cache_checks_++;
     PrewarmLookalikeCheckAsync();
   }

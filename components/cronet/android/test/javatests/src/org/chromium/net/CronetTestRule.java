@@ -39,21 +39,9 @@ import java.net.URLStreamHandlerFactory;
  */
 public class CronetTestRule implements TestRule {
     private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "cronet_test";
-
-    /**
-     * Name of the file that contains the test server certificate in PEM format.
-     */
-    public static final String SERVER_CERT_PEM = "quic-chain.pem";
-
-    /**
-     * Name of the file that contains the test server private key in PKCS8 PEM format.
-     */
-    public static final String SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
-
     private static final String TAG = "CronetTestRule";
 
     private CronetTestFramework mCronetTestFramework;
-
     private boolean mTestingSystemHttpURLConnection;
     private boolean mTestingJavaImpl;
     private StrictMode.VmPolicy mOldVmPolicy;

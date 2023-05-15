@@ -25,6 +25,7 @@ class PrivacySandboxDialogUI : public content::WebUIController {
                   base::OnceCallback<void(int)> resize_callback,
                   base::OnceClosure show_dialog_callback,
                   base::OnceClosure open_settings_callback,
+                  base::OnceClosure open_measurement_settings_callback,
                   PrivacySandboxService::PromptType prompt_type);
 
  private:

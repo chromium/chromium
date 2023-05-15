@@ -150,4 +150,7 @@ message StructuredEventProto {
 // structured events for that upload, and any other metadata.
 message StructuredDataProto {
   repeated StructuredEventProto events = 1;
+
+  // Whether the device is enrolled and may be controlled by a policy.
+  optional bool is_device_enrolled = 2;
 }

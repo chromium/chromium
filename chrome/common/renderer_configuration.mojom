@@ -6,12 +6,41 @@ module chrome.mojom;
 
 import "components/content_settings/common/content_settings_manager.mojom";
 import "components/content_settings/core/common/content_settings.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Renderer configuration for a bound session.
+// Network requests with `domain` and that are on `path` require a short lived
+// cookie that would expire at `cookie_expiry_date`. Renderer throtller relies
+// on `BoundSessionParams` to defer a request when required.
+// `BoundSessionParams` can change when a bound session is created, terminated
+// or on cookie expiration change.
+[EnableIf=enable_bound_session_credentials]
+struct BoundSessionParams {
+  string domain;
+  string path;
+  mojo_base.mojom.Time cookie_expiry_date;
+};
 
 // The renderer configuration parameters which can change post renderer launch.
 struct DynamicParams {
+  // `BoundSessionParams` can be null if there is no ongoing bound session.
+  [EnableIf=enable_bound_session_credentials]
+  BoundSessionParams? bound_session_params;
   bool force_safe_search = true;
   int32 youtube_restrict = 0;
   string allowed_domains_for_apps;
+};
+
+// Allows the renderer to notify the browser process that requests in renderer
+// are throttled and require a fresh short lived cookie.
+interface BoundSessionRequestThrottledListener {
+  // Called to notify the browser process when a network request requires a
+  // fresh cookie. This triggers a cookie refresh request and will
+  // run the callback to release the request upon success, failure or timeout.
+  // Note: The callback might be called synchronously in process if the
+  // previous conditions apply.
+  [EnableIf=enable_bound_session_credentials]
+  OnRequestBlockedOnCookie() => ();
 };
 
 interface ChromeOSListener {
@@ -29,11 +58,16 @@ interface RendererConfiguration {
   // the merge session is still running - otherwise not set.
   // |content_settings_manager| may be sent as an optimization to avoid
   // requesting it from the browser process, and may be null.
+  // |bound_session_request_throttled_listener| is passed only if the buildflag
+  // `enable_bound_session_credentials` is enabled. It can be null if bound
+  // sessions are not supported yet for the current profile type.
   SetInitialConfiguration(
       bool is_incognito_process,
       pending_receiver<ChromeOSListener>? chromeos_listener,
       pending_remote<content_settings.mojom.ContentSettingsManager>?
-          content_settings_manager);
+          content_settings_manager,
+      pending_remote<BoundSessionRequestThrottledListener>?
+          bound_session_request_throttled_listener);
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);

@@ -277,8 +277,7 @@ test("display_unittests") {
       "manager/content_protection_manager_unittest.cc",
       "manager/display_change_observer_unittest.cc",
       "manager/display_configurator_unittest.cc",
-      "manager/display_manager_util_unittest.cc",
-      "manager/display_manager_utilities_unittest.cc",
+      "manager/display_port_observer_unittest.cc",
       "manager/display_properties_parser_unittest.cc",
       "manager/json_converter_unittest.cc",
       "manager/managed_display_info_unittest.cc",
@@ -286,6 +285,7 @@ test("display_unittests") {
       "manager/touch_device_manager_unittest.cc",
       "manager/touch_transform_controller_unittest.cc",
       "manager/update_display_configuration_task_unittest.cc",
+      "manager/util/display_manager_util_unittest.cc",
     ]
 
     deps += [

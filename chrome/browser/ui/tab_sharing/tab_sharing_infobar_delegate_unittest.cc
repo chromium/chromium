@@ -32,8 +32,8 @@ const std::u16string kSinkName = u"Living Room TV";
 class MockTabSharingUIViews : public TabSharingUI {
  public:
   MockTabSharingUIViews() {}
-  MOCK_METHOD1(StartSharing, void(infobars::InfoBar* infobar));
-  MOCK_METHOD0(StopSharing, void());
+  MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
+  MOCK_METHOD(void, StopSharing, ());
 
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,

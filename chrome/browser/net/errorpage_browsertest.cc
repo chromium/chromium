@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
 
   // Clicking the reload button should load the error page again.
   content::TestNavigationObserver nav_observer(web_contents, 1);
-  // Can't use content::ExecuteScript because it waits for scripts to send
+  // Can't use content::ExecJs because it waits for scripts to send
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
 
   // Clicking the reload button should load the error page again.
   content::TestNavigationObserver nav_observer2(web_contents);
-  // Can't use content::ExecuteScript because it waits for scripts to send
+  // Can't use content::ExecJs because it waits for scripts to send
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(

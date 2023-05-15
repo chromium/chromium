@@ -5,6 +5,7 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -108,12 +109,12 @@ BrowserContextKeyedServiceFactory* OffscreenDocumentManager::GetFactory() {
 OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
     const Extension& extension,
     const GURL& url,
-    api::offscreen::Reason reason) {
+    std::set<api::offscreen::Reason> reasons) {
   DCHECK_EQ(url::Origin::Create(url), extension.origin());
   // Currently only a single offscreen document is supported per extension.
   DCHECK_EQ(nullptr, GetOffscreenDocumentForExtension(extension));
   DCHECK(!base::Contains(offscreen_documents_, extension.id()));
-  DCHECK_NE(api::offscreen::Reason::kNone, reason);
+  CHECK(!base::Contains(reasons, api::offscreen::Reason::kNone));
 #if DCHECK_IS_ON()
   // This should only be for an off-the-record context if the extension is both
   // enabled in incognito *and* runs in split mode. For spanning mode
@@ -136,15 +137,18 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
   // The following Unretained()s are safe because this class owns the offscreen
   // document host and lifetime enforcer, so these callbacks can't possibly be
   // called after the manager's destruction.
-  auto termination_callback = base::BindOnce(
-      &OffscreenDocumentManager::CloseOffscreenDocumentForExtensionId,
-      base::Unretained(this), extension.id());
   auto notify_inactive_callback = base::BindRepeating(
       &OffscreenDocumentManager::OnOffscreenDocumentActivityChanged,
       base::Unretained(this), extension.id());
-  data.enforcers.push_back(LifetimeEnforcerFactories::GetLifetimeEnforcer(
-      reason, host, std::move(termination_callback),
-      std::move(notify_inactive_callback)));
+
+  for (auto reason : reasons) {
+    auto termination_callback = base::BindOnce(
+        &OffscreenDocumentManager::CloseOffscreenDocumentForExtensionId,
+        base::Unretained(this), extension.id());
+    data.enforcers.push_back(LifetimeEnforcerFactories::GetLifetimeEnforcer(
+        reason, host, std::move(termination_callback),
+        notify_inactive_callback));
+  }
 
   host->SetCloseHandler(
       base::BindOnce(&OffscreenDocumentManager::CloseOffscreenDocument,

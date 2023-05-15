@@ -6,20 +6,37 @@
 
 #include <memory>
 
-#include "base/values.h"
-#include "google_apis/common/parser_util.h"
-#include "google_apis/common/test_util.h"
+#include "base/json/json_reader.h"
 #include "google_apis/common/time_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace google_apis::tasks {
 
+using ::base::JSONReader;
+
 TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
-  const auto raw_task_lists = test_util::LoadJSONFile("tasks/task_lists.json");
-  ASSERT_TRUE(raw_task_lists.get());
-  ASSERT_EQ(raw_task_lists->type(), base::Value::Type::DICT);
+  const auto raw_task_lists = JSONReader::Read(R"(
+      {
+        "kind": "tasks#taskLists",
+        "items": [
+          {
+            "kind": "tasks#taskList",
+            "id": "qwerty",
+            "title": "My Tasks 1",
+            "updated": "2023-01-30T22:19:22.812Z"
+          },
+          {
+            "kind": "tasks#taskList",
+            "id": "asdfgh",
+            "title": "My Tasks 2",
+            "updated": "2022-12-21T23:38:22.590Z"
+          }
+        ]
+      })");
+  ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
+  ASSERT_TRUE(task_lists);
   EXPECT_TRUE(task_lists->next_page_token().empty());
   EXPECT_EQ(task_lists->items().size(), 2u);
 
@@ -35,33 +52,54 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTaskListsWithNextPageTokenFromResponse) {
-  const auto raw_task_lists = test_util::LoadJSONFile("tasks/task_lists.json");
-  ASSERT_TRUE(raw_task_lists.get());
-  ASSERT_EQ(raw_task_lists->type(), base::Value::Type::DICT);
-
-  raw_task_lists->SetStringKey("nextPageToken", "qwerty");
+  const auto raw_task_lists = JSONReader::Read(R"(
+      {
+        "kind": "tasks#taskLists",
+        "items": [],
+        "nextPageToken": "qwerty"
+      })");
+  ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
+  ASSERT_TRUE(task_lists);
   EXPECT_EQ(task_lists->next_page_token(), "qwerty");
 }
 
 TEST(TasksApiResponseTypesTest, FailsToCreateTaskListsFromInvalidResponse) {
-  const auto raw_task_lists = test_util::LoadJSONFile("tasks/task_lists.json");
-  ASSERT_TRUE(raw_task_lists.get());
-  ASSERT_EQ(raw_task_lists->type(), base::Value::Type::DICT);
-
-  raw_task_lists->SetStringKey(kApiResponseKindKey, "invalid_kind");
+  const auto raw_task_lists = JSONReader::Read(R"(
+      {
+        "kind": "invalid_kind",
+        "items": true
+      })");
+  ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
-  EXPECT_FALSE(task_lists);
+  ASSERT_FALSE(task_lists);
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
-  const auto raw_tasks = test_util::LoadJSONFile("tasks/tasks.json");
-  ASSERT_TRUE(raw_tasks.get());
-  ASSERT_EQ(raw_tasks->type(), base::Value::Type::DICT);
+  const auto raw_tasks = JSONReader::Read(R"(
+      {
+        "kind": "tasks#tasks",
+        "items": [
+          {
+            "id": "qwe",
+            "title": "Completed child task",
+            "parent": "asd",
+            "status": "completed"
+          },
+          {
+            "id": "asd",
+            "title": "Parent task",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }
+        ]
+      })");
+  ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_TRUE(tasks);
   EXPECT_TRUE(tasks->next_page_token().empty());
   EXPECT_EQ(tasks->items().size(), 2u);
 
@@ -69,21 +107,27 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[0]->title(), "Completed child task");
   EXPECT_EQ(tasks->items()[0]->status(), Task::Status::kCompleted);
   EXPECT_EQ(tasks->items()[0]->parent_id(), "asd");
+  EXPECT_FALSE(tasks->items()[0]->due());
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
   EXPECT_EQ(tasks->items()[1]->status(), Task::Status::kNeedsAction);
   EXPECT_TRUE(tasks->items()[1]->parent_id().empty());
+  EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
+            "2023-04-19T00:00:00.000Z");
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
-  const auto raw_tasks = test_util::LoadJSONFile("tasks/tasks.json");
-  ASSERT_TRUE(raw_tasks.get());
-  ASSERT_EQ(raw_tasks->type(), base::Value::Type::DICT);
-
-  raw_tasks->SetStringKey("nextPageToken", "qwerty");
+  const auto raw_tasks = JSONReader::Read(R"(
+      {
+        "kind": "tasks#tasks",
+        "items": [],
+        "nextPageToken": "qwerty"
+      })");
+  ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_TRUE(tasks);
   EXPECT_EQ(tasks->next_page_token(), "qwerty");
 }
 
@@ -92,15 +136,44 @@ TEST(TasksApiResponseTypesTest, ConvertsTaskStatusToString) {
   EXPECT_EQ(Task::StatusToString(Task::Status::kNeedsAction), "needsAction");
 }
 
-TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
-  const auto raw_tasks = test_util::LoadJSONFile("tasks/tasks.json");
-  ASSERT_TRUE(raw_tasks.get());
-  ASSERT_EQ(raw_tasks->type(), base::Value::Type::DICT);
-
-  raw_tasks->SetStringKey(kApiResponseKindKey, "invalid_kind");
+TEST(TasksApiResponseTypesTest, ConvertsTaskLinks) {
+  const auto raw_tasks = JSONReader::Read(R"(
+      {
+        "kind": "tasks#tasks",
+        "items": [
+          {
+            "id": "qwerty",
+            "links": [
+              {"type": "email"},
+              {"type": "something unsupported yet"}
+            ]
+          }
+        ]
+      })");
+  ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
-  EXPECT_FALSE(tasks);
+  ASSERT_TRUE(tasks);
+  ASSERT_EQ(tasks->items().size(), 1u);
+
+  EXPECT_EQ(tasks->items().at(0)->id(), "qwerty");
+
+  const auto& links = tasks->items().at(0)->links();
+  ASSERT_EQ(links.size(), 2u);
+  EXPECT_EQ(links.at(0)->type(), TaskLink::Type::kEmail);
+  EXPECT_EQ(links.at(1)->type(), TaskLink::Type::kUnknown);
+}
+
+TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
+  const auto raw_tasks = JSONReader::Read(R"(
+      {
+        "kind": "invalid_kind",
+        "items": true
+      })");
+  ASSERT_TRUE(raw_tasks);
+
+  const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_FALSE(tasks);
 }
 
 }  // namespace google_apis::tasks

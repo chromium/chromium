@@ -14,5 +14,6 @@ public interface TestingDelegate {
 
     void searchForTesting(@Nullable String query);
 
+    // TODO(https://crbug.com/1434401): Delete this method.
     void simulateSignInForTesting();
 }

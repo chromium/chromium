@@ -193,13 +193,5 @@ interface PresentationController {
 interface PresentationReceiver {
   // Notifies the PresentationReceiver that a receiver connection has become
   // available.
-  // |info|: URL and ID of the PresentationConnection.
-  // |controller_connection|: Remote to the corresponding controller connection.
-  // |receiver_connection_receiver|: PendingReceiver to be bound at the other
-  // endpoint of the controller connection.
-  // TODO(btolsch): Convert this to take a PresentationConnectionResult.
-  OnReceiverConnectionAvailable(
-      PresentationInfo info,
-      pending_remote<PresentationConnection> controller_connection,
-      pending_receiver<PresentationConnection> receiver_connection_receiver);
+  OnReceiverConnectionAvailable(PresentationConnectionResult result);
 };

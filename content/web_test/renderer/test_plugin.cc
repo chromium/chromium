@@ -255,7 +255,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-        gpu::kNullSurfaceHandle);
+        "TestLabel", gpu::kNullSurfaceHandle);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     GLuint color_texture =
@@ -324,7 +324,7 @@ bool TestPlugin::PrepareTransferableResource(
   gfx::Size size(rect_.size());
   if (!mailbox_.IsZero()) {
     *resource = viz::TransferableResource::MakeGpu(
-        mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size,
+        mailbox_, GL_TEXTURE_2D, sync_token_, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
     *release_callback =

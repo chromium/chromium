@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файл таңдалды</translation>
 <translation id="2383454254762599978">Себетке жіберу</translation>
 <translation id="2387458720915042159">Прокси-сервер байланысының түрі</translation>
 <translation id="2389832672041313158">Бирма (Мьянма)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Құрылғы тек оқуға арналған</translation>
 <translation id="4826849268470072925">Тамиль (ITRANS)</translation>
 <translation id="482932175346970750">Браузеріңізге <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> деп теріңіз</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> элемент таңдалды</translation>
 <translation id="4843566743023903107">Chromebase құрылғылары</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Бос орын жоқ</translation>
 <translation id="6993826899923627728">Бұл элементтер себетте</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> қалта таңдалған</translation>
 <translation id="7008426324576352165">Жүктеп салуды аяқтау үшін ұйымға көбірек жад қажет.</translation>
 <translation id="7009985720488544166">Әкімші саясаты <ph name="COUNT" /> файлды тасымалдауға тыйым салды.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +787,7 @@
 <translation id="7252604552361840748">Жоғарыдағы кеңейтімді табу</translation>
 <translation id="7256405249507348194">Танылмаған қате: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Қолжетімді қызметтер</translation>
+<translation id="7291818353625820805">Таңбалар қайталанып енгізілуі керек пе? Пернетақта параметрлерінде екпін белгілерін өшіріңіз.</translation>
 <translation id="7292816689782057017">Әкімші саясаты кейбір орындарға сақтауға тыйым салады.</translation>
 <translation id="7294063083760278948">Телугу (транслитерация)</translation>
 <translation id="7295662345261934369">Басқалармен бөлісу</translation>

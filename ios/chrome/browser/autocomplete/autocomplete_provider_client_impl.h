@@ -12,6 +12,7 @@
 
 class ChromeBrowserState;
 class AutocompleteScoringModelService;
+class OnDeviceTailModelService;
 
 namespace unified_consent {
 class UrlKeyedDataCollectionConsentHelper;
@@ -64,6 +65,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       const override;
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
+  OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
   std::vector<std::u16string> GetBuiltinURLs() override;

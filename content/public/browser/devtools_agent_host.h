@@ -74,6 +74,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Similar to the above, but returns a DevToolsAgentHost representing 'tab'
   // target. Unlike the one for RenderFrame, this will remain the same through
   // all possible transitions of underlying frame trees.
+  static scoped_refptr<DevToolsAgentHost> GetForTab(WebContents* web_contents);
   static scoped_refptr<DevToolsAgentHost> GetOrCreateForTab(
       WebContents* web_contents);
 
@@ -167,6 +168,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Starts inspecting element at position (|x|, |y|) in the frame
   // represented by |frame_host|.
   virtual void InspectElement(RenderFrameHost* frame_host, int x, int y) = 0;
+
+  using GetUniqueFormControlIdCallback = base::OnceCallback<void(uint64_t)>;
+  // Resolves a backendNodeId to a form control ID.
+  virtual void GetUniqueFormControlId(
+      int node_id,
+      GetUniqueFormControlIdCallback callback) = 0;
 
   // Returns the unique id of the agent.
   virtual std::string GetId() = 0;

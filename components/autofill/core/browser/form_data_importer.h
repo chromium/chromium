@@ -188,7 +188,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
     // valid credit card, and the preconditions for extracting the credit card
     // were met. See `ExtractCreditCard()` for details on when
     // the preconditions are met for extracting a credit card from a form.
-    absl::optional<CreditCard> credit_card_import_candidate;
+    absl::optional<CreditCard> extracted_credit_card;
     // List of address profiles extracted from the form, which are candidates
     // for importing. The list is empty if none of the address profile fulfill
     // import requirements.
@@ -246,17 +246,33 @@ class FormDataImporter : public PersonalDataManagerObserver {
   //   - NEW_CARD otherwise.
   absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form);
 
+  // Returns an existing server card based on the following criteria:
+  // - If `candidate` compares with a full server card, this function returns
+  //   the existing full server card which has the same full card number as
+  //   `candidate`, if one exists.
+  // - If `candidate` compares with a masked server card, this function returns
+  //   an existing masked server card which has the same last four digits and
+  //   the same expiration date as `candidate`, if one exists.
+  // additionally, set `credit_card_import_type_` set to `kServerCard`.
+  // Or returns the `candidate`:
+  // - If there is no matching existing server card.
+  // or returns nullopt:
+  // - If there is a server card which has the same number as `candidate`, but
+  //   the `candidate` does not have expiration date.
+  absl::optional<CreditCard> TryMatchingExistingServerCard(
+      const CreditCard& candidate);
+
   // Returns the extracted IBAN from the `form` if it is a new IBAN.
   absl::optional<IBAN> ExtractIBAN(const FormStructure& form);
 
-  // Tries to initiate the saving of the `credit_card_import_candidate`
-  // if applicable. `submitted_form` is the form from which the card was
+  // Tries to initiate the saving of the `extracted_credit_card` if applicable.
+  // `submitted_form` is the form from which the card was
   // imported. If a UPI id was found it is stored in `extracted_upi_id`.
   // `is_credit_card_upstream_enabled` indicates if server card storage is
   // enabled. Returns true if a save is initiated.
-  bool ProcessCreditCardImportCandidate(
+  bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
-      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const absl::optional<CreditCard>& extracted_credit_card,
       const absl::optional<std::string>& extracted_upi_id,
       bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled);
@@ -278,16 +294,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
   absl::optional<std::string> ExtractUpiId(const FormStructure& form);
 
   // Returns true if credit card upload or local save should be offered to user.
-  // |credit_card_import_candidate| is the credit card imported from the form if
-  // there is any. If no valid card was imported, it is set to nullopt. It might
-  // be set to a copy of a LOCAL_CARD or SERVER_CARD we have already saved if we
+  // `extracted_credit_card` is the credit card imported from the form if there
+  // is any. If no valid card was imported, it is set to nullopt. It might be
+  // set to a copy of a LOCAL_CARD or SERVER_CARD we have already saved if we
   // were able to find a matching copy. |is_credit_card_upstream_enabled|
   // denotes whether the user has credit card upload enabled. This function is
   // used to prevent offering upload card save or local card save in situations
   // where it would be invalid to offer them. For example, we should not offer
   // to upload card if it is already a valid server card.
   bool ShouldOfferUploadCardOrLocalCardSave(
-      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const absl::optional<CreditCard>& extracted_credit_card,
       bool is_credit_card_upload_enabled);
 
   // If the `profile`'s country is not empty, complements it with
@@ -370,10 +386,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   friend class SaveCardInfobarEGTestHelper;
   friend class ::SaveCardOfferObserver;
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
-                           ProcessCreditCardImportCandidate_EmptyCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterNonParameterizedTest,
-      ProcessCreditCardImportCandidate_VirtualCardEligible);
+                           ProcessExtractedCreditCard_EmptyCreditCard);
+  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
+                           ProcessExtractedCreditCard_VirtualCardEligible);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ShouldOfferUploadCardOrLocalCardSave);
 };

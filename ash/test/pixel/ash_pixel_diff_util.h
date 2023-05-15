@@ -5,6 +5,7 @@
 #ifndef ASH_TEST_PIXEL_ASH_PIXEL_DIFF_UTIL_H_
 #define ASH_TEST_PIXEL_ASH_PIXEL_DIFF_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "ui/gfx/geometry/rect.h"
@@ -19,6 +20,8 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+
+std::string GetScreenshotPrefixForCurrentTestInfo();
 
 // Returns the screen bounds of a UI component (a view, a widget or a window).
 gfx::Rect GetUiComponentScreenBounds(views::View* view);

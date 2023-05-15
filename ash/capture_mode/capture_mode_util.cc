@@ -13,7 +13,6 @@
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -307,9 +306,6 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
 // Creates the banner view that will show on top of the notification image.
 std::unique_ptr<views::View> CreateBannerView() {
   std::unique_ptr<views::View> banner_view = std::make_unique<views::View>();
-  // Use the light mode as default as notification is still using light
-  // theme as the default theme.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
 
   auto* layout =
       banner_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -552,31 +548,11 @@ gfx::Rect CalculateHighlightLayerBounds(const gfx::PointF& center_point,
                    highlight_layer_radius * 2, highlight_layer_radius * 2);
 }
 
-int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode) {
-  int total = 0;
-  for (const auto& type : {RecordingType::kGif, RecordingType::kWebM}) {
-    switch (type) {
-      case RecordingType::kGif:
-        total +=
-            features::IsGifRecordingEnabled() && !is_in_projector_mode ? 1 : 0;
-        break;
-      case RecordingType::kWebM:
-        total += 1;
-        break;
-    }
-  }
-  return total;
-}
-
-void MaybeSetHighlightBorder(views::View* view,
-                             int corner_radius,
-                             views::HighlightBorder::Type type) {
-  if (!features::IsDarkLightModeEnabled()) {
-    return;
-  }
-
-  view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, type, /*use_light_color=*/false));
+void SetHighlightBorder(views::View* view,
+                        int corner_radius,
+                        views::HighlightBorder::Type type) {
+  view->SetBorder(
+      std::make_unique<views::HighlightBorder>(corner_radius, type));
 }
 
 }  // namespace ash::capture_mode_util

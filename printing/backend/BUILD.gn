@@ -63,6 +63,8 @@ component("backend") {
       "print_backend_win.cc",
       "printing_info_win.cc",
       "printing_info_win.h",
+      "spooler_win.cc",
+      "spooler_win.h",
       "win_helper.cc",
       "win_helper.h",
       "xps_utils_win.cc",

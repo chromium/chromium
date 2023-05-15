@@ -477,29 +477,10 @@ TEST_F(ContextProviderImplTest, CanCreateContextWithServiceDirectory) {
                GetInstanceDirectory(instance_name).AppendASCII("svc"));
 }
 
-TEST_F(ContextProviderImplTest, CanCreateContextWithoutServiceDirectory) {
-  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
-  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
-  ExpectChildInstance(binder_request, context_request);
-
-  fuchsia::web::ContextPtr context;
-  const std::string instance_name =
-      CreateAndWaitForInstance(context_provider(), {}, context);
-  ASSERT_FALSE(instance_name.empty());
-
-  // Requests for both interfaces should have been made.
-  ASSERT_TRUE(binder_request);
-  ASSERT_TRUE(context_request);
-
-  const auto& child = GetInstanceDecl(instance_name);
-  const auto& create_child_args = GetInstanceArgs(instance_name);
-
-  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
-                           "web_instance.cm"));
-  ASSERT_THAT(create_child_args,
-              Not(HasDynamicDirectoryOffer("svc", fuchsia::io::RW_STAR_DIR)));
-  ASSERT_FALSE(
-      base::PathExists(GetInstanceDirectory(instance_name).AppendASCII("svc")));
+TEST_F(ContextProviderImplTest, CreateContextWithoutServiceDirectoryFails) {
+  fuchsia::web::ContextPtr context_ptr;
+  context_provider().Create({}, context_ptr.NewRequest());
+  ASSERT_EQ(WaitForContextClosedStatus(context_ptr), ZX_ERR_INVALID_ARGS);
 }
 
 TEST_F(ContextProviderImplTest, CreateValidatesDataDirectory) {

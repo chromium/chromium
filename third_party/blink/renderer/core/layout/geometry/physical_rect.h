@@ -122,7 +122,6 @@ struct CORE_EXPORT PhysicalRect {
   bool InclusiveIntersect(const PhysicalRect&);
 
   void Expand(const NGPhysicalBoxStrut&);
-  void Expand(const LayoutRectOutsets&);
   void ExpandEdges(LayoutUnit top,
                    LayoutUnit right,
                    LayoutUnit bottom,
@@ -136,7 +135,6 @@ struct CORE_EXPORT PhysicalRect {
   void Inflate(LayoutUnit d) { ExpandEdges(d, d, d, d); }
 
   void Contract(const NGPhysicalBoxStrut&);
-  void Contract(const LayoutRectOutsets&);
   void ContractEdges(LayoutUnit top,
                      LayoutUnit right,
                      LayoutUnit bottom,

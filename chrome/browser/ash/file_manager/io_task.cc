@@ -33,12 +33,21 @@ ProgressStatus::ProgressStatus(ProgressStatus&& other) = default;
 ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 
 bool ProgressStatus::IsPaused() const {
-  return state == State::kPaused;
+  return state == State::kPaused && !policy_error.has_value();
 }
 
 bool ProgressStatus::IsCompleted() const {
   return state == State::kSuccess || state == State::kError ||
          state == State::kCancelled;
+}
+
+bool ProgressStatus::HasWarning() const {
+  // We should show a warning if the task is paused because of policy.
+  return state == State::kPaused && policy_error.has_value();
+}
+
+bool ProgressStatus::HasPolicyError() const {
+  return state == State::kError && policy_error.has_value();
 }
 
 std::string ProgressStatus::GetSourceName(Profile* profile) const {

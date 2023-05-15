@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -304,6 +305,29 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
   if (icon_view)
     bubble->SetHighlightedButton(icon_view);
 
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
+    content::WebContents* web_contents,
+    MandatoryReauthBubbleController* controller,
+    bool is_user_gesture) {
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kMandatoryReauth);
+  DCHECK(icon_view);
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kMandatoryReauth);
+
+  MandatoryReauthOptInBubbleView* bubble =
+      new MandatoryReauthOptInBubbleView(anchor_view, web_contents, controller);
+
+  DCHECK(bubble);
+  bubble->SetHighlightedButton(icon_view);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 

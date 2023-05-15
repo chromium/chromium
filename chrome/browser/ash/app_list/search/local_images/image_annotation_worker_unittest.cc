@@ -39,7 +39,8 @@ class ImageAnnotationWorkerTest : public testing::Test {
         /*current_version_number=*/2, /*annotation_worker=*/nullptr);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
   std::unique_ptr<AnnotationStorage> storage_;
   base::FilePath test_directory_;
@@ -65,6 +66,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   }
 
   annotation_worker_->Initialize(storage_.get());
+  task_environment_.FastForwardBy(base::Seconds(1));
   task_environment_.RunUntilIdle();
 
   ImageInfo jpg_image({"bar"}, jpg_path, image_time);

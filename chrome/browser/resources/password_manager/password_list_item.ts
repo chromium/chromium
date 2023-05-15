@@ -13,13 +13,14 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {Page, Router} from './router.js';
 
 export interface PasswordListItemElement {
   $: {
     displayedName: HTMLElement,
     numberOfAccounts: HTMLElement,
+    seePasswordDetails: HTMLElement,
   };
 }
 const PasswordListItemElementBase = I18nMixin(PolymerElement);
@@ -70,6 +71,10 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     this.addEventListener('click', this.onRowClick_);
   }
 
+  override focus() {
+    this.$.seePasswordDetails.focus();
+  }
+
   private async onRowClick_() {
     const ids = this.item.entries.map(entry => entry.id);
     PasswordManagerImpl.getInstance()
@@ -80,9 +85,14 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
             iconUrl: this.item.iconUrl,
             entries: entries,
           };
+          this.dispatchEvent(new CustomEvent(
+              'password-details-shown',
+              {bubbles: true, composed: true, detail: this}));
           Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
         })
         .catch(() => {});
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
   }
 
   private async onItemChanged_() {
@@ -98,7 +108,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private getTitle_() {
-    const term = this.searchTerm.trim();
+    const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
       return this.item.name;
     }

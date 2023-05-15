@@ -90,6 +90,12 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
     return type == kLayoutObjectTableCol || LayoutBox::IsOfType(type);
   }
 
+  // Table row doesn't paint background by itself.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 

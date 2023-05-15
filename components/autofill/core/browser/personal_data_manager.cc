@@ -42,9 +42,8 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
-#include "components/autofill/core/browser/manual_testing_profile_import.h"
+#include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
@@ -70,8 +69,10 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/version_info/version_info.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
@@ -153,6 +154,33 @@ static bool CompareVotes(const std::pair<std::string, int>& a,
                          const std::pair<std::string, int>& b) {
   return a.second < b.second;
 }
+
+// Orders all `profiles` by the specified `order` rule.
+void OrderProfiles(std::vector<AutofillProfile*>& profiles,
+                   PersonalDataManager::ProfileOrder order) {
+  switch (order) {
+    case PersonalDataManager::ProfileOrder::kNone:
+      break;
+    case PersonalDataManager::ProfileOrder::kHighestFrecencyDesc:
+      // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
+      base::ranges::sort(profiles, [comparison_time = AutofillClock::Now()](
+                                       AutofillProfile* a, AutofillProfile* b) {
+        return a->HasGreaterRankingThan(b, comparison_time);
+      });
+      break;
+    case PersonalDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
+      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
+        return a->modification_date() > b->modification_date();
+      });
+      break;
+    case PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
+      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
+        return a->use_date() > b->use_date();
+      });
+      break;
+  }
+}
+
 }  // namespace
 
 // Helper class to abstract the switching between account and profile storage
@@ -290,7 +318,6 @@ void PersonalDataManager::Init(
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcher* image_fetcher,
     bool is_off_the_record) {
-  CountryNames::SetLocaleString(app_locale_);
   database_helper_->Init(profile_database, account_database);
 
   SetPrefService(pref_service);
@@ -341,9 +368,13 @@ void PersonalDataManager::Init(
     return;
   }
 
-  database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
-      base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
-                          weak_factory_.GetWeakPtr()));
+  // No profile change callbacks are expected in the Incognito mode, this check ensures
+  // that the origin profile (which is actually used) change callback is not overridden.
+  if (!is_off_the_record) {
+    database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
+        base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
+                            weak_factory_.GetWeakPtr()));
+  }
 
   Refresh();
 
@@ -353,7 +384,7 @@ void PersonalDataManager::Init(
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
   // when the Chrome profile is changed (including incognito mode).
-  MaybeImportProfilesForManualTesting(weak_factory_.GetWeakPtr());
+  MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
 PersonalDataManager::~PersonalDataManager() {
@@ -577,15 +608,12 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
     observer.OnPersonalDataSyncStateChanged();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage)) {
-    // Use the ephemeral account storage when the user didn't enable the sync
-    // feature explicitly. `sync_service` is nullptr-checked because this
-    // method can also be used (apart from the Sync service observer's calls) in
-    // SetSyncService() where setting a nullptr is possible.
-    database_helper_->SetUseAccountStorageForServerData(
-        sync_service && !sync_service->IsSyncFeatureEnabled());
-  }
+  // Use the ephemeral account storage when the user didn't enable the sync
+  // feature explicitly. `sync_service` is nullptr-checked because this
+  // method can also be used (apart from the Sync service observer's calls) in
+  // SetSyncService() where setting a nullptr is possible.
+  database_helper_->SetUseAccountStorageForServerData(
+      sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
 void PersonalDataManager::OnSyncShutdown(syncer::SyncService* sync_service) {
@@ -638,10 +666,8 @@ AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
     return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   }
 
-  // Check if the feature is enabled and if Wallet data types are supported.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage) &&
-      sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
+  // Check if Wallet data types are supported.
+  if (sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
     return AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
   }
 
@@ -1197,24 +1223,28 @@ bool PersonalDataManager::IsDataLoaded() const {
   return is_data_loaded_;
 }
 
-std::vector<AutofillProfile*> PersonalDataManager::GetProfiles() const {
-  std::vector<AutofillProfile*> a =
-      GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable);
-  std::vector<AutofillProfile*> b =
-      GetProfilesFromSource(AutofillProfile::Source::kAccount);
+std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
+    ProfileOrder order) const {
+  std::vector<AutofillProfile*> a = GetProfilesFromSource(
+      AutofillProfile::Source::kLocalOrSyncable, ProfileOrder::kNone);
+  std::vector<AutofillProfile*> b = GetProfilesFromSource(
+      AutofillProfile::Source::kAccount, ProfileOrder::kNone);
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
+  OrderProfiles(a, order);
   return a;
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
-    AutofillProfile::Source profile_source) const {
+    AutofillProfile::Source profile_source,
+    ProfileOrder order) const {
   const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile_source);
   std::vector<AutofillProfile*> result;
   result.reserve(profiles.size());
   for (const auto& profile : profiles)
     result.push_back(profile.get());
+  OrderProfiles(result, order);
   return result;
 }
 
@@ -1373,32 +1403,14 @@ void PersonalDataManager::Refresh() {
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
     const {
-  if (!IsAutofillProfileEnabled())
-    return std::vector<AutofillProfile*>{};
-
-  // Suggest `kAccount` and `kLocalOrSyncable` profiles.
-  std::vector<AutofillProfile*> profiles = GetProfiles();
-
-  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
-  if (profiles.size() > 1) {
-    // Rank the suggestions by ranking score.
-    const base::Time comparison_time = AutofillClock::Now();
-    base::ranges::sort(profiles, [comparison_time](const AutofillProfile* a,
-                                                   const AutofillProfile* b) {
-      return a->HasGreaterRankingThan(b, comparison_time);
-    });
-  }
-  return profiles;
+  return IsAutofillProfileEnabled()
+             ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
+             : std::vector<AutofillProfile*>{};
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
     const {
-  std::vector<AutofillProfile*> profiles = GetProfiles();
-  base::ranges::sort(profiles,
-                     [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() > b->modification_date();
-                     });
-  return profiles;
+  return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
 std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
@@ -1572,9 +1584,7 @@ bool PersonalDataManager::ShouldSuggestServerCards() const {
     return false;
 
   // Check if the user is in sync transport mode for wallet data.
-  if (!sync_service_->IsSyncFeatureEnabled() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage)) {
+  if (!sync_service_->IsSyncFeatureEnabled()) {
     // For SyncTransport, only show server cards if the user has opted in to
     // seeing them in the dropdown.
     if (!prefs::IsUserOptedInWalletSyncTransport(
@@ -1856,9 +1866,10 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
   GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
 }
 
-bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) const {
+bool PersonalDataManager::IsSyncEnabledFor(
+    syncer::UserSelectableType data_type) const {
   return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
-         sync_service_->GetPreferredDataTypes().Has(model_type);
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(data_type);
 }
 
 bool PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
@@ -2193,7 +2204,15 @@ void PersonalDataManager::LogStoredDataMetrics() const {
   // Only log this info once per Chrome user profile load.
   has_logged_stored_data_metrics_ = true;
 
-  autofill_metrics::LogStoredProfileMetrics(GetProfiles());
+  const std::vector<AutofillProfile*> profiles = GetProfiles();
+  autofill_metrics::LogStoredProfileMetrics(profiles);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView) &&
+      base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
+    autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
+                                                     app_locale_);
+  }
+
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,
       GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
@@ -2210,18 +2229,14 @@ std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
 
   // Count up country codes from existing profiles.
   std::map<std::string, int> votes;
-  // TODO(estade): can we make this GetProfiles() instead? It seems to cause
-  // errors in tests on mac trybots. See http://crbug.com/57221
   const std::vector<AutofillProfile*>& profiles = GetProfiles();
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
   for (auto* profile : profiles) {
     std::string country_code = base::ToUpperASCII(
         base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
-
     if (base::Contains(country_codes, country_code)) {
-      // Verified profiles count 100x more than unverified ones.
-      votes[country_code] += profile->IsVerified() ? 100 : 1;
+      votes[country_code]++;
     }
   }
 
@@ -2303,12 +2318,6 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
       GetServerCreditCards().empty()) {
     return false;
   }
-
-  // If we have not returned yet, it should mean that the user is in Sync
-  // Transport mode for Wallet data (Sync Feature disabled but has server
-  // cards). This should only happen if that feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillEnableAccountWalletStorage));
 
   bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);

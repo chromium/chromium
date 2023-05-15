@@ -8,7 +8,6 @@
 #include <cmath>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"
@@ -61,7 +60,7 @@ void AudioPowerMonitor::Scan(const AudioBus& buffer, int num_frames) {
   }
 
   // Update accumulated results, with clamping for sanity.
-  average_power_ = base::clamp(sum_power / num_channels, 0.0f, 1.0f);
+  average_power_ = std::clamp(sum_power / num_channels, 0.0f, 1.0f);
 
   // Push results for reading by other threads, non-blocking.
   if (reading_lock_.Try()) {

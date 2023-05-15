@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -44,7 +45,7 @@ class ArcPictureInPictureWindowControllerImpl
   content::WebContents* GetChildWebContents() override;
 
  private:
-  arc::ArcPipBridge* const arc_pip_bridge_;
+  const raw_ptr<arc::ArcPipBridge, ExperimentalAsh> arc_pip_bridge_;
 };
 
 }  // namespace arc

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -98,8 +99,8 @@ class CandidateViewTest : public views::ViewsTestBase {
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
  private:
-  views::Widget* widget_ = nullptr;
-  views::View* container_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

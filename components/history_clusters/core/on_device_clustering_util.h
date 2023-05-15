@@ -28,9 +28,6 @@ void AppendClusterVisits(history::Cluster& cluster1,
 // Removes clusters without visits from |clusters|.
 void RemoveEmptyClusters(std::vector<history::Cluster>* clusters);
 
-// Returns whether |visit| should be shown in the UI.
-bool IsShownVisitCandidate(const history::ClusterVisit& visit);
-
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_ON_DEVICE_CLUSTERING_UTIL_H_

@@ -1534,6 +1534,7 @@ const boolAttributes = [
   'clickable',
   'containerLiveAtomic',
   'containerLiveBusy',
+  'hasHiddenOffscreenNodes',
   'nonAtomicTextFieldRoot',
   'liveAtomic',
   'modal',

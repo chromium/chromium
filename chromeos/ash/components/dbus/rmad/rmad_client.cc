@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
@@ -100,7 +101,7 @@ class RmadClientImpl : public RmadClient {
   // Sends out the requests to verify if RMAD files exist on device.
   void StartCheckForRmadFiles();
 
-  dbus::ObjectProxy* rmad_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> rmad_proxy_ = nullptr;
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;
 

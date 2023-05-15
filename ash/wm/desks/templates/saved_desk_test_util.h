@@ -12,8 +12,14 @@
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
+#include "components/desks_storage/core/desk_model.h"
 #include "ui/views/controls/scroll_view.h"
+
+namespace app_restore {
+struct AppRestoreData;
+}  // namespace app_restore
 
 namespace views {
 class Button;
@@ -53,7 +59,7 @@ class SavedDeskPresenterTestApi {
   void MaybeWaitForModel();
 
  private:
-  SavedDeskPresenter* const presenter_;
+  const raw_ptr<SavedDeskPresenter, ExperimentalAsh> presenter_;
 };
 
 // Wrapper for `SavedDeskLibraryView` that exposes internal state to test
@@ -74,7 +80,8 @@ class SavedDeskLibraryViewTestApi {
   void WaitForAnimationDone();
 
  private:
-  SavedDeskLibraryView* library_view_;
+  raw_ptr<SavedDeskLibraryView, DanglingUntriaged | ExperimentalAsh>
+      library_view_;
 };
 
 // Wrapper for `SavedDeskGridView` that exposes internal state to test
@@ -89,7 +96,7 @@ class SavedDeskGridViewTestApi {
   void WaitForItemMoveAnimationDone();
 
  private:
-  SavedDeskGridView* grid_view_;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> grid_view_;
 };
 
 // Wrapper for `SavedDeskItemView` that exposes internal state to test
@@ -107,7 +114,7 @@ class SavedDeskItemViewTestApi {
 
   const PillButton* launch_button() const { return item_view_->launch_button_; }
 
-  const base::GUID uuid() const { return item_view_->saved_desk_->uuid(); }
+  const base::Uuid uuid() const { return item_view_->saved_desk_->uuid(); }
 
   const views::View* hover_container() const {
     return item_view_->hover_container_;
@@ -118,7 +125,7 @@ class SavedDeskItemViewTestApi {
   std::vector<SavedDeskIconView*> GetIconViews() const;
 
  private:
-  const SavedDeskItemView* item_view_;
+  raw_ptr<const SavedDeskItemView, ExperimentalAsh> item_view_;
 };
 
 // Wrapper for `SavedDeskIconView` that exposes internal state to test
@@ -140,7 +147,7 @@ class SavedDeskIconViewTestApi {
   }
 
  private:
-  const SavedDeskIconView* saved_desk_icon_view_;
+  raw_ptr<const SavedDeskIconView, ExperimentalAsh> saved_desk_icon_view_;
 };
 
 // Test API for `SavedDeskController`.
@@ -156,7 +163,7 @@ class SavedDeskControllerTestApi {
   void SetAdminTemplate(std::unique_ptr<DeskTemplate> admin_template);
 
  private:
-  SavedDeskController* saved_desk_controller_;
+  raw_ptr<SavedDeskController, ExperimentalAsh> saved_desk_controller_;
 };
 
 // Returns all saved desk item views from the desk library on the given
@@ -168,7 +175,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     SavedDeskLibraryView* saved_desk_library_view);
 
-// Return the `grid_item_index`th `SavedDeskItemView` from the first
+// Returns the `grid_item_index`th `SavedDeskItemView` from the first
 // `OverviewGrid`'s `SavedDeskGridView` in `GetOverviewGridList()`.
 SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index);
 
@@ -185,6 +192,34 @@ views::Button* GetSavedDeskDialogAcceptButton();
 // update, which sends callbacks via posting tasks. Call `WaitForSavedDeskUI()`
 // if testing a piece of the UI which calls into the desk model.
 void WaitForSavedDeskUI();
+
+// Retrieves the AppRestoreData (if any) from a template. For both `app_id` and
+// `window_id`: if not set - the first occurrence is used. Returns nullptr if
+// matching data is not found.
+const app_restore::AppRestoreData* QueryRestoreData(
+    const DeskTemplate& saved_desk,
+    absl::optional<std::string> app_id,
+    absl::optional<int32_t> window_id = {});
+
+// Adds a captured desk entry to the desks model.
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       std::unique_ptr<DeskTemplate> saved_desk);
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateSource source,
+                       DeskTemplateType type,
+                       std::unique_ptr<app_restore::RestoreData> restore_data);
+
+// Adds an entry to the desks model directly without capturing a desk. Allows
+// for testing the names and times of the UI directly.
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateType type);
 
 }  // namespace ash
 

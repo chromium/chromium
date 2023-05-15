@@ -29,6 +29,8 @@ namespace web_app {
 using UrlResult = WebAppUrlLoader::Result;
 using UrlComparison = WebAppUrlLoader::UrlComparison;
 
+const char kGenericPageContent[] = "<html><body>Content</body></html>";
+
 // Returns a redirect response to |dest| URL.
 std::unique_ptr<net::test_server::HttpResponse> HandleServerRedirect(
     const std::string& dest,
@@ -116,6 +118,25 @@ class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
         base::BindRepeating(&HandleServerRedirect, dest)));
   }
 
+  // Set up the server to always report the given HTTP response `code` and
+  // optionally respond with the given `content`. Must be called before the
+  // server is started.
+  void SetupHttpResponseWithContent(const net::HttpStatusCode code,
+                                    absl::optional<std::string> content) {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [code, content](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(code);
+          if (content.has_value()) {
+            http_response->set_content_type("text/html");
+            http_response->set_content(content.value());
+          }
+          return http_response;
+        }));
+  }
+
  private:
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -173,6 +194,37 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, 302FoundRedirect) {
   EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
             LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef,
                            "/server-redirect-302?" + final_url.spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http404ErrorWithContent) {
+  SetupHttpResponseWithContent(net::HTTP_NOT_FOUND, kGenericPageContent);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
+            LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http407ErrorWithoutContent) {
+  SetupHttpResponseWithContent(net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
+                               /*content=*/absl::nullopt);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
+            LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http500ErrorWithContent) {
+  SetupHttpResponseWithContent(net::HTTP_INTERNAL_SERVER_ERROR,
+                               kGenericPageContent);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
+            LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http500ErrorWithoutContent) {
+  SetupHttpResponseWithContent(net::HTTP_INTERNAL_SERVER_ERROR,
+                               /*content=*/absl::nullopt);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
+            LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {

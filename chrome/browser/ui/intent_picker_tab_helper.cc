@@ -142,14 +142,12 @@ void IntentPickerTabHelper::ShowIconForApps(
               ->PreferredAppsList()
               .IsPreferredAppForSupportedLinks(current_app_id_);
 
-      if (apps::features::AppIconInIntentChipEnabled()) {
-        LoadSingleAppIcon(
-            profile, GetAppType(apps[0].type), current_app_id_,
-            GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-            base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
-                           weak_factory_.GetWeakPtr(), current_app_id_));
-        return;
-      }
+      LoadSingleAppIcon(
+          profile, GetAppType(apps[0].type), current_app_id_,
+          GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+          base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
+                         weak_factory_.GetWeakPtr(), current_app_id_));
+      return;
     } else if (apps.size() != 1) {
       current_app_icon_ = ui::ImageModel();
       current_app_id_ = std::string();
@@ -317,7 +315,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {
-      apps::MaybeShowIntentPicker(navigation_handle);
+      apps::MaybeShowIntentPicker(web_contents());
     } else {
       ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
     }

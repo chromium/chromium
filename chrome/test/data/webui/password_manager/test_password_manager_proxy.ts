@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener} from 'chrome://password-manager/password_manager.js';
+import {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './test_util.js';
@@ -52,6 +52,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'addPassword',
       'cancelExportPasswords',
       'changeSavedPassword',
+      'continueImport',
       'exportPasswords',
       'extendAuthValidity',
       'importPasswords',
@@ -68,8 +69,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'muteInsecureCredential',
       'optInForAccountStorage',
       'recordPasswordCheckInteraction',
+      'recordPasswordViewInteraction',
       'removeBlockedSite',
       'removeSavedPassword',
+      'resetImporter',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
@@ -182,6 +185,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
+  }
+
+  recordPasswordViewInteraction(interaction: PasswordViewPageInteractions) {
+    this.methodCalled('recordPasswordViewInteraction', interaction);
   }
 
   muteInsecureCredential(insecureCredential:
@@ -311,9 +318,26 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.listeners.accountStorageOptInStateListener = null;
   }
 
+  /**
+   * Sets the value to be returned by importPasswords.
+   */
+  setImportResults(results: chrome.passwordsPrivate.ImportResults) {
+    this.importResults_ = results;
+  }
+
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('importPasswords', toStore);
     return Promise.resolve(this.importResults_);
+  }
+
+  continueImport(selectedIds: number[]) {
+    this.methodCalled('continueImport', selectedIds);
+    return Promise.resolve(this.importResults_);
+  }
+
+  resetImporter(deleteFile: boolean) {
+    this.methodCalled('resetImporter', deleteFile);
+    return Promise.resolve();
   }
 
   isOptedInForAccountStorage() {

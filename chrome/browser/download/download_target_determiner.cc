@@ -68,7 +68,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #endif
@@ -285,8 +285,8 @@ DownloadTargetDeterminer::Result
       RecordDownloadPathGeneration(
           DownloadPathGenerationEvent::USE_DEFAULTL_DOWNLOAD_DIRECTORY, false);
     }
-    virtual_path_ = target_directory.Append(generated_filename);
     should_notify_extensions_ = true;
+    virtual_path_ = target_directory.Append(generated_filename);
     DCHECK(virtual_path_.IsAbsolute());
   } else {
     conflict_action_ = DownloadPathReservationTracker::OVERWRITE;
@@ -417,6 +417,12 @@ void DownloadTargetDeterminer::NotifyExtensionsDone(
   // Extensions should not call back here more than once.
   DCHECK_EQ(STATE_RESERVE_VIRTUAL_PATH, next_state_);
 
+  // Ignore path suggestion for file URLs.
+  if (download_->GetURL().SchemeIsFile()) {
+    DoLoop();
+    return;
+  }
+
   if (!suggested_path.empty()) {
     // If an extension overrides the filename, then the target directory will be
     // forced to download_prefs_->DownloadPath() since extensions cannot place
@@ -428,24 +434,14 @@ void DownloadTargetDeterminer::NotifyExtensionsDone(
     base::FilePath new_path(download_prefs_->DownloadPath().Append(
         suggested_path).NormalizePathSeparators());
 
-    // If this is a local file, don't allow extensions to override its
-    // name.
-    if (download_->GetURL().SchemeIsFile()) {
-      base::FilePath file_path;
-      net::FileURLToFilePath(download_->GetURL(), &file_path);
-      base::FilePath file_name = file_path.BaseName();
-      // Check if file name is a dir.
-      if (file_name.BaseName() != file_name.DirName())
-        new_path = new_path.DirName().Append(file_name);
-    } else {
-      // If the (Chrome) extension does not suggest an file extension, or if the
-      // suggested extension matches that of the |virtual_path_|, do not
-      // pass a mime type to GenerateSafeFileName so that it does not force the
-      // filename to have an extension or generate a different one. Otherwise,
-      // correct the file extension in case it is wrongly given.
-      GenerateSafeFileName(&new_path, virtual_path_.Extension(),
-                           download_->GetMimeType());
-    }
+    // If the (Chrome) extension does not suggest an file extension, or if the
+    // suggested extension matches that of the |virtual_path_|, do not
+    // pass a mime type to GenerateSafeFileName so that it does not force the
+    // filename to have an extension or generate a different one. Otherwise,
+    // correct the file extension in case it is wrongly given.
+    GenerateSafeFileName(&new_path, virtual_path_.Extension(),
+                         download_->GetMimeType());
+
     virtual_path_ = new_path;
     create_target_directory_ = true;
   }
@@ -1232,8 +1228,9 @@ bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager)
     return false;
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
   if (!files_controller)
     return false;
   const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(

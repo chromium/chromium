@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -32,8 +34,8 @@ using ::attribution_reporting::mojom::SourceType;
 using ::base::test::IsJson;
 
 TEST(AttributionReportTest, ReportURL) {
-  ReportBuilder builder(
-      AttributionInfoBuilder(SourceBuilder().BuildStored()).Build());
+  ReportBuilder builder(AttributionInfoBuilder().Build(),
+                        SourceBuilder().BuildStored());
 
   EXPECT_EQ(
       "https://report.test/.well-known/attribution-reporting/"
@@ -83,13 +85,13 @@ TEST(AttributionReportTest, ReportBody) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(base::Time::UnixEpoch())
-                                       .SetSourceEventId(100)
-                                       .SetSourceType(test_case.source_type)
-                                       .BuildStored())
-                .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                .Build())
+        ReportBuilder(AttributionInfoBuilder()
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetSourceEventId(100)
+                          .SetSourceType(test_case.source_type)
+                          .BuildStored())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
@@ -137,12 +139,12 @@ TEST(AttributionReportTest, ReportBody_MultiDestination) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(AttributionInfoBuilder(
-                          SourceBuilder(base::Time::UnixEpoch())
-                              .SetDestinationSites(test_case.destination_sites)
-                              .BuildStored())
+        ReportBuilder(AttributionInfoBuilder()
                           .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                          .Build())
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetDestinationSites(test_case.destination_sites)
+                          .BuildStored())
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
@@ -200,14 +202,14 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(base::Time::UnixEpoch())
-                                       .SetSourceEventId(100)
-                                       .SetDebugKey(test_case.source_debug_key)
-                                       .BuildStored())
-                .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                .SetDebugKey(test_case.trigger_debug_key)
-                .Build())
+        ReportBuilder(AttributionInfoBuilder()
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .SetDebugKey(test_case.trigger_debug_key)
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetSourceEventId(100)
+                          .SetDebugKey(test_case.source_debug_key)
+                          .BuildStored())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
@@ -224,10 +226,9 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
   })json");
 
   AttributionReport report =
-      ReportBuilder(AttributionInfoBuilder(
-                        SourceBuilder(base::Time::FromJavaTime(1234483200000))
-                            .BuildStored())
-                        .Build())
+      ReportBuilder(
+          AttributionInfoBuilder().Build(),
+          SourceBuilder(base::Time::FromJavaTime(1234483200000)).BuildStored())
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();
@@ -241,25 +242,56 @@ TEST(AttributionReportTest, PopulateAdditionalHeaders) {
       "foo",
   };
 
-  for (const auto& attestation_token : kTestCases) {
-    AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
-            .SetAttestationToken(attestation_token)
-            .BuildAggregatableAttribution();
+  for (const auto& verification_token : kTestCases) {
+    AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                             SourceBuilder().BuildStored())
+                                   .SetVerificationToken(verification_token)
+                                   .BuildAggregatableAttribution();
 
     net::HttpRequestHeaders headers;
     report.PopulateAdditionalHeaders(headers);
 
-    if (attestation_token.has_value()) {
+    if (verification_token.has_value()) {
       std::string header;
       headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
                         &header);
-      EXPECT_EQ(header, *attestation_token);
+      EXPECT_EQ(header, *verification_token);
     } else {
       EXPECT_TRUE(headers.IsEmpty());
     }
   }
+}
+
+TEST(AttributionReportTest, NullAggregatableReport) {
+  base::Value::Dict expected = base::test::ParseJsonDict(R"json({
+    "aggregation_coordinator_identifier": "aws-cloud",
+    "aggregation_service_payloads": [{
+      "key_id": "key",
+      "payload": "ABCD1234"
+    }],
+    "shared_info":"example_shared_info"
+  })json");
+
+  AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                           SourceBuilder().BuildStored())
+                                 .BuildNullAggregatable();
+  EXPECT_EQ(report.ReportURL(),
+            GURL("https://report.test/.well-known/attribution-reporting/"
+                 "report-aggregate-attribution"));
+
+  auto& data =
+      absl::get<AttributionReport::NullAggregatableData>(report.data());
+  data.common_data.assembled_report = AggregatableReport(
+      {AggregatableReport::AggregationServicePayload(
+          /*payload=*/kABCD1234AsBytes,
+          /*key_id=*/"key",
+          /*debug_cleartext_payload=*/absl::nullopt)},
+      "example_shared_info",
+      /*debug_key=*/absl::nullopt,
+      /*additional_fields=*/{},
+      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+
+  EXPECT_THAT(report.ReportBody(), IsJson(expected));
 }
 
 }  // namespace

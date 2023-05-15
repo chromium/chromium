@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog_proxy.h"
@@ -84,30 +85,15 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   It2MeHost(const It2MeHost&) = delete;
   It2MeHost& operator=(const It2MeHost&) = delete;
 
-  // Enable, disable, or query whether or not the confirm, continue, and
-  // disconnect dialogs are shown.
-  void set_enable_dialogs(bool enable);
-  bool enable_dialogs() const { return enable_dialogs_; }
+  // Session parameters provided by the remote command infrastructure when the
+  // session is started from the admin console for a managed Chrome OS device.
+  void set_chrome_os_enterprise_params(ChromeOsEnterpriseParams params);
 
-  // Enable, disable, or query whether or not connection notifications are
-  // shown when a remote user has connected.
-  void set_enable_notifications(bool enable);
-  bool enable_notifications() const { return enable_notifications_; }
-
-  // Enable or disable whether or not the session should be terminated if local
-  // input is detected.
-  void set_terminate_upon_input(bool terminate_upon_input);
-  bool terminate_upon_input() const { return terminate_upon_input_; }
-
-  // Enable, disable, or query whether or not the local user session is
-  // curtained when a remote user has connected.
-  void set_enable_curtaining(bool enable);
-  bool enable_curtaining() const { return enable_curtaining_; }
-
-  // Indicates whether the session was initiated through the remote command
-  // infrastructure for a managed device.
-  void set_is_enterprise_session(bool is_enterprise_session);
-  bool is_enterprise_session() const { return is_enterprise_session_; }
+  // Indicates whether this support session was initiated by the admin console
+  // for a managed Chrome OS device.
+  bool is_enterprise_session() const {
+    return chrome_os_enterprise_params_.has_value();
+  }
 
   // If set, only |authorized_helper| will be allowed to connect to this host.
   void set_authorized_helper(const std::string& authorized_helper);
@@ -146,6 +132,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
  protected:
   friend class base::RefCountedThreadSafe<It2MeHost>;
+  friend class It2MeNativeMessagingHostTest;
 
   ~It2MeHost() override;
 
@@ -228,9 +215,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Stores the current relay connections allowed policy value.
   bool relay_connections_allowed_ = false;
 
-  // Indicates whether the session was initiated via the RemoteCommand infra.
-  // This is by administrators to connect to managed enterprise devices.
-  bool is_enterprise_session_ = false;
+  // Set when the session was initiated for a managed Chrome OS device by an
+  // admin using the admin console.
+  absl::optional<ChromeOsEnterpriseParams> chrome_os_enterprise_params_;
 
   // Only the username stored in |authorized_helper_| will be allowed to connect
   // to this host instance, if set. Note: setting this value does not override
@@ -252,11 +239,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;
-
-  bool enable_dialogs_ = true;
-  bool enable_notifications_ = true;
-  bool terminate_upon_input_ = false;
-  bool enable_curtaining_ = false;
 };
 
 // Having a factory interface makes it possible for the test to provide a mock

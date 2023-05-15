@@ -217,9 +217,6 @@ class CC_EXPORT FrameSequenceTracker {
   // scheduled to report histogram.
   base::TimeTicks first_frame_timestamp_;
 
-  // Tracks the presentation timestamp of the previous frame.
-  base::TimeTicks last_frame_presentation_timestamp_;
-
   // Keeps track of whether the impl-frame being processed did not have any
   // damage from the compositor (i.e. 'impl damage').
   bool frame_had_no_compositor_damage_ = false;

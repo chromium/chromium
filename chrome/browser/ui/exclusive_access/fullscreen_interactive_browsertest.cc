@@ -96,16 +96,16 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
   // Make the top page fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(
-        ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();",
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
 
   // Make the child frame fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, child_frame);
-    EXPECT_TRUE(
-        ExecuteScript(child_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(child_frame, "document.body.webkitRequestFullscreen();",
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
 
@@ -115,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
   if (!content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     {
       FullscreenWebContentsObserver observer(web_contents, main_frame);
-      EXPECT_TRUE(
-          ExecuteScript(child_frame, "document.webkitExitFullscreen();"));
+      EXPECT_TRUE(ExecJs(child_frame, "document.webkitExitFullscreen();",
+                         content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
       observer.Wait();
     }
   }
@@ -136,23 +136,24 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
   // Make the top page fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(
-        ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();",
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
 
   // Make the child frame fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, child_frame);
-    EXPECT_TRUE(
-        ExecuteScript(child_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(child_frame, "document.body.webkitRequestFullscreen();",
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
 
   // Exit fullscreen on the child frame.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(ExecuteScript(child_frame, "document.webkitExitFullscreen();"));
+    EXPECT_TRUE(ExecJs(child_frame, "document.webkitExitFullscreen();",
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
 }

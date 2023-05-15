@@ -451,9 +451,7 @@ void SearchPrefetchRequest::MarkPrefetchAsComplete() {
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsClicked() {
-  if (current_status_ == SearchPrefetchStatus::kCanBeServed) {
-    SetSearchPrefetchStatus(SearchPrefetchStatus::kCanBeServedAndUserClicked);
-  } else if (current_status_ == SearchPrefetchStatus::kPrerendered) {
+  if (current_status_ == SearchPrefetchStatus::kPrerendered) {
     SetSearchPrefetchStatus(SearchPrefetchStatus::kPrerenderedAndClicked);
   }
 }

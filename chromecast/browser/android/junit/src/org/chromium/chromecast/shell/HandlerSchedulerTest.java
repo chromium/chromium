@@ -11,6 +11,7 @@ import android.os.Looper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -18,12 +19,11 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.chromecast.base.Box;
 import org.chromium.chromecast.base.Observable.Scheduler;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for HandlerScheduler.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class HandlerSchedulerTest {

@@ -143,7 +143,7 @@ void MetadataWriter::AddOutputConfigForBinaryClassifier(
     float threshold,
     const std::string& positive_label,
     const std::string& negative_label) {
-  proto::Predictor_BinaryClassifier* binary_classifier =
+  proto::Predictor::BinaryClassifier* binary_classifier =
       metadata_->mutable_output_config()
           ->mutable_predictor()
           ->mutable_binary_classifier();
@@ -158,7 +158,7 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
     size_t class_labels_length,
     int top_k_outputs,
     absl::optional<float> threshold) {
-  proto::Predictor_MultiClassClassifier* multi_class_classifier =
+  proto::Predictor::MultiClassClassifier* multi_class_classifier =
       metadata_->mutable_output_config()
           ->mutable_predictor()
           ->mutable_multi_class_classifier();
@@ -175,7 +175,7 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
 void MetadataWriter::AddOutputConfigForBinnedClassifier(
     const std::vector<std::pair<float, std::string>>& bins,
     std::string underflow_label) {
-  proto::Predictor_BinnedClassifier* binned_classifier =
+  proto::Predictor::BinnedClassifier* binned_classifier =
       metadata_->mutable_output_config()
           ->mutable_predictor()
           ->mutable_binned_classifier();
@@ -187,6 +187,16 @@ void MetadataWriter::AddOutputConfigForBinnedClassifier(
     current_bin->set_min_range(bin.first);
     current_bin->set_label(bin.second);
   }
+}
+
+void MetadataWriter::AddOutputConfigForGenericPredictor(
+    const std::vector<std::string>& labels) {
+  proto::Predictor::GenericPredictor* generic_predictor =
+      metadata_->mutable_output_config()
+          ->mutable_predictor()
+          ->mutable_generic_predictor();
+  generic_predictor->mutable_output_labels()->Assign(labels.begin(),
+                                                     labels.end());
 }
 
 void MetadataWriter::AddPredictedResultTTLInOutputConfig(

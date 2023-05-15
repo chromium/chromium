@@ -10,20 +10,27 @@ video.addEventListener('loadedmetadata', function() {
 });
 
 function enterPictureInPicture() {
-  video.requestPictureInPicture()
-      .catch(error => { window.domAutomationController.send(false); });
+  return Promise.all([
+    video.requestPictureInPicture(),
 
-  video.addEventListener('enterpictureinpicture', function(pipWindow) {
-    window.domAutomationController.send(
-        pipWindow.width != 0 && pipWindow.height != 0);
-  }, { once: true });
+    new Promise(resolve => {
+      video.addEventListener('enterpictureinpicture', function(pipWindow) {
+        resolve(pipWindow.width != 0 && pipWindow.height != 0);
+      }, { once: true });
+    }),
+  ])
+  .then(([ignored, result]) => result);
 }
 
 function exitPictureInPicture() {
-  document.exitPictureInPicture()
-      .catch(error => { window.domAutomationController.send(false); });
+  return Promise.all([
+    document.exitPictureInPicture(),
 
-  video.addEventListener('leavepictureinpicture', function() {
-    window.domAutomationController.send(true);
-  }, { once: true });
+    new Promise(resolve => {
+      video.addEventListener('leavepictureinpicture', function() {
+        resolve(true);
+      }, { once: true });
+    }),
+  ])
+  .then(([ignored, result]) => result);
 }

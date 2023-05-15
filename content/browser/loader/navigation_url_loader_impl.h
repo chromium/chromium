@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_IMPL_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_IMPL_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/load_timing_info.h"
 #include "net/url_request/url_request.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -146,7 +148,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // to initially elect to handle a request, and later decide to fallback to
   // the default behavior. This is needed for service worker network fallback
   // and signed exchange (SXG) fallback redirect.
-  void FallbackToNonInterceptedRequest(bool reset_subresource_loader_params);
+  void FallbackToNonInterceptedRequest(
+      bool reset_subresource_loader_params,
+      const net::LoadTimingInfo& timing_info = net::LoadTimingInfo());
 
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest();
@@ -340,6 +344,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // UKM source id used for recording events associated with navigation loading.
   const ukm::SourceId ukm_source_id_;
+
+  // If this navigation was intercepted by a worker but the worker didn't handle
+  // it, we still expose the worker timing as part of the response.
+  base::TimeTicks intercepting_worker_start_time_;
+  base::TimeTicks intercepting_worker_ready_time_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

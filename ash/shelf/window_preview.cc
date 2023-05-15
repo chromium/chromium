@@ -38,8 +38,7 @@ constexpr int kPreviewBorderRadius = 4;
 
 WindowPreview::WindowPreview(aura::Window* window, Delegate* delegate)
     : delegate_(delegate) {
-  preview_view_ =
-      new WindowPreviewView(window, /*trilinear_filtering_on_init=*/false);
+  preview_view_ = new WindowPreviewView(window);
   preview_container_view_ = new views::View();
   preview_container_view_->SetBackground(views::CreateRoundedRectBackground(
       kPreviewContainerBgColor, kPreviewBorderRadius));
@@ -48,10 +47,10 @@ WindowPreview::WindowPreview(aura::Window* window, Delegate* delegate)
       &WindowPreview::CloseButtonPressed, base::Unretained(this)));
   close_button_->SetFocusBehavior(FocusBehavior::NEVER);
 
-  AddChildView(preview_container_view_);
-  AddChildView(preview_view_);
-  AddChildView(title_);
-  AddChildView(close_button_);
+  AddChildView(preview_container_view_.get());
+  AddChildView(preview_view_.get());
+  AddChildView(title_.get());
+  AddChildView(close_button_.get());
 }
 
 WindowPreview::~WindowPreview() = default;

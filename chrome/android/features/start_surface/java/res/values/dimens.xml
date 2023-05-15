@@ -9,4 +9,10 @@ found in the LICENSE file.
     <dimen name="mv_tiles_container_top_margin">17dp</dimen>
     <dimen name="single_tab_view_top_margin_for_feed_improvement">32dp</dimen>
     <dimen name="tab_switcher_title_top_margin">16dp</dimen>
+
+    <!-- Single Tab card on tablets -->
+    <dimen name="single_tab_card_lateral_margin_landscape_tablet">62dp</dimen>
+    <dimen name="single_tab_card_lateral_margin_portrait_tablet">14dp</dimen>
+    <dimen name="single_tab_card_lateral_margin">16dp</dimen>
+    <dimen name="single_tab_card_start_padding">2dp</dimen>
 </resources>

@@ -56,9 +56,10 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   FeedbackService(const FeedbackService&) = delete;
   FeedbackService& operator=(const FeedbackService&) = delete;
 
-  virtual void SendFeedback(const FeedbackParams& params,
-                            scoped_refptr<feedback::FeedbackData> feedback_data,
-                            SendFeedbackCallback callback);
+  virtual void RedactThenSendFeedback(
+      const FeedbackParams& params,
+      scoped_refptr<feedback::FeedbackData> feedback_data,
+      SendFeedbackCallback callback);
 
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() { return delegate_; }
 
@@ -67,6 +68,10 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
 
  private:
   friend class base::RefCountedThreadSafe<FeedbackService>;
+
+  void SendFeedback(const FeedbackParams& params,
+                    scoped_refptr<feedback::FeedbackData> feedback_data,
+                    SendFeedbackCallback callback);
 
   void FetchAttachedFileAndScreenshot(
       scoped_refptr<feedback::FeedbackData> feedback_data,

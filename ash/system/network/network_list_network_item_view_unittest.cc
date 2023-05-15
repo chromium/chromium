@@ -7,17 +7,22 @@
 #include <memory>
 
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/network/fake_network_detailed_network_view.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,9 +64,17 @@ int kSignalStrength = 50;
 
 }  // namespace
 
-class NetworkListNetworkItemViewTest : public AshTestBase {
+class NetworkListNetworkItemViewTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    if (IsJellyrollEnabled()) {
+      feature_list_.InitAndEnableFeature(chromeos::features::kJellyroll);
+    } else {
+      feature_list_.InitAndDisableFeature(chromeos::features::kJellyroll);
+    }
+
     AshTestBase::SetUp();
 
     SetUpDefaultNetworkDevices();
@@ -90,6 +103,8 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
 
     AshTestBase::TearDown();
   }
+
+  bool IsJellyrollEnabled() const { return GetParam(); }
 
   std::vector<ConnectionStateType> GetConnectionStateTypes() {
     return {ConnectionStateType::kConnected, ConnectionStateType::kConnecting,
@@ -142,6 +157,10 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
     return network_list_network_item_view_;
   }
 
+  const ui::ColorProvider* GetColorProvider() {
+    return widget_->GetColorProvider();
+  }
+
  protected:
   void SetUpDefaultNetworkDevices() {
     network_state_helper()->ClearDevices();
@@ -157,14 +176,20 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
     return &network_config_helper_.network_state_helper();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeNetworkDetailedNetworkView>
       fake_network_detailed_network_view_;
   CrosNetworkConfigTestHelper network_config_helper_;
-  NetworkListNetworkItemView* network_list_network_item_view_;
+  raw_ptr<NetworkListNetworkItemView, ExperimentalAsh>
+      network_list_network_item_view_;
 };
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {
+INSTANTIATE_TEST_SUITE_P(Jellyroll,
+                         NetworkListNetworkItemViewTest,
+                         testing::Bool());
+
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectLabel) {
   ASSERT_TRUE(network_list_network_item_view()->text_label());
 
   EXPECT_EQ(base::UTF8ToUTF16(kWiFiName),
@@ -192,7 +217,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {
       network_list_network_item_view()->text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectNonCellularSublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectNonCellularSublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -211,7 +236,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectNonCellularSublabel) {
       network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
   // Label for pSIM networks that are connected but not yet activated.
   NetworkStatePropertiesPtr cellular_network =
@@ -281,7 +306,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
             network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectPortalSublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -295,7 +320,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSublabel) {
       network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectProxyAuthSublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectProxyAuthSublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -309,7 +334,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectProxyAuthSublabel) {
       network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSuspectedSublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectPortalSuspectedSublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -323,7 +348,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSuspectedSublabel) {
             network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasCorrectNoConnectivitySublabel) {
+TEST_P(NetworkListNetworkItemViewTest, HasCorrectNoConnectivitySublabel) {
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -337,13 +362,13 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectNoConnectivitySublabel) {
             network_list_network_item_view()->sub_text_label()->GetText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, NotifiesListenerWhenClicked) {
+TEST_P(NetworkListNetworkItemViewTest, NotifiesListenerWhenClicked) {
   EXPECT_FALSE(LastClickedNetworkListItem());
   LeftClickOn(network_list_network_item_view());
   EXPECT_EQ(LastClickedNetworkListItem(), network_list_network_item_view());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
+TEST_P(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
   EXPECT_FALSE(network_list_network_item_view()->right_view());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -375,7 +400,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
   ASSERT_FALSE(network_list_network_item_view()->right_view());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasPoweredIcon) {
+TEST_P(NetworkListNetworkItemViewTest, HasPoweredIcon) {
   EXPECT_FALSE(network_list_network_item_view()->right_view());
   int battery_percentage = 50;
 
@@ -397,7 +422,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasPoweredIcon) {
                 ->GetTooltipText());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
+TEST_P(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       kWiFiName, NetworkType::kWiFi, ConnectionStateType::kConnected);
   wifi_network->connection_state = ConnectionStateType::kConnected;
@@ -457,7 +482,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
             network_list_network_item_view()->GetAccessibleName());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForEthernet) {
+TEST_P(NetworkListNetworkItemViewTest, HasExpectedDescriptionForEthernet) {
   NetworkStatePropertiesPtr ethernet_network =
       CreateStandaloneNetworkProperties(kEthernetName, NetworkType::kEthernet,
                                         ConnectionStateType::kConnected);
@@ -514,7 +539,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForEthernet) {
   }
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForTether) {
+TEST_P(NetworkListNetworkItemViewTest, HasExpectedDescriptionForTether) {
   int battery_percentage = 50;
   std::u16string connection_status;
   NetworkStatePropertiesPtr tether_network = CreateStandaloneNetworkProperties(
@@ -559,7 +584,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForTether) {
   }
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
+TEST_P(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
   NetworkStatePropertiesPtr cellular_network =
       CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
                                         ConnectionStateType::kConnected);
@@ -671,7 +696,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
   }
 }
 
-TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
+TEST_P(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
   SecurityType security_types[2] = {SecurityType::kNone, SecurityType::kWepPsk};
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -770,7 +795,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
   }
 }
 
-TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
+TEST_P(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       kWiFiName, NetworkType::kWiFi, ConnectionStateType::kConnecting);
 
@@ -800,7 +825,9 @@ TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
                    .isNull());
 }
 
-TEST_F(NetworkListNetworkItemViewTest, WiFiIcon) {
+TEST_P(NetworkListNetworkItemViewTest, WiFiIcon) {
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
+
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       kWiFiName, NetworkType::kWiFi, ConnectionStateType::kConnecting);
 
@@ -812,12 +839,24 @@ TEST_F(NetworkListNetworkItemViewTest, WiFiIcon) {
 
   gfx::Image default_image =
       gfx::Image(network_icon::GetImageForNonVirtualNetwork(
-          wifi_network.get(), network_icon::ICON_TYPE_LIST, false));
+          GetColorProvider(), wifi_network.get(), network_icon::ICON_TYPE_LIST,
+          false));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
+
+  // Test that theme changes cause network icon change.
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
+
+  image = static_cast<views::ImageView*>(
+              network_list_network_item_view()->left_view())
+              ->GetImage();
+
+  EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
 }
 
-TEST_F(NetworkListNetworkItemViewTest, CellularIcon) {
+TEST_P(NetworkListNetworkItemViewTest, CellularIcon) {
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
+
   NetworkStatePropertiesPtr cellular_network =
       CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
                                         ConnectionStateType::kConnected);
@@ -830,9 +869,19 @@ TEST_F(NetworkListNetworkItemViewTest, CellularIcon) {
 
   gfx::Image default_image =
       gfx::Image(network_icon::GetImageForNonVirtualNetwork(
-          cellular_network.get(), network_icon::ICON_TYPE_LIST, false));
+          GetColorProvider(), cellular_network.get(),
+          network_icon::ICON_TYPE_LIST, false));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
+
+  // Test that theme changes cause network icon change.
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
+
+  image = static_cast<views::ImageView*>(
+              network_list_network_item_view()->left_view())
+              ->GetImage();
+
+  EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
 }
 
 }  // namespace ash

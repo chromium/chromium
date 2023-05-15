@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 #define ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -75,10 +76,12 @@ class TopIconAnimationView : public views::View,
   void OnImplicitAnimationsCompleted() override;
   bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
-  const AppsGridView* grid_;  // Owned by views hierarchy.
+  raw_ptr<const AppsGridView, ExperimentalAsh>
+      grid_;  // Owned by views hierarchy.
   gfx::Size icon_size_;
-  views::ImageView* icon_;  // Owned by views hierarchy.
-  views::Label* title_;     // Owned by views hierarchy.
+  raw_ptr<views::ImageView, ExperimentalAsh>
+      icon_;                                      // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> title_;  // Owned by views hierarchy.
   // Rect of the scaled down top item icon inside folder icon's ink bubble.
   gfx::Rect scaled_rect_;
   // true: opening folder; false: closing folder.

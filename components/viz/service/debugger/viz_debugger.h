@@ -398,6 +398,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     SkBitmap bitmap;
   };
 
+  struct DrawOption {
+    uint8_t color_r;
+    uint8_t color_g;
+    uint8_t color_b;
+    uint8_t color_a;
+  };
+
   inline void CompleteFrame(uint64_t counter,
                             const gfx::Size& window_pix,
                             base::TimeTicks time_ticks) {}

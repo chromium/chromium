@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -30,7 +31,8 @@ class MultiWordSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) override;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
                                      gfx::Range selection_range) override;
@@ -65,6 +67,7 @@ class MultiWordSuggester : public Suggester {
       size_t initial_confirmed_length;
       base::TimeTicks time_first_shown;
       bool highlighted = false;
+      size_t original_surrounding_text_length;
     };
 
     struct SurroundingText {
@@ -116,7 +119,7 @@ class MultiWordSuggester : public Suggester {
 
    private:
     // Not owned by this class
-    MultiWordSuggester* suggester_;
+    raw_ptr<MultiWordSuggester, ExperimentalAsh> suggester_;
 
     // The current state of the suggester (eg is a suggestion shown or not).
     State state_ = State::kNoSuggestionShown;
@@ -146,7 +149,7 @@ class MultiWordSuggester : public Suggester {
   absl::optional<int> focused_context_id_;
 
   // Not owned by this class
-  SuggestionHandlerInterface* suggestion_handler_;
+  raw_ptr<SuggestionHandlerInterface, ExperimentalAsh> suggestion_handler_;
 
   // Current suggestion state
   SuggestionState state_;
@@ -154,7 +157,7 @@ class MultiWordSuggester : public Suggester {
   ui::ime::AssistiveWindowButton suggestion_button_;
 
   // The current user's Chrome user profile.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace input_method

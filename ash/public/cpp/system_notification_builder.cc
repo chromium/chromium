@@ -115,6 +115,11 @@ SystemNotificationBuilder& SystemNotificationBuilder::SetOptionalFields(
   return *this;
 }
 
+const message_center::RichNotificationData&
+SystemNotificationBuilder::GetOptionalFields() {
+  return optional_fields_;
+}
+
 SystemNotificationBuilder& SystemNotificationBuilder::SetWarningLevel(
     message_center::SystemNotificationWarningLevel warning_level) {
   warning_level_ = warning_level;

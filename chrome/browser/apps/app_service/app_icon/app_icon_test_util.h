@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -59,7 +60,7 @@ class FakeIconLoader : public apps::IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
 
-  apps::AppServiceProxy* proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
 };
 
 class FakePublisherForIconTest : public apps::AppPublisher {

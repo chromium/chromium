@@ -33,34 +33,12 @@ def main():
   parser.add_argument("--depfile-target",
                       help="Target to key depfile around",
                       required=True)
-  parser.add_argument("--stdlibs",
-                      help="Expected list of standard library libraries")
-  parser.add_argument("--ignore-stdlibs",
-                      help="List of sysroot libraries to ignore")
   parser.add_argument("--extra-libs",
                       help="List of extra non-libstd sysroot libraries")
   parser.add_argument("--rustc-revision",
                       help="Not used, just passed from GN to add a dependency"
                       " on the rustc version.")
   args = parser.parse_args()
-
-  # Expected rlibs by concise name (the crate name, plus a disambiguating suffix
-  # e.g. "-2" when necessary).
-  if args.stdlibs:
-    rlibs_expected = set()
-    for lib in args.stdlibs.split(','):
-      # The version is only included if there's more than one of `name`, and
-      # even then is only included for the 2nd onward.
-      (name, version) = EXPECTED_STDLIB_INPUT_REGEX.match(lib).group(1, 2)
-      if version is None:
-        rlibs_expected.add(name)
-      else:
-        rlibs_expected.add(f"{name}-{version}")
-    ignore_rlibs = set()
-    if args.ignore_stdlibs is not None:
-      ignore_rlibs = set(args.ignore_stdlibs.split(','))
-  else:
-    rlibs_expected = None
 
   extra_libs = set()
   if args.extra_libs:
@@ -138,13 +116,6 @@ def main():
 
       output_filename = f"lib{concise_name}.rlib"
 
-      if rlibs_expected is not None:
-        if concise_name in ignore_rlibs:
-          continue
-        if concise_name not in rlibs_expected:
-          raise Exception("Found stdlib rlib that wasn't expected: %s" % f)
-        rlibs_expected.remove(concise_name)
-
       infile = os.path.join(rustlib_dir, f)
       outfile = os.path.join(args.output, output_filename)
       copy_file(infile, outfile)
@@ -155,9 +126,6 @@ def main():
       copy_file(infile, outfile)
 
     depfile.write("\n")
-    if rlibs_expected:
-      raise Exception("We failed to find all expected stdlib rlibs: %s" %
-                      ','.join(rlibs_expected))
 
 
 if __name__ == '__main__':

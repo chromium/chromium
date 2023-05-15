@@ -25,8 +25,9 @@ void* DefaultWinHeapCallocImpl(const AllocatorDispatch* self,
                                void* context) {
   // Overflow check.
   const size_t size = n * elem_size;
-  if (elem_size != 0 && size / elem_size != n)
+  if (elem_size != 0 && size / elem_size != n) {
     return nullptr;
+  }
 
   void* result = DefaultWinHeapMallocImpl(self, size, context);
   if (result) {

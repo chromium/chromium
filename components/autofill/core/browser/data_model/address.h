@@ -38,10 +38,7 @@ class Address : public FormGroup {
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting
   // them from their assigned children.
-  bool FinalizeAfterImport(bool profile_is_verified);
-
-  // Convenience wrapper to invoke finalization for unverified profiles.
-  bool FinalizeAfterImport() { return FinalizeAfterImport(false); }
+  bool FinalizeAfterImport();
 
   // For structured addresses, merges |newer| into |this|. For some values
   // within the structured address tree the more recently used profile gets

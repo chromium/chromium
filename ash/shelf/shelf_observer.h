@@ -22,8 +22,8 @@ class ASH_EXPORT ShelfObserver {
   virtual void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
                                        AnimationChangeType change_type) {}
 
-  // Invoked when Shelf's visibility state will be changed to |new_state|.
-  virtual void WillChangeVisibilityState(ShelfVisibilityState new_state) {}
+  // Invoked when Shelf's visibility state changes to |new_state|.
+  virtual void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) {}
 
   // Invoked when Shelf's auto hide state is changed to |new_state|.
   virtual void OnAutoHideStateChanged(ShelfAutoHideState new_state) {}

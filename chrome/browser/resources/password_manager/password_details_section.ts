@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_section.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {Page, Route, RouteObserverMixin, Router} from './router.js';
 
 export interface PasswordDetailsSectionElement {
@@ -58,6 +58,8 @@ export class PasswordDetailsSectionElement extends
         composed: true,
       }));
       this.navigateBack_();
+      PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+          PasswordViewPageInteractions.TIMED_OUT_IN_VIEW_PAGE);
     };
     PasswordManagerImpl.getInstance().addPasswordManagerAuthTimeoutListener(
         this.passwordManagerAuthTimeoutListener_);
@@ -84,8 +86,11 @@ export class PasswordDetailsSectionElement extends
     if (group && group.name) {
       this.selectedGroup_ = group;
       this.startListeningForUpdates_();
+      this.$.backButton.focus();
     } else {
       // Navigation happened directly. Find group with matching name.
+      PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+          PasswordViewPageInteractions.CREDENTIAL_REQUESTED_BY_URL);
       this.assignMatchingGroup(route.details as string);
     }
   }
@@ -111,11 +116,15 @@ export class PasswordDetailsSectionElement extends
     }
     if (!selectedGroup) {
       this.navigateBack_();
+      PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+          PasswordViewPageInteractions.CREDENTIAL_NOT_FOUND);
       return;
     }
     assert(selectedGroup);
     this.updateShownCredentials(selectedGroup).catch(this.navigateBack_);
     this.startListeningForUpdates_();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_FOUND);
   }
 
   private startListeningForUpdates_() {

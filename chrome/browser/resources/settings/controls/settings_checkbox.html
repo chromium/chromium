@@ -1,13 +1,20 @@
-<style include="settings-shared">
+<style
+<if expr="not chromeos_ash">
+  include="cr-shared-style"
+</if>
+<if expr="chromeos_ash">
+  include="cr-shared-style cros-color-overrides"
+</if>
+>
   #outerRow {
     align-items: center;
     display: flex;
-    min-height: var(--settings-row-two-line-min-height);
+    min-height: var(--cr-section-two-line-min-height);
     width: 100%;
   }
 
   #outerRow[noSubLabel] {
-    min-height: var(--settings-row-min-height);
+    min-height: var(--cr-section-min-height);
   }
 
   cr-checkbox {
@@ -18,7 +25,12 @@
   }
 
   cr-policy-pref-indicator {
-    margin-inline-start: var(--settings-controlled-by-spacing);
+    margin-inline-start: var(--cr-controlled-by-spacing);
+  }
+
+  /* Style links that can appear within #subLabel. */
+  a {
+    color: var(--cr-link-color);
   }
 </style>
 <div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
@@ -26,8 +38,8 @@
       on-change="notifyChangedByUserInteraction"
       disabled="[[controlDisabled(disabled, pref.*)]]"
       aria-label="[[label]]">
-    <div id="label" class="label">[[label]] <slot></slot></div>
-    <div id="subLabel" class="secondary label">
+    <div id="label">[[label]] <slot></slot></div>
+    <div id="subLabel" class="cr-secondary-text">
       <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"></div>
       [[subLabel]]
     </div>

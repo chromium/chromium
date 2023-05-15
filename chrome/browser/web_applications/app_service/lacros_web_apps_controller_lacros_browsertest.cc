@@ -115,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
   // If ash is does not contain the relevant test controller functionality,
   // then there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kLaunchAppFromAppListMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";

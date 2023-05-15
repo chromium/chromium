@@ -35,6 +35,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
@@ -80,6 +81,7 @@
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -237,6 +239,12 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
     // changes.
     update_policy_ = UpdatePolicy::kOnVersionChange;
   }
+
+  // Ensure that system web apps have chrome://theme and
+  // chrome-untrusted://theme available.
+  content::URLDataSource::Add(profile, GetThemeSource(profile));
+  content::URLDataSource::Add(profile,
+                              GetThemeSource(profile, /*untrusted=*/true));
 }
 
 SystemWebAppManager::~SystemWebAppManager() {

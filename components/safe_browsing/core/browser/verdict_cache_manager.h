@@ -77,19 +77,22 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   size_t GetStoredPhishGuardVerdictCount(
       LoginReputationClientRequest::TriggerType trigger_type);
 
-  // Stores |verdict| in |content_settings_| based on its |url|, |verdict| and
+  // Stores |verdict| in |content_settings_| based on its |verdict| and
   // |receive_time|.
-  void CacheRealTimeUrlVerdict(const GURL& url,
-                               const RTLookupResponse& verdict,
+  void CacheRealTimeUrlVerdict(const RTLookupResponse& verdict,
                                const base::Time& receive_time);
 
   // Looks up |content_settings_| to find the cached verdict response. If
   // verdict is not available or is expired, return VERDICT_TYPE_UNSPECIFIED.
   // Otherwise, the most matching theat info will be copied to out_threat_info.
-  // Can be called on any thread.
+  // |out_is_verdict_from_past_initialization| represents whether the verdict
+  // was set before the current VerdictCacheManager instance was initialized,
+  // and is used only for logging. The parameter is only set if the unexpired
+  // cache entry was found. Can be called on any thread.
   RTLookupResponse::ThreatInfo::VerdictType GetCachedRealTimeUrlVerdict(
       const GURL& url,
-      RTLookupResponse::ThreatInfo* out_threat_info);
+      RTLookupResponse::ThreatInfo* out_threat_info,
+      absl::optional<bool>* out_is_verdict_from_past_initialization);
 
   safe_browsing::ClientSideDetectionType
   GetCachedRealTimeUrlClientSideDetectionType(const GURL& url);
@@ -232,6 +235,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       std::make_unique<HashRealTimeCache>();
 
   bool is_shut_down_ = false;
+
+  // Represents the time the VerdictCacheManager object was constructed.
+  base::Time time_initialized_;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 

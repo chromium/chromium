@@ -58,13 +58,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         notify: true,
       },
 
-      isTangibleSyncEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isTangibleSyncEnabled');
-        },
-      },
-
       /**
        * The disclaimer for managed devices.
        */
@@ -93,7 +86,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   private managedDeviceDisclaimer_: boolean;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
-  private isTangibleSyncEnabled_: boolean;
 
   // <if expr="chromeos_lacros">
   private hasAvailableAccounts_: boolean;
@@ -150,7 +142,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   }
 
   private handleLoadSigninFinished_(_success: boolean) {
-    // TODO(crbug.com/1126913): If failed, show some error message to inform the
+    // TODO(crbug.com/1444046): If failed, show some error message to inform the
     // user.
     this.profileCreationInProgress = false;
   }
@@ -158,10 +150,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   private getBackButtonAriaLabel_(): string {
     return this.i18n(
         'backButtonAriaLabel', this.i18n('profileTypeChoiceTitle'));
-  }
-
-  private getTangibleSyncStyleClass_() {
-    return this.isTangibleSyncEnabled_ ? 'tangible-sync-style' : '';
   }
 
   // <if expr="chromeos_lacros">

@@ -70,6 +70,20 @@ interface VideoConferenceManager {
       => (bool success);
 };
 
+// Note to keep this in sync with VideoConferenceAppType in enums.xml.
+[Stable, Extensible]
+enum VideoConferenceAppType {
+  // App is traced by Browser, but the type is unknown.
+  [Default] kBrowserUnknown,
+  kChromeTab,
+  kChromeExtension,
+  kChromeApp,
+  kWebApp,
+  kArcApp,
+  // App is traced by AppService, but the type is unknown.
+  kAppServiceUnknown,
+};
+
 [Stable]
 struct VideoConferenceMediaAppInfo {
   // The id represents a unique identifier for the app. It's
@@ -97,6 +111,10 @@ struct VideoConferenceMediaAppInfo {
   // Url of the app, if media app is a webapp. Used to extract
   // domain name and other info for UI to display.
   url.mojom.Url? url@6;
+
+  // App type.
+  [MinVersion=1]
+  VideoConferenceAppType app_type@7;
 };
 
 // Client interface implemented by browsers (ash or lacros).

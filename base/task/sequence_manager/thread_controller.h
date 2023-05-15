@@ -145,6 +145,10 @@ class BASE_EXPORT ThreadController {
   virtual void DetachFromMessagePump() = 0;
 #endif
 
+  // Initializes the state of all the thread controller features. Must be
+  // invoked after FeatureList initialization.
+  static void InitializeFeatures();
+
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
 
@@ -362,7 +366,7 @@ class BASE_EXPORT ThreadController {
       absl::optional<perfetto::Track> perfetto_track_;
 
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
-      bool was_tracing_enabled_;
+      bool was_tracing_enabled_ = false;
 #endif
       const raw_ref<const RunLevelTracker> outer_;
     } time_keeper_{*this};
@@ -399,6 +403,8 @@ class BASE_EXPORT ThreadController {
      private:
       State state_ = kIdle;
       bool is_nested_;
+
+      bool ShouldRecordSampleMetadata();
 
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.

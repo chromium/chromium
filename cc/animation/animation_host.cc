@@ -891,4 +891,15 @@ void AnimationHost::StopThroughputTracking(
   SetNeedsPushProperties();
 }
 
+bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
+  for (auto& animation : ticking_animations_.Read(*this)) {
+    if (auto* timeline = animation->animation_timeline()) {
+      if (timeline->IsLinkedToScroller(for_scroller)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace cc

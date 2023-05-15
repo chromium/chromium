@@ -35,8 +35,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -64,8 +62,6 @@ using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
 using blink::mojom::FileChooserParamsPtr;
 using content::BrowserThread;
-using content::RenderViewHost;
-using content::RenderWidgetHost;
 using content::WebContents;
 
 namespace {
@@ -649,9 +645,7 @@ void FileSelectHelper::RunFileChooser(
   render_frame_host_ = render_frame_host;
   web_contents_ = WebContents::FromRenderFrameHost(render_frame_host);
   listener_ = std::move(listener);
-  observation_.Reset();
   content::WebContentsObserver::Observe(web_contents_);
-  observation_.Observe(render_frame_host_->GetRenderViewHost()->GetWidget());
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -856,13 +850,6 @@ void FileSelectHelper::EnumerateDirectoryImpl(
 // EnumerateDirectoryImpl().
 void FileSelectHelper::EnumerateDirectoryEnd() {
   Release();
-}
-
-void FileSelectHelper::RenderWidgetHostDestroyed(
-    content::RenderWidgetHost* widget_host) {
-  render_frame_host_ = nullptr;
-  DCHECK(observation_.IsObservingSource(widget_host));
-  observation_.Reset();
 }
 
 void FileSelectHelper::RenderFrameHostChanged(

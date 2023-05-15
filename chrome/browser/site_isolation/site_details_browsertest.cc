@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -38,7 +39,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -48,9 +48,7 @@
 
 using base::Bucket;
 using content::WebContents;
-using extensions::DictionaryBuilder;
 using extensions::Extension;
-using extensions::ListBuilder;
 using extensions::TestExtensionDir;
 using testing::ElementsAre;
 using testing::PrintToString;
@@ -197,22 +195,20 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
                                    bool has_background_process) {
     TestExtensionDir dir;
 
-    DictionaryBuilder manifest;
-    manifest.Set("name", name)
-        .Set("version", "1.0")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", ListBuilder()
-                                             .Append("blank_iframe.html")
-                                             .Append("http_iframe.html")
-                                             .Append("two_http_iframes.html")
-                                             .Build());
+    auto manifest = base::Value::Dict()
+                        .Set("name", name)
+                        .Set("version", "1.0")
+                        .Set("manifest_version", 2)
+                        .Set("web_accessible_resources",
+                             base::Value::List()
+                                 .Append("blank_iframe.html")
+                                 .Append("http_iframe.html")
+                                 .Append("two_http_iframes.html"));
 
     if (has_background_process) {
-      manifest.Set(
-          "background",
-          DictionaryBuilder()
-              .Set("scripts", ListBuilder().Append("script.js").Build())
-              .Build());
+      manifest.Set("background",
+                   base::Value::Dict().Set(
+                       "scripts", base::Value::List().Append("script.js")));
       dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                     "console.log('" + name + " running');");
     }
@@ -243,7 +239,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
                       "  <iframe width=80 height=80 src='%s'></iframe>"
                       "</body></html>",
                       name.c_str(), iframe_url.c_str(), iframe_url2.c_str()));
-    dir.WriteManifest(manifest.ToJSON());
+    dir.WriteManifest(manifest);
 
     const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
@@ -255,18 +251,17 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
                                    const GURL& app_url) {
     TestExtensionDir dir;
 
-    DictionaryBuilder manifest;
-    manifest.Set("name", name)
-        .Set("version", "1.0")
-        .Set("manifest_version", 2)
-        .Set(
-            "app",
-            DictionaryBuilder()
-                .Set("urls", ListBuilder().Append(app_url.spec()).Build())
-                .Set("launch",
-                     DictionaryBuilder().Set("web_url", app_url.spec()).Build())
-                .Build());
-    dir.WriteManifest(manifest.ToJSON());
+    auto manifest =
+        base::Value::Dict()
+            .Set("name", name)
+            .Set("version", "1.0")
+            .Set("manifest_version", 2)
+            .Set("app",
+                 base::Value::Dict()
+                     .Set("urls", base::Value::List().Append(app_url.spec()))
+                     .Set("launch",
+                          base::Value::Dict().Set("web_url", app_url.spec())));
+    dir.WriteManifest(manifest);
 
     const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
@@ -417,9 +412,9 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   ui_test_utils::UrlLoadObserver load_complete(
       dcbae_url, content::NotificationService::AllSources());
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('" + dcbae_url.spec() + "');"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('" + dcbae_url.spec() + "');"));
   ASSERT_EQ(4, browser()->tab_strip_model()->count());
   load_complete.Wait();
 
@@ -715,9 +710,9 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
   ui_test_utils::UrlLoadObserver load_complete(
       dcbae_url, content::NotificationService::AllSources());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('" + dcbae_url.spec() + "');"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('" + dcbae_url.spec() + "');"));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   load_complete.Wait();
 

@@ -219,24 +219,16 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   };
   picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
 
-  bool result;
-
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "getStream()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "getStream()"));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "getStreamWithInvalidId()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "getStreamWithInvalidId()"));
 
   // Verify that the picker is closed once the tab is closed.
   content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "openPickerDialogAndReturn()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "openPickerDialogAndReturn()"));
   EXPECT_TRUE(test_flags[2].picker_created);
   EXPECT_FALSE(test_flags[2].picker_deleted);
 

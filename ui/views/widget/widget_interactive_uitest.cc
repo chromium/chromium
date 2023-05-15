@@ -1989,6 +1989,9 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   UniqueWidgetPtrT widget1 = std::make_unique<MouseEventTrackingWidget>();
   Widget::InitParams params1 =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  // Not setting bounds on Win64 Arm results in a 0 height window, which
+  // won't get mouse events. See https://crbug.com/1418180.
+  params1.bounds = gfx::Rect(0, 0, 200, 200);
   params1.native_widget = new DesktopNativeWidgetAura(widget1.get());
   widget1->Init(std::move(params1));
   widget1->Show();
@@ -1996,6 +1999,7 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   UniqueWidgetPtrT widget2 = std::make_unique<MouseEventTrackingWidget>();
   Widget::InitParams params2 =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  params2.bounds = gfx::Rect(0, 0, 200, 200);
   params2.native_widget = new DesktopNativeWidgetAura(widget2.get());
   widget2->Init(std::move(params2));
   widget2->Show();

@@ -13,7 +13,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -53,6 +52,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -183,9 +183,12 @@ TableView::TableView() : weak_factory_(this) {
       this, std::make_unique<TableView::HighlightPathGenerator>());
 
   FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) {
-    return static_cast<TableView*>(view)->HasFocus() && !header_row_is_active_;
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<TableView>(view);
+        CHECK(v);
+        return v->HasFocus() && !v->header_row_is_active_;
+      }));
 }
 
 TableView::TableView(ui::TableModel* model,
@@ -1206,8 +1209,8 @@ TableView::PaintRegion TableView::GetPaintRegion(
 
   PaintRegion region;
   region.min_row = static_cast<size_t>(
-      base::clamp(bounds.y() / row_height_, 0,
-                  base::saturated_cast<int>(GetRowCount() - 1)));
+      std::clamp(bounds.y() / row_height_, 0,
+                 base::saturated_cast<int>(GetRowCount() - 1)));
   region.max_row = static_cast<size_t>(bounds.bottom() / row_height_);
   if (bounds.bottom() % row_height_ != 0)
     region.max_row++;

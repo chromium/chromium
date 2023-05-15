@@ -439,10 +439,9 @@ function getCSS() {
     :host {
       align-items: center;
       display: flex;
-      font-family: 'Roboto Medium';
-      font-size: 14px;
       outline: none;
       overflow: hidden;
+      padding-inline-start: 8px;
       user-select: none;
       white-space: nowrap;
     }
@@ -471,8 +470,7 @@ function getCSS() {
       display: inline-block;
       position: relative;
 
-      /* don't use browser's button font. */
-      font: inherit;
+      font: var(--cros-title-1-font);;
       margin: 0;
 
       /* elide wide text */
@@ -489,7 +487,6 @@ function getCSS() {
 
     button[disabled] {
       cursor: default;
-      font-weight: 500;
       margin-inline-end: 4px;
       pointer-events: none;
     }
@@ -525,6 +522,10 @@ function getCSS() {
       padding: 0 12px;
     }
 
+    :host > button:first-child {
+      margin-inline-start: 0;
+    }
+
     button[disabled] {
       color: var(--cros-sys-on_surface);
     }
@@ -558,8 +559,7 @@ function getCSS() {
     #elider-menu button {
       color: var(--cros-sys-on_surface);
       display: block;
-      font-family: 'Roboto';
-      font-size: 13px;
+      font: var(--cros-button-2-font);
       height: 36px;
       max-width: min(288px, 40vw);
       min-width: 192px;  /* menu width */
@@ -568,9 +568,15 @@ function getCSS() {
       text-align: start;
     }
 
-    :host-context(.focus-outline-visible) #elider-menu button:focus {
-      outline: 2px solid var(--cros-sys-focus_ring);
-      outline-offset: -2px;
+    :host-context(.focus-outline-visible) #elider-menu button:focus::after {
+      border: 2px solid var(--cros-sys-focus_ring);
+      border-radius: 4px;
+      content: '';
+      height: 32px; /* option height - 2 x border width */
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: calc(100% - 4px); /* 2 x border width */
     }
 
     /** Reset the hover color when using keyboard to navigate the menu items. */

@@ -62,13 +62,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "components/version_info/version_info.h"
 #import "google_apis/google_api_keys.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/metrics/chrome_browser_state_client.h"
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
@@ -77,12 +71,18 @@
 #import "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 #import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
 #import "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -283,6 +283,9 @@ void IOSChromeMetricsServiceClient::Initialize() {
         std::make_unique<metrics::DemographicMetricsProvider>(
             std::make_unique<metrics::ChromeBrowserStateClient>(),
             metrics::MetricsLogUploader::MetricServiceType::UKM));
+    // As this is startup, there the UKM previous state is the same as the
+    // present state.
+    OnUkmAllowedStateChanged(/* must_purge */ false, GetUkmConsentState());
     RegisterUKMProviders();
   }
 }
@@ -537,13 +540,28 @@ void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
 
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
-    ukm::UkmConsentState) {
+    ukm::UkmConsentState previous_consent_state) {
+  const ukm::UkmConsentState consent_state = GetUkmConsentState();
   if (!ukm_service_)
     return;
   if (must_purge) {
     ukm_service_->Purge();
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+  } else {
+    // Purge recording if required consent has been revoked.
+    if (!consent_state.Has(ukm::MSBB)) {
+      ukm_service_->PurgeMsbbData();
+    }
+    // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
+    // supported on iOS.
   }
+
+  // Notify the recording service of changed metrics consent.
+  ukm_service_->UpdateRecording(consent_state);
+
+  // Broadcast UKM consent state change.
+  ukm_service_->OnUkmAllowedStateChanged(consent_state);
+
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();
 }

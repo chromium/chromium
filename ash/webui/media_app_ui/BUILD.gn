@@ -34,6 +34,8 @@ static_library("media_app_ui") {
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:media_app_resources",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//ash/webui/web_applications",
     "//chromeos/constants",
     "//chromeos/strings",

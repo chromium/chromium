@@ -38,7 +38,7 @@
 #include "base/ranges/algorithm.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
@@ -201,7 +201,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
   response.SetWebBundleURL(KURL(head.web_bundle_url));
-  response.SetTriggerAttestation(head.trigger_attestation);
+  response.SetTriggerVerification(head.trigger_verification);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
                              report_security_info);
@@ -343,9 +343,9 @@ void WebURLResponse::SetLoadTiming(
   resource_response_->SetResourceLoadTiming(std::move(timing));
 }
 
-void WebURLResponse::SetTriggerAttestation(
-    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
-  resource_response_->SetTriggerAttestation(trigger_attestation);
+void WebURLResponse::SetTriggerVerification(
+    const absl::optional<network::TriggerVerification>& trigger_verification) {
+  resource_response_->SetTriggerVerification(trigger_verification);
 }
 
 base::Time WebURLResponse::ResponseTime() const {

@@ -132,7 +132,7 @@ SharedMemoryImageBacking::ProduceGLTexturePassthrough(
   return nullptr;
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 SharedMemoryImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

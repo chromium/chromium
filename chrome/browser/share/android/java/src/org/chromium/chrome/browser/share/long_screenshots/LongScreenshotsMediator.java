@@ -64,6 +64,9 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     private int mDragStartViewHeight;
     private boolean mDragIsPossibleClick;
 
+    // Test support
+    private boolean mDidScaleForTesting;
+
     // Amount by which tapping up/down scrolls the viewport.
     private static final int BUTTON_SCROLL_STEP_DP = 100;
     // Minimum selectable screenshot, vertical size.
@@ -71,13 +74,12 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     // Minimum height for mask views; should scale with ImageView margins.
     private static final int MINIMUM_MASK_HEIGHT_DP = 20;
 
-    // Enforce a maximum displayed image size to avoid too-large-[software]-bitmap
-    // errors in ImageView/Scrollview pair.
-    // Images above this will be downsampled.
-    // 100MB/(24-bit ARGB888) = 3.3e7
-    private static final long DOWNSCALE_AREA_THRESHOLD_PIXELS = 33000000;
-
-    private static final String TAG = "long_screenshots";
+    // Enforce a maximum displayed image size to avoid too-large-[software]-bitmap errors in
+    // ImageView/Scrollview pair. Larger values with be scaled.
+    // The value comes from Android RecordingCanvas#getPanelFrameSize().
+    // This value can also be empirically verified using a manual test for this class (see the test
+    // file) in case it changes on future versions of Android.
+    private static final long DOWNSCALE_AREA_THRESHOLD_BYTES = 100000000;
 
     public LongScreenshotsMediator(Activity activity, EntryManager entryManager) {
         mActivity = activity;
@@ -85,7 +87,9 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mDisplayDensity = activity.getResources().getDisplayMetrics().density;
     }
 
-    private void displayInitialScreenshot() {
+    @VisibleForTesting
+    void displayInitialScreenshot() {
+        mDidScaleForTesting = false;
         mEntryManager.addBitmapGeneratorObserver(new EntryManager.BitmapGeneratorObserver() {
             @Override
             public void onStatusChange(int status) {
@@ -105,18 +109,19 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                     public void onResult(@EntryStatus int status) {
                         if (status == EntryStatus.BITMAP_GENERATED) {
                             Bitmap entryBitmap = entry.getBitmap();
-                            long bitmapArea = entryBitmap.getWidth() * entryBitmap.getHeight();
+                            long bitmapByteCount = entryBitmap.getAllocationByteCount();
                             // Scale down the bitmap if passing it to ImageView.setImageBitmap()
-                            // would throw a too-large error.
-                            // TODO(skare): We could include this logic inside the generator and
-                            // reuse mScaleFactor there.
-                            if (bitmapArea > DOWNSCALE_AREA_THRESHOLD_PIXELS) {
+                            // would throw a too-large error due to OOM (out of memory).
+                            // TODO(http://crbug.com/1275758): We could include this logic inside
+                            // the generator and reuse mScaleFactor there.
+                            if (bitmapByteCount >= DOWNSCALE_AREA_THRESHOLD_BYTES) {
                                 double oversizeRatio =
-                                        (1.0 * bitmapArea / DOWNSCALE_AREA_THRESHOLD_PIXELS);
+                                        (1.0 * bitmapByteCount / DOWNSCALE_AREA_THRESHOLD_BYTES);
                                 double scale = Math.sqrt(oversizeRatio);
                                 showAreaSelectionDialog(Bitmap.createScaledBitmap(entryBitmap,
                                         (int) (Math.round(entryBitmap.getWidth() / scale)),
                                         (int) (Math.round(entryBitmap.getHeight() / scale)), true));
+                                mDidScaleForTesting = true;
                             } else {
                                 showAreaSelectionDialog(entryBitmap);
                             }
@@ -260,6 +265,11 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     @VisibleForTesting
     public Dialog getDialog() {
         return mDialog;
+    }
+
+    @VisibleForTesting
+    boolean getDidScaleForTesting() {
+        return mDidScaleForTesting;
     }
 
     // EditorScreenshotSource implementation.

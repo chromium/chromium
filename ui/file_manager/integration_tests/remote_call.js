@@ -131,24 +131,25 @@ export class RemoteCall {
   }
 
   /**
-   * Waits until a window having the given ID prefix appears.
-   * @param {string} windowIdPrefix ID prefix of the requested window.
-   * @return {!Promise<string>} promise Promise to be fulfilled with a found
-   *     window's ID.
+   * Wait for a SWA window to be open.
+   * @param {boolean=} debug Whether to debug the findSwaWindow.
+   * @return {!Promise<string>}
    */
-  waitForWindow(windowIdPrefix) {
+  async waitForWindow(debug = false) {
     const caller = getCaller();
-    const windowIdRegex = new RegExp(windowIdPrefix);
-    return repeatUntil(async () => {
-      const windows = await this.callRemoteTestUtil('getWindows', null, []);
-      for (const id in windows) {
-        if (id.indexOf(windowIdPrefix) === 0 || windowIdRegex.test(id)) {
-          return id;
-        }
+    const appId = await repeatUntil(async () => {
+      const msg = {name: 'findSwaWindow'};
+      if (debug) {
+        msg['debug'] = true;
       }
-      return pending(
-          caller, 'Window with the prefix %s is not found.', windowIdPrefix);
+      const ret = await sendTestMessage(msg);
+      if (ret === 'none') {
+        return pending(caller, 'Wait for SWA window');
+      }
+      return ret;
     });
+
+    return appId;
   }
 
   /**
@@ -401,12 +402,15 @@ export class RemoteCall {
 
   /**
    * Simulate Click in the UI in the middle of the element.
-   * @param{string} appId App window ID contains the element. NOTE: The click is
+   * @param {string} appId App window ID contains the element. NOTE: The click
+   *     is
    * simulated on most recent window in the window system.
    * @param {string|!Array<string>} query Query to the element to be clicked.
+   * @param {boolean} leftClick If true, simulate left click. Otherwise simulate
+   *     right click.
    * @return {!Promise} A promise fulfilled after the click event.
    */
-  async simulateUiClick(appId, query) {
+  async simulateUiClick(appId, query, leftClick = true) {
     const element = /* @type {!Object} */ (
         await this.waitForElementStyles(appId, query, ['display']));
     chrome.test.assertTrue(!!element, 'element for simulateUiClick not found');
@@ -418,7 +422,18 @@ export class RemoteCall {
         Math.floor(element['renderedTop'] + (element['renderedHeight'] / 2));
 
     return sendTestMessage(
-        {appId, name: 'simulateClick', 'clickX': x, 'clickY': y});
+        {appId, name: 'simulateClick', 'clickX': x, 'clickY': y, leftClick});
+  }
+
+  /**
+   * Simulate Right Click in blank/empty space of the file list element.
+   * @param{string} appId App window ID contains the element. NOTE: The click is
+   * simulated on most recent window in the window system.
+   * @return {!Promise} A promise fulfilled after the click event.
+   */
+  async rightClickFileListBlankSpace(appId) {
+    await this.simulateUiClick(
+        appId, '#file-list .spacer.signals-overscroll', false);
   }
 
   /**
@@ -475,30 +490,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     });
   }
 
-  /** @override */
-  async waitForWindow(windowIdPrefix) {
-    return this.waitForSwaWindow();
-  }
-
   async getWindows() {
     return JSON.parse(await sendTestMessage({name: 'getWindows'}));
-  }
-
-  /**
-   * Wait for a SWA window to be open.
-   * @return {!Promise<string>}
-   */
-  async waitForSwaWindow() {
-    const caller = getCaller();
-    const appId = await repeatUntil(async () => {
-      const ret = await sendTestMessage({name: 'findSwaWindow'});
-      if (ret === 'none') {
-        return pending(caller, 'Wait for SWA window');
-      }
-      return ret;
-    });
-
-    return appId;
   }
 
   /**
@@ -1059,5 +1052,101 @@ export class RemoteCallFilesApp extends RemoteCall {
 
       return true;
     });
+  }
+
+  /**
+   * Waits for the <xf-cloud-panel> element to be visible on the DOM.
+   * @param {string} appId app window ID
+   */
+  async waitForCloudPanelVisible(appId) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const styles = await this.waitForElementStyles(
+          appId, ['xf-cloud-panel', 'cr-action-menu', 'dialog'], ['left']);
+
+      if (styles.renderedHeight > 0 && styles.renderedWidth > 0 &&
+          styles.renderedTop > 0 && styles.renderedLeft > 0) {
+        return true;
+      }
+
+      return pending(caller, `Waiting for xf-cloud-panel to appear.`);
+    });
+  }
+
+  /**
+   * Wait for the underlying bulk pinning manager to enter the specified stage.
+   * @param {string} want The stage the bulk pinning is expected to be in. This
+   *     is a string relating to the stage defined in the `PinManager`.
+   */
+  async waitForBulkPinningStage(want) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const currentStage = await sendTestMessage({name: 'getBulkPinningStage'});
+      if (currentStage === want) {
+        return true;
+      }
+      return pending(caller, `Still waiting for syncing stage: ${want}`);
+    });
+  }
+
+  /**
+   * Wait until the pin manager has the expected required space.
+   * @param {number} want
+   */
+  async waitForBulkPinningRequiredSpace(want) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const actualRequiredSpace =
+          await sendTestMessage({name: 'getBulkPinningRequiredSpace'});
+      const parsedSpace = parseInt(actualRequiredSpace, 10);
+      if (parsedSpace === want) {
+        return true;
+      }
+      return pending(caller, `Still waiting for required space to be ${want}`);
+    });
+  }
+
+  /**
+   * Wait until the cloud panel has the specified item and percentage attributes
+   * defined, if the `timeoutSeconds` is supplied it will only wait for the
+   * specified time before timing out.
+   * @param {string} appId app window ID
+   * @param {number} items The items expected on the cloud panel.
+   * @param {number} percentage The percentage integer expected on the cloud
+   *     panel.
+   * @param {number=} timeoutSeconds Whether to timeout when verifying the panel
+   *     attributes.
+   */
+  async waitForCloudPanelState(appId, items, percentage, timeoutSeconds = 10) {
+    const futureDate = new Date();
+    futureDate.setSeconds(futureDate.getSeconds() + timeoutSeconds);
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      chrome.test.assertTrue(
+          new Date() < futureDate,
+          `Timed out waiting for items=${items} and percentage=${
+              percentage} to appear on xf-cloud-panel`);
+      const cloudPanel = await this.callRemoteTestUtil(
+          'deepQueryAllElements', appId,
+          [`xf-cloud-panel[percentage="${percentage}"][items="${items}"]`]);
+      if (cloudPanel && cloudPanel.length === 1) {
+        return true;
+      }
+      return pending(
+          caller,
+          `Still waiting for xf-cloud-panel to have items=${
+              items} and percentage=${percentage}`);
+    });
+  }
+
+  /**
+   * Clicks the enabled and visible move to trash button and ensures the delete
+   * button is hidden.
+   * @param {string} appId
+   */
+  async clickTrashButton(appId) {
+    await this.waitForElement(appId, '#delete-button[hidden]');
+    await this.waitAndClickElement(
+        appId, '#move-to-trash-button:not([hidden]):not([disabled])');
   }
 }

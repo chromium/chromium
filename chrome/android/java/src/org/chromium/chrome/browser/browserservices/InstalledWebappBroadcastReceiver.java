@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.components.embedder_support.util.Origin;
@@ -117,14 +115,11 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
             }
         }
 
-        try (TimingMetric unused = TimingMetric.mediumUptime(
-                     BrowserServicesTimingMetrics.CLIENT_APP_DATA_LOAD_TIME)) {
-            // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
-            // lazily, so to time opening the file we must include the first read as well.
-            if (!mDataRegister.chromeHoldsDataForPackage(uid)) {
-                Log.d(TAG, "Chrome holds no data for package.");
-                return;
-            }
+        // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
+        // lazily, so to time opening the file we must include the first read as well.
+        if (!mDataRegister.chromeHoldsDataForPackage(uid)) {
+            Log.d(TAG, "Chrome holds no data for package.");
+            return;
         }
 
         mClearDataStrategy.execute(context, mDataRegister, mPermissionUpdater, uid, uninstalled);

@@ -434,7 +434,8 @@ class VideoAcceleratorUtil {
                                     + ", level=" + profile.level + ", min=" + profile.minWidth + "x"
                                     + profile.minHeight + ", max=" + profile.maxWidth + "x"
                                     + profile.maxHeight + ", is_sw=" + profile.isSoftwareCodec
-                                    + ", secure=" + profile.supportsSecurePlayback);
+                                    + ", supports_secure=" + profile.supportsSecurePlayback
+                                    + ", requires_secure=" + profile.requiresSecurePlayback);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
                     if (needsPortraitEntry) {

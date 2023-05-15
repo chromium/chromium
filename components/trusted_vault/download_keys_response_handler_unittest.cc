@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/protocol/vault.pb.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -40,23 +40,23 @@ void AddSecurityDomainMembership(
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
     const std::vector<int>& trusted_vault_keys_versions,
     const std::vector<std::vector<uint8_t>>& signing_keys,
-    sync_pb::SecurityDomainMember* member) {
+    trusted_vault_pb::SecurityDomainMember* member) {
   DCHECK(member);
   DCHECK_EQ(trusted_vault_keys.size(), trusted_vault_keys_versions.size());
   DCHECK_EQ(trusted_vault_keys.size(), signing_keys.size());
 
-  sync_pb::SecurityDomainMember::SecurityDomainMembership* membership =
+  trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership* membership =
       member->add_memberships();
   membership->set_security_domain(security_domain_name);
   for (size_t i = 0; i < trusted_vault_keys.size(); ++i) {
-    sync_pb::SharedMemberKey* shared_key = membership->add_keys();
+    trusted_vault_pb::SharedMemberKey* shared_key = membership->add_keys();
     shared_key->set_epoch(trusted_vault_keys_versions[i]);
     AssignBytesToProtoString(
         ComputeTrustedVaultWrappedKey(member_public_key, trusted_vault_keys[i]),
         shared_key->mutable_wrapped_key());
 
     if (!signing_keys[i].empty()) {
-      sync_pb::RotationProof* rotation_proof =
+      trusted_vault_pb::RotationProof* rotation_proof =
           membership->add_rotation_proofs();
       rotation_proof->set_new_epoch(trusted_vault_keys_versions[i]);
       AssignBytesToProtoString(ComputeRotationProofForTesting(
@@ -71,7 +71,7 @@ std::string CreateGetSecurityDomainMemberResponseWithSyncMembership(
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
     const std::vector<int>& trusted_vault_keys_versions,
     const std::vector<std::vector<uint8_t>>& signing_keys) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       kSyncSecurityDomainName, MakeTestKeyPair()->public_key(),
       trusted_vault_keys, trusted_vault_keys_versions, signing_keys, &member);
@@ -272,7 +272,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 // should return kMembershipCorrupted to allow client to restore the member by
 // re-registration.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       kSyncSecurityDomainName, MakeTestKeyPair()->public_key(),
       /*trusted_vault_keys=*/{kKnownTrustedVaultKey, kTrustedVaultKey1},
@@ -367,7 +367,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
   EXPECT_THAT(handler()
                   .ProcessResponse(
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
-                      /*response_body=*/sync_pb::SecurityDomainMember()
+                      /*response_body=*/trusted_vault_pb::SecurityDomainMember()
                           .SerializeAsString())
                   .status,
               Eq(TrustedVaultDownloadKeysStatus::kMembershipNotFound));
@@ -375,7 +375,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
 
 // Same as above, but there is a different security domain membership.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       "other_domain", MakeTestKeyPair()->public_key(),
       /*trusted_vault_keys=*/{kTrustedVaultKey1},
@@ -391,7 +391,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
 }
 
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(kSyncSecurityDomainName,
                               MakeTestKeyPair()->public_key(),
                               /*trusted_vault_keys=*/{},
@@ -408,7 +408,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
 
 // Tests handling presence of other security domain memberships.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       "other_domain", MakeTestKeyPair()->public_key(),
       /*trusted_vault_keys=*/{kTrustedVaultKey1},
@@ -437,4 +437,4 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace trusted_vault

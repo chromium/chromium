@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/skia/include/core/SkImage.h"
 
@@ -86,12 +87,23 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         base::checked_cast<wtf_size_t>(
             message.image_bitmap_contents_array.size()));
 
-    for (auto& sk_bitmap : message.image_bitmap_contents_array) {
-      const scoped_refptr<StaticBitmapImage> bitmap_contents =
-          ToStaticBitmapImage(sk_bitmap);
-      if (!bitmap_contents)
-        continue;
-      image_bitmap_contents_array.push_back(bitmap_contents);
+    for (auto& image : message.image_bitmap_contents_array) {
+      if (image->is_bitmap()) {
+        const scoped_refptr<StaticBitmapImage> bitmap_contents =
+            ToStaticBitmapImage(image->get_bitmap());
+        if (!bitmap_contents) {
+          continue;
+        }
+        image_bitmap_contents_array.push_back(bitmap_contents);
+      } else if (image->is_accelerated_image()) {
+        const scoped_refptr<StaticBitmapImage> accelerated_image =
+            WrapAcceleratedBitmapImage(
+                std::move(image->get_accelerated_image()));
+        if (!accelerated_image) {
+          continue;
+        }
+        image_bitmap_contents_array.push_back(accelerated_image);
+      }
     }
     result.message->SetImageBitmapContentsArray(
         std::move(image_bitmap_contents_array));
@@ -123,4 +135,11 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
   return UnacceleratedStaticBitmapImage::Create(std::move(image));
 }
 
+scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
+    AcceleratedImageInfo image) {
+  return AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
+      image.mailbox_holder, image.usage, image.image_info,
+      image.is_origin_top_left, image.supports_display_compositing,
+      image.is_overlay_candidate, std::move(image.release_callback));
+}
 }  // namespace blink

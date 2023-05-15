@@ -33,10 +33,12 @@ source_set("test_support") {
   public_deps = [
     "//base",
     "//chrome/browser",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//testing/gmock",
   ]
 
   deps = [
+    ":features",
     ":prefs",
     "//components/pref_registry",
     "//components/prefs:test_support",

@@ -196,7 +196,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     protected abstract class StorageRequest<T> {
         protected final int mTabId;
         protected final String mDataId;
-        protected final File mFile;
 
         /**
          * @param tabId identifier for the {@link Tab}
@@ -205,7 +204,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         StorageRequest(int tabId, String dataId) {
             mTabId = tabId;
             mDataId = dataId;
-            mFile = FilePersistedTabDataStorage.getFile(tabId, dataId);
         }
 
         /**
@@ -232,8 +230,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             if (!(other instanceof StorageRequest)) return false;
             StorageRequest otherStorageRequest = (StorageRequest) other;
             return mTabId == otherStorageRequest.mTabId
-                    && mDataId.equals(otherStorageRequest.mDataId)
-                    && mFile.equals(otherStorageRequest.mFile);
+                    && mDataId.equals(otherStorageRequest.mDataId);
         }
 
         @Override
@@ -241,7 +238,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             int result = 17;
             result = 31 * result + mTabId;
             result = 31 * result + mDataId.hashCode();
-            result = 31 * result + mFile.hashCode();
             return result;
         }
 
@@ -249,6 +245,10 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
          * @return type of storage request (save, restore or delete)
          */
         abstract @StorageRequestType int getStorageRequestType();
+
+        protected File getFile() {
+            return FilePersistedTabDataStorage.getFile(mTabId, mDataId);
+        }
     }
 
     /**
@@ -288,9 +288,10 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             FileOutputStream outputStream = null;
             AtomicFile atomicFile = null;
             boolean success = false;
+            File file = getFile();
             try {
                 long startTime = SystemClock.elapsedRealtime();
-                atomicFile = new AtomicFile(mFile);
+                atomicFile = new AtomicFile(file);
                 outputStream = atomicFile.startWrite();
                 FileChannel fileChannel = outputStream.getChannel();
                 fileChannel.write(data);
@@ -304,13 +305,13 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                         String.format(Locale.ENGLISH,
                                 "FileNotFoundException while attempting to save file %s "
                                         + "Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } catch (IOException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
                                 "IOException while attempting to save for file %s. "
                                         + " Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } finally {
                 StreamUtil.closeQuietly(outputStream);
                 if (atomicFile != null) {
@@ -389,17 +390,18 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
         @Override
         public Void executeSyncTask() {
-            boolean exists = mFile.exists();
+            File file = getFile();
+            boolean exists = file.exists();
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Exists." + getUmaTag(), exists);
             if (!exists) {
                 return null;
             }
-            boolean success = mFile.delete();
+            boolean success = file.delete();
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Delete." + getUmaTag(), success);
             if (!success) {
-                Log.e(TAG, String.format(Locale.ENGLISH, "Error deleting file %s", mFile));
+                Log.e(TAG, String.format(Locale.ENGLISH, "Error deleting file %s", file));
             }
             return null;
         }
@@ -455,9 +457,10 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             boolean success = false;
             ByteBuffer res = null;
             FileInputStream fileInputStream = null;
+            File file = getFile();
             try {
                 long startTime = SystemClock.elapsedRealtime();
-                AtomicFile atomicFile = new AtomicFile(mFile);
+                AtomicFile atomicFile = new AtomicFile(file);
                 fileInputStream = atomicFile.openRead();
                 FileChannel channel = fileInputStream.getChannel();
                 res = channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
@@ -471,13 +474,13 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                         String.format(Locale.ENGLISH,
                                 "FileNotFoundException while attempting to restore "
                                         + " %s. Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } catch (IOException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
                                 "IOException while attempting to restore "
                                         + "%s. Details: %s",
-                                mFile, e.getMessage()));
+                                file, e.getMessage()));
             } finally {
                 StreamUtil.closeQuietly(fileInputStream);
             }

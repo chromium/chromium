@@ -34,8 +34,8 @@
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
 
+#include "base/apple/bridging.h"
 #include "base/location.h"
-#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -52,6 +52,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
@@ -107,7 +111,7 @@ void FontCache::PlatformInit() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetLocalCenter(), this,
       FontCacheRegisteredFontsChangedNotificationCallback,
-      kCTFontManagerRegisteredFontsChangedNotification, 0,
+      kCTFontManagerRegisteredFontsChangedNotification, /*object=*/nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
@@ -142,11 +146,11 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
-  NSFont* ns_font = base::mac::CFToNSCast(platform_data.CtFont());
+  NSFont* ns_font = base::apple::CFToNSPtrCast(platform_data.CtFont());
 
-  NSString* string = [[[NSString alloc]
+  NSString* string = [[NSString alloc]
       initWithCharacters:reinterpret_cast<UniChar*>(code_units)
-                  length:code_units_length] autorelease];
+                  length:code_units_length];
   NSFont* substitute_font =
       [NSFont findFontLike:ns_font
                  forString:string
@@ -166,7 +170,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // account.  But it does create the possibility that we could end up with a
   // font that doesn't actually cover the characters we need.
 
-  NSFontManager* font_manager = [NSFontManager sharedFontManager];
+  NSFontManager* font_manager = NSFontManager.sharedFontManager;
 
   NSFontTraitMask traits;
   NSInteger weight;
@@ -195,7 +199,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (traits != substitute_font_traits || weight != substitute_font_weight ||
       !ns_font) {
     if (NSFont* best_variation =
-            [font_manager fontWithFamily:[substitute_font familyName]
+            [font_manager fontWithFamily:substitute_font.familyName
                                   traits:traits
                                   weight:weight
                                     size:size]) {
@@ -210,8 +214,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     }
   }
 
-  substitute_font = UseHinting() ? [substitute_font screenFont]
-                                 : [substitute_font printerFont];
+  substitute_font =
+      UseHinting() ? substitute_font.screenFont : substitute_font.printerFont;
 
   substitute_font_traits = [font_manager traitsOfFont:substitute_font];
   substitute_font_weight = [font_manager weightOfFont:substitute_font];
@@ -226,7 +230,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
           !(substitute_font_traits & NSFontItalicTrait),
       font_description.TextRendering(), ResolvedFontFeatures(),
       platform_data.Orientation(), font_description.FontOpticalSizing(),
-      nullptr);  // No variation paramaters in fallback.
+      /*variation_settings=*/nullptr);
 
   if (!alternate_font)
     return nullptr;
@@ -273,14 +277,14 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   if (!matched_font)
     return nullptr;
 
-  NSFontManager* font_manager = [NSFontManager sharedFontManager];
+  NSFontManager* font_manager = NSFontManager.sharedFontManager;
   NSFontTraitMask actual_traits = 0;
   if (font_description.Style())
     actual_traits = [font_manager traitsOfFont:matched_font];
   NSInteger actual_weight = [font_manager weightOfFont:matched_font];
 
   NSFont* platform_font =
-      UseHinting() ? [matched_font screenFont] : [matched_font printerFont];
+      UseHinting() ? matched_font.screenFont : matched_font.printerFont;
   NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
 
   bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&

@@ -52,8 +52,8 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
       // An accumulated relative offset is applied to an OOF once it reaches its
       // inline container. Subtract out the relative offset to avoid adding it
       // twice.
-      PropagateChildData(
-          child.layout_result->PhysicalFragment(),
+      PropagateFromLayoutResultAndFragment(
+          *child.layout_result,
           child.Offset() -
               ComputeRelativeOffsetForInline(ConstraintSpace(),
                                              child.PhysicalFragment()->Style()),

@@ -67,7 +67,7 @@ void CellularInhibitor::Init(NetworkStateHandler* network_state_handler,
   network_state_handler_ = network_state_handler;
   network_device_handler_ = network_device_handler;
 
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 void CellularInhibitor::InhibitCellularScanning(InhibitReason reason,
@@ -379,6 +379,9 @@ std::ostream& operator<<(
       break;
     case CellularInhibitor::InhibitReason::kDisablingProfile:
       stream << "[Disabling profile]";
+      break;
+    case CellularInhibitor::InhibitReason::kRequestingAvailableProfiles:
+      stream << "[Requesting available profiles]";
       break;
   }
   return stream;

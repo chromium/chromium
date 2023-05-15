@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -113,36 +114,41 @@ class SpeechRecognitionObserverWrapper
 
   // libassistant::mojom::SpeechRecognitionObserver implementation:
   void OnSpeechLevelUpdated(float speech_level_in_decibels) override {
-    for (auto& it : interaction_subscribers_)
+    for (auto& it : *interaction_subscribers_) {
       it.OnSpeechLevelUpdated(speech_level_in_decibels);
+    }
   }
 
   void OnSpeechRecognitionStart() override {
-    for (auto& it : interaction_subscribers_)
+    for (auto& it : *interaction_subscribers_) {
       it.OnSpeechRecognitionStarted();
+    }
   }
 
   void OnIntermediateResult(const std::string& high_confidence_text,
                             const std::string& low_confidence_text) override {
-    for (auto& it : interaction_subscribers_) {
+    for (auto& it : *interaction_subscribers_) {
       it.OnSpeechRecognitionIntermediateResult(high_confidence_text,
                                                low_confidence_text);
     }
   }
 
   void OnSpeechRecognitionEnd() override {
-    for (auto& it : interaction_subscribers_)
+    for (auto& it : *interaction_subscribers_) {
       it.OnSpeechRecognitionEndOfUtterance();
+    }
   }
 
   void OnFinalResult(const std::string& recognized_text) override {
-    for (auto& it : interaction_subscribers_)
+    for (auto& it : *interaction_subscribers_) {
       it.OnSpeechRecognitionFinalResult(recognized_text);
+    }
   }
 
  private:
   // Owned by our parent, |AssistantManagerServiceImpl|.
-  const base::ObserverList<AssistantInteractionSubscriber>&
+  const raw_ref<const base::ObserverList<AssistantInteractionSubscriber>,
+                ExperimentalAsh>
       interaction_subscribers_;
 
   mojo::Receiver<libassistant::mojom::SpeechRecognitionObserver> receiver_{

@@ -28,6 +28,7 @@
 #include <iosfwd>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -138,6 +139,7 @@ class GSL_POINTER BasicStringPiece {
   // `BasicStringPiece(nullptr_t) = delete`, but unfortunately the terse form is
   // not supported by the PNaCl toolchain.
   template <class T, class = std::enable_if_t<std::is_null_pointer<T>::value>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
   BasicStringPiece(T) {
     static_assert(sizeof(T) == 0,  // Always false.
                   "StringPiece does not support construction from nullptr, use "
@@ -148,10 +150,23 @@ class GSL_POINTER BasicStringPiece {
   // (an object convertible to) a std::basic_string_view, as well as an explicit
   // cast operator to a std::basic_string_view, but (obviously) not from/to a
   // BasicStringPiece.
+  // NOLINTNEXTLINE(google-explicit-constructor)
   BasicStringPiece(const std::basic_string<CharT>& str)
       : ptr_(str.data()), length_(str.size()) {}
   explicit operator std::basic_string<CharT>() const {
     return std::basic_string<CharT>(data(), size());
+  }
+
+  // Provide implicit conversions from/to the STL version, for interoperability
+  // with non-Chromium code.
+  // TODO(crbug.com/691162): These will be moot when BasicStringPiece is
+  // replaced with std::basic_string_view.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr BasicStringPiece(std::basic_string_view<CharT> str)
+      : ptr_(str.data()), length_(str.size()) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr operator std::basic_string_view<CharT>() const {
+    return std::basic_string_view<CharT>(data(), size());
   }
 
   constexpr const_iterator begin() const noexcept { return ptr_; }
@@ -613,6 +628,8 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
 // Stand-ins for the STL's std::hash<> specializations.
 template <typename StringPieceType>
 struct StringPieceHashImpl {
+  using is_transparent = void;  // to allow for heterogenous lookup
+
   // This is a custom hash function. We don't use the ones already defined for
   // string and std::u16string directly because it would require the string
   // constructors to be called, which we don't want.

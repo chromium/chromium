@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -46,7 +47,7 @@ class PluginVmLicenseChecker {
   void CallEndpointWithAccessToken(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   GURL validation_url_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 

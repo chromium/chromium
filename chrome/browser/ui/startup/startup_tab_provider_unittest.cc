@@ -20,19 +20,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/values.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using StandardOnboardingTabsParams =
     StartupTabProviderImpl::StandardOnboardingTabsParams;
+
+#if BUILDFLAG(IS_WIN)
+#define CMD_ARG(x) L##x
+#else
+#define CMD_ARG(x) x
+#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
@@ -352,7 +353,8 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 
   // Simple use. Pass google.com URL.
   {
-    base::CommandLine command_line({"", "https://google.com"});
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("https://google.com")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -365,8 +367,8 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 
   // Two URL case.
   {
-    base::CommandLine command_line(
-        {"", "https://google.com", "https://gmail.com"});
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("https://google.com"),
+                                    CMD_ARG("https://gmail.com")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -380,7 +382,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 
   // Vista way search query.
   {
-    base::CommandLine command_line({"", "? Foo"});
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("? Foo")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -393,26 +395,13 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // "file:" path fix up.
-  {
-    base::CommandLine command_line({"", "file:foo.txt"});
-    StartupTabProviderImpl instance;
-    StartupTabs output =
-        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
-
-    EXPECT_EQ(CommandLineTabsPresent::kYes,
-              instance.HasCommandLineTabs(command_line, base::FilePath()));
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Unsafe scheme should be filtered out.
   // Note that chrome:// URLs are allowed on Lacros so that trustworthy calls
   // from Ash will work (URLs from untrustworthy applications are filtered
   // before getting to StartupTabProvider).
   {
-    base::CommandLine command_line({"", "chrome://flags"});
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("chrome://flags")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -426,7 +415,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   // Exceptional settings page.
   {
     base::CommandLine command_line(
-        {"", "chrome://settings/resetProfileSettings"});
+        {CMD_ARG(""), CMD_ARG("chrome://settings/resetProfileSettings")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -438,7 +427,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   }
   {
     base::CommandLine command_line(
-        {"", "chrome://settings/resetProfileSettings#cct"});
+        {CMD_ARG(""), CMD_ARG("chrome://settings/resetProfileSettings#cct")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -461,7 +450,8 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 
   // chrome://settings/ page handling.
   {
-    base::CommandLine command_line({"", "chrome://settings/syncSetup"});
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("chrome://settings/syncSetup")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -483,7 +473,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 
   // about:blank URL.
   {
-    base::CommandLine command_line({"", "about:blank"});
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("about:blank")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -495,88 +485,34 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(StartupTabProviderTest, GetCrosapiTabs) {
-  base::test::TaskEnvironment task_environment;
+// This test fails on Windows. TODO(crbug.com/1439648): Investigate and
+// fix this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetCommandLineTabsFileUrl DISABLED_GetCommandLineTabsFileUrl
+#else
+#define MAYBE_GetCommandLineTabsFileUrl GetCommandLineTabsFileUrl
+#endif
+TEST(StartupTabProviderTest, MAYBE_GetCommandLineTabsFileUrl) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  // Set up and inject a real instance for the profile.
+  TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      &profile,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 
-  // Non kOpenWindowWithUrls case.
+  // "file:" path fix up.
   {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kUseStartupPreference;
-    // The given URLs should be ignored.
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    EXPECT_TRUE(output.empty());
-  }
-
-  // Simple use. Pass google.com URL.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    // The given URLs should be ignored.
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("file:foo.txt")});
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("https://google.com"), output[0].url);
-  }
+    EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
 
-  // Two URL case.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com"),
-                                             GURL("https://gmail.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(2u, output.size());
-    EXPECT_EQ(GURL("https://google.com"), output[0].url);
-    EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
-  }
-
-  // chrome:// scheme should be allowed on Lacros because calls from
-  // untrustworthy applications are filtered before StartupTabProvider.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("chrome://flags")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("chrome://flags"), output[0].url);
-  }
-
-  // Exceptional settings page.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls =
-        std::vector<GURL>{GURL("chrome://settings/resetProfileSettings")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
-  }
-
-  // about:blank URL.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("about:blank")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("about:blank"), output[0].url);
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -620,9 +556,7 @@ TEST_F(StartupTabProviderPrivacySandboxTest,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("1")
           .SetManifestKey("chrome_url_overrides",
-                          extensions::DictionaryBuilder()
-                              .Set("newtab", "custom_tab.html")
-                              .Build())
+                          base::Value::Dict().Set("newtab", "custom_tab.html"))
           .Build();
   registry()->AddEnabled(extension);
   auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(

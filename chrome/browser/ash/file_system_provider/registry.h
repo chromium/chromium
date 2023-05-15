@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
@@ -58,7 +59,7 @@ class Registry : public RegistryInterface {
                         const Watcher& watcher) override;
 
  private:
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
 };
 
 }  // namespace file_system_provider

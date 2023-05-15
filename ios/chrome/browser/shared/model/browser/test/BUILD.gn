@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_browser_observer.h",
+    "fake_browser_observer.mm",
+    "test_browser.h",
+    "test_browser.mm",
+    "test_browser_list_observer.h",
+    "test_browser_list_observer.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

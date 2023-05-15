@@ -147,6 +147,8 @@ source_set("internal") {
     "config_dir_policy_loader.h",
     "configuration_policy_provider.cc",
     "configuration_policy_provider.h",
+    "device_local_account_type.cc",
+    "device_local_account_type.h",
     "external_data_fetcher.cc",
     "external_data_fetcher.h",
     "external_data_manager.h",
@@ -268,6 +270,8 @@ source_set("internal") {
       "management/platform_management_status_provider_win.h",
       "policy_loader_win.cc",
       "policy_loader_win.h",
+      "scoped_critical_policy_section.cc",
+      "scoped_critical_policy_section.h",
     ]
     libs = [
       "netapi32.lib",
@@ -513,6 +517,7 @@ source_set("unit_tests") {
     "cloud/cloud_policy_refresh_scheduler_unittest.cc",
     "cloud/cloud_policy_service_unittest.cc",
     "cloud/device_management_service_unittest.cc",
+    "cloud/dm_token_unittest.cc",
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
     "generate_policy_source_unittest.cc",
@@ -621,7 +626,10 @@ source_set("unit_tests") {
     data = [ "//chrome/test/data/policy/" ]
   }
   if (is_win) {
-    sources += [ "policy_loader_win_unittest.cc" ]
+    sources += [
+      "policy_loader_win_unittest.cc",
+      "scoped_critical_policy_section_unittest.cc",
+    ]
   }
   if (is_chromeos_lacros) {
     sources += [ "policy_loader_lacros_unittest.cc" ]

@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Preuzimanje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prebaci na prikaz liste</translation>
 <translation id="2377590462528165447">Broj foldera koji se dijele s Linuxom <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="2378075407703503998">Broj odabranih fajlova: <ph name="SELCTED_FILE_COUNT" /></translation>
 <translation id="2383454254762599978">Premjesti u otpad</translation>
 <translation id="2387458720915042159">Vrsta veze s proksi serverom</translation>
 <translation id="2389832672041313158">burmanski (Mijanmar)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
 <translation id="482932175346970750">Upišite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> u pregledniku</translation>
-<translation id="4839847978919684242">Broj odabranih stavki: <ph name="SELCTED_FILES_COUNT" /></translation>
 <translation id="4843566743023903107">Uređaji Chromebase</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">Njemačka</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">švedski</translation>
 <translation id="6990081529015358884">Nestalo vam je prostora</translation>
 <translation id="6993826899923627728">Ovi artikli su u otpadu</translation>
-<translation id="6998711733709403587">Broj odabranih foldera: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">Vašoj organizaciji treba više pohrane da dovrši otpremanje.</translation>
 <translation id="7009985720488544166">Administratorska pravila blokiraju premještanje fajlova (njih<ph name="COUNT" />)</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">Pronađite ekstenziju iznad</translation>
 <translation id="7256405249507348194">Neprepoznata greška: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
+<translation id="7291818353625820805">Želite tipke za ponavljanje? Isključite znakove naglaska u Postavkama tastature</translation>
 <translation id="7292816689782057017">Pravila administratora ograničavaju pohranjivanje na nekim lokacijama.</translation>
 <translation id="7294063083760278948">telugu (transliteracija)</translation>
 <translation id="7295662345261934369">Dijeli s drugima</translation>

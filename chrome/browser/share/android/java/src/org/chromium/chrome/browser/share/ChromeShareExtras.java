@@ -231,14 +231,6 @@ public class ChromeShareExtras {
             return this;
         }
 
-        /**
-         * Sets whether it is sharing a tab group.
-         */
-        public Builder setSharingTabGroup(boolean sharingTabGroup) {
-            mSharingTabGroup = sharingTabGroup;
-            return this;
-        }
-
         public Builder setIsReshareHighlightedText(boolean isReshareHighlightedText) {
             mIsReshareHighlightedText = isReshareHighlightedText;
             return this;

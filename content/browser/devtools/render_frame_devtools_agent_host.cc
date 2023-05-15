@@ -219,7 +219,8 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
 void RenderFrameDevToolsAgentHost::AttachToWebContents(
     WebContents* web_contents) {
   if (ShouldForceCreation()) {
-    // Force agent host.
+    // Force agent hosts.
+    DevToolsAgentHost::GetOrCreateForTab(web_contents);
     DevToolsAgentHost::GetOrCreateFor(web_contents);
   }
 }
@@ -298,8 +299,9 @@ WebContents* RenderFrameDevToolsAgentHost::GetWebContents() {
 
 bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                  bool acquire_wake_lock) {
-  if (!ShouldAllowSession(session))
+  if (!ShouldAllowSession(frame_host_, session)) {
     return false;
+  }
 
   if (frame_tree_node_ && !frame_tree_node_->parent() &&
       frame_tree_node_->is_on_initial_empty_document()) {
@@ -422,6 +424,12 @@ void RenderFrameDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
   host->GetRendererChannel()->InspectElement(point);
 }
 
+void RenderFrameDevToolsAgentHost::GetUniqueFormControlId(
+    int node_id,
+    GetUniqueFormControlIdCallback callback) {
+  GetRendererChannel()->GetUniqueFormControlId(node_id, std::move(callback));
+}
+
 RenderFrameDevToolsAgentHost::~RenderFrameDevToolsAgentHost() {
   SetFrameTreeNode(nullptr);
   ChangeFrameHostAndObservedProcess(nullptr);
@@ -502,8 +510,9 @@ void RenderFrameDevToolsAgentHost::UpdateFrameHost(
 
   std::vector<DevToolsSession*> restricted_sessions;
   for (DevToolsSession* session : sessions()) {
-    if (!ShouldAllowSession(session))
+    if (!ShouldAllowSession(frame_host_, session)) {
       restricted_sessions.push_back(session);
+    }
   }
   scoped_refptr<RenderFrameDevToolsAgentHost> protect;
   if (!restricted_sessions.empty()) {
@@ -901,17 +910,19 @@ bool RenderFrameDevToolsAgentHost::IsChildFrame() {
 }
 
 bool RenderFrameDevToolsAgentHost::ShouldAllowSession(
+    RenderFrameHost* frame_host,
     DevToolsSession* session) {
   // There's not much we can say if there's not host yet, but we'll
   // check again when host is updated.
-  if (!frame_host_)
+  if (!frame_host) {
     return true;
+  }
   DevToolsManager* manager = DevToolsManager::GetInstance();
   if (manager->delegate() &&
-      !manager->delegate()->AllowInspectingRenderFrameHost(frame_host_)) {
+      !manager->delegate()->AllowInspectingRenderFrameHost(frame_host)) {
     return false;
   }
-  return session->GetClient()->MayAttachToRenderFrameHost(frame_host_);
+  return session->GetClient()->MayAttachToRenderFrameHost(frame_host);
 }
 
 void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {

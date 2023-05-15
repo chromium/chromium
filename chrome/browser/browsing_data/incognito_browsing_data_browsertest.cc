@@ -108,7 +108,11 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
     ExpectCookieTreeModelCount(regular_browser, 0);
-    ExpectCookieTreeModelCount(incognito_browser, 1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(incognito_browser, 1);
+    // is not always true here.
+
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(regular_browser)));
     EXPECT_TRUE(HasDataForType(type, GetActiveWebContents(incognito_browser)));
 
@@ -142,7 +146,10 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
     ExpectCookieTreeModelCount(regular_browser, 0);
-    ExpectCookieTreeModelCount(incognito_browser, 1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(incognito_browser, 1);
+    // is not always true here.
 
     // Restart Incognito, ensure there is no residue from previous one.
     RestartIncognitoBrowser();

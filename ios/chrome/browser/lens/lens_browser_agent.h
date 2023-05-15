@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_LENS_LENS_BROWSER_AGENT_H_
 
 #import "base/scoped_multi_source_observation.h"
-#import "ios/chrome/browser/main/browser_observer.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class LensEntrypoint;

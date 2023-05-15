@@ -109,7 +109,6 @@ constexpr base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 InputInjectorWayland::InputInjectorWayland(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   core_ = new Core(task_runner);
-  core_->SetCapabilityCallbacks();
 
   // Register callback with the wayland manager so that it can get details
   // about the desktop capture metadata (which include session details of the
@@ -126,9 +125,7 @@ InputInjectorWayland::InputInjectorWayland(
       base::BindRepeating(&Core::Shutdown, core_));
 }
 
-InputInjectorWayland::~InputInjectorWayland() {
-  core_->Shutdown();
-}
+InputInjectorWayland::~InputInjectorWayland() = default;
 
 void InputInjectorWayland::InjectClipboardEvent(const ClipboardEvent& event) {
   core_->InjectClipboardEvent(event);
@@ -214,6 +211,9 @@ void InputInjectorWayland::Core::SeatAcquiredKeyboardCapability() {
   }
 
   seat_has_keyboard_capability_ = true;
+  if (seat_has_pointer_capability_) {
+    current_state_ = State::CAPABILITIES_RECEIVED;
+  }
   MaybeFlushPendingEvents();
 }
 
@@ -225,13 +225,10 @@ void InputInjectorWayland::Core::SeatAcquiredPointerCapability() {
   }
 
   seat_has_pointer_capability_ = true;
+  if (seat_has_keyboard_capability_) {
+    current_state_ = State::CAPABILITIES_RECEIVED;
+  }
   MaybeFlushPendingEvents();
-}
-
-bool InputInjectorWayland::Core::IsReady() {
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-  return seat_has_keyboard_capability_ && seat_has_pointer_capability_ &&
-         remote_desktop_initialized_;
 }
 
 void InputInjectorWayland::Core::InjectClipboardEvent(
@@ -241,12 +238,64 @@ void InputInjectorWayland::Core::InjectClipboardEvent(
         FROM_HERE, base::BindOnce(&Core::InjectClipboardEvent, this, event));
     return;
   }
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
   if (!clipboard_initialized_) {
     pending_clipboard_event_ = absl::make_optional(event);
     return;
   }
   clipboard_->InjectClipboardEvent(event);
+}
+
+void InputInjectorWayland::Core::QueueKeyEvent(
+    const protocol::KeyEvent& event) {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+
+  return pending_remote_desktop_tasks_.push(
+      base::BindOnce(&Core::InjectKeyEventHelper, this, event));
+}
+
+void InputInjectorWayland::Core::QueueMouseEvent(
+    const protocol::MouseEvent& event) {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+
+  return pending_remote_desktop_tasks_.push(
+      base::BindOnce(&Core::InjectMouseEventHelper, this, event));
+}
+
+void InputInjectorWayland::Core::ProcessKeyEvent(
+    const protocol::KeyEvent& event) {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+
+  switch (current_state_) {
+    case State::UNINITIALIZED:
+    case State::SESSION_INITIALIZED:
+      QueueKeyEvent(event);
+      break;
+    case State::CAPABILITIES_RECEIVED:
+      InjectKeyEventHelper(event);
+      break;
+    case State::STOPPED:
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+void InputInjectorWayland::Core::ProcessMouseEvent(
+    const protocol::MouseEvent& event) {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+
+  switch (current_state_) {
+    case State::UNINITIALIZED:
+    case State::SESSION_INITIALIZED:
+      QueueMouseEvent(event);
+      break;
+    case State::CAPABILITIES_RECEIVED:
+      InjectMouseEventHelper(event);
+      break;
+    case State::STOPPED:
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void InputInjectorWayland::Core::InjectKeyEvent(const KeyEvent& event) {
@@ -255,12 +304,13 @@ void InputInjectorWayland::Core::InjectKeyEvent(const KeyEvent& event) {
         FROM_HERE, base::BindOnce(&Core::InjectKeyEvent, this, event));
     return;
   }
+
+  ProcessKeyEvent(event);
+}
+
+void InputInjectorWayland::Core::InjectKeyEventHelper(const KeyEvent& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  if (!IsReady()) {
-    pending_remote_desktop_tasks_.push(
-        base::BindOnce(&Core::InjectKeyEvent, this, event));
-    return;
-  }
+
   // HostEventDispatcher should filter events missing the pressed field.
   if (!event.has_pressed() || !event.has_usb_keycode()) {
     return;
@@ -307,35 +357,18 @@ InputInjectorWayland::Core::~Core() {
   }
 }
 
-void InputInjectorWayland::Core::InjectScrollWheelClicks(int button,
-                                                         int count) {
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-
-  if (button < 0) {
-    LOG(WARNING) << __func__ << " : Ignoring unmapped scroll wheel button";
-    return;
-  }
-  for (int i = 0; i < count; i++) {
-    // Generate a button-down and a button-up to simulate a wheel click.
-    InjectMouseButton(button, /*pressed=*/true);
-    InjectMouseButton(button, /*pressed=*/false);
-  }
-}
-
 void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
   if (!input_task_runner_->BelongsToCurrentThread()) {
     input_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&Core::InjectMouseEvent, this, event));
     return;
   }
+  ProcessMouseEvent(event);
+}
+
+void InputInjectorWayland::Core::InjectMouseEventHelper(
+    const MouseEvent& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  // We wait for keyboard capability here so that we can inject all the mouse
-  // and keyboard events in the correct order in which they were received.
-  if (!IsReady()) {
-    pending_remote_desktop_tasks_.push(
-        base::BindOnce(&Core::InjectMouseEvent, this, event));
-    return;
-  }
 
   if (event.has_delta_x() && event.has_delta_y() &&
       (event.delta_x() != 0 || event.delta_y() != 0)) {
@@ -453,6 +486,17 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
 }
 
 void InputInjectorWayland::Core::InjectPendingEvents(bool libei_succeeded) {
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Core::InjectPendingEvents, this, libei_succeeded));
+    return;
+  }
+
+  if (current_state_ == State::STOPPED) {
+    return;
+  }
+
   if (!libei_succeeded) {
     LOG(WARNING) << "Setting up libei failed, going to rely on slower "
                  << "input injection path";
@@ -460,6 +504,12 @@ void InputInjectorWayland::Core::InjectPendingEvents(bool libei_succeeded) {
     // These are needed so that we can acquire keyboard/pointer capability.
     InjectFakeKeyEvent();
     InjectFakePointerEvent();
+  } else {
+    // With libei we don't have to inject fake events and wait for
+    // capabilities, so we mark the capabilities ready here.
+    seat_has_keyboard_capability_ = true;
+    seat_has_pointer_capability_ = true;
+    current_state_ = State::CAPABILITIES_RECEIVED;
   }
 
   MaybeFlushPendingEvents();
@@ -473,9 +523,10 @@ void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
                                   session_details));
     return;
   }
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
   remotedesktop_portal_.SetSessionDetails(session_details);
-  remote_desktop_initialized_ = true;
+  SetCapabilityCallbacks();
+
+  current_state_ = State::SESSION_INITIALIZED;
 
   remotedesktop_portal_.SetupLibei(
       base::BindOnce(&Core::InjectPendingEvents, this));
@@ -483,9 +534,12 @@ void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
 
 void InputInjectorWayland::Core::MaybeFlushPendingEvents() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  if (!IsReady()) {
+
+  if (current_state_ != State::CAPABILITIES_RECEIVED ||
+      current_state_ == State::STOPPED) {
     return;
   }
+
   while (!pending_remote_desktop_tasks_.empty()) {
     base::OnceClosure task = std::move(pending_remote_desktop_tasks_.front());
     pending_remote_desktop_tasks_.pop();
@@ -502,7 +556,6 @@ void InputInjectorWayland::Core::SetClipboardSessionDetails(
     return;
   }
 
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
   clipboard_->SetSessionDetails(session_details);
   clipboard_initialized_ = true;
 
@@ -515,22 +568,26 @@ void InputInjectorWayland::Core::SetClipboardSessionDetails(
 void InputInjectorWayland::Core::InjectMouseButton(unsigned int code,
                                                    bool pressed) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
+
   remotedesktop_portal_.InjectMouseButton(code, pressed);
 }
 
 void InputInjectorWayland::Core::InjectMouseScroll(unsigned int axis,
                                                    int steps) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
+
   remotedesktop_portal_.InjectMouseScroll(axis, steps);
 }
 
 void InputInjectorWayland::Core::MovePointerTo(int x, int y) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
+
   remotedesktop_portal_.MovePointerTo(x, y);
 }
 
 void InputInjectorWayland::Core::MovePointerBy(int delta_x, int delta_y) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
+
   remotedesktop_portal_.MovePointerBy(delta_x, delta_y);
 }
 
@@ -538,6 +595,7 @@ void InputInjectorWayland::Core::InjectKeyPress(unsigned int code,
                                                 bool pressed,
                                                 bool is_code) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
+
   remotedesktop_portal_.InjectKeyPress(code, pressed, is_code);
 }
 
@@ -549,7 +607,6 @@ void InputInjectorWayland::Core::Start(
         base::BindOnce(&Core::Start, this, std::move(client_clipboard)));
     return;
   }
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
   clipboard_->Start(std::move(client_clipboard));
 }
 
@@ -559,14 +616,12 @@ void InputInjectorWayland::Core::Shutdown() {
                                  base::BindOnce(&Core::Shutdown, this));
     return;
   }
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-  // We disable processing the events here. This may cause the events to be
-  // queued for sometime but the expectation here is that after `Shutdown` is
-  // invoked, we expect the injector to be destroyed soon.
+
   seat_has_keyboard_capability_ = false;
   seat_has_pointer_capability_ = false;
   clipboard_initialized_ = false;
-  remote_desktop_initialized_ = false;
+  current_state_ = State::STOPPED;
+  remotedesktop_portal_.Shutdown();
 }
 
 }  // namespace remoting

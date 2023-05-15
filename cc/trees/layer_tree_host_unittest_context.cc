@@ -850,7 +850,7 @@ class LayerTreeHostContextTestDontUseLostResources
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGpu(
-        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+        mailbox, GL_TEXTURE_2D, sync_token, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     texture->SetTransferableResource(
         resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
@@ -936,15 +936,12 @@ class LayerTreeHostContextTestDontUseLostResources
     }
   }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame,
-                                   DrawResult draw_result) override {
+  void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->active_tree()->source_frame_number() == 2) {
       // Lose the context after draw on the second commit. This will cause
       // a third commit to recover.
-      gl_->set_times_bind_texture_succeeds(0);
+      LoseContext();
     }
-    return draw_result;
   }
 
   void RequestNewLayerTreeFrameSink() override {

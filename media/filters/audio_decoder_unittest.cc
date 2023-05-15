@@ -143,7 +143,8 @@ class AudioDecoderTest
         break;
 #elif BUILDFLAG(IS_MAC)
       case AudioDecoderType::kAudioToolbox:
-        decoder_ = std::make_unique<AudioToolboxAudioDecoder>();
+        decoder_ =
+            std::make_unique<AudioToolboxAudioDecoder>(media_log_.Clone());
         break;
 #elif BUILDFLAG(IS_WIN)
       case AudioDecoderType::kMediaFoundation:
@@ -676,16 +677,16 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   }
 }
 
-TEST_P(AudioDecoderTest, DecodeMismatchedSubsamples) {
-  ASSERT_NO_FATAL_FAILURE(Initialize());
-  DecodeBuffer(CreateMismatchedBufferForTest());
-  EXPECT_TRUE(!last_decode_status().is_ok());
-}
-
 TEST_P(AudioDecoderTest, Decode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   EXPECT_TRUE(last_decode_status().is_ok());
+}
+
+TEST_P(AudioDecoderTest, DecodeMismatchedSubsamples) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeBuffer(CreateMismatchedBufferForTest());
+  EXPECT_TRUE(!last_decode_status().is_ok());
 }
 
 TEST_P(AudioDecoderTest, Reset) {
@@ -699,6 +700,12 @@ TEST_P(AudioDecoderTest, NoTimestamp) {
   buffer->set_timestamp(kNoTimestamp);
   DecodeBuffer(std::move(buffer));
   EXPECT_THAT(last_decode_status(), IsDecodeErrorStatus());
+}
+
+TEST_P(AudioDecoderTest, EOSBuffer) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeBuffer(DecoderBuffer::CreateEOSBuffer());
+  EXPECT_TRUE(last_decode_status().is_ok());
 }
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,

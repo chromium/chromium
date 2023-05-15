@@ -56,6 +56,7 @@ def generate_framework_tests_and_coverage(
         coverage_output_dir: str,
         graph_output_dir: Optional[str],
         delete_in_place: bool = False,
+        add_to_file: bool = False,
         suppress_coverage: bool = False):
     for partition_a in custom_partitions:
         check_partition_prefixes(partition_a, default_partition)
@@ -141,7 +142,7 @@ def generate_framework_tests_and_coverage(
     # Print all diffs that are required.
     compare_and_print_tests_to_remove_and_add(
         existing_tests_ids_by_platform_set, required_coverage_by_platform_set,
-        custom_partitions, default_partition)
+        custom_partitions, default_partition, add_to_file)
 
     if suppress_coverage:
         return
@@ -192,6 +193,13 @@ def main(argv=None):
                         action='store_true',
                         help='Delete test cases no longer needed in place',
                         required=False)
+
+    parser.add_argument('--add-to-file',
+                        dest='add_to_file',
+                        action='store_true',
+                        help='Add test cases to existing test file',
+                        required=False)
+
     parser.add_argument('--suppress-coverage',
                         dest='suppress_coverage',
                         action='store_true',
@@ -245,7 +253,7 @@ def main(argv=None):
         generate_framework_tests_and_coverage(
             supported_actions, enums_file, actions_file, coverage_file,
             custom_partitions, default_partition, coverage_output_dir,
-            graph_output_dir, options.delete_in_place,
+            graph_output_dir, options.delete_in_place, options.add_to_file,
             options.suppress_coverage)
 
 

@@ -22,7 +22,6 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/android/webapk/libs/common:common_java",
-    "//chrome/browser/android/browserservices/constants:java",
     "//chrome/browser/flags:java",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_main_dex_java",
@@ -48,7 +47,6 @@ robolectric_library("junit") {
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/libs/common:splash_java",
     "//chrome/android/webapk/test:junit_test_support",
-    "//chrome/browser/android/browserservices/constants:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/webapk/android/libs/common:java",
     "//components/webapps/browser/android:java",

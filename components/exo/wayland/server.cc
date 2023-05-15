@@ -27,6 +27,7 @@
 #include <remote-shell-unstable-v1-server-protocol.h>
 #include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
+#include <single-pixel-buffer-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
 #include <surface-augmenter-server-protocol.h>
@@ -76,6 +77,7 @@
 #include "components/exo/wayland/wl_shm.h"
 #include "components/exo/wayland/wl_subcompositor.h"
 #include "components/exo/wayland/wp_presentation.h"
+#include "components/exo/wayland/wp_single_pixel_buffer.h"
 #include "components/exo/wayland/wp_viewporter.h"
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wayland/zaura_output_manager.h"
@@ -131,10 +133,6 @@ const base::FilePath::CharType kSocketName[] = FILE_PATH_LITERAL("wayland-0");
 // Group used for wayland socket.
 const char kWaylandSocketGroup[] = "wayland";
 
-// Directory name where all custom wayland sockets will live.
-constexpr base::FilePath::CharType kCustomServerDir[] =
-    FILE_PATH_LITERAL("wayland");
-
 // Number of clients that can be waiting for accept() before we start refusing
 // connections. This is *NOT* the maximum number of clients, just pending ones
 // (see `man 2 listen`).
@@ -156,51 +154,9 @@ void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
 }
 
-// Custom wayland sockets are stored at:
-//
-//              /<sibling>/wayland/<context>/<unique>/<socket>
-//
-// where:
-//  - "sibling" is a sibling of the $XDG_RUNTIME_DIR
-//  - "context" is a directory to be bind-mounted into whatever namespace needs
-//    access to the wayland server.
-//  - "unique" is a directory created to prevent collisions of servers in the
-//    same context.
-//  - "socket" is the name of the wayland socket, usually "wayland-0"
-// This is documented in go/secure-exo-ids. Returns "true" if |out_temp_dir| was
-// successfully initialized.
-bool InitServerDirectory(const SecurityDelegate& security_delegate,
-                         base::ScopedTempDir& out_temp_dir) {
-  char* xdg_dir_str = getenv("XDG_RUNTIME_DIR");
-  if (!xdg_dir_str) {
-    LOG(ERROR) << "XDG_RUNTIME_DIR is not set.";
-    return false;
-  }
-  std::string security_context = security_delegate.GetSecurityContext();
-  if (security_context.empty()) {
-    LOG(ERROR) << "Providing an empty security context is an error.";
-    return false;
-  }
-  base::FilePath parent_path = base::FilePath(xdg_dir_str)
-                                   .DirName()
-                                   .Append(kCustomServerDir)
-                                   .Append(security_context);
-  if (!out_temp_dir.CreateUniqueTempDirUnderPath(parent_path)) {
-    LOG(ERROR) << "Unable to create runtime directory under " << parent_path;
-    return false;
-  }
-  if (!base::SetPosixFilePermissions(out_temp_dir.GetPath(), 0755)) {
-    LOG(ERROR) << "Could not set permissions for directory "
-               << out_temp_dir.GetPath()
-               << ", deleted=" << out_temp_dir.Delete();
-    return false;
-  }
-  return true;
-}
-
 }  // namespace
 
-bool Server::Open(bool default_path) {
+bool Server::Open() {
   std::string socket_name = kSocketName;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kWaylandServerSocket)) {
@@ -208,37 +164,32 @@ bool Server::Open(bool default_path) {
         command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
   }
 
-  if (default_path) {
-    char* runtime_dir_str = getenv("XDG_RUNTIME_DIR");
-    if (!runtime_dir_str) {
-      LOG(ERROR) << "XDG_RUNTIME_DIR not set in the environment";
-      return false;
-    }
-    socket_path_ = base::FilePath(runtime_dir_str).Append(socket_name);
-  } else {
-    if (!InitServerDirectory(*security_delegate_, socket_dir_)) {
-      return false;
-    }
-    socket_path_ = socket_dir_.GetPath().Append(socket_name);
+  char* runtime_dir_str = getenv("XDG_RUNTIME_DIR");
+  if (!runtime_dir_str) {
+    LOG(ERROR) << "XDG_RUNTIME_DIR not set in the environment";
+    return false;
   }
-  if (!socket_path_.IsAbsolute()) {
+  base::FilePath socket_path =
+      base::FilePath(runtime_dir_str).Append(socket_name);
+
+  if (!socket_path.IsAbsolute()) {
     LOG(ERROR) << "Unable to create a wayland server. The provided path must "
                   "be absolute, got: "
-               << socket_path_;
+               << socket_path;
     return false;
   }
 
   // On debugging chromeos-chrome on linux platform,
   // try to ensure the directory if missing.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-    base::FilePath runtime_dir = socket_path_.DirName();
+    base::FilePath runtime_dir = socket_path.DirName();
     CHECK(base::DirectoryExists(runtime_dir) ||
           base::CreateDirectory(runtime_dir))
         << "Failed to create " << runtime_dir;
   }
 
-  if (!AddSocket(socket_path_.MaybeAsASCII().c_str())) {
-    LOG(ERROR) << "Failed to add socket: " << socket_path_;
+  if (!AddSocket(socket_path.MaybeAsASCII().c_str())) {
+    LOG(ERROR) << "Failed to add socket: " << socket_path;
     return false;
   }
 
@@ -252,7 +203,7 @@ bool Server::Open(bool default_path) {
     return false;
   }
   if (wayland_group_res) {
-    if (HANDLE_EINTR(chown(socket_path_.MaybeAsASCII().c_str(), -1,
+    if (HANDLE_EINTR(chown(socket_path.MaybeAsASCII().c_str(), -1,
                            wayland_group.gr_gid)) < 0) {
       PLOG(ERROR) << "chown";
       return false;
@@ -261,8 +212,8 @@ bool Server::Open(bool default_path) {
     LOG(WARNING) << "Group '" << kWaylandSocketGroup << "' not found";
   }
 
-  if (!base::SetPosixFilePermissions(socket_path_, 0660)) {
-    PLOG(ERROR) << "Could not set permissions: " << socket_path_.value();
+  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
+    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
     return false;
   }
   return true;
@@ -315,8 +266,8 @@ void Server::Initialize() {
   // This is necessary to ensure aura_output_manager can send relevant output
   // events immediately after an output is bound to the client and before the
   // data in these events might be needed by the client.
-  wl_global_create(wl_display_.get(), &zaura_output_manager_interface, 1, this,
-                   bind_aura_output_manager);
+  wl_global_create(wl_display_.get(), &zaura_output_manager_interface,
+                   kZAuraOutputManagerVersion, this, bind_aura_output_manager);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
                    bind_subcompositor);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
@@ -333,6 +284,9 @@ void Server::Initialize() {
 
   wl_global_create(wl_display_.get(), &surface_augmenter_interface,
                    kSurfaceAugmenterVersion, display_, bind_surface_augmenter);
+  wl_global_create(
+      wl_display_.get(), &wp_single_pixel_buffer_manager_v1_interface,
+      kSinglePixelBufferVersion, display_, bind_single_pixel_buffer);
   wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
                    display_, bind_overlay_prioritizer);
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
@@ -452,7 +406,7 @@ void Server::Finalize(StartCallback callback, bool success) {
   if (success) {
     wayland_watcher_ = std::make_unique<wayland::WaylandWatcher>(this);
   }
-  std::move(callback).Run(success, socket_path_);
+  std::move(callback).Run(success);
 }
 
 Server::~Server() {
@@ -477,37 +431,9 @@ std::unique_ptr<Server> Server::Create(
   return server;
 }
 
-// static
-void Server::DestroyAsync(std::unique_ptr<Server> server) {
-  // We must delete the actual server on the same thread as it was created on,
-  // so we defer deleting its temporary directory by moving it out of the server
-  // first and deleting it on a blocking thread.
-  base::ScopedTempDir socket_dir = std::move(server->socket_dir_);
-  server.reset();
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(
-          [](base::ScopedTempDir socket_dir) {
-            if (socket_dir.IsValid() && !socket_dir.Delete()) {
-              LOG(ERROR) << "Failed to remove server directory: "
-                         << socket_dir.GetPath();
-            }
-          },
-          std::move(socket_dir)));
-}
-
-void Server::StartAsync(StartCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&Server::Open, base::Unretained(this),
-                     /*default_path=*/false),
-      base::BindOnce(&Server::Finalize, base::Unretained(this),
-                     std::move(callback)));
-}
-
 void Server::StartWithDefaultPath(StartCallback callback) {
-  if (!Open(/*default_path=*/true)) {
-    std::move(callback).Run(/*success=*/false, socket_path_);
+  if (!Open()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   Finalize(std::move(callback), /*success=*/true);

@@ -18,7 +18,16 @@ const loadedSvgs = new Map<string, SVGElement>();
 export class SvgWrapper extends LitElement {
   static override styles = css`
     :host {
+      /* Most common default color for icons. */
+      color: var(--cros-sys-on_surface);
       display: block;
+      margin: auto;
+      height: fit-content;
+      width: fit-content;
+    }
+    svg {
+      display: block;
+      fill: currentColor;
     }
   `;
 
@@ -26,7 +35,16 @@ export class SvgWrapper extends LitElement {
     name: {type: String},
   };
 
-  name = null;
+  name: string|null = null;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.hasAttribute('aria-hidden')) {
+      // Set default of aria-hidden to true since the parent element of the SVG
+      // is typically a button and would handle a11y instead of the SVG itself.
+      this.setAttribute('aria-hidden', 'true');
+    }
+  }
 
   override render(): unknown {
     if (this.name === null) {
@@ -53,10 +71,9 @@ export function loadSvgImages(): void {
     const imageName = assertExists(el.dataset['svg']);
     const svg = document.createElement('svg-wrapper');
     svg.setAttribute('name', imageName);
-    // The parent element of the SVG is typically a button and would
-    // handle a11y instead of the SVG itself.
-    svg.setAttribute('aria-hidden', 'true');
-    el.appendChild(svg);
+    // Prepend the svg so it's on the bottom-most layer and won't be covering
+    // other possible children (e.g. inkdrop effect).
+    el.prepend(svg);
   }
 
   // This needs to be called after svg are loaded, so the SvgWrapper will

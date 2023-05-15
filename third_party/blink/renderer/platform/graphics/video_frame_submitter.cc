@@ -97,6 +97,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
 
   // Not used by VideoFrameSubmitter.
   void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED(); }
+  void SetWantsBeginFrameAcks() override { NOTREACHED(); }
 
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,

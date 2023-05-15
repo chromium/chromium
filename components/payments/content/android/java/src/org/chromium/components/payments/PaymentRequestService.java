@@ -685,6 +685,9 @@ public class PaymentRequestService
                 case MethodStrings.GOOGLE_PAY:
                     methodTypes.add(PaymentMethodCategory.GOOGLE);
                     break;
+                case MethodStrings.GOOGLE_PAY_AUTHENTICATION:
+                    methodTypes.add(PaymentMethodCategory.GOOGLE_PAY_AUTHENTICATION);
+                    break;
                 case MethodStrings.GOOGLE_PLAY_BILLING:
                     methodTypes.add(PaymentMethodCategory.PLAY_BILLING);
                     break;
@@ -799,6 +802,9 @@ public class PaymentRequestService
             if (method.equals(MethodStrings.ANDROID_PAY)
                     || method.equals(MethodStrings.GOOGLE_PAY)) {
                 category = PaymentMethodCategory.GOOGLE;
+                break;
+            } else if (method.equals(MethodStrings.GOOGLE_PAY_AUTHENTICATION)) {
+                category = PaymentMethodCategory.GOOGLE_PAY_AUTHENTICATION;
                 break;
             } else if (method.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
                 assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP;

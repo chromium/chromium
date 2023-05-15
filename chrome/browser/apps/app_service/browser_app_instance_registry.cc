@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -32,14 +33,14 @@ void MinimizeWindow(aura::Window* window) {
 }  // namespace
 
 struct BrowserAppInstanceRegistry::WindowEventList {
-  aura::Window* window{nullptr};
+  raw_ptr<aura::Window, ExperimentalAsh> window{nullptr};
   std::vector<base::OnceCallback<void(aura::Window*)>> events;
 };
 
 BrowserAppInstanceRegistry::BrowserAppInstanceRegistry(
     BrowserAppInstanceTracker& ash_instance_tracker)
     : ash_instance_tracker_(ash_instance_tracker) {
-  tracker_observation_.Observe(&ash_instance_tracker_);
+  tracker_observation_.Observe(&*ash_instance_tracker_);
   aura_env_observation_.Observe(aura::Env::GetInstance());
 }
 
@@ -89,7 +90,7 @@ bool BrowserAppInstanceRegistry::IsAppRunning(const std::string& app_id) const {
 }
 
 bool BrowserAppInstanceRegistry::IsAshBrowserRunning() const {
-  return ash_instance_tracker_.window_instances_.size() > 0;
+  return ash_instance_tracker_->window_instances_.size() > 0;
 }
 
 bool BrowserAppInstanceRegistry::IsLacrosBrowserRunning() const {
@@ -103,7 +104,7 @@ void BrowserAppInstanceRegistry::ActivateTabInstance(
       controller_->ActivateTabInstance(id);
     }
   } else {
-    ash_instance_tracker_.ActivateTabInstance(id);
+    ash_instance_tracker_->ActivateTabInstance(id);
   }
 }
 
@@ -159,13 +160,13 @@ bool BrowserAppInstanceRegistry::IsInstanceActive(
 
 void BrowserAppInstanceRegistry::NotifyExistingInstances(
     BrowserAppInstanceObserver* observer) {
-  for (const auto& pair : ash_instance_tracker_.window_instances_) {
+  for (const auto& pair : ash_instance_tracker_->window_instances_) {
     observer->OnBrowserWindowAdded(*pair.second);
   }
-  for (const auto& pair : ash_instance_tracker_.app_tab_instances_) {
+  for (const auto& pair : ash_instance_tracker_->app_tab_instances_) {
     observer->OnBrowserAppAdded(*pair.second);
   }
-  for (const auto& pair : ash_instance_tracker_.app_window_instances_) {
+  for (const auto& pair : ash_instance_tracker_->app_window_instances_) {
     observer->OnBrowserAppAdded(*pair.second);
   }
   for (const auto& pair : lacros_window_instances_) {
@@ -351,7 +352,7 @@ void BrowserAppInstanceRegistry::RunOrEnqueueEventForWindow(
     base::OnceCallback<void(aura::Window*)> event) {
   auto& event_list = window_id_to_event_list_[window_id];
   if (event_list.window) {
-    std::move(event).Run(event_list.window);
+    std::move(event).Run(event_list.window.get());
   } else {
     event_list.events.push_back(std::move(event));
   }

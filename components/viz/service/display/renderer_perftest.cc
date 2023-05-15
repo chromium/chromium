@@ -175,12 +175,12 @@ TransferableResource CreateTestTexture(
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, MakePixelSpan(pixels));
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", MakePixelSpan(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
-      SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+      mailbox, GL_TEXTURE_2D, sync_token, size, SinglePlaneFormat::kRGBA_8888,
+      false /* is_overlay_candidate */);
   gl_resource.color_space = gfx::ColorSpace();
   auto release_callback = base::BindOnce(
       &DeleteSharedImage, std::move(child_context_provider), mailbox);

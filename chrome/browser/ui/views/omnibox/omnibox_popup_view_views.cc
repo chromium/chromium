@@ -253,10 +253,6 @@ OmniboxResultView* OmniboxPopupViewViews::GetSelectedResultView() {
   return result_view_at(selected_line);
 }
 
-bool OmniboxPopupViewViews::InExplicitExperimentalKeywordMode() {
-  return edit_model_->InExplicitExperimentalKeywordMode();
-}
-
 bool OmniboxPopupViewViews::IsOpen() const {
   return popup_ != nullptr;
 }
@@ -465,6 +461,36 @@ void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
 
 void OmniboxPopupViewViews::OnDragCanceled() {
   SetMouseAndGestureHandler(nullptr);
+}
+
+void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  return GetAccessibleNodeData(node_data);
+}
+
+void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  // Establish a "CONTROLS" relationship between the omnibox and the
+  // the popup. This allows a screen reader to understand the relationship
+  // between the omnibox and the list of suggestions, and determine which
+  // suggestion is currently selected, even though focus remains here on
+  // the omnibox.
+  int32_t popup_view_id = GetViewAccessibility().GetUniqueId().Get();
+  node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
+                                 {popup_view_id});
+  OmniboxResultView* selected_result_view = GetSelectedResultView();
+  if (selected_result_view) {
+    node_data->AddIntAttribute(
+        ax::mojom::IntAttribute::kActivedescendantId,
+        selected_result_view->GetViewAccessibility().GetUniqueId().Get());
+  }
+}
+
+std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
+    size_t line) {
+  views::LabelButton* button = static_cast<views::LabelButton*>(
+      result_view_at(line)->GetActiveAuxiliaryButtonForAccessibility());
+  return button->GetText();
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/infolist_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -109,10 +110,10 @@ class InfolistEntryView : public views::View {
   ui::InfolistEntry entry_;
 
   // The title label. Owned by views hierarchy.
-  views::Label* title_label_;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_;
 
   // The description label. Owned by views hierarchy.
-  views::Label* description_label_;
+  raw_ptr<views::Label, ExperimentalAsh> description_label_;
 };
 
 BEGIN_METADATA(InfolistEntryView, views::View)
@@ -138,8 +139,8 @@ InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
   description_label_->SizeToFit(kInfolistEntryWidth);
   description_label_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(2, 17, 4, 4)));
-  AddChildView(title_label_);
-  AddChildView(description_label_);
+  AddChildView(title_label_.get());
+  AddChildView(description_label_.get());
   UpdateBackground();
 }
 

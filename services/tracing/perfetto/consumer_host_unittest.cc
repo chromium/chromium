@@ -310,7 +310,8 @@ class TracingConsumerTest : public testing::Test,
                             public mojo::DataPipeDrainer::Client {
  public:
   void SetUp() override {
-    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::MainThreadType::IO);
     tracing_environment_ = std::make_unique<base::test::TracingEnvironment>(
         *task_environment_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         PerfettoTracedProcess::Get()->perfetto_platform_for_testing());

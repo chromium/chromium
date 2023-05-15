@@ -10,6 +10,19 @@
       "use_goma": true
     }
   },
+  "chromeos-js-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "optimize_webui": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_javascript_coverage": true,
+      "use_remoteexec": true
+    }
+  },
   "gpu-fyi-try-lacros-amd-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -286,6 +299,15 @@
       "use_remoteexec": true
     }
   },
+  "linux-cr23-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "linux-dcheck-off-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -353,7 +375,6 @@
   "linux-js-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_webui_inline_sourcemaps": true,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,

@@ -40,11 +40,11 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemMetadata::
 ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
   CreateImageView();
-  const gfx::VectorIcon* icon = &kSystemTrayRecordingIcon;
+  const gfx::VectorIcon* icon = &kPrivacyIndicatorsScreenShareIcon;
   image_view()->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
       *icon, kUnifiedTrayIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorAlert))));
+          AshColorProvider::ContentLayerType::kIconColorPrimary))));
 
   multi_capture_service_client_observation_.Observe(
       Shell::Get()->multi_capture_service_client());

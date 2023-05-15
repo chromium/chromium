@@ -231,20 +231,12 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
                                    ->tab_strip_model()
                                    ->GetActiveWebContents()
                                    ->GetPrimaryMainFrame();
-    // We can't use EvalJs with a different world_id to get around CSP
-    // restrictions, because Mojo is only exposed to the global world
-    // (ISOLATED_WORLD_ID_GLOBAL). So we use |ExecuteScriptAndExtractString| to
-    // work with CSP and in the right world_id.
-    std::string result;
     std::string wrapped_script =
-        base::StrCat({"Promise.resolve(", statement, ").then(",
-                      "  resolved => domAutomationController.send(resolved),"
-                      "  error => domAutomationController.send('JS Error: ' + "
-                      "    error.message)",
+        base::StrCat({"Promise.resolve(", statement, ").catch(",
+                      "  error => 'JS Error: ' + "
+                      "    error.message",
                       ");"});
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractString(eval_frame, wrapped_script, &result));
-    return result;
+    return EvalJs(eval_frame, wrapped_script).ExtractString();
   }
 
   // Returns whether |frame| (defaults to the main frame) has Mojo bindings
@@ -255,14 +247,7 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
                                    ->tab_strip_model()
                                    ->GetActiveWebContents()
                                    ->GetPrimaryMainFrame();
-    // We can't use EvalJs with a different world_id to get around CSP
-    // restrictions, because Mojo is only exposed to the global world
-    // (ISOLATED_WORLD_ID_GLOBAL). So we use |ExecuteScriptAndExtractString| to
-    // work with CSP and in the right world_id.
-    bool result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        eval_frame, "domAutomationController.send(!!window.Mojo)", &result));
-    return result;
+    return content::EvalJs(eval_frame, "!!window.Mojo").ExtractBool();
   }
 
  private:
@@ -302,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
       web_contents->GetWebUI()->GetController()->broker_for_testing();
   // Refresh to trigger a RenderFrame reuse.
   content::TestNavigationObserver observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "location.reload()"));
+  // TODO(https://crbug.com/1157718): migrate to ExecJs.
+  EXPECT_TRUE(content::ExecJs(web_contents, "location.reload()"));
   observer.Wait();
 
   // Verify a new broker is created, and Foo still works.
@@ -343,22 +329,14 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest,
 
   // Attempt to get a remote for a Bar interface (registered for BarUI).
   //
-  // Don't use EvalJs here because it don't work with WebUI's default CSP, and
-  // we only expose Mojo to the global world (ISOLATED_WORLD_ID_GLOBAL) thus the
-  // `world_id = 1` work-around doesn't work.
-  //
   // EXPECT_FALSE because this the following should cause renderer to shutdown
   // before it can reply with the result.
-  std::string result;
-  EXPECT_FALSE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "(async () => {"
-      "  let barRemote = window.Bar.getRemote();"
-      "  let resp = await barRemote.getBar();"
-      "  domAutomationController.send(resp.value);"
-      "})()",
-      &result));
-  EXPECT_EQ("", result);
+  EXPECT_FALSE(content::ExecJs(web_contents,
+                               "(async () => {"
+                               "  let barRemote = window.Bar.getRemote();"
+                               "  let resp = await barRemote.getBar();"
+                               "  return resp.value;"
+                               "})()"));
   watcher.Wait();
   EXPECT_FALSE(watcher.did_exit_normally());
   EXPECT_TRUE(web_contents->IsCrashed());
@@ -395,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
 
   // Reload Bar iframe, Bar interface should still work.
   content::TestNavigationObserver observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScript(bar_frame, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(bar_frame, "location.reload()"));
   observer.Wait();
   bar_frame = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 

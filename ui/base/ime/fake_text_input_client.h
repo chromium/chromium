@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 
 namespace ui {
 
@@ -26,6 +27,7 @@ class FakeTextInputClient : public TextInputClient {
   void set_text_input_type(TextInputType text_input_type);
   void set_source_id(ukm::SourceId source_id);
   void SetTextAndSelection(const std::u16string& text, gfx::Range selection);
+  void SetFlags(const int flags);
 
   const std::u16string& text() const { return text_; }
   const gfx::Range& selection() const { return selection_; }
@@ -101,6 +103,7 @@ class FakeTextInputClient : public TextInputClient {
   std::vector<ui::ImeTextSpan> ime_text_spans_;
   gfx::Range autocorrect_range_;
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
+  int flags_ = TEXT_INPUT_FLAG_NONE;
 };
 
 }  // namespace ui

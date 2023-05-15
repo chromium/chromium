@@ -32,6 +32,7 @@ import './network_summary.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -43,7 +44,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -81,6 +82,7 @@ declare global {
         CustomEvent<{networkState: NetworkStateProperties}>;
     'show-known-networks': CustomEvent<NetworkType>;
     'show-networks': CustomEvent<NetworkType>;
+    'show-passpoint-detail': CustomEvent<PasspointSubscription>;
   }
 }
 
@@ -311,6 +313,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       isCreateCustomApnButtonDisabled_: {
         type: Boolean,
       },
+
+      /**
+       * Passpoint subscription set by show-passpoint-detail.
+       */
+      passpointSubscription_: {
+        type: Object,
+        notify: true,
+      },
     };
   }
 
@@ -332,7 +342,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private isCreateCustomApnButtonDisabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
   private knownNetworksType_: NetworkType;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
+  private passpointSubscription_: PasspointSubscription|undefined;
   private pendingShowCellularSetupDialogAttemptPageName_: CellularSetupPageName|
       null;
   private pendingShowSimLockDialog_: boolean;
@@ -393,6 +404,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     });
     this.addEventListener('show-hotspot-config-dialog', () => {
       this.onShowHotspotConfigDialog_();
+    });
+    this.addEventListener('show-passpoint-detail', (event) => {
+      this.onShowPasspointDetails_(event);
     });
     this.addEventListener('show-error-toast', (event) => {
       this.onShowErrorToast_(event);
@@ -938,6 +952,25 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     const apnSubpage = castExists(
         this.shadowRoot!.querySelector<ApnSubpageElement>('#apnSubpage'));
     apnSubpage.openApnDetailDialogInCreateMode();
+  }
+
+  private onShowPasspointDetails_(event: CustomEvent<PasspointSubscription>):
+      void {
+    this.passpointSubscription_ = event.detail;
+    const params = new URLSearchParams();
+    params.append('id', this.passpointSubscription_.id);
+    Router.getInstance().navigateTo(routes.PASSPOINT_DETAIL, params);
+  }
+
+  private getPasspointSubscriptionName_(subscription: PasspointSubscription|
+                                        undefined): string {
+    if (!subscription) {
+      return '';
+    }
+    if (subscription.friendlyName && subscription.friendlyName !== '') {
+      return subscription.friendlyName;
+    }
+    return subscription.domains[0];
   }
 }
 

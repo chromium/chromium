@@ -46,7 +46,6 @@
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -861,18 +860,18 @@ void WorkspaceWindowResizer::CompleteDrag() {
     WMEventType type;
     switch (snap_type_) {
       case SnapType::kPrimary: {
-        window_state()->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
-        const WMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
+        const WindowSnapWMEvent snap_primary_event(
+            WM_EVENT_SNAP_PRIMARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
       }
       case SnapType::kSecondary: {
-        window_state()->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
-        const WMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
+        const WindowSnapWMEvent snap_secondary_event(
+            WM_EVENT_SNAP_SECONDARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;
       }
@@ -1336,7 +1335,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
       return true;
     }
     window_tracker_.Remove(magnetism_window_);
-    magnetism_window_ = NULL;
+    magnetism_window_ = nullptr;
   }
 
   // Avoid magnetically snapping windows that are not resizable.
@@ -1707,20 +1706,20 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
     case WindowStateType::kPrimarySnapped:
       if (window_state->CanSnap()) {
         window_state->SetRestoreBoundsInParent(restore_bounds_for_gesture_);
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WMEvent event(WM_EVENT_SNAP_PRIMARY);
+        const WindowSnapWMEvent event(
+            WM_EVENT_SNAP_PRIMARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state->OnWMEvent(&event);
       }
       break;
     case WindowStateType::kSecondarySnapped:
       if (window_state->CanSnap()) {
         window_state->SetRestoreBoundsInParent(restore_bounds_for_gesture_);
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WMEvent event(WM_EVENT_SNAP_SECONDARY);
+        const WindowSnapWMEvent event(
+            WM_EVENT_SNAP_SECONDARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state->OnWMEvent(&event);
       }
       break;

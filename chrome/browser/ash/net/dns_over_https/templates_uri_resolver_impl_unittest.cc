@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -95,10 +96,9 @@ class TemplatesUriResolverImplTest : public testing::Test {
         prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
 
-    fake_user_manager_ = new user_manager::FakeUserManager();
-    fake_user_manager_->set_local_state(&pref_service_);
+    fake_user_manager_ = new user_manager::FakeUserManager(&pref_service_);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>();
 
@@ -137,7 +137,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  user_manager::FakeUserManager* fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
@@ -246,6 +246,30 @@ TEST_F(TemplatesUriResolverImplTest, ReuseOldPolicyFeature) {
   EXPECT_NE(kEffectiveTemplateIdentifiersWithTestSalt,
             kEffectiveTemplateIdentifiers);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
+}
+
+TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
+  SetupAffiliatedUser();
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeSecure));
+  pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value(""));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value(kTemplateIdentifiers));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+  doh_template_uri_resolver_->UpdateFromPrefs(pref_service());
+
+  EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(),
+            kDisplayTemplateIdentifiers);
+  EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
+            kDisplayTemplateIdentifiers);
+  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
+
+  // `prefs::kDnsOverHttpsTemplates` should apply when
+  // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
+  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  doh_template_uri_resolver_->UpdateFromPrefs(pref_service());
+  EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(), kGoogleDns);
+  EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 }  // namespace ash::dns_over_https

@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
@@ -142,12 +142,6 @@ void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
   MaybeFinishUninstallAndDestruct();
 }
 
-void WebAppUninstallCommand::OnSyncSourceRemoved() {
-  // TODO(crbug.com/1320086): remove after uninstall from sync is async.
-  Abort(webapps::UninstallResultCode::kNoAppToUninstall);
-  return;
-}
-
 void WebAppUninstallCommand::OnShutdown() {
   Abort(webapps::UninstallResultCode::kError);
   return;
@@ -219,9 +213,19 @@ void WebAppUninstallCommand::Uninstall(
     webapps::WebappUninstallSource uninstall_source) {
   QueueSubAppsForUninstallIfAny(app_id);
 
+  auto* web_app = lock_->registrar().GetAppById(app_id);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<base::FilePath> app_profile_path;
+  if (web_app->chromeos_data().has_value()) {
+    app_profile_path = web_app->chromeos_data()->app_profile_path;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   auto uninstall_job = WebAppUninstallJob::CreateAndStart(
-      app_id,
-      url::Origin::Create(lock_->registrar().GetAppById(app_id)->start_url()),
+      app_id, url::Origin::Create(web_app->start_url()),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       base::BindOnce(&WebAppUninstallCommand::OnSingleUninstallComplete,
                      weak_factory_.GetWeakPtr(), app_id, uninstall_source),
       lock_->os_integration_manager(), lock_->sync_bridge(),

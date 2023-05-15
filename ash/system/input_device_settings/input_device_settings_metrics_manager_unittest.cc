@@ -272,8 +272,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   mojom::Touchpad touchpad_external;
   touchpad_external.device_key = kExternalTouchpadId;
   touchpad_external.is_external = true;
+  touchpad_external.is_haptic = true;
   touchpad_external.settings = mojom::TouchpadSettings::New();
   touchpad_external.settings->sensitivity = kSampleSensitivity;
+  touchpad_external.settings->haptic_sensitivity = kSampleSensitivity;
 
   base::HistogramTester histogram_tester;
   SimulateUserLogin(kUser1);
@@ -281,6 +283,12 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Initial",
       /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticEnabled.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Initial",
+      /*sample=*/3u, /*expected_bucket_count=*/1u);
 
   // Call RecordTouchpadInitialMetrics with the same user and same touchpad,
   // ExpectTotalCount for Internal metric won't increase.
@@ -306,9 +314,14 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       !touchpad_external.settings->tap_dragging_enabled;
   touchpad_external.settings->tap_to_click_enabled =
       !touchpad_external.settings->tap_to_click_enabled;
+  touchpad_external.settings->haptic_sensitivity = kSampleMaxSensitivity;
+
   manager_.get()->RecordTouchpadChangedMetrics(touchpad_external, *old_setting);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.AccelerationEnabled.Changed",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticEnabled.Changed",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.ReverseScrolling.Changed",
@@ -322,6 +335,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.TapToClick.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Changed",
+      /*sample=*/5u, /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
@@ -368,4 +384,54 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "AssistantRemappedTo.Changed",
       /*expected_count=*/0);
 }
+
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       RecordModifierRemappingHashMetrics) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kExternalKeyboardId;
+  keyboard.is_external = false;
+  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
+      ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape},
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kEscape},
+  };
+  base::HistogramTester histogram_tester;
+
+  SimulateUserLogin(kUser1);
+
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+  // Test the hash code is correct with manually computed value.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 0x7654255,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 1u);
+
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl},
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kEscape},
+      {ui::mojom::ModifierKey::kCapsLock, ui::mojom::ModifierKey::kAssistant},
+      {ui::mojom::ModifierKey::kEscape, ui::mojom::ModifierKey::kCapsLock},
+      {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kAssistant},
+      {ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kVoid},
+  };
+
+  SimulateUserLogin(kUser2);
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+
+  // Test the hash code is correct with manually computed value.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 0x3747501,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 2u);
+}
+
 }  // namespace ash

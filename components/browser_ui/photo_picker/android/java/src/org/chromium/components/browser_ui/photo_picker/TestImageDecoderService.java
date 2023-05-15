@@ -9,12 +9,10 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * A service to accept requests to take image file contents and decode them, used for tests.
  */
-@MainDex
 public class TestImageDecoderService extends Service {
     private final ImageDecoder mDecoder = new ImageDecoder();
 

@@ -121,8 +121,8 @@ class FakePasswordRequirementsSpecFetcher
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
-  MOCK_CONST_METHOD0(IsIncognito, bool());
+  MOCK_METHOD(bool, IsSavingAndFillingEnabled, (const GURL&), (const override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
 
   explicit MockPasswordManagerClient(std::unique_ptr<PrefService> prefs)
       : prefs_(std::move(prefs)),
@@ -356,7 +356,7 @@ TEST_F(PasswordGenerationFrameHelperTest, UpdatePasswordSyncStateIncognito) {
   // syncing is enabled, generation should still be disabled.
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*client_, IsIncognito()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(testing::Return(true));
   PrefService* prefs = client_->GetPrefs();
   prefs->SetBoolean(prefs::kCredentialsEnableService, true);
   EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())

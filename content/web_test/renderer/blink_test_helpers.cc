@@ -19,7 +19,7 @@
 #include "ui/display/display.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -113,7 +113,7 @@ static base::FilePath GetBuildDirectory() {
   if (base::mac::AmIBundled()) {
     // If this is a bundled Content Shell.app, go up one from the outer bundle
     // directory.
-    return base::mac::OuterBundlePath().DirName();
+    return base::apple::OuterBundlePath().DirName();
   }
 #endif
 

@@ -237,7 +237,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   String SourceURL();
   void RemapSourceDataToCSSOMIfNecessary();
   void MapSourceDataToCSSOM();
-  bool ResourceStyleSheetText(String* result);
+  bool ResourceStyleSheetText(String* result, bool* loadingFailed);
   bool InlineStyleSheetText(String* result);
   bool InspectorStyleSheetText(String* result);
   String CollectStyleSheetRules();
@@ -274,6 +274,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   InspectorIndexMap rule_to_source_data_;
   InspectorIndexMap source_data_to_rule_;
   String source_url_;
+  absl::optional<bool> request_failed_to_load_;
   // True means that CSSOM rules are to be synced with the original source text.
   bool marked_for_sync_;
 };

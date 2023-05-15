@@ -1574,6 +1574,17 @@ void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
   input_handler->ExtendSelectionAndDelete(before, after);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void RenderWidgetHostViewAura::ExtendSelectionAndReplace(
+    size_t before,
+    size_t after,
+    const base::StringPiece16 replacement_text) {
+  // TODO(crbug.com/1443726): Implement this using a custom Mojo method on
+  // FrameWidgetInputHandler.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+#endif
+
 void RenderWidgetHostViewAura::EnsureCaretNotInRect(
     const gfx::Rect& rect_in_screen) {
   keyboard_occluded_bounds_ = rect_in_screen;

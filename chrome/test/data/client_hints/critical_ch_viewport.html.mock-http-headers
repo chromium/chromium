@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Accept-CH: sec-ch-viewport-height,sec-ch-viewport-width,viewport-width
+Critical-CH: sec-ch-viewport-height,sec-ch-viewport-width,viewport-width

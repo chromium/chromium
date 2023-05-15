@@ -41,7 +41,22 @@ void CommerceTabHelper::DidFinishNavigation(
                                      previous_main_frame_url_);
   previous_main_frame_url_ = navigation_context->GetUrl();
 
+  // If navigating to a different document, expect PageLoaded to be
+  // triggered.
+  if (!navigation_context->IsSameDocument()) {
+    web_wrapper_->SetIsFirstLoadForNavigationFinished(false);
+  }
+
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+}
+
+void CommerceTabHelper::DidStopLoading(web::WebState* web_state) {
+  if (!shopping_service_) {
+    return;
+  }
+
+  web_wrapper_->SetIsFirstLoadForNavigationFinished(true);
+  shopping_service_->DidStopLoading(web_wrapper_.get());
 }
 
 void CommerceTabHelper::PageLoaded(
@@ -49,6 +64,8 @@ void CommerceTabHelper::PageLoaded(
     web::PageLoadCompletionStatus load_completion_status) {
   if (!shopping_service_)
     return;
+
+  web_wrapper_->SetIsFirstLoadForNavigationFinished(true);
 
   shopping_service_->DidFinishLoad(web_wrapper_.get());
 }

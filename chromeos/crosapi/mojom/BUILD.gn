@@ -37,6 +37,7 @@ mojom("mojom") {
     "dlp.mojom",
     "document_scan.mojom",
     "download_controller.mojom",
+    "download_status_updater.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",
     "emoji_picker.mojom",
@@ -251,7 +252,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.GUID"
-          cpp = "::base::GUID"
+          cpp = "::base::Uuid"
         },
         {
           mojom = "crosapi.mojom.TabGroup"

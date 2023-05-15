@@ -31,6 +31,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -62,8 +63,7 @@
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/public/activation_client.h"
 
-namespace ash {
-namespace window_util {
+namespace ash::window_util {
 namespace {
 
 // This window targeter reserves space for the portion of the resize handles
@@ -89,6 +89,55 @@ class InteriorResizeHandleTargeterAsh
   }
 };
 
+// Returns the lowest common parent of the given `windows` by traversing up from
+// one of the windows' direct parent and check if the intermediate parent
+// contains all the `windows`. If yes, it will be the lowest common parent.
+aura::Window* FindLowestCommonParent(const aura::Window::Windows& windows) {
+  if (windows.empty()) {
+    return nullptr;
+  }
+
+  auto contains_all = [&](aura::Window* parent) {
+    for (aura::Window* window : windows) {
+      if (!parent->Contains(window)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // As a window can `Contains` itself, which is not the common parent, we start
+  // traversing from its parent instead.
+  for (aura::Window* parent = windows.front()->parent(); parent;
+       parent = parent->parent()) {
+    if (contains_all(parent)) {
+      return parent;
+    }
+  }
+
+  return nullptr;
+}
+
+// Uses DFS to find the topmost child of the `parent` that is included in
+// `windows`. With the reverse traversing of the children, the first observed
+// window found will be the topmost one.
+aura::Window* FindTopMostChild(aura::Window* parent,
+                               const aura::Window::Windows& windows) {
+  for (aura::Window* child : base::Reversed(parent->children())) {
+    for (aura::Window* window : windows) {
+      if (child == window) {
+        return window;
+      }
+      if (child->Contains(window)) {
+        return FindTopMostChild(child, windows);
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 aura::Window* GetActiveWindow() {
@@ -102,6 +151,25 @@ aura::Window* GetActiveWindow() {
 aura::Window* GetFocusedWindow() {
   return aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
       ->GetFocusedWindow();
+}
+
+bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
+  CHECK_NE(win1, win2);
+  CHECK_EQ(win1->parent(), win2->parent());
+
+  const auto& children = win1->parent()->children();
+  auto win1_iter = base::ranges::find(children, win1);
+  auto win2_iter = base::ranges::find(children, win2);
+  CHECK(win1_iter != children.end());
+  CHECK(win2_iter != children.end());
+  return win1_iter < win2_iter;
+}
+
+aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
+  aura::Window* lowest_common_parent = FindLowestCommonParent(windows);
+  CHECK(lowest_common_parent);
+
+  return FindTopMostChild(lowest_common_parent, windows);
 }
 
 aura::Window* GetCaptureWindow() {
@@ -522,5 +590,4 @@ bool IsNaturalScrollOn() {
          pref->GetBoolean(prefs::kNaturalScroll);
 }
 
-}  // namespace window_util
-}  // namespace ash
+}  // namespace ash::window_util

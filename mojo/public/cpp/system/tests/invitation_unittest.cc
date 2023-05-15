@@ -8,6 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -23,6 +24,7 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/test_switches.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -35,12 +37,22 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/access_token.h"
+#endif
+
 namespace mojo {
 namespace {
 
 enum class InvitationType {
   kNormal,
   kIsolated,
+#if BUILDFLAG(IS_WIN)
+  // For now, the concept of an elevated process is only meaningful on Windows.
+  kElevated,
+#endif
 };
 
 enum class TransportType {
@@ -140,15 +152,29 @@ class MAYBE_InvitationCppTest
       channel->RemoteProcessLaunchAttempted();
 
     OutgoingInvitation invitation;
-    if (invitation_type == InvitationType::kNormal) {
+    if (invitation_type != InvitationType::kIsolated) {
       for (uint64_t name = 0; name < num_primordial_pipes; ++name)
         primordial_pipes[name] = invitation.AttachMessagePipe(name);
     }
 
+#if BUILDFLAG(IS_WIN)
+    if (invitation_type == InvitationType::kElevated) {
+      // We can't elevate the child process because of UAC, so instead we just
+      // lower the integrity level on the IO thread, so that OpenProcess() will
+      // fail with access denied error on the server side, forcing the client
+      // to be responsible for handle duplication. This trick works regardless
+      // of whether the current process is elevated.
+      core::GetIOTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&LowerCurrentThreadIntegrityLevel));
+
+      invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
+    }
+#endif
+
     switch (transport_type) {
       case TransportType::kChannel:
         DCHECK(channel_endpoint.is_valid());
-        if (invitation_type == InvitationType::kNormal) {
+        if (invitation_type != InvitationType::kIsolated) {
           OutgoingInvitation::Send(std::move(invitation),
                                    child_process_.Handle(),
                                    std::move(channel_endpoint), error_callback);
@@ -162,7 +188,7 @@ class MAYBE_InvitationCppTest
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
       case TransportType::kChannelServer:
         DCHECK(server_endpoint.is_valid());
-        if (invitation_type == InvitationType::kNormal) {
+        if (invitation_type != InvitationType::kIsolated) {
           OutgoingInvitation::Send(std::move(invitation),
                                    child_process_.Handle(),
                                    std::move(server_endpoint), error_callback);
@@ -177,9 +203,8 @@ class MAYBE_InvitationCppTest
         break;
       case TransportType::kChannelServerWithoutHandle:
         DCHECK(server_endpoint.is_valid());
-        if (invitation_type == InvitationType::kNormal) {
-          OutgoingInvitation::Send(std::move(invitation),
-                                   child_process_.Handle(),
+        if (invitation_type != InvitationType::kIsolated) {
+          OutgoingInvitation::Send(std::move(invitation), {},
                                    std::move(server_endpoint), error_callback);
         } else {
           DCHECK(primordial_pipes);
@@ -219,6 +244,21 @@ class MAYBE_InvitationCppTest
     return std::string(payload.begin(), payload.end());
   }
 
+#if BUILDFLAG(IS_WIN)
+  static void LowerCurrentThreadIntegrityLevel() {
+    auto restricted_access_token = base::win::AccessToken::FromCurrentProcess(
+        /* impersonation= */ true, TOKEN_ALL_ACCESS);
+    PCHECK(restricted_access_token);
+    CHECK(restricted_access_token->IsImpersonation());
+    CHECK_GT(restricted_access_token->IntegrityLevel(),
+             static_cast<DWORD>(SECURITY_MANDATORY_UNTRUSTED_RID))
+        << "Current integrity level must be higher than UNTRUSTED.";
+    PCHECK(restricted_access_token->SetIntegrityLevel(
+        SECURITY_MANDATORY_UNTRUSTED_RID));
+    PCHECK(ImpersonateLoggedOnUser(restricted_access_token->get()));
+  }
+#endif
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::Process child_process_;
@@ -242,8 +282,9 @@ class TestClientBase : public MAYBE_InvitationCppTest {
     return PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
   }
 
-  static IncomingInvitation AcceptInvitation() {
-    return IncomingInvitation::Accept(RecoverEndpointFromCommandLine());
+  static IncomingInvitation AcceptInvitation(
+      MojoAcceptInvitationFlags flags = MOJO_ACCEPT_INVITATION_FLAG_NONE) {
+    return IncomingInvitation::Accept(RecoverEndpointFromCommandLine(), flags);
   }
 
   static ScopedMessagePipeHandle AcceptIsolatedInvitation() {
@@ -291,6 +332,22 @@ DEFINE_TEST_CLIENT(CppSendIsolatedClient) {
   auto pipe = AcceptIsolatedInvitation();
   CHECK_EQ(kTestMessage1, ReadMessage(pipe));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_P(MAYBE_InvitationCppTest, SendElevated) {
+  ScopedMessagePipeHandle pipe;
+  LaunchChildTestClient("CppSendElevatedClient", &pipe, 1,
+                        InvitationType::kElevated, GetParam());
+  WriteMessage(pipe, kTestMessage1);
+  WaitForChildExit();
+}
+
+DEFINE_TEST_CLIENT(CppSendElevatedClient) {
+  auto invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_ELEVATED);
+  auto pipe = invitation.ExtractMessagePipe(0);
+  CHECK_EQ(kTestMessage1, ReadMessage(pipe));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_P(MAYBE_InvitationCppTest, SendWithMultiplePipes) {
   ScopedMessagePipeHandle pipes[2];

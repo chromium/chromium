@@ -24,20 +24,20 @@ using AmbientPhotoViewTest = AmbientAshTestBase;
 TEST_F(AmbientPhotoViewTest, ShouldRefreshImagesEveryCycle) {
   UpdateDisplay("600x800");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   gfx::ImageSkia image_1 = GetAmbientBackgroundImageView()->GetCurrentImage();
   ASSERT_FALSE(image_1.isNull());
 
   // It takes 2 cycles to refresh both AmbientBackgroundImageViews owned by the
   // PhotoView, guaranteeing that the images for both should have changed.
-  FastForwardToNextImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
+  FastForwardByPhotoRefreshInterval();
   gfx::ImageSkia image_2 = GetAmbientBackgroundImageView()->GetCurrentImage();
   ASSERT_FALSE(image_2.isNull());
   EXPECT_FALSE(image_2.BackedBySameObjectAs(image_1));
 
-  FastForwardToNextImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
+  FastForwardByPhotoRefreshInterval();
   gfx::ImageSkia image_3 = GetAmbientBackgroundImageView()->GetCurrentImage();
   ASSERT_FALSE(image_3.isNull());
   EXPECT_FALSE(image_3.BackedBySameObjectAs(image_2));
@@ -52,9 +52,9 @@ TEST_F(AmbientPhotoViewTest, ShouldResizePortraitImageForPortraitScreen) {
 
   UpdateDisplay("600x800");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -72,9 +72,9 @@ TEST_F(AmbientPhotoViewTest, ShouldResizeLandscapeImageForPortraitScreen) {
 
   UpdateDisplay("600x808");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -92,9 +92,9 @@ TEST_F(AmbientPhotoViewTest, ShouldTileTwoPortraitImagesForLandscapeScreen) {
 
   UpdateDisplay("808x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -122,9 +122,9 @@ TEST_F(AmbientPhotoViewTest,
                              base::NumberToString(kScreenHeight);
   UpdateDisplay(display_size);
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -149,9 +149,9 @@ TEST_F(AmbientPhotoViewTest,
 
   UpdateDisplay("800x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -172,9 +172,9 @@ TEST_F(AmbientPhotoViewTest,
 
   UpdateDisplay("800x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -201,9 +201,9 @@ TEST_F(AmbientPhotoViewTest, ShouldResizeLandscapeImageForLandscapeScreen) {
 
   UpdateDisplay("800x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -229,9 +229,9 @@ TEST_F(AmbientPhotoViewTest,
 
   UpdateDisplay("808x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -262,9 +262,9 @@ TEST_F(AmbientPhotoViewTest,
 
   UpdateDisplay("808x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -294,9 +294,9 @@ TEST_F(AmbientPhotoViewTest,
 
   UpdateDisplay("808x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -330,9 +330,9 @@ TEST_F(AmbientPhotoViewTest, ShouldTileWhenRotateToLandscapeScreen) {
 
   UpdateDisplay("600x808");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 
@@ -363,9 +363,9 @@ TEST_F(AmbientPhotoViewTest, ShouldResizeTiledPortraitImagesWhenBoundsChanged) {
 
   UpdateDisplay("808x600");
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   auto* image_view = GetAmbientBackgroundImageView();
 

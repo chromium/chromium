@@ -18,7 +18,7 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -75,8 +75,8 @@ public class CustomTabsTestUtils {
         final AtomicReference<CustomTabsSession> sessionReference = new AtomicReference<>();
         final AtomicReference<CustomTabsClient> clientReference = new AtomicReference<>();
         final CallbackHelper waitForConnection = new CallbackHelper();
-        CustomTabsClient.bindCustomTabsService(InstrumentationRegistry.getContext(),
-                InstrumentationRegistry.getTargetContext().getPackageName(),
+        CustomTabsClient.bindCustomTabsService(ApplicationProvider.getApplicationContext(),
+                ApplicationProvider.getApplicationContext().getPackageName(),
                 new CustomTabsServiceConnection() {
                     @Override
                     public void onServiceDisconnected(ComponentName name) {}
@@ -124,7 +124,7 @@ public class CustomTabsTestUtils {
      * @return The test bitmap which can be used to represent an action item on the Toolbar.
      */
     public static Bitmap createTestBitmap(int widthDp, int heightDp) {
-        Resources testRes = InstrumentationRegistry.getTargetContext().getResources();
+        Resources testRes = ApplicationProvider.getApplicationContext().getResources();
         float density = testRes.getDisplayMetrics().density;
         return Bitmap.createBitmap(
                 (int) (widthDp * density), (int) (heightDp * density), Bitmap.Config.ARGB_8888);

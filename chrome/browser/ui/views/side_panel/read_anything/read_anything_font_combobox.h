@@ -35,6 +35,8 @@ class ReadAnythingFontCombobox : public views::Combobox {
   // views::Combobox:
   gfx::Size GetMinimumSize() const override;
 
+  void SetFocusRingColorId(ui::ColorId focus_ring_color);
+
  private:
   class MenuModel;
 

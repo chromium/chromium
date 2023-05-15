@@ -29,6 +29,14 @@ static_library("internal") {
     "data_collection/training_data_collector.h",
     "data_collection/training_data_collector_impl.cc",
     "data_collection/training_data_collector_impl.h",
+    "database/cached_result_provider.cc",
+    "database/cached_result_provider.h",
+    "database/cached_result_writer.cc",
+    "database/cached_result_writer.h",
+    "database/client_result_prefs.cc",
+    "database/client_result_prefs.h",
+    "database/config_holder.cc",
+    "database/config_holder.h",
     "database/database_maintenance.h",
     "database/database_maintenance_impl.cc",
     "database/database_maintenance_impl.h",
@@ -94,6 +102,8 @@ static_library("internal") {
     "execution/processing/uma_feature_processor.h",
     "local_state_helper_impl.cc",
     "local_state_helper_impl.h",
+    "logging.cc",
+    "logging.h",
     "metadata/metadata_utils.cc",
     "metadata/metadata_utils.h",
     "metadata/metadata_writer.cc",
@@ -125,12 +135,6 @@ static_library("internal") {
     "segmentation_platform_service_impl.h",
     "segmentation_ukm_helper.cc",
     "segmentation_ukm_helper.h",
-    "selection/cached_result_provider.cc",
-    "selection/cached_result_provider.h",
-    "selection/cached_result_writer.cc",
-    "selection/cached_result_writer.h",
-    "selection/client_result_prefs.cc",
-    "selection/client_result_prefs.h",
     "selection/experimental_group_recorder.cc",
     "selection/experimental_group_recorder.h",
     "selection/request_dispatcher.cc",
@@ -198,6 +202,8 @@ static_library("internal") {
 
   if (is_android) {
     sources += [
+      "android/execution/processing/custom_device_utils.cc",
+      "android/execution/processing/custom_device_utils.h",
       "android/segmentation_platform_service_android.cc",
       "android/segmentation_platform_service_android.h",
     ]
@@ -237,6 +243,9 @@ source_set("unit_tests") {
     "config_parser_unittest.cc",
     "data_collection/training_data_cache_unittest.cc",
     "data_collection/training_data_collector_impl_unittest.cc",
+    "database/cached_result_provider_unittest.cc",
+    "database/cached_result_writer_unittest.cc",
+    "database/client_result_prefs_unittest.cc",
     "database/database_maintenance_impl_unittest.cc",
     "database/mock_signal_database.cc",
     "database/mock_signal_database.h",
@@ -285,9 +294,6 @@ source_set("unit_tests") {
     "segmentation_platform_service_test_base.cc",
     "segmentation_platform_service_test_base.h",
     "segmentation_ukm_helper_unittest.cc",
-    "selection/cached_result_provider_unittest.cc",
-    "selection/cached_result_writer_unittest.cc",
-    "selection/client_result_prefs_unittest.cc",
     "selection/request_dispatcher_unittest.cc",
     "selection/request_handler_unittest.cc",
     "selection/result_refresh_manager_unittest.cc",
@@ -300,6 +306,8 @@ source_set("unit_tests") {
     "signals/history_delegate_impl_unittest.cc",
     "signals/mock_histogram_signal_handler.cc",
     "signals/mock_histogram_signal_handler.h",
+    "signals/mock_user_action_signal_handler.cc",
+    "signals/mock_user_action_signal_handler.h",
     "signals/signal_filter_processor_unittest.cc",
     "signals/ukm_config_unittest.cc",
     "signals/ukm_observer_unittest.cc",
@@ -374,7 +382,10 @@ bundle_data("unit_tests_bundle_data") {
 if (is_android) {
   android_library("internal_java") {
     visibility = [ "//chrome/android:chrome_all_java" ]
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java",
+      "android/java/src/org/chromium/components/segmentation_platform/execution/processing/CustomDeviceUtils.java",
+    ]
 
     deps = [
       "//base:base_java",
@@ -392,6 +403,9 @@ if (is_android) {
       "//chrome/browser",
     ]
 
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java",
+      "android/java/src/org/chromium/components/segmentation_platform/execution/processing/CustomDeviceUtils.java",
+    ]
   }
 }

@@ -20,12 +20,9 @@ export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 
 export type Keyboard = InputDeviceSettingsTypes.Keyboard;
-export type Touchpad = InputDeviceSettingsTypes.Touchpad&
-                       Partial<{isExternal: boolean, isHaptic: boolean}>;
-export type Mouse =
-    InputDeviceSettingsTypes.Mouse&Partial<{isExternal: boolean}>;
-export type PointingStick =
-    InputDeviceSettingsTypes.PointingStick&Partial<{isExternal: boolean}>;
+export type Touchpad = InputDeviceSettingsTypes.Touchpad;
+export type Mouse = InputDeviceSettingsTypes.Mouse;
+export type PointingStick = InputDeviceSettingsTypes.PointingStick;
 
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;

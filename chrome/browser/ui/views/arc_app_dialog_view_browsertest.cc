@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -105,9 +106,9 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return profile_; }
 
  private:
-  ArcAppListPrefs* arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_ = nullptr;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

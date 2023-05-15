@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_nudge.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -73,7 +74,7 @@ class ImplicitNudgeHideAnimationObserver
  private:
   std::unique_ptr<SystemNudge> nudge_;
   // Owned by the shell.
-  SystemNudgeController* const controller_;
+  const raw_ptr<SystemNudgeController, ExperimentalAsh> controller_;
 };
 
 SystemNudgeController::SystemNudgeController() = default;

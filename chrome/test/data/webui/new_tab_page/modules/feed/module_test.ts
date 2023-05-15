@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {FeedHandlerRemote} from 'chrome://new-tab-page/feed.mojom-webui.js';
-import {FeedModuleElement, FeedProxy, feedV2Descriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {feedDescriptor, FeedModuleElement, FeedProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -37,7 +37,7 @@ suite('NewTabPageModulesFeedModuleTest', () => {
       return {articles: articles};
     })()));
 
-    const module = await feedV2Descriptor.initialize(0) as FeedModuleElement;
+    const module = await feedDescriptor.initialize(0) as FeedModuleElement;
     assertTrue(!!module);
 
     document.body.append(module);
@@ -68,7 +68,7 @@ suite('NewTabPageModulesFeedModuleTest', () => {
     handler.setResultFor(
         'getFollowingFeedArticles', Promise.resolve({articles: []}));
 
-    const module = await feedV2Descriptor.initialize(0);
+    const module = await feedDescriptor.initialize(0);
     await handler.whenCalled('getFollowingFeedArticles');
     assertTrue(!!module);
   });

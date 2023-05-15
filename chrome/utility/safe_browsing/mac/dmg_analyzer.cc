@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -27,9 +29,6 @@ namespace safe_browsing {
 namespace dmg {
 
 namespace {
-
-// The maximum duration of DMG analysis, in milliseconds.
-const double kDmgAnalysisTimeoutMs = 10000;
 
 // MachOFeatureExtractor examines files to determine if they are Mach-O, and,
 // if so, it uses the BinaryFeatureExtractor to obtain information about the
@@ -97,7 +96,8 @@ bool MachOFeatureExtractor::ExtractFeatures(
 }
 
 bool MachOFeatureExtractor::HashAndCopyStream(
-    ReadStream* stream, uint8_t digest[crypto::kSHA256Length]) {
+    ReadStream* stream,
+    uint8_t digest[crypto::kSHA256Length]) {
   if (stream->Seek(0, SEEK_SET) != 0)
     return false;
 
@@ -131,55 +131,43 @@ constexpr uint8_t kDERPKCS7SignedData[] = {0x30, 0x80, 0x06, 0x09, 0x2a,
 
 }  // namespace
 
-void AnalyzeDMGFile(base::File dmg_file, ArchiveAnalyzerResults* results) {
-  FileReadStream read_stream(dmg_file.GetPlatformFile());
-  DMGIterator iterator(&read_stream);
-  AnalyzeDMGFile(&iterator, results);
+DMGAnalyzer::~DMGAnalyzer() = default;
+
+DMGAnalyzer::DMGAnalyzer() = default;
+
+void DMGAnalyzer::Init() {
+  GetTempFile(
+      base::BindOnce(&DMGAnalyzer::OnGetTempFile, weak_factory_.GetWeakPtr()));
+
+  read_stream_ =
+      std::make_unique<FileReadStream>(GetArchiveFile().GetPlatformFile());
+  iterator_ = std::make_unique<DMGIterator>(&*read_stream_);
 }
 
-void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
-  base::Time start_time = base::Time::Now();
-  results->success = false;
-
-  bool opened_iterator = iterator->Open();
-  if (!opened_iterator) {
-    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kUnknown;
-    return;
-  } else if (iterator->IsEmpty()) {
-    results->analysis_result =
-        safe_browsing::ArchiveAnalysisResult::kDmgNoPartitions;
-    return;
-  }
-
+bool DMGAnalyzer::ResumeExtraction() {
   MachOFeatureExtractor feature_extractor;
-
-  results->signature_blob = iterator->GetCodeSignature();
-
-  bool timeout = false;
-  while (iterator->Next()) {
-    std::unique_ptr<ReadStream> stream = iterator->GetReadStream();
-    if (!stream)
+  while (iterator_->Next()) {
+    std::unique_ptr<ReadStream> stream = iterator_->GetReadStream();
+    if (!stream) {
       continue;
-    if (base::Time::Now() - start_time >=
-        base::Milliseconds(kDmgAnalysisTimeoutMs)) {
-      timeout = true;
-      break;
     }
 
-    std::string path = base::UTF16ToUTF8(iterator->GetPath());
+    std::string path = base::UTF16ToUTF8(iterator_->GetPath());
 
     bool is_detached_code_signature_file = base::EndsWith(
         path, "_CodeSignature/CodeSignature", base::CompareCase::SENSITIVE);
 
     if (is_detached_code_signature_file) {
-      results->has_executable = true;
+      results()->has_executable = true;
 
       std::vector<uint8_t> signature_contents;
-      if (!ReadEntireStream(stream.get(), &signature_contents))
+      if (!ReadEntireStream(stream.get(), &signature_contents)) {
         continue;
+      }
 
-      if (signature_contents.size() < std::size(kDERPKCS7SignedData))
+      if (signature_contents.size() < std::size(kDERPKCS7SignedData)) {
         continue;
+      }
 
       if (memcmp(kDERPKCS7SignedData, signature_contents.data(),
                  std::size(kDERPKCS7SignedData)) != 0) {
@@ -187,32 +175,81 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
       }
 
       ClientDownloadRequest_DetachedCodeSignature* detached_signature =
-          results->detached_code_signatures.Add();
+          results()->detached_code_signatures.Add();
       detached_signature->set_file_name(path);
       detached_signature->set_contents(signature_contents.data(),
                                        signature_contents.size());
     } else if (feature_extractor.IsMachO(stream.get())) {
       ClientDownloadRequest_ArchivedBinary* binary =
-          results->archived_binary.Add();
-      binary->set_file_basename(path);
+          results()->archived_binary.Add();
+      binary->set_file_path(path);
 
       if (feature_extractor.ExtractFeatures(stream.get(), binary)) {
         binary->set_download_type(
             ClientDownloadRequest_DownloadType_MAC_EXECUTABLE);
         binary->set_is_executable(true);
-        results->has_executable = true;
+        results()->has_executable = true;
       } else {
-        results->archived_binary.RemoveLast();
+        results()->archived_binary.RemoveLast();
+      }
+    } else if (base::FeatureList::IsEnabled(kNestedArchives)) {
+      DownloadFileType_InspectionType file_type =
+          GetFileType(base::FilePath(path));
+      if (file_type == DownloadFileType::ZIP ||
+          file_type == DownloadFileType::RAR ||
+          file_type == DownloadFileType::DMG ||
+          file_type == DownloadFileType::SEVEN_ZIP) {
+        if (!CopyStreamToFile(iterator_->GetReadStream().get(), temp_file_)) {
+          continue;
+        }
+
+        if (!temp_file_.IsValid()) {
+          continue;
+        }
+
+        // TODO(crbug.com/1373671): Support file length here.
+        return !UpdateResultsForEntry(
+            temp_file_.Duplicate(), GetRootPath().Append(path),
+            /*file_length=*/0,
+            /*is_encrypted=*/false, /*is_directory=*/false);
       }
     }
   }
 
-  if (timeout) {
-    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kTimeout;
-  } else {
-    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kValid;
-    results->success = true;
+  return true;
+}
+
+void DMGAnalyzer::OnGetTempFile(base::File temp_file) {
+  if (!temp_file.IsValid()) {
+    InitComplete(ArchiveAnalysisResult::kFailedToOpenTempFile);
+    return;
   }
+
+  if (!iterator_->Open()) {
+    InitComplete(ArchiveAnalysisResult::kUnknown);
+    return;
+  } else if (iterator_->IsEmpty()) {
+    InitComplete(ArchiveAnalysisResult::kDmgNoPartitions);
+    return;
+  }
+
+  results()->signature_blob = iterator_->GetCodeSignature();
+  InitComplete(ArchiveAnalysisResult::kValid);
+}
+
+void DMGAnalyzer::AnalyzeDMGFileForTesting(
+    std::unique_ptr<DMGIterator> iterator,
+    ArchiveAnalyzerResults* results,
+    base::File temp_file,
+    FinishedAnalysisCallback callback) {
+  SetResultsForTesting(results);                       // IN-TEST
+  SetFinishedCallbackForTesting(std::move(callback));  // IN-TEST
+  iterator_ = std::move(iterator);
+  OnGetTempFile(std::move(temp_file));
+}
+
+base::WeakPtr<ArchiveAnalyzer> DMGAnalyzer::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace dmg

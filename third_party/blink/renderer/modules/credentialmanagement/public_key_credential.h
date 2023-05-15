@@ -35,7 +35,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       AuthenticatorResponse*,
       mojom::AuthenticatorAttachment authenticator_attachment,
       const AuthenticationExtensionsClientOutputs* extension_outputs,
-      const String& type = "");
+      const String& type = g_empty_string);
 
   DOMArrayBuffer* rawId() const { return raw_id_.Get(); }
   AuthenticatorResponse* response() const { return response_.Get(); }

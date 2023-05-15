@@ -197,6 +197,8 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
 
 WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+
+  StopAudioSessionEventListener();
 }
 
 bool WASAPIAudioOutputStream::Open() {
@@ -325,10 +327,7 @@ bool WASAPIAudioOutputStream::Open() {
     return false;
   }
 
-  session_listener_ = std::make_unique<AudioSessionEventListener>(
-      audio_client_.Get(), base::BindPostTaskToCurrentDefault(base::BindOnce(
-                               &WASAPIAudioOutputStream::OnDeviceChanged,
-                               weak_factory_.GetWeakPtr())));
+  StartAudioSessionEventListener();
 
   opened_ = true;
   return true;
@@ -474,7 +473,7 @@ void WASAPIAudioOutputStream::Close() {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
   SendLogMessage("%s()", __func__);
 
-  session_listener_.reset();
+  StopAudioSessionEventListener();
 
   // It is valid to call Close() before calling open or Start().
   // It is also valid to call Close() after Start() has been called.
@@ -905,7 +904,56 @@ void WASAPIAudioOutputStream::ReportAndResetStats() {
       stats.largest_glitch_duration.InMilliseconds());
 }
 
+void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+
+  if (session_listener_) {
+    // Already started listening!
+    return;
+  }
+
+  HRESULT hr = audio_client_->GetService(IID_PPV_ARGS(&audio_session_control_));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get IAudioSessionControl service: " << std::hex
+                << hr;
+    return;
+  }
+
+  session_listener_ = Microsoft::WRL::Make<AudioSessionEventListener>(
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&WASAPIAudioOutputStream::OnDeviceChanged,
+                         weak_factory_.GetWeakPtr())));
+
+  hr = audio_session_control_->RegisterAudioSessionNotification(
+      session_listener_.Get());
+
+  DLOG_IF(ERROR, FAILED(hr))
+      << "IAudioSessionControl::RegisterAudioSessionNotification() failed: "
+      << std::hex << hr;
+}
+
+void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+
+  if (!session_listener_) {
+    // Already stopped listening!
+    return;
+  }
+
+  HRESULT hr = audio_session_control_->UnregisterAudioSessionNotification(
+      session_listener_.Get());
+
+  DLOG_IF(ERROR, FAILED(hr))
+      << "IAudioSessionControl::UnregisterAudioSessionNotification() failed: "
+      << std::hex << hr;
+
+  audio_session_control_.Reset();
+  session_listener_.Reset();
+}
+
 void WASAPIAudioOutputStream::OnDeviceChanged() {
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+
   device_changed_ = true;
   if (source_)
     source_->OnError(AudioSourceCallback::ErrorType::kDeviceChange);

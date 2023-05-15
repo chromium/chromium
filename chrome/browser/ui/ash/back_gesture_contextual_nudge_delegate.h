@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_BACK_GESTURE_CONTEXTUAL_NUDGE_DELEGATE_H_
 
 #include "ash/public/cpp/back_gesture_contextual_nudge_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
@@ -56,8 +57,10 @@ class BackGestureContextualNudgeDelegate
   // Stop tracking the navigation status for |window_|.
   void StopTrackingNavigation();
 
-  aura::Window* window_ = nullptr;  // Current observed window.
-  ash::BackGestureContextualNudgeController* const controller_;  // Not owned.
+  raw_ptr<aura::Window, ExperimentalAsh> window_ =
+      nullptr;  // Current observed window.
+  const raw_ptr<ash::BackGestureContextualNudgeController, ExperimentalAsh>
+      controller_;  // Not owned.
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_BACK_GESTURE_CONTEXTUAL_NUDGE_DELEGATE_H_

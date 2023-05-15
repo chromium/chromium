@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -634,10 +635,12 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -828,10 +831,12 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -989,10 +994,12 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1079,10 +1086,12 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1177,8 +1186,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto buffer_format = gfx::BufferFormat::RGBA_8888;
-  const auto format = viz::SharedImageFormat::SinglePlane(
-      viz::GetResourceFormat(buffer_format));
+  const auto format = viz::GetSharedImageFormat(buffer_format);
   const gfx::Size size(1, 1);
   const auto plane = gfx::BufferPlane::DEFAULT;
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1345,10 +1353,12 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1473,10 +1483,12 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1643,8 +1655,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
     const gfx::Size plane_sizes[kNumPlanes] = {
         size, gfx::Size(size.width() / 2, size.height() / 2)};
-    const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
-                                                           viz::RG_88};
+    const viz::SharedImageFormat plane_formats[kNumPlanes] = {
+        viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88};
 
     for (size_t i = 0; i < std::min(shared_image_backings.size(), kNumPlanes);
          i++) {
@@ -1652,8 +1664,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
       EXPECT_EQ(backing->mailbox(), mailboxes[i]);
       EXPECT_EQ(backing->size(), plane_sizes[i]);
-      EXPECT_EQ(backing->format(),
-                viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+      EXPECT_EQ(backing->format(), plane_formats[i]);
       EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
       EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
       EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -2050,8 +2061,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
   const gfx::Size plane_sizes[kNumPlanes] = {
       size, gfx::Size(size.width() / 2, size.height() / 2)};
-  const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
-                                                         viz::RG_88};
+  const viz::SharedImageFormat plane_formats[kNumPlanes] = {
+      viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88};
 
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_image_refs;
@@ -2060,8 +2071,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
     EXPECT_EQ(backing->mailbox(), mailboxes[i]);
     EXPECT_EQ(backing->size(), plane_sizes[i]);
-    EXPECT_EQ(backing->format(),
-              viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+    EXPECT_EQ(backing->format(), plane_formats[i]);
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -2255,12 +2265,11 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   SkBitmap dst_bitmap;
   dst_bitmap.allocPixels(rgba_image_info);
   {
-    auto source_image =
-        scoped_read_access->CreateSkImage(context_state_->gr_context());
+    auto source_image = scoped_read_access->CreateSkImage(context_state_.get());
     ASSERT_TRUE(source_image);
 
     SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
-    sk_sp<SkSurface> dest_surface = SkSurface::MakeRenderTarget(
+    sk_sp<SkSurface> dest_surface = SkSurfaces::RenderTarget(
         context_state_->gr_context(), skgpu::Budgeted::kNo, rgba_image_info, 0,
         kTopLeft_GrSurfaceOrigin, &surface_props);
     ASSERT_NE(dest_surface, nullptr);
@@ -2276,8 +2285,8 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
                             SkCanvas::kStrict_SrcRectConstraint);
     }
 
-    GrBackendTexture backend_texture = dest_surface->getBackendTexture(
-        SkSurface::kFlushWrite_BackendHandleAccess);
+    GrBackendTexture backend_texture = SkSurfaces::GetBackendTexture(
+        dest_surface.get(), SkSurfaces::BackendHandleAccess::kFlushWrite);
     auto dst_image = SkImages::BorrowTextureFrom(
         context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, alpha_type, nullptr);

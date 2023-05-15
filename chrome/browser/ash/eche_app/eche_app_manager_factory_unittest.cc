@@ -13,6 +13,7 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -112,12 +113,13 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  EcheTray* eche_tray_ = nullptr;
-  PhoneHubTray* phone_hub_tray_ = nullptr;
-  EcheAppManagerFactory* eche_app_manager_factory_ = nullptr;
+  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<PhoneHubTray, ExperimentalAsh> phone_hub_tray_ = nullptr;
+  raw_ptr<EcheAppManagerFactory, ExperimentalAsh> eche_app_manager_factory_ =
+      nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
@@ -163,10 +165,10 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  EcheTray* eche_tray_ = nullptr;
+  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();

@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+PASS e.style['border'] = "2px solid color-mix(42deg)" should not set the property value
+PASS e.style['border'] = "2px solid color-contrast(42deg)" should not set the property value
 PASS e.style['border'] = "5px dotted blue" should set border-bottom-color
 PASS e.style['border'] = "5px dotted blue" should set border-bottom-style
 PASS e.style['border'] = "5px dotted blue" should set border-bottom-width

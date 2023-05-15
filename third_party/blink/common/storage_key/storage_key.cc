@@ -779,6 +779,16 @@ const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
   return net::SiteForCookies(top_level_site_);
 }
 
+const net::IsolationInfo StorageKey::ToPartialNetIsolationInfo() const {
+  url::Origin top_frame_origin =
+      IsFirstPartyContext() ? origin_
+                            : url::Origin::Create(top_level_site_.GetURL());
+  return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                    top_frame_origin, origin_,
+                                    ToNetSiteForCookies(),
+                                    /*party_context=*/absl::nullopt, nonce_);
+}
+
 // static
 bool StorageKey::ShouldSkipKeyDueToPartitioning(
     const std::string& reg_key_string) {

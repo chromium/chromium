@@ -1,4 +1,20 @@
 <style include="os-feedback-shared">
+  :host-context(body.jelly-enabled) #privacyNote {
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #screenshotCheckLabel {
+    font: var(--cros-button-2-font);
+  }
+
+  :host-context(body.jelly-enabled) .checkbox-label {
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) cr-dialog [slot=body] {
+    font: var(--cros-body-1-font);
+  }
+
   ::-webkit-scrollbar {
     background-color: transparent;
     border-radius: 4px;
@@ -8,6 +24,20 @@
   ::-webkit-scrollbar-thumb {
     background-color: var(--cros-app-scrollbar-color);
     border-radius: 4px;
+  }
+
+  :host-context(body.jelly-enabled) .card-frame {
+    background-color: var(--cros-sys-app_base);
+    border: none;
+    border-radius: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #screenshotContainer {
+    margin-inline-end: 16px;
+  }
+
+  :host-context(body.jelly-enabled) #screenshotImage {
+    border-radius: 0 12px 12px 0;
   }
 
   #privacyNote {

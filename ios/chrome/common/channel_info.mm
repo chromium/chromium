@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/version_info/version_info.h"
@@ -61,7 +61,7 @@ version_info::Channel GetChannel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static dispatch_once_t channel_dispatch_token;
   dispatch_once(&channel_dispatch_token, ^{
-    NSBundle* bundle = base::mac::OuterBundle();
+    NSBundle* bundle = base::apple::OuterBundle();
 
     // Only Keystone-enabled build can have a channel.
     if (![bundle objectForInfoDictionaryKey:@"KSProductID"])

@@ -10,12 +10,12 @@ PASS internals.isSelectPopupVisible(popup) is false
 PASS popup.value is "Spain"
 3. space key to open popup menu.
 PASS internals.isSelectPopupVisible(popup) is true
-PASS popup.value is "United Arab Emerites"
+PASS popup.value is "United Arab Emirates"
 PASS successfullyParsed is true
 
 TEST COMPLETE
 
 Canada
 Spain
-United Arab Emerites
+United Arab Emirates
 United States

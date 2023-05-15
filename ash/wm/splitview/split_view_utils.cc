@@ -25,11 +25,9 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
 
@@ -347,14 +345,16 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         case WindowStateType::kPrimarySnapped:
           if (!split_view_controller->primary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kPrimary);
+                window, SplitViewController::SnapPosition::kPrimary,
+                WindowSnapActionSource::kSnapByDeskOrSessionChange);
           }
           break;
 
         case WindowStateType::kSecondarySnapped:
           if (!split_view_controller->secondary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kSecondary);
+                window, SplitViewController::SnapPosition::kSecondary,
+                WindowSnapActionSource::kSnapByDeskOrSessionChange);
           }
           break;
 
@@ -507,15 +507,13 @@ SplitViewController::SnapPosition GetSnapPosition(
       vertical_edge_inset);
 }
 
-bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() {
+bool IsSnapGroupEnabledInClamshellMode() {
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   const bool in_tablet_mode =
       tablet_mode_controller && tablet_mode_controller->InTabletMode();
-  return snap_group_controller &&
-         snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
-         !in_tablet_mode;
+  return snap_group_controller && !in_tablet_mode;
 }
 
 views::Widget::InitParams CreateWidgetInitParams(
@@ -524,8 +522,7 @@ views::Widget::InitParams CreateWidgetInitParams(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.parent =
-      Shell::GetContainer(parent_window, kShellWindowId_AlwaysOnTopContainer);
+  params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.name = widget_name;
   return params;

@@ -225,6 +225,9 @@ void ValidateDump(const StartHandlerForSelfTestOptions& options,
 #if defined(COMPILER_GCC)
 __attribute__((noinline))
 #endif
+#if defined(__clang__)
+__attribute__((optnone))
+#endif
 int RecurseInfinitely(int* ptr) {
   int buf[1 << 20];
   return *ptr + RecurseInfinitely(buf);

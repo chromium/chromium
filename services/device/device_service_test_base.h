@@ -52,7 +52,7 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 

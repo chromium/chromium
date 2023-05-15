@@ -34,48 +34,40 @@ namespace {
 class GeolocationObserver {
  public:
   virtual ~GeolocationObserver() = default;
-  virtual void OnLocationUpdate(const mojom::Geoposition& position) = 0;
+  virtual void OnLocationUpdate(const mojom::GeopositionResult& result) = 0;
 };
 
 class MockGeolocationObserver : public GeolocationObserver {
  public:
-  MOCK_METHOD1(OnLocationUpdate, void(const mojom::Geoposition& position));
+  MOCK_METHOD1(OnLocationUpdate, void(const mojom::GeopositionResult& result));
 };
 
 class AsyncMockGeolocationObserver : public MockGeolocationObserver {
  public:
-  void OnLocationUpdate(const mojom::Geoposition& position) override {
-    MockGeolocationObserver::OnLocationUpdate(position);
+  void OnLocationUpdate(const mojom::GeopositionResult& result) override {
+    MockGeolocationObserver::OnLocationUpdate(result);
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 };
 
 class MockGeolocationCallbackWrapper {
  public:
-  MOCK_METHOD1(Callback, void(const mojom::Geoposition& position));
+  MOCK_METHOD1(Callback, void(const mojom::GeopositionResult& result));
 };
 
-class GeopositionEqMatcher
-    : public MatcherInterface<const mojom::Geoposition&> {
+class GeopositionResultEqMatcher
+    : public MatcherInterface<const mojom::GeopositionResult&> {
  public:
-  explicit GeopositionEqMatcher(const mojom::Geoposition& expected)
-      : expected_(expected) {}
+  explicit GeopositionResultEqMatcher(mojom::GeopositionResultPtr expected)
+      : expected_(std::move(expected)) {}
 
-  GeopositionEqMatcher(const GeopositionEqMatcher&) = delete;
-  GeopositionEqMatcher& operator=(const GeopositionEqMatcher&) = delete;
+  GeopositionResultEqMatcher(const GeopositionResultEqMatcher&) = delete;
+  GeopositionResultEqMatcher& operator=(const GeopositionResultEqMatcher&) =
+      delete;
 
-  bool MatchAndExplain(const mojom::Geoposition& actual,
+  bool MatchAndExplain(const mojom::GeopositionResult& actual,
                        MatchResultListener* listener) const override {
-    return actual.latitude == expected_.latitude &&
-           actual.longitude == expected_.longitude &&
-           actual.altitude == expected_.altitude &&
-           actual.accuracy == expected_.accuracy &&
-           actual.altitude_accuracy == expected_.altitude_accuracy &&
-           actual.heading == expected_.heading &&
-           actual.speed == expected_.speed &&
-           actual.timestamp == expected_.timestamp &&
-           actual.error_code == expected_.error_code &&
-           actual.error_message == expected_.error_message;
+    return expected_->Equals(actual);
   }
 
   void DescribeTo(::std::ostream* os) const override {
@@ -87,16 +79,16 @@ class GeopositionEqMatcher
   }
 
  private:
-  mojom::Geoposition expected_;
+  mojom::GeopositionResultPtr expected_;
 };
 
-Matcher<const mojom::Geoposition&> GeopositionEq(
-    const mojom::Geoposition& expected) {
-  return MakeMatcher(new GeopositionEqMatcher(expected));
+Matcher<const mojom::GeopositionResult&> GeopositionResultEq(
+    const mojom::GeopositionResult& expected) {
+  return MakeMatcher(new GeopositionResultEqMatcher(expected.Clone()));
 }
 
 void DummyFunction(const LocationProvider* provider,
-                   const mojom::Geoposition& position) {}
+                   const mojom::GeopositionResult& result) {}
 
 }  // namespace
 
@@ -122,7 +114,7 @@ class GeolocationProviderTest : public testing::Test {
 
   // Called on test thread.
   bool ProvidersStarted();
-  void SendMockLocation(const mojom::Geoposition& position);
+  void SendMockLocation(const mojom::GeopositionResult& result);
 
  private:
   // Called on provider thread.
@@ -164,13 +156,13 @@ void GeolocationProviderTest::GetProvidersStarted() {
 }
 
 void GeolocationProviderTest::SendMockLocation(
-    const mojom::Geoposition& position) {
+    const mojom::GeopositionResult& result) {
   DCHECK(provider()->IsRunning());
   DCHECK(thread_checker_.CalledOnValidThread());
   provider()->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GeolocationProviderImpl::OnLocationUpdate,
-                     base::Unretained(provider()), arbitrator_, position));
+      FROM_HERE, base::BindOnce(&GeolocationProviderImpl::OnLocationUpdate,
+                                base::Unretained(provider()), arbitrator_,
+                                result.Clone()));
 }
 
 // Regression test for http://crbug.com/59377
@@ -198,7 +190,9 @@ TEST_F(GeolocationProviderTest, StartStop) {
 }
 
 TEST_F(GeolocationProviderTest, StalePositionNotSent) {
-  mojom::Geoposition first_position;
+  auto first_result =
+      mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+  mojom::Geoposition& first_position = *first_result->get_position();
   first_position.latitude = 12;
   first_position.longitude = 34;
   first_position.accuracy = 56;
@@ -208,15 +202,18 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
   GeolocationProviderImpl::LocationUpdateCallback first_callback =
       base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
                           base::Unretained(&first_observer));
-  EXPECT_CALL(first_observer, OnLocationUpdate(GeopositionEq(first_position)));
+  EXPECT_CALL(first_observer,
+              OnLocationUpdate(GeopositionResultEq(*first_result)));
   base::CallbackListSubscription subscription =
       provider()->AddLocationUpdateCallback(first_callback, false);
-  SendMockLocation(first_position);
+  SendMockLocation(*first_result);
   base::RunLoop().Run();
 
   subscription = {};
 
-  mojom::Geoposition second_position;
+  auto second_result =
+      mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+  mojom::Geoposition& second_position = *second_result->get_position();
   second_position.latitude = 13;
   second_position.longitude = 34;
   second_position.accuracy = 56;
@@ -236,8 +233,8 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
 
   // The second observer should receive the new position now.
   EXPECT_CALL(second_observer,
-              OnLocationUpdate(GeopositionEq(second_position)));
-  SendMockLocation(second_position);
+              OnLocationUpdate(GeopositionResultEq(*second_result)));
+  SendMockLocation(*second_result);
   base::RunLoop().Run();
 
   subscription2 = {};
@@ -245,13 +242,13 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
 }
 
 TEST_F(GeolocationProviderTest, OverrideLocationForTesting) {
-  mojom::Geoposition position;
-  position.error_code = mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-  provider()->OverrideLocationForTesting(position);
+  auto result = mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+      mojom::GeopositionErrorCode::kPositionUnavailable, "", ""));
+  provider()->OverrideLocationForTesting(result->Clone());
   // Adding an observer when the location is overridden should synchronously
   // update the observer with our overridden position.
   MockGeolocationObserver mock_observer;
-  EXPECT_CALL(mock_observer, OnLocationUpdate(GeopositionEq(position)));
+  EXPECT_CALL(mock_observer, OnLocationUpdate(GeopositionResultEq(*result)));
   GeolocationProviderImpl::LocationUpdateCallback callback =
       base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
                           base::Unretained(&mock_observer));

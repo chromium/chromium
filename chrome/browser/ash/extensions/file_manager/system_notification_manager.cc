@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
+#include <string>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -144,6 +149,60 @@ std::u16string GetIOTaskMessage(Profile* profile,
                             .value()));
 }
 
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetPolicyNotificationTitle(const ProgressStatus& status) {
+  if (status.HasWarning()) {
+    return u"Confirmation required";
+  } else {
+    return u"files blocked";
+  }
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
+  if (status.HasWarning()) {
+    return (status.sources.size() == 1)
+               ? u"File may contain sensitive content"
+               : u"files may contain sensitive content";
+  }
+  // error
+  return (status.sources.size() == 1) ? u"File was blocked" : u"Files blocked";
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
+  if (status.HasWarning()) {
+    return u"Cancel";
+  } else {
+    return u"Dismiss";
+  }
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetPolicyNotificationProceedButton(
+    const ProgressStatus& status) {
+  if (status.sources.size() > 1) {
+    return u"Review";
+  }
+
+  DCHECK(status.HasWarning());
+
+  switch (status.type) {
+    case file_manager::io_task::OperationType::kCopy:
+      return u"Copy anyway";
+    case file_manager::io_task::OperationType::kMove:
+      return u"Move anyway";
+    case file_manager::io_task::OperationType::kDelete:
+    case file_manager::io_task::OperationType::kEmptyTrash:
+    case file_manager::io_task::OperationType::kExtract:
+    case file_manager::io_task::OperationType::kRestore:
+    case file_manager::io_task::OperationType::kRestoreToDestination:
+    case file_manager::io_task::OperationType::kTrash:
+    case file_manager::io_task::OperationType::kZip:
+      NOTREACHED();
+      return u"";
+  }
+}
 }  // namespace
 
 namespace file_manager {
@@ -317,19 +376,15 @@ void SystemNotificationManager::HandleIOTaskProgressNotificationClick(
     const std::string& notification_id,
     const bool paused,
     absl::optional<int> button_index) {
-  if (!button_index) {
+  if (!button_index.has_value()) {
     return;
   }
 
-  if (button_index == 0) {
-    if (io_task_controller_) {
-      io_task_controller_->Cancel(task_id);
-    } else {
-      LOG(ERROR) << "No TaskController, can't cancel task_id: " << task_id;
-    }
+  if (button_index.value() == 0) {
+    CancelTask(task_id);
   }
 
-  if (paused && button_index == 1) {
+  if (paused && button_index.value() == 1) {
     platform_util::ShowItemInFolder(
         profile_, file_manager::util::GetMyFilesFolderForProfile(profile_));
     Dismiss(notification_id);
@@ -642,6 +697,10 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
     case extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
       notification = UpdateDriveSyncNotification(event, event_arguments);
       break;
+    case extensions::events::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
+      // The bulk pin progress should not get a status outside the Files app,
+      // ignore this event.
+      return;
     default:
       DLOG(WARNING) << "Unhandled event: " << event.event_name;
       break;
@@ -670,6 +729,21 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // notifications.
   if (!status.show_notification || DoFilesSwaWindowsExist()) {
     Dismiss(id);
+    return;
+  }
+
+  // If there's a warning or security error, show a data protection
+  // notification.
+  if (status.HasWarning() || status.HasPolicyError()) {
+    Dismiss(id);
+    // TODO(aidazolic): Pass a real continue callback.
+    std::unique_ptr<message_center::Notification> notification =
+        MakeDataProtectionPolicyNotification(
+            id, status,
+            /*continue_callback=*/base::DoNothing());
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
     return;
   }
 
@@ -736,6 +810,25 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          kRemovableNotificationId);
+}
+
+void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
+    file_manager::io_task::IOTaskId task_id,
+    const std::string& notification_id,
+    DataProtectionWarningContinueCallback callback,
+    absl::optional<int> button_index) {
+  if (!button_index.has_value()) {
+    return;
+  }
+
+  if (button_index.value() == 0) {
+    CancelTask(task_id);
+  }
+
+  if (button_index.value() == 1) {
+    Dismiss(notification_id);
+    callback.Run();
+  }
 }
 
 std::unique_ptr<message_center::Notification>
@@ -940,13 +1033,11 @@ SystemNotificationManager::MakeRemovableNotification(
     notification = CreateSystemNotification(kRemovableNotificationId, title,
                                             message, delegate);
     std::vector<message_center::ButtonInfo> notification_buttons;
-    notification_buttons.push_back(
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+    notification_buttons.emplace_back(l10n_util::GetStringUTF16(
+        IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
     if (show_settings_button) {
-      notification_buttons.push_back(
-          message_center::ButtonInfo(l10n_util::GetStringUTF16(
-              IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
+      notification_buttons.emplace_back(l10n_util::GetStringUTF16(
+          IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL));
     }
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
@@ -959,6 +1050,79 @@ SystemNotificationManager::MakeRemovableNotification(
   }
 
   return notification;
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::MakeDataProtectionPolicyNotification(
+    const std::string& notification_id,
+    const file_manager::io_task::ProgressStatus& status,
+    DataProtectionWarningContinueCallback continue_callback) {
+  std::u16string title = GetPolicyNotificationTitle(status);
+  std::u16string message = GetPolicyNotificationMessage(status);
+  std::u16string cancel_button = GetPolicyNotificationCancelButton(status);
+
+  std::vector<message_center::ButtonInfo> notification_buttons;
+  notification_buttons.emplace_back(cancel_button);
+
+  DataProtectionWarningContinueCallback callback;
+  if (status.HasWarning()) {
+    notification_buttons.emplace_back(
+        GetPolicyNotificationProceedButton(status));
+    if (status.sources.size() == 1) {
+      // If there's only one file, the user can continue the action directly
+      // from the notification.
+      callback = continue_callback;
+    } else {
+      // If there's more than one file, add the "Review" button. The user can
+      // continue the action from the dialog.
+      callback = base::BindRepeating(
+          &SystemNotificationManager::ShowPolicyWarningDialog,
+          weak_ptr_factory_.GetWeakPtr(), std::move(continue_callback));
+    }
+  } else {  // Error - some files couldn't be transferred.
+    DCHECK(status.policy_error.has_value());
+    if (status.policy_error !=
+            file_manager::io_task::PolicyErrorType::kDlpWarningTimeout &&
+        status.sources.size() > 1) {
+      // If more than one file was blocked, add the "Review" button.
+      notification_buttons.emplace_back(
+          GetPolicyNotificationProceedButton(status));
+      callback =
+          base::BindRepeating(&SystemNotificationManager::ShowPolicyErrorDialog,
+                              weak_ptr_factory_.GetWeakPtr());
+    }
+  }
+
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&SystemNotificationManager::
+                                  HandleDataProtectionPolicyNotificationClick,
+                              weak_ptr_factory_.GetWeakPtr(), status.task_id,
+                              notification_id, callback));
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(notification_id, title, message, delegate);
+
+  notification->set_buttons(notification_buttons);
+
+  return notification;
+}
+
+void SystemNotificationManager::ShowPolicyWarningDialog(
+    DataProtectionWarningContinueCallback callback) {
+  // TODO(b/279436140): Create a dialog.
+}
+
+void SystemNotificationManager::ShowPolicyErrorDialog() {
+  // TODO(b/279436140): Create a dialog.
+}
+
+void SystemNotificationManager::CancelTask(
+    file_manager::io_task::IOTaskId task_id) {
+  if (io_task_controller_) {
+    io_task_controller_->Cancel(task_id);
+  } else {
+    LOG(ERROR) << "No TaskController, can't cancel task_id: " << task_id;
+  }
 }
 
 void SystemNotificationManager::HandleMountCompletedEvent(

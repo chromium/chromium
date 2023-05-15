@@ -13,6 +13,7 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -159,7 +160,7 @@ class ASH_EXPORT ResultSelectionController {
 
   // Container views to be traversed by this controller.
   // Owned by |SearchResultPageView|.
-  const ResultSelectionModel* result_selection_model_;
+  raw_ptr<const ResultSelectionModel, ExperimentalAsh> result_selection_model_;
 
   // Returns true if the container at the given |index| within
   // |result_selection_model_| responds true to
@@ -171,7 +172,7 @@ class ASH_EXPORT ResultSelectionController {
   base::RepeatingClosure selection_change_callback_;
 
   // The currently selected result view.
-  SearchResultBaseView* selected_result_ = nullptr;
+  raw_ptr<SearchResultBaseView, ExperimentalAsh> selected_result_ = nullptr;
 
   // The currently selected result ID.
   std::string selected_result_id_;

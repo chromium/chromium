@@ -823,12 +823,14 @@ export class FileTable extends Table {
     }
     icon.appendChild(this.renderCheckmark_());
     label.appendChild(icon);
+    label.appendChild(filelist.renderIconBadge(this.ownerDocument));
 
     label.entry = entry;
     label.className = 'detail-name';
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo && locationInfo.isDriveBased) {
+      label.appendChild(filelist.renderEncryptionStatus(this.ownerDocument));
       label.appendChild(filelist.renderInlineStatus(this.ownerDocument));
     }
     if (!util.isJellyEnabled() && !util.isInlineSyncStatusEnabled()) {
@@ -1030,6 +1032,8 @@ export class FileTable extends Table {
                   'pinned',
                   'syncStatus',
                   'progress',
+                  'syncCompletedTime',
+                  'shortcut',
                 ])[0],
             util.isTeamDriveRoot(entry));
         listItem.toggleAttribute(

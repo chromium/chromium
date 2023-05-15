@@ -19,12 +19,14 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
 
@@ -98,7 +100,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport", 2, 1);
+      "Conversions.AggregatableReport.NumContributionsPerReport2", 2, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest,
@@ -122,7 +124,7 @@ TEST(AggregatableAttributionUtilsTest,
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 100, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport", 0, 1);
+      "Conversions.AggregatableReport.NumContributionsPerReport2", 0, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
@@ -143,9 +145,8 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
   for (const auto& test_case : kTestCases) {
     base::Time source_time = base::Time::FromJavaTime(test_case.source_time);
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
-                .Build())
+        ReportBuilder(AttributionInfoBuilder().Build(),
+                      SourceBuilder(source_time).BuildStored())
             .SetAggregatableHistogramContributions(
                 {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
             .BuildAggregatableAttribution();
@@ -167,8 +168,8 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
   for (auto aggregation_coordinator :
        {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+        ReportBuilder(AttributionInfoBuilder().Build(),
+                      SourceBuilder().BuildStored())
             .SetAggregatableHistogramContributions(
                 {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
             .SetAggregationCoordinator(aggregation_coordinator)
@@ -181,6 +182,26 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
               aggregation_coordinator)
         << aggregation_coordinator;
   }
+}
+
+TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
+  absl::optional<AggregatableReportRequest> request =
+      CreateAggregatableReportRequest(
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(base::Time::FromJavaTime(1234567890123))
+                            .BuildStored())
+              .BuildNullAggregatable());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_THAT(request->payload_contents().contributions,
+              ElementsAre(blink::mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/0, /*value=*/0)));
+  EXPECT_EQ(request->payload_contents().aggregation_coordinator,
+            ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud);
+  const std::string* source_registration_time =
+      request->shared_info().additional_fields.FindString(
+          "source_registration_time");
+  ASSERT_TRUE(source_registration_time);
+  EXPECT_EQ(*source_registration_time, "1234483200");
 }
 
 }  // namespace content

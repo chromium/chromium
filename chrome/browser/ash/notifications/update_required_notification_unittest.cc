@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 
 #include <memory>
@@ -107,7 +108,7 @@ class UpdateRequiredNotificationTest
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>
       minimum_version_policy_handler_;

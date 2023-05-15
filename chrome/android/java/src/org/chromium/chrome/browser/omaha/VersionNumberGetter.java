@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -39,6 +40,7 @@ public class VersionNumberGetter {
     @VisibleForTesting
     static void setInstanceForTests(VersionNumberGetter getter) {
         sInstanceForTests = getter;
+        ResettersForTesting.register(() -> sInstanceForTests = null);
     }
 
     @VisibleForTesting

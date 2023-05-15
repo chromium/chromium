@@ -103,12 +103,6 @@ public final class BackupSigninProcessor {
     private static void setBackupFlowSigninComplete() {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME);
-        // The FRE and backup background sign-ins used to mark completion via the same pref.
-        // Keep writing this pref for a while to support rollbacks, i.e. so background sign-ins
-        // don't suddently trigger because the pref isn't set.
-        // TODO(crbug.com/1318463): Remove after crrev.com/c/3870839 reaches stable safely.
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.LEGACY_FIRST_RUN_AND_BACKUP_SIGNIN_COMPLETE, true);
     }
 
     /**

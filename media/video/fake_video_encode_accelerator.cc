@@ -160,7 +160,7 @@ void FakeVideoEncodeAccelerator::DoBitstreamBufferReady(
     BitstreamBuffer buffer,
     FrameToEncode frame_to_encode) const {
   if (!will_encoding_succeed_) {
-    client_->NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+    client_->NotifyErrorStatus(EncoderStatus::Codes::kEncoderFailedEncode);
     return;
   }
 

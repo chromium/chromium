@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -53,7 +54,7 @@ class SnapshotManager {
       LocalPathCallback callback,
       int64_t needed_space);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<FileRefsHolder> holder_;
 
   // Note: This should remain the last member so it'll be destroyed and

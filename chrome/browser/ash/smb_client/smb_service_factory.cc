@@ -48,7 +48,12 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
 SmbServiceFactory::SmbServiceFactory()
     : ProfileKeyedServiceFactory(
           /*name=*/"SmbService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());

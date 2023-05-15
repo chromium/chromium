@@ -91,7 +91,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   int numberDeselected =
-      [self.tableView numberOfRowsInSection:TabListSectionIdentifier] -
+      [self.tableView
+          numberOfRowsInSection:
+              [self.tableViewModel
+                  sectionForSectionIdentifier:kSectionIdentifierEnumZero]] -
       [self.tableView indexPathsForSelectedRows].count;
   [_delegate
       tabListFromAndroidViewControllerDidDismissWithSwipe:YES
@@ -150,10 +153,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Returns the navigation 'cancel' button.
 - (UIBarButtonItem*)navigationCancelButton {
-  return [[UIBarButtonItem alloc]
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelButtonTapped)];
+  cancelButton.accessibilityIdentifier =
+      kBringAndroidTabsPromptTabListCancelButtonAXId;
+  return cancelButton;
 }
 
 // Updates the title and enabled status of the 'Open Tabs' button. This method
@@ -179,16 +185,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Returns the navigation 'Open Tabs' button.
 - (UIBarButtonItem*)navigationOpenTabsButton {
-  return [[UIBarButtonItem alloc] initWithTitle:[self openTabsButtonTitle]
-                                          style:UIBarButtonItemStylePlain
-                                         target:self
-                                         action:@selector(openButtonTapped)];
+  UIBarButtonItem* openButton =
+      [[UIBarButtonItem alloc] initWithTitle:[self openTabsButtonTitle]
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(openButtonTapped)];
+  openButton.accessibilityIdentifier =
+      kBringAndroidTabsPromptTabListOpenButtonAXId;
+  return openButton;
 }
 
 // Called when the cancel button is tapped.
 - (void)cancelButtonTapped {
   int numberDeselected =
-      [self.tableView numberOfRowsInSection:TabListSectionIdentifier] -
+      [self.tableView
+          numberOfRowsInSection:
+              [self.tableViewModel
+                  sectionForSectionIdentifier:kSectionIdentifierEnumZero]] -
       [self.tableView indexPathsForSelectedRows].count;
   [_delegate
       tabListFromAndroidViewControllerDidDismissWithSwipe:NO

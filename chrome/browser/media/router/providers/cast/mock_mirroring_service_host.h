@@ -26,8 +26,8 @@ class MockMirroringServiceHost : public mirroring::MirroringServiceHost {
                    inbound_channel,
                const std::string& sink_name));
   MOCK_METHOD(absl::optional<int>, GetTabSourceId, (), (const));
-  MOCK_METHOD(void, Pause, ());
-  MOCK_METHOD(void, Resume, ());
+  MOCK_METHOD(void, Pause, (base::OnceClosure on_paused_callback));
+  MOCK_METHOD(void, Resume, (base::OnceClosure on_resumed_callback));
   MOCK_METHOD(void,
               GetMirroringStats,
               (base::OnceCallback<void(const base::Value)>));

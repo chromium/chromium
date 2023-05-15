@@ -24,7 +24,6 @@ consoles.list_view(
 
 def updater_linux_builder(*, name, **kwargs):
     kwargs.setdefault("os", os.LINUX_DEFAULT)
-    kwargs.setdefault("goma_backend", None)
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.LOW_JOBS_FOR_CQ)
     return try_.builder(name = name, **kwargs)

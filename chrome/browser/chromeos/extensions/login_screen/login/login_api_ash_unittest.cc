@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 
 #include <map>
@@ -122,8 +123,8 @@ class ScopedTestingProfile {
   TestingProfile* profile() { return profile_; }
 
  private:
-  TestingProfile* const profile_;
-  TestingProfileManager* const profile_manager_;
+  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  const raw_ptr<TestingProfileManager, ExperimentalAsh> profile_manager_;
 };
 
 ash::UserContext GetPublicUserContext(const std::string& email) {
@@ -155,7 +156,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
 
-    auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
+    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
     fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::unique_ptr<ash::FakeChromeUserManager>(fake_chrome_user_manager_));
@@ -182,7 +183,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     mock_existing_user_controller_.reset();
     mock_login_display_host_.reset();
     scoped_user_manager_.reset();
-    auth_metrics_recorder_.reset();
+    auth_events_recorder_.reset();
 
     ExtensionApiUnittest::TearDown();
   }
@@ -196,12 +197,13 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
 
-  ash::FakeChromeUserManager* fake_chrome_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh>
+      fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
-  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
 MATCHER_P(MatchSigninSpecifics, expected, "") {

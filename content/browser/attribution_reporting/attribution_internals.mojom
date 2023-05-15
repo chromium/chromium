@@ -13,21 +13,10 @@ import "services/network/public/mojom/attribution.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// Represents `AttributionReport::EventLevelData::Id`.
+// Represents `AttributionReport::Id`.
 // Will be used to issue commands for individual reports.
-struct EventLevelReportID {
+struct ReportID {
   int64 value;
-};
-
-// Represents `AttributionReport::AggregatableAttributionData::Id`.
-// Will be used to issue commands for individual reports.
-struct AggregatableAttributionReportID {
-  int64 value;
-};
-
-union ReportID {
-  EventLevelReportID event_level_id;
-  AggregatableAttributionReportID aggregatable_attribution_id;
 };
 
 // Contains event-level data to be displayed.
@@ -46,8 +35,9 @@ struct AggregatableHistogramContribution {
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
-  string? attestation_token;
+  string? verification_token;
   string aggregation_coordinator;
+  bool is_null_report;
 };
 
 union WebUIReportData {
@@ -138,7 +128,7 @@ struct WebUIRegistration {
 
 struct WebUITrigger {
   WebUIRegistration registration;
-  network.mojom.TriggerAttestation? attestation;
+  network.mojom.TriggerVerification? verification;
 
   enum Status {
     // Shared statuses:
@@ -153,12 +143,12 @@ struct WebUITrigger {
     kDeduplicated,
     kReportWindowPassed,
     kNotRegistered,
+    kExcessiveReports,
 
     // Event-level statuses:
     kLowPriority,
     kNoised,
     kNoMatchingConfigurations,
-    kExcessiveEventLevelReports,
 
     // Aggregatable statuses:
     kNoHistograms,
@@ -228,8 +218,9 @@ interface Observer {
 // storage layer.
 interface Handler {
   // Returns the state of the Attribution Reporting API in the WebUI's browsing context.
+  // `attribution_support` is the `Attribution-Reporting-Support` request header value.
   IsAttributionReportingEnabled() => (bool enabled, bool debug_mode,
-                                      bool has_os_support);
+                                      string attribution_support);
 
   // Returns all active sources that are persisted in storage. This does
   // not include expired sources, or sources that can no longer be attributed

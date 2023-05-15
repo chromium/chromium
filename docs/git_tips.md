@@ -23,7 +23,7 @@ The following resources can provide background on how Git works:
     explaining the main purpose of Git operations.
 *   [Git User's Manual](http://schacon.github.com/git/user-manual.html) -- a
     great resource to learn more about ho to use Git properly.
-*   [A Visual Git Reference](http://marklodato.github.com/visual-git-guide/index-en.html)
+*   [A Visual Git Reference](https://marklodato.github.io/visual-git-guide/index-en.html)
     -- a resource that explains various Git operations for visual learners.
 *   [Git Cheat Sheet](http://cheat.errtheblog.com/s/git) -- now that you
     understand Git, here's a cheat sheet to quickly remind you of all the

@@ -5,8 +5,10 @@
   "start_url": "/index.html",
   "display": "standalone",
   "permissions_policy": {
-    "usb": [ "*" ],
-    "direct-sockets": [ "*" ]
+    "clipboard-read": [ "*" ],
+    "clipboard-write": [ "*" ],
+    "direct-sockets": [ "*" ],
+    "usb": [ "*" ]
   },
   "icons": [
     {

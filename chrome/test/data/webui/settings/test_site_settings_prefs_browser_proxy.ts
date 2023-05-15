@@ -78,6 +78,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getNumCookiesString',
       'getExtensionName',
       'getFileSystemGrants',
+      'revokeFileSystemGrant',
+      'revokeFileSystemGrants',
     ]);
 
 
@@ -667,5 +669,13 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]> {
     this.methodCalled('getFileSystemGrants');
     return Promise.resolve(this.fileSystemGrantsList_);
+  }
+
+  revokeFileSystemGrant(origin: string, filePath: string): void {
+    this.methodCalled('revokeFileSystemGrant', [origin, filePath]);
+  }
+
+  revokeFileSystemGrants(origin: string): void {
+    this.methodCalled('revokeFileSystemGrants', origin);
   }
 }

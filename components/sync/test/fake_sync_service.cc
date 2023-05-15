@@ -20,6 +20,8 @@ FakeSyncService::FakeSyncService() = default;
 
 FakeSyncService::~FakeSyncService() = default;
 
+void FakeSyncService::SetSyncFeatureRequested() {}
+
 syncer::SyncUserSettings* FakeSyncService::GetUserSettings() {
   return nullptr;
 }
@@ -30,7 +32,7 @@ const syncer::SyncUserSettings* FakeSyncService::GetUserSettings() const {
 
 syncer::SyncService::DisableReasonSet FakeSyncService::GetDisableReasons()
     const {
-  return DISABLE_REASON_NOT_SIGNED_IN;
+  return {DISABLE_REASON_NOT_SIGNED_IN};
 }
 
 syncer::SyncService::TransportState FakeSyncService::GetTransportState() const {
@@ -102,6 +104,10 @@ bool FakeSyncService::RequiresClientUpgrade() const {
   return false;
 }
 
+bool FakeSyncService::IsSyncFeatureDisabledViaDashboard() const {
+  return false;
+}
+
 void FakeSyncService::DataTypePreconditionChanged(ModelType type) {}
 
 syncer::SyncTokenStatus FakeSyncService::GetSyncTokenStatusForDebugging()
@@ -166,6 +172,10 @@ void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {}
+
+bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
+  return HasSyncConsent();
+}
 
 void FakeSyncService::Shutdown() {}
 

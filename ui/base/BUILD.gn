@@ -38,11 +38,20 @@ build_ime = !is_ios
 # toolchains that just builds the support to load datapacks. The dependencies
 # should be kept minimal to not have to build too many targets with multiple
 # toolchains.
+#
+# Any other target should depend on //ui/base instead, except when needed to
+# avoid circular dependencies.
 component("ui_data_pack") {
+  visibility = [
+    ":base",
+    "//chromeos/crosapi/mojom",  # This target requires minimal dependencies.
+    "//ios/chrome/tools/strings:generate_localizable_strings",
+    "//ui/gfx:*",
+  ]
+
   sources = [
     "resource/data_pack.cc",
     "resource/data_pack.h",
-    "resource/data_pack_export.h",
     "resource/resource_handle.h",
     "resource/resource_scale_factor.cc",
     "resource/resource_scale_factor.h",
@@ -50,13 +59,17 @@ component("ui_data_pack") {
     "resource/scoped_file_writer.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//build:chromeos_buildflags",
+  ]
+
+  deps = [
     "//net",
     "//third_party/zlib/google:compression_utils",
   ]
 
-  defines = [ "UI_DATA_PACK_IMPLEMENTATION" ]
+  defines = [ "IS_UI_DATA_PACK_IMPL" ]
 
   if (is_chromeos) {
     sources += [
@@ -64,6 +77,7 @@ component("ui_data_pack") {
       "resource/temporary_shared_resource_path_chromeos.h",
     ]
   }
+
   if (is_chromeos_lacros) {
     sources += [
       "resource/data_pack_with_resource_sharing_lacros.cc",
@@ -327,8 +341,6 @@ component("base") {
       "cocoa/touch_bar_util.mm",
       "cocoa/tracking_area.h",
       "cocoa/tracking_area.mm",
-      "cocoa/underlay_opengl_hosting_window.h",
-      "cocoa/underlay_opengl_hosting_window.mm",
       "cocoa/user_interface_item_command_handler.h",
       "cocoa/views_hostable.h",
       "cocoa/window_size_constants.h",
@@ -840,7 +852,6 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:ui_data_pack",
     "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
     "//ui/events:events_base",
@@ -1060,7 +1071,6 @@ test("ui_base_unittests") {
     "//ui/base",
     "//ui/base:data_exchange",
     "//ui/base:test_support",
-    "//ui/base:ui_data_pack",
     "//ui/base/clipboard:clipboard_test",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/clipboard:file_info",

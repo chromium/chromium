@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/history_types.h"
@@ -641,7 +642,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     scoped_refptr<QueryHistoryState> state,
     base::Time start_time,
     WebHistoryService::Request* request,
-    const base::Value* results_value) {
+    base::optional_ref<base::Value::Dict> results_dict) {
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
   if (!web_history_timer_->IsRunning())
@@ -649,27 +650,33 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
   web_history_timer_->Stop();
   web_history_request_.reset();
 
-  if (results_value) {
+  if (results_dict.has_value()) {
     has_synced_results_ = true;
-    if (const base::Value* events = results_value->FindListKey("event")) {
+    if (const base::Value::List* events = results_dict->FindList("event")) {
       state->remote_results.reserve(state->remote_results.size() +
-                                    events->GetList().size());
+                                    events->size());
       std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
-      for (const base::Value& event : events->GetList()) {
-        if (!event.is_dict())
+      for (const base::Value& event : *events) {
+        const base::Value::Dict* event_dict = event.GetIfDict();
+        if (!event_dict) {
           continue;
-        const base::Value* results = event.FindListKey("result");
-        if (!results || results->GetList().empty())
+        }
+        const base::Value::List* results = event_dict->FindList("result");
+        if (!results || results->empty()) {
           continue;
-        const base::Value& result = results->GetList()[0];
-        if (!result.is_dict())
+        }
+        const base::Value::Dict* result = results->front().GetIfDict();
+        if (!result) {
           continue;
-        const std::string* url = result.FindStringKey("url");
-        if (!url)
+        }
+        const std::string* url = result->FindString("url");
+        if (!url) {
           continue;
-        const base::Value* ids = result.FindListKey("id");
-        if (!ids || ids->GetList().empty())
+        }
+        const base::Value::List* ids = result->FindList("id");
+        if (!ids || ids->empty()) {
           continue;
+        }
 
         GURL gurl(*url);
         if (state->original_options.host_only) {
@@ -686,21 +693,24 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
         std::u16string title;
 
         // Title is optional.
-        if (const std::string* s = result.FindStringKey("title"))
+        if (const std::string* s = result->FindString("title")) {
           title = base::UTF8ToUTF16(*s);
+        }
 
         std::string favicon_url;
-        if (const std::string* s = result.FindStringKey("favicon_url"))
+        if (const std::string* s = result->FindString("favicon_url")) {
           favicon_url = *s;
+        }
 
         // Extract the timestamps of all the visits to this URL.
         // They are referred to as "IDs" by the server.
-        for (const base::Value& id : ids->GetList()) {
+        for (const base::Value& id : *ids) {
           const std::string* timestamp_string;
           int64_t timestamp_usec = 0;
 
-          if (!id.is_dict() ||
-              !(timestamp_string = id.FindStringKey("timestamp_usec")) ||
+          auto* id_dict = id.GetIfDict();
+          if (!id_dict ||
+              !(timestamp_string = id_dict->FindString("timestamp_usec")) ||
               !base::StringToInt64(*timestamp_string, &timestamp_usec)) {
             NOTREACHED() << "Unable to extract timestamp.";
             continue;
@@ -711,8 +721,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 
           // Get the ID of the client that this visit came from.
           std::string client_id;
-          if (const std::string* s = result.FindStringKey("client_id"))
+          if (const std::string* s = result->FindString("client_id")) {
             client_id = *s;
+          }
 
           state->remote_results.emplace_back(HistoryEntry(
               HistoryEntry::REMOTE_ENTRY, gurl, title, time, client_id,
@@ -722,7 +733,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
       }
     }
     const std::string* continuation_token =
-        results_value->FindStringKey("continuation_token");
+        results_dict->FindString("continuation_token");
     state->remote_status = !continuation_token || continuation_token->empty()
                                ? REACHED_BEGINNING
                                : MORE_RESULTS;

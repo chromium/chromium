@@ -6,6 +6,8 @@
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 
 #include "ash/style/icon_button.h"
+#include "ash/utility/cursor_setter.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -27,7 +29,7 @@ class SplitViewDividerView : public views::View,
                                 SplitViewDivider* divider);
   SplitViewDividerView(const SplitViewDividerView&) = delete;
   SplitViewDividerView& operator=(const SplitViewDividerView&) = delete;
-  ~SplitViewDividerView() override = default;
+  ~SplitViewDividerView() override;
 
   void DoSpawningAnimation(int spawn_position);
   void SetDividerBarVisible(bool visible);
@@ -35,6 +37,8 @@ class SplitViewDividerView : public views::View,
   // views::View:
   void Layout() override;
   void OnThemeChanged() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -59,22 +63,30 @@ class SplitViewDividerView : public views::View,
   // hiding the `snap_group_expanded_menu_widget_`.
   void OnKebabButtonPressed();
 
-  SplitViewController* split_view_controller_;
-  SplitViewDividerHandlerView* divider_handler_view_ = nullptr;
-  SplitViewDivider* divider_;
+  // Called to update the bounds of the `snap_group_expanded_menu_widget_`.
+  void MaybeUpdateExpandedMenuWidgetBounds();
+
+  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> divider_handler_view_ =
+      nullptr;
+  raw_ptr<SplitViewDivider, DanglingUntriaged | ExperimentalAsh> divider_;
 
   // A vertical 3-dot button that shows on the split view divider when
   // `ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()` is true.
-  IconButton* kebab_button_;
+  raw_ptr<IconButton, ExperimentalAsh> kebab_button_;
 
   // The snap group expanded menu widget and its contents view.
   views::UniqueWidgetPtr snap_group_expanded_menu_widget_;
-  SnapGroupExpandedMenuView* snap_group_expanded_menu_view_ = nullptr;
+  raw_ptr<SnapGroupExpandedMenuView, ExperimentalAsh>
+      snap_group_expanded_menu_view_ = nullptr;
 
   // True if the `snap_group_expanded_menu_widget_` should show
   // `OnKebabButtonPressed()` and false otherwise. The value will be updated on
   // the `kebab_button_` is clicked.
   bool should_show_expanded_menu_ = false;
+
+  // Securely updates the cursor.
+  CursorSetter cursor_setter_;
 };
 
 }  // namespace ash

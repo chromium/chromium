@@ -73,6 +73,7 @@ class AppDeduplicationServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -447,24 +448,57 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
       service->AreDuplicates(not_duplicate_app_id, skype_web_entry_id));
 }
 
-TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
+class AppDeduplicationServiceAlmanacTest : public testing::Test {
+ protected:
+  AppDeduplicationServiceAlmanacTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAppDeduplicationServiceFondue);
+  }
+
+  void SetUp() override {
+    testing::Test::SetUp();
+    AppDeduplicationServiceFactory::SkipApiKeyCheckForTesting(true);
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &url_loader_factory_));
+    profile_ = profile_builder.Build();
+  }
+
+  void TearDown() override {
+    AppDeduplicationServiceFactory::SkipApiKeyCheckForTesting(false);
+  }
+
+  Profile* GetProfile() { return profile_.get(); }
+
+  network::TestURLLoaderFactory url_loader_factory_;
+
+ private:
+  // BrowserTaskEnvironment has to be the first member or test will break.
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
   proto::DeduplicateData data;
 
   auto* skype_group = data.add_app_group();
-  auto* skype_app_1 = skype_group->add_app();
-  skype_app_1->set_app_id("com.skype.raider");
-  skype_app_1->set_platform("phonehub");
-  auto* skype_app_2 = skype_group->add_app();
-  skype_app_2->set_app_id("https://web.skype.com/");
-  skype_app_2->set_platform("website");
+  skype_group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  skype_group->add_package_id();
+  skype_group->set_package_id(0, "android:com.skype.raider");
+  skype_group->add_package_id();
+  skype_group->set_package_id(1, "web:https://web.skype.com/");
 
   auto* duo_group = data.add_app_group();
-  auto* duo_app_1 = duo_group->add_app();
-  duo_app_1->set_app_id("com.google.android.apps.tachyon");
-  duo_app_1->set_platform("arc");
-  auto* duo_app_2 = duo_group->add_app();
-  duo_app_2->set_app_id("https://duo.google.com/?lfhs=2");
-  duo_app_2->set_platform("web");
+  duo_group->set_app_group_uuid("1d460a2b-d6d5-471d-b1e6-bbfc87971ea8");
+  duo_group->add_package_id();
+  duo_group->set_package_id(0, "android:com.google.duo");
+  duo_group->add_package_id();
+  duo_group->set_package_id(1, "web:https://duo.google.com/?lfhs=2");
+  duo_group->add_package_id();
+  duo_group->set_package_id(2, "website:https://duo.google.com/?lfhs=2");
 
   TestingProfile profile;
   ASSERT_TRUE(AppDeduplicationServiceFactory::
@@ -472,31 +506,38 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
+  // This function is called to populate the duplicate map, or else IsServiceOn
+  // will return false.
   service->DeduplicateDataToEntries(data);
 
+  EXPECT_TRUE(service->IsServiceOn());
+
   uint32_t skype_test_index = 1;
-  std::string skype_phonehub_app_id = "com.skype.raider";
-  auto it = service->entry_to_group_map_.find(EntryId(skype_phonehub_app_id));
+
+  std::string skype_android_app_id = "com.skype.raider";
+  auto it = service->entry_to_group_map_.find(
+      EntryId(skype_android_app_id, AppType::kArc));
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(skype_test_index, it->second);
 
-  std::string skype_website_id = "https://web.skype.com/";
-  it = service->entry_to_group_map_.find(EntryId(GURL(skype_website_id)));
+  std::string skype_web_id = "https://web.skype.com/";
+  it = service->entry_to_group_map_.find(EntryId(skype_web_id, AppType::kWeb));
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(skype_test_index, it->second);
 
   auto map_it = service->duplication_map_.find(skype_test_index);
   ASSERT_FALSE(map_it == service->duplication_map_.end());
   EXPECT_THAT(map_it->second.entries,
-              ElementsAre(Entry(EntryId(skype_phonehub_app_id)),
-                          Entry(EntryId(GURL(skype_website_id)))));
+              ElementsAre(Entry(EntryId(skype_android_app_id, AppType::kArc)),
+                          Entry(EntryId(skype_web_id, AppType::kWeb))));
 
   uint32_t duo_test_index = 2;
-  std::string duo_arc_app_id = "com.google.android.apps.tachyon";
-  it =
-      service->entry_to_group_map_.find(EntryId(duo_arc_app_id, AppType::kArc));
+
+  std::string duo_android_app_id = "com.google.duo";
+  it = service->entry_to_group_map_.find(
+      EntryId(skype_android_app_id, AppType::kArc));
   ASSERT_NE(it, service->entry_to_group_map_.end());
-  EXPECT_EQ(duo_test_index, it->second);
+  EXPECT_EQ(skype_test_index, it->second);
 
   std::string duo_web_app_id = "https://duo.google.com/?lfhs=2";
   it =
@@ -504,34 +545,26 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(duo_test_index, it->second);
 
+  std::string duo_website_app_id = "https://duo.google.com/?lfhs=2";
+  it = service->entry_to_group_map_.find(EntryId(duo_website_app_id));
+  EXPECT_EQ(it, service->entry_to_group_map_.end());
+
   map_it = service->duplication_map_.find(duo_test_index);
   ASSERT_FALSE(map_it == service->duplication_map_.end());
   EXPECT_THAT(map_it->second.entries,
-              ElementsAre(Entry(EntryId(duo_arc_app_id, AppType::kArc)),
+              ElementsAre(Entry(EntryId(duo_android_app_id, AppType::kArc)),
                           Entry(EntryId(duo_web_app_id, AppType::kWeb))));
 }
 
-TEST_F(AppDeduplicationServiceTest, PrefUnchangedAfterServerError) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
-      /*disabled_features=*/{features::kAppDeduplicationService});
-
-  TestingProfile::Builder profile_builder;
-  network::TestURLLoaderFactory url_loader_factory;
-  profile_builder.SetSharedURLLoaderFactory(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &url_loader_factory));
-
-  url_loader_factory.AddResponse(
+TEST_F(AppDeduplicationServiceAlmanacTest, PrefUnchangedAfterServerError) {
+  url_loader_factory_.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<bool> result;
-  auto profile = profile_builder.Build();
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(GetProfile()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(GetProfile());
   EXPECT_NE(nullptr, service);
 
   base::Time time_before = service->GetServerPref();
@@ -543,32 +576,21 @@ TEST_F(AppDeduplicationServiceTest, PrefUnchangedAfterServerError) {
   EXPECT_EQ(time_before, time_after);
 }
 
-TEST_F(AppDeduplicationServiceTest, PrefSetAfterServerSuccess) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
-      /*disabled_features=*/{features::kAppDeduplicationService});
-
-  TestingProfile::Builder profile_builder;
-  network::TestURLLoaderFactory url_loader_factory;
-  profile_builder.SetSharedURLLoaderFactory(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &url_loader_factory));
-
+TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
   proto::DeduplicateData data;
-  auto* app = data.add_app_group()->add_app();
-  app->set_app_id("com.skype.raider");
-  app->set_platform("phonehub");
+  auto* group = data.add_app_group();
+  group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  group->add_package_id();
+  group->set_package_id(0, "website:https://web.skype.com/");
 
-  url_loader_factory.AddResponse(
+  url_loader_factory_.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(),
       data.SerializeAsString());
 
   base::test::TestFuture<bool> result;
-  auto profile = profile_builder.Build();
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(GetProfile()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(GetProfile());
   EXPECT_NE(nullptr, service);
 
   base::Time time_before = service->GetServerPref();
@@ -580,4 +602,42 @@ TEST_F(AppDeduplicationServiceTest, PrefSetAfterServerSuccess) {
   EXPECT_TRUE(time_before < time_after);
 }
 
+TEST_F(AppDeduplicationServiceAlmanacTest, ValidServiceNoDuplicates) {
+  proto::DeduplicateData data;
+
+  auto* viber_group = data.add_app_group();
+  viber_group->set_app_group_uuid("af45163b-111d-4d43-b191-01a9f8aece4c");
+  viber_group->add_package_id();
+  viber_group->set_package_id(0, "android:com.viber.voip");
+
+  std::string viber_arc_app_id = "com.viber.voip";
+
+  TestingProfile profile;
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+
+  EXPECT_NE(nullptr, service);
+
+  // This function is called to populate the duplicate map, or else IsServiceOn
+  // will return false.
+  service->DeduplicateDataToEntries(data);
+
+  EXPECT_TRUE(service->IsServiceOn());
+
+  EntryId viber_arc_entry_id(viber_arc_app_id, apps::AppType::kArc);
+
+  EXPECT_TRUE(service->GetDuplicates(viber_arc_entry_id).empty());
+}
+
+TEST_F(AppDeduplicationServiceAlmanacTest, InvalidServiceNoDuplicates) {
+  TestingProfile profile;
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+
+  EXPECT_NE(nullptr, service);
+
+  EXPECT_FALSE(service->IsServiceOn());
+}
 }  // namespace apps::deduplication

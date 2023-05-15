@@ -338,3 +338,20 @@ export async function getUniqueParents(entries) {
 
   return Promise.all([...uniquePaths].map(path => getDirectory(root, path)));
 }
+
+/**
+ * Gets the current bulk pin progress status.
+ * @returns {!Promise<!chrome.fileManagerPrivate.BulkPinProgress>}
+ */
+export async function getBulkPinProgress() {
+  return promisify(chrome.fileManagerPrivate.getBulkPinProgress);
+}
+
+/**
+ * Starts calculating the required space to pin all the users items on their My
+ * drive.
+ * @returns {!Promise<void>}
+ */
+export async function calculateBulkPinRequiredSpace() {
+  return promisify(chrome.fileManagerPrivate.calculateBulkPinRequiredSpace);
+}

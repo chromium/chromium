@@ -16,6 +16,7 @@ namespace aom {
 struct AV1RateControlRtcConfig;
 struct AV1FrameParamsRTC;
 class AV1RateControlRTC;
+struct AV1LoopfilterLevel;
 }  // namespace aom
 
 namespace media {
@@ -73,7 +74,8 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  private:
   using AV1RateControl = VideoRateControl<aom::AV1RateControlRtcConfig,
                                           aom::AV1RateControlRTC,
-                                          aom::AV1FrameParamsRTC>;
+                                          aom::AV1FrameParamsRTC,
+                                          aom::AV1LoopfilterLevel>;
 
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;

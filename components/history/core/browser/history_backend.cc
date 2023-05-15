@@ -43,6 +43,7 @@
 #include "components/favicon/core/favicon_backend.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/history_constants.h"
@@ -98,6 +99,9 @@ using syncer::ClientTagBasedModelTypeProcessor;
 namespace history {
 
 namespace {
+
+using OsType = syncer::DeviceInfo::OsType;
+using FormFactor = syncer::DeviceInfo::FormFactor;
 
 #if DCHECK_IS_ON()
 // Use to keep track of paths used to host HistoryBackends. This class
@@ -237,6 +241,49 @@ class DeleteForeignVisitsDBTask : public HistoryDBTask {
 
   void DoneRunOnMainThread() override {}
 };
+
+// On iOS devices, Returns true if the device that created the foreign visit is
+// an Android or iOS device, and has a mobile form factor.
+//
+// On non-iOS devices, returns false.
+bool CanAddForeignVisitToSegments(
+    const VisitRow& foreign_visit,
+    const std::string& local_device_originator_cache_guid,
+    const SyncDeviceInfoMap& sync_device_info) {
+#if BUILDFLAG(IS_IOS)
+  if (!history::IsSyncSegmentsDataEnabled() ||
+      foreign_visit.originator_cache_guid.empty() ||
+      !foreign_visit.consider_for_ntp_most_visited) {
+    return false;
+  }
+
+  auto foreign_device_info_iter =
+      sync_device_info.find(foreign_visit.originator_cache_guid);
+  auto local_device_info_iter =
+      sync_device_info.find(local_device_originator_cache_guid);
+
+  if (foreign_device_info_iter == sync_device_info.end() ||
+      local_device_info_iter == sync_device_info.end()) {
+    return false;
+  }
+
+  std::pair<OsType, FormFactor> foreign_device_info =
+      foreign_device_info_iter->second;
+  std::pair<OsType, FormFactor> local_device_info =
+      local_device_info_iter->second;
+
+  if (local_device_info.first != OsType::kIOS ||
+      local_device_info.second != FormFactor::kPhone) {
+    return false;
+  }
+
+  return foreign_device_info.second == FormFactor::kPhone &&
+         (foreign_device_info.first == OsType::kAndroid ||
+          foreign_device_info.first == OsType::kIOS);
+#else
+  return false;
+#endif
+}
 
 }  // namespace
 
@@ -436,10 +483,12 @@ SegmentID HistoryBackend::GetLastSegmentID(VisitID from_visit) {
   VisitID visit_id = from_visit;
   while (visit_id) {
     VisitRow row;
-    if (!db_->GetRowForVisit(visit_id, &row))
+    if (!db_->GetRowForVisit(visit_id, &row)) {
       return 0;
-    if (row.segment_id)
+    }
+    if (row.segment_id) {
       return row.segment_id;  // Found a visit in this change with a segment.
+    }
 
     // Check the referrer of this visit, if any.
     visit_id = row.referring_visit;
@@ -453,14 +502,49 @@ SegmentID HistoryBackend::GetLastSegmentID(VisitID from_visit) {
   return 0;
 }
 
-SegmentID HistoryBackend::UpdateSegments(const GURL& url,
-                                         VisitID from_visit,
-                                         VisitID visit_id,
-                                         ui::PageTransition transition_type,
-                                         const Time ts) {
-  if (!db_)
+SegmentID HistoryBackend::AssignSegmentForNewVisit(
+    const GURL& url,
+    VisitID from_visit,
+    VisitID visit_id,
+    ui::PageTransition transition_type,
+    const Time ts) {
+  if (!db_) {
     return 0;
+  }
 
+  // We only consider main frames.
+  if (!ui::PageTransitionIsMainFrame(transition_type)) {
+    return 0;
+  }
+
+  SegmentID segment_id = CalculateSegmentID(url, from_visit, transition_type);
+
+  if (!segment_id) {
+    return 0;
+  }
+
+  // Set the segment in the visit.
+  if (!db_->SetSegmentID(visit_id, segment_id)) {
+    DLOG(WARNING) << "AssignSegmentForNewVisit: SetSegmentID failed: "
+                  << segment_id;
+    return 0;
+  }
+
+  // Finally, increase the counter for that segment / day.
+  if (!db_->UpdateSegmentVisitCount(segment_id, ts, 1)) {
+    DLOG(WARNING)
+        << "AssignSegmentForNewVisit: UpdateSegmentVisitCount failed: "
+        << segment_id;
+    return 0;
+  }
+
+  return segment_id;
+}
+
+SegmentID HistoryBackend::CalculateSegmentID(
+    const GURL& url,
+    VisitID from_visit,
+    ui::PageTransition transition_type) {
   // We only consider main frames.
   if (!ui::PageTransitionIsMainFrame(transition_type))
     return 0;
@@ -495,7 +579,8 @@ SegmentID HistoryBackend::UpdateSegments(const GURL& url,
     if (!segment_id) {
       segment_id = db_->CreateSegment(url_id, segment_name);
       if (!segment_id) {
-        DLOG(ERROR) << "UpdateSegments: CreateSegment failed: " << segment_name;
+        DLOG(WARNING) << "CalculateSegmentID: CreateSegment failed: "
+                      << segment_name;
         return 0;
       }
     } else {
@@ -510,23 +595,54 @@ SegmentID HistoryBackend::UpdateSegments(const GURL& url,
     // TYPED. (For example GENERATED). In this case this visit doesn't count
     // toward any segment.
     segment_id = GetLastSegmentID(from_visit);
-    if (!segment_id)
-      return 0;
   }
 
-  // Set the segment in the visit.
-  if (!db_->SetSegmentID(visit_id, segment_id)) {
-    DLOG(ERROR) << "UpdateSegments: SetSegmentID failed: " << segment_id;
-    return 0;
-  }
-
-  // Finally, increase the counter for that segment / day.
-  if (!db_->IncreaseSegmentVisitCount(segment_id, ts, 1)) {
-    DLOG(ERROR) << "UpdateSegments: IncreaseSegmentVisitCount failed: "
-                << segment_id;
-    return 0;
-  }
   return segment_id;
+}
+
+void HistoryBackend::UpdateSegmentForExistingForeignVisit(VisitRow& visit_row) {
+  CHECK(!visit_row.originator_cache_guid.empty());
+
+  URLRow url_row;
+  if (!db_->GetURLRow(visit_row.url_id, &url_row)) {
+    DLOG(WARNING) << "Failed to get id " << visit_row.url_id
+                  << " from history.urls.";
+    return;
+  }
+
+  SegmentID new_segment_id =
+      (can_add_foreign_visits_to_segments_ &&
+       CanAddForeignVisitToSegments(
+           visit_row, local_device_originator_cache_guid_, sync_device_info_))
+          ? CalculateSegmentID(url_row.url(), visit_row.referring_visit,
+                               visit_row.transition)
+          : 0;
+
+  if (visit_row.segment_id == new_segment_id) {
+    return;
+  }
+
+  if (visit_row.segment_id != 0 &&
+      !db_->UpdateSegmentVisitCount(visit_row.segment_id, visit_row.visit_time,
+                                    -1)) {
+    // Decrement the count of the old segment.
+    DLOG(WARNING) << "UpdateSegmentForExistingForeignVisit: "
+                     "UpdateSegmentVisitCount failed: "
+                  << visit_row.segment_id;
+    return;
+  }
+
+  if (new_segment_id != 0 &&
+      !db_->UpdateSegmentVisitCount(new_segment_id, visit_row.visit_time, 1)) {
+    DLOG(WARNING) << "UpdateSegmentForExistingForeignVisit: "
+                     "UpdateSegmentVisitCount failed: "
+                  << new_segment_id;
+    return;
+  }
+
+  visit_row.segment_id = new_segment_id;
+
+  db_->SetSegmentID(visit_row.visit_id, new_segment_id);
 }
 
 void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
@@ -906,8 +1022,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     // result in changing most visited, so we don't update segments (most
     // visited db).
     if (!is_keyword_generated && request.consider_for_ntp_most_visited) {
-      UpdateSegments(request.url, from_visit_id, last_visit_id, t,
-                     request.time);
+      AssignSegmentForNewVisit(request.url, from_visit_id, last_visit_id, t,
+                               request.time);
     }
   } else {
     // Redirect case. Add the redirect chain.
@@ -1030,8 +1146,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
         if (request.consider_for_ntp_most_visited) {
-          UpdateSegments(redirects[redirect_index], from_visit_id,
-                         last_visit_id, t, request.time);
+          AssignSegmentForNewVisit(redirects[redirect_index], from_visit_id,
+                                   last_visit_id, t, request.time);
         }
       }
 
@@ -1372,6 +1488,10 @@ int HistoryBackend::GetForeignVisitsToDeletePerBatchForTest() {
   return GetForeignVisitsToDeletePerBatch();
 }
 
+sql::Database& HistoryBackend::GetDBForTesting() {
+  return db_->GetDBForTesting();  // IN-TEST
+}
+
 void HistoryBackend::SetPageTitle(const GURL& url,
                                   const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::SetPageTitle");
@@ -1582,6 +1702,13 @@ VisitID HistoryBackend::AddSyncedVisit(
 
   db_->SetMayContainForeignVisits(true);
 
+  if (can_add_foreign_visits_to_segments_ &&
+      CanAddForeignVisitToSegments(visit, local_device_originator_cache_guid_,
+                                   sync_device_info_)) {
+    AssignSegmentForNewVisit(url, visit.referring_visit, visit_id,
+                             visit.transition, visit.visit_time);
+  }
+
   ScheduleCommit();
   return visit_id;
 }
@@ -1646,9 +1773,15 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   updated_row.referring_visit = original_row.referring_visit;
   updated_row.opener_visit = original_row.opener_visit;
 
+  // `segment_id` is computed locally and not synced, so keep any value from the
+  // existing row. It'll be updated below, if necessary.
+  updated_row.segment_id = original_row.segment_id;
+
   if (!db_->UpdateVisitRow(updated_row)) {
     return kInvalidVisitID;
   }
+
+  UpdateSegmentForExistingForeignVisit(updated_row);
 
   // If provided, add or update the ContextAnnotations.
   if (context_annotations) {
@@ -1689,7 +1822,15 @@ bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
   row.referring_visit = referrer_id;
   row.opener_visit = opener_id;
 
-  return db_->UpdateVisitRow(row);
+  bool result = db_->UpdateVisitRow(row);
+
+  if (result) {
+    UpdateSegmentForExistingForeignVisit(row);
+  }
+
+  ScheduleCommit();
+
+  return result;
 }
 
 void HistoryBackend::DeleteAllForeignVisitsAndResetIsKnownToSync() {
@@ -3332,6 +3473,10 @@ void HistoryBackend::SetLocalDeviceOriginatorCacheGuid(
     std::string local_device_originator_cache_guid) {
   local_device_originator_cache_guid_ =
       std::move(local_device_originator_cache_guid);
+}
+
+void HistoryBackend::SetCanAddForeignVisitsToSegments(bool add_foreign_visits) {
+  can_add_foreign_visits_to_segments_ = add_foreign_visits;
 }
 
 void HistoryBackend::ProcessDBTask(

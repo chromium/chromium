@@ -44,7 +44,7 @@
   #setupRow {
     align-items: center;
     display: flex;
-    min-height: var(--settings-row-two-line-min-height);
+    min-height: var(--cr-section-two-line-min-height);
     padding: 0 var(--cr-section-padding);
   }
 </style>
@@ -165,7 +165,6 @@
       label="$i18n{nearbyShareManageContactsRowTitle}"
       sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
       external
-      button-aria-description="$i18n{opensInNewTab}"
       deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
   </cr-link-row>
   <div class="settings-box two-line" id="dataUsageRow">

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/public/browser/content_browser_client.h"
@@ -17,8 +19,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/functional/bind.h"
-#include "base/time/time.h"
 #include "ui/base/idle/idle.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -35,6 +35,8 @@ constexpr base::TimeDelta kScreenLockPollInterval = base::Seconds(1);
 constexpr int kHideSmtcDelaySeconds = 5;
 constexpr base::TimeDelta kHideSmtcDelay = base::Seconds(kHideSmtcDelaySeconds);
 #endif  // BUILDFLAG(IS_WIN)
+
+constexpr base::TimeDelta kDebounceDelay = base::Milliseconds(10);
 
 SystemMediaControlsNotifier::SystemMediaControlsNotifier(
     system_media_controls::SystemMediaControls* system_media_controls)
@@ -74,21 +76,15 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_WIN)
   bool is_playing = false;
-#endif  // BUILDFLAG(IS_WIN)
 
   session_info_ptr_ = std::move(session_info_ptr);
   if (session_info_ptr_) {
-    if (session_info_ptr_->playback_state ==
-        media_session::mojom::MediaPlaybackState::kPlaying) {
-#if BUILDFLAG(IS_WIN)
-      is_playing = true;
-#endif  // BUILDFLAG(IS_WIN)
-      system_media_controls_->SetPlaybackStatus(PlaybackStatus::kPlaying);
-    } else {
-      system_media_controls_->SetPlaybackStatus(PlaybackStatus::kPaused);
-    }
+    is_playing = session_info_ptr_->playback_state ==
+                 media_session::mojom::MediaPlaybackState::kPlaying;
+
+    DebouncePlaybackStatusUpdate(is_playing ? PlaybackStatus::kPlaying
+                                            : PlaybackStatus::kPaused);
   } else {
     system_media_controls_->SetPlaybackStatus(PlaybackStatus::kStopped);
 
@@ -96,15 +92,16 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
     // https://wicg.github.io/mediasession/#metadata
     // 5.3.1 If the active media session is null, unset the media metadata
     // presented to the platform, and terminate these steps.
-    system_media_controls_->ClearMetadata();
+    ClearAllMetadata();
   }
 
 #if BUILDFLAG(IS_WIN)
   if (screen_locked_) {
-    if (is_playing)
+    if (is_playing) {
       StopHideSmtcTimer();
-    else if (!hide_smtc_timer_.IsRunning())
+    } else if (!hide_smtc_timer_.IsRunning()) {
       StartHideSmtcTimer();
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -116,21 +113,11 @@ void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
   if (metadata.has_value()) {
     // 5.3.3 Update the media metadata presented to the platform to match the
     // metadata for the active media session.
-    // If no title was provided, the title of the tab will be in the title
-    // property.
-    system_media_controls_->SetTitle(metadata->title);
-
-    // If no artist was provided, then the source URL will be in the artist
-    // property.
-    system_media_controls_->SetArtist(metadata->artist);
-
-    system_media_controls_->SetAlbum(metadata->album);
-
-    system_media_controls_->UpdateDisplay();
+    DebounceMetadataUpdate(*metadata);
   } else {
     // 5.3.2 If the metadata of the active media session is an empty metadata,
     // unset the media metadata presented to the platform.
-    system_media_controls_->ClearMetadata();
+    ClearAllMetadata();
   }
 }
 
@@ -147,7 +134,7 @@ void SystemMediaControlsNotifier::MediaSessionActionsChanged(
       break;
     }
   }
-  system_media_controls_->SetIsSeekToEnabled(seek_available);
+  DebounceSetIsSeekToEnabled(seek_available);
 }
 
 void SystemMediaControlsNotifier::MediaSessionChanged(
@@ -165,23 +152,7 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
     const SkBitmap& bitmap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!bitmap.empty()) {
-    // 5.3.4.4.3 If the image format is supported, use the image as the artwork
-    // for display in the platform UI. Otherwise the fetch image algorithm fails
-    // and terminates.
-    system_media_controls_->SetThumbnail(bitmap);
-  } else {
-    // 5.3.4.2 If metadata's artwork is empty, terminate these steps.
-    // If no images are fetched in the fetch image algorithm, the user agent
-    // may have fallback behavior such as displaying a default image as artwork.
-    // We display the application icon if no artwork is provided.
-    absl::optional<gfx::ImageSkia> icon =
-        GetContentClient()->browser()->GetProductLogo();
-    if (icon.has_value())
-      system_media_controls_->SetThumbnail(*icon->bitmap());
-    else
-      system_media_controls_->ClearThumbnail();
-  }
+  DebounceIconUpdate(bitmap);
 }
 
 void SystemMediaControlsNotifier::MediaSessionPositionChanged(
@@ -189,10 +160,152 @@ void SystemMediaControlsNotifier::MediaSessionPositionChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (position) {
-    system_media_controls_->SetPosition(*position);
+    DebouncePositionUpdate(*position);
   } else {
-    system_media_controls_->ClearMetadata();
+    ClearAllMetadata();
   }
+}
+
+void SystemMediaControlsNotifier::DebouncePositionUpdate(
+    media_session::MediaPosition position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delayed_position_update_ = position;
+
+  MaybeScheduleMetadataUpdate();
+}
+
+void SystemMediaControlsNotifier::DebounceMetadataUpdate(
+    media_session::MediaMetadata metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delayed_metadata_update_ = metadata;
+
+  MaybeScheduleMetadataUpdate();
+}
+
+void SystemMediaControlsNotifier::DebouncePlaybackStatusUpdate(
+    system_media_controls::SystemMediaControls::PlaybackStatus
+        playback_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  delayed_playback_status_ = playback_status;
+
+  MaybeScheduleMetadataUpdate();
+}
+
+void SystemMediaControlsNotifier::DebounceIconUpdate(const SkBitmap& bitmap) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  delayed_icon_update_ = bitmap;
+
+  // Only update `delayed_icon_update_` once every kDebounceDelay.
+  if (!icon_update_timer_.IsRunning()) {
+    icon_update_timer_.Start(
+        FROM_HERE, kDebounceDelay,
+        base::BindOnce(&SystemMediaControlsNotifier::UpdateIcon,
+                       base::Unretained(this)));
+  }
+}
+
+void SystemMediaControlsNotifier::DebounceSetIsSeekToEnabled(
+    bool is_seek_to_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  delayed_is_seek_to_enabled_ = is_seek_to_enabled;
+
+  // Only update `delayed_is_seek_to_enabled_` once every kDebounceDelay.
+  if (!actions_update_timer_.IsRunning()) {
+    auto update_seek_to_is_enabled = [](SystemMediaControlsNotifier* self) {
+      CHECK(self->delayed_is_seek_to_enabled_);
+
+      self->system_media_controls_->SetIsSeekToEnabled(
+          *self->delayed_is_seek_to_enabled_);
+
+      self->delayed_is_seek_to_enabled_ = absl::nullopt;
+    };
+
+    actions_update_timer_.Start(
+        FROM_HERE, kDebounceDelay,
+        base::BindOnce(std::move(update_seek_to_is_enabled),
+                       base::Unretained(this)));
+  }
+}
+
+void SystemMediaControlsNotifier::MaybeScheduleMetadataUpdate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (metadata_update_timer_.IsRunning()) {
+    return;
+  }
+
+  metadata_update_timer_.Start(
+      FROM_HERE, kDebounceDelay,
+      base::BindOnce(&SystemMediaControlsNotifier::UpdateMetadata,
+                     base::Unretained(this)));
+}
+
+void SystemMediaControlsNotifier::UpdateMetadata() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (delayed_position_update_) {
+    system_media_controls_->SetPosition(*delayed_position_update_);
+    delayed_position_update_ = absl::nullopt;
+  }
+
+  if (delayed_metadata_update_) {
+    // If no title was provided, the title of the tab will be in the title
+    // property.
+    system_media_controls_->SetTitle(delayed_metadata_update_->title);
+
+    // If no artist was provided, then the source URL will be in the artist
+    // property.
+    system_media_controls_->SetArtist(delayed_metadata_update_->artist);
+
+    system_media_controls_->SetAlbum(delayed_metadata_update_->album);
+
+    system_media_controls_->UpdateDisplay();
+    delayed_metadata_update_ = absl::nullopt;
+  }
+
+  if (delayed_playback_status_) {
+    system_media_controls_->SetPlaybackStatus(*delayed_playback_status_);
+    delayed_playback_status_ = absl::nullopt;
+  }
+}
+
+void SystemMediaControlsNotifier::UpdateIcon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(delayed_icon_update_);
+
+  if (!delayed_icon_update_->empty()) {
+    // 5.3.4.4.3 If the image format is supported, use the image as the artwork
+    // for display in the platform UI. Otherwise the fetch image algorithm fails
+    // and terminates.
+    system_media_controls_->SetThumbnail(*delayed_icon_update_);
+  } else {
+    // 5.3.4.2 If metadata's artwork is empty, terminate these steps.
+    // If no images are fetched in the fetch image algorithm, the user agent may
+    // have fallback behavior such as displaying a default image as artwork.
+    // We display the application icon if no artwork is provided.
+    absl::optional<gfx::ImageSkia> icon =
+        GetContentClient()->browser()->GetProductLogo();
+    if (icon.has_value()) {
+      system_media_controls_->SetThumbnail(*icon->bitmap());
+    } else {
+      system_media_controls_->ClearThumbnail();
+    }
+  }
+
+  delayed_icon_update_ = absl::nullopt;
+}
+
+void SystemMediaControlsNotifier::ClearAllMetadata() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metadata_update_timer_.Stop();
+
+  delayed_position_update_ = absl::nullopt;
+  delayed_metadata_update_ = absl::nullopt;
+  delayed_playback_status_ = absl::nullopt;
+
+  system_media_controls_->ClearMetadata();
 }
 
 #if BUILDFLAG(IS_WIN)

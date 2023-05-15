@@ -437,7 +437,7 @@ void IconButton::UpdateBackground() {
 void IconButton::UpdateVectorIcon(bool icon_changed) {
   const bool is_toggled = IsToggledOn();
   const gfx::VectorIcon* icon =
-      is_toggled && toggled_icon_ ? toggled_icon_ : icon_;
+      is_toggled && toggled_icon_ ? toggled_icon_.get() : icon_.get();
 
   if (!icon)
     return;

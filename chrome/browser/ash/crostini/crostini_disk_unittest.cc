@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -91,7 +92,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  ash::FakeConciergeClient* fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;

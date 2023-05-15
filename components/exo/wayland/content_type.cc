@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
 
@@ -58,7 +59,7 @@ class SurfaceContentType : SurfaceObserver {
     surface_->SetContainsVideo(false);
   }
 
-  Surface* surface_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

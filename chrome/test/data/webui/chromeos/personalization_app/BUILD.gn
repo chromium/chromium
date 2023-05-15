@@ -2,15 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../../tsconfig_base.json"
-  path_mappings = [
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings = [
     "chrome://personalization/*|" +
         rebase_path(
             "$root_gen_dir/ash/webui/personalization_app/resources/tsc/*",
@@ -22,7 +17,8 @@ ts_library("build_ts") {
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
   ]
-  in_files = [
+
+  files = [
     "ambient_preview_large_element_test.ts",
     "ambient_preview_small_element_test.ts",
     "ambient_subpage_element_test.ts",
@@ -62,9 +58,8 @@ ts_library("build_ts") {
     "wallpaper_selected_element_test.ts",
     "zone_customization_element_test.ts",
   ]
-  deps = [
-    "..:build_ts",
-    "../..:build_ts",
+
+  ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/personalization_app/resources:build_ts",
     "//third_party/polymer/v3_0:library",
@@ -72,14 +67,6 @@ ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-}
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_chromeos_personalization_app"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "chromeos/personalization_app"
+  resource_path_prefix = "chromeos_personalization_app"
 }

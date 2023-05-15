@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_creator.h"
@@ -18,7 +19,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -366,11 +366,10 @@ TestExtensionBuilder::TestExtensionBuilder(const ExtensionId& extension_id)
 TestExtensionBuilder::~TestExtensionBuilder() = default;
 
 void TestExtensionBuilder::WriteManifest() {
-  extension_dir_.WriteManifest(DictionaryBuilder()
+  extension_dir_.WriteManifest(base::Value::Dict()
                                    .Set("manifest_version", 2)
                                    .Set("name", "Test extension")
-                                   .Set("version", "1.0")
-                                   .ToJSON());
+                                   .Set("version", "1.0"));
 }
 
 void TestExtensionBuilder::WriteResource(
@@ -425,26 +424,18 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
       std::string(signature_value.begin(), signature_value.end()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &signature_b64);
 
-  base::Value::List signatures =
-      ListBuilder()
-          .Append(DictionaryBuilder()
-                      .Set("header",
-                           DictionaryBuilder().Set("kid", "webstore").Build())
-                      .Set("protected", "")
-                      .Set("signature", signature_b64)
-                      .Build())
-          .Build();
-  base::Value::List verified_contents =
-      ListBuilder()
-          .Append(DictionaryBuilder()
-                      .Set("description", "treehash per file")
-                      .Set("signed_content",
-                           DictionaryBuilder()
-                               .Set("payload", payload_b64)
-                               .Set("signatures", std::move(signatures))
-                               .Build())
-                      .Build())
-          .Build();
+  base::Value::List signatures = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("header", base::Value::Dict().Set("kid", "webstore"))
+          .Set("protected", "")
+          .Set("signature", signature_b64));
+  base::Value::List verified_contents = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("description", "treehash per file")
+          .Set("signed_content",
+               base::Value::Dict()
+                   .Set("payload", payload_b64)
+                   .Set("signatures", std::move(signatures))));
 
   std::string json;
   if (!base::JSONWriter::Write(verified_contents, &json)) {
@@ -474,7 +465,7 @@ std::unique_ptr<base::Value>
 TestExtensionBuilder::CreateVerifiedContentsPayload() const {
   int block_size = extension_misc::kContentVerificationDefaultBlockSize;
 
-  ListBuilder files;
+  base::Value::List files;
   for (const auto& resource : extension_resources_) {
     std::string path = base::FilePath(resource.relative_path).AsUTF8Unsafe();
     std::string tree_hash =
@@ -484,26 +475,20 @@ TestExtensionBuilder::CreateVerifiedContentsPayload() const {
     base::Base64UrlEncode(tree_hash, base::Base64UrlEncodePolicy::OMIT_PADDING,
                           &tree_hash_b64);
 
-    files.Append(DictionaryBuilder()
-                     .Set("path", path)
-                     .Set("root_hash", tree_hash_b64)
-                     .Build());
+    files.Append(
+        base::Value::Dict().Set("path", path).Set("root_hash", tree_hash_b64));
   }
 
   base::Value::Dict result =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("item_id", extension_id_)
           .Set("item_version", "1.0")
-          .Set("content_hashes",
-               ListBuilder()
-                   .Append(DictionaryBuilder()
-                               .Set("format", "treehash")
-                               .Set("block_size", block_size)
-                               .Set("hash_block_size", block_size)
-                               .Set("files", files.Build())
-                               .Build())
-                   .Build())
-          .Build();
+          .Set("content_hashes", base::Value::List().Append(
+                                     base::Value::Dict()
+                                         .Set("format", "treehash")
+                                         .Set("block_size", block_size)
+                                         .Set("hash_block_size", block_size)
+                                         .Set("files", std::move(files))));
 
   return std::make_unique<base::Value>(std::move(result));
 }

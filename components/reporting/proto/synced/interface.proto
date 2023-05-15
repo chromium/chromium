@@ -107,6 +107,10 @@ message UploadEncryptedRecordResponse {
   //      "Policy controlling reporting upload is unset or off."
   //      - Not Retryable
   optional StatusProto status = 1;
+
+  // Flag indicating that missived should be disabled, if set to `true`:
+  // for example, because Chrome got a bad (dummy) API key - see b/239253702.
+  optional bool disable = 2 [default = false];
 }
 
 // ConfirmRecordUploadRequest is expected to only come from

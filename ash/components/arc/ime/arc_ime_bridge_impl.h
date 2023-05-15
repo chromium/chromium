@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
 #include "ash/components/arc/mojom/ime.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -61,8 +62,8 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
                     SendKeyEventCallback callback) override;
 
  private:
-  Delegate* const delegate_;
-  ArcBridgeService* const bridge_service_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_service_;
 };
 
 }  // namespace arc

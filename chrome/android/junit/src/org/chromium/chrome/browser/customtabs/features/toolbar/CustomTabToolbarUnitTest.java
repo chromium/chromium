@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -49,6 +50,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -56,6 +58,7 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHandleStrategy;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -118,6 +121,10 @@ public class CustomTabToolbarUnitTest {
     OfflineDownloader mOfflineDownloader;
     @Mock
     Tab mTab;
+    @Mock
+    Callback<Integer> mContainerVisibilityChangeObserver;
+    @Mock
+    View mParentView;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -410,6 +417,40 @@ public class CustomTabToolbarUnitTest {
 
         mToolbar.removeSideSheetMaximizeButton();
         assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void testHandleStrategy_ClickCloseListener() {
+        var strategy1 = new SimpleHandleStrategy(r -> {});
+        mToolbar.setHandleStrategy(strategy1);
+
+        View.OnClickListener listener = v -> {};
+        mToolbar.setCustomTabCloseClickHandler(listener);
+        assertNotNull(strategy1.getClickCloseHandlerForTesting());
+
+        var strategy2 = new SimpleHandleStrategy(r -> {});
+        // Another call to #setHandleStrategy which can come from device rotation.
+        // HandleStrategy should be initialized properly in response.
+        mToolbar.setHandleStrategy(strategy2);
+        assertNotNull(strategy2.getClickCloseHandlerForTesting());
+    }
+
+    @Test
+    public void testContainerVisibilityChange() {
+        // Self changes should be ignored.
+        mToolbar.addContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
+        mToolbar.onVisibilityChanged(mToolbar, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, never()).onResult(any());
+
+        mToolbar.onVisibilityChanged(mParentView, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, times(1)).onResult(View.VISIBLE);
+
+        // After removing, no more events.
+        reset(mContainerVisibilityChangeObserver);
+        mToolbar.removeContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
+        mToolbar.onVisibilityChanged(mParentView, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, never()).onResult(any());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

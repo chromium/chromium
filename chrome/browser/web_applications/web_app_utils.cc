@@ -68,6 +68,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/strcat.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
@@ -95,12 +100,12 @@ GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
 }
 
 // This class is responsible for fetching the app icon for a web app and for
-// providing it to the DefaultOffline page that's currently showing. The class
+// providing it to the error page that's currently showing. The class
 // monitors the lifetime of the web_contents for the page and deletes itself
 // under these conditions:
 //
 // 1) It is unable to determine which icon to download.
-// 2) The default offline page being monitored (it's web_contents) is destroyed.
+// 2) The error page being monitored (it's web_contents) is destroyed.
 // 3) The page starts loading something else.
 // 4) (Success case) The icon is successfully fetched and delivered to the web
 //    page.
@@ -167,7 +172,7 @@ class AppIconFetcherTask : public content::WebContentsObserver {
 
   // This function does nothing until both of these conditions have been met:
   // 1) The app icon image has been fetched.
-  // 2) The offline page is ready to receive the image.
+  // 2) The error page is ready to receive the image.
   // Once they are met, this function will send the icon to the web page and
   // delete itself. Callers should not assume it is safe to do more work after
   // calling this function.
@@ -192,7 +197,7 @@ class AppIconFetcherTask : public content::WebContentsObserver {
   // This url will contain the fetched icon bits inlined as a data: url.
   GURL icon_url_;
 
-  // Whether the Default Offline page is ready to receive the icon.
+  // Whether the error page is ready to receive the icon.
   bool document_ready_ = false;
 
   // A weak factory for this class, must be last in the member list.
@@ -310,8 +315,16 @@ bool AreWebAppsEnabled(const Profile* profile) {
       !base::FeatureList::IsEnabled(features::kKioskEnableAppService))
     return false;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
+  // Disable web apps in the profile unless one of the following is true:
+  // * the profile is the main one
+  // * the testing condition is set
+  // * it is an app profile.
+  if (!(profile->IsMainProfile() || g_skip_main_profile_check_for_testing ||
+        (ResolveExperimentalWebAppIsolationFeature() ==
+             ExperimentalWebAppIsolationMode::kProfile &&
+         Profile::IsWebAppProfilePath(profile->GetPath())))) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return true;
@@ -360,49 +373,6 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
   if (profile->GetOriginalProfile()->IsGuestSession())
     return nullptr;
   return GetBrowserContextForWebApps(context);
-}
-
-content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
-    const GURL& url,
-    content::RenderFrameHost* render_frame_host,
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
-  if (web_app_provider == nullptr) {
-    return nullptr;
-  }
-
-  WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
-  const absl::optional<AppId> app_id =
-      web_app_registrar.FindAppWithUrlInScope(url);
-  if (!app_id.has_value()) {
-    return nullptr;
-  }
-
-  // Fetch the app icon asynchronously and provide it to the error page. The
-  // web_contents check exists because not all unit tests set up a proper error
-  // page.
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (web_contents) {
-    AppIconFetcherTask::FetchAndPopulateIcon(web_contents, web_app_provider,
-                                             app_id.value());
-  }
-
-  auto alternative_error_page_info =
-      content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value::Dict dict;
-  dict.Set(default_offline::kAppShortName,
-           web_app_registrar.GetAppShortName(*app_id));
-  dict.Set(default_offline::kMessage,
-           l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE));
-  // Android uses kIconUrl to provide the icon url synchronously, but Desktop
-  // sends down a blank image source and then updates it asynchronously once it
-  // is available.
-  dict.Set(default_offline::kIconUrl, "''");
-  alternative_error_page_info->alternative_error_page_params = std::move(dict);
-  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
-  return alternative_error_page_info;
 }
 
 base::FilePath GetWebAppsRootDirectory(Profile* profile) {
@@ -552,6 +522,49 @@ void SetSkipMainProfileCheckForTesting(bool skip_check) {
 bool IsMainProfileCheckSkippedForTesting() {
   return g_skip_main_profile_check_for_testing;
 }
+
+base::FilePath GenerateWebAppProfilePath(const std::string& app_id) {
+  CHECK(ResolveExperimentalWebAppIsolationFeature() ==
+        ExperimentalWebAppIsolationMode::kProfile);
+  auto* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath& user_data_dir = profile_manager->user_data_dir();
+
+  // We are not allowed to reuse a deleted profile path before chrome restart.
+  // To deal with the case where a user re-install an app after deleting it in
+  // the same session, we will use a loop to search for the next available
+  // profile name. Limiting the loop to 1k times is more than enough.
+  //
+  // TODO(https://crbug.com/1425284): a better way is to do some proper cleanup
+  // after deleting the profile so that we can just reuse the path.
+  for (int i = 0; i < 1000; ++i) {
+    auto path = user_data_dir.Append(base::StrCat(
+        {chrome::kWebAppProfilePrefix, app_id, "-", base::NumberToString(i)}));
+    if (profile_manager->CanCreateProfileAtPath(path)) {
+      // We don't allow installing a web app twice, so the web app profile
+      // shouldn't exist.
+      CHECK(!profile_manager->GetProfileAttributesStorage()
+                 .GetProfileAttributesWithPath(path))
+          << "profile at " << path << " already exists";
+      return path;
+    }
+  }
+
+  // Reaching here is extremely unlikely. Something else must be wrong.
+  NOTREACHED_NORETURN();
+}
+
+ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature() {
+  // Profile isolation takes precedence.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppProfileIsolation)) {
+    return ExperimentalWebAppIsolationMode::kProfile;
+  }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppStoragePartitionIsolation)) {
+    return ExperimentalWebAppIsolationMode::kStoragePartition;
+  }
+  return ExperimentalWebAppIsolationMode::kDisabled;
+}
 #endif
 
 bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
@@ -669,6 +682,54 @@ const char* IconsDownloadedResultToString(IconsDownloadedResult result) {
     case IconsDownloadedResult::kAbortedDueToFailure:
       return "AbortedDueToFailure";
   }
+}
+
+content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
+    const GURL& url,
+    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context,
+    std::u16string message,
+    std::u16string supplementary_icon) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider == nullptr) {
+    return nullptr;
+  }
+
+  WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
+  const absl::optional<AppId> app_id =
+      web_app_registrar.FindAppWithUrlInScope(url);
+  if (!app_id.has_value()) {
+    return nullptr;
+  }
+
+  // Fetch the app icon asynchronously and provide it to the error page. The
+  // web_contents check exists because not all unit tests set up a proper error
+  // page.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (web_contents) {
+    AppIconFetcherTask::FetchAndPopulateIcon(web_contents, web_app_provider,
+                                             app_id.value());
+  }
+
+  auto alternative_error_page_info =
+      content::mojom::AlternativeErrorPageOverrideInfo::New();
+  base::Value::Dict dict;
+  dict.Set(error_page::kAppShortName,
+           web_app_registrar.GetAppShortName(*app_id));
+  dict.Set(error_page::kMessage, message);
+  // Android uses kIconUrl to provide the icon url synchronously, because it
+  // already available, but Desktop sends down a transparent 1x1 pixel instead
+  // and then updates it asynchronously once it is available.
+  dict.Set(error_page::kIconUrl,
+           "data:image/"
+           "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklE"
+           "QVR42mMAAQAABQABoIJXOQAAAABJRU5ErkJggg==");
+  dict.Set(error_page::kSupplementaryIcon, supplementary_icon);
+  alternative_error_page_info->alternative_error_page_params = std::move(dict);
+  alternative_error_page_info->resource_id = IDR_WEBAPP_ERROR_PAGE_HTML;
+  return alternative_error_page_info;
 }
 
 }  // namespace web_app

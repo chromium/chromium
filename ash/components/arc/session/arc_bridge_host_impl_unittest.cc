@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,7 +77,7 @@ class ScopedPendingReceiver {
 
  private:
   mojo::PendingReceiver<T> pending_receiver_;
-  const ArcBridgeHostImpl* const arc_bridge_host_impl_;
+  const raw_ptr<const ArcBridgeHostImpl, ExperimentalAsh> arc_bridge_host_impl_;
 };
 
 // Test that the test fixture class, especially its ArcBridgeHostImpl variable,

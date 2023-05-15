@@ -26,16 +26,20 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_hglobal.h"
+#include "clipboard_util.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -485,12 +489,16 @@ void ClipboardWin::ReadPng(ClipboardBuffer buffer,
   std::vector<uint8_t> data = ReadPngInternal(buffer);
   // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
   // otherwise fall back to reading as a bitmap.
-  if (data.empty()) {
-    SkBitmap bitmap = ReadBitmapInternal(buffer);
-    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                      &data);
+  if (!data.empty()) {
+    std::move(callback).Run(data);
+    return;
   }
-  std::move(callback).Run(data);
+
+  SkBitmap bitmap = ReadBitmapInternal(buffer);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&clipboard_util::EncodeBitmapToPng, bitmap),
+      std::move(callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -653,64 +661,45 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
+    DispatchPortableRepresentation(object.second);
 }
 
-void ClipboardWin::WriteText(const char* text_data, size_t text_len) {
-  std::u16string text;
-  base::UTF8ToUTF16(text_data, text_len, &text);
-  HGLOBAL glob = CreateGlobalData(text);
+void ClipboardWin::WriteText(base::StringPiece text) {
+  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(text));
 
   WriteToClipboard(ClipboardFormatType::PlainTextType(), glob);
 }
 
-void ClipboardWin::WriteHTML(const char* markup_data,
-                             size_t markup_len,
-                             const char* url_data,
-                             size_t url_len) {
-  std::string markup(markup_data, markup_len);
-  std::string url;
-
-  if (url_len > 0)
-    url.assign(url_data, url_len);
-
+void ClipboardWin::WriteHTML(base::StringPiece markup,
+                             absl::optional<base::StringPiece> source_url) {
   std::string html_fragment = clipboard_util::HtmlToCFHtml(
-      markup, url, ClipboardContentType::kSanitized);
+      markup, source_url.value_or(""), ClipboardContentType::kSanitized);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
-void ClipboardWin::WriteUnsanitizedHTML(const char* markup_data,
-                                        size_t markup_len,
-                                        const char* url_data,
-                                        size_t url_len) {
-  std::string markup(markup_data, markup_len);
-  std::string url;
-
-  if (url_len > 0) {
-    url.assign(url_data, url_len);
-  }
-
+void ClipboardWin::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   // Add Windows specific headers to the HTML payload before writing to the
   // clipboard.
   std::string html_fragment = clipboard_util::HtmlToCFHtml(
-      markup, url, ClipboardContentType::kUnsanitized);
+      markup, source_url.value_or(""), ClipboardContentType::kUnsanitized);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
-void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
-  std::u16string markup;
-  base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  HGLOBAL glob = CreateGlobalData(markup);
+void ClipboardWin::WriteSvg(base::StringPiece markup) {
+  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(markup));
 
   WriteToClipboard(ClipboardFormatType::SvgType(), glob);
 }
 
-void ClipboardWin::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
+void ClipboardWin::WriteRTF(base::StringPiece rtf) {
+  WriteData(ClipboardFormatType::RtfType(),
+            base::as_bytes(base::make_span(rtf)));
 }
 
 void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -720,16 +709,12 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
-void ClipboardWin::WriteBookmark(const char* title_data,
-                                 size_t title_len,
-                                 const char* url_data,
-                                 size_t url_len) {
+void ClipboardWin::WriteBookmark(base::StringPiece title,
+                                 base::StringPiece url) {
   // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
   // title separated by a newline.
   // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
-  std::string bookmark(url_data, url_len);
-  std::u16string wide_bookmark = base::UTF8ToUTF16(bookmark);
-  HGLOBAL glob = CreateGlobalData(wide_bookmark);
+  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(url));
 
   WriteToClipboard(ClipboardFormatType::UrlType(), glob);
 }
@@ -751,10 +736,15 @@ void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
   // order is also important as some programs will use the first compatible
   // format that is available on the clipboard, and we want Word to choose the
   // PNG format.
-
-  std::vector<unsigned char> png_encoded_bitmap;
-  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                        &png_encoded_bitmap)) {
+  //
+  // Encode the bitmap to a PNG from the UI thread. Ideally this CPU-intensive
+  // encoding operation would be performed on a background thread, but
+  // ui::base::Clipboard writes are (unfortunately) synchronous.
+  // We could consider making writes async, then moving this image encoding to a
+  // background sequence.
+  std::vector<uint8_t> png_encoded_bitmap =
+      clipboard_util::EncodeBitmapToPngAcceptJank(bitmap);
+  if (!png_encoded_bitmap.empty()) {
     HGLOBAL png_hglobal = skia::CreateHGlobalForByteArray(png_encoded_bitmap);
     if (png_hglobal)
       WriteToClipboard(ClipboardFormatType::PngType(), png_hglobal);
@@ -765,14 +755,13 @@ void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
 }
 
 void ClipboardWin::WriteData(const ClipboardFormatType& format,
-                             const char* data_data,
-                             size_t data_len) {
-  HGLOBAL hdata = ::GlobalAlloc(GMEM_MOVEABLE, data_len);
+                             base::span<const uint8_t> data) {
+  HGLOBAL hdata = ::GlobalAlloc(GMEM_MOVEABLE, data.size());
   if (!hdata)
     return;
 
-  char* data = static_cast<char*>(::GlobalLock(hdata));
-  memcpy(data, data_data, data_len);
+  char* hdata_ptr = static_cast<char*>(::GlobalLock(hdata));
+  memcpy(hdata_ptr, data.data(), data.size());
   ::GlobalUnlock(hdata);
   WriteToClipboard(format, hdata);
 }

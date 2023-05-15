@@ -4,13 +4,13 @@
 
 module content.mojom;
 
-import "components/attribution_reporting/os_support.mojom";
 import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
@@ -130,6 +130,8 @@ interface Renderer {
   // pages containing plugins.
   PurgePluginListCache(bool reload_pages);
 
+  // Tells the renderer to purge its in-memory resource cache.
+  PurgeResourceCache() => ();
 
   // Tells the renderer process of a change in visibility or background state.
   SetProcessState(RenderProcessBackgroundState background_state,
@@ -180,18 +182,14 @@ interface Renderer {
   // |cors_exempt_header_list| sets the CORS exempt header list for sanity
   // checking (e.g. DCHECKs).
   //
-  // |attribution_os_support| sets the OS-level support for Attribution
-  // Reporting.
+  // |attribution_support| sets whether web or OS-level Attribution Reporting is supported.
   InitializeRenderer(string user_agent,
                      string full_user_agent,
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     attribution_reporting.mojom.OsSupport attribution_os_support);
+                     network.mojom.AttributionSupport attribution_support);
 
-  // Set the OS-level support for Attribution Reporting indicating whether
-  // OS-level attribution is enabled.
-  [EnableIf=is_android]
-  SetOsSupportForAttributionReporting(
-      attribution_reporting.mojom.OsSupport os_support);
+ // Set whether web or OS-level Attribution Reporting is supported.
+  SetAttributionReportingSupport(network.mojom.AttributionSupport attribution_support);
 };

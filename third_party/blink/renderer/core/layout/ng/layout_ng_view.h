@@ -22,7 +22,7 @@ class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
 
   bool IsFragmentationContextRoot() const override;
 
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

@@ -12,6 +12,10 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // TODO(crbug.com/841631): This file uses the deprecated CWInterface interface;
 // it needs to be migrated to CWWiFiClient, which is unfortunately not
 // compatible.
@@ -26,7 +30,7 @@ bool GetWifiSSID(NSString* ns_ifname, std::string* ssid_out) {
   if (interface == nil) {
     return false;
   }
-  std::string ssid(base::SysNSStringToUTF8([interface ssid]));
+  std::string ssid(base::SysNSStringToUTF8(interface.ssid));
   if (ssid.empty()) {
     return false;
   }

@@ -115,9 +115,9 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('/title1.html')"));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('/title1.html')"));
   navigation_observer.Wait();
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -151,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('/title1.html')"));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('/title1.html')"));
   navigation_observer.Wait();
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerPrerenderBrowserTest,
 
   // Load a prerender url in the popup window.
   const GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.open('/popup_blocker/popup-simple-prerender.html')"));
   prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);

@@ -63,6 +63,18 @@ enum class OperationType {
   kZip,
 };
 
+// The type of Data Protection policy error that occurred.
+enum class PolicyErrorType {
+  // Error caused by Data Leak Prevention policy.
+  kDlp,
+
+  // Error caused by Enterprise Connectors policy.
+  kEnterpriseConnectors,
+
+  // Error caused by Data Leak Prevention warning timing out.
+  kDlpWarningTimeout,
+};
+
 // Unique identifier for any type of task.
 using IOTaskId = uint64_t;
 
@@ -130,6 +142,13 @@ class ProgressStatus {
   // True if the task is in a terminal state and won't receive further updates.
   bool IsCompleted() const;
 
+  // True if the task is paused due to a data protection policy warning.
+  bool HasWarning() const;
+
+  // True if the task completed with security errors due to Data Leak Prevention
+  // or Enterprise Connectors policies.
+  bool HasPolicyError() const;
+
   // Returns a default method for obtaining the source name.
   std::string GetSourceName(Profile* profile) const;
 
@@ -145,6 +164,11 @@ class ProgressStatus {
 
   // Task state.
   State state;
+
+  // Type of policy error that occurred, if any. Empty otherwise.
+  // Can be set only if Data Leak Prevention or Enterprise Connectors policies
+  // apply.
+  absl::optional<PolicyErrorType> policy_error;
 
   // I/O Operation type (e.g. copy, move).
   OperationType type;

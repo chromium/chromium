@@ -50,9 +50,6 @@ class ContentNavigationItem : public NavigationItem {
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() const override;
 
-  void SetPageDisplayState(const PageDisplayState& page_state) override;
-  const PageDisplayState& GetPageDisplayState() const override;
-
   const std::u16string& GetTitleForDisplay() const override;
 
   void SetTransitionType(ui::PageTransition transition_type) override;
@@ -72,9 +69,9 @@ class ContentNavigationItem : public NavigationItem {
 
   bool HasPostData() const override;
 
-  NSDictionary* GetHttpRequestHeaders() const override;
+  HttpRequestHeaders* GetHttpRequestHeaders() const override;
 
-  void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
+  void AddHttpRequestHeaders(HttpRequestHeaders* additional_headers) override;
 
   HttpsUpgradeType GetHttpsUpgradeType() const override;
   void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) override;
@@ -89,11 +86,10 @@ class ContentNavigationItem : public NavigationItem {
   // NavigationEntry isn't changed, the functions are still semantically
   // const.
   mutable Referrer referrer_;
-  mutable NSDictionary* headers_ = nil;
+  mutable HttpRequestHeaders* headers_ = nil;
   mutable FaviconStatus favicon_status_;
   mutable SSLStatus ssl_status_;
 
-  PageDisplayState page_display_state_;
   UserAgentType user_agent_type_ = UserAgentType::MOBILE;
 };
 

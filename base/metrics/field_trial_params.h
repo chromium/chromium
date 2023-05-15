@@ -137,8 +137,8 @@ struct FeatureParam {
 //     constexpr FeatureParam<string> kAssistantName{
 //         &kAssistantFeature, "assistant_name", "HAL"};
 //
-// If the parameter is not set, or set to the empty string, then Get() will
-// return the default value.
+// If the feature is not enabled, the parameter is not set, or set to the empty
+// string, then Get() will return the default value.
 template <>
 struct FeatureParam<std::string> {
   constexpr FeatureParam(const Feature* feature,
@@ -162,8 +162,8 @@ struct FeatureParam<std::string> {
 //     constexpr FeatureParam<double> kAssistantTriggerThreshold{
 //         &kAssistantFeature, "trigger_threshold", 0.10};
 //
-// If the parameter is not set, or set to an invalid double value, then Get()
-// will return the default value.
+// If the feature is not enabled, the parameter is not set, or set to an invalid
+// double value, then Get() will return the default value.
 template <>
 struct FeatureParam<double> {
   constexpr FeatureParam(const Feature* feature,
@@ -187,8 +187,8 @@ struct FeatureParam<double> {
 //     constexpr FeatureParam<int> kAssistantParallelism{
 //         &kAssistantFeature, "parallelism", 4};
 //
-// If the parameter is not set, or set to an invalid int value, then Get() will
-// return the default value.
+// If the feature is not enabled, the parameter is not set, or set to an invalid
+// int value, then Get() will return the default value.
 template <>
 struct FeatureParam<int> {
   constexpr FeatureParam(const Feature* feature,
@@ -212,8 +212,8 @@ struct FeatureParam<int> {
 //     constexpr FeatureParam<int> kAssistantIsHelpful{
 //         &kAssistantFeature, "is_helpful", true};
 //
-// If the parameter is not set, or set to value other than "true" or "false",
-// then Get() will return the default value.
+// If the feature is not enabled, the parameter is not set, or set to value
+// other than "true" or "false", then Get() will return the default value.
 template <>
 struct FeatureParam<bool> {
   constexpr FeatureParam(const Feature* feature,
@@ -237,8 +237,9 @@ struct FeatureParam<bool> {
 //     constexpr base::FeatureParam<base::TimeDelta> kPerAgentDelay{
 //         &kPerAgentSchedulingExperiments, "delay", base::TimeDelta()};
 //
-// If the parameter is not set, or set to an invalid value (as defined by
-// base::TimeDeltaFromString()), then Get() will return the default value.
+// If the feature is not enabled, the parameter is not set, or set to an
+// invalid value (as defined by base::TimeDeltaFromString()), then Get() will
+// return the default value.
 template <>
 struct FeatureParam<base::TimeDelta> {
   constexpr FeatureParam(const Feature* feature,

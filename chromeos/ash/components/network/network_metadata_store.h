@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -187,13 +188,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   void OnDisableHiddenError(const std::string& error_name);
 
   base::ObserverList<NetworkMetadataObserver> observers_;
-  NetworkConfigurationHandler* network_configuration_handler_;
-  NetworkConnectionHandler* network_connection_handler_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  PrefService* profile_pref_service_;
-  PrefService* device_pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> profile_pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> device_pref_service_;
   bool is_enterprise_managed_;
   bool has_profile_loaded_ = false;
   bool secure_dns_templates_with_identifiers_active_ = false;

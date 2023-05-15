@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -51,7 +52,7 @@ class CrostiniUpgradeAvailableNotification {
   message_center::Notification* Get() { return notification_.get(); }
 
  private:
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   std::unique_ptr<message_center::Notification> notification_;
   base::WeakPtrFactory<CrostiniUpgradeAvailableNotification> weak_ptr_factory_{
       this};

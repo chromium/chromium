@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 namespace omnibox {
 
@@ -15,9 +16,7 @@ class OmniboxPrefsTest : public ::testing::Test {
   OmniboxPrefsTest(const OmniboxPrefsTest&) = delete;
   OmniboxPrefsTest& operator=(const OmniboxPrefsTest&) = delete;
 
-  void SetUp() override {
-    omnibox::RegisterProfilePrefs(GetPrefs()->registry());
-  }
+  void SetUp() override { RegisterProfilePrefs(GetPrefs()->registry()); }
 
   TestingPrefServiceSimple* GetPrefs() { return &pref_service_; }
 
@@ -28,61 +27,61 @@ class OmniboxPrefsTest : public ::testing::Test {
   base::HistogramTester histogram_;
 };
 
-TEST_F(OmniboxPrefsTest, SuggestionGroupId) {
-  const int kOnboardingGroupId = 40001;
-  const int kRZPSGroupId = 40009;
+TEST_F(OmniboxPrefsTest, ToggleSuggestionGroupId) {
   {
-    // Expect |kOnboardingGroupId| to be in the default state.
-    EXPECT_EQ(SuggestionGroupVisibility::DEFAULT,
-              GetUserPreferenceForSuggestionGroupVisibility(
-                  GetPrefs(), kOnboardingGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOffHistogram, 0);
-
-    // Expect |kRZPSGroupId| to be in the default state.
+    // Expect `UMAGroupId::kTrends` to be in the default state.
     EXPECT_EQ(SuggestionGroupVisibility::DEFAULT,
               GetUserPreferenceForSuggestionGroupVisibility(GetPrefs(),
-                                                            kRZPSGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOnHistogram, 0);
+                                                            GROUP_TRENDS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOffHistogram, 0);
+
+    // Expect `UMAGroupId::kTrendsEntityChips` to be in the default state.
+    EXPECT_EQ(SuggestionGroupVisibility::DEFAULT,
+              GetUserPreferenceForSuggestionGroupVisibility(
+                  GetPrefs(), GROUP_TRENDS_ENTITY_CHIPS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOnHistogram, 0);
   }
   {
     SetUserPreferenceForSuggestionGroupVisibility(
-        GetPrefs(), kOnboardingGroupId, SuggestionGroupVisibility::HIDDEN);
+        GetPrefs(), GROUP_TRENDS, SuggestionGroupVisibility::HIDDEN);
 
-    // Expect |kOnboardingGroupId| to have been toggled hidden.
+    // Expect `UMAGroupId::kTrends` to have been toggled hidden.
     EXPECT_EQ(SuggestionGroupVisibility::HIDDEN,
-              GetUserPreferenceForSuggestionGroupVisibility(
-                  GetPrefs(), kOnboardingGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOffHistogram, 1);
-    histogram()->ExpectBucketCount(kToggleSuggestionGroupIdOffHistogram,
-                                   kOnboardingGroupId, 1);
-
-    // Expect |kRZPSGroupId| to have remained in the default state.
-    EXPECT_EQ(SuggestionGroupVisibility::DEFAULT,
               GetUserPreferenceForSuggestionGroupVisibility(GetPrefs(),
-                                                            kRZPSGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOnHistogram, 0);
+                                                            GROUP_TRENDS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOffHistogram, 1);
+    histogram()->ExpectBucketCount(kGroupIdToggledOffHistogram,
+                                   UMAGroupId::kTrends, 1);
+
+    // Expect `UMAGroupId::kTrendsEntityChips` to have remained in the default
+    // state.
+    EXPECT_EQ(SuggestionGroupVisibility::DEFAULT,
+              GetUserPreferenceForSuggestionGroupVisibility(
+                  GetPrefs(), GROUP_TRENDS_ENTITY_CHIPS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOnHistogram, 0);
   }
   {
     SetUserPreferenceForSuggestionGroupVisibility(
-        GetPrefs(), kOnboardingGroupId, SuggestionGroupVisibility::SHOWN);
+        GetPrefs(), GROUP_TRENDS, SuggestionGroupVisibility::SHOWN);
     SetUserPreferenceForSuggestionGroupVisibility(
-        GetPrefs(), kRZPSGroupId, SuggestionGroupVisibility::HIDDEN);
+        GetPrefs(), GROUP_TRENDS_ENTITY_CHIPS,
+        SuggestionGroupVisibility::HIDDEN);
 
-    // Expect |kOnboardingGroupId| to have been toggled visible again.
+    // Expect `UMAGroupId::kTrends` to have been toggled visible again.
     EXPECT_EQ(SuggestionGroupVisibility::SHOWN,
-              GetUserPreferenceForSuggestionGroupVisibility(
-                  GetPrefs(), kOnboardingGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOnHistogram, 1);
-    histogram()->ExpectBucketCount(kToggleSuggestionGroupIdOnHistogram,
-                                   kOnboardingGroupId, 1);
-
-    // Expect |kRZPSGroupId| to have been toggled hidden.
-    EXPECT_EQ(SuggestionGroupVisibility::HIDDEN,
               GetUserPreferenceForSuggestionGroupVisibility(GetPrefs(),
-                                                            kRZPSGroupId));
-    histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOffHistogram, 2);
-    histogram()->ExpectBucketCount(kToggleSuggestionGroupIdOffHistogram,
-                                   kRZPSGroupId, 1);
+                                                            GROUP_TRENDS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOnHistogram, 1);
+    histogram()->ExpectBucketCount(kGroupIdToggledOnHistogram,
+                                   UMAGroupId::kTrends, 1);
+
+    // Expect `UMAGroupId::kTrendsEntityChips` to have been toggled hidden.
+    EXPECT_EQ(SuggestionGroupVisibility::HIDDEN,
+              GetUserPreferenceForSuggestionGroupVisibility(
+                  GetPrefs(), GROUP_TRENDS_ENTITY_CHIPS));
+    histogram()->ExpectTotalCount(kGroupIdToggledOffHistogram, 2);
+    histogram()->ExpectBucketCount(kGroupIdToggledOffHistogram,
+                                   UMAGroupId::kTrendsEntityChips, 1);
   }
 }
 

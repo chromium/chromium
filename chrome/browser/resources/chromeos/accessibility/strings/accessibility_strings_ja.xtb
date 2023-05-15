@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="100506692671054486">前のコマンドがありません</translation>
 <translation id="1009046985747440431">上または下矢印キーで移動し、Enter キーで有効にします</translation>
 <translation id="1011903154582639569">キーを探し、見つかったら指を離して入力します</translation>
 <translation id="1012173283529841972">リスト項目</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ラベンダー ブラッシュ</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3962990492275676168">現在の場所から読み上げを開始</translation>
+<translation id="397094149579293440">テキストが選択されていません</translation>
 <translation id="3970951409746498040">サンディ ブラウン</translation>
 <translation id="3989324057180830702">切り替えボタン</translation>
 <translation id="3991317907213946254">モカシン</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">前のレベル 1 の見出しはありません</translation>
 <translation id="4787577491510559358">現在のアイテムの書式設定を読み上げる</translation>
 <translation id="479989351350248267">検索</translation>
+<translation id="4802034228771424756">フォーカスされているテキスト フィールドがありません</translation>
 <translation id="4804818685124855865">切断</translation>
 <translation id="481165870889056555">現在のページのタイトルを読み上げる</translation>
 <translation id="4815668758102003883">ペール ターコイズ</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">内部リンク</translation>
 <translation id="4909019435900810068">1 単語後ろへ移動</translation>
 <translation id="4911349081560453449">前のチェックボックスはありません</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> できません。もう一度お試しください</translation>
 <translation id="492295894462528572">前書き</translation>
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953585991029886728">テキスト編集</translation>
+<translation id="4964701498510730546">テキスト フィールドが空です</translation>
 <translation id="4973717656530883744">最小 <ph name="X" /></translation>
 <translation id="4974612477719259470">前のボタンはありません</translation>
 <translation id="4979404613699303341">前のボタン</translation>
+<translation id="4981239367072766915">入力内容を認識できません</translation>
 <translation id="4982917827052020884">まずはよく使うキーから始めましょう。Ctrl キーは、現在の読み上げを停止する際に使用できます。Ctrl キーは、キーボードの左下隅にあります。次へ進むには Ctrl キーを押してください。</translation>
 <translation id="4983588134362688868">ページの先頭に移動します</translation>
 <translation id="4986606102545753256"><ph name="NAME" />、ウィンドウ</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">現在の電池の状態を読み上げる</translation>
 <translation id="4997282455736854877"><ph name="NAME" />、選択されたラジオボタン</translation>
 <translation id="5012724933919010465"><ph name="NAME" />、選択されたメニュー項目のラジオボタン</translation>
+<translation id="5014131807708055994"><ph name="REASON" />　のため、<ph name="COMMAND" /> できません</translation>
 <translation id="5020651427400641814">読み上げのログを有効にする</translation>
 <translation id="5041394372352067729">ブライユ点字表示をページ上部に移動</translation>
 <translation id="5042770794184672516">読み上げの音量を上げる</translation>

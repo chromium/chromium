@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -17,6 +17,10 @@
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace updater {
 
@@ -60,7 +64,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
  private:
   ~ManagedPreferencePolicyManager() override;
-  base::scoped_nsobject<CRUManagedPreferencePolicyManager> impl_;
+  CRUManagedPreferencePolicyManager* __strong impl_;
 };
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
@@ -71,11 +75,11 @@ ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
 ManagedPreferencePolicyManager::~ManagedPreferencePolicyManager() = default;
 
 bool ManagedPreferencePolicyManager::HasActiveDevicePolicies() const {
-  return [impl_ managed];
+  return impl_.managed;
 }
 
 std::string ManagedPreferencePolicyManager::source() const {
-  return base::SysNSStringToUTF8([impl_ source]);
+  return base::SysNSStringToUTF8(impl_.source);
 }
 
 absl::optional<base::TimeDelta>
@@ -199,21 +203,21 @@ ManagedPreferencePolicyManager::GetAppsWithPolicy() const {
 
 NSDictionary* ReadManagedPreferencePolicyDictionary() {
   base::ScopedCFTypeRef<CFPropertyListRef> policies(CFPreferencesCopyAppValue(
-      (__bridge CFStringRef)kManagedPreferencesUpdatePolicies,
-      (__bridge CFStringRef)kKeystoneSharedPreferenceSuite));
+      base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
+      base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
   if (!policies)
     return nil;
 
   if (!CFPreferencesAppValueIsForced(
-          (__bridge CFStringRef)kManagedPreferencesUpdatePolicies,
-          (__bridge CFStringRef)kKeystoneSharedPreferenceSuite)) {
+          base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
+          base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite))) {
     return nil;
   }
 
   if (CFGetTypeID(policies) != CFDictionaryGetTypeID())
     return nil;
 
-  return reinterpret_cast<NSDictionary*>(CFBridgingRelease(policies.release()));
+  return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
 scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager() {

@@ -19,7 +19,7 @@ TEST(LayoutRectTest, ToString) {
 
   LayoutRect granular_rect(LayoutUnit(1.6f), LayoutUnit(2.7f), LayoutUnit(3.8f),
                            LayoutUnit(4.9f));
-  EXPECT_EQ("1.59375,2.6875 3.79688x4.89063", granular_rect.ToString());
+  EXPECT_EQ("1.59375,2.6875 3.796875x4.890625", granular_rect.ToString());
 }
 
 TEST(LayoutRectTest, InclusiveIntersect) {

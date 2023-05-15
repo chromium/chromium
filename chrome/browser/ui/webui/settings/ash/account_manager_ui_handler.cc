@@ -479,10 +479,11 @@ void AccountManagerUIHandler::HandleChangeArcAvailability(
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {
-  account_manager_facade_observation_.Observe(account_manager_facade_);
-  identity_manager_observation_.Observe(identity_manager_);
+  account_manager_facade_observation_.Observe(account_manager_facade_.get());
+  identity_manager_observation_.Observe(identity_manager_.get());
   if (account_apps_availability_) {
-    account_apps_availability_observation_.Observe(account_apps_availability_);
+    account_apps_availability_observation_.Observe(
+        account_apps_availability_.get());
   }
 }
 

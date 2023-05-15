@@ -11,6 +11,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
+namespace ui {
+struct KeyboardDevice;
+}
+
 namespace ash {
 
 // AcceleratorAliasConverter class creates alias for given accelerators,
@@ -33,9 +37,14 @@ class ASH_EXPORT AcceleratorAliasConverter {
       const ui::Accelerator& accelerator) const;
 
  private:
-  // Create accelerator alias for |top_row_key| for all currently connected
-  // keyboards.
-  std::vector<ui::Accelerator> CreateTopRowAliases(
+  // Create accelerator alias for |top_row_key| for the given |keyboard|.
+  absl::optional<ui::Accelerator> CreateTopRowAliases(
+      const ui::KeyboardDevice& keyboard,
+      const ui::Accelerator& accelerator) const;
+
+  // Create accelerator alias for |function_key| for the given |keyboard|.
+  absl::optional<ui::Accelerator> CreateFunctionKeyAliases(
+      const ui::KeyboardDevice& keyboard,
       const ui::Accelerator& accelerator) const;
 
   // Create accelerator alias for |six_pack_key|. Result could be either zero or

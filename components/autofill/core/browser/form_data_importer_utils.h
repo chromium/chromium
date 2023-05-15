@@ -146,7 +146,6 @@ class MultiStepImportMerger {
   // candidates and potentially stores it as a multi-step candidate itself.
   // `profile` and `import_metadata` are updated accordingly, if the profile
   // can be merged. See `MergeProfileWithMultiStepCandidates()` for details.
-  // Only applicable when `kAutofillEnableMultiStepImports` is enabled.
   void ProcessMultiStepImport(AutofillProfile& profile,
                               ProfileImportMetadata& import_metadata);
 
@@ -183,12 +182,11 @@ class MultiStepImportMerger {
       AutofillProfile& profile,
       ProfileImportMetadata& import_metadata);
 
-  // With AutofillComplementCountryEarly, merging can fail if one profile
-  // fragment contains an observed country and the complemented country of the
-  // other profile disagrees with it. This function attempts to make `profile_a`
-  // and `profile_b` mergeable by removing the complemented country.
+  // Merging can fail if one profile fragment contains an observed country and
+  // the complemented country of the other profile disagrees with it.
+  // This function attempts to make `profile_a` and `profile_b` mergeable by
+  // removing the complemented country.
   // If successful, true is returned and the complemented country removed.
-  // TODO(crbug.com/1287498): Remove AutofillComplementCountryEarly reference.
   bool MergeableByRemovingIncorrectlyComplementedCountry(
       AutofillProfile& profile_a,
       bool& complemented_profile_a,

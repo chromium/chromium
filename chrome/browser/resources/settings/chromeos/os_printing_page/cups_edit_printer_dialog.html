@@ -129,8 +129,7 @@
            hidden="[[pendingPrinter_.isManaged]]">
         <div class="select-ppd-and-view">
           <cr-button class="ppd-button" on-click="onViewPpd_"
-                     disabled="[[!isViewPpdEnabled_(printerInfoChanged_,
-                         viewPpdEnabled_)]]">
+                     disabled="[[printerInfoChanged_]]">
             $i18n{cupsPrintersViewPpd}
           </cr-button>
           <localized-link localized-string="$i18n{selectDriver}"

@@ -114,10 +114,7 @@ CrasUnifiedStream::CrasUnifiedStream(
       output_bus_(AudioBus::Create(params)),
       pin_device_(GetDevicePin(manager, device_id)),
       glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
-      log_callback_(std::move(log_callback)),
-      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                                         base::Unretained(manager_),
-                                         /*trace_start=*/false)) {
+      log_callback_(std::move(log_callback)) {
   DCHECK(manager_);
   DCHECK_GT(params_.channels(), 0);
 }
@@ -246,6 +243,12 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
     return;
   }
 
+  // Recreate `peak_detector_` everytime we create a new stream, to
+  // avoid ThreadChecker DCHECKs.
+  peak_detector_ = std::make_unique<AmplitudePeakDetector>(base::BindRepeating(
+      &AudioManager::TraceAmplitudePeak, base::Unretained(manager_),
+      /*trace_start=*/false));
+
   // Adding the stream will start the audio callbacks requesting data.
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,
                                        stream_params)) {
@@ -275,6 +278,8 @@ void CrasUnifiedStream::Stop() {
 
   // Removing the stream from the client stops audio.
   libcras_client_rm_stream(client_, stream_id_);
+
+  peak_detector_.reset();
 
   ReportAndResetStats();
 
@@ -335,7 +340,7 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
       delay, base::TimeTicks::Now(), glitch_info_accumulator_.GetAndReset(),
       output_bus_.get());
 
-  peak_detector_.FindPeak(output_bus_.get());
+  peak_detector_->FindPeak(output_bus_.get());
 
   // Note: If this ever changes to output raw float the data must be clipped and
   // sanitized since it may come from an untrusted source such as NaCl.

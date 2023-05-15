@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -59,8 +60,8 @@ class FirstAppRunToastManager::AppWidgetObserver
   }
 
  private:
-  FirstAppRunToastManager* manager_;
-  views::Widget* widget_;
+  raw_ptr<FirstAppRunToastManager, ExperimentalAsh> manager_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 FirstAppRunToastManager::FirstAppRunToastManager(Profile* profile)
@@ -138,7 +139,7 @@ void FirstAppRunToastManager::CreateAndShowToastDialog() {
   toast_widget_ = views::BubbleDialogDelegateView::CreateBubble(toast_dialog);
   toast_widget_->Show();
   AdjustToastWidgetBounds();
-  toast_widget_observation_.Observe(toast_widget_);
+  toast_widget_observation_.Observe(toast_widget_.get());
 }
 
 void FirstAppRunToastManager::ToastDialogDismissed() {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -182,7 +182,7 @@ TemplateURLBuilder::TemplateURLBuilder(const std::string& keyword) {
   hex_encoded_hash.resize(12);
   data_.sync_guid =
       base::StrCat({"12345678-0000-4000-8000-", hex_encoded_hash});
-  DCHECK(base::IsValidGUID(data_.sync_guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(data_.sync_guid).is_valid());
 }
 
 TemplateURLBuilder::~TemplateURLBuilder() = default;

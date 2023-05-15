@@ -95,7 +95,7 @@ source_set("terms_util") {
     "//base",
     "//components/resources:terms_resources",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/url:constants",
     "//ui/base",
     "//url",

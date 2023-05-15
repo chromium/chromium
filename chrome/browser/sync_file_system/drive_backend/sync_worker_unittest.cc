@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
@@ -27,7 +28,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
@@ -208,11 +208,10 @@ TEST_F(SyncWorkerTest, UpdateRegisteredApps) {
   for (int i = 0; i < 3; i++) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(extensions::DictionaryBuilder()
+            .SetManifest(base::Value::Dict()
                              .Set("name", "foo")
                              .Set("version", "1.0")
-                             .Set("manifest_version", 2)
-                             .Build())
+                             .Set("manifest_version", 2))
             .SetID(base::StringPrintf("app_%d", i))
             .Build();
     extension_service()->AddExtension(extension.get());

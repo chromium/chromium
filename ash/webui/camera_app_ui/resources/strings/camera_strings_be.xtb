@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Запіс спынены: мала месца ў сховішчы прылады. Каб запісаць больш відэа, вызваліце месца.</translation>
 <translation id="2036868001356139588">Час таймера</translation>
 <translation id="2064538373111010176">Камера <ph name="CAMERA" /> актыўная</translation>
-<translation id="2128052519899549250">Запісаць відэа ў рэжыме пакадравай здымкі</translation>
 <translation id="2134029355740465625">Налады відэа</translation>
 <translation id="2144806332417375165">Карыстальніцкія параметры відэа</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -54,7 +53,7 @@
 <translation id="3411958449466169012">Таймер выключаны</translation>
 <translation id="3448774564454087943">Відэа не захавана, бо яно занадта кароткае</translation>
 <translation id="346539236881580388">Перазняць</translation>
-<translation id="3517926952904427380">Не ўдалося зрабіць фотапартрэт</translation>
+<translation id="3517926952904427380">Не ўдалося зрабіць партрэтнае фота</translation>
 <translation id="3566302376254083266">Перамяшчаецца ўлева ўверх</translation>
 <translation id="3573890771273113519">Пераключыцца ў рэжым сканіравання</translation>
 <translation id="3583444040776960729">Левы ніжні вугал дакумента</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Выяўлены дакумент</translation>
 <translation id="414641094616694804">Гэта камера не можа змяняць раздзяляльнасць</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
-<translation id="4281620174117014503">Сярэдняя раздзяляльнасць</translation>
 <translation id="428234092390943511">Мініяцюра старонкі</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>
 <translation id="4445542136948522167">Спыніць фотаздымку</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5320594929574852403">Перамяшчаецца ўлева</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Пакадравая здымка</translation>
 <translation id="5662366948659129155">Сканіруецца старонка <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="574392208103952083">Сярэдні</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
 <translation id="5753488212459587150">Уключыць экспертны рэжым</translation>
 <translation id="5759254179196327752">Сканіраваць дакумент</translation>
@@ -122,7 +120,7 @@
 <translation id="6888362557094394345">Перамяшчаецца ўніз</translation>
 <translation id="695140971690006676">Скінуць усе</translation>
 <translation id="6965382102122355670">ОК</translation>
-<translation id="6965830616442491568">Кніжная арыентацыя</translation>
+<translation id="6965830616442491568">Партрэт</translation>
 <translation id="698156982839284926">3 секунды</translation>
 <translation id="7134221860976209830">Таймер на 10 секунд</translation>
 <translation id="7191890674911603392">Тып запісу</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7670511624014457267">60 кадраў у секунду</translation>
 <translation id="7671804233658741790">Правы ніжні вугал дакумента</translation>
+<translation id="7684446460490665873">Запісаць відэа ў рэжыме пакадравай здымкі</translation>
 <translation id="7692090236657809299">Уключыць нахіл, панараміраванне і прыбліжэнне</translation>
 <translation id="7726641833034062494">Запісаць звычайнае відэа</translation>
 <translation id="7748344063862150053">Правы верхні вугал дакумента</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Памясціце ўсе краі дакумента ўнутр рамкі</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Ідзе апрацоўка відарыса…</translation>
+<translation id="9161584225258678723">Пакадравая здымка</translation>
 <translation id="922762992951083513">Рэжым люстэрка ўключаны</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 </translationbundle>

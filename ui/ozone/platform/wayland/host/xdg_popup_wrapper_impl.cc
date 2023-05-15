@@ -110,6 +110,18 @@ uint32_t TranslateConstraintAdjustment(
   return res;
 }
 
+zaura_popup_decoration_type TranslateDecorationType(
+    ui::PlatformWindowShadowType platformWindowShadowType) {
+  switch (platformWindowShadowType) {
+    case ui::PlatformWindowShadowType::kNone:
+      return ZAURA_POPUP_DECORATION_TYPE_NONE;
+    case ui::PlatformWindowShadowType::kDefault:
+      return ZAURA_POPUP_DECORATION_TYPE_NORMAL;
+    case ui::PlatformWindowShadowType::kDrop:
+      return ZAURA_POPUP_DECORATION_TYPE_SHADOW;
+  }
+}
+
 }  // namespace
 
 XDGPopupWrapperImpl::XDGPopupWrapperImpl(
@@ -249,9 +261,9 @@ bool XDGPopupWrapperImpl::SupportsDecoration() {
   return version >= ZAURA_POPUP_SET_DECORATION_SINCE_VERSION;
 }
 
-void XDGPopupWrapperImpl::Decorate() {
+void XDGPopupWrapperImpl::Decorate(ui::PlatformWindowShadowType shadow_type) {
   zaura_popup_set_decoration(aura_popup_.get(),
-                             ZAURA_POPUP_DECORATION_TYPE_SHADOW);
+                             TranslateDecorationType(shadow_type));
 }
 
 void XDGPopupWrapperImpl::SetScaleFactor(float scale_factor) {

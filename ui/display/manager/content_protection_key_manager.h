@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -68,7 +69,8 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
   // change throughout the life of the process.
   std::string cached_provisioned_key_;
 
-  NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
+  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> native_display_delegate_ =
+      nullptr;  // Not owned.
 
   base::flat_map<int64_t, KeySetCallback> pending_display_callbacks_;
   base::flat_set<int64_t> displays_pending_set_key_;

@@ -6,9 +6,9 @@
 
 #include <cstring>
 
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "url/gurl.h"
@@ -31,7 +31,7 @@ bool IsValidUrnUuidURL(const GURL& url) {
   const std::string& spec = url.spec();
   return base::StartsWith(spec, kURNUUIDprefix,
                           base::CompareCase::INSENSITIVE_ASCII) &&
-         base::GUID::ParseCaseInsensitive(
+         base::Uuid::ParseCaseInsensitive(
              base::StringPiece(spec).substr(std::strlen(kURNUUIDprefix)))
              .is_valid();
 }

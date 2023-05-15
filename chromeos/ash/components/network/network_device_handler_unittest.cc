@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -143,7 +144,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::string result_;
-  ShillDeviceClient* fake_device_client_ = nullptr;
+  raw_ptr<ShillDeviceClient, ExperimentalAsh> fake_device_client_ = nullptr;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

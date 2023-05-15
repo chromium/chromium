@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/persistent_forced_extension_keep_alive.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
@@ -90,6 +91,7 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/sync/sync_appsync_service_factory.h"
@@ -169,6 +171,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
   crostini::AnsibleManagementServiceFactory::GetInstance();
   crostini::CrostiniExportImport::EnsureFactoryBuilt();
+  crostini::CrostiniInstaller::EnsureFactoryBuilt();
   crostini::CrostiniMetricsService::Factory::GetInstance();
   crostini::CrostiniPackageService::EnsureFactoryBuilt();
   crostini::CrostiniPortForwarder::EnsureFactoryBuilt();
@@ -219,6 +222,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   policy::UserCloudPolicyTokenForwarderFactory::GetInstance();
   printing::print_management::PrintingManagerFactory::GetInstance();
   PrintJobHistoryServiceFactory::GetInstance();
+  ScanServiceFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
   sharesheet::SharesheetServiceFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();

@@ -41,7 +41,7 @@ class ChromeHistoryClient : public history::HistoryClient,
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<history::HistoryBackendClient> CreateBackendClient() override;
-  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+  void UpdateBookmarkLastUsedTime(const base::Uuid& bookmark_node_uuid,
                                   base::Time time) override;
 
  private:

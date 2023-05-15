@@ -22,6 +22,7 @@ class WebState;
 - (void)initiateNewTabBackgroundAnimation;
 
 // Tells the consumer to start an animation for a foreground tab.
+// Should be called with a non-null webState.
 // TODO(crbug.com/1417570): Remove webState from this call.
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState;
 
@@ -35,10 +36,18 @@ class WebState;
 // `webState` is already the selected WebState.
 - (void)webStateSelected;
 
-// Tells the consumer to make `webState` the currently visible WebState,
-// displaying its view if BVC is in an active state.
-// TODO(crbug.com/1417570): Remove webState from this call.
-- (void)displayWebStateIfActive:(web::WebState*)webState;
+// Tells the consumer to make the current WebState visible, displaying its view
+// if BVC is in an active state.
+- (void)displayTabViewIfActive;
+
+// Tells the consumer to display the tab view associated to the new web state
+// index.
+- (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex;
+
+// Tells the consumer to remove any bookmark modal controller from view if
+// visible.
+- (void)dismissBookmarkModalController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_TAB_CONSUMER_H_

@@ -51,6 +51,8 @@ class SharedImageManager;
 class SharedImageRepresentation;
 class GLTextureImageRepresentation;
 class GLTexturePassthroughImageRepresentation;
+class SkiaGaneshImageRepresentation;
+class SkiaGraphiteImageRepresentation;
 class SkiaImageRepresentation;
 class DawnImageRepresentation;
 class LegacyOverlayImageRepresentation;
@@ -85,7 +87,8 @@ enum class SharedImageBackingType {
   kIOSurface = 15,
   kDCompSurface = 16,
   kDXGISwapChain = 17,
-  kMaxValue = kDXGISwapChain
+  kWrappedGraphiteTexture = 18,
+  kMaxValue = kWrappedGraphiteTexture
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -248,8 +251,15 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state);
-  // Returns a SkiaImageRepresentation created using the Skia Ganesh backend.
-  virtual std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  // Returns a SkiaGaneshImageRepresentation created using the Skia Ganesh
+  // backend.
+  virtual std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state);
+  // Returns a SkiaGraphiteImageRepresentation created using the Skia Graphite
+  // backend.
+  virtual std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state);

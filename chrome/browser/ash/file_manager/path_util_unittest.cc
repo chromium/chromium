@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -705,8 +706,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   arc::FakeFileSystemInstance fake_file_system_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* primary_profile_;
-  TestingProfile* secondary_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;

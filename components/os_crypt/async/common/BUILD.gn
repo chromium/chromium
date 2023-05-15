@@ -53,7 +53,7 @@ mojom("algorithm_mojom") {
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
-source_set("common") {
+component("common") {
   sources = [
     "encryptor.cc",
     "encryptor.h",
@@ -68,6 +68,8 @@ source_set("common") {
     ":algorithm_mojom",
     "//base",
   ]
+
+  defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
 }
 
 source_set("unit_tests") {

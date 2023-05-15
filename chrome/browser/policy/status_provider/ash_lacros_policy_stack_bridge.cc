@@ -61,16 +61,15 @@ void AshLacrosPolicyStackBridge::LoadDevicePolicy() {
   if (!service->IsAvailable<crosapi::mojom::DeviceSettingsService>()) {
     return;
   }
-  if (service->GetInterfaceVersion(
-          crosapi::mojom::DeviceSettingsService::Uuid_) >=
+  if (service->GetInterfaceVersion<crosapi::mojom::DeviceSettingsService>() >=
       static_cast<int>(
           crosapi::mojom::DeviceSettingsService::kGetDevicePolicyMinVersion)) {
     service->GetRemote<crosapi::mojom::DeviceSettingsService>()
         ->GetDevicePolicy(
             base::BindOnce(&AshLacrosPolicyStackBridge::OnDevicePolicyLoaded,
                            weak_ptr_factory_.GetWeakPtr()));
-  } else if (service->GetInterfaceVersion(
-                 crosapi::mojom::DeviceSettingsService::Uuid_) >=
+  } else if (service->GetInterfaceVersion<
+                 crosapi::mojom::DeviceSettingsService>() >=
              static_cast<int>(crosapi::mojom::DeviceSettingsService::
                                   kGetDevicePolicyDeprecatedMinVersion)) {
     service->GetRemote<crosapi::mojom::DeviceSettingsService>()

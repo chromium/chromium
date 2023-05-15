@@ -9,7 +9,7 @@ import android.app.NotificationChannel;
 import android.content.Context;
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -42,7 +42,7 @@ public class NotificationWrapperBuilderFactoryTest {
 
     @Before
     public void setUp() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         mNotificationManager = new NotificationManagerProxyImpl(context);
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LIST_LAYOUT_NG_INLINE_LIST_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LIST_LAYOUT_NG_INLINE_LIST_ITEM_H_
 
+#include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 
 namespace blink {
@@ -14,9 +15,28 @@ class LayoutNGInlineListItem final : public LayoutInline {
  public:
   explicit LayoutNGInlineListItem(Element* element);
 
+  ListItemOrdinal& Ordinal() {
+    NOT_DESTROYED();
+    return ordinal_;
+  }
+  int Value() const;
+  void OrdinalValueChanged();
+
+  LayoutObject* Marker() const;
+  void UpdateMarkerTextIfNeeded();
+
+  void UpdateCounterStyle();
+
  private:
+  void WillBeDestroyed() override;
   const char* GetName() const override;
   bool IsOfType(LayoutObjectType) const override;
+  void InsertedIntoTree() override;
+  void WillBeRemovedFromTree() override;
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void SubtreeDidChange() final;
+
+  ListItemOrdinal ordinal_;
 };
 
 template <>

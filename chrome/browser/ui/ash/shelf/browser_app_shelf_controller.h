@@ -8,6 +8,8 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -81,12 +83,14 @@ class BrowserAppShelfController : public apps::BrowserAppInstanceObserver,
   // Updates app-related properties of all the windows containing this app.
   void MaybeUpdateWindowPropertiesForApp(const std::string& app_id);
 
-  Profile* profile_;
-  ash::ShelfModel& model_;
-  ChromeShelfItemFactory& shelf_item_factory_;
-  ShelfSpinnerController& shelf_spinner_controller_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ref<ash::ShelfModel, ExperimentalAsh> model_;
+  const raw_ref<ChromeShelfItemFactory, ExperimentalAsh> shelf_item_factory_;
+  const raw_ref<ShelfSpinnerController, DanglingUntriaged | ExperimentalAsh>
+      shelf_spinner_controller_;
 
-  apps::BrowserAppInstanceRegistry& browser_app_instance_registry_;
+  const raw_ref<apps::BrowserAppInstanceRegistry, ExperimentalAsh>
+      browser_app_instance_registry_;
 
   base::ScopedObservation<apps::BrowserAppInstanceRegistry,
                           apps::BrowserAppInstanceObserver>

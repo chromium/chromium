@@ -31,7 +31,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.flags.PostNativeFlag;
@@ -48,9 +47,7 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The TabContentManager is responsible for serving tab contents to the UI components. Contents
@@ -74,17 +71,13 @@ public class TabContentManager {
         int GOT_DIFFERENT_ASPECT_RATIO_JPEG = 3;
         int NUM_ENTRIES = 4;
     }
-    public static final double ASPECT_RATIO_PRECISION = 0.01;
 
-    // Whether to allow to refetch tab thumbnail if the aspect ratio is not matching.
-    public static final BooleanCachedFieldTrialParameter ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, "allow_to_refetch", true);
+    // This is to accommodate for pixel rounding errors.
+    public static final double PIXEL_TOLERANCE_PERCENT = 0.02;
 
     @VisibleForTesting
     public static final String UMA_THUMBNAIL_FETCHING_RESULT =
-            "GridTabSwitcher.ThumbnailFetchingResult";
-    private final Set<Integer> mRefectchedTabIds = new HashSet<>();
+            "Android.GridTabSwitcher.ThumbnailFetchingResult";
 
     private float mThumbnailScale;
     /**
@@ -210,7 +203,6 @@ public class TabContentManager {
      * Destroy the native component.
      */
     public void destroy() {
-        if (mRefectchedTabIds != null) mRefectchedTabIds.clear();
         if (mNativeTabContentManager != 0) {
             TabContentManagerJni.get().destroy(mNativeTabContentManager);
             mNativeTabContentManager = 0;
@@ -332,14 +324,13 @@ public class TabContentManager {
      * Call to get a thumbnail for a given tab through a {@link Callback}. If there is
      * no up-to-date thumbnail on disk for the given tab, callback returns null.
      * @param tabId The ID of the tab to get the thumbnail for.
-     * @param thumbnailSize Desired size of thumbnail received by callback. Use default values if
-     *         null.
+     * @param thumbnailSize Desired size of thumbnail received by callback.
      * @param callback The callback to send the {@link Bitmap} with. Can be called up to twice when
      *                 {@code forceUpdate}; otherwise always called exactly once.
      * @param forceUpdate Whether to obtain the thumbnail from the live content.
      * @param writeBack When {@code forceUpdate}, whether to write the thumbnail to cache.
      */
-    public void getTabThumbnailWithCallback(@NonNull int tabId, @Nullable Size thumbnailSize,
+    public void getTabThumbnailWithCallback(@NonNull int tabId, @NonNull Size thumbnailSize,
             @NonNull Callback<Bitmap> callback, boolean forceUpdate, boolean writeBack) {
         if (!mSnapshotsEnabled) return;
 
@@ -388,11 +379,10 @@ public class TabContentManager {
     }
 
     @VisibleForTesting
-    public static Bitmap getJpegForTab(int tabId, @Nullable Size thumbnailSize) {
+    public static Bitmap getJpegForTab(int tabId, @NonNull Size thumbnailSize) {
         File file = getTabThumbnailFileJpeg(tabId);
         if (!file.isFile()) return null;
-        if (thumbnailSize == null || thumbnailSize.getWidth() <= 0
-                || thumbnailSize.getHeight() <= 0) {
+        if (thumbnailSize.getWidth() <= 0 || thumbnailSize.getHeight() <= 0) {
             return BitmapFactory.decodeFile(file.getPath());
         }
         return resizeJpeg(file.getPath(), thumbnailSize);
@@ -433,43 +423,43 @@ public class TabContentManager {
     }
 
     private void getTabThumbnailFromDisk(
-            @NonNull int tabId, @Nullable Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         // Try JPEG thumbnail first before using the more costly
         // TabContentManagerJni.get().getEtc1TabThumbnail.
         TraceEvent.startAsync("GetTabThumbnailFromDisk", tabId);
         PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
             Bitmap bitmap = getJpegForTab(tabId, thumbnailSize);
-            PostTask.postTask(
-                    TaskTraits.UI_USER_VISIBLE, () -> { onBitmapRead(tabId, bitmap, callback); });
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE,
+                    () -> { onBitmapRead(tabId, thumbnailSize, bitmap, callback); });
         });
     }
 
-    private void onBitmapRead(@NonNull int tabId, Bitmap jpeg, @NonNull Callback<Bitmap> callback) {
+    private void onBitmapRead(@NonNull int tabId, @NonNull Size thumbnailSize, Bitmap jpeg,
+            @NonNull Callback<Bitmap> callback) {
         TraceEvent.finishAsync("GetTabThumbnailFromDisk", tabId);
         if (jpeg != null) {
-            if (ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION.getValue()) {
-                // TODO(crbug.com/1344354): compare the height instead of pixel tolerance.
-                double jpegAspectRatio =
-                        jpeg.getHeight() == 0 ? 0 : 1.0 * jpeg.getWidth() / jpeg.getHeight();
-                // Retry fetching thumbnail once for all tabs that are:
-                //  * Thumbnail's aspect ratio is different from the expected ratio.
-                if (!mRefectchedTabIds.contains(tabId)
-                        && Math.abs(jpegAspectRatio - getTabCaptureAspectRatio())
-                                >= ASPECT_RATIO_PRECISION) {
-                    recordThumbnailFetchingResult(
-                            ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
+            // Pixel difference between the real aspect ratio and the actual aspect ratio.
+            final int aspectRatioPixelError =
+                    Math.abs((int) Math.round(jpeg.getHeight() * getTabCaptureAspectRatio())
+                            - jpeg.getWidth());
+            // Allow a pixel error proportional to the size of the thumbnail that will be shown.
+            // thumbnailSize will be within a factor of 2 of the size of jpeg due to resizeJpeg.
+            final int aspectRatioAllowedError =
+                    (int) Math.round(Math.min(thumbnailSize.getWidth(), thumbnailSize.getHeight())
+                            * PIXEL_TOLERANCE_PERCENT);
+            if (aspectRatioPixelError >= aspectRatioAllowedError) {
+                recordThumbnailFetchingResult(
+                        ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
 
-                    if (mNativeTabContentManager == 0) {
-                        callback.onResult(jpeg);
-                        return;
-                    }
-                    if (!mSnapshotsEnabled) return;
-
-                    mRefectchedTabIds.add(tabId);
-                    TabContentManagerJni.get().getEtc1TabThumbnail(
-                            mNativeTabContentManager, tabId, getTabCaptureAspectRatio(), callback);
+                if (mNativeTabContentManager == 0) {
+                    callback.onResult(jpeg);
                     return;
                 }
+                if (!mSnapshotsEnabled) return;
+
+                TabContentManagerJni.get().getEtc1TabThumbnail(
+                        mNativeTabContentManager, tabId, getTabCaptureAspectRatio(), callback);
+                return;
             }
             recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_JPEG);
 

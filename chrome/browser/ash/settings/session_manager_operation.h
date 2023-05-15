@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -94,11 +95,6 @@ class SessionManagerOperation {
     return session_manager_client_;
   }
 
-  // Whether to verify the loaded policy's signature against |public_key_| and
-  // perform other cloud-specific validations.  (Active Directory policy has no
-  // signature that could be verified.)
-  bool cloud_validations_ = true;
-
   bool force_key_load_ = false;
 
   bool force_immediate_load_ = false;
@@ -130,7 +126,8 @@ class SessionManagerOperation {
   // Extracts status and device settings from the validator and reports them.
   void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
 
-  SessionManagerClient* session_manager_client_ = nullptr;
+  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
+      nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Callback callback_;
@@ -149,12 +146,11 @@ class SessionManagerOperation {
 // the policy blob from session manager, and validates the loaded policy blob.
 class LoadSettingsOperation : public SessionManagerOperation {
  public:
-  // Creates a new load operation.  If |cloud_validations| is true, signature
-  // validation and other cloud-specific checks are performed.
+  // Creates a new load operation.  Signature validation and other
+  // cloud-specific checks are performed.
   // If |force_immediate_load| is true, load happens synchronously on Run()
   // call.
   LoadSettingsOperation(bool force_key_load,
-                        bool cloud_validations,
                         bool force_immediate_load,
                         Callback callback);
 

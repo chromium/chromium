@@ -3,10 +3,20 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("liblouis_library.gni")
 
 liblouis_library("liblouis") {
   dest_dir = "$root_build_dir/resources/chromeos/accessibility/chromevox/background/braille"
+}
+
+# grdp for ChromeVox subpage in ChromeOS settings.
+generate_grd("build_grdp") {
+  grd_prefix = "liblouis"
+  out_grd = "$target_gen_dir/liblouis_resources.grdp"
+  input_files = [ "tables.json" ]
+  input_files_base_dir = rebase_path(".", "//")
+  resource_path_prefix = "static/liblouis"
 }
 
 if (!is_castos) {

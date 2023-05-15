@@ -128,6 +128,7 @@ component("policy") {
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
     public_deps += [ "mac:packaged_sb_files" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",

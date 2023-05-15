@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
-#include "components/sync/protocol/vault.pb.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -16,7 +16,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -26,8 +26,8 @@ struct ExtractedSharedKey {
   std::vector<uint8_t> rotation_proof;
 };
 
-const sync_pb::SecurityDomainMember::SecurityDomainMembership*
-FindSyncMembership(const sync_pb::SecurityDomainMember& member) {
+const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+FindSyncMembership(const trusted_vault_pb::SecurityDomainMember& member) {
   for (const auto& membership : member.memberships()) {
     if (membership.security_domain() == kSyncSecurityDomainName) {
       return &membership;
@@ -40,10 +40,12 @@ FindSyncMembership(const sync_pb::SecurityDomainMember& member) {
 // keys from |membership| and sorts them by version. In case of decryption
 // errors it returns nullopt.
 absl::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
-    const sync_pb::SecurityDomainMember::SecurityDomainMembership& membership,
+    const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership&
+        membership,
     const SecureBoxPrivateKey& member_private_key) {
   std::map<int, ExtractedSharedKey> epoch_to_extracted_key;
-  for (const sync_pb::SharedMemberKey& shared_key : membership.keys()) {
+  for (const trusted_vault_pb::SharedMemberKey& shared_key :
+       membership.keys()) {
     absl::optional<std::vector<uint8_t>> decrypted_key =
         DecryptTrustedVaultWrappedKey(
             member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
@@ -55,7 +57,7 @@ absl::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
     epoch_to_extracted_key[shared_key.epoch()].trusted_vault_key =
         *decrypted_key;
   }
-  for (const sync_pb::RotationProof& rotation_proof :
+  for (const trusted_vault_pb::RotationProof& rotation_proof :
        membership.rotation_proofs()) {
     if (epoch_to_extracted_key.count(rotation_proof.new_epoch()) == 0) {
       // There is no shared key corresponding to rotation proof. In theory it
@@ -185,15 +187,15 @@ DownloadKeysResponseHandler::ProcessResponse(
     return ProcessedResponse(*error_from_http_status);
   }
 
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
   if (!member.ParseFromString(response_body)) {
     return ProcessedResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);
   }
 
   // TODO(crbug.com/1113598): consider validation of member public key.
-  const sync_pb::SecurityDomainMember::SecurityDomainMembership* membership =
-      FindSyncMembership(member);
+  const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+      membership = FindSyncMembership(member);
   if (!membership) {
     // Member is not in sync security domain.
     return ProcessedResponse(
@@ -237,4 +239,4 @@ DownloadKeysResponseHandler::ProcessResponse(
                            /*last_key_version=*/new_keys.back().version);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

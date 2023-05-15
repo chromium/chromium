@@ -10,10 +10,13 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -32,6 +35,7 @@ class MediaControlPopupMenuElement::EventListener final
 
   void StartListening() {
     popup_menu_->addEventListener(event_type_names::kKeydown, this, false);
+    popup_menu_->addEventListener(event_type_names::kBeforetoggle, this, false);
 
     LocalDOMWindow* window = popup_menu_->GetDocument().domWindow();
     if (!window)
@@ -47,6 +51,8 @@ class MediaControlPopupMenuElement::EventListener final
 
   void StopListening() {
     popup_menu_->removeEventListener(event_type_names::kKeydown, this, false);
+    popup_menu_->removeEventListener(event_type_names::kBeforetoggle, this,
+                                     false);
 
     LocalDOMWindow* window = popup_menu_->GetDocument().domWindow();
     if (!window)
@@ -69,8 +75,8 @@ class MediaControlPopupMenuElement::EventListener final
 
  private:
   void Invoke(ExecutionContext*, Event* event) final {
-    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-    if (event->type() == event_type_names::kKeydown && keyboard_event) {
+    if (event->type() == event_type_names::kKeydown) {
+      auto* keyboard_event = To<KeyboardEvent>(event);
       bool handled = true;
 
       switch (keyboard_event->keyCode()) {
@@ -101,7 +107,8 @@ class MediaControlPopupMenuElement::EventListener final
         event->SetDefaultHandled();
       }
     } else if (event->type() == event_type_names::kResize ||
-               event->type() == event_type_names::kScroll) {
+               event->type() == event_type_names::kScroll ||
+               event->type() == event_type_names::kBeforetoggle) {
       popup_menu_->SetIsWanted(false);
     }
   }
@@ -115,8 +122,10 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   MediaControlDivElement::SetIsWanted(wanted);
 
   if (wanted) {
-    GetDocument().AddToTopLayer(this);
-    SetPosition();
+    ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
+    if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+      SetPosition();
+    }
 
     SelectFirstItem();
 
@@ -126,7 +135,11 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   } else {
     if (event_listener_)
       event_listener_->StopListening();
-    GetDocument().RemoveFromTopLayerImmediately(this);
+    if (popoverOpen()) {
+      HidePopoverInternal(HidePopoverFocusBehavior::kNone,
+                          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+                          nullptr);
+    }
   }
 }
 
@@ -189,11 +202,17 @@ void MediaControlPopupMenuElement::Trace(Visitor* visitor) const {
 MediaControlPopupMenuElement::MediaControlPopupMenuElement(
     MediaControlsImpl& media_controls)
     : MediaControlDivElement(media_controls) {
+  setAttribute(html_names::kPopoverAttr, kPopoverTypeValueAuto);
+  SetElementAttribute(html_names::kAnchorAttr, PopupAnchor());
   SetIsWanted(false);
 }
 
+// TODO(crbug.com/1309178): This entire function and the one callsite can be
+// removed once anchor positioning is enabled by default.
 void MediaControlPopupMenuElement::SetPosition() {
-  // The popup is positioned slightly on the inside of the bottom right corner.
+  DCHECK(!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+  // The popup is positioned slightly on the inside of the bottom right
+  // corner.
   static constexpr int kPopupMenuMarginPx = 4;
   static const char kImportant[] = "important";
   static const char kPx[] = "px";

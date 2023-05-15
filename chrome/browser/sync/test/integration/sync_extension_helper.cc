@@ -10,11 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -70,7 +70,8 @@ void SyncExtensionHelper::SetupIfNecessary(SyncTest* test) {
     return;
   }
 
-  extension_name_prefix_ = kFakeExtensionPrefix + base::GenerateGUID();
+  extension_name_prefix_ =
+      kFakeExtensionPrefix + base::Uuid::GenerateRandomV4().AsLowercaseString();
   for (int i = 0; i < test->num_clients(); ++i) {
     SetupProfile(test->GetProfile(i));
   }

@@ -12,10 +12,11 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -83,7 +84,7 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 + (BOOL)settingsRegisteredKeyboardCommands {
   UIViewController* viewController =
       chrome_test_util::GetMainController()
-          .interfaceProvider.mainInterface.viewController;
+          .browserProviderInterface.mainBrowserProvider.viewController;
   return viewController.presentedViewController.keyCommands != nil;
 }
 

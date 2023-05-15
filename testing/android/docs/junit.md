@@ -86,7 +86,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 // Be sure to specify to run tests with a RobolectricTestRunner. The
 // default JUnit test runner won't load the Robolectric Android code properly.
 // BaseRobolectricTestRunner will do some common initializations. If this is
-// not desired, then LocalRobolectricTestRunner could be used.
+// not desired, then RobolectricTestRunner could be used directly.
 @RunWith(BaseRobolectricTestRunner.class)
 // Can specify some Robolectric related configs here.
 // More about configuring Robolectric at http://robolectric.org/configuring/.

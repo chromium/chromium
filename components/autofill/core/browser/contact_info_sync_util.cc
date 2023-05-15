@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -194,6 +195,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
   s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+    s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
+  }
 
   // Set email, phone and company values and statuses.
   s.Set(specifics.mutable_email_address(), EMAIL_ADDRESS);
@@ -216,7 +221,7 @@ CreateContactInfoEntityDataFromAutofillProfile(
   // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
   // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
   // sure that syncing a profile through the wrong sync bridge fails early.
-  if (!base::IsValidUuid(profile.guid()) ||
+  if (!base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid() ||
       profile.source() != AutofillProfile::Source::kAccount) {
     return nullptr;
   }
@@ -249,7 +254,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     return nullptr;
 
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), /*origin=*/"", AutofillProfile::Source::kAccount);
+      specifics.guid(), AutofillProfile::Source::kAccount);
 
   profile->set_use_count(specifics.use_count());
   profile->set_use_date(
@@ -292,6 +297,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
   s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+    s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
+  }
 
   // Set email, phone and company values and statuses.
   s.Set(specifics.email_address(), EMAIL_ADDRESS);
@@ -427,6 +436,10 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   if (d.Delete(trimmed_specifics.mutable_address_floor())) {
     trimmed_specifics.clear_address_floor();
+  }
+
+  if (d.Delete(trimmed_specifics.mutable_address_landmark())) {
+    trimmed_specifics.clear_address_landmark();
   }
 
   // Delete email, phone and company values and statuses.

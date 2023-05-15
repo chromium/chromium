@@ -129,10 +129,10 @@ class ScopedObservation {
  private:
   using Traits = ScopedObservationTraits<Source, Observer>;
 
-  const raw_ptr<Observer> observer_;
+  const raw_ptr<Observer, DanglingUntriaged> observer_;
 
   // The observed source, if any.
-  raw_ptr<Source> source_ = nullptr;
+  raw_ptr<Source, DanglingUntriaged> source_ = nullptr;
 };
 
 }  // namespace base

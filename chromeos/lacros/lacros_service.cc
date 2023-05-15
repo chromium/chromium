@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -43,6 +44,7 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
@@ -115,6 +117,8 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -167,8 +171,8 @@ class LacrosService::InterfaceEntry : public LacrosService::InterfaceEntryBase {
   InterfaceEntry& operator=(const InterfaceEntry&) = delete;
   ~InterfaceEntry() override = default;
   void* GetInternal() override { return &remote_; }
-  void MaybeBind(uint32_t crosapi_version, LacrosService* impl) override {
-    available_ = crosapi_version >= MethodMinVersion;
+  void MaybeBind(LacrosService* impl) override {
+    available_ = impl->IsSupported<CrosapiInterface>();
     if (available_) {
       impl->InitializeAndBindRemote<CrosapiInterface, bind_func>(&remote_);
     }
@@ -317,6 +321,10 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DownloadStatusUpdater,
+      &Crosapi::BindDownloadStatusUpdater,
+      Crosapi::MethodMinVersions::kBindDownloadStatusUpdaterMinVersion>();
   ConstructRemote<
       crosapi::mojom::DriveIntegrationService,
       &crosapi::mojom::Crosapi::BindDriveIntegrationService,
@@ -575,7 +583,7 @@ void LacrosService::BindReceiver(const std::string& browser_version) {
 
   if (CrosapiVersion()) {
     for (auto& entry : interfaces_) {
-      entry.second->MaybeBind(*CrosapiVersion(), this);
+      entry.second->MaybeBind(this);
     }
   }
 
@@ -587,79 +595,9 @@ void LacrosService::BindReceiver(const std::string& browser_version) {
   }
 }
 
-bool LacrosService::IsAccountManagerAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindAccountManagerMinVersion;
-}
-
-bool LacrosService::IsBrowserCdmFactoryAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindBrowserCdmFactoryMinVersion;
-}
-
-bool LacrosService::IsMediaSessionAudioFocusAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindMediaSessionAudioFocusMinVersion;
-}
-
-bool LacrosService::IsMediaSessionAudioFocusDebugAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::
-                            kBindMediaSessionAudioFocusDebugMinVersion;
-}
-
-bool LacrosService::IsMediaSessionControllerAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindMediaSessionControllerMinVersion;
-}
-
-bool LacrosService::IsMetricsReportingAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindMetricsReportingMinVersion;
-}
-
-bool LacrosService::IsMultiCaptureServiceAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindMultiCaptureServiceMinVersion;
-}
-
-bool LacrosService::IsSmartReaderClientAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindSmartReaderClientMinVersion;
-}
-
-bool LacrosService::IsSensorHalClientAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindSensorHalClientMinVersion;
-}
-
-bool LacrosService::IsStableVideoDecoderFactoryAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::
-                            kBindStableVideoDecoderFactoryMinVersion;
-}
-
 void LacrosService::BindAccountManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
-  DCHECK(IsAccountManagerAvailable());
+  DCHECK(IsSupported<crosapi::mojom::AccountManager>());
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::AccountManager>,
       &crosapi::mojom::Crosapi::BindAccountManager>(
@@ -668,7 +606,7 @@ void LacrosService::BindAccountManagerReceiver(
 
 void LacrosService::BindAudioFocusManager(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManager> remote) {
-  DCHECK(IsMediaSessionAudioFocusAvailable());
+  DCHECK(IsSupported<media_session::mojom::AudioFocusManager>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager>,
@@ -678,7 +616,7 @@ void LacrosService::BindAudioFocusManager(
 void LacrosService::BindAudioFocusManagerDebug(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
         remote) {
-  DCHECK(IsMediaSessionAudioFocusAvailable());
+  DCHECK(IsSupported<media_session::mojom::AudioFocusManager>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>,
@@ -688,7 +626,7 @@ void LacrosService::BindAudioFocusManagerDebug(
 
 void LacrosService::BindBrowserCdmFactory(
     mojo::GenericPendingReceiver receiver) {
-  DCHECK(IsBrowserCdmFactoryAvailable());
+  DCHECK(IsSupported<cdm::mojom::BrowserCdmFactory>());
   BindPendingReceiverOrRemote<mojo::GenericPendingReceiver,
                               &crosapi::mojom::Crosapi::BindBrowserCdmFactory>(
       std::move(receiver));
@@ -697,7 +635,7 @@ void LacrosService::BindBrowserCdmFactory(
 void LacrosService::BindGeolocationService(
     mojo::PendingReceiver<crosapi::mojom::GeolocationService>
         pending_receiver) {
-  DCHECK(IsAvailable<crosapi::mojom::GeolocationService>());
+  DCHECK(IsSupported<crosapi::mojom::GeolocationService>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::GeolocationService>,
@@ -709,7 +647,7 @@ void LacrosService::BindMachineLearningService(
     mojo::PendingReceiver<
         chromeos::machine_learning::mojom::MachineLearningService> receiver) {
   DCHECK(
-      IsAvailable<chromeos::machine_learning::mojom::MachineLearningService>());
+      IsSupported<chromeos::machine_learning::mojom::MachineLearningService>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<
@@ -721,7 +659,7 @@ void LacrosService::BindMachineLearningService(
 void LacrosService::BindMediaControllerManager(
     mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
         remote) {
-  DCHECK(IsMediaSessionAudioFocusAvailable());
+  DCHECK(IsSupported<media_session::mojom::AudioFocusManager>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>,
@@ -730,7 +668,7 @@ void LacrosService::BindMediaControllerManager(
 
 void LacrosService::BindMetricsReporting(
     mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
-  DCHECK(IsMetricsReportingAvailable());
+  DCHECK(IsSupported<crosapi::mojom::MetricsReporting>());
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::MetricsReporting>,
       &crosapi::mojom::Crosapi::BindMetricsReporting>(std::move(receiver));
@@ -739,7 +677,7 @@ void LacrosService::BindMetricsReporting(
 void LacrosService::BindRemoteAppsLacrosBridge(
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
         receiver) {
-  DCHECK(IsAvailable<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>());
+  DCHECK(IsSupported<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>());
 
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<
@@ -750,7 +688,7 @@ void LacrosService::BindRemoteAppsLacrosBridge(
 
 void LacrosService::BindScreenManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
-  DCHECK(IsAvailable<crosapi::mojom::ScreenManager>());
+  DCHECK(IsSupported<crosapi::mojom::ScreenManager>());
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::ScreenManager>,
       &crosapi::mojom::Crosapi::BindScreenManager>(std::move(pending_receiver));
@@ -758,7 +696,7 @@ void LacrosService::BindScreenManagerReceiver(
 
 void LacrosService::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
-  DCHECK(IsSensorHalClientAvailable());
+  DCHECK(IsSupported<chromeos::sensors::mojom::SensorHalClient>());
   BindPendingReceiverOrRemote<
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>,
       &crosapi::mojom::Crosapi::BindSensorHalClient>(std::move(remote));
@@ -773,24 +711,17 @@ bool LacrosService::IsOnBrowserStartupAvailable() const {
 void LacrosService::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
         pending_receiver) {
-  DCHECK(IsVideoCaptureDeviceFactoryAvailable());
+  DCHECK(IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>());
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>,
       &crosapi::mojom::Crosapi::BindVideoCaptureDeviceFactory>(
       std::move(pending_receiver));
 }
 
-bool LacrosService::IsVideoCaptureDeviceFactoryAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::
-                            kBindVideoCaptureDeviceFactoryMinVersion;
-}
-
 void LacrosService::BindVideoConferenceManager(
     mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager>
         pending_receiver) {
-  DCHECK(IsAvailable<crosapi::mojom::VideoConferenceManager>());
+  DCHECK(IsSupported<crosapi::mojom::VideoConferenceManager>());
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager>,
       &crosapi::mojom::Crosapi::BindVideoConferenceManager>(
@@ -800,24 +731,11 @@ void LacrosService::BindVideoConferenceManager(
 void LacrosService::BindStableVideoDecoderFactory(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
         receiver) {
-  DCHECK(IsStableVideoDecoderFactoryAvailable());
+  DCHECK(IsSupported<media::stable::mojom::StableVideoDecoderFactory>());
   BindPendingReceiverOrRemote<
       mojo::GenericPendingReceiver,
       &crosapi::mojom::Crosapi::BindStableVideoDecoderFactory>(
       mojo::GenericPendingReceiver(std::move(receiver)));
-}
-
-int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
-  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
-    return -1;
-  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions())
-    return -1;
-  const base::flat_map<base::Token, uint32_t>& versions =
-      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
-  auto it = versions.find(interface_uuid);
-  if (it == versions.end())
-    return -1;
-  return it->second;
 }
 
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
@@ -853,6 +771,22 @@ void LacrosService::ConstructRemote() {
   interfaces_.emplace(CrosapiInterface::Uuid_,
                       std::make_unique<LacrosService::InterfaceEntry<
                           CrosapiInterface, bind_func, MethodMinVersion>>());
+}
+
+int LacrosService::GetInterfaceVersionImpl(base::Token interface_uuid) const {
+  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting()) {
+    return -1;
+  }
+  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions()) {
+    return -1;
+  }
+  const base::flat_map<base::Token, uint32_t>& versions =
+      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
+  auto it = versions.find(interface_uuid);
+  if (it == versions.end()) {
+    return -1;
+  }
+  return it->second;
 }
 
 void LacrosService::AddObserver(Observer* obs) {

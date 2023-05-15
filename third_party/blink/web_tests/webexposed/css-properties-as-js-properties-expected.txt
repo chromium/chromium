@@ -14,8 +14,6 @@ anchorScroll
 animation
 animationComposition
 animationDelay
-animationDelayEnd
-animationDelayStart
 animationDirection
 animationDuration
 animationFillMode
@@ -165,7 +163,6 @@ direction
 display
 dominantBaseline
 emptyCells
-end
 fallback
 fill
 fillOpacity
@@ -347,6 +344,8 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
+popoverHideDelay
+popoverShowDelay
 position
 positionFallback
 prefix
@@ -388,6 +387,16 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollStart
+scrollStartBlock
+scrollStartInline
+scrollStartTarget
+scrollStartTargetBlock
+scrollStartTargetInline
+scrollStartTargetX
+scrollStartTargetY
+scrollStartX
+scrollStartY
 scrollTimeline
 scrollTimelineAttachment
 scrollTimelineAxis
@@ -401,11 +410,9 @@ shapeOutside
 shapeRendering
 size
 sizeAdjust
-source
 speak
 speakAs
 src
-start
 stopColor
 stopOpacity
 stroke

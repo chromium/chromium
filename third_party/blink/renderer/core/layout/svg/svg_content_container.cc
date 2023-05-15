@@ -80,23 +80,20 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     }
 
     // Resource containers are nasty: they can invalidate clients outside the
-    // current SubtreeLayoutScope.
+    // containers.
     // Since they only care about viewport size changes (to resolve their
     // relative lengths), we trigger their invalidation directly from
-    // SVGSVGElement::svgAttributeChange() or at a higher SubtreeLayoutScope (in
-    // LayoutView::layout()). We do not create a SubtreeLayoutScope for
-    // resources because their ability to reference each other leads to circular
-    // layout. We protect against that within the layout code for marker
-    // resources, but it causes assertions if we use a SubtreeLayoutScope for
-    // them.
+    // SVGSVGElement::svgAttributeChange() or at the LayoutView. We do not mark
+    // them for resources here, because their ability to reference each other
+    // leads to circular layout.
+    // TODO(layout-dev): Do we still need this special treatment?
     if (child->IsSVGResourceContainer()) {
       child->LayoutIfNeeded();
     } else {
       DCHECK(!child->IsSVGRoot());
-      SubtreeLayoutScope layout_scope(*child);
       if (force_child_layout) {
-        layout_scope.SetNeedsLayout(child,
-                                    layout_invalidation_reason::kSvgChanged);
+        child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
+                              kMarkOnlyThis);
       }
 
       // Lay out any referenced resources before the child.

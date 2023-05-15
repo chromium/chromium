@@ -9,6 +9,10 @@
 
 namespace reporting::metrics {
 
+// Default app telemetry collection rate.
+constexpr base::TimeDelta kDefaultAppUsageTelemetryCollectionRate =
+    base::Minutes(15);
+
 // Default audio telemetry collection rate.
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(15);
@@ -45,6 +49,11 @@ constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
 // Minimum usage time threshold for app usage reporting.
 constexpr base::TimeDelta kMinimumAppUsageTime = base::Milliseconds(1);
 
+// Default value that controls app inventory reporting. Set to false even though
+// the corresponding user policy is a list type to signify reporting is
+// disallowed by default.
+constexpr bool kReportAppInventoryEnabledDefaultValue = false;
+
 // Default value for reporting device activity heartbeats.
 constexpr bool kDeviceActivityHeartbeatEnabledDefaultValue = false;
 
@@ -53,6 +62,9 @@ constexpr bool kReportDeviceAudioStatusDefaultValue = true;
 
 // Default value for reporting device network status.
 constexpr bool kReportDeviceNetworkStatusDefaultValue = true;
+
+// Default value for reporting device network events.
+constexpr bool kDeviceReportNetworkEventsDefaultValue = false;
 
 // Default value for reporting device peripheral status.
 constexpr bool kReportDevicePeripheralsDefaultValue = false;

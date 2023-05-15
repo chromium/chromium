@@ -114,6 +114,11 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!uploader_);
 
+  if (!url_loader_factory_) {
+    std::move(finish_callback).Run();
+    return;
+  }
+
   ClientDownloadReport report_metadata;
 
   bool r = report_metadata.mutable_download_request()->ParseFromString(

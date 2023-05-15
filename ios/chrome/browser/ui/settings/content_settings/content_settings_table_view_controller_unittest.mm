@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -37,14 +38,19 @@ class ContentSettingsTableViewControllerTest
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Tests that there are 4 items in Content Settings.
+// Tests that the number of items in Content Settings is correct.
 TEST_F(ContentSettingsTableViewControllerTest,
        TestModelWithLanguageSettingsUI) {
   CreateController();
   CheckController();
   CheckTitleWithId(IDS_IOS_CONTENT_SETTINGS_TITLE);
 
-  ASSERT_EQ(1, NumberOfSections());
+  if (web::features::IsWebInspectorSupportEnabled()) {
+    ASSERT_EQ(2, NumberOfSections());
+    ASSERT_EQ(1, NumberOfItemsInSection(1));
+  } else {
+    ASSERT_EQ(1, NumberOfSections());
+  }
   ASSERT_EQ(4, NumberOfItemsInSection(0));
   CheckDetailItemTextWithIds(IDS_IOS_BLOCK_POPUPS, IDS_IOS_SETTING_ON, 0, 0);
 }

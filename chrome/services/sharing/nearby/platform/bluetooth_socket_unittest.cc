@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -100,7 +101,7 @@ class BluetoothSocketTest : public testing::Test {
 
  protected:
   std::unique_ptr<chrome::BluetoothDevice> bluetooth_device_;
-  FakeSocket* fake_socket_ = nullptr;
+  raw_ptr<FakeSocket, ExperimentalAsh> fake_socket_ = nullptr;
   mojo::ScopedDataPipeProducerHandle receive_stream_;
   mojo::ScopedDataPipeConsumerHandle send_stream_;
   std::unique_ptr<BluetoothSocket> bluetooth_socket_;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "ash/assistant/test/test_assistant_service.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -35,8 +36,8 @@ class MockedAssistantInteraction {
  private:
   void Submit();
 
-  AssistantTestApi* test_api_;
-  TestAssistantService* service_;
+  raw_ptr<AssistantTestApi, ExperimentalAsh> test_api_;
+  raw_ptr<TestAssistantService, ExperimentalAsh> service_;
   std::unique_ptr<InteractionResponse> response_;
 
   std::string query_ = "<fake-query>";

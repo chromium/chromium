@@ -10,9 +10,15 @@
 #import <CoreVideo/CoreVideo.h>
 
 #include "base/feature_list.h"
-#include "base/mac/scoped_nsobject.h"
+#include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@class DeviceNameAndTransportType;
 
 namespace media {
 
@@ -22,7 +28,8 @@ std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
 // VideoCaptureDeviceMac should call this function to fetch the list of devices
 // available in the system; this method returns the list of device names that
 // have to be used with -[VideoCaptureDeviceAVFoundation setCaptureDevice:].
-base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames();
+NSDictionary<NSString*, DeviceNameAndTransportType*>*
+GetVideoCaptureDeviceNames();
 
 // Extracts |base_address| and |length| out of a SampleBuffer. Returns true on
 // success and false if we failed to retrieve the information due to OS call

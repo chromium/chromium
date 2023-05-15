@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -104,7 +105,7 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   void HideSpinner(const std::string& app_id);
 
   // Unowned pointers.
-  ChromeShelfController* owner_;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> owner_;
 
   AccountId current_account_id_;
 

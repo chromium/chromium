@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -80,7 +81,7 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
             std::move(callback)));
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 BorealisFeatures::BorealisFeatures(Profile* profile)
@@ -103,11 +104,9 @@ void BorealisFeatures::IsAllowed(
   async_checker_->Get(base::BindOnce(
       [](base::OnceCallback<void(AllowStatus)> callback,
          AsyncAllowChecker::Result result) {
-        if (result) {
-          std::move(callback).Run(*result.Value());
-          return;
-        }
-        std::move(callback).Run(AllowStatus::kFailedToDetermine);
+        std::move(callback).Run(
+            result.transform([](AllowStatus* status) { return *status; })
+                .value_or(AllowStatus::kFailedToDetermine));
       },
       std::move(callback)));
 }

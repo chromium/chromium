@@ -81,6 +81,8 @@ PthreadWaiter::PthreadWaiter() : waiter_count_(0), wakeup_count_(0) {
 #if defined(__GLIBC__) && \
     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
 #define ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT 1
+#elif defined(__ANDROID_API__) && __ANDROID_API__ >= 30
+#define ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT 1
 #endif
 
 // Calls pthread_cond_timedwait() or possibly something else like
@@ -88,14 +90,8 @@ PthreadWaiter::PthreadWaiter() : waiter_count_(0), wakeup_count_(0) {
 // KernelTimeout requested. The return value is the same as the return
 // value of pthread_cond_timedwait().
 int PthreadWaiter::TimedWait(KernelTimeout t) {
-#ifndef __GOOGLE_GRTE_VERSION__
-  constexpr bool kRelativeTimeoutSupported = true;
-#else
-  constexpr bool kRelativeTimeoutSupported = false;
-#endif
-
   assert(t.has_timeout());
-  if (kRelativeTimeoutSupported && t.is_relative_timeout()) {
+  if (KernelTimeout::SupportsSteadyClock() && t.is_relative_timeout()) {
 #ifdef ABSL_INTERNAL_HAS_PTHREAD_COND_TIMEDWAIT_RELATIVE_NP
     const auto rel_timeout = t.MakeRelativeTimespec();
     return pthread_cond_timedwait_relative_np(&cv_, &mu_, &rel_timeout);

@@ -220,6 +220,16 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
           child_bfc_offset.block_offset - parent_bfc_offset.block_offset};
 }
 
+// Whether the `node` reuqires `NGLineInfoList` or not.
+inline bool NeedsLineInfoList(const NGInlineNode& node) {
+  const TextWrap wrap = node.Style().GetTextWrap();
+  if (UNLIKELY(wrap == TextWrap::kPretty)) {
+    DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
+    return !node.IsScoreLineBreakDisabled();
+  }
+  return false;
+}
+
 }  // namespace
 
 NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
@@ -457,10 +467,16 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
   NGLayoutInputNode first_child(nullptr);
-  if (Node().IsInlineFormattingContextRoot(&first_child))
-    result = LayoutWithInlineChildLayoutContext(first_child);
-  else
+  if (Node().IsInlineFormattingContextRoot(&first_child)) {
+    NGInlineNode inline_child = To<NGInlineNode>(first_child);
+    if (UNLIKELY(NeedsLineInfoList(inline_child))) {
+      result = LayoutWithLineInfoList(inline_child);
+    } else {
+      result = LayoutWithInlineChildLayoutContext(inline_child);
+    }
+  } else {
     result = Layout(nullptr);
+  }
 
   if (result->Status() == NGLayoutResult::kSuccess) {
     return result;
@@ -501,9 +517,15 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
-    const NGLayoutInputNode& first_child) {
-  NGInlineChildLayoutContext context(To<NGInlineNode>(first_child),
-                                     &container_builder_);
+    const NGInlineNode& child) {
+  NGSimpleInlineChildLayoutContext context(child, &container_builder_);
+  const NGLayoutResult* result = Layout(&context);
+  return result;
+}
+
+NOINLINE const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutWithLineInfoList(
+    const NGInlineNode& child) {
+  NGOptimalInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
@@ -863,10 +885,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     // [2] inline-block/contenteditable-baseline.html
     const LayoutBlock* const layout_block =
         To<LayoutBlock>(Node().GetLayoutBox());
-    if (auto baseline_offset = layout_block->BaselineForEmptyLine(
-            layout_block->IsHorizontalWritingMode() ? kHorizontalLine
-                                                    : kVerticalLine))
+    if (auto baseline_offset = layout_block->BaselineForEmptyLine()) {
       container_builder_.SetBaselines(*baseline_offset);
+    }
   }
 
   // Collapse annotation overflow and padding.
@@ -971,6 +992,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         intrinsic_block_size_, previous_inflow_position->logical_block_offset);
   }
 
+  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
       ConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
       intrinsic_block_size_,
@@ -1086,6 +1108,15 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   if (ConstraintSpace().IsTableCell()) {
     NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
                                                    &container_builder_);
+  }
+
+  if (RuntimeEnabledFeatures::LayoutNewFormCenteringEnabled() &&
+      Style().AlignContentBlockCenter() &&
+      !IsBreakInside(container_builder_.PreviousBreakToken())) {
+    container_builder_.MoveChildrenInBlockDirection(
+        (container_builder_.FragmentBlockSize() -
+         unconstrained_intrinsic_block_size) /
+        2);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
@@ -1532,7 +1563,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
-  if (UNLIKELY(child.Style().AlignSelfBlockCenter())) {
+  if (UNLIKELY(!RuntimeEnabledFeatures::LayoutNewFormCenteringEnabled() &&
+               child.Style().AlignSelfBlockCenter())) {
     // The block-size of a textfield doesn't depend on its contents, so we can
     // compute the block-size without passing the actual intrinsic block-size.
     const LayoutUnit bsp_block_sum = BorderScrollbarPadding().BlockSum();
@@ -3294,6 +3326,16 @@ LogicalOffset NGBlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
   const auto* input =
       To<HTMLInputElement>(Node().GetDOMNode()->OwnerShadowHost());
   LayoutUnit offset(input->RatioValue().ToDouble() * available_extent);
+  // While the vertical form controls do not support LTR direction, we need to
+  // position the thumb's offset on the opposite side of the element (similar to
+  // RTL direction).
+  WritingDirectionMode writing_direction =
+      ConstraintSpace().GetWritingDirection();
+  if (!writing_direction.IsHorizontal() && writing_direction.IsLtr() &&
+      !RuntimeEnabledFeatures::
+          FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+    offset = available_extent - offset;
+  }
   return {logical_offset.inline_offset + offset, logical_offset.block_offset};
 }
 

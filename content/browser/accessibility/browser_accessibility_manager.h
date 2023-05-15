@@ -237,6 +237,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
           ax::mojom::ScrollBehavior::kDoNotScrollIfVisible);
   void ScrollToPoint(const BrowserAccessibility& node, gfx::Point point);
   void SetAccessibilityFocus(const BrowserAccessibility& node);
+  void Blur(const BrowserAccessibility& node);
   void SetFocus(const BrowserAccessibility& node);
   void SetSequentialFocusNavigationStartingPoint(
       const BrowserAccessibility& node);

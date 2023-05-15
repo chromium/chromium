@@ -28,11 +28,6 @@ const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
 const char kInboundRtp[] = "inbound-rtp";
 const char kOutboundRtp[] = "outbound-rtp";
 
-enum class GetStatsVariation {
-  PROMISE_BASED,
-  CALLBACK_BASED
-};
-
 // Sums up "RTC[In/Out]boundRTPStreamStats.bytes_[received/sent]" values.
 double GetTotalRTPStreamBytes(
     TestStatsReportDictionary* report, const char* type,
@@ -234,33 +229,17 @@ class WebRtcStatsPerfBrowserTest : public WebRtcTestBase {
     EndCall();
   }
 
-  void RunsAudioAndVideoCallMeasuringGetStatsPerformance(
-      GetStatsVariation variation) {
+  void RunsAudioAndVideoCallMeasuringGetStatsPerformance() {
     EXPECT_TRUE(base::TimeTicks::IsHighResolution());
 
     StartCall(kUseDefaultAudioCodec, kUseDefaultVideoCodec,
               false /* prefer_hw_video_codec */, "");
 
-    double invocation_time = 0.0;
-    switch (variation) {
-      case GetStatsVariation::PROMISE_BASED:
-        invocation_time = (MeasureGetStatsPerformance(left_tab_) +
-                           MeasureGetStatsPerformance(right_tab_)) / 2.0;
-        break;
-      case GetStatsVariation::CALLBACK_BASED:
-        invocation_time =
-            (MeasureGetStatsCallbackPerformance(left_tab_) +
-             MeasureGetStatsCallbackPerformance(right_tab_)) / 2.0;
-        break;
-    }
-    perf_test::PrintResult(
-        "getStats",
-        (variation == GetStatsVariation::PROMISE_BASED) ?
-            "_promise" : "_callback",
-        "invocation_time",
-        invocation_time,
-        "milliseconds",
-        false);
+    double invocation_time = (MeasureGetStatsPerformance(left_tab_) +
+                              MeasureGetStatsPerformance(right_tab_)) /
+                             2.0;
+    perf_test::PrintResult("getStats", "_promise", "invocation_time",
+                           invocation_time, "milliseconds", false);
 
     EndCall();
   }
@@ -356,16 +335,7 @@ IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
     MANUAL_RunsAudioAndVideoCallMeasuringGetStatsPerformance_Promise) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  RunsAudioAndVideoCallMeasuringGetStatsPerformance(
-      GetStatsVariation::PROMISE_BASED);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebRtcStatsPerfBrowserTest,
-    MANUAL_RunsAudioAndVideoCallMeasuringGetStatsPerformance_Callback) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  RunsAudioAndVideoCallMeasuringGetStatsPerformance(
-      GetStatsVariation::CALLBACK_BASED);
+  RunsAudioAndVideoCallMeasuringGetStatsPerformance();
 }
 
 }  // namespace

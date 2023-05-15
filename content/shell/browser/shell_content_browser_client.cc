@@ -102,7 +102,7 @@
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -254,14 +254,14 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
 // needed should be added here so that it's shared between the instances.
 struct SharedState {
   SharedState() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     location_manager = std::make_unique<device::FakeGeolocationManager>();
     location_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 #endif
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   std::unique_ptr<device::FakeGeolocationManager> location_manager;
 #endif
 
@@ -438,7 +438,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
 }
 
 device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return GetSharedState().location_manager.get();
 #else
   return nullptr;

@@ -156,6 +156,10 @@ class PictureInPictureBrowserFrameView
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
 
+  // Returns the the non-client view area size, i.e. the size of the window
+  // elements where web content is not drawn.
+  gfx::Size GetNonClientViewAreaSize() const;
+
   // Called when mouse entered or exited the pip window.
   void OnMouseEnteredOrExitedWindow(bool entered);
 
@@ -176,8 +180,20 @@ class PictureInPictureBrowserFrameView
   std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
+  views::Label* GetWindowTitleForTesting();
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CloseReason {
+    kOther = 0,
+    kBackToTabButton = 1,
+    kCloseButton = 2,
+    kMaxValue = kCloseButton,
+  };
+
+  CloseReason close_reason_ = CloseReason::kOther;
+
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
 

@@ -7,7 +7,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -43,7 +43,7 @@ public class DirectActionAvailabilityCustomTabTest {
     @Feature({"DirectActions"})
     public void testCoreDirectActionInCustomTabActivity() throws Exception {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank");
+                ApplicationProvider.getApplicationContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         assertThat(

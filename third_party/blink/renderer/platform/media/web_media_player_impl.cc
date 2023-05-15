@@ -1635,11 +1635,11 @@ void WebMediaPlayerImpl::OnCdmAttached(bool success) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(pending_cdm_context_ref_);
 
+  media_log_->SetProperty<MediaLogProperty::kIsCdmAttached>(success);
+
   // If the CDM is set from the constructor there is no promise
   // (`set_cdm_result_`) to fulfill.
   if (success) {
-    media_log_->SetProperty<MediaLogProperty::kIsVideoEncrypted>(true);
-
     // This will release the previously attached CDM (if any).
     cdm_context_ref_ = std::move(pending_cdm_context_ref_);
     if (set_cdm_result_) {
@@ -3358,7 +3358,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
           pipeline_metadata_.has_audio, has_video, false, false,
           GetDemuxerType() == media::DemuxerType::kChunkDemuxer, is_encrypted_,
           embedded_media_experience_enabled_,
-          media::mojom::MediaStreamType::kNone),
+          media::mojom::MediaStreamType::kNone, renderer_type_),
       pipeline_metadata_.natural_size,
       base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                           base::Unretained(this)),

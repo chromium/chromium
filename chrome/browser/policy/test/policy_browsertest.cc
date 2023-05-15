@@ -69,14 +69,11 @@ const int kThreeHoursInMs = 180 * 60 * 1000;
 
 // Checks if WebGL is enabled in the given WebContents.
 bool IsWebGLEnabled(content::WebContents* contents) {
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "var canvas = document.createElement('canvas');"
-      "var context = canvas.getContext('webgl');"
-      "domAutomationController.send(context != null);",
-      &result));
-  return result;
+  return content::EvalJs(contents,
+                         "var canvas = document.createElement('canvas');"
+                         "var context = canvas.getContext('webgl');"
+                         "context != null;")
+      .ExtractBool();
 }
 
 }  // namespace

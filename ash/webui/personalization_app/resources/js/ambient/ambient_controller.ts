@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
@@ -35,6 +35,14 @@ export function setAnimationTheme(
   provider.setAnimationTheme(animationTheme);
 
   store.dispatch(setAnimationThemeAction(animationTheme));
+}
+
+// Set ambient mode screen saver running duration in minutes.
+export function setScreenSaverDuration(
+    minutes: number, provider: AmbientProviderInterface,
+    store: PersonalizationStore): void {
+  provider.setScreenSaverDuration(minutes);
+  store.dispatch(setScreenSaverDurationAction(minutes));
 }
 
 // Set ambient mode topic source.

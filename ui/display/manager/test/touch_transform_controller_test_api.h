@@ -5,6 +5,7 @@
 #ifndef UI_DISPLAY_MANAGER_TEST_TOUCH_TRANSFORM_CONTROLLER_TEST_API_H_
 #define UI_DISPLAY_MANAGER_TEST_TOUCH_TRANSFORM_CONTROLLER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/display/manager/touch_transform_controller.h"
 
 namespace display::test {
@@ -26,7 +27,7 @@ class TouchTransformControllerTestApi {
   }
 
  private:
-  TouchTransformController* controller_ = nullptr;
+  raw_ptr<TouchTransformController, ExperimentalAsh> controller_ = nullptr;
 };
 
 }  // namespace display::test

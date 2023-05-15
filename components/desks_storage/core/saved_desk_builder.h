@@ -192,7 +192,7 @@ class SavedDeskBrowserBuilder {
   std::vector<SavedDeskTabGroupBuilder> tab_group_builders_;
   absl::optional<int> active_tab_index_;
   absl::optional<int> first_non_pinned_tab_index_;
-  absl::optional<std::vector<GURL>> urls_;
+  std::vector<GURL> urls_;
 };
 
 // Builder that constructs arc apps.  Requires a GenericAppBuilder with the

@@ -181,6 +181,14 @@ public class WebApkUmaRecorder {
                 GooglePlayInstallResult.NUM_ENTRIES);
     }
 
+    /** Records the duration of a WebAPK session (from launch/foreground to background). */
+    public static void recordWebApkSessionDuration(
+            @WebApkDistributor int distributor, long duration) {
+        RecordHistogram.recordLongTimesHistogram(
+                "WebApk.Session.TotalDuration3." + getWebApkDistributorUmaSuffix(distributor),
+                duration);
+    }
+
     /** Records the current Shell APK version. */
     public static void recordShellApkVersion(
             int shellApkVersion, @WebApkDistributor int distributor) {
@@ -205,23 +213,9 @@ public class WebApkUmaRecorder {
         RecordHistogram.recordCount1MHistogram("WebApk.Update.NumStaleUpdateRequestFiles", count);
     }
 
-    /** Records whether Chrome could bind to the WebAPK service. */
-    public static void recordBindToWebApkServiceSucceeded(boolean bindSucceeded) {
-        RecordHistogram.recordBooleanHistogram("WebApk.WebApkService.BindSuccess", bindSucceeded);
-    }
-
     /** Records the network error code caught when a WebAPK is launched. */
     public static void recordNetworkErrorWhenLaunch(int errorCode) {
         RecordHistogram.recordSparseHistogram("WebApk.Launch.NetworkError", -errorCode);
-    }
-
-    /**
-     * Records whether a WebAPK navigation is within the WebAPK's scope.
-     * @param isChildTab Whether {@link Tab#getParentId()} is non-empty.
-     * @param isNavigationInScope
-     */
-    public static void recordNavigation(boolean isNavigationInScope) {
-        RecordHistogram.recordBooleanHistogram("WebApk.Navigation.InScope", isNavigationInScope);
     }
 
     /** Records number of unique origins for WebAPKs in WebappRegistry */

@@ -11,7 +11,7 @@
 #import "components/shared_highlighting/ios/parsing_utils.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,7 +53,7 @@ void TextFragmentsJavaScriptFeature::ProcessTextFragments(
     std::string background_color_hex_rgb,
     std::string foreground_color_hex_rgb) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }
@@ -77,7 +77,7 @@ void TextFragmentsJavaScriptFeature::ProcessTextFragments(
 void TextFragmentsJavaScriptFeature::RemoveHighlights(WebState* web_state,
                                                       const GURL& new_url) {
   DCHECK(web_state);
-  auto* frame = web::GetMainFrame(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!frame) {
     return;
   }

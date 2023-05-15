@@ -49,7 +49,7 @@ namespace {
 
 // This templated function avoids compiler warnings about tautological
 // comparisons when log_internal::Tid is unsigned. It can be replaced with a
-// constexpr if once the minimum C++ version Abseil suppports is C++17.
+// constexpr if once the minimum C++ version Abseil supports is C++17.
 template <typename T>
 inline std::enable_if_t<!std::is_signed<T>::value>
 PutLeadingWhitespace(T tid, char*& p) {

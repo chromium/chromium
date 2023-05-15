@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -78,7 +77,7 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
     PhysicalBoxSides sides_to_include) {
   return PixelSnappedRoundedBorderWithOutsets(
       style, border_rect,
-      LayoutRectOutsets(
+      NGPhysicalBoxStrut(
           -style.BorderTopWidth().Floor(), -style.BorderRightWidth().Floor(),
           -style.BorderBottomWidth().Floor(), -style.BorderLeftWidth().Floor()),
       sides_to_include);
@@ -87,13 +86,13 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
 FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
-    const LayoutRectOutsets& outsets,
+    const NGPhysicalBoxStrut& outsets,
     PhysicalBoxSides sides_to_include) {
-  LayoutRectOutsets adjusted_outsets(
-      sides_to_include.top ? outsets.Top() : LayoutUnit(),
-      sides_to_include.right ? outsets.Right() : LayoutUnit(),
-      sides_to_include.bottom ? outsets.Bottom() : LayoutUnit(),
-      sides_to_include.left ? outsets.Left() : LayoutUnit());
+  NGPhysicalBoxStrut adjusted_outsets(
+      sides_to_include.top ? outsets.top : LayoutUnit(),
+      sides_to_include.right ? outsets.right : LayoutUnit(),
+      sides_to_include.bottom ? outsets.bottom : LayoutUnit(),
+      sides_to_include.left ? outsets.left : LayoutUnit());
   PhysicalRect rect_with_outsets = border_rect;
   rect_with_outsets.Expand(adjusted_outsets);
   rect_with_outsets.size.ClampNegativeToZero();

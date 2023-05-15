@@ -652,10 +652,13 @@ class RuleSetCascadeLayerTest : public SimTest {
 
  protected:
   const RuleSet& GetRuleSet() {
-    return To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
-        ->sheet()
-        ->Contents()
-        ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+    RuleSet& rule_set =
+        To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+            ->sheet()
+            ->Contents()
+            ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+    rule_set.CompactRulesIfNeeded();
+    return rule_set;
   }
 
   const CascadeLayer* GetLayerByRule(const RuleData& rule) {

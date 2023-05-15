@@ -270,7 +270,7 @@ class SyncerTest : public testing::Test,
 };
 
 TEST_F(SyncerTest, CommitFiltersThrottledEntries) {
-  const ModelTypeSet throttled_types(BOOKMARKS);
+  const ModelTypeSet throttled_types = {BOOKMARKS};
 
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
@@ -315,7 +315,7 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
 
   // Set BOOKMARKS throttled but PREFERENCES not,
   // then BOOKMARKS should not get synced but PREFERENCES should.
-  ModelTypeSet throttled_types(BOOKMARKS);
+  ModelTypeSet throttled_types = {BOOKMARKS};
   mock_server_->set_throttling(true);
   mock_server_->SetPartialFailureTypes(throttled_types);
 
@@ -370,7 +370,7 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
 
   // Set BOOKMARKS failure but PREFERENCES not,
   // then BOOKMARKS should not get synced but PREFERENCES should.
-  ModelTypeSet failed_types(BOOKMARKS);
+  ModelTypeSet failed_types = {BOOKMARKS};
   mock_server_->set_partial_failure(true);
   mock_server_->SetPartialFailureTypes(failed_types);
 
@@ -1131,7 +1131,7 @@ TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
 TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
   // Simulate type being unregistered before configuration by including type
   // that isn't registered with ModelTypeRegistry.
-  SyncShareConfigureTypes(ModelTypeSet(APPS));
+  SyncShareConfigureTypes({APPS});
 
   // No explicit verification, DCHECK shouldn't have been triggered.
 }
@@ -1143,8 +1143,7 @@ TEST_F(SyncerTest, GetKeySuccess) {
 
   SyncShareConfigure();
 
-  EXPECT_EQ(SyncerError::SYNCER_OK,
-            cycle_->status_controller().last_get_key_result().value());
+  EXPECT_FALSE(cycle_->status_controller().last_get_key_failed());
   EXPECT_FALSE(keystore_keys_handler->NeedKeystoreKey());
 }
 
@@ -1156,8 +1155,7 @@ TEST_F(SyncerTest, GetKeyEmpty) {
   mock_server_->SetKeystoreKey(std::string());
   SyncShareConfigure();
 
-  EXPECT_NE(SyncerError::SYNCER_OK,
-            cycle_->status_controller().last_get_key_result().value());
+  EXPECT_TRUE(cycle_->status_controller().last_get_key_failed());
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 }
 
@@ -1166,7 +1164,7 @@ TEST_F(SyncerTest, GetKeyEmpty) {
 // are correctly removed before commit.
 TEST_F(SyncerTest, CommitOnlyTypes) {
   mock_server_->set_partial_failure(true);
-  mock_server_->SetPartialFailureTypes(ModelTypeSet(PREFERENCES));
+  mock_server_->SetPartialFailureTypes({PREFERENCES});
 
   EnableDatatype(USER_EVENTS);
 

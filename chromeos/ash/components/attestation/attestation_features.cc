@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
@@ -75,7 +76,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   bool is_rsa_supported_ = false;
   bool is_ecc_supported_ = false;
 
-  AttestationClient* attestation_client_;
+  raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
+      attestation_client_;
   base::WeakPtrFactory<AttestationFeaturesImpl> weak_factory_{this};
 };
 

@@ -92,6 +92,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void Cancel() override;
   void Cleanup() override;
   void DisableUI() override;
+  void DisableTLSCheck() override;
   RenderFrameHost* GetRenderFrameHost() const override;
   void EnableRequestProxyExtensionsAPISupport() override;
 
@@ -226,14 +227,19 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   bool has_pending_request_ = false;
   std::unique_ptr<device::FidoRequestHandlerBase> request_handler_;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory_;
-  raw_ptr<device::FidoDiscoveryFactory> discovery_factory_testing_override_ =
-      nullptr;
+  // This dangling raw_ptr occurred in:
+  // interactive_ui_tests:
+  // WebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials
+  // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1357012/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Ainteractive_ui_tests%2FWebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials+VHash%3A81d118f1ad0b63a6
+  raw_ptr<device::FidoDiscoveryFactory, FlakyDanglingUntriaged>
+      discovery_factory_testing_override_ = nullptr;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;
   blink::mojom::Authenticator::GetAssertionCallback
       get_assertion_response_callback_;
   std::string client_data_json_;
   bool disable_ui_ = false;
+  bool disable_tls_check_ = false;
   url::Origin caller_origin_;
   std::string relying_party_id_;
   scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;

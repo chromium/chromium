@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 (async function() {
   TestRunner.addResult('Tests accessibility of ServiceWorkersView on application panel.');
-  await TestRunner.loadTestModule('axe_core_test_runner');
-  await TestRunner.loadTestModule('application_test_runner');
   await ApplicationTestRunner.resetState();
 
   await TestRunner.showPanel('resources');
@@ -16,8 +18,8 @@
   Resources.ServiceWorkersView.setThrottleDisabledForDebugging = true;
 
   UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
-  ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
-  ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
+  await ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
+  await ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
   const element = UI.panels.resources.visibleView.contentElement;
 
   await AxeCoreTestRunner.runValidation(element);

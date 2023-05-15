@@ -68,19 +68,16 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenUrlOptions;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowUpdate;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
-import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
@@ -144,9 +141,7 @@ public class FeedStreamTest {
     @Mock
     private RecyclerView.Adapter mAdapter;
     @Mock
-    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
-    @Mock
-    private FeedUserInteractionReliabilityLogger mUserInteractionReliabilityLogger;
+    private FeedReliabilityLogger mReliabilityLogger;
     @Mock
     private FeedActionDelegate mActionDelegate;
     @Mock
@@ -195,8 +190,6 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
-        when(mSurfaceScope.getFeedUserInteractionReliabilityLogger())
-                .thenReturn(mUserInteractionReliabilityLogger);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
@@ -305,7 +298,7 @@ public class FeedStreamTest {
 
         // Bind again with correct headercount.
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, 2);
+                mReliabilityLogger, 2);
 
         // Add different feed content.
         update = FeedUiProto.StreamUpdate.newBuilder()
@@ -328,7 +321,7 @@ public class FeedStreamTest {
         verify(mFeedStreamJniMock).surfaceOpened(anyLong(), any(FeedStream.class));
         // Set handlers in contentmanager.
         assertEquals(2, mContentManager.getContextValues(0).size());
-        verify(mLaunchReliabilityLogger, times(1)).logFeedReloading(anyLong());
+        verify(mReliabilityLogger).onBindStream(anyInt(), anyInt());
     }
 
     @Test
@@ -338,6 +331,7 @@ public class FeedStreamTest {
         verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
         // Unset handlers in contentmanager.
         assertEquals(0, mContentManager.getContextValues(0).size());
+        verify(mReliabilityLogger).onUnbindStream();
     }
 
     @Test
@@ -542,56 +536,48 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrl() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.SAME_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
-        verify(mLaunchReliabilityLogger)
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+        verify(mReliabilityLogger).onOpenCard();
     }
 
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrlNewTab() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
 
-        // Don't log "launch finished" if the card was opened in a new tab in the background.
-        verify(mLaunchReliabilityLogger, never())
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+        // Don't report card opened if the card was opened in a new tab in the background.
+        verify(mReliabilityLogger, never()).onOpenCard();
     }
 
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenUrlNewTab() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
-        // Don't log "launch finished" if the card was opened in a new tab in the background.
-        verify(mLaunchReliabilityLogger, never())
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+        // Don't report card opened if the card was opened in a new tab in the background.
+        verify(mReliabilityLogger, never()).onOpenCard();
     }
 
     @Test
     @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrlIncognito() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
-        verify(mLaunchReliabilityLogger)
-                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+        verify(mReliabilityLogger).onOpenCard();
     }
 
     @Test
@@ -1179,14 +1165,6 @@ public class FeedStreamTest {
         assertTrue(stream.supportsOptions());
     }
 
-    @Test
-    @SmallTest
-    public void testReportStreamOpened() {
-        bindToView();
-        verify(mUserInteractionReliabilityLogger).onStreamOpened(anyInt());
-        mFeedStream.unbind(false);
-    }
-
     private int getLoadMoreTriggerScrollDistance() {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
@@ -1239,7 +1217,7 @@ public class FeedStreamTest {
 
     void bindToView() {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, mContentManager.getItemCount());
+                mReliabilityLogger, mContentManager.getItemCount());
     }
 
     class StubSnackbarController implements FeedActionsHandler.SnackbarController {

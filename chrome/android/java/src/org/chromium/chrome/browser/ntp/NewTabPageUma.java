@@ -4,18 +4,10 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.content.Intent;
-import android.os.SystemClock;
-import android.view.View;
-import android.view.ViewTreeObserver;
-
 import androidx.annotation.IntDef;
 
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,7 +19,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
@@ -160,24 +151,14 @@ public class NewTabPageUma {
     }
 
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<Long> mLastInteractionTime;
-    private final boolean mActivityHadWarmStart;
-    private final Supplier<Intent> mActivityIntent;
     private TabCreationRecorder mTabCreationRecorder;
 
     /**
      * Constructor.
      * @param tabModelSelector Tab model selector to observe tab creation event.
-     * @param lastInteractionTime The time user interacted with UI lastly.
-     * @param activityHadWarmStart {@code true} if the activity did a warm start.
-     * @param intent Supplier of the activity intent.
      */
-    public NewTabPageUma(TabModelSelector tabModelSelector, Supplier<Long> lastInteractionTime,
-            boolean activityHadWarmStart, Supplier<Intent> intent) {
+    public NewTabPageUma(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
-        mLastInteractionTime = lastInteractionTime;
-        mActivityHadWarmStart = activityHadWarmStart;
-        mActivityIntent = intent;
     }
 
     /**
@@ -235,34 +216,6 @@ public class NewTabPageUma {
     }
 
     /**
-     * Records the network status of the user.
-     */
-    public void recordIsUserOnline() {
-        RecordHistogram.recordBooleanHistogram(
-                "NewTabPage.MobileIsUserOnline", NetworkChangeNotifier.isOnline());
-    }
-
-    /**
-     * Records how much time elapsed from start until the search box became available to the user.
-     */
-    public void recordSearchAvailableLoadTime() {
-        // Log the time it took for the search box to be displayed at startup, based on the
-        // timestamp on the intent for the activity. If the user has interacted with the
-        // activity already, it's not a startup, and the timestamp on the activity would not be
-        // relevant either.
-        if (mLastInteractionTime.get() != 0) return;
-        long timeFromIntent = SystemClock.elapsedRealtime()
-                - IntentHandler.getTimestampFromIntent(mActivityIntent.get());
-        if (mActivityHadWarmStart) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "NewTabPage.SearchAvailableLoadTime2.WarmStart", timeFromIntent);
-        } else {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "NewTabPage.SearchAvailableLoadTime2.ColdStart", timeFromIntent);
-        }
-    }
-
-    /**
      * Records number of prefetched article suggestions, which were available when content
      * suggestions surface was opened and there was no network connection.
      */
@@ -303,30 +256,6 @@ public class NewTabPageUma {
             if (!UrlUtilities.isNTPUrl(tab.getUrl())) return;
             RecordUserAction.record("MobileNTPOpenedInNewTab");
         }
-    }
-
-    /**
-     * Setups up an onPreDraw listener for the given view to emit a metric exactly once. The view
-     * should be guaranteed to be shown on the page/screen on every load, otherwise the metric
-     * may not be emitted, or worse not emitted promptly.
-     * @param view The UI element to track.
-     * @param constructedTimeNs The timestamp at which the new tab page's construction started.
-     */
-    public void trackTimeToFirstDraw(View view, long constructedTimeNs) {
-        // Use preDraw instead of draw because api level 25 and earlier doesn't seem to call the
-        // onDraw listener. Also, the onDraw version cannot be removed inside of the
-        // notification, which complicates this.
-        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                long timeToFirstDrawMs = (System.nanoTime() - constructedTimeNs)
-                        / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-                RecordHistogram.recordTimesHistogram(
-                        "NewTabPage.TimeToFirstDraw2", timeToFirstDrawMs);
-                view.getViewTreeObserver().removeOnPreDrawListener(this);
-                return true;
-            }
-        });
     }
 
     /** Destroy and unhook objects at destruction. */

@@ -4,12 +4,19 @@
 
 #include <memory>
 
+#include "base/debug/debugging_buildflags.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/crash_handler/crash_handler.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+#include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"
+#include "components/allocation_recorder/crash_handler/user_stream_data_source.h"
 #endif
 
 extern "C" {
@@ -21,6 +28,14 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());
+#endif
+
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+  user_stream_data_sources.push_back(
+      std::make_unique<allocation_recorder::crash_handler::
+                           AllocationRecorderStreamDataSource>(
+          base::MakeRefCounted<
+              allocation_recorder::crash_handler::StreamDataSourceFactory>()));
 #endif
 
   return crashpad::HandlerMain(argc, argv, &user_stream_data_sources);

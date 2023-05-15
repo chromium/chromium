@@ -90,6 +90,9 @@ class TestWallpaperController : public ash::WallpaperController {
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
+  ash::WallpaperDragDropDelegate* GetDragDropDelegate() override;
+  void SetDragDropDelegate(
+      std::unique_ptr<ash::WallpaperDragDropDelegate> delegate) override;
   void SetDriveFsDelegate(
       std::unique_ptr<ash::WallpaperDriveFsDelegate> drivefs_delegate) override;
   void Init(const base::FilePath& user_data,
@@ -111,6 +114,7 @@ class TestWallpaperController : public ash::WallpaperController {
                                  const gfx::ImageSkia& image) override;
   void SetOnlineWallpaper(const ash::OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
+  void ShowOobeWallpaper() override;
   void SetGooglePhotosWallpaper(const ash::GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,
@@ -165,7 +169,7 @@ class TestWallpaperController : public ash::WallpaperController {
   void AddObserver(ash::WallpaperControllerObserver* observer) override;
   void RemoveObserver(ash::WallpaperControllerObserver* observer) override;
   gfx::ImageSkia GetWallpaperImage() override;
-  scoped_refptr<base::RefCountedMemory> GetPreviewImage() override;
+  void LoadPreviewImage(LoadPreviewImageCallback callback) override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
   bool IsWallpaperControlledByPolicy(
@@ -187,6 +191,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int set_default_wallpaper_count_ = 0;
   int set_custom_wallpaper_count_ = 0;
   int set_online_wallpaper_count_ = 0;
+  int set_oobe_wallpaper_count_ = 0;
   int set_google_photos_wallpaper_count_ = 0;
   std::map</*always_on_top=*/bool, int> show_override_wallpaper_count_;
   int remove_override_wallpaper_count_ = 0;

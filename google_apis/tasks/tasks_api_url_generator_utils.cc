@@ -23,16 +23,17 @@ constexpr char kPageTokenParameterName[] = "pageToken";
 constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
-constexpr char kTaskListsListRequestedFields[] = "kind,items(id,title,updated)";
+constexpr char kTaskListsListRequestedFields[] =
+    "kind,items(id,title,updated),nextPageToken";
 
 constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
-    "kind,items(id,title,status,parent)";
+    "kind,items(id,title,status,parent,due,links(type)),nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
 
 GURL GetBaseUrl() {
-  return GaiaUrls::GetInstance()->google_apis_origin_url();
+  return GaiaUrls::GetInstance()->tasks_api_origin_url();
 }
 
 }  // namespace

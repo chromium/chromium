@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_HATS_UNLOCK_SURVEY_TRIGGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 
@@ -63,7 +64,7 @@ class HatsUnlockSurveyTrigger {
   Profile* GetProfile(const AccountId& account_id);
 
   std::unique_ptr<Impl> impl_;
-  Profile* profile_for_testing_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_for_testing_ = nullptr;
 };
 
 }  // namespace ash

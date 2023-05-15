@@ -32,7 +32,7 @@ IconDecoderImpl::DecoderDelegate::~DecoderDelegate() = default;
 void IconDecoderImpl::DecoderDelegate::Decode(
     const DecodingData& request,
     data_decoder::DecodeImageCallback callback) {
-  const std::string& encoded_icon = request.input_data;
+  const std::string& encoded_icon = *request.input_data;
   data_decoder::DecodeImage(
       &data_decoder_, base::as_bytes(base::make_span(encoded_icon)),
       data_decoder::mojom::ImageCodec::kDefault,

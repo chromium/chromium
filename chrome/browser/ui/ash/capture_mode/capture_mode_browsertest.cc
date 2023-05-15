@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -794,14 +795,17 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
                        AudioCaptureDisabledByPolicy) {
   ash::CaptureModeTestApi test_api;
-  test_api.SetAudioRecordingEnabled(true);
-  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
+  test_api.SetAudioRecordingMode(ash::AudioRecordingMode::kMicrophone);
+  EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
+            test_api.GetEffectiveAudioRecordingMode());
 
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kAudioCaptureAllowed, false);
-  EXPECT_FALSE(test_api.GetAudioRecordingEnabled());
+  EXPECT_EQ(ash::AudioRecordingMode::kOff,
+            test_api.GetEffectiveAudioRecordingMode());
   prefs->SetBoolean(prefs::kAudioCaptureAllowed, true);
-  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
+  EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
+            test_api.GetEffectiveAudioRecordingMode());
 }
 
 // This test fixture tests the chromeos-linux path of camera video frames coming
@@ -881,7 +885,8 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
   void StartProjectorModeSession() {
     auto* projector_session = ash::ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
-    ash::ProjectorController::Get()->StartProjectorSession("projector_data");
+    ash::ProjectorController::Get()->StartProjectorSession(
+        base::SafeBaseName::Create("projector_data").value());
     EXPECT_TRUE(projector_session->is_active());
     EXPECT_TRUE(ash::CaptureModeTestApi().IsSessionActive());
   }

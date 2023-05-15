@@ -6,12 +6,14 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync/base/storage_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -248,8 +250,8 @@ class DualReadingListModelTest : public testing::Test {
       local_or_syncable_model_storage_ptr_;
   base::WeakPtr<FakeReadingListModelStorage> account_model_storage_ptr_;
   // Owned by `dual_model_` and guaranteed to exist while `dual_model_` exists.
-  base::raw_ptr<ReadingListModelImpl> local_or_syncable_model_ptr_;
-  base::raw_ptr<ReadingListModelImpl> account_model_ptr_;
+  raw_ptr<ReadingListModelImpl> local_or_syncable_model_ptr_;
+  raw_ptr<ReadingListModelImpl> account_model_ptr_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_model_;
 };
 
@@ -655,18 +657,26 @@ TEST_F(DualReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
 }
 
 TEST_F(DualReadingListModelTest, NeedsExplicitUploadToSyncServerWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kReadingListEnableSyncTransportModeUponSignIn);
+
   ASSERT_TRUE(ResetStorageAndMimicSignedOut(/*initial_local_entries_builders=*/{
       TestEntryBuilder(kUrl, clock_.Now())}));
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 
-  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kUrl));
+  EXPECT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kUrl));
   EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
       GURL("http://non_existing_url.com/")));
 }
 
 TEST_F(DualReadingListModelTest,
        NeedsExplicitUploadToSyncServerWhenSignedInSyncDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kReadingListEnableSyncTransportModeUponSignIn);
+
   const GURL kLocalURL("http://local_url.com/");
   const GURL kAccountURL("http://account_url.com/");
   const GURL kCommonURL("http://common_url.com/");
@@ -694,6 +704,10 @@ TEST_F(DualReadingListModelTest,
 
 TEST_F(DualReadingListModelTest,
        NeedsExplicitUploadToSyncServerWhenSyncEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kReadingListEnableSyncTransportModeUponSignIn);
+
   ASSERT_TRUE(
       ResetStorageAndMimicSyncEnabled(/*initial_syncable_entries_builders=*/{
           TestEntryBuilder(kUrl, clock_.Now())}));
@@ -703,6 +717,49 @@ TEST_F(DualReadingListModelTest,
   EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kUrl));
   EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
       GURL("http://non_existing_url.com/")));
+}
+
+TEST_F(DualReadingListModelTest, MarkAllForUploadToSyncServerIfNeeded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kReadingListEnableSyncTransportModeUponSignIn);
+
+  const GURL kLocalURL("http://local_url.com/");
+  const GURL kAccountURL("http://account_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalURL,
+                                                           clock_.Now())
+                                              .SetTitle("local_entry_title")},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountURL, clock_.Now())
+              .SetTitle("account_entry_title")}));
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  ASSERT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalURL));
+  ASSERT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kAccountURL));
+
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillAddEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->MarkAllForUploadToSyncServerIfNeeded();
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kLocalURL),
+              MatchesEntry(kLocalURL, "local_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kAccountURL),
+              MatchesEntry(kAccountURL, "account_entry_title"));
+
+  // Although the entry was originally local only, it has been effectively moved
+  // when the entry got uploaded.
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
 }
 
 TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
@@ -1104,8 +1161,9 @@ TEST_F(DualReadingListModelTest, AddLocalEntryFromSync) {
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
-  local_or_syncable_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now()).Build());
+  local_or_syncable_model_ptr_->AddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build(),
+      reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -1127,8 +1185,8 @@ TEST_F(DualReadingListModelTest, AddAccountEntryFromSync) {
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
-  account_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now()).Build());
+  account_model_ptr_->AddEntry(TestEntryBuilder(kUrl, clock_.Now()).Build(),
+                               reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -1150,8 +1208,8 @@ TEST_F(DualReadingListModelTest, AddLocalExistingEntryFromSync) {
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
-  account_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now()).Build());
+  account_model_ptr_->AddEntry(TestEntryBuilder(kUrl, clock_.Now()).Build(),
+                               reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -2874,8 +2932,9 @@ TEST_F(DualReadingListModelTest,
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
-  local_or_syncable_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now()).Build());
+  local_or_syncable_model_ptr_->AddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build(),
+      reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2903,8 +2962,8 @@ TEST_F(DualReadingListModelTest,
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
-  account_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now()).Build());
+  account_model_ptr_->AddEntry(TestEntryBuilder(kUrl, clock_.Now()).Build(),
+                               reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2934,8 +2993,9 @@ TEST_F(DualReadingListModelTest,
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
-  account_model_ptr_->SyncAddEntry(
-      TestEntryBuilder(kUrl, clock_.Now() + base::Seconds(1)).Build());
+  account_model_ptr_->AddEntry(
+      TestEntryBuilder(kUrl, clock_.Now() + base::Seconds(1)).Build(),
+      reading_list::ADDED_VIA_SYNC);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));

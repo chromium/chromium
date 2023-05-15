@@ -213,22 +213,19 @@ struct PaintPropertyTreeBuilderContext final {
   // True if a change has forced all properties in a subtree to be updated. This
   // can be set due to paint offset changes or when the structure of the
   // property tree changes (i.e., a node is added or removed).
-  unsigned force_subtree_update_reasons : 2 = 0u;
+  unsigned force_subtree_update_reasons : 2;
 
   // True if the current subtree is underneath a LayoutSVGHiddenContainer
   // ancestor.
-  unsigned has_svg_hidden_container_ancestor : 1 = false;
+  unsigned has_svg_hidden_container_ancestor : 1;
 
   // Whether this object was a layout shift root during the previous render
   // (not this one).
-  unsigned was_layout_shift_root : 1 = false;
-
-  unsigned was_main_thread_scrolling : 1 = false;
-  unsigned scroll_unification_enabled : 1 = false;
+  unsigned was_layout_shift_root : 1;
 
   // Main thread scrolling reasons that apply to all scrollers in the current
   // LocalFrameView subtree.
-  unsigned global_main_thread_scrolling_reasons : 5 = 0;
+  unsigned global_main_thread_scrolling_reasons : 5;
   static constexpr MainThreadScrollingReasons
       kGlobalMainThreadScrollingReasons =
           cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects |
@@ -258,7 +255,7 @@ struct NGPrePaintInfo {
   STACK_ALLOCATED();
 
  public:
-  NGPrePaintInfo(const NGPhysicalBoxFragment& box_fragment,
+  NGPrePaintInfo(const NGPhysicalBoxFragment* box_fragment,
                  PhysicalOffset paint_offset,
                  wtf_size_t fragmentainer_idx,
                  bool is_first_for_node,
@@ -276,7 +273,8 @@ struct NGPrePaintInfo {
 
   // The fragment for the LayoutObject currently being processed, or, in the
   // case of text and non-atomic inlines: the fragment of the containing block.
-  const NGPhysicalBoxFragment& box_fragment;
+  // Is nullptr if we're rebuilding the property tree for a missed descendant.
+  const NGPhysicalBoxFragment* box_fragment;
 
   FragmentData* fragment_data = nullptr;
   PhysicalOffset paint_offset;

@@ -1,11 +1,16 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_UI_FOR_TEST_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_UI_FOR_TEST_H_
 
 #include <string>
 #include "base/functional/callback.h"
+
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 class Browser;
 class MediaToolbarButtonView;
@@ -57,6 +62,8 @@ class MediaDialogUiForTest {
   void WaitForPictureInPictureButtonVisibility(bool visible);
 
  private:
+  global_media_controls::MediaItemManager* GetItemManager() const;
+
   base::RepeatingCallback<Browser*()> browser_callback_;
 };
 

@@ -107,6 +107,8 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE},
       {"kerberosConfigErrorTooManyNestedGroups",
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS},
+      {"kerberosConfigErrorLineTooLong",
+       IDS_SETTINGS_KERBEROS_CONFIG_ERROR_LINE_TOO_LONG},
       {"addKerberosAccountRefreshButtonLabel",
        IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL},
       {"addKerberosAccount", IDS_SETTINGS_ADD_KERBEROS_ACCOUNT},
@@ -298,10 +300,6 @@ void KerberosAccountsHandler::HandleAddKerberosAccount(
     const base::Value::List& args) {
   AllowJavascript();
 
-  // TODO(https://crbug.com/961246):
-  //   - Prevent account changes when Kerberos is disabled.
-  //   - Remove all accounts when Kerberos is disabled.
-
   CHECK_EQ(6U, args.size());
   const std::string& callback_id = args[0].GetString();
   const std::string& principal_name = args[1].GetString();
@@ -400,7 +398,7 @@ void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
 }
 
 void KerberosAccountsHandler::OnJavascriptAllowed() {
-  credentials_manager_observation_.Observe(kerberos_credentials_manager_);
+  credentials_manager_observation_.Observe(kerberos_credentials_manager_.get());
 }
 
 void KerberosAccountsHandler::OnJavascriptDisallowed() {

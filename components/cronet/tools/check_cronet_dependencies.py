@@ -94,15 +94,7 @@ def main():
       type=str,
       help='Path to touch on success',
   )
-  parser.add_argument('--is_cronet_build',
-                      action='store_true',
-                      help='Whether this is an official Cronet build or not')
-  parser.set_defaults(is_cronet_build=False)
   args = parser.parse_args()
-
-  if not args.is_cronet_build:
-    build_utils.Touch(args.stamp)
-    return
 
   new_dependencies = subprocess.check_output(
       [args.new_dependencies_script, args.old_dependencies]).decode('utf-8')

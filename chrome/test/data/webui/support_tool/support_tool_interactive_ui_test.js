@@ -22,7 +22,11 @@ const SupportToolInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get featureList() {
     return {
-      enabled: ['features::kSupportTool', 'features::kSupportToolScreenshot'],
+      enabled: [
+        'features::kSupportTool',
+        'features::kSupportToolScreenshot',
+        'features::kSupportToolCopyTokenButton',
+      ],
     };
   }
 };

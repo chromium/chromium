@@ -18,7 +18,6 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,9 +50,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -99,28 +96,6 @@ public class OptionalNewTabButtonControllerActivityTest {
         }
     }
 
-    // TODO(crbug.com/1199025): Remove this shadow.
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        private static final Map<String, String> sParamValues = new HashMap<>();
-
-        @Implementation
-        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
-            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
-            return sParamValues.getOrDefault(paramKey, "");
-        }
-
-        @Implementation
-        public static boolean isEnabled(String featureName) {
-            return featureName.equals(
-                    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
-        }
-
-        public static void reset() {
-            sParamValues.clear();
-        }
-    }
-
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private AdaptiveToolbarButtonController mAdaptiveButtonController;
     private MockTab mTab;
@@ -163,7 +138,6 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     private static void resetStaticState() {
         ShadowDelegate.reset();
-        ShadowChromeFeatureList.reset();
         // DisplayAndroidManager will reuse the Display between tests. This can cause
         // AsyncInitializationActivity#applyOverrides to set incorrect smallestWidth.
         DisplayAndroidManager.resetInstanceForTesting();

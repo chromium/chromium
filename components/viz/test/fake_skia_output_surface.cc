@@ -30,6 +30,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -68,8 +69,8 @@ void FakeSkiaOutputSurface::Reshape(const ReshapeParams& params) {
   SkImageInfo image_info = SkImageInfo::Make(
       params.size.width(), params.size.height(), color_type,
       kPremul_SkAlphaType, params.color_space.ToSkColorSpace());
-  sk_surface = SkSurface::MakeRenderTarget(gr_context(), skgpu::Budgeted::kNo,
-                                           image_info);
+  sk_surface =
+      SkSurfaces::RenderTarget(gr_context(), skgpu::Budgeted::kNo, image_info);
 
   DCHECK(sk_surface);
 }
@@ -189,8 +190,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     SkImageInfo image_info = SkImageInfo::Make(
         surface_size.width(), surface_size.height(), color_type,
         kPremul_SkAlphaType, std::move(color_space));
-    sk_surface = SkSurface::MakeRenderTarget(gr_context(), skgpu::Budgeted::kNo,
-                                             image_info);
+    sk_surface = SkSurfaces::RenderTarget(gr_context(), skgpu::Budgeted::kNo,
+                                          image_info);
   }
   return sk_surface->getCanvas();
 }
@@ -283,7 +284,7 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::Mailbox local_mailbox = sii->CreateSharedImage(
         SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
+        gpu::SHARED_IMAGE_USAGE_GLES2, "CopyOutput", gpu::kNullSurfaceHandle);
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
     release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
@@ -404,6 +405,7 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
+    base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   return gpu::Mailbox::GenerateForSharedImage();
 }

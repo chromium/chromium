@@ -12,6 +12,7 @@
 #include "ash/assistant/model/assistant_notification_model.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom.h"
@@ -79,7 +80,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   AssistantNotificationExpiryMonitor expiry_monitor_;
 
   // Owned by AssistantService
-  assistant::Assistant* assistant_ = nullptr;
+  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
 
   const message_center::NotifierId notifier_id_;
 

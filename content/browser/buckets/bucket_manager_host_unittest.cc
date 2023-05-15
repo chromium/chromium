@@ -164,12 +164,14 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_GT(result->id.value(), 0u);
 }
 
 TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
   const std::vector<std::pair</*is_valid=*/bool, std::string>> names = {
+      // The default name should not be a valid user-provided bucket name.
+      {false, storage::kDefaultBucketName},
       {false, ""},
       {false, " "},
       {false, "2021/01/01"},
@@ -239,7 +241,7 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), storage::QuotaError::kNotFound);
 }
 

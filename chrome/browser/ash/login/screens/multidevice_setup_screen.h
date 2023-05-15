@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
@@ -135,8 +136,10 @@ class MultiDeviceSetupScreen : public BaseScreen {
   static void RecordMultiDeviceSetupOOBEUserChoiceHistogram(
       MultiDeviceSetupOOBEUserChoice value);
 
-  multidevice_setup::MultiDeviceSetupClient* setup_client_ = nullptr;
-  device_sync::DeviceSyncClient* device_sync_client_ = nullptr;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      setup_client_ = nullptr;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_ =
+      nullptr;
   bool skipped_ = false;
   bool skipped_reason_determined_ = false;
 

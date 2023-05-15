@@ -118,9 +118,7 @@ try_.orchestrator_builder(
         "ci/Mac12 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
-        # TODO(crbug.com/1380184) Once the GPU test capacity situation is
-        # resolved, restore this mirror.
-        # "ci/Mac Retina Release (AMD)",
+        "ci/Mac Retina Release (AMD)",
     ],
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
@@ -133,7 +131,7 @@ try_.orchestrator_builder(
     experiments = {
         "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -329,28 +327,28 @@ try_.builder(
 
 try_.builder(
     name = "mac_upload_clang",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
     name = "mac_upload_clang_arm",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
     name = "mac_upload_rust",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
     name = "mac_upload_rust_arm",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     execution_timeout = 8 * time.hour,
 )
@@ -431,7 +429,7 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     experiments = {
         # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -521,12 +519,14 @@ ios_builder(
 ios_builder(
     name = "ios15-beta-simulator",
     mirrors = ["ci/ios15-beta-simulator"],
+    os = os.MAC_13,
 )
 
 ios_builder(
     name = "ios15-sdk-simulator",
     mirrors = ["ci/ios15-sdk-simulator"],
     os = os.MAC_13,
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
@@ -534,7 +534,7 @@ ios_builder(
     mirrors = [
         "ci/ios16-beta-simulator",
     ],
-    os = os.MAC_DEFAULT,
+    os = os.MAC_13,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -602,4 +602,9 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "ui/gl/.+"),
         ],
     ),
+)
+
+try_.builder(
+    name = "mac-cr23-rel",
+    mirrors = ["ci/mac-cr23-rel"],
 )

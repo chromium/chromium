@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/autoclick/autoclick_ring_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -129,7 +130,7 @@ class AutoclickRingHandler::AutoclickRingView : public views::View {
     canvas->Restore();
   }
 
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
   int radius_;
   int current_angle_ = kAutoclickRingAngleStartValue;
 };
@@ -197,7 +198,7 @@ void AutoclickRingHandler::StopAutoclickRing() {
   current_animation_type_ = AnimationType::NONE;
   Stop();
   if (view_) {
-    ring_widget_->GetRootView()->RemoveChildViewT(view_);
+    ring_widget_->GetRootView()->RemoveChildViewT(view_.get());
     view_ = nullptr;
   }
 }
@@ -223,7 +224,7 @@ void AutoclickRingHandler::AnimationStopped() {
     case AnimationType::NONE:
       // Fall through to reset the view.
       if (view_) {
-        ring_widget_->GetRootView()->RemoveChildViewT(view_);
+        ring_widget_->GetRootView()->RemoveChildViewT(view_.get());
         view_ = nullptr;
       }
       break;

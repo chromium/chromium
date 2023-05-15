@@ -50,10 +50,11 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // TODO(crbug/1199857): Tune these limits.
   constexpr int kMB = 1024 * 1024;
 #if BUILDFLAG(IS_ANDROID)
-  SkGraphics::SetFontCacheLimit(base::SysInfo::IsLowEndDevice() ? kMB
-                                                                : 8 * kMB);
-  SkGraphics::SetResourceCacheTotalByteLimit(
-      base::SysInfo::IsLowEndDevice() ? 32 * kMB : 64 * kMB);
+  bool is_low_end_mode =
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+  SkGraphics::SetFontCacheLimit(is_low_end_mode ? kMB : 8 * kMB);
+  SkGraphics::SetResourceCacheTotalByteLimit(is_low_end_mode ? 32 * kMB
+                                                             : 64 * kMB);
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(16 * kMB);
 #else
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * kMB);
@@ -69,8 +70,8 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   mojo::PendingRemote<font_service::mojom::FontService> font_service;
   content::UtilityThread::Get()->BindHostReceiver(
       font_service.InitWithNewPipeAndPassReceiver());
-  font_loader_ = sk_make_sp<font_service::FontLoader>(std::move(font_service));
-  SkFontConfigInterface::SetGlobal(font_loader_);
+  SkFontConfigInterface::SetGlobal(
+      sk_make_sp<font_service::FontLoader>(std::move(font_service)));
 #endif
   // TODO(crbug/1023377): Determine if EnsureBlinkInitialized*() does any other
   // initialization we require. Possibly for other platforms (e.g. MacOS,

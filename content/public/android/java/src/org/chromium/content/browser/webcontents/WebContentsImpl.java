@@ -419,6 +419,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public boolean isFocusedElementEditable() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().isFocusedElementEditable(mNativeWebContentsAndroid);
+    }
+
+    @Override
     public RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id) {
         checkNotDestroyed();
         return WebContentsImplJni.get().getRenderFrameHostFromId(
@@ -483,6 +489,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public @Visibility int getVisibility() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getVisibility(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public void updateWebContentsVisibility(@Visibility int visibility) {
+        checkNotDestroyed();
+        WebContentsImplJni.get().updateWebContentsVisibility(mNativeWebContentsAndroid, visibility);
     }
 
     @Override
@@ -1167,6 +1179,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void setTopLevelNativeWindow(long nativeWebContentsAndroid, WindowAndroid windowAndroid);
         RenderFrameHost getMainFrame(long nativeWebContentsAndroid);
         RenderFrameHost getFocusedFrame(long nativeWebContentsAndroid);
+        boolean isFocusedElementEditable(long nativeWebContentsAndroid);
         RenderFrameHost getRenderFrameHostFromId(
                 long nativeWebContentsAndroid, int renderProcessId, int renderFrameId);
         RenderFrameHost[] getAllRenderFrameHosts(long nativeWebContentsAndroid);
@@ -1174,6 +1187,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         WebContentsImpl[] getInnerWebContents(long nativeWebContentsAndroid);
         @Visibility
         int getVisibility(long nativeWebContentsAndroid);
+        void updateWebContentsVisibility(long nativeWebContentsAndroid, int visibility);
         String getTitle(long nativeWebContentsAndroid);
         GURL getVisibleURL(long nativeWebContentsAndroid);
         int getVirtualKeyboardMode(long nativeWebContentsAndroid);

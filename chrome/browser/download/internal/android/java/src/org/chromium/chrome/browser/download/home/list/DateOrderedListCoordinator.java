@@ -148,7 +148,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      */
     private void initializeView(Context context) {
         mMainView = new FrameLayout(context);
-        FrameLayout.LayoutParams emptyViewParams = new FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams emptyViewParams;
+        emptyViewParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         emptyViewParams.gravity = Gravity.CENTER;
         mMainView.addView(mEmptyCoordinator.getView(), emptyViewParams);

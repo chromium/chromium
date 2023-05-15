@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -163,9 +162,9 @@ class CORE_EXPORT NGInlineCursorPosition {
 
   // Returns start/end of offset in text content of current text fragment.
   // It is error when this cursor doesn't point to text fragment.
-  NGTextOffset TextOffset() const { return item_->TextOffset(); }
-  unsigned TextStartOffset() const { return TextOffset().start; }
-  unsigned TextEndOffset() const { return TextOffset().end; }
+  NGTextOffsetRange TextOffset() const { return item_->TextOffset(); }
+  wtf_size_t TextStartOffset() const { return TextOffset().start; }
+  wtf_size_t TextEndOffset() const { return TextOffset().end; }
 
   // Returns text of the current position. It is error to call other than
   // text.

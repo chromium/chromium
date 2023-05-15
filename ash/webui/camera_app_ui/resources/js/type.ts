@@ -137,7 +137,6 @@ export enum ViewName {
   EXPERT_SETTINGS = 'view-expert-settings',
   FLASH = 'view-flash',
   LOW_STORAGE_DIALOG = 'view-low-storage-dialog',
-  MESSAGE_DIALOG = 'view-message-dialog',
   OPTION_PANEL = 'view-option-panel',
   PHOTO_ASPECT_RATIO_SETTINGS = 'view-photo-aspect-ratio-settings',
   PHOTO_RESOLUTION_SETTINGS = 'view-photo-resolution-settings',
@@ -440,10 +439,10 @@ export class NoChunkError extends Error {
 }
 
 /**
- * Throws when the GIF recording is ended with no frame captured.
+ * Throws when the GIF or time lapse recording is ended with no frame captured.
  */
 export class NoFrameError extends Error {
-  constructor(message = 'No frames captured during GIF recording') {
+  constructor(message = 'No frames captured during the recording') {
     super(message);
     this.name = this.constructor.name;
   }
@@ -477,6 +476,7 @@ export enum LocalStorageKey {
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
   ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
+  ENABLE_MULTISTREAM_RECORDING_CHROME = 'enableMultistreamRecordingChrome',
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
   GA_USER_ID = 'google-analytics.analytics.user-id',

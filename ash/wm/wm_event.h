@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/display/display.h"
@@ -122,13 +123,11 @@ enum WMEventType {
 
 class SetBoundsWMEvent;
 class DisplayMetricsChangedWMEvent;
+class WindowSnapWMEvent;
 
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
-  // Creates a window snap event with the requested `snap_ratio`. Used only by
-  // snap events.
-  WMEvent(WMEventType type, float snap_ratio);
 
   WMEvent(const WMEvent&) = delete;
   WMEvent& operator=(const WMEvent&) = delete;
@@ -136,8 +135,6 @@ class ASH_EXPORT WMEvent {
   virtual ~WMEvent();
 
   WMEventType type() const { return type_; }
-
-  float snap_ratio() const { return snap_ratio_; }
 
   // Predicates to test the type of event.
 
@@ -164,14 +161,14 @@ class ASH_EXPORT WMEvent {
   // True if the event is a window snap event.
   bool IsSnapEvent() const;
 
+  // Returns `this` if it's a WindowSnapWMEvent, otherwise returns nullptr.
+  virtual const WindowSnapWMEvent* AsSnapEvent() const;
+
   // Utility methods to downcast to specific WMEvent types.
   const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
 
  private:
   WMEventType type_;
-
-  // The snap ratio requested by snap events.
-  float snap_ratio_ = chromeos::kDefaultSnapRatio;
 };
 
 // An WMEvent to request new bounds for the window.
@@ -223,6 +220,37 @@ class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
 
  private:
   const uint32_t changed_metrics_;
+};
+
+// An WMEvent to snap a window.
+class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
+ public:
+  explicit WindowSnapWMEvent(WMEventType type);
+  WindowSnapWMEvent(WMEventType type, float snap_ratio);
+  WindowSnapWMEvent(WMEventType type,
+                    WindowSnapActionSource snap_action_source);
+  WindowSnapWMEvent(WMEventType type,
+                    float snap_ratio,
+                    WindowSnapActionSource snap_action_source);
+
+  WindowSnapWMEvent(const WindowSnapWMEvent&) = delete;
+  WindowSnapWMEvent& operator=(const WindowSnapWMEvent&) = delete;
+
+  ~WindowSnapWMEvent() override;
+
+  // WMEvent:
+  const WindowSnapWMEvent* AsSnapEvent() const override;
+
+  float snap_ratio() const { return snap_ratio_; }
+  WindowSnapActionSource snap_action_source() const {
+    return snap_action_source_;
+  }
+
+ private:
+  float snap_ratio_ = chromeos::kDefaultSnapRatio;
+
+  WindowSnapActionSource snap_action_source_ =
+      WindowSnapActionSource::kNotSpecified;
 };
 
 }  // namespace ash

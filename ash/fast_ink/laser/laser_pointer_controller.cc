@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/palette/palette_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/widget.h"
@@ -49,7 +50,7 @@ class LaserPointerController::ScopedLockedHiddenCursor {
   }
 
  private:
-  wm::CursorManager* const cursor_manager_;
+  const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
 };
 
 LaserPointerController::LaserPointerController() {

@@ -54,9 +54,9 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
   int number_of_requests = 0;
-  for (auto it : pending_requests) {
+  for (auto [extension_id, request_data] : pending_requests) {
     if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
-            it.first, webstore_update_url, extension_management)) {
+            extension_id, webstore_update_url, extension_management)) {
       continue;
     }
 
@@ -67,13 +67,15 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       break;
 
     auto* request = report->add_extension_requests();
-    request->set_id(it.first);
+    request->set_id(extension_id);
+
+    const auto& request_data_dict = request_data.GetDict();
     absl::optional<base::Time> timestamp = ::base::ValueToTime(
-        it.second.GetDict().Find(extension_misc::kExtensionRequestTimestamp));
+        request_data_dict.Find(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());
 
-    const std::string* justification = it.second.FindStringKey(
+    const std::string* justification = request_data_dict.FindString(
         extension_misc::kExtensionWorkflowJustification);
     if (justification) {
       request->set_justification(*justification);

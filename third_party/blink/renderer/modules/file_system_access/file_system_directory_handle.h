@@ -82,7 +82,9 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>)
       override;
-  void GetUniqueIdImpl(base::OnceCallback<void(const WTF::String&)>) override;
+  void GetUniqueIdImpl(
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                              const WTF::String&)>) override;
 
   HeapMojoRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr_;
 };

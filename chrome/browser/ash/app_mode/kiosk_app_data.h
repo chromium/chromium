@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
@@ -140,7 +141,7 @@ class KioskAppData : public KioskAppDataBase,
 
   void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
 
-  KioskAppDataDelegate* delegate_;  // not owned.
+  raw_ptr<KioskAppDataDelegate, ExperimentalAsh> delegate_;  // not owned.
   Status status_;
 
   GURL update_url_;

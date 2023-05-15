@@ -443,7 +443,7 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
                                 ExceptionState& exception_state) {
   WGPUExtent3D dawn_write_size;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(write_size, &dawn_write_size, exception_state) ||
+  if (!ConvertToDawn(write_size, &dawn_write_size, device_, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
@@ -507,7 +507,7 @@ void GPUQueue::copyExternalImageToTexture(
   WGPUExtent3D dawn_copy_size;
   WGPUOrigin2D origin_in_external_image;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(copyImage->origin(), &origin_in_external_image,
                      exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {

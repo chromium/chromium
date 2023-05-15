@@ -16,6 +16,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -24,6 +25,25 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+
+namespace {
+
+bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
+  constexpr char kMinPhotosVersion[] = "6.12";
+  if (!apps_util::IsInstalled(update.Readiness())) {
+    return false;
+  }
+
+  if (update.Version() == "DEVELOPMENT") {
+    return true;
+  }
+
+  auto photos_version = base::Version(update.Version());
+  return photos_version.IsValid() &&
+         photos_version >= base::Version(kMinPhotosVersion);
+}
+
+}  // namespace
 
 ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate() = default;
 
@@ -35,25 +55,21 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   apps::AppRegistryCache& app_registry_cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
-  bool photos_installed = false;
-  auto photos_version = base::Version();
+  bool photos_integration_supported = false;
   app_registry_cache.ForOneApp(
       arc::kGooglePhotosAppId,
-      [&photos_installed, &photos_version](const apps::AppUpdate& update) {
-        photos_installed = apps_util::IsInstalled(update.Readiness());
-        photos_version = base::Version(update.Version());
+      [&photos_integration_supported](const apps::AppUpdate& update) {
+        photos_integration_supported = PhotosIntegrationSupported(update);
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
   version_info::Channel channel = chrome::GetChannel();
-  source->AddBoolean("colorThemes", ash::features::IsDarkLightModeEnabled());
-  base::Version min_photos_version("6.12");
-  bool photos_available = photos_installed && photos_version.IsValid() &&
-                          photos_version >= min_photos_version;
-  source->AddBoolean("photosAvailableForImage", photos_available);
-  source->AddBoolean("photosAvailableForVideo", photos_available);
+  source->AddBoolean("colorThemes", true);
+  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
+  source->AddBoolean("photosAvailableForImage", photos_integration_supported);
+  source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
   source->AddBoolean("pdfSignature", base::FeatureList::IsEnabled(
                                          ash::features::kMediaAppPdfSignature));
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
@@ -68,7 +84,8 @@ MediaAppGuestUIConfig::MediaAppGuestUIConfig()
 MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                             const GURL& url) {
   ChromeMediaAppGuestUIDelegate delegate;
   return std::make_unique<ash::MediaAppGuestUI>(web_ui, &delegate);
 }

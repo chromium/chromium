@@ -318,16 +318,10 @@ Timing::Delay MapAnimationTimingDelay(const CSSValue& value) {
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayStart(StyleResolverState& state,
                                                     const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialDelayStart();
-  }
   return MapAnimationTimingDelay(value);
 }
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialDelayEnd();
-  }
   return MapAnimationTimingDelay(value);
 }
 
@@ -339,10 +333,6 @@ Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(StyleResolverState& state,
 Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialDirection();
-  }
-
   switch (To<CSSIdentifierValue>(value).GetValueID()) {
     case CSSValueID::kNormal:
       return Timing::PlaybackDirection::NORMAL;
@@ -354,16 +344,13 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
       return Timing::PlaybackDirection::ALTERNATE_REVERSE;
     default:
       NOTREACHED();
-      return CSSAnimationData::InitialDirection();
+      return Timing::PlaybackDirection::NORMAL;
   }
 }
 
 absl::optional<double> CSSToStyleMap::MapAnimationDuration(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSTimingData::InitialDuration();
-  }
   if (auto* identifier = DynamicTo<CSSIdentifierValue>(value);
       identifier && identifier->GetValueID() == CSSValueID::kAuto) {
     return absl::nullopt;
@@ -373,10 +360,6 @@ absl::optional<double> CSSToStyleMap::MapAnimationDuration(
 
 Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
                                                      const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialFillMode();
-  }
-
   switch (To<CSSIdentifierValue>(value).GetValueID()) {
     case CSSValueID::kNone:
       return Timing::FillMode::NONE;
@@ -388,15 +371,12 @@ Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
       return Timing::FillMode::BOTH;
     default:
       NOTREACHED();
-      return CSSAnimationData::InitialFillMode();
+      return Timing::FillMode::NONE;
   }
 }
 
 double CSSToStyleMap::MapAnimationIterationCount(StyleResolverState& state,
                                                  const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialIterationCount();
-  }
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kInfinite) {
@@ -407,9 +387,6 @@ double CSSToStyleMap::MapAnimationIterationCount(StyleResolverState& state,
 
 AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
                                              const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialName();
-  }
   if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
     return AtomicString(custom_ident_value->Value());
   }
@@ -420,9 +397,6 @@ AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
                                                   const CSSValue& value) {
   DCHECK(value.IsScopedValue());
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialTimeline();
-  }
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(ident->GetValueID() == CSSValueID::kAuto ||
            ident->GetValueID() == CSSValueID::kNone);
@@ -462,9 +436,6 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
 
 EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
                                                     const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSAnimationData::InitialPlayState();
-  }
   if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kPaused) {
     return EAnimPlayState::kPaused;
   }
@@ -484,12 +455,19 @@ absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
   const auto& list = To<CSSValueList>(value);
   DCHECK_GE(list.length(), 1u);
   DCHECK_LE(list.length(), 2u);
-  const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  Length percent = (list.length() == 2u) ? StyleBuilderConverter::ConvertLength(
-                                               state, list.Item(1))
-                                         : Length::Percent(default_percent);
-  return TimelineOffset(range_name.ConvertTo<TimelineOffset::NamedRange>(),
-                        percent);
+  TimelineOffset::NamedRange range_name = TimelineOffset::NamedRange::kNone;
+  Length offset = Length::Percent(default_percent);
+  if (list.Item(0).IsIdentifierValue()) {
+    range_name = To<CSSIdentifierValue>(list.Item(0))
+                     .ConvertTo<TimelineOffset::NamedRange>();
+    if (list.length() == 2u) {
+      offset = StyleBuilderConverter::ConvertLength(state, list.Item(1));
+    }
+  } else {
+    offset = StyleBuilderConverter::ConvertLength(state, list.Item(0));
+  }
+
+  return TimelineOffset(range_name, offset);
 }
 
 }  // namespace
@@ -523,9 +501,6 @@ EffectModel::CompositeOperation CSSToStyleMap::MapAnimationComposition(
 CSSTransitionData::TransitionProperty CSSToStyleMap::MapAnimationProperty(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsInitialValue()) {
-    return CSSTransitionData::InitialProperty();
-  }
   if (const auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
     if (custom_ident_value->IsKnownPropertyID()) {
       return CSSTransitionData::TransitionProperty(
@@ -586,10 +561,6 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
     return CubicBezierTimingFunction::Create(
         cubic_timing_function->X1(), cubic_timing_function->Y1(),
         cubic_timing_function->X2(), cubic_timing_function->Y2());
-  }
-
-  if (value.IsInitialValue()) {
-    return CSSTimingData::InitialTimingFunction();
   }
 
   const auto& steps_timing_function =

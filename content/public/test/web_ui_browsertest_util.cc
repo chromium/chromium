@@ -232,7 +232,8 @@ TestWebUIConfig::TestWebUIConfig(base::StringPiece host)
     : WebUIConfig(content::kChromeUIScheme, host) {}
 
 std::unique_ptr<WebUIController> TestWebUIConfig::CreateWebUIController(
-    content::WebUI* web_ui) {
+    content::WebUI* web_ui,
+    const GURL& url) {
   return CreateTestWebUIControllerForURL(web_ui, GURL(host()), true);
 }
 

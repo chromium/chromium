@@ -275,7 +275,12 @@ message DeviceRegisterRequest {
   // milliseconds since Epoch in UTC timezone (Java time).
   optional int64 psm_determination_timestamp_ms = 20;
 
-  // Next id: 21.
+  // Information specific to Demo Mode about the device and the demo context.
+  // Only set when the device is enrolling into Demo Mode, as defined by
+  // DeviceRegisterRequest.requisition == "cros-demo-mode".
+  optional DemoModeDimensions demo_mode_dimensions = 21;
+
+  // Next id: 22.
 }
 
 // Identification of a device used during its registration.
@@ -1493,6 +1498,25 @@ message LaCrOsBrowserReport {
   optional BrowserReport browser_report = 2;
 }
 
+// Information specific to Demo Mode about the device and the demo context.
+message DemoModeDimensions {
+  // Two-letter country code.
+  optional string country = 1;
+  // Name of the retailer whose store the device is running in. Also called
+  // retailer_id elsewhere in some legacy field names.
+  optional string retailer_name = 2;
+  // Retailer-defined number to identify the store that a device is running in.
+  // Also called store_id elsewhere in some legacy field names.
+  optional string store_number = 3;
+  // Device attributes significant to Demo Mode for customization purposes.
+  enum CustomizationFacet {
+    UNDEFINED = 0;
+    CLOUD_GAMING_DEVICE = 1;
+    FEATURE_AWARE_DEVICE = 2;
+  }
+  repeated CustomizationFacet customization_facets = 4;
+}
+
 // Report device level status.
 message DeviceStatusReportRequest {
   reserved 4, 7, 13, 20;
@@ -1640,6 +1664,10 @@ message DeviceStatusReportRequest {
 
   // Flag whether LaCros is the primary browser.
   optional bool is_lacros_primary_browser = 48;
+
+  // Information specific to Demo Mode about the device and the demo context.
+  // Only included for devices in Demo Mode.
+  optional DemoModeDimensions demo_mode_dimensions = 49;
 }
 
 message OsUpdateStatus {

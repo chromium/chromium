@@ -9,6 +9,7 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/wayland/clients/client_helper.h"
@@ -33,7 +34,8 @@ class SecurityDelegateBindingTest : public test::WaylandServerTest {
     ASSERT_NE(server_security_delegate_, nullptr);
   }
 
-  SecurityDelegate* server_security_delegate_ = nullptr;
+  raw_ptr<SecurityDelegate, ExperimentalAsh> server_security_delegate_ =
+      nullptr;
 };
 
 TEST_F(SecurityDelegateBindingTest, ShellSurfaceHasSecurityDelegate) {

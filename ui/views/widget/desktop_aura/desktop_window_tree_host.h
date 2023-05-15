@@ -128,6 +128,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
+  virtual void PaintAsActiveChanged();
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual void Restore() = 0;
@@ -174,7 +175,10 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void SetOpacity(float opacity) = 0;
 
-  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
+  // See NativeWidgetPrivate::SetAspectRatio for more information about what
+  // `excluded_margin` does.
+  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                              const gfx::Size& excluded_margin) = 0;
 
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;

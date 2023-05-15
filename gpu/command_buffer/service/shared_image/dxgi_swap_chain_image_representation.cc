@@ -135,19 +135,16 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  if (!IsCleared() && gfx::Rect(size()) != update_rect) {
-    LOG(ERROR) << "First draw to surface must draw to everything";
-    return {};
-  }
-
   std::vector<sk_sp<SkSurface>> surfaces =
       SkiaGLImageRepresentation::BeginWriteAccess(
           final_msaa_count, surface_props, update_rect, begin_semaphores,
           end_semaphores, end_state);
 
   if (!surfaces.empty()) {
-    static_cast<DXGISwapChainImageBacking*>(backing())->DidBeginWriteAccess(
-        update_rect);
+    if (!static_cast<DXGISwapChainImageBacking*>(backing())
+             ->DidBeginWriteAccess(update_rect)) {
+      return {};
+    }
   }
 
   return surfaces;

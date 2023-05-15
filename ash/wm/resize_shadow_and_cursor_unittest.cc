@@ -12,6 +12,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,7 +143,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
   aura::Window* window() { return window_; }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Test whether the resize shadows are visible and the cursor type based on the

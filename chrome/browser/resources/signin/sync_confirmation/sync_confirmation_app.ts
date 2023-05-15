@@ -7,6 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './icons.html.js';
 import './strings.m.js';
 import './signin_shared.css.js';
@@ -61,20 +62,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      isSigninInterceptFre_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isSigninInterceptFre');
-        },
-      },
-
-      isTangibleSync_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isTangibleSync');
-        },
-      },
-
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -87,9 +74,15 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      tangibleSyncStyleClass: {
-        type: String,
-        computed: 'getTangibleSyncStyleClass_(isTangibleSync_, isModalDialog_)',
+      /**
+       * Whether to show the new UI for Browser Sync Settings and which include
+       * sublabel and Apps toggle shared between Ash and Lacros.
+       */
+      useClickableSyncInfoDesc_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('useClickableSyncInfoDesc');
+        },
       },
     };
   }
@@ -97,12 +90,12 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private accountImageSrc_: string;
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
-  private isSigninInterceptFre_: boolean;
-  private isTangibleSync_: boolean;
   private showEnterpriseBadge_: boolean;
   private syncBenefitsList_: SyncBenefit[];
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
+  private useClickableSyncInfoDesc_: boolean;
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -154,7 +147,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
                 element => element.getBoundingClientRect().width *
                         element.getBoundingClientRect().height >
                     0)
-            .map(element => element.innerHTML.trim());
+            .map(
+                element => element.hasAttribute('localized-string') ?
+                    element.getAttribute('localized-string')! :
+                    element.innerHTML.trim());
+
     assert(consentDescription.length);
     return consentDescription;
   }
@@ -165,29 +162,34 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
   }
 
+  /**
+   * Called when the link to the device's sync settings is clicked.
+   */
+  private onDisclaimerClicked_(event: CustomEvent<{event: Event}>) {
+    // Prevent the default link click behavior.
+    event.detail.event.preventDefault();
 
-  private getSigninInterceptDesignClass_(): string {
-    return this.isSigninInterceptFre_ ? 'signin-intercept-design' : '';
+    // Programmatically open device's sync settings.
+    this.syncConfirmationBrowserProxy_.openDeviceSyncSettings();
   }
 
+  /**
+   * Returns the name of class to apply on some tags to enable animations.
+   * May be empty if no animations should be added.
+   */
   private getAnimationClass_() {
     return !this.isModalDialog_ ? 'fade-in' : '';
   }
 
-  private isModalDialogWithoutTangibleSync_(): boolean {
-    return this.isModalDialog_ && !this.isTangibleSync_;
-  }
-
-  private isWindowVersionWithoutTangibleSync_(): boolean {
-    return !this.isModalDialog_ && !this.isTangibleSync_;
-  }
-
-  private getTangibleSyncStyleClass_() {
-    if (!this.isTangibleSync_) {
-      return '';
-    }
-    return this.isModalDialog_ ? 'tangible-sync-style dialog' :
-                                 'tangible-sync-style';
+  /**
+   * Returns either "dialog" or an empty string.
+   *
+   * The returned value is intended to be added as a class on the root tags of
+   * the element. Some styles from `tangible_sync_style_shared.css` rely on the
+   * presence of this "dialog" class.
+   */
+  private getMaybeDialogClass_() {
+    return this.isModalDialog_ ? 'dialog' : '';
   }
 }
 

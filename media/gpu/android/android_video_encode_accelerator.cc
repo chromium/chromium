@@ -233,7 +233,7 @@ void AndroidVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
   if (frame->visible_rect().size() != frame_size_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        "Unexpected resolution: got " +
                            frame->visible_rect().size().ToString() +
                            ", expected " + frame_size_.ToString()});
@@ -259,7 +259,7 @@ void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
   // to check that the mode matches the current mode.
   if (bitrate.mode() != Bitrate::Mode::kConstant) {
     NotifyErrorStatus(
-        {EncoderStatus::Codes::kUnsupportedFrameFormat,
+        {EncoderStatus::Codes::kEncoderUnsupportedConfig,
          "Unexpected bitrate mode: " +
              base::NumberToString(static_cast<int>(bitrate.mode()))});
     return;
@@ -354,7 +354,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
       uv_plane_size.width() * 2;
 
   if (queued_size > capacity) {
-    NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        "Frame doesn't fit into the input buffer. queue_size: " +
                            base::NumberToString(queued_size) +
                            "capacity: " + base::NumberToString(capacity)});
@@ -531,7 +531,7 @@ bool AndroidVideoEncodeAccelerator::SetInputBufferLayout() {
 
 void AndroidVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(status.is_ok());
+  CHECK(!status.is_ok());
   CHECK(log_);
   MEDIA_LOG(ERROR, log_) << status.message();
   LOG(ERROR) << "Call NotifyErrorStatus(): code="

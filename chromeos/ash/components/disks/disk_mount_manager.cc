@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -1085,7 +1086,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Mount event change observers.
   base::ObserverList<DiskMountManager::Observer> observers_;
 
-  CrosDisksClient* const cros_disks_client_ = CrosDisksClient::Get();
+  const raw_ptr<CrosDisksClient, ExperimentalAsh> cros_disks_client_ =
+      CrosDisksClient::Get();
 
   // The list of disks found.
   Disks disks_;

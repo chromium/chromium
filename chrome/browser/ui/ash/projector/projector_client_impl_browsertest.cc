@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -95,11 +96,13 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
       const NewScreencastPrecondition& condition) override {
     std::move(quit_closure_).Run();
   }
-  MOCK_METHOD1(OnScreencastsPendingStatusChanged,
-               void(const PendingScreencastSet&));
-  MOCK_METHOD1(OnSodaProgress, void(int));
-  MOCK_METHOD0(OnSodaError, void());
-  MOCK_METHOD0(OnSodaInstalled, void());
+  MOCK_METHOD(void,
+              OnScreencastsPendingStatusChanged,
+              (const PendingScreencastContainerSet&),
+              (override));
+  MOCK_METHOD(void, OnSodaProgress, (int), (override));
+  MOCK_METHOD(void, OnSodaError, (), (override));
+  MOCK_METHOD(void, OnSodaInstalled, (), (override));
 
   void SetDriveEnabled(bool enabled_drive, base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
@@ -112,7 +115,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
 
  private:
   base::OnceClosure quit_closure_;
-  drive::DriveIntegrationService* service_;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> service_;
 };
 
 class ProjectorClientTest : public InProcessBrowserTest {

@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/color_space.h"
@@ -95,7 +96,7 @@ void SkiaGlRenderer::RenderFrame() {
     GrBackendRenderTarget render_target(size_.width(), size_.height(), 0, 8,
                                         framebuffer_info);
 
-    sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
+    sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
         gr_context_.get(), render_target, kBottomLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, nullptr, &surface_props);
   }

@@ -506,8 +506,10 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
   if (match_type.contains(MatchFieldType::kTelephone) && type == "tel")
     return true;
 
-  if (match_type.contains(MatchFieldType::kSelect) && type == "select-one")
+  if (match_type.contains(MatchFieldType::kSelect) &&
+      (type == "select-one" || type == "selectmenu")) {
     return true;
+  }
 
   if (match_type.contains(MatchFieldType::kTextArea) && type == "textarea")
     return true;

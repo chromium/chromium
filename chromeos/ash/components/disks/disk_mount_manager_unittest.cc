@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -464,7 +465,7 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
 
  private:
   // Pointer to the manager object to which this |Observer| is registered.
-  const DiskMountManager* manager_;
+  raw_ptr<const DiskMountManager, ExperimentalAsh> manager_;
 
   // Records all invocations.
   std::vector<std::unique_ptr<ObserverEvent>> events_;
@@ -574,7 +575,7 @@ class DiskMountManagerTest : public testing::Test {
   }
 
  protected:
-  FakeCrosDisksClient* fake_cros_disks_client_;
+  raw_ptr<FakeCrosDisksClient, ExperimentalAsh> fake_cros_disks_client_;
   std::unique_ptr<MockDiskMountManagerObserver> observer_;
 
  private:

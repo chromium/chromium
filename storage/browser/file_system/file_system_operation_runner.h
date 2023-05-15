@@ -180,7 +180,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   // the metadata of the file itself (as well as GetMetadata does),
   // while in remote filesystem case the backend may want to download the file
   // into a temporary snapshot file and return the metadata of the
-  // temporary file.  Or if the implementaiton already has the local cache
+  // temporary file.  Or if the implementation already has the local cache
   // data for |url| it can simply return the url to the cache.
   OperationID CreateSnapshotFile(const FileSystemURL& url,
                                  SnapshotFileCallback callback);

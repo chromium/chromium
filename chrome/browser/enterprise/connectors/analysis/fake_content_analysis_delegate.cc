@@ -234,7 +234,7 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
         data = std::move(data_arg);
       }));
 
-  // Increment request canalysis_ount.
+  // Increment total analysis request count.
   total_analysis_requests_count_++;
 
   // Simulate a response.
@@ -262,7 +262,7 @@ void FakeContentAnalysisDelegate::UploadImageForDeepScanning(
         data = std::move(data_arg);
       }));
 
-  // Increment request canalysis_ount.
+  // Increment total analysis request count.
   total_analysis_requests_count_++;
 
   // Simulate a response.
@@ -285,7 +285,7 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     DCHECK_EQ(dm_token_, request->device_token());
   }
 
-  // Increment request canalysis_ount.
+  // Increment total analysis request count.
   total_analysis_requests_count_++;
 
   // Simulate a response.
@@ -304,7 +304,7 @@ void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
     DCHECK_EQ(dm_token_, request->device_token());
   }
 
-  // Increment request coanalysis_unt.
+  // Increment total analysis request count.
   total_analysis_requests_count_++;
 
   // Simulate a response.

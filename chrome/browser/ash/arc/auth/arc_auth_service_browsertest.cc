@@ -23,6 +23,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -256,8 +257,10 @@ class AccountAppsAvailabilitySetter {
     return false;
   }
 
-  ash::AccountAppsAvailability* const account_apps_availability_;
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<ash::AccountAppsAvailability, ExperimentalAsh>
+      account_apps_availability_;
+  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_;
 };
 
 class ArcAuthServiceTest : public InProcessBrowserTest,
@@ -375,7 +378,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     }
 
     GetFakeUserManager()->LoginUser(account_id);
-    GetFakeUserManager()->CreateLocalState();
 
     // Create test profile.
     TestingProfile::Builder profile_builder;
@@ -576,8 +578,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
-  ArcAuthService* auth_service_ = nullptr;
-  ArcBridgeService* arc_bridge_service_ = nullptr;
+  raw_ptr<ArcAuthService, ExperimentalAsh> auth_service_ = nullptr;
+  raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {

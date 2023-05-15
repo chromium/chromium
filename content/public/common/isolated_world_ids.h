@@ -8,8 +8,8 @@
 namespace content {
 
 enum IsolatedWorldIDs : int32_t {
-  // Chrome cannot use ID 0 for an isolated world because 0 represents the main
-  // world.
+  // The main world. Chrome cannot use ID 0 for an isolated world because 0
+  // represents the main world.
   ISOLATED_WORLD_ID_GLOBAL = 0,
   // Custom isolated world ids used by other embedders should start from here.
   ISOLATED_WORLD_ID_CONTENT_END,

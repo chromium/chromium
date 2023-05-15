@@ -789,8 +789,7 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
                                       bool should_succeed,
                                       content::WebContents** newtab_result) {
   content::WebContentsAddedObserver tab_added_observer;
-  ASSERT_TRUE(content::ExecuteScript(contents,
-                                     "window.open('" + url.spec() + "');"));
+  ASSERT_TRUE(content::ExecJs(contents, "window.open('" + url.spec() + "');"));
   content::WebContents* newtab = tab_added_observer.GetWebContents();
   ASSERT_TRUE(newtab);
   WaitForLoadStop(newtab);
@@ -822,10 +821,8 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
 
 bool ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
                                               const GURL& url) {
-  // Note: We use ExecuteScript instead of ExecJS here, because ExecuteScript
-  // works on pages with a Content Security Policy.
-  EXPECT_TRUE(content::ExecuteScript(
-      contents, "window.location = '" + url.spec() + "';"));
+  EXPECT_TRUE(
+      content::ExecJs(contents, "window.location = '" + url.spec() + "';"));
   bool result = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
   return result;

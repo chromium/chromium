@@ -159,7 +159,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
                    bool has_more) override;
   void OnObservableEvents(const perfetto::ObservableEvents&) override;
   void OnTraceStats(bool success, const perfetto::TraceStats&) override;
-  void OnSessionCloned(bool, const std::string&) override;
+  void OnSessionCloned(const OnSessionClonedArgs&) override;
 
   // Unused in Chrome.
   void OnDetach(bool success) override {}

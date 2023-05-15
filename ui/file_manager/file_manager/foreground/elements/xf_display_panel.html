@@ -5,17 +5,28 @@
   }
   #container {
     align-items: stretch;
-    background-color: var(--cros-bg-color-elevation-2);
-    border-radius: 4px;
     box-shadow: var(--cros-elevation-2-shadow);
     display: flex;
     flex-direction: column;
     max-width: min-content;
     z-index: 100;
   }
+  :host-context([theme='legacy']) #container {
+    background-color: var(--cros-bg-color-elevation-2);
+    border-radius: 4px;
+  }
+  :host-context([theme='refresh23']) #container {
+    background-color: var(--cros-sys-base_elevated);
+    border-radius: 8px;
+  }
   #separator {
-    background-color: var(--cros-separator-color);
     height: 1px;
+  }
+  :host-context([theme='legacy']) #separator {
+    background-color: var(--cros-separator-color);
+  }
+  :host-context([theme='refresh23']) #separator {
+    background-color: var(--cros-sys-separator);
   }
   /* Limit to 3 visible progress panels before scroll. */
   #panels {

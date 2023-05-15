@@ -9,13 +9,14 @@
 #include <memory>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
-#include "device/vr/openxr/openxr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
 
 class OpenXRInputHelper {
  public:

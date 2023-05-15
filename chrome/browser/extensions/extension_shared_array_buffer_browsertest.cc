@@ -8,10 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,32 +115,30 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
   std::tie(is_sab_allowed_unconditionally, is_cross_origin_isolated,
            is_platform_app) = GetParam();
 
-  DictionaryBuilder builder;
-  builder.Set("manifest_version", 2)
-      .Set("name", "SharedArrayBuffer")
-      .Set("version", "1.1");
+  auto builder = base::Value::Dict()
+                     .Set("manifest_version", 2)
+                     .Set("name", "SharedArrayBuffer")
+                     .Set("version", "1.1");
 
   if (is_cross_origin_isolated) {
-    builder
-        .Set("cross_origin_opener_policy",
-             DictionaryBuilder().Set("value", "same-origin").Build())
-        .Set("cross_origin_embedder_policy",
-             DictionaryBuilder().Set("value", "require-corp").Build());
+    builder.Set("cross_origin_opener_policy",
+                base::Value::Dict().Set("value", "same-origin"));
+    builder.Set("cross_origin_embedder_policy",
+                base::Value::Dict().Set("value", "require-corp"));
   }
 
-  DictionaryBuilder background_builder;
+  base::Value::Dict background_builder;
   background_builder.Set("scripts",
-                         ListBuilder().Append("background.js").Build());
+                         base::Value::List().Append("background.js"));
 
   if (is_platform_app) {
-    builder.Set("app", DictionaryBuilder()
-                           .Set("background", background_builder.Build())
-                           .Build());
+    builder.Set("app", base::Value::Dict().Set("background",
+                                               std::move(background_builder)));
   } else {
-    builder.Set("background", background_builder.Build());
+    builder.Set("background", std::move(background_builder));
   }
 
-  test_dir().WriteManifest(builder.ToJSON());
+  test_dir().WriteManifest(builder);
 
   const bool expect_sab_allowed =
       is_cross_origin_isolated || is_sab_allowed_unconditionally;

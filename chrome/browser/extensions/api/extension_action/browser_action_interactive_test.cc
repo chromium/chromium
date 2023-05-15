@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
       content::WebContents::FromRenderFrameHost(frame_host));
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/popup_iframe.html"));
   std::string script = "location.href = '" + foo_url.spec() + "'";
-  EXPECT_TRUE(ExecuteScript(frame_host, script));
+  EXPECT_TRUE(ExecJs(frame_host, script));
 
   frame_host = watcher.WaitAndReturnNewFrame();
 
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   std::string script =
       "document.querySelector('fencedframe').config = new FencedFrameConfig('" +
       foo_url.spec() + "')";
-  EXPECT_TRUE(ExecuteScript(primary_rfh, script));
+  EXPECT_TRUE(ExecJs(primary_rfh, script));
   observer.WaitForNavigationFinished();
 
   content::RenderFrameHost* fenced_frame_rfh =
@@ -957,20 +957,18 @@ class NavigatingExtensionPopupInteractiveTest
     GURL popup_url = popup_extension().GetResourceURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
 
-    // Note that the |setTimeout| call below is needed to make sure
-    // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
-    // already started.
-    std::string script_to_execute =
-        navigation_starting_script +
-        "setTimeout(\n"
-        "    function() { window.domAutomationController.send(true); },\n"
-        "    0);\n";
+    // Note that the |setTimeout| call below is needed to make sure EvalJs
+    // returns *after* a scheduled navigation has already started.
+    std::string script_to_execute = navigation_starting_script +
+                                    "new Promise(resolve => {\n"
+                                    "  setTimeout(\n"
+                                    "    function() { resolve(true); },\n"
+                                    "    0);\n"
+                                    "});\n";
 
     // Try to navigate the pop-up.
-    bool ignored_script_result = false;
     content::WebContentsDestroyedWatcher popup_destruction_watcher(popup);
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(popup, script_to_execute,
-                                            &ignored_script_result));
+    EXPECT_TRUE(ExecJs(popup, script_to_execute));
     popup = popup_destruction_watcher.web_contents();
 
     // Verify if the popup navigation succeeded or failed as expected.

@@ -35,6 +35,18 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     page.remove();
   });
 
+  function changeKeyboardExternalState(isExternal: boolean): Promise<void> {
+    page.keyboard = {...page.keyboard, isExternal};
+    return flushTasks();
+  }
+
+  function getPageDescription(): string {
+    const description =
+        page.shadowRoot!.querySelector('#description')!.textContent;
+    assert(description);
+    return description;
+  }
+
   /**
    * Check that all the prefs are set to default keyboard value.
    */
@@ -67,6 +79,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#altKey');
     assert(altKeyRow);
+    assertEquals('alt', altKeyRow.get('keyLabel'));
     const altKeyDropdown = altKeyRow.shadowRoot!.querySelector('#keyDropdown');
     assert(altKeyDropdown);
     assertEquals(
@@ -82,6 +95,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#ctrlKey');
     assert(ctrlKeyRow);
+    assertEquals('ctrl', ctrlKeyRow.get('keyLabel'));
     const ctrlKeyMappedTo =
         fakeKeyboards[0]!.settings.modifierRemappings[ModifierKey.kControl]!
             .toString();
@@ -100,7 +114,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#metaKey');
     assert(metaKeyRow);
-    assertEquals('Command', metaKeyRow.get('keyLabel'));
+    assertEquals('command', metaKeyRow.get('keyLabel'));
 
     // Verify that the icon is hidden.
     const commandKeyIcon = metaKeyRow.shadowRoot!.querySelector('iron-icon');
@@ -154,17 +168,30 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     // Verify that the remapped key icon is highlighted.
     assertEquals('modifier-remapped', altKeyRow.keyState);
 
-    // Verify that the label for meta key is displayed as the
-    // the target key in the new keyboard remapping settings.
+    // Verify that the label for meta key is empty and the key icon is
+    // displayed as launcher.
     const metaKeyRow =
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#metaKey');
     assert(metaKeyRow);
-    assertEquals('Launcher', metaKeyRow.get('keyLabel'));
+    assertEquals('', metaKeyRow.get('keyLabel'));
+    assertEquals('os-settings:launcher', metaKeyRow.get('keyIcon'));
 
     const launcherKeyIcon = metaKeyRow.shadowRoot!.querySelector('iron-icon');
     assert(launcherKeyIcon);
     assertEquals('os-settings:launcher', launcherKeyIcon.icon);
+
+    // Verify that the label for assistant key is displayed as icon.
+    const assistantKeyRow =
+        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
+            '#assistantKey');
+    assert(assistantKeyRow);
+    assertEquals('assistant', assistantKeyRow.get('keyLabel'));
+
+    const assistantKeyIcon =
+        assistantKeyRow.shadowRoot!.querySelector('iron-icon');
+    assert(assistantKeyIcon);
+    assertEquals('os-settings:assistant', assistantKeyIcon.icon);
   });
 
   /**
@@ -271,5 +298,15 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(
         ModifierKey.kControl, updatedRemapping[ModifierKey.kBackspace]);
     assertEquals(ModifierKey.kVoid, updatedRemapping[ModifierKey.kEscape]);
+  });
+
+  test('Keyboard description populated correctly', async () => {
+    assertTrue(page.get('isInitialized'));
+    assertEquals(
+        'For ERGO K860, choose an action for each key', getPageDescription());
+    await changeKeyboardExternalState(/* isExternal= */ false);
+    assertEquals(
+        'For Built-in Keyboard, choose an action for each key',
+        getPageDescription());
   });
 });

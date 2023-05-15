@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_button.h"
 #include "ash/shelf/shelf_button_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -190,18 +191,18 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void MaybeHideInkDropWhenGestureEnds();
 
   // The icon part of a button can be animated independently of the rest.
-  views::ImageView* const icon_view_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
-  ShelfView* const shelf_view_;
+  const raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
 
   // Draws an indicator underneath the image to represent the state of the
   // application.
-  AppStatusIndicatorView* const indicator_;
+  const raw_ptr<AppStatusIndicatorView, ExperimentalAsh> indicator_;
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  DotIndicator* notification_indicator_ = nullptr;
+  raw_ptr<DotIndicator, ExperimentalAsh> notification_indicator_ = nullptr;
 
   // The current application state, a bitfield of State enum values.
   int state_ = STATE_NORMAL;

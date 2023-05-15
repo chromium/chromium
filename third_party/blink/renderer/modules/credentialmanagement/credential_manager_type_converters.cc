@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_login_hint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_element.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -62,7 +61,6 @@ using blink::mojom::blink::DevicePublicKeyRequestPtr;
 using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
-using blink::mojom::blink::IdentityProviderLoginHint;
 using blink::mojom::blink::IdentityProviderPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
@@ -737,16 +735,10 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
   mojo_provider->nonce = provider.getNonceOr("");
-  auto login_hint = IdentityProviderLoginHint::New();
-  if (blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled() &&
-      provider.hasLoginHint()) {
-    login_hint->email = provider.loginHint()->getEmailOr("");
-    login_hint->id = provider.loginHint()->getIdOr("");
-    login_hint->is_required = provider.loginHint()->getIsRequiredOr(false);
+  if (blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled()) {
+    mojo_provider->login_hint = provider.getLoginHintOr("");
   } else {
-    login_hint->email = "";
-    login_hint->id = "";
-    login_hint->is_required = false;
+    mojo_provider->login_hint = "";
   }
 
   if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
@@ -765,7 +757,6 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
     }
   }
 
-  mojo_provider->login_hint = std::move(login_hint);
   return mojo_provider;
 }
 

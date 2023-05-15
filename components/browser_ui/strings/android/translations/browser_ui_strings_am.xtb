@@ -10,7 +10,7 @@
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> ላይ ተካትቷል</translation>
 <translation id="1272079795634619415">አቁም</translation>
-<translation id="1289742167380433257">ውሂብ እንዲቆጥብልዎ የዚህ ገጽ ምስሎች በGoogle እንዲተቡ ተደርገዋል።</translation>
+<translation id="1289742167380433257">ውሂብ እንዲቆጥብልዎ የዚህ ገፅ ምስሎች በGoogle እንዲተቡ ተደርገዋል።</translation>
 <translation id="129382876167171263">በድር ጣቢያዎች የተቀመጡ ፋይሎች እዚህ ይታያሉ</translation>
 <translation id="131112695174432497">ማስታወቂያን ግላዊነት ማላበስ ላይ ተጽዕኖ የሚያሳድር ውሂብ ተሰርዟል</translation>
 <translation id="1317194122196776028">ይህን ጣቢያ እርሳ</translation>
@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">ስውር ምስል መፍቻ</translation>
 <translation id="1785415724048343560">ለምርጥ ተሞክሮ የሚመከር</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
-<translation id="1864927262126810325">ከ<ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">ተያያዥ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ ማየት ይችላሉ</translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1915307458270490472">ዝጋ</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">ጣቢያዎች የአሰሳዎን ተሞክሮ ለማሻሻል ኩኪዎችን መጠቀም ይችላሉ፣ ለምሳሌ እርስዎ በመለያ እንደገቡ ማቆየት ወይም በግዢ ጋሪዎ ውስጥ ንጥሎችን ለማስታወስ</translation>
 <translation id="3165022941318558018">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም ይፍቀዱ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> የተከማቸ ውሂብ</translation>
-<translation id="3203366800380907218">ከድሩ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ማሳወቂያዎችን እንዲልክልዎት ለማድረግ፣ በተጨማሪ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
 <translation id="3248611290851046188">ይህ ጣቢያ የሚገልጸው ማስታወቂያዎችን ለእርስዎ ለማሳየት ሌሎች ጣቢያዎች ሊጠቀሙባቸው የሚችሏቸውን ዝንባሌዎች ነው። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸውን ማስታወቂያዎች ለእርስዎ ለማሳየት የእርስዎን ዝንባሌዎች ከChrome ያገኛል።</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">ድምጽን በሚያጫውቱ ጣቢያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
+<translation id="3707034683772193706">እርስዎ የሚጎበኙት ጣቢያ በዋነኛነት እርስዎ ቦት አለመሆንዎን ለማረጋገጥ በChrome ትንሽ መጠን ያለው መረጃ ሊያስቀምጥ ይችላል</translation>
 <translation id="3721953990244350188">ያሰናብቱ እና የሚገኘውን ቀጣይ ያሳዩ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3763247130972274048">10 ሴ ለመዝለል ቪዲዮ ወደ ግራ ወይም ቀኝ ላይ ሁለቴ መታ ያድርጉ</translation>
@@ -169,7 +168,7 @@
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
-<translation id="3992684624889376114">ስለዚህ ገጽ</translation>
+<translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
@@ -228,10 +227,9 @@
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
 <translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
-<translation id="5229337741799419985">ይህ ቅንብር እርስዎን ሳይለይ ወይም ጣቢያዎች የአሰሳ ታሪክዎን እንዲያዩ ሳይፈቅድ ይሠራል</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5264323282659631142">«<ph name="CHIP_LABEL" />»ን ያስወግዱ</translation>
-<translation id="528192093759286357">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
+<translation id="528192093759286357">ከሙሉ ማያ ገፅ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
@@ -313,9 +311,9 @@
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>
 <translation id="662080504995468778">ቆይ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
+<translation id="6653342741369270081">ከሙሉ ማያ ገጽ ለመውጣት የተመለስ አዝራሩን ይጫኑ።</translation>
 <translation id="6689172468748959065">የመገለጫ ፎቶዎች</translation>
 <translation id="6697925417670533197">ንቁ ውርዶች</translation>
-<translation id="6701547804986694515">የሚጎበኙት ጣቢያ ቦት አለመሆንዎን የሚያረጋግጥ መረጃ በChrome ሊያስቀምጥ ይችላል። ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ።</translation>
 <translation id="6722828510648505498">የመግቢያ መጠይቆችን ከማንነት አገልግሎቶች ያግዱ።</translation>
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6749077623962119521">ፈቃዶችን ዳግም ይጀመሩ?</translation>
@@ -348,6 +346,7 @@
 <translation id="7302486331832100261">ማሳወቂያዎችን ብዙውን ጊዜ ያግዳሉ። ለመፍቀድ፣ ዝርዝሮች ላይ መታ ያድርጉ።</translation>
 <translation id="7366415735885268578">አንድ ጣቢያ ያክሉ</translation>
 <translation id="7383715096023715447">የ<ph name="DOMAIN" /> ቅንብሮች</translation>
+<translation id="7406113532070524618">ምንም እንኳን ጣቢያዎች እንደ የማረጋገጫው አካል ትንሽ መጠን ያለው መረጃን ማጋራት ቢችሉም ይህ ቅንብር እርስዎን ሳይለይ ወይም ጣቢያዎች የአሰሳ ታሪክዎን እንዲያዩ ሳይፈቅድ ይሠራል።</translation>
 <translation id="7423098979219808738">መጀመሪያ ጠይቅ</translation>
 <translation id="7423538860840206698">ቅንጥብ ሰሌዳን ከማንበብ ታግዷል</translation>
 <translation id="7425915948813553151">ለጣቢያዎች ጠቆር ያለ ገጽታ</translation>
@@ -362,7 +361,7 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7667547420449112975">አስደናቂው የኦዝ ምትሃተኛ</translation>
 <translation id="7684642910516280563">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም አይፍቀዱ</translation>
-<translation id="7719367874908701697">ገጽ አጉላ</translation>
+<translation id="7719367874908701697">ገፅ አጉላ</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -416,8 +415,8 @@
 <translation id="8499083585497694743">የማይክሮፎን ድምፀ-ከል አንሳ</translation>
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
-<translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
-<translation id="8528440122773422556">ይህ እርምጃ በ<ph name="ORIGIN" /> ሥር ወይም በእርስዎ መነሻ ማያ ገጽ ላይ በመተግበሪያው ሁሉም ጣቢያዎች የተከማቹትን ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
+<translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
+<translation id="8528440122773422556">ይህ እርምጃ በ<ph name="ORIGIN" /> ሥር ወይም በእርስዎ መነሻ ማያ ገፅ ላይ በመተግበሪያው ሁሉም ጣቢያዎች የተከማቹትን ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}one{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}other{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያዎች የተፈቀዱ ኩኪዎች}}</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
@@ -437,6 +436,7 @@
 <translation id="8816026460808729765">ጣቢያዎች ዳሳሾችን እንዳይደርሱ ያግዱ</translation>
 <translation id="8823559166155093873">ኩኪዎችን አግድ</translation>
 <translation id="8847988622838149491">ዩ ኤስ ቢ</translation>
+<translation id="8889294078294184559">ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ</translation>
 <translation id="8899807382908246773">ጣልቃ ገቢ ማስታወቂያዎች</translation>
 <translation id="8903921497873541725">አጉላ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
@@ -454,7 +454,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="9138217887606523162">የአሁን ማጉላት <ph name="ZOOM_LEVEL" /> %% ነው</translation>
-<translation id="9162462602695099906">ይህ ገጽ አደገኛ ነው</translation>
+<translation id="9162462602695099906">ይህ ገፅ አደገኛ ነው</translation>
 <translation id="9201023452444595544">ማናቸውም የመስመር ውጭ ውሂብ ይጸዳል</translation>
 <translation id="930525582205581608">ይህ ጣቢያ ይረሳ?</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>

@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -151,7 +152,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  TrayBackgroundView* const tray_background_view_;
+  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_background_view_;
   const gfx::Insets insets_;
 };
 
@@ -178,7 +179,7 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   void Add(views::Widget* widget) { observations_.AddObservation(widget); }
 
  private:
-  TrayBackgroundView* host_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> host_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       observations_{this};
 };
@@ -214,7 +215,7 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
         FROM_HERE, callback.Release());
   }
 
-  TrayBackgroundView* const tray_;
+  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_;
   ScopedSessionObserver session_observer_{this};
 };
 
@@ -259,7 +260,7 @@ TrayBackgroundView::TrayBackgroundView(
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
 
-  AddChildView(tray_container_);
+  AddChildView(tray_container_.get());
 
   tray_event_filter_ = std::make_unique<TrayEventFilter>();
 
@@ -270,6 +271,7 @@ TrayBackgroundView::TrayBackgroundView(
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
+  layer()->SetOpacity(0.0f);
 }
 
 void TrayBackgroundView::AddObserver(Observer* observer) {
@@ -347,6 +349,10 @@ void TrayBackgroundView::SetRoundedCornerBehavior(
     RoundedCornerBehavior corner_behavior) {
   corner_behavior_ = corner_behavior;
   UpdateBackground();
+
+  // The ink drop doesn't automatically pick up on rounded corner changes, so
+  // we need to manually notify it here.
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 }
 
 gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
@@ -611,8 +617,6 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
   views::View::SetVisible(GetEffectiveVisibility());
 }
 
-void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
-
 void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
     views::Widget* bubble_widget,
     bool visible) {}
@@ -722,6 +726,24 @@ void TrayBackgroundView::BounceInAnimation() {
                                      smoothness);
       })));
 
+  // Alias to avoid difficult to read line wrapping below.
+  using ConstantTransform = ui::InterpolatedConstantTransform;
+  using MatrixTransform = ui::InterpolatedMatrixTransform;
+
+  // NOTE: It is intentional that `ui::InterpolatedTransform`s be used below
+  // rather than `gfx::Transform`s which could otherwise be used to accomplish
+  // the same animation.
+  //
+  // This is because the latter only informs layer delegates of transform
+  // changes on animation completion whereas the former informs layer delegates
+  // of transform changes at each animation step [1].
+  //
+  // Failure to inform layer delegates of transform changes at each animation
+  // step can result in the ink drop layer going out of sync if the
+  // `TrayBackgroundView`s activation state changes while an animation is in
+  // progress.
+  //
+  // [1] See discussion in https://crrev.com/c/4304899.
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -740,17 +762,24 @@ void TrayBackgroundView::BounceInAnimation() {
       .Once()
       .SetDuration(base::TimeDelta())
       .SetOpacity(this, 1.0)
-      .SetTransform(this, std::move(initial_state))
+      .SetInterpolatedTransform(
+          this, std::make_unique<ConstantTransform>(initial_state))
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetTransform(this, std::move(scale_about_pivot),
-                    gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .SetInterpolatedTransform(
+          this,
+          std::make_unique<MatrixTransform>(initial_state, scale_about_pivot),
+          gfx::Tween::FAST_OUT_SLOW_IN_3)
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetTransform(this, std::move(move_down), gfx::Tween::EASE_OUT_4)
+      .SetInterpolatedTransform(
+          this, std::make_unique<MatrixTransform>(scale_about_pivot, move_down),
+          gfx::Tween::EASE_OUT_4)
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetTransform(this, gfx::Transform(), gfx::Tween::FAST_OUT_SLOW_IN_3);
+      .SetInterpolatedTransform(
+          this, std::make_unique<MatrixTransform>(move_down, gfx::Transform()),
+          gfx::Tween::FAST_OUT_SLOW_IN_3);
 }
 
 // Any visibility updates should be called after the hide animation is

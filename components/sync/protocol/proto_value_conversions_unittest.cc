@@ -55,7 +55,7 @@ using testing::Not;
     specifics.mutable_##Key();                                      \
     base::Value value = EntitySpecificsToValue(specifics);          \
     ASSERT_TRUE(value.is_dict());                                   \
-    EXPECT_EQ(1, static_cast<int>(value.DictSize()));               \
+    EXPECT_EQ(1u, value.GetDict().size());                          \
   }
 
 // We'd also like to check if we changed any field in our messages. However,

@@ -2,13 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1057925581724305206">ሙሉ ኤችዲ (1080p)</translation>
-<translation id="1076394037877376434">ገጽ <ph name="PAGE_NUMBER" />ን ሰርዝ</translation>
+<translation id="1076394037877376434">ገፅ <ph name="PAGE_NUMBER" />ን ሰርዝ</translation>
 <translation id="1113173431709655881">የካሜራ ሁነታ</translation>
 <translation id="1153190633558910465">ፍርግርግ ጠፍቷል</translation>
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
-<translation id="1197694886744716213">ገጽ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
+<translation id="1197694886744716213">ገፅ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
 <translation id="1258009455399840361">90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
-<translation id="1417314334557041815">ገጽ <ph name="INDEX" />ን አርትዕ</translation>
+<translation id="1417314334557041815">ገፅ <ph name="INDEX" />ን አርትዕ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ተነቅሏል።</translation>
 <translation id="1473110567575736769">3 ሰከንዶች መቁጠሪያ</translation>
 <translation id="148783771699678004">ወደ ላይ-ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
@@ -20,7 +20,7 @@
 <translation id="1644345013557678440">ኤችዲ (720p)</translation>
 <translation id="1664224225747386870">ምንም አልተቀረጸም</translation>
 <translation id="1838104802459806957">ወደ ላይ አጋድል</translation>
-<translation id="1843105061469674856">ተጨማሪ ገጽ ቃኝ</translation>
+<translation id="1843105061469674856">ተጨማሪ ገፅ ቃኝ</translation>
 <translation id="1851616744363735765">ላፍታ ቆሟል</translation>
 <translation id="1899697626337024495">የፎቶ ምስል ጥራት</translation>
 <translation id="1925845977604399247">ወደ ማዕከለ-ሥዕላት ሂድ</translation>
@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት የእርስዎ ቀረጻ ቆሟል። ተጨማሪ ቪድዮዎችን ለመቅረጽ በመሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="2036868001356139588">የሰዓት ቆጣሪ ቆይታ ጊዜ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ገቢር ነው</translation>
-<translation id="2128052519899549250">የረዘመ ጊዜ ቪድዮ ይቅረጹ</translation>
 <translation id="2134029355740465625">የቪዲዮ ቅንብሮች</translation>
 <translation id="2144806332417375165">ብጁ የቪዲዮ መለኪያዎች</translation>
 <translation id="2175927920773552910">የQR ኮድ</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">ሰነድ ተገኝቷል</translation>
 <translation id="414641094616694804">ይህ ካሜራ ጥራትን መቀየር አይችልም</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
-<translation id="4281620174117014503">መካከለኛ ጥራት</translation>
 <translation id="428234092390943511">የገጽ ጥፍር አከል</translation>
 <translation id="4383571725254449280">የህትመት አፈጻጸም መዝገቦች</translation>
 <translation id="4445542136948522167">ፎቶን ማንሳት አቁም</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5320594929574852403">ወደ ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="5374917190292010970">4ኪ (2160p)</translation>
-<translation id="5577251651370645658">የረዘመ ጊዜ</translation>
-<translation id="5662366948659129155">ገጽ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
+<translation id="5662366948659129155">ገፅ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
 <translation id="5671277269877808209">ካሬ</translation>
+<translation id="574392208103952083">መካከለኛ</translation>
 <translation id="5746169159649715125">እንደ PDF አስቀምጥ</translation>
 <translation id="5753488212459587150">የባለሙያ ሁነታን ያንቁ</translation>
 <translation id="5759254179196327752">ሰነድ ቃኝ</translation>
@@ -122,7 +120,7 @@
 <translation id="6888362557094394345">ወደ ታች አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="695140971690006676">ሁሉንም ዳግም አስጀምር</translation>
 <translation id="6965382102122355670">እሺ</translation>
-<translation id="6965830616442491568">የቁም ፎቶ</translation>
+<translation id="6965830616442491568">የአግድም ፎቶ</translation>
 <translation id="698156982839284926">3 ሰከንዶች</translation>
 <translation id="7134221860976209830">10 ሰከንዶች መቁጠሪያ</translation>
 <translation id="7191890674911603392">የቀረጻ ዓይነት</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">የሰነድ ከታች-ቀኝ ጥግ</translation>
+<translation id="7684446460490665873">የረዘመ ጊዜ ቪድዮ ይቅረጹ</translation>
 <translation id="7692090236657809299">ማንፏቀቅ ማዘንበል ማጉላትን አንቃ</translation>
 <translation id="7726641833034062494">መደበኛ ቪዲዮን ይቅረጹ</translation>
 <translation id="7748344063862150053">የሰነድ ከላይ-ቀኝ ጥግ</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ</translation>
 <translation id="9045155556724273246">10 ሰከንዶች</translation>
 <translation id="906331135292332864">ምስልን በማሰናዳት ላይ...</translation>
+<translation id="9161584225258678723">የረዘመ ጊዜ</translation>
 <translation id="922762992951083513">መስታወት ጠፍቷል</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 </translationbundle>

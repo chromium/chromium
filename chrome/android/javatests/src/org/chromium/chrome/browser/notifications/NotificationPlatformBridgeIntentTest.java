@@ -8,8 +8,8 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

@@ -140,9 +140,8 @@ void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
   if (IsNetworkError(net_error)) {
     RecordRequestStatus(SubscriptionStatus::kNetworkFailure, type_, topic_,
                         net_error, response_code);
-    RunCompletedCallbackAndMaybeDie(
-        Status(StatusCode::FAILED, base::StringPrintf("Network Error")),
-        std::string());
+    RunCompletedCallbackAndMaybeDie(Status(StatusCode::FAILED, "Network Error"),
+                                    std::string());
     // Potentially dead after the above invocation; nothing to do except return.
     return;
   }
@@ -176,9 +175,8 @@ void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
   if (!response_body || response_body->empty()) {
     RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_,
                         net_error, response_code);
-    RunCompletedCallbackAndMaybeDie(
-        Status(StatusCode::FAILED, base::StringPrintf("Body missing")),
-        std::string());
+    RunCompletedCallbackAndMaybeDie(Status(StatusCode::FAILED, "Body missing"),
+                                    std::string());
     // Potentially dead after the above invocation; nothing to do except return.
     return;
   }
@@ -191,28 +189,20 @@ void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
 
 void PerUserTopicSubscriptionRequest::OnJsonParse(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
-    RunCompletedCallbackAndMaybeDie(
-        Status(StatusCode::FAILED, base::StringPrintf("Body parse error")),
-        std::string());
+  if (const auto topic_name = result.transform(GetTopicName);
+      topic_name.has_value() && *topic_name) {
+    RecordRequestStatus(SubscriptionStatus::kSuccess, type_, topic_);
+    RunCompletedCallbackAndMaybeDie(Status(StatusCode::SUCCESS, std::string()),
+                                    **topic_name);
     // Potentially dead after the above invocation; nothing to do except return.
     return;
   }
-
-  const std::string* topic_name = GetTopicName(*result);
-  if (topic_name) {
-    RecordRequestStatus(SubscriptionStatus::kSuccess, type_, topic_);
-    RunCompletedCallbackAndMaybeDie(Status(StatusCode::SUCCESS, std::string()),
-                                    *topic_name);
-    // Potentially dead after the above invocation; nothing to do except return.
-  } else {
-    RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
-    RunCompletedCallbackAndMaybeDie(
-        Status(StatusCode::FAILED, base::StringPrintf("Missing topic name")),
-        std::string());
-    // Potentially dead after the above invocation; nothing to do except return.
-  }
+  RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
+  RunCompletedCallbackAndMaybeDie(
+      Status(StatusCode::FAILED,
+             result.has_value() ? "Missing topic name" : "Body parse error"),
+      std::string());
+  // Potentially dead after the above invocation; nothing to do except return.
 }
 
 void PerUserTopicSubscriptionRequest::RunCompletedCallbackAndMaybeDie(

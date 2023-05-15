@@ -4,11 +4,12 @@
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 
 namespace content {
@@ -17,7 +18,7 @@ const char kUrnUuidPrefix[] = "urn:uuid:";
 
 GURL GenerateUrnUuid() {
   return GURL(kUrnUuidPrefix +
-              base::GUID::GenerateRandomV4().AsLowercaseString());
+              base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 namespace {
@@ -71,9 +72,11 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url)
                   VisibilityToContent::kTransparent),
       mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
-FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url,
-                                     const gfx::Size& content_size,
-                                     bool is_ad_component)
+FencedFrameConfig::FencedFrameConfig(
+    const GURL& mapped_url,
+    const gfx::Size& content_size,
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
+    bool is_ad_component)
     : mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
@@ -86,6 +89,7 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url,
                                              false,
                                              VisibilityToEmbedder::kTransparent,
                                              VisibilityToContent::kOpaque),
+      fenced_frame_reporter_(fenced_frame_reporter),
       is_ad_component_(is_ad_component) {}
 
 FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
@@ -97,9 +101,12 @@ FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
                   VisibilityToContent::kTransparent),
       mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
-FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url,
-                                     bool is_ad_component)
+FencedFrameConfig::FencedFrameConfig(
+    const GURL& mapped_url,
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
+    bool is_ad_component)
     : FencedFrameConfig(mapped_url) {
+  fenced_frame_reporter_ = fenced_frame_reporter;
   is_ad_component_ = is_ad_component;
 }
 
@@ -170,6 +177,8 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
   // was called to generate the config, rather than any cross-site data.
   redacted_config.mode_ = mode_;
 
+  redacted_config.required_permissions_to_load_ = required_permissions_to_load;
+
   return redacted_config;
 }
 
@@ -200,7 +209,8 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToEmbedder::kOpaque,
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
-      is_ad_component_(config.is_ad_component_) {
+      is_ad_component_(config.is_ad_component_),
+      required_permissions_to_load(config.required_permissions_to_load) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -281,6 +291,9 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   // was called to generate the config, rather than any cross-site data.
   redacted_properties.mode_ = mode_;
 
+  redacted_properties.required_permissions_to_load_ =
+      required_permissions_to_load;
+
   return redacted_properties;
 }
 
@@ -291,8 +304,13 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
 
 void FencedFrameProperties::UpdateAutomaticBeaconData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
-  automatic_beacon_info_.emplace(event_data, destination);
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {
+  // For an ad component, the event data from its automatic beacon is ignored.
+  automatic_beacon_info_.emplace(is_ad_component_ ? std::string{} : event_data,
+                                 destinations,
+                                 attribution_reporting_runtime_features);
 }
 
 }  // namespace content

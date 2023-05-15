@@ -219,14 +219,14 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
           cast_environment, std::move(openscreen_test_senders_->audio_sender),
           std::move(openscreen_test_senders_->video_sender),
           MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
-                                                Codec::CODEC_AUDIO_REMOTE),
+                                                Codec::kAudioRemote),
           MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                                Codec::CODEC_VIDEO_REMOTE));
+                                                Codec::kVideoRemote));
     } else {
       media_remoter_->StartRpcMessaging(
           cast_environment, &mock_transport_, media::cast::FrameSenderConfig(),
           MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                                Codec::CODEC_VIDEO_REMOTE));
+                                                Codec::kVideoRemote));
     }
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);

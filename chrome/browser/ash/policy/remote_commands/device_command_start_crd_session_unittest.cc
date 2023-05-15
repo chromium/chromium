@@ -566,6 +566,26 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
             crd_host_delegate().session_parameters().user_name);
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassAdminEmailToDelegate) {
+  LogInAsKioskUser();
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("adminEmail", "email@admin.com")));
+
+  EXPECT_EQ("email@admin.com",
+            crd_host_delegate().session_parameters().admin_email);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldNotSetAdminEmailWhenNotSpecifiedInPayload) {
+  LogInAsKioskUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult(Payload()));
+
+  EXPECT_EQ(absl::nullopt,
+            crd_host_delegate().session_parameters().admin_email);
+}
+
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
        TestTerminateUponInputForRemoteSupportWithAckedUserPresenceFalse) {
   TestSessionType user_session_type = GetParam();
@@ -1067,12 +1087,13 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
-       ShouldAllowRequestIfManagedVpnNetworkIsAvailable) {
+       ShouldRejectRequestIfManagedNetworkIsVpn) {
   fake_cros_network_config().SetActiveNetworks({
       CreateNetwork(NetworkType::kVPN).SetOncSource(OncSource::kDevicePolicy),
   });
 
-  EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
+  EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
+               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,

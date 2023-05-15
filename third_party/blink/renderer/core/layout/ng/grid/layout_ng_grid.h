@@ -16,7 +16,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock {
  public:
   explicit LayoutNGGrid(Element*);
 
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

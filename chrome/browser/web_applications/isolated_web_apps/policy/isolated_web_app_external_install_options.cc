@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
@@ -33,8 +32,10 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
     return base::unexpected("Policy entry is not dictionary");
   }
 
+  const base::Value::Dict& entry_dict = entry.GetDict();
+
   const std::string* const update_manifest_url_raw =
-      entry.FindStringKey(kPolicyUpdateManifestUrlKey);
+      entry_dict.FindString(kPolicyUpdateManifestUrlKey);
   if (!update_manifest_url_raw) {
     return base::unexpected(
         "Update manifest URL value is not found or has the wrong type");
@@ -46,7 +47,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   }
 
   const std::string* const web_bundle_id_raw =
-      entry.FindStringKey(kPolicyWebBundleIdKey);
+      entry_dict.FindString(kPolicyWebBundleIdKey);
   if (!web_bundle_id_raw) {
     return base::unexpected(
         "Web Bundle ID value is not found or has the wrong type");
@@ -56,8 +57,8 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
       web_bundle_id =
           web_package::SignedWebBundleId::Create(*web_bundle_id_raw);
   if (!web_bundle_id.has_value()) {
-    return base::unexpected(base::StringPrintf("Wrong Web Bundle ID value: %s",
-                                               web_bundle_id.error().c_str()));
+    return base::unexpected("Wrong Web Bundle ID value: " +
+                            web_bundle_id.error());
   }
 
   if (web_bundle_id->type() !=

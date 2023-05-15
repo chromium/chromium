@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 
@@ -52,7 +53,7 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   bool successfully_requested_targets_ = true;
   bool failed_to_get_arc_service_manager_ = false;
   bool failed_to_get_net_instance_service_for_http_test_ = false;
-  arc::mojom::NetInstance* net_instance_ = nullptr;
+  raw_ptr<arc::mojom::NetInstance, ExperimentalAsh> net_instance_ = nullptr;
   int64_t max_latency_ = 0;
   base::WeakPtrFactory<ArcHttpRoutine> weak_ptr_factory_{this};
 };

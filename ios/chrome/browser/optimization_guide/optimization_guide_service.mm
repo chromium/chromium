@@ -23,13 +23,13 @@
 #import "components/optimization_guide/core/top_host_provider.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/synthetic_trials.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
 #import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -82,6 +82,7 @@ OptimizationGuideService::OptimizationGuideService(
   DCHECK(
       !off_the_record_ || prediction_model_and_features_store ||
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled());
+  base::FilePath models_dir;
   if (!off_the_record_) {
     // Only create a top host provider from the command line if provided.
     top_host_provider_ =
@@ -100,12 +101,20 @@ OptimizationGuideService::OptimizationGuideService(
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
     if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+      // Do not explicitly hand off the model downloads directory to
+      // off-the-record profiles. Underneath the hood, this variable is only
+      // used in non off-the-record profiles to know where to download the model
+      // files to. Off-the-record profiles read the model locations from the
+      // original profiles they are associated with.
+      models_dir = profile_path.Append(
+          optimization_guide::kOptimizationGuidePredictionModelDownloads);
       prediction_model_and_features_store_ =
           std::make_unique<optimization_guide::OptimizationGuideStore>(
               proto_db_provider,
               profile_path.Append(
                   optimization_guide::
                       kOptimizationGuidePredictionModelMetadataStore),
+              models_dir,
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
               pref_service);
@@ -119,16 +128,6 @@ OptimizationGuideService::OptimizationGuideService(
       top_host_provider_.get(), tab_url_provider_.get(), url_loader_factory,
       optimization_guide_logger_.get());
 
-  base::FilePath models_dir;
-  if (!off_the_record_) {
-    // Do not explicitly hand off the model downloads directory to
-    // off-the-record profiles. Underneath the hood, this variable is only used
-    // in non off-the-record profiles to know where to download the model files
-    // to. Off-the-record profiles read the model locations from the original
-    // profiles they are associated with.
-    models_dir = profile_path.Append(
-        optimization_guide::kOptimizationGuidePredictionModelDownloads);
-  }
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     // TODO(crbug.com/1284363): Support the new prediction model store.
     prediction_manager_ =

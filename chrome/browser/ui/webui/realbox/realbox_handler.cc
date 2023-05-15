@@ -41,6 +41,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -214,7 +216,7 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
           base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
         return l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_SUFFIX);
       }
-      const OmniboxAction* action = match.GetPrimaryAction();
+      const OmniboxAction* action = match.GetActionAt(0u);
       if (action) {
         return action->GetLabelStrings().accessibility_suffix;
       }
@@ -310,29 +312,16 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value());
-
-    // The realbox only supports one action and priority is given to the actions
-    // instead of the switch to tab button.
-    if (match.has_tab_match.value_or(false) &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      mojom_match->action = omnibox::mojom::Action::New(
-          l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON),
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
-          std::u16string(), kTabIconResourceName);
-    }
-
-    // Omit actions that takeover the whole match, because the C++ handler
-    // remaps the navigation to execute the action. (Doesn't happen in the JS.)
-    const OmniboxAction* action = match.GetPrimaryAction();
-    if (action && !action->TakesOverMatch() &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      const OmniboxAction::LabelStrings& label_strings =
-          action->GetLabelStrings();
-      mojom_match->action = omnibox::mojom::Action::New(
-          label_strings.accessibility_hint, label_strings.hint,
-          label_strings.suggestion_contents,
-          RealboxHandler::PedalVectorIconToResourceName(
-              action->GetVectorIcon()));
+    if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+      for (const auto& action : match.actions) {
+        const OmniboxAction::LabelStrings& label_strings =
+            action->GetLabelStrings();
+        mojom_match->actions.emplace_back(omnibox::mojom::Action::New(
+            label_strings.accessibility_hint, label_strings.hint,
+            label_strings.suggestion_contents,
+            RealboxHandler::PedalVectorIconToResourceName(
+                action->GetVectorIcon())));
+      }
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
         match, match.contents, line, 0,
@@ -404,6 +393,7 @@ class RealboxOmniboxClient : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
+  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
@@ -447,6 +437,11 @@ SessionID RealboxOmniboxClient::GetSessionID() const {
 
 bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
+}
+
+AutocompleteControllerEmitter*
+RealboxOmniboxClient::GetAutocompleteControllerEmitter() {
+  return AutocompleteControllerEmitter::GetForBrowserContext(profile_);
 }
 
 TemplateURLService* RealboxOmniboxClient::GetTemplateURLService() {
@@ -545,21 +540,11 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 
   source->AddBoolean("roundCorners", base::FeatureList::IsEnabled(
                                          ntp_features::kRealboxRoundedCorners));
-
-  source->AddBoolean(
-      "showSecondarySide",
-      base::FeatureList::IsEnabled(omnibox::kRealboxSecondaryZeroSuggest));
 }
 
 // static
 std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
-  std::string answerNames[] = {
-      omnibox::kAnswerCurrencyIcon.name,   omnibox::kAnswerDefaultIcon.name,
-      omnibox::kAnswerDictionaryIcon.name, omnibox::kAnswerFinanceIcon.name,
-      omnibox::kAnswerSunriseIcon.name,    omnibox::kAnswerTranslationIcon.name,
-      omnibox::kAnswerWhenIsIcon.name,     omnibox::kAnswerWhenIsIcon.name};
-
   if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
     return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
@@ -617,7 +602,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else {
     NOTREACHED()
         << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
-           "must have an equivalent SVG resource for the NTP Realbox.";
+           "must have an equivalent SVG resource for the NTP Realbox. "
+           "icon.name: '"
+        << icon.name << "'";
   }
   return "";
 }
@@ -625,6 +612,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
 // static
 std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
+  if (icon.name == omnibox::kSwitchIcon.name) {
+    return kTabIconResourceName;
+  }
   if (icon.name == omnibox::kDinoIcon.name) {
     return kDinoIconResourceName;
   }
@@ -677,7 +667,9 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   }
 #endif
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
-                  "must have an equivalent SVG resource for the NTP Realbox.";
+                  "must have an equivalent SVG resource for the NTP Realbox. "
+                  "icon.name: '"
+               << icon.name << "'";
   return "";
 }
 
@@ -693,19 +685,12 @@ RealboxHandler::RealboxHandler(
   controller_emitter_observation_.Observe(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_));
 
-  edit_model_ = std::make_unique<OmniboxEditModel>(
-      /*view=*/nullptr, /*edit_model_delegate=*/this,
-      std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
-  edit_model_->set_autocomplete_controller(
+  controller_ = std::make_unique<OmniboxController>(
+      /*edit_model_delegate=*/this,
       std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-          AutocompleteClassifier::DefaultOmniboxProviders()));
-
-  AutocompleteControllerEmitter* emitter =
-      AutocompleteControllerEmitter::GetForBrowserContext(profile_);
-  if (emitter) {
-    autocomplete_controller()->AddObserver(emitter);
-  }
+          AutocompleteClassifier::DefaultOmniboxProviders()),
+      std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
 }
 
 RealboxHandler::~RealboxHandler() = default;
@@ -763,60 +748,46 @@ void RealboxHandler::OpenAutocompleteMatch(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  if (line >= autocomplete_controller()->result().size()) {
-    NOTREACHED();
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  edit_model_->OpenSelection(OmniboxPopupSelection(line), timestamp,
-                             disposition);
+  edit_model()->OpenSelection(OmniboxPopupSelection(line), timestamp,
+                              disposition);
 }
 
 void RealboxHandler::OnNavigationLikely(
     uint8_t line,
+    const GURL& url,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
-  if (autocomplete_controller()->result().size() <= line) {
-    NOTREACHED();
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    AutocompleteMatch match(autocomplete_controller()->result().match_at(line));
     search_prefetch_service->OnNavigationLikely(
-        line, match, navigation_predictor, web_contents_);
+        line, *match, navigation_predictor, web_contents_);
   }
 }
 
-void RealboxHandler::OpenURL(const GURL& destination_url,
-                             TemplateURLRef::PostContent* post_content,
-                             WindowOpenDisposition disposition,
-                             ui::PageTransition transition,
-                             AutocompleteMatchType::Type type,
-                             base::TimeTicks match_selection_timestamp,
-                             bool destination_url_entered_without_scheme,
-                             const std::u16string&,
-                             const AutocompleteMatch&,
-                             const AutocompleteMatch&,
-                             IDNA2008DeviationCharacter) {
-  // TODO(crbug.com/1431513): Cull this method and simplify base interfaces.
-  NOTREACHED();
-}
-
-void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
-  if (autocomplete_controller()->result().size() <= line ||
-      !autocomplete_controller()->result().match_at(line).SupportsDeletion()) {
-    NOTREACHED();
+void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match || !match->SupportsDeletion()) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
-
-  const auto& match = autocomplete_controller()->result().match_at(line);
-  if (match.SupportsDeletion()) {
-    autocomplete_controller()->Stop(false);
-    autocomplete_controller()->DeleteMatch(match);
-  }
+  autocomplete_controller()->Stop(false);
+  autocomplete_controller()->DeleteMatch(*match);
 }
 
 void RealboxHandler::ToggleSuggestionGroupIdVisibility(
@@ -831,32 +802,31 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
 }
 
 void RealboxHandler::ExecuteAction(uint8_t line,
+                                   uint8_t action_index,
+                                   const GURL& url,
                                    base::TimeTicks match_selection_timestamp,
                                    uint8_t mouse_button,
                                    bool alt_key,
                                    bool ctrl_key,
                                    bool meta_key,
                                    bool shift_key) {
-  if (line >= autocomplete_controller()->result().size()) {
-    NOTREACHED();
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return;
+  }
+  if (action_index >= match->actions.size()) {
     return;
   }
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  const AutocompleteMatch& match =
-      autocomplete_controller()->result().match_at(line);
-  // Realbox currently only supports one action button and gives preference to
-  // actions over tab switch, but the omnibox shows tab switch button first.
-  // This disparity can be eliminated once realbox supports multiple
-  // actions on a button row.
-  const bool has_action = match.GetPrimaryAction() != nullptr;
-  DCHECK(has_action || match.has_tab_match.value_or(false));
   OmniboxPopupSelection selection(
-      line, has_action
-                ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION
-                : OmniboxPopupSelection::LineState::FOCUSED_BUTTON_TAB_SWITCH);
-  edit_model_->OpenSelection(selection, match_selection_timestamp, disposition);
+      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
+      action_index);
+  edit_model()->OpenSelection(selection, match_selection_timestamp,
+                              disposition);
 }
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
@@ -993,6 +963,28 @@ bool RealboxHandler::ShouldUseUpdatedConnectionSecurityIndicators() const {
   return false;
 }
 
+OmniboxEditModel* RealboxHandler::edit_model() const {
+  return controller_->edit_model();
+}
+
 AutocompleteController* RealboxHandler::autocomplete_controller() const {
-  return edit_model_->autocomplete_controller();
+  return controller_->autocomplete_controller();
+}
+
+const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
+                                                         const GURL& url) {
+  const AutocompleteResult& result = autocomplete_controller()->result();
+  if (index >= result.size()) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return nullptr;
+  }
+  const AutocompleteMatch& match = result.match_at(index);
+  if (match.destination_url != url) {
+    // This can happen also, for the same reason. We could search the result
+    // for the match with this URL, but there would be no guarantee that it's
+    // the same match, so for this edge case we treat result mismatch as none.
+    return nullptr;
+  }
+  return &match;
 }

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_LIST_ITEM_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -34,7 +35,7 @@ class ASH_EXPORT AppStreamLauncherListItem : public views::View {
 
  private:
   // Owned by views hierarchy.
-  views::LabelButton* app_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> app_button_ = nullptr;
 };
 
 }  // namespace ash

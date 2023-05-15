@@ -49,10 +49,11 @@ bool GetValue(const base::Value& value, bool* result) {
 bool GetValue(const base::Value& value, gfx::Rect* rect) {
   if (!value.is_dict())
     return false;
-  absl::optional<int> x = value.FindIntKey("x");
-  absl::optional<int> y = value.FindIntKey("y");
-  absl::optional<int> width = value.FindIntKey("width");
-  absl::optional<int> height = value.FindIntKey("height");
+  const base::Value::Dict& dict = value.GetDict();
+  absl::optional<int> x = dict.FindInt("x");
+  absl::optional<int> y = dict.FindInt("y");
+  absl::optional<int> width = dict.FindInt("width");
+  absl::optional<int> height = dict.FindInt("height");
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value()) {
     return false;
@@ -66,7 +67,7 @@ bool GetValue(const base::Value& value, RegisterOptions* options) {
   if (!value.is_dict())
     return false;
 
-  const bool synced = value.FindBoolKey("synced").value_or(false);
+  const bool synced = value.GetDict().FindBool("synced").value_or(false);
   options->sync_mode = synced ? RegisterOptions::SyncMode::kSync
                               : RegisterOptions::SyncMode::kDontSync;
   return true;

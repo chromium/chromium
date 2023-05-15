@@ -55,10 +55,6 @@ group("deployment_resources") {
   }
 
   if (test_isolate_uses_emulator) {
-    data += [
-      "//third_party/fuchsia-sdk/sdk/bin/device_launcher.version",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvdl",
-    ]
     if (test_host_cpu == "x64") {
       data += [
         "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
@@ -97,4 +93,11 @@ group("asan_runtime_library") {
     ":sysroot_asan_libs",
     ":sysroot_asan_runtime_libs",
   ]
+}
+
+# rustc gives the linker (clang++) "-pie" directives. clang++ complains on
+# Fuchsia that these don't make any sense. On Fuchsia alone, for Rust-linked
+# targets only, disable these warnings.
+config("rustc_no_pie_warning") {
+  ldflags = [ "-Wno-unused-command-line-argument" ]
 }

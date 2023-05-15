@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -93,7 +94,7 @@ class CopyMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.
-  const base::FilePath& original_profile_dir_;
+  const raw_ref<const base::FilePath, ExperimentalAsh> original_profile_dir_;
   // A hash string of the profile user ID.
   const std::string user_id_hash_;
 

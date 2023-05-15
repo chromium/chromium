@@ -88,8 +88,8 @@ void RemoteApps::LoadIcon(const std::string& app_id,
   IconEffects icon_effects = (icon_type == IconType::kStandard)
                                  ? IconEffects::kCrOsStandardIcon
                                  : IconEffects::kMdIconStyle;
-  ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
-                   std::move(callback));
+  ApplyIconEffects(profile_, app_id, icon_effects, size_hint_in_dip,
+                   std::move(icon), std::move(callback));
 }
 
 void RemoteApps::Launch(const std::string& app_id,

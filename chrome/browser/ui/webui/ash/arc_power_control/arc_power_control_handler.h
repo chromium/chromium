@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/power/arc_power_bridge.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -69,8 +70,8 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
   void OnIsDeveloperMode(bool developer_mode);
 
   // Unowned pointers.
-  arc::ArcPowerBridge* const power_bridge_;
-  arc::ArcInstanceThrottle* const instance_throttle_;
+  const raw_ptr<arc::ArcPowerBridge, ExperimentalAsh> power_bridge_;
+  const raw_ptr<arc::ArcInstanceThrottle, ExperimentalAsh> instance_throttle_;
 
   // Collects system stats runtime.
   base::Time timestamp_;

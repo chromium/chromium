@@ -68,6 +68,10 @@ public class TouchToFillCreditCardViewTest {
             /* number= */ "4111111111111111", /* month= */ "4", /* year= */ "2090",
             /* network= */ "Visa", /* iconId= */ 0, /* cardNameForAutofillDisplay= */ "Visa",
             /* obfuscatedLastFourDigits= */ "1111");
+    private static final CreditCard LONG_CARD_NAME_CARD =
+            createCreditCard("MJ", "4111111111111111", "5", "2050", false,
+                    "How much wood would a woodchuck chuck if a woodchuck could chuck wood",
+                    "• • • • 1111", 0, "visa");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -142,14 +146,17 @@ public class TouchToFillCreditCardViewTest {
 
         assertThat(getCreditCardNameAt(0).getText(), is(VISA.getCardNameForAutofillDisplay()));
         assertThat(getCreditCardNumberAt(0).getText(), is(VISA.getObfuscatedLastFourDigits()));
-        assertThat(getCreditCardExpirationAt(0).getText(), is(createExpirationDateString(VISA)));
+        assertThat(getCreditCardExpirationAt(0).getText(),
+                is(VISA.getFormattedExpirationDateWithTwoDigitYear(
+                        ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(1).getText(), is(MASTER_CARD.getCardNameForAutofillDisplay()));
         assertThat(
                 getCreditCardNumberAt(1).getText(), is(MASTER_CARD.getObfuscatedLastFourDigits()));
         assertThat(getCreditCardExpirationAt(1).getText(),
-                is(createExpirationDateString(MASTER_CARD)));
+                is(MASTER_CARD.getFormattedExpirationDateWithTwoDigitYear(
+                        ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(2).getText(), is(VIRTUAL_CARD.getCardNameForAutofillDisplay()));
@@ -252,6 +259,26 @@ public class TouchToFillCreditCardViewTest {
         assertEquals(cardName.getContentDescription(), null);
     }
 
+    @Test
+    @MediumTest
+    public void testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(LONG_CARD_NAME_CARD)));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        TextView cardNumber =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_number);
+        assertTrue(
+                cardName.getLayout().getEllipsisCount(cardName.getLayout().getLineCount() - 1) > 0);
+        assertThat(cardNumber.getLayout().getText().toString(),
+                is(LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits()));
+    }
+
     private RecyclerView getCreditCards() {
         return mTouchToFillCreditCardView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -293,16 +320,10 @@ public class TouchToFillCreditCardViewTest {
         } else {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                    createExpirationDateString(card));
+                    card.getFormattedExpirationDateWithTwoDigitYear(
+                            ContextUtils.getApplicationContext()));
         }
         return creditCardModelBuilder.build();
-    }
-
-    private static String createExpirationDateString(CreditCard card) {
-        return ContextUtils.getApplicationContext()
-                .getString(R.string.autofill_credit_card_two_line_label_from_card_number)
-                .replace("$1",
-                        card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
     }
 
     private static String getVirtualCardLabel() {

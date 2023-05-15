@@ -14,6 +14,7 @@
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
 #include "ash/system/unified/quick_settings_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -166,14 +167,14 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   std::unique_ptr<UnifiedSystemTrayController> controller_;
 
   // Owner of this class.
-  UnifiedSystemTray* tray_;
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
 
   // Widget that contains UnifiedSystemTrayView. Unowned.
   // When the widget is closed by deactivation, |bubble_widget_| pointer is
   // invalidated and we have to delete UnifiedSystemTrayBubble by calling
   // UnifiedSystemTray::CloseBubble().
   // In order to do this, we observe OnWidgetDestroying().
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // PreTargetHandler of |unified_view_| to record TimeToClick metrics. Owned.
   std::unique_ptr<TimeToClickRecorder> time_to_click_recorder_;
@@ -181,9 +182,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // The time the bubble is created.
   absl::optional<base::TimeTicks> time_opened_;
 
-  TrayBubbleView* bubble_view_ = nullptr;
-  UnifiedSystemTrayView* unified_view_ = nullptr;
-  QuickSettingsView* quick_settings_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> unified_view_ = nullptr;
+  raw_ptr<QuickSettingsView, ExperimentalAsh> quick_settings_view_ = nullptr;
 
   base::WeakPtrFactory<UnifiedSystemTrayBubble> weak_factory_{this};
 };

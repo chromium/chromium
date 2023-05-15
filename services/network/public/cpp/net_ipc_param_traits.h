@@ -30,7 +30,6 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_version.h"
 #include "net/nqe/effective_connection_type.h"
-#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
@@ -88,17 +87,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<net::HashValue> {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    ParamTraits<net::HostPortPair> {
-  typedef net::HostPortPair param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     ParamTraits<net::IPEndPoint> {
   typedef net::IPEndPoint param_type;
   static void Write(base::Pickle* m, const param_type& p);
@@ -131,17 +119,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    ParamTraits<net::ProxyServer> {
-  typedef net::ProxyServer param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     ParamTraits<net::OCSPVerifyResult> {
   typedef net::OCSPVerifyResult param_type;
   static void Write(base::Pickle* m, const param_type& p);
@@ -155,17 +132,6 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     ParamTraits<net::ResolveErrorInfo> {
   typedef net::ResolveErrorInfo param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    ParamTraits<scoped_refptr<net::SSLCertRequestInfo>> {
-  typedef scoped_refptr<net::SSLCertRequestInfo> param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
@@ -276,9 +242,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(net::OCSPRevocationStatus,
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::ct::SCTVerifyStatus, net::ct::SCT_STATUS_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(net::RequestPriority, net::MAXIMUM_PRIORITY)
-
-IPC_ENUM_TRAITS_MAX_VALUE(net::SSLClientCertType,
-                          net::SSLClientCertType::CLIENT_CERT_INVALID_TYPE)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::SSLInfo::HandshakeType,
                           net::SSLInfo::HANDSHAKE_FULL)

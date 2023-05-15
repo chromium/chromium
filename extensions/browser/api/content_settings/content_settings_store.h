@@ -130,22 +130,28 @@ class ContentSettingsStore
 
   content_settings::OriginIdentifierValueMap* GetValueMap(
       const std::string& ext_id,
-      ExtensionPrefsScope scope);
+      ExtensionPrefsScope scope) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const content_settings::OriginIdentifierValueMap* GetValueMap(
       const std::string& ext_id,
-      ExtensionPrefsScope scope) const;
+      ExtensionPrefsScope scope) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void NotifyOfContentSettingChanged(const std::string& extension_id,
                                      bool incognito);
 
   bool OnCorrectThread();
 
-  ExtensionEntry* FindEntry(const std::string& ext_id) const;
-  ExtensionEntries::iterator FindIterator(const std::string& ext_id);
+  ExtensionEntry* FindEntry(const std::string& ext_id) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ExtensionEntries::iterator FindIterator(const std::string& ext_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void ShouldNotifyForEntry(const ExtensionEntry& entry,
+                            bool* notify,
+                            bool* notify_incognito);
 
   // The entries.
-  ExtensionEntries entries_;
+  ExtensionEntries entries_ GUARDED_BY(lock_);
 
   base::ObserverList<Observer, false>::Unchecked observers_;
 

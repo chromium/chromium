@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -137,14 +138,15 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable* mock_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+      mock_prefs_;
   TestingProfileManager mock_profile_manager_;
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<ExtensionCleanupHandler> extension_cleanup_handler_;
-  MockExtensionService* extension_service_;
-  extensions::ExtensionRegistry* extension_registry_;
-  TestingProfile* mock_profile_;
+  raw_ptr<MockExtensionService, ExperimentalAsh> extension_service_;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_;
+  raw_ptr<TestingProfile, ExperimentalAsh> mock_profile_;
 };
 
 scoped_refptr<const Extension> MakeExtensionNamed(const std::string& name,

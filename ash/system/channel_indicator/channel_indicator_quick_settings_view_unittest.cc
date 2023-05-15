@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
 #include "ui/views/widget/widget.h"
@@ -65,9 +66,9 @@ class ChannelIndicatorQuickSettingsViewTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestSystemTrayClient* system_tray_client_ = nullptr;
+  raw_ptr<TestSystemTrayClient, ExperimentalAsh> system_tray_client_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
-  ChannelIndicatorQuickSettingsView* view_ = nullptr;
+  raw_ptr<ChannelIndicatorQuickSettingsView, ExperimentalAsh> view_ = nullptr;
 };
 
 // Run the `Visible` test below for each value of version_info::Channel.

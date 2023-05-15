@@ -14,6 +14,36 @@ each histogram.
 
 <histograms>
 
+<histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
+    enum="AccessibilityModeFlagEnum" expires_after="2023-10-21">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Whether individual accessibility mode flags are set. Recorded with every UMA
+    report to attempt to slice other metrics based on which a11y flags are set.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
+    enum="Boolean" expires_after="2023-10-21">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Whether any accessibility mode flags are set. Recorded with every UMA report
+    to attempt to slice other metrics based on whether a11y is active.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
+    units="%" expires_after="2023-10-28">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every UMA upload, this histogram represents the percentage of the
+    interval since the last upload that was spent with Battery Saver enabled.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
     enum="EfficiencyMode" expires_after="2023-09-10">
   <owner>anthonyvd@chromium.org</owner>
@@ -28,10 +58,20 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.UserTuning.MemorySaverModeEnabledPercent"
+    units="%" expires_after="2023-10-28">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every UMA upload, this histogram represents the percentage of the
+    interval since the last upload that was spent with Memory Saver enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="PerformanceManager.V8DetailedMemory.{Destination}.MeasurementMode"
     enum="V8DetailedMemoryMeasurementMode" expires_after="2023-05-23">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     Logged every time V8DetailedMemoryReporter.GetV8MemoryUsage is sent to a

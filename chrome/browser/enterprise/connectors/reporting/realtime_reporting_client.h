@@ -167,8 +167,10 @@ class RealtimeReportingClient : public KeyedService,
   // The cloud policy clients used to upload browser events and profile events
   // to the cloud. These clients are never used to fetch policies. These
   // pointers are not owned by the class.
-  raw_ptr<policy::CloudPolicyClient> browser_client_ = nullptr;
-  raw_ptr<policy::CloudPolicyClient> profile_client_ = nullptr;
+  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> browser_client_ =
+      nullptr;
+  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> profile_client_ =
+      nullptr;
 
   // The private clients are used on platforms where we cannot just get a
   // client and we create our own (used through the above client pointers).

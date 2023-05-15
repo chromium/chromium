@@ -4,9 +4,11 @@
 # found in the LICENSE file.
 
 import argparse
+import lzma
 import os
 import platform
 import shutil
+import subprocess
 import sys
 import tarfile
 
@@ -21,7 +23,7 @@ from update import (CHROMIUM_DIR)
 
 PACKAGE_VERSION = GetLatestRevision()
 BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
-RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tgz'
+RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 
 
 def BuildCrubit(build_mac_arm):
@@ -90,9 +92,18 @@ def main():
 
     BuildCrubit(args.build_mac_arm)
 
-    with tarfile.open(
-            os.path.join(THIRD_PARTY_DIR, RUST_TOOLCHAIN_PACKAGE_NAME),
-            'w:gz') as tar:
+    # Strip everything in bin/ to reduce the package size.
+    bin_dir_path = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin')
+    if sys.platform != 'win32' and os.path.exists(bin_dir_path):
+        for f in os.listdir(bin_dir_path):
+            file_path = os.path.join(bin_dir_path, f)
+            if not os.path.islink(file_path):
+                subprocess.call(['strip', file_path])
+
+    with tarfile.open(os.path.join(THIRD_PARTY_DIR,
+                                   RUST_TOOLCHAIN_PACKAGE_NAME),
+                      'w:xz',
+                      preset=9 | lzma.PRESET_EXTREME) as tar:
         tar.add(RUST_TOOLCHAIN_OUT_DIR, arcname='rust-toolchain')
 
     os.chdir(THIRD_PARTY_DIR)

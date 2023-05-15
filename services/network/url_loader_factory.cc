@@ -358,7 +358,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
   if (context_->network_service()) {
     attribution_request_helper = AttributionRequestHelper::CreateIfNeeded(
-        resource_request.headers,
+        resource_request.attribution_reporting_eligibility,
         context_->network_service()->trust_token_key_commitments());
   }
 

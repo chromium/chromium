@@ -13,6 +13,7 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -280,7 +281,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<quick_pair::FakeFastPairRepository> fast_pair_repository_;
   gfx::Image test_image_;
-  quick_pair::MockFastPairImageDecoder* mock_decoder_;
+  raw_ptr<quick_pair::MockFastPairImageDecoder, ExperimentalAsh> mock_decoder_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestFastPairSavedDevicesHandler> handler_;
   base::WeakPtrFactory<FastPairSavedDevicesHandlerTest> weak_ptr_factory_{this};

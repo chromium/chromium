@@ -14,6 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -228,11 +229,11 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
-  StorageHandler* handler_;
+  raw_ptr<StorageHandler, ExperimentalAsh> handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::test::ScopedFeatureList features_;
   std::unique_ptr<TotalDiskSpaceTestAPI> total_disk_space_test_api_;
   std::unique_ptr<FreeDiskSpaceTestAPI> free_disk_space_test_api_;
@@ -242,7 +243,7 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<DriveOfflineSizeTestAPI> drive_offline_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

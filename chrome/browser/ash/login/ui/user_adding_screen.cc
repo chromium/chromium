@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -41,7 +42,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
   ~UserAddingScreenImpl() override;
 
   base::ObserverList<UserAddingScreen::Observer>::Unchecked observers_;
-  LoginDisplayHost* display_host_;
+  raw_ptr<LoginDisplayHost, DanglingUntriaged | ExperimentalAsh> display_host_;
 
   UserAddingScreenInputMethodsController im_controller_;
 };

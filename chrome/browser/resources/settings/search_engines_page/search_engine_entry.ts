@@ -8,7 +8,7 @@
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../controls/extension_controlled_indicator.js';
+import '/shared/settings/controls/extension_controlled_indicator.js';
 import './search_engine_entry.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';

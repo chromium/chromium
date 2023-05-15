@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -241,7 +242,8 @@ class AdaptiveScreenBrightnessManagerTest
 
   ui::UserActivityDetector user_activity_detector_;
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager_;
-  TestingAdaptiveScreenBrightnessUkmLogger* ukm_logger_;
+  raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger, ExperimentalAsh>
+      ukm_logger_;
 };
 
 TEST_F(AdaptiveScreenBrightnessManagerTest, PeriodicLogging) {

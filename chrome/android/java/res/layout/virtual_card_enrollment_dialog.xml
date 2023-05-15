@@ -30,7 +30,6 @@ found in the LICENSE file.
         tools:text="Make it more secure with a virtual card?"
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
-
     <RelativeLayout
         android:id="@+id/card_container"
         android:background="@drawable/card_container_background"
@@ -40,33 +39,8 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/virtual_card_enrollment_dialog_description_margin_top"
         android:padding="@dimen/virtual_card_enrollment_dialog_card_container_padding">
 
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/credit_card_issuer_icon"
-            android:layout_width="@dimen/virtual_card_enrollment_dialog_card_art_width"
-            android:layout_height="@dimen/virtual_card_enrollment_dialog_card_art_height"
-            android:layout_alignTop="@id/virtual_card_text"
-            android:layout_alignBottom="@id/credit_card_identifier"
-            android:layout_marginEnd="@dimen/virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end"
-            tools:src="@drawable/infobar_autofill_cc"
-            android:importantForAccessibility="no" />
-
-        <TextView
-            android:id="@+id/virtual_card_text"
-            style="@style/TextAppearance.TextLarge.Primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/credit_card_issuer_icon"
-            android:text="@string/autofill_virtual_card_enrollment_dialog_card_container_title"
-            tools:text="Virtual Card" />
-
-        <TextView
-            android:id="@+id/credit_card_identifier"
-            style="@style/TextAppearance.TextMedium.Secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/virtual_card_text"
-            android:layout_toEndOf="@id/credit_card_issuer_icon"
-            tools:text="Linked with Mastercard 1111" />
+        <include
+            layout="@layout/autofill_cc_details_new" />
     </RelativeLayout>
 
     <ScrollView

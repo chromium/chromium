@@ -17,6 +17,8 @@ static_library("redaction_tool") {
     "url_canon_stdstring.cc",
     "url_canon_stdstring.h",
     "url_parse.h",
+    "validation.cc",
+    "validation.h",
   ]
 
   public_deps = [ "//base" ]
@@ -25,6 +27,8 @@ static_library("redaction_tool") {
     "//build:chromeos_buildflags",
     "//third_party/re2",
   ]
+
+  defines = [ "IS_REDACTION_TOOL_IMPL" ]
 }
 
 source_set("unit_tests") {
@@ -32,6 +36,7 @@ source_set("unit_tests") {
   sources = [ "redaction_tool_unittest.cc" ]
   deps = [
     ":redaction_tool",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

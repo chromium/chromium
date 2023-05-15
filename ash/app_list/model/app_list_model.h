@@ -15,6 +15,7 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 
@@ -178,7 +179,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                            const syncer::StringOrdinal& new_position);
 
   // Used to initiate updates on app list items from the ash side.
-  AppListModelDelegate* const delegate_;
+  const raw_ptr<AppListModelDelegate, ExperimentalAsh> delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
+#include "base/test/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
@@ -40,6 +42,8 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   void TearDown() override { testing_profile_.reset(); }
 
+  ArcSystemStateObservation* observation() { return observation_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -47,13 +51,20 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 
-  ash::ThrottleObserver* active_window_observer_;
-  ash::ThrottleObserver* background_service_observer_;
-  ash::ThrottleObserver* arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> active_window_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> background_service_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> arc_window_observer_;
 };
 
 TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}
 
+TEST_F(ArcSystemStateObservationTest, TestCallback) {
+  int reset_count = 0;
+  observation()->SetDurationResetCallback(
+      base::BindLambdaForTesting([&]() { reset_count++; }));
+  observation()->ThrottleInstance(false);
+  EXPECT_EQ(reset_count, 1);
+}
 // TODO(sstan): Test the ARC system running state update from mojo.
 
 }  // namespace arc

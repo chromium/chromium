@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
@@ -283,7 +282,6 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
     public void createRecyclerViews_toggleOff_showsIph() {
         String fileContentType = "image/gif";
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =

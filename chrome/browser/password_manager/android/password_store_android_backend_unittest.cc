@@ -179,7 +179,6 @@ class MockPasswordStoreAndroidBackendBridgeHelper
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&, Account), (override));
-  MOCK_METHOD(void, ShowErrorNotification, (), (override));
 };
 
 }  // namespace
@@ -697,8 +696,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalIgnoredErrorNotCausingExperimentUnenrollment) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// INTERNAL_ERROR=8
          {password_manager::features::kIgnoredGmsApiErrors.name, "8"},
          {password_manager::features::kRetriableGmsApiErrors.name, ""}}}},
@@ -750,8 +748,7 @@ TEST_F(
     OnUnretriableOperationWithExternalRetriableErrorOnCausesExperimentUnenrollment) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// DEVELOPER_ERROR=10, BAD_REQUEST=11008
          {password_manager::features::kIgnoredGmsApiErrors.name, "10,11008"},
          // NETWORK_ERROR=7
@@ -914,8 +911,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnNetworkErrorRetriableStopsRetryingAfterSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// NETWORK_ERROR = 7
          {password_manager::features::kIgnoredGmsApiErrors.name, ""},
          {password_manager::features::kRetriableGmsApiErrors.name, "7"}}}},
@@ -980,44 +976,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
-       OnExternalAuthErrorKeepSavingWithoutErrorMessageFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerAndroid,
-        {// AUTH_ERROR_UNRESOLVABLE=11006
-         {password_manager::features::kIgnoredGmsApiErrors.name, "11006"}}}},
-      {password_manager::features::kUnifiedPasswordManagerErrorMessages});
-
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.
-  int kUnresolvableAuthErrorCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
-  error.api_error_code = absl::optional<int>(kUnresolvableAuthErrorCode);
-  consumer().OnError(kJobId, std::move(error));
-  RunUntilIdle();
-
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalAuthErrorNotCausingExperimentUnenrollmentButSuspendsSaving) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// AUTH_ERROR_UNRESOLVABLE=11006
          {password_manager::features::kIgnoredGmsApiErrors.name, "11006"}}}},
       {});
@@ -1052,8 +1014,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalAuthErrorKeepSavingIfErrorNotIgnorable) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// DEVELOPER_ERROR=10, BAD_REQUEST=11008
          {password_manager::features::kIgnoredGmsApiErrors.name, "10,11008"}}}},
       {});
@@ -1084,8 +1045,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        ResetTemporarySavingSuspensionAfterSuccessfulLogin) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kUnifiedPasswordManagerErrorMessages);
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
@@ -1198,61 +1157,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
   error.api_error_code = absl::optional<int>(kInternalErrorCode);
   consumer().OnError(kJobId, std::move(error));
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       OnUnrecoverablApiErrorShowsUIFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kShowUPMErrorNotification};
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving INTERNAL_ERROR code.
-  int kInternalErrorCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
-
-  EXPECT_CALL(*bridge_helper(), ShowErrorNotification);
-  consumer().OnError(kJobId, std::move(error));
-
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       OnUnrecoverablApiErrorNoUIFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kShowUPMErrorNotification);
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving INTERNAL_ERROR code.
-  int kInternalErrorCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
-
-  EXPECT_CALL(*bridge_helper(), ShowErrorNotification).Times(0);
-  consumer().OnError(kJobId, std::move(error));
-
   RunUntilIdle();
 }
 
@@ -1566,55 +1470,13 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
       UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors, 1);
 }
 
-TEST_F(PasswordStoreAndroidBackendTest, AuthErrorUnrecoverableAfterMaxPrompts) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages,
-        {{password_manager::features::kMaxShownUPMErrorsBeforeEviction.name,
-          "3"}}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
-        {
-            // AUTH_ERROR_RESOLVABLE = "11005"
-            {password_manager::features::kIgnoredGmsApiErrors.name, "11005"},
-        }}},
-      {});
-  ASSERT_FALSE(prefs()->GetBoolean(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving AUTH_ERROR_RESOLVABLE code.
-  int kAuthErrorResolvableCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorResolvable);
-  error.api_error_code = absl::optional<int>(kAuthErrorResolvableCode);
-
-  // Pretend 3 prompts were already shown.
-  prefs()->SetInteger(prefs::kTimesUPMAuthErrorShown, 3);
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorResolvable,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  consumer().OnError(kJobId, std::move(error));
-  RunUntilIdle();
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-}
-
 TEST_F(PasswordStoreAndroidBackendTest,
        AuthErrorStillRecoverableUnderMaxPrompts) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// AUTH_ERROR_RESOLVABLE = "11005"
-         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"},
-         {password_manager::features::kMaxShownUPMErrorsBeforeEviction.name,
-          "3"}}}},
+         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"}}}},
       {});
   ASSERT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
@@ -1646,12 +1508,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
 TEST_F(PasswordStoreAndroidBackendTest, ResetAuthErrorCounterOnSuccessfulGet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// AUTH_ERROR_RESOLVABLE = "11005"
-         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"},
-         {password_manager::features::kMaxShownUPMErrorsBeforeEviction.name,
-          "3"}}}},
+         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"}}}},
       {});
   ASSERT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
@@ -1679,12 +1538,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
        ResetAuthErrorCounterOnSuccessfulModification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{password_manager::features::kUnifiedPasswordManagerErrorMessages, {}},
-       {password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{password_manager::features::kUnifiedPasswordManagerAndroid,
         {// AUTH_ERROR_RESOLVABLE = "11005"
-         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"},
-         {password_manager::features::kMaxShownUPMErrorsBeforeEviction.name,
-          "3"}}}},
+         {password_manager::features::kIgnoredGmsApiErrors.name, "11005"}}}},
       {});
   ASSERT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));

@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,7 +100,8 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
                                      absl::optional<std::string> text,
                                      absl::optional<GURL> image_url) {
     chrome_browser_sharing::SharingMessage sharing_message;
-    sharing_message.set_sender_guid(base::GenerateGUID());
+    sharing_message.set_sender_guid(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     sharing_message.set_sender_device_name(device_name);
     if (text) {
       sharing_message.mutable_remote_copy_message()->set_text(text.value());

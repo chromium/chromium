@@ -19,7 +19,6 @@ namespace multidevice_setup {
 const char kInstantTetheringAllowedPrefName[] = "tether.allowed";
 const char kMessagesAllowedPrefName[] = "multidevice.sms_connect_allowed";
 const char kSmartLockAllowedPrefName[] = "easy_unlock.allowed";
-const char kSmartLockSigninAllowedPrefName[] = "smart_lock_signin.allowed";
 const char kPhoneHubAllowedPrefName[] = "phone_hub.allowed";
 const char kPhoneHubCameraRollAllowedPrefName[] =
     "phone_hub_camera_roll.allowed";
@@ -53,7 +52,6 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kInstantTetheringAllowedPrefName, true);
   registry->RegisterBooleanPref(kMessagesAllowedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockAllowedPrefName, true);
-  registry->RegisterBooleanPref(kSmartLockSigninAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubCameraRollAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubNotificationsAllowedPrefName, true);
@@ -100,7 +98,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       static const mojom::Feature kTopLevelFeaturesInSuite[] = {
           mojom::Feature::kInstantTethering, mojom::Feature::kMessages,
           mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
-          mojom::Feature::kWifiSync,         mojom::Feature::kEche,
+          mojom::Feature::kWifiSync,
       };
       for (mojom::Feature top_level_feature : kTopLevelFeaturesInSuite) {
         if (IsFeatureAllowed(top_level_feature, pref_service))

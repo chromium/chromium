@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/simple_test_clock.h"
@@ -121,8 +122,8 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
                                        gcm_manager,
                                        pref_service),
         scoped_sync_scheduler_(new NiceMock<MockSyncScheduler>()),
-        weak_sync_scheduler_factory_(scoped_sync_scheduler_) {
-    SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_));
+        weak_sync_scheduler_factory_(scoped_sync_scheduler_.get()) {
+    SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_.get()));
   }
 
   TestCryptAuthEnrollmentManager(const TestCryptAuthEnrollmentManager&) =
@@ -139,7 +140,7 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
  private:
   // Ownership is passed to |CryptAuthEnrollmentManager| super class when
   // |CreateSyncScheduler()| is called.
-  NiceMock<MockSyncScheduler>* scoped_sync_scheduler_;
+  raw_ptr<NiceMock<MockSyncScheduler>, ExperimentalAsh> scoped_sync_scheduler_;
 
   // Stores the pointer of |scoped_sync_scheduler_| after ownership is passed to
   // the super class.
@@ -166,8 +167,8 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate()),
         gcm_manager_(kGCMRegistrationId),
         enrollment_manager_(&clock_,
-                            base::WrapUnique(enroller_factory_),
-                            base::WrapUnique(secure_message_delegate_),
+                            base::WrapUnique(enroller_factory_.get()),
+                            base::WrapUnique(secure_message_delegate_.get()),
                             device_info_,
                             &gcm_manager_,
                             &pref_service_) {}
@@ -253,10 +254,11 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
   base::SimpleTestClock clock_;
 
   // Owned by |enrollment_manager_|.
-  MockCryptAuthEnrollerFactory* enroller_factory_;
+  raw_ptr<MockCryptAuthEnrollerFactory, ExperimentalAsh> enroller_factory_;
 
   // Ownered by |enrollment_manager_|.
-  multidevice::FakeSecureMessageDelegate* secure_message_delegate_;
+  raw_ptr<multidevice::FakeSecureMessageDelegate, ExperimentalAsh>
+      secure_message_delegate_;
 
   cryptauth::GcmDeviceInfo device_info_;
 

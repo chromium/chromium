@@ -4,6 +4,7 @@
 
 #include "ui/views/test/widget_test.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/focus_client.h"
@@ -53,7 +54,9 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
 #if BUILDFLAG(IS_WIN)
 
 struct FindAllWindowsData {
-  std::vector<aura::Window*>* windows;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION std::vector<aura::Window*>* windows;
 };
 
 BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {

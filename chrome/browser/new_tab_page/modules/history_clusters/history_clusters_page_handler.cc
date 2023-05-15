@@ -8,134 +8,35 @@
 #include <tuple>
 #include <vector>
 
-#include "base/barrier_callback.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
 
 namespace {
-
-constexpr int kMinRequiredRelatedSearches = 3;
-
-// The minimum number of visits to render a layout is 2 URL visits plus a SRP
-// visit.
-constexpr int kMinRequiredVisits = 3;
-
-// This enum must match the numbering for NTPHistoryClustersIneligibleReason in
-// enums.xml. Do not reorder or remove items, and update kMaxValue when new
-// items are added.
-enum NTPHistoryClustersIneligibleReason {
-  kNone = 0,
-  kNoClusters = 1,
-  kNonProminent = 2,
-  kNoSRPVisit = 3,
-  kInsufficientVisits = 4,
-  kInsufficientImages = 5,
-  kInsufficientRelatedSearches = 6,
-  kMaxValue = kInsufficientRelatedSearches,
-};
-
-base::flat_set<std::string> GetCategories(const char* feature_param) {
-  std::string categories_string = base::GetFieldTrialParamValueByFeature(
-      ntp_features::kNtpHistoryClustersModuleCategories, feature_param);
-  if (categories_string.empty()) {
-    return {};
-  }
-
-  auto categories = base::SplitString(categories_string, ",",
-                                      base::WhitespaceHandling::TRIM_WHITESPACE,
-                                      base::SplitResult::SPLIT_WANT_NONEMPTY);
-
-  return categories.empty() ? base::flat_set<std::string>()
-                            : base::flat_set<std::string>(categories.begin(),
-                                                          categories.end());
-}
-
-int GetMinVisitsToShow() {
-  static int min_visits = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequired,
-      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequiredParam,
-      kMinRequiredVisits);
-  if (min_visits < 0) {
-    return kMinRequiredVisits;
-  }
-  return min_visits;
-}
-
-int GetMinImagesToShow() {
-  static int min_images_to_show = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequired,
-      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequiredParam, 1);
-  return min_images_to_show;
-}
-
-size_t GetMaxClusters() {
-  // Even though only one cluster will be shown on the NTP at a time for now,
-  // set this to greater than that in case the filtering logic does not match
-  // up.
-  static int max_clusters = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMaxClusters,
-      ntp_features::kNtpHistoryClustersModuleMaxClustersParam, 5);
-  if (max_clusters < 0) {
-    return 5;
-  }
-  return static_cast<size_t>(max_clusters);
-}
-
-history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
-  history_clusters::QueryClustersFilterParams filter_params;
-  filter_params.min_visits = GetMinVisitsToShow();
-  filter_params.min_visits_with_images = GetMinImagesToShow();
-  filter_params.categories_allowlist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam);
-  filter_params.categories_blocklist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
-  filter_params.is_search_initiated = true;
-  filter_params.has_related_searches = true;
-  filter_params.is_shown_on_prominent_ui_surfaces = true;
-  filter_params.max_clusters = GetMaxClusters();
-  filter_params.categories_boostlist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam);
-  return filter_params;
-}
-
-base::Time GetBeginTime() {
-  static int hours_to_look_back = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleBeginTimeDuration,
-      ntp_features::kNtpHistoryClustersModuleBeginTimeDurationHoursParam, 24);
-  if (hours_to_look_back <= 0) {
-    hours_to_look_back = 24;
-  }
-
-  return base::Time::Now() - base::Hours(hours_to_look_back);
-}
 
 history::ClusterVisit GenerateSampleVisit(
     history::VisitID visit_id,
@@ -221,131 +122,32 @@ HistoryClustersPageHandler::HistoryClustersPageHandler(
     content::WebContents* web_contents)
     : receiver_(this, std::move(pending_receiver)),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      web_contents_(web_contents),
-      filter_params_(GetFilterParamsFromFeatureFlags()),
-      cart_service_(CartServiceFactory::GetForProfile(profile_)) {}
+      web_contents_(web_contents) {
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpChromeCartInHistoryClusterModule)) {
+    cart_processor_ = std::make_unique<CartProcessor>(
+        CartServiceFactory::GetForProfile(profile_));
+  }
+}
 
-HistoryClustersPageHandler::~HistoryClustersPageHandler() = default;
+HistoryClustersPageHandler::~HistoryClustersPageHandler() {
+  receiver_.reset();
+}
 
 void HistoryClustersPageHandler::CallbackWithClusterData(
     GetClustersCallback callback,
-    std::vector<history::Cluster> clusters,
-    history_clusters::QueryClustersContinuationParams continuation_params) {
-  const TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  if (!template_url_service) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  history_clusters::CoalesceRelatedSearches(clusters);
-
-  // Cull clusters that do not have the minimum number of visits with and
-  // without images to be eligible for display.
-  NTPHistoryClustersIneligibleReason ineligible_reason =
-      clusters.empty() ? kNoClusters : kNone;
-  base::EraseIf(clusters, [&](auto& cluster) {
-    // Cull non prominent clusters.
-    if (!cluster.should_show_on_prominent_ui_surfaces) {
-      ineligible_reason = kNonProminent;
-      return true;
-    }
-
-    // Cull clusters whose visits don't have at least one SRP.
-    const TemplateURL* default_search_provider =
-        template_url_service->GetDefaultSearchProvider();
-    auto srp_visits_it = std::find_if(
-        cluster.visits.begin(), cluster.visits.end(), [&](auto& visit) {
-          return default_search_provider->IsSearchURL(
-              visit.normalized_url, template_url_service->search_terms_data());
-        });
-    if (srp_visits_it == cluster.visits.end()) {
-      ineligible_reason = kNoSRPVisit;
-      return true;
-    }
-
-    // Ensure visits contains at most one SRP visit and its the first one in the
-    // list.
-    history::ClusterVisit first_srp_visit = *srp_visits_it;
-    base::EraseIf(cluster.visits, [&](auto& visit) {
-      return default_search_provider->IsSearchURL(
-          visit.normalized_url, template_url_service->search_terms_data());
-    });
-    cluster.visits.insert(cluster.visits.begin(), first_srp_visit);
-
-    // Cull visits that have a zero relevance score.
-    base::EraseIf(cluster.visits,
-                  [&](auto& visit) { return visit.score == 0.0; });
-
-    int visits_with_images = std::accumulate(
-        cluster.visits.begin(), cluster.visits.end(), 0,
-        [](const auto& i, const auto& v) {
-          return i + int(v.annotated_visit.content_annotations
-                             .has_url_keyed_image &&
-                         v.annotated_visit.visit_row.is_known_to_sync);
-        });
-
-    if (cluster.visits.size() < kMinRequiredVisits) {
-      ineligible_reason = kInsufficientVisits;
-      return true;
-    }
-
-    if (visits_with_images < GetMinImagesToShow()) {
-      ineligible_reason = kInsufficientImages;
-      return true;
-    }
-
-    // Cull clusters that do not have the minimum required number of related
-    // searches to be eligible for display.
-    if (cluster.related_searches.size() < kMinRequiredRelatedSearches) {
-      ineligible_reason = kInsufficientRelatedSearches;
-      return true;
-    }
-
-    return false;
-  });
-
-  base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
-                                ineligible_reason);
-  base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
-                            !clusters.empty());
-  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumClusterCandidates",
-                              clusters.size());
-
+    std::vector<history::Cluster> clusters) {
   if (clusters.empty()) {
     std::move(callback).Run({});
     return;
   }
 
-  history::Cluster top_cluster = clusters.front();
-  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumVisits",
-                              top_cluster.visits.size());
-  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumRelatedSearches",
-                              top_cluster.related_searches.size());
-
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   for (const auto& cluster : clusters) {
-    clusters_mojom.push_back(
-        history_clusters::ClusterToMojom(template_url_service, cluster));
+    clusters_mojom.push_back(history_clusters::ClusterToMojom(
+        TemplateURLServiceFactory::GetForProfile(profile_), cluster));
   }
   std::move(callback).Run(std::move(clusters_mojom));
-
-  if (!IsCartModuleEnabled() || !cart_service_) {
-    return;
-  }
-  const auto metrics_callback = base::BarrierCallback<bool>(
-      top_cluster.visits.size(),
-      base::BindOnce([](const std::vector<bool>& results) {
-        bool has_cart = false;
-        for (bool result : results) {
-          has_cart = has_cart || result;
-        }
-        base::UmaHistogramBoolean(
-            "NewTabPage.HistoryClusters.HasCartForTopCluster", has_cart);
-      }));
-  for (auto& visit : top_cluster.visits) {
-    cart_service_->HasActiveCartForURL(visit.normalized_url, metrics_callback);
-  }
 }
 
 void HistoryClustersPageHandler::GetClusters(GetClustersCallback callback) {
@@ -356,42 +158,55 @@ void HistoryClustersPageHandler::GetClusters(GetClustersCallback callback) {
   if (!fake_data_param.empty()) {
     const std::vector<std::string> kFakeDataParams = base::SplitString(
         fake_data_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (kFakeDataParams.size() != 2) {
+    if (kFakeDataParams.size() != 3) {
       LOG(ERROR) << "Invalid history clusters fake data selection parameter "
                     "format.";
       std::move(callback).Run({});
       return;
     }
 
+    int num_clusters;
     int num_visits;
     int num_images;
-    if (!base::StringToInt(kFakeDataParams.at(0), &num_visits) ||
-        !base::StringToInt(kFakeDataParams.at(1), &num_images) ||
+    if (!base::StringToInt(kFakeDataParams.at(0), &num_clusters) ||
+        !base::StringToInt(kFakeDataParams.at(1), &num_visits) ||
+        !base::StringToInt(kFakeDataParams.at(2), &num_images) ||
         num_visits < num_images) {
       std::move(callback).Run({});
       return;
     }
 
     std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
-    clusters_mojom.push_back(history_clusters::ClusterToMojom(
-        TemplateURLServiceFactory::GetForProfile(profile_),
-        GenerateSampleCluster(num_visits, num_images)));
+    for (int i = 0; i < num_clusters; i++) {
+      clusters_mojom.push_back(history_clusters::ClusterToMojom(
+          TemplateURLServiceFactory::GetForProfile(profile_),
+          GenerateSampleCluster(num_visits, num_images)));
+    }
     std::move(callback).Run(std::move(clusters_mojom));
     return;
   }
 
-  auto* history_clusters_service =
-      HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-  history_clusters::QueryClustersContinuationParams continuation_params;
-
-  // TODO(b/244504329): The first call to QueryClusters may come back with
-  // empty data though history clusters may exist.
-  fetch_clusters_task_ = history_clusters_service->QueryClusters(
-      history_clusters::ClusteringRequestSource::kNewTabPage, filter_params_,
-      GetBeginTime(), continuation_params,
-      /*recluster=*/false,
+  auto* history_clusters_module_service =
+      HistoryClustersModuleServiceFactory::GetForProfile(profile_);
+  if (!history_clusters_module_service) {
+    std::move(callback).Run({});
+    return;
+  }
+  history_clusters_module_service->GetClusters(
       base::BindOnce(&HistoryClustersPageHandler::CallbackWithClusterData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HistoryClustersPageHandler::GetCartForCluster(
+    history_clusters::mojom::ClusterPtr cluster,
+    GetCartForClusterCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpChromeCartInHistoryClusterModule)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  DCHECK(cart_processor_);
+  cart_processor_->GetCartForCluster(std::move(cluster), std::move(callback));
 }
 
 void HistoryClustersPageHandler::ShowJourneysSidePanel(
@@ -404,7 +219,12 @@ void HistoryClustersPageHandler::ShowJourneysSidePanel(
 }
 
 void HistoryClustersPageHandler::OpenUrlsInTabGroup(
-    const std::vector<GURL>& urls) {
+    const std::vector<GURL>& urls,
+    const absl::optional<std::string>& tab_group_name) {
+  // This method is different from HistoryClustersHandler::OpenUrlsInTabGroup:
+  //  - It takes over the current tab instead of opening new background tabs.
+  //  - It inserts the new tabs into the location of the current tab.
+
   if (urls.empty()) {
     return;
   }
@@ -437,7 +257,17 @@ void HistoryClustersPageHandler::OpenUrlsInTabGroup(
 
   tab_indices.insert(tab_indices.begin(), model->GetIndexOfWebContents(
                                               model->GetActiveWebContents()));
-  model->AddToNewGroup(tab_indices);
+
+  auto new_group_id = model->AddToNewGroup(tab_indices);
+  if (!new_group_id.is_empty() && tab_group_name) {
+    if (auto* group_model = model->group_model()) {
+      auto* tab_group = group_model->GetTabGroup(new_group_id);
+      // Copy and modify the existing visual data with a new title.
+      tab_groups::TabGroupVisualData visual_data = *tab_group->visual_data();
+      visual_data.SetTitle(base::UTF8ToUTF16(*tab_group_name));
+      tab_group->SetVisualData(visual_data);
+    }
+  }
 
   if (tab_indices.size() > 1) {
     model->ActivateTabAt(tab_indices.at(1));

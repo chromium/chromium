@@ -6,8 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_REGISTRATION_H_
 
 #include <memory>
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_object_info.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -18,6 +16,8 @@
 #include "third_party/blink/renderer/modules/service_worker/navigation_preload_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -131,16 +131,15 @@ class ServiceWorkerRegistration final
   // to the Mojo connection. It is bound on the
   // main thread for service worker clients (document), and is bound on the
   // service worker thread for service worker execution contexts.
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedRemote<mojom::blink::ServiceWorkerRegistrationObjectHost>
+  HeapMojoAssociatedRemote<mojom::blink::ServiceWorkerRegistrationObjectHost>
       host_;
   // |receiver_| receives messages from the ServiceWorkerRegistrationObjectHost
   // in the browser process. It is bound on the main thread for service worker
   // clients (document), and is bound on the service worker thread for service
   // worker execution contexts.
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<mojom::blink::ServiceWorkerRegistrationObject>
-      receiver_{this};
+  HeapMojoAssociatedReceiver<mojom::blink::ServiceWorkerRegistrationObject,
+                             ServiceWorkerRegistration>
+      receiver_;
 
   bool stopped_;
 };

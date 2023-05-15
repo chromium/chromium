@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -40,7 +41,8 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FuseBoxDaemon
 
   // Cros-disks mount manager.
   using CrosDisksMountManager = ::ash::disks::DiskMountManager;
-  CrosDisksMountManager* cros_disks_mount_manager_ = nullptr;
+  raw_ptr<CrosDisksMountManager, ExperimentalAsh> cros_disks_mount_manager_ =
+      nullptr;
 
   // FuseBox daemon URI: cros-disks URI protocol is fusebox://<mount-point>.
   static char* CrosDisksFuseBoxHelperURI() {

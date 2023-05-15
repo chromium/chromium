@@ -1,0 +1,6 @@
+monorail: {
+  component: "OS>Software>Enterprise>DLP"
+}
+buganizer {
+  component_id: 1208119
+}

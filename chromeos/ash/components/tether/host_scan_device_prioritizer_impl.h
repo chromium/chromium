@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/host_scan_device_prioritizer.h"
 
@@ -31,7 +32,8 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
       multidevice::RemoteDeviceRefList* remote_devices) const override;
 
  private:
-  TetherHostResponseRecorder* tether_host_response_recorder_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
 };
 
 }  // namespace tether

@@ -21,7 +21,7 @@ void ShelfContainerView::Initialize() {
 
   shelf_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   shelf_view_->layer()->SetFillsBoundsOpaquely(false);
-  AddChildView(shelf_view_);
+  AddChildView(shelf_view_.get());
 }
 
 gfx::Size ShelfContainerView::CalculateIdealSize(int button_size) const {

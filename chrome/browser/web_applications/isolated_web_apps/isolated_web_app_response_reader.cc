@@ -65,15 +65,14 @@ void IsolatedWebAppResponseReader::OnResponseRead(
     ReadResponseCallback callback,
     base::expected<web_package::mojom::BundleResponsePtr, Error>
         response_head) {
-  if (!response_head.has_value()) {
-    std::move(callback).Run(base::unexpected(response_head.error()));
-    return;
-  }
-  // Since `this` owns `reader_`, we only pass a weak pointer to it to the
-  // `Response` object. If `this` is deleted, it makes sense that the pointer to
-  // the `reader_` contained in `Response` also becomes invalid.
-  std::move(callback).Run(
-      Response(std::move(*response_head), reader_->AsWeakPtr()));
+  std::move(callback).Run(response_head.transform(
+      [this](web_package::mojom::BundleResponsePtr& ptr) {
+        // Since `this` owns `reader_`, we only pass a weak pointer to it to the
+        // `Response` object. If `this` is deleted, it makes sense that the
+        // pointer to the `reader_` contained in `Response` also becomes
+        // invalid.
+        return Response(std::move(ptr), reader_->AsWeakPtr());
+      }));
 }
 
 IsolatedWebAppResponseReader::Response::Response(

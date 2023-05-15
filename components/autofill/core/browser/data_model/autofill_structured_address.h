@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -20,13 +21,20 @@ class AddressComponentWithRewriter : public AddressComponent {
 
  protected:
   // Apply a country-specific rewriter to the normalized value.
-  std::u16string ValueForComparison(
+  std::u16string GetValueForComparison(
       const AddressComponent& other) const override;
 
   // Applies the |country_code| specific rewriter to the normalized value. If
   // |country_code| is empty, it defaults to US.
   std::u16string RewriteValue(const std::u16string& value,
                               const std::u16string& country_code) const;
+
+  // This method is used to retrieve the value for a supported field type
+  // different from the storage type, and rewrites it for comparison with
+  // `other`. It must implement the conversion logic specific to each type.
+  std::u16string GetValueForComparisonForOtherSupportedType(
+      ServerFieldType field_type,
+      const AddressComponent& other) const override;
 };
 
 // The name of the street.
@@ -104,8 +112,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   explicit StreetAddressNode(AddressComponent* parent);
   ~StreetAddressNode() override;
 
-  void GetAdditionalSupportedFieldTypes(
-      ServerFieldTypeSet* supported_types) const override;
+  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
   void SetValue(std::u16string value, VerificationStatus status) override;
 
@@ -132,15 +139,13 @@ class StreetAddressNode : public AddressComponentWithRewriter {
 
  protected:
   // Implements support for getting the value of the individual address lines.
-  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      const std::string& type_name,
-      std::u16string* value) const override;
+  std::u16string GetValueForOtherSupportedType(
+      ServerFieldType field_type) const override;
 
   // Implements support for setting the value of the individual address lines.
-  bool ConvertAndSetValueForAdditionalFieldTypeName(
-      const std::string& type_name,
-      const std::u16string& value,
-      const VerificationStatus& status) override;
+  void SetValueForOtherSupportedType(ServerFieldType field_type,
+                                     const std::u16string& value,
+                                     const VerificationStatus& status) override;
 
   // Returns true of the address lines do not contain an empty line.
   bool IsValueValid() const override;
@@ -148,6 +153,10 @@ class StreetAddressNode : public AddressComponentWithRewriter {
  private:
   // Calculates the address line from the street address.
   void CalculateAddressLines();
+
+  // Returns the corresponding address line depending on `type`. Assumes that
+  // `type` is ADDRESS_HOME_LINE(1|2|3).
+  std::u16string GetAddressLine(ServerFieldType type) const;
 
   StreetAndDependentStreetNameNode streets_{this};
   HouseNumberNode number_{this};
@@ -204,7 +213,7 @@ class PostalCodeNode : public AddressComponentWithRewriter {
  protected:
   // In contrast to the base class, the normalization removes all white spaces
   // from the value.
-  std::u16string NormalizedValue() const override;
+  std::u16string GetNormalizedValue() const override;
 };
 
 // Stores the sorting code.
@@ -212,6 +221,13 @@ class SortingCodeNode : public AddressComponent {
  public:
   explicit SortingCodeNode(AddressComponent* parent);
   ~SortingCodeNode() override;
+};
+
+// Stores the landmark of an address profile.
+class LandmarkNode : public AddressComponent {
+ public:
+  explicit LandmarkNode(AddressComponent* parent);
+  ~LandmarkNode() override;
 };
 
 // Stores the overall Address that contains the StreetAddress, the PostalCode
@@ -224,7 +240,7 @@ class AddressNode : public AddressComponent {
   AddressNode& operator=(const AddressNode& other);
   ~AddressNode() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
   // Checks if the street address contains an invalid structure and wipes it if
   // necessary.
@@ -238,6 +254,7 @@ class AddressNode : public AddressComponent {
   CityNode city_{this};
   StateNode state_{this};
   CountryCodeNode country_code_{this};
+  LandmarkNode landmark_code_{this};
 };
 
 }  // namespace autofill

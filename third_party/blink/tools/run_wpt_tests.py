@@ -14,6 +14,7 @@ import multiprocessing
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import warnings
@@ -28,7 +29,7 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
 )
-from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR, Port
+from blinkpy.web_tests.port.base import Port
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
@@ -64,22 +65,53 @@ except ImportError:
     _IOS_ENABLED = False
 
 
-def _make_log_enabled_grouping_formatter():
-    # Make a grouping log formatter that shows regular log messages:
-    #   WARNING Unsupported test type wdspec for product content_shell
-    #
-    # Activating logs dynamically with:
-    #   StructuredLogger.send_message('show_logs', 'on')
-    # appears buggy. This factory exists as a workaround.
-    grouping_formatter = mozlog.formatters.GroupingFormatter()
-    grouping_formatter.message_handler.handle_message('show_logs', 'on')
-    return grouping_formatter
+class GroupingFormatter(mozlog.formatters.GroupingFormatter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Enable informative log messages, which look like:
+        #   WARNING Unsupported test type wdspec for product content_shell
+        #
+        # Activating logs dynamically with:
+        #   StructuredLogger.send_message('show_logs', 'on')
+        # appears buggy. This default exists as a workaround.
+        self.show_logs = True
+
+    def suite_start(self, data) -> str:
+        self.completed_tests = 0
+        self.running_tests.clear()
+        self.test_output.clear()
+        self.subtest_failures.clear()
+        self.tests_with_failing_subtests.clear()
+        for status in self.expected:
+            self.expected[status] = 0
+        for tests in self.unexpected_tests.values():
+            tests.clear()
+        return super().suite_start(data)
+
+    def suite_end(self, data) -> str:
+        # Do not show test failures again in noninteractive mode. THey are
+        # already shown during the run.
+        self.test_failure_text = ''
+        return super().suite_end(data)
 
 
-mozlog.commandline.log_formatters['grouped'] = (
-    _make_log_enabled_grouping_formatter,
-    mozlog.commandline.log_formatters['grouped'][1],
-)
+class MachFormatter(mozlog.formatters.MachFormatter):
+    def __init__(self, *args, reset_before_suite: bool = True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset_before_suite = reset_before_suite
+
+    def suite_start(self, data) -> str:
+        output = super().suite_start(data)
+        if self.reset_before_suite:
+            for counts in self.summary.current['counts'].values():
+                counts['count'] = 0
+                counts['expected'].clear()
+                counts['unexpected'].clear()
+                counts['known_intermittent'].clear()
+            self.summary.current['unexpected_logs'].clear()
+            self.summary.current['intermittent_logs'].clear()
+            self.summary.current['harness_errors'].clear()
+        return output
 
 
 class StructuredLogAdapter(logging.Handler):
@@ -148,7 +180,6 @@ class WPTAdapter:
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
         self.port = self.host.port_factory.get()
-        self.port.set_option_default('use_xvfb', True)
         self._shard_index = _parse_environ_int('GTEST_SHARD_INDEX')
         self._total_shards = _parse_environ_int('GTEST_TOTAL_SHARDS')
 
@@ -208,11 +239,6 @@ class WPTAdapter:
         parser.add_argument('--isolated-script-test-perf-output',
                             help=argparse.SUPPRESS)
         parser.add_argument('--script-type', help=argparse.SUPPRESS)
-        # `Port.setup_test_run` will always start Xvfb on Linux.
-        parser.add_argument('--xvfb',
-                            action='store_true',
-                            default=True,
-                            help=argparse.SUPPRESS)
         parser.add_argument(
             '-j',
             '--processes',
@@ -247,11 +273,12 @@ class WPTAdapter:
 
     def _check_and_update_options(self, options):
         """Postprocess options, some of which can depend on each other."""
+        self._check_and_update_sharding_options(options)
         # Set up logging as early as possible.
         self._check_and_update_output_options(options)
         self._check_and_update_upstream_options(options)
         self._check_and_update_config_options(options)
-        self._check_and_update_sharding_options(options)
+        self._check_and_update_debugging_options(options)
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
         # '--symbols-path'.
         options.exclude = options.exclude or []
@@ -260,7 +287,6 @@ class WPTAdapter:
             'webdriver',
             'infrastructure/webdriver',
         ])
-        options.pause_after_test = False
         options.no_capture_stdio = True
         options.manifest_download = False
 
@@ -281,14 +307,16 @@ class WPTAdapter:
         if not self.fs.isdir(output_dir):
             raise ValueError("'--target' must be a directory under //out")
         self.port.set_option_default('target', options.target)
+        if options.results_directory:
+            self.port.set_option_default('results_directory',
+                                         options.results_directory)
+        else:
+            options.results_directory = self.port.results_directory()
         if options.log_chromium == '' or options.show_results:
             options.log_chromium = self.fs.join(output_dir, 'results.json')
         if options.log_wptreport == '':
-            if self._shard_index is None:
-                filename = 'wpt_reports_%s.json' % options.product
-            else:
-                filename = 'wpt_reports_%s_%02d.json' % (options.product,
-                                                         self._shard_index)
+            filename = 'wpt_reports_%s_%02d.json' % (options.product,
+                                                     options.this_chunk)
             options.log_wptreport = self.fs.join(output_dir, filename)
         for log_type in ('chromium', 'wptreport'):
             dest = 'log_%s' % log_type
@@ -318,15 +346,10 @@ class WPTAdapter:
             '--force-fieldtrial-params='
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
         ])
-        if options.retry_unexpected is None:
-            if _has_explicit_tests(options):
-                options.retry_unexpected = 0
-                logger.warning('Tests explicitly specified; disabling retries')
-            else:
-                options.retry_unexpected = 3
-                logger.warning(
-                    'Tests not explicitly specified; '
-                    'using %d retries', options.retry_unexpected)
+        if options.sanitizer_enabled and (options.timeout_multiplier or 1) < 2:
+            options.timeout_multiplier = 2
+            logger.info('Defaulting to 2x timeout multiplier because '
+                        'sanitizer is enabled')
         if not options.mojojs_path:
             options.mojojs_path = self.path_from_output_dir(
                 options.target, 'gen')
@@ -356,6 +379,13 @@ class WPTAdapter:
                 logger.warning(
                     'Tests explicitly specified; '
                     'not running tests from %s', smoke_file_short_path)
+
+    def _check_and_update_debugging_options(self, options: argparse.Namespace):
+        self.port.set_option_default('use_xvfb', options.headless)
+        if not options.headless and options.processes is None:
+            logger.info('Not headless; default to 1 worker to avoid '
+                        'opening too many windows')
+            options.processes = 1
 
     def _load_smoke_tests(self, options: argparse.Namespace):
         """Read the smoke tests file and append its tests to the test list.
@@ -402,13 +432,12 @@ class WPTAdapter:
             options.run_by_dir = 0
 
     def _check_and_update_sharding_options(self, options):
-        if self._shard_index is not None:
+        # Command line arguments take priority over environment variables
+        if (options.total_chunks == 1 and self._shard_index is not None
+                and self._total_shards is not None):
             # wptrunner uses a 1-based index, whereas LUCI uses 0-based.
             options.this_chunk = self._shard_index + 1
-        if self._total_shards is not None:
             options.total_chunks = self._total_shards
-        logger.info('Selecting tests for shard %d/%d', options.this_chunk,
-                    options.total_chunks)
         # The default sharding strategy is to shard by directory. But
         # we want to hash each test to determine which shard runs it.
         # This allows running individual directories that have few
@@ -448,6 +477,18 @@ class WPTAdapter:
             logger.debug('Using WPT tools from %s', tools_root)
             self._create_extra_run_info(options)
 
+            if options.clobber_old_results:
+                self.port.clobber_old_results()
+            elif self.port._filesystem.exists(self.port.artifacts_directory()):
+                self.port.limit_archived_results_count()
+
+                # Rename the existing results folder for archiving.
+                self.port.rename_results_folder()
+
+            # Create the output directory if it doesn't already exist.
+            self.port.host.filesystem.maybe_make_directory(
+                self.port.artifacts_directory())
+
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
             self.fs.chdir(self.path_finder.web_tests_dir())
@@ -479,7 +520,7 @@ class WPTAdapter:
             'debug': self.port.get_option('configuration') == 'Debug',
             'flag_specific': options.flag_specific or '',
             'used_upstream': options.use_upstream_wpt,
-            'sanitizer_enabled': options.enable_sanitizer,
+            'sanitizer_enabled': options.sanitizer_enabled,
         }
         if options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
@@ -494,18 +535,8 @@ class WPTAdapter:
             json.dump(run_info, file_handle)
 
     @contextlib.contextmanager
-    def process_and_upload_results(
-            self,
-            options,
-            layout_test_results_subdir: str = ARTIFACTS_SUB_DIR,
-    ):
-        if options.log_chromium:
-            artifacts_dir = self.fs.join(
-                self.fs.dirname(options.log_chromium[0].name),
-                layout_test_results_subdir)
-        else:
-            artifacts_dir = self.path_from_output_dir(
-                options.target, layout_test_results_subdir)
+    def process_and_upload_results(self, options):
+        artifacts_dir = self.port.artifacts_directory()
         processor = WPTResultsProcessor(self.host.filesystem,
                                         self.port,
                                         artifacts_dir=artifacts_dir)
@@ -570,21 +601,15 @@ class WPTAdapter:
             '--isolated-script-test-launcher-retry-limit',
             metavar='RETRIES',
             type=lambda value: max(0, int(value)),
-            default=None,
-            help=(
-                'Maximum number of times to rerun unexpectedly failed tests. '
-                'Defaults to 3 unless given an explicit list of tests to run.'
-            ))
+            default=3,
+            help=('Maximum number of times to rerun unexpectedly failed '
+                  'tests. Defaults to 3.'))
         group.add_argument('--no-show-results',
                            dest='show_results',
                            action='store_false',
                            default=self.host.platform.interactive,
                            help=("Don't launch a browser with results after"
                                  "the tests are done"))
-        group.add_argument(
-            '--enable-sanitizer',
-            action='store_true',
-            help='Only report sanitizer-related errors and crashes.')
         group.add_argument('--enable-leak-detection',
                            action='append_const',
                            dest='binary_args',
@@ -664,6 +689,8 @@ class WPTAdapter:
     def add_output_arguments(self, parser):
         group = parser.add_argument_group(
             'Output Logging', 'Options for controlling logging behavior.')
+        group.add_argument('--results-directory',
+                           help='Location of test results'),
         # For the overridden '--log-*' options, the value will be `None` if no
         # report should be logged, or the empty string if a default filename
         # should be derived.
@@ -682,11 +709,23 @@ class WPTAdapter:
             help=('Log a wptreport as newline-delimited JSON objects '
                   '(default: //out/<target>/'
                   'wpt_reports_<product>_<shard-index>.json)'))
+        group.add_argument('--clobber-old-results',
+                           action='store_true',
+                           help='Clobbers test results from previous runs.'),
         group.add_argument('-v',
                            '--verbose',
                            action='count',
                            default=0,
                            help='Increase verbosity')
+        # Install customized versions of `mozlog` formatters.
+        for name, formatter in [
+            ('grouped', GroupingFormatter),
+            ('mach', MachFormatter),
+        ]:
+            mozlog.commandline.log_formatters[name] = (
+                formatter,
+                mozlog.commandline.log_formatters[name][1],
+            )
         return group
 
     def add_android_arguments(self, parser):
@@ -1228,6 +1267,16 @@ def _parse_environ_int(name: str) -> Optional[int]:
     return None
 
 
+def handle_interrupt_signals():
+    def termination_handler(_signum, _unused_frame):
+        raise KeyboardInterrupt()
+
+    if sys.platform == "win32":
+        signal.signal(signal.SIGBREAK, termination_handler)
+    else:
+        signal.signal(signal.SIGTERM, termination_handler)
+
+
 def main() -> int:
     # Force log output in utf-8 instead of a locale-dependent encoding. On
     # Windows, this can be cp1252. See: crbug.com/1371195.
@@ -1236,11 +1285,19 @@ def main() -> int:
         sys.stderr.reconfigure(encoding='utf-8')
     # Also apply utf-8 mode to python subprocesses.
     os.environ['PYTHONUTF8'] = '1'
+    # Convert SIGTERM to be handled as KeyboardInterrupt to handle early termination
+    # Same handle is declared later on in wptrunner
+    # See: https://github.com/web-platform-tests/wpt/blob/25cd6eb086db5977ac51f7dee7faafe6772dc9d7/tools/wptrunner/wptrunner/wptrunner.py
+    # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
+    handle_interrupt_signals()
     try:
         adapter = WPTAdapter()
         options = adapter.parse_arguments()
+        logger.info('Selecting tests for shard %d/%d', options.this_chunk,
+                    options.total_chunks)
         return adapter.run_tests(options)
     except KeyboardInterrupt:
+        logger.critical("Harness exited after signal interrupt")
         return exit_codes.INTERRUPTED_EXIT_STATUS
 
 

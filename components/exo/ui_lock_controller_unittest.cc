@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -138,6 +139,14 @@ class UILockControllerTest : public test::ExoTestBase {
   void SetUp() override {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<Seat>();
+
+    // Order of window activations and observer callbacks is not trivial, e.g.
+    // lock screen widget is active when `OnLockStateChanged(locked=false)`
+    // callback is called. It's better to test them with views.
+    // `AuthEventsRecorder` is required for `set_show_lock_screen_views=true`.
+    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
+    GetSessionControllerClient()->set_show_lock_screen_views(true);
+
     WMHelper::GetInstance()->RegisterAppPropertyResolver(
         std::make_unique<TestPropertyResolver>());
   }
@@ -183,6 +192,7 @@ class UILockControllerTest : public test::ExoTestBase {
 
   std::unique_ptr<Seat> seat_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
 TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
@@ -577,6 +587,9 @@ TEST_F(UILockControllerTest, PointerLockNotificationReshownWhenScreenTurnedOn) {
 }
 
 TEST_F(UILockControllerTest, PointerLockNotificationReshownOnUnlock) {
+  // Lock screen takes focus and it disables pointer capture.
+  GetSessionControllerClient()->set_show_lock_screen_views(false);
+
   // Arrange: Set up a pointer capture notification, then let it expire.
   std::unique_ptr<ShellSurface> test_surface = BuildSurface(1024, 768);
   test_surface->SetApplicationId(kOverviewToExitAppId);

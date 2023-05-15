@@ -11,10 +11,14 @@ source_set("content") {
   sources = [
     "content_browser_context.h",
     "content_browser_context.mm",
+    "js_messaging/content_java_script_feature_manager.h",
+    "js_messaging/content_java_script_feature_manager.mm",
     "js_messaging/content_web_frame.h",
     "js_messaging/content_web_frame.mm",
     "js_messaging/content_web_frames_manager.h",
     "js_messaging/content_web_frames_manager.mm",
+    "js_messaging/ios_web_message_host_factory.h",
+    "js_messaging/ios_web_message_host_factory.mm",
     "navigation/content_navigation_context.h",
     "navigation/content_navigation_context.mm",
     "navigation/content_navigation_item.h",
@@ -31,6 +35,7 @@ source_set("content") {
   deps = [
     "//base",
     "//build:blink_buildflags",
+    "//components/js_injection/browser",
     "//content/public/browser",
     "//ios/web/common:user_agent",
     "//ios/web/find_in_page:find_in_page",

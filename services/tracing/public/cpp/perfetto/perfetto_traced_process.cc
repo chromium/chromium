@@ -308,13 +308,12 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.shmem_batch_commits_duration_ms = 1000;
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;
-// TODO(eseckler): Not yet supported on Android to avoid binary size regression
-// of the consumer IPC messages. We'll need a way to exclude them.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX)
   // In non-SDK build we only use the client library system backend for the
   // consumer side, which is only allowed in the browser process.
   // In SDK build we use system backend for producers too, but note that
-  // currently the connection to the service fails from sandboxed processes.
+  // currently the connection to the service fails from sandboxed processes
+  // on non-Android platforms.
   // TODO(khokhlov): Delegate socket connections from sandboxed processes
   // to the browser.
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

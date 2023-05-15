@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 
+#include <algorithm>
+#include <iterator>
+#include <map>
 #include <string>
 
 #include "base/logging.h"
@@ -79,10 +82,9 @@ ImageInfo::ImageInfo(const std::set<std::string>& annotations,
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
 
-FileSearchResult::FileSearchResult(const base::FilePath& path,
-                                   const base::Time& last_modified,
+FileSearchResult::FileSearchResult(const base::Time& last_modified,
                                    double relevance)
-    : path(path), last_modified(last_modified), relevance(relevance) {}
+    : last_modified(last_modified), relevance(relevance) {}
 
 FileSearchResult::~FileSearchResult() = default;
 FileSearchResult::FileSearchResult(const FileSearchResult&) = default;
@@ -213,8 +215,8 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
-std::vector<FileSearchResult> AnnotationStorage::LinearSearchAnnotations(
-    const std::u16string& query) {
+std::map<base::FilePath, FileSearchResult>
+AnnotationStorage::LinearSearchAnnotations(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "LinearSearchAnnotationsAsync";
   using TokenizedString = ash::string_matching::TokenizedString;
@@ -229,7 +231,7 @@ std::vector<FileSearchResult> AnnotationStorage::LinearSearchAnnotations(
   sql::Statement statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
 
-  std::vector<FileSearchResult> matched_paths;
+  std::map<base::FilePath, FileSearchResult> matched_paths;
   TokenizedString tokenized_query(query);
   ash::string_matching::FuzzyTokenizedStringMatch fuzzy_match;
   while (statement.Step()) {
@@ -246,9 +248,13 @@ std::vector<FileSearchResult> AnnotationStorage::LinearSearchAnnotations(
     DVLOG(1) << "Select: " << statement.ColumnString(0) << ", " << path << ", "
              << time << " rl: " << relevance;
 
-    // TODO(b/260646344): keep only top N relevant paths.
-    matched_paths.emplace_back(std::move(path), std::move(time), relevance);
+    if (!matched_paths.contains(path)) {
+      matched_paths.insert({path, {std::move(time), relevance}});
+    } else if (matched_paths.at(path).relevance < relevance) {
+      matched_paths.at(path).relevance = relevance;
+    }
   }
+
   return matched_paths;
 }
 

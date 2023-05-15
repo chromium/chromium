@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {PrinterStatusReason, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /**
  * Helper function to verify that printers in |printerListEntries| that contain
@@ -103,7 +104,7 @@ function createPrinterEntry(printerType) {
       },
       printerProtocol: 'ipp',
       printerQueue: 'moreinfohere',
-      printerStatus: '',
+      printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
     },
     printerType: printerType,
   };
@@ -202,5 +203,59 @@ suite('CupsPrinterEntry', function() {
       printerEntryTestElement.userPrintersAllowed = false;
       assertTrue(actionButton.disabled);
     }
+  });
+
+  // Verify the correct printer status icon is shown based on the printer's
+  // status reason.
+  test('savedPrinterCorrectPrinterStatusIcon', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+
+    // Start at the unknown state.
+    assertEquals(
+        'os-settings:printer-status-grey',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+
+    // Set to a good status reason.
+    printerEntryTestElement.set(
+        'printerEntry.printerInfo.printerStatusReason',
+        PrinterStatusReason.NO_ERROR);
+    assertEquals(
+        'os-settings:printer-status-green',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+
+    // Set to an error status reason.
+    printerEntryTestElement.set(
+        'printerEntry.printerInfo.printerStatusReason',
+        PrinterStatusReason.OUT_OF_PAPER);
+    assertEquals(
+        'os-settings:printer-status-red',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+  });
+
+  // Verify the printer icon is visible based on the printer's type.
+  test('visiblePrinterIconByPrinterType', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.ENTERPRISE);
+    assertFalse(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.DISCOVERED);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.AUTOMATIC);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
   });
 });

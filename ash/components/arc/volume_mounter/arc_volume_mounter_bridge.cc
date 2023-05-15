@@ -233,6 +233,14 @@ void ArcVolumeMounterBridge::OnMountEvent(
     return;
   }
 
+  // Skip mount events if removable media access is disabled by a feature.
+  if (event == DiskMountManager::MountEvent::MOUNTING &&
+      !base::FeatureList::IsEnabled(kExternalStorageAccess)) {
+    DVLOG(1) << "Ignoring mount event since removable media is disabled by "
+                "feature";
+    return;
+  }
+
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       !IsReadyToSendMountingEvents()) {
     DVLOG(1) << "Skipping OnMountEvent because it is not ready to send "

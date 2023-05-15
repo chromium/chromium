@@ -8,15 +8,17 @@
 
 #include <utility>
 
-#include "base/guid.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -30,6 +32,8 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
@@ -47,6 +51,7 @@ namespace {
 
 static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
+static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
 // profile.
@@ -157,9 +162,7 @@ autofill::AutofillManager* GetAutofillManager(
 
 autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data,
-    const absl::optional<std::string>& country_code) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      kSanctionedCountries{{"CU", "IR", "KP", "SD", "SY"}};
+    absl::optional<base::StringPiece> country_code) {
   autofill::AutofillProfile::Source source =
       personal_data->IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
@@ -171,13 +174,14 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // Note: overriding address profile source only if test feature is enabled.
     source = autofill::AutofillProfile::Source::kAccount;
   }
-  if (country_code && kSanctionedCountries->count(country_code.value())) {
-    // Note: addresses from sanctioned countries can't be saved in account.
-    // TODO(crbug.com/1432505): remove temporary sanctioned countries filtering.
+  if (country_code && !personal_data->IsCountryEligibleForAccountStorage(
+                          country_code.value())) {
+    // Note: addresses from unsupported countries can't be saved in account.
+    // TODO(crbug.com/1432505): remove temporary unsupported countries
+    // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  return autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin,
-                                   source);
+  return autofill::AutofillProfile(source);
 }
 
 }  // namespace
@@ -321,7 +325,6 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_language_code(*address->language_code);
 
   if (use_existing_profile) {
-    profile.set_origin(kSettingsOrigin);
     personal_data->UpdateProfile(profile);
   } else {
     profile.FinalizeAfterImport();
@@ -433,9 +436,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::CreditCard credit_card =
-      existing_card
-          ? *existing_card
-          : autofill::CreditCard(base::GenerateGUID(), kSettingsOrigin);
+      existing_card ? *existing_card
+                    : autofill::CreditCard(
+                          base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          kSettingsOrigin);
 
   if (card->name) {
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
@@ -681,7 +685,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::IBAN iban =
-      existing_iban ? *existing_iban : autofill::IBAN(base::GenerateGUID());
+      existing_iban
+          ? *existing_iban
+          : autofill::IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
 
@@ -832,6 +838,58 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
       card->instrument_id(),
       /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
   return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // If `client` is not available, then don't do anything.
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+  }
+
+  // If `device_authenticator` is not available, then don't do anything.
+  auto device_authenticator = client->GetDeviceAuthenticator();
+  if (!device_authenticator) {
+    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+  }
+
+  // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
+  // asynchronously. The pref value directly correlates to the mandatory auth
+  // toggle.
+  autofill_util::AuthenticateUserOnMandatoryReauthToggled(
+      device_authenticator,
+      base::BindOnce(
+          &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+              UpdateMandatoryAuthTogglePref,
+          this));
+  base::RecordAction(base::UserMetricsAction(
+      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
+  return RespondNow(NoArguments());
+#else
+  return RespondNow(Error(kErrorDeviceAuthUnavailable));
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+}
+
+// Update the Mandatory auth toggle pref after a successful user auth.
+void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+    UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (reauth_succeeded && browser_context()) {
+    PrefService* prefs =
+        Profile::FromBrowserContext(browser_context())->GetPrefs();
+    autofill::prefs::SetAutofillPaymentMethodsMandatoryReauth(
+        prefs, !prefs->GetBoolean(
+                   autofill::prefs::kAutofillPaymentMethodsMandatoryReauth));
+    base::RecordAction(base::UserMetricsAction(
+        "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
+  }
+#endif
 }
 
 }  // namespace extensions

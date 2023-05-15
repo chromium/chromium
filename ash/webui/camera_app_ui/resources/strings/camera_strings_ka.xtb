@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ჩაწერა შეწყდა მოწყობილობის საცავში არასაკმარისი მეხსიერების გამო. მეტი ვიდეოს ჩასაწერად მოწყობილობაზე სივრცე უნდა გაათავისუფლოთ.</translation>
 <translation id="2036868001356139588">ტაიმერის ხანგრძლივობა</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> აქტიურია</translation>
-<translation id="2128052519899549250">ვიდეოს ინტერვალური გადაღება</translation>
 <translation id="2134029355740465625">ვიდეოს პარამეტრები</translation>
 <translation id="2144806332417375165">მორგებული ვიდეოპარამეტრები</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">დოკუმენტი აღმოჩენილია</translation>
 <translation id="414641094616694804">ამ კამერის გარჩევადობა ვერ შეიცვლება</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
-<translation id="4281620174117014503">საშუალო გარჩევადობა</translation>
 <translation id="428234092390943511">გვერდის ესკიზი</translation>
 <translation id="4383571725254449280">წარმადობის ჟურნალების ბეჭდვა</translation>
 <translation id="4445542136948522167">ფოტოს გადაღების შეწყვეტა</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5320594929574852403">გადატანა ხდება მარცხენა მიმართულებით</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ინტერვალური გადაღება</translation>
 <translation id="5662366948659129155">სკანირდება გვერდი <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">კვადრატი</translation>
+<translation id="574392208103952083">საშუალო</translation>
 <translation id="5746169159649715125">შენახვა PDF-ის სახით</translation>
 <translation id="5753488212459587150">ექსპერტის რეჟიმის ჩართვა</translation>
 <translation id="5759254179196327752">დოკუმენტის სკანირება</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7670511624014457267">60 კადრი/წმ</translation>
 <translation id="7671804233658741790">დოკუმენტის ქვედა მარჯვენა კუთხე</translation>
+<translation id="7684446460490665873">ვიდეოს ინტერვალური გადაღება</translation>
 <translation id="7692090236657809299">პანირების/გადახრის/მასშტაბირების ჩართვა</translation>
 <translation id="7726641833034062494">ჩვეულებრივი ვიდეოს ჩაწერა</translation>
 <translation id="7748344063862150053">დოკუმენტის ზედა მარჯვენა კუთხე</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში</translation>
 <translation id="9045155556724273246">10 წამი</translation>
 <translation id="906331135292332864">მიმდინარეობს იმიჯის დამუშავება...</translation>
+<translation id="9161584225258678723">ინტერვალური გადაღება</translation>
 <translation id="922762992951083513">არეკვლის ჩართვა</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 </translationbundle>

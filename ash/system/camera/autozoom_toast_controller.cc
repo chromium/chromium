@@ -88,8 +88,7 @@ void AutozoomToastController::ShowToast() {
   StartAutoCloseTimer();
   UpdateToastView();
 
-  tray_->SetTrayBubbleHeight(
-      bubble_widget_->GetWindowBoundsInScreen().height());
+  tray_->NotifySecondaryBubbleHeight(toast_view_->height());
 }
 
 void AutozoomToastController::HideToast() {
@@ -97,7 +96,7 @@ void AutozoomToastController::HideToast() {
   if (!bubble_widget_ || bubble_widget_->IsClosed())
     return;
   bubble_widget_->Close();
-  tray_->SetTrayBubbleHeight(0);
+  tray_->NotifySecondaryBubbleHeight(0);
 }
 
 void AutozoomToastController::BubbleViewDestroyed() {

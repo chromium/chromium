@@ -8,6 +8,7 @@
 #include <bitset>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,7 +96,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   std::bitset<kChurnBitSize> value_;
 
   // Singleton lives throughout class lifetime.
-  system::StatisticsProvider* const statistics_provider_;
+  const raw_ptr<system::StatisticsProvider, ExperimentalAsh>
+      statistics_provider_;
 
   // This class is constructed after the machine statistics are loaded. This
   // callback logic exists in the device activity controller.

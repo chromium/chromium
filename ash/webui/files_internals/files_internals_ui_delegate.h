@@ -19,11 +19,22 @@ class FilesInternalsUIDelegate {
   virtual bool GetSmbfsEnableVerboseLogging() const = 0;
   virtual void SetSmbfsEnableVerboseLogging(bool enabled) = 0;
 
-  virtual bool GetOfficeSetupComplete() const = 0;
-  virtual void SetOfficeSetupComplete(bool complete) = 0;
+  virtual std::string GetOfficeFileHandlers() const = 0;
+  virtual void ClearOfficeFileHandlers() = 0;
 
-  virtual bool GetAlwaysMoveOfficeFiles() const = 0;
-  virtual void SetAlwaysMoveOfficeFiles(bool always_move) = 0;
+  virtual bool GetMoveConfirmationShownForDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForOneDrive() const = 0;
+
+  virtual bool GetMoveConfirmationShownForLocalToDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForLocalToOneDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForCloudToDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForCloudToOneDrive() const = 0;
+
+  virtual bool GetAlwaysMoveOfficeFilesToDrive() const = 0;
+  virtual void SetAlwaysMoveOfficeFilesToDrive(bool always_move) = 0;
+
+  virtual bool GetAlwaysMoveOfficeFilesToOneDrive() const = 0;
+  virtual void SetAlwaysMoveOfficeFilesToOneDrive(bool always_move) = 0;
 };
 
 }  // namespace ash

@@ -2,6 +2,7 @@
     as="pointingStick" index-as="index" restamp>
   <settings-per-device-pointing-stick-subsection
       pointing-stick="[[pointingStick]]"
-      pointing-stick-index="[[index]]">
+      pointing-stick-index="[[index]]"
+      is-last-device="[[computeIsLastDevice(index, pointingSticks.length)]]">
   </settings-per-device-pointing-stick-subsection>
 </template>

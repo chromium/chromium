@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_DETAILED_VIEW_DELEGATE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -59,7 +60,7 @@ class ASH_EXPORT DetailedViewDelegate {
       views::Button::PressedCallback callback);
 
  private:
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 };
 
 }  // namespace ash

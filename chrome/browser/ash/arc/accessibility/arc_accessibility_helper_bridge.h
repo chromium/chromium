@@ -15,6 +15,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
@@ -147,8 +148,8 @@ class ArcAccessibilityHelperBridge
 
   bool is_focus_event_enabled_ = false;
   bool use_full_focus_mode_ = false;
-  Profile* const profile_;
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
 
   const AccessibilityHelperInstanceRemoteProxy accessibility_helper_instance_;
 

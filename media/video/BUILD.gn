@@ -66,6 +66,15 @@ source_set("video") {
     }
   }
 
+  if (enable_platform_vvc) {
+    sources += [
+      "h266_nalu_parser.cc",
+      "h266_nalu_parser.h",
+      "h266_parser.cc",
+      "h266_parser.h",
+    ]
+  }
+
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
 
   deps = [
@@ -161,6 +170,12 @@ source_set("unit_tests") {
       ]
     }
   }
+  if (enable_platform_vvc) {
+    sources += [
+      "h266_nalu_parser_unittest.cc",
+      "h266_parser_unittest.cc",
+    ]
+  }
 
   configs += [ "//media:media_config" ]
   deps = [
@@ -191,6 +206,16 @@ fuzzer_test("media_h264_parser_fuzzer") {
 if (enable_hevc_parser_and_hw_decoder) {
   fuzzer_test("media_h265_parser_fuzzer") {
     sources = [ "h265_parser_fuzzertest.cc" ]
+    deps = [
+      "//base",
+      "//media",
+    ]
+  }
+}
+
+if (enable_platform_vvc) {
+  fuzzer_test("media_h266_parser_fuzzer") {
+    sources = [ "h266_parser_fuzzertest.cc" ]
     deps = [
       "//base",
       "//media",

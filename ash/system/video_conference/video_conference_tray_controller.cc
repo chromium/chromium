@@ -9,17 +9,21 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "base/check.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -43,6 +47,19 @@ constexpr char kVideoConferenceTrayUseWhileDisabledToastId[] =
 constexpr int KSpeakOnMuteNotificationCoolDownDuration = 60;
 
 VideoConferenceTrayController* g_controller_instance = nullptr;
+
+bool IsAnyShelfAutoHidden() {
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    CHECK(root_window_controller);
+    if (root_window_controller->shelf()->auto_hide_behavior() ==
+        ShelfAutoHideBehavior::kAlways) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 VideoConferenceTrayController::VideoConferenceTrayController() {
@@ -246,10 +263,15 @@ void VideoConferenceTrayController::OnInputMuteChanged(
 
   microphone_muted_by_hardware_switch_ =
       method == CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter;
+
+  // Reset the speak-on-mute notification timer when change to mute so user can
+  // get instant speak-on-mute notification when they mute their microphone.
+  if (mute_on) {
+    last_speak_on_mute_notification_time_.reset();
+  }
 }
 
 void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
-  // TODO(b/273374112): Add unit test for this toast.
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
   if (!last_speak_on_mute_notification_time_.has_value() ||
@@ -267,6 +289,11 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
 
     last_speak_on_mute_notification_time_.emplace(current_time);
   }
+}
+
+base::OneShotTimer&
+VideoConferenceTrayController::GetShelfAutoHideTimerForTest() {
+  return disable_shelf_autohide_timer_;
 }
 
 void VideoConferenceTrayController::UpdateWithMediaState(
@@ -307,6 +334,31 @@ void VideoConferenceTrayController::UpdateWithMediaState(
       observer.OnScreenSharingStateChange(state_.is_capturing_screen);
     }
   }
+
+  // If any `Shelf` is auto hidden, request a new list of `MediaApps` because
+  // the `Shelf` needs to be forced shown, or allowed to hide, depending on the
+  // current number of capturing applications.
+  if (!IsAnyShelfAutoHidden()) {
+    return;
+  }
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  if (!state_.has_media_app) {
+    if (disable_shelf_autohide_timer_.IsRunning()) {
+      disable_shelf_autohide_timer_.Stop();
+    }
+    disable_shelf_autohide_locks_.clear();
+    return;
+  }
+
+  // The `Shelf` may need to be forced shown if a new app has started accessing
+  // the sensors, also `UpdateWithMediaState()` may be called with no change to
+  // `state_.has_media_app`, and if a new app is capturing the shelf needs to be
+  // re-shown.
+  GetMediaApps(
+      base::BindOnce(&VideoConferenceTrayController::UpdateShelfAutoHide,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool VideoConferenceTrayController::HasCameraPermission() const {
@@ -370,6 +422,39 @@ void VideoConferenceTrayController::UpdateCameraIcons() {
                             camera_muted_by_software_switch_);
     camera_icon->UpdateCapturingState();
   }
+}
+
+void VideoConferenceTrayController::UpdateShelfAutoHide(MediaApps media_apps) {
+  const int old_capturing_apps = capturing_apps_;
+  capturing_apps_ = media_apps.size();
+
+  // Don't force show the `Shelf` if the number of apps accessing the sensors
+  // has decreased. Also do not force hide the shelf when the number of
+  // capturing apps decreases, that will be done only if the number of capturing
+  // apps drops to zero and is handled elsewhere.
+  if (old_capturing_apps >= capturing_apps_) {
+    return;
+  }
+
+  if (disable_shelf_autohide_locks_.empty()) {
+    for (auto* root_window_controller :
+         Shell::Get()->GetAllRootWindowControllers()) {
+      CHECK(root_window_controller);
+      CHECK(root_window_controller->shelf());
+
+      disable_shelf_autohide_locks_.emplace_back(
+          root_window_controller->shelf());
+    }
+  }
+
+  disable_shelf_autohide_timer_.Start(
+      FROM_HERE, base::Seconds(6),
+      base::BindOnce(
+          [](std::list<Shelf::ScopedDisableAutoHide>&
+                 disable_shelf_autohide_locks) {
+            disable_shelf_autohide_locks.clear();
+          },
+          std::ref(disable_shelf_autohide_locks_)));
 }
 
 }  // namespace ash

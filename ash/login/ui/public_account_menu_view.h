@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_PUBLIC_ACCOUNT_MENU_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/combobox/combobox.h"
 
@@ -35,7 +36,7 @@ class ASH_EXPORT PublicAccountMenuView : public views::Combobox {
   void OnSelectedIndexChanged();
 
  private:
-  const std::vector<Item>& items_;
+  const raw_ref<const std::vector<Item>, ExperimentalAsh> items_;
   const OnSelect on_select_;
 
   base::CallbackListSubscription property_changed_subscription_;

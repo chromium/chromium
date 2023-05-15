@@ -43,14 +43,6 @@
 using testing::AtLeast;
 
 namespace gpu {
-namespace {
-
-bool IsGLSupported(viz::SharedImageFormat format) {
-  return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-         format != viz::SinglePlaneFormat::kBGR_565;
-}
-
-}  // namespace
 
 class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
@@ -188,10 +180,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -330,10 +324,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -418,10 +414,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -772,8 +770,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
 
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::ResourceFormat::YUV_420_BIPLANAR);
+  auto format = viz::LegacyMultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -851,10 +848,8 @@ TEST_F(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
                            gles2::DisallowedFeatures());
   const gles2::Validators* validators = feature_info->validators();
 
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = viz::SharedImageFormat::SinglePlane(
-        static_cast<viz::ResourceFormat>(i));
-    if (!IsGLSupported(format) || format.IsCompressed()) {
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
       continue;
     }
     int storage_format = TextureStorageFormat(

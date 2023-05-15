@@ -2,38 +2,36 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++inputTime inputType='time' value='00:00:00'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Hours' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox name='12'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Minutes' placeholder='--' value='00' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='00'
-++++++++++++++++++inlineTextBox name='00'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='AM/PM' placeholder='--' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
-++++++++++++++++staticText name='AM'
-++++++++++++++++++inlineTextBox name='AM'
-++++++++++popUpButton name='Show time picker'
+++++++++++++spinButton name='Hours' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='12'
+++++++++++++++++inlineTextBox name='12'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Minutes' placeholder='--' value='00' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='00'
+++++++++++++++++inlineTextBox name='00'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='AM/PM' placeholder='--' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++staticText name='AM'
+++++++++++++++++inlineTextBox name='AM'
+++++++++popUpButton name='Show time picker'
 ++++++inputTime inputType='time' name='Breakfast' value='00:00:00'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Hours Breakfast' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox name='12'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Minutes Breakfast' placeholder='--' value='00' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='00'
-++++++++++++++++++inlineTextBox name='00'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='AM/PM Breakfast' placeholder='--' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
-++++++++++++++++staticText name='AM'
-++++++++++++++++++inlineTextBox name='AM'
-++++++++++popUpButton name='Show time picker'
+++++++++++++spinButton name='Hours Breakfast' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='12'
+++++++++++++++++inlineTextBox name='12'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Minutes Breakfast' placeholder='--' value='00' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='00'
+++++++++++++++++inlineTextBox name='00'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='AM/PM Breakfast' placeholder='--' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++staticText name='AM'
+++++++++++++++++inlineTextBox name='AM'
+++++++++popUpButton name='Show time picker'

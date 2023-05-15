@@ -4,6 +4,7 @@
             "files": [
                 "apks/ContentShell.apk",
                 "apks/ChromePublic.apk",
+                "apks/SystemWebView.apk",
                 "apks/SystemWebViewShell.apk"
             ],
             "rename_dirs": [

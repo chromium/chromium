@@ -16,17 +16,19 @@ Googler update instructions - see:
 https://goto.google.com/arcore-chrome-client-update
 
 Local Modifications:
-Added files required for consumption in Chrome (LICENSE, OWNERS, BUILD.gn,
-cipd.yaml, *.info).
-
-Added override for proguard configs brought by ARCore SDK's .aar.
-The override should be removed once ARCore SDK includes the change upstream and
-the version of SDK gets rolled.
+* Added files required for consumption in Chrome (LICENSE, OWNERS, BUILD.gn,
+  cipd.yaml, *.info).
+* Extracted AndroidManifest.xml and split into two separate .xml files.
+* Added AndroidManifest_0_remove.xml for weblayer use.
+* Added override for proguard configs brought by ARCore SDK's .aar.
+  * The override should be removed once ARCore SDK includes the change upstream and
+    the version of SDK gets rolled.
 
 The LICENSE file is taken from
  * https://www.apache.org/licenses/LICENSE-2.0.txt
 
 Changes:
+2023-04-18 - Split AndroidManifest.xml into two separate files.
 2022-07-18 - Upgraded SDK binaries to v1.32.
 2021-06-23 - Ignoring Manifest changes so we don't include them in WebView.
 2021-02-01 - Upgraded SDK binaries to v1.22.

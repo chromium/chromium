@@ -246,6 +246,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void InitializeFromStartedRequest(NavigationRequest* request);
 
   // WebContentsObserver:
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;

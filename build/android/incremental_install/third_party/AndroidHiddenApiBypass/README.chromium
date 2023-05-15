@@ -1,0 +1,16 @@
+Name: AndroidHiddenApiBypass
+URL: https://github.com/LSPosed/AndroidHiddenApiBypass
+Version: b16cc3934a27e55e51f00f5504c7f49e7c8cfab7
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+AndroidHiddenApiBypass enables reflection on APIs that are meant to be guarded
+by Android's API Blocklist.
+
+Local Modifications:
+* Removed files related to Gradle.
+* Added local_modifications/.../BuildConfig.java to replace what Gradle would
+  have generated.
+* Added BUILD.gn

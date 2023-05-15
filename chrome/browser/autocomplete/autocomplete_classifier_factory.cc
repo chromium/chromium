@@ -48,7 +48,12 @@ std::unique_ptr<KeyedService> AutocompleteClassifierFactory::BuildInstanceFor(
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()
     : ProfileKeyedServiceFactory(
           "AutocompleteClassifier",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());

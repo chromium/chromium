@@ -10,6 +10,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.70"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 dependencies = [
@@ -59,13 +63,17 @@ version = "1.0.0"
 name = "chromium"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bitflags",
  "cargo-platform",
  "cargo_metadata",
- "clap 3.1.12",
+ "cfg-if",
+ "clap",
  "cxx",
  "cxxbridge-cmd",
+ "env_logger",
  "lazy_static",
+ "log",
  "memoffset",
  "once_cell",
  "proc-macro2",
@@ -86,31 +94,13 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "3.1.12"
+version = "4.0.26"
 dependencies = [
  "atty",
  "bitflags",
- "clap_lex 0.1.1",
- "indexmap",
+ "clap_lex",
  "strsim",
  "termcolor",
- "textwrap",
-]
-
-[[package]]
-name = "clap"
-version = "4.0.26"
-dependencies = [
- "bitflags",
- "clap_lex 0.3.0",
- "strsim",
-]
-
-[[package]]
-name = "clap_lex"
-version = "0.1.1"
-dependencies = [
- "os_str_bytes",
 ]
 
 [[package]]
@@ -140,7 +130,7 @@ dependencies = [
 name = "cxxbridge-cmd"
 version = "1.0.82"
 dependencies = [
- "clap 4.0.26",
+ "clap",
  "codespan-reporting",
  "proc-macro2",
  "quote",
@@ -154,6 +144,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "env_logger"
+version = "0.10.0"
+dependencies = [
+ "log",
+ "regex",
+ "termcolor",
 ]
 
 [[package]]
@@ -207,11 +206,18 @@ version = "1.4.0"
 
 [[package]]
 name = "libc"
-version = "0.2.132"
+version = "0.2.142"
 
 [[package]]
 name = "link-cplusplus"
 version = "1.0.5"
+
+[[package]]
+name = "log"
+version = "0.4.17"
+dependencies = [
+ "cfg-if",
+]
 
 [[package]]
 name = "memchr"
@@ -383,10 +389,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "textwrap"
-version = "0.15.0"
-
-[[package]]
 name = "toml"
 version = "0.5.9"
 dependencies = [
@@ -396,7 +398,7 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.3"
+version = "1.0.8"
 
 [[package]]
 name = "unicode-linebreak"

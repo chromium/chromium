@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -116,7 +117,7 @@ class WebsiteMetrics : public BrowserListObserver,
     void OnInstallableWebAppStatusUpdated() override;
 
    private:
-    WebsiteMetrics* owner_;
+    raw_ptr<WebsiteMetrics, ExperimentalAsh> owner_;
     base::ScopedObservation<webapps::AppBannerManager,
                             webapps::AppBannerManager::Observer>
         app_banner_manager_observer_{this};

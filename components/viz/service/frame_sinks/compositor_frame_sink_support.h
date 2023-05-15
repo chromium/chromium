@@ -176,6 +176,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // mojom::CompositorFrameSink helpers.
   void SetNeedsBeginFrame(bool needs_begin_frame);
   void SetWantsAnimateOnlyBeginFrames();
+  void SetWantsBeginFrameAcks();
   void DidNotProduceFrame(const BeginFrameAck& ack);
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
@@ -303,6 +304,12 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // deadline has passed. This is called every BeginFrame.
   void CheckPendingSurfaces();
 
+  // When features::kOnBeginFrameAcks is enabled and `wants_begin_frame_acks_`
+  // was requested by a client, we want to throttle sending
+  // DidReceiveCompositorFrameAck and ReclaimResources. Instead merging them
+  // into OnBeginFrame.
+  bool ShouldMergeBeginFrameWithAcks() const;
+
   // When throttling is requested by a client, a BeginFrame will not be sent
   // until the time elapsed has passed the requested throttle interval since the
   // last sent BeginFrame. This function returns true if such interval has
@@ -336,12 +343,16 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   std::unique_ptr<HitTestAggregator> hit_test_aggregator_;
 
   // Counts the number of CompositorFrames that have been submitted and have not
-  // yet received an ACK.
-  int ack_pending_count_ = 0;
+  // yet received an ACK from their Surface.
+  int ack_pending_from_surface_count_ = 0;
+  // Counts the number of ACKs that have been received from a Surface and have
+  // not yet been sent to the CompositorFrameSinkClient.
+  int ack_queued_for_client_count_ = 0;
+  bool ack_pending_during_on_begin_frame_ = false;
 
   // When `true` we have received frames from a client using its own
   // BeginFrameSource. While dealing with frames from multiple sources we cannot
-  // fely on `ack_pending_count_` to throttle frame production.
+  // rely on `ack_pending_from_surface_count_` to throttle frame production.
   //
   // TODO(crbug.com/1396081): Track acks, presentation feedback, and resources
   // being returned, on a per BeginFrameSource basis. For
@@ -366,6 +377,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool added_frame_observer_ = false;
 
   bool wants_animate_only_begin_frames_ = false;
+  bool wants_begin_frame_acks_ = false;
 
   // Indicates the FrameSinkBundle to which this sink belongs, if any.
   absl::optional<FrameSinkBundleId> bundle_id_;

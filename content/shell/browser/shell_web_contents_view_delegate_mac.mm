@@ -4,13 +4,12 @@
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -27,6 +26,10 @@
 #include "content/shell/common/shell_switches.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using blink::ContextMenuDataEditFlags;
 
@@ -73,9 +76,9 @@ NSMenuItem* MakeContextMenuItem(NSString* title,
       [[NSMenuItem alloc] initWithTitle:title
                                  action:@selector(itemSelected:)
                           keyEquivalent:@""];
-  [menu_item setTarget:delegate];
-  [menu_item setTag:tag];
-  [menu_item setEnabled:enabled];
+  menu_item.target = delegate;
+  menu_item.tag = tag;
+  menu_item.enabled = enabled;
   [menu addItem:menu_item];
 
   return menu_item;
@@ -95,24 +98,24 @@ ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(
     : web_contents_(web_contents) {
 }
 
-ShellWebContentsViewDelegate::~ShellWebContentsViewDelegate() {
-}
+ShellWebContentsViewDelegate::~ShellWebContentsViewDelegate() = default;
 
 void ShellWebContentsViewDelegate::ShowContextMenu(
     RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
-  if (switches::IsRunWebTestsSwitchPresent())
+  if (switches::IsRunWebTestsSwitchPresent()) {
     return;
+  }
 
   params_ = params;
   bool has_link = !params_.unfiltered_link_url.is_empty();
   bool has_selection = ! params_.selection_text.empty();
 
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
   ShellContextMenuDelegate* delegate =
       [[ShellContextMenuDelegate alloc] initWithDelegate:this];
-  [menu setDelegate:delegate];
-  [menu setAutoenablesItems:NO];
+  menu.delegate = delegate;
+  menu.autoenablesItems = NO;
 
   if (params.media_type == blink::mojom::ContextMenuDataMediaType::kNone &&
       !has_link && !has_selection && !params_.is_editable) {
@@ -206,19 +209,18 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
                       delegate);
 
   NSView* parent_view = web_contents_->GetContentNativeView().GetNativeNSView();
-  NSEvent* currentEvent = [NSApp currentEvent];
-  NSWindow* window = [parent_view window];
-  NSPoint position = [window mouseLocationOutsideOfEventStream];
-  NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
-                                           location:position
-                                      modifierFlags:0
-                                          timestamp:eventTime
-                                       windowNumber:[window windowNumber]
-                                            context:nil
-                                        eventNumber:0
-                                         clickCount:1
-                                           pressure:1.0];
+  NSPoint position = parent_view.window.mouseLocationOutsideOfEventStream;
+  NSTimeInterval eventTime = NSApp.currentEvent.timestamp;
+  NSEvent* clickEvent =
+      [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
+                         location:position
+                    modifierFlags:0
+                        timestamp:eventTime
+                     windowNumber:parent_view.window.windowNumber
+                          context:nil
+                      eventNumber:0
+                       clickCount:1
+                         pressure:1.0];
 
   [NSMenu popUpContextMenu:menu
                  withEvent:clickEvent
@@ -267,7 +269,7 @@ void ShellWebContentsViewDelegate::ActionPerformed(int tag) {
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*
-ShellWebContentsViewDelegate::CreateRenderWidgetHostViewDelegate(
+ShellWebContentsViewDelegate::GetDelegateForHost(
     content::RenderWidgetHost* render_widget_host,
     bool is_popup) {
   return [[ShellRenderWidgetHostViewMacDelegate alloc] init];

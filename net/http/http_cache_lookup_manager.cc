@@ -46,7 +46,9 @@ int HttpCacheLookupManager::LookupTransaction::StartLookup(
   });
 
   request_->url = push_helper_->GetURL();
-  // TODO(crbug/1355929) Remove push helper.
+  // Note: since HTTP/2 Server Push has been disabled and this code will likely
+  // be removed, just use empty NIKs and NAKs here. For more info, see
+  // https://crbug.com/1355929.
   request_->network_isolation_key = NetworkIsolationKey();
   request_->network_anonymization_key = NetworkAnonymizationKey();
   request_->method = "GET";

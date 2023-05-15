@@ -154,21 +154,25 @@ Response EmulationHandler::SetGeolocationOverride(Maybe<double> latitude,
     return Response::InternalError();
 
   auto* geolocation_context = GetWebContents()->GetGeolocationContext();
-  auto geoposition = device::mojom::Geoposition::New();
+  device::mojom::GeopositionResultPtr override_result;
   if (latitude.isJust() && longitude.isJust() && accuracy.isJust()) {
-    geoposition->latitude = latitude.fromJust();
-    geoposition->longitude = longitude.fromJust();
-    geoposition->accuracy = accuracy.fromJust();
-    geoposition->timestamp = base::Time::Now();
-
-    if (!device::ValidateGeoposition(*geoposition))
+    auto position = device::mojom::Geoposition::New();
+    position->latitude = latitude.fromJust();
+    position->longitude = longitude.fromJust();
+    position->accuracy = accuracy.fromJust();
+    position->timestamp = base::Time::Now();
+    if (!device::ValidateGeoposition(*position)) {
       return Response::ServerError("Invalid geolocation");
-
+    }
+    override_result =
+        device::mojom::GeopositionResult::NewPosition(std::move(position));
   } else {
-    geoposition->error_code =
-        device::mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
+    override_result = device::mojom::GeopositionResult::NewError(
+        device::mojom::GeopositionError::New(
+            device::mojom::GeopositionErrorCode::kPositionUnavailable,
+            /*error_message=*/"", /*error_technical=*/""));
   }
-  geolocation_context->SetOverride(std::move(geoposition));
+  geolocation_context->SetOverride(std::move(override_result));
   return Response::Success();
 }
 

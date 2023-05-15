@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -54,6 +53,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
+import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -138,11 +138,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private PreferenceCategory mSyncingCategory;
 
     private ChromeSwitchPreference mSyncEverything;
-    private CheckBoxPreference mSyncPaymentsIntegration;
-    // Maps {@link UserSelectableType} to the corresponding CheckBoxPreference. There is no entry
+    private ChromeBaseCheckBoxPreference mSyncPaymentsIntegration;
+    // Maps {@link UserSelectableType} to the corresponding preference. There is no entry
     // for {@code mSyncPaymentsIntegration} because it does not correspond to a {@link
     // UserSelectableType}
-    private Map<Integer, CheckBoxPreference> mSyncTypePreferencesMap = new HashMap<>();
+    private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypePreferencesMap = new HashMap<>();
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
@@ -230,7 +230,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncTypePreferencesMap.values().forEach(pref -> pref.setOnPreferenceChangeListener(this));
 
         mSyncPaymentsIntegration =
-                (CheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
+                (ChromeBaseCheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
         mSyncPaymentsIntegration.setOnPreferenceChangeListener(this);
 
         // Prevent sync settings changes from taking effect until the user leaves this screen.
@@ -585,16 +585,40 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         boolean syncEverything = mSyncService.hasKeepEverythingSynced();
         mSyncEverything.setChecked(syncEverything);
 
-        Set<Integer> syncTypes = mSyncService.getSelectedTypes();
-        mSyncTypePreferencesMap.values().forEach(pref -> pref.setEnabled(!syncEverything));
-        mSyncTypePreferencesMap.forEach((type, pref) -> pref.setChecked(syncTypes.contains(type)));
+        Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
+        ChromeManagedPreferenceDelegate autofillChromeManagedPreferenceDelegate = null;
 
-        // Payments integration requires AUTOFILL user selectable type
-        boolean syncAutofill = syncTypes.contains(UserSelectableType.AUTOFILL);
-        mSyncPaymentsIntegration.setChecked((syncEverything || syncAutofill)
+        for (Map.Entry<Integer, ChromeBaseCheckBoxPreference> entry :
+                mSyncTypePreferencesMap.entrySet()) {
+            @UserSelectableType
+            int type = entry.getKey();
+            ChromeBaseCheckBoxPreference pref = entry.getValue();
+            boolean managed = mSyncService.isTypeManagedByPolicy(type);
+            pref.setEnabled(!syncEverything);
+            pref.setChecked(selectedSyncTypes.contains(type));
+
+            ChromeManagedPreferenceDelegate managedDelegate =
+                    new ChromeManagedPreferenceDelegate() {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return managed;
+                        }
+                    };
+            pref.setManagedPreferenceDelegate(managedDelegate);
+            if (type == UserSelectableType.AUTOFILL) {
+                autofillChromeManagedPreferenceDelegate = managedDelegate;
+            }
+        }
+
+        // Payments integration requires AUTOFILL user selectable type.
+        mSyncPaymentsIntegration.setChecked(
+                mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
                 && PersonalDataManager.isPaymentsIntegrationEnabled());
-        mSyncPaymentsIntegration.setEnabled(
-                !syncEverything && syncAutofill && !Profile.getLastUsedRegularProfile().isChild());
+        mSyncPaymentsIntegration.setEnabled(!syncEverything
+                && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
+                && !Profile.getLastUsedRegularProfile().isChild());
+        mSyncPaymentsIntegration.setManagedPreferenceDelegate(
+                autofillChromeManagedPreferenceDelegate);
     }
 
     /**

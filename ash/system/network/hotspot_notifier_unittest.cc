@@ -57,7 +57,8 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>();
     cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>();
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+            /*use_fake_implementation=*/false);
 
     NoSessionAshTestBase::SetUp();
     LogIn();

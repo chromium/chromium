@@ -19,6 +19,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "ui/display/screen.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 static const char kGraphicsTracingCategories[] =
@@ -29,6 +33,15 @@ static const char kDetailedGraphicsTracingCategories[] =
     "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
     "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
     "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders";
+
+static const char kNavigationTracingCategories[] =
+    "-*,benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
+    "safe_browsing,loading,startup,mojom,renderer_host,"
+    "disabled-by-default-system_stats,disabled-by-default-cpu_profiler,dwrite,"
+    "fonts,ServiceWorker,passwords,disabled-by-default-file,sql,"
+    "disabled-by-default-user_action_samples,disk_cache";
+
+static const char kAllTracingCategories[] = "*";
 
 }  // namespace
 
@@ -338,6 +351,21 @@ static const char kDetailedGraphicsTracingCategories[] =
                                     startTracingWithCategories:
                                         kDetailedGraphicsTracingCategories];
                               }]];
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:@"Begin Navigation Tracing"
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                [weakSelf startTracingWithCategories:
+                                              kNavigationTracingCategories];
+                              }]];
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Begin Tracing All Categories"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf startTracingWithCategories:
+                                                         kAllTracingCategories];
+                                         }]];
   }
 
   [self presentViewController:alertController animated:YES completion:nil];
@@ -599,7 +627,7 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   ShellData& shell_data = shell_data_map_[shell];
 
   [shell_data.window resignKeyWindow];
-  return true;  // The performClose() will do the destruction of Shell.
+  return false;  // We have not destroyed the shell here.
 }
 
 void ShellPlatformDelegate::RunFileChooser(

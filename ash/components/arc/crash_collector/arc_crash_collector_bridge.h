@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/mojom/base/time.mojom.h"
 
@@ -58,7 +59,8 @@ class ArcCrashCollectorBridge : public KeyedService,
  private:
   std::vector<std::string> CreateCrashReporterArgs();
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::string device_;
   std::string board_;

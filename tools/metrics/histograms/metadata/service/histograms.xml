@@ -452,6 +452,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FetchEvent.{Resource}.FetchResponseFrom"
+    enum="ServiceWorkerFetchResponseFrom" expires_after="2023-10-20">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result of the RaceNetworkRequest. RaceNetworkRequest runs a race between
+    the network request which bypasses ServiceWorker, and the other request
+    which goes through the fetch handler. This metric is recorded for
+    {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.FetchHandler.SkipReason"
     enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -534,7 +550,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of dispatching the install event to the worker. This histogram
-    includes data for ${type}.
+    includes data for {type}.
   </summary>
   <token key="type">
     <variant name="All" summary="all install events"/>
@@ -552,7 +568,7 @@ chromium-metrics-reviews@google.com.
     The time taken between dispatching an InstallEvent to a Service Worker and
     receiving a message that it finished handling the event. Includes the time
     for the waitUntil() promise to settle. This histogram includes data for
-    ${type}.
+    {type}.
   </summary>
   <token key="type">
     <variant name="All" summary="all install events"/>
@@ -1428,7 +1444,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken to query the content settings in the browser process for the
-    ${operation} operation. This is recorded each time a sync call is made.
+    {operation} operation. This is recorded each time a sync call is made.
   </summary>
   <token key="operation">
     <variant name="AllowCacheStorage"/>
@@ -1467,9 +1483,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform 'match' operations of type ${MatchType} on the Cache
-    object in the ServiceWorker Cache API. This histogram was temporarily
-    disabled from M96 through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {MatchType} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>
@@ -1494,9 +1509,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform the ${ProcessOps} operation on the Cache object in the
-    ServiceWorker Cache API. This histogram was temporarily disabled from M96
-    through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {ProcessOps} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>
@@ -1539,9 +1553,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform the ${ProcessOps} operations on the CacheStorage object
-    in the ServiceWorker Cache API. This histogram was temporarily disabled from
-    M96 through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {ProcessOps} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>

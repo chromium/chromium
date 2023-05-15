@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor_hash.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -66,6 +67,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                             ExceptionState&);
   void upgrade(Node* root);
 
+  const LocalDOMWindow* GetOwnerWindow() const { return owner_; }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -80,19 +83,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   bool element_definition_is_running_;
 
-  // Hashes Member<V8CustomElementConstructor> by their v8 callback objects.
-  struct V8CustomElementConstructorHashTraits
-      : WTF::MemberHashTraits<V8CustomElementConstructor> {
-    static unsigned GetHash(
-        const Member<V8CustomElementConstructor>& constructor) {
-      return constructor->CallbackObject()->GetIdentityHash();
-    }
-    static bool Equal(const Member<V8CustomElementConstructor>& a,
-                      const Member<V8CustomElementConstructor>& b) {
-      return a->CallbackObject() == b->CallbackObject();
-    }
-    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
-  };
   using ConstructorMap = HeapHashMap<Member<V8CustomElementConstructor>,
                                      Member<CustomElementDefinition>,
                                      V8CustomElementConstructorHashTraits>;
@@ -115,7 +105,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   FRIEND_TEST_ALL_PREFIXES(
       CustomElementTest,
       CreateElement_TagNameCaseHandlingCreatingCustomElement);
-  friend class CustomElementRegistryTestingScope;
+  friend class CustomElementRegistryTest;
 };
 
 }  // namespace blink

@@ -730,28 +730,28 @@ TEST(LinkedHashSetRefPtrTest, WithRefPtr) {
     expected = 2;
   bool is_deleted = false;
   DummyRefCounted::ref_invokes_count_ = 0;
-  scoped_refptr<DummyRefCounted> ptr =
+  scoped_refptr<DummyRefCounted> object =
       base::AdoptRef(new DummyRefCounted(is_deleted));
   EXPECT_EQ(0, DummyRefCounted::ref_invokes_count_);
 
   Set set;
-  set.insert(ptr);
+  set.insert(object);
   // Referenced only once (to store a copy in the container).
   EXPECT_EQ(expected, DummyRefCounted::ref_invokes_count_);
-  EXPECT_EQ(ptr, set.front());
+  EXPECT_EQ(object, set.front());
   EXPECT_EQ(expected, DummyRefCounted::ref_invokes_count_);
 
-  DummyRefCounted* raw_ptr = ptr.get();
+  DummyRefCounted* ptr = object.get();
 
+  EXPECT_TRUE(set.Contains(object));
   EXPECT_TRUE(set.Contains(ptr));
-  EXPECT_TRUE(set.Contains(raw_ptr));
   EXPECT_EQ(expected, DummyRefCounted::ref_invokes_count_);
 
-  ptr = nullptr;
+  object = nullptr;
   EXPECT_FALSE(is_deleted);
   EXPECT_EQ(expected, DummyRefCounted::ref_invokes_count_);
 
-  set.erase(raw_ptr);
+  set.erase(ptr);
   EXPECT_TRUE(is_deleted);
 
   EXPECT_EQ(expected, DummyRefCounted::ref_invokes_count_);

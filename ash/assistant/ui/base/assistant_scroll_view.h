@@ -6,6 +6,7 @@
 #define ASH_ASSISTANT_UI_BASE_ASSISTANT_SCROLL_VIEW_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
@@ -49,7 +50,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
 
   base::ObserverList<Observer> observers_;
 
-  views::View* content_view_;                // Owned by view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh>
+      content_view_;  // Owned by view hierarchy.
 };
 
 }  // namespace ash

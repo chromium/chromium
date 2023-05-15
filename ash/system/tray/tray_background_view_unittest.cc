@@ -14,6 +14,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -100,7 +101,8 @@ class TestTrayBackgroundView : public TrayBackgroundView,
 
   bool show_bubble_called() const { return show_bubble_called_; }
 
-  views::Widget* on_bubble_visibility_change_captured_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh>
+      on_bubble_visibility_change_captured_widget_ = nullptr;
   bool on_bubble_visibility_change_captured_visibility_ = false;
 
  private:
@@ -176,9 +178,16 @@ class TrayBackgroundViewTest : public AshTestBase,
   }
 
  private:
-  TestTrayBackgroundView* test_tray_background_view_ = nullptr;
+  raw_ptr<TestTrayBackgroundView, ExperimentalAsh> test_tray_background_view_ =
+      nullptr;
   int num_animations_scheduled_ = 0;
 };
+
+// Tests that a `TrayBackgroundView` initially starts in a hidden state.
+TEST_F(TrayBackgroundViewTest, InitiallyHidden) {
+  EXPECT_FALSE(test_tray_background_view()->GetVisible());
+  EXPECT_EQ(test_tray_background_view()->layer()->opacity(), 0.0f);
+}
 
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(

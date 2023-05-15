@@ -50,7 +50,7 @@ class ScriptWrappable;
 class TransferredMediaStreamTrack;
 class UserMediaClient;
 
-enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
+enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kAllScreensMedia };
 
 enum class UserMediaRequestResult {
   kOk = 0,

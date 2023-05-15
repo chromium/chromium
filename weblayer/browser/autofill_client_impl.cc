@@ -269,26 +269,6 @@ void AutofillClientImpl::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
-bool AutofillClientImpl::IsFastCheckoutSupported(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    const autofill::AutofillManager& autofill_manager) {
-  return false;
-}
-
-bool AutofillClientImpl::TryToShowFastCheckout(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    base::WeakPtr<autofill::AutofillManager> autofill_manager) {
-  return false;
-}
-
-void AutofillClientImpl::HideFastCheckout(bool allow_further_runs) {}
-
-bool AutofillClientImpl::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool AutofillClientImpl::IsTouchToFillCreditCardSupported() {
   return false;
 }
@@ -381,7 +361,7 @@ bool AutofillClientImpl::IsContextSecure() const {
   return false;
 }
 
-void AutofillClientImpl::ExecuteCommand(int id) {
+void AutofillClientImpl::ExecuteCommand(autofill::Suggestion::FrontendId id) {
   NOTREACHED();
 }
 

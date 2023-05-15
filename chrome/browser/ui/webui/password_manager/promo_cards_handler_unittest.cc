@@ -58,9 +58,11 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
     prefs_.registry()->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
 
     std::vector<std::unique_ptr<password_manager::PromoCardInterface>> cards;
-    cards.emplace_back(std::make_unique<MockPromoCard>("mock1", &prefs_));
+    cards.emplace_back(
+        std::make_unique<MockPromoCard>("password_checkup_promo", &prefs_));
     card1_ = static_cast<MockPromoCard*>(cards.back().get());
-    cards.emplace_back(std::make_unique<MockPromoCard>("mock2", &prefs_));
+    cards.emplace_back(
+        std::make_unique<MockPromoCard>("password_shortcut_promo", &prefs_));
     card2_ = static_cast<MockPromoCard*>(cards.back().get());
 
     auto handler =

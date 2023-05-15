@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
@@ -42,7 +43,7 @@ class InputMethodPersistence : public InputMethodManager::Observer {
       Profile* profile);
 
  private:
-  InputMethodManager* input_method_manager_;
+  raw_ptr<InputMethodManager, ExperimentalAsh> input_method_manager_;
 };
 
 void SetUserLastInputMethodPreferenceForTesting(

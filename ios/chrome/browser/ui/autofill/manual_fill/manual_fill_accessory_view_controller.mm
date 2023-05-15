@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -47,6 +48,9 @@ constexpr CGFloat ManualFillIconsSpacing = 10;
 
 // iPad override for the icons' spacing.
 constexpr CGFloat ManualFillIconsIPadSpacing = 15;
+
+// Size of the symbols.
+constexpr CGFloat kSymbolSize = 18;
 
 // Color to use for the buttons while enabled.
 UIColor* IconActiveTintColor() {
@@ -146,12 +150,19 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 // Helper to create a system button with the passed data and `self` as the
 // target. Such button has been configured to have some preset properties
 - (UIButton*)manualFillButtonWithAction:(SEL)selector
-                             ImageNamed:(NSString*)imageName
+                            symbolNamed:(NSString*)symbolName
+                          defaultSymbol:(BOOL)defaultSymbol
                 accessibilityIdentifier:(NSString*)accessibilityIdentifier
                      accessibilityLabel:(NSString*)accessibilityLabel {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* image = [[UIImage imageNamed:imageName]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImageConfiguration* imageConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  UIImage* image =
+      defaultSymbol
+          ? DefaultSymbolWithConfiguration(symbolName, imageConfiguration)
+          : CustomSymbolWithConfiguration(symbolName, imageConfiguration);
   [button setImage:image forState:UIControlStateNormal];
   button.tintColor = IconActiveTintColor();
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -173,7 +184,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     self.keyboardButton = [self
         manualFillButtonWithAction:@selector(keyboardButtonPressed)
-                        ImageNamed:@"mf_keyboard"
+                       symbolNamed:kKeyboardSymbol
+                     defaultSymbol:YES
            accessibilityIdentifier:manual_fill::
                                        AccessoryKeyboardAccessibilityIdentifier
                 accessibilityLabel:l10n_util::GetNSString(
@@ -185,7 +197,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.passwordButton = [self
       manualFillButtonWithAction:@selector(passwordButtonPressed:)
-                      ImageNamed:@"password_key"
+                     symbolNamed:kPasswordSymbol
+                   defaultSymbol:NO
          accessibilityIdentifier:manual_fill::
                                      AccessoryPasswordAccessibilityIdentifier
               accessibilityLabel:l10n_util::GetNSString(
@@ -213,7 +226,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.cardsButton =
       [self manualFillButtonWithAction:@selector(cardButtonPressed:)
-                            ImageNamed:@"ic_credit_card"
+                           symbolNamed:kCreditCardSymbol
+                         defaultSymbol:YES
                accessibilityIdentifier:
                    manual_fill::AccessoryCreditCardAccessibilityIdentifier
                     accessibilityLabel:
@@ -224,7 +238,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.accountButton = [self
       manualFillButtonWithAction:@selector(accountButtonPressed:)
-                      ImageNamed:@"ic_place"
+                     symbolNamed:kLocationSymbol
+                   defaultSymbol:NO
          accessibilityIdentifier:manual_fill::
                                      AccessoryAddressAccessibilityIdentifier
               accessibilityLabel:l10n_util::GetNSString(

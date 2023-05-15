@@ -21,7 +21,6 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/public/version.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace headless {

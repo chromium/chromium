@@ -265,6 +265,14 @@ s! {
         pub seccomp_notif_resp: ::__u16,
         pub seccomp_data: ::__u16,
     }
+
+    pub struct ptrace_rseq_configuration {
+        pub rseq_abi_pointer: ::__u64,
+        pub rseq_abi_size: ::__u32,
+        pub signature: ::__u32,
+        pub flags: ::__u32,
+        pub pad: ::__u32,
+    }
 }
 
 s_no_extra_traits! {
@@ -535,6 +543,7 @@ pub const O_ASYNC: ::c_int = 0x2000;
 pub const O_NDELAY: ::c_int = 0x800;
 
 pub const PTRACE_DETACH: ::c_uint = 17;
+pub const PTRACE_GET_RSEQ_CONFIGURATION: ::c_uint = 0x420f;
 
 pub const EFD_NONBLOCK: ::c_int = 0x800;
 
@@ -591,6 +600,7 @@ pub const EFD_CLOEXEC: ::c_int = 0x80000;
 
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 
 pub const O_DIRECT: ::c_int = 0x4000;
 pub const O_DIRECTORY: ::c_int = 0x10000;

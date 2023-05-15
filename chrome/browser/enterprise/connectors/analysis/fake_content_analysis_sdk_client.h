@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
 
 namespace enterprise_connectors {
@@ -28,7 +29,8 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   const content_analysis::sdk::AgentInfo& GetAgentInfo() const override;
 
   // Get the latest request client receives.
-  const content_analysis::sdk::ContentAnalysisRequest& GetRequest();
+  content_analysis::sdk::ContentAnalysisRequest GetRequest(
+      const std::string& request_token);
 
   // Get the latest cancel requests receives.
   const content_analysis::sdk::ContentAnalysisCancelRequests&
@@ -51,9 +53,11 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   void SetAgentInfo(const content_analysis::sdk::AgentInfo& agent_info);
 
  private:
+  mutable base::Lock lock_;
   content_analysis::sdk::Client::Config config_;
-  content_analysis::sdk::ContentAnalysisResponse response_;
-  content_analysis::sdk::ContentAnalysisRequest request_;
+  content_analysis::sdk::ContentAnalysisResponse response_template_;
+  std::map<std::string, content_analysis::sdk::ContentAnalysisRequest>
+      requests_;
   content_analysis::sdk::ContentAnalysisCancelRequests cancel_;
   int send_status_ = 0;
   int ack_status_ = 0;

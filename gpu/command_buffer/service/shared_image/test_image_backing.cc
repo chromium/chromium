@@ -61,13 +61,13 @@ class TestGLTexturePassthroughImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough> texture_;
 };
 
-class TestSkiaImageRepresentation : public SkiaImageRepresentation {
+class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
  public:
   TestSkiaImageRepresentation(GrDirectContext* gr_context,
                               SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker) {}
 
  protected:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
@@ -81,8 +81,8 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
       return {};
     }
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    auto surface =
-        SkSurface::MakeRasterN32Premul(size().width(), size().height(), &props);
+    auto surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size().width(), size().height()), &props);
     if (!surface)
       return {};
     return {surface};
@@ -227,7 +227,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 TestImageBacking::~TestImageBacking() {
   // Pretend our context is lost to avoid actual cleanup in |texture_| or
   // |passthrough_texture_|.
-  texture_->RemoveLightweightRef(/*have_context=*/false);
+  texture_.ExtractAsDangling()->RemoveLightweightRef(/*have_context=*/false);
   texture_passthrough_->MarkContextLost();
   texture_passthrough_.reset();
 
@@ -291,7 +291,8 @@ TestImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, this, tracker, texture_passthrough_);
 }
 
-std::unique_ptr<SkiaImageRepresentation> TestImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+TestImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

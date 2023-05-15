@@ -38,6 +38,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
@@ -92,7 +93,7 @@ class OverviewButtonTrayTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
-    ui::DeviceDataManagerTestApi().SetKeyboardDevices({ui::InputDevice(
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({ui::KeyboardDevice(
         3, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard")});
     base::RunLoop().RunUntilIdle();
     // State change is asynchronous on the device. Do the same

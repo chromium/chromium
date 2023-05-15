@@ -379,7 +379,7 @@ DownloadItemImpl::DownloadItemImpl(
   delegate_->Attach();
   DCHECK(state_ == COMPLETE_INTERNAL || state_ == INTERRUPTED_INTERNAL ||
          state_ == CANCELLED_INTERNAL);
-  DCHECK(base::IsValidUuid(guid_));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid_).is_valid());
 
   if (download_entry) {
     download_source_ = download_entry->download_source;
@@ -414,7 +414,9 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
                     info.isolation_info,
                     info.save_info->range_request_from,
                     info.save_info->range_request_to),
-      guid_(info.guid.empty() ? base::GenerateUuid() : info.guid),
+      guid_(info.guid.empty()
+                ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+                : info.guid),
       download_id_(download_id),
       response_headers_(info.response_headers),
       content_disposition_(info.content_disposition),
@@ -453,7 +455,7 @@ DownloadItemImpl::DownloadItemImpl(
     const std::string& mime_type,
     DownloadJob::CancelRequestCallback cancel_request_callback)
     : request_info_(url),
-      guid_(base::GenerateUuid()),
+      guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       download_id_(download_id),
       mime_type_(mime_type),
       original_mime_type_(mime_type),
@@ -849,10 +851,6 @@ int64_t DownloadItemImpl::GetBytesWasted() const {
 
 int32_t DownloadItemImpl::GetAutoResumeCount() const {
   return auto_resume_count_;
-}
-
-bool DownloadItemImpl::IsOffTheRecord() const {
-  return delegate_->IsOffTheRecord();
 }
 
 const GURL& DownloadItemImpl::GetURL() const {

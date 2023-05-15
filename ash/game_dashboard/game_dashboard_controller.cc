@@ -7,110 +7,90 @@
 #include <memory>
 #include <string>
 
-#include "ash/game_dashboard/game_dashboard_session.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
-#include "base/logging.h"
+#include "ash/public/cpp/window_properties.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "extensions/common/constants.h"
+#include "ui/aura/client/window_types.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
 namespace {
-
-// Gets top level window of the provided window if the top level window is not
-// null. Otherwise return the window.
-aura::Window* GetTopLevelWindow(aura::Window* window) {
-  return window ? window->GetToplevelWindow() : nullptr;
-}
-
+// The singleton instance owned by `Shell`.
+GameDashboardController* g_instance = nullptr;
 }  // namespace
 
-GameDashboardController::GameDashboardController() {
-  Shell::Get()->session_controller()->AddObserver(this);
+// static
+GameDashboardController* GameDashboardController::Get() {
+  return g_instance;
+}
+
+GameDashboardController::GameDashboardController(
+    std::unique_ptr<GameDashboardDelegate> delegate)
+    : delegate_(std::move(delegate)) {
+  DCHECK_EQ(g_instance, nullptr);
+  g_instance = this;
+  CHECK(aura::Env::HasInstance());
+  env_observation_.Observe(aura::Env::GetInstance());
 }
 
 GameDashboardController::~GameDashboardController() {
-  ShutdownAllSessions();
-  Shell::Get()->session_controller()->RemoveObserver(this);
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
-// static
-bool GameDashboardController::CanStart(aura::Window* window) {
-  return IsArcWindow(window);
-}
-
-bool GameDashboardController::IsActive(aura::Window* window) const {
-  auto it = sessions_.find(window);
-  return it != sessions_.end() && !it->second->is_shutting_down();
-}
-
-bool GameDashboardController::Start(aura::Window* window) {
-  window = GetTopLevelWindow(window);
-  if (!window) {
-    VLOG(1) << "Ignoring attempt to start game dashboard with a null window";
-    return false;
+void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
+  auto* top_level_window = new_window->GetToplevelWindow();
+  if (!top_level_window ||
+      top_level_window->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
+    // Ignore non-NORMAL window types.
+    return;
   }
-
-  if (!CanStart(window)) {
-    return false;
-  }
-
-  auto& session = sessions_[window];
-  if (session) {
-    // Already exists.
-    return false;
-  }
-
-  session = std::make_unique<GameDashboardSession>(window);
-  session->Initialize();
-  window_observations_.AddObservation(window);
-  return true;
+  RefreshWindowTracking(new_window);
 }
 
-void GameDashboardController::Stop(aura::Window* window) {
-  auto it_session = sessions_.find(window);
-  if (it_session != sessions_.end()) {
-    window_observations_.RemoveObservation(window);
-    it_session->second->Shutdown();
-    sessions_.erase(it_session);
+void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
+                                                      const void* key,
+                                                      intptr_t old) {
+  if (key == kAppIDKey) {
+    RefreshWindowTracking(window);
   }
-}
-
-void GameDashboardController::ToggleMenu(aura::Window* window) {
-  auto it_session = sessions_.find(GetTopLevelWindow(window));
-  if (it_session != sessions_.end()) {
-    it_session->second->ToggleMenu();
-  }
-}
-
-void GameDashboardController::OnActiveUserSessionChanged(
-    const AccountId& account_id) {
-  ShutdownAllSessions();
-}
-
-void GameDashboardController::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    ShutdownAllSessions();
-  }
-}
-
-void GameDashboardController::OnChromeTerminating() {
-  ShutdownAllSessions();
 }
 
 void GameDashboardController::OnWindowDestroying(aura::Window* window) {
-  Stop(window);
+  window_observations_.RemoveObservation(window);
 }
 
-void GameDashboardController::ShutdownAllSessions() {
-  window_observations_.RemoveAllObservations();
-  for (auto& it_session : sessions_) {
-    if (!it_session.second->is_shutting_down()) {
-      it_session.second->Shutdown();
-    }
+GameDashboardController::WindowGameState
+GameDashboardController::GetWindowGameState(aura::Window* window) const {
+  const auto* app_id = window->GetProperty(kAppIDKey);
+  if (!app_id) {
+    return WindowGameState::kNotYetKnown;
   }
-  sessions_.clear();
+  const bool is_game = (IsArcWindow(window) && delegate_->IsGame(*app_id)) ||
+                       (*app_id == extension_misc::kGeForceNowAppId);
+  return is_game ? WindowGameState::kGame : WindowGameState::kNotGame;
+}
+
+void GameDashboardController::RefreshWindowTracking(aura::Window* window) {
+  const bool is_observing = window_observations_.IsObservingSource(window);
+  const auto state = GetWindowGameState(window);
+  const bool should_observe = state != WindowGameState::kNotGame;
+
+  if (state != WindowGameState::kNotYetKnown) {
+    window->SetProperty(chromeos::kIsGameKey, state == WindowGameState::kGame);
+  }
+
+  if (is_observing == should_observe) {
+    return;
+  }
+
+  if (should_observe) {
+    window_observations_.AddObservation(window);
+  } else {
+    window_observations_.RemoveObservation(window);
+  }
 }
 
 }  // namespace ash

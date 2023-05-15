@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -53,7 +54,8 @@ class SigninProfileHandler : public OAuth2LoginManager::Observer,
   // Called when sign-in profile clearing is completed.
   void OnSigninProfileCleared();
 
-  content::BrowsingDataRemover* browsing_data_remover_ = nullptr;
+  raw_ptr<content::BrowsingDataRemover, ExperimentalAsh>
+      browsing_data_remover_ = nullptr;
   base::RepeatingClosure on_clear_profile_stage_finished_;
   std::vector<base::OnceClosure> on_clear_callbacks_;
 

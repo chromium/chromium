@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -115,7 +115,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  BOOL syncEnabled = syncSetupService->IsFirstSetupComplete();
+  BOOL syncEnabled = syncSetupService->IsInitialSyncFeatureSetupComplete();
 
   // Need a first step to show logout contextual information about the forced
   // sign-in policy. Only return this state when sync is enabled because it is

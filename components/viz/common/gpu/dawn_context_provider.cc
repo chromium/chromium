@@ -60,17 +60,32 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
+  wgpu::DeviceDescriptor descriptor;
 
   // Disable validation in non-DCHECK builds.
-  dawn::native::DawnDeviceDescriptor descriptor;
 #if !DCHECK_IS_ON()
-  descriptor.forceEnabledToggles.push_back("disable_robustness");
-  descriptor.forceEnabledToggles.push_back("skip_validation");
-  descriptor.forceDisabledToggles.push_back("lazy_clear_resource_on_first_use");
+  std::vector<const char*> force_enabled_toggles;
+  std::vector<const char*> force_disabled_toggles;
+
+  force_enabled_toggles.push_back("disable_robustness");
+  force_enabled_toggles.push_back("skip_validation");
+  force_disabled_toggles.push_back("lazy_clear_resource_on_first_use");
+
+  wgpu::DawnTogglesDescriptor toggles_desc;
+  toggles_desc.enabledToggles = force_enabled_toggles.data();
+  toggles_desc.enabledTogglesCount = force_enabled_toggles.size();
+  toggles_desc.disabledToggles = force_disabled_toggles.data();
+  toggles_desc.disabledTogglesCount = force_disabled_toggles.size();
+  descriptor.nextInChain = &toggles_desc;
 #endif
-  descriptor.requiredFeatures.push_back("dawn-internal-usages");
-  descriptor.requiredFeatures.push_back("depth-clip-control");
-  descriptor.requiredFeatures.push_back("depth32float-stencil8");
+
+  std::vector<wgpu::FeatureName> features;
+  features.push_back(wgpu::FeatureName::DawnInternalUsages);
+  features.push_back(wgpu::FeatureName::DepthClipControl);
+  features.push_back(wgpu::FeatureName::Depth32FloatStencil8);
+
+  descriptor.requiredFeatures = features.data();
+  descriptor.requiredFeaturesCount = features.size();
 
   std::vector<dawn::native::Adapter> adapters = instance_.GetAdapters();
   for (dawn::native::Adapter adapter : adapters) {

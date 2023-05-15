@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -66,7 +67,9 @@ using State = AppBannerManager::State;
 class AppBannerManagerDesktopBrowserTest
     : public AppBannerManagerBrowserTestBase {
  public:
-  AppBannerManagerDesktopBrowserTest() = default;
+  AppBannerManagerDesktopBrowserTest()
+      : total_engagement_(
+            AppBannerSettingsHelper::ScopeTotalEngagementForTesting(0)) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({}, GetDisabledFeatures());
@@ -75,8 +78,6 @@ class AppBannerManagerDesktopBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    // Trigger banners instantly.
-    AppBannerSettingsHelper::SetTotalEngagementToTrigger(0);
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
     AppBannerManagerBrowserTestBase::SetUpOnMainThread();
@@ -93,6 +94,8 @@ class AppBannerManagerDesktopBrowserTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Scope engagement needed to trigger banners instantly.
+  base::AutoReset<double> total_engagement_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,

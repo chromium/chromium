@@ -16,6 +16,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -74,6 +75,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate) override;
   void Destroy() override;
+  void Flush(FlushCallback flush_callback) override;
+  bool IsFlushSupported() override;
   bool IsGpuFrameResizeSupported() override;
 
   // IMFAsyncCallback implementation
@@ -103,9 +106,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     kUninitialized,
     kInitializing,
     kEncoding,
-    kDraining,
+    // We wait to feed all pending frames from `pending_input_queue_`
+    // before telling MF encoder to drain.
+    kPreFlushing,
+    // We issued a drain message to the MF encoder want wait for the drain
+    // to complete.
     kFlushing,
-    kClosing,
     kError,
   };
 
@@ -134,10 +140,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void SetState(State state);
 
   // Processes the input video frame for the encoder.
-  HRESULT ProcessInput(PendingInput input);
+  HRESULT ProcessInput(const PendingInput& input);
+
+  // Feed as many frames from |pending_input_queue_| to ProcessInput()
+  // as possible.
+  void FeedInputs();
 
   // Populates input sample buffer with contents of a video frame
-  HRESULT PopulateInputSampleBuffer(scoped_refptr<VideoFrame> frame);
+  HRESULT PopulateInputSampleBuffer(const PendingInput& input);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
   HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
 
@@ -156,10 +166,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void ProcessOutput();
 
   // Asynchronous event handler
-  void MediaEventHandler(MediaEventType event_type);
+  void MediaEventHandler(MediaEventType event_type, HRESULT status);
 
-  // Releases resources encoder holds.
-  void ReleaseEncoderResources();
+  // Sends MFT_MESSAGE_COMMAND_DRAIN to the encoder to make it
+  // process all inputs, produce all outputs and tell us when it's done.
+  void DrainEncoder();
 
   // Initialize video processing (for scaling)
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
@@ -171,6 +182,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unique_ptr<MediaLog> media_log_;
+
+  // Attempts to set the current frame color space on `imf_input_media_type_`
+  // and `imf_output_media_type_` and update `encoder_`.
+  void SetEncoderColorSpace();
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
@@ -232,9 +247,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<IMFMediaType> imf_input_media_type_;
   Microsoft::WRL::ComPtr<IMFMediaType> imf_output_media_type_;
 
-  bool input_required_ = false;
-
   Microsoft::WRL::ComPtr<IMFSample> input_sample_;
+  // True if `input_sample_` has been populated with data/metadata
+  // of the next frame to be encoded.
+  bool has_prepared_input_sample_ = false;
+
   Microsoft::WRL::ComPtr<IMFSample> output_sample_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
@@ -246,7 +263,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view_;
 
   // To expose client callbacks from VideoEncodeAccelerator.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // DXGI device manager for handling hardware input textures
@@ -263,8 +280,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // A buffer used as a scratch space for I420 to NV12 conversion
   std::vector<uint8_t> resize_buffer_;
 
+  FlushCallback flush_callback_;
+
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
+
+  // Color space of the first frame sent to Encode(). Every input gets an entry
+  // in `output_color_spaces_`, new outputs take the color space from the front.
+  absl::optional<gfx::ColorSpace> encoder_color_space_;
+  base::circular_deque<absl::optional<gfx::ColorSpace>> output_color_spaces_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

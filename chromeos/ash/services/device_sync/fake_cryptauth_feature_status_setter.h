@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_setter.h"
@@ -70,7 +71,7 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   std::vector<Request> requests_;
 };
 
@@ -111,7 +112,8 @@ class FakeCryptAuthFeatureStatusSetterFactory
   std::vector<FakeCryptAuthFeatureStatusSetter*> instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;
-  CryptAuthClientFactory* last_client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
+      nullptr;
 };
 
 }  // namespace device_sync

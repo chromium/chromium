@@ -25,7 +25,7 @@
 <translation id="1190144681599273207">इस फ़ाइल को लाने में मोबाइल डेटा का करीब <ph name="FILE_SIZE" /> उपयोग होगा.</translation>
 <translation id="1194390763418645112">फ़ाइल का ऐक्सेस <ph name="RESTRICTED_DESTINATIONS" /> ने दिया है</translation>
 <translation id="1201402288615127009">अगला</translation>
-<translation id="1209796539517632982">स्वचालित नाम सर्वर</translation>
+<translation id="1209796539517632982">ऑटोमैटिक (अपने-आप कॉन्फ़िगर होने वाला) नेम सर्वर</translation>
 <translation id="1210831758834677569">लाओ</translation>
 <translation id="1221555006497674479">आपके <ph name="TOTAL_SPACE" /> की शेयर की गई ड्राइव में सिर्फ़ <ph name="REMAINING_PERCENTAGE" />% स्टोरेज बचा है.</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
@@ -83,7 +83,7 @@
 <translation id="1715848075824334077">व्यक्ति साइकल चला रहा है</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आइटम ज़िप किए जा रहे हैं...</translation>
 <translation id="1722687688096767818">प्रोफ़ाइल जोड़ी जा रही है...</translation>
-<translation id="1726100011689679555">नाम सर्वर</translation>
+<translation id="1726100011689679555">नेम सर्वर</translation>
 <translation id="1727562178154619254">सिंक किया जा सकता है</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चाइनीज़ शांग्जी</translation>
@@ -166,7 +166,6 @@
 <translation id="23721837607121582">मोबाइल प्रोफ़ाइल डाउनलोड करें. यह <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="2377319039870049694">'सूची की तरह देखें' पर स्विच करें</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> फ़ोल्डर Linux के साथ शेयर किए गए</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> फ़ाइलें चयनित</translation>
 <translation id="2383454254762599978">ट्रैश में भेजें</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज़/म्यांमार</translation>
@@ -424,7 +423,7 @@
 <translation id="4477219268485577442">बुल्गारियाई फ़ोनेटिक</translation>
 <translation id="4508265954913339219">सक्रियण विफल</translation>
 <translation id="4509667233588080747">वर्कमैन इंटरनैशनल कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
-<translation id="4522570452068850558">विवरण</translation>
+<translation id="4522570452068850558">ब्यौरा</translation>
 <translation id="4527800702232535228">यह फ़ोल्डर Parallels Desktop के साथ शेयर किया गया है</translation>
 <translation id="4552678318981539154">ज़्यादा स्टोरेज खरीदें</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">डिवाइस केवल-पढ़ने के लिए है</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
 <translation id="482932175346970750">अपने ब्राउज़र में <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करें</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आइटम चयनित</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">अब आपके पास और स्‍थान शेष नहीं है</translation>
 <translation id="6993826899923627728">ये आइटम आपके ट्रैश में हैं</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फ़ोल्‍डर चयनित</translation>
 <translation id="7008426324576352165">अपलोड को पूरा करने के लिए, आपके संगठन को ज़्यादा स्टोरेज की ज़रूरत है.</translation>
 <translation id="7009985720488544166">एडमिन नीति के तहत, <ph name="COUNT" /> फ़ाइलों को ट्रांसफ़र करने की अनुमति नहीं है</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">ऊपर दिया गया एक्सटेंशन ढूंढें</translation>
 <translation id="7256405249507348194">अपरिचित गड़बड़ी: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाएं</translation>
+<translation id="7291818353625820805">क्या आपको बटन दबाकर रखना है? कीबोर्ड सेटिंग में उच्चारण के चिह्न बंद करें</translation>
 <translation id="7292816689782057017">एडमिन नीति, कुछ जगहों पर सेव करने की अनुमति नहीं देती.</translation>
 <translation id="7294063083760278948">तेलुगु ट्रांसलिट्रेशन</translation>
 <translation id="7295662345261934369">दूसरों से शेयर करें</translation>

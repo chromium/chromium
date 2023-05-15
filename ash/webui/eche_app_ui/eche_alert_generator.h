@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -49,8 +50,8 @@ class EcheAlertGenerator : public mojom::NotificationGenerator {
   void OnEnableScreenLockChanged();
 
   mojo::Receiver<mojom::NotificationGenerator> notification_receiver_{this};
-  LaunchAppHelper* launch_app_helper_;
-  PrefService* pref_service_;
+  raw_ptr<LaunchAppHelper, ExperimentalAsh> launch_app_helper_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

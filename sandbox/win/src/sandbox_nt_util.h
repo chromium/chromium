@@ -10,8 +10,11 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Placement new and delete to be used from ntdll interception code.
 void* __cdecl operator new(size_t size,
@@ -99,7 +102,10 @@ struct NtAllocDeleter {
 void* GetGlobalIPCMemory();
 
 // Returns a pointer to the Policy shared memory.
-void* GetGlobalPolicyMemory();
+void* GetGlobalPolicyMemoryForTesting();
+
+// Returns a view of the shared delegate data, or nullopt if none was provided.
+absl::optional<base::span<const uint8_t>> GetGlobalDelegateData();
 
 // Returns a reference to imported NT functions.
 const NtExports* GetNtExports();
@@ -201,7 +207,9 @@ class AutoProtectMemory {
 
  private:
   bool changed_;
-  void* address_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* address_;
   size_t bytes_;
   ULONG old_protect_;
 };
@@ -211,6 +219,9 @@ class AutoProtectMemory {
 bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
                            DWORD length,
                            uint32_t file_info_class);
+
+// Get the CLIENT_ID from the current TEB.
+CLIENT_ID GetCurrentClientId();
 
 }  // namespace sandbox
 

@@ -21,7 +21,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:71-
+- chrome_os:71-103
+deprecated: true
 tags:
 - local-data-access
 - google-sharing

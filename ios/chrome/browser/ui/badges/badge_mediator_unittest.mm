@@ -8,26 +8,26 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/badge_state.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/badges/badge_consumer.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 #import "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -66,7 +66,8 @@ enum class TestParam {
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
+             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem
+                     infoBar:(InfoBarIOS*)infoBar {
   self.hasFullscreenOffTheRecordBadge =
       fullscreenBadgeItem != nil &&
       fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;

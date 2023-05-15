@@ -144,6 +144,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system",
     "//components/account_id",
     "//components/prefs:test_support",
+    "//components/user_manager:test_support",
     "//components/user_manager",
     "//components/version_info",
     "//content/test:test_support",

@@ -68,6 +68,19 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       bool supports_display_compositing,
       bool is_overlay_candidate);
 
+  // Creates an image wrapping an external mailbox.
+  // The mailbox may come from a different context,
+  // potentially from a different process.
+  // This takes ownership of the mailbox.
+  static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromExternalMailbox(
+      const gpu::MailboxHolder& mailbox_holder,
+      uint32_t usage,
+      const SkImageInfo& sk_image_info,
+      bool is_origin_top_left,
+      bool supports_display_compositing,
+      bool is_overlay_candidate,
+      base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
+
   bool CurrentFrameKnownToBeOpaque() override;
   bool IsTextureBacked() const override { return true; }
   scoped_refptr<StaticBitmapImage> ConvertToColorSpace(sk_sp<SkColorSpace>,
@@ -125,6 +138,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   PaintImage PaintImageForCurrentFrame() override;
 
+  SkImageInfo GetSkImageInfo() const override;
+
+  uint32_t GetUsage() const override;
+
  private:
   struct ReleaseContext {
     scoped_refptr<MailboxRef> mailbox_ref;
@@ -151,8 +168,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
-
-  SkImageInfo GetSkImageInfoInternal() const override;
 
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;

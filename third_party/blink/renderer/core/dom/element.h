@@ -612,6 +612,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     RebuildMarkerLayoutTree(whitespace_attacher);
     HandleSubtreeModifications();
   }
+  void RebuildLayoutTreeForSizeContainerAncestor() {
+    RebuildFirstLetterLayoutTree();
+  }
   bool NeedsRebuildChildLayoutTrees(
       const WhitespaceAttacher& whitespace_attacher) const {
     return ChildNeedsReattachLayoutTree() || NeedsWhitespaceChildrenUpdate() ||
@@ -659,10 +662,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
   // Returns true if the attachment was successful.
-  bool AttachDeclarativeShadowRoot(HTMLTemplateElement*,
-                                   ShadowRootType,
-                                   FocusDelegation,
-                                   SlotAssignmentMode);
+  bool AttachStreamingDeclarativeShadowRoot(HTMLTemplateElement&,
+                                            ShadowRootType,
+                                            FocusDelegation,
+                                            SlotAssignmentMode);
+  // TODO(crbug.com/1396384) Remove this entire function when the older version
+  // of declarative shadow DOM is removed.
+  bool AttachDeprecatedNonStreamingDeclarativeShadowRoot(HTMLTemplateElement&,
+                                                         ShadowRootType,
+                                                         FocusDelegation,
+                                                         SlotAssignmentMode);
 
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(
@@ -863,7 +872,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // parsing a special case in this respect should be avoided if possible.
   virtual void FinishParsingChildren();
 
-  virtual void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
+  void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
   // Returns the pseudo element for the given PseudoId type.
   // |view_transition_name| is used to uniquely identify a pseudo element

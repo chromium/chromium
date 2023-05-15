@@ -15,13 +15,11 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/large_icon_cache.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -31,6 +29,9 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -62,7 +63,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -107,6 +107,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)start {
   DCHECK(self.browser);
+  DCHECK(self.NTPMetricsDelegate);
+
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
@@ -146,7 +148,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
 
   BOOL isGoogleDefaultSearchProvider =
-      [self.ntpDelegate isGoogleDefaultSearchEngine];
+      [self.NTPDelegate isGoogleDefaultSearchEngine];
 
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc] init];
@@ -161,7 +163,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   self.contentSuggestionsMediator.promosManager = promosManager;
-  self.contentSuggestionsMediator.NTPMetrics = self.NTPMetrics;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -173,6 +174,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;
+  self.contentSuggestionsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
 
   self.contentSuggestionsViewController =
       [[ContentSuggestionsViewController alloc] init];
@@ -228,12 +230,12 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 }
 
 - (void)returnToRecentTabWasAdded {
-  [self.ntpDelegate updateFeedLayout];
-  [self.ntpDelegate setContentOffsetToTop];
+  [self.NTPDelegate updateFeedLayout];
+  [self.NTPDelegate setContentOffsetToTop];
 }
 
 - (void)moduleWasRemoved {
-  [self.ntpDelegate updateFeedLayout];
+  [self.NTPDelegate updateFeedLayout];
 }
 
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {

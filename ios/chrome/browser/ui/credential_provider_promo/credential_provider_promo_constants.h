@@ -13,7 +13,8 @@ enum class IOSCredentialProviderPromoSource {
   kPasswordCopied = 1,
   kPasswordSaved = 2,
   kAutofillUsed = 3,
-  kMaxValue = kAutofillUsed,
+  kSetUpList = 4,
+  kMaxValue = kSetUpList,
 };
 
 enum CredentialProviderPromoContext {

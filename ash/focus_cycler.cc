@@ -115,7 +115,7 @@ bool FocusCycler::FocusWidget(views::Widget* widget) {
   // will be taken care of by the widget activation.
   widget_activating_ = widget;
   widget->Activate();
-  widget_activating_ = NULL;
+  widget_activating_ = nullptr;
   return widget->IsActive();
 }
 

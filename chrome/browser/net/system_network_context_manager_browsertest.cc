@@ -217,6 +217,8 @@ class SystemNetworkContextManagerWithCustomProxyConfigBrowserTest
     : public SystemNetworkContextManagerBrowsertest {
  protected:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    SystemNetworkContextManagerBrowsertest::SetUpDefaultCommandLine(
+        command_line);
     command_line->AppendSwitchASCII(switches::kIPAnonymizationProxyServer,
                                     "testproxy:80");
     command_line->AppendSwitchASCII(

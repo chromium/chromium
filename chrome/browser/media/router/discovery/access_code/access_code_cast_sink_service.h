@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -29,6 +28,8 @@ namespace media_router {
 
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
+
+class AccessCodeCastPrefUpdater;
 
 bool IsAccessCodeCastEnabled();
 
@@ -121,6 +122,9 @@ class AccessCodeCastSinkService : public KeyedService,
                              RecordRouteDuration);
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              RecordRouteDurationNonAccessCodeDevice);
+    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                             AddRouteCallsHandleMediaRoute);
+
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
@@ -207,6 +211,10 @@ class AccessCodeCastSinkService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest, RecordRouteDuration);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RecordRouteDurationNonAccessCodeDevice);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           RestartExpirationTimerDoesntResetTimer);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           AddRouteCallsHandleMediaRoute);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -225,7 +233,7 @@ class AccessCodeCastSinkService : public KeyedService,
                              AddSinkResultCode result_code);
 
   void OnChannelOpenedResult(AddSinkResultCallback add_sink_callback,
-                             MediaSink::Id sink_id,
+                             const MediaSinkInternal& sink,
                              bool channel_opened);
 
   bool IsSinkValidAccessCodeSink(const MediaSinkInternal* sink);

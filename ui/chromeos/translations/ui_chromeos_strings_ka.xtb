@@ -166,7 +166,6 @@
 <translation id="23721837607121582">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">სიის ხედზე გადართვა</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> საქაღალდე გაზიარებულია Linux-თან</translation>
-<translation id="2378075407703503998">არჩეულია <ph name="SELCTED_FILE_COUNT" /> ფაილი</translation>
 <translation id="2383454254762599978">წაშლილებში გადატანა</translation>
 <translation id="2387458720915042159">პროქსი-სერვერის კავშირის ტიპი</translation>
 <translation id="2389832672041313158">ბირმული/მიანმარული</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">მოწყობილობა მხოლოდ კითხვადია</translation>
 <translation id="4826849268470072925">ტამილური ITRANS</translation>
 <translation id="482932175346970750">აკრიფეთ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> თქვენს ბრაუზერში</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ელემენტი არჩეულია</translation>
 <translation id="4843566743023903107">Chromebase-ები</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="485316830061041779">გერმანული</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">შვედური</translation>
 <translation id="6990081529015358884">ადგილი აღარ არის</translation>
 <translation id="6993826899923627728">ეს ერთეულები თქვენს წაშლილებშია</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> შერჩეული ფოლდერი</translation>
 <translation id="7008426324576352165">ატვირთვის შესასრულებლად თქვენს ორგანიზაციას მეტი მეხსიერება სჭირდება.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ფაილის გადატანა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +787,7 @@
 <translation id="7252604552361840748">ზემოთ იპოვეთ გაფართოება</translation>
 <translation id="7256405249507348194">ამოუცნობი შეცდომა: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ხელმისაწვდომი მომსახურებები</translation>
+<translation id="7291818353625820805">გსურთ, კლავიშები გამეორდეს? გამორთეთ მახვილის ნიშნები კლავიატურის პარამეტრებიდან</translation>
 <translation id="7292816689782057017">ადმინისტრატორის მიერ დადგენილი წესები ზღუდავს ზოგიერთ მდებარეობაზე შენახვას.</translation>
 <translation id="7294063083760278948">ტელუგუ ტრანსლიტერაცია</translation>
 <translation id="7295662345261934369">სხვებთან გაზიარება</translation>

@@ -15,9 +15,12 @@ namespace content {
 // Please keep features in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables ADPF (Android Dynamic Performance Framework) for the browser IO
-// thread.
-BASE_DECLARE_FEATURE(kADPFForBrowserIOThread);
+// Use chromim's implementation of selection magnifier built using surface
+// control APIs, instead of using the system-provided magnifier.
+BASE_DECLARE_FEATURE(kAndroidSurfaceControlMagnifier);
+
+CONTENT_EXPORT bool IsAndroidSurfaceControlMagnifierEnabled();
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, RenderFrameHostManager::CommitPending will also update the
@@ -25,11 +28,6 @@ BASE_DECLARE_FEATURE(kADPFForBrowserIOThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);
 
 #if BUILDFLAG(IS_ANDROID)
-// Unifies RenderWidgetHostViewAndroid with the other platforms in their usage
-// of OnShowWithPageVisibility. Disabling will revert the refactor and use the
-// direct ShowInternal path.
-BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
-
 // Enables skipping of calls to hideSoftInputFromWindow when there is not a
 // keyboard currently visible.
 BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
@@ -39,6 +37,11 @@ BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 // IPC is sent to create all child frame proxies instead of sending one IPC per
 // proxy.
 BASE_DECLARE_FEATURE(kConsolidatedIPCForProxyCreation);
+
+// TODO(https://crbug.com/1442346): Feature flag to guard extra CHECKs put in
+// place to ensure that the AllowBindings API on RenderFrameHost is not called
+// for documents outside of WebUI ones.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnsureAllowBindingsIsAlwaysForWebUI);
 
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
@@ -80,21 +83,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationCitadelEnforcement);
 
 // (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
 BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
-
-#if BUILDFLAG(IS_ANDROID)
-// Monitor total private memory footprint and dispatch memory pressure signal
-// if the value exceeds the pre-defined threshold. (for Android 4GB devices)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices);
-
-// (for Android 6GB devices)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices);
-
-// Helper functions for UserLevelMemoryPressureSignal features.
-CONTENT_EXPORT base::TimeDelta
-MinimumIntervalOfUserLevelMemoryPressureSignalOn4GbDevices();
-CONTENT_EXPORT base::TimeDelta
-MinimumIntervalOfUserLevelMemoryPressureSignalOn6GbDevices();
-#endif
 
 // Please keep features in alphabetical order.
 

@@ -40,6 +40,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_aura_utils.h"
 #include "ui/views/window/native_frame_view.h"
+#include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/window_move_client.h"
 
@@ -267,6 +268,11 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
       ConvertWidgetInitParamsToInitProperties(params,
                                               requires_accelerated_widget);
   AddAdditionalInitProperties(params, &properties);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Set persistable based on whether or not the content window is persistable.
+  properties.persistable = GetContentWindow()->GetProperty(wm::kPersistableKey);
+#endif
 
   // If we have a parent, record the parent/child relationship. We use this
   // data during destruction to make sure that when we try to close a parent
@@ -731,7 +737,12 @@ void DesktopWindowTreeHostPlatform::SetOpacity(float opacity) {
 }
 
 void DesktopWindowTreeHostPlatform::SetAspectRatio(
-    const gfx::SizeF& aspect_ratio) {
+    const gfx::SizeF& aspect_ratio,
+    const gfx::Size& excluded_margin) {
+  // TODO(crbug.com/1407629): send `excluded_margin`.
+  if (excluded_margin.width() > 0 || excluded_margin.height() > 0) {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
   platform_window()->SetAspectRatio(aspect_ratio);
 }
 

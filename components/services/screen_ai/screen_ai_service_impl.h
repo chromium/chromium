@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/deferred_sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -43,11 +42,9 @@ class ScreenAIService : public mojom::ScreenAIService,
   ~ScreenAIService() override;
 
   // Calls `success_callback` function and tells it if `library` has value.
-  // If `library` has value, sets the library and starts task runner, otherwise
-  // kills the current process.
-  void SetLibraryAndStartTaskRunner(
-      LoadAndInitializeLibraryCallback success_callback,
-      std::unique_ptr<ScreenAILibraryWrapper> library);
+  // Kills the current process if `library` does not has value .
+  void SetLibraryOrDie(LoadAndInitializeLibraryCallback success_callback,
+                       std::unique_ptr<ScreenAILibraryWrapper> library);
 
   static void RecordMetrics(ukm::SourceId ukm_source_id,
                             ukm::UkmRecorder* ukm_recorder,
@@ -60,12 +57,17 @@ class ScreenAIService : public mojom::ScreenAIService,
   // mojom::ScreenAIAnnotator:
   void ExtractSemanticLayout(const SkBitmap& image,
                              const ui::AXTreeID& parent_tree_id,
-                             PerformOcrCallback callback) override;
+                             ExtractSemanticLayoutCallback callback) override;
 
   // mojom::ScreenAIAnnotator:
-  void PerformOcr(const SkBitmap& image,
-                  const ui::AXTreeID& parent_tree_id,
-                  PerformOcrCallback callback) override;
+  void PerformOcrAndReturnAXTreeUpdate(
+      const SkBitmap& image,
+      PerformOcrAndReturnAXTreeUpdateCallback callback) override;
+
+  // mojom::ScreenAIAnnotator:
+  void PerformOcrAndReturnAnnotation(
+      const SkBitmap& image,
+      PerformOcrAndReturnAnnotationCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -92,25 +94,9 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  // Common section of PerformOcr and ExtractSemanticLayout functions.
-  void PerformVisualAnnotation(const SkBitmap& image,
-                               const ui::AXTreeID& parent_tree_id,
-                               PerformOcrCallback callback,
-                               bool run_ocr,
-                               bool run_layout_extraction);
-
-  // Wrapper functions for task scheduler.
-  void VisualAnnotationInternal(const SkBitmap& image,
-                                const ui::AXTreeID& parent_tree_id,
-                                bool run_ocr,
-                                bool run_layout_extraction,
-                                ui::AXTreeUpdate* annotation);
-  void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
-                                  const ukm::SourceId& ukm_source_id,
-                                  std::vector<int32_t>* content_node_ids);
-
-  // Internal task scheduler that starts after library load is completed.
-  scoped_refptr<base::DeferredSequencedTaskRunner> task_runner_;
+  // Wrapper to call `PerformOcr` library function and record metrics.
+  absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
+      const SkBitmap& image);
 
   mojo::Receiver<mojom::ScreenAIService> receiver_;
 

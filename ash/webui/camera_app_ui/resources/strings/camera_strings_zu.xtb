@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Ukurekhoda kwakho kumisiwe ngenxa yesikhala sesitoreji sedivayisi esiphansi. Ukuze urekhode amavidiyo wakho, udinga ukukhulula isikhala kudivayisi yakho.</translation>
 <translation id="2036868001356139588">Ubude besikhathi</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> iyasebenza</translation>
-<translation id="2128052519899549250">Rekhoda indlulisasikhathi yevidiyo</translation>
 <translation id="2134029355740465625">Izilungiselelo zevidiyo</translation>
 <translation id="2144806332417375165">Yenza ngokwezifiso amapharamitha wevidiyo yakho</translation>
 <translation id="2175927920773552910">Ikhodi ye-QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Idokhumenti itholiwe</translation>
 <translation id="414641094616694804">Le khamera ayikwazi ukushintsha ukucaca</translation>
 <translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
-<translation id="4281620174117014503">Ukucaca okumaphakathi</translation>
 <translation id="428234092390943511">Isithonjana sekhasi</translation>
 <translation id="4383571725254449280">Amalogu okusebenza kokuphrinta</translation>
 <translation id="4445542136948522167">Yeka ukuthatha isithombe</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5320594929574852403">Ihambela ngasohlangothini lwesobunxele</translation>
 <translation id="5374917190292010970">I-4K (2160p)</translation>
-<translation id="5577251651370645658">Indlulisasikhathi</translation>
 <translation id="5662366948659129155">Iskena ikhasi <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Isikwele</translation>
+<translation id="574392208103952083">Okulingene</translation>
 <translation id="5746169159649715125">Londoloza njenge-PDF</translation>
 <translation id="5753488212459587150">Nika amandla imodi yengcweti</translation>
 <translation id="5759254179196327752">Skena idokhumenti</translation>
@@ -138,6 +136,7 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="7658239707568436148">Khansela</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Idokhumenti ekhoneni eliphansi kwesokudla</translation>
+<translation id="7684446460490665873">Rekhoda indlulisasikhathi yevidiyo</translation>
 <translation id="7692090236657809299">Nika amandla ukusondeza i-pan tilt</translation>
 <translation id="7726641833034062494">Rekhoda ividiyo evamile</translation>
 <translation id="7748344063862150053">Idokhumenti ekhoneni eliphezulu kwesokudla</translation>
@@ -163,6 +162,7 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="9045010116236796332">Beka bonke onqenqema bedokhumenti ngaphakathi kohlaka</translation>
 <translation id="9045155556724273246">10 amasekhondi</translation>
 <translation id="906331135292332864">Icubungula isithombe...</translation>
+<translation id="9161584225258678723">Indlulisasikhathi</translation>
 <translation id="922762992951083513">Isibuko sivuliwe</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 </translationbundle>

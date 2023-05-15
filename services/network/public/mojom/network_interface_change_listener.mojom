@@ -1,0 +1,65 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/ip_address.mojom";
+
+// The corresponds to a struct ifaddrmsg sent from the Linux kernel, see
+// https://man7.org/linux/man-pages/man7/rtnetlink.7.html.
+// Note that there is no way to validate any of these values, and so this should
+// normally only be sent from a trusted process.
+[EnableIf=use_network_interface_change_listener]
+struct IfAddrMsg {
+  uint8 ifa_family;
+  uint8 ifa_prefixlen;
+  uint8 ifa_flags;
+  uint8 ifa_scope;
+  uint32 ifa_index;
+};
+
+// The counterpart to AddressMapOwnerLinux::AddressMap.
+[EnableIf=use_network_interface_change_listener]
+struct AddressMap {
+  // Mapped to an AddressMap.
+  map<network.mojom.IPAddress, IfAddrMsg> address_map;
+};
+
+// The counterpart to the std::unordered_set<int> of online links maintained in
+// AddressMapOwnerLinux.
+[EnableIf=use_network_interface_change_listener]
+struct OnlineLinks {
+  // Mapped to an std::unordered_set<int>.
+  array<int32> online_links;
+};
+
+// This data is necessary to initialize AddressMapCacheLinux, for example in the
+// sandboxed network service where AddressTrackerLinux can't be used instead.
+[EnableIf=use_network_interface_change_listener]
+struct InitialAddressMap {
+  // The initial AddressMap.
+  AddressMap address_map;
+  // The initial online interfaces.
+  OnlineLinks online_links;
+};
+
+// Represents a diff of an AddressMap and a set of online links.
+[EnableIf=use_network_interface_change_listener]
+struct NetworkInterfaceChangeParams {
+  // Maps an IPAddress to null if the IPAddress has been removed from the map.
+  // Otherwise maps an IPAddress to an IfAddrMsg if the entry has been changed
+  // or added.
+  map<network.mojom.IPAddress, IfAddrMsg?> address_map;
+  // Maps an interface index to true if it has been added to the set, and false
+  // if it has been removed from the set.
+  map<int32, bool> online_links;
+};
+
+// Used to listen for changes to the network interfaces (e.g. updates received
+// via netlink from the Linux kernel).
+[EnableIf=use_network_interface_change_listener]
+interface NetworkInterfaceChangeListener {
+  // Called when there is a change to the network interfaces.
+  OnNetworkInterfacesChanged(NetworkInterfaceChangeParams params);
+};

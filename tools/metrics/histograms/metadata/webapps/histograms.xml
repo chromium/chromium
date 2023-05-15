@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AppBanners.BeforeInstallEvent"
-    enum="AppBannersBeforeInstallEvent" expires_after="2023-08-13">
+    enum="AppBannersBeforeInstallEvent" expires_after="2023-10-15">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
-    enum="AppTypeToMenuEntry" expires_after="2023-08-20">
+    enum="AppTypeToMenuEntry" expires_after="2023-10-22">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -255,18 +255,6 @@ chromium-metrics-reviews@google.com.
     application related to the current website when the site meets all install
     criteria. When an ambient badge was shown, record the type of the app
     (native app or web app).
-  </summary>
-</histogram>
-
-<histogram name="Webapp.AmbientBadge.Messages.DismissReason"
-    enum="MessageDismissReason" expires_after="2023-12-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    On mobile, an install ambient badge may automatically shows to promote an
-    application related to the current website when the site meets all install
-    criteria. When a message UI style ambient badge was dismissed for any
-    reason, record the dismiss reason.
   </summary>
 </histogram>
 
@@ -363,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.CheckServiceWorker.Status"
-    enum="ServiceWorkerOfflineCapability" expires_after="2023-07-17">
+    enum="ServiceWorkerOfflineCapability" expires_after="2023-10-22">
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -485,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ExternalPrefs.PlaceholderMigrationState"
-    enum="PlaceholderMigrationState" expires_after="2023-07-15">
+    enum="PlaceholderMigrationState" expires_after="2023-10-22">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -497,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ExternalPrefs.PrefDataAbsentDBDataAbsent" units="bool"
-    expires_after="2023-07-15">
+    expires_after="2023-10-22">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -509,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ExternalPrefs.PrefDataAbsentDBDataPresent" units="bool"
-    expires_after="2023-07-15">
+    expires_after="2023-10-22">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -534,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ExternalPrefs.PrefDataPresentDBDataPresent"
-    units="bool" expires_after="2023-07-15">
+    units="bool" expires_after="2023-10-22">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -778,7 +766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -789,7 +777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -848,6 +836,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstalledCount.ByUser" units="count"
+    expires_after="2024-09-10">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of web apps that were installed by sync but not yet
+    locally installed by the user. This is recorded on the initialization of the
+    Profile object, which can happen either at chrome startup or when the user
+    switches profiles.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstalledCount.ByUserNotLocallyInstalled" units="count"
+    expires_after="2024-09-10">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of fully installed web apps, installed by the user. This
+    is recorded on the initialization of the Profile object, which can happen
+    either at chrome startup or when the user switches profiles.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallIphPromo.Result" enum="WebAppInstallIphResult"
     expires_after="2022-05-22">
   <obsolete>
@@ -862,7 +873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
   <owner>ortuno@chromium.org</owner>
@@ -870,25 +881,20 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
-<histogram name="WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus"
-    enum="IsolatedWebAppReadIntegrityBlockAndMetadataStatus"
-    expires_after="2023-11-08">
+<histogram name="WebApp.Isolated.ReadResponseHeadError"
+    enum="IsolatedWebAppReadResponseHeadError" expires_after="2024-05-08">
   <owner>cmfcmf@chromium.org</owner>
   <owner>peletskyi@chromium.org</owner>
   <summary>
-    Records whether reading integrity block and metadata from a Signed Web
-    Bundle via the isolated-app: scheme was successful or resulted in an error.
-    This is logged every time the integrity block and metadata of an Isolated
-    Web App are parsed, which happens whenever the reader for an Isolated Web
-    App is not yet cached. Readers are evicted from the cache after
-    approximately 10 minutes of not reading any responses from their
-    corresponding Signed Web Bundle. Isolated Web Apps are parsed for any
-    resources loading for the web app, so any usage could trigger this UMA.
+    Records the exact error that occured during reading of a response head for a
+    request to an Isolated Web App via the isolated-app: scheme. The error is
+    logged together with WebApp.Isolated.ReadResponseHeadSuccess in case when an
+    error occurs.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Isolated.ReadResponseHeadStatus"
-    enum="IsolatedWebAppReadResponseHeadStatus" expires_after="2023-11-08">
+<histogram name="WebApp.Isolated.ReadResponseHeadSuccess" enum="BooleanSuccess"
+    expires_after="2024-05-08">
   <owner>cmfcmf@chromium.org</owner>
   <owner>peletskyi@chromium.org</owner>
   <summary>
@@ -943,8 +949,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.SwbnFileUsabilityError"
+    enum="IsolatedWebAppSwbnFileUsabilityError" expires_after="2024-05-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records the exact error why a Signed Web Bundle is unusable. In particular
+    integrity block or metadata parsing errors are recorded here. The error is
+    logged together with WebApp.Isolated.SwbnFileUsabilitySuccess when an error
+    occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.SwbnFileUsabilitySuccess" enum="BooleanValid"
+    expires_after="2024-05-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records whether a Signed Web Bundle file is usable. To be usable the file's
+    integrity block and metadata should be read, parsed and validated
+    successfully. This is logged every time the integrity block and metadata of
+    an Isolated Web App are parsed, which happens whenever the reader for an
+    Isolated Web App is not yet cached. Readers are evicted from the cache after
+    approximately 10 minutes of not reading any responses from their
+    corresponding Signed Web Bundle. Isolated Web Apps are parsed for any
+    resources loading for the web app, so any usage could trigger this UMA.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2023-08-14">
+    expires_after="2023-10-15">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -982,16 +1016,6 @@ chromium-metrics-reviews@google.com.
     Records the result of running the WebAppMover, which runs on Chrome startup.
     It uninstalls a set of WebApps and then installs a single WebApp as a
     replacement.
-  </summary>
-</histogram>
-
-<histogram name="Webapp.NavigationStatus" enum="BooleanSuccess"
-    expires_after="2021-10-25">
-  <owner>peter@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <summary>
-    Records whether the top-level navigations in standalone Web Apps result in
-    presenting the web content or showing the error page.
   </summary>
 </histogram>
 
@@ -1349,7 +1373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Creation.Result"
-    enum="ShortcutsCreationResult" expires_after="2023-08-20">
+    enum="ShortcutsCreationResult" expires_after="2023-10-22">
   <owner>phillis@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <summary>Records the result of shortcut creation for PWA.</summary>

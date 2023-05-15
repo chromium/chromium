@@ -64,8 +64,7 @@ class AboutThisSiteService : public KeyedService {
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client,
-                                TemplateURLService* template_url_service,
-                                bool allow_missing_description);
+                                TemplateURLService* template_url_service);
   ~AboutThisSiteService() override;
 
   AboutThisSiteService(const AboutThisSiteService&) = delete;
@@ -86,7 +85,6 @@ class AboutThisSiteService : public KeyedService {
  private:
   std::unique_ptr<Client> client_;
   raw_ptr<TemplateURLService> template_url_service_;
-  const bool allow_missing_description_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
 };

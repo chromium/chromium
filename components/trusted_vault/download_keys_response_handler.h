@@ -13,7 +13,7 @@
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 class SecureBoxKeyPair;
 
@@ -66,6 +66,6 @@ class DownloadKeysResponseHandler {
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_DOWNLOAD_KEYS_RESPONSE_HANDLER_H_

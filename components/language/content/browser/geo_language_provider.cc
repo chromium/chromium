@@ -17,6 +17,7 @@
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/device/public/cpp/geolocation/geoposition.h"
 
 namespace language {
 namespace {
@@ -184,17 +185,21 @@ void GeoLanguageProvider::QueryNextPosition() {
 }
 
 void GeoLanguageProvider::OnIpGeolocationResponse(
-    device::mojom::GeopositionPtr geoposition) {
+    device::mojom::GeopositionResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
 
-  // Update current languages on UI thread. We pass the lat/long pair so that
-  // SetGeoLanguages can do the lookup on the UI thread. This is because the
-  // language provider could decide to cache the values, requiring interaction
-  // with the pref service.
-  creation_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GeoLanguageProvider::LookupAndSetLanguages,
-                                base::Unretained(this), geoposition->latitude,
-                                geoposition->longitude));
+  if (result->is_position() &&
+      device::ValidateGeoposition(*result->get_position())) {
+    // Update current languages on UI thread. We pass the lat/long pair so that
+    // SetGeoLanguages can do the lookup on the UI thread. This is because the
+    // language provider could decide to cache the values, requiring interaction
+    // with the pref service.
+    const auto& position = *result->get_position();
+    creation_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GeoLanguageProvider::LookupAndSetLanguages,
+                                  base::Unretained(this), position.latitude,
+                                  position.longitude));
+  }
 
   // Post a task to request a fresh lookup after |kMinUpdatePeriod|.
   background_task_runner_->PostDelayedTask(

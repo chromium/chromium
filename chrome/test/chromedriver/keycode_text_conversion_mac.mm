@@ -6,9 +6,8 @@
 
 #import <Carbon/Carbon.h>
 
-#include <cctype>
-
 #include "base/mac/scoped_cftyperef.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -54,7 +53,7 @@ bool ConvertKeyCodeToText(
   UniChar character =
       GetCharacter(static_cast<UInt16>(mac_key_code), modifier_key_state);
 
-  if (character && !std::iscntrl(character)) {
+  if (character && !base::IsAsciiControl(character)) {
     std::u16string text16;
     text16.push_back(character);
     *text = base::UTF16ToUTF8(text16);

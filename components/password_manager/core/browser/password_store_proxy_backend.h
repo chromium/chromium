@@ -105,7 +105,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   // passed to the result callback. Could be either |LoginsResultOrError| or
   // |PasswordChangesOrError|.
   template <typename ResultT>
-  void MaybeRetryOperation(
+  void MaybeFallbackOnOperation(
       base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
           retry_callback,
       const base::StrongAlias<struct MethodNameTag, std::string>& method_name,

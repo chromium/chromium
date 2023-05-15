@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
 
   // Attempt to add an event listener for the
   // activityLogPrivate.onExtensionActivity event.
-  ASSERT_TRUE(content::ExecuteScript(page_contents, R"(
+  ASSERT_TRUE(content::ExecJs(page_contents, R"(
       let activityLogListener = () => {};
       chrome.activityLogPrivate.onExtensionActivity.addListener(
           activityLogListener);
@@ -282,10 +282,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   // See chrome/browser/resources/extensions for the Polymer code.
   // This test only serves as an end to end test, and most of the functionality
   // is covered in the JS unit tests.
-  bool has_api_call = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      activity_log_contents,
-      R"(let manager = document.querySelector('extensions-manager');
+  EXPECT_EQ(true,
+            content::EvalJs(
+                activity_log_contents,
+                R"(let manager = document.querySelector('extensions-manager');
          let activityLog =
              manager.shadowRoot.querySelector('extensions-activity-log');
          let activityLogHistory =
@@ -301,10 +301,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
              let item = activityLogHistory.shadowRoot.querySelector(
                  'activity-log-history-item');
              let activityKey = item.shadowRoot.getElementById('activity-key');
-             window.domAutomationController.send(
-                 activityKey.innerText === 'test.sendMessage');
+             return activityKey.innerText === 'test.sendMessage';
          });
-      )",
-      &has_api_call));
-  EXPECT_TRUE(has_api_call);
+      )"));
 }

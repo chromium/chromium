@@ -15,6 +15,7 @@ namespace net {
 
 // An interface to a class that should be notified when session receives server
 // push.
+// TODO(https://crbug.com/1426477): Remove.
 class NET_EXPORT_PRIVATE ServerPushDelegate {
  public:
   // An interface to a class that reflects information on the pushed request.

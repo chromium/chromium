@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -76,18 +76,18 @@ TEST_F(PartnerBookmarksShimTest, GetNodeByID) {
   BookmarkNode* root_partner_node_ptr = root_partner_node.get();
   BookmarkNode* partner_folder1 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GUID::GenerateRandomV4(), GURL()));
+          1, base::Uuid::GenerateRandomV4(), GURL()));
 
   BookmarkNode* partner_folder2 =
       partner_folder1->Add(std::make_unique<BookmarkNode>(
-          2, base::GUID::GenerateRandomV4(), GURL()));
+          2, base::Uuid::GenerateRandomV4(), GURL()));
 
   partner_folder1->Add(std::make_unique<BookmarkNode>(
-      3, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
+      3, base::Uuid::GenerateRandomV4(), GURL("http://www.a.com")));
 
   BookmarkNode* partner_bookmark2 =
       partner_folder2->Add(std::make_unique<BookmarkNode>(
-          4, base::GUID::GenerateRandomV4(), GURL("http://www.b.com")));
+          4, base::Uuid::GenerateRandomV4(), GURL("http://www.b.com")));
 
   PartnerBookmarksShim* shim = partner_bookmarks_shim();
   ASSERT_FALSE(shim->IsLoaded());
@@ -116,7 +116,7 @@ TEST_F(PartnerBookmarksShimTest, ObserverNotifiedOfLoadWithPartnerBookmarks) {
 
   int64_t id = 5;
   root_partner_node->Add(std::make_unique<BookmarkNode>(
-      id++, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
+      id++, base::Uuid::GenerateRandomV4(), GURL("http://www.a.com")));
 
   PartnerBookmarksShim* shim = partner_bookmarks_shim();
   shim->AddObserver(&observer_);
@@ -139,32 +139,32 @@ TEST_F(PartnerBookmarksShimTest, RemoveBookmarks) {
 
   BookmarkNode* partner_folder1 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GUID::GenerateRandomV4(), GURL()));
+          1, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder1->SetTitle(u"a.net");
 
   BookmarkNode* partner_folder2 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          2, base::GUID::GenerateRandomV4(), GURL()));
+          2, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder2->SetTitle(u"b.net");
 
   BookmarkNode* partner_bookmark1 =
       partner_folder1->Add(std::make_unique<BookmarkNode>(
-          3, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
+          3, base::Uuid::GenerateRandomV4(), GURL("http://www.a.com")));
   partner_bookmark1->SetTitle(u"a.com");
 
   BookmarkNode* partner_bookmark2 =
       partner_folder2->Add(std::make_unique<BookmarkNode>(
-          4, base::GUID::GenerateRandomV4(), GURL("http://www.b.com")));
+          4, base::Uuid::GenerateRandomV4(), GURL("http://www.b.com")));
   partner_bookmark2->SetTitle(u"b.com");
 
   BookmarkNode* partner_folder3 =
       partner_folder2->Add(std::make_unique<BookmarkNode>(
-          5, base::GUID::GenerateRandomV4(), GURL()));
+          5, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder3->SetTitle(u"c.net");
 
   BookmarkNode* partner_bookmark3 =
       partner_folder3->Add(std::make_unique<BookmarkNode>(
-          6, base::GUID::GenerateRandomV4(), GURL("http://www.c.com")));
+          6, base::Uuid::GenerateRandomV4(), GURL("http://www.c.com")));
   partner_bookmark3->SetTitle(u"c.com");
 
   ASSERT_FALSE(shim->IsLoaded());
@@ -233,22 +233,22 @@ TEST_F(PartnerBookmarksShimTest, RenameBookmarks) {
 
   BookmarkNode* partner_folder1 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GUID::GenerateRandomV4(), GURL()));
+          1, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder1->SetTitle(u"a.net");
 
   BookmarkNode* partner_folder2 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          2, base::GUID::GenerateRandomV4(), GURL()));
+          2, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder2->SetTitle(u"b.net");
 
   BookmarkNode* partner_bookmark1 =
       partner_folder1->Add(std::make_unique<BookmarkNode>(
-          3, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
+          3, base::Uuid::GenerateRandomV4(), GURL("http://www.a.com")));
   partner_bookmark1->SetTitle(u"a.com");
 
   BookmarkNode* partner_bookmark2 =
       partner_folder2->Add(std::make_unique<BookmarkNode>(
-          4, base::GUID::GenerateRandomV4(), GURL("http://www.b.com")));
+          4, base::Uuid::GenerateRandomV4(), GURL("http://www.b.com")));
   partner_bookmark2->SetTitle(u"b.com");
 
   ASSERT_FALSE(shim->IsLoaded());
@@ -316,17 +316,17 @@ TEST_F(PartnerBookmarksShimTest, SaveLoadProfile) {
 
     BookmarkNode* partner_folder1 =
         root_partner_node->Add(std::make_unique<BookmarkNode>(
-            1, base::GUID::GenerateRandomV4(), GURL()));
+            1, base::Uuid::GenerateRandomV4(), GURL()));
     partner_folder1->SetTitle(u"a.net");
 
     BookmarkNode* partner_bookmark1 =
         partner_folder1->Add(std::make_unique<BookmarkNode>(
-            3, base::GUID::GenerateRandomV4(), GURL("http://a.com")));
+            3, base::Uuid::GenerateRandomV4(), GURL("http://a.com")));
     partner_bookmark1->SetTitle(u"a.com");
 
     BookmarkNode* partner_bookmark2 =
         partner_folder1->Add(std::make_unique<BookmarkNode>(
-            5, base::GUID::GenerateRandomV4(), GURL("http://b.com")));
+            5, base::Uuid::GenerateRandomV4(), GURL("http://b.com")));
     partner_bookmark2->SetTitle(u"b.com");
 
     ASSERT_FALSE(shim->IsLoaded());
@@ -372,12 +372,12 @@ TEST_F(PartnerBookmarksShimTest, DisableEditing) {
 
   BookmarkNode* partner_bookmark1 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          3, base::GUID::GenerateRandomV4(), GURL("http://a")));
+          3, base::Uuid::GenerateRandomV4(), GURL("http://a")));
   partner_bookmark1->SetTitle(u"a");
 
   BookmarkNode* partner_bookmark2 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          3, base::GUID::GenerateRandomV4(), GURL("http://b")));
+          3, base::Uuid::GenerateRandomV4(), GURL("http://b")));
   partner_bookmark2->SetTitle(u"b");
 
   ASSERT_FALSE(shim->IsLoaded());
@@ -403,22 +403,22 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
       PartnerBookmarksReader::CreatePartnerBookmarksRootForTesting();
   BookmarkNode* partner_folder1 =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GUID::GenerateRandomV4(), GURL()));
+          1, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder1->SetTitle(u"Folder1");
 
   BookmarkNode* partner_folder2 =
       partner_folder1->Add(std::make_unique<BookmarkNode>(
-          2, base::GUID::GenerateRandomV4(), GURL()));
+          2, base::Uuid::GenerateRandomV4(), GURL()));
   partner_folder2->SetTitle(u"Folder2");
 
   BookmarkNode* partner_bookmark1 =
       partner_folder1->Add(std::make_unique<BookmarkNode>(
-          3, base::GUID::GenerateRandomV4(), GURL("http://www.ugtdat.com")));
+          3, base::Uuid::GenerateRandomV4(), GURL("http://www.ugtdat.com")));
   partner_bookmark1->SetTitle(u"wx");
 
   BookmarkNode* partner_bookmark2 =
       partner_folder2->Add(std::make_unique<BookmarkNode>(
-          4, base::GUID::GenerateRandomV4(), GURL("http://argbhl.com")));
+          4, base::Uuid::GenerateRandomV4(), GURL("http://argbhl.com")));
   partner_bookmark2->SetTitle(u"wx yz");
 
   PartnerBookmarksShim* shim = partner_bookmarks_shim();

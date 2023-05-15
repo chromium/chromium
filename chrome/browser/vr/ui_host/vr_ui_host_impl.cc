@@ -151,14 +151,25 @@ VRUiHostImpl::~VRUiHostImpl() {
   // We don't call BrowserXRRuntime::RemoveObserver, because if we are being
   // destroyed, it means the corresponding device has been removed from
   // XRRuntimeManager, and the BrowserXRRuntime has been destroyed.
-  if (web_contents_)
+  if (have_webxr_web_contents_) {
     WebXRWebContentsChanged(nullptr);
+  }
 }
 
 void VRUiHostImpl::WebXRWebContentsChanged(content::WebContents* contents) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << __func__ << ": web_contents_.get()=" << web_contents_.get()
+           << " contents=" << contents
+           << " have_webxr_web_contents_=" << have_webxr_web_contents_;
 
-  if (web_contents_ == contents) {
+  // Note that we can't just check for equality here, because in the destruction
+  // case we may be *supposed* to have a WebContents that needs to be cleaned
+  // up, but it's already been nulled out. So we need to use the
+  // `have_webxr_web_contents_` as a proxy for "should web_contents_ actually be
+  // null".
+  const bool has_new_webxr_web_contents = !!contents;
+  if (have_webxr_web_contents_ == has_new_webxr_web_contents &&
+      web_contents_.get() == contents) {
     // Nothing to do. This includes the case where both the old and new contents
     // are null.
     return;
@@ -167,32 +178,40 @@ void VRUiHostImpl::WebXRWebContentsChanged(content::WebContents* contents) {
   // Eventually the contents will be used to poll for permissions, or determine
   // what overlays should show.
 
-  if (web_contents_) {
+  if (have_webxr_web_contents_) {
     // If the WebContents change, make sure we unregister pre-existing
     // observers, if any. It's safe to try to remove a nonexistent observer.
 
     DesktopMediaPickerManager::Get()->RemoveObserver(this);
-
-    VrTabHelper::SetIsContentDisplayedInHeadset(web_contents_, false);
-
-    // Don't save the permission request manager for future use to avoid a race
-    // condition when destroying the WebContents, see https://crbug.com/1203146
-    raw_ptr<permissions::PermissionRequestManager> old_manager =
-        permissions::PermissionRequestManager::FromWebContents(web_contents_);
-    if (old_manager) {
-      old_manager->RemoveObserver(this);
-    }
-
     if (!contents) {
       poll_capturing_state_task_.Cancel();
 
-      if (ui_rendering_thread_)
+      if (ui_rendering_thread_) {
         ui_rendering_thread_->SetWebXrPresenting(false);
+      }
       StopUiRendering();
+    }
+
+    // Even though we think we should have a WebContents, we only hold onto it
+    // as a WeakPtr, so it may have been destroyed. So check here before we do
+    // any cleanup.
+    if (web_contents_) {
+      VrTabHelper::SetIsContentDisplayedInHeadset(web_contents_.get(), false);
+
+      // Don't save the permission request manager for future use to avoid a
+      // race condition when destroying the WebContents, see
+      // https://crbug.com/1203146
+      raw_ptr<permissions::PermissionRequestManager> old_manager =
+          permissions::PermissionRequestManager::FromWebContents(
+              web_contents_.get());
+      if (old_manager) {
+        old_manager->RemoveObserver(this);
+      }
     }
   }
 
-  web_contents_ = contents;
+  have_webxr_web_contents_ = has_new_webxr_web_contents;
+  web_contents_ = contents ? contents->GetWeakPtr() : nullptr;
 
   if (contents) {
     DesktopMediaPickerManager::Get()->AddObserver(this);
@@ -351,7 +370,7 @@ void VRUiHostImpl::InitCapturingStates() {
   active_capturing_ = g_default_capturing_state;
   potential_capturing_ = g_default_capturing_state;
 
-  DCHECK(web_contents_);
+  CHECK(web_contents_);
   content::PermissionController* permission_controller =
       web_contents_->GetBrowserContext()->GetPermissionController();
   potential_capturing_.audio_capture_enabled =
@@ -392,45 +411,48 @@ void VRUiHostImpl::PollCapturingState() {
   CapturingStateModel active_capturing = active_capturing_;
   // TODO(https://crbug.com/1103176): Plumb the actual frame reference here (we
   // should get a RFH from VRServiceImpl instead of WebContents)
-  content_settings::PageSpecificContentSettings* settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents_->GetPrimaryMainFrame());
+  if (web_contents_) {
+    content_settings::PageSpecificContentSettings* settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            web_contents_->GetPrimaryMainFrame());
 
-  if (settings) {
-    active_capturing.location_access_enabled =
-        settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+    if (settings) {
+      active_capturing.location_access_enabled =
+          settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    active_capturing.audio_capture_enabled =
-        (settings->GetMicrophoneCameraState() &
-         content_settings::PageSpecificContentSettings::MICROPHONE_ACCESSED) &&
-        !(settings->GetMicrophoneCameraState() &
-          content_settings::PageSpecificContentSettings::MICROPHONE_BLOCKED);
+      active_capturing.audio_capture_enabled =
+          (settings->GetMicrophoneCameraState() &
+           content_settings::PageSpecificContentSettings::
+               MICROPHONE_ACCESSED) &&
+          !(settings->GetMicrophoneCameraState() &
+            content_settings::PageSpecificContentSettings::MICROPHONE_BLOCKED);
 
-    active_capturing.video_capture_enabled =
-        (settings->GetMicrophoneCameraState() &
-         content_settings::PageSpecificContentSettings::CAMERA_ACCESSED) &
-        !(settings->GetMicrophoneCameraState() &
-          content_settings::PageSpecificContentSettings::CAMERA_BLOCKED);
+      active_capturing.video_capture_enabled =
+          (settings->GetMicrophoneCameraState() &
+           content_settings::PageSpecificContentSettings::CAMERA_ACCESSED) &
+          !(settings->GetMicrophoneCameraState() &
+            content_settings::PageSpecificContentSettings::CAMERA_BLOCKED);
 
-    active_capturing.midi_connected =
-        settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
+      active_capturing.midi_connected =
+          settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
+    }
+
+    // Screen capture.
+    scoped_refptr<MediaStreamCaptureIndicator> indicator =
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->GetMediaStreamCaptureIndicator();
+    active_capturing.screen_capture_enabled =
+        indicator->IsBeingMirrored(web_contents_.get()) ||
+        indicator->IsCapturingWindow(web_contents_.get()) ||
+        indicator->IsCapturingDisplay(web_contents_.get());
+
+    // Bluetooth.
+    active_capturing.bluetooth_connected =
+        web_contents_->IsConnectedToBluetoothDevice();
+
+    // USB.
+    active_capturing.usb_connected = web_contents_->IsConnectedToUsbDevice();
   }
-
-  // Screen capture.
-  scoped_refptr<MediaStreamCaptureIndicator> indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator();
-  active_capturing.screen_capture_enabled =
-      indicator->IsBeingMirrored(web_contents_) ||
-      indicator->IsCapturingWindow(web_contents_) ||
-      indicator->IsCapturingDisplay(web_contents_);
-
-  // Bluetooth.
-  active_capturing.bluetooth_connected =
-      web_contents_->IsConnectedToBluetoothDevice();
-
-  // USB.
-  active_capturing.usb_connected = web_contents_->IsConnectedToUsbDevice();
 
   auto capturing_switched_on =
       active_capturing.NewlyUpdatedPermissions(active_capturing_);

@@ -17,7 +17,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
@@ -120,8 +119,8 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::RectF& rect,
     const gfx::PointF& top,
     const gfx::PointF& bottom) {
-  gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
-                    base::clamp(top.y(), rect.y(), rect.bottom()));
+  gfx::PointF start(std::clamp(top.x(), rect.x(), rect.right()),
+                    std::clamp(top.y(), rect.y(), rect.bottom()));
   gfx::PointF end = start + (bottom - top);
   return {start, end};
 }
@@ -749,10 +748,6 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   // Transfer page transition directives.
   for (auto& request : commit_state.view_transition_requests)
     AddViewTransitionRequest(std::move(request));
-
-  SetVisualUpdateDurations(
-      commit_state.previous_surfaces_visual_update_duration,
-      commit_state.visual_update_duration);
 }
 
 void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
@@ -883,9 +878,6 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   for (auto& request : TakeViewTransitionRequests())
     target_tree->AddViewTransitionRequest(std::move(request));
-
-  target_tree->SetVisualUpdateDurations(
-      previous_surfaces_visual_update_duration_, visual_update_duration_);
 }
 
 void LayerTreeImpl::HandleTickmarksVisibilityChange() {
@@ -1297,7 +1289,7 @@ bool LayerTreeImpl::ClampTopControlsShownRatio() {
         host_impl_->browser_controls_manager()->TopControlsShownRatioRange();
   }
   return top_controls_shown_ratio_->SetCurrent(
-      base::clamp(ratio, range.first, range.second));
+      std::clamp(ratio, range.first, range.second));
 }
 
 bool LayerTreeImpl::ClampBottomControlsShownRatio() {
@@ -1310,7 +1302,7 @@ bool LayerTreeImpl::ClampBottomControlsShownRatio() {
         host_impl_->browser_controls_manager()->BottomControlsShownRatioRange();
   }
   return bottom_controls_shown_ratio_->SetCurrent(
-      base::clamp(ratio, range.first, range.second));
+      std::clamp(ratio, range.first, range.second));
 }
 
 bool LayerTreeImpl::SetCurrentBrowserControlsShownRatio(float top_ratio,
@@ -2841,6 +2833,7 @@ void LayerTreeImpl::GetViewportSelection(
                                 : nullptr,
       device_scale_factor() * painted_device_scale_factor());
   if (selection->start.type() == gfx::SelectionBound::CENTER ||
+      selection->start.type() == gfx::SelectionBound::HIDDEN ||
       selection->start.type() == gfx::SelectionBound::EMPTY) {
     selection->end = selection->start;
   } else {
@@ -2956,19 +2949,6 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
 
 bool LayerTreeImpl::IsReadyToActivate() const {
   return host_impl_->IsReadyToActivate();
-}
-
-void LayerTreeImpl::ClearVisualUpdateDurations() {
-  previous_surfaces_visual_update_duration_ = base::TimeDelta();
-  visual_update_duration_ = base::TimeDelta();
-}
-
-void LayerTreeImpl::SetVisualUpdateDurations(
-    base::TimeDelta previous_surfaces_visual_update_duration,
-    base::TimeDelta visual_update_duration) {
-  previous_surfaces_visual_update_duration_ =
-      previous_surfaces_visual_update_duration;
-  visual_update_duration_ = visual_update_duration;
 }
 
 void LayerTreeImpl::RequestImplSideInvalidationForRerasterTiling() {

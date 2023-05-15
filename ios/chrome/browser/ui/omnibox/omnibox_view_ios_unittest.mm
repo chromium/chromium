@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_view_ios.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

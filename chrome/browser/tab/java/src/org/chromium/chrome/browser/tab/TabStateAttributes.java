@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.support.annotation.VisibleForTesting;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;

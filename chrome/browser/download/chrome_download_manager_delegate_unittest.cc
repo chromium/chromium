@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -25,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -427,7 +427,7 @@ ChromeDownloadManagerDelegateTest::CreateActiveDownloadItem(int32_t id) {
       .WillByDefault(Return(false));
   ON_CALL(*item, IsTemporary())
       .WillByDefault(Return(false));
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   ON_CALL(*item, GetGuid()).WillByDefault(ReturnRefOfCopy(guid));
   content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile(),
                                                    web_contents());
@@ -1444,16 +1444,16 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
   const auto kInsecureOrigin = Origin::Create(GURL("http://example.org"));
 
-  struct {
+  const struct {
     // The file's final URL.
-    const GURL& download_url;
+    GURL download_url;
     // The origin that linked to or initiated the download.
-    const absl::optional<url::Origin>& initiator_origin;
+    absl::optional<url::Origin> initiator_origin;
     // One URL that the download may have redirected through.
-    const absl::optional<GURL>& redirect_url;
+    absl::optional<GURL> redirect_url;
 
-    const download::DownloadInterruptReason expected_interrupt_reason;
-    const download::DownloadItem::InsecureDownloadStatus
+    download::DownloadInterruptReason expected_interrupt_reason;
+    download::DownloadItem::InsecureDownloadStatus
         expected_insecure_download_status;
   } kTestCases[] = {
       // Secure files, with or without redirects, shouldn't be blocked.

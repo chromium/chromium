@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
@@ -30,7 +31,7 @@ class BorealisShutdownMonitorTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  BorealisServiceFake* service_fake_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
   BorealisFeatures features_;
   testing::StrictMock<BorealisContextManagerMock> context_manager_mock_;
 };

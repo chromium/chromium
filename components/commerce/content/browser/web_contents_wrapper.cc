@@ -14,11 +14,21 @@ WebContentsWrapper::WebContentsWrapper(content::WebContents* web_contents,
                                        int32_t js_world_id)
     : web_contents_(web_contents), js_world_id_(js_world_id) {}
 
+WebContentsWrapper::~WebContentsWrapper() = default;
+
 const GURL& WebContentsWrapper::GetLastCommittedURL() {
   if (!web_contents_)
     return GURL::EmptyGURL();
 
   return web_contents_->GetLastCommittedURL();
+}
+
+bool WebContentsWrapper::IsFirstLoadForNavigationFinished() {
+  return is_first_load_for_nav_finished_;
+}
+
+void WebContentsWrapper::SetIsFirstLoadForNavigationFinished(bool finished) {
+  is_first_load_for_nav_finished_ = finished;
 }
 
 bool WebContentsWrapper::IsOffTheRecord() {

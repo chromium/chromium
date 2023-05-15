@@ -6,6 +6,8 @@
 #include <iterator>
 #include <memory>
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/fake_soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -83,7 +85,7 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
         &mock_cryptauth_key_factory_);
     user_manager_ = new FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
     user_manager_->AddUser(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     auto soft_bind_attestation_flow =
@@ -115,12 +117,13 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
       attestation_certificate_generator_impl_;
   FakeCryptAuthKeyRegistryFactory mock_cryptauth_key_factory_;
   bool is_valid_ = false;
-  const std::vector<std::string>* certs_;
+  raw_ptr<const std::vector<std::string>, ExperimentalAsh> certs_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* const profile_;
+  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  FakeChromeUserManager* user_manager_;
-  attestation::FakeSoftBindAttestationFlow* mock_attestation_flow_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<attestation::FakeSoftBindAttestationFlow, ExperimentalAsh>
+      mock_attestation_flow_;
 
  private:
   std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
@@ -132,16 +135,30 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
 };
 
 TEST_F(AttestationCertificateGeneratorImplTest,
-       CallsSoftBindAttestationFlowSuccessfully) {
+       RetrieveCertificateWithoutCache) {
   mock_attestation_flow_->SetCertificates(false_certs_);
   base::RunLoop wait_loop;
-  attestation_certificate_generator_impl_->GenerateCertificate(
-      base::BindRepeating(
-          &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
-          base::Unretained(this), &wait_loop));
+  // Reset the timestamp to force regenerate certificate.
+  attestation_certificate_generator_impl_
+      ->last_attestation_certificate_generated_time_ = base::Time();
+  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
+      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
+      base::Unretained(this), &wait_loop));
   wait_loop.Run();
   EXPECT_TRUE(is_valid_);
   EXPECT_EQ(*certs_, false_certs_);
+}
+
+TEST_F(AttestationCertificateGeneratorImplTest, RetrieveCertificateWithCache) {
+  mock_attestation_flow_->SetCertificates(false_certs_);
+  base::RunLoop wait_loop;
+  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
+      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
+      base::Unretained(this), &wait_loop));
+  wait_loop.Run();
+  // Used cached result generated in constructor.
+  EXPECT_FALSE(is_valid_);
+  EXPECT_EQ(*certs_, std::vector<std::string>());
 }
 
 }  // namespace ash::phonehub

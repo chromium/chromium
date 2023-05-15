@@ -139,13 +139,17 @@ const char HatsNotificationController::kNotificationId[] = "hats_notification";
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config,
-    const base::flat_map<std::string, std::string>& product_specific_data)
+    const base::flat_map<std::string, std::string>& product_specific_data,
+    const std::u16string title,
+    const std::u16string body)
     : profile_(profile),
       hats_config_(hats_config),
-      product_specific_data_(product_specific_data) {
+      product_specific_data_(product_specific_data),
+      title_(std::move(title)),
+      body_(std::move(body)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string histogram_name = HatsFinchHelper::GetHistogramName(hats_config_);
+  std::string histogram_name = HatsFinchHelper::GetHistogramName(*hats_config_);
   if (!histogram_name.empty()) {
     base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
   }
@@ -156,6 +160,17 @@ HatsNotificationController::HatsNotificationController(
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }
+
+HatsNotificationController::HatsNotificationController(
+    Profile* profile,
+    const HatsConfig& hats_config,
+    const base::flat_map<std::string, std::string>& product_specific_data)
+    : HatsNotificationController(
+          profile,
+          hats_config,
+          product_specific_data,
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY)) {}
 
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
@@ -176,7 +191,7 @@ HatsNotificationController::~HatsNotificationController() {
 void HatsNotificationController::Initialize(bool is_new_device) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (is_new_device && !IsTestingEnabled(hats_config_)) {
+  if (is_new_device && !IsTestingEnabled(*hats_config_)) {
     // This device has been chosen for a survey, but it is too new. Instead
     // of showing the user the survey, just mark it as completed.
     UpdateLastInteractionTime();
@@ -297,8 +312,8 @@ void HatsNotificationController::ShowDialog(const std::string& site_context) {
     return;
   }
 
-  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_),
-                   HatsFinchHelper::GetHistogramName(hats_config_),
+  HatsDialog::Show(HatsFinchHelper::GetTriggerID(*hats_config_),
+                   HatsFinchHelper::GetHistogramName(*hats_config_),
                    site_context);
 }
 
@@ -326,9 +341,8 @@ void HatsNotificationController::PortalStateChanged(
     // Create and display the notification for the user.
     if (!notification_) {
       notification_ = CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),
+          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title_,
+          body_,
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(

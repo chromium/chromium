@@ -104,14 +104,6 @@ GLuint TestGLES2Interface::CreateProgram() {
 }
 
 void TestGLES2Interface::BindTexture(GLenum target, GLuint texture) {
-  if (times_bind_texture_succeeds_ >= 0) {
-    if (!times_bind_texture_succeeds_) {
-      LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                          GL_INNOCENT_CONTEXT_RESET_ARB);
-    }
-    --times_bind_texture_succeeds_;
-  }
-
   if (!texture)
     return;
   DCHECK(base::Contains(textures_, texture));
@@ -429,10 +421,6 @@ GLenum TestGLES2Interface::GetGraphicsResetStatusKHR() {
   if (IsContextLost())
     return GL_UNKNOWN_CONTEXT_RESET_KHR;
   return GL_NO_ERROR;
-}
-
-void TestGLES2Interface::set_times_bind_texture_succeeds(int times) {
-  times_bind_texture_succeeds_ = times;
 }
 
 void TestGLES2Interface::set_have_extension_egl_image(bool have) {

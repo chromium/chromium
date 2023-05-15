@@ -6,8 +6,8 @@
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

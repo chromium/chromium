@@ -42,6 +42,15 @@ views::View* CaptureModeSettingsTestApi::GetAudioOffOption() {
   return GetAudioInputMenuGroup()->GetOptionForTesting(kAudioOff);
 }
 
+views::View* CaptureModeSettingsTestApi::GetSystemAudioOption() {
+  return GetAudioInputMenuGroup()->GetOptionForTesting(kAudioSystem);
+}
+
+views::View* CaptureModeSettingsTestApi::GetSystemAndMicrophoneAudioOption() {
+  return GetAudioInputMenuGroup()->GetOptionForTesting(
+      kAudioSystemAndMicrophone);
+}
+
 CaptureModeMenuGroup* CaptureModeSettingsTestApi::GetSaveToMenuGroup() {
   return settings_view_->save_to_menu_group_;
 }

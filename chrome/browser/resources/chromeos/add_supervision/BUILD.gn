@@ -9,6 +9,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":add_supervision_api_server",
+    ":add_supervision_app",
     ":add_supervision_ui",
     "//ash/webui/common/resources/post_message_api:post_message_api_server",
   ]
@@ -19,6 +20,16 @@ js_library("add_supervision_api_server") {
     "//ash/webui/common/resources/post_message_api:post_message_api_server",
     "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_js_library_for_compile",
   ]
+}
+
+js_library("add_supervision_app") {
+  deps = [
+    ":add_supervision_ui",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
 }
 
 js_library("add_supervision_ui") {
@@ -34,5 +45,8 @@ js_library("add_supervision_ui") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "add_supervision_ui.js" ]
+  js_files = [
+    "add_supervision_app.js",
+    "add_supervision_ui.js",
+  ]
 }

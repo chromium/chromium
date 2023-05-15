@@ -19,8 +19,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -79,6 +78,7 @@ public class TouchToFillCreditCardTest {
     private static final String CARD_NAME = "Visa";
     private static final String CARD_NUMBER = "4111111111111111";
     private static final String CARD_EXP_YEAR = "2050";
+    private static final String CARD_EXP_2_DIGIT_YEAR = "50";
     private static final String CARD_EXP_MONTH = "05";
     private static final String MASKED_NUMBER = "• • • • 1111";
     private static final String NETWORK_NAME = "visa";
@@ -113,7 +113,6 @@ public class TouchToFillCreditCardTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1433074")
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
         DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);
@@ -160,6 +159,6 @@ public class TouchToFillCreditCardTest {
                 containsString(CARD_NUMBER.substring(CARD_NUMBER.length() - 4)));
         // Check that the expiration month and year are present in the card description
         checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_MONTH));
-        checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_YEAR));
+        checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_2_DIGIT_YEAR));
     }
 }

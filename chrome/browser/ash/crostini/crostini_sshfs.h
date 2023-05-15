@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -101,7 +102,7 @@ class CrostiniSshfs : ContainerShutdownObserver {
     PendingRequest& operator=(PendingRequest&& other) noexcept;
     ~PendingRequest();
   };
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};

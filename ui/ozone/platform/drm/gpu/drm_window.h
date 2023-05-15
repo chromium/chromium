@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -75,10 +76,10 @@ class DrmWindow {
   // Called when the window is resized/moved.
   void SetBounds(const gfx::Rect& bounds);
 
-  // Update the HW cursor bitmap & move to specified location. If
-  // the bitmap is empty, the cursor is hidden.
+  // Update the HW cursor bitmap & move to the location if specified.
+  // If the bitmap is empty, the cursor is hidden.
   void SetCursor(const std::vector<SkBitmap>& bitmaps,
-                 const gfx::Point& location,
+                 const absl::optional<gfx::Point>& location,
                  base::TimeDelta frame_delay);
 
   // Move the HW cursor to the specified location.
@@ -106,15 +107,16 @@ class DrmWindow {
 
   const gfx::AcceleratedWidget widget_;
 
-  DrmDeviceManager* const device_manager_;  // Not owned.
-  ScreenManager* const screen_manager_;     // Not owned.
+  const raw_ptr<DrmDeviceManager, ExperimentalAsh>
+      device_manager_;                                            // Not owned.
+  const raw_ptr<ScreenManager, ExperimentalAsh> screen_manager_;  // Not owned.
 
   // The current bounds of the window.
   gfx::Rect bounds_;
 
   // The controller associated with the current window. This may be nullptr if
   // the window isn't over an active display.
-  HardwareDisplayController* controller_ = nullptr;
+  raw_ptr<HardwareDisplayController, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<DrmOverlayValidator> overlay_validator_;
 
   base::RepeatingTimer cursor_timer_;

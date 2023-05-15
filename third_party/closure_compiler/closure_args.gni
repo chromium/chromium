@@ -18,7 +18,6 @@ strict_error_checking_closure_args = [
   "jscomp_error=missingReturn",
   "jscomp_error=nonStandardJsDocs",
   "jscomp_error=suspiciousCode",
-  "jscomp_error=undefinedNames",
   "jscomp_error=undefinedVars",
   "jscomp_error=unknownDefines",
   "jscomp_error=uselessCode",

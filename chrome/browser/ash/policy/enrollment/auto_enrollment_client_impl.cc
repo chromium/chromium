@@ -11,14 +11,15 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
@@ -399,9 +400,9 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     }
   }
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 
@@ -559,7 +560,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   // related to PSM protocol with DMServer.
   std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client_;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   CompletionCallback completion_callback_;
 };
@@ -711,9 +712,9 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     std::move(completion_callback_).Run(result);
   }
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 
@@ -741,7 +742,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
     const std::string& server_backed_state_key,
     int power_initial,
     int power_limit) {
-  const std::string device_id = base::GenerateGUID();
+  const std::string device_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback,
       std::make_unique<FREServerStateAvailabilityRequester>(
@@ -769,7 +771,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           std::move(psm_rlwe_dmserver_client), local_state),
       std::make_unique<ServerStateRetriever>(
           device_management_service, url_loader_factory, local_state,
-          /*device_id=*/base::GenerateGUID(), kUMASuffixInitialEnrollment,
+          /*device_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
+          kUMASuffixInitialEnrollment,
           AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
               device_serial_number, device_brand_code))));
 }

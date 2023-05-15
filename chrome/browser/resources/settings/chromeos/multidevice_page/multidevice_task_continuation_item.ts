@@ -30,7 +30,7 @@ import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_task_continuation_item.html.js';
 
-interface SettingsMultideviceTaskContinuationItemElement {
+export interface SettingsMultideviceTaskContinuationItemElement {
   $: {
     phoneHubTaskContinuationItem: SettingsMultideviceFeatureItemElement,
   };
@@ -39,7 +39,7 @@ interface SettingsMultideviceTaskContinuationItemElement {
 const SettingsMultideviceTaskContinuationItemElementBase =
     MultiDeviceFeatureMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsMultideviceTaskContinuationItemElement extends
+export class SettingsMultideviceTaskContinuationItemElement extends
     SettingsMultideviceTaskContinuationItemElementBase {
   static get is() {
     return 'settings-multidevice-task-continuation-item' as const;

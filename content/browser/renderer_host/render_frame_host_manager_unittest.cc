@@ -405,7 +405,7 @@ class RenderFrameHostManagerTest
         NavigationRequest::Create(
             frame_tree_node, std::move(common_params), std::move(commit_params),
             !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
-            nullptr /* initiator_frame_token */,
+            absl::nullopt /* initiator_frame_token */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             entry->extra_headers(), frame_entry, entry, is_form_submission,
             nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
@@ -441,10 +441,14 @@ class RenderFrameHostManagerTest
   // Exposes RenderFrameHostManager::CollectOpenerFrameTrees for testing.
   void CollectOpenerFrameTrees(
       FrameTreeNode* node,
+      SiteInstanceImpl* site_instance,
       std::vector<FrameTree*>* opener_frame_trees,
-      std::unordered_set<FrameTreeNode*>* nodes_with_back_links) {
-    node->render_manager()->CollectOpenerFrameTrees(opener_frame_trees,
-                                                    nodes_with_back_links);
+      std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
+      std::unordered_set<FrameTreeNode*>*
+          cross_browsing_context_group_openers) {
+    node->render_manager()->CollectOpenerFrameTrees(
+        site_instance, opener_frame_trees, nodes_with_back_links,
+        cross_browsing_context_group_openers);
   }
 
  private:
@@ -2555,8 +2559,11 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
 
   std::vector<FrameTree*> opener_frame_trees;
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
+  std::unordered_set<FrameTreeNode*> cross_browsing_context_group_openers;
 
-  CollectOpenerFrameTrees(root1, &opener_frame_trees, &nodes_with_back_links);
+  CollectOpenerFrameTrees(root1, /*site_instance=*/nullptr, &opener_frame_trees,
+                          &nodes_with_back_links,
+                          &cross_browsing_context_group_openers);
 
   EXPECT_EQ(4U, opener_frame_trees.size());
   EXPECT_EQ(tree1, opener_frame_trees[0]);
@@ -3244,12 +3251,10 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           frame_tree_node, std::move(common_params), std::move(commit_params),
-          false /* was_opener_suppressed */,
-          nullptr /* initiator_frame_token */,
-          ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-          entry.extra_headers(), frame_entry, &entry,
-          false /* is_form_submission */, nullptr /* navigation_ui_data */,
-          absl::nullopt /* impression */, false /* is_pdf */
+          false /* was_opener_suppressed */, entry.extra_headers(), frame_entry,
+          &entry, false /* is_form_submission */,
+          nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+          false /* is_pdf */
       );
   manager->DidCreateNavigationRequest(navigation_request.get());
 

@@ -79,9 +79,16 @@ BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
 // of persisted clusters.
 BASE_DECLARE_FEATURE(kHideVisits);
 
+// Enables Journeys creating new tab groups that have names derived from the
+// cluster title. If disabled, new tab groups are anonymous.
+BASE_DECLARE_FEATURE(kJourneysNamedNewTabGroups);
+
 // Enables use of cache to store the URL for display to avoid calls to url
 // formatter.
 BASE_DECLARE_FEATURE(kUseUrlForDisplayCache);
+
+// Enables filtering of the zero-state Journeys WebUI.
+BASE_DECLARE_FEATURE(kJourneysZeroStateFiltering);
 
 // Order consistently with config.h.
 

@@ -12,10 +12,12 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -24,12 +26,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -49,6 +54,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private final @Px int mUnclampedInitialWidth;
     private final boolean mShowMaximizeButton;
+    private final int mRoundedCornersPosition;
 
     private boolean mIsMaximized;
     private int mDecorationType;
@@ -60,7 +66,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             boolean showMaximizeButton, boolean startMaximized, int position, int slideInBehavior,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType) {
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType,
+            int roundedCornersPosition) {
         super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
                 interactWithBackground, handleStrategyFactory);
 
@@ -68,6 +75,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mShowMaximizeButton = showMaximizeButton;
         mPositionUpdater = this::updatePosition;
         mDecorationType = decorationType;
+        mRoundedCornersPosition = roundedCornersPosition;
         mIsMaximized = startMaximized;
         mSheetOnRight = isSheetOnRight(position);
         mSlideDownAnimation = slideInBehavior
@@ -100,10 +108,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        if (mFinishRunnable != null) return;
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        if (!super.handleCloseAnimation(finishRunnable)) return false;
 
-        mFinishRunnable = finishRunnable;
         configureLayoutBeyondScreen(true);
         Window window = mActivity.getWindow();
         AnimatorUpdateListener closeAnimation;
@@ -119,6 +126,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             closeAnimation = (animator) -> setWindowX((int) animator.getAnimatedValue());
         }
         startAnimation(start, end, closeAnimation, this::onCloseAnimationEnd, true);
+        return true;
     }
 
     @Override
@@ -126,8 +134,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
-                getStrategyType(), mActivity, this::isFullHeight, () -> 0, null);
+        CustomTabToolbar.HandleStrategy handleStrategy =
+                mHandleStrategyFactory.create(getStrategyType(), mActivity, this::isFullHeight,
+                        () -> 0, null, this::handleCloseAnimation);
         if (mShowMaximizeButton) {
             toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
         }
@@ -137,6 +146,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean toggleMaximize(boolean animate) {
+        @ResizeType
+        int resizeType =
+                mIsMaximized ? ResizeType.MANUAL_MINIMIZATION : ResizeType.MANUAL_EXPANSION;
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.SideSheetResizeType", resizeType, ResizeType.COUNT);
+
         mIsMaximized = !mIsMaximized;
         if (mIsMaximized) {
             if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
@@ -184,16 +199,38 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void onMaximizeEnd() {
         if (isMaximized()) {
-            if (mSheetOnRight) configureLayoutBeyondScreen(false);
+            if (mSheetOnRight) {
+                configureLayoutBeyondScreen(false);
+                maybeResetTalkbackFocus();
+            }
             maybeInvokeResizeCallback();
             setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
-                if (mSheetOnRight) configureLayoutBeyondScreen(false);
+                if (mSheetOnRight) {
+                    configureLayoutBeyondScreen(false);
+                    maybeResetTalkbackFocus();
+                }
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
+        }
+    }
+
+    private void maybeResetTalkbackFocus() {
+        var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (am != null && am.isTouchExplorationEnabled()) {
+            // After resizing the view, notify the window state change to let the talkback
+            // focus navigation work as before.
+            mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+            new Handler().postDelayed(() -> {
+                // Move the talkback focus from the leftmost button back to maximize button. This
+                // happens when double-tapping on the button causes the sheet to be resized to full
+                // width in talkback mode. Some delay is required for this to work as expected.
+                var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
+                maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }, 200);
         }
     }
 
@@ -204,10 +241,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected int getHandleHeight() {
-        // TODO(crbug.com/1408288) by default the side-sheet will have no round corners so this will
-        // just return 0. We will implement the handle height logic as part of adding customization
-        // support.
-        return 0;
+        return mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
+                ? 0
+                : mToolbarCornerRadius;
     }
 
     @Override
@@ -260,9 +296,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected void adjustCornerRadius(GradientDrawable d, int radius) {
+        if (mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE) {
+            radius = 0;
+        }
+
+        int topLeftCornerRadius = mSheetOnRight ? radius : 0;
+        int topRightCornerRadius = !mSheetOnRight ? radius : 0;
+
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        View dragBar = handleView.findViewById(R.id.drag_bar);
+        ViewGroup.LayoutParams dragBarLayoutParams = dragBar.getLayoutParams();
+        dragBarLayoutParams.height = radius;
+        dragBar.setLayoutParams(dragBarLayoutParams);
+
         d.mutate();
-        // Left top corner rounded.
-        d.setCornerRadii(new float[] {radius, radius, 0, 0, 0, 0, 0, 0});
+        // Inner top rounded corner (depends on side sheet positioning)
+        d.setCornerRadii(new float[] {topLeftCornerRadius, topLeftCornerRadius,
+                topRightCornerRadius, topRightCornerRadius, 0, 0, 0, 0});
     }
 
     @Override

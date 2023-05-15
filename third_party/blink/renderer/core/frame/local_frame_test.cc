@@ -8,13 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #if BUILDFLAG(IS_MAC)
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
@@ -26,13 +20,6 @@
 namespace blink {
 
 namespace {
-
-void DisableLazyLoadInSettings(Settings& settings) {
-  settings.SetLazyLoadEnabled(false);
-}
-void EnableLazyLoadInSettings(Settings& settings) {
-  settings.SetLazyLoadEnabled(true);
-}
 
 #if BUILDFLAG(IS_MAC)
 void RegisterMockedHttpURLLoad(const std::string& base_url,
@@ -81,40 +68,7 @@ class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
 
 }  // namespace
 
-class LocalFrameTest : public testing::Test {
- public:
-  void TearDown() override {
-    // Reset the global data saver setting to false at the end of the test.
-    GetNetworkStateNotifier().SetSaveDataEnabled(false);
-  }
-};
-
-TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithFeatureDisabled) {
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(false);
-  auto page_holder = std::make_unique<DummyPageHolder>(
-      gfx::Size(800, 600), nullptr, nullptr,
-      WTF::BindOnce(&EnableLazyLoadInSettings));
-  EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kDisabled,
-            page_holder->GetFrame().GetLazyLoadImageSetting());
-}
-
-TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithSettingDisabled) {
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(false);
-  auto page_holder = std::make_unique<DummyPageHolder>(
-      gfx::Size(800, 600), nullptr, nullptr,
-      WTF::BindOnce(&DisableLazyLoadInSettings));
-  EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kDisabled,
-            page_holder->GetFrame().GetLazyLoadImageSetting());
-}
-
-TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithAutomaticDisabled) {
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
-  auto page_holder = std::make_unique<DummyPageHolder>(
-      gfx::Size(800, 600), nullptr, nullptr,
-      WTF::BindOnce(&EnableLazyLoadInSettings));
-  EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kEnabledExplicit,
-            page_holder->GetFrame().GetLazyLoadImageSetting());
-}
+class LocalFrameTest : public testing::Test {};
 
 namespace {
 

@@ -45,8 +45,8 @@ class SyncerProtoUtil {
       sync_pb::ClientToServerMessage* msg);
 
   // Posts the given message and fills the buffer with the returned value.
-  // Returns true on success.  Also handles store birthday verification: will
-  // produce a SyncError if the birthday is incorrect. Before calling this
+  // Returns the result of processing. Also handles store birthday verification:
+  // will produce a SyncError if the birthday is incorrect. Before calling this
   // method, AddRequiredFieldsToClientToServerMessage() must be called.
   static SyncerError PostClientToServerMessage(
       const sync_pb::ClientToServerMessage& msg,
@@ -95,6 +95,12 @@ class SyncerProtoUtil {
   static bool PostAndProcessHeaders(ServerConnectionManager* scm,
                                     const sync_pb::ClientToServerMessage& msg,
                                     sync_pb::ClientToServerResponse* response);
+
+  // Handles the server response and returns whether there was any error.
+  static SyncerError HandleClientToServerMessageResponse(
+      const sync_pb::ClientToServerResponse& response,
+      SyncCycle* cycle,
+      ModelTypeSet* partial_failure_data_types);
 
   static base::TimeDelta GetThrottleDelay(
       const sync_pb::ClientToServerResponse& response);

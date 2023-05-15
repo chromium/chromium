@@ -20,6 +20,7 @@ import 'chrome://resources/ash/common/network/network_siminfo.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
@@ -27,14 +28,16 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../../controls/controlled_button.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/controlled_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import './cellular_roaming_toggle_button.js';
 import './internet_shared.css.js';
 import './network_proxy_section.js';
 import './settings_traffic_counters.js';
 import './tether_connection_dialog.js';
 
+import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
+import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {isActiveSim, processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -45,7 +48,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -306,6 +309,20 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      isPasspointSettingsEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isPasspointSettingsEnabled') &&
+              loadTimeData.getBoolean('isPasspointSettingsEnabled');
+        },
+      },
+
+      passpointSubscription_: {
+        type: Object,
+        notify: true,
+      },
+
       advancedExpanded_: Boolean,
 
       networkExpanded_: Boolean,
@@ -380,15 +397,18 @@ class SettingsInternetDetailPageElement extends
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
   private isPasspointEnabled_: boolean;
+  private isPasspointSettingsEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isWifiSyncEnabled_: boolean;
   private managedProperties_: ManagedProperties|undefined;
   private meteredOverride_: boolean;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
   private networkExpanded_: boolean;
   private osSyncBrowserProxy_: OsSyncBrowserProxy;
   private outOfRange_: boolean;
+  private passpointService_: PasspointServiceInterface;
+  private passpointSubscription_: PasspointSubscription|null;
   private pendingSimLockDeepLink_: boolean;
   private preferNetwork_: boolean;
   private primaryUserEmail_: string;
@@ -435,6 +455,11 @@ class SettingsInternetDetailPageElement extends
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+    if (this.isPasspointSettingsEnabled_) {
+      this.passpointService_ =
+          MojoConnectivityProvider.getInstance().getPasspointService();
+    }
 
     this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
   }
@@ -622,7 +647,9 @@ class SettingsInternetDetailPageElement extends
       this.managedProperties_ = undefined;
       this.propertiesReceived_ = false;
 
-      Router.getInstance().navigateToPreviousRoute();
+      if (Router.getInstance().currentRoute === routes.NETWORK_DETAIL) {
+        Router.getInstance().navigateToPreviousRoute();
+      }
     });
   }
 
@@ -945,6 +972,12 @@ class SettingsInternetDetailPageElement extends
       const response =
           await this.networkConfig_.getManagedProperties(this.guid);
       this.getPropertiesCallback_(response.result);
+      if (this.isPasspointSettingsEnabled_ &&
+          this.isPasspointWifi_(this.managedProperties_)) {
+        const response = await this.passpointService_.getPasspointSubscription(
+            this.managedProperties_!.typeProperties.wifi!.passpointId!);
+        this.passpointSubscription_ = response.result;
+      }
     }
   }
 
@@ -2132,6 +2165,30 @@ class SettingsInternetDetailPageElement extends
         managedProperties.typeProperties.wifi!.passpointId !== '' &&
         managedProperties.typeProperties.wifi!.passpointMatchType !==
         MatchType.kNoMatch;
+  }
+
+  private shouldShowPasspointProviderRow_(managedProperties: ManagedProperties|
+                                          undefined): boolean {
+    return this.isPasspointSettingsEnabled_ &&
+        this.isPasspointWifi_(managedProperties);
+  }
+
+  private getPasspointSubscriptionName_(subscription: PasspointSubscription|
+                                        null): string {
+    if (!subscription) {
+      return '';
+    }
+    if (subscription.friendlyName && subscription.friendlyName !== '') {
+      return subscription.friendlyName;
+    }
+    return subscription.domains[0];
+  }
+
+  private onPasspointRowClicked_(): void {
+    const showPasspointEvent = new CustomEvent(
+        'show-passpoint-detail',
+        {bubbles: true, composed: true, detail: this.passpointSubscription_});
+    this.dispatchEvent(showPasspointEvent);
   }
 
   private onPasspointRemovalDialogCancel_(): void {

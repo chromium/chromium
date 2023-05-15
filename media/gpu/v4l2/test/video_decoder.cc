@@ -10,7 +10,11 @@
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/pattern.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -37,18 +41,27 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
 }
 
 VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                           std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                           std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : needs_init(true),
-      v4l2_ioctl_(std::move(v4l2_ioctl)),
-      OUTPUT_queue_(std::move(OUTPUT_queue)),
-      CAPTURE_queue_(std::move(CAPTURE_queue)) {}
-
-VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                            gfx::Size display_resolution)
-    : needs_init(false),
-      v4l2_ioctl_(std::move(v4l2_ioctl)),
-      display_resolution_(display_resolution) {}
+    : v4l2_ioctl_(std::move(v4l2_ioctl)),
+      display_resolution_(display_resolution) {
+  // TODO(b/278748005): Remove |cur_val_is_supported_| when all drivers
+  // fully support |V4L2_CTRL_WHICH_CUR_VAL|
+
+  // On kernel version 5.4 the MTK driver for MT8192 does not correctly support
+  // |V4L2_CTRL_WHICH_CUR_VAL|. This parameter is used when calling
+  // VIDIOC_S_EXT_CTRLS to indicate that the call should be executed
+  // immediately instead of putting it in a queue. Making sure the first
+  // buffer is processed immediately is only necessary for codecs that
+  // support 10 bit profiles. When processing a 10 bit profile the parameters
+  // need to be processed before the format can be determined. There are no
+  // chipsets that are on kernels older 5.10 and produce 10 bit output.
+  constexpr base::StringPiece kKernelVersion5dot4 = "Linux version 5.4*";
+  std::string kernel_version;
+  ReadFileToString(base::FilePath("/proc/version"), &kernel_version);
+
+  cur_val_is_supported_ =
+      !base::MatchPattern(kernel_version, kKernelVersion5dot4);
+}
 
 VideoDecoder::~VideoDecoder() = default;
 
@@ -113,46 +126,6 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
       << static_cast<uint32_t>(fmt.fmt.pix_mp.num_planes);
 }
 
-void VideoDecoder::Initialize(bool resolution_changed) {
-  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
-  //   after b/193237015 is resolved.
-  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
-    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
-
-  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
-
-  NegotiateCAPTUREFormat();
-
-  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
-                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
-      << "Display size is not contained within the coded size. DRC?";
-
-  // If there is a dynamic resolution change, the Initialization sequence will
-  // be performed again, minus the allocation of OUTPUT queue buffers.
-  if (resolution_changed) {
-    v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
-                                  number_of_buffers_in_capture_queue_);
-  } else {
-    v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
-    v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
-    v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
-  }
-
-  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
-
-  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
-  // CAPTURE buffers will be queued after that.
-  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0))
-    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
-
-  int media_request_fd;
-  v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd);
-  OUTPUT_queue_->set_media_request_fd(media_request_fd);
-
-  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
-  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
-}
-
 void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
   // TODO(stevecho): might need to consider using more than 1 file descriptor
   // (fd) & buffer with the output queue for 4K60 requirement.
@@ -161,12 +134,6 @@ void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP,
       kNumberOfBuffersInOutputQueue);
   OUTPUT_queue_->set_fourcc(compressed_fourcc);
-
-  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
-  //   after b/193237015 is resolved.
-  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc())) {
-    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
-  }
 
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
   v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
@@ -213,6 +180,10 @@ void VideoDecoder::HandleDynamicResolutionChange(
   v4l2_ioctl_->StreamOff(OUTPUT_queue_->type());
   v4l2_ioctl_->StreamOff(CAPTURE_queue_->type());
 
+  // Store the buffer count before clearing so the amount to reallocate
+  // is known.
+  const uint32_t num_buffers = CAPTURE_queue_->num_buffers();
+
   // Free all CAPTURE buffers from the driver side by calling VIDIOC_REQBUFS()
   // on the CAPTURE queue with a buffer count of zero.
   v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0);
@@ -223,9 +194,21 @@ void VideoDecoder::HandleDynamicResolutionChange(
   // Set the new resolution on OUTPUT queue. The driver will then pick up
   // the new resolution to be set on the coded size for CAPTURE queue.
   OUTPUT_queue_->set_resolution(new_resolution);
+  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
-  // Perform the initialization sequence again
-  Initialize(/* resolution_changed*/ true);
+  NegotiateCAPTUREFormat();
+
+  v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, num_buffers);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
+
+  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
+  // CAPTURE buffers will be queued after that.
+  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0)) {
+    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
+  }
+
+  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
 void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,

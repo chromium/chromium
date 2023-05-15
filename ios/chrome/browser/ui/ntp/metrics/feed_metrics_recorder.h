@@ -16,6 +16,7 @@
 class DiscoverFeedRefresher;
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
+@protocol NewTabPageMetricsDelegate;
 
 namespace base {
 class Time;
@@ -35,6 +36,9 @@ class Time;
 
 // Object that can refresh the feed.
 @property(nonatomic, assign) DiscoverFeedRefresher* feedRefresher;
+
+// Delegate for reporting feed actions to the NTP metrics recorder.
+@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
 // Records the trigger where a feed refresh is requested.
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger;
@@ -289,6 +293,12 @@ class Time;
 // Record metrics for sign-in related UI from Discover feed personalization
 // controls.
 - (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type;
+
+#pragma mark - Sync Promo
+
+// Record metrics for when a user triggered a sync related UI from Discover
+// feed sync promo entry point.
+- (void)recordShowSyncnRelatedUIWithType:(feed::FeedSyncPromo)type;
 
 @end
 

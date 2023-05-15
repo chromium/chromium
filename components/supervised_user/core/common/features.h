@@ -29,6 +29,8 @@ BASE_DECLARE_FEATURE(kRetireStaticDenyList);
 
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
+BASE_DECLARE_FEATURE(kUpdateSupervisedUserFactoryCreation);
+
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
 bool IsWebFilterInterstitialRefreshEnabled();
@@ -43,9 +45,6 @@ bool IsLocalWebApprovalsEnabled();
 // preferred option.
 // This should only be called if IsLocalWebApprovalsEnabled() returns true.
 bool IsLocalWebApprovalThePreferredButton();
-
-// Returns whether to use the new Api for fetching.
-bool IsKidsManagementServiceEnabled();
 
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();

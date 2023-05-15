@@ -3,19 +3,12 @@
 -AccessContextAuditBrowserTest.RemoveRecords
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
--BluetoothApiTest.*
--BluetoothLowEnergyApiTest.*
--BluetoothPrivateApiTest.*
--BrowserTest.RestorePinnedTabs
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -DeclarativeContentApiTest.RulesPersistence
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
--OmniboxPopupViewViewsTest.ClickOmnibox
--OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
--OutOfProcessPPAPITest.Printing
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -SSLUITest.TestCloseTabWithUnsafePopup
 # crbug.com/1121486

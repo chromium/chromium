@@ -57,9 +57,12 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
 
 // Only MetricKit reports currently use attachements.
 bool IsMetricKitReport(crash_reporter::Report report) {
-  return base::ComputeDirectorySize(crash_reporter::GetCrashpadDatabasePath()
-                                        .Append("attachments")
-                                        .Append(report.local_id)) > 0;
+  auto crashpad_path = crash_reporter::GetCrashpadDatabasePath();
+  if (!crashpad_path) {
+    return false;
+  }
+  return base::ComputeDirectorySize(
+             crashpad_path->Append("attachments").Append(report.local_id)) > 0;
 }
 
 }  // namespace

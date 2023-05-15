@@ -238,9 +238,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
 
-  html_source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(html_source);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::string remove_warning_profile = l10n_util::GetStringFUTF8(
@@ -283,20 +281,14 @@ void AddStrings(content::WebUIDataSource* html_source) {
       "isLocalProfileCreationDialogEnabled",
       base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
 
-  html_source->AddBoolean(
-      "isTangibleSyncEnabled",
-      base::FeatureList::IsEnabled(switches::kTangibleSync));
-
-  html_source->AddResourcePath("images/tangible_sync_style_left_banner.svg",
+  html_source->AddResourcePath("images/left_banner.svg",
                                IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
-  html_source->AddResourcePath(
-      "images/tangible_sync_style_left_banner_dark.svg",
-      IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
-  html_source->AddResourcePath("images/tangible_sync_style_right_banner.svg",
+  html_source->AddResourcePath("images/left_banner_dark.svg",
+                               IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+  html_source->AddResourcePath("images/right_banner.svg",
                                IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
-  html_source->AddResourcePath(
-      "images/tangible_sync_style_right_banner_dark.svg",
-      IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  html_source->AddResourcePath("images/right_banner_dark.svg",
+                               IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
 }
 
 }  // namespace

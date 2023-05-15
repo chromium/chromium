@@ -151,7 +151,9 @@ class PartialData {
 
   // The size of the whole file.
   int64_t resource_size_ = 0;
-  HttpByteRange byte_range_;  // The range requested by the user.
+  HttpByteRange user_byte_range_;  // The range requested by the user.
+  HttpByteRange byte_range_;       // Range requested by user potentially
+                                   // interpreted in context of stored length.
   // The clean set of extra headers (no ranges).
   HttpRequestHeaders extra_headers_;
   bool range_requested_ = false;  // ###

@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/apple/bridging.h",
     "+base/atomic_sequence_num.h",
     "+base/barrier_closure.h",
     "+base/cancelable_callback.h",
@@ -7,7 +8,7 @@ include_rules = [
     "+base/files/file_path.h",
     "+base/guid.h",
     "+base/mac/foundation_util.h",
-    "+base/memory/scoped_policy.h",
+    "+base/mac/scoped_cftyperef.h",
     "+base/memory/scoped_refptr.h",
     "+base/profiler/sample_metadata.h",
     "+base/strings/stringprintf.h",
@@ -115,6 +116,7 @@ include_rules = [
     "+ui/gfx/codec/png_codec.h",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",
+    "+ui/gfx/selection_bound.h",
     "-web",
     # We do not want any new dependencies into core/exported until we resolve
     # controller layer.

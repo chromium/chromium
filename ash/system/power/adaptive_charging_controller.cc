@@ -30,15 +30,26 @@ AdaptiveChargingController::AdaptiveChargingController()
 AdaptiveChargingController::~AdaptiveChargingController() = default;
 
 bool AdaptiveChargingController::IsAdaptiveChargingSupported() {
+  if (is_adaptive_charging_supported_)
+    return true;
+
   const absl::optional<power_manager::PowerSupplyProperties>&
       power_supply_proto = chromeos::PowerManagerClient::Get()->GetLastStatus();
 
-  return power_supply_proto.has_value() &&
-         power_supply_proto->adaptive_charging_supported();
+  is_adaptive_charging_supported_ =
+      power_supply_proto.has_value() &&
+      power_supply_proto->adaptive_charging_supported();
+  return is_adaptive_charging_supported_;
 }
 
 void AdaptiveChargingController::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
+  // `is_adaptive_charging_supported_` is a hardware feature and we keep it
+  // unchanged if it was set true.
+  if (!is_adaptive_charging_supported_) {
+    is_adaptive_charging_supported_ = proto.adaptive_charging_supported();
+  }
+
   bool is_on_charger_now = false;
   if (proto.has_external_power()) {
     is_on_charger_now =

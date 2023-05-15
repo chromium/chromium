@@ -36,7 +36,6 @@ public class EntryManager {
     private @EntryStatus int mGeneratorStatus;
     private ScreenshotBoundsManager mBoundsManager;
     private int mMemoryUsedInKb;
-    private static final String TAG = "long_screenshot";
 
     /**
      * Users of the {@link EntryManager} can implement this interface to be notified of changes to

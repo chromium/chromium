@@ -121,7 +121,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDiscoverFeedHeaderFeature,
     &kIPHDefaultSiteViewFeature,
     &kIPHFollowWhileBrowsingFeature,
-    &kIPHOverflowMenuTipFeature,
     &kIPHPriceNotificationsWhileBrowsingFeature,
     &kIPHiOSDefaultBrowserBadgeEligibilityFeature,
     &kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
@@ -132,10 +131,16 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoPostRestoreFeature,
     &kIPHiOSPromoCredentialProviderExtensionFeature,
     &kIPHiOSPromoDefaultBrowserFeature,
+    &kIPHiOSNewTabToolbarItemFeature,
+    &kIPHiOSTabGridToolbarItemFeature,
+    &kIPHiOSHistoryOnOverflowMenuFeature,
+    &kIPHiOSShareToolbarItemFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+    &kIPHAutofillFeedbackNewBadgeFeature,
     &kIPHBatterySaverModeFeature,
+    &kIPHCompanionSidePanelFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDownloadToolbarButtonFeature,
@@ -151,6 +156,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsWebAppProfileSwitchFeature,
     &kIPHPerformanceNewBadgeFeature,
     &kIPHPowerBookmarksSidePanelFeature,
+    &kIPHPriceTrackingChipFeature,
     &kIPHPriceTrackingPageActionIconLabelFeature,
     &kIPHReadingListDiscoveryFeature,
     &kIPHReadingListEntryPointFeature,
@@ -164,9 +170,9 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,
     &kIPHDesktopSharedHighlightingFeature,
-    &kIPHIntentChipFeature,
     &kIPHWebUiHelpBubbleTestFeature,
     &kIPHPriceTrackingInSidePanelFeature,
+    &kIPHBackNavigationMenuFeature,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

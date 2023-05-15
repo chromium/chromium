@@ -199,4 +199,47 @@ suite('ApnSubpageTest', function() {
     assertEquals(1, counter);
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
+
+  test('Network removed while on subpage', async function() {
+    let counter = 0;
+    const navigateToPreviousRoute =
+        Router.getInstance().navigateToPreviousRoute;
+    Router.getInstance().navigateToPreviousRoute = () => {
+      counter++;
+    };
+
+    // Simulate the network being removed.
+    mojoApi_.resetForTest();
+    apnSubpage.onNetworkStateChanged(
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular'));
+    await flushTasks();
+
+    assertEquals(1, counter);
+    Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
+  });
+
+  test('Network removed while not on subpage', async function() {
+    // Navigate to a different page.
+    const params = new URLSearchParams();
+    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    await flushTasks();
+    assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
+
+    let counter = 0;
+    const navigateToPreviousRoute =
+        Router.getInstance().navigateToPreviousRoute;
+    Router.getInstance().navigateToPreviousRoute = () => {
+      counter++;
+    };
+
+    // Simulate the network being removed.
+    mojoApi_.resetForTest();
+    apnSubpage.onNetworkStateChanged(
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular'));
+    await flushTasks();
+
+    assertEquals(0, counter);
+    Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
+  });
 });

@@ -63,6 +63,15 @@ BASE_DECLARE_FEATURE(kWebAuthnNewPrioritiesImpl);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 
+// Count kCtap2ErrPinRequired as meaning not recognised.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized);
+
+// Advertise hybrid prelinking on Android even if the app doesn't have
+// notifications permission.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

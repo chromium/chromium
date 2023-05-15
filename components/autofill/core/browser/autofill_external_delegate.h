@@ -49,14 +49,15 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int frontend_id,
+                           Suggestion::FrontendId frontend_id,
                            const Suggestion::BackendId& backend_id) override;
   void DidAcceptSuggestion(const Suggestion& suggestion, int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int frontend_id,
+                                   Suggestion::FrontendId frontend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
+  bool RemoveSuggestion(const std::u16string& value,
+                        Suggestion::FrontendId frontend_id) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
@@ -128,7 +129,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // If |is_preview| is true then this is just a preview to show the user what
   // would be selected and if |is_preview| is false then the user has selected
   // this data.
-  void FillAutofillFormData(int unique_id,
+  void FillAutofillFormData(Suggestion::FrontendId unique_id,
                             bool is_preview,
                             const AutofillTriggerSource trigger_source);
 

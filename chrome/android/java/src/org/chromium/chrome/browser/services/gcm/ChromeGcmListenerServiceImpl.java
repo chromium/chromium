@@ -39,8 +39,6 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
 
     @Override
     public void onMessageReceived(final String from, final Bundle data) {
-        GcmUma.recordDataMessageReceived(ContextUtils.getApplicationContext());
-
         // Dispatch the message to the GCM Driver for native features.
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             GCMMessage message = null;

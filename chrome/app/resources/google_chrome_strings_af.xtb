@@ -19,12 +19,14 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1278833599417554002">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="1302523850133262269">Wag asseblief terwyl Chrome die jongste stelselopdaterings installeer.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voordat jy hierdie toestel gebruik. Hierdie bepalings wysig, beperk of brei nie die Google Chrome OS Flex-bepalings uit nie.</translation>
+<translation id="1341711321000856656">Jy kan oorskakel om wagwoorde van ’n ander Chrome-profiel af te sien</translation>
 <translation id="1363996462118479832">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie weens ’n fout met aanmelding.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Google Chrome. As die sagteware nie werk nie, deïnstalleer Google Chrome en probeer weer.</translation>
 <translation id="139993653570221430">Jy kan enige tyd in Chrome-instellings van plan verander. Die proeflopies werk saam met die huidige manier waarop advertensies gewys word, en daarom sal jy nie dadelik veranderinge sien nie.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word.}=1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou Incognito-venster sal nie weer oopgemaak word nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou # Incognito-vensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome was aan ’n HID-toestel gekoppel}=1{Google Chrome is aan ’n HID-toestel gekoppel}other{Google Chrome is aan HID-toestelle gekoppel}}</translation>
+<translation id="1492280395845991349">Herbegin om Chrome-opdatering te voltooi</translation>
 <translation id="1507198376417198979">Pasmaak jou nuwe Chrome-profiel</translation>
 <translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -85,6 +87,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
 <translation id="2534507159460261402">Google Pay (na Chrome gekopieer)</translation>
+<translation id="2556847002339236023">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Blaaierdata is uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="2559253115192232574">Later kan ’n werf wat jy besoek Chrome vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer. Chrome kan tot 3 belangstellings deel.</translation>
 <translation id="2563121210305478421">Herbegin Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Chrome kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
@@ -96,6 +99,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2652691236519827073">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
 <translation id="2665296953892887393">Help om Google Chrome beter te maak deur omvalverslae en <ph name="UMA_LINK" /> na Google te stuur</translation>
 <translation id="2689103672227170538">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy Chrome begin.</translation>
+<translation id="2712234843277364121">Herbegin om op te dateer – jou oortjies sal weer oopgemaak word</translation>
 <translation id="2742320827292110288">Waarskuwing: Google Chrome kan nie keer dat uitbreidings jou blaaigeskiedenis opneem nie. Ontkies hierdie opsie om hierdie uitbreiding in Incognitomodus te deaktiveer.</translation>
 <translation id="2765403129283291972">Chrome het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
@@ -115,6 +119,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2929907241665500097">Chrome het nie opgedateer nie; iets het skeefgeloop. <ph name="BEGIN_LINK" />Stel Chrome-opdateringprobleme en mislukte opdaterings reg.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chrome</translation>
 <translation id="3019382870990049182">Herbegin om Chrome OS Flex op te dateer</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-uitbreidings het toegang tot MKT-toestelle gehad}=1{Google Chrome-uitbreidings het tans toegang tot MKT-toestelle}other{Google Chrome-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="303514781271618814">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou data te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
 <translation id="3038232873781883849">Wag tans om te installeer...</translation>
@@ -208,6 +213,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4754614261631455953">Google Chrome Kanarie (mDNS-In)</translation>
 <translation id="4771048833395599659">Hierdie lêer kan gevaarlik wees en daarom het Chrome dit geblokkeer.</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
+<translation id="4828579605166583682">Google Chrome probeer tans bestaande wagwoorde vervang. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="4842397268809523050">Chrome OS Flex kon nie jou data sinkroniseer nie omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="4873783916118289636">Gaan belangrike privaatheid- en sekuriteitkontroles in Chrome na</translation>
 <translation id="4891791193823137474">Laat Google Chrome in die agtergrond loop.</translation>
@@ -219,6 +225,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4970880042055371251">Chrome-bedryfstelselweergawe</translation>
 <translation id="4970947549776831107">Chrome het hierdie lêer geblokkeer omdat hierdie soort lêer gevaarlik is</translation>
 <translation id="4990567037958725628">Google Chrome Kanarie</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{’n Google Chrome-uitbreiding het toegang tot MKT-toestelle gehad}=1{’n Google Chrome-uitbreiding het tans toegang tot 1 MKT-toestel}other{’n Google Chrome-uitbreiding het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Jou admin maak Chrome outomaties toe nadat dit 1 minuut lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}other{Jou admin maak Chrome outomaties toe nadat dit # minute lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}}</translation>
 <translation id="5098668839038261629">Wanneer dit aan is, sal jy ook by Chrome afgemeld word</translation>
 <translation id="5132929315877954718">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Google Chrome.</translation>
@@ -269,6 +276,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6113794647360055231">Chrome het pas beter geword</translation>
 <translation id="6145313976051292476">Maak PDF's in Chrome oop</translation>
 <translation id="6155960517327665396">Geheuebespaarder het Chrome vinniger gemaak</translation>
+<translation id="6157638032135951407">Jou organisasie vee Chrome-data uit wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
@@ -282,7 +290,9 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Jou admin vee blaaierdata outomaties uit wanneer dit 1 minuut lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou bestaande oortjies sal oop bly.}other{Jou admin vee blaaierdata outomaties uit wanneer dit # minute lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou bestaande oortjies sal oop bly.}}</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="6418662306461808273">Skakel oor na bestaande Chrome-profiel?</translation>
+<translation id="648319183876919572">Verbeterde Veiligblaai doen meer om jou teen gevaarlike webwerwe en aflaaie te beskerm</translation>
 <translation id="6493527311031785448">Google Chrome probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome is outomaties toegemaak</translation>
 <translation id="6506909944137591434">Chrome het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">In Google Wagwoordbestuurder op hierdie toestel</translation>
@@ -319,6 +329,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
 <translation id="7161904924553537242">Welkom by Google Chrome</translation>
 <translation id="7177959540995930968">Jy kan in Chrome-instellings meer oor hierdie kenmerke te wete kom.</translation>
+<translation id="7193885263065350793">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Hierdie taal word gebruik om die Google Chrome UI te wys</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
@@ -412,6 +423,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8989968390305463310">Jou blaaigeskiedenis beïnvloed die advertensies wat jy sien en die belangstellings soos hieronder geskat. Chrome vee outomaties elke maand jou belangstellings op ’n rollende basis uit om jou privaatheid te beskerm. Belangstellings kan herlaai, tensy jy hulle verwyder.</translation>
 <translation id="8999208279178790196">{0,plural, =0{'n Chrome-opdatering is beskikbaar}=1{'n Chrome-opdatering is beskikbaar}other{'n Chrome-opdatering is al # dae lank beskikbaar}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex-stelsel</translation>
+<translation id="9054037008353851982">Herbegin om op te dateer – jou oortjies sal weer oopgemaak word</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>
 <translation id="9138603949443464873">Herbegin Chrome om jou veranderinge toe te pas</translation>
 <translation id="9195993889682885387">Chrome kan jou belangstellings op grond van jou blaaigeskiedenis die afgelope paar weke skat. Hierdie inligting bly op jou toestel.</translation>

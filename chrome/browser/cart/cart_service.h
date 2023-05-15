@@ -69,7 +69,7 @@ class CartService : public history::HistoryServiceObserver,
   // Load the cart for a domain.
   void LoadCart(const std::string& domain, CartDB::LoadCallback callback);
   // Load all active carts in this service.
-  void LoadAllActiveCarts(CartDB::LoadCallback callback);
+  virtual void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
   void AddCart(const GURL& navigation_url,
                const absl::optional<GURL>& cart_url,
@@ -165,6 +165,8 @@ class CartService : public history::HistoryServiceObserver,
   // returns the result in the callback.
   virtual void HasActiveCartForURL(const GURL& url,
                                    base::OnceCallback<void(bool)> callback);
+  // Checks if the cart feature is enabled based on user's setting.
+  virtual bool IsCartEnabled();
 
  private:
   friend class CartServiceFactory;
@@ -262,8 +264,8 @@ class CartService : public history::HistoryServiceObserver,
   std::unique_ptr<CartDB> cart_db_;
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-  absl::optional<base::Value> domain_name_mapping_;
-  absl::optional<base::Value> domain_cart_url_mapping_;
+  base::Value::Dict domain_name_mapping_;
+  base::Value::Dict domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_for_testing_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;

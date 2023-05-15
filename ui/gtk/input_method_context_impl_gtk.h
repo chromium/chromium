@@ -40,18 +40,17 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                    ui::TextInputType old_type,
                    ui::TextInputType new_type,
                    ui::TextInputClient::FocusReason reason) override;
-  void SetSurroundingText(const std::u16string& text,
-                          const gfx::Range& text_range,
-                          const gfx::Range& selection_range) override;
+  void SetSurroundingText(
+      const std::u16string& text,
+      const gfx::Range& text_range,
+      const gfx::Range& selection_range,
+      const absl::optional<ui::GrammarFragment>& fragment,
+      const absl::optional<ui::AutocorrectInfo>& autocorrect) override;
   void SetContentType(ui::TextInputType type,
                       ui::TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning,
                       bool can_compose_inline) override;
-  void SetGrammarFragmentAtCursor(
-      const ui::GrammarFragment& fragment) override {}
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds) override {}
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:

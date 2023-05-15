@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ui {
@@ -90,7 +91,7 @@ class ASH_EXPORT WallpaperWidgetController
   // Copies and fades out the existing wallpaper.
   void ApplyCrossFadeAnimation(base::TimeDelta duration);
 
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The current wallpaper widget.
   std::unique_ptr<views::Widget> widget_;

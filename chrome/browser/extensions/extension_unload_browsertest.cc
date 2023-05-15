@@ -120,11 +120,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   // extension's) Origin header - this should succeed (given that
   // xhr.txt.mock-http-headers says `Access-Control-Allow-Origin: *`).
   const char kSendXhrScript[] = "document.getElementById('xhrButton').click();";
-  bool xhr_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), kSendXhrScript,
-      &xhr_result));
-  EXPECT_TRUE(xhr_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                kSendXhrScript, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   DisableExtension(id);
 
@@ -137,10 +136,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   // The content script sends an XHR with the webpage's (rather than
   // extension's) Origin header - this should succeed (given that
   // xhr.txt.mock-http-headers says `Access-Control-Allow-Origin: *`).
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), kSendXhrScript,
-      &xhr_result));
-  EXPECT_TRUE(xhr_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                kSendXhrScript, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Ensure the process has not been killed.
   EXPECT_TRUE(browser()

@@ -13,6 +13,7 @@
 
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -206,7 +207,8 @@ void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
-    PreloadingTriggeringOutcome status);
+    PreloadingTriggeringOutcome status,
+    PrefetchStatus prefetch_status);
 
 void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
@@ -325,7 +327,6 @@ ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
 
 // Produces an inspector issue and sends it to the client with
 // |ReportBrowserInitiatedIssue|.
-// This only support TrustedWebActivityIssue for now.
 void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info);
@@ -402,7 +403,8 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host,
+                                bool auto_reauthn);
 
 }  // namespace devtools_instrumentation
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 
+#include "ash/webui/print_management/print_management_ui.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
@@ -57,6 +58,28 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
                                            ServiceAccessType::EXPLICIT_ACCESS),
       CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
+}
+
+// static
+void PrintingManagerFactory::MaybeBindPrintManagementForWebUI(
+    Profile* profile,
+    mojo::PendingReceiver<
+        chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
+        receiver) {
+  PrintingManager* handler = GetForProfile(profile);
+  if (handler) {
+    handler->BindInterface(std::move(receiver));
+  }
+}
+
+// static
+std::unique_ptr<content::WebUIController>
+PrintingManagerFactory::CreatePrintManagementUIController(
+    content::WebUI* web_ui,
+    const GURL& url) {
+  return std::make_unique<printing_manager::PrintManagementUI>(
+      web_ui, base::BindRepeating(&MaybeBindPrintManagementForWebUI,
+                                  Profile::FromWebUI(web_ui)));
 }
 
 KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(

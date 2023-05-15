@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
-class VPNListView;
+class VpnDetailedView;
 
 // Controller of VPN detailed view in UnifiedSystemTray.
 class UnifiedVPNDetailedViewController : public DetailedViewController {
@@ -35,7 +36,7 @@ class UnifiedVPNDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  VPNListView* view_ = nullptr;
+  raw_ptr<VpnDetailedView, ExperimentalAsh> view_ = nullptr;
 };
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/mock_timer.h"
@@ -256,7 +257,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
       device_sync_result_code_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   std::unique_ptr<CryptAuthFeatureStatusGetter> feature_status_getter_;
 };

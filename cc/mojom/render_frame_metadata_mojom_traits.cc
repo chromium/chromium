@@ -5,7 +5,6 @@
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -57,10 +56,6 @@ bool StructTraits<
          data.ReadLocalSurfaceId(&out->local_surface_id) &&
          data.ReadNewVerticalScrollDirection(
              &out->new_vertical_scroll_direction) &&
-         data.ReadPreviousSurfacesVisualUpdateDuration(
-             &out->previous_surfaces_visual_update_duration) &&
-         data.ReadCurrentSurfaceVisualUpdateDuration(
-             &out->current_surface_visual_update_duration) &&
          data.ReadRootBackgroundColor(&out->root_background_color);
 }
 

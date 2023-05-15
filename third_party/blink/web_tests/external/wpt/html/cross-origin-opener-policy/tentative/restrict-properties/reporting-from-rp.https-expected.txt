@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL coop reporting test Opening a restrict-properties to SAME_ORIGIN with unsafe-none, , ,  promise_test: Unhandled rejection with value: "No report matched the expected report for endpoint: coop-report-endpoint, expected report: {\"body\":{\"disposition\":\"enforce\",\"effectivePolicy\":\"restrict-properties\",\"nextResponseURL\":\"/uuid=(uuid)$/\",\"type\":\"navigation-from-response\"},\"url\":\"https://web-platform.test:8444/html/cross-origin-opener-policy/tentative/restrict-properties/reporting-from-rp.https.html\",\"type\":\"coop\"}, within available reports: []"
+FAIL coop reporting test Opening a restrict-properties to CROSS_ORIGIN with unsafe-none, , ,  promise_test: Unhandled rejection with value: "No report matched the expected report for endpoint: coop-report-endpoint, expected report: {\"body\":{\"disposition\":\"enforce\",\"effectivePolicy\":\"restrict-properties\",\"nextResponseURL\":\"/uuid=(uuid)$/\",\"type\":\"navigation-from-response\"},\"url\":\"https://web-platform.test:8444/html/cross-origin-opener-policy/tentative/restrict-properties/reporting-from-rp.https.html\",\"type\":\"coop\"}, within available reports: []"
+PASS coop reporting test Opening a restrict-properties to SAME_ORIGIN with restrict-properties, , , 
+PASS verify remaining reports
+Harness: the test ran to completion.
+

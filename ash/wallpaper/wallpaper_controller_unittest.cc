@@ -28,6 +28,7 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
+#include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -41,6 +42,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -127,11 +129,15 @@ const std::string kFileName2 = GetDummyFileName(kAccountId2);
 
 constexpr char kChildEmail[] = "child@test.com";
 
-const std::string kDummyUrl = "https://best_wallpaper/1";
-const std::string kDummyUrl2 = "https://best_wallpaper/2";
+constexpr char kDummyUrl[] = "https://best_wallpaper/1";
+constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
+constexpr char kDummyUrl3[] = "https://best_wallpaper/3";
+constexpr char kDummyUrl4[] = "https://best_wallpaper/4";
 
 const uint64_t kAssetId = 1;
 const uint64_t kAssetId2 = 2;
+const uint64_t kAssetId3 = 3;
+const uint64_t kAssetId4 = 4;
 const uint64_t kUnitId = 1;
 const uint64_t kUnitId2 = 2;
 
@@ -279,7 +285,7 @@ WallpaperInfo InfoWithType(WallpaperType type) {
                      base::Time::Now());
   if (IsOnlineWallpaper(type)) {
     // Daily and Online types require asset id and collection id.
-    info.asset_id = 1234;
+    info.unit_id = 1234;
     info.collection_id = "placeholder collection";
     info.location = "https://example.com/example.jpeg";
   }
@@ -352,7 +358,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   bool is_in_wallpaper_preview() const { return is_in_wallpaper_preview_; }
 
  private:
-  WallpaperController* controller_;
+  raw_ptr<WallpaperController, ExperimentalAsh> controller_;
 
   base::RepeatingClosure resize_callback_;
   base::RepeatingClosure colors_calculated_callback_;
@@ -694,10 +700,6 @@ class WallpaperControllerTest : public AshTestBase {
 
   void ClearWallpaper() { controller_->current_wallpaper_.reset(); }
 
-  int GetWallpaperContainerId() {
-    return controller_->GetWallpaperContainerId(controller_->locked_);
-  }
-
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -729,8 +731,9 @@ class WallpaperControllerTest : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
-  WallpaperControllerImpl* controller_;
-  WallpaperPrefManager* pref_manager_ = nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperPrefManager, ExperimentalAsh> pref_manager_ =
+      nullptr;  // owned by controller
 
   base::ScopedTempDir user_data_dir_;
   base::ScopedTempDir online_wallpaper_dir_;
@@ -915,38 +918,6 @@ TEST_F(WallpaperControllerTest, ResizeCustomWallpaper) {
   EXPECT_TRUE(resized_image.BackedBySameObjectAs(controller_->GetWallpaper()));
 }
 
-TEST_F(WallpaperControllerTest, GetMaxDisplaySize) {
-  // Device scale factor shouldn't affect the native size.
-  UpdateDisplay("1000x300*2");
-  EXPECT_EQ("1000x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Rotated display should return the rotated size.
-  UpdateDisplay("1000x300*2/r");
-  EXPECT_EQ("300x1000",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // UI Scaling shouldn't affect the native size.
-  UpdateDisplay("1000x300*2@1.5");
-  EXPECT_EQ("1000x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // First display has maximum size.
-  UpdateDisplay("400x300,200x100");
-  EXPECT_EQ("400x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Second display has maximum size.
-  UpdateDisplay("400x300,500x600");
-  EXPECT_EQ("500x600",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Maximum width and height belongs to different displays.
-  UpdateDisplay("400x300,100x500");
-  EXPECT_EQ("400x500",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-}
-
 // Test that the wallpaper is always fitted to the native display resolution
 // when the layout is WALLPAPER_LAYOUT_CENTER to prevent blurry images.
 TEST_F(WallpaperControllerTest, DontScaleWallpaperWithCenterLayout) {
@@ -1104,7 +1075,15 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   EXPECT_EQ(controller_->calculated_colors()->k_mean_color, SK_ColorBLUE);
   EXPECT_FALSE(pref_manager_->GetCachedKMeanColor("old"));
   EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
-  EXPECT_TRUE(controller_->GetPreviewImage());
+
+  base::RunLoop load_preview_image_loop;
+  controller_->LoadPreviewImage(base::BindLambdaForTesting(
+      [quit = load_preview_image_loop.QuitClosure()](
+          scoped_refptr<base::RefCountedMemory> image_bytes) {
+        EXPECT_TRUE(image_bytes);
+        std::move(quit).Run();
+      }));
+  load_preview_image_loop.Run();
 }
 
 TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
@@ -2547,7 +2526,8 @@ TEST_F(WallpaperControllerTest,
 TEST_F(WallpaperControllerTest, WallpaperBlur) {
   TestWallpaperControllerObserver observer(controller_);
 
-  ASSERT_TRUE(controller_->IsBlurAllowedForLockState());
+  ASSERT_TRUE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   SetSessionState(SessionState::ACTIVE);
@@ -2591,7 +2571,8 @@ TEST_F(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   TestWallpaperControllerObserver observer(controller_);
 
-  ASSERT_TRUE(controller_->IsBlurAllowedForLockState());
+  ASSERT_TRUE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
@@ -2675,7 +2656,8 @@ TEST_F(WallpaperControllerTest, OnlyShowDevicePolicyWallpaperOnLoginScreen) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_TRUE(IsDevicePolicyWallpaper());
   // Verify the device policy wallpaper shouldn't be blurred.
-  ASSERT_FALSE(controller_->IsBlurAllowedForLockState());
+  ASSERT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   // Verify the device policy wallpaper is replaced when session state is no
@@ -3353,7 +3335,8 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kOneShotWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-  EXPECT_FALSE(controller_->IsBlurAllowedForLockState());
+  EXPECT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   EXPECT_FALSE(controller_->ShouldApplyShield());
 
   // Verify that we can reload wallpaer without losing it.
@@ -3363,7 +3346,8 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(2, GetWallpaperCount());  // Reload increments count.
   EXPECT_EQ(kOneShotWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-  EXPECT_FALSE(controller_->IsBlurAllowedForLockState());
+  EXPECT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   EXPECT_FALSE(controller_->ShouldApplyShield());
 
   // Verify the user wallpaper info is unaffected, and the one-shot wallpaper
@@ -3377,6 +3361,54 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
+}
+
+TEST_F(WallpaperControllerTest, ShowOobeWallpaper) {
+  SetBypassDecode();
+
+  controller_->ShowDefaultWallpaperForTesting();
+  RunAllTasksUntilIdle();
+
+  // Verify the OOBE wallpaper is shown during OOBE.
+  SetSessionState(SessionState::OOBE);
+  controller_->ReloadWallpaperForTesting(/*clear_cache=*/false);
+  RunAllTasksUntilIdle();
+  if (ash::features::IsOobeSimonEnabled()) {
+    EXPECT_TRUE(controller_->IsOobeWallpaper());
+  } else {
+    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
+    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
+  }
+
+  SetSessionState(SessionState::OOBE);
+  controller_->ShowSigninWallpaper();
+  RunAllTasksUntilIdle();
+  if (ash::features::IsOobeSimonEnabled()) {
+    EXPECT_TRUE(controller_->IsOobeWallpaper());
+  } else {
+    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
+    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
+  }
+
+  // Verify the OOBE wallpaper is replaced when session state is no
+  // longer OOBE.
+  SetSessionState(SessionState::LOGGED_IN_NOT_ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  // Verify the OOBE wallpaper never shows up again when session
+  // state changes.
+  SetSessionState(SessionState::ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOCKED);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOGIN_SECONDARY);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
 }
 
 TEST_F(WallpaperControllerTest, OnFirstWallpaperShown) {
@@ -3730,7 +3762,7 @@ TEST_F(WallpaperControllerTest,
 
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
@@ -3752,7 +3784,7 @@ TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
   CacheOnlineWallpaper(kDummyUrl);
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
@@ -3798,7 +3830,7 @@ TEST_F(WallpaperControllerTest,
   SimulateUserLogin(kAccountId1);
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
   RunAllTasksUntilIdle();
@@ -3867,7 +3899,7 @@ TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
 
   WallpaperInfo info = {std::string(), WALLPAPER_LAYOUT_CENTER,
                         WallpaperType::kDaily, DayBeforeYesterdayish()};
-  info.asset_id = kAssetId;
+  info.unit_id = kUnitId;
   info.collection_id = expected;
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
@@ -4500,6 +4532,78 @@ TEST_F(WallpaperControllerTest, WallpaperCustomization_UnusedForNonDefault) {
   // Verify that we still use the online wallpaper. i.e. did not switch to
   // default.
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+}
+
+TEST_F(WallpaperControllerTest, TimeOfDayWallpapers_NotSyncedIn) {
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  WallpaperInfo local_info = WallpaperInfo(params);
+  local_info.unit_id = kUnitId;
+  local_info.date = DayBeforeYesterdayish();
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+
+  // synced info tracks a different wallpaper.
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kOnline, base::Time::Now()};
+  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_TRUE(actual_info.MatchesSelection(local_info));
+  // Verify that no new wallpaper is set.
+  EXPECT_EQ(0, GetWallpaperCount());
+}
+
+TEST_F(WallpaperControllerTest, TimeOfDayWallpapers_NotSyncedOut) {
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+
+  // synced info tracks a different wallpaper.
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kOnline, base::Time::Now()};
+  synced_info.date = DayBeforeYesterdayish();
+  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  WallpaperInfo local_info = WallpaperInfo(params);
+  local_info.unit_id = kUnitId;
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_TRUE(actual_info.MatchesSelection(synced_info));
 }
 
 class WallpaperControllerGooglePhotosWallpaperTest

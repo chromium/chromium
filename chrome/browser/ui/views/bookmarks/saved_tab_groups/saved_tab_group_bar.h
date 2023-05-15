@@ -67,18 +67,18 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void OnPaint(gfx::Canvas* canvas) override;
 
   // SavedTabGroupModelObserver
-  void SavedTabGroupAddedLocally(const base::GUID& guid) override;
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
   void SavedTabGroupUpdatedLocally(
-      const base::GUID& group_guid,
-      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
+      const base::Uuid& group_guid,
+      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;
   void SavedTabGroupReorderedLocally() override;
-  void SavedTabGroupAddedFromSync(const base::GUID& guid) override;
+  void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) override;
   void SavedTabGroupUpdatedFromSync(
-      const base::GUID& group_guid,
-      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
+      const base::Uuid& group_guid,
+      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;
 
   // WidgetObserver
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -93,15 +93,15 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Adds the saved group denoted by `guid` as a button in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
-  void SavedTabGroupAdded(const base::GUID& guid);
+  void SavedTabGroupAdded(const base::Uuid& guid);
 
   // Removes the button denoted by `removed_group`'s guid from the
   // `SavedTabGroupBar`.
-  void SavedTabGroupRemoved(const base::GUID& guid);
+  void SavedTabGroupRemoved(const base::Uuid& guid);
 
   // Updates the button (color, name, tab list) denoted by `guid` in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
-  void SavedTabGroupUpdated(const base::GUID& guid);
+  void SavedTabGroupUpdated(const base::Uuid& guid);
 
   // Adds the button to the child views for a new tab group at a specific index.
   // This function then verifies if the added button and overflow button should
@@ -114,16 +114,16 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Removes the button from the child views at a specific index. Also removes
   // the button ptr from the tab_group_buttons_ list.
-  void RemoveTabGroupButton(const base::GUID& guid);
+  void RemoveTabGroupButton(const base::Uuid& guid);
 
   // Remove all buttons currently in the bar.
   void RemoveAllButtons();
 
   // Find the button that matches `guid`.
-  views::View* GetButton(const base::GUID& guid);
+  views::View* GetButton(const base::Uuid& guid);
 
   // The callback that the button calls when clicked by a user.
-  void OnTabGroupButtonPressed(const base::GUID& id, const ui::Event& event);
+  void OnTabGroupButtonPressed(const base::Uuid& id, const ui::Event& event);
 
   // When called, display a bubble which shows all the groups that are saved
   // and not visible. Each entry in the bubble, when clicked, should open the
@@ -140,8 +140,23 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Updates the drop index in `drag_data_` based on the current drag location.
   void UpdateDropIndex();
 
+  // Returns the drop index for the current drag session, if any.
+  absl::optional<size_t> GetDropIndex() const;
+
   // Reorders the dragged group to its new index.
   void HandleDrop();
+
+  // Paints the drop indicator, if one should be shown.
+  void MaybePaintDropIndicatorInBar(gfx::Canvas* canvas);
+
+  // Calculates the index in the saved tab groups bar at which we should show a
+  // drop indicator, or nullopt if we should not show an indicator in the bar.
+  absl::optional<int> CalculateDropIndicatorIndexInBar() const;
+
+  // Calculates the index (in saved tab group model space, so across the bar and
+  // the overflow menu) at which we should show a drop indicator, or nullopt if
+  // we should not show an indicator anywhere at all.
+  absl::optional<int> CalculateDropIndicatorIndexInCombinedSpace() const;
 
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();

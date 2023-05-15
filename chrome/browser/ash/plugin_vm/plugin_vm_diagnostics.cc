@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -280,7 +281,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     return base::ReplaceStringPlaceholders(string_template, subs, nullptr);
   }
 
-  Profile* const active_profile_;
+  const raw_ptr<Profile, ExperimentalAsh> active_profile_;
   DiagnosticsCallback callback_;
   guest_os::DiagnosticsBuilder builder_;
 };

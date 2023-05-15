@@ -6,17 +6,13 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -53,7 +49,7 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
   }
 
  private:
-  views::View* const view_;
+  const raw_ptr<views::View, ExperimentalAsh> view_;
   absl::optional<gfx::Rect> bounds_;
 };
 
@@ -61,7 +57,7 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
 
 SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
-  SetPaintToLayer(ui::LAYER_TEXTURED);
+  SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -69,8 +65,7 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kHighlightScreenRoundRectRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow,
-      /*use_light_colors=*/false));
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;

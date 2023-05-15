@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_constants.h"
@@ -515,7 +516,7 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<CryptAuthKeyRegistry> key_registry_;
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   std::unique_ptr<FakeCryptAuthKeyCreatorFactory>
       fake_cryptauth_key_creator_factory_;

@@ -4,9 +4,9 @@
 
 package org.chromium.chromecast.base;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,7 +120,7 @@ public class ObserverTest {
         Cell<Integer> ints = new Cell<>(0);
         Cell<String> strings = new Cell<>("a");
         List<String> result = new ArrayList<>();
-        Subscription sub = ints.and(strings).subscribe(Observer.both((Integer i, String s) -> {
+        Scope sub = ints.and(strings).subscribe(Observer.both((Integer i, String s) -> {
             result.add("opened " + i + " " + s);
             return () -> result.add("closed " + i + " " + s);
         }));

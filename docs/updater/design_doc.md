@@ -44,16 +44,17 @@ display UI to the user.
 
 ![Updater process architecture diagram](images/architecture.svg)
 
-The updater may be installed *per-user* or *system-wide*. If installed per-user,
-the updater can only update applications owned by that user, whereas a system-
-wide updater can update applications owned by any entity on the system. In
-multi-user systems, it is efficient for software such as the browser to be
-installed system-wide, owned by root (or the system user) and run by individual
-users, but this requires the updater to maintain root privileges in order to
-update it. Therefore, in a system-wide installation, the server process runs as
-root (or at high integrity). One system-wide installation of the updater and any
-number of per-user installations of the updater can coexist and operate
-independently on the same system.
+The updater may be installed *per-user* or *system-wide*. If installed
+per-user, the updater may lack permissions to update applications owned by
+other users, whereas a system- wide updater can update applications owned by
+any entity on the system. In multi-user systems, it is efficient for software
+such as the browser to be installed system-wide, owned by root (or the system
+user) and run by individual users, but this requires the updater to maintain
+root privileges in order to update it. Therefore, in a system-wide
+installation, the server process runs as root (or at high integrity). One
+system-wide installation of the updater and any number of per-user
+installations of the updater can coexist and operate independently on the same
+system.
 
 Different versions of the updater can coexist even within the same installation
 of the updater, but only one such instance is *active*. Inactive versions of the
@@ -772,25 +773,72 @@ take priority over `HKLM` entries when UAC is off.
 
 When introducing a new interface, or making an existing interface to be SxS,
 the following steps need to be followed:
-* Add corresponding interfaces with `User` and `System` suffixes that are
-  binary-identical to the non-suffixed interface, to the `.template` IDL file
-  and BUILD files.
-* IDL file changes use the following rules:
-  * If there are no interface parameters in any of the methods of the interface,
-    simply derive the `User` and `System` suffixed interfaces from the
-    non-suffixed interface.
+* Decorate interfaces with distinct user and system identities with
+`BEGIN_INTERFACE` and `END_INTERFACE` in the `.template` IDL file.
 
-    Example: `IUpdaterInternalCallbackUser` and `IUpdaterInternalCallbackSystem`
-    derive from `IUpdaterInternalCallback` in `updater_internal_idl.template`.
-  * If there are interface parameters in any of the methods of the interface,
-    make an exact copy of the non-suffixed interface, but replace any interface
-    parameters with the `User` and `System` suffixed interface equivalents.
+`BEGIN_INTERFACE` takes the placeholder guid, the interface that needs distinct
+identities, as well as any other items that need to be distinct for `user` and
+`system` respectively.
 
-    Example: `IUpdaterInternalUser` and `IUpdaterInternalSystem` are copies of
-    `IUpdaterInternal`, but with the interface parameters of type
-    `IUpdaterInternalCallback` replaced with `IUpdaterInternalCallbackUser` and
-    `IUpdaterInternalCallbackSystem` respectively for the methods `Run` and
-    `Hello` in `updater_internal_idl.template`.
+Here is an example:
+
+```
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
+    },
+    "tokensToSuffix": ["ICompleteStatus"]
+  }
+)
+[
+  uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatus : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+END_INTERFACE
+```
+
+The example IDL above will produce the following output via the build:
+
+```
+[
+  uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatus : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+[
+  uuid(PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatusUser : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+[
+  uuid(PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatusSystem : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+```
+
+* List the interfaces with `User` and `System` suffixes that are
+  binary-identical to the non-suffixed interface, to the `.template` IDL file's
+  `library` section and `BUILD.gn` files.
 * Code changes:
   * Derive the COM class that implements interface `Interface` from
     `DynamicIIDsImpl<Interface, iid_user, iid_system>`. `iid_user` and
@@ -868,8 +916,8 @@ a lock.
 On POSIX, the most common means of uninstalling a program is to delete the
 program's application bundle from disk. When a program registers itself with
 the updater, it provides the path to the application bundle. If the bundle has
-been removed (or is owned by a user different from the updater), the updater
-considers it uninstalled and ceases attempting to update it.
+been removed (or is owned by root and the updater is a user-scope updater), the
+updater considers it uninstalled and ceases attempting to update it.
 
 ### Periodic Task Scheduling
 On Mac, the scheduler is implemented via LaunchAgents (for user-level installs)
@@ -971,7 +1019,7 @@ Consider the following sequence of updater processes A, B, and C
   3. B: Shared memory `foo` exists. Open the existing shared memory object.
   4. A: Release the mutex lock and `shm_unlink` “foo”. Note: Process B can
      still use the shared memory until it closes it. Future attempts to open
-     `foo` will fail with ENOENT. `foo` can be recreated. 
+     `foo` will fail with ENOENT. `foo` can be recreated.
   5. C:  Shared memory `foo` does not exist. Create the shared memory object.
   6. B: Acquire the mutex lock in shared memory.
   7. C: Creates and acquires the mutex lock in shared memory.

@@ -51,8 +51,7 @@ net::ScopedCERTCertificate TranslatePEMToCert(const std::string& cert_pem) {
 
   std::vector<uint8_t> cert_der(tokenizer.data().begin(),
                                 tokenizer.data().end());
-  return net::x509_util::CreateCERTCertificateFromBytes(cert_der.data(),
-                                                        cert_der.size());
+  return net::x509_util::CreateCERTCertificateFromBytes(cert_der);
 }
 
 }  // namespace

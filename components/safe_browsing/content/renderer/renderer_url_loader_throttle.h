@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -75,15 +76,15 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   // mojom::UrlCheckNotifier implementation.
   void OnCompleteCheck(bool proceed,
                        bool showed_interstitial,
-                       bool did_perform_real_time_check,
-                       bool did_check_allowlist) override;
+                       bool did_perform_url_real_time_check,
+                       bool did_check_url_real_time_allowlist) override;
 
   void OnCheckUrlResult(
       mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      bool did_perform_real_time_check,
-      bool did_check_allowlist);
+      bool did_perform_url_real_time_check,
+      bool did_check_url_real_time_allowlist);
 
   // Called by the two methods above.
   // |slow_check| indicates whether it reports the result of a slow check.

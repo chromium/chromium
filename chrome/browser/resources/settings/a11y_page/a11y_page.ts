@@ -9,7 +9,7 @@
  * a subpage with lots of other settings on Chrome OS.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
 // clang-format off
@@ -24,12 +24,11 @@ import './live_caption_section.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
 // clang-format on
-
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';

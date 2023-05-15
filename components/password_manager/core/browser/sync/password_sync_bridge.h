@@ -51,10 +51,10 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -75,7 +75,7 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   // to modification of encryption key in Keychain or Keyring
   // (https://crbug.com/730625). This method deletes those logins from the
   // store. So during merge, the data in sync will be added to the password
-  // store. This should be called during MergeSyncData().
+  // store. This should be called during MergeFullSyncData().
   absl::optional<syncer::ModelError> CleanupPasswordStore();
 
   // Retrieves the storage keys of all unsynced passwords in the store.

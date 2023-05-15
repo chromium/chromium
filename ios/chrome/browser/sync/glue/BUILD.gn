@@ -12,8 +12,8 @@ source_set("glue") {
     "//base",
     "//components/browser_sync",
     "//components/sync",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web",
   ]
 }

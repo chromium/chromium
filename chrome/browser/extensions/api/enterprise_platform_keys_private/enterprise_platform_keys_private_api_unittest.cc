@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -36,7 +37,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
  protected:
   EPKPChallengeKeyTestBase()
       : fake_user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
     extension_ = ExtensionBuilder("Test").Build();
   }
 
@@ -72,9 +73,10 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   scoped_refptr<const Extension> extension_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
 };
 
 class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {

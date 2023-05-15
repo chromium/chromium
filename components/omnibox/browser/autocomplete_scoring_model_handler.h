@@ -22,6 +22,9 @@ class AutocompleteScoringModelHandler
           AutocompleteScoringModelExecutor::ModelOutput,
           AutocompleteScoringModelExecutor::ModelInput> {
  public:
+  using ScoringSignals =
+      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+
   AutocompleteScoringModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
@@ -41,8 +44,7 @@ class AutocompleteScoringModelHandler
   // Checks validness of signals and applies transformation if configured in
   // metadata. Returns nullopt if the model or metadata is missing.
   absl::optional<std::vector<float>> GetModelInput(
-      const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
-          scoring_signals);
+      const ScoringSignals& scoring_signals);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteScoringModelHandlerTest,
@@ -51,8 +53,7 @@ class AutocompleteScoringModelHandler
   // Extracts the model input from scoring signals according to the model
   // metadata.
   std::vector<float> ExtractInputFromScoringSignals(
-      const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
-          scoring_signals,
+      const ScoringSignals& scoring_signals,
       const optimization_guide::proto::AutocompleteScoringModelMetadata&
           metadata);
 };

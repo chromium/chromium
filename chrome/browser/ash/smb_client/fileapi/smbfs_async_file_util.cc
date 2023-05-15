@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -91,7 +92,7 @@ class DeleteRecursivelyOperation {
                                   base::BindOnce(std::move(callback_), error));
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const base::FilePath path_;
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;

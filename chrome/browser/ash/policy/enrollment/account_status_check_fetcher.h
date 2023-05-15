@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -67,7 +68,7 @@ class AccountStatusCheckFetcher {
   // Acconut status.
   AccountStatus result_ = AccountStatus::kUnknown;
 
-  DeviceManagementService* service_ = nullptr;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Randomly generated device id for the request to make sure request won't

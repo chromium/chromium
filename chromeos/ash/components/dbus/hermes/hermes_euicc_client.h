@@ -28,6 +28,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
       base::OnceCallback<void(HermesResponseStatus status,
                               const dbus::ObjectPath* carrier_profile_path)>;
 
+  // Callback for the RefreshSmdxProfiles(). Callback returns the status code
+  // and 0 or more object paths for profiles available to be installed for the
+  // activation code provided to the method.
+  using RefreshSmdxProfilesCallback = base::OnceCallback<void(
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths)>;
+
   class TestInterface {
    public:
     enum class AddCarrierProfileBehavior {
@@ -212,6 +219,15 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   virtual void RefreshInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                         bool restore_slot,
                                         HermesResponseCallback callback) = 0;
+
+  // Fetches the available profiles for Euicc at |euicc_path| using the
+  // activation code provided by |activation_code|. This method will update the
+  // set of known profiles before returning. If |restore_slot| is |true| then
+  // the SIM slot that was active prior to refreshing is restored.
+  virtual void RefreshSmdxProfiles(const dbus::ObjectPath& euicc_path,
+                                   const std::string& activation_code,
+                                   bool restore_slot,
+                                   RefreshSmdxProfilesCallback callback) = 0;
 
   // Updates pending profiles for Euicc at |euicc_path| from the SMDS server
   // using the given |root_smds| server address. Passing an empty |root_smds|

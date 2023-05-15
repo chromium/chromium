@@ -348,6 +348,10 @@ namespace autofillPrivate {
     // it refers to the legacy server id of credit cards, not the instrument
     // ids.
     static void removeVirtualCard(DOMString cardId);
+
+    // Authenticates the user via device authentication and if successful, it
+    // will then flip the mandatory auth toggle.
+    static void authenticateUserAndFlipMandatoryAuthToggle();
   };
 
   interface Events {

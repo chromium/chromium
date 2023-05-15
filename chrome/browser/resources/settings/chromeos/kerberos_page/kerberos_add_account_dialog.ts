@@ -460,6 +460,8 @@ class KerberosAddAccountDialogElement extends
         return this.i18n('kerberosConfigErrorKrb5FailedToParse');
       case KerberosConfigErrorCode.TOO_MANY_NESTED_GROUPS:
         return this.i18n('kerberosConfigErrorTooManyNestedGroups', errorLine);
+      case KerberosConfigErrorCode.LINE_TOO_LONG:
+        return this.i18n('kerberosConfigErrorLineTooLong', errorLine);
       default:
         assertNotReached();
     }

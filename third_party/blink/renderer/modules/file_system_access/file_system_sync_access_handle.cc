@@ -98,24 +98,18 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   }
 
   base::FileErrorOr<bool> result = file_delegate()->SetLength(size);
-  if (result.has_value()) {
-    if (cursor_ > size) {
-      cursor_ = size;
+  if (!result.has_value()) {
+    if (result.error() == base::File::FILE_ERROR_NO_SPACE) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kQuotaExceededError,
+          "No space available for this operation");
+    } else if (result.error() != base::File::FILE_OK) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "truncate failed");
     }
     return;
   }
-
-  base::File::Error file_error = result.error();
-  if (file_error == base::File::FILE_ERROR_NO_SPACE) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
-                                      "No space available for this operation");
-    return;
-  }
-  if (file_error != base::File::FILE_OK) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "truncate failed");
-    return;
-  }
+  cursor_ = std::min(cursor_, size);
 }
 
 uint64_t FileSystemSyncAccessHandle::read(
@@ -199,10 +193,10 @@ uint64_t FileSystemSyncAccessHandle::write(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kQuotaExceededError,
           "No space available for this operation");
-      return 0;
+    } else {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Failed to write to the access handle");
     }
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Failed to write to the access handle");
     return 0;
   }
 

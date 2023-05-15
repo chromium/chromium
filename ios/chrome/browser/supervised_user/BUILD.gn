@@ -18,8 +18,8 @@ source_set("supervised_user") {
     "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/net",
     "//net",
@@ -38,7 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/public/test",
   ]
 }

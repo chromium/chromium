@@ -68,9 +68,7 @@
   </template>
   <div id="middle">
     <wallpaper-preview>
-      <template is="dom-if" if="[[isDarkLightModeEnabled_]]">
-        <personalization-theme></personalization-theme>
-      </template>
+      <personalization-theme></personalization-theme>
     </wallpaper-preview>
     <template is="dom-if" if="[[shouldShowAmbientPreview_]]">
       <ambient-preview-large>

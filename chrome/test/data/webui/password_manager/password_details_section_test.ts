@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -59,6 +59,9 @@ suite('PasswordDetailsSectionTest', function() {
         document.createElement('password-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getCredentialGroups');
+    assertEquals(
+        PasswordViewPageInteractions.CREDENTIAL_REQUESTED_BY_URL,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
     await flushTasks();
@@ -318,6 +321,9 @@ suite('PasswordDetailsSectionTest', function() {
     assertTrue(!!passwordManager.listeners.passwordManagerAuthTimeoutListener);
 
     passwordManager.listeners.passwordManagerAuthTimeoutListener();
+    assertEquals(
+        PasswordViewPageInteractions.TIMED_OUT_IN_VIEW_PAGE,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
     await flushTasks();
 
     // Assert that now Passwords page is shown.

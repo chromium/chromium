@@ -671,7 +671,7 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
 // (fractionally) larger due to floating point precision errors, and if the
 // scroll offset is near zero that can naively lead to a negative offset being
 // returned which is not desirable.
-TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
+TEST(ScrollTreeTest, GetScrollOffsetForScrollTimelineNegativeOffset) {
   FakeProtectedSequenceSynchronizer synchronizer;
   PropertyTrees property_trees(synchronizer);
   ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
@@ -693,7 +693,8 @@ TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
   transform_tree.Node(transform_node_id)->needs_local_transform_update = false;
 
   // The returned offset should be clamped at a minimum of 0.
-  gfx::PointF offset = scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
+  gfx::PointF offset = scroll_tree.GetScrollOffsetForScrollTimeline(
+      *scroll_tree.Node(scroll_node_id));
   EXPECT_EQ(offset.y(), 0);
 }
 

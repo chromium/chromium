@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
@@ -121,7 +122,7 @@ bool CreditCardAccessManager::GetDeletionConfirmationText(
     return false;
 
   if (title)
-    title->assign(card->CardIdentifierStringForAutofillDisplay());
+    title->assign(card->CardNameAndLastFourDigits());
   if (body) {
     body->assign(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
@@ -1064,6 +1065,10 @@ void CreditCardAccessManager::FetchVirtualCard() {
       .last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
   virtual_card_unmask_request_details_.card = *card_;
+  if (ShouldShowCardMetadata(*card_)) {
+    virtual_card_unmask_request_details_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
   virtual_card_unmask_request_details_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
 
@@ -1120,29 +1125,53 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   virtual_card_unmask_response_details_ = response_details;
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
-      // Show confirmation on the progress dialog and then dismiss it.
-      client_->CloseAutofillProgressDialog(
-          /*show_confirmation_before_closing=*/true);
-
       // If the real pan is not empty, then complete card information has been
       // fetched from the server (this is ensured in Payments Client). Pass the
-      // unmasked card to |accessor_| and end the session.
-      CreditCard card = *card_;
+      // unmasked card to `accessor_` and end the session.
       DCHECK_EQ(response_details.card_type,
                 AutofillClient::PaymentsRpcCardType::kVirtualCard);
-      card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
-      card.SetExpirationMonthFromString(
+      card_->SetNumber(base::UTF8ToUTF16(response_details.real_pan));
+      card_->SetExpirationMonthFromString(
           base::UTF8ToUTF16(response_details.expiration_month),
           /*app_locale=*/std::string());
-      card.SetExpirationYearFromString(
+      card_->SetExpirationYearFromString(
           base::UTF8ToUTF16(response_details.expiration_year));
-      accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card,
-                                     base::UTF8ToUTF16(response_details.dcvv));
-      autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
-          AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
-      Reset();
+      // Check if we need to authenticate the user before filling the virtual
+      // card.
+      if (personal_data_manager_
+              ->IsAutofillPaymentMethodsMandatoryReauthEnabled()) {
+        // On some operating systems (for example, macOS and Windows), the
+        // device authentication prompt freezes Chrome. Thus we can only trigger
+        // the prompt after the progress dialog has been closed, which we can do
+        // by using the `no_interactive_authentication_callback` parameter in
+        // `AutofillClient::CloseAutofillProgressDialog()`.
+        // TODO(crbug.com/1427216): Implement this flow for Android as well.
+        client_->CloseAutofillProgressDialog(
+            /*show_confirmation_before_closing=*/false,
+            /*no_interactive_authentication_callback=*/base::BindOnce(
+                // `StartDeviceAuthenticationForFilling()` will asynchronously
+                // trigger the re-authentication flow, so we should avoid
+                // calling `Reset()` until the re-authentication flow is
+                // complete.
+                &CreditCardAccessManager::StartDeviceAuthenticationForFilling,
+                weak_ptr_factory_.GetWeakPtr(), accessor_, card_.get(),
+                base::UTF8ToUTF16(response_details.dcvv)));
+      } else {
+        client_->CloseAutofillProgressDialog(
+            /*show_confirmation_before_closing=*/true);
+        accessor_->OnCreditCardFetched(
+            CreditCardFetchResult::kSuccess, card_.get(),
+            base::UTF8ToUTF16(response_details.dcvv));
+        autofill_metrics::LogServerCardUnmaskResult(
+            autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
+            AutofillClient::PaymentsRpcCardType::kVirtualCard,
+            autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
+        // `accessor_->OnCreditCardFetched()` makes a copy of `card` and `cvc`
+        // before it asynchronously fills them into the form. Thus we can safely
+        // call `Reset()` here, and we should as from this class' point of view
+        // the authentication flow is complete.
+        Reset();
+      }
       return;
     }
 
@@ -1397,6 +1426,10 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
 
   is_authentication_in_progress_ = true;
 
+  CreditCard::RecordType record_type = card->record_type();
+  CHECK(record_type == CreditCard::LOCAL_CARD ||
+        record_type == CreditCard::VIRTUAL_CARD);
+
   // TODO(crbug.com/1427216): Add the iOS branching logic as well.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   device_authenticator->AuthenticateWithMessage(
@@ -1409,7 +1442,9 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
   device_authenticator->Authenticate(
-      device_reauth::DeviceAuthRequester::kLocalCardAutofill,
+      record_type == CreditCard::LOCAL_CARD
+          ? device_reauth::DeviceAuthRequester::kLocalCardAutofill
+          : device_reauth::DeviceAuthRequester::kVirtualCardAutofill,
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
           weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc),

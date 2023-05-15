@@ -208,15 +208,22 @@ ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
   return result;
 }
 
-ScriptPromise FileSystemHandle::getUniqueId(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise FileSystemHandle::getUniqueId(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   GetUniqueIdImpl(WTF::BindOnce(
       [](FileSystemHandle*, ScriptPromiseResolver* resolver,
-         const WTF::String& id) {
+         FileSystemAccessErrorPtr result, const WTF::String& id) {
         // Keep `this` alive so the handle will not be garbage-collected
         // before the promise is resolved.
+        if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+          file_system_access_error::Reject(resolver, *result);
+          return;
+        }
+
         resolver->Resolve(std::move(id));
       },
       WrapPersistent(this), WrapPersistent(resolver)));

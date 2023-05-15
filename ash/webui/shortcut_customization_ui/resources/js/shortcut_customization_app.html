@@ -5,9 +5,14 @@
     font-family: var(--shortcuts-font-family-default);
     font-size: var(--shortcuts-font-size-default);
     font-weight: var(--shortcuts-font-weight-regular);
+    height: 100%;
   }
 
-  /** 
+  :host-context(body.jelly-enabled) navigation-view-panel {
+    --navigation-view-panel-bg-color: var(--cros-sys-app_base_shaded);
+  }
+
+  /**
    * This breakpoint is when the NavigationViewPanel side nav shrinks to a
    * smaller width.
    */
@@ -22,10 +27,6 @@
     :host {
       --cr-toolbar-field-width: 80vw;
     }
-  }
-
-  #navigationPanel::part(nav-body) {
-    width: var(--cr-toolbar-field-width);
   }
 
   #navigationPanel::part(title) {
@@ -93,7 +94,7 @@
       [[i18n('resetAllShortcuts')]]
     </cr-button>
     <div id="keyboardSettingsLinkContainer">
-      <a href="chrome://os-settings/keyboard-overlay">
+      <a id="keyboardSettingsLink" href="[[keyboardSettingsLink]]"">
         <span>[[i18n('keyboardSettings')]]</span>
         <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
       </a>

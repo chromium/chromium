@@ -42,7 +42,7 @@ class AuraContext {
     aura::WindowTreeHost* window_tree_host() { return window_tree_host_.get(); }
 
    private:
-    base::raw_ptr<AuraContext> const context_;
+    raw_ptr<AuraContext> const context_;
     std::unique_ptr<aura::WindowTreeHost> const window_tree_host_;
   };
 
@@ -62,7 +62,7 @@ class AuraContext {
   std::unique_ptr<display::Screen> screen_;
   std::unique_ptr<wm::FocusController> focus_controller_;
   std::unique_ptr<wm::CursorManager> cursor_manager_;
-  base::raw_ptr<NativeCursorManager> native_cursor_manager_;
+  raw_ptr<NativeCursorManager> native_cursor_manager_;
 };
 
 }  // namespace webui_examples

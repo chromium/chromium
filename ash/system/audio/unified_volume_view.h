@@ -12,6 +12,7 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -49,15 +50,24 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   // References to the icons that correspond to different volume levels used in
   // the `QuickSettingsSlider`. Defined as a public member to be used in tests.
   static constexpr const gfx::VectorIcon* kQsVolumeLevelIcons[] = {
-      &kUnifiedMenuVolumeMuteIcon,    // Mute volume.
+      &kUnifiedMenuVolumeMuteIcon,    // Muted.
       &kUnifiedMenuVolumeMediumIcon,  // Medium volume.
       &kUnifiedMenuVolumeHighIcon,    // High volume.
   };
 
+  // The maximum index of `kQsVolumeLevelIcons`.
+  static constexpr int kQsVolumeLevels = std::size(kQsVolumeLevelIcons) - 1;
+
   IconButton* more_button() { return more_button_; }
 
  private:
+  friend class UnifiedVolumeViewTest;
+
   void Update(bool by_user);
+
+  // Get `VectorIcon` reference that corresponds to the given volume level.
+  // `level` is between 0.0 to 1.0 inclusive.
+  const gfx::VectorIcon& GetVolumeIconForLevel(float level);
 
   // Callback called when the `live_caption_button_` is pressed.
   void OnLiveCaptionButtonPressed();
@@ -76,16 +86,15 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   void ChildVisibilityChanged(views::View* child) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
-  IconButton* const more_button_;
+  const raw_ptr<IconButton, ExperimentalAsh> more_button_;
 
   // Whether this `UnifiedVolumeView` is the view for the active output node.
   bool const is_active_output_node_;
 
-  QuickSettingsSlider::Style const slider_style_;
-  AccessibilityControllerImpl* const a11y_controller_;
+  const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> a11y_controller_;
   uint64_t device_id_ = 0;
   // Owned by the views hierarchy.
-  IconButton* live_caption_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> live_caption_button_ = nullptr;
 };
 
 }  // namespace ash

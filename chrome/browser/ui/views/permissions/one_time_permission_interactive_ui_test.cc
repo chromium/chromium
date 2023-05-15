@@ -25,6 +25,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -216,9 +217,29 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   }
 
  protected:
+  void OtpEventExpectUniqueSample(ContentSettingsType content_setting_type,
+                                  permissions::OneTimePermissionEvent event,
+                                  int occ) {
+    histograms_.ExpectUniqueSample(
+        permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+            content_setting_type),
+        static_cast<base::HistogramBase::Sample>(event), occ);
+  }
+
+  void OtpEventExpectBucketCount(ContentSettingsType content_setting_type,
+                                 permissions::OneTimePermissionEvent event,
+                                 int occ) {
+    histograms_.ExpectBucketCount(
+        permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+            content_setting_type),
+        static_cast<base::HistogramBase::Sample>(event), occ);
+  }
+
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
   raw_ptr<Browser, DanglingUntriaged> current_browser_ = nullptr;
+
+  base::HistogramTester histograms_;
 
  private:
   // The render frame host where JS calls will be executed.
@@ -244,6 +265,11 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Ensure position is accessible in new tab without prompt.
   WatchPositionAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false);
+
+  // Ensure grant event is recorded
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -262,6 +288,11 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Ensure position is accessible in new tab without prompt.
   WatchPositionAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false);
+
+  // Ensure grant event is only recorded once
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -279,7 +310,17 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
 
   // Ensure that a prompt is triggered.
   WatchPositionAndExpectGrantedPermission(
-      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+      permissions::PermissionRequestManager::ACCEPT_ALL, true);
+
+  // Since the second request was resolved with a persistent accept, only one
+  // otp-grant event should be recorded
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -305,7 +346,17 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Ensure that a prompt is triggered again when requesting geolocation
   // permission.
   WatchPositionAndExpectGrantedPermission(
-      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+      permissions::PermissionRequestManager::ACCEPT_ALL, true);
+
+  // Since the second request was resolved with a persistent accept, only one
+  // otp-grant event should be recorded
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -336,6 +387,11 @@ IN_PROC_BROWSER_TEST_F(
   // Request geolocation permission and ensure that no prompt is triggered.
   WatchPositionAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false);
+
+  // Ensure that only a single GRANTED_ONE_TIME event is recorded
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -364,6 +420,14 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Ensure that a prompt is triggered again when requesting permission
   WatchPositionAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -378,14 +442,22 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission expiration
-  // timers that are running at this point in time will fire their callbacks and
-  // are stopped.
+  // Fire running timers. This means, that all one time permission
+  // expiration timers that are running at this point in time will fire
+  // their callbacks and are stopped.
   FireRunningExpirationTimers();
 
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false, 0);
+
+  // Ensure that only a single GRANTED_ONE_TIME event is recorded per permission
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -403,9 +475,9 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // within specified web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission expiration
-  // timers that are running at this point in time will fire their callbacks and
-  // are stopped.
+  // Fire running timers. This means, that all one time permission
+  // expiration timers that are running at this point in time will fire
+  // their callbacks and are stopped.
   FireRunningExpirationTimers();
 
   // Switch back to previous tab
@@ -414,6 +486,21 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Request cam/mic permission, expect a prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, true, 0);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -438,6 +525,14 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false, 0);
+
+  // Ensure that only a single GRANTED_ONE_TIME event is recorded per permission
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -452,12 +547,20 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission expiration
-  // timers that are running at this point in time will fire their callbacks and
-  // are stopped.
+  // Fire running timers. This means, that all one time permission
+  // expiration timers that are running at this point in time will fire
+  // their callbacks and are stopped.
   FireRunningExpirationTimers();
 
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE, false, 0);
+
+  // Ensure that only a single GRANTED_ONE_TIME event is recorded per permission
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+  OtpEventExpectUniqueSample(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }

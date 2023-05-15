@@ -758,11 +758,10 @@ IPC_SYNC_MESSAGE_ROUTED2_0(PpapiHostMsg_PPBGraphics3D_DestroyTransferBuffer,
                            int32_t /* id */)
 // The receiver of this message takes ownership of the front buffer of the GL
 // context. Each call to PpapiHostMsg_PPBGraphics3D_SwapBuffers must be preceded
-// by exactly one call to PpapiHostMsg_PPBGraphics3D_TakeFrontBuffer. The
-// SyncToken passed to PpapiHostMsg_PPBGraphics3D_SwapBuffers must be generated
-// after this message is sent.
-IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBGraphics3D_TakeFrontBuffer,
-                    ppapi::HostResource /* graphics_3d */)
+// by exactly one call to
+// PpapiHostMsg_PPBGraphics3D_ResolveAndDetachFramebuffer. The SyncToken passed
+// to PpapiHostMsg_PPBGraphics3D_SwapBuffers must be generated after this
+// message is sent.
 IPC_MESSAGE_ROUTED3(PpapiHostMsg_PPBGraphics3D_SwapBuffers,
                     ppapi::HostResource /* graphics_3d */,
                     gpu::SyncToken /* sync_token */,

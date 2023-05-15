@@ -8,12 +8,10 @@
 
 #import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -34,10 +32,6 @@ class SyncEncryptionTableViewControllerTest
 
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    syncer::TestSyncService* test_sync_service =
-        static_cast<syncer::TestSyncService*>(
-            SyncServiceFactory::GetForBrowserState(browser_state_.get()));
-    test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();
   }

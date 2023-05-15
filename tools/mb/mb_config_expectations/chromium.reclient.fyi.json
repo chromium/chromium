@@ -87,7 +87,27 @@
       "use_remoteexec": true
     }
   },
+  "Linux Builder reclient test (unified uploads)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
   "Linux Builder reclient test untrusted": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
+  "Linux Builder reclient test untrusted (unified uploads)": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

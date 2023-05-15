@@ -65,7 +65,7 @@ void FormActivityTabHelper::OnFormMessageReceived(
     FormSubmissionHandler(web_state, message);
   } else if (*command == "form.activity") {
     HandleFormActivity(web_state, message);
-  } else if (*command == "form.removal") {
+  } else if (*command == "pwdform.removal") {
     HandleFormRemoval(web_state, message);
   }
 }

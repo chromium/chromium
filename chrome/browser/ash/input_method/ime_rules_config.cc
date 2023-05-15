@@ -13,8 +13,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-// The default denylist of domains that will turn off auto_correct feature.
-const char* kDefaultAutocorrectDomainDenylist[] = {
+// The default denylist of domains that will turn off autocorrect and multi word
+// suggestions.
+const char* kDefaultDomainDenylist[] = {
     "amazon",
     "b.corp.google",
     "buganizer.corp.google",
@@ -24,12 +25,20 @@ const char* kDefaultAutocorrectDomainDenylist[] = {
     "docs.google",
     "facebook",
     "instagram",
+    "mail.google",
     "outlook.live",
     "outlook.office",
     "quizlet",
+    "reddit",
+    "web.skype",
+    "teams.microsoft",
+    "twitter",
     "whatsapp",
     "youtube",
 };
+
+// exceptions where the features are enabled.
+const char* kAllowedDomainsWithPaths[][2] = {{"mail.google", "/chat"}};
 }  // namespace
 
 // Checks if domain is a sub-domain of url
@@ -57,14 +66,29 @@ bool IsSubDomainWithPathPrefix(const GURL& url,
          base::StartsWith(url.path(), path_prefix);
 }
 
-bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info) {
-  // Check the default domain denylist rules.
-  for (const char* domain : kDefaultAutocorrectDomainDenylist) {
-    if (IsSubDomain(info.tab_url, domain)) {
+bool IsMatchedSubDomain(const GURL& url) {
+  for (const char* domain : kDefaultDomainDenylist) {
+    if (IsSubDomain(url, domain)) {
       return true;
     }
   }
   return false;
+}
+
+bool IsMatchedSubDomainWithPathPrefix(const GURL& url) {
+  for (const auto& [domain, path_prefix] : kAllowedDomainsWithPaths) {
+    if (IsSubDomainWithPathPrefix(url, domain, path_prefix)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsAssistiveInputDisabled(const absl::optional<GURL>& url) {
+  if (!url.has_value()) {
+    return false;
+  }
+  return IsMatchedSubDomain(*url) && !IsMatchedSubDomainWithPathPrefix(*url);
 }
 }  // namespace input_method
 }  // namespace ash

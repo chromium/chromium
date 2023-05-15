@@ -4,21 +4,23 @@
 
 #import "chrome/updater/util/mac_util.h"
 
+#import <CoreFoundation/CoreFoundation.h>
+
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
-#include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -27,10 +29,12 @@
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace updater {
 namespace {
-
-constexpr int kLaunchctlExitCodeNoSuchProcess = 3;
 
 constexpr base::FilePath::CharType kZipExePath[] =
     FILE_PATH_LITERAL("/usr/bin/unzip");
@@ -40,6 +44,31 @@ base::FilePath ExecutableFolderPath() {
              base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"));
+}
+
+std::string GetDomain(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kSystem:
+      return "system";
+    case UpdaterScope::kUser:
+      return base::StrCat({"gui/", base::NumberToString(geteuid())});
+  }
+}
+
+bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
+  std::string output;
+  int exit_code = 0;
+  base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
+  launchctl.AppendArg("bootstrap");
+  launchctl.AppendArg(GetDomain(scope));
+  launchctl.AppendArgPath(path);
+  if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code) ||
+      exit_code != 0) {
+    VLOG(1) << "launchctl bootstrap of " << path << " failed: " << exit_code
+            << ": " << output;
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -93,35 +122,32 @@ absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
   return absl::make_optional(ksadmin_path);
 }
 
-base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope) {
-  return base::SysUTF8ToCFStringRef(
-      IsSystemInstall(scope) ? MAC_BUNDLE_IDENTIFIER_STRING ".wake.system"
-                             : MAC_BUNDLE_IDENTIFIER_STRING ".wake");
+std::string GetWakeLaunchdName(UpdaterScope scope) {
+  return IsSystemInstall(scope) ? MAC_BUNDLE_IDENTIFIER_STRING ".wake.system"
+                                : MAC_BUNDLE_IDENTIFIER_STRING ".wake";
 }
 
-bool RemoveJobFromLaunchd(UpdaterScope scope,
-                          Launchd::Domain domain,
-                          Launchd::Type type,
-                          base::ScopedCFTypeRef<CFStringRef> name) {
+bool RemoveWakeJobFromLaunchd(UpdaterScope scope) {
+  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  if (!path) {
+    return false;
+  }
+
   // This may block while deleting the launchd plist file.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (Launchd::GetInstance()->PlistExists(domain, type, name)) {
-    if (!Launchd::GetInstance()->DeletePlist(domain, type, name))
-      return false;
-  }
-
   base::CommandLine command_line(base::FilePath("/bin/launchctl"));
-  command_line.AppendArg("remove");
-  command_line.AppendArg(base::SysCFStringRefToUTF8(name));
-  if (IsSystemInstall(scope))
-    command_line = MakeElevated(command_line);
-
+  command_line.AppendArg("bootout");
+  command_line.AppendArg(GetDomain(scope));
+  command_line.AppendArgPath(*path);
   int exit_code = -1;
   std::string output;
-  base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-  return exit_code == 0 || exit_code == kLaunchctlExitCodeNoSuchProcess;
+  if (base::GetAppOutputWithExitCode(command_line, &output, &exit_code) &&
+      exit_code != 0) {
+    VLOG(2) << "launchctl bootout exited " << exit_code << ": " << output;
+  }
+  return base::DeleteFile(*path);
 }
 
 bool UnzipWithExe(const base::FilePath& src_path,
@@ -243,6 +269,92 @@ bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
     success = base::mac::RemoveQuarantineAttribute(name) && success;
   }
   return success;
+}
+
+absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
+  @autoreleasepool {
+    NSArray* library_paths = NSSearchPathForDirectoriesInDomains(
+        NSLibraryDirectory,
+        IsSystemInstall(scope) ? NSLocalDomainMask : NSUserDomainMask, YES);
+    if ([library_paths count] < 1) {
+      return absl::nullopt;
+    }
+    return base::mac::NSStringToFilePath(library_paths[0])
+        .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
+        .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
+  }
+}
+
+bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
+  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  if (!path) {
+    VLOG(1) << "Failed to find wake plist path.";
+    return false;
+  }
+  const bool previousPlistExists = base::PathExists(*path);
+  if (!base::CreateDirectory(path->DirName())) {
+    VLOG(1) << "Failed to create " << path->DirName();
+    return false;
+  }
+  @autoreleasepool {
+    NSURL* const url = base::mac::FilePathToNSURL(*path);
+
+    // If the file is unchanged, avoid a spammy notification by not touching it.
+    if (previousPlistExists &&
+        [contents isEqualToDictionary:[NSDictionary
+                                          dictionaryWithContentsOfURL:url]]) {
+      VLOG(2) << "Skipping unnecessary update to " << path;
+      return true;
+    }
+
+    // Save a backup of the previous plist.
+    base::ScopedTempDir backup_dir;
+    if (previousPlistExists &&
+        (!backup_dir.CreateUniqueTempDir() ||
+         !base::CopyFile(*path, backup_dir.GetPath().Append("backup_plist")))) {
+      VLOG(1) << "Failed to back up previous plist.";
+      return false;
+    }
+
+    // Bootout the old plist.
+    {
+      std::string output;
+      int exit_code = 0;
+      base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
+      launchctl.AppendArg("bootout");
+      launchctl.AppendArg(GetDomain(scope));
+      launchctl.AppendArgPath(*path);
+      if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code)) {
+        VLOG(1) << "Failed to launch launchctl.";
+      } else if (exit_code != 0) {
+        // This is expected in cases where there the service doesn't exist.
+        // Unfortunately, in the user case, bootout returns 5 both for does-not-
+        // exist errors and other errors.
+        VLOG(2) << "launchctl bootout exited: " << exit_code
+                << ", stdout: " << output;
+      }
+    }
+
+    // Overwrite the plist.
+    if (![contents writeToURL:url atomically:YES]) {
+      VLOG(1) << "Failed to write " << url;
+      return false;
+    }
+
+    // Bootstrap the new plist.
+    if (!BootstrapPlist(scope, *path)) {
+      // The plist has already been replaced! If launchctl doesn't like it,
+      // this installation is now broken. Try to recover by restoring and
+      // bootstrapping the backup.
+      if (previousPlistExists &&
+          (!base::Move(backup_dir.GetPath().Append("backup_plist"), *path) ||
+           !BootstrapPlist(scope, *path))) {
+        VLOG(1) << "Failed to restore backup plist.";
+      }
+      return false;
+    }
+    return true;
+  }
 }
 
 }  // namespace updater

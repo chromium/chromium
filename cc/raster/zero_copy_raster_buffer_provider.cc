@@ -103,7 +103,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       backing_->mailbox = sii->CreateSharedImage(
           gpu_memory_buffer_.get(), gpu_memory_buffer_manager_,
           resource_color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage);
+          usage, "ZeroCopyRasterTile");
     } else {
       sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
     }

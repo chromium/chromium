@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
@@ -23,9 +22,9 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
@@ -35,7 +34,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +44,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
@@ -59,7 +56,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -76,6 +72,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
@@ -109,36 +106,24 @@ public class ReadingListTest {
     // Constant but can only be initialized after parameterized test runner setup because this would
     // trigger native load / CommandLineFlag setup.
     private GURL mTestUrlA;
-    private GURL mTestPage;
-    private GURL mTestPageFoo;
     private EmbeddedTestServer mTestServer;
     private @Nullable BookmarkActivity mBookmarkActivity;
-    @Mock
-    private SyncService mSyncService;
-    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
-
-            // Emulate sync disabled so promos are shown.
-            when(mSyncService.isSyncRequested()).thenReturn(false);
-            SyncService.overrideForTests(mSyncService);
         });
         // Use a custom port so the links are consistent for render tests.
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
         mTestServer = mActivityTestRule.getTestServer();
         mTestUrlA = new GURL("http://a.com");
-        mTestPage = new GURL(mTestServer.getURL(TEST_PAGE_URL_GOOGLE));
-        mTestPageFoo = new GURL(mTestServer.getURL(TEST_PAGE_URL_FOO));
     }
 
     @After
     public void tearDown() throws Exception {
         if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
-        if (mActionTester != null) mActionTester.tearDown();
     }
 
     private void openBookmarkManager() throws InterruptedException {
@@ -166,7 +151,7 @@ public class ReadingListTest {
         }
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false));
+                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
@@ -457,8 +442,6 @@ public class ReadingListTest {
         openReadingList();
 
         // Select a reading list item. Verify the toolbar menu buttons being shown.
-        BookmarkRow bookmarkRow =
-                (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         onView(withText(TEST_PAGE_TITLE_GOOGLE)).perform(longClick());
 
         BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();

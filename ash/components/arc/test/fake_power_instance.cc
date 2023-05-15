@@ -58,4 +58,9 @@ void FakePowerInstance::OnCpuRestrictionChanged(
   ++cpu_restriction_state_count_;
 }
 
+void FakePowerInstance::OnBatterySaverModeStateChanged(
+    mojom::BatterySaverModeStatePtr state) {
+  ++battery_saver_mode_state_count_;
+}
+
 }  // namespace arc

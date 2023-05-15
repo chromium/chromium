@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,6 +36,7 @@ struct AddressLineParsingTestCase {
   std::string house_number;
   std::string floor;
   std::string apartment;
+  std::string landmark;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -45,6 +47,7 @@ std::ostream& operator<<(std::ostream& out,
   out << "House number: " << test_case.house_number << std::endl;
   out << "Floor: " << test_case.floor << std::endl;
   out << "Apartment: " << test_case.apartment << std::endl;
+  out << "Landmark: " << test_case.apartment << std::endl;
   return out;
 }
 
@@ -98,6 +101,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_APT_NUM,
        .value = test_case.apartment,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = test_case.landmark,
        .status = VerificationStatus::kObserved}};
 
   SetTestValues(&address, test_value);
@@ -122,6 +128,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_FLOOR,
        .value = test_case.floor,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = test_case.landmark,
        .status = VerificationStatus::kObserved}};
   VerifyTestValues(&address, expectation);
 }
@@ -226,7 +235,7 @@ TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
        .house_number = "1600",
        .floor = "6",
        .apartment = "12"},
-      {.street_address = "1600 Amphitheatre Parkway\nSome UnparseableText",
+      {.street_address = "1600 Amphitheatre Parkway\nSome UnparsableText",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600"},
       {.street_address = "Av. Paulista, 1098\n1º andar, apto. 101",
@@ -272,19 +281,22 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
-       .apartment = "14"},
+       .apartment = "14",
+       .landmark = "Red tree"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - 14",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "",
-       .apartment = "14"},
+       .apartment = "14",
+       .landmark = "Old house"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - Piso 13",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
-       .apartment = ""},
+       .apartment = "",
+       .landmark = "Pine in the corner"},
       // Examples for Spain.
       {.country_code = "ES",
        .street_address = "Street Name 1, 3ª",
@@ -431,13 +443,16 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
+       .status = VerificationStatus::kNoStatus},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
        .status = VerificationStatus::kNoStatus}};
 
   SetTestValues(&address, test_values, /*finalize=*/false);
 
   // Invoke the migration. This should only change the verification statuses of
   // the set values.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/false);
+  address.MigrateLegacyStructure();
 
   AddressComponentTestValues expectation_after_migration = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -448,6 +463,9 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
        .value = "",
@@ -472,8 +490,11 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
        .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
+       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
-       .value = "123 Street name CA US",
+       .value = "123 Street name CA US Red tree",
        .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_CITY,
        .value = "",
@@ -487,47 +508,6 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
   };
 
   VerifyTestValues(&address, expectation_after_completion);
-}
-
-// Tests the migration of a structured address in a verified profile.
-TEST(AutofillStructuredAddress, TestMigrationOfVerifiedProfile) {
-  AddressNode address;
-  AddressComponentTestValues test_values = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "123 Street name",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_STATE,
-       .value = "CA",
-       .status = VerificationStatus::kNoStatus}};
-
-  SetTestValues(&address, test_values, /*finalize=*/false);
-
-  // Invoke the migration. All non-empty fields should be marked as
-  // user-verified.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/true);
-
-  AddressComponentTestValues expectation_after_migration = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "123 Street name",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_STATE,
-       .value = "CA",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_ADDRESS,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_CITY,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
-  };
-
-  VerifyTestValues(&address, expectation_after_migration);
 }
 
 // Tests that the migration does not happen of the root node
@@ -552,7 +532,7 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
 
   // Invoke the migration. Since the ADDRESS_HOME_ADDRESS node already has a
   // verification status, the address is considered as already migrated.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/false);
+  address.MigrateLegacyStructure();
 
   // Verify that the address was not changed by the migration.
   VerifyTestValues(&address, test_values);
@@ -618,29 +598,53 @@ TEST(AutofillStructuredAddress,
   VerifyTestValues(&address, address_with_wiped_structure);
 }
 
-// Test that the correct country for merging structured addresses is computed.
-TEST(AutofillStructuredAddress, TestGetCommonCountryForMerge) {
+// Test that the correct common country between structured addresses is
+// computed.
+TEST(AutofillStructuredAddress, TestGetCommonCountry) {
   CountryCodeNode country1(nullptr);
   CountryCodeNode country2(nullptr);
 
   // No countries set.
-  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
-  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
+  EXPECT_EQ(country1.GetCommonCountry(country2), u"");
+  EXPECT_EQ(country2.GetCommonCountry(country1), u"");
 
   // If exactly one country is set, use it as their common one.
   country1.SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"AT");
-  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"AT");
+  EXPECT_EQ(country1.GetCommonCountry(country2), u"AT");
+  EXPECT_EQ(country2.GetCommonCountry(country1), u"AT");
 
   // If both are set to the same value, use it as their common one.
   country2.SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"AT");
-  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"AT");
+  EXPECT_EQ(country1.GetCommonCountry(country2), u"AT");
+  EXPECT_EQ(country2.GetCommonCountry(country1), u"AT");
 
   // If both have a different value, there is no common one.
   country2.SetValue(u"DE", VerificationStatus::kObserved);
-  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
-  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
+  EXPECT_EQ(country1.GetCommonCountry(country2), u"");
+  EXPECT_EQ(country2.GetCommonCountry(country1), u"");
+}
+
+// Tests retrieving a value for comparison for a field type.
+TEST(AutofillStructuredAddress, TestGetValueForComparisonForType) {
+  CountryCodeNode country_code(nullptr);
+  country_code.SetValue(u"US", VerificationStatus::kObserved);
+  StreetAddressNode street_address(&country_code);
+  EXPECT_TRUE(street_address.SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
+                                             u"Main Street\nOther Street",
+                                             VerificationStatus::kObserved));
+  EXPECT_EQ(street_address.GetValueForComparisonForType(
+                ADDRESS_HOME_STREET_ADDRESS, street_address),
+            u"main st other st");
+  EXPECT_EQ(street_address.GetValueForComparisonForType(ADDRESS_HOME_LINE1,
+                                                        street_address),
+            u"main st");
+  EXPECT_EQ(street_address.GetValueForComparisonForType(ADDRESS_HOME_LINE2,
+                                                        street_address),
+            u"other st");
+  EXPECT_TRUE(
+      street_address
+          .GetValueForComparisonForType(ADDRESS_HOME_LINE3, street_address)
+          .empty());
 }
 
 struct HasNewerStreetAddressPrecedenceInMergingTestCase {

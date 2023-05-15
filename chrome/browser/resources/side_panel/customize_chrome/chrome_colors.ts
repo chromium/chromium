@@ -1,12 +1,16 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './color.js';
 
+import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -20,12 +24,12 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface ChromeColorsElement {
   $: {
-    backButton: HTMLElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
     defaultColor: ColorElement,
     customColor: ColorElement,
     customColorContainer: HTMLElement,
+    heading: SpHeading,
   };
 }
 
@@ -109,7 +113,7 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   focusOnBackButton() {
-    this.$.backButton.focus();
+    this.$.heading.getBackButton().focus();
   }
 
   private computeIsDefaultColorSelected_(): boolean {

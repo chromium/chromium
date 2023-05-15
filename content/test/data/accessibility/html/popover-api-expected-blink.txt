@@ -31,6 +31,18 @@ rootWebArea
 ++++++++inlineTextBox name='Email input pointing to hidden manual '
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible name='Manual'
+++++++button name='Button pointing to hint popover'
+++++++++staticText name='Button pointing to hint popover'
+++++++++++inlineTextBox name='Button pointing to hint popover'
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='Popover=hint'
+++++++button name='Button pointing to "rich" hint popover'
+++++++++staticText name='Button pointing to "rich" hint popover'
+++++++++++inlineTextBox name='Button pointing to "rich" hint popover'
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='Popover=hint '
+++++++++link ignored invisible
+++++++++++staticText ignored invisible name='Link'
 ++++++button name='Button pointing to non-popover'
 ++++++++staticText name='Button pointing to non-popover'
 ++++++++++inlineTextBox name='Button pointing to non-popover'
@@ -90,3 +102,9 @@ rootWebArea
 ++++++group ispopup=manual
 ++++++++staticText name='Manual (showing)'
 ++++++++++inlineTextBox name='Manual (showing)'
+++++++group ispopup=manual
+++++++++staticText name='Popover=hint (showing) '
+++++++++++inlineTextBox name='Popover=hint (showing) '
+++++++++link name='Link'
+++++++++++staticText name='Link'
+++++++++++++inlineTextBox name='Link'

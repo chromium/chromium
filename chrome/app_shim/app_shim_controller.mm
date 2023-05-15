@@ -9,12 +9,12 @@
 
 #include <utility>
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
@@ -215,7 +215,7 @@ bool AppShimController::FindOrLaunchChrome() {
   }
 
   // Otherwise, launch Chrome.
-  base::FilePath chrome_bundle_path = base::mac::OuterBundlePath();
+  base::FilePath chrome_bundle_path = base::apple::OuterBundlePath();
   LOG(INFO) << "Launching " << chrome_bundle_path.value();
   base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
   browser_command_line.AppendSwitchPath(switches::kUserDataDir,
@@ -235,14 +235,14 @@ bool AppShimController::FindOrLaunchChrome() {
       chrome_bundle_path, browser_command_line, /*url_specs=*/{},
       {.create_new_instance = true},
       base::BindOnce(
-          [](AppShimController* shim_controller,
-             base::expected<NSRunningApplication*, NSError*> result) {
-            if (!result.has_value()) {
+          [](AppShimController* shim_controller, NSRunningApplication* app,
+             NSError* error) {
+            if (error) {
               LOG(FATAL) << "Failed to launch Chrome.";
             }
 
             shim_controller->chrome_launched_by_app_.reset(
-                result.value(), base::scoped_policy::RETAIN);
+                app, base::scoped_policy::RETAIN);
 
             // Start polling to see if Chrome is ready to connect.
             shim_controller->PollForChromeReady(kPollTimeoutSeconds);
@@ -280,7 +280,7 @@ AppShimController::FindChromeFromSingletonLock(
 
   // Check the process' bundle id. As above, the specified pid could have been
   // reused by some other process.
-  NSString* expected_bundle_id = [base::mac::OuterBundle() bundleIdentifier];
+  NSString* expected_bundle_id = [base::apple::OuterBundle() bundleIdentifier];
   NSString* lock_bundle_id = [process_from_lock bundleIdentifier];
   if (![expected_bundle_id isEqualToString:lock_bundle_id]) {
     LOG(WARNING) << "Singleton lock pid " << pid
@@ -509,17 +509,17 @@ void AppShimController::CreateRenderWidgetHostNSView(
     mojo::ScopedInterfaceEndpointHandle host_handle,
     mojo::ScopedInterfaceEndpointHandle view_request_handle) {
   remote_cocoa::RenderWidgetHostViewMacDelegateCallback
-      responder_delegate_creation_callback = base::BindOnce(
-          &AppShimController::CreateRenderWidgetHostViewDelegate, view_id);
+      responder_delegate_creation_callback =
+          base::BindOnce(&AppShimController::GetDelegateForHost, view_id);
   remote_cocoa::CreateRenderWidgetHostNSView(
       view_id, std::move(host_handle), std::move(view_request_handle),
       std::move(responder_delegate_creation_callback));
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*
-AppShimController::CreateRenderWidgetHostViewDelegate(uint64_t view_id) {
-  return [[AppShimRenderWidgetHostViewMacDelegate alloc]
-      initWithRenderWidgetHostNSViewID:view_id];
+AppShimController::GetDelegateForHost(uint64_t view_id) {
+  return [[[AppShimRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHostNSViewID:view_id] autorelease];
 }
 
 void AppShimController::CreateCommandDispatcherForWidget(uint64_t widget_id) {

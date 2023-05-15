@@ -7,4 +7,5 @@ history_clusters_test_files = [
   "modules/history_clusters/suggest_tile_test.ts",
   "modules/history_clusters/test_support.ts",
   "modules/history_clusters/tile_test.ts",
+  "modules/history_clusters/cart/cart_tile_test.ts",
 ]

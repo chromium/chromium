@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/protocol/vault.pb.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
@@ -31,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -59,9 +59,9 @@ std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   return SecureBoxKeyPair::CreateByPrivateKeyImport(private_key_bytes);
 }
 
-sync_pb::SecurityDomain MakeSecurityDomainWithDegradedRecoverability(
+trusted_vault_pb::SecurityDomain MakeSecurityDomainWithDegradedRecoverability(
     bool recoverability_degraded) {
-  sync_pb::SecurityDomain security_domain;
+  trusted_vault_pb::SecurityDomain security_domain;
   security_domain.set_name(kSyncSecurityDomainName);
   security_domain.mutable_security_domain_details()
       ->mutable_sync_details()
@@ -69,10 +69,11 @@ sync_pb::SecurityDomain MakeSecurityDomainWithDegradedRecoverability(
   return security_domain;
 }
 
-sync_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
+trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
     int current_epoch) {
-  sync_pb::JoinSecurityDomainsResponse response;
-  sync_pb::SecurityDomain* security_domain = response.mutable_security_domain();
+  trusted_vault_pb::JoinSecurityDomainsResponse response;
+  trusted_vault_pb::SecurityDomain* security_domain =
+      response.mutable_security_domain();
   security_domain->set_name(kSyncSecurityDomainName);
   security_domain->set_current_epoch(current_epoch);
   return response;
@@ -221,7 +222,7 @@ TEST_F(TrustedVaultConnectionImplTest,
   EXPECT_THAT(resource_request.url,
               Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
 
-  sync_pb::JoinSecurityDomainsRequest deserialized_body;
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.security_domain().name(),
@@ -236,17 +237,18 @@ TEST_F(TrustedVaultConnectionImplTest,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_public_key);
 
-  const sync_pb::SecurityDomainMember& member =
+  const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_body.security_domain_member();
   EXPECT_THAT(member.name(),
               Eq(kSecurityDomainMemberNamePrefix + encoded_public_key));
   EXPECT_THAT(member.public_key(), Eq(public_key_string));
-  EXPECT_THAT(member.member_type(),
-              Eq(sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
+  EXPECT_THAT(
+      member.member_type(),
+      Eq(trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
 
   // Constant key with |epoch| set to kUnknownConstantKeyVersion must be sent.
   ASSERT_THAT(deserialized_body.shared_member_key(), SizeIs(1));
-  const sync_pb::SharedMemberKey& shared_key =
+  const trusted_vault_pb::SharedMemberKey& shared_key =
       deserialized_body.shared_member_key(0);
   EXPECT_THAT(shared_key.epoch(), Eq(0));
 
@@ -284,7 +286,7 @@ TEST_F(TrustedVaultConnectionImplTest,
   EXPECT_THAT(resource_request.url,
               Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
 
-  sync_pb::JoinSecurityDomainsRequest deserialized_body;
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.security_domain().name(),
@@ -299,17 +301,18 @@ TEST_F(TrustedVaultConnectionImplTest,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_public_key);
 
-  const sync_pb::SecurityDomainMember& member =
+  const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_body.security_domain_member();
   EXPECT_THAT(member.name(),
               Eq(kSecurityDomainMemberNamePrefix + encoded_public_key));
   EXPECT_THAT(member.public_key(), Eq(public_key_string));
-  EXPECT_THAT(member.member_type(),
-              Eq(sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
+  EXPECT_THAT(
+      member.member_type(),
+      Eq(trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
 
   ASSERT_THAT(deserialized_body.shared_member_key(),
               SizeIs(kTrustedVaultKeys.size()));
-  const sync_pb::SharedMemberKey& shared_key_1 =
+  const trusted_vault_pb::SharedMemberKey& shared_key_1 =
       deserialized_body.shared_member_key(0);
   EXPECT_THAT(shared_key_1.epoch(), Eq(kLastKeyVersion - 1));
 
@@ -321,7 +324,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       VerifyMemberProof(key_pair->public_key(), kTrustedVaultKeys[0],
                         ProtoStringToBytes(shared_key_1.member_proof())));
 
-  const sync_pb::SharedMemberKey& shared_key_2 =
+  const trusted_vault_pb::SharedMemberKey& shared_key_2 =
       deserialized_body.shared_member_key(1);
   EXPECT_THAT(shared_key_2.epoch(), Eq(kLastKeyVersion));
 
@@ -357,7 +360,7 @@ TEST_F(TrustedVaultConnectionImplTest,
   EXPECT_THAT(resource_request.url,
               Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
 
-  sync_pb::JoinSecurityDomainsRequest deserialized_body;
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
   ASSERT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.member_type_hint(), Eq(kTypeHint));
@@ -431,13 +434,13 @@ TEST_F(TrustedVaultConnectionImplTest,
                   TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
                                               kServerConstantKeyVersion)));
 
-  sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+  trusted_vault_pb::JoinSecurityDomainsErrorDetail error_detail;
   *error_detail.mutable_already_exists_response() =
       MakeJoinSecurityDomainsResponse(
           /*current_epoch=*/kServerConstantKeyVersion);
 
-  sync_pb::RPCStatus response;
-  sync_pb::Proto3Any* status_detail = response.add_details();
+  trusted_vault_pb::RPCStatus response;
+  trusted_vault_pb::Proto3Any* status_detail = response.add_details();
   status_detail->set_type_url(kJoinSecurityDomainsErrorDetailTypeURL);
   status_detail->set_value(error_detail.SerializeAsString());
 
@@ -826,7 +829,8 @@ TEST_F(TrustedVaultConnectionImplTest,
   // Respond with empty proto.
   EXPECT_TRUE(RespondToGetSecurityDomainRequest(
       net::HTTP_OK,
-      /*response_body=*/sync_pb::SecurityDomain().SerializeAsString()));
+      /*response_body=*/trusted_vault_pb::SecurityDomain()
+          .SerializeAsString()));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
@@ -852,4 +856,4 @@ TEST_F(TrustedVaultConnectionImplTest,
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace trusted_vault

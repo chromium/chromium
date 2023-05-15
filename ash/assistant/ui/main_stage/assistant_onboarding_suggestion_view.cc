@@ -8,7 +8,6 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/util/resource_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,12 +70,9 @@ SkColor GetBackgroundColor(int index) {
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(std::size(kBackgroundColors)));
 
-  if (features::IsDarkLightModeEnabled()) {
-    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-               ? kBackgroundColors[index].dark
-               : kBackgroundColors[index].light;
-  }
-  return kBackgroundColors[index].flag_off;
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? kBackgroundColors[index].dark
+             : kBackgroundColors[index].light;
 }
 
 SkColor GetForegroundColor(int index) {
@@ -93,12 +89,9 @@ SkColor GetForegroundColor(int index) {
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(std::size(kForegroundColors)));
 
-  if (features::IsDarkLightModeEnabled()) {
-    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-               ? kForegroundColors[index].dark
-               : kForegroundColors[index].light;
-  }
-  return kForegroundColors[index].flag_off;
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? kForegroundColors[index].dark
+             : kForegroundColors[index].light;
 }
 
 }  // namespace

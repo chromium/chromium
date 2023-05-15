@@ -11,10 +11,14 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 
 namespace gfx {
 class Rect;
@@ -46,9 +50,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
   // Tells the system IME the surrounding text around the cursor location.
-  virtual void SetSurroundingText(const std::u16string& text,
-                                  const gfx::Range& text_range,
-                                  const gfx::Range& selection_range) = 0;
+  virtual void SetSurroundingText(
+      const std::u16string& text,
+      const gfx::Range& text_range,
+      const gfx::Range& selection_range,
+      const absl::optional<ui::GrammarFragment>& fragment,
+      const absl::optional<AutocorrectInfo>& autocorrect) = 0;
 
   // Tells the system IME the content type of the text input client is changed.
   virtual void SetContentType(TextInputType type,
@@ -56,15 +63,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
                               uint32_t flags,
                               bool should_do_learning,
                               bool can_compose_inline) = 0;
-
-  // Sets grammar fragment at the cursor position. If not exists, sends a
-  // fragment with empty range.
-  virtual void SetGrammarFragmentAtCursor(
-      const ui::GrammarFragment& fragment) = 0;
-
-  // Tells Ash about the current autocorrect information.
-  virtual void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                                  const gfx::Rect& autocorrect_bounds) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().

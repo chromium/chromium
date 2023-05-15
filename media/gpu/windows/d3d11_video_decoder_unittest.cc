@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -240,7 +241,9 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   raw_ptr<D3D11VideoDecoder> d3d11_decoder_raw_ = nullptr;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-  MockD3D11VideoDecoderImpl* impl_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION MockD3D11VideoDecoderImpl* impl_ = nullptr;
 
   Microsoft::WRL::ComPtr<D3D11DeviceMock> mock_d3d11_device_;
   Microsoft::WRL::ComPtr<D3D11DeviceContextMock> mock_d3d11_device_context_;

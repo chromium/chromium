@@ -54,7 +54,8 @@ ShortcutInfo::~ShortcutInfo() = default;
 std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
     const GURL& manifest_url,
     const blink::mojom::Manifest& manifest,
-    const GURL& primary_icon_url) {
+    const GURL& primary_icon_url,
+    bool primary_icon_maskable) {
   if (blink::IsEmptyManifest(manifest)) {
     return nullptr;
   }
@@ -63,6 +64,7 @@ std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
   shortcut_info->UpdateFromManifest(manifest);
   shortcut_info->manifest_url = manifest_url;
   shortcut_info->best_primary_icon_url = primary_icon_url;
+  shortcut_info->is_primary_icon_maskable = primary_icon_maskable;
   shortcut_info->UpdateBestSplashIcon(manifest);
   return shortcut_info;
 }

@@ -501,15 +501,9 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       ThreadPriorityForTest::kDisplay);
-#if BUILDFLAG(IS_WIN)
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      MessagePumpType::UI,
-                                      ThreadPriorityForTest::kNormal);
-#else
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       MessagePumpType::UI,
                                       ThreadPriorityForTest::kDisplay);
-#endif  // BUILDFLAG(IS_WIN)
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       MessagePumpType::IO,
                                       ThreadPriorityForTest::kDisplay);

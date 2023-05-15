@@ -99,6 +99,11 @@ TestAmbientClient::GetURLLoaderFactory() {
   return url_loader_factory_;
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+TestAmbientClient::GetSigninURLLoaderFactory() {
+  return url_loader_factory_;
+}
+
 void TestAmbientClient::RequestWakeLockProvider(
     mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) {
   wake_lock_provider_->BindReceiver(std::move(receiver));

@@ -33,7 +33,7 @@ ManagedSessionService::ManagedSessionService(base::Clock* clock)
   SetLoginStatus();
   if (session_manager_) {
     // To alleviate tight coupling in unit tests to DeviceStatusCollector.
-    session_manager_observation_.Observe(session_manager_);
+    session_manager_observation_.Observe(session_manager_.get());
     is_session_locked_ = session_manager_->IsScreenLocked();
   }
   if (user_manager::UserManager::IsInitialized()) {

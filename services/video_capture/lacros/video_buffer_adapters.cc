@@ -89,7 +89,6 @@ media::mojom::VideoFrameInfoPtr ConvertToMediaVideoFrameInfo(
   video_capture_buffer_info->pixel_format = buffer_info->pixel_format;
   video_capture_buffer_info->coded_size = buffer_info->coded_size;
   video_capture_buffer_info->visible_rect = buffer_info->visible_rect;
-  video_capture_buffer_info->color_space.emplace();
 
   media::VideoFrameMetadata media_frame_metadata;
   switch (buffer_info->rotation) {

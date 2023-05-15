@@ -45,10 +45,6 @@ struct NET_EXPORT HttpRequestInfo {
 
   // This key is used to isolate requests from different contexts in accessing
   // shared network resources.
-
-  // TODO @brgoldstein: populate this field from the
-  // NetworkContext::PreconnectSockets path. And the HTTPCacheLookupManager
-  // path.
   NetworkAnonymizationKey network_anonymization_key;
 
   // True if it is a subframe's document resource.

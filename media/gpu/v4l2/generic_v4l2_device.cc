@@ -29,6 +29,7 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/egl_util.h"
@@ -312,8 +313,8 @@ std::vector<uint32_t> GenericV4L2Device::GetSupportedImageProcessorPixelformats(
       continue;
     }
 
-    std::vector<uint32_t> pixelformats =
-        EnumerateSupportedPixelformats(buf_type);
+    const auto pixelformats = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
 
     supported_pixelformats.insert(supported_pixelformats.end(),
                                   pixelformats.begin(), pixelformats.end());
@@ -324,8 +325,8 @@ std::vector<uint32_t> GenericV4L2Device::GetSupportedImageProcessorPixelformats(
 }
 
 VideoDecodeAccelerator::SupportedProfiles
-GenericV4L2Device::GetSupportedDecodeProfiles(const size_t num_formats,
-                                              const uint32_t pixelformats[]) {
+GenericV4L2Device::GetSupportedDecodeProfiles(
+    const std::vector<uint32_t>& pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles supported_profiles;
 
   Type type = Type::kDecoder;
@@ -336,8 +337,7 @@ GenericV4L2Device::GetSupportedDecodeProfiles(const size_t num_formats,
       continue;
     }
 
-    const auto& profiles =
-        EnumerateSupportedDecodeProfiles(num_formats, pixelformats);
+    const auto& profiles = EnumerateSupportedDecodeProfiles(pixelformats);
     supported_profiles.insert(supported_profiles.end(), profiles.begin(),
                               profiles.end());
     CloseDevice();
@@ -470,9 +470,9 @@ void GenericV4L2Device::EnumerateDevicesForType(Type type) {
   for (const auto& path : candidate_paths) {
     if (!OpenDevicePath(path, type))
       continue;
+    const auto supported_pixelformats = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
 
-    const auto& supported_pixelformats =
-        EnumerateSupportedPixelformats(buf_type);
     if (!supported_pixelformats.empty()) {
       DVLOGF(3) << "Found device: " << path;
       devices.push_back(std::make_pair(path, supported_pixelformats));

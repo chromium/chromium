@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Pendekode gambar</translation>
 <translation id="1785415724048343560">Direkomendasikan untuk mendapatkan pengalaman terbaik</translation>
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Dari <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Situs terkait dapat melihat aktivitas Anda di grup</translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Akhiri</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda</translation>
 <translation id="3165022941318558018">Izinkan situs menggunakan cookie pihak ketiga</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data tersimpan</translation>
-<translation id="3203366800380907218">Dari web</translation>
 <translation id="321187648315454507">Untuk mengizinkan <ph name="APP_NAME" /> mengirimkan notifikasi, aktifkan juga notifikasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Situs ini menentukan minat yang dapat digunakan oleh situs lain untuk menampilkan iklan kepada Anda. Situs ini juga mendapatkan minat Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Nonaktifkan suara situs yang memutar suara</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3628308229821498208">Penelusuran yang disarankan</translation>
+<translation id="3707034683772193706">Situs yang Anda buka dapat menyimpan info dalam jumlah kecil dengan Chrome, terutama untuk memvalidasi bahwa Anda bukan bot</translation>
 <translation id="3721953990244350188">Tutup dan tampilkan tindakan berikutnya yang tersedia</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
 <translation id="5225463052809312700">Aktifkan kamera</translation>
-<translation id="5229337741799419985">Setelan ini berfungsi tanpa mengidentifikasi Anda atau mengizinkan situs melihat histori penjelajahan Anda</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
-<translation id="6701547804986694515">Situs yang Anda buka dapat menyimpan info dengan Chrome yang memvalidasi bahwa Anda bukan bot. Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="6722828510648505498">Blokir perintah login dari layanan identitas.</translation>
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6749077623962119521">Reset izin?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Anda biasanya memblokir notifikasi. Untuk mengizinkan, ketuk Detail.</translation>
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7383715096023715447">Setelan untuk <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Setelan ini berfungsi tanpa mengidentifikasi Anda atau mengizinkan situs melihat histori penjelajahan Anda, meskipun situs dapat membagikan info dalam jumlah kecil sebagai bagian dari verifikasi</translation>
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7423538860840206698">Diblokir agar tidak membaca papan klip</translation>
 <translation id="7425915948813553151">Tema gelap untuk situs</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Memblokir situs agar tidak mengakses sensor</translation>
 <translation id="8823559166155093873">Blokir cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

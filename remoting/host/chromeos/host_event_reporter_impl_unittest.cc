@@ -5,6 +5,7 @@
 #include "remoting/host/chromeos/host_event_reporter_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
 #include "remoting/protocol/transport.h"
@@ -45,9 +46,9 @@ class HostEventReporterTest : public ::testing::Test {
   HostEventReporterTest()
       : delegate_(new TestHostEventReporterDelegate()),
         monitor_(new HostStatusMonitor()),
-        reporter_(monitor_, base::WrapUnique(delegate_)) {}
+        reporter_(monitor_, base::WrapUnique(delegate_.get())) {}
 
-  TestHostEventReporterDelegate* const delegate_;
+  const raw_ptr<TestHostEventReporterDelegate, ExperimentalAsh> delegate_;
   scoped_refptr<HostStatusMonitor> monitor_;
   HostEventReporterImpl reporter_;
 };

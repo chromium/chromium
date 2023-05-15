@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -109,8 +110,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
       const std::string& guid,
       const absl::optional<std::string>& shill_error) const;
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkConnectionHandler* network_connection_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_ = nullptr;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

@@ -58,10 +58,11 @@ optimize_webui("launch_rollup") {
 }
 
 optimize_webui("receiver_rollup") {
-  host = "media-app"
+  host = "chrome-untrusted://media-app"
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     ":stage_generated",
     ":stage_static",
   ]

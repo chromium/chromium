@@ -57,7 +57,6 @@ from wptrunner import (
     wpttest,
 )
 from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends import conditional
 from wptrunner.wptmanifest.parser import ParseError
 
 _log = logging.getLogger(__name__)
@@ -170,7 +169,7 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(self._path_finder)
         updater = MetadataUpdater.from_manifests(
             manifests,
-            generate_configs(self._tool),
+            TestConfigurations.generate(self._tool),
             self._tool.filesystem,
             self._explicit_include_patterns(options, args),
             options.exclude,
@@ -339,15 +338,10 @@ class UpdateMetadata(Command):
         the same change. For this reason, avoid aborting or prompting the user
         to continue, which could be too disruptive.
         """
-        tests_present_locally = set()
-        item_types = [
-            item_type for item_type in wptmanifest.item_classes
-            if item_type != 'support'
-        ]
-        for manifest in manifests:
-            tests_present_locally.update(
-                test.id for _, _, tests in manifest.itertypes(*item_types)
-                for test in tests)
+        tests_present_locally = {
+            test.id
+            for manifest in manifests for test in _tests(manifest)
+        }
         tests_absent_locally = tests_from_builders - tests_present_locally
         if tests_absent_locally:
             _log.warning(
@@ -474,46 +468,121 @@ class UpdateMetadata(Command):
         setattr(parser.values, option.dest, reports)
 
 
-def generate_configs(host: Host) -> Dict[metadata.RunInfo, Port]:
-    """Construct run info representing all Chromium test environments.
+class TestConfigurations(collections.abc.Mapping):
+    def __init__(self, fs: FileSystem, configs):
+        self._fs = fs
+        self._finder = path_finder.PathFinder(self._fs)
+        self._configs = configs
+        self._get_dir_manifest = memoized(manifestexpected.get_dir_manifest)
 
-    Each property in a config represents a value that metadata keys can be
-    conditioned on (e.g., 'os').
-    """
-    configs = {}
-    wptrunner_builders = {
-        builder
-        for builder in host.builders.all_builder_names()
-        if host.builders.uses_wptrunner(builder)
-    }
+    def __getitem__(self, config: metadata.RunInfo) -> Port:
+        return self._configs[config]
 
-    for builder in wptrunner_builders:
-        port_name = host.builders.port_name_for_builder_name(builder)
-        _, build_config, *_ = host.builders.specifiers_for_builder(builder)
+    def __len__(self) -> int:
+        return len(self._configs)
 
-        for step in host.builders.step_names_for_builder(builder):
-            flag_specific = host.builders.flag_specific_option(builder, step)
-            port = host.port_factory.get(
-                port_name,
-                optparse.Values({
-                    'configuration': build_config,
-                    'flag_specific': flag_specific,
-                }))
-            product = host.builders.product_for_build_step(builder, step)
-            config = metadata.RunInfo({
-                'product':
-                product,
-                'os':
-                port.operating_system(),
-                'port':
-                port.version(),
-                'debug':
-                port.get_option('configuration') == 'Debug',
-                'flag_specific':
-                flag_specific or '',
-            })
-            configs[config] = port
-    return configs
+    def __iter__(self) -> Iterator[metadata.RunInfo]:
+        return iter(self._configs)
+
+    @classmethod
+    def generate(cls, host: Host) -> 'TestConfigurations':
+        """Construct run info representing all Chromium test environments.
+
+        Each property in a config represents a value that metadata keys can be
+        conditioned on (e.g., 'os').
+        """
+        configs = {}
+        wptrunner_builders = {
+            builder
+            for builder in host.builders.all_builder_names()
+            if host.builders.uses_wptrunner(builder)
+        }
+
+        for builder in wptrunner_builders:
+            port_name = host.builders.port_name_for_builder_name(builder)
+            _, build_config, *_ = host.builders.specifiers_for_builder(builder)
+
+            for step in host.builders.step_names_for_builder(builder):
+                flag_specific = host.builders.flag_specific_option(
+                    builder, step)
+                port = host.port_factory.get(
+                    port_name,
+                    optparse.Values({
+                        'configuration': build_config,
+                        'flag_specific': flag_specific,
+                    }))
+                product = host.builders.product_for_build_step(builder, step)
+                debug = port.get_option('configuration') == 'Debug'
+                config = metadata.RunInfo({
+                    'product': product,
+                    'os': port.operating_system(),
+                    'port': port.version(),
+                    'debug': debug,
+                    'flag_specific': flag_specific or '',
+                })
+                configs[config] = port
+        return cls(host.filesystem, configs)
+
+    def enabled_configs(self, test: manifestupdate.TestNode,
+                        metadata_root: str) -> Set[metadata.RunInfo]:
+        """Find configurations where the given test is enabled.
+
+        This method also checks parent `__dir__.ini` to give a definitive
+        answer.
+
+        Arguments:
+            test: Test node holding expectations in conditional form.
+            test_path: Path to the test file (relative to the test root).
+            metadata_root: Absolute path to where the `.ini` files are stored.
+        """
+        return {
+            config
+            for config in self._configs
+            if not self._config_disabled(config, test, metadata_root)
+        }
+
+    def _config_disabled(
+        self,
+        config: metadata.RunInfo,
+        test: manifestupdate.TestNode,
+        metadata_root: str,
+    ) -> bool:
+        with contextlib.suppress(KeyError):
+            port = self._configs[config]
+            if port.default_smoke_test_only():
+                test_id = test.id
+                if test_id.startswith('/'):
+                    test_id = test_id[1:]
+                if (not self._finder.is_wpt_internal_path(test_id)
+                        and not self._finder.is_wpt_path(test_id)):
+                    test_id = self._finder.wpt_prefix() + test_id
+                if port.skipped_due_to_smoke_tests(test_id):
+                    return True
+        with contextlib.suppress(KeyError):
+            return test.get('disabled', config)
+        test_dir = test.parent.test_path
+        while test_dir:
+            test_dir = self._fs.dirname(test_dir)
+            abs_test_dir = self._fs.join(metadata_root, test_dir)
+            disabled = self._directory_disabled(abs_test_dir, config)
+            if disabled is not None:
+                return disabled
+        return False
+
+    def _directory_disabled(self, dir_path: str,
+                            config: metadata.RunInfo) -> Optional[bool]:
+        """Check if a `__dir__.ini` in the given directory disables tests.
+
+        Returns:
+            * True if the directory disables tests.
+            * False if the directory explicitly enables tests.
+            * None if the key is not present (e.g., `__dir__.ini` doesn't
+              exist). We may need to search other `__dir__.ini` to get a
+              conclusive answer.
+        """
+        metadata_path = self._fs.join(dir_path, '__dir__.ini')
+        manifest = self._get_dir_manifest(metadata_path, config)
+        return manifest.disabled if manifest else None
 
 
 class UpdateAbortError(Exception):
@@ -532,8 +601,8 @@ class MetadataUpdater:
     def __init__(
         self,
         test_files: TestFileMap,
-        configs: Dict[metadata.RunInfo, Port],
-        fs: FileSystem,
+        slow_tests: Set[str],
+        configs: TestConfigurations,
         primary_properties: Optional[List[str]] = None,
         dependent_properties: Optional[Mapping[str, str]] = None,
         overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
@@ -543,7 +612,7 @@ class MetadataUpdater:
         dry_run: bool = False,
     ):
         self._configs = configs
-        self._fs = fs
+        self._slow_tests = slow_tests
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
@@ -583,7 +652,7 @@ class MetadataUpdater:
         test_filter = testloader.TestFilter(manifests,
                                             include=include,
                                             exclude=exclude)
-        test_files = {}
+        test_files, slow_tests = {}, set()
         for manifest, paths in manifests.items():
             # Unfortunately, test filtering is tightly coupled to the
             # `testloader.TestLoader` API. Monkey-patching here is the cleanest
@@ -595,9 +664,11 @@ class MetadataUpdater:
                 test_files.update(
                     metadata.create_test_tree(paths['metadata_path'],
                                               manifest))
+                slow_tests.update(test.id for test in _tests(manifest)
+                                  if getattr(test, 'timeout', None) == 'long')
             finally:
                 manifest.itertypes = itertypes
-        return cls(test_files, configs, fs, **options)
+        return cls(test_files, slow_tests, configs, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
@@ -654,19 +725,16 @@ class MetadataUpdater:
         Missing configs are only detected at the test level so that subtests can
         still be pruned.
         """
-        expectations = self._make_initialized_expectations(test_file)
-        for test in expectations.child_map.values():
+        expected = self._make_initialized_expectations(test_file)
+        for test in expected.child_map.values():
             updated_configs = self._updated_configs(test_file, test.id)
             # Nothing to update. This commonly occurs when every port runs
             # expectedly. As an optimization, skip this file's update entirely
             # instead of replaying every result.
             if not updated_configs:
                 continue
-            enabled_configs = {
-                config
-                for config in self._configs
-                if not self._config_disabled(test_file, test, config)
-            }
+            enabled_configs = self._configs.enabled_configs(
+                test, test_file.metadata_path)
             missing_configs = enabled_configs - updated_configs
             for config in missing_configs:
                 self._updater.suite_start({'run_info': config.data})
@@ -715,20 +783,20 @@ class MetadataUpdater:
         # `manifestexpected.ExpectedManifest` because the former is
         # conditionally compiled, meaning keys can be evaluated against
         # different run info without needing to re-read the file.
-        expectations = test_file.expected(
+        expected = test_file.expected(
             (self._primary_properties, self._dependent_properties),
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
         for test_id in test_file.data:
-            test = expectations.get_test(test_id)
+            test = expected.get_test(test_id)
             if not test:
                 test = manifestupdate.TestNode.create(test_id)
-                expectations.append(test)
+                expected.append(test)
             for subtest in test_file.data.get(test_id, []):
                 if subtest != None:
                     # This creates the subtest node if it doesn't exist.
                     test.get_subtest(subtest)
-        return expectations
+        return expected
 
     def _eval_statuses(
             self,
@@ -752,53 +820,6 @@ class MetadataUpdater:
         subtest_data = subtests.get(subtest_id, [])
         return frozenset(run_info for _, run_info, _ in subtest_data)
 
-    def _config_disabled(
-        self,
-        test_file: metadata.TestFileData,
-        test: manifestupdate.TestNode,
-        config: metadata.RunInfo,
-    ) -> bool:
-        """Check if a test is disabled for a given configuration."""
-        with contextlib.suppress(KeyError):
-            port = self._configs[config]
-            if port.default_smoke_test_only():
-                finder = path_finder.PathFinder(self._fs)
-                test_id = test.id
-                if test_id.startswith('/'):
-                    test_id = test_id[1:]
-                if (not finder.is_wpt_internal_path(test_id)
-                        and not finder.is_wpt_path(test_id)):
-                    test_id = finder.wpt_prefix() + test_id
-                if port.skipped_due_to_smoke_tests(test_id):
-                    return True
-        with contextlib.suppress(KeyError):
-            return test.get('disabled', config)
-        test_dir = test_file.test_path
-        while test_dir:
-            test_dir = self._fs.dirname(test_dir)
-            abs_test_dir = self._fs.join(test_file.metadata_path, test_dir)
-            disabled = self._directory_disabled(abs_test_dir, config)
-            if disabled is not None:
-                return disabled
-        return False
-
-    @memoized
-    def _directory_disabled(self, dir_path: str,
-                            config: metadata.RunInfo) -> Optional[bool]:
-        """Check if a `__dir__.ini` in the given directory disables tests.
-
-        Returns:
-            * True if the directory disables tests.
-            * False if the directory explicitly enables tests.
-            * None if the key is not present (e.g., `__dir__.ini` doesn't
-              exist). We may need to search other `__dir__.ini` to get a
-              conclusive answer.
-        """
-        metadata_path = self._fs.join(dir_path, '__dir__.ini')
-        manifest = manifestexpected.get_dir_manifest(metadata_path,
-                                                     config.data)
-        return manifest.disabled if manifest else None
-
     def update(self, test_file: metadata.TestFileData) -> bool:
         """Update and serialize the AST of a metadata file.
 
@@ -817,6 +838,8 @@ class MetadataUpdater:
             #   https://github.com/web-platform-tests/wpt/blob/merge_pr_35624/tools/wptrunner/wptrunner/manifestupdate.py#L422-L436
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
+        if expected:
+            self._disable_slow_timeouts(test_file, expected)
 
         modified = expected and expected.modified
         if modified:
@@ -827,10 +850,39 @@ class MetadataUpdater:
                 metadata.write_new_expected(test_file.metadata_path, expected)
         return modified
 
-    def _add_bug_url(self, expected: conditional.ManifestItem):
-        for test_id_section in expected.iterchildren():
-            if test_id_section.modified:
-                test_id_section.set('bug', 'crbug.com/%d' % self._bug)
+    def _disable_slow_timeouts(
+            self,
+            test_file: metadata.TestFileData,
+            expected: manifestupdate.ExpectedManifest,
+            message: str = 'times out even with extended deadline'):
+        """Disable tests that are simultaneously slow and consistently time out.
+
+        Such tests provide too little value for the large amount of time/compute
+        that they consume.
+        """
+        for test in expected.iterchildren():
+            if test.id not in self._slow_tests:
+                continue
+            results = test_file.data.get(test.id, {}).get(None, [])
+            statuses_by_config = collections.defaultdict(set)
+            for prop, config, value in results:
+                if prop == 'status':
+                    status, known_intermittent = metadata.unpack_result(value)
+                    statuses_by_config[config].add(status)
+                    if known_intermittent:
+                        statuses_by_config[config].update(known_intermittent)
+            # Writing a conditional `disabled` value is complicated, so just
+            # disable the test unconditionally if any configuration times out
+            # consistently.
+            if any(statuses == {'TIMEOUT'}
+                   for statuses in statuses_by_config.values()):
+                test.set('disabled', message)
+                test.modified = True
+
+    def _add_bug_url(self, expected: manifestupdate.ExpectedManifest):
+        for test in expected.iterchildren():
+            if test.modified:
+                test.set('bug', 'crbug.com/%d' % self._bug)
 
 
 def sort_metadata_ast(node: wptnode.DataNode) -> None:
@@ -883,6 +935,17 @@ def load_and_update_manifests(finder: path_finder.PathFinder) -> ManifestMap:
         }
     return testloader.ManifestLoader(test_paths,
                                      force_manifest_update=True).load()
+
+
+def _tests(
+        manifest: wptmanifest.Manifest) -> Iterator[wptmanifest.ManifestItem]:
+    item_types = frozenset(wptmanifest.item_classes) - {
+        'support',
+        'manual',
+        'conformancechecker',
+    }
+    for _, _, tests in manifest.itertypes(*item_types):
+        yield from tests
 
 
 def _default_expected_by_type():

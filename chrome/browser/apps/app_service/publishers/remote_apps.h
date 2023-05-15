@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -91,8 +92,8 @@ class RemoteApps : public AppPublisher {
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  Profile* const profile_;
-  Delegate* const delegate_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 };
 

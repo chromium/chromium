@@ -63,7 +63,12 @@ SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(
       request->frame_tree_node()->frame_tree().root()->current_frame_host();
   NavigationRequest* root_frame_navigation_request =
       root_frame_host->GetSameDocumentNavigationRequest(*main_frame_token);
-  DCHECK(root_frame_navigation_request);
+  // If the main-frame same-document history navigation already completed, the
+  // throttle is no longer necessary. This can happen when `request` is
+  // cross-document and had to wait on a slow beforeunload handler.
+  if (!root_frame_navigation_request) {
+    return nullptr;
+  }
   auto throttle = std::make_unique<SubframeHistoryNavigationThrottle>(request);
   root_frame_navigation_request->AddDeferredSubframeNavigationThrottle(
       throttle->weak_factory_.GetWeakPtr());

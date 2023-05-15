@@ -91,15 +91,9 @@ namespace {
 // Password is considered not generated when user edits it below 4 characters.
 constexpr int kMinimumLengthForEditedPassword = 4;
 
-// The string ' •••' appended to the username in the suggestion.
-NSString* const kSuggestionSuffix = @" ••••••••";
-
-BOOL canProcessCrossOriginIframes() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordManagerCrossOriginIframeSupport);
-}
-
 }  // namespace
+
+NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 @interface SharedPasswordController ()
 
@@ -112,7 +106,7 @@ BOOL canProcessCrossOriginIframes() {
 // Tracks current potential generated password until accepted or rejected.
 @property(nonatomic, copy) NSString* generatedPotentialPassword;
 
-- (BOOL)isIncognito;
+- (BOOL)IsOffTheRecord;
 
 @end
 
@@ -198,9 +192,9 @@ BOOL canProcessCrossOriginIframes() {
   }
 }
 
-- (BOOL)isIncognito {
+- (BOOL)IsOffTheRecord {
   DCHECK(_delegate.passwordManagerClient);
-  return _delegate.passwordManagerClient->IsIncognito();
+  return _delegate.passwordManagerClient->IsOffTheRecord();
 }
 
 #pragma mark - PasswordGenerationProvider
@@ -291,12 +285,6 @@ BOOL canProcessCrossOriginIframes() {
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
                                              inFrame:webFrame];
 
-  if (IsCrossOriginIframe(_webState, webFrame->IsMainFrame(),
-                          webFrame->GetSecurityOrigin()) &&
-      !canProcessCrossOriginIframes()) {
-    return;
-  }
-
   if (_webState->ContentIsHTML()) {
     [self findPasswordFormsAndSendToPasswordStoreForFormChange:false
                                                        inFrame:webFrame];
@@ -312,12 +300,6 @@ BOOL canProcessCrossOriginIframes() {
   }
   web::WebFrame* webFrame = webFramesManager->GetFrameWithId(frameId);
   if (!webFrame || webFrame->IsMainFrame()) {
-    return;
-  }
-
-  if (IsCrossOriginIframe(_webState, webFrame->IsMainFrame(),
-                          webFrame->GetSecurityOrigin()) &&
-      !canProcessCrossOriginIframes()) {
     return;
   }
 
@@ -382,9 +364,7 @@ BOOL canProcessCrossOriginIframes() {
   // previous clicked field in the previous password form. Getting the frame
   // from this previous frame id will result in a null frame pointer, hence
   // the check below.
-  if (!frame || (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
-                                     frame->GetSecurityOrigin()) &&
-                 !canProcessCrossOriginIframes())) {
+  if (!frame) {
     completion(NO);
     return;
   }
@@ -454,9 +434,7 @@ BOOL canProcessCrossOriginIframes() {
       feature->GetWebFramesManager(_webState)->GetFrameWithId(
           SysNSStringToUTF8(formQuery.frameID));
 
-  if (frame == nullptr || (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
-                                               frame->GetSecurityOrigin()) &&
-                           !canProcessCrossOriginIframes())) {
+  if (frame == nullptr) {
     completion({}, self);
     return;
   }
@@ -481,8 +459,8 @@ BOOL canProcessCrossOriginIframes() {
       continue;
     }
     DCHECK(self.delegate.passwordManagerClient);
-    NSString* value =
-        [rawSuggestion.value stringByAppendingString:kSuggestionSuffix];
+    NSString* value = [rawSuggestion.value
+        stringByAppendingString:kPasswordFormSuggestionSuffix];
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value
                          displayDescription:rawSuggestion.displayDescription
@@ -514,7 +492,7 @@ BOOL canProcessCrossOriginIframes() {
   }
 
   if (suggestionState) {
-    LogPasswordDropdownShown(*suggestionState, [self isIncognito]);
+    LogPasswordDropdownShown(*suggestionState, [self IsOffTheRecord]);
   }
 
   if (suggestions.count == 0 || ![_delegate shouldShowAccountStorageNotice]) {
@@ -559,7 +537,7 @@ BOOL canProcessCrossOriginIframes() {
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kShowAll,
-          [self isIncognito]);
+          [self IsOffTheRecord]);
       return;
     }
     case autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY: {
@@ -572,17 +550,18 @@ BOOL canProcessCrossOriginIframes() {
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kGenerate,
-          [self isIncognito]);
+          [self IsOffTheRecord]);
       return;
     }
     default: {
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kPassword,
-          [self isIncognito]);
-      DCHECK([suggestion.value hasSuffix:kSuggestionSuffix]);
+          [self IsOffTheRecord]);
+      DCHECK([suggestion.value hasSuffix:kPasswordFormSuggestionSuffix]);
       NSString* username = [suggestion.value
-          substringToIndex:suggestion.value.length - kSuggestionSuffix.length];
+          substringToIndex:suggestion.value.length -
+                           kPasswordFormSuggestionSuffix.length];
       std::unique_ptr<password_manager::FillData> fillData =
           [self.suggestionHelper passwordFillDataForUsername:username
                                                      inFrame:frame];
@@ -653,11 +632,6 @@ BOOL canProcessCrossOriginIframes() {
   if (frame->IsMainFrame()) {
     _passwordManager->OnPasswordFormSubmitted(driver, form);
   } else {
-    if (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
-                            frame->GetSecurityOrigin()) &&
-        !canProcessCrossOriginIframes()) {
-      return;
-    }
     // Show a save prompt immediately because for iframes it is very hard to
     // figure out correctness of password forms submission.
     _passwordManager->OnSubframeFormSubmission(driver, form);
@@ -947,10 +921,7 @@ BOOL canProcessCrossOriginIframes() {
 
   GURL pageURL;
   if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
-      params.input_missing ||
-      (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
-                           frame->GetSecurityOrigin()) &&
-       !canProcessCrossOriginIframes())) {
+      params.input_missing) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();
     _lastFocusedFrame = nullptr;
@@ -982,11 +953,6 @@ BOOL canProcessCrossOriginIframes() {
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
-  if (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
-                          frame->GetSecurityOrigin()) &&
-      !canProcessCrossOriginIframes()) {
-    return;
-  }
   if (!params.unique_form_id) {
     // If formless password fields were removed, check that all of them had
     // user input.

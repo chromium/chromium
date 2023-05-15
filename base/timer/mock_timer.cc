@@ -43,6 +43,11 @@ void MockOneShotTimer::Fire() {
   FlushPendingTasks(test_task_runner_.get());
 }
 
+void MockOneShotTimer::FireNow() {
+  DCHECK(IsRunning());
+  FlushPendingTasks(test_task_runner_.get());
+}
+
 MockRepeatingTimer::MockRepeatingTimer()
     : RepeatingTimer(&clock_),
       test_task_runner_(MakeRefCounted<TestSimpleTaskRunner>()) {

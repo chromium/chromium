@@ -70,6 +70,7 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
@@ -109,6 +110,7 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
+#include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
@@ -124,6 +126,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/crosapi/mojom/virtual_keyboard.mojom.h"
+#include "chromeos/crosapi/mojom/volume_manager.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
@@ -264,7 +267,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 106,
+static_assert(crosapi::mojom::Crosapi::Version_ == 107,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -277,6 +280,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AudioService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Authentication>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
@@ -304,6 +308,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DocumentScan>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadController>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DownloadStatusUpdater>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EchoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EmojiPicker>(),
@@ -350,6 +355,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::ResourceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SearchControllerRegistry>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SelectFile>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Sharesheet>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SmartReaderClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SpeechRecognition>(),
@@ -365,6 +371,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoConferenceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VirtualKeyboard>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::VolumeManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Wallpaper>(),
@@ -444,20 +451,7 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
 
 InitialBrowserAction::InitialBrowserAction(
     crosapi::mojom::InitialBrowserAction action)
-    : action(action) {
-  // kOpnWindowWIthUrls should take the argument, so the ctor below should be
-  // used.
-  DCHECK_NE(action, crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls);
-}
-
-InitialBrowserAction::InitialBrowserAction(
-    crosapi::mojom::InitialBrowserAction action,
-    std::vector<GURL> urls,
-    crosapi::mojom::OpenUrlFrom from)
-    : action(action), urls(std::move(urls)), from(from) {
-  // Currently, only kOpenWindowWithUrls can take the URLs as its argument.
-  DCHECK_EQ(action, crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls);
-}
+    : action(action) {}
 
 InitialBrowserAction::InitialBrowserAction(InitialBrowserAction&&) = default;
 InitialBrowserAction& InitialBrowserAction::operator=(InitialBrowserAction&&) =
@@ -608,6 +602,15 @@ void InjectBrowserInitParams(
   params->enable_cpu_mappable_native_gpu_memory_buffers =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNativeGpuMemoryBuffers);
+
+  params->oop_video_decoding_enabled = base::FeatureList::IsEnabled(
+      media::kExposeOutOfProcessVideoDecodingToLacros);
+
+  params->is_upload_office_to_cloud_enabled =
+      chromeos::features::IsUploadOfficeToCloudEnabled();
+
+  params->enable_clipboard_history_refresh =
+      chromeos::features::IsClipboardHistoryRefreshEnabled();
 }
 
 template <typename BrowserParams>
@@ -634,12 +637,6 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
       environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 
   params->initial_browser_action = initial_browser_action.action;
-  if (initial_browser_action.action ==
-      crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
-    params->startup_urls = std::move(initial_browser_action.urls);
-    params->startup_urls_from = initial_browser_action.from;
-  }
-
   params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
   params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
 
@@ -762,13 +759,13 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
         for (const auto& entry : *usb_detachable_allow_list) {
           mojom::UsbDeviceIdPtr usb_device_id = mojom::UsbDeviceId::New();
           absl::optional<int> vid =
-              entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid);
+              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyVid);
           if (vid) {
             usb_device_id->has_vendor_id = true;
             usb_device_id->vendor_id = vid.value();
           }
           absl::optional<int> pid =
-              entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid);
+              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyPid);
           if (pid) {
             usb_device_id->has_product_id = true;
             usb_device_id->product_id = pid.value();

@@ -25,7 +25,6 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -43,7 +42,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/about_ui.h"
-#include "chrome/browser/ui/webui/ash/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -59,6 +57,8 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -110,7 +111,6 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/user_image_source.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/test_files_request_filter.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -201,10 +201,6 @@ void AddProjectSimonResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kFirstAnimation, IDR_CROS_OOBE_FIRST_ANIMATION);
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
-  auto product_name =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_CROS_OOBE_PRODUCT_NAME);
-  source->AddString("kProjectSimonProductName", std::string{product_name});
 #endif
 }
 
@@ -289,22 +285,32 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
   source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
+  source->AddBoolean("isOobeGaiaInfoScreenEnabled",
+                     features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
       base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration));
 
   source->AddBoolean("isTouchpadScrollEnabled",
-                     (features::IsOobeChoobeEnabled() &&
-                      features::IsOobeTouchpadScrollEnabled()));
+                     features::IsOobeTouchpadScrollEnabled());
+
+  source->AddBoolean("isDrivePinningEnabled",
+                     features::IsOobeDrivePinningEnabled());
+
   // Whether the timings in oobe_trace.js will be output to the console.
   source->AddBoolean(
       "printFrontendTimings",
       command_line->HasSwitch(switches::kOobePrintFrontendLoadTimings));
 
+  source->AddBoolean("isDisplaySizeEnabled",
+                     features::IsOobeDisplaySizeEnabled());
+
   // Configure shared resources
   AddProductLogoResources(source);
-  AddProjectSimonResources(source);
+  if (ash::features::IsOobeSimonEnabled()) {
+    AddProjectSimonResources(source);
+  }
 
   quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);
@@ -347,6 +353,11 @@ struct DisplayScaleFactor {
 const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
                          kMediumDisplay = {1440, 4.f / 3};
 
+bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  return ash::ProfileHelper::IsSigninProfile(
+      Profile::FromBrowserContext(browser_context));
+}
+
 // static
 const char OobeUI::kAppLaunchSplashDisplay[] = "app-launch-splash";
 const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";
@@ -365,9 +376,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
 
-    if (features::IsOobeQuickStartEnabled()) {
-      AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
-    }
+    AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<NetworkScreenHandler>());
@@ -427,10 +436,12 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<GaiaPasswordChangedScreenHandler>());
 
-  AddScreenHandler(std::make_unique<ActiveDirectoryLoginScreenHandler>());
-
   auto password_change_handler =
       std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>();
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
+  }
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
                                                        error_screen));
@@ -490,9 +501,16 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<ChoobeScreenHandler>());
   }
 
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
+  }
+
+  if (features::IsOobeDisplaySizeEnabled()) {
+    AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
+  }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());
@@ -508,15 +526,9 @@ void OobeUI::ConfigureOobeDisplay() {
       profile,
       std::make_unique<AboutUIHTMLSource>(chrome::kChromeUITermsHost, profile));
 
-  // Set up the chrome://userimage/ source.
-  content::URLDataSource::Add(profile, std::make_unique<UserImageSource>());
-
-  content::WebContents* contents = web_ui()->GetWebContents();
-
   // TabHelper is required for OOBE webui to make webview working on it.
+  content::WebContents* contents = web_ui()->GetWebContents();
   extensions::TabHelper::CreateForWebContents(contents);
-
-  BootTimesRecorderTabHelper::MaybeCreateForWebContents(contents);
 
   if (ShouldUpScaleOobe())
     UpScaleOobe();
@@ -726,9 +738,6 @@ void OobeUI::AddScreenHandler(std::unique_ptr<BaseScreenHandler> handler) {
 }
 
 void OobeUI::InitializeHandlers() {
-  ready_ = true;
-  ready_callbacks_.Notify();
-
   for (BaseWebUIHandler* handler : webui_only_handlers_) {
     CHECK(!handler->IsJavascriptAllowed());
     handler->AllowJavascript();
@@ -738,6 +747,10 @@ void OobeUI::InitializeHandlers() {
     CHECK(!handler->IsJavascriptAllowed());
     handler->AllowJavascript();
   }
+
+  // Notify listeners that JS is allowed and ready.
+  ready_ = true;
+  ready_callbacks_.Notify();
 }
 
 void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {

@@ -690,7 +690,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       gpu_mailbox = sii->CreateSharedImage(
           format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+          kPremul_SkAlphaType, usage, "PepperGraphics2DHost",
+          gpu::kNullSurfaceHandle);
       in_sync_token = sii->GenUnverifiedSyncToken();
     }
 
@@ -725,8 +726,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         base::BindOnce(&ReleaseTextureCallback, this->AsWeakPtr(),
                        main_thread_context_, size, gpu_mailbox);
     *transferable_resource = viz::TransferableResource::MakeGpu(
-        std::move(gpu_mailbox), GL_LINEAR, texture_target,
-        std::move(out_sync_token), size, format, overlays_supported);
+        std::move(gpu_mailbox), texture_target, std::move(out_sync_token), size,
+        format, overlays_supported);
     composited_output_modified_ = false;
     return true;
   }

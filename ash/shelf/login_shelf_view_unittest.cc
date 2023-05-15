@@ -39,6 +39,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -198,7 +199,8 @@ class LoginShelfViewTest : public LoginTestBase {
 
   TestTrayActionClient tray_action_client_;
 
-  LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
+  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_ =
+      nullptr;  // Unowned.
 
   TestLockScreenActionBackgroundController* action_background_controller() {
     return action_background_controller_;
@@ -218,8 +220,8 @@ class LoginShelfViewTest : public LoginTestBase {
 
   // LockScreenActionBackgroundController created by
   // |CreateActionBackgroundController|.
-  TestLockScreenActionBackgroundController* action_background_controller_ =
-      nullptr;
+  raw_ptr<TestLockScreenActionBackgroundController, ExperimentalAsh>
+      action_background_controller_ = nullptr;
 };
 
 // Checks the login shelf updates UI after session state changes.
@@ -627,11 +629,7 @@ TEST_F(LoginShelfViewTest, ClickCancelButton) {
 TEST_F(LoginShelfViewTest, ClickBrowseAsGuestButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
 
-  if (features::IsOobeConsolidatedConsentEnabled())
-    EXPECT_CALL(*client, ShowGuestTosScreen());
-  else
-    EXPECT_CALL(*client, LoginAsGuest());
-
+  EXPECT_CALL(*client, ShowGuestTosScreen());
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   Click(LoginShelfView::kBrowseAsGuest);

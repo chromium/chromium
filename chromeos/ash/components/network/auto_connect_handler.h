@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -135,11 +136,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void CallShillScanAndConnectToBestServices();
 
   // Local references to the associated handler instances.
-  ClientCertResolver* client_cert_resolver_;
-  NetworkConnectionHandler* network_connection_handler_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<ClientCertResolver, ExperimentalAsh> client_cert_resolver_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
-  ManagedNetworkConfigurationHandler* managed_configuration_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_configuration_handler_;
 
   // Whether a request to connect to the best network is pending. If true, once
   // all requirements are met (like policy loaded, certificate patterns being

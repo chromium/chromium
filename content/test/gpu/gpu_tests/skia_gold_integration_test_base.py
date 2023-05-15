@@ -18,10 +18,10 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
-from gpu_tests.skia_gold import gpu_skia_gold_properties as sgp
-from gpu_tests.skia_gold import gpu_skia_gold_session_manager as sgsm
 
+from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session as sgs
+from skia_gold_common import skia_gold_session_manager as sgsm
 
 import gpu_path_util
 
@@ -76,16 +76,16 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._skia_gold_temp_dir = tempfile.mkdtemp()
 
   @classmethod
-  def GetSkiaGoldProperties(cls) -> sgp.GpuSkiaGoldProperties:
+  def GetSkiaGoldProperties(cls) -> sgp.SkiaGoldProperties:
     if not cls._skia_gold_properties:
-      cls._skia_gold_properties = sgp.GpuSkiaGoldProperties(
+      cls._skia_gold_properties = sgp.SkiaGoldProperties(
           cls.GetOriginalFinderOptions())
     return cls._skia_gold_properties
 
   @classmethod
-  def GetSkiaGoldSessionManager(cls) -> sgsm.GpuSkiaGoldSessionManager:
+  def GetSkiaGoldSessionManager(cls) -> sgsm.SkiaGoldSessionManager:
     if not cls._skia_gold_session_manager:
-      cls._skia_gold_session_manager = sgsm.GpuSkiaGoldSessionManager(
+      cls._skia_gold_session_manager = sgsm.SkiaGoldSessionManager(
           cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties())
     return cls._skia_gold_session_manager
 
@@ -380,19 +380,22 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     elif status == status_codes.INIT_FAILURE:
       logging.error('Gold initialization failed with output %s', error)
     elif status == status_codes.COMPARISON_FAILURE_REMOTE:
-      # We currently don't have an internal instance + public mirror like the
-      # general Chrome Gold instance, so just report the "internal" link, which
-      # points to the correct instance.
-      _, triage_link = gold_session.GetTriageLinks(image_name)
-      if not triage_link:
-        logging.error('Failed to get triage link for %s, raw output: %s',
+      public_triage_link, internal_triage_link = gold_session.GetTriageLinks(
+          image_name)
+      if not public_triage_link or not internal_triage_link:
+        logging.error('Failed to get triage links for %s, raw output: %s',
                       image_name, error)
-        logging.error('Reason for no triage link: %s',
+        logging.error('Reason for no triage links: %s',
                       gold_session.GetTriageLinkOmissionReason(image_name))
       elif gold_properties.IsTryjobRun():
-        self.artifacts.CreateLink('triage_link_for_entire_cl', triage_link)
+        self.artifacts.CreateLink('public_triage_link_for_entire_cl',
+                                  public_triage_link)
+        self.artifacts.CreateLink('internal_triage_link_for_entire_cl',
+                                  internal_triage_link)
       else:
-        self.artifacts.CreateLink('gold_triage_link', triage_link)
+        self.artifacts.CreateLink('public_gold_triage_link', public_triage_link)
+        self.artifacts.CreateLink('internal_gold_triage_link',
+                                  internal_triage_link)
     elif status == status_codes.COMPARISON_FAILURE_LOCAL:
       logging.error('Local comparison failed. Local diff files:')
       _OutputLocalDiffFiles(gold_session, image_name)

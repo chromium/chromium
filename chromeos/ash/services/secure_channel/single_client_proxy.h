@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
@@ -74,7 +75,7 @@ class SingleClientProxy {
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash::secure_channel

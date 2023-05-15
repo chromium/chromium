@@ -22,7 +22,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
-#include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -44,13 +43,6 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_ = monitor.get();
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
-#if !BUILDFLAG(IS_ANDROID)
-    // Unretained is safe because the PageTimelineMonitor will be deleted when
-    // the graph is torn down in TearDown().
-    monitor_->SetSiteDataReaderCallbackForTesting(
-        base::BindRepeating(&PageTimelineMonitorUnitTest::GetTestSiteDataReader,
-                            base::Unretained(this)));
-#endif
     graph()->PassToGraph(std::move(monitor));
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -68,14 +60,6 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   PageTimelineMonitor* monitor() { return monitor_; }
 
   void TriggerCollectSlice() { monitor_->CollectSlice(); }
-
-#if !BUILDFLAG(IS_ANDROID)
-  SiteDataReader* GetTestSiteDataReader(const PageNode*) {
-    return &site_data_reader_;
-  }
-
-  testing::SimpleTestSiteDataReader site_data_reader_;
-#endif
 
  private:
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
@@ -179,6 +163,32 @@ TEST_F(PageTimelineMonitorUnitTest, TestOnlyRecordTabs) {
   EXPECT_EQ(entries2.size(), 0UL);
 }
 
+TEST_F(PageTimelineMonitorUnitTest, TestUpdateTitleOrFaviconInBackground) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(false);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
+
+  // Collect one slice before updating, one after.
+  TriggerCollectSlice();
+
+  PageLiveStateDecorator::Data* data =
+      PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+          mock_graph.page.get());
+  data->SetUpdatedTitleOrFaviconInBackgroundForTesting(true);
+
+  TriggerCollectSlice();
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 2UL);
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[0], "ChangedFaviconOrTitleInBackground", false);
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[1], "ChangedFaviconOrTitleInBackground", true);
+}
+
 TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
@@ -193,56 +203,6 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Background title updates are tracked by SiteDataRecorder, which isn't enabled
-// on Android.
-TEST_F(PageTimelineMonitorUnitTest, TestUpdateTitleInBackground) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
-  mock_graph.page->SetType(performance_manager::PageType::kTab);
-  mock_graph.page->SetUkmSourceId(mock_source_id);
-  mock_graph.page->SetIsVisible(false);
-  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
-
-  // Collect one slice before updating, one after.
-  TriggerCollectSlice();
-
-  site_data_reader_.set_updates_title_in_background(true);
-
-  TriggerCollectSlice();
-  auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_EQ(entries.size(), 2UL);
-  test_ukm_recorder()->ExpectEntryMetric(
-      entries[0], "ChangedFaviconOrTitleInBackground", false);
-  test_ukm_recorder()->ExpectEntryMetric(
-      entries[1], "ChangedFaviconOrTitleInBackground", true);
-}
-
-// Background favicon updates are tracked by SiteDataRecorder, which isn't
-// enabled on Android.
-TEST_F(PageTimelineMonitorUnitTest, TestUpdateFaviconInBackground) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
-  mock_graph.page->SetType(performance_manager::PageType::kTab);
-  mock_graph.page->SetUkmSourceId(mock_source_id);
-  mock_graph.page->SetIsVisible(false);
-  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
-
-  // Collect one slice before updating, one after.
-  TriggerCollectSlice();
-
-  site_data_reader_.set_updates_favicon_in_background(true);
-
-  TriggerCollectSlice();
-  auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_EQ(entries.size(), 2UL);
-  test_ukm_recorder()->ExpectEntryMetric(
-      entries[0], "ChangedFaviconOrTitleInBackground", false);
-  test_ukm_recorder()->ExpectEntryMetric(
-      entries[1], "ChangedFaviconOrTitleInBackground", true);
-}
-
 TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
@@ -268,8 +228,10 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   EXPECT_EQ(entries.size(), 2UL);
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "HighEfficiencyMode", 0);
 
-  performance_manager::policies::HighEfficiencyModePolicy::GetInstance()
-      ->OnHighEfficiencyModeChanged(true);
+  performance_manager::policies::HighEfficiencyModePolicy* policy =
+      performance_manager::policies::HighEfficiencyModePolicy::GetInstance();
+  policy->SetTimeBeforeDiscard(base::Hours(2));
+  policy->OnHighEfficiencyModeChanged(true);
 
   TriggerCollectSlice();
   entries = test_ukm_recorder()->GetEntriesByName(

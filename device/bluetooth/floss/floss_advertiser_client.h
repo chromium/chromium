@@ -256,7 +256,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
       AdvertisingStatus status);
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  base::raw_ptr<dbus::Bus> bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Path used for gatt api calls by this class.
   dbus::ObjectPath gatt_adapter_path_;

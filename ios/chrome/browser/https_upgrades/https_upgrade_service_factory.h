@@ -9,8 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 
 // Singleton that owns all HttpsUpgradeService and associates them with
 // ChromeBrowserState.

@@ -35,36 +35,35 @@ async_test(function() {
       }, 0);
     }
   });
-  requestIdleCallback(callback_1);
-  requestIdleCallback(callback_2);
+  requestAnimationFrame(() => {
+    requestIdleCallback(callback_1);
+    requestIdleCallback(callback_2);
+  });
 }, 'requestIdleCallback can run multiple different requestIdleCallback callbacks in the same idle period.');
 
 async_test(function() {
   // Check that if an idle callback calls requestIdleCallback the new callback
   // doesn't run in the current idle period.
-  var previous_deadline;
   var idle_callbacks_remaining = 10;
   var self = this;
-  requestIdleCallback(this.step_func(function rIC(deadline) {
-    var remaining = deadline.timeRemaining();
-    var now = performance.now();
-    if (previous_deadline != undefined) {
-      assert_true(now >= previous_deadline, "A requestIdleCallback called during an idle period should not be run until the next idle period.");
-    }
+  var last_cb = null;
+  requestIdleCallback(this.step_func(function rIC() {
+    assert_not_equals(last_cb, "rIC", "A requestIdleCallback called during an idle period should not be run until the next idle period.");
+    last_cb = "rIC";
 
     // Schedule a new requestIdleCallback.
     if (--idle_callbacks_remaining > 0) {
-      previous_deadline = now + remaining;
-      requestIdleCallback(rIC);
+      requestIdleCallback(self.step_func(rIC));
     } else {
       self.done();
     }
   }));
 
   // Spin an empty rAF loop to cause an idle period each frame.
-  requestAnimationFrame(this.step_func(function rAFLoop() {
+  requestAnimationFrame(function rAFLoop() {
+    last_cb = "rAF";
     requestAnimationFrame(rAFLoop);
-  }));
+  });
 }, 'Check that if an idle callback calls requestIdleCallback the new callback doesn\'t run in the current idle period.');
 </script>
 <h1>Description</h1>

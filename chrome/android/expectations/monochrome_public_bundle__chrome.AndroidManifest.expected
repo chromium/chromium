@@ -13,6 +13,14 @@
   </dist:module>  # DIFF-ANCHOR: 2805007f
   <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <application>
+    <activity  # DIFF-ANCHOR: 28dc9019
+        android:name="com.google.ar.core.InstallActivity"
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleTop"
+        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
+    </activity>  # DIFF-ANCHOR: 28dc9019
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"
@@ -144,19 +152,6 @@
         android:taskAffinity=""
         android:theme="@style/Theme.BrowserUI.Translucent">
     </activity>  # DIFF-ANCHOR: 50c7105b
-    <activity  # DIFF-ANCHOR: aeab60ac
-        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:screenOrientation="portrait"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-    </activity>  # DIFF-ANCHOR: aeab60ac
-    <activity  # DIFF-ANCHOR: 170e9f21
-        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoTutorialListActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-    </activity>  # DIFF-ANCHOR: 170e9f21
     <activity  # DIFF-ANCHOR: be2dce69
         android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"
         android:excludeFromRecents="true"
@@ -271,6 +266,13 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 8f811d02
     </activity>  # DIFF-ANCHOR: b98302dc
+    <activity  # DIFF-ANCHOR: 060360d2
+        android:name="org.chromium.chrome.browser.init.LaunchFailedActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
+    </activity>  # DIFF-ANCHOR: 060360d2
     <activity  # DIFF-ANCHOR: ecd48344
         android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
         android:enabled="false"
@@ -383,33 +385,6 @@
         android:noHistory="true"
         android:theme="@style/Theme.MaterialComponents">
     </activity>  # DIFF-ANCHOR: 43bfa5de
-    <activity  # DIFF-ANCHOR: b007dcaa
-        android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
-        android:enableVrMode="@string/gvr_vr_mode_component"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
-      <intent-filter>  # DIFF-ANCHOR: dea53031
-        <action android:name="org.chromium.chrome.browser.dummy.action"/>
-        <category android:name="com.google.intent.category.CARDBOARD"/>
-        <category android:name="com.google.intent.category.DAYDREAM"/>
-      </intent-filter>  # DIFF-ANCHOR: dea53031
-    </activity>  # DIFF-ANCHOR: b007dcaa
-    <activity  # DIFF-ANCHOR: 5e628a6c
-        android:name="org.chromium.chrome.browser.vr.VrFirstRunActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:enableVrMode="@string/gvr_vr_mode_component"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:launchMode="singleInstance"
-        android:theme="@style/VrActivityTheme">
-      <intent-filter>  # DIFF-ANCHOR: dea53031
-        <action android:name="org.chromium.chrome.browser.dummy.action"/>
-        <category android:name="com.google.intent.category.CARDBOARD"/>
-        <category android:name="com.google.intent.category.DAYDREAM"/>
-      </intent-filter>  # DIFF-ANCHOR: dea53031
-    </activity>  # DIFF-ANCHOR: 5e628a6c
     <activity  # DIFF-ANCHOR: 9bb1f409
         android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
         android:exported="true"
@@ -714,6 +689,7 @@
       </intent-filter>  # DIFF-ANCHOR: 9fe4b527
     </activity-alias>  # DIFF-ANCHOR: 7c349c4f
     <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER" android:value="org.chromium.content_public.browser.SmartClipProvider"/>
+    <property android:name="android.adservices.AD_SERVICES_CONFIG" android:resource="@xml/ad_services_config"/>
     <receiver  # DIFF-ANCHOR: 58d39a0f
         android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
         android:exported="true"
@@ -791,10 +767,6 @@
         android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 05f19ac3
-    <receiver  # DIFF-ANCHOR: a3a6e991
-        android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: a3a6e991
     <receiver  # DIFF-ANCHOR: 226134db
         android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:exported="true"

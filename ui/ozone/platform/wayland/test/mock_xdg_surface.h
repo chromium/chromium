@@ -25,6 +25,7 @@ extern const struct zxdg_surface_v6_interface kMockZxdgSurfaceV6Impl;
 extern const struct zxdg_toplevel_v6_interface kMockZxdgToplevelV6Impl;
 
 class MockXdgTopLevel;
+class TestZAuraToplevel;
 
 // Manage xdg_surface, zxdg_surface_v6 and zxdg_toplevel for providing desktop
 // UI.
@@ -93,7 +94,14 @@ class MockXdgTopLevel : public ServerObject {
   const gfx::Size& max_size() const { return max_size_; }
   void set_max_size(const gfx::Size& max_size) { max_size_ = max_size; }
 
+  TestZAuraToplevel* zaura_toplevel() { return zaura_toplevel_; }
+  void set_zaura_toplevel(TestZAuraToplevel* zaura_toplevel) {
+    zaura_toplevel_ = zaura_toplevel;
+  }
+
  private:
+  raw_ptr<TestZAuraToplevel> zaura_toplevel_ = nullptr;
+
   gfx::Size min_size_;
   gfx::Size max_size_;
 

@@ -16,3 +16,26 @@ proto_library("proto") {
     "storage.proto",
   ]
 }
+
+source_set("proto_util") {
+  sources = [
+    "proto_util.cc",
+    "proto_util.h",
+  ]
+  public_deps = [ ":proto" ]
+  deps = [
+    "//base",
+    "//ios/web/common:user_agent",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "proto_util_unittest.cc" ]
+  deps = [
+    ":proto",
+    ":proto_util",
+    "//base",
+    "//testing/gtest",
+  ]
+}

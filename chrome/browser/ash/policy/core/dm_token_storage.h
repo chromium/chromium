@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class PrefRegistrySimple;
@@ -88,7 +89,7 @@ class DMTokenStorage : public DMTokenStorageBase {
   // Fires RetrieveCallbacks (if exists) with |dm_token|.
   void FlushRetrieveTokenCallback(const std::string& dm_token);
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   SaltState state_ = SaltState::LOADING;
   std::string system_salt_;
   // Stored |dm_token| while waiting for system salt.

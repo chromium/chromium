@@ -70,5 +70,12 @@ TEST(CursorTest, CustomTypeComparesBitmapPixels) {
   EXPECT_EQ(kCursor1, kCursor2);
 }
 
+TEST(CursorTest, ClampHotspot) {
+  // Initialize a cursor with an invalid hotspot; it should be clamped.
+  const Cursor cursor =
+      Cursor::NewCustom(CreateTestBitmap(5, 7), gfx::Point(100, 100));
+  EXPECT_EQ(gfx::Point(4, 6), cursor.custom_hotspot());
+}
+
 }  // namespace
 }  // namespace ui

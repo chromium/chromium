@@ -47,3 +47,10 @@ Changed the symbolizer to act in a passthrough mode when reading from stdin, so
 
 Made the symbolizer agnostic to the width of pointers.
 Clamping the padding on symbolized names to 80 columns.
+
+Added an option to the symbolizer passthrough mode to flush the output regularly
+    which simplifies its intereaction with logcat_monitor's transform_func [1]
+    within the test runners [2] and [3].
+    [1] https://crsrc.org/c/third_party/catapult/devil/devil/android/logcat_monitor.py;drc=dc3e9bf012e68f78efc07dff48cdc023fc130739;l=40
+    [2] https://source.chromium.org/chromium/chromium/src/+/main:build/android/pylib/local/device/local_device_instrumentation_test_run.py?q=local_device_instrumentation_test#:~:text=def%20_ArchiveLogcat(self%2C%20device%2C%20test_name)%3A
+    [3] https://source.chromium.org/chromium/chromium/src/+/main:build/android/pylib/local/device/local_device_gtest_run.py#:~:text=def%20_ArchiveLogcat(self%2C%20device%2C%20test)%3A

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/settings/ash/metrics_consent_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/peripheral_data_access_handler.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -298,7 +300,9 @@ PrivacySection::PrivacySection(Profile* profile,
                                SearchTagRegistry* search_tag_registry,
                                PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      auth_performer_(UserDataAuthClient::Get()),
+      fp_engine_(&auth_performer_) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrivacySearchConcepts());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -400,6 +404,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT},
       {"geolocationToggleTitle",
        IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE},
+      {"geolocationToggleDesc",
+       IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC},
       {"microphoneHwToggleTooltip",
        IDS_OS_SETTINGS_PRIVACY_HUB_HW_MICROPHONE_TOGGLE_TOOLTIP},
   };
@@ -482,6 +488,10 @@ bool PrivacySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Privacy.PeripheralDataAccessProtection",
           value.GetBool());
       return true;
+    case mojom::Setting::kVerifiedAccess:
+      base::UmaHistogramBoolean("ChromeOS.Settings.Privacy.VerifiedAccessOnOff",
+                                value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -502,6 +512,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kLockScreenV2,
       mojom::Setting::kChangeAuthPinV2,
       mojom::Setting::kPeripheralDataAccessProtection,
+      mojom::Setting::kLockScreenNotification,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSecurityAndSignInV2,
                             kSecurityAndSignInSettings, generator);
@@ -559,8 +570,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {
-  return quick_unlock::IsFingerprintEnabled(profile(),
-                                            quick_unlock::Purpose::kAny);
+  return fp_engine_.IsFingerprintEnabled(
+      *profile()->GetPrefs(), LegacyFingerprintEngine::Purpose::kAny);
 }
 
 void PrivacySection::UpdateRemoveFingerprintSearchTags() {

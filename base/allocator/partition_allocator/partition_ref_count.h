@@ -414,9 +414,6 @@ GetPartitionRefCountIndexMultiplierShift() {
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CheckThatSlotOffsetIsZero(slot_start);
-#endif
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
     uintptr_t refcount_address = slot_start - sizeof(PartitionRefCount);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -457,9 +454,6 @@ constexpr size_t kPartitionPastAllocationAdjustment = 1;
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CheckThatSlotOffsetIsZero(slot_start);
-#endif
   // Have to MTE-tag, because the address is untagged, but lies within a slot
   // area, which is protected by MTE.
   return static_cast<PartitionRefCount*>(TagAddr(slot_start));

@@ -88,21 +88,18 @@ SourceRegistration::Parse(base::Value::Dict registration) {
   if (!destination_set.has_value()) {
     return base::unexpected(destination_set.error());
   }
-
   SourceRegistration result(std::move(*destination_set));
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
       FilterData::FromJSON(registration.Find(kFilterData));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
-
   result.filter_data = std::move(*filter_data);
 
   base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys));
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
-
   result.aggregation_keys = std::move(*aggregation_keys);
 
   result.source_event_id =

@@ -1786,13 +1786,27 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
   EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
 
   // Testing cases:
-  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::STORAGE_ACCESS,
       CONTENT_SETTING_ALLOW);
 
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::STORAGE_ACCESS, &settings);
+
+  EXPECT_EQ(settings[0].primary_pattern,
+            content_settings::URLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(settings[0].secondary_pattern,
+            content_settings::URLToSchemefulSitePattern(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
+  host_content_settings_map->SetContentSettingDefaultScope(
+      primary_url, secondary_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW);
+
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &settings);
 
   EXPECT_EQ(settings[0].primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));

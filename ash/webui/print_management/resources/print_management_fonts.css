@@ -27,3 +27,28 @@
   --print-management-header-text-color: var(--cros-text-color-secondary);
   --print-management-button-text-color: var(--cros-text-color-prominent);
 }
+
+:host-context(body.jelly-enabled) {
+  --print-management-title-font-family: var(--cros-display-6-font-family);
+  --print-management-default-font-family: var(--cros-body-2-font-family);
+  --print-management-header-font-family: var(--cros-button-2-font-family);
+  --print-management-button-font-family: var(--cros-button-2-font-family);
+
+  --print-management-title-font-size:  var(--cros-display-6-font-size);
+  --print-management-default-font-size: var(--cros-body-2-font-size);
+  --print-management-header-font-size: var(--cros-button-2-font-size);
+  --print-management-button-font-size: var(--cros-button-2-font-size);
+
+  --print-management-title-font-weight: var(--cros-display-6-font-weight);
+  --print-management-default-font-weight: var(--cros-body-2-font-weight);
+  --print-management-header-font-weight: var(--cros-button-2-font-weight);
+  --print-management-button-font-weight: var(--cros-button-2-font-weight);
+}
+
+:host-context(body.jelly-enabled) cr-button {
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body.jelly-enabled) cr-button.action-button {
+  font: var(--cros-button-1-font);
+}

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"

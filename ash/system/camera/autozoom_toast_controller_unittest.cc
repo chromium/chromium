@@ -6,6 +6,7 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -42,7 +43,7 @@ class TestDelegate : public AutozoomToastController::Delegate {
     }
   }
 
-  AutozoomObserver* autozoom_observer = nullptr;
+  raw_ptr<AutozoomObserver, ExperimentalAsh> autozoom_observer = nullptr;
 
  private:
   bool autozoom_enabled_ = false;
@@ -78,7 +79,7 @@ class AutozoomToastControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<AutozoomToastController> controller_;
-  TestDelegate* delegate_;
+  raw_ptr<TestDelegate, ExperimentalAsh> delegate_;
 };
 
 TEST_F(AutozoomToastControllerTest, ShowToastWhenCameraActive) {

@@ -37,6 +37,10 @@ class CONTENT_EXPORT CreateReportResult {
     // `absl::nullopt` unless `aggregatable_status_` is
     // `kNoCapacityForConversionDestination`.
     absl::optional<int> max_aggregatable_reports_per_destination;
+
+    // `absl::nullopt` unless `aggregatable_status_` is
+    // `kExcessiveReports`..
+    absl::optional<int> max_aggregatable_reports_per_source;
   };
 
   CreateReportResult(
@@ -50,6 +54,8 @@ class CONTENT_EXPORT CreateReportResult {
       absl::optional<StoredSource> source = absl::nullopt,
       Limits limits = Limits(),
       absl::optional<AttributionReport> dropped_event_level_report =
+          absl::nullopt,
+      absl::optional<base::Time> min_null_aggregatble_report_time =
           absl::nullopt);
   ~CreateReportResult();
 
@@ -97,6 +103,10 @@ class CONTENT_EXPORT CreateReportResult {
     return dropped_event_level_report_;
   }
 
+  absl::optional<base::Time> min_null_aggregatable_report_time() const {
+    return min_null_aggregatable_report_time_;
+  }
+
  private:
   base::Time trigger_time_;
 
@@ -123,6 +133,8 @@ class CONTENT_EXPORT CreateReportResult {
   // `absl::nullopt` unless `event_level_status_` is `kPriorityTooLow` or
   // `kExcessiveReports`.
   absl::optional<AttributionReport> dropped_event_level_report_;
+
+  absl::optional<base::Time> min_null_aggregatable_report_time_;
 };
 
 }  // namespace content

@@ -280,11 +280,10 @@ TEST_F(ExtensionRegistryTest, TerminatedExtensionStoredVersion) {
   ExtensionRegistry registry(nullptr);
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Test")
                            .Set("version", kVersionString)
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
   const ExtensionId extension_id = extension->id();
 

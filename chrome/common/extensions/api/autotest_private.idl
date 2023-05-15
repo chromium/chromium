@@ -5,6 +5,7 @@
 // API for integration testing. To be used on test images with a test component
 // extension.
 [platforms=("chromeos"),
+ modernised_enums,
  implemented_in="chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"]
 namespace autotestPrivate {
 
@@ -77,8 +78,8 @@ namespace autotestPrivate {
     Minimized,
     Maximized,
     Fullscreen,
-    LeftSnapped,
-    RightSnapped,
+    PrimarySnapped,
+    SecondarySnapped,
     PIP,
     Floated
   };
@@ -90,6 +91,10 @@ namespace autotestPrivate {
     WMEventMaximize,
     WMEventMinimize,
     WMEventFullscreen,
+    WMEventSnapPrimary,
+    WMEventSnapSecondary,
+    // TODO(b/252512988): Tast side still uses Left/Right. Temporarily support
+    // both during migration.
     WMEventSnapLeft,
     WMEventSnapRight,
     WMEventFloat
@@ -277,6 +282,7 @@ namespace autotestPrivate {
     Unavailable,
     Stopped,
     CreatingLogFile,
+    PreLaunched,
     Starting,
     Running,
     Terminating
@@ -441,6 +447,7 @@ namespace autotestPrivate {
     ShelfItemStatus status;
     boolean showsTooltip;
     boolean pinnedByPolicy;
+    boolean pinStateForcedByType;
     boolean hasNotification;
   };
 

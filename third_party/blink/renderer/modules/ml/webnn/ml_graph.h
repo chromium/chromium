@@ -109,14 +109,20 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph asynchronously. The actual graph execution work should be
-  // handled by a worker thread without blocking the main thread. If no errors
-  // occurred, the results will be stored in output buffers and the resolver
-  // will be resolved with an MLComputeResult that contains the input and output
-  // buffers. Otherwise, the resolver will be rejected with a DOMException
-  // accordingly.
+  // handled by a worker thread without blocking the main thread.
+  //
+  // The implementation should transfer the input and output
+  // `MLNamedArrayBufferViews` to new views that share the same backing memory
+  // allocations.
+  //
+  // If compute is successful, the results will be stored in output buffers and
+  // the resolver will be resolved with an MLComputeResult that contains the
+  // input and output buffers. Otherwise, the resolver will be rejected with a
+  // DOMException accordingly.
   virtual void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                 const MLNamedArrayBufferViews& outputs,
-                                ScriptPromiseResolver* resolver) = 0;
+                                ScriptPromiseResolver* resolver,
+                                ExceptionState& exception_state) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph synchronously in the caller's thread. Results will be stored

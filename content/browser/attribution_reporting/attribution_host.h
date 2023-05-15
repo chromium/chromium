@@ -94,6 +94,9 @@ class CONTENT_EXPORT AttributionHost
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
+  void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle,
+                                        bool is_final_response);
+
   // Returns the top frame origin corresponding to the current target frame.
   // Returns `absl::nullopt` and reports a bad message if the top frame origin
   // is not potentially trustworthy or the current target frame is not a secure

@@ -1,6 +1,7 @@
 <template is="dom-repeat" items="[[touchpads]]"
     as="touchpad" index-as="index" restamp>
   <settings-per-device-touchpad-subsection
-      touchpad="[[touchpad]]" touchpad-index="[[index]]">
+      touchpad="[[touchpad]]" touchpad-index="[[index]]"
+      is-last-device="[[computeIsLastDevice(index, touchpads.length)]]">
   </settings-per-device-touchpad-subsection>
 </template>

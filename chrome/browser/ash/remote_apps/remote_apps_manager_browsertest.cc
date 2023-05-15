@@ -7,7 +7,9 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -20,26 +22,29 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/id_generator.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_types.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -95,7 +100,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
       : id_(id), condition_(condition) {
     app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
                                ->AppRegistryCache();
-    app_registry_cache_observation_.Observe(app_registry_cache_);
+    app_registry_cache_observation_.Observe(app_registry_cache_.get());
   }
 
   void Wait() {
@@ -127,7 +132,8 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
 
  private:
   std::string id_;
-  apps::AppRegistryCache* app_registry_cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
+      nullptr;
   base::OnceClosure callback_;
   base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
   bool condition_met_ = false;
@@ -181,6 +187,12 @@ class MockRemoteAppLaunchObserver
 class RemoteAppsManagerBrowsertest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
+  RemoteAppsManagerBrowsertest() {
+    // Quick App is used for the current implementation of app pinning.
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kHomeButtonQuickAppAccess);
+  }
+
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {
     DevicePolicyCrosBrowserTest::SetUp();
@@ -303,7 +315,7 @@ class RemoteAppsManagerBrowsertest
     AppListClientImpl* client = AppListClientImpl::GetInstance();
     EXPECT_FALSE(client->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST, {});
+        AcceleratorAction::kToggleAppList, {});
     ash::AppListTestApi().WaitForBubbleWindow(wait_for_opening_animation);
     EXPECT_TRUE(client->GetAppListWindow());
   }
@@ -340,6 +352,18 @@ class RemoteAppsManagerBrowsertest
     std::move(closure).Run();
   }
 
+  const std::string& PinnedAppId() {
+    return AppListModelProvider::Get()
+        ->quick_app_access_model()
+        ->quick_app_id();
+  }
+
+  void ExpectNoAppIsPinned() {
+    // When no app is pinned, QuickAppAccessMode::quick_app_id() returns an
+    // empty string.
+    EXPECT_EQ(PinnedAppId(), "");
+  }
+
  protected:
   // Launch healthcare application on device (COM_HEALTH_CUJ1_TASK2_WF1).
   void AddScreenplayTag() {
@@ -347,13 +371,17 @@ class RemoteAppsManagerBrowsertest
                              "screenplay-446812cc-07af-4094-bfb2-00150301ede3");
   }
 
-  app_list::AppListSyncableService* app_list_syncable_service_;
-  AppListModelUpdater* app_list_model_updater_;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> app_list_model_updater_;
   ash::AppListTestApi app_list_test_api_;
-  RemoteAppsManager* manager_ = nullptr;
-  MockImageDownloader* image_downloader_ = nullptr;
-  Profile* profile_ = nullptr;
+  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<MockImageDownloader, ExperimentalAsh> image_downloader_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
@@ -379,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
-  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
-                         /*size_hint_in_dip=*/64, std::move(iv),
-                         future.GetCallback());
+  apps::ApplyIconEffects(
+      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is the downloaded icon.
   CheckIconsEqual(future.Get()->uncompressed, item->GetDefaultIcon());
@@ -410,9 +438,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
   iv->uncompressed =
       manager_->GetPlaceholderIcon(kId1, /*size_hint_in_dip=*/64);
   iv->is_placeholder_icon = true;
-  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
-                         /*size_hint_in_dip=*/64, std::move(iv),
-                         future.GetCallback());
+  apps::ApplyIconEffects(
+      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is placeholder.
   // TODO(https://crbug.com/1345682): add a pixel diff test for this scenario.
@@ -865,4 +893,58 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
       std::vector<std::string>({remote_app1_id, remote_folder_id,
                                 remote_app2_id, app1_id, native_folder_id}));
 }
+
+// Tests that a single remote app can be pinned to the shelf and then unpinned.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, PinAndUnpinSingleApp) {
+  // Add a remote app.
+  std::string remote_app1_id =
+      AddApp(kExtensionId1, "test app 5", std::string(), GURL(),
+             /*add_to_front=*/true);
+
+  std::vector<std::string> app_ids_to_pin{remote_app1_id};
+  RemoteAppsError error1 = manager_->SetPinnedApps(app_ids_to_pin);
+
+  EXPECT_EQ(error1, RemoteAppsError::kNone);
+  EXPECT_EQ(PinnedAppId(), remote_app1_id);
+
+  // Empty list indicates that any currently pinned apps should be unpinned.
+  RemoteAppsError error2 = manager_->SetPinnedApps({});
+
+  EXPECT_EQ(error2, RemoteAppsError::kNone);
+  ExpectNoAppIsPinned();
+}
+
+// Pinning of multiple apps is not yet supported, but API allows it in case we
+// will implement this in the future. Test that current implementation doesn't
+// pin anything when asked to pin multiple apps.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
+                       PinningMultipleAppsNotSupported) {
+  // Show launcher UI so that app icons are loaded.
+  ShowLauncherAppsGrid(/*wait_for_opening_animation=*/true);
+
+  // Adds2 remote apps.
+  std::string remote_app1_id =
+      AddApp(kExtensionId1, "test app 5", std::string(), GURL(),
+             /*add_to_front=*/true);
+  std::string remote_app2_id =
+      AddApp(kExtensionId1, "Test App 7", std::string(), GURL(),
+             /*add_to_front=*/true);
+
+  std::vector<std::string> app_ids_to_pin{remote_app1_id, remote_app2_id};
+  RemoteAppsError error = manager_->SetPinnedApps(app_ids_to_pin);
+
+  EXPECT_EQ(error, RemoteAppsError::kPinningMultipleAppsNotSupported);
+  ExpectNoAppIsPinned();
+}
+
+// Tests that nothing is pinned if we try to use an invalid app id.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, PinInvalidApp) {
+  // No apps are added so there is nothing to pin.
+  std::vector<std::string> app_ids_to_pin{"invalid id"};
+  RemoteAppsError error = manager_->SetPinnedApps(app_ids_to_pin);
+
+  EXPECT_EQ(error, RemoteAppsError::kFailedToPinAnApp);
+  ExpectNoAppIsPinned();
+}
+
 }  // namespace ash

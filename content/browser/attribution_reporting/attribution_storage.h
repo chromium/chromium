@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -74,10 +75,10 @@ class AttributionStorage {
   // a negative number for no limit.
   virtual std::vector<StoredSource> GetActiveSources(int limit = -1) = 0;
 
-  // Returns all distinct reporting_origins as DataKeys for the
+  // Returns all distinct reporting origins for the
   // Browsing Data Model. Partial data will still be returned
   // in the event of an error.
-  virtual std::vector<AttributionDataModel::DataKey> GetAllDataKeys() = 0;
+  virtual std::set<AttributionDataModel::DataKey> GetAllDataKeys() = 0;
 
   // Deletes all data in storage for storage keys matching the provided
   // reporting origin in the data key.

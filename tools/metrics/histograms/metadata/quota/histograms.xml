@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
     <variant name="FromV6ToV7"/>
     <variant name="FromV7ToV8"/>
     <variant name="FromV8ToV9"/>
+    <variant name="FromV9ToV10"/>
   </token>
 </histogram>
 
@@ -110,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketsPerHour" units="buckets"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -120,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -222,7 +223,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseResultSuccess" enum="BooleanSuccess"
-    expires_after="2023-07-16">
+    expires_after="2023-10-22">
+  <obsolete>
+    Code for recording this histogram was removed in May 2023 after a refactor.
+    The error rate at the time was less than 0.005%.
+  </obsolete>
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -307,7 +312,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2023-08-20">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2023-10-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

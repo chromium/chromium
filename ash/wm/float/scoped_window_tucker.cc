@@ -17,8 +17,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "ui/aura/null_window_targeter.h"
-#include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -174,7 +172,7 @@ END_METADATA
 // -----------------------------------------------------------------------------
 
 ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
-    : window_(window), left_(left) {
+    : window_(window), left_(left), event_blocker_(window) {
   DCHECK(window_);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -212,9 +210,6 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
           : *app_window_it;
   DCHECK(window_to_activate);
   wm::ActivateWindow(window_to_activate);
-
-  targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
-      window_, std::make_unique<aura::NullWindowTargeter>());
 
   Shell::Get()->activation_client()->AddObserver(this);
   overview_observer_.Observe(Shell::Get()->overview_controller());
@@ -287,6 +282,8 @@ void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
   tuck_handle->SetBounds(GetTuckHandleBounds(left_, final_bounds));
 
   views::AnimationBuilder()
+      // TODO(sammiequon|sophiewen): Should we handle the case where the
+      // animation gets aborted?
       .OnEnded(std::move(callback))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)

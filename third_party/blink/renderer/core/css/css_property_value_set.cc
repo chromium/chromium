@@ -100,6 +100,7 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
   Member<const CSSValue>* value_array =
       const_cast<Member<const CSSValue>*>(ValueArray());
   for (unsigned i = 0; i < array_size_; ++i) {
+    new (metadata_array + i) CSSPropertyValueMetadata();
     metadata_array[i] = properties[i].Metadata();
     value_array[i] = properties[i].Value();
   }

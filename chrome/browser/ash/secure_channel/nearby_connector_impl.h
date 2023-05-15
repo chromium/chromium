@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
@@ -101,7 +102,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
       mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
           file_payload_handler_remote);
 
-  nearby::NearbyProcessManager* nearby_process_manager_;
+  raw_ptr<nearby::NearbyProcessManager, ExperimentalAsh>
+      nearby_process_manager_;
 
   // Reference to the Nearby utility process; null if we have not requested a
   // connection to the process (i.e., when there are no active connection

@@ -52,6 +52,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -100,7 +101,6 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
-#include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -256,6 +256,17 @@ SyncTest::SyncTest(TestType test_type)
       num_clients_ = 2;
       break;
     }
+  }
+
+  if (num_clients_ > 1) {
+    // Workaround to turn off single client optimization for sync standalone
+    // invalidations in tests.
+    // TODO(crbug.com/1438806): remove once resolved.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{switches::
+                                   kSyncFilterOutInactiveDevicesForSingleClient,
+                               {{"SyncActiveDeviceMargin", "-2d"}}}},
+        /*disabled_features=*/{});
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1106,12 +1117,12 @@ void SyncTest::SetUpOnMainThread() {
 }
 
 void SyncTest::WaitForDataModels(Profile* profile) {
+  // Ideally the waiting for bookmarks should be done exclusively for
+  // bookmark-related tests, but there are several tests that use bookmarks as
+  // a way to generally check if sync is working, although the test is not
+  // really about bookmarks.
   bookmarks::test::WaitForBookmarkModelToLoad(
       BookmarkModelFactory::GetForBrowserContext(profile));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  printers_helper::WaitForPrinterStoreToLoad(profile);
-#endif
 }
 
 void SyncTest::ReadPasswordFile() {

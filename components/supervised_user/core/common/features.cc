@@ -16,27 +16,12 @@ namespace supervised_user {
 // Enables refreshed version of the website filter interstitial that is shown to
 // Family Link users when they navigate to the blocked website.
 // This feature is a prerequisite for `kLocalWebApproval` feature.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_IOS)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+//
+// TODO(b/276428131): clean up this feature once local approvals on Android is
+// fully launched.
 BASE_FEATURE(kWebFilterInterstitialRefresh,
              "WebFilterInterstitialRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else  // Desktop
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
@@ -45,24 +30,12 @@ BASE_FEATURE(kWebFilterInterstitialRefresh,
 //
 // The feature includes one experiment parameter: "preferred_button", which
 // determines which button is displayed as the preferred option in the
-// interstitial UI (i.e. dark blue button).#if BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_IOS)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+// interstitial UI (i.e. dark blue button).
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else  // Desktop
+#else
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -87,11 +60,6 @@ BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the new Kids Management Api.
-BASE_FEATURE(kEnableKidsManagementService,
-             "EnableKidsManagementService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the proto api for ClassifyURL calls.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
@@ -112,6 +80,11 @@ BASE_FEATURE(kRetireStaticDenyList,
 BASE_FEATURE(kLocalExtensionApprovalsV2,
              "LocalExtensionApprovalsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Stops creating Supervised User Service for Incognito profile.
+BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,
+             "UpdateSupervisedUserFactoryCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsWebFilterInterstitialRefreshEnabled() {
   CHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
@@ -147,10 +120,6 @@ bool IsLocalWebApprovalThePreferredButton() {
   DCHECK((preferred_button == kLocalWebApprovalsPreferredButtonLocal) ||
          (preferred_button == kLocalWebApprovalsPreferredButtonRemote));
   return (preferred_button == kLocalWebApprovalsPreferredButtonLocal);
-}
-
-bool IsKidsManagementServiceEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
 bool IsProtoApiForClassifyUrlEnabled() {

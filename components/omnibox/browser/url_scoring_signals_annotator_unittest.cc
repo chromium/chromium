@@ -16,7 +16,10 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 namespace {
 
@@ -143,7 +146,7 @@ TEST_F(UrlScoringSignalsAnnotatorTest, AnnotateResultHostOnly) {
       /*total_query_or_ref_match_length=*/0,
       /*num_input_terms_matched_by_url=*/1,
       /*allowed_to_be_default_match=*/false);
-  CompareScoringSignals(result.match_at(0)->scoring_signals,
+  CompareScoringSignals(*result.match_at(0)->scoring_signals,
                         expected_scoring_signals);
 }
 
@@ -169,7 +172,7 @@ TEST_F(UrlScoringSignalsAnnotatorTest, AnnotateResultUrlWithPath) {
       /*total_query_or_ref_match_length=*/0,
       /*num_input_terms_matched_by_url=*/2,
       /*allowed_to_be_default_match=*/false);
-  CompareScoringSignals(result.match_at(0)->scoring_signals,
+  CompareScoringSignals(*result.match_at(0)->scoring_signals,
                         expected_scoring_signals);
 }
 
@@ -196,7 +199,7 @@ TEST_F(UrlScoringSignalsAnnotatorTest, AnnotateResultPathMatchOnly) {
       /*total_query_or_ref_match_length=*/0,
       /*num_input_terms_matched_by_url=*/1,
       /*allowed_to_be_default_match=*/false);
-  CompareScoringSignals(result.match_at(0)->scoring_signals,
+  CompareScoringSignals(*result.match_at(0)->scoring_signals,
                         expected_scoring_signals);
 }
 
@@ -221,6 +224,6 @@ TEST_F(UrlScoringSignalsAnnotatorTest, AnnotateResultWWWOnly) {
       /*total_query_or_ref_match_length=*/0,
       /*num_input_terms_matched_by_url=*/1,
       /*allowed_to_be_default_match=*/false);
-  CompareScoringSignals(result.match_at(0)->scoring_signals,
+  CompareScoringSignals(*result.match_at(0)->scoring_signals,
                         expected_scoring_signals);
 }

@@ -60,7 +60,6 @@ class RenderViewContextMenuViews : public RenderViewContextMenu {
   void AppendPlatformEditableItems() override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-  void ExecOpenInReadAnything() override;
 
   // Gets the AcceleratorProvider for the browser. May be null.
   ui::AcceleratorProvider* GetBrowserAcceleratorProvider() const;

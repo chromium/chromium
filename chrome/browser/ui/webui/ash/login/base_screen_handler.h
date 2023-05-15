@@ -26,7 +26,7 @@ class BaseScreenHandler : public BaseWebUIHandler {
   OobeScreenId oobe_screen() const { return oobe_screen_; }
 
   // BaseWebUIHandler:
-  void RegisterMessages() override;
+  void RegisterMessages() final;
 
  protected:
   // Advances to the `oobe_screen_` in the WebUI. Optional `data` will be passed

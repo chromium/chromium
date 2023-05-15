@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
@@ -71,9 +72,10 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
   void SetDeviceNamePolicy(DeviceNamePolicy policy,
                            const std::string& new_hostname);
 
-  ash::CrosSettings* cros_settings_;
-  ash::system::StatisticsProvider* statistics_provider_;
-  ash::NetworkStateHandler* handler_;
+  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<ash::system::StatisticsProvider, ExperimentalAsh>
+      statistics_provider_;
+  raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> handler_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

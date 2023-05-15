@@ -91,9 +91,8 @@ class MDnsAPI : public BrowserContextKeyedAPI,
                       const std::string& message);
 
   // Returns true if an extension or platform app |extension_id| is allowed to
-  // listen to mDNS events for |service_type|.
-  virtual bool IsMDnsAllowed(const std::string& extension_id,
-                             const std::string& service_type) const;
+  // listen to mDNS events.
+  virtual bool IsMDnsAllowed(const std::string& extension_id) const;
 
   // Finds all all the valid listeners of the mdns.onServiceList event and
   // filters them by service type if |service_type_filter| is non-empty.

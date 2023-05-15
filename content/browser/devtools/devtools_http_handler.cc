@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -28,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -820,10 +820,12 @@ DevToolsHttpHandler::DevToolsHttpHandler(
     const base::FilePath& output_directory,
     const base::FilePath& debug_frontend_dir)
     : delegate_(delegate) {
-  browser_guid_ = delegate_->IsBrowserTargetDiscoverable()
-                      ? kBrowserUrlPrefix
-                      : base::StringPrintf("%s/%s", kBrowserUrlPrefix,
-                                           base::GenerateGUID().c_str());
+  browser_guid_ =
+      delegate_->IsBrowserTargetDiscoverable()
+          ? kBrowserUrlPrefix
+          : base::StringPrintf(
+                "%s/%s", kBrowserUrlPrefix,
+                base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
   std::unique_ptr<base::Thread> thread(
       new base::Thread(kDevToolsHandlerThreadName));
   base::Thread::Options options;

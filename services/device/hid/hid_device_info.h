@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "services/device/hid/hid_report_type.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -112,13 +111,6 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   // Merge the device information in |device_info| into this object.
   // |device_info| must be part of the same HID interface.
   void AppendDeviceInfo(scoped_refptr<HidDeviceInfo> device_info);
-
-  // Returns the collection in `device_` containing a report with ID `report_id`
-  // and type `report_type`, or nullptr if no collection contains a matching
-  // report.
-  const mojom::HidCollectionInfo* FindCollectionWithReport(
-      uint8_t report_id,
-      HidReportType report_type);
 
  protected:
   virtual ~HidDeviceInfo();

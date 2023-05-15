@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
@@ -140,7 +141,7 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
  private:
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   std::vector<std::unique_ptr<SetSoftwareFeatureStateArgs>>
       set_software_feature_state_calls_;

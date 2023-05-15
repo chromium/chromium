@@ -132,34 +132,6 @@ void RecordV4GetHashCheckResult(V4GetHashCheckResultType result_type) {
                             GET_HASH_CHECK_RESULT_MAX);
 }
 
-// Enumerate SePatternType for histogramming purposes. DO NOT CHANGE THE
-// ORDERING OF THESE VALUES.
-enum SocialEngineeringPatternType {
-  SOCIAL_ENGINEERING_PATTERN_ADS = 0,
-
-  SOCIAL_ENGINEERING_PATTERN_LANDING = 1,
-
-  SOCIAL_ENGINEERING_PATTERN_PHISHING = 2,
-
-  SOCIAL_ENGINEERING_PATTERN_UNKNOWN = 3,
-
-  // Memory space for histograms is determined by the max. ALWAYS
-  // ADD NEW VALUES BEFORE THIS ONE.
-  SOCIAL_ENGINEERING_PATTERN_MAX
-};
-
-// Record a social engineering pattern type.
-void RecordSocialEngineeringPattern(SocialEngineeringPatternType pattern_type) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.V4GetHash.SocialEngineeringPattern",
-                            pattern_type, SOCIAL_ENGINEERING_PATTERN_MAX);
-}
-
-bool ErrorIsRetriable(int net_error, int http_error) {
-  return (net_error == net::ERR_INTERNET_DISCONNECTED ||
-          net_error == net::ERR_NETWORK_CHANGED) &&
-         http_error != net::HTTP_OK;
-}
-
 const char kPermission[] = "permission";
 const char kPhaPatternType[] = "pha_pattern_type";
 const char kMalwareThreatType[] = "malware_threat_type";
@@ -735,21 +707,17 @@ void V4GetHashProtocolManager::ParseMetadata(const ThreatMatch& match,
          match.threat_entry_metadata().entries()) {
       if (m.key() == kSePatternType) {
         if (m.value() == kSocialEngineeringAds) {
-          RecordSocialEngineeringPattern(SOCIAL_ENGINEERING_PATTERN_ADS);
           metadata->threat_pattern_type =
               ThreatPatternType::SOCIAL_ENGINEERING_ADS;
           break;
         } else if (m.value() == kSocialEngineeringLanding) {
-          RecordSocialEngineeringPattern(SOCIAL_ENGINEERING_PATTERN_LANDING);
           metadata->threat_pattern_type =
               ThreatPatternType::SOCIAL_ENGINEERING_LANDING;
           break;
         } else if (m.value() == kPhishing) {
-          RecordSocialEngineeringPattern(SOCIAL_ENGINEERING_PATTERN_PHISHING);
           metadata->threat_pattern_type = ThreatPatternType::PHISHING;
           break;
         } else {
-          RecordSocialEngineeringPattern(SOCIAL_ENGINEERING_PATTERN_UNKNOWN);
           RecordParseGetHashResult(UNEXPECTED_METADATA_VALUE_ERROR);
           return;
         }

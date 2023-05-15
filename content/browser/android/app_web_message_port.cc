@@ -45,12 +45,13 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateJavaMessagePort(
 // static
 base::android::ScopedJavaLocalRef<jobject> AppWebMessagePort::Create(
     blink::MessagePortDescriptor&& descriptor) {
-  auto ptr = base::WrapUnique(new AppWebMessagePort(std::move(descriptor)));
+  auto app_web_message_port =
+      base::WrapUnique(new AppWebMessagePort(std::move(descriptor)));
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto* raw_ptr = ptr.get();
+  auto* app_web_messge_port_ptr = app_web_message_port.get();
   auto j_obj = Java_AppWebMessagePort_Constructor(
-      env, reinterpret_cast<intptr_t>(ptr.release()));
-  raw_ptr->j_obj_ = JavaObjectWeakGlobalRef(env, j_obj);
+      env, reinterpret_cast<intptr_t>(app_web_message_port.release()));
+  app_web_messge_port_ptr->j_obj_ = JavaObjectWeakGlobalRef(env, j_obj);
   return j_obj;
 }
 

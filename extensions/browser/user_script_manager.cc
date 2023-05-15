@@ -50,7 +50,7 @@ ExtensionUserScriptLoader* UserScriptManager::GetUserScriptLoaderForExtension(
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
-  DCHECK(extension);
+  CHECK(extension);
 
   auto it = extension_script_loaders_.find(extension->id());
   return (it == extension_script_loaders_.end())
@@ -116,7 +116,7 @@ void UserScriptManager::RemovePendingExtensionLoadAndSignal(
 
 ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
     const Extension* extension) {
-  DCHECK(!base::Contains(extension_script_loaders_, extension->id()));
+  CHECK(!base::Contains(extension_script_loaders_, extension->id()));
   // Inserts a new ExtensionUserScriptLoader and returns a ptr to it.
   ExtensionUserScriptLoader* loader =
       extension_script_loaders_
@@ -133,7 +133,7 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
 
 WebUIUserScriptLoader* UserScriptManager::CreateWebUIUserScriptLoader(
     const GURL& url) {
-  DCHECK(!base::Contains(webui_script_loaders_, url));
+  CHECK(!base::Contains(webui_script_loaders_, url));
   // Inserts a new WebUIUserScriptLoader and returns a ptr to it.
   WebUIUserScriptLoader* loader =
       webui_script_loaders_

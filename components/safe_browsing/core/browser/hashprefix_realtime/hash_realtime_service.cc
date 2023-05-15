@@ -6,13 +6,11 @@
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -40,13 +38,6 @@ const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
 const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kLookupTimeoutDurationInSeconds = 3;
-
-// TODO(1392143): [Also TODO(thefrog)] For now, we say that no error is
-// retriable. Once ErrorIsRetriable is correct for SBv4, we will refactor it out
-// and reuse it here.
-bool ErrorIsRetriable(int net_error, int http_error) {
-  return false;
-}
 
 SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
   switch (threat_type) {
@@ -148,6 +139,14 @@ HashRealTimeService::~HashRealTimeService() = default;
 
 bool HashRealTimeService::IsEnhancedProtectionEnabled() {
   return get_is_enhanced_protection_enabled_.Run();
+}
+
+// static
+bool HashRealTimeService::CanCheckUrl(
+    const GURL& url,
+    network::mojom::RequestDestination request_destination) {
+  return request_destination == network::mojom::RequestDestination::kDocument &&
+         CanGetReputationOfUrl(url);
 }
 
 // static
@@ -337,7 +336,7 @@ void HashRealTimeService::StartLookup(
     std::unique_ptr<network::SimpleURLLoader> url_loader =
         network::SimpleURLLoader::Create(
             GetDirectFetchResourceRequest(std::move(request)),
-            GetTrafficAnnotationTag());
+            GetTrafficAnnotationTagForDirectFetch());
     url_loader->SetTimeoutDuration(
         base::Seconds(kLookupTimeoutDurationInSeconds));
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -378,8 +377,8 @@ void HashRealTimeService::OnGetOhttpKey(
   network::mojom::ObliviousHttpRequestPtr ohttp_request =
       network::mojom::ObliviousHttpRequest::New();
   ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
-  ohttp_request->traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag());
+  ohttp_request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
+      GetTrafficAnnotationTagForOhttp());
   ohttp_request->key_config = key.value();
   ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
   ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
@@ -414,9 +413,7 @@ void HashRealTimeService::OnOhttpComplete(
     int net_error,
     int response_code,
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  if (headers) {
-    ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
-  }
+  ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
 
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
@@ -424,7 +421,8 @@ void HashRealTimeService::OnOhttpComplete(
       url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
-      std::move(response_body_ptr), net_error, response_code);
+      std::move(response_body_ptr), net_error, response_code,
+      /*allow_retriable_errors=*/false);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -451,7 +449,8 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
       url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
-      std::move(response_body), url_loader->NetError(), response_code);
+      std::move(response_body), url_loader->NetError(), response_code,
+      /*allow_retriable_errors=*/true);
 
   pending_requests_.erase(pending_request_it);
 }
@@ -466,17 +465,28 @@ void HashRealTimeService::OnURLLoaderComplete(
     SBThreatType locally_cached_results_threat_type,
     std::unique_ptr<std::string> response_body,
     int net_error,
-    int response_code) {
+    int response_code,
+    bool allow_retriable_errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
                           base::TimeTicks::Now() - request_start_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
+  if (net_error == net::ERR_INTERNET_DISCONNECTED) {
+    base::UmaHistogramSparse(
+        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
+        response_code);
+  }
+  if (net_error == net::ERR_NETWORK_CHANGED) {
+    base::UmaHistogramSparse(
+        "SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
+        response_code);
+  }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
-      response = ParseResponseAndUpdateBackoff(net_error, response_code,
-                                               std::move(response_body),
-                                               hash_prefixes_in_request);
+      response = ParseResponseAndUpdateBackoff(
+          net_error, response_code, std::move(response_body),
+          hash_prefixes_in_request, allow_retriable_errors);
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
     if (cache_manager_) {
@@ -509,126 +519,24 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes) const {
+    const std::vector<std::string>& requested_hash_prefixes,
+    bool allow_retriable_errors) const {
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
-                    requested_hash_prefixes);
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.HPRT.OperationResult",
-      response.has_value() ? OperationResult::kSuccess : response.error());
+                    requested_hash_prefixes, allow_retriable_errors);
+  base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",
+                                response.error_or(OperationResult::kSuccess));
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
   } else if (response.error() != OperationResult::kRetriableError) {
-    backoff_operator_->ReportError();
+    bool newly_in_backoff_mode = backoff_operator_->ReportError();
+    if (newly_in_backoff_mode) {
+      RecordHttpResponseOrErrorCode(
+          "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
+          response_code);
+    }
   }
   return response;
-}
-
-void HashRealTimeService::LogTemporaryUnmatchedFullHashesDebugInfo(
-    const std::unique_ptr<V5::SearchHashesResponse>& response,
-    const std::set<std::string>& requested_hash_prefixes_set) const {
-  auto replace_embedded_nulls = [](std::string hash) {
-    // DumpWithoutCrashing does not allow embedded nulls. We replace any
-    // embedded nulls with a dummy different character (X).
-    std::replace(hash.begin(), hash.end(), '\0', 'X');
-    return hash;
-  };
-
-  static crash_reporter::CrashKeyString<64> full_hash_crash_key(
-      "hprt-full-hash");
-  static crash_reporter::CrashKeyString<32> full_hash_size_crash_key(
-      "hprt-full-hash-size");
-  bool found_unmatched_full_hashes = false;
-  for (const auto& full_hash : response->full_hashes()) {
-    if (!base::Contains(
-            requested_hash_prefixes_set,
-            hash_realtime_utils::GetHashPrefix(full_hash.full_hash()))) {
-      found_unmatched_full_hashes = true;
-      full_hash_crash_key.Set(replace_embedded_nulls(full_hash.full_hash()));
-      full_hash_size_crash_key.Set(
-          base::NumberToString(full_hash.full_hash().length()));
-      // There may be multiple full hashes that don't match, but just one is
-      // sufficient for debugging purposes.
-      break;
-    }
-  }
-  if (!found_unmatched_full_hashes) {
-    return;
-  }
-
-  using ArrayItemKey8 = crash_reporter::CrashKeyString<8>;
-  static ArrayItemKey8 prefix_crash_keys[] = {
-      {"hprt-prefix-0", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-1", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-2", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-3", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-4", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-5", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-6", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-7", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-8", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-9", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-10", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-11", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-12", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-13", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-14", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-15", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-16", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-17", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-18", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-19", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-20", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-21", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-22", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-23", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-24", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-25", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-26", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-27", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-28", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-29", ArrayItemKey8::Tag::kArray},
-  };
-
-  static crash_reporter::CrashKeyString<32>
-      num_requested_prefixes_hash_crash_key("hprt-num-requested-prefixes");
-  static crash_reporter::CrashKeyString<4> some_prefix_size_too_big_crash_key(
-      "hprt-some-prefix-size-too-big");
-  static crash_reporter::CrashKeyString<4> some_prefix_size_too_small_crash_key(
-      "hprt-some-prefix-size-too-small");
-  some_prefix_size_too_big_crash_key.Set("F");
-  some_prefix_size_too_small_crash_key.Set("F");
-  num_requested_prefixes_hash_crash_key.Set(
-      base::NumberToString(requested_hash_prefixes_set.size()));
-  size_t i = 0;
-  for (const auto& requested_hash_prefix : requested_hash_prefixes_set) {
-    if (i >= std::size(prefix_crash_keys)) {
-      // We should only ever have up to 30 hash prefixes (same as the size of
-      // |prefix_crash_keys|). |hprt-num-requested-prefixes| will identify if
-      // there are times where that's not the case.
-      break;
-    }
-    if (requested_hash_prefix.length() > 4) {
-      some_prefix_size_too_big_crash_key.Set("T");
-    }
-    if (requested_hash_prefix.length() < 4) {
-      some_prefix_size_too_small_crash_key.Set("T");
-    }
-    prefix_crash_keys[i].Set(replace_embedded_nulls(requested_hash_prefix));
-    ++i;
-  }
-
-  base::debug::DumpWithoutCrashing();
-
-  // Clear all the crash keys.
-  full_hash_crash_key.Clear();
-  full_hash_size_crash_key.Clear();
-  for (auto& prefix_crash_key : prefix_crash_keys) {
-    prefix_crash_key.Clear();
-  }
-  num_requested_prefixes_hash_crash_key.Clear();
-  some_prefix_size_too_big_crash_key.Clear();
-  some_prefix_size_too_small_crash_key.Clear();
 }
 
 void HashRealTimeService::RemoveUnmatchedFullHashes(
@@ -637,8 +545,6 @@ void HashRealTimeService::RemoveUnmatchedFullHashes(
   size_t initial_full_hashes_count = response->full_hashes_size();
   std::set<std::string> requested_hash_prefixes_set(
       requested_hash_prefixes.begin(), requested_hash_prefixes.end());
-  LogTemporaryUnmatchedFullHashesDebugInfo(response,
-                                           requested_hash_prefixes_set);
   auto* mutable_full_hashes = response->mutable_full_hashes();
   mutable_full_hashes->erase(
       std::remove_if(
@@ -683,35 +589,35 @@ HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes) const {
-  auto response = std::make_unique<V5::SearchHashesResponse>();
-  bool net_and_http_ok = net_error == net::OK && response_code == net::HTTP_OK;
-  if (net_and_http_ok && response->ParseFromString(*response_body)) {
-    if (!response->has_cache_duration()) {
-      return base::unexpected(OperationResult::kNoCacheDurationError);
-    }
-    for (const auto& full_hash : response->full_hashes()) {
-      if (full_hash.full_hash().length() !=
-          hash_realtime_utils::kFullHashLength) {
-        return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
-      }
-    }
-    RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
-    RemoveFullHashDetailsWithInvalidEnums(response);
-    return std::move(response);
-  } else if (net_and_http_ok) {
-    return base::unexpected(OperationResult::kParseError);
-  } else if (ErrorIsRetriable(net_error, response_code)) {
-    return base::unexpected(OperationResult::kRetriableError);
-  } else if (net_error != net::OK &&
-             net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return base::unexpected(OperationResult::kNetworkError);
-  } else if (response_code != net::HTTP_OK) {
-    return base::unexpected(OperationResult::kHttpError);
-  } else {
-    NOTREACHED();
-    return base::unexpected(OperationResult::kNotReached);
+    const std::vector<std::string>& requested_hash_prefixes,
+    bool allow_retriable_errors) const {
+  if (net_error != net::OK &&
+      net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    return base::unexpected(allow_retriable_errors &&
+                                    ErrorIsRetriable(net_error, response_code)
+                                ? OperationResult::kRetriableError
+                                : OperationResult::kNetworkError);
   }
+  if (response_code != net::HTTP_OK) {
+    return base::unexpected(OperationResult::kHttpError);
+  }
+  CHECK_EQ(net::OK, net_error);
+  auto response = std::make_unique<V5::SearchHashesResponse>();
+  if (!response->ParseFromString(*response_body)) {
+    return base::unexpected(OperationResult::kParseError);
+  }
+  if (!response->has_cache_duration()) {
+    return base::unexpected(OperationResult::kNoCacheDurationError);
+  }
+  for (const auto& full_hash : response->full_hashes()) {
+    if (full_hash.full_hash().length() !=
+        hash_realtime_utils::kFullHashLength) {
+      return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
+    }
+  }
+  RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
+  RemoveFullHashDetailsWithInvalidEnums(response);
+  return std::move(response);
 }
 
 std::unique_ptr<network::ResourceRequest>
@@ -763,10 +669,10 @@ base::WeakPtr<HashRealTimeService> HashRealTimeService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
-    const {
+net::NetworkTrafficAnnotationTag
+HashRealTimeService::GetTrafficAnnotationTagForDirectFetch() const {
   return net::DefineNetworkTrafficAnnotation(
-      "safe_browsing_hashprefix_realtime_lookup",
+      "safe_browsing_hashprefix_realtime_lookup_direct",
       R"(
   semantics {
     sender: "Safe Browsing"
@@ -774,9 +680,7 @@ net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
       "When Safe Browsing can't detect that a URL is safe based on its "
       "local database, it sends partial hashes of the URL to Google to check "
       "whether to show a warning to the user. These partial hashes do not "
-      "expose the URL to Google. The partial hashes are sent to a proxy via "
-      "Oblivious HTTP first and then relayed to Google. The source of the "
-      "requests (e.g. IP address) is anonymized to Google."
+      "expose the URL to Google."
     trigger:
       "When a main frame URL fails to match the local hash-prefix "
       "database of known safe URLs and a valid result from a prior "
@@ -796,21 +700,84 @@ net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
     user_data {
       type: NONE
     }
-    last_reviewed: "2023-01-18"
+    last_reviewed: "2023-04-20"
   }
   policy {
-    cookies_allowed: YES
-    cookies_store: "Safe Browsing cookie store"
+    cookies_allowed: NO
     setting:
-      "Users can disable Safe Browsing by unchecking 'Protect you and "
-      "your device from dangerous sites' in Chromium settings under "
-      "Privacy. The feature is enabled by default."
+      "Users can disable Safe Browsing by checking 'No protection' in Chromium "
+      "settings under Security > Safe Browsing. The feature is enabled by "
+      "default."
+    chrome_policy {
+      SafeBrowsingProtectionLevel {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingProtectionLevel: 0
+      }
+    }
     chrome_policy {
       SafeBrowsingEnabled {
         policy_options {mode: MANDATORY}
         SafeBrowsingEnabled: false
       }
     }
+    deprecated_policies: "SafeBrowsingEnabled"
+  })");
+}
+
+net::NetworkTrafficAnnotationTag
+HashRealTimeService::GetTrafficAnnotationTagForOhttp() const {
+  return net::DefineNetworkTrafficAnnotation(
+      "safe_browsing_hashprefix_realtime_lookup_ohttp",
+      R"(
+  semantics {
+    sender: "Safe Browsing"
+    description:
+      "When Safe Browsing can't detect that a URL is safe based on its "
+      "local database, it sends partial hashes of the URL to Google to check "
+      "whether to show a warning to the user. These partial hashes do not "
+      "expose the URL to Google. The partial hashes are sent to a proxy via "
+      "Oblivious HTTP first and then relayed to Google. The source of the "
+      "requests (e.g. IP address) is anonymized to Google."
+    trigger:
+      "When a main frame URL fails to match the local hash-prefix "
+      "database of known safe URLs and a valid result from a prior "
+      "lookup is not already cached, this will be sent."
+    data:
+        "The 32-bit hash prefixes of the URL that did not match the local "
+        " safelist. The URL itself is not sent."
+    destination: PROXIED_GOOGLE_OWNED_SERVICE
+    internal {
+      contacts {
+        email: "thefrog@chromium.org"
+      }
+      contacts {
+        email: "chrome-counter-abuse-alerts@google.com"
+      }
+    }
+    user_data {
+      type: NONE
+    }
+    last_reviewed: "2023-04-20"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "Users can disable Safe Browsing by checking 'No protection' in Chromium "
+      "settings under Security > Safe Browsing. The feature is enabled by "
+      "default."
+    chrome_policy {
+      SafeBrowsingProtectionLevel {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingProtectionLevel: 0
+      }
+    }
+    chrome_policy {
+      SafeBrowsingEnabled {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingEnabled: false
+      }
+    }
+    deprecated_policies: "SafeBrowsingEnabled"
   })");
 }
 

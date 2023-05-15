@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
@@ -68,9 +69,9 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  views::Label* const label_;
-  views::Label* const sub_label_;
-  views::ImageView* const detailed_view_arrow_;
+  const raw_ptr<views::Label, ExperimentalAsh> label_;
+  const raw_ptr<views::Label, ExperimentalAsh> sub_label_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> detailed_view_arrow_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
@@ -161,8 +162,8 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  FeaturePodIconButton* const icon_button_;
-  FeaturePodLabelButton* const label_button_;
+  const raw_ptr<FeaturePodIconButton, ExperimentalAsh> icon_button_;
+  const raw_ptr<FeaturePodLabelButton, ExperimentalAsh> label_button_;
 
   // If true, it is preferred by the FeaturePodController that the view is
   // visible. Usually, this should match visible(), but in case that the

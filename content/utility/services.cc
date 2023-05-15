@@ -94,6 +94,12 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/network_service_util.h"
+#include "services/network/empty_network_service.h"
+#include "services/network/public/cpp/features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/os_accessibility_service.h"  // nogncheck
@@ -103,6 +109,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+
+#if BUILDFLAG(IS_LINUX)
+#include "media/capture/capture_switches.h"
+#include "services/viz/public/cpp/gpu/gpu.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace content {
 base::LazyInstance<NetworkBinderCreationCallback>::Leaky
@@ -298,8 +309,20 @@ auto RunTracing(
 
 auto RunVideoCapture(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
-  return std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
+  auto service = std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
       std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
+#if BUILDFLAG(IS_LINUX)
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+    content::UtilityThread::Get()->BindHostReceiver(
+        remote_gpu.InitWithNewPipeAndPassReceiver());
+    std::unique_ptr<viz::Gpu> viz_gpu =
+        viz::Gpu::Create(std::move(remote_gpu),
+                         content::UtilityThread::Get()->GetIOTaskRunner());
+    service->SetVizGpu(std::move(viz_gpu));
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+  return service;
 }
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
@@ -353,6 +376,13 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
   // The network service runs on the IO thread because it needs a message
   // loop of type IO that can get notified when pipes have data.
   services.Add(RunNetworkService);
+#if BUILDFLAG(IS_ANDROID)
+  if (IsInProcessNetworkService() &&
+      base::FeatureList::IsEnabled(
+          network::features::kNetworkServiceEmptyOutOfProcess)) {
+    network::RegisterEmptyNetworkService(services);
+  }
+#endif
 
   // Add new IO-thread services above this line.
   GetContentClient()->utility()->RegisterIOThreadServices(services);

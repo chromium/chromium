@@ -68,7 +68,7 @@ public class VariationsSeedFetcherTest {
     public void setUp() throws IOException {
         // Pretend we are not on the UI thread, since the class we are testing is supposed to run
         // only on a background thread.
-        ThreadUtils.setWillOverrideUiThread(true);
+        ThreadUtils.setWillOverrideUiThread();
         ThreadUtils.setUiThread(mock(Looper.class));
         mFetcher = spy(VariationsSeedFetcher.get());
         mConnection = mock(HttpURLConnection.class);

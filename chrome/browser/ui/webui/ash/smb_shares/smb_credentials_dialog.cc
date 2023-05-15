@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,7 +24,7 @@ namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbCredentialsDialogHeight = 230;
-constexpr int kSmbCredentialsDialogHeightWithJellyOn = 275;
+constexpr int kSmbCredentialsDialogHeightWithJellyOn = 295;
 
 void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   static const struct {
@@ -39,8 +40,8 @@ void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
   }
-  bool is_jelly = chromeos::features::IsJellyEnabled();
-  html_source->AddBoolean("isJelly", is_jelly);
+  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  html_source->AddBoolean("isJellyEnabled", is_jelly_enabled);
 }
 
 std::string GetDialogId(const std::string& mount_id) {
@@ -115,8 +116,7 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISmbCredentialsHost);
-
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
 
   AddSmbCredentialsDialogStrings(source);
 

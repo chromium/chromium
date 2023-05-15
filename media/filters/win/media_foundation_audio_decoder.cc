@@ -44,12 +44,6 @@ bool CodecSupportsFloatOutput(AudioCodec codec) {
 
 bool CodecSupportsFormat(const AudioDecoderConfig& config,
                          const WAVEFORMATEX& format) {
-  // Can this really happen? Seems like it's required by the subtype being
-  // MFAudioFormat_Float.
-  if (format.nBlockAlign != format.nChannels * sizeof(float)) {
-    return false;
-  }
-
   if (config.channels() == format.nChannels &&
       config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
     return true;
@@ -61,6 +55,14 @@ bool CodecSupportsFormat(const AudioDecoderConfig& config,
       2 * config.channels() == format.nChannels &&
       2 * config.samples_per_second() ==
           static_cast<int>(format.nSamplesPerSec)) {
+    return true;
+  }
+
+  // For AC3/EAC3, we expect channel config changes, no need to compare channels
+  // here.
+  if ((config.codec() == AudioCodec::kAC3 ||
+       config.codec() == AudioCodec::kEAC3) &&
+      config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
     return true;
   }
 
@@ -180,10 +182,8 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                          DecodeCB decode_cb) {
-  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
-    return;
-  }
+  DecodeCB decode_cb_bound =
+      base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
   if (buffer->end_of_stream()) {
     switch (decoder_->ProcessMessage(MFT_MESSAGE_COMMAND_DRAIN, 0)) {
@@ -193,26 +193,33 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
           rc = PumpOutput(PumpState::kNormal);
         } while (rc == OutputStatus::kSuccess);
         // Return kOk if more input is needed since this is end of stream
-        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+        std::move(decode_cb_bound)
             .Run(rc == OutputStatus::kFailed ? DecoderStatus::Codes::kFailed
                                              : DecoderStatus::Codes::kOk);
         return;
       }
       case MF_E_TRANSFORM_TYPE_NOT_SET:
-        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+        std::move(decode_cb_bound)
             .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
         return;
       default:
-        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-            .Run(DecoderStatus::Codes::kFailed);
+        std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
         return;
     }
   }
 
+  if (buffer->decrypt_config() &&
+      buffer->decrypt_config()->encryption_scheme() !=
+          EncryptionScheme::kUnencrypted) {
+    DLOG(ERROR) << "Encrypted buffer not supported";
+    std::move(decode_cb_bound)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
   if (buffer->timestamp() == kNoTimestamp) {
     DLOG(ERROR) << "Received a buffer without timestamps!";
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-        .Run(DecoderStatus::Codes::kMissingTimestamp);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kMissingTimestamp);
     return;
   }
 
@@ -223,14 +230,12 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   auto sample = CreateEmptySampleWithBuffer(buffer->data_size(), 0);
   if (!sample) {
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-        .Run(DecoderStatus::Codes::kFailed);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!PopulateInputSample(sample.Get(), *buffer)) {
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-        .Run(DecoderStatus::Codes::kFailed);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -252,7 +257,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         break;
     }
     // Drop remaining samples on error, no need to call PumpOutput
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(rc);
+    std::move(decode_cb_bound).Run(rc);
     return;
   }
 
@@ -265,8 +270,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     if (rc == OutputStatus::kNeedMoreInput)
       break;
     if (rc == OutputStatus::kFailed) {
-      base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-          .Run(DecoderStatus::Codes::kFailed);
+      std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
       return;
     }
     decoded_frame_this_loop = true;
@@ -280,7 +284,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     DCHECK(!result);
   }
 
-  base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(OkStatus());
+  std::move(decode_cb_bound).Run(OkStatus());
 }
 
 void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {

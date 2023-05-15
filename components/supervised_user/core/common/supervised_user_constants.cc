@@ -20,7 +20,7 @@ const char kClassifyURLRequestURL[] = "people/me:classifyUrl";
 
 }  // namespace
 
-const char kAuthorizationHeaderFormat[] = "Bearer %s";
+const char kAuthorizationHeader[] = "Bearer";
 const char kCameraMicDisabled[] = "CameraMicDisabled";
 const char kContentPackDefaultFilteringBehavior[] =
     "ContentPackDefaultFilteringBehavior";

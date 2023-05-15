@@ -33,6 +33,13 @@ class TestModelExecutor
   void SendForExecution(ExecutionCallback callback_on_complete,
                         base::TimeTicks start_time,
                         const std::vector<float>& args) override;
+
+  using BatchExecutionCallback = base::OnceCallback<void(
+      const std::vector<absl::optional<std::vector<float>>>&)>;
+  void SendForBatchExecution(
+      BatchExecutionCallback callback_on_complete,
+      base::TimeTicks start_time,
+      const std::vector<std::vector<float>>& args) override;
 };
 
 }  // namespace optimization_guide

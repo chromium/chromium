@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -116,7 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
   // TPM. Will be adapted after each attempt.
   base::TimeDelta tpm_request_delay_;
 
-  CryptohomePkcs11Client* cryptohome_pkcs11_client_;
+  raw_ptr<CryptohomePkcs11Client, ExperimentalAsh> cryptohome_pkcs11_client_;
 
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
 };

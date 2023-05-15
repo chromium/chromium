@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HIDDEN_NETWORK_HANDLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -46,10 +47,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HiddenNetworkHandler {
   // Allows us to check for wrongly configured networks on a daily basis.
   base::RepeatingTimer daily_event_timer_;
 
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkMetadataStore* network_metadata_store_ = nullptr;
+  raw_ptr<NetworkMetadataStore, DanglingUntriaged | ExperimentalAsh>
+      network_metadata_store_ = nullptr;
 };
 
 }  // namespace ash

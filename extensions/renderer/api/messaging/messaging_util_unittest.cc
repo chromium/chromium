@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -65,6 +66,119 @@ TEST_F(MessagingUtilTest, TestParseMessageOptionsFrameId) {
         messaging_util::ParseMessageOptions(context, value.As<v8::Object>(),
                                             messaging_util::PARSE_FRAME_ID);
     EXPECT_EQ(test_case.expected_frame_id, options.frame_id);
+  }
+}
+
+// Tests the result of GetEventForChannel().
+TEST_F(MessagingUtilTest, TestGetEventForChannel) {
+  ExtensionId id1('a', 32);
+  ExtensionId id2('b', 32);
+
+  // Exercise a bunch of possible channel endpoints -> extensions.
+  // This technically isn't exhaustive, but should give us pretty reasonable
+  // coverage.
+
+  // sendRequest, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnRequestEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kSendRequest));
+  }
+
+  // sendRequest, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnRequestExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kSendRequest));
+  }
+
+  // sendMessage, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Web Page -> Extension
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForWebPage(), id1,
+                                           ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Content Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnMessageEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForContentScript(id1), id1,
+                  ChannelType::kSendMessage));
+  }
+
+  // sendMessage, User Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnUserScriptMessageEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForUserScript(id1), id1,
+                  ChannelType::kSendMessage));
+  }
+
+  // connect, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnConnectEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kConnect));
+  }
+
+  // connect, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnConnectExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kConnect));
+  }
+
+  // connect, Web Page -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectExternalEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForWebPage(), id1, ChannelType::kConnect));
+  }
+
+  // connect, Content Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForContentScript(id1), id1,
+                  ChannelType::kConnect));
+  }
+
+  // connect, User Script -> Extension
+  {
+    EXPECT_EQ(
+        messaging_util::kOnUserScriptConnectEvent,
+        messaging_util::GetEventForChannel(
+            MessagingEndpoint::ForUserScript(id1), id1, ChannelType::kConnect));
+  }
+
+  // connect, Native App -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectNativeEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForNativeApp("some app"), id1,
+                  ChannelType::kNative));
   }
 }
 
@@ -132,6 +246,49 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
       {v8::Null(isolate()), base::StringPiece(), false},
       {gin::StringToV8(isolate(), ""), base::StringPiece(), false},
       {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
+  };
+
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
+    const auto& test_case = test_cases[i];
+    std::string target;
+    std::string error;
+    EXPECT_EQ(test_case.should_pass,
+              messaging_util::GetTargetExtensionId(
+                  script_context, test_case.passed_id, "runtime.sendMessage",
+                  &target, &error));
+    EXPECT_EQ(test_case.expected_id, target);
+    EXPECT_EQ(test_case.should_pass, error.empty()) << error;
+  }
+}
+
+TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromUserScriptContext) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
+  RegisterExtension(extension);
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::USER_SCRIPT_CONTEXT);
+  script_context->set_url(extension->url());
+
+  std::string other_id(32, 'a');
+  struct {
+    v8::Local<v8::Value> passed_id;
+    base::StringPiece expected_id;
+    bool should_pass;
+  } test_cases[] = {
+      // If the extension ID is not provided, the bindings use the calling
+      // extension's.
+      {v8::Null(isolate()), extension->id(), true},
+      // We treat the empty string to be the same as null, even though it's
+      // somewhat unfortunate.
+      // See https://crbug.com/823577.
+      {gin::StringToV8(isolate(), ""), extension->id(), true},
+      {gin::StringToV8(isolate(), extension->id()), extension->id(), true},
+      // User scripts may not target other extensions.
+      {gin::StringToV8(isolate(), other_id), base::StringPiece(), false},
   };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {

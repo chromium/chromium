@@ -4,12 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
+ * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cros-color-overrides
  * #css_wrapper_metadata_end */
-
-html {
-  background-color: var(--cros-bg-color);
-}
 
 :host {
   --shortcuts-font-weight-regular: 400;
@@ -17,4 +15,26 @@ html {
 
   --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
+}
+
+:host-context(body.jelly-enabled) {
+  --shortcuts-font-weight-regular: var(--cros-body-2-font-weight);
+  --shortcuts-font-weight-medium: var(--cros-button-2-font-weight);
+
+  --shortcuts-font-family-default: var(--cros-body-2-font-family);
+  --shortcuts-font-size-default: var(--cros-body-2-font-size);
+
+  font: var(--cros-body-2-font);
+}
+
+:host-context(body.jelly-enabled) cr-button {
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body.jelly-enabled) cr-button.action-button {
+  font: var(--cros-button-1-font);
+}
+
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  border-radius: 20px;
 }

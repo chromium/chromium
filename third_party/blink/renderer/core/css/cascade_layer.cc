@@ -55,6 +55,13 @@ void CascadeLayer::ToStringInternal(StringBuilder& result,
   }
 }
 
+void CascadeLayer::Merge(const CascadeLayer& other, LayerMap& mapping) {
+  mapping.insert(&other, this);
+  for (CascadeLayer* sub_layer : other.direct_sub_layers_) {
+    GetOrAddSubLayer({sub_layer->GetName()})->Merge(*sub_layer, mapping);
+  }
+}
+
 void CascadeLayer::Trace(blink::Visitor* visitor) const {
   visitor->Trace(direct_sub_layers_);
 }

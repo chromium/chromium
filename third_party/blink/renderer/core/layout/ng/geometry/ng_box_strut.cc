@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,6 +44,14 @@ std::ostream& operator<<(std::ostream& stream, const NGLineBoxStrut& value) {
   return stream << "Inline: (" << value.inline_start << " " << value.inline_end
                 << ") Line: (" << value.line_over << " " << value.line_under
                 << ") ";
+}
+
+NGPhysicalBoxStrut& NGPhysicalBoxStrut::Unite(const NGPhysicalBoxStrut& other) {
+  top = std::max(top, other.top);
+  right = std::max(right, other.right);
+  bottom = std::max(bottom, other.bottom);
+  left = std::max(left, other.left);
+  return *this;
 }
 
 }  // namespace blink

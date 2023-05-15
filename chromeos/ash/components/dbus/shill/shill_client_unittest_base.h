@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
@@ -201,7 +202,7 @@ class ShillClientUnittestBase : public testing::Test {
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock object proxy returns.
-  dbus::Response* response_;
+  raw_ptr<dbus::Response, ExperimentalAsh> response_;
   // A callback to intercept and check the method call arguments.
   ArgumentCheckCallback argument_checker_;
 };

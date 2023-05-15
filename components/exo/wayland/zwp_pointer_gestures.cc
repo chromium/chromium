@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/pointer.h"
 #include "components/exo/pointer_gesture_pinch_delegate.h"
 #include "components/exo/surface.h"
@@ -70,8 +71,8 @@ class WaylandPointerGesturePinchDelegate : public PointerGesturePinchDelegate {
   }
 
  private:
-  wl_resource* const resource_;
-  Pointer* pointer_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<Pointer, ExperimentalAsh> pointer_;
 };
 
 void pointer_gesture_pinch_destroy(wl_client* client, wl_resource* resource) {

@@ -40,10 +40,24 @@ export interface Size {
   height: number;
 }
 
-interface FittingTypeParams {
-  page: number;
-  boundingBox: Rect;
+interface FitToPageParams {
+  page?: number;
+  scrollToTop?: boolean;
 }
+
+interface FitToHeightParams {
+  page?: number;
+  viewPosition?: number;
+}
+
+interface FitToBoundingBoxParams {
+  boundingBox: Rect;
+  page: number;
+}
+
+type FitToWidthParams = FitToHeightParams;
+type FittingTypeParams =
+    FitToPageParams|FitToHeightParams|FitToWidthParams|FitToBoundingBoxParams;
 
 /** @return The area of the intersection of the rects */
 function getIntersectionArea(rect1: ViewportRect, rect2: ViewportRect): number {
@@ -430,11 +444,11 @@ export class Viewport implements ViewportInterface {
     }
 
     if (this.fittingType_ === FittingType.FIT_TO_PAGE) {
-      this.fitToPageInternal_(false);
+      this.fitToPage({scrollToTop: false});
     } else if (this.fittingType_ === FittingType.FIT_TO_WIDTH) {
       this.fitToWidth();
     } else if (this.fittingType_ === FittingType.FIT_TO_HEIGHT) {
-      this.fitToHeightInternal_(document.fullscreenElement !== null);
+      this.fitToHeight();
     } else if (this.internalZoom_ === 0) {
       this.fitToNone();
     } else {
@@ -530,17 +544,23 @@ export class Viewport implements ViewportInterface {
     this.zoomManager_!.onPdfZoomChange();
   }
 
-  private setZoomInternal_(newZoom: number) {
+  /**
+   * @param currentScrollPos Optional starting position to zoom into. Otherwise,
+   *     use the current position.
+   */
+  private setZoomInternal_(newZoom: number, currentScrollPos?: Point) {
     assert(
         this.allowedToChangeZoom_,
         'Called Viewport.setZoomInternal_ without calling ' +
             'Viewport.mightZoom_.');
     // Record the scroll position (relative to the top-left of the window).
     let zoom = this.getZoom();
-    const currentScrollPos = {
-      x: this.position.x / zoom,
-      y: this.position.y / zoom,
-    };
+    if (!currentScrollPos) {
+      currentScrollPos = {
+        x: this.position.x / zoom,
+        y: this.position.y / zoom,
+      };
+    }
 
     this.internalZoom_ = newZoom;
     this.contentSizeChanged_();
@@ -913,24 +933,25 @@ export class Viewport implements ViewportInterface {
 
   /**
    * Set the fitting type and fit within the viewport accordingly.
-   * @param params Params required for fitting to the bounding box.
+   * @param params Params needed to determine the page, position, and zoom for
+   *     certain fitting types.
    */
   setFittingType(fittingType: FittingType, params?: FittingTypeParams) {
     switch (fittingType) {
       case FittingType.FIT_TO_PAGE:
-        this.fitToPage();
+        this.fitToPage(params as FitToPageParams);
         return;
       case FittingType.FIT_TO_WIDTH:
-        this.fitToWidth();
+        this.fitToWidth(params as FitToWidthParams);
         return;
       case FittingType.FIT_TO_HEIGHT:
-        this.fitToHeight();
+        this.fitToHeight(params as FitToHeightParams);
         return;
       case FittingType.FIT_TO_BOUNDING_BOX:
-        assert(params);
-        this.fitToBoundingBox_(params.page, params.boundingBox);
+        this.fitToBoundingBox(params as FitToBoundingBoxParams);
         return;
       case FittingType.NONE:
+        // Does not take any params.
         this.fittingType_ = fittingType;
         return;
       default:
@@ -938,91 +959,121 @@ export class Viewport implements ViewportInterface {
     }
   }
 
-  /** Zoom the viewport so that the page width consumes the entire viewport. */
-  fitToWidth() {
+  /**
+   * Zoom the viewport so that the page width consumes the entire viewport.
+   * @param params Optional params that may contain the page to scroll to the
+   *     top of. Otherwise, remain at the current scroll position. Params may
+   *     also contain the y offset from the top of the page.
+   */
+  fitToWidth(params?: FitToWidthParams) {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.FIT_TO_WIDTH;
       if (!this.documentDimensions_) {
         return;
       }
+
+      const scrollPosition = {
+        x: this.position.x / this.getZoom(),
+        y: this.position.y / this.getZoom(),
+      };
+
+      if (params?.page !== undefined) {
+        scrollPosition.y = this.pageDimensions_[params.page].y;
+      }
+
+      if (params?.viewPosition !== undefined) {
+        if (params.page === undefined) {
+          scrollPosition.y = this.pageDimensions_[this.getMostVisiblePage()].y;
+        }
+        scrollPosition.y += params.viewPosition;
+      }
+
       // When computing fit-to-width, the maximum width of a page in the
       // document is used, which is equal to the size of the document width.
       this.setZoomInternal_(
-          this.computeFittingZoom_(this.documentDimensions_, true, false));
+          this.computeFittingZoom_(this.documentDimensions_, true, false),
+          scrollPosition);
       this.updateViewport_();
     });
   }
 
   /**
    * Zoom the viewport so that the page height consumes the entire viewport.
-   * @param scrollToTopOfPage Set to true if the viewport should be scrolled to
-   *     the top of the current page. Set to false if the viewport should remain
-   *     at the current scroll position.
+   * @param params Optional params that may contain the page to scroll to the
+   *     top of. Otherwise, remain at the current scroll position. Params may
+   *     also contain the x offset from the left of the page.
    */
-  private fitToHeightInternal_(scrollToTopOfPage: boolean) {
+  fitToHeight(params?: FitToHeightParams) {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.FIT_TO_HEIGHT;
       if (!this.documentDimensions_) {
         return;
       }
-      const page = this.getMostVisiblePage();
-      // When computing fit-to-height, the maximum height of the current page
-      // is used.
+
+      const scrollPosition = {
+        x: this.position.x / this.getZoom(),
+        y: this.position.y / this.getZoom(),
+      };
+
+      const page =
+          params?.page !== undefined ? params.page : this.getMostVisiblePage();
+
+      if (params?.page !== undefined || document.fullscreenElement !== null) {
+        scrollPosition.y = this.pageDimensions_[page].y;
+      }
+
+      if (params?.viewPosition !== undefined) {
+        scrollPosition.x = this.pageDimensions_[page].x + params.viewPosition;
+      }
+
+      // When computing fit-to-height, the maximum height of the page is used.
       const dimensions = {
         width: 0,
         height: this.pageDimensions_[page].height,
       };
-      this.setZoomInternal_(this.computeFittingZoom_(dimensions, false, true));
-      if (scrollToTopOfPage) {
-        this.setPosition({
-          x: 0,
-          y: this.pageDimensions_[page].y * this.getZoom(),
-        });
-      }
+      this.setZoomInternal_(
+          this.computeFittingZoom_(dimensions, false, true), scrollPosition);
       this.updateViewport_();
     });
   }
 
-  /** Zoom the viewport so that the page height consumes the entire viewport. */
-  fitToHeight() {
-    this.fitToHeightInternal_(true);
-  }
-
   /**
-   * Zoom the viewport so that a page consumes as much as possible of the it.
-   * @param scrollToTopOfPage Whether the viewport should be scrolled to the top
-   *     of the current page. If false, the viewport will remain at the current
-   *     scroll position.
+   * Zoom the viewport so that a page consumes as much as of the viewport as
+   * possible.
+   * @param params Optional params that may contain the page to scroll to the
+   *     top of. Also may contain `scrollToTop`, whether to scroll to the top of
+   *     the page or not. Defaults to true. Ignored if a page value is provided.
    */
-  private fitToPageInternal_(scrollToTopOfPage: boolean) {
+  fitToPage(params?: FitToPageParams) {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.FIT_TO_PAGE;
       if (!this.documentDimensions_) {
         return;
       }
-      const page = this.getMostVisiblePage();
-      // Fit to the current page's height and the widest page's width.
+
+      const scrollPosition = {
+        x: this.position.x / this.getZoom(),
+        y: this.position.y / this.getZoom(),
+      };
+
+      const page =
+          params?.page !== undefined ? params.page : this.getMostVisiblePage();
+
+      if (params?.page !== undefined || params?.scrollToTop !== false) {
+        // Scroll to top of page.
+        scrollPosition.x = 0;
+        scrollPosition.y = this.pageDimensions_[page].y;
+      }
+
+      // Fit to the page's height and the widest page's width.
       const dimensions = {
         width: this.documentDimensions_.width,
         height: this.pageDimensions_[page].height,
       };
-      this.setZoomInternal_(this.computeFittingZoom_(dimensions, true, true));
-      if (scrollToTopOfPage) {
-        this.setPosition({
-          x: 0,
-          y: this.pageDimensions_[page].y * this.getZoom(),
-        });
-      }
+      this.setZoomInternal_(
+          this.computeFittingZoom_(dimensions, true, true), scrollPosition);
       this.updateViewport_();
     });
-  }
-
-  /**
-   * Zoom the viewport so that a page consumes the entire viewport. Also scrolls
-   * the viewport to the top of the current page.
-   */
-  fitToPage() {
-    this.fitToPageInternal_(true);
   }
 
   /** Zoom the viewport to the default zoom. */
@@ -1042,10 +1093,11 @@ export class Viewport implements ViewportInterface {
   /**
    * Zoom the viewport so that the bounding box of a page consumes the entire
    * viewport.
-   * @param page The page to display.
-   * @param boundingBox The bounding box to fit to.
+   * @param params Required params containing the bounding box to fit to and the
+   *     page to scroll to.
    */
-  private fitToBoundingBox_(page: number, boundingBox: Rect) {
+  fitToBoundingBox(params: FitToBoundingBoxParams) {
+    const boundingBox = params.boundingBox;
     // Ignore invalid bounding boxes, which can occur if the plugin fails to
     // give a valid box.
     if (!boundingBox.width || !boundingBox.height) {
@@ -1065,12 +1117,9 @@ export class Viewport implements ViewportInterface {
     const zoomFitToHeight =
         this.computeFittingZoom_(boundingBoxSize, false, true);
     const newZoom = this.clampZoom_(Math.min(zoomFitToWidth, zoomFitToHeight));
-    this.mightZoom_(() => {
-      this.setZoomInternal_(newZoom);
-    });
 
     // Calculate the position.
-    const pageInsetDimensions = this.getPageInsetDimensions(page);
+    const pageInsetDimensions = this.getPageInsetDimensions(params.page);
     const viewportSize = this.size;
     const screenPosition: Point = {
       x: pageInsetDimensions.x + boundingBox.x,
@@ -1085,8 +1134,10 @@ export class Viewport implements ViewportInterface {
       screenPosition.y -=
           ((viewportSize.height / newZoom) - boundingBox.height) / 2;
     }
-    this.setPosition(
-        {x: screenPosition.x * newZoom, y: screenPosition.y * newZoom});
+
+    this.mightZoom_(() => {
+      this.setZoomInternal_(newZoom, screenPosition);
+    });
   }
 
   /** Zoom out to the next predefined zoom level. */

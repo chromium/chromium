@@ -15,6 +15,9 @@
 // Presents the edit View.
 - (void)showEditView;
 
+// Indicates that the user decided not to migrate the profile.
+- (void)noThanksButtonWasPressed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_AUTOFILL_ADDRESS_PROFILE_INFOBAR_SAVE_ADDRESS_PROFILE_MODAL_DELEGATE_H_

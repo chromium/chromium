@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
+#include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -27,29 +27,6 @@ constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 base::Time GetTimeInTenMinutes() {
   return base::Time::Now() + base::Minutes(10);
 }
-
-class FakeBoundSessionRefreshCookieFetcher
-    : public BoundSessionRefreshCookieFetcher {
- public:
-  FakeBoundSessionRefreshCookieFetcher(SigninClient* client,
-                                       const GURL& url,
-                                       const std::string& cookie_name)
-      : BoundSessionRefreshCookieFetcher(client, url, cookie_name) {}
-
-  void Start(RefreshCookieCompleteCallback callback) override {
-    callback_ = std::move(callback);
-  }
-
-  void SimulateCompleteRefreshRequest(
-      absl::optional<base::Time> cookie_expiration) {
-    if (cookie_expiration.has_value()) {
-      // Synchronous since tests use `BoundSessionTestCookieManager`.
-      OnRefreshCookieCompleted(CreateFakeCookie(cookie_expiration.value()));
-    } else {
-      std::move(callback_).Run(cookie_expiration);
-    }
-  }
-};
 }  // namespace
 
 class BoundSessionCookieControllerImplTest
@@ -95,6 +72,7 @@ class BoundSessionCookieControllerImplTest
       return false;
     }
     SimulateCompleteRefreshRequest(GetTimeInTenMinutes());
+    task_environment_.RunUntilIdle();
     return true;
   }
 
@@ -260,6 +238,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
   // Simulate refresh complete.
   SimulateCompleteRefreshRequest(GetTimeInTenMinutes());
+  task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(controller->cookie_expiration_time(), GetTimeInTenMinutes());
 }
@@ -281,8 +260,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(future.IsReady());
 
   // Simulate refresh complete with failure.
-  // Callbacks should be called regardless of success, failure.
   SimulateCompleteRefreshRequest(absl::nullopt);
+  task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(controller->cookie_expiration_time(), cookie_expiration);
 }
@@ -302,6 +281,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   }
 
   SimulateCompleteRefreshRequest(GetTimeInTenMinutes());
+  task_environment()->RunUntilIdle();
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
   }

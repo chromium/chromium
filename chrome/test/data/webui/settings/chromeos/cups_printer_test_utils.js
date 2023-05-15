@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrinterStatusReason} from 'chrome://os-settings/chromeos/lazy_load.js';
+
 /**
  * @param {string} printerName
  * @param {string} printerAddress
@@ -29,7 +31,7 @@ export function createCupsPrinterInfo(
     },
     printerProtocol: 'ipp',
     printerQueue: 'moreinfohere',
-    printerStatus: '',
+    printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
     printServerUri: '',
   };
   return printer;
@@ -62,7 +64,7 @@ export function createPrinterListEntry(
       },
       printerProtocol: 'ipp',
       printerQueue: 'moreinfohere',
-      printerStatus: '',
+      printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
       printServerUri: '',
     },
     printerType: printerType,

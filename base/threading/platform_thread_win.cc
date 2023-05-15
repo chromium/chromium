@@ -43,7 +43,7 @@ BASE_FEATURE(kUseThreadPriorityLowest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAboveNormalCompositingBrowserWin,
              "AboveNormalCompositingBrowserWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -52,7 +52,7 @@ namespace {
 std::atomic<bool> g_use_thread_priority_lowest{false};
 // Flag used to map Compositing ThreadType |THREAD_PRIORITY_ABOVE_NORMAL| on the
 // UI thread for |kAboveNormalCompositingBrowserWin| Feature.
-std::atomic<bool> g_above_normal_compositing_browser{false};
+std::atomic<bool> g_above_normal_compositing_browser{true};
 
 // These values are sometimes returned by ::GetThreadPriority().
 constexpr int kWinDisplayPriority1 = 5;

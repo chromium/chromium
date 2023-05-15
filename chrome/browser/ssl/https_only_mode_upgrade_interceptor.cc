@@ -165,7 +165,9 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Don't upgrade if HTTPS-Only Mode isn't enabled, but record metrics.
   auto* prefs = profile->GetPrefs();
   if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
-    RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted);
+    RecordHttpsFirstModeNavigation(
+        Event::kUpgradeNotAttempted,
+        security_interstitials::https_only_mode::HttpInterstitialState{});
     std::move(callback).Run({});
     return;
   }

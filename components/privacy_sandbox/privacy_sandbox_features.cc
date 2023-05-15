@@ -93,4 +93,8 @@ BASE_FEATURE(kPrivacySandboxFirstPartySetsUI,
 const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets{
     &kPrivacySandboxFirstPartySetsUI, "use-sample-sets", false};
 
+BASE_FEATURE(kEnforcePrivacySandboxAttestations,
+             "EnforcePrivacySandboxAttestations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

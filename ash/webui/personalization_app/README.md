@@ -49,14 +49,41 @@ tests, javascript component browser tests, and javascript full-app browsertests.
   * Uses fixture `personalization_app_browsertest_fixture.h`
     * wallpaper mocked out at network layer by mocking out wallpaper fetchers
     via `TestWallpaperFetcherDelegate`
+    * uses a real theme provider
     * all others mock out mojom layer via fake mojom providers
-    `FakePersonalizationApp{Ambient,KeyboardBacklight,Theme,User}Provider`
+    `FakePersonalizationApp{Ambient,KeyboardBacklight,User}Provider`
 * System Web App integration tests
   * `personalization_app_integration_browsertest.cc`
   * `browser_tests --gtest_filter=*PersonalizationAppIntegration*`
   * Tests that the app install, launches without error
   * Also tests special tricky system UI support for full screen transparency for
   wallpaper preview because they cannot be tested in javascript
+    * includes a pixel test for fullscreen wallpaper preview
+    * see below [Running browser pixel tests](#running-browser-pixel-tests) and
+    `//ash/test/pixel/README.md` for more information
+
+#### Running browser pixel tests
+
+##### Locally
+
+```
+browser_tests
+--gtest_filter=*PersonalizationAppIntegrationPixel*
+--skia-gold-local-png-write-directory=/tmp/skia_gold/
+--enable-pixel-output-in-tests
+--browser-ui-tests-verify-pixels
+```
+
+Inspect the output pngs generated in `/tmp/skia_gold/*` to make sure that the
+test is setting up the correct UI state.
+
+##### CQ
+
+In CQ these tests do not actually verify pixel output as part of the mainline
+`browser_tests` step in `linux-chromeos-rel`. However, they still go through
+the setup to make sure there are no crashes while preparing the UI. Full pixel
+verification will run as part of `pixel_experimental_browser_tests` which passes
+the necessary additional argument `--browser-ui-tests-verify-pixels`.
 
 ### Where should I write my test?
 

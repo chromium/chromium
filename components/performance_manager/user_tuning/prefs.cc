@@ -17,6 +17,11 @@ const char kHighEfficiencyModeEnabled[] =
 const char kHighEfficiencyModeState[] =
     "performance_tuning.high_efficiency_mode.state";
 
+const char kHighEfficiencyModeTimeBeforeDiscardInMinutes[] =
+    "performance_tuning.high_efficiency_mode.time_before_discard_in_minutes";
+
+const int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes = 120;
+
 const char kBatterySaverModeState[] =
     "performance_tuning.battery_saver_mode.state";
 
@@ -31,6 +36,9 @@ const char kManagedTabDiscardingExceptions[] =
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
+  registry->RegisterIntegerPref(
+      kHighEfficiencyModeTimeBeforeDiscardInMinutes,
+      kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes);
   registry->RegisterIntegerPref(
       kHighEfficiencyModeState,
       static_cast<int>(HighEfficiencyModeState::kDisabled));
@@ -57,6 +65,19 @@ HighEfficiencyModeState GetCurrentHighEfficiencyModeState(
   }
 
   return static_cast<HighEfficiencyModeState>(state);
+}
+
+base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+    PrefService* pref_service) {
+  int time_before_discard_in_minutes =
+      pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+  if (time_before_discard_in_minutes < 0) {
+    pref_service->ClearPref(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+    time_before_discard_in_minutes =
+        pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+  }
+
+  return base::Minutes(time_before_discard_in_minutes);
 }
 
 BatterySaverModeState GetCurrentBatterySaverModeState(

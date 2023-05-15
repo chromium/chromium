@@ -130,10 +130,9 @@ void TailoredSecurityUrlObserver::UpdateFocusAndURL(bool focused,
     bool old_should_query =
         focused_ && CanQueryTailoredSecurityForUrl(last_url_);
     if (should_query && !old_should_query) {
-      service_->AddQueryRequest();
-      has_query_request_ = true;
+      has_query_request_ = service_->AddQueryRequest();
     }
-    if (!should_query && old_should_query) {
+    if (!should_query && old_should_query && has_query_request_) {
       service_->RemoveQueryRequest();
       has_query_request_ = false;
     }

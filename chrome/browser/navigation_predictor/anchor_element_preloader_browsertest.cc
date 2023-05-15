@@ -48,9 +48,15 @@ class AnchorElementPreloaderBrowserTest
     return {};
   }
 
+  virtual base::FieldTrialParams GetNavigationPredictorFieldTrialParams() {
+    return {};
+  }
+
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kAnchorElementInteraction,
+        {{blink::features::kNavigationPredictor,
+          GetNavigationPredictorFieldTrialParams()},
+         {blink::features::kAnchorElementInteraction,
           GetAnchorElementInteractionFieldTrialParams()},
          {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
         {blink::features::kSpeculationRulesPointerHoverHeuristics,
@@ -484,4 +490,51 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
       << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
                                                            expected_entries);
 }
+
+class AnchorElementSetIsNavigationInDomainBrowserTest
+    : public AnchorElementPreloaderBrowserTest {
+ public:
+  base::FieldTrialParams GetNavigationPredictorFieldTrialParams() override {
+    return {{"random_anchor_sampling_period", "1"}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AnchorElementSetIsNavigationInDomainBrowserTest,
+                       TestPointerDownOnAnchor) {
+  base::HistogramTester histogram_tester;
+  GURL url = GetTestURL("/one_anchor.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // Add a new link and trigger a mouse down event.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              R"(
+    let a = document.createElement("a");
+    a.id = "link";
+    a.href = "https://www.example.com";
+    a.innerHTML = '<div style="width:100vw;height:100vh;">Example<div>';
+    document.body.appendChild(a);
+    )"));
+  base::RunLoop().RunUntilIdle();
+  content::InputEventAckWaiter waiter(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kMouseDown);
+  SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseDown,
+                     blink::WebPointerProperties::Button::kLeft,
+                     gfx::Point(150, 150));
+  waiter.Wait();
+  // Add another link and click on it.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              R"(
+    let google = document.createElement("a");
+    google.id = "link";
+    google.href = "https://www.google.com";
+    google.innerHTML = "google";
+    document.body.appendChild(google);
+    google.click();
+    )"));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Predictor.PointerDownOnAnchor.Recall",
+      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
+}
+
 }  // namespace

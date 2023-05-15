@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -64,6 +65,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -112,13 +114,6 @@ void CertCallbackSuccessWithValidCertificate(
     ash::attestation::AttestationFlow::CertificateCallback callback) {
   std::string certificate;
   ash::attestation::GetFakeCertificatePEM(base::Days(10), &certificate);
-  CertCallbackSuccess(std::move(callback), std::move(certificate));
-}
-
-void CertCallbackSuccessWithExpiredCertificate(
-    ash::attestation::AttestationFlow::CertificateCallback callback) {
-  std::string certificate;
-  ash::attestation::GetFakeCertificatePEM(base::Days(-1), &certificate);
   CertCallbackSuccess(std::move(callback), std::move(certificate));
 }
 
@@ -213,12 +208,16 @@ class DeviceCloudPolicyManagerAshTest
         std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_ = external_data_manager.get();
     manager_ = std::make_unique<TestingDeviceCloudPolicyManagerAsh>(
-        base::WrapUnique(store_), std::move(external_data_manager),
+        base::WrapUnique(store_.get()), std::move(external_data_manager),
         base::SingleThreadTaskRunner::GetCurrentDefault(), &state_keys_broker_);
 
     RegisterLocalState(local_state_.registry());
     manager_->Init(&schema_registry_);
     manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
+
+    user_manager_ =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    manager_->OnUserManagerCreated(user_manager_.get());
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
@@ -244,6 +243,10 @@ class DeviceCloudPolicyManagerAshTest
     if (initializer_)
       initializer_->Shutdown();
     ShutdownManager();
+
+    manager_->OnUserManagerWillBeDestroyed(user_manager_.get());
+    user_manager_.reset();
+
     manager_.reset();
     install_attributes_.reset();
 
@@ -345,6 +348,7 @@ class DeviceCloudPolicyManagerAshTest
   net::HttpStatusCode url_fetcher_response_code_;
   std::string url_fetcher_response_string_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
@@ -353,10 +357,10 @@ class DeviceCloudPolicyManagerAshTest
   ServerBackedStateKeysBroker state_keys_broker_;
   StrictMock<ash::attestation::MockAttestationFlow> mock_attestation_flow_;
 
-  DeviceCloudPolicyStoreAsh* store_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
   SchemaRegistry schema_registry_;
   ash::attestation::ScopedStubAttestationFeatures attestation_features_;
-  MockCloudExternalDataManager* external_data_manager_;
+  raw_ptr<MockCloudExternalDataManager, ExperimentalAsh> external_data_manager_;
   std::unique_ptr<TestingDeviceCloudPolicyManagerAsh> manager_;
   std::unique_ptr<DeviceCloudPolicyInitializer> initializer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -639,16 +643,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           mock_attestation_flow_,
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-              /*force_new_key=*/false, _, _, _, _))
-          .Times(1)
-          .WillOnce(
-              WithArgs<7>(Invoke(CertCallbackSuccessWithExpiredCertificate)));
-      EXPECT_CALL(
-          mock_attestation_flow_,
-          GetCertificate(
-              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
               /*force_new_key=*/true, _, _, _, _))
-          .Times(1)
           .WillOnce(
               WithArgs<7>(Invoke(CertCallbackSuccessWithValidCertificate)));
     }
@@ -707,8 +702,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     enrollment_handler_ = std::make_unique<EnrollmentHandler>(
         store_, install_attributes_.get(), &state_keys_broker_,
         &mock_attestation_flow_, std::move(client),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /*ad_join_delegate=*/nullptr, enrollment_config,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), enrollment_config,
         policy::LicenseType::kEnterprise, std::move(auth),
         install_attributes_->GetDeviceId(),
         EnrollmentRequisitionManager::GetDeviceRequisition(),

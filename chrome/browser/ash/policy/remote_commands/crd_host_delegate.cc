@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
 
+#include <iomanip>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -27,7 +28,7 @@ using SessionEndCallback = DeviceCommandStartCrdSessionJob::SessionEndCallback;
 
 namespace {
 
-// Default implementation of the RemotingService, which will contact the real
+// Default implementation of the `RemotingService`, which will contact the real
 // remoting service.
 class DefaultRemotingService : public CrdHostDelegate::RemotingServiceProxy {
  public:
@@ -36,8 +37,7 @@ class DefaultRemotingService : public CrdHostDelegate::RemotingServiceProxy {
   DefaultRemotingService& operator=(const DefaultRemotingService&) = delete;
   ~DefaultRemotingService() override = default;
 
-  // CrdHostDelegate::RemotingService implementation:
-
+  // `CrdHostDelegate::RemotingService` implementation:
   void StartSession(remoting::mojom::SupportSessionParamsPtr params,
                     const remoting::ChromeOsEnterpriseParams& enterprise_params,
                     StartSessionCallback callback) override {
@@ -65,8 +65,10 @@ class CrdHostDelegate::CrdHostSession
 
   void Start(CrdHostDelegate::RemotingServiceProxy& remoting_service) {
     CRD_DVLOG(3) << "Starting CRD session with parameters { "
-                    "user_name '"
-                 << parameters_.user_name << "', terminate_upon_input "
+                 << "user_name " << std::quoted(parameters_.user_name)
+                 << ", admin_email "
+                 << std::quoted(parameters_.admin_email.value_or("<null>"))
+                 << ", terminate_upon_input "
                  << parameters_.terminate_upon_input
                  << ", show_confirmation_dialog "
                  << parameters_.show_confirmation_dialog
@@ -147,12 +149,10 @@ class CrdHostDelegate::CrdHostSession
   remoting::mojom::SupportSessionParamsPtr GetSessionParameters() const {
     auto result = remoting::mojom::SupportSessionParams::New();
     result->user_name = parameters_.user_name;
+    result->authorized_helper = parameters_.admin_email;
     // Note the oauth token must be prefixed with 'oauth2:', or it will be
     // rejected by the CRD host.
     result->oauth_access_token = "oauth2:" + parameters_.oauth_token;
-
-    // TODO(joedow): Set the |authorized_helper| field once it is provided by
-    // the admin console and available in |parameters_|.
 
     return result;
   }

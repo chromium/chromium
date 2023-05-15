@@ -12,9 +12,15 @@
   --oobe-oobe-dialog-width-base: 461px;
   --oobe-bg-color: var(--cros-bg-color);
   --oobe-container-border-radius: 2px;
+  --oobe-container-elevation: none;
 }
 :root.jelly-enabled {
   --oobe-bg-color: var(--cros-sys-app_base_shaded);
+}
+:root.simon-enabled {
+  --oobe-container-border-radius: 24px;
+  /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
+  --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
 }
 
 html,
@@ -23,6 +29,10 @@ body {
   height: 100%;
   transition: background-color 250ms linear;
   width: 100%;
+}
+html.simon-enabled,
+:root.simon-enabled body {
+  background-color: transparent;
 }
 
 html {
@@ -149,12 +159,21 @@ Styles related to the `md-screen-container`
   right: 0;
   top: 0;
 }
-
+/* Animation to fade in shelf for simon-enabled */
+:root.simon-enabled #scroll-container:has(#oobe.connect
+#inner-container:not(.down)) {
+  transition: bottom 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
+}
+:root.simon-enabled #scroll-container:has(#oobe.connect
+#inner-container.down) {
+  bottom: 0;
+}
 #scroll-container.disable-scroll {
   overflow-y: hidden;
 }
 
 #outer-container {
+  display: flex;
   height: 100%;
   z-index: 1;
 }
@@ -175,8 +194,11 @@ Styles related to the `md-screen-container`
 }
 
 #inner-container {
+  background-color: var(--oobe-bg-color);
   border-radius: var(--oobe-container-border-radius);
+  box-shadow: var(--oobe-container-elevation);
   display: grid;
+  overflow: hidden;
   place-items: center;
   position: relative;
 }
@@ -195,13 +217,57 @@ Styles related to the `md-screen-container`
   position: absolute;
 }
 
+#welcome-backdrop {
+  background-color: var(--oobe-bg-color);
+  background-position: center;
+  background-size: cover;
+  display: none;
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+:root.simon-enabled[dir=rtl] #oobe.connect #welcome-backdrop {
+  transform: scaleX(-100%);
+}
+:root.simon-enabled #oobe.connect #welcome-backdrop {
+  display: block;
+}
+:root.simon-enabled #oobe.connect #inner-container {
+  background-color: transparent;
+}
+
 /* Only play this animation when 'down' class is removed. */
 .oobe-display #inner-container:not(.down) {
   transition: transform 200ms ease-in-out;
 }
+:root.simon-enabled #oobe.connect #inner-container:not(.down) {
+  min-height: var(--oobe-adaptive-dialog-height);
+  min-width: var(--oobe-adaptive-dialog-width);
+  /* Property duration curve delay */
+  transition: border-radius 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00),
+              min-height 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00),
+              min-width 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
+}
+:root.simon-enabled #oobe.connect #inner-container #connect {
+  /* Property duration curve delay */
+  transition: opacity 250ms linear 900ms;
+}
 
 .oobe-display #inner-container.down {
   transform: translateY(50px) rotateX(-2.5deg);
+}
+:root.simon-enabled #oobe.connect #inner-container.down {
+  border-radius: 0;
+  min-height: 100vh;
+  min-width: 100vw;
+  transform: translateY(0) rotateX(0);
+}
+:root.simon-enabled [orientation=vertical] #oobe.connect #inner-container.down {
+  min-height: 100vw;
+  min-width: 100vh;
+}
+:root.simon-enabled #oobe.connect #inner-container.down #connect {
+  opacity: 0;
 }
 
 /* Styles related to the `top_header_bar` */

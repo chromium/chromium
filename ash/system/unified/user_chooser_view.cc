@@ -14,8 +14,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -25,10 +26,13 @@
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -39,8 +43,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -68,14 +70,23 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
 
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
-  icon->SetImage(gfx::CreateVectorIcon(
-      kSystemMenuNewUserIcon, AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemMenuNewUserIcon,
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshIconColorPrimary));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT)));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColorId(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary);
+  if (is_jelly_enabled) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label);
+  }
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
 }
@@ -93,10 +104,11 @@ class Separator : public views::View {
     // make sure that the view is displayed by setting non-zero size
     child->SetPreferredSize(gfx::Size(1, 1));
     AddChildView(child);
-    child->SetBorder(views::CreateSolidSidedBorder(
+    child->SetBorder(views::CreateThemedSolidSidedBorder(
         gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness, 0),
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kSeparatorColor)));
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
+            : kColorAshSeparatorColor));
   }
 
   Separator(const Separator&) = delete;
@@ -105,8 +117,10 @@ class Separator : public views::View {
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
   auto* label = new views::Label(message);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColorId(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetBorder(views::CreateEmptyBorder(kUnifiedTopShortcutSpacing));
@@ -204,25 +218,39 @@ UserItemButton::UserItemButton(PressedCallback callback,
       Shell::Get()->session_controller()->GetUserSession(user_index);
 
   name_->SetText(base::UTF8ToUTF16(user_session->user_info.display_name));
-  name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  name_->SetEnabledColorId(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary);
+  if (is_jelly_enabled) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *name_);
+  }
   name_->SetAutoColorReadabilityEnabled(false);
   name_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(name_);
+  vertical_labels->AddChildView(name_.get());
 
   email_->SetText(base::UTF8ToUTF16(user_session->user_info.display_email));
-  email_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary));
+  email_->SetEnabledColorId(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
+          : kColorAshTextColorSecondary);
+  if (is_jelly_enabled) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *email_);
+  }
   email_->SetAutoColorReadabilityEnabled(false);
   email_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(email_);
+  vertical_labels->AddChildView(email_.get());
 
   AddChildView(vertical_labels);
   layout->SetFlexForView(vertical_labels, 1);
 
-  capture_icon_->SetImage(gfx::CreateVectorIcon(
-      kSystemTrayRecordingIcon, AshColorProvider::Get()->GetContentLayerColor(
-                                    ContentLayerType::kIconColorAlert)));
+  capture_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemTrayRecordingIcon,
+      is_jelly_enabled ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
+                       : kColorAshIconColorAlert));
   if (!has_close_button) {
     // Add a padding with the same size as the close button,
     // so as to align all media indicators in a column.
@@ -230,7 +258,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
         0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
   }
   capture_icon_->SetVisible(false);
-  AddChildView(capture_icon_);
+  AddChildView(capture_icon_.get());
 
   if (has_close_button) {
     AddChildView(std::make_unique<IconButton>(

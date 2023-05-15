@@ -9,4 +9,7 @@ module mojom;
 interface WebAppInternalsHandler {
   // Returns Web App related debug information as a JSON string.
   GetDebugInfoAsJsonString() => (string result);
+  // Returns whether the clearing is successful.
+  [EnableIf=is_chromeos_lacros]
+  ClearExperimentalWebAppIsolationData() => (bool success);
 };

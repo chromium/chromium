@@ -66,10 +66,19 @@ class WebContentHandler {
   // TODO(b/276428131): Remove when local approvals is fully launched.
   virtual void ShowFeedback(GURL url, std::u16string reason) = 0;
 
+  // Goes back to main frame if we are on a subframe.
+  // The action applies when localWebApprovalsEnabled is disabled.
+  virtual void GoBack() = 0;
+
+  // Returns the interstitial navigation id.
+  virtual int64_t GetInterstitialNavigationId() const = 0;
+
   static const char* GetLocalApprovalDurationMillisecondsHistogram();
   static const char* GetLocalApprovalResultHistogram();
 
  protected:
+  WebContentHandler();
+
   // Processes the outcome of the local approval request.
   // Should be called by platform specific completion callback.
   // TODO(b/278079069): Refactor and convert the class to an interface.

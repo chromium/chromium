@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 
 class AccountId;
 class PrefRegistrySimple;
@@ -74,9 +75,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  void OnKeyboardListUpdated(std::vector<ui::InputDevice> keyboards_to_add,
+  void OnKeyboardListUpdated(std::vector<ui::KeyboardDevice> keyboards_to_add,
                              std::vector<DeviceId> keyboard_ids_to_remove);
-  void OnTouchpadListUpdated(std::vector<ui::InputDevice> touchpads_to_add,
+  void OnTouchpadListUpdated(std::vector<ui::TouchpadDevice> touchpads_to_add,
                              std::vector<DeviceId> touchpad_ids_to_remove);
   void OnMouseListUpdated(std::vector<ui::InputDevice> mice_to_add,
                           std::vector<DeviceId> mouse_ids_to_remove);
@@ -151,10 +152,13 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   // Notifiers must be declared after the `flat_map` objects as the notifiers
   // depend on these objects.
-  std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr>> keyboard_notifier_;
-  std::unique_ptr<InputDeviceNotifier<mojom::TouchpadPtr>> touchpad_notifier_;
-  std::unique_ptr<InputDeviceNotifier<mojom::MousePtr>> mouse_notifier_;
-  std::unique_ptr<InputDeviceNotifier<mojom::PointingStickPtr>>
+  std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
+      keyboard_notifier_;
+  std::unique_ptr<InputDeviceNotifier<mojom::TouchpadPtr, ui::TouchpadDevice>>
+      touchpad_notifier_;
+  std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
+      mouse_notifier_;
+  std::unique_ptr<InputDeviceNotifier<mojom::PointingStickPtr, ui::InputDevice>>
       pointing_stick_notifier_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 

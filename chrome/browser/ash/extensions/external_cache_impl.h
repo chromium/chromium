@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -149,7 +150,7 @@ class ExternalCacheImpl : public ExternalCache,
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Delegate that would like to get notifications about cache updates.
-  ExternalCacheDelegate* delegate_;
+  raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
 
   // Updates needs to be check for the extensions with external_crx too.
   bool always_check_updates_;

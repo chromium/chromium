@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/chromium_strings.h"
@@ -51,6 +52,10 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace {
+constexpr int kChromeRefreshImageLabelPadding = 2;
+}
+
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
 
@@ -59,6 +64,9 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  if (features::IsChromeRefresh2023()) {
+    SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+  }
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}
@@ -66,9 +74,7 @@ BrowserAppMenuButton::~BrowserAppMenuButton() {}
 void BrowserAppMenuButton::SetTypeAndSeverity(
     AppMenuIconController::TypeAndSeverity type_and_severity) {
   type_and_severity_ = type_and_severity;
-
-  UpdateIcon();
-  UpdateTextAndHighlightColor();
+  UpdateColors();
 }
 
 void BrowserAppMenuButton::ShowMenu(int run_types) {
@@ -120,8 +126,18 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
 }
 
 void BrowserAppMenuButton::OnThemeChanged() {
-  UpdateTextAndHighlightColor();
+  UpdateColors();
   AppMenuButton::OnThemeChanged();
+}
+
+void BrowserAppMenuButton::UpdateColors() {
+  UpdateTextAndHighlightColor();
+  // Call `UpdateIcon()` after `UpdateTextAndHighlightColor()` as the icon color
+  // depends on if the container is in an expanded state.
+  UpdateIcon();
+  if (features::IsChromeRefresh2023()) {
+    UpdateInkdrop();
+  }
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
@@ -136,6 +152,34 @@ void BrowserAppMenuButton::UpdateIcon() {
             GetForegroundColor(state));
     SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
   }
+}
+
+void BrowserAppMenuButton::UpdateInkdrop() {
+  CHECK(features::IsChromeRefresh2023());
+
+  if (IsLabelPresentAndVisible()) {
+    ConfigureToolbarInkdropForRefresh2023(this, kColorAppMenuChipInkDropHover,
+                                          kColorAppMenuChipInkDropRipple);
+  } else {
+    ConfigureToolbarInkdropForRefresh2023(this, kColorToolbarInkDropHover,
+                                          kColorToolbarInkDropRipple);
+  }
+}
+
+bool BrowserAppMenuButton::IsLabelPresentAndVisible() const {
+  if (!label()) {
+    return false;
+  }
+  return label()->GetVisible() && !label()->GetText().empty();
+}
+
+SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
+  if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
+    const auto* const color_provider = GetColorProvider();
+    return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
+  }
+
+  return ToolbarButton::GetForegroundColor(state);
 }
 
 void BrowserAppMenuButton::HandleMenuClosed() {
@@ -192,6 +236,18 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
   SetHighlight(text, color);
+}
+
+bool BrowserAppMenuButton::ShouldPaintBorder() const {
+  return !features::IsChromeRefresh2023();
+}
+
+absl::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {
+  if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
+    const auto* const color_provider = GetColorProvider();
+    return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
+  }
+  return absl::nullopt;
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {

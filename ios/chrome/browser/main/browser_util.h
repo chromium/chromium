@@ -7,9 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import <set>
+
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class Browser;
+
+// Stores information about a tab.
+struct BrowserAndIndex {
+  Browser* browser = nullptr;
+  int tab_index = WebStateList::kInvalidIndex;
+};
 
 // Move the web state from `source_browser` at `source_tab_index` to
 // `destination_browser` web state list at `destination_tab_index` with the
@@ -40,5 +48,10 @@ void MoveTabToBrowser(NSString* tab_id,
 void MoveTabToBrowser(NSString* tab_id,
                       Browser* destination_browser,
                       int destination_tab_index);
+
+// Given a set of `browsers`, finds the one with `tab_id`. Returns a
+// BrowserAndIndex that contains the browser and `tab_index` of the tab.
+BrowserAndIndex FindBrowserAndIndex(NSString* tab_id,
+                                    const std::set<Browser*>& browsers);
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_UTIL_H_

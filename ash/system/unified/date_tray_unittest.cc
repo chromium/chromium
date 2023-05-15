@@ -10,9 +10,12 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
+#include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -21,9 +24,16 @@
 
 namespace ash {
 
-class DateTrayTest : public AshTestBase, public wm::ActivationChangeObserver {
+class DateTrayTest
+    : public AshTestBase,
+      public wm::ActivationChangeObserver,
+      public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
  public:
-  DateTrayTest() = default;
+  DateTrayTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
+                                              GetParam());
+  }
+
   DateTrayTest(const DateTrayTest&) = delete;
   DateTrayTest& operator=(const DateTrayTest&) = delete;
   ~DateTrayTest() override = default;
@@ -42,9 +52,13 @@ class DateTrayTest : public AshTestBase, public wm::ActivationChangeObserver {
 
     AshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
+    widget_->SetContentsView(std::make_unique<views::View>());
     widget_->SetFullscreen(true);
     date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
-    widget_->SetContentsView(date_tray_);
+    unified_system_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+                               ->unified_system_tray();
+    widget_->GetContentsView()->AddChildView(date_tray_.get());
+    widget_->GetContentsView()->AddChildView(unified_system_tray_.get());
     date_tray_->SetVisiblePreferred(true);
     date_tray_->unified_system_tray_->SetVisiblePreferred(true);
   }
@@ -58,10 +72,39 @@ class DateTrayTest : public AshTestBase, public wm::ActivationChangeObserver {
     AshTestBase::TearDown();
   }
 
+  bool AreGlanceablesV2Enabled() { return GetParam(); }
+
   DateTray* GetDateTray() { return date_tray_; }
 
   UnifiedSystemTray* GetUnifiedSystemTray() {
     return date_tray_->unified_system_tray_;
+  }
+
+  GlanceableTrayBubble* GetGlanceableTrayBubble() {
+    return date_tray_->bubble_.get();
+  }
+
+  bool IsBubbleShown() {
+    if (AreGlanceablesV2Enabled()) {
+      return !!GetGlanceableTrayBubble();
+    }
+    return GetUnifiedSystemTray()->IsBubbleShown();
+  }
+
+  bool AreContentsViewShown() {
+    if (AreGlanceablesV2Enabled()) {
+      return !!GetGlanceableTrayBubble();
+    }
+    return GetUnifiedSystemTray()->IsShowingCalendarView();
+  }
+
+  void LeftClickOnOpenBubble() {
+    if (AreGlanceablesV2Enabled()) {
+      LeftClickOn(GetGlanceableTrayBubble()->GetBubbleView());
+
+    } else {
+      LeftClickOn(GetUnifiedSystemTray()->bubble()->GetBubbleView());
+    }
   }
 
   std::u16string GetTimeViewText() {
@@ -87,81 +130,89 @@ class DateTrayTest : public AshTestBase, public wm::ActivationChangeObserver {
   bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.
-  DateTray* date_tray_ = nullptr;
+  raw_ptr<DateTray, ExperimentalAsh> date_tray_ = nullptr;
+
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(GlanceablesV2, DateTrayTest, testing::Bool());
 
 // Tests that toggling the `CalendarView` via the date tray accelerator does not
 // result in a crash when the unified system tray bubble is set to immediately
 // close upon activation. See crrev/c/1419499 for details.
-TEST_F(DateTrayTest, AcceleratorOpenAndImmediateCloseDoesNotCrash) {
+TEST_P(DateTrayTest, AcceleratorOpenAndImmediateCloseDoesNotCrash) {
   ImmediatelyCloseBubbleOnActivation();
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_FALSE(IsBubbleShown());
 }
 
 // Test the initial state.
-TEST_F(DateTrayTest, InitialState) {
+TEST_P(DateTrayTest, InitialState) {
   // Show the mock time now Month and day.
   EXPECT_EQ(u"Aug 24", GetTimeViewText());
 
   // Initial state: not showing the calendar bubble.
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(IsBubbleShown());
+  EXPECT_FALSE(AreContentsViewShown());
 }
 
 // Tests clicking/tapping the DateTray shows/closes the calendar bubble.
-TEST_F(DateTrayTest, ShowCalendarBubble) {
+TEST_P(DateTrayTest, ShowCalendarBubble) {
   base::HistogramTester histogram_tester;
   // Clicking on the `DateTray` -> show the calendar bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 1);
+  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView",
+                                    AreGlanceablesV2Enabled() ? 0 : 1);
 
   // Clicking on the `DateTray` again -> close the calendar bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 
   // Tapping on the `DateTray` again -> open the calendar bubble.
   GestureTapOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 2);
+  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView",
+                                    AreGlanceablesV2Enabled() ? 0 : 2);
 
   // Tapping on the `DateTray` again -> close the calendar bubble.
   GestureTapOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(IsBubbleShown());
+  EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 }
 
 // Tests the behavior when clicking on different areas.
-TEST_F(DateTrayTest, ClickingArea) {
+TEST_P(DateTrayTest, ClickingArea) {
   // Clicking on the `DateTray` -> show the calendar bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
   // Clicking on the bubble area -> not close the calendar bubble.
-  LeftClickOn(GetUnifiedSystemTray()->bubble()->GetBubbleView());
+  LeftClickOnOpenBubble();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
@@ -169,74 +220,66 @@ TEST_F(DateTrayTest, ClickingArea) {
   LeftClickOn(GetUnifiedSystemTray());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
   EXPECT_TRUE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 
   // Clicking on the `DateTray` -> switch to the calendar bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
-  // Clicking on the gap between `DateTray` and `UnifiedSystemTray`-> close the
-  // bubble.
-  auto* event_generator = GetEventGenerator();
-  int date_tray_right = GetDateTray()->GetBoundsInScreen().right();
-  int unigied_tray_left = GetUnifiedSystemTray()->GetBoundsInScreen().x();
-  event_generator->MoveMouseTo(
-      gfx::Point((date_tray_right + unigied_tray_left) / 2,
-                 GetDateTray()->GetBoundsInScreen().CenterPoint().y()));
-  event_generator->ClickLeftButton();
+  // Clicking on `DateTray` closes the bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 }
 
-TEST_F(DateTrayTest, EscapeKeyForClose) {
+TEST_P(DateTrayTest, EscapeKeyForClose) {
   base::HistogramTester histogram_tester;
   // Clicking on the `DateTray` -> show the calendar bubble.
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 1);
+  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView",
+                                    AreGlanceablesV2Enabled() ? 0 : 1);
 
   // Hitting escape key -> close and deactivate the calendar bubble.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 }
 
 // Tests that calling `DateTray::CloseBubble()` actually closes the bubble.
-TEST_F(DateTrayTest, CloseBubble) {
-  ASSERT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
-
+TEST_P(DateTrayTest, CloseBubble) {
+  ASSERT_FALSE(IsBubbleShown());
   // Clicking on the `DateTray` -> show the calendar bubble.
   LeftClickOn(GetDateTray());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_TRUE(GetDateTray()->is_active());
 
   // Calling `DateTray::CloseBubble()` should close the bubble.
   GetDateTray()->CloseBubble();
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 
   // Calling `DateTray::CloseBubble()` on an already-closed bubble should do
   // nothing.
   GetDateTray()->CloseBubble();
-  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 }

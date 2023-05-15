@@ -7,26 +7,34 @@ import argparse
 import collections
 import contextlib
 import enum
+import inspect
 import io
 import logging
 import optparse
 import pathlib
+import textwrap
 import urllib.parse
-from typing import Collection, List, Optional, Set, Tuple, Type, Union
+from typing import Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.tool.commands.command import Command
+from blinkpy.tool.commands.update_metadata import (
+    BUG_PATTERN,
+    TestConfigurations,
+)
+from blinkpy.w3c.common import is_basename_skipped
 from blinkpy.w3c.wpt_manifest import WPTManifest
-from blinkpy.tool.commands.update_metadata import BUG_PATTERN, generate_configs
+from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
-from wptrunner import metadata, wptmanifest
+from wptrunner import manifestupdate, metadata, wptmanifest
 from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends.static import Compiler
+from wptrunner.wptmanifest.backends import conditional, static
 
 _log = logging.getLogger(__name__)
 
@@ -67,7 +75,7 @@ class MetadataUnsortedSection(MetadataRule):
 
 class MetadataEmptySection(MetadataRule):
     name = 'META-EMPTY-SECTION'
-    description = 'Empty section can be removed:%(heading)s'
+    description = 'Empty section should be removed:%(heading)s'
     to_fix = """
     A section without keys or subsections has no effect and should be removed.
     The (sub)tests represented by empty sections default to enabled and
@@ -109,6 +117,7 @@ class MetadataUnknownKey(MetadataRule):
             'fuzzy',
             'implementation-status',
             'tags',
+            'bug',
         }),
         SectionType.ROOT:
         frozenset({
@@ -117,6 +126,7 @@ class MetadataUnknownKey(MetadataRule):
             'fuzzy',
             'implementation-status',
             'tags',
+            'bug',
         }),
         SectionType.TEST:
         frozenset({
@@ -169,6 +179,16 @@ class MetadataConditionsUnnecessary(MetadataRule):
     """
 
 
+class MetadataUnnecessaryKey(MetadataRule):
+    name = 'META-UNNECESSARY-KEY'
+    description = ("%(section_type)s%(heading)s key %(key)r always resolves "
+                   'to an implied %(value)r and should be removed')
+    to_fix = """
+    A key that only resolves to an implied default value should be removed. For
+    example, `expected: (OK|PASS)` is implied by an absent `expected` key.
+    """
+
+
 class MetadataUnreachableValue(MetadataRule):
     name = 'META-UNREACHABLE-VALUE'
     description = '%(section_type)s key %(key)r has an unused %(condition)s'
@@ -197,9 +217,56 @@ class MetadataUnknownPropValue(MetadataRule):
     """
 
 
+class MetadataSingleElementList(MetadataRule):
+    name = 'META-SINGLE-ELEM-LIST'
+    description = (
+        '%(section_type)s%(heading)s key %(key)r has a single-element list '
+        'that should be unwrapped to %(value)r')
+    to_fix = """
+    The list form should be replaced by the unwrapped value, which is
+    semantically equivalent.
+    """
+
+
+class MetadataLongTimeout(MetadataRule):
+    name = 'META-LONG-TIMEOUT'
+    description = ('%(test)r should be disabled when it consistently times '
+                   "out even with 'timeout=long'")
+    to_fix = """
+    To reduce resource waste, add a `disabled: ...` key that disables the test
+    for configurations where there are consistent timeouts.
+
+    Splitting a `testharness.js` test with many subtests may also help them run
+    to completion.
+    """
+
+
+class IgnoreListInvalidRule(rules.Rule):
+    name = 'IGNORELIST-BAD-RULE'
+    description = 'Rule %(rule)r cannot be ignored or does not exist'
+    to_fix = """
+    Check that all rules are spelled correctly in `lint.ignore`. `META-*` rules
+    are only defined in Chromium and cannot be ignored.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
 Condition = Optional[wptnode.Node]
+
+
+class WebPlatformTestRegexp(rules.WebPlatformTestRegexp):
+    def __init__(self, fs: FileSystem):
+        super().__init__()
+        self._fs = fs
+
+    def applies(self, path: str) -> bool:
+        # Skip searching for the forbidden `web-platform.test` domain if this
+        # is a metadata file. Checking the metadata file is redundant because
+        # its contents simply reflect the corresponding test file that needs to
+        # be fixed first.
+        _, extension = self._fs.splitext(path)
+        return extension != '.ini' and super().applies(path)
 
 
 class LintWPT(Command):
@@ -207,16 +274,17 @@ class LintWPT(Command):
     show_in_main_help = False  # TODO(crbug.com/1406669): To be switched on.
     help_text = __doc__.strip().splitlines()[0]
     long_help = __doc__
+    ignorelist_filename: str = 'lint.ignore'
 
     def __init__(self,
                  tool: Host,
-                 configs: Optional[Collection[metadata.RunInfo]] = None):
+                 configs: Optional[TestConfigurations] = None):
         super().__init__()
         self._tool = tool
         self._fs = self._tool.filesystem
         self._default_port = self._tool.port_factory.get()
         self._finder = path_finder.PathFinder(self._fs)
-        self._configs = configs or generate_configs(self._tool)
+        self._configs = configs or TestConfigurations.generate(self._tool)
 
     def parse_args(self, args: List[str]) -> Tuple[optparse.Values, List[str]]:
         # TODO(crbug.com/1431070): Migrate `blink_tool.py` to stdlib's
@@ -234,8 +302,6 @@ class LintWPT(Command):
         parser.add_argument('--github-checks-text-file',
                             help=argparse.SUPPRESS)
         parameters = parser.parse_args(args)
-        # TODO(crbug.com/1406669): Find a way to lint `wpt_internal/` files too
-        # so that they can be upstreamed easily.
         if not parameters.repo_root:
             parameters.repo_root = self._finder.path_from_wpt_tests()
         return optparse.Values(vars(parameters)), []
@@ -244,8 +310,86 @@ class LintWPT(Command):
                 _tool: Host) -> Optional[int]:
         # Pipe `wpt lint`'s logs into `blink_tool.py`'s formatter.
         wptlint.logger = _log
+        # Repurpose the `json` format to collect all lint errors, including
+        # non-metadata ones, so that `lint-wpt` can customize the logs.
+        errors = self.check_ignorelist(options.repo_root)
+        options.json = True
+        wptlint.output_errors_json = (
+            lambda _log, worker_errors: errors.extend(worker_errors))
+        # Replace `web-platform.test` regexp rule with a metadata-aware one.
+        wptlint.regexps = [
+            regexp for regexp in wptlint.regexps
+            if not isinstance(regexp, rules.WebPlatformTestRegexp)
+        ]
+        wptlint.regexps.append(WebPlatformTestRegexp(self._fs))
         wptlint.file_lints.append(self.check_metadata)
-        return wptlint.main(**vars(options))
+        exit_code = wptlint.main(**vars(options))
+        self._log_errors(errors, options.repo_root)
+        return exit_code
+
+    def _log_errors(self, errors: List[LintError], repo_root: str):
+        if not errors:
+            _log.info('All files OK.')
+            return
+        manifest = self._manifest(repo_root)
+        wptlint.output_errors_text(_log.error, errors)
+        test_file_errors, metadata_file_errors = [], []
+        for error in errors:
+            _, _, path, _ = error
+            if self._is_dir_metadata(path) or self._test_path(manifest, path):
+                metadata_file_errors.append(error)
+            elif path != self.ignorelist_filename and not is_basename_skipped(
+                    self._fs.basename(path)):
+                test_file_errors.append(error)
+
+        paragraphs = []
+        # TODO(crbug.com/1406669): Document the supplemental `META-*` rules in
+        # `//docs/testing` and add the link.
+        paragraphs.append(
+            'You must address all errors; for details on how to fix them, see '
+            'https://web-platform-tests.org/writing-tests/lint-tool.html')
+        if test_file_errors:
+            error, _, path, _ = test_file_errors[-1]
+            context = {'error': error, 'path': path}
+            ignorelist_path = self._fs.abspath(
+                self._fs.join(repo_root, 'lint.ignore'))
+            paragraphs.append(
+                "However, for errors in test files, it's sometimes OK to add "
+                'lines to `%s` to ignore them.' % self._fs.relpath(
+                    ignorelist_path, self._finder.path_from_web_tests()))
+            paragraphs.append(
+                "For example, to make the lint tool ignore all '%(error)s' "
+                'errors in the %(path)s file, you could add the following '
+                'line to the lint.ignore file:' % context)
+            paragraphs.append('%(error)s: %(path)s' % context)
+        if metadata_file_errors:
+            paragraphs.append(
+                'Errors for `*.ini` metadata files cannot be ignored and must '
+                'be fixed.')
+        wptlint.output_error_count(
+            collections.Counter(error for error, _, _, _ in errors))
+        for paragraph in paragraphs:
+            _log.info('')
+            for line in textwrap.wrap(paragraph):
+                _log.info(line)
+
+    def check_ignorelist(self, repo_root: str) -> List[LintError]:
+        ignorelist_path = self._fs.join(repo_root, self.ignorelist_filename)
+        with self._fs.open_text_file_for_reading(
+                ignorelist_path) as ignorelist_file:
+            ignorelist, _ = wptlint.parse_ignorelist(ignorelist_file)
+        ignorable_rules = {
+            maybe_rule.name: maybe_rule
+            for maybe_rule in rules.__dict__.values()
+            if inspect.isclass(maybe_rule)
+            and issubclass(maybe_rule, (rules.Rule, rules.Regexp))
+        }
+        invalid_rules = set(ignorelist) - set(ignorable_rules)
+        return [
+            IgnoreListInvalidRule.error(self.ignorelist_filename,
+                                        {'rule': rule})
+            for rule in sorted(invalid_rules)
+        ]
 
     def check_metadata(self, repo_root: str, path: str,
                        metadata_file: io.BytesIO) -> List[LintError]:
@@ -260,13 +404,15 @@ class LintWPT(Command):
             return [MetadataBadSyntax.error(path, context, error.line)]
 
         test_type = manifest.get_test_type(test_path) if test_path else None
-        linter = MetadataLinter(path, test_type, manifest, self._configs)
+        linter = MetadataLinter(path, test_path, test_type, manifest,
+                                repo_root, self._configs)
         return linter.find_errors(ast)
 
     def _manifest(self, repo_root: str) -> WPTManifest:
         wpt_dir = self._fs.normpath(
             self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
-        return self._default_port.wpt_manifest(wpt_dir)
+        return self._default_port.wpt_manifest(
+            pathlib.Path(wpt_dir).as_posix())
 
     def _is_dir_metadata(self, path: str) -> bool:
         return self._fs.basename(path) == '__dir__.ini'
@@ -279,12 +425,20 @@ class LintWPT(Command):
         return None
 
 
-class MetadataLinter(Compiler):
-    def __init__(self, path: str, test_type: str, manifest: WPTManifest,
-                 configs: Collection[metadata.RunInfo]):
+class MetadataLinter(static.Compiler):
+    def __init__(
+        self,
+        path: str,
+        test_path: Optional[str],
+        test_type: Optional[str],
+        manifest: WPTManifest,
+        metadata_root: str,
+        configs: TestConfigurations,
+    ):
+        super().__init__()
         self.path = path
-        self.test_type = test_type
-        self.manifest = manifest
+        self.test_path, self.test_type = test_path, test_type
+        self.manifest, self.metadata_root = manifest, metadata_root
         self.configs = configs
         # `context` contains information about the current section type,
         # heading, and key as it becomes available during the traversal. It's
@@ -292,7 +446,7 @@ class MetadataLinter(Compiler):
         self.context = {}
         self.errors = set()
         # Check that all configurations have the same keys.
-        assert len(set({frozenset(config.data) for config in configs})) == 1
+        assert len({frozenset(config.data) for config in configs}) == 1
 
     @contextlib.contextmanager
     def using_context(self, **context):
@@ -308,11 +462,35 @@ class MetadataLinter(Compiler):
         self.errors.clear()
         if self.test_type:
             initial_type = SectionType.ROOT
+            url_base = Port.WPT_DIRS[self.manifest.wpt_dir]
+            # Since the long timeout check requires examining both `disabled`
+            # and `expected` at the same time, use the high-level expectations
+            # API instead of checking during the syntax tree traversal.
+            expected = conditional.compile_ast(ast,
+                                               manifestupdate.data_cls_getter,
+                                               test_path=self.test_path,
+                                               run_info_properties=([], {}),
+                                               url_base=url_base)
+            self._check_for_long_timeouts(expected)
         else:
             initial_type = SectionType.DIRECTORY
         with self.using_context(next_type=initial_type):
             self.visit(ast)
         return sorted(self.errors, key=lambda error: error[:3])
+
+    def _check_for_long_timeouts(self,
+                                 expected: manifestupdate.ExpectedManifest):
+        for test_id in sorted(expected.child_map):
+            test = expected.get_test(test_id)
+            if test_id.startswith('/'):
+                test_id = test_id[1:]
+            if not self.manifest.is_slow_test(test_id):
+                continue
+            configs = self.configs.enabled_configs(test, self.metadata_root)
+            for config in configs:
+                with contextlib.suppress(KeyError):
+                    if test.get('expected', config) == 'TIMEOUT':
+                        self._error(MetadataLongTimeout, test=test_id)
 
     def visit(self, node: wptnode.Node):
         try:
@@ -381,9 +559,11 @@ class MetadataLinter(Compiler):
 
     def _check_conditions(self, key_value_node: wptnode.KeyValueNode):
         conditions, values = self._get_conditional_values(key_value_node)
+        assert conditions and values
         # Reference conditions by index because they are not hashable.
         conditions_not_taken = set(range(len(conditions)))
         unique_values = set(map(self.visit, values))
+        implicit_default = self._implicit_default_value(key_value_node.data)
         # Simulate conditional value resolution for each test configuration.
         for config in self.configs:
             for i, condition in enumerate(conditions):
@@ -402,18 +582,13 @@ class MetadataLinter(Compiler):
                     # as if this branch were not taken.
                     conditions_not_taken.discard(i)
             else:
-                # Add a sentinel object to simulate no default (an empty value).
-                # This unique value forces `META-CONDITIONS-UNNECESSARY` to
-                # pass because at least one configuration falls through to the
-                # end.
-                #
-                # TODO(crbug.com/1406669): Add a special rule when
-                # `unique_values` is `expected: (PASS|OK)`, which can just be
-                # removed.
-                unique_values.add(object())
+                unique_values.add(implicit_default)
 
-        if (len([condition for condition in conditions if condition]) > 0
-                and len(unique_values) == 1):
+        if unique_values == {implicit_default}:
+            self._error(MetadataUnnecessaryKey, value=_format_node(values[0]))
+            return
+        elif (len([condition for condition in conditions if condition]) > 0
+              and len(unique_values) == 1):
             self._error(MetadataConditionsUnnecessary,
                         value=_format_node(values[0]))
             return
@@ -429,6 +604,20 @@ class MetadataLinter(Compiler):
                             prop=prop,
                             value=value,
                             condition=_format_condition(condition))
+
+    def _implicit_default_value(self, key: str) -> Hashable:
+        """Return the value wptrunner infers when no conditions match."""
+        if key == 'expected':
+            if (self.context['section_type'] is SectionType.TEST
+                    and self.test_type == 'testharness'):
+                return 'OK'
+            return 'PASS'
+        elif key == 'disabled' or key == 'restart-after':
+            return False
+        # Add a sentinel object to simulate no explicit default. This unique
+        # value forces `META-CONDITIONS-UNNECESSARY` to pass because at least
+        # one configuration falls through to the end.
+        return object()
 
     def _eval_condition_taken(self, condition: Condition,
                               run_info: metadata.RunInfo) -> bool:
@@ -456,12 +645,14 @@ class MetadataLinter(Compiler):
     def visit_ListNode(self,
                        node: wptnode.ListNode) -> Tuple[Union[bool, str]]:
         key = self.context['key']
-        # TODO(crbug.com/1406669): Recommend unwrapping one-entry lists for
-        # `fuzzy`, `expected`, and `bug`.
         if key == 'implementation-status':
             self._error(MetadataBadValue, value=_format_node(node))
-        else:
-            return tuple(self.visit(child) for child in node.children)
+            # Skip checking the children when the type needs to be fixed first.
+            return ()
+        if key in {'bug', 'expected', 'fuzzy'} and len(node.children) == 1:
+            self._error(MetadataSingleElementList,
+                        value=_format_node(node.children[0]))
+        return tuple(self.visit(child) for child in node.children)
 
     def visit_ValueNode(self, node: wptnode.ValueNode) -> str:
         assert node.data is not None

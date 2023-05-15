@@ -64,9 +64,12 @@ void SidePanelRegistry::RemoveObserver(SidePanelRegistryObserver* observer) {
 bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   if (GetEntryForKey(entry->key()))
     return false;
+  // It's important to add `this` as an observer to `entry` before notifying
+  // SidePanelRegistryObservers of the entry's registration because some
+  // registry observers can call SidePanelEntryObserver methods for `entry`.
+  entry->AddObserver(this);
   for (SidePanelRegistryObserver& observer : observers_)
     observer.OnEntryRegistered(this, entry.get());
-  entry->AddObserver(this);
   entries_.push_back(std::move(entry));
   return true;
 }
@@ -76,11 +79,11 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
     return false;
   }
 
-  DeregisterAndReturnView(key);
+  DeregisterAndReturnEntry(key);
   return true;
 }
 
-std::unique_ptr<views::View> SidePanelRegistry::DeregisterAndReturnView(
+std::unique_ptr<SidePanelEntry> SidePanelRegistry::DeregisterAndReturnEntry(
     const SidePanelEntry::Key& key) {
   auto* entry = GetEntryForKey(key);
   if (!entry) {
@@ -101,11 +104,7 @@ std::unique_ptr<views::View> SidePanelRegistry::DeregisterAndReturnView(
     observer.OnEntryWillDeregister(this, entry);
   }
 
-  std::unique_ptr<views::View> entry_view =
-      entry->CachedView() ? entry->GetContent() : nullptr;
-
-  RemoveEntry(entry);
-  return entry_view;
+  return RemoveEntry(entry);
 }
 
 void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {
@@ -121,6 +120,14 @@ void SidePanelRegistry::OnEntryIconUpdated(SidePanelEntry* entry) {
     observer.OnEntryIconUpdated(entry);
 }
 
-void SidePanelRegistry::RemoveEntry(SidePanelEntry* entry) {
-  base::EraseIf(entries_, base::MatchesUniquePtr(entry));
+std::unique_ptr<SidePanelEntry> SidePanelRegistry::RemoveEntry(
+    SidePanelEntry* entry) {
+  auto it = std::find_if(entries_.begin(), entries_.end(),
+                         base::MatchesUniquePtr(entry));
+  if (it == entries_.end()) {
+    return nullptr;
+  }
+  std::unique_ptr<SidePanelEntry> return_entry = std::move(*it);
+  entries_.erase(it);
+  return return_entry;
 }

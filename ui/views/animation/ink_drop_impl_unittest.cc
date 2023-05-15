@@ -15,6 +15,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/native_theme/test_native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
@@ -311,6 +312,25 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnSizeChange) {
   EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
   EXPECT_EQ(bounds.size(), ink_drop_ripple()->GetRootLayer()->size());
   EXPECT_EQ(bounds.size(), ink_drop_highlight()->layer()->size());
+}
+
+// Make sure the InkDropRipple and InkDropHighlight get recreated when the host
+// theme changes.
+TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnHostThemeChange) {
+  test_api()->SetShouldHighlight(true);
+  ink_drop()->AnimateToState(InkDropState::ACTIVATED);
+  EXPECT_EQ(1, ink_drop_host()->num_ink_drop_ripples_created());
+  EXPECT_EQ(1, ink_drop_host()->num_ink_drop_highlights_created());
+  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
+  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
+
+  ui::TestNativeTheme native_theme;
+  native_theme.SetDarkMode(true);
+  ink_drop_host()->SetNativeThemeForTesting(&native_theme);
+  EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
+  EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());
+  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
+  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
 }
 
 // Verifies that the host's GetHighlighted() method reflects the ink drop's

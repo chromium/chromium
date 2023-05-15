@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
@@ -78,7 +79,7 @@ class ShillProfileClientImpl : public ShillProfileClient {
   // Returns the corresponding ShillClientHelper for the profile.
   ShillClientHelper* GetHelper(const dbus::ObjectPath& profile_path);
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   HelperMap helpers_;
 };
 

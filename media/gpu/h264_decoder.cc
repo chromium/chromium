@@ -253,13 +253,8 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
         prev_pic_order_cnt_msb = prev_pic_order_cnt_lsb = 0;
       } else {
         if (prev_ref_has_memmgmnt5_) {
-          if (prev_ref_field_ != H264Picture::FIELD_BOTTOM) {
-            prev_pic_order_cnt_msb = 0;
-            prev_pic_order_cnt_lsb = prev_ref_top_field_order_cnt_;
-          } else {
-            prev_pic_order_cnt_msb = 0;
-            prev_pic_order_cnt_lsb = 0;
-          }
+          prev_pic_order_cnt_msb = 0;
+          prev_pic_order_cnt_lsb = prev_ref_top_field_order_cnt_;
         } else {
           prev_pic_order_cnt_msb = prev_ref_pic_order_cnt_msb_;
           prev_pic_order_cnt_lsb = prev_ref_pic_order_cnt_lsb_;
@@ -281,20 +276,12 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
         pic->pic_order_cnt_msb = prev_pic_order_cnt_msb;
       }
 
-      if (pic->field != H264Picture::FIELD_BOTTOM) {
-        pic->top_field_order_cnt =
-            pic->pic_order_cnt_msb + pic->pic_order_cnt_lsb;
-      }
+      pic->top_field_order_cnt =
+          pic->pic_order_cnt_msb + pic->pic_order_cnt_lsb;
 
-      if (pic->field != H264Picture::FIELD_TOP) {
-        if (pic->field == H264Picture::FIELD_NONE) {
-          pic->bottom_field_order_cnt =
-              pic->top_field_order_cnt + pic->delta_pic_order_cnt_bottom;
-        } else {
-          pic->bottom_field_order_cnt =
-              pic->pic_order_cnt_msb + pic->pic_order_cnt_lsb;
-        }
-      }
+      pic->bottom_field_order_cnt =
+          pic->top_field_order_cnt + pic->delta_pic_order_cnt_bottom;
+
       break;
     }
 
@@ -342,20 +329,12 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (!pic->nal_ref_idc)
         expected_pic_order_cnt += sps->offset_for_non_ref_pic;
 
-      if (pic->field == H264Picture::FIELD_NONE) {
-        pic->top_field_order_cnt =
-            expected_pic_order_cnt + pic->delta_pic_order_cnt0;
-        pic->bottom_field_order_cnt = pic->top_field_order_cnt +
-                                      sps->offset_for_top_to_bottom_field +
-                                      pic->delta_pic_order_cnt1;
-      } else if (pic->field != H264Picture::FIELD_BOTTOM) {
-        pic->top_field_order_cnt =
-            expected_pic_order_cnt + pic->delta_pic_order_cnt0;
-      } else {
-        pic->bottom_field_order_cnt = expected_pic_order_cnt +
-                                      sps->offset_for_top_to_bottom_field +
-                                      pic->delta_pic_order_cnt0;
-      }
+      pic->top_field_order_cnt =
+          expected_pic_order_cnt + pic->delta_pic_order_cnt0;
+      pic->bottom_field_order_cnt = pic->top_field_order_cnt +
+                                    sps->offset_for_top_to_bottom_field +
+                                    pic->delta_pic_order_cnt1;
+
       break;
     }
 
@@ -380,14 +359,9 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
         temp_pic_order_cnt = 2 * (pic->frame_num_offset + pic->frame_num);
       }
 
-      if (pic->field == H264Picture::FIELD_NONE) {
-        pic->top_field_order_cnt = temp_pic_order_cnt;
-        pic->bottom_field_order_cnt = temp_pic_order_cnt;
-      } else if (pic->field == H264Picture::FIELD_BOTTOM) {
-        pic->bottom_field_order_cnt = temp_pic_order_cnt;
-      } else {
-        pic->top_field_order_cnt = temp_pic_order_cnt;
-      }
+      pic->top_field_order_cnt = temp_pic_order_cnt;
+      pic->bottom_field_order_cnt = temp_pic_order_cnt;
+
       break;
     }
 
@@ -396,18 +370,8 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       return false;
   }
 
-  switch (pic->field) {
-    case H264Picture::FIELD_NONE:
-      pic->pic_order_cnt =
-          std::min(pic->top_field_order_cnt, pic->bottom_field_order_cnt);
-      break;
-    case H264Picture::FIELD_TOP:
-      pic->pic_order_cnt = pic->top_field_order_cnt;
-      break;
-    case H264Picture::FIELD_BOTTOM:
-      pic->pic_order_cnt = pic->bottom_field_order_cnt;
-      break;
-  }
+  pic->pic_order_cnt =
+      std::min(pic->top_field_order_cnt, pic->bottom_field_order_cnt);
 
   return true;
 }
@@ -881,6 +845,14 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         to_mark = dpb_.GetShortRefPicByPicNum(pic_num_x);
         if (to_mark) {
           DCHECK(to_mark->ref && !to_mark->long_term);
+
+          scoped_refptr<H264Picture> long_term_mark =
+              dpb_.GetLongRefPicByLongTermIdx(
+                  ref_pic_marking->long_term_frame_idx);
+          if (long_term_mark) {
+            long_term_mark->ref = false;
+          }
+
           to_mark->long_term = true;
           to_mark->long_term_frame_idx = ref_pic_marking->long_term_frame_idx;
         } else {
@@ -1760,14 +1732,9 @@ bool H264Decoder::FillH264PictureFromSliceHeader(
   if (pic->idr)
     pic->idr_pic_id = slice_hdr.idr_pic_id;
 
-  if (slice_hdr.field_pic_flag) {
-    pic->field = slice_hdr.bottom_field_flag ? H264Picture::FIELD_BOTTOM
-                                             : H264Picture::FIELD_TOP;
-  } else {
+  if (!slice_hdr.field_pic_flag) {
     pic->field = H264Picture::FIELD_NONE;
-  }
-
-  if (pic->field != H264Picture::FIELD_NONE) {
+  } else {
     DVLOG(1) << "Interlaced video not supported.";
     return false;
   }

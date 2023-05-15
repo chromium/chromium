@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace views {
@@ -62,7 +63,8 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
       size_t index);
 
-  BluetoothDetailedView* const bluetooth_detailed_view_;
+  const raw_ptr<BluetoothDetailedView, ExperimentalAsh>
+      bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string, BluetoothDeviceListItemView*>

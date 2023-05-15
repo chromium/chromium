@@ -24,37 +24,10 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/blink/public/common/action_after_pagehide.h"
-
-using blink::ActionAfterPagehide;
 
 namespace content {
 
 namespace {
-
-content::RenderFrameHostChangedCallback GetAsyncScriptExecutorCallback(
-    std::string callback_script) {
-  return base::BindOnce(
-      [](std::string callback_script, RenderFrameHost* old_host,
-         RenderFrameHost* new_host) {
-        ExecuteScriptAsync(old_host, callback_script);
-      },
-      callback_script);
-}
-
-// DO NOT USE THIS FUNCTION, use GetAsyncScriptExecutorCallback() instead.
-// GetScriptExecutorCallback must not be used, because it forces waiting for a
-// browser <-> renderer IPC roundtrip while being in the middle of a very
-// complex operation: swapping the current RenderFrameHost
-content::RenderFrameHostChangedCallback GetScriptExecutorCallback(
-    std::string callback_script) {
-  return base::BindOnce(
-      [](std::string callback_script, RenderFrameHost* old_host,
-         RenderFrameHost* new_host) {
-        EXPECT_TRUE(ExecuteScript(old_host, callback_script));
-      },
-      callback_script);
-}
 
 // Helper function for error page navigations that makes sure that the last
 // committed origin on |node| is an opaque origin with a precursor that matches
@@ -168,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(
   }
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
     EXPECT_EQ(2, nav_controller.GetEntryCount());
@@ -183,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(
   url_interceptor.reset();
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
     EXPECT_EQ(2, nav_controller.GetEntryCount());
@@ -575,10 +548,6 @@ class ProactivelySwapBrowsingInstancesSameSiteTest
     FetchHistogramsFromChildProcesses();
     histogram_tester_.ExpectBucketCount(name, sample, expected_count);
   }
-
- protected:
-  const char* kActionAfterPagehideHistogramName =
-      "BackForwardCache.SameSite.ActionAfterPagehide2";
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1178,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // 4) Trigger reload using location.reload().
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
   }
@@ -1763,265 +1732,6 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
       "not_dispatched",
       EvalJs(main_frame_2, "localStorage.getItem('visibilitychange_storage')"));
 }
-
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       NavigationAfterPagehideHistogram) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // 1) Navigate to a.com/title1.html.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  ExpectTotalCount(kActionAfterPagehideHistogramName, 0);
-
-  // 2) Set up a navigation that will start after we commit the next navigation.
-  RenderFrameHostChangedCallbackRunner navigate_after_commit(
-      web_contents,
-      GetAsyncScriptExecutorCallback("window.location.reload();"));
-
-  // 3) Navigate same-site to a.com/title2.html.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-
-  // We should record the fact that a navigation started after pagehide was
-  // dispatched.
-  content::FetchHistogramsFromChildProcesses();
-  ExpectBucketCount(kActionAfterPagehideHistogramName,
-                    ActionAfterPagehide::kNavigation, 1);
-}
-
-// TODO(crbug.com/1274974): Make this work with NavigationThreadingOptimizations
-// enabled.
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       DISABLED_PostMessageAfterPagehideHistogram) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // 1) Navigate to a.com/title1.html.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  ExpectTotalCount(kActionAfterPagehideHistogramName, 0);
-
-  {
-    // 2) Set up a script that will call postMessage on the current window
-    // after we commit the next navigation.
-    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
-    // removed in favor of GetSyncExecutorCallback()
-    RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
-        web_contents,
-        GetScriptExecutorCallback("window.postMessage('hello', '*')"));
-
-    // 3) Navigate same-site to a.com/title2.html.
-    EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-
-    // We should record the fact that a postMessage call was done after
-    // pagehide was dispatched and since we're calling it on our own window, we
-    // are also receiving the message.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSentPostMessage, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kReceivedPostMessage, 1);
-  }
-
-  {
-    // 4) Set up a script that will call postMessage on the current window
-    // after we commit the next navigation.
-    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
-    // removed in favor of GetSyncExecutorCallback()
-    RenderFrameHostChangedCallbackRunner post_message_after_cross_site_commit(
-        web_contents,
-        GetScriptExecutorCallback("window.postMessage('hello', '*')"));
-    // 5) Navigate cross-site to |url_b1|.
-    EXPECT_TRUE(NavigateToURL(shell(), url_b1));
-
-    // Since the navigation is cross-site, the postMessage will happen before
-    // pagehide gets dispatched (at unload time), so the histogram stays the
-    // same.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSentPostMessage, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kReceivedPostMessage, 1);
-  }
-}
-
-// TODO(crbug.com/1274974): Make this work with NavigationThreadingOptimizations
-// enabled.
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       DISABLED_PostMessageAfterPagehideHistogramSubframe) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(a)"));
-  GURL url_a2(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b)"));
-  GURL url_a3(embedded_test_server()->GetURL("a.com", "/title3.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // 1) Navigate to |url_a1|, which has one same-site iframe.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  ExpectTotalCount(kActionAfterPagehideHistogramName, 0);
-  {
-    // 2) Set up a script that will call postMessage on a same-site iframe
-    // after we commit the next navigation.
-    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
-    // removed in favor of GetSyncExecutorCallback()
-    RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
-        web_contents, GetScriptExecutorCallback(
-                          "window.frames[0].postMessage('hello', '*')"));
-
-    // 3) Navigate same-site to |url_a2|, which has one cross-site iframe.
-    EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-
-    // We should record the fact that a postMessage call was done after
-    // pagehide was dispatched and since we're calling it on a same-site
-    // iframe's window, we will track it.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSentPostMessage, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kReceivedPostMessage, 1);
-  }
-
-  {
-    FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
-    RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
-    bool subframe_was_in_same_site_instance =
-        root->current_frame_host()->GetSiteInstance() ==
-        child_rfh->GetSiteInstance();
-    // 4) Set up a script that will call postMessage on a cross-site iframe
-    // after we commit the next navigation.
-    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
-    // removed in favor of GetSyncExecutorCallback()
-    RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
-        web_contents, GetScriptExecutorCallback(
-                          "window.frames[0].postMessage('hello', '*')"));
-
-    // 5) Navigate same-site to |url_a3|.
-    EXPECT_TRUE(NavigateToURL(shell(), url_a3));
-
-    // We should record the fact that a postMessage call was done after
-    // pagehide was dispatched. On the receiving part, if the cross-site
-    // subframe is in the same SiteInstance as the main frame (it's not
-    // isolated) or the iframe is saved in the back-forward cache, the
-    // postMessage will arrive after we dispatch pagehide. The former case
-    // happens because we will dispatch pagehide at commit time for all
-    // subframes in the same SiteInstance as the main frame, and the latter case
-    // happens because we will send the freeze message to the subframe before
-    // the postMessage arrives in the subframe. Otherwise (if the cross-site
-    // subframe is isolated and it's not saved in the back-forward cache), the
-    // postMessage will never actually arrive in the subframe (because we would
-    // have already unloaded).
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSentPostMessage, 2);
-
-    if (!subframe_was_in_same_site_instance && !IsBackForwardCacheEnabled()) {
-      ExpectBucketCount(kActionAfterPagehideHistogramName,
-                        ActionAfterPagehide::kReceivedPostMessage, 1);
-    } else {
-      ExpectBucketCount(kActionAfterPagehideHistogramName,
-                        ActionAfterPagehide::kReceivedPostMessage, 2);
-    }
-  }
-}
-
-// Flaky on all major platforms: https://crbug.com/1156218
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       DISABLED_StorageModificationAfterPagehideHistogram) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  GURL url_a3(embedded_test_server()->GetURL("a.com", "/title3.html"));
-  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // 1) Navigate to a.com/title1.html.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  ExpectTotalCount(kActionAfterPagehideHistogramName, 0);
-
-  {
-    // 2) Set up a script that will modify localStorage after we commit the next
-    // navigation.
-    RenderFrameHostChangedCallbackRunner
-        set_local_storage_after_same_site_commit(
-            web_contents, GetAsyncScriptExecutorCallback(
-                              "localStorage.setItem('foo', 'bar'); "));
-
-    // 3) Navigate same-site to a.com/title2.html.
-    EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-
-    // We should record the fact that we modified localStorage after pagehide
-    // was dispatched.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kLocalStorageModification, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSessionStorageModification, 0);
-  }
-
-  {
-    // 4) Set up a script that will modify sessionStorage after we commit the
-    // next navigation.
-    RenderFrameHostChangedCallbackRunner
-        set_session_storage_after_same_site_commit(
-            web_contents, GetAsyncScriptExecutorCallback(
-                              "sessionStorage.setItem('foo', 'bar'); "));
-
-    // 5) Navigate same-site to a.com/title3.html.
-    EXPECT_TRUE(NavigateToURL(shell(), url_a3));
-
-    // We should record the fact that we modified sessionStorage after pagehide
-    // was dispatched.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kLocalStorageModification, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSessionStorageModification, 1);
-  }
-  {
-    // 6) Set up a script that will modify localStorage and sessionStorage after
-    // we commit the next navigation.
-    RenderFrameHostChangedCallbackRunner set_storage_after_cross_site_commit(
-        web_contents, GetAsyncScriptExecutorCallback(R"(
-      localStorage.setItem('foo', 'bar');
-      sessionStorage.setItem('foo', 'bar');
-    )"));
-
-    // 7) Navigate cross-site to b.com/title1.html.
-    EXPECT_TRUE(NavigateToURL(shell(), url_b1));
-
-    // Since the navigation is cross-site, the localStorage and sessionStorage
-    // modification (which is done at commit time) will happen before pagehide
-    // gets dispatched (at unload time), so the histogram stays the same.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kLocalStorageModification, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSessionStorageModification, 1);
-  }
-  {
-    // 8) Set up a script that will access localStorage and sessionStorage after
-    // we commit the next navigation.
-    RenderFrameHostChangedCallbackRunner get_storage_after_same_site_commit(
-        web_contents, GetAsyncScriptExecutorCallback(R"(
-      localStorage.getItem('foo');
-      sessionStorage.getItem('foo');
-    )"));
-
-    // 9) Navigate same-site to b.com/title2.html.
-    EXPECT_TRUE(NavigateToURL(shell(), url_b2));
-
-    // Even though the script runs after pagehide was dispatched, we did not
-    // modify anything in localStorage/sessionStorage (getItem only reads
-    // values), so the histogram stays the same.
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kLocalStorageModification, 1);
-    ExpectBucketCount(kActionAfterPagehideHistogramName,
-                      ActionAfterPagehide::kSessionStorageModification, 1);
-  }
-}
-
 class ProactivelySwapBrowsingInstancesSameSiteCoopTest
     : public ProactivelySwapBrowsingInstancesSameSiteTest {
  public:
@@ -2205,7 +1915,7 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to a.com/title1.html.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   // Set window.name.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "window.name='foo'"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.name='foo'"));
   auto* frame_a1 = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ("foo", frame_a1->GetFrameName());
 

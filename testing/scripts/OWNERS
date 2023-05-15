@@ -10,7 +10,7 @@ per-file check_static_initializers.py=thomasanderson@chromium.org
 per-file run_performance_tests.py=johnchen@chromium.org
 per-file run_performance_tests.py=wenbinzhang@google.com
 
-per-file run_chromedriver_tests.py=johnchen@chromium.org
+per-file run_chromedriver_tests.py=file://chrome/test/chromedriver/OWNERS
 
 per-file run_variations_smoke_tests.py=wuwang@chromium.org
 per-file variations_seed_access_helper.py=wuwang@chromium.org

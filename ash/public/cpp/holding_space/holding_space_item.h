@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
@@ -61,7 +62,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     int label_id;
 
     // The icon to be displayed for the command.
-    const gfx::VectorIcon* icon;
+    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
 
     // The handler to be invoked to perform command execution.
     Handler handler;
@@ -124,17 +125,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns `true` if `type` is a Camera app type, `false` otherwise.
   static bool IsCameraAppType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsDownloadType()`.
   // Returns `true` if `type` is a download type, `false` otherwise.
-  static bool IsDownload(HoldingSpaceItem::Type type);
+  static bool IsDownloadType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsScreenCaptureType()`.
   // Returns `true` if `type` is a screen capture type, `false` otherwise.
-  static bool IsScreenCapture(HoldingSpaceItem::Type type);
+  static bool IsScreenCaptureType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsSuggestionType()`.
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
-  static bool IsSuggestion(HoldingSpaceItem::Type type);
+  static bool IsSuggestionType(HoldingSpaceItem::Type type);
 
   // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.

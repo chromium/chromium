@@ -43,11 +43,18 @@ class TestTickClock : public base::TickClock {
   TestTickClock(const TestTickClock&) = delete;
   TestTickClock& operator=(const TestTickClock&) = delete;
 
-  // Unconditionally returns a tick count that is 1ms later than the previous
-  // call, starting at 1ms.
+  // Returns a tick count that is 1ms later than the previous call to
+  // `NowTicks`, plus possible additional time from calls to `Advance`. Starts
+  // at 1ms.
   base::TimeTicks NowTicks() const override {
     static constexpr base::TimeDelta kOneMillisecond = base::Milliseconds(1);
     return ticks_ += kOneMillisecond;
+  }
+
+  // Advances the clock by `delta`. `delta` should be non-negative.
+  void Advance(const base::TimeDelta& delta) {
+    DCHECK(delta >= base::TimeDelta());
+    ticks_ += delta;
   }
 
  private:
@@ -629,6 +636,10 @@ void EventGenerator::Dispatch(ui::Event* event) {
     if (details.dispatcher_destroyed)
       current_target_ = nullptr;
   }
+}
+
+void EventGenerator::AdvanceClock(const base::TimeDelta& delta) {
+  tick_clock_->Advance(delta);
 }
 
 void EventGenerator::Init(gfx::NativeWindow root_window,

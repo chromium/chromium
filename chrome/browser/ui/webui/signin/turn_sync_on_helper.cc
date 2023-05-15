@@ -168,6 +168,11 @@ bool TurnSyncOnHelper::Delegate::
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
     Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
   LoginUIServiceFactory::GetForProfile(browser->profile())
       ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
 }
@@ -502,7 +507,7 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // progress.
     // TODO(https://crbug.com/811211): Remove this handle.
     sync_blocker_ = sync_service->GetSetupInProgressHandle();
-    sync_service->GetUserSettings()->SetSyncRequested();
+    sync_service->SetSyncFeatureRequested();
 
     // For managed users and users on enterprise machines that might have cloud
     // policies, it is important to wait until sync is initialized so that the

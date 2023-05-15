@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {LayersTestRunner} from 'layers_test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests accessibility in the layers view using the axe-core linter.`);
-  await TestRunner.loadTestModule('layers_test_runner');
-  await TestRunner.loadTestModule('axe_core_test_runner');
   await TestRunner.loadHTML(`
       <div id="a" style="transform: translateZ(0px); background-color:blue; width:100px; height:100px;">
           <div style="width:50px; height:50px; background-color:red;"></div>

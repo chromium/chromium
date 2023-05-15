@@ -17,74 +17,12 @@
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/accessibility/features/mojo/test/test_api.test-mojom.h"
+#include "services/accessibility/features/mojo/test/js_test_interface.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8_manager.h"
 
 namespace ax {
-
-// C++ implementation of the TestBindingInterface. The other end of the pipe is
-// held in Javascript.
-class TestBindingInterfaceImpl : public axtest::mojom::TestBindingInterface,
-                                 public InterfaceBinder {
- public:
-  explicit TestBindingInterfaceImpl(base::OnceCallback<void(bool)> on_complete)
-      : on_complete_(std::move(on_complete)), receiver_(this) {}
-  ~TestBindingInterfaceImpl() override = default;
-  TestBindingInterfaceImpl& operator=(const TestBindingInterfaceImpl&) = delete;
-  TestBindingInterfaceImpl(const TestBindingInterfaceImpl&) = delete;
-
-  // InterfaceBinder overrides:
-  void BindReceiver(mojo::GenericPendingReceiver pending_receiver) override {
-    auto receiver = pending_receiver.As<axtest::mojom::TestBindingInterface>();
-    receiver_.Bind(std::move(receiver));
-    receiver_.set_disconnect_handler(base::BindLambdaForTesting(
-        [this]() { std::move(on_complete_).Run(false); }));
-  }
-
-  bool MatchesInterface(const std::string& interface_name) override {
-    return interface_name == "axtest.mojom.TestBindingInterface";
-  }
-
-  // axtest::mojom::TestBindingInterface overrides:
-  void AddTestInterface(AddTestInterfaceCallback callback) override {
-    int index = test_interface_receivers_.size();
-    test_interface_receivers_.emplace_back();
-    auto pending_receiver =
-        test_interface_receivers_[index].BindNewPipeAndPassReceiver();
-    std::move(callback).Run(std::move(pending_receiver));
-  }
-
-  void GetTestStruct(int num,
-                     const std::string& name,
-                     GetTestStructCallback callback) override {
-    auto result = axtest::mojom::TestStruct::New();
-    result->is_structy = true;
-    // Modify the passed values a bit to ensure it's not just an echo.
-    result->num = num + 1;
-    result->name = name + " rocks";
-    std::move(callback).Run(std::move(result));
-  }
-
-  void SendEnumToTestInterface(axtest::mojom::TestEnum num) override {
-    for (auto& receiver : test_interface_receivers_) {
-      receiver->TestMethod(num);
-    }
-  }
-
-  void Disconnect() override { receiver_.reset(); }
-
-  void TestComplete(bool success) override {
-    std::move(on_complete_).Run(success);
-  }
-
- private:
-  base::OnceCallback<void(bool)> on_complete_;
-  mojo::Receiver<axtest::mojom::TestBindingInterface> receiver_;
-  std::vector<mojo::Remote<axtest::mojom::TestInterface>>
-      test_interface_receivers_;
-};
 
 class V8ManagerTest : public testing::Test {
  public:
@@ -107,8 +45,8 @@ class V8ManagerTest : public testing::Test {
 
   void RunJSMojoTest(const std::string& js_script) {
     base::RunLoop waiter;
-    std::unique_ptr<TestBindingInterfaceImpl> test_interface =
-        std::make_unique<TestBindingInterfaceImpl>(
+    std::unique_ptr<JSTestInterface> test_interface =
+        std::make_unique<JSTestInterface>(
             base::BindLambdaForTesting([&waiter](bool success) {
               EXPECT_TRUE(success) << "Mojo JS was not successful";
               waiter.Quit();
@@ -196,8 +134,8 @@ TEST_F(V8ManagerTest, MAYBE_SanityCheckMojoBindings) {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 TEST_F(V8ManagerTest, MAYBE_CheckMojoConstants) {
   base::RunLoop waiter;
-  std::unique_ptr<TestBindingInterfaceImpl> test_interface =
-      std::make_unique<TestBindingInterfaceImpl>(
+  std::unique_ptr<JSTestInterface> test_interface =
+      std::make_unique<JSTestInterface>(
           base::BindLambdaForTesting([&waiter](bool success) {
             EXPECT_TRUE(success) << "Mojo JS was not successful";
             waiter.Quit();

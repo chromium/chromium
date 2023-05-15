@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -28,6 +29,7 @@
 class NearbyShareClient;
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
+class NearbyShareProfileInfoProvider;
 class PrefService;
 
 namespace device {
@@ -67,6 +69,7 @@ class NearbyShareCertificateManagerImpl
     static std::unique_ptr<NearbyShareCertificateManager> Create(
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
+        NearbyShareProfileInfoProvider* profile_info_provider,
         PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
@@ -79,6 +82,7 @@ class NearbyShareCertificateManagerImpl
     virtual std::unique_ptr<NearbyShareCertificateManager> CreateInstance(
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
+        NearbyShareProfileInfoProvider* profile_info_provider,
         PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
@@ -95,6 +99,7 @@ class NearbyShareCertificateManagerImpl
   NearbyShareCertificateManagerImpl(
       NearbyShareLocalDeviceDataManager* local_device_data_manager,
       NearbyShareContactManager* contact_manager,
+      NearbyShareProfileInfoProvider* profile_info_provider,
       PrefService* pref_service,
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& profile_path,
@@ -189,11 +194,15 @@ class NearbyShareCertificateManagerImpl
       size_t certificate_count);
 
   base::OneShotTimer timer_;
-  NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
-  NearbyShareContactManager* contact_manager_ = nullptr;
-  PrefService* pref_service_ = nullptr;
-  NearbyShareClientFactory* client_factory_ = nullptr;
-  const base::Clock* clock_;
+  raw_ptr<NearbyShareLocalDeviceDataManager, ExperimentalAsh>
+      local_device_data_manager_ = nullptr;
+  raw_ptr<NearbyShareContactManager, ExperimentalAsh> contact_manager_ =
+      nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+      profile_info_provider_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
   std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       private_certificate_expiration_scheduler_;

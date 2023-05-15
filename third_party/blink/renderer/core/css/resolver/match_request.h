@@ -65,21 +65,20 @@ class CORE_EXPORT MatchRequest {
         scope_(scope),
         vtt_originating_element_(vtt_originating_element) {
     if (rule_set) {
-      AddRuleset(rule_set, css_sheet);
+      AddRuleset(rule_set);
     }
   }
 
   const ContainerNode* Scope() const { return scope_; }
   Element* VTTOriginatingElement() const { return vtt_originating_element_; }
 
-  void AddRuleset(RuleSet* rule_set, const CSSStyleSheet* style_sheet) {
+  void AddRuleset(RuleSet* rule_set) {
     DCHECK(!IsFull());
 
     // Now that we're about to read from the RuleSet, we're done adding more
     // rules to the set and we should make sure it's compacted.
     rule_set->CompactRulesIfNeeded();
-    rule_sets_[num_rule_sets_].rule_set = rule_set;
-    rule_sets_[num_rule_sets_].style_sheet = style_sheet;
+    rule_sets_[num_rule_sets_] = rule_set;
     ++num_rule_sets_;
   }
 
@@ -95,22 +94,12 @@ class CORE_EXPORT MatchRequest {
     num_rule_sets_ = 0;
   }
 
-  // A rule set and the style sheet it is coming from.
-  struct RuleSetAndSheet {
-    STACK_ALLOCATED();
-
-   public:
-    const RuleSet* rule_set;
-    const CSSStyleSheet* style_sheet;
-  };
-
   // Used for returning from RuleSetIterator; not actually stored.
-  struct RuleSetAndSheetWithIndex {
+  struct RuleSetWithIndex {
     STACK_ALLOCATED();
 
    public:
     const RuleSet* rule_set;
-    const CSSStyleSheet* style_sheet;
     unsigned style_sheet_index;
   };
 
@@ -124,9 +113,8 @@ class CORE_EXPORT MatchRequest {
     RuleSetIterator(const MatchRequest* match_request, unsigned index)
         : match_request_(*match_request), index_(index) {}
 
-    RuleSetAndSheetWithIndex operator*() const {
-      return {match_request_.rule_sets_[index_].rule_set,
-              match_request_.rule_sets_[index_].style_sheet,
+    RuleSetWithIndex operator*() const {
+      return {match_request_.rule_sets_[index_],
               index_ + match_request_.style_sheet_first_index_};
     }
 
@@ -175,7 +163,7 @@ class CORE_EXPORT MatchRequest {
   friend class RuleSetIterator;
 
   static constexpr unsigned kRulesetsRoom = 32;
-  RuleSetAndSheet rule_sets_[kRulesetsRoom];
+  const RuleSet* rule_sets_[kRulesetsRoom];
   unsigned num_rule_sets_ = 0;
   unsigned style_sheet_first_index_ = 0;
 

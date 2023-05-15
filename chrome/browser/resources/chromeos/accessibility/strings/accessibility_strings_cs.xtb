@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="100506692671054486">žádný předchozí příkaz</translation>
 <translation id="1009046985747440431">Navigovat lze šipkami nahoru a dolů, možnost aktivujete klávesou Enter</translation>
 <translation id="1011903154582639569">Najděte klávesu a zvednutím prstu pište</translation>
 <translation id="1012173283529841972">Položka seznamu</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Levandulová růžová</translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3962990492275676168">Začít číst z aktuálního místa</translation>
+<translation id="397094149579293440">není vybrán text</translation>
 <translation id="3970951409746498040">Oranžovohnědá</translation>
 <translation id="3989324057180830702">přep</translation>
 <translation id="3991317907213946254">Bledě krémová</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Žádný předchozí nadpis 1. úrovně není</translation>
 <translation id="4787577491510559358">Oznamovat formátování aktuální položky</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">není vybráno textové pole</translation>
 <translation id="4804818685124855865">Odpojit</translation>
 <translation id="481165870889056555">Oznámit název aktuální stránky</translation>
 <translation id="4815668758102003883">Bledě tyrkysová</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interní odkaz</translation>
 <translation id="4909019435900810068">Přejít o slovo dozadu</translation>
 <translation id="4911349081560453449">Žádné předchozí zaškrtávací políčko není</translation>
+<translation id="4919186071145887492">Nelze <ph name="COMMAND" />, zkuste to znovu</translation>
 <translation id="492295894462528572">Předmluva</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4953585991029886728">Upravit text</translation>
+<translation id="4964701498510730546">textové pole je prázdné</translation>
 <translation id="4973717656530883744">Min <ph name="X" /></translation>
 <translation id="4974612477719259470">Žádné předchozí tlačítko není</translation>
 <translation id="4979404613699303341">Předchozí tlačítko</translation>
+<translation id="4981239367072766915">nerozpoznaný vstup</translation>
 <translation id="4982917827052020884">Začneme několika klávesami, které budete pravidelně používat. Klávesou Control můžete zastavit aktuální hlasovou odezvu. Klávesa Control se nachází v levém dolním rohu klávesnice. Až budete chtít pokračovat, opět stiskněte Control.</translation>
 <translation id="4983588134362688868">Přejít na začátek stránky</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, okno</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Oznamovat aktuální stav baterie</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, přepínač je vybrán</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, vybraný přepínač položky v nabídce</translation>
+<translation id="5014131807708055994">Nelze <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Zapnout protokolování řeči</translation>
 <translation id="5041394372352067729">Přesunout zobrazení Braillova písma na začátek stránky</translation>
 <translation id="5042770794184672516">Zvýšit hlasitost řeči</translation>

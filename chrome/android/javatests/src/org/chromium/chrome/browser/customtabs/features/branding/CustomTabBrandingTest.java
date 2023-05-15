@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -75,7 +75,7 @@ public class CustomTabBrandingTest {
                 appContext.getSharedPreferences(BRANDING_SHARED_PREF_KEY, Context.MODE_PRIVATE);
         String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), url);
+                ApplicationProvider.getApplicationContext(), url);
 
         // Set the referrer so branding controller can identify the client app.
         mIntent.putExtra(Intent.EXTRA_REFERRER,

@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -41,9 +42,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
-    wl_output* output = nullptr;
-    uint32_t output_name = 0;
-    uint32_t output_version = 0;
+    raw_ptr<wl_output, ExperimentalAsh> output = nullptr;
   };
 
   // Start with 2 displays.
@@ -55,13 +54,10 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
     auto data = std::make_unique<ClientData>();
     // This gets the latest bound output on the client side, which should be the
     // 2nd display here.
-    data->output = client->output();
-    data->output_name = client->globals().output.name();
-    data->output_version =
-        wl_proxy_get_version(reinterpret_cast<wl_proxy*>(client->output()));
+    ASSERT_EQ(client->globals().outputs.size(), 2u);
+    data->output = client->globals().outputs.back().get();
+    output_resource_key = test::client_util::GetResourceKey(data->output);
     client->set_data(std::move(data));
-
-    output_resource_key = test::client_util::GetResourceKey(client->output());
   });
 
   auto* display_handler =
@@ -79,8 +75,9 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   // Try releasing now and check for client error.
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ClientData>();
-    EXPECT_EQ(data->output, client->globals().output.get());
-    wl_output_release(client->globals().output.release());
+    ASSERT_EQ(client->globals().outputs.size(), 2u);
+    EXPECT_EQ(data->output, client->globals().outputs.back().get());
+    wl_output_release(client->globals().outputs.back().release());
     client->Roundtrip();
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
@@ -100,7 +97,7 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
   ASSERT_TRUE(client_thread_->task_runner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&] { block_bind_event.Wait(); })));
 
-  // Quickly add then remove a display while the client is blocked.
+  // Quickly add then remove a 2nd display while the client is blocked.
   UpdateDisplay("800x600,1024x786");
   UpdateDisplay("800x600");
 
@@ -118,9 +115,9 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
 
-  // Clean up client output object.
+  // Clean up client's 2nd output object that was removed.
   PostToClientAndWait([&](test::TestClient* client) {
-    wl_output_release(client->globals().output.release());
+    wl_output_release(client->globals().outputs.back().release());
   });
 
   task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *

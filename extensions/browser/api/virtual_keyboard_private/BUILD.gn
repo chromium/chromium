@@ -25,6 +25,10 @@ source_set("virtual_keyboard_private") {
     deps += [ "//ash" ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
+
   public_deps = [
     ":virtual_keyboard_delegate",
     "//extensions/browser:browser_sources",

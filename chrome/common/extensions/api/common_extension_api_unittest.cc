@@ -32,7 +32,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -279,11 +278,10 @@ TEST(ExtensionAPITest, APIFeaturesAlias) {
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
   const Feature* test_feature =
       api_feature_provider.GetFeature("alias_api_source");
@@ -302,28 +300,22 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
   scoped_refptr<const Extension> app =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "app")
-                  .Set("app",
-                       DictionaryBuilder()
-                           .Set("background",
-                                DictionaryBuilder()
-                                    .Set("scripts", ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "background",
+                                  base::Value::Dict().Set(
+                                      "scripts", base::Value::List().Append(
+                                                     "background.js"))))
                   .Set("version", "1")
-                  .Set("manifest_version", 2)
-                  .Build())
+                  .Set("manifest_version", 2))
           .Build();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   struct {
@@ -392,20 +384,15 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
   scoped_refptr<const Extension> app =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "app")
-                  .Set("app",
-                       DictionaryBuilder()
-                           .Set("background",
-                                DictionaryBuilder()
-                                    .Set("scripts", ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "background",
+                                  base::Value::Dict().Set(
+                                      "scripts", base::Value::List().Append(
+                                                     "background.js"))))
                   .Set("version", "1")
-                  .Set("manifest_version", 2)
-                  .Build())
+                  .Set("manifest_version", 2))
           .Build();
 
   const std::vector<FeatureSessionTypesTestData> kTestData(
@@ -475,10 +462,10 @@ TEST(ExtensionAPITest, LazyGetSchema) {
 
 scoped_refptr<Extension> CreateExtensionWithPermissions(
     const std::set<std::string>& permissions) {
-  base::Value::Dict manifest;
-  manifest.Set("name", "extension");
-  manifest.Set("version", "1.0");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "extension")
+                      .Set("version", "1.0")
+                      .Set("manifest_version", 2);
   {
     base::Value::List permissions_list;
     for (const auto& i : permissions) {
@@ -583,31 +570,28 @@ scoped_refptr<Extension> CreateHostedApp() {
 
 scoped_refptr<Extension> CreatePackagedAppWithPermissions(
     const std::set<std::string>& permissions) {
-  base::Value::Dict values;
-  values.Set(manifest_keys::kName, "test");
-  values.Set(manifest_keys::kVersion, "0.1");
-  values.SetByDottedPath(manifest_keys::kPlatformAppBackground,
-                         "http://www.example.com");
+  auto manifest =
+      base::Value::Dict()
+          .Set(manifest_keys::kName, "test")
+          .Set(manifest_keys::kVersion, "0.1")
+          .Set(manifest_keys::kApp,
+               base::Value::Dict().Set(
+                   "background",
+                   base::Value::Dict().Set(
+                       "scripts", base::Value::List().Append("test.js"))));
 
-  base::Value::Dict app;
-  base::Value::Dict background;
-  base::Value::List scripts;
-  scripts.Append("test.js");
-  background.Set("scripts", std::move(scripts));
-  app.Set("background", std::move(background));
-  values.Set(manifest_keys::kApp, std::move(app));
   {
     base::Value::List permissions_list;
     for (const auto& i : permissions) {
       permissions_list.Append(i);
     }
-    values.Set("permissions", std::move(permissions_list));
+    manifest.Set("permissions", std::move(permissions_list));
   }
 
   std::string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
-                        values, Extension::NO_FLAGS, &error));
+                        manifest, Extension::NO_FLAGS, &error));
   CHECK(extension.get()) << error;
   return extension;
 }

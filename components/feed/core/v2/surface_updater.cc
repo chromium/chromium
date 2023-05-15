@@ -369,8 +369,9 @@ void SurfaceUpdater::SendStreamUpdate(
   StreamUpdateAndType update =
       MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state);
 
-  if (load_stream_started_ && !loading_more_)
+  if (load_stream_started_ || loading_more_) {
     launch_reliability_logger_.OnStreamUpdate(update.type);
+  }
 
   for (auto& entry : *surfaces_)
     SendUpdateToSurface(entry.surface, update.stream_update);

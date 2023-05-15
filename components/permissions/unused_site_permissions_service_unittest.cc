@@ -7,9 +7,11 @@
 #include <list>
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -109,7 +111,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   const base::TimeDelta precision =
       content_settings::GetCoarseVisitedTimePrecision();
 
-  // Add one setting for url1 and two settings for url2.
+  // Add one setting for `url1` and two settings for `url2`.
   hcsm()->SetContentSettingDefaultScope(
       url1, url1, type1, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
   hcsm()->SetContentSettingDefaultScope(
@@ -129,7 +131,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 3u);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
-  // Visit url2 and check that the corresponding content setting got updated.
+  // Visit `url2` and check that the corresponding content setting got updated.
   UnusedSitePermissionsService::TabHelper::CreateForWebContents(web_contents(),
                                                                 service());
   NavigateAndCommit(url2);
@@ -158,7 +160,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   EXPECT_EQ(url2_str, service()
                           ->GetTrackedUnusedPermissionsForTesting()[1]
                           .source.primary_pattern.ToString());
-  // url1 should be on revoked permissions list.
+  // `url1` should be on revoked permissions list.
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
   std::string url1_str =
       ContentSettingsPattern::FromURLNoWildcard(url1).ToString();
@@ -188,7 +190,7 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
   // Travel through time for 20 days.
   clock()->Advance(base::Days(20));
 
-  // Only url1 should be tracked because it is the only single origin url.
+  // Only `url1` should be tracked because it is the only single origin url.
   service()->UpdateUnusedPermissionsForTesting();
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   auto tracked_origin = service()->GetTrackedUnusedPermissionsForTesting()[0];
@@ -343,7 +345,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   permission_type_list.Append(static_cast<int32_t>(type));
   dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
 
-  // Add url1 and url2 to revoked permissions list.
+  // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url1), GURL(url1),
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
@@ -360,21 +362,21 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
       &revoked_permissions_list);
   EXPECT_EQ(2U, revoked_permissions_list.size());
 
-  // Allow the permission for url1 again
+  // Allow the permission for `url1` again
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
 
-  // Check there is only url2 in revoked permissions list.
+  // Check there is only `url2` in revoked permissions list.
   hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       &revoked_permissions_list);
   EXPECT_EQ(1U, revoked_permissions_list.size());
 
-  // Check if the permissions of url1 is regranted.
+  // Check if the permissions of `url1` is regranted.
   EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
             hcsm()->GetContentSetting(GURL(url1), GURL(url1), type));
 
-  // Undoing the changes should add url1 back to the list of revoked permissions
-  // and reset its permissions.
+  // Undoing the changes should add `url1` back to the list of revoked
+  // permissions and reset its permissions.
   service()->UndoRegrantPermissionsForOrigin({type}, absl::nullopt,
                                              url::Origin::Create(GURL(url1)));
 
@@ -509,7 +511,7 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
   permission_type_list.Append(static_cast<int32_t>(type));
   dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
 
-  // Add url1 and url2 to revoked permissions list.
+  // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url1), GURL(url1),
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
@@ -533,6 +535,97 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       &revoked_permissions_list);
   EXPECT_EQ(revoked_permissions_list.size(), 0U);
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, GetDaysSinceRevocation) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url = GURL("https://example1.com:443");
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  absl::optional<uint32_t> days_since_revocation;
+
+  // Permission has not yet been revoked, so shouldn't return a number of days
+  // since revocation.
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_FALSE(days_since_revocation.has_value());
+
+  hcsm()->SetContentSettingDefaultScope(
+      url, url, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel 70 days through time so that the granted permission is revoked.
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 0u);
+
+  // Forward the clock for five days, which would be the number of days since
+  // revocation.
+  clock()->Advance(base::Days(5));
+
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 5u);
+
+  // Revoked permission is cleaned up after >30 days.
+  clock()->Advance(base::Days(40));
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_FALSE(days_since_revocation.has_value());
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
+  const std::string url = "https://example.com:443";
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(
+      static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  auto cleanUpThreshold =
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  const content_settings::ContentSettingConstraints constraint{
+      .expiration = clock()->Now() + cleanUpThreshold};
+
+  // Add `url` to revoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url), GURL(url),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()), constraint);
+
+  // Assert there is 1 origin in revoked permissions list.
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  ASSERT_EQ(1U, revoked_permissions_list.size());
+
+  // Advance 14 days; this will be the expected histogram sample.
+  clock()->Advance(base::Days(14));
+  base::HistogramTester histogram_tester;
+
+  // Allow the permission for `url` again
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url)));
+
+  // Only a single entry should be recorded in the histogram.
+  const std::vector<base::Bucket> buckets = histogram_tester.GetAllSamples(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays");
+  EXPECT_EQ(1U, buckets.size());
+  // The recorded metric should be the elapsed days since the revocation.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays", 14, 1);
 }
 
 }  // namespace permissions

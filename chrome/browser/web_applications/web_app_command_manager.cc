@@ -212,35 +212,6 @@ void WebAppCommandManager::Shutdown() {
   shared_web_contents_.reset();
 }
 
-void WebAppCommandManager::NotifySyncSourceRemoved(
-    const std::vector<AppId>& app_ids) {
-  if (is_in_shutdown_)
-    return;
-
-  // To prevent map modification-during-iteration, make a copy of relevant
-  // commands. The main complications that can occur are a command calling
-  // `CompleteAndDestruct` or `ScheduleCommand` inside of the
-  // `OnSyncSourceRemoved` call. Because all commands are
-  // `StartWithLock()`ed asynchronously, we will never have to notify any
-  // commands that are newly scheduled. So at most one command needs to be
-  // notified per queue, and that command can be destroyed before we notify it.
-  std::vector<base::WeakPtr<WebAppCommand>> commands_to_notify;
-  for (const AppId& app_id : app_ids) {
-    for (const auto& [id, command] : commands_) {
-      if (base::Contains(command->lock_description().app_ids(), app_id)) {
-        if (command->IsStarted()) {
-          commands_to_notify.push_back(command->AsWeakPtr());
-        }
-      }
-    }
-  }
-  for (const auto& command_ptr : commands_to_notify) {
-    if (!command_ptr)
-      continue;
-    command_ptr->OnSyncSourceRemoved();
-  }
-}
-
 base::Value WebAppCommandManager::ToDebugValue() {
   base::Value::List command_log;
   for (const auto& command_value : command_debug_log_) {

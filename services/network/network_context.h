@@ -288,6 +288,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                               const net::NetworkIsolationKey& key,
                               bool is_subframe_document_resource,
                               bool include_credentials) override;
+  void ClearCorsPreflightCache(
+      mojom::ClearDataFilterPtr filter,
+      ClearCorsPreflightCacheCallback callback) override;
   void ClearHostCache(mojom::ClearDataFilterPtr filter,
                       ClearHostCacheCallback callback) override;
   void ClearHttpAuthCache(base::Time start_time,

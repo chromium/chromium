@@ -72,6 +72,13 @@ void RecordHttpResponseOrErrorCode(const char* metric_name,
                                    int net_error,
                                    int response_code);
 
+// If the network response for a request has errors, the corresponding service
+// usually increments the backoff counter. However, some errors are not related
+// to the network infrastructure and therefore don't require this. This function
+// returns whether an error is considered retriable and doesn't need to
+// increment backoff.
+bool ErrorIsRetriable(int net_error, int http_error);
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

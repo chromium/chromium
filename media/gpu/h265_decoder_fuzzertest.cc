@@ -26,11 +26,15 @@ class FakeH265Accelerator : public media::H265Decoder::H265Accelerator {
     return new media::H265Picture();
   }
 
-  Status SubmitFrameMetadata(const media::H265SPS* sps,
-                             const media::H265PPS* pps,
-                             const media::H265SliceHeader* slice_hdr,
-                             const media::H265Picture::Vector& ref_pic_list,
-                             scoped_refptr<media::H265Picture> pic) override {
+  Status SubmitFrameMetadata(
+      const media::H265SPS* sps,
+      const media::H265PPS* pps,
+      const media::H265SliceHeader* slice_hdr,
+      const media::H265Picture::Vector& ref_pic_list,
+      const media::H265Picture::Vector& ref_pic_set_lt_curr,
+      const media::H265Picture::Vector& ref_pic_set_st_curr_after,
+      const media::H265Picture::Vector& ref_pic_set_st_curr_before,
+      scoped_refptr<media::H265Picture> pic) override {
     return Status::kOk;
   }
   Status SubmitSlice(

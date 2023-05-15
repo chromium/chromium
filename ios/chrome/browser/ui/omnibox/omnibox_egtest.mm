@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -461,6 +462,23 @@ void FocusFakebox() {
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 }
+// Tests that a security info icon is visible on a web page.
+- (void)testSecurityInfoIcon {
+  [self openPage1];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PageSecurityInfoIndicator()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that location bar shows the current URL in a short form.
+- (void)testLocationBarUrl {
+  [self openPage1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            _URL1.host())];
+}
 
 - (void)testCopyPaste {
   [self openPage1];
@@ -710,6 +728,157 @@ void FocusFakebox() {
 - (void)checkLocationBarEditState {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+#pragma mark - Pre-edit state tests
+
+@interface LocationBarPreEditStateTestCase : ChromeTestCase
+@end
+
+@implementation LocationBarPreEditStateTestCase {
+  GURL _URL;
+}
+
+- (void)setUp {
+  [super setUp];
+
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  _URL = self.testServer->GetURL(kPage1URL);
+
+  // Clear the pasteboard in case there is a URL copied.
+  [ChromeEarlGrey clearPasteboard];
+}
+
+- (void)tearDown {
+  // Clear the pasteboard after every test.
+  [ChromeEarlGrey clearPasteboard];
+  [super tearDown];
+}
+
+// Tests that tapping on steady view on webpage and starting typing a query
+// would clear the page url and have instead the typed query in the omnibox text
+// field.
+- (void)testTypingOnPreEditState {
+  // Load a web page.
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText(@"hello")];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("hello")];
+}
+
+// Tests that tapping on omnibox in pre-edit state in SRP or webpage would
+// display a callout menu with cut,copy and paste (if there is a text on the
+// pasteboard).
+- (void)testTapOmniboxOnPreEditState {
+  // Load a web page.
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // Focus Omnibox.
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Add a text to the pasteBoard (So that we have the paste button displayed).
+  [ChromeEarlGrey copyTextToPasteboard:@"hello"];
+
+  // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
+  // Wait for callout copy button to be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutCopyButton()];
+
+  // Verify that system text cut callout is displayed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SystemSelectionCalloutCutButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that system text paste callout is displayed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SystemSelectionCalloutPasteButton()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that Cut callout button would erase the current url and copy it on the
+// pasteboard.
+- (void)testCutCalloutButton {
+  // Load a web page.
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // Focus Omnibox.
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
+  // Wait for callout cut button to be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutCutButton()];
+
+  // Tapping on Cut.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SystemSelectionCalloutCutButton()]
+      performAction:grey_tap()];
+
+  // Omnibox now should be empty.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("")];
+}
+
+// Tests that Paste callout button would erase the current url and replace it
+// with text on pasteboard.
+- (void)testPasteCalloutButton {
+  // Load a web page.
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // Focus Omnibox.
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Add a text to the pasteBoard (So that we have the paste button displayed).
+  [ChromeEarlGrey copyTextToPasteboard:@"hello"];
+
+  // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
+  // Wait for callout paste button to be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutPasteButton()];
+
+  // Tapping on Paste.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SystemSelectionCalloutPasteButton()]
+      performAction:grey_tap()];
+
+  // Omnibox now should be empty.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("hello")];
 }
 
 @end

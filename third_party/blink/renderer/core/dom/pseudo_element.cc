@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -306,8 +307,14 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       LayoutObject* child = content->CreateLayoutObject(*this, style);
       if (layout_object->IsChildAllowed(child, style)) {
         layout_object->AddChild(child);
-        if (child->IsQuote())
-          To<LayoutQuote>(child)->AttachQuote();
+        if (child->IsQuote()) {
+          StyleContainmentScopeTree& tree =
+              GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+          StyleContainmentScope* scope =
+              tree.FindOrCreateEnclosingScopeForElement(*this);
+          scope->AttachQuote(*To<LayoutQuote>(child));
+          tree.UpdateOutermostDirtyScope(scope);
+        }
       } else {
         child->Destroy();
       }
@@ -337,6 +344,16 @@ Node* PseudoElement::InnerNodeForHitTesting() const {
   if (parent && parent->IsPseudoElement())
     return To<PseudoElement>(parent)->InnerNodeForHitTesting();
   return parent;
+}
+
+void PseudoElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
+  // Even though pseudo elements can't use the accesskey attribute, assistive
+  // tech can still attempt to interact with pseudo elements if they are in
+  // the AX tree (usually due to their text/image content).
+  // Just pass this request to the originating element.
+  DCHECK(OriginatingElement());
+  OriginatingElement()->AccessKeyAction(creation_scope);
 }
 
 Element* PseudoElement::OriginatingElement() const {

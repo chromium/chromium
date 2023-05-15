@@ -307,7 +307,7 @@ void ChromeOsFeedbackDelegate::SendReport(
     feedback_params.load_system_info = false;
   }
 
-  feedback_service_->SendFeedback(
+  feedback_service_->RedactThenSendFeedback(
       feedback_params, feedback_data,
       base::BindOnce(&ChromeOsFeedbackDelegate::OnSendFeedbackDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

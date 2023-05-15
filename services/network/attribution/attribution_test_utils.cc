@@ -13,10 +13,11 @@
 #include "base/strings/string_util.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/attribution/attribution_attestation_mediator.h"
-#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_request_helper.h"
+#include "services/network/attribution/attribution_verification_mediator.h"
+#include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,18 +80,21 @@ bool FakeCryptographer::IsToken(const std::string& potential_token,
   return potential_token == base::StrCat({kUnblindKey, blind_token});
 }
 
-std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
+std::unique_ptr<net::test_server::HttpResponse> HandleVerificationRequest(
     const net::test_server::HttpRequest& request) {
-  if (!base::StartsWith(request.relative_url, kAttestationHandlerPathPrefix)) {
+  if (!base::StartsWith(request.relative_url, kVerificationHandlerPathPrefix)) {
     return nullptr;
   }
 
-  auto attestation_header = base::ranges::find_if(request.headers, [](auto& s) {
-    return s.first == AttributionAttestationMediator::kTriggerAttestationHeader;
-  });
-  bool attestation_header_set = attestation_header != std::end(request.headers);
-  EXPECT_TRUE(attestation_header_set);
-  if (!attestation_header_set) {
+  auto verification_header =
+      base::ranges::find_if(request.headers, [](auto& s) {
+        return s.first ==
+               AttributionVerificationMediator::kReportVerificationHeader;
+      });
+  bool verification_header_set =
+      verification_header != std::end(request.headers);
+  EXPECT_TRUE(verification_header_set);
+  if (!verification_header_set) {
     return nullptr;
   }
 
@@ -107,15 +111,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->AddCustomHeader(
-      AttributionAttestationMediator::kTriggerAttestationHeader,
+      AttributionVerificationMediator::kReportVerificationHeader,
       kTestBlindToken);
 
-  if (request.relative_url == kRedirectAttestationRequestPath) {
+  if (request.relative_url == kRedirectVerificationRequestPath) {
     http_response->set_code(net::HTTP_FOUND);
     http_response->AddCustomHeader(
         "Location",
-        base::JoinString({kAttestationHandlerPathPrefix, "some-different-path"},
-                         "/"));
+        base::JoinString(
+            {kVerificationHandlerPathPrefix, "some-different-path"}, "/"));
   } else {
     http_response->set_code(net::HTTP_OK);
   }
@@ -147,18 +151,17 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
 std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
     TrustTokenKeyCommitments* trust_token_key_commitments) {
   DCHECK(trust_token_key_commitments);
-  net::HttpRequestHeaders request_headers;
-  request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
   return AttributionRequestHelper::CreateForTesting(
-      request_headers, /*create_mediator=*/base::BindRepeating(
-          &CreateTestAttestationMediator, trust_token_key_commitments));
+      mojom::AttributionReportingEligibility::kTrigger,
+      /*create_mediator=*/base::BindRepeating(&CreateTestVerificationMediator,
+                                              trust_token_key_commitments));
 }
 
-AttributionAttestationMediator CreateTestAttestationMediator(
+AttributionVerificationMediator CreateTestVerificationMediator(
     TrustTokenKeyCommitments* trust_token_key_commitments) {
-  return AttributionAttestationMediator(
+  return AttributionVerificationMediator(
       trust_token_key_commitments, std::make_unique<FakeCryptographer>(),
-      std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
+      std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
 }
 
 }  // namespace network

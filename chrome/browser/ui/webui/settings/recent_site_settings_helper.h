@@ -36,7 +36,7 @@ struct TimestampedSetting {
 
 struct RecentSitePermissions {
   GURL origin;
-  absl::optional<std::string> isolated_web_app_name;
+  std::string display_name;
   bool incognito;
   std::vector<TimestampedSetting> settings;
 
@@ -46,7 +46,7 @@ struct RecentSitePermissions {
       default;
   RecentSitePermissions(RecentSitePermissions&& other);
   RecentSitePermissions(GURL origin,
-                        absl::optional<std::string> isolated_web_app_name,
+                        const std::string& display_name,
                         bool incognito,
                         std::vector<TimestampedSetting> settings);
   ~RecentSitePermissions();

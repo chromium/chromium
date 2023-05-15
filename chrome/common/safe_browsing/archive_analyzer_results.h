@@ -70,6 +70,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,
                                           int file_length,
                                           bool is_encrypted,
+                                          bool is_directory,
                                           ArchiveAnalyzerResults* results);
 
 // Returns the `DownloadFileType_InspectionType` of the file path.

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,6 +26,7 @@ namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbShareDialogHeight = 515;
+constexpr int kSmbShareDialogHeightWithJellyOn = 570;
 
 void AddSmbSharesStrings(content::WebUIDataSource* html_source) {
   // Add strings specific to smb_dialog.
@@ -59,15 +61,17 @@ SmbShareDialog::SmbShareDialog()
 SmbShareDialog::~SmbShareDialog() = default;
 
 void SmbShareDialog::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(SystemWebDialogDelegate::kDialogWidth, kSmbShareDialogHeight);
+  size->SetSize(SystemWebDialogDelegate::kDialogWidth,
+                chromeos::features::IsJellyEnabled()
+                    ? kSmbShareDialogHeightWithJellyOn
+                    : kSmbShareDialogHeight);
 }
 
 SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISmbShareHost);
-
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
 
   AddSmbSharesStrings(source);
 
@@ -88,8 +92,8 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
                   user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
   source->AddBoolean("isGuest", is_guest);
 
-  bool is_jelly = chromeos::features::IsJellyEnabled();
-  source->AddBoolean("isJelly", is_jelly);
+  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  source->AddBoolean("isJellyEnabled", is_jelly_enabled);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_SMB_SHARES_DIALOG_CONTAINER_HTML);

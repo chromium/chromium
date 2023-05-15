@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -223,7 +222,7 @@ void ArCoreGl::Initialize(
 
   // Get the activity context.
   base::android::ScopedJavaLocalRef<jobject> application_context =
-      session_utils->GetApplicationContext();
+      session_utils->GetCurrentActivityContext();
   if (!application_context.obj()) {
     DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
     std::move(callback).Run(
@@ -873,7 +872,7 @@ base::TimeDelta ArCoreGl::EstimatedArCoreFrameTime() {
   // Ensure that the returned value is within ARCore's nominal frame time range.
   // This helps avoid underestimating the frame rate if the app is too slow
   // to reach the minimum target FPS value.
-  return base::clamp(frametime, min_frametime, max_frametime);
+  return std::clamp(frametime, min_frametime, max_frametime);
 }
 
 base::TimeDelta ArCoreGl::WaitTimeForArCoreUpdate() {

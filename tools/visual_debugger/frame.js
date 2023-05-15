@@ -137,7 +137,7 @@ class DrawFrame {
       (this.submissionCount() - 1);
   }
 
-  updateCanvasSize(canvas, scale, orientationDeg) {
+  updateCanvasSize(canvas, context, scale, orientationDeg) {
     // Swap canvas width/height for 90 or 270 deg rotations
     if (orientationDeg === 90 || orientationDeg === 270) {
       canvas.width = this.size_.height * scale;
@@ -153,6 +153,17 @@ class DrawFrame {
     const padding = 20;
     canvas.width += padding * 2;
     canvas.height += padding * 2;
+
+    // Fill the actual frame bounds to an opaque color.
+    context.save();
+    context.fillStyle = "white";
+    context.fillRect(
+      padding,
+      padding,
+      canvas.width - padding * 2,
+      canvas.height - padding * 2
+    );
+    context.restore();
   }
 
   getFilter(source_index) {
@@ -375,6 +386,7 @@ class Viewer {
     }
   }
 
+
   drawPreviousFrame() {
     // When we switch to a different frame, we need to unfreeze the current
     // frame (to make sure the frame draws completely the next time it is drawn
@@ -389,7 +401,10 @@ class Viewer {
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
-    frame.updateCanvasSize(this.canvas_, this.viewScale, this.viewOrientation);
+    frame.updateCanvasSize(this.canvas_,
+                           this.drawContext_,
+                           this.viewScale,
+                           this.viewOrientation);
     frame.draw(this.canvas_,
                this.drawContext_,
                this.viewScale,
@@ -455,7 +470,7 @@ class Player {
     this.viewer_ = viewer;
     this.paused_ = false;
     this.nextFrameScheduled_ = false;
-
+    this.live_ = true;
     this.drawCb_ = draw_cb;
 
     Player.instances[0] = this;
@@ -466,6 +481,10 @@ class Player {
     if (this.nextFrameScheduled_) return;
 
     const drawn = this.viewer_.drawNextFrame();
+    if(this.live_){
+      while(this.viewer_.drawNextFrame());
+    }
+
     this.didDrawNewFrame_();
     if (!drawn) return;
 
@@ -477,8 +496,15 @@ class Player {
     });
   }
 
+  live()
+  {
+    this.live_ = true;
+    this.play();
+  }
+
   pause() {
     this.paused_ = true;
+    this.live_ = false;
   }
 
   rewind() {

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -70,8 +71,32 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // reason for retrying is.
   enum class InstallRetryReason {
     kMissingNonCellularConnectivity = 0,
-    kOther,
+    kInternalError = 1,
+    kUserError = 2,
+    kOther
   };
+
+  // HermesUserErrorCodes indicate errors made by the user. These can be due
+  // to bad input or a valid input that has already been successfully processed.
+  // In such errors, we do not attempt to retry.
+  const std::array<HermesResponseStatus, 4> kHermesUserErrorCodes = {
+      HermesResponseStatus::kErrorAlreadyDisabled,
+      HermesResponseStatus::kErrorAlreadyEnabled,
+      HermesResponseStatus::kErrorInvalidActivationCode,
+      HermesResponseStatus::kErrorInvalidIccid};
+
+  // HermesInternalErrorCodes indicate system failure during the installation
+  // process. These error can happen due to code bugs or reasons unrelated to
+  // user input. In these cases, we retry using an exponental backoff policy to
+  // attempt the installation again.
+  const std::array<HermesResponseStatus, 7> kHermesInternalErrorCodes = {
+      HermesResponseStatus::kErrorUnknown,
+      HermesResponseStatus::kErrorInternalLpaFailure,
+      HermesResponseStatus::kErrorWrongState,
+      HermesResponseStatus::kErrorSendApduFailure,
+      HermesResponseStatus::kErrorUnexpectedModemManagerState,
+      HermesResponseStatus::kErrorModemMessageProcessing,
+      HermesResponseStatus::kErrorPendingProfile};
 
   friend class CellularPolicyHandlerTest;
 
@@ -125,15 +150,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void OnWaitTimeout();
   bool HasNonCellularInternetConnectivity();
 
-  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
-  CellularESimInstaller* cellular_esim_installer_ = nullptr;
-  NetworkProfileHandler* network_profile_handler_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_ =
+      nullptr;
+  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
+      nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
-      nullptr;
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_ = nullptr;
 
   bool is_installing_ = false;
   bool need_refresh_profile_list_ = true;

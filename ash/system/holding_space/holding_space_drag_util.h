@@ -22,6 +22,7 @@ class HoldingSpaceItemView;
 
 namespace holding_space_util {
 
+// TODO(http://b/278815245): Add pixel tests.
 // Returns a drag image for the specified holding space item `views` and the
 // offset with which to position it. The drag image consists of a stacked
 // representation of the dragged items with the first item being stacked on top.

@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION"/>
+
 
     <!-- "Dangerous" permissions which require user prompt -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -153,6 +155,9 @@
             android:noHistory="true"
             android:exported="true">
         </activity>
+
+        <property android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/ad_services_config" />
 
         <uses-library android:name="android.test.runner" />
     </application>

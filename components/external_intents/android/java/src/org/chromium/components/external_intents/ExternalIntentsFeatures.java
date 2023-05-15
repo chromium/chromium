@@ -18,7 +18,7 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("external_intents")
 public class ExternalIntentsFeatures extends Features {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
-    public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations";
+    public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations2";
     public static final String DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME =
             "DoNotRequireSpecializedCCTHandler";
     public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";

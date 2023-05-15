@@ -13,6 +13,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 #include "ash/system/phonehub/app_stream_launcher_list_item.h"
 #include "ash/system/phonehub/app_stream_launcher_view.h"
@@ -23,8 +25,11 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,6 +41,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -261,6 +267,11 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
   title->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_APP_STREAM_LAUNCHER_TITLE));
 
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
+                                          *title);
+  }
+
   return header;
 }
 
@@ -276,6 +287,15 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
   auto button = views::CreateVectorImageButton(std::move(callback));
   views::SetImageFromVectorIconWithColor(button.get(), icon, color,
                                          disabled_color);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    ash::StyleUtil::SetUpInkDropForButton(button.get(), gfx::Insets(),
+                                          /*highlight_on_hover=*/false,
+                                          /*highlight_on_focus=*/true);
+    views::FocusRing::Get(button.get())
+        ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+  }
+
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();
 

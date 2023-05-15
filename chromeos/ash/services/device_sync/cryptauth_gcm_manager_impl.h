@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -87,10 +88,10 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
                                gcm::GCMClient::Result result);
 
   // Handles the communications with GCM. Not owned.
-  gcm::GCMDriver* gcm_driver_;
+  raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
 
   // Manages preferences across process restarts. Not owned.
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Whether a GCM registration is currently being processed.
   bool registration_in_progress_;

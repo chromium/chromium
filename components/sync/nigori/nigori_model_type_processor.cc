@@ -114,7 +114,7 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
     entity_->ClearTransientSyncState();
   }
   // Ask the bridge to persist the new metadata.
-  bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
+  bridge_->ApplyIncrementalSyncChanges(/*data=*/absl::nullopt);
 }
 
 void NigoriModelTypeProcessor::OnUpdateReceived(
@@ -144,14 +144,14 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   if (is_initial_sync) {
     DCHECK(!entity_);
     if (updates.empty()) {
-      error = bridge_->MergeSyncData(absl::nullopt);
+      error = bridge_->MergeFullSyncData(absl::nullopt);
     } else {
       DCHECK(!updates[0].entity.is_deleted());
       entity_ = ProcessorEntity::CreateNew(
           kNigoriStorageKey, ClientTagHash::FromHashed(kRawNigoriClientTagHash),
           updates[0].entity.id, updates[0].entity.creation_time);
       entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
-      error = bridge_->MergeSyncData(std::move(updates[0].entity));
+      error = bridge_->MergeFullSyncData(std::move(updates[0].entity));
     }
     if (error) {
       ReportError(*error);
@@ -160,7 +160,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   }
 
   if (updates.empty()) {
-    bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
+    bridge_->ApplyIncrementalSyncChanges(/*data=*/absl::nullopt);
     return;
   }
 
@@ -171,7 +171,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 
   if (entity_->IsVersionAlreadyKnown(updates[0].response_version)) {
     // Seen this update before; just ignore it.
-    bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
+    bridge_->ApplyIncrementalSyncChanges(/*data=*/absl::nullopt);
     return;
   }
 
@@ -179,11 +179,11 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
     // Remote update always win in case of conflict, because bridge takes care
     // of reapplying pending local changes after processing the remote update.
     entity_->RecordForcedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
-    error = bridge_->ApplySyncChanges(std::move(updates[0].entity));
+    error = bridge_->ApplyIncrementalSyncChanges(std::move(updates[0].entity));
   } else if (!entity_->MatchesData(updates[0].entity)) {
     // Inform the bridge of the new or updated data.
     entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
-    error = bridge_->ApplySyncChanges(std::move(updates[0].entity));
+    error = bridge_->ApplyIncrementalSyncChanges(std::move(updates[0].entity));
   }
 
   if (error) {
@@ -200,8 +200,9 @@ void NigoriModelTypeProcessor::StorePendingInvalidations(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   model_type_state_.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
-  // ApplySyncChanges does actually query and persist the |model_type_state_|.
-  bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
+  // ApplyIncrementalSyncChanges does actually query and persist the
+  // |model_type_state_|.
+  bridge_->ApplyIncrementalSyncChanges(/*data=*/absl::nullopt);
 }
 
 void NigoriModelTypeProcessor::OnSyncStarting(

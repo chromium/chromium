@@ -620,7 +620,7 @@ void UserMediaProcessor::SetupAudioInput() {
 
   TrackControls& audio_controls = stream_controls->audio;
   audio_controls.stream_type =
-      (request->MediaRequestType() == UserMediaRequestType::kDisplayMediaSet)
+      (request->MediaRequestType() == UserMediaRequestType::kAllScreensMedia)
           ? MediaStreamType::NO_SERVICE
           : request->AudioMediaStreamType();
 

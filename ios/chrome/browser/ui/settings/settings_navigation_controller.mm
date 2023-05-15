@@ -11,9 +11,9 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -437,11 +437,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     inactiveTabsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate {
-  // `IsInactiveTabsEnabled` returns NO if the user explicitly disabled inactive
-  // tabs. As the user should have the choice to enabled it back, the settings
-  // should be displayed even if the feature has been explicitly disabled.
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
-  DCHECK(browser);
+  CHECK(IsInactiveTabsAvailable());
+  CHECK(browser);
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
@@ -770,6 +767,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
+}
+
+- (void)passwordDetailsWillDeletePassword {
+  // No-op: This method is only used when the Password Details page is presented
+  // from a PasswordIssuesCoordinator.
 }
 
 #pragma mark - ClearBrowsingDataCoordinatorDelegate

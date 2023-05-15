@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -37,14 +38,17 @@ class ASH_EXPORT VcEffectsDelegate {
 
   virtual ~VcEffectsDelegate();
 
-  // Inserts `effect` into the vector of effects hosted by this delegate.
+  // Inserts `effect` into the collection of effects hosted by this delegate.
   void AddEffect(std::unique_ptr<VcHostedEffect> effect);
+
+  // Removes effect associated with `effect_id`.
+  void RemoveEffect(VcEffectId effect_id);
 
   // Returns the number of hosted effects.
   int GetNumEffects();
 
-  // Retrieves the `VcHostedEffect` at `index`.
-  const VcHostedEffect* GetEffect(int index);
+  // Retrieves the `VcHostedEffect` given its `effect_id`.
+  const VcHostedEffect* GetEffectById(VcEffectId effect_id);
 
   // Retrieves a std::vector<> of hosted effects of the passed-in `type`.
   std::vector<VcHostedEffect*> GetEffects(VcEffectType type);
@@ -73,8 +77,9 @@ class ASH_EXPORT VcEffectsDelegate {
                                               int state_value) const {}
 
  private:
-  // Effects are created by `VcEffectsDelegate` subclasses.
-  std::vector<std::unique_ptr<VcHostedEffect>> effects_;
+  // Stores the collection of effects that are hosted by this delegate. The keys
+  // are the unique ids of the effects.
+  std::map<VcEffectId, std::unique_ptr<VcHostedEffect>> effects_;
 };
 
 }  // namespace ash

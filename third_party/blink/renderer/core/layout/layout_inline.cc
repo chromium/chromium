@@ -186,46 +186,6 @@ void LayoutInline::StyleDidChange(StyleDifference diff,
   PropagateStyleToAnonymousChildren();
 }
 
-void LayoutInline::UpdateAlwaysCreateLineBoxes(bool full_layout) {
-  NOT_DESTROYED();
-  DCHECK(!IsInLayoutNGInlineFormattingContext());
-
-  // Once we have been tainted once, just assume it will happen again. This way
-  // effects like hover highlighting that change the background color will only
-  // cause a layout on the first rollover.
-  if (AlwaysCreateLineBoxes())
-    return;
-
-  const ComputedStyle& parent_style = Parent()->StyleRef();
-  auto* parent_layout_inline = DynamicTo<LayoutInline>(Parent());
-  bool check_fonts = GetDocument().InNoQuirksMode();
-  bool always_create_line_boxes_new =
-      (parent_layout_inline && parent_layout_inline->AlwaysCreateLineBoxes()) ||
-      (parent_layout_inline &&
-       parent_style.VerticalAlign() != EVerticalAlign::kBaseline) ||
-      StyleRef().VerticalAlign() != EVerticalAlign::kBaseline ||
-      StyleRef().GetTextEmphasisMark() != TextEmphasisMark::kNone ||
-      (check_fonts &&
-       (!StyleRef().HasIdenticalAscentDescentAndLineGap(parent_style) ||
-        parent_style.LineHeight() != StyleRef().LineHeight()));
-
-  if (!always_create_line_boxes_new && check_fonts &&
-      GetDocument().GetStyleEngine().UsesFirstLineRules()) {
-    // Have to check the first line style as well.
-    const ComputedStyle& first_line_parent_style = Parent()->StyleRef(true);
-    const ComputedStyle& child_style = StyleRef(true);
-    always_create_line_boxes_new =
-        !first_line_parent_style.HasIdenticalAscentDescentAndLineGap(
-            child_style) ||
-        child_style.VerticalAlign() != EVerticalAlign::kBaseline ||
-        first_line_parent_style.LineHeight() != child_style.LineHeight();
-  }
-
-  if (always_create_line_boxes_new) {
-    SetAlwaysCreateLineBoxes();
-  }
-}
-
 bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     const ComputedStyle& style) const {
   NOT_DESTROYED();
@@ -671,46 +631,37 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,
                                        const HitTestLocation& hit_test_location,
                                        const PhysicalOffset& accumulated_offset,
-                                       const NGInlineCursor* parent_cursor) {
+                                       const NGInlineCursor& parent_cursor) {
   NOT_DESTROYED();
-  DCHECK(parent_cursor || !AlwaysCreateLineBoxes());
   if (!VisibleToHitTestRequest(result.GetHitTestRequest()))
     return false;
 
   HitTestLocation adjusted_location(hit_test_location, -accumulated_offset);
   cc::Region region_result;
   bool intersected = false;
-  auto yield = [&adjusted_location, &region_result,
-                &intersected](const PhysicalRect& rect) {
+
+  // NG generates purely physical rectangles here.
+
+  // Iterate fragments for |this|, including culled inline, but only that are
+  // descendants of |parent_cursor|.
+  DCHECK(IsDescendantOf(parent_cursor.GetLayoutBlockFlow()));
+  NGInlineCursor cursor(parent_cursor);
+  cursor.MoveToIncludingCulledInline(*this);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    // Block-in-inline is inline in the box tree, and may appear as a child of
+    // a culled inline, but it should be painted and hit-tested as block
+    // painting-order-wise. Don't include it as part of the culled inline
+    // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
+    if (const auto* fragment = cursor.Current().BoxFragment()) {
+      if (UNLIKELY(fragment->IsOpaque())) {
+        continue;
+      }
+    }
+    PhysicalRect rect = cursor.Current().RectInContainerFragment();
     if (adjusted_location.Intersects(rect)) {
       intersected = true;
       region_result.Union(ToEnclosingRect(rect));
     }
-  };
-
-  // NG generates purely physical rectangles here, while legacy sets the block
-  // offset on the rectangles relatively to the block-start. NG is doing the
-  // right thing. Legacy is wrong.
-  if (parent_cursor) {
-    // Iterate fragments for |this|, including culled inline, but only that are
-    // descendants of |parent_cursor|.
-    DCHECK(IsDescendantOf(parent_cursor->GetLayoutBlockFlow()));
-    NGInlineCursor cursor(*parent_cursor);
-    cursor.MoveToIncludingCulledInline(*this);
-    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      // Block-in-inline is inline in the box tree, and may appear as a child of
-      // a culled inline, but it should be painted and hit-tested as block
-      // painting-order-wise. Don't include it as part of the culled inline
-      // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
-      if (const NGPhysicalBoxFragment* fragment =
-              cursor.Current().BoxFragment()) {
-        if (UNLIKELY(fragment->IsOpaque()))
-          continue;
-      }
-      yield(cursor.Current().RectInContainerFragment());
-    }
-  } else {
-    DCHECK(!IsInLayoutNGInlineFormattingContext());
   }
 
   if (intersected) {
@@ -744,45 +695,7 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
       bounding_box.UniteIfNonZero(cursor.Current().RectInContainerFragment());
     return bounding_box;
   }
-
-  if (!AlwaysCreateLineBoxes()) {
-    PhysicalRect bounding_box;
-    CollectLineBoxRects([&bounding_box](const PhysicalRect& rect) {
-      bounding_box.UniteIfNonZero(rect);
-    });
-    return bounding_box;
-  }
-
-  LayoutRect result;
-  return FlipForWritingMode(result);
-}
-
-PhysicalRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
-  NOT_DESTROYED();
-  PhysicalRect result;
-  if (!FirstChild())
-    return result;
-
-  for (LayoutObject* curr = FirstChild(); curr; curr = curr->NextSibling()) {
-    if (curr->IsFloatingOrOutOfFlowPositioned())
-      continue;
-
-    // For overflow we just have to propagate by hand and recompute it all.
-    if (curr->IsLayoutInline()) {
-      // If the child doesn't need line boxes either, then we can recur.
-      auto* curr_inline = To<LayoutInline>(curr);
-      if (!curr_inline->AlwaysCreateLineBoxes()) {
-        result.UniteIfNonZero(
-            curr_inline->CulledInlineVisualOverflowBoundingBox());
-      } else if (!curr_inline->HasSelfPaintingLayer()) {
-        result.UniteIfNonZero(curr_inline->PhysicalVisualOverflowRect());
-      }
-    } else if (curr->IsText()) {
-      auto* curr_text = To<LayoutText>(curr);
-      result.UniteIfNonZero(curr_text->PhysicalVisualOverflowRect());
-    }
-  }
-  return result;
+  return PhysicalRect();
 }
 
 PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
@@ -798,10 +711,6 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
     }
     return result;
   }
-
-  if (!AlwaysCreateLineBoxes())
-    return CulledInlineVisualOverflowBoundingBox();
-
   return PhysicalRect();
 }
 
@@ -817,14 +726,7 @@ PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
   if (IsInLayoutNGInlineFormattingContext()) {
     return NGFragmentItem::LocalVisualRectFor(*this);
   }
-
-  // If we don't create line boxes, we don't have any invalidations to do.
-  if (!AlwaysCreateLineBoxes())
-    return PhysicalRect();
-
-  // VisualOverflowRect() is in "physical coordinates with flipped blocks
-  // direction", while all "VisualRect"s are in pure physical coordinates.
-  return PhysicalVisualOverflowRect();
+  return PhysicalRect();
 }
 
 PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
@@ -970,17 +872,8 @@ void LayoutInline::DirtyLinesFromChangedChild(
   }
 }
 
-LayoutUnit LayoutInline::LineHeight(
-    bool first_line,
-    LineDirectionMode /*direction*/,
-    LinePositionMode /*linePositionMode*/) const {
-  if (first_line && GetDocument().GetStyleEngine().UsesFirstLineRules()) {
-    const ComputedStyle* s = Style(first_line);
-    if (s != Style())
-      return LayoutUnit(s->ComputedLineHeight());
-  }
-
-  return LayoutUnit(StyleRef().ComputedLineHeight());
+LayoutUnit LayoutInline::FirstLineHeight() const {
+  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {

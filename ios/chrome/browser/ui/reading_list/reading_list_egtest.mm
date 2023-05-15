@@ -17,10 +17,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_earl_grey_ui.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -232,26 +234,6 @@ void AssertHeaderNotVisible(NSString* header) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Opens the reading list menu.
-void OpenReadingList() {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::ReadingListDestinationButton()];
-  // It seems that sometimes there is a delay before the ReadingList is
-  // displayed. See https://crbug.com/1109202 .
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kWaitForUIElementTimeout,
-                 ^BOOL {
-                   NSError* error = nil;
-                   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                                           kReadingListViewID)]
-                       assertWithMatcher:grey_sufficientlyVisible()
-                                   error:&error];
-                   return error == nil;
-                 }),
-             @"Reading List didn't appear.");
-}
-
 // Adds 20 read and 20 unread entries to the model, opens the reading list menu
 // and enter edit mode.
 void AddLotOfEntriesAndEnterEdit() {
@@ -273,7 +255,7 @@ void AddLotOfEntriesAndEnterEdit() {
                                  read:NO],
                   @"Unable to add Reading List item");
   }
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 
   TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
 }
@@ -301,7 +283,7 @@ void AddEntriesAndOpenReadingList() {
                                           read:NO],
       @"Unable to add Reading List item");
 
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 }
 
 void AddEntriesAndEnterEdit() {
@@ -471,11 +453,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 
   // Test the presence of the omnibox offline chip.
+  UIImage* symbol =
+      DefaultSymbolTemplateWithPointSize(kDownloadPromptFillSymbol, 10);
+
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(chrome_test_util::PageSecurityInfoIndicator(),
-                            chrome_test_util::ImageViewWithImageNamed(
-                                @"location_bar_connection_offline"),
-                            nil)]
+                            chrome_test_util::ImageViewWithImage(symbol), nil)]
       assertWithMatcher:online ? grey_nil() : grey_notNil()];
 }
 
@@ -558,7 +541,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AddCurrentPageToReadingList();
 
   // Verify that an entry with the correct title is present in the reading list.
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
 
   WaitForDistillation();
@@ -621,7 +604,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify that an entry with the correct title is present in the reading list.
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
 
   WaitForDistillation();
@@ -676,7 +659,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify that an entry with the correct title is present in the reading list.
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
 
   WaitForDistillation();
@@ -720,7 +703,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify that an entry with the correct title is present in the reading list.
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
@@ -754,7 +737,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify that an entry with the correct title is present in the reading list.
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
@@ -798,7 +781,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify that an entry with the correct title is present in the reading
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
   AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
@@ -828,7 +811,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                          title:kUnreadTitle
                                           read:NO],
       @"Unable to add Reading List entry.");
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
@@ -1129,7 +1112,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   @"Unable to add Reading List entry.");
   }
 
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 
   // Make sure the Reading List view is not empty. Therefore, the illustration,
   // title and subtitles shoud not be present.
@@ -1170,7 +1153,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                          title:kUnreadTitle
                                           read:NO],
       @"Unable to add Reading List entry.");
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
@@ -1220,8 +1203,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-// TODO(crbug.com/1427934): Flaky.
-- (void)DISABLED_testContextMenuMarkAsReadAndBack {
+- (void)testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1320,7 +1302,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey openNewTab];
-  OpenReadingList();
+  [ReadingListEarlGreyUI openReadingList];
 }
 
 @end

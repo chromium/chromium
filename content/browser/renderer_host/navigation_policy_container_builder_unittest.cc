@@ -149,10 +149,16 @@ TEST_F(NavigationPolicyContainerBuilderTest, DefaultFinalPolicies) {
   PolicyContainerPolicies expected_policies;
   EXPECT_EQ(builder.FinalPolicies(), expected_policies);
 
+  scoped_refptr<PolicyContainerHost> cloned_host =
+      builder.GetPolicyContainerHost();
+  ASSERT_THAT(cloned_host, NotNull());
+  EXPECT_EQ(cloned_host->policies(), expected_policies);
+
   scoped_refptr<PolicyContainerHost> host =
       std::move(builder).TakePolicyContainerHost();
   ASSERT_THAT(host, NotNull());
   EXPECT_EQ(host->policies(), expected_policies);
+  ASSERT_THAT(cloned_host, NotNull());
 }
 
 // Verifies that when the URL of the document to commit does not have a local

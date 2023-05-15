@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
-#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -90,6 +89,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
       return container_view_->custom_button_;
     }
 
+    views::FrameCaptionButton* float_button() const {
+      CHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
+      return container_view_->float_button_;
+    }
+
     MultitaskMenuNudgeController* nudge_controller() const {
       return &container_view_->nudge_controller_;
     }
@@ -98,7 +102,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     raw_ptr<FrameCaptionButtonContainerView> container_view_;
   };
 
-  chromeos::FrameSizeButton* size_button() { return size_button_; }
+  views::FrameCaptionButton* size_button() { return size_button_; }
 
   // Sets whether the buttons should be painted as active. Does not schedule
   // a repaint.
@@ -131,8 +135,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // state. A parent view should relayout to reflect the change in states.
   void UpdateCaptionButtonState(bool animate);
 
-  // Updates the image and tooltips of the size and snap buttons. These can
-  // change on state change or display orientation change.
+  // Updates the image and tooltips of the size, snap, and float buttons. These
+  // can change on state change or display orientation change.
   void UpdateButtonsImageAndTooltip();
 
   // Sets the size of the buttons in this container.
@@ -175,11 +179,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // well.
   void UpdateSizeButton();
   void UpdateSnapButtons();
+  void UpdateFloatButton();
 
   void MinimizeButtonPressed();
   void SizeButtonPressed();
   void CloseButtonPressed();
   void MenuButtonPressed();
+  void FloatButtonPressed();
 
   // FrameSizeButtonDelegate:
   bool IsMinimizeButtonVisible() const override;
@@ -203,12 +209,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
   raw_ptr<views::FrameCaptionButton> custom_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> float_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> menu_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> minimize_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> close_button_ = nullptr;
 
   // Stored as a `FrameSizeButton` so the multitask menu can be accessed.
-  raw_ptr<chromeos::FrameSizeButton> size_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> size_button_ = nullptr;
 
   // Handles showing the educational nudge for the clamshell multitask menu.
   MultitaskMenuNudgeController nudge_controller_;

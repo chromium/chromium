@@ -1050,7 +1050,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
   V8TestingScope scope;
 
   // Make a 10x7 red ImageBitmap.
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(10, 7);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(10, 7));
   surface->getCanvas()->clear(SK_ColorRED);
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()));
@@ -1085,8 +1086,8 @@ TEST(V8ScriptValueSerializerTest, ImageBitmapEXIFImageOrientation) {
   for (uint8_t i = static_cast<uint8_t>(ImageOrientationEnum::kOriginTopLeft);
        i <= static_cast<uint8_t>(ImageOrientationEnum::kMaxValue); i++) {
     ImageOrientationEnum orientation = static_cast<ImageOrientationEnum>(i);
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(kImageWidth, kImageHeight);
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(kImageWidth, kImageHeight));
     auto static_image =
         UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
     static_image->SetOrientation(orientation);
@@ -1112,7 +1113,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   // Make a 10x7 red ImageBitmap in P3 color space.
   SkImageInfo info =
       SkImageInfo::Make(10, 7, kRGBA_F16_SkColorType, kPremul_SkAlphaType, p3);
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info);
   surface->getCanvas()->clear(SK_ColorRED);
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()));
@@ -1474,7 +1475,8 @@ TEST(V8ScriptValueSerializerTest, TransferImageBitmap) {
   // More thorough tests exist in web_tests/.
   V8TestingScope scope;
 
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(10, 7);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(10, 7));
   surface->getCanvas()->clear(SK_ColorRED);
   sk_sp<SkImage> image = surface->makeImageSnapshot();
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(

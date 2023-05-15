@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "extensions/browser/event_router.h"
@@ -30,22 +31,22 @@ class TestServiceWorkerLifetimeManager : public ServiceWorkerLifetimeManager {
  private:
   std::string IncrementKeepalive(const WorkerId& worker_id) override {
     std::string id = base::StringPrintf("uuid-%d", next_keepalive_id_++);
-    keepalive_map_[worker_id].insert(id);
+    (*keepalive_map_)[worker_id].insert(id);
     return id;
   }
 
   void DecrementKeepalive(const KeepaliveKey& key) override {
-    DCHECK(base::Contains(keepalive_map_, key.worker_id));
-    DCHECK(base::Contains(keepalive_map_[key.worker_id], key.request_uuid));
-    keepalive_map_[key.worker_id].erase(key.request_uuid);
-    if (keepalive_map_[key.worker_id].empty()) {
-      keepalive_map_.erase(key.worker_id);
+    DCHECK(base::Contains(*keepalive_map_, key.worker_id));
+    DCHECK(base::Contains((*keepalive_map_)[key.worker_id], key.request_uuid));
+    (*keepalive_map_)[key.worker_id].erase(key.request_uuid);
+    if ((*keepalive_map_)[key.worker_id].empty()) {
+      keepalive_map_->erase(key.worker_id);
     }
   }
 
   // Effectively emulates ProcessManager.
   int next_keepalive_id_ = 1;
-  KeepaliveMap& keepalive_map_;
+  const raw_ref<KeepaliveMap, ExperimentalAsh> keepalive_map_;
 };
 
 }  // namespace

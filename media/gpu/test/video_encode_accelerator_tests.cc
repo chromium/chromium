@@ -41,8 +41,8 @@ namespace {
 // under docs/media/gpu/video_encoder_test_usage.md when making changes here.
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_tests
-           [--codec=<codec>] [--num_temporal_layers=<number>]
-           [--num_spatial_layers=<number>] [--bitrate_mode=(cbr|vbr)]
+           [--codec=<codec>] [--svc_mode=<svc scalability mode>]
+           [--bitrate_mode=(cbr|vbr)]
            [--reverse] [--bitrate=<bitrate>]
            [--disable_validator] [--output_bitstream]
            [--output_images=(all|corrupt)] [--output_format=(png|yuv)]
@@ -67,16 +67,19 @@ The following arguments are supported:
    -v                   enable verbose mode, e.g. -v=2.
   --vmodule             enable verbose mode for the specified module,
                         e.g. --vmodule=*media/gpu*=2.
-
   --codec               codec profile to encode, "h264" (baseline),
                         "h264main, "h264high", "vp8", "vp9", "av1".
                         H264 Baseline is selected if unspecified.
+  --num_spatial_layers  the number of spatial layers of the encoded
+                        bitstream. A default value is 1. Only affected
+                        if --codec=vp9 currently.
   --num_temporal_layers the number of temporal layers of the encoded
                         bitstream. A default value is 1.
-  --num_spatial_layers  the number of spatial layers of the encoded
-                        bitstream. Only used in --codec=vp9 currently.
-                        Spatial SVC encoding is applied only in
-                        NV12Dmabuf test cases.
+  --svc_mode            SVC scalability mode. Spatial SVC encoding is only
+                        supported with --codec=vp9 and only runs in NV12Dmabuf
+                        test cases. The valid svc mode is "L1T1", "L1T2",
+                        "L1T3", "L2T1_KEY", "L2T2_KEY", "L2T3_KEY", "L3T1_KEY",
+                        "L3T2_KEY", "L3T3_KEY". The default value is "L1T1".
   --bitrate             bitrate (bits in second) of a produced bitstram.
                         If not specified, a proper value for the video
                         resolution is selected by the test.
@@ -136,7 +139,8 @@ class VideoEncoderTest : public ::testing::Test {
     CHECK_LE(spatial_layers.size(), 1u);
 
     return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    spatial_layers, g_env->BitrateAllocation(),
+                                    spatial_layers, g_env->InterLayerPredMode(),
+                                    g_env->BitrateAllocation(),
                                     g_env->Reverse());
   }
 
@@ -270,28 +274,9 @@ class VideoEncoderTest : public ::testing::Test {
       return bitstream_processors;
     }
 
-    switch (codec) {
-      case VideoCodec::kH264:
-        bitstream_processors.emplace_back(new H264Validator(
-            config.output_profile, visible_rect, config.num_temporal_layers));
-        break;
-      case VideoCodec::kVP8:
-        bitstream_processors.emplace_back(
-            new VP8Validator(visible_rect, config.num_temporal_layers));
-        break;
-      case VideoCodec::kVP9:
-        bitstream_processors.emplace_back(new VP9Validator(
-            config.output_profile, visible_rect, config.num_spatial_layers,
-            config.num_temporal_layers));
-        break;
-      case VideoCodec::kAV1:
-        bitstream_processors.emplace_back(new AV1Validator(visible_rect));
-        break;
-      default:
-        LOG(ERROR) << "Unsupported profile: "
-                   << GetProfileName(config.output_profile);
-        break;
-    }
+    bitstream_processors.emplace_back(DecoderBufferValidator::Create(
+        config.output_profile, visible_rect, config.num_spatial_layers,
+        config.num_temporal_layers));
 
     raw_data_helper_ = RawDataHelper::Create(video, g_env->Reverse());
     if (!raw_data_helper_) {
@@ -618,6 +603,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   Video* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->SpatialLayers(),
+                                  g_env->InterLayerPredMode(),
                                   g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -674,6 +660,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   }
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers,
+      VideoEncodeAccelerator::Config::InterLayerPredMode::kOff,
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
                                        num_temporal_layers, new_bitrate),
       g_env->Reverse());
@@ -718,6 +705,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
                                   g_env->SpatialLayers(),
+                                  g_env->InterLayerPredMode(),
                                   g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
@@ -760,6 +748,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
                                   g_env->SpatialLayers(),
+                                  g_env->InterLayerPredMode(),
                                   g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
@@ -821,6 +810,7 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
 
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->SpatialLayers(),
+                                  g_env->InterLayerPredMode(),
                                   g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -870,8 +860,7 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
-  size_t num_temporal_layers = 1u;
-  size_t num_spatial_layers = 1u;
+  std::string svc_mode = "L1T1";
   bool output_bitstream = false;
   absl::optional<uint32_t> output_bitrate;
   bool reverse = false;
@@ -891,19 +880,17 @@ int main(int argc, char** argv) {
       continue;
     }
 
+    if (it->first == "num_temporal_layers" ||
+        it->first == "num_spatial_layers") {
+      std::cout << "--num_temporal_layers and --num_spatial_layers have been "
+                << "removed. Please use --svc_mode";
+      return EXIT_FAILURE;
+    }
+
     if (it->first == "codec") {
       codec = it->second;
-    } else if (it->first == "num_temporal_layers") {
-      if (!base::StringToSizeT(it->second, &num_temporal_layers)) {
-        std::cout << "invalid number of temporal layers: " << it->second
-                  << "\n";
-        return EXIT_FAILURE;
-      }
-    } else if (it->first == "num_spatial_layers") {
-      if (!base::StringToSizeT(it->second, &num_spatial_layers)) {
-        std::cout << "invalid number of spatial layers: " << it->second << "\n";
-        return EXIT_FAILURE;
-      }
+    } else if (it->first == "svc_mode") {
+      svc_mode = it->second;
     } else if (it->first == "bitrate_mode") {
       if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
@@ -972,9 +959,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
-          output_folder, codec, num_temporal_layers, num_spatial_layers,
-          output_bitstream, output_bitrate, bitrate_mode, reverse,
-          frame_output_config,
+          output_folder, codec, svc_mode, output_bitstream, output_bitrate,
+          bitrate_mode, reverse, frame_output_config,
           /*enabled_features=*/{}, disabled_features);
 
   if (!test_environment)

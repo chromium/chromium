@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -82,12 +83,15 @@ class AssistiveWindowController : public views::WidgetObserver,
   void DisplayCompletionSuggestion(const ui::ime::SuggestionDetails& details);
   void ClearPendingSuggestionTimer();
 
-  const AssistiveWindowControllerDelegate* delegate_;
+  raw_ptr<const AssistiveWindowControllerDelegate, ExperimentalAsh> delegate_;
   AssistiveWindowProperties window_;
-  ui::ime::SuggestionWindowView* suggestion_window_view_ = nullptr;
-  ui::ime::UndoWindow* undo_window_ = nullptr;
-  ui::ime::GrammarSuggestionWindow* grammar_suggestion_window_ = nullptr;
-  ui::ime::AssistiveAccessibilityView* accessibility_view_ = nullptr;
+  raw_ptr<ui::ime::SuggestionWindowView, ExperimentalAsh>
+      suggestion_window_view_ = nullptr;
+  raw_ptr<ui::ime::UndoWindow, ExperimentalAsh> undo_window_ = nullptr;
+  raw_ptr<ui::ime::GrammarSuggestionWindow, ExperimentalAsh>
+      grammar_suggestion_window_ = nullptr;
+  raw_ptr<ui::ime::AssistiveAccessibilityView, ExperimentalAsh>
+      accessibility_view_ = nullptr;
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;

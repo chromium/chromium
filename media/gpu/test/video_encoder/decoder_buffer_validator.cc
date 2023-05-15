@@ -1,7 +1,6 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 
 #include <set>
@@ -42,6 +41,31 @@ int VideoCodecProfileToVP9Profile(VideoCodecProfile profile) {
   return 0;
 }
 }  // namespace
+
+// static
+std::unique_ptr<DecoderBufferValidator> DecoderBufferValidator::Create(
+    VideoCodecProfile profile,
+    const gfx::Rect& visible_rect,
+    size_t num_spatial_layers,
+    size_t num_temporal_layers) {
+  CHECK_LE(num_spatial_layers, kMaxSpatialLayers);
+  CHECK_LE(num_temporal_layers, kMaxSpatialLayers);
+  switch (VideoCodecProfileToVideoCodec(profile)) {
+    case VideoCodec::kH264:
+      return std::make_unique<H264Validator>(profile, visible_rect,
+                                             num_temporal_layers);
+    case VideoCodec::kVP8:
+      return std::make_unique<VP8Validator>(visible_rect, num_temporal_layers);
+    case VideoCodec::kVP9:
+      return std::make_unique<VP9Validator>(
+          profile, visible_rect, num_spatial_layers, num_temporal_layers);
+    case VideoCodec::kAV1:
+      return std::make_unique<AV1Validator>(visible_rect);
+    default:
+      LOG(ERROR) << "Unsupported profile: " << GetProfileName(profile);
+      return nullptr;
+  }
+}
 
 DecoderBufferValidator::DecoderBufferValidator(const gfx::Rect& visible_rect,
                                                size_t num_temporal_layers)
@@ -140,10 +164,12 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
         }
 
         CHECK(parser_.GetPPS(cur_pps_id_));
-        DVLOGF(4) << "qp="
-                  << slice_hdr.slice_qp_delta +
-                         parser_.GetPPS(cur_pps_id_)->pic_init_qp_minus26 + 26;
-
+        const int qp = slice_hdr.slice_qp_delta +
+                       parser_.GetPPS(cur_pps_id_)->pic_init_qp_minus26 + 26;
+        DVLOGF(4) << "qp=" << qp;
+        const int temporal_idx =
+            metadata.h264 ? metadata.h264->temporal_idx : 0;
+        qp_values_[0][temporal_idx].push_back(qp);
         if (slice_hdr.disable_deblocking_filter_idc != 0) {
           LOG(ERROR) << "Deblocking filter is not enabled";
           return false;
@@ -270,8 +296,8 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  DVLOGF(4) << "qp=" << base::strict_cast<int>(header.quantization_hdr.y_ac_qi);
-
+  const int qp = base::strict_cast<int>(header.quantization_hdr.y_ac_qi);
+  DVLOGF(4) << "qp=" << qp;
   if (!header.show_frame) {
     LOG(ERROR) << "|show_frame| should be always true";
     return false;
@@ -292,8 +318,19 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  if (num_temporal_layers_ == 1)
+  if (num_temporal_layers_ == 1) {
+    if (!header.refresh_entropy_probs) {
+      LOG(ERROR) << "refereh_entropy_probs should be true in non temporal "
+                    "layer encoding";
+      return false;
+    }
+    qp_values_[0][0].push_back(qp);
     return true;
+  } else if (header.refresh_entropy_probs) {
+    LOG(ERROR)
+        << "refereh_entropy_probs must be false in temporal layer encoding";
+    return false;
+  }
 
   if (!metadata.vp8) {
     LOG(ERROR) << "Metadata must be populated if temporal scalability is used.";
@@ -306,7 +343,7 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
                << base::strict_cast<int>(temporal_idx);
     return false;
   }
-
+  qp_values_[0][temporal_idx].push_back(qp);
   if (header.IsKeyframe()) {
     if (temporal_idx != 0) {
       LOG(ERROR) << "Temporal id must be 0 on keyframe";
@@ -392,8 +429,6 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  DVLOGF(4) << "qp=" << base::strict_cast<int>(header.quant_params.base_q_idx);
-
   if (metadata.key_frame != header.IsKeyframe()) {
     LOG(ERROR) << "Keyframe info in metadata is wrong, metadata.keyframe="
                << metadata.key_frame;
@@ -409,7 +444,9 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
   }
 
   BufferState new_buffer_state{};
-  if (max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1) {
+  const bool svc_encoding =
+      max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1;
+  if (svc_encoding) {
     if (!metadata.vp9) {
       LOG(ERROR) << "Metadata must be populated if spatial/temporal "
                     "scalability is used.";
@@ -418,6 +455,11 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     if (!header.error_resilient_mode) {
       LOG(ERROR) << "Error resilient mode must be used if spatial or temporal "
                     "scaliblity is enabled.";
+      return false;
+    }
+    if (header.refresh_frame_context) {
+      LOG(ERROR) << "Frame context must not be refreshed in spatial or temporal"
+                    " scaliblity is enabled";
       return false;
     }
     new_buffer_state.spatial_id = metadata.vp9->spatial_idx;
@@ -436,6 +478,16 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     if (metadata.vp9->spatial_idx == cur_num_spatial_layers_ - 1)
       next_picture_id_++;
   } else {
+    if (header.error_resilient_mode) {
+      LOG(ERROR) << "Error resilient mode should not be used if neither spatial"
+                    "nor temporal scalablity is enabled";
+      return false;
+    }
+    if (!header.refresh_frame_context) {
+      LOG(ERROR) << "Frame context should be refreshed if neither spatial nor "
+                    "nor temporal scalablity is enabled";
+      return false;
+    }
     new_buffer_state.picture_id = next_picture_id_++;
   }
 
@@ -604,6 +656,15 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
       reference_buffers_[i] = new_buffer_state;
   }
 
+  const int qp = base::strict_cast<int>(header.quant_params.base_q_idx);
+  DVLOGF(4) << "qp=" << qp;
+  if (!metadata.vp9) {
+    qp_values_[0][0].push_back(qp);
+  } else {
+    qp_values_[metadata.vp9->spatial_idx][metadata.vp9->temporal_idx].push_back(
+        qp);
+  }
+
   return true;
 }
 
@@ -634,32 +695,37 @@ bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  if (av1_parser.frame_header().width != visible_rect_.width() ||
-      av1_parser.frame_header().height != visible_rect_.height()) {
+  const auto& frame_header = av1_parser.frame_header();
+  if (frame_header.width != visible_rect_.width() ||
+      frame_header.height != visible_rect_.height()) {
     LOG(ERROR) << "Mismatched frame dimensions.";
-    LOG(ERROR) << "Got width=" << av1_parser.frame_header().width
-               << " height=" << av1_parser.frame_header().height;
+    LOG(ERROR) << "Got width=" << frame_header.width
+               << " height=" << frame_header.height;
     LOG(ERROR) << "Expected width=" << visible_rect_.width()
                << " height=" << visible_rect_.height();
     return false;
   }
 
-  if (av1_parser.frame_header().frame_type != libgav1::FrameType::kFrameKey &&
+  if (frame_header.frame_type != libgav1::FrameType::kFrameKey &&
       frame_num_ == 0) {
     LOG(ERROR) << "First frame must be keyframe";
     return false;
   }
 
-  if (av1_parser.frame_header().frame_type == libgav1::FrameType::kFrameKey) {
+  if (frame_header.frame_type == libgav1::FrameType::kFrameKey) {
     frame_num_ = 0;
   }
 
-  if (av1_parser.frame_header().order_hint != (frame_num_ & 0xFF)) {
+  if (frame_header.order_hint != (frame_num_ & 0xFF)) {
     LOG(ERROR) << "Incorrect frame order hint";
-    LOG(ERROR) << "Got: " << av1_parser.frame_header().order_hint;
+    LOG(ERROR) << "Got: " << frame_header.order_hint;
     LOG(ERROR) << "Expected: " << (int)(frame_num_ & 0xFF);
     return false;
   }
+
+  const int qp = base::strict_cast<int>(frame_header.quantizer.base_index);
+  DVLOGF(4) << "qp=" << qp;
+  qp_values_[0][0].push_back(qp);
 
   // Update our state for the next frame.
   if (av1_parser.frame_header().frame_type == libgav1::FrameType::kFrameKey) {

@@ -40,6 +40,7 @@
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -188,7 +189,7 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
     // effectively hides the drag item image from the overall folder icon.
     item_view_->UpdateDraggedItem(item_icon_to_hide);
     folder_item_->NotifyOfDraggedItem(item_icon_to_hide);
-    folder_item_observer_.Observe(folder_item_);
+    folder_item_observer_.Observe(folder_item_.get());
   }
 
   ~FolderIconItemHider() override {
@@ -219,8 +220,8 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
 
  private:
   // The item view of `folder_item_`;
-  AppListItemView* item_view_;
-  AppListFolderItem* folder_item_;
+  raw_ptr<AppListItemView, ExperimentalAsh> item_view_;
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
 
   base::ScopedObservation<AppListItem, AppListItemObserver>
       folder_item_observer_{this};
@@ -236,7 +237,7 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
   explicit DragViewHider(AppListItemView* drag_view) : drag_view_(drag_view) {
     DCHECK(drag_view_->layer());
     drag_view_->layer()->SetOpacity(0.0f);
-    view_observer_.Observe(drag_view_);
+    view_observer_.Observe(drag_view_.get());
   }
 
   ~DragViewHider() override {
@@ -253,7 +254,7 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
   const views::View* drag_view() const { return drag_view_; }
 
  private:
-  AppListItemView* drag_view_;
+  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_;
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
@@ -294,7 +295,7 @@ class AppsGridView::ScopedModelUpdate {
   }
 
  private:
-  AppsGridView* const apps_grid_view_;
+  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_;
   const gfx::Size initial_grid_size_;
 };
 
@@ -1050,6 +1051,10 @@ void AppsGridView::ClearDragState() {
   MaybeStopPageFlip();
   StopAutoScroll();
 
+  if (drag_item_ && app_list_features::IsDragAndDropRefactorEnabled()) {
+    drag_item_->RemoveObserver(this);
+  }
+
   drag_view_ = nullptr;
   drag_item_ = nullptr;
   drag_out_of_folder_container_ = false;
@@ -1090,6 +1095,14 @@ bool AppsGridView::GetDropFormats(
 }
 
 bool AppsGridView::CanDrop(const OSExchangeData& data) {
+  if (ShouldContainerHandleDragEvents()) {
+    return false;
+  }
+
+  return WillAcceptDropEvent(data);
+}
+
+bool AppsGridView::WillAcceptDropEvent(const OSExchangeData& data) {
   if (!app_list_features::IsDragAndDropRefactorEnabled()) {
     return true;
   }
@@ -1123,7 +1136,8 @@ void AppsGridView::OnDragExited() {
   // TODO(b/261985897): Add timer to close folder bounds.
   if (folder_delegate_) {
     if (drag_view_) {
-      folder_delegate_->ReparentItem(Pointer::NONE, drag_view_, gfx::Point());
+      folder_delegate_->ReparentItem(drag_pointer_, drag_view_,
+                                     last_drag_point_);
     }
 
     if (item_list_) {
@@ -1135,6 +1149,13 @@ void AppsGridView::OnDragExited() {
     folder_delegate_->Close();
   }
   CancelDragWithNoDropAnimation();
+}
+
+void AppsGridView::ItemBeingDestroyed() {
+  DCHECK(drag_item_);
+  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
+  EndDrag(/*cancel=*/true);
+  DCHECK(!drag_item_);
 }
 
 void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -1157,6 +1178,7 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   if (!drag_item_) {
     return;
   }
+  drag_item_->AddObserver(this);
 
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();
@@ -1165,8 +1187,11 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   drag_icon_proxy_.reset();
 
   PrepareItemsForBoundsAnimation();
-
-  drag_pointer_ = MOUSE;
+  if (event.IsMouseEvent()) {
+    drag_pointer_ = MOUSE;
+  } else {
+    drag_pointer_ = TOUCH;
+  }
   drag_view_ = GetItemViewAt(GetModelIndexOfItem(drag_item_));
   if (drag_view_) {
     drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
@@ -1177,15 +1202,23 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   } else {
     dragging_for_reparent_item_ = true;
   }
+
+  const gfx::Size initial_grid_size = GetTileGridSize();
   reorder_placeholder_ =
       drag_view_ ? drag_view_init_index_
                  : GetGridIndexFromIndexInViewModel(view_model()->view_size());
+
+  // When reparenting drag, the preferred grid size may change if there are no
+  // extra slots on the grid for the placeholder item.
+  if (GetTileGridSize() != initial_grid_size) {
+    PreferredSizeChanged();
+  }
   ExtractDragLocation(event.root_location(), &drag_start_grid_view_);
 }
 
 int AppsGridView::OnDragUpdated(const ui::DropTargetEvent& event) {
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    UpdateDrag(MOUSE, event.location());
+    UpdateDrag(drag_pointer_, event.location());
   }
   return ui::DragDropTypes::DRAG_MOVE;
 }
@@ -1234,20 +1267,24 @@ bool AppsGridView::OnKeyReleased(const ui::KeyEvent& event) {
 
 void AppsGridView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (!details.is_add && details.parent == items_container_) {
+  if (!details.is_add && details.parent == items_container_.get()) {
     // The view being delete should not have reference in |view_model_|.
     CHECK(!view_model_.GetIndexOfView(details.child).has_value());
 
-    if (selected_view_ == details.child)
+    if (selected_view_.get() == details.child) {
       selected_view_ = nullptr;
+    }
 
-    if (drag_view_ == details.child)
+    if (drag_view_.get() == details.child) {
       drag_view_ = nullptr;
+    }
 
-    if (current_ghost_view_ == details.child)
+    if (current_ghost_view_.get() == details.child) {
       current_ghost_view_ = nullptr;
-    if (last_ghost_view_ == details.child)
+    }
+    if (last_ghost_view_.get() == details.child) {
       last_ghost_view_ = nullptr;
+    }
 
     if (reordering_folder_view_ && *reordering_folder_view_ == details.child)
       reordering_folder_view_.reset();

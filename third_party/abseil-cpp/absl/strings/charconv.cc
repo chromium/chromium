@@ -203,7 +203,8 @@ struct FloatTraits<float> {
     if (mantissa > kMantissaMask) {
       // Normal value.
       // Adjust by 127 for the exponent representation bias, and an additional
-      // 23 due to the implied decimal point in the IEEE mantissa represenation.
+      // 23 due to the implied decimal point in the IEEE mantissa
+      // representation.
       flt += static_cast<uint32_t>(exponent + 127 + kTargetMantissaBits - 1)
              << 23;
       mantissa &= kMantissaMask;
@@ -462,7 +463,7 @@ uint64_t ShiftRightAndRound(uint128 value, int shift, bool input_exact,
     // the low bit of `value` is set.
     //
     // In inexact mode, the nonzero error means the actual value is greater
-    // than the halfway point and we must alway round up.
+    // than the halfway point and we must always round up.
     if ((value & 1) == 1 || !input_exact) {
       ++value;
     }

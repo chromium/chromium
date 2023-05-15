@@ -21,6 +21,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
@@ -113,6 +114,7 @@ absl::optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
     std::string device_name,
     absl::optional<std::string> full_name,
     absl::optional<std::string> icon_url,
+    absl::optional<std::string> account_name,
     device::BluetoothAdapter* bluetooth_adapter) {
   nearbyshare::proto::EncryptedMetadata metadata;
   if (device_name.empty()) {
@@ -128,6 +130,9 @@ absl::optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
   }
   if (icon_url) {
     metadata.set_icon_url(*icon_url);
+  }
+  if (account_name) {
+    metadata.set_account_name(*account_name);
   }
 
   absl::optional<std::string> bluetooth_mac_address =
@@ -227,6 +232,7 @@ std::unique_ptr<NearbyShareCertificateManager>
 NearbyShareCertificateManagerImpl::Factory::Create(
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
     NearbyShareContactManager* contact_manager,
+    NearbyShareProfileInfoProvider* profile_info_provider,
     PrefService* pref_service,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
@@ -235,14 +241,16 @@ NearbyShareCertificateManagerImpl::Factory::Create(
   DCHECK(clock);
 
   if (test_factory_) {
-    return test_factory_->CreateInstance(
-        local_device_data_manager, contact_manager, pref_service,
-        proto_database_provider, profile_path, client_factory, clock);
+    return test_factory_->CreateInstance(local_device_data_manager,
+                                         contact_manager, profile_info_provider,
+                                         pref_service, proto_database_provider,
+                                         profile_path, client_factory, clock);
   }
 
   return base::WrapUnique(new NearbyShareCertificateManagerImpl(
-      local_device_data_manager, contact_manager, pref_service,
-      proto_database_provider, profile_path, client_factory, clock));
+      local_device_data_manager, contact_manager, profile_info_provider,
+      pref_service, proto_database_provider, profile_path, client_factory,
+      clock));
 }
 
 // static
@@ -256,6 +264,7 @@ NearbyShareCertificateManagerImpl::Factory::~Factory() = default;
 NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
     NearbyShareContactManager* contact_manager,
+    NearbyShareProfileInfoProvider* profile_info_provider,
     PrefService* pref_service,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
@@ -263,6 +272,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
     const base::Clock* clock)
     : local_device_data_manager_(local_device_data_manager),
       contact_manager_(contact_manager),
+      profile_info_provider_(profile_info_provider),
       pref_service_(pref_service),
       client_factory_(client_factory),
       clock_(clock),
@@ -485,6 +495,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
       BuildMetadata(local_device_data_manager_->GetDeviceName(),
                     local_device_data_manager_->GetFullName(),
                     local_device_data_manager_->GetIconUrl(),
+                    profile_info_provider_->GetProfileUserName(),
                     bluetooth_adapter.get());
   if (!metadata) {
     NS_LOG(WARNING)

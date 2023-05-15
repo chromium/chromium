@@ -27,8 +27,6 @@ using BrowserAppLauncherForTesting =
 void SetBrowserAppLauncherForTesting(
     const BrowserAppLauncherForTesting& launcher);
 
-void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback);
-
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:
   // AppShimManager::Delegate:
@@ -44,13 +42,14 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   void EnableExtension(Profile* profile,
                        const std::string& extension_id,
                        base::OnceCallback<void()> callback) override;
-  void LaunchApp(Profile* profile,
-                 const AppId& app_id,
-                 const std::vector<base::FilePath>& files,
-                 const std::vector<GURL>& urls,
-                 const GURL& override_url,
-                 chrome::mojom::AppShimLoginItemRestoreState
-                     login_item_restore_state) override;
+  void LaunchApp(
+      Profile* profile,
+      const AppId& app_id,
+      const std::vector<base::FilePath>& files,
+      const std::vector<GURL>& urls,
+      const GURL& override_url,
+      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+      base::OnceClosure launch_finished_callback) override;
   void LaunchShim(Profile* profile,
                   const AppId& app_id,
                   bool recreate_shims,

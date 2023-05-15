@@ -54,6 +54,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "extensions/browser/api/feedback_private/log_source_resource.h"
+#include "extensions/browser/api/media_perception_private/media_perception_api_manager.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 #endif
@@ -67,6 +69,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   ApiResourceManager<BluetoothLowEnergyConnection>::GetFactoryInstance();
   ApiResourceManager<BluetoothLowEnergyNotifySession>::GetFactoryInstance();
   ApiResourceManager<HidConnectionResource>::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ApiResourceManager<LogSourceResource>::GetFactoryInstance();
+#endif
   ApiResourceManager<ResumableTCPServerSocket>::GetFactoryInstance();
   ApiResourceManager<ResumableTCPSocket>::GetFactoryInstance();
   ApiResourceManager<ResumableUDPSocket>::GetFactoryInstance();
@@ -93,6 +98,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   HidDeviceManager::GetFactoryInstance();
   IdleManagerFactory::GetInstance();
   ManagementAPI::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MediaPerceptionAPIManager::GetFactoryInstance();
+#endif
   MessageService::GetFactoryInstance();
   MessagingAPIMessageFilter::EnsureAssociatedFactoryBuilt();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \

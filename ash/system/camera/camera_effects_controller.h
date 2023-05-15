@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -30,7 +31,8 @@ enum class VcEffectId;
 
 // CameraEffectsController is the interface for any object in ash to
 // enable/change camera effects.
-class ASH_EXPORT CameraEffectsController : public media::CameraEffectObserver,
+class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
+                                           public media::CameraEffectObserver,
                                            public SessionObserver,
                                            public VcEffectsDelegate {
  public:
@@ -101,6 +103,9 @@ class ASH_EXPORT CameraEffectsController : public media::CameraEffectObserver,
   }
 
  private:
+  // AutozoomObserver:
+  void OnAutozoomControlEnabledChanged(bool enabled) override;
+
   // Returns the segmentation model that should be used in the effects pipeline
   // based on the value of the feature flag.
   cros::mojom::SegmentationModel GetSegmentationModelType();

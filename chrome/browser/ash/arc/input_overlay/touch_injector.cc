@@ -68,15 +68,20 @@ void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     TouchInjector* touch_injector,
-    const base::Value& root) {
+    const base::Value::Dict& root) {
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
-  const auto* tap_act_list = root.FindListKey(kTapAction);
-  if (tap_act_list && tap_act_list->is_list()) {
-    for (const auto& val : tap_act_list->GetList()) {
+  const base::Value::List* tap_act_list = root.FindList(kTapAction);
+  if (tap_act_list) {
+    for (const auto& val : *tap_act_list) {
+      auto* val_dict = val.GetIfDict();
+      if (!val_dict) {
+        LOG(ERROR) << "Value must be a dictionary.";
+        continue;
+      }
       auto action = std::make_unique<ActionTap>(touch_injector);
-      bool succeed = action->ParseFromJson(val);
+      bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
       }
@@ -84,11 +89,16 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   }
 
   // Parse move actions if they exist.
-  const base::Value* move_act_list = root.FindListKey(kMoveAction);
-  if (move_act_list && move_act_list->is_list()) {
-    for (const base::Value& val : move_act_list->GetList()) {
+  const base::Value::List* move_act_list = root.FindList(kMoveAction);
+  if (move_act_list) {
+    for (const auto& val : *move_act_list) {
+      auto* val_dict = val.GetIfDict();
+      if (!val_dict) {
+        LOG(ERROR) << "Value must be a dictionary.";
+        continue;
+      }
       auto action = std::make_unique<ActionMove>(touch_injector);
-      bool succeed = action->ParseFromJson(val);
+      bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
       }
@@ -123,8 +133,7 @@ bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
   const auto key_code = event.key_code();
   // If it is allowed to move, the arrow key event moves the position
   // instead of getting back to view mode.
-  if ((AllowReposition() && ash::IsArrowKey(key_code)) ||
-      key_code == ui::KeyboardCode::VKEY_SPACE ||
+  if (ash::IsArrowKey(key_code) || key_code == ui::KeyboardCode::VKEY_SPACE ||
       key_code == ui::KeyboardCode::VKEY_RETURN ||
       event.type() != ui::ET_KEY_PRESSED) {
     return true;
@@ -184,17 +193,16 @@ TouchInjector::TouchInjector(aura::Window* top_level_window,
     : window_(top_level_window),
       package_name_(package_name),
       content_bounds_(CalculateWindowContentBounds(window_)),
-      save_file_callback_(save_file_callback),
-      allow_reposition_(AllowReposition()) {}
+      save_file_callback_(save_file_callback) {}
 
 TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
 }
 
-void TouchInjector::ParseActions(const base::Value& root) {
+void TouchInjector::ParseActions(const base::Value::Dict& root) {
   DCHECK(actions_.empty());
   if (enable_mouse_lock_) {
-    ParseMouseLock(root.GetDict());
+    ParseMouseLock(root);
   }
 
   auto parsed_actions = ParseJsonToActions(this, root);
@@ -527,7 +535,7 @@ void TouchInjector::SendExtraEvent(
 }
 
 void TouchInjector::ParseMouseLock(const base::Value::Dict& dict) {
-  auto* mouse_lock = dict.Find(kMouseLock);
+  auto* mouse_lock = dict.FindDict(kMouseLock);
   if (!mouse_lock) {
     mouse_lock_ = std::make_unique<KeyCommand>(
         kDefaultMouseLockCode, /*modifier=*/0,
@@ -866,22 +874,12 @@ void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
 }
 
 void TouchInjector::AddSystemVersionToProto(AppDataProto& proto) {
-  auto system_version = GetCurrentSystemVersion();
-  if (!system_version) {
-    return;
-  }
-
-  proto.set_system_version(*system_version);
+  proto.set_system_version(GetCurrentSystemVersion());
 }
 
 void TouchInjector::LoadSystemVersionFromProto(AppDataProto& proto) {
-  auto system_version = GetCurrentSystemVersion();
-  if (!system_version) {
-    return;
-  }
-
   if (!proto.has_system_version() ||
-      system_version->compare(proto.system_version()) > 0) {
+      GetCurrentSystemVersion().compare(proto.system_version()) > 0) {
     show_nudge_ = true;
   }
 }

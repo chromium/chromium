@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -118,9 +118,7 @@ public class BookmarkSaveFlowCoordinator {
         boolean shown =
                 mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
 
-        AccessibilityManager am =
-                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (!am.isTouchExplorationEnabled()) {
+        if (!AccessibilityState.isTouchExplorationEnabled()) {
             setupAutodismiss();
         }
 

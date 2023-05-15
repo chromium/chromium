@@ -42,8 +42,6 @@
 <if expr="is_win">
   iron-icon[icon='cr:open-in-new'] {
     height: 20px;
-    margin-inline-start: 6px;
-    margin-inline-end: -10px;
     width: 20px;
   }
 </if>
@@ -60,7 +58,8 @@
     <cr-button class="action-button" on-click="onSetDefaultClick_">
       $i18n{setDefaultConfirm}
 <if expr="is_win">
-      <iron-icon icon="cr:open-in-new" hidden="[[!isWin10]]"></iron-icon>
+      <iron-icon icon="cr:open-in-new" slot="suffix-icon" hidden="[[!isWin10]]">
+      </iron-icon>
 </if>
     </cr-button>
   </div>

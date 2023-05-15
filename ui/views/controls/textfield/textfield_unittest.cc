@@ -18,7 +18,6 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -3736,36 +3735,6 @@ TEST_F(TextfieldTest, ScrollToPlaceCursor) {
   gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(kCursorEndPos));
-}
-
-TEST_F(TextfieldTest, ScrollToPlaceCursorShowsTouchHandles) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
-      /*disabled_features=*/{});
-
-  InitTextfield();
-  textfield_->SetText(u"Hello string world");
-
-  // Scroll in a horizontal direction to move the cursor.
-  const gfx::Point kScrollStart = views::View::ConvertPointToScreen(
-      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
-  const gfx::Point kScrollEnd = views::View::ConvertPointToScreen(
-      textfield_, {GetCursorPositionX(15), GetCursorYForTesting()});
-  event_generator_->GestureScrollSequenceWithCallback(
-      kScrollStart, kScrollEnd, /*duration=*/base::Milliseconds(50),
-      /*steps=*/5,
-      base::BindLambdaForTesting(
-          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type != ui::ET_GESTURE_SCROLL_UPDATE) {
-              return;
-            }
-            // Touch handles should be hidden during scroll.
-            EXPECT_FALSE(test_api_->touch_selection_controller());
-          }));
-
-  // Touch handles should be shown after scroll ends.
-  EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
 TEST_F(TextfieldTest, ScrollToPlaceCursorAdjustsDisplayOffset) {

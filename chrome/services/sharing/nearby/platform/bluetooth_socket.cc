@@ -61,7 +61,7 @@ Exception BluetoothSocket::Close() {
 }
 
 api::BluetoothDevice* BluetoothSocket::GetRemoteDevice() {
-  return &remote_device_ref_;
+  return &*remote_device_ref_;
 }
 
 void BluetoothSocket::CloseMojoSocketIfNecessary() {

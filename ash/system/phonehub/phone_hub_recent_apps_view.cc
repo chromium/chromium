@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -28,7 +29,9 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
@@ -134,17 +137,24 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
   auto* label = AddChildView(std::make_unique<views::Label>());
   label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
-  label->SetLineHeight(kHeaderLabelLineHeight);
-  label->SetFontList(label->font_list()
-                         .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
-                                              label->font_list().GetFontSize())
-                         .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                          *label);
+  } else {
+    label->SetFontList(
+        label->font_list()
+            .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
+                                 label->font_list().GetFontSize())
+            .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+  }
+  label->SetLineHeight(kHeaderLabelLineHeight);
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     error_button_ =
@@ -174,7 +184,6 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
   PlaceholderView() {
     SetText(
         l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER));
-    SetLineHeight(kContentLabelLineHeightDip);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     SetAutoColorReadabilityEnabled(false);
     SetSubpixelRenderingEnabled(false);
@@ -182,6 +191,12 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     SetMultiLine(true);
     SetBorder(views::CreateEmptyBorder(kContentTextLabelInsetsDip));
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                            *this);
+    }
+    SetLineHeight(kContentLabelLineHeightDip);
   }
   ~PlaceholderView() override = default;
   PlaceholderView(PlaceholderView&) = delete;
@@ -411,9 +426,11 @@ void PhoneHubRecentAppsView::Update() {
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
       placeholder_view_->SetVisible(true);
-      header_view_->SetErrorButtonVisible(false);
-      if (loading_view_) {
-        loading_view_->SetVisible(false);
+      if (features::IsEcheNetworkConnectionStateEnabled()) {
+        header_view_->SetErrorButtonVisible(false);
+        if (loading_view_) {
+          loading_view_->SetVisible(false);
+        }
       }
       SetVisible(true);
       break;

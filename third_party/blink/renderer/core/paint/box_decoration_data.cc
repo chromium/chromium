@@ -40,7 +40,7 @@ BackgroundBleedAvoidance BoxDecorationData::ComputeBleedAvoidance() const {
       // behind the top layer.  But only if we need to draw something
       // underneath.
       const FillLayer& fill_layer = style_.BackgroundLayers();
-      if ((BackgroundColor().Alpha() || fill_layer.Next()) &&
+      if ((!BackgroundColor().IsFullyTransparent() || fill_layer.Next()) &&
           !fill_layer.ImageOccludesNextLayers(layout_box_.GetDocument(),
                                               style_)) {
         return kBackgroundBleedClipLayer;

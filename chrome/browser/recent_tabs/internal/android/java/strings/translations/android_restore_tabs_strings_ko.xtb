@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="1356944128023012143">동기화된 기기 목록 및 새로운 복원 워크플로를 통해 복원할 기기에서 선택된 탭 목록이 닫혔습니다.</translation>
+<translation id="1816430105422765050">이 메뉴 항목에서 다른 동기화된 기기로 변경합니다.</translation>
+<translation id="3347725959865138210">탭을 가져올 기기를 선택합니다.</translation>
+<translation id="3575801299326994724">현재 선택한 기기에서 복원하기 위해 선택한 탭을 검토합니다.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개, 최종 업데이트: <ph name="TIME_SINCE_MODIFIED" />}other{탭 <ph name="TABS_COUNT_MANY" />개, 최종 업데이트: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">뒤로</translation>
+<translation id="3983305234037158273">탭 복원을 위해 동기화된 기기는 터치하여 변경할 수 있습니다. 터치 시 현재 기기를 위해 선택된 탭을 검토하거나 복원할 수 있는 위치로 이동합니다. 키보드가 숨겨졌습니다.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개 열기}other{탭 <ph name="TABS_COUNT_MANY" />개 열기}}</translation>
+<translation id="4811934403802581334">현재 선택한 기기에서 선택한 모든 탭이 복원됩니다.</translation>
+<translation id="5336031759968328813">모든 탭 검토</translation>
+<translation id="8725404154479306799">이전 기기에서 중단한 탭 가져오기</translation>
+</translationbundle>

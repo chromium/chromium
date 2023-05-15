@@ -3,7 +3,7 @@
         /* Larger cr-input margin (by reserving space for error display). */
         --cr-input-error-display: block;
         margin-bottom: 0;
-        width: var(--settings-input-max-width);
+        width: var(--cr-default-input-max-width);
       }
 
       /* Override the padding-top (the space is set by save-to-this-device). */
@@ -33,7 +33,7 @@
 
       /* For nickname input, cr-input-width is the same as other input fields */
       #nicknameInput {
-        --cr-input-width: var(--settings-input-max-width);
+        --cr-input-width: var(--cr-default-input-max-width);
         width: fit-content;
       }
 
@@ -111,7 +111,7 @@
             on-input="validateNickname_"
             invalid="[[nicknameInvalid_]]"
             error-message="$i18n{creditCardNicknameInvalid}">
-            <div id="charCount" slot="suffix">
+            <div id="charCount" slot="suffix" aria-hidden="true">
               [[computeNicknameCharCount_(nickname_)]]/25
             </div>
         </cr-input>

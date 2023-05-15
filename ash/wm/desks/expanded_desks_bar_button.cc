@@ -10,10 +10,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -24,6 +24,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   METADATA_HEADER(InnerExpandedDesksBarButton);
 
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
-                              DesksBarView* bar_view,
+                              DeskBarViewBase* bar_view,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
       : DeskButtonBase(text,
@@ -82,7 +83,9 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   void SetButtonState(bool enabled) {
     outer_button_->UpdateLabelColor(enabled);
     // Notify the overview highlight if we are about to be disabled.
-    if (!enabled) {
+    // TODO(b/277988182): Add highlight/chromevoxing support for bento button
+    // desk bar outside of overview.
+    if (!enabled && bar_view_->type() == DeskBarViewBase::Type::kOverview) {
       OverviewSession* overview_session =
           Shell::Get()->overview_controller()->overview_session();
       DCHECK(overview_session);
@@ -99,7 +102,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   void UpdateFocusState() override { outer_button_->UpdateFocusColor(); }
 
  private:
-  ExpandedDesksBarButton* outer_button_;
+  raw_ptr<ExpandedDesksBarButton, ExperimentalAsh> outer_button_;
   absl::optional<ui::ColorId> focus_color_id_;
 };
 
@@ -110,7 +113,7 @@ END_METADATA
 // ExpandedDesksBarButton:
 
 ExpandedDesksBarButton::ExpandedDesksBarButton(
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     const gfx::VectorIcon* button_icon,
     const std::u16string& button_label,
     bool initially_enabled,
@@ -133,12 +136,20 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   views::InstallRoundRectHighlightPathGenerator(
       inner_button_, gfx::Insets(kFocusRingHaloInset), kBorderCornerRadius);
   auto* focus_ring = views::FocusRing::Get(inner_button_);
-  focus_ring->SetHasFocusPredicate([&](views::View* view) {
-    return inner_button_->IsViewHighlighted() ||
-           ((bar_view_->dragged_item_over_bar() &&
-             IsPointOnButton(bar_view_->last_dragged_item_screen_location())) ||
-            active_);
-  });
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const ExpandedDesksBarButton* desks_bar_button,
+         const views::View* view) {
+        const auto* inner_button =
+            views::AsViewClass<InnerExpandedDesksBarButton>(view);
+        CHECK(inner_button);
+        return inner_button->IsViewHighlighted() ||
+               ((desks_bar_button->bar_view_->dragged_item_over_bar() &&
+                 desks_bar_button->IsPointOnButton(
+                     desks_bar_button->bar_view_
+                         ->last_dragged_item_screen_location())) ||
+                desks_bar_button->active_);
+      },
+      base::Unretained(this)));
 }
 
 DeskButtonBase* ExpandedDesksBarButton::GetInnerButton() {

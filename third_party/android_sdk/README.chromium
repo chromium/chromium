@@ -34,7 +34,7 @@ Update Instructions:
 * Adding new sdk packages:
   * Prepare the CIPD yaml files for packages in the cipd/ directory.
   * Add them to android-sdk-packager buildbucket configuation file:
-    infra/config/subprojects/chromium/ci/chromium.packager.star
+    infra/config/subprojects/chromium/ci/chromium.infra.star
   * Submit the changes into gerrit (See crrev.com/c/2241994 as a reference)
   * Follow the update instructions to get a build from the CI builder.
 * Updating this file:

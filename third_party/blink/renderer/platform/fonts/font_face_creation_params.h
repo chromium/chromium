@@ -115,7 +115,7 @@ class FontFaceCreationParams {
           sizeof(fontconfig_interface_id_));
       return hasher.GetHash();
     }
-    return CaseFoldingHash::GetHash(family_.empty() ? "" : family_);
+    return CaseFoldingHash::GetHash(family_.empty() ? g_empty_atom : family_);
   }
 
   bool operator==(const FontFaceCreationParams& other) const {

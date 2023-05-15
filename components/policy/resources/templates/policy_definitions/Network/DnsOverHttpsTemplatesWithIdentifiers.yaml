@@ -2,15 +2,13 @@ caption: Specify URI template of desired DNS-over-HTTPS resolver with identity i
 desc: |-
   The URI template of the desired DNS-over-HTTPS resolver. To specify multiple DNS-over-HTTPS resolvers, separate the corresponding URI templates with spaces. This policy is very similar to <ph name="DOH_TEMPLATES_POLICY_NAME">DnsOverHttpsTemplates</ph> which it will override if specified. In contrast to that it supports specifying identify information.
 
-    If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_SECURE">"secure"</ph> then either this policy or <ph name="DOH_TEMPLATES_POLICY_NAME">DnsOverHttpsTemplates</ph> must be set and not empty.
+  If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_SECURE">"secure"</ph> then either this policy or <ph name="DOH_TEMPLATES_POLICY_NAME">DnsOverHttpsTemplates</ph> must be set and not empty.
 
-    If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_AUTOMATIC">"automatic"</ph> and this policy is set then the URI templates specified will be used; if this policy is unset then hardcoded mappings will be used to attempt to upgrade the users current DNS resolver to a DoH resolver operated by the same provider.
+  If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_AUTOMATIC">"automatic"</ph> and this policy is set then the URI templates specified will be used; if this policy is unset then hardcoded mappings will be used to attempt to upgrade the users current DNS resolver to a DoH resolver operated by the same provider.
 
-    If the URI template contains a <ph name="HTTP_VARIABLE_DNS">dns</ph> variable, requests to the resolver will use <ph name="HTTP_METHOD_GET">GET</ph>; otherwise requests will use <ph name="HTTP_METHOD_POST">POST</ph>.
+  If the URI template contains a <ph name="HTTP_VARIABLE_DNS">dns</ph> variable, requests to the resolver will use <ph name="HTTP_METHOD_GET">GET</ph>; otherwise requests will use <ph name="HTTP_METHOD_POST">POST</ph>.
 
-    If this policy is set, then also <ph name="DOH_SALT_POLICY_NAME">DnsOverHttpsSalt</ph> must be set.
-
-    Incorrectly formatted templates will be ignored.
+  In version 114 and later, <ph name="DOH_SALT_POLICY_NAME">DnsOverHttpsSalt</ph> is optional if this policy is set.
 example_value: https://dns.example.net/dns-query{?dns}
 features:
   dynamic_refresh: true

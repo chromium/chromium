@@ -16,6 +16,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -157,7 +158,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  FeatureTilesContainerView* container_;
+  raw_ptr<FeatureTilesContainerView, ExperimentalAsh> container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable

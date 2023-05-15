@@ -588,9 +588,8 @@ struct HostResolverManager::JobKey {
       // that differ only in their (non-singleton) `query_types` fields. When we
       // enable new query types, this behavior could lead to subtle bugs. That
       // is why the following DCHECK restricts the allowable query types.
-      DCHECK(Difference(query_types,
-                        DnsQueryTypeSet(DnsQueryType::A, DnsQueryType::AAAA,
-                                        DnsQueryType::HTTPS))
+      DCHECK(Difference(query_types, {DnsQueryType::A, DnsQueryType::AAAA,
+                                      DnsQueryType::HTTPS})
                  .Empty());
     }
     const DnsQueryType query_type_for_key = query_types.Size() == 1
@@ -632,8 +631,7 @@ class HostResolverManager::RequestImpl
       : source_net_log_(std::move(source_net_log)),
         request_host_(std::move(request_host)),
         network_anonymization_key_(
-            base::FeatureList::IsEnabled(
-                features::kSplitHostCacheByNetworkIsolationKey)
+            NetworkAnonymizationKey::IsPartitioningEnabled()
                 ? std::move(network_anonymization_key)
                 : NetworkAnonymizationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()
@@ -3868,11 +3866,11 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   *out_effective_flags = flags | additional_resolver_flags_;
 
   if (dns_query_type != DnsQueryType::UNSPECIFIED) {
-    *out_effective_types = dns_query_type;
+    *out_effective_types = {dns_query_type};
     return;
   }
 
-  DnsQueryTypeSet effective_types(DnsQueryType::A, DnsQueryType::AAAA);
+  DnsQueryTypeSet effective_types = {DnsQueryType::A, DnsQueryType::AAAA};
 
   // Disable AAAA queries when we cannot do anything with the results.
   bool use_local_ipv6 = true;
@@ -3926,10 +3924,11 @@ void HostResolverManager::FinishIPv6ReachabilityCheck(
   SetLastIPv6ProbeResult((rv == OK) ? true : false);
   std::move(callback).Run(OK);
   if (!ipv6_request_callbacks_.empty()) {
-    for (auto& request_callback : ipv6_request_callbacks_) {
+    std::vector<CompletionOnceCallback> tmp_request_callbacks;
+    ipv6_request_callbacks_.swap(tmp_request_callbacks);
+    for (auto& request_callback : tmp_request_callbacks) {
       std::move(request_callback).Run(OK);
     }
-    ipv6_request_callbacks_.clear();
   }
 }
 

@@ -59,11 +59,11 @@ class CheckUrlCallbackWrapper {
   void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
            bool proceed,
            bool showed_interstitial,
-           bool did_perform_real_time_check,
-           bool did_check_allowlist) {
-    std::move(callback_).Run(std::move(slow_check_notifier), proceed,
-                             showed_interstitial, did_perform_real_time_check,
-                             did_check_allowlist);
+           bool did_perform_url_real_time_check,
+           bool did_check_url_real_time_allowlist) {
+    std::move(callback_).Run(
+        std::move(slow_check_notifier), proceed, showed_interstitial,
+        did_perform_url_real_time_check, did_check_url_real_time_allowlist);
   }
 
  private:
@@ -161,8 +161,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
                               false /* showed_interstitial */,
-                              false /* did_perform_real_time_check */,
-                              false /* did_check_allowlist */);
+                              false /* did_perform_url_real_time_check */,
+                              false /* did_check_url_real_time_allowlist */);
     }
 
     // This will drop |receiver|. The result is that the renderer side will
@@ -183,21 +183,24 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
                           static_cast<int>(render_frame_id)),
       render_process_id_, render_frame_id,
       content::RenderFrameHost::kNoFrameTreeNodeId,
-      /*real_time_lookup_enabled=*/false,
-      /*can_rt_check_subresource_url=*/false,
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_urt_check_subresource_url=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
       /*url_lookup_service_metric_suffix=*/".None",
       /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance(),
       /*hash_realtime_service_on_ui=*/nullptr,
       /*mechanism_experimenter=*/nullptr,
-      /*is_mechanism_experiment_allowed=*/false);
+      /*is_mechanism_experiment_allowed=*/false,
+      /*hash_real_time_lookup_enabled=*/false);
+  auto weak_impl = checker_impl->WeakPtr();
 
   checker_impl->CheckUrl(
       url, method,
       base::BindOnce(
           &CheckUrlCallbackWrapper::Run,
           base::Owned(new CheckUrlCallbackWrapper(std::move(callback)))));
+  CHECK(weak_impl);  // This is to ensure calling CheckUrl doesn't delete itself
   mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }
 

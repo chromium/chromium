@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -94,7 +95,8 @@ class ConnectionPreserverImplTest : public testing::Test {
         mock_tether_host_response_recorder_.get());
 
     mock_timer_ = new base::MockOneShotTimer();
-    connection_preserver_->SetTimerForTesting(base::WrapUnique(mock_timer_));
+    connection_preserver_->SetTimerForTesting(
+        base::WrapUnique(mock_timer_.get()));
   }
 
   void TearDown() override { connection_preserver_.reset(); }
@@ -191,7 +193,7 @@ class ConnectionPreserverImplTest : public testing::Test {
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<NiceMock<MockTetherHostResponseRecorder>>
       mock_tether_host_response_recorder_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
 
   std::unique_ptr<ConnectionPreserverImpl> connection_preserver_;
 

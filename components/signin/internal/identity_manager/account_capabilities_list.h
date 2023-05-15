@@ -42,6 +42,11 @@ ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
                    IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
                    "accountcapabilities/g42tslldmfya")
 
+ACCOUNT_CAPABILITY(
+    kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice,
+    IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE,
+    "accountcapabilities/he4tolldmfya")
+
 ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
                    IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
                    "accountcapabilities/g44tilldmfya")

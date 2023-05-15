@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_api.h"
@@ -13,7 +14,6 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -657,18 +657,17 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
        CheckRestrictedFeaturesBasedOnContext) {
   scoped_refptr<const Extension> connectable_extension;
   {
-    DictionaryBuilder manifest;
-    manifest.Set("name", "connectable")
-        .Set("manifest_version", 2)
-        .Set("version", "0.1")
-        .Set("description", "test extension");
-    DictionaryBuilder connectable;
-    connectable.Set("matches",
-                    ListBuilder().Append("*://example.com/*").Build());
-    manifest.Set("externally_connectable", connectable.Build());
+    auto manifest = base::Value::Dict()
+                        .Set("name", "connectable")
+                        .Set("manifest_version", 2)
+                        .Set("version", "0.1")
+                        .Set("description", "test extension");
+    base::Value::Dict connectable;
+    connectable.Set("matches", base::Value::List().Append("*://example.com/*"));
+    manifest.Set("externally_connectable", std::move(connectable));
     connectable_extension =
         ExtensionBuilder()
-            .SetManifest(manifest.Build())
+            .SetManifest(std::move(manifest))
             .SetLocation(mojom::ManifestLocation::kInternal)
             .SetID(crx_file::id_util::GenerateId("connectable"))
             .Build();
@@ -1288,8 +1287,7 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
 
   // Dispatch an event with an argument that matches the expected schema.
   {
-    base::Value::List event_args;
-    event_args.Append("active");
+    auto event_args = base::Value::List().Append("active");
     bindings_system()->DispatchEventInContext("idle.onStateChanged", event_args,
                                               nullptr, script_context);
   }

@@ -693,9 +693,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
 // a successful commit to the compositor.
 TEST_F(NotifySwapTimesWebFrameWidgetTest,
        ReportPresentationOnlyOnSuccessfulCommit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kReportFCPOnlyOnSuccessfulCommit);
-
   base::HistogramTester histograms;
   constexpr base::TimeDelta delta = base::Milliseconds(16);
   constexpr base::TimeDelta delta_from_swap_time = base::Microseconds(2);

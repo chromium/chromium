@@ -65,6 +65,12 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     PaintInfo paint_info{graphics_context, cull_rect, PaintPhase::kForeground};
     TextPaintStyle text_style =
         TextPainterBase::TextPaintingStyle(GetDocument(), style, paint_info);
+    if (selection) {
+      selection->ComputeSelectionStyle(GetDocument(), style,
+                                       text_item.GetLayoutObject()->GetNode(),
+                                       paint_info, text_style);
+    }
+
     NGTextPainter text_painter(graphics_context, text_item.ScaledFont(), rect,
                                physical_offset, physical_rect, &inline_context,
                                true);

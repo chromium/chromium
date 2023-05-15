@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,7 +126,7 @@ class TouchAssociationTest : public testing::Test {
  protected:
   DisplayInfoList displays_;
   std::unique_ptr<DisplayManager> display_manager_;
-  TouchDeviceManager* touch_device_manager_;
+  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
 };
 
 TEST_F(TouchAssociationTest, NoTouchscreens) {

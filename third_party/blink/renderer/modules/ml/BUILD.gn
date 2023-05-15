@@ -43,6 +43,7 @@ blink_modules_sources("ml") {
   deps = [
     ":buildflags",
     "//components/ml/mojom:mojom_blink",
+    "//services/webnn/public/mojom:mojom_blink",
   ]
 
   if (build_webnn_with_xnnpack) {
@@ -65,6 +66,17 @@ blink_modules_sources("ml") {
       "//third_party/tflite:tflite_public_headers",
     ]
   }
+
+  if (!is_chromeos) {
+    sources += [
+      # MLGraphMojo is platform independent which packages the model information
+      # into a neutral struct type, it will be built and executed with hardware
+      # accelerated OS machine learning API in WebNN Service which run out of
+      # renderer process.
+      "webnn/ml_graph_mojo.cc",
+      "webnn/ml_graph_mojo.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -83,6 +95,7 @@ source_set("unit_tests") {
 
   deps = [
     "//components/ml/mojom:mojom_blink",
+    "//services/webnn/public/mojom:mojom_blink",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/controller:blink_bindings_test_sources",
@@ -104,5 +117,9 @@ source_set("unit_tests") {
   if (is_chromeos && current_cpu == "x64") {
     sources += [ "webnn/ml_graph_test_cros.cc" ]
     deps += [ "//third_party/tflite" ]
+  }
+
+  if (!is_chromeos) {
+    sources += [ "webnn/ml_graph_test_mojo.cc" ]
   }
 }

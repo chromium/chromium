@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.payments;
 
 import androidx.annotation.Nullable;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -228,7 +228,8 @@ public class AndroidPaymentAppFinderTest
     public void setUp() throws Throwable {
         mActivityTestRule.startMainActivityOnBlankPage();
         mPackageManager.reset();
-        mServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mDownloader.setTestServerUrl(new GURL(mServer.getURL("/components/test/data/payments/")));
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;

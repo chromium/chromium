@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Perekaman dihentikan karena ruang penyimpanan perangkat hampir penuh. Untuk merekam lebih banyak video, Anda perlu mengosongkan ruang penyimpanan di perangkat.</translation>
 <translation id="2036868001356139588">Durasi timer</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
-<translation id="2128052519899549250">Rekam video time lapse</translation>
 <translation id="2134029355740465625">Setelan Video</translation>
 <translation id="2144806332417375165">Parameter video kustom</translation>
 <translation id="2175927920773552910">Kode QR</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Dokumen terdeteksi</translation>
 <translation id="414641094616694804">Kamera ini tidak dapat mengubah resolusi</translation>
 <translation id="4269820728363426813">Salin URL</translation>
-<translation id="4281620174117014503">Resolusi sedang</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5320594929574852403">Berpindah ke arah kiri</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Time lapse</translation>
 <translation id="5662366948659129155">Memindai halaman <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Persegi</translation>
+<translation id="574392208103952083">Sedang</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
 <translation id="5753488212459587150">Aktifkan mode pakar</translation>
 <translation id="5759254179196327752">Pindai dokumen</translation>
@@ -138,6 +136,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Pojok kanan bawah dokumen</translation>
+<translation id="7684446460490665873">Rekam video time lapse</translation>
 <translation id="7692090236657809299">Aktifkan geser miring zoom</translation>
 <translation id="7726641833034062494">Rekam video normal</translation>
 <translation id="7748344063862150053">Pojok kanan atas dokumen</translation>
@@ -163,6 +162,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="9045010116236796332">Tempatkan semua sisi dokumen ke dalam bingkai</translation>
 <translation id="9045155556724273246">10 detik</translation>
 <translation id="906331135292332864">Memproses gambar ...</translation>
+<translation id="9161584225258678723">Time Lapse</translation>
 <translation id="922762992951083513">Cermin aktif</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 </translationbundle>

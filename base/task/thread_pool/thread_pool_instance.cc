@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/thread_pool_impl.h"

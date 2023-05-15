@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/fake_disconnect_tethering_request_sender.h"
@@ -93,7 +94,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
         new FakeDisconnectTetheringRequestSender();
 
     container_->SetTestDoubles(
-        base::WrapUnique(fake_disconnect_tethering_request_sender_));
+        base::WrapUnique(fake_disconnect_tethering_request_sender_.get()));
   }
 
   void CallShutdown() {
@@ -115,7 +116,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
       test_pref_service_;
   std::unique_ptr<FakeRemoteDeviceProviderFactory>
       fake_remote_device_provider_factory_;
-  FakeDisconnectTetheringRequestSender*
+  raw_ptr<FakeDisconnectTetheringRequestSender, ExperimentalAsh>
       fake_disconnect_tethering_request_sender_;
 
   bool was_shutdown_callback_invoked_;

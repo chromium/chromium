@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

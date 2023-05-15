@@ -27,6 +27,8 @@ const wchar_t kRegValueDateOfLastRollcall[] = L"DayOfLastRollCall";
 const wchar_t kRegValueName[] = L"name";
 const wchar_t kRegValueUninstallCmdLine[] = L"UninstallCmdLine";
 const wchar_t kRegValueVersion[] = L"version";
+const wchar_t kRegValueCohortName[] = L"name";
+const wchar_t kRegValueCohortHint[] = L"hint";
 
 const wchar_t kRegValueInstallerError[] = L"InstallerError";
 const wchar_t kRegValueInstallerExtraCode1[] = L"InstallerExtraCode1";

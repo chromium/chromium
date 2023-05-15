@@ -5,11 +5,45 @@
 module network.mojom;
 
 // Structure containing a redemption token that can be sent to the reporting
-// origin alongside an aggregatable report for them to attest the validity of a
+// origin alongside an aggregatable report for them to verify the validity of a
 // trigger. The token was signed over the included aggregatable_report_id which
 // must therefore be used when creating the report.
-struct TriggerAttestation {
+struct TriggerVerification {
   string token;
   // TODO(https://crbug.com/1240405): replace with `guid` once a type-mapping exists.
   string aggregatable_report_id;
+};
+
+// Indicates whether web or OS-level Attribution Reporting is supported.
+// See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+enum AttributionSupport {
+  kWeb,
+  kWebAndOs,
+  kOs,
+  kNone,
+};
+
+// Controls the value of the Attribution-Reporting-Eligible request header, if
+// any. This header controls which registrations a response is allowed to
+// register. In most contexts, by default, a response is allowed to register
+// triggers when the header is omitted.
+enum AttributionReportingEligibility {
+  // The header is not set.
+  kUnset,
+  // The header is set to the empty string.
+  kEmpty,
+  // The header contains `event-source`.
+  kEventSource,
+  // The header contains `navigation-source`.
+  kNavigationSource,
+  // The header contains `trigger`.
+  kTrigger,
+  // The header contains `event-source, trigger`.
+  kEventSourceOrTrigger,
+};
+
+// Wraps whether Attribution Reporting API related runtime features are
+// enabled.
+struct AttributionReportingRuntimeFeatures {
+  bool cross_app_web_enabled;
 };

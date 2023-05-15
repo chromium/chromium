@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Bộ giải mã hình ảnh</translation>
 <translation id="1785415724048343560">Nên chọn để có trải nghiệm tốt nhất</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Từ <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Các trang web liên quan có thể xem hoạt động của bạn trong nhóm</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mặt hàng có trong giỏ hàng</translation>
 <translation id="3165022941318558018">Cho phép một trang web dùng cookie của bên thứ ba</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
-<translation id="3203366800380907218">Trên web</translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3248611290851046188">Trang web này xác định các mối quan tâm mà các trang web khác có thể sử dụng để hiển thị quảng cáo cho bạn. Trang web này cũng lấy thông tin về mối quan tâm của bạn qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
@@ -150,8 +148,9 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
+<translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
-<translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
+<translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
 <translation id="3794286421982011626">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để hoạt động như bạn mong muốn – ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
 <translation id="3797520601150691162">Không áp dụng giao diện tối cho một trang web cụ thể</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="5225463052809312700">Bật máy ảnh</translation>
-<translation id="5229337741799419985">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
-<translation id="6701547804986694515">Trang web bạn truy cập có thể lưu thông tin qua Chrome để xác thực rằng bạn không phải là bot. Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="6722828510648505498">Chặn lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Bạn thường chặn các thông báo. Để cho phép, hãy nhấn vào Chi tiết.</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7383715096023715447">Chế độ cài đặt cho <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn mặc dù các trang web có thể chia sẻ một lượng thông tin nhỏ trong quá trình xác minh</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
 <translation id="7425915948813553151">Giao diện tối cho các trang web</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Chặn không cho các trang web sử dụng cảm biến</translation>
 <translation id="8823559166155093873">Chặn cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="8899807382908246773">Quảng cáo xâm nhập</translation>
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

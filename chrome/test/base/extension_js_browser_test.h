@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/javascript_browser_test.h"
 
@@ -39,7 +40,8 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
   std::string extension_id_;
   // The browser context associated with the ExtensionHost loaded from
   // WaitForExtension().
-  content::BrowserContext* extension_host_browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh>
+      extension_host_browser_context_ = nullptr;
   bool libs_loaded_ = false;
 
   // Handles collection of code coverage.

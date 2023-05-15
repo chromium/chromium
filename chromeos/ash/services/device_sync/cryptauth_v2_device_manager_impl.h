@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
@@ -129,12 +130,12 @@ class CryptAuthV2DeviceManagerImpl
   std::unique_ptr<CryptAuthDeviceSyncer> device_syncer_;
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  CryptAuthDeviceRegistry* device_registry_ = nullptr;
-  CryptAuthKeyRegistry* key_registry_ = nullptr;
-  CryptAuthClientFactory* client_factory_ = nullptr;
-  CryptAuthGCMManager* gcm_manager_ = nullptr;
-  CryptAuthScheduler* scheduler_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<CryptAuthDeviceRegistry, ExperimentalAsh> device_registry_ = nullptr;
+  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_ = nullptr;
+  raw_ptr<CryptAuthScheduler, ExperimentalAsh> scheduler_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 
   // For sending a weak pointer to the scheduler, whose lifetime exceeds that of
   // CryptAuthV2DeviceManagerImpl.

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="th">
+<translation id="1356944128023012143">รายการอุปกรณ์ที่ซิงค์และแท็บที่เลือกจากอุปกรณ์เหล่านั้นซึ่งจะมีการคืนค่าในเวิร์กโฟลว์การคืนค่าใหม่ปิดอยู่</translation>
+<translation id="1816430105422765050">เปลี่ยนเป็นอุปกรณ์อื่นๆ ที่ซิงค์ไว้ในส่วนรายการในเมนูนี้</translation>
+<translation id="3347725959865138210">เลือกอุปกรณ์ที่ต้องการจะคืนค่าแท็บ</translation>
+<translation id="3575801299326994724">ตรวจสอบแท็บที่เลือกเพื่อคืนค่าจากอุปกรณ์ที่เลือกอยู่</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ อัปเดตล่าสุดเมื่อ <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> แท็บ อัปเดตล่าสุดเมื่อ <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">กลับ</translation>
+<translation id="3983305234037158273">อุปกรณ์ที่ซิงค์อยู่สำหรับการคืนค่าแท็บจะทำการเปลี่ยนแปลงได้เมื่อแตะ ไปยังส่วนสำหรับดูหรือคืนค่าแท็บที่เลือกในอุปกรณ์ปัจจุบันเมื่อแตะ แป้นพิมพ์ซ่อนอยู่</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{เปิด <ph name="TABS_COUNT_ONE" /> แท็บ}other{เปิด <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="4811934403802581334">ระบบจะคืนค่าแท็บที่เลือกทั้งหมดจากอุปกรณ์ที่เลือกอยู่</translation>
+<translation id="5336031759968328813">ดูแท็บทั้งหมด</translation>
+<translation id="8725404154479306799">คืนค่าแท็บที่ค้างไว้จากอุปกรณ์เครื่องเก่า</translation>
+</translationbundle>

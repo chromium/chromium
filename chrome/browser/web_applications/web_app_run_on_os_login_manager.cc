@@ -8,27 +8,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/notification_utils.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
-#endif
-
 namespace web_app {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kRunOnOsLoginNotificationId[] = "run_on_os_login";
-const char kWebAppPolicyManagerNotifierId[] = "web_app_policy_notifier";
-#endif
 
 WebAppRunOnOsLoginManager::WebAppRunOnOsLoginManager(
     WebAppCommandScheduler* scheduler)
@@ -62,53 +49,21 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
       continue;
     }
 
+    // In case of already opened/restored apps, we do not launch them again.
+    if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
+      continue;
+    }
+
     // TODO(crbug.com/1091964): Implement Run on OS Login mode selection and
-    // launch app appropriately
+    // launch app appropriately.
+    // For ROOL on ChromeOS, we only have managed web apps which need to be run
+    // as standalone windows, never as tabs
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
 
-    if (lock.registrar().GetAppEffectiveDisplayMode(app_id) ==
-        blink::mojom::DisplayMode::kBrowser) {
-      params.container = apps::LaunchContainer::kLaunchContainerTab;
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    }
-
-    const std::string app_name = lock.registrar().GetAppShortName(app_id);
-
-    auto callback =
-        base::BindOnce(&WebAppRunOnOsLoginManager::OnAppLaunchedOnOsLogin,
-                       weak_ptr_factory_.GetWeakPtr(), app_id, app_name);
-    scheduler_->LaunchAppWithCustomParams(std::move(params),
-                                          std::move(callback));
+    scheduler_->LaunchAppWithCustomParams(std::move(params), base::DoNothing());
   }
-}
-
-void WebAppRunOnOsLoginManager::OnAppLaunchedOnOsLogin(
-    AppId app_id,
-    std::string app_name,
-    Browser* browser,
-    content::WebContents* web_contents,
-    apps::LaunchContainer container) {
-// TODO(crbug.com/1341247): Implement notification for lacros
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::string notification_id =
-      std::string(kRunOnOsLoginNotificationId) + "_" + app_name;
-  auto notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      /*title=*/std::u16string(),
-      l10n_util::GetStringFUTF16(IDS_RUN_ON_OS_LOGIN_ENABLED,
-                                 base::UTF8ToUTF16(app_name)),
-      /* display_source= */ std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kWebAppPolicyManagerNotifierId,
-                                 ash::NotificationCatalogName::kWebAppSettings),
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::RepeatingClosure()),
-      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(notification);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 base::WeakPtr<WebAppRunOnOsLoginManager>

@@ -1005,12 +1005,12 @@ void LocalFrameMojoHandler::GetStringForRange(
     GetStringForRangeCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
-      frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
-      base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
+  base::ScopedCFTypeRef<CFAttributedStringRef> string =
+      SubstringUtil::AttributedSubstringInRange(
+          frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
+          base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
   if (string) {
-    attributed_string =
-        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+    attributed_string = ui::mojom::blink::AttributedString::From(string.get());
   }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);
@@ -1164,6 +1164,7 @@ void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
 void LocalFrameMojoHandler::TraverseCancelled(
     const String& navigation_api_key,
     mojom::blink::TraverseCancelledReason reason) {
+  frame_->GetPage()->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
   frame_->DomWindow()->navigation()->TraverseCancelled(navigation_api_key,
                                                        reason);
 }

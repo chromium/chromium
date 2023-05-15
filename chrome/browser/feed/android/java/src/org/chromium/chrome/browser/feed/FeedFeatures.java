@@ -55,7 +55,7 @@ public final class FeedFeatures {
                 && IdentityServicesProvider.get()
                            .getSigninManager(Profile.getLastUsedRegularProfile())
                            .getIdentityManager()
-                           .hasPrimaryAccount(ConsentLevel.SYNC)
+                           .hasPrimaryAccount(ConsentLevel.SIGNIN)
                 && !Profile.getLastUsedRegularProfile().isChild();
     }
 

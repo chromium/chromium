@@ -12,6 +12,18 @@ INSERT INTO meta VALUES ('mmap_status', '-1');
 INSERT INTO meta VALUES ('last_compatible_version', '9');
 INSERT INTO meta VALUES ('version', '9');
 
+INSERT INTO quota(host, type, quota)  VALUES('a.com', 0, 0);
+INSERT INTO quota(host, type, quota)  VALUES('b.com', 0, 1);
+INSERT INTO quota(host, type, quota)  VALUES('c.com', 1, 123);
+
+INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, last_modified, expiration, quota, persistent, durability)
+  VALUES('http://a/', 'http://a/', 0, 'bucket_a', 123, 13260644621105493, 13242931862595604, 0, 0, 0, 0);
+INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, last_modified, expiration, quota, persistent, durability)
+  VALUES('http://b/', 'http://b/', 0, 'bucket_b', 111, 13250042735631065, 13260999511438890, 0, 1000, 0, 0);
+-- type of 1 corresponds to the deprecated persistent type.
+INSERT INTO buckets(storage_key, host, type, name, use_count, last_accessed, last_modified, expiration, quota, persistent, durability)
+  VALUES('http://a/', 'http://a/', 1, 'bucket_c', 123, 13260644621105493, 13242931862595604, 0, 0, 0, 0);
+
 CREATE UNIQUE INDEX buckets_by_storage_key ON buckets(storage_key, type, name);
 
 CREATE INDEX buckets_by_host ON buckets(host, type);

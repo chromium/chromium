@@ -336,11 +336,8 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed by any source (the user, the administrator, etc.).">
       Allowed
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_ONE_TAB" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed once by any source (the user, the administrator, etc.) and there is only one tab opened for the site.">
-      Allowed until you close this tab
-    </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_MULTIPLE_TAB" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed once by any source (the user, the administrator, etc.) and there are nultiple tabs opened for the site.">
-      Allowed until you close tabs for this site
+    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed once by any source (the user, the administrator, etc.).">
+      Only this time
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is not allowed (blocked or ask state) by any source (the user, the administrator, etc.).">
       Not allowed
@@ -368,6 +365,10 @@
     <message name="IDS_PAGE_INFO_SELECTOR_TOOLTIP" desc="The text of the tooltip on the page info selector.">
       Select permission for <ph name="PERMISSION_NAME">$1<ex>Location</ex></ph>
     </message>
+    <message name="IDS_PAGE_INFO_STORAGE_ACCESS_SECONDARY_TEXT" translateable="false" desc="Text highlighting which site is requesting a permission.">
+      For <ph name="DOMAIN">$1<ex>example.com</ex></ph>
+    </message>
+
 
     <!-- Permission ask strings -->
     <message name="IDS_PAGE_INFO_STATE_TEXT_AR_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the AR permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their camera position.">
@@ -426,6 +427,9 @@
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
       Can ask to discover nearby Bluetooth devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" translateable="false"  desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
+      Can ask to access cookies
     </message>
 
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
@@ -656,7 +660,7 @@
     Go to permission settings
   </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_REMEMBER_THIS_SETTING" desc="The text near the checkbox, that controls if user's decision will be remembered for this permission, in permission's subpage in page info bubble.">
-    Remember this setting
+    Allow on every visit
   </message>
   <message name="IDS_PAGE_INFO_RESET_PERMISSIONS" desc="The label of the button to reset permissions for a site.">
     {NUM_PERMISSIONS, plural, =1 {Reset permission} other {Reset permissions}}

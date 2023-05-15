@@ -117,6 +117,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   DCHECK_EQ(HasTransformRelatedProperty(),
             StyleRef().HasTransformRelatedPropertyForSVG());
 
+  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
 

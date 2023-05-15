@@ -157,41 +157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Blocker.ScreenCapture.Action.{Action}"
-    units="notifications" expires_after="M96">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of times the 'Notifications muted' notification got shown
-    before the user took an action. Clicking on 'Show' and 'Snooze' can only be
-    recorded once per session while 'Body' and 'Close' may be recorded multiple
-    times. Logged each time the user interacts with the notification. {Action}
-  </summary>
-  <token key="Action">
-    <variant name="Body"/>
-    <variant name="Close"/>
-    <variant name="Show"/>
-    <variant name="Snooze"/>
-  </token>
-</histogram>
-
-<histogram name="Notifications.Blocker.ScreenCapture.ActionTiming.{Action}"
-    units="ms" expires_after="M96">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the time between showing the 'Notifications muted' notification and
-    the user taking an action on it. Logged each time the user interacts with
-    the notification. {Action}
-  </summary>
-  <token key="Action">
-    <variant name="Body"/>
-    <variant name="Close"/>
-    <variant name="Show"/>
-    <variant name="Snooze"/>
-  </token>
-</histogram>
-
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
     units="notifications" expires_after="2023-09-10">
   <owner>knollr@chromium.org</owner>
@@ -384,16 +349,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Database.DeleteServiceWorkerRegistrationResult"
-    enum="NotificationDatabaseStatus" expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the result status codes of deleting all notification data associated
-    with a Service Worker registration ID.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Database.DestroyResult"
     enum="NotificationDatabaseStatus" expires_after="2022-04-24">
   <owner>knollr@chromium.org</owner>
@@ -405,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.ExpiredNotificationCount"
-    units="notifications" expires_after="2023-08-20">
+    units="notifications" expires_after="2023-10-22">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -461,28 +416,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Database.ReadResourcesForTriggeredResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the result status codes of reading resources for a notification from
-    the Web Notification database. This happens when a previously scheduled
-    notification has triggered.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Database.ReadResourcesResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the result status codes of reading resources for a notification from
-    the Web Notification database. This happens when a scheduled notification is
-    read from the database.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Database.ReadResult"
     enum="NotificationDatabaseStatus" expires_after="2023-06-18">
   <owner>knollr@chromium.org</owner>
@@ -500,17 +433,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result status codes of writing data for a notification to the
     Web Notification database.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Database.WriteTriggeredResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the result status codes of updating the triggered flag for a
-    notification in the Web Notification database. This happens after fetching
-    data and resources for a triggered notification, just before displaying it.
   </summary>
 </histogram>
 
@@ -540,6 +462,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.macOS.Delivered.{Style}" enum="BooleanSuccess"
     expires_after="M96">
+  <obsolete>
+    Obsoleted April 2023. Histogram was removed after expiration.
+  </obsolete>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -707,7 +632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"
-    enum="NotificationActionType" expires_after="2023-08-08">
+    enum="NotificationActionType" expires_after="2023-10-22">
   <owner>dewittj@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -988,37 +913,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of user action when the user interacts with notification
     sent from notification scheduler system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Triggers.DisplayDelay" units="ms"
-    expires_after="M91">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Delay between the expected and actual display time of a notification.
-    Recorded just before displaying a notification with a show trigger.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Triggers.HasShowTrigger" enum="Boolean"
-    expires_after="2021-12-26">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Indicates if the notificaiton has a show trigger. This is recorded before a
-    notification is written to the database if the notification triggers feature
-    is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Triggers.ShowTriggerDelay" units="days"
-    expires_after="2021-06-27">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The specified delay until the notification is displayed. This is recorded
-    before writing a notification with a valid show trigger to the database.
   </summary>
 </histogram>
 

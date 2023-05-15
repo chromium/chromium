@@ -10,8 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -22,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
@@ -60,11 +64,18 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
 
 void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::ButtonPressed() {
   auto* coordinator = browser_view_->side_panel_coordinator();
-  if (coordinator->GetCurrentEntryId() !=
+  if (coordinator->GetCurrentEntryId() ==
       SidePanelEntry::Id::kSearchCompanion) {
+    coordinator->Close();
+  } else {
     coordinator->Show(
         id_, SidePanelUtil::SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   }
+  // Close IPH for companion if shown and record usage for side panel promo.
+  browser_view_->NotifyFeatureEngagementEvent(
+      "companion_side_panel_accessed_via_toolbar_button");
+  browser_view_->CloseFeaturePromo(
+      feature_engagement::kIPHCompanionSidePanelFeature);
 }
 
 void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
@@ -124,13 +135,8 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   // pin state group (i.e. from the default being false to the default being
   // true) we want to make sure their pin state changes if they have not
   // explicitly changed it themselves.
-  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
-  if (pref_service) {
-    bool companion_should_be_default_pinned = base::FeatureList::IsEnabled(
-        features::kSidePanelCompanionDefaultPinned);
-    pref_service->SetDefaultPrefValue(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar,
-        base::Value(companion_should_be_default_pinned));
+  if (PrefService* pref_service = browser_view_->GetProfile()->GetPrefs()) {
+    companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
   }
   CreatePinnedEntryButtons();
 }
@@ -183,9 +189,10 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view_->browser());
-  AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
-                          search_companion_coordinator->name(),
-                          search_companion_coordinator->icon());
+  AddPinnedEntryButtonFor(
+      SidePanelEntry::Id::kSearchCompanion,
+      search_companion_coordinator->GetTooltipForToolbarButton(),
+      search_companion_coordinator->icon());
 }
 
 void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
@@ -197,8 +204,14 @@ void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
   }
   auto button = std::make_unique<PinnedSidePanelToolbarButton>(browser_view_,
                                                                id, name, icon);
+  button->SetProperty(views::kElementIdentifierKey,
+                      kSidePanelCompanionToolbarButtonElementId);
   button->SetVisible(false);
   ObserveButton(button.get());
+  pinned_button_visibility_change_subscription_ =
+      button->AddVisibleChangedCallback(base::BindRepeating(
+          &SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState,
+          base::Unretained(this)));
   pinned_entry_buttons_.push_back(AddChildView(std::move(button)));
 
   ReorderViews();
@@ -215,6 +228,8 @@ void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
   DCHECK(iter != pinned_entry_buttons_.end());
   RemoveChildView(*iter);
   pinned_entry_buttons_.erase(iter);
+  pinned_button_visibility_change_subscription_ =
+      base::CallbackListSubscription();
 }
 
 bool SidePanelToolbarContainer::IsPinned(SidePanelEntry::Id id) {
@@ -229,10 +244,20 @@ bool SidePanelToolbarContainer::IsPinned(SidePanelEntry::Id id) {
 
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
-  GetSidePanelButton()->SetHighlighted(side_panel_visible);
-  GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
-      side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
-                         : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  bool side_panel_button_highlighted = side_panel_visible;
+  absl::optional<SidePanelEntry::Id> current_active_id =
+      browser_view_->side_panel_coordinator()->GetCurrentEntryId();
+  for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
+    if (browser_view_->unified_side_panel()->GetVisible() &&
+        pinned_button->GetVisible() &&
+        pinned_button->id() == current_active_id) {
+      pinned_button->SetHighlighted(true);
+      side_panel_button_highlighted = false;
+    } else {
+      pinned_button->SetHighlighted(false);
+    }
+  }
+  GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
 }
 
 bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {

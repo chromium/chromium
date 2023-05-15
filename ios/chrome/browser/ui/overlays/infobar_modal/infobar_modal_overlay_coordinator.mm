@@ -138,6 +138,12 @@
       initWithRootViewController:self.modalViewController];
   self.modalNavController.modalPresentationStyle = UIModalPresentationCustom;
   self.modalNavController.transitioningDelegate = self.modalTransitionDriver;
+  UINavigationBarAppearance* opaqueAppearance =
+      [[UINavigationBarAppearance alloc] init];
+  [opaqueAppearance configureWithOpaqueBackground];
+  self.modalNavController.navigationBar.standardAppearance = opaqueAppearance;
+  self.modalNavController.navigationBar.compactAppearance = opaqueAppearance;
+  self.modalNavController.navigationBar.scrollEdgeAppearance = opaqueAppearance;
 }
 
 - (void)resetModal {

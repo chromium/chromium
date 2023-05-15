@@ -31,6 +31,9 @@ const char kDefaultOAuthAccountManagerBaseUrl[] =
     "https://oauthaccountmanager.googleapis.com";
 const char kDefaultAccountCapabilitiesBaseUrl[] =
     "https://accountcapabilities-pa.googleapis.com";
+constexpr char kDefaultClassroomApiBaseUrl[] =
+    "https://classroom.googleapis.com";
+constexpr char kDefaultTasksApiBaseUrl[] = "https://tasks.googleapis.com";
 
 // API calls from accounts.google.com
 const char kEmbeddedSetupChromeOsUrlSuffix[] = "embedded/setup/v2/chromeos";
@@ -86,6 +89,8 @@ const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
 // API calls from accountcapabilities-pa.googleapis.com
 const char kAccountCapabilitiesBatchGetUrlSuffix[] =
     "v1/accountcapabilities:batchGet";
+
+const char kRotateBoundCookiesUrlSuffix[] = "RotateBoundCookies";
 
 GaiaUrls* g_instance_for_testing = nullptr;
 
@@ -290,6 +295,18 @@ const GURL& GaiaUrls::reauth_api_url() const {
   return reauth_api_url_;
 }
 
+const GURL& GaiaUrls::rotate_bound_cookies_url() const {
+  return rotate_bound_cookies_url_;
+}
+
+const GURL& GaiaUrls::classroom_api_origin_url() const {
+  return classroom_api_origin_url_;
+}
+
+const GURL& GaiaUrls::tasks_api_origin_url() const {
+  return tasks_api_origin_url_;
+}
+
 const GURL& GaiaUrls::google_apis_origin_url() const {
   return google_apis_origin_url_;
 }
@@ -338,6 +355,12 @@ void GaiaUrls::InitializeDefault() {
     scheme_replacement.SetSchemeStr(url::kHttpsScheme);
     secure_google_url_ = google_url_.ReplaceComponents(scheme_replacement);
   }
+  if (!classroom_api_origin_url_.is_valid()) {
+    classroom_api_origin_url_ = GURL(kDefaultClassroomApiBaseUrl);
+  }
+  if (!tasks_api_origin_url_.is_valid()) {
+    tasks_api_origin_url_ = GURL(kDefaultTasksApiBaseUrl);
+  }
 
   oauth2_chrome_client_id_ =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
@@ -379,6 +402,8 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&reauth_url_, gaia_url, kReauthSuffix);
   ResolveURLIfInvalid(&get_check_connection_info_url_, gaia_url,
                       kGetCheckConnectionInfoSuffix);
+  ResolveURLIfInvalid(&rotate_bound_cookies_url_, gaia_url,
+                      kRotateBoundCookiesUrlSuffix);
 
   // URLs from |lso_origin_url_|.
   ResolveURLIfInvalid(&oauth2_revoke_url_, lso_origin_url_,
@@ -421,6 +446,8 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(classroom_api_origin_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(tasks_api_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_chromeos_url));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signup_url));
@@ -450,4 +477,5 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_revoke_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_api_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(rotate_bound_cookies_url));
 }

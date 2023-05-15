@@ -178,7 +178,7 @@ void ImageWriterControllerLacros::WriteFromUrl(
     WriteOperationCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::ImageWriter>() ||
-      service->GetInterfaceVersion(crosapi::mojom::ImageWriter::Uuid_) < 1) {
+      service->GetInterfaceVersion<crosapi::mojom::ImageWriter>() < 1) {
     std::move(callback).Run(kUnsupportedAshVersion);
     return;
   }
@@ -203,7 +203,7 @@ void ImageWriterControllerLacros::WriteFromFile(
     WriteOperationCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::ImageWriter>() ||
-      service->GetInterfaceVersion(crosapi::mojom::ImageWriter::Uuid_) < 1) {
+      service->GetInterfaceVersion<crosapi::mojom::ImageWriter>() < 1) {
     std::move(callback).Run(kUnsupportedAshVersion);
     return;
   }

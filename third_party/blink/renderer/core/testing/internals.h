@@ -60,6 +60,7 @@ class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
 class HTMLSelectElement;
+class HTMLSelectMenuElement;
 class HTMLVideoElement;
 class HitTestLayerRectList;
 class HitTestLocation;
@@ -187,6 +188,7 @@ class Internals final : public ScriptWrappable {
   DOMRectReadOnly* boundingBox(Element*);
 
   void setMarker(Document*, const Range*, const String&, ExceptionState&);
+  void removeMarker(Document*, const Range*, const String&, ExceptionState&);
   unsigned markerCountForNode(Text*, const String&, ExceptionState&);
   unsigned activeMarkerCountForNode(Text*);
   Range* markerRangeForNode(Text*,
@@ -463,6 +465,8 @@ class Internals final : public ScriptWrappable {
   bool selectPopupItemStyleIsRtl(Node*, int);
   int selectPopupItemStyleFontHeight(Node*, int);
   void resetTypeAheadSession(HTMLSelectElement*);
+
+  void resetSelectMenuTypeAheadSession(HTMLSelectMenuElement*);
 
   StaticSelection* getDragCaret();
   StaticSelection* getSelectionInFlatTree(DOMWindow*, ExceptionState&);

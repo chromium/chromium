@@ -8,24 +8,24 @@
 class Browser;
 struct UrlLoadParams;
 @class TabGridCoordinator;
-@protocol BrowserInterface;
+@class WrangledBrowser;
 
 // Methods exposed for testing. This is terrible and should be rewritten.
 @interface SceneController ()
 
 @property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
 
-- (void)showLegacyFirstRunUI;
-
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;
+
+- (void)presentSignInAccountsViewControllerIfNecessary;
 
 // Dismisses all modal dialogs, excluding the omnibox if `dismissOmnibox` is
 // NO, then call `completion`.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
 
-- (id<BrowserInterface>)currentInterface;
+- (WrangledBrowser*)currentInterface;
 
 @end
 

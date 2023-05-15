@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -73,6 +74,31 @@ const ui::DeviceCapabilities kWacomIntuos5SPen = {
     kWacomIntuos5SPenAbsAxes,
     std::size(kWacomIntuos5SPenAbsAxes),
 };
+
+constexpr char kWacomIntuos5SPenLogDescription[] =
+    R"(class=ui::TabletEventConverterEvdev id=1
+ x_abs_min=0
+ x_abs_range=31497
+ y_abs_min=0
+ y_abs_range=19686
+ tilt_x_min=0
+ tilt_x_range=128
+ tilt_y_min=0
+ tilt_y_range=128
+ pressure_max=2047
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_USB
+ name="Wacom Intuos5 touch S Pen"
+ phys=""
+ enabled=0
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=056A
+ product_id=0026
+ version=0107
+)";
 
 const ui::DeviceAbsoluteAxis EpsonBrightLink1430AbsAxes[] = {
     {ABS_X, {0, 0, 32767, 0, 0, 200}},
@@ -253,6 +279,15 @@ struct ExpectedEvent {
   ui::EventType type;
   ui::EventFlags button_flags;
 };
+
+std::string LogSubst(std::string description,
+                     std::string key,
+                     std::string replacement) {
+  EXPECT_TRUE(RE2::Replace(&description, "\n(\\s*" + key + ")=[^\n]+\n",
+                           "\n\\1=" + replacement + "\n"));
+  return description;
+}
+
 }  // namespace
 
 namespace ui {
@@ -378,7 +413,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
       const TabletEventConverterEvdevTest&) = delete;
 
   std::unique_ptr<ui::MockTabletEventConverterEvdev> CreateDevice(
-      const ui::DeviceCapabilities& caps) {
+      const ui::EventDeviceInfo& devinfo) {
     // Set up pipe to satisfy message pump (unused).
     int evdev_io[2];
     if (pipe(evdev_io))
@@ -386,11 +421,16 @@ class TabletEventConverterEvdevTest : public testing::Test {
     base::ScopedFD events_in(evdev_io[0]);
     events_out_.reset(evdev_io[1]);
 
-    ui::EventDeviceInfo devinfo;
-    CapabilitiesToDeviceInfo(caps, &devinfo);
     return std::make_unique<ui::MockTabletEventConverterEvdev>(
         std::move(events_in), base::FilePath(kTestDevicePath), cursor_.get(),
         devinfo, dispatcher_.get());
+  }
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> CreateDevice(
+      const ui::DeviceCapabilities& caps) {
+    ui::EventDeviceInfo devinfo;
+    CapabilitiesToDeviceInfo(caps, &devinfo);
+    return CreateDevice(devinfo);
   }
 
   ui::CursorDelegateEvdev* cursor() { return cursor_.get(); }
@@ -2026,4 +2066,87 @@ TEST_F(TabletEventConverterEvdevTest,
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   CheckEvents(expected_events, std::size(expected_events));
+}
+
+TEST_F(TabletEventConverterEvdevTest, Basic) {
+  ui::EventDeviceInfo devinfo;
+  ui::CapabilitiesToDeviceInfo(kWacomIntuos5SPen, &devinfo);
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
+      CreateDevice(devinfo);
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), kWacomIntuos5SPenLogDescription);
+}
+
+// Twiddle each field that can reasonably be changed independently.
+TEST_F(TabletEventConverterEvdevTest, LogPressureAbs) {
+  ui::EventDeviceInfo devinfo;
+  ui::CapabilitiesToDeviceInfo(kWacomIntuos5SPen, &devinfo);
+  input_absinfo absinfo = {.minimum = 12, .maximum = 24, .resolution = 55};
+  devinfo.SetAbsInfo(ABS_PRESSURE, absinfo);
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
+      CreateDevice(devinfo);
+
+  std::string log = kWacomIntuos5SPenLogDescription;
+  log = LogSubst(log, "pressure_max", "24");
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(TabletEventConverterEvdevTest, LogXYAbs) {
+  ui::EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(kWacomIntuos5SPen, &devinfo);
+
+  input_absinfo absinfo_x = {.minimum = -12, .maximum = 400, .resolution = 123};
+  input_absinfo absinfo_y = {
+      .minimum = 3000, .maximum = 4000, .resolution = 9000};
+  devinfo.SetAbsInfo(ABS_X, absinfo_x);
+  devinfo.SetAbsInfo(ABS_Y, absinfo_y);
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
+      CreateDevice(devinfo);
+
+  std::string log = kWacomIntuos5SPenLogDescription;
+  log = LogSubst(log, "x_abs_min", "-12");
+  log = LogSubst(log, "x_abs_range", "413");
+  log = LogSubst(log, "y_abs_min", "3000");
+  log = LogSubst(log, "y_abs_range", "1001");
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(TabletEventConverterEvdevTest, LogXYTilt) {
+  ui::EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(kWacomIntuos5SPen, &devinfo);
+
+  input_absinfo absinfo_tilt_x = {
+      .minimum = -120, .maximum = 40, .resolution = 12};
+  input_absinfo absinfo_tilt_y = {
+      .minimum = 300, .maximum = 400, .resolution = 900};
+  devinfo.SetAbsInfo(ABS_TILT_X, absinfo_tilt_x);
+  devinfo.SetAbsInfo(ABS_TILT_Y, absinfo_tilt_y);
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
+      CreateDevice(devinfo);
+
+  std::string log = kWacomIntuos5SPenLogDescription;
+  log = LogSubst(log, "tilt_x_min", "-120");
+  log = LogSubst(log, "tilt_x_range", "161");
+  log = LogSubst(log, "tilt_y_min", "300");
+  log = LogSubst(log, "tilt_y_range", "101");
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), log);
 }

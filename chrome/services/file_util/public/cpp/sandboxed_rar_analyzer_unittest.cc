@@ -40,7 +40,7 @@ class SandboxedRarAnalyzerTest : public testing::Test {
  protected:
   // Constants for validating the data reported by the analyzer.
   struct BinaryData {
-    const char* file_basename;
+    const char* file_path;
     safe_browsing::ClientDownloadRequest_DownloadType download_type;
     const uint8_t* sha256_digest;
     bool has_signature;
@@ -76,8 +76,8 @@ class SandboxedRarAnalyzerTest : public testing::Test {
   void ExpectBinary(
       const BinaryData& data,
       const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary) {
-    ASSERT_TRUE(binary.has_file_basename());
-    EXPECT_EQ(data.file_basename, binary.file_basename());
+    ASSERT_TRUE(binary.has_file_path());
+    EXPECT_EQ(data.file_path, binary.file_path());
     ASSERT_TRUE(binary.has_download_type());
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
@@ -180,7 +180,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeBenignRar) {
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
   EXPECT_EQ(results.archived_binary.size(), 1);
-  EXPECT_EQ(results.archived_binary[0].file_basename(), "limerick.txt");
+  EXPECT_EQ(results.archived_binary[0].file_path(), "limerick.txt");
   EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
@@ -198,7 +198,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPassword) {
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
   ASSERT_EQ(results.archived_binary.size(), 1);
-  EXPECT_EQ(results.archived_binary[0].file_basename(), "file1.txt");
+  EXPECT_EQ(results.archived_binary[0].file_path(), "file1.txt");
   EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
@@ -216,10 +216,10 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPasswordMultipleFiles) {
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
   ASSERT_EQ(results.archived_binary.size(), 2);
-  EXPECT_EQ(results.archived_binary[0].file_basename(), "file1.txt");
+  EXPECT_EQ(results.archived_binary[0].file_path(), "file1.txt");
   EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
-  EXPECT_EQ(results.archived_binary[1].file_basename(), "file2.txt");
+  EXPECT_EQ(results.archived_binary[1].file_path(), "file2.txt");
   EXPECT_FALSE(results.archived_binary[1].is_executable());
   EXPECT_FALSE(results.archived_binary[1].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
@@ -244,7 +244,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarContainingExecutable) {
 TEST_F(SandboxedRarAnalyzerTest, AnalyzeTextAsRar) {
   // Catches when a file isn't a a valid RAR file.
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath(kNotARar.file_basename));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath(kNotARar.file_path));
 
   safe_browsing::ArchiveAnalyzerResults results;
   AnalyzeFile(path, &results);
@@ -286,7 +286,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarContainingAssortmentOfFiles) {
   EXPECT_EQ(4, results.archived_binary.size());
   ExpectBinary(kSignedExe, results.archived_binary.Get(0));
   ExpectBinary(kNotARar, results.archived_binary.Get(1));
-  EXPECT_EQ(results.archived_binary[2].file_basename(), "text.txt");
+  EXPECT_EQ(results.archived_binary[2].file_path(), "text.txt");
   EXPECT_FALSE(results.archived_binary[2].is_executable());
   EXPECT_FALSE(results.archived_binary[2].is_archive());
   ExpectBinary(kEmptyZip, results.archived_binary.Get(3));
@@ -315,8 +315,8 @@ TEST_F(SandboxedRarAnalyzerTest,
 
   const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary =
       results.archived_binary.Get(0);
-  ASSERT_TRUE(binary.has_file_basename());
-  EXPECT_EQ(kSignedExe.file_basename, binary.file_basename());
+  ASSERT_TRUE(binary.has_file_path());
+  EXPECT_EQ(kSignedExe.file_path, binary.file_path());
   ASSERT_TRUE(binary.has_download_type());
   EXPECT_EQ(kSignedExe.download_type, binary.download_type());
   // If we're doing content inspection, we expect to have digests.

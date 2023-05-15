@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -26,6 +27,8 @@ gfx::Rect TrackedElementMac::GetScreenBounds() const {
   return screen_bounds_;
 }
 
+// Holds all data regarding elements in a specific NSMenu or its children, and
+// handles dispatching of ElementTracker events.
 class ElementTrackerMac::MenuData {
  public:
   explicit MenuData(ElementContext context) : context_(context) {
@@ -33,10 +36,10 @@ class ElementTrackerMac::MenuData {
   }
 
   ~MenuData() {
-    for (const auto& element : elements_) {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
-          element.second.get());
-    }
+    HideElements(recycle_bin_);
+    LOG_IF(WARNING, !elements_.empty())
+        << "Destroying menu data before all elements are hidden.";
+    HideElements(elements_);
   }
 
   MenuData(const MenuData& other) = delete;
@@ -44,8 +47,14 @@ class ElementTrackerMac::MenuData {
 
   ElementContext context() const { return context_; }
 
+  // Adds an element representing a menu item. The item must not already exist.
   void AddElement(ElementIdentifier identifier,
                   const gfx::Rect& screen_bounds) {
+    // On show of a new menu or submenu, clear out any menu items waiting to be
+    // garbage-collected, since an activation won't happen.
+    HideElements(recycle_bin_);
+
+    // Insert an entry for the new element and verify that it is correct.
     const auto result =
         elements_.emplace(identifier, std::make_unique<TrackedElementMac>(
                                           identifier, context_, screen_bounds));
@@ -54,31 +63,74 @@ class ElementTrackerMac::MenuData {
         result.first->second.get());
   }
 
+  // Notifies that the specified element has been activated. Also checks
+  // elements in the recycle bin, in case hide and activate came arrived in the
+  // wrong order.
   void ActivateElement(ElementIdentifier identifier) {
-    const auto it = elements_.find(identifier);
-    if (it != elements_.end()) {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
-          it->second.get());
-    } else {
-      NOTREACHED() << "Element " << identifier
-                   << " had its activation sent after it was hidden. This may "
-                      "be due to a race condition with renderer context menus; "
-                      "see crbug.com/1418614 for the state of current efforts "
-                      "to diagnose and fix the problem.";
+    auto it = elements_.find(identifier);
+    if (it == elements_.end()) {
+      it = recycle_bin_.find(identifier);
+      if (it == recycle_bin_.end()) {
+        NOTREACHED()
+            << "Element " << identifier
+            << " had its activation sent after its menu was destroyed. This "
+               "may be due to a race condition with renderer context menus; "
+               "see crbug.com/1418614 for the state of current efforts to "
+               "diagnose and fix the problem.";
+        return;
+      }
+      LOG(WARNING) << "Element " << identifier
+                   << " activated after hide signal received.";
     }
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
+        it->second.get());
   }
 
+  // Notifies that the element with `identifier` was hidden. Instead of deleting
+  // the element right away, it is instead put in the `recycle_bin_` for
+  // disposal when it is certain no activation event will occur.
   void HideElement(ElementIdentifier identifier) {
     const auto it = elements_.find(identifier);
-    DCHECK(it != elements_.end());
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
-        it->second.get());
+    if (it == elements_.end()) {
+      if (base::Contains(recycle_bin_, identifier)) {
+        LOG(WARNING) << "Element " << identifier
+                     << " hidden multiple times in a row.";
+      } else {
+        NOTREACHED() << "Element " << identifier
+                     << " hidden after its menu was destroyed.";
+      }
+      return;
+    }
+    auto result = recycle_bin_.emplace(identifier, std::move(it->second));
+    DCHECK(result.second);
     elements_.erase(it);
   }
 
  private:
+  using ElementMap =
+      std::map<ElementIdentifier, std::unique_ptr<TrackedElementMac>>;
+
+  // Hides all of the elements in `map` and then clears the map. Used to do
+  // final disposal of TrackedElementMac objects owned by this object.
+  void HideElements(ElementMap& map) {
+    for (auto& [identifier, element] : map) {
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
+          element.get());
+    }
+    map.clear();
+  }
+
   const ElementContext context_;
-  std::map<ElementIdentifier, std::unique_ptr<TrackedElementMac>> elements_;
+
+  // Keeps track of all "live" elements being tracked by this object. When they
+  // are hidden, they are moved to `recycle_bin_` to await final disposal.
+  ElementMap elements_;
+
+  // Because activation and hide events can come in reverse order in some corner
+  // cases (see crbug.com/1432480) elements are kept around between the time
+  // they are notified as hidden and when they are actually destroyed, which is
+  // when the menu is destroyed or when a new submenu opens.
+  ElementMap recycle_bin_;
 };
 
 // static

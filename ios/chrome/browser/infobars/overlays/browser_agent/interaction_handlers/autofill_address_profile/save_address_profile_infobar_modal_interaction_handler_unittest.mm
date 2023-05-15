@@ -6,8 +6,8 @@
 
 #import <string>
 
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -24,9 +24,7 @@
 class SaveAddressProfileInfobarModalInteractionHandlerTest
     : public PlatformTest {
  public:
-  SaveAddressProfileInfobarModalInteractionHandlerTest()
-      : delegate_factory_(),
-        profile_(base::GenerateGUID(), "https://www.example.com/") {
+  SaveAddressProfileInfobarModalInteractionHandlerTest() : delegate_factory_() {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
@@ -69,4 +67,9 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, Cancel) {
   EXPECT_EQ(
       mock_delegate().user_decision(),
       autofill::AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+}
+
+TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, NoThanks) {
+  EXPECT_CALL(mock_delegate(), Never());
+  handler_.NoThanksWasPressed(infobar_.get());
 }

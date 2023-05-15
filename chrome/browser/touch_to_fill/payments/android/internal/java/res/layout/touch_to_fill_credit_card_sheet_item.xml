@@ -29,25 +29,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/card_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginEnd="4dp"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-            <TextView
-                android:id="@+id/card_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-        </LinearLayout>
+        <include
+            layout="@layout/autofill_card_name_and_number" />
         <!-- This line will appear when it's necessary to display a card linked offer -->
         <TextView
             android:id="@+id/description_line_1"

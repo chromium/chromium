@@ -80,6 +80,7 @@ const uint32_t kSpdyMaxHeaderTableSize = 64 * 1024;
 const uint32_t kSpdyMaxHeaderListSize = 256 * 1024;
 
 // Specifies the maximum concurrent streams server could send (via push).
+// TODO(https://crbug.com/1426477): Remove.
 const uint32_t kSpdyMaxConcurrentPushedStreams = 1000;
 
 // Self-contained structure with all the simple configuration options
@@ -89,6 +90,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   HttpNetworkSessionParams(const HttpNetworkSessionParams& other);
   ~HttpNetworkSessionParams();
 
+  // TODO(https://crbug.com/1426477): Remove.
   bool enable_server_push_cancellation = false;
   HostMappingRules host_mapping_rules;
   bool ignore_certificate_errors = false;
@@ -290,6 +292,7 @@ class NET_EXPORT HttpNetworkSession {
   // Returns the original Context used to construct this session.
   const HttpNetworkSessionContext& context() const { return context_; }
 
+  // TODO(https://crbug.com/1426477): Remove.
   void SetServerPushDelegate(std::unique_ptr<ServerPushDelegate> push_delegate);
 
   // Returns protocols to be used with ALPN.
@@ -345,6 +348,7 @@ class NET_EXPORT HttpNetworkSession {
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
   std::unique_ptr<ClientSocketPoolManager> normal_socket_pool_manager_;
   std::unique_ptr<ClientSocketPoolManager> websocket_socket_pool_manager_;
+  // TODO(https://crbug.com/1426477): Remove.
   std::unique_ptr<ServerPushDelegate> push_delegate_;
   QuicStreamFactory quic_stream_factory_;
   SpdySessionPool spdy_session_pool_;

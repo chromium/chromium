@@ -12,7 +12,7 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
 <translation id="129382876167171263">Filer, der gemmes af websites, vises her</translation>
-<translation id="131112695174432497">Data, der påvirker annoncetilpasning, slettes</translation>
+<translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="1317194122196776028">Glem dette website</translation>
 <translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
-<translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Relaterede websites kan se din aktivitet i gruppen</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv</translation>
 <translation id="3165022941318558018">Tillad, at et website bruger tredjepartscookies</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
-<translation id="3203366800380907218">Fra nettet</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Dette website definerer interesser, som andre websites kan bruge til at vise dig annoncer. Dette website henter også dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
@@ -188,7 +187,7 @@
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
-<translation id="4428065317363009941">Annoncetilpasning</translation>
+<translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
@@ -209,7 +208,7 @@
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
-<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at tilpasse din oplevelse.</translation>
+<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at personligt tilpasse din oplevelse.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
-<translation id="5229337741799419985">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
@@ -249,7 +247,7 @@
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
 <translation id="5527111080432883924">Spørg, før websites får adgang til at læse tekst og billeder fra udklipsholderen (anbefales)</translation>
-<translation id="5545693483061321551">Websites kan ikke bruge dine cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
+<translation id="5545693483061321551">Websites kan ikke bruge dine cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="5553374991681107062">Seneste</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -313,9 +311,9 @@
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6643016212128521049">Ryd</translation>
+<translation id="6653342741369270081">Tryk på knappen Tilbage for at afslutte fuld skærm.</translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
-<translation id="6701547804986694515">Når du besøger et website, kan Chrome gemme oplysninger, der bekræfter, at du ikke er en bot. Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="6722828510648505498">Bloker loginmeddelelser fra identitetstjenester</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
@@ -348,6 +346,7 @@
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik, men websites kan dele en lille mængde oplysninger som en del af verificeringen</translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>
@@ -437,6 +436,7 @@
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

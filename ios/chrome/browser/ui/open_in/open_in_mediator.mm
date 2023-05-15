@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

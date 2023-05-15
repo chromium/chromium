@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -320,9 +321,9 @@ class IndicatorPillView : public views::View {
 
  private:
   // Possibly rotated image of an arrow based on |vector_icon_|.
-  views::ImageView* icon_ = nullptr;  // NOT OWNED
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;  // NOT OWNED
   // Label containing name of target display in the pill.
-  views::Label* text_label_ = nullptr;  // NOT OWNED
+  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;  // NOT OWNED
   gfx::ImageSkia arrow_image_;
   // The side of the display indicator is postioned on. Used to determine arrow
   // direction and placement.

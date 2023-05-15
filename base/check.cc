@@ -52,6 +52,15 @@ void DCheckDumpWithoutCrashing(LogMessage* log_message,
   DumpWithoutCrashing(log_message, location);
 }
 
+void DumpWillBeCheckDumpWithoutCrashing(LogMessage* log_message,
+                                        const base::Location& location) {
+#if !BUILDFLAG(IS_NACL)
+  SCOPED_CRASH_KEY_STRING1024("Logging", "DUMP_WILL_BE_CHECK_MESSAGE",
+                              log_message->BuildCrashString());
+#endif  // !BUILDFLAG(IS_NACL)
+  DumpWithoutCrashing(log_message, location);
+}
+
 class NotReachedLogMessage : public LogMessage {
  public:
   NotReachedLogMessage(const base::Location& location, LogSeverity severity)
@@ -76,6 +85,23 @@ class DCheckLogMessage : public LogMessage {
   ~DCheckLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
       DCheckDumpWithoutCrashing(this, location_);
+    }
+  }
+
+ private:
+  const base::Location location_;
+};
+
+class DumpWillBeCheckLogMessage : public LogMessage {
+ public:
+  using LogMessage::LogMessage;
+  DumpWillBeCheckLogMessage(const base::Location& location,
+                            LogSeverity severity)
+      : LogMessage(location.file_name(), location.line_number(), severity),
+        location_(location) {}
+  ~DumpWillBeCheckLogMessage() override {
+    if (severity() != logging::LOGGING_FATAL) {
+      DumpWillBeCheckDumpWithoutCrashing(this, location_);
     }
   }
 
@@ -127,11 +153,20 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
 
 }  // namespace
 
-CheckError CheckError::Check(const char* file,
-                             int line,
-                             const char* condition) {
-  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+CheckError CheckError::Check(const char* condition,
+                             const base::Location& location) {
+  auto* const log_message = new LogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL);
   log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::CheckOp(char* log_message_str,
+                               const base::Location& location) {
+  auto* const log_message = new LogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
   return CheckError(log_message);
 }
 
@@ -142,23 +177,39 @@ CheckError CheckError::DCheck(const char* condition,
   return CheckError(log_message);
 }
 
-CheckError CheckError::PCheck(const char* file,
-                              int line,
-                              const char* condition) {
+CheckError CheckError::DCheckOp(char* log_message_str,
+                                const base::Location& location) {
+  auto* const log_message = new DCheckLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
+  return CheckError(log_message);
+}
+
+CheckError CheckError::DumpWillBeCheck(const char* condition,
+                                       const base::Location& location) {
+  auto* const log_message = new DumpWillBeCheckLogMessage(
+      location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::PCheck(const char* condition,
+                              const base::Location& location) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if BUILDFLAG(IS_WIN)
-  auto* const log_message =
-      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code);
+  auto* const log_message = new Win32ErrorLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  auto* const log_message =
-      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code);
+  auto* const log_message = new ErrnoLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
 #endif
   log_message->stream() << "Check failed: " << condition << ". ";
   return CheckError(log_message);
 }
 
-CheckError CheckError::PCheck(const char* file, int line) {
-  return PCheck(file, line, "");
+CheckError CheckError::PCheck(const base::Location& location) {
+  return PCheck("", location);
 }
 
 CheckError CheckError::DPCheck(const char* condition,
@@ -175,10 +226,10 @@ CheckError CheckError::DPCheck(const char* condition,
   return CheckError(log_message);
 }
 
-CheckError CheckError::NotImplemented(const char* file,
-                                      int line,
-                                      const char* function) {
-  auto* const log_message = new LogMessage(file, line, LOGGING_ERROR);
+CheckError CheckError::NotImplemented(const char* function,
+                                      const base::Location& location) {
+  auto* const log_message = new LogMessage(
+      location.file_name(), location.line_number(), LOGGING_ERROR);
   log_message->stream() << "Not implemented reached in " << function;
   return CheckError(log_message);
 }
@@ -219,14 +270,16 @@ NotReachedError NotReachedError::NotReached(const base::Location& location) {
 void NotReachedError::TriggerNotReached() {
   // This triggers a NOTREACHED() error as the returned NotReachedError goes out
   // of scope.
-  NotReached();
+  NotReached()
+      << "NOTREACHED log messages are omitted in official builds. Sorry!";
 }
 
 NotReachedError::~NotReachedError() = default;
 
-NotReachedNoreturnError::NotReachedNoreturnError(const char* file, int line)
-    : CheckError([file, line]() {
-        auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+NotReachedNoreturnError::NotReachedNoreturnError(const base::Location& location)
+    : CheckError([location]() {
+        auto* const log_message = new LogMessage(
+            location.file_name(), location.line_number(), LOGGING_FATAL);
         log_message->stream() << "NOTREACHED hit. ";
         return log_message;
       }()) {}
@@ -243,28 +296,9 @@ NotReachedNoreturnError::~NotReachedNoreturnError() {
   base::ImmediateCrash();
 }
 
-LogMessage* CheckOpResult::CreateLogMessage(bool is_dcheck,
-                                            const char* file,
-                                            int line,
-                                            const char* expr_str,
-                                            char* v1_str,
-                                            char* v2_str) {
-  LogMessage* const log_message =
-      is_dcheck ? new DCheckLogMessage(file, line, LOGGING_DCHECK)
-                : new LogMessage(file, line, LOGGING_FATAL);
-  log_message->stream() << "Check failed: " << expr_str << " (" << v1_str
-                        << " vs. " << v2_str << ")";
-  free(v1_str);
-  free(v2_str);
-  return log_message;
-}
-
-void RawCheck(const char* message) {
+void RawCheckFailure(const char* message) {
   RawLog(LOGGING_FATAL, message);
-}
-
-void RawError(const char* message) {
-  RawLog(LOGGING_ERROR, message);
+  __builtin_unreachable();
 }
 
 }  // namespace logging

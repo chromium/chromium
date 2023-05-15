@@ -3,11 +3,10 @@
  * found in the LICENSE file. */
 
 .mode-subgroup {
-  backdrop-filter: blur(30px);
-  background-color: rgba(255, 255, 255, 0.06);
+  background: var(--cros-sys-base_elevated);
   border-radius: var(--border-radius-rounded-with-short-side);
   bottom: calc(var(--bottom-line) * 2 + 8px);
-  color: white;
+  color: var(--cros-sys-on_surface);
   display: flex;
   left: 50%;
   position: absolute;
@@ -40,7 +39,6 @@
 }
 
 .mode-subgroup > .item input:checked + div.label {
-  background: var(--grey-200);
-  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
-  color: var(--grey-900);
+  background: var(--cros-sys-primary);
+  color: var(--cros-sys-inverse_on_surface);
 }

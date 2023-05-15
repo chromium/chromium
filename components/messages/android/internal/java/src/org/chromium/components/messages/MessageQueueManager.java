@@ -289,9 +289,15 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     }
 
     // Return true if |a| is lower priority than |b|.
-    private boolean isLowerPriority(@Nullable MessageState a, @NonNull MessageState b) {
+    // * If both are the same priority, #isLowerPriority will be based on the order in which it was
+    //   enqueued (since sIdNext gets incremented when MessageState is created);
+    // * If a is highPriority and b is not high priority, return false
+    //   (a is not lower priority than b);
+    // * If a is not highPriority and b is high priority, return true (a is lower priority than b);
+    @VisibleForTesting
+    boolean isLowerPriority(@Nullable MessageState a, @NonNull MessageState b) {
         if (a == null) return true;
-        if (!a.highPriority && b.highPriority) return true;
+        if (a.highPriority != b.highPriority) return b.highPriority;
         return a.id > b.id;
     }
 
@@ -306,11 +312,17 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
 
         MessageState(ScopeKey scopeKey, Object messageKey, MessageStateHandler handler,
                 boolean highPriority) {
+            this(scopeKey, messageKey, handler, highPriority, sIdNext++);
+        }
+
+        @VisibleForTesting
+        MessageState(ScopeKey scopeKey, Object messageKey, MessageStateHandler handler,
+                boolean highPriority, int id) {
             this.scopeKey = scopeKey;
             this.messageKey = messageKey;
             this.handler = handler;
             this.highPriority = highPriority;
-            id = sIdNext++;
+            this.id = id;
         }
     }
 }

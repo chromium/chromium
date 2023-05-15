@@ -48,6 +48,7 @@ enum WallpaperType {
                            // album id.
   kOnceGooglePhotos = 11,  // WallpaperInfo.location contains the Google Photos
                            // photo id.
+  kOobe = 12,  // Wallpaper shown during OOBE if not overridden.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync
@@ -348,6 +349,8 @@ interface WallpaperProvider {
 
 // Color scheme options used to generate the system UI's color palette.
 // These options are based off the user's wallpaper.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ColorScheme {
   kStatic = 0,
   kTonalSpot = 1,
@@ -358,6 +361,8 @@ enum ColorScheme {
 
 // Static color options used to generate the system UI's color palette. These
 // options are not based off the user's wallpaper.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum StaticColor {
   kUnknown = 0,
   kGoogleBlue = 1,
@@ -578,19 +583,10 @@ enum TemperatureUnit {
 // Enumeration of UI visibility states.
 // This should be kept in sync with |ash:AmbientUiVisibility|.
 enum AmbientUiVisibility {
-  kShown = 0,
+  kShouldShow = 0,
   kPreview = 1,
   kHidden = 2,
   kClosed = 3,
-};
-
-// Enumeration of screen saver running time before sleep.
-enum ScreenSaverDuration {
-  kFiveMinutes = 0,
-  kTenMinutes = 1,
-  kThirtyMinutes = 2,
-  kOneHour = 3,
-  kForever = 4,
 };
 
 // Album metadaba to display. Contains necessary data for both topic sources.
@@ -626,6 +622,11 @@ interface AmbientObserver {
 
   // Notifies the JS side about the current state of TopicSource.
   OnTopicSourceChanged(TopicSource topic_source);
+
+  // Notifies the JS side about the current state of ScreenSaverDuration.
+  //
+  // SPECIAL NOTE: 0 means forever.
+  OnScreenSaverDurationChanged(uint32 minutes);
 
   // Notifies the JS side about the current state of TemperatureUnit.
   OnTemperatureUnitChanged(TemperatureUnit temperature_unit);

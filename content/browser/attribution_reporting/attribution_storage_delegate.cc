@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 
@@ -44,6 +45,9 @@ int AttributionStorageDelegate::GetMaxReportsPerDestination(
       return config_.event_level_limit.max_reports_per_destination;
     case attribution_reporting::mojom::ReportType::kAggregatableAttribution:
       return config_.aggregate_limit.max_reports_per_destination;
+    case attribution_reporting::mojom::ReportType::kNullAggregatable:
+      NOTREACHED();
+      return 0;
   }
 }
 
@@ -59,22 +63,14 @@ AttributionConfig::RateLimitConfig AttributionStorageDelegate::GetRateLimits()
   return config_.rate_limit;
 }
 
-double AttributionStorageDelegate::GetRandomizedResponseRate(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return config_.event_level_limit
-          .navigation_source_randomized_response_rate;
-    case SourceType::kEvent:
-      return config_.event_level_limit.event_source_randomized_response_rate;
-  }
-}
-
 int64_t AttributionStorageDelegate::GetAggregatableBudgetPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.aggregate_limit.aggregatable_budget_per_source;
+}
+
+int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return config_.aggregate_limit.max_aggregatable_reports_per_source;
 }
 
 uint64_t AttributionStorageDelegate::SanitizeTriggerData(

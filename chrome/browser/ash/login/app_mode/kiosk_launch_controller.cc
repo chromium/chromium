@@ -9,12 +9,11 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check_is_test.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
@@ -148,7 +149,7 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
  private:
   // `service_` is externally owned and it's the caller's responsibility to
   // ensure that it outlives this wrapper.
-  ArcKioskAppService* const service_;
+  const raw_ptr<ArcKioskAppService, ExperimentalAsh> service_;
 };
 
 std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
@@ -268,8 +269,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   RecordKioskLaunchUMA(auto_launch);
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
 
-  if (host_) {
-    host_->GetLoginDisplay()->SetUIEnabled(true);
+  if (host_ && host_->GetWebUILoginView()) {
+    host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
   }
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
@@ -360,12 +361,7 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   network_ui_controller_->SetProfile(profile);
 
   InitializeKeyboard();
-
-  if (network_ui_controller_->ShouldShowNetworkConfig()) {
-    network_ui_controller_->UserRequestedNetworkConfig();
-  } else {
-    InitializeLauncher();
-  }
+  LaunchLacros();
 }
 
 void KioskLaunchController::InitializeKeyboard() {
@@ -375,6 +371,22 @@ void KioskLaunchController::InitializeKeyboard() {
     // Make keyboard config sync with the `VirtualKeyboardFeatures`
     // policy.
     ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
+  }
+}
+
+void KioskLaunchController::LaunchLacros() {
+  app_state_ = kLaunchingLacros;
+  lacros_launcher_ = std::make_unique<app_mode::LacrosLauncher>();
+  lacros_launcher_->Start(
+      base::BindOnce(&KioskLaunchController::OnLacrosLaunchComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void KioskLaunchController::OnLacrosLaunchComplete() {
+  if (network_ui_controller_->ShouldShowNetworkConfig()) {
+    network_ui_controller_->UserRequestedNetworkConfig();
+  } else {
+    InitializeLauncher();
   }
 }
 
@@ -507,18 +519,7 @@ void KioskLaunchController::OnAppPrepared() {
     return;
   }
 
-  if (network_ui_controller_->IsShowingNetworkConfigScreen()) {
-    return;
-  }
-
   app_state_ = AppState::kInstallingExtensions;
-
-  // Initialize and start Lacros for preparing force-installed extensions.
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession() &&
-      !crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
-    SYSLOG(INFO) << "Launching lacros for web kiosk";
-    crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
-  }
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);

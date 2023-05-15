@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -20,23 +21,16 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,18 +43,13 @@ bool g_skip_mouse_out_delay_for_testing = false;
 constexpr int kCenterPadding = 4;
 constexpr int kLabelFontSize = 13;
 
-// Dogfood feedback button layout values.
-constexpr int kButtonHeight = 28;
-// The space between the text and image in the feedback button.
-constexpr int kButtonImageSpacing = 4;
-// Divisor to determine the radius of the rounded corners for the button.
-constexpr float kButtonRadDivisor = 2.f;
-constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(0, 6, 0, 8);
-
 // If the menu was opened as a result of hovering over the frame size button,
 // moving the mouse outside the menu or size button will result in closing it
-// after 3 seconds have elapsed.
-constexpr base::TimeDelta kMouseExitMenuTimeout = base::Seconds(3);
+// after 250 ms have elapsed.
+constexpr base::TimeDelta kMouseExitMenuTimeout = base::Milliseconds(250);
+
+// The multitask menu fade out duration after the exit timer finishes.
+constexpr base::TimeDelta kFadeDuration = base::Milliseconds(100);
 
 // Creates multitask button with label.
 std::unique_ptr<views::View> CreateButtonContainer(
@@ -83,7 +72,7 @@ std::unique_ptr<views::View> CreateButtonContainer(
 
 // -----------------------------------------------------------------------------
 // MultitaskMenuView::MenuPreTargetHandler:
-
+// Auto-closes the multitask menu on click outside or after timeout.
 class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
  public:
   MenuPreTargetHandler(views::Widget* menu_widget,
@@ -102,8 +91,13 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
+    if (!menu_widget_ || menu_widget_->IsClosed()) {
+      return;
+    }
+
     if (event->type() == ui::ET_MOUSE_PRESSED) {
       ProcessPressedEvent(*event);
+      return;
     }
 
     if (event->type() == ui::ET_MOUSE_MOVED && anchor_view_) {
@@ -116,7 +110,7 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
         exit_timer_.Stop();
       } else if (g_skip_mouse_out_delay_for_testing) {
         OnExitTimerFinished();
-      } else {
+      } else if (!exit_timer_.IsRunning()) {
         exit_timer_.Start(FROM_HERE, kMouseExitMenuTimeout, this,
                           &MenuPreTargetHandler::OnExitTimerFinished);
       }
@@ -124,6 +118,10 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   }
 
   void OnTouchEvent(ui::TouchEvent* event) override {
+    if (!menu_widget_ || menu_widget_->IsClosed()) {
+      return;
+    }
+
     if (event->type() == ui::ET_TOUCH_PRESSED) {
       ProcessPressedEvent(*event);
     }
@@ -138,20 +136,37 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   }
 
  private:
-  void OnExitTimerFinished() { close_callback_.Run(); }
+  void OnExitTimerFinished() {
+    if (!menu_widget_->GetLayer()->GetAnimator()->is_animating()) {
+      views::AnimationBuilder()
+          .SetPreemptionStrategy(
+              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+          .OnEnded(base::BindOnce(&MenuPreTargetHandler::OnFadeOutFinished,
+                                  weak_factory_.GetWeakPtr()))
+          .Once()
+          .SetDuration(kFadeDuration)
+          .SetOpacity(menu_widget_->GetLayer(), 0.0f, gfx::Tween::LINEAR);
+    }
+  }
+
+  void OnFadeOutFinished() { close_callback_.Run(); }
 
   // The widget of the multitask menu that is currently shown. Guaranteed to
   // outlive `this`, which will get destroyed when the menu is destructed in
   // `close_callback_`.
-  views::Widget* const menu_widget_;
+  const raw_ptr<views::Widget, ExperimentalAsh> menu_widget_;
 
   // The anchor of the menu's widget if it exists. Set if there is an anchor and
   // we want the menu to close if the mouse has exited the menu bounds.
-  views::View* anchor_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
 
   base::OneShotTimer exit_timer_;
 
   base::RepeatingClosure close_callback_;
+
+  // Chrome's compiler toolchain enforces that any `WeakPtrFactory`
+  // fields are declared last, to avoid destruction ordering issues.
+  base::WeakPtrFactory<MenuPreTargetHandler> weak_factory_{this};
 };
 
 // -----------------------------------------------------------------------------
@@ -167,6 +182,8 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   DCHECK(window);
   DCHECK(close_callback_);
   SetUseDefaultFillLayout(true);
+
+  window_observation_.Observe(window);
 
   // The display orientation. This determines whether menu is in
   // landscape/portrait mode.
@@ -228,28 +245,6 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
     float_button_for_testing_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id));
   }
-
-  // Dogfood feedback button. This button is added as a child view as it
-  // prevents having to create separate instances in `MultitaskMenu` and
-  // `TabletModeMultitaskMenuView`, and does not require a separate
-  // `LayoutManager`.
-  feedback_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      views::Button::PressedCallback(),
-      l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_FEEDBACK_BUTTON_NAME)));
-
-  feedback_button_->SetImageLabelSpacing(kButtonImageSpacing);
-  feedback_button_->SetBorder(views::CreateEmptyBorder(kButtonInsets));
-  feedback_button_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_CENTER);
-  feedback_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorMultitaskFeedbackButtonLabelBackground,
-      kButtonHeight / kButtonRadDivisor));
-
-  views::InkDropHost* const ink_drop = views::InkDrop::Get(feedback_button_);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop->SetBaseColor(SK_ColorGRAY);
-  views::InstallRoundRectHighlightPathGenerator(
-      feedback_button_, gfx::Insets(), kButtonHeight / kButtonRadDivisor);
 }
 
 MultitaskMenuView::~MultitaskMenuView() {
@@ -263,21 +258,28 @@ void MultitaskMenuView::AddedToWidget() {
       GetWidget(), close_callback_, anchor_view_);
 }
 
-void MultitaskMenuView::OnThemeChanged() {
-  // Must be called at the beginning of the function.
-  views::View::OnThemeChanged();
+void MultitaskMenuView::OnWindowDestroying(aura::Window* window) {
+  CHECK(window_observation_.IsObservingSource(window));
 
-  auto* color_provider = GetColorProvider();
-  feedback_button_->SetTextColor(
-      views::Button::STATE_NORMAL,
-      color_provider->GetColor(
-          ui::kColorMultitaskFeedbackButtonLabelForeground));
-  feedback_button_->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          kDogfoodPawIcon,
-          color_provider->GetColor(
-              ui::kColorMultitaskFeedbackButtonLabelForeground)));
+  window_observation_.Reset();
+  window_ = nullptr;
+  close_callback_.Run();
+}
+
+void MultitaskMenuView::OnWindowBoundsChanged(aura::Window* window,
+                                              const gfx::Rect& old_bounds,
+                                              const gfx::Rect& new_bounds,
+                                              ui::PropertyChangeReason reason) {
+  CHECK(window_observation_.IsObservingSource(window));
+  close_callback_.Run();
+}
+
+void MultitaskMenuView::OnWindowVisibilityChanging(aura::Window* window,
+                                                   bool visible) {
+  CHECK(window_observation_.IsObservingSource(window));
+  if (!visible) {
+    close_callback_.Run();
+  }
 }
 
 // static
@@ -286,16 +288,19 @@ void MultitaskMenuView::SetSkipMouseOutDelayForTesting(bool val) {
 }
 
 void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
-  SnapController::Get()->CommitSnap(window_, direction, kDefaultSnapRatio);
+  SnapController::Get()->CommitSnap(
+      window_, direction, kDefaultSnapRatio,
+      SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kHalfSplitButton);
 }
 
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
-  SnapController::Get()->CommitSnap(window_, direction,
-                                    direction == SnapDirection::kPrimary
-                                        ? kTwoThirdSnapRatio
-                                        : kOneThirdSnapRatio);
+  SnapController::Get()->CommitSnap(
+      window_, direction,
+      direction == SnapDirection::kPrimary ? kTwoThirdSnapRatio
+                                           : kOneThirdSnapRatio,
+      SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
 
   base::RecordAction(base::UserMetricsAction(

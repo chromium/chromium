@@ -39,8 +39,8 @@ class MockSearchAndAssistantEnabledCheckerDelegate
   MockSearchAndAssistantEnabledCheckerDelegate() = default;
   ~MockSearchAndAssistantEnabledCheckerDelegate() override = default;
 
-  MOCK_METHOD0(OnError, void());
-  MOCK_METHOD1(OnSearchAndAssistantStateReceived, void(bool));
+  MOCK_METHOD(void, OnError, (), (override));
+  MOCK_METHOD(void, OnSearchAndAssistantStateReceived, (bool), (override));
 
  private:
 };

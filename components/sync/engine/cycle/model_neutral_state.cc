@@ -6,20 +6,14 @@
 
 namespace syncer {
 
-ModelNeutralState::ModelNeutralState()
-    : num_successful_commits(0),
-      num_successful_bookmark_commits(0),
-      num_updates_downloaded_total(0),
-      num_tombstone_updates_downloaded_total(0),
-      num_server_conflicts(0),
-      items_committed(false) {}
+ModelNeutralState::ModelNeutralState() = default;
 
 ModelNeutralState::ModelNeutralState(const ModelNeutralState& other) = default;
 
 ModelNeutralState::~ModelNeutralState() = default;
 
 bool HasSyncerError(const ModelNeutralState& state) {
-  const bool get_key_error = state.last_get_key_result.IsActualError();
+  const bool get_key_error = state.last_get_key_failed;
   const bool download_updates_error =
       state.last_download_updates_result.IsActualError();
   const bool commit_error = state.commit_result.IsActualError();

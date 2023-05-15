@@ -38,8 +38,8 @@ const NGLayoutResult* NGMathTokenLayoutAlgorithm::Layout() {
   LayoutUnit ascent = BorderScrollbarPadding().block_start + ink_ascent;
   LayoutUnit descent = ink_descent + BorderScrollbarPadding().block_end;
 
-  NGInlineChildLayoutContext context(To<NGInlineNode>(child),
-                                     &container_builder_);
+  NGSimpleInlineChildLayoutContext context(To<NGInlineNode>(child),
+                                           &container_builder_);
   const NGLayoutResult* child_layout_result = To<NGInlineNode>(child).Layout(
       ConstraintSpace(), /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &context);

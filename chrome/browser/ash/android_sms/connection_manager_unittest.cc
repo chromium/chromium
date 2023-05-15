@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/fake_connection_establisher.h"
@@ -63,8 +64,10 @@ class ConnectionManagerTest : public testing::Test {
       return nullptr;
     }
 
-    content::FakeServiceWorkerContext* new_url_service_worker_;
-    content::FakeServiceWorkerContext* old_url_service_worker_;
+    raw_ptr<content::FakeServiceWorkerContext, ExperimentalAsh>
+        new_url_service_worker_;
+    raw_ptr<content::FakeServiceWorkerContext, ExperimentalAsh>
+        old_url_service_worker_;
   };
 
   enum class PwaState { kEnabledWithNewUrl, kEnabledWithOldUrl, kDisabled };
@@ -189,8 +192,10 @@ class ConnectionManagerTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeAndroidSmsAppManager> fake_android_sms_app_manager_;
-  FakeConnectionEstablisher* fake_connection_establisher_;
-  TestServiceWorkerProvider* test_service_worker_provider_;
+  raw_ptr<FakeConnectionEstablisher, ExperimentalAsh>
+      fake_connection_establisher_;
+  raw_ptr<TestServiceWorkerProvider, ExperimentalAsh>
+      test_service_worker_provider_;
 
   std::unique_ptr<ConnectionManager> connection_manager_;
 };

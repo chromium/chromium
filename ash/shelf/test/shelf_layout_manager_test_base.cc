@@ -171,7 +171,7 @@ class ShelfDragCallback {
 
 void ShelfLayoutManagerTestBase::SetState(ShelfLayoutManager* layout_manager,
                                           ShelfVisibilityState state) {
-  layout_manager->SetState(state);
+  layout_manager->SetState(state, /*force_layout=*/false);
 }
 
 void ShelfLayoutManagerTestBase::UpdateAutoHideStateNow() {
@@ -452,7 +452,7 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   WindowState* window_state = WindowState::Get(window);
   window_state->SetHideShelfWhenFullscreen(false);
   window->SetProperty(kImmersiveIsActive, true);
-  layout_manager->UpdateVisibilityState();
+  layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
   EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
@@ -614,7 +614,7 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   // is fullscreen. (eg browser immersive fullscreen).
   widget->SetFullscreen(true);
   WindowState::Get(window)->SetHideShelfWhenFullscreen(false);
-  layout_manager->UpdateVisibilityState();
+  layout_manager->UpdateVisibilityState(/*force_layout=*/false);
 
   gfx::Rect window_bounds_fullscreen = window->bounds();
   EXPECT_TRUE(widget->IsFullscreen());
@@ -658,7 +658,7 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   // with or without immersive browser fullscreen).
   WindowState::Get(window)->SetHideShelfWhenFullscreen(true);
 
-  layout_manager->UpdateVisibilityState();
+  layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
   EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
 

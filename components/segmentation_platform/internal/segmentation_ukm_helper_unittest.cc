@@ -11,17 +11,20 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Segmentation_ModelExecution = ukm::builders::Segmentation_ModelExecution;
 
@@ -45,10 +48,15 @@ void CompareEncodeDecodeDifference(float tensor) {
       kRoundingError);
 }
 
-absl::optional<proto::PredictionResult> GetPredictionResult() {
+absl::optional<proto::PredictionResult> GetPredictionResult(
+    absl::optional<base::Time> prediction_time = absl::nullopt) {
   proto::PredictionResult result;
   result.add_result(0.5);
   result.add_result(0.4);
+  if (prediction_time.has_value()) {
+    result.set_timestamp_us(
+        prediction_time->ToDeltaSinceWindowsEpoch().InMicroseconds());
+  }
   return result;
 }
 
@@ -144,7 +152,8 @@ TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
   selected_segment.selection_time = base::Time::Now() - base::Seconds(10);
   SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
-      outputs, output_indexes, GetPredictionResult(), selected_segment);
+      outputs, output_indexes,
+      GetPredictionResult(selected_segment.selection_time), selected_segment);
   ExpectUkmMetrics(Segmentation_ModelExecution::kEntryName,
                    {Segmentation_ModelExecution::kOptimizationTargetName,
                     Segmentation_ModelExecution::kModelVersionName,

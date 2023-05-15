@@ -10,10 +10,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -29,6 +32,14 @@
 namespace ash {
 
 namespace {
+
+// Returns the delegate, owned by the `WallpaperControllerImpl`, for
+// drag-and-drop events over the wallpaper. May be `nullptr` if drag-and-drop
+// related features are disabled.
+WallpaperDragDropDelegate* GetDragDropDelegate() {
+  auto* controller = Shell::Get()->wallpaper_controller();
+  return controller ? controller->GetDragDropDelegate() : nullptr;
+}
 
 // A view that controls the child view's layer so that the layer always has the
 // same size as the display's original, un-scaled size in DIP. The layer is then
@@ -88,14 +99,14 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
   if (enabled) {
     DCHECK(!shield_view_);
     shield_view_ = new views::View();
-    parent()->AddChildViewAt(shield_view_, 0);
+    parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
   } else {
     DCHECK(shield_view_);
-    parent()->RemoveChildViewT(shield_view_);
+    parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }
 }
@@ -111,6 +122,64 @@ bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
 void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (shield_view_)
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
+}
+
+bool WallpaperView::AreDropTypesRequired() {
+  return true;
+}
+
+bool WallpaperView::CanDrop(const ui::OSExchangeData& data) {
+  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+    return drag_drop_delegate->CanDrop(data);
+  }
+  return false;
+}
+
+views::View::DropCallback WallpaperView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  const gfx::Point location_in_screen =
+      views::View::ConvertPointToScreen(this, event.location());
+  return base::BindOnce(
+      [](const gfx::Point& location_in_screen, const ui::DropTargetEvent& event,
+         ui::mojom::DragOperation& output_drag_op,
+         std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+        if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+          output_drag_op =
+              drag_drop_delegate->OnDrop(event.data(), location_in_screen);
+        }
+      },
+      location_in_screen);
+}
+
+bool WallpaperView::GetDropFormats(int* formats,
+                                   std::set<ui::ClipboardFormatType>* types) {
+  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+    drag_drop_delegate->GetDropFormats(formats, types);
+  }
+  return *formats || types->size();
+}
+
+void WallpaperView::OnDragEntered(const ui::DropTargetEvent& event) {
+  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+    drag_drop_delegate->OnDragEntered(
+        event.data(),
+        views::View::ConvertPointToScreen(this, event.location()));
+  }
+}
+
+int WallpaperView::OnDragUpdated(const ui::DropTargetEvent& event) {
+  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+    return drag_drop_delegate->OnDragUpdated(
+        event.data(),
+        views::View::ConvertPointToScreen(this, event.location()));
+  }
+  return ui::DragDropTypes::DRAG_NONE;
+}
+
+void WallpaperView::OnDragExited() {
+  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
+    drag_drop_delegate->OnDragExited();
+  }
 }
 
 void WallpaperView::ShowContextMenuForViewImpl(views::View* source,

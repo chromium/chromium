@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/timer/mock_timer.h"
@@ -135,7 +136,8 @@ class DemoSessionTest : public testing::Test {
     return profile;
   }
 
-  FakeCrOSComponentManager* cros_component_manager_ = nullptr;
+  raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
+      nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
@@ -199,11 +201,10 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
   TestingProfile* profile = LoginDemoUser();
   scoped_refptr<const extensions::Extension> screensaver_app =
       extensions::ExtensionBuilder()
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Test App")
                            .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
@@ -264,11 +265,10 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
   TestingProfile* profile = LoginDemoUser();
   scoped_refptr<const extensions::Extension> screensaver_app =
       extensions::ExtensionBuilder()
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Test App")
                            .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(

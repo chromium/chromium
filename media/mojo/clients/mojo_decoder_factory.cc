@@ -37,7 +37,7 @@ void MojoDecoderFactory::CreateAudioDecoders(
       audio_decoder.InitWithNewPipeAndPassReceiver());
 
   audio_decoders->push_back(std::make_unique<MojoAudioDecoder>(
-      task_runner, std::move(audio_decoder)));
+      task_runner, media_log, std::move(audio_decoder)));
 #endif
 }
 

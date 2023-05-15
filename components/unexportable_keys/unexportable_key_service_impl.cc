@@ -204,31 +204,26 @@ void UnexportableKeyServiceImpl::OnKeyGenerated(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> client_callback,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
-  if (!key_or_error.has_value()) {
-    std::move(client_callback).Run(base::unexpected(key_or_error.error()));
-    return;
-  }
-
-  scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
-  // `key` must be non-null if `key_or_error` holds a value.
-  CHECK(key);
-  UnexportableKeyId key_id = key->id();
-  auto [unused, key_id_inserted] =
-      key_id_by_wrapped_key_.try_emplace(key->key().GetWrappedKey(), key_id);
-  if (!key_id_inserted) {
-    // Drop a newly generated key in the case of a key collision. This should be
-    // extremely rare.
-    DVLOG(1)
-        << "Collision between an existing and a newly generated key detected.";
-    std::move(client_callback)
-        .Run(base::unexpected(ServiceError::kKeyCollision));
-    return;
-  }
-  auto [unused2, key_inserted] =
-      key_by_key_id_.try_emplace(key_id, std::move(key));
-  // A newly generated key ID must be unique.
-  CHECK(key_inserted);
-  std::move(client_callback).Run(key_id);
+  std::move(client_callback).Run([&]() -> ServiceErrorOr<UnexportableKeyId> {
+    if (!key_or_error.has_value()) {
+      return base::unexpected(key_or_error.error());
+    }
+    scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
+    // `key` must be non-null if `key_or_error` holds a value.
+    CHECK(key);
+    UnexportableKeyId key_id = key->id();
+    if (!key_id_by_wrapped_key_.try_emplace(key->key().GetWrappedKey(), key_id)
+             .second) {
+      // Drop a newly generated key in the case of a key collision. This should
+      // be extremely rare.
+      DVLOG(1) << "Collision between an existing and a newly generated key "
+                  "detected.";
+      return base::unexpected(ServiceError::kKeyCollision);
+    }
+    // A newly generated key ID must be unique.
+    CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
+    return key_id;
+  }());
 }
 
 void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
@@ -240,7 +235,6 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     key_id_by_wrapped_key_.erase(pending_entry_it);
     return;
   }
-
   scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);
@@ -248,10 +242,8 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
       base::ranges::equal(pending_entry_it->first, key->key().GetWrappedKey()));
 
   UnexportableKeyId key_id = key->id();
-  auto [unused, key_id_inserted] =
-      key_by_key_id_.try_emplace(key_id, std::move(key));
   // A newly created key ID must be unique.
-  CHECK(key_id_inserted);
+  CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
   pending_entry_it->second.SetKeyIdAndRunCallbacks(key_id);
 }
 

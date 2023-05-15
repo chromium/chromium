@@ -45,6 +45,8 @@ std::string LocalApprovalResultToString(
 
 namespace supervised_user {
 
+WebContentHandler::WebContentHandler() = default;
+
 WebContentHandler::~WebContentHandler() = default;
 
 void WebContentHandler::OnLocalApprovalRequestCompleted(

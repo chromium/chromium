@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
@@ -23,8 +24,8 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "extensions/browser/api/management/management_api.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
@@ -101,8 +102,9 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
   DCHECK(supervised_user_extensions_delegate);
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
+  DCHECK(supervised_user_service);
   if (supervised_user_service->AreExtensionsPermissionsEnabled() && extension &&
 
       // Only ask for parent approval if the extension still requires approval.
@@ -246,12 +248,18 @@ void ExtensionEnableFlow::EnableExtension() {
     return;
   }
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   if (supervised_user_service->AreExtensionsPermissionsEnabled()) {
     // We need to add parent approval first.
-    supervised_user_service->AddExtensionApproval(*extension);
-    supervised_user_service->RecordExtensionEnablementUmaMetrics(
+    extensions::SupervisedUserExtensionsDelegate*
+        supervised_user_extensions_delegate =
+            extensions::ManagementAPI::GetFactoryInstance()
+                ->Get(profile_)
+                ->GetSupervisedUserExtensionsDelegate();
+    CHECK(supervised_user_extensions_delegate);
+    supervised_user_extensions_delegate->AddExtensionApproval(*extension);
+    supervised_user_extensions_delegate->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

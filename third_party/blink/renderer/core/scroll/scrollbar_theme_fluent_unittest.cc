@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
 
+#include "base/gtest_prod_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"

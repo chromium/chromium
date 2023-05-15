@@ -245,14 +245,10 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
     return;
   }
 
-  // Show a white wallpaper during OOBE.
+  // Show a wallpaper during OOBE.
   if (SessionManager::Get()->session_state() ==
       session_manager::SessionState::OOBE) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(1, 1);
-    bitmap.eraseColor(SK_ColorWHITE);
-    wallpaper_controller_->ShowOneShotWallpaper(
-        gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+    wallpaper_controller_->ShowOobeWallpaper();
     return;
   }
 
@@ -310,21 +306,6 @@ bool WallpaperControllerClientImpl::SetThirdPartyWallpaper(
                                                        layout, image);
 }
 
-void WallpaperControllerClientImpl::ConfirmPreviewWallpaper() {
-  wallpaper_controller_->ConfirmPreviewWallpaper();
-}
-
-void WallpaperControllerClientImpl::CancelPreviewWallpaper() {
-  wallpaper_controller_->CancelPreviewWallpaper();
-}
-
-void WallpaperControllerClientImpl::UpdateCurrentWallpaperLayout(
-    const AccountId& account_id,
-    ash::WallpaperLayout layout) {
-  if (IsKnownUser(account_id))
-    wallpaper_controller_->UpdateCurrentWallpaperLayout(account_id, layout);
-}
-
 void WallpaperControllerClientImpl::ShowUserWallpaper(
     const AccountId& account_id) {
   if (IsKnownUser(account_id)) {
@@ -366,25 +347,6 @@ void WallpaperControllerClientImpl::RemovePolicyWallpaper(
   wallpaper_controller_->RemovePolicyWallpaper(account_id);
 }
 
-void WallpaperControllerClientImpl::SetAnimationDuration(
-    const base::TimeDelta& animation_duration) {
-  wallpaper_controller_->SetAnimationDuration(animation_duration);
-}
-
-void WallpaperControllerClientImpl::OpenWallpaperPickerIfAllowed() {
-  wallpaper_controller_->OpenWallpaperPickerIfAllowed();
-}
-
-void WallpaperControllerClientImpl::MinimizeInactiveWindows(
-    const std::string& user_id_hash) {
-  wallpaper_controller_->MinimizeInactiveWindows(user_id_hash);
-}
-
-void WallpaperControllerClientImpl::RestoreMinimizedWindows(
-    const std::string& user_id_hash) {
-  wallpaper_controller_->RestoreMinimizedWindows(user_id_hash);
-}
-
 void WallpaperControllerClientImpl::AddObserver(
     ash::WallpaperControllerObserver* observer) {
   wallpaper_controller_->AddObserver(observer);
@@ -399,21 +361,9 @@ gfx::ImageSkia WallpaperControllerClientImpl::GetWallpaperImage() {
   return wallpaper_controller_->GetWallpaperImage();
 }
 
-bool WallpaperControllerClientImpl::IsWallpaperBlurred() {
-  return wallpaper_controller_->IsWallpaperBlurredForLockState();
-}
-
-bool WallpaperControllerClientImpl::IsActiveUserWallpaperControlledByPolicy() {
-  return wallpaper_controller_->IsActiveUserWallpaperControlledByPolicy();
-}
-
 absl::optional<ash::WallpaperInfo>
 WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
   return wallpaper_controller_->GetActiveUserWallpaperInfo();
-}
-
-bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
-  return wallpaper_controller_->ShouldShowWallpaperSetting();
 }
 
 void WallpaperControllerClientImpl::GetFilesId(
@@ -616,12 +566,6 @@ base::FilePath
 WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
   return base::FilePath(
       local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
-}
-
-void WallpaperControllerClientImpl::SetDailyRefreshCollectionId(
-    const AccountId& account_id,
-    const std::string& collection_id) {
-  wallpaper_controller_->SetDailyRefreshCollectionId(account_id, collection_id);
 }
 
 void WallpaperControllerClientImpl::OnDailyImageInfoFetched(

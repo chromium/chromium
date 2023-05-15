@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -154,7 +155,7 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   base::RepeatingClosure on_primary_click_;
   base::RepeatingClosure on_secondary_click_;
   base::OnceCallback<void(FastPairNotificationDismissReason)> on_close_;
-  base::OneShotTimer* expire_notification_timer_;
+  raw_ptr<base::OneShotTimer, ExperimentalAsh> expire_notification_timer_;
 };
 
 FastPairNotificationController::FastPairNotificationController(

@@ -1,0 +1,142 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
+#define MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
+
+#include <vector>
+
+#include "base/time/time.h"
+#include "media/base/media_export.h"
+#include "media/formats/mp4/fourccs.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace media::mp4::writable_boxes {
+
+enum class TrackHeaderFlags : uint16_t {
+  kTrackEnabled = 0x0001,
+  kTrackInMovie = 0x0002,
+  kTrackInPreview = 0x0004,
+};
+
+// Box header without version.
+struct MEDIA_EXPORT Box {};
+
+// Box header with version and flags.
+struct MEDIA_EXPORT FullBox : Box {
+  // version 1 is 64 bits where applicable, 0 is 32 bits.
+  uint8_t version;
+  uint32_t flags : 24;
+};
+
+// Media sample table (`stsd`) box.
+struct MEDIA_EXPORT SampleDescription : FullBox {
+  uint32_t entry_count;
+  // TODO: add optional `avc1` or `mp4a` box.
+};
+
+// Media sample table (`stbl`) box.
+struct MEDIA_EXPORT SampleTable : Box {
+  SampleDescription sample_description;
+  // TODO: add `stsc`, `stts`, `stsz`, `stco` box.
+};
+
+// Media information (`minf`) box.
+struct MEDIA_EXPORT MediaInformation : Box {
+  SampleTable sample_table;
+  // TODO: add `vmhd`, `dinf` box.
+};
+
+// Media Handler (`hdlr`) box.
+struct MEDIA_EXPORT MediaHandler : FullBox {
+  mp4::FourCC handler_type;
+  std::string name;
+};
+
+// Media header (`mdhd`) box.
+struct MEDIA_EXPORT MediaHeader : FullBox {
+  base::Time creation_time;
+  base::Time modification_time;
+  uint32_t timescale;
+  base::TimeDelta duration;
+  std::string language;  // 3 letters code ISO-639-2/T language.
+};
+
+// Media (`mdia`) box.
+struct MEDIA_EXPORT Media : Box {
+  MediaHeader header;
+  MediaHandler handler;
+  MediaInformation information;
+};
+
+// Track header (`tkhd`) box.
+struct MEDIA_EXPORT TrackHeader : FullBox {
+  uint32_t track_id;
+  base::Time creation_time;
+  base::Time modification_time;
+  base::TimeDelta duration;
+  bool is_audio;
+  gfx::Size natural_size;
+};
+
+// Track (`trak`) box.
+struct MEDIA_EXPORT Track : Box {
+  TrackHeader header;
+  Media media;
+};
+
+// Track Extends (`trex`) box.
+struct MEDIA_EXPORT TrackExtends : FullBox {
+  uint32_t track_id;
+  uint32_t default_sample_description_index;
+  base::TimeDelta default_sample_duration;
+  uint32_t default_sample_size;
+
+  // The sample flags field in sample fragments is coded as a 32-bit value.
+  // bit(4) reserved=0;
+  // unsigned int(2) is_leading;
+  // unsigned int(2) sample_depends_on;
+  // unsigned int(2) sample_is_depended_on;
+  // unsigned int(2) sample_has_redundancy;
+  // bit(3) sample_padding_value;
+  // bit(1) sample_is_non_sync_sample;
+  // unsigned int(16) sample_degradation_priority;
+  uint32_t default_sample_flags;
+};
+
+// Movie Extends (`mvex`) box.
+struct MEDIA_EXPORT MovieExtends : Box {
+  MovieExtends();
+  ~MovieExtends();
+  std::vector<TrackExtends> track_extends;
+};
+
+// Movie Header (`mvhd`) box.
+struct MEDIA_EXPORT MovieHeader : FullBox {
+  MovieHeader();
+  ~MovieHeader();
+
+  // It is Windows epoch time so it should be converted to Jan. 1, 1904 UTC
+  // before writing. Dates before Jan 1, 1904 UTC will fail / are unsupported.
+  base::Time creation_time;
+  base::Time modification_time;
+
+  // This is the number of time units that pass in one second.
+  uint32_t timescale;
+  base::TimeDelta duration;
+  uint32_t next_track_id;
+};
+
+// Movie (`moov`) box.
+struct MEDIA_EXPORT Movie : Box {
+  Movie();
+  ~Movie();
+  MovieHeader header;
+  std::vector<Track> tracks;
+  MovieExtends extends;
+};
+
+}  // namespace media::mp4::writable_boxes
+
+#endif  // MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_

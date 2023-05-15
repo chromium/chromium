@@ -2,7 +2,7 @@ Test that prerender navigations report the final status
 {
     method : Preload.prerenderAttemptCompleted
     params : {
-        finalStatus : TriggerDestroyed
+        finalStatus : TriggerPageNavigated
         initiatingFrameId : <string>
         key : {
             action : Prerender

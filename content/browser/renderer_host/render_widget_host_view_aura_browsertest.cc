@@ -469,20 +469,11 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
   // Helper function to check |isActivated| for a given frame.
   bool FrameIsActivated(content::RenderFrameHost* rfh) {
-    bool active = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        rfh,
-        "window.domAutomationController.send(window.internals.isActivated())",
-        &active));
-    return active;
+    return EvalJs(rfh, "window.internals.isActivated()").ExtractBool();
   }
 
   bool FrameIsFocused(content::RenderFrameHost* rfh) {
-    bool is_focused = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        rfh, "window.domAutomationController.send(document.hasFocus())",
-        &is_focused));
-    return is_focused;
+    return EvalJs(rfh, "document.hasFocus()").ExtractBool();
   }
 
   RenderViewHost* GetRenderViewHost() const {

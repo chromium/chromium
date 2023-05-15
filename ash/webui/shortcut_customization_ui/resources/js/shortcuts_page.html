@@ -1,7 +1,15 @@
 <style include="shortcut-customization-shared cr-shared-style">
+  :host-context(body.jelly-enabled) #container {
+    background-color: var(--cros-sys-app_base);
+    border-radius: 16px 16px 0 0;
+  }
+
   #container {
-    margin-top: 20px;
-    max-width: var(--cr-centered-card-max-width);
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    width: 100%;
   }
 
   #container accelerator-subsection:not(:first-child)::part(container) {

@@ -50,17 +50,20 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     return MediaRouterDialogController::ShowMediaRouterDialogForPresentation(
         std::move(context));
   }
-
+#if BUILDFLAG(IS_CHROMEOS)
   ShowGlobalMediaControlsDialog(std::move(context));
+#else
+  ShowGlobalMediaControlsDialogAsync(std::move(context));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return true;
 }
 
 void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
     MediaRouterDialogActivationLocation activation_location) {
   base::Time dialog_creation_time = base::Time::Now();
-  if (GetActionController())
+  if (GetActionController()) {
     GetActionController()->OnDialogShown();
-
+  }
   Profile* profile =
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
 
@@ -90,16 +93,17 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
   scoped_widget_observations_.AddObservation(
       cast_dialog_coordinator_.GetCastDialogWidget());
 
-  if (dialog_creation_callback_)
+  if (dialog_creation_callback_) {
     dialog_creation_callback_.Run();
-
+  }
   MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
       activation_location);
 }
 
 void MediaRouterDialogControllerViews::CloseMediaRouterDialog() {
-  if (IsShowingMediaRouterDialog())
+  if (IsShowingMediaRouterDialog()) {
     cast_dialog_coordinator_.Hide();
+  }
 }
 
 bool MediaRouterDialogControllerViews::IsShowingMediaRouterDialog() const {
@@ -109,8 +113,9 @@ bool MediaRouterDialogControllerViews::IsShowingMediaRouterDialog() const {
 void MediaRouterDialogControllerViews::Reset() {
   // If |ui_| is null, Reset() has already been called.
   if (ui_) {
-    if (GetActionController())
+    if (GetActionController()) {
       GetActionController()->OnDialogHidden();
+    }
     ui_.reset();
     MediaRouterDialogController::Reset();
   }
@@ -119,8 +124,9 @@ void MediaRouterDialogControllerViews::Reset() {
 void MediaRouterDialogControllerViews::OnWidgetDestroying(
     views::Widget* widget) {
   DCHECK(scoped_widget_observations_.IsObservingSource(widget));
-  if (ui_)
+  if (ui_) {
     ui_->LogMediaSinkStatus();
+  }
   Reset();
   scoped_widget_observations_.RemoveObservation(widget);
 }
@@ -168,7 +174,16 @@ void MediaRouterDialogControllerViews::DestroyMediaRouterUI() {
   ui_.reset();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
+    std::unique_ptr<StartPresentationContext> context) {
+  Profile* const profile =
+      Profile::FromBrowserContext(initiator()->GetBrowserContext());
+  MediaNotificationServiceFactory::GetForProfile(profile)->ShowDialogAsh(
+      std::move(context));
+}
+#else
+void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialogAsync(
     std::unique_ptr<StartPresentationContext> context) {
   // Show the WebContents requesting a dialog.
   initiator()->GetDelegate()->ActivateContents(initiator());
@@ -178,7 +193,21 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
   MediaNotificationService* const service =
       MediaNotificationServiceFactory::GetForProfile(profile);
   service->OnStartPresentationContextCreated(std::move(context));
+  // This needs to be async because it needs to happen after UI preparations
+  // (done through OnStartPresentationContextCreated()) that may happen
+  // asynchronously as it crosses a Mojo boundary.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
+void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
+  Profile* const profile =
+      Profile::FromBrowserContext(initiator()->GetBrowserContext());
+  MediaNotificationService* const service =
+      MediaNotificationServiceFactory::GetForProfile(profile);
   MediaToolbarButtonView* const media_button = GetMediaButton();
   // If there exists a media button, anchor the dialog to this media button.
   if (media_button) {
@@ -210,11 +239,12 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
                 kPresentation));
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
-  if (hide_media_button_for_testing_)
+  if (hide_media_button_for_testing_) {
     return nullptr;
-
+  }
   Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
   BrowserView* const browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
@@ -223,9 +253,9 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   MediaToolbarButtonView* media_button =
       toolbar_view ? toolbar_view->media_button() : nullptr;
 
-  if (!media_button)
+  if (!media_button) {
     return nullptr;
-
+  }
   // Show the |media_button| before opening the dialog so that when the bubble
   // dialog is opened, it has an anchor.
   media_button->media_toolbar_button_controller()->ShowToolbarButton();

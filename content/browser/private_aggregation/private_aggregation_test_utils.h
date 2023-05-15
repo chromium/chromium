@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -18,6 +19,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
@@ -64,6 +66,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               (url::Origin,
                url::Origin,
                PrivateAggregationBudgetKey::Api,
+               absl::optional<std::string>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -89,6 +92,7 @@ class MockPrivateAggregationManager : public PrivateAggregationManager {
               (url::Origin,
                url::Origin,
                PrivateAggregationBudgetKey::Api,
+               absl::optional<std::string>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 

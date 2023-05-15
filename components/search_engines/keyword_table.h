@@ -70,8 +70,10 @@ class Statement;
 //                          added in version 82.
 //   is_active              See TemplateURLData::is_active. This was added
 //                          in version 97.
-//   starter_pack_id        See TemplateURLData::starter_pack_id.  This was
-//                          added in version 103.
+//   starter_pack_id        See TemplateURLData::starter_pack_id. This was added
+//                          in version 103.
+//   enforced_by_policy     See TemplateURLData::enforced_by_policy. This was
+//                          added in version 112.
 //
 // This class also manages some fields in the |meta| table:
 //
@@ -107,7 +109,6 @@ class KeywordTable : public WebDatabaseTable {
 
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
-  bool IsSyncable() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Performs an arbitrary number of Add/Remove/Update operations as a single
@@ -147,6 +148,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion82AddCreatedFromPlayApiColumn();
   bool MigrateToVersion97AddIsActiveColumn();
   bool MigrateToVersion103AddStarterPackIdColumn();
+  bool MigrateToVersion112AddEnforcedByPolicyColumn();
 
  private:
   friend class KeywordTableTest;

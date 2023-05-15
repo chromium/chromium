@@ -17,11 +17,13 @@ class SharedContextState;
 // validating or passthrough command decoder.
 class GLTextureHolder {
  public:
-  // Returns the equivalent ResourceFormat for plane specified by `plane_index`.
-  static viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
-                                            int plane_index);
+  // Returns the equivalent SharedImageFormat for plane specified by
+  // `plane_index`.
+  static viz::SharedImageFormat GetPlaneFormat(viz::SharedImageFormat format,
+                                               int plane_index);
 
-  GLTextureHolder(viz::ResourceFormat format,
+  // `format` must be single-planar format.
+  GLTextureHolder(viz::SharedImageFormat format,
                   const gfx::Size& size,
                   bool is_passthrough,
                   gl::ProgressReporter* progress_reporter);
@@ -70,16 +72,12 @@ class GLTextureHolder {
   void SetContextLost();
 
  private:
-  // TODO(kylechar): ResourceFormat isn't the ideal type to represent the format
-  // here since it's really a single plane of SharedImageFormat. This could
-  // potentially be SharedImageFormat + plane_index or some other type entirely.
-  // Figure out the right type to use instead and replace it.
-  viz::ResourceFormat format_;
+  viz::SharedImageFormat format_;
   gfx::Size size_;
   bool is_passthrough_;
   bool context_lost_ = false;
 
-  raw_ptr<gles2::Texture, DanglingUntriaged> texture_ = nullptr;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GLFormatDesc format_desc_;
   raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;

@@ -15,23 +15,18 @@
 
 namespace autofill {
 
-AutofillDataModel::AutofillDataModel(const std::string& guid,
-                                     const std::string& origin)
-    : guid_(guid), origin_(origin), use_count_(1) {
+AutofillDataModel::AutofillDataModel(const std::string& guid)
+    : guid_(guid), use_count_(1) {
   set_use_date(AutofillClock::Now());
   set_modification_date(AutofillClock::Now());
 }
-AutofillDataModel::~AutofillDataModel() {}
+AutofillDataModel::~AutofillDataModel() = default;
 
 int AutofillDataModel::GetDaysSinceLastUse(base::Time current_time) const {
   if (current_time <= use_date_)
     return 0;
 
   return (current_time - use_date_).InDays();
-}
-
-bool AutofillDataModel::IsVerified() const {
-  return !origin_.empty() && !GURL(origin_).is_valid();
 }
 
 double AutofillDataModel::GetRankingScore(base::Time current_time) const {

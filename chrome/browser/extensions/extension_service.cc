@@ -93,6 +93,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -128,8 +129,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 using content::BrowserContext;
@@ -156,21 +157,9 @@ const char* const kObsoleteComponentExtensionIds[] = {
     "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
 };
 
-// When uninstalling an extension determine if the extension's directory
-// should be deleted when uninstalling. Returns `true` iff extension is
-// unpacked and installed outside the unpacked extensions installations dir.
-// Example: packed extensions are always deleted. But unpacked extensions are
-// in a folder outside the profile dir are not deleted.
-bool SkipDeleteExtensionDir(const Extension& extension,
-                            const base::FilePath& profile_path) {
-  bool is_unpacked_location =
-      Manifest::IsUnpackedLocation(extension.location());
-  bool extension_dir_not_direct_subdir_of_unpacked_extensions_install_dir =
-      extension.path().DirName() !=
-      profile_path.AppendASCII(extensions::kUnpackedInstallDirectoryName);
-  return is_unpacked_location &&
-         extension_dir_not_direct_subdir_of_unpacked_extensions_install_dir;
-}
+// ExtensionUnpublishedAvailability policy default value.
+constexpr int kAllowUnpublishedExtensions = 0;
+
 }  // namespace
 
 // ExtensionService.
@@ -422,6 +411,10 @@ ExtensionService::ExtensionService(
 
   UpgradeDetector::GetInstance()->AddObserver(this);
 
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    cws_info_service_observation_.Observe(CWSInfoService::Get(profile_));
+  }
+
   ExtensionManagementFactory::GetForBrowserContext(profile_)->AddObserver(this);
 
   // Set up the ExtensionUpdater.
@@ -480,6 +473,9 @@ ExtensionService::~ExtensionService() {
 }
 
 void ExtensionService::Shutdown() {
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    cws_info_service_observation_.Reset();
+  }
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
@@ -835,25 +831,13 @@ bool ExtensionService::UninstallExtension(
         base::BarrierClosure(num_tasks, std::move(done_callback));
   }
 
-  // Delete extensions in profile directory (from webstore, or from .crx), but
-  // do not delete unpacked in a folder outside the profile directory.
-  if (!SkipDeleteExtensionDir(*extension, profile_->GetPath())) {
-    // Extensions installed from webstore or .crx are versioned in subdirs so we
-    // delete the parent dir. Unpacked (installed from .zip rather than folder)
-    // are not versioned so we just delete the single installation directory.
-    base::FilePath deletion_dir =
-        is_unpacked_location ? extension->path() : extension->path().DirName();
-
-    // Tell the backend to start deleting installed extension on the file
-    // thread.
+  // Tell the backend to start deleting installed extensions on the file thread.
+  if (!is_unpacked_location) {
     if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
                            extension->id(), profile_->GetProfileUserName(),
-                           /*extensions_install_dir=*/
-                           is_unpacked_location ? unpacked_install_directory_
-                                                : install_directory_,
-                           /*extension_dir_to_delete=*/std::move(deletion_dir),
+                           install_directory_, extension->path(),
                            profile_->GetPath()),
             subtask_done_callback)) {
       NOTREACHED();
@@ -879,14 +863,13 @@ bool ExtensionService::UninstallExtension(
 void ExtensionService::UninstallExtensionOnFileThread(
     const std::string& id,
     const std::string& profile_user_name,
-    const base::FilePath& extensions_install_dir,
-    const base::FilePath& extension_dir_to_delete,
+    const base::FilePath& install_dir,
+    const base::FilePath& extension_path,
     const base::FilePath& profile_dir) {
   ExtensionAssetsManager* assets_manager =
       ExtensionAssetsManager::GetInstance();
-  assets_manager->UninstallExtension(id, profile_user_name,
-                                     extensions_install_dir,
-                                     extension_dir_to_delete, profile_dir);
+  assets_manager->UninstallExtension(id, profile_user_name, install_dir,
+                                     extension_path, profile_dir);
 }
 
 bool ExtensionService::IsExtensionEnabled(
@@ -896,7 +879,7 @@ bool ExtensionService::IsExtensionEnabled(
 
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value& attributes) {
+    const base::Value::Dict& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(extension_id,
                                                                 attributes);
@@ -1248,6 +1231,16 @@ void ExtensionService::CheckManagementPolicy() {
       disable_reasons &= (~disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
     }
 
+    // Check published-in-store status against policy requirement and update
+    // the disable reasons accordingly.
+    if (management->IsAllowedByUnpublishedAvailabilityPolicy(extension.get())) {
+      disable_reasons &=
+          ~disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    } else {
+      disable_reasons |=
+          disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    }
+
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
                                                           nullptr, nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
@@ -1255,13 +1248,14 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    bool extensions_permissions_enabled = true;
+    bool is_supervised;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    extensions_permissions_enabled =
-        SupervisedUserServiceFactory::GetForProfile(profile())
-            ->AreExtensionsPermissionsEnabled();
+    is_supervised = SupervisedUserServiceFactory::GetForProfile(profile())
+                        ->IsSubjectToParentalControls();
+#else
+    is_supervised = false;
 #endif
-    if (extensions_permissions_enabled) {
+    if (!is_supervised) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }
 
@@ -1828,6 +1822,19 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
   }
 
   CheckManagementPolicy();
+
+  // Request an out-of-cycle update of extension metadata information from CWS
+  // if the ExtensionUnpublishedAvailability policy setting is such that
+  // unpublished extensions should not be enabled. This update allows
+  // unpublished extensions to be disabled sooner rather than waiting till the
+  // next regularly scheduled fetch.
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    if (profile_->GetPrefs()->GetInteger(
+            pref_names::kExtensionUnpublishedAvailability) !=
+        kAllowUnpublishedExtensions) {
+      CWSInfoService::Get(profile_)->CheckAndMaybeFetchInfo();
+    }
+  }
 }
 
 void ExtensionService::AddNewOrUpdatedExtension(
@@ -2205,6 +2212,10 @@ void ExtensionService::OnBlocklistUpdated() {
                      AsExtensionServiceWeakPtr()));
 }
 
+void ExtensionService::OnCWSInfoChanged() {
+  CheckManagementPolicy();
+}
+
 void ExtensionService::OnUpgradeRecommended() {
   // Notify observers that chrome update is available.
   for (auto& observer : update_observers_)
@@ -2268,8 +2279,9 @@ void ExtensionService::OnProfileMarkedForPermanentDeletion(Profile* profile) {
     return;
 
   ExtensionIdSet ids_to_unload = registry_->enabled_extensions().GetIDs();
-  for (auto it = ids_to_unload.begin(); it != ids_to_unload.end(); ++it)
-    UnloadExtension(*it, UnloadedExtensionReason::PROFILE_SHUTDOWN);
+  for (const auto& id : ids_to_unload) {
+    UnloadExtension(id, UnloadedExtensionReason::PROFILE_SHUTDOWN);
+  }
 }
 
 void ExtensionService::ManageBlocklist(

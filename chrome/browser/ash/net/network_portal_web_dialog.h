@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -54,7 +55,7 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
 
   GURL url_;
   base::WeakPtr<Delegate> delegate_;
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 }  // namespace ash

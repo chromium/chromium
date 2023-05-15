@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1785415724048343560">Recommended for best experience</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Related sites can see your activity in the group</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Hang up</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
 <translation id="3165022941318558018">Allow a site to use third-party cookies</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
-<translation id="3203366800380907218">From the web</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3248611290851046188">This site defines interests that other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3721953990244350188">Dismiss and show next available action</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Last visited today</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
-<translation id="5229337741799419985">This setting works without identifying you or allowing sites to see your browsing history.</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
-<translation id="6701547804986694515">A site that you visit can save info with Chrome that validates that you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
 <translation id="7366415735885268578">Add a site</translation>
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>
 <translation id="8823559166155093873">Block cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

@@ -137,7 +137,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const module = await driveDescriptor.initialize(0);
+    const module = await driveDescriptor.initialize(0) as DriveModuleElement;
     assertTrue(!!module);
     document.body.append(module);
 

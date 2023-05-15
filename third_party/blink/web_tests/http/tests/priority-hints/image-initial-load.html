@@ -16,18 +16,18 @@ const priority_tests = [
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?2', location), document),
-    expected_priority: kLow,
-    description: 'auto fetchpriority on <img> must translate to kLow resource load priority'
+    expected_priority: kMedium,
+    description: 'auto fetchpriority on early <img> must translate to kMedium resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?3', location), document),
-    expected_priority: kLow,
-    description: 'invalid fetchpriority on <img> must translate to kLow resource load priority'
+    expected_priority: kMedium,
+    description: 'invalid fetchpriority on early <img> must translate to kMedium resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?4', location), document),
-    expected_priority: kLow,
-    description: 'missing fetchpriority on <img> must translate to kLow resource load priority'
+    expected_priority: kMedium,
+    description: 'missing fetchpriority on early <img> must translate to kMedium resource load priority'
   }
 ];
 

@@ -37,9 +37,6 @@ class PrintPreviewDialogController
 
   static PrintPreviewDialogController* GetInstance();
 
-  // Initiates print preview for `initiator`.
-  static void PrintPreview(content::WebContents* initiator);
-
   // Returns true if `url` is a Print Preview dialog URL (has `chrome://print`
   // origin).
   static bool IsPrintPreviewURL(const GURL& url);
@@ -47,6 +44,9 @@ class PrintPreviewDialogController
   // Returns true if `url` is a Print Preview content URL (has
   // `chrome-untrusted://print` origin).
   static bool IsPrintPreviewContentURL(const GURL& url);
+
+  // Initiates print preview for `initiator`.
+  void PrintPreview(content::WebContents* initiator);
 
   // Returns the preview dialog for `contents`.
   // Returns `contents` if `contents` is a preview dialog.

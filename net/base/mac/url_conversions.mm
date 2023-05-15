@@ -6,16 +6,20 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/escape.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace net {
 
 NSURL* NSURLWithGURL(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return nil;
+  }
 
   // NSURL strictly enforces RFC 1738 which requires that certain characters
   // are always encoded. These characters are: "<", ">", """, "#", "%", "{",
@@ -39,14 +43,15 @@ NSURL* NSURLWithGURL(const GURL& url) {
   }
   GURL escaped_url = url.ReplaceComponents(replacements);
 
-  base::scoped_nsobject<NSString> escaped_url_string(
-      [[NSString alloc] initWithUTF8String:escaped_url.spec().c_str()]);
+  NSString* escaped_url_string =
+      [NSString stringWithUTF8String:escaped_url.spec().c_str()];
   return [NSURL URLWithString:escaped_url_string];
 }
 
 GURL GURLWithNSURL(NSURL* url) {
-  if (url)
-    return GURL([[url absoluteString] UTF8String]);
+  if (url) {
+    return GURL(url.absoluteString.UTF8String);
+  }
   return GURL();
 }
 

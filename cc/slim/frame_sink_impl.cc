@@ -134,8 +134,10 @@ void FrameSinkImpl::MaybeCompositeNow() {
 
 void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
                                      cc::UIResourceBitmap resource_bitmap) {
-  const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
   gfx::Size size = resource_bitmap.GetSize();
+  TRACE_EVENT1("cc", "slim::FrameSinkImpl::UploadUIResource", "size",
+               size.ToString());
+  const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
   if (size.width() > caps.max_texture_size ||
       size.height() > caps.max_texture_size) {
     LOG(ERROR) << "Size exceeds max texture size";
@@ -160,7 +162,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.mailbox = sii->CreateSharedImage(
       format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, shared_image_usage,
+      kPremul_SkAlphaType, shared_image_usage, "SlimCompositorUIResource",
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
@@ -169,7 +171,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
       gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()), caps);
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
-          uploaded_resource.mailbox, GL_LINEAR, texture_target, sync_token,
+          uploaded_resource.mailbox, texture_target, sync_token,
           resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));

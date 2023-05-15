@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
@@ -24,6 +25,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -90,7 +92,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  SurfaceTreeHost* const surface_tree_host_;
+  const raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
 };
 
 }  // namespace
@@ -151,10 +153,15 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   if (root_surface) {
     root_surface_ = root_surface;
     root_surface_->SetSurfaceDelegate(this);
+
+    // TODO(oshima): Investigate if we can set this to `host_window`.
+    root_surface->window()->SetProperty(
+        ui::kAXConsiderInvisibleAndIgnoreChildren, true);
     host_window_->AddChild(root_surface_->window());
     UpdateHostWindowBounds();
     root_surface_->window()->Show();
   }
+  set_bounds_is_dirty(true);
 }
 
 bool SurfaceTreeHost::HasHitTestRegion() const {
@@ -379,8 +386,9 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-  if (bounds != host_window_->bounds())
+  if (bounds != host_window_->bounds()) {
     host_window_->SetBounds({host_window_->bounds().origin(), bounds.size()});
+  }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for

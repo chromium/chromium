@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_internal.h"
 #include "ui/gfx/image/image_png_rep.h"
@@ -117,7 +118,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
 }
 
 UIImage* UIImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps) {
-  float ideal_scale = ImageSkia::GetMaxSupportedScale();
+  const float ideal_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   if (image_png_reps.empty())
     return CreateErrorUIImage(ideal_scale);
@@ -126,8 +127,8 @@ UIImage* UIImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps) {
   float smallest_diff = std::numeric_limits<float>::max();
   size_t closest_index = 0u;
   for (size_t i = 0; i < image_png_reps.size(); ++i) {
-    float scale = image_png_reps[i].scale;
-    float diff = std::abs(ideal_scale - scale);
+    const float scale = image_png_reps[i].scale;
+    const float diff = std::abs(ideal_scale - scale);
     if (diff < smallest_diff) {
       smallest_diff = diff;
       closest_index = i;

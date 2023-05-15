@@ -22,6 +22,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -99,6 +100,12 @@ public class PrivacySettings extends PreferenceFragmentCompat
             // available to restricted users.
             getPreferenceScreen().removePreference(sandboxPreference);
         } else {
+            if (PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
+                // Update the summary to one that describes only ad measurement if ad-measurement
+                // is available to restricted users.
+                sandboxPreference.setSummary(getContext().getString(
+                        R.string.settings_ad_privacy_restricted_link_row_sub_label));
+            }
             // Overwrite the click listener to pass a correct referrer to the fragment.
             sandboxPreference.setOnPreferenceClickListener(preference -> {
                 PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(getContext(),
@@ -117,7 +124,8 @@ public class PrivacySettings extends PreferenceFragmentCompat
             UserPrefs.get(mProfile).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
             return false;
         });
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE) || mProfile.isChild()
+                || ManagedBrowserUtils.isBrowserManaged(mProfile)) {
             getPreferenceScreen().removePreference(privacyGuidePreference);
         }
 

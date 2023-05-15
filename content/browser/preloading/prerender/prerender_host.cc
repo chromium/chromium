@@ -33,7 +33,6 @@
 #include "url/origin.h"
 
 namespace content {
-
 namespace {
 
 bool AreHttpRequestHeadersCompatible(
@@ -79,18 +78,12 @@ bool AreHttpRequestHeadersCompatible(
   prerender_headers.RemoveHeader("sec-ch-viewport-height");
   potential_activation_headers.RemoveHeader("sec-ch-viewport-height");
 
-  // Compare headers in serialized strings. The spec doesn't require serialized
-  // string matches, but practically Chrome generates headers in a decisive way,
-  // i.e. in the same order and cases. So we can expect serialized string
-  // comparisons just work. We ensure this assumption through the metric we
-  // handled in AnalyzePrerenderActivationHeader.
-  if (prerender_headers.ToString() == potential_activation_headers.ToString()) {
+  if (PrerenderHost::IsActivationHeaderMatch(potential_activation_headers,
+                                             prerender_headers)) {
     return true;
   }
 
   // The headers mismatch. Analyze the headers asynchronously.
-  // TODO(https://crbug.com/1378921): This is only used to detect if prerender
-  // fails to set headers correctly. Remove this logic after we draw the
   // conclusion.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -165,13 +158,7 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
              RenderFrameHost::kNoFrameTreeNodeId);
   }
 
-  // When `kPrerender2SequentialPrerendering` feature is enabled, the prerender
-  // host can be pending until the host starts or is cancelled. So the outcome
-  // is set here to track the pending status.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering)) {
-    SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
-  }
+  SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
 
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::Create(web_contents.GetBrowserContext());
@@ -196,6 +183,42 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
       frame_tree_->root()->render_manager()->current_frame_host());
 
   frame_tree_node_id_ = frame_tree_->root()->frame_tree_node_id();
+}
+
+// static
+bool PrerenderHost::IsActivationHeaderMatch(
+    const net::HttpRequestHeaders& potential_activation_headers,
+    const net::HttpRequestHeaders& prerender_headers) {
+  // The numbers of headers are different.
+  if (potential_activation_headers.GetHeaderVector().size() !=
+      prerender_headers.GetHeaderVector().size()) {
+    return false;
+  }
+
+  // Normalize the headers.
+  using HeaderPair = net::HttpRequestHeaders::HeaderKeyValuePair;
+  auto cmp = [](const HeaderPair& a, const HeaderPair& b) {
+    return a.key < b.key;
+  };
+  auto lower_case = [](HeaderPair& x) { x.key = base::ToLowerASCII(x.key); };
+  auto same_predicate = [](const HeaderPair& a, const HeaderPair& b) {
+    return a.key == b.key && base::EqualsCaseInsensitiveASCII(a.value, b.value);
+  };
+  std::vector<HeaderPair> potential_header_list(
+      potential_activation_headers.GetHeaderVector());
+  std::vector<HeaderPair> prerender_header_list(
+      prerender_headers.GetHeaderVector());
+  std::for_each(potential_header_list.begin(), potential_header_list.end(),
+                lower_case);
+  std::for_each(prerender_header_list.begin(), prerender_header_list.end(),
+                lower_case);
+  std::sort(potential_header_list.begin(), potential_header_list.end(), cmp);
+  std::sort(prerender_header_list.begin(), prerender_header_list.end(), cmp);
+
+  // The two vectors should be exactly the same if the headers are the same.
+  return std::equal(potential_header_list.begin(), potential_header_list.end(),
+                    prerender_header_list.begin(), prerender_header_list.end(),
+                    same_predicate);
 }
 
 PrerenderHost::~PrerenderHost() {
@@ -390,6 +413,11 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     status = PrerenderFinalStatus::kBlockedByClient;
   } else if (is_prerender_main_frame && net_error != net::Error::OK) {
     status = PrerenderFinalStatus::kNavigationRequestNetworkError;
+    if (!final_status_) {
+      // Only tracks the first error this instance encountered.
+      RecordPrerenderNavigationErrorCode(net_error, trigger_type(),
+                                         embedder_histogram_suffix());
+    }
   } else if (is_prerender_main_frame && !navigation_request->HasCommitted()) {
     status = PrerenderFinalStatus::kNavigationNotCommitted;
   }
@@ -747,8 +775,12 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // The renderer may add the client redirect flag when it has enough
   // information to be certain that this navigation would replace the current
   // history entry (e.g., a renderer-initiated navigation to the current URL).
-  if ((potential_activation.transition &
-       ~ui::PAGE_TRANSITION_CLIENT_REDIRECT) != common_params_->transition) {
+  int32_t potential_activation_transition =
+      potential_activation.transition & ~ui::PAGE_TRANSITION_CLIENT_REDIRECT;
+  if (potential_activation_transition != common_params_->transition) {
+    RecordPrerenderActivationTransition(potential_activation_transition,
+                                        trigger_type(),
+                                        embedder_histogram_suffix());
     return ActivationNavigationParamsMatch::kTransition;
   }
 
@@ -936,13 +968,6 @@ void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
   attempt_->SetTriggeringOutcome(outcome);
 }
 
-void PrerenderHost::SetEligibility(PreloadingEligibility eligibility) {
-  if (!attempt_)
-    return;
-
-  attempt_->SetEligibility(eligibility);
-}
-
 void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
   switch (status) {
     // When adding a new failure reason, consider whether it should be
@@ -956,6 +981,9 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kActivatedBeforeStarted:
     case PrerenderFinalStatus::kTabClosedByUserGesture:
     case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+    case PrerenderFinalStatus::kTriggerPageNavigated:
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return;
     case PrerenderFinalStatus::kDestroyed:
     case PrerenderFinalStatus::kLowEndDevice:
@@ -1014,6 +1042,8 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
         kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
     case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
+    case PrerenderFinalStatus::kMemoryPressureOnTrigger:
+    case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       // SetFailureReason() will call SetTriggeringOutcome() with kFailure.
       if (initiator_devtools_navigation_token().has_value()) {
         devtools_instrumentation::DidUpdatePrerenderStatus(

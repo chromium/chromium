@@ -1604,7 +1604,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_FALSE(trace_receiver_helper.trace_received());
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
+// TODO(crbug.com/1444519): Re-enable this test once fixed
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
+#else
+#define MAYBE_RunStartupTracing RunStartupTracing
+#endif
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       MAYBE_RunStartupTracing) {
   TestTraceLogHelper tracelog_helper;
   TestBackgroundTracingHelper background_tracing_helper;
   TestTraceReceiverHelper trace_receiver_helper;

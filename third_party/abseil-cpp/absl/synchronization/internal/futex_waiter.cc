@@ -35,13 +35,34 @@ namespace synchronization_internal {
 constexpr char FutexWaiter::kName[];
 #endif
 
+int FutexWaiter::WaitUntil(std::atomic<int32_t>* v, int32_t val,
+                           KernelTimeout t) {
+#ifdef CLOCK_MONOTONIC
+  constexpr bool kHasClockMonotonic = true;
+#else
+  constexpr bool kHasClockMonotonic = false;
+#endif
+
+  // We can't call Futex::WaitUntil() here because the prodkernel implementation
+  // does not know about KernelTimeout::SupportsSteadyClock().
+  if (!t.has_timeout()) {
+    return Futex::Wait(v, val);
+  } else if (kHasClockMonotonic && KernelTimeout::SupportsSteadyClock() &&
+             t.is_relative_timeout()) {
+    auto rel_timespec = t.MakeRelativeTimespec();
+    return Futex::WaitRelativeTimeout(v, val, &rel_timespec);
+  } else {
+    auto abs_timespec = t.MakeAbsTimespec();
+    return Futex::WaitAbsoluteTimeout(v, val, &abs_timespec);
+  }
+}
+
 bool FutexWaiter::Wait(KernelTimeout t) {
   // Loop until we can atomically decrement futex from a positive
   // value, waiting on a futex while we believe it is zero.
   // Note that, since the thread ticker is just reset, we don't need to check
   // whether the thread is idle on the very first pass of the loop.
   bool first_pass = true;
-
   while (true) {
     int32_t x = futex_.load(std::memory_order_relaxed);
     while (x != 0) {
@@ -54,7 +75,7 @@ bool FutexWaiter::Wait(KernelTimeout t) {
     }
 
     if (!first_pass) MaybeBecomeIdle();
-    const int err = Futex::WaitUntil(&futex_, 0, t);
+    const int err = WaitUntil(&futex_, 0, t);
     if (err != 0) {
       if (err == -EINTR || err == -EWOULDBLOCK) {
         // Do nothing, the loop will retry.

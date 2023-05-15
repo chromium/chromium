@@ -20,14 +20,17 @@ namespace captions {
 
 // Static
 std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
-    PrefService* profile_prefs) {
-  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs);
+    PrefService* profile_prefs,
+    const std::string& application_locale) {
+  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs,
+                                                        application_locale);
 }
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(
-    PrefService* profile_prefs) {
+    PrefService* profile_prefs,
+    const std::string& application_locale) {
   caption_bubble_ = new CaptionBubble(
-      profile_prefs,
+      profile_prefs, application_locale,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =

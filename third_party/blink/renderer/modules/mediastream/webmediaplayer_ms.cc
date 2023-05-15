@@ -1473,7 +1473,8 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
       media::mojom::PlaybackProperties::New(
           HasAudio(), HasVideo(), false /*is_background*/, false /*is_muted*/,
           false /*is_mse*/, false /*is_eme*/,
-          false /*is_embedded_media_experience*/, *media_stream_type),
+          false /*is_embedded_media_experience*/, *media_stream_type,
+          media::RendererType::kRendererImpl),
       NaturalSize(),
       WTF::BindRepeating(&WebMediaPlayerMS::GetCurrentTimeInterval,
                          WTF::Unretained(this)),

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="100506692671054486">nessun comando precedente</translation>
 <translation id="1009046985747440431">Premi la freccia su o giù per spostarti e INVIO per attivare</translation>
 <translation id="1011903154582639569">Trova un tasto, poi solleva il dito per digitarlo</translation>
 <translation id="1012173283529841972">Voce elenco</translation>
@@ -360,12 +361,12 @@
 <translation id="3273791280096244679">Salva etichetta</translation>
 <translation id="3283583562490372694">deselezionato</translation>
 <translation id="3286372614333682499">verticale</translation>
-<translation id="3286390186030710347">Dispositivo di scorrimento</translation>
+<translation id="3286390186030710347">Cursore</translation>
 <translation id="3300733168898541351">annulla</translation>
 <translation id="3307886118343381874">Vai alla fine della tabella</translation>
 <translation id="3312997241656799641">Link visitato successivo</translation>
 <translation id="3313245066383501820">Tasto di modifica di ChromeVox</translation>
-<translation id="3317212938060708859">Un dispositivo di scorrimento</translation>
+<translation id="3317212938060708859">Un cursore</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3322936298410871309">Intestazione livello 1 precedente</translation>
 <translation id="3323447499041942178">Casella di testo</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Sfumatura lavanda</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3962990492275676168">Inizia a leggere dalla posizione corrente</translation>
+<translation id="397094149579293440">Nessun testo selezionato</translation>
 <translation id="3970951409746498040">Sabbia</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mocassino</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Nessuna intestazione di livello 1 precedente</translation>
 <translation id="4787577491510559358">Annuncia la formattazione dell'elemento corrente</translation>
 <translation id="479989351350248267">ricerca</translation>
+<translation id="4802034228771424756">Nessun campo di testo attivo</translation>
 <translation id="4804818685124855865">Disconnetti</translation>
 <translation id="481165870889056555">Pronuncia il titolo della pagina corrente</translation>
 <translation id="4815668758102003883">Turchese chiaro</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Link interno</translation>
 <translation id="4909019435900810068">Sposta indietro di una parola</translation>
 <translation id="4911349081560453449">Nessuna casella di controllo precedente</translation>
+<translation id="4919186071145887492">Impossibile <ph name="COMMAND" />. Riprova</translation>
 <translation id="492295894462528572">Premessa</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953585991029886728">Modifica testo</translation>
+<translation id="4964701498510730546">Il campo di testo è vuoto</translation>
 <translation id="4973717656530883744">Minimo <ph name="X" /></translation>
 <translation id="4974612477719259470">Nessun pulsante precedente</translation>
 <translation id="4979404613699303341">Pulsante precedente</translation>
+<translation id="4981239367072766915">Valore non riconosciuto</translation>
 <translation id="4982917827052020884">Iniziamo con alcuni tasti che utilizzerai regolarmente. Il tasto Ctrl può essere utilizzato per interrompere qualsiasi lettura corrente. Puoi trovarlo nell'angolo in basso a sinistra della tastiera. Per continuare, premi il tasto Ctrl.</translation>
 <translation id="4983588134362688868">Vai all'inizio della pagina</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, finestra</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Annuncia stato corrente della batteria</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, pulsante di opzione selezionato</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, pulsante di opzione di una voce di menu selezionato</translation>
+<translation id="5014131807708055994">Impossibile <ph name="COMMAND" />. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Attiva la registrazione vocale</translation>
 <translation id="5041394372352067729">Sposta display braille a inizio pagina</translation>
 <translation id="5042770794184672516">Aumenta volume comandi vocali</translation>
@@ -760,7 +767,7 @@
 <translation id="6037602951055904232">Panoramica avanti</translation>
 <translation id="604240746417122825">Errore grammaticale</translation>
 <translation id="6082768461603900813">Navigazione di base</translation>
-<translation id="609281021724813947">Nessun dispositivo di scorrimento precedente</translation>
+<translation id="609281021724813947">Nessun cursore precedente</translation>
 <translation id="6100239002225743044">Sposta in alto di una riga</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">attiva</translation>
@@ -901,7 +908,7 @@
 <translation id="7167657087543110">eco caratteri</translation>
 <translation id="7173102181852295013">Blu notte</translation>
 <translation id="7203150201908454328">Espanso</translation>
-<translation id="7209751026933045237">Nessun dispositivo di scorrimento successivo</translation>
+<translation id="7209751026933045237">Nessun cursore successivo</translation>
 <translation id="7218782500591078391">Ocra dorato</translation>
 <translation id="7226216518520804442">lst</translation>
 <translation id="7229749224609077523">Seleziona una tabella braille a sei punti:</translation>

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_GEOLOCATION_GEOLOCATION_CONTROLLER_TEST_UTIL_H_
 
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 
 namespace ash {
@@ -54,7 +55,7 @@ class GeopositionResponsesWaiter : public GeolocationController::Observer {
   void OnGeopositionChanged(bool possible_change_in_timezone) override;
 
  private:
-  GeolocationController* const controller_;
+  const raw_ptr<GeolocationController, ExperimentalAsh> controller_;
   base::RunLoop run_loop_;
 };
 

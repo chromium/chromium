@@ -608,8 +608,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   config.management_domain = policy::kDemoModeDomain;
 
   enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-      this, nullptr, config, policy::kDemoModeDomain,
-      policy::LicenseType::kEnterprise);
+      this, config, policy::kDemoModeDomain, policy::LicenseType::kEnterprise);
   enrollment_helper_->EnrollUsingAttestation();
 }
 

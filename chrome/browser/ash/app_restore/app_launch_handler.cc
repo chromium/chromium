@@ -213,10 +213,10 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
           extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
               app_id);
       if (extension) {
-        DCHECK(it.second->file_paths.has_value());
+        DCHECK(!it.second->file_paths.empty());
         apps::LaunchPlatformAppWithFileHandler(profile_, extension,
                                                it.second->handler_id.value(),
-                                               it.second->file_paths.value());
+                                               it.second->file_paths);
       }
       continue;
     }
@@ -234,8 +234,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         static_cast<WindowOpenDisposition>(it.second->disposition.value()),
         it.second->override_url.value_or(GURL()),
         apps::LaunchSource::kFromFullRestore, it.second->display_id.value(),
-        it.second->file_paths.has_value() ? it.second->file_paths.value()
-                                          : std::vector<base::FilePath>{},
+        it.second->file_paths,
         it.second->intent ? it.second->intent->Clone() : nullptr);
     params.restore_id = it.first;
     proxy->LaunchAppWithParams(std::move(params));

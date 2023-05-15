@@ -89,7 +89,13 @@ void RecordingServiceTestApi::RequestAndWaitForVideoFrame(
 bool RecordingServiceTestApi::IsDoingAudioRecording() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
-  return !!recording_service_.audio_capturer_;
+  return !recording_service_.audio_capturers_.empty();
+}
+
+int RecordingServiceTestApi::GetNumberOfAudioCapturers() const {
+  DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
+
+  return recording_service_.audio_capturers_.size();
 }
 
 }  // namespace recording

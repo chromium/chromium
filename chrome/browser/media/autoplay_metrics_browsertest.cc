@@ -34,8 +34,8 @@ class AutoplayMetricsBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     ukm_recorder.SetOnAddEntryCallback(Entry::kEntryName,
                                        run_loop.QuitClosure());
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(adapter.render_frame_host(),
-                                                "tryPlayback();"));
+    EXPECT_TRUE(ExecJs(adapter.render_frame_host(), "tryPlayback();",
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     run_loop.Run();
   }
 

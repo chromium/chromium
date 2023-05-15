@@ -60,7 +60,7 @@
   },
   "background.service_worker": {
     "channel": "stable",
-    "extension_types": ["extension", "chromeos_system_extension"]
+    "extension_types": ["extension", "chromeos_system_extension", "login_screen_extension"]
   },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the
@@ -68,7 +68,7 @@
     // APIs.
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "win", "mac"]
+    "platforms": ["chromeos", "lacros", "win", "mac"]
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -174,11 +174,17 @@
       "min_manifest_version": 3
     }
   ],
-  "host_permissions": {
+  "host_permissions": [{
     "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  {
+    "channel": "stable",
+    "dependencies": ["behavior:imprivata_login_screen_extension"],
+    "extension_types": ["login_screen_extension"],
+    "min_manifest_version": 3
+  }],
   "icons": {
     "channel": "stable",
     "extension_types": "all"

@@ -39,12 +39,6 @@ class UserEventReporterHelper {
       delete;
   virtual ~UserEventReporterHelper();
 
-  // Returns whether the user email can be included in the report. By default,
-  // only affiliated user emails are included. Function can accept
-  // canonicalized and non canonicalized user_email.
-  // Must be called on UI task runner (returned by valid_task_runner() below).
-  virtual bool ShouldReportUser(const std::string& user_email) const;
-
   // Returns whether the provided reporting policy is set.
   // Must be called on UI task runner (returned by valid_task_runner() below).
   virtual bool ReportingEnabled(const std::string& policy_path) const;

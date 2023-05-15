@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/containers/span.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,12 +97,13 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
 
   CFDictionarySetValue(
       attributes, kSecAttrAccessGroup,
-      base::SysUTF8ToNSString(constants::kKeychainAccessGroup));
+      base::SysUTF8ToCFStringRef(constants::kKeychainAccessGroup));
   CFDictionarySetValue(attributes, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(attributes, kSecAttrTokenID,
                        kSecAttrTokenIDSecureEnclave);
-  CFDictionarySetValue(attributes, kSecAttrKeySizeInBits, @256);
+  CFDictionarySetValue(attributes, kSecAttrKeySizeInBits,
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(
       attributes, kSecAttrLabel,
       base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));
@@ -111,7 +113,7 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
-  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
+  CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
   base::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault,
@@ -135,13 +137,13 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(query, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
-  CFDictionarySetValue(query, kSecReturnRef, @YES);
+  CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
 
   // Specifying to query the data protection keychain is only available on
   // macOS 10.15 or newer. This forces a query to the correct keychain since
   // Secure Enclave keys are stored in the data protection keychain.
   if (@available(macOS 10.15, *)) {
-    CFDictionarySetValue(query, kSecUseDataProtectionKeychain, @YES);
+    CFDictionarySetValue(query, kSecUseDataProtectionKeychain, kCFBooleanTrue);
   }
   return query;
 }

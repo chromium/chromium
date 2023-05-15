@@ -83,8 +83,8 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {
       CreateForm("http://example.com", u"username2"),
   };
   PasswordForm expected_form = forms[0];
-  expected_form.password_issues[InsecureType::kPhished] =
-      InsecurityMetadata(base::Time::Now(), IsMuted(false));
+  expected_form.password_issues[InsecureType::kPhished] = InsecurityMetadata(
+      base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username1"));
@@ -97,8 +97,8 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormRemove) {
       CreateForm("http://example.com", u"username1"),
       CreateForm("http://example.com", u"username2"),
   };
-  forms.at(0).password_issues[InsecureType::kPhished] =
-      InsecurityMetadata(base::Time::Now(), IsMuted(false));
+  forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata(
+      base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
 
   ExpectGetLogins("http://example.com");
   RemovePhishedCredentials(store(),
@@ -116,10 +116,10 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForAllMatchingFormsAdd) {
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username"));
-  forms.at(0).password_issues[InsecureType::kPhished] =
-      InsecurityMetadata(base::Time::Now(), IsMuted(false));
-  forms.at(1).password_issues[InsecureType::kPhished] =
-      InsecurityMetadata(base::Time::Now(), IsMuted(false));
+  forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata(
+      base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
+  forms.at(1).password_issues[InsecureType::kPhished] = InsecurityMetadata(
+      base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
   EXPECT_CALL(*store(), UpdateLogin(forms[1], _));
   EXPECT_CALL(*store(), UpdateLogin(forms[0], _));
   SimulateStoreRepliedWithResults(

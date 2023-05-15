@@ -58,12 +58,15 @@ class GPU_EXPORT SharedImageInterface {
   // The |SharedImageInterface| keeps ownership of the image until
   // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
+  // |debug_label| is retained for heap dumps and passed to graphics APIs for
+  // tracing tools. Pick a name that is unique to the allocation site.
   virtual Mailbox CreateSharedImage(viz::SharedImageFormat format,
                                     const gfx::Size& size,
                                     const gfx::ColorSpace& color_space,
                                     GrSurfaceOrigin surface_origin,
                                     SkAlphaType alpha_type,
                                     uint32_t usage,
+                                    base::StringPiece debug_label,
                                     gpu::SurfaceHandle surface_handle) = 0;
 
   // Same behavior as the above, except that this version takes |pixel_data|
@@ -76,6 +79,7 @@ class GPU_EXPORT SharedImageInterface {
                                     GrSurfaceOrigin surface_origin,
                                     SkAlphaType alpha_type,
                                     uint32_t usage,
+                                    base::StringPiece debug_label,
                                     base::span<const uint8_t> pixel_data) = 0;
 
   // Creates a shared image out an existing buffer. The buffer described by
@@ -96,6 +100,7 @@ class GPU_EXPORT SharedImageInterface {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
   // Creates a shared image out of a GpuMemoryBuffer, using |color_space|.
@@ -122,7 +127,8 @@ class GPU_EXPORT SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) = 0;
+      uint32_t usage,
+      base::StringPiece debug_label) = 0;
 
   // Same as the above, but specifies gfx::BufferPlane::DEFAULT for |plane|.
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -130,7 +136,8 @@ class GPU_EXPORT SharedImageInterface {
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
-                            uint32_t usage);
+                            uint32_t usage,
+                            base::StringPiece debug_label);
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -113,7 +114,8 @@ class KeepAliveOperationTest : public testing::Test {
   const multidevice::RemoteDeviceRef local_device_;
   const multidevice::RemoteDeviceRef remote_device_;
 
-  secure_channel::FakeConnectionAttempt* connection_attempt_;
+  raw_ptr<secure_channel::FakeConnectionAttempt, ExperimentalAsh>
+      connection_attempt_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;

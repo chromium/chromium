@@ -660,6 +660,8 @@ URLLoader::URLLoader(
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_);
 
+  SetAttributionReportingHeaders(*url_request_, request);
+
   if (request.update_first_party_url_on_redirect) {
     url_request_->set_first_party_url_policy(
         net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
@@ -2297,6 +2299,17 @@ void URLLoader::DispatchOnRawRequest(
 bool URLLoader::DispatchOnRawResponse() {
   if (!devtools_observer_ || !devtools_request_id() ||
       !url_request_->response_headers()) {
+    return false;
+  }
+
+  if (url_request_->was_cached() && !seen_raw_request_headers_) {
+    // If a response in a redirect chain has been cached,
+    // we need to clear the emitted_devtools_raw_request_ and
+    // emitted_devtools_raw_response_ flags to prevent misreporting
+    // that extra info was available on the response. We also suppress
+    // reporting the extra info events here.
+    emitted_devtools_raw_request_ = false;
+    emitted_devtools_raw_response_ = false;
     return false;
   }
 

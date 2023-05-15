@@ -6,12 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/backup_util.h"
 #import "base/base64url.h"
 #import "base/files/file_util.h"
 #import "base/files/important_file_writer.h"
 #import "base/hash/sha1.h"
 #import "base/ios/device_util.h"
-#import "base/mac/backup_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
@@ -65,7 +65,7 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
     return false;
   }
 
-  base::mac::SetBackupExclusion(token_file_path);
+  base::apple::SetBackupExclusion(token_file_path);
   return true;
 }
 

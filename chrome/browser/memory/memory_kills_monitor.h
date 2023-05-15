@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"

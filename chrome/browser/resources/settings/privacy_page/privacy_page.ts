@@ -13,13 +13,14 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -30,7 +31,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -166,6 +166,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
 
+      isPrivacySandboxRestrictedNoticeEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
+      },
+
       isPrivacySandboxSettings4_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
@@ -280,6 +286,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
+  private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private isPrivacySandboxSettings4_: boolean;
   private privateStateTokensEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
@@ -446,6 +453,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
                      this.i18n('privacySandboxTrialsDisabled');
   }
 
+  private computeAdPrivacySublabel_(): string {
+    // When the privacy sandbox is restricted with a notice, the sublabel
+    // wording indicates measurement only, rather than general ad privacy.
+    const restricted = this.isPrivacySandboxRestricted_ &&
+        this.isPrivacySandboxRestrictedNoticeEnabled_;
+    return restricted ? this.i18n('adPrivacyRestrictedLinkRowSubLabel') :
+                        this.i18n('adPrivacyLinkRowSubLabel');
+  }
+
   private computeNotificationsDefaultBehaviorLabel_(): string {
     return this.safetyCheckNotificationPermissionsEnabled_ ?
         this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
@@ -473,7 +489,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private isPrivacySandboxSettings4Enabled_(): boolean {
-    return !this.isPrivacySandboxRestricted_ && this.isPrivacySandboxSettings4_;
+    return (!this.isPrivacySandboxRestricted_ ||
+            this.isPrivacySandboxRestrictedNoticeEnabled_) &&
+        this.isPrivacySandboxSettings4_;
   }
 }
 

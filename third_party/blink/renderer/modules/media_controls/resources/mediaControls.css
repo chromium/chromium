@@ -878,8 +878,6 @@ audio::-internal-media-controls-playback-speed-list,
 video::-internal-media-controls-playback-speed-list,
 audio::-internal-media-controls-overflow-menu-list,
 video::-internal-media-controls-overflow-menu-list {
-  position: fixed;
-  z-index: 2; /* Keep the menus above the loading animation at z-index 1. */
   max-height: 250px;
   width: 200px;
   overflow-x: hidden;
@@ -891,6 +889,11 @@ video::-internal-media-controls-overflow-menu-list {
   border-radius: 2px;
   transition: transform .3s ease-out, opacity .2s linear;
   transform-origin: bottom right;
+  border:0;
+  padding: 0;
+  /* Anchor the popover on the bottom right corner. */
+  bottom: calc(anchor(bottom) + 4px) !important;
+  right: calc(anchor(right) + 4px) !important;
 }
 
 audio::-internal-media-controls-overflow-menu-list:focus,

@@ -119,9 +119,22 @@ void MockIMEInputContextHandler::DeleteSurroundingText(
       num_char16s_after_cursor;
 }
 
+void MockIMEInputContextHandler::ReplaceSurroundingText(
+    uint32_t length_before_selection,
+    uint32_t length_after_selection,
+    const base::StringPiece16 replacement_text) {
+  last_replace_surrounding_text_arg_.length_before_selection =
+      length_before_selection;
+  last_replace_surrounding_text_arg_.length_after_selection =
+      length_after_selection;
+  last_replace_surrounding_text_arg_.replacement_text =
+      std::u16string(replacement_text);
+}
+
 SurroundingTextInfo MockIMEInputContextHandler::GetSurroundingTextInfo() {
   SurroundingTextInfo info;
   info.selection_range = cursor_range_;
+  info.offset = 0;
   return info;
 }
 

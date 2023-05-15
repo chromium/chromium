@@ -30,6 +30,7 @@ option optimize_for = LITE_RUNTIME;
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
 // W/<operation-id>                 -> pending_web_feed_operation
+// v/<docid>/<timestamp>            -> docview
 message Record {
   oneof data {
     StreamData stream_data = 1;
@@ -42,6 +43,7 @@ message Record {
     WebFeedInfo recommended_web_feed = 8;
     RecommendedWebFeedIndex recommended_web_feed_index = 9;
     PendingWebFeedOperation pending_web_feed_operation = 10;
+    DocView doc_view = 11;
   }
 }
 
@@ -309,4 +311,11 @@ message PendingWebFeedOperation {
   int32 attempts = 4;
   // Reason for this change.
   feedwire.webfeed.WebFeedChangeReason change_reason = 5;
+}
+
+message DocView {
+  // Unique ID for the content that was viewed.
+  uint64 docid = 1;
+  // Unix timestamp when the view occurred.
+  int64 view_time_millis = 4;
 }

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -21,9 +22,9 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_layout_manager.h"
-#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/update_display_configuration_task.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -38,13 +39,13 @@ namespace {
 typedef std::vector<const DisplayMode*> DisplayModeList;
 
 struct DisplayState {
-  DisplaySnapshot* display = nullptr;  // Not owned.
+  raw_ptr<DisplaySnapshot, ExperimentalAsh> display = nullptr;  // Not owned.
 
   // User-selected mode for the display.
-  const DisplayMode* selected_mode = nullptr;
+  raw_ptr<const DisplayMode, ExperimentalAsh> selected_mode = nullptr;
 
   // Mode used when displaying the same desktop on multiple displays.
-  const DisplayMode* mirror_mode = nullptr;
+  raw_ptr<const DisplayMode, ExperimentalAsh> mirror_mode = nullptr;
 };
 
 // Returns whether |display_id| can be found in |display_list|,
@@ -167,7 +168,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   bool FindExactMatchingMirrorMode(const std::vector<DisplayState*>& displays,
                                    bool preserve_native_aspect_ratio) const;
 
-  DisplayConfigurator* configurator_;  // Not owned.
+  raw_ptr<DisplayConfigurator, ExperimentalAsh> configurator_;  // Not owned.
 
   bool configure_displays_ = false;
 };
@@ -303,7 +304,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
       for (size_t i = 0; i < states.size(); ++i) {
         const DisplayState* state = &states[i];
-        (*requests)[i].mode = display_power[i] ? state->selected_mode : NULL;
+        (*requests)[i].mode =
+            display_power[i] ? state->selected_mode.get() : NULL;
 
         if (display_power[i] || states.size() == 1) {
           const DisplayMode* mode_info = state->selected_mode;
@@ -352,7 +354,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
       for (size_t i = 0; i < states.size(); ++i) {
         const DisplayState* state = &states[i];
-        (*requests)[i].mode = display_power[i] ? state->mirror_mode : NULL;
+        (*requests)[i].mode =
+            display_power[i] ? state->mirror_mode.get() : NULL;
       }
       break;
     }
@@ -368,7 +371,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
         const DisplayState* state = &states[i];
         (*requests)[i].origin.set_y(size.height() ? size.height() + kVerticalGap
                                                   : 0);
-        (*requests)[i].mode = display_power[i] ? state->selected_mode : NULL;
+        (*requests)[i].mode =
+            display_power[i] ? state->selected_mode.get() : NULL;
 
         // Retain the full screen size even if all displays are off so the
         // same desktop configuration can be restored when the displays are
@@ -925,6 +929,9 @@ void DisplayConfigurator::OnConfigurationChanged() {
 void DisplayConfigurator::OnDisplaySnapshotsInvalidated() {
   VLOG(1) << "Display snapshots invalidated.";
   cached_displays_.clear();
+  for (Observer& observer : observers_) {
+    observer.OnDisplaySnapshotsInvalidated();
+  }
 }
 
 void DisplayConfigurator::AddObserver(Observer* observer) {

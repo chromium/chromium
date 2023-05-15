@@ -7,12 +7,8 @@
     var iframe1loaded = false;
     var iframe2loaded = false;
 
-    function sendValueToTest(value) {
-      window.domAutomationController.send(value);
-    }
-
-    function loaded1() { sendValueToTest(iframe1loaded); }
-    function loaded2() { sendValueToTest(iframe2loaded); }
+    function loaded1() { return iframe1loaded; }
+    function loaded2() { return iframe2loaded; }
   </script>
   <iframe src="http://www.iframe1.com/supervised_user/iframe.html" onload="iframe1loaded=true;"></iframe>
   <iframe src="http://www.iframe2.com/supervised_user/iframe.html" onload="iframe2loaded=true;"></iframe>

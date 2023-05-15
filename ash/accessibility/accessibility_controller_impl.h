@@ -14,6 +14,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -124,8 +125,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
         A11yFeatureType::kNoConflictingFeature;
     bool enabled_ = false;
     const std::string pref_name_;
-    const gfx::VectorIcon* icon_;
-    AccessibilityControllerImpl* const owner_;
+    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+    const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> owner_;
   };
 
   // Helper struct to store information about a11y dialog -- pref name, resource
@@ -536,7 +537,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   int dictation_soda_download_progress_ = 0;
 
   // Client interface in chrome browser.
-  AccessibilityControllerClient* client_ = nullptr;
+  raw_ptr<AccessibilityControllerClient, ExperimentalAsh> client_ = nullptr;
 
   // Features are indexed by A11yFeatureType cast to int.
   std::unique_ptr<Feature> features_[kA11yFeatureTypeCount];
@@ -551,8 +552,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   SelectToSpeakState select_to_speak_state_ =
       SelectToSpeakState::kSelectToSpeakStateInactive;
   std::unique_ptr<SelectToSpeakEventHandler> select_to_speak_event_handler_;
-  SelectToSpeakEventHandlerDelegate* select_to_speak_event_handler_delegate_ =
-      nullptr;
+  raw_ptr<SelectToSpeakEventHandlerDelegate, ExperimentalAsh>
+      select_to_speak_event_handler_delegate_ = nullptr;
   std::unique_ptr<SelectToSpeakMenuBubbleController>
       select_to_speak_bubble_controller_;
 
@@ -560,7 +561,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   std::vector<int> switch_access_keys_to_capture_;
   std::unique_ptr<SwitchAccessMenuBubbleController>
       switch_access_bubble_controller_;
-  AccessibilityEventRewriter* accessibility_event_rewriter_ = nullptr;
+  raw_ptr<AccessibilityEventRewriter, ExperimentalAsh>
+      accessibility_event_rewriter_ = nullptr;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;
@@ -599,7 +601,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // The pref service of the currently active user or the signin profile before
   // user logs in. Can be null in ash_unittests.
-  PrefService* active_user_prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> active_user_prefs_ = nullptr;
 
   // This has to be the first one to be destroyed so we don't get updates about
   // any prefs during destruction.

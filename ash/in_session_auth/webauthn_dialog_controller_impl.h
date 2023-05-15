@@ -10,6 +10,7 @@
 #include "ash/in_session_auth/in_session_auth_dialog.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tracker.h"
 
@@ -79,7 +80,7 @@ class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
   // Called when auth succeeds to close the dialog and report success.
   void OnAuthSuccess();
 
-  InSessionAuthDialogClient* client_ = nullptr;
+  raw_ptr<InSessionAuthDialogClient, ExperimentalAsh> client_ = nullptr;
 
   // Callback to provide result of the entire authentication flow to
   // UserAuthenticationServiceProvider.

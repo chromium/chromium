@@ -11,6 +11,8 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 
 /**
+ * Implemented in Chromium.
+ *
  * Provides dependencies for xsurface at the surface level.
  *
  * Should only be called on the UI thread.
@@ -33,7 +35,11 @@ public interface SurfaceScopeDependencyProvider {
         return false;
     }
 
+    // Warning:
+    // Code below this comment is Feed-specific, and is moving to FeedSurfaceScopeDependencyProvider
+
     /** User-set preference for when videos are eligible to autoplay. */
+    @Deprecated
     public enum AutoplayPreference {
         /** Autoplay is disabled. */
         AUTOPLAY_DISABLED,
@@ -44,11 +50,13 @@ public interface SurfaceScopeDependencyProvider {
     }
 
     /** Returns the user-set preferences for when videos are eligible to autoplay. */
+    @Deprecated
     default AutoplayPreference getAutoplayPreference() {
         return AutoplayPreference.AUTOPLAY_DISABLED;
     }
 
     /** Events that are triggered during the video playing. */
+    @Deprecated
     public @interface VideoPlayEvent {
         // Events applying muted autoplay only.
 
@@ -72,6 +80,7 @@ public interface SurfaceScopeDependencyProvider {
     }
 
     /** Errors occurred during the video player initialization. */
+    @Deprecated
     public @interface VideoInitializationError {
         int CLIENT_LIBRARY_UPDATE_REQUIRED = 0;
         int DEVELOPER_KEY_INVALID = 1;
@@ -88,6 +97,7 @@ public interface SurfaceScopeDependencyProvider {
     }
 
     /** Errors occurred during the video playing. */
+    @Deprecated
     public @interface VideoPlayError {
         int NOT_PLAYABLE = 0;
         int UNAUTHORIZED_OVERLAY = 1;
@@ -106,6 +116,7 @@ public interface SurfaceScopeDependencyProvider {
      * @param isMutedAutoplay Whether the video is currently autoplaying muted.
      * @param event The event to report.
      */
+    @Deprecated
     default void reportVideoPlayEvent(boolean isMutedAutoplay, @VideoPlayEvent int event) {}
 
     /**
@@ -114,6 +125,7 @@ public interface SurfaceScopeDependencyProvider {
      * @param isMutedAutoplay Whether the video is currently autoplaying muted.
      * @param error The error to report.
      */
+    @Deprecated
     default void reportVideoInitializationError(
             boolean isMutedAutoplay, @VideoInitializationError int error) {}
 
@@ -123,11 +135,13 @@ public interface SurfaceScopeDependencyProvider {
      * @param isMutedAutoplay Whether the video is currently autoplaying muted.
      * @param error The error to report.
      */
+    @Deprecated
     default void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {}
 
     /**
      * Returns the bounds of the toolbar in global (root) coordinates.
      */
+    @Deprecated
     default Rect getToolbarGlobalVisibleRect() {
         return new Rect();
     }
@@ -138,6 +152,7 @@ public interface SurfaceScopeDependencyProvider {
      * @param observer The observer to add.
      * @Return a reference to be used when removing the observer, or null if not successful.
      */
+    @Deprecated
     default void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
 
     /**
@@ -145,11 +160,6 @@ public interface SurfaceScopeDependencyProvider {
      *
      * @param observer An Object returned by |addHeaderOffsetObserver|.
      */
-    default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
-
-    /** Returns whether or not activity logging should be enabled. */
     @Deprecated
-    default boolean isActivityLoggingEnabled() {
-        return false;
-    }
+    default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
 }

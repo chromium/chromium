@@ -126,14 +126,11 @@ public class ObservableAndTest {
 
     @Test
     public void testAndCartesianProduct() {
-        ReactiveRecorder r = ReactiveRecorder.record(
-                Observable
-                        .make(observer
-                                -> observer.open(1).and(observer.open(2)).and(observer.open(3)))
-                        .and(Observable.make(observer
-                                -> observer.open("a")
-                                           .and(observer.open("b"))
-                                           .and(observer.open("c")))));
+        Observable<Integer> numbers =
+                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3));
+        Observable<String> letters =
+                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c"));
+        ReactiveRecorder r = ReactiveRecorder.record(numbers.and(letters));
         r.verify()
                 .opened(Both.both(1, "a"))
                 .opened(Both.both(1, "b"))

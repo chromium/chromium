@@ -112,6 +112,12 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     service->CancelDownloads();
     DCHECK_EQ(0, service->NonMaliciousDownloadCount());
 
+    // Take a ScopedProfileKeepAlive for the the deletion process to avoid the
+    // profile from being randomly unloaded.
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+        std::make_unique<ScopedProfileKeepAlive>(
+            profile, ProfileKeepAliveOrigin::kProfileDeletionProcess);
+
     // Close all browser windows before deleting the profile. If the user
     // cancels the closing of any tab in an OnBeforeUnload event, profile
     // deletion is also cancelled. (crbug.com/289390)
@@ -120,10 +126,12 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
         base::BindRepeating(
             &DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion,
             base::Unretained(this), base::Passed(std::move(keep_alive)),
+            base::Passed(std::move(profile_keep_alive)),
             base::Passed(std::move(callback))),
         base::BindRepeating(&CancelProfileDeletion), false);
   } else {
     EnsureActiveProfileExistsBeforeDeletion(std::move(keep_alive),
+                                            /*profile_keep_alive=*/nullptr,
                                             std::move(callback), profile_dir);
   }
 }
@@ -233,6 +241,7 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
 
 void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ProfileLoadedCallback callback,
     const base::FilePath& profile_dir) {
   DCHECK(keep_alive);
@@ -245,12 +254,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
       profile_manager_->GetProfileByPath(last_used_profile_path);
   if (last_used_profile_path != profile_dir &&
       last_used_profile_path != guest_profile_path && last_used_profile) {
-    Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
-    FinishDeletingProfile(
-        profile_dir, last_used_profile_path,
-        profile ? std::make_unique<ScopedProfileKeepAlive>(
-                      profile, ProfileKeepAliveOrigin::kProfileDeletionProcess)
-                : nullptr);
+    FinishDeletingProfile(profile_dir, last_used_profile_path,
+                          std::move(profile_keep_alive));
     return;
   }
 
@@ -261,7 +266,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
     if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
       OnNewActiveProfileInitialized(profile_dir, cur_path, std::move(callback),
-                                    std::move(keep_alive), profile);
+                                    std::move(keep_alive),
+                                    std::move(profile_keep_alive), profile);
       return;
     }
   }
@@ -297,7 +303,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
       fallback_profile_path,
       base::BindOnce(&DeleteProfileHelper::OnNewActiveProfileInitialized,
                      base::Unretained(this), profile_dir, fallback_profile_path,
-                     std::move(callback), std::move(keep_alive)));
+                     std::move(callback), std::move(keep_alive),
+                     std::move(profile_keep_alive)));
 }
 
 void DeleteProfileHelper::FinishDeletingProfile(
@@ -393,6 +400,7 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     const base::FilePath& new_active_profile_path,
     ProfileLoadedCallback callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     Profile* loaded_profile) {
   DCHECK(keep_alive);
   DCHECK(loaded_profile);
@@ -401,17 +409,12 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     // deleted, then retry deleting this profile to redo the logic to load
     // the next available profile.
     EnsureActiveProfileExistsBeforeDeletion(
-        std::move(keep_alive), std::move(callback), profile_to_delete_path);
+        std::move(keep_alive), std::move(profile_keep_alive),
+        std::move(callback), profile_to_delete_path);
     return;
   }
 
-  Profile* profile_to_delete =
-      profile_manager_->GetProfileByPath(profile_to_delete_path);
-  FinishDeletingProfile(
-      profile_to_delete_path, new_active_profile_path,
-      profile_to_delete ? std::make_unique<ScopedProfileKeepAlive>(
-                              profile_to_delete,
-                              ProfileKeepAliveOrigin::kProfileDeletionProcess)
-                        : nullptr);
+  FinishDeletingProfile(profile_to_delete_path, new_active_profile_path,
+                        std::move(profile_keep_alive));
   std::move(callback).Run(loaded_profile);
 }

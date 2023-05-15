@@ -25,9 +25,10 @@ namespace content {
 
 BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
                                        BrowserPluginGuestDelegate* delegate)
-    : WebContentsObserver(web_contents), delegate_(delegate) {
-  DCHECK(web_contents);
-  DCHECK(delegate);
+    : WebContentsObserver(web_contents),
+      delegate_(delegate->GetGuestDelegateWeakPtr()) {
+  CHECK(web_contents);
+  CHECK(delegate_);
   RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Create"));
 }
 
@@ -97,6 +98,11 @@ WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
 }
 
 RenderFrameHostImpl* BrowserPluginGuest::GetProspectiveOuterDocument() {
+  if (!delegate_) {
+    // The guest delegate may only be null during some destruction scenarios.
+    CHECK(web_contents()->IsBeingDestroyed());
+    return nullptr;
+  }
   return static_cast<RenderFrameHostImpl*>(
       delegate_->GetProspectiveOuterDocument());
 }

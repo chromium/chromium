@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
@@ -227,7 +228,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   CrosDisplayConfig* cros_display_config() { return cros_display_config_; }
 
  private:
-  CrosDisplayConfig* cros_display_config_ = nullptr;
+  raw_ptr<CrosDisplayConfig, ExperimentalAsh> cros_display_config_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

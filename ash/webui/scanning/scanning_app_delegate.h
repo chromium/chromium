@@ -9,12 +9,18 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/scanning/mojom/scanning.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ui {
 class SelectFilePolicy;
 }  // namespace ui
+
+namespace content {
+class WebUI;
+}  // namespace content
 
 namespace ash {
 
@@ -22,6 +28,9 @@ namespace ash {
 // UI.
 class ScanningAppDelegate {
  public:
+  using BindScanServiceCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<scanning::mojom::ScanService>)>;
+
   virtual ~ScanningAppDelegate() = default;
 
   // Returns a ChromeSelectFilePolicy used to open a select dialog.
@@ -54,6 +63,9 @@ class ScanningAppDelegate {
   virtual void ShowFileInFilesApp(
       const base::FilePath& path_to_file,
       base::OnceCallback<void(const bool)> callback) = 0;
+
+  virtual BindScanServiceCallback GetBindScanServiceCallback(
+      content::WebUI* web_ui) = 0;
 };
 
 }  // namespace ash

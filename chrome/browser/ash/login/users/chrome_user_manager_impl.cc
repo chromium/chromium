@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
@@ -93,6 +93,7 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -180,42 +181,6 @@ void MaybeStartBluetoothLogging(const AccountId& account_id) {
 
   UpstartClient::Get()->StartJob(kBluetoothLoggingUpstartJob, {},
                                  base::DoNothing());
-}
-
-bool AreRiskyPoliciesUsed(policy::DeviceLocalAccountPolicyBroker* broker) {
-  const policy::PolicyMap& policy_map = broker->core()->store()->policy_map();
-  for (const auto& it : policy_map) {
-    const policy::PolicyDetails* policy_details =
-        policy::GetChromePolicyDetails(it.first);
-    if (!policy_details)
-      continue;
-    for (policy::RiskTag risk_tag : policy_details->risk_tags) {
-      if (risk_tag == policy::RISK_TAG_WEBSITE_SHARING) {
-        VLOG(1) << "Considering managed session risky because " << it.first
-                << " policy was enabled by admin.";
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-bool IsProxyUsed(const PrefService* local_state_prefs) {
-  std::unique_ptr<ProxyConfigDictionary> proxy_config =
-      ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
-          ProfileHelper::Get()->GetSigninProfile()->GetPrefs(),
-          local_state_prefs);
-  ProxyPrefs::ProxyMode mode;
-  if (!proxy_config || !proxy_config->GetMode(&mode))
-    return false;
-  return mode != ProxyPrefs::MODE_DIRECT;
-}
-
-bool PolicyHasWebTrustedAuthorityCertificate(
-    policy::DeviceLocalAccountPolicyBroker* broker) {
-  return policy::UserNetworkConfigurationUpdaterAsh::
-      PolicyHasWebTrustedAuthorityCertificate(
-          broker->core()->store()->policy_map());
 }
 
 void CheckCryptohomeIsMounted(
@@ -313,6 +278,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
+      user_image_manager_registry_(this),
       supervised_user_manager_(new SupervisedUserManagerImpl(this)),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
@@ -450,11 +416,8 @@ void ChromeUserManagerImpl::Shutdown() {
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->RemoveObserver(this);
 
-  for (UserImageManagerMap::iterator it = user_image_managers_.begin(),
-                                     ie = user_image_managers_.end();
-       it != ie; ++it) {
-    it->second->Shutdown();
-  }
+  user_image_manager_registry_.Shutdown();
+
   multi_profile_user_controller_.reset();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
@@ -467,13 +430,7 @@ ChromeUserManagerImpl::GetMultiProfileUserController() {
 
 UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
     const AccountId& account_id) {
-  UserImageManagerMap::iterator ui = user_image_managers_.find(account_id);
-  if (ui != user_image_managers_.end())
-    return ui->second.get();
-  auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
-  UserImageManagerImpl* mgr_raw = mgr.get();
-  user_image_managers_[account_id] = std::move(mgr);
-  return mgr_raw;
+  return user_image_manager_registry_.GetManager(account_id);
 }
 
 SupervisedUserManager* ChromeUserManagerImpl::GetSupervisedUserManager() {
@@ -487,12 +444,6 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
       GetPrimaryUser()->GetType() != user_manager::USER_TYPE_REGULAR) {
     return user_manager::UserList();
   }
-
-  // Multiprofile mode is not allowed on the Active Directory managed devices.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsActiveDirectoryManaged())
-    return user_manager::UserList();
 
   user_manager::UserList result;
   const user_manager::UserList& users = GetUsers();
@@ -672,6 +623,11 @@ bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
 
 bool ChromeUserManagerImpl::IsEphemeralAccountId(
     const AccountId& account_id) const {
+  // Owner account should never be ephemeral.
+  if (account_id == GetOwnerAccountId()) {
+    return false;
+  }
+
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return GetEphemeralModeConfig().IsAccountIdIncluded(account_id) &&
@@ -679,16 +635,8 @@ bool ChromeUserManagerImpl::IsEphemeralAccountId(
           GetOwnerAccountId().is_valid());
 }
 
-void ChromeUserManagerImpl::OnUserRemoved(const AccountId& account_id) {
-  RemoveReportingUser(account_id);
-}
-
 const std::string& ChromeUserManagerImpl::GetApplicationLocale() const {
   return g_browser_process->GetApplicationLocale();
-}
-
-PrefService* ChromeUserManagerImpl::GetLocalState() const {
-  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
@@ -716,12 +664,6 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   }
 }
 
-void ChromeUserManagerImpl::PerformPostUserListLoadingActions() {
-  for (user_manager::User* user : users_) {
-    GetUserImageManager(user->GetAccountId())->LoadUserImage();
-  }
-}
-
 void ChromeUserManagerImpl::PerformPostUserLoggedInActions(
     bool browser_restart) {
   // Initialize the session length limiter and start it only if
@@ -742,7 +684,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     return;
 
   SetEphemeralModeConfig(EphemeralModeConfig());
-  SetOwnerId(EmptyAccountId());
+  ResetOwnerId();
 
   // Schedule a callback if device policy has not yet been verified.
   if (CrosSettingsProvider::TRUSTED !=
@@ -823,7 +765,10 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
 
   MaybeStartBluetoothLogging(account_id);
 
-  GetUserImageManager(account_id)->UserLoggedIn(IsCurrentUserNew(), false);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 
   // Make sure that new data is persisted to Local State.
@@ -836,7 +781,10 @@ void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChromeUserManager::RegularUserLoggedInAsEphemeral(account_id, user_type);
 
-  GetUserImageManager(account_id)->UserLoggedIn(IsCurrentUserNew(), false);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
@@ -845,10 +793,10 @@ void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
   SetIsCurrentUserNew(true);
   active_user_ = user;
 
-  // The UserImageManager chooses a random avatar picture when a user logs in
-  // for the first time. Tell the UserImageManager that this user is not new to
-  // prevent the avatar from getting changed.
-  GetUserImageManager(user->GetAccountId())->UserLoggedIn(false, true);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
 
   // For public account, it's possible that the user-policy controlled wallpaper
   // was fetched/cleared at the login screen (while for a regular user it was
@@ -1075,11 +1023,8 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     }
   }
 
-  for (user_manager::UserList::iterator
-           ui = users_.begin(),
-           ue = users_.begin() + device_local_accounts.size();
-       ui != ue; ++ui) {
-    GetUserImageManager((*ui)->GetAccountId())->LoadUserImage();
+  for (auto& observer : observer_list_) {
+    observer.OnDeviceLocalUserListUpdated();
   }
 
   // Remove data belonging to device local accounts that are no longer found on
@@ -1102,38 +1047,6 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
       SaveUserDisplayName(AccountId::FromUserEmail(user_id),
                           base::UTF8ToUTF16(display_name));
     }
-  }
-}
-
-UserFlow* ChromeUserManagerImpl::GetCurrentUserFlow() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsUserLoggedIn())
-    return GetDefaultUserFlow();
-  return GetUserFlow(GetActiveUser()->GetAccountId());
-}
-
-UserFlow* ChromeUserManagerImpl::GetUserFlow(
-    const AccountId& account_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FlowMap::const_iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end())
-    return it->second;
-  return GetDefaultUserFlow();
-}
-
-void ChromeUserManagerImpl::SetUserFlow(const AccountId& account_id,
-                                        UserFlow* flow) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ResetUserFlow(account_id);
-  specific_flows_[account_id] = flow;
-}
-
-void ChromeUserManagerImpl::ResetUserFlow(const AccountId& account_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FlowMap::iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end()) {
-    delete it->second;
-    specific_flows_.erase(it);
   }
 }
 
@@ -1163,8 +1076,9 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
   if (user) {
     user->SetProfileIsCreated();
 
-    if (user->HasGaiaAccount())
-      GetUserImageManager(user->GetAccountId())->UserProfileCreated();
+    for (auto& observer : observer_list_) {
+      observer.OnUserProfileCreated(*user);
+    }
 
     // Managed Guest Sessions can be lockable if launched via the chrome.login
     // extension API.
@@ -1195,13 +1109,6 @@ bool ChromeUserManagerImpl::IsUserAllowed(
   return chrome_user_manager_util::IsUserAllowed(
       user, IsGuestSessionAllowed(),
       user.HasGaiaAccount() && IsGaiaUserAllowed(user));
-}
-
-UserFlow* ChromeUserManagerImpl::GetDefaultUserFlow() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!default_flow_.get())
-    default_flow_ = std::make_unique<DefaultUserFlow>();
-  return default_flow_.get();
 }
 
 void ChromeUserManagerImpl::NotifyUserAddedToSession(
@@ -1266,34 +1173,18 @@ void ChromeUserManagerImpl::UpdateUserTimeZoneRefresher(Profile* profile) {
 
 void ChromeUserManagerImpl::SetUserAffiliation(
     const AccountId& account_id,
-    const AffiliationIDSet& user_affiliation_ids) {
+    const base::flat_set<std::string>& user_affiliation_ids) {
   user_manager::User* user = FindUserAndModify(account_id);
 
   if (user) {
     policy::BrowserPolicyConnectorAsh const* const connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    const bool is_affiliated = IsUserAffiliated(
-        user_affiliation_ids, connector->GetDeviceAffiliationIDs(),
+    const bool is_affiliated = policy::IsUserAffiliated(
+        user_affiliation_ids, connector->device_affiliation_ids(),
         account_id.GetUserEmail());
     user->SetAffiliation(is_affiliated);
-
-    if (user->GetType() == user_manager::USER_TYPE_REGULAR) {
-      if (is_affiliated) {
-        AddReportingUser(account_id);
-      } else {
-        RemoveReportingUser(account_id);
-      }
-    }
+    NotifyUserAffiliationUpdated(*user);
   }
-}
-
-bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
-    policy::DeviceLocalAccountPolicyBroker* broker) const {
-  return AreRiskyPoliciesUsed(broker) ||
-         g_browser_process->local_state()->GetBoolean(
-             ::prefs::kManagedSessionUseFullLoginWarning) ||
-         PolicyHasWebTrustedAuthorityCertificate(broker) ||
-         IsProxyUsed(GetLocalState());
 }
 
 const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {
@@ -1325,13 +1216,6 @@ bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
 
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
-  const policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Supervised accounts are not allowed on the Active Directory devices. It
-  // also makes sure "locally-managed.localhost" would work properly and would
-  // not be detected as supervised users.
-  if (connector->IsActiveDirectoryManaged())
-    return false;
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
 }

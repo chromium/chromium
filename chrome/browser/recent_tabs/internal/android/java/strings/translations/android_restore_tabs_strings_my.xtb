@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="my">
+<translation id="1356944128023012143">အသစ်ပြန်ယူခြင်း လုပ်ငန်းစဉ်ရှိ စင့်ခ်လုပ်ထားသော စက်စာရင်းနှင့် ၎င်းစက်များမှ ပြန်ယူရန် ရွေးထားသောတဘ်များကို ပိတ်လိုက်သည်။</translation>
+<translation id="1816430105422765050">ဤမီနူး အကြောင်းအရာအောက်ရှိ အခြားစင့်ခ်လုပ်ထားသော စက်များသို့ ပြောင်းနိုင်သည်။</translation>
+<translation id="3347725959865138210">တဘ်များ ရယူလိုသော စက်ကို ရွေးပါ</translation>
+<translation id="3575801299326994724">လက်ရှိ ရွေးထားသောစက်မှ ပြန်ယူရန် ရွေးချယ်ထားသောတဘ်များကို စစ်ပါ။</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်၊ နောက်ဆုံးအပ်ဒိတ်- <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> တဘ်၊ နောက်ဆုံးအပ်ဒိတ်- <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">နောက်သို့</translation>
+<translation id="3983305234037158273">တဘ်ပြန်ယူခြင်းအတွက် စင့်ခ်လုပ်ထားသောစက်များကို ထိရုံဖြင့် ရရှိနိုင်သည်။ လက်ရှိစက်အတွက် ရွေးထားသောတဘ်များကို ထိရုံဖြင့် စစ်ရန် (သို့) ပြန်ယူရန် သွားကြည့်ပါ။ ကီးဘုတ် ဖျောက်ထားသည်။</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု ဖွင့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု ဖွင့်ရန်}}</translation>
+<translation id="4811934403802581334">လက်ရှိ ရွေးထားသောစက်မှ ရွေးချယ်ထားသောတဘ်အားလုံးကို ပြန်ယူပါမည်။</translation>
+<translation id="5336031759968328813">တဘ်အားလုံး စစ်ရန်</translation>
+<translation id="8725404154479306799">စက်အဟောင်းများတွင် ကျန်ခဲ့သော တဘ်များ ရယူခြင်း</translation>
+</translationbundle>

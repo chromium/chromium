@@ -377,7 +377,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (UNLIKELY(text_item.IsSymbolMarker())) {
-    if (!IsA<LayoutCounter>(layout_object)) {
+    if (!RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
+        !IsA<LayoutCounter>(layout_object)) {
       // The NGInlineItem of marker might be Split(). To avoid calling
       // PaintSymbol multiple times, only call it the first time. For an
       // outside marker, this is when StartOffset is 0. But for an inside

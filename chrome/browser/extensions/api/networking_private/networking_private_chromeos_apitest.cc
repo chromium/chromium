@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -29,7 +30,6 @@
 #include "extensions/browser/api/networking_private/networking_private_chromeos.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -504,7 +504,7 @@ class NetworkingPrivateChromeOSApiTestLacros
   bool SetUpAsh() {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kBindShillClientTestInterfaceMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";
@@ -526,7 +526,7 @@ class NetworkingPrivateChromeOSApiTestLacros
   std::string GetSanitizedActiveUsername() override {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kGetSanitizedActiveUsernameMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";
@@ -1065,18 +1065,15 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
   SetupCellular();
   // Create fake list of found networks.
   base::Value::List found_networks =
-      extensions::ListBuilder()
-          .Append(extensions::DictionaryBuilder()
+      base::Value::List()
+          .Append(base::Value::Dict()
                       .Set(shill::kNetworkIdProperty, "network1")
                       .Set(shill::kTechnologyProperty, "GSM")
-                      .Set(shill::kStatusProperty, "current")
-                      .Build())
-          .Append(extensions::DictionaryBuilder()
+                      .Set(shill::kStatusProperty, "current"))
+          .Append(base::Value::Dict()
                       .Set(shill::kNetworkIdProperty, "network2")
                       .Set(shill::kTechnologyProperty, "GSM")
-                      .Set(shill::kStatusProperty, "available")
-                      .Build())
-          .Build();
+                      .Set(shill::kStatusProperty, "available"));
   SetDeviceProperty(kCellularDevicePath, shill::kFoundNetworksProperty,
                     base::Value(std::move(found_networks)));
   EXPECT_TRUE(RunNetworkingSubtest("selectCellularMobileNetwork")) << message_;

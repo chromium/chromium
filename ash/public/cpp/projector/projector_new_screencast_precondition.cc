@@ -4,14 +4,7 @@
 
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 
-#include "base/values.h"
-
 namespace ash {
-
-namespace {
-constexpr char kState[] = "state";
-constexpr char kReasons[] = "reasons";
-}  // namespace
 
 NewScreencastPrecondition::NewScreencastPrecondition() = default;
 
@@ -27,18 +20,6 @@ NewScreencastPrecondition& NewScreencastPrecondition::operator=(
     const NewScreencastPrecondition&) = default;
 
 NewScreencastPrecondition::~NewScreencastPrecondition() = default;
-
-base::Value NewScreencastPrecondition::ToValue() const {
-  base::Value::Dict result;
-  result.Set(kState, static_cast<int>(state));
-
-  base::Value::List reasons_value;
-  for (const auto& reason : reasons)
-    reasons_value.Append(static_cast<int>(reason));
-
-  result.Set(kReasons, std::move(reasons_value));
-  return base::Value(std::move(result));
-}
 
 bool NewScreencastPrecondition::operator==(
     const NewScreencastPrecondition& rhs) const {

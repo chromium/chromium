@@ -29,10 +29,6 @@ class DeviceAttributes {
   // identifies the SAML settings for the device.
   virtual std::string GetSSOProfile() const = 0;
 
-  // Returns the Kerberos realm (aka Windows Domain) if the device is managed by
-  // Active Directory.
-  virtual std::string GetRealm() const = 0;
-
   // Returns the device asset ID if it is set.
   virtual std::string GetDeviceAssetID() const = 0;
 

@@ -49,11 +49,11 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 dialog child_ids=2,3 (0, 0)-(800, 900)\n"
-        "  id=2 button offset_container_id=1 (0, 1)-(2, 3)"
+        "id=-2 dialog child_ids=-3,-4 (0, 0)-(800, 900)\n"
+        "  id=-3 button offset_container_id=-2 (0, 1)-(2, 3)"
         " transform=[ 0 -1 0 0\n  1 0 0 0\n  0 0 1 0\n  0 0 0 1 ]\n"
         "\n"
-        "  id=3 genericContainer offset_container_id=1 (0, 0)-(5, 5) "
+        "  id=-4 genericContainer offset_container_id=-2 (0, 0)-(5, 5) "
         "role_description=Signature\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
@@ -114,14 +114,19 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 region child_ids=2 (0, 0)-(800, 900) "
+        "AXTreeUpdate: root id -2\n"
+        "id=-2 region child_ids=-3,-4,-6 (0, 0)-(800, 900) "
         "is_page_breaking_object=true\n"
-        "  id=2 staticText name=Hello world child_ids=3 offset_container_id=1 "
-        "(100, 100)-(500, 20) "
+        "  id=-3 status name=Start of extracted text name_from=attribute"
+        " (0, 0)-(1, 1)\n"
+        "  id=-4 staticText name=Hello world child_ids=-5 "
+        "offset_container_id=-2 (100, 100)-(500, 20) "
         "text_direction=rtl language=en\n"
-        "    id=3 inlineTextBox name=Hello world (100, 100)-(500, 20) "
+        "    id=-5 inlineTextBox name=Hello world (100, 100)-(500, 20) "
         "background_color=&C350 color=&61A8 text_direction=rtl language=en "
-        "word_starts=0,6 word_ends=6,11\n");
+        "word_starts=0,6 word_ends=6,11\n"
+        "  id=-6 status name=End of extracted text name_from=attribute"
+        " (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }

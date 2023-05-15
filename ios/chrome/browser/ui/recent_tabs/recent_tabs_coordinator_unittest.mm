@@ -12,14 +12,16 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/fake_model_type_controller_delegate.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_user_events/global_id_mapper.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -30,7 +32,6 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -177,7 +178,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             chrome_browser_state_.get()));
     ON_CALL(*syncSetupService, CanSyncFeatureStart())
         .WillByDefault(Return(syncEnabled));
-    ON_CALL(*syncSetupService, IsDataTypePreferred(syncer::PROXY_TABS))
+    ON_CALL(*syncSetupService,
+            IsDataTypePreferred(syncer::UserSelectableType::kTabs))
         .WillByDefault(Return(true));
 
     if (syncCompleted) {

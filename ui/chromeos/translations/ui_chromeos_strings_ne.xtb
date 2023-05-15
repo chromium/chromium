@@ -166,7 +166,6 @@
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="2377590462528165447">Linux सँग <ph name="NUMBER_OF_ITEMS" /> फोल्डरहरू आदान प्रदान गरिए</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> फाइलहरू चयन भए</translation>
 <translation id="2383454254762599978">ट्र्यासमा सार्नुहोस्</translation>
 <translation id="2387458720915042159">प्रोक्सी जडानको प्रकार</translation>
 <translation id="2389832672041313158">बर्मेली/म्यान्मार</translation>
@@ -215,7 +214,7 @@
 <translation id="2781645665747935084">बेल्गियम</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2802583107108007218">यी प्रतिबन्धहरूका बारेमा थप जान्नुहोस्</translation>
-<translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
+<translation id="2803375539583399270">PIN हाल्नुहोस्</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
 <translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">हालसालै कुनै पनि भिडियो हेरिएको छैन</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> वटा फाइलहरू चयन गरिएका छन्</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, <ph name="CONNECTION_STATUS" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">यन्त्र पढ्ने-मात्र मोडमा छ</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
 <translation id="482932175346970750">आफ्नो ब्राउजरमा <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप गर्नुहोस्</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> वस्तुहरू चयन गरियो</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -578,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
 <translation id="5580591966435005537">भर्चुअल मेसिन</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
 <translation id="5583664733673201137">विरामको चौडाइ पूर्ण छ</translation>
@@ -588,7 +588,7 @@
 <translation id="5625294776298156701">तमिल Tamil99 किबोर्ड</translation>
 <translation id="5633226425545095130">तपाईंले यो वस्तु सार्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
-<translation id="5669691691057771421">नयाँ PIN प्रविष्टि गर्नुहोस्</translation>
+<translation id="5669691691057771421">नयाँ PIN हाल्नुहोस्</translation>
 <translation id="5678784840044122290">Linux एप तपाईंको टर्मिनलअन्तर्गत उपलब्ध हुने छ तपाईंको लन्चरमा कुनै आइकन देखाउन पनि सक्छ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />अभिलेख वा भर्चुअल डिस्कबाट विच्छेदन गर्न सकिँदैन<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
@@ -600,6 +600,7 @@
 <translation id="5724172041621205163">थाई पत्ताचोते किबोर्ड</translation>
 <translation id="57383366388012121">गत महिना</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> वटा सामग्री चयन गरिएका छन्</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
 <translation id="5775750595919327203">उर्दू</translation>
@@ -755,7 +756,6 @@
 <translation id="6989942356279143254">स्विडिस</translation>
 <translation id="6990081529015358884">तपाईंको खाली स्थान समाप्त भएको छ</translation>
 <translation id="6993826899923627728">यी फाइलहरू ट्र्यासमा छन्</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डरहरू चयन गरियो</translation>
 <translation id="7008426324576352165">अपलोड गर्ने कार्य पूरा गर्न तपाईंको सङ्गठनले भण्डारणमा थप ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="7009985720488544166">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल सार्न पाइँदैन</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +790,7 @@
 <translation id="7252604552361840748">माथि उल्लिखित एक्स्टेन्सन खोज्नुहोस्</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
+<translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>
 <translation id="7292816689782057017">एड्मिनले तोक्नुभएको नीतिअनुसार केही लोकेसनहरूमा सेभ गर्न मिल्दैन।</translation>
 <translation id="7294063083760278948">तेलगू लिपि रूपान्तरण</translation>
 <translation id="7295662345261934369">अरूसँग सेयर गर्नुहोस्</translation>

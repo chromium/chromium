@@ -11,15 +11,9 @@
 
 namespace ash {
 
-void ExecuteScriptAndExtractInt(content::WebContents* web_contents,
-                                const std::string& script,
-                                int* result) {
-  *result = content::EvalJs(web_contents, script).ExtractInt();
-}
-
 void ExecuteScript(content::WebContents* web_contents,
                    const std::string& script) {
-  ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
 }
 
 gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
@@ -32,11 +26,10 @@ gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
       var bounds = element.getBoundingClientRect();
     )",
                                                  field_id.c_str()));
-  int top, left, width, height;
-  ExecuteScriptAndExtractInt(web_contents, "bounds.top", &top);
-  ExecuteScriptAndExtractInt(web_contents, "bounds.left", &left);
-  ExecuteScriptAndExtractInt(web_contents, "bounds.width", &width);
-  ExecuteScriptAndExtractInt(web_contents, "bounds.height", &height);
+  int top = content::EvalJs(web_contents, "bounds.top").ExtractInt();
+  int left = content::EvalJs(web_contents, "bounds.left").ExtractInt();
+  int width = content::EvalJs(web_contents, "bounds.width").ExtractInt();
+  int height = content::EvalJs(web_contents, "bounds.height").ExtractInt();
   gfx::Rect rect(left, top, width, height);
 
   content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();

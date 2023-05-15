@@ -4,6 +4,8 @@
 
 package org.chromium.base.task;
 
+import android.os.Handler;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -130,11 +132,9 @@ public class PostTask {
      *
      * Use this only for trivial tasks as it ignores task priorities.
      *
-     * @deprecated In tests, use {@link
-     *         org.chromium.content_public.browser.test.util.TestThreadUtils#runOnUiThreadBlocking(Runnable)
-     *         TestThreadUtils.runOnUiThreadBlocking(Runnable)} instead. Non-test usage is heavily
-     *         discouraged. For non-tests, use callbacks rather than blocking threads. If you
-     * absolutely must block the thread, use FutureTask.get().
+     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
+     * callbacks rather than blocking threads.
+     *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      * @return The result of the callable
@@ -154,11 +154,9 @@ public class PostTask {
      *
      * Use this only for trivial tasks as it ignores task priorities.
      *
-     * @deprecated In tests, use {@link
-     *         org.chromium.content_public.browser.test.util.TestThreadUtils#runOnUiThreadBlocking(Runnable)
-     *         TestThreadUtils.runOnUiThreadBlocking(Runnable)} instead. Non-test usage is heavily
-     *         discouraged. For non-tests, use callbacks rather than blocking threads. If you
-     * absolutely must block the thread, use FutureTask.get().
+     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
+     * callbacks rather than blocking threads.
+     *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      */
@@ -273,12 +271,15 @@ public class PostTask {
     }
 
     /** Called once when the UI thread has been initialized */
-    public static void onUiThreadReady() {
+    public static void onUiThreadReady(Handler uiThreadHandler) {
         assert sUiThreadTaskExecutor == null;
-        sUiThreadTaskExecutor = new UiThreadTaskExecutor();
+        sUiThreadTaskExecutor = new UiThreadTaskExecutor(uiThreadHandler);
     }
 
     public static void resetUiThreadForTesting() {
+        // UI Thread cannot be reset cleanly after native initialization.
+        assert !sNativeInitialized;
+
         sUiThreadTaskExecutor = null;
     }
 }

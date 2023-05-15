@@ -97,12 +97,13 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
       ui::ColorId separator_color_id,
       ui::ColorId dropdown_color_id,
       ui::ColorId selected_color_id,
+      ui::ColorId focus_ring_color_id,
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing) {
     toolbar_view_->OnReadAnythingThemeChanged(
         font_name, font_scale, foreground_color_id, background_color_id,
-        separator_color_id, dropdown_color_id, selected_color_id, line_spacing,
-        letter_spacing);
+        separator_color_id, dropdown_color_id, selected_color_id,
+        focus_ring_color_id, line_spacing, letter_spacing);
   }
 
   views::Button::ButtonState GetDecreaseSizeButtonState() {
@@ -111,6 +112,18 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
 
   views::Button::ButtonState GetIncreaseSizeButtonState() {
     return toolbar_view_->increase_text_size_button_->GetState();
+  }
+
+  std::vector<views::View*> GetChildren() {
+    std::vector<views::View*> children;
+    children.emplace_back(toolbar_view_->font_combobox_);
+    children.emplace_back(toolbar_view_->increase_text_size_button_);
+    children.emplace_back(toolbar_view_->decrease_text_size_button_);
+    children.emplace_back(toolbar_view_->colors_button_);
+    children.emplace_back(toolbar_view_->line_spacing_button_);
+    children.emplace_back(toolbar_view_->letter_spacing_button_);
+    children.shrink_to_fit();
+    return children;
   }
 
  protected:
@@ -128,6 +141,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
       "", kReadAnythingMinimumFontScale, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
+      kColorReadAnythingFocusRingBackground,
       read_anything::mojom::LineSpacing::kStandard,
       read_anything::mojom::LetterSpacing::kStandard);
 
@@ -155,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
       "", kReadAnythingMaximumFontScale, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
+      kColorReadAnythingFocusRingBackground,
       read_anything::mojom::LineSpacing::kStandard,
       read_anything::mojom::LetterSpacing::kStandard);
 
@@ -202,4 +217,20 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, AccessibleLabel) {
   EXPECT_EQ(ax::mojom::Role::kToolbar, node_data.role);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_READING_MODE_TOOLBAR_LABEL),
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
+                       AllToolbarElementsInOneGroup) {
+  for (views::View* view : GetChildren()) {
+    EXPECT_EQ(view->GetGroup(), kToolbarGroupId);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
+                       OnlyFirstElementIsGroupTraversable) {
+  std::vector<views::View*> children = GetChildren();
+  EXPECT_TRUE(children.front()->IsGroupFocusTraversable());
+  for (size_t i = 1; i < children.size(); i++) {
+    EXPECT_FALSE(children.at(i)->IsGroupFocusTraversable());
+  }
 }

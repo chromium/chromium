@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,7 +43,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -129,9 +129,11 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
                       base::TimeTicks::Now() - construction_time_);
   }
 
-  PolicyService* const device_wide_policy_service_;
-  const ProxyPolicyProvider* const proxy_policy_provider_;
-  const ConfigurationPolicyProvider* const source_policy_provider_;
+  const raw_ptr<PolicyService, ExperimentalAsh> device_wide_policy_service_;
+  const raw_ptr<const ProxyPolicyProvider, ExperimentalAsh>
+      proxy_policy_provider_;
+  const raw_ptr<const ConfigurationPolicyProvider, ExperimentalAsh>
+      source_policy_provider_;
   const base::TimeTicks construction_time_ = base::TimeTicks::Now();
   base::OnceClosure proxied_policies_propagated_callback_;
   base::OneShotTimer timeout_timer_;
@@ -203,10 +205,6 @@ void ProfilePolicyConnector::Init(
   if (browser_policy_connector->GetDeviceCloudPolicyManager()) {
     policy_providers_.push_back(
         browser_policy_connector->GetDeviceCloudPolicyManager());
-  }
-  if (browser_policy_connector->GetDeviceActiveDirectoryPolicyManager()) {
-    policy_providers_.push_back(
-        browser_policy_connector->GetDeviceActiveDirectoryPolicyManager());
   }
 #else
   ConfigurationPolicyProvider* machine_level_user_cloud_policy_provider =

@@ -5,8 +5,11 @@
 #ifndef ASH_STYLE_TAB_SLIDER_BUTTON_H_
 #define ASH_STYLE_TAB_SLIDER_BUTTON_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/style/tab_slider.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -32,7 +35,8 @@ class ASH_EXPORT TabSliderButton : public views::Button {
  public:
   METADATA_HEADER(TabSliderButton);
 
-  explicit TabSliderButton(PressedCallback callback);
+  TabSliderButton(PressedCallback callback,
+                  const std::u16string& tooltip_text_base);
   TabSliderButton(const TabSliderButton&) = delete;
   TabSliderButton& operator=(const TabSliderButton&) = delete;
   ~TabSliderButton() override;
@@ -59,13 +63,21 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   // Called when the button selected state is changed.
   virtual void OnSelectedChanged() = 0;
 
+  // Updates the accessible name and tooltip with `tooltip_text_base_` and the
+  // buttons state.
+  void UpdateTooltipAndAccessibleName();
+
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
 
   // Not owned by button.
-  TabSlider* tab_slider_ = nullptr;
+  raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
   // The selected state indicating if the button is selected.
   bool selected_ = false;
+
+  // The base for the buttons accessible name and tooltip. The state is appended
+  // in `UpdateAccessibleName()`.
+  const std::u16string tooltip_text_base_;
 };
 
 // An extension of `TabSliderButton` which is a circle button with an icon in
@@ -77,7 +89,7 @@ class ASH_EXPORT IconSliderButton : public TabSliderButton {
 
   IconSliderButton(PressedCallback callback,
                    const gfx::VectorIcon* icon,
-                   const std::u16string& tooltip_text = u"");
+                   const std::u16string& tooltip_text_base = u"");
   IconSliderButton(const IconSliderButton&) = delete;
   IconSliderButton& operator=(const IconSliderButton&) = delete;
   ~IconSliderButton() override;
@@ -94,7 +106,7 @@ class ASH_EXPORT IconSliderButton : public TabSliderButton {
   void OnThemeChanged() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  const gfx::VectorIcon* const icon_;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 // An extension of `TabSliderButton` which is rounded rect button with a label
@@ -106,7 +118,7 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
 
   LabelSliderButton(PressedCallback callback,
                     const std::u16string& text,
-                    const std::u16string& tooltip_text = u"");
+                    const std::u16string& tooltip_text_base = u"");
   LabelSliderButton(const LabelSliderButton&) = delete;
   LabelSliderButton& operator=(const LabelSliderButton&) = delete;
   ~LabelSliderButton() override;
@@ -128,7 +140,7 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
   void StateChanged(ButtonState old_state) override;
 
   // Owned by the view hierarchy.
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 // A `TabSliderButton` which shows an icon above a label.
@@ -139,7 +151,7 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   IconLabelSliderButton(PressedCallback callback,
                         const gfx::VectorIcon* icon,
                         const std::u16string& text,
-                        const std::u16string& tooltip_text = u"");
+                        const std::u16string& tooltip_text_base = u"");
   IconLabelSliderButton(const IconLabelSliderButton&) = delete;
   IconLabelSliderButton& operator=(const IconLabelSliderButton&) = delete;
   ~IconLabelSliderButton() override;
@@ -156,8 +168,8 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   void OnSelectedChanged() override;
 
   // Owned by the views hierarchy.
-  views::ImageView* const image_view_;
-  views::Label* const label_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 }  // namespace ash

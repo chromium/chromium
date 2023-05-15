@@ -8,7 +8,7 @@
 //     com/google/vr/ndk/base/GvrApi
 
 // Local modification includes:
-// 1. Remove all implementaiton, only keep definition.
+// 1. Remove all implementation, only keep definition.
 // 2. Use absolute path instead of relative path.
 // 3. Removed all helper functions such as: Create.
 // 4. Removed external functions that don't have implementation in shim file.

@@ -4,8 +4,6 @@
 
 #include "ash/wm/test_child_modal_parent.h"
 
-#include <memory>
-
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
@@ -14,7 +12,6 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
 
@@ -98,8 +95,8 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
                           base::Unretained(this)),
       u"Show/Hide Child Modal Window");
   button_ = AddChildView(std::move(button));
-  AddChildView(textfield_);
-  AddChildView(host_);
+  AddChildView(textfield_.get());
+  AddChildView(host_.get());
 }
 
 TestChildModalParent::~TestChildModalParent() = default;

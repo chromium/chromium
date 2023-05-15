@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -19,6 +20,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 class MultitaskMenuNudgeControllerTest;
+class MultitaskMenuNudgeTest;
 }
 
 namespace ui {
@@ -51,6 +53,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     virtual void SetNudgePreferences(bool tablet_mode,
                                      int count,
                                      base::Time time) = 0;
+    // Returns true if the user has logged in for the first time. We don't want
+    // to show the nudge in this case.
+    virtual bool IsUserNew() const;
 
    protected:
     Delegate();
@@ -99,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
 
  private:
   friend class ::ash::MultitaskMenuNudgeControllerTest;
+  friend class ::ash::MultitaskMenuNudgeTest;
 
   // Used to control the clock in a test setting.
   static void SetOverrideClockForTesting(base::Clock* test_clock);
@@ -136,11 +142,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   std::unique_ptr<ui::Layer> pulse_layer_;
 
   // The app window that the nudge is associated with.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // The view that the nudge will be anchored to. It is the maximize or resize
   // button on `window_`'s frame. Null in tablet mode.
-  views::View* anchor_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

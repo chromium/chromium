@@ -114,6 +114,11 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     iteration_start_ = iteration_start;
   }
 
+  bool active_at_boundary() const { return active_at_boundary_; }
+  void set_active_at_boundary(bool active_at_boundary) {
+    active_at_boundary_ = active_at_boundary;
+  }
+
   AnimationCurve* curve() { return curve_.get(); }
   const AnimationCurve* curve() const { return curve_.get(); }
 
@@ -218,6 +223,8 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // about these values.
   base::TimeTicks pause_time_;
   base::TimeDelta total_paused_duration_;
+
+  bool active_at_boundary_ = false;
 };
 
 }  // namespace gfx

@@ -357,7 +357,7 @@ TEST_F(ReadableStreamTest, Tee) {
 
   ReadableStream* branch1 = nullptr;
   ReadableStream* branch2 = nullptr;
-  stream->Tee(script_state, &branch1, &branch2, ASSERT_NO_EXCEPTION);
+  stream->Tee(script_state, &branch1, &branch2, false, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->IsLocked());
   EXPECT_FALSE(stream->IsDisturbed());

@@ -30,18 +30,6 @@ Test support code (TestFooDelegate, FooControllerTestApi, etc.) lives in the
 same directory as the class under test (e.g. //ash/foo rather than //ash/test).
 Test code uses namespace ash; there is no special "test" namespace.
 
-base::raw_ptr<>
----------------
-Use of [base::raw_ptr<>](/base/memory/raw_ptr.md) is *allowed* but
-*not required* in //ash.
-
-Chromium's Windows and Android codebases were converted in mid-2022 to use
-base:raw_ptr<> for class and struct members as part of the "MiraclePtr" security
-project. ChromeOS code was not converted, hence //ash was not converted.
-
-Until //ash is bulk converted (no ETA yet), feel free to use traditional
-pointer members if that would be more consistent with surrounding code.
-
 Prefs
 -----
 Ash supports both per-user prefs and device-wide prefs. These are called

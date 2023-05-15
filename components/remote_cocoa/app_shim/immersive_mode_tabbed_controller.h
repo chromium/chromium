@@ -19,8 +19,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
  public:
   explicit ImmersiveModeTabbedController(NSWindow* browser_window,
                                          NSWindow* overlay_window,
-                                         NSWindow* tab_window,
-                                         base::OnceClosure callback);
+                                         NSWindow* tab_window);
   ImmersiveModeTabbedController(const ImmersiveModeTabbedController&) = delete;
   ImmersiveModeTabbedController& operator=(
       const ImmersiveModeTabbedController&) = delete;
@@ -32,7 +31,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   // UpdateToolbarVisibility(). Remove this comment once the bug has been
   // resolved.
   void Enable() override;
-  void FullscreenTransitionCompleted() override;
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
   void RevealLock() override;
@@ -40,6 +38,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void OnTitlebarFrameDidChange(NSRect frame) override;
   void OnChildWindowAdded(NSWindow* child) override;
   void OnChildWindowRemoved(NSWindow* child) override;
+  bool ShouldObserveChildWindow(NSWindow* child) override;
   bool IsTabbed() override;
 
  private:

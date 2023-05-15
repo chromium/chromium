@@ -9,10 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.SERVER_CERT_PEM;
-import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
+import static org.chromium.net.Http2TestServer.SERVER_CERT_PEM;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -65,9 +64,7 @@ public class PkpTest {
             return;
         }
         System.loadLibrary("cronet_tests");
-        TestFilesInstaller.installIfNeeded(getContext());
-        assertTrue(Http2TestServer.startHttp2TestServer(
-                getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM));
+        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
         mServerHost = "test.example.com";
         mServerUrl = "https://" + mServerHost + ":" + Http2TestServer.getServerPort();
         mDomain = mServerHost.substring(mServerHost.indexOf('.') + 1, mServerHost.length());

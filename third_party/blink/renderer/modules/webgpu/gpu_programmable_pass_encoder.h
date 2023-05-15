@@ -7,10 +7,11 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 
 namespace blink {
 
-class GPUProgrammablePassEncoder {
+class GPUProgrammablePassEncoder : public NoAllocDirectCallHost {
  protected:
   bool ValidateSetBindGroupDynamicOffsets(
       const FlexibleUint32Array& dynamic_offsets_data,

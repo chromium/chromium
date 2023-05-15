@@ -20,10 +20,16 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
   static constexpr unsigned kImplicitOuterLayerOrder =
       std::numeric_limits<unsigned>::max();
 
-  explicit CascadeLayerMap(const ActiveStyleSheetVector&);
+  CascadeLayerMap(const ActiveStyleSheetVector& sheets,
+                  const LayerMap& super_rule_set_mapping);
 
   unsigned GetLayerOrder(const CascadeLayer& layer) const {
-    return layer_order_map_.at(&layer);
+    const auto mapped_layer = super_rule_set_mapping_.find(&layer);
+    if (mapped_layer != super_rule_set_mapping_.end()) {
+      return layer_order_map_.at(mapped_layer->value);
+    } else {
+      return layer_order_map_.at(&layer);
+    }
   }
 
   // Compare the layer orders of two CascadeLayer objects, possibly from
@@ -38,6 +44,7 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
  private:
   Member<const CascadeLayer> canonical_root_layer_;
   HeapHashMap<Member<const CascadeLayer>, unsigned> layer_order_map_;
+  LayerMap super_rule_set_mapping_;
 };
 
 }  // namespace blink

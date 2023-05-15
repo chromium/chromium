@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -35,7 +36,7 @@ struct TabRendererData {
   // process died unexpectedly).
   bool IsCrashed() const;
 
-  gfx::ImageSkia favicon;
+  ui::ImageModel favicon;
   scoped_refptr<ThumbnailImage> thumbnail;
   TabNetworkState network_state = TabNetworkState::kNone;
   std::u16string title;
@@ -57,6 +58,8 @@ struct TabRendererData {
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
+  bool should_show_discard_status = false;
+  bool is_monochrome_favicon = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

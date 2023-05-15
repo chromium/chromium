@@ -22,7 +22,7 @@ class ToggleButton;
 }  // namespace views
 
 class Browser;
-class ExtensionsMenuNavigationHandler;
+class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
@@ -32,9 +32,8 @@ class ExtensionsMenuMainPageView : public views::View {
  public:
   METADATA_HEADER(ExtensionsMenuMainPageView);
 
-  explicit ExtensionsMenuMainPageView(
-      Browser* browser,
-      ExtensionsMenuNavigationHandler* navigation_handler);
+  explicit ExtensionsMenuMainPageView(Browser* browser,
+                                      ExtensionsMenuHandler* menu_handler);
   ~ExtensionsMenuMainPageView() override = default;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
   const ExtensionsMenuMainPageView& operator=(
@@ -45,8 +44,11 @@ class ExtensionsMenuMainPageView : public views::View {
   void CreateAndInsertMenuItem(
       std::unique_ptr<ExtensionActionViewController> action_controller,
       extensions::ExtensionId extension_id,
+      ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
       ExtensionMenuItemView::SitePermissionsButtonState
           site_permissions_button_state,
+      ExtensionMenuItemView::SitePermissionsButtonAccess
+          site_permissions_button_access,
       int index);
 
   // Removes the menu item corresponding to `action_id`.
@@ -73,7 +75,7 @@ class ExtensionsMenuMainPageView : public views::View {
   content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsMenuNavigationHandler> navigation_handler_;
+  const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
   // Subheader section.
   raw_ptr<views::Label> subheader_subtitle_;

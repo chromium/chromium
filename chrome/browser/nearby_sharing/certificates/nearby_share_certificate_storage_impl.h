@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
@@ -106,7 +107,7 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
 
   InitStatus init_status_ = InitStatus::kUninitialized;
   size_t num_initialize_attempts_ = 0;
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<nearbyshare::proto::PublicCertificate>>
       db_;

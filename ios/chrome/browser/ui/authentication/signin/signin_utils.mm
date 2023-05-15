@@ -12,9 +12,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -197,7 +197,7 @@ IdentitySigninState GetPrimaryIdentitySigninState(
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
-      syncSetupService->IsFirstSetupComplete()) {
+      syncSetupService->IsInitialSyncFeatureSetupComplete()) {
     return IdentitySigninStateSignedInWithSyncEnabled;
   } else if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return IdentitySigninStateSignedInWithSyncDisabled;

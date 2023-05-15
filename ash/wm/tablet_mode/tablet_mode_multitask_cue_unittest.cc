@@ -16,14 +16,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr int kCueYOffset = 6;
-constexpr int kCueWidth = 48;
-constexpr int kCueHeight = 4;
-
-}  // namespace
-
 class TabletModeMultitaskCueTest : public AshTestBase {
  public:
   TabletModeMultitaskCueTest()
@@ -37,7 +29,7 @@ class TabletModeMultitaskCueTest : public AshTestBase {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_event_handler()
-        ->multitask_cue_for_testing();
+        ->multitask_cue();
   }
 
   // AshTestBase:
@@ -61,9 +53,12 @@ TEST_F(TabletModeMultitaskCueTest, BasicShowCue) {
   ui::Layer* cue_layer = multitask_cue->cue_layer();
   ASSERT_TRUE(cue_layer);
 
-  EXPECT_EQ(gfx::Rect((window_bounds.width() - kCueWidth) / 2, kCueYOffset,
-                      kCueWidth, kCueHeight),
-            cue_layer->bounds());
+  EXPECT_EQ(
+      gfx::Rect((window_bounds.width() - TabletModeMultitaskCue::kCueWidth) / 2,
+                TabletModeMultitaskCue::kCueYOffset,
+                TabletModeMultitaskCue::kCueWidth,
+                TabletModeMultitaskCue::kCueHeight),
+      cue_layer->bounds());
 }
 
 // Tests that the cue bounds are updated properly after a window is split.
@@ -76,8 +71,10 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
   split_view_controller->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
 
-  gfx::Rect split_bounds((window1->bounds().width() - kCueWidth) / 2,
-                         kCueYOffset, kCueWidth, kCueHeight);
+  gfx::Rect split_bounds(
+      (window1->bounds().width() - TabletModeMultitaskCue::kCueWidth) / 2,
+      TabletModeMultitaskCue::kCueYOffset, TabletModeMultitaskCue::kCueWidth,
+      TabletModeMultitaskCue::kCueHeight);
 
   ui::Layer* cue_layer = GetMultitaskCue()->cue_layer();
   ASSERT_TRUE(cue_layer);

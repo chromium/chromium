@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
@@ -49,8 +50,9 @@ class LogStore {
   // Should only be called if has_unsent_logs() is true.
   virtual void StageNextLog() = 0;
 
-  // Discards the staged log.
-  virtual void DiscardStagedLog() = 0;
+  // Discards the staged log. |reason| is the reason why the log was discarded
+  // (used for debugging through chrome://metrics-internals).
+  virtual void DiscardStagedLog(base::StringPiece reason = "") = 0;
 
   // Marks the staged log as sent, DiscardStagedLog() shall still be called if
   // the staged log needs discarded.

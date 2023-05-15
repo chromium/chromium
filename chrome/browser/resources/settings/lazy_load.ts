@@ -38,7 +38,6 @@ import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
 import './site_settings/file_system_site_list.js';
 import './site_settings_page/site_settings_page.js';
-import './site_settings/category_default_setting.js';
 import './site_settings/category_setting_exceptions.js';
 import './site_settings/chooser_exception_list.js';
 import './site_settings/site_details_permission_device_entry.js';
@@ -89,6 +88,11 @@ export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList}
 // </if>
 
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
+export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
+export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
+export {SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+export {SecureDnsInputElement} from '/shared/settings/privacy_page/secure_dns_input.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -113,7 +117,9 @@ export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.j
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
+export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
+export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 // <if expr="is_win or is_macosx">
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
@@ -124,7 +130,6 @@ export {PasswordCheckListItemElement} from './autofill_page/password_check_list_
 export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
 export {PasswordListItemElement} from './autofill_page/password_list_item.js';
 export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
-export {PasswordMoveToAccountDialogElement} from './autofill_page/password_move_to_account_dialog.js';
 export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
 export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialog.js';
 export {PasswordViewElement} from './autofill_page/password_view.js';
@@ -139,10 +144,7 @@ export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearB
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
-export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
-export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
-export {SettingsSliderElement} from './controls/settings_slider.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="_google_chrome">
@@ -197,8 +199,6 @@ export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_page/privacy
 export {PrivacySandboxInterestItemElement} from './privacy_page/privacy_sandbox/privacy_sandbox_interest_item.js';
 export {SettingsPrivacySandboxPageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_page.js';
 export {SettingsPrivacySandboxTopicsSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.js';
-export {SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
-export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagementDialogElement} from './privacy_page/security_keys_credential_management_dialog.js';
@@ -219,7 +219,6 @@ export {AllSitesElement} from './site_settings/all_sites.js';
 // <if expr="chromeos_ash">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>
-export {CategoryDefaultSettingElement} from './site_settings/category_default_setting.js';
 export {CategorySettingExceptionsElement} from './site_settings/category_setting_exceptions.js';
 export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';

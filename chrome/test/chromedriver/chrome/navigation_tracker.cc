@@ -6,8 +6,8 @@
 
 #include <unordered_map>
 
-#include "base/guid.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
@@ -57,7 +57,9 @@ bool IsNetworkError(const std::string& error_text) {
 class ObjectGroup {
  public:
   explicit ObjectGroup(DevToolsClient* client)
-      : client_(client), object_group_name_(base::GenerateGUID()) {}
+      : client_(client),
+        object_group_name_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+  }
 
   ~ObjectGroup() {
     base::Value::Dict params;

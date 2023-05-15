@@ -141,7 +141,8 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
 
   bool EnsureARCoreLoaded() override { return true; }
 
-  base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override {
+  base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
+      override {
     JNIEnv* env = base::android::AttachCurrentThread();
     jclass activityThread = env->FindClass("android/app/ActivityThread");
     jmethodID currentActivityThread =
@@ -216,6 +217,7 @@ class StubCompositorFrameSink
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
   void SetWantsAnimateOnlyBeginFrames() override {}
+  void SetWantsBeginFrameAcks() override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,

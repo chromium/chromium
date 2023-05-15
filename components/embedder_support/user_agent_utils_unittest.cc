@@ -220,10 +220,16 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   }
 
   if (!model.empty()) {
-    if (base::SysInfo::GetAndroidBuildCodename() == "REL")
-      ASSERT_EQ(base::SysInfo::HardwareModelName(), model);
-    else
+    if (base::SysInfo::GetAndroidBuildCodename() == "REL") {
+      // In UA reduction Phase 6, we change the deviceModel token to "K".
+      ASSERT_EQ(base::FeatureList::IsEnabled(
+                    blink::features::kReduceUserAgentAndroidVersionDeviceModel)
+                    ? "K"
+                    : base::SysInfo::HardwareModelName(),
+                model);
+    } else {
       ASSERT_EQ("", model);
+    }
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   // X11; Fuchsia

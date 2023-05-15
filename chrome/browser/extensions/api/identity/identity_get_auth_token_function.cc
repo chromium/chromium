@@ -109,7 +109,7 @@ base::TimeDelta GetIdleTimeThreshold() {
 
 BASE_FEATURE(kGetAuthTokenCheckInteractivity,
              "InteractiveGetAuthTokenCheckActivity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGetAuthTokenActivityStatusHistogramBaseName[] =
     "Signin.Extensions.GetAuthTokenInteractivityStatus";

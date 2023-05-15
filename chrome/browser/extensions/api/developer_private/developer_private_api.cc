@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
@@ -26,9 +25,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_mangle.h"
 #include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/api/developer_private/show_permissions_dialog_helper.h"
@@ -98,7 +97,6 @@
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -126,8 +124,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif
 
 namespace extensions {
@@ -463,7 +461,6 @@ void RevokePermissionsForSite(content::BrowserContext* context,
 }  // namespace
 
 namespace ChoosePath = api::developer_private::ChoosePath;
-namespace GetItemsInfo = api::developer_private::GetItemsInfo;
 namespace PackDirectory = api::developer_private::PackDirectory;
 namespace Reload = api::developer_private::Reload;
 
@@ -509,7 +506,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   info->is_child_account = service->AreExtensionsPermissionsEnabled();
 #else
@@ -824,7 +821,7 @@ DeveloperPrivateAPI::UnpackedRetryId DeveloperPrivateAPI::AddUnpackedPath(
   if (existing != paths.end())
     return existing->first;
 
-  UnpackedRetryId id = base::GenerateGUID();
+  UnpackedRetryId id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   paths[id] = path;
   return id;
 }
@@ -1041,32 +1038,6 @@ void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
   Respond(WithArguments(size));
 }
 
-DeveloperPrivateGetItemsInfoFunction::DeveloperPrivateGetItemsInfoFunction() {}
-DeveloperPrivateGetItemsInfoFunction::~DeveloperPrivateGetItemsInfoFunction() {}
-
-ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
-  absl::optional<developer::GetItemsInfo::Params> params =
-      developer::GetItemsInfo::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
-  info_generator_->CreateExtensionsInfo(
-      params->include_disabled, params->include_terminated,
-      base::BindOnce(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
-                     this));
-
-  return RespondLater();
-}
-
-void DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated(
-    ExtensionInfoGenerator::ExtensionInfoList list) {
-  std::vector<developer::ItemInfo> item_list;
-  for (const developer::ExtensionInfo& info : list)
-    item_list.push_back(developer_private_mangle::MangleExtensionInfo(info));
-
-  Respond(ArgumentList(developer::GetItemsInfo::Results::Create(item_list)));
-}
-
 DeveloperPrivateGetProfileConfigurationFunction::
 ~DeveloperPrivateGetProfileConfigurationFunction() {
 }
@@ -1103,7 +1074,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    SupervisedUserService* service =
+    supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile);
     if (service->AreExtensionsPermissionsEnabled()) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
@@ -1333,7 +1304,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (service->AreExtensionsPermissionsEnabled()) {
     return RespondNow(
@@ -1456,18 +1427,9 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
 
   ExtensionService* service = GetExtensionService(browser_context());
   if (path.MatchesExtension(FILE_PATH_LITERAL(".zip"))) {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
-      ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                               MakeRegisterInExtensionServiceCallback(service))
-          ->InstallZipFileToUnpackedExtensionsDir(
-              path, service->unpacked_install_directory());
-    } else {
-      ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                               MakeRegisterInExtensionServiceCallback(service))
-          ->InstallZipFileToTempDir(path);
-    }
-
+    ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
+                             MakeRegisterInExtensionServiceCallback(service))
+        ->LoadFromZipFile(path);
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =
@@ -1928,7 +1890,7 @@ ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   return RespondNow(WithArguments(service->AreExtensionsPermissionsEnabled()));
 #else

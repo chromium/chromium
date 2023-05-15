@@ -34,6 +34,13 @@ export class TextAcceleratorElement extends PolymerElement {
         observer: TextAcceleratorElement.prototype.parseAndDisplayTextParts,
       },
 
+      isOnlyText: {
+        type: Boolean,
+        value: false,
+        computed: 'areAllPartsTextParts(parts)',
+        reflectToAttribute: true,
+      },
+
       // If this property is true, the spacing between keys will be narrower
       // than usual.
       narrow: {
@@ -122,6 +129,11 @@ export class TextAcceleratorElement extends PolymerElement {
 
   private shouldShowLockIcon(): boolean {
     return !isCustomizationDisabled();
+  }
+
+  private areAllPartsTextParts(): boolean {
+    return this.parts.every(
+        part => part.type === TextAcceleratorPartType.kPlainText);
   }
 
   static get template(): HTMLTemplateElement {

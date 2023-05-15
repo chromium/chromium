@@ -37,7 +37,9 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
 
  private:
   // Manages an isolated Environment, and the web instances hosted within it.
-  WebInstanceHost web_instance_host_;
+  // Services for each web instance are provided by the Service Directory
+  // provided in the Create() call.
+  WebInstanceHostWithoutServices web_instance_host_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_CONTEXT_PROVIDER_IMPL_H_

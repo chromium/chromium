@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
@@ -101,7 +102,8 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_mock_;
   scoped_refptr<StorageDeviceList> devices_;
 };
 

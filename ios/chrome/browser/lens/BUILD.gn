@@ -9,13 +9,13 @@ source_set("lens") {
   ]
   deps = [
     "//components/search_engines",
-    "//ios/chrome/browser/browser_state:browser_state",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
-    "//ios/chrome/browser/web_state_list",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
   ]

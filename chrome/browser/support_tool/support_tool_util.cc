@@ -84,11 +84,11 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosHwDetails[] = {
 constexpr support_tool::DataCollectorType kOptionalDataCollectors[] = {
     support_tool::CHROMEOS_CROS_API, support_tool::CHROMEOS_LACROS};
 
-// Returns the current time in YYYY_MM_DD_HH_mm format.
+// Returns the current time in UTCYYYY_MM_DD_HH_mm format.
 std::string GetTimestampString(base::Time timestamp) {
   base::Time::Exploded tex;
   timestamp.UTCExplode(&tex);
-  return base::StringPrintf("%04d_%02d_%02d_%02d_%02d", tex.year, tex.month,
+  return base::StringPrintf("UTC%04d%02d%02d_%02d%02d", tex.year, tex.month,
                             tex.day_of_month, tex.hour, tex.minute);
 }
 

@@ -7,7 +7,9 @@
 
 #include <map>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -33,8 +35,8 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
 
   // Starts the BookmarkUndoService and register it as a BookmarkModelObserver.
   // Calling this method is optional, but the service will be inactive until it
-  // is called.
-  void Start(bookmarks::BookmarkModel* model);
+  // is called at least once. Can be called multiple times.
+  void StartObservingBookmarkModel(bookmarks::BookmarkModel* model);
 
   UndoManager* undo_manager() { return &undo_manager_; }
 
@@ -65,19 +67,18 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   void GroupedBookmarkChangesEnded(bookmarks::BookmarkModel* model) override;
 
   // bookmarks::BookmarkUndoDelegate:
-  void SetUndoProvider(bookmarks::BookmarkUndoProvider* undo_provider) override;
   void OnBookmarkNodeRemoved(
       bookmarks::BookmarkModel* model,
+      bookmarks::BookmarkUndoProvider* undo_provider,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> model_;
-  raw_ptr<bookmarks::BookmarkUndoProvider, DanglingUntriaged> undo_provider_;
   UndoManager undo_manager_;
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BookmarkModelObserver>
-      scoped_observation_{this};
+  base::flat_set<raw_ptr<bookmarks::BookmarkModel>> observed_models_;
+  base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
+                                     bookmarks::BookmarkModelObserver>
+      scoped_observations_{this};
 };
 
 #endif  // COMPONENTS_UNDO_BOOKMARK_UNDO_SERVICE_H_

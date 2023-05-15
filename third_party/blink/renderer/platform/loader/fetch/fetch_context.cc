@@ -54,7 +54,7 @@ void FetchContext::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
 
 void FetchContext::PopulateResourceRequest(
     ResourceType,
-    const FetchParameters::ResourceWidth&,
+    const absl::optional<float> resource_width,
     ResourceRequest&,
     const ResourceLoaderOptions&) {}
 

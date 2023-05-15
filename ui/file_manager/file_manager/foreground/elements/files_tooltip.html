@@ -5,14 +5,27 @@ found in the LICENSE file.
 -->
 <style>
   :host {
-    background-color: var(--cros-tooltip-background-color);
-    color: var(--cros-tooltip-label-color);
+    box-sizing: border-box;
     display: flex;
-    height: 24px;
     opacity: 0;
     position: absolute;
     transition: opacity 300ms;
     z-index: 1000;
+  }
+
+  :host-context([theme='legacy']):host {
+    background-color: var(--cros-tooltip-background-color);
+    color: var(--cros-tooltip-label-color);
+    height: 24px;
+    padding: 0 8px;
+  }
+
+  :host-context([theme='refresh23']):host {
+    background-color: var(--cros-sys-on_surface);
+    border-radius: 6px;
+    color: var(--cros-sys-inverse_on_surface);
+    height: 28px;
+    padding: 5px 8px;
   }
 
   :host([visible]) {
@@ -24,24 +37,37 @@ found in the LICENSE file.
     align-items: center;
     border-radius: 2px;
     display: inline-flex;
-    font-size: 12px;
-    padding: 0 8px;
     white-space: nowrap;
   }
 
+  :host-context([theme='legacy']) #label,
+  :host-context([theme='legacy']) #link.link-label {
+    font-size: 12px;
+  }
+
+  :host-context([theme='refresh23']) #label,
+  :host-context([theme='refresh23']) #link.link-label {
+    font: var(--cros-annotation-1-font);
+  }
+
   :host(.card-tooltip) {
-    background-color: var(--cros-bg-color-elevation-1);
     border-radius: 8px;
     box-shadow: var(--cros-elevation-1-shadow);
+    margin-top: 4px;
+  }
+
+  :host-context([theme='legacy']):host(.card-tooltip) {
+    background-color: var(--cros-bg-color-elevation-1);
     color: var(--cros-text-color-primary);
     height: auto;
-    margin-top: 4px;
     padding: 12px 16px;
   }
 
   :host-context([theme='refresh23']):host(.card-tooltip) {
     background-color: var(--cros-sys-base_elevated);
     color: var(--cros-sys-on_surface);
+    height: auto;
+    padding: 16px;
   }
 
   :host(.link-tooltip) {
@@ -58,9 +84,14 @@ found in the LICENSE file.
     white-space: normal;
   }
 
-  #label.card-label a,
-  #link.link-label a {
+  :host-context([theme='legacy']) #label.card-label a,
+  :host-context([theme='legacy']) #link.link-label a {
     color: var(--cros-link-color);
+  }
+
+  :host-context([theme='refresh23']) #label.card-label a,
+  :host-context([theme='refresh23']) #link.link-label a {
+    color: var(--cros-sys-primary);
   }
 
   #link {
@@ -68,10 +99,13 @@ found in the LICENSE file.
     text-decoration: none;
   }
 
-  #link:focus-visible {
+  :host-context([theme='legacy']) #link:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }
 
+  :host-context([theme='refresh23']) #link:focus-visible {
+    outline: 2px solid var(--cros-sys-focus_ring);
+  }
 </style>
 <div id="label"></div>
 <a id="link" target="_blank" href="#"></a>

@@ -20,7 +20,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -38,7 +37,6 @@
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -83,21 +81,6 @@ constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
 
 // Max number of retries to check install attributes state.
 constexpr int kMaxInstallAttributesStateCheckRetries = 60;
-
-bool ShouldAttemptRestart() {
-  // Restart browser to switch from DeviceCloudPolicyManagerAsh to
-  // DeviceActiveDirectoryPolicyManager.
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsActiveDirectoryManaged()) {
-    // TODO(tnagel): Refactor BrowserPolicyConnectorAsh so that device
-    // policy providers are only registered after enrollment has finished and
-    // thus the correct one can be picked without restarting the browser.
-    return true;
-  }
-
-  return false;
-}
 
 // Returns the manager of the domain (either the domain name or the email of the
 // admin of the domain) after enrollment, or an empty string.
@@ -168,10 +151,6 @@ EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
   retry_policy_.entry_lifetime_ms = -1;
   retry_policy_.always_use_initial_delay = true;
   retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
-
-  ad_migration_utils::CheckChromadMigrationOobeFlow(
-      base::BindOnce(&EnrollmentScreen::UpdateChromadMigrationOobeFlow,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
@@ -251,7 +230,7 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
 void EnrollmentScreen::CreateEnrollmentHelper() {
   if (!enrollment_helper_) {
     enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-        this, this, config_, enrolling_user_domain_, license_type_to_use_);
+        this, config_, enrolling_user_domain_, license_type_to_use_);
   }
 }
 
@@ -327,10 +306,10 @@ void EnrollmentScreen::UpdateFlowType() {
     if (context()->enrollment_preference_ ==
         WizardContext::EnrollmentPreference::kKiosk) {
       view_->SetGaiaButtonsType(
-          EnrollmentScreenView::GaiaButtonsType::kKioskPreffered);
+          EnrollmentScreenView::GaiaButtonsType::kKioskPreferred);
     } else {
       view_->SetGaiaButtonsType(
-          EnrollmentScreenView::GaiaButtonsType::kEnterprisePreffered);
+          EnrollmentScreenView::GaiaButtonsType::kEnterprisePreferred);
     }
   }
 }
@@ -564,10 +543,6 @@ void EnrollmentScreen::OnCancel() {
   if (elapsed_timer_)
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeCancel, elapsed_timer_);
 
-  on_joined_callback_.Reset();
-  if (authpolicy_login_helper_)
-    authpolicy_login_helper_->CancelRequestsAndRestart();
-
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
@@ -578,8 +553,7 @@ void EnrollmentScreen::OnCancel() {
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
-  if (features::IsOobeConsolidatedConsentEnabled())
-    StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
@@ -588,9 +562,6 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
-
-  if (ShouldAttemptRestart())
-    chrome::AttemptRestart();
 }
 
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
@@ -694,19 +665,6 @@ void EnrollmentScreen::OnAccountStatusFetched(
 
   // For all other types just show signin screen.
   view_->ShowSigninScreen();
-}
-
-void EnrollmentScreen::OnActiveDirectoryCredsProvided(
-    const std::string& machine_name,
-    const std::string& distinguished_name,
-    int encryption_types,
-    const std::string& username,
-    const std::string& password) {
-  DCHECK(authpolicy_login_helper_);
-  authpolicy_login_helper_->JoinAdDomain(
-      machine_name, distinguished_name, encryption_types, username, password,
-      base::BindOnce(&EnrollmentScreen::OnActiveDirectoryJoined,
-                     weak_ptr_factory_.GetWeakPtr(), machine_name, username));
 }
 
 void EnrollmentScreen::OnDeviceAttributeProvided(const std::string& asset_id,
@@ -824,49 +782,11 @@ void EnrollmentScreen::RecordEnrollmentErrorMetrics() {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeFailure, elapsed_timer_);
 }
 
-void EnrollmentScreen::JoinDomain(
-    const std::string& dm_token,
-    const std::string& domain_join_config,
-    policy::OnDomainJoinedCallback on_joined_callback) {
-  if (!authpolicy_login_helper_)
-    authpolicy_login_helper_ = std::make_unique<AuthPolicyHelper>();
-  authpolicy_login_helper_->set_dm_token(dm_token);
-  on_joined_callback_ = std::move(on_joined_callback);
-  if (view_) {
-    scoped_network_observation_.Reset();
-    view_->ShowActiveDirectoryScreen(
-        domain_join_config, std::string() /* machine_name */,
-        std::string() /* username */, authpolicy::ERROR_NONE);
-  }
-}
-
 void EnrollmentScreen::OnBrowserRestart() {
   // When the browser is restarted, renderers are shutdown and the `view_`
   // wants to know in order to stop trying to use the soon-invalid renderers.
   if (view_)
     view_->Shutdown();
-}
-
-void EnrollmentScreen::OnActiveDirectoryJoined(
-    const std::string& machine_name,
-    const std::string& username,
-    authpolicy::ErrorType error,
-    const std::string& machine_domain) {
-  if (error == authpolicy::ERROR_NONE) {
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
-    LOG(WARNING) << "Joined active directory";
-    if (view_)
-      view_->ShowEnrollmentWorkingScreen();
-    std::move(on_joined_callback_).Run(machine_domain);
-    return;
-  }
-  LOG(ERROR) << "Active directory join error: " << error;
-  if (view_) {
-    scoped_network_observation_.Reset();
-    view_->ShowActiveDirectoryScreen(std::string() /* domain_join_config */,
-                                     machine_name, username, error);
-  }
 }
 
 void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
@@ -882,13 +802,8 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
-  is_chromad_migration_oobe_flow_ = exists;
-}
-
 bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
-  return is_chromad_migration_oobe_flow_ ||
-         WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
+  return WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {

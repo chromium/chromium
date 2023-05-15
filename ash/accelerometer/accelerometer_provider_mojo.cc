@@ -585,11 +585,10 @@ void AccelerometerProviderMojo::CreateAccelerometerSamplesObserver(int32_t id) {
     return;
   }
 
-  accelerometer.samples_observer =
-      std::make_unique<AccelerometerSamplesObserver>(
-          id, std::move(accelerometer.remote), accelerometer.scale.value(),
-          base::BindRepeating(
-              &AccelerometerProviderMojo::OnSampleUpdatedCallback, this));
+  accelerometer.samples_observer = std::make_unique<AccelGryoSamplesObserver>(
+      id, std::move(accelerometer.remote), accelerometer.scale.value(),
+      base::BindRepeating(&AccelerometerProviderMojo::OnSampleUpdatedCallback,
+                          this));
 
   if (initialization_state_ == MojoState::BASE) {
     DCHECK_EQ(accelerometer.location.value(),

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 
 #include "base/feature_list.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/callback_utils.h"
@@ -98,6 +99,12 @@ void ManifestUpdateCheckCommand::DownloadNewManifestData(
       base::BindOnce(&ManifestUpdateCheckCommand::StashNewIconBitmaps,
                      GetWeakPtr()),
 
+      base::BindOnce(&ManifestUpdateCheckCommand::ValidateNewScopeExtensions,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommand::StashValidatedScopeExtensions,
+                     GetWeakPtr()),
+
       std::move(next_step_callback));
 }
 
@@ -189,6 +196,41 @@ void ManifestUpdateCheckCommand::StashNewIconBitmaps(
   PopulateOtherIcons(&new_install_info_, icons_map);
   PopulateProductIcons(&new_install_info_, &icons_map);
 
+  std::move(next_step_callback).Run();
+}
+
+void ManifestUpdateCheckCommand::ValidateNewScopeExtensions(
+    OnDidGetWebAppOriginAssociations next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+
+  GURL web_app_identity = GURL(GenerateAppIdUnhashed(
+      new_install_info_.manifest_id, new_install_info_.start_url));
+  ScopeExtensions new_scope_extensions = new_install_info_.scope_extensions;
+
+  lock_->origin_association_manager().GetWebAppOriginAssociations(
+      web_app_identity, std::move(new_scope_extensions),
+      std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommand::StashValidatedScopeExtensions(
+    base::OnceClosure next_step_callback,
+    ScopeExtensions validated_scope_extensions) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+
+  new_install_info_.validated_scope_extensions =
+      absl::make_optional(std::move(validated_scope_extensions));
   std::move(next_step_callback).Run();
 }
 
@@ -344,7 +386,8 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   // of time where they can "fix" themselves silently to use the site provided
   // icons.
   constexpr base::TimeDelta kSyncGeneratedIconFixWindowDuration = base::Days(7);
-  if (base::FeatureList::IsEnabled(features::kWebAppSyncGeneratedIconFix) &&
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppSyncGeneratedIconUpdateFix) &&
       web_app.is_generated_icon() &&
       web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
       check_time_ <

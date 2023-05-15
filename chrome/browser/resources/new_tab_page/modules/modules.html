@@ -73,12 +73,6 @@
     width: var(--ntp-module-width);
   }
 
-  :host([modules-redesigned-layout-enabled_]) .module-container {
-    --ntp-module-container-padding-top: 0;
-    margin-bottom: 30px;
-    margin-inline-end: 30px;
-  }
-
   .module-container + .module-container {
     padding-top: var(--ntp-module-container-padding-top);
   }
@@ -86,11 +80,6 @@
   #modules {
     max-width: 100%;
     width: fit-content;
-  }
-
-  :host([modules-redesigned-layout-enabled_]) #modules {
-    display: flex;
-    flex-flow: row wrap;
   }
 
   #removeModuleToastMessage {

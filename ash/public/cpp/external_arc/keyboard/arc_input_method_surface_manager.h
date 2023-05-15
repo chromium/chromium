@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,7 +32,8 @@ class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
   void OnTouchableBoundsChanged(exo::InputMethodSurface* surface) override;
 
  private:
-  exo::InputMethodSurface* input_method_surface_ = nullptr;  // Not owned
+  raw_ptr<exo::InputMethodSurface, ExperimentalAsh> input_method_surface_ =
+      nullptr;  // Not owned
 };
 
 }  // namespace ash

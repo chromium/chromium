@@ -120,9 +120,9 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   bool ShouldBlockOnServerError() const;
 
   base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
-  ErrorScreen* error_screen_;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
   base::RepeatingCallback<void(Result result)> exit_callback_;
-  base::raw_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_ =
+  raw_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_ =
       nullptr;
 
   base::CallbackListSubscription auto_enrollment_progress_subscription_;

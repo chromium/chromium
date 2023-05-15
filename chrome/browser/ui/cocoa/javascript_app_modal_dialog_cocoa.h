@@ -60,6 +60,7 @@ class JavaScriptAppModalDialogCocoa
 
   // Mojo interface to the NSAlert.
   mojo::Remote<remote_cocoa::mojom::AlertBridge> alert_bridge_remote_;
+  remote_cocoa::mojom::AlertBridge* alert_bridge_;
 
   std::unique_ptr<javascript_dialogs::AppModalDialogController> controller_;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;

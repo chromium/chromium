@@ -76,6 +76,18 @@ void WebAppProviderBridgeLacros::InstallMicrosoft365(
                      std::move(callback)));
 }
 
+void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialog(
+    const GURL& install_url,
+    const GURL& origin_url,
+    bool is_renderer_initiated) {
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath(),
+      /*incognito=*/false,
+      base::BindOnce(&WebAppProviderBridgeLacros::
+                         ScheduleNavigateAndTriggerInstallDialogImpl,
+                     install_url, origin_url, is_renderer_initiated));
+}
+
 void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
                                               GetSubAppIdsCallback callback) {
   g_browser_process->profile_manager()->LoadProfileByPath(
@@ -137,6 +149,19 @@ void WebAppProviderBridgeLacros::InstallMicrosoft365Impl(
     InstallMicrosoft365Callback callback,
     Profile* profile) {
   chromeos::InstallMicrosoft365(profile, std::move(callback));
+}
+
+// static
+void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialogImpl(
+    const GURL& install_url,
+    const GURL& origin_url,
+    bool is_renderer_initiated,
+    Profile* profile) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
+      install_url, origin_url, is_renderer_initiated, base::DoNothing());
 }
 
 // static

@@ -18,9 +18,6 @@ per-file autotest.py=agrieve@chromium.org
 per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
-per-file bisect*.py=anantha@chromium.org
-per-file bisect*.py=robertocn@chromium.org
-
 per-file boilerplate.py=rsesek@chromium.org
 
 per-file check_git_config.py=iannucci@chromium.org

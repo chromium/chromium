@@ -107,8 +107,7 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   float_t document_dpr = document.DevicePixelRatio();
 
   // Get the size attribute calculated width, if any
-  FetchParameters::ResourceWidth sizes_width =
-      image_element->GetResourceWidth();
+  absl::optional<float> sizes_width = image_element->GetResourceWidth();
   // Report offset in pixels between intrinsic and layout dimensions
   const float_t kDPRCap = 2.0;
   float_t capped_dpr = std::min(document_dpr, kDPRCap);
@@ -136,9 +135,9 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   }
 
   // Report offset in pixels between layout width and sizes result
-  if (sizes_width.is_set) {
+  if (sizes_width) {
     int sizes_miss =
-        base::saturated_cast<int>(sizes_width.width - layout_width);
+        base::saturated_cast<int>(sizes_width.value() - layout_width);
 
     base::UmaHistogramBoolean("Renderer.Images.HasSizesAttributeMiss",
                               sizes_miss > 0);

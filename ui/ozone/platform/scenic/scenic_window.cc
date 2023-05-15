@@ -6,7 +6,6 @@
 
 #include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
 #include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 

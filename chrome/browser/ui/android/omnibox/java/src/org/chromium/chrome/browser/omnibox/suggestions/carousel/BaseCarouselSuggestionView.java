@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.base.ViewUtils;
@@ -60,10 +62,13 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setClipToPadding(false);
-        mRecyclerView.setPaddingRelative(
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing),
-                mRecyclerView.getPaddingTop(), mRecyclerView.getPaddingEnd(),
-                mRecyclerView.getPaddingBottom());
+        int startPadding = OmniboxResourceProvider.getSideSpacing(context);
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            startPadding -= context.getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_carousel_start_padding_reduction);
+        }
+        mRecyclerView.setPaddingRelative(startPadding, mRecyclerView.getPaddingTop(),
+                mRecyclerView.getPaddingEnd(), mRecyclerView.getPaddingBottom());
 
         mSelectionManager =
                 new BaseCarouselSuggestionSelectionManager(mRecyclerView.getLayoutManager());

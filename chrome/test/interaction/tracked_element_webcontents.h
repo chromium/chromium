@@ -36,7 +36,7 @@ class TrackedElementWebContents : public ui::TrackedElement {
 
   void Init();
 
-  const base::raw_ptr<WebContentsInteractionTestUtil> owner_;
+  const raw_ptr<WebContentsInteractionTestUtil> owner_;
 };
 
 #endif  // CHROME_TEST_INTERACTION_TRACKED_ELEMENT_WEBCONTENTS_H_

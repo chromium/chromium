@@ -74,6 +74,18 @@ class SegmentationPlatformService : public KeyedService,
       scoped_refptr<InputContext> input_context,
       ClassificationResultCallback callback) = 0;
 
+  // Get the result from the model execution, annotated with output config to
+  // interpret the results. Depending on the options and client config, it
+  // either runs the associated model or uses unexpired cached results. This API
+  // is experimental and does not cleanly support transitions from a heuristic
+  // to ML models. This API is not usable for most ML models since ML models
+  // require normalization of the output values to make them usable.
+  virtual void GetAnnotatedNumericResult(
+      const std::string& segmentation_key,
+      const PredictionOptions& prediction_options,
+      scoped_refptr<InputContext> input_context,
+      AnnotatedNumericResultCallback callback) = 0;
+
   // Called to get the selected segment synchronously. If none, returns empty
   // result.
   virtual SegmentSelectionResult GetCachedSegmentResult(

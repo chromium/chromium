@@ -38,8 +38,8 @@ EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
 EyeDropperViewMac::~EyeDropperViewMac() = default;
 
 struct EyeDropperView::PreEventDispatchHandler::ObjCStorage {
-  id click_event_tap_ = nil;
-  id notification_observer_ = nil;
+  id click_event_tap = nil;
+  id notification_observer = nil;
 };
 
 EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
@@ -47,7 +47,7 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
     gfx::NativeView parent)
     : view_(view), objc_storage_(std::make_unique<ObjCStorage>()) {
   // Ensure that this handler is called before color popup handler.
-  objc_storage_->click_event_tap_ = [NSEvent
+  objc_storage_->click_event_tap = [NSEvent
       addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
                                      NSEventType eventType = [event type];
@@ -71,7 +71,7 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
   // menubar.
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
-  objc_storage_->notification_observer_ =
+  objc_storage_->notification_observer =
       [notificationCenter addObserverForName:NSMenuDidBeginTrackingNotification
                                       object:[NSApp mainMenu]
                                        queue:[NSOperationQueue mainQueue]
@@ -81,16 +81,16 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
 }
 
 EyeDropperView::PreEventDispatchHandler::~PreEventDispatchHandler() {
-  if (objc_storage_->click_event_tap_) {
-    [NSEvent removeMonitor:objc_storage_->click_event_tap_];
-    objc_storage_->click_event_tap_ = nil;
+  if (objc_storage_->click_event_tap) {
+    [NSEvent removeMonitor:objc_storage_->click_event_tap];
+    objc_storage_->click_event_tap = nil;
   }
 
-  if (objc_storage_->notification_observer_) {
+  if (objc_storage_->notification_observer) {
     NSNotificationCenter* notificationCenter =
         [NSNotificationCenter defaultCenter];
-    [notificationCenter removeObserver:objc_storage_->notification_observer_];
-    objc_storage_->notification_observer_ = nil;
+    [notificationCenter removeObserver:objc_storage_->notification_observer];
+    objc_storage_->notification_observer = nil;
   }
 }
 

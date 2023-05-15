@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_POLICY_ARC_ANDROID_MANAGEMENT_CHECKER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
@@ -61,8 +62,8 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   void OnRefreshTokensLoaded() override;
 
   // Unowned pointers.
-  Profile* profile_;
-  signin::IdentityManager* const identity_manager_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   const CoreAccountId device_account_id_;
 

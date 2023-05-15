@@ -9,10 +9,8 @@
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
@@ -20,6 +18,9 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -42,7 +43,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -372,7 +372,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   const BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
   // Apply variation header data to the params.
-  NSMutableDictionary* combinedExtraHeaders =
+  NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
       [web_navigation_util::VariationHeadersForURL(webParams.url, isIncognito)
           mutableCopy];
   [combinedExtraHeaders addEntriesFromDictionary:webParams.extra_headers];

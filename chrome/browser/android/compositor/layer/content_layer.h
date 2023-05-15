@@ -47,6 +47,8 @@ class ContentLayer : public Layer {
  protected:
   explicit ContentLayer(TabContentManager* tab_content_manager);
   ~ContentLayer() override;
+
+ private:
   // This is an intermediate shim layer whose children are
   // both the static and content layers (or either, or none, depending on which
   // is available).

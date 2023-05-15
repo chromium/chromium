@@ -83,6 +83,8 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
       {"stopped", IDS_PRINT_MANAGEMENT_STOPPED_ERROR_STATUS},
       {"clientUnauthorized",
        IDS_PRINT_MANAGEMENT_CLIENT_UNAUTHORIZED_ERROR_STATUS},
+      {"expiredCertificate",
+       IDS_PRINT_MANAGEMENT_EXPIRED_CERTIFICATE_ERROR_STATUS},
       {"filterFailed", IDS_PRINT_MANAGEMENT_FILTERED_FAILED_ERROR_STATUS},
       {"unknownPrinterError", IDS_PRINT_MANAGEMENT_UNKNOWN_ERROR_STATUS},
       {"paperJamStopped", IDS_PRINT_MANAGEMENT_PAPER_JAM_STOPPED_ERROR_STATUS},

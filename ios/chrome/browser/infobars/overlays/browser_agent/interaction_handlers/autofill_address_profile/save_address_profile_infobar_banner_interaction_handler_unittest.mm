@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler.h"
 
-#import "base/guid.h"
+#import "base/uuid.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
@@ -22,8 +22,7 @@ class SaveAddressProfileInfobarBannerInteractionHandlerTest
     : public PlatformTest {
  public:
   SaveAddressProfileInfobarBannerInteractionHandlerTest()
-      : delegate_factory_(),
-        profile_(base::GenerateGUID(), "https://www.example.com/") {
+      : delegate_factory_() {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -126,7 +127,6 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #endif
   Member<void*> members[9];
   PhysicalOffset offset;
-  LayoutSize size;
   LayoutUnit layout_units[2];
   std::unique_ptr<void*> pointer;
 };
@@ -231,6 +231,10 @@ void PaintLayer::Destroy() {
     if (auto* reference_clip =
             DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
       reference_clip->RemoveClient(*resource_info_);
+    if (auto* reference_offset =
+            DynamicTo<ReferenceOffsetPathOperation>(style.OffsetPath())) {
+      reference_offset->RemoveClient(*resource_info_);
+    }
     resource_info_->ClearLayer();
   }
 
@@ -321,7 +325,7 @@ void PaintLayer::UpdateTransform() {
     DCHECK(box);
     transform->MakeIdentity();
     box->StyleRef().ApplyTransform(
-        *transform, box, box->Size(),
+        *transform, box, PhysicalSize(box->Size()),
         ComputedStyle::kIncludeTransformOperations,
         ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,
@@ -560,11 +564,9 @@ void PaintLayer::Update3DTransformedDescendantStatus() {
 }
 
 void PaintLayer::UpdateLayerPosition() {
-  // LayoutBoxes will call UpdateSizeAndScrollingAfterLayout() from
-  // LayoutBox::UpdateAfterLayout, but LayoutInlines will still need to update
-  // their size.
-  if (GetLayoutObject().IsLayoutInline())
-    UpdateSize();
+  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    return;
+  }
   PhysicalOffset local_point;
   if (LayoutBox* box = GetLayoutBox()) {
     local_point += box->PhysicalLocation();
@@ -590,30 +592,15 @@ void PaintLayer::UpdateLayerPosition() {
 #endif
 }
 
-bool PaintLayer::UpdateSize() {
-  LayoutSize old_size = size_;
-  if (IsRootLayer()) {
-    size_ = LayoutSize(GetLayoutObject().GetDocument().View()->Size());
-  } else if (GetLayoutObject().IsInline() &&
-             GetLayoutObject().IsLayoutInline()) {
-    auto& inline_flow = To<LayoutInline>(GetLayoutObject());
-    gfx::Rect line_box =
-        ToEnclosingRect(inline_flow.PhysicalLinesBoundingBox());
-    size_ = LayoutSize(line_box.size());
-  } else if (LayoutBox* box = GetLayoutBox()) {
-    size_ = box->Size();
-  }
-
-  return old_size != size_;
-}
-
-void PaintLayer::UpdateSizeAndScrollingAfterLayout() {
-  bool did_resize = UpdateSize();
+void PaintLayer::UpdateScrollingAfterLayout() {
   if (RequiresScrollableArea()) {
     DCHECK(scrollable_area_);
     scrollable_area_->UpdateAfterLayout();
-    if (did_resize)
+    LayoutBox* layout_box = GetLayoutBox();
+    if (layout_box->ScrollableAreaSizeChanged()) {
       scrollable_area_->VisibleSizeChanged();
+      layout_box->SetScrollableAreaSizeChanged(false);
+    }
   }
 }
 
@@ -950,6 +937,7 @@ static inline const PaintLayer* AccumulateOffsetTowardsAncestor(
 
 void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                                       PhysicalOffset& location) const {
+  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
   if (ancestor_layer == this)
     return;
 
@@ -957,6 +945,14 @@ void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
   while (curr_layer && curr_layer != ancestor_layer)
     curr_layer =
         AccumulateOffsetTowardsAncestor(curr_layer, ancestor_layer, location);
+}
+
+const PhysicalOffset& PaintLayer::LocationWithoutPositionOffset() const {
+  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
+#if DCHECK_IS_ON()
+  DCHECK(!needs_position_update_);
+#endif
+  return location_without_position_offset_;
 }
 
 void PaintLayer::DidUpdateScrollsOverflow() {
@@ -1045,7 +1041,7 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
   ClipRectsContext clip_rects_context(this, fragment.fragment_data,
                                       kExcludeOverlayScrollbarSizeForHitTesting,
                                       respect_overflow_clip);
-  Clipper().CalculateRects(clip_rects_context, fragment.fragment_data,
+  Clipper().CalculateRects(clip_rects_context, *fragment.fragment_data,
                            fragment.layer_offset, fragment.background_rect,
                            fragment.foreground_rect);
 
@@ -1054,16 +1050,8 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
 
 const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   const LayoutBox* layout_box = GetLayoutBox();
-  if (!layout_box)
-    return nullptr;
-  if (!layout_box->CanTraversePhysicalFragments())
-    return nullptr;
-  if (!layout_box->PhysicalFragmentCount()) {
-    // TODO(crbug.com/1273068): The box has no fragments. This is
-    // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
-    // on our way here. If the LayoutBox has never been laid out, it will
-    // have no fragments. But then we shouldn't really be here. Fall back to
-    // legacy LayoutObject tree traversal for this layer.
+  if (!layout_box || !layout_box->CanTraversePhysicalFragments() ||
+      layout_box->IsFragmentLessBox()) {
     return nullptr;
   }
   return layout_box;
@@ -1114,7 +1102,7 @@ void PaintLayer::CollectFragments(
         kExcludeOverlayScrollbarSizeForHitTesting, respect_overflow_clip,
         PhysicalOffset());
 
-    Clipper().CalculateRects(clip_rects_context, fragment_data,
+    Clipper().CalculateRects(clip_rects_context, *fragment_data,
                              fragment.layer_offset, fragment.background_rect,
                              fragment.foreground_rect);
 
@@ -1378,12 +1366,8 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
-  if (const auto* box = GetLayoutBox()) {
-    // A child layer of a <frameset> might have no physical fragments. We can
-    // skip such layer. See ClearNeedsLayoutOnHiddenFrames().
-    if (box->PhysicalFragmentCount() == 0) {
-      return nullptr;
-    }
+  if (layout_object.IsFragmentLessBox()) {
+    return nullptr;
   }
 
   if (!IsSelfPaintingLayer() && !HasSelfPaintingLayerDescendant())
@@ -1514,9 +1498,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (local_transform_state &&
       layout_object.StyleRef().BackfaceVisibility() ==
           EBackfaceVisibility::kHidden &&
-      local_transform_state->AccumulatedTransform()
-          .InverseOrIdentity()
-          .IsBackFaceVisible()) {
+      local_transform_state->AccumulatedTransform().IsBackFaceVisible()) {
     return nullptr;
   }
 
@@ -2101,7 +2083,12 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
     }
 
     PhysicalOffset delta;
-    child_layer->ConvertToLayerCoords(this, delta);
+    if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+      delta = child_layer->GetLayoutObject().LocalToAncestorPoint(
+          delta, &GetLayoutObject(), kIgnoreTransforms);
+    } else {
+      child_layer->ConvertToLayerCoords(this, delta);
+    }
     added_rect.Move(delta);
 
     result.Unite(added_rect);
@@ -2234,6 +2221,27 @@ void PaintLayer::UpdateClipPath(const ComputedStyle* old_style,
   }
 }
 
+void PaintLayer::UpdateOffsetPath(const ComputedStyle* old_style,
+                                  const ComputedStyle& new_style) {
+  OffsetPathOperation* new_offset = new_style.OffsetPath();
+  OffsetPathOperation* old_offset =
+      old_style ? old_style->OffsetPath() : nullptr;
+  if (!new_offset && !old_offset) {
+    return;
+  }
+  const bool had_resource_info = ResourceInfo();
+  if (auto* reference_offset =
+          DynamicTo<ReferenceOffsetPathOperation>(new_offset)) {
+    reference_offset->AddClient(EnsureResourceInfo());
+  }
+  if (had_resource_info) {
+    if (auto* old_reference_offset =
+            DynamicTo<ReferenceOffsetPathOperation>(old_offset)) {
+      old_reference_offset->RemoveClient(*ResourceInfo());
+    }
+  }
+}
+
 void PaintLayer::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   UpdateScrollableArea();
@@ -2315,6 +2323,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   UpdateFilters(old_style, new_style);
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);
+  UpdateOffsetPath(old_style, new_style);
 
   if (diff.ZIndexChanged()) {
     // We don't need to invalidate paint of objects when paint order

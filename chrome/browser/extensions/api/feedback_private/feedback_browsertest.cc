@@ -94,14 +94,11 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowLoginFeedback) {
   ASSERT_TRUE(window);
   content::WebContents* const content = window->web_contents();
 
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-        "$('page-url').hidden && $('attach-file-container').hidden && "
-        "$('attach-file-note').hidden);",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "$('page-url').hidden && $('attach-file-container').hidden && "
+                "$('attach-file-note').hidden;"));
 }
 
 // Tests that there's an option in the email drop down box with a value ''.
@@ -118,21 +115,16 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
   ASSERT_TRUE(window);
   content::WebContents* const content = window->web_contents();
 
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var options = $('user-email-drop-down').options;"
-      "      for (var option in options) {"
-      "        if (options[option].value == '')"
-      "          return true;"
-      "      }"
-      "      return false;"
-      "    })()));",
-      &bool_result));
-
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true, content::EvalJs(
+                      content,
+                      "((function() {"
+                      "    var options = $('user-email-drop-down').options;"
+                      "    for (var option in options) {"
+                      "      if (options[option].value == '')"
+                      "        return true;"
+                      "    }"
+                      "    return false;"
+                      "  })());"));
 }
 
 // Ensures that when extra diagnostics are provided with feedback, they are
@@ -150,23 +142,18 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ExtraDiagnostics) {
   ASSERT_TRUE(window);
   content::WebContents* const content = window->web_contents();
 
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var sysInfo = feedbackInfo.systemInformation;"
-      "      for (var info in sysInfo) {"
-      "        if (sysInfo[info].key == 'EXTRA_DIAGNOSTICS' &&"
-      "            sysInfo[info].value == 'Some diagnostics') {"
-      "          return true;"
-      "        }"
-      "      }"
-      "      return false;"
-      "    })()));",
-      &bool_result));
-
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true, content::EvalJs(
+                      content,
+                      "((function() {"
+                      "    var sysInfo = feedbackInfo.systemInformation;"
+                      "    for (var info in sysInfo) {"
+                      "      if (sysInfo[info].key == 'EXTRA_DIAGNOSTICS' &&"
+                      "          sysInfo[info].value == 'Some diagnostics') {"
+                      "        return true;"
+                      "      }"
+                      "    }"
+                      "    return false;"
+                      "  })());"));
 }
 
 // Ensures that when triggered from Assistant with Google account, Assistant
@@ -185,19 +172,16 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedbackFromAssistant) {
   ASSERT_TRUE(window);
   content::WebContents* const content = window->web_contents();
 
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      if ($('assistant-checkbox-container') != null &&"
-      "          $('assistant-checkbox-container').hidden == true) {"
-      "        return false;"
-      "      }"
-      "      return true;"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    if ($('assistant-checkbox-container') != null &&"
+                "        $('assistant-checkbox-container').hidden == true) {"
+                "      return false;"
+                "    }"
+                "    return true;"
+                "  })());"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -219,35 +203,29 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ProvideBluetoothLogs) {
 
   // It shouldn't be visible until we put the Bluetooth text into the
   // description.
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      if ($('bluetooth-checkbox-container') != null &&"
-      "          $('bluetooth-checkbox-container').hidden == true) {"
-      "        return true;"
-      "      }"
-      "      return false;"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
-  bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var elem = document.getElementById('description-text');"
-      "      elem.value = 'bluetooth';"
-      "      elem.dispatchEvent(new Event('input', {}));"
-      "      if ($('bluetooth-checkbox-container') != null &&"
-      "          $('bluetooth-checkbox-container').hidden == false) {"
-      "        return true;"
-      "      }"
-      "      return false;"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    if ($('bluetooth-checkbox-container') != null &&"
+                "        $('bluetooth-checkbox-container').hidden == true) {"
+                "      return true;"
+                "    }"
+                "    return false;"
+                "  })());"));
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    var elem = document.getElementById('description-text');"
+                "    elem.value = 'bluetooth';"
+                "    elem.dispatchEvent(new Event('input', {}));"
+                "    if ($('bluetooth-checkbox-container') != null &&"
+                "        $('bluetooth-checkbox-container').hidden == false) {"
+                "      return true;"
+                "    }"
+                "    return false;"
+                "  })());"));
 }
 
 // Ensures that when triggered from a Google account and a Bluetooth related
@@ -269,45 +247,37 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaire) {
 
   // Questionnaire shouldn't be visible until we put the Bluetooth text into the
   // description.
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      return !$('description-text').value.includes('please answer');"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          content,
+          "((function() {"
+          "    return !$('description-text').value.includes('please answer');"
+          "  })());"));
 
   // Bluetooth questions should appear.
-  bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var elem = document.getElementById('description-text');"
-      "      elem.value = 'bluetooth';"
-      "      elem.dispatchEvent(new Event('input', {}));"
-      "      return elem.value.includes('please answer')"
-      "          && elem.value.includes('[Bluetooth]')"
-      "          && !elem.value.includes('[WiFi]');"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    var elem = document.getElementById('description-text');"
+                "    elem.value = 'bluetooth';"
+                "    elem.dispatchEvent(new Event('input', {}));"
+                "    return elem.value.includes('please answer')"
+                "        && elem.value.includes('[Bluetooth]')"
+                "        && !elem.value.includes('[WiFi]');"
+                "  })());"));
 
   // WiFi questions should appear.
-  bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var elem = document.getElementById('description-text');"
-      "      elem.value = 'wifi issue';"
-      "      elem.dispatchEvent(new Event('input', {}));"
-      "      return elem.value.includes('[WiFi]');"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    var elem = document.getElementById('description-text');"
+                "    elem.value = 'wifi issue';"
+                "    elem.dispatchEvent(new Event('input', {}));"
+                "    return elem.value.includes('[WiFi]');"
+                "  })());"));
 }
 
 // Questionnaires should not be displayed if it's not a Googler session.
@@ -326,29 +296,24 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaireNotGoogler) {
   content::WebContents* const content = window->web_contents();
 
   // Questionnaire shouldn't be visible in the beginning.
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      return !$('description-text').value.includes('[Bluetooth]');"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          content,
+          "((function() {"
+          "    return !$('description-text').value.includes('[Bluetooth]');"
+          "  })()));"));
 
   // Questionnaire should not appear even with a Bluetooth keyword.
-  bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      var elem = document.getElementById('description-text');"
-      "      elem.value = 'bluetooth';"
-      "      elem.dispatchEvent(new Event('input', {}));"
-      "      return !elem.value.includes('please answer');"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    var elem = document.getElementById('description-text');"
+                "    elem.value = 'bluetooth';"
+                "    elem.dispatchEvent(new Event('input', {}));"
+                "    return !elem.value.includes('please answer');"
+                "  })());"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -415,19 +380,16 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
       ->set_feedback_uploader_delegate(&delegate);
 
   // Click the send button.
-  bool bool_result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      content,
-      "domAutomationController.send("
-      "  ((function() {"
-      "      if ($('send-report-button') != null) {"
-      "        document.getElementById('send-report-button').click();"
-      "        return true;"
-      "      }"
-      "      return false;"
-      "    })()));",
-      &bool_result));
-  EXPECT_TRUE(bool_result);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                content,
+                "((function() {"
+                "    if ($('send-report-button') != null) {"
+                "      document.getElementById('send-report-button').click();"
+                "      return true;"
+                "    }"
+                "    return false;"
+                "  })());"));
 
   // This will DCHECK if the JS private API call doesn't return a value, which
   // is the main case we are concerned about.

@@ -88,7 +88,10 @@ source_set("frame") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//components/user_manager",
+    ]
   }
 }
 

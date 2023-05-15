@@ -76,11 +76,9 @@ void SignalsAggregatorImpl::GetSignalsForUser(
 
   LogSignalCollectionRequested(*request.signal_names.begin());
 
-  permission_service_->CanUserCollectSignals(
-      user_context,
-      base::BindOnce(&SignalsAggregatorImpl::OnUserPermissionChecked,
-                     weak_factory_.GetWeakPtr(), std::move(request),
-                     std::move(callback)));
+  const auto permission =
+      permission_service_->CanUserCollectSignals(user_context);
+  GetSignalsWithPermission(permission, std::move(request), std::move(callback));
 }
 
 void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
@@ -94,15 +92,14 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
 
   LogSignalCollectionRequested(*request.signal_names.begin());
 
-  permission_service_->CanCollectSignals(base::BindOnce(
-      &SignalsAggregatorImpl::OnUserPermissionChecked,
-      weak_factory_.GetWeakPtr(), std::move(request), std::move(callback)));
+  const auto permission = permission_service_->CanCollectSignals();
+  GetSignalsWithPermission(permission, std::move(request), std::move(callback));
 }
 
-void SignalsAggregatorImpl::OnUserPermissionChecked(
+void SignalsAggregatorImpl::GetSignalsWithPermission(
+    const UserPermission user_permission,
     const SignalsAggregationRequest& request,
-    GetSignalsCallback callback,
-    const UserPermission user_permission) {
+    GetSignalsCallback callback) {
   LogUserPermissionChecked(user_permission);
   if (user_permission != UserPermission::kGranted) {
     RespondWithError(PermissionToError(user_permission), std::move(callback));

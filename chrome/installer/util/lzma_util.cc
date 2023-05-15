@@ -313,7 +313,11 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
   DCHECK(archive_file_.IsValid());
 
   SevenZipDelegateImpl delegate(location, output_file);
-  seven_zip::Extract(archive_file_.Duplicate(), delegate);
+  std::unique_ptr<seven_zip::SevenZipReader> reader =
+      seven_zip::SevenZipReader::Create(archive_file_.Duplicate(), delegate);
+  if (reader) {
+    reader->Extract();
+  }
   error_code_ = delegate.error_code();
   return delegate.unpack_error();
 }

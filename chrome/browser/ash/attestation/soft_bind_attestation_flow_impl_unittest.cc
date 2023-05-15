@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -129,7 +130,8 @@ class SoftBindAttestationFlowImplTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  StrictMock<MockAttestationFlow>* mock_attestation_flow_;
+  raw_ptr<StrictMock<MockAttestationFlow>, ExperimentalAsh>
+      mock_attestation_flow_;
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<SoftBindAttestationFlowImpl> soft_bind_attestation_flow_;
 

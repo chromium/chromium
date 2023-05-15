@@ -234,6 +234,13 @@ LogMessage::LogMessage(const char* file, int line, absl::LogSeverity severity)
   LogBacktraceIfNeeded();
 }
 
+LogMessage::LogMessage(const char* file, int line, InfoTag)
+    : LogMessage(file, line, absl::LogSeverity::kInfo) {}
+LogMessage::LogMessage(const char* file, int line, WarningTag)
+    : LogMessage(file, line, absl::LogSeverity::kWarning) {}
+LogMessage::LogMessage(const char* file, int line, ErrorTag)
+    : LogMessage(file, line, absl::LogSeverity::kError) {}
+
 LogMessage::~LogMessage() {
 #ifdef ABSL_MIN_LOG_LEVEL
   if (data_->entry.log_severity() <
@@ -346,12 +353,12 @@ void LogMessage::FailQuietly() {
 }
 
 LogMessage& LogMessage::operator<<(const std::string& v) {
-  CopyToEncodedBuffer(v, StringType::kNotLiteral);
+  CopyToEncodedBuffer<StringType::kNotLiteral>(v);
   return *this;
 }
 
 LogMessage& LogMessage::operator<<(absl::string_view v) {
-  CopyToEncodedBuffer(v, StringType::kNotLiteral);
+  CopyToEncodedBuffer<StringType::kNotLiteral>(v);
   return *this;
 }
 LogMessage& LogMessage::operator<<(std::ostream& (*m)(std::ostream& os)) {
@@ -383,8 +390,7 @@ template LogMessage& LogMessage::operator<<(const double& v);
 template LogMessage& LogMessage::operator<<(const bool& v);
 
 void LogMessage::Flush() {
-  if (data_->entry.log_severity() < absl::MinLogLevel())
-    return;
+  if (data_->entry.log_severity() < absl::MinLogLevel()) return;
 
   if (data_->is_perror) {
     InternalStream() << ": " << absl::base_internal::StrError(errno_saver_())
@@ -427,7 +433,7 @@ LogMessage::OstreamView::OstreamView(LogMessageData& message_data)
                          &encoded_remaining_copy_);
   string_start_ =
       EncodeMessageStart(ValueTag::kString, encoded_remaining_copy_.size(),
-                       &encoded_remaining_copy_);
+                         &encoded_remaining_copy_);
   setp(encoded_remaining_copy_.data(),
        encoded_remaining_copy_.data() + encoded_remaining_copy_.size());
   data_.manipulated.rdbuf(this);
@@ -519,8 +525,8 @@ void LogMessage::LogBacktraceIfNeeded() {
 // containing the specified string data using a `Value` field appropriate to
 // `str_type`.  Truncates `str` if necessary, but emits nothing and marks the
 // buffer full if  even the field headers do not fit.
-void LogMessage::CopyToEncodedBuffer(absl::string_view str,
-                                     StringType str_type) {
+template <LogMessage::StringType str_type>
+void LogMessage::CopyToEncodedBuffer(absl::string_view str) {
   auto encoded_remaining_copy = data_->encoded_remaining;
   auto start = EncodeMessageStart(
       EventTag::kValue, BufferSizeFor(WireType::kLengthDelimited) + str.size(),
@@ -541,7 +547,12 @@ void LogMessage::CopyToEncodedBuffer(absl::string_view str,
     data_->encoded_remaining.remove_suffix(data_->encoded_remaining.size());
   }
 }
-void LogMessage::CopyToEncodedBuffer(char ch, size_t num, StringType str_type) {
+template void LogMessage::CopyToEncodedBuffer<LogMessage::StringType::kLiteral>(
+    absl::string_view str);
+template void LogMessage::CopyToEncodedBuffer<
+    LogMessage::StringType::kNotLiteral>(absl::string_view str);
+template <LogMessage::StringType str_type>
+void LogMessage::CopyToEncodedBuffer(char ch, size_t num) {
   auto encoded_remaining_copy = data_->encoded_remaining;
   auto value_start = EncodeMessageStart(
       EventTag::kValue, BufferSizeFor(WireType::kLengthDelimited) + num,
@@ -562,6 +573,10 @@ void LogMessage::CopyToEncodedBuffer(char ch, size_t num, StringType str_type) {
     data_->encoded_remaining.remove_suffix(data_->encoded_remaining.size());
   }
 }
+template void LogMessage::CopyToEncodedBuffer<LogMessage::StringType::kLiteral>(
+    char ch, size_t num);
+template void LogMessage::CopyToEncodedBuffer<
+    LogMessage::StringType::kNotLiteral>(char ch, size_t num);
 
 LogMessageFatal::LogMessageFatal(const char* file, int line)
     : LogMessage(file, line, absl::LogSeverity::kFatal) {}

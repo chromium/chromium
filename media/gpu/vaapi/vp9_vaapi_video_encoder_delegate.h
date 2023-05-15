@@ -44,6 +44,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // 0-255.
     uint8_t min_qp;
     uint8_t max_qp;
+
+    bool error_resilident_mode = false;
   };
 
   VP9VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -70,7 +72,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   using VP9RateControl = VideoRateControl<libvpx::VP9RateControlRtcConfig,
                                           libvpx::VP9RateControlRTC,
-                                          libvpx::VP9FrameParamsQpRTC>;
+                                          libvpx::VP9FrameParamsQpRTC,
+                                          int>;
   void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
 
   bool ApplyPendingUpdateRates();

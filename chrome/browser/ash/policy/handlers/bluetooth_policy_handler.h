@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_BLUETOOTH_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_BLUETOOTH_POLICY_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -35,7 +36,7 @@ class BluetoothPolicyHandler {
   // |Shutdown| on the Bluetooth stack in order to disable it.
   void SetBluetoothPolicy(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  ash::CrosSettings* cros_settings_;
+  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
   base::CallbackListSubscription allow_bluetooth_subscription_;
   base::CallbackListSubscription allowed_services_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;

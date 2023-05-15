@@ -826,6 +826,8 @@ base::Value::Dict SerializeReferrer(const ReferrerChainEntry& referrer) {
     case ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE:
       navigation_initiation = "RENDERER_INITIATED_WITH_USER_GESTURE";
       break;
+    case ReferrerChainEntry::COPY_PASTE_USER_INITIATED:
+      navigation_initiation = "COPY_PASTE_USER_INITIATED";
   }
   referrer_dict.Set("navigation_initiation", navigation_initiation);
 
@@ -866,16 +868,13 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("length", static_cast<int>(cdr.length()));
   if (cdr.has_file_basename())
     dict.Set("file_basename", cdr.file_basename());
-  if (cdr.has_archive_valid())
-    dict.Set("archive_valid", cdr.archive_valid());
 
   if (!cdr.archived_binary().empty()) {
     base::Value::List archived_binaries;
     for (const auto& archived_binary : cdr.archived_binary()) {
       base::Value::Dict dict_archived_binary;
-      if (archived_binary.has_file_basename()) {
-        dict_archived_binary.Set("file_basename",
-                                 archived_binary.file_basename());
+      if (archived_binary.has_file_path()) {
+        dict_archived_binary.Set("file_path", archived_binary.file_path());
       }
       if (archived_binary.has_download_type()) {
         dict_archived_binary.Set("download_type",
@@ -906,12 +905,6 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
 
   if (cdr.has_request_ap_verdicts())
     dict.Set("request_ap_verdicts", cdr.request_ap_verdicts());
-
-  if (cdr.has_archive_file_count())
-    dict.Set("archive_file_count", cdr.archive_file_count());
-
-  if (cdr.has_archive_directory_count())
-    dict.Set("archive_directory_count", cdr.archive_directory_count());
 
   if (!cdr.access_token().empty())
     dict.Set("access_token", cdr.access_token());
@@ -1628,8 +1621,8 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ThreatSource::CLIENT_SIDE_DETECTION:
       threat_source = "CLIENT_SIDE_DETECTION";
       break;
-    case ThreatSource::REAL_TIME_CHECK:
-      threat_source = "REAL_TIME_CHECK";
+    case ThreatSource::URL_REAL_TIME_CHECK:
+      threat_source = "URL_REAL_TIME_CHECK";
       break;
     case ThreatSource::UNKNOWN:
       threat_source = "UNKNOWN";

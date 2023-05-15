@@ -54,7 +54,7 @@ class ScopedDeviceSettings {
 
 class ScopedCanConfigureNetwork {
  public:
-  ScopedCanConfigureNetwork(bool can_configure, bool needs_owner_auth);
+  explicit ScopedCanConfigureNetwork(bool can_configure);
   ScopedCanConfigureNetwork(const ScopedCanConfigureNetwork&) = delete;
   ScopedCanConfigureNetwork& operator=(const ScopedCanConfigureNetwork&) =
       delete;
@@ -62,13 +62,9 @@ class ScopedCanConfigureNetwork {
 
   bool CanConfigureNetwork() const { return can_configure_; }
 
-  bool NeedsOwnerAuthToConfigureNetwork() const { return needs_owner_auth_; }
-
  private:
   const bool can_configure_;
-  const bool needs_owner_auth_;
   KioskLaunchController::ReturnBoolCallback can_configure_network_callback_;
-  KioskLaunchController::ReturnBoolCallback needs_owner_auth_callback_;
 };
 
 }  // namespace ash

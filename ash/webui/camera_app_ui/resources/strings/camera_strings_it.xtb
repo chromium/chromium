@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">La registrazione è stata interrotta perché lo spazio di archiviazione del dispositivo è in esaurimento. Per registrare altri video, devi liberare spazio sul dispositivo.</translation>
 <translation id="2036868001356139588">Durata del timer</translation>
 <translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
-<translation id="2128052519899549250">Registra un video in time-lapse</translation>
 <translation id="2134029355740465625">Impostazioni video</translation>
 <translation id="2144806332417375165">Parametri video personalizzati</translation>
 <translation id="2175927920773552910">Codice QR</translation>
@@ -54,7 +53,7 @@
 <translation id="3411958449466169012">Timer off</translation>
 <translation id="3448774564454087943">Video non salvato perché è troppo breve</translation>
 <translation id="346539236881580388">Nuovo scatto</translation>
-<translation id="3517926952904427380">Impossibile scattare foto verticale</translation>
+<translation id="3517926952904427380">Impossibile scattare il ritratto</translation>
 <translation id="3566302376254083266">Spostamento in alto a sinistra</translation>
 <translation id="3573890771273113519">Passa alla modalità di scansione</translation>
 <translation id="3583444040776960729">Angolo inferiore sinistro del documento</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Documento rilevato</translation>
 <translation id="414641094616694804">Non è possibile modificare la risoluzione di questa fotocamera</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
-<translation id="4281620174117014503">Media risoluzione</translation>
 <translation id="428234092390943511">Miniatura della pagina</translation>
 <translation id="4383571725254449280">Log relativi alle prestazioni di stampa</translation>
 <translation id="4445542136948522167">Interrompi acquisizione foto</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5320594929574852403">Spostamento a sinistra</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Time-lapse</translation>
 <translation id="5662366948659129155">Scansione pagina <ph name="COUNT" /> in corso…</translation>
 <translation id="5671277269877808209">Quadrato</translation>
+<translation id="574392208103952083">Medio</translation>
 <translation id="5746169159649715125">Salva come PDF</translation>
 <translation id="5753488212459587150">Attiva modalità Esperto</translation>
 <translation id="5759254179196327752">Esegui la scansione del documento</translation>
@@ -122,7 +120,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="6888362557094394345">Spostamento in basso</translation>
 <translation id="695140971690006676">Reimposta tutto</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Verticale</translation>
+<translation id="6965830616442491568">Ritratto</translation>
 <translation id="698156982839284926">3 secondi</translation>
 <translation id="7134221860976209830">Timer di 10 secondi</translation>
 <translation id="7191890674911603392">Tipo di registrazione</translation>
@@ -138,6 +136,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Angolo inferiore destro del documento</translation>
+<translation id="7684446460490665873">Registra un video in time-lapse</translation>
 <translation id="7692090236657809299">Attiva panoramica inclinazione zoom</translation>
 <translation id="7726641833034062494">Registra video normale</translation>
 <translation id="7748344063862150053">Angolo superiore destro del documento</translation>
@@ -163,6 +162,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="9045010116236796332">Posiziona i bordi del documento all'interno dell'inquadratura</translation>
 <translation id="9045155556724273246">10 secondi</translation>
 <translation id="906331135292332864">Elaborazione dell'immagine in corso…</translation>
+<translation id="9161584225258678723">Time-lapse</translation>
 <translation id="922762992951083513">Specchio on</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 </translationbundle>

@@ -38,7 +38,7 @@ class AutofillPopupDelegate {
   // shown. |frontend_id| is the frontend id of the suggestion. |backend_id| is
   // the guid of the backend data model.
   virtual void DidSelectSuggestion(const std::u16string& value,
-                                   int frontend_id,
+                                   Suggestion::FrontendId frontend_id,
                                    const Suggestion::BackendId& backend_id) = 0;
 
   // Informs the delegate that a row in the popup has been chosen. |suggestion|
@@ -50,14 +50,14 @@ class AutofillPopupDelegate {
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.
   virtual bool GetDeletionConfirmationText(const std::u16string& value,
-                                           int frontend_id,
+                                           Suggestion::FrontendId frontend_id,
                                            std::u16string* title,
                                            std::u16string* body) = 0;
 
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.
   virtual bool RemoveSuggestion(const std::u16string& value,
-                                int frontend_id) = 0;
+                                Suggestion::FrontendId frontend_id) = 0;
 
   // Informs the delegate that the Autofill previewed form should be cleared.
   virtual void ClearPreviewedForm() = 0;

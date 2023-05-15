@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
@@ -36,6 +38,15 @@
 #include "url/gurl.h"
 
 namespace ash::settings {
+
+namespace {
+
+constexpr char kSavedPrintersCountHistogramName[] =
+    "Printing.CUPS.SavedPrintersCount";
+
+constexpr char kHandlerFunctionName[] = "handlerFunctionName";
+
+}  // namespace
 
 using ::chromeos::Printer;
 
@@ -61,6 +72,11 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
   }
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override {
     return printer_installed_;
+  }
+
+  std::vector<chromeos::Printer> GetPrinters(
+      chromeos::PrinterClass printer_class) const override {
+    return {Printer(), Printer()};
   }
 
   // Used to configured our test manager for specific tests.
@@ -162,7 +178,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
 
-  ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
+      expected_file_type_info_;
 };
 
 // A factory associated with the artificial file picker.
@@ -187,7 +204,8 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       delete;
 
  private:
-  ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
+      expected_file_type_info_;
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -251,6 +269,12 @@ class CupsPrintersHandlerTest : public testing::Test {
     run_loop_.Run();
   }
 
+  void CallGetCupsSavedPrintersList() {
+    base::Value::List args;
+    args.Append(kHandlerFunctionName);
+    web_ui_.HandleReceivedMessage("getCupsSavedPrintersList", args);
+  }
+
   // Get the contents of the file that was downloaded.  Return true on success,
   // false on error.
   bool GetDownloadedPpdContents(std::string& contents) const {
@@ -272,9 +296,10 @@ class CupsPrintersHandlerTest : public testing::Test {
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
   base::ScopedTempDir download_dir_;
+  base::HistogramTester histogram_tester_;
 
   const std::string kPpdPrinterName = "printer_name";
   const std::string kDefaultPpdData = "PPD data used for testing";
@@ -496,6 +521,16 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
   std::string contents;
   EXPECT_TRUE(GetDownloadedPpdContents(contents));
   EXPECT_THAT(contents, testing::HasSubstr(kPpdErrorString));
+}
+
+TEST_F(CupsPrintersHandlerTest, GetSavedPrinters) {
+  CallGetCupsSavedPrintersList();
+
+  // Expect 2 printers are recorded to the histogram from the `GetPrinters()`
+  // result.
+  histogram_tester_.ExpectBucketCount(kSavedPrintersCountHistogramName,
+                                      /*sample=*/2,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash::settings

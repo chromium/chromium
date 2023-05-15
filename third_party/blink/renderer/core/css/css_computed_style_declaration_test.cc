@@ -161,7 +161,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, UseCountDurationZero) {
-  ScopedCSSScrollTimelineForTest scroll_timeline_feature(false);
+  ScopedScrollTimelineForTest scroll_timeline_feature(false);
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       div {

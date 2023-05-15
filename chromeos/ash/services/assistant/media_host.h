@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_MEDIA_HOST_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom-forward.h"
@@ -64,11 +65,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   void StopObservingMediaController();
 
   // Owned by our parent |AssistantManagerServiceImpl|.
-  const base::ObserverList<AssistantInteractionSubscriber>* const
+  const raw_ptr<const base::ObserverList<AssistantInteractionSubscriber>,
+                ExperimentalAsh>
       interaction_subscribers_;
   // Owned by our parent |AssistantManagerServiceImpl|.
-  libassistant::mojom::MediaController* libassistant_media_controller_ =
-      nullptr;
+  raw_ptr<libassistant::mojom::MediaController, ExperimentalAsh>
+      libassistant_media_controller_ = nullptr;
 
   std::unique_ptr<AssistantMediaSession> media_session_;
   mojo::Remote<media_session::mojom::MediaController>

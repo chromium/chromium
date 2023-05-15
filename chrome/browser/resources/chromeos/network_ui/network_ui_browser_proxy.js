@@ -79,6 +79,8 @@ export class NetworkUIBrowserProxy {
 
   resetEuicc() {}
 
+  resetApnMigrator() {}
+
   /**
    * @return {Promise<string>}
    */
@@ -203,6 +205,11 @@ export class NetworkUIBrowserProxyImpl {
   /** @override */
   resetEuicc() {
     chrome.send('resetEuicc');
+  }
+
+  /** @override */
+  resetApnMigrator() {
+    chrome.send('resetApnMigrator');
   }
 
   /**

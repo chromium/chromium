@@ -70,6 +70,14 @@ BASE_FEATURE(kRendererFilterEnvironment,
 BASE_FEATURE(kWinSboxAllowSystemFonts,
              "WinSboxAllowSystemFonts",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables very high job memory limits for sandboxed renderer processes. This
+// sets a limit of 1Tb, effectively removing the Job memory limits, except in
+// egregious cases.
+BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
+             "WinSboxHighRendererJobMemoryLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

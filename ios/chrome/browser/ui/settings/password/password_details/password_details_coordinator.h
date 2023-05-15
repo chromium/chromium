@@ -55,6 +55,12 @@ class Browser;
 // button.
 @property(nonatomic) BOOL showCancelButton;
 
+// Flag indicating whether the coordinator should dismiss the view controller
+// when the last presented password is deleted. If false, it means that the
+// view controller will instead be dismissed by a parent coordinator. `YES` by
+// default.
+@property(nonatomic, assign) BOOL shouldDismissOnAllPasswordsGone;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -20,6 +21,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -340,6 +342,66 @@ TEST(VariationsSeedStoreTest, LoadSeed_InvalidSignature) {
   histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
                                       LoadSeedResult::kInvalidSignature, 1);
   CheckRegularSeedPrefsAreCleared(prefs);
+  CheckSafeSeedPrefsAreSet(prefs);
+}
+
+TEST(VariationsSeedStoreTest, LoadSeed_RejectEmptySignature) {
+  const VariationsSeed seed = CreateTestSeed();
+  const std::string base64_seed = SerializeSeedBase64(seed);
+  const std::string base64_seed_signature = "";
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SetAllSeedPrefsToNonDefaultValues(&prefs);
+  prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed);
+  prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
+
+  // Loading a valid seed with an empty signature should fail and clear all
+  // associated prefs when signature verification is enabled.
+  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  EXPECT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
+                                   &loaded_base64_seed_signature));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
+                                      LoadSeedResult::kInvalidSignature, 1);
+  CheckRegularSeedPrefsAreCleared(prefs);
+  CheckSafeSeedPrefsAreSet(prefs);
+}
+
+TEST(VariationsSeedStoreTest, LoadSeed_AcceptEmptySignature) {
+  const VariationsSeed seed = CreateTestSeed();
+  const std::string base64_seed = SerializeSeedBase64(seed);
+  const std::string base64_seed_signature = "";
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SetAllSeedPrefsToNonDefaultValues(&prefs);
+  prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed);
+  prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
+
+  // Loading a valid seed with an empty signature should succeed iff
+  // switches::kAcceptEmptySeedSignatureForTesting is on the command line.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kAcceptEmptySeedSignatureForTesting);
+
+  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  EXPECT_TRUE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
+                                  &loaded_base64_seed_signature));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
+                                      LoadSeedResult::kSuccess, 1);
+  CheckRegularSeedPrefsAreSet(prefs);
   CheckSafeSeedPrefsAreSet(prefs);
 }
 

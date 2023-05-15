@@ -15,9 +15,6 @@ group("wpt_tests_isolate") {
     # Include blinkpy tools for uploading results to ResultDB.
     "//third_party/blink/tools/blinkpy/",
 
-    # Imported by some code in blinkpy.
-    "//build/skia_gold_common/",
-
     # The web_tests/external directory contains manifest file and public WPTs.
     "//third_party/blink/web_tests/external/",
 

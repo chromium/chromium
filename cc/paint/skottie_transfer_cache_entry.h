@@ -41,6 +41,7 @@ class CC_PAINT_EXPORT ServiceSkottieTransferCacheEntry final
   // ServiceTransferCacheEntry implementation:
   size_t CachedSize() const final;
   bool Deserialize(GrDirectContext* context,
+                   skgpu::graphite::Recorder* graphite_recorder,
                    base::span<const uint8_t> data) final;
 
   const scoped_refptr<SkottieWrapper>& skottie() const { return skottie_; }

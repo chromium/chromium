@@ -81,7 +81,7 @@
 // Web app window commands
 #define IDC_COPY_URL                    34060
 #define IDC_OPEN_IN_CHROME              34061
-#define IDC_SITE_SETTINGS               34062
+#define IDC_WEB_APP_SETTINGS            34062
 #define IDC_WEB_APP_MENU_APP_INFO    34063
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -127,6 +127,11 @@
 #define IDC_FOLLOW                      35033
 #define IDC_UNFOLLOW                    35034
 #define IDC_SAVE_IBAN_FOR_PAGE          35035
+#define IDC_AUTOFILL_MANDATORY_REAUTH   35036
+#define IDC_PASSWORDS_AND_AUTOFILL_MENU 35040
+#define IDC_SHOW_PASSWORD_MANAGER       35041
+#define IDC_SHOW_PAYMENT_METHODS        35042
+#define IDC_SHOW_ADDRESSES              35043
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
@@ -238,6 +243,12 @@
 #define IDC_EXTENSIONS_SUBMENU                         40267
 #define IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS       40268
 #define IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE  40269
+#define IDC_READING_LIST_MENU           40270
+#define IDC_READING_LIST_MENU_ADD_TAB   40271
+#define IDC_READING_LIST_MENU_SHOW_UI   40272
+#define IDC_BOOKMARKS_LIST_TITLE        40273
+#define IDC_SHOW_BOOKMARK_SIDE_PANEL    40274
+#define IDC_SHOW_SEARCH_COMPANION       40275
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
@@ -495,8 +506,8 @@
 #define IDC_LIVE_CAPTION 53251
 
 // Device API system tray icon
-#define IDC_MANAGE_HID_DEVICES_FIRST 53260
-#define IDC_MANAGE_HID_DEVICES_LAST 53269
+#define IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST 53260
+#define IDC_DEVICE_SYSTEM_TRAY_ICON_LAST 53299
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

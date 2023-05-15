@@ -13,6 +13,7 @@
 
 #import "base/observer_list.h"
 #import "build/blink_buildflags.h"
+#import "content/public/browser/web_contents_delegate.h"
 #import "content/public/browser/web_contents_observer.h"
 #import "ios/web/content/js_messaging/content_web_frames_manager.h"
 #import "ios/web/content/navigation/content_navigation_manager.h"
@@ -35,7 +36,9 @@ class WebContents;
 namespace web {
 
 // ContentWebState is an implementation of WebState that's based on WebContents.
-class ContentWebState : public WebState, public content::WebContentsObserver {
+class ContentWebState : public WebState,
+                        public content::WebContentsObserver,
+                        public content::WebContentsDelegate {
  public:
   explicit ContentWebState(const CreateParams& params);
 
@@ -163,10 +166,21 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  // WebContentsDelegate
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const blink::mojom::WindowFeatures& window_features,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+
  private:
+  WebStateDelegate* delegate_ = nullptr;
   UIScrollView* web_view_;
   CRWSessionStorage* session_storage_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::WebContents> child_web_contents_;
   std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
   id<CRWWebViewProxy> web_view_proxy_;
   NSString* UUID_;

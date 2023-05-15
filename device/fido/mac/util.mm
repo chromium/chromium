@@ -14,7 +14,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/writer.h"
@@ -24,14 +23,15 @@
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 using base::ScopedCFTypeRef;
-using base::scoped_nsobject;
-using cbor::Writer;
 using cbor::Value;
+using cbor::Writer;
 
 // The Touch ID authenticator AAGUID value. Despite using self-attestation,
 // Chrome will return this non-zero AAGUID for all MakeCredential
@@ -167,19 +167,17 @@ CodeSigningState ProcessIsSigned() {
   }
 
   base::ScopedCFTypeRef<CFStringRef> sign_id(
-      SecTaskCopySigningIdentifier(task.get(), /* error= */ nullptr));
+      SecTaskCopySigningIdentifier(task.get(), /*error=*/nullptr));
   return static_cast<bool>(sign_id) ? CodeSigningState::kSigned
                                     : CodeSigningState::kNotSigned;
 }
 
 bool DeviceHasBiometricsAvailable() {
-  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
+  LAContext* context = [[LAContext alloc] init];
   NSError* nserr;
   return
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&nserr];
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,8 +57,9 @@ class ArcMemoryPressureBridge
   // reclaimed - An estimate of the number of bytes freed.
   void OnHostMemoryPressureComplete(uint32_t killed, uint64_t reclaimed);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-  ArcMetricsService* const arc_metrics_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
 
   // Set between OnMemoryPressure and OnHostMemoryPressureComplete, so we can
   // throttle calls into ARCVM if it is unresponsive.

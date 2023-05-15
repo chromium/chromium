@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/style/style_viewer/system_ui_components_grid_view_factories.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -28,7 +29,7 @@ struct IconButtonInfo {
   IconButton::Type type;
   bool is_toggled;
   bool is_enabled;
-  gfx::ImageSkia* bg_img;
+  raw_ptr<gfx::ImageSkia, ExperimentalAsh> bg_img;
 };
 
 }  // namespace

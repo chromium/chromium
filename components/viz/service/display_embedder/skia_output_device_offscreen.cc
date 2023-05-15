@@ -8,6 +8,7 @@
 
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace viz {
 
@@ -26,6 +27,7 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
+                       context_state->graphite_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_state_(context_state),
@@ -50,18 +52,18 @@ SkiaOutputDeviceOffscreen::~SkiaOutputDeviceOffscreen() {
   DiscardBackbuffer();
 }
 
-bool SkiaOutputDeviceOffscreen::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceOffscreen::Reshape(const SkImageInfo& image_info,
+                                        const gfx::ColorSpace& color_space,
+                                        int sample_count,
+                                        float device_scale_factor,
+                                        gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
   DiscardBackbuffer();
-  size_ = gfx::SkISizeToSize(characterization.dimensions());
-  sk_color_type_ = characterization.colorType();
-  sk_color_space_ = characterization.refColorSpace();
-  sample_count_ = characterization.sampleCount();
+  size_ = gfx::SkISizeToSize(image_info.dimensions());
+  sk_color_type_ = image_info.colorType();
+  sk_color_space_ = image_info.refColorSpace();
+  sample_count_ = sample_count;
   EnsureBackbuffer();
   return true;
 }
@@ -130,7 +132,7 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
   DCHECK(backend_texture_.isValid());
   if (!sk_surface_) {
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-    sk_surface_ = SkSurface::MakeFromBackendTexture(
+    sk_surface_ = SkSurfaces::WrapBackendTexture(
         context_state_->gr_context(), backend_texture_,
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
             ? kTopLeft_GrSurfaceOrigin

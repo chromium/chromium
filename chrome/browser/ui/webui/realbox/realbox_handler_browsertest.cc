@@ -11,13 +11,13 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
 
   const scoped_refptr<OmniboxAction> history_clusters_action =
       base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          "test", history::ClusterKeywordData(), /*takes_over_match=*/false);
+          "test", history::ClusterKeywordData());
   const gfx::VectorIcon& vector_icon = history_clusters_action->GetVectorIcon();
   const std::string& svg_name =
       RealboxHandler::PedalVectorIconToResourceName(vector_icon);

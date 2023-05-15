@@ -10,6 +10,20 @@
 
 namespace syncer::prefs {
 
+// Enabled the local sync backend implemented by the LoopbackServer.
+inline constexpr char kEnableLocalSyncBackend[] =
+    "sync.enable_local_sync_backend";
+
+// Specifies the local sync backend directory. The name is chosen to mimic
+// user-data-dir etc. This flag only matters if the enable-local-sync-backend
+// flag is present.
+inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
+
+// NOTE: All the "internal" prefs should not be used directly by non-sync code,
+// but should rather always be accessed via SyncUserSettings.
+// TODO(crbug.com/1435427): Clean up/replace any existing references to these
+// prefs from outside components/sync/.
+namespace internal {
 // Boolean specifying whether the user finished setting up sync at least once.
 inline constexpr char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
 
@@ -18,6 +32,13 @@ inline constexpr char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
 // (kSyncBookmarks, kSyncPasswords, etc.) can all be ignored.
 inline constexpr char kSyncKeepEverythingSynced[] =
     "sync.keep_everything_synced";
+
+// Boolean specifying whether the user has opted in account storage for
+// bookmarks and reading list or not. This pref and the following preferences
+// (kSyncBookmarks, kSyncReadingList) should be both true to enable bookmarks
+// and reading lists for signed-in, non-syncing users only.
+inline constexpr char kBookmarksAndReadingListAccountStorageOptIn[] =
+    "sync.bookmarks_and_reading_list_account_storage_opt_in";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref that records whether OS sync preferences were migrated due to
@@ -79,15 +100,7 @@ inline constexpr char kSyncEncryptionBootstrapToken[] =
 inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
     "sync.passphrase_prompt_muted_product_version";
 
-// Enabled the local sync backend implemented by the LoopbackServer.
-inline constexpr char kEnableLocalSyncBackend[] =
-    "sync.enable_local_sync_backend";
-
-// Specifies the local sync backend directory. The name is chosen to mimic
-// user-data-dir etc. This flag only matters if the enable-local-sync-backend
-// flag is present.
-inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
-
+}  // namespace internal
 }  // namespace syncer::prefs
 
 #endif  // COMPONENTS_SYNC_BASE_PREF_NAMES_H_

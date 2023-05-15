@@ -60,7 +60,7 @@ TEST_F(QuotaManagerProxyTest, GetBucketPath) {
       params, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
   auto bucket = future.Take();
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
 
   base::FilePath expected_path =
       profile_path_.GetPath()
@@ -79,7 +79,7 @@ TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
       params, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
   auto bucket = future.Take();
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
 
   base::FilePath bucket_path =
       profile_path_.GetPath()

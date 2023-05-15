@@ -105,14 +105,13 @@ takes the start address of the file's text section. To calculate this, one will
 need a copy of `/path/to/chrome`, and run:
 
 ```shell
-$ objdump -x /path/to/chrome | grep '\.text' | head -n 1 | tr -s ' ' | \
-    cut -d' ' -f 7
+$ objdump -x /path/to/chrome | grep '\.text' | head -n 1 | tr -s ' ' | cut -d' ' -f 5
 
-005282c0
+00000000005282c0
 ```
 
 
-Now add the two addresses: `7fe749a90000 + 005282c0 = 7fe749fb82c0` and in gdb, run:
+Now add the two addresses: `7fe749a90000 + 5282c0 = 7fe749fb82c0` and in gdb, run:
 
 ```
 (gdb) add-symbol-file /path/to/chrome 0x7fe749fb82c0

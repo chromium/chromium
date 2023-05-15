@@ -31,7 +31,6 @@ export enum I18nString {
   CONFIRM_REVIEW_BUTTON = 'confirm_review_button',
   DELETE_PAGE_BUTTON = 'delete_page_button',
   DELETE_PAGE_MESSAGE = 'delete_page_message',
-  DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',
   DOC_SCAN_MENU_BUTTON = 'doc_scan_menu_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
@@ -53,6 +52,10 @@ export enum I18nString {
   EXPERT_ENABLE_PTZ_FOR_BUILTIN = 'expert_enable_ptz_for_builtin',
   EXPERT_MODE_BUTTON = 'expert_mode_button',
   EXPERT_MULTISTREAM_RECORDING = 'expert_multistream_recording',
+  EXPERT_MULTISTREAM_RECORDING_CHROME = 'expert_multistream_recording_chrome',
+  EXPERT_MULTISTREAM_RECORDING_DISABLED =
+      'expert_multistream_recording_disabled',
+  EXPERT_MULTISTREAM_RECORDING_HAL = 'expert_multistream_recording_hal',
   EXPERT_PREVIEW_METADATA = 'expert_preview_metadata',
   EXPERT_PRINT_PERFORMANCE_LOGS = 'expert_print_performance_logs',
   EXPERT_SAVE_METADATA = 'expert_save_metadata',

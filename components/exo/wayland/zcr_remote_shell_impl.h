@@ -9,6 +9,7 @@
 #include <remote-shell-unstable-v2-server-protocol.h>
 
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/notification_surface.h"
@@ -41,13 +42,13 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   void OnOutputDestroyed() override;
 
  private:
-  wl_resource* const resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
 
   bool initial_config_sent_ = false;
 
   WaylandRemoteOutputEventMapping const event_mapping_;
 
-  WaylandDisplayHandler* display_handler_;
+  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> display_handler_;
 };
 
 // Implements remote shell interface and monitors workspace state needed
@@ -160,10 +161,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   };
 
   // The exo display instance. Not owned.
-  Display* const display_;
+  const raw_ptr<Display, ExperimentalAsh> display_;
 
   // The remote shell resource associated with observer.
-  wl_resource* const remote_shell_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> remote_shell_resource_;
 
   // Callback to get the wl_output resource for a given display_id.
   OutputResourceProvider const output_provider_;
@@ -185,7 +186,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  Seat* const seat_;
+  const raw_ptr<Seat, ExperimentalAsh> seat_;
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 
@@ -219,7 +220,7 @@ class WaylandRemoteSurfaceDelegate
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
 
   base::WeakPtr<WaylandRemoteShell> shell_;
-  wl_resource* resource_;
+  raw_ptr<wl_resource, ExperimentalAsh> resource_;
   WaylandRemoteShellEventMapping const event_mapping_;
 };
 

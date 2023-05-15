@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,11 +50,6 @@ DateTimeFieldElement::DateTimeFieldElement(Document& document,
 void DateTimeFieldElement::Trace(Visitor* visitor) const {
   visitor->Trace(field_owner_);
   HTMLSpanElement::Trace(visitor);
-}
-
-float DateTimeFieldElement::ComputeTextWidth(const ComputedStyle& style,
-                                             const String& text) {
-  return style.GetFont().Width(ConstructTextRun(text, style));
 }
 
 void DateTimeFieldElement::DefaultEventHandler(Event& event) {

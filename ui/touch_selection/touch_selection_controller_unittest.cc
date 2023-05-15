@@ -1115,6 +1115,57 @@ TEST_F(TouchSelectionControllerTest, NoLongPressDragIfDisabled) {
   EXPECT_EQ(1.f, test_controller.GetEndAlpha());
 }
 
+TEST_F(TouchSelectionControllerTest, InsertionFocusBound) {
+  OnTapEvent();
+
+  // Activate insertion. Focus should be the caret.
+  gfx::SelectionBound caret_bound;
+  caret_bound.set_type(gfx::SelectionBound::CENTER);
+  caret_bound.SetEdge(gfx::PointF(5, 5), gfx::PointF(5, 15));
+  controller().OnSelectionBoundsChanged(caret_bound, caret_bound);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+  EXPECT_EQ(caret_bound, controller().GetFocusBound());
+
+  // Move caret.
+  caret_bound.SetEdge(gfx::PointF(8, 5), gfx::PointF(8, 15));
+  controller().OnSelectionBoundsChanged(caret_bound, caret_bound);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_MOVED));
+  EXPECT_EQ(caret_bound, controller().GetFocusBound());
+
+  ClearInsertion();
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_CLEARED));
+}
+
+TEST_F(TouchSelectionControllerTest, SelectionFocusBound) {
+  OnLongPressEvent();
+
+  // Activate selection. Focus should be the selection end.
+  gfx::SelectionBound start_bound;
+  start_bound.set_type(gfx::SelectionBound::LEFT);
+  start_bound.SetEdge(gfx::PointF(5, 5), gfx::PointF(5, 15));
+  gfx::SelectionBound end_bound;
+  end_bound.set_type(gfx::SelectionBound::RIGHT);
+  end_bound.SetEdge(gfx::PointF(50, 5), gfx::PointF(50, 15));
+  controller().OnSelectionBoundsChanged(start_bound, end_bound);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_SHOWN));
+  EXPECT_EQ(end_bound, controller().GetFocusBound());
+
+  // Move the selection start. Focus should now be the selection start.
+  start_bound.SetEdge(gfx::PointF(8, 5), gfx::PointF(8, 15));
+  controller().OnSelectionBoundsChanged(start_bound, end_bound);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_MOVED));
+  EXPECT_EQ(start_bound, controller().GetFocusBound());
+
+  // Move the selection end. Focus should now be the selection end.
+  end_bound.SetEdge(gfx::PointF(52, 5), gfx::PointF(52, 15));
+  controller().OnSelectionBoundsChanged(start_bound, end_bound);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_MOVED));
+  EXPECT_EQ(end_bound, controller().GetFocusBound());
+
+  ClearSelection();
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_CLEARED));
+}
+
 TEST_F(TouchSelectionControllerTest, RectBetweenBounds) {
   gfx::RectF start_rect(5, 5, 0, 10);
   gfx::RectF end_rect(50, 5, 0, 10);

@@ -289,17 +289,6 @@ def _emulator(emulator_avd_name):
     try:
         # Ensure the emulator and its disk are fully set up.
         device.WaitUntilFullyBooted(decrypt=True)
-        if device.build_version_sdk >= 28:
-            # In P, there are two settings:
-            #  * hidden_api_policy_p_apps
-            #  * hidden_api_policy_pre_p_apps
-            # In Q, there is just one:
-            #  * hidden_api_policy
-            if device.build_version_sdk == 28:
-                setting_name = 'hidden_api_policy_p_apps'
-            else:
-                setting_name = 'hidden_api_policy'
-            device.adb.Shell(f'settings put global {setting_name} 0')
         logging.info('Started emulator: %s', device.serial)
         yield device
     finally:

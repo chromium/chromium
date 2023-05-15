@@ -39,6 +39,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -80,7 +81,35 @@ std::u16string GetPinButtonPressedAccText(bool is_pinned) {
                                              : IDS_EXTENSION_UNPINNED);
 }
 
+std::u16string GetSiteAccessToggleTooltip(bool is_on) {
+  return l10n_util::GetStringUTF16(
+      is_on ? IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ON_TOOLTIP
+            : IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_OFF_TOOLTIP);
+}
+
+std::u16string GetSitePermissionsButtonText(
+    ExtensionMenuItemView::SitePermissionsButtonAccess button_access) {
+  int label_id;
+  switch (button_access) {
+    case ExtensionMenuItemView::SitePermissionsButtonAccess::kNone:
+      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE;
+      break;
+    case ExtensionMenuItemView::SitePermissionsButtonAccess::kOnClick:
+      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK;
+      break;
+    case ExtensionMenuItemView::SitePermissionsButtonAccess::kOnSite:
+      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE;
+      break;
+    case ExtensionMenuItemView::SitePermissionsButtonAccess::kOnAllSites:
+      label_id =
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES;
+      break;
+  }
+  return l10n_util::GetStringUTF16(label_id);
+}
+
 }  // namespace
+
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
@@ -144,7 +173,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
-    SitePermissionsButtonState site_permissions_button_state,
+    base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
       controller_(std::move(controller)),
@@ -163,6 +192,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   const int icon_label_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
+  auto site_permissions_button_icon =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
+  site_permissions_button_icon_ = site_permissions_button_icon.get();
+
   views::Builder<ExtensionMenuItemView>(this)
       // Set so the extension button receives enter/exit on children to
       // retain hover status when hovering child views.
@@ -176,12 +210,25 @@ ExtensionMenuItemView::ExtensionMenuItemView(
               .SetOrientation(views::LayoutOrientation::kHorizontal)
               .SetIgnoreDefaultMainAxisMargins(true)
               .AddChildren(
+                  // Primary action button.
                   views::Builder<ExtensionsMenuButton>(
                       std::make_unique<ExtensionsMenuButton>(browser_,
                                                              controller_.get()))
                       .CopyAddressTo(&primary_action_button_)
                       .SetProperty(views::kFlexBehaviorKey,
                                    stretch_specification),
+                  // Site access toggle.
+                  views::Builder<views::ToggleButton>()
+                      .CopyAddressTo(&site_access_toggle_)
+                      .SetCallback(base::BindRepeating(
+                          [](views::ToggleButton* toggle_button,
+                             base::RepeatingCallback<void(bool)>
+                                 site_access_toggle_callback) {
+                            site_access_toggle_callback.Run(
+                                toggle_button->GetIsOn());
+                          },
+                          site_access_toggle_, site_access_toggle_callback)),
+                  // Context menu button.
                   views::Builder<HoverButton>(
                       std::make_unique<HoverButton>(
                           views::Button::PressedCallback(), std::u16string()))
@@ -195,22 +242,13 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
-              // TODO(crbug.com/998298): Compute title based on the
-              // extension site access.
               // TODO(crbug.com/998298): Add tooltip after UX provides it.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       site_permissions_button_callback,
-                      /*icon_view=*/nullptr, u"site access", std::u16string(),
-                      std::make_unique<views::ImageView>(
-                          ui::ImageModel::FromVectorIcon(
-                              vector_icons::kSubmenuArrowIcon,
-                              ui::kColorIcon))))
+                      /*icon_view=*/nullptr, std::u16string(), std::u16string(),
+                      std::move(site_permissions_button_icon)))
                   .CopyAddressTo(&site_permissions_button_)
-                  .SetVisible(site_permissions_button_state !=
-                              SitePermissionsButtonState::kHidden)
-                  .SetEnabled(site_permissions_button_state ==
-                              SitePermissionsButtonState::kEnabled)
                   // Margin to align the main and secondary row text. Icon
                   // size and horizontal insets should be the values used by
                   // the extensions menu button.
@@ -251,14 +289,27 @@ void ExtensionMenuItemView::OnThemeChanged() {
 }
 
 void ExtensionMenuItemView::Update(
-    SitePermissionsButtonState site_permissions_button_state) {
-  if (site_permissions_button_) {
+    SiteAccessToggleState site_access_toggle_state,
+    SitePermissionsButtonState site_permissions_button_state,
+    SitePermissionsButtonAccess site_permissions_button_access) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    bool is_toggle_on = site_access_toggle_state == SiteAccessToggleState::kOn;
+    std::u16string toggle_tooltip = GetSiteAccessToggleTooltip(is_toggle_on);
+    site_access_toggle_->SetVisible(site_access_toggle_state !=
+                                    SiteAccessToggleState::kHidden);
+    site_access_toggle_->SetIsOn(is_toggle_on);
+    site_access_toggle_->SetTooltipText(toggle_tooltip);
+    site_access_toggle_->SetAccessibleName(toggle_tooltip);
+
     site_permissions_button_->SetVisible(site_permissions_button_state !=
                                          SitePermissionsButtonState::kHidden);
     site_permissions_button_->SetEnabled(site_permissions_button_state ==
                                          SitePermissionsButtonState::kEnabled);
-    // TODO(crbug.com/1390952): Display the arrow icon only when site
-    // permissions button is enabled.
+    site_permissions_button_->SetText(
+        GetSitePermissionsButtonText(site_permissions_button_access));
+    site_permissions_button_icon_->SetVisible(
+        site_permissions_button_state == SitePermissionsButtonState::kEnabled);
   }
 
   view_controller()->UpdateState();

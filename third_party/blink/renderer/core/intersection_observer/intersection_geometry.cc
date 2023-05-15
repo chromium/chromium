@@ -63,10 +63,10 @@ void ApplyMargin(
   // TODO(szager): Make sure the spec is clear that left/right margins are
   // resolved against width and not height.
   const PhysicalRect& rect = resolution_rect.value_or(expand_rect);
-  LayoutRectOutsets outsets(ComputeMargin(margin[0], rect.Height(), zoom),
-                            ComputeMargin(margin[1], rect.Width(), zoom),
-                            ComputeMargin(margin[2], rect.Height(), zoom),
-                            ComputeMargin(margin[3], rect.Width(), zoom));
+  NGPhysicalBoxStrut outsets(ComputeMargin(margin[0], rect.Height(), zoom),
+                             ComputeMargin(margin[1], rect.Width(), zoom),
+                             ComputeMargin(margin[2], rect.Height(), zoom),
+                             ComputeMargin(margin[3], rect.Width(), zoom));
   expand_rect.Expand(outsets);
 }
 

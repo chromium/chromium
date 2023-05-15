@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -21,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/common/chrome_switches.h"
@@ -173,7 +173,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   AutocompleteActionPredictorTable::Row CreateRowFromTestUrlInfo(
       const TestUrlInfo& test_row) const {
     AutocompleteActionPredictorTable::Row row;
-    row.id = base::GenerateGUID();
+    row.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     row.user_text = test_row.user_text;
     row.url = test_row.url;
     row.number_of_hits = test_row.number_of_hits;

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_WEBAPP_DEFAULT_OFFLINE_HTML" file="../web_app_resources/web_app_default_offline.html" flattenhtml="true" type="BINDATA"/>
-</grit-part>

@@ -150,7 +150,7 @@ class _TestExecutableWrapper:
         # output to the terminal).
         args = [
             self._path_to_test_executable, '--test', '--format=pretty',
-            '--exact'
+            '--color=always', '--exact'
         ]
         args.extend(list_of_tests_to_run)
 

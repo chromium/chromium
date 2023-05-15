@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/media_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -107,7 +108,7 @@ class MediaManagerMock : public assistant_client::MediaManager {
   }
 
  private:
-  Listener* listener_ = nullptr;
+  raw_ptr<Listener, ExperimentalAsh> listener_ = nullptr;
 };
 
 }  // namespace

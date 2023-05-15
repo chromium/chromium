@@ -366,8 +366,9 @@ bool FillCountrySelectControl(const std::u16string& value,
 }
 
 // Attempt to fill the user's expiration month |value| inside the <select>
-// |field|. Since |value| is well defined but the website's |field| option
-// values may not be, some heuristics are run to cover all observed cases.
+// or <selectmenu> |field|. Since |value| is well defined but the website's
+// |field| option values may not be, some heuristics are run to cover all
+// observed cases.
 bool FillExpirationMonthSelectControl(const std::u16string& value,
                                       const std::string& app_locale,
                                       FormFieldData* field,
@@ -569,7 +570,7 @@ std::u16string GetVirtualCardNumberForPreviewInput(
   std::u16string value =
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
-      u" " + virtual_card.CardIdentifierStringForAutofillDisplay();
+      u" " + virtual_card.CardNameAndLastFourDigits();
 
   // |field|'s max_length truncates the credit card number to fit within.
   if (field.credit_card_number_offset() < value.length()) {
@@ -592,17 +593,19 @@ std::u16string GetVirtualCardNumberForPreviewInput(
   return value;
 }
 
-// Fills in the select control |field| with |value|. If an exact match is not
-// found, falls back to alternate filling strategies based on the |type|.
-bool FillSelectControl(const AutofillType& type,
-                       const std::u16string& value,
-                       absl::variant<const AutofillProfile*, const CreditCard*>
-                           profile_or_credit_card,
-                       const std::string& app_locale,
-                       FormFieldData* field,
-                       AddressNormalizer* address_normalizer,
-                       std::string* failure_to_fill) {
-  DCHECK_EQ("select-one", field->form_control_type);
+// Fills in the select or selectmenu control |field| with |value|. If an exact
+// match is not found, falls back to alternate filling strategies based on the
+// |type|.
+bool FillSelectOrSelectMenuControl(
+    const AutofillType& type,
+    const std::u16string& value,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const std::string& app_locale,
+    FormFieldData* field,
+    AddressNormalizer* address_normalizer,
+    std::string* failure_to_fill) {
+  DCHECK(field->IsSelectOrSelectMenuElement());
 
   ServerFieldType storable_type = type.GetStorableType();
 
@@ -1073,9 +1076,10 @@ bool FieldFiller::FillFormField(
       *failure_to_fill += "No value to fill available. ";
     return false;
   }
-  if (field.form_control_type == "select-one") {
-    return FillSelectControl(type, value, profile_or_credit_card, app_locale_,
-                             field_data, address_normalizer_, failure_to_fill);
+  if (field.IsSelectOrSelectMenuElement()) {
+    return FillSelectOrSelectMenuControl(type, value, profile_or_credit_card,
+                                         app_locale_, field_data,
+                                         address_normalizer_, failure_to_fill);
   }
   field_data->value = value;
   if (value_is_an_override)

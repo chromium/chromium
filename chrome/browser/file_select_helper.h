@@ -12,13 +12,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
@@ -40,22 +37,21 @@ struct SelectedFileInfo;
 }
 
 namespace policy {
-FORWARD_DECLARE_TEST(DlpFilesControllerBrowserTest, FilesUploadCallerPassed);
+FORWARD_DECLARE_TEST(DlpFilesControllerAshBrowserTest, FilesUploadCallerPassed);
 }  // namespace policy
 
 // This class handles file-selection requests coming from renderer processes.
 // It implements both the initialisation and listener functions for
 // file-selection dialogs.
 //
-// Since FileSelectHelper listens to observations of a widget, it needs to live
-// on and be destroyed on the UI thread. References to FileSelectHelper may be
+// Since FileSelectHelper listens to WebContentsObserver, it needs to live on
+// and be destroyed on the UI thread. References to FileSelectHelper may be
 // passed on to other threads.
 class FileSelectHelper : public base::RefCountedThreadSafe<
                              FileSelectHelper,
                              content::BrowserThread::DeleteOnUIThread>,
                          public ui::SelectFileDialog::Listener,
                          public content::WebContentsObserver,
-                         public content::RenderWidgetHostObserver,
                          private net::DirectoryLister::DirectoryListerDelegate {
  public:
   FileSelectHelper(const FileSelectHelper&) = delete;
@@ -111,7 +107,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       ContentAnalysisCompletionCallback_FolderUpload_OKBad);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
-  FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
   explicit FileSelectHelper(Profile* profile);
@@ -151,10 +147,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const std::vector<ui::SelectedFileInfo>& files,
       void* params) override;
   void FileSelectionCanceled(void* params) override;
-
-  // content::RenderWidgetHostObserver overrides.
-  void RenderWidgetHostDestroyed(
-      content::RenderWidgetHost* widget_host) override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
@@ -319,7 +311,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& suggested_path);
 
   // Profile used to set/retrieve the last used directory.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // The RenderFrameHost and WebContents for the page showing a file dialog
   // (may only be one such dialog).
@@ -349,10 +341,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // more than one going on at a time.
   struct ActiveDirectoryEnumeration;
   std::unique_ptr<ActiveDirectoryEnumeration> directory_enumeration_;
-
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      observation_{this};
 
   // Temporary files only used on OSX. This class is responsible for deleting
   // these files when they are no longer needed.

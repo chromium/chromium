@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -28,14 +29,14 @@ class TestMainExtraPart : public ChromeBrowserMainExtraParts {
     // be updated, and do ephemeral user checks.
     // Given that user manager does not exist yet (by design), create a
     // temporary fake user manager instance.
-    auto user_manager = std::make_unique<user_manager::FakeUserManager>();
-    user_manager->set_local_state(g_browser_process->local_state());
+    auto user_manager = std::make_unique<user_manager::FakeUserManager>(
+        g_browser_process->local_state());
     user_manager::ScopedUserManager scoper(std::move(user_manager));
     delegate_->SetUpLocalStateBase();
   }
 
  private:
-  LocalStateMixin::Delegate* const delegate_;
+  const raw_ptr<LocalStateMixin::Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace

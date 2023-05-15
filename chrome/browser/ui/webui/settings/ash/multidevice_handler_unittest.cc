@@ -8,7 +8,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/fake_browser_tabs_model_provider.h"
@@ -43,6 +46,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
@@ -74,6 +78,15 @@ constexpr char kDialogSetUpFinishedScreenSetupModeHistogram[] =
 constexpr char kManagedUserEmail[] = "user@managedchrome.com";
 
 using ::testing::Optional;
+
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
 
 class TestMultideviceHandler : public MultideviceHandler {
  public:
@@ -143,7 +156,8 @@ class ScopedLacrosOnlyHandle {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
@@ -360,8 +374,11 @@ class MultideviceHandlerTest : public testing::Test {
         phonehub::prefs::kScreenLockStatus,
         static_cast<int>(phonehub::ScreenLockManager::LockStatus::kLockedOff));
 
+    InitializeNewWindowDelegate();
     CreateHandler();
   }
+
+  void TearDown() override { new_window_provider_.reset(); }
 
   void CreateHandler() {
     handler_ = std::make_unique<TestMultideviceHandler>(
@@ -379,6 +396,14 @@ class MultideviceHandlerTest : public testing::Test {
 
     handler_->RegisterMessages();
     handler_->AllowJavascript();
+  }
+
+  void InitializeNewWindowDelegate() {
+    auto instance = std::make_unique<MockNewWindowDelegate>();
+    auto primary = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_primary_ = primary.get();
+    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(instance), std::move(primary));
   }
 
   void InitWithFeatures(
@@ -515,6 +540,11 @@ class MultideviceHandlerTest : public testing::Test {
     base::Value::List empty_args;
     test_web_ui()->HandleReceivedMessage("cancelFeatureSetupConnection",
                                          empty_args);
+  }
+
+  void CallHandleShowBrowserSyncSettings() {
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("showBrowserSyncSettings", empty_args);
   }
 
   void SimulateHostStatusUpdate(
@@ -910,6 +940,10 @@ class MultideviceHandlerTest : public testing::Test {
         ->IsCombinedSetupOperationInProgress();
   }
 
+  MockNewWindowDelegate* new_window_delegate_primary() {
+    return new_window_delegate_primary_;
+  }
+
   const multidevice::RemoteDeviceRef test_device_;
 
   bool expected_is_nearby_share_disallowed_by_policy_ = false;
@@ -947,6 +981,8 @@ class MultideviceHandlerTest : public testing::Test {
   std::unique_ptr<eche_app::FakeAppsAccessManager> fake_apps_access_manager_;
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
   phonehub::FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device_;
@@ -1484,6 +1520,14 @@ TEST_F(MultideviceHandlerTest, ScreenLockStatusChanged) {
   SetUpHandlerWithEmptyManagers();
 
   SimulateScreenLockStatusChanged();
+}
+
+TEST_F(MultideviceHandlerTest, ShowBrowserSyncSettings) {
+  EXPECT_CALL(*new_window_delegate_primary(),
+              OpenUrl(GURL("chrome://settings/syncSetup/advanced"),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  CallHandleShowBrowserSyncSettings();
 }
 
 }  // namespace ash::settings

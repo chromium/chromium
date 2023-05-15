@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/services/device_sync/mock_cryptauth_client.h"
@@ -111,7 +112,7 @@ class DeviceSyncCryptAuthEnrollerTest
             MockCryptAuthClientFactory::MockType::MAKE_NICE_MOCKS)),
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate()),
         enroller_(client_factory_.get(),
-                  base::WrapUnique(secure_message_delegate_)) {
+                  base::WrapUnique(secure_message_delegate_.get())) {
     client_factory_->AddObserver(this);
 
     // This call is actually synchronous.
@@ -256,7 +257,8 @@ class DeviceSyncCryptAuthEnrollerTest
   // Owned by |enroller_|.
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
   // Owned by |enroller_|.
-  multidevice::FakeSecureMessageDelegate* secure_message_delegate_;
+  raw_ptr<multidevice::FakeSecureMessageDelegate, ExperimentalAsh>
+      secure_message_delegate_;
   // The CryptAuthEnroller under test.
   CryptAuthEnrollerImpl enroller_;
 

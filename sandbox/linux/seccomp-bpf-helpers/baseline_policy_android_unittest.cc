@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <linux/android/binder.h>
 #include <linux/ashmem.h>
+#include <linux/incrementalfs.h>
 #include <linux/nbd.h>
 #include <linux/userfaultfd.h>
 #include <sched.h>
@@ -87,6 +88,10 @@ BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Allowed, BaselinePolicyAndroid) {
   errno = 0;
   BPF_ASSERT_EQ(-1, ioctl(fd.get(), TCGETS));
   BPF_ASSERT_EQ(ENOTTY, errno);
+
+  errno = 0;
+  BPF_ASSERT_EQ(-1, ioctl(fd.get(), INCFS_IOC_GET_FILLED_BLOCKS));
+  BPF_ASSERT_EQ(ENOTTY, errno);
 }
 
 BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Blocked, BaselinePolicyAndroid) {
@@ -95,6 +100,18 @@ BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Blocked, BaselinePolicyAndroid) {
 
   errno = 0;
   BPF_ASSERT_EQ(-1, ioctl(fd.get(), NBD_CLEAR_SOCK));
+  BPF_ASSERT_EQ(EINVAL, errno);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 Ioctl_Blocked_Crash,
+                 DEATH_SEGV_MESSAGE(GetIoctlErrorMessageContentForTests()),
+                 BaselinePolicyAndroid) {
+  base::ScopedFD fd(HANDLE_EINTR(open("/dev/null", O_RDWR)));
+  BPF_ASSERT(fd.is_valid());
+
+  errno = 0;
+  BPF_ASSERT_EQ(-1, ioctl(fd.get(), INCFS_IOC_CREATE_FILE));
   BPF_ASSERT_EQ(EINVAL, errno);
 }
 

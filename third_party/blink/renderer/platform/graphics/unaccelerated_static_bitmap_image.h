@@ -45,10 +45,11 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                               const gfx::Rect& copy_rect) override;
 
+  SkImageInfo GetSkImageInfo() const override;
+
  private:
   UnacceleratedStaticBitmapImage(sk_sp<SkImage>, ImageOrientation);
   UnacceleratedStaticBitmapImage(PaintImage, ImageOrientation);
-  SkImageInfo GetSkImageInfoInternal() const override;
 
   PaintImage paint_image_;
   THREAD_CHECKER(thread_checker_);

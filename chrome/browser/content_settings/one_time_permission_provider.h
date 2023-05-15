@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/permission_uma_util.h"
 
 class OneTimePermissionsTracker;
 
@@ -72,14 +73,14 @@ class OneTimePermissionProvider
   void OnShutdown() override;
 
  private:
-  void DeleteValuesMatchingGurl(ContentSettingsType content_setting_type,
-                                const GURL& origin_gurl);
+  // Deletes the matching values and records matching UMA events.
+  void DeleteValuesMatchingGurl(
+      ContentSettingsType content_setting_type,
+      const GURL& origin_gurl,
+      permissions::OneTimePermissionEvent trigger_event);
 
   content_settings::OriginIdentifierValueMap value_map_;
   raw_ptr<OneTimePermissionsTracker> one_time_permissions_tracker_ = nullptr;
-
-  // Used around accesses to the value map objects to guarantee thread safety.
-  mutable base::Lock lock_;
 
   // Unowned
   raw_ptr<const base::Clock> clock_;

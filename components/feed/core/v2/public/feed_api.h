@@ -154,6 +154,11 @@ class FeedApi {
   // shown/loaded.
   virtual void InvalidateContentCacheFor(StreamKind stream_kind) = 0;
 
+  // Called when content is viewed, providing a unique identifier of the content
+  // which was viewed. Used for signed-out view demotion. This may be called
+  // regardless of sign-in status, but may be ignored.
+  virtual void RecordContentViewed(uint64_t docid) = 0;
+
   // User interaction reporting. Unless otherwise documented, these have no
   // side-effects other than reporting metrics.
 

@@ -4,14 +4,13 @@
 
 #include "components/media_message_center/media_notification_view_ash_impl.h"
 
-#include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -33,12 +32,13 @@ constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::VH(0, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kPlayPauseContainerInsets = gfx::Insets::VH(8, 0);
-constexpr auto kProgressViewInsets = gfx::Insets::VH(0, 14);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
 
 constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
+constexpr int kControlsRowSeparator = 2;
+constexpr int kChevronIconSize = 15;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
 constexpr int kBackgroundCornerRadius = 12;
@@ -47,36 +47,30 @@ constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
 
 constexpr auto kArtworkSize = gfx::Size(80, 80);
-constexpr auto kChevronIconSize = gfx::Size(15, 15);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
 
 class MediaButton : public views::ImageButton {
  public:
-  MediaButton(PressedCallback callback, int icon_size, gfx::Size button_size)
-      : ImageButton(callback), icon_size_(icon_size) {
-    SetHasInkDropActionOnClick(true);
+  MediaButton(PressedCallback callback,
+              int icon_size,
+              gfx::Size button_size,
+              ui::ColorId foreground_color_id,
+              ui::ColorId foreground_disabled_color_id)
+      : ImageButton(callback),
+        icon_size_(icon_size),
+        foreground_color_id_(foreground_color_id),
+        foreground_disabled_color_id_(foreground_disabled_color_id) {
+    views::ConfigureVectorImageButton(this);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   button_size.height() / 2);
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColor(foreground_color_);
-    SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
-    SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
+    SetInstallFocusRingOnFocus(true);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFlipCanvasOnPaintForRTLUI(false);
     SetPreferredSize(button_size);
-  }
-
-  void SetButtonColor(SkColor foreground_color,
-                      SkColor foreground_disabled_color) {
-    foreground_color_ = foreground_color;
-    foreground_disabled_color_ = foreground_disabled_color;
-
-    views::SetImageFromVectorIconWithColor(
+    views::SetImageFromVectorIconWithColorId(
         this, *GetVectorIconForMediaAction(GetActionFromButtonTag(*this)),
-        icon_size_, foreground_color_, foreground_disabled_color_);
-
-    SchedulePaint();
+        foreground_color_id_, foreground_disabled_color_id_, icon_size_);
   }
 
   void set_tag(int tag) {
@@ -86,15 +80,15 @@ class MediaButton : public views::ImageButton {
         GetAccessibleNameForMediaAction(GetActionFromButtonTag(*this)));
     SetAccessibleName(
         GetAccessibleNameForMediaAction(GetActionFromButtonTag(*this)));
-    views::SetImageFromVectorIconWithColor(
+    views::SetImageFromVectorIconWithColorId(
         this, *GetVectorIconForMediaAction(GetActionFromButtonTag(*this)),
-        icon_size_, foreground_color_, foreground_disabled_color_);
+        foreground_color_id_, foreground_disabled_color_id_, icon_size_);
   }
 
  private:
-  SkColor foreground_color_ = gfx::kPlaceholderColor;
-  SkColor foreground_disabled_color_ = gfx::kPlaceholderColor;
-  int icon_size_;
+  const int icon_size_;
+  const ui::ColorId foreground_color_id_;
+  const ui::ColorId foreground_disabled_color_id_;
 };
 
 // If the image does not fit the square view, scale the image to fill the view
@@ -112,15 +106,15 @@ gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
 MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
-    NotificationTheme theme,
+    MediaColorTheme theme,
     MediaDisplayPage media_display_page)
     : container_(container), item_(std::move(item)), theme_(theme) {
   DCHECK(container_);
   DCHECK(item_);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
-  SetBackground(views::CreateRoundedRectBackground(theme_.background_color,
-                                                   kBackgroundCornerRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      theme_.background_color_id, kBackgroundCornerRadius));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), kMainSeparator));
@@ -150,7 +144,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           views::style::STYLE_SECONDARY));
   source_label_->SetLineHeight(kSourceLineHeight);
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  source_label_->SetEnabledColor(theme_.secondary_text_color);
+  source_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
   source_label_->SetProperty(views::kMarginsKey, kSourceLabelInsets);
 
   title_row_ =
@@ -163,18 +157,17 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       views::style::STYLE_PRIMARY));
   title_label_->SetLineHeight(kTitleArtistLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetEnabledColor(theme_.primary_text_color);
+  title_label_->SetEnabledColorId(theme_.primary_foreground_color_id);
   title_row_->SetFlexForView(title_label_, 1);
 
   // Add a chevron right icon to the title if the media is displaying on the
   // quick settings media view to indicate user can click on the view to go to
   // the detailed view page.
   if (media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
-    chevron_icon_ =
-        title_row_->AddChildView(std::make_unique<views::ImageView>());
-    chevron_icon_->SetPreferredSize(kChevronIconSize);
-    chevron_icon_->SetImage(
-        CreateVectorIcon(kChevronRightIcon, theme_.enabled_icon_color));
+    chevron_icon_ = title_row_->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            kChevronRightIcon, theme_.secondary_foreground_color_id,
+            kChevronIconSize)));
   }
 
   artist_label_ =
@@ -183,7 +176,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           views::style::STYLE_SECONDARY));
   artist_label_->SetLineHeight(kTitleArtistLineHeight);
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  artist_label_->SetEnabledColor(theme_.secondary_text_color);
+  artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
 
   // |play_pause_container| holds the play/pause button and dismiss button.
   auto* play_pause_container =
@@ -194,36 +187,35 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
 
   play_pause_button_ =
       CreateMediaButton(play_pause_container, MediaSessionAction::kPlay);
-  play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
-      theme_.background_color, kPlayPauseButtonSize.height() / 2));
+  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+      theme_.secondary_container_color_id, kPlayPauseButtonSize.height() / 2));
 
-  // |controls_row| holds all available media action buttons and the progress
-  // bar.
-  auto* controls_row = AddChildView(std::make_unique<views::View>());
-  auto* controls_row_layout =
-      controls_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
-  controls_row_layout->set_cross_axis_alignment(
+  // |controls_row| holds all the available media action buttons and the
+  // progress view.
+  auto* controls_row = AddChildView(std::make_unique<views::BoxLayoutView>());
+  controls_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  controls_row->SetBetweenChildSpacing(kControlsRowSeparator);
 
+  // Create the previous track button.
   CreateMediaButton(controls_row, MediaSessionAction::kPreviousTrack);
-  progress_view_ =
-      controls_row->AddChildView(std::make_unique<MediaControlsProgressView>(
-          base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
-                              base::Unretained(this)),
-          /*is_modern_notification=*/true));
-  progress_view_->SetForegroundColor(theme_.enabled_icon_color);
-  progress_view_->SetBackgroundColor(theme_.disabled_icon_color);
-  progress_view_->SetProperty(views::kMarginsKey, kProgressViewInsets);
-  controls_row_layout->SetFlexForView(progress_view_, 1);
 
+  // Create the squiggly progress view.
+  squiggly_progress_view_ =
+      controls_row->AddChildView(std::make_unique<MediaSquigglyProgressView>(
+          theme_.primary_container_color_id,
+          theme_.secondary_container_color_id,
+          base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
+                              base::Unretained(this))));
+  controls_row->SetFlexForView(squiggly_progress_view_, 1);
+
+  // Create the next track button.
   CreateMediaButton(controls_row, MediaSessionAction::kNextTrack);
+
+  // Create the picture in picture button.
   picture_in_picture_button_ = CreateMediaButton(
       controls_row, MediaSessionAction::kEnterPictureInPicture);
 
-  container_->OnColorsChanged(theme_.enabled_icon_color,
-                              theme_.disabled_icon_color,
-                              theme_.background_color);
   item_->SetView(this);
 }
 
@@ -239,12 +231,12 @@ MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
       action == MediaSessionAction::kPlay ? kPlayPauseIconSize
                                           : kControlsIconSize,
       action == MediaSessionAction::kPlay ? kPlayPauseButtonSize
-                                          : kControlsButtonSize);
+                                          : kControlsButtonSize,
+      theme_.primary_foreground_color_id, theme_.secondary_foreground_color_id);
   button->SetCallback(
       base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
                           base::Unretained(this), button.get()));
   button->set_tag(static_cast<int>(action));
-  button->SetButtonColor(theme_.enabled_icon_color, theme_.disabled_icon_color);
 
   auto* button_ptr = parent->AddChildView(std::move(button));
   action_buttons_.push_back(button_ptr);
@@ -291,7 +283,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaActions(
 void MediaNotificationViewAshImpl::UpdateWithMediaPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
-  progress_view_->UpdateProgress(position);
+  squiggly_progress_view_->UpdateProgress(position);
 }
 
 void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(

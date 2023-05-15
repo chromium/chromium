@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -68,7 +69,7 @@ class FileManagerPrivateInternalSharesheetHasTargetsFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
   bool contains_hosted_document_ = false;
 };
@@ -110,7 +111,7 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
   std::vector<std::string> dlp_source_urls_;
   bool contains_hosted_document_ = false;

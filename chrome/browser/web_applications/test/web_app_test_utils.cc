@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -240,11 +241,9 @@ std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
   return url_handlers;
 }
 
-std::vector<ScopeExtensionInfo> CreateRandomScopeExtensions(
-    uint32_t suffix,
-    RandomHelper& random) {
-  std::vector<ScopeExtensionInfo> scope_extensions;
-
+ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
+                                            RandomHelper& random) {
+  ScopeExtensions scope_extensions;
   for (unsigned int i = 0; i < 3; ++i) {
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
@@ -253,7 +252,7 @@ std::vector<ScopeExtensionInfo> CreateRandomScopeExtensions(
     scope_extension.origin =
         url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
     scope_extension.has_origin_wildcard = random.next_bool();
-    scope_extensions.push_back(std::move(scope_extension));
+    scope_extensions.insert(std::move(scope_extension));
   }
 
   return scope_extensions;
@@ -679,6 +678,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   app->SetScopeExtensions(
       CreateRandomScopeExtensions(random.next_uint(), random));
+
+  ScopeExtensions validated_scope_extensions;
+  base::ranges::copy_if(app->scope_extensions(),
+                        std::inserter(validated_scope_extensions,
+                                      validated_scope_extensions.begin()),
+                        [&random](const ScopeExtensionInfo& extension) {
+                          return random.next_bool();
+                        });
+  app->SetValidatedScopeExtensions(validated_scope_extensions);
+
   if (random.next_bool()) {
     app->SetLockScreenStartUrl(scope.Resolve(
         "lock_screen_start_url" + base::NumberToString(random.next_uint())));

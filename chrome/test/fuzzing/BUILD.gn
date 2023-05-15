@@ -35,4 +35,7 @@ if (!is_android) {
   in_process_fuzz_test("html_in_process_fuzz_tests") {
     sources = [ "html_in_process_fuzz_test.cc" ]
   }
+  in_process_fuzz_test("kombucha_in_process_fuzz_tests") {
+    sources = [ "kombucha_in_process_fuzz_test.cc" ]
+  }
 }

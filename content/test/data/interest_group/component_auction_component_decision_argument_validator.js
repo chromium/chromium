@@ -159,16 +159,25 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.bidCurrency != 'USD')
       throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 12) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
-    validateBid(browserSignals.bid);
+    // sellerCurrency is CAD, but the incombing bid is in USD, and no conversion
+    // is provided, so the bid is blanked.
+    if (browserSignals.bidCurrency !== 'CAD')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
+    if (browserSignals.bid !== 0)
+      throw 'Wrong bid ' + browserSignals.bid;
     if (browserSignals.desirability !== 13)
       throw 'Wrong desireability ' + browserSignals.desirability;
     if (browserSignals.highestScoringOtherBid !== 0) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
+    }
+    if (browserSignals.highestScoringOtherBidCurrency !== 'CAD') {
+      throw 'Wrong highestScoringOtherBidCurrency ' +
+          browserSignals.highestScoringOtherBidCurrency;
     }
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;

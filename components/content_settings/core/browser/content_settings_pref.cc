@@ -158,8 +158,8 @@ ContentSettingsPref::~ContentSettingsPref() = default;
 std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
     bool off_the_record) const {
   if (off_the_record)
-    return off_the_record_value_map_.GetRuleIterator(content_type_, &lock_);
-  return value_map_.GetRuleIterator(content_type_, &lock_);
+    return off_the_record_value_map_.GetRuleIterator(content_type_);
+  return value_map_.GetRuleIterator(content_type_);
 }
 
 void ContentSettingsPref::SetWebsiteSetting(
@@ -179,7 +179,7 @@ void ContentSettingsPref::SetWebsiteSetting(
     map_to_modify = &value_map_;
 
   {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock auto_lock(map_to_modify->GetLock());
     if (!value.is_none()) {
       map_to_modify->SetValue(primary_pattern, secondary_pattern, content_type_,
                               value.Clone(), metadata);
@@ -201,7 +201,7 @@ void ContentSettingsPref::ClearPref() {
   DCHECK(prefs_);
 
   {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock auto_lock(value_map_.GetLock());
     value_map_.clear();
   }
 
@@ -217,7 +217,7 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
   DCHECK(prefs_);
 
   if (off_the_record_) {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock auto_lock(off_the_record_value_map_.GetLock());
     off_the_record_value_map_.clear();
   } else {
     ClearPref();
@@ -228,13 +228,15 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
 }
 
 size_t ContentSettingsPref::GetNumExceptions() {
+  base::AutoLock auto_lock(value_map_.GetLock());
   return value_map_.size();
 }
 
 bool ContentSettingsPref::TryLockForTesting() const {
-  if (!lock_.Try())
+  if (!value_map_.GetLock().Try()) {
     return false;
-  lock_.Release();
+  }
+  value_map_.GetLock().Release();
   return true;
 }
 
@@ -246,7 +248,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   // notification.
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
   prefs::ScopedDictionaryPrefUpdate update(prefs_, *pref_name_);
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(value_map_.GetLock());
 
   value_map_.clear();
 
@@ -444,8 +446,8 @@ void ContentSettingsPref::UpdatePref(
 void ContentSettingsPref::AssertLockNotHeld() const {
 #if !defined(NDEBUG)
   // |Lock::Acquire()| will assert if the lock is held by this thread.
-  lock_.Acquire();
-  lock_.Release();
+  value_map_.GetLock().Acquire();
+  value_map_.GetLock().Release();
 #endif
 }
 

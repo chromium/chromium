@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -254,8 +254,7 @@
 
 // Returns a location icon for offline pages.
 - (UIImage*)imageForOfflinePage {
-  return [[UIImage imageNamed:@"location_bar_connection_offline"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  return GetLocationBarOfflineIcon();
 }
 
 // The status text associated with the current location icon.

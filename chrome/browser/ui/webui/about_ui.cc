@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -60,7 +61,6 @@
 #include <map>
 
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/borealis/borealis_credits.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -77,6 +77,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/language/core/common/locale_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/zlib/google/compression_utils.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_url_handling.h"
@@ -282,10 +283,12 @@ class ChromeOSCreditsHandler
   ChromeOSCreditsHandler(const ChromeOSCreditsHandler&) = delete;
   ChromeOSCreditsHandler& operator=(const ChromeOSCreditsHandler&) = delete;
 
+  // |prefix| allows tests to specify different location for the credits files.
   static void Start(const std::string& path,
-                    content::URLDataSource::GotDataCallback callback) {
+                    content::URLDataSource::GotDataCallback callback,
+                    const base::FilePath& prefix) {
     scoped_refptr<ChromeOSCreditsHandler> handler(
-        new ChromeOSCreditsHandler(path, std::move(callback)));
+        new ChromeOSCreditsHandler(path, std::move(callback), prefix));
     handler->StartOnUIThread();
   }
 
@@ -293,8 +296,9 @@ class ChromeOSCreditsHandler
   friend class base::RefCountedThreadSafe<ChromeOSCreditsHandler>;
 
   ChromeOSCreditsHandler(const std::string& path,
-                         content::URLDataSource::GotDataCallback callback)
-      : path_(path), callback_(std::move(callback)) {}
+                         content::URLDataSource::GotDataCallback callback,
+                         const base::FilePath& prefix)
+      : path_(path), callback_(std::move(callback)), prefix_(prefix) {}
 
   virtual ~ChromeOSCreditsHandler() {}
 
@@ -307,12 +311,38 @@ class ChromeOSCreditsHandler
         base::BindOnce(&ChromeOSCreditsHandler::ResponseOnUIThread, this));
   }
 
+  // LoadCreditsFileAsync first attempts to load the uncompressed credits file.
+  // Then, if that's not present, it attempts to load and decompress the
+  // compressed credits file.
+  // If both fails, fall back to default contents as handled in
+  // ResponseOnUIThread.
   void LoadCreditsFileAsync() {
-    base::FilePath credits_file_path(chrome::kChromeOSCreditsPath);
-    if (!base::ReadFileToString(credits_file_path, &contents_)) {
+    if (prefix_.empty()) {
+      prefix_ = base::FilePath(chrome::kChromeOSCreditsPath).DirName();
+    }
+    base::FilePath credits =
+        prefix_.Append(base::FilePath(chrome::kChromeOSCreditsPath).BaseName());
+    if (base::ReadFileToString(credits, &contents_)) {
+      // Decompressed present; return.
+      return;
+    }
+
+    // Decompressed not present; load compressed.
+    base::FilePath compressed_credits = prefix_.Append(
+        base::FilePath(chrome::kChromeOSCreditsCompressedPath).BaseName());
+    std::string compressed;
+    if (!base::ReadFileToString(compressed_credits, &compressed)) {
       // File with credits not found, ResponseOnUIThread will load credits
       // from resources if contents_ is empty.
       contents_.clear();
+      return;
+    }
+
+    // Decompress.
+    if (!compression::GzipUncompress(compressed, &contents_)) {
+      LOG(DFATAL) << "Decompressing os credits failed";
+      contents_.clear();
+      return;
     }
   }
 
@@ -336,6 +366,9 @@ class ChromeOSCreditsHandler
 
   // Chrome OS credits contents that was loaded from file.
   std::string contents_;
+
+  // Directory containing files to read.
+  base::FilePath prefix_;
 };
 
 void OnBorealisCreditsLoaded(content::URLDataSource::GotDataCallback callback,
@@ -433,7 +466,7 @@ class CrostiniCreditsHandler
   // Linux credits contents that was loaded from file.
   std::string contents_;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 #endif
 
@@ -666,7 +699,8 @@ void AboutUIHTMLSource::StartDataRequest(
       response = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_ABOUT_UI_CREDITS_CSS);
     } else {
-      ChromeOSCreditsHandler::Start(path, std::move(callback));
+      ChromeOSCreditsHandler::Start(path, std::move(callback),
+                                    os_credits_prefix_);
       return;
     }
   } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {

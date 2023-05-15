@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/values.h"
+#include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -54,7 +55,7 @@ const char kConfigRuleTypeMonitorHistogram[] =
 namespace content {
 
 BackgroundTracingRule::BackgroundTracingRule() = default;
-BackgroundTracingRule::BackgroundTracingRule(int trigger_delay)
+BackgroundTracingRule::BackgroundTracingRule(base::TimeDelta trigger_delay)
     : trigger_delay_(trigger_delay) {}
 
 BackgroundTracingRule::~BackgroundTracingRule() {
@@ -88,7 +89,7 @@ bool BackgroundTracingRule::OnRuleTriggered() const {
   return trigger_callback_.Run(this);
 }
 
-int BackgroundTracingRule::GetTraceDelay() const {
+base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
   return trigger_delay_;
 }
 
@@ -102,8 +103,10 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
   if (trigger_chance_ < 1.0)
     dict.Set(kConfigRuleTriggerChance, trigger_chance_);
 
-  if (trigger_delay_ != -1)
-    dict.Set(kConfigRuleTriggerDelay, trigger_delay_);
+  if (!trigger_delay_.is_zero()) {
+    dict.Set(kConfigRuleTriggerDelay,
+             static_cast<int>(trigger_delay_.InSeconds()));
+  }
 
   if (rule_id_ != GetDefaultRuleId()) {
     dict.Set(kConfigRuleIdKey, rule_id_);
@@ -117,14 +120,17 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
 }
 
 void BackgroundTracingRule::GenerateMetadataProto(
-    BackgroundTracingRule::MetadataProto* out) const {}
+    BackgroundTracingRule::MetadataProto* out) const {
+  uint32_t name_hash = variations::HashName(rule_id());
+  out->set_name_hash(name_hash);
+}
 
 void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
   if (auto trigger_chance = dict.FindDouble(kConfigRuleTriggerChance)) {
     trigger_chance_ = *trigger_chance;
   }
   if (auto trigger_delay = dict.FindInt(kConfigRuleTriggerDelay)) {
-    trigger_delay_ = *trigger_delay;
+    trigger_delay_ = base::Seconds(*trigger_delay);
   }
   if (const std::string* rule_id = dict.FindString(kConfigRuleIdKey)) {
     rule_id_ = *rule_id;

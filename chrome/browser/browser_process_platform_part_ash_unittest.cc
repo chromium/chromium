@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_process_platform_part_ash.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +23,7 @@ class BrowserProcessPlatformPartAshTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  BrowserProcessPlatformPart* process_part_ =
+  raw_ptr<BrowserProcessPlatformPart, ExperimentalAsh> process_part_ =
       TestingBrowserProcess::GetGlobal()->platform_part();
 };
 

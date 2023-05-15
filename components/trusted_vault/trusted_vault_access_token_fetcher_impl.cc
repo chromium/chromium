@@ -15,7 +15,7 @@
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -56,7 +56,7 @@ void TrustedVaultAccessTokenFetcherImpl::FetchAccessToken(
   ui_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(FetchAccessTokenOnUIThread, frontend_, account_id,
-                     BindToCurrentSequence(std::move(callback))));
+                     syncer::BindToCurrentSequence(std::move(callback))));
 }
 
 std::unique_ptr<TrustedVaultAccessTokenFetcher>
@@ -65,4 +65,4 @@ TrustedVaultAccessTokenFetcherImpl::Clone() {
       frontend_, ui_thread_task_runner_));
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

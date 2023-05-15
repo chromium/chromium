@@ -9,8 +9,8 @@ source_set("fullscreen") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -41,13 +41,13 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/omnibox/browser:test_support",
     "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/toolbar/test",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",

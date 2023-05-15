@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -177,13 +178,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     RunEncryptedMediaTest(kDefaultEmePlayer, media_file, key_system, src_type,
                           kNoSessionToLoad, false, play_count, expected_title);
     // Check KeyMessage received for all key systems.
-    bool receivedKeyMessage = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send("
-        "document.querySelector('video').receivedKeyMessage);",
-        &receivedKeyMessage));
-    EXPECT_TRUE(receivedKeyMessage);
+    EXPECT_EQ(true, content::EvalJs(
+                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.querySelector('video').receivedKeyMessage;"));
   }
 
   void RunEncryptedMediaMultipleFileTest(const std::string& key_system,
@@ -290,8 +287,11 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  void SetUpCommandLineForKeySystem(const std::string& key_system,
-                                    base::CommandLine* command_line) {
+  void SetUpCommandLineForKeySystem(
+      const std::string& key_system,
+      base::CommandLine* command_line,
+      const std::vector<base::test::FeatureRefAndParams>&
+          enable_additional_features = {}) {
     if (GetServerConfig(key_system)) {
       // Since the web and license servers listen on different ports, we need to
       // disable web-security to send license requests to the license server.
@@ -303,6 +303,10 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kChromeWhatsNewUI};
+
+    for (auto feature : enable_additional_features) {
+      enabled_features.emplace_back(feature);
+    }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     if (RequiresClearKeyCdm(key_system)) {
@@ -319,7 +323,20 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       // TODO(crbug.com/1412485): Remove this line so that real hardware
       // capabilities can be checked.
       command_line->AppendSwitchASCII(
-          switches::kOverrideHardwareSecureCodecsForTesting, "avc1");
+          switches::kOverrideHardwareSecureCodecsForTesting, "avc1,mp4a");
+
+      // To enable MediaFoundation playback, tests should run on a hardware GPU
+      // other than use a software OpenGL implementation. This can be configured
+      // via `switches::kUseGpuInTests` or `--use-gpu-in-tests`.
+      if (command_line->HasSwitch(switches::kUseGpuInTests)) {
+        // TODO(crbug.com/1421444): Investigate why the video playback doesn't
+        // work with `switches::kDisableGpu` and remove this line if possible.
+        // For now, `switches::kDisableGpu` should not be set. Otherwise,
+        // the video playback will not work with software rendering. Note that
+        // this switch is appended to browser_tests.exe by force as a workaround
+        // of http://crbug.com/687387.
+        command_line->RemoveSwitch(switches::kDisableGpu);
+      }
     }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -429,6 +446,34 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
   }
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(IS_WIN)
+// Tests encrypted media playback using ClearKey key system while
+// the MediaFoundationForClear feature is enabled. This ensures
+// proper renderer selection occurs when Media Foundation Renderer
+// is set as the default but the playback requires another (e.g.
+// default) renderer.
+// TODO(crbug.com/1442997): We should create a browser test suite
+// intended explicitly for Media Foundation scenarios and move
+// the MFClearEncryptedMediaTest tests there.
+class MFClearEncryptedMediaTest : public EncryptedMediaTestBase {
+ public:
+  void TestSimplePlayback(const std::string& encrypted_media) {
+    RunSimpleEncryptedMediaTest(encrypted_media, media::kClearKeyKeySystem,
+                                SrcType::SRC, PlayCount::ONCE);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    // Add MediaFoundationClearPlayback feature to enablement list.
+    std::vector<base::test::FeatureRefAndParams> mf_clear;
+    mf_clear.push_back({media::kMediaFoundationClearPlayback, {}});
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line, mf_clear);
+  }
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 // A base class for parameterized encrypted media tests. Subclasses must
 // override `CurrentKeySystem()` and `CurrentSourceType()`.
@@ -1004,16 +1049,29 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_AudioClearVideo) {
+  TestSimplePlayback("bear-320x240-av_enc-a.webm");
+}
+
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_VideoAudio) {
+  TestSimplePlayback("bear-320x240-av_enc-av.webm");
+}
+
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_VideoClearAudio) {
+  TestSimplePlayback("bear-320x240-av_enc-v.webm");
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // MediaFoundation Clear Key Key System uses Windows Media Foundation's decoders
 // and H264 is always supported.
 class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
  public:
-  void TestLicenseExchange(const std::string& encrypted_media) {
-    // Skip the playback since we test the EME parts only.
+  void TestMediaFoundationPlayback(const std::string& encrypted_media) {
     RunSimpleEncryptedMediaTest(encrypted_media,
                                 media::kMediaFoundationClearKeyKeySystem,
-                                SrcType::MSE, PlayCount::ZERO);
+                                SrcType::MSE, PlayCount::ONCE);
   }
 
  protected:
@@ -1024,25 +1082,42 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
   }
 
   bool IsMediaFoundationEncryptedPlaybackSupported() {
-    static bool is_mediafoundation_encrypted_playback_supported =
+    bool is_mediafoundation_encrypted_playback_supported =
         media::SupportMediaFoundationEncryptedPlayback();
+    bool use_gpu_in_tests = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kUseGpuInTests);
+    bool disable_gpu = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kDisableGpu);
+    bool is_playback_supported =
+        is_mediafoundation_encrypted_playback_supported && use_gpu_in_tests &&
+        !disable_gpu;
     DLOG(INFO) << "is_mediafoundation_encrypted_playback_supported="
-               << is_mediafoundation_encrypted_playback_supported;
+               << is_mediafoundation_encrypted_playback_supported
+               << ", use_gpu_in_tests=" << use_gpu_in_tests
+               << ", disable_gpu=" << disable_gpu;
 
     // Run test only if the test machine supports MediaFoundation playback.
-    // Otherwise, NotSupportedError is expected.
-    if (!is_mediafoundation_encrypted_playback_supported) {
-      // if (!is_mediafoundation_encrypted_playback_supported) {
-      auto os_version = static_cast<int>(base::win::GetVersion());
+    // Otherwise, NotSupportedError or the failure to create D3D11 device is
+    // expected.
+    if (!is_playback_supported) {
       DLOG(WARNING)
           << "Test method "
           << ::testing::UnitTest::GetInstance()->current_test_info()->name()
-          << " is inconclusive since MediaFoundation "
-             "playback is not supported. "
-          << "os_version=" << os_version;
+          << " is inconclusive since MediaFoundation playback is not "
+             "supported.";
+
+      if (!is_mediafoundation_encrypted_playback_supported) {
+        auto os_version = static_cast<int>(base::win::GetVersion());
+        DLOG(WARNING) << "os_version=" << os_version;
+      }
+
+      if (!use_gpu_in_tests) {
+        DLOG(WARNING) << "MediaFoundation playback will not work without a "
+                         "hardware GPU. Use `--use-gpu-in-tests` flag.";
+      }
     }
 
-    return is_mediafoundation_encrypted_playback_supported;
+    return is_playback_supported;
   }
 };
 
@@ -1052,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
     GTEST_SKIP();
   }
 
-  TestLicenseExchange("bear-640x360-v_frag-cenc.mp4");  // H.264
+  TestMediaFoundationPlayback("bear-640x360-v_frag-cenc.mp4");  // H.264
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1061,21 +1136,42 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
     GTEST_SKIP();
   }
 
-  TestLicenseExchange("bear-640x360-v_frag-cbcs.mp4");  // H.264
+  TestMediaFoundationPlayback("bear-640x360-v_frag-cbcs.mp4");  // H.264
 }
 
+// TODO(crbug.com/1442373): Enable this test after fixing the error with no
+// audio device (i.e., Windows trybots don't have any audio device will fail).
+// "Activate failed to create mediasink. Call
+// OutputNode::GetUINT32(MF_TOPONODE_MAJORTYPE) for more information.
+// (0xC00D36FA)"
+/*
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
-                       Playback_EncryptedAudioCbcs_MediaTypeUnsupported) {
+                       Playback_EncryptedCencAudio_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP();
+  }
+
+  TestMediaFoundationPlayback(
+      "bear-640x360-a_frag-cenc.mp4");  // MP4 AAC audio only
+}
+*/
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_EncryptedVp9CencAudio_MediaTypeUnsupported) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP();
   }
 
   // MediaFoundation Clear Key Key System supports only H.264 videos
-  // (codecs=avc1.64001E). See AddMediaFoundationClearKey() in
+  // (codecs="avc1.64001E") and MP4 audios (codecs="mp4a.40.2"). See
+  // AddMediaFoundationClearKey() in
   // components/cdm/renderer/key_system_support_update.cc
-  RunEncryptedMediaTest(
-      kDefaultEmePlayer, "bear-640x360-a_frag-cbcs.mp4" /*codecs=mp4a.40.2*/,
-      media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
-      false, PlayCount::ONCE, kEmeNotSupportedError);
+  RunEncryptedMediaTest(kDefaultEmePlayer,
+                        "bear-320x240-v_frag-vp9-cenc.mp4"
+                        /*codecs="vp09.00.10.08.01.02.02.02.00"*/
+                        ,
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        kEmeNotSupportedError);
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)

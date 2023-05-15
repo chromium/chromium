@@ -115,7 +115,7 @@
 // starting with that index and extract potential candidates: occupied slots
 // with a control byte equal to `H2(hash(x))`. If we find an empty slot in the
 // group, we stop and return an error. Each candidate slot `y` is compared with
-// `x`; if `x == y`, we are done and return `&y`; otherwise we contine to the
+// `x`; if `x == y`, we are done and return `&y`; otherwise we continue to the
 // next probe index. Tombstones effectively behave like full slots that never
 // match the value we're looking for.
 //
@@ -1828,19 +1828,25 @@ class raw_hash_set {
     infoz().Unregister();
   }
 
-  iterator begin() {
+  iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = iterator_at(0);
     it.skip_empty_or_deleted();
     return it;
   }
-  iterator end() { return iterator(common().generation_ptr()); }
+  iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return iterator(common().generation_ptr());
+  }
 
-  const_iterator begin() const {
+  const_iterator begin() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return const_cast<raw_hash_set*>(this)->begin();
   }
-  const_iterator end() const { return iterator(common().generation_ptr()); }
-  const_iterator cbegin() const { return begin(); }
-  const_iterator cend() const { return end(); }
+  const_iterator end() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return iterator(common().generation_ptr());
+  }
+  const_iterator cbegin() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return begin();
+  }
+  const_iterator cend() const ABSL_ATTRIBUTE_LIFETIME_BOUND { return end(); }
 
   bool empty() const { return !size(); }
   size_t size() const { return common().size_; }
@@ -1887,7 +1893,7 @@ class raw_hash_set {
   template <class T, RequiresInsertable<T> = 0, class T2 = T,
             typename std::enable_if<IsDecomposable<T2>::value, int>::type = 0,
             T* = nullptr>
-  std::pair<iterator, bool> insert(T&& value) {
+  std::pair<iterator, bool> insert(T&& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(std::forward<T>(value));
   }
 
@@ -1905,7 +1911,8 @@ class raw_hash_set {
   template <
       class T, RequiresInsertable<const T&> = 0,
       typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
-  std::pair<iterator, bool> insert(const T& value) {
+  std::pair<iterator, bool> insert(const T& value)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(value);
   }
 
@@ -1914,7 +1921,8 @@ class raw_hash_set {
   //
   //   flat_hash_map<std::string, int> s;
   //   s.insert({"abc", 42});
-  std::pair<iterator, bool> insert(init_type&& value) {
+  std::pair<iterator, bool> insert(init_type&& value)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(std::move(value));
   }
 
@@ -1923,18 +1931,20 @@ class raw_hash_set {
   template <class T, RequiresInsertable<T> = 0, class T2 = T,
             typename std::enable_if<IsDecomposable<T2>::value, int>::type = 0,
             T* = nullptr>
-  iterator insert(const_iterator, T&& value) {
+  iterator insert(const_iterator, T&& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(std::forward<T>(value)).first;
   }
 
   template <
       class T, RequiresInsertable<const T&> = 0,
       typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
-  iterator insert(const_iterator, const T& value) {
+  iterator insert(const_iterator,
+                  const T& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(value).first;
   }
 
-  iterator insert(const_iterator, init_type&& value) {
+  iterator insert(const_iterator,
+                  init_type&& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(std::move(value)).first;
   }
 
@@ -1952,7 +1962,7 @@ class raw_hash_set {
     insert(ilist.begin(), ilist.end());
   }
 
-  insert_return_type insert(node_type&& node) {
+  insert_return_type insert(node_type&& node) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (!node) return {end(), false, node_type()};
     const auto& elem = PolicyTraits::element(CommonAccess::GetSlot(node));
     auto res = PolicyTraits::apply(
@@ -1966,7 +1976,8 @@ class raw_hash_set {
     }
   }
 
-  iterator insert(const_iterator, node_type&& node) {
+  iterator insert(const_iterator,
+                  node_type&& node) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto res = insert(std::move(node));
     node = std::move(res.node);
     return res.position;
@@ -1983,7 +1994,8 @@ class raw_hash_set {
   //   m.emplace("abc", "xyz");
   template <class... Args, typename std::enable_if<
                                IsDecomposable<Args...>::value, int>::type = 0>
-  std::pair<iterator, bool> emplace(Args&&... args) {
+  std::pair<iterator, bool> emplace(Args&&... args)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return PolicyTraits::apply(EmplaceDecomposable{*this},
                                std::forward<Args>(args)...);
   }
@@ -1993,7 +2005,8 @@ class raw_hash_set {
   // destroys.
   template <class... Args, typename std::enable_if<
                                !IsDecomposable<Args...>::value, int>::type = 0>
-  std::pair<iterator, bool> emplace(Args&&... args) {
+  std::pair<iterator, bool> emplace(Args&&... args)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     alignas(slot_type) unsigned char raw[sizeof(slot_type)];
     slot_type* slot = reinterpret_cast<slot_type*>(&raw);
 
@@ -2003,7 +2016,8 @@ class raw_hash_set {
   }
 
   template <class... Args>
-  iterator emplace_hint(const_iterator, Args&&... args) {
+  iterator emplace_hint(const_iterator,
+                        Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(std::forward<Args>(args)...).first;
   }
 
@@ -2053,7 +2067,8 @@ class raw_hash_set {
   };
 
   template <class K = key_type, class F>
-  iterator lazy_emplace(const key_arg<K>& key, F&& f) {
+  iterator lazy_emplace(const key_arg<K>& key,
+                        F&& f) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto res = find_or_prepare_insert(key);
     if (res.second) {
       slot_type* slot = slot_array() + res.first;
@@ -2103,7 +2118,8 @@ class raw_hash_set {
     erase_meta_only(it);
   }
 
-  iterator erase(const_iterator first, const_iterator last) {
+  iterator erase(const_iterator first,
+                 const_iterator last) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     while (first != last) {
       erase(first++);
     }
@@ -2232,7 +2248,8 @@ class raw_hash_set {
   // 2. The type of the key argument doesn't have to be key_type. This is so
   // called heterogeneous key support.
   template <class K = key_type>
-  iterator find(const key_arg<K>& key, size_t hash) {
+  iterator find(const key_arg<K>& key,
+                size_t hash) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto seq = probe(common(), hash);
     slot_type* slot_ptr = slot_array();
     const ctrl_t* ctrl = control();
@@ -2250,17 +2267,19 @@ class raw_hash_set {
     }
   }
   template <class K = key_type>
-  iterator find(const key_arg<K>& key) {
+  iterator find(const key_arg<K>& key) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     prefetch_heap_block();
     return find(key, hash_ref()(key));
   }
 
   template <class K = key_type>
-  const_iterator find(const key_arg<K>& key, size_t hash) const {
+  const_iterator find(const key_arg<K>& key,
+                      size_t hash) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return const_cast<raw_hash_set*>(this)->find(key, hash);
   }
   template <class K = key_type>
-  const_iterator find(const key_arg<K>& key) const {
+  const_iterator find(const key_arg<K>& key) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     prefetch_heap_block();
     return find(key, hash_ref()(key));
   }
@@ -2271,14 +2290,15 @@ class raw_hash_set {
   }
 
   template <class K = key_type>
-  std::pair<iterator, iterator> equal_range(const key_arg<K>& key) {
+  std::pair<iterator, iterator> equal_range(const key_arg<K>& key)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = find(key);
     if (it != end()) return {it, std::next(it)};
     return {it, it};
   }
   template <class K = key_type>
   std::pair<const_iterator, const_iterator> equal_range(
-      const key_arg<K>& key) const {
+      const key_arg<K>& key) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = find(key);
     if (it != end()) return {it, std::next(it)};
     return {it, it};
@@ -2456,8 +2476,8 @@ class raw_hash_set {
   void rehash_and_grow_if_necessary() {
     const size_t cap = capacity();
     if (cap > Group::kWidth &&
-        // Do these calcuations in 64-bit to avoid overflow.
-        size() * uint64_t{32} <= cap* uint64_t{25}) {
+        // Do these calculations in 64-bit to avoid overflow.
+        size() * uint64_t{32} <= cap * uint64_t{25}) {
       // Squash DELETED without growing if there is enough capacity.
       //
       // Rehash in place if the current size is <= 25/32 of capacity.
@@ -2606,10 +2626,10 @@ class raw_hash_set {
            "constructed value does not match the lookup key");
   }
 
-  iterator iterator_at(size_t i) {
+  iterator iterator_at(size_t i) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return {control() + i, slot_array() + i, common().generation_ptr()};
   }
-  const_iterator iterator_at(size_t i) const {
+  const_iterator iterator_at(size_t i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return {control() + i, slot_array() + i, common().generation_ptr()};
   }
 

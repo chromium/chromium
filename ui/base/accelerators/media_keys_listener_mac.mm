@@ -4,16 +4,14 @@
 
 #include "ui/base/accelerators/media_keys_listener.h"
 
-#include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
-#include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -68,8 +66,8 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   raw_ptr<MediaKeysListener::Delegate> delegate_;
   const Scope scope_;
   // Event tap for intercepting mac media keys.
-  CFMachPortRef event_tap_ = nullptr;
-  CFRunLoopSourceRef event_tap_source_ = nullptr;
+  base::ScopedCFTypeRef<CFMachPortRef> event_tap_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> event_tap_source_;
   base::flat_set<KeyboardCode> key_codes_;
 };
 
@@ -106,16 +104,16 @@ void MediaKeysListenerImpl::StartEventTapIfNecessary() {
   DCHECK_EQ(event_tap_source_, nullptr);
 
   // Add an event tap to intercept the system defined media key events.
-  event_tap_ = CGEventTapCreate(
+  event_tap_.reset(CGEventTapCreate(
       kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault,
-      CGEventMaskBit(NX_SYSDEFINED), EventTapCallback, this);
+      CGEventMaskBit(NX_SYSDEFINED), EventTapCallback, /*userInfo=*/this));
   if (event_tap_ == nullptr) {
     LOG(ERROR) << "Error: failed to create event tap.";
     return;
   }
 
-  event_tap_source_ =
-      CFMachPortCreateRunLoopSource(kCFAllocatorSystemDefault, event_tap_, 0);
+  event_tap_source_.reset(CFMachPortCreateRunLoopSource(
+      kCFAllocatorDefault, event_tap_, /*order=*/0));
   if (event_tap_source_ == nullptr) {
     LOG(ERROR) << "Error: failed to create new run loop source.";
     return;
@@ -137,12 +135,10 @@ void MediaKeysListenerImpl::StopEventTapIfNecessary() {
 
   // Invalidate the event tap.
   CFMachPortInvalidate(event_tap_);
-  CFRelease(event_tap_);
-  event_tap_ = nullptr;
+  event_tap_.reset();
 
   // Release the event tap source.
-  CFRelease(event_tap_source_);
-  event_tap_source_ = nullptr;
+  event_tap_source_.reset();
 }
 
 void MediaKeysListenerImpl::OnMediaKeyEvent(KeyboardCode key_code) {

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "dbus/mock_bus.h"
@@ -41,10 +42,6 @@ class HibermanClientTest : public testing::Test {
     dbus_service_proxy_ = new dbus::MockObjectProxy(
         bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
 
-    // Except that we will test alive once after the object comes up.
-    EXPECT_CALL(*bus_.get(), GetObjectProxy(DBUS_SERVICE_DBUS,
-                                            dbus::ObjectPath(DBUS_PATH_DBUS)))
-        .WillOnce(Return(proxy_.get()));
     // Makes sure `GetObjectProxy()` is caled with the correct service name and
     // path.
     EXPECT_CALL(*bus_.get(),
@@ -74,7 +71,7 @@ class HibermanClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> dbus_service_proxy_;
 
   // Convenience pointer to the global instance.
-  HibermanClient* client_ = nullptr;
+  raw_ptr<HibermanClient, ExperimentalAsh> client_ = nullptr;
 
  private:
   // Handles calls to |proxy_|'s `CallMethod()`.

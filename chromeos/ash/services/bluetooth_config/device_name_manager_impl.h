@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/device_name_manager.h"
 
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -37,7 +38,7 @@ class DeviceNameManagerImpl : public DeviceNameManager {
   bool DoesDeviceExist(const std::string& device_id) const;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 };
 
 }  // namespace ash::bluetooth_config

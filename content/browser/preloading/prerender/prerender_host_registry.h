@@ -12,10 +12,12 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -139,10 +141,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   std::set<int> CancelHosts(const std::vector<int>& frame_tree_node_ids,
                             const PrerenderCancellationReason& reason);
 
-  // Cancels the existing hosts that were triggered by `trigger_type`.
-  void CancelHostsForTrigger(PrerenderTriggerType trigger_type,
-                             const PrerenderCancellationReason& reason);
-
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderFinalStatus final_status);
 
@@ -265,6 +263,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // cancelled.
   int StartPrerendering(int frame_tree_node_id);
 
+  // Cancels the existing hosts that were triggered by `trigger_types`.
+  void CancelHostsForTriggers(std::vector<PrerenderTriggerType> trigger_types,
+                              const PrerenderCancellationReason& reason);
+
   // Returns whether a certain type of PrerenderTriggerType is allowed to be
   // added to PrerenderHostRegistry according to the limit of the given
   // PrerenderTriggerType.
@@ -287,6 +289,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       GURL back_url,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
   // Holds the frame_tree_node_id of running PrerenderHost. Reset to
@@ -294,7 +299,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Tracks only the host id of speculation rules triggers and ignores requests
   // from embedder because embedder requests are more urgent and we'd like to
   // handle embedder prerender independently from speculation rules requests.
-  // This is valid only when kPrerender2SequentialPrerendering is enabled.
   int running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   // Holds the ids of upcoming prerender requests. The requests from embedder
@@ -302,7 +306,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // requests from the speculation rules are appended to the back. This may
   // contain ids of cancelled requests. You can identify cancelled requests by
   // checking if an id is in `prerender_host_by_frame_tree_node_id_`.
-  // This is valid only when kPrerender2SequentialPrerendering is enabled.
   base::circular_deque<int> pending_prerenders_;
 
   // Hosts that are not reserved for activation yet. This map also includes the
@@ -338,7 +341,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // entry for it in the HTTP cache.
   std::unique_ptr<network::SimpleURLLoader> http_cache_query_loader_;
 
+  base::MemoryPressureListener memory_pressure_listener_;
+
   base::ObserverList<Observer> observers_;
+
+  // Ensures this instance lives on the UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PrerenderHostRegistry> weak_factory_{this};
 };

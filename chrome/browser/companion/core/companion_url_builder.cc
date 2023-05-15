@@ -70,8 +70,15 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
                                             const std::string& text_query) {
-  GURL url_with_query_params = GetHomepageURLForCompanion();
+  return AppendCompanionParamsToURL(GetHomepageURLForCompanion(), page_url,
+                                    text_query);
+}
 
+GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
+    GURL base_url,
+    GURL page_url,
+    const std::string& text_query) {
+  GURL url_with_query_params = base_url;
   // Fill the protobuf with the required query params.
   std::string base64_encoded_proto = BuildCompanionUrlParamProto(page_url);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -95,7 +102,6 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kTextQueryParameterKey, text_query);
   }
-
   return url_with_query_params;
 }
 
@@ -109,7 +115,8 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
   }
 
   url_params.set_has_msbb_enabled(is_msbb_enabled);
-  url_params.set_signin_allowed_and_required(signin_delegate_->AllowedSignin());
+  url_params.set_is_sign_in_allowed(signin_delegate_->AllowedSignin());
+  url_params.set_is_signed_in(signin_delegate_->IsSignedIn());
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(

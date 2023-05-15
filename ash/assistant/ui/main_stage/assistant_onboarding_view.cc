@@ -211,7 +211,7 @@ void AssistantOnboardingView::InitLayout() {
 
 void AssistantOnboardingView::UpdateSuggestions() {
   if (table_)
-    RemoveChildViewT(table_);
+    RemoveChildViewT(table_.get());
 
   table_ = AddChildView(std::make_unique<views::TableLayoutView>());
   table_->SetBorder(views::CreateEmptyBorder(

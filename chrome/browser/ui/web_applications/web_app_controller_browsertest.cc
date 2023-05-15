@@ -115,8 +115,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
     content::WebContents* contents,
     const GURL& url) {
   content::WebContentsAddedObserver tab_added_observer;
-  EXPECT_TRUE(
-      content::ExecuteScript(contents, "window.open('" + url.spec() + "');"));
+  EXPECT_TRUE(content::ExecJs(contents, "window.open('" + url.spec() + "');"));
   content::WebContents* new_contents = tab_added_observer.GetWebContents();
   EXPECT_TRUE(new_contents);
   WaitForLoadStop(new_contents);
@@ -134,8 +133,8 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
 bool WebAppControllerBrowserTest::NavigateInRenderer(
     content::WebContents* contents,
     const GURL& url) {
-  EXPECT_TRUE(content::ExecuteScript(
-      contents, "window.location = '" + url.spec() + "';"));
+  EXPECT_TRUE(
+      content::ExecJs(contents, "window.location = '" + url.spec() + "';"));
   bool success = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
   return success;

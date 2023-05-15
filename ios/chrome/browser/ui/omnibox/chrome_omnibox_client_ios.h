@@ -12,11 +12,15 @@
 
 class ChromeBrowserState;
 class WebOmniboxEditModelDelegate;
+namespace feature_engagement {
+class Tracker;
+}
 
 class ChromeOmniboxClientIOS : public OmniboxClient {
  public:
   ChromeOmniboxClientIOS(WebOmniboxEditModelDelegate* edit_model_delegate,
-                         ChromeBrowserState* browser_state);
+                         ChromeBrowserState* browser_state,
+                         feature_engagement::Tracker* tracker);
 
   ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
   ChromeOmniboxClientIOS& operator=(const ChromeOmniboxClientIOS&) = delete;
@@ -33,6 +37,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   bool IsDefaultSearchProviderEnabled() const override;
   SessionID GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
+  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
@@ -61,6 +66,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   WebOmniboxEditModelDelegate* edit_model_delegate_;
   ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
+  feature_engagement::Tracker* engagement_tracker_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_

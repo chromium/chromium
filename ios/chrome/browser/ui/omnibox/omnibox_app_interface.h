@@ -20,6 +20,17 @@
 // Blocks `URL` from most visited sites.
 + (void)blockURLFromTopSites:(NSString*)URL;
 
+// Set up a service that serves custom search suggestions in the omnibox. These
+// replace suggestions provided by the suggest server. Fake suggestions are
+// loaded from `filename` (json) and the file must be in
+// ios/test/chrome/data/omnibox/. Fake suggestions can be generated with
+// chrome://suggest-internals available on Desktop. The service must be teared
+// down with `tearDownFakeSuggestionsService`.
++ (void)setUpFakeSuggestionsService:(NSString*)filename;
+
+// Tear down test fake suggestions service.
++ (void)tearDownFakeSuggestionsService;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_APP_INTERFACE_H_

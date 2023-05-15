@@ -63,10 +63,14 @@ class UmaFeatureProcessor : public QueryProcessor {
   base::flat_map<FeatureIndex, Data> uma_features_;
 
   // Main signal database for user actions and histograms.
-  const raw_ptr<SignalDatabase> signal_database_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: SegmentationPlatformTest.RunDefaultModel (flaky)
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/175245/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSegmentationPlatformTest.RunDefaultModel+VHash%3Abdbee181b3e0309b
+  // This also occurs while checking for dangling ptrs at exit.
+  const raw_ptr<SignalDatabase, DanglingUntriaged> signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
-  const raw_ptr<FeatureAggregator, DanglingUntriaged> feature_aggregator_;
+  const raw_ptr<FeatureAggregator, FlakyDanglingUntriaged> feature_aggregator_;
 
   // Data needed for the processing of uma features.
   const base::Time prediction_time_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
@@ -33,7 +34,8 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   enterprise_management::RemoteCommand_Type GetType() const override;
 
  private:
-  ash::attestation::MachineCertificateUploader* machine_certificate_uploader_;
+  raw_ptr<ash::attestation::MachineCertificateUploader, ExperimentalAsh>
+      machine_certificate_uploader_;
 
   // RemoteCommandJob:
   bool IsExpired(base::TimeTicks now) override;

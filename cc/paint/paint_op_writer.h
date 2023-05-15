@@ -50,10 +50,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
                 bool enable_security_constraints = false);
   ~PaintOpWriter();
 
-  static std::unique_ptr<char, base::AlignedFreeDeleter> AllocateAlignedBuffer(
+  template <typename T = char>
+  static std::unique_ptr<T, base::AlignedFreeDeleter> AllocateAlignedBuffer(
       size_t size) {
-    return std::unique_ptr<char, base::AlignedFreeDeleter>(
-        static_cast<char*>(base::AlignedAlloc(size, kMaxAlignment)));
+    return std::unique_ptr<T, base::AlignedFreeDeleter>(
+        static_cast<T*>(base::AlignedAlloc(size, kMaxAlignment)));
   }
 
   const PaintOp::SerializeOptions& options() const { return *options_; }
@@ -173,21 +174,16 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // alignment.
   size_t size() const { return valid_ ? size_ - remaining_bytes_ : 0u; }
 
-  // Writes a size_t. The return value can be used when the size is unknown
-  // before writing some data:
-  //   uint64_t* memory = WriteSize(0u);
-  //   size_t data_size = WriteSomeData();
-  //   *memory = data_size;
-  // Note that size_t is always serialized as uint64_t to make the serialized
-  // result portable between 32bit and 64bit processes.
-  uint64_t* WriteSize(size_t size);
+  // Writes a size_t.
+  // Note that size_t is always serialized as two uint32_ts to make the
+  // serialized result portable between 32bit and 64bit processes.
+  void WriteSize(size_t size);
 
   void Write(SkScalar data);
   void Write(SkMatrix data);
   void Write(const SkM44& data);
   void Write(uint8_t data);
   void Write(uint32_t data);
-  void Write(uint64_t data);
   void Write(int32_t data);
   void Write(const SkRect& rect);
   void Write(const SkIRect& rect);
@@ -281,6 +277,14 @@ class CC_PAINT_EXPORT PaintOpWriter {
     Write(base::checked_cast<uint8_t>(value));
   }
 
+  // The following sequence is used when the size is unknown before writing
+  // some data:
+  //   void* memory = SkipSize();
+  //   size_t data_size = WriteSomeData();
+  //   WriteSizeAt(memory, data_size);
+  void* SkipSize();
+  void WriteSizeAt(void* memory, size_t size);
+
   // The main entry point is Write(const PaintFilter* filter) which casts the
   // filter and calls one of the following functions.
   void Write(const ColorFilterPaintFilter& filter, const SkM44& current_ctm);
@@ -347,11 +351,11 @@ constexpr size_t PaintOpWriter::SerializedSizeSimple() {
   return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
 }
 
-// size_t is always serialized as uint64_t to make the serialized result
+// size_t is always serialized as two uint32_ts to make the serialized result
 // portable between 32bit and 64bit processes.
 template <>
 constexpr size_t PaintOpWriter::SerializedSizeSimple<size_t>() {
-  return base::bits::AlignUp(sizeof(uint64_t), kDefaultAlignment);
+  return base::bits::AlignUp(2 * sizeof(uint32_t), kDefaultAlignment);
 }
 
 template <>

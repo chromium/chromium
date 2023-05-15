@@ -6,11 +6,12 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/compositor/layer.h"
@@ -57,13 +58,6 @@ void SubFeatureOptInView::RefreshDescription(int description_string_id) {
 }
 
 void SubFeatureOptInView::InitLayout() {
-  // The dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
-
   const SkColor border_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
   SetBorder(views::CreateRoundedRectBorder(
@@ -91,11 +85,16 @@ void SubFeatureOptInView::InitLayout() {
                                .DeriveWithSizeDelta(kLabelTextFontSizeDip -
                                                     default_font.GetFontSize())
                                .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-  text_label_->SetLineHeight(kTextLabelLineHeightDip);
   text_label_->SetMultiLine(/*multi_line=*/true);
   text_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   text_label_->SetText(l10n_util::GetStringFUTF16(description_string_id_,
                                                   ui::GetChromeOSDeviceName()));
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
+                                          *text_label_);
+  }
+  text_label_->SetLineHeight(kTextLabelLineHeightDip);
 
   // Set up layout row for the buttons.
   auto* button_container =

@@ -10,6 +10,8 @@ namespace content {
 enum class PrerenderTriggerType {
   // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
   kSpeculationRule,
+  // Same as kSpeculationRule but triggered in isolated worlds like Extensions.
+  kSpeculationRuleFromIsolatedWorld,
   // Trigger used by content embedders.
   kEmbedder,
 };

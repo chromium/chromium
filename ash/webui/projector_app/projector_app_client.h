@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "ash/webui/projector_app/pending_screencast.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
@@ -30,50 +31,6 @@ struct AnnotatorTool;
 struct ProjectorScreencastVideo;
 struct NewScreencastPrecondition;
 
-struct PendingScreencast {
-  PendingScreencast();
-  explicit PendingScreencast(const base::FilePath& container_dir);
-  PendingScreencast(const base::FilePath& container_dir,
-                    const std::string& name,
-                    int64_t total_size_in_bytes,
-                    int64_t bytes_transferred);
-  PendingScreencast(const PendingScreencast&);
-  PendingScreencast& operator=(const PendingScreencast&);
-  ~PendingScreencast();
-
-  base::Value::Dict ToValue() const;
-  bool operator==(const PendingScreencast& rhs) const;
-
-  // The container path of the screencast. It's a relative path of drive, looks
-  // like "/root/projector_data/abc".
-  base::FilePath container_dir;
-  // The display name of screencast. If `container_dir` is
-  // "/root/projector_data/abc", the `name` is "abc".
-  std::string name;
-  // The total size of a screencast in bytes, including the media file and the
-  // metadata file under `container_dir`.
-  int64_t total_size_in_bytes = 0;
-  // The bytes have been transferred to drive.
-  int64_t bytes_transferred = 0;
-
-  // The media file created time.
-  base::Time created_time;
-
-  // True after observing drivefs::mojom::DriveError::kCantUploadStorageFull for
-  // the first time. Screencast's status might go through error -> uploading ->
-  // error -> ... -> uploaded, but it will display the error state until
-  // successfully uploaded to avoid over commnucation with user.
-  bool upload_failed = false;
-};
-
-struct PendingScreencastSetComparator {
-  bool operator()(const PendingScreencast& a, const PendingScreencast& b) const;
-};
-
-// The set to store pending screencasts.
-using PendingScreencastSet =
-    std::set<PendingScreencast, PendingScreencastSetComparator>;
-
 // Defines interface to access Browser side functionalities for the
 // ProjectorApp.
 class ProjectorAppClient {
@@ -89,22 +46,22 @@ class ProjectorAppClient {
     // Used to notify the Projector SWA app on whether it can start a new
     // screencast session.
     virtual void OnNewScreencastPreconditionChanged(
-        const NewScreencastPrecondition& precondition) {}
+        const NewScreencastPrecondition& precondition) = 0;
 
     // Observes the pending screencast state change events.
     virtual void OnScreencastsPendingStatusChanged(
-        const PendingScreencastSet& pending_screencast) {}
+        const PendingScreencastContainerSet& pending_screencast_containers) = 0;
 
     // Notifies the observer the SODA binary and language pack download and
     // installation progress.
-    virtual void OnSodaProgress(int combined_progress) {}
+    virtual void OnSodaProgress(int combined_progress) = 0;
 
     // Notifies the observer that an error occurred during installation.
-    virtual void OnSodaError() {}
+    virtual void OnSodaError() = 0;
 
     // Notifies the observer that installation of SODA binary and at least one
     // language pack has finished.
-    virtual void OnSodaInstalled() {}
+    virtual void OnSodaInstalled() = 0;
   };
 
   ProjectorAppClient(const ProjectorAppClient&) = delete;
@@ -127,7 +84,8 @@ class ProjectorAppClient {
       const NewScreencastPrecondition& precondition) = 0;
 
   // Returns pending screencast uploaded by primary user.
-  virtual const PendingScreencastSet& GetPendingScreencasts() const = 0;
+  virtual const PendingScreencastContainerSet& GetPendingScreencasts()
+      const = 0;
 
   // Checks if device is eligible to trigger SODA installer.
   virtual bool ShouldDownloadSoda() const = 0;

@@ -376,7 +376,7 @@ class SessionStateAnimatorImpl::AnimationSequence
     sequences_attached_++;
   }
 
-  SessionStateAnimatorImpl* animator_;  // not owned
+  raw_ptr<SessionStateAnimatorImpl, ExperimentalAsh> animator_;  // not owned
 
   // Number of sequences this observer was attached to.
   int sequences_attached_;

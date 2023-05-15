@@ -883,7 +883,7 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
   Color color = table_part.StyleRef().VisitedDependentColor(
       GetCSSPropertyBackgroundColor());
   const FillLayer& background_layers = table_part.StyleRef().BackgroundLayers();
-  if (background_layers.AnyLayerHasImage() || color.Alpha()) {
+  if (background_layers.AnyLayerHasImage() || !color.IsFullyTransparent()) {
     BackgroundImageGeometry geometry(
         layout_table_cell,
         table_cell_paint_offset - table_part_paint_rect.offset, table_part,

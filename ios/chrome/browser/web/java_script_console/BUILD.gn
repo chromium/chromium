@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("java_script_console") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -20,18 +20,22 @@ source_set("java_script_console") {
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
   frameworks = [ "Foundation.framework" ]
 }
 
-optimize_js("console_js") {
+optimize_ts("console_js") {
   visibility = [ ":java_script_console" ]
 
-  primary_script = "resources/console.js"
-  sources = [ "resources/console.js" ]
+  sources = [ "resources/console.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unit_tests") {
@@ -42,7 +46,7 @@ source_set("unit_tests") {
     ":java_script_console",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

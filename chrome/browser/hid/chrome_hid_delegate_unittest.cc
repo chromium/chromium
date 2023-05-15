@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -39,12 +39,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/command_line.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -230,17 +230,17 @@ class ChromeHidTestHelper {
   // exercise behaviors that are only enabled for privileged extensions.
   scoped_refptr<const extensions::Extension> CreateExtensionWithId(
       base::StringPiece extension_id) {
-    extensions::DictionaryBuilder manifest;
-    manifest.Set("name", "Fake extension")
-        .Set("description", "For testing.")
-        .Set("version", "0.1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", extensions::ListBuilder()
-                                             .Append(kExtensionDocumentFileName)
-                                             .Build());
+    auto manifest =
+        base::Value::Dict()
+            .Set("name", "Fake extension")
+            .Set("description", "For testing.")
+            .Set("version", "0.1")
+            .Set("manifest_version", 2)
+            .Set("web_accessible_resources",
+                 base::Value::List().Append(kExtensionDocumentFileName));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(manifest.Build())
+            .SetManifest(std::move(manifest))
             .SetID(std::string(extension_id))
             .Build();
     if (!extension) {
@@ -1215,7 +1215,8 @@ TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
   EXPECT_EQ(nullptr,
             chrome_hid_delegate.GetHidManager(/*browser_context=*/nullptr));
   EXPECT_EQ(nullptr, chrome_hid_delegate.GetDeviceInfo(
-                         /*browser_context=*/nullptr, base::GenerateGUID()));
+                         /*browser_context=*/nullptr,
+                         base::Uuid::GenerateRandomV4().AsLowercaseString()));
   EXPECT_FALSE(chrome_hid_delegate.IsFidoAllowedForOrigin(
       /*browser_context=*/nullptr, origin));
 }

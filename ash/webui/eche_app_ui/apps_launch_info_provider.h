@@ -9,6 +9,7 @@
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 namespace eche_app {
@@ -35,7 +36,8 @@ class AppsLaunchInfoProvider : public EcheConnectionStatusHandler::Observer {
   mojom::AppStreamLaunchEntryPoint entry_point() { return entry_point_; }
 
  private:
-  EcheConnectionStatusHandler* eche_connection_status_handler_;
+  raw_ptr<EcheConnectionStatusHandler, ExperimentalAsh>
+      eche_connection_status_handler_;
   mojom::AppStreamLaunchEntryPoint entry_point_ =
       mojom::AppStreamLaunchEntryPoint::UNKNOWN;
   mojom::ConnectionStatus last_connection_ =

@@ -4,15 +4,14 @@
 
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/format_macros.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_in_page/constants.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"

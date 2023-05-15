@@ -61,7 +61,6 @@ class TestHttpPostProvider : public HttpPostProvider {
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
-  void SetAllowBatching(bool allow_batching) override {}
   bool MakeSynchronousPost(int* net_error_code,
                            int* http_status_code) override {
     return false;
@@ -226,7 +225,7 @@ class SyncManagerImplTest : public testing::Test {
 // Test that the configuration params are properly created and sent to
 // ScheduleConfigure. No callback should be invoked.
 TEST_F(SyncManagerImplTest, BasicConfiguration) {
-  ModelTypeSet types_to_download(BOOKMARKS, PREFERENCES);
+  const ModelTypeSet types_to_download = {BOOKMARKS, PREFERENCES};
   base::MockOnceClosure ready_task;
   EXPECT_CALL(*scheduler(), Start(SyncScheduler::CONFIGURATION_MODE, _));
   EXPECT_CALL(*scheduler(),

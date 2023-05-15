@@ -58,6 +58,12 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void setRangeEnd(const RangeBoundary* range_end,
                    ExceptionState& exception_state) override;
 
+  // Conditionally updates both boundaries of the animation range.
+  // If the corresponding boundary has been explicitly set via WAAPI
+  // the new value will be ignored.
+  void SetRange(const absl::optional<TimelineOffset>& range_start,
+                const absl::optional<TimelineOffset>& range_end) override;
+
   // When set, subsequent changes to animation-<property> no longer affect
   // <property>.
   // https://drafts.csswg.org/css-animations-2/#interaction-between-animation-play-state-and-web-animations-API

@@ -30,7 +30,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
-<translation id="1154704303112745282">Page unavailable offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -59,7 +58,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1273937721055267968">Block <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tap to expand</translation>
-<translation id="1285310382777185058">Change language</translation>
 <translation id="1291207594882862231">Clear history, cookies, site data, cache…</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
@@ -107,7 +105,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">To manage your passwords, update Google Play services</translation>
 <translation id="1506061864768559482">Search engine</translation>
-<translation id="1508960385613684700">Privacy Guide <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
 <translation id="1513814250881909472">Sync to get your tabs from your other devices</translation>
 <translation id="1513858653616922153">Delete password</translation>
@@ -121,6 +118,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> suggested items in list below.</translation>
+<translation id="1598163867407640634">Use <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chrome to consider.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1633659023549081553">Discover new content on Chrome’s homepage</translation>
@@ -132,7 +130,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1671236975893690980">Download pending...</translation>
 <translation id="1672586136351118594">Don‘t show again</translation>
 <translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
-<translation id="1682195225331129001">Try now</translation>
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1702907158640575240">Managed browser</translation>
 <translation id="1710099199314114079">Switch or close tabs</translation>
@@ -151,6 +148,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
+<translation id="185383612275551373">Sync to get the most relevant content from Google</translation>
 <translation id="1854311313115643875">When trials are on, ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
 
 When you delete your browsing history – all or for a specific site – you also delete associated measurement info. See <ph name="BEGIN_LINK" />your browsing history<ph name="END_LINK" />.</translation>
@@ -187,12 +185,10 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
 <translation id="2046634576464120978">Registration failed</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="2052422354554967744">Search the Internet</translation>
 <translation id="2053105195397337973">We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="2056878612599315956">Site paused</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
 <translation id="2067805253194386918">text</translation>
-<translation id="2068748236079642969">Watch next video</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sync and personalise across devices</translation>
@@ -219,6 +215,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
+<translation id="2234827758954819389">Privacy guide</translation>
 <translation id="2239812875700136898">Control your stories from the 'Options for Discover' button</translation>
 <translation id="2248941474044011069">Your passwords are encrypted on your device before they’re saved to Google Password Manager</translation>
 <translation id="2249635629516220541">Customise the info used by sites to show you ads</translation>
@@ -241,7 +238,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2394602618534698961">Files that you download appear here</translation>
-<translation id="2407481962792080328">When you sign in to your Google account, this feature is turned on</translation>
 <translation id="2410754283952462441">Choose an account</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2426805022920575512">Choose another account</translation>
@@ -285,6 +281,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2587052924345400782">Newer version is available</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Sign in to manage your preferences</translation>
+<translation id="260403163289591229">Following</translation>
 <translation id="2604446170045642109">You can turn off Dark theme for sites in your settings.</translation>
 <translation id="2612676031748830579">Card number</translation>
 <translation id="2625189173221582860">Password copied</translation>
@@ -298,6 +295,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="265156376773362237">Standard preloading</translation>
 <translation id="2656405586795711023">Web apps</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
+<translation id="2688382350024736268">Chrome now shares only very limited information among sites and apps, such as when an ad was shown to you, to help sites measure the performance of ads.</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2707726405694321444">Refresh page</translation>
 <translation id="271033894570825754">New</translation>
@@ -364,7 +362,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2996809686854298943">URL required</translation>
 <translation id="2997081575621687554">When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
 <translation id="3006881078666935414">No usage data</translation>
-<translation id="301080557829842765">Privacy guide</translation>
 <translation id="3016635187733453316">Make sure that this device is connected to the Internet</translation>
 <translation id="3026955690410463085">Include link</translation>
 <translation id="3027644380269727216">Based on your activity on a site. This setting is on.</translation>
@@ -383,11 +380,11 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3066573403916685335">Move Down</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
+<translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3083194063661536258">Signed out. Button. Opens dialogue to sign in and turn on sync.</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
@@ -415,14 +412,12 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3250563604907490871">Image descriptions will resume when you connect to Wi-Fi</translation>
 <translation id="3254409185687681395">Bookmark this page</translation>
 <translation id="3259831549858767975">Make everything on the page smaller</translation>
-<translation id="3264124641674805320">How to download content for later</translation>
 <translation id="3264259168916048410">Your computer wants to use this device to sign in to a site</translation>
 <translation id="3265093782546847662">All pages of <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Manage the sites that you follow</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3280562213547448728">Voice search</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
-<translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
@@ -432,7 +427,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
 <translation id="3365271666488085187">Chrome can consider this interest</translation>
-<translation id="3367813778245106622">Sign in again to start sync</translation>
 <translation id="3373979091428520308">To share this page to another device, turn on sync in Chrome settings on the other device</translation>
 <translation id="3374023511497244703">Your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google account</translation>
 <translation id="3384347053049321195">Share image</translation>
@@ -515,7 +509,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3845098929839618392">Open in Incognito tab</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3861633093716975811">Popular videos</translation>
 <translation id="3874520961715512166">Site removed</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
@@ -547,6 +540,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4035877632587724847">Don't allow</translation>
 <translation id="4036177530563778041">Easily continue where you left off</translation>
+<translation id="4042941173059740150">Continue to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -567,7 +561,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="414128724510021958">Desktop sites requested by default</translation>
-<translation id="4141536112466364990">Learn Chrome</translation>
 <translation id="4147131678541801076">When trials are on, spam and fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
 
 Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites that you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
@@ -584,6 +577,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4202218894997543208">Topics that you blocked</translation>
 <translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
+<translation id="4225725533026049334">Following</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
@@ -627,7 +621,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
 <translation id="4504667196171871375">On Wi-Fi and mobile data</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
-<translation id="4508642716788467538">Pick your language</translation>
 <translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you’re viewing personalises ads</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# day ago}other{# days ago}}</translation>
 <translation id="451872707440238414">Search your bookmarks</translation>
@@ -693,9 +686,7 @@ Your Google Account may have other forms of browsing history such as searches an
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name on card</translation>
 <translation id="481574578487123132">Linked devices</translation>
-<translation id="4818017973810341238">Digital Asset Links verification failed on <ph name="VIOLATED_URL" /></translation>
 <translation id="4826163340425232009">Sign-in bottom sheet.</translation>
-<translation id="4831037795716408498">Download content</translation>
 <translation id="4834007576107377210">See your search engine’s instructions for deleting your search history, if applicable</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
@@ -726,6 +717,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="492284538114688557">Price drop spotted</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
+<translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
@@ -745,7 +737,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5017529052065664584">Last 15 minutes</translation>
 <translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -779,14 +770,12 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Downloading file…}other{Downloading # files…}}</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
-<translation id="5213672942202814946">Use voice search</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
-<translation id="5274286919938458946">Linked with <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5300426565656326054">Browser-based ad personalisation</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
@@ -822,16 +811,13 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
-<translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Clear data</translation>
-<translation id="549025011754480756">How to search with your voice</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
 <translation id="5515439363601853141">Unlock to view your password</translation>
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5524843473235508879">Redirect blocked.</translation>
-<translation id="554297709083131118">Following data from the last 15 minutes will be deleted</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -849,7 +835,10 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="562289928968387744">Manage reactions</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5628604359369369630">Unread – available offline</translation>
+<translation id="5635091213277904818">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="5639724618331995626">Allow all sites</translation>
+<translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account</translation>
+<translation id="564667659802381754">Privacy Guide <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5655963694829536461">Search your downloads</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -881,14 +870,12 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5809361687334836369">{HOURS,plural, =1{# hour ago}other{# hours ago}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="5813552293717797987">This browser is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
-<translation id="5814131985548525293">Type here or tap the voice icon to start</translation>
 <translation id="5814749351757353073">Keep up with your favourite sites</translation>
 <translation id="5822875253699806474">To quickly get back to sites that you’ve visited, sync your tabs and history</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
-<translation id="5842437907245493289">Organise your tracked products in Bookmarks from the folder icon</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
@@ -923,6 +910,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6005538289190791541">Suggested password</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6026538407078977628">Expand to full screen</translation>
+<translation id="6030719887161080597">Manage info used by sites to measure ad performance</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604124094241169006">Automatic</translation>
@@ -968,7 +956,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6294610283659775533">You can send tabs between devices that are signed in with the same Google Account</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6297765934698848803">The organisation that manages your device has turned off your camera.</translation>
-<translation id="6301525844455696527">Catch up on your reading list</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
 <translation id="6316139424528454185">Android version is unsupported</translation>
@@ -990,7 +977,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Back online</translation>
 <translation id="6401458660421980302">To send this tab to another device, sign in to Chrome there</translation>
-<translation id="6402652558933147609"><ph name="ERROR_CODE" /> on <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">Can’t connect to your computer. Try another verification option.</translation>
@@ -1110,6 +1096,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6908998565271542516">Option to approve or not approve a website opened at full height</translation>
 <translation id="6909589135458168665">Preload pages</translation>
+<translation id="6910211073230771657">Deleted</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="6945221475159498467">Select</translation>
@@ -1166,12 +1153,12 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7260367682327802201">Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blocked site</translation>
-<translation id="7286572596625053347">Change <ph name="LANGUAGE" />?</translation>
 <translation id="7286703216224610554">Share reaction only</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
 <translation id="7291910923717764901">Image descriptions added for this page</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>
+<translation id="7304072650267745798">Your Android device may include a similar setting. If this setting is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
@@ -1211,6 +1198,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7482656565088326534">Preview tab</translation>
 <translation id="7484997419527351112">Discover – off</translation>
 <translation id="7485033510383818941">To refresh the feed content, pull down the page</translation>
+<translation id="7486953194485875763">The following data from the last 15 minutes will be deleted:</translation>
 <translation id="749294055653435199">Google Lens is not available on this device</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Added topic back to potential topics</translation>
@@ -1253,6 +1241,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7682724950699840886">Try the following tips: make sure that there is enough space on your device; try to export again.</translation>
 <translation id="7686086654630106285">More about site-suggested ads</translation>
 <translation id="768618399695552958">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.</translation>
+<translation id="7690596512217303514">Your device couldn't open Chrome. To fix the issue, download the latest Chrome update from your app store.</translation>
 <translation id="7691043218961417207">Explore content to follow</translation>
 <translation id="7697383401610880082">Drag handle</translation>
 <translation id="7698359219371678927">Create email in <ph name="APP_NAME" /></translation>
@@ -1261,6 +1250,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7709918231054955894">Get all your tabs</translation>
 <translation id="772434085369393266">Upgrade navigations to HTTPS and warn you before loading sites that don't support it. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
+<translation id="7733878270780732638">Not enough space on device.</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Add address</translation>
@@ -1278,7 +1268,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="78270725016672455">Your computer wants to register this device for signing in to a site</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>
 <translation id="7846296061357476882">Google services</translation>
-<translation id="7847228556075070294">Deleted history, cookies and other data</translation>
 <translation id="784934925303690534">Time range</translation>
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>
@@ -1288,10 +1277,8 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> needs Nearby devices permission in order to connect to your device</translation>
 <translation id="7875915731392087153">Create email</translation>
 <translation id="7876243839304621966">Remove all</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> unread page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> unread pages}}</translation>
 <translation id="7886917304091689118">Running in Chrome</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
-<translation id="789763218334337857">How to use Chrome</translation>
 <translation id="7903184275147100332">This may take a minute</translation>
 <translation id="7914399737746719723">App installed</translation>
 <translation id="7919123827536834358">Automatically translate these languages</translation>
@@ -1362,8 +1349,8 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8209050860603202033">Open image</translation>
-<translation id="8216351761227087153">Watch</translation>
 <translation id="8218622182176210845">Manage your account</translation>
+<translation id="8221401890884589479">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8236097722223016103">Add to bookmarks</translation>
 <translation id="8250920743982581267">Documents</translation>
@@ -1419,6 +1406,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8503559462189395349">Chrome Passwords</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505766168025405649">See notification for download status</translation>
+<translation id="8506357771923193001">You'll find your downloads here</translation>
 <translation id="8514477925623180633">Export passwords stored with Chrome</translation>
 <translation id="8516012719330875537">Image editor</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
@@ -1450,11 +1438,11 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8645920082661222035">Predicts and warns you about dangerous events before they happen</translation>
 <translation id="8646467750715887511">Pages load only after you open them.</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
-<translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
+<translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="869891660844655955">Expiry date</translation>
@@ -1488,7 +1476,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="885480114717186641">You can request the desktop site for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8856931513242997049">Notification permission flow closed</translation>
-<translation id="8873817150012960745">Tap here to start</translation>
 <translation id="8881973373982641723">Clears history, including in the search box.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
@@ -1548,7 +1535,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
-<translation id="9183331776983279456">Chrome auto-deletes sites that are older than four weeks. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
@@ -1570,7 +1556,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="96681097142096641">View simplified page?</translation>
 <translation id="968900484120156207">Pages that you visit appear here</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
-<translation id="978317418833355355">You can block sites that you don’t want. Chrome also auto-deletes sites from the list that are older than four weeks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="987264212798334818">General</translation>

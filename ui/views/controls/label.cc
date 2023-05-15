@@ -575,6 +575,13 @@ bool Label::HasSelection() const {
   return render_text ? !render_text->selection().is_empty() : false;
 }
 
+bool Label::HasFullSelection() const {
+  const gfx::RenderText* render_text = GetRenderTextForSelectionController();
+  return render_text
+             ? render_text->selection().length() == render_text->text().length()
+             : false;
+}
+
 void Label::SelectAll() {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
   if (!render_text)

@@ -13,7 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
 
 /**
  * Implementation class for launching a {@link SettingsActivity}.
@@ -23,7 +28,41 @@ public class SettingsLauncherImpl implements SettingsLauncher {
 
     @Override
     public void launchSettingsActivity(Context context) {
-        launchSettingsActivity(context, null);
+        launchSettingsActivity(context, SettingsFragment.MAIN);
+    }
+
+    @Override
+    public void launchSettingsActivity(Context context, @SettingsFragment int settingsFragment) {
+        Class<? extends Fragment> fragment = null;
+        Bundle fragmentArgs = null;
+
+        switch (settingsFragment) {
+            case SettingsFragment.MAIN:
+                break;
+
+            case SettingsFragment.CLEAR_BROWSING_DATA:
+                fragment = ClearBrowsingDataTabsFragment.class;
+                break;
+
+            case SettingsFragment.PAYMENT_METHODS:
+                fragment = AutofillPaymentMethodsFragment.class;
+                break;
+
+            case SettingsFragment.SAFETY_CHECK:
+                fragment = SafetyCheckSettingsFragment.class;
+                fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
+                break;
+
+            case SettingsFragment.SITE:
+                fragment = SiteSettings.class;
+                break;
+
+            case SettingsFragment.ACCESSIBILITY:
+                fragment = AccessibilitySettings.class;
+                break;
+        }
+
+        launchSettingsActivity(context, fragment, fragmentArgs);
     }
 
     @Override

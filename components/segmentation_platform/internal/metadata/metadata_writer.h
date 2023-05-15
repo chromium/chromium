@@ -165,6 +165,10 @@ class MetadataWriter {
       const std::vector<std::pair<float, std::string>>& bins,
       std::string underflow_label);
 
+  // Adds a generic predictor output config.
+  void AddOutputConfigForGenericPredictor(
+      const std::vector<std::string>& labels);
+
   // Adds a `PredictedResultTTL` in `OutputConfig`.
   void AddPredictedResultTTLInOutputConfig(
       std::vector<std::pair<std::string, std::int64_t>> top_label_to_ttl_list,

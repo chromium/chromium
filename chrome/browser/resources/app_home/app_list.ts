@@ -7,7 +7,6 @@ import './app_home_empty_page.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
@@ -22,12 +21,6 @@ export interface ActionMenuModel {
 }
 
 type MenuHandleEvent = CustomEvent<ActionMenuModel>;
-
-export interface AppListElement {
-  $: {
-    menu: CrActionMenuElement,
-  };
-}
 
 export class AppListElement extends PolymerElement {
   static get is() {
@@ -106,6 +99,10 @@ export class AppListElement extends PolymerElement {
     } else if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(
                    e.key)) {
       this.handleNavigateWithArrows(e);
+    } else if (e.key === 'F10' && e.shiftKey) {
+      this.launchContextMenuForFocusedApp();
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
@@ -117,15 +114,35 @@ export class AppListElement extends PolymerElement {
     }
   }
 
+  private launchContextMenuForFocusedApp() {
+    const activeElementId = this.shadowRoot!.activeElement?.id;
+    if (!activeElementId) {
+      return;
+    }
+
+    const currIndex = this.apps_.findIndex(app => activeElementId === app.id);
+    if (currIndex < 0) {
+      return;
+    }
+
+    const appElement =
+        (this.shadowRoot!.getElementById('container')
+             ?.querySelector('#' + this.apps_[currIndex].id) as HTMLElement);
+    if (!appElement) {
+      return;
+    }
+
+    // Dispatch the contextmenu event on the focused element.
+    appElement.dispatchEvent(new CustomEvent('contextmenu'));
+  }
+
   // Capture arrow key events to focus on apps and navigate the apps as a grid.
   private handleNavigateWithArrows(e: KeyboardEvent) {
     const numApps = this.apps_.length;
+    const cssProps =
+        window.getComputedStyle(this.shadowRoot!.getElementById('container')!);
     const numColumns: number =
-        window
-            .getComputedStyle(
-                this.shadowRoot!.getElementById('container')!,
-                )!.getPropertyValue('grid-template-columns')!.split(' ')
-            .length;
+        cssProps!.getPropertyValue('grid-template-columns')!.split(' ').length;
     const keyActions = {
       ArrowRight: 1,
       ArrowLeft: -1,

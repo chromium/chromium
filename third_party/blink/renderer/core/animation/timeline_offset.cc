@@ -108,11 +108,18 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   // TODO(kevers): Keep track of style dependent lengths in order
   // to re-resolve on a style update.
   DCHECK(list.length());
-  const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  Length offset = (list.length() == 2u) ? ResolveLength(element, &list.Item(1))
-                                        : Length::Percent(default_percent);
+  NamedRange range_name = NamedRange::kNone;
+  Length offset = Length::Percent(default_percent);
+  if (list.Item(0).IsIdentifierValue()) {
+    range_name = To<CSSIdentifierValue>(list.Item(0)).ConvertTo<NamedRange>();
+    if (list.length() == 2u) {
+      offset = ResolveLength(element, &list.Item(1));
+    }
+  } else {
+    offset = ResolveLength(element, &list.Item(0));
+  }
 
-  return TimelineOffset(range_name.ConvertTo<NamedRange>(), offset);
+  return TimelineOffset(range_name, offset);
 }
 
 /* static */
@@ -161,6 +168,12 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
 
 /* static */
 Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
+  // Elements without the computed style don't have a layout box,
+  // so the timeline will be inactive.
+  // See ScrollTimeline::IsResolved.
+  if (!element->GetComputedStyle()) {
+    return Length::Fixed();
+  }
   ElementResolveContext element_resolve_context(*element);
   Document& document = element->GetDocument();
   // TODO(kevers): Re-resolve any value that is not px or % on a style change.

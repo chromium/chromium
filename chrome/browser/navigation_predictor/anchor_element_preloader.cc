@@ -10,12 +10,14 @@
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
 #include "url/scheme_host_port.h"
 
 namespace {
@@ -37,7 +39,21 @@ AnchorElementPreloader::~AnchorElementPreloader() = default;
 
 AnchorElementPreloader::AnchorElementPreloader(
     content::RenderFrameHost& render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : render_frame_host_(render_frame_host) {
+  content::PreloadingData* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(
+          content::WebContents::FromRenderFrameHost(&*render_frame_host_));
+  preloading_data->SetIsNavigationInDomainCallback(
+      chrome_preloading_predictor::kPointerDownOnAnchor,
+      base::BindRepeating(
+          [](content::NavigationHandle* navigation_handle) -> bool {
+            return ui::PageTransitionCoreTypeIs(
+                       navigation_handle->GetPageTransition(),
+                       ui::PageTransition::PAGE_TRANSITION_LINK) &&
+                   ui::PageTransitionIsNewNavigation(
+                       navigation_handle->GetPageTransition());
+          }));
+}
 
 void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   content::PreloadingData* preloading_data =

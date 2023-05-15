@@ -25,21 +25,20 @@
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -155,31 +154,6 @@ typedef void (^HandleStartupParam)(
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
-// Sets init stage expected transition calls from `start` to `end`.
-void SetInitStageTransitionExpectations(id mock,
-                                        AppState* app_state,
-                                        InitStage start,
-                                        InitStage end) {
-  ASSERT_LE(end, InitStageFinal);
-  ASSERT_GE(end, InitStageStart);
-
-  InitStage current_stage = start;
-
-  // Handle the particular case of InitStageStart.
-  if (current_stage == InitStageStart) {
-    [[mock expect] appState:app_state willTransitionToInitStage:InitStageStart];
-    [[mock expect] appState:app_state
-        didTransitionFromInitStage:InitStageStart];
-  }
-
-  while (current_stage != end) {
-    InitStage next_stage = static_cast<InitStage>(current_stage + 1);
-    [[mock expect] appState:app_state willTransitionToInitStage:next_stage];
-    [[mock expect] appState:app_state didTransitionFromInitStage:current_stage];
-    current_stage = next_stage;
-  }
-}
-
 }  // namespace
 
 // An app state observer that will call [AppState
@@ -239,7 +213,7 @@ class AppStateTest : public BlockCleanupTest {
     app_state_observer_mock_ =
         [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-    interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
+    interface_provider_ = [[StubBrowserProviderInterface alloc] init];
 
     app_state_observer_to_mock_main_controller_ =
         [AppStateObserverToMockMainController alloc];
@@ -303,7 +277,7 @@ class AppStateTest : public BlockCleanupTest {
     id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
     id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
     id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
-    Browser* browser = interface_provider_.currentInterface.browser;
+    Browser* browser = interface_provider_.currentBrowserProvider.browser;
 
     [[metricsMediator stub] updateMetricsStateBasedOnPrefsUserTriggered:NO];
     [[memoryHelper stub] resetForegroundMemoryWarningCount];
@@ -426,7 +400,7 @@ class AppStateTest : public BlockCleanupTest {
   id getApplicationDelegateMock() { return main_application_delegate_; }
   id getWindowMock() { return window_; }
   id getAppStateObserverMock() { return app_state_observer_mock_; }
-  StubBrowserInterfaceProvider* getInterfaceProvider() {
+  StubBrowserProviderInterface* getInterfaceProvider() {
     return interface_provider_;
   }
   ChromeBrowserState* getBrowserState() { return browser_state_.get(); }
@@ -445,7 +419,7 @@ class AppStateTest : public BlockCleanupTest {
   id main_application_delegate_;
   id window_;
   id app_state_observer_mock_;
-  StubBrowserInterfaceProvider* interface_provider_;
+  StubBrowserProviderInterface* interface_provider_;
   ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
   HandleStartupParam handle_startup_swizzle_block_;
@@ -467,136 +441,6 @@ class AppStateWithThreadTest : public PlatformTest {
 
 #pragma mark - Tests.
 
-// Tests that if the application is in background
-// -requiresHandlingAfterLaunchWithOptions saves the launchOptions and returns
-// YES (to handle the launch options later).
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsBackground) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  AppState* appState = getAppStateWithMock();
-
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  // Test.
-  EXPECT_TRUE(result);
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-
-  // Verify the launch stage is still at the point of initializing the browser
-  // basics when the app is backgrounded.
-  EXPECT_EQ(InitStageBrowserBasic, appState.initStage);
-}
-
-// Tests that if the application is active and Safe Mode should be activated
-// -requiresHandlingAfterLaunchWithOptions save the launch options and activate
-// the Safe Mode.
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-  [[getStartupInformationMock() stub] setIsFirstRun:YES];
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
-  [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&now];
-  }] appLaunchTime];
-
-  id windowMock = getWindowMock();
-  [[[windowMock stub] andReturn:nil] rootViewController];
-  [[windowMock expect] setRootViewController:[OCMArg any]];
-  [[windowMock expect] makeKeyAndVisible];
-
-  AppState* appState = getAppStateWithMock();
-  ASSERT_EQ(InitStageStart, appState.initStage);
-
-  id appStateObserverMock = getAppStateObserverMock();
-  SetInitStageTransitionExpectations(appStateObserverMock, appState,
-                                     InitStageStart, InitStageFinal);
-  [appState addObserver:appStateObserverMock];
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  swizzleSafeModeShouldStart(YES);
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  [appState queueTransitionToNextInitStage];
-
-  // Start the safe mode by transitioning the scene to foreground again after
-  // #requiresHandlingAfterLaunchWithOptions which starts the safe mode.
-  SceneState* sceneState = appState.connectedScenes.firstObject;
-  sceneState.activationLevel = SceneActivationLevelForegroundActive;
-
-  EXPECT_TRUE(result);
-  EXPECT_EQ(appState.initStage, InitStageSafeMode);
-
-  // Transition out of safe mode.
-  [appState queueTransitionToNextInitStage];
-
-  // Verify that the dependencies are called properly during the app journey.
-  EXPECT_OCMOCK_VERIFY(windowMock);
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-  EXPECT_OCMOCK_VERIFY(appStateObserverMock);
-
-  EXPECT_EQ(InitStageFinal, appState.initStage);
-}
-
-// Tests that if the application is active
-// -requiresHandlingAfterLaunchWithOptions saves the launchOptions and start the
-// application in foreground.
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-  [[getStartupInformationMock() stub] setIsFirstRun:YES];
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
-
-  [[[getWindowMock() stub] andReturn:nil] rootViewController];
-
-  AppState* appState = getAppStateWithMock();
-  ASSERT_EQ(appState.initStage, InitStageStart);
-
-  id appStateObserverMock = getAppStateObserverMock();
-  SetInitStageTransitionExpectations(appStateObserverMock, appState,
-                                     InitStageStart, InitStageFinal);
-
-  [appState addObserver:appStateObserverMock];
-
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  swizzleSafeModeShouldStart(NO);
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  [appState queueTransitionToNextInitStage];
-
-  // Test.
-  EXPECT_TRUE(result);
-  EXPECT_EQ(InitStageFinal, appState.initStage);
-
-  // Verify that the dependencies were called properly.
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-  EXPECT_OCMOCK_VERIFY(appStateObserverMock);
-}
-
 using AppStateNoFixtureTest = PlatformTest;
 
 // Test that -willResignActive set cold start to NO and launch record.
@@ -608,13 +452,14 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(browser_state.get());
 
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
-  interfaceProvider.mainInterface.browser = browser.get();
+  StubBrowserProviderInterface* browserProviderInterface =
+      [[StubBrowserProviderInterface alloc] init];
+  browserProviderInterface.mainBrowserProvider.browser = browser.get();
 
   id browserLauncher =
       [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
-  [[[browserLauncher stub] andReturn:interfaceProvider] interfaceProvider];
+  [[[browserLauncher stub] andReturn:browserProviderInterface]
+      browserProviderInterface];
 
   id applicationDelegate =
       [OCMockObject mockForClass:[MainApplicationDelegate class]];
@@ -634,7 +479,7 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
   [appState addObserver:observer];
 
   // Start init stages.
-  [appState queueTransitionToFirstInitStage];
+  [appState startInitialization];
   [appState queueTransitionToNextInitStage];
   [appState queueTransitionToNextInitStage];
 
@@ -676,7 +521,7 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   [appState addObserver:observer];
 
   // Start init stages.
-  [appState queueTransitionToFirstInitStage];
+  [appState startInitialization];
   [appState queueTransitionToNextInitStage];
 
   id application = [OCMockObject mockForClass:[UIApplication class]];
@@ -688,8 +533,8 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   EXPECT_OCMOCK_VERIFY(startupInformation);
   EXPECT_OCMOCK_VERIFY(application);
   for (SceneState* connectedScene in appState.connectedScenes) {
-    EXPECT_FALSE(
-        connectedScene.interfaceProvider.mainInterface.userInteractionEnabled);
+    EXPECT_FALSE(connectedScene.browserProviderInterface.mainBrowserProvider
+                     .userInteractionEnabled);
   }
   EXPECT_TRUE(ios::provider::test::AreAppDistributionNotificationsCanceled());
 }
@@ -704,14 +549,15 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  StubBrowserInterfaceProvider* interfaceProvider = getInterfaceProvider();
+  StubBrowserProviderInterface* browserProviderInterface =
+      getInterfaceProvider();
   id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(getBrowserState());
 
-  [[[getBrowserLauncherMock() stub] andReturn:interfaceProvider]
-      interfaceProvider];
-  interfaceProvider.mainInterface.browserState = getBrowserState();
+  [[[getBrowserLauncherMock() stub] andReturn:browserProviderInterface]
+      browserProviderInterface];
+  browserProviderInterface.mainBrowserProvider.browser = browser.get();
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
@@ -723,7 +569,7 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   [[appStateMock expect] completeUIInitialization];
 
   // Simulate finishing the initialization before going to background.
-  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() startInitialization];
   [getAppStateWithMock() queueTransitionToNextInitStage];
 
   // Simulate background before going to foreground.
@@ -766,7 +612,7 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Simulate finishing the initialization before going to background.
-  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() startInitialization];
   [getAppStateWithMock() queueTransitionToNextInitStage];
 
   // Actions.
@@ -791,7 +637,7 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
   id browserLauncher = getBrowserLauncherMock();
 
-  [[[browserLauncher stub] andReturn:nil] interfaceProvider];
+  [[[browserLauncher stub] andReturn:nil] browserProviderInterface];
 
   ASSERT_EQ(NSUInteger(0), [scopedKeyWindow.Get() subviews].count);
 

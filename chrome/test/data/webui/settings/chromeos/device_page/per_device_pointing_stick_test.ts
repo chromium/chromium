@@ -4,7 +4,7 @@
 
 import {fakePointingSticks, fakePointingSticks2, SettingsPerDevicePointingStickElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-per-device-pointing-stick>', function() {
@@ -27,6 +27,8 @@ suite('<settings-per-device-pointing-stick>', function() {
     let subsections = perDevicePointingStickPage.shadowRoot!.querySelectorAll(
         'settings-per-device-pointing-stick-subsection');
     assertEquals(fakePointingSticks.length, subsections.length);
+    assertFalse(subsections[0]!.get('isLastDevice'));
+    assertTrue(subsections[fakePointingSticks.length - 1]!.get('isLastDevice'));
 
     // Check the number of subsections when the pointing stick list is updated.
     perDevicePointingStickPage.set('pointingSticks', fakePointingSticks2);
@@ -34,6 +36,8 @@ suite('<settings-per-device-pointing-stick>', function() {
     subsections = perDevicePointingStickPage.shadowRoot!.querySelectorAll(
         'settings-per-device-pointing-stick-subsection');
     assertEquals(fakePointingSticks2.length, subsections.length);
+    assertTrue(
+        subsections[fakePointingSticks2.length - 1]!.get('isLastDevice'));
   });
 
   test(
@@ -45,10 +49,10 @@ suite('<settings-per-device-pointing-stick>', function() {
           const name =
               subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
           if (fakePointingSticks[i]!.isExternal) {
-            assertEquals(fakePointingSticks[i]!.name, name);
+            assertEquals(fakePointingSticks[i]!.name, name!.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInPointingStickName'));
-            assertEquals('Built-in TrackPoint', name);
+            assertEquals('Built-in TrackPoint', name!.trim());
           }
         }
       });

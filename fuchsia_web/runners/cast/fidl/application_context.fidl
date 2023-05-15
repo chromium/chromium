@@ -21,7 +21,7 @@ protocol ApplicationContext {
 
     /// Called if the application component exits gracefully, with the same
     /// `exit_code` as would be reported via `ComponentController.OnTerminated()`.
-    /// Values less than or equal to zero are `zx.status` codes.
+    /// Values less than or equal to zero are `zx.Status` codes.
     /// May be called at most once, immediately prior to termination.
     @transitional
     OnApplicationExit(struct {

@@ -180,6 +180,7 @@ int SharedAppListConfig::GetPreferredIconDimension(
     case SearchResultDisplayType::kNone:
     case SearchResultDisplayType::kAnswerCard:
     case SearchResultDisplayType::kRecentApps:
+    case SearchResultDisplayType::kImage:
     case SearchResultDisplayType::kLast:
       return 0;
   }

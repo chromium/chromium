@@ -1,0 +1,62 @@
+# crbug.com/1435573
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
+
+# crbug.com/1297370
+-org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.*
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.*
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
+
+# crbug.com/1225709
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
+-org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
+
+# crbug.com/1429439
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsOnly
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionView
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+
+# crbug.com/1193745
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
+
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
+
+# crbug.com/1429741
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverNoCutout
+
+# crbug.com/1225754
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1276402
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.*
+
+# crbug.com/1441680
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized*
+
+# crbug.com/1374103
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testSwipeMessage
+
+# crbug.com/1441681
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testRenderMessageCard_Landscape_AppNotificationsDisabled
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testRenderMessageCard_Landscape_AppNotificationsEnabled
+
+# crbug.com/1441685
+-org.chromium.chrome.browser.share.SaveBitmapDelegateTest.*

@@ -143,6 +143,7 @@
 ../../third_party/catapult/telemetry/telemetry/core/debug_data.py
 ../../third_party/catapult/telemetry/telemetry/core/exceptions.py
 ../../third_party/catapult/telemetry/telemetry/core/fuchsia_interface.py
+../../third_party/catapult/telemetry/telemetry/core/linux_based_interface.py
 ../../third_party/catapult/telemetry/telemetry/core/local_server.py
 ../../third_party/catapult/telemetry/telemetry/core/memory_cache_http_server.py
 ../../third_party/catapult/telemetry/telemetry/core/network_controller.py
@@ -469,9 +470,8 @@ benchmarks/blink_perf.py
 benchmarks/blink_perf_unittest.py
 benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
-benchmarks/jetstream.py
+benchmarks/dummy_wpr_benchmark.py
 benchmarks/jetstream2.py
-benchmarks/kraken.py
 benchmarks/loading.py
 benchmarks/loading_metrics_category.py
 benchmarks/media.py
@@ -483,7 +483,7 @@ benchmarks/press.py
 benchmarks/rasterize_and_record_micro.py
 benchmarks/rendering.py
 benchmarks/smoketests_versions_validator_unittest.py
-benchmarks/speedometer.py
+benchmarks/speedometer1.py
 benchmarks/speedometer2.py
 benchmarks/startup_mobile.py
 benchmarks/system_health.py
@@ -491,7 +491,6 @@ benchmarks/system_health_load_tests_smoke_test.py
 benchmarks/system_health_smoke_test.py
 benchmarks/system_health_unittest.py
 benchmarks/tab_switching.py
-benchmarks/tracing.py
 benchmarks/v8.py
 benchmarks/v8_browsing.py
 benchmarks/v8_helper.py
@@ -533,6 +532,7 @@ contrib/cluster_telemetry/v8_loading_ct.py
 contrib/cluster_telemetry/v8_loading_runtime_stats_ct.py
 contrib/download_mobile/__init__.py
 contrib/download_mobile/download_mobile.py
+contrib/intelligence/companion.py
 contrib/leak_detection/__init__.py
 contrib/leak_detection/leak_detection.py
 contrib/leak_detection/page_sets.py
@@ -606,6 +606,10 @@ measurements/skpicture_printer.py
 page_sets/__init__.py
 page_sets/ad_frames.py
 page_sets/android_screen_restoration_shared_state.py
+page_sets/companion/__init__.py
+page_sets/companion/basic_companion_story.py
+page_sets/companion/browser_element_identifiers.py
+page_sets/companion/companion_stories.py
 page_sets/cros_ui_cases.py
 page_sets/desktop_power.py
 page_sets/desktop_ui/__init__.py
@@ -626,6 +630,7 @@ page_sets/desktop_ui/url_list.py
 page_sets/desktop_ui/webui_tab_strip_story.py
 page_sets/desktop_ui/webui_utils.py
 page_sets/dummy_story_set.py
+page_sets/dummy_wpr_story_set.py
 page_sets/google_pages.py
 page_sets/helpers/__init__.py
 page_sets/helpers/override_online.py
@@ -636,9 +641,7 @@ page_sets/intl_hi_ru.py
 page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
-page_sets/jetstream_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/kraken_pages.py
 page_sets/loading_desktop.py
 page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py
@@ -688,8 +691,8 @@ page_sets/rendering/tough_scrolling_cases.py
 page_sets/rendering/tough_texture_upload_cases.py
 page_sets/rendering/tough_webgl_cases.py
 page_sets/service_worker_micro_benchmark.py
+page_sets/speedometer1_pages.py
 page_sets/speedometer2_pages.py
-page_sets/speedometer_pages.py
 page_sets/static_top_25_pages.py
 page_sets/story_set_unittest.py
 page_sets/system_health/__init__.py

@@ -14,7 +14,10 @@
 #import "components/url_formatter/url_formatter.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
+#import "ios/web/navigation/proto_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_client.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/text_elider.h"
@@ -23,6 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
+namespace web {
 namespace {
 
 // Returns a new unique ID for use in NavigationItem during construction.  The
@@ -32,9 +36,15 @@ static int GetUniqueIDInConstructor() {
   return ++unique_id_counter;
 }
 
+// Returns whether `referrer` needs to be serialized.
+bool ShouldSerializeReferrer(const Referrer& referrer) {
+  return referrer.url.is_valid() &&
+         referrer.url.spec().size() < url::kMaxURLChars;
+}
+
 }  // namespace
 
-namespace web {
+using HttpRequestHeaders = NavigationItem::HttpRequestHeaders;
 
 // Value 50 was picked experimentally by examining Chrome for iOS UI. Tab strip
 // on 12.9" iPad Pro trucates the title to less than 50 characters (title that
@@ -48,40 +58,62 @@ std::unique_ptr<NavigationItem> NavigationItem::Create() {
 }
 
 NavigationItemImpl::NavigationItemImpl()
-    : unique_id_(GetUniqueIDInConstructor()),
-      transition_type_(ui::PAGE_TRANSITION_LINK),
-      user_agent_type_(UserAgentType::NONE),
-      is_created_from_hash_change_(false),
-      should_skip_serialization_(false),
-      navigation_initiation_type_(web::NavigationInitiationType::NONE),
-      is_untrusted_(false),
-      https_upgrade_type_(HttpsUpgradeType::kNone) {}
+    : unique_id_(GetUniqueIDInConstructor()) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
 }
 
-NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
-    : unique_id_(item.unique_id_),
-      original_request_url_(item.original_request_url_),
-      url_(item.url_),
-      referrer_(item.referrer_),
-      virtual_url_(item.virtual_url_),
-      title_(item.title_),
-      page_display_state_(item.page_display_state_),
-      transition_type_(item.transition_type_),
-      favicon_status_(item.favicon_status_),
-      ssl_(item.ssl_),
-      timestamp_(item.timestamp_),
-      user_agent_type_(item.user_agent_type_),
-      http_request_headers_([item.http_request_headers_ mutableCopy]),
-      serialized_state_object_([item.serialized_state_object_ copy]),
-      is_created_from_hash_change_(item.is_created_from_hash_change_),
-      should_skip_serialization_(item.should_skip_serialization_),
-      post_data_([item.post_data_ copy]),
-      navigation_initiation_type_(item.navigation_initiation_type_),
-      is_untrusted_(item.is_untrusted_),
-      cached_display_title_(item.cached_display_title_),
-      https_upgrade_type_(item.https_upgrade_type_) {}
+NavigationItemImpl::NavigationItemImpl(
+    const proto::NavigationItemStorage& storage)
+    : unique_id_(GetUniqueIDInConstructor()),
+      original_request_url_(storage.url()),
+      referrer_(ReferrerFromProto(storage.referrer())),
+      title_(base::UTF8ToUTF16(storage.title())),
+      // Use reload transition type to avoid incorrect increase for other
+      // transition types (such as typed).
+      transition_type_(ui::PAGE_TRANSITION_RELOAD),
+      timestamp_(TimeFromProto(storage.timestamp())),
+      user_agent_type_(UserAgentTypeFromProto(storage.user_agent())),
+      http_request_headers_(
+          HttpRequestHeadersFromProto(storage.http_request_headers())) {
+  // In the cases where the URL to be restored is not an HTTP URL, it is
+  // very likely that we can't restore the page (e.g. for files, it could
+  // be an external PDF that has been deleted), don't restore it to avoid
+  // issues.
+  const GURL virtual_url(storage.virtual_url());
+  if (original_request_url_.SchemeIsHTTPOrHTTPS()) {
+    url_ = original_request_url_;
+    virtual_url_ = virtual_url;
+  } else {
+    url_ = virtual_url;
+  }
+}
+
+void NavigationItemImpl::SerializeToProto(
+    proto::NavigationItemStorage& storage) const {
+  if (url_.is_valid()) {
+    storage.set_url(url_.spec());
+  }
+  if (url_ != virtual_url_ && virtual_url_.is_valid()) {
+    storage.set_virtual_url(virtual_url_.spec());
+  }
+  if (!title_.empty()) {
+    storage.set_title(base::UTF16ToUTF8(title_));
+  }
+  SerializeTimeToProto(timestamp_, *storage.mutable_timestamp());
+  storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
+  if (ShouldSerializeReferrer(referrer_)) {
+    SerializeReferrerToProto(referrer_, *storage.mutable_referrer());
+  }
+  if (http_request_headers_.count) {
+    SerializeHttpRequestHeadersToProto(http_request_headers_,
+                                       *storage.mutable_http_request_headers());
+  }
+}
+
+std::unique_ptr<NavigationItemImpl> NavigationItemImpl::Clone() {
+  return base::WrapUnique(new NavigationItemImpl(*this));
+}
 
 int NavigationItemImpl::GetUniqueID() const {
   return unique_id_;
@@ -137,15 +169,6 @@ const std::u16string& NavigationItemImpl::GetTitle() const {
   return title_;
 }
 
-void NavigationItemImpl::SetPageDisplayState(
-    const web::PageDisplayState& display_state) {
-  page_display_state_ = display_state;
-}
-
-const PageDisplayState& NavigationItemImpl::GetPageDisplayState() const {
-  return page_display_state_;
-}
-
 const std::u16string& NavigationItemImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
@@ -197,10 +220,6 @@ base::Time NavigationItemImpl::GetTimestamp() const {
 
 void NavigationItemImpl::SetUserAgentType(UserAgentType type) {
   user_agent_type_ = type;
-  DCHECK(!wk_navigation_util::URLNeedsUserAgentType(GetURL()) ==
-         (user_agent_type_ == UserAgentType::NONE))
-      << "GetURL() " << GetURL() << " user_agent_type_ "
-      << static_cast<short>(user_agent_type_);
 }
 
 void NavigationItemImpl::SetUntrusted() {
@@ -219,12 +238,12 @@ bool NavigationItemImpl::HasPostData() const {
   return post_data_ != nil;
 }
 
-NSDictionary* NavigationItemImpl::GetHttpRequestHeaders() const {
+HttpRequestHeaders* NavigationItemImpl::GetHttpRequestHeaders() const {
   return [http_request_headers_ copy];
 }
 
 void NavigationItemImpl::AddHttpRequestHeaders(
-    NSDictionary* additional_headers) {
+    HttpRequestHeaders* additional_headers) {
   if (!additional_headers)
     return;
 
@@ -275,7 +294,7 @@ void NavigationItemImpl::SetShouldSkipSerialization(bool skip) {
 }
 
 bool NavigationItemImpl::ShouldSkipSerialization() const {
-  return should_skip_serialization_;
+  return should_skip_serialization_ || url_.spec().size() > url::kMaxURLChars;
 }
 
 void NavigationItemImpl::SetPostData(NSData* post_data) {
@@ -312,7 +331,6 @@ void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
     SetUserAgentType(other->GetUserAgentType());
   }
   if (url_ == other->GetURL()) {
-    SetPageDisplayState(other->GetPageDisplayState());
     SetVirtualURL(other->GetVirtualURL());
   }
 }
@@ -341,20 +359,42 @@ NSString* NavigationItemImpl::GetDescription() const {
   return [NSString
       stringWithFormat:
           @"url:%s virtual_url_:%s originalurl:%s referrer: %s title:%s "
-          @"transition:%d "
-           "displayState:%@ userAgent:%s "
+          @"transition:%d userAgent:%s "
            "is_created_from_hash_change: %@ "
            "navigation_initiation_type: %d "
            "https_upgrade_type: %s",
           url_.spec().c_str(), virtual_url_.spec().c_str(),
           original_request_url_.spec().c_str(), referrer_.url.spec().c_str(),
           base::UTF16ToUTF8(title_).c_str(), transition_type_,
-          page_display_state_.GetDescription(),
           GetUserAgentTypeDescription(user_agent_type_).c_str(),
           is_created_from_hash_change_ ? @"true" : @"false",
           navigation_initiation_type_,
           GetHttpsUpgradeTypeDescription(https_upgrade_type_).c_str()];
 }
 #endif
+
+NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
+    : unique_id_(item.unique_id_),
+      original_request_url_(item.original_request_url_),
+      url_(item.url_),
+      referrer_(item.referrer_),
+      virtual_url_(item.virtual_url_),
+      title_(item.title_),
+      transition_type_(item.transition_type_),
+      favicon_status_(item.favicon_status_),
+      ssl_(item.ssl_),
+      timestamp_(item.timestamp_),
+      user_agent_type_(item.user_agent_type_),
+      http_request_headers_([item.http_request_headers_ mutableCopy]),
+      serialized_state_object_([item.serialized_state_object_ copy]),
+      is_created_from_hash_change_(item.is_created_from_hash_change_),
+      should_skip_serialization_(item.should_skip_serialization_),
+      post_data_([item.post_data_ copy]),
+      navigation_initiation_type_(item.navigation_initiation_type_),
+      is_untrusted_(item.is_untrusted_),
+      cached_display_title_(item.cached_display_title_),
+      https_upgrade_type_(item.https_upgrade_type_) {
+  CloneDataFrom(item);
+}
 
 }  // namespace web

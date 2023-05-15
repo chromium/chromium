@@ -43,6 +43,10 @@ bool operator==(const AuctionConfig::BuyerTimeouts& a,
          std::tie(b.all_buyers_timeout, b.per_buyer_timeouts);
 }
 
+bool operator==(const AdCurrency& a, const AdCurrency& b) {
+  return a.currency_code() == b.currency_code();
+}
+
 bool operator==(const AuctionConfig::BuyerCurrencies& a,
                 const AuctionConfig::BuyerCurrencies& b) {
   return std::tie(a.all_buyers_currency, a.per_buyer_currencies) ==
@@ -151,13 +155,13 @@ AuctionConfig CreateFullConfig() {
 
   AuctionConfig::BuyerCurrencies buyer_currencies;
   buyer_currencies.per_buyer_currencies.emplace();
-  (*buyer_currencies.per_buyer_currencies)[buyer] = "CAD";
-  buyer_currencies.all_buyers_currency = "USD";
+  (*buyer_currencies.per_buyer_currencies)[buyer] = AdCurrency::From("CAD");
+  buyer_currencies.all_buyers_currency = AdCurrency::From("USD");
   non_shared_params.buyer_currencies =
       AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
           std::move(buyer_currencies));
 
-  non_shared_params.seller_currency = "EUR";
+  non_shared_params.seller_currency = AdCurrency::From("EUR");
 
   AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
   buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
@@ -263,6 +267,16 @@ bool SerializeAndDeserialize(const AuctionConfig::BuyerCurrencies& in) {
       blink::mojom::AuctionAdConfigBuyerCurrencies>(in, out);
   if (success) {
     EXPECT_EQ(in, out);
+  }
+  return success;
+}
+
+bool SerializeAndDeserialize(const AdCurrency& in) {
+  AdCurrency out;
+  bool success =
+      mojo::test::SerializeAndDeserialize<blink::mojom::AdCurrency>(in, out);
+  if (success) {
+    EXPECT_EQ(in.currency_code(), out.currency_code());
   }
   return success;
 }
@@ -550,17 +564,36 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseBuyerTimeouts) {
 TEST(AuctionConfigMojomTraitsTest, BuyerCurrencies) {
   {
     AuctionConfig::BuyerCurrencies value;
-    value.all_buyers_currency.emplace("EUR");
+    value.all_buyers_currency = blink::AdCurrency::From("EUR");
     value.per_buyer_currencies.emplace();
     value.per_buyer_currencies->emplace(
-        url::Origin::Create(GURL("https://example.co.uk")), "GBP");
+        url::Origin::Create(GURL("https://example.co.uk")),
+        blink::AdCurrency::From("GBP"));
     value.per_buyer_currencies->emplace(
-        url::Origin::Create(GURL("https://example.ca")), "CAD");
+        url::Origin::Create(GURL("https://example.ca")),
+        blink::AdCurrency::From("CAD"));
     EXPECT_TRUE(SerializeAndDeserialize(value));
   }
   {
     AuctionConfig::BuyerCurrencies value;
     EXPECT_TRUE(SerializeAndDeserialize(value));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest, AdCurrency) {
+  {
+    AdCurrency value = AdCurrency::From("EUR");
+    EXPECT_TRUE(SerializeAndDeserialize(value));
+  }
+  {
+    AdCurrency value;
+    value.SetCurrencyCodeForTesting("eur");
+    EXPECT_FALSE(SerializeAndDeserialize(value));
+  }
+  {
+    AdCurrency value;
+    value.SetCurrencyCodeForTesting("EURO");
+    EXPECT_FALSE(SerializeAndDeserialize(value));
   }
 }
 

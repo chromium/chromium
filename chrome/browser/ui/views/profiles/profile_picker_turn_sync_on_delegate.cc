@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +50,12 @@ absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
 }
 
 void OpenSettingsInBrowser(Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 

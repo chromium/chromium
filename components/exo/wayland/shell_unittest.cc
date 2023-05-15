@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/wayland/wayland_display_output.h"
 
 #include <xdg-shell-client-protocol.h>
@@ -118,7 +119,7 @@ class ShellClientData : public test::TestClient::CustomData {
 
  private:
   bool close_called_ = false;
-  test::TestClient* const client_;
+  const raw_ptr<test::TestClient, ExperimentalAsh> client_;
   std::unique_ptr<wl_surface> surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;
@@ -234,8 +235,7 @@ TEST_P(ShellTest, ShellDestruction) {
 using RemoteShellTest = test::WaylandServerTest;
 
 // Calling SetPined w/o commit should not crash (crbug.com/979128).
-// TODO(crbug.com/1432923): Re-enable this test
-TEST_F(RemoteShellTest, DISABLED_DestroyRootSurfaceBeforeCommit) {
+TEST_F(RemoteShellTest, DestroyRootSurfaceBeforeCommit) {
   test::ResourceKey surface_key;
 
   PostToClientAndWait([&](test::TestClient* client) {

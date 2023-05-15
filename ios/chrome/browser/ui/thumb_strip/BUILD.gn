@@ -14,14 +14,14 @@ source_set("thumb_strip") {
   deps = [
     ":public",
     "//base",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/url",
-    "//ios/chrome/browser/web_state_list",
     "//ios/web/public",
     "//ios/web/public/ui",
   ]

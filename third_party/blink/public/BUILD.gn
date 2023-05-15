@@ -91,7 +91,6 @@ if (is_android) {
   android_library("blink_headers_java") {
     deps = [
       "//services/network/public/mojom:mojom_java",
-      "//third_party/android_deps:com_android_support_support_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     srcjar_deps = [ ":blink_headers_java_enums_srcjar" ]

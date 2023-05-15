@@ -1,9 +1,1 @@
-<svg id="offline" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" fill="none">
-  <circle cx="8" cy="8" r="6.9" fill="var(--xf-icon-color-outline, transparent)" stroke="var(--xf-icon-color-outline, transparent)" />
-  <g fill="var(--xf-icon-color)">
-    <path
-      d="M9.529 4.995a.667.667 0 11.942.943L7.805 8.605a.667.667 0 01-.943 0L5.529 7.27a.667.667 0 11.942-.942l.862.862L9.53 4.995zM5.4 9.6a.6.6 0 000 1.2h5.2a.6.6 0 000-1.2H5.4z" />
-    <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M14.4 8A6.4 6.4 0 111.6 8a6.4 6.4 0 0112.8 0zm-1.6 0a4.8 4.8 0 11-9.6 0 4.8 4.8 0 019.6 0z" />
-  </g>
-</svg>
+<svg id="offline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="var(--xf-icon-color-outline, transparent)"/><g fill="var(--xf-icon-color)"><path d="M11.91 6.24a.83.83 0 011.18 1.18l-3.33 3.34a.85.85 0 01-1.18 0L6.91 9.09a.83.83 0 011.18-1.18L9.17 9zM6.75 12a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5z"/><path d="M18 10a8 8 0 11-8-8 8 8 0 018 8zm-2 0a6 6 0 11-6-6 6 6 0 016 6z" fill-rule="evenodd"/></g></svg>

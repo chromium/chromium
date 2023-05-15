@@ -61,7 +61,8 @@ class MockDelegate : public apps::AppShimManager::Delegate {
                const std::vector<base::FilePath>&,
                const std::vector<GURL>&,
                const GURL&,
-               chrome::mojom::AppShimLoginItemRestoreState),
+               chrome::mojom::AppShimLoginItemRestoreState,
+               base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               LaunchShim,
@@ -199,7 +200,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          std::vector<GURL>(), GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolWebPrefix) {
@@ -221,7 +223,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolWebPrefix) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          {protocol_handler_launch_url}, GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
@@ -243,7 +246,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          {protocol_handler_launch_url}, GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolFile) {
@@ -264,7 +268,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolFile) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          {protocol_handler_launch_url}, GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolDisallowed) {
@@ -284,7 +289,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolDisallowed) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          {protocol_handler_launch_url}, GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileFullPath) {
@@ -305,9 +311,9 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileFullPath) {
         return nullptr;
       }));
 
-  shim_manager.LaunchApp(profile(), AppId(), {test_path}, std::vector<GURL>(),
-                         GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+  shim_manager.LaunchApp(
+      profile(), AppId(), {test_path}, std::vector<GURL>(), GURL(),
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileRelativePath) {
@@ -328,9 +334,9 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileRelativePath) {
         return nullptr;
       }));
 
-  shim_manager.LaunchApp(profile(), AppId(), {test_path}, std::vector<GURL>(),
-                         GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+  shim_manager.LaunchApp(
+      profile(), AppId(), {test_path}, std::vector<GURL>(), GURL(),
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileHandlersLaunchType) {
@@ -363,7 +369,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileHandlersLaunchType) {
       profile(), AppId(),
       {base::FilePath(kTestPathTxt), base::FilePath(kTestPathPng),
        base::FilePath(kTestPathTxt2), base::FilePath(kTestPathPng2)},
-      {}, GURL(), chrome::mojom::AppShimLoginItemRestoreState::kNone);
+      {}, GURL(), chrome::mojom::AppShimLoginItemRestoreState::kNone,
+      base::DoNothing());
   EXPECT_EQ(3, launches);
 }
 
@@ -386,9 +393,9 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolAndFileHandlerMixed) {
         return nullptr;
       }));
 
-  shim_manager.LaunchApp(profile(), AppId(), {test_path},
-                         {protocol_handler_launch_url}, GURL(),
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+  shim_manager.LaunchApp(
+      profile(), AppId(), {test_path}, {protocol_handler_launch_url}, GURL(),
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest,
@@ -415,7 +422,7 @@ TEST_F(WebAppShimManagerDelegateTest,
   shim_manager.LaunchApp(
       profile(), AppId(), {test_path},
       {protocol_handler_launch_url, protocol_handler_file_url}, GURL(),
-      chrome::mojom::AppShimLoginItemRestoreState::kNone);
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_OverrideUrl) {
@@ -435,7 +442,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_OverrideUrl) {
 
   shim_manager.LaunchApp(profile(), AppId(), std::vector<base::FilePath>(),
                          std::vector<GURL>(), override_url,
-                         chrome::mojom::AppShimLoginItemRestoreState::kNone);
+                         chrome::mojom::AppShimLoginItemRestoreState::kNone,
+                         base::DoNothing());
 }
 
 TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {

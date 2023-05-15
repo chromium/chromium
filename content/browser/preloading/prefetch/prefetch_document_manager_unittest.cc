@@ -92,8 +92,12 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     return GURL("https://example.com" + path);
   }
 
-  GURL GetCrossOriginUrl(const std::string& path) {
+  GURL GetSameSiteCrossOriginUrl(const std::string& path) {
     return GURL("https://other.example.com" + path);
+  }
+
+  GURL GetCrossOriginUrl(const std::string& path) {
+    return GURL("https://other.com" + path);
   }
 
   void NavigateMainframeRendererTo(const GURL& url) {
@@ -142,9 +146,8 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(
-        base::UnguessableToken::Create(), candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -174,7 +177,6 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   // Create candidate for private cross-origin prefetch. This candidate should
@@ -185,9 +187,9 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidate1->requires_anonymous_client_ip_when_cross_origin = false;
   candidate1->url = test_url1;
   candidate1->referrer = blink::mojom::Referrer::New();
-  candidate1->no_vary_search_expected = network::mojom::NoVarySearch::New();
-  candidate1->no_vary_search_expected->vary_on_key_order = false;
-  candidate1->no_vary_search_expected->search_variance =
+  candidate1->no_vary_search_hint = network::mojom::NoVarySearch::New();
+  candidate1->no_vary_search_hint->vary_on_key_order = false;
+  candidate1->no_vary_search_hint->search_variance =
       network::mojom::SearchParamsVariance::NewNoVaryParams({"a"});
 
   auto candidate2 = blink::mojom::SpeculationCandidate::New();
@@ -196,9 +198,9 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidate2->requires_anonymous_client_ip_when_cross_origin = false;
   candidate2->url = test_url2;
   candidate2->referrer = blink::mojom::Referrer::New();
-  candidate2->no_vary_search_expected = network::mojom::NoVarySearch::New();
-  candidate2->no_vary_search_expected->vary_on_key_order = true;
-  candidate2->no_vary_search_expected->search_variance =
+  candidate2->no_vary_search_hint = network::mojom::NoVarySearch::New();
+  candidate2->no_vary_search_hint->vary_on_key_order = true;
+  candidate2->no_vary_search_hint->search_variance =
       network::mojom::SearchParamsVariance::NewVaryParams({"a"});
 
   auto candidate3 = blink::mojom::SpeculationCandidate::New();
@@ -212,31 +214,30 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidates.push_back(std::move(candidate2));
   candidates.push_back(std::move(candidate3));
 
-  prefetch_document_manager->ProcessCandidates(
-      initiator_devtools_navigation_token, candidates,
-      /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
 
   ASSERT_EQ(GetPrefetches().size(), 3u);
   {
     auto& prefetch = GetPrefetches()[0];
     ASSERT_TRUE(prefetch);
-    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
-    EXPECT_FALSE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->no_vary_params(),
+    ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
+    EXPECT_FALSE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->no_vary_params(),
                 UnorderedElementsAreArray({"a"}));
   }
   {
     auto& prefetch = GetPrefetches()[1];
     ASSERT_TRUE(prefetch);
-    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
-    EXPECT_TRUE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->vary_params(),
+    ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
+    EXPECT_TRUE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->vary_params(),
                 UnorderedElementsAreArray({"a"}));
   }
   {
     auto& prefetch = GetPrefetches()[2];
     ASSERT_TRUE(prefetch);
-    EXPECT_FALSE(prefetch->GetNoVarySearchExpected().has_value());
+    EXPECT_FALSE(prefetch->GetNoVarySearchHint().has_value());
   }
 }
 
@@ -252,7 +253,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
   prefetch_document_manager->EnableNoVarySearchSupport();
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
   {
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -267,9 +267,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(
-        initiator_devtools_navigation_token, candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
     const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
 
     // Now call TakePrefetchedResponse
@@ -317,9 +316,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.emplace_back(std::move(candidate1));
-    prefetch_document_manager->ProcessCandidates(
-        initiator_devtools_navigation_token, candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
 
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -373,10 +371,9 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
 TEST_F(PrefetchDocumentManagerTest,
        ProcessNoVarySearchResponseWithDefaultValue) {
-  EXPECT_THAT(
-      TriggerNoVarySearchParseErrorAndGetConsoleMessage(
-          network::mojom::NoVarySearchParseError::kDefaultValue),
-      testing::HasSubstr("is equivalent to the default search variance"));
+  EXPECT_THAT(TriggerNoVarySearchParseErrorAndGetConsoleMessage(
+                  network::mojom::NoVarySearchParseError::kDefaultValue),
+              testing::HasSubstr("is equivalent to the default behavior"));
 }
 
 TEST_F(PrefetchDocumentManagerTest,
@@ -497,19 +494,39 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate6->eagerness = blink::mojom::SpeculationEagerness::kConservative;
   candidates.push_back(std::move(candidate6));
 
+  // Create candidate for same-site prefetch. This candidate should
+  // be prefetched by |PrefetchDocumentManager|.
+  auto candidate7 = blink::mojom::SpeculationCandidate::New();
+  candidate7->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate7->requires_anonymous_client_ip_when_cross_origin = false;
+  candidate7->url = GetSameSiteCrossOriginUrl("/candidate7.html");
+  candidate7->referrer = blink::mojom::Referrer::New();
+  candidate7->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidates.push_back(std::move(candidate7));
+
+  // Create candidate for same-origin prefetch that requires a proxy if
+  // redirected to a cross-origin URL. This candidate should be prefetched by
+  // |PrefetchDocumentManager|.
+  auto candidate8 = blink::mojom::SpeculationCandidate::New();
+  candidate8->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate8->requires_anonymous_client_ip_when_cross_origin = true;
+  candidate8->url = GetSameOriginUrl("/candidate8.html");
+  candidate8->referrer = blink::mojom::Referrer::New();
+  candidate8->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidates.push_back(std::move(candidate8));
+
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  prefetch_document_manager->ProcessCandidates(base::UnguessableToken::Create(),
-                                               candidates,
+  prefetch_document_manager->ProcessCandidates(candidates,
                                                /*devtools_observer=*/nullptr);
 
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.
   const auto& prefetch_urls = GetPrefetches();
-  ASSERT_EQ(prefetch_urls.size(), 4U);
+  ASSERT_EQ(prefetch_urls.size(), 6U);
   EXPECT_EQ(prefetch_urls[0]->GetURL(), GetCrossOriginUrl("/candidate1.html"));
   EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
             PrefetchType(/*use_isolated_network_context=*/true,
@@ -530,6 +547,17 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
             PrefetchType(/*use_isolated_network_context=*/true,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kConservative));
+  EXPECT_EQ(prefetch_urls[4]->GetURL(),
+            GetSameSiteCrossOriginUrl("/candidate7.html"));
+  EXPECT_EQ(prefetch_urls[4]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/false,
+                         /*use_prefetch_proxy=*/false,
+                         blink::mojom::SpeculationEagerness::kEager));
+  EXPECT_EQ(prefetch_urls[5]->GetURL(), GetSameOriginUrl("/candidate8.html"));
+  EXPECT_EQ(prefetch_urls[5]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/false,
+                         /*use_prefetch_proxy=*/true,
+                         blink::mojom::SpeculationEagerness::kEager));
 
   // Check that the only remaining entries in candidates are those that
   // shouldn't be prefetched by |PrefetchService|.

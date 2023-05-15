@@ -93,6 +93,7 @@ suite('ProfileCardMenuTest', function() {
     assertTrue(dialog.open);
     dialog.querySelector<HTMLElement>('.cancel-button')!.click();
     assertFalse(dialog.open);
+    assertEquals(browserProxy.getCallCount('closeProfileStatistics'), 1);
     assertEquals(browserProxy.getCallCount('removeProfile'), 0);
   });
 
@@ -106,6 +107,7 @@ suite('ProfileCardMenuTest', function() {
     await browserProxy.whenCalled('removeProfile');
     webUIListenerCallback('profile-removed', 'profilePath');
     assertFalse(dialog.open);
+    assertEquals(browserProxy.getCallCount('closeProfileStatistics'), 0);
   });
 
   // The profile info in the remove confirmation dialog is displayed correctly.

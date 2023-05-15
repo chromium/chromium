@@ -37,7 +37,7 @@ class TrackedElementWebUI : public ui::TrackedElement {
   void CustomEvent(ui::CustomElementEventType event_type);
   bool visible() const { return visible_; }
 
-  const base::raw_ptr<HelpBubbleHandlerBase> handler_;
+  const raw_ptr<HelpBubbleHandlerBase> handler_;
   bool visible_ = false;
   gfx::RectF last_known_bounds_;
 };

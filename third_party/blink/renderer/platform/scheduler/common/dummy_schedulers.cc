@@ -295,6 +295,8 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return isolate_;
   }
 
+  void StartIdlePeriodForTesting() override {}
+
  private:
   v8::Isolate* isolate_ = nullptr;
 };

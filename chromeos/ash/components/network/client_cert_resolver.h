@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -155,15 +156,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   bool network_properties_changed_;
 
   // Unowned associated (global or test) instance.
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Unowned associated (global or test) instance.
-  ManagedNetworkConfigurationHandler* managed_network_config_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_config_handler_;
 
   // Can be set for testing.
-  base::Clock* testing_clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> testing_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

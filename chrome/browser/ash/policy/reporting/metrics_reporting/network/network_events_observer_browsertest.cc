@@ -72,10 +72,6 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kEnableWifiSignalEventsReporting,
-                              kEnableNetworkConnectionStateEventsReporting},
-        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -117,12 +113,7 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
 
   void EnablePolicy() {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceNetworkStatus, true);
-  }
-
-  void DisablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceNetworkStatus, false);
+        ash::kDeviceReportNetworkEvents, true);
   }
 
   void SetWifiSignalEventDrivenPolicy() {

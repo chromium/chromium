@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -279,7 +280,7 @@ class ScanServiceTest : public testing::Test {
             ScopedTestMountPoint::CreateAndMountDownloads(profile_)),
         session_controller_(std::make_unique<TestSessionController>()),
         user_manager_(new ash::FakeChromeUserManager),
-        user_manager_owner_(base::WrapUnique(user_manager_)) {
+        user_manager_owner_(base::WrapUnique(user_manager_.get())) {
     DCHECK(scanned_files_mount_->IsValid());
     const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
@@ -398,10 +399,10 @@ class ScanServiceTest : public testing::Test {
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
   FakeScanJobObserver fake_scan_job_observer_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* const profile_;
+  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<ScopedTestMountPoint> scanned_files_mount_;
   std::unique_ptr<TestSessionController> session_controller_;
-  ash::FakeChromeUserManager* const user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
   std::unique_ptr<ScanService> scan_service_;
 

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_EUICC_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -63,7 +64,10 @@ class Euicc : public mojom::Euicc {
   const mojom::EuiccPropertiesPtr& properties() { return properties_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(EuiccTest, RequestPendingProfiles);
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest,
+                           RequestPendingProfiles_DBusMigrationDisabled);
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest,
+                           RequestPendingProfiles_DBusMigrationEnabled);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -84,6 +88,11 @@ class Euicc : public mojom::Euicc {
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRefreshSmdxProfilesResult(
+      RequestPendingProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
   void OnRequestPendingProfilesResult(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
@@ -102,7 +111,7 @@ class Euicc : public mojom::Euicc {
       const std::vector<CellularESimProfile>& esim_profile_states);
 
   // Reference to ESimManager that owns this Euicc.
-  ESimManager* esim_manager_;
+  raw_ptr<ESimManager, ExperimentalAsh> esim_manager_;
   mojo::ReceiverSet<mojom::Euicc> receiver_set_;
   mojom::EuiccPropertiesPtr properties_;
   dbus::ObjectPath path_;

@@ -21,8 +21,9 @@ import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -138,7 +139,7 @@ public class CustomTabActivityAppMenuTest {
 
     private Intent createMinimalCustomTabIntent() {
         return CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
     }
 
     private CustomTabIntentDataProvider getCustomTabIntentDataProvider() {
@@ -446,7 +447,7 @@ public class CustomTabActivityAppMenuTest {
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtils.addTrustedIntentExtras(intent);
 

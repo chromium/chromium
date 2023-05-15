@@ -16,7 +16,7 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
   let result = {
     'ad': ad,
     'bid': 1,
-    'render': { url: ad.renderUrl, width: "100sw", height: "50px" },
+    'render': { url: ad.renderUrl, width: "100sw", height: "50sh" },
     'allowComponentAuction': allowComponentAuction
   };
   if (interestGroup.adComponents && interestGroup.adComponents[0])

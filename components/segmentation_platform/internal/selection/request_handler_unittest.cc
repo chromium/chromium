@@ -9,14 +9,18 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::ElementsAre;
+using testing::FloatNear;
 using testing::Invoke;
 
 namespace segmentation_platform {
@@ -33,17 +37,28 @@ class MockResultProvider : public SegmentResultProvider {
 };
 
 proto::PredictionResult CreatePredictionResultWithBinaryClassifier() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForBinaryClassifier(0.5f, "positive_label",
+                                            "negative_label");
+
   proto::PredictionResult prediction_result;
-  proto::Predictor_BinaryClassifier* binary_classifier =
-      prediction_result.mutable_output_config()
-          ->mutable_predictor()
-          ->mutable_binary_classifier();
-
-  binary_classifier->set_threshold(0.5f);
-  binary_classifier->set_positive_label("positive_label");
-  binary_classifier->set_negative_label("negative_label");
-
   prediction_result.add_result(0.8f);
+  prediction_result.mutable_output_config()->Swap(
+      model_metadata.mutable_output_config());
+  return prediction_result;
+}
+
+proto::PredictionResult CreatePredictionResultWithGenericPredictor() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor({"output1", "output2"});
+
+  proto::PredictionResult prediction_result;
+  prediction_result.add_result(0.8f);
+  prediction_result.add_result(0.2f);
+  prediction_result.mutable_output_config()->Swap(
+      model_metadata.mutable_output_config());
   return prediction_result;
 }
 
@@ -58,8 +73,8 @@ class RequestHandlerTest : public testing::Test {
     config_ = test_utils::CreateTestConfig("test_client", kSegmentId);
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
-    request_handler_ =
-        RequestHandler::Create(*config_, std::move(provider), nullptr);
+    request_handler_ = RequestHandler::Create(*config_, std::move(provider),
+                                              &execution_service_);
   }
 
   void OnGetClassificationResult(base::RepeatingClosure closure,
@@ -70,11 +85,20 @@ class RequestHandlerTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  void OnGetAnnotatedNumericResult(base::RepeatingClosure closure,
+                                   const AnnotatedNumericResult& result) {
+    EXPECT_NEAR(0.8, result.result.result(0), 0.001);
+    EXPECT_NEAR(0.2, result.result.result(1), 0.001);
+    EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
+    std::move(closure).Run();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;
   raw_ptr<MockResultProvider> result_provider_ = nullptr;
   std::unique_ptr<RequestHandler> request_handler_;
+  ExecutionService execution_service_;
 };
 
 TEST_F(RequestHandlerTest, TestGetClassificationResult) {
@@ -101,6 +125,32 @@ TEST_F(RequestHandlerTest, TestGetClassificationResult) {
       options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestHandlerTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), expected));
+  loop.Run();
+}
+
+TEST_F(RequestHandlerTest, GetAnnotatedNumericResult) {
+  PredictionOptions options;
+  options.on_demand_execution = true;
+
+  EXPECT_CALL(*result_provider_, GetSegmentResult(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(
+          [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
+            EXPECT_TRUE(options->ignore_db_scores);
+            EXPECT_EQ(options->segment_id, kSegmentId);
+            auto result =
+                std::make_unique<SegmentResultProvider::SegmentResult>(
+                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    CreatePredictionResultWithGenericPredictor(), /*rank=*/2);
+            std::move(options->callback).Run(std::move(result));
+          }));
+
+  base::RunLoop loop;
+  AnnotatedNumericResult result(PredictionStatus::kSucceeded);
+  request_handler_->GetAnnotatedNumericResult(
+      options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestHandlerTest::OnGetAnnotatedNumericResult,
+                     base::Unretained(this), loop.QuitClosure()));
   loop.Run();
 }
 

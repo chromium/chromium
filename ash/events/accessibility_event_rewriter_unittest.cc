@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -166,7 +167,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   // A test accessibility event delegate; simulates ChromeVox and Switch Access.
   ChromeVoxTestDelegate delegate_;
   // Generates ui::Events from simulated user input.
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
 
@@ -209,6 +210,9 @@ class ChromeVoxAccessibilityEventRewriterTest
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void RecordEventRemappedToRightClick() override {}
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
@@ -529,12 +533,12 @@ class SwitchAccessAccessibilityEventRewriterTest
         accessibility_event_rewriter_.get());
     controller_->switch_access().SetEnabled(true);
 
-    std::vector<ui::InputDevice> keyboards;
+    std::vector<ui::KeyboardDevice> keyboards;
     ui::DeviceDataManagerTestApi device_data_test_api;
-    keyboards.push_back(ui::InputDevice(1, ui::INPUT_DEVICE_INTERNAL, ""));
-    keyboards.push_back(ui::InputDevice(2, ui::INPUT_DEVICE_USB, ""));
-    keyboards.push_back(ui::InputDevice(3, ui::INPUT_DEVICE_BLUETOOTH, ""));
-    keyboards.push_back(ui::InputDevice(4, ui::INPUT_DEVICE_UNKNOWN, ""));
+    keyboards.emplace_back(1, ui::INPUT_DEVICE_INTERNAL, "");
+    keyboards.emplace_back(2, ui::INPUT_DEVICE_USB, "");
+    keyboards.emplace_back(3, ui::INPUT_DEVICE_BLUETOOTH, "");
+    keyboards.emplace_back(4, ui::INPUT_DEVICE_UNKNOWN, "");
     device_data_test_api.SetKeyboardDevices(keyboards);
   }
 
@@ -610,12 +614,16 @@ class SwitchAccessAccessibilityEventRewriterTest
     return false;
   }
 
+  void RecordEventRemappedToRightClick() override {}
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override {}
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 
  protected:
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  AccessibilityControllerImpl* controller_ = nullptr;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
@@ -935,9 +943,9 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
   }
 
  protected:
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  AccessibilityControllerImpl* controller_ = nullptr;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;

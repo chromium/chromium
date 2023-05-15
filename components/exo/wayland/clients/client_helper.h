@@ -29,6 +29,7 @@
 #include <remote-shell-unstable-v1-client-protocol.h>
 #include <remote-shell-unstable-v2-client-protocol.h>
 #include <secure-output-unstable-v1-client-protocol.h>
+#include <single-pixel-buffer-v1-client-protocol.h>
 #include <stylus-tools-unstable-v1-client-protocol.h>
 #include <stylus-unstable-v2-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -100,6 +101,7 @@ DEFAULT_DELETER_FDECL(zwp_linux_buffer_params_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_dmabuf_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_explicit_synchronization_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
+DEFAULT_DELETER_FDECL(wp_single_pixel_buffer_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
 DEFAULT_DELETER_FDECL(wl_data_device_manager)

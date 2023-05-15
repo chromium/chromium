@@ -150,10 +150,6 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
 
   seen_tab_under_ = true;
   content::WebContents* contents = navigation_handle()->GetWebContents();
-  auto* popup_opener =
-      blocked_content::PopupOpenerTabHelper::FromWebContents(contents);
-  DCHECK(popup_opener);
-  popup_opener->OnDidTabUnder();
 
   LogTabUnderAttempt(navigation_handle());
 

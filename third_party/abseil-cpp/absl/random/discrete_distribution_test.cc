@@ -146,7 +146,7 @@ TEST(DiscreteDistributionTest, ChiSquaredTest50) {
   using absl::random_internal::kChiSquared;
 
   constexpr size_t kTrials = 10000;
-  constexpr int kBuckets = 50;  // inclusive, so actally +1
+  constexpr int kBuckets = 50;  // inclusive, so actually +1
 
   // 1-in-100000 threshold, but remember, there are about 8 tests
   // in this file. And the test could fail for other reasons.

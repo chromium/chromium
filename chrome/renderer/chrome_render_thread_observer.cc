@@ -58,6 +58,12 @@
 #include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 using blink::WebCache;
 using blink::WebSecurityPolicy;
 using content::RenderThread;
@@ -137,16 +143,32 @@ ChromeRenderThreadObserver::ChromeRenderThreadObserver()
 
 ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
 
-chrome::mojom::DynamicParams ChromeRenderThreadObserver::GetDynamicParams()
+chrome::mojom::DynamicParamsPtr ChromeRenderThreadObserver::GetDynamicParams()
     const {
   {
     base::AutoLock lock(dynamic_params_lock_);
     if (dynamic_params_) {
-      return *dynamic_params_;
+      return dynamic_params_.Clone();
     }
   }
-  return chrome::mojom::DynamicParams();
+  return chrome::mojom::DynamicParams::New();
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Returns null if `bound_session_request_throttled_in_renderer_manager_` is
+// null. This can happen on profiles where `RendererUpdater` and
+// `BoundSessionCookieRefreshService` keyed services are not created.
+std::unique_ptr<BoundSessionRequestThrottledListener>
+ChromeRenderThreadObserver::CreateBoundSessionRequestThrottledListener() const {
+  if (!bound_session_request_throttled_in_renderer_manager_) {
+    return nullptr;
+  }
+
+  CHECK(switches::IsBoundSessionCredentialsEnabled());
+  return std::make_unique<BoundSessionRequestThrottledListenerRendererImpl>(
+      bound_session_request_throttled_in_renderer_manager_, io_task_runner_);
+}
+#endif
 
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
@@ -167,7 +189,9 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
         chromeos_listener_receiver,
     mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
-        content_settings_manager) {
+        content_settings_manager,
+    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+        bound_session_request_throttled_listener) {
   if (content_settings_manager)
     content_settings_manager_.Bind(std::move(content_settings_manager));
   is_incognito_process_ = is_incognito_process;
@@ -177,6 +201,16 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
         ChromeOSListener::Create(std::move(chromeos_listener_receiver));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (bound_session_request_throttled_listener) {
+    CHECK(switches::IsBoundSessionCredentialsEnabled());
+    bound_session_request_throttled_in_renderer_manager_ =
+        BoundSessionRequestThrottledInRendererManager::Create(
+            std::move(bound_session_request_throttled_listener));
+    io_task_runner_ = content::ChildThread::Get()->GetIOTaskRunner();
+  }
+#endif
 }
 
 void ChromeRenderThreadObserver::SetConfiguration(

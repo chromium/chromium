@@ -17,20 +17,19 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 
-namespace chromeos {
-namespace converters {
+namespace chromeos::converters {
 
 namespace {
 
-namespace telemetry_api = ::chromeos::api::os_telemetry;
-namespace telemetry_service = ::crosapi::mojom;
+namespace cx_telem = ::chromeos::api::os_telemetry;
+namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
 
 namespace unchecked {
-chromeos::api::os_telemetry::AudioInputNodeInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeAudioInputNodeInfoPtr input) {
-  telemetry_api::AudioInputNodeInfo result;
+cx_telem::AudioInputNodeInfo UncheckedConvertPtr(
+    crosapi::ProbeAudioInputNodeInfoPtr input) {
+  cx_telem::AudioInputNodeInfo result;
 
   if (input->id) {
     result.id = input->id->value;
@@ -47,9 +46,9 @@ chromeos::api::os_telemetry::AudioInputNodeInfo UncheckedConvertPtr(
   return result;
 }
 
-chromeos::api::os_telemetry::AudioOutputNodeInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeAudioOutputNodeInfoPtr input) {
-  telemetry_api::AudioOutputNodeInfo result;
+cx_telem::AudioOutputNodeInfo UncheckedConvertPtr(
+    crosapi::ProbeAudioOutputNodeInfoPtr input) {
+  cx_telem::AudioOutputNodeInfo result;
 
   if (input->id) {
     result.id = input->id->value;
@@ -66,9 +65,8 @@ chromeos::api::os_telemetry::AudioOutputNodeInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::AudioInfo UncheckedConvertPtr(
-    telemetry_service::ProbeAudioInfoPtr input) {
-  telemetry_api::AudioInfo result;
+cx_telem::AudioInfo UncheckedConvertPtr(crosapi::ProbeAudioInfoPtr input) {
+  cx_telem::AudioInfo result;
 
   if (input->output_mute) {
     result.output_mute = input->output_mute->value;
@@ -83,20 +81,20 @@ telemetry_api::AudioInfo UncheckedConvertPtr(
     result.severe_underruns = input->severe_underruns->value;
   }
   if (input->output_nodes) {
-    result.output_nodes = ConvertPtrVector<telemetry_api::AudioOutputNodeInfo>(
+    result.output_nodes = ConvertPtrVector<cx_telem::AudioOutputNodeInfo>(
         std::move(input->output_nodes.value()));
   }
   if (input->input_nodes) {
-    result.input_nodes = ConvertPtrVector<telemetry_api::AudioInputNodeInfo>(
+    result.input_nodes = ConvertPtrVector<cx_telem::AudioInputNodeInfo>(
         std::move(input->input_nodes.value()));
   }
 
   return result;
 }
 
-telemetry_api::CpuCStateInfo UncheckedConvertPtr(
-    telemetry_service::ProbeCpuCStateInfoPtr input) {
-  telemetry_api::CpuCStateInfo result;
+cx_telem::CpuCStateInfo UncheckedConvertPtr(
+    crosapi::ProbeCpuCStateInfoPtr input) {
+  cx_telem::CpuCStateInfo result;
   result.name = input->name;
   if (input->time_in_state_since_last_boot_us) {
     result.time_in_state_since_last_boot_us =
@@ -105,9 +103,9 @@ telemetry_api::CpuCStateInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
-    telemetry_service::ProbeLogicalCpuInfoPtr input) {
-  telemetry_api::LogicalCpuInfo result;
+cx_telem::LogicalCpuInfo UncheckedConvertPtr(
+    crosapi::ProbeLogicalCpuInfoPtr input) {
+  cx_telem::LogicalCpuInfo result;
   if (input->max_clock_speed_khz) {
     result.max_clock_speed_khz = input->max_clock_speed_khz->value;
   }
@@ -121,23 +119,26 @@ telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
   if (input->idle_time_ms) {
     result.idle_time_ms = input->idle_time_ms->value;
   }
-  result.c_states = ConvertPtrVector<telemetry_api::CpuCStateInfo>(
-      std::move(input->c_states));
+  result.c_states =
+      ConvertPtrVector<cx_telem::CpuCStateInfo>(std::move(input->c_states));
+  if (input->core_id) {
+    result.core_id = input->core_id->value;
+  }
   return result;
 }
 
-telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
-    telemetry_service::ProbePhysicalCpuInfoPtr input) {
-  telemetry_api::PhysicalCpuInfo result;
+cx_telem::PhysicalCpuInfo UncheckedConvertPtr(
+    crosapi::ProbePhysicalCpuInfoPtr input) {
+  cx_telem::PhysicalCpuInfo result;
   result.model_name = input->model_name;
-  result.logical_cpus = ConvertPtrVector<telemetry_api::LogicalCpuInfo>(
+  result.logical_cpus = ConvertPtrVector<cx_telem::LogicalCpuInfo>(
       std::move(input->logical_cpus));
   return result;
 }
 
-telemetry_api::BatteryInfo UncheckedConvertPtr(
-    telemetry_service::ProbeBatteryInfoPtr input) {
-  telemetry_api::BatteryInfo result;
+cx_telem::BatteryInfo UncheckedConvertPtr(crosapi::ProbeBatteryInfoPtr input,
+                                          bool has_serial_number_permission) {
+  cx_telem::BatteryInfo result;
   result.vendor = std::move(input->vendor);
   result.model_name = std::move(input->model_name);
   result.technology = std::move(input->technology);
@@ -168,12 +169,16 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
   }
   result.manufacture_date = std::move(input->manufacture_date);
 
+  if (has_serial_number_permission) {
+    result.serial_number = std::move(input->serial_number);
+  }
+
   return result;
 }
 
-telemetry_api::NonRemovableBlockDeviceInfo UncheckedConvertPtr(
-    telemetry_service::ProbeNonRemovableBlockDeviceInfoPtr input) {
-  telemetry_api::NonRemovableBlockDeviceInfo result;
+cx_telem::NonRemovableBlockDeviceInfo UncheckedConvertPtr(
+    crosapi::ProbeNonRemovableBlockDeviceInfoPtr input) {
+  cx_telem::NonRemovableBlockDeviceInfo result;
 
   if (input->size) {
     result.size = input->size->value;
@@ -185,9 +190,8 @@ telemetry_api::NonRemovableBlockDeviceInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::OsVersionInfo UncheckedConvertPtr(
-    telemetry_service::ProbeOsVersionPtr input) {
-  telemetry_api::OsVersionInfo result;
+cx_telem::OsVersionInfo UncheckedConvertPtr(crosapi::ProbeOsVersionPtr input) {
+  cx_telem::OsVersionInfo result;
 
   result.release_milestone = input->release_milestone;
   result.build_number = input->build_number;
@@ -197,9 +201,9 @@ telemetry_api::OsVersionInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
-    telemetry_service::ProbeStatefulPartitionInfoPtr input) {
-  telemetry_api::StatefulPartitionInfo result;
+cx_telem::StatefulPartitionInfo UncheckedConvertPtr(
+    crosapi::ProbeStatefulPartitionInfoPtr input) {
+  cx_telem::StatefulPartitionInfo result;
   if (input->available_space) {
     result.available_space = input->available_space->value;
   }
@@ -210,9 +214,10 @@ telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::NetworkInfo UncheckedConvertPtr(
-    chromeos::network_health::mojom::NetworkPtr input) {
-  telemetry_api::NetworkInfo result;
+cx_telem::NetworkInfo UncheckedConvertPtr(
+    chromeos::network_health::mojom::NetworkPtr input,
+    bool has_mac_address_permission) {
+  cx_telem::NetworkInfo result;
 
   result.type = Convert(input->type);
   result.state = Convert(input->state);
@@ -224,13 +229,32 @@ telemetry_api::NetworkInfo UncheckedConvertPtr(
   if (input->signal_strength) {
     result.signal_strength = input->signal_strength->value;
   }
+  if (has_mac_address_permission) {
+    result.mac_address = std::move(input->mac_address);
+  }
 
   return result;
 }
 
-telemetry_api::TpmVersion UncheckedConvertPtr(
-    telemetry_service::ProbeTpmVersionPtr input) {
-  telemetry_api::TpmVersion result;
+cx_telem::InternetConnectivityInfo UncheckedConvertPtr(
+    chromeos::network_health::mojom::NetworkHealthStatePtr input,
+    bool has_mac_address_permission) {
+  cx_telem::InternetConnectivityInfo result;
+  for (auto& network : input->networks) {
+    auto converted_network = converters::ConvertPtr<cx_telem::NetworkInfo>(
+        std::move(network), has_mac_address_permission);
+
+    // Don't include networks with an undefined type.
+    if (converted_network.type != cx_telem::NetworkType::kNone) {
+      result.networks.push_back(std::move(converted_network));
+    }
+  }
+
+  return result;
+}
+
+cx_telem::TpmVersion UncheckedConvertPtr(crosapi::ProbeTpmVersionPtr input) {
+  cx_telem::TpmVersion result;
 
   result.gsc_version = Convert(input->gsc_version);
   if (input->family) {
@@ -253,9 +277,8 @@ telemetry_api::TpmVersion UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::TpmStatus UncheckedConvertPtr(
-    telemetry_service::ProbeTpmStatusPtr input) {
-  telemetry_api::TpmStatus result;
+cx_telem::TpmStatus UncheckedConvertPtr(crosapi::ProbeTpmStatusPtr input) {
+  cx_telem::TpmStatus result;
 
   if (input->enabled) {
     result.enabled = input->enabled->value;
@@ -270,9 +293,9 @@ telemetry_api::TpmStatus UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::TpmDictionaryAttack UncheckedConvertPtr(
-    telemetry_service::ProbeTpmDictionaryAttackPtr input) {
-  telemetry_api::TpmDictionaryAttack result;
+cx_telem::TpmDictionaryAttack UncheckedConvertPtr(
+    crosapi::ProbeTpmDictionaryAttackPtr input) {
+  cx_telem::TpmDictionaryAttack result;
 
   if (input->counter) {
     result.counter = input->counter->value;
@@ -290,29 +313,27 @@ telemetry_api::TpmDictionaryAttack UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::TpmInfo UncheckedConvertPtr(
-    telemetry_service::ProbeTpmInfoPtr input) {
-  telemetry_api::TpmInfo result;
+cx_telem::TpmInfo UncheckedConvertPtr(crosapi::ProbeTpmInfoPtr input) {
+  cx_telem::TpmInfo result;
 
   if (input->version) {
     result.version =
-        ConvertPtr<telemetry_api::TpmVersion>(std::move(input->version));
+        ConvertPtr<cx_telem::TpmVersion>(std::move(input->version));
   }
   if (input->status) {
-    result.status =
-        ConvertPtr<telemetry_api::TpmStatus>(std::move(input->status));
+    result.status = ConvertPtr<cx_telem::TpmStatus>(std::move(input->status));
   }
   if (input->dictionary_attack) {
-    result.dictionary_attack = ConvertPtr<telemetry_api::TpmDictionaryAttack>(
+    result.dictionary_attack = ConvertPtr<cx_telem::TpmDictionaryAttack>(
         std::move(input->dictionary_attack));
   }
 
   return result;
 }
 
-telemetry_api::UsbBusInterfaceInfo UncheckedConvertPtr(
-    telemetry_service::ProbeUsbBusInterfaceInfoPtr input) {
-  telemetry_api::UsbBusInterfaceInfo result;
+cx_telem::UsbBusInterfaceInfo UncheckedConvertPtr(
+    crosapi::ProbeUsbBusInterfaceInfoPtr input) {
+  cx_telem::UsbBusInterfaceInfo result;
 
   if (input->interface_number) {
     result.interface_number = input->interface_number->value;
@@ -331,9 +352,9 @@ telemetry_api::UsbBusInterfaceInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::FwupdFirmwareVersionInfo UncheckedConvertPtr(
-    telemetry_service::ProbeFwupdFirmwareVersionInfoPtr input) {
-  telemetry_api::FwupdFirmwareVersionInfo result;
+cx_telem::FwupdFirmwareVersionInfo UncheckedConvertPtr(
+    crosapi::ProbeFwupdFirmwareVersionInfoPtr input) {
+  cx_telem::FwupdFirmwareVersionInfo result;
 
   result.version = input->version;
   result.version_format = Convert(input->version_format);
@@ -341,9 +362,8 @@ telemetry_api::FwupdFirmwareVersionInfo UncheckedConvertPtr(
   return result;
 }
 
-telemetry_api::UsbBusInfo UncheckedConvertPtr(
-    telemetry_service::ProbeUsbBusInfoPtr input) {
-  telemetry_api::UsbBusInfo result;
+cx_telem::UsbBusInfo UncheckedConvertPtr(crosapi::ProbeUsbBusInfoPtr input) {
+  cx_telem::UsbBusInfo result;
 
   if (input->class_id) {
     result.class_id = input->class_id->value;
@@ -361,11 +381,11 @@ telemetry_api::UsbBusInfo UncheckedConvertPtr(
     result.product_id = input->product_id->value;
   }
   if (input->interfaces) {
-    result.interfaces = ConvertPtrVector<telemetry_api::UsbBusInterfaceInfo>(
+    result.interfaces = ConvertPtrVector<cx_telem::UsbBusInterfaceInfo>(
         std::move(input->interfaces.value()));
   }
   result.fwupd_firmware_version_info =
-      ConvertPtr<telemetry_api::FwupdFirmwareVersionInfo>(
+      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(
           std::move(input->fwupd_firmware_version_info));
   result.version = Convert(input->version);
   result.spec_speed = Convert(input->spec_speed);
@@ -373,47 +393,62 @@ telemetry_api::UsbBusInfo UncheckedConvertPtr(
   return result;
 }
 
+chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
+    crosapi::ProbeCachedVpdInfoPtr input,
+    bool has_serial_number_permission) {
+  cx_telem::VpdInfo result;
+
+  result.activate_date = std::move(input->first_power_date);
+  result.model_name = std::move(input->model_name);
+  result.sku_number = std::move(input->sku_number);
+
+  if (has_serial_number_permission) {
+    result.serial_number = std::move(input->serial_number);
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
-telemetry_api::CpuArchitectureEnum Convert(
-    telemetry_service::ProbeCpuArchitectureEnum input) {
+cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
   switch (input) {
-    case telemetry_service::ProbeCpuArchitectureEnum::kUnknown:
-      return telemetry_api::CpuArchitectureEnum::kUnknown;
-    case telemetry_service::ProbeCpuArchitectureEnum::kX86_64:
-      return telemetry_api::CpuArchitectureEnum::kX86_64;
-    case telemetry_service::ProbeCpuArchitectureEnum::kAArch64:
-      return telemetry_api::CpuArchitectureEnum::kAarch64;
-    case telemetry_service::ProbeCpuArchitectureEnum::kArmv7l:
-      return telemetry_api::CpuArchitectureEnum::kArmv7l;
+    case crosapi::ProbeCpuArchitectureEnum::kUnknown:
+      return cx_telem::CpuArchitectureEnum::kUnknown;
+    case crosapi::ProbeCpuArchitectureEnum::kX86_64:
+      return cx_telem::CpuArchitectureEnum::kX86_64;
+    case crosapi::ProbeCpuArchitectureEnum::kAArch64:
+      return cx_telem::CpuArchitectureEnum::kAarch64;
+    case crosapi::ProbeCpuArchitectureEnum::kArmv7l:
+      return cx_telem::CpuArchitectureEnum::kArmv7l;
   }
   NOTREACHED();
 }
 
-telemetry_api::NetworkState Convert(
+cx_telem::NetworkState Convert(
     chromeos::network_health::mojom::NetworkState input) {
   switch (input) {
     case network_health::mojom::NetworkState::kUninitialized:
-      return telemetry_api::NetworkState::kUninitialized;
+      return cx_telem::NetworkState::kUninitialized;
     case network_health::mojom::NetworkState::kDisabled:
-      return telemetry_api::NetworkState::kDisabled;
+      return cx_telem::NetworkState::kDisabled;
     case network_health::mojom::NetworkState::kProhibited:
-      return telemetry_api::NetworkState::kProhibited;
+      return cx_telem::NetworkState::kProhibited;
     case network_health::mojom::NetworkState::kNotConnected:
-      return telemetry_api::NetworkState::kNotConnected;
+      return cx_telem::NetworkState::kNotConnected;
     case network_health::mojom::NetworkState::kConnecting:
-      return telemetry_api::NetworkState::kConnecting;
+      return cx_telem::NetworkState::kConnecting;
     case network_health::mojom::NetworkState::kPortal:
-      return telemetry_api::NetworkState::kPortal;
+      return cx_telem::NetworkState::kPortal;
     case network_health::mojom::NetworkState::kConnected:
-      return telemetry_api::NetworkState::kConnected;
+      return cx_telem::NetworkState::kConnected;
     case network_health::mojom::NetworkState::kOnline:
-      return telemetry_api::NetworkState::kOnline;
+      return cx_telem::NetworkState::kOnline;
   }
   NOTREACHED();
 }
 
-telemetry_api::NetworkType Convert(
+cx_telem::NetworkType Convert(
     chromeos::network_config::mojom::NetworkType input) {
   // Cases kAll, kMobile and kWireless are only used for querying
   // the network_config daemon and are not returned by the cros_healthd
@@ -421,105 +456,101 @@ telemetry_api::NetworkType Convert(
   // cases.
   switch (input) {
     case network_config::mojom::NetworkType::kAll:
-      return telemetry_api::NetworkType::kNone;
+      return cx_telem::NetworkType::kNone;
     case network_config::mojom::NetworkType::kCellular:
-      return telemetry_api::NetworkType::kCellular;
+      return cx_telem::NetworkType::kCellular;
     case network_config::mojom::NetworkType::kEthernet:
-      return telemetry_api::NetworkType::kEthernet;
+      return cx_telem::NetworkType::kEthernet;
     case network_config::mojom::NetworkType::kMobile:
-      return telemetry_api::NetworkType::kNone;
+      return cx_telem::NetworkType::kNone;
     case network_config::mojom::NetworkType::kTether:
-      return telemetry_api::NetworkType::kTether;
+      return cx_telem::NetworkType::kTether;
     case network_config::mojom::NetworkType::kVPN:
-      return telemetry_api::NetworkType::kVpn;
+      return cx_telem::NetworkType::kVpn;
     case network_config::mojom::NetworkType::kWireless:
-      return telemetry_api::NetworkType::kNone;
+      return cx_telem::NetworkType::kNone;
     case network_config::mojom::NetworkType::kWiFi:
-      return telemetry_api::NetworkType::kWifi;
+      return cx_telem::NetworkType::kWifi;
   }
   NOTREACHED();
 }
 
-chromeos::api::os_telemetry::TpmGSCVersion Convert(
-    crosapi::mojom::ProbeTpmGSCVersion input) {
+cx_telem::TpmGSCVersion Convert(crosapi::ProbeTpmGSCVersion input) {
   switch (input) {
-    case telemetry_service::ProbeTpmGSCVersion::kNotGSC:
-      return telemetry_api::TpmGSCVersion::kNotGsc;
-    case telemetry_service::ProbeTpmGSCVersion::kCr50:
-      return telemetry_api::TpmGSCVersion::kCr50;
-    case telemetry_service::ProbeTpmGSCVersion::kTi50:
-      return telemetry_api::TpmGSCVersion::kTi50;
+    case crosapi::ProbeTpmGSCVersion::kNotGSC:
+      return cx_telem::TpmGSCVersion::kNotGsc;
+    case crosapi::ProbeTpmGSCVersion::kCr50:
+      return cx_telem::TpmGSCVersion::kCr50;
+    case crosapi::ProbeTpmGSCVersion::kTi50:
+      return cx_telem::TpmGSCVersion::kTi50;
   }
   NOTREACHED();
 }
 
-telemetry_api::FwupdVersionFormat Convert(
-    telemetry_service::ProbeFwupdVersionFormat input) {
+cx_telem::FwupdVersionFormat Convert(crosapi::ProbeFwupdVersionFormat input) {
   switch (input) {
-    case crosapi::mojom::ProbeFwupdVersionFormat::kUnknown:
-      return telemetry_api::FwupdVersionFormat::kPlain;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kPlain:
-      return telemetry_api::FwupdVersionFormat::kPlain;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kNumber:
-      return telemetry_api::FwupdVersionFormat::kNumber;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kPair:
-      return telemetry_api::FwupdVersionFormat::kPair;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kTriplet:
-      return telemetry_api::FwupdVersionFormat::kTriplet;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kQuad:
-      return telemetry_api::FwupdVersionFormat::kQuad;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kBcd:
-      return telemetry_api::FwupdVersionFormat::kBcd;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe:
-      return telemetry_api::FwupdVersionFormat::kIntelMe;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2:
-      return telemetry_api::FwupdVersionFormat::kIntelMe2;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy:
-      return telemetry_api::FwupdVersionFormat::kSurfaceLegacy;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kSurface:
-      return telemetry_api::FwupdVersionFormat::kSurface;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kDellBios:
-      return telemetry_api::FwupdVersionFormat::kDellBios;
-    case crosapi::mojom::ProbeFwupdVersionFormat::kHex:
-      return telemetry_api::FwupdVersionFormat::kHex;
+    case crosapi::ProbeFwupdVersionFormat::kUnknown:
+      return cx_telem::FwupdVersionFormat::kPlain;
+    case crosapi::ProbeFwupdVersionFormat::kPlain:
+      return cx_telem::FwupdVersionFormat::kPlain;
+    case crosapi::ProbeFwupdVersionFormat::kNumber:
+      return cx_telem::FwupdVersionFormat::kNumber;
+    case crosapi::ProbeFwupdVersionFormat::kPair:
+      return cx_telem::FwupdVersionFormat::kPair;
+    case crosapi::ProbeFwupdVersionFormat::kTriplet:
+      return cx_telem::FwupdVersionFormat::kTriplet;
+    case crosapi::ProbeFwupdVersionFormat::kQuad:
+      return cx_telem::FwupdVersionFormat::kQuad;
+    case crosapi::ProbeFwupdVersionFormat::kBcd:
+      return cx_telem::FwupdVersionFormat::kBcd;
+    case crosapi::ProbeFwupdVersionFormat::kIntelMe:
+      return cx_telem::FwupdVersionFormat::kIntelMe;
+    case crosapi::ProbeFwupdVersionFormat::kIntelMe2:
+      return cx_telem::FwupdVersionFormat::kIntelMe2;
+    case crosapi::ProbeFwupdVersionFormat::kSurfaceLegacy:
+      return cx_telem::FwupdVersionFormat::kSurfaceLegacy;
+    case crosapi::ProbeFwupdVersionFormat::kSurface:
+      return cx_telem::FwupdVersionFormat::kSurface;
+    case crosapi::ProbeFwupdVersionFormat::kDellBios:
+      return cx_telem::FwupdVersionFormat::kDellBios;
+    case crosapi::ProbeFwupdVersionFormat::kHex:
+      return cx_telem::FwupdVersionFormat::kHex;
   }
   NOTREACHED();
 }
 
-telemetry_api::UsbVersion Convert(telemetry_service::ProbeUsbVersion input) {
+cx_telem::UsbVersion Convert(crosapi::ProbeUsbVersion input) {
   switch (input) {
-    case crosapi::mojom::ProbeUsbVersion::kUnknown:
-      return telemetry_api::UsbVersion::kUnknown;
-    case crosapi::mojom::ProbeUsbVersion::kUsb1:
-      return telemetry_api::UsbVersion::kUsb1;
-    case crosapi::mojom::ProbeUsbVersion::kUsb2:
-      return telemetry_api::UsbVersion::kUsb2;
-    case crosapi::mojom::ProbeUsbVersion::kUsb3:
-      return telemetry_api::UsbVersion::kUsb3;
+    case crosapi::ProbeUsbVersion::kUnknown:
+      return cx_telem::UsbVersion::kUnknown;
+    case crosapi::ProbeUsbVersion::kUsb1:
+      return cx_telem::UsbVersion::kUsb1;
+    case crosapi::ProbeUsbVersion::kUsb2:
+      return cx_telem::UsbVersion::kUsb2;
+    case crosapi::ProbeUsbVersion::kUsb3:
+      return cx_telem::UsbVersion::kUsb3;
   }
   NOTREACHED();
 }
 
-telemetry_api::UsbSpecSpeed Convert(
-    telemetry_service::ProbeUsbSpecSpeed input) {
+cx_telem::UsbSpecSpeed Convert(crosapi::ProbeUsbSpecSpeed input) {
   switch (input) {
-    case crosapi::mojom::ProbeUsbSpecSpeed::kUnknown:
-      return telemetry_api::UsbSpecSpeed::kUnknown;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps:
-      return telemetry_api::UsbSpecSpeed::kN1_5mbps;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps:
-      return telemetry_api::UsbSpecSpeed::kN12Mbps;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps:
-      return telemetry_api::UsbSpecSpeed::kN480Mbps;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps:
-      return telemetry_api::UsbSpecSpeed::kN5Gbps;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps:
-      return telemetry_api::UsbSpecSpeed::kN10Gbps;
-    case crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps:
-      return telemetry_api::UsbSpecSpeed::kN20Gbps;
+    case crosapi::ProbeUsbSpecSpeed::kUnknown:
+      return cx_telem::UsbSpecSpeed::kUnknown;
+    case crosapi::ProbeUsbSpecSpeed::k1_5Mbps:
+      return cx_telem::UsbSpecSpeed::kN1_5mbps;
+    case crosapi::ProbeUsbSpecSpeed::k12Mbps:
+      return cx_telem::UsbSpecSpeed::kN12Mbps;
+    case crosapi::ProbeUsbSpecSpeed::k480Mbps:
+      return cx_telem::UsbSpecSpeed::kN480Mbps;
+    case crosapi::ProbeUsbSpecSpeed::k5Gbps:
+      return cx_telem::UsbSpecSpeed::kN5Gbps;
+    case crosapi::ProbeUsbSpecSpeed::k10Gbps:
+      return cx_telem::UsbSpecSpeed::kN10Gbps;
+    case crosapi::ProbeUsbSpecSpeed::k20Gbps:
+      return cx_telem::UsbSpecSpeed::kN20Gbps;
   }
   NOTREACHED();
 }
 
-}  // namespace converters
-}  // namespace chromeos
+}  // namespace chromeos::converters

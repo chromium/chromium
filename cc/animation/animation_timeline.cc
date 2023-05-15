@@ -184,6 +184,10 @@ bool AnimationTimeline::IsScrollTimeline() const {
   return false;
 }
 
+bool AnimationTimeline::IsLinkedToScroller(ElementId scroller) const {
+  return false;
+}
+
 bool AnimationTimeline::IsOwnerThread() const {
   return !animation_host_ || animation_host_->IsOwnerThread();
 }

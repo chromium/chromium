@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="100506692671054486">沒有上一個指令</translation>
 <translation id="1009046985747440431">使用向上鍵或向下鍵瀏覽內容，按下 Enter 鍵即可啟用控制項</translation>
 <translation id="1011903154582639569">找到需要的按鍵後，輕輕一點即可輸入</translation>
 <translation id="1012173283529841972">清單項目</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">薰衣草紫紅</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3962990492275676168">從目前位置開始朗讀</translation>
+<translation id="397094149579293440">未選取任何文字</translation>
 <translation id="3970951409746498040">沙褐</translation>
 <translation id="3989324057180830702">切換鈕</translation>
 <translation id="3991317907213946254">鹿皮鞋色</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">沒有上一個第 1 階標題</translation>
 <translation id="4787577491510559358">朗讀目前項目的格式</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">未聚焦在文字欄位</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="481165870889056555">朗讀目前網頁的標題</translation>
 <translation id="4815668758102003883">灰綠松石色</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">內部連結</translation>
 <translation id="4909019435900810068">移到上一個字詞</translation>
 <translation id="4911349081560453449">沒有上一個核取方塊</translation>
+<translation id="4919186071145887492">無法<ph name="COMMAND" />，請再試一次</translation>
 <translation id="492295894462528572">前言</translation>
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953585991029886728">編輯文字</translation>
+<translation id="4964701498510730546">文字欄位空白</translation>
 <translation id="4973717656530883744">最小值：<ph name="X" /></translation>
 <translation id="4974612477719259470">沒有上一個按鈕</translation>
 <translation id="4979404613699303341">上一個按鈕</translation>
+<translation id="4981239367072766915">輸入的內容無法辨識</translation>
 <translation id="4982917827052020884">我們從你會經常使用的幾個按鍵說起。Control 鍵可用於停止目前的任何朗讀。你可以在鍵盤的左下角找到 Control 鍵。如要繼續，請按下 Control 鍵。</translation>
 <translation id="4983588134362688868">前往網頁頂端</translation>
 <translation id="4986606102545753256"><ph name="NAME" />，視窗</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">讀出目前的電池狀態</translation>
 <translation id="4997282455736854877">已選取「<ph name="NAME" />」圓形按鈕</translation>
 <translation id="5012724933919010465">已選取「<ph name="NAME" />」選單項目圓形按鈕</translation>
+<translation id="5014131807708055994"><ph name="REASON" />，因此無法<ph name="COMMAND" /></translation>
 <translation id="5020651427400641814">啟用語音記錄功能</translation>
 <translation id="5041394372352067729">將點字顯示畫面移至頁面頂端</translation>
 <translation id="5042770794184672516">增加說話音量</translation>

@@ -65,11 +65,9 @@ class SystemUIComponentsStyleViewerView::ComponentButton
       : views::LabelButton(pressed_callback, name) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
-        0,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_color=*/false));
+        0, chromeos::features::IsJellyrollEnabled()
+               ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+               : views::HighlightBorder::Type::kHighlightBorder1));
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));

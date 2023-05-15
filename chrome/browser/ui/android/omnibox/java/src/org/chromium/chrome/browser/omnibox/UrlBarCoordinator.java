@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -111,11 +110,6 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
     /** @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener) */
     public void addUrlTextChangeListener(UrlTextChangeListener listener) {
         mMediator.addUrlTextChangeListener(listener);
-    }
-
-    /** @see TextWatcher */
-    public void addTextChangedListener(TextWatcher textWatcher) {
-        mMediator.addTextChangedListener(textWatcher);
     }
 
     /** @see UrlBarMediator#setUrlBarData(UrlBarData, int, int) */

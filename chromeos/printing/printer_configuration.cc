@@ -5,11 +5,11 @@
 #include "chromeos/printing/printer_configuration.h"
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
 #include "net/base/ip_endpoint.h"
@@ -118,11 +118,13 @@ bool Printer::PpdReference::IsFilled() const {
          !effective_make_and_model.empty();
 }
 
-Printer::Printer() : id_(base::GenerateGUID()), source_(SRC_USER_PREFS) {}
+Printer::Printer()
+    : id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+      source_(SRC_USER_PREFS) {}
 
 Printer::Printer(const std::string& id) : id_(id), source_(SRC_USER_PREFS) {
   if (id_.empty())
-    id_ = base::GenerateGUID();
+    id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 Printer::Printer(const Printer& other) = default;

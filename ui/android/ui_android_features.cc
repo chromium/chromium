@@ -4,10 +4,8 @@
 
 #include "ui/android/ui_android_features.h"
 
-#include "base/feature_list.h"
-
-namespace features {
+namespace ui {
 BASE_FEATURE(kConvertTrackpadEventsToMouse,
              "ConvertTrackpadEventsToMouse",
              base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
+}  // namespace ui

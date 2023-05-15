@@ -23,6 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/switches.h"
+#include "components/viz/service/performance_hint/boost_manager.h"
 
 static_assert(sizeof(base::PlatformThreadId) == sizeof(int32_t),
               "thread id types incompatible");
@@ -104,7 +105,9 @@ class AdpfHintSession : public HintSession {
   ~AdpfHintSession() override;
 
   void UpdateTargetDuration(base::TimeDelta target_duration) override;
-  void ReportCpuCompletionTime(base::TimeDelta actual_duration) override;
+  void ReportCpuCompletionTime(base::TimeDelta actual_duration,
+                               base::TimeTicks draw_start,
+                               BoostType preferable_boost_type) override;
 
   void WakeUp();
 
@@ -112,6 +115,7 @@ class AdpfHintSession : public HintSession {
   const raw_ptr<APerformanceHintSession> hint_session_;
   const raw_ptr<HintSessionFactoryImpl> factory_;
   base::TimeDelta target_duration_;
+  BoostManager boost_manager_;
 };
 
 class HintSessionFactoryImpl : public HintSessionFactory {
@@ -161,15 +165,23 @@ void AdpfHintSession::UpdateTargetDuration(base::TimeDelta target_duration) {
       hint_session_, target_duration.InNanoseconds());
 }
 
-void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration) {
+void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
+                                              base::TimeTicks draw_start,
+                                              BoostType preferable_boost_type) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+
+  base::TimeDelta frame_duration =
+      boost_manager_.GetFrameDurationAndMaybeUpdateBoostType(
+          target_duration_, actual_duration, draw_start, preferable_boost_type);
+
   AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
-      hint_session_, actual_duration.InNanoseconds());
+      hint_session_, frame_duration.InNanoseconds());
 }
 
 void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
-  ReportCpuCompletionTime(target_duration_ * 1.5f);
+  ReportCpuCompletionTime(target_duration_, base::TimeTicks::Now(),
+                          BoostType::kWakeUpBoost);
 }
 
 HintSessionFactoryImpl::HintSessionFactoryImpl(

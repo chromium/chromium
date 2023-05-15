@@ -4,7 +4,6 @@
 
 /**
  * @fileoverview PasswordPreviewItem represents one row in a list of passwords.
- * It needs to be its own component because FocusRowBehavior provides good a11y.
  */
 
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -14,6 +13,7 @@ import '../shared_style.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ShowPasswordMixin} from '../show_password_mixin.js';
@@ -30,7 +30,8 @@ export interface PasswordPreviewItemElement {
   };
 }
 
-const PasswordPreviewItemElementBase = ShowPasswordMixin(PolymerElement);
+const PasswordPreviewItemElementBase =
+    I18nMixin(ShowPasswordMixin(PolymerElement));
 
 export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
   static get is() {
@@ -69,6 +70,13 @@ export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
 
   private getPasswordValue_(): string {
     return this.isPasswordVisible ? this.password : ' '.repeat(10);
+  }
+
+  private getShowHidePasswordButtonA11yLabel_(): string {
+    return this.i18n(
+        this.isPasswordVisible ? 'hidePasswordA11yLabel' :
+                                 'showPasswordA11yLabel',
+        this.username, this.url);
   }
 }
 

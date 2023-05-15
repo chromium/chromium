@@ -41,16 +41,18 @@ namespace {
 class MockTabStripUIEmbedder : public TabStripUIEmbedder {
  public:
   MOCK_CONST_METHOD0(GetAcceleratorProvider, const ui::AcceleratorProvider*());
-  MOCK_METHOD0(CloseContainer, void());
-  MOCK_METHOD3(ShowContextMenuAtPoint,
-               void(gfx::Point,
-                    std::unique_ptr<ui::MenuModel>,
-                    base::RepeatingClosure));
-  MOCK_METHOD0(CloseContextMenu, void());
-  MOCK_METHOD3(ShowEditDialogForGroupAtPoint,
-               void(gfx::Point, gfx::Rect, tab_groups::TabGroupId));
-  MOCK_METHOD0(HideEditDialogForGroup, void());
-  MOCK_METHOD0(GetLayout, TabStripUILayout());
+  MOCK_METHOD(void, CloseContainer, ());
+  MOCK_METHOD(void,
+              ShowContextMenuAtPoint,
+              (gfx::Point,
+               std::unique_ptr<ui::MenuModel>,
+               base::RepeatingClosure));
+  MOCK_METHOD(void, CloseContextMenu, ());
+  MOCK_METHOD(void,
+              ShowEditDialogForGroupAtPoint,
+              (gfx::Point, gfx::Rect, tab_groups::TabGroupId));
+  MOCK_METHOD(void, HideEditDialogForGroup, ());
+  MOCK_METHOD(TabStripUILayout, GetLayout, ());
   MOCK_CONST_METHOD1(GetColorProviderColor, SkColor(ui::ColorId));
 };
 

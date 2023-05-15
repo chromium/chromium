@@ -82,19 +82,29 @@ class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
   }
 
   // Creates a new offscreen document with the given `extension`, `url`,
-  // and `profile`, and waits for it to load.
+  // `reasons`, and `profile`, and waits for it to load.
   OffscreenDocumentHost* CreateDocumentAndWaitForLoad(
       const Extension& extension,
       const GURL& url,
+      std::set<api::offscreen::Reason> reasons,
       Profile& profile) {
     ExtensionHostTestHelper host_waiter(&profile);
     host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     OffscreenDocumentHost* offscreen_document =
         OffscreenDocumentManager::Get(&profile)->CreateOffscreenDocument(
-            extension, url, api::offscreen::Reason::kTesting);
+            extension, url, reasons);
     host_waiter.WaitForHostCompletedFirstLoad();
 
     return offscreen_document;
+  }
+
+  // Same as above, defaulting to a single reason of Reason::kTesting.
+  OffscreenDocumentHost* CreateDocumentAndWaitForLoad(
+      const Extension& extension,
+      const GURL& url,
+      Profile& profile) {
+    return CreateDocumentAndWaitForLoad(
+        extension, url, {api::offscreen::Reason::kTesting}, profile);
   }
 
   // Same as the above, defaulting to the on-the-record profile.
@@ -141,18 +151,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
                 *extension));
 
-  OffscreenDocumentHost* offscreen_document = nullptr;
-  {
-    // Instruct the manager to create a new offscreen document and wait for it
-    // to load.
-    ExtensionHostTestHelper host_waiter(profile());
-    host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
-    offscreen_document = offscreen_document_manager()->CreateOffscreenDocument(
-        *extension, extension->GetResourceURL("offscreen.html"),
-        api::offscreen::Reason::kTesting);
-    ASSERT_TRUE(offscreen_document);
-    host_waiter.WaitForHostCompletedFirstLoad();
-  }
+  OffscreenDocumentHost* offscreen_document = CreateDocumentAndWaitForLoad(
+      *extension, extension->GetResourceURL("offscreen.html"));
 
   {
     // Check the document loaded properly. Note: general capabilities of
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     // manager to close the document, destroying the host.
     ExtensionHostTestHelper host_waiter(profile());
     host_waiter.RestrictToHost(offscreen_document);
-    ASSERT_TRUE(content::ExecuteScript(offscreen_document->host_contents(),
-                                       "window.close();"));
+    ASSERT_TRUE(content::ExecJs(offscreen_document->host_contents(),
+                                "window.close();"));
     host_waiter.WaitForHostDestroyed();
   }
 
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
       api::offscreen::Reason::kTesting,
       base::BindRepeating(&CreateTestLifetimeEnforcer, &lifetime_enforcer));
 
-  // Load an extension an create an offscreen document.
+  // Load an extension and create an offscreen document.
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",
@@ -451,6 +451,103 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
 
   // Note: `offscreen_document` and `lifetime_enforcer` are now unsafe to use.
 
+  EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
+// Tests that when multiple reasons are provided, a lifetime enforcer is
+// created for each, and the offscreen document is only terminated once all
+// lifetime enforcers indicate the document is inactive.
+IN_PROC_BROWSER_TEST_F(
+    OffscreenDocumentManagerBrowserTest,
+    LifetimeEnforcement_DocumentIsNotTerminatedUntilAllInactive) {
+  // Override the factory method for both the dom parsing and blobs reasons to
+  // use our own TestLifetimeEnforcer.
+  TestLifetimeEnforcer* dom_parser_enforcer = nullptr;
+  LifetimeEnforcerFactories::TestingOverride factory_override;
+  factory_override.map().emplace(
+      api::offscreen::Reason::kDomParser,
+      base::BindRepeating(&CreateTestLifetimeEnforcer, &dom_parser_enforcer));
+  TestLifetimeEnforcer* blobs_enforcer = nullptr;
+  factory_override.map().emplace(
+      api::offscreen::Reason::kBlobs,
+      base::BindRepeating(&CreateTestLifetimeEnforcer, &blobs_enforcer));
+
+  // Load an extension an create an offscreen document.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Create a new document for both the blob and dom parser reasons.
+  OffscreenDocumentHost* offscreen_document = CreateDocumentAndWaitForLoad(
+      *extension, extension->GetResourceURL("offscreen.html"),
+      {api::offscreen::Reason::kBlobs, api::offscreen::Reason::kDomParser},
+      *profile());
+  ASSERT_TRUE(offscreen_document);
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // Each lifetime enforcer should have been created.
+  ASSERT_TRUE(dom_parser_enforcer);
+  ASSERT_TRUE(blobs_enforcer);
+
+  // Set the dom parser enforcer to be inactive. Note that the blob enforcer is
+  // still active.
+  dom_parser_enforcer->SetActive(false);
+  dom_parser_enforcer->CallNotifyInactive();
+
+  // The document should still be around, since the blob enforcer is still
+  // active.
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // Re-activate and deactivate the dom parser enforcer (to verify it's okay for
+  // it to cycle between states multiple times).
+  // Note: Technically, the SetActive() calls here aren't necessary, but it
+  // better indicates the real scenario.
+  dom_parser_enforcer->SetActive(true);
+  dom_parser_enforcer->SetActive(false);
+  dom_parser_enforcer->CallNotifyInactive();
+
+  // The document should still be active.
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // Switch the active enforcers, first making the dom parser enforcer active,
+  // then making the blob enforcer inactive.
+  dom_parser_enforcer->SetActive(true);
+  blobs_enforcer->SetActive(false);
+  blobs_enforcer->CallNotifyInactive();
+
+  // As above, the document should still be around, since a lifetime enforcer
+  // is still active (this time, the dom parser enforcer).
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // Finally, re-mark the dom parser as inactive.
+  dom_parser_enforcer->SetActive(false);
+  dom_parser_enforcer->CallNotifyInactive();
+
+  // Note: `offscreen_document`, `dom_parser_enforcer`, and `blobs_enforcer`
+  // are all now unsafe to use!
+
+  // Now, the document should be closed.
   EXPECT_EQ(nullptr,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
                 *extension));

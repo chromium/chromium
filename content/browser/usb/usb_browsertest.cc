@@ -55,8 +55,14 @@ class WebUsbTest : public ContentBrowserTest {
 
     // The chooser will always select the last-created `fake_device_info_`.
     EXPECT_CALL(delegate(), RunChooserInternal).WillRepeatedly([&]() {
+      permission_granted_ = true;
       return fake_device_info_.Clone();
     });
+    EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly([&]() {
+      return permission_granted_;
+    });
+    EXPECT_CALL(delegate(), RevokeDevicePermissionWebInitiated)
+        .WillRepeatedly([&]() { permission_granted_ = false; });
 
     // All origins can request device permissions.
     EXPECT_CALL(delegate(), CanRequestDevicePermission)
@@ -119,12 +125,12 @@ class WebUsbTest : public ContentBrowserTest {
       test_client_;
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
+  bool permission_granted_ = false;
   url::Origin origin_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestAndGetDevices) {
   // Call getDevices with no device permissions.
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(false));
   EXPECT_EQ(ListValueOf(), EvalJs(web_contents(),
                                   R"((async () => {
         let devices = await navigator.usb.getDevices();
@@ -141,7 +147,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestAndGetDevices) {
       })())"));
 
   // Call getDevices again with the device permission granted.
-  EXPECT_CALL(delegate(), HasDevicePermission).WillOnce(Return(true));
   EXPECT_EQ(ListValueOf("123456"), EvalJs(web_contents(),
                                           R"((async () => {
         let devices = await navigator.usb.getDevices();
@@ -167,7 +172,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestDeviceWithGuardBlocked) {
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
   // Request permission to access the fake device.
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(false));
   EXPECT_EQ("123456", EvalJs(web_contents(),
                              R"((async () => {
         let device =
@@ -175,7 +179,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
         return device.serialNumber;
       })())"));
 
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(true));
   EXPECT_TRUE(ExecJs(web_contents(),
                      R"(
         var removedPromise = new Promise(resolve => {
@@ -204,7 +207,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, ForgetDevice) {
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(false));
   EXPECT_EQ("123456", EvalJs(web_contents(),
                              R"((async () => {
         let device =
@@ -212,21 +214,18 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, ForgetDevice) {
         return device.serialNumber;
       })())"));
 
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(true));
   EXPECT_EQ(1, EvalJs(web_contents(),
                       R"((async () => {
         const devices = await navigator.usb.getDevices();
         return devices.length;
       })())"));
 
-  EXPECT_CALL(delegate(), RevokeDevicePermissionWebInitiated);
   EXPECT_TRUE(ExecJs(web_contents(),
                      R"((async () => {
         const [device] = await navigator.usb.getDevices();
         await device.forget();
       })())"));
 
-  EXPECT_CALL(delegate(), HasDevicePermission).WillRepeatedly(Return(false));
   EXPECT_EQ(0, EvalJs(web_contents(),
                       R"((async () => {
         const devices = await navigator.usb.getDevices();

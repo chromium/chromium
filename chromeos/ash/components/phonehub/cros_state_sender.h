@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
@@ -59,18 +60,21 @@ class CrosStateSender
   void PerformUpdateCrosState();
   void OnRetryTimerFired();
   void SendCrosStateMessage(const std::vector<std::string>* attestation_certs);
-  void OnAttestationCertificateGenerated(
+  void OnAttestationCertificateRetrieved(
       const std::vector<std::string>& attestation_certs,
       bool is_valid);
 
-  MessageSender* message_sender_;
-  secure_channel::ConnectionManager* connection_manager_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  PhoneModel* phone_model_;
+  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<PhoneModel, ExperimentalAsh> phone_model_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   base::TimeDelta retry_delay_;
   std::unique_ptr<AttestationCertificateGenerator>
       attestation_certificate_generator_;
+  base::Time attestation_generating_start_time_;
   base::WeakPtrFactory<CrosStateSender> weak_ptr_factory_{this};
 };
 

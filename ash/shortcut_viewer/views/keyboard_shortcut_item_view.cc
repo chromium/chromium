@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -17,6 +16,7 @@
 #include "ash/shortcut_viewer/views/bubble_view.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,8 +65,7 @@ class KSVSeparatorImageView : public views::ImageView {
   void ConfigureImage() {
     DCHECK(color_provider_);
     SkColor kShortcutBubbleSeparatorColor = kShortcutBubbleSeparatorColorLight;
-    if (ash::features::IsDarkLightModeEnabled() &&
-        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()) {
+    if (ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()) {
       kShortcutBubbleSeparatorColor = color_provider_->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorSecondary);
     }
@@ -75,7 +74,7 @@ class KSVSeparatorImageView : public views::ImageView {
     SetImageSize(gfx::Size(kIconSize, kIconSize));
   }
 
-  ash::ColorProvider* color_provider_;  // Not owned.
+  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;  // Not owned.
 };
 
 // Creates the separator view between bubble views of modifiers and key.

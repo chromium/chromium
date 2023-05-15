@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_cache.h"
@@ -38,6 +40,10 @@ class AppDeduplicationService : public KeyedService,
   AppDeduplicationService(const AppDeduplicationService&) = delete;
   AppDeduplicationService& operator=(const AppDeduplicationService&) = delete;
 
+  // Call this function before using any other function.
+  // This function returns true if the Deduplication Service has been
+  // properly initialised, ensuring the correctness of method responses.
+  bool IsServiceOn();
   std::vector<Entry> GetDuplicates(const EntryId& entry_id);
   bool AreDuplicates(const EntryId& entry_id_1, const EntryId& entry_id_2);
 
@@ -52,12 +58,18 @@ class AppDeduplicationService : public KeyedService,
                            ExactDuplicateAllInstalled);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+
+  friend class AppDeduplicationServiceAlmanacTest;
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            DeduplicateDataToEntries);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            PrefUnchangedAfterServerError);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            PrefSetAfterServerSuccess);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           ValidServiceNoDuplicates);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           ValidServiceWithDuplicates);
 
   enum class EntryStatus {
     // This entry is not an app entry (could be website, phonehub, etc.).
@@ -120,7 +132,7 @@ class AppDeduplicationService : public KeyedService,
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
   std::map<EntryId, EntryStatus> entry_status_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedObservation<AppProvisioningDataManager,
                           AppProvisioningDataManager::Observer>

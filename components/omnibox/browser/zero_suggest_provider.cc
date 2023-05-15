@@ -305,7 +305,7 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
     return false;
   }
 
-  absl::optional<base::Value> response_data =
+  absl::optional<base::Value::List> response_data =
       SearchSuggestionParser::DeserializeJsonData(response_json);
   if (!response_data) {
     return false;
@@ -696,6 +696,7 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
       AutocompleteMatch::SanitizeString(navigation.description());
   match.description_class = ClassifyTermMatches({}, match.description.length(),
                                                 0, ACMatchClassification::NONE);
+  match.suggest_type = navigation.suggest_type();
   for (const int subtype : navigation.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
   }

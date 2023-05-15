@@ -43,6 +43,11 @@ class FutexWaiter : public WaiterCrtp<FutexWaiter> {
   static constexpr char kName[] = "FutexWaiter";
 
  private:
+  // Atomically check that `*v == val`, and if it is, then sleep until the
+  // timeout `t` has been reached, or until woken by `Wake()`.
+  static int WaitUntil(std::atomic<int32_t>* v, int32_t val,
+                       KernelTimeout t);
+
   // Futexes are defined by specification to be 32-bits.
   // Thus std::atomic<int32_t> must be just an int32_t with lockfree methods.
   std::atomic<int32_t> futex_;

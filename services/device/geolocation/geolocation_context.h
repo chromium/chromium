@@ -35,7 +35,7 @@ class GeolocationContext : public mojom::GeolocationContext {
   // mojom::GeolocationContext implementation:
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
                        const GURL& requesting_url) override;
-  void SetOverride(mojom::GeopositionPtr geoposition) override;
+  void SetOverride(mojom::GeopositionResultPtr geoposition_result) override;
   void ClearOverride() override;
 
   // Called when a GeolocationImpl has a connection error. After this call, it
@@ -45,7 +45,7 @@ class GeolocationContext : public mojom::GeolocationContext {
  private:
   std::vector<std::unique_ptr<GeolocationImpl>> impls_;
 
-  mojom::GeopositionPtr geoposition_override_;
+  mojom::GeopositionResultPtr geoposition_override_;
 };
 
 }  // namespace device

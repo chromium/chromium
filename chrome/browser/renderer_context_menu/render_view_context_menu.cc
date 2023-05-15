@@ -91,6 +91,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -249,8 +250,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
 
@@ -278,6 +279,8 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif
@@ -638,8 +641,13 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void OnProfileCreated(const GURL& link_url, Profile* profile) {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+void OnBrowserCreated(const GURL& link_url, Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+
   NavigateParams nav_params(
       browser, link_url,
       /* |ui::PAGE_TRANSITION_TYPED| is used rather than
@@ -749,6 +757,8 @@ RenderViewContextMenu::RenderViewContextMenu(
                        this,
                        &menu_model_,
                        base::BindRepeating(MenuItemMatchesParams, params_)),
+      current_url_(render_frame_host.GetLastCommittedURL()),
+      main_frame_url_(render_frame_host.GetMainFrame()->GetLastCommittedURL()),
       profile_link_submenu_model_(this),
       multiple_profiles_open_(false),
       protocol_handler_submenu_model_(this),
@@ -761,7 +771,8 @@ RenderViewContextMenu::RenderViewContextMenu(
               GetProfile()->GetOriginalProfile()),
           this,
           &menu_model_,
-          GetBrowser()) {
+          GetBrowser(),
+          std::make_unique<ScopedNewBadgeTracker>(GetProfile())) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -964,6 +975,7 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
   ui::ScopedClipboardWriter scw(
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/true));
+  scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(FormatURLForClipboard(url));
 }
 
@@ -1093,11 +1105,14 @@ void RenderViewContextMenu::InitMenu() {
     AppendPlatformEditableItems();
   }
 
-  // Show Read Anything option if text is selected.
+  // Show Read Anything option if text is selected and if it's not already open
+  // in the side panel.
   if (features::IsReadAnythingEnabled()) {
-    if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
-        content_type_->SupportsGroup(
-            ContextMenuContentType::ITEM_GROUP_EDITABLE)) {
+    if (GetBrowser() && !IsReadAnythingEntryShowing(GetBrowser()) &&
+        (content_type_->SupportsGroup(
+             ContextMenuContentType::ITEM_GROUP_COPY) ||
+         content_type_->SupportsGroup(
+             ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
       AppendReadAnythingItem();
     }
   }
@@ -1769,6 +1784,9 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   menu_model_.AddItem(GetSearchForImageIdc(), menu_string);
+  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+  }
 
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
@@ -1975,7 +1993,9 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 void RenderViewContextMenu::AppendReadAnythingItem() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                   IDS_CONTENT_CONTEXT_READING_MODE);
-  menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+  menu_model_.SetIsNewFeatureAt(
+      menu_model_.GetItemCount() - 1,
+      !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK));
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2049,6 +2069,9 @@ void RenderViewContextMenu::AppendSearchProvider() {
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                      default_provider->short_name(),
                                      printable_selection_text));
+      if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
+        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+      }
     }
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
@@ -2301,6 +2324,9 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     menu_model_.AddItem(GetRegionSearchIdc(),
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
+    if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    }
   }
 }
 
@@ -2582,7 +2608,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      return ash::ClipboardHistoryController::Get()->CanShowMenu();
+      return ash::ClipboardHistoryController::Get()->HasAvailableHistoryItems();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     {
       auto* service = chromeos::LacrosService::Get();
@@ -2832,17 +2858,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     // back/forward entries. Session history may have changed while the context
     // menu was open. So we need to check `CanGoBack`/`CanGoForward` again.
     case IDC_BACK:
-      if (auto& controller = embedder_web_contents_->GetController();
-          controller.CanGoBack()) {
-        controller.GoBack();
-      }
+      chrome::GoBack(embedder_web_contents_);
       break;
 
     case IDC_FORWARD:
-      if (auto& controller = embedder_web_contents_->GetController();
-          controller.CanGoForward()) {
-        controller.GoForward();
-      }
+      chrome::GoForward(embedder_web_contents_);
       break;
 
     case IDC_SAVE_PAGE:
@@ -2968,7 +2988,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
         break;
       }
+      // Searching in this side panel is dependent on the companion feature
+      // being disabled.
       if (side_search::IsSearchWebInSidePanelSupported(
+              chrome::FindBrowserWithWebContents(embedder_web_contents_)) &&
+          !companion::IsSearchInCompanionSidePanelSupported(
               chrome::FindBrowserWithWebContents(embedder_web_contents_))) {
         ExecSearchWebInSidePanel(selection_navigation_url_);
         break;
@@ -3279,7 +3303,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (supervised_user_service &&
       supervised_user_service->IsURLFilteringEnabled()) {
@@ -3609,7 +3633,15 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::BindRepeating(OnProfileCreated, params_.link_url));
+      base::BindRepeating(OnBrowserCreated, params_.link_url));
+}
+
+void RenderViewContextMenu::ExecOpenInReadAnything() {
+  Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  ShowReadAnythingSidePanel(browser);
 }
 
 void RenderViewContextMenu::ExecInspectElement() {
@@ -3718,6 +3750,7 @@ void RenderViewContextMenu::ExecCopyLinkText() {
   ui::ScopedClipboardWriter scw(
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/true));
+  scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(params_.link_text);
 }
 
@@ -3771,16 +3804,24 @@ void RenderViewContextMenu::ExecRegionSearch(
   // PDF reader.
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-
-  if (!lens_region_search_controller_) {
-    lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser);
-  }
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   bool use_fullscreen_capture =
       GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
       lens::features::IsLensFullscreenSearchEnabled();
+
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
+  if (companion_helper &&
+      companion::IsSearchImageInCompanionSidePanelSupported(browser)) {
+    companion_helper->StartRegionSearch(web_contents, use_fullscreen_capture);
+    return;
+  }
+
+  if (!lens_region_search_controller_) {
+    lens_region_search_controller_ =
+        std::make_unique<lens::LensRegionSearchController>(browser);
+  }
   lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
                                         is_google_default_search_provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3806,7 +3847,7 @@ void RenderViewContextMenu::ExecSearchWebInCompanionSidePanel(const GURL& url) {
   if (!companion_helper) {
     return;
   }
-  companion_helper->ShowCompanionSidePanel(url);
+  companion_helper->ShowCompanionSidePanelForSearchURL(url);
 }
 
 void RenderViewContextMenu::ExecSearchWebInSidePanel(const GURL& url) {
@@ -3919,7 +3960,10 @@ void RenderViewContextMenu::ExecPrint() {
   }
 
   printing::StartPrint(
-      source_web_contents_, mojo::NullAssociatedRemote(),
+      source_web_contents_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      mojo::NullAssociatedRemote(),
+#endif
       GetPrefs(browser_context_)->GetBoolean(prefs::kPrintPreviewDisabled),
       !params_.selection_text.empty());
 #endif  // BUILDFLAG(ENABLE_PRINTING)
@@ -3965,10 +4009,19 @@ void RenderViewContextMenu::ExecPartialTranslate() {
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
+// Open the browser language settings.
+// Exception: On Ash, the browser language settings consists solely of a link to
+// the OS language settings, so just open the OS settings directly (this has the
+// added benefit of also doing the right thing when Lacros is enabled).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      GetProfile(), chromeos::settings::mojom::kLanguagesAndInputSectionPath);
+#else
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
       event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   GURL url = chrome::GetSettingsUrl(chrome::kLanguageOptionsSubPage);
   OpenURL(url, GURL(), disposition, ui::PAGE_TRANSITION_LINK);
+#endif
 }
 
 void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {

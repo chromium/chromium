@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura_ash.h"
 
 #include "ash/public/cpp/split_view_test_api.h"
@@ -124,7 +125,7 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
     fs_changed.Wait();
   }
 
-  extensions::AppWindow* app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
 };
 
 // Verify that immersive mode is enabled or disabled as expected.

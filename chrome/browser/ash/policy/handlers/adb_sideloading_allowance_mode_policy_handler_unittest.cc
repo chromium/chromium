@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -41,7 +42,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
   AdbSideloadingAllowanceModePolicyHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
         mock_notification_(
             new ash::MockAdbSideloadingPolicyChangeNotification()) {
     chromeos::PowerManagerClient::InitializeFake();
@@ -115,12 +116,13 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
-  ash::MockAdbSideloadingPolicyChangeNotification* mock_notification_;
+  raw_ptr<ash::MockAdbSideloadingPolicyChangeNotification, ExperimentalAsh>
+      mock_notification_;
   std::unique_ptr<AdbSideloadingAllowanceModePolicyHandler>
       adb_sideloading_allowance_mode_policy_handler_;
 

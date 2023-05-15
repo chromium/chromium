@@ -4,6 +4,8 @@
 
 static_library("core") {
   sources = [
+    "companion_metrics_logger.cc",
+    "companion_metrics_logger.h",
     "companion_permission_utils.cc",
     "companion_permission_utils.h",
     "companion_url_builder.cc",
@@ -21,10 +23,13 @@ static_library("core") {
     "mojom:mojo_bindings",
     "proto",
     "//base",
+    "//chrome/browser/ui/side_panel:side_panel_enums",
     "//components/prefs",
     "//components/unified_consent",
     "//content/public/browser",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
 }
@@ -32,6 +37,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "companion_metrics_logger_unittest.cc",
     "companion_url_builder_unittest.cc",
     "promo_handler_unittest.cc",
   ]
@@ -42,12 +48,15 @@ source_set("unit_tests") {
     "proto",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui/side_panel:side_panel_enums",
     "//chrome/test:test_support",
     "//components/prefs",
+    "//components/ukm:test_support",
     "//components/unified_consent",
     "//content/public/browser",
     "//content/test:test_support",
     "//net",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -47,11 +47,10 @@ class SuppressBubbleSettingRow : public views::View,
  public:
   METADATA_HEADER(SuppressBubbleSettingRow);
 
-  SuppressBubbleSettingRow(
-      raw_ptr<Browser> browser,
-      bool should_show_settings_link,
-      raw_ptr<DownloadBubbleUIController> bubble_controller,
-      raw_ptr<DownloadBubbleNavigationHandler> navigation_handler)
+  SuppressBubbleSettingRow(Browser* browser,
+                           bool should_show_settings_link,
+                           DownloadBubbleUIController* bubble_controller,
+                           DownloadBubbleNavigationHandler* navigation_handler)
       : browser_(browser),
         bubble_controller_(bubble_controller),
         navigation_handler_(navigation_handler) {
@@ -168,7 +167,7 @@ class SuppressBubbleSettingRow : public views::View,
 BEGIN_METADATA(SuppressBubbleSettingRow, views::View)
 END_METADATA
 
-bool ShouldShowSuppressSetting(raw_ptr<Profile> profile, int impressions) {
+bool ShouldShowSuppressSetting(Profile* profile, int impressions) {
   // Impressions have been incremented by this point, so the first
   // impression is 1.
   return download::IsDownloadBubblePartialViewEnabledDefaultValue(profile) &&
@@ -179,7 +178,7 @@ bool ShouldShowSettingsLink(int impressions) {
   return impressions == 5;
 }
 
-void MaybeRecordImpression(raw_ptr<Profile> profile, int impressions) {
+void MaybeRecordImpression(Profile* profile, int impressions) {
   // Pref writes are moderately expensive and we never change behavior for 7+
   // impressions, so don't increment further.
   if (impressions > 6) {
@@ -193,33 +192,33 @@ void MaybeRecordImpression(raw_ptr<Profile> profile, int impressions) {
 
 // static
 std::unique_ptr<DownloadBubblePartialView> DownloadBubblePartialView::Create(
-    raw_ptr<Browser> browser,
-    raw_ptr<DownloadBubbleUIController> bubble_controller,
-    raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+    Browser* browser,
+    DownloadBubbleUIController* bubble_controller,
+    DownloadBubbleNavigationHandler* navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    base::OnceClosure on_mouse_entered_closure) {
+    base::OnceClosure on_interacted_closure) {
   if (rows.empty()) {
     return nullptr;
   }
 
   return base::WrapUnique(new DownloadBubblePartialView(
       browser, bubble_controller, navigation_handler, std::move(rows),
-      std::move(on_mouse_entered_closure)));
+      std::move(on_interacted_closure)));
 }
 
 DownloadBubblePartialView::DownloadBubblePartialView(
-    raw_ptr<Browser> browser,
-    raw_ptr<DownloadBubbleUIController> bubble_controller,
-    raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+    Browser* browser,
+    DownloadBubbleUIController* bubble_controller,
+    DownloadBubbleNavigationHandler* navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    base::OnceClosure on_mouse_entered_closure)
-    : on_mouse_entered_closure_(std::move(on_mouse_entered_closure)) {
+    base::OnceClosure on_interacted_closure)
+    : on_interacted_closure_(std::move(on_interacted_closure)) {
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  raw_ptr<Profile> profile = browser->profile();
+  Profile* profile = browser->profile();
   const int impressions =
       download::DownloadBubblePartialViewImpressions(profile) + 1;
   std::unique_ptr<SuppressBubbleSettingRow> setting_row;
@@ -253,10 +252,35 @@ DownloadBubblePartialView::DownloadBubblePartialView(
 
 DownloadBubblePartialView::~DownloadBubblePartialView() = default;
 
-void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (on_mouse_entered_closure_) {
-    std::move(on_mouse_entered_closure_).Run();
+void DownloadBubblePartialView::AddedToWidget() {
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager) {
+    focus_manager->AddFocusChangeListener(this);
   }
+}
+
+void DownloadBubblePartialView::RemovedFromWidget() {
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager) {
+    focus_manager->RemoveFocusChangeListener(this);
+  }
+}
+
+void DownloadBubblePartialView::OnInteracted() {
+  if (on_interacted_closure_) {
+    std::move(on_interacted_closure_).Run();
+  }
+}
+
+void DownloadBubblePartialView::OnWillChangeFocus(views::View* before,
+                                                  views::View* now) {
+  if (now && Contains(now)) {
+    OnInteracted();
+  }
+}
+
+void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
+  OnInteracted();
 }
 
 BEGIN_METADATA(DownloadBubblePartialView, views::View)

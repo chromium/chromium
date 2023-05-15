@@ -36,8 +36,6 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
-
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
@@ -96,13 +94,13 @@ void WebAppMenuModel::Build() {
   AddItemWithStringId(IDC_WEB_APP_MENU_APP_INFO,
                       IDS_APP_CONTEXT_MENU_SHOW_INFO);
   size_t app_info_index = GetItemCount() - 1;
+
+  CHECK(browser());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool is_isolated_web_app =
-      web_contents &&
-      web_contents->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
-          WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  bool is_isolated_web_app = browser()->app_controller() &&
+                             browser()->app_controller()->IsIsolatedWebApp();
 
   if (web_contents) {
     std::u16string display_text =
@@ -112,12 +110,11 @@ void WebAppMenuModel::Build() {
     // For Isolated Web Apps the origin's host name is a non-human-readable
     // string of characters, so instead of displaying the origin, the short name
     // of the app will be displayed.
-    if (is_isolated_web_app && browser() &&
-        browser()->app_controller()->IsWebApp(browser())) {
+    if (is_isolated_web_app) {
       std::u16string short_name =
           browser()->app_controller()->GetAppShortName();
-      if (!short_name.empty())
-        display_text = short_name;
+      // For Isolated Web Apps, |GetAppShortName()| must be non-empty.
+      display_text = short_name;
     }
     SetMinorText(app_info_index, display_text);
   }

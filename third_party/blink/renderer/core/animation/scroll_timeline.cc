@@ -165,14 +165,14 @@ V8CSSNumberish* ScrollTimeline::duration() {
 // https://github.com/w3c/csswg-drafts/issues/7240.
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
 ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
+  TimelineState state;
   UpdateResolvedSource();
 
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
   if (!IsResolved()) {
-    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
-            /* scroll_offsets */ absl::nullopt};
+    return state;
   }
   DCHECK(resolved_source_);
   LayoutBox* layout_box = resolved_source_->GetLayoutBox();
@@ -195,6 +195,13 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
   DCHECK(scrollable_area->MaximumScrollOffset().x() == 0 ||
          scrollable_area->MinimumScrollOffset().x() == 0);
 
+  // Record the scroll range for a quick validation check at the end
+  // of the layout process. If the cached values change, a fresh
+  // style + layout cycle is required. The check is performed only once
+  // per frame to avoid an infinite loop in the update cycle.
+  minimum_scroll_offset_ = scrollable_area->MinimumScrollOffset();
+  maximum_scroll_offset_ = scrollable_area->MaximumScrollOffset();
+
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   auto physical_orientation =
       ToPhysicalScrollOrientation(GetAxis(), *layout_box);
@@ -207,36 +214,33 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
   // use that everywhere.
   current_offset = std::abs(current_offset);
 
-  absl::optional<ScrollOffsets> scroll_offsets =
-      CalculateOffsets(scrollable_area, physical_orientation);
-  DCHECK(scroll_offsets);
+  CalculateOffsets(scrollable_area, physical_orientation, &state);
+  DCHECK(state.scroll_offsets);
 
-  // Make the timeline inactive when the scroll offset range is zero.
+  state.zoom = layout_box->StyleRef().EffectiveZoom();
+  // Timeline is inactive unless the scroll offset range is positive.
   // github.com/w3c/csswg-drafts/issues/7401
-  if (std::abs(scroll_offsets->end - scroll_offsets->start) < 1) {
-    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
-            scroll_offsets};
+  if (std::abs(state.scroll_offsets->end - state.scroll_offsets->start) > 0) {
+    state.phase = TimelinePhase::kActive;
+    double progress = (current_offset - state.scroll_offsets->start) /
+                      (state.scroll_offsets->end - state.scroll_offsets->start);
+
+    base::TimeDelta duration = base::Seconds(GetDuration()->InSecondsF());
+    state.current_time =
+        base::Milliseconds(progress * duration.InMillisecondsF());
   }
-
-  double progress = (current_offset - scroll_offsets->start) /
-                    (scroll_offsets->end - scroll_offsets->start);
-
-  base::TimeDelta duration = base::Seconds(GetDuration()->InSecondsF());
-  absl::optional<base::TimeDelta> calculated_current_time =
-      base::Milliseconds(progress * duration.InMillisecondsF());
-
-  return {TimelinePhase::kActive, calculated_current_time, scroll_offsets};
+  return state;
 }
 
-absl::optional<ScrollOffsets> ScrollTimeline::CalculateOffsets(
-    PaintLayerScrollableArea* scrollable_area,
-    ScrollOrientation physical_orientation) const {
+void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                                      ScrollOrientation physical_orientation,
+                                      TimelineState* state) const {
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();
   double end_offset = physical_orientation == kHorizontalScroll
                           ? scroll_dimensions.x()
                           : scroll_dimensions.y();
-  return absl::make_optional<ScrollOffsets>(0, end_offset);
+  state->scroll_offsets = absl::make_optional<ScrollOffsets>(0, end_offset);
 }
 
 // Scroll-linked animations are initialized with the start time of zero.
@@ -252,8 +256,7 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
 
   // Only run calculation for progress based scroll timelines
   if (duration) {
-    // if iteration_duration == "auto" and iterations > 0
-    if (!timing.iteration_duration && timing.iteration_count > 0) {
+    if (timing.iteration_count > 0) {
       // duration represents 100% so we subtract percentage delays and divide it
       // by iteration count to calculate the iteration duration.
       double start_delay = timing.start_delay.relative_delay.value_or(0);
@@ -290,13 +293,51 @@ bool ScrollTimeline::ShouldScheduleNextService() {
   return current_phase_and_time != last_current_phase_and_time_;
 }
 
+bool ScrollTimeline::CheckIfNeedsValidation() {
+  bool resolved = ComputeIsResolved();
+  if (resolved != is_resolved_) {
+    return true;
+  }
+
+  Node* source =
+      CurrentAttachment()
+          ? ResolveSource(CurrentAttachment()->ComputeSourceNoLayout())
+          : nullptr;
+  if (source != resolved_source_) {
+    return true;
+  }
+  DCHECK(!resolved || source);
+
+  if (resolved) {
+    LayoutBox* layout_box = source->GetLayoutBox();
+    PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+    ScrollOffset min_scroll_offset = scrollable_area->MinimumScrollOffset();
+    ScrollOffset max_scroll_offset = scrollable_area->MaximumScrollOffset();
+    // Scroll range is cached during the snapshot update. If the values do not
+    // align, the timeline state is no longer valid.
+    if (min_scroll_offset != minimum_scroll_offset_ ||
+        max_scroll_offset != maximum_scroll_offset_) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ScrollTimeline::ScheduleNextService() {
   // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
   NOTREACHED();
 }
 
 void ScrollTimeline::UpdateSnapshot() {
-  timeline_state_snapshotted_ = ComputeTimelineState();
+  auto state = ComputeTimelineState();
+  bool invalidate_timing =
+      !state.HasConsistentLayout(timeline_state_snapshotted_);
+  timeline_state_snapshotted_ = state;
+  if (invalidate_timing) {
+    for (Animation* animation : GetAnimations()) {
+      animation->InvalidateNormalizedTiming();
+    }
+  }
 }
 
 Element* ScrollTimeline::source() const {
@@ -374,7 +415,7 @@ ScrollAxis ScrollTimeline::GetAxis() const {
   return ScrollAxis::kBlock;
 }
 
-void ScrollTimeline::InvalidateEffectTargetStyle() {
+void ScrollTimeline::InvalidateEffectTargetStyle() const {
   for (Animation* animation : GetAnimations()) {
     animation->InvalidateEffectTargetStyle();
   }
@@ -382,29 +423,35 @@ void ScrollTimeline::InvalidateEffectTargetStyle() {
 
 bool ScrollTimeline::ValidateSnapshot() {
   auto state = ComputeTimelineState();
-
-  if (timeline_state_snapshotted_ == state)
+  if (ValidateTimelineOffsets() && timeline_state_snapshotted_ == state) {
     return true;
-
-  timeline_state_snapshotted_ = state;
-  InvalidateEffectTargetStyle();
-  return false;
-}
-
-void ScrollTimeline::FlushStyleUpdate() {
-  UpdateResolvedSource();
-  if (!IsResolved()) {
-    return;
   }
 
-  DCHECK(resolved_source_);
-  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
-  DCHECK(layout_box);
-  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
-  DCHECK(scrollable_area);
-  auto physical_orientation =
-      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
-  CalculateOffsets(scrollable_area, physical_orientation);
+  timeline_state_snapshotted_ = state;
+
+  // Mark an attached animation's target as dirty if the play state is running
+  // or finished. Idle animations are not in effect and the effect of a paused
+  // animation is not impacted by timeline staleness.
+  for (Animation* animation : GetAnimations()) {
+    Animation::AnimationPlayState play_state =
+        animation->CalculateAnimationPlayState();
+    if (play_state != Animation::kRunning &&
+        play_state != Animation::kFinished) {
+      continue;
+    }
+
+    // The animation's effect target requires a style update to ensure that we
+    // pickup the new effect value.
+    animation->InvalidateEffectTargetStyle();
+    // Normalized timing needs to be reevaluated since the intrinsic iteration
+    // duration may be affected.
+    animation->InvalidateNormalizedTiming();
+    // The animation range may be affected, which in turn can affect animation
+    // start time as well as intrinsic iteration duration.
+    animation->OnRangeUpdate();
+  }
+
+  return false;
 }
 
 void ScrollTimeline::AddAttachment(ScrollTimelineAttachment* attachment) {

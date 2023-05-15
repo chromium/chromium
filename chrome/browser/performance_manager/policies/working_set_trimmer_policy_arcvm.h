@@ -11,6 +11,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -86,7 +87,8 @@ class WorkingSetTrimmerPolicyArcVm
   void StartObservingUserInteractions();
   void OnConnectionReadyInternal();
 
-  content::BrowserContext* context_for_testing_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_for_testing_ =
+      nullptr;
 
   // True if ARCVM has already been fully booted and app.mojom connection is
   // established.

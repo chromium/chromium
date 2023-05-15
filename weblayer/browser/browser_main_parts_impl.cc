@@ -58,6 +58,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/javascript_dialogs/android/app_modal_dialog_view_android.h"  // nogncheck
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"  // nogncheck
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -101,7 +102,8 @@ void PublishSubresourceFilterRulesetFromResourceBundle() {
           IDR_SUBRESOURCE_FILTER_UNINDEXED_RULESET_MANIFEST_JSON);
   auto ruleset_manifest = base::JSONReader::Read(ruleset_manifest_string);
   DCHECK(ruleset_manifest);
-  std::string* content_version = ruleset_manifest->FindStringKey("version");
+  std::string* content_version =
+      ruleset_manifest->GetDict().FindString("version");
 
   // Instruct the RulesetService to obtain the unindexed ruleset data from the
   // ResourceBundle and give it the version of that data.
@@ -171,6 +173,7 @@ int BrowserMainPartsImpl::PreCreateThreads() {
       std::make_unique<crash_reporter::ChildProcessCrashObserver>());
 
   crash_reporter::InitializeCrashKeys();
+  CHECK(metrics::SubprocessMetricsProvider::CreateInstance());
 
   // WebLayer initializes the MetricsService once consent is determined.
   // Determining consent is async and potentially slow. VariationsIdsProvider

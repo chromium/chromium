@@ -18,6 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -141,10 +143,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Typemapped to blink::mojom::AuctionAdConfigBuyerCurrencies
   struct BuyerCurrencies {
     // Fallback value used for buyers not in `per_buyer_currencies`.
-    absl::optional<std::string> all_buyers_currency;
+    absl::optional<AdCurrency> all_buyers_currency;
 
     // Currency expectations for buyer per their origin.
-    absl::optional<base::flat_map<url::Origin, std::string>>
+    absl::optional<base::flat_map<url::Origin, AdCurrency>>
         per_buyer_currencies;
   };
 
@@ -216,7 +218,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
     // Expectation of currency seller worklet in this auction will provide when
     // modified bids or converting them for reporting.
-    absl::optional<std::string> seller_currency;
+    absl::optional<AdCurrency> seller_currency;
 
     // Expectation of currency for bids made by various participating buyers.
     MaybePromiseBuyerCurrencies buyer_currencies;
@@ -260,6 +262,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // order to participate in the auction. Interest groups that don't declare
     // all required seller capabilities will not participate in the auction.
     SellerCapabilitiesType required_seller_capabilities;
+
+    // The requested ad creative size for the auction (strictly optional).
+    // If specified by the caller, it is surfaced during the auction through
+    // browser signals and stored after the auction in the winning fenced frame
+    // config as its container size.
+    absl::optional<blink::AdSize> requested_size;
 
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.

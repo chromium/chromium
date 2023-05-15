@@ -27,6 +27,13 @@ enum class ConsentLevel;
 // Adds `fakeIdentity` to the fake identity service.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
+// Adds `fakeIdentity` to the fake system identity interaction manager. This
+// is used to simulate adding the `fakeIdentity` through the fake SSO Auth flow
+// done by `FakeSystemIdentityInteractionManager`. See
+// `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
+- (void)addFakeIdentityForSSOAuthAddAccountFlow:
+    (FakeSystemIdentity*)fakeIdentity;
+
 // Maps `capabilities` to the `fakeIdentity`. Check fails if the
 // `fakeIdentity` has not been added to the fake identity service.
 - (void)setCapabilities:(ios::CapabilitiesDict*)capabilities

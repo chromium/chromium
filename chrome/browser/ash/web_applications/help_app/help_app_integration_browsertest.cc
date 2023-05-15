@@ -37,6 +37,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -46,18 +47,18 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
@@ -69,6 +70,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -76,41 +78,31 @@ namespace {
 
 class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
-  HelpAppIntegrationTest() {
+  HelpAppIntegrationTest()
+      : https_server_{std::make_unique<net::EmbeddedTestServer>(
+            net::EmbeddedTestServer::TYPE_HTTPS)} {
     scoped_feature_list_.InitWithFeatures(
         {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
-        {});
+        // TODO(b/279856318): Test auto trigger install dialog functionality.
+        {features::kHelpAppAutoTriggerInstallDialog});
+
+    https_server()->ServeFilesFromSourceDirectory(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   }
+
+  // Setting up our own HTTPS `EmbeddedTestServer` because the superclass's
+  // `embedded_test_server()` is HTTP.
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
-
-class HelpAppIntegrationDarkLightModeEnabledTest
-    : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationDarkLightModeEnabledTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class HelpAppIntegrationDarkLightModeDisabledTest
-    : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationDarkLightModeDisabledTest() {
-    feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 content::WebContents* GetActiveWebContents() {
   return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
@@ -200,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
 }
 
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeEnabledTest,
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
   WaitForTestSystemAppInstall();
   web_app::AppId app_id =
@@ -213,20 +205,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeEnabledTest,
   EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), gfx::kGoogleGrey900);
   EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id),
             gfx::kGoogleGrey900);
-}
-
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeDisabledTest,
-                       HasCorrectThemeAndBackgroundColor) {
-  WaitForTestSystemAppInstall();
-  web_app::AppId app_id =
-      *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP);
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
-
-  EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
-  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
-  EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), absl::nullopt);
-  EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
@@ -365,16 +343,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   constexpr char kScript[] = R"(
     (async () => {
       await window.customLaunchData.delegate.maybeShowDiscoverNotification();
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
-  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // Use EvalJs instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
-  bool script_finished;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
             3);
@@ -425,16 +401,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     (async () => {
       const delegate = window.customLaunchData.delegate;
       await delegate.maybeShowReleaseNotesNotification();
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
-  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // Use EvalJs instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
-  bool script_finished;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             3);
@@ -520,17 +494,13 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
   constexpr char kScript[] = R"(
     (async () => {
       const res = await window.customLaunchData.delegate.openFeedbackDialog();
-      window.domAutomationController.send(res === null);
+      return res === null;
     })();
   )";
-  bool error_is_null;
-  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
-  // run in the same world as the page's code.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &error_is_null));
   // A null string result means no error in opening feedback.
-  EXPECT_TRUE(error_is_null);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 }
 
 // Test that the Help App opens the OS Settings family link page.
@@ -552,16 +522,127 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
       await window.customLaunchData.delegate.showParentalControls();
     })();
   )";
-  // Trigger the script, then wait for settings to open. Use ExecuteScript
+  // Trigger the script, then wait for settings to open. Use ExecJs
   // instead of EvalJsInAppFrame because the script needs to run in the same
   // world as the page's code.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   navigation_observer.Wait();
 
   // Settings should be active in a new window.
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
+// Test that the Help App's `openUrlInBrowser` can open valid URLs.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2CanOpenValidHttpsUrlsInBrowser) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL test_url = https_server()->GetURL("/title1.html");
+
+  ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
+
+  // There should be only be one regular browser with one tab.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  content::TestNavigationObserver navigation_observer(test_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Script that tells the Help App to call the openUrlInBrowser Mojo function.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const delegate = window.customLaunchData.delegate;
+      await delegate.openUrlInBrowser($1);
+    })();
+  )";
+  // Trigger the script, then wait for the URL to open in a new tab. Use
+  // ExecJs instead of EvalJsInAppFrame because the script needs to run
+  // in the same world as the page's code.
+  EXPECT_TRUE(
+      content::ExecJs(SandboxedWebUiAppTestBase::GetAppFrame(web_contents),
+                      content::JsReplace(kScript, test_url),
+                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  navigation_observer.Wait();
+
+  // There should still be two browser windows.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  // The regular browser should only have 2 tabs.
+  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  // After opening the URL, the regular browser should be the most recently
+  // active browser.
+  EXPECT_EQ(browser(), chrome::FindLastActive());
+  // The active tab should be the `test_url` we opened.
+  EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
+}
+
+// Test that the Help App's `openUrlInBrowser` crashes for invalid URLs.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2CrashesForInvalidUrlsInBrowser) {
+  // There should be only be one regular browser with one tab.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  // The regular browser should only have 1 tab.
+  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  // The tab should be the default "about:blank" URL.
+  EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
+
+  WaitForTestSystemAppInstall();
+
+  // Script that tells the Help App to call the openUrlInBrowser Mojo function.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const delegate = window.customLaunchData.delegate;
+      await delegate.openUrlInBrowser($1);
+    })();
+  )";
+  std::string invalid_urls[] = {"",
+                                "test",
+                                "www.test.com",
+                                "http://test.com",
+                                "data:,Hello%2C%20World%21",
+                                "file:///home/foo.html",
+                                "javascript:alert('Hello World')"};
+  for (const std::string& test_url : invalid_urls) {
+    // Launch a new Help app window per test URL.
+    Browser* help_app_browser;
+    content::WebContents* web_contents =
+        LaunchApp(SystemWebAppType::HELP, &help_app_browser);
+
+    // There should be two browser windows, one regular and one for the newly
+    // opened help app.
+    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    auto* frame = SandboxedWebUiAppTestBase::GetAppFrame(web_contents);
+
+    // Test that calls with invalid URLs crash the renderer process.
+    {
+      content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+      content::RenderFrameDeletedObserver crash_observer(frame);
+
+      content::ExecuteScriptAsync(frame, content::JsReplace(kScript, test_url));
+
+      crash_observer.WaitUntilDeleted();
+    }
+    EXPECT_TRUE(web_contents->IsCrashed());
+
+    // The Help app renderer process crashed. Close the browser window so that
+    // we can relaunch it in another browser window.
+    chrome::CloseWindow(help_app_browser);
+    ui_test_utils::WaitForBrowserToClose(help_app_browser);
+
+    // There should only be 1 regular browser.
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    // The regular browser should still only have 1 tab.
+    EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    // The tab should still be the default "about:blank" URL.
+    EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
+  }
 }
 
 // Test that the Help App delegate can update the index for launcher search.
@@ -583,16 +664,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
         urlPathWithParameters: 'help/sub/3399763/id/6318213',
         locale: ''
       }]);
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
 
-  bool script_finished;
   // Use ExtractBool to make the script wait until the update completes.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 
   // Search using the search handler to confirm that the update happened.
   base::RunLoop run_loop;
@@ -652,16 +731,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
           locale: '',
         },
       ]);
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
 
-  bool script_finished;
   // Use ExtractBool to make the script wait until the update completes.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 
   // These hash values can be found in the enum in the google-internal histogram
   // file.
@@ -838,12 +915,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationDarkLightModeEnabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationDarkLightModeDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);

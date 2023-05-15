@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_coordinator.h"
 
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_view_controller.h"

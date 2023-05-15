@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"

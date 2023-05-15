@@ -95,8 +95,8 @@ void OnGetSessions(const Status& status,
   ASSERT_TRUE(session1.is_dict());
   ASSERT_TRUE(session2.is_dict());
 
-  ASSERT_EQ(static_cast<size_t>(2), session1.DictSize());
-  ASSERT_EQ(static_cast<size_t>(2), session2.DictSize());
+  ASSERT_EQ(static_cast<size_t>(2), session1.GetDict().size());
+  ASSERT_EQ(static_cast<size_t>(2), session2.GetDict().size());
 
   const std::string* session1_id = session1.GetDict().FindString("id");
   const std::string* session2_id = session2.GetDict().FindString("id");

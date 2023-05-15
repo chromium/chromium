@@ -13,6 +13,76 @@ namespace storage {
 
 namespace {
 
+bool MigrateToVersion3(sql::Database& db, sql::MetaTable& meta_table) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kNewValuesTableSql[] =
+      "CREATE TABLE new_values_mapping("
+      "context_origin TEXT NOT NULL,"
+      "key BLOB NOT NULL,"
+      "value BLOB NOT NULL,"
+      "last_used_time INTEGER NOT NULL,"
+      "PRIMARY KEY(context_origin,key)) WITHOUT ROWID";
+  if (!db.Execute(kNewValuesTableSql)) {
+    return false;
+  }
+
+  static constexpr char kSelectPreviousValuesSql[] =
+      "SELECT * FROM values_mapping";
+  static constexpr char kInsertIntoNewValuesSql[] =
+      "INSERT INTO new_values_mapping(context_origin, key, value, "
+      "last_used_time) VALUES(?,?,?,?)";
+
+  sql::Statement select_statement(
+      db.GetCachedStatement(SQL_FROM_HERE, kSelectPreviousValuesSql));
+
+  while (select_statement.Step()) {
+    sql::Statement insert_statement(
+        db.GetCachedStatement(SQL_FROM_HERE, kInsertIntoNewValuesSql));
+    insert_statement.BindString(0, select_statement.ColumnString(0));
+    insert_statement.BindBlob(1, select_statement.ColumnString16(1));
+    insert_statement.BindBlob(2, select_statement.ColumnString16(2));
+    insert_statement.BindTime(3, select_statement.ColumnTime(3));
+
+    if (!insert_statement.Run()) {
+      return false;
+    }
+  }
+
+  if (!select_statement.Succeeded()) {
+    return false;
+  }
+
+  static constexpr char kDropOldIndexSql[] =
+      "DROP INDEX IF EXISTS values_mapping_last_used_time_idx";
+  if (!db.Execute(kDropOldIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kDropOldValuesSql[] = "DROP TABLE values_mapping";
+  if (!db.Execute(kDropOldValuesSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameValuesMapSql[] =
+      "ALTER TABLE new_values_mapping RENAME TO values_mapping";
+  if (!db.Execute(kRenameValuesMapSql)) {
+    return false;
+  }
+
+  static constexpr char kCreateNewIndexSql[] =
+      "CREATE INDEX values_mapping_last_used_time_idx "
+      "ON values_mapping(last_used_time)";
+  if (!db.Execute(kCreateNewIndexSql)) {
+    return false;
+  }
+
+  return meta_table.SetVersionNumber(3) && transaction.Commit();
+}
+
 bool MigrateToVersion2(sql::Database& db,
                        sql::MetaTable& meta_table,
                        base::Clock* clock) {
@@ -85,7 +155,10 @@ bool UpgradeSharedStorageDatabaseSchema(sql::Database& db,
       !MigrateToVersion2(db, meta_table, clock)) {
     return false;
   }
-
+  if (meta_table.GetVersionNumber() == 2 &&
+      !MigrateToVersion3(db, meta_table)) {
+    return false;
+  }
   return true;
 }
 

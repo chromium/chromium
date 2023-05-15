@@ -25,7 +25,7 @@ suite(webview_manager_tests.suiteName, function() {
   let manager;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     webview = document.createElement('webview');
     manager = new WebviewManager(webview);
     document.body.appendChild(webview);

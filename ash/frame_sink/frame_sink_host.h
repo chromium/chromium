@@ -118,7 +118,7 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
 
   // The window on which LayerTreeFrameSink is created on.
-  base::raw_ptr<aura::Window> host_window_ = nullptr;
+  raw_ptr<aura::Window> host_window_ = nullptr;
 
   // The bounds of the content to be displayed in host window coordinates.
   gfx::Rect content_rect_;

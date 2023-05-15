@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
@@ -49,7 +50,7 @@ class ASH_EXPORT LoginPinInputView
     bool IsEmpty();
 
    private:
-    LoginPinInputView* const view_;
+    const raw_ptr<LoginPinInputView, ExperimentalAsh> view_;
   };
 
   explicit LoginPinInputView();
@@ -100,7 +101,7 @@ class ASH_EXPORT LoginPinInputView
   bool is_read_only_ = false;
 
   // The input field owned by this view.
-  LoginPinInput* code_input_ = nullptr;
+  raw_ptr<LoginPinInput, ExperimentalAsh> code_input_ = nullptr;
 
   // Whether the 'Return' key should trigger an unlock with an empty PIN.
   bool authenticate_with_empty_pin_on_return_key_ = false;

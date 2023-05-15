@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -28,7 +28,7 @@ public class CustomTabActivityArTestRule extends CustomTabActivityTestRule imple
                         base, desc, CustomTabActivityArTestRule.this, () -> {
                             startCustomTabActivityWithIntent(
                                     CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                            InstrumentationRegistry.getTargetContext(),
+                                            ApplicationProvider.getApplicationContext(),
                                             "about:blank"));
                         });
             }

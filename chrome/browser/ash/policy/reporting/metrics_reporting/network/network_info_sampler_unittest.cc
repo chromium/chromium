@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -52,7 +53,8 @@ class NetworkInfoSamplerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  ::ash::ShillDeviceClient::TestInterface* device_client_;
+  raw_ptr<::ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
+      device_client_;
 
  private:
   base::test::TaskEnvironment task_environment_;

@@ -10,7 +10,7 @@
 
 namespace device_reauth {
 
-// The filling surface asking for biometric authentication.
+// The UI surface requesting the device reauthentication flow.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -50,7 +50,22 @@ enum class DeviceAuthRequester {
   // re-auth is triggered.
   kLocalCardAutofill = 8,
 
-  kMaxValue = kLocalCardAutofill,
+  // The page displayed to inform the user that a device lock is needed for
+  // sign-in to protect their data privacy on this particular device. The
+  // page will prompt the user to re-authenticate their existing device lock,
+  // or create one if none exist.
+  kDeviceLockPage = 9,
+
+  // The prompt displayed when user is trying to enable/disable payment method
+  // mandatory reauth toggle or edit local card when reauth is enabled in
+  // Settings page on Android.
+  kPaymentMethodsReauthInSettings = 10,
+
+  // The prompt displayed when the user is trying to autofill a virtual card,
+  // and re-auth is triggered.
+  kVirtualCardAutofill = 11,
+
+  kMaxValue = kVirtualCardAutofill,
 };
 
 // This interface encapsulates operations related to biometric authentication.

@@ -129,14 +129,13 @@ absl::optional<int64_t> GetDisplayIdFromDict(const base::Value::Dict& dict) {
 }
 
 // Gets urls from the dictionary value.
-absl::optional<std::vector<GURL>> GetUrlsFromDict(
-    const base::Value::Dict& dict) {
+std::vector<GURL> GetUrlsFromDict(const base::Value::Dict& dict) {
   const base::Value::List* urls_path_value = dict.FindList(kUrlsKey);
+  std::vector<GURL> url_paths;
   if (!urls_path_value || urls_path_value->empty()) {
-    return absl::nullopt;
+    return url_paths;
   }
 
-  std::vector<GURL> url_paths;
   for (const auto& item : *urls_path_value) {
     if (item.GetString().empty())
       continue;
@@ -152,13 +151,13 @@ absl::optional<std::vector<GURL>> GetUrlsFromDict(
 // Gets std::vector<base::FilePath> from base::Value::Dict, e.g.
 // {"file_paths": { "aa.cc", "bb.h", ... }} returns
 // std::vector<base::FilePath>{"aa.cc", "bb.h", ...}.
-absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
+std::vector<base::FilePath> GetFilePathsFromDict(
     const base::Value::Dict& dict) {
   const base::Value::List* file_paths_value = dict.FindList(kFilePathsKey);
-  if (!file_paths_value || file_paths_value->empty())
-    return absl::nullopt;
-
   std::vector<base::FilePath> file_paths;
+  if (!file_paths_value || file_paths_value->empty())
+    return file_paths;
+
   for (const auto& item : *file_paths_value) {
     if (item.GetString().empty())
       continue;
@@ -310,8 +309,8 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (handler_id.has_value())
     data->handler_id = handler_id.value();
 
-  if (urls.has_value())
-    data->urls = urls.value();
+  if (!urls.empty())
+    data->urls = urls;
 
   if (active_tab_index.has_value())
     data->active_tab_index = active_tab_index.value();
@@ -322,8 +321,8 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (intent)
     data->intent = intent->Clone();
 
-  if (file_paths.has_value())
-    data->file_paths = file_paths.value();
+  if (!file_paths.empty())
+    data->file_paths = file_paths;
 
   if (app_type_browser.has_value())
     data->app_type_browser = app_type_browser.value();
@@ -371,8 +370,8 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (status_bar_color.has_value())
     data->status_bar_color = status_bar_color.value();
 
-  if (tab_group_infos.has_value())
-    data->tab_group_infos = tab_group_infos.value();
+  if (!tab_group_infos.empty())
+    data->tab_group_infos = tab_group_infos;
 
   return data;
 }
@@ -400,10 +399,11 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (handler_id.has_value())
     launch_info_dict.Set(kHandlerIdKey, handler_id.value());
 
-  if (urls.has_value() && !urls.value().empty()) {
+  if (!urls.empty()) {
     base::Value::List urls_list;
-    for (auto& url : urls.value())
+    for (auto& url : urls) {
       urls_list.Append(url.spec());
+    }
     launch_info_dict.Set(kUrlsKey, std::move(urls_list));
   }
 
@@ -419,10 +419,11 @@ base::Value AppRestoreData::ConvertToValue() const {
     launch_info_dict.Set(kIntentKey, apps_util::ConvertIntentToValue(intent));
   }
 
-  if (file_paths.has_value() && !file_paths.value().empty()) {
+  if (!file_paths.empty()) {
     base::Value::List file_paths_list;
-    for (auto& file_path : file_paths.value())
+    for (auto& file_path : file_paths) {
       file_paths_list.Append(file_path.value());
+    }
     launch_info_dict.Set(kFilePathsKey, std::move(file_paths_list));
   }
 

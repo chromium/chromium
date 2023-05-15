@@ -30,7 +30,7 @@ import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {isFileSystemDirectoryEntry, isFileSystemFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
-import {str, util} from './util.js';
+import {str} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -156,9 +156,6 @@ export function deleteIsForever(
  */
 export function shouldMoveToTrash(
     entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
-  if (!util.isTrashEnabled()) {
-    return false;
-  }
   const urls: Array<{volume: string, volumeAndTrashPath: string}> = [];
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
     const volumeInfo = volumeManager.volumeInfoList.item(i);

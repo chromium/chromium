@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/functional/bind.h"
+#include "base/auto_reset.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -172,9 +172,9 @@ class TestBundleClient : public mojom::FrameSinkBundleClient {
       std::vector<mojom::BundledReturnedResourcesPtr>* acks,
       std::vector<mojom::BeginFrameInfoPtr>* begin_frames,
       std::vector<mojom::BundledReturnedResourcesPtr>* reclaimed_resources) {
-    acks_ = acks;
-    begin_frames_ = begin_frames;
-    reclaimed_resources_ = reclaimed_resources;
+    base::AutoReset acks_scope(&acks_, acks);
+    base::AutoReset frames_scope(&begin_frames_, begin_frames);
+    base::AutoReset resources_scope(&reclaimed_resources_, reclaimed_resources);
     WaitForNextMessage();
   }
 
@@ -441,6 +441,12 @@ TEST_P(OnBeginFrameAcksFrameSinkBundleImplTest, ReclaimResourcesOnAck) {
   TestFrameSink frame_a(manager(), kSubFrameA, kMainFrame, kBundleId);
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
+
+  if (BeginFrameAcksEnabled()) {
+    frame_a.frame_sink->SetWantsBeginFrameAcks();
+    frame_b.frame_sink->SetWantsBeginFrameAcks();
+    frame_c.frame_sink->SetWantsBeginFrameAcks();
+  }
 
   // First submit frames through all the sinks, to each surface.
   std::vector<mojom::BundledFrameSubmissionPtr> submissions;

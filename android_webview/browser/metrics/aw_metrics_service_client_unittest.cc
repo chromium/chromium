@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,6 +72,9 @@ class AwMetricsServiceClientTest : public testing::Test {
             std::make_unique<AwMetricsServiceClientTestDelegate>())) {
     base::SetRecordActionTaskRunner(task_runner_);
     AwMetricsServiceTestClient::RegisterMetricsPrefs(prefs_->registry());
+    // Needed because RegisterMetricsProvidersAndInitState() checks for this.
+    metrics::SubprocessMetricsProvider::CreateInstance();
+
     client_->Initialize(prefs_.get());
   }
 
@@ -123,8 +127,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule expected_record(
       base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
-  prefs->Set(prefs::kMetricsAppPackageNameLoggingRule,
-             expected_record.ToDictionary());
+  prefs->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
+                 expected_record.ToDictionary());
 
   absl::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
@@ -278,7 +282,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
   base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule record(base::Version(kTestAllowlistVersion),
                                    base::Time::Now() + expiry_time);
-  prefs->Set(prefs::kMetricsAppPackageNameLoggingRule, record.ToDictionary());
+  prefs->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
+                 record.ToDictionary());
   client->SetAppPackageNameLoggingRule(record);
 
   EXPECT_TRUE(client->ShouldRecordPackageName());

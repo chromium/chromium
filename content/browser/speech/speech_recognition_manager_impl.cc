@@ -303,7 +303,7 @@ void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
     return;
 
   // The SpeechRecognictionManager is not used with multiple streams
-  // which is only supported in combination with the getDisplayMediaSet API.
+  // which is only supported in combination with the getAllScreensMedia API.
   // The |stream_devices| vector can be empty e.g. if the permission
   // was denied.
   DCHECK_LE(stream_devices_set.stream_devices.size(), 1u);

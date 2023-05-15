@@ -9,6 +9,7 @@
 #include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/calculators_policies_binder.h"
@@ -274,7 +275,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
   std::unique_ptr<CalculatorsPoliciesBinder> profile_binder_;
 
   // Profile (user) settings.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   AccountId account_id_;
   PrefChangeRegistrar pref_change_registrar_;
 

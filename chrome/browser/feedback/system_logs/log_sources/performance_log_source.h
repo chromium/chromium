@@ -30,7 +30,6 @@ class PerformanceLogSource : public SystemLogsSource {
 
   raw_ptr<performance_manager::user_tuning::UserPerformanceTuningManager>
       tuning_manager_ = nullptr;
-  bool battery_saver_available_ = false;
 };
 
 }  // namespace system_logs

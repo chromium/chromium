@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -32,7 +33,7 @@ class ASH_EXPORT TetherConnectionPendingView : public PhoneHubContentView {
  private:
   // Responsible for displaying the connecting UI contents.
   // Owned by view hierarchy.
-  PhoneHubInterstitialView* content_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView, ExperimentalAsh> content_view_ = nullptr;
 };
 
 }  // namespace ash

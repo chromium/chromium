@@ -130,6 +130,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
+  using ClipboardPasteData = content::ClipboardPasteData;
+
   // This is used to give the delegate a chance to filter IPC messages.
   virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                                  const IPC::Message& message);
@@ -527,7 +529,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void IsClipboardPasteContentAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // Notified when the main frame of `source` adjusts the page scale.

@@ -11,11 +11,7 @@
 #endif
 
 CGFloat ReturnToRecentTabHeight() {
-  if (ShouldMinimizeSpacingForModuleRefresh()) {
-    return 64;
-  } else {
-    return kReturnToRecentTabSize.height;
-  }
+  return kReturnToRecentTabSize.height;
 }
 
 const CGSize kReturnToRecentTabSize = {/*width=*/343, /*height=*/72};

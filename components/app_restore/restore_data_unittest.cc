@@ -168,9 +168,8 @@ class RestoreDataTest : public testing::Test {
             std::vector<base::FilePath>{base::FilePath(kFilePath2)},
             MakeIntent(kIntentActionView, kMimeType, kShareText2));
     app_launch_info2->app_type_browser = kAppTypeBrower2;
-    app_launch_info2->tab_group_infos.emplace();
     app_launch_info2->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-    PopulateTestTabgroups(app_launch_info2->tab_group_infos.value());
+    PopulateTestTabgroups(app_launch_info2->tab_group_infos);
 
     std::unique_ptr<AppLaunchInfo> app_launch_info3 =
         std::make_unique<AppLaunchInfo>(
@@ -265,10 +264,10 @@ class RestoreDataTest : public testing::Test {
     EXPECT_TRUE(data->display_id.has_value());
     EXPECT_EQ(display_id, data->display_id.value());
 
-    EXPECT_TRUE(data->file_paths.has_value());
-    EXPECT_EQ(file_paths.size(), data->file_paths.value().size());
+    EXPECT_FALSE(data->file_paths.empty());
+    EXPECT_EQ(file_paths.size(), data->file_paths.size());
     for (size_t i = 0; i < file_paths.size(); i++)
-      EXPECT_EQ(file_paths[i], data->file_paths.value()[i]);
+      EXPECT_EQ(file_paths[i], data->file_paths[i]);
 
     EXPECT_TRUE(data->intent);
     EXPECT_EQ(intent->action, data->intent->action);
@@ -365,15 +364,14 @@ class RestoreDataTest : public testing::Test {
     if (expected_tab_group_infos.size() > 0 && test_tab_group_infos) {
       // If we're passing a non-empty expceted vector then we expect the
       // object under test to have tab group infos.
-      EXPECT_TRUE(data->tab_group_infos.has_value());
+      EXPECT_FALSE(data->tab_group_infos.empty());
 
       // Parameter vector and data vector should always have the same size
       // as they should be instantiated from the same function.
-      EXPECT_EQ(expected_tab_group_infos.size(),
-                data->tab_group_infos.value().size());
+      EXPECT_EQ(expected_tab_group_infos.size(), data->tab_group_infos.size());
 
-      EXPECT_THAT(expected_tab_group_infos, testing::UnorderedElementsAreArray(
-                                                data->tab_group_infos.value()));
+      EXPECT_THAT(expected_tab_group_infos,
+                  testing::UnorderedElementsAreArray(data->tab_group_infos));
     }
   }
 
@@ -663,10 +661,10 @@ TEST_F(RestoreDataTest, GetAppLaunchInfo) {
   EXPECT_TRUE(app_launch_info->display_id.has_value());
   EXPECT_EQ(kDisplayId1, app_launch_info->display_id.value());
 
-  EXPECT_TRUE(app_launch_info->file_paths.has_value());
-  ASSERT_EQ(2u, app_launch_info->file_paths.value().size());
-  EXPECT_EQ(base::FilePath(kFilePath1), app_launch_info->file_paths.value()[0]);
-  EXPECT_EQ(base::FilePath(kFilePath2), app_launch_info->file_paths.value()[1]);
+  EXPECT_FALSE(app_launch_info->file_paths.empty());
+  ASSERT_EQ(2u, app_launch_info->file_paths.size());
+  EXPECT_EQ(base::FilePath(kFilePath1), app_launch_info->file_paths[0]);
+  EXPECT_EQ(base::FilePath(kFilePath2), app_launch_info->file_paths[1]);
 
   EXPECT_TRUE(app_launch_info->intent);
   EXPECT_EQ(kIntentActionSend, app_launch_info->intent->action);
@@ -840,9 +838,8 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
           MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
   app_launch_info_1->app_type_browser = kAppTypeBrower2;
-  app_launch_info_1->tab_group_infos.emplace();
   app_launch_info_1->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-  PopulateTestTabgroups(app_launch_info_1->tab_group_infos.value());
+  PopulateTestTabgroups(app_launch_info_1->tab_group_infos);
 
   // Same as app_launch_info_1.
   std::unique_ptr<AppLaunchInfo> app_launch_info_2 =
@@ -854,9 +851,8 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
           MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
   app_launch_info_2->app_type_browser = kAppTypeBrower2;
-  app_launch_info_2->tab_group_infos.emplace();
   app_launch_info_2->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-  PopulateTestTabgroups(app_launch_info_2->tab_group_infos.value());
+  PopulateTestTabgroups(app_launch_info_2->tab_group_infos);
 
   std::unique_ptr<AppLaunchInfo> app_launch_info_3 =
       std::make_unique<AppLaunchInfo>(
@@ -878,7 +874,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
   EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_3);
 
   // Modify tab groups of app_restore_data_2.
-  app_restore_data_2->tab_group_infos->push_back(
+  app_restore_data_2->tab_group_infos.push_back(
       MakeTestTabGroup(kTestTabGroupTitleThree, kTestTabGroupColorThree));
   EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_2);
 }

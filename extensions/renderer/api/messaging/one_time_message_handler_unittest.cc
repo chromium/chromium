@@ -103,14 +103,15 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
 
   message_handler()->SendMessage(
-      script_context(), port_id, target, messaging_util::kSendMessageChannel,
-      message, binding::AsyncResponseType::kNone, v8::Local<v8::Function>());
+      script_context(), port_id, target, ChannelType::kSendMessage, message,
+      binding::AsyncResponseType::kNone, v8::Local<v8::Function>());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
@@ -138,12 +139,13 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
 
   message_handler()->SendMessage(
-      script_context(), port_id, target, messaging_util::kSendMessageChannel,
-      message, binding::AsyncResponseType::kCallback, callback);
+      script_context(), port_id, target, ChannelType::kSendMessage, message,
+      binding::AsyncResponseType::kCallback, callback);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   // We should have added a pending request to the APIRequestHandler, but
@@ -186,12 +188,13 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
 
   v8::Local<v8::Promise> promise = message_handler()->SendMessage(
-      script_context(), port_id, target, messaging_util::kSendMessageChannel,
-      message, binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+      script_context(), port_id, target, ChannelType::kSendMessage, message,
+      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ASSERT_FALSE(promise.IsEmpty());
 
@@ -231,11 +234,12 @@ TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerCallback) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
   message_handler()->SendMessage(
-      script_context(), port_id, target, messaging_util::kSendMessageChannel,
-      message, binding::AsyncResponseType::kCallback, callback);
+      script_context(), port_id, target, ChannelType::kSendMessage, message,
+      binding::AsyncResponseType::kCallback, callback);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   EXPECT_EQ("undefined", GetGlobalProperty(context, "replyArgs"));
@@ -264,11 +268,12 @@ TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerPromise) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
   v8::Local<v8::Promise> promise = message_handler()->SendMessage(
-      script_context(), port_id, target, messaging_util::kSendMessageChannel,
-      message, binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+      script_context(), port_id, target, ChannelType::kSendMessage, message,
+      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   EXPECT_EQ(v8::Promise::kPending, promise->State());
@@ -468,10 +473,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInListener) {
   const Message listener_sent_message("\"foo\"", SerializationFormat::kJson,
                                       false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
-  EXPECT_CALL(
-      *ipc_message_sender(),
-      SendOpenMessageChannel(script_context(), listener_created_port_id, target,
-                             messaging_util::kSendMessageChannel));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), listener_created_port_id,
+                                     target, ChannelType::kSendMessage,
+                                     messaging_util::kSendMessageChannel));
   EXPECT_CALL(
       *ipc_message_sender(),
       SendPostMessageToPort(listener_created_port_id, listener_sent_message));
@@ -508,6 +513,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), original_port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(),
               SendPostMessageToPort(original_port_id, original_message));
@@ -520,6 +526,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
                            SerializationFormat::kJson);
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), new_port_id, target,
+                                     ChannelType::kSendMessage,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(
       *ipc_message_sender(),

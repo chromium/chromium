@@ -183,16 +183,29 @@ class CORE_EXPORT PrePaintTreeWalk final {
   bool CollectMissableChildren(PrePaintTreeWalkContext&,
                                const NGPhysicalBoxFragment&);
 
-  // Based on the context established by |ancestor|, modify it to become correct
-  // for |object|, at least as far as OOF containing block info is concerned.
-  void RebuildContextForMissedDescendant(const LayoutObject& ancestor,
-                                         const LayoutObject& object,
-                                         PrePaintTreeWalkContext&);
+  // Based on the context established by |ancestor|, modify it to become as
+  // correct as possible for |object|. Any object between the ancestor and the
+  // target object may have paint effects that would be missed otherwise.
+  //
+  // This function will start by walking up to the ancestor recursively, and
+  // then build whatever it can on the way down again. If a physical fragment is
+  // returned, this will be the parent fragment of the next child, so that we
+  // can search for a fragment for the child right there. If the child is
+  // out-of-flow positioned, it will need to locate the correct containing
+  // fragment via other means, though. If it's nullptr, it means that no
+  // fragment exists for the parent (i.e. the node isn't represented in this
+  // fragmentainer), and we need to behave according to specs (assume that a
+  // transform origin is based on a zero-block-size box, zero clip rectangle
+  // size, etc.)
+  const NGPhysicalBoxFragment* RebuildContextForMissedDescendant(
+      const NGPhysicalBoxFragment& ancestor,
+      const LayoutObject& object,
+      bool update_tree_builder_context,
+      PrePaintTreeWalkContext&);
 
   // Walk any missed children (i.e. those collected by CollectMissableChildren()
   // and not walked by Walk()) after child object traversal.
-  void WalkMissedChildren(const LayoutObject& ancestor,
-                          const NGPhysicalBoxFragment&,
+  void WalkMissedChildren(const NGPhysicalBoxFragment&,
                           const PrePaintTreeWalkContext&);
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,

@@ -17,7 +17,7 @@ inline WifiData CreateDefaultUniqueWifiData() {
   return CreateUniqueWifiData(10);
 }
 
-mojom::Geoposition CreateGeoposition(int offset);
+mojom::GeopositionPtr CreateGeoposition(int offset);
 
 }  // namespace testing
 }  // namespace device

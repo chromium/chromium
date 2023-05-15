@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Записът ви спря поради недостатъчно място в хранилището на устройството. За да записвате още видеоклипове, трябва да освободите място.</translation>
 <translation id="2036868001356139588">Продължителност на таймера</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
-<translation id="2128052519899549250">Записване на видеоклип с цайтрафер</translation>
 <translation id="2134029355740465625">Настройки за видеоклиповете</translation>
 <translation id="2144806332417375165">Персонализирани параметри на видеото</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Открит е документ</translation>
 <translation id="414641094616694804">Разделителната способност на тази камера не може да се променя</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
-<translation id="4281620174117014503">Средна разделителна способност</translation>
 <translation id="428234092390943511">Миниизображение на страницата</translation>
 <translation id="4383571725254449280">Печат на регистрационните файлове за ефективността</translation>
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5320594929574852403">Премества се наляво</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Цайтрафер</translation>
 <translation id="5662366948659129155">Сканира се страница <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="574392208103952083">Среден</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
 <translation id="5753488212459587150">Активиране на експертния режим</translation>
 <translation id="5759254179196327752">Сканиране на документи</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7670511624014457267">60 кдр/сек</translation>
 <translation id="7671804233658741790">Долен десен ъгъл на документа</translation>
+<translation id="7684446460490665873">Записване на видеоклип с цайтрафер</translation>
 <translation id="7692090236657809299">Активиране на панорамното придвижване, накланянето и промяната на мащаба</translation>
 <translation id="7726641833034062494">Записване на обикновен видеоклип</translation>
 <translation id="7748344063862150053">Горен десен ъгъл на документа</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Поставете документа изцяло в рамката</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="906331135292332864">Изображението се обработва...</translation>
+<translation id="9161584225258678723">Цайтрафер</translation>
 <translation id="922762992951083513">Включване на огледалното обръщане</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 </translationbundle>

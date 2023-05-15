@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<style>
+  @font-face {
+    font-family: 'testFont';
+    src: url('../../resources/opensans/OpenSans-Regular.woff') format("woff");
+  }
+
+  div {
+    width: 150px;
+    height: 30px;
+    font: 15px testFont;
+  }
+</style>
+
+<div id="markAllSpelling">aaaaaaaaaa</div>
+<div id="markNoSpelling">bbbbbbbbbb</div>
+
+<script>
+function addSpellingMarker(elem, start, end) {
+    const range = document.createRange();
+    const textNode = elem.firstChild;
+    range.setStart(textNode, start);
+    range.setEnd(textNode, end);
+    if (typeof internals !== 'undefined')
+        internals.setMarker(document, range, 'spelling');
+};
+
+addSpellingMarker(markAllSpelling, 0, 10);
+</script>

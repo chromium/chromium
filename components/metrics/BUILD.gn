@@ -183,11 +183,16 @@ if (!is_cronet_build || is_ios) {
       "unsent_log_store_metrics.h",
       "unsent_log_store_metrics_impl.cc",
       "unsent_log_store_metrics_impl.h",
-      "url_constants.cc",
       "url_constants.h",
       "version_utils.cc",
       "version_utils.h",
     ]
+
+    if (is_chrome_branded) {
+      sources += [ "internal/url_constants.cc" ]
+    } else {
+      sources += [ "url_constants.cc" ]
+    }
 
     public_deps = [
       "//third_party/metrics_proto",

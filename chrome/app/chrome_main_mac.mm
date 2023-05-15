@@ -8,9 +8,9 @@
 
 #include <string>
 
+#import "base/apple/bundle_locations.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -22,7 +22,8 @@
 
 void SetUpBundleOverrides() {
   @autoreleasepool {
-    base::mac::SetOverrideFrameworkBundlePath(chrome::GetFrameworkBundlePath());
+    base::apple::SetOverrideFrameworkBundlePath(
+        chrome::GetFrameworkBundlePath());
 
     NSBundle* base_bundle = chrome::OuterAppBundle();
     base::mac::SetBaseBundleID([[base_bundle bundleIdentifier] UTF8String]);

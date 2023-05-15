@@ -85,7 +85,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    base::StringPiece debug_label) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto params = mojom::CreateSharedImageParams::New();
   params->mailbox = mailbox;
@@ -93,6 +94,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->size = size;
   params->color_space = color_space;
   params->usage = usage;
+  params->debug_label = std::string(debug_label);
   params->surface_origin = surface_origin;
   params->alpha_type = alpha_type;
   {
@@ -117,6 +119,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     base::span<const uint8_t> pixel_data) {
   // Pixel data's size must fit into a uint32_t to be sent in
   // CreateSharedImageWithDataParams.
@@ -145,6 +148,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->size = size;
   params->color_space = color_space;
   params->usage = usage;
+  params->debug_label = std::string(debug_label);
   params->pixel_data_offset = shm_offset;
   params->pixel_data_size = pixel_data.size();
   params->done_with_shm = done_with_shm;
@@ -166,6 +170,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   // TODO(kylechar): Verify buffer_handle works for size+format.
 
@@ -178,6 +183,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->format = format;
   params->color_space = color_space;
   params->usage = usage;
+  params->debug_label = std::string(debug_label);
   params->surface_origin = surface_origin;
   params->alpha_type = alpha_type;
 
@@ -203,6 +209,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   auto mailbox = Mailbox::GenerateForSharedImage();
 
@@ -214,6 +221,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->plane = plane;
   params->color_space = color_space;
   params->usage = usage;
+  params->debug_label = std::string(debug_label);
   params->surface_origin = surface_origin;
   params->alpha_type = alpha_type;
 

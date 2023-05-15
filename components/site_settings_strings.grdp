@@ -220,5 +220,11 @@
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
     window management
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" translateable="false" desc="The label used for the storage access site settings controls.">
+    Storage Access
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" translateable="false" desc="The label used for the storage access site settings controls when used mid-sentence.">
+    storage access
+  </message>
   </if>
 </grit-part>

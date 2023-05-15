@@ -88,43 +88,6 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 }
 
 // static
-media::mojom::VideoEncodeAccelerator_Error
-EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
-           media::VideoEncodeAccelerator::Error>::
-    ToMojom(media::VideoEncodeAccelerator::Error error) {
-  switch (error) {
-    case media::VideoEncodeAccelerator::kIllegalStateError:
-      return media::mojom::VideoEncodeAccelerator_Error::ILLEGAL_STATE;
-    case media::VideoEncodeAccelerator::kInvalidArgumentError:
-      return media::mojom::VideoEncodeAccelerator_Error::INVALID_ARGUMENT;
-    case media::VideoEncodeAccelerator::kPlatformFailureError:
-      return media::mojom::VideoEncodeAccelerator_Error::PLATFORM_FAILURE;
-  }
-  NOTREACHED();
-  return media::mojom::VideoEncodeAccelerator_Error::INVALID_ARGUMENT;
-}
-
-// static
-bool EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
-                media::VideoEncodeAccelerator::Error>::
-    FromMojom(media::mojom::VideoEncodeAccelerator_Error error,
-              media::VideoEncodeAccelerator::Error* out) {
-  switch (error) {
-    case media::mojom::VideoEncodeAccelerator_Error::ILLEGAL_STATE:
-      *out = media::VideoEncodeAccelerator::kIllegalStateError;
-      return true;
-    case media::mojom::VideoEncodeAccelerator_Error::INVALID_ARGUMENT:
-      *out = media::VideoEncodeAccelerator::kInvalidArgumentError;
-      return true;
-    case media::mojom::VideoEncodeAccelerator_Error::PLATFORM_FAILURE:
-      *out = media::VideoEncodeAccelerator::kPlatformFailureError;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 bool StructTraits<media::mojom::VariableBitratePeakDataView, uint32_t>::Read(
     media::mojom::VariableBitratePeakDataView data,
     uint32_t* out_peak_bps) {

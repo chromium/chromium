@@ -35,14 +35,15 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/direct_layer_tree_frame_sink.h"
-#include "ui/compositor/test/in_process_context_provider.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -221,9 +222,9 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   }
   if (!shared_worker_context_provider_wrapper_ ||
       shared_worker_context_provider_lost) {
-    scoped_refptr<InProcessContextProvider> shared_worker_context_provider =
-        InProcessContextProvider::CreateOffscreen(&gpu_memory_buffer_manager_,
-                                                  /*is_worker=*/true);
+    auto shared_worker_context_provider =
+        base::MakeRefCounted<viz::TestInProcessContextProvider>(
+            viz::TestContextType::kGpuRaster, /*support_locking=*/true);
     auto result = shared_worker_context_provider->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess) {
       shared_worker_context_provider_wrapper_ = nullptr;
@@ -303,8 +304,9 @@ InProcessContextFactory::SharedMainThreadContextProvider() {
     return shared_main_thread_contexts_;
 
   shared_main_thread_contexts_ =
-      InProcessContextProvider::CreateOffscreen(&gpu_memory_buffer_manager_,
-                                                /*is_worker=*/false);
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
+
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_thread_contexts_.reset();

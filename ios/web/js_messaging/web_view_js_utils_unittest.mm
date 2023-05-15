@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
@@ -258,6 +259,114 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
     current_list = inner_list;
   }
   EXPECT_FALSE(current_list);
+}
+
+TEST_F(WebViewJsUtilsTest, NSObjectFromNullptr) {
+  id wk_result = web::NSObjectFromValueResult(nullptr);
+  // `wk_result` should be nil.
+  EXPECT_FALSE(wk_result);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::STRING to NSString.
+TEST_F(WebViewJsUtilsTest, NSObjectFromStringValueResult) {
+  auto value = std::make_unique<base::Value>("test");
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSString class]]);
+  EXPECT_NSEQ(@"test", wk_result);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::INT to NSNumber.
+TEST_F(WebViewJsUtilsTest, NSObjectFromIntValueResult) {
+  auto value = std::make_unique<base::Value>(1);
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ(1, [wk_result intValue]);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::DOUBLE to NSNumber.
+TEST_F(WebViewJsUtilsTest, NSObjectFromDoubleValueResult) {
+  auto value = std::make_unique<base::Value>(3.14);
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ(3.14, [wk_result doubleValue]);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::BOOLEAN to NSNumber.
+TEST_F(WebViewJsUtilsTest, NSObjectFromBoolValueResult) {
+  auto value = std::make_unique<base::Value>(true);
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ(YES, [wk_result boolValue]);
+
+  value.reset(new base::Value(false));
+  wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ(NO, [wk_result boolValue]);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::NONE to NSNull.
+TEST_F(WebViewJsUtilsTest, NSObjectFromNoneValueResult) {
+  auto value = std::make_unique<base::Value>();
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSNull class]]);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::DICT to
+// NSDictionary.
+TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
+  base::Value::Dict test_dict;
+  test_dict.Set("Key1", "Value1");
+
+  base::Value::Dict inner_test_dict;
+  inner_test_dict.Set("Key3", 42);
+  test_dict.Set("Key2", std::move(inner_test_dict));
+
+  auto value = std::make_unique<base::Value>(std::move(test_dict));
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSDictionary class]]);
+
+  NSDictionary* wk_result_dictionary =
+      base::mac::ObjCCastStrict<NSDictionary>(wk_result);
+  EXPECT_NSEQ(@"Value1", wk_result_dictionary[@"Key1"]);
+
+  NSDictionary* inner_dictionary = wk_result_dictionary[@"Key2"];
+  EXPECT_TRUE(inner_dictionary);
+  EXPECT_NSEQ(@(42), inner_dictionary[@"Key3"]);
+}
+
+// Tests that NSObjectFromValueResult converts Value::Type::LIST to NSArray.
+TEST_F(WebViewJsUtilsTest, NSObjectFromListValueResult) {
+  base::Value::List test_list;
+  test_list.Append("Value1");
+
+  base::Value::List inner_test_list;
+  inner_test_list.Append(true);
+  test_list.Append(std::move(inner_test_list));
+
+  test_list.Append(42);
+
+  auto value = std::make_unique<base::Value>(std::move(test_list));
+  id wk_result = web::NSObjectFromValueResult(value.get());
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSArray class]]);
+
+  NSArray* wk_result_array = base::mac::ObjCCastStrict<NSArray>(wk_result);
+
+  EXPECT_EQ(3UL, wk_result_array.count);
+  EXPECT_NSEQ(@"Value1", wk_result_array[0]);
+
+  NSArray* inner_array = wk_result_array[1];
+  EXPECT_TRUE(inner_array);
+  EXPECT_TRUE([inner_array isKindOfClass:[NSArray class]]);
+
+  EXPECT_NSEQ(@(42), wk_result_array[2]);
 }
 
 // Tests that ExecuteJavaScript returns an error if there is no web view.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 
 #include "base/functional/callback.h"
@@ -47,8 +48,8 @@ class InlineLoginDialogOnboarding : public InlineLoginDialog {
     // views::WidgetObserver:
     void OnWidgetClosing(views::Widget* widget) override;
 
-    InlineLoginDialogOnboarding* dialog_ = nullptr;
-    views::Widget* widget_ = nullptr;
+    raw_ptr<InlineLoginDialogOnboarding, ExperimentalAsh> dialog_ = nullptr;
+    raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
   };
 
   static InlineLoginDialogOnboarding* Show(

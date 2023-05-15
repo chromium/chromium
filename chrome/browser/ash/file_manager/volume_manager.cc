@@ -105,12 +105,13 @@ bool FindExternalMountPoint(const std::string& mount_point_name) {
 }
 
 std::string FuseBoxSubdirADP(const std::string& authority,
-                             const std::string& root_id) {
-  // Hash the authority and ID
+                             const std::string& document_id) {
+  // Hash the authority and document ID
   // - because the ID can be quite long (400+ bytes) and
   // - to avoid sharing the ID in the file system.
-  std::string hash =
-      crypto::SHA256HashString(base::StrCat({authority, "/", root_id}));
+  std::string hash = crypto::SHA256HashString(
+      arc::GetDocumentsProviderMountPathSuffix(authority, document_id)
+          .AsUTF8Unsafe());
   std::string b64;
   base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
   return base::StrCat({util::kFuseBoxSubdirPrefixADP, b64});
@@ -1211,12 +1212,12 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   auto adp_file_system_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey::CreateFirstParty(util::GetFilesAppOrigin()),
       arc::kDocumentsProviderMountPointName,
-      base::FilePath(base::StrCat({authority, "/", root_id})));
+      arc::GetDocumentsProviderMountPathSuffix(authority, document_id));
   const std::string url = adp_file_system_url.ToGURL().spec();
   DCHECK(adp_file_system_url.is_valid());
 
   // Attach the ADP storage device to the fusebox daemon.
-  std::string subdir = FuseBoxSubdirADP(authority, root_id);
+  std::string subdir = FuseBoxSubdirADP(authority, document_id);
   fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox ADP storage device.
@@ -1258,7 +1259,7 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
   }
 
   // Remove the fusebox ADP storage device from chrome::storage.
-  std::string subdir = FuseBoxSubdirADP(authority, root_id);
+  std::string subdir = FuseBoxSubdirADP(authority, document_id);
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   const std::string fusebox_fsid =
       base::StrCat({util::kFuseBoxMountNamePrefix, subdir});

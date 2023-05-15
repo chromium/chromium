@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.xsurface;
 
 import androidx.annotation.Nullable;
 
-/** A simple key-value cache that is persisting all data on disk. Automatically evicts old data. */
+/**
+ * Implemented in Chromium.
+ *
+ * A simple key-value cache that is persisting all data on disk. Automatically evicts old data.
+ */
 public interface PersistentKeyValueCache {
     /** Consumes the result of PersistentKeyValueCache.lookup(). */
     public interface ValueConsumer {

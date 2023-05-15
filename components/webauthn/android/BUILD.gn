@@ -82,6 +82,8 @@ source_set("android") {
     "webauthn_browser_bridge.h",
     "webauthn_client_android.cc",
     "webauthn_client_android.h",
+    "webauthn_cred_man_delegate.cc",
+    "webauthn_cred_man_delegate.h",
   ]
   deps = [
     ":jni_headers",
@@ -93,5 +95,16 @@ source_set("android") {
     "//device/fido",
     "//third_party/blink/public/mojom:android_mojo_bindings_blink",
     "//third_party/boringssl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "webauthn_cred_man_delegate_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

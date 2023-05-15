@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ABOUT_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ABOUT_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -48,7 +49,7 @@ class AboutSection : public OsSettingsSection {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void UpdateReportIssueSearchTags();
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };

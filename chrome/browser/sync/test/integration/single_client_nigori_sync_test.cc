@@ -43,10 +43,10 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cryptographer_impl.h"
-#include "components/sync/test/fake_security_domains_server.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
@@ -240,12 +240,12 @@ class TrustedVaultRecoverabilityDegradedStateChecker
 
 class FakeSecurityDomainsServerMemberStatusChecker
     : public StatusChangeChecker,
-      public syncer::FakeSecurityDomainsServer::Observer {
+      public trusted_vault::FakeSecurityDomainsServer::Observer {
  public:
   FakeSecurityDomainsServerMemberStatusChecker(
       int expected_member_count,
       const std::vector<uint8_t>& expected_trusted_vault_key,
-      syncer::FakeSecurityDomainsServer* server)
+      trusted_vault::FakeSecurityDomainsServer* server)
       : expected_member_count_(expected_member_count),
         expected_trusted_vault_key_(expected_trusted_vault_key),
         server_(server) {
@@ -281,7 +281,7 @@ class FakeSecurityDomainsServerMemberStatusChecker
 
   int expected_member_count_;
   std::vector<uint8_t> expected_trusted_vault_key_;
-  const raw_ptr<syncer::FakeSecurityDomainsServer> server_;
+  const raw_ptr<trusted_vault::FakeSecurityDomainsServer> server_;
 };
 
 class SingleClientNigoriSyncTest : public SyncTest {
@@ -733,7 +733,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(
         syncer::kTrustedVaultServiceURL,
-        syncer::FakeSecurityDomainsServer::GetServerURL(
+        trusted_vault::FakeSecurityDomainsServer::GetServerURL(
             embedded_test_server()->base_url())
             .spec());
 
@@ -746,11 +746,11 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     security_domains_server_ =
-        std::make_unique<syncer::FakeSecurityDomainsServer>(
+        std::make_unique<trusted_vault::FakeSecurityDomainsServer>(
             embedded_test_server()->base_url());
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&syncer::FakeSecurityDomainsServer::HandleRequest,
-                            base::Unretained(security_domains_server_.get())));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &trusted_vault::FakeSecurityDomainsServer::HandleRequest,
+        base::Unretained(security_domains_server_.get())));
 
     // Install a redirect from the actual degraded recoverability URL as
     // determined by GaiaUrls to |recoverability_url|, which runs Javascript
@@ -787,7 +787,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     SyncTest::TearDown();
   }
 
-  syncer::FakeSecurityDomainsServer* GetSecurityDomainsServer() {
+  trusted_vault::FakeSecurityDomainsServer* GetSecurityDomainsServer() {
     return security_domains_server_.get();
   }
 
@@ -799,10 +799,13 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
   // Arbitrary (but valid) public key of a recovery method that gets
   // automatically added if the Gaia recoverability page is visited.
   const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
-      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+      trusted_vault::SecureBoxKeyPair::GenerateRandom()
+          ->public_key()
+          .ExportToBytes();
 
  private:
-  std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
+  std::unique_ptr<trusted_vault::FakeSecurityDomainsServer>
+      security_domains_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
@@ -926,7 +929,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
@@ -1270,7 +1274,18 @@ IN_PROC_BROWSER_TEST_F(
       GetFakeServer());
 
   base::HistogramTester histogram_tester;
+
+  // The manual sequence below, instead of invoking SetupSync() manually,
+  // reproduces a more realistic case of the first-time turn-sync-on experience,
+  // with a temporary stage where the user is signed in without sync-the-feature
+  // being enabled. Except on Ash where the two steps happen at once.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(SetupSync());
+
   ASSERT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
@@ -1296,7 +1311,7 @@ IN_PROC_BROWSER_TEST_F(
       "Sync.TrustedVaultErrorShownOnStartup.MigratedLastDay",
       /*count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+      "Sync.TrustedVaultErrorShownOnFirstTimeSync2",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
@@ -1358,7 +1373,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(
@@ -1452,7 +1468,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the account being already using a trusted vault passphrase.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1494,7 +1511,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the account being already using a trusted vault passphrase.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1542,7 +1560,8 @@ IN_PROC_BROWSER_TEST_F(
   // degraded).
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1588,12 +1607,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // TODO(crbug.com/1113599): consider checking member public key (requires
   // either ability to overload key generator in the test or exposing public key
   // from the client).
-  EXPECT_TRUE(
-      FakeSecurityDomainsServerMemberStatusChecker(
-          /*expected_member_count=*/1,
-          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
-          GetSecurityDomainsServer())
-          .Wait());
+  EXPECT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/1,
+                  /*expected_trusted_vault_key=*/
+                  trusted_vault::GetConstantTrustedVaultKey(),
+                  GetSecurityDomainsServer())
+                  .Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
@@ -1603,19 +1622,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldFollowInitialKeyRotation) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      FakeSecurityDomainsServerMemberStatusChecker(
-          /*expected_member_count=*/1,
-          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
-          GetSecurityDomainsServer())
-          .Wait());
+  ASSERT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/1,
+                  /*expected_trusted_vault_key=*/
+                  trusted_vault::GetConstantTrustedVaultKey(),
+                  GetSecurityDomainsServer())
+                  .Wait());
 
   // Rotate trusted vault key and mimic transition to trusted vault passphrase
   // type.
   base::HistogramTester histogram_tester;
   std::vector<uint8_t> new_trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{new_trusted_vault_key}),
                         GetFakeServer());
@@ -1634,7 +1654,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
-      /*sample=*/syncer::TrustedVaultDownloadKeysStatus::kSuccess,
+      /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatus::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
@@ -1648,16 +1668,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldFollowKeyRotationAndAddRecoveryMethod) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      FakeSecurityDomainsServerMemberStatusChecker(
-          /*expected_member_count=*/1,
-          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
-          GetSecurityDomainsServer())
-          .Wait());
+  ASSERT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/1,
+                  /*expected_trusted_vault_key=*/
+                  trusted_vault::GetConstantTrustedVaultKey(),
+                  GetSecurityDomainsServer())
+                  .Wait());
 
   std::vector<uint8_t> new_trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   // Trigger following key rotation client-side.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{new_trusted_vault_key}),
@@ -1693,18 +1714,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldFollowKeyRotationAfterSecurityDomainReset) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      FakeSecurityDomainsServerMemberStatusChecker(
-          /*expected_member_count=*/1,
-          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
-          GetSecurityDomainsServer())
-          .Wait());
+  ASSERT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/1,
+                  /*expected_trusted_vault_key=*/
+                  trusted_vault::GetConstantTrustedVaultKey(),
+                  GetSecurityDomainsServer())
+                  .Wait());
 
   // Rotate trusted vault key and mimic transition to trusted vault passphrase
   // type.
   std::vector<uint8_t> trusted_vault_key1 =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key1}),
                         GetFakeServer());
@@ -1730,16 +1752,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Make sure that client is able to follow key rotation with fresh security
   // domain state.
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      FakeSecurityDomainsServerMemberStatusChecker(
-          /*expected_member_count=*/1,
-          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
-          GetSecurityDomainsServer())
-          .Wait());
+  ASSERT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/1,
+                  /*expected_trusted_vault_key=*/
+                  trusted_vault::GetConstantTrustedVaultKey(),
+                  GetSecurityDomainsServer())
+                  .Wait());
 
   std::vector<uint8_t> trusted_vault_key2 =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key2}),
                         GetFakeServer());
@@ -1837,7 +1860,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+          /*last_trusted_vault_key=*/trusted_vault::
+              GetConstantTrustedVaultKey());
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/barrier_closure.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
@@ -28,9 +29,6 @@ DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 
 void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
     const std::string& key) {
-  // TODO(crbug.com/1416477): Directly accessing `outer_`'s private members is
-  // icky - consider avoiding this, e.g. by passing in callbacks instead.
-
   // Ignore this notification if it originated from the outer store - in that
   // case, `DualLayerUserPrefStore` itself will send notifications as
   // appropriate. This avoids dual notifications even though there are dual
@@ -57,21 +55,39 @@ void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
 
 void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
     OnInitializationCompleted(bool succeeded) {
-  // The account store starts out already initialized, and should never send
-  // OnInitializationCompleted() notifications.
-  DCHECK(!is_account_store_);
-  if (outer_->IsInitializationComplete()) {
-    for (auto& observer : outer_->observers_) {
-      observer.OnInitializationCompleted(succeeded);
+  initialization_succeeded_ = succeeded;
+
+  // Notify observers only after all underlying PrefStores are initialized.
+  if (!outer_->IsInitializationComplete()) {
+    return;
+  }
+
+  // Forward error if any of the underlying store reported error upon
+  // ReadPrefsAsync().
+  if (outer_->read_error_delegate_) {
+    if (auto read_error = outer_->GetReadError();
+        read_error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
+      outer_->read_error_delegate_->OnError(read_error);
     }
   }
+
+  for (auto& observer : outer_->observers_) {
+    observer.OnInitializationCompleted(outer_->IsInitializationSuccessful());
+  }
+}
+
+bool DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
+    initialization_succeeded() const {
+  CHECK(outer_->IsInitializationComplete());
+  return initialization_succeeded_;
 }
 
 DualLayerUserPrefStore::DualLayerUserPrefStore(
     scoped_refptr<PersistentPrefStore> local_pref_store,
+    scoped_refptr<PersistentPrefStore> account_pref_store,
     const PrefModelAssociatorClient* pref_model_associator_client)
     : local_pref_store_(std::move(local_pref_store)),
-      account_pref_store_(base::MakeRefCounted<ValueMapPrefStore>()),
+      account_pref_store_(std::move(account_pref_store)),
       local_pref_store_observer_(this, /*is_account_store=*/false),
       account_pref_store_observer_(this, /*is_account_store=*/true),
       pref_model_associator_client_(pref_model_associator_client) {
@@ -106,9 +122,8 @@ bool DualLayerUserPrefStore::HasObservers() const {
 }
 
 bool DualLayerUserPrefStore::IsInitializationComplete() const {
-  // `account_pref_store_` (a ValueMapPrefStore) is always initialized.
-  DCHECK(account_pref_store_->IsInitializationComplete());
-  return local_pref_store_->IsInitializationComplete();
+  return local_pref_store_->IsInitializationComplete() &&
+         account_pref_store_->IsInitializationComplete();
 }
 
 bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
@@ -314,41 +329,73 @@ void DualLayerUserPrefStore::RemoveValuesByPrefixSilently(
 }
 
 bool DualLayerUserPrefStore::ReadOnly() const {
-  // `account_pref_store_` (a ValueMapPrefStore) can't be read-only.
-  return local_pref_store_->ReadOnly();
+  return local_pref_store_->ReadOnly() || account_pref_store_->ReadOnly();
 }
 
 PersistentPrefStore::PrefReadError DualLayerUserPrefStore::GetReadError()
     const {
-  // `account_pref_store_` (a ValueMapPrefStore) can't have read errors.
-  return local_pref_store_->GetReadError();
+  if (auto local_prefs_read_error = local_pref_store_->GetReadError();
+      local_prefs_read_error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
+    return local_prefs_read_error;
+  }
+  return account_pref_store_->GetReadError();
 }
 
 PersistentPrefStore::PrefReadError DualLayerUserPrefStore::ReadPrefs() {
-  // `account_pref_store_` (a ValueMapPrefStore) doesn't explicitly read prefs.
-  return local_pref_store_->ReadPrefs();
+  // Call ReadPrefs() on both stores before reporting error.
+  auto local_prefs_read_error = local_pref_store_->ReadPrefs();
+  auto account_prefs_read_error = account_pref_store_->ReadPrefs();
+
+  if (local_prefs_read_error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
+    return local_prefs_read_error;
+  }
+  return account_prefs_read_error;
 }
 
 void DualLayerUserPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
-  // `account_pref_store_` (a ValueMapPrefStore) doesn't explicitly read prefs.
-  local_pref_store_->ReadPrefsAsync(error_delegate);
+  // The store is expected to take ownership of `error_delegate`, thus it's not
+  // valid to forward the same to the two underlying stores. Instead, if any
+  // error occurs, it's reported in OnInitializationCompleted() handle.
+  read_error_delegate_.reset(error_delegate);
+  local_pref_store_->ReadPrefsAsync(nullptr);
+  account_pref_store_->ReadPrefsAsync(nullptr);
 }
 
 void DualLayerUserPrefStore::CommitPendingWrite(
     base::OnceClosure reply_callback,
     base::OnceClosure synchronous_done_callback) {
-  // `account_pref_store_` (a ValueMapPrefStore) doesn't need to commit.
-  local_pref_store_->CommitPendingWrite(std::move(reply_callback),
-                                        std::move(synchronous_done_callback));
+  // A BarrierClosure will run its callback wherever the last instance of the
+  // returned wrapper is invoked. As such it is guaranteed to respect the reply
+  // vs synchronous semantics assuming `local_pref_store_` and
+  // `account_pref_store_` honor it.
+
+  static constexpr int kNumStores = 2;
+
+  base::RepeatingClosure reply_callback_wrapper =
+      reply_callback
+          ? base::BarrierClosure(kNumStores, std::move(reply_callback))
+          : base::RepeatingClosure();
+
+  base::RepeatingClosure synchronous_callback_wrapper =
+      synchronous_done_callback
+          ? base::BarrierClosure(kNumStores,
+                                 std::move(synchronous_done_callback))
+          : base::RepeatingClosure();
+
+  local_pref_store_->CommitPendingWrite(reply_callback_wrapper,
+                                        synchronous_callback_wrapper);
+  account_pref_store_->CommitPendingWrite(reply_callback_wrapper,
+                                          synchronous_callback_wrapper);
 }
 
 void DualLayerUserPrefStore::SchedulePendingLossyWrites() {
-  // `account_pref_store_` (a ValueMapPrefStore) doesn't schedule writes.
   local_pref_store_->SchedulePendingLossyWrites();
+  account_pref_store_->SchedulePendingLossyWrites();
 }
 
 void DualLayerUserPrefStore::OnStoreDeletionFromDisk() {
   local_pref_store_->OnStoreDeletionFromDisk();
+  account_pref_store_->OnStoreDeletionFromDisk();
 }
 
 bool DualLayerUserPrefStore::IsPrefKeySyncable(const std::string& key) const {
@@ -507,6 +554,11 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
   base::Value new_account_value(value.Clone());
   base::Value new_local_value(std::move(value));
   return {std::move(new_local_value), std::move(new_account_value)};
+}
+
+bool DualLayerUserPrefStore::IsInitializationSuccessful() const {
+  return local_pref_store_observer_.initialization_succeeded() &&
+         account_pref_store_observer_.initialization_succeeded();
 }
 
 }  // namespace sync_preferences

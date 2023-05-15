@@ -225,7 +225,6 @@ DEFINE_VARIATION_PARAM(kIPHDiscoverFeedHeaderFeature,
 DEFINE_VARIATION_PARAM(kIPHDefaultSiteViewFeature, "IPH_DefaultSiteView");
 DEFINE_VARIATION_PARAM(kIPHFollowWhileBrowsingFeature,
                        "IPH_FollowWhileBrowsing");
-DEFINE_VARIATION_PARAM(kIPHOverflowMenuTipFeature, "IPH_OverflowMenuTip");
 DEFINE_VARIATION_PARAM(kIPHPriceNotificationsWhileBrowsingFeature,
                        "IPHPriceNotificationsWhileBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
@@ -243,11 +242,22 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoCredentialProviderExtensionFeature,
                        "IPH_iOSPromoCredentialProviderExtension");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoDefaultBrowserFeature,
                        "IPH_iOSPromoDefaultBrowser");
+DEFINE_VARIATION_PARAM(kIPHiOSNewTabToolbarItemFeature,
+                       "IPH_iOSNewTabToolbarItemFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSTabGridToolbarItemFeature,
+                       "IPH_iOSTabGridToolbarItemFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSHistoryOnOverflowMenuFeature,
+                       "IPH_iOSHistoryOnOverflowMenuFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSShareToolbarItemFeature,
+                       "IPH_iOSShareToolbarItemFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+DEFINE_VARIATION_PARAM(kIPHAutofillFeedbackNewBadgeFeature,
+                       "IPH_AutofillFeedbackNewBadge");
 DEFINE_VARIATION_PARAM(kIPHBatterySaverModeFeature, "IPH_BatterySaverMode");
+DEFINE_VARIATION_PARAM(kIPHCompanionSidePanelFeature, "IPH_CompanionSidePanel");
 DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeFeature,
                        "IPH_DesktopCustomizeChrome");
 DEFINE_VARIATION_PARAM(kIPHDesktopTabGroupsNewGroupFeature,
@@ -272,6 +282,8 @@ DEFINE_VARIATION_PARAM(kIPHPerformanceNewBadgeFeature,
                        "IPH_PerformanceNewBadge");
 DEFINE_VARIATION_PARAM(kIPHPowerBookmarksSidePanelFeature,
                        "IPH_PowerBookmarksSidePanel");
+DEFINE_VARIATION_PARAM(kIPHPriceTrackingChipFeature,
+                       "IPH_PriceTrackingChipFeature");
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingPageActionIconLabelFeature,
                        "IPH_PriceTrackingPageActionIconLabelFeature");
 DEFINE_VARIATION_PARAM(kIPHReadingListDiscoveryFeature,
@@ -293,11 +305,11 @@ DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
 DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
                        "IPH_DesktopSharedHighlighting");
-DEFINE_VARIATION_PARAM(kIPHIntentChipFeature, "IPH_IntentChip");
 DEFINE_VARIATION_PARAM(kIPHWebUiHelpBubbleTestFeature,
                        "IPH_WebUiHelpBubbleTest");
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingInSidePanelFeature,
                        "IPH_PriceTrackingInSidePanel");
+DEFINE_VARIATION_PARAM(kIPHBackNavigationMenuFeature, "IPH_BackNavigationMenu");
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -421,7 +433,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDiscoverFeedHeaderFeature),
         VARIATION_ENTRY(kIPHDefaultSiteViewFeature),
         VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
-        VARIATION_ENTRY(kIPHOverflowMenuTipFeature),
         VARIATION_ENTRY(kIPHPriceNotificationsWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBadgeEligibilityFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
@@ -432,9 +443,15 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSPromoDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSNewTabToolbarItemFeature),
+        VARIATION_ENTRY(kIPHiOSTabGridToolbarItemFeature),
+        VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),
+        VARIATION_ENTRY(kIPHiOSShareToolbarItemFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+        VARIATION_ENTRY(kIPHAutofillFeedbackNewBadgeFeature),
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),
+        VARIATION_ENTRY(kIPHCompanionSidePanelFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeFeature),
         VARIATION_ENTRY(kIPHDesktopTabGroupsNewGroupFeature),
         VARIATION_ENTRY(kIPHDownloadToolbarButtonFeature),
@@ -450,6 +467,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHPasswordsWebAppProfileSwitchFeature),
         VARIATION_ENTRY(kIPHPerformanceNewBadgeFeature),
         VARIATION_ENTRY(kIPHPowerBookmarksSidePanelFeature),
+        VARIATION_ENTRY(kIPHPriceTrackingChipFeature),
         VARIATION_ENTRY(kIPHPriceTrackingPageActionIconLabelFeature),
         VARIATION_ENTRY(kIPHReadingListDiscoveryFeature),
         VARIATION_ENTRY(kIPHReadingListEntryPointFeature),
@@ -464,9 +482,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),
         VARIATION_ENTRY(kIPHProfileSwitchFeature),
         VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
-        VARIATION_ENTRY(kIPHIntentChipFeature),
         VARIATION_ENTRY(kIPHWebUiHelpBubbleTestFeature),
         VARIATION_ENTRY(kIPHPriceTrackingInSidePanelFeature),
+        VARIATION_ENTRY(kIPHBackNavigationMenuFeature),
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

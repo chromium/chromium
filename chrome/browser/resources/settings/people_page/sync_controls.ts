@@ -4,6 +4,7 @@
 
 import '//resources/js/util_ts.js';
 import '//resources/cr_components/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
@@ -16,6 +17,10 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+// <if expr="chromeos_lacros">
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+
+// </if>
 
 // <if expr="is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
@@ -73,12 +78,25 @@ export class SettingsSyncControlsElement extends
         type: Object,
         observer: 'syncStatusChanged_',
       },
+
+      // <if expr="chromeos_lacros">
+      /**
+       * Whether to show the new UI for OS Sync Settings and
+       * Browser Sync Settings which include sublabel and
+       * Apps toggle shared between Ash and Lacros.
+       */
+      showSyncSettingsRevamp_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
+      },
+      //</if>
     };
   }
 
   override hidden: boolean;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
+  private showSyncSettingsRevamp_: boolean;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private cachedSyncPrefs_: {[key: string]: any}|null;
 
@@ -105,6 +123,12 @@ export class SettingsSyncControlsElement extends
     }
   }
 
+  // <if expr="chromeos_lacros">
+  private onOsSyncSettingsLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('osSyncSettingsUrl'));
+  }
+  // </if>
 
   // <if expr="is_chromeos">
   private shouldShowLacrosSideBySideWarning_(): boolean {
@@ -142,6 +166,13 @@ export class SettingsSyncControlsElement extends
     this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
     this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
   }
+
+  // <if expr="chromeos_lacros">
+  private shouldAppsToggleBeDisabled_(
+      syncAllDataTypes: boolean, showSyncSettingsRevamp: boolean): boolean {
+    return syncAllDataTypes || showSyncSettingsRevamp;
+  }
+  // </if>
 
   private handleSyncAllDataTypesChanged_(syncAllDataTypes: boolean) {
     if (syncAllDataTypes) {

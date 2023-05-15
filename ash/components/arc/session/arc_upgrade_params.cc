@@ -37,7 +37,11 @@ UpgradeParams::UpgradeParams()
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableGmsCoreCache)),
       skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcDisableTtsCache)) {}
+          ash::switches::kArcDisableTtsCache)),
+      enable_priority_app_lmk_delay(
+          base::FeatureList::IsEnabled(kPriorityAppLmkDelay)),
+      priority_app_lmk_delay_second(kPriorityAppLmkDelaySecond.Get()),
+      priority_app_lmk_delay_list(kPriorityAppLmkDelayList.Get()) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;

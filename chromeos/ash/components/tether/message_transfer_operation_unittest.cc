@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
@@ -178,7 +179,8 @@ class MessageTransferOperationTest : public testing::Test {
     operation_ = base::WrapUnique(
         new TestOperation(remote_devices, fake_device_sync_client_.get(),
                           fake_secure_channel_client_.get()));
-    operation_->SetTimerFactoryForTest(base::WrapUnique(test_timer_factory_));
+    operation_->SetTimerFactoryForTest(
+        base::WrapUnique(test_timer_factory_.get()));
     VerifyOperationStartedAndFinished(false /* has_started */,
                                       false /* has_finished */);
   }
@@ -262,7 +264,7 @@ class MessageTransferOperationTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
-  TestTimerFactory* test_timer_factory_;
+  raw_ptr<TestTimerFactory, ExperimentalAsh> test_timer_factory_;
   std::unique_ptr<TestOperation> operation_;
 };
 

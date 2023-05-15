@@ -38,8 +38,7 @@ _COMMENT_REMOVER_REGEX = re.compile(
 
 _EXTRACT_NATIVES_REGEX = re.compile(
     r'(@NativeClassQualifiedName'
-    r'\(\"(?P<native_class_name>.*?)\"\)\s+)?'
-    r'(@NativeCall(\(\"(?P<java_class_name>.*?)\"\))\s+)?'
+    r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
     r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native '
     r'(?P<return_type>\S*) '
     r'(?P<name>native\w+)\((?P<params>.*?)\);')
@@ -51,8 +50,7 @@ _MAIN_DEX_REGEX = re.compile(r'^\s*(?:@(?:\w+\.)*\w+\s+)*@MainDex\b',
 # doesn't require name to be prefixed with native, and does not
 # require a native qualifier.
 _EXTRACT_METHODS_REGEX = re.compile(
-    r'(@NativeClassQualifiedName'
-    r'\(\"(?P<native_class_name>.*?)\"\)\s*)?'
+    r'(@NativeClassQualifiedName\(\"(?P<native_class_name>\S*?)\"\)\s*)?'
     r'(?P<qualifiers>'
     r'((public|private|static|final|abstract|protected|native)\s*)*)\s+'
     r'(?P<return_type>\S*)\s+'
@@ -124,7 +122,6 @@ class NativeMethod(object):
 
   def __init__(self, **kwargs):
     self.static = kwargs['static']
-    self.java_class_name = kwargs['java_class_name']
     self.return_type = kwargs['return_type']
     self.params = kwargs['params']
     self.is_proxy = kwargs.get('is_proxy', False)
@@ -349,12 +346,6 @@ class JniParams(object):
       if not self._fully_qualified_class.endswith(inner):
         self._inner_classes += [self._fully_qualified_class + '$' + inner]
 
-    re_additional_imports = re.compile(
-        r'@JNIAdditionalImport\(\s*{?(?P<class_names>.*?)}?\s*\)')
-    for match in re.finditer(re_additional_imports, contents):
-      for class_name in match.group('class_names').split(','):
-        self._AddAdditionalImport(class_name.strip())
-
   def JavaToJni(self, param):
     """Converts a java param into a JNI signature type."""
     pod_param_map = {
@@ -425,28 +416,12 @@ class JniParams(object):
       for qualified_name in self._imports:
         if qualified_name.endswith('/' + outer):
           return (prefix + qualified_name + '$' + inner + ';')
-      raise SyntaxError('Inner class (%s) can not be '
-                        'used directly by JNI. Please import the outer '
-                        'class, probably:\n'
-                        'import %s.%s;' % (param, self._package.replace(
-                            '/', '.'), outer.replace('/', '.')))
+      param = param.replace('.', '$')
 
     self._CheckImplicitImports(param)
 
     # Type not found, falling back to same package as this class.
     return (prefix + 'L' + self._package + '/' + param + ';')
-
-  def _AddAdditionalImport(self, class_name):
-    assert class_name.endswith('.class')
-    raw_class_name = class_name[:-len('.class')]
-    if '.' in raw_class_name:
-      raise SyntaxError('%s cannot be used in @JNIAdditionalImport. '
-                        'Only import unqualified outer classes.' % class_name)
-    new_import = 'L%s/%s' % (self._package, raw_class_name)
-    if new_import in self._imports:
-      raise SyntaxError('Do not use JNIAdditionalImport on an already '
-                        'imported class: %s' % (new_import.replace('/', '.')))
-    self._imports += [new_import]
 
   def _CheckImplicitImports(self, param):
     # Ensure implicit imports, such as java.lang.*, are not being treated
@@ -547,7 +522,6 @@ def ExtractNatives(contents, ptr_type):
   for match in _EXTRACT_NATIVES_REGEX.finditer(contents):
     native = NativeMethod(
         static='static' in match.group('qualifiers'),
-        java_class_name=match.group('java_class_name'),
         native_class_name=match.group('native_class_name'),
         return_type=match.group('return_type'),
         name=match.group('name').replace('native', ''),
@@ -664,10 +638,8 @@ def GetMangledMethodName(jni_params, name, params, return_type):
   return mangled_name
 
 
-def MangleCalledByNatives(jni_params, called_by_natives, always_mangle):
-  """Mangles all the overloads from the call_by_natives list or
-     mangle all methods if always_mangle is true.
-  """
+def MangleCalledByNatives(jni_params, called_by_natives):
+  """Mangles all the overloads from the call_by_natives list."""
   method_counts = collections.defaultdict(
       lambda: collections.defaultdict(lambda: 0))
   for called_by_native in called_by_natives:
@@ -678,7 +650,7 @@ def MangleCalledByNatives(jni_params, called_by_natives, always_mangle):
     java_class_name = called_by_native.java_class_name
     method_name = called_by_native.name
     method_id_var_name = method_name
-    if always_mangle or method_counts[java_class_name][method_name] > 1:
+    if method_counts[java_class_name][method_name] > 1:
       method_id_var_name = GetMangledMethodName(jni_params, method_name,
                                                 called_by_native.params,
                                                 called_by_native.return_type)
@@ -708,13 +680,12 @@ def RemoveIndentedEmptyLines(string):
   return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
-def ExtractCalledByNatives(jni_params, contents, always_mangle):
+def ExtractCalledByNatives(jni_params, contents):
   """Parses all methods annotated with @CalledByNative.
 
   Args:
     jni_params: JniParams object.
     contents: the contents of the java file.
-    always_mangle: See MangleCalledByNatives.
 
   Returns:
     A list of dict with information about the annotated methods.
@@ -750,7 +721,7 @@ def ExtractCalledByNatives(jni_params, contents, always_mangle):
     if '@CalledByNative' in line1:
       raise ParseError('could not parse @CalledByNative method signature',
                        line1, line2)
-  return MangleCalledByNatives(jni_params, called_by_natives, always_mangle)
+  return MangleCalledByNatives(jni_params, called_by_natives)
 
 
 def RemoveComments(contents):
@@ -830,8 +801,8 @@ class JNIFromJavaP(object):
                              contents[lineno + 1]),
                          is_constructor=True)
       ]
-    self.called_by_natives = MangleCalledByNatives(
-        self.jni_params, self.called_by_natives, options.always_mangle)
+    self.called_by_natives = MangleCalledByNatives(self.jni_params,
+                                                   self.called_by_natives)
     self.constant_fields = []
     re_constant_field = re.compile('.*?public static final int (?P<name>.*?);')
     re_constant_field_value = re.compile(
@@ -973,7 +944,6 @@ class ProxyHelpers(object):
             fully_qualified_class, name, use_hash=True)
         native = NativeMethod(
             static=True,
-            java_class_name=None,
             return_type=return_type,
             name=name,
             native_class_name=method.group('native_class_name'),
@@ -1000,8 +970,7 @@ class JNIFromJavaSource(object):
     self.jni_params = JniParams(fully_qualified_class)
     self.jni_params.ExtractImportsAndInnerClasses(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
-    called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
-                                               options.always_mangle)
+    called_by_natives = ExtractCalledByNatives(self.jni_params, contents)
 
     natives, module_name = ProxyHelpers.ExtractStaticProxyNatives(
         fully_qualified_class, contents, options.ptr_type)
@@ -1068,8 +1037,6 @@ class HeaderFileGeneratorHelper(object):
     template = Template('Java_${JAVA_NAME}_native${NAME}')
 
     java_name = self.fully_qualified_class
-    if native.java_class_name:
-      java_name += '$' + native.java_class_name
 
     values = {'NAME': native.name, 'JAVA_NAME': EscapeClassName(java_name)}
     return template.substitute(values)
@@ -1086,7 +1053,7 @@ class HeaderFileGeneratorHelper(object):
 
       class_name = self.class_name
       jni_class_path = self.fully_qualified_class
-      if entry.java_class_name:
+      if isinstance(entry, CalledByNative) and entry.java_class_name:
         class_name = entry.java_class_name
         jni_class_path = self.fully_qualified_class + '$' + class_name
       ret[class_name] = jni_class_path
@@ -1210,7 +1177,7 @@ $METHOD_STUBS
 #endif  // ${HEADER_GUARD}
 """)
     values = {
-        'SCRIPT_NAME': self.options.script_name,
+        'SCRIPT_NAME': GetScriptName(),
         'FULLY_QUALIFIED_CLASS': self.fully_qualified_class,
         'CLASS_PATH_DEFINITIONS': self.GetClassPathDefinitionsString(),
         'CONSTANT_FIELDS': self.GetConstantFieldsString(),
@@ -1298,12 +1265,7 @@ $METHOD_STUBS
         })
 
   def GetImplementationMethodName(self, native):
-    class_name = self.class_name
-    if native.java_class_name is not None:
-      # Inner class
-      class_name = native.java_class_name
-
-    return 'JNI_%s_%s' % (class_name, native.name)
+    return 'JNI_%s_%s' % (self.class_name, native.name)
 
   def GetNativeStub(self, native):
     is_method = native.type == 'method'
@@ -1632,11 +1594,6 @@ See SampleForTests.java for more details.
                       dest='output_names',
                       help='Output filenames within output directory.')
   parser.add_argument(
-      '--script_name',
-      default=GetScriptName(),
-      help='The name of this script in the generated '
-      'header.')
-  parser.add_argument(
       '--includes',
       help='The comma-separated list of header files to '
       'include in the generated header.')
@@ -1656,8 +1613,6 @@ See SampleForTests.java for more details.
       '--enable_profiling',
       action='store_true',
       help='Add additional profiling instrumentation.')
-  parser.add_argument(
-      '--always_mangle', action='store_true', help='Mangle all function names')
   parser.add_argument('--unchecked_exceptions',
                       action='store_true',
                       help='Do not check that no exceptions were thrown.')

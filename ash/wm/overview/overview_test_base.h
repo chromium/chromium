@@ -75,6 +75,12 @@ class OverviewTestBase : public AshTestBase {
 
   WindowPreviewView* GetPreviewView(OverviewItem* item);
 
+  gfx::Rect GetShadowBounds(OverviewItem* item) const;
+
+  views::Widget* GetCannotSnapWidget(OverviewItem* item);
+
+  void SetAnimatingToClose(OverviewItem* item, bool val);
+
   float GetCloseButtonOpacity(OverviewItem* item);
 
   float GetTitlebarOpacity(OverviewItem* item);

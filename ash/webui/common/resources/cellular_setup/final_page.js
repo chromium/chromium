@@ -68,4 +68,14 @@ Polymer({
   getPageBodyClass_(showError) {
     return showError ? 'error' : '';
   },
+
+  /**
+   * @param {boolean} showError
+   * @return {string}
+   * @private
+   */
+  getJellyIllustrationName_(showError) {
+    return showError ? 'cellular-setup-illo:error' :
+                       'cellular-setup-illo:final-page-success';
+  },
 });

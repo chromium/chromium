@@ -435,6 +435,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcFileSystemMounter::EnsureFactoryBuilt();
   ArcFileSystemOperationRunner::EnsureFactoryBuilt();
   ArcFileSystemWatcherService::EnsureFactoryBuilt();
+  ArcIdleManager::EnsureFactoryBuilt();
   ArcIioSensorBridge::EnsureFactoryBuilt();
   ArcImeService::EnsureFactoryBuilt();
   ArcInitialOptInNotifier::EnsureFactoryBuilt();

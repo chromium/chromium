@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_component.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -48,7 +49,7 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
     views::BoundsAnimator* GetBoundsAnimator();
 
    private:
-    ShelfNavigationWidget* navigation_widget_;
+    raw_ptr<ShelfNavigationWidget, ExperimentalAsh> navigation_widget_;
   };
 
   ShelfNavigationWidget(Shelf* shelf, ShelfView* shelf_view);
@@ -120,8 +121,8 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   // Returns the number of visible control buttons.
   int CalculateButtonCount() const;
 
-  Shelf* shelf_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   // In tablet mode with hotseat enabled, `clip_rect_after_rtl_` is used to hide
   // the invisible widget part. We try best to avoid changing the widget's

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

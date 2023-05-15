@@ -57,6 +57,7 @@ enum class DebugDataType {
   kTriggerAggregateInsufficientBudget,
   kTriggerAggregateStorageLimit,
   kTriggerAggregateReportWindowPassed,
+  kTriggerAggregateExcessiveReports,
   kTriggerUnknownError,
 };
 
@@ -182,6 +183,10 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
       return DataTypeIfCookieSet(
           DebugDataType::kTriggerAggregateReportWindowPassed,
           is_debug_cookie_set);
+    case AggregatableResult::kExcessiveReports:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAggregateExcessiveReports,
+          is_debug_cookie_set);
   }
 }
 
@@ -229,6 +234,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-aggregate-storage-limit";
     case DebugDataType::kTriggerAggregateReportWindowPassed:
       return "trigger-aggregate-report-window-passed";
+    case DebugDataType::kTriggerAggregateExcessiveReports:
+      return "trigger-aggregate-excessive-reports";
     case DebugDataType::kTriggerUnknownError:
       return "trigger-unknown-error";
   }
@@ -292,6 +299,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerAggregateInsufficientBudget:
     case DebugDataType::kTriggerAggregateStorageLimit:
     case DebugDataType::kTriggerAggregateReportWindowPassed:
+    case DebugDataType::kTriggerAggregateExcessiveReports:
     case DebugDataType::kTriggerUnknownError:
       NOTREACHED();
       return base::Value::Dict();
@@ -337,6 +345,9 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       break;
     case DebugDataType::kTriggerAggregateInsufficientBudget:
       SetLimit(data_body, result.limits().aggregatable_budget_per_source);
+      break;
+    case DebugDataType::kTriggerAggregateExcessiveReports:
+      SetLimit(data_body, result.limits().max_aggregatable_reports_per_source);
       break;
     case DebugDataType::kTriggerReportingOriginLimit:
       SetLimit(data_body,

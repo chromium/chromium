@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,11 +28,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_search_params.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/attribution_reporting_to_mojom.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
-#include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -94,6 +95,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetPriority(original->Priority());
   request->SetKeepalive(original->Keepalive());
   request->SetBrowsingTopics(original->BrowsingTopics());
+  request->SetAdAuctionHeaders(original->AdAuctionHeaders());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   if (original->URLLoaderFactory()) {
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
@@ -103,6 +105,8 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   }
   request->SetWindowId(original->WindowId());
   request->SetTrustTokenParams(original->TrustTokenParams());
+  request->SetAttributionReportingEligibility(
+      original->AttributionReportingEligibility());
 
   // When a new request is created from another the destination is always reset
   // to be `kEmpty`.  In order to facilitate some later checks when a service
@@ -124,8 +128,9 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
          init->hasKeepalive() || init->hasBrowsingTopics() ||
-         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasPrivateToken();
+         init->hasAdAuctionHeaders() || init->hasPriority() ||
+         init->hasSignal() || init->hasDuplex() || init->hasPrivateToken() ||
+         init->hasAttributionReporting();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -549,6 +554,18 @@ Request* Request::CreateRequestWithRequestOrString(
     }
   }
 
+  if (init->hasAdAuctionHeaders()) {
+    if (!execution_context->IsSecureContext()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "adAuctionHeaders: ad auction operations are only available in "
+          "secure contexts.");
+      return nullptr;
+    }
+
+    request->SetAdAuctionHeaders(init->adAuctionHeaders());
+  }
+
   // "If |init|'s method member is present, let |method| be it and run these
   // substeps:"
   if (init->hasMethod()) {
@@ -580,8 +597,9 @@ Request* Request::CreateRequestWithRequestOrString(
                       mojom::blink::WebFeature::kTrustTokenFetch);
 
     network::mojom::blink::TrustTokenParams params;
-    if (!ConvertTrustTokenToMojom(*init->privateToken(), &exception_state,
-                                  &params)) {
+    if (!ConvertTrustTokenToMojomAndCheckPermissions(
+            *init->privateToken(), execution_context, &exception_state,
+            &params)) {
       // Whenever parsing the trustToken argument fails, we expect a suitable
       // exception to be thrown.
       DCHECK(exception_state.HadException());
@@ -595,27 +613,21 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
 
-    if ((params.operation == TrustTokenOperationType::kRedemption ||
-         params.operation == TrustTokenOperationType::kSigning) &&
-        !execution_context->IsFeatureEnabled(
-            mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-      exception_state.ThrowTypeError(
-          "trustToken: Redemption ('token-redemption') and signing "
-          "('send-redemption-record') operations require that the "
-          "trust-token-redemption "
-          "Permissions Policy feature be enabled.");
-      return nullptr;
-    }
-
-    if (params.operation == TrustTokenOperationType::kIssuance &&
-        !IsTrustTokenIssuanceAvailableInExecutionContext(*execution_context)) {
-      exception_state.ThrowTypeError(
-          "trustToken: Issuance ('token-request') is disabled except in "
-          "contexts with the TrustTokens Origin Trial enabled.");
-      return nullptr;
-    }
-
     request->SetTrustTokenParams(std::move(params));
+  }
+
+  if (init->hasAttributionReporting()) {
+    if (!execution_context->IsSecureContext()) {
+      exception_state.ThrowTypeError(
+          "attributionReporting: Attribution Reporting operations are only "
+          "available in secure contexts.");
+      return nullptr;
+    }
+
+    request->SetAttributionReportingEligibility(
+        ConvertAttributionReportingRequestOptionsToMojom(
+            *init->attributionReporting(), *execution_context,
+            exception_state));
   }
 
   // "Let |r| be a new Request object associated with |request| and a new

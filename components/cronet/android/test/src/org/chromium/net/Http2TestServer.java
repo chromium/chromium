@@ -48,6 +48,9 @@ public final class Http2TestServer {
 
     private static ReportingCollector sReportingCollector;
 
+    public static final String SERVER_CERT_PEM = "quic-chain.pem";
+    private static final String SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
+
     public static boolean shutdownHttp2TestServer() throws Exception {
         if (sServerChannel != null) {
             sServerChannel.close().sync();
@@ -138,12 +141,19 @@ public final class Http2TestServer {
         return getServerUrl() + Http2TestHandler.COMBINED_HEADERS_PATH;
     }
 
-    public static boolean startHttp2TestServer(
-            Context context, String certFileName, String keyFileName) throws Exception {
-        return startHttp2TestServer(context, certFileName, keyFileName, null);
+    public static boolean startHttp2TestServer(Context context) throws Exception {
+        TestFilesInstaller.installIfNeeded(context);
+        return startHttp2TestServer(context, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, null);
     }
 
-    public static boolean startHttp2TestServer(Context context, String certFileName,
+    public static boolean startHttp2TestServer(Context context, CountDownLatch hangingUrlLatch)
+            throws Exception {
+        TestFilesInstaller.installIfNeeded(context);
+        return startHttp2TestServer(
+                context, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, hangingUrlLatch);
+    }
+
+    private static boolean startHttp2TestServer(Context context, String certFileName,
             String keyFileName, CountDownLatch hangingUrlLatch) throws Exception {
         sReportingCollector = new ReportingCollector();
         Http2TestServerRunnable http2TestServerRunnable =

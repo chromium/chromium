@@ -69,11 +69,13 @@ class ExceptionState;
 class ImageBitmapTest : public testing::Test {
  protected:
   void SetUp() override {
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(10, 10);
+    sk_sp<SkSurface> surface =
+        SkSurfaces::Raster(SkImageInfo::MakeN32Premul(10, 10));
     surface->getCanvas()->clear(0xFFFFFFFF);
     image_ = surface->makeImageSnapshot();
 
-    sk_sp<SkSurface> surface2 = SkSurface::MakeRasterN32Premul(5, 5);
+    sk_sp<SkSurface> surface2 =
+        SkSurfaces::Raster(SkImageInfo::MakeN32Premul(5, 5));
     surface2->getCanvas()->clear(0xAAAAAAAA);
     image2_ = surface2->makeImageSnapshot();
 
@@ -111,7 +113,7 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
   sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
   SkImageInfo raster_image_info =
       SkImageInfo::MakeN32Premul(5, 5, src_rgb_color_space);
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(raster_image_info));
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(raster_image_info));
   sk_sp<SkImage> image = surface->makeImageSnapshot();
   ImageResourceContent* original_image_content =
       ImageResourceContent::CreateLoaded(
@@ -180,7 +182,7 @@ TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
   sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
   SkImageInfo raster_image_info =
       SkImageInfo::MakeN32Premul(5, 5, src_rgb_color_space);
-  sk_sp<SkSurface> raster_surface(SkSurface::MakeRaster(raster_image_info));
+  sk_sp<SkSurface> raster_surface(SkSurfaces::Raster(raster_image_info));
   sk_sp<SkImage> raster_image = raster_surface->makeImageSnapshot();
   ImageResourceContent* original_image_content =
       ImageResourceContent::CreateLoaded(

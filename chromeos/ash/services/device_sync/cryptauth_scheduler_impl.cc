@@ -295,7 +295,7 @@ void CryptAuthSchedulerImpl::OnShuttingDown() {
 void CryptAuthSchedulerImpl::OnSchedulingStarted(RequestType request_type) {
   if (!network_state_handler_observer_.IsObserving()) {
     DCHECK(network_state_handler_);
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
 
   ScheduleNextRequest(request_type);

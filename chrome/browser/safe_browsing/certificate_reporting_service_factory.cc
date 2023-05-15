@@ -77,7 +77,12 @@ void CertificateReportingServiceFactory::SetURLLoaderFactoryForTesting(
 CertificateReportingServiceFactory::CertificateReportingServiceFactory()
     : ProfileKeyedServiceFactory(
           "cert_reporting::Factory",
-          ProfileSelections::BuildForRegularAndIncognito()),
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()),
       server_public_key_(nullptr),
       server_public_key_version_(0),
       clock_(base::DefaultClock::GetInstance()),

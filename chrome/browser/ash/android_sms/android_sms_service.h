@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -73,8 +74,9 @@ class AndroidSmsService : public KeyedService,
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 
-  Profile* profile_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
 
   std::unique_ptr<AndroidSmsAppSetupController>
       andoid_sms_app_setup_controller_;

@@ -67,7 +67,7 @@ void CertDbInitializerImpl::Start() {
     return InitializeReadOnlyCertDb();
   }
 
-  if (lacros_service->GetInterfaceVersion(CrosapiCertDb::Uuid_) >=
+  if (lacros_service->GetInterfaceVersion<CrosapiCertDb>() >=
       kAddAshCertDatabaseObserverMinVersion) {
     lacros_service->GetRemote<CrosapiCertDb>()->AddAshCertDatabaseObserver(
         receiver_.BindNewPipeAndPassRemote());

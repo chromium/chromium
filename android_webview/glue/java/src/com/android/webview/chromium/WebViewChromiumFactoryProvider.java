@@ -415,7 +415,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
             }
 
-            ThreadUtils.setWillOverrideUiThread(true);
+            ThreadUtils.setWillOverrideUiThread();
             BuildInfo.setBrowserPackageInfo(packageInfo);
             BuildInfo.setFirebaseAppId(
                     FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));

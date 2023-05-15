@@ -11,7 +11,7 @@
 namespace chrome {
 
 // Flags for Chrome specific child processes to resolve the appropriate process
-// via ChromeContentClient::GetChildProcessPath().
+// via ChromeContentBrowserClient::GetChildProcessSuffix().
 enum ChildProcessHostFlags {
 #if BUILDFLAG(IS_MAC)
   // Starts a child process with the macOS alert style to show notifications as

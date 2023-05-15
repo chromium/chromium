@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
       "settings.SyncBrowserProxyImpl.getInstance()."
       "startSyncingWithEmail(\"%s\", true);",
       test_account.user.c_str());
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       settings_tab, base::StringPrintf(kSettingsScriptWrapperFormat,
                                        start_syncing_script.c_str())));
   EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(

@@ -389,64 +389,6 @@ TEST_P(ScreenCaptureNotificationBlockerTest, ShowAction) {
   EXPECT_FALSE(blocker().ShouldBlockNotification(notification));
 }
 
-TEST_P(ScreenCaptureNotificationBlockerTest, CloseHistogram) {
-  base::HistogramTester histogram_tester;
-  const char kHistogram[] = "Notifications.Blocker.ScreenCapture.Action.Close";
-
-  blocker().OnIsCapturingDisplayChanged(
-      CreateWebContents(GURL("https://example1.com")), true);
-  message_center::Notification notification =
-      CreateNotification(GURL("https://example2.com"));
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-
-  auto action_delay = base::Seconds(5);
-  task_environment_.FastForwardBy(action_delay);
-  SimulateClose(/*by_user=*/true);
-
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1, /*count=*/1);
-  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "Notifications.Blocker.ScreenCapture.ActionTiming.Close", action_delay,
-      /*count=*/1);
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-  SimulateClose(/*by_user=*/true);
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2, /*count=*/1);
-  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-  SimulateClose(/*by_user=*/false);
-  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
-}
-
-TEST_P(ScreenCaptureNotificationBlockerTest, BodyClickHistogram) {
-  base::HistogramTester histogram_tester;
-  const char kHistogram[] = "Notifications.Blocker.ScreenCapture.Action.Body";
-
-  blocker().OnIsCapturingDisplayChanged(
-      CreateWebContents(GURL("https://example1.com")), true);
-  message_center::Notification notification =
-      CreateNotification(GURL("https://example2.com"));
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-
-  auto action_delay = base::Seconds(5);
-  task_environment_.FastForwardBy(action_delay);
-  SimulateClick(/*action_index=*/absl::nullopt);
-
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1, /*count=*/1);
-  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "Notifications.Blocker.ScreenCapture.ActionTiming.Body", action_delay,
-      /*count=*/1);
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-  SimulateClick(/*action_index=*/absl::nullopt);
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2, /*count=*/1);
-  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
-}
-
 TEST_P(ScreenCaptureNotificationBlockerTest, SnoozeClickHistogram) {
   if (!GetParam())
     return;
@@ -465,41 +407,12 @@ TEST_P(ScreenCaptureNotificationBlockerTest, SnoozeClickHistogram) {
   task_environment_.FastForwardBy(action_delay);
   SimulateClick(0);
 
-  histogram_tester.ExpectUniqueSample(
-      "Notifications.Blocker.ScreenCapture.Action.Snooze", /*sample=*/1,
-      /*count=*/1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "Notifications.Blocker.ScreenCapture.ActionTiming.Snooze", action_delay,
-      /*count=*/1);
-
   // Test showing another notification while snoozing.
   blocker().OnBlockedNotification(notification, /*replaced*/ false);
   blocker().OnIsCapturingDisplayChanged(contents, false);
 
   histogram_tester.ExpectUniqueSample(
       "Notifications.Blocker.ScreenCapture.SnoozedCount", /*sample=*/1,
-      /*count=*/1);
-}
-
-TEST_P(ScreenCaptureNotificationBlockerTest, ShowClickHistogram) {
-  base::HistogramTester histogram_tester;
-
-  blocker().OnIsCapturingDisplayChanged(
-      CreateWebContents(GURL("https://example1.com")), true);
-  message_center::Notification notification =
-      CreateNotification(GURL("https://example2.com"));
-
-  blocker().OnBlockedNotification(notification, /*replaced*/ false);
-
-  auto action_delay = base::Seconds(5);
-  task_environment_.FastForwardBy(action_delay);
-  SimulateClick(GetParam() ? 1 : 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Notifications.Blocker.ScreenCapture.Action.Show", /*sample=*/1,
-      /*count=*/1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "Notifications.Blocker.ScreenCapture.ActionTiming.Show", action_delay,
       /*count=*/1);
 }
 

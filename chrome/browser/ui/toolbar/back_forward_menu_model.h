@@ -11,7 +11,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "components/favicon/core/favicon_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -69,6 +71,7 @@ class BackForwardMenuModel : public ui::MenuModel {
   void ActivatedAt(size_t index) override;
   void ActivatedAt(size_t index, int event_flags) override;
   void MenuWillShow() override;
+  void MenuWillClose() override;
 
   // Is the item at |index| a separator?
   bool IsSeparator(size_t index) const;
@@ -202,6 +205,15 @@ class BackForwardMenuModel : public ui::MenuModel {
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // The timestamp of the previous opening of the BackForwardMenuModel.
+  // This is used to calculate the time spent between the model's opening and
+  // the clicking of a menu item.
+  // Note: This timestamp will be set from `MenuWillShow()` and will be accessed
+  // from `MenuWillClose()` and `ActivateAt()`. Since it will be read once or
+  // twice depending on whether any of the menu item is activated, the timestamp
+  // will not be reset.
+  absl::optional<base::TimeTicks> menu_model_open_timestamp_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_BACK_FORWARD_MENU_MODEL_H_

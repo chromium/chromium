@@ -12,7 +12,10 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+
 /**
+ * Implemented in Chromium.
+ *
  * Interface to provide chromium calling points for an external surface.
  */
 public interface SurfaceActionsHandler {
@@ -43,28 +46,28 @@ public interface SurfaceActionsHandler {
     /**
      * Options for entry points to the single web feed.
      */
-    @IntDef({OpenWebFeedEntryPoint.ATTRIBUTION, OpenWebFeedEntryPoint.RECOMMENDATION,
-            OpenWebFeedEntryPoint.GROUP_HEADER, OpenWebFeedEntryPoint.OTHER,
+    @IntDef({OpenWebFeedEntryPoint.OTHER, OpenWebFeedEntryPoint.ATTRIBUTION,
+            OpenWebFeedEntryPoint.RECOMMENDATION, OpenWebFeedEntryPoint.GROUP_HEADER,
             OpenWebFeedEntryPoint.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface OpenWebFeedEntryPoint {
         /**
-         * Feed Atteribution
-         */
-        int ATTRIBUTION = 0;
-        /**
-         * Feed Recomentation
-         */
-        int RECOMMENDATION = 1;
-        /**
-         * Group Header Attribution
-         */
-        int GROUP_HEADER = 2;
-        /**
          * Other
          */
-        int OTHER = 3;
-        int MAX_VALUE = OTHER;
+        int OTHER = 0;
+        /**
+         * Feed Attribution
+         */
+        int ATTRIBUTION = 1;
+        /**
+         * Feed Recommendation
+         */
+        int RECOMMENDATION = 2;
+        /**
+         * Group Header
+         */
+        int GROUP_HEADER = 3;
+        int MAX_VALUE = GROUP_HEADER;
     }
 
     /**

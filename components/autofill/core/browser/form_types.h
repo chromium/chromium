@@ -22,7 +22,7 @@ enum class FormType : int {
 
 // Returns true if the form contains fields that represent the card number and
 // the card expiration date.
-bool FormHasAllEmtyCreditCardFields(const FormStructure& form_structure);
+bool FormHasAllCreditCardFields(const FormStructure& form_structure);
 
 FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
 

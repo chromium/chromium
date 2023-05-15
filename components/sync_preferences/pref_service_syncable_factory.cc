@@ -14,6 +14,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/sync/base/features.h"
@@ -58,9 +59,12 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     // If EnablePreferencesAccountStorage is enabled, then a
     // DualLayerUserPrefStore is used as the main user pref store, and sync is
     // hooked up directly to the underlying account store.
+
+    auto account_pref_store = base::MakeRefCounted<InMemoryPrefStore>();
     auto dual_layer_user_pref_store =
         base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
-            user_prefs_, pref_model_associator_client_);
+            user_prefs_, std::move(account_pref_store),
+            pref_model_associator_client_);
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_prefs_.get(), supervised_user_prefs_.get(),
         extension_prefs_.get(), standalone_browser_prefs_.get(),

@@ -20,6 +20,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -60,9 +61,10 @@ void LoadMoreTask::Run() {
   if (final_status != LoadStreamStatus::kNoStatus)
     return Done(final_status);
 
+  // Pass empty pending actions to force reading from the store.
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
-      &*stream_,
-      /*launch_reliability_logger=*/nullptr,
+      std::vector<feedstore::StoredAction>(),
+      /*from_load_more=*/true, stream_type_, &*stream_,
       base::BindOnce(&LoadMoreTask::UploadActionsComplete, GetWeakPtr()));
   upload_actions_task_->Execute(base::DoNothing());
 }
@@ -71,11 +73,12 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   StreamModel* model = stream_->GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
+  GetLaunchReliabilityLogger().LogLoadMoreRequestSent();
+
   // Determine whether the load more request should be forced signed-out
   // regardless of the live sign-in state of the client.
   //
-  // The signed-in state of the model is used instead of using
-  // FeedStream#ShouldForceSignedOutFeedQueryRequest because the load more
+  // The signed-in state of the model is used because the load more
   // requests should be in the same signed-in state as the prior requests that
   // filled the model to have consistent data.
   //
@@ -129,15 +132,20 @@ void LoadMoreTask::ProcessNetworkResponse(
                                         response_info, response_body != nullptr)
                                         .load_stream_status;
   if (network_status != LoadStreamStatus::kNoStatus)
-    return Done(network_status);
+    return RequestFinished(network_status, response_info.status_code, 0L, 0L);
 
   RefreshResponseData translated_response =
       stream_->GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkLoadMore,
           response_info.account_info, base::Time::Now());
-
   if (!translated_response.model_update_request)
-    return Done(LoadStreamStatus::kProtoTranslationFailed);
+    return RequestFinished(LoadStreamStatus::kProtoTranslationFailed,
+                           response_info.status_code, 0L, 0L);
+
+  int64_t server_send_timestamp_ns = feedstore::ToTimestampNanos(
+      translated_response.server_response_sent_timestamp);
+  int64_t server_receive_timestamp_ns = feedstore::ToTimestampNanos(
+      translated_response.server_request_received_timestamp);
 
   result_.loaded_new_content_from_network =
       !translated_response.model_update_request->stream_structures.empty();
@@ -156,14 +164,35 @@ void LoadMoreTask::ProcessNetworkResponse(
 
   result_.request_schedule = std::move(translated_response.request_schedule);
 
-  Done(LoadStreamStatus::kLoadedFromNetwork);
+  RequestFinished(LoadStreamStatus::kLoadedFromNetwork,
+                  response_info.status_code, server_receive_timestamp_ns,
+                  server_send_timestamp_ns);
+}
+
+void LoadMoreTask::RequestFinished(LoadStreamStatus status,
+                                   int network_status_code,
+                                   int64_t server_receive_timestamp_ns,
+                                   int64_t server_send_timestamp_ns) {
+  if (network_status_code > 0) {
+    GetLaunchReliabilityLogger().LogLoadMoreResponseReceived(
+        server_receive_timestamp_ns, server_send_timestamp_ns);
+  }
+  GetLaunchReliabilityLogger().LogLoadMoreRequestFinished(network_status_code);
+  Done(status);
 }
 
 void LoadMoreTask::Done(LoadStreamStatus status) {
+  GetLaunchReliabilityLogger().LogLoadMoreEnded(
+      status == LoadStreamStatus::kLoadedFromNetwork);
+
   result_.stream_type = stream_type_;
   result_.final_status = status;
   std::move(done_callback_).Run(std::move(result_));
   TaskComplete();
+}
+
+LaunchReliabilityLogger& LoadMoreTask::GetLaunchReliabilityLogger() const {
+  return stream_->GetLaunchReliabilityLogger(stream_type_);
 }
 
 }  // namespace feed

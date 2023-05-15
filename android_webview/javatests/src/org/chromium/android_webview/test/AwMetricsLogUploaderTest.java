@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -27,10 +28,7 @@ import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUs
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Instrumentation tests MetricsUploadService. These tests are not batched to make sure all unbinded
@@ -95,38 +93,38 @@ public class AwMetricsLogUploaderTest {
     }
 
     @Test
-    public void testSendingDataException_whenCancellationException() throws Throwable {
-        testSendingDataException(new CancellationException(), HttpURLConnection.HTTP_GONE);
-    }
-
-    @Test
     public void testSendingDataException_whenInterruptedException() throws Throwable {
         testSendingDataException(new InterruptedException(), HttpURLConnection.HTTP_UNAVAILABLE);
     }
 
     @Test
-    public void testSendingDataException_whenExecutionException() throws Throwable {
-        testSendingDataException(
-                new ExecutionException("", null), HttpURLConnection.HTTP_BAD_REQUEST);
-    }
-
-    @Test
     public void testSendingDataException_whenTimesOut() throws Throwable {
-        testSendingDataException(new TimeoutException(), HttpURLConnection.HTTP_CLIENT_TIMEOUT);
+        // When the AwMetricsLogUploader attempts to wait for log results, an exception of our
+        // choosing will be thrown.
+        final LinkedBlockingQueue<IMetricsUploadService> mockedResultsQueue =
+                mock(LinkedBlockingQueue.class);
+        when(mockedResultsQueue.poll(anyLong(), any())).thenReturn(null);
+
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(
+                /* waitForResults= */ true, /* useDefaultUploadQos= */ false);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsQueue);
+
+        Assert.assertEquals(HttpURLConnection.HTTP_CLIENT_TIMEOUT, status);
     }
 
     private void testSendingDataException(Throwable exceptionThrown, int expectedStatus)
             throws Throwable {
         // When the AwMetricsLogUploader attempts to wait for log results, an exception of our
         // choosing will be thrown.
-        final CompletableFuture<Integer> mockedResultsFuture = mock(CompletableFuture.class);
-        when(mockedResultsFuture.get(anyLong(), any())).thenAnswer(invocation -> {
+        final LinkedBlockingQueue<IMetricsUploadService> mockedResultsQueue =
+                mock(LinkedBlockingQueue.class);
+        when(mockedResultsQueue.poll(anyLong(), any())).thenAnswer(invocation -> {
             throw exceptionThrown;
         });
 
         AwMetricsLogUploader uploader = new AwMetricsLogUploader(
                 /* waitForResults= */ true, /* useDefaultUploadQos= */ false);
-        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsFuture);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsQueue);
 
         Assert.assertEquals(expectedStatus, status);
     }

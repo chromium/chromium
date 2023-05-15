@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
@@ -76,20 +77,6 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
   return dest;
 }
 
-std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-CreateDefaultResponseReaderFactory(content::BrowserContext& browser_context) {
-  Profile& profile = *Profile::FromBrowserContext(&browser_context);
-  PrefService& pref_service = *profile.GetPrefs();
-
-  auto trust_checker =
-      std::make_unique<IsolatedWebAppTrustChecker>(pref_service);
-  auto validator =
-      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
-
-  return std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::move(validator));
-}
-
 }  // namespace
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
@@ -97,25 +84,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppLocation& location,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
-    content::BrowserContext& browser_context,
-    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                                           InstallIsolatedWebAppCommandError>)>
-        callback)
-    : InstallIsolatedWebAppCommand(
-          url_info,
-          location,
-          std::move(web_contents),
-          std::move(url_loader),
-          browser_context,
-          std::move(callback),
-          CreateDefaultResponseReaderFactory(browser_context)) {}
-
-InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
-    const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppLocation& location,
-    std::unique_ptr<content::WebContents> web_contents,
-    std::unique_ptr<WebAppUrlLoader> url_loader,
-    content::BrowserContext& browser_context,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback,
@@ -129,12 +99,15 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
-      browser_context_(browser_context),
+      optional_keep_alive_(std::move(optional_keep_alive)),
+      optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  DCHECK(web_contents_ != nullptr);
-  DCHECK(!callback.is_null());
+  CHECK(web_contents_ != nullptr);
+  CHECK(!callback.is_null());
+  CHECK(optional_profile_keep_alive_ == nullptr ||
+        &profile() == optional_profile_keep_alive_->profile());
 
   callback_ =
       base::BindOnce(
@@ -144,6 +117,18 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
             return result;
           })
           .Then(std::move(callback));
+}
+
+// static
+std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
+    const PrefService& prefs) {
+  auto trust_checker = std::make_unique<IsolatedWebAppTrustChecker>(prefs);
+  auto validator =
+      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
+
+  return std::make_unique<IsolatedWebAppResponseReaderFactory>(
+      std::move(validator));
 }
 
 void InstallIsolatedWebAppCommand::SetDataRetrieverForTesting(
@@ -172,8 +157,6 @@ void InstallIsolatedWebAppCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
-  const PrefService& prefs =
-      *Profile::FromBrowserContext(&*browser_context_)->GetPrefs();
 
   absl::visit(
       base::Overloaded{
@@ -185,7 +168,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
           [&](const DevModeBundle& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(prefs())) {
               ReportFailure(kIwaDevModeNotEnabledMessage);
               return;
             }
@@ -194,13 +177,13 @@ void InstallIsolatedWebAppCommand::StartWithLock(
           [&](const DevModeProxy& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kDevelopment);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(prefs())) {
               ReportFailure(kIwaDevModeNotEnabledMessage);
               return;
             }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
-            OnTrustAndSignaturesChecked(absl::nullopt);
+            OnTrustAndSignaturesChecked(base::ok());
           }},
       location_);
 }
@@ -222,17 +205,12 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
       /*skip_signature_verification=*/false,
       base::BindOnce(
           [](base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                            IsolatedWebAppResponseReaderFactory::Error> reader)
-              -> absl::optional<IsolatedWebAppResponseReaderFactory::Error> {
-            // Convert expected<Reader,Error> into optional<Error> to match the
-            // signature of `OnTrustAndSignaturesChecked`. This is necessary for
-            // compatibility with the dev mode proxy case, where
-            // `OnTrustAndSignaturesChecked` is called with `absl::nullopt` to
-            // indicate success.
+                            UnusableSwbnFileError> reader)
+              -> base::expected<void, UnusableSwbnFileError> {
             if (!reader.has_value()) {
-              return std::move(reader.error());
+              return base::unexpected(std::move(reader.error()));
             }
-            return absl::nullopt;
+            return base::ok();
           })
           .Then(base::BindOnce(
               &InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
@@ -240,9 +218,10 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
 }
 
 void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
-    absl::optional<IsolatedWebAppResponseReaderFactory::Error> error) {
-  if (error) {
-    ReportFailure(IsolatedWebAppResponseReaderFactory::ErrorToString(*error));
+    base::expected<void, UnusableSwbnFileError> status) {
+  if (!status.has_value()) {
+    ReportFailure(
+        IsolatedWebAppResponseReaderFactory::ErrorToString(status.error()));
     return;
   }
 
@@ -251,9 +230,8 @@ void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
 }
 
 void InstallIsolatedWebAppCommand::CreateStoragePartition() {
-  browser_context_->GetStoragePartition(
-      url_info_.storage_partition_config(&*browser_context_),
-      /*can_create=*/true);
+  profile().GetStoragePartition(url_info_.storage_partition_config(&profile()),
+                                /*can_create=*/true);
 }
 
 void InstallIsolatedWebAppCommand::LoadUrl() {
@@ -303,17 +281,16 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
 
   if (!manifest.id.has_value()) {
-    return base::unexpected{
-        base::StrCat({"Manifest `id` is not present. manifest_url: ",
-                      manifest_url.possibly_invalid_spec()})};
+    return base::unexpected("Manifest `id` is not present. manifest_url: " +
+                            manifest_url.possibly_invalid_spec());
   }
 
   // In other installations the best-effort encoding is fine, but for isolated
   // apps we have the opportunity to report this error.
   absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
   if (!encoded_id.has_value()) {
-    return base::unexpected{
-        "Failed to convert manifest `id` from UTF16 to UTF8."};
+    return base::unexpected(
+        "Failed to convert manifest `id` from UTF16 to UTF8.");
   }
 
   if (!encoded_id->empty()) {
@@ -326,16 +303,16 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
     // the application and do not include other information in order to be able
     // to identify Isolated Web Apps by origin because there is always only 1
     // app per origin.
-    return base::unexpected{base::StrCat(
-        {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
+    return base::unexpected(
+        R"(Manifest `id` must be "/". Resolved manifest id: )" + *encoded_id);
   }
 
   url::Origin origin = url_info_.origin();
   if (manifest.scope != origin.GetURL()) {
-    return base::unexpected{
+    return base::unexpected(
         base::StrCat({"Scope should resolve to the origin. scope: ",
                       manifest.scope.possibly_invalid_spec(),
-                      ", origin: ", origin.Serialize()})};
+                      ", origin: ", origin.Serialize()}));
   }
 
   if (info.title.empty()) {
@@ -446,11 +423,6 @@ void InstallIsolatedWebAppCommand::OnGetIcons(
   FinalizeInstall(install_info);
 }
 
-void InstallIsolatedWebAppCommand::OnSyncSourceRemoved() {
-  // TODO(kuragin): Test cancellation on sync source removed event.
-  ReportFailure("Sync source removed.");
-}
-
 void InstallIsolatedWebAppCommand::OnShutdown() {
   // TODO(kuragin): Test cancellation of pending installation during system
   // shutdown.
@@ -464,8 +436,8 @@ void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
-                     base::unexpected{InstallIsolatedWebAppCommandError{
-                         .message = std::string{message}}}));
+                     base::unexpected(InstallIsolatedWebAppCommandError{
+                         .message = std::string(message)})));
 }
 
 void InstallIsolatedWebAppCommand::ReportSuccess() {
@@ -476,6 +448,16 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
       CommandResult::kSuccess,
       base::BindOnce(std::move(callback_),
                      InstallIsolatedWebAppCommandSuccess{}));
+}
+
+Profile& InstallIsolatedWebAppCommand::profile() {
+  CHECK(web_contents_);
+  CHECK(web_contents_->GetBrowserContext());
+  return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
+const PrefService& InstallIsolatedWebAppCommand::prefs() {
+  return *profile().GetPrefs();
 }
 
 }  // namespace web_app

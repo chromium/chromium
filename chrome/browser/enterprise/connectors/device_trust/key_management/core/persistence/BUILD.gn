@@ -42,6 +42,7 @@ source_set("persistence") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     friend = [ ":unit_tests" ]
   }
@@ -121,6 +122,8 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:test_support",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     frameworks = [
       "Foundation.framework",

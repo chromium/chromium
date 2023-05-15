@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_NOTIFICATION_GROUPING_CONTROLLER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_NOTIFICATION_GROUPING_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -100,18 +101,20 @@ class NotificationGroupingController
   bool adding_parent_grouped_notification_ = false;
 
   // Owner of this class.
-  UnifiedSystemTray* const system_tray_;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> system_tray_;
 
   // Raw ptr to the `NotificationCenterTray` adjacent to `system_tray_`, has the
   // same owner as `system_tray_`.
   // TODO(b/251687017): Make this the owner of this class.
-  NotificationCenterTray* const notification_tray_;
+  const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
+      notification_tray_;
 
   // A data structure that holds all grouped notifications along with their
   // associations with their parent notifications. This pointer is assigned to a
   // static global instance that is shared across all instances of
   // `NotificationGroupingController`.
-  GroupedNotificationList* const grouped_notification_list_;
+  const raw_ptr<GroupedNotificationList, ExperimentalAsh>
+      grouped_notification_list_;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       observer_{this};

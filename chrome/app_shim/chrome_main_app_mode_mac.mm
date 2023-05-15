@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/allocator/early_zone_registration_mac.h"
+#include "base/apple/bundle_locations.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -80,9 +80,9 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     chrome::RegisterPathProvider();
 
     // Set bundle paths. This loads the bundles.
-    base::mac::SetOverrideOuterBundlePath(
+    base::apple::SetOverrideOuterBundlePath(
         base::FilePath(info->chrome_outer_bundle_path));
-    base::mac::SetOverrideFrameworkBundlePath(
+    base::apple::SetOverrideFrameworkBundlePath(
         base::FilePath(info->chrome_framework_path));
 
     // Note that `info->user_data_dir` for shims contains the app data path,
@@ -96,12 +96,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
 
     // Calculate the preferred locale used by Chrome. We can't use
     // l10n_util::OverrideLocaleWithCocoaLocale() because it calls
-    // [base::mac::OuterBundle() preferredLocalizations] which gets
+    // [base::apple::OuterBundle() preferredLocalizations] which gets
     // localizations from the bundle of the running app (i.e. it is equivalent
     // to [[NSBundle mainBundle] preferredLocalizations]) instead of the target
     // bundle.
     NSArray* preferred_languages = [NSLocale preferredLanguages];
-    NSArray* supported_languages = [base::mac::OuterBundle() localizations];
+    NSArray* supported_languages = [base::apple::OuterBundle() localizations];
     std::string preferred_localization;
     for (NSString* language in preferred_languages) {
       // We must convert the "-" separator to "_" to be compatible with

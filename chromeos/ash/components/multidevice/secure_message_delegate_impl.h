@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 
@@ -71,7 +72,7 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
                                    const std::string& unwrap_result);
 
   // Not owned by this instance.
-  EasyUnlockClient* dbus_client_;
+  raw_ptr<EasyUnlockClient, ExperimentalAsh> dbus_client_;
 
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
 };

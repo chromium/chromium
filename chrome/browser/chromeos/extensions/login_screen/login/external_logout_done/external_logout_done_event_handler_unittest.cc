@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -63,7 +64,7 @@ class ExternalLogoutDoneEventHandlerUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
   std::unique_ptr<ExternalLogoutDoneEventHandler>
       external_logout_done_event_handler_;
   std::unique_ptr<EventRouter> event_router_;

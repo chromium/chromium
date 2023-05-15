@@ -21,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -122,11 +123,13 @@ class TabDragDropDelegateTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
+      nullptr;
 
   std::unique_ptr<TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;
-  NiceMock<MockNewWindowDelegate>* mock_new_window_delegate_ptr_ = nullptr;
+  raw_ptr<NiceMock<MockNewWindowDelegate>, ExperimentalAsh>
+      mock_new_window_delegate_ptr_ = nullptr;
 
   std::unique_ptr<aura::Window> dummy_window_;
 };

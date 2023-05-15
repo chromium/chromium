@@ -7,11 +7,10 @@
 #include <algorithm>
 #include <list>
 
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -45,13 +44,15 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
   bool enable_texture_storage =
       feature_info->feature_flags().ext_texture_storage;
   const gles2::Validators* validators = feature_info->validators();
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = static_cast<viz::ResourceFormat>(i);
-    if (!viz::GLSupportsFormat(format))
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    // BG5_565 is not supported for historical reasons.
+    if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
-    const GLuint image_internal_format = viz::GLInternalFormat(format);
-    const GLenum gl_format = viz::GLDataFormat(format);
-    const GLenum gl_type = viz::GLDataType(format);
+    }
+    const GLuint image_internal_format = GLInternalFormat(format);
+    const GLenum gl_format = GLDataFormat(format);
+    CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
+    const GLenum gl_type = GLDataType(format);
     const bool uncompressed_format_valid =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(gl_format);
@@ -63,9 +64,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
       continue;
     }
 
-    FormatInfo& info =
-        supported_formats_[viz::SharedImageFormat::SinglePlane(format)]
-            .emplace_back();
+    FormatInfo& info = supported_formats_[format].emplace_back();
     info.is_compressed = compressed_format_valid;
     info.gl_format = gl_format;
     info.gl_type = gl_type;
@@ -73,7 +72,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
         gles2::TextureManager::GetCompatibilitySwizzle(feature_info, gl_format);
     info.image_internal_format = gles2::TextureManager::AdjustTexInternalFormat(
         feature_info, image_internal_format, gl_type);
-    info.storage_internal_format = viz::TextureStorageFormat(
+    info.storage_internal_format = TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);
     info.adjusted_format =
         gles2::TextureManager::AdjustTexFormat(feature_info, gl_format);

@@ -99,7 +99,6 @@ base::Value::Dict CreateEmptyPrinterInfo() {
   printer_info.Set("printerPPDPath", "");
   printer_info.Set("printerProtocol", "ipp");
   printer_info.Set("printerQueue", "");
-  printer_info.Set("printerStatus", "");
   return printer_info;
 }
 
@@ -205,6 +204,10 @@ base::Value::Dict GetCupsPrinterInfo(const Printer& printer) {
   if (!printer.uri().GetQueryEncodedAsString().empty())
     printer_queue += "?" + printer.uri().GetQueryEncodedAsString();
   printer_info.Set("printerQueue", printer_queue);
+  printer_info.Set(
+      "printerStatusReason",
+      static_cast<int>(
+          CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason));
 
   return printer_info;
 }

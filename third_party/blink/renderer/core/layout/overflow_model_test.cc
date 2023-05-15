@@ -44,64 +44,6 @@ LayoutRect InitialVisualOverflow() {
   return LayoutRect(0, 0, 100, 100);
 }
 
-class SimpleOverflowModelTest : public testing::Test {
- protected:
-  SimpleOverflowModelTest()
-      : layout_overflow_(InitialLayoutOverflow()),
-        visual_overflow_(InitialVisualOverflow()) {}
-  SimpleLayoutOverflowModel layout_overflow_;
-  SimpleVisualOverflowModel visual_overflow_;
-};
-
-TEST_F(SimpleOverflowModelTest, InitialOverflowRects) {
-  EXPECT_EQ(InitialLayoutOverflow(), layout_overflow_.LayoutOverflowRect());
-  EXPECT_EQ(InitialVisualOverflow(), visual_overflow_.VisualOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddLayoutOverflowOutsideExpandsRect) {
-  layout_overflow_.AddLayoutOverflow(LayoutRect(0, 10, 30, 10));
-  EXPECT_EQ(LayoutRect(0, 10, 90, 80), layout_overflow_.LayoutOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddLayoutOverflowInsideDoesNotAffectRect) {
-  layout_overflow_.AddLayoutOverflow(LayoutRect(50, 50, 10, 20));
-  EXPECT_EQ(InitialLayoutOverflow(), layout_overflow_.LayoutOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddLayoutOverflowEmpty) {
-  // This test documents the existing behavior so that we are aware when/if
-  // it changes. It would also be reasonable for addLayoutOverflow to be
-  // a no-op in this situation.
-  layout_overflow_.AddLayoutOverflow(LayoutRect(200, 200, 0, 0));
-  EXPECT_EQ(LayoutRect(10, 10, 190, 190),
-            layout_overflow_.LayoutOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddVisualOverflowOutsideExpandsRect) {
-  visual_overflow_.AddVisualOverflow(LayoutRect(150, -50, 10, 10));
-  EXPECT_EQ(LayoutRect(0, -50, 160, 150),
-            visual_overflow_.VisualOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddVisualOverflowInsideDoesNotAffectRect) {
-  visual_overflow_.AddVisualOverflow(LayoutRect(0, 10, 90, 90));
-  EXPECT_EQ(InitialVisualOverflow(), visual_overflow_.VisualOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, AddVisualOverflowEmpty) {
-  visual_overflow_.SetVisualOverflow(LayoutRect(0, 0, 600, 0));
-  visual_overflow_.AddVisualOverflow(LayoutRect(100, -50, 100, 100));
-  visual_overflow_.AddVisualOverflow(LayoutRect(300, 300, 0, 10000));
-  EXPECT_EQ(LayoutRect(100, -50, 100, 100),
-            visual_overflow_.VisualOverflowRect());
-}
-
-TEST_F(SimpleOverflowModelTest, MoveAffectsLayoutOverflow) {
-  layout_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(LayoutRect(510, 110, 80, 80),
-            layout_overflow_.LayoutOverflowRect());
-}
-
 class BoxOverflowModelTest : public testing::Test {
  protected:
   BoxOverflowModelTest()
@@ -186,12 +128,6 @@ TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowEmpty) {
   visual_overflow_.AddContentsVisualOverflow(LayoutRect(20, 20, 0, 0));
   EXPECT_EQ(LayoutRect(0, 0, 10, 10),
             visual_overflow_.ContentsVisualOverflowRect());
-}
-
-TEST_F(BoxOverflowModelTest, MoveAffectsLayoutOverflow) {
-  layout_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(LayoutRect(510, 110, 80, 80),
-            layout_overflow_.LayoutOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, MoveAffectsSelfVisualOverflow) {

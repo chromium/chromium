@@ -15,7 +15,10 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/gdi_util.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 namespace gl {
@@ -98,9 +101,29 @@ bool GLTestHelper::CheckPixelsWithError(int x,
 }
 
 #if BUILDFLAG(IS_WIN)
+
 // static
-std::vector<SkColor> GLTestHelper::ReadBackWindow(HWND window,
-                                                  const gfx::Size& size) {
+SkColor GLTestHelper::GetColorAtPoint(const SkBitmap& bitmap,
+                                      const gfx::Point& location) {
+  CHECK_GE(location.x(), 0);
+  CHECK_LT(location.x(), bitmap.width());
+  CHECK_GE(location.y(), 0);
+  CHECK_LT(location.y(), bitmap.height());
+  return bitmap.getColor(location.x(), location.y());
+}
+
+// static
+SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
+  {
+    // Ensure that the previous commit has been processed before trying to read
+    // back the window contents.
+    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
+        GetDirectCompositionDevice();
+    if (dcomp_device) {
+      CHECK_EQ(S_OK, dcomp_device->WaitForCommitCompletion());
+    }
+  }
+
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
   DCHECK(mem_hdc.IsValid());
 
@@ -127,9 +150,14 @@ std::vector<SkColor> GLTestHelper::ReadBackWindow(HWND window,
 
   GdiFlush();
 
-  std::vector<SkColor> pixels(size.width() * size.height());
-  memcpy(pixels.data(), bits, pixels.size() * sizeof(SkColor));
-  return pixels;
+  SkBitmap sk_bitmap;
+  CHECK(sk_bitmap.tryAllocPixels(SkImageInfo::Make(
+      SkISize::Make(size.width(), size.height()),
+      SkColorInfo(SkColorType::kBGRA_8888_SkColorType,
+                  SkAlphaType::kPremul_SkAlphaType, nullptr))));
+  memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize());
+
+  return sk_bitmap;
 }
 
 // static
@@ -137,7 +165,7 @@ SkColor GLTestHelper::ReadBackWindowPixel(HWND window,
                                           const gfx::Point& point) {
   gfx::Size size(point.x() + 1, point.y() + 1);
   auto pixels = ReadBackWindow(window, size);
-  return pixels[size.width() * point.y() + point.x()];
+  return GetColorAtPoint(pixels, point);
 }
 #endif
 

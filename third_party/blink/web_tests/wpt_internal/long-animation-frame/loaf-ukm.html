@@ -13,22 +13,12 @@ promise_test(async () => {
   }));
 
   let found = false;
-  for (const load of ["BeforeLoad", "AfterLoad"]) {
-    for (const blocking of ["NonBlocking", "BlockingFrame", "BlockingInput"]) {
-      const entries = recorder.getMetrics(
-        `PerformanceAPI.LongAnimationFrame.${load}.${blocking}`,
-        ["Duration.Total", "DidPause"]);
-      if (!entries.length || entries[0]["Duration.Total"] < very_long_frame_duration)
-        continue;
-
-      const metrics = entries[0];
-
-      assert_equals(metrics["DidPause"], 0);
-      found = true;
-    }
-  }
-
-  assert_true(found);
+  const entries = recorder.getMetrics(
+    "PerformanceAPI.LongAnimationFrame",
+    ["Duration.Total", "DidPause"]);
+  assert_greater_than_equal(entries.length, 1);
+  const metrics = entries[0];
+  assert_equals(metrics["DidPause"], 0);
 }, "UKM recorder should receive LoAF entries");
 </script>
 <body>

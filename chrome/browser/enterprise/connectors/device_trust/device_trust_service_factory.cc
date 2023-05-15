@@ -29,6 +29,9 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,7 +74,7 @@ DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
 DeviceTrustServiceFactory::DeviceTrustServiceFactory()
     : ProfileKeyedServiceFactory(
           "DeviceTrustService",
-          ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 
@@ -101,13 +104,19 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
       std::make_unique<AshAttestationService>(profile);
 #else
   DeviceTrustKeyManager* key_manager = nullptr;
+  policy::CloudPolicyStore* browser_cloud_policy_store = nullptr;
   auto* browser_policy_connector =
       g_browser_process->browser_policy_connector();
   if (browser_policy_connector) {
     auto* cbcm_controller =
         browser_policy_connector->chrome_browser_cloud_management_controller();
+    auto* machine_policy_manager =
+        browser_policy_connector->machine_level_user_cloud_policy_manager();
     if (cbcm_controller) {
       key_manager = cbcm_controller->GetDeviceTrustKeyManager();
+    }
+    if (machine_policy_manager) {
+      browser_cloud_policy_store = machine_policy_manager->store();
     }
   }
 
@@ -117,7 +126,8 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<AttestationService> attestation_service =
       std::make_unique<DesktopAttestationService>(
-          policy::BrowserDMTokenStorage::Get(), key_manager);
+          policy::BrowserDMTokenStorage::Get(), key_manager,
+          browser_cloud_policy_store);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto signals_service = CreateSignalsService(profile);

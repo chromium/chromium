@@ -14,12 +14,12 @@ source_set("sessions") {
     "//components/keyed_service/core",
     "//components/sync",
     "//components/sync_sessions",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
 }

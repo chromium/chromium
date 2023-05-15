@@ -1439,6 +1439,7 @@ TEST_F(NetworkHealthProviderTest, EthernetAndWifiOrderedCorrectly) {
 TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   NetworkingLog log(temp_dir_.GetPath());
   network_health_provider_->SetNetworkingLogForTesting(&log);
+  size_t list_call_count = 0;
 
   // Observe the network list.
   FakeNetworkListObserver list_observer;
@@ -1452,6 +1453,10 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
 
   SetupObserver(&observer, list_observer.observer_guids()[0]);
   AssociateWifi();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  // List Oberver is fired but UpdateNetworkList() is not called because
+  // active_guid_ is empty.
+  EXPECT_EQ(0u, log.update_network_list_call_count_for_testing());
   EXPECT_TRUE(list_observer.active_guid().empty());
 
   // The non-active network still appears in the log.
@@ -1464,6 +1469,12 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   // Log contents tested in networking_log_unittest.cc -
   // NetworkingLogTest.DetailedLogContentsWiFi.
   EXPECT_FALSE(log.GetNetworkInfo().empty());
+
+  // List Oberver is fired and UpdateNetworkList() is called because
+  // active_guid_ is not empty.
+  ExpectListObserverFired(list_observer, &list_call_count);
+  EXPECT_GE(log.update_network_list_call_count_for_testing(), 0u);
+  EXPECT_FALSE(list_observer.active_guid().empty());
 }
 
 TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {

@@ -90,7 +90,7 @@ class AXTreeDistiller {
   // Called by the Screen2x service from the utility process. Runs the callback
   // if Screen2x identified content nodes. If not, distills via the rules-based
   // algorithm.
-  void ProcessScreen2xResult(const ui::AXTree& tree,
+  void ProcessScreen2xResult(const ui::AXTreeID& tree_id,
                              const std::vector<ui::AXNodeID>& content_node_ids);
 
   // Called when the main content extractor is disconnected. Runs the callback

@@ -55,20 +55,11 @@ namespace media_router {
 namespace {
 
 std::string GetStartedConnectionId(WebContents* web_contents) {
-  std::string session_id;
-  CHECK(content::ExecuteScriptAndExtractString(
-      web_contents, "window.domAutomationController.send(startedConnection.id)",
-      &session_id));
-  return session_id;
+  return EvalJs(web_contents, "startedConnection.id").ExtractString();
 }
 
 std::string GetDefaultRequestSessionId(WebContents* web_contents) {
-  std::string session_id;
-  CHECK(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(defaultRequestSessionId)",
-      &session_id));
-  return session_id;
+  return EvalJs(web_contents, "defaultRequestSessionId").ExtractString();
 }
 
 // Routes observer that calls a callback once there are no routes.
@@ -140,22 +131,24 @@ void MediaRouterIntegrationBrowserTest::SetUp() {
 void MediaRouterIntegrationBrowserTest::InitTestUi() {
   auto* const web_contents = GetActiveWebContents();
   auto* const context = browser()->profile();
+  if (test_ui_) {
+    test_ui_->TearDown();
+  }
   switch (GetParam()) {
     case UiForBrowserTest::kCast:
       CHECK(!GlobalMediaControlsCastStartStopEnabled(context));
-      test_ui_ =
-          MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
+      test_ui_ = std::make_unique<MediaRouterCastUiForTest>(web_contents);
       break;
     case UiForBrowserTest::kGmc:
       CHECK(GlobalMediaControlsCastStartStopEnabled(context));
-      test_ui_ =
-          MediaRouterGmcUiForTest::GetOrCreateForWebContents(web_contents);
+      test_ui_ = std::make_unique<MediaRouterGmcUiForTest>(web_contents);
       break;
   }
 }
 
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
+  test_ui_.reset();
   test_provider_->TearDown();
   InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();
@@ -232,7 +225,7 @@ void MediaRouterIntegrationBrowserTest::WaitUntilNoRoutes(
 void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
     WebContents* web_contents,
     const std::string& script) {
-  std::string result(ExecuteScriptAndExtractString(web_contents, script));
+  std::string result(EvalJs(web_contents, script).ExtractString());
 
   // Read the test result, the test result set by javascript is a
   // JSON string with the following format:
@@ -332,26 +325,10 @@ base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
   return full_path;
 }
 
-std::string MediaRouterIntegrationBrowserTest::ExecuteScriptAndExtractString(
-    const content::ToRenderFrameHost& adapter,
-    const std::string& script) {
-  std::string result;
-  CHECK(content::ExecuteScriptAndExtractString(adapter, script, &result));
-  return result;
-}
-
-bool MediaRouterIntegrationBrowserTest::ExecuteScriptAndExtractBool(
-    const content::ToRenderFrameHost& adapter,
-    const std::string& script) {
-  bool result;
-  CHECK(content::ExecuteScriptAndExtractBool(adapter, script, &result));
-  return result;
-}
-
 void MediaRouterIntegrationBrowserTest::ExecuteScript(
     const content::ToRenderFrameHost& adapter,
     const std::string& script) {
-  ASSERT_TRUE(content::ExecuteScript(adapter, script));
+  ASSERT_TRUE(content::ExecJs(adapter, script));
 }
 
 bool MediaRouterIntegrationBrowserTest::IsRouteCreatedOnUI() {
@@ -420,12 +397,8 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionTest() {
   ExecuteJavaScriptAPI(
       new_web_contents,
       base::StringPrintf("reconnectSession('%s');", session_id.c_str()));
-  std::string reconnected_session_id;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      new_web_contents,
-      "window.domAutomationController.send(reconnectedSession.id)",
-      &reconnected_session_id));
-  ASSERT_EQ(session_id, reconnected_session_id);
+  ASSERT_EQ(session_id,
+            content::EvalJs(new_web_contents, "reconnectedSession.id"));
 
   ExecuteJavaScriptAPI(web_contents,
                        "terminateSessionAndWaitForStateChange();");
@@ -468,12 +441,7 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   ExecuteJavaScriptAPI(
       web_contents,
       base::StringPrintf("reconnectSession('%s');", session_id.c_str()));
-  std::string reconnected_session_id;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(reconnectedSession.id)",
-      &reconnected_session_id));
-  ASSERT_EQ(session_id, reconnected_session_id);
+  ASSERT_EQ(session_id, content::EvalJs(web_contents, "reconnectedSession.id"));
 }
 
 bool MediaRouterIntegrationBrowserTest::RequiresMediaRouteProviders() const {

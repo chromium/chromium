@@ -27,7 +27,7 @@ nearby_share_tsc_dir =
     "$root_gen_dir/chrome/browser/resources/nearby_share/shared/tsc"
 
 if (optimize_webui) {
-  build_manifest_v3 = "build_v3_manifest.json"
+  build_manifest = "build_manifest.json"
 
   optimize_webui("optimize_bundle") {
     host = "os-settings"
@@ -36,13 +36,15 @@ if (optimize_webui) {
       "chromeos/lazy_load.js",
       "chromeos/os_settings.js",
     ]
-    out_manifest = "$target_gen_dir/$build_manifest_v3"
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [ ":build_ts" ]
     excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
       "chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js",
+      "chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js",
+      "chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js",
       "chrome://resources/ash/common/network/mojo_interface_provider.js",
@@ -213,8 +215,8 @@ generate_grd("build_grd") {
   grd_prefix = "os_settings"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
-    "images/computer_and_bluetooth_switch_dark.svg",
-    "images/computer_and_bluetooth_switch.svg",
+    "css/base.css",
+
     "images/error_badge_dark.svg",
     "images/error_badge.svg",
     "images/icon_add_cellular.svg",
@@ -251,18 +253,26 @@ generate_grd("build_grd") {
     "images/switch_access_setup_guide_choose_two_switches_dark.svg",
     "images/switch_access_setup_guide_closing.svg",
     "images/switch_access_setup_guide_closing_dark.svg",
-    "os_settings_v3.html",
+    "images/switch_access_setup_guide_start_pairing.svg",
+    "images/switch_access_setup_guide_start_pairing_dark.svg",
+
+    "os_settings.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ "//chrome/browser/resources/nearby_share/shared:build_json_grdp" ]
-  grdp_files = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_json_resources.grdp" ]
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:build_json_grdp",
+    "//third_party/liblouis:build_grdp",
+  ]
+  grdp_files = [
+    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_json_resources.grdp",
+    "$root_gen_dir/third_party/liblouis/liblouis_resources.grdp",
+  ]
   manifest_files = []
-  resource_path_rewrites =
-      [ "os_settings_v3.html|chromeos/os_settings_v3.html" ]
+  resource_path_rewrites = [ "os_settings.html|chromeos/os_settings.html" ]
 
   if (optimize_webui) {
     deps += [ ":optimize_bundle" ]
-    manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
+    manifest_files += [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites += [
       "chromeos/lazy_load.rollup.js|chromeos/lazy_load.js",
       "chromeos/os_settings.rollup.js|chromeos/os_settings.js",
@@ -271,9 +281,9 @@ generate_grd("build_grd") {
   } else {
     deps += [
       ":build_ts",
-      "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
+      "//chrome/browser/resources/nearby_share/shared:build_grdp",
     ]
-    grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
+    grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/resources.grdp" ]
     manifest_files +=
         filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }

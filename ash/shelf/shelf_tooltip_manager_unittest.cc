@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -37,6 +38,7 @@ class ShelfTooltipManagerTest : public AshTestBase {
     AshTestBase::SetUp();
     shelf_view_ = GetPrimaryShelf()->GetShelfViewForTesting();
     test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
+    test_api_->SetAnimationDuration(base::Milliseconds(1));
     test_api_->AddItem(TYPE_PINNED_APP);
     test_api_->RunMessageLoopUntilAnimationsDone();
     tooltip_manager_ = test_api_->tooltip_manager();
@@ -53,8 +55,8 @@ class ShelfTooltipManagerTest : public AshTestBase {
   }
 
  protected:
-  ShelfView* shelf_view_;
-  ShelfTooltipManager* tooltip_manager_;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  raw_ptr<ShelfTooltipManager, ExperimentalAsh> tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 

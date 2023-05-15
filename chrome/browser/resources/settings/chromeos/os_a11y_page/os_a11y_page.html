@@ -20,7 +20,7 @@
         deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
     </settings-toggle-button>
     <div class="hr" hidden="[[isKioskModeActive_]]"></div>
-    <cr-link-row id="text-to-speech-page-trigger"
+    <cr-link-row id="textToSpeechSubpageTrigger"
         label="$i18n{textToSpeechLinkTitle}"
         on-click="onTextToSpeechClick_"
         sub-label="$i18n{textToSpeechLinkDescription}"
@@ -60,8 +60,7 @@
           id="additionalFeaturesLink" class="hr"
           label="$i18n{additionalFeaturesTitle}"
           on-click="onAdditionalFeaturesClick_"
-          external
-          button-aria-description="$i18n{opensInNewTab}">
+          external>
       </cr-link-row>
     </template>
   </div>
@@ -69,15 +68,15 @@
   <template is="dom-if" route-path="/manageAccessibility">
     <os-settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
         hide-close-button="[[isKioskModeActive_]]">
-      <settings-manage-a11y-page prefs="{{prefs}}">
-      </settings-manage-a11y-page>
+      <settings-manage-a11y-subpage prefs="{{prefs}}">
+      </settings-manage-a11y-subpage>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/textToSpeech">
     <os-settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
-      <settings-text-to-speech-page prefs="{{prefs}}"
+      <settings-text-to-speech-subpage prefs="{{prefs}}"
           has-screen-reader="[[hasScreenReader_]]">
-      </settings-text-to-speech-page>
+      </settings-text-to-speech-subpage>
     </os-settings-subpage>
   </template>
   <template is="dom-if"
@@ -100,8 +99,8 @@
   </template>
   <template is="dom-if" route-path="/displayAndMagnification">
     <os-settings-subpage page-title="$i18n{displayAndMagnificationLinkTitle}">
-      <settings-display-and-magnification-page prefs="{{prefs}}">
-      </settings-display-and-magnification-page>
+      <settings-display-and-magnification-subpage prefs="{{prefs}}">
+      </settings-display-and-magnification-subpage>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/keyboardAndTextInput">
@@ -124,8 +123,8 @@
   </template>
   <template is="dom-if" route-path="/manageAccessibility/tts">
     <os-settings-subpage page-title="$i18n{manageTtsSettings}">
-      <settings-tts-subpage prefs="{{prefs}}">
-      </settings-tts-subpage>
+      <settings-tts-voice-subpage prefs="{{prefs}}">
+      </settings-tts-voice-subpage>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/captions">

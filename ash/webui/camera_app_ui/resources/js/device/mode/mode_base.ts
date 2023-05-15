@@ -90,16 +90,14 @@ export abstract class ModeBase {
     if (this.video.isExpired()) {
       return;
     }
-    this.crosImageCapture.addMetadataObserver();
+    await this.crosImageCapture.addMetadataObserver();
   }
 
   /**
    * Removes the observer that saves metadata.
-   *
-   * @return Promise for the operation.
    */
-  async removeMetadataObserver(): Promise<void> {
-    if (!this.video.isExpired) {
+  removeMetadataObserver(): void {
+    if (!this.video.isExpired()) {
       return;
     }
     this.crosImageCapture.removeMetadataObserver();

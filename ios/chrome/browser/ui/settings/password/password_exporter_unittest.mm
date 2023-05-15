@@ -12,7 +12,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/password_test_util.h"
+#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"

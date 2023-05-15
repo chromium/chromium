@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash {
 
 class ManagedNetworkConfigurationHandler;
@@ -33,7 +35,8 @@ class NetworkConfigurationRemover {
  private:
   friend class NetworkConfigurationRemoverTest;
 
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_;
 };
 
 }  // namespace tether

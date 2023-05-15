@@ -55,6 +55,8 @@ extern const char kQuirksClientLastServerCheck[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDeviceWiFiFastTransitionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kHasHotspotUsedBefore[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInputNoiseCancellationEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kMultitaskMenuNudgeClamshellShownCount[];
@@ -70,6 +72,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordExpirationTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordChangeUrl[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShortcutCustomizationOverrides[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSyncOobeCompleted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -625,6 +629,9 @@ extern const char kPersonalizationKeyboardBacklightColorDisplayType[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kShowTouchpadScrollScreenEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShowDisplaySizeScreenEnabled[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];
@@ -691,6 +698,23 @@ extern const char kOwnerPrimaryPointingStickButtonRight[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOwnerTapToClickEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEventRemappedToRightClick[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackDelete[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackHome[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackEnd[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackPageUp[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackPageDown[];
 }  // namespace prefs
 }  // namespace ash
 

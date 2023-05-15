@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
+import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
@@ -29,6 +29,8 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
+import {updateBulkPinProgress} from '../../state/actions/bulk_pinning.js';
+import {updatePreferences} from '../../state/actions/preferences.js';
 import {updateSearch} from '../../state/actions/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
 import {trashRootKey} from '../../state/reducers/volumes.js';
@@ -745,6 +747,37 @@ export class FileManager extends EventTarget {
 
     await Promise.all(
         [fileListPromise, currentDirectoryPromise, this.setGuestMode_()]);
+
+    // When bulk pin progress events are received, dispatch an action to the
+    // store containing the updated data.
+    // TODO(b/275635808): Depending on the users corpus size, this API could be
+    // quite chatty, consider wrapping it in a concurrency model.
+    this.initBulkPinning_();
+  }
+
+  /**
+   * Retrieve the bulk pinning progress and populate the store. Then subscribe
+   * to any future updates to ensure the store is kept up to date.
+   * @private
+   */
+  async initBulkPinning_() {
+    if (!util.isDriveFsBulkPinningEnabled()) {
+      return;
+    }
+    let progress = null;
+    try {
+      progress = await getBulkPinProgress();
+    } catch (e) {
+      console.error('Failed to get bulk pin progress:', e);
+      return;
+    }
+    if (!progress) {
+      return;
+    }
+    this.store_.dispatch(updateBulkPinProgress(progress));
+    chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+      this.store_.dispatch(updateBulkPinProgress(progress));
+    });
   }
 
   /**
@@ -1146,7 +1179,7 @@ export class FileManager extends EventTarget {
 
     // Create task controller.
     this.taskController_ = new TaskController(
-        this.dialogType, this.volumeManager_, this.ui_, this.metadataModel_,
+        this.volumeManager_, this.ui_, this.metadataModel_,
         this.directoryModel_, this.selectionHandler_,
         this.metadataUpdateController_, assert(this.crostini_),
         this.progressCenter);
@@ -1677,6 +1710,8 @@ export class FileManager extends EventTarget {
       console.error('Failed to retrieve preferences:', e);
       return;
     }
+
+    this.store_.dispatch(updatePreferences(prefs));
 
     let redraw = false;
     if (this.driveEnabled_ !== prefs.driveEnabled) {

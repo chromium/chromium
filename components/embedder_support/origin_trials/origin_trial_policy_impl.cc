@@ -5,11 +5,12 @@
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"

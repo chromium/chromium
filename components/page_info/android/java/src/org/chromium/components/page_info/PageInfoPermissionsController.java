@@ -14,11 +14,13 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
@@ -188,6 +190,9 @@ public class PageInfoPermissionsController
 
     @Override
     public void clearData() {
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.PAGE_INFO_RESET_PERMISSIONS,
+                DeleteBrowsingDataAction.MAX_VALUE);
         // Need to fetch data in order to clear it.
         BrowserContextHandle browserContext = getDelegate().getBrowserContext();
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(browserContext);

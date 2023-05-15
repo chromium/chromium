@@ -180,8 +180,7 @@ TEST_F(CertManagerImplTest, ImportKeyAndCertTest) {
   std::vector<uint8_t> cert_der(tokenizer.data().begin(),
                                 tokenizer.data().end());
   net::ScopedCERTCertificate cert(
-      net::x509_util::CreateCERTCertificateFromBytes(cert_der.data(),
-                                                     cert_der.size()));
+      net::x509_util::CreateCERTCertificateFromBytes(cert_der));
 
   // Get the certificate ID.
   crypto::ScopedSECItem cert_sec_item(

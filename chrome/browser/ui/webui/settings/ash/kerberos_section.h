@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_KERBEROS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_KERBEROS_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -47,7 +48,8 @@ class KerberosSection : public OsSettingsSection,
 
   void UpdateKerberosSearchConcepts();
 
-  KerberosCredentialsManager* kerberos_credentials_manager_;
+  raw_ptr<KerberosCredentialsManager, ExperimentalAsh>
+      kerberos_credentials_manager_;
 };
 
 }  // namespace ash::settings

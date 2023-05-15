@@ -14,8 +14,8 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -61,20 +61,33 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 - (void)removeReportParameter:(NSNumber*)key pending:(BOOL)pending {
   int index = key.intValue;
   DCHECK(index < kNumberOfURLsToSend);
-  if (pending)
+  if (pending) {
     pending_url_crash_keys[index].Clear();
-  else
+  } else {
     url_crash_keys[index].Clear();
+    if (index == 0) {
+      // Only sync (and clear) the first non-pending URL to PreviousSessionInfo.
+      [[PreviousSessionInfo sharedInstance]
+          removeReportParameterForKey:@"url0"];
+    }
+  }
 }
 - (void)setReportParameterURL:(const GURL&)URL
                        forKey:(NSNumber*)key
                       pending:(BOOL)pending {
   int index = key.intValue;
   DCHECK(index < kNumberOfURLsToSend);
-  if (pending)
+  if (pending) {
     pending_url_crash_keys[index].Set(URL.spec());
-  else
+  } else {
     url_crash_keys[index].Set(URL.spec());
+    if (index == 0) {
+      // Only sync (and clear) the first non-pending URL to PreviousSessionInfo.
+      [[PreviousSessionInfo sharedInstance]
+          setReportParameterValue:base::SysUTF8ToNSString(URL.spec())
+                           forKey:@"url0"];
+    }
+  }
 }
 @end
 

@@ -65,7 +65,9 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
   void GetIsolationKey(int client_id,
                        const blink::WebGPUExecutionContextToken& token,
                        GetIsolationKeyCallback cb) override {}
-  void MaybeExitOnContextLost() override { is_exiting_ = true; }
+  void MaybeExitOnContextLost(bool synthetic_loss) override {
+    is_exiting_ = true;
+  }
   bool IsExiting() const override { return is_exiting_; }
 
   Scheduler* GetGpuScheduler() override { return scheduler_; }

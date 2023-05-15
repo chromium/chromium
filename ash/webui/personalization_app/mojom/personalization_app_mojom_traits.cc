@@ -99,6 +99,8 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
       return MojomWallpaperType::kDailyGooglePhotos;
     case ash::WallpaperType::kOnceGooglePhotos:
       return MojomWallpaperType::kOnceGooglePhotos;
+    case ash::WallpaperType::kOobe:
+      return MojomWallpaperType::kOobe;
     case ash::WallpaperType::kCount:
       NOTREACHED();
       return MojomWallpaperType::kDefault;
@@ -138,6 +140,9 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       return true;
     case MojomWallpaperType::kOnceGooglePhotos:
       *output = ash::WallpaperType::kOnceGooglePhotos;
+      return true;
+    case MojomWallpaperType::kOobe:
+      *output = ash::WallpaperType::kOobe;
       return true;
   }
   NOTREACHED();
@@ -464,8 +469,8 @@ MojomAmbientUiVisibility
 EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::ToMojom(
     ash::AmbientUiVisibility input) {
   switch (input) {
-    case ash::AmbientUiVisibility::kShown:
-      return MojomAmbientUiVisibility::kShown;
+    case ash::AmbientUiVisibility::kShouldShow:
+      return MojomAmbientUiVisibility::kShouldShow;
     case ash::AmbientUiVisibility::kPreview:
       return MojomAmbientUiVisibility::kPreview;
     case ash::AmbientUiVisibility::kHidden:
@@ -479,8 +484,8 @@ bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
     MojomAmbientUiVisibility input,
     ash::AmbientUiVisibility* output) {
   switch (input) {
-    case MojomAmbientUiVisibility::kShown:
-      *output = ash::AmbientUiVisibility::kShown;
+    case MojomAmbientUiVisibility::kShouldShow:
+      *output = ash::AmbientUiVisibility::kShouldShow;
       return true;
     case MojomAmbientUiVisibility::kPreview:
       *output = ash::AmbientUiVisibility::kPreview;

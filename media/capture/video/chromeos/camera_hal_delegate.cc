@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
@@ -61,7 +62,7 @@ class LocalCameraClientObserver : public CameraClientObserver {
   }
 
  private:
-  CameraHalDelegate* camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
 };
 
 // ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.

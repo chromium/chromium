@@ -5,11 +5,13 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/load_timing_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_load_metrics {
@@ -34,7 +36,7 @@ using content::test::ScopedPrerenderWebContentsDelegate;
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
  public:
-  TestPageLoadMetricsObserver(raw_ptr<PageLoadMetricsObserverEvents> events)
+  TestPageLoadMetricsObserver(PageLoadMetricsObserverEvents* events)
       : events_(events) {}
 
   void StopObservingOnPrerender() { stop_on_prerender_ = true; }
@@ -450,6 +452,69 @@ TEST_F(PageLoadTrackerTest, ResumeOnPrerenderActivation) {
       ->ActivatePrerenderedPage(GURL(kPrerenderingUrl));
 
   EXPECT_TRUE(GetEvents().was_prerendered_page_activated);
+}
+
+TEST_F(PageLoadTrackerTest, LargestImageIncorrectLoadTimings) {
+  // Construct page load timing to be used in SimulateTimingUpdate.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::Now();
+
+  timing.paint_timing->largest_contentful_paint->largest_image_load_start =
+      base::Milliseconds(56);
+  timing.paint_timing->largest_contentful_paint->largest_image_load_end =
+      base::Milliseconds(45);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(34);
+
+  SetTargetUrl(kTestUrl);
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(GURL(kTestUrl),
+                                                           web_contents());
+  ASSERT_NE(nullptr, navigation_simulator);
+
+  navigation_simulator->Commit();
+
+  base::TimeTicks reference_time =
+      tester()->GetDelegateForCommittedLoad().GetNavigationStart();
+
+  // Construct ExtraRequestCompleteInfo object to be used in
+  // SimulateLoadedResource.
+  net::LoadTimingInfo load_timing_info;
+  load_timing_info.receive_headers_start =
+      reference_time + base::Milliseconds(65);
+
+  ExtraRequestCompleteInfo request_info(
+      /*final_url=*/url::SchemeHostPort(GURL(kTestUrl)),
+      /*remote_endpoint=*/net::IPEndPoint(),
+      /*frame_tree_node_id=*/-1, /*was_cached=*/false, /*raw_body_bytes=*/0,
+      /*original_network_content_length=*/0,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
+      /*net_error=*/0,
+      /*load_timing_info=*/
+      std::make_unique<net::LoadTimingInfo>(load_timing_info));
+
+  // Set document receive_headers_start.
+  const auto request_id = navigation_simulator->GetGlobalRequestID();
+  tester()->SimulateLoadedResource(request_info, request_id);
+
+  // Set largest contentful paint timings.
+  tester()->SimulateTimingUpdate(timing);
+
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+                  "ImageLoadStartLessThanDocumentTTFB"),
+              testing::ElementsAre(base::Bucket(true, 1)));
+
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+                  "ImageLoadEndLessThanLoadStart"),
+              testing::ElementsAre(base::Bucket(true, 1)));
+
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+                  "ImageLCPLessThanLoadEnd"),
+              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 }  // namespace

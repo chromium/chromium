@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -590,6 +591,22 @@ void PrintBackendServiceImpl::FetchCapabilities(
           std::move(caps_and_info)));
 }
 
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::GetPaperPrintableArea(
+    const std::string& printer_name,
+    const PrintSettings::RequestedMedia& media,
+    mojom::PrintBackendService::GetPaperPrintableAreaCallback callback) {
+  CHECK(print_backend_);
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      print_backend_->GetPrinterDriverInfo(printer_name));
+
+  absl::optional<gfx::Rect> printable_area_um =
+      print_backend_->GetPaperPrintableArea(printer_name, media.vendor_id,
+                                            media.size_microns);
+  std::move(callback).Run(printable_area_um.value_or(gfx::Rect()));
+}
+#endif
+
 void PrintBackendServiceImpl::EstablishPrintingContext(uint32_t context_id
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
                                                        ,
@@ -679,6 +696,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
       context->UpdatePrintSettings(std::move(job_settings));
 
   if (result != mojom::ResultCode::kSuccess) {
+    persistent_printing_contexts_.erase(context_id);
     std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
     return;
   }
@@ -932,18 +950,17 @@ PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
                                                      &value_result);
   if (value_result->is_result_code()) {
     DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
-                << printer_name << ", error: " << xml.error();
+                << printer_name
+                << ", error: " << value_result->get_result_code();
     return base::unexpected(value_result->get_result_code());
   }
 
-  base::expected<XpsCapabilities, mojom::ResultCode> xps_capabilities =
-      ParseValueForXpsPrinterCapabilities(value_result->get_capabilities());
-  if (!xps_capabilities.has_value()) {
-    DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
-                << printer_name << ", error: " << xml.error();
-    return base::unexpected(xps_capabilities.error());
-  }
-  return std::move(xps_capabilities).value();
+  return ParseValueForXpsPrinterCapabilities(value_result->get_capabilities())
+      .transform_error([&](mojom::ResultCode code) {
+        DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
+                    << printer_name << ", error: " << code;
+        return code;
+      });
 }
 #endif  // BUILDFLAG(IS_WIN)
 

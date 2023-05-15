@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Date;
 import java.util.Set;
@@ -134,6 +135,12 @@ public abstract class SyncService {
 
     public abstract @Nullable CoreAccountInfo getAccountInfo();
 
+    /**
+     * Checks whether the primary account is consented to run Sync (the feature). Note that even if
+     * this is true, other reasons might prevent Sync from actually starting up.
+     *
+     * @return true if the primary account is consented to Sync (the feature), false otherwise.
+     */
     public abstract boolean hasSyncConsent();
 
     /**
@@ -157,6 +164,8 @@ public abstract class SyncService {
 
     public abstract boolean hasKeepEverythingSynced();
 
+    public abstract boolean isTypeManagedByPolicy(@UserSelectableType int type);
+
     /**
      * Enables syncing for the passed types.
      *
@@ -169,18 +178,9 @@ public abstract class SyncService {
 
     public abstract void setFirstSetupComplete(int syncFirstSetupCompleteSource);
 
-    public abstract boolean isFirstSetupComplete();
+    public abstract boolean isInitialSyncFeatureSetupComplete();
 
     public abstract void setSyncRequested();
-
-    /**
-     * Checks whether syncing is requested by the user, i.e. the user has at least started a Sync
-     * setup flow, and has not disabled syncing in settings. Note that even if this is true, other
-     * reasons might prevent Sync from actually starting up.
-     *
-     * @return true if the user wants to sync, false otherwise.
-     */
-    public abstract boolean isSyncRequested();
 
     /**
      * Instances of this class keep sync paused until {@link #close} is called. Use

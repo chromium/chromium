@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -138,7 +139,7 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
  public:
   DeviceAPIServiceRegularUserTest()
       : fake_user_manager_(new user_manager::FakeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {}
 
   void LoginRegularUser(bool is_affiliated) {
     const user_manager::User* user =
@@ -153,7 +154,7 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
   }
 
  private:
-  user_manager::FakeUserManager* fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -177,7 +178,7 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
  public:
   DeviceAPIServiceWithKioskUserTest()
       : fake_user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {}
 
   void SetUp() override {
     DeviceAPIServiceTest::SetUp();
@@ -204,7 +205,7 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
   ash::WebKioskAppManager* app_manager() const { return app_manager_.get(); }
 
  private:
-  ash::FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ash::WebKioskAppManager> app_manager_;
   base::test::ScopedCommandLine command_line_;

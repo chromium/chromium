@@ -10,18 +10,28 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
-namespace printing {
+namespace printing::test {
 
-const char kDummyPrinterName[] = "DefaultPrinter";
+const char kPrinterName[] = "DefaultPrinter";
 
-const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
-    kTestPrinterCapabilitiesDpi};
-const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
-                                                         {"opt2", "456"}};
+const PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
+    /*display_name=*/"Letter", /*vendor_id=*/"45",
+    /*size_um=*/gfx::Size(215900, 279400),
+    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 275872)};
+const PrinterSemanticCapsAndDefaults::Paper kPaperLegal{
+    /*display_name=*/"Legal", /*vendor_id=*/"46",
+    /*size_um=*/gfx::Size(215900, 355600),
+    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 352072)};
+
+const std::vector<gfx::Size> kPrinterCapabilitiesDefaultDpis{
+    kPrinterCapabilitiesDpi};
+const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
+                                                {"opt2", "456"}};
 
 base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   DCHECK_NE(type, mojom::PrinterType::kPrivetDeprecated);
@@ -52,9 +62,9 @@ base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   ticket.Set(kSettingScaleFactor, 100);
   ticket.Set(kSettingScalingType, FIT_TO_PAGE);
   ticket.Set(kSettingPagesPerSheet, 1);
-  ticket.Set(kSettingDpiHorizontal, kTestPrinterDpi);
-  ticket.Set(kSettingDpiVertical, kTestPrinterDpi);
-  ticket.Set(kSettingDeviceName, kDummyPrinterName);
+  ticket.Set(kSettingDpiHorizontal, kPrinterDpi);
+  ticket.Set(kSettingDpiVertical, kPrinterDpi);
+  ticket.Set(kSettingDeviceName, kPrinterName);
   ticket.Set(kSettingPageWidth, 215900);
   ticket.Set(kSettingPageHeight, 279400);
   ticket.Set(kSettingShowSystemDialog, false);
@@ -88,8 +98,8 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
                              /*text_height=*/0);
 
   auto settings = std::make_unique<PrintSettings>();
-  settings->set_copies(kTestPrintSettingsCopies);
-  settings->set_dpi(kTestPrinterDefaultRenderDpi);
+  settings->set_copies(kPrintSettingsCopies);
+  settings->set_dpi(kPrinterDefaultRenderDpi);
   settings->set_page_setup_device_units(kPageSetup);
   settings->set_device_name(base::ASCIIToUTF16(printer_name));
   return settings;
@@ -99,8 +109,17 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
     const std::string& printer_name) {
   std::unique_ptr<PrintSettings> settings =
       MakeDefaultPrintSettings(printer_name);
-  settings->set_copies(kTestPrintSettingsCopies + 1);
+  settings->set_copies(kPrintSettingsCopies + 1);
   return settings;
 }
 
-}  // namespace printing
+void StartPrint(content::WebContents* contents) {
+  printing::StartPrint(contents,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
+                       /*print_preview_disabled=*/false,
+                       /*has_selection=*/false);
+}
+
+}  // namespace printing::test

@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(browser()->window()->IsActive());
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       background_browser->tab_strip_model()->GetActiveWebContents(),
       "stealFocus();"));
 
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, LocationBarLockFocus) {
 
   chrome::FocusLocationBar(browser());
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(), "stealFocus();"));
 
   // Make sure the location bar is still focused.
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AboutBlankNavigationLocationTest) {
       "w.document.location = '" +
       url2.spec() + "';";
 
-  ASSERT_TRUE(content::ExecuteScript(web_contents, spoof));
+  ASSERT_TRUE(content::ExecJs(web_contents, spoof));
   EXPECT_EQ(url1, web_contents->GetVisibleURL());
   // After running the spoof code, |GetActiveWebContents| returns the new tab,
   // not the same as |web_contents|.
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
   const GURL new_url = embedded_test_server()->GetURL("/title2.html");
   const std::string open_script = "window.open('" + new_url.spec() + "');";
   content::WebContentsAddedObserver open_observer;
-  ASSERT_TRUE(content::ExecuteScript(opener_web_contents, open_script));
+  ASSERT_TRUE(content::ExecJs(opener_web_contents, open_script));
   WebContents* new_web_contents = open_observer.GetWebContents();
 
   // Tell the first (non-selected) tab to go back.  This should not give the
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
   // the focus may scroll the origin out of view, making a spoof possible.
   const std::string go_back_script = "window.opener.history.back();";
   content::TestNavigationObserver back_observer(opener_web_contents);
-  ASSERT_TRUE(content::ExecuteScript(new_web_contents, go_back_script));
+  ASSERT_TRUE(content::ExecJs(new_web_contents, go_back_script));
   back_observer.Wait();
   EXPECT_FALSE(IsViewFocused(VIEW_ID_OMNIBOX));
 }

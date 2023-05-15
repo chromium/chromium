@@ -40,7 +40,7 @@ void WebsiteMetricsServiceLacros::InitDeviceTypeAndStart() {
   }
 
   int mojo_version =
-      service->GetInterfaceVersion(crosapi::mojom::DeviceAttributes::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::DeviceAttributes>();
   if (mojo_version < int{crosapi::mojom::DeviceAttributes::MethodMinVersions::
                              kGetDeviceTypeForMetricsMinVersion}) {
     return;

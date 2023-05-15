@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="100506692671054486">нема претходне команде</translation>
 <translation id="1009046985747440431">Притисните стрелицу нагоре или надоле да бисте се кретали. Да бисте активирали, притисните Enter</translation>
 <translation id="1011903154582639569">Нађите тастер, па подигните прст да бисте унели</translation>
 <translation id="1012173283529841972">Ставка листе</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Светлољубичаста</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3962990492275676168">Читање почиње од актуелне локације</translation>
+<translation id="397094149579293440">нема изабраног текста</translation>
 <translation id="3970951409746498040">Наранџастобраон</translation>
 <translation id="3989324057180830702">дугме за укључивање/искључивање</translation>
 <translation id="3991317907213946254">Бледобраон</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Нема претходног заглавља 1. нивоа</translation>
 <translation id="4787577491510559358">Описује форматирање за тренутну ставку</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">без фокусираног поља за текст</translation>
 <translation id="4804818685124855865">Прекини везу</translation>
 <translation id="481165870889056555">Објављивање наслова актуелне странице</translation>
 <translation id="4815668758102003883">Светлотиркизна</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Интерни линк</translation>
 <translation id="4909019435900810068">Помери уназад за једну реч</translation>
 <translation id="4911349081560453449">Нема претходног поља за потврду</translation>
+<translation id="4919186071145887492">Команда <ph name="COMMAND" /> није успела, пробајте поново</translation>
 <translation id="492295894462528572">Предговор</translation>
 <translation id="495046168593986294">Помери нагоре</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4953585991029886728">Измена текста</translation>
+<translation id="4964701498510730546">поље за текст је празно</translation>
 <translation id="4973717656530883744">Најмање <ph name="X" /></translation>
 <translation id="4974612477719259470">Нема претходног дугмета</translation>
 <translation id="4979404613699303341">Претходно дугме</translation>
+<translation id="4981239367072766915">непознат унос</translation>
 <translation id="4982917827052020884">Започнимо са неколико тастера које ћете редовно користити. Тастер Control може да се користи за прекид актуелног говора. Тастер Control се налази у доњем левом углу тастатуре. Да бисте наставили, притисните тастер Control.</translation>
 <translation id="4983588134362688868">Прелазак на врх странице</translation>
 <translation id="4986606102545753256">Прозор <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Описује тренутни статус батерије</translation>
 <translation id="4997282455736854877">Дугме за избор <ph name="NAME" /> је изабрано</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, изабрано је дугме за избор ставке менија</translation>
+<translation id="5014131807708055994">Команда <ph name="COMMAND" /> није успела, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Омогући евидентирање говора</translation>
 <translation id="5041394372352067729">Померање екрана са Брајевом азбуком у врх странице</translation>
 <translation id="5042770794184672516">Повећавање јачине звука говора</translation>

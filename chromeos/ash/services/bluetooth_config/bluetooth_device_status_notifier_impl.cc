@@ -30,8 +30,8 @@ BluetoothDeviceStatusNotifierImpl::BluetoothDeviceStatusNotifierImpl(
       device_cache_(device_cache),
       power_manager_client_(power_manager_client) {
   DCHECK(power_manager_client_);
-  device_cache_observation_.Observe(device_cache_);
-  power_manager_client_observation_.Observe(power_manager_client_);
+  device_cache_observation_.Observe(device_cache_.get());
+  power_manager_client_observation_.Observe(power_manager_client_.get());
 
   for (const auto& paired_device : device_cache_->GetPairedDevices()) {
     devices_id_to_properties_map_[paired_device->device_properties->id] =

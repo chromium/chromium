@@ -21,10 +21,6 @@ closure_library_dir =
 chromevox_modules = [
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
-  "injected/api_implementation.js",
-  "injected/content_script_bridge.js",
-  "injected/loader.js",
-  "injected/script_installer.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 
@@ -134,7 +130,6 @@ chromevox_es6_modules = [
   "common/bridge_constants.js",
   "common/bridge_helper.js",
   "common/command_store.js",
-  "common/content_script_bridge.js",
   "common/custom_automation_event.js",
   "common/earcon_id.js",
   "common/event_source_type.js",
@@ -198,7 +193,6 @@ group("build") {
     ":chromevox_copied_files",
     ":chromevox_learn_mode_script",
     ":chromevox_log_script",
-    ":chromevox_min_content_script",
     ":chromevox_options_script",
     ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
@@ -211,7 +205,6 @@ group("build") {
 chromevox_background_script_loader_file = "background/loader.js"
 chromevox_learn_mode_loader_file = "learn_mode/kbexplorer_loader.js"
 chromevox_log_loader_file = "log_page/log_loader.js"
-chromevox_min_content_script_loader_file = "injected/loader.js"
 chromevox_options_script_loader_file = "options/options_loader.js"
 chromevox_panel_script_loader_file = "panel/panel_loader.js"
 
@@ -237,7 +230,7 @@ run_jsbundler("chromevox_copied_files") {
     "images/options-36.png",
     "images/options-hover-36.png",
     "images/triangle-6.png",
-    "injected/api.js",
+    "injected/cvox_gdocs_script.js",
     "learn_mode/learn_mode.html",
     "log_page/log.css",
     "log_page/log.html",
@@ -331,11 +324,6 @@ compress_js("chromevox_options_script") {
 compress_js("chromevox_background_script") {
   sources = [ chromevox_background_script_loader_file ]
   output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
-}
-
-compress_js("chromevox_min_content_script") {
-  sources = [ chromevox_min_content_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
 }
 
 compress_js("chromevox_panel_script") {

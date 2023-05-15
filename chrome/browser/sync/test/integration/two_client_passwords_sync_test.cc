@@ -7,24 +7,27 @@
 #include <limits>
 #include <tuple>
 
-#include "base/guid.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/network_change_notifier.h"
 
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
@@ -41,6 +44,7 @@ using password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::IsMuted;
 using password_manager::PasswordForm;
+using password_manager::TriggerBackendNotification;
 
 using testing::ElementsAre;
 using testing::Pointee;
@@ -264,10 +268,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  PasswordForm form0 =
-      CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
-  PasswordForm form1 =
-      CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
+  PasswordForm form0 = CreateTestPasswordForm(
+      base::FastHash(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  PasswordForm form1 = CreateTestPasswordForm(
+      base::FastHash(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   GetProfilePasswordStoreInterface(0)->AddLogin(form1);
 
@@ -390,10 +394,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   form0.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   form1.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
@@ -426,10 +432,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   PasswordForm form = CreateTestPasswordForm(0);
   form.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   form.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   // Add the form and security issues to Client 0.
   GetProfilePasswordStoreInterface(0)->AddLogin(form);
@@ -450,10 +458,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
 
   form0.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   form1.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   // Add the form and security issues to Client 0.
   GetProfilePasswordStoreInterface(0)->AddLogin(form0);
@@ -483,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   PasswordForm form = CreateTestPasswordForm(0);
   form.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   // Add the form and security issue to Client 0.
   GetProfilePasswordStoreInterface(0)->AddLogin(form);
@@ -512,21 +523,22 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(GetPasswordCount(0), 1);
 
-  // Simulate Client 1 going offline.
-  GetClient(1)->StopSyncServiceWithoutClearingData();
+  // Simulate going offline on both clients.
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   // Remove the password from both clients to simulate a conflict with matching
   // remote and local deletion after Client 1 comes back online.
   GetProfilePasswordStoreInterface(0)->RemoveLogin(form);
   GetProfilePasswordStoreInterface(1)->RemoveLogin(form);
-  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  ASSERT_EQ(GetPasswordCount(0), 0);
 
-  // Simulate Client 1 coming back online. Checks that the client does not crash
-  // due to trimming entity specifics for caching for a deleted entity (without
-  // a password field).
-  ASSERT_TRUE(GetClient(1)->StartSyncService());
-  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  // Simulate going online again.
+  fake_server::FakeServerHttpPostProvider::EnableNetwork();
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+
+  // Checks that the client does not crash due to trimming entity specifics for
+  // caching for a deleted entity (without a password field).
+  ASSERT_TRUE(AwaitQuiescence());
 }
 
 class TwoClientPasswordsSyncTestWithNotes : public SyncTest {

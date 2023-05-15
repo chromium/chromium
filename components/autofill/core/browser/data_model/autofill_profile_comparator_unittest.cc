@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +24,7 @@
 using autofill::ADDRESS_HOME_CITY;
 using autofill::ADDRESS_HOME_COUNTRY;
 using autofill::ADDRESS_HOME_DEPENDENT_LOCALITY;
+using autofill::ADDRESS_HOME_LANDMARK;
 using autofill::ADDRESS_HOME_LINE1;
 using autofill::ADDRESS_HOME_LINE2;
 using autofill::ADDRESS_HOME_LINE3;
@@ -90,9 +90,7 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::SAME_TOKENS;
   };
 
-  AutofillProfileComparatorTest() {
-    autofill::CountryNames::SetLocaleString(kLocale);
-  }
+  AutofillProfileComparatorTest() = default;
 
   AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
   AutofillProfileComparatorTest& operator=(
@@ -118,7 +116,7 @@ class AutofillProfileComparatorTest : public testing::Test {
                                         const char* middle,
                                         const char* last,
                                         bool finalize = true) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     autofill::test::SetProfileInfo(&profile, first, middle, last, "", "", "",
                                    "", "", "", "", "", "");
     if (finalize)
@@ -128,7 +126,7 @@ class AutofillProfileComparatorTest : public testing::Test {
 
   AutofillProfile CreateProfileWithName(const NameInfo& name,
                                         bool finalize = true) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     profile.SetRawInfoWithVerificationStatus(
         NAME_FULL, name.GetRawInfo(NAME_FULL),
         name.GetVerificationStatus(NAME_FULL));
@@ -148,21 +146,21 @@ class AutofillProfileComparatorTest : public testing::Test {
   }
 
   AutofillProfile CreateProfileWithEmail(const char* email) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     autofill::test::SetProfileInfo(&profile, "", "", "", email, "", "", "", "",
                                    "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithCompanyName(const char* company_name) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     autofill::test::SetProfileInfo(&profile, "", "", "", "", company_name, "",
                                    "", "", "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithPhoneNumber(const char* phone_number) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "",
                                    "", "", phone_number);
     return profile;
@@ -174,7 +172,7 @@ class AutofillProfileComparatorTest : public testing::Test {
                                            const char* state,
                                            const char* zip,
                                            const char* country) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", line1, line2,
                                    city, state, zip, country, "");
     return profile;
@@ -183,10 +181,17 @@ class AutofillProfileComparatorTest : public testing::Test {
   AutofillProfile CreateProfileWithBirthdate(const char* day,
                                              const char* month,
                                              const char* year) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile;
     profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
     profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
     profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));
+    return profile;
+  }
+
+  AutofillProfile CreateProfileWithLandmark(const char* landmark) {
+    AutofillProfile profile;
+    profile.SetRawInfo(autofill::ADDRESS_HOME_LANDMARK,
+                       base::UTF8ToUTF16(landmark));
     return profile;
   }
 
@@ -302,6 +307,8 @@ class AutofillProfileComparatorTest : public testing::Test {
               actual.GetInfo(AutofillType(ADDRESS_HOME_ZIP), kLocale));
     EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale),
               actual.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale));
+    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale),
+              actual.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale));
 
     if (check_structured_address_tokens) {
       EXPECT_EQ(expected.GetInfo(
@@ -698,7 +705,7 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableBirthdates) {
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
-  AutofillProfile p(base::GenerateUuid(), "https://www.example.com/");
+  AutofillProfile p;
   autofill::test::SetProfileInfo(&p, "Marion", "Mitchell", "Morrison",
                                  "marion@me.xyz", "Fox", "123 Zoo St.",
                                  "Unit 5", "Hollywood", "CA", "91601", "US",
@@ -936,8 +943,6 @@ TEST_F(AutofillProfileComparatorTest, MergeCompanyNames) {
   static const char16_t kCompanyB16[] = u"SÔMÈ ÇÖMPÁÑÝ";
   static const char kCompanyC[] = "SÔMÈ ÇÖMPÁÑÝ A.G.";
   static const char16_t kCompanyC16[] = u"SÔMÈ ÇÖMPÁÑÝ A.G.";
-  static const char kCompanyD[] = "1987";
-  static const char16_t kCompanyD16[] = u"1987";
 
   CompanyInfo company_a;
   company_a.SetRawInfo(COMPANY_NAME, kCompanyA16);
@@ -958,31 +963,17 @@ TEST_F(AutofillProfileComparatorTest, MergeCompanyNames) {
   AutofillProfile profile_c = CreateProfileWithCompanyName(kCompanyC);
   profile_c.set_use_date(profile_a.use_date() - base::Days(1));
 
-  // Company Name D is in the format of a birthyear, invalid and non-verified.
-  CompanyInfo company_d;
-  company_d.SetRawInfo(COMPANY_NAME, kCompanyD16);
-  AutofillProfile profile_d = CreateProfileWithCompanyName(kCompanyD);
-  profile_a.set_use_date(AutofillClock::Now());
-
   MergeCompanyNamesAndExpect(profile_a, profile_a, company_a);
   MergeCompanyNamesAndExpect(profile_a, profile_b, company_b);
   MergeCompanyNamesAndExpect(profile_a, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_a, profile_d, company_a);
 
   MergeCompanyNamesAndExpect(profile_b, profile_a, company_b);
   MergeCompanyNamesAndExpect(profile_b, profile_b, company_b);
   MergeCompanyNamesAndExpect(profile_b, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_b, profile_d, company_b);
 
   MergeCompanyNamesAndExpect(profile_c, profile_a, company_c);
   MergeCompanyNamesAndExpect(profile_c, profile_b, company_c);
   MergeCompanyNamesAndExpect(profile_c, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_c, profile_d, company_c);
-
-  MergeCompanyNamesAndExpect(profile_d, profile_a, company_a);
-  MergeCompanyNamesAndExpect(profile_d, profile_b, company_b);
-  MergeCompanyNamesAndExpect(profile_d, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_d, profile_d, company_d);
 }
 
 TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
@@ -1196,6 +1187,16 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
   }
 }
 
+TEST_F(AutofillProfileComparatorTest, MergeLandmarks) {
+  AutofillProfile empty = CreateProfileWithLandmark("");
+  AutofillProfile profile2 = CreateProfileWithLandmark("Red tree");
+
+  Address expected;
+  expected.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+
+  MergeAddressesAndExpect(empty, profile2, expected);
+}
+
 // Checks for various scenarios for determining mergeability of profiles w.r.t.
 // the state.
 TEST_F(AutofillProfileComparatorTest, CheckStatesMergeability) {
@@ -1232,8 +1233,7 @@ TEST_F(AutofillProfileComparatorTest, CheckStatesMergeability) {
 // visible value works.
 TEST_F(AutofillProfileComparatorTest,
        ProfilesHaveDifferentSettingsVisibleValues) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1276,8 +1276,7 @@ TEST_F(AutofillProfileComparatorTest,
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1303,8 +1302,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1331,8 +1329,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1365,8 +1362,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1398,8 +1394,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile;
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "the city", "state", "zip", "US", "phone");
@@ -1438,60 +1433,6 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
       ADDRESS_HOME_CITY, u"Village", autofill::VerificationStatus::kObserved);
   EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile,
                                            unmergeable_profile, "en_US"));
-}
-
-// Test the correct determination of a merge candidate.
-TEST_F(AutofillProfileComparatorTest, GetMergeCandidate) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
-  autofill::test::SetProfileInfo(
-      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
-      "company", "line1", "line2", "city", "state", "zip", "US", "phone");
-
-  // A profile should never be a merge candidate to itself because all values
-  // are the same.
-  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-                existing_profile, {&existing_profile}, "en_US"),
-            absl::nullopt);
-
-  // Create a new profile that is not mergeable because it has a completely
-  // different name.
-  AutofillProfile new_profile = existing_profile;
-  new_profile.SetRawInfo(NAME_FULL, u"JustAnotherName");
-  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-                new_profile, {&existing_profile}, "en_US"),
-            absl::nullopt);
-
-  // Use a city name that is a superset of the existing city name. It should be
-  // mergeable and the profile should be updated to the new value.
-  new_profile = existing_profile;
-  new_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"the City", autofill::VerificationStatus::kObserved);
-  absl::optional<AutofillProfile> optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), existing_profile);
-
-  // Now create a second existing profile that is the same as the first one, but
-  // was used more often. By this, this profile should become the merge
-  // candidate.
-  AutofillProfile second_existing_profile = existing_profile;
-  second_existing_profile.set_use_count(second_existing_profile.use_count() +
-                                        10);
-  optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&existing_profile, &second_existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
-
-  // Make sure the result is independent of the initial ordering of the
-  // profiles.
-  optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&second_existing_profile, &existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
 }
 
 // Tests that the profiles are merged when they have common states.

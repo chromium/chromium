@@ -99,6 +99,10 @@ void WaylandPointer::Enter(void* data,
       wl::SerialType::kMouseEnter, serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  if (!window) {
+    return;
+  }
+
   gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
                        static_cast<float>(wl_fixed_to_double(surface_y))};
 

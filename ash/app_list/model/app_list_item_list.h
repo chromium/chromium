@@ -13,6 +13,7 @@
 
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -131,7 +132,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   void FixItemPosition(size_t index);
 
   // Used to initiate updates on app list item positions from the ash side.
-  AppListModelDelegate* const app_list_model_delegate_;
+  const raw_ptr<AppListModelDelegate, ExperimentalAsh> app_list_model_delegate_;
 
   std::vector<std::unique_ptr<AppListItem>> app_list_items_;
   base::ObserverList<AppListItemListObserver, true> observers_;

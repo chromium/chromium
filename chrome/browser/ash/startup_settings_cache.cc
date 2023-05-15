@@ -14,8 +14,7 @@
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 
-namespace ash {
-namespace startup_settings_cache {
+namespace ash::startup_settings_cache {
 namespace {
 
 // Name of the cache file on disk.
@@ -26,8 +25,9 @@ const char kAppLocaleKey[] = "app_locale";
 
 bool GetCacheFilePath(base::FilePath* path) {
   base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     return false;
+  }
 
   *path = user_data_dir.Append(kCacheFilename);
   return true;
@@ -37,16 +37,19 @@ bool GetCacheFilePath(base::FilePath* path) {
 
 std::string ReadAppLocale() {
   base::FilePath cache_file;
-  if (!GetCacheFilePath(&cache_file))
+  if (!GetCacheFilePath(&cache_file)) {
     return std::string();
+  }
 
   std::string input;
-  if (!base::ReadFileToString(cache_file, &input))
+  if (!base::ReadFileToString(cache_file, &input)) {
     return std::string();
+  }
 
   absl::optional<base::Value> settings = base::JSONReader::Read(input);
-  if (!settings.has_value())
+  if (!settings.has_value()) {
     return std::string();
+  }
 
   const std::string* app_locale_setting =
       settings->GetDict().FindString(kAppLocaleKey);
@@ -55,21 +58,20 @@ std::string ReadAppLocale() {
   return app_locale_setting ? *app_locale_setting : std::string();
 }
 
-void WriteAppLocale(std::string app_locale) {
+void WriteAppLocale(const std::string& app_locale) {
   base::FilePath cache_file;
-  if (!GetCacheFilePath(&cache_file))
+  if (!GetCacheFilePath(&cache_file)) {
     return;
+  }
 
-  base::Value settings(base::Value::Type::DICT);
-  settings.SetKey(kAppLocaleKey, base::Value(app_locale));
-
+  auto settings = base::Value::Dict().Set(kAppLocaleKey, app_locale);
   std::string output;
-  if (!base::JSONWriter::Write(settings, &output))
+  if (!base::JSONWriter::Write(settings, &output)) {
     return;
+  }
 
   // Ignore errors because we're shutting down and we can't recover.
   base::WriteFile(cache_file, output);
 }
 
-}  // namespace startup_settings_cache
-}  // namespace ash
+}  // namespace ash::startup_settings_cache

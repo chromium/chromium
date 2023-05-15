@@ -21,7 +21,6 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1805,7 +1804,7 @@ int HttpCache::Transaction::DoStartPartialCacheValidation() {
 }
 
 int HttpCache::Transaction::DoCompletePartialCacheValidation(int result) {
-  if (!result) {
+  if (!result && reading_) {
     // This is the end of the request.
     DoneWithEntry(true);
     TransitionToState(STATE_FINISH_HEADERS);
@@ -3649,14 +3648,6 @@ void HttpCache::Transaction::DoneWithEntryForRestartWithCache() {
 
 int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
   DLOG(ERROR) << "ReadData failed: " << result;
-  const int result_for_histogram = std::max(0, -result);
-  if (restart) {
-    base::UmaHistogramSparse("HttpCache.ReadErrorRestartable",
-                             result_for_histogram);
-  } else {
-    base::UmaHistogramSparse("HttpCache.ReadErrorNonRestartable",
-                             result_for_histogram);
-  }
 
   // Avoid using this entry in the future.
   if (cache_.get())

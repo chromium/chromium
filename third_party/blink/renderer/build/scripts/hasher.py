@@ -15,7 +15,7 @@
 # the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301, USA.
 
-# This implementaiton of SuperFastHash is based on the Python implementation
+# This implementation of SuperFastHash is based on the Python implementation
 # by Victor Perron at <https://github.com/vperron/python-superfasthash>.
 # We've modified Victor's version to output hash values that match WTFString,
 # which involves using a specific seed and some different constants.

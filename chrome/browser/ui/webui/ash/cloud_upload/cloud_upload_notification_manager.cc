@@ -42,12 +42,14 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
     const std::string& file_name,
     const std::string& cloud_provider_name,
     const std::string& target_app_name,
-    int num_files)
+    int num_files,
+    file_manager::io_task::OperationType operation_type)
     : profile_(profile),
       file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name),
-      num_files_(num_files) {
+      num_files_(num_files),
+      operation_type_(operation_type) {
   // Generate a unique ID for the cloud upload notifications.
   notification_id_ =
       "cloud-upload-" +
@@ -77,10 +79,13 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
+  std::string operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copying"
+                                                                     : "Moving";
   std::string title =
       // TODO(b/242685536) Use "files" for multi-files when support for
       // multi-files is added.
-      "Moving " + base::NumberToString(num_files_) + " file to " +
+      operation + " " + base::NumberToString(num_files_) + " file to " +
       cloud_provider_name_;
   std::string message = "File will open in " + target_app_name_;
 
@@ -104,7 +109,10 @@ std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   // TODO(b/242685536) Use "files" for multi-files when support for multi-files
   // is added.
-  std::string title = "Moved " + base::NumberToString(num_files_) +
+  std::string operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copied"
+                                                                     : "Moved";
+  std::string title = operation + " " + base::NumberToString(num_files_) +
                       " file to " + cloud_provider_name_;
   std::string message = "Opening in " + target_app_name_;
   auto notification = ash::CreateSystemNotificationPtr(
@@ -137,7 +145,10 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
-  std::string title = "Can't move file";
+  std::string operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy ? "copy"
+                                                                     : "move";
+  std::string title = "Can't " + operation + " file";
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),

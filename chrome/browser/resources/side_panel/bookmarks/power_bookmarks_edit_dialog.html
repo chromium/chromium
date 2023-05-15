@@ -106,7 +106,8 @@
       </div>
     </div>
     <sp-heading hide-back-button="[[!activeFolderPath_.length]]"
-        back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
+        back-button-title="$i18n{tooltipBack}"
+        back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBack_">
       <h2 slot="heading">[[getActiveFolderTitle_(activeFolderPath_.*)]]</h2>
     </sp-heading>
@@ -116,6 +117,7 @@
                    newFolders_.*)]]">
         <template>
           <div class="folder-row"
+              title="[[item.title]]"
               selected$="[[isSelected_(item, selectedFolder_)]]"
               on-click="onFolderSelected_"
               tabindex="0">
@@ -126,6 +128,7 @@
             <template is="dom-if" restamp
                 if="[[hasAvailableChildFolders_(item, newFolders_.*)]]">
               <cr-icon-button class="subpage-arrow"
+                  title="[[getForwardButtonTooltip_(item)]]"
                   aria-label="[[getForwardButtonLabel_(item)]]"
                   on-click="onForward_">
               </cr-icon-button>

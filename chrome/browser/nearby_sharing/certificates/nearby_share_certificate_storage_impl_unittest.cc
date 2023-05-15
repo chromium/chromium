@@ -8,6 +8,7 @@
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -203,7 +204,9 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
  protected:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::map<std::string, nearbyshare::proto::PublicCertificate> db_entries_;
-  leveldb_proto::test::FakeDB<nearbyshare::proto::PublicCertificate>* db_;
+  raw_ptr<leveldb_proto::test::FakeDB<nearbyshare::proto::PublicCertificate>,
+          ExperimentalAsh>
+      db_;
   std::unique_ptr<NearbyShareCertificateStorage> cert_store_;
   std::vector<nearbyshare::proto::PublicCertificate> public_certificates_;
 };

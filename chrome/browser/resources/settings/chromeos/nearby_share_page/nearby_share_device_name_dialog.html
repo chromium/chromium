@@ -3,19 +3,23 @@
     --cr-dialog-width: 340px;
   }
 
-  h2 {
+  .title {
     color: var(--cros-primary-text-color);
-    font-family: 'Google Sans';
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 24px;
     margin: 0;
     padding-block-end: 24px;
     padding-block-start: 24px;
   }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) .title {
+    font-family: 'Google Sans';
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 24px;
+  }
 </style>
 <cr-dialog id="dialog">
-  <div slot="title">$i18n{nearbyShareDeviceNameDialogTitle}</div>
+  <div slot="title" class="title">$i18n{nearbyShareDeviceNameDialogTitle}</div>
   <div slot="body">
     <cr-input value="[[settings.deviceName]]"
         on-input="onDeviceNameInput_"

@@ -7,7 +7,8 @@
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 
@@ -58,7 +59,12 @@ NavigationJavaScriptFeature::GetScriptMessageHandlerName() const {
 void NavigationJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.body()) {
+    // Ignore malformed responses.
+    return;
+  }
+  auto* dict = message.body()->GetIfDict();
+  if (!dict) {
     // Ignore malformed responses.
     return;
   }
@@ -67,17 +73,19 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = message.body()->FindStringKey("command");
+  const std::string* command = dict->FindString("command");
   if (!command) {
     return;
   }
 
-  const std::string* frame_id = message.body()->FindStringKey("frame_id");
+  const std::string* frame_id = dict->FindString("frame_id");
   if (!frame_id) {
     return;
   }
 
-  std::string main_frame_id = GetMainWebFrameId(web_state);
+  WebFrame* main_frame =
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
+  std::string main_frame_id = main_frame ? main_frame->GetFrameId() : "";
   if (main_frame_id != *frame_id) {
     // Frame has changed, do not send message to the web controller as it would
     // update the incorrect navigation item.
@@ -92,9 +100,9 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
   } else if (*command == "willChangeState") {
     [web_controller handleNavigationWillChangeState];
   } else if (*command == "didPushState") {
-    [web_controller handleNavigationDidPushStateMessage:message.body()];
+    [web_controller handleNavigationDidPushStateMessage:dict];
   } else if (*command == "didReplaceState") {
-    [web_controller handleNavigationDidReplaceStateMessage:message.body()];
+    [web_controller handleNavigationDidReplaceStateMessage:dict];
   }
 }
 

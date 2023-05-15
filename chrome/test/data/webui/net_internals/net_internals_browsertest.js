@@ -66,29 +66,31 @@ NetInternalsDnsViewTest.prototype = {
   },
 };
 
+TEST_F('NetInternalsDnsViewTest', 'ResolveHostWithoutAlternative', function() {
+  this.runMochaTest(dns_view_test.TestNames.ResolveHostWithoutAlternative);
+});
+
 TEST_F(
-    'NetInternalsDnsViewTest', 'ResolveSingleHostWithoutMetadata', function() {
+    'NetInternalsDnsViewTest', 'ResolveHostWithHTTP2Alternative', function() {
       this.runMochaTest(
-          dns_view_test.TestNames.ResolveSingleHostWithoutMetadata);
+          dns_view_test.TestNames.ResolveHostWithHTTP2Alternative);
     });
 
 TEST_F(
-    'NetInternalsDnsViewTest', 'ResolveSingleHostWithHTTP2Metadata',
-    function() {
-      this.runMochaTest(dns_view_test.TestNames.ResolveSingleHostWithHTTP2Alpn);
+    'NetInternalsDnsViewTest', 'ResolveHostWithHTTP3Alternative', function() {
+      this.runMochaTest(
+          dns_view_test.TestNames.ResolveHostWithHTTP3Alternative);
     });
 
-TEST_F(
-    'NetInternalsDnsViewTest', 'ResolveSingleHostWithHTTP3Metadata',
-    function() {
-      this.runMochaTest(dns_view_test.TestNames.ResolveSingleHostWithHTTP3Alpn);
-    });
+TEST_F('NetInternalsDnsViewTest', 'ResolveHostWithECHAlternative', function() {
+  this.runMochaTest(dns_view_test.TestNames.ResolveHostWithECHAlternative);
+});
 
 TEST_F(
-    'NetInternalsDnsViewTest', 'ResolveMultipleHostWithMultipleAlpns',
+    'NetInternalsDnsViewTest', 'ResolveHostWithMultipleAlternatives',
     function() {
       this.runMochaTest(
-          dns_view_test.TestNames.ResolveMultipleHostWithMultipleAlpns);
+          dns_view_test.TestNames.ResolveHostWithMultipleAlternatives);
     });
 
 TEST_F('NetInternalsDnsViewTest', 'ErrorNameNotResolved', function() {

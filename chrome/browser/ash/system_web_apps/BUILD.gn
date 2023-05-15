@@ -102,6 +102,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:types",
     "//extensions/browser:test_support",
     "//ui/base/idle:test_support",
     "//ui/events:test_support",

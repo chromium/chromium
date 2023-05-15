@@ -33,6 +33,10 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   // mojom::WebAppInternalsHandler:
   void GetDebugInfoAsJsonString(
       GetDebugInfoAsJsonStringCallback callback) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void ClearExperimentalWebAppIsolationData(
+      ClearExperimentalWebAppIsolationDataCallback callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   const raw_ptr<Profile> profile_;

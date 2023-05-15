@@ -208,7 +208,8 @@ void DisplayMediaAccessHandler::HandleRequest(
     }
   }
 
-  std::unique_ptr<DesktopMediaPicker> picker = picker_factory_->CreatePicker();
+  std::unique_ptr<DesktopMediaPicker> picker =
+      picker_factory_->CreatePicker(&request);
   if (!picker) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),

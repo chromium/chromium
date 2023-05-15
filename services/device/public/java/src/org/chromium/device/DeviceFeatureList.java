@@ -7,18 +7,17 @@ package org.chromium.device;
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Device Service Features.
  */
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList exists.
 @JNINamespace("features")
-@MainDex
 public class DeviceFeatureList {
-    public static final String ASYNC_SENSOR_CALLS = "AsyncSensorCalls";
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
     public static final String WEBAUTHN_ANDROID_CRED_MAN = "WebAuthenticationAndroidCredMan";
+    public static final String WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS =
+            "WebAuthenticationHybridLinkWithoutNotifications";
 
     private DeviceFeatureList() {}
 

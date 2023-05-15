@@ -376,6 +376,7 @@ def main():
 
         # HWASAN Android runtime.
         'lib/clang/$V/lib/linux/libclang_rt.hwasan-aarch64-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.hwasan-preinit-aarch64-android.a',
 
         # MemorySanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.msan.a',

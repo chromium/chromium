@@ -10,6 +10,8 @@
 
 namespace ash {
 
+class DeskBarViewBase;
+
 // A button in zero state bar showing the name of the desk. Zero state is the
 // state of the desks bar when there's only a single desk available, in which
 // case the bar is shown in a minimized state. Clicking the button will switch
@@ -20,7 +22,7 @@ class CrOSNextDefaultDeskButton : public CrOSNextDeskButtonBase {
  public:
   METADATA_HEADER(CrOSNextDefaultDeskButton);
 
-  explicit CrOSNextDefaultDeskButton(DesksBarView* bar_view);
+  explicit CrOSNextDefaultDeskButton(DeskBarViewBase* bar_view);
   CrOSNextDefaultDeskButton(const CrOSNextDefaultDeskButton&) = delete;
   CrOSNextDefaultDeskButton& operator=(const CrOSNextDefaultDeskButton&) =
       delete;

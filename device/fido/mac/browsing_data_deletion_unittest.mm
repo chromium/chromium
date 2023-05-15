@@ -4,6 +4,7 @@
 
 #include "device/fido/mac/credential_store.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
 
@@ -23,13 +24,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 extern "C" {
 // This is a private Security Framework symbol. It indicates that a query must
 // be run on the "syncable" macOS keychain, which is where Secure Enclave keys
 // are stored. This test needs it because it tries to erase all credentials
 // belonging to the (test-only) keychain access group, and the corresponding
 // filter label (kSecAttrAccessGroup) appears to be ineffective *unless*
-// kSecAttrNoLegacy is `@YES`.
+// kSecAttrNoLegacy is `kCFBooleanTrue`.
 extern const CFStringRef kSecAttrNoLegacy;
 }
 
@@ -37,8 +42,7 @@ namespace device {
 
 using test::TestCallbackReceiver;
 
-namespace fido {
-namespace mac {
+namespace fido::mac {
 namespace {
 
 constexpr char kKeychainAccessGroup[] =
@@ -60,8 +64,8 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
   base::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
   CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
-  CFDictionarySetValue(query, kSecAttrNoLegacy, @YES);
-  CFDictionarySetValue(query, kSecReturnAttributes, @YES);
+  CFDictionarySetValue(query, kSecAttrNoLegacy, kCFBooleanTrue);
+  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
   return query;
 }
@@ -200,6 +204,7 @@ TEST_F(BrowsingDataDeletionTest, DISABLED_Count) {
 }
 
 }  // namespace
-}  // namespace mac
-}  // namespace fido
+
+}  // namespace fido::mac
+
 }  // namespace device

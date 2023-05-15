@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -22,8 +23,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -85,7 +86,7 @@ constexpr char kInvalidToken[] = "invalid";
 constexpr char kValidPassword[] = "valid";
 constexpr char kInvalidPassword[] = "invalid";
 
-class FakeEasyUnlockService : public ash::EasyUnlockServiceRegular {
+class FakeEasyUnlockService : public ash::EasyUnlockService {
  public:
   FakeEasyUnlockService(
       Profile* profile,
@@ -93,19 +94,15 @@ class FakeEasyUnlockService : public ash::EasyUnlockServiceRegular {
       ash::secure_channel::FakeSecureChannelClient* fake_secure_channel_client,
       ash::multidevice_setup::FakeMultiDeviceSetupClient*
           fake_multidevice_setup_client)
-      : ash::EasyUnlockServiceRegular(profile,
-                                      fake_secure_channel_client,
-                                      fake_device_sync_client,
-                                      fake_multidevice_setup_client) {}
+      : ash::EasyUnlockService(profile,
+                               fake_secure_channel_client,
+                               fake_device_sync_client,
+                               fake_multidevice_setup_client) {}
 
   FakeEasyUnlockService(const FakeEasyUnlockService&) = delete;
   FakeEasyUnlockService& operator=(const FakeEasyUnlockService&) = delete;
 
   ~FakeEasyUnlockService() override {}
-
-  // ash::EasyUnlockServiceRegular:
-  void InitializeInternal() override {}
-  void ShutdownInternal() override {}
 };
 
 std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
@@ -642,7 +639,8 @@ class QuickUnlockPrivateUnitTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  sync_preferences::TestingPrefServiceSyncable* test_pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+      test_pref_service_;
 
  private:
   // Runs the given |func| with the given |params|.
@@ -679,7 +677,8 @@ class QuickUnlockPrivateUnitTest
     expect_modes_changed_ = false;
   }
 
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   QuickUnlockPrivateSetModesFunction::ModesChangedEventHandler
       modes_changed_handler_;

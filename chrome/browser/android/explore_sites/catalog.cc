@@ -16,18 +16,19 @@ std::unique_ptr<NTPCatalog> NTPCatalog::create(const base::Value& json) {
   if (!json.is_dict())
     return nullptr;
 
-  const base::Value* categories = json.FindListKey("categories");
+  const base::Value::List* categories = json.GetDict().FindList("categories");
   if (!categories)
     return nullptr;
 
   std::vector<NTPCatalog::Category> catalog_categories;
-  for (const auto& category : categories->GetList()) {
-    if (!category.is_dict()) {
+  for (const auto& category : *categories) {
+    auto* category_dict = category.GetIfDict();
+    if (!category_dict) {
       return nullptr;
     }
-    const std::string* id = category.FindStringKey("id");
-    const std::string* title = category.FindStringKey("title");
-    const std::string* icon_url_str = category.FindStringKey("icon_url");
+    const std::string* id = category_dict->FindString("id");
+    const std::string* title = category_dict->FindString("title");
+    const std::string* icon_url_str = category_dict->FindString("icon_url");
 
     if (!id || !title || !icon_url_str)
       continue;

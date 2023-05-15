@@ -31,7 +31,7 @@
     grid-gap: var(--gap-size) var(--gap-size);
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    padding: 0 24px 24px;
+    padding: 0 16px 16px;
   }
 
   .main-tile {
@@ -79,7 +79,7 @@
   #layout3 .main-tile {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--gap-size);
   }
 </style>
 <div id="content">
@@ -111,10 +111,18 @@
           visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
           on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
-      <ntp-history-clusters-tile class="secondary-tile" medium-format
-          visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
-          on-aux-click="onVisitTileClick_">
-      </ntp-history-clusters-tile>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
+        <ntp-history-clusters-cart-tile
+            id="cartTile" cart="[[cart]]" class="secondary-tile"
+            on-click="onCartTileClick_" on-aux-click="onCartTileClick_">
+        </ntp-history-clusters-cart-tile>
+      </template>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
+        <ntp-history-clusters-tile class="secondary-tile" medium-format
+            visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
+            on-aux-click="onVisitTileClick_">
+        </ntp-history-clusters-tile>
+      </template>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
           related-searches="[[cluster.relatedSearches]]"
           on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
@@ -127,14 +135,22 @@
           visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
           on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
-      <div class="small-tiles">
-        <ntp-history-clusters-tile small-format visit="[[cluster.visits.1]]"
-            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
-        </ntp-history-clusters-tile>
-        <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
-            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
-        </ntp-history-clusters-tile>
-      </div>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
+        <ntp-history-clusters-cart-tile
+            id="cartTile" cart="[[cart]]" class="secondary-tile"
+            on-click="onCartTileClick_" on-aux-click="onCartTileClick_">
+        </ntp-history-clusters-cart-tile>
+      </template>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
+        <div class="small-tiles">
+          <ntp-history-clusters-tile small-format visit="[[cluster.visits.1]]"
+              on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
+          </ntp-history-clusters-tile>
+          <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
+              on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
+          </ntp-history-clusters-tile>
+        </div>
+      </template>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
           related-searches="[[cluster.relatedSearches]]"
           on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
@@ -151,14 +167,22 @@
             on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
       </div>
-      <div class="small-tiles">
-        <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
-            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
-        </ntp-history-clusters-tile>
-        <ntp-history-clusters-tile small-format visit="[[cluster.visits.3]]"
-            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
-        </ntp-history-clusters-tile>
-      </div>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
+        <ntp-history-clusters-cart-tile
+            id="cartTile" cart="[[cart]]" class="secondary-tile"
+            on-click="onCartTileClick_" on-aux-click="onCartTileClick_">
+        </ntp-history-clusters-cart-tile>
+      </template>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
+        <div class="small-tiles">
+          <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
+              on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
+          </ntp-history-clusters-tile>
+          <ntp-history-clusters-tile small-format visit="[[cluster.visits.3]]"
+              on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
+          </ntp-history-clusters-tile>
+        </div>
+      </template>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
           related-searches="[[cluster.relatedSearches]]"
           on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">

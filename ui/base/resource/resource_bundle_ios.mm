@@ -7,9 +7,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted_memory.h"
@@ -26,13 +26,13 @@ namespace {
 base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
   NSString *resource_path;
   if ([mac_locale length]) {
-    resource_path = [base::mac::FrameworkBundle() pathForResource:name
-                                                           ofType:@"pak"
-                                                      inDirectory:@""
-                                                  forLocalization:mac_locale];
+    resource_path = [base::apple::FrameworkBundle() pathForResource:name
+                                                             ofType:@"pak"
+                                                        inDirectory:@""
+                                                    forLocalization:mac_locale];
   } else {
-    resource_path = [base::mac::FrameworkBundle() pathForResource:name
-                                                           ofType:@"pak"];
+    resource_path = [base::apple::FrameworkBundle() pathForResource:name
+                                                             ofType:@"pak"];
   }
   if (!resource_path) {
     // Return just the name of the pak file.

@@ -10,6 +10,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -94,9 +95,9 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
   ArcEnterpriseReportingService* service() { return service_; }
 
  private:
-  ArcEnterpriseReportingService* service_ = nullptr;
+  raw_ptr<ArcEnterpriseReportingService, ExperimentalAsh> service_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

@@ -12,19 +12,9 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
-const isModalDialogDesignEnabled = loadTimeData.getBoolean('isModalDialog');
-const isSigninInterceptFreEnabled =
-    loadTimeData.getBoolean('isSigninInterceptFre');
-const isTangibleSync = loadTimeData.getBoolean('isTangibleSync');
-
 suite(`SigninSyncConfirmationTest`, function() {
   let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
-
-  function getCancelButtonID() {
-    return isTangibleSync || !isModalDialogDesignEnabled ? '#notNowButton' :
-                                                           '#cancelButton';
-  }
 
   function testButtonClick(buttonSelector: string) {
     const allButtons =
@@ -57,7 +47,7 @@ suite(`SigninSyncConfirmationTest`, function() {
   // Tests that no DCHECKS are thrown during initialization of the UI.
   test('LoadPage', function() {
     const cancelButton =
-        app.shadowRoot!.querySelector<HTMLElement>(getCancelButtonID());
+        app.shadowRoot!.querySelector<HTMLElement>('#notNowButton');
     assertFalse(cancelButton!.hidden);
   });
 
@@ -69,7 +59,7 @@ suite(`SigninSyncConfirmationTest`, function() {
 
   // Tests clicking on cancel button.
   test('CancelClicked', async function() {
-    testButtonClick(getCancelButtonID());
+    testButtonClick('#notNowButton');
     await browserProxy.whenCalled('undo');
   });
 
@@ -94,21 +84,14 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
       i18n('syncConfirmationSyncInfoTitle'),
     ];
 
-    if (isTangibleSync) {
-      const syncBenefitsList =
-          JSON.parse(loadTimeData.getString('syncBenefitsList'));
+    const syncBenefitsList =
+        JSON.parse(loadTimeData.getString('syncBenefitsList'));
 
-      for (let i = 0; i < syncBenefitsList.length; i++) {
-        consentDescriptionTexts.push(i18n(syncBenefitsList[i].title));
-      }
-      consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
-      return consentDescriptionTexts;
+    for (let i = 0; i < syncBenefitsList.length; i++) {
+      consentDescriptionTexts.push(i18n(syncBenefitsList[i].title));
     }
+    consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
 
-    if (!isModalDialogDesignEnabled ||
-        (isModalDialogDesignEnabled && !isSigninInterceptFreEnabled)) {
-      consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
-    }
     return consentDescriptionTexts;
   }
 

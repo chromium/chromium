@@ -4,8 +4,8 @@
 
 package org.chromium.chromecast.base;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,19 +28,19 @@ import java.util.List;
 public class ObservableMiscellaneousTest {
     @Test
     public void testMakeNotifyOneAtATime() {
-        ReactiveRecorder r = ReactiveRecorder.record(Observable.make(observer -> {
+        ReactiveRecorder r = ReactiveRecorder.record(observer -> {
             observer.open(1).close();
             observer.open(2).close();
             observer.open(3).close();
             return Scope.NO_OP;
-        }));
+        });
         r.verify().opened(1).closed(1).opened(2).closed(2).opened(3).closed(3).end();
     }
 
     @Test
     public void testMakeNotifyAllAtOnce() {
-        ReactiveRecorder r = ReactiveRecorder.record(Observable.make(
-                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c"))));
+        ReactiveRecorder r = ReactiveRecorder.record(
+                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c")));
         r.verify().opened("a").opened("b").opened("c").end();
         r.unsubscribe();
         r.verify().closed("c").closed("b").closed("a").end();

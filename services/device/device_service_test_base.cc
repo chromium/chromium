@@ -16,7 +16,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -63,7 +63,7 @@ DeviceServiceTestBase::~DeviceServiceTestBase() = default;
 
 void DeviceServiceTestBase::SetUp() {
   GeolocationManager* geolocation_manager = nullptr;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
   geolocation_manager = fake_geolocation_manager_.get();
 #endif

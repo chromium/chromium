@@ -17,7 +17,10 @@ source_set("backend_factory") {
     "//components/prefs",
   ]
   if (is_android) {
-    deps += [ "//chrome/browser/password_manager/android:backend" ]
+    deps += [
+      "//chrome/browser/password_manager/android:backend",
+      "//components/webauthn/android",
+    ]
   }
 
   sources = [ "password_store_backend_factory.cc" ]

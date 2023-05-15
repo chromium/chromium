@@ -116,7 +116,7 @@ bool EventReaderLibevdevCros::HasHapticTouchpad() const {
   return haptic_touchpad_handler_ != nullptr;
 }
 
-bool EventReaderLibevdevCros::CanHandleHapticFeedback() {
+bool EventReaderLibevdevCros::CanHandleHapticFeedback() const {
   return haptic_touchpad_handler_ && haptic_feedback_enabled_ &&
          touch_count_ > 0;
 }
@@ -156,6 +156,19 @@ bool EventReaderLibevdevCros::HasStylusSwitch() const {
 
 void EventReaderLibevdevCros::OnDisabled() {
   delegate_->OnLibEvdevCrosStopped(&evdev_, &evstate_);
+}
+
+std::ostream& EventReaderLibevdevCros::DescribeForLog(std::ostream& os) const {
+  os << "class=EventReaderLibevdevCros id=" << input_device_.id << std::endl
+     << " has_keyboard=" << has_keyboard_ << std::endl
+     << " has_mouse=" << has_mouse_ << std::endl
+     << " has_pointing_stick=" << has_pointing_stick_ << std::endl
+     << " HasHapticTouchpad=" << HasHapticTouchpad() << std::endl
+     << " CanHandleHapticFeedback=" << CanHandleHapticFeedback() << std::endl
+     << " has_caps_lock_led=" << has_caps_lock_led_ << std::endl
+     << " has_stylus_switch=" << has_stylus_switch_ << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
 }
 
 // static

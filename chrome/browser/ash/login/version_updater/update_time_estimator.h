@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
 #define CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
@@ -72,7 +73,7 @@ class UpdateTimeEstimator {
   base::TimeTicks stage_started_time_;
   update_engine::Operation current_stage_ = update_engine::Operation::IDLE;
 
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
 };
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "ios/web/navigation/navigation_initiation_type.h"
 #include "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -18,6 +19,9 @@
 #include "url/gurl.h"
 
 namespace web {
+namespace proto {
+class NavigationItemStorage;
+}  // namespace proto
 
 class NavigationItemStorageBuilder;
 enum class NavigationInitiationType;
@@ -29,9 +33,14 @@ class NavigationItemImpl : public web::NavigationItem {
   NavigationItemImpl();
   ~NavigationItemImpl() override;
 
-  // Since NavigationItemImpls own their facade delegates, there is no implicit
-  // copy constructor (scoped_ptrs can't be copied), so one is defined here.
-  NavigationItemImpl(const NavigationItemImpl& item);
+  // Creates a NavigationItemImpl from serialized representation.
+  explicit NavigationItemImpl(const proto::NavigationItemStorage& storage);
+
+  // Serializes the NavigationItemImpl into `storage`.
+  void SerializeToProto(proto::NavigationItemStorage& storage) const;
+
+  // Clones the current object.
+  std::unique_ptr<NavigationItemImpl> Clone();
 
   // NavigationItem implementation:
   int GetUniqueID() const override;
@@ -45,8 +54,6 @@ class NavigationItemImpl : public web::NavigationItem {
   const GURL& GetVirtualURL() const override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() const override;
-  void SetPageDisplayState(const PageDisplayState& display_state) override;
-  const PageDisplayState& GetPageDisplayState() const override;
   const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
@@ -59,8 +66,8 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetUserAgentType(UserAgentType type) override;
   UserAgentType GetUserAgentType() const override;
   bool HasPostData() const override;
-  NSDictionary* GetHttpRequestHeaders() const override;
-  void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
+  HttpRequestHeaders* GetHttpRequestHeaders() const override;
+  void AddHttpRequestHeaders(HttpRequestHeaders* additional_headers) override;
   void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) override;
   HttpsUpgradeType GetHttpsUpgradeType() const override;
 
@@ -84,6 +91,10 @@ class NavigationItemImpl : public web::NavigationItem {
   // Whether or not to bypass serializing this item to session storage.  Set to
   // YES to skip saving this page (and therefore restoring this page).
   void SetShouldSkipSerialization(bool skip);
+
+  // Returns whether the page should be skipped when serializing. Will return
+  // true if `SetShouldSkipSerialization(YES)` was called but may return true
+  // in other circumstances (e.g. URL too long, ...).
   bool ShouldSkipSerialization() const;
 
   // Data submitted with a POST request, persisted for resubmits.
@@ -123,43 +134,45 @@ class NavigationItemImpl : public web::NavigationItem {
   // private variables of NavigationItemImpl.
   friend NavigationItemStorageBuilder;
 
-  int unique_id_;
+  // Explicit copy constructor since the super class is not copyable.
+  // Used to implement Clone().
+  NavigationItemImpl(const NavigationItemImpl& item);
+
+  const int unique_id_;
   GURL original_request_url_;
   GURL url_;
   Referrer referrer_;
   GURL virtual_url_;
   std::u16string title_;
-  PageDisplayState page_display_state_;
-  ui::PageTransition transition_type_;
+  ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   FaviconStatus favicon_status_;
   SSLStatus ssl_;
   base::Time timestamp_;
-  UserAgentType user_agent_type_;
-  NSMutableDictionary* http_request_headers_;
+  UserAgentType user_agent_type_ = UserAgentType::NONE;
+  NSMutableDictionary* http_request_headers_ = nil;
 
-  NSString* serialized_state_object_;
-  bool is_created_from_hash_change_;
-  bool should_skip_serialization_;
-  NSData* post_data_;
+  NSString* serialized_state_object_ = nil;
+  bool is_created_from_hash_change_ = false;
+  bool should_skip_serialization_ = false;
+  NSData* post_data_ = nil;
 
   // The navigation initiation type of the item.  This decides whether the URL
   // should be displayed before the navigation commits.  It is cleared in
   // `ResetForCommit` and not persisted.
-  web::NavigationInitiationType navigation_initiation_type_;
+  web::NavigationInitiationType navigation_initiation_type_ =
+      web::NavigationInitiationType::NONE;
 
   // Used only by NavigationManagerImpl.  `is_untrusted_` is only `true` for
   // Visible or LastCommitted NavigationItems where the `url_` may be incorrect
   // due to timining problems or bugs in WKWebView.
-  bool is_untrusted_;
+  bool is_untrusted_ = false;
 
   // This is a cached version of the result of GetTitleForDisplay. When the URL,
   // virtual URL, or title is set, this should be cleared to force a refresh.
   mutable std::u16string cached_display_title_;
 
   // Type of the HTTPS upgrade applied to this navigation, if any.
-  HttpsUpgradeType https_upgrade_type_;
-
-  // Copy and assignment is explicitly allowed for this class.
+  HttpsUpgradeType https_upgrade_type_ = HttpsUpgradeType::kNone;
 };
 
 }  // namespace web

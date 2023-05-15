@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -135,7 +136,7 @@ class EventHandlerDriver : public AsyncServiceDriver {
 
   typename THandlerInterface::AsyncService service_;
 
-  GrpcLibassistantClient* libassistant_client_;
+  raw_ptr<GrpcLibassistantClient, ExperimentalAsh> libassistant_client_;
   const std::string assistant_service_address_;
 
   base::ObserverList<EventObserverType> observers_;

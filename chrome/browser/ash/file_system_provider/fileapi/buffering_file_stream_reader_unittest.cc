@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -80,7 +81,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
   }
 
  private:
-  std::vector<int>* log_;  // Not owned.
+  raw_ptr<std::vector<int>, ExperimentalAsh> log_;  // Not owned.
   net::Error return_error_;
 };
 

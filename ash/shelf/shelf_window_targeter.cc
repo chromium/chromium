@@ -19,10 +19,14 @@ namespace ash {
 namespace {
 
 gfx::Insets GetInsetsForAlignment(int distance, ShelfAlignment alignment) {
-  if (alignment == ShelfAlignment::kLeft)
+  if (alignment == ShelfAlignment::kLeft) {
     return gfx::Insets::TLBR(0, 0, 0, distance);
-  if (alignment == ShelfAlignment::kRight)
+  }
+
+  if (alignment == ShelfAlignment::kRight) {
     return gfx::Insets::TLBR(0, distance, 0, 0);
+  }
+
   return gfx::Insets::TLBR(distance, 0, 0, 0);
 }
 
@@ -31,14 +35,17 @@ gfx::Insets GetInsetsForAlignment(int distance, ShelfAlignment alignment) {
 ShelfWindowTargeter::ShelfWindowTargeter(aura::Window* container, Shelf* shelf)
     : ::wm::EasyResizeWindowTargeter(gfx::Insets(), gfx::Insets()),
       shelf_(shelf) {
-  WillChangeVisibilityState(shelf_->GetVisibilityState());
+  UpdateInsetsForVisibilityState(shelf_->GetVisibilityState());
   container->AddObserver(this);
   shelf_->AddObserver(this);
+  Shell::Get()->AddShellObserver(this);
 }
 
 ShelfWindowTargeter::~ShelfWindowTargeter() {
   // Ensure that the observers were removed and the shelf pointer was cleared.
   DCHECK(!shelf_);
+
+  Shell::Get()->RemoveShellObserver(this);
 }
 
 bool ShelfWindowTargeter::ShouldUseExtendedBounds(const aura::Window* w) const {
@@ -91,26 +98,44 @@ void ShelfWindowTargeter::OnWindowDestroying(aura::Window* window) {
   shelf_ = nullptr;
 }
 
-void ShelfWindowTargeter::WillChangeVisibilityState(
-    ShelfVisibilityState new_state) {
-  // Do not use |new_state| as it can be a shelf on other displays.
-  auto visibility_state = shelf_->GetVisibilityState();
-
-  gfx::Insets mouse_insets;
-  gfx::Insets touch_insets;
-  if (visibility_state == SHELF_VISIBLE) {
-    // Let clicks at the very top of the shelf through so windows can be
-    // resized with the bottom-right corner and bottom edge.
-    mouse_insets = GetInsetsForAlignment(
-        ShelfConfig::Get()->workspace_area_visible_inset(),
-        shelf_->alignment());
-  } else if (visibility_state == SHELF_AUTO_HIDE) {
-    // Extend the touch hit target out a bit to allow users to drag shelf out
-    // while hidden.
-    touch_insets = GetInsetsForAlignment(
-        -ShelfConfig::Get()->workspace_area_auto_hide_inset(),
-        shelf_->alignment());
+void ShelfWindowTargeter::OnShelfAlignmentChanged(
+    aura::Window* root_window,
+    ShelfAlignment old_alignment) {
+  if (!shelf_) {
+    return;
   }
+  if (shelf_->shelf_widget()->GetNativeWindow()->GetRootWindow() !=
+      root_window) {
+    return;
+  }
+
+  UpdateInsets();
+}
+
+void ShelfWindowTargeter::OnShelfVisibilityStateChanged(
+    ShelfVisibilityState new_state) {
+  UpdateInsetsForVisibilityState(new_state);
+}
+
+void ShelfWindowTargeter::UpdateInsetsForVisibilityState(
+    ShelfVisibilityState state) {
+  mouse_inset_size_for_shelf_visibility_ =
+      state == SHELF_VISIBLE
+          ? ShelfConfig::Get()->workspace_area_visible_inset()
+          : 0;
+  touch_inset_size_for_shelf_visibility_ =
+      state == SHELF_AUTO_HIDE
+          ? -ShelfConfig::Get()->workspace_area_auto_hide_inset()
+          : 0;
+
+  UpdateInsets();
+}
+
+void ShelfWindowTargeter::UpdateInsets() {
+  const gfx::Insets mouse_insets = GetInsetsForAlignment(
+      mouse_inset_size_for_shelf_visibility_, shelf_->alignment());
+  const gfx::Insets touch_insets = GetInsetsForAlignment(
+      touch_inset_size_for_shelf_visibility_, shelf_->alignment());
 
   // Remember the insets. See GetHitTestsRects when they're actually used.
   SetInsets(mouse_insets, touch_insets);

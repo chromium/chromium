@@ -59,8 +59,7 @@ class CORE_EXPORT FileReaderClient : public GarbageCollectedMixin {
   // called with the returned error.
   // Clients must not make re-entrant calls to the FileReaderLoader in this
   // method.
-  virtual FileErrorCode DidStartLoading(uint64_t total_size,
-                                        uint64_t content_size) = 0;
+  virtual FileErrorCode DidStartLoading(uint64_t total_size) = 0;
   // Clients must implement this method to receive the blob's data.
   // If an error occurred while processing the data, a FileErrorCode can be
   // returned. In such case, the blob's processing will end a DidFail will be
@@ -105,7 +104,7 @@ class CORE_EXPORT FileReaderAccumulator : public FileReaderClient {
   }
 
  private:
-  FileErrorCode DidStartLoading(uint64_t size, uint64_t total_bytes) final;
+  FileErrorCode DidStartLoading(uint64_t total_bytes) final;
   FileErrorCode DidReceiveData(const char* data, unsigned data_length) final;
   void DidFinishLoading() final;
 

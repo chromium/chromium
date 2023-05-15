@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ class UserActionRecorderImpl : public UserActionRecorder {
 
   void HandleUserAction(UserAction action);
 
-  FeatureStatusProvider* feature_status_provider_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
 };
 
 }  // namespace phonehub

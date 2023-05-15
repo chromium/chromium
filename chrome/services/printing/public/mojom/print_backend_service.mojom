@@ -111,6 +111,17 @@ interface PrintBackendService {
   FetchCapabilities(string printer_name)
     => (PrinterCapsAndInfoResult printer_caps_and_info);
 
+  // Gets the printable area for a particular paper size.  Windows only, as a
+  // workaround for the high cost of trying to get printable area for all paper
+  // sizes in `FetchCapabilities()`.  Returns an empty area if there is any
+  // error in retrieving the printable area.
+  // TODO(crbug.com/1424368):  Remove this if
+  // `PrintBackendWin::GetPrinterSemanticCapsAndDefaults()` can be made to
+  // fetch the all printable areas in a performant manner.
+  [EnableIf=is_win]
+  GetPaperPrintableArea(string printer_name, RequestedMedia media)
+    => (gfx.mojom.Rect printable_area_um);
+
   // Creates a printing context that can persist across multiple calls.
   // Necessary to ensure that the context used for system dialogs is still
   // available by the time that printing is started.  The printing context

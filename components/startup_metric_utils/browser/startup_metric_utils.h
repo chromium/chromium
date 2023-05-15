@@ -108,6 +108,25 @@ void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed);
 
+// Result of an attempt to create the first run sentinel file.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FirstRunSentinelCreationResult {
+  // The sentinel file was created without error.
+  kSuccess = 0,
+  // Obtaining the path to the sentinel file failed. Might indicate issues
+  // in determining the user data dir.
+  kFailedToGetPath = 1,
+  // The sentinel file already exists. Can indicate that a switch to override
+  // the first run state was used.
+  kFilePathExists = 2,
+  // File system error, writing the file failed.
+  kFileSystemError = 3,
+  kMaxValue = kFileSystemError,
+};
+void RecordFirstRunSentinelCreation(FirstRunSentinelCreationResult result);
+
 }  // namespace startup_metric_utils
 
 #endif  // COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
@@ -63,21 +64,6 @@ struct LogoutRpsRequest {
   string account_id;
 };
 
-// The login hint for this identity provider. Used by the relying party to
-// specify some data about the user account they would like to show in the
-// FedCM dialog.
-struct IdentityProviderLoginHint {
-  // The strings can be empty when not provided.
-  string email;
-
-  string id;
-
-  // Whether the hint should be required or not. If required, the user agent can
-  // show other accounts if there is no account matching the hint. Otherwise,
-  // the user agent should not show other accounts in case no match is found.
-  bool is_required;
-};
-
 // The details of different mechanisms that allows the browser
 // to intermediate the exchange of the user's entities.
 // Currently, federated identities are supported, and mobile driver's license
@@ -116,8 +102,10 @@ struct IdentityProviderConfig {
   // Can be an empty string to be omitted in the request sent to the provider.
   string nonce;
 
+  // The login hint for this identity provider. Used by the relying party to
+  // specify which user account they would like to show in the FedCM dialog.
   // This field is not sent to the provider, but rather used by the user agent.
-  IdentityProviderLoginHint login_hint;
+  string login_hint;
 
   // The scope of the federated identity request: name/email/photo or
   // custom ones (e.g. "access to calendar", "access to social graph", etc).
@@ -147,9 +135,6 @@ struct IdentityProviderGetParameters {
   // Details of identity provider(s).
   array<IdentityProvider> providers;
 
-  // Whether auto re-authn is enabled by the caller.
-  bool auto_reauthn;
-
   // Controls the wording of the FedCM prompt.
   // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig
   // when/if we support the Context API for Multiple IdPs at a time.
@@ -168,7 +153,8 @@ interface FederatedAuthRequest {
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
-  RequestToken(array<IdentityProviderGetParameters> idp_get_params) =>
+  RequestToken(array<IdentityProviderGetParameters> idp_get_params,
+      CredentialMediationRequirement requirement) =>
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
       string? token);
@@ -180,6 +166,11 @@ interface FederatedAuthRequest {
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();
+
+  // Resolve the token request from a JS call from a WebView dialog,
+  // when the id_assertion_endpoint returns a continue_on rather than the
+  // actual token.
+  ResolveTokenRequest(string token) => (bool success);
 
   // Contact the list of Relying Party logout endpoints and account IDs to
   // attempt to initiate user logout.
@@ -193,4 +184,15 @@ interface FederatedAuthRequest {
 
   // Unregisters the url as an IdP's configURL of the user's preference.
   UnregisterIdP(url.mojom.Url url) => (bool success);
+
+  // Closes the modal dialog view, if any.
+  CloseModalDialogView();
+
+  // Require user mediation with navigator.credentials.preventSilentAccess() as
+  // defined in https://w3c.github.io/webappsec-credential-management/#user-mediation
+  // TODO(https://crbug.com/1441075): There's `PreventSilentAccess` in
+  // credential_manager.mojom but that's specific to PasswordManager and it's
+  // hard to reuse it as-is. We should unify the implementation for different
+  // CredentialTypes and avoid the duplication eventually.
+  PreventSilentAccess() => ();
 };

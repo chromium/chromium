@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
@@ -73,6 +74,8 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   PlatformKeysTest& operator=(const PlatformKeysTest&) = delete;
 
   void SetUpOnMainThread() override {
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-63f95a00-bff8-4d81-9cf9-ccf5fdacbef0");
     if (!IsPreTest()) {
       // Set up the private slot before
       // |PlatformKeysTestBase::SetUpOnMainThread| triggers the user sign-in.

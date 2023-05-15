@@ -5,14 +5,58 @@
 #include "chrome/browser/win/titlebar_config.h"
 
 #include "base/command_line.h"
+#include "base/win/windows_version.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
+#include "ui/color/win/accent_color_observer.h"
+#include "ui/native_theme/native_theme.h"
 
-bool ShouldCustomDrawSystemTitlebar() {
+namespace {
+// Allows the titlebar to be drawn by the system using the Mica material
+// on Windows 11, version 22H2 and above.
+BASE_FEATURE(kWindows11MicaTitlebar,
+             "Windows11MicaTitlebar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
+bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
+  return !ShouldAlwaysUseSystemTitlebar() &&
+         !ShouldBrowserUseMicaTitlebar(browser_view);
+}
+
+bool ShouldAlwaysUseSystemTitlebar() {
   // Cache flag lookup.
   static const bool custom_titlebar_disabled =
       base::CommandLine::InitializedForCurrentProcess() &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWindows10CustomTitlebar);
 
-  return !custom_titlebar_disabled;
+  return custom_titlebar_disabled;
+}
+
+bool ShouldBrowserUseMicaTitlebar(BrowserView* browser_view) {
+  return ShouldDefaultThemeUseMicaTitlebar() &&
+         (browser_view->browser()->is_type_normal() ||
+          browser_view->browser()->is_type_popup() ||
+          browser_view->browser()->is_type_devtools()) &&
+         ThemeServiceFactory::GetForProfile(browser_view->GetProfile())
+             ->UsingSystemTheme();
+}
+
+bool ShouldDefaultThemeUseMicaTitlebar() {
+  return SystemTitlebarCanUseMicaMaterial() &&
+         !ui::AccentColorObserver::Get()->accent_color().has_value() &&
+         !ui::NativeTheme::GetInstanceForNativeUi()
+              ->UserHasContrastPreference();
+}
+
+bool SystemTitlebarCanUseMicaMaterial() {
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         base::FeatureList::IsEnabled(kWindows11MicaTitlebar);
+}
+
+bool SystemTitlebarSupportsDarkMode() {
+  return base::win::GetVersion() >= base::win::Version::WIN11;
 }

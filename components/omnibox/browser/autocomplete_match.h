@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
@@ -95,6 +96,9 @@ struct RichAutocompletionParams {
 // example, a search result may say "Search for asdf" as the description, but
 // "asdf" should appear in the box.
 struct AutocompleteMatch {
+  using ScoringSignals =
+      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+
   // Autocomplete matches contain strings that are classified according to a
   // separate vector of styles.  This vector associates flags with particular
   // string segments, and must be in sorted order.  All text must be associated
@@ -509,6 +513,12 @@ struct AutocompleteMatch {
   void FilterOmniboxActions(
       const std::vector<OmniboxActionId>& allowed_action_ids);
 
+  // Rearranges and truncates ActionsInSuggest objects to match the desired
+  // order and presence of actions.
+  // Unlike FilterOmniboxActions(), this method specifically targets
+  // ActionsInSuggest.
+  void FilterAndSortActionsInSuggest();
+
   // Returns whether the autocompletion is trivial enough that we consider it
   // an autocompletion for which the omnibox autocompletion code did not add
   // any value.
@@ -578,17 +588,21 @@ struct AutocompleteMatch {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-  // Matches with actions usually have just one. Even with more, one of them
-  // is usually first and most significant; an action that takes over the
-  // whole match, for example. This method returns the foremost action, if it
-  // exists, and nullptr otherwise.
-  OmniboxAction* GetPrimaryAction() const;
+  // Returns the action at `index`, or nullptr if `index` is out of bounds.
+  OmniboxAction* GetActionAt(size_t index) const;
 
-  // Finds first action where predicate returns true. This is a special use
+  // Returns if `predicate` returns true for the match or one of its duplicates.
+  template <typename UnaryPredicate>
+  bool MatchOrDuplicateMeets(UnaryPredicate predicate) const {
+    return predicate(*this) ||
+           base::ranges::any_of(duplicate_matches, std::move(predicate));
+  }
+
+  // Finds first action where `predicate` returns true. This is a special use
   // utility method for situations where actions with certain constraints
   // need to be selected. If no such action is found, returns nullptr.
-  template <typename Predicate>
-  OmniboxAction* GetActionWhere(Predicate predicate) const {
+  template <typename UnaryPredicate>
+  OmniboxAction* GetActionWhere(UnaryPredicate predicate) const {
     auto it = base::ranges::find_if(actions, std::move(predicate));
     return it != actions.end() ? it->get() : nullptr;
   }
@@ -730,23 +744,36 @@ struct AutocompleteMatch {
   // Type of this match.
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
-  // True if we saw a tab that matched this suggestion.
-  // Unset if it has not been computed yet.
-  absl::optional<bool> has_tab_match;
+  // The type of this suggestion as reported from and back to the suggest server
+  // via the server response and the ChromeSearchboxStats (reported in the match
+  // destination URL) respectively.
+  // The default value indicates a native Chrome suggestion which must include a
+  // SUBTYPE_OMNIBOX_* in `subtypes`.
+  //
+  // The value is always present in omnibox::SuggestType enum. Although the list
+  // of types in omnibox::SuggestType enum may not be exhaustive, the known type
+  // names found in the server response are mapped to the equivalent enum values
+  // and the unknown types fall back to omnibox::TYPE_QUERY.
+  omnibox::SuggestType suggest_type{omnibox::TYPE_NATIVE_CHROME};
 
   // Used to identify the specific source / type for suggestions by the
   // suggest server. See SuggestSubtype in types.proto for more details.
   // Uses flat_set to deduplicate subtypes (e.g., as a result of Chrome adding
-  // additional subtypes). The order of elements reported back via AQS is
-  // irrelevant. flat_set uses std::vector as a container, reducing memory
-  // overhead of keeping a handful of integers, while offering similar
-  // functionality as std::set.
-  // Note this set may contain int values not present in omnibox::SuggestSubtype
+  // additional subtypes). The order of elements reported back via
+  // ChromeSearchboxStats is irrelevant. flat_set uses std::vector as a
+  // container, reducing memory overhead of keeping a handful of integers, while
+  // offering similar functionality as std::set.
+  //
+  // This set may contain int values not present in omnibox::SuggestSubtype
   // enum. This is because the list of subtypes in omnibox::SuggestSubtype enum
   // is not exhaustive. However, casting int values into omnibox::SuggestSubtype
   // enum without testing membership is expected to be safe as
   // omnibox::SuggestSubtype enum has a fixed int underlying type.
   base::flat_set<omnibox::SuggestSubtype> subtypes;
+
+  // True if we saw a tab that matched this suggestion.
+  // Unset if it has not been computed yet.
+  absl::optional<bool> has_tab_match;
 
   // Set with a keyword provider match if this match can show a keyword hint.
   // For example, if this is a SearchProvider match for "www.amazon.com",
@@ -774,8 +801,13 @@ struct AutocompleteMatch {
   // Set in matches originating from keyword results.
   bool from_keyword = false;
 
-  // Contains one or more actions relevant to this match.
+  // The visible actions relevant to this match.
   std::vector<scoped_refptr<OmniboxAction>> actions;
+
+  // An optional invisible action that takes over the match navigation. That is:
+  // if provided, when the user selects the match, the navigation is ignored and
+  // this action is executed instead.
+  scoped_refptr<OmniboxAction> takeover_action;
 
   // True if this match is from a previous result.
   bool from_previous = false;
@@ -812,7 +844,7 @@ struct AutocompleteMatch {
   std::vector<SuggestTile> suggest_tiles;
 
   // Signals for ML scoring.
-  metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+  absl::optional<ScoringSignals> scoring_signals;
 
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they

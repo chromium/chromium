@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
   // Calls `typecd` to set whether peripheral data access is perimitted.
   virtual void SetPeripheralDataAccessPermissionState(bool permitted) = 0;
 
+  // Calls `typecd` to set which ports are used for displays.
+  virtual void SetTypeCPortsUsingDisplays(
+      const std::vector<uint32_t>& port_nums) = 0;
+
  protected:
   // Initialize/Shutdown should be used instead.
   TypecdClient();

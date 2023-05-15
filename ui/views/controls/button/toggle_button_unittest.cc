@@ -95,7 +95,6 @@ class ToggleButtonTest : public ViewsTestBase {
 // The test verifies that the ink drop layer is removed properly when the
 // ToggleButton gets destroyed.
 TEST_F(ToggleButtonTest, ToggleButtonDestroyed) {
-  EXPECT_EQ(0, counter());
   gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
@@ -109,7 +108,6 @@ TEST_F(ToggleButtonTest, ToggleButtonDestroyed) {
 // ToggleButton has focus (and is showing a ripple).
 TEST_F(ToggleButtonTest, ShutdownWithFocus) {
   button()->RequestFocus();
-  EXPECT_EQ(1, counter());
 }
 
 // Verify that ToggleButton::accepts_events_ works as expected.

@@ -431,6 +431,17 @@ void HistoryService::SetDeviceInfoServices(
   SendLocalDeviceOriginatorCacheGuidToBackend();
 }
 
+void HistoryService::SetCanAddForeignVisitsToSegmentsOnBackend(
+    bool add_foreign_visits) {
+  CHECK(history::IsSyncSegmentsDataEnabled());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HistoryBackend::SetCanAddForeignVisitsToSegments,
+                     history_backend_, add_foreign_visits));
+}
+
 void HistoryService::OnDeviceInfoChange() {
   CHECK(history::IsSyncSegmentsDataEnabled());
   CHECK(device_info_tracker_ != nullptr);
@@ -1378,6 +1389,7 @@ void HistoryService::ScheduleTask(SchedulePriority priority,
   TRACE_EVENT0("browser", "HistoryService::ScheduleTask");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(backend_task_runner_);
+  CHECK(!task.is_null());
   // TODO(brettw): Do prioritization.
   // NOTE(mastiz): If this implementation changes, be cautious with implications
   // for sync, because a) the sync engine (sync thread) post tasks directly to

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -230,9 +231,9 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   TestingProfileManager testing_profile_manager_;
   FakeChromeUserManager fake_user_manager_;
   // A sign-in Profile is always created in SetUp().
-  TestingProfile* signin_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> signin_profile_ = nullptr;
   // The profile that will be passed to TpmChallengeKeySubtle - can be nullptr.
-  TestingProfile* testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
 };
 
 TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(

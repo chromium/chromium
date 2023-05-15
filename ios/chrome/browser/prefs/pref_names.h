@@ -10,6 +10,7 @@ namespace prefs {
 extern const char kApplicationLocale[];
 extern const char kAppStoreRatingPolicyEnabled[];
 extern const char kArticlesForYouEnabled[];
+extern const char kBottomOmnibox[];
 extern const char kBrowserLockdownModeEnabled[];
 extern const char kBrowserStateInfoCache[];
 extern const char kBrowserStateLastUsed[];
@@ -25,18 +26,21 @@ extern const char kFirstFollowUIShownCount[];
 extern const char kHttpServerProperties[];
 extern const char kInactiveTabsTimeThreshold[];
 extern const char kIncognitoInterstitialEnabled[];
+extern const char kIosCredentialProviderPromoLastActionTaken[];
 extern const char kIosCredentialProviderPromoPolicyEnabled[];
 extern const char kIosCredentialProviderPromoStopPromo[];
 extern const char kIosCredentialProviderPromoSource[];
 extern const char kIosCredentialProviderPromoHasRegisteredWithPromoManager[];
 extern const char kIosBookmarkCachedFolderId[];
 extern const char kIosBookmarkCachedTopMostRow[];
-extern const char kIosBookmarkFolderDefault[];
+extern const char kIosBookmarkLastUsedFolderReceivingBookmarks[];
+extern const char kIosBookmarkLastUsedStorageReceivingBookmarks[];
 extern const char kIosBookmarkPromoAlreadySeen[];
 extern const char kIosBookmarkSigninPromoDisplayedCount[];
 extern const char kIosBringAndroidTabsPromptDisplayed[];
 extern const char kIosShareChromeCount[];
 extern const char kIosShareChromeLastShare[];
+extern const char kIosSyncSegmentsNewTabPageDisplayCount[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosDiscoverFeedLastUnseenRefreshTime[];
 extern const char kIosPasswordBottomSheetDismissCount[];
@@ -62,6 +66,7 @@ extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTrackPricesOnTabsEnabled[];
 extern const char kLensCameraAssistedSearchPolicyAllowed[];
+extern const char kWebInspectorEnabled[];
 
 extern const char kNetworkPredictionSetting[];
 

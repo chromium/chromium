@@ -20,14 +20,14 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import './setup_pin_dialog.js';
 import './pin_autosubmit_dialog.js';
 import './local_data_recovery_dialog.js';
 import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -37,7 +37,6 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockScreenUnlockType, LockStateMixin} from '../lock_state_mixin.js';
@@ -160,6 +159,17 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
+       * True if cryptohome recovery feature is enabled.
+       */
+      cryptohomeRecoveryEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('cryptohomeRecoveryEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
        * State of the recovery toggle. Is |null| iff recovery is not a
        * available.
        */
@@ -196,6 +206,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         readOnly: true,
       },
 
+      noRecoveryVirtualPref_: Object,
+
       showSetupPinDialog_: Boolean,
 
       showPinAutosubmitDialog_: Boolean,
@@ -210,6 +222,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         value: () => new Set<Setting>([
           Setting.kLockScreenV2,
           Setting.kChangeAuthPinV2,
+          Setting.kLockScreenNotification,
         ]),
       },
     };
@@ -226,7 +239,9 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private numFingerprintDescription_: string;
   private lockScreenNotificationsEnabled_: boolean;
   private lockScreenHideSensitiveNotificationSupported_: boolean;
+  private cryptohomeRecoveryEnabled_: boolean;
   private recovery_: chrome.settingsPrivate.PrefObject|null;
+  private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
   private quickUnlockPinAutosubmitFeatureEnabled_: boolean;
   private smartLockUIRevampEnabled_: boolean;
@@ -248,6 +263,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     this.fingerprintBrowserProxy_ = FingerprintBrowserProxyImpl.getInstance();
 
     this.numFingerprintDescription_ = '';
+    // The pref is used to bind to the settings toggle when the `recovery_` pref
+    // is not set because the recovery feature is not available on the device.
+    this.noRecoveryVirtualPref_ = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    };
   }
 
   override ready(): void {
@@ -422,6 +444,37 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    */
   private showConfigurePinButton_(selectedUnlockType: string): boolean {
     return selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD;
+  }
+
+  private recoveryToggleSubLabel_(): string {
+    if (!this.cryptohomeRecoveryEnabled_) {
+      return '';
+    }
+    if (this.recovery_) {
+      return this.i18n('recoveryToggleSubLabel');
+    }
+    return this.i18n('recoveryNotSupportedMessage');
+  }
+
+  private recoveryToggleLearnMoreUrl_(): string {
+    if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
+      return '';
+    }
+    return this.i18n('recoveryNotSupportedMessage');
+  }
+
+  private recoveryToggleDisabled_(): boolean {
+    if (!this.cryptohomeRecoveryEnabled_ || !this.recovery_) {
+      return true;
+    }
+    return this.recoveryChangeInProcess_;
+  }
+
+  private recoveryTogglePref_(): chrome.settingsPrivate.PrefObject {
+    if (this.recovery_) {
+      return this.recovery_;
+    }
+    return this.noRecoveryVirtualPref_;
   }
 
   private getSetupPinText_(hasPin: boolean): string {

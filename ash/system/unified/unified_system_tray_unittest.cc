@@ -166,8 +166,8 @@ class UnifiedSystemTrayTest
   }
 
   gfx::Rect GetBubbleViewBounds() {
-    auto* bubble =
-        GetPrimaryUnifiedSystemTray()->slider_bubble_controller_->bubble_view_;
+    auto* bubble = GetPrimaryUnifiedSystemTray()
+                       ->slider_bubble_controller_->bubble_view_.get();
     return bubble ? bubble->GetBoundsInScreen() : gfx::Rect();
   }
 

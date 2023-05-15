@@ -4,12 +4,22 @@
 
 #include "components/zucchini/zucchini_integration.h"
 
+#include <stdint.h>
+
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/mapped_file.h"
 #include "components/zucchini/patch_reader.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <ntstatus.h>
+
+#include "components/zucchini/exception_filter_helper_win.h"
+#endif
 
 namespace zucchini {
 
@@ -100,50 +110,77 @@ status::Code ApplyCommon(base::File old_file,
                          base::File new_file,
                          const FileNames& names,
                          bool force_keep) {
-  MappedFileReader mapped_patch(std::move(patch_file));
-  if (mapped_patch.HasError()) {
-    LOG(ERROR) << "Error with file " << names.patch_name.value() << ": "
-               << mapped_patch.error();
-    return status::kStatusFileReadError;
-  }
+#if BUILDFLAG(IS_WIN)
+  ExceptionFilterHelper exception_filter_helper;
+  __try {
+#endif
+    MappedFileReader mapped_patch(std::move(patch_file));
+    if (mapped_patch.HasError()) {
+      LOG(ERROR) << "Error with file " << names.patch_name.value() << ": "
+                 << mapped_patch.error();
+      return status::kStatusFileReadError;
+    }
+#if BUILDFLAG(IS_WIN)
+    exception_filter_helper.AddRange(
+        {mapped_patch.data(), mapped_patch.length()});
+#endif
 
-  auto patch_reader = EnsemblePatchReader::Create(mapped_patch.region());
-  if (!patch_reader.has_value()) {
-    LOG(ERROR) << "Error reading patch header.";
-    return status::kStatusPatchReadError;
-  }
+    auto patch_reader = EnsemblePatchReader::Create(mapped_patch.region());
+    if (!patch_reader.has_value()) {
+      LOG(ERROR) << "Error reading patch header.";
+      return status::kStatusPatchReadError;
+    }
 
-  MappedFileReader mapped_old(std::move(old_file));
-  if (mapped_old.HasError()) {
-    LOG(ERROR) << "Error with file " << names.old_name.value() << ": "
-               << mapped_old.error();
-    return status::kStatusFileReadError;
-  }
+    MappedFileReader mapped_old(std::move(old_file));
+    if (mapped_old.HasError()) {
+      LOG(ERROR) << "Error with file " << names.old_name.value() << ": "
+                 << mapped_old.error();
+      return status::kStatusFileReadError;
+    }
+#if BUILDFLAG(IS_WIN)
+    exception_filter_helper.AddRange({mapped_old.data(), mapped_old.length()});
+#endif
 
-  PatchHeader header = patch_reader->header();
-  // By default, delete output on destruction, to avoid having lingering files
-  // in case of a failure. On Windows deletion can be done by the OS.
-  MappedFileWriter mapped_new(names.new_name, std::move(new_file),
-                              header.new_size);
-  if (mapped_new.HasError()) {
-    LOG(ERROR) << "Error with file " << names.new_name.value() << ": "
-               << mapped_new.error();
-    return status::kStatusFileWriteError;
-  }
-  if (force_keep)
-    mapped_new.Keep();
+    PatchHeader header = patch_reader->header();
+    // By default, delete output on destruction, to avoid having lingering files
+    // in case of a failure. On Windows deletion can be done by the OS.
+    MappedFileWriter mapped_new(names.new_name, std::move(new_file),
+                                header.new_size);
+    if (mapped_new.HasError()) {
+      LOG(ERROR) << "Error with file " << names.new_name.value() << ": "
+                 << mapped_new.error();
+      return status::kStatusFileWriteError;
+    }
+    if (force_keep) {
+      mapped_new.Keep();
+    }
+#if BUILDFLAG(IS_WIN)
+    exception_filter_helper.AddRange({mapped_new.data(), mapped_new.length()});
+#endif
 
-  status::Code result =
-      ApplyBuffer(mapped_old.region(), *patch_reader, mapped_new.region());
-  if (result != status::kStatusSuccess) {
-    LOG(ERROR) << "Fatal error encountered while applying patch.";
-    return result;
-  }
+    status::Code result =
+        ApplyBuffer(mapped_old.region(), *patch_reader, mapped_new.region());
+    if (result != status::kStatusSuccess) {
+      LOG(ERROR) << "Fatal error encountered while applying patch.";
+      return result;
+    }
 
-  // Successfully patch |mapped_new|. Explicitly request file to be kept.
-  if (!mapped_new.Keep())
-    return status::kStatusFileWriteError;
-  return status::kStatusSuccess;
+    // Successfully patch |mapped_new|. Explicitly request file to be kept.
+    return mapped_new.Keep() ? status::kStatusSuccess
+                             : status::kStatusFileWriteError;
+#if BUILDFLAG(IS_WIN)
+  } __except (exception_filter_helper.FilterPageError(
+      GetExceptionInformation()->ExceptionRecord)) {
+    LOG(ERROR) << "EXCEPTION_IN_PAGE_ERROR while "
+               << (exception_filter_helper.is_write() ? "writing to"
+                                                      : "reading from")
+               << " mapped files; NTSTATUS = "
+               << exception_filter_helper.nt_status();
+    return exception_filter_helper.nt_status() == STATUS_DISK_FULL
+               ? status::kStatusDiskFull
+               : status::kStatusIoError;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 status::Code VerifyPatchCommon(base::File patch_file,

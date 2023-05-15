@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
@@ -45,14 +46,31 @@ LocalDeviceDataProviderImpl::~LocalDeviceDataProviderImpl() = default;
 
 void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
     const std::vector<::nearby::internal::SharedCredential>&
-        shared_credentials) {}
+        new_shared_credentials) {
+  base::Value::List list;
+  for (const auto& credential : new_shared_credentials) {
+    list.Append(credential.secret_id());
+  }
+  pref_service_->SetList(prefs::kNearbyPresenceSharedCredentialIdListPrefName,
+                         std::move(list));
+}
 
 bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
     const std::vector<::nearby::internal::SharedCredential>&
-        shared_credentials) {
-  // TODO (b/276307539): Implement `HavePublicCredentialsChanged`, this
-  // default implementation is to get the skeleton class to compile.
-  return true;
+        new_shared_credentials) {
+  std::set<std::string> persisted_shared_credential_ids;
+  const base::Value::List& list = pref_service_->GetList(
+      prefs::kNearbyPresenceSharedCredentialIdListPrefName);
+  for (const auto& id : list) {
+    persisted_shared_credential_ids.insert(id.GetString());
+  }
+
+  std::set<std::string> new_shared_credential_ids;
+  for (const auto& credential : new_shared_credentials) {
+    new_shared_credential_ids.insert(credential.secret_id());
+  }
+
+  return new_shared_credential_ids != persisted_shared_credential_ids;
 }
 
 std::string LocalDeviceDataProviderImpl::GetDeviceId() {
@@ -106,13 +124,10 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
   CHECK(!user_name.empty());
   CHECK(!profile_url.empty());
 
-  // TODO (b/276307539): Change `device_type` to DEVICE_TYPE_CHROMEOS once
-  // available in //third_party/nearby protos.
-  //
   // `mac_address` is empty for Nearby Presence MVP on ChromeOS since
   // broadcasting is not supported.
   return BuildMetadata(
-      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,
+      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
       /*account_name=*/GetAccountName(),
       /*device_name=*/GetDeviceName(),
       /*user_name=*/user_name,
@@ -129,6 +144,23 @@ std::string LocalDeviceDataProviderImpl::GetAccountName() {
 
 void LocalDeviceDataProviderImpl::SaveUserRegistrationInfo(
     const std::string& display_name,
-    const std::string& image_url) {}
+    const std::string& image_url) {
+  pref_service_->SetString(prefs::kNearbyPresenceUserNamePrefName,
+                           display_name);
+  pref_service_->SetString(prefs::kNearbyPresenceProfileUrlPrefName, image_url);
+}
+
+bool LocalDeviceDataProviderImpl::IsUserRegistrationInfoSaved() {
+  // The user name pref and image url are set during first time registration
+  // flow with the server. If they are not set, that means that the first time
+  // registration flow (and therefore Nearby Presence initialization) has not
+  // occurred. These fields are both set in the same step via
+  // |SaveUserRegistrationInfo|.
+  std::string user_name =
+      pref_service_->GetString(prefs::kNearbyPresenceUserNamePrefName);
+  std::string image_url =
+      pref_service_->GetString(prefs::kNearbyPresenceProfileUrlPrefName);
+  return (!user_name.empty() && !image_url.empty());
+}
 
 }  // namespace ash::nearby::presence

@@ -48,7 +48,6 @@ namespace blink {
 
 class AriaNotificationOptions;
 class AXObject;
-class AbstractInlineTextBox;
 class AccessibleNode;
 class HTMLCanvasElement;
 class HTMLOptionElement;
@@ -57,6 +56,7 @@ class HTMLFrameOwnerElement;
 class HTMLSelectElement;
 class LayoutRect;
 class LocalFrameView;
+class NGAbstractInlineTextBox;
 
 class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
  public:
@@ -104,7 +104,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Remove(LayoutObject*) = 0;
   virtual void Remove(Node*) = 0;
   virtual void Remove(Document*) = 0;
-  virtual void Remove(AbstractInlineTextBox*) = 0;
+  virtual void Remove(NGAbstractInlineTextBox*) = 0;
 
   virtual const Element* RootAXEditableElement(const Node*) = 0;
 

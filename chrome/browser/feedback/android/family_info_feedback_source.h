@@ -12,8 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 class Profile;
 
@@ -25,14 +26,14 @@ namespace chrome::android {
 
 // Native class for Java counterpart. Retrieves family information
 // asynchronously.
-class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
+class FamilyInfoFeedbackSource {
  public:
   FamilyInfoFeedbackSource(const base::android::JavaParamRef<jobject>& obj,
                            Profile* profile);
 
   FamilyInfoFeedbackSource(const FamilyInfoFeedbackSource&) = delete;
   FamilyInfoFeedbackSource& operator=(const FamilyInfoFeedbackSource&) = delete;
-  ~FamilyInfoFeedbackSource() override;
+  ~FamilyInfoFeedbackSource();
 
   // Retrieves a list of family members for the primary account.
   void GetFamilyMembers();
@@ -41,16 +42,22 @@ class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
   friend class FamilyInfoFeedbackSourceTest;
   friend class FamilyInfoFeedbackSourceForChildFilterBehaviorTest;
 
-  // FamilyInfoFetcher::Consumer implementation.
-  void OnGetFamilyMembersSuccess(
-      const std::vector<FamilyInfoFetcher::FamilyMember>& members) override;
-  void OnFailure(FamilyInfoFetcher::ErrorCode error) override;
+  void OnResponse(
+      KidsExternalFetcherStatus status,
+      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+          response);
+  void OnSuccess(
+      const kids_chrome_management::ListFamilyMembersResponse& response);
+  void OnFailure(KidsExternalFetcherStatus status);
 
-  // Performs completion following call to GetFamilyMembers.
-  void OnGetFamilyMembersCompletion();
+  // Cleans up following the call to ListFamilyMembers
+  void OnComplete();
 
-  raw_ptr<SupervisedUserService> supervised_user_service_;
-  std::unique_ptr<FamilyInfoFetcher> family_fetcher_;
+  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
+  std::unique_ptr<
+      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
+                          kids_chrome_management::ListFamilyMembersResponse>>
+      list_family_members_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

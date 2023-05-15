@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 19
+// Next MinVersion: 20
 
 module ash.ime.mojom;
 
@@ -302,7 +302,7 @@ struct InputFieldInfo {
   [MinVersion=10] TextPredictionMode text_prediction@3;
 };
 
-// Next ordinal: 4
+// Next ordinal: 8
 //
 // TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
@@ -315,6 +315,8 @@ union InputMethodSettings {
   ZhuyinSettings zhuyin_settings@3;
   [MinVersion=14, Default] bool null_settings@4;
   [MinVersion=15] JapaneseSettings japanese_settings@5;
+  [MinVersion=19] VietnameseTelexSettings vietnamese_telex_settings@6;
+  [MinVersion=19] VietnameseVniSettings vietnamese_vni_settings@7;
 };
 
 // Next ordinal: 9
@@ -624,3 +626,39 @@ interface InputMethod {
   // shown, dismissed, accepted etc).
   [MinVersion=13] OnAssistiveWindowChanged@9(AssistiveWindow window);
 };
+
+// Settings for Vietnamese Telex input method.
+//
+// Next ordinal: 4
+[Stable]
+struct VietnameseTelexSettings {
+  // Allow flexible diacritic assignment.
+  bool allow_flexible_diacritics@0;
+
+  // Defines the placement of tone marks for some syllables.
+  // If false, use "old style" placement.
+  bool new_style_tone_mark_placement@1;
+
+  // When a horn modifier is applied to "uo", it will add horns to both u and o.
+  bool enable_insert_double_horn_on_uo@2;
+
+  // Type the horn modifier trigger to get u-horn.
+  bool enable_w_for_u_horn_shortcut@3;
+};
+
+// Settings for Vietnamese VNI input method.
+//
+// Next ordinal: 3
+[Stable]
+struct VietnameseVniSettings {
+  // Allow flexible diacritic assignment.
+  bool allow_flexible_diacritics@0;
+
+  // Defines the placement of tone marks for some syllables.
+  // If false, use "old style" placement.
+  bool new_style_tone_mark_placement@1;
+
+  // When a horn modifier is applied to "uo", it will add horns to both u and o.
+  bool enable_insert_double_horn_on_uo@2;
+};
+

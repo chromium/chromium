@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -12,6 +13,7 @@
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
@@ -63,6 +65,9 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  absl::optional<base::FilePath> GetCrxCachePath() const override;
+#endif
 
  protected:
   friend class base::RefCountedThreadSafe<AwComponentUpdaterConfigurator>;

@@ -18,6 +18,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/icon_manager.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -122,6 +123,8 @@ class TransparentButton : public views::Button {
           /*visible=*/true, /*request_focus_on_last_quick_action=*/true);
     }
   }
+
+  void NotifyClickForTesting(const ui::Event& event) { NotifyClick(event); }
 
  private:
   raw_ptr<DownloadBubbleRowView> row_view_;
@@ -301,6 +304,7 @@ void DownloadBubbleRowView::SetIcon() {
     return;
   }
 
+  // For downloads in incognito mode.
   if (bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
     if (last_overridden_icon_ == &kIncognitoIcon) {
       return;
@@ -309,6 +313,18 @@ void DownloadBubbleRowView::SetIcon() {
     has_default_icon_ = false;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
         kIncognitoIcon, ui::kColorIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    return;
+  }
+
+  // For downloads in guest sessions.
+  if (bubble_controller_->ShouldShowGuestIcon(model_.get())) {
+    if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
+      return;
+    }
+    last_overridden_icon_ = &kUserAccountAvatarIcon;
+    has_default_icon_ = false;
+    SetIconFromImageModel(
+        profiles::GetGuestAvatar(GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
     return;
   }
 
@@ -643,8 +659,7 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
     navigation_handler_->OpenSecurityDialog(this);
   } else {
     RecordDownloadOpenButtonPressed(model_->IsDone());
-    DownloadCommands(model_->GetWeakPtr())
-        .ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE);
+    model_->OpenDownload();
   }
 }
 
@@ -721,9 +736,7 @@ void DownloadBubbleRowView::UpdateLabels() {
         {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
   }
 
-  if (GetWidget()) {
-    secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
-  }
+  secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
 }
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
@@ -1021,6 +1034,12 @@ void DownloadBubbleRowView::UnregisterAccelerators(
   }
 
   focus_manager->UnregisterAccelerator(accelerator, this);
+}
+
+void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
+    const ui::Event& event) {
+  static_cast<TransparentButton*>(transparent_button_)
+      ->NotifyClickForTesting(event);  // IN-TEST
 }
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)

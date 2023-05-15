@@ -6,8 +6,8 @@
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

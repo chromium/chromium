@@ -57,6 +57,7 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLboolean unpack_flip_y,
       const volatile GLbyte* mailboxes);
   // Only used by passthrough decoder.
+  // TODO(crbug.com/1444777): Handle this use-case for graphite.
   base::expected<void, GLError> CopySharedImageToGLTexture(
       GLuint texture_service_id,
       GLenum target,

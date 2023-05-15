@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_NETWORKING_EUICC_STATUS_UPLOADER_H_
 #define CHROME_BROWSER_ASH_POLICY_NETWORKING_EUICC_STATUS_UPLOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -103,8 +104,8 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   // Used in tests. Fires |retry_timer_| to avoid flakiness.
   void FireRetryTimerIfExistsForTesting();
 
-  CloudPolicyClient* client_;
-  PrefService* local_state_;
+  raw_ptr<CloudPolicyClient, ExperimentalAsh> client_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   bool currently_uploading_ = false;
   // The status that is being uploaded right now.
@@ -125,7 +126,7 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
       cloud_policy_client_observation_{this};
 
-  ash::ManagedNetworkConfigurationHandler*
+  raw_ptr<ash::ManagedNetworkConfigurationHandler, ExperimentalAsh>
       managed_network_configuration_handler_ = nullptr;
 
   base::WeakPtrFactory<EuiccStatusUploader> weak_ptr_factory_{this};

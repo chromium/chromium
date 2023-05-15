@@ -60,10 +60,3 @@ enum DiscoverAboveTheFoldRenderResult {
   FULL_FEED_ERROR = 3;
   INTERNAL_ERROR = 4;
 }
-enum DiscoverImagesInViewportLoadResult {
-  IMAGES_UNSPECIFIED = 0 [deprecated = true];
-  IMAGES_FULLY_RENDERED = 1;
-  SOME_IMAGES_FAILED_TO_RENDER = 2;
-  ALL_IMAGES_FAILED_TO_RENDER = 3;
-  IMAGE_LOADING_CANCELLED = 4;
-}

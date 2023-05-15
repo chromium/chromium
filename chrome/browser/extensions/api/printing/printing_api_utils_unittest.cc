@@ -16,6 +16,9 @@ namespace extensions {
 
 namespace idl = api::printing;
 
+using testing::Contains;
+using testing::Pair;
+
 namespace {
 
 constexpr char kId[] = "id";
@@ -30,6 +33,8 @@ constexpr int kVerticalDpi = 400;
 constexpr int kMediaSizeWidth = 210000;
 constexpr int kMediaSizeHeight = 297000;
 constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
+constexpr char kVendorItemId[] = "finishings";
+constexpr char kVendorItemValue[] = "trim";
 
 constexpr char kCjt[] = R"(
     {
@@ -56,6 +61,49 @@ constexpr char kCjt[] = R"(
           "height_microns": 297000,
           "vendor_id": "iso_a4_210x297mm"
         },
+        "vendor_ticket_item": [
+          {
+            "id": "finishings",
+            "value": "trim"
+          }
+        ],
+        "collate": {
+          "collate": false
+        }
+      }
+    })";
+
+constexpr char kInvalidVendorItemCjt[] = R"(
+    {
+      "version": "1.0",
+      "print": {
+        "color": {
+          "type": "STANDARD_MONOCHROME"
+        },
+        "duplex": {
+          "type": "NO_DUPLEX"
+        },
+        "page_orientation": {
+          "type": "LANDSCAPE"
+        },
+        "copies": {
+          "copies": 5
+        },
+        "dpi": {
+          "horizontal_dpi": 300,
+          "vertical_dpi": 400
+        },
+        "media_size": {
+          "width_microns": 210000,
+          "height_microns": 297000,
+          "vendor_id": "iso_a4_210x297mm"
+        },
+        "vendor_ticket_item": [
+          {
+            "id": "invalid-id",
+            "value": "invalid-value"
+          }
+        ],
         "collate": {
           "collate": false
         }
@@ -169,6 +217,14 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
             settings->requested_media().size_microns);
   EXPECT_EQ(kMediaSizeVendorId, settings->requested_media().vendor_id);
   EXPECT_FALSE(settings->collate());
+  EXPECT_THAT(settings->advanced_settings(),
+              Contains(Pair(kVendorItemId, kVendorItemValue)));
+}
+
+TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidVendorItem) {
+  base::Value::Dict cjt_ticket =
+      base::test::ParseJsonDict(kInvalidVendorItemCjt);
+  EXPECT_FALSE(ParsePrintTicket(std::move(cjt_ticket)));
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {

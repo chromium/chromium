@@ -86,6 +86,19 @@ export class RealboxDropdownElement extends PolymerElement {
         notify: true,
       },
 
+      /**
+       * Computed value for whether or not the dropdown should show the
+       * secondary side. This depends on whether the parent has set
+       * `canShowSecondarySide` to true and whether there are visible primary
+       * matches.
+       */
+      showSecondarySide_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSecondarySide_(' +
+            'canShowSecondarySide, result.matches.*, hiddenGroupIds_.*)',
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -112,6 +125,7 @@ export class RealboxDropdownElement extends PolymerElement {
   selectedMatchIndex: number;
   private hiddenGroupIds_: number[];
   private selectableMatchElements_: RealboxMatchElement[];
+  private showSecondarySide_: boolean;
 
   private pageHandler_: PageHandlerInterface;
 
@@ -128,7 +142,7 @@ export class RealboxDropdownElement extends PolymerElement {
   get selectableMatchElements() {
     return this.selectableMatchElements_.filter(
         matchEl => matchEl.sideType === SideType.kDefaultPrimary ||
-            this.canShowSecondarySide);
+            this.showSecondarySide_);
   }
 
   /** Unselects the currently selected match, if any. */
@@ -205,6 +219,10 @@ export class RealboxDropdownElement extends PolymerElement {
     }));
   }
 
+  private onHeaderMousedown_(e: Event) {
+    e.preventDefault();  // Prevents default browser action (focus).
+  }
+
   private onResultRepaint_() {
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('CharTyped')
@@ -228,10 +246,6 @@ export class RealboxDropdownElement extends PolymerElement {
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
         [...this.shadowRoot!.querySelectorAll('cr-realbox-match')];
-  }
-
-  private onToggleButtonMouseDown_(e: Event) {
-    e.preventDefault();  // Prevents default browser action (focus).
   }
 
   //============================================================================
@@ -318,7 +332,7 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns The list of side types to show.
    */
   private sideTypes_(): SideType[] {
-    return this.canShowSecondarySide ?
+    return this.showSecondarySide_ ?
         [SideType.kDefaultPrimary, SideType.kSecondary] :
         [SideType.kDefaultPrimary];
   }
@@ -360,6 +374,25 @@ export class RealboxDropdownElement extends PolymerElement {
   private toggleButtonTitleForGroup_(groupId: number): string {
     return loadTimeData.getString(
         this.groupIsHidden_(groupId) ? 'showSuggestions' : 'hideSuggestions');
+  }
+
+  private computeShowSecondarySide_(): boolean {
+    if (!this.canShowSecondarySide) {
+      // Parent prohibits showing secondary side.
+      return false;
+    }
+
+    if (!this.hiddenGroupIds_) {
+      // Not ready yet as dropdown has received results but has not yet
+      // determined which groups are hidden.
+      return true;
+    }
+
+    // Only show secondary side if there are primary matches visible.
+    const primaryGroupIds = this.groupIdsForSide_(SideType.kDefaultPrimary);
+    return primaryGroupIds.some((groupId) => {
+      return this.matchesForGroup_(groupId).length > 0;
+    });
   }
 }
 

@@ -20,6 +20,7 @@ class PrivacySandboxSettingsDelegate
   bool IsPrivacySandboxRestricted() const override;
   bool IsIncognitoProfile() const override;
   bool HasAppropriateTopicsConsent() const override;
+  bool IsSubjectToM1NoticeRestricted() const override;
 
  private:
   raw_ptr<Profile> profile_;

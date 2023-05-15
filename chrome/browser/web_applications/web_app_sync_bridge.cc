@@ -430,12 +430,12 @@ void WebAppSyncBridge::UpdateRegistrar(
 void WebAppSyncBridge::UpdateSync(
     const RegistryUpdateData& update_data,
     syncer::MetadataChangeList* metadata_change_list) {
-  // We don't block web app subsystems on WebAppSyncBridge::MergeSyncData: we
-  // call WebAppProvider::OnRegistryControllerReady() right after
+  // We don't block web app subsystems on WebAppSyncBridge::MergeFullSyncData:
+  // we call WebAppProvider::OnRegistryControllerReady() right after
   // change_processor()->ModelReadyToSync. As a result, subsystems may produce
-  // some local changes between OnRegistryControllerReady and MergeSyncData.
+  // some local changes between OnRegistryControllerReady and MergeFullSyncData.
   // Return early in this case. The processor cannot do any useful metadata
-  // tracking until MergeSyncData is called:
+  // tracking until MergeFullSyncData is called:
   if (!change_processor()->IsTrackingMetadata())
     return;
 
@@ -605,7 +605,7 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   }
 }
 
-void WebAppSyncBridge::ApplySyncChangesToRegistrar(
+void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     std::unique_ptr<RegistryUpdateData> update_local_data,
     const std::vector<AppId>& apps_display_mode_changed) {
   if (update_local_data->IsEmpty())
@@ -675,7 +675,7 @@ WebAppSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   CHECK(change_processor()->IsTrackingMetadata());
@@ -696,8 +696,8 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
       base::BindOnce(&WebAppSyncBridge::OnDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
-  ApplySyncChangesToRegistrar(std::move(update_local_data),
-                              apps_display_mode_changed);
+  ApplyIncrementalSyncChangesToRegistrar(std::move(update_local_data),
+                                         apps_display_mode_changed);
 
   if (!on_sync_connected_.is_signaled()) {
     on_sync_connected_.Signal();
@@ -706,7 +706,8 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
   return absl::nullopt;
 }
 
-absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+WebAppSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   // `change_processor()->IsTrackingMetadata()` may be false if the sync
@@ -725,8 +726,8 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
       base::BindOnce(&WebAppSyncBridge::OnDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
-  ApplySyncChangesToRegistrar(std::move(update_local_data),
-                              apps_display_mode_changed);
+  ApplyIncrementalSyncChangesToRegistrar(std::move(update_local_data),
+                                         apps_display_mode_changed);
 
   if (!on_sync_connected_.is_signaled()) {
     on_sync_connected_.Signal();

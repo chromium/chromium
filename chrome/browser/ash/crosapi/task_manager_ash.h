@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_TASK_MANAGER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_TASK_MANAGER_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -82,7 +83,7 @@ class TaskManagerAsh : public mojom::TaskManager {
   std::map<base::UnguessableToken, mojo::Remote<mojom::TaskManagerProvider>>
       task_manager_providers_;
 
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer, ExperimentalAsh> observer_ = nullptr;
 
   int64_t refresh_flags_ = task_manager::REFRESH_TYPE_NONE;
 

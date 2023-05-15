@@ -102,6 +102,9 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#if DCHECK_IS_ON()
+#include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
+#endif
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
@@ -676,6 +679,13 @@ void AXObject::Detach() {
   SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
 
+#if !defined(NDEBUG)
+  // Facilitates debugging of detached objects by providing info on what it was.
+  if (!ax_object_cache_->HasBeenDisposed()) {
+    detached_object_debug_info_ = ToString(true, true);
+  }
+#endif
+
   // Clear any children and call DetachFromParent() on them so that
   // no children are left with dangling pointers to their parent.
   ClearChildren();
@@ -1080,11 +1090,10 @@ void AXObject::EnsureCorrectParentComputation() {
   if (GetNode() && GetNode()->IsPseudoElement())
     return;
 
-    // Verify that the algorithm in ComputeParent() provides same results as
-    // parents that init their children with themselves as the parent.
-    // Inconsistency indicates a problem could potentially exist where a child's
-    // parent does not include the child in its children.
-#if DCHECK_IS_ON()
+  // Verify that the algorithm in ComputeParent() provides same results as
+  // parents that init their children with themselves as the parent.
+  // Inconsistency indicates a problem could potentially exist where a child's
+  // parent does not include the child in its children.
   AXObject* computed_parent = ComputeParent();
 
   DCHECK(computed_parent) << "Computed parent was null for " << this
@@ -1095,8 +1104,14 @@ void AXObject::EnsureCorrectParentComputation() {
       << computed_parent->GetLayoutObject()
       << "\n**** Actual parent's layout object was "
       << parent_->GetLayoutObject() << "\n**** Child was " << this;
-#endif
 }
+
+void AXObject::ShowAXTreeForThis() {
+  DLOG(INFO) << "\n"
+             << TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(),
+                                                   this);
+}
+
 #endif
 
 const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(
@@ -1757,6 +1772,13 @@ void AXObject::SerializeOtherScreenReaderAttributes(
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kInPageLinkTargetId, target_id);
     }
+
+    // `ax::mojom::blink::StringAttribute::kLinkTarget` is only valid on <a> and
+    // <area> elements. <area> elements should link to something in order to be
+    // considered, see `AXImageMap::Role()`.
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kLinkTarget,
+        EffectiveTarget());
   }
 
   if (node_data->role == ax::mojom::blink::Role::kRadioButton) {
@@ -3443,10 +3465,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
-  if (IsExcludedByFormControlsFilter()) {
-    return false;
-  }
-
   const Node* node = GetNode();
 
   if (!node) {
@@ -3469,6 +3487,43 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // ClearChildren() will be able to find these children and detach them
     // from their parent.
     return true;
+  }
+
+  // Labels are sometimes marked ignored, to prevent duplication when the AT
+  // reads the label and the control it labels (see
+  // AXNodeObject::IsRedundantLabel), but we will need them to calculate the
+  // name of the control.
+  if (IsA<HTMLLabelElement>(node)) {
+    return true;
+  }
+
+  // Custom elements and their children are included in the tree.
+  // <slot>s and their children are included in the tree.
+  // Also children of <label> elements, for accname calculation purposes.
+  // This checks to see whether this is a child of one of those.
+  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
+    if (parent_node->IsCustomElement() ||
+        ToHTMLSlotElementIfSupportsAssignmentOrNull(parent_node)) {
+      return true;
+    }
+    // <span>s are ignored because they are considered uninteresting. Do not add
+    // them back inside labels.
+    if (IsA<HTMLLabelElement>(parent_node) && !IsA<HTMLSpanElement>(node)) {
+      return true;
+    }
+    // Simplify AXNodeObject::AddImageMapChildren() -- it will only need to deal
+    // with included children.
+    if (IsA<HTMLMapElement>(parent_node)) {
+      return true;
+    }
+    // Necessary to calculate the accessible description of a ruby node.
+    if (IsA<HTMLRTElement>(parent_node)) {
+      return true;
+    }
+  }
+
+  if (IsExcludedByFormControlsFilter()) {
+    return false;
   }
 
   // Allow the browser side ax tree to access "visibility: [hidden|collapse]"
@@ -3501,35 +3556,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // This is useful for APIs that return the node referenced by
     // aria-labeledby and aria-describedby.
     if (IsAriaHidden())
-      return true;
-  }
-
-  // Labels are sometimes marked ignored, to prevent duplication when the AT
-  // reads the label and the control it labels (see
-  // AXNodeObject::IsRedundantLabel), but we will need them to calculate the
-  // name of the control.
-  if (IsA<HTMLLabelElement>(node))
-    return true;
-
-  // Custom elements and their children are included in the tree.
-  // <slot>s and their children are included in the tree.
-  // Also children of <label> elements, for accname calculation purposes.
-  // This checks to see whether this is a child of one of those.
-  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
-    if (parent_node->IsCustomElement() ||
-        ToHTMLSlotElementIfSupportsAssignmentOrNull(parent_node)) {
-      return true;
-    }
-    // <span>s are ignored because they are considered uninteresting. Do not add
-    // them back inside labels.
-    if (IsA<HTMLLabelElement>(parent_node) && !IsA<HTMLSpanElement>(node))
-      return true;
-    // Simplify AXNodeObject::AddImageMapChildren() -- it will only need to deal
-    // with included children.
-    if (IsA<HTMLMapElement>(parent_node))
-      return true;
-    // Necessary to calculate the accessible description of a ruby node.
-    if (IsA<HTMLRTElement>(parent_node))
       return true;
   }
 
@@ -4420,6 +4446,14 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
 bool AXObject::IsNameFromAuthorAttribute() const {
   return IsNameFromAriaAttribute(GetElement()) ||
          HasAttribute(html_names::kTitleAttr);
+}
+
+AXObject* AXObject::InPageLinkTarget() const {
+  return nullptr;
+}
+
+const AtomicString& AXObject::EffectiveTarget() const {
+  return g_null_atom;
 }
 
 AccessibilityOrientation AXObject::Orientation() const {
@@ -5326,6 +5360,23 @@ AXObject* AXObject::ParentObjectIncludedInTree() const {
   return parent;
 }
 
+Element* AXObject::GetClosestElement() const {
+  Element* element = GetElement();
+  // Certain AXObjects, such as those created from layout tree traversal,
+  // have null values for `AXObject::GetNode()` and `AXObject::GetElement()`.
+  // Just look for the closest parent that can handle this request.
+  if (!element) {
+    for (AXObject* parent = ParentObject(); parent;
+         parent = parent->ParentObject()) {
+      if (parent) {
+        return parent->GetElement();
+      }
+    }
+  }
+
+  return element;
+}
+
 // Container widgets are those that a user tabs into and arrows around
 // sub-widgets
 bool AXObject::IsContainerWidget() const {
@@ -5343,8 +5394,9 @@ AXObject* AXObject::ContainerWidget() const {
 AXObject* AXObject::ContainerListMarkerIncludingIgnored() const {
   AXObject* ancestor = ParentObject();
   while (ancestor && (!ancestor->GetLayoutObject() ||
-                      !ancestor->GetLayoutObject()->IsListMarkerIncludingAll()))
+                      !ancestor->GetLayoutObject()->IsListMarker())) {
     ancestor = ancestor->ParentObject();
+  }
 
   return ancestor;
 }
@@ -5519,9 +5571,10 @@ void AXObject::ClearChildren() const {
   if (slot)
     return;
 
-  // TODO(accessibility) Is this needed? Aren't image children already included?
-  if (Node* map = GetMapForImage(node))
+  Node* map = GetMapForImage(node);
+  if (map) {
     node = map;
+  }
 
   // Detach unincluded children from their parent (this).
   // These are children that were not cleared from first loop, as well as
@@ -5530,15 +5583,26 @@ void AXObject::ClearChildren() const {
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
     // Get the child object that should be detached from this parent.
-    // Do not invalidate from layout, because it nay be  unsafe to check layout
+    // Do not invalidate from layout, because it may be unsafe to check layout
     // at this time. However, do allow invalidations if an object changes its
     // display locking (content-visibility: auto) status, as this may be the
     // only chance to do that, and it's safe to do now.
     AXObject* ax_child_from_node = AXObjectCache().SafeGet(child_node, true);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
-      // Check current parent first. It may be owned by another node.
-      ax_child_from_node->DetachFromParent();
+      if (map) {
+        // Children (and other descendants, recursively) of a <map> need to be
+        // fully removed, because they may no longer have a valid AX parent if
+        // the image is removed. See HTMLMapElement and HTMLImageElement-related
+        // code in AXObject::GetParentNodeForComputeParent.
+        // Since this code only runs when |map| is set, and therefore
+        // |node| is an image outside the map, this only needs to happen for
+        // the map descendants, not the image descendants.
+        AXObjectCache().RemoveSubtreeWithFlatTraversal(ax_child_from_node,
+                                                       false);
+      } else {
+        ax_child_from_node->DetachFromParent();
+      }
     }
   }
 }
@@ -6209,7 +6273,7 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
 bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::blink::Action::kBlur:
-      return RequestFocusAction();
+      return OnNativeBlurAction();
     case ax::mojom::blink::Action::kClearAccessibilityFocus:
       return InternalClearAccessibilityFocusAction();
     case ax::mojom::blink::Action::kCollapse:
@@ -6296,12 +6360,10 @@ bool AXObject::OnNativeClickAction() {
       document->GetFrame(),
       mojom::blink::UserActivationNotificationType::kInteraction);
 
-  Element* element = GetElement();
-  if (!element && GetNode())
-    element = GetNode()->parentElement();
-
   if (IsTextField())
     return OnNativeFocusAction();
+
+  Element* element = GetClosestElement();
 
   if (element) {
     // Always set the sequential focus navigation starting point.
@@ -6550,6 +6612,10 @@ bool AXObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
 }
 
 bool AXObject::OnNativeDecrementAction() {
+  return false;
+}
+
+bool AXObject::OnNativeBlurAction() {
   return false;
 }
 
@@ -7143,10 +7209,21 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   // Build a friendly name for debugging the object.
   // If verbose, build a longer name name in the form of:
   // CheckBox axid#28 <input.someClass#cbox1> name="checkbox"
+#if !defined(NDEBUG)
+  if (IsDetached() && verbose) {
+    return "(detached) " + detached_object_debug_info_;
+  }
+#endif
+
   String string_builder = InternalRoleName(RoleValue()).EncodeForDebugging();
 
-  if (IsDetached())
-    string_builder = string_builder + " (detached)";
+  if (IsDetached()) {
+    return string_builder + " (detached)";
+  }
+
+  if (AXObjectCache().HasBeenDisposed()) {
+    return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
+  }
 
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
@@ -7200,7 +7277,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
                              : !AccessibilityIsIncludedInTree())
         string_builder = string_builder + " isRemovedFromTree";
     }
-    if (GetNode()) {
+    if (GetNode() && GetDocument()->Lifecycle().GetState() >=
+                         DocumentLifecycle::kLayoutClean) {
       if (GetNode()->OwnerShadowHost()) {
         string_builder = string_builder + (GetNode()->IsInUserAgentShadowRoot()
                                                ? " inUserAgentShadowRoot:"
@@ -7212,11 +7290,9 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       if (GetNode()->GetShadowRoot()) {
         string_builder = string_builder + " hasShadowRoot";
       }
-      if (!GetDocument()->IsFlatTreeTraversalForbidden()) {
-        if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-                *GetNode(), DisplayLockActivationReason::kAccessibility)) {
-          string_builder = string_builder + " isDisplayLocked";
-        }
+      if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+              *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+        string_builder = string_builder + " isDisplayLocked";
       }
     }
     if (cached_values_only) {
@@ -7243,7 +7319,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isInert";
     if (IsMissingParent())
       string_builder = string_builder + " isMissingParent";
-    if (NeedsToUpdateChildren()) {
+    if (children_dirty_) {
       string_builder = string_builder + " needsToUpdateChildren";
     } else if (!children_.empty()) {
       string_builder = string_builder + " #children=";

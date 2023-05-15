@@ -20,9 +20,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -312,11 +312,10 @@ void ModuleSystemTest::TearDown() {
 }
 
 scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {
-  base::Value::Dict manifest = DictionaryBuilder()
+  base::Value::Dict manifest = base::Value::Dict()
                                    .Set("name", "test")
                                    .Set("version", "1.0")
-                                   .Set("manifest_version", 2)
-                                   .Build();
+                                   .Set("manifest_version", 2);
   return ExtensionBuilder().SetManifest(std::move(manifest)).Build();
 }
 

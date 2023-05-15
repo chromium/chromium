@@ -33,6 +33,7 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
   }
 
   if (!base::CopyFile(file_path, temp_path)) {
+    base::DeleteFile(temp_path);
     return false;
   }
 
@@ -49,10 +50,8 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
   }
   base::UmaHistogramMediumTimes("SBClientDownload.MemoryMapFileDuration",
                                 base::Time::Now() - start_time);
-  bool success =
-      ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
-                                   options, image_headers, signed_data);
-  return success;
+  return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
+                                      options, image_headers, signed_data);
 }
 
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromFile(

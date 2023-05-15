@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -143,11 +144,11 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
 
   // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.
-  const Delegate* const delegate_;
+  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
 
   // The menu header of `this`. It's owned by the views hierarchy. Can be null
   // if this group is header-less.
-  CaptureModeMenuHeader* menu_header_ = nullptr;
+  raw_ptr<CaptureModeMenuHeader, ExperimentalAsh> menu_header_ = nullptr;
 
   // Options added via calls "AddOption()". Options are owned by theirs views
   // hierarchy.
@@ -157,7 +158,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // We need it for grouping up options. For example, when user selects a custom
   // folder, we need to add it to the end of the options instead of adding it
   // after the menu item.
-  views::View* options_container_;
+  raw_ptr<views::View, ExperimentalAsh> options_container_;
 
   // Menu items added by calling AddMenuItem().
   std::vector<CaptureModeMenuItem*> menu_items_;

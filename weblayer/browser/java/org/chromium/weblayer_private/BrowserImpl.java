@@ -18,6 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
@@ -30,6 +31,7 @@ import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,6 +50,8 @@ public class BrowserImpl extends IBrowser.Stub {
     private final ProfileImpl mProfile;
     private final boolean mIsExternalIntentsEnabled;
     private Context mServiceContext;
+
+    private @Nullable List<Origin> mAllowedOrigins;
 
     private IBrowserClient mClient;
     private boolean mInDestroy;
@@ -100,6 +104,19 @@ public class BrowserImpl extends IBrowser.Stub {
 
         mIsExternalIntentsEnabled =
                 fragmentArgs.getBoolean(BrowserFragmentArgs.IS_EXTERNAL_INTENTS_ENABLED);
+
+        List<String> allowedOriginStrings =
+                fragmentArgs.getStringArrayList(BrowserFragmentArgs.ALLOWED_ORIGINS);
+        if (allowedOriginStrings != null) {
+            mAllowedOrigins = new ArrayList<Origin>();
+
+            for (String allowedOriginString : allowedOriginStrings) {
+                Origin allowedOrigin = Origin.create(allowedOriginString);
+                if (allowedOrigin != null) {
+                    mAllowedOrigins.add(allowedOrigin);
+                }
+            }
+        }
 
         if (!isIncognito && !TextUtils.isEmpty(persistenceId)) {
             mFullPersistenceInfo = new FullPersistenceInfo();
@@ -297,6 +314,15 @@ public class BrowserImpl extends IBrowser.Stub {
 
     boolean isExternalIntentsEnabled() {
         return mIsExternalIntentsEnabled;
+    }
+
+    boolean isUrlAllowed(String url) {
+        // Defaults to all origins being allowed if a developer list is not provided.
+        if (mAllowedOrigins == null) {
+            return true;
+        }
+
+        return mAllowedOrigins.contains(Origin.create(url));
     }
 
     public boolean isWindowOnSmallDevice() {

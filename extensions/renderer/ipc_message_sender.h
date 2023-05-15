@@ -15,6 +15,7 @@
 
 namespace extensions {
 
+enum class ChannelType;
 class ScriptContext;
 class WorkerThreadDispatcher;
 struct Message;
@@ -72,6 +73,7 @@ class IPCMessageSender {
   virtual void SendOpenMessageChannel(ScriptContext* script_context,
                                       const PortId& port_id,
                                       const MessageTarget& target,
+                                      ChannelType channel_type,
                                       const std::string& channel_name) = 0;
 
   // Sends a message to open/close a mesage port or send a message to an

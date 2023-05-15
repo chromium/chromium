@@ -711,24 +711,56 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
            reader->ReadVec(&pps_list[i], pps_length));
   }
 
+  if (profile_indication == 100 || profile_indication == 110 ||
+      profile_indication == 122 || profile_indication == 144) {
+    if (!reader->HasBytes(4)) {
+      DVLOG(2) << __func__ << ": REXT profile metadata missing";
+      chroma_format = 0;
+      bit_depth_luma_minus8 = 0;
+      bit_depth_chroma_minus8 = 0;
+      sps_ext_list.resize(0);
+      return true;
+    }
+
+    RCHECK(reader->Read1(&chroma_format));
+    chroma_format &= 0x3;
+
+    RCHECK(reader->Read1(&bit_depth_luma_minus8));
+    bit_depth_luma_minus8 &= 0x7;
+    RCHECK(bit_depth_luma_minus8 <= 4);
+
+    RCHECK(reader->Read1(&bit_depth_chroma_minus8));
+    bit_depth_chroma_minus8 &= 0x7;
+    RCHECK(bit_depth_chroma_minus8 <= 4);
+
+    uint8_t num_sps_ext;
+    RCHECK(reader->Read1(&num_sps_ext));
+
+    sps_ext_list.resize(num_sps_ext);
+    for (int i = 0; i < num_sps_ext; i++) {
+      uint16_t sps_ext_length;
+      RCHECK(reader->Read2(&sps_ext_length) &&
+             reader->ReadVec(&sps_ext_list[i], sps_ext_length));
+    }
+  }
+
   return true;
 }
 
 bool AVCDecoderConfigurationRecord::Serialize(
     std::vector<uint8_t>& output) const {
-  // See ISO/IEC 14496-15 5.3.3.1.2 for the format description
-  constexpr uint8_t sps_list_size_mask = (1 << 5) - 1;  // 5 bits
-  if (sps_list.size() > sps_list_size_mask)
+  if (sps_list.size() > 0x1f) {
     return false;
+  }
 
-  constexpr uint8_t pps_list_size_mask = 0xff;
-  if (pps_list.size() > pps_list_size_mask)
+  if (pps_list.size() > 0xff) {
     return false;
+  }
 
-  if (length_size > 4)
+  if (length_size != 1 && length_size != 2 && length_size != 4) {
     return false;
+  }
 
-  // Calculating total size of the buffer we'll need for serialization
   size_t expected_size =
       1 +  // configurationVersion
       1 +  // AVCProfileIndication
@@ -738,19 +770,52 @@ bool AVCDecoderConfigurationRecord::Serialize(
       1 +  // numOfSequenceParameterSets, i.e. length of sps_list
       1;   // numOfPictureParameterSets, i.e. length of pps_list
 
-  constexpr size_t max_vector_size = (1 << 16) - 1;  // 2 bytes
   for (auto& sps : sps_list) {
-    expected_size += 2;  // 2 bytes for sequenceParameterSetLength
-    if (sps.size() > max_vector_size)
+    expected_size += 2;  // sequenceParameterSetLength
+    if (sps.size() > 0xffff) {
       return false;
+    }
     expected_size += sps.size();
   }
 
   for (auto& pps : pps_list) {
-    expected_size += 2;  // 2 bytes for pictureParameterSetLength;
-    if (pps.size() > max_vector_size)
+    expected_size += 2;  // pictureParameterSetLength
+    if (pps.size() > 0xffff) {
       return false;
+    }
     expected_size += pps.size();
+  }
+
+  if (profile_indication == 100 || profile_indication == 110 ||
+      profile_indication == 122 || profile_indication == 144) {
+    if (chroma_format > 0x3) {
+      return false;
+    }
+
+    if (bit_depth_luma_minus8 > 4) {
+      return false;
+    }
+
+    if (bit_depth_chroma_minus8 > 4) {
+      return false;
+    }
+
+    if (sps_ext_list.size() > 0xff) {
+      return false;
+    }
+
+    expected_size += 1 +  // chroma_format
+                     1 +  // bit_depth_luma_minus8
+                     1 +  // bit_depth_chroma_minus8
+                     1;   // numOfSequenceParameterSetExt
+
+    for (auto& sps_ext : sps_ext_list) {
+      expected_size += 2;  // sequenceParameterSetExtLength
+      if (sps_ext.size() > 0xffff) {
+        return false;
+      }
+      expected_size += sps_ext.size();
+    }
   }
 
   output.clear();
@@ -771,12 +836,12 @@ bool AVCDecoderConfigurationRecord::Serialize(
   uint8_t length_size_minus_one = (length_size - 1) | 0xfc;
   result &= writer.WriteU8(length_size_minus_one);
   // numOfSequenceParameterSets
-  uint8_t sps_size = sps_list.size() | ~sps_list_size_mask;
+  uint8_t sps_size = sps_list.size() | 0xe0;
   result &= writer.WriteU8(sps_size);
   // sequenceParameterSetNALUnits
   for (auto& sps : sps_list) {
     result &= writer.WriteU16(sps.size());
-    writer.WriteBytes(sps.data(), sps.size());
+    result &= writer.WriteBytes(sps.data(), sps.size());
   }
   // numOfPictureParameterSets
   uint8_t pps_size = pps_list.size();
@@ -784,7 +849,25 @@ bool AVCDecoderConfigurationRecord::Serialize(
   // pictureParameterSetNALUnit
   for (auto& pps : pps_list) {
     result &= writer.WriteU16(pps.size());
-    writer.WriteBytes(pps.data(), pps.size());
+    result &= writer.WriteBytes(pps.data(), pps.size());
+  }
+
+  if (profile_indication == 100 || profile_indication == 110 ||
+      profile_indication == 122 || profile_indication == 144) {
+    // chroma_format
+    result &= writer.WriteU8(chroma_format | 0xfc);
+    // bit_depth_luma_minus8
+    result &= writer.WriteU8(bit_depth_luma_minus8 | 0xf8);
+    // bit_depth_chroma_minus8
+    result &= writer.WriteU8(bit_depth_chroma_minus8 | 0xf8);
+    // numOfSequenceParameterSetExt
+    uint8_t sps_ext_size = sps_ext_list.size();
+    result &= writer.WriteU8(sps_ext_size);
+    // sequenceParameterSetExtNALUnit
+    for (auto& sps_ext : sps_ext_list) {
+      result &= writer.WriteU16(sps_ext.size());
+      result &= writer.WriteBytes(sps_ext.data(), sps_ext.size());
+    }
   }
 
   return result;
@@ -1624,11 +1707,13 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  if (format == FOURCC_AC3) {
+  if (format == FOURCC_AC3 ||
+      (format == FOURCC_ENCA && sinf.format.format == FOURCC_AC3)) {
     RCHECK_MEDIA_LOGGED(reader->ReadChild(&ac3), reader->media_log(),
                         "Failure parsing AC3SpecificBox (dac3)");
   }
-  if (format == FOURCC_EAC3) {
+  if (format == FOURCC_EAC3 ||
+      (format == FOURCC_ENCA && sinf.format.format == FOURCC_EAC3)) {
     RCHECK_MEDIA_LOGGED(reader->ReadChild(&eac3), reader->media_log(),
                         "Failure parsing EC3SpecificBox (dec3)");
   }

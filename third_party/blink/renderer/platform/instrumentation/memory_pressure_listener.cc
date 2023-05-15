@@ -43,6 +43,12 @@ bool MemoryPressureListenerRegistry::IsLowEndDevice() {
   return is_low_end_device_;
 }
 
+bool MemoryPressureListenerRegistry::
+    IsLowEndDeviceOrPartialLowEndModeEnabled() {
+  return is_low_end_device_ ||
+         base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+}
+
 // static
 bool MemoryPressureListenerRegistry::IsCurrentlyLowMemory() {
 #if BUILDFLAG(IS_ANDROID)

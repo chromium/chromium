@@ -12,16 +12,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 
-namespace {
-// The set of user-selectable datatypes. This must be in the same order as
-// `SyncSetupService::SyncableDatatype`.
-syncer::ModelType kDataTypes[] = {
-    syncer::BOOKMARKS,    syncer::TYPED_URLS, syncer::PASSWORDS,
-    syncer::PROXY_TABS,   syncer::AUTOFILL,   syncer::PREFERENCES,
-    syncer::READING_LIST,
-};
-}  // namespace
-
 SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
     : sync_service_(sync_service) {
   DCHECK(sync_service_);
@@ -29,48 +19,32 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 
 SyncSetupService::~SyncSetupService() {}
 
-// static
-syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
-  DCHECK(datatype < std::size(kDataTypes));
-  return kDataTypes[datatype];
-}
-
-syncer::ModelTypeSet SyncSetupService::GetPreferredDataTypes() const {
-  return sync_service_->GetPreferredDataTypes();
-}
-
 bool SyncSetupService::IsDataTypeActive(syncer::ModelType datatype) const {
   return sync_service_->GetActiveDataTypes().Has(datatype);
 }
 
-bool SyncSetupService::IsDataTypePreferred(syncer::ModelType datatype) const {
-  return GetPreferredDataTypes().Has(datatype);
+bool SyncSetupService::IsDataTypePreferred(
+    syncer::UserSelectableType datatype) const {
+  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(datatype);
 }
 
-void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
+void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
                                           bool enabled) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  syncer::ModelTypeSet model_types = GetPreferredDataTypes();
-  if (enabled)
-    model_types.Put(datatype);
-  else
-    model_types.Remove(datatype);
+  CHECK(sync_blocker_);
+
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
-  // TODO(crbug.com/950874): support syncer::UserSelectableType in ios code,
-  // get rid of this workaround and consider getting rid of SyncableDatatype.
-  syncer::UserSelectableTypeSet selected_types;
-  for (syncer::UserSelectableType type :
-       user_settings->GetRegisteredSelectableTypes()) {
-    if (model_types.Has(syncer::UserSelectableTypeToCanonicalModelType(type))) {
-      selected_types.Put(type);
-    }
-  }
-  user_settings->SetSelectedTypes(IsSyncingAllDataTypes(), selected_types);
+  syncer::UserSelectableTypeSet selected_types =
+      user_settings->GetSelectedTypes();
+  if (enabled)
+    selected_types.Put(datatype);
+  else
+    selected_types.Remove(datatype);
+  user_settings->SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!CanSyncFeatureStart() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
+  if (!CanSyncFeatureStart() ||
+      !IsDataTypePreferred(syncer::UserSelectableType::kTabs)) {
     return true;
   }
 
@@ -104,19 +78,14 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
   return true;
 }
 
-bool SyncSetupService::IsSyncingAllDataTypes() const {
+bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
-void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
+  CHECK(sync_blocker_);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
-}
-
-bool SyncSetupService::IsSyncRequested() const {
-  return sync_service_->GetUserSettings()->IsSyncRequested();
 }
 
 bool SyncSetupService::CanSyncFeatureStart() const {
@@ -127,20 +96,6 @@ bool SyncSetupService::IsEncryptEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
-bool SyncSetupService::IsInitialSetupOngoing() {
-  // Sync initial setup is considered to finished iff:
-  //   1. User is signed in with sync enabled and the sync setup was completed.
-  //   OR
-  //   2. User is not signed in or has disabled sync.
-  // Otherwise we consider that the initial setup is still pending.
-  // Note that if the user visits the Advanced Settings during the opt-in flow,
-  // the Sync consent is not granted yet. In this case, IsSyncRequested() is
-  // set to true, indicating that the sync was requested but the initial setup
-  // has not been finished yet.
-  return IsSyncRequested() &&
-         !sync_service_->GetUserSettings()->IsFirstSetupComplete();
-}
-
 void SyncSetupService::PrepareForFirstSyncSetup() {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
@@ -148,7 +103,7 @@ void SyncSetupService::PrepareForFirstSyncSetup() {
 
 void SyncSetupService::SetFirstSetupComplete(
     syncer::SyncFirstSetupCompleteSource source) {
-  DCHECK(sync_blocker_);
+  CHECK(sync_blocker_);
   // Turn on the sync setup completed flag only if the user did not turn sync
   // off.
   if (sync_service_->CanSyncFeatureStart()) {
@@ -156,8 +111,8 @@ void SyncSetupService::SetFirstSetupComplete(
   }
 }
 
-bool SyncSetupService::IsFirstSetupComplete() const {
-  return sync_service_->GetUserSettings()->IsFirstSetupComplete();
+bool SyncSetupService::IsInitialSyncFeatureSetupComplete() const {
+  return sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncSetupService::CommitSyncChanges() {

@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {SettingsRadioGroupElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -304,6 +305,19 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     }
     assertTrue(hasBooleanProperty(toggle, 'checked'));
     return toggle;
+  }
+
+  async assertRecoveryControlAvailability(isAvailable: boolean): Promise<void> {
+    const property = () => {
+      const toggle = this.recoveryToggle();
+      if (toggle === null) {
+        return !isAvailable;
+      }
+      return toggle.outerHTML.includes('not supported') === !isAvailable;
+    };
+
+    await assertAsync(property);
+    await assertForDuration(property);
   }
 
   async assertRecoveryControlVisibility(isVisible: boolean): Promise<void> {
@@ -720,14 +734,21 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     return toggle;
   }
 
+  private queryLockScreenNotificationSettings(): SettingsRadioGroupElement {
+    const notificationSettings =
+        this.shadowRoot().getElementById('notificationSettings');
+    assertTrue(notificationSettings instanceof SettingsRadioGroupElement);
+    return notificationSettings;
+  }
+
   async assertAutoLockScreenEnabled(isEnabled: boolean): Promise<void> {
     const isAutoLockScreenEnabled = () => {
       const toggle = this.queryAutoLockScreenToggle();
       return toggle.checked === isEnabled;
     };
 
-    assertAsync(isAutoLockScreenEnabled);
-    assertForDuration(isAutoLockScreenEnabled);
+    await assertAsync(isAutoLockScreenEnabled);
+    await assertForDuration(isAutoLockScreenEnabled);
   }
 
   async enableAutoLockScreen(): Promise<void> {
@@ -750,6 +771,13 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     assertAsync(isFocused);
     assertForDuration(isFocused);
   }
+
+  async assertLockScreenNotificationFocused(): Promise<void> {
+    const isFocused = () => this.queryLockScreenNotificationSettings().contains(
+        this.shadowRoot().activeElement);
+    await assertAsync(isFocused);
+    await assertForDuration(isFocused);
+  }
 }
 
 // Page object that implements the Mojo remote to interact with the Google drive
@@ -771,6 +799,34 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
       Promise<void> {
     this.assertRequiredSpace(requiredSpace);
     this.assertRemainingSpace(remainingSpace);
+  }
+
+  async assertBulkPinningPinnedSize(expectedPinnedSize: string): Promise<void> {
+    assertTrue(
+        this.googleDriveSubpage_?.totalPinnedSize === expectedPinnedSize);
+  }
+
+  async clickClearOfflineFilesAndAssertNewSize(newSize: string): Promise<void> {
+    const offlineStorageButton =
+        this.googleDriveSubpage_.shadowRoot!.querySelector<CrButtonElement>(
+            '#drive-offline-storage-row cr-button')!;
+    offlineStorageButton.click();
+
+    // Click the confirm button on the confirmation dialog.
+    const getConfirmationButton = () =>
+        querySelectorShadow(
+            this.googleDriveSubpage_.shadowRoot!,
+            [
+              'settings-drive-confirmation-dialog',
+              '.action-button',
+            ])! as CrButtonElement |
+        null;
+    await assertAsync(() => getConfirmationButton() !== null, 10000000);
+    getConfirmationButton()!.click();
+
+    // Wait for the total pinned size to be updated.
+    await assertAsync(
+        () => this.googleDriveSubpage_?.totalPinnedSize === newSize);
   }
 }
 

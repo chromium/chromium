@@ -182,6 +182,7 @@ class TargetHandler : public DevToolsDomainHandler,
   void DevToolsAgentHostCrashed(DevToolsAgentHost* agent_host,
                                 base::TerminationStatus status) override;
   bool discover() const { return !!discover_target_filter_; }
+  Session* FindWaitingSession(DevToolsAgentHost* host);
 
   const AccessMode access_mode_;
   const std::string owner_target_id_;

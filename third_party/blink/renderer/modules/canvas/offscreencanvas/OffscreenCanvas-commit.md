@@ -196,7 +196,7 @@ implementations and could be managing different specific resource types, ranging
 from Gpu textures, Gpu Memory Buffers, to shared bitmap in RAM. When `commit()`
 is invoked by the user, an image snapshot would be taken from the SkSurface
 managed by the CanvasResourceProvider; the SkSurface can be on Gpu context (see
-SkSurface::MakeRenderTarget()) or on RAM memory (see SkSurface::MakeRaster()).
+SkSurfaces::RenderTarget()) or on RAM memory (see SkSurfaces::Raster()).
 The image snapshot would be saved as a StaticBitmapImage instance.
 
 The image resources of OffscreenCanvas’s WebGL rendering context are centrally

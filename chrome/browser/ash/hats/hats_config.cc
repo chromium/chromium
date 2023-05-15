@@ -178,6 +178,22 @@ const HatsConfig kHatsBluetoothRevampSurvey = {
     prefs::kHatsBluetoothRevampCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Battery life experience survey -- shown after login.
+const HatsConfig kHatsBatteryLifeSurvey = {
+    ::features::kHappinessTrackingSystemBatteryLife,  // feature
+    base::Days(7),                                    // new_device_threshold
+    prefs::kHatsBatteryLifeIsSelected,                // is_selected_pref_name
+    prefs::kHatsBatteryLifeCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
+// Peripherals experience survey -- shown after login.
+const HatsConfig kHatsPeripheralsSurvey = {
+    ::features::kHappinessTrackingSystemPeripherals,  // feature
+    base::Days(7),                                    // new_device_threshold
+    prefs::kHatsPeripheralsIsSelected,                // is_selected_pref_name
+    prefs::kHatsPeripheralsCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 // Privacy Hub Baseline experience survey -- shown 40 seconds after the user
 // leaves the Security and Privacy page.
 const HatsConfig kPrivacyHubBaselineSurvey = {
@@ -196,6 +212,14 @@ const HatsConfig kHatsOsSettingsSearchSurvey = {
     prefs::kHatsOsSettingsSearchSurveyIsSelected,    // is_selected_pref_name
     prefs::
         kHatsOsSettingsSearchSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
+// Borealis games survey -- Shown after a Steam game exits.
+const HatsConfig kHatsBorealisGamesSurvey = {
+    ::features::kHappinessTrackingBorealisGames,  // feature
+    base::Days(1),                                // new_device_threshold
+    prefs::kHatsBorealisGamesSurveyIsSelected,    // is_selected_pref_name
+    prefs::kHatsBorealisGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
 }  // namespace ash

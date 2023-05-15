@@ -7,8 +7,8 @@
 #include <windows.h>
 
 #include <cguid.h>
-#include <ctype.h>
 
+#include "base/strings/string_util.h"
 #include "chrome/install_static/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,10 +30,11 @@ namespace {
 // alphanumeric nor a period.
 MATCHER(ContainsIllegalProgIdChar, "") {
   const wchar_t* scan = arg;
-  wint_t c;
+  wchar_t c;
   while ((c = *scan++) != 0) {
-    if (!iswalnum(c) && c != L'.')
+    if (!base::IsAsciiAlphaNumeric(c) && c != L'.') {
       return true;
+    }
   }
   return false;
 }

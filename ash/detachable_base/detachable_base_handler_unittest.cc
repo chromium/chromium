@@ -10,6 +10,7 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -131,7 +132,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_->AddObserver(&detachable_base_observer_);
   }
 
-  FakeHammerdClient* hammerd_client_ = nullptr;
+  raw_ptr<FakeHammerdClient, ExperimentalAsh> hammerd_client_ = nullptr;
 
   TestBaseObserver detachable_base_observer_;
 

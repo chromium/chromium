@@ -55,8 +55,8 @@ OmniboxChipButton::~OmniboxChipButton() = default;
 
 void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
                                           bool is_visible) {
-  if (visibility_changed_callback_) {
-    visibility_changed_callback_.Run();
+  for (Observer& observer : observers_) {
+    observer.OnChipVisibilityChanged(is_visible);
   }
 }
 
@@ -89,16 +89,6 @@ void OmniboxChipButton::AnimateToFit(base::TimeDelta kAnimationDuration) {
 void OmniboxChipButton::ResetAnimation(double value) {
   fully_collapsed_ = value == 0.0;
   animation_->Reset(value);
-}
-
-void OmniboxChipButton::SetExpandAnimationEndedCallback(
-    base::RepeatingCallback<void()> callback) {
-  expand_animation_ended_callback_ = callback;
-}
-
-void OmniboxChipButton::SetCollapseEndedCallback(
-    base::RepeatingCallback<void()> callback) {
-  collapse_animation_ended_callback_ = callback;
 }
 
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
@@ -135,13 +125,16 @@ void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
 
   fully_collapsed_ = animation->GetCurrentValue() != 1.0;
 
-  if (animation->GetCurrentValue() == 1.0 && expand_animation_ended_callback_) {
-    expand_animation_ended_callback_.Run();
+  if (animation->GetCurrentValue() == 1.0) {
+    for (Observer& observer : observers_) {
+      observer.OnExpandAnimationEnded();
+    }
   }
 
-  if (animation->GetCurrentValue() == 0.0 &&
-      collapse_animation_ended_callback_) {
-    collapse_animation_ended_callback_.Run();
+  if (animation->GetCurrentValue() == 0.0) {
+    for (Observer& observer : observers_) {
+      observer.OnCollapseAnimationEnded();
+    }
   }
 }
 
@@ -218,6 +211,14 @@ void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
 
   UpdateIconAndColors();
+}
+
+void OmniboxChipButton::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void OmniboxChipButton::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)

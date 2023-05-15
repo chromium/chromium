@@ -242,11 +242,6 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         }
     }
 
-    public void removeProfileData(String accountEmail) {
-        mCachedProfileData.remove(accountEmail);
-        notifyObservers(accountEmail);
-    }
-
     /**
      * Converts canHaveEmailAddressDisplayed() capability Tribool value to boolean.
      * If the capability is not available (Tribool.UNKNOWN), uses fallback.

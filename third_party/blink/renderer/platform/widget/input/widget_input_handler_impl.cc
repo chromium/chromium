@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -45,16 +48,34 @@ WidgetInputHandlerImpl::WidgetInputHandlerImpl(
     : input_handler_manager_(manager),
       input_event_queue_(input_event_queue),
       widget_(std::move(widget)),
-      frame_widget_input_handler_(std::move(frame_widget_input_handler)) {}
+      frame_widget_input_handler_(std::move(frame_widget_input_handler)) {
+  // NOTE: DirectReceiver must be bound on an IO thread, so input handlers which
+  // live on the main thread (e.g. for popups) cannot use direct IPC for now.
+  if (base::FeatureList::IsEnabled(features::kInputIpcDirect) &&
+      base::CurrentIOThread::IsSet()) {
+    receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
+  } else {
+    receiver_.emplace<Receiver>(this);
+  }
+}
 
 WidgetInputHandlerImpl::~WidgetInputHandlerImpl() = default;
 
 void WidgetInputHandlerImpl::SetReceiver(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
         interface_receiver) {
-  receiver_.Bind(std::move(interface_receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&WidgetInputHandlerImpl::Release, base::Unretained(this)));
+  if (absl::holds_alternative<Receiver>(receiver_)) {
+    auto& receiver = absl::get<Receiver>(receiver_);
+    receiver.Bind(std::move(interface_receiver));
+    receiver.set_disconnect_handler(base::BindOnce(
+        &WidgetInputHandlerImpl::Release, base::Unretained(this)));
+  } else {
+    CHECK(absl::holds_alternative<DirectReceiver>(receiver_));
+    auto& receiver = absl::get<DirectReceiver>(receiver_);
+    receiver.Bind(std::move(interface_receiver));
+    receiver.set_disconnect_handler(base::BindOnce(
+        &WidgetInputHandlerImpl::Release, base::Unretained(this)));
+  }
 }
 
 void WidgetInputHandlerImpl::SetFocus(mojom::blink::FocusState focus_state) {

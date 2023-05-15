@@ -267,6 +267,43 @@ TEST(AccessCodeCastMetricsTest, RecordRouteDuration) {
   histogram_tester.ExpectTotalCount(histogram, 3);
 }
 
+TEST(AccessCodeCastMetricsTest, RecordMirroringPauseCount) {
+  base::HistogramTester histogram_tester;
+  char histogram[] = "AccessCodeCast.Session.FreezeCount";
+
+  AccessCodeCastMetrics::RecordMirroringPauseCount(0);
+  histogram_tester.ExpectBucketCount(histogram, 0, 1);
+
+  AccessCodeCastMetrics::RecordMirroringPauseCount(1);
+  histogram_tester.ExpectBucketCount(histogram, 1, 1);
+
+  AccessCodeCastMetrics::RecordMirroringPauseCount(100);
+  histogram_tester.ExpectBucketCount(histogram, 100, 1);
+
+  // Over 100 should be reported as 100.
+  AccessCodeCastMetrics::RecordMirroringPauseCount(500);
+  histogram_tester.ExpectBucketCount(histogram, 100, 2);
+
+  histogram_tester.ExpectTotalCount(histogram, 4);
+}
+
+TEST(AccessCodeCastMetricsTest, RecordMirroringPauseDuration) {
+  base::HistogramTester histogram_tester;
+  char histogram[] = "AccessCodeCast.Session.FreezeDuration";
+
+  AccessCodeCastMetrics::RecordMirroringPauseDuration(base::Milliseconds(1));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Milliseconds(1), 1);
+
+  AccessCodeCastMetrics::RecordMirroringPauseDuration(base::Minutes(5));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Minutes(5), 1);
+
+  AccessCodeCastMetrics::RecordMirroringPauseDuration(base::Hours(2));
+  // The long times histogram has a maximum value of 1 hours.
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Hours(1), 1);
+
+  histogram_tester.ExpectTotalCount(histogram, 3);
+}
+
 TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
   base::HistogramTester histogram_tester;
 

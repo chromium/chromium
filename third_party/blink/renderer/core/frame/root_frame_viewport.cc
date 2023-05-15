@@ -52,7 +52,7 @@ gfx::RectF GetUserScrollableRect(const ScrollableArea& area) {
 static base::RepeatingCallback<void(ScrollableArea::ScrollCompletionMode)>
 MakeViewportScrollCompletion(ScrollableArea::ScrollCallback callback) {
   return callback
-             ? BarrierCallback<ScrollableArea::ScrollCompletionMode>(
+             ? base::BarrierCallback<ScrollableArea::ScrollCompletionMode>(
                    2, WTF::BindOnce(
                           [](ScrollableArea::ScrollCallback on_finish,
                              const std::vector<
@@ -233,7 +233,7 @@ PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
     return visible_scroll_snapport;
 
   const ComputedStyle* style = LayoutViewport().GetLayoutBox()->Style();
-  LayoutRectOutsets padding(
+  visible_scroll_snapport.ContractEdges(
       MinimumValueForLength(style->ScrollPaddingTop(),
                             visible_scroll_snapport.Height()),
       MinimumValueForLength(style->ScrollPaddingRight(),
@@ -242,7 +242,6 @@ PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
                             visible_scroll_snapport.Height()),
       MinimumValueForLength(style->ScrollPaddingLeft(),
                             visible_scroll_snapport.Width()));
-  visible_scroll_snapport.Contract(padding);
 
   return visible_scroll_snapport;
 }

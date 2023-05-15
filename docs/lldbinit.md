@@ -4,7 +4,7 @@ Usage of Chromium's [lldbinit.py](../tools/lldb/lldbinit.py) is recommended when
 debugging with lldb. This is necessary for source-level debugging when
 `strip_absolute_paths_from_debug_symbols` is enabled [this is the default].
 
-To install, run `sudo apt-get install lldb`.
+If you have not installed LLDB yet, run `sudo apt-get install lldb` to get it.
 
 To use, add the following to your `~/.lldbinit`
 

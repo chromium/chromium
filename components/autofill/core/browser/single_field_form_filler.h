@@ -79,14 +79,15 @@ class SingleFieldFormFiller {
   virtual void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
       const std::u16string& value,
-      int frontend_id) = 0;
+      Suggestion::FrontendId frontend_id) = 0;
 
   // Invoked when the user selects |value| in the list of suggestions. For
   // Autocomplete, this function logs the DaysSinceLastUse of the Autocomplete
   // entry associated with |value|. |frontend_id| is the PopupItemId of the
   // suggestion selected.
-  virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                               int frontend_id) = 0;
+  virtual void OnSingleFieldSuggestionSelected(
+      const std::u16string& value,
+      Suggestion::FrontendId frontend_id) = 0;
 
  protected:
   // Internal data object used to keep a request's context to associate it

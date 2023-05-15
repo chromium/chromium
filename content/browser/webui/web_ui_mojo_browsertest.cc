@@ -331,17 +331,11 @@ IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript));
 
-  // We expect two independent chrome://foo tabs/shells to use a separate
-  // process.
-  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
-            other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
-
-  // Close the second shell and wait until its process exits.
-  RenderProcessHostWatcher process_watcher(
-      other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess(),
-      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  // Close the second shell and wait until the second shell exits.
+  RenderFrameHostWrapper wrapper(
+      other_shell->web_contents()->GetPrimaryMainFrame());
   other_shell->Close();
-  process_watcher.Wait();
+  EXPECT_TRUE(wrapper.WaitUntilRenderFrameDeleted());
 
   // Check that a third shell works correctly, even if we force it to share a
   // process with the first shell, by forcing an artificially low process

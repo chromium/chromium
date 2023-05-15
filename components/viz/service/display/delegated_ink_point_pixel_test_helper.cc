@@ -28,6 +28,11 @@ void DelegatedInkPointPixelTestHelper::SetRendererAndCreateInkRenderer(
   CreateInkRenderer();
 }
 
+void DelegatedInkPointPixelTestHelper::DropRenderer() {
+  ink_renderer_ = nullptr;
+  renderer_ = nullptr;
+}
+
 void DelegatedInkPointPixelTestHelper::CreateInkRenderer() {
   auto ink_renderer = std::make_unique<DelegatedInkPointRendererSkia>();
   ink_renderer_ = ink_renderer.get();

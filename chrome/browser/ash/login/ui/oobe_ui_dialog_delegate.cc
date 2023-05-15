@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/ui/captive_portal_dialog_delegate.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
@@ -130,7 +131,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
                            OobeWebDialogView* oobe_view)
       : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
     SetFocusTraversesOut(true);
-    AddChildView(oobe_view_);
+    AddChildView(oobe_view_.get());
   }
 
   LayoutWidgetDelegateView(const LayoutWidgetDelegateView&) = delete;
@@ -181,8 +182,10 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   View* GetInitiallyFocusedView() override { return oobe_view_; }
 
  private:
-  OobeUIDialogDelegate* dialog_delegate_ = nullptr;  // Owned by us.
-  OobeWebDialogView* oobe_view_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<OobeUIDialogDelegate, ExperimentalAsh> dialog_delegate_ =
+      nullptr;  // Owned by us.
+  raw_ptr<OobeWebDialogView, ExperimentalAsh> oobe_view_ =
+      nullptr;  // Owned by views hierarchy.
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.
   bool fullscreen_ = false;
@@ -228,7 +231,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   ash_util::SetupWidgetInitParamsForContainerInPrimary(
       &params, kShellWindowId_LockScreenContainer);
   layout_view_ = new LayoutWidgetDelegateView(this, dialog_view_);
-  params.delegate = layout_view_;
+  params.delegate = layout_view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
 
@@ -238,7 +241,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   layout_view_->SetHasShelf(
       !ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
 
-  view_observer_.Observe(dialog_view_);
+  view_observer_.Observe(dialog_view_.get());
 
   captive_portal_delegate_ =
       (new CaptivePortalDialogDelegate(dialog_view_))->GetWeakPtr();

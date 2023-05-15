@@ -18,8 +18,8 @@ source_set("consistency_sheet") {
     "consistency_sheet_slide_transition_animator.mm",
   ]
   deps = [
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/signin",

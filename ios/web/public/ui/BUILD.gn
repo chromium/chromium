@@ -15,7 +15,6 @@ source_set("ui") {
     "crw_web_view_proxy.h",
     "crw_web_view_scroll_view_proxy.h",
     "java_script_dialog_presenter.h",
-    "page_display_state.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

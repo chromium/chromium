@@ -10,6 +10,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -135,6 +136,8 @@ class PrefetchCanaryCheckerTest : public RenderViewHostTestHarness {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    SetNetworkConnectionTrackerForTesting(nullptr);
+
     RenderViewHostTestHarness::SetUp();
 
     mojo::PendingRemote<network::mojom::NetworkContext> network_context_remote;

@@ -88,7 +88,8 @@ class MediaFoundationRendererWrapper final
       std::vector<MediaFoundationFrameInfo> frame_textures,
       const gfx::Size& texture_size);
 
-  raw_ptr<mojom::FrameInterfaceFactory, DanglingUntriaged> frame_interfaces_;
+  raw_ptr<mojom::FrameInterfaceFactory, FlakyDanglingUntriaged>
+      frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
   mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>

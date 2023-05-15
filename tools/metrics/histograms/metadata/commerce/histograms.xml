@@ -221,6 +221,24 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
+    expires_after="2023-11-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether a navigation to a product details page (PDP) happened while
+    the user was eligible for the &quot;{FeatureName}&quot; feature.
+    &quot;True&quot; means the user was eligible when navigation to the PDP
+    occurred, &quot;false&quot; means they weren't. This information will give
+    us an idea of the opportunity size of reducing restrictions to enable the
+    feature.
+  </summary>
+  <token key="FeatureName">
+    <variant name="ShoppingList"/>
+  </token>
+</histogram>
+
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
     expires_after="2023-10-08">
   <owner>ayman@chromium.org</owner>
@@ -229,6 +247,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <summary>
     Records whether a navigation is to a product details page and then whether
     the information we retrieved about the page contains a product cluster ID.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PDPStateWithLocalMeta"
+    enum="ShoppingPDPDetectionMethod" expires_after="2024-04-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records if and how a page has been determined to be a product details page
+    after the page has finished loading. This histogram includes pages that are
+    most likely product pages based on metadata extracted from the head section
+    of the page (via javascript). If the page navigates prior to the javascript
+    being executed, this metric is not recorded.
   </summary>
 </histogram>
 
@@ -309,7 +341,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2023-06-25">
+    expires_after="2023-10-15">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -374,7 +406,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
-    enum="BooleanContainsPrice" expires_after="2023-04-25">
+    enum="BooleanContainsPrice" expires_after="2024-04-15">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -390,7 +422,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPriceDrop"
-    enum="BooleanContainsPriceDrop" expires_after="2023-04-25">
+    enum="BooleanContainsPriceDrop" expires_after="2024-04-15">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -407,7 +439,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
-    enum="BooleanIsProductDetailPage" expires_after="2023-04-25">
+    enum="BooleanIsProductDetailPage" expires_after="2024-04-15">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -485,7 +517,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
-    enum="ShoppingDataProviderFallback" expires_after="2023-06-01">
+    enum="ShoppingDataProviderFallback" expires_after="2023-11-01">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -497,7 +529,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataUsed"
-    enum="Boolean" expires_after="2023-09-10">
+    enum="Boolean" expires_after="2023-11-01">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -508,7 +540,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.ImageAvailability"
-    enum="ProductImageAvailability" expires_after="2023-10-08">
+    enum="ProductImageAvailability" expires_after="2023-11-01">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -519,6 +551,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     the shopping service's product info API is enabled and is recorded only
     after the local, on-page fallback is run (since we need both server-provided
     and local to record the right value).
+  </summary>
+</histogram>
+
+<histogram name="Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime"
+    units="ms" expires_after="2023-11-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the amount of time spent executing the on-page javascript for
+    extracting product info. This metric will only be recorded if the javascript
+    executes successfully and the page that ran for is still in an active tab.
+    This metric will help us identify possible performance regressions as we
+    improve the extraction heuristics. This metric is recorded from the browser
+    side which means it includes compiling and the other prep work done before
+    the script is actually run on the page.
   </summary>
 </histogram>
 

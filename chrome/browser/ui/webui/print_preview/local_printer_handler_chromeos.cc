@@ -114,7 +114,7 @@ LocalPrinterHandlerChromeos::Create(
   handler->local_printer_ =
       service->GetRemote<crosapi::mojom::LocalPrinter>().get();
   handler->local_printer_version_ =
-      service->GetInterfaceVersion(crosapi::mojom::LocalPrinter::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
 #endif
   return handler;
 }

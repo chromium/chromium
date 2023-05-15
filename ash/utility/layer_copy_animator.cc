@@ -123,7 +123,7 @@ void LayerCopyAnimator::RunAnimation() {
   parent_layer->StackAbove(copied_layer_.get(), window_->layer());
   window_->layer()->SetOpacity(0.f);
 
-  std::move(animation_callback_).Run(copied_layer_.get(), observer_);
+  std::move(animation_callback_).Run(copied_layer_.get(), observer_.get());
 
   // Callback may not run animations, in which case, just end immediately.
   if (!copied_layer_->GetAnimator()->is_animating()) {

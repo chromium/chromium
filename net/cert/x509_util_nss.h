@@ -33,7 +33,7 @@ NET_EXPORT bool IsSameCertificate(const CRYPTO_BUFFER* a, CERTCertificate* b);
 // returned value may reference an already existing CERTCertificate object.
 // Returns NULL on failure.
 NET_EXPORT ScopedCERTCertificate
-CreateCERTCertificateFromBytes(const uint8_t* data, size_t length);
+CreateCERTCertificateFromBytes(base::span<const uint8_t> data);
 
 // Returns a CERTCertificate handle from |cert|. The returned value may
 // reference an already existing CERTCertificate object.  Returns NULL on
@@ -158,6 +158,12 @@ NET_EXPORT bool GetValidityTimes(CERTCertificate* cert,
 // Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
+
+// Prefer using NSSCertDatabase::ImportUserCert. Temporary public for Kcer.
+// Import a user certificate. The private key for the user certificate must
+// already be installed, otherwise returns ERR_NO_PRIVATE_KEY_FOR_CERT.
+// Returns OK or a network error code.
+NET_EXPORT int ImportUserCert(CERTCertificate* cert);
 
 }  // namespace net::x509_util
 

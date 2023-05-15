@@ -364,12 +364,6 @@ bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
   return true;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchMalwareIP(
-    const std::string& ip_address) {
-  NOTREACHED();
-  return false;
-}
-
 safe_browsing::ThreatSource RemoteSafeBrowsingDatabaseManager::GetThreatSource()
     const {
   return safe_browsing::ThreatSource::REMOTE;

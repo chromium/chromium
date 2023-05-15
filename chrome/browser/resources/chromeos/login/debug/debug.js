@@ -669,6 +669,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'gaia-info',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'offline-login',
       kind: ScreenKind.NORMAL,
       states: [
@@ -1575,6 +1579,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     },
     {
       id: 'touchpad-scroll',
+      kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'drive-pinning',
       kind: ScreenKind.NORMAL,
     },
     {

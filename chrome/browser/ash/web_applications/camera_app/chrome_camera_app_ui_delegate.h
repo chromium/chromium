@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -125,6 +127,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
+  ash::HoldingSpaceClient* GetHoldingSpaceClient() override;
   void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
@@ -140,10 +143,10 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
                                monitor_callback) override;
   void StopStorageMonitor() override;
   void OpenStorageManagement() override;
+  base::FilePath GetFilePathByName(const std::string& name) override;
 
  private:
   base::FilePath GetMyFilesFolder();
-  base::FilePath GetFilePathByName(const std::string& name);
   void OnFileMonitorInitialized(std::unique_ptr<FileMonitor> file_monitor);
   void MonitorFileDeletionOnFileThread(
       FileMonitor* file_monitor,
@@ -153,7 +156,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void IntializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
 
   base::Time session_start_time_;
 

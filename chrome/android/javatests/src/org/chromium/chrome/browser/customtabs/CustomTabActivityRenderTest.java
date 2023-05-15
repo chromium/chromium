@@ -22,7 +22,7 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -75,7 +75,7 @@ public class CustomTabActivityRenderTest {
         public static void addMaxTopActionIconToIntent(Intent intent) {
             ArrayList<Bundle> toolbarItems = new ArrayList<>(2);
             PendingIntent pendingIntent =
-                    PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                    PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(), 0,
                             new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
             toolbarItems.add(CustomTabsIntentTestUtils.makeToolbarItemBundle(
@@ -113,7 +113,7 @@ public class CustomTabActivityRenderTest {
 
     private static Bitmap createVectorDrawableBitmap(
             @DrawableRes int resId, int widthDp, int heightDp) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Drawable vectorDrawable = AppCompatResources.getDrawable(context, resId);
         Bitmap bitmap = createTestBitmap(widthDp, heightDp);
         Canvas canvas = new Canvas(bitmap);
@@ -128,7 +128,7 @@ public class CustomTabActivityRenderTest {
     private void prepareCCTIntent() {
         mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), mUrl);
+                ApplicationProvider.getApplicationContext(), mUrl);
     }
 
     private void startActivityAndRenderToolbar(String renderTestId) throws IOException {
@@ -189,7 +189,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void custom_color_red() throws IOException {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
                 context, mUrl, true, builder -> { builder.setToolbarColor(Color.RED); });
 
@@ -200,7 +200,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void custom_color_black() throws IOException {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
                 context, mUrl, true, builder -> { builder.setToolbarColor(Color.BLACK); });
 

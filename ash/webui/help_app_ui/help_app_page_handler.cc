@@ -10,6 +10,7 @@
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "base/feature_list.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -55,6 +56,13 @@ void HelpAppPageHandler::MaybeShowReleaseNotesNotification() {
 
 void HelpAppPageHandler::GetDeviceInfo(GetDeviceInfoCallback callback) {
   help_app_ui_->delegate()->GetDeviceInfo(std::move(callback));
+}
+
+void HelpAppPageHandler::OpenUrlInBrowser(const GURL& url) {
+  auto error_message = help_app_ui_->delegate()->OpenUrlInBrowser(url);
+  if (error_message.has_value()) {
+    receiver_.ReportBadMessage(error_message.value());
+  }
 }
 
 }  // namespace ash

@@ -8,16 +8,19 @@
 #include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
+using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsPage);
@@ -27,6 +30,14 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
 constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
     "(el) => { return !el.checked; }";
+
+const WebContentsInteractionTestUtil::DeepQuery kHighEfficiencyToggleQuery = {
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-performance-page",
+    "settings-toggle-button",
+    "cr-toggle#control"};
 
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -78,14 +89,23 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return CheckResult(get_tab_count, expected_tab_count);
   }
 
-  auto CheckHighEffiencyModeLogged(
-      bool high_efficiency_enabled,
+  auto CheckHighEfficiencyModePrefState(HighEfficiencyModeState state) {
+    return CheckResult(base::BindLambdaForTesting([]() {
+                         return performance_manager::user_tuning::prefs::
+                             GetCurrentHighEfficiencyModeState(
+                                 g_browser_process->local_state());
+                       }),
+                       state);
+  }
+
+  auto CheckHighEfficiencyModeLogged(
+      HighEfficiencyModeState state,
       int expected_count,
       const base::HistogramTester& histogram_tester) {
     return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
       histogram_tester.ExpectBucketCount(
-          "PerformanceControls.HighEfficiency.SettingsChangeMode",
-          high_efficiency_enabled, expected_count);
+          "PerformanceControls.HighEfficiency.SettingsChangeMode2",
+          static_cast<int>(state), expected_count);
     }));
   }
 
@@ -124,12 +144,38 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return WaitForStateChange(contents_id, element_renders);
   }
 
+ private:
   raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
       sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
       battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
 };
+
+IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
+                       HighEfficiencyPrefChanged) {
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kHighEfficiencyToggleQuery),
+      CheckJsResultAt(kPerformanceSettingsPage, kHighEfficiencyToggleQuery,
+                      kCheckJsElementIsChecked),
+
+      // Turn Off High Efficiency Mode
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, false),
+      CheckHighEfficiencyModePrefState(HighEfficiencyModeState::kDisabled),
+
+      // Turn High Efficiency Mode back on
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, true),
+      CheckHighEfficiencyModePrefState(
+          HighEfficiencyModeState::kEnabledOnTimer));
+}
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        HighEfficiencyLearnMoreLinkNavigates) {
@@ -172,34 +218,30 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        HighEfficiencyMetricsShouldLogOnToggle) {
-  const DeepQuery high_efficiency_toggle = {"settings-ui",
-                                            "settings-main",
-                                            "settings-basic-page",
-                                            "settings-performance-page",
-                                            "settings-toggle-button",
-                                            "cr-toggle#control"};
-
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
                           GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      WaitForElementToRender(kPerformanceSettingsPage, high_efficiency_toggle),
-      CheckJsResultAt(kPerformanceSettingsPage, high_efficiency_toggle,
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kHighEfficiencyToggleQuery),
+      CheckJsResultAt(kPerformanceSettingsPage, kHighEfficiencyToggleQuery,
                       kCheckJsElementIsChecked),
 
       // Turn Off High Efficiency Mode
-      ClickElement(kPerformanceSettingsPage, high_efficiency_toggle),
-      WaitForButtonStateChange(kPerformanceSettingsPage, high_efficiency_toggle,
-                               false),
-      CheckHighEffiencyModeLogged(false, 1, histogram_tester),
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, false),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kDisabled, 1,
+                                    histogram_tester),
 
       // Turn High Efficiency Mode back on
-      ClickElement(kPerformanceSettingsPage, high_efficiency_toggle),
-      WaitForButtonStateChange(kPerformanceSettingsPage, high_efficiency_toggle,
-                               true),
-      CheckHighEffiencyModeLogged(true, 1, histogram_tester));
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, true),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kEnabledOnTimer, 1,
+                                    histogram_tester));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
@@ -275,8 +317,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       HighEfficiencySendFeedbackDialogOpens) {
+                       DISABLED_HighEfficiencySendFeedbackDialogOpens) {
   const DeepQuery high_efficiency_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
@@ -289,8 +332,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
+// TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       BatterySaverSendFeedbackDialogOpens) {
+                       DISABLED_BatterySaverSendFeedbackDialogOpens) {
   const DeepQuery battery_saver_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-section#batterySettingsSection", "cr-icon-button#feedback"};

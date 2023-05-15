@@ -19,6 +19,7 @@
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -236,8 +237,7 @@ AppListToastView::AppListToastView(const std::u16string title,
         kCornerRadius,
         is_jelly_enabled
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder1));
   } else {
     const ui::ColorId background_color_id =
         is_jelly_enabled
@@ -293,7 +293,7 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
       label_container_->AddChildView(std::make_unique<views::Label>(subtitle));
   const ui::ColorId label_color_id =
       chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
           : kColorAshTextColorSecondary;
   bubble_utils::ApplyStyle(subtitle_label_, TypographyToken::kCrosAnnotation1,
                            label_color_id);
@@ -329,7 +329,7 @@ void AppListToastView::SetIconSize(int icon_size) {
 
 void AppListToastView::AddIconBackground() {
   if (icon_) {
-    RemoveChildViewT(icon_);
+    RemoveChildViewT(icon_.get());
     icon_ = nullptr;
   }
 
@@ -365,14 +365,16 @@ AppListToastView::ToastPillButton::ToastPillButton(
     Type type,
     const gfx::VectorIcon* icon)
     : PillButton(callback, text, type, icon), view_delegate_(view_delegate) {
-  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) -> bool {
-    // With a `view_delegate_` present, focus ring should only show when
-    // button is focused and keyboard traversal is engaged.
-    if (view_delegate_ && !view_delegate_->KeyboardTraversalEngaged())
-      return false;
-
-    return view->HasFocus();
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<ToastPillButton>(view);
+        CHECK(v);
+        // With a `view_delegate_` present, focus ring should only show when
+        // button is focused and keyboard traversal is engaged.
+        return (!v->view_delegate_ ||
+                v->view_delegate_->KeyboardTraversalEngaged()) &&
+               v->HasFocus();
+      }));
 }
 
 void AppListToastView::ToastPillButton::OnFocus() {
@@ -384,6 +386,9 @@ void AppListToastView::ToastPillButton::OnBlur() {
   PillButton::OnBlur();
   views::FocusRing::Get(this)->SchedulePaint();
 }
+
+BEGIN_METADATA(AppListToastView, ToastPillButton, PillButton)
+END_METADATA
 
 void AppListToastView::UpdateIconImage() {
   if (!icon_)
@@ -398,12 +403,10 @@ void AppListToastView::UpdateIconImage() {
     return;
   }
 
-  // Default to dark_icon_ if dark/light mode feature is not enabled.
   const gfx::VectorIcon* themed_icon =
-      !features::IsDarkLightModeEnabled() ||
-              DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? dark_icon_
-          : light_icon_;
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? dark_icon_.get()
+          : light_icon_.get();
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *themed_icon, ui::kColorAshSystemUIMenuIcon,
       icon_size_.value_or(gfx::GetDefaultSizeOfVectorIcon(*themed_icon))));

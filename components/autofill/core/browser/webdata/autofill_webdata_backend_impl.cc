@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -73,6 +74,10 @@ AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
 
 void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
     base::RepeatingCallback<void(const AutofillProfileDeepChange&)> change_cb) {
+  // The callback must be set only once, but it can be reset in tests.
+  if (!on_autofill_profile_changed_cb_.is_null()) {
+    CHECK_IS_TEST();
+  }
   on_autofill_profile_changed_cb_ = std::move(change_cb);
 }
 

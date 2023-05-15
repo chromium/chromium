@@ -173,7 +173,7 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5},
       // Strings for the restricted notice dialog (kM1NoticeRestricted).
       {"m1NoticeRestrictedTitle",
-       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1},
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE},
       {"m1NoticeRestrictedDescription1",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1},
       {"m1NoticeRestrictedDescription2",
@@ -205,6 +205,7 @@ void PrivacySandboxDialogUI::Initialize(
     base::OnceCallback<void(int)> resize_callback,
     base::OnceClosure show_dialog_callback,
     base::OnceClosure open_settings_callback,
+    base::OnceClosure open_measurement_settings_callback,
     PrivacySandboxService::PromptType prompt_type) {
   base::Value::Dict update;
   update.Set("isConsent",
@@ -214,7 +215,7 @@ void PrivacySandboxDialogUI::Initialize(
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       std::move(close_callback), std::move(resize_callback),
       std::move(show_dialog_callback), std::move(open_settings_callback),
-      prompt_type);
+      std::move(open_measurement_settings_callback), prompt_type);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 
@@ -222,7 +223,8 @@ void PrivacySandboxDialogUI::InitializeForDebug(
     content::WebUIDataSource* source) {
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       base::DoNothing(), base::DoNothing(), base::DoNothing(),
-      base::DoNothing(), PrivacySandboxService::PromptType::kNone);
+      base::DoNothing(), base::DoNothing(),
+      PrivacySandboxService::PromptType::kNone);
   source->AddBoolean("isConsent", false);
   web_ui()->AddMessageHandler(std::move(handler));
 }

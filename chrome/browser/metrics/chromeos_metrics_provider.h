@@ -70,7 +70,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
 
   // Interface for providing the SystemProfile to metrics.
-  base::raw_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
+  raw_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 };

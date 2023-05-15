@@ -513,6 +513,8 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
       {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
        ActionType::kClearAutofill});
   ASSERT_EQ(1u, actions.size());
+  EXPECT_EQ(static_cast<int>(ActionType::kClearBrowsingHistory),
+            actions.top()->priority());
 
   // The callback should run with success=false.
   base::MockCallback<Action::Continuation> cb;

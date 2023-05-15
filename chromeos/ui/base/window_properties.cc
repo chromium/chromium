@@ -24,6 +24,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kBlockedForAssistantSnapshotKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kEscHoldToExitFullscreen, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseOverviewToExitFullscreen, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseOverviewToExitPointerLock, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNoExitFullscreenOnLock, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kTrackDefaultFrameColors, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(SkColor, kFrameActiveColorKey, kDefaultFrameColor)
@@ -40,9 +41,13 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
                                    kImmersiveTopContainerBoundsInScreen,
                                    nullptr)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsGameKey, false)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsShowingInOverviewKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldHaveHighlightBorderOverlay, false)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSupportsFloatedStateKey, true)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
 

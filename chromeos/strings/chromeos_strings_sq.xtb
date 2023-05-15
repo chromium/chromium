@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS-ja nuk mund të zgjidhet</translation>
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1022433422498218992">Kontrollet e përgjithshme</translation>
+<translation id="1022628058306505708">Rrjedha e tokës</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Ka veçori të re, përdor tastin "Shigjeta lart" për të mësuar më shumë.</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
@@ -29,6 +30,7 @@
 <translation id="1201402288615127009">Para</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="1207734034680156868">Sugjerimet bazohen në përshkrimin tënd</translation>
+<translation id="121090498480012229">luaj ose vendos në pauzë median</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
 <translation id="1264369926465113395">Kontrollo revistën e re dixhitale të Chromebook për krijuesit</translation>
@@ -63,6 +65,7 @@
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Dërgo</translation>
 <translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">rrit volumin</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
@@ -91,6 +94,7 @@
 <translation id="1676557873873341166">Po nxjerr një video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
+<translation id="1708602061922134366">Blu e Google</translation>
 <translation id="1710499924611012470">Navigimi me veçoritë e qasshmërisë</translation>
 <translation id="1715359911173058521">Ka një problem komunikimi me skanerin. Kontrollo lidhjen e rrjetit ose lidhjen USB dhe provo përsëri.</translation>
 <translation id="1717874160321062422">Menaxhohet nga <ph name="FIRST_MANAGER" /> dhe <ph name="SECOND_MANAGER" /></translation>
@@ -105,12 +109,14 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Lloji i vërtetimit</translation>
+<translation id="1776228893584526149">Toni i imazhit të sfondit</translation>
 <translation id="1782199038061388045">përkthimi</translation>
 <translation id="1790209694022261219">Dritaret dhe tavolinat e punës</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1801418420130173017">Çaktivizo temën e errët</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
+<translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
 <translation id="1852934301711881861">Instalo Chrome OS Flex</translation>
 <translation id="1856388568474281774">Shigjeta poshtë</translation>
@@ -119,10 +125,12 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
 <translation id="1881188606372070653">Shko te <ph name="BEGIN_LINK1" />faqja e Ndihmës ligjore<ph name="END_LINK1" /> për të kërkuar ndryshime të përmbajtjes për arsye ligjore. Disa prej informacioneve të llogarisë dhe të sistemit mund të dërgohen në Google. Informacionet që na jep do t'i përdorim për zgjidhjen e problemeve teknike për përmirësimin e shërbimeve tona, sipas <ph name="BEGIN_LINK2" />Politikës së privatësisë<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />Kushteve të shërbimit<ph name="END_LINK3" />.</translation>
+<translation id="1885577615937958993">kalo median shpejt përpara</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
 <translation id="1904932688895783618">Këtu janë disa burime të tjera të dobishme:</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
+<translation id="1908394185991500139">shigjeta majtas</translation>
 <translation id="1923388006036088459">Ngjyrat e theksimit</translation>
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1951012854035635156">Asistenti</translation>
@@ -141,7 +149,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2085089206770112532">Ulja e ndriçimit të ekranit</translation>
-<translation id="209751264101900360">Nga agimi në muzg - lëvizja e reve</translation>
 <translation id="2102231663024125441">Redaktimi i tekstit</translation>
 <translation id="2105810540595158374">Pajisja është një kontrollues loje.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +156,7 @@
 <translation id="2138109643290557664">Plusko</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
+<translation id="2157660087437850958">zgjedhësi për emoji</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -192,8 +200,10 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2498950423397131220">Pluskuesi</translation>
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
+<translation id="2512979179176933762">shfaq dritaret</translation>
 <translation id="2513396635448525189">Imazhi i identifikimit</translation>
 <translation id="2517472476991765520">Skano</translation>
+<translation id="2521835766824839541">pjesa muzikore e mëparshme</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="253029298928638905">Po riniset...</translation>
 <translation id="2533048460510040082">Përmbajtjet e sugjeruara të ndihmës</translation>
@@ -206,6 +216,7 @@
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2638662041295312666">Imazhi i identifikimit</translation>
 <translation id="2640549051766135490">Është zgjedhur albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="267442004702508783">rifresko</translation>
 <translation id="2712812801627182647">Çelësi i vërtetimit për TLS</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2717139507051041123">Aktivizo modalitetin e ngjyrave të errëta</translation>
@@ -225,6 +236,7 @@
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
 <translation id="2940811910881150316">Pajisja nuk mund të testohet. Rihap kapakun për ta provuar.</translation>
+<translation id="2981143481017883351">Tani ofrohen elemente ekskluzive për Chromebook</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
@@ -261,12 +273,16 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Drejtimi i çelësit</translation>
 <translation id="3294437725009624529">Vizitor</translation>
+<translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
+<translation id="3340978935015468852">cilësimet</translation>
+<translation id="3359218928534347896">aktivizo/çaktivizo audion e mikrofonit</translation>
 <translation id="3360306038446926262">Dritaret</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3386675685417744672">Ekskluzive për Chromebook</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -281,6 +297,7 @@
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
+<translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
@@ -324,6 +341,7 @@
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
+<translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
@@ -333,7 +351,6 @@
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3969602104473960991">Fjalëkalimi i ChromeOS u përditësua</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
-<translation id="3974175076798940554">Tani ofrohen elemente ekskluzive të Chromebook Plus</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> tani është përditësuar</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
@@ -344,6 +361,7 @@
 <translation id="404928562651467259">PARALAJMËRIM</translation>
 <translation id="4054683689023980771">Imazhi po shkarkohet</translation>
 <translation id="4060260348856573701">APN e re</translation>
+<translation id="4079743696465895866">Zgjidh ilustrimin ekskluziv të Chromebook</translation>
 <translation id="4093865285251893588">Imazhi i profilit</translation>
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -359,6 +377,7 @@
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4170180284036919717">Bëj një fotografi</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
+<translation id="4171077696775491955">ulja e ndriçimit</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4176659219503619100">Paneli i kontrollit</translation>
 <translation id="420283545744377356">Çaktivizo mbrojtësin e ekranit</translation>
@@ -373,7 +392,6 @@
 <translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4289849978083912975">Shfaqje me rrëshqitje</translation>
-<translation id="4293621540182258188">Nga agimi në muzg - lëvizja e Tokës</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4311195029067684288">I plotë</translation>
@@ -386,6 +404,7 @@
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
 <translation id="4415951057168511744">Simboli aktual</translation>
+<translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
@@ -396,6 +415,7 @@
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
+<translation id="4507392511610824664">rrit ndriçimin</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Përputhje e emrit alternativ të subjektit</translation>
 <translation id="4522570452068850558">Detajet</translation>
@@ -459,9 +479,9 @@
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
-<translation id="4937657825850660613">Gjysmë</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">I pjesshëm</translation>
+<translation id="4972592110715526173">ndryshimi i modalitetit</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>
@@ -474,6 +494,7 @@
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
+<translation id="5087864757604726239">prapa</translation>
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -483,6 +504,7 @@
 <translation id="5166918508782100047">Cilësimet e "Përgjigjeve të shpejta"</translation>
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
+<translation id="5180712487038406644">Ekspresiv</translation>
 <translation id="5190187232518914472">Rijeto kujtimet e tua të preferuara. Për të shtuar ose modifikuar albume, shko te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Dil</translation>
@@ -517,6 +539,7 @@
 <translation id="5423849171846380976">U aktivizua</translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
+<translation id="5456936324019847994">Nuk mund të lidhet me asnjë APN të personalizuar të aktivizuar. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
@@ -537,18 +560,20 @@
 <translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
 <translation id="5659593005791499971">Mail-i</translation>
+<translation id="5662240986744577912">aktivizo/çaktivizo ekranin e privatësisë</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familja</translation>
 <translation id="5695599963893094957">Shtyp çfarëdo tasti në tastierën tënde. Mund të shtypësh deri në 4 taste njëkohësisht.</translation>
 <translation id="5701381305118179107">Qendër</translation>
+<translation id="5703716265115423771">ul volumin</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Përditëso <ph name="DEVICE_NAME" /></translation>
+<translation id="5757187557809630523">pjesa tjetër muzikore</translation>
 <translation id="5760715441271661976">Gjendja e portalit</translation>
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
-<translation id="5809090008577139505">Agimi polar</translation>
 <translation id="5826644637650799838">Rreth artit</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="583281660410589416">E panjohur</translation>
@@ -567,11 +592,11 @@
 <translation id="5907649332524363701">ngjyra e tastit</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
-<translation id="5918201491776799918">Zgjidh ilustrimin ekskluziv të Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skedari nuk u gjet</translation>
 <translation id="5939518447894949180">Rivendos</translation>
 <translation id="594552776027197022">Gjenero çift të rastësishëm çelësash</translation>
+<translation id="5946538341867151940">Nuk je lidhur ende. Nëse operatori yt celular rekomandon një APN të personalizuar, fut informacionet e APN-së duke zgjedhur "+ APN e re"</translation>
 <translation id="5972388717451707488">Motori i përditësimit</translation>
 <translation id="5984145644188835034">Imazhi i parazgjedhur i sfondit</translation>
 <translation id="6017514345406065928">E gjelbër</translation>
@@ -584,6 +609,7 @@
 <translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
+<translation id="6073292342939316679">ulja e ndriçimit të tastierës</translation>
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
@@ -601,6 +627,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
+<translation id="6205145102504628069">Rrjedha e reve</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Dil nga ekrani i plotë</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
@@ -611,6 +638,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
+<translation id="6285899124799306373">hap nisësin</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
@@ -626,9 +654,11 @@
 <translation id="6382182670717268353">Pamja paraprake e mbrojtësit të ekranit</translation>
 <translation id="6388847657025262518">Furnizuesi i dokumenteve i skanerit është bllokuar. Kontrollo furnizuesin dhe provo përsëri.</translation>
 <translation id="6394634179843537518">Shto një skedar</translation>
+<translation id="6401427872449207797">kërkimi në shfletues</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
 <translation id="641081527798843608">Përputhja e subjektit</translation>
 <translation id="6412715219990689313">Tastiera e integruar</translation>
+<translation id="6417265370957905582">Asistenti i Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
@@ -640,12 +670,14 @@
 <translation id="6494974875566443634">Personalizimi</translation>
 <translation id="6500818810472529210">Shikoje rezultatin te "Kërko në Google"</translation>
 <translation id="650266656685499220">Për të krijuar albume, shko te "Fotografitë e Google"</translation>
+<translation id="6505750420152840539">Nga agimi në muzg</translation>
 <translation id="6516990319416533844">Për të testuar shpejtësinë e karikimit të baterisë, lëre baterinë të shkarkohet për një periudhë të shkurtër</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6526200165918397681">Përputh me imazhin e sfondit</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
 <translation id="6535178685492749208">Je jashtë linje. Komentet do të dërgohen më vonë.</translation>
 <translation id="65587193855025101">Shtrat i sheshtë</translation>
+<translation id="6560196641871357166">Me gjallëri</translation>
 <translation id="6564646048574748301">Dështoi - Printeri është i paarritshëm</translation>
 <translation id="6566314079205407217">Skanimi me shumë faqe</translation>
 <translation id="6574762126505704998">Mbush</translation>
@@ -661,6 +693,7 @@
 <translation id="6650062777702288430">Kalimi në tastierën kana/alfanumerike</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659594942844771486">Skeda</translation>
+<translation id="6673898378497337661">ngritja e ndriçimit të tastierës</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6723839937902243910">Energjia</translation>
@@ -686,6 +719,7 @@
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>
 <translation id="6943893908656559156">Identiteti në distancë (opsional)</translation>
 <translation id="6957231940976260713">Emri i shërbimit</translation>
+<translation id="695776212669661671">shigjeta djathtas</translation>
 <translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6965978654500191972">Pajisja</translation>
@@ -727,7 +761,9 @@
 <translation id="7281657306185710294">Ndjeje puhizën</translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
 <translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
+<translation id="7297726121602187087">E gjelbër e errët</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305236594389852547">aktivizo/çaktivizo diktimin</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pyet ekspertët në forumin e ndihmës për Chromebook</translation>
 <translation id="7311368985037279727">ngjyra e tastierës</translation>
@@ -749,6 +785,7 @@
 <translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7491478667760509108">Dil nga pluskimi</translation>
 <translation id="7497215489070763236">Certifikata CA e serverit</translation>
+<translation id="7501957181231305652">ose</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Përmbajtja e ndihmës nuk ofrohet</translation>
@@ -761,13 +798,14 @@
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7613724632293948900">Ndrysho pozicionin me anë të miut ose tasteve të shigjetave.</translation>
+<translation id="7618774594543487847">Neutrale</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
+<translation id="765159867434478292">Ndaje</translation>
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
-<translation id="7675241868020048622">Aurora (ekskluzivisht për Plus)</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -798,6 +836,7 @@
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943235353293548836">Intervali i procesit të vazhdueshëm të mbajtjes aktive</translation>
+<translation id="7944562637040950644">aktivizo/çaktivizo dritën e sfondit të tastierës</translation>
 <translation id="7953669802889559161">Hyrjet</translation>
 <translation id="7955587717700691983">Tastierë me Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -824,7 +863,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Zgjidh "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
-<translation id="8153923300383192510">Ekskluzive për Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Bashkëngjit</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
@@ -840,7 +878,10 @@
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
+<translation id="8312330582793120272">luaj median</translation>
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
+<translation id="8329018942023753850">aplikacioni i makinës llogaritëse</translation>
+<translation id="8335869473001018124">hap kërkimin</translation>
 <translation id="8336739000755212683">Ndrysho imazhin e llogarisë së pajisjes</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8351855506390808906">Pika e prekjes për organizimin e tasteve</translation>
@@ -872,7 +913,10 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
+<translation id="8593058461203131755">vendose median në pauzë</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
+<translation id="86356131183441916">Vjollcë e çelur</translation>
+<translation id="8651481478098336970">vendos volumin në heshtje</translation>
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655828773034788261">Ndaj URL-në:</translation>
 <translation id="8660881923941176839">paundë</translation>
@@ -907,7 +951,9 @@
 <translation id="8876270629542503161">Pajisja është një tablet.</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
 <translation id="8898840733695078011">Fuqia e sinjalit</translation>
+<translation id="8909114361904403025">shigjeta lart</translation>
 <translation id="8910721771319628100">Rrjeti i parazgjedhur është mbi pragun e vonesës</translation>
+<translation id="8912306040879976619">Zonat e tastierës</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> që ka <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Dështoi - Tabakaja mungon</translation>
 <translation id="8923267550422472772">Dita e muajit për rivendosje</translation>
@@ -924,6 +970,7 @@
 <translation id="8997710128084572139">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
+<translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9025198690966128418">Përdore si pajisje personale</translation>
 <translation id="902638246363752736">Cilësimet e tastierës</translation>
 <translation id="9028832514430399253">Aktivizo çelësin e aktivizimit/çaktivizimit për të zgjedhur opsionet e mbrojtësit të ekranit</translation>
@@ -957,6 +1004,7 @@
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
 <translation id="960719561871045870">Kodi i operatorit</translation>
+<translation id="979450713603643090">Rozë e çelur</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 </translationbundle>

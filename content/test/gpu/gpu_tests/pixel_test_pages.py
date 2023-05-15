@@ -603,8 +603,6 @@ class PixelTestPages():
   def ExperimentalCanvasFeaturesPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-        # Temporarily force pixel tests to use AAA (https://crbug.com/1421297)
-        '--force-skia-analytic-aa',
     ]
     accelerated_args = [
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
@@ -984,6 +982,9 @@ class PixelTestPages():
         cba.ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS,
         cba.ENABLE_DIRECT_COMPOSITION_VP_SCALING,
     ]
+    browser_args_sw_decode = browser_args + [
+        cba.DISABLE_ACCELERATED_VIDEO_DECODE
+    ]
 
     # Most tests fall roughly into 3 tiers of noisiness.
     # Parameter values were determined using the automated optimization script,
@@ -1165,6 +1166,11 @@ class PixelTestPages():
             browser_args=[cba.DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS],
             other_args={'no_overlay': True},
             matching_algorithm=very_permissive_dc_sobel_algorithm),
+        PixelTestPage('pixel_video_mp4.html?width=240&height=135',
+                      base_name + '_DirectComposition_Video_SW_Decode',
+                      test_rect=[0, 0, 240, 135],
+                      browser_args=browser_args_sw_decode,
+                      matching_algorithm=very_permissive_dc_sobel_algorithm),
     ]
 
   @staticmethod

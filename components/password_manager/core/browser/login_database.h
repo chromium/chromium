@@ -44,14 +44,14 @@ extern const int kCompatibleVersionNumber;
 // Interface to the database storage of login information, intended as a helper
 // for PasswordStore on platforms that need internal storage of some or all of
 // the login information.
-class LoginDatabase : public PasswordStoreSync::MetadataStore {
+class LoginDatabase {
  public:
   LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
 
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
-  ~LoginDatabase() override;
+  virtual ~LoginDatabase();
 
   // Returns whether this is the profile-scoped or the account-scoped storage:
   // true:  Gaia-account-scoped store, which is used for signed-in but not
@@ -169,22 +169,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // removed from the database, returns ITEM_FAILURE.
   DatabaseCleanupResult DeleteUndecryptableLogins();
 
-  // PasswordStoreSync::MetadataStore implementation.
-  std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() override;
-  void DeleteAllSyncMetadata() override;
-  bool UpdateEntityMetadata(syncer::ModelType model_type,
-                            const std::string& storage_key,
-                            const sync_pb::EntityMetadata& metadata) override;
-  bool ClearEntityMetadata(syncer::ModelType model_type,
-                           const std::string& storage_key) override;
-  bool UpdateModelTypeState(
-      syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
-  void SetDeletionsHaveSyncedCallback(
-      base::RepeatingCallback<void(bool)> callback) override;
-  bool HasUnsyncedDeletions() override;
-
   // Callers that requires transaction support should call these methods to
   // begin, rollback and commit transactions. They delegate to the transaction
   // support of the underlying database. Only one transaction may exist at a
@@ -200,6 +184,9 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   PasswordNotesTable& password_notes_table() { return password_notes_table_; }
 
   FieldInfoTable& field_info_table() { return field_info_table_; }
+  PasswordStoreSync::MetadataStore& password_sync_metadata_store() {
+    return password_sync_metadata_store_;
+  }
 
   // Result values for encryption/decryption actions.
   enum EncryptionResult {
@@ -233,6 +220,48 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
  private:
   struct PrimaryKeyAndPassword;
+  class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
+   public:
+    // |db| must be not null and must outlive |this|.
+    explicit SyncMetadataStore(sql::Database* db);
+    SyncMetadataStore(const SyncMetadataStore&) = delete;
+    SyncMetadataStore& operator=(const SyncMetadataStore&) = delete;
+    ~SyncMetadataStore() override;
+
+   private:
+    // Reads all the stored sync entities metadata in a MetadataBatch. Returns
+    // nullptr in case of failure.
+    std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata();
+
+    // Reads the stored ModelTypeState. Returns nullptr in case of failure.
+    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState();
+
+    // PasswordStoreSync::MetadataStore implementation.
+    std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() override;
+    void DeleteAllSyncMetadata() override;
+    bool UpdateEntityMetadata(syncer::ModelType model_type,
+                              const std::string& storage_key,
+                              const sync_pb::EntityMetadata& metadata) override;
+    bool ClearEntityMetadata(syncer::ModelType model_type,
+                             const std::string& storage_key) override;
+    bool UpdateModelTypeState(
+        syncer::ModelType model_type,
+        const sync_pb::ModelTypeState& model_type_state) override;
+
+    bool ClearModelTypeState(syncer::ModelType model_type) override;
+    void SetDeletionsHaveSyncedCallback(
+        base::RepeatingCallback<void(bool)> callback) override;
+    bool HasUnsyncedDeletions() override;
+
+    raw_ptr<sql::Database> const db_;
+    // A callback to be invoked whenever all pending deletions have been
+    // processed
+    // by Sync - see
+    // PasswordStoreSync::MetadataStore::SetDeletionsHaveSyncedCallback for more
+    // details.
+    base::RepeatingCallback<void(bool)> deletions_have_synced_callback_;
+  };
+
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest, AddLoginWithEncryptedPassword);
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest,
                            AddLoginWithEncryptedPasswordAndValue);
@@ -288,13 +317,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   PrimaryKeyAndPassword GetPrimaryKeyAndPassword(
       const PasswordForm& form) const;
 
-  // Reads all the stored sync entities metadata in a MetadataBatch. Returns
-  // nullptr in case of failure.
-  std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata();
-
-  // Reads the stored ModelTypeState. Returns nullptr in case of failure.
-  std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState();
-
   // Overwrites |key_to_form_map| with credentials retrieved from |statement|.
   // If |matched_form| is not null, filters out all results but those
   // PSL-matching |*matched_form| or federated credentials for it. If feature
@@ -344,6 +366,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   FieldInfoTable field_info_table_;
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
+  SyncMetadataStore password_sync_metadata_store_{&db_};
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;
@@ -361,12 +384,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   std::string blocklisted_statement_;
   std::string encrypted_password_statement_by_id_;
   std::string id_and_password_statement_;
-
-  // A callback to be invoked whenever all pending deletions have been processed
-  // by Sync - see
-  // PasswordStoreSync::MetadataStore::SetDeletionsHaveSyncedCallback for more
-  // details.
-  base::RepeatingCallback<void(bool)> deletions_have_synced_callback_;
 };
 
 }  // namespace password_manager

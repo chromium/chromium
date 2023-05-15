@@ -127,7 +127,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
 
-  if (target_element_id && !scroll_state->main_thread_hit_tested_reasons()) {
+  if (target_element_id && (!scroll_state->main_thread_hit_tested_reasons() ||
+                            scroll_state->is_scrollbar_interaction())) {
     TRACE_EVENT_INSTANT0("cc", "Latched scroll node provided",
                          TRACE_EVENT_SCOPE_THREAD);
     // If the caller passed in an element_id we can skip all the hit-testing
@@ -2232,6 +2233,18 @@ void InputHandler::UpdateBrowserControlsState(BrowserControlsState constraints,
                                               bool animate) {
   compositor_delegate_->UpdateBrowserControlsState(constraints, current,
                                                    animate);
+}
+
+bool InputHandler::CurrentScrollNeedsFrameAlignment() const {
+  if (const ScrollNode* node = CurrentlyScrollingNode()) {
+    // We need frame-aligned handling of GestureScrollUpdate if an animation
+    // is linked to the scroll position.  If we update the scroll offset between
+    // tick and draw, then things will be out of sync in the drawn frame.
+    if (compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace cc

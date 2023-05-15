@@ -172,11 +172,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
   // this callback with stale processes.
   // https://crbug.com/1335821.
   if (!content::RenderProcessHost::FromID(process_id)) {
-    // NOTE: The following is an antipattern [1]. We have this as a temporary
-    // hack to avoid crashing for stable users while the bug is addressed.
-    // [1]
-    // https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/c++/c++-dos-and-donts.md#guarding-with-dcheck_is_on
-    NOTREACHED();
+    // Leave a debug trace without crashing while the bug is addressed.
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -207,6 +204,7 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
 
 void ServiceWorkerTaskQueue::DidStartWorkerFail(
     const SequencedContextId& context_id,
+    base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsCurrentActivation(context_id.first.extension_id(),
@@ -219,6 +217,10 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
 
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
                         false);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Extensions.ServiceWorkerBackground.StartWorker_FailStatus", status_code);
+  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+                      base::Time::Now() - start_time);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -514,7 +516,8 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
                      weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,
-                     weak_factory_.GetWeakPtr(), context_id));
+                     weak_factory_.GetWeakPtr(), context_id,
+                     base::Time::Now()));
 }
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
@@ -779,9 +782,17 @@ void ServiceWorkerTaskQueue::StopObserving(
     content::ServiceWorkerContext* service_worker_context) {
   auto iter_pair =
       observing_worker_contexts_.equal_range(service_worker_context);
-  DCHECK(iter_pair.first != observing_worker_contexts_.end());
-  if (std::distance(iter_pair.first, iter_pair.second) == 1)
+  // ServiceWorkerContext not found if the iterators are equal.
+  if (iter_pair.first == iter_pair.second) {
+    return;
+  }
+  // If the distance is 1, it means there is just one instance of the observing
+  // ServiceWorkerContext remaining so we also remove the
+  // ServiceWorkerContextObserver (this) from the observing
+  // ServiceWorkerContext.
+  if (std::distance(iter_pair.first, iter_pair.second) == 1) {
     service_worker_context->RemoveObserver(this);
+  }
   observing_worker_contexts_.erase(iter_pair.first);
 }
 

@@ -128,7 +128,7 @@ class WebSocketChannelImpl::BlobLoader final
   void Cancel();
 
   // FileReaderClient functions.
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override;
+  FileErrorCode DidStartLoading(uint64_t) override;
   FileErrorCode DidReceiveData(const char* data, unsigned data_length) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
@@ -167,8 +167,7 @@ void WebSocketChannelImpl::BlobLoader::Cancel() {
   data_ = nullptr;
 }
 
-FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t,
-                                                                uint64_t) {
+FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
   const absl::optional<uint64_t> size = loader_->TotalBytes();
   DCHECK(size);
   if (size.value() > std::numeric_limits<size_t>::max()) {

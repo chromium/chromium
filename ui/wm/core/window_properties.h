@@ -47,6 +47,9 @@ extern const ui::ClassProperty<float>* const
 COMPONENT_EXPORT(UI_WM)
 extern const ui::ClassProperty<int32_t>* const kWindowHidingAnimationCountKey;
 
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<bool>* const kPersistableKey;
+
 }  // namespace wm
 
 // These need to be declared here for jumbo builds.

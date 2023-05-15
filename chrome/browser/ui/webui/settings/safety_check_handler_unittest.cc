@@ -193,7 +193,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     form.password_issues = {
         {password_manager::InsecureType::kLeaked,
          password_manager::InsecurityMetadata(
-             base::Time(), password_manager::IsMuted(false))}};
+             base::Time(), password_manager::IsMuted(false),
+             password_manager::TriggerBackendNotification(false))}};
     base::RunLoop().RunUntilIdle();
   }
 

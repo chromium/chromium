@@ -123,6 +123,7 @@ void LayoutSVGTransformableContainer::StyleDidChange(
   NOT_DESTROYED();
   LayoutSVGContainer::StyleDidChange(diff, old_style);
 
+  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
 }

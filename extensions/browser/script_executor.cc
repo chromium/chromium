@@ -14,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
@@ -171,8 +172,7 @@ class Handler : public content::WebContentsObserver {
     return content::RenderFrameHost::FrameIterationAction::kContinue;
   }
 
-  void PushPendingRenderFrame(raw_ptr<content::RenderFrameHost> frame,
-                              int frame_id) {
+  void PushPendingRenderFrame(content::RenderFrameHost* frame, int frame_id) {
     pending_render_frames_.push_back(frame);
 
     // Preallocate the results to hold the initial `frame_id` and `document_id`.
@@ -233,7 +233,20 @@ class Handler : public content::WebContentsObserver {
     DCHECK(frame->IsRenderFrameLive());
     DCHECK(base::Contains(pending_render_frames_, frame));
 
-    ContentScriptTracker::WillExecuteCode(pass_key, frame, host_id_);
+    if (params->injection->is_js()) {
+      ContentScriptTracker::ScriptType script_type =
+          ContentScriptTracker::ScriptType::kContentScript;
+
+      switch (params->injection->get_js()->world) {
+        case mojom::ExecutionWorld::kMain:
+        case mojom::ExecutionWorld::kIsolated:
+          break;  // kContentScript above is correct.
+        case mojom::ExecutionWorld::kUserScript:
+          script_type = ContentScriptTracker::ScriptType::kUserScript;
+      }
+      ContentScriptTracker::WillExecuteCode(pass_key, script_type, frame,
+                                            host_id_);
+    }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrame(frame)
         ->ExecuteCode(std::move(params),

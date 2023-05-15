@@ -7,6 +7,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "ios/web/content/init/ios_content_browser_client.h"
 #include "ios/web/content/init/ios_content_client.h"
+#include "ios/web/content/init/ios_content_renderer_client.h"
 
 namespace web {
 
@@ -22,7 +23,7 @@ content::ContentBrowserClient* IOSMainDelegate::CreateContentBrowserClient() {
   return browser_client_.get();
 }
 content::ContentRendererClient* IOSMainDelegate::CreateContentRendererClient() {
-  renderer_client_ = std::make_unique<content::ContentRendererClient>();
+  renderer_client_ = std::make_unique<IOSContentRendererClient>();
   return renderer_client_.get();
 }
 

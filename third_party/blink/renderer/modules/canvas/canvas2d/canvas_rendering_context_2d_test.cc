@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -55,6 +54,8 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -102,8 +103,8 @@ class FakeImageSource : public CanvasImageSource {
 
 FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
     : size_(size), is_opaque_(opacity == kOpaqueBitmap) {
-  sk_sp<SkSurface> surface(
-      SkSurface::MakeRasterN32Premul(size_.width(), size_.height()));
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
+      SkImageInfo::MakeN32Premul(size_.width(), size_.height())));
   surface->getCanvas()->clear(opacity == kOpaqueBitmap ? SK_ColorWHITE
                                                        : SK_ColorTRANSPARENT);
   image_ = UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
@@ -480,7 +481,7 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_FullCoverage) {
 
 TEST_P(CanvasRenderingContext2DOverdrawTest, DisableOverdrawOptimization) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kCanvasOverdrawOptimization);
+  feature_list.InitAndEnableFeature(kDisableCanvasOverdrawOptimization);
   ExpectNoOverdraw();
   Context2D()->clearRect(0, 0, 10, 10);
   VerifyExpectations();
@@ -1429,7 +1430,9 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
       nullptr, std::move(fake_accelerate_surface), size);
-  Context2D()->beginLayer();
+  NonThrowableExceptionState exception_state;
+  Context2D()->beginLayer(GetExecutionContext(), /*filter_init=*/nullptr,
+                          exception_state);
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
@@ -1484,9 +1487,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       mojom::blink::PageVisibilityState::kHidden,
       /*is_initial_state=*/false);
   // Run hibernation task.
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      WTF::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   blink::test::RunPendingTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
@@ -1536,9 +1539,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       mojom::blink::PageVisibilityState::kHidden,
       /*is_initial_state=*/false);
   // Run hibernation task.
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      WTF::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   blink::test::RunPendingTasks();
 
   // Never hibernate a canvas with no resource provider.

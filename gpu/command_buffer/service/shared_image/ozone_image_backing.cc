@@ -173,7 +173,8 @@ OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       need_cache ? &cached_texture_holders_ : nullptr);
 }
 
-std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+OzoneImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -357,14 +358,7 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     }
   }
 
-  if (auto end_state = dest_scoped_access->TakeEndState()) {
-    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      context_state_->gr_context()->setBackendTextureState(
-          dest_scoped_access->promise_image_texture(plane)->backendTexture(),
-          *end_state);
-    }
-  }
-
+  dest_scoped_access->ApplyBackendSurfaceEndState();
   FlushAndSubmitIfNecessary(std::move(end_semaphores), context_state_.get());
   if (written && !IsCleared()) {
     SetCleared();

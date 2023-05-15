@@ -129,7 +129,7 @@ class ConsentProviderDelegate : public ConsentProviderImpl::DelegateInterface,
   bool IsAllowlistedComponent(const Extension& extension) override;
 
   // |profile_| can be a raw pointer since its destruction is observed.
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 

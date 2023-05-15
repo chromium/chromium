@@ -37,12 +37,14 @@ class EditAddressProfileDialogControllerImpl
   // re-open the original prompt in a correct state.
   void OfferEdit(const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
+                 const std::u16string& footer_message,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback,
                  bool is_migration_to_account);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;
+  const std::u16string& GetFooterMessage() const override;
   std::u16string GetOkButtonLabel() const override;
   const AutofillProfile& GetProfileToEdit() const override;
   bool GetIsValidatable() const override;
@@ -65,6 +67,9 @@ class EditAddressProfileDialogControllerImpl
 
   // nullptr if no dialog is currently shown.
   raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
+
+  // Editor's footnote message.
+  std::u16string footer_message_;
 
   // Callback to run once the user makes a decision with respect to saving the
   // address profile currently being edited.

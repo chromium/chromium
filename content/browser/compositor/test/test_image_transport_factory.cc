@@ -7,9 +7,9 @@
 #include <limits>
 #include <utility>
 
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/compositor/test/in_process_context_provider.h"
 
 namespace content {
 namespace {
@@ -61,11 +61,13 @@ TestImageTransportFactory::SharedMainThreadContextProvider() {
     return shared_main_context_provider_;
 
   constexpr bool kSupportsLocking = false;
-  shared_main_context_provider_ = ui::InProcessContextProvider::CreateOffscreen(
-      &gpu_memory_buffer_manager_, kSupportsLocking);
+  shared_main_context_provider_ =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kGLES2WithRaster, kSupportsLocking);
   auto result = shared_main_context_provider_->BindToCurrentSequence();
-  if (result != gpu::ContextResult::kSuccess)
+  if (result != gpu::ContextResult::kSuccess) {
     shared_main_context_provider_ = nullptr;
+  }
 
   return shared_main_context_provider_;
 }

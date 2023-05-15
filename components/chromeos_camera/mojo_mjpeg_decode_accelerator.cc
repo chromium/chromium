@@ -101,8 +101,8 @@ void MojoMjpegDecodeAccelerator::OnDecodeAck(
   // Only NotifyError once.
   // Client::NotifyError() may trigger deletion of |this|, so calling it needs
   // to be the last thing done on this stack!
-  MjpegDecodeAccelerator::Client* client = nullptr;
-  std::swap(client, client_);
+  MjpegDecodeAccelerator::Client* client = client_;
+  client_ = nullptr;
   client->NotifyError(bitstream_buffer_id, error);
 }
 

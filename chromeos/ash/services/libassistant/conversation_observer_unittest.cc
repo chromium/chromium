@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/libassistant/conversation_controller.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
@@ -66,10 +67,12 @@ class CrosActionModuleHelper {
  private:
   const std::vector<chromeos::assistant::action::AssistantActionObserver*>&
   action_observers() {
-    return action_module_.GetActionObserversForTesting();
+    return action_module_->GetActionObserversForTesting();
   }
 
-  const chromeos::assistant::action::CrosActionModule& action_module_;
+  const raw_ref<const chromeos::assistant::action::CrosActionModule,
+                ExperimentalAsh>
+      action_module_;
 };
 
 class ConversationObserverMock : public mojom::ConversationObserver {

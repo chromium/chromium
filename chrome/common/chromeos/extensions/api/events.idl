@@ -6,7 +6,10 @@
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h", modernised_enums]
 namespace os.events {
     enum EventCategory {
-        audio_jack
+        audio_jack,
+        lid,
+        usb,
+        sd_card
     };
 
     enum EventSupportStatus {
@@ -28,8 +31,60 @@ namespace os.events {
         disconnected
     };
 
+    enum AudioJackDeviceType {
+        // The device is a headphone.
+        headphone,
+        // The device is a microphone.
+        microphone
+    };
+
+    enum LidEvent {
+        // The lid was closed.
+        closed,
+        // The lid was opened.
+        opened
+    };
+
+    enum UsbEvent {
+        // A USB device was connected.
+        connected,
+        // A USB device was disconnected.
+        disconnected
+    };
+
+    enum SdCardEvent {
+        // A SD card was connected.
+        connected,
+        // A SD card was disconnected.
+        disconnected
+    };
+
     dictionary AudioJackEventInfo {
         AudioJackEvent? event;
+        AudioJackDeviceType? deviceType;
+    };
+
+    dictionary LidEventInfo {
+        LidEvent? event;
+    };
+
+    dictionary UsbEventInfo {
+        // Vendor name.
+        DOMString? vendor;
+        // Name, model name, product name.
+        DOMString? name;
+        // Vendor ID.
+        long? vid;
+        // Product ID.
+        long? pid;
+        // USB device categories.
+        // https://www.usb.org/defined-class-codes
+        DOMString[] categories;
+        UsbEvent? event;
+    };
+
+    dictionary SdCardEventInfo {
+        SdCardEvent? event;
     };
 
     callback VoidCallback = void();
@@ -58,5 +113,14 @@ namespace os.events {
     interface Events {
         // Informs the extension  that an `AudioJack` event occured.
         static void onAudioJackEvent(AudioJackEventInfo event_info);
+
+        // Informs the extension that a `Lid` event occured.
+        static void onLidEvent(LidEventInfo event_info);
+
+        // Informs the extension that a `Usb` event occured.
+        static void onUsbEvent(UsbEventInfo event_info);
+
+        // Informs the extension that a `SD Card` event occured.
+        static void onSdCardEvent(SdCardEventInfo event_info);
     };
 };

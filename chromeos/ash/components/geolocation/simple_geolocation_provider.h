@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     geolocation_handler_ = geolocation_handler;
   }
 
-  const Delegate* const delegate_;
+  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
@@ -100,7 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // destroy.
   std::vector<std::unique_ptr<SimpleGeolocationRequest>> requests_;
 
-  GeolocationHandler* geolocation_handler_ = nullptr;
+  raw_ptr<GeolocationHandler, ExperimentalAsh> geolocation_handler_ = nullptr;
 
   // Creation and destruction should happen on the same thread.
   THREAD_CHECKER(thread_checker_);

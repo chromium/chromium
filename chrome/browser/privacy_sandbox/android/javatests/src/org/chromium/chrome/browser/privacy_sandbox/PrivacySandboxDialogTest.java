@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy_sandbox.v4.AdMeasurementFragmentV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
@@ -533,18 +534,17 @@ public final class PrivacySandboxDialogTest {
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         launchDialog();
         tryClickOn(withId(R.id.settings_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(any(Context.class),
-                        eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
+                .launchSettingsActivity(any(Context.class), eq(AdMeasurementFragmentV4.class));
     }
 }

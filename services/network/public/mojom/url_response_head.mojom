@@ -121,7 +121,7 @@ struct URLResponseHead {
   NavigationDeliveryType navigation_delivery_type = kDefault;
 
   // The proxy server used for this request, if any.
-  proxy_resolver.mojom.ProxyServer proxy_server;
+  ProxyServer proxy_server;
 
   // True if a service worker responded to the request. If the service worker
   // received a fetch event and did not call respondWith(), or was bypassed due
@@ -260,21 +260,21 @@ struct URLResponseHead {
   //
   // The property will be added only on responses to trigger registration
   // requests sent to reporting origin registered as private state token issuer
-  // which returned a blind token attesting to the validity of the trigger.
+  // which returned a blind token verifying the validity of the trigger.
   //
   // The structure contains a token that can be sent to a reporting origin
-  // alongside an aggregatable report for it to attest the validity of a
+  // alongside an aggregatable report for it to verify the validity of a
   // trigger. The token is signed over the included aggregatable_report_id which
   // must be used to create the aggregatable report.
   //
   // It is added as a property on the response to transfer the token from the
   // network service (where it's generated) to blink where it is transferred to
-  // the browser alongside of the attribution data that it attests. See:
-  // https://github.com/WICG/attribution-reporting-api/blob/main/trigger_attestation.md
+  // the browser alongside of the attribution data that it verifies. See:
+  // https://github.com/WICG/attribution-reporting-api/blob/main/report_verification.md
   //
   // TODO(https://crbug.com/1374121): Remove the property when attribution response
   // parsing moves from blink to the network service.
-  TriggerAttestation? trigger_attestation;
+  TriggerVerification? trigger_verification;
 
   // The result of any PNA preflight sent for this request, if any.
   //

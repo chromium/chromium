@@ -1,4 +1,12 @@
 <style include="print-management-shared">
+  :host-context(body.jelly-enabled) #confirmationText {
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+    border-radius: 20px;
+  }
+
   #buttonContainer {
     display: flex;
     justify-content: flex-end;

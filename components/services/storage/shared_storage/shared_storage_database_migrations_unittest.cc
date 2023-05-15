@@ -230,6 +230,99 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateTooNewVersionToCurrent) {
   }
 }
 
+TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
+  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, GetTestFileNameForVersion(2)));
+  std::map<std::string,
+           std::map<std::u16string, std::pair<std::u16string, base::Time>>>
+      premigration_values;
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(file_name_));
+
+    // `context_origin`, `key`, `value`, and `last_used_time`.
+    EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "values_mapping"));
+
+    // Implicit index on `meta`, `per_origin_mapping_last_used_time_idx`,
+    // `budget_mapping_origin_time_stamp_idx`, and
+    // `values_mapping_last_used_time_idx`.
+    EXPECT_EQ(4u, sql::test::CountSQLIndices(&db));
+
+    ASSERT_TRUE(db.DoesColumnExist("values_mapping", "key"));
+    ASSERT_TRUE(db.DoesColumnExist("values_mapping", "value"));
+
+    sql::test::ColumnInfo key_column_info =
+        sql::test::ColumnInfo::Create(&db, "main", "values_mapping", "key");
+    EXPECT_EQ("TEXT", key_column_info.data_type);
+    sql::test::ColumnInfo value_column_info =
+        sql::test::ColumnInfo::Create(&db, "main", "values_mapping", "key");
+    EXPECT_EQ("TEXT", value_column_info.data_type);
+
+    sql::Statement select_statement(
+        db.GetUniqueStatement("SELECT * FROM values_mapping"));
+
+    while (select_statement.Step()) {
+      premigration_values[select_statement.ColumnString(0)]
+                         [select_statement.ColumnString16(1)] =
+                             std::make_pair(select_statement.ColumnString16(2),
+                                            select_statement.ColumnTime(3));
+    }
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(file_name_));
+
+    // Check version.
+    EXPECT_EQ(SharedStorageDatabase::kCurrentVersionNumber,
+              VersionFromDatabase(db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    ASSERT_TRUE(db.DoesColumnExist("values_mapping", "key"));
+    ASSERT_TRUE(db.DoesColumnExist("values_mapping", "value"));
+
+    sql::test::ColumnInfo key_column_info =
+        sql::test::ColumnInfo::Create(&db, "main", "values_mapping", "key");
+    EXPECT_EQ("BLOB", key_column_info.data_type);
+    sql::test::ColumnInfo value_column_info =
+        sql::test::ColumnInfo::Create(&db, "main", "values_mapping", "key");
+    EXPECT_EQ("BLOB", value_column_info.data_type);
+
+    // Verify that data is preserved across the migration.
+    sql::Statement count_statement(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM values_mapping"));
+
+    ASSERT_TRUE(count_statement.Step());
+    ASSERT_LT(0, count_statement.ColumnInt(0));
+
+    // Verify that the `key` and `value` in `values_mapping` are the UTF-16 hex
+    // bytes of the pre-migration `key` and `value`.
+    sql::Statement select_statement(
+        db.GetUniqueStatement("SELECT * FROM values_mapping"));
+
+    while (select_statement.Step()) {
+      auto origin_it =
+          premigration_values.find(select_statement.ColumnString(0));
+      ASSERT_TRUE(origin_it != premigration_values.end());
+      std::u16string key;
+      ASSERT_TRUE(select_statement.ColumnBlobAsString16(1, &key));
+      auto key_it = origin_it->second.find(key);
+      ASSERT_TRUE(key_it != origin_it->second.end());
+      std::u16string value;
+      ASSERT_TRUE(select_statement.ColumnBlobAsString16(2, &value));
+      EXPECT_EQ(key_it->second.first, value);
+      EXPECT_EQ(key_it->second.second, select_statement.ColumnTime(3));
+    }
+  }
+}
+
 TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion1ToCurrent) {
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, GetTestFileNameForVersion(1)));
 

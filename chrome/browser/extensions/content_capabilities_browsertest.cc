@@ -31,10 +31,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/quota/special_storage_policy.h"
 
-using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::ExtensionBuilder;
-using extensions::ListBuilder;
 
 class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
  protected:
@@ -116,11 +114,9 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
                                             const GURL& url,
                                             const char* code) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    bool result = false;
-    if (!content::ExecuteScriptAndExtractBool(web_contents(), code, &result))
-      return testing::AssertionFailure() << "Could not execute test script.";
-    if (!result)
+    if (!content::EvalJs(web_contents(), code).ExtractBool()) {
       return testing::AssertionFailure();
+    }
     return testing::AssertionSuccess();
   }
 

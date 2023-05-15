@@ -36,7 +36,7 @@ class ServiceProxyImpl : public ServiceProxy,
       SegmentInfoDatabase* segment_db,
       DefaultModelManager* default_manager,
       SignalStorageConfig* signal_storage_config,
-      std::vector<std::unique_ptr<Config>>* configs,
+      const std::vector<std::unique_ptr<Config>>* configs,
       const PlatformOptions& options,
       base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>*
           segment_selectors);
@@ -82,7 +82,7 @@ class ServiceProxyImpl : public ServiceProxy,
   const raw_ptr<SegmentInfoDatabase> segment_db_;
   const raw_ptr<DefaultModelManager> default_manager_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
-  const raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
+  const raw_ptr<const std::vector<std::unique_ptr<Config>>> configs_;
   base::ObserverList<ServiceProxy::Observer> observers_;
   raw_ptr<ExecutionService> execution_service_{nullptr};
   const raw_ptr<

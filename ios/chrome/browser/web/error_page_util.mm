@@ -14,7 +14,7 @@
 #import "components/error_page/common/error.h"
 #import "components/error_page/common/localized_error.h"
 #import "components/grit/components_resources.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/net/protocol_handler_util.h"
 #import "net/base/net_errors.h"
 #import "ui/base/resource/resource_bundle.h"

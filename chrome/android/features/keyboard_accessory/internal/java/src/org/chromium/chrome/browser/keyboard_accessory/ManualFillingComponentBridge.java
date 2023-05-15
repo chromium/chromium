@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
-import android.app.Activity;
 import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
@@ -27,10 +26,12 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+
 class ManualFillingComponentBridge {
     private final SparseArray<PropertyProvider<AccessorySheetData>> mProviders =
             new SparseArray<>();
-    private PropertyProvider<Action[]> mActionProvider;
+    private HashMap<Integer, PropertyProvider<Action[]>> mActionProviders = new HashMap<>();
     private final WindowAndroid mWindowAndroid;
     private final WebContents mWebContents;
     private long mNativeView;
@@ -74,36 +75,9 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    private void onAutomaticGenerationStatusChanged(boolean available) {
-        final Action[] generationAction;
-        final Activity activity = mWindowAndroid.getActivity().get();
-        if (available && activity != null) {
-            // This is meant to suppress the warning that the short string is not used.
-            // TODO(crbug.com/855581): Switch between strings based on whether they fit on the
-            // screen or not.
-            boolean useLongString = true;
-            String caption = useLongString
-                    ? activity.getString(R.string.password_generation_accessory_button)
-                    : activity.getString(R.string.password_generation_accessory_button_short);
-            generationAction = new Action[] {
-                    new Action(caption, AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, (action) -> {
-                        assert mNativeView
-                                != 0
-                            : "Controller has been destroyed but the bridge wasn't cleaned up!";
-                        ManualFillingMetricsRecorder.recordActionSelected(
-                                AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
-                        ManualFillingComponentBridgeJni.get().onOptionSelected(mNativeView,
-                                ManualFillingComponentBridge.this,
-                                AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
-                    })};
-        } else {
-            generationAction = new Action[0];
-        }
-        if (mActionProvider == null && getManualFillingComponent() != null) {
-            mActionProvider = new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
-            getManualFillingComponent().registerActionProvider(mWebContents, mActionProvider);
-        }
-        if (mActionProvider != null) mActionProvider.notifyObservers(generationAction);
+    private void onAccessoryActionAvailabilityChanged(
+            boolean available, @AccessoryAction int actionType) {
+        createOrClearAction(available, actionType);
     }
 
     @CalledByNative
@@ -280,17 +254,67 @@ class ManualFillingComponentBridge {
     }
 
     private void onComponentDestroyed() {
-        if (mNativeView != 0) {
-            ManualFillingComponentBridgeJni.get().onViewDestroyed(
-                    mNativeView, ManualFillingComponentBridge.this);
-        }
+        if (mNativeView == 0) return; // Component was destroyed already.
+        ManualFillingComponentBridgeJni.get().onViewDestroyed(
+                mNativeView, ManualFillingComponentBridge.this);
     }
 
     private void requestSheet(int sheetType) {
-        if (mNativeView != 0) {
-            ManualFillingComponentBridgeJni.get().requestAccessorySheet(
-                    mNativeView, ManualFillingComponentBridge.this, sheetType);
+        if (mNativeView == 0) return; // Component was destroyed already.
+        ManualFillingComponentBridgeJni.get().requestAccessorySheet(
+                mNativeView, ManualFillingComponentBridge.this, sheetType);
+    }
+
+    private void createOrClearAction(boolean available, @AccessoryAction int actionType) {
+        if (getManualFillingComponent() == null) return; // Actions are not displayed.
+        final Action[] actions = available ? createSingleAction(actionType) : new Action[0];
+        getOrCreateActionProvider(actionType).notifyObservers(actions);
+    }
+
+    private Action[] createSingleAction(@AccessoryAction int actionType) {
+        return new Action[] {
+                new Action(getActionTitle(actionType), actionType, this::onActionSelected)};
+    }
+
+    private PropertyProvider<Action[]> getOrCreateActionProvider(@AccessoryAction int actionType) {
+        assert getManualFillingComponent()
+                != null : "Bridge has been destroyed but the bridge wasn't cleaned-up!";
+        if (mActionProviders.containsKey(actionType)) {
+            return mActionProviders.get(actionType);
         }
+        PropertyProvider<Action[]> actionProvider = new PropertyProvider<>(actionType);
+        mActionProviders.put(actionType, actionProvider);
+        getManualFillingComponent().registerActionProvider(mWebContents, actionProvider);
+        return actionProvider;
+    }
+
+    private void onActionSelected(Action action) {
+        if (mNativeView == 0) return; // Component was destroyed already.
+        ManualFillingMetricsRecorder.recordActionSelected(action.getActionType());
+        ManualFillingComponentBridgeJni.get().onOptionSelected(
+                mNativeView, ManualFillingComponentBridge.this, action.getActionType());
+    }
+
+    private String getActionTitle(@AccessoryAction int actionType) {
+        switch (actionType) {
+            case AccessoryAction.GENERATE_PASSWORD_AUTOMATIC:
+                return mWindowAndroid.getApplicationContext().getString(
+                        R.string.password_generation_accessory_button);
+            case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
+                return mWindowAndroid.getApplicationContext().getString(
+                        R.string.credman_reentry_accessory_button);
+            case AccessoryAction.AUTOFILL_SUGGESTION:
+            case AccessoryAction.COUNT:
+            case AccessoryAction.TOGGLE_SAVE_PASSWORDS:
+            case AccessoryAction.USE_OTHER_PASSWORD:
+            case AccessoryAction.GENERATE_PASSWORD_MANUAL:
+            case AccessoryAction.MANAGE_ADDRESSES:
+            case AccessoryAction.MANAGE_CREDIT_CARDS:
+            case AccessoryAction.MANAGE_PASSWORDS:
+                assert false : "No caption defined for accessory action: " + actionType;
+        }
+        assert false : "Define a title for accessory action: " + actionType;
+        return "";
     }
 
     @NativeMethods

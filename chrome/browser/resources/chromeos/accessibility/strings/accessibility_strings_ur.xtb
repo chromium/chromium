@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="100506692671054486">پچھلا کوئی کمانڈ نہیں</translation>
 <translation id="1009046985747440431">‏نیویگیٹ کرنے کیلئے، اوپر یا نیچے کا تیر کا نشان دبائیں؛ فعال کرنے کیلئے enter دبائیں</translation>
 <translation id="1011903154582639569">ایک کلید تلاش کریں، پھر ٹائپ کرنے کیلئے لفٹ کریں</translation>
 <translation id="1012173283529841972">فہرست آئٹم</translation>
@@ -460,6 +461,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3936394396199829062">ارغوانی بلش</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3962990492275676168">موجودہ مقام سے پڑھنا شروع کریں</translation>
+<translation id="397094149579293440">کوئی منتخب ٹیکسٹ نہیں ہے</translation>
 <translation id="3970951409746498040">ریت نما بھورا</translation>
 <translation id="3989324057180830702">ٹوگل بٹن</translation>
 <translation id="3991317907213946254">ہلکا بھورا</translation>
@@ -566,6 +568,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4786285211967466855">سطح 1 کی کوئی پچھلی ہیڈنگ نہیں ہے</translation>
 <translation id="4787577491510559358">موجودہ آئٹم کیلئے فارمیٹنگ پڑھیں</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
+<translation id="4802034228771424756">کوئی فوکس کردہ ٹیکسٹ فیلڈ نہیں ہے</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
 <translation id="481165870889056555">موجودہ صفحہ کا عنوان بتائیں</translation>
 <translation id="4815668758102003883">ہلکا فیروزی</translation>
@@ -588,13 +591,16 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="489907760999452556">داخلی لنک</translation>
 <translation id="4909019435900810068">ایک لفظ پیچھے منتقل کریں</translation>
 <translation id="4911349081560453449">کوئی پچھلا چیک باکس نہیں ہے</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> نہیں کیا جا سکا، دوبارہ کوشش کریں</translation>
 <translation id="492295894462528572">پیش لفظ</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="495170559598752135">کارروائیاں</translation>
 <translation id="4953585991029886728">متن میں ترمیم کریں</translation>
+<translation id="4964701498510730546">ٹیکسٹ فیلڈ خالی ہے</translation>
 <translation id="4973717656530883744">کم سے کم <ph name="X" /></translation>
 <translation id="4974612477719259470">کوئی پچھلا بٹن نہیں ہے</translation>
 <translation id="4979404613699303341">پچھلا بٹن</translation>
+<translation id="4981239367072766915">غیر شناخت شدہ ان پٹ</translation>
 <translation id="4982917827052020884">‏آئیے کچھ کلیدوں سے شروع کریں جن کو آپ باقاعدگی سے استعمال کریں گے۔ کسی بھی موجودہ اسپیچ کو روکنے کیلئے Control کلید کا استعمال کیا جا سکتا ہے۔ اپنے کی بورڈ کے نیچے بائیں کونے پر Control کلید تلاش کریں۔ جاری رکھنے کیلئے، Control کلید دبائیں۔</translation>
 <translation id="4983588134362688868">صفحہ کے اوپر جائیں</translation>
 <translation id="4986606102545753256"><ph name="NAME" />، ونڈو</translation>
@@ -602,6 +608,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4994420463726586413">بیٹری کا موجودہ اسٹیٹس پڑھیں</translation>
 <translation id="4997282455736854877"><ph name="NAME" />، ریڈیو بٹن منتخب کر لیا گیا</translation>
 <translation id="5012724933919010465"><ph name="NAME" />،مینیو آئٹم ریڈیو بٹن منتخب کیا گیا ہے</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> نہیں کیا جا سکا، <ph name="REASON" /></translation>
 <translation id="5020651427400641814">اسپیچ لاگنگ کو فعال کریں</translation>
 <translation id="5041394372352067729">بریل ڈسپلے کو صفحہ کے اوپر لے جائیں</translation>
 <translation id="5042770794184672516">اسپیچ کا والیوم بڑھائیں</translation>

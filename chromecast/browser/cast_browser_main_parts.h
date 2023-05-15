@@ -61,6 +61,7 @@ class ExternalService;
 }  // namespace external_service_support
 
 namespace media {
+struct CodecProfileLevel;
 class MediaCapsImpl;
 class MediaPipelineBackendManager;
 class VideoPlaneController;
@@ -112,6 +113,9 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   void PostDestroyThreads() override;
 
  private:
+  void AddSupportedCodecProfileLevels(
+      base::span<const media::CodecProfileLevel> codec_profile_levels);
+
   std::unique_ptr<CastBrowserProcess> cast_browser_process_;
   // Caches a pointer of the CastContentBrowserClient.
   CastContentBrowserClient* const cast_content_browser_client_ = nullptr;

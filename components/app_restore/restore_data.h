@@ -180,8 +180,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   void SetDeskIndex(int desk_index);
 
   // Make all contained window IDs globally unique for a desk template
-  // launch. This must be done before launching.
-  void MakeWindowIdsUniqueForDeskTemplate();
+  // launch. This must be done before launching. Returns a mapping of new window
+  // IDs to the IDs present before this function was called. If the function is
+  // called a second time, no change is done and the returned mapping is empty.
+  base::flat_map<int32_t, int32_t> MakeWindowIdsUniqueForDeskTemplate();
 
   // Update the app id for the browser app to lacros if lacros is enabled and is
   // primary. This must be done before launching.
@@ -207,6 +209,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
                                            int window_id);
 
   AppIdToLaunchList app_id_to_launch_list_;
+
+  // True if the window IDs in `app_id_to_launch_list_` have been made unique
+  // with a call to `MakeWindowIdsUniqueForDeskTemplate`
+  bool has_unique_window_ids_for_desk_template_ = false;
 
   // Saves the next restore window_id to be handled for each chrome app.
   std::map<std::string, int> chrome_app_id_to_current_window_id_;

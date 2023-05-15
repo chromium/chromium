@@ -21,7 +21,8 @@
 namespace {
 
 // Layout constants.
-const CGFloat kVerticalPadding = 8;
+const CGFloat kTopPadding = 14;
+const CGFloat kBottomPadding = 10;
 const CGFloat kHorizontalPadding = 16;
 
 }  // namespace
@@ -44,13 +45,11 @@ const CGFloat kHorizontalPadding = 16;
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
-    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
     _textView.textContainer.lineFragmentPadding = 0;
-    _textView.textContainerInset =
-        UIEdgeInsets(kVerticalPadding, kHorizontalPadding, kVerticalPadding,
-                     kHorizontalPadding);
+    _textView.textContainerInset = UIEdgeInsets(
+        kTopPadding, kHorizontalPadding, kBottomPadding, kHorizontalPadding);
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_textView];
     AddSameConstraints(_textView, self);
@@ -69,6 +68,8 @@ const CGFloat kHorizontalPadding = 16;
                                  argument:argument];
   NSDictionary* attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
   };
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],

@@ -31,15 +31,7 @@ constexpr float kStrictVisibilityThreshold = 0.75f;
 constexpr float kSizeThreshold = 0.2f;
 
 Page* GetContainingPage(HTMLVideoElement& video) {
-  LocalDOMWindow* window = video.DomWindow();
-  if (!window)
-    return nullptr;
-
-  LocalFrame* frame = window->GetFrame();
-  if (!frame)
-    return nullptr;
-
-  return frame->GetPage();
+  return video.GetDocument().GetPage();
 }
 
 // TODO(crbug.com/1340424): Remove after feature goes to stable w/o issue.

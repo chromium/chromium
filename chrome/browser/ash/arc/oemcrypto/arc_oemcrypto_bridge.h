@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,7 +45,8 @@ class ArcOemCryptoBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcOemCryptoBridge> weak_factory_{this};

@@ -44,13 +44,12 @@ class GetIsolatedWebAppBrowsingDataCommand
   base::Value ToDebugValue() const override;
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
   void OnShutdown() override;
-  void OnSyncSourceRemoved() override {}
 
  private:
   void StoragePartitionSizeFetched(const url::Origin& iwa_origin, int64_t size);
   void MaybeCompleteCommand();
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   BrowsingDataCallback callback_;
 
   std::unique_ptr<AllAppsLockDescription> lock_description_;

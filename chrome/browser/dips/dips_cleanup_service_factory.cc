@@ -22,7 +22,12 @@ DIPSCleanupServiceFactory* DIPSCleanupServiceFactory::GetInstance() {
 /*static*/
 ProfileSelections DIPSCleanupServiceFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(dips::kFeature)) {
-    return GetHumanProfileSelections();
+    return ProfileSelections::Builder()
+        .WithRegular(ProfileSelection::kOriginalOnly)
+        .WithGuest(ProfileSelection::kNone)
+        .WithSystem(ProfileSelection::kNone)
+        .WithAshInternals(ProfileSelection::kNone)
+        .Build();
   }
 
   return ProfileSelections::BuildNoProfilesSelected();

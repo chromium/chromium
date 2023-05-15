@@ -51,7 +51,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   void Cancel();
 
   // FileReaderClient implementation.
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override;
+  FileErrorCode DidStartLoading(uint64_t) override;
   FileErrorCode DidReceiveData(const char* data, unsigned data_length) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;

@@ -165,7 +165,7 @@ decltype(std::declval<F>()(std::declval<T>())) WithConstructed(
       std::forward<F>(f));
 }
 
-// Given arguments of an std::pair's consructor, PairArgs() returns a pair of
+// Given arguments of an std::pair's constructor, PairArgs() returns a pair of
 // tuples with references to the passed arguments. The tuples contain
 // constructor arguments for the first and the second elements of the pair.
 //

@@ -26,10 +26,10 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Constructor} from '../common/types.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
-import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 import {getTemplate} from './os_settings_subpage.html.js';
 

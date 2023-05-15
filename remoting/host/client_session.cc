@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -182,6 +181,15 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     }
   }
 
+  if (video_control.has_target_framerate()) {
+    target_framerate_ = video_control.target_framerate();
+    LOG(INFO) << "Received target framerate: " << target_framerate_;
+    for (const auto& [_, video_stream] : video_streams_) {
+      video_stream->SetTargetFramerate(target_framerate_);
+    }
+    mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
+  }
+
   if (video_control.has_framerate_boost()) {
     auto framerate_boost = video_control.framerate_boost();
     DCHECK(framerate_boost.has_enabled());
@@ -192,13 +200,13 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     } else {
       base::TimeDelta capture_interval =
           framerate_boost.has_capture_interval_ms()
-              ? base::clamp(
+              ? std::clamp(
                     base::Milliseconds(framerate_boost.capture_interval_ms()),
                     base::Milliseconds(1), base::Milliseconds(1000))
               : kDefaultBoostCaptureInterval;
       base::TimeDelta boost_duration =
           framerate_boost.has_boost_duration_ms()
-              ? base::clamp(
+              ? std::clamp(
                     base::Milliseconds(framerate_boost.boost_duration_ms()),
                     base::Milliseconds(1), base::Milliseconds(1000))
               : kDefaultBoostDuration;
@@ -574,6 +582,9 @@ void ClientSession::CreateMediaStreams() {
   // Pause capturing if necessary.
   video_stream->Pause(pause_video_);
 
+  // Set the current target framerate.
+  video_stream->SetTargetFramerate(target_framerate_);
+
   if (event_timestamp_source_for_tests_) {
     video_stream->SetEventTimestampsSource(event_timestamp_source_for_tests_);
   }
@@ -610,6 +621,9 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     // Pause capturing if necessary.
     video_stream->Pause(pause_video_);
+
+    // Set the current target framerate.
+    video_stream->SetTargetFramerate(target_framerate_);
 
     if (event_timestamp_source_for_tests_) {
       video_stream->SetEventTimestampsSource(event_timestamp_source_for_tests_);

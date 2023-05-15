@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -64,8 +64,7 @@ void AppListTestBase::ConfigureWebAppProvider() {
   url_loader_ = url_loader.get();
 
   auto externally_managed_app_manager =
-      std::make_unique<web_app::ExternallyManagedAppManagerImpl>(
-          testing_profile);
+      std::make_unique<web_app::ExternallyManagedAppManager>(testing_profile);
   externally_managed_app_manager->SetUrlLoaderForTesting(std::move(url_loader));
 
   auto* const provider = web_app::FakeWebAppProvider::Get(testing_profile);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_ASH_ASH_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_ASH_ASH_SIGNALS_DECORATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
@@ -39,8 +40,9 @@ class AshSignalsDecorator : public SignalsDecorator {
       base::OnceClosure done_closure,
       crosapi::mojom::GetNetworkDetailsResultPtr result);
 
-  policy::BrowserPolicyConnectorAsh* const browser_policy_connector_;
-  Profile* profile_;
+  const raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh>
+      browser_policy_connector_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   std::unique_ptr<policy::DeviceAttributes> attributes_;
 

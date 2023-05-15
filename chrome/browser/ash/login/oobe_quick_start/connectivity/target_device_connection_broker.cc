@@ -21,8 +21,9 @@ void TargetDeviceConnectionBroker::GetFeatureSupportStatusAsync(
 
 void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
   FeatureSupportStatus status = GetFeatureSupportStatus();
-  if (status == FeatureSupportStatus::kUndetermined)
+  if (status == FeatureSupportStatus::kUndetermined) {
     return;
+  }
 
   auto callbacks = std::exchange(feature_status_callbacks_, {});
 
@@ -31,9 +32,22 @@ void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
   }
 }
 
+void TargetDeviceConnectionBroker::OnConnectionAuthenticated(
+    base::WeakPtr<AuthenticatedConnection> authenticated_connection) {
+  CHECK(connection_lifecycle_listener_);
+  connection_lifecycle_listener_->OnConnectionAuthenticated(
+      authenticated_connection);
+}
+
+void TargetDeviceConnectionBroker::OnConnectionClosed(
+    ConnectionClosedReason reason) {
+  CHECK(connection_lifecycle_listener_);
+  connection_lifecycle_listener_->OnConnectionClosed(reason);
+}
+
 std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(
     const RandomSessionId& random_session_id,
-    const Connection::SharedSecret shared_secret) const {
+    const SharedSecret shared_secret) const {
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
   std::string shared_secret_base64;
   base::Base64UrlEncode(shared_secret_str,

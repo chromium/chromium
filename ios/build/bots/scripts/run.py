@@ -26,6 +26,8 @@ import sys
 import traceback
 
 import constants
+import iossim_util
+import mac_util
 import shard_util
 import test_runner
 import test_runner_errors
@@ -91,6 +93,8 @@ class Runner():
       # xcode.install() installs the Xcode & iOS runtime, and returns a bool
       # indicating if the Xcode version in CIPD is a legacy Xcode package (which
       # includes iOS runtimes).
+      # Update as of 2023: for MacOS13+, iOS runtime will not be installed in
+      # xcode.install(). See xcode.install_runtime_dmg below().
       is_legacy_xcode = xcode.install(
           self.args.mac_toolchain_cmd,
           self.args.xcode_build_version,
@@ -98,6 +102,12 @@ class Runner():
           runtime_cache_folder=runtime_cache_folder,
           ios_version=self.args.version)
       xcode.select(self.args.xcode_path)
+
+      # Starting MacOS13+, additional simulator runtime will be installed
+      # in DMG format
+      if self.args.version and mac_util.is_macos_13_or_higher():
+        xcode.install_runtime_dmg(self.args.mac_toolchain_cmd,
+                                  runtime_cache_folder, self.args.version)
     except subprocess.CalledProcessError as e:
       # Flush buffers to ensure correct output ordering.
       sys.stdout.flush()
@@ -367,6 +377,16 @@ class Runner():
           xcode.move_runtime(runtime_cache_folder, self.args.xcode_path, False)
         else:
           xcode.remove_runtimes(self.args.xcode_path)
+
+      # For MacOS13+, delete iOS simulator runtime because it will
+      # be re-added on the next task depending on test args
+      if self.args.version:
+        if mac_util.is_macos_13_or_higher() and not xcode.is_runtime_builtin(
+            self.args.version):
+          logging.debug(
+              'Deleting iOS simulator runtime %s after tests are finished...' %
+              self.args.version)
+          iossim_util.delete_simulator_runtime_and_wait(self.args.version)
 
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')

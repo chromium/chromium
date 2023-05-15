@@ -286,7 +286,6 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
                                                      run.Direction());
     TextRun run_with_override = run_info.run;
     run_with_override.SetText(text_with_override);
-    run_with_override.SetCharactersLength(text_with_override.length());
     run_with_override.SetDirectionalOverride(false);
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
                         custom_font_not_ready_action, flags, draw_type);
@@ -552,9 +551,7 @@ void Font::WillUseFontData(const String& text) const {
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
   if (mark.empty())
     return GlyphData();
-
-  TextRun emphasis_mark_run(mark, mark.length());
-  return CachingWordShaper(*this).EmphasisMarkGlyphData(emphasis_mark_run);
+  return CachingWordShaper(*this).EmphasisMarkGlyphData(TextRun(mark));
 }
 
 int Font::EmphasisMarkAscent(const AtomicString& mark) const {
@@ -588,27 +585,6 @@ int Font::EmphasisMarkHeight(const AtomicString& mark) const {
     return 0;
 
   return mark_font_data->GetFontMetrics().Height();
-}
-
-CharacterRange Font::GetCharacterRange(const TextRun& run,
-                                       unsigned from,
-                                       unsigned to) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.GetCharacterRange(run, from, to);
-}
-
-Vector<CharacterRange> Font::IndividualCharacterRanges(
-    const TextRun& run) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  auto ranges = shaper.IndividualCharacterRanges(run);
-  // The shaper should return ranges.size == run.length but on some platforms
-  // (OSX10.9.5) we are seeing cases in the upper end of the unicode range
-  // where this is not true (see: crbug.com/620952). To catch these cases on
-  // more popular platforms, and to protect users, we are using a CHECK here.
-  CHECK_EQ(ranges.size(), run.length());
-  return ranges;
 }
 
 Vector<double> Font::IndividualCharacterAdvances(const TextRun& run) const {

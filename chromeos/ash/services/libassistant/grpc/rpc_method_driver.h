@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -98,8 +99,8 @@ class RpcMethodDriver {
                        std::move(request), std::move(responder)));
 
     DCHECK(service_rpc_call_fn_);
-    service_rpc_call_fn_.Run(ctx_ptr, request_ptr, responder_ptr, cq_, cq_,
-                             process_rpc_cb);
+    service_rpc_call_fn_.Run(ctx_ptr, request_ptr, responder_ptr, cq_.get(),
+                             cq_.get(), process_rpc_cb);
   }
 
   // Process the RPC received.
@@ -167,7 +168,7 @@ class RpcMethodDriver {
   }
 
   // Owned by |ServicesInitializerBase|.
-  grpc::ServerCompletionQueue* cq_ = nullptr;
+  raw_ptr<grpc::ServerCompletionQueue, ExperimentalAsh> cq_ = nullptr;
 
   ServiceRpcCallFn service_rpc_call_fn_;
   RpcImplAsyncFn rpc_impl_async_fn_;

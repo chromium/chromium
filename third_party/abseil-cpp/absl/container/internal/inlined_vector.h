@@ -1050,7 +1050,7 @@ template <typename NotMemcpyPolicy>
 void Storage<T, N, A>::SwapInlinedElements(NotMemcpyPolicy policy,
                                            Storage* other) {
   // Note: `destroy` needs to use pre-swap allocator while `construct` -
-  // post-swap allocator. Allocators will be swaped later on outside of
+  // post-swap allocator. Allocators will be swapped later on outside of
   // `SwapInlinedElements`.
   Storage* small_ptr = this;
   Storage* large_ptr = other;

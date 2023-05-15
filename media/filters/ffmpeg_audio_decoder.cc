@@ -119,11 +119,6 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeCB decode_cb_bound =
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
-  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
-    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
-    return;
-  }
-
   if (state_ == DecoderState::kError) {
     std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
@@ -159,6 +154,14 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
   if (!buffer.end_of_stream() && buffer.timestamp() == kNoTimestamp) {
     DVLOG(1) << "Received a buffer without timestamps!";
     std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
+  if (!buffer.end_of_stream() && buffer.decrypt_config() &&
+      buffer.decrypt_config()->encryption_scheme() !=
+          EncryptionScheme::kUnencrypted) {
+    DLOG(ERROR) << "Encrypted buffer not supported";
+    std::move(decode_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 

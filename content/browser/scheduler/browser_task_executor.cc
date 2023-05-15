@@ -30,21 +30,6 @@
 using QueueType = content::BrowserTaskQueues::QueueType;
 
 namespace content {
-namespace features {
-// When the "BrowserPrioritizeInputQueue" feature is enabled, the browser will
-// schedule tasks related to input in kHigh priority queue. This puts it under
-// bootstrap, but above regular tasks.
-//
-// The goal is to reduce jank by ensuring chromium is handling input events as
-// soon as possible.
-//
-// TODO(nuskos): Remove this feature flag after we've done our retroactive study
-// of all chrometto performance improvements.
-BASE_FEATURE(kBrowserPrioritizeInputQueue,
-             "BrowserPrioritizeInputQueue",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
 
 namespace {
 
@@ -100,12 +85,7 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
     const BrowserTaskTraits& traits) {
   switch (traits.task_type()) {
     case BrowserTaskType::kUserInput:
-      if (base::FeatureList::IsEnabled(
-              features::kBrowserPrioritizeInputQueue)) {
-        return QueueType::kUserInput;
-      }
-      // Defer to traits.priority() below.
-      break;
+      return QueueType::kUserInput;
 
     case BrowserTaskType::kNavigationNetworkResponse:
       if (base::FeatureList::IsEnabled(

@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
   SavedTabGroupModel* stg_model = saved_tab_group_service->model();
   TabStripModel* model = browser()->tab_strip_model();
-  base::GUID guid = base::GUID::GenerateRandomV4();
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   {  // Add the STG to the model and then open it from the current browser.
     const int original_model_count = model->GetTabCount();
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   SavedTabGroupModel* stg_model = saved_tab_group_service->model();
   TabStripModel* model = browser()->tab_strip_model();
 
-  base::GUID guid = base::GUID::GenerateRandomV4();
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
     stg_model->Add(SavedTabGroup(
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
   SavedTabGroupModel* stg_model = saved_tab_group_service->model();
   TabStripModel* model = browser()->tab_strip_model();
-  base::GUID guid = base::GUID::GenerateRandomV4();
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   // Add a tab to a new group and expect the new group is not saved.
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), -1, true);

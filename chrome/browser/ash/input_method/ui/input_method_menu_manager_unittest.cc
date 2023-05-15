@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -38,7 +39,7 @@ class InputMethodMenuManagerStatefulTest : public testing::Test {
 
   void TearDown() override { menu_manager_->RemoveObserver(observer_.get()); }
 
-  InputMethodMenuManager* menu_manager_;
+  raw_ptr<InputMethodMenuManager, ExperimentalAsh> menu_manager_;
   std::unique_ptr<MockObserver> observer_;
 };
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
@@ -66,7 +67,7 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShelfObserver overrides:
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
  private:
@@ -81,10 +82,11 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
 
   int timer_delay_;
   base::OneShotTimer timer_;
-  Shelf* shelf_ = nullptr;
-  ShelfBubble* bubble_ = nullptr;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
+  raw_ptr<ShelfBubble, DanglingUntriaged | ExperimentalAsh> bubble_ = nullptr;
 
-  ShelfTooltipDelegate* shelf_tooltip_delegate_ = nullptr;
+  raw_ptr<ShelfTooltipDelegate, ExperimentalAsh> shelf_tooltip_delegate_ =
+      nullptr;
 
   base::WeakPtrFactory<ShelfTooltipManager> weak_factory_{this};
 };

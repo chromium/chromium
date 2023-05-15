@@ -214,6 +214,16 @@ void WilcoDtcSupportdWebRequestService::MaybeStartNextRequest() {
             data:
                 "wilco_dtc_supportd's proprietary data."
             destination: OTHER
+            internal {
+              contacts {
+                email: "chromeos-oem-services@google.com"
+              }
+            }
+            user_data {
+                type: IP_ADDRESS
+                type: DEVICE_ID
+            }
+            last_reviewed: "2023-04-13"
           }
           policy {
             cookies_allowed: NO

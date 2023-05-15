@@ -55,6 +55,7 @@
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
@@ -164,7 +165,8 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  AccessibilityControllerImpl* accessibility_controller_;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
+      accessibility_controller_;
   const bool enabled_;
 };
 
@@ -399,7 +401,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Creates a window, maximized the window and from within the maximized
@@ -593,7 +595,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   auto insets = gfx::Insets::TLBR(0, 0, 56, 0);
   WorkAreaInsets::ForWindow(window.get())
       ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(), insets, insets);
-  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   const gfx::Rect kWorkAreaBounds = GetPrimaryDisplay().work_area();
@@ -628,7 +630,7 @@ TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window1_state = WindowState::Get(window1.get());
-  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window1_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -639,7 +641,7 @@ TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
   std::unique_ptr<aura::Window> window2(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window2_state = WindowState::Get(window2.get());
-  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window2_state->OnWMEvent(&snap_right);
   const gfx::Rect expected_right_snapped_bounds =
       gfx::Rect(work_area.right() - work_area.width() / 2, work_area.y(),
@@ -1141,7 +1143,7 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   ui::WindowShowState show_state_;
 };
 
@@ -1487,12 +1489,12 @@ TEST_F(WorkspaceLayoutManagerSoloTest, NotResizeWhenScreenIsLocked) {
   // The window size should not get touched while we are in lock screen.
   GetSessionControllerClient()->LockScreen();
   ShelfLayoutManager* shelf_layout_manager = shelf->shelf_layout_manager();
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(window_bounds.ToString(), window->bounds().ToString());
 
   // Coming out of the lock screen the window size should still remain.
   GetSessionControllerClient()->UnlockScreen();
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(
       screen_util::GetMaximizedWindowBoundsInParent(window.get()).ToString(),
       window_bounds.ToString());
@@ -1576,7 +1578,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  aura::Window* default_container_;
+  raw_ptr<aura::Window, ExperimentalAsh> default_container_;
 };
 
 constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
@@ -1679,17 +1681,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
 
   // When the shelf is re-shown WorkspaceLayoutManager shrinks all children but
   // the backdrop.
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
 }
@@ -1960,50 +1962,6 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   EXPECT_EQ(kNoSoundKey, client.GetPlayedEarconAndReset());
 }
 
-TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
-  WorkspaceController* wc = ShellTestApi().workspace_controller();
-  WorkspaceControllerTestApi test_helper(wc);
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  TestAccessibilityControllerClient client;
-
-  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback().enabled());
-
-  aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window_arc(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
-  window_arc->Show();
-  std::unique_ptr<aura::Window> window_nonarc(
-      CreateTestWindowInShellWithDelegate(&delegate, 0,
-                                          gfx::Rect(0, 0, 100, 100)));
-  window_nonarc->Show();
-
-  window_arc->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::ARC_APP));
-  EXPECT_FALSE(test_helper.GetBackdropWindow());
-
-  // ARC window will have a backdrop only when it's active.
-  wm::ActivateWindow(window_arc.get());
-  EXPECT_TRUE(test_helper.GetBackdropWindow());
-
-  wm::ActivateWindow(window_nonarc.get());
-  EXPECT_FALSE(test_helper.GetBackdropWindow());
-
-  wm::ActivateWindow(window_arc.get());
-  EXPECT_TRUE(test_helper.GetBackdropWindow());
-
-  // Make sure that clicking the backdrop window will play sound.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(300, 300);
-  generator->ClickLeftButton();
-  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
-
-  generator->MoveMouseTo(70, 70);
-  generator->ClickLeftButton();
-  EXPECT_EQ(kNoSoundKey, client.GetPlayedEarconAndReset());
-}
-
 class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerKeyboardTest() : layout_manager_(nullptr) {}
@@ -2068,7 +2026,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  WorkspaceLayoutManager* layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, ExperimentalAsh> layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2206,7 +2164,7 @@ TEST_F(WorkspaceLayoutManagerKeyboardTest,
 }
 
 // Test that backdrop works in split view mode.
-TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
+TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   SetTabletModeEnabled(true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -2233,15 +2191,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // Test that backdrop window is visible and is the second child in the
   // container. Its bounds should be the same as the container bounds.
   EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children())
+  for (auto* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
+  }
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
 
   // Snap the window to left. Test that the backdrop window is still visible
-  // and is the second child in the container. Its bounds should be the same
-  // as the snapped window's bounds.
+  // and is the third child (split view divider as one of the children) in the
+  // container. Its bounds should be the same as the snapped window's bounds.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -2258,7 +2218,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
                                                        ->GetNativeWindow();
                                 }),
                  children.end());
-  EXPECT_EQ(2U, children.size());
+  EXPECT_EQ(3U, children.size());
 
   // Backdrop is hidden in overview mode. So test the window and backdrop
   // separately.
@@ -2268,15 +2228,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   EXPECT_EQ(window1->bounds(), children[0]->bounds());
 
   // Now snap another window to right. Test that the backdrop window is still
-  // visible but is now the third window in the container. Its bounds should
+  // visible but is now the fourth window in the container. Its bounds should
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
 
-  EXPECT_EQ(3U, default_container()->children().size());
-  for (auto* child : default_container()->children())
+  EXPECT_EQ(4U, default_container()->children().size());
+  for (auto* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
+  }
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(window2.get(), default_container()->children()[2]);
   EXPECT_EQ(default_container()->bounds(),
@@ -2360,8 +2322,8 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
   TestState* test_state() { return test_state_; }
 
  private:
-  aura::Window* window_ = nullptr;
-  TestState* test_state_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<TestState, ExperimentalAsh> test_state_ = nullptr;
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

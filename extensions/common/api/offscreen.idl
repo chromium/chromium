@@ -25,7 +25,7 @@ namespace offscreen {
     // media (e.g. <code>getUserMedia()</code>).
     USER_MEDIA,
     // The offscreen document needs to interact with media streams from display
-    // media (e.g. <code>getDisplayMedia()</code).
+    // media (e.g. <code>getDisplayMedia()</code>).
     DISPLAY_MEDIA,
     // The offscreen document needs to use WebRTC APIs.
     WEB_RTC,

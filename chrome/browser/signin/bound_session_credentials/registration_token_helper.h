@@ -65,7 +65,7 @@ class RegistrationTokenHelper {
   void OnDataSigned(
       unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result);
 
-  const base::raw_ref<unexportable_keys::UnexportableKeyService>
+  const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
   const std::string client_id_;
   const std::string auth_code_;

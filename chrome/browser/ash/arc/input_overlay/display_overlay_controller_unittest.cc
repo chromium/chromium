@@ -30,7 +30,7 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
     controller_->DismissEducationalViewForTesting();
   }
 
-  bool ShowingNudge() { return controller_->ShowingNudge(); }
+  bool ShowingNudge() { return !!controller_->nudge_view_; }
 
  protected:
   std::unique_ptr<test::ArcTestWindow> arc_test_window_;

@@ -155,9 +155,8 @@ class GFX_EXPORT SurfaceControl {
     void SetOpaque(const Surface& surface, bool opaque);
     void SetDamageRect(const Surface& surface, const gfx::Rect& rect);
     void SetColorSpace(const Surface& surface,
-                       const gfx::ColorSpace& color_space);
-    void SetHDRMetadata(const Surface& surface,
-                        const absl::optional<HDRMetadata>& hdr_metadata);
+                       const gfx::ColorSpace& color_space,
+                       const absl::optional<HDRMetadata>& metadata);
     void SetFrameRate(const Surface& surface, float frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);
     void SetPosition(const Surface& surface, const gfx::Point& position);

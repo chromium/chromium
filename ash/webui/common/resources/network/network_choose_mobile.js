@@ -15,7 +15,7 @@ import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfigRemote, FoundNetworkProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, FoundNetworkProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
@@ -71,7 +71,7 @@ Polymer({
   /** @private {boolean} */
   scanRequested_: false,
 
-  /** @private {?CrosNetworkConfigRemote} */
+  /** @private {?CrosNetworkConfigInterface} */
   networkConfig_: null,
 
   /** @override */
@@ -80,7 +80,7 @@ Polymer({
   },
 
   /**
-   * @return {?CrosNetworkConfigRemote}
+   * @return {?CrosNetworkConfigInterface}
    * @private
    */
   getNetworkConfig_() {

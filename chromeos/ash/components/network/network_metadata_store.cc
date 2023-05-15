@@ -124,7 +124,7 @@ NetworkMetadataStore::NetworkMetadataStore(
     network_configuration_handler_->AddObserver(this);
   }
   if (network_state_handler_) {
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);

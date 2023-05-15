@@ -13,6 +13,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -62,7 +63,8 @@ class PhoneHubTrayTest : public AshTestBase {
         /*enabled_features=*/{features::kPhoneHub,
                               features::kPhoneHubCameraRoll,
                               features::kEcheLauncher, features::kEcheSWA,
-                              features::kPhoneHubNudge},
+                              features::kPhoneHubNudge,
+                              features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
@@ -79,6 +81,14 @@ class PhoneHubTrayTest : public AshTestBase {
 
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phonehub::CreateFakePhoneStatusModel());
+    phone_hub_manager_.fake_recent_apps_interaction_handler()
+        ->set_ui_state_for_testing(phonehub::RecentAppsInteractionHandler::
+                                       RecentAppsUiState::ITEMS_VISIBLE);
+  }
+
+  void TearDown() override {
+    delegate_provider_.reset();
+    AshTestBase::TearDown();
   }
 
   phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {
@@ -180,10 +190,10 @@ class PhoneHubTrayTest : public AshTestBase {
   }
 
  protected:
-  PhoneHubTray* phone_hub_tray_ = nullptr;
+  raw_ptr<PhoneHubTray, ExperimentalAsh> phone_hub_tray_ = nullptr;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
-  MockNewWindowDelegate* new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -353,11 +363,6 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, StartAllPermissionSetUpFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kPhoneHubCameraRoll,
-                            features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
@@ -385,10 +390,6 @@ TEST_F(PhoneHubTrayTest, StartAllPermissionSetUpFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, StartNotificationAndAppSetUpFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
@@ -414,10 +415,6 @@ TEST_F(PhoneHubTrayTest, StartNotificationAndAppSetUpFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, StartNotificationAccessOnlySetUpFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
@@ -441,10 +438,6 @@ TEST_F(PhoneHubTrayTest, StartNotificationAccessOnlySetUpFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, StartAppsAccessOnlySetUpFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
@@ -470,10 +463,6 @@ TEST_F(PhoneHubTrayTest, StartAppsAccessOnlySetUpFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, DoNotShowAppsAccessSetUpFlowIfFeatureIsNotReady) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
@@ -487,10 +476,6 @@ TEST_F(PhoneHubTrayTest, DoNotShowAppsAccessSetUpFlowIfFeatureIsNotReady) {
 }
 
 TEST_F(PhoneHubTrayTest, StartCameraRollOnlySetUpFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
-      /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
       AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(

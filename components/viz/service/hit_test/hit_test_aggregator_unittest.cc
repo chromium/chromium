@@ -135,6 +135,7 @@ class HitTestAggregatorTest : public testing::Test {
         local_surface_id_lookup_delegate(), kDisplayFrameSink);
   }
   void TearDown() override {
+    hit_test_aggregator_.reset();
     support_.reset();
     frame_sink_manager_.reset();
     host_frame_sink_manager_.reset();

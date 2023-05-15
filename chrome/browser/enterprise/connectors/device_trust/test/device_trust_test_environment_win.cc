@@ -126,7 +126,16 @@ void DeviceTrustTestEnvironmentWin::SetUpExistingKey() {
 }
 
 std::vector<uint8_t> DeviceTrustTestEnvironmentWin::GetWrappedKey() {
-  return key_persistence_delegate_->LoadKeyPair()->key()->GetWrappedKey();
+  std::vector<uint8_t> wrapped_key;
+  auto loaded_key_pair = key_persistence_delegate_->LoadKeyPair();
+  if (loaded_key_pair) {
+    auto* key_pointer = loaded_key_pair->key();
+    if (key_pointer) {
+      wrapped_key = key_pointer->GetWrappedKey();
+    }
+  }
+  EXPECT_FALSE(wrapped_key.empty());
+  return wrapped_key;
 }
 
 }  // namespace enterprise_connectors

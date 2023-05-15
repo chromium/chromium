@@ -10,6 +10,7 @@
 #include "ash/system/accessibility/autoclick_menu_view.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class Widget;
@@ -86,11 +87,11 @@ class ASH_EXPORT AutoclickMenuBubbleController
   friend class AutoclickBrowserTest;
 
   // Owned by views hierarchy.
-  TrayBubbleView* bubble_view_ = nullptr;
-  AutoclickMenuView* menu_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<AutoclickMenuView, ExperimentalAsh> menu_view_ = nullptr;
   FloatingMenuPosition position_ = kDefaultAutoclickMenuPosition;
 
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // The controller for the scroll bubble. Only exists during a scroll. Owned
   // by this class so that positioning calculations can take place using both

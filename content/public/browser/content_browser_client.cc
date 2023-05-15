@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -18,7 +17,9 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/responsiveness_calculator_delegate.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -77,6 +79,22 @@
 #endif
 
 namespace content {
+
+ClipboardPasteData::ClipboardPasteData(std::string text,
+                                       std::string image,
+                                       std::vector<std::string> file_paths)
+    : text(std::move(text)),
+      image(std::move(image)),
+      file_paths(std::move(file_paths)) {}
+ClipboardPasteData::ClipboardPasteData() = default;
+ClipboardPasteData::ClipboardPasteData(const ClipboardPasteData&) = default;
+ClipboardPasteData::ClipboardPasteData(ClipboardPasteData&&) = default;
+ClipboardPasteData& ClipboardPasteData::operator=(ClipboardPasteData&&) =
+    default;
+bool ClipboardPasteData::isEmpty() {
+  return text.empty() && image.empty() && file_paths.empty();
+}
+ClipboardPasteData::~ClipboardPasteData() = default;
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
@@ -336,7 +354,7 @@ bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
   return false;
 }
 
-bool ContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
+bool ContentBrowserClient::IsGetAllScreensMediaAllowed(
     content::BrowserContext* context,
     const url::Origin& origin) {
   return false;
@@ -513,6 +531,10 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
+  return true;
+}
+
+bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 
@@ -1272,9 +1294,9 @@ void ContentBrowserClient::IsClipboardPasteContentAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
-  std::move(callback).Run(data);
+  std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
 bool ContentBrowserClient::IsClipboardCopyAllowed(
@@ -1427,11 +1449,9 @@ bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
 }
 
 #if BUILDFLAG(IS_MAC)
-base::FilePath ContentBrowserClient::GetChildProcessPath(
-    int child_flags,
-    const base::FilePath& helpers_path) {
+std::string ContentBrowserClient::GetChildProcessSuffix(int child_flags) {
   NOTIMPLEMENTED();
-  return base::FilePath();
+  return std::string();
 }
 #endif
 
@@ -1457,6 +1477,11 @@ bool ContentBrowserClient::
 bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
   return false;
+}
+
+std::unique_ptr<ResponsivenessCalculatorDelegate>
+ContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
+  return nullptr;
 }
 
 }  // namespace content

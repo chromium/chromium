@@ -10,18 +10,8 @@ luci.console_view(
     header = HEADER,
     entries = [
         luci.console_view_entry(
-            builder = "goma/Chromium Linux Goma RBE Staging (clobber)",
-            category = "rbe|rel",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
             builder = "goma/Chromium Linux Goma RBE Staging",
             category = "rbe|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Linux Goma RBE Staging (dbg) (clobber)",
-            category = "rbe|debug",
-            short_name = "clb",
         ),
         luci.console_view_entry(
             builder = "goma/Chromium Linux Goma RBE Staging (dbg)",

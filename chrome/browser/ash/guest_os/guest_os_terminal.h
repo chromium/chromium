@@ -131,10 +131,11 @@ void LaunchTerminal(Profile* profile,
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
-void LaunchTerminalHome(Profile* profile, int64_t display_id);
+void LaunchTerminalHome(Profile* profile, int64_t display_id, int restore_id);
 
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
+                           int restore_id,
                            const GURL& url);
 
 void LaunchTerminalWithIntent(
@@ -168,7 +169,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 
 // Parse Intent extras from shortcut ID.
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value& shortcut);
+    const base::Value::Dict& shortcut);
 
 // Returns list of SSH connections {<profile-id>, <description>}.
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(

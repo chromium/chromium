@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,7 +100,7 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
   }
 
  private:
-  FakeNetworkDiagnostics* const fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
 };
 
 TEST(HttpsLatencySamplerTest, NoProblem) {

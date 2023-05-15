@@ -17,13 +17,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_features.h"
@@ -102,6 +102,7 @@ class MockDownloadManagerDelegate : public DownloadManagerDelegate {
                     bool,
                     SavePackagePathPickedCallback));
   MOCK_METHOD0(ApplicationClientIdForFileScanning, std::string());
+  MOCK_METHOD1(AttachExtraInfo, void(download::DownloadItem*));
 };
 
 MockDownloadManagerDelegate::MockDownloadManagerDelegate() {}
@@ -262,7 +263,8 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateActiveItem(
   EXPECT_CALL(*result, GetId())
       .WillRepeatedly(Return(download_id));
   EXPECT_CALL(*result, GetGuid())
-      .WillRepeatedly(ReturnRefOfCopy(base::GenerateGUID()));
+      .WillRepeatedly(
+          ReturnRefOfCopy(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   EXPECT_CALL(*result, GetUrlChain())
       .WillRepeatedly(ReturnRefOfCopy(std::vector<GURL>()));
   EXPECT_CALL(*result, GetReferrerUrl())
@@ -473,6 +475,7 @@ class DownloadManagerTest : public testing::Test {
     // null.
     uint32_t id = next_download_id_;
     ++next_download_id_;
+    EXPECT_CALL(*mock_download_manager_delegate_, AttachExtraInfo(_));
     download_manager_->CreateActiveItem(id, info);
     DCHECK(mock_download_item_factory_->GetItem(id));
     download::MockDownloadItemImpl& item(
@@ -625,6 +628,7 @@ TEST_F(DownloadManagerTest, StartDownload) {
       .WillOnce(Return(mock_file));
 
   mock_download_item_factory_->set_is_download_persistent(true);
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), AttachExtraInfo(_));
   download_manager_->StartDownload(
       std::move(info), std::move(input_stream),
       download::DownloadUrlParameters::OnStartedCallback());
@@ -658,6 +662,7 @@ TEST_F(DownloadManagerTest, StartDownloadWithoutHistoryDB) {
               MockCreateFile(Ref(*info->save_info.get()), input_stream.get()))
       .WillOnce(Return(mock_file));
 
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), AttachExtraInfo(_));
   download_manager_->StartDownload(
       std::move(info), std::move(input_stream),
       download::DownloadUrlParameters::OnStartedCallback());
@@ -717,6 +722,7 @@ TEST_F(DownloadManagerTest, GetDownloadByGuid) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://example.com/1.zip");
   EXPECT_CALL(GetMockObserver(), OnDownloadCreated(download_manager_.get(), _));
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), AttachExtraInfo(_));
   download::DownloadItem* persisted_item = CreateDownloadItem(
       base::Time::Now(), url_chain, download::DownloadItem::INTERRUPTED);
   ASSERT_TRUE(persisted_item);
@@ -788,6 +794,7 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
 
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetNextId_(_))
       .WillOnce(RunOnceCallback<0>(1));
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), AttachExtraInfo(_));
   OnHistoryDBInitialized();
   ASSERT_TRUE(download_manager_->GetDownloadByGuid(kGuid));
   download::DownloadItem* download =
@@ -925,6 +932,7 @@ TEST_F(DownloadManagerWithExpirationTest, DeleteExpiredDownload) {
   EXPECT_FALSE(download_item) << "Download without URL chain will be deleted.";
 
   EXPECT_CALL(GetMockObserver(), OnDownloadCreated(download_manager_.get(), _));
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), AttachExtraInfo(_));
   download_item = CreateDownloadItem(expired_start_time, url_chain,
                                      download::DownloadItem::COMPLETE);
   EXPECT_TRUE(download_item)

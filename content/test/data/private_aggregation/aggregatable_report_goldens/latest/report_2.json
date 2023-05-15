@@ -1,0 +1,8 @@
+{
+    "aggregation_coordinator_identifier": "aws-cloud",
+    "aggregation_service_payloads": [ {
+      "key_id": "example_id",
+      "payload": "VpAiKW5LqtNgWx8yDZhIzUes2v78bFqQiw5WLcaG9ggZ7Ge+uF41uOy3m4tmO8H/aUoH59VZngk7030FJdVS4xfwZQ/18Y3rTx9oe/vf83QI0LNVa9/y3nt+omXT9xA5pEwcZtSEy48U69huzXwl"
+    } ],
+    "shared_info": "{\"api\":\"fledge\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"0.1\"}"
+}

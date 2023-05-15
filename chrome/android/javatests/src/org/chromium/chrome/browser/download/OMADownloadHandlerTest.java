@@ -10,7 +10,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -71,7 +71,7 @@ public class OMADownloadHandlerTest {
     }
 
     private Context getTestContext() {
-        return new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+        return new AdvancedMockContext(ApplicationProvider.getApplicationContext());
     }
 
     /**
@@ -383,8 +383,8 @@ public class OMADownloadHandlerTest {
     @MediumTest
     @Feature({"Download"})
     public void testEnqueueOMADownloads() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         Context context = getTestContext();
 
         OMADownloadHandler.OMAInfo omaInfo = new OMAInfo();

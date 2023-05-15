@@ -32,12 +32,10 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
 BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
-BASE_DECLARE_FEATURE(kPageEntitiesModelBatchEntityMetadataSimplification);
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 BASE_DECLARE_FEATURE(kPushNotifications);
 BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
-BASE_DECLARE_FEATURE(kPageTopicsBatchAnnotations);
 BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 BASE_DECLARE_FEATURE(kPreventLongRunningPredictionModels);
@@ -48,6 +46,7 @@ BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
+BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -223,10 +222,6 @@ bool IsUnrestrictedModelDownloadingEnabled();
 // Returns whether the feature to annotate page content is enabled.
 bool IsPageContentAnnotationEnabled();
 
-// Whether search metadata should be persisted for non-Google searches, as
-// identified by the TemplateURLService.
-bool ShouldPersistSearchMetadataForNonGoogleSearches();
-
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 
@@ -241,10 +236,6 @@ bool ShouldExtractRelatedSearches();
 // Returns whether the page entities model should be executed on page content
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
-
-// Returns whether to use the simplified path for fetching entity metadata for a
-// batch of entity IDs.
-bool ShouldUseBatchEntityMetadataSimplication();
 
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.
@@ -272,9 +263,6 @@ double NoiseProbabilityForRAPPORMetrics();
 
 // Returns whether the metadata validation fetch feature is host keyed.
 bool ShouldMetadataValidationFetchHostKeyed();
-
-// Returns if Page Topics Batch Annotations are enabled.
-bool PageTopicsBatchAnnotationsEnabled();
 
 // Returns if Page Visibility Batch Annotations are enabled.
 bool PageVisibilityBatchAnnotationsEnabled();

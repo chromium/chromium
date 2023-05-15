@@ -94,6 +94,7 @@ const char DefaultSearchManager::kPrefetchLikelyNavigations[] =
     "prefetch_likely_navigations";
 const char DefaultSearchManager::kIsActive[] = "is_active";
 const char DefaultSearchManager::kStarterPackId[] = "starter_pack_id";
+const char DefaultSearchManager::kEnforcedByPolicy[] = "enforced_by_policy";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,

@@ -219,7 +219,8 @@ class AUHALStream : public AudioOutputStream {
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
 
-  [[maybe_unused]] std::unique_ptr<AmplitudePeakDetector> peak_detector_;
+  [[maybe_unused]] std::unique_ptr<AmplitudePeakDetector> peak_detector_
+      GUARDED_BY(lock_);
 
   AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 

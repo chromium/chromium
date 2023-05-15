@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter.h"
@@ -91,7 +92,8 @@ class FakeCryptAuthFeatureStatusGetterFactory
       std::unique_ptr<base::OneShotTimer> timer) override;
 
   std::vector<FakeCryptAuthFeatureStatusGetter*> instances_;
-  CryptAuthClientFactory* last_client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
+      nullptr;
 };
 
 }  // namespace device_sync

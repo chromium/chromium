@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -380,7 +380,6 @@ void SubAppInstallCommand::OnInstallFinalized(
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     webapps::WebappInstallSource::SUB_APP);
-  RecordAppBanner(&lock_->shared_web_contents(), start_url);
   MaybeFinishInstall(unhashed_app_id,
                      webapps::InstallResultCode::kSuccessNewInstall);
 }

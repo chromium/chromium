@@ -16,6 +16,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -87,8 +88,6 @@ class AppListClientImpl
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
                                 ash::SearchResultActionType action) override;
-  void ViewClosing() override;
-  void ViewShown(int64_t display_id) override;
   void ActivateItem(int profile_id,
                     const std::string& id,
                     int event_flags,
@@ -193,8 +192,8 @@ class AppListClientImpl
   // Updates the speech webview and start page for the current |profile_|.
   void SetUpSearchUI();
 
-  // Maybe records the metrics related to showing the app list.
-  void MaybeRecordViewShown();
+  // Records the metrics related to showing the app list.
+  void RecordViewShown();
 
   // Records the browser window status + the opened search result type when
   // the result is opened from the search box.
@@ -205,16 +204,14 @@ class AppListClientImpl
   // box. `launched_from` indicates where the launcher action comes from.
   void MaybeRecordLauncherAction(ash::AppListLaunchedFrom launched_from);
 
-  // The current display id showing the app list.
-  int64_t display_id_ = display::kInvalidDisplayId;
-
   // Unowned pointer to the associated profile. May change if SetProfile is
   // called.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // Unowned pointer to the model updater owned by AppListSyncableService. Will
   // change if |profile_| changes.
-  AppListModelUpdater* current_model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> current_model_updater_ =
+      nullptr;
 
   // Store the mappings between profiles and AppListModelUpdater instances.
   // In multi-profile mode, mojo callings from the Ash process to access the app
@@ -231,7 +228,8 @@ class AppListClientImpl
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
 
-  ash::AppListController* app_list_controller_ = nullptr;
+  raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_ =
+      nullptr;
 
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
 

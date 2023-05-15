@@ -82,6 +82,10 @@ class PendingCriticalClosure {
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure,
                                        bool is_immediate) {
+  // Wrapping a null closure in a critical closure has unclear semantics and
+  // most likely indicates a bug. CHECK-ing early allows detecting and
+  // investigating these cases more easily.
+  CHECK(!closure.is_null());
   if (is_immediate) {
     return base::BindOnce(&internal::ImmediateCriticalClosure::Run,
                           Owned(new internal::ImmediateCriticalClosure(

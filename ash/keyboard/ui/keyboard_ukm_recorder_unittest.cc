@@ -15,7 +15,7 @@ TEST(KeyboardUkmRecorderTest, RecordUkmWithEmptySource) {
   base::test::TaskEnvironment env;
 
   ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.UpdateRecording(ukm::UkmConsentState(ukm::MSBB));
+  test_recorder.UpdateRecording({ukm::MSBB});
   EXPECT_EQ(0u, test_recorder.entries_count());
 
   RecordUkmKeyboardShown(ukm::SourceId(), ui::TEXT_INPUT_TYPE_NONE);
@@ -28,7 +28,7 @@ TEST(KeyboardUkmRecorderTest, RecordUkmWithNavigationId) {
   base::test::TaskEnvironment env;
 
   ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.UpdateRecording(ukm::MSBB);
+  test_recorder.UpdateRecording({ukm::MSBB});
   ASSERT_EQ(0u, test_recorder.entries_count());
 
   const ukm::SourceId source =

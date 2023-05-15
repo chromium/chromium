@@ -22,21 +22,33 @@ DevToolsIssueStorage::DevToolsIssueStorage(Page& page)
   // DevToolsIssueStorage is only created for outermost pages.
   DCHECK(!page.GetMainDocument().GetParentOrOuterDocument());
 }
-DevToolsIssueStorage::~DevToolsIssueStorage() = default;
+
+DevToolsIssueStorage::~DevToolsIssueStorage() {
+  // TOOD(1351587): remove explicit destructor once the bug is fixed.
+  // This is so that crash key is scoped to issue destruction.
+  SCOPED_CRASH_KEY_NUMBER("devtools", "audit_issue_count",
+                          base::bits::Log2Floor(total_added_issues_));
+  issues_.clear();
+}
 
 void DevToolsIssueStorage::AddInspectorIssue(
     RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   DCHECK_LE(issues_.size(), kMaxIssueCount);
   if (issues_.size() == kMaxIssueCount) {
     issues_.pop_front();
   }
+  total_added_issues_++;
   issues_.emplace_back(rfh->GetGlobalId(), std::move(issue));
 }
 
 std::vector<const protocol::Audits::InspectorIssue*>
 DevToolsIssueStorage::FindIssuesForAgentOf(
     RenderFrameHost* render_frame_host) const {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   RenderFrameHostImpl* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
   RenderFrameHostImpl* main_rfh =

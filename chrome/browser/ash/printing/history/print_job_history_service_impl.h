@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
@@ -64,7 +65,7 @@ class PrintJobHistoryServiceImpl : public PrintJobHistoryService,
                           std::vector<printing::proto::PrintJobInfo> entries);
 
   std::unique_ptr<PrintJobDatabase> print_job_database_;
-  CupsPrintJobManager* print_job_manager_;
+  raw_ptr<CupsPrintJobManager, ExperimentalAsh> print_job_manager_;
   PrintJobHistoryCleaner print_job_history_cleaner_;
   // Used for avoiding that callbacks are called after the class was
   // destroyed already.

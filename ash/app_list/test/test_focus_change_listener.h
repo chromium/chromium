@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_TEST_TEST_FOCUS_CHANGE_LISTENER_H_
 #define ASH_APP_LIST_TEST_TEST_FOCUS_CHANGE_LISTENER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace ash {
@@ -26,7 +27,7 @@ class TestFocusChangeListener : public views::FocusChangeListener {
   int focus_change_count() { return focus_change_count_; }
 
  private:
-  views::FocusManager* const focus_manager_;
+  const raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
 
   // Records the count of focus changes.
   int focus_change_count_ = 0;

@@ -203,6 +203,57 @@
       },
       {
         "args": [
+          "--gtest_filter=WebNN*",
+          "--use-gpu-in-tests"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "services_webnn_unittests 10de:2184",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "services_unittests",
+        "test_id_prefix": "ninja://services:services_unittests/",
+        "variant_id": "10de:2184"
+      },
+      {
+        "args": [
+          "--gtest_filter=WebNN*",
+          "--use-gpu-in-tests"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "services_webnn_unittests 8086:9bc5",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "services_unittests",
+        "test_id_prefix": "ninja://services:services_unittests/",
+        "variant_id": "8086:9bc5"
+      },
+      {
+        "args": [
           "--ignore-runtime-requirements=*"
         ],
         "merge": {

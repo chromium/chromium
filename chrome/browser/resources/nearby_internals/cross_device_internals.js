@@ -39,4 +39,12 @@ Polymer({
   onStartScanClicked() {
     this.browserProxy_.SendStartScan();
   },
+
+  onSyncCredentialsClicked() {
+    this.browserProxy_.SendSyncCredentials();
+  },
+
+  onFirstTimeFlowClicked() {
+    this.browserProxy_.SendFirstTimeFlow();
+  },
 });

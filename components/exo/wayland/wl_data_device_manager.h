@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 
 namespace exo {
@@ -26,10 +28,10 @@ struct WaylandDataDeviceManager {
 
   // Owned by WaylandServerController, which always outlives
   // wl_data_device_manager.
-  Display* const display;
+  const raw_ptr<Display, ExperimentalAsh> display;
 
   // Owned by Server, which always outlives wl_data_device_manager.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 void bind_data_device_manager(wl_client* client,

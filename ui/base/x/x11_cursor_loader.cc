@@ -586,6 +586,11 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     } image;
     if (!ReadU32s(&image, sizeof(ImageHeader)))
       continue;
+    // Ignore unreasonably-sized cursors to prevent allocating too much
+    // memory in the bitmap below.
+    if (image.width > 8192 || image.height > 8192) {
+      continue;
+    }
     SkBitmap bitmap;
     bitmap.allocN32Pixels(image.width, image.height);
     if (!ReadU32s(bitmap.getPixels(), bitmap.computeByteSize()))

@@ -4,9 +4,9 @@
 
 #include "media/base/tuneable.h"
 
+#include <algorithm>
 #include <random>
 
-#include "base/cxx17_backports.h"
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,7 +32,7 @@ int GetParam<int>(const char* name,
                   int minimum_value,
                   int default_value,
                   int maximum_value) {
-  return base::clamp(
+  return std::clamp(
       base::FeatureParam<int>(&::media::kMediaOptimizer, name, default_value)
           .Get(),
       minimum_value, maximum_value);

@@ -167,7 +167,7 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
 }
 
-void AssistantOptInFlowScreenHandler::RegisterMessages() {
+void AssistantOptInFlowScreenHandler::DeclareJSCallbacks() {
   AddCallback(
       "login.AssistantOptInFlowScreen.ValuePropScreen.userActed",
       &AssistantOptInFlowScreenHandler::HandleValuePropScreenUserAction);

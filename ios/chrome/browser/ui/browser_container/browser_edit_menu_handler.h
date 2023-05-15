@@ -9,6 +9,7 @@
 
 @protocol LinkToTextDelegate;
 @protocol PartialTranslateDelegate;
+@protocol SearchWithDelegate;
 
 // A handler for the Browser edit menu.
 // This class is in charge of customising the menu and executing the commands.
@@ -23,6 +24,9 @@
 // The delegate to handle Partial Translate button selection.
 @property(nonatomic, weak) id<PartialTranslateDelegate>
     partialTranslateDelegate;
+
+// The delegate to handle Search With button selection.
+@property(nonatomic, weak) id<SearchWithDelegate> searchWithDelegate;
 
 // Will be called by `BrowserContainerViewController buildMenuWithBuilder:`
 // to customize its edit menu.

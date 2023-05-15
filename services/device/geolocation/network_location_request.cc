@@ -101,19 +101,17 @@ void FormUploadData(const WifiData& wifi_data,
 
 // Attempts to extract a position from the response. Detects and indicates
 // various failure cases.
-void GetLocationFromResponse(int net_error,
-                             int status_code,
-                             std::unique_ptr<std::string> response_body,
-                             const base::Time& wifi_timestamp,
-                             const GURL& server_url,
-                             mojom::Geoposition* position);
+mojom::GeopositionResultPtr CreateGeopositionResultFromResponse(
+    int net_error,
+    int status_code,
+    std::unique_ptr<std::string> response_body,
+    const base::Time& wifi_timestamp,
+    const GURL& server_url);
 
 // Parses the server response body. Returns true if parsing was successful.
-// Sets |*position| to the parsed location if a valid fix was received,
-// otherwise leaves it unchanged.
-bool ParseServerResponse(const std::string& response_body,
-                         const base::Time& wifi_timestamp,
-                         mojom::Geoposition* position);
+// Returns a `mojom::GeopositionPtr` or `nullptr` if no valid fix was received.
+mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
+                                          const base::Time& wifi_timestamp);
 void AddWifiData(const WifiData& wifi_data,
                  int age_milliseconds,
                  base::Value::Dict& request);
@@ -205,10 +203,9 @@ void NetworkLocationRequest::OnRequestComplete(
   GEOLOCATION_LOG(DEBUG) << "Got network location response: response_code="
                          << response_code;
 
-  mojom::Geoposition position;
-  GetLocationFromResponse(net_error, response_code, std::move(data),
-                          wifi_timestamp_, url_loader_->GetFinalURL(),
-                          &position);
+  auto result = CreateGeopositionResultFromResponse(
+      net_error, response_code, std::move(data), wifi_timestamp_,
+      url_loader_->GetFinalURL());
 
   bool server_error =
       net_error != net::OK || (response_code >= 500 && response_code < 600);
@@ -216,7 +213,7 @@ void NetworkLocationRequest::OnRequestComplete(
   url_loader_.reset();
 
   DVLOG(1) << "NetworkLocationRequest::OnURLFetchComplete() : run callback.";
-  location_response_callback_.Run(position, server_error, wifi_data_);
+  location_response_callback_.Run(std::move(result), server_error, wifi_data_);
 }
 
 // Local functions.
@@ -303,87 +300,87 @@ void AddWifiData(const WifiData& wifi_data,
     request.Set("wifiAccessPoints", std::move(wifi_access_point_list));
 }
 
-void FormatPositionError(const GURL& server_url,
-                         const std::string& error_message,
-                         const std::string& error_technical,
-                         mojom::Geoposition* position) {
-  position->error_code = mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-  position->error_message = error_message;
-  VLOG(1) << "NetworkLocationRequest::GetLocationFromResponse() : "
-          << position->error_message;
+mojom::GeopositionResultPtr CreateGeopositionErrorResult(
+    const GURL& server_url,
+    const std::string& error_message,
+    const std::string& error_technical) {
+  auto error = mojom::GeopositionError::New();
+  error->error_code = mojom::GeopositionErrorCode::kPositionUnavailable;
+  error->error_message = error_message;
+  VLOG(1) << "NetworkLocationRequest::CreateGeopositionErrorResult() : "
+          << error->error_message;
   if (!error_technical.empty()) {
-    position->error_technical = "Network location provider at '";
-    position->error_technical += server_url.DeprecatedGetOriginAsURL().spec();
-    position->error_technical += "' : ";
-    position->error_technical += error_technical;
-    position->error_technical += ".";
-    VLOG(1) << "NetworkLocationRequest::GetLocationFromResponse() : "
-            << position->error_technical;
+    error->error_technical = "Network location provider at '";
+    error->error_technical += server_url.DeprecatedGetOriginAsURL().spec();
+    error->error_technical += "' : ";
+    error->error_technical += error_technical;
+    error->error_technical += ".";
+    VLOG(1) << "NetworkLocationRequest::CreateGeopositionErrorResult() : "
+            << error->error_technical;
   }
+  return mojom::GeopositionResult::NewError(std::move(error));
 }
 
-void GetLocationFromResponse(int net_error,
-                             int status_code,
-                             std::unique_ptr<std::string> response_body,
-                             const base::Time& wifi_timestamp,
-                             const GURL& server_url,
-                             mojom::Geoposition* position) {
-  DCHECK(position);
+mojom::GeopositionResultPtr CreateGeopositionResultFromResponse(
+    int net_error,
+    int status_code,
+    std::unique_ptr<std::string> response_body,
+    const base::Time& wifi_timestamp,
+    const GURL& server_url) {
   // HttpPost can fail for a number of reasons. Most likely this is because
   // we're offline, or there was no response.
   if (net_error != net::OK) {
-    FormatPositionError(server_url,
-                        "Network error. Check "
-                        "DevTools console for more information.",
-                        net::ErrorToShortString(net_error), position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
-    return;
+    return CreateGeopositionErrorResult(
+        server_url,
+        "Network error. Check "
+        "DevTools console for more information.",
+        net::ErrorToShortString(net_error));
   }
 
   if (status_code != 200) {  // HTTP OK.
     std::string message = "Returned error code ";
     message += base::NumberToString(status_code);
-    FormatPositionError(server_url,
-                        "Failed to query location from network service. Check "
-                        "the DevTools console for more information.",
-                        message, position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_NOT_OK);
-    return;
+    return CreateGeopositionErrorResult(
+        server_url,
+        "Failed to query location from network service. Check "
+        "the DevTools console for more information.",
+        message);
   }
 
   // We use the timestamp from the wifi data that was used to generate
   // this position fix.
   DCHECK(response_body);
-  if (!ParseServerResponse(*response_body, wifi_timestamp, position)) {
+  mojom::GeopositionPtr position =
+      ParseServerResponse(*response_body, wifi_timestamp);
+  if (!position) {
     // We failed to parse the response.
-    FormatPositionError(server_url, "Response was malformed", "", position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
-    return;
+    return CreateGeopositionErrorResult(server_url, "Response was malformed",
+                                        /*error_technical=*/"");
   }
 
   // The response was successfully parsed, but it may not be a valid
   // position fix.
   if (!ValidateGeoposition(*position)) {
-    FormatPositionError(server_url, "Did not provide a good position fix", "",
-                        position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_INVALID_FIX);
-    return;
+    return CreateGeopositionErrorResult(server_url,
+                                        "Did not provide a good position fix",
+                                        /*error_technical=*/"");
   }
 
   RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_SUCCESS);
+  return mojom::GeopositionResult::NewPosition(std::move(position));
 }
 
-bool ParseServerResponse(const std::string& response_body,
-                         const base::Time& wifi_timestamp,
-                         mojom::Geoposition* position) {
-  DCHECK(position);
-  DCHECK(!ValidateGeoposition(*position));
-  DCHECK(position->error_code == mojom::Geoposition::ErrorCode::NONE);
+mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
+                                          const base::Time& wifi_timestamp) {
   DCHECK(!wifi_timestamp.is_null());
 
   if (response_body.empty()) {
     LOG(WARNING) << "ParseServerResponse() : Response was empty.";
-    return false;
+    return nullptr;
   }
   DVLOG(1) << "ParseServerResponse() : Parsing response " << response_body;
 
@@ -393,7 +390,7 @@ bool ParseServerResponse(const std::string& response_body,
   if (!response_result.has_value()) {
     LOG(WARNING) << "ParseServerResponse() : JSONReader failed : "
                  << response_result.error().message;
-    return false;
+    return nullptr;
   }
   base::Value response_value = std::move(*response_result);
 
@@ -401,7 +398,7 @@ bool ParseServerResponse(const std::string& response_body,
   if (!response_object) {
     VLOG(1) << "ParseServerResponse() : Unexpected response type "
             << response_value.type();
-    return false;
+    return nullptr;
   }
 
   // Get the location
@@ -409,8 +406,11 @@ bool ParseServerResponse(const std::string& response_body,
   if (!location_value) {
     VLOG(1) << "ParseServerResponse() : Missing location attribute.";
     // GLS returns a response with no location property to represent
-    // no fix available; return true to indicate successful parse.
-    return true;
+    // no fix available; return an invalid geoposition to indicate successful
+    // parse.
+    // TODO(mattreynolds): Return an appropriate error instead of a
+    // default-initialized Geoposition.
+    return mojom::Geoposition::New();
   }
 
   const base::Value::Dict* location_object = location_value->GetIfDict();
@@ -420,9 +420,12 @@ bool ParseServerResponse(const std::string& response_body,
               << location_value->type();
       // If the network provider was unable to provide a position fix, it should
       // return a HTTP 200, with "location" : null. Otherwise it's an error.
-      return false;
+      return nullptr;
     }
-    return true;  // Successfully parsed response containing no fix.
+    // Successfully parsed response containing no fix.
+    // TODO(mattreynolds): Return an appropriate error instead of a
+    // default-initialized Geoposition.
+    return mojom::Geoposition::New();
   }
 
   // latitude and longitude fields are always required.
@@ -432,9 +435,10 @@ bool ParseServerResponse(const std::string& response_body,
       location_object->FindDouble(kLongitudeString);
   if (!latitude || !longitude) {
     VLOG(1) << "ParseServerResponse() : location lacks lat and/or long.";
-    return false;
+    return nullptr;
   }
-  // All error paths covered: now start actually modifying postion.
+  // All error paths covered.
+  auto position = mojom::Geoposition::New();
   position->latitude = *latitude;
   position->longitude = *longitude;
   position->timestamp = wifi_timestamp;
@@ -446,7 +450,7 @@ bool ParseServerResponse(const std::string& response_body,
     position->accuracy = *accuracy;
   }
 
-  return true;
+  return position;
 }
 
 }  // namespace

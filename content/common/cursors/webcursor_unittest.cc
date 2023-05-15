@@ -51,12 +51,9 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 #if defined(USE_AURA)
   // Test if the custom cursor is correctly cached and updated
   // on aura platform.
+  EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
   gfx::NativeCursor native_cursor = webcursor.GetNativeCursor();
   EXPECT_EQ(gfx::Point(5, 10), native_cursor.custom_hotspot());
-  EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
-  webcursor.SetCursor(cursor);
-  EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
-  webcursor.GetNativeCursor();
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
 
   // Test if the rotating custom cursor works correctly.
@@ -81,50 +78,6 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
   EXPECT_EQ(gfx::Point(5, 10), native_cursor.custom_hotspot());
 #endif
 #endif
-}
-
-TEST(WebCursorTest, ClampHotspot) {
-  // Initialize a cursor with an invalid hotspot; it should be clamped.
-  ui::Cursor cursor =
-      ui::Cursor::NewCustom(CreateTestBitmap(5, 7), gfx::Point(100, 100));
-  WebCursor webcursor(cursor);
-  EXPECT_EQ(gfx::Point(4, 6), webcursor.cursor().custom_hotspot());
-  // SetCursor should also clamp the hotspot.
-  EXPECT_TRUE(webcursor.SetCursor(cursor));
-  EXPECT_EQ(gfx::Point(4, 6), webcursor.cursor().custom_hotspot());
-}
-
-TEST(WebCursorTest, SetCursor) {
-  WebCursor webcursor;
-  EXPECT_TRUE(webcursor.SetCursor(ui::Cursor()));
-  EXPECT_TRUE(webcursor.SetCursor(ui::Cursor(ui::mojom::CursorType::kHand)));
-  EXPECT_TRUE(
-      webcursor.SetCursor(ui::Cursor::NewCustom(SkBitmap(), gfx::Point())));
-
-  const SkBitmap kBitmap = CreateTestBitmap(32, 32);
-  const gfx::Point kHotspot = gfx::Point(10, 20);
-  ui::Cursor cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 1.5f);
-  EXPECT_TRUE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the scale factor is too small.
-  cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 0.001f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the 1x scaled image width is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(151, 3), kHotspot, 1.0f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the 1x scaled image height is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(3, 151), kHotspot, 1.0f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the scaled image width is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(50, 5), kHotspot, 0.02f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the scaled image height is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(5, 20), kHotspot, 0.1f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
 }
 
 #if defined(USE_AURA)

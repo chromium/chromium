@@ -9,12 +9,26 @@
 
 #include "ash/webui/media_app_ui/media_app_ui.mojom.h"
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
+#include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
 class MediaAppPageHandler;
+class MediaAppUI;
+
+// The WebUIConfig for chrome://media-app.
+class MediaAppUIConfig : public SystemWebAppUIConfig<MediaAppUI> {
+ public:
+  explicit MediaAppUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(ash::kChromeUIMediaAppHost,
+                             SystemWebAppType::MEDIA,
+                             create_controller_func) {}
+};
 
 // The WebUI controller for chrome://media-app.
 class MediaAppUI : public ui::MojoWebUIController,

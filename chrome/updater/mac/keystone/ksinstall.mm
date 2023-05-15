@@ -31,6 +31,10 @@
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace updater {
 namespace {
 
@@ -54,30 +58,16 @@ class KSInstallApp : public App {
 void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
-        UpdaterScope scope =
-            (geteuid() == 0) ? UpdaterScope::kSystem : UpdaterScope::kUser;
         const absl::optional<base::FilePath>& keystone_path =
-            GetKeystoneFolderPath(scope);
-
+            GetKeystoneFolderPath((geteuid() == 0) ? UpdaterScope::kSystem
+                                                   : UpdaterScope::kUser);
         if (!keystone_path ||
             !base::DeletePathRecursively(
                 keystone_path->AppendASCII(KEYSTONE_NAME ".bundle"))) {
           PLOG(ERROR) << "Couldn't find/delete Keystone path.";
           return false;
         }
-        if (IsSystemInstall(scope)) {
-          return base::DeleteFile(
-              GetLibraryFolderPath(scope)
-                  ->Append("LaunchDaemons")
-                  .Append("com.google.keystone.daemon.plist"));
-        } else {
-          base::FilePath launch_agent_dir =
-              GetLibraryFolderPath(scope)->Append("LaunchAgents");
-          return base::DeleteFile(launch_agent_dir.Append(
-                     "com.google.keystone.agent.plist")) &&
-                 base::DeleteFile(launch_agent_dir.Append(
-                     "com.google.keystone.xpcservice.plist"));
-        }
+        return true;
       }),
       base::BindOnce(
           [](base::OnceCallback<void(int)> cb, bool result) {

@@ -14,18 +14,22 @@
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
@@ -33,12 +37,11 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -71,7 +74,13 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     chrome_browser_state_ = test_cbs_builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        chrome_browser_state_.get(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
         &mock_favicon_service_, nullptr, 32, favicon_base::IconType::kTouchIcon,
         "test_chrome"));
@@ -111,10 +120,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
     mediator_.webStateList = browser_.get()->GetWebStateList();
     mediator_.webState = fake_web_state_.get();
-    NTPMetrics_ = [[NTPHomeMetrics alloc]
-        initWithBrowserState:browser_->GetBrowserState()];
-    mediator_.NTPMetrics = NTPMetrics_;
-    mediator_.NTPMetrics.webState = fake_web_state_.get();
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
@@ -142,6 +147,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState local_state_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
@@ -154,7 +160,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   ContentSuggestionsMediator* mediator_;
-  NTPHomeMetrics* NTPMetrics_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
@@ -165,16 +170,12 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
 
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
+
   // Action.
   ContentSuggestionsMostVisitedActionItem* readingList =
       ReadingListActionItem();
   [mediator_ openMostVisitedItem:readingList atIndex:1];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 1);
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
@@ -186,14 +187,10 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
   ContentSuggestionsMostVisitedItem* item =
       [[ContentSuggestionsMostVisitedItem alloc] init];
   item.URL = url;
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kMostVisitedTile, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate mostVisitedTileOpened]);
+
   // Action.
   [mediator_ openMostVisitedItem:item atIndex:0];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kMostVisitedTile, 1);
 
   // Test.
   EXPECT_EQ(url, url_loader_->last_params.web_params.url);
@@ -219,7 +216,6 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                   WebStateOpener());
   web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
   mediator_.webState = ntp_web_state;
-  mediator_.NTPMetrics.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
 
   OCMExpect([consumer_ showReturnToRecentTabTileWithConfig:[OCMArg any]]);
@@ -228,13 +224,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                    timeLabel:@"12 hours ago"];
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kReturnToRecentTab, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate recentTabTileOpened]);
+
   [mediator_ openMostRecentTab];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kReturnToRecentTab, 1);
   // Verify the most recent tab was opened.
   EXPECT_EQ(recent_tab_index, web_state_list_->active_index());
 }
@@ -265,60 +257,25 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
   [mediator_ mostRecentTabWasRemoved:web_state];
 }
 
-// Tests that the mediator calls the consumer properly in response to a call
-// from TestStartSuggestServiceResponseBridge
-TEST_F(ContentSuggestionsMediatorTest,
-       TestStartSuggestServiceResponseDelegating) {
-  // Expect the consumer is called with something if no suggestions are
-  // returned.
-  OCMExpect([consumer_ setTrendingQueriesWithConfigs:[OCMArg any]]);
-  std::vector<QuerySuggestion> response_queries{
-      {u"query1", GURL("http://test-url.com/query1")},
-      {u"query2", GURL("http://test-url.com/query1")}};
-  [mediator_ suggestionsReceived:std::move(response_queries)];
-
-  // Expect the consumer is called with an empty array if no suggestions are
-  // returned.
-  OCMExpect([consumer_ setTrendingQueriesWithConfigs:@[]]);
-  [mediator_ suggestionsReceived:std::vector<QuerySuggestion>()];
-
-  int index = 1;
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kTrendingQuery, 0);
-  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 0);
-
-  // Test that the mediator loads the URL in the config passed into
-  // loadSuggestedQuery:.
-  GURL url = GURL("http://chromium.org");
-  QuerySuggestionConfig* config = [[QuerySuggestionConfig alloc] init];
-  config.index = index;
-  config.URL = url;
-  [mediator_ loadSuggestedQuery:config];
-  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_LINK,
-      url_loader_->last_params.web_params.transition_type));
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kTrendingQuery, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 1);
-}
-
 // Tests that the command is sent to the dispatcher when opening the What's new.
 TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
 
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
 
   // Action.
   ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
   [mediator_ openMostVisitedItem:whatsNew atIndex:1];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 1);
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+}
+
+// Tests that the reload logic (e.g. setting the consumer) triggers the correct
+// consumer calls when the Magic Stack feature is enabled.
+TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
+  scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
+  OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
+  OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
+  mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

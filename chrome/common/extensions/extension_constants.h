@@ -171,6 +171,8 @@ extern const char kContactCenterInsightsExtensionId[];
 extern const char kDeskApiExtensionId[];
 // The extension id of the Bruschetta Security Key Forwarder extension.
 extern const char kBruSecurityKeyForwarderExtensionId[];
+// The extension id of the OneDrive FS external component extension.
+extern const char kODFSExtensionId[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.

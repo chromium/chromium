@@ -4,14 +4,17 @@
 
 #include "third_party/blink/renderer/platform/fonts/mac/font_platform_data_mac.h"
 
-#include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
-
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
-
+#include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace blink {
 
@@ -20,7 +23,7 @@ constexpr SkFourByteTag kOpszTag = SkSetFourByteTag('o', 'p', 's', 'z');
 constexpr SkFourByteTag kWghtTag = SkSetFourByteTag('w', 'g', 'h', 't');
 
 sk_sp<SkTypeface> MakeSystemFontOfSize(float size) {
-  return SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(MatchNSFontFamily(
+  return SkMakeTypefaceFromCTFont(base::apple::NSToCFPtrCast(MatchNSFontFamily(
       font_family_names::kSystemUi, 0, FontSelectionValue(400), size)));
 }
 }

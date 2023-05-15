@@ -6,25 +6,20 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/background.h"
 
 namespace ash {
-
-namespace {
-
-SkColor GetBackgroundColor() {
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-}
-
-}  // namespace
 
 class SplitViewDividerHandlerView::SelectionAnimation
     : public gfx::SlideAnimation,
@@ -58,7 +53,7 @@ class SplitViewDividerHandlerView::SelectionAnimation
         kSplitviewWhiteBarCornerRadius, kSplitviewWhiteBarRadius));
   }
 
-  SplitViewDividerHandlerView* white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
 };
 
 class SplitViewDividerHandlerView::SpawningAnimation
@@ -114,7 +109,7 @@ class SplitViewDividerHandlerView::SpawningAnimation
     UpdateWhiteHandlerBounds();
   }
 
-  SplitViewDividerHandlerView* white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
   int spawn_signed_offset_;
   base::OneShotTimer delay_timer_;
 };
@@ -122,8 +117,11 @@ class SplitViewDividerHandlerView::SpawningAnimation
 SplitViewDividerHandlerView::SplitViewDividerHandlerView()
     : selection_animation_(std::make_unique<SelectionAnimation>(this)) {
   SetPaintToLayer();
-  SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), kSplitviewWhiteBarCornerRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      chromeos::features::IsJellyrollEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshIconColorPrimary,
+      kSplitviewWhiteBarCornerRadius));
 }
 
 SplitViewDividerHandlerView::~SplitViewDividerHandlerView() = default;
@@ -167,12 +165,6 @@ void SplitViewDividerHandlerView::OnPaint(gfx::Canvas* canvas) {
   // It's needed to avoid artifacts when tapping on the divider quickly.
   canvas->DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
   views::View::OnPaint(canvas);
-}
-
-void SplitViewDividerHandlerView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  background()->SetNativeControlColor(GetBackgroundColor());
-  SchedulePaint();
 }
 
 }  // namespace ash

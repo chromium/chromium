@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -128,6 +129,23 @@ WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItem* item) {
   return item->overview_item_view_->preview_view();
 }
 
+gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItem* item) const {
+  SystemShadow* shadow = item->shadow_.get();
+  if (!shadow || !shadow->GetLayer()->visible()) {
+    return gfx::Rect();
+  }
+
+  return shadow->GetContentBounds();
+}
+
+views::Widget* OverviewTestBase::GetCannotSnapWidget(OverviewItem* item) {
+  return item->cannot_snap_widget_.get();
+}
+
+void OverviewTestBase::SetAnimatingToClose(OverviewItem* item, bool val) {
+  item->animating_to_close_ = val;
+}
+
 float OverviewTestBase::GetCloseButtonOpacity(OverviewItem* item) {
   return GetCloseButton(item)->layer()->opacity();
 }
@@ -204,13 +222,14 @@ void OverviewTestBase::CheckOverviewEnterExitHistogram(
     const std::vector<int>& exit_counts) {
   CheckForDuplicateTraceName(trace);
 
-  // Overview histograms recorded via ui::ThroughputTracker is reported
-  // on the next frame presented after animation stops. Wait for the next
-  // frame with a 100ms timeout for the report, regardless of whether there
-  // is a next frame.
-  std::ignore = ui::WaitForNextFrameToBePresented(
-      Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-      base::Milliseconds(500));
+  // Force a frame then wait, ensuring there is one more frame presented after
+  // animation finishes to allow animation throughput data to be passed from
+  // cc to ui.
+  ui::Compositor* compositor =
+      Shell::GetPrimaryRootWindow()->layer()->GetCompositor();
+  compositor->ScheduleFullRedraw();
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));
 
   {
     SCOPED_TRACE(trace + ".Enter");

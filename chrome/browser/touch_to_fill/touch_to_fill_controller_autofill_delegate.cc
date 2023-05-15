@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -143,7 +144,7 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
     return;
 
   password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
-      ->SelectPasskey(credential.id());
+      ->SelectPasskey(base::Base64Encode(credential.credential_id()));
 
   CleanUpDriverAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
                                 /*show_virtual_keyboard=*/false);
@@ -229,7 +230,7 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   password_manager::metrics_util::LogFilledCredentialIsFromAndroidApp(
       credential.is_affiliation_based_match().value());
-  driver_->TouchToFillClosed(ShowVirtualKeyboard(false));
+  driver_->KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false));
 
   driver_->FillSuggestion(credential.username(), credential.password());
 
@@ -254,6 +255,7 @@ void TouchToFillControllerAutofillDelegate::CleanUpDriverAndReportOutcome(
     TouchToFillOutcome outcome,
     bool show_virtual_keyboard) {
   std::exchange(driver_, nullptr)
-      ->TouchToFillClosed(ShowVirtualKeyboard(show_virtual_keyboard));
+      ->KeyboardReplacingSurfaceClosed(
+          ShowVirtualKeyboard(show_virtual_keyboard));
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

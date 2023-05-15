@@ -10,6 +10,7 @@
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
@@ -59,7 +60,8 @@ void ServiceWorkerHost::BindReceiver(
 void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
-    int worker_thread_id) {
+    int worker_thread_id,
+    mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
@@ -88,6 +90,9 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
       ->DidInitializeServiceWorkerContext(render_process_id, extension_id,
                                           service_worker_version_id,
                                           worker_thread_id);
+  EventRouter::Get(browser_context)
+      ->BindServiceWorkerEventDispatcher(render_process_id, worker_thread_id,
+                                         std::move(event_dispatcher));
 }
 
 void ServiceWorkerHost::DidStartServiceWorkerContext(

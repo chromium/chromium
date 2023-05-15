@@ -11,23 +11,22 @@ namespace base {
 namespace {
 
 TEST(FileErrorOrDeathTest, Error) {
-  FileErrorOr<int> error;
-  error = unexpected(File::Error::FILE_ERROR_FAILED);
-  EXPECT_FALSE(error.has_value());
+  FileErrorOr<int> error = unexpected(File::Error::FILE_ERROR_FAILED);
+  ASSERT_FALSE(error.has_value());
   EXPECT_EQ(error.error(), File::Error::FILE_ERROR_FAILED);
   EXPECT_DEATH_IF_SUPPORTED(error.value(), "");
 }
 
 TEST(FileErrorOrDeathTest, Value) {
-  FileErrorOr<int> value(42);
-  EXPECT_TRUE(value.has_value());
+  FileErrorOr<int> value = 42;
+  ASSERT_TRUE(value.has_value());
   EXPECT_EQ(value.value(), 42);
   EXPECT_DEATH_IF_SUPPORTED(value.error(), "");
 }
 
 TEST(FileErrorOrDeathTest, ConstValue) {
-  const FileErrorOr<int> const_value(1234);
-  EXPECT_TRUE(const_value.has_value());
+  const FileErrorOr<int> const_value = 1234;
+  ASSERT_TRUE(const_value.has_value());
   EXPECT_EQ(const_value.value(), 1234);
   EXPECT_DEATH_IF_SUPPORTED(const_value.error(), "");
 }

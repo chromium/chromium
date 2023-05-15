@@ -20,6 +20,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/container/internal/test_instance_tracker.h"
+#include "absl/functional/any_invocable.h"
 #include "absl/memory/memory.h"
 
 namespace absl {
@@ -157,6 +158,25 @@ TEST(FunctionRef, NullMemberPtrAssertFails) {
   EXPECT_DEBUG_DEATH({ FunctionRef<int(const S& s)> ref(mem_ptr); }, "");
 }
 
+TEST(FunctionRef, NullStdFunctionAssertPasses) {
+  std::function<void()> function = []() {};
+  FunctionRef<void()> ref(function);
+}
+
+TEST(FunctionRef, NullStdFunctionAssertFails) {
+  std::function<void()> function = nullptr;
+  EXPECT_DEBUG_DEATH({ FunctionRef<void()> ref(function); }, "");
+}
+
+TEST(FunctionRef, NullAnyInvocableAssertPasses) {
+  AnyInvocable<void() const> invocable = []() {};
+  FunctionRef<void()> ref(invocable);
+}
+TEST(FunctionRef, NullAnyInvocableAssertFails) {
+  AnyInvocable<void() const> invocable = nullptr;
+  EXPECT_DEBUG_DEATH({ FunctionRef<void()> ref(invocable); }, "");
+}
+
 #endif  // GTEST_HAS_DEATH_TEST
 
 TEST(FunctionRef, CopiesAndMovesPerPassByValue) {
@@ -237,7 +257,7 @@ TEST(FunctionRef, PassByValueTypes) {
       "Reference types should be preserved");
 
   // Make sure the address of an object received by reference is the same as the
-  // addess of the object passed by the caller.
+  // address of the object passed by the caller.
   {
     LargeTrivial obj;
     auto test = [&obj](LargeTrivial& input) { ASSERT_EQ(&input, &obj); };

@@ -8,7 +8,8 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
@@ -54,8 +55,8 @@ void BlendEquationFuncAdd(float dst[4],
   r[3] = src[3] * Weight<As, 3>(dst, src, src1) +
          dst[3] * Weight<Ad, 3>(dst, src, src1);
   for (int i = 0; i < 4; ++i) {
-    result[i] = static_cast<uint8_t>(
-        std::floor(base::clamp(r[i], 0.0f, 1.0f) * 255.0f));
+    result[i] =
+        static_cast<uint8_t>(std::floor(std::clamp(r[i], 0.0f, 1.0f) * 255.0f));
   }
 }
 

@@ -37,8 +37,12 @@ bool DeviceAuthenticatorMac::CanAuthenticateWithBiometrics() {
   base::UmaHistogramBoolean("PasswordManager.CanUseBiometricsMac",
                             is_available);
   if (is_available) {
+    // If biometrics is available, we should record that at one point in time
+    // biometrics was available on this device. This will never be set to false
+    // after setting to true here as we only record this when biometrics is
+    // available.
     g_browser_process->local_state()->SetBoolean(
-        password_manager::prefs::kHadBiometricsAvailable, is_available);
+        password_manager::prefs::kHadBiometricsAvailable, /*value=*/true);
   }
   return is_available;
 }

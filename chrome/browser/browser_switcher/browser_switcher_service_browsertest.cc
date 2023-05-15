@@ -467,8 +467,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
                        ExternalGreylistFetchAndParseAfterStartup) {
   policy::PolicyMap policies;
   EnableBrowserSwitcher(&policies);
-  base::Value::List url_list;
-  url_list.Append("*");
+  auto url_list = base::Value::List().Append("*");
   SetPolicy(&policies, policy::key::kBrowserSwitcherUrlList,
             base::Value(std::move(url_list)));
   SetPolicy(&policies, policy::key::kBrowserSwitcherExternalGreylistUrl,
@@ -842,11 +841,10 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
       extensions::ExtensionBuilder()
           .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .SetID(kLBSExtensionId)
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Legacy Browser Support")
                            .Set("manifest_version", 2)
-                           .Set("version", "5.9")
-                           .Build())
+                           .Set("version", "5.9"))
           .Build();
   extensions::ExtensionSystem::Get(browser()->profile())
       ->extension_service()

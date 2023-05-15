@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
@@ -52,6 +53,10 @@ unsigned ContainerSelector::Type(WritingMode writing_mode) const {
   }
 
   return type;
+}
+
+void ScopedContainerSelector::Trace(Visitor* visitor) const {
+  visitor->Trace(tree_scope_);
 }
 
 }  // namespace blink

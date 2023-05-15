@@ -10,7 +10,7 @@ import '//resources/cr_elements/cr_actionable_row_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './extension_controlled_icon.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -66,6 +66,8 @@ export class PrefToggleButtonElement extends PolymerElement {
         value: false,
       },
 
+      noExtensionIndicator: Boolean,
+
       pref: Object,
     };
   }
@@ -82,6 +84,7 @@ export class PrefToggleButtonElement extends PolymerElement {
   checked: boolean;
   disabled: boolean;
   changeRequiresValidation: boolean;
+  noExtensionIndicator: boolean;
   pref: chrome.settingsPrivate.PrefObject;
 
   override ready() {
@@ -143,6 +146,30 @@ export class PrefToggleButtonElement extends PolymerElement {
       return this.label;
     }
     return [this.label, this.subLabel].join('. ');
+  }
+
+  private isPrefEnforced_(): boolean {
+    return !!this.pref &&
+        this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private hasPrefPolicyIndicator_(): boolean {
+    if (!this.pref) {
+      return false;
+    }
+    if (this.noExtensionIndicator &&
+        this.pref.controlledBy ===
+            chrome.settingsPrivate.ControlledBy.EXTENSION) {
+      return false;
+    }
+    return this.isPrefEnforced_() ||
+        chrome.settingsPrivate.Enforcement.RECOMMENDED ===
+        this.pref.enforcement;
+  }
+
+  private controlDisabled_(): boolean {
+    return this.disabled || this.isPrefEnforced_() ||
+        !!(this.pref && this.pref.userControlDisabled);
   }
 }
 

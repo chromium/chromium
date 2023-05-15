@@ -14,14 +14,23 @@
 }
 {% macro render_variables_for_mode(mode) -%}
 {%- for model_name, color in colors[mode].items() %}
-  {%- if needs_rgb_variant(color) %}
+{%-   if needs_rgb_variant(color) %}
   {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
-  {%- endif %}
+{%-   endif %}
   {{model_name | to_css_var_name}}: {{css_color_var(model_name, color, mode)}};
 {% endfor %}
 
 {%- for name, value in opacities[mode].items() %}
   {{name | to_css_var_name}}: {{value | css_opacity}};
+{%  endfor -%}
+
+{%- for name, color in legacy_mappings[Modes.DEFAULT].items() %}
+{%-   if needs_rgb_variant(color) %}
+  {{name | to_css_var_name_unscoped}}-rgb: {{color | css_color_rgb}};
+{%-   endif %}
+  {{name | to_css_var_name_unscoped}}: {{css_color_var(name, color, mode, True)}};
+  {{name | to_css_var_name_unscoped}}-light: {{css_color_var(name, color, Modes.LIGHT, True)}};
+  {{name | to_css_var_name_unscoped}}-dark: {{css_color_var(name, color, Modes.DARK, True)}};
 {%  endfor -%}
 {%- endmacro %}
 {#
@@ -32,11 +41,6 @@ Chrome OS pages.
 -#}
 html:not(body) {
 {{- render_variables_for_mode(Modes.DEFAULT) -}}
-
-{%- for name, value in legacy_mappings.items() %}
-  {{name | to_css_var_name_unscoped}}: {{value | process_simple_ref}};
-{%  endfor -%}
-
 }
 
 {%- if font_families or typefaces %}

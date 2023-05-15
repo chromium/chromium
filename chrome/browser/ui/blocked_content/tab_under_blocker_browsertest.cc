@@ -87,7 +87,7 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
 
     content::WebContents* opener =
         browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(content::ExecuteScript(opener, "window.open('/title1.html')"));
+    EXPECT_TRUE(content::ExecJs(opener, "window.open('/title1.html')"));
     navigation_observer.Wait();
 
     EXPECT_TRUE(blocked_content::PopupOpenerTabHelper::FromWebContents(opener)
@@ -144,16 +144,18 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, SimpleTabUnder_IsBlocked) {
   content::WebContentsConsoleObserver console_observer(opener);
   console_observer.SetPattern(expected_error);
 
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      opener, base::StringPrintf("window.location = '%s';",
-                                 cross_origin_url.spec().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(opener,
+                      base::StringPrintf("window.location = '%s';",
+                                         cross_origin_url.spec().c_str()),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   tab_under_observer.Wait();
   EXPECT_FALSE(tab_under_observer.last_navigation_succeeded());
 
   // Round trip to the renderer to ensure the message was sent. Don't use Wait()
   // to be consistent with the NotBlocked test below, which has to use this
   // technique.
-  EXPECT_TRUE(content::ExecuteScript(opener, "var a = 0;"));
+  EXPECT_TRUE(content::ExecJs(opener, "var a = 0;"));
   EXPECT_EQ(expected_error, console_observer.GetMessageAt(0u));
   EXPECT_TRUE(IsUiShownForUrl(opener, cross_origin_url));
 }
@@ -173,16 +175,18 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerFencedFrameTest,
   content::WebContentsConsoleObserver console_observer(opener);
   console_observer.SetPattern(expected_error);
 
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      opener, base::StringPrintf("window.location = '%s';",
-                                 cross_origin_url.spec().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(opener,
+                      base::StringPrintf("window.location = '%s';",
+                                         cross_origin_url.spec().c_str()),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   tab_under_observer.Wait();
   EXPECT_FALSE(tab_under_observer.last_navigation_succeeded());
 
   // Round trip to the renderer to ensure the message was sent. Don't use Wait()
   // to be consistent with the NotBlocked test below, which has to use this
   // technique.
-  EXPECT_TRUE(content::ExecuteScript(opener, "var a = 0;"));
+  EXPECT_TRUE(content::ExecJs(opener, "var a = 0;"));
   EXPECT_EQ(expected_error, console_observer.GetMessageAt(0u));
   EXPECT_TRUE(IsUiShownForUrl(opener, cross_origin_url));
 }
@@ -200,14 +204,16 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
       embedded_test_server()->GetURL("a.com", "/title1.html");
   content::WebContentsConsoleObserver console_observer(opener);
   console_observer.SetPattern(GetError(cross_origin_url));
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      opener, base::StringPrintf("window.location = '%s';",
-                                 cross_origin_url.spec().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(opener,
+                      base::StringPrintf("window.location = '%s';",
+                                         cross_origin_url.spec().c_str()),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   tab_under_observer.Wait();
   EXPECT_TRUE(tab_under_observer.last_navigation_succeeded());
 
   // Round trip to the renderer to ensure the message would have been sent.
-  EXPECT_TRUE(content::ExecuteScript(opener, "var a = 0;"));
+  EXPECT_TRUE(content::ExecJs(opener, "var a = 0;"));
   EXPECT_TRUE(console_observer.messages().empty());
   EXPECT_FALSE(IsUiShownForUrl(opener, cross_origin_url));
 }
@@ -227,14 +233,16 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerFencedFrameTest,
       embedded_test_server()->GetURL("a.com", "/title1.html");
   content::WebContentsConsoleObserver console_observer(opener);
   console_observer.SetPattern(GetError(cross_origin_url));
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      opener, base::StringPrintf("window.location = '%s';",
-                                 cross_origin_url.spec().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(opener,
+                      base::StringPrintf("window.location = '%s';",
+                                         cross_origin_url.spec().c_str()),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   tab_under_observer.Wait();
   EXPECT_TRUE(tab_under_observer.last_navigation_succeeded());
 
   // Round trip to the renderer to ensure the message would have been sent.
-  EXPECT_TRUE(content::ExecuteScript(opener, "var a = 0;"));
+  EXPECT_TRUE(content::ExecJs(opener, "var a = 0;"));
   EXPECT_TRUE(console_observer.messages().empty());
   EXPECT_FALSE(IsUiShownForUrl(opener, cross_origin_url));
 }
@@ -263,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   content::TestNavigationObserver tab_under_observer(opener, 1);
   navigation_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       opener,
       base::StringPrintf(script.c_str(), cross_origin_url.c_str()).c_str()));
   navigation_observer.Wait();
@@ -284,9 +292,11 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
     content::TestNavigationObserver tab_under_observer(opener, 1);
     const GURL cross_origin_url =
         embedded_test_server()->GetURL("a.com", "/title1.html");
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-        opener, base::StringPrintf("window.location = '%s';",
-                                   cross_origin_url.spec().c_str())));
+    EXPECT_TRUE(
+        content::ExecJs(opener,
+                        base::StringPrintf("window.location = '%s';",
+                                           cross_origin_url.spec().c_str()),
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     tab_under_observer.Wait();
 
     EXPECT_TRUE(tab_under_observer.last_navigation_succeeded());
@@ -300,9 +310,11 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
     content::TestNavigationObserver tab_under_observer(opener, 1);
     const GURL cross_origin_url =
         embedded_test_server()->GetURL("b.com", "/title1.html");
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-        opener, base::StringPrintf("window.location = '%s';",
-                                   cross_origin_url.spec().c_str())));
+    EXPECT_TRUE(
+        content::ExecJs(opener,
+                        base::StringPrintf("window.location = '%s';",
+                                           cross_origin_url.spec().c_str()),
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     tab_under_observer.Wait();
 
     EXPECT_FALSE(tab_under_observer.last_navigation_succeeded());
@@ -325,9 +337,11 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
   content::TestNavigationObserver tab_under_observer(opener, 1);
   const GURL cross_origin_url =
       embedded_test_server()->GetURL("b.com", "/title1.html");
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      opener, base::StringPrintf("window.location = '%s';",
-                                 cross_origin_url.spec().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(opener,
+                      base::StringPrintf("window.location = '%s';",
+                                         cross_origin_url.spec().c_str()),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   tab_under_observer.Wait();
 
   EXPECT_TRUE(tab_under_observer.last_navigation_succeeded());
@@ -345,9 +359,11 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, ControlledBySetting) {
     content::TestNavigationObserver tab_under_observer(opener, 1);
     const GURL cross_origin_url =
         embedded_test_server()->GetURL("b.com", "/title1.html");
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-        opener, base::StringPrintf("window.location = '%s';",
-                                   cross_origin_url.spec().c_str())));
+    EXPECT_TRUE(
+        content::ExecJs(opener,
+                        base::StringPrintf("window.location = '%s';",
+                                           cross_origin_url.spec().c_str()),
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     tab_under_observer.Wait();
 
     EXPECT_FALSE(tab_under_observer.last_navigation_succeeded());
@@ -364,9 +380,11 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, ControlledBySetting) {
     content::TestNavigationObserver tab_under_observer(opener, 1);
     const GURL cross_origin_url =
         embedded_test_server()->GetURL("a.com", "/title1.html");
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-        opener, base::StringPrintf("window.location = '%s';",
-                                   cross_origin_url.spec().c_str())));
+    EXPECT_TRUE(
+        content::ExecJs(opener,
+                        base::StringPrintf("window.location = '%s';",
+                                           cross_origin_url.spec().c_str()),
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     tab_under_observer.Wait();
 
     EXPECT_TRUE(tab_under_observer.last_navigation_succeeded());

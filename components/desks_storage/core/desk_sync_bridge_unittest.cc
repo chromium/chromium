@@ -366,6 +366,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecificsWithoutDeskType(
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
   FillExampleSystemWebAppWindow(desk->add_apps());
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -380,6 +383,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
       ExampleWorkspaceDeskSpecificsWithoutDeskType(
           uuid, template_name, created_time, number_of_tabs);
   specifics.set_desk_type(desk_type);
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -412,6 +418,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
   FillExampleSystemWebAppWindow(desk->add_apps());
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -438,6 +447,21 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskWithoutDeskType() {
       /*number_of_tabs=*/2);
 }
 
+WorkspaceDeskSpecifics CreateFloatingWorkspaceTemplateExpectedValue(
+    std::string cache_guid) {
+  WorkspaceDeskSpecifics expected_desk_specifics =
+      ExampleWorkspaceDeskSpecifics(
+          MakeTestUuid(TestUuidId(1)).AsLowercaseString(),
+          base::StringPrintf(kNameFormat, 1), base::Time::Now(),
+          /*number_of_tabs=*/2,
+          SyncDeskType::WorkspaceDeskSpecifics_DeskType_FLOATING_WORKSPACE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
+  expected_desk_specifics.set_client_cache_guid(cache_guid);
+  return expected_desk_specifics;
+}
+
 WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
     int template_index,
     const base::Time& created_time) {
@@ -450,6 +474,9 @@ WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(kBrowserWindowId);
@@ -476,6 +503,9 @@ WorkspaceDeskSpecifics CreatePwaTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(kPwaWindowId);
@@ -504,6 +534,9 @@ WorkspaceDeskSpecifics CreateChromeAppTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(window_id);
@@ -624,8 +657,8 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   // Helper method to reduce duplicated code between tests. Wraps the given
-  // specifics objects in an EntityData and EntityChange of type ACTION_ADD, and
-  // returns an EntityChangeList containing them all. Order is maintained.
+  // specifics objects in an EntityData and EntityChange of type ACTION_ADD,
+  // and returns an EntityChangeList containing them all. Order is maintained.
   EntityChangeList EntityAddList(
       const std::vector<WorkspaceDeskSpecifics>& specifics_list) {
     EntityChangeList changes;
@@ -675,8 +708,8 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   void AddTwoTemplatesWithDuplicatedNames() {
-    // These two templates will have new UUIDs but with names that collides with
-    // "template 1"
+    // These two templates will have new UUIDs but with names that collides
+    // with "template 1"
     auto desk_template1 =
         desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(8)).AsLowercaseString(), "template 1",
@@ -926,6 +959,21 @@ TEST_F(DeskSyncBridgeTest, TabGroupInfoConversionShouldBeLossless) {
   }
 }
 
+TEST_F(DeskSyncBridgeTest, FloatingWorkspaceConversionShouldBeLossless) {
+  CreateBridge();
+  WorkspaceDeskSpecifics desk_proto =
+      CreateFloatingWorkspaceTemplateExpectedValue("cache_guid");
+  std::unique_ptr<DeskTemplate> desk_template =
+      desk_template_conversion::FromSyncProto(desk_proto);
+  WorkspaceDeskSpecifics converted_desk_proto =
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
+
+  std::unique_ptr<DeskTemplate> converted_desk_template =
+      desk_template_conversion::FromSyncProto(converted_desk_proto);
+
+  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+}
+
 // Tests that URLs are saved properly when converting a DeskTemplate
 // to its Protobuf form.
 TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
@@ -1091,8 +1139,8 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
           kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
-// Tests that the sync bridge appropriately handles explicitly unknown desk type
-// as invalid.
+// Tests that the sync bridge appropriately handles explicitly unknown desk
+// type as invalid.
 TEST_F(DeskSyncBridgeTest, EnsureGracefulHandlingOfUnknownDeskTypes) {
   WorkspaceDeskSpecifics unknown_desk = CreateUnknownDeskType();
   std::unique_ptr<DeskTemplate> desk_template =
@@ -1530,41 +1578,41 @@ TEST_F(DeskSyncBridgeTest, DeleteAllEntriesLocally) {
   EXPECT_EQ(0ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesEmpty) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(_)).Times(0);
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(_)).Times(0);
 
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          EntityChangeList());
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), EntityChangeList());
   EXPECT_FALSE(error);
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithTwoAdditions) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithTwoAdditions) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  auto error =
-      bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                 EntityAddList({template1, template2}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({template1, template2}));
   EXPECT_FALSE(error);
 
   // We should have two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithOneUpdate) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({template1, template2}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({template1, template2}));
 
   // We should have seeded two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
@@ -1578,8 +1626,8 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
       template1.uuid(), MakeEntityData(updated_template1)));
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(update_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(update_changes));
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
   // Template 1 should be updated to new content.
@@ -1598,15 +1646,15 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
 }
 
 // Tests that remote desk template can be correctly removed.
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithOneDeletion) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({template1, template2}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({template1, template2}));
 
   // Verify that we have seeded two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
@@ -1616,8 +1664,8 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
   delete_changes.push_back(EntityChange::CreateDelete(template1.uuid()));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(delete_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
 
   // Verify that we only have template 2.
   EXPECT_EQ(1ul, bridge()->GetAllEntryUuids().size());
@@ -1629,7 +1677,7 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
                 .SerializeAsString());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesDeleteNonexistent) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesDeleteNonexistent) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(_)).Times(0);
 
@@ -1640,12 +1688,12 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesDeleteNonexistent) {
 
   EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete("no-such-uuid"));
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          std::move(entity_change_list));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), std::move(entity_change_list));
   EXPECT_FALSE(error);
 }
 
-TEST_F(DeskSyncBridgeTest, MergeSyncDataWithTwoEntries) {
+TEST_F(DeskSyncBridgeTest, MergeFullSyncDataWithTwoEntries) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
@@ -1653,12 +1701,12 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataWithTwoEntries) {
 
   auto metadata_change_list = std::make_unique<InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          EntityAddList({template1, template2}));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              EntityAddList({template1, template2}));
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
+TEST_F(DeskSyncBridgeTest, MergeFullSyncDataUploadsLocalOnlyEntries) {
   InitializeBridge();
 
   // Seed two templates.
@@ -1675,13 +1723,13 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
   auto metadata_change_list = std::make_unique<InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
 
-  // MergeSyncData should upload the local-only template "template 1".
+  // MergeFullSyncData should upload the local-only template "template 1".
   EXPECT_CALL(*processor(),
               Put(StrEq(MakeTestUuid(TestUuidId(1)).AsLowercaseString()), _, _))
       .Times(1);
 
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          EntityAddList({template1, template2}));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              EntityAddList({template1, template2}));
 
   // Merged data should contain 3 templtes.
   EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());

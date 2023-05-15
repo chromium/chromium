@@ -32,6 +32,7 @@ extern const char kReverseAutologinRejectedEmailList[];
 extern const char kSignedInWithCredentialProvider[];
 extern const char kSigninAllowed[];
 extern const char kGaiaCookieLastListAccountsData[];
+extern const char kSigninAllowedOnNextStartup[];
 
 }  // namespace prefs
 

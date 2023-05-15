@@ -43,10 +43,6 @@ BASE_FEATURE(kSyncExtensionTypesThrottling,
              "SyncExtensionTypesThrottling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncResetPollIntervalOnStart,
-             "SyncResetPollIntervalOnStart",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncSegmentationDataType,
              "SyncSegmentationDataType",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -81,7 +77,7 @@ BASE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration,
 
 BASE_FEATURE(kUseSyncInvalidations,
              "UseSyncInvalidations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncPersistInvalidations,
              "SyncPersistInvalidations",
@@ -89,7 +85,7 @@ BASE_FEATURE(kSyncPersistInvalidations,
 
 BASE_FEATURE(kUseSyncInvalidationsForWalletAndOffer,
              "UseSyncInvalidationsForWalletAndOffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
@@ -101,7 +97,7 @@ BASE_FEATURE(kSyncEnableHistoryDataType,
 
 BASE_FEATURE(kSyncEnableContactInfoDataType,
              "SyncEnableContactInfoDataType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeEarlyReturnNoDatabase,
              "SyncEnableContactInfoDataTypeEarlyReturnNoDatabase",
@@ -139,9 +135,19 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kSyncIgnoreSyncRequestedPreference,
+             "SyncIgnoreSyncRequestedPreference",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
              "SyncPollImmediatelyOnEveryStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncPollWithoutDelayOnStartup,
+             "SyncPollWithoutDelayOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIndicateAccountStorageErrorInAccountCell,
@@ -154,5 +160,9 @@ BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
+             "SyncIgnoreGetUpdatesRetryDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace syncer

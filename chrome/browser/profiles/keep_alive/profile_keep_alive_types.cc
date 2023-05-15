@@ -71,6 +71,10 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kDriveFsNativeMessageHostLacros";
     case ProfileKeepAliveOrigin::kProfileDeletionProcess:
       return out << "kProfileDeletionProcess";
+    case ProfileKeepAliveOrigin::kProfileStatistics:
+      return out << "kProfileStatistics";
+    case ProfileKeepAliveOrigin::kIsolatedWebAppInstall:
+      return out << "kIsolatedWebAppInstall";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

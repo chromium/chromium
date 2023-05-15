@@ -126,7 +126,7 @@ class TestUploadClient : public UploaderInterface {
 
   absl::optional<int64_t> generation_id_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
-  const base::raw_ptr<LastRecordDigestMap> last_record_digest_map_
+  const raw_ptr<LastRecordDigestMap> last_record_digest_map_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
 };
 

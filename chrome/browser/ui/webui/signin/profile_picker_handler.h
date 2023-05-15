@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 
+#include <memory>
 #include <unordered_map>
 
 #include "base/files/file_path.h"
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -34,6 +36,8 @@ namespace account_manager {
 struct Account;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+class Browser;
 
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
@@ -84,6 +88,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleAskOnStartupChanged(const base::Value::List& args);
   void HandleRemoveProfile(const base::Value::List& args);
   void HandleGetProfileStatistics(const base::Value::List& args);
+  void HandleCloseProfileStatistics(const base::Value::List& args);
   void HandleSetProfileName(const base::Value::List& args);
 
   void HandleSelectNewAccount(const base::Value::List& args);
@@ -114,8 +119,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                    profiles::ProfileCategoryStats result);
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
-                                 Profile* profile);
-  void OnSwitchToProfileCompleteOpenCustomization(Profile* profile);
+                                 Browser* browser);
+  void OnSwitchToProfileCompleteOpenCustomization(Browser* browser);
   void OnProfileInitialized(absl::optional<SkColor> profile_color,
                             bool create_shortcut,
                             Profile* profile);
@@ -250,6 +255,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   base::TimeTicks profile_picked_time_on_startup_;
 
   bool main_view_initialized_ = false;
+
+  // Keep alive used when displaying the profile statistics in the profile
+  // deletion dialog. Released when the dialog or the Picker is closed, which
+  // will unload the respective profile if this was the only keep alive. Since
+  // the dialog and the statistics can be shown only for one single profile at
+  // a time, only one ScopedProfileKeepAlive is needed for the Profile Picker.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_statistics_keep_alive_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Takes care of getting a signed-in profile.

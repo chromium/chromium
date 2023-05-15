@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.DrmOverlayManager.TestPageFlipUs"
-    units="microseconds" expires_after="2023-08-20">
+    units="microseconds" expires_after="2023-10-22">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldAttemptMultipleOverlays"
-    enum="AttemptingMultipleOverlays" expires_after="2023-08-20">
+    enum="AttemptingMultipleOverlays" expires_after="2023-10-22">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
@@ -661,31 +661,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Compositing.Renderer.FirstSurfaceActivationUpdateDuration.{Surface}"
-    units="ms" expires_after="2023-04-28">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    The cumulative time spent performing visual updates for the {Surface}.
-
-    The time is measured in the Renderer. The result is reported in the Browser
-    when it is notified that the first Surface for a Renderer has been activated
-    by the GPU process. This is only reported for the first Surface that is
-    activated, and not for subsequent Surfaces.
-  </summary>
-  <token key="Surface">
-    <variant name="CurrentSurface"
-        summary="current surface which was activated. This time overlaps with
-                 when paint holding is deferring commits, and so is an upper
-                 bound"/>
-    <variant name="PreviousSurfaces"
-        summary="previous surfaces which were not activated. This time might
-                 overlap with when paint holding is deferring commits, and so
-                 is an upper bound"/>
-  </token>
-</histogram>
-
 <histogram name="Compositing.Renderer.LayersUpdateTime" units="microseconds"
     expires_after="2023-08-27">
   <owner>pdr@chromium.org</owner>
@@ -842,7 +817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.DeclareResourcesUs"
-    units="microseconds" expires_after="2023-08-20">
+    units="microseconds" expires_after="2023-10-22">
   <owner>kylechar@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
@@ -866,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.PrewalkUs" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>kylechar@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
@@ -896,7 +871,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
-    units="microseconds" expires_after="2023-03-01">
+    units="microseconds" expires_after="2024-05-05">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -906,6 +881,8 @@ chromium-metrics-reviews@google.com.
 
     This metric uses base::Histogram::FactoryMicrosecondsTimeGet so only users
     with high resolution clocks will report this metric.
+
+    Note: This metric was expired from 2023-03-01 to 2023-05-05.
   </summary>
   <token key="InteractionType">
     <variant name=""/>
@@ -1108,7 +1085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding" units="%"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1240,13 +1217,15 @@ chromium-metrics-reviews@google.com.
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
 
+    See http://shortn/_ItBDdHoyCf (internal only) for more details.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
-    units="%" expires_after="2023-05-11">
+    units="%" expires_after="2024-05-11">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1298,100 +1277,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Video" summary="video playback"/>
     <variant name="WheelScroll" summary="wheel scrolling"/>
   </token>
-</histogram>
-
-<histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"
-    units="%" expires_after="2022-09-30">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of frames that missed the deadline for a particular
-    sequence of frames (e.g. during scroll, animation, etc.). This is reported
-    in various sub-metrics with suffixes describing the type of the sequence
-    (e.g. TouchScroll etc.).
-
-    PercentMissedDeadlineFrames is measured by tracking the number of frames
-    which were displayed on screen but missed the vsync interval.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations"
-    units="%" expires_after="2022-09-30">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of frames that missed the deadline for a particular
-    sequence of frames for all animations. This metric is reported for all
-    animations (e.g. comositor-driven animations, main-thread driven animations,
-    and raf-driven animations).
-
-    PercentMissedDeadlineFrames is measured by tracking the number of frames
-    which were displayed on screen but missed the vsync interval.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
-<histogram
-    name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions"
-    units="%" expires_after="2022-09-30">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of frames that missed the deadline for a particular
-    sequence of frames where a user-input (e.g. scroll, pinch) is active. This
-    metric is reported for all sources of user-input (i.e. both touchscreen and
-    touchpad/mouse-wheel).
-
-    PercentMissedDeadlineFrames is measured by tracking the number of frames
-    which were displayed on screen but missed the vsync interval.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences"
-    units="%" expires_after="2023-08-20">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of frames that missed the deadline for a particular
-    sequence of frames. This metric is reported for all animations and all
-    interactions.
-
-    PercentMissedDeadlineFrames is measured by tracking the number of frames
-    which were displayed on screen but missed the vsync interval.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
-<histogram
-    name="Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2023-04-17">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the 95th percentile of dropped frames percent of a sliding window of
-    1 second. The metric is reported once per page-load when the page closes. If
-    there are fewer than 20 sliding windows for calculating 95th percentile, the
-    max value will be used instead of 95th percentile.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-  </summary>
 </histogram>
 
 <histogram

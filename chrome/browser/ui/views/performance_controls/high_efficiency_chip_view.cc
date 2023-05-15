@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -104,16 +106,30 @@ void HighEfficiencyChipView::UpdateImpl() {
   if (tab_helper->ShouldChipBeVisible() && is_high_efficiency_mode_enabled_) {
     SetVisible(true);
     if (tab_helper->ShouldIconAnimate()) {
-      // Only animate the chip to the expanded view the first 3 times it is
-      // viewed.
+      tab_helper->SetWasAnimated();
+      // Show an informational message the first 3 times the chip is shown.
       PrefService* const pref_service = browser_->profile()->GetPrefs();
       int times_rendered =
           pref_service->GetInteger(prefs::kHighEfficiencyChipExpandedCount);
       if (times_rendered < kChipAnimationCount) {
         AnimateIn(IDS_HIGH_EFFICIENCY_CHIP_LABEL);
-        tab_helper->SetWasAnimated();
         pref_service->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
                                  times_rendered + 1);
+        RecordHighEfficiencyChipState(
+            HighEfficiencyChipState::kExpandedEducation);
+      } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper,
+                                                              pref_service)) {
+        int const memory_savings = tab_helper->GetMemorySavingsInBytes();
+        SetLabel(
+            l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
+                                       {ui::FormatBytes(memory_savings)}));
+        AnimateIn(absl::nullopt);
+        pref_service->SetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp,
+                              base::Time::Now());
+        RecordHighEfficiencyChipState(
+            HighEfficiencyChipState::kExpandedWithSavings);
+      } else {
+        RecordHighEfficiencyChipState(HighEfficiencyChipState::kCollapsed);
       }
     } else if (tab_helper->HasChipBeenHidden()) {
       UnpauseAnimation();
@@ -161,6 +177,39 @@ void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   is_high_efficiency_mode_enabled_ = manager->IsHighEfficiencyModeActive();
+}
+
+bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
+    HighEfficiencyChipTabHelper* high_efficiency_tab_helper,
+    PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kMemorySavingsReportingImprovements)) {
+    return false;
+  }
+
+  bool const savings_over_threshold =
+      (int)high_efficiency_tab_helper->GetMemorySavingsInBytes() >
+      performance_manager::features::kExpandedHighEfficiencyChipThresholdBytes
+          .Get();
+
+  base::Time const last_expanded_timestamp =
+      pref_service->GetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp);
+  bool const expanded_chip_not_shown_recently =
+      (base::Time::Now() - last_expanded_timestamp) >
+      performance_manager::features::kExpandedHighEfficiencyChipFrequency.Get();
+
+  auto* pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::FromWebContents(GetWebContents());
+  bool const tab_discard_time_over_threshold =
+      pre_discard_resource_usage &&
+      (base::LiveTicks::Now() -
+       pre_discard_resource_usage->discard_liveticks()) >
+          performance_manager::features::
+              kExpandedHighEfficiencyChipDiscardedDuration.Get();
+
+  return savings_over_threshold && expanded_chip_not_shown_recently &&
+         tab_discard_time_over_threshold;
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)

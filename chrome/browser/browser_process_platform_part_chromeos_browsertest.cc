@@ -161,15 +161,13 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   // Check pref_urls_opened_browser.
   EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(pref_urls_opened_browser));
   tab_strip_model = pref_urls_opened_browser->tab_strip_model();
-  EXPECT_EQ(4, tab_strip_model->GetTabCount());
+  EXPECT_EQ(3, tab_strip_model->GetTabCount());
   EXPECT_EQ(restore_url_1,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
   EXPECT_EQ(restore_url_2,
             tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
   EXPECT_EQ(restore_url_3,
             tab_strip_model->GetWebContentsAt(2)->GetVisibleURL());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetWebContentsAt(3)->GetVisibleURL());
 
   // If there are existing open browsers opening a new browser should not
   // trigger a restore or open another window with startup URLs.
@@ -356,15 +354,13 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
     EXPECT_NO_FATAL_FAILURE(
         WaitForLoadStopForBrowser(pref_urls_opened_browser));
     tab_strip_model = pref_urls_opened_browser->tab_strip_model();
-    EXPECT_EQ(4, tab_strip_model->GetTabCount());
+    EXPECT_EQ(3, tab_strip_model->GetTabCount());
     EXPECT_EQ(restore_url_1,
               tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
     EXPECT_EQ(restore_url_2,
               tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
     EXPECT_EQ(restore_url_3,
               tab_strip_model->GetWebContentsAt(2)->GetVisibleURL());
-    EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-              tab_strip_model->GetWebContentsAt(3)->GetVisibleURL());
 
     // If there are existing open browsers opening a new browser should not
     // trigger a restore or open another window with startup URLs.

@@ -12,6 +12,7 @@
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -94,7 +95,8 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  NetworkListWifiHeaderViewImpl* network_list_wifi_header_view_;
+  raw_ptr<NetworkListWifiHeaderViewImpl, ExperimentalAsh>
+      network_list_wifi_header_view_;
 };
 
 TEST_F(NetworkListWifiHeaderViewTest, HeaderLabel) {

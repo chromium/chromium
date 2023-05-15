@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -28,10 +29,9 @@ using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
 
 class URLCookieAccessObserver : public content::WebContentsObserver {
  public:
-  using Type = content::CookieAccessDetails::Type;
   URLCookieAccessObserver(content::WebContents* web_contents,
                           const GURL& url,
-                          Type access_type);
+                          CookieOperation access_type);
 
   void Wait();
 
@@ -43,7 +43,27 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
                          const content::CookieAccessDetails& details) override;
 
   GURL url_;
-  Type access_type_;
+  CookieOperation access_type_;
+  base::RunLoop run_loop_;
+};
+
+class FrameCookieAccessObserver : public content::WebContentsObserver {
+ public:
+  explicit FrameCookieAccessObserver(
+      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
+      CookieOperation access_type);
+
+  // Wait until the frame accesses cookies.
+  void Wait();
+
+  // WebContentsObserver override
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
+
+ private:
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  CookieOperation access_type_;
   base::RunLoop run_loop_;
 };
 
@@ -55,6 +75,8 @@ class RedirectChainObserver : public DIPSService::Observer {
   void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) override;
 
   void Wait();
+
+  size_t handle_call_count = 0;
 
  private:
   GURL final_url_;

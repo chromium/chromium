@@ -20,6 +20,7 @@
 #include <string.h>
 #include <sys/mman.h>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -36,12 +37,9 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/buffer_affinity_tracker.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/native_pixmap_handle.h"
-
-#if defined(AML_V4L2)
-#include "media/gpu/v4l2/aml_v4l2_device.h"
-#endif
 
 namespace media {
 
@@ -1532,12 +1530,6 @@ scoped_refptr<V4L2Device> V4L2Device::Create() {
 
   scoped_refptr<V4L2Device> device;
 
-#if defined(AML_V4L2)
-  device = new AmlV4L2Device();
-  if (device->Initialize())
-    return device;
-#endif
-
   device = new GenericV4L2Device();
   if (device->Initialize())
     return device;
@@ -1567,11 +1559,9 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
     else
       return V4L2_PIX_FMT_H264;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile == HEVCPROFILE_MAIN) {
+  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
     if (slice_based) {
-      DVLOGF(1) << "Unsupported profile for slice based decode: "
-                << GetProfileName(profile);
-      return 0;
+      return V4L2_PIX_FMT_HEVC_SLICE;
     } else {
       return V4L2_PIX_FMT_HEVC;
     }
@@ -1593,175 +1583,8 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
       return V4L2_PIX_FMT_AV1;
   } else {
     DVLOGF(1) << "Unsupported profile: " << GetProfileName(profile);
-    return 0;
+    return V4L2_PIX_FMT_INVALID;
   }
-}
-
-namespace {
-
-VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
-                                                 uint32_t v4l2_profile) {
-  switch (codec) {
-    case VideoCodec::kH264:
-      switch (v4l2_profile) {
-        // H264 Stereo amd Multiview High are not tested and the use is
-        // minuscule, skip.
-        case V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE:
-        case V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE:
-          return H264PROFILE_BASELINE;
-        case V4L2_MPEG_VIDEO_H264_PROFILE_MAIN:
-          return H264PROFILE_MAIN;
-        case V4L2_MPEG_VIDEO_H264_PROFILE_EXTENDED:
-          return H264PROFILE_EXTENDED;
-        case V4L2_MPEG_VIDEO_H264_PROFILE_HIGH:
-          return H264PROFILE_HIGH;
-      }
-      break;
-    case VideoCodec::kVP8:
-      switch (v4l2_profile) {
-        case V4L2_MPEG_VIDEO_VP8_PROFILE_0:
-        case V4L2_MPEG_VIDEO_VP8_PROFILE_1:
-        case V4L2_MPEG_VIDEO_VP8_PROFILE_2:
-        case V4L2_MPEG_VIDEO_VP8_PROFILE_3:
-          return VP8PROFILE_ANY;
-      }
-      break;
-    case VideoCodec::kVP9:
-      switch (v4l2_profile) {
-        // VP9 Profile 1 and 3 are not tested and the use is minuscule, skip.
-        case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
-          return VP9PROFILE_PROFILE0;
-        case V4L2_MPEG_VIDEO_VP9_PROFILE_2:
-          return VP9PROFILE_PROFILE2;
-      }
-      break;
-#if BUILDFLAG(IS_CHROMEOS)
-    case VideoCodec::kAV1:
-      switch (v4l2_profile) {
-        case V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN:
-          return AV1PROFILE_PROFILE_MAIN;
-        case V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH:
-          return AV1PROFILE_PROFILE_HIGH;
-        case V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL:
-          return AV1PROFILE_PROFILE_PRO;
-      }
-      break;
-#endif
-    default:
-      VLOGF(2) << "Unsupported codec: " << GetCodecName(codec);
-  }
-  VLOGF(2) << "Unsupported V4L2 profile: " << v4l2_profile;
-  return VIDEO_CODEC_PROFILE_UNKNOWN;
-}
-
-}  // namespace
-
-std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
-    uint32_t pix_fmt) {
-  auto get_supported_profiles = [this](
-                                    VideoCodec codec,
-                                    std::vector<VideoCodecProfile>* profiles) {
-    uint32_t query_id = 0;
-    switch (codec) {
-      case VideoCodec::kH264:
-        query_id = V4L2_CID_MPEG_VIDEO_H264_PROFILE;
-        break;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case VideoCodec::kHEVC:
-        query_id = V4L2_CID_MPEG_VIDEO_HEVC_PROFILE;
-        break;
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case VideoCodec::kVP8:
-        query_id = V4L2_CID_MPEG_VIDEO_VP8_PROFILE;
-        break;
-      case VideoCodec::kVP9:
-        query_id = V4L2_CID_MPEG_VIDEO_VP9_PROFILE;
-        break;
-#if BUILDFLAG(IS_CHROMEOS)
-      case VideoCodec::kAV1:
-        query_id = V4L2_CID_MPEG_VIDEO_AV1_PROFILE;
-        break;
-#endif
-      default:
-        return false;
-    }
-
-    v4l2_queryctrl query_ctrl;
-    memset(&query_ctrl, 0, sizeof(query_ctrl));
-    query_ctrl.id = query_id;
-    if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0)
-      return false;
-
-    v4l2_querymenu query_menu;
-    memset(&query_menu, 0, sizeof(query_menu));
-    query_menu.id = query_ctrl.id;
-    for (query_menu.index = query_ctrl.minimum;
-         static_cast<int>(query_menu.index) <= query_ctrl.maximum;
-         query_menu.index++) {
-      if (Ioctl(VIDIOC_QUERYMENU, &query_menu) == 0) {
-        const VideoCodecProfile profile =
-            V4L2ProfileToVideoCodecProfile(codec, query_menu.index);
-        if (profile != VIDEO_CODEC_PROFILE_UNKNOWN)
-          profiles->push_back(profile);
-      }
-    }
-    return true;
-  };
-
-  std::vector<VideoCodecProfile> profiles;
-  switch (pix_fmt) {
-    case V4L2_PIX_FMT_H264:
-    case V4L2_PIX_FMT_H264_SLICE:
-      if (!get_supported_profiles(VideoCodec::kH264, &profiles)) {
-        DLOG(WARNING) << "Driver doesn't support QUERY H264 profiles, "
-                      << "use default values, Base, Main, High";
-        profiles = {
-            H264PROFILE_BASELINE,
-            H264PROFILE_MAIN,
-            H264PROFILE_HIGH,
-        };
-      }
-      break;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case V4L2_PIX_FMT_HEVC:
-      if (!get_supported_profiles(VideoCodec::kHEVC, &profiles)) {
-        DLOG(WARNING) << "Driver doesn't support QUERY HEVC profiles, "
-                      << "use default value, Main";
-        profiles = {
-            HEVCPROFILE_MAIN,
-        };
-      }
-      break;
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case V4L2_PIX_FMT_VP8:
-    case V4L2_PIX_FMT_VP8_FRAME:
-      profiles = {VP8PROFILE_ANY};
-      break;
-    case V4L2_PIX_FMT_VP9:
-    case V4L2_PIX_FMT_VP9_FRAME:
-      if (!get_supported_profiles(VideoCodec::kVP9, &profiles)) {
-        DLOG(WARNING) << "Driver doesn't support QUERY VP9 profiles, "
-                      << "use default values, Profile0";
-        profiles = {VP9PROFILE_PROFILE0};
-      }
-      break;
-    case V4L2_PIX_FMT_AV1:
-    case V4L2_PIX_FMT_AV1_FRAME:
-      if (!get_supported_profiles(VideoCodec::kAV1, &profiles)) {
-        DLOG(WARNING) << "Driver doesn't support QUERY AV1 profiles, "
-                      << "use default values, Main";
-        profiles = {AV1PROFILE_PROFILE_MAIN};
-      }
-      break;
-    default:
-      VLOGF(1) << "Unhandled pixelformat " << FourccToString(pix_fmt);
-      return {};
-  }
-
-  // Erase duplicated profiles.
-  std::sort(profiles.begin(), profiles.end());
-  profiles.erase(std::unique(profiles.begin(), profiles.end()), profiles.end());
-  return profiles;
 }
 
 // static
@@ -2122,35 +1945,19 @@ V4L2Device::GetSupportedRateControlMode() {
   return rate_control_mode;
 }
 
-std::vector<uint32_t> V4L2Device::EnumerateSupportedPixelformats(
-    v4l2_buf_type buf_type) {
-  std::vector<uint32_t> pixelformats;
-
-  v4l2_fmtdesc fmtdesc;
-  memset(&fmtdesc, 0, sizeof(fmtdesc));
-  fmtdesc.type = buf_type;
-
-  for (; Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0; ++fmtdesc.index) {
-    DVLOGF(3) << "Found " << FourccToString(fmtdesc.pixelformat) << " ("
-              << fmtdesc.description << ")";
-    pixelformats.push_back(fmtdesc.pixelformat);
-  }
-
-  return pixelformats;
-}
-
 VideoDecodeAccelerator::SupportedProfiles
-V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
-                                             const uint32_t pixelformats[]) {
+V4L2Device::EnumerateSupportedDecodeProfiles(
+    const std::vector<uint32_t>& pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
-  const auto& supported_pixelformats =
-      EnumerateSupportedPixelformats(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+  const auto v4l2_codecs_as_pix_fmts =
+      EnumerateSupportedPixFmts(base::BindRepeating(&V4L2Device::Ioctl, this),
+                                V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 
-  for (uint32_t pixelformat : supported_pixelformats) {
-    if (std::find(pixelformats, pixelformats + num_formats, pixelformat) ==
-        pixelformats + num_formats)
+  for (uint32_t pixelformat : v4l2_codecs_as_pix_fmts) {
+    if (!base::Contains(pixelformats, pixelformat)) {
       continue;
+    }
 
     // Skip AV1 decoder profiles if kChromeOSHWAV1Decoder is disabled.
     if ((pixelformat == V4L2_PIX_FMT_AV1 ||
@@ -2163,8 +1970,8 @@ V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
     GetSupportedResolution(pixelformat, &profile.min_resolution,
                            &profile.max_resolution);
 
-    const auto video_codec_profiles =
-        V4L2PixFmtToVideoCodecProfiles(pixelformat);
+    const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
+        base::BindRepeating(&V4L2Device::Ioctl, this), pixelformat);
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;
@@ -2183,10 +1990,11 @@ VideoEncodeAccelerator::SupportedProfiles
 V4L2Device::EnumerateSupportedEncodeProfiles() {
   VideoEncodeAccelerator::SupportedProfiles profiles;
 
-  const auto& supported_pixelformats =
-      EnumerateSupportedPixelformats(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+  const auto v4l2_codecs_as_pix_fmts =
+      EnumerateSupportedPixFmts(base::BindRepeating(&V4L2Device::Ioctl, this),
+                                V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 
-  for (const auto& pixelformat : supported_pixelformats) {
+  for (const auto& pixelformat : v4l2_codecs_as_pix_fmts) {
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.max_framerate_numerator = 30;
     profile.max_framerate_denominator = 1;
@@ -2200,8 +2008,8 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
     gfx::Size min_resolution;
     GetSupportedResolution(pixelformat, &min_resolution,
                            &profile.max_resolution);
-    const auto video_codec_profiles =
-        V4L2PixFmtToVideoCodecProfiles(pixelformat);
+    const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
+        base::BindRepeating(&V4L2Device::Ioctl, this), pixelformat);
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;
@@ -2454,7 +2262,7 @@ class V4L2Request {
   bool Reset();
 
  private:
-  V4L2RequestsQueue* request_queue_;
+  raw_ptr<V4L2RequestsQueue> request_queue_;
   int ref_counter_ = 0;
   base::ScopedFD request_fd_;
 

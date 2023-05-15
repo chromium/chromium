@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/text_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -79,10 +80,10 @@ DateTimeNumericFieldElement::DateTimeNumericFieldElement(
 }
 
 float DateTimeNumericFieldElement::MaximumWidth(const ComputedStyle& style) {
-  float maximum_width = ComputeTextWidth(style, placeholder_);
+  float maximum_width = ComputeTextWidth(placeholder_, style);
   maximum_width =
-      std::max(maximum_width, ComputeTextWidth(style, FormatValue(Maximum())));
-  maximum_width = std::max(maximum_width, ComputeTextWidth(style, Value()));
+      std::max(maximum_width, ComputeTextWidth(FormatValue(Maximum()), style));
+  maximum_width = std::max(maximum_width, ComputeTextWidth(Value(), style));
   return maximum_width + DateTimeFieldElement::MaximumWidth(style);
 }
 

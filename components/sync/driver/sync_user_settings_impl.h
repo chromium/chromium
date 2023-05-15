@@ -29,37 +29,36 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   SyncUserSettingsImpl(SyncServiceCrypto* crypto,
                        SyncPrefs* prefs,
                        const SyncTypePreferenceProvider* preference_provider,
-                       ModelTypeSet registered_types);
+                       ModelTypeSet registered_types,
+                       base::RepeatingCallback<bool()>
+                           bookmarks_and_reading_list_opt_in_callback);
   ~SyncUserSettingsImpl() override;
 
-  bool IsSyncRequested() const override;
-  void SetSyncRequested() override;
-  void ClearSyncRequested() override;
-
-  bool IsFirstSetupComplete() const override;
+  // SyncUserSettings implementation.
+  bool IsInitialSyncFeatureSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
-
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
+  bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
+#if BUILDFLAG(IS_IOS)
+  void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
+#endif  // BUILDFLAG(IS_IOS)
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
+  bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
 #endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetAppsSyncEnabledByOs(bool apps_sync_enabled) override;
 #endif
-
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
-
   ModelTypeSet GetEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
@@ -71,13 +70,10 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsUsingExplicitPassphrase() const override;
   base::Time GetExplicitPassphraseTime() const override;
   PassphraseType GetPassphraseType() const override;
-
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
-
-  void SetSyncRequestedIfNotSetExplicitly();
 
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;
@@ -87,7 +83,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const raw_ptr<SyncPrefs> prefs_;
   const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
   const ModelTypeSet registered_model_types_;
-  base::RepeatingCallback<void(bool)> sync_allowed_by_platform_changed_cb_;
+  base::RepeatingCallback<bool()> bookmarks_and_reading_list_opt_in_callback_;
 };
 
 }  // namespace syncer

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/arc/fake_android_management_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -57,8 +58,8 @@ class ArcAndroidManagementCheckerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  policy::FakeAndroidManagementClient* fake_android_management_client_ =
-      nullptr;
+  raw_ptr<policy::FakeAndroidManagementClient, ExperimentalAsh>
+      fake_android_management_client_ = nullptr;
   CoreAccountId account_id_;
 };
 

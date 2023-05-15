@@ -559,8 +559,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 3
-// Next value: 35
+// Next version: 4
+// Next value: 36
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -593,6 +593,7 @@ enum StringAttribute {
   kKeyShortcuts = 19,
   // Only present when different from parent.
   kLanguage = 20,
+  [MinVersion=3] kLinkTarget = 35,  // E.g. "self", "blank", "top".
   [MinVersion=1] kLongClickLabel = 32, // Only for ARC
   kName = 21,
   kLiveRelevant = 22,
@@ -793,8 +794,8 @@ enum FloatAttribute {
 //
 // Finally, note that different tree sources can use all three states for a
 // given attribute, while another tree source only uses two.
-// Next value: 22
-// Next Version: 2
+// Next value: 23
+// Next Version: 3
 [Extensible, Stable, Uuid="ed1f1b8c-c89c-483f-9840-ca3b10042e81"]
 enum BoolAttribute {
   [Default]kNone = 0,
@@ -871,6 +872,10 @@ enum BoolAttribute {
 
   // A hint to clients that the node is long clickable.
   [MinVersion=1] kLongClickable = 21,
+
+  // Android does not provide nodes that are not on screen.
+  // We need to distinguish containers that are like this.
+  [MinVersion=2] kHasHiddenOffscreenNodes,
 };
 
 // Next version: 4

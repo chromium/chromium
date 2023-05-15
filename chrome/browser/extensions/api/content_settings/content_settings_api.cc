@@ -91,7 +91,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
   bool incognito = false;
   if (params->details.scope ==
-      api::content_settings::SCOPE_INCOGNITO_SESSION_ONLY) {
+      api::content_settings::Scope::kIncognitoSessionOnly) {
     scope = kExtensionPrefsScopeIncognitoSessionOnly;
     incognito = true;
   }
@@ -266,16 +266,13 @@ ContentSettingsContentSettingSetFunction::Run() {
                                                readable_type_name.c_str())));
   }
 
-  size_t num_values = 0;
-  int histogram_value =
-      ContentSettingTypeToHistogramValue(content_type, &num_values);
   if (primary_pattern != secondary_pattern &&
       secondary_pattern != ContentSettingsPattern::Wildcard()) {
-    UMA_HISTOGRAM_EXACT_LINEAR("ContentSettings.ExtensionEmbeddedSettingSet",
-                               histogram_value, num_values);
+    RecordContentSettingsHistogram(
+        "ContentSettings.ExtensionEmbeddedSettingSet", content_type);
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR("ContentSettings.ExtensionNonEmbeddedSettingSet",
-                               histogram_value, num_values);
+    RecordContentSettingsHistogram(
+        "ContentSettings.ExtensionNonEmbeddedSettingSet", content_type);
   }
 
   if (primary_pattern != secondary_pattern &&
@@ -289,7 +286,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
   bool incognito = false;
   if (params->details.scope ==
-      api::content_settings::SCOPE_INCOGNITO_SESSION_ONLY) {
+      api::content_settings::Scope::kIncognitoSessionOnly) {
     scope = kExtensionPrefsScopeIncognitoSessionOnly;
     incognito = true;
   }

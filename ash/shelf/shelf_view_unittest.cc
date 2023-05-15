@@ -31,6 +31,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_observer.h"
@@ -46,10 +47,12 @@
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -148,7 +151,7 @@ class TestShelfObserver : public ShelfObserver {
   }
 
  private:
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
 };
@@ -289,9 +292,19 @@ TEST_F(ShelfObserverIconTest, AddRemove) {
   observer()->Reset();
 }
 
+// Flaky on linux-chromeos-rel: https://crbug.com/1444582
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddRemoveWithMultipleDisplays \
+  DISABLED_AddRemoveWithMultipleDisplays
+#else
+#define MAYBE_AddRemoveWithMultipleDisplays AddRemoveWithMultipleDisplays
+#endif
 // Make sure creating/deleting an window on one displays notifies a
 // shelf on external display as well as one on primary.
-TEST_F(ShelfObserverIconTest, AddRemoveWithMultipleDisplays) {
+TEST_F(ShelfObserverIconTest, MAYBE_AddRemoveWithMultipleDisplays) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   UpdateDisplay("500x400,500x400");
   observer()->Reset();
 
@@ -362,13 +375,16 @@ class ShelfViewTest : public AshTestBase {
                        ->GetStatusAreaWidget()
                        ->GetContentsView();
 
-    // The bounds should be big enough for 4 buttons.
-    ASSERT_GE(GetPrimaryShelf()
-                  ->shelf_widget()
-                  ->hotseat_widget()
-                  ->GetWindowBoundsInScreen()
-                  .width(),
-              500);
+    // If the desk button is enabled there will be less space for buttons.
+    if (!features::IsDeskButtonEnabled()) {
+      // The bounds should be big enough for 4 buttons.
+      ASSERT_GE(GetPrimaryShelf()
+                    ->shelf_widget()
+                    ->hotseat_widget()
+                    ->GetWindowBoundsInScreen()
+                    .width(),
+                500);
+    }
 
     test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
     test_api_->SetAnimationDuration(base::Milliseconds(1));
@@ -618,10 +634,10 @@ class ShelfViewTest : public AshTestBase {
         ui::HapticTouchpadEffectStrength::kMedium);
   }
 
-  ShelfModel* model_ = nullptr;
-  ShelfView* shelf_view_ = nullptr;
-  views::View* navigation_view_ = nullptr;
-  views::View* status_area_ = nullptr;
+  raw_ptr<ShelfModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> navigation_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> status_area_ = nullptr;
 
   int id_ = 0;
 
@@ -851,6 +867,36 @@ TEST_F(ShelfViewTest, DragAppsToPin) {
   // After pinning the last unpinned app by dragging, the separator is removed
   // as there is no unpinned app on the shelf.
   EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
+}
+
+// Ensure that the unpinnable apps can not be pinned by dragging.
+TEST_F(ShelfViewTest, NotPinnableItemCantBePinnedByDragging) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  size_t pinned_apps_size = id_map.size();
+
+  // Add an unpinnable app.
+  const ShelfItem unpinnable_app =
+      ShelfTestUtil::AddAppNotPinnable(base::NumberToString(id_++));
+  const ShelfID id = unpinnable_app.id;
+  id_map.emplace_back(id, GetButtonByID(id));
+
+  ASSERT_TRUE(GetButtonByID(id)->state() & ShelfAppButton::STATE_RUNNING);
+  ASSERT_FALSE(IsAppPinned(id));
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+
+  // Drag an unpinnable app and move it to the beginning of the shelf. The app
+  // can not be moved across the separator so the dragged app will stay unpinned
+  // beside the separator after release.
+  views::View* dragged_button =
+      SimulateDrag(ShelfView::MOUSE, id_map.size() - 1, 0, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+  EXPECT_FALSE(IsAppPinned(id));
 }
 
 // Check that separator index updates as expected when a drag view is dragged
@@ -2587,6 +2633,7 @@ class InkDropSpy : public views::InkDrop {
   void HostSizeChanged(const gfx::Size& new_size) override {
     ink_drop_->HostSizeChanged(new_size);
   }
+  void HostViewThemeChanged() override { ink_drop_->HostViewThemeChanged(); }
   void HostTransformChanged(const gfx::Transform& new_transform) override {
     ink_drop_->HostTransformChanged(new_transform);
   }
@@ -2693,11 +2740,12 @@ class ShelfViewInkDropTest : public ShelfViewTest {
         .SetInkDrop(std::move(browser_button_ink_drop));
   }
 
-  HomeButton* home_button_ = nullptr;
-  InkDropSpy* home_button_ink_drop_ = nullptr;
-  ShelfAppButton* browser_button_ = nullptr;
-  InkDropSpy* browser_button_ink_drop_ = nullptr;
-  views::InkDropImpl* browser_button_ink_drop_impl_ = nullptr;
+  raw_ptr<HomeButton, ExperimentalAsh> home_button_ = nullptr;
+  raw_ptr<InkDropSpy, ExperimentalAsh> home_button_ink_drop_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> browser_button_ = nullptr;
+  raw_ptr<InkDropSpy, ExperimentalAsh> browser_button_ink_drop_ = nullptr;
+  raw_ptr<views::InkDropImpl, ExperimentalAsh> browser_button_ink_drop_impl_ =
+      nullptr;
 };
 
 // Tests that changing visibility of the app list transitions home button's
@@ -3371,8 +3419,8 @@ class ShelfViewGestureTapTest : public ShelfViewTest {
   }
 
  protected:
-  ShelfAppButton* app_icon1_ = nullptr;
-  ShelfAppButton* app_icon2_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> app_icon1_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> app_icon2_ = nullptr;
 };
 
 // Verifies the shelf app button's inkdrop behavior when the mouse click
@@ -3443,6 +3491,8 @@ TEST_F(ShelfViewGestureTapTest, InterruptContextMenuShowByItemRemoval) {
 
   // Initialize the mouse drag on the shelf app button specified by `id2`.
   ShelfAppButton* app_button2 = GetButtonByID(id2);
+  // Wait for app 2 to move in reaction to removing app 1.
+  test_api_->RunMessageLoopUntilAnimationsDone();
   GetEventGenerator()->MoveMouseTo(
       app_button2->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
@@ -3654,6 +3704,102 @@ TEST_P(ShelfPartyTest, DragUnpinnedAppToPin) {
   // End shelf party.
   model_->ToggleShelfParty();
   test_api_->RunMessageLoopUntilAnimationsDone();
+}
+
+// Test class to test the desk button.
+class ShelfViewDeskButtonTest : public ShelfViewTest {
+ public:
+  ShelfViewDeskButtonTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
+  }
+
+  ShelfViewDeskButtonTest(const ShelfViewDeskButtonTest&) = delete;
+  ShelfViewDeskButtonTest& operator=(const ShelfViewDeskButtonTest&) = delete;
+
+  ~ShelfViewDeskButtonTest() override = default;
+
+  DeskButtonWidget* desk_button_widget() {
+    return test_api_->shelf_view()->shelf_widget()->desk_button_widget();
+  }
+
+  // ShelfViewTest:
+  void SetUp() override {
+    ShelfViewTest::SetUp();
+
+    // With the desk button, there should be space in the hotseat for 6 apps.
+    ASSERT_GE(GetPrimaryShelf()
+                  ->shelf_widget()
+                  ->hotseat_widget()
+                  ->GetWindowBoundsInScreen()
+                  .width(),
+              336);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that the desk button is visible normally, and not visible in overview
+// mode.
+TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
+  // The button should be normally visible.
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  const int original_hotseat_width = GetPrimaryShelf()
+                                         ->shelf_widget()
+                                         ->hotseat_widget()
+                                         ->GetWindowBoundsInScreen()
+                                         .width();
+
+  // The button should disappear in overview mode and reappear after.
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  // Since the desk button is hidden, the hotseat should expand to use the space
+  // the desk button was occupying.
+  EXPECT_GT(GetPrimaryShelf()
+                ->shelf_widget()
+                ->hotseat_widget()
+                ->GetWindowBoundsInScreen()
+                .width(),
+            original_hotseat_width);
+  ToggleOverview();
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Repeat for vertical alignment.
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that the desk button is not visible in tablet mode.
+TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // In tablet mode, the shelf should be visible but the desk button shouldn't.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that the desk button is 136 wide if the screen width is greater than
+// 1280px, and 96 otherwise, and that the button is 36x36 in vertical alignment.
+TEST_F(ShelfViewDeskButtonTest, Position) {
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kBottom);
+  UpdateDisplay("1281x400");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 136);
+  UpdateDisplay("400x1281");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
+  UpdateDisplay("1280x400");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
+
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 36);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().height(), 36);
 }
 
 }  // namespace ash

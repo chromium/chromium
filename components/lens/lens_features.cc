@@ -50,6 +50,10 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              "EnableContextMenuInLensSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableLensPing,
+             "EnableLensPing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
 
@@ -85,6 +89,13 @@ const base::FeatureParam<bool> kUseJpegInRegionSearch{
 
 const base::FeatureParam<int> kEncodingQualityRegionSearch{
     &kLensImageFormatOptimizations, "encoding-quality-region-search", 90};
+
+constexpr base::FeatureParam<std::string> kLensPingURL{
+    &kEnableLensPing, "lens-ping-url",
+    "https://lens.google.com/_/LensWebStandaloneUi/gen204/"};
+
+const base::FeatureParam<bool> kPingLensSequentially{
+    &kEnableLensPing, "ping-lens-sequentially", true};
 
 bool GetEnableLatencyLogging() {
   return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
@@ -164,6 +175,18 @@ int GetRegionSearchEncodingQuality() {
 
 bool GetEnableContextMenuInLensSidePanel() {
   return base::FeatureList::IsEnabled(kEnableContextMenuInLensSidePanel);
+}
+
+bool GetEnableLensPing() {
+  return base::FeatureList::IsEnabled(kEnableLensPing);
+}
+
+std::string GetLensPingURL() {
+  return kLensPingURL.Get();
+}
+
+bool GetLensPingIsSequential() {
+  return kPingLensSequentially.Get();
 }
 
 }  // namespace features

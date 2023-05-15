@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -119,7 +120,9 @@ class AshAttestationServiceTest : public testing::Test {
   std::unique_ptr<AshAttestationService> attestation_service_;
 
   TestingProfile test_profile_;
-  ash::attestation::MockTpmChallengeKey* mock_challenge_key_;
+  raw_ptr<ash::attestation::MockTpmChallengeKey, ExperimentalAsh>
+      mock_challenge_key_;
+  std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
 
 TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
@@ -150,7 +153,7 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
               kFakeResponse)));
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      protoChallenge, CreateSignals(), std::move(callback));
+      protoChallenge, CreateSignals(), levels_, std::move(callback));
   run_loop.Run();
 }
 

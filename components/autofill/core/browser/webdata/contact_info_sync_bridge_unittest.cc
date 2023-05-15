@@ -64,8 +64,7 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
 }
 
 AutofillProfile TestProfile(base::StringPiece guid) {
-  return AutofillProfile(std::string(guid), /*origin=*/"",
-                         AutofillProfile::Source::kAccount);
+  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount);
 }
 
 }  // namespace
@@ -90,7 +89,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   }
 
   // Tells the processor to starts syncing with pre-existing `remote_profiles`.
-  // Triggers the `bridge()`'s `MergeSyncData()`.
+  // Triggers the `bridge()`'s `MergeFullSyncData()`.
   // Returns true if syncing started successfully.
   bool StartSyncing(const std::vector<AutofillProfile>& remote_profiles) {
     syncer::EntityChangeList entity_data;
@@ -98,9 +97,9 @@ class ContactInfoSyncBridgeTest : public testing::Test {
       entity_data.push_back(syncer::EntityChange::CreateAdd(
           profile.guid(), ProfileToEntity(profile)));
     }
-    // `MergeSyncData()` returns an error if it fails.
-    return !bridge().MergeSyncData(bridge().CreateMetadataChangeList(),
-                                   std::move(entity_data));
+    // `MergeFullSyncData()` returns an error if it fails.
+    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       std::move(entity_data));
   }
 
   // Adds multiple `profiles` the `bridge()`'s AutofillTable.
@@ -180,9 +179,9 @@ TEST_F(ContactInfoSyncBridgeTest, GetStorageKey) {
   EXPECT_EQ(kGUID1, bridge().GetStorageKey(*entity));
 }
 
-// Tests that during the initial sync, `MergeSyncData()` incorporates remote
+// Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
 // profiles.
-TEST_F(ContactInfoSyncBridgeTest, MergeSyncData) {
+TEST_F(ContactInfoSyncBridgeTest, MergeFullSyncData) {
   const AutofillProfile remote1 = TestProfile(kGUID1);
   const AutofillProfile remote2 = TestProfile(kGUID2);
 
@@ -197,9 +196,10 @@ TEST_F(ContactInfoSyncBridgeTest, MergeSyncData) {
   EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1, remote2));
 }
 
-// Tests that when sync changes are applied, `ApplySyncChanges()` merges remotes
-// changes into the local store. New local changes are not applied to sync.
-TEST_F(ContactInfoSyncBridgeTest, ApplySyncChanges) {
+// Tests that when sync changes are applied, `ApplyIncrementalSyncChanges()`
+// merges remotes changes into the local store. New local changes are not
+// applied to sync.
+TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
   AddAutofillProfilesToTable({TestProfile(kGUID1)});
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
 
@@ -220,9 +220,9 @@ TEST_F(ContactInfoSyncBridgeTest, ApplySyncChanges) {
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
 
-  // `ApplySyncChanges()` returns an error if it fails.
-  EXPECT_FALSE(bridge().ApplySyncChanges(bridge().CreateMetadataChangeList(),
-                                         std::move(entity_change_list)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
 
   // Expect that the local profiles have changed.
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));

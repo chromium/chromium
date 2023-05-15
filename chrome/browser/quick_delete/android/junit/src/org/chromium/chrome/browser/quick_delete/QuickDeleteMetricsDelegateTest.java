@@ -17,7 +17,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,10 +68,10 @@ public class QuickDeleteMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testRecordClearBrowsingDataActionHistogram() {
+    public void testRecordDeleteBrowsingDataActionHistogram() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.ClearBrowsingData.Action",
-                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
+                HistogramWatcher.newSingleRecordWatcher("Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
         QuickDeleteMetricsDelegate.recordHistogram(
                 QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 

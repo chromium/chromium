@@ -514,6 +514,7 @@ export class PaymentsManagerExpectations {
   requestedIbans: number = 0;
   removedIbans: number = 0;
   isValidIban: number = 0;
+  authenticateUserAndFlipMandatoryAuthToggle: number = 0;
 }
 
 /**
@@ -544,6 +545,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'removeIban',
       'addVirtualCard',
       'isValidIban',
+      'authenticateUserAndFlipMandatoryAuthToggle',
     ]);
 
     // Set these to have non-empty data.
@@ -625,6 +627,10 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     return Promise.resolve(this.isUserVerifyingPlatformAuthenticatorAvailable_);
   }
 
+  authenticateUserAndFlipMandatoryAuthToggle() {
+    this.methodCalled('authenticateUserAndFlipMandatoryAuthToggle');
+  }
+
   /**
    * Verifies expectations.
    */
@@ -653,5 +659,9 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     assertEquals(
         expected.removedIbans, this.getCallCount('removeIban'),
         'removedIbans mismatch');
+    assertEquals(
+        expected.authenticateUserAndFlipMandatoryAuthToggle,
+        this.getCallCount('authenticateUserAndFlipMandatoryAuthToggle'),
+        'authenticateUserAndFlipMandatoryAuthToggle mismatch');
   }
 }

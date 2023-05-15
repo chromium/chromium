@@ -93,7 +93,7 @@ class UpdaterState {
 #endif
   class StateReaderChromiumUpdater final : public StateReader {
    public:
-    explicit StateReaderChromiumUpdater(base::Value parsed_json);
+    explicit StateReaderChromiumUpdater(base::Value::Dict parsed_json);
 
    private:
     // Overrides for StateReader.
@@ -105,7 +105,7 @@ class UpdaterState {
     int GetUpdatePolicy() const override;
 
     base::Time FindTimeKey(base::StringPiece key) const;
-    const base::Value parsed_json_;
+    const base::Value::Dict parsed_json_;
   };
 
   explicit UpdaterState(bool is_machine);

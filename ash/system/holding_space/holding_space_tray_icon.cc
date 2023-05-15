@@ -22,6 +22,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -130,8 +131,8 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   void AdvanceToEnd() { animation_.End(); }
 
  private:
-  HoldingSpaceTrayIcon* const icon_;
-  views::View* const previews_container_;
+  const raw_ptr<HoldingSpaceTrayIcon, ExperimentalAsh> icon_;
+  const raw_ptr<views::View, ExperimentalAsh> previews_container_;
   const gfx::Size initial_size_;
   const gfx::Size target_size_;
 

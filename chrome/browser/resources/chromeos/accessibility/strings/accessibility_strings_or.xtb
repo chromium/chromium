@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="100506692671054486">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ କମାଣ୍ଡ ନାହିଁ</translation>
 <translation id="1009046985747440431">ନାଭିଗେଟ୍ କରିବା ପାଇଁ ଅପ୍ କିମ୍ବା ଡାଉନ୍ ତୀରଚିହ୍ନ କୀ; ସକ୍ରିୟ କରିବା ପାଇଁ enter କୀ ଦବାନ୍ତୁ</translation>
 <translation id="1011903154582639569">ଏକ କୀ'କୁ ଖୋଜି ଦବାଇ ଧରନ୍ତୁ ତା'ପରେ ସେହି ଅକ୍ଷରଟି ଟାଇପ୍ କରିବାକୁ ଆଙ୍ଗୁଠିକୁ ଉଠାଇ ଦିଅନ୍ତୁ</translation>
 <translation id="1012173283529841972">ତାଲିକା ଆଇଟମ୍</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ଲାଭେଣ୍ଡର୍ ବ୍ଲଶ୍</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3962990492275676168">ସାମ୍ପ୍ରତିକ ଲୋକେସନ୍‌ରୁ ପଢ଼ିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="397094149579293440">କୌଣସି ଚୟନିତ ଟେକ୍ସଟ ନାହିଁ</translation>
 <translation id="3970951409746498040">ସ୍ୟାଣ୍ଡି ବାଦାମୀ</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">ମୋକ୍କାସିନ୍</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 1 ହେଡିଂ ନାହିଁ</translation>
 <translation id="4787577491510559358">ବର୍ତ୍ତମାନର ଆଇଟମ୍ ପାଇଁ ଫର୍ମାଟିଂ ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="479989351350248267">ଖୋଜନ୍ତୁ</translation>
+<translation id="4802034228771424756">କୌଣସି ଫୋକସ କରାଯାଇଥିବା ଟେକ୍ସଟ ଫିଲ୍ଡ ନାହିଁ</translation>
 <translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="481165870889056555">ବର୍ତ୍ତମାନ ପୃଷ୍ଠାର ଟାଇଟେଲ୍ ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="4815668758102003883">ଇଷତ୍ ସବୁଜ ନୀଳ</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ଇଣ୍ଟର୍ନଲ୍ ଲିଙ୍କ୍</translation>
 <translation id="4909019435900810068">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ନିଅନ୍ତୁ</translation>
 <translation id="4911349081560453449">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ଚେକବକ୍ସ ନାହିଁ</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> କରାଯାଇପାରିବ ନାହିଁ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="492295894462528572">ଭୂମିକା</translation>
 <translation id="495046168593986294">ଉପରକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4953585991029886728">ଟେକ୍ସଟ୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
+<translation id="4964701498510730546">ଟେକ୍ସଟ ଫିଲ୍ଡ ଖାଲି ଅଛି</translation>
 <translation id="4973717656530883744">ସର୍ବନିମ୍ନ <ph name="X" /></translation>
 <translation id="4974612477719259470">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ବଟନ୍ ନାହିଁ</translation>
 <translation id="4979404613699303341">ପୂର୍ବବର୍ତ୍ତୀ ବଟନ୍</translation>
+<translation id="4981239367072766915">ଚିହ୍ନଟ କରାଯାଇନଥିବା ଇନପୁଟ</translation>
 <translation id="4982917827052020884">ଚାଲନ୍ତୁ ଆପଣ ନିୟମିତ ଭାବେ ବ୍ୟବହାର କରିବାକୁ ଥିବା କିଛି କୀ ସହ ଆରମ୍ଭ କରିବା। ବର୍ତ୍ତମାନର ଯେ କୌଣସି ସ୍ପିଚକୁ ବନ୍ଦ କରିବା ପାଇଁ Control କୀ ବ୍ୟବହାର କରାଯାଇପାରିବ। ଆପଣଙ୍କ କୀବୋର୍ଡର ନିମ୍ନ ବାମ କୋଣରେ Control କୀ ପାଆନ୍ତୁ। ଜାରି ରଖିବାକୁ, Control କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="4983588134362688868">ସିଧାସଳଖ ପୃଷ୍ଠାର ଶୀର୍ଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ୱିଣ୍ଡୋ</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ବର୍ତ୍ତମାନର ବ୍ୟାଟେରୀ ସ୍ଥିତି ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ରେଡିଓ ବଟନ୍ ବଛାଯାଇଛି</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ମେନୁ ଆଇଟମ୍ ରେଡିଓ ବଟନ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> କରାଯାଇପାରିବ ନାହିଁ, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ସ୍ପୀଚ୍‌ ଲଗିଂ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5041394372352067729">ପୃଷ୍ଠାର ଅଗ୍ରଭାଗକୁ ବ୍ରେଲି ପ୍ରଦର୍ଶନ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="5042770794184672516">ସ୍ପିଚ୍‍ର ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>

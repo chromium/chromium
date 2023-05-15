@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -47,7 +48,7 @@ const char kObjectPath[] = "/object/path";
 
 class ModemMessagingClientTest : public testing::Test {
  public:
-  ModemMessagingClientTest() : response_(NULL) {}
+  ModemMessagingClientTest() = default;
 
   void SetUp() override {
     // Create a mock bus.
@@ -119,7 +120,8 @@ class ModemMessagingClientTest : public testing::Test {
   }
 
  protected:
-  ModemMessagingClient* client_ = nullptr;  // Unowned convenience pointer.
+  raw_ptr<ModemMessagingClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
   // The mock bus.
@@ -131,7 +133,7 @@ class ModemMessagingClientTest : public testing::Test {
   // Expected argument for Delete method.
   dbus::ObjectPath expected_sms_path_;
   // Response returned by mock methods.
-  dbus::Response* response_;
+  raw_ptr<dbus::Response, ExperimentalAsh> response_ = nullptr;
 
  private:
   // Used to implement the mock proxy.

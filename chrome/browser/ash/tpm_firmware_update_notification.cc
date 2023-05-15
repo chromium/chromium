@@ -9,6 +9,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -65,7 +66,7 @@ class TPMFirmwareUpdateNotificationDelegate
         NotificationHandler::Type::TRANSIENT, kTPMFirmwareUpdateNotificationId);
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 void OnAvailableUpdateModes(Profile* profile,

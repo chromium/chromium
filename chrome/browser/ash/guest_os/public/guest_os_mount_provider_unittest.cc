@@ -8,12 +8,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,6 +44,18 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
+
+class MockVolumeManagerObserver : public file_manager::VolumeManagerObserver {
+ public:
+  MockVolumeManagerObserver() = default;
+  ~MockVolumeManagerObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnVolumeMounted,
+              (ash::MountError error_code, const file_manager::Volume& volume),
+              (override));
+};
+
 }  // namespace
 
 namespace guest_os {
@@ -60,6 +73,8 @@ class GuestOsMountProviderTest : public testing::Test {
 
     DiskMountManager::InitializeForTesting(disk_manager_);
     volume_manager_ = file_manager::VolumeManagerFactory::Get(profile_.get());
+    volume_manager_observer_ = std::make_unique<MockVolumeManagerObserver>();
+    volume_manager_->AddObserver(volume_manager_observer_.get());
   }
 
   GuestOsMountProviderTest(const GuestOsMountProviderTest&) = delete;
@@ -104,6 +119,8 @@ class GuestOsMountProviderTest : public testing::Test {
         .Times(n)
         .WillRepeatedly(
             Invoke(this, &GuestOsMountProviderTest::NotifyMountEvent));
+
+    EXPECT_CALL(*volume_manager_observer_, OnVolumeMounted).Times(n);
   }
 
   // guestos_${UserHash}_${encode(kGuestId.ToString())}. Note that UserHash
@@ -113,9 +130,10 @@ class GuestOsMountProviderTest : public testing::Test {
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;
-  ash::disks::MockDiskMountManager* disk_manager_;
+  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh> disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  file_manager::VolumeManager* volume_manager_;
+  raw_ptr<file_manager::VolumeManager, ExperimentalAsh> volume_manager_;
+  std::unique_ptr<MockVolumeManagerObserver> volume_manager_observer_;
   std::unique_ptr<MockMountProvider> provider_;
   int cid_ = 41;     // Default set in MockMountProvider
   int port_ = 1234;  // Default set in MockMountProvider
@@ -220,8 +238,11 @@ TEST_F(GuestOsMountProviderTest, VolumesMountedOnChildProfiles) {
       otr_profile, base::BindRepeating(&BuildVolumeManager));
   auto* otr_volume_manager =
       file_manager::VolumeManagerFactory::Get(otr_profile);
+  MockVolumeManagerObserver otr_volume_manager_observer;
+  otr_volume_manager->AddObserver(&otr_volume_manager_observer);
 
   ExpectMountCalls(1);
+  EXPECT_CALL(otr_volume_manager_observer, OnVolumeMounted).Times(1);
   bool result = false;
 
   provider_->Mount(otr_profile, base::BindLambdaForTesting(
@@ -244,4 +265,5 @@ TEST_F(GuestOsMountProviderTest, VolumesMountedOnChildProfiles) {
   // wrong order.
   profile_->DestroyOffTheRecordProfile(otr_profile);
 }
+
 }  // namespace guest_os

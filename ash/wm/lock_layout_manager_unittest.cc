@@ -16,6 +16,7 @@
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -46,7 +47,7 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
   bool CanActivate() const override { return true; }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
@@ -106,7 +107,7 @@ class AuthPolicyCredentialsManager : public KeyedService,
                                  const std::string& signal_name,
                                  bool success);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   AccountId account_id_;
   std::string display_name_;
   std::string given_name_;

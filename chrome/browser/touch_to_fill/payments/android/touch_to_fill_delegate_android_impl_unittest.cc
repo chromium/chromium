@@ -53,7 +53,7 @@ class MockFastCheckoutClient : public FastCheckoutClient {
               (const autofill::FormData&,
                const autofill::FormFieldData&,
                const autofill::AutofillManager&),
-              (override));
+              (const override));
   MOCK_METHOD(bool, IsNotShownYet, (), (const, override));
 };
 
@@ -294,7 +294,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
-       TryToShowTouchToFillFailsForPrefilledYear) {
+       TryToShowTouchToFillSucceedsForPrefilledYear) {
   // Force the form to be parsed here to test the case, when form values are
   // changed after the form is added to the cache.
   browser_autofill_manager_->OnFormsSeen({form_}, {});
@@ -304,11 +304,11 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   form_.fields[3].value = u"2023";
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
-  TryToShowTouchToFill(/*expected_success=*/false);
+  TryToShowTouchToFill(/*expected_success=*/true);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFormAlreadyFilled, 1);
+      TouchToFillCreditCardTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,

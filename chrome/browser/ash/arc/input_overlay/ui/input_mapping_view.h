@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
-#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {

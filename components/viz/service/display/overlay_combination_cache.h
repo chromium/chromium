@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_proposed_candidate.h"
@@ -84,7 +85,7 @@ class VIZ_SERVICE_EXPORT OverlayCombinationCache {
   // number of overlays you'd like to try and promote, determines the best
   // combination of overlays to try promoting this frame.
   OverlayCombinationToTest GetOverlayCombinationToTest(
-      const std::vector<OverlayProposedCandidate>& sorted_candidates,
+      base::span<OverlayProposedCandidate const> sorted_candidates,
       int max_overlays_considered);
 
   // Records the success/failure of each candidate we attempted to promote to an
@@ -93,7 +94,7 @@ class VIZ_SERVICE_EXPORT OverlayCombinationCache {
   // NOTE: The OverlayProposedCandidate.candidate.overlay_handled field should
   // be true iff that candidate was promoted this frame.
   void DeclarePromotedCandidates(
-      const std::vector<OverlayProposedCandidate>& attempted_candidates);
+      base::span<OverlayProposedCandidate const> attempted_candidates);
 
   // Clears all caches. This includes CandidateIds and CombinationResults.
   void ClearCache();
@@ -109,7 +110,7 @@ class VIZ_SERVICE_EXPORT OverlayCombinationCache {
   // that represent unique quads. If there are multiple candidates for a single
   // quad, only the first one will be used.
   std::vector<OverlayProposedCandidate> GetConsideredCandidates(
-      const std::vector<OverlayProposedCandidate>& sorted_candidates,
+      base::span<OverlayProposedCandidate const> sorted_candidates,
       size_t max_overlays_possible);
 
   // Gets the CandidateIds for each considered candidate. Reuses cached ids if

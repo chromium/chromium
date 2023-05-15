@@ -314,6 +314,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:ui_data_pack",
   ]
 
   if (!is_apple) {
@@ -476,6 +477,7 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     if (is_mac) {
       sources += [
         "mac/display_icc_profiles.cc",
@@ -681,6 +683,7 @@ static_library("test_support") {
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (use_fuzzing_engine) {
     sources += [
@@ -697,6 +700,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base:ui_data_pack",
     "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
@@ -737,6 +741,7 @@ test("gfx_unittests") {
     sources += [ "font_fallback_linux_unittest.cc" ]
   }
   if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
   }
   if (is_mac) {

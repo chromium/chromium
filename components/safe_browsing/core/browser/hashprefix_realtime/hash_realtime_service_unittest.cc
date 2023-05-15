@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -334,11 +335,35 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*name=*/"SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
           /*expected_count=*/0);
     }
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/
+        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
+        /*expected_count=*/expected_network_result ==
+                net::ERR_INTERNET_DISCONNECTED
+            ? 1
+            : 0);
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
+        /*expected_count=*/expected_network_result == net::ERR_NETWORK_CHANGED
+            ? 1
+            : 0);
   }
   void CheckNoNetworkRequestMetric() {
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Network.Result",
         /*expected_count=*/0);
+  }
+  void CheckEnteringBackoffMetric(absl::optional<int> expected_network_result) {
+    if (expected_network_result.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff",
+          /*sample=*/expected_network_result.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff",
+          /*expected_count=*/0);
+    }
   }
   V5::FullHash CreateFullHashProto(
       std::vector<V5::ThreatType> threat_types,
@@ -451,8 +476,7 @@ class HashRealTimeServiceTest : public PlatformTest {
       absl::optional<int> inner_response_code,
       int expected_prefix_count,
       int expected_network_result,
-      HashRealTimeService::OperationResult expected_operation_result,
-      bool expected_lookup_response_called) {
+      HashRealTimeService::OperationResult expected_operation_result) {
     auto num_requests = network_context_.total_requests();
 
     // Set up request and response.
@@ -494,8 +518,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
-    EXPECT_EQ(ohttp_key_service_->lookup_response_notified(),
-              expected_lookup_response_called);
+    EXPECT_TRUE(ohttp_key_service_->lookup_response_notified());
   }
   // Starts a lookup on |url| that should already be found entirely in the cache
   // and therefore not require a request to be sent. Confirms that the lookup's
@@ -571,14 +594,15 @@ class HashRealTimeServiceTest : public PlatformTest {
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
   }
-  void RunSimpleFailingRequest(const GURL& url) {
+  void RunSimpleFailingRequest(const GURL& url,
+                               int net_error = net::ERR_FAILED) {
     // Set up request response.
     auto request = std::make_unique<V5::SearchHashesRequest>();
     for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
       request->add_hash_prefixes(hash_prefix);
     }
     std::string expected_url = GetExpectedRequestUrl(request);
-    network_context_.AddResponse(expected_url, "", net::ERR_FAILED,
+    network_context_.AddResponse(expected_url, "", net_error,
                                  /*outer_response_error_code=*/absl::nullopt,
                                  /*inner_response_code=*/absl::nullopt);
 
@@ -991,8 +1015,22 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNetworkError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kNetworkError);
+}
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
+  GURL url = GURL("https://example.test");
+  // Retriable errors are not yet implemented for the OHTTP path, so they should
+  // still be considered a network error.
+  RunRequestFailureTest(
+      /*url=*/url, /*response_full_hashes=*/absl::nullopt,
+      /*custom_response=*/"",
+      /*net_error=*/net::ERR_INTERNET_DISCONNECTED,
+      /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt,
+      /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED,
+      /*expected_operation_result=*/
+      HashRealTimeService::OperationResult::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
@@ -1005,8 +1043,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/0,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1019,8 +1056,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_NOT_FOUND,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1032,8 +1068,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   GURL url = GURL("https://example.test");
@@ -1044,8 +1079,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kParseError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kParseError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
   GURL url = GURL("https://example.test");
@@ -1059,8 +1093,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   GURL url = GURL("https://example.test");
@@ -1076,8 +1109,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNoCacheDurationError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kNoCacheDurationError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   GURL url = GURL("https://example.test");
@@ -1332,8 +1364,12 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
+  ResetMetrics();
   RunSimpleFailingRequest(url);
   EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/net::ERR_FAILED);
+  ResetMetrics();
 
   // Backoff mode should still be set until 5 minutes later.
   task_environment_.FastForwardBy(base::Seconds(299));
@@ -1352,6 +1388,24 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
+}
+
+TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
+  GURL url = GURL("https://example.test");
+
+  // Retriable errors are not yet implemented for the OHTTP path, so they
+  // should still trigger backoff.
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
+  ResetMetrics();
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(
+      /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
@@ -1373,6 +1427,7 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
 
   // Key related failure should also affect the backoff status.
   EXPECT_EQ(service_->backoff_operator_->IsInBackoffMode(), true);
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeRespected_FullyCached) {
@@ -1499,6 +1554,35 @@ TEST_F(HashRealTimeServiceTest, TestIsThreatTypeMoreSevere) {
   }
 }
 
+TEST_F(HashRealTimeServiceTest, TestCanCheckUrl) {
+  auto can_check_url =
+      [](std::string url,
+         network::mojom::RequestDestination request_destination =
+             network::mojom::RequestDestination::kDocument) {
+        EXPECT_TRUE(GURL(url).is_valid());
+        return HashRealTimeService::CanCheckUrl(GURL(url), request_destination);
+      };
+  // Yes: HTTPS and main-frame URL.
+  EXPECT_TRUE(can_check_url("https://example.test/path"));
+  // Yes: HTTP and main-frame URL.
+  EXPECT_TRUE(can_check_url("http://example.test/path"));
+  // No: It's not a mainframe URL.
+  EXPECT_FALSE(can_check_url("https://example.test/path",
+                             network::mojom::RequestDestination::kFrame));
+  // No: The URL scheme is not HTTP/HTTPS.
+  EXPECT_FALSE(can_check_url("ftp://example.test/path"));
+  // No: It's localhost.
+  EXPECT_FALSE(can_check_url("http://localhost/path"));
+  // No: The host is an IP address, but is not publicly routable.
+  EXPECT_FALSE(can_check_url("http://0.0.0.0"));
+  // Yes: The host is an IP address and is publicly routable.
+  EXPECT_TRUE(can_check_url("http://1.0.0.0"));
+  // No: Hostname does not have at least 1 dot.
+  EXPECT_FALSE(can_check_url("https://example/path"));
+  // No: Hostname does not have at least 3 characters.
+  EXPECT_FALSE(can_check_url("https://e./path"));
+}
+
 class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
  public:
   HashRealTimeServiceDirectFetchTest() {
@@ -1528,6 +1612,56 @@ class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
     return response_str;
   }
 
+  // Starts a lookup on |url| that is expected to fail due to a |net_error|.
+  // Confirms that the lookup fails.
+  void RunRequestNetErrorFailureTest(
+      const GURL& url,
+      net::Error net_error,
+      int expected_prefix_count,
+      HashRealTimeService::OperationResult expected_operation_result,
+      bool expected_enter_backoff) {
+    auto num_requests = test_url_loader_factory_->total_requests();
+
+    // Set up request and response.
+    auto request = std::make_unique<V5::SearchHashesRequest>();
+    for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
+      request->add_hash_prefixes(hash_prefix);
+    }
+    std::string expected_url = GetExpectedRequestUrl(request);
+
+    auto head = network::CreateURLResponseHead(net::HTTP_OK);
+    network::URLLoaderCompletionStatus status(net_error);
+    test_url_loader_factory_->AddResponse(GURL(expected_url), std::move(head),
+                                          "", status);
+
+    // Start lookup.
+    base::MockCallback<HPRTLookupResponseCallback> response_callback;
+    EXPECT_CALL(response_callback,
+                Run(/*is_lookup_successful=*/false,
+                    /*sb_threat_type=*/testing::Eq(absl::nullopt),
+                    /*locally_cached_results_threat_type=*/testing::_))
+        .Times(1);
+    service_->StartLookup(url, response_callback.Get(),
+                          base::SequencedTaskRunner::GetCurrentDefault());
+    task_environment_.RunUntilIdle();
+
+    CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/false,
+                           /*expected_backoff_mode_status=*/false);
+    CheckRequestMetrics(
+        /*expected_prefix_count=*/expected_prefix_count,
+        /*expected_network_result=*/net_error,
+        /*expected_operation_result=*/
+        expected_operation_result,
+        /*expected_found_unmatched_full_hashes=*/absl::nullopt);
+    CheckEnteringBackoffMetric(
+        /*expected_network_result=*/expected_enter_backoff
+            ? net_error
+            : absl::optional<int>());
+    ResetMetrics();
+
+    EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests + 1u);
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1552,6 +1686,49 @@ TEST_F(HashRealTimeServiceDirectFetchTest, TestLookup_Success) {
   service_->StartLookup(url, response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(HashRealTimeServiceDirectFetchTest,
+       TestLookupFailure_RetriableNetError) {
+  GURL url = GURL("https://example.test");
+  auto run_net_error_failure_test =
+      [this, url](net::Error net_error, bool expected_is_retriable_error,
+                  bool expected_enter_backoff = false) {
+        RunRequestNetErrorFailureTest(
+            /*url=*/url, /*net_error=*/net_error, /*expected_prefix_count=*/1,
+            /*expected_operation_result=*/
+            expected_is_retriable_error
+                ? HashRealTimeService::OperationResult::kRetriableError
+                : HashRealTimeService::OperationResult::kNetworkError,
+            expected_enter_backoff);
+      };
+
+  // Retriable errors should not trigger backoff mode.
+  run_net_error_failure_test(net::ERR_INTERNET_DISCONNECTED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_NETWORK_CHANGED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_INTERNET_DISCONNECTED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_NETWORK_CHANGED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_INTERNET_DISCONNECTED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_NETWORK_CHANGED,
+                             /*expected_is_retriable_error=*/true);
+  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+
+  // Retriable errors should not reset the backoff counter back to 0.
+  run_net_error_failure_test(net::ERR_FAILED,
+                             /*expected_is_retriable_error=*/false);
+  run_net_error_failure_test(net::ERR_FAILED,
+                             /*expected_is_retriable_error=*/false);
+  run_net_error_failure_test(net::ERR_INTERNET_DISCONNECTED,
+                             /*expected_is_retriable_error=*/true);
+  run_net_error_failure_test(net::ERR_FAILED,
+                             /*expected_is_retriable_error=*/false,
+                             /*expected_enter_backoff=*/true);
+  EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
 }
 
 }  // namespace safe_browsing

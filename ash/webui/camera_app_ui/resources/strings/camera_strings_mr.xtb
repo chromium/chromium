@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">डिव्हाइसवरील कमी स्टोरेज जागेमुळे तुमचे रेकॉर्डिंग थांबले आहे. आणखी व्हिडिओ रेकॉर्ड करण्यासाठी, तुम्हाला तुमच्या डिव्हाइसवरील जागा मोकळी करावी लागेल.</translation>
 <translation id="2036868001356139588">टायमरचा कालावधी</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> अ‍ॅक्टिव्ह</translation>
-<translation id="2128052519899549250">टाइम-लॅप्स व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="2134029355740465625">व्हिडिओ सेटिंग्ज</translation>
 <translation id="2144806332417375165">कस्टम व्हिडिओ पॅरामीटर</translation>
 <translation id="2175927920773552910">QR कोड</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">दस्तऐवज डिटेक्ट केले</translation>
 <translation id="414641094616694804">हा कॅमेरा रेझोल्यूशन बदलू शकत नाही</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
-<translation id="4281620174117014503">मध्यम रेझोल्यूशन</translation>
 <translation id="428234092390943511">पेज थंबनेल</translation>
 <translation id="4383571725254449280">परफॉर्मन्स लॉग प्रिंट करा</translation>
 <translation id="4445542136948522167">फोटो घेणे थांबवा</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5320594929574852403">डाव्या दिशेने हलत आहे</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">टाइम-लॅप्स</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्कॅन करत आहे</translation>
 <translation id="5671277269877808209">चौरस</translation>
+<translation id="574392208103952083">मध्यम</translation>
 <translation id="5746169159649715125">पीडीएफ म्हणून सेव्ह करा</translation>
 <translation id="5753488212459587150">एक्सपोर्ट मोड सुरू करा</translation>
 <translation id="5759254179196327752">दस्तऐवज स्कॅन करा</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7670511624014457267">६० FPS</translation>
 <translation id="7671804233658741790">दस्तऐवजाच्या तळाशी असलेला उजवीकडील कोपरा</translation>
+<translation id="7684446460490665873">टाइम लॅप्स व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7692090236657809299">पॅन टिल्ट झूम सुरू करा</translation>
 <translation id="7726641833034062494">साधारण व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7748344063862150053">दस्तऐवजाचा सर्वात वरील उजवीकडील कोपरा</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा</translation>
 <translation id="9045155556724273246">१० सेकंद</translation>
 <translation id="906331135292332864">इमेजवर प्रक्रिया करत आहे...</translation>
+<translation id="9161584225258678723">टाइम लॅप्स</translation>
 <translation id="922762992951083513">मिरर करणे सुरू करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 </translationbundle>

@@ -34,7 +34,7 @@ class GdbRspConnection(object):
     # sel_ldr's debug stub.
     timeout_in_seconds = 10
     poll_time_in_seconds = 0.1
-    for i in xrange(int(timeout_in_seconds / poll_time_in_seconds)):
+    for i in range(int(timeout_in_seconds / poll_time_in_seconds)):
       # On Mac OS X, we have to create a new socket FD for each retry.
       sock = socket.socket()
       try:
@@ -50,7 +50,7 @@ class GdbRspConnection(object):
   def _GetReply(self):
     reply = ''
     while True:
-      data = self._socket.recv(1024)
+      data = self._socket.recv(1024).decode()
       if len(data) == 0:
         if reply == '+':
           raise EofOnReplyException()
@@ -69,18 +69,18 @@ class GdbRspConnection(object):
       raise AssertionError('Bad RSP checksum: %r != %r' %
                            (checksum, expected_checksum))
     # Send acknowledgement.
-    self._socket.send('+')
+    self._socket.send('+'.encode())
     return reply_body
 
   # Send an rsp message, but don't wait for or expect a reply.
   def RspSendOnly(self, data):
     msg = '$%s#%02x' % (data, RspChecksum(data))
-    return self._socket.send(msg)
+    return self._socket.send(msg.encode())
 
   def RspRequest(self, data):
     self.RspSendOnly(data)
     return self._GetReply()
 
   def RspInterrupt(self):
-    self._socket.send('\x03')
+    self._socket.send('\x03'.encode())
     return self._GetReply()

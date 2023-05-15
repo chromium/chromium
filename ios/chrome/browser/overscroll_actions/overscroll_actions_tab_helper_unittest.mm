@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

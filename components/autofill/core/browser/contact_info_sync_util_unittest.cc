@@ -24,8 +24,7 @@ const auto kModificationDate = base::Time::FromDoubleT(456);
 // Returns a profile with all fields set. Contains identical data to the data
 // returned from `ConstructCompleteSpecifics()`.
 AutofillProfile ConstructCompleteProfile() {
-  AutofillProfile profile(kGuid, /*origin=*/"",
-                          AutofillProfile::Source::kAccount);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount);
 
   profile.set_use_count(123);
   profile.set_use_date(kUseDate);
@@ -94,6 +93,8 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"2",
                                            VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
+                                           VerificationStatus::kObserved);
 
   // All of the following types don't store verification statuses.
   // Set email, phone and company values.
@@ -188,6 +189,8 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_floor(), "2",
            ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_landmark(), "Red tree",
+           ContactInfoSpecifics::OBSERVED);
 
   // All of the following types don't store verification statuses in
   // AutofillProfile. This corresponds to `VERIFICATION_STATUS_UNSPECIFIED`.
@@ -212,8 +215,20 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
 
 }  // namespace
 
+class ContactInfoSyncUtilTest : public testing::Test {
+ public:
+  ContactInfoSyncUtilTest() {
+    features_.InitAndEnableFeature(
+        features::kAutofillEnableNewStreetLevelFieldTypes);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 // Test that converting AutofillProfile -> ContactInfoSpecifics works.
-TEST(ContactInfoSyncUtilTest, CreateContactInfoEntityDataFromAutofillProfile) {
+TEST_F(ContactInfoSyncUtilTest,
+       CreateContactInfoEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList honorific_prefixes_feature;
   honorific_prefixes_feature.InitAndEnableFeature(
       features::kAutofillEnableSupportForHonorificPrefixes);
@@ -231,27 +246,25 @@ TEST(ContactInfoSyncUtilTest, CreateContactInfoEntityDataFromAutofillProfile) {
 }
 
 // Test that only profiles with valid GUID are converted.
-TEST(ContactInfoSyncUtilTest,
-     CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, /*origin=*/"",
-                          AutofillProfile::Source::kAccount);
+TEST_F(ContactInfoSyncUtilTest,
+       CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
 }
 
 // Test that AutofillProfiles with invalid source are not converted.
-TEST(ContactInfoSyncUtilTest,
-     CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, /*origin=*/"",
-                          AutofillProfile::Source::kLocalOrSyncable);
+TEST_F(ContactInfoSyncUtilTest,
+       CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
 }
 
 // Test that supported fields and nested messages are successfully trimmed.
-TEST(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
+TEST_F(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
   sync_pb::ContactInfoSpecifics contact_info_specifics;
   contact_info_specifics.mutable_address_city()->set_value("City");
   contact_info_specifics.mutable_address_city()->mutable_metadata()->set_status(
@@ -266,8 +279,8 @@ TEST(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
 
 // Test that supported fields and nested messages are successfully trimmed but
 // that unsupported fields are preserved.
-TEST(ContactInfoSyncUtilTest,
-     TrimAllSupportedFieldsFromRemoteSpecifics_PreserveUnsupportedFields) {
+TEST_F(ContactInfoSyncUtilTest,
+       TrimAllSupportedFieldsFromRemoteSpecifics_PreserveUnsupportedFields) {
   sync_pb::ContactInfoSpecifics contact_info_specifics_with_only_unknown_fields;
 
   // Set an unsupported field in both the top-level message and also in a nested
@@ -294,7 +307,7 @@ TEST(ContactInfoSyncUtilTest,
 
 // Test that the conversion of a profile to specifics preserve the unsupported
 // fields.
-TEST(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
+TEST_F(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
   // If this feature is not available the honorific prefix will be lost in the
   // back and forth conversion.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -327,7 +340,7 @@ TEST(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
 }
 
 // Test that converting ContactInfoSpecifics -> AutofillProfile works.
-TEST(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
+TEST_F(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
   ContactInfoSpecifics specifics = ConstructCompleteSpecifics();
   AutofillProfile profile = ConstructCompleteProfile();
 
@@ -338,8 +351,8 @@ TEST(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
 }
 
 // Test that only specifics with valid GUID are converted.
-TEST(ContactInfoSyncUtilTest,
-     CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
+TEST_F(ContactInfoSyncUtilTest,
+       CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
   ContactInfoSpecifics specifics;
   specifics.set_guid(kInvalidGuid);
   EXPECT_EQ(CreateAutofillProfileFromContactInfoSpecifics(specifics), nullptr);

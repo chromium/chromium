@@ -53,7 +53,8 @@
     height: 68px;
   }
 
-  :host(.hovered) {
+  :host(.hovered),
+  :host([force-hover]) {
     background: var(--cr-hover-background-color);
   }
 
@@ -145,7 +146,6 @@
         0 0;
     box-sizing: border-box;
     height: 100%;
-    overflow: hidden;
     width: 100%;
   }
 
@@ -180,6 +180,7 @@
   /* If there is only 1 img, span the entire grid. */
   .folder-and-count:not(:has(div:nth-child(2))) .image-container:first-of-type {
     border: none;
+    border-radius: var(--cr-url-list-item-image-container-border-radius_);
     grid-column: 1 / span 2;
     grid-row: 1 / span 2;
   }
@@ -217,6 +218,13 @@
     border-radius: 0;
   }
 
+  :host([size=large])
+      .folder-and-count:not(:has(div:nth-child(2))):has(.image-container)
+      .count {
+    border-inline-start: var(--cr-url-list-item-image-container-border_);
+    border-top: var(--cr-url-list-item-image-container-border_);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host([size=large]) .count {
       background: rgba(var(--google-grey-200-rgb), .11);
@@ -248,7 +256,7 @@
   .metadata {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 8px;
     min-width: 0;
     width: 100%;
   }
@@ -406,7 +414,7 @@
 </div>
 <slot name="content">
   <div id="metadata" class="metadata">
-    <button class="title"
+    <button id="title" class="title"
         aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
         aria-description="[[
             getButtonAriaDescription_(description, buttonAriaDescription)]]">

@@ -7,22 +7,49 @@ module side_panel.mojom;
 import "url/mojom/url.mojom";
 
 // Methods called on the browser from the companion UI.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum MethodType {
-  // Method called in response to a user action in a promo.
+  // Methods used in renderer -> browser communication.
+  // Method corresponding to `CompanionPageHandler.OnPromoAction`.
   kOnPromoAction = 1,
 
-  // Method called in response to user clicking on the region search button.
+  // Method corresponding to `CompanionPageHandler.OnRegionSearchClicked`.
   kOnRegionSearchClicked = 2,
 
-  // Method called when user's experience opt-in status is available.
+  // Method corresponding to `CompanionPageHandler.OnExpsOptInStatusAvailable`.
   kOnExpsOptInStatusAvailable = 3,
+
+  // Method corresponding to
+  // `CompanionPageHandler.OnOpenInNewTabButtonURLChanged`.
+  kOnOpenInNewTabButtonURLChanged = 4,
+
+  // Method corresponding to `CompanionPageHandler.RecordUiSurfaceShown`.
+  kRecordUiSurfaceShown = 5,
+
+  // Method corresponding to `CompanionPageHandler.RecordUiSurfaceClicked`.
+  kRecordUiSurfaceClicked = 6,
+
+  // Method corresponding to `CompanionPageHandler.OnCqCandidatesAvailable`.
+  kOnCqCandidatesAvailable = 7,
+
+  // Method corresponding to `CompanionPageHandler.OnPhFeedback`.
+  kOnPhFeedback = 8,
+
+  // Method corresponding to `CompanionPageHandler.OnCqJumptagClicked`.
+  kOnCqJumptagClicked = 9,
+
+  // Methods used in browser -> renderer communication.
+  // Method corresponding to `CompanionPage.UpdateCompanionPage`.
+  kUpdateCompanionPage = 31,
+
+  // Method corresponding to `CompanionPage.OnCqFindTextResultsAvailable`.
+  kOnCqFindTextResultsAvailable = 32,
 };
 
 // Types of promos shown in the companion UI.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum PromoType {
   // Promo to sign-in to chrome.
   kSignin = 1,
@@ -35,8 +62,8 @@ enum PromoType {
 };
 
 // User actions taken on a promo.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum PromoAction {
   // Promo was shown in the companion UI.
   kShown = 1,
@@ -46,6 +73,53 @@ enum PromoAction {
 
   // User declined the promo.
   kRejected = 3,
+};
+
+// User feedback actions on the PH surface.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+enum PhFeedback {
+  // User clicked thumbs up.
+  kThumbsUp = 1,
+
+  // User clicked thumbs down.
+  kThumbsDown = 2,
+};
+
+// Data for uploading an image query.
+struct ImageQuery {
+  // URL to upload the image query to.
+  url.mojom.Url upload_url;
+  // URL of the image if it exists.
+  url.mojom.Url image_url;
+  // Content type representing the image to pass in the POST form.
+  string content_type;
+  // Array of image bytes to query.
+  array<uint8> image_bytes;
+  // Height of the image before transformations.
+  uint32 height;
+  // Width of the image before transformations.
+  uint32 width;
+  // Height of the image after transformations.
+  uint32 downscaled_height;
+  // Width of the image after transformations.
+  uint32 downscaled_width;
+};
+
+// Various UI surfaces on the companion page.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+enum UiSurface {
+  kUnknown = 0,
+  kPH = 1,
+  kCQ = 2,
+  kRegionSearch = 3,
+  kSearchBox = 4,
+  kVQ = 5,
+  kRelQr = 6,
+  kRelQs = 7,
+  kPageEntities = 8,
+  kATX = 9,
 };
 
 // Factory method for creating a new WebUI page handler.
@@ -70,6 +144,42 @@ interface CompanionPageHandler {
   // Called to notify the browser that the user's experience opt-in status is
   // available.
   OnExpsOptInStatusAvailable(bool is_exps_opted_in);
+
+  // Called to notify the browser that the url used for the 'open in new tab'
+  // button in the side panel header should be updated. If the url is empty
+  // the button would be hidden.
+  OnOpenInNewTabButtonURLChanged(url.mojom.Url url_to_open);
+
+  // For metrics only. Called to record that a certain UI surface was shown on
+  // the companion page. Additionally indicates the number of child elements
+  // shown within the surface, e.g. the number of related queries shown in
+  // the related queries component.
+  // `ui_surface_position` indicates the position of this UI surface within the
+  // page.
+  // `child_element_available_count` is the number of candidate children that
+  // were considered to be shown in the page.
+  // 'child_element_shown_count` is the number of children that were actually
+  // shown.
+  RecordUiSurfaceShown(UiSurface ui_surface, uint32 ui_surface_position,
+      uint32 child_element_available_count, uint32 child_element_shown_count);
+
+  // For metrics only. Called to record that the user clicked on the given UI
+  // surface on the companion page. These clicks are actual clicks on the
+  // surface which exclude clicks on the feedback elements. The
+  // `click_position` refers to the position of the surface within a
+  // list. Applicable only to certain UI surfaces. Pass -1 when not applicable.
+  RecordUiSurfaceClicked(UiSurface ui_surface, int32 click_position);
+
+  // Called to notify the browser that the cq candidates are available.
+  OnCqCandidatesAvailable(array<string> text_directives);
+
+  // Called in response to user feedback action on the PH surface.
+  OnPhFeedback(PhFeedback ph_feedback);
+
+  // Called to notify the browser that the user has clicked on a jumptag.
+  // `text_directive` is the URL fragment for highlighting and scrolling-to.
+  // Ref: https://wicg.github.io/scroll-to-text-fragment/#syntax.
+  OnCqJumptagClicked(string text_directive);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
@@ -82,4 +192,13 @@ interface CompanionPage {
   // Results in a postmessage() call to the companion with the encoded protobuf
   // representation of the update params.
   UpdateCompanionPage(string companion_update_proto);
+
+  // Pass a new companion URL needed along with a byte string representing the
+  // image bytes that should be used for the query.
+  OnImageQuery(ImageQuery image_query);
+
+  // Pass the finding results for cq texts to the iframe.
+  // `text_directives` and `results` have the same length.
+  OnCqFindTextResultsAvailable(array<string> text_directives,
+    array<bool> results);
 };

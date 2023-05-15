@@ -23,15 +23,23 @@ repack("headless_command_resources_pack") {
   deps = [ ":headless_command_resources" ]
 }
 
-static_library("command_handler") {
+source_set("switches") {
   sources = [
-    "headless_command_handler.cc",
-    "headless_command_handler.h",
     "headless_command_switches.cc",
     "headless_command_switches.h",
   ]
 
+  deps = [ "//base" ]
+}
+
+static_library("command_handler") {
+  sources = [
+    "headless_command_handler.cc",
+    "headless_command_handler.h",
+  ]
+
   deps = [
+    ":switches",
     "//base",
     "//components/devtools/simple_devtools_protocol_client",
     "//content",

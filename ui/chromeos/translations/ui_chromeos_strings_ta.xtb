@@ -166,7 +166,6 @@
 <translation id="23721837607121582">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் Linuxஸுடன் பகிரப்பட்டன</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ஃபைல்கள்  தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="2383454254762599978">‘நீக்கியவை’ ஃபோல்டருக்கு நகர்த்து</translation>
 <translation id="2387458720915042159">ப்ராக்ஸி இணைப்பு வகை</translation>
 <translation id="2389832672041313158">பர்மீஸ்/மியான்மர்</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">படிப்பதற்கு மட்டுமேயான சாதனம்</translation>
 <translation id="4826849268470072925">தமிழ் (ITRANS)</translation>
 <translation id="482932175346970750">உலாவியில் <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> என டைப் செய்யவும்</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> உருப்படிகள் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="485316830061041779">ஜெர்மன்</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">ஸ்வீடிஷ்</translation>
 <translation id="6990081529015358884">இயக்குவதற்கு போதுமான இடம் இல்லை</translation>
 <translation id="6993826899923627728">இந்த ஃபைல்கள் உங்கள் 'நீக்கியவை' ஃபோல்டரில் உள்ளன</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ஃபோல்டர்கள் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="7008426324576352165">பதிவேற்றத்தை நிறைவுசெய்ய உங்கள் நிறுவனத்திற்குக் கூடுதல் சேமிப்பகம் தேவை.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ஃபைல்களை நகர்த்துவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">மேலே உள்ள நீட்டிப்பைக் கண்டறியவும்</translation>
 <translation id="7256405249507348194">அறியப்படாத பிழை: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
+<translation id="7291818353625820805">பட்டன்களுக்கான செயல்பாடு மீண்டும் மீண்டும் நிகழ வேண்டுமா? கீபோர்டு அமைப்புகளில் ஆக்ஸண்ட் குறிகளை முடக்கவும்</translation>
 <translation id="7292816689782057017">சில இடங்களில் சேமிப்பதை நிர்வாகக் கொள்கை கட்டுப்படுத்துகிறது.</translation>
 <translation id="7294063083760278948">தெலுங்கு ஒலிபெயர்ப்பு</translation>
 <translation id="7295662345261934369">பிறருடன் பகிர்</translation>

@@ -17,6 +17,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -92,7 +93,7 @@ class HTClientView : public views::ClientView {
   HUDDisplayView* GetHUDDisplayViewForTesting() { return hud_display_; }
 
  private:
-  HUDDisplayView* hud_display_;
+  raw_ptr<HUDDisplayView, ExperimentalAsh> hud_display_;
 };
 
 BEGIN_METADATA(HTClientView, views::ClientView)

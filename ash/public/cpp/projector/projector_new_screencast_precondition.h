@@ -9,10 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace ash {
 
 // The new screencast button state in the Projector SWA.
@@ -66,7 +62,6 @@ struct ASH_PUBLIC_EXPORT NewScreencastPrecondition {
   NewScreencastPrecondition& operator=(const NewScreencastPrecondition&);
   ~NewScreencastPrecondition();
 
-  base::Value ToValue() const;
   bool operator==(const NewScreencastPrecondition& rhs) const;
 
   NewScreencastPreconditionState state;

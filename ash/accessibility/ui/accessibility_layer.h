@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/geometry/rect.h"
@@ -71,7 +72,7 @@ class AccessibilityLayer : public ui::LayerDelegate {
                            bool stack_at_top);
 
   // The current root window containing the focused object.
-  aura::Window* root_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_ = nullptr;
 
   // The current layer.
   std::unique_ptr<ui::Layer> layer_;
@@ -86,7 +87,7 @@ class AccessibilityLayer : public ui::LayerDelegate {
                                   float new_device_scale_factor) override;
 
   // The object that owns this layer.
-  AccessibilityLayerDelegate* delegate_;
+  raw_ptr<AccessibilityLayerDelegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

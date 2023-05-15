@@ -257,7 +257,7 @@ scoped_refptr<UpdateClient> UpdateClientFactory(
     scoped_refptr<Configurator> config) {
   return base::MakeRefCounted<UpdateClientImpl>(
       config, base::MakeRefCounted<PingManager>(config),
-      &UpdateChecker::Create);
+      base::BindRepeating(&UpdateChecker::Create));
 }
 
 void RegisterPrefs(PrefRegistrySimple* registry) {

@@ -99,7 +99,12 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
 
 + (id<GREYAction>)tapWebElement:(ElementSelector*)selector {
   return web::WebViewTapElement(chrome_test_util::GetCurrentWebState(),
-                                selector);
+                                selector, /*verified*/ true);
+}
+
++ (id<GREYAction>)tapWebElementUnverified:(ElementSelector*)selector {
+  return web::WebViewTapElement(chrome_test_util::GetCurrentWebState(),
+                                selector, /*verified*/ false);
 }
 
 + (id<GREYAction>)scrollToTop {

@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
-#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -39,8 +38,7 @@ Status MakeFailedStatus(const std::string& desired_state,
 }
 }  // namespace
 
-ChromeImpl::~ChromeImpl() {
-}
+ChromeImpl::~ChromeImpl() = default;
 
 Status ChromeImpl::GetAsDesktop(ChromeDesktopImpl** desktop) {
   return Status(kUnknownError, "operation unsupported");
@@ -137,7 +135,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
           web_views_.push_back(std::make_unique<WebViewImpl>(
               view.id, w3c_compliant, nullptr,
               devtools_http_client_->browser_info(), std::move(client),
-              device_metrics_.get(), page_load_strategy_));
+              mobile_device_, page_load_strategy_));
         }
         DevToolsClientImpl* parent =
             static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
@@ -263,7 +261,7 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
       return status;
     std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
         *it, false, nullptr, devtools_http_client_->browser_info(),
-        std::move(client), nullptr, page_load_strategy_));
+        std::move(client), absl::nullopt, page_load_strategy_));
 
     DevToolsClientImpl* parent =
         static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
@@ -297,7 +295,7 @@ Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
   if (status.IsError())
     return status;
 
-  return ParseWindow(base::Value(std::move(result)), window);
+  return ParseWindow(std::move(result), window);
 }
 
 Status ChromeImpl::GetWindowRect(const std::string& target_id,
@@ -392,7 +390,7 @@ Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
   if (status.IsError())
     return status;
 
-  return ParseWindowBounds(base::Value(std::move(result)), window);
+  return ParseWindowBounds(std::move(result), window);
 }
 
 Status ChromeImpl::SetWindowBounds(Window* window,
@@ -581,8 +579,9 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
   return status;
 }
 
-Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
-  absl::optional<int> id = params.FindIntKey("windowId");
+Status ChromeImpl::ParseWindow(const base::Value::Dict& params,
+                               Window* window) {
+  absl::optional<int> id = params.FindInt("windowId");
   if (!id)
     return Status(kUnknownError, "no window id in response");
   window->id = *id;
@@ -590,9 +589,9 @@ Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
   return ParseWindowBounds(std::move(params), window);
 }
 
-Status ChromeImpl::ParseWindowBounds(const base::Value& params,
+Status ChromeImpl::ParseWindowBounds(const base::Value::Dict& params,
                                      Window* window) {
-  const base::Value::Dict* value = params.GetDict().FindDict("bounds");
+  const base::Value::Dict* value = params.FindDict("bounds");
   if (!value) {
     return Status(kUnknownError, "no window bounds in response");
   }
@@ -741,10 +740,10 @@ ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
                        std::unique_ptr<DevToolsClient> websocket_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
-                       std::unique_ptr<DeviceMetrics> device_metrics,
+                       absl::optional<MobileDevice> mobile_device,
                        SyncWebSocketFactory socket_factory,
                        std::string page_load_strategy)
-    : device_metrics_(std::move(device_metrics)),
+    : mobile_device_(std::move(mobile_device)),
       socket_factory_(std::move(socket_factory)),
       devtools_http_client_(std::move(http_client)),
       devtools_websocket_client_(std::move(websocket_client)),

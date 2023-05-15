@@ -173,6 +173,42 @@ const testCases = [
               });
         });
   },
+  // Adds `test app 5` to the launcher and pins it to the shelf.
+  async function PinSingleApp() {
+    chrome.enterprise.remoteApps.addApp(
+        {name: 'test app 5', iconUrl, addToFront: true}, (appId) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Id 1', appId);
+
+          chrome.enterprise.remoteApps.setPinnedApps(['Id 1'], () => {
+            chrome.test.assertNoLastError();
+            chrome.test.succeed();
+          });
+        });
+  },
+
+  // Adds two apps to the launcher and tries to pin both of them to the shelf
+  // which should result in an error.
+  async function PinMultipleAppsError() {
+    chrome.enterprise.remoteApps.addApp(
+        {name: 'test app 5', iconUrl, addToFront: true}, (appId) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Id 1', appId);
+
+          chrome.enterprise.remoteApps.addApp(
+              {name: 'Test App 7', iconUrl, addToFront: true}, (appId) => {
+                chrome.test.assertNoLastError();
+                chrome.test.assertEq('Id 2', appId);
+
+                chrome.enterprise.remoteApps.setPinnedApps(
+                    ['Id 1', 'Id 2'], () => {
+                      chrome.test.assertLastError(
+                          'Pinning multiple apps is not yet supported');
+                      chrome.test.succeed();
+                    });
+              });
+        });
+  },
 ];
 
 chrome.test.getConfig(async (config) => {

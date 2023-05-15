@@ -7,23 +7,10 @@
 
 #import <memory>
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 
-@interface MockReauthenticationModule : NSObject<ReauthenticationProtocol>
-
-// Localized string containing the reason why reauthentication is requested.
-@property(nonatomic, copy) NSString* localizedReasonForAuthentication;
-
-// Indicates whether the device is capable of reauthenticating the user.
-@property(nonatomic, assign) BOOL canAttempt;
-
-// Indicates whether (mock) authentication should succeed or not. Setting
-// `shouldSucceed` to any value sets `canAttempt` to YES.
-@property(nonatomic, assign) ReauthenticationResult expectedResult;
-
-@end
+@class MockReauthenticationModule;
 
 namespace chrome_test_util {
 
@@ -47,6 +34,12 @@ SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 // blocked with a reauth prompt, and return the fake reauthentication module.
 std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 SetUpAndReturnMockReauthenticationModuleForExportFromSettings();
+
+// Replace the reauthentication module in Password Suggestion Bottom Sheet with
+// a fake one to avoid being blocked with a reauth prompt, and return the fake
+// reauthentication module.
+std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
+SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet();
 
 }  // namespace chrome_test_util
 

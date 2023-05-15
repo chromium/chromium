@@ -45,8 +45,8 @@ class CommandBufferServiceTest : public testing::Test,
   void MakeService(unsigned int entry_count) {
     command_buffer_service_ =
         std::make_unique<CommandBufferService>(this, nullptr);
-    api_mock_ =
-        std::make_unique<AsyncAPIMock>(false, command_buffer_service_.get());
+    api_mock_ = std::make_unique<AsyncAPIMock>(false, nullptr,
+                                               command_buffer_service_.get());
     SetNewGetBuffer(entry_count * sizeof(CommandBufferEntry));
   }
 

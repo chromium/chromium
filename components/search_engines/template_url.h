@@ -256,6 +256,9 @@ class TemplateURLRef {
     // The content type string for `image_thumbnail_content`.
     std::string image_thumbnail_content_type;
 
+    // The image dimension data for a Google search-by-image query.
+    std::string processed_image_dimensions;
+
     // When searching for an image, the URL of the original image. Callers
     // should leave this empty for images specified via data: URLs.
     GURL image_url;
@@ -436,6 +439,7 @@ class TemplateURLRef {
     GOOGLE_PAGE_CLASSIFICATION,
     GOOGLE_PREFETCH_QUERY,
     GOOGLE_PREFETCH_SOURCE,
+    GOOGLE_PROCESSED_IMAGE_DIMENSIONS,
     GOOGLE_RLZ,
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,
@@ -779,6 +783,7 @@ class TemplateURL {
   base::Time last_visited() const { return data_.last_visited; }
 
   bool created_by_policy() const { return data_.created_by_policy; }
+  bool enforced_by_policy() const { return data_.enforced_by_policy; }
   bool created_from_play_api() const { return data_.created_from_play_api; }
 
   int usage_count() const { return data_.usage_count; }

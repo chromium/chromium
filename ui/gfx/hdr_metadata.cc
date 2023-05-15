@@ -81,6 +81,12 @@ std::string HDRMetadata::ToString() const {
   ss << "smpteSt2086:" << color_volume_metadata.ToString() << ", ";
   ss << "maxCLL:" << max_content_light_level << ", ";
   ss << "maxFALL:" << max_frame_average_light_level;
+
+  if (extended_range_brightness) {
+    ss << "cur_ratio: " << extended_range_brightness->current_buffer_ratio;
+    ss << "desired_ratio: " << extended_range_brightness->desired_ratio;
+  }
+
   ss << "}";
   return ss.str();
 }

@@ -196,27 +196,35 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.INPUT_TEXT_VIEW:
         return new InputTextViewMacro(text, this.getInputController());
       case MacroName.DELETE_PREV_CHAR:
-        return new RepeatableKeyPressMacro.DeletePreviousCharacterMacro(repeat);
+        return new RepeatableKeyPressMacro.DeletePreviousCharacterMacro(
+            this.getInputController(), repeat);
       case MacroName.NAV_PREV_CHAR:
-        return new RepeatableKeyPressMacro.NavPreviousCharMacro(repeat);
+        return new RepeatableKeyPressMacro.NavPreviousCharMacro(
+            this.getInputController(), repeat);
       case MacroName.NAV_NEXT_CHAR:
-        return new RepeatableKeyPressMacro.NavNextCharMacro(repeat);
+        return new RepeatableKeyPressMacro.NavNextCharMacro(
+            this.getInputController(), repeat);
       case MacroName.NAV_PREV_LINE:
-        return new RepeatableKeyPressMacro.NavPreviousLineMacro(repeat);
+        return new RepeatableKeyPressMacro.NavPreviousLineMacro(
+            this.getInputController(), repeat);
       case MacroName.NAV_NEXT_LINE:
-        return new RepeatableKeyPressMacro.NavNextLineMacro(repeat);
+        return new RepeatableKeyPressMacro.NavNextLineMacro(
+            this.getInputController(), repeat);
       case MacroName.COPY_SELECTED_TEXT:
-        return new RepeatableKeyPressMacro.CopySelectedTextMacro();
+        return new RepeatableKeyPressMacro.CopySelectedTextMacro(
+            this.getInputController());
       case MacroName.PASTE_TEXT:
         return new RepeatableKeyPressMacro.PasteTextMacro();
       case MacroName.CUT_SELECTED_TEXT:
-        return new RepeatableKeyPressMacro.CutSelectedTextMacro();
+        return new RepeatableKeyPressMacro.CutSelectedTextMacro(
+            this.getInputController());
       case MacroName.UNDO_TEXT_EDIT:
         return new RepeatableKeyPressMacro.UndoTextEditMacro();
       case MacroName.REDO_ACTION:
         return new RepeatableKeyPressMacro.RedoActionMacro();
       case MacroName.SELECT_ALL_TEXT:
-        return new RepeatableKeyPressMacro.SelectAllTextMacro();
+        return new RepeatableKeyPressMacro.SelectAllTextMacro(
+            this.getInputController());
       case MacroName.UNSELECT_TEXT:
         return new RepeatableKeyPressMacro.UnselectTextMacro(
             this.getInputController());
@@ -225,13 +233,16 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.STOP_LISTENING:
         return new StopListeningMacro();
       case MacroName.DELETE_PREV_WORD:
-        return new RepeatableKeyPressMacro.DeletePrevWordMacro(repeat);
+        return new RepeatableKeyPressMacro.DeletePrevWordMacro(
+            this.getInputController(), repeat);
       case MacroName.DELETE_PREV_SENT:
         return new DeletePrevSentMacro(this.getInputController());
       case MacroName.NAV_NEXT_WORD:
-        return new RepeatableKeyPressMacro.NavNextWordMacro(repeat);
+        return new RepeatableKeyPressMacro.NavNextWordMacro(
+            this.getInputController(), repeat);
       case MacroName.NAV_PREV_WORD:
-        return new RepeatableKeyPressMacro.NavPrevWordMacro(repeat);
+        return new RepeatableKeyPressMacro.NavPrevWordMacro(
+            this.getInputController(), repeat);
       case MacroName.SMART_DELETE_PHRASE:
         return new SmartDeletePhraseMacro(this.getInputController(), text);
       case MacroName.SMART_REPLACE_PHRASE:
@@ -248,19 +259,26 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.NAV_PREV_SENT:
         return new NavPrevSentMacro(this.getInputController());
       case MacroName.DELETE_ALL_TEXT:
-        return new RepeatableKeyPressMacro.DeleteAllText();
+        return new RepeatableKeyPressMacro.DeleteAllText(
+            this.getInputController());
       case MacroName.NAV_START_TEXT:
-        return new RepeatableKeyPressMacro.NavStartText();
+        return new RepeatableKeyPressMacro.NavStartText(
+            this.getInputController());
       case MacroName.NAV_END_TEXT:
-        return new RepeatableKeyPressMacro.NavEndText();
+        return new RepeatableKeyPressMacro.NavEndText(
+            this.getInputController());
       case MacroName.SELECT_PREV_WORD:
-        return new RepeatableKeyPressMacro.SelectPrevWord(repeat);
+        return new RepeatableKeyPressMacro.SelectPrevWord(
+            this.getInputController(), repeat);
       case MacroName.SELECT_NEXT_WORD:
-        return new RepeatableKeyPressMacro.SelectNextWord(repeat);
+        return new RepeatableKeyPressMacro.SelectNextWord(
+            this.getInputController(), repeat);
       case MacroName.SELECT_NEXT_CHAR:
-        return new RepeatableKeyPressMacro.SelectNextChar(repeat);
+        return new RepeatableKeyPressMacro.SelectNextChar(
+            this.getInputController(), repeat);
       case MacroName.SELECT_PREV_CHAR:
-        return new RepeatableKeyPressMacro.SelectPrevChar(repeat);
+        return new RepeatableKeyPressMacro.SelectPrevChar(
+            this.getInputController(), repeat);
       case MacroName.REPEAT:
         return new RepeatMacro();
       default:

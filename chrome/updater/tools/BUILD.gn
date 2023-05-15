@@ -46,15 +46,28 @@ copy("certificate_tag") {
 }
 
 if (is_mac) {
-  executable("keystone_ticketstore_reader") {
-    sources = [ "keystone_ticketstore_reader.mm" ]
+  executable("keystone_ticketstore_tool") {
+    sources = [ "keystone_ticketstore_tool.mm" ]
     deps = [
       "//base",
       "//chrome/updater:ks_ticket",
     ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
+}
+
+executable("dm_policy_dump") {
+  sources = [ "dm_policy_dump.cc" ]
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:external_constants",
+    "//chrome/updater/protos:omaha_proto",
+    "//components/policy/proto",
+  ]
 }
 
 source_set("unittest") {
@@ -66,6 +79,7 @@ source_set("unittest") {
     ":certificate_tag_lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/updater:unittest_util_sources",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",
   ]

@@ -289,6 +289,10 @@ void CheckInstallation(UpdaterScope scope,
                       L"*/components/update_client/*=2,"
                       L"*/chrome/updater/*=2"})
             .c_str());
+
+    EXPECT_EQ(task_info.trigger_types,
+              TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
+                  TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON);
   } else {
     task_scheduler->ForEachTaskWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
@@ -626,6 +630,7 @@ void EnterTestMode(const GURL& update_url,
                   .SetDeviceManagementURL(device_management_url.spec())
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Milliseconds(100))
+                  .SetServerKeepAliveTime(base::Seconds(1))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(11))
                   .Modify());
@@ -811,12 +816,25 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
          }()) {
       Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
       ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(clsid, updater_legacy_server));
+
+      // The non-user/system-specialized interfaces are registered for all
+      // installs for backward compatibility.
       Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
       ASSERT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
+      google_update.Reset();
+      EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.CopyTo(
+          IsSystemInstall(scope) ? __uuidof(IGoogleUpdate3WebSystem)
+                                 : __uuidof(IGoogleUpdate3WebUser),
+          IID_PPV_ARGS_Helper(&google_update)));
       Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
       Microsoft::WRL::ComPtr<IDispatch> dispatch;
       ASSERT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
       EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
+      app_bundle.Reset();
+      EXPECT_HRESULT_SUCCEEDED(
+          dispatch.CopyTo(IsSystemInstall(scope) ? __uuidof(IAppBundleWebSystem)
+                                                 : __uuidof(IAppBundleWebUser),
+                          IID_PPV_ARGS_Helper(&app_bundle)));
     }
   }
 
@@ -868,8 +886,7 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
   // Marshal and unmarshal an IUpdaterInternal object.
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(
-      Microsoft::WRL::MakeAndInitialize<UpdaterInternalImpl>(
-          &updater_internal));
+      MakeAndInitializeComObject<UpdaterInternalImpl>(updater_internal));
 
   Microsoft::WRL::ComPtr<IStream> stream;
   EXPECT_HRESULT_SUCCEEDED(::CoMarshalInterThreadInterfaceInStream(
@@ -911,7 +928,11 @@ void InitializeBundle(UpdaterScope scope,
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
   ASSERT_HRESULT_SUCCEEDED(update3web->createAppBundleWeb(&dispatch));
   ASSERT_HRESULT_SUCCEEDED(dispatch.As(&bundle));
-
+  bundle.Reset();
+  ASSERT_HRESULT_SUCCEEDED(dispatch.CopyTo(IsSystemInstall(scope)
+                                               ? __uuidof(IAppBundleWebSystem)
+                                               : __uuidof(IAppBundleWebUser),
+                                           IID_PPV_ARGS_Helper(&bundle)));
   EXPECT_HRESULT_SUCCEEDED(bundle->initialize());
 
   bundle_web = bundle;
@@ -945,10 +966,20 @@ HRESULT DoUpdate(UpdaterScope scope,
     EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
     Microsoft::WRL::ComPtr<IAppWeb> app;
     EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+    app.Reset();
+    EXPECT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(IsSystemInstall(scope)
+                                                     ? __uuidof(IAppWebSystem)
+                                                     : __uuidof(IAppWebUser),
+                                                 IID_PPV_ARGS_Helper(&app)));
     Microsoft::WRL::ComPtr<IDispatch> state_dispatch;
     EXPECT_HRESULT_SUCCEEDED(app->get_currentState(&state_dispatch));
     Microsoft::WRL::ComPtr<ICurrentState> state;
     EXPECT_HRESULT_SUCCEEDED(state_dispatch.As(&state));
+    state.Reset();
+    EXPECT_HRESULT_SUCCEEDED(state_dispatch.CopyTo(
+        IsSystemInstall(scope) ? __uuidof(ICurrentStateSystem)
+                               : __uuidof(ICurrentStateUser),
+        IID_PPV_ARGS_Helper(&state)));
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
     std::wstring state_description;
@@ -1195,12 +1226,21 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   ASSERT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
   Microsoft::WRL::ComPtr<IAppWeb> app;
   ASSERT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+  app.Reset();
+  ASSERT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IAppWebSystem) : __uuidof(IAppWebUser),
+      IID_PPV_ARGS_Helper(&app)));
 
   Microsoft::WRL::ComPtr<IDispatch> command_dispatch;
   ASSERT_HRESULT_SUCCEEDED(app->get_command(
       base::win::ScopedBstr(commandid).Get(), &command_dispatch));
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command_web;
   ASSERT_HRESULT_SUCCEEDED(command_dispatch.As(&app_command_web));
+  app_command_web.Reset();
+  ASSERT_HRESULT_SUCCEEDED(command_dispatch.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IAppCommandWebSystem)
+                             : __uuidof(IAppCommandWebUser),
+      IID_PPV_ARGS_Helper(&app_command_web)));
 
   std::vector<base::win::ScopedVariant> variant_params;
   variant_params.reserve(kMaxParameters);
@@ -1278,6 +1318,11 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
       policy_status_server));
   Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
   ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+  policy_status2.Reset();
+  ASSERT_HRESULT_SUCCEEDED(policy_status_server.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IPolicyStatus2System)
+                             : __uuidof(IPolicyStatus2User),
+      IID_PPV_ARGS_Helper(&policy_status2)));
 
   base::win::ScopedBstr updater_version;
   ASSERT_HRESULT_SUCCEEDED(
@@ -1469,6 +1514,19 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(
       key.Create(
           root,
+          GetAppCohortKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(nullptr, L"TestCohort"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueCohortName, L"TestCohortName"),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueCohortHint, L"TestCohortHint"),
+            ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
           GetAppClientsKey(L"{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}").c_str(),
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
@@ -1594,6 +1652,9 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
   EXPECT_EQ(persisted_data->GetDateLastActive(kChromeAppId).value(), -1);
   EXPECT_EQ(persisted_data->GetDateLastRollcall(kChromeAppId).value(), 5929);
+  EXPECT_EQ(persisted_data->GetCohort(kChromeAppId), "TestCohort");
+  EXPECT_EQ(persisted_data->GetCohortName(kChromeAppId), "TestCohortName");
+  EXPECT_EQ(persisted_data->GetCohortHint(kChromeAppId), "TestCohortHint");
 
   int count_entries = 0;
   if (IsSystemInstall(scope)) {

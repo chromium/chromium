@@ -312,6 +312,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
           contact_manager_.get(),
+          profile_info_provider_.get(),
           prefs,
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
           profile->GetPath(),
@@ -1115,6 +1116,7 @@ bool NearbySharingServiceImpl::ShouldRestartNearbyProcess(
       return false;
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kPresenceMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
       break;
   }
@@ -3893,7 +3895,7 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
             base::Unretained(this)));
   }
 
-  // Make sure to call this before calling Disconnect or we risk loosing some
+  // Make sure to call this before calling Disconnect or we risk losing some
   // transfer updates in the receive case due to the Disconnect call cleaning up
   // share targets.
   ShareTargetInfo* info = GetShareTargetInfo(share_target);

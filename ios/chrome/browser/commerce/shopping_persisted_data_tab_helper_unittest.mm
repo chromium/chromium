@@ -20,11 +20,11 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -124,7 +124,8 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(fake_identity_);
+    auth_service_->SignIn(fake_identity_,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   void MockOptimizationGuideResponse(

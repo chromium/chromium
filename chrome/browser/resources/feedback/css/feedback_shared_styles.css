@@ -4,6 +4,26 @@
 
 @import url(./feedback_shared_vars.css);
 
+html:has(body.jelly-enabled) :host-context(.focus-outline-visible)
+    button:focus {
+  box-shadow: none;
+  outline: 2px solid var(--cros-sys-focus_ring);
+}
+
+/* Sizing from cr-button. */
+html:has(body.jelly-enabled) button {
+  background-color: var(--cros-sys-primary_container);
+  border: none;
+  border-radius: 4px;
+  color: var(--cros-sys-on_primary_container);
+  min-width: 5.14em;
+  padding: 8px 16px;
+}
+
+html:has(body.jelly-enabled) button:hover {
+  background-color: var(--cros-sys-hover_on_subtle);
+}
+
 html,
 body {
   background-color: var(--feedback-bg-color);

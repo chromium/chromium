@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
@@ -107,7 +108,7 @@ class ConciergeHelperServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  ConciergeHelperService* service_;
+  raw_ptr<ConciergeHelperService, ExperimentalAsh> service_;
 };
 
 // Tests that ConciergeHelperService makes cpu restriction requests correctly.

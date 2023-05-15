@@ -37,6 +37,13 @@ found in the LICENSE file.
             android:visibility="gone"
             android:scrollbars="vertical" />
 
+        <ViewStub
+            android:id="@+id/empty_state_view_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout="@layout/empty_state_view"
+            android:layout_gravity="center"
+            android:padding="@dimen/card_padding" />
 
         <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
             android:id="@+id/empty_view_wrapper"

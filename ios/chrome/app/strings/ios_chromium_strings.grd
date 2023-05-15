@@ -249,6 +249,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP_SUBTITLE" desc="The subtitle explaining what the choosen mode (here desktop, the other possible state is mobile) will do in the browser">
         This means Chromium will request the desktop site every time.
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_TITLE_TEXT" desc="Chromium version of the title for the default browser half screen promo. [iOS only]">
+        Open Chromium From Any App
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_SUBTITLE_TEXT" desc="Chromium version of the subtitle for the default browser half screen promo. [iOS only]">
+        Automatically use Chromium when you tap links in messages, documents, and other apps.
+      </message>
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE" desc="The subtitle explaining what the choosen mode (here mobile, the other possible state is desktop) will do in the browser">
         This means Chromium will request the mobile site every time.
       </message>
@@ -551,6 +557,9 @@ Things to consider:
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
             You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
+          Google Password Manager
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chromium can't check your passwords
       </message>
@@ -607,9 +616,6 @@ Things to consider:
       </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user that the Overflow Menu has new items">
-        Get to know the new Chromium menu
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         To use and save Chromium data in your Google Account, enter your passphrase.

@@ -29,6 +29,7 @@ source_set("constants") {
 
   deps = [
     "//base",
+    "//components/commerce/core:commerce_constants",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//ios/components/webui:url_constants",
   ]

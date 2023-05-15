@@ -19,7 +19,7 @@
 AffiliationServiceFactory::AffiliationServiceFactory()
     : ProfileKeyedServiceFactory(
           "AffiliationService",
-          ProfileSelections::BuildRedirectedInIncognitoNonExperimental()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 AffiliationServiceFactory::~AffiliationServiceFactory() = default;
 

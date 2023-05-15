@@ -9,6 +9,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -54,7 +55,7 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  EcheTray* eche_tray_ = nullptr;
+  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
   std::unique_ptr<EcheStreamOrientationObserver> observer_;
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();

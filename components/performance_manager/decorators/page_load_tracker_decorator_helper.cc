@@ -100,7 +100,16 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     if (loading_state_ == LoadingState::kLoading)
       return;
 
-    DCHECK_EQ(loading_state_, LoadingState::kWaitingForNavigation);
+    // There are a few cases where an ongoing navigation will get upgraded to
+    // show loading ui without a DidStartLoading (e.g., if an iframe navigates,
+    // then the top-level frame begins navigating before the iframe navigation
+    // completes). If that happened, emulate the DidStartLoading now before
+    // notifying PrimaryPageChanged.
+    if (loading_state_ != LoadingState::kWaitingForNavigation) {
+      NotifyPageLoadTrackerDecoratorOnPMSequence(
+          web_contents(), &PageLoadTrackerDecorator::DidStartLoading);
+    }
+
     loading_state_ = LoadingState::kLoading;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
         web_contents(), &PageLoadTrackerDecorator::PrimaryPageChanged);

@@ -68,8 +68,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonDictionaryInput) {
 
 TEST(TrustTokenKeyCommitmentParser, AcceptsMinimal) {
   std::string input =
-      R"( { "PrivateStateTokenV3PMB": {
-                "protocol_version": "PrivateStateTokenV3PMB",
+      R"( { "PrivateStateTokenV1PMB": {
+                "protocol_version": "PrivateStateTokenV1PMB",
                 "id": 1,
                 "batchsize": 5
         }} )";
@@ -79,7 +79,7 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMinimal) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 
@@ -88,8 +88,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMinimal) {
 }
 
 TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithTypeUnsafeValue) {
-  const std::string input = R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB",
+  const std::string input = R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB",
             "id": 1,
             "batchsize": 5,
             "keys": 42
@@ -113,8 +113,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithTypeUnsafeKeyLabel) {
   // (The expiry will likely exceed the JSON spec's maximum integer value, so
   // it's encoded as a string.)
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB",
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB",
             "id": 1,
             "batchsize": 5,
             "keys": {
@@ -143,8 +143,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooSmall) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB",
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB",
             "id": 1,
             "batchsize": 5,
             "keys": {
@@ -173,8 +173,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooLarge) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5,
             "keys": {
               "1000000000000": {
@@ -202,8 +202,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsOtherwiseValidButNonBase64Key) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5,
             "keys": {
               "1": {
@@ -230,8 +230,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsKeyWithExpiryAndBody) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5,
             "keys": {"1": { "Y": "akey", "expiry": "%s" }}
          }})",
@@ -263,8 +263,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMultipleKeys) {
       (two_minutes_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string input = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5,
             "keys": {
               "1": { "Y": "akey", "expiry": "%s" },
@@ -295,8 +295,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithNoExpiry) {
   // If a key has a missing "expiry" field, we should reject the entire
   // record.
   const std::string input =
-      R"( {"PrivateStateTokenV3PMB": {
-          "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( {"PrivateStateTokenV1PMB": {
+          "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
           "batchsize": 5, "keys": {"1": { "Y": "akey" }} }})";
 
   // Sanity check that the input is actually valid JSON.
@@ -311,8 +311,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithMalformedExpiry) {
   // record.
   const std::string input =
       R"(
-   { "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5,
+   { "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5,
      "keys": {
        "1": {
          "Y": "akey",
@@ -345,8 +345,8 @@ TEST(TrustTokenKeyCommitmentParser, IgnoreKeyWithExpiryInThePast) {
   // If the time has passed a key's "expiry" field, we should reject the entire
   // record.
   const std::string input = base::StringPrintf(
-      R"( { "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( { "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
           "batchsize": 5, "keys": {"1": { "Y": "akey", "expiry": "%s" }} }})",
       base::NumberToString(one_minute_before_now_in_micros).c_str());
 
@@ -355,7 +355,7 @@ TEST(TrustTokenKeyCommitmentParser, IgnoreKeyWithExpiryInThePast) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 
@@ -374,8 +374,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithNoBody) {
   // If a key has an expiry but is missing its body,
   // we should reject the entire result.
   const std::string input = base::StringPrintf(
-      R"( { "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( { "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5, "keys": {"1": { "expiry": "%s" }} }} )",
       base::NumberToString(one_minute_from_now_in_micros).c_str());
 
@@ -392,8 +392,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsEmptyKey) {
   // we should reject the entire result.
 
   const std::string input =
-      R"( { "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( { "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5, "keys": {"1": { }} }})";
 
   // Sanity check that the input is actually valid JSON,
@@ -406,8 +406,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsEmptyKey) {
 
 TEST(TrustTokenKeyCommitmentParser, ParsesBatchSize) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5
    }})";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -421,8 +421,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesBatchSize) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingBatchSize) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1
    }})";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -434,8 +434,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingBatchSize) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsNonpositiveBatchSize) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
      "batchsize": 0
    }})";
   // Double-check that the input is actually valid JSON.
@@ -448,8 +448,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonpositiveBatchSize) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeBatchSize) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
      "batchsize": "not a number"
    }})";
   // Double-check that the input is actually valid JSON.
@@ -462,10 +462,10 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeBatchSize) {
 
 TEST(TrustTokenKeyCommitmentParser, IgnoresRequestIssuanceLocallyOn) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
+      R"({ "PrivateStateTokenV1PMB": {
      "srrkey": "aaaa",
      "batchsize": 1,
-     "protocol_version": "PrivateStateTokenV3PMB",
+     "protocol_version": "PrivateStateTokenV1PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
      "unavailable_local_operation_fallback": "web_issuance"
@@ -480,8 +480,8 @@ TEST(TrustTokenKeyCommitmentParser, IgnoresRequestIssuanceLocallyOn) {
 
 TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
@@ -491,16 +491,16 @@ TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
       TrustTokenKeyCommitmentParser().Parse(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(result->protocol_version,
-            mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
+            mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb);
 }
 
 TEST(TrustTokenKeyCommitmentParser, ParsesMultipleProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
-     }, "PrivateStateTokenV3VOPRF": {
-     "protocol_version": "PrivateStateTokenV3VOPRF", "id": 1, "batchsize": 5
+     }, "PrivateStateTokenV1VOPRF": {
+     "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1, "batchsize": 5
      }})";
   // Make sure the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -509,14 +509,14 @@ TEST(TrustTokenKeyCommitmentParser, ParsesMultipleProtocolVersion) {
       TrustTokenKeyCommitmentParser().Parse(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(result->protocol_version,
-            mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf);
+            mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf);
 }
 
 TEST(TrustTokenKeyCommitmentParser,
      ParsesMultipleIgnoreUnknownProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
      }, "PrivateStateTokenJunk": {
      "protocol_version": "PrivateStateTokenJunk", "id": 1, "batchsize": 5
@@ -528,11 +528,11 @@ TEST(TrustTokenKeyCommitmentParser,
       TrustTokenKeyCommitmentParser().Parse(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(result->protocol_version,
-            mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
+            mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb);
 }
 
 TEST(TrustTokenKeyCommitmentParser, RejectsBadVersionCommitmentType) {
-  std::string input = R"({ "PrivateStateTokenV3PMB": 3})";
+  std::string input = R"({ "PrivateStateTokenV1PMB": 3})";
   // Make sure the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
@@ -543,7 +543,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsBadVersionCommitmentType) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
+      R"({ "PrivateStateTokenV1PMB": {
      "id": 1, "batchsize": 5, "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
@@ -556,8 +556,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingProtocolVersion) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsMismatchedProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3VOPRF", "id": 1, "batchsize": 5
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1, "batchsize": 5
    }})";
   // Make sure the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -583,7 +583,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsUnknownProtocolVersion) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeProtocolVersion) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
+      R"({ "PrivateStateTokenV1PMB": {
      "protocol_version": 5, "id": 1, "srrkey": "aaaa",
      "batchsize": 5
    }})";
@@ -597,8 +597,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeProtocolVersion) {
 
 TEST(TrustTokenKeyCommitmentParser, ParsesID) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
@@ -613,8 +613,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesID) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingID) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "batchsize": 5,
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "batchsize": 5,
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
@@ -627,8 +627,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingID) {
 
 TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeID) {
   std::string input =
-      R"({ "PrivateStateTokenV3PMB": {
-     "protocol_version": "PrivateStateTokenV3PMB", "id": "foo",
+      R"({ "PrivateStateTokenV1PMB": {
+     "protocol_version": "PrivateStateTokenV1PMB", "id": "foo",
      "srrkey": "aaaa",
      "batchsize": 5
    }})";
@@ -673,7 +673,7 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, UnsuitableKey) {
   // Test that a key with an unsuitable Trust Tokens origin gets skipped.
   std::string input =
       R"( { "http://insecure.example/":
-             { "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+             { "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
                "batchsize": 5
                  } } )";
 
@@ -701,8 +701,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, SuitableKeyInvalidValue) {
 
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers, SingleIssuer) {
   std::string input =
-      R"( { "https://issuer.example/": {  "PrivateStateTokenV3PMB": {
-              "protocol_version": "PrivateStateTokenV3PMB",
+      R"( { "https://issuer.example/": {  "PrivateStateTokenV1PMB": {
+              "protocol_version": "PrivateStateTokenV1PMB",
               "id": 1, "batchsize": 5
               }} } )";
 
@@ -718,22 +718,22 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, SingleIssuer) {
   ASSERT_TRUE(result->count(issuer));
   EXPECT_TRUE(
       mojo::Equals(result->at(issuer), parser.Parse(
-                                           R"({  "PrivateStateTokenV3PMB": {
-             "protocol_version": "PrivateStateTokenV3PMB",
+                                           R"({  "PrivateStateTokenV1PMB": {
+             "protocol_version": "PrivateStateTokenV1PMB",
              "id": 1, "batchsize": 5 }})")));
 }
 
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuer) {
   std::string input =
-      R"( { "https://issuer.example/": {  "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( { "https://issuer.example/": {  "PrivateStateTokenV1PMB": {
+            "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
             "batchsize": 5 }},
-    "https://other.example/": {  "PrivateStateTokenV3PMB": {
-             "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+    "https://other.example/": {  "PrivateStateTokenV1PMB": {
+             "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
              "batchsize": 5 }},
     "https://issuer.example/this-is-really-the-same-issuer-as-the-first-entry":
-      { "PrivateStateTokenV3PMB": {
-        "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      { "PrivateStateTokenV1PMB": {
+        "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
         "batchsize": 3 }}
     } )";
 
@@ -754,8 +754,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuer) {
   ASSERT_TRUE(result->count(issuer));
   EXPECT_TRUE(
       mojo::Equals(result->at(issuer), parser.Parse(
-                                           R"({ "PrivateStateTokenV3PMB": {
-        "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 3
+                                           R"({ "PrivateStateTokenV1PMB": {
+        "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 3
         }})")));
 }
 
@@ -766,13 +766,13 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuerFirstWins) {
 
   std::string input =
       R"( {
-    "https://issuer.example/longer": {  "PrivateStateTokenV3PMB": {
-      "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5 }},
-    "https://other.example/": {  "PrivateStateTokenV3PMB": {
-      "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5 }},
+    "https://issuer.example/longer": {  "PrivateStateTokenV1PMB": {
+      "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5 }},
+    "https://other.example/": {  "PrivateStateTokenV1PMB": {
+      "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5 }},
     "https://issuer.example/":
-      { "PrivateStateTokenV3PMB": {
-        "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      { "PrivateStateTokenV1PMB": {
+        "protocol_version": "PrivateStateTokenV1PMB", "id": 1,
         "batchsize": 3 }
     }} )";
 
@@ -793,18 +793,18 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuerFirstWins) {
   ASSERT_TRUE(result->count(issuer));
   EXPECT_TRUE(
       mojo::Equals(result->at(issuer), parser.Parse(
-                                           R"({ "PrivateStateTokenV3PMB": {
-               "protocol_version": "PrivateStateTokenV3PMB",
+                                           R"({ "PrivateStateTokenV1PMB": {
+               "protocol_version": "PrivateStateTokenV1PMB",
                "id": 1, "batchsize": 5 }})")));
 }
 
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
      MixOfSuitableAndUnsuitableIssuers) {
   std::string input = R"( {
-    "https://issuer.example/": { "PrivateStateTokenV3PMB": {
-      "protocol_version": "PrivateStateTokenV3PMB", "id": 1, "batchsize": 5 }},
-    "http://insecure.example": { "PrivateStateTokenV3PMB": {
-      "protocol_version": "PrivateStateTokenV3PMB",
+    "https://issuer.example/": { "PrivateStateTokenV1PMB": {
+      "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5 }},
+    "http://insecure.example": { "PrivateStateTokenV1PMB": {
+      "protocol_version": "PrivateStateTokenV1PMB",
       "id": 1, "batchsize": 5 } }} )";
 
   // Make sure the input is actually valid JSON.
@@ -821,8 +821,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
   ASSERT_TRUE(result->count(issuer));
   EXPECT_TRUE(
       mojo::Equals(result->at(issuer), parser.Parse(
-                                           R"({  "PrivateStateTokenV3PMB": {
-        "protocol_version": "PrivateStateTokenV3PMB",
+                                           R"({  "PrivateStateTokenV1PMB": {
+        "protocol_version": "PrivateStateTokenV1PMB",
         "id": 1, "batchsize": 5}})")));
 }
 

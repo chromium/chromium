@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include <string>
 
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -12,9 +15,11 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
@@ -41,6 +46,22 @@ PermissionToggleRowView::PermissionToggleRowView(
   std::u16string detail = delegate->GetPermissionDetail(permission.type);
   if (!detail.empty())
     row_view_->AddSecondaryLabel(detail);
+
+  if (permission.requesting_origin.has_value()) {
+    std::u16string requesting_origin_string;
+    switch (permission.type) {
+      case ContentSettingsType::STORAGE_ACCESS:
+        requesting_origin_string = l10n_util::GetStringFUTF16(
+            IDS_PAGE_INFO_STORAGE_ACCESS_SECONDARY_TEXT,
+            url_formatter::FormatOriginForSecurityDisplay(
+                *permission.requesting_origin,
+                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+        break;
+      default:
+        NOTREACHED();
+    }
+    row_view_->AddSecondaryLabel(requesting_origin_string);
+  }
 
   if (permission.source == content_settings::SETTING_SOURCE_USER) {
     // If permission is not allowed because of security reasons, show a label

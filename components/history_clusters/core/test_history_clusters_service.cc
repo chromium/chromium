@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/test_history_clusters_service.h"
 
+#include "base/task/single_thread_task_runner.h"
+
 namespace history_clusters {
 
 TestHistoryClustersService::TestHistoryClustersService()
@@ -17,6 +19,10 @@ TestHistoryClustersService::TestHistoryClustersService()
                              /*pref_service=*/nullptr) {}
 TestHistoryClustersService::~TestHistoryClustersService() = default;
 
+bool TestHistoryClustersService::IsJourneysEnabled() const {
+  return is_journeys_enabled_;
+}
+
 std::unique_ptr<HistoryClustersServiceTask>
 TestHistoryClustersService::QueryClusters(
     ClusteringRequestSource clustering_request_source,
@@ -25,13 +31,27 @@ TestHistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
-  std::move(callback).Run(clusters_, continuation_params);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), clusters_,
+                     next_query_is_done_
+                         ? QueryClustersContinuationParams::DoneParams()
+                         : continuation_params));
+  // Set the next query to done so the query eventually finishes.
+  next_query_is_done_ = true;
   return nullptr;
 }
 
+void TestHistoryClustersService::SetIsJourneysEnabled(
+    bool is_journeys_enabled) {
+  is_journeys_enabled_ = is_journeys_enabled;
+}
+
 void TestHistoryClustersService::SetClustersToReturn(
-    const std::vector<history::Cluster>& clusters) {
+    const std::vector<history::Cluster>& clusters,
+    bool exhausted_all_visits) {
   clusters_ = clusters;
+  next_query_is_done_ = exhausted_all_visits;
 }
 
 }  // namespace history_clusters

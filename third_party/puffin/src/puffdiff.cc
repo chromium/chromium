@@ -132,6 +132,7 @@ bool PuffDiff(UniqueStreamPtr src,
             std::move(stream), puffer, puff_buffer->size(), deflates, *puffs);
         bool result =
             src_puffin_stream->Read(puff_buffer->data(), puff_buffer->size());
+        src_puffin_stream->Close();
         return result;
       };
 
@@ -268,6 +269,22 @@ Status PuffDiff(const string& src_file_path,
   if (!puffin::LocateDeflatesInZipArchive(dest_data, &dst_deflates_bit)) {
     LOG(ERROR) << "No zip deflates for destination filepath: "
                << dest_file_path;
+  }
+
+  if (src_deflates_bit.empty()) {
+    if (!FindDeflateSubBlocks(src_stream, src_deflates_byte,
+                              &src_deflates_bit)) {
+      LOG(ERROR) << "Unable to find deflate subblocks for source.";
+      return Status::P_STREAM_ERROR;
+    }
+  }
+
+  if (dst_deflates_bit.empty()) {
+    if (!FindDeflateSubBlocks(dest_stream, dst_deflates_byte,
+                              &dst_deflates_bit)) {
+      LOG(ERROR) << "Unable to find deflate subblocks for destination";
+      return Status::P_STREAM_ERROR;
+    }
   }
 
   Buffer puffdiff_delta;

@@ -16,6 +16,7 @@
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
@@ -353,7 +354,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const VmType vm_type_;
   const int name_id_;
   base::RepeatingClosure notification_changed_callback_;

@@ -28,6 +28,7 @@ extern const char kRunOnOsLogin[];
 extern const char kAllowed[];
 extern const char kBlocked[];
 extern const char kRunWindowed[];
+extern const char kPreventClose[];
 
 }  // namespace web_app
 

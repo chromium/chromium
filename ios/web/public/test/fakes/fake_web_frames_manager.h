@@ -19,10 +19,8 @@ class WebFrame;
 //   2. Create FakeWebFramesManager;
 //   3. Call TestWebState::SetWebFramesManager with FakeWebFramesManager;
 //   4. Manipulate WebFrames:
-//     a. Call FakeWebFramesManager::AddWebFrame then
-//        TestWebState::OnWebFrameDidBecomeAvailable;
-//     b. Call TestWebState::OnWebFrameWillBecomeUnavailable then
-//        FakeWebFramesManager::RemoveWebFrame.
+//     a. Call FakeWebFramesManager::AddWebFrame
+//     b. Call FakeWebFramesManager::RemoveWebFrame.
 class FakeWebFramesManager : public WebFramesManager {
  public:
   FakeWebFramesManager();

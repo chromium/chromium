@@ -8,7 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -38,7 +39,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(SingleCategorySettings.EXTRA_CATEGORY, category);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getTargetContext(), SiteSettings.class.getName(),
+                ApplicationProvider.getApplicationContext(), SiteSettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
@@ -58,7 +59,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(SingleCategorySettings.EXTRA_TITLE, title);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getTargetContext(), SingleCategorySettings.class.getName(),
+                ApplicationProvider.getApplicationContext(), SingleCategorySettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
@@ -69,7 +70,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, site);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getTargetContext(), SingleWebsiteSettings.class.getName(),
+                ApplicationProvider.getApplicationContext(), SingleWebsiteSettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
@@ -80,8 +81,8 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putSerializable(GroupedWebsitesSettings.EXTRA_GROUP, group);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getTargetContext(), GroupedWebsitesSettings.class.getName(),
-                fragmentArgs);
+                ApplicationProvider.getApplicationContext(),
+                GroupedWebsitesSettings.class.getName(), fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
     }
@@ -92,7 +93,7 @@ public class SiteSettingsTestUtils {
                 AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getTargetContext(), AllSiteSettings.class.getName(),
+                ApplicationProvider.getApplicationContext(), AllSiteSettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);

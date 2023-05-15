@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/settings/ash/device_display_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
@@ -772,10 +773,6 @@ bool IsTouchCalibrationAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
-bool IsDriveFsBulkPinningEnabled() {
-  return ash::features::IsDriveFsBulkPinningEnabled();
-}
-
 bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
 }
@@ -788,6 +785,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyboardBlockMetaFunctionKeyRewritesDescription",
        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
+      {"keyboardEnableAutoRepeatSubLabel",
+       IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
       {"keyboardKeyAlt", IDS_SETTINGS_KEYBOARD_KEY_LEFT_ALT},
       {"keyboardKeyAssistant", IDS_SETTINGS_KEYBOARD_KEY_ASSISTANT},
       {"keyboardKeyBackspace", IDS_SETTINGS_KEYBOARD_KEY_BACKSPACE},
@@ -822,11 +821,37 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION},
       {"showKeyboardShortcutViewer",
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
+      {"viewAndCustomizeKeyboardShortcut",
+       IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS},
       {"keyboardKeyLauncher", IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER},
       {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_SEARCH},
       {"keyboardRemapRestoreDefaultsLabel",
        IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL},
+      {"keyboardHoldingKeys", IDS_SETTINGS_KEYBOARD_HOLDING_KEYS},
+      {"keyboardAccentMarks", IDS_SETTINGS_KEYBOARD_ACCENT_MARKS},
+      {"keyboardAccentMarksSubLabel",
+       IDS_SETTINGS_KEYBOARD_ACCENT_MARKS_SUB_LABEL},
       {"noKeyboardsConnected", IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE},
+      {"perDeviceKeyboardKeyAlt",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT},
+      {"perDeviceKeyboardKeyAssistant",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ASSISTANT},
+      {"perDeviceKeyboardKeyBackspace",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_BACKSPACE},
+      {"perDeviceKeyboardKeyCapsLock",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_CAPS_LOCK},
+      {"perDeviceKeyboardKeyCommand",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND},
+      {"perDeviceKeyboardKeyCtrl",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_CTRL},
+      {"perDeviceKeyboardKeyDisabled",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED},
+      {"perDeviceKeyboardKeyEscape",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
+      {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
+      {"perDeviceKeyboardKeySearch",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH},
+
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
@@ -970,11 +995,11 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());
 
-  html_source->AddBoolean("enableDriveFsBulkPinning",
-                          IsDriveFsBulkPinningEnabled());
-
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));
+
+  html_source->AddBoolean("enableDriveFsBulkPinning",
+                          drive::util::IsDriveFsBulkPinningEnabled());
 
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",
@@ -1704,6 +1729,7 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadScrollAccelerationLabel",
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
+      {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
   };
   html_source->AddLocalizedStrings(kPointersStrings);
 

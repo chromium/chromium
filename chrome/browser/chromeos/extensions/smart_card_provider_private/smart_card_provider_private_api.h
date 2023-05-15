@@ -39,6 +39,31 @@ class SmartCardProviderPrivateAPI
   // extension.
   using Handle = base::IdType32<class SmartCardHandleClass>;
 
+  using ResultArgs = std::variant<
+      std::monostate,            // ReleaseContext, Cancel
+      ContextId,                 // EstablishContext
+      std::vector<std::string>,  // ListReaders
+      std::vector<
+          device::mojom::SmartCardReaderStateOutPtr>,        // GetStatusChange
+      std::tuple<Handle, device::mojom::SmartCardProtocol>,  // Connect
+      std::vector<uint8_t>>;                                 // Transmit
+
+  // Common to Transmit, Control and GetAttrib.
+  using DataCallback =
+      base::OnceCallback<void(device::mojom::SmartCardDataResultPtr)>;
+
+  using SmartCardCallback = std::variant<
+      // Cancel, Disconnect
+      base::OnceCallback<void(device::mojom::SmartCardResultPtr)>,
+      ListReadersCallback,
+      GetStatusChangeCallback,
+      ConnectCallback,
+      CreateContextCallback,
+      DataCallback>;
+
+  using ProcessResultCallback = base::OnceCallback<
+      void(ResultArgs, device::mojom::SmartCardResultPtr, SmartCardCallback)>;
+
   static BrowserContextKeyedAPIFactory<SmartCardProviderPrivateAPI>*
   GetFactoryInstance();
 
@@ -67,54 +92,87 @@ class SmartCardProviderPrivateAPI
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
                ConnectCallback callback) override;
+
+  // device::mojom::SmartCardConnection overrides:
   void Disconnect(device::mojom::SmartCardDisposition disposition,
                   DisconnectCallback callback) override;
+  void Transmit(device::mojom::SmartCardProtocol protocol,
+                const std::vector<uint8_t>& data,
+                TransmitCallback callback) override;
 
   // Called by extension functions:
+  void ReportResult(RequestId request_id,
+                    ResultArgs result_args,
+                    device::mojom::SmartCardResultPtr result);
+  void ReportReleaseContextResult(RequestId request_id,
+                                  device::mojom::SmartCardResultPtr result);
   void ReportEstablishContextResult(RequestId request_id,
                                     ContextId scard_context,
                                     device::mojom::SmartCardResultPtr result);
-  void ReportReleaseContextResult(RequestId request_id,
-                                  device::mojom::SmartCardResultPtr result);
-  void ReportListReadersResult(RequestId request_id,
-                               std::vector<std::string> readers,
-                               device::mojom::SmartCardResultPtr result);
-  void ReportGetStatusChangeResult(
-      RequestId request_id,
-      std::vector<device::mojom::SmartCardReaderStateOutPtr> reader_states,
-      device::mojom::SmartCardResultPtr result);
-  void ReportCancelResult(RequestId request_id,
-                          device::mojom::SmartCardResultPtr result);
   void ReportConnectResult(RequestId request_id,
-                           Handle scard_handle,
-                           device::mojom::SmartCardProtocol active_protocol,
+                           Handle,
+                           device::mojom::SmartCardProtocol,
                            device::mojom::SmartCardResultPtr result);
-  void ReportDisconnectResult(RequestId request_id,
-                              device::mojom::SmartCardResultPtr result);
 
   void SetResponseTimeLimitForTesting(base::TimeDelta);
 
+  using DisconnectObserver = base::RepeatingClosure;
+  void SetDisconnectObserverForTesting(DisconnectObserver observer);
+
  private:
-  template <typename Callback>
-  struct PendingResult {
-    base::OneShotTimer timer;
-    Callback callback;
-  };
-
-  template <typename Callback>
-  using PendingResultMap =
-      std::map<RequestId, std::unique_ptr<PendingResult<Callback>>>;
-
   // BrowserContextKeyedAPI:
   static const bool kServiceIsCreatedWithBrowserContext = false;
   static const char* service_name() { return "SmartCardProviderPrivateAPI"; }
 
   friend class BrowserContextKeyedAPIFactory<SmartCardProviderPrivateAPI>;
 
-  void ProviderReleaseContext(ContextId scard_context);
-  void ProviderDisconnect(Handle scard_handle,
-                          device::mojom::SmartCardDisposition disposition,
-                          DisconnectCallback callback);
+  // Called by ReportResult:
+  void ProcessListReadersResult(ResultArgs result_args,
+                                device::mojom::SmartCardResultPtr result,
+                                SmartCardCallback callback);
+  void ProcessGetStatusChangeResult(ResultArgs result_args,
+                                    device::mojom::SmartCardResultPtr result,
+                                    SmartCardCallback callback);
+  void ProcessCancelResult(ResultArgs result_args,
+                           device::mojom::SmartCardResultPtr result,
+                           SmartCardCallback callback);
+  void ProcessConnectResult(ContextId scard_context,
+                            ResultArgs result_args,
+                            device::mojom::SmartCardResultPtr result,
+                            SmartCardCallback callback);
+  void ProcessDisconnectResult(ResultArgs result_args,
+                               device::mojom::SmartCardResultPtr result,
+                               SmartCardCallback callback);
+  void ProcessDataResult(ResultArgs result_args,
+                         device::mojom::SmartCardResultPtr result,
+                         SmartCardCallback callback);
+
+  // If the context is free the request is run immediately.
+  // Otherwise it is put in a task queue.
+  void RunOrQueueRequest(ContextId scard_context, base::OnceClosure request);
+
+  // Methods to send requests to the smart card provider extension:
+  void SendReleaseContext(ContextId scard_context);
+  void SendListReaders(ContextId scard_context, ListReadersCallback callback);
+  void SendGetStatusChange(
+      ContextId scard_context,
+      base::TimeDelta time_delta,
+      std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
+      GetStatusChangeCallback callback);
+  void SendConnect(ContextId scard_context,
+                   const std::string& reader,
+                   device::mojom::SmartCardShareMode share_mode,
+                   device::mojom::SmartCardProtocolsPtr preferred_protocols,
+                   ConnectCallback callback);
+  void SendDisconnect(ContextId scard_context,
+                      Handle handle,
+                      device::mojom::SmartCardDisposition disposition,
+                      DisconnectCallback callback);
+  void SendTransmit(ContextId scard_context,
+                    Handle handle,
+                    device::mojom::SmartCardProtocol protocol,
+                    const std::vector<uint8_t>& data,
+                    TransmitCallback callback);
 
   // Called when a device::mojom::SmartCardContext loses its mojo connection.
   // eg: because its mojo Remote was destroyed.
@@ -125,6 +183,8 @@ class SmartCardProviderPrivateAPI
   void OnMojoConnectionDisconnected();
 
   void OnScardHandleDisconnected(device::mojom::SmartCardResultPtr result);
+
+  void RunNextRequestForContext(ContextId scard_context);
 
   std::string GetListenerExtensionId(const extensions::Event& event);
 
@@ -142,41 +202,47 @@ class SmartCardProviderPrivateAPI
                         RequestId request_id);
   void OnDisconnectTimeout(const std::string& provider_extension_id,
                            RequestId request_id);
+  void OnTransmitTimeout(const std::string& provider_extension_id,
+                         RequestId request_id);
 
-  template <typename ResultPtr, typename Callback>
+  template <typename ResultPtr>
   void DispatchEventWithTimeout(
+      ContextId scard_context,
       const std::string& event_name,
       extensions::events::HistogramValue histogram_value,
+      ProcessResultCallback process_result,
       base::OnceCallback<void(ResultPtr)> callback,
-      PendingResultMap<Callback>& pending_results,
       void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                      RequestId),
       base::Value::List event_arguments = base::Value::List(),
       absl::optional<base::TimeDelta> timeout = absl::nullopt);
 
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(
+      ContextId scard_context,
       Handle handle,
       device::mojom::SmartCardProtocol active_protocol);
+
+  struct ContextData;
+
+  ContextData& GetContextData(ContextId scard_context);
+
+  // Returns true is we are waiting for the provider to send back the result
+  // of a request sent on that context. Ie, we have a pending result on that
+  // context.
+  bool IsContextBusy(ContextId scard_context) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::TimeDelta response_time_limit_{base::Minutes(5)};
 
-  PendingResultMap<CreateContextCallback> pending_establish_context_;
-
-  struct PendingReleaseContext;
-  std::map<RequestId, std::unique_ptr<PendingReleaseContext>>
-      pending_release_context_;
-
-  PendingResultMap<ListReadersCallback> pending_list_readers_;
-  PendingResultMap<GetStatusChangeCallback> pending_get_status_change_;
-  PendingResultMap<CancelCallback> pending_cancel_;
-  PendingResultMap<ConnectCallback> pending_connect_;
-  PendingResultMap<DisconnectCallback> pending_disconnect_;
+  struct PendingResult;
+  std::map<RequestId, std::unique_ptr<PendingResult>> pending_results_;
 
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;
   const raw_ref<EventRouter> event_router_;
+
+  std::map<ContextId, ContextData> context_data_map_;
 
   mojo::ReceiverSet<device::mojom::SmartCardContextFactory>
       context_factory_receivers_;
@@ -184,8 +250,11 @@ class SmartCardProviderPrivateAPI
   mojo::ReceiverSet<device::mojom::SmartCardContext, ContextId>
       context_receivers_;
 
-  mojo::ReceiverSet<device::mojom::SmartCardConnection, Handle>
+  mojo::ReceiverSet<device::mojom::SmartCardConnection,
+                    std::tuple<ContextId, Handle>>
       connection_receivers_;
+
+  DisconnectObserver disconnect_observer_;
 
   base::WeakPtrFactory<SmartCardProviderPrivateAPI> weak_ptr_factory_{this};
 };
@@ -268,6 +337,17 @@ class SmartCardProviderPrivateReportDisconnectResultFunction
 
   DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportDisconnectResult",
                              SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT)
+};
+
+class SmartCardProviderPrivateReportDataResultFunction
+    : public ExtensionFunction {
+ private:
+  // ExtensionFunction:
+  ~SmartCardProviderPrivateReportDataResultFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportDataResult",
+                             SMARTCARDPROVIDERPRIVATE_REPORTDATARESULT)
 };
 
 }  // namespace extensions

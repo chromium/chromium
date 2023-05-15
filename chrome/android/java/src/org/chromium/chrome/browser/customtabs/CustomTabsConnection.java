@@ -27,6 +27,7 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.json.JSONException;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -193,10 +195,6 @@ public class CustomTabsConnection {
             "scrollPercentage";
     private static final String DID_GET_USER_INTERACTION_CALLBACK = "didGetUserInteraction";
     private static final String DID_GET_USER_INTERACTION_EXTRA = "didInteract";
-    @VisibleForTesting
-    static final String GET_GREATEST_SCROLL_PERCENTAGE = "getGreatestScrollPercentage";
-    @VisibleForTesting
-    static final String GREATEST_SCROLL_PERCENTAGE_KEY = "greatestScrollPercentage";
     private static final MutableFlagWithSafeDefault sRealTimeEngagementFlag =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
@@ -246,7 +244,6 @@ public class CustomTabsConnection {
 
     @Nullable
     private Callback<CustomTabsSessionToken> mDisconnectCallback;
-    private @Nullable Supplier<Integer> mGreatestScrollPercentageSupplier;
     @Nullable
     private SessionRestoreManager mSessionRestoreManager;
 
@@ -692,24 +689,7 @@ public class CustomTabsConnection {
      * @return The result {@link Bundle}, or null.
      */
     public @Nullable Bundle extraCommand(String commandName, Bundle args) {
-        Bundle result = null;
-        switch (commandName) {
-            case GET_GREATEST_SCROLL_PERCENTAGE:
-                if (!isDynamicFeatureEnabled(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
-                    break;
-                }
-                Integer percentage = mGreatestScrollPercentageSupplier != null
-                        ? mGreatestScrollPercentageSupplier.get()
-                        : null;
-                if (percentage != null) {
-                    result = new Bundle();
-                    result.putInt(GREATEST_SCROLL_PERCENTAGE_KEY, percentage);
-                }
-                break;
-            default:
-                break;
-        }
-        return result;
+        return null;
     }
 
     public boolean updateVisuals(final CustomTabsSessionToken session, Bundle bundle) {
@@ -1287,6 +1267,17 @@ public class CustomTabsConnection {
         if (safeExtraCallback(session, ON_VERTICAL_SCROLL_EVENT_CALLBACK, args)) {
             logCallback("extraCallback(" + ON_VERTICAL_SCROLL_EVENT_CALLBACK + ")", args);
         }
+
+        EngagementSignalsCallback callback =
+                mClientManager.getEngagementSignalsCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onVerticalScrollEvent(isDirectionUp, null);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
     }
 
     /**
@@ -1301,10 +1292,20 @@ public class CustomTabsConnection {
             CustomTabsSessionToken session, int scrollPercentage) {
         Bundle args = new Bundle();
         args.putInt(ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_PERCENTAGE_EXTRA, scrollPercentage);
-
         if (safeExtraCallback(session, ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK, args)) {
             logCallback("extraCallback(" + ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK + ")",
                     args);
+        }
+
+        EngagementSignalsCallback callback =
+                mClientManager.getEngagementSignalsCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onGreatestScrollPercentageIncreased(scrollPercentage, null);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
         }
     }
 
@@ -1321,6 +1322,17 @@ public class CustomTabsConnection {
 
         if (safeExtraCallback(session, DID_GET_USER_INTERACTION_CALLBACK, args)) {
             logCallback("extraCallback(" + DID_GET_USER_INTERACTION_CALLBACK + ")", args);
+        }
+
+        EngagementSignalsCallback callback =
+                mClientManager.getEngagementSignalsCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onSessionEnded(didGetUserInteraction, null);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
         }
     }
 
@@ -1820,8 +1832,14 @@ public class CustomTabsConnection {
         recordSpeculationStatusOnSwap(SPECULATION_STATUS_ON_SWAP_BACKGROUND_TAB_NOT_MATCHED);
     }
 
-    public void setGreatestScrollPercentageSupplier(Supplier<Integer> supplier) {
-        mGreatestScrollPercentageSupplier = supplier;
+    public void setEngagementSignalsAvailableSupplier(
+            CustomTabsSessionToken session, Supplier<Boolean> supplier) {
+        mClientManager.setEngagementSignalsAvailableSupplierForSession(session, supplier);
+    }
+
+    public void setGreatestScrollPercentageSupplier(
+            CustomTabsSessionToken session, Supplier<Integer> supplier) {
+        mClientManager.setGreatestScrollPercentageSupplierForSession(session, supplier);
     }
 
     @CalledByNative
@@ -1862,6 +1880,53 @@ public class CustomTabsConnection {
         mClientManager.setCustomTabIsInForeground(session, isInForeground);
     }
 
+    public boolean isEngagementSignalsApiAvailable(
+            CustomTabsSessionToken sessionToken, Bundle extras) {
+        return isEngagementSignalsApiAvailableInternal(sessionToken);
+    }
+
+    public boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
+            EngagementSignalsCallback callback, Bundle extras) {
+        if (!isEngagementSignalsApiAvailableInternal(sessionToken)) {
+            return false;
+        }
+
+        mClientManager.setEngagementSignalsCallbackForSession(sessionToken, callback);
+        return true;
+    }
+
+    public int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
+        if (!isEngagementSignalsApiAvailableInternal(sessionToken)) {
+            throw new UnsupportedOperationException("Engagement Signals API is not available.");
+        }
+        return mClientManager.getGreatestScrollPercentageForSession(sessionToken, extras);
+    }
+
+    private boolean isEngagementSignalsApiAvailableInternal(CustomTabsSessionToken session) {
+        var supplier = mClientManager.getEngagementSignalsAvailableSupplierForSession(session);
+        return supplier != null
+                ? supplier.get()
+                : PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
+    }
+
+    /**
+     * Called when text fragment lookups on the current page has completed.
+     * @param session session object.
+     * @param stateKey unique key for the embedder to keep track of the request.
+     * @param foundTextFragments text fragments from the initial request that were found on the
+     *         page.
+     */
+    @CalledByNative
+    private static void notifyClientOfTextFragmentLookupCompletion(
+            CustomTabsSessionToken session, String stateKey, String[] foundTextFragments) {
+        getInstance().notifyClientOfTextFragmentLookupCompletionReportApp(
+                session, stateKey, new ArrayList(Arrays.asList(foundTextFragments)));
+    }
+
+    protected void notifyClientOfTextFragmentLookupCompletionReportApp(
+            CustomTabsSessionToken session, String stateKey, ArrayList<String> foundTextFragments) {
+    }
+
     @VisibleForTesting
     public static void setInstanceForTesting(CustomTabsConnection connection) {
         sInstance = connection;
@@ -1873,5 +1938,9 @@ public class CustomTabsConnection {
                 String packageName, String url, String origin, int referrerPolicy,
                 @DetachedResourceRequestMotivation int motivation);
         void setClientDataHeader(WebContents webContents, String header);
+        void textFragmentLookup(CustomTabsSessionToken session, WebContents webContents,
+                String stateKey, String[] textFragment);
+        void textFragmentFindScrollAndHighlight(
+                CustomTabsSessionToken session, WebContents webContents, String textFragment);
     }
 }

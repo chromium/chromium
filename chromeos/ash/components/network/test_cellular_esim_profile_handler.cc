@@ -59,7 +59,7 @@ void TestCellularESimProfileHandler::SetDevicePrefs(PrefService* device_prefs) {
 
 void TestCellularESimProfileHandler::OnHermesPropertiesUpdated() {
   std::vector<CellularESimProfile> new_profile_states =
-      GenerateProfilesFromHermes();
+      cellular_utils::GenerateProfilesFromHermes();
   if (new_profile_states == esim_profile_states_)
     return;
   esim_profile_states_ = new_profile_states;

@@ -118,12 +118,12 @@ Animation* Animatable::animate(
 
   // ViewTimeline options.
   if (options_dict->hasRangeStart() &&
-      RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
+      RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
     animation->SetRangeStartInternal(TimelineOffset::Create(
         element, options_dict->rangeStart(), 0, exception_state));
   }
   if (options_dict->hasRangeEnd() &&
-      RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
+      RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
     animation->SetRangeEndInternal(TimelineOffset::Create(
         element, options_dict->rangeEnd(), 100, exception_state));
   }

@@ -14,7 +14,7 @@ window.JSErrorCount = 0;
 /**
  * Creates a list of arguments extended with stack information.
  * @param {string} prefix The prefix indicating type of error situation.
- * @param {*} args The remaining, if any, arguments of the call.
+ * @param {...*} args The remaining, if any, arguments of the call.
  * @return {string} A string representing args and stack traces.
  */
 function createLoggableArgs(prefix, ...args) {

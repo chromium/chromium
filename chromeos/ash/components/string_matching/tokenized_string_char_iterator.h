@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace base::i18n {
@@ -71,8 +72,8 @@ class TokenizedStringCharIterator {
  private:
   void CreateTokenCharIterator();
 
-  const TokenizedString::Tokens& tokens_;
-  const TokenizedString::Mappings& mappings_;
+  const raw_ref<const TokenizedString::Tokens, ExperimentalAsh> tokens_;
+  const raw_ref<const TokenizedString::Mappings, ExperimentalAsh> mappings_;
 
   size_t current_token_;
   std::unique_ptr<base::i18n::UTF16CharIterator> current_token_iter_;

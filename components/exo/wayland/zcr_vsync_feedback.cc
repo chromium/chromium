@@ -6,6 +6,7 @@
 
 #include <vsync-feedback-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wayland/server_util.h"
 
@@ -45,7 +46,7 @@ class VSyncTiming final : public VSyncTimingManager::Observer {
 
  private:
   // The VSync timing resource.
-  wl_resource* const timing_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> timing_resource_;
 };
 
 void vsync_timing_destroy(wl_client* client, wl_resource* resource) {

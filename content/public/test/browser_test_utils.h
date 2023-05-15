@@ -187,6 +187,24 @@ void NavigateToURLBlockUntilNavigationsComplete(
     int number_of_navigations,
     bool ignore_uncommitted_navigations = true);
 
+// Helpers for performing renderer-initiated navigations. Note these helpers are
+// only suitable when the navigation is expected to at least start successfully,
+// i.e. result in a `DidStartNavigation()` notification.
+//
+// To write a test where the renderer itself blocks or cancels the navigation,
+// use `ExecJs()` or `EvalJs()`, e.g.:
+//
+//   EXPECT_THAT(ExecJs("try { location = ''; } catch (e) { e.message; }")
+//                   .ExtractString(),
+//               HasSubStr("..."));
+//
+// To write a test where the navigation results in a bad message kill, use
+// `ExecuteScriptAsync()` + `RenderProcessHostBadMojoMessageWaiter`, e.g.:
+//
+//   ExecuteScriptAsync(rfh, JsReplace("location = $1", "/title2.html"));
+//   RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
+//   EXPECT_THAT(kill_waiter.Wait(), Optional(HasSubstr("...")));
+
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning
 // location.href in the frame |adapter|. Returns true if the page was loaded
@@ -199,21 +217,20 @@ void NavigateToURLBlockUntilNavigationsComplete(
 [[nodiscard]] bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
                                              const GURL& url,
                                              const GURL& expected_commit_url);
+
+// Similar to the two helpers above, but perform the renderer-initiated
+// navigation without a user gesture.
 [[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url);
-// Similar to above but takes in an additional URL, |expected_commit_url|, to
-// which the navigation should eventually commit. (See the browser-initiated
-// counterpart for more details).
+
 [[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url,
     const GURL& expected_commit_url);
 
-// Perform a renderer-initiated navigation of |window| to |url|. Unlike the
-// previous set of helpers, does not block. The navigation is done by assigning
-// location.href in the frame |adapter|. Returns the result of executing the IPC
-// to evaluate the JS that assigns location.href.
+// Perform a renderer-initiated navigation of `window` to `url`. Returns true if
+// the navigation started successfully and false otherwise.
 [[nodiscard]] bool BeginNavigateToURLFromRenderer(
     const ToRenderFrameHost& adapter,
     const GURL& url);
@@ -224,7 +241,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
 //
 // This method does not trigger a user activation before the navigation.  If
 // necessary, a user activation can be triggered right before calling this
-// method, e.g. by calling |ExecuteScript(frame_tree_node, "")|.
+// method, e.g. by calling |ExecJs(frame_tree_node, "")|.
 bool NavigateIframeToURL(WebContents* web_contents,
                          const std::string& iframe_id,
                          const GURL& url);
@@ -521,7 +538,7 @@ class ScopedSimulateModifierKeyPress {
 // Method to check what devices we have on the system.
 bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 
-// Allow ExecuteScript* methods to target either a WebContents or a
+// Allow ExecJs/EvalJs methods to target either a WebContents or a
 // RenderFrameHost.  Targeting a WebContents means executing the script in the
 // RenderFrameHost returned by WebContents::GetPrimaryMainFrame(), which is the
 // main frame.  Pass a specific RenderFrameHost to target it. Embedders may
@@ -546,43 +563,13 @@ class ToRenderFrameHost {
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 
-// Deprecated: in new code, prefer ExecJs() -- it works the same, but has
-// better error handling. (Note: still use ExecuteScript() on pages with a
-// Content Security Policy).
-//
-// Executes the passed |script| in the specified frame with the user gesture.
-//
-// Appends |domAutomationController.send(...)| to the end of |script| and waits
-// until the response comes back (pumping the message loop while waiting).  The
-// |script| itself should not invoke domAutomationController.send(); if you want
-// to call domAutomationController.send(...) yourself and extract the result,
-// then use one of ExecuteScriptAndExtract... functions).
-//
-// Returns true on success (if the renderer responded back with the expected
-// value).  Returns false otherwise (e.g. if the script threw an exception
-// before calling the appended |domAutomationController.send(...)|, or if the
-// renderer died or if the renderer called |domAutomationController.send(...)|
-// with a malformed or unexpected value).
+// Executes the passed |script| in the specified frame with a user gesture,
+// without waiting for |script| completion.
 //
 // See also:
-// - ExecJs (preferred replacement with better error handling)
+// - ExecJs (if you want to wait for script completion, or detect syntax errors)
 // - EvalJs (if you want to retrieve a value)
-// - ExecuteScriptAsync (if you don't want to block for |script| completion)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
-[[nodiscard]] bool ExecuteScript(const ToRenderFrameHost& adapter,
-                                 const std::string& script);
-
-// Same as content::ExecuteScript but doesn't send a user gesture to the
-// renderer.
-[[nodiscard]] bool ExecuteScriptWithoutUserGesture(
-    const ToRenderFrameHost& adapter,
-    const std::string& script);
-
-// Similar to ExecuteScript above, but
-// - Doesn't modify the |script|.
-// - Kicks off execution of the |script| in the specified frame and returns
-//   immediately (without waiting for a response from the renderer and/or
-//   without checking that the script succeeded).
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
                         const std::string& script);
 
@@ -590,20 +577,6 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 // the renderer.
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           const std::string& script);
-
-// The following methods execute the passed |script| in the specified frame and
-// sets |result| to the value passed to "window.domAutomationController.send" by
-// the executed script. They return true on success, false if the script
-// execution failed or did not evaluate to the expected type.
-//
-// Deprecated: Use EvalJs().
-[[nodiscard]] bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
-                                               const std::string& script,
-                                               bool* result);
-[[nodiscard]] bool ExecuteScriptAndExtractString(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    std::string* result);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -665,7 +638,7 @@ base::Value ListValueOf(Args&&... args) {
 // Example 1:
 //
 //   GURL page_url("http://example.com");
-//   EXPECT_TRUE(ExecuteScript(
+//   EXPECT_TRUE(ExecJs(
 //       shell(), JsReplace("window.open($1, '_blank');", page_url)));
 //
 // $1 is replaced with a double-quoted JS string literal:
@@ -674,7 +647,7 @@ base::Value ListValueOf(Args&&... args) {
 // Example 2:
 //
 //   bool forced_reload = true;
-//   EXPECT_TRUE(ExecuteScript(
+//   EXPECT_TRUE(ExecJs(
 //       shell(), JsReplace("window.location.reload($1);", forced_reload)));
 //
 // This becomes "window.location.reload(true);" -- because bool values are
@@ -717,7 +690,7 @@ struct EvalJsResult {
   const base::Value value;  // Value; if things went well.
   const std::string error;  // Error; if things went badly.
 
-  // Creates an ExecuteScript result. If |error| is non-empty, |value| will be
+  // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
   EvalJsResult(base::Value value, const std::string& error);
 
@@ -865,33 +838,9 @@ enum EvalJsOptions {
 // until the Promise resolves, which happens when the async function returns
 // the HTTP status code -- which is expected, in this case, to be 200.
 //
-// Quick migration guide for users of the classic ExecuteScriptAndExtract*():
-//  - If your page has a Content SecurityPolicy, don't migrate [yet]; CSP can
-//    interfere with the internal mechanism used here.
-//  - Get rid of the out-param. You call EvalJs no matter what your return
-//    type is.
 //  - If possible, pass the result of EvalJs() into the second argument of an
 //    EXPECT_EQ macro. This will trigger failure (and a nice message) if an
 //    error occurs.
-//  - Eliminate calls to domAutomationController.send() in |script|. In simple
-//    cases, |script| is just an expression you want the value of.
-//  - When a script previously installed a callback or event listener that
-//    invoked domAutomationController.send(x) asynchronously, there is a choice:
-//     * Preferred, but more rewriting: Use EvalJs with a Promise which
-//       resolves to the value you previously passed to send().
-//     * Less rewriting of |script|, but with some drawbacks: Use
-//       EXECUTE_SCRIPT_USE_MANUAL_REPLY in |options|. When specified, this
-//       means that |script| must continue to call
-//       domAutomationController.send(). Note that this option option disables
-//       some error-catching safeguards, but you still get the benefit of having
-//       an EvalJsResult that can be passed to EXPECT.
-//
-// Why prefer EvalJs over ExecuteScriptAndExtractString(), etc? Because:
-//
-//  - It's one function, that does everything, and more succinctly.
-//  - Can be used directly in EXPECT_EQ macros (no out- param pointers like
-//    ExecuteScriptAndExtractBool()) -- no temporary variable is required,
-//    usually resulting in fewer lines of code.
 //  - JS exceptions are reliably captured and will appear as C++ assertion
 //    failures.
 //  - JS stack traces arising from exceptions are annotated with the
@@ -929,11 +878,7 @@ enum EvalJsOptions {
 // exception.
 //
 // As with EvalJs(), if the script passed evaluates to a Promise, this waits
-// until it resolves.
-//
-// Unlike ExecuteScript(), this catches syntax errors and uncaught exceptions,
-// and gives more useful error messages when things go wrong. Prefer ExecJs to
-// ExecuteScript(), unless your page has a CSP.
+// until it resolves (by default).
 [[nodiscard]] ::testing::AssertionResult ExecJs(
     const ToRenderFrameHost& execution_target,
     const std::string& script,
@@ -1507,7 +1452,10 @@ class MainThreadFrameObserver {
  private:
   void Quit(bool);
 
-  raw_ptr<RenderWidgetHost> render_widget_host_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: All/NavigationPageLoadMetricsBrowserTest.FirstInputDelay/1
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/180209/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FNavigationPageLoadMetricsBrowserTest.FirstInputDelay%2FAll.1+VHash%3Abdbee181b3e0309b
+  raw_ptr<RenderWidgetHost, FlakyDanglingUntriaged> render_widget_host_;
   base::OnceClosure quit_closure_;
   int routing_id_;
 };

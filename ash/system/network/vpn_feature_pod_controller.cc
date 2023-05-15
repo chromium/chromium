@@ -79,10 +79,9 @@ std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile(bool compact) {
   tile_ = tile.get();
   tile_->SetVectorIcon(kUnifiedMenuVpnIcon);
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_SHORT));
-  const std::u16string tooltip =
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP);
-  tile_->SetTooltipText(tooltip);
-  tile_->CreateDecorativeDrillInButton(tooltip);
+  tile_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP));
+  tile_->CreateDecorativeDrillInArrow();
   // Init the tile with invisible state. `Update()` will update visibility.
   tile_->SetVisible(false);
   Update();

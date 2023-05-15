@@ -220,7 +220,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     EXPECT_EQ(mock_private_delegate.get(),
               mock_feedback_service->GetFeedbackPrivateDelegate());
 
-    EXPECT_CALL(*mock_feedback_service, SendFeedback(_, _, _))
+    EXPECT_CALL(*mock_feedback_service, RedactThenSendFeedback(_, _, _))
         .WillOnce([&](const extensions::FeedbackParams& params,
                       scoped_refptr<FeedbackData> feedback_data,
                       extensions::SendFeedbackCallback callback) {
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service.
+// passed to RedactThenSendFeedback method of the feedback service.
 // - System logs and histograms are included.
 // - Screenshot is included so tab titles will be sent too.
 // - Consent granted.
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service.
+// passed to RedactThenSendFeedback method of the feedback service.
 // - System logs and histograms are included.
 // - Screenshot is included so tab titles will be sent too.
 // - Consent granted.
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service.
+// passed to RedactThenSendFeedback method of the feedback service.
 // - System logs and histograms are not included.
 // - Screenshot is not included.
 // - Consent granted.
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service.
+// passed to RedactThenSendFeedback method of the feedback service.
 // - System logs and histograms are not included.
 // - Screenshot is not included.
 // - Consent not granted.

@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/fonts",
 
     # Dependencies.
+    "+base/apple",
     "+base/mac",
     "+base/win",
     "+cc",

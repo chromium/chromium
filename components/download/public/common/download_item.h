@@ -230,8 +230,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual uint32_t GetId() const = 0;
 
   // Retrieve the GUID for this download. The returned string is never empty and
-  // will satisfy base::IsValidUuid() and uniquely identifies the download
-  // during its lifetime.
+  // will satisfy `base::Uuid::ParseCaseInsensitive().is_valid()` and uniquely
+  // identifies the download during its lifetime.
   virtual const std::string& GetGuid() const = 0;
 
   // Get the current state of the download. See DownloadState for descriptions
@@ -273,9 +273,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Returns the number of times the download has been auto-resumed since last
   // user triggered resumption.
   virtual int32_t GetAutoResumeCount() const = 0;
-
-  // Whether the download is off the record.
-  virtual bool IsOffTheRecord() const = 0;
 
   //    Origin State accessors -------------------------------------------------
 

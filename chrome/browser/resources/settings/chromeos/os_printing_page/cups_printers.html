@@ -1,8 +1,13 @@
 <style include="cups-printer-shared action-link iron-flex
     iron-flex-alignment">
-  .custom-list-item {
+  .custom-list-item-bottom {
     border-bottom: var(--cr-separator-line);
-    min-height: var(--settings-row-min-height);
+    min-height: var(--cr-section-min-height);
+  }
+
+  .custom-list-item-top {
+    border-top: var(--cr-separator-line);
+    min-height: var(--cr-section-min-height);
   }
 
   .padded {
@@ -13,12 +18,12 @@
     flex: 1;
   }
 
-  #addManualPrinterIcon {
+  .add-manual-printer-icon {
     --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
     --cr-icon-button-margin-end: 0;
   }
 
-  :host-context(body.jelly-enabled) #addManualPrinterIcon {
+  :host-context(body.jelly-enabled) .add-manual-printer-icon {
     --cr-icon-button-fill-color: var(--cros-sys-primary);
   }
 
@@ -52,10 +57,67 @@
     border-top: var(--cr-separator-line);
   }
 
-  :host(:not([can-add-printer])) #addPrinterSection,
-  :host(:not([can-add-printer])) #nearbyPrinters {
+  :host(:not([can-add-printer])) .add-printer-section,
+  :host(:not([can-add-printer])) .nearby-printers-section {
     opacity: var(--cr-disabled-opacity);
     pointer-events: none;
+  }
+
+  #nearbyPrintersRevamp {
+    display: flex;
+  }
+
+  #nearbyPrintersDescription {
+    flex: 1;
+  }
+
+  #nearbyPrinterToggleButton {
+    --paper-ripple-opacity: 0;
+    background: none;
+    border: none;
+    border-radius: initial;
+    flex-basis: 0;
+  }
+
+  #nearbyPrinterToggleButton:active {
+    box-shadow: none;
+  }
+
+  #nearbyPrinterToggleButton:focus {
+    outline: none;
+  }
+
+  #collapsibleSection {
+    padding-top: 0;
+  }
+
+  #helpSection {
+    align-items: center;
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 12px;
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  #helpIconSection {
+    flex-basis: 100px;
+  }
+
+  #helpIcon {
+    display: block;
+    margin: auto;
+  }
+
+  #helpSectionText {
+    flex: 1;
+    margin: 20px auto;
+  }
+
+  .help-title {
+    color: var(--cros-text-color-primary);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 5px;
   }
 </style>
 
@@ -78,6 +140,9 @@
         <span aria-label$="[[savedPrintersAriaLabel_]]">
           $i18n{savedPrintersTitle}
         </span>
+        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+          $i18n{savedPrintersSubtext}
+        </div>
       </div>
     </div>
 
@@ -89,7 +154,8 @@
   </div>
 </template>
 <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
-  <div class="padded first" id="nearbyPrinters">
+  <div id="nearbyPrinters" class="padded first nearby-printers-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
     <div aria-label$="[[nearbyPrintersAriaLabel_]]">
       $i18n{nearbyPrintersListTitle}
     </div>
@@ -105,13 +171,39 @@
       </cr-policy-pref-indicator>
     </template>
   </div>
+  <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
+      hidden="[[!isPrinterSettingsRevampEnabled_]]">
+    <div id="nearbyPrintersDescription">
+      <div id="availablePrintersReadyTitle"
+          aria-label$="[[nearbyPrintersAriaLabel_]]">
+        $i18n{availablePrintersReadyTitle}
+      </div>
+      <div id="availablePrintersReadySubtext" class="secondary"
+          hidden="[[!nearbyPrintersExpanded_]]">
+        $i18n{availablePrintersReadySubtext}
+      </div>
+    </div>
+    <cr-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
+        aria-expanded="[[nearbyPrintersExpanded_]]">
+      <iron-icon icon="[[getIconDirection_(nearbyPrintersExpanded_)]]">
+      </iron-icon>
+    </cr-button>
+    <cr-policy-pref-indicator
+        pref="[[prefs.native_printing.user_native_printers_allowed]]"
+        icon-aria-label="$i18n{printingPageTitle}">
+    </cr-policy-pref-indicator>
+  </div>
 
-  <div id="addPrinterSection" class="list-frame">
-    <div class="layout horizontal center custom-list-item">
+  <!-- When the revamp flag is enabled hide this Add printer section so
+        the revamp Add printer section will be shown in the correct order. -->
+  <div id="addPrinterSection" class="list-frame add-printer-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
+    <div class="layout horizontal center custom-list-item-bottom">
       <div id="addPrinterText" aria-hidden="true">
         $i18n{addCupsPrinter}
       </div>
-      <cr-icon-button class="action-button" id="addManualPrinterIcon"
+      <cr-icon-button id="addManualPrinterIcon"
+          class="action-button add-manual-printer-icon"
           iron-icon="os-settings:printer-add"
           on-click="onAddPrinterClick_"
           disabled="[[!addPrinterButtonActive_(canAddPrinter,
@@ -123,12 +215,48 @@
   </div>
 
   <template is="dom-if" if="[[canAddPrinter]]" restamp>
-    <settings-cups-nearby-printers search-term="[[searchTerm]]"
-        user-printers-allowed="[[!prefs.native_printing.
-            user_native_printers_allowed.value]]"
-        active-printer="{{activePrinter}}"
-        printers-count="{{nearbyPrinterCount_}}">
-    </settings-cups-nearby-printers>
+    <div id="collapsibleSection" class="padded"
+        hidden="[[!nearbyPrintersExpanded_]]">
+      <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div id="helpIconSection">
+          <!-- TODO(b/278621575): Replace with printer help icon when
+              available -->
+          <iron-icon id="helpIcon" icon="os-settings:printer-status-grey">
+          </iron-icon>
+        </div>
+        <div id="helpSectionText">
+          <div class="help-title">
+            $i18n{helpSectionTitle}
+          </div>
+          <div class="secondary">
+            $i18n{helpSectionDescription}
+          </div>
+        </div>
+      </div>
+      <settings-cups-nearby-printers search-term="[[searchTerm]]"
+          user-printers-allowed="[[!prefs.native_printing.
+              user_native_printers_allowed.value]]"
+          active-printer="{{activePrinter}}"
+          printers-count="{{nearbyPrinterCount_}}">
+      </settings-cups-nearby-printers>
+      <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
+          hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div class="layout horizontal center custom-list-item-top">
+          <div id="addPrinterTextRevamp" aria-hidden="true">
+            $i18n{addCupsPrinterManually}
+          </div>
+          <cr-icon-button id="addManualPrinterIconRevamp"
+              class="action-button add-manual-printer-icon"
+              iron-icon="os-settings:printer-add"
+              on-click="onAddPrinterClick_"
+              disabled="[[!addPrinterButtonActive_(canAddPrinter,
+                  prefs.native_printing.user_native_printers_allowed.value)]]"
+              title="$i18n{addCupsPrinterManually}"
+              deep-link-focus-id$="[[Setting.kAddPrinter]]">
+          </cr-icon-button>
+        </div>
+      </div>
+    </div>
   </template>
 </template>
 

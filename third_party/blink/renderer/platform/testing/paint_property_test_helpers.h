@@ -303,7 +303,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
 }
 
 inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
-    const TransformPaintPropertyNodeOrAlias& parent,
+    const TransformPaintPropertyNodeOrAlias& parent_transform,
+    const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
     float offset_y,
     const gfx::Rect& container_rect,
@@ -312,9 +313,6 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     CompositingReasons compositing_reasons = CompositingReason::kNone,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
-  const auto* parent_scroll_translation = &parent.Unalias();
-  while (!parent_scroll_translation->ScrollNode())
-    parent_scroll_translation = parent_scroll_translation->UnaliasedParent();
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = container_rect;
   scroll_state.contents_size = contents_size;
@@ -325,25 +323,33 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
   TransformPaintPropertyNode::State translation_state{
       {gfx::Transform::MakeTranslation(offset_x, offset_y)}};
   translation_state.direct_compositing_reasons = compositing_reasons;
-  translation_state.scroll = ScrollPaintPropertyNode::Create(
-      *parent_scroll_translation->ScrollNode(), std::move(scroll_state));
-  return TransformPaintPropertyNode::Create(parent,
+  translation_state.scroll =
+      ScrollPaintPropertyNode::Create(parent_scroll, std::move(scroll_state));
+  return TransformPaintPropertyNode::Create(parent_transform,
                                             std::move(translation_state));
+}
+
+inline const ScrollPaintPropertyNode& DefaultParentScroll(
+    const TransformPaintPropertyNodeOrAlias& parent_transform) {
+  return *parent_transform.Unalias()
+              .NearestScrollTranslationNode()
+              .ScrollNode();
 }
 
 inline scoped_refptr<TransformPaintPropertyNode>
 CreateCompositedScrollTranslation(
-    const TransformPaintPropertyNodeOrAlias& parent,
+    const TransformPaintPropertyNodeOrAlias& parent_transform,
     float offset_x,
     float offset_y,
     const ScrollPaintPropertyNode& scroll) {
-  return CreateScrollTranslation(parent, offset_x, offset_y, scroll,
+  return CreateScrollTranslation(parent_transform, offset_x, offset_y, scroll,
                                  CompositingReason::kOverflowScrolling);
 }
 
 inline scoped_refptr<TransformPaintPropertyNode>
 CreateCompositedScrollTranslation(
-    const TransformPaintPropertyNodeOrAlias& parent,
+    const TransformPaintPropertyNodeOrAlias& parent_transform,
+    const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
     float offset_y,
     const gfx::Rect& container_rect,
@@ -352,12 +358,14 @@ CreateCompositedScrollTranslation(
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain) {
   return CreateScrollTranslation(
-      parent, offset_x, offset_y, container_rect, contents_size, overflow_clip,
-      CompositingReason::kOverflowScrolling, main_thread_reasons);
+      parent_transform, parent_scroll, offset_x, offset_y, container_rect,
+      contents_size, overflow_clip, CompositingReason::kOverflowScrolling,
+      main_thread_reasons);
 }
 
 inline RefCountedPropertyTreeState CreateScrollTranslationState(
     const PropertyTreeState& parent_state,
+    const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
     float offset_y,
     const gfx::Rect& container_rect,
@@ -369,9 +377,40 @@ inline RefCountedPropertyTreeState CreateScrollTranslationState(
   state.SetClip(*CreateClip(parent_state.Clip(), parent_state.Transform(),
                             FloatRoundedRect(container_rect)));
   state.SetTransform(*CreateScrollTranslation(
-      parent_state.Transform(), offset_x, offset_y, container_rect,
-      contents_size, &state.Clip(), compositing_reasons, main_thread_reasons));
+      parent_state.Transform(), parent_scroll, offset_x, offset_y,
+      container_rect, contents_size, &state.Clip(), compositing_reasons,
+      main_thread_reasons));
   return state;
+}
+
+inline RefCountedPropertyTreeState CreateScrollTranslationState(
+    const PropertyTreeState& parent_state,
+    float offset_x,
+    float offset_y,
+    const gfx::Rect& container_rect,
+    const gfx::Size& contents_size,
+    CompositingReasons compositing_reasons = CompositingReason::kNone,
+    MainThreadScrollingReasons main_thread_reasons =
+        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
+  return CreateScrollTranslationState(
+      parent_state, DefaultParentScroll(parent_state.Transform()), offset_x,
+      offset_y, container_rect, contents_size, compositing_reasons,
+      main_thread_reasons);
+}
+
+inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
+    const PropertyTreeState& parent_state,
+    const ScrollPaintPropertyNode& parent_scroll,
+    float offset_x,
+    float offset_y,
+    const gfx::Rect& container_rect,
+    const gfx::Size& contents_size,
+    MainThreadScrollingReasons main_thread_reasons =
+        cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+  return CreateScrollTranslationState(parent_state, parent_scroll, offset_x,
+                                      offset_y, container_rect, contents_size,
+                                      CompositingReason::kOverflowScrolling,
+                                      main_thread_reasons);
 }
 
 inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
@@ -383,7 +422,8 @@ inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain) {
   return CreateScrollTranslationState(
-      parent_state, offset_x, offset_y, container_rect, contents_size,
+      parent_state, DefaultParentScroll(parent_state.Transform()), offset_x,
+      offset_y, container_rect, contents_size,
       CompositingReason::kOverflowScrolling, main_thread_reasons);
 }
 

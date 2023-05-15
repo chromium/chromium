@@ -217,6 +217,9 @@ const char* VAProfileToString(VAProfile profile) {
 #if VA_MAJOR_VERSION >= 2 || VA_MINOR_VERSION >= 11
     TOSTR(VAProfileProtected);
 #endif
+#if VA_MAJOR_VERSION >= 2 || VA_MINOR_VERSION >= 18
+    TOSTR(VAProfileH264High10);
+#endif
   }
   // clang-format on
   return "<unknown profile>";

@@ -36,6 +36,7 @@
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -117,11 +118,26 @@ constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
 
 void RecordMemoryMetrics();
 
+// Gets the delay for logging memory related metrics for testing.
+absl::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
+  int test_delay_in_minutes;
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kTestMemoryLogDelayInMinutes) &&
+      base::StringToInt(command_line->GetSwitchValueASCII(
+                            switches::kTestMemoryLogDelayInMinutes),
+                        &test_delay_in_minutes)) {
+    return base::Minutes(test_delay_in_minutes);
+  }
+  return absl::nullopt;
+}
+
 // Records memory metrics after a delay.
 void RecordMemoryMetricsAfterDelay() {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&RecordMemoryMetrics),
-      memory_instrumentation::GetDelayForNextMemoryLog());
+      GetDelayForNextMemoryLogTest().value_or(
+          memory_instrumentation::GetDelayForNextMemoryLog()));
 }
 
 // Records memory metrics, and then triggers memory colleciton after a delay.
@@ -532,6 +548,23 @@ ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
 ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
+void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Initialize the TabStatsTracker singleton instance. Must be initialized
+  // before `responsiveness::Watcher`, which happens in
+  // BrowserMainLoop::PreMainMessageLoopRun(), thus the decision to use
+  // `PreCreateThreads`.
+  // Only instantiate the tab stats tracker if a local state exists. This is
+  // always the case for Chrome but not for the unittests.
+  if (g_browser_process != nullptr &&
+      g_browser_process->local_state() != nullptr) {
+    metrics::TabStatsTracker::SetInstance(
+        std::make_unique<metrics::TabStatsTracker>(
+            g_browser_process->local_state()));
+  }
+#endif
+}
+
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
 #if !BUILDFLAG(IS_ANDROID)
   // Must be initialized before any child processes are spawned.
@@ -680,14 +713,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 
 #if !BUILDFLAG(IS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
-  // Only instantiate the tab stats tracker if a local state exists. This is
-  // always the case for Chrome but not for the unittests.
-  if (g_browser_process != nullptr &&
-      g_browser_process->local_state() != nullptr) {
-    metrics::TabStatsTracker::SetInstance(
-        std::make_unique<metrics::TabStatsTracker>(
-            g_browser_process->local_state()));
-  }
 
   // Instantiate the power-related metrics reporters.
 

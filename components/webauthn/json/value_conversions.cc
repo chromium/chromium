@@ -503,10 +503,11 @@ MakeCredentialResponseFromValue(const base::Value& value) {
 
   absl::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*attestation_response, "clientDataJSON");
-  if (!client_data_json) {
-    return InvalidMakeCredentialField("clientDataJSON");
+  // Providers can return an empty clientDataJson when it knows it will
+  // be overridden by the caller.
+  if (client_data_json) {
+    response->info->client_data_json = ToByteVector(*client_data_json);
   }
-  response->info->client_data_json = ToByteVector(*client_data_json);
 
   const base::Value::List* transports =
       attestation_response->FindList("transports");
@@ -516,10 +517,12 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   for (const base::Value& transport_name : *transports) {
     absl::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
-    if (!transport) {
-      return InvalidMakeCredentialField("transports");
+    // Unknown transports are ignored because new transport values might be
+    // introduced in the future. Plausibly we should pass them as opaque
+    // strings, but our Mojo interface isn't shaped like that.
+    if (transport) {
+      response->transports.push_back(*transport);
     }
-    response->transports.push_back(*transport);
   }
 
   const base::Value::Dict* client_extension_results =
@@ -608,10 +611,11 @@ GetAssertionResponseFromValue(const base::Value& value) {
 
   absl::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*assertion_response, "clientDataJSON");
-  if (!client_data_json) {
-    return InvalidGetAssertionField("clientDataJSON");
+  // Providers can return an empty clientDataJson when it knows it will
+  // be overridden by the caller.
+  if (client_data_json) {
+    response->info->client_data_json = ToByteVector(*client_data_json);
   }
-  response->info->client_data_json = ToByteVector(*client_data_json);
 
   absl::optional<std::string> authenticator_data =
       Base64UrlDecodeStringKey(*assertion_response, "authenticatorData");

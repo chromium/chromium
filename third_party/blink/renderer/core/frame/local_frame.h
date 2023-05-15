@@ -378,7 +378,7 @@ class CORE_EXPORT LocalFrame final
   // If this frame doesn't need to fit into a page size, default values are
   // used.
   void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
-                     const gfx::SizeF& original_page_size = gfx::SizeF(),
+                     const gfx::SizeF& aspect_ratio = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
   void EndPrinting();
@@ -396,7 +396,13 @@ class CORE_EXPORT LocalFrame final
   void EnsureSaveScrollOffset(Node&);
   void RestoreScrollOffsets();
 
-  gfx::SizeF ResizePageRectsKeepingRatio(const gfx::SizeF& original_size,
+  // Return `expected_size` adjusted to the specified `aspect_ratio`. The
+  // logical width (inline-size) of `expected_size` will be kept unmodified [*],
+  // whereas the logical height (block-size) will be adjusted if needed, to
+  // honor the aspect ratio. The values returned are rounded down to the nearest
+  // integer.
+  // [*] Except that it's rounded down to the nearest integer.
+  gfx::SizeF ResizePageRectsKeepingRatio(const gfx::SizeF& aspect_ratio,
                                          const gfx::SizeF& expected_size) const;
 
   bool InViewSourceMode() const;
@@ -839,7 +845,10 @@ class CORE_EXPORT LocalFrame final
   // All newly created ScrollSnapshotClients are considered "unvalidated". This
   // means that the internal state of the client is considered tentative, and
   // computing the actual state may require an additional style/layout pass.
-  //
+  // ScrollSnapshotClients may be marked as unvalidated if a style or layout
+  // change suggests that the snapshot is stale. This additional check is
+  // expected to be lightweight since run once per frame.
+
   // The lifecycle update will call this function after style and layout has
   // completed. The function will then go though all unvalidated clients,
   // and compare the current state snapshot to a fresh state snapshot. If they
@@ -853,12 +862,17 @@ class CORE_EXPORT LocalFrame final
   // https://github.com/w3c/csswg-drafts/issues/5261
   bool ValidateScrollSnapshotClients();
 
+  void ClearScrollSnapshotClients();
+
   const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
-  GetUnvalidatedScrollSnapshotClientsForTesting() {
-    return unvalidated_scroll_snapshot_clients_;
+  GetScrollSnapshotClientsForTesting() {
+    return scroll_snapshot_clients_;
   }
 
   void ScheduleNextServiceForScrollSnapshotClients();
+
+  void CollectAnchorScrollContainerIds(
+      Vector<cc::ElementId>* scroll_container_ids) const;
 
   using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
   static BlockingDetailsList ConvertFeatureAndLocationToMojomStruct(
@@ -909,11 +923,11 @@ class CORE_EXPORT LocalFrame final
 
   // Internal implementation for starting or ending printing.
   // |printing| is true when printing starts, false when printing ends.
-  // |page_size|, |original_page_size|, and |maximum_shrink_ratio| are only
+  // |page_size|, |aspect_ratio|, and |maximum_shrink_ratio| are only
   // meaningful when we should use printing layout for this frame.
   void SetPrinting(bool printing,
                    const gfx::SizeF& page_size,
-                   const gfx::SizeF& original_page_size,
+                   const gfx::SizeF& aspect_ratio,
                    float maximum_shrink_ratio);
 
   // FrameScheduler::Delegate overrides:
@@ -1086,9 +1100,6 @@ class CORE_EXPORT LocalFrame final
   // ScrollSnapshotClients owned by elements in this frame. The clients must
   // be registered at the actual elements as the references here are weak.
   HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
-
-  HeapHashSet<WeakMember<ScrollSnapshotClient>>
-      unvalidated_scroll_snapshot_clients_;
 
   // Set lazily, when the browser asks to host a resource cache in this frame.
   Member<ResourceCacheImpl> resource_cache_;

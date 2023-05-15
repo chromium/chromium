@@ -5,7 +5,8 @@
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 
 #include "base/containers/adapters.h"
-#include "components/history_clusters/core/on_device_clustering_util.h"
+#include "components/history_clusters/core/history_clusters_util.h"
+#include "components/history_clusters/core/ntp_visit_scores.h"
 
 namespace history_clusters {
 
@@ -31,7 +32,9 @@ float Smoothstep(float low, float high, float value) {
 
 }  // namespace
 
-RankingClusterFinalizer::RankingClusterFinalizer() = default;
+RankingClusterFinalizer::RankingClusterFinalizer(
+    ClusteringRequestSource clustering_request_source)
+    : clustering_request_source_(clustering_request_source) {}
 RankingClusterFinalizer::~RankingClusterFinalizer() = default;
 
 void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
@@ -45,7 +48,7 @@ void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
 void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     history::Cluster& cluster,
     base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
-  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
+  for (const auto& visit : cluster.visits) {
     auto it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (it == url_visit_scores.end()) {
       auto visit_score = VisitScores();
@@ -53,6 +56,13 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
           {visit.annotated_visit.visit_row.visit_id, visit_score});
     }
     it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
+
+    if (GetConfig().use_ntp_specific_intracluster_ranking &&
+        clustering_request_source_ == ClusteringRequestSource::kNewTabPage) {
+      it->second.set_ntp_visit_attributes_score(
+          GetNtpVisitAttributesScore(visit));
+      return;
+    }
 
     // Check if the visit is bookmarked.
     if (visit.annotated_visit.context_annotations.is_existing_bookmark ||
@@ -95,7 +105,7 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
           visit.annotated_visit.context_annotations.total_foreground_duration;
     }
   }
-  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
+  for (const auto& visit : cluster.visits) {
     float visit_duration_score =
         Smoothstep(0.0f, max_visit_duration.InSecondsF(),
                    visit.annotated_visit.visit_row.visit_duration.InSecondsF());
@@ -123,7 +133,7 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
     history::Cluster& cluster,
     base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   float max_score = -1.0;
-  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
+  for (auto& visit : cluster.visits) {
     // Determine the max score to use for normalizing all the scores.
     auto visit_scores_it =
         url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
@@ -143,7 +153,7 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
 
   // Now normalize the score by `max_score` so the values are all between 0
   // and 1.
-  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
+  for (auto& visit : cluster.visits) {
     visit.score = visit.score / max_score;
   }
 }

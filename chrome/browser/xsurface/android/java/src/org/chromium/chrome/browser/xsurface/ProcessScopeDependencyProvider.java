@@ -13,6 +13,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * Implemented in Chromium.
+ *
  * Provides application-level dependencies for an external surface.
  */
 public interface ProcessScopeDependencyProvider {

@@ -18,8 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -27,6 +31,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +41,8 @@ import java.util.Locale;
  * Local credit card settings.
  */
 public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
+    private static Callback<Fragment> sObserverForTest;
+
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
     private EditText mNameText;
@@ -85,6 +92,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         addSpinnerAdapters();
         addCardDataToEditFields();
         initializeButtons(v);
+        if (sObserverForTest != null) {
+            sObserverForTest.onResult(this);
+        }
         return v;
     }
 
@@ -111,6 +121,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     @Override
     public void afterTextChanged(Editable s) {
         updateSaveButtonEnabled();
+    }
+
+    @VisibleForTesting
+    public static void setObserverForTest(Callback<Fragment> observerForTest) {
+        sObserverForTest = observerForTest;
     }
 
     void addSpinnerAdapters() {
@@ -250,13 +265,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     }
 
     private TextWatcher nicknameTextWatcher() {
-        return new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
+        return new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 // Show an error message if nickname contains any digits.

@@ -1,3 +1,6 @@
+CONSOLE WARNING: Found a 'popover' attribute with an invalid value.
+CONSOLE WARNING: Found a 'popover' attribute with an invalid value.
+CONSOLE WARNING: Found a 'popover' attribute with an invalid value.
 Verify that removing a video element from the DOM does not crash.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

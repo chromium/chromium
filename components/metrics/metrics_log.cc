@@ -168,6 +168,7 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE4:
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE5:
+    case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE6:
       return metrics::SystemProfileProto::OS::KDE;
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_PANTHEON:
       return metrics::SystemProfileProto::OS::PANTHEON;

@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #import "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +19,10 @@
 #include "components/device_signals/core/browser/settings_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace device_signals {
 
@@ -36,37 +39,40 @@ constexpr size_t kMaxStringSizeInBytes = 1024;
 id ParseArrays(id data_obj, NSString* path) {
   NSArray* indexes = [path componentsSeparatedByString:@"["];
 
-  for (NSString* index_str in indexes) {
-    if (![data_obj isKindOfClass:[NSArray class]]) {
+  for (NSString* index_with_bracket in indexes) {
+    NSArray* data_array = base::mac::ObjCCast<NSArray>(data_obj);
+    if (!data_array) {
       return nil;
     }
 
-    if (![index_str length])
+    if (!index_with_bracket.length) {
       continue;
+    }
 
     // Checking for the square brackets being closed. If they are not, then the
     // key path is malformed.
-    NSRange range = [index_str rangeOfString:@"]"];
+    NSRange range = [index_with_bracket rangeOfString:@"]"];
     if (range.location == NSNotFound ||
-        range.location < [index_str length] - 1) {
+        range.location < index_with_bracket.length - 1) {
       return nil;
     }
-    index_str = [index_str substringToIndex:range.location];
+    NSString* index_str = [index_with_bracket substringToIndex:range.location];
 
     // Validate that the index is a numeric. If the index is an alpha, issues
     // will occur during string to integer conversion.
-    NSCharacterSet* numeric_set = [NSCharacterSet decimalDigitCharacterSet];
+    NSCharacterSet* numeric_set = NSCharacterSet.decimalDigitCharacterSet;
     if (![numeric_set
             isSupersetOfSet:[NSCharacterSet characterSetWithCharactersInString:
                                                 index_str]]) {
       return nil;
     }
 
-    NSUInteger index = base::checked_cast<NSUInteger>([index_str integerValue]);
-    if (index > [data_obj count])
+    NSUInteger index = base::checked_cast<NSUInteger>(index_str.integerValue);
+    if (index > data_array.count) {
       return nil;
+    }
 
-    data_obj = [data_obj objectAtIndex:index];
+    data_obj = data_array[index];
   }
 
   return data_obj;
@@ -97,7 +103,7 @@ id ParsePlist(NSDictionary* dict, NSString* key_path) {
   // This will occur if the key path is incorrect and does not actually point to
   // a setting item. At the end of a parse, the only remaining object should be
   // the single setting item.
-  if ([current_obj isKindOfClass:[NSArray class]] && [current_obj count] != 1) {
+  if ([current_obj isKindOfClass:[NSArray class]] && current_obj.count != 1) {
     return nil;
   }
   return current_obj;
@@ -133,9 +139,9 @@ std::vector<SettingsItem> GetSettingItems(
 
     NSError* error = nil;
     NSURL* url = base::mac::FilePathToNSURL(resolved_path);
-    base::scoped_nsobject<NSDictionary> plist_dict(
-        [[NSDictionary alloc] initWithContentsOfURL:url error:&error]);
-    if (error && [error code] == NSFileReadNoPermissionError) {
+    NSDictionary* plist_dict =
+        [[NSDictionary alloc] initWithContentsOfURL:url error:&error];
+    if (error && error.code == NSFileReadNoPermissionError) {
       item.presence = PresenceValue::kAccessDenied;
       items.push_back(item);
       continue;
@@ -160,7 +166,7 @@ std::vector<SettingsItem> GetSettingItems(
     }
 
     if (NSString* setting_str = base::mac::ObjCCast<NSString>(value_ptr)) {
-      if ([setting_str length] <= kMaxStringSizeInBytes) {
+      if (setting_str.length <= kMaxStringSizeInBytes) {
         std::string setting_json_string;
         base::JSONWriter::Write(
             base::Value(base::SysNSStringToUTF8(setting_str)),
@@ -169,12 +175,12 @@ std::vector<SettingsItem> GetSettingItems(
       }
     } else if (NSNumber* value_num = base::mac::ObjCCast<NSNumber>(value_ptr)) {
       // Differentiating between integer and float types.
-      const char* value_type = [value_num objCType];
+      const char* value_type = value_num.objCType;
       if (strcmp(value_type, "d") == 0 || strcmp(value_type, "f") == 0) {
-        double setting_num = [value_num doubleValue];
+        double setting_num = value_num.doubleValue;
         item.setting_json_value = base::StringPrintf("%f", setting_num);
       } else {
-        int setting_num = [value_num integerValue];
+        int setting_num = value_num.integerValue;
         item.setting_json_value = base::StringPrintf("%d", setting_num);
       }
     }

@@ -18,11 +18,11 @@ ArcPaymentAppBridgeTestSupport::ScopedSetInstance::ScopedSetInstance(
     ArcServiceManager* manager,
     mojom::PaymentAppInstance* instance)
     : manager_(manager), instance_(instance) {
-  manager_->arc_bridge_service()->payment_app()->SetInstance(instance_);
+  manager_->arc_bridge_service()->payment_app()->SetInstance(instance_.get());
 }
 
 ArcPaymentAppBridgeTestSupport::ScopedSetInstance::~ScopedSetInstance() {
-  manager_->arc_bridge_service()->payment_app()->CloseInstance(instance_);
+  manager_->arc_bridge_service()->payment_app()->CloseInstance(instance_.get());
 }
 
 ArcPaymentAppBridgeTestSupport::ArcPaymentAppBridgeTestSupport() = default;

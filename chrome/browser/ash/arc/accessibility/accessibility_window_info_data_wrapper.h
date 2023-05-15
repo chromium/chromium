@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -57,7 +58,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool GetProperty(mojom::AccessibilityWindowIntListProperty prop,
                    std::vector<int32_t>* out_value) const;
 
-  mojom::AccessibilityWindowInfoData* window_ptr_ = nullptr;
+  raw_ptr<mojom::AccessibilityWindowInfoData, ExperimentalAsh> window_ptr_ =
+      nullptr;
 };
 
 }  // namespace arc

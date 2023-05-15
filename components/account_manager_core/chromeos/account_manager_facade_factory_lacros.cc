@@ -22,7 +22,8 @@ mojo::Remote<crosapi::mojom::AccountManager> GetAccountManagerRemote() {
 
   auto* lacros_chrome_service_impl = chromeos::LacrosService::Get();
   DCHECK(lacros_chrome_service_impl);
-  if (!lacros_chrome_service_impl->IsAccountManagerAvailable()) {
+  if (!lacros_chrome_service_impl
+           ->IsSupported<crosapi::mojom::AccountManager>()) {
     LOG(WARNING) << "Connected to an older version of ash. Account "
                     "consistency will not be available";
     return remote;
@@ -103,8 +104,8 @@ class AccountManagerFacadeFactoryLacros {
         std::make_unique<account_manager::AccountManagerFacadeImpl>(
             GetAccountManagerRemote(),
             /*remote_version=*/
-            chromeos::LacrosService::Get()->GetInterfaceVersion(
-                crosapi::mojom::AccountManager::Uuid_),
+            chromeos::LacrosService::Get()
+                ->GetInterfaceVersion<crosapi::mojom::AccountManager>(),
             /*account_manager_for_tests=*/nullptr);
   }
 

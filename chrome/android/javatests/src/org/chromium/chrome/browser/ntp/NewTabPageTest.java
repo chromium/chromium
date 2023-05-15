@@ -27,11 +27,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -95,12 +96,14 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -131,7 +134,7 @@ import java.util.concurrent.TimeUnit;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
-@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS})
+@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class NewTabPageTest {
     /**
      * Parameter set controlling whether scrollable mvt is enabled.
@@ -187,6 +190,9 @@ public class NewTabPageTest {
             UrlUtils.getIsolatedTestFilePath("/chrome/test/data/android/feed/hello_world.gcl.bin");
     private static final String TEST_URL = "https://www.example.com/";
 
+    private static final String EMAIL = "email@gmail.com";
+    private static final String NAME = "Email Emailson";
+
     private Tab mTab;
     private TemplateUrlService mTemplateUrlService;
     private NewTabPage mNtp;
@@ -219,7 +225,8 @@ public class NewTabPageTest {
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
         mMostVisitedSites = new FakeMostVisitedSites();
@@ -235,7 +242,6 @@ public class NewTabPageTest {
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
         Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getChildCount());
-        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
     }
 
     @After
@@ -647,6 +653,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSettingOmniboxStubAddsUrlFocusChangeListener() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.setOmniboxStub(mOmniboxStub);
             verify(mOmniboxStub).addUrlFocusChangeListener(eq(mFeedReliabilityLogger));
@@ -657,6 +665,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingFocusOmnibox() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/false, /*pastedText=*/"");
@@ -668,6 +678,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingVoiceSearch() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/true, /*pastedText=*/"");
@@ -679,6 +691,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingHideWithBack() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeTabbedActivity activity = (ChromeTabbedActivity) mActivityTestRule.getActivity();
             activity.handleBackPressed();
@@ -692,6 +706,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1434807")
     public void testRecordHistogramMostVisitedItemClick_Ntp() {
         Tile tileForTest = new Tile(mSiteSuggestions.get(0), 0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -820,13 +835,15 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1433093")
     public void testRecordHistogramProfileButtonClick_Ntp() {
+        // Identity Disc should be shown on sign-in state.
+        waitForSignIn();
         HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
         onView(withId(R.id.optional_toolbar_button)).perform(click());
         histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
                 + " is not recorded correctly when click on the profile button.");
+        mSigninTestRule.signOut();
     }
 
     /**
@@ -850,6 +867,20 @@ public class NewTabPageTest {
     }
 
     /**
+     * Test whether the clicking action on the menu button in {@link NewTabPage} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramMenuButtonClick_Ntp() {
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+        onView(withId(R.id.menu_button_wrapper)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                + " is not recorded correctly when click on the menu button.");
+    }
+
+    /**
      * Test show and click on the single tab card on the {@link NewTabPage} in the tablet.
      */
     @Test
@@ -864,7 +895,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
         assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
@@ -891,13 +922,15 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testSingleTabCardDestroy() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
+        Tab mostRecentTab = activity.getActivityTab();
         Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(newTab);
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -922,13 +955,15 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testSingleTabCardHide() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
+        Tab mostRecentTab = activity.getActivityTab();
         Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(newTab);
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -939,11 +974,11 @@ public class NewTabPageTest {
                 singleTabCardView.getVisibility());
 
         TabObserver tabObserver = ntp.getTabObserverForTesting();
-        ntp.setShownAsHomeSurfaceForTesting(false);
-        Assert.assertFalse(
+        ntp.setIsHiddenForTesting(true);
+        Assert.assertTrue(
                 "The variable controlling whether to show the single tab card hasn't been "
                         + "set to false.",
-                ntp.getShownAsHomeSurfaceForTesting());
+                ntp.getIsHiddenForTesting());
         ntpLayout.setMostVisitedTilesCoordinatorForTesting(null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tabObserver.onShown(newTab, TabSelectionType.FROM_NEW); });
@@ -968,7 +1003,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(originalMostRecentTab));
 
         View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
         assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
@@ -985,7 +1020,7 @@ public class NewTabPageTest {
             TabModelUtils.setIndex(activity.getCurrentTabModel(),
                     TabModelUtils.getTabIndexById(activity.getCurrentTabModel(), tab.getId()),
                     false);
-            ntp.showHomeSurfaceUi();
+            ntp.showHomeSurfaceUi(newMostRecentTab);
         });
 
         assertEquals("The single tab card is invisible after updating the single tab card.",
@@ -1013,7 +1048,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(originalMostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -1029,12 +1064,12 @@ public class NewTabPageTest {
                     originalMostRecentTabTitleForCheck, title.getText());
         });
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        Tab newMostRecentTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabModelUtils.setIndex(activity.getCurrentTabModel(),
                     TabModelUtils.getTabIndexById(activity.getCurrentTabModel(), tab.getId()),
                     false);
-            ntp.showHomeSurfaceUi();
+            ntp.showHomeSurfaceUi(newMostRecentTab);
         });
 
         assertEquals("The single tab card container is still visible after updating with "
@@ -1043,13 +1078,6 @@ public class NewTabPageTest {
         assertEquals("The single tab card is still visible after updating with the new tab "
                         + "page information.",
                 View.GONE, singleTabCardView.getVisibility());
-        TextView new_title = singleTabCardView.findViewById(R.id.tab_title_view);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            String newMostRecentTabTitleForCheck = "";
-            assertEquals("The title of the single tab card is wrong after updating with "
-                            + "the new tab page information.",
-                    newMostRecentTabTitleForCheck, new_title.getText());
-        });
     }
 
     private void captureThumbnail() {
@@ -1138,5 +1166,18 @@ public class NewTabPageTest {
 
     private static HistogramWatcher expectNoRecordsForNtpModuleClick() {
         return HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NTP_MODULE_CLICK).build();
+    }
+
+    /**
+     * Transform the New Tab Page into the signed-in state.
+     */
+    private void waitForSignIn() {
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(
+                EMAIL, NAME, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        mSigninTestRule.waitForSeeding();
+        SigninTestUtil.signin(coreAccountInfo);
+        // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
     }
 }

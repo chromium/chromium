@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.List;
 
@@ -46,10 +47,7 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
         mUsernameView = findViewById(R.id.username_view);
         mUsernameInputLayout = findViewById(R.id.username_input_layout);
         mUsernameInputLayout.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
-        mUsernameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
+        mUsernameView.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (mUsernameChangedCallback == null) return;

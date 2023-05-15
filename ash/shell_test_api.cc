@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -62,7 +63,7 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  ui::LayerAnimator* animator_;
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
   base::RunLoop run_loop_;
 };
 

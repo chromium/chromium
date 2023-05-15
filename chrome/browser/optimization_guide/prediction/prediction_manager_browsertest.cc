@@ -228,8 +228,9 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
 };
 
-class PredictionManagerBrowserTest : public testing::WithParamInterface<bool>,
-                                     public PredictionManagerBrowserTestBase {
+class PredictionManagerBrowserTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public PredictionManagerBrowserTestBase {
  public:
   PredictionManagerBrowserTest() = default;
   ~PredictionManagerBrowserTest() override = default;
@@ -238,7 +239,12 @@ class PredictionManagerBrowserTest : public testing::WithParamInterface<bool>,
   PredictionManagerBrowserTest& operator=(const PredictionManagerBrowserTest&) =
       delete;
 
-  bool ShouldEnableInstallWideModelStore() const { return GetParam(); }
+  bool ShouldEnableInstallWideModelStore() const {
+    return std::get<0>(GetParam());
+  }
+  bool ShouldEnableModelStoreUseRelativePath() const {
+    return std::get<1>(GetParam());
+  }
 
  private:
   void InitializeFeatureList() override {
@@ -257,9 +263,12 @@ class PredictionManagerBrowserTest : public testing::WithParamInterface<bool>,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PredictionManagerBrowserTest,
-                         /*use_install_wide_model_store=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PredictionManagerBrowserTest,
+    testing::Combine(
+        /*ShouldEnableInstallWideModelStore=*/testing::Bool(),
+        /*ShouldEnableModelStoreUseRelativePath=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
                        ComponentUpdatesPrefDisabled) {
@@ -386,15 +395,22 @@ class PredictionManagerModelDownloadingBrowserTest
           features::kOptimizationGuideInstallWideModelStore,
           base::FieldTrialParams());
     }
+    if (ShouldEnableModelStoreUseRelativePath()) {
+      enabled_features.emplace_back(features::kModelStoreUseRelativePath,
+                                    base::FieldTrialParams());
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PredictionManagerModelDownloadingBrowserTest,
-                         /*ShouldEnableInstallWideModelStore=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PredictionManagerModelDownloadingBrowserTest,
+    testing::Combine(
+        /*ShouldEnableInstallWideModelStore=*/testing::Bool(),
+        /*ShouldEnableModelStoreUseRelativePath=*/testing::Bool()));
 
 // Flaky on various bots. See https://crbug.com/1266318
 IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
@@ -539,12 +555,13 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   model_file_observer()->set_model_file_received_callback(base::BindOnce(
-      [](base::RunLoop* run_loop, proto::OptimizationTarget optimization_target,
+      [](base::RunLoop* run_loop, bool should_enable_install_wide_model_store,
+         proto::OptimizationTarget optimization_target,
          const ModelInfo& model_info) {
         EXPECT_EQ(optimization_target,
                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 
-        if (!GetParam()) {
+        if (!should_enable_install_wide_model_store) {
           // Regression test for crbug/1327975.
           // Make sure model file path downloaded into profile dir.
           base::FilePath profile_dir =
@@ -553,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
         }
         run_loop->Quit();
       },
-      run_loop.get()));
+      run_loop.get(), ShouldEnableInstallWideModelStore()));
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.

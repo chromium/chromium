@@ -22,10 +22,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/webview/webview_side_panel_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
@@ -79,13 +77,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
-    auto* history_clusters_side_panel_coordinator =
-        HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser);
-    if (browser->profile()->GetPrefs()->GetBoolean(
-            history_clusters::prefs::kVisible)) {
-      history_clusters_side_panel_coordinator->CreateAndRegisterEntry(
-          global_registry);
-    }
+    HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
   }
 
   // Add read anything.
@@ -113,16 +106,10 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
         ->CreateAndRegisterEntry(global_registry);
   }
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelWebView)) {
-    WebViewSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser)
-        ->RegisterExtensionEntries();
+    extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser);
   }
 #endif
 
@@ -136,6 +123,14 @@ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
         kSidePanelContentProxyKey,
         std::make_unique<SidePanelContentProxy>(true).release());
   return content_view->GetProperty(kSidePanelContentProxyKey);
+}
+
+std::unique_ptr<views::View> SidePanelUtil::DeregisterAndReturnView(
+    SidePanelRegistry* registry,
+    SidePanelEntry::Key key) {
+  std::unique_ptr<SidePanelEntry> entry =
+      registry->DeregisterAndReturnEntry(key);
+  return entry->CachedView() ? entry->GetContent() : nullptr;
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
@@ -193,6 +188,7 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
+    Browser* browser,
     SidePanelEntry::Id id,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
@@ -200,5 +196,12 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
         base::StrCat(
             {"SidePanel.", GetHistogramNameForId(id), ".ShowTriggered"}),
         trigger.value());
+  }
+
+  if (id == SidePanelEntry::Id::kSearchCompanion) {
+    auto* search_companion_coordinator =
+        SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
+    search_companion_coordinator->NotifyCompanionOfSidePanelOpenTrigger(
+        trigger);
   }
 }

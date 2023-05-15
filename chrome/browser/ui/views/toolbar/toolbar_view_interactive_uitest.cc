@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -31,6 +32,8 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -43,6 +46,11 @@ class ToolbarViewTest : public InProcessBrowserTest {
   ToolbarViewTest() = default;
   ToolbarViewTest(const ToolbarViewTest&) = delete;
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
 
   void RunToolbarCycleFocusTest(Browser* browser);
 };
@@ -170,6 +178,51 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonHoverThenClick) {
   back_nav_observer.Wait();
 
   EXPECT_FALSE(back_button->GetEnabled());
+}
+
+// TODO(crbug.com/1405449): The ui test utils do not seem to adequately simulate
+// mouse hovering on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BackButtonHoverMetricsLogged DISABLED_BackButtonHoverMetricsLogged
+#else
+#define MAYBE_BackButtonHoverMetricsLogged BackButtonHoverMetricsLogged
+#endif
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ToolbarButtonProvider* toolbar_button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+
+  // Set the initial mouse position to a known state. If the mouse happens to
+  // be over the back button at the start of the test, then the mouse movement
+  // done by the test wouldn't be seen as a mouse enter.
+  // The choice of using the reload button as the starting position is
+  // arbitrary.
+  const gfx::Point start_position = ui_test_utils::GetCenterInScreenCoordinates(
+      toolbar_button_provider->GetReloadButton());
+  ui_controls::SendMouseMove(start_position.x(), start_position.y());
+
+  const GURL first_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL cross_site_url =
+      embedded_test_server()->GetURL("b.test", "/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_site_url));
+
+  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
+  EXPECT_TRUE(back_button->GetEnabled());
+
+  base::HistogramTester histogram_tester;
+
+  content::TestNavigationObserver back_nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ui_test_utils::ClickOnView(back_button);
+  back_nav_observer.Wait();
+
+  // content/ internal tests cover the details of various navigation scenarios
+  // in relation to this histogram. It's enough for this test confirm that a
+  // sample was added, rather than its specific value.
+  histogram_tester.ExpectTotalCount(
+      "Preloading.PrerenderBackNavigationEligibility.BackButtonHover", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,

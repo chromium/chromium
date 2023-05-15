@@ -245,7 +245,12 @@ var wraps = ['', 'nowrap', 'wrap', 'wrap-reverse'];
 directions.forEach(function(direction) {
     wraps.forEach(function(wrap) {
         var expectedComputed = (direction || 'row') + ' ' + (wrap || 'nowrap');
-        var expected = direction + ' ' + wrap;
+        var expected = (direction == 'row') ? '' : direction;
+        if (expected.length)
+            expected += ' '
+        expected += (wrap == 'nowrap') ? '' : wrap;
+        if (!expected.length && (direction.length || wrap.length))
+            expected = 'row'
         testFlexFlowValue(direction + ' ' + wrap, expected, expectedComputed);
         testFlexFlowValue(wrap + ' ' + direction, expected, expectedComputed);
     });
@@ -263,7 +268,7 @@ shouldBeEqualToString('flexbox.style.flexFlow', '');
 shouldBeEqualToString('window.getComputedStyle(flexbox, null).flexFlow', 'row nowrap');
 flexbox.style.flexDirection = 'column';
 flexbox.style.flexWrap = 'initial';
-shouldBeEqualToString('flexbox.style.flexFlow', 'column');
+shouldBeEqualToString('flexbox.style.flexFlow', '');
 shouldBeEqualToString('window.getComputedStyle(flexbox, null).flexFlow', 'column nowrap');
 flexbox.style.flexWrap = 'wrap';
 shouldBeEqualToString('flexbox.style.flexFlow', 'column wrap');

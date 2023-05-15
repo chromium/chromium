@@ -49,19 +49,20 @@ std::vector<std::vector<uint8_t>> ExtractKeystoreKeys(
   return keystore_keys;
 }
 
-SyncerError HandleGetEncryptionKeyResponse(
+// Populates keystore encryption keys to KeystoreKeysHandler, returns true on
+// success and false otherwise.
+bool HandleGetEncryptionKeyResponse(
     const sync_pb::ClientToServerResponse& update_response,
     SyncCycleContext* context) {
-  bool success = false;
   if (update_response.get_updates().encryption_keys_size() == 0) {
     LOG(ERROR) << "Failed to receive encryption key from server.";
-    return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+    return false;
   }
 
   std::vector<std::vector<uint8_t>> keystore_keys =
       ExtractKeystoreKeys(update_response);
 
-  success =
+  bool success =
       context->model_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
           keystore_keys);
 
@@ -69,9 +70,7 @@ SyncerError HandleGetEncryptionKeyResponse(
            << update_response.get_updates().encryption_keys_size()
            << "encryption keys. Nigori keystore key " << (success ? "" : "not ")
            << "updated.";
-  return (success
-              ? SyncerError(SyncerError::SYNCER_OK)
-              : SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED));
+  return success;
 }
 
 // Given a GetUpdates response, iterates over all the returned items and
@@ -163,10 +162,6 @@ void InitDownloadUpdatesContext(SyncCycle* cycle,
   // (e.g. Bookmark URLs but not their containing folders).
   get_updates->set_fetch_folders(true);
 
-  // This is a deprecated field that should be cleaned up after server's
-  // behavior is updated.
-  get_updates->set_create_mobile_bookmarks_folder(true);
-
   bool need_encryption_key = ShouldRequestEncryptionKey(cycle->context());
   get_updates->set_need_encryption_key(need_encryption_key);
 
@@ -185,6 +180,8 @@ GetUpdatesProcessor::~GetUpdatesProcessor() = default;
 SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
                                                  SyncCycle* cycle) {
   TRACE_EVENT0("sync", "DownloadUpdates");
+
+  has_more_updates_to_download_ = false;
 
   sync_pb::ClientToServerMessage message;
   InitDownloadUpdatesContext(cycle, &message);
@@ -280,8 +277,8 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
 
   if (need_encryption_key ||
       update_response.get_updates().encryption_keys_size() > 0) {
-    status->set_last_get_key_result(
-        HandleGetEncryptionKeyResponse(update_response, cycle->context()));
+    status->set_last_get_key_failed(
+        !HandleGetEncryptionKeyResponse(update_response, cycle->context()));
   }
 
   SyncerError process_result =
@@ -353,9 +350,8 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   DCHECK(progress_marker_iter == progress_index_by_type.end() &&
          updates_iter == updates_by_type.end());
 
-  return gu_response.changes_remaining() == 0
-             ? SyncerError(SyncerError::SYNCER_OK)
-             : SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
+  has_more_updates_to_download_ = gu_response.changes_remaining() != 0;
+  return SyncerError(SyncerError::SYNCER_OK);
 }
 
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
@@ -365,6 +361,10 @@ void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
       update_handler->ApplyUpdates(status_controller, /*cycle_done=*/true);
     }
   }
+}
+
+bool GetUpdatesProcessor::HasMoreUpdatesToDownload() const {
+  return has_more_updates_to_download_;
 }
 
 }  // namespace syncer

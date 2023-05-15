@@ -9,6 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -24,7 +25,8 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
   // PushableMediaStreamAudioSource from multiple threads. This also includes
   // safely posting tasks to/from outside the main thread.
   // The public methods of this class can be called on any thread.
-  class MODULES_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
+  class MODULES_EXPORT LOCKABLE Broker
+      : public WTF::ThreadSafeRefCounted<Broker> {
    public:
     Broker(const Broker&) = delete;
     Broker& operator=(const Broker&) = delete;
@@ -46,19 +48,21 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     bool IsRunning();
     void PushAudioData(scoped_refptr<media::AudioBuffer> data);
     void StopSource();
+    void SetShouldDeliverAudioOnAudioTaskRunner(
+        bool should_deliver_audio_on_audio_task_runner);
+    bool ShouldDeliverAudioOnAudioTaskRunner();
 
    private:
     friend class PushableMediaStreamAudioSource;
 
-    explicit Broker(PushableMediaStreamAudioSource* source);
-
-    // Must be called on the audio task runner of |source_|.
-    void DeliverData(scoped_refptr<media::AudioBuffer> data);
+    explicit Broker(PushableMediaStreamAudioSource* source,
+                    scoped_refptr<base::SequencedTaskRunner> audio_task_runner);
 
     // These functions must be called on |main_task_runner_|.
     void OnSourceStarted();
     void OnSourceDestroyedOrStopped();
     void StopSourceOnMain();
+    void AssertLockAcquired() const ASSERT_EXCLUSIVE_LOCK();
 
     base::Lock lock_;
     // Source can only change its value on |main_task_runner_|. We use |lock_|
@@ -73,6 +77,9 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     bool is_running_ GUARDED_BY(lock_) = false;
     int num_clients_ GUARDED_BY(lock_) = 0;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
+    int should_deliver_audio_on_audio_task_runner_ GUARDED_BY(lock_) = true;
+    const scoped_refptr<base::SequencedTaskRunner> audio_task_runner_;
   };
 
   PushableMediaStreamAudioSource(
@@ -81,8 +88,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
   ~PushableMediaStreamAudioSource() override;
 
-  // This can be called from any thread, and will push the data on
-  // |audio_task_runner_|
+  // Push data to the audio tracks. Can be called from any thread.
   void PushAudioData(scoped_refptr<media::AudioBuffer> data);
 
   // These functions can be called on any thread.
@@ -91,19 +97,17 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
  private:
   friend class Broker;
-  // Actually push data to the audio tracks. Only called on
-  // |audio_task_runner_|.
+  // Actually push data to the audio tracks. Can be called from any thread.
   void DeliverData(scoped_refptr<media::AudioBuffer> data);
 
   // MediaStreamAudioSource implementation.
   bool EnsureSourceIsStarted() final;
   void EnsureSourceIsStopped() final;
 
-  int last_channels_ = 0;
-  int last_frames_ = 0;
-  int last_sample_rate_ = 0;
+  int last_channels_ GUARDED_BY(broker_) = 0;
+  int last_frames_ GUARDED_BY(broker_) = 0;
+  int last_sample_rate_ GUARDED_BY(broker_) = 0;
 
-  const scoped_refptr<base::SequencedTaskRunner> audio_task_runner_;
   const scoped_refptr<Broker> broker_;
 };
 

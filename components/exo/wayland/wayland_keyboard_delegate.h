@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/exo/keyboard_delegate.h"
@@ -57,10 +58,10 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   wl_client* client() const;
 
   // The keyboard resource associated with the keyboard.
-  wl_resource* const keyboard_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> keyboard_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  SerialTracker* const serial_tracker_;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
 
   // Tracks the latest modifiers.
   KeyboardModifiers current_modifiers_{};

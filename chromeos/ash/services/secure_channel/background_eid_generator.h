@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace base {
@@ -73,7 +74,7 @@ class BackgroundEidGenerator {
       const std::vector<cryptauth::BeaconSeed>& beacon_seeds) const;
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 };
 
 }  // namespace ash::secure_channel

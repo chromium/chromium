@@ -308,6 +308,13 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
       owner_->OnAnchorBoundsChanged();
     }
   }
+
+  // If the native window is closed by the OS, OnWidgetDestroying() won't
+  // fire. Instead, OnWindowDestroying() will fire before aura::Window
+  // destruction. See //docs/ui/views/widget_destruction.md.
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
 #endif
 
  private:

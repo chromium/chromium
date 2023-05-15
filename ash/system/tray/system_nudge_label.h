@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
@@ -38,7 +39,7 @@ class ASH_EXPORT SystemNudgeLabel : public views::View {
   void OnThemeChanged() override;
 
  private:
-  views::StyledLabel* const styled_label_;
+  const raw_ptr<views::StyledLabel, ExperimentalAsh> styled_label_;
   base::flat_map<size_t, views::StyledLabel::RangeStyleInfo>
       custom_view_styles_by_offset_;
   int font_size_delta_ = 0;

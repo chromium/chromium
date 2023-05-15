@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/files/file.h"
@@ -215,12 +214,18 @@ double FileResult::CalculateRelevance(
 }
 
 void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
-  // Thumbnails are only available for list results.
-  DCHECK_EQ(display_type(), DisplayType::kList);
+  // Thumbnails are only available for list results or image results.
+  gfx::Size size;
+  if (display_type() == DisplayType::kList) {
+    size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
+  } else if (display_type() == DisplayType::kImage) {
+    size = gfx::Size(kImageSearchWidth, kImageSearchHeight);
+  } else {
+    NOTREACHED();
+  }
 
   // Request a thumbnail for all file types. For unsupported types, this will
   // just call OnThumbnailLoaded with an error.
-  const gfx::Size size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
   thumbnail_loader->Load({filepath_, size},
                          base::BindOnce(&FileResult::OnThumbnailLoaded,
                                         weak_factory_.GetWeakPtr()));
@@ -242,32 +247,26 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 
   DCHECK_EQ(error, base::File::Error::FILE_OK);
 
-  const int dimension = kThumbnailDimension;
+  const bool is_list_display_type = display_type() == DisplayType::kList;
+
+  const int dimension =
+      is_list_display_type ? kThumbnailDimension : kImageSearchWidth;
+  const auto shape = is_list_display_type
+                         ? ash::SearchResultIconShape::kCircle
+                         : ash::SearchResultIconShape::kRoundedRectangle;
   const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
 
-  SetIcon(ChromeSearchResult::IconInfo(image, dimension,
-                                       ash::SearchResultIconShape::kCircle));
+  SetIcon(ChromeSearchResult::IconInfo(image, dimension, shape));
 }
 
 void FileResult::UpdateIcon() {
-  // Launcher search results UI is dark by default, so use icons for dark
-  // background if dark/light mode feature is not enabled.
-  const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
-  const bool is_dark_mode_enabled =
-      dark_light_mode_controller &&
-      dark_light_mode_controller->IsDarkModeEnabled();
-  const bool dark_background = !is_dark_light_enabled || is_dark_mode_enabled;
+  const bool dark_background = dark_light_mode_controller &&
+                               dark_light_mode_controller->IsDarkModeEnabled();
 
   if (display_type() == DisplayType::kContinue) {
-    // For Continue Section, if dark/light mode is disabled, we should use the
-    // icon and not the chip icon with a dark background as default.
-    const gfx::ImageSkia chip_icon =
-        is_dark_light_enabled
-            ? chromeos::GetChipIconForPath(filepath_, dark_background)
-            : chromeos::GetIconForPath(filepath_, /*dark_background=*/true);
-    SetChipIcon(chip_icon);
+    SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
   } else {
     switch (type_) {
       case Type::kFile:

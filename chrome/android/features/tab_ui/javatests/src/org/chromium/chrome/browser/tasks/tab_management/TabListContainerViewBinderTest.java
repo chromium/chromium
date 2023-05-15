@@ -328,26 +328,59 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @MediumTest
     @UiThreadTest
     public void testTopMarginSetsTopMargin() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContainerModel.set(
+                    TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
+            mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
+        });
         assertThat(mRecyclerView.getLayoutParams(), instanceOf(FrameLayout.LayoutParams.class));
         assertThat(
                 ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin, equalTo(0));
 
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
         mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT);
+        assertThat(
+                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin, equalTo(0));
+
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
         assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
                 equalTo(CONTAINER_HEIGHT));
+
+        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT + 1);
+        assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
+                equalTo(CONTAINER_HEIGHT + 1));
+
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
+        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT);
+        assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
+                equalTo(CONTAINER_HEIGHT + 1));
     }
 
     @Test
     @MediumTest
     @UiThreadTest
     public void testBottomContainerHeightSetsBottomMargin() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContainerModel.set(
+                    TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
+            mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
+        });
         assertThat(mRecyclerView.getLayoutParams(), instanceOf(FrameLayout.LayoutParams.class));
         assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
                 equalTo(0));
 
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
         mContainerModel.set(TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT, CONTAINER_HEIGHT);
         assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
+                equalTo(0));
+
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
                 equalTo(CONTAINER_HEIGHT));
+
+        mContainerModel.set(TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT, 0);
+        assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
+                equalTo(0));
     }
 
     @Test

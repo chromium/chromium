@@ -17,7 +17,20 @@ class RectF;
 // Bound of a selection end-point.
 class GFX_EXPORT SelectionBound {
  public:
-  enum Type { LEFT, RIGHT, CENTER, EMPTY, LAST = EMPTY };
+  enum Type {
+    // The LEFT and RIGHT hand side of a selection bound.
+    LEFT,
+    RIGHT,
+    // Used when a selection is zero width (a caret) and the selection handle
+    // should be shown.
+    CENTER,
+    // Used when a selection is zero width (a caret), but the selection handle
+    // should not be shown.
+    HIDDEN,
+    // No selection.
+    EMPTY,
+    LAST = EMPTY
+  };
 
   SelectionBound();
   SelectionBound(const SelectionBound& other);
@@ -46,6 +59,9 @@ class GFX_EXPORT SelectionBound {
 
   // Returns the vertical difference between rounded start and end.
   int GetHeight() const;
+
+  // Returns whether the type is one that should show a selection handle.
+  bool HasHandle() const { return !(type_ == EMPTY || type_ == HIDDEN); }
 
   std::string ToString() const;
 

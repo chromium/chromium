@@ -44,7 +44,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/web/public/deprecated/url_verification_constants.h"
@@ -76,33 +76,32 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::FieldRendererId;
 using autofill::FormActivityParams;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::FormRendererId;
 using autofill::FormRemovalParams;
-using autofill::FieldRendererId;
-using password_manager::PasswordForm;
+using autofill::FormRendererId;
 using autofill::PasswordFormFillData;
-using base::SysUTF16ToNSString;
-using base::SysUTF8ToNSString;
-using FillingAssistance =
-    password_manager::PasswordFormMetricsRecorder::FillingAssistance;
-using password_manager::PasswordFormManagerForUI;
-using password_manager::PasswordFormManager;
-using password_manager::PasswordStoreConsumer;
-using password_manager::prefs::kPasswordLeakDetectionEnabled;
-using test_helpers::SetPasswordFormFillData;
-using test_helpers::MakeSimpleFormData;
-using testing::NiceMock;
-using testing::Return;
 using base::ASCIIToUTF16;
+using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using testing::WithArg;
+using FillingAssistance =
+    password_manager::PasswordFormMetricsRecorder::FillingAssistance;
+using password_manager::PasswordForm;
+using password_manager::PasswordFormManager;
+using password_manager::PasswordFormManagerForUI;
+using password_manager::PasswordStoreConsumer;
+using password_manager::prefs::kPasswordLeakDetectionEnabled;
+using test_helpers::MakeSimpleFormData;
+using test_helpers::SetPasswordFormFillData;
 using testing::_;
+using testing::NiceMock;
+using testing::Return;
+using testing::WithArg;
 using web::WebFrame;
 
 namespace {
@@ -125,10 +124,12 @@ class MockPasswordManagerClient
 
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(IsIncognito, bool());
-  MOCK_METHOD1(PromptUserToSaveOrUpdatePasswordPtr,
-               void(PasswordFormManagerForUI*));
-  MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
+  MOCK_METHOD(void,
+              PromptUserToSaveOrUpdatePasswordPtr,
+              (PasswordFormManagerForUI*),
+              ());
+  MOCK_METHOD(bool, IsSavingAndFillingEnabled, (const GURL&), (const override));
 
   PrefService* GetPrefs() const override { return prefs_; }
 
@@ -317,8 +318,9 @@ class PasswordControllerTest : public PlatformTest {
 
     // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
-                 intValue] == int{next_available_id};
+      return
+          [ExecuteJavaScriptInFeatureWorld(@"document[__gCrWeb.fill.ID_SYMBOL]")
+              intValue] == int{next_available_id};
     });
   }
 
@@ -383,7 +385,7 @@ class PasswordControllerTest : public PlatformTest {
     NSString* kFormNamingScript =
         @"__gCrWeb.form.getFormIdentifier("
          "    document.querySelectorAll('form')[%d]);";
-    return base::SysNSStringToUTF8(ExecuteJavaScript(
+    return base::SysNSStringToUTF8(ExecuteJavaScriptInFeatureWorld(
         [NSString stringWithFormat:kFormNamingScript, form_number]));
   }
 
@@ -495,6 +497,10 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   id ExecuteJavaScript(NSString* java_script) {
+    return web::test::ExecuteJavaScript(java_script, web_state());
+  }
+
+  id ExecuteJavaScriptInFeatureWorld(NSString* java_script) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
@@ -1422,7 +1428,7 @@ TEST_F(PasswordControllerTest, TouchendAsSubmissionIndicator) {
          "var e = new UIEvent('touchend');"
          "document.getElementById('submit_button').dispatchEvent(e);");
     LoadHtmlWithRendererInitiatedNavigation(
-        SysUTF8ToNSString("<html><body>Success</body></html>"));
+        @"<html><body>Success</body></html>");
 
     auto& form_manager_check = form_manager_to_save;
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
@@ -1465,8 +1471,7 @@ TEST_F(PasswordControllerTest, SavingFromSameOriginIframe) {
       @"document.getElementById('frame1').contentDocument.getElementById('"
       @"submit_input').click();");
 
-  LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
   EXPECT_EQ(u"user1",
@@ -1719,8 +1724,7 @@ TEST_F(PasswordControllerTest, ShowingSavingPromptOnSuccessfulSubmission) {
       @"document.getElementsByName('username')[0].value = 'user1';"
        "document.getElementsByName('password')[0].value = 'password1';"
        "document.getElementById('submit_button').click();");
-  LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
   auto& form_manager_check = form_manager_to_save;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
     return form_manager_check != nullptr;
@@ -1759,7 +1763,7 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWithoutSubmission) {
       @"document.getElementsByName('username')[0].value = 'user1';"
        "document.getElementsByName('password')[0].value = 'password1';");
   LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>New page</body></html>"));
+      @"<html><body>New page</body></html>");
 }
 
 // Tests that the user is not prompted to save or update password on a
@@ -1791,8 +1795,7 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
       @"document.getElementsByName('username')[0].value = 'user1';"
        "document.getElementsByName('password')[0].value = 'password1';"
        "document.getElementById('submit_button').click();");
-  LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
 }
 
 // Tests that the user is prompted to update password on a succesful
@@ -1827,7 +1830,7 @@ TEST_F(PasswordControllerTest, ShowingUpdatePromptOnSuccessfulSubmission) {
        "document.getElementsByName('Passwd')[0].value = 'new_password';"
        "document.getElementById('submit_button').click();");
   LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"),
+      @"<html><body>Success</body></html>",
       GURL("http://www.google.com/a/Login"));
 
   auto& form_manager_check = form_manager_to_save;
@@ -1898,8 +1901,7 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
 
         // Simulate a successful submission by loading the landing page without
         // a form.
-        LoadHtml(
-            SysUTF8ToNSString("<html><body>Login success page</body></html>"));
+        LoadHtml(@"<html><body>Login success page</body></html>");
 
         if (prompt_should_be_shown) {
           auto& form_manager_check = form_manager;
@@ -2414,8 +2416,7 @@ TEST_F(PasswordControllerTest,
       @"document.getElementById('frame1').contentDocument.getElementById('"
       @"submit_input').click();");
 
-  LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
   EXPECT_EQ(u"user1",
@@ -2464,8 +2465,7 @@ TEST_F(PasswordControllerTest, PasswordManagerManualFillingAssistanceMetric) {
   ExecuteJavaScript(
       @"var e = new UIEvent('touchend');"
        "document.getElementById('submit_button').dispatchEvent(e);");
-  LoadHtmlWithRendererInitiatedNavigation(
-      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
 
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingAssistance",
                                       FillingAssistance::kManual, 1);

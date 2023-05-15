@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -42,6 +45,24 @@ bool DoesPrinterMatchDefaultPrinterRules(
           RE2::FullMatch(printer.id, rules->id_pattern)) &&
          (rules->name_pattern.empty() ||
           RE2::FullMatch(printer.name, rules->name_pattern));
+}
+
+// Return true if the given item is in the allow list, else return false.
+bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
+  // A map containing the allowed vendor items.  The key is an IPP attribute,
+  // and the value is a set of allowable values for that attribute.
+  static const base::NoDestructor<
+      base::flat_map<base::StringPiece, base::flat_set<base::StringPiece>>>
+      kVendorItemAllowList({
+          {"finishings", {"none", "trim"}},
+      });
+
+  const auto& item = kVendorItemAllowList->find(vendor_item.id);
+  if (item == kVendorItemAllowList->end()) {
+    return false;
+  }
+
+  return item->second.contains(vendor_item.value);
 }
 
 }  // namespace
@@ -119,6 +140,8 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
       return idl::PRINTER_STATUS_OUTPUT_FULL;
     case chromeos::PrinterErrorCode::STOPPED:
       return idl::PRINTER_STATUS_STOPPED;
+    case chromeos::PrinterErrorCode::EXPIRED_CERTIFICATE:
+      return idl::PRINTER_STATUS_EXPIRED_CERTIFICATE;
     default:
       break;
   }
@@ -128,14 +151,18 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
     base::Value::Dict ticket) {
   cloud_devices::CloudDeviceDescription description;
-  if (!description.InitFromValue(std::move(ticket)))
+  if (!description.InitFromValue(std::move(ticket))) {
+    LOG(ERROR) << "Unable to initialize CDD from print ticket.";
     return nullptr;
+  }
 
   auto settings = std::make_unique<printing::PrintSettings>();
 
   cloud_devices::printer::ColorTicketItem color;
-  if (!color.LoadFrom(description))
+  if (!color.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load color from print ticket.";
     return nullptr;
+  }
   switch (color.value().type) {
     case cloud_devices::printer::ColorType::STANDARD_MONOCHROME:
     case cloud_devices::printer::ColorType::CUSTOM_MONOCHROME:
@@ -154,8 +181,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::DuplexTicketItem duplex;
-  if (!duplex.LoadFrom(description))
+  if (!duplex.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load duplex from print ticket.";
     return nullptr;
+  }
   switch (duplex.value()) {
     case cloud_devices::printer::DuplexType::NO_DUPLEX:
       settings->set_duplex_mode(printing::mojom::DuplexMode::kSimplex);
@@ -172,8 +201,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::OrientationTicketItem orientation;
-  if (!orientation.LoadFrom(description))
+  if (!orientation.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load orientation from print ticket.";
     return nullptr;
+  }
   switch (orientation.value()) {
     case cloud_devices::printer::OrientationType::LANDSCAPE:
       settings->SetOrientation(/*landscape=*/true);
@@ -187,22 +218,29 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::CopiesTicketItem copies;
-  if (!copies.LoadFrom(description) || copies.value() < 1)
+  if (!copies.LoadFrom(description) || copies.value() < 1) {
+    LOG(ERROR) << "Unable to load copies from print ticket.";
     return nullptr;
+  }
   settings->set_copies(copies.value());
 
   cloud_devices::printer::DpiTicketItem dpi;
-  if (!dpi.LoadFrom(description))
+  if (!dpi.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load DPI from print ticket.";
     return nullptr;
+  }
   settings->set_dpi_xy(dpi.value().horizontal, dpi.value().vertical);
 
   cloud_devices::printer::MediaTicketItem media;
-  if (!media.LoadFrom(description))
+  if (!media.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load media from print ticket.";
     return nullptr;
+  }
   cloud_devices::printer::Media media_value = media.value();
   printing::PrintSettings::RequestedMedia requested_media;
   if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0 ||
       media_value.vendor_id.empty()) {
+    LOG(ERROR) << "Loaded invalid media from print ticket.";
     return nullptr;
   }
   requested_media.size_microns = media_value.size_um;
@@ -210,9 +248,25 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   settings->set_requested_media(requested_media);
 
   cloud_devices::printer::CollateTicketItem collate;
-  if (!collate.LoadFrom(description))
+  if (!collate.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load collate from print ticket.";
     return nullptr;
+  }
   settings->set_collate(collate.value());
+
+  // These items are optional - don't fail if they don't exist.  However, if
+  // they do exist, this will fail if they are not an allowed vendor item.
+  cloud_devices::printer::VendorTicketItems vendor_items;
+  if (vendor_items.LoadFrom(description)) {
+    for (const auto& item : vendor_items) {
+      if (!ValidateVendorItem(item)) {
+        LOG(ERROR) << "Invalid vendor item/value: " << item.id << "/"
+                   << item.value << ".";
+        return nullptr;
+      }
+      settings->advanced_settings().emplace(item.id, item.value);
+    }
+  }
 
   return settings;
 }

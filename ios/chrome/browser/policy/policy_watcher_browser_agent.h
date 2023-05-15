@@ -10,7 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
 

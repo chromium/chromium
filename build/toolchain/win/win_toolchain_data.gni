@@ -28,16 +28,17 @@ declare_args() {
                     "environment.x64",
                   ],
                   "scope")
-
-  win_toolchain_data_arm64 =
-      exec_script("//build/toolchain/win/setup_toolchain.py",
-                  [
-                    visual_studio_path,
-                    windows_sdk_path,
-                    visual_studio_runtime_dirs,
-                    "win",
-                    "arm64",
-                    "environment.arm64",
-                  ],
-                  "scope")
+  if (target_cpu == "arm64" || host_cpu == "arm64") {
+    win_toolchain_data_arm64 =
+        exec_script("//build/toolchain/win/setup_toolchain.py",
+                    [
+                      visual_studio_path,
+                      windows_sdk_path,
+                      visual_studio_runtime_dirs,
+                      "win",
+                      "arm64",
+                      "environment.arm64",
+                    ],
+                    "scope")
+  }
 }

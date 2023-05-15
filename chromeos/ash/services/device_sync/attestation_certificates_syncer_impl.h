@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_ATTESTATION_CERTIFICATES_SYNCER_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
@@ -72,8 +73,8 @@ class AttestationCertificatesSyncerImpl : public AttestationCertificatesSyncer {
   void StartTimer(base::TimeDelta timeout);
   base::TimeDelta CalculateTimeToRegeneration();
 
-  CryptAuthScheduler* cryptauth_scheduler_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<CryptAuthScheduler, ExperimentalAsh> cryptauth_scheduler_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   AttestationCertificatesSyncer::GetAttestationCertificatesFunction
       get_attestation_certificates_function_;
   base::Time last_update_time_;

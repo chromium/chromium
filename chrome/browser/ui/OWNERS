@@ -32,3 +32,5 @@ per-file ui_features.h=*
 per-file settings_window_manager*chromeos*=file://chrome/browser/ui/ash/OWNERS
 
 per-file file_system_access*=file://content/browser/file_system_access/OWNERS
+
+per-file intent_picker_tab_helper*=file://chrome/browser/apps/intent_helper/OWNERS

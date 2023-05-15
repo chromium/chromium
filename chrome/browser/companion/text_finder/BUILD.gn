@@ -8,6 +8,8 @@ static_library("text_finder") {
   sources = [
     "text_finder.cc",
     "text_finder.h",
+    "text_highlighter.cc",
+    "text_highlighter.h",
   ]
 
   deps = [
@@ -19,6 +21,8 @@ static_library("text_finder") {
     sources += [
       "text_finder_manager.cc",
       "text_finder_manager.h",
+      "text_highlighter_manager.cc",
+      "text_highlighter_manager.h",
     ]
     deps += [ "//content/public/browser" ]
   }
@@ -31,6 +35,7 @@ source_set("unit_tests") {
     "text_finder_manager_base_test.h",
     "text_finder_manager_unittest.cc",
     "text_finder_unittest.cc",
+    "text_highlighter_manager_unittest.cc",
   ]
 
   deps = [

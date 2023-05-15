@@ -11,4 +11,6 @@ include_rules = [
   "+ui/native_theme",
   "+components/crash/core/common",
   "+media/mojo/mojom/stable/stable_video_decoder.mojom.h",
+  "+services/media_session/public/mojom/audio_focus.mojom.h",
+  "+services/media_session/public/mojom/media_controller.mojom.h",
 ]

@@ -25,6 +25,8 @@ interface FileSystemAccessDirectoryEntriesListener {
   // Called by FileSystemAccessDirectoryHandle.GetEntries when some entries
   // have been obtained. `has_more_entries` is false when all the entries have
   // been obtained, and  indicates that the callback will not be called again.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   DidReadDirectory(FileSystemAccessError result,
                    array<FileSystemAccessEntry> entries,
                    bool has_more_entries);
@@ -45,12 +47,16 @@ interface FileSystemAccessDirectoryHandle {
 
   // Requests read and/or write permission for this handle. Returns the new
   // permission status for this handle.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   RequestPermission(bool writable) => (FileSystemAccessError result, PermissionStatus status);
 
   // Returns a file with the given `basename` that is a child of this
   // directory. If no such file exists, and `create` is true, the file is first
   // created. Returns an error if the operation fails, or a handle to the newly
   // created file if the operation succeeds.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   GetFile(string basename, bool create) =>
       (FileSystemAccessError result, pending_remote<FileSystemAccessFileHandle>? file);
 
@@ -59,6 +65,8 @@ interface FileSystemAccessDirectoryHandle {
   // is first created.
   // Returns an error if the operation fails, or a handle to the newly created
   // directory if the operation succeeds.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   GetDirectory(string basename, bool create) =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
@@ -94,6 +102,8 @@ interface FileSystemAccessDirectoryHandle {
   // empty array. And if `possible_child` is a descendant of this directory,
   // `path` will contain the path components making up the path of
   // `possible_child` relative to this directory.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   Resolve(pending_remote<FileSystemAccessTransferToken> possible_child) =>
       (FileSystemAccessError result, array<string>? path);
 
@@ -104,5 +114,7 @@ interface FileSystemAccessDirectoryHandle {
 
   // Returns a uniquely identifying string for the handle.
   // `id` must be in GUID version 4 format.
-  GetUniqueId() => (string id);
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
+  GetUniqueId() => (FileSystemAccessError result, string id);
 };

@@ -19,21 +19,25 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -45,19 +49,18 @@
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
@@ -96,63 +99,6 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
 }
 }  // namespace
 
-// Test object that conforms to TabCollectionConsumer and exposes inner state
-// for test verification.
-@interface FakeConsumer : NSObject <TabCollectionConsumer>
-// The fake consumer only keeps the identifiers of items for simplicity
-@property(nonatomic, strong) NSMutableArray<NSString*>* items;
-@property(nonatomic, copy) NSString* selectedItemID;
-@end
-@implementation FakeConsumer
-@synthesize items = _items;
-@synthesize selectedItemID = _selectedItemID;
-
-- (void)setItemsRequireAuthentication:(BOOL)require {
-  // No-op.
-}
-
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
-  self.items = [NSMutableArray array];
-  for (TabSwitcherItem* item in items) {
-    [self.items addObject:item.identifier];
-  }
-}
-
-- (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(NSString*)selectedItemID {
-  [self.items insertObject:item.identifier atIndex:index];
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)removeItemWithID:(NSString*)removedItemID
-          selectedItemID:(NSString*)selectedItemID {
-  [self.items removeObject:removedItemID];
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  NSUInteger index = [self.items indexOfObject:itemID];
-  self.items[index] = item.identifier;
-}
-
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
-  [self.items removeObject:itemID];
-  [self.items insertObject:itemID atIndex:toIndex];
-}
-
-- (void)dismissModals {
-  // No-op.
-}
-
-@end
-
 // Fake WebStateList delegate that attaches the required tab helper.
 class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
  public:
@@ -167,7 +113,9 @@ class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
     NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     SnapshotTabHelper::CreateForWebState(web_state);
-    WebSessionStateTabHelper::CreateForWebState(web_state);
+    if (web::UseNativeSessionRestorationCache()) {
+      WebSessionStateTabHelper::CreateForWebState(web_state);
+    }
   }
 };
 
@@ -203,7 +151,8 @@ class TabGridMediatorTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(identity);
+    auth_service_->SignIn(identity,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -238,7 +187,7 @@ class TabGridMediatorTest : public PlatformTest {
     browser_->GetWebStateList()->ActivateWebStateAt(1);
     original_selected_identifier_ =
         browser_->GetWebStateList()->GetWebStateAt(1)->GetStableIdentifier();
-    consumer_ = [[FakeConsumer alloc] init];
+    consumer_ = [[FakeTabCollectionConsumer alloc] init];
     mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
     mediator_.tabRestoreService = tab_restore_service_;
@@ -254,6 +203,8 @@ class TabGridMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetWebFramesManager(
+        std::make_unique<web::FakeWebFramesManager>());
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
@@ -311,7 +262,7 @@ class TabGridMediatorTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   sessions::TabRestoreService* tab_restore_service_;
   id tab_model_;
-  FakeConsumer* consumer_;
+  FakeTabCollectionConsumer* consumer_;
   TabGridMediator* mediator_;
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;
@@ -335,6 +286,7 @@ TEST_F(TabGridMediatorTest, ConsumerPopulateItems) {
 TEST_F(TabGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.count);
   auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
   NSString* item_identifier = web_state.get()->GetStableIdentifier();
   browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
                                               WebStateList::INSERT_FORCE_INDEX,
@@ -371,6 +323,8 @@ TEST_F(TabGridMediatorTest, ConsumerUpdateSelectedItem) {
 // id of the new item.
 TEST_F(TabGridMediatorTest, ConsumerReplaceItem) {
   auto new_web_state = std::make_unique<web::FakeWebState>();
+  new_web_state->SetWebFramesManager(
+      std::make_unique<web::FakeWebFramesManager>());
   NSString* new_item_identifier = new_web_state->GetStableIdentifier();
   @autoreleasepool {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));

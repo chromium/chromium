@@ -39,6 +39,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 using ::base::ASCIIToUTF16;
@@ -377,6 +378,12 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
     form_structure_ = nullptr;
   }
 
+  void AddTextField() {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+
   FormStructure* form_structure() {
     if (!form_structure_)
       form_structure_ = std::make_unique<FormStructure>(form_);
@@ -420,11 +427,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
 
   // Add one text field.
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -432,22 +435,14 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
 
 // Forms with at least one text field should be parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -465,28 +460,32 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+}
+
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectMenuField) {
+  {
+    FormFieldData field;
+    field.form_control_type = "selectmenu";
+    AddField(field);
+  }
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+
+  AddTextField();
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 }
 
 // Form whose action is a search URL should not be parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -547,11 +546,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
 // parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
        TrueIfOneFieldHasAutocomplete) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
@@ -6107,6 +6102,33 @@ TEST_F(FormStructureTestImpl, CreateForPasswordManagerUpload) {
       "" /*login_form_signature*/, true /*observed_submission*/,
       true /* is_raw_metadata_uploading_enabled */);
   ASSERT_EQ(1u, uploads.size());
+}
+
+// Milestone number must be set to correct actual value, as autofill server
+// relies on this. If this is planning to change, inform Autofill team. This
+// must be set to avoid situations similar to dropping branch number in M101,
+// which yielded cl/513794193 and cl/485660167.
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_MilestoneSet) {
+  // To test |EncodeUploadRequest()|, a non-empty form is required.
+  std::unique_ptr<FormStructure> form =
+      FormStructure::CreateForPasswordManagerUpload(FormSignature(1234),
+                                                    {FieldSignature(1)});
+  for (auto& field : *form) {
+    field->host_form_signature = form->form_signature();
+  }
+  std::vector<AutofillUploadContents> uploads = form->EncodeUploadRequest(
+      {} /* available_field_types */, false /* form_was_autofilled */,
+      "" /*login_form_signature*/, true /*observed_submission*/,
+      true /* is_raw_metadata_uploading_enabled */);
+  ASSERT_EQ(1u, uploads.size());
+  static constexpr char kChromeVersionRegex[] =
+      "\\w+/([0-9]+)\\.[0-9]+\\.[0-9]+\\.[0-9]+";
+  std::string major_version;
+  ASSERT_TRUE(re2::RE2::FullMatch(uploads[0].client_version(),
+                                  kChromeVersionRegex, &major_version));
+  int major_version_as_interger;
+  ASSERT_TRUE(base::StringToInt(major_version, &major_version_as_interger));
+  EXPECT_NE(major_version_as_interger, 0);
 }
 
 // Tests if a new logical form is started with the second appearance of a field

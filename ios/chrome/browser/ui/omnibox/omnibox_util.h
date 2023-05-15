@@ -38,4 +38,7 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
 UIImage* GetLocationBarSecurityIconForSecurityState(
     security_state::SecurityLevel security_level);
 
+// Returns the icon for an offline page.
+UIImage* GetLocationBarOfflineIcon();
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UTIL_H_

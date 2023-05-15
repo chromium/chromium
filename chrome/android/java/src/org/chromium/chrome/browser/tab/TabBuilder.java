@@ -31,6 +31,7 @@ public class TabBuilder {
     private WebContents mWebContents;
     private TabDelegateFactory mDelegateFactory;
     private boolean mInitiallyHidden;
+    private boolean mInitializeRenderer;
     private TabState mTabState;
     private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
     private Callback<Tab> mPreInitializeAction;
@@ -92,6 +93,18 @@ public class TabBuilder {
      */
     public TabBuilder setLaunchType(@TabLaunchType int type) {
         mLaunchType = type;
+        return this;
+    }
+
+    /**
+     * Sets a flag indicating to initialize renderer during WebContents creation.
+     *
+     * @param boolean initializeRenderer to initialize renderer or not.
+     *
+     * @return {@link TabBuilder} creating the Tab.
+     */
+    public TabBuilder setInitializeRenderer(boolean initializeRenderer) {
+        mInitializeRenderer = initializeRenderer;
         return this;
     }
 
@@ -196,7 +209,7 @@ public class TabBuilder {
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
         tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
-                mInitiallyHidden, mTabState);
+                mInitiallyHidden, mTabState, mInitializeRenderer);
         return tab;
     }
 

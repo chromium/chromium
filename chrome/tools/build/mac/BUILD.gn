@@ -24,7 +24,7 @@ executable("infoplist_strings_util") {
     "//base",
     "//base:i18n",
     "//third_party/icu",
-    "//ui/base:ui_data_pack",
+    "//ui/base",
   ]
 
   # This runs as part of the build, on the host, but needs to process strings

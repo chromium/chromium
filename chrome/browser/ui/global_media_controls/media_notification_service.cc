@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
+#include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -87,6 +89,23 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
   return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+crosapi::mojom::MediaUI* GetMediaUI() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
+    return chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::MediaUI>()
+        .get();
+  }
+  return nullptr;
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 MediaNotificationService::MediaNotificationService(Profile* profile,
@@ -123,37 +142,68 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   if (!media_router::MediaRouterEnabled(profile)) {
     return;
   }
-  // base::Unretained() is safe here because cast_notification_producer_ is
-  // deleted before item_manager_.
+  // CastMediaNotificationProducer is owned by
+  // CastMediaNotificationProducerKeyedService in Ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // base::Unretained() is safe here because `cast_notification_producer_` is
+  // deleted before `item_manager_`.
   cast_notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
       profile, item_manager_.get());
   item_manager_->AddItemProducer(cast_notification_producer_.get());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
     presentation_request_notification_producer_ =
-        std::make_unique<PresentationRequestNotificationProducer>(this);
-    item_manager_->AddItemProducer(
-        presentation_request_notification_producer_.get());
+        std::make_unique<PresentationRequestNotificationProducer>(
+            base::BindRepeating(
+                &MediaNotificationService::HasActiveNotificationsForWebContents,
+                base::Unretained(this)),
+            content::MediaSession::GetSourceId(profile));
+#if !BUILDFLAG(IS_CHROMEOS)
+    supplemental_device_picker_producer_ =
+        std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
+    item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
+    // On Chrome OS, SetDevicePickerProvider() gets called by Ash via the
+    // crosapi.
+    SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   // On Lacros-enabled Chrome OS, MediaNotificationService instances exist on
   // both Ash and Lacros sides. The Ash-side instance manages Casting from
   // System Web Apps.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->media_ui_ash()
-      ->RegisterDeviceService(content::MediaSession::GetSourceId(profile),
-                              receiver_.BindNewPipeAndPassRemote());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::MediaUI>()
-        ->RegisterDeviceService(content::MediaSession::GetSourceId(profile),
-                                receiver_.BindNewPipeAndPassRemote());
+  if (GetMediaUI()) {
+    GetMediaUI()->RegisterDeviceService(
+        content::MediaSession::GetSourceId(profile),
+        receiver_.BindNewPipeAndPassRemote());
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void MediaNotificationService::ShowDialogAsh(
+    std::unique_ptr<media_router::StartPresentationContext> context) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(
+          context->presentation_request().render_frame_host_id));
+  OnStartPresentationContextCreated(std::move(context));
+  auto routes = media_router::WebContentsPresentationManager::Get(web_contents)
+                    ->GetMediaRoutes();
+  std::string item_id;
+  if (!routes.empty()) {
+    // It is possible for a sender page to connect to two routes. For the
+    // sake of the Zenith dialog, only one notification is needed.
+    item_id = routes.begin()->media_route_id();
+  } else {
+    item_id = content::MediaSession::GetRequestIdFromWebContents(web_contents)
+                  .ToString();
+  }
+  if (GetMediaUI()) {
+    GetMediaUI()->ShowDevicePicker(item_id);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 MediaNotificationService::~MediaNotificationService() {
   media_session_item_producer_->RemoveObserver(this);
@@ -166,10 +216,6 @@ void MediaNotificationService::Shutdown() {
   // which is another keyed service. So they must be destroyed here.
   if (cast_notification_producer_) {
     item_manager_->RemoveItemProducer(cast_notification_producer_.get());
-  }
-  if (presentation_request_notification_producer_) {
-    item_manager_->RemoveItemProducer(
-        presentation_request_notification_producer_.get());
   }
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
@@ -254,7 +300,7 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
     item_id = GetActiveControllableSessionForWebContents(contents);
   } else {
     auto presentation_item =
-        presentation_request_notification_producer_->GetNotificationItem();
+        supplemental_device_picker_producer_->GetNotificationItem();
     item_id = presentation_item->id();
     DCHECK(presentation_request_notification_producer_->GetWebContents() ==
            contents);
@@ -332,6 +378,13 @@ void MediaNotificationService::GetDeviceListHostForPresentation(
   CreateCastDeviceListHost(CreateCastDialogControllerForPresentationRequest(),
                            std::move(host_receiver), std::move(client_remote),
                            absl::nullopt);
+}
+
+void MediaNotificationService::SetDevicePickerProvider(
+    mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>
+        provider_remote) {
+  presentation_request_notification_producer_->BindProvider(
+      std::move(provider_remote));
 }
 
 std::unique_ptr<media_router::CastDialogController>

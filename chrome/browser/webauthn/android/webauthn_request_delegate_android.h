@@ -44,15 +44,16 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       bool is_conditional_request,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
+      base::RepeatingCallback<void(const std::vector<uint8_t>& id)> callback);
 
-  // Called when an outstanding request is aborted. This triggers the cached
-  // callback with an empty credential.
-  void CancelWebAuthnRequest(content::RenderFrameHost* frame_host);
+  // Called when an outstanding request is ended, either because it was aborted
+  // by the RP, or because it completed successfully. Its main purpose is to
+  // clean up conditional UI state.
+  void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host);
 
-  // Tells the driver that the user has selected a Web Authentication
-  // credential from a dialog, and provides the credential ID for the selected
-  // credential.
+  // Tells the WebAuthn Java implementation that the user has selected a Web
+  // Authentication credential from a dialog, and provides the credential ID
+  // for the selected credential.
   virtual void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id);
 
   // Returns the WebContents that owns this object.
@@ -66,7 +67,7 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
       content::WebContents* web_contents);
 
  private:
-  base::OnceCallback<void(const std::vector<uint8_t>& user_id)>
+  base::RepeatingCallback<void(const std::vector<uint8_t>& user_id)>
       webauthn_account_selection_callback_;
 
   // Controller for using the Touch To Fill bottom sheet for non-conditional

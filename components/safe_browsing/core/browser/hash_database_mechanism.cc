@@ -15,12 +15,10 @@ HashDatabaseMechanism::HashDatabaseMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    bool can_check_db,
     MechanismExperimentHashDatabaseCache experiment_cache_selection)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  can_check_db,
                                   experiment_cache_selection) {}
 
 HashDatabaseMechanism::~HashDatabaseMechanism() {
@@ -34,20 +32,14 @@ HashDatabaseMechanism::~HashDatabaseMechanism() {
 SafeBrowsingLookupMechanism::StartCheckResult
 HashDatabaseMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool safe_synchronously = can_check_db_ ? CallCheckBrowseUrl() : true;
-  return StartCheckResult(
-      /*is_safe_synchronously=*/safe_synchronously,
-      /*did_check_url_real_time_allowlist=*/false,
-      /*matched_high_confidence_allowlist=*/absl::nullopt);
-}
-
-bool HashDatabaseMechanism::CallCheckBrowseUrl() {
   bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
       url_, threat_types_, this, experiment_cache_selection_);
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
-  return is_safe_synchronously;
+  return StartCheckResult(is_safe_synchronously,
+                          /*did_check_url_real_time_allowlist=*/false,
+                          /*matched_high_confidence_allowlist=*/absl::nullopt);
 }
 
 void HashDatabaseMechanism::OnCheckBrowseUrlResult(

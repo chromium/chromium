@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_handler.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
 
 namespace syncer {
 
@@ -25,29 +27,36 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
                                               kSenderId, kApplicationId);
 }
 
-SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
+SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void SyncInvalidationsServiceImpl::AddListener(
     InvalidationsListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_->AddListener(listener);
 }
 
 void SyncInvalidationsServiceImpl::RemoveListener(
     InvalidationsListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_->RemoveListener(listener);
 }
 
 void SyncInvalidationsServiceImpl::AddTokenObserver(
     FCMRegistrationTokenObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_->AddTokenObserver(observer);
 }
 
 void SyncInvalidationsServiceImpl::RemoveTokenObserver(
     FCMRegistrationTokenObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_->RemoveTokenObserver(observer);
 }
 
 void SyncInvalidationsServiceImpl::StartListening() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
       fcm_handler_->IsListening()) {
     return;
@@ -56,10 +65,12 @@ void SyncInvalidationsServiceImpl::StartListening() {
 }
 
 void SyncInvalidationsServiceImpl::StopListening() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_->StopListening();
 }
 
 void SyncInvalidationsServiceImpl::StopListeningPermanently() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!fcm_handler_->IsListening()) {
     return;
   }
@@ -69,6 +80,7 @@ void SyncInvalidationsServiceImpl::StopListeningPermanently() {
 
 absl::optional<std::string>
 SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Return empty token if standalone invalidations are off.
   if (!base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     return std::string();
@@ -78,31 +90,48 @@ SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(
     InterestedDataTypesHandler* handler) {
-  data_types_manager_.SetInterestedDataTypesHandler(handler);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!interested_data_types_handler_ || !handler);
+  interested_data_types_handler_ = handler;
 }
 
 absl::optional<ModelTypeSet>
 SyncInvalidationsServiceImpl::GetInterestedDataTypes() const {
-  return data_types_manager_.GetInterestedDataTypes();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return interested_data_types_;
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(
     const ModelTypeSet& data_types) {
-  data_types_manager_.SetInterestedDataTypes(data_types);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(interested_data_types_handler_);
+
+  interested_data_types_ = data_types;
+  interested_data_types_handler_->OnInterestedDataTypesChanged();
 }
 
 void SyncInvalidationsServiceImpl::
     SetCommittedAdditionalInterestedDataTypesCallback(
         InterestedDataTypesAppliedCallback callback) {
-  data_types_manager_.SetCommittedAdditionalInterestedDataTypesCallback(
-      std::move(callback));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(interested_data_types_handler_);
+
+  // Do not send an additional GetUpdates request when invalidations are
+  // disabled.
+  if (base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
+    interested_data_types_handler_
+        ->SetCommittedAdditionalInterestedDataTypesCallback(
+            std::move(callback));
+  }
 }
 
 void SyncInvalidationsServiceImpl::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fcm_handler_.reset();
 }
 
 FCMHandler* SyncInvalidationsServiceImpl::GetFCMHandlerForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_handler_.get();
 }
 

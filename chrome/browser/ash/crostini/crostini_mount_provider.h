@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MOUNT_PROVIDER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -50,7 +51,7 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider,
  private:
   void OnRestarted(PrepareCallback callback, CrostiniResult result);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::GuestId container_id_;
   base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};

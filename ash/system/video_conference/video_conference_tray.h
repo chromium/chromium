@@ -11,7 +11,9 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -60,6 +62,8 @@ class VideoConferenceTrayButton : public IconButton {
 
   ~VideoConferenceTrayButton() override;
 
+  void set_toggle_is_one_way() { toggle_is_one_way_ = true; }
+
   bool show_privacy_indicator() const { return show_privacy_indicator_; }
   bool is_capturing() const { return is_capturing_; }
 
@@ -74,11 +78,24 @@ class VideoConferenceTrayButton : public IconButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
+  // Updates the tooltip according to the medium the button is for, the toggle
+  // state, and the capture state.
+  void UpdateTooltip();
+
   // Cache of the capturing state received from `VideoConferenceManagerAsh`.
   bool is_capturing_ = false;
 
-  // Indicates whether we are showing the privacy indicator in the button.
+  // Indicates whether we are showing the privacy indicator (the green dot) in
+  // the button.
   bool show_privacy_indicator_ = false;
+
+  // Whether the toggle is a one way operation (like Screen Share). Toggling it
+  // off makes it dissapear.
+  bool toggle_is_one_way_ = false;
+
+  // The accessible name for this button's capture type (camera, microphone, or
+  // screen share).
+  const int accessible_name_id_;
 };
 
 // This class represents the VC Controls tray button in the status area and
@@ -86,7 +103,8 @@ class VideoConferenceTrayButton : public IconButton {
 class ASH_EXPORT VideoConferenceTray
     : public SessionObserver,
       public TrayBackgroundView,
-      public VideoConferenceTrayController::Observer {
+      public VideoConferenceTrayController::Observer,
+      public VideoConferenceTrayEffectsManager::Observer {
  public:
   METADATA_HEADER(VideoConferenceTray);
 
@@ -105,6 +123,7 @@ class ASH_EXPORT VideoConferenceTray
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   std::u16string GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;
@@ -117,6 +136,10 @@ class ASH_EXPORT VideoConferenceTray
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
   void OnScreenSharingStateChange(bool is_capturing_screen) override;
+
+  // VideoConferenceTrayEffectsManager::Observer:
+  void OnEffectSupportStateChanged(VcEffectId effect_id,
+                                   bool is_supported) override;
 
   // The expand indicator of the toggle bubble button needs to rotate according
   // to shelf alignment and whether the bubble is opened. This function will
@@ -146,10 +169,11 @@ class ASH_EXPORT VideoConferenceTray
   void OnScreenShareButtonClicked(const ui::Event& event);
 
   // Owned by the views hierarchy.
-  VideoConferenceTrayButton* audio_icon_ = nullptr;
-  VideoConferenceTrayButton* camera_icon_ = nullptr;
-  VideoConferenceTrayButton* screen_share_icon_ = nullptr;
-  IconButton* toggle_bubble_button_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> audio_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> screen_share_icon_ =
+      nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> toggle_bubble_button_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

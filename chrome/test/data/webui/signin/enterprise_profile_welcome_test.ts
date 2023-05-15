@@ -23,7 +23,6 @@ suite('EnterpriseProfileWelcomeTest', function() {
   const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
 
   const testEnterpriseInfo: EnterpriseProfileInfo = {
-    backgroundColor: 'rgb(255, 0, 0)',
     pictureUrl: AVATAR_URL_1,
     showEnterpriseBadge: false,
     title: 'title',
@@ -124,7 +123,6 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
     // Update the values so that the lkink data checkbox is checked by default.
     webUIListenerCallback('on-profile-info-changed', {
-      backgroundColor: 'rgb(255, 0, 0)',
       pictureUrl: AVATAR_URL_1,
       showEnterpriseBadge: false,
       title: 'title',
@@ -180,7 +178,6 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
     // Update the values.
     webUIListenerCallback('on-profile-info-changed', {
-      backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_2,
       showEnterpriseBadge: true,
       title: 'new_title',

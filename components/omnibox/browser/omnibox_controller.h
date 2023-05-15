@@ -12,24 +12,28 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
-struct AutocompleteMatch;
 class AutocompleteResult;
-class InstantController;
 class OmniboxClient;
 class OmniboxEditModel;
+class OmniboxEditModelDelegate;
+class OmniboxView;
+struct AutocompleteMatch;
 
-// This class controls the various services that can modify the content
-// for the omnibox, including AutocompleteController and InstantController. It
-// is responsible of updating the omnibox content.
-// TODO(beaudoin): Keep on expanding this class so that OmniboxEditModel no
-//     longer needs to hold any reference to AutocompleteController. Also make
-//     this the point of contact between InstantController and OmniboxEditModel.
-//     As the refactor progresses, keep the class comment up to date to
-//     precisely explain what this class is doing.
+// This class controls the various services that can modify the content of the
+// omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
  public:
-  OmniboxController(OmniboxEditModel* omnibox_edit_model,
-                    OmniboxClient* client);
+  // Used by the omnibox which uses `OmniboxView` and whose
+  // `AutocompleteController` instance is created and observed here.
+  OmniboxController(OmniboxView* view,
+                    OmniboxEditModelDelegate* edit_model_delegate,
+                    std::unique_ptr<OmniboxClient> client);
+  // Used by the realbox which does not use `OmniboxView` and observes and
+  // passes its own instance of `AutocompleteController`.
+  OmniboxController(
+      OmniboxEditModelDelegate* edit_model_delegate,
+      std::unique_ptr<AutocompleteController> autocomplete_controller,
+      std::unique_ptr<OmniboxClient> client);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;
@@ -40,6 +44,10 @@ class OmniboxController : public AutocompleteController::Observer {
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+
+  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
+
+  void SetEditModel(std::unique_ptr<OmniboxEditModel> edit_model);
 
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
@@ -63,15 +71,21 @@ class OmniboxController : public AutocompleteController::Observer {
     return autocomplete_controller_->result();
   }
 
+ protected:
+  // Used by other constructors.
+  OmniboxController(
+      OmniboxView* view,
+      OmniboxEditModelDelegate* edit_model_delegate,
+      std::unique_ptr<AutocompleteController> autocomplete_controller,
+      std::unique_ptr<OmniboxClient> client);
+
  private:
   // Stores the bitmap in the OmniboxPopupModel.
   void SetRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
 
-  // Weak, it owns us.
-  // TODO(beaudoin): Consider defining a delegate to ease unit testing.
-  raw_ptr<OmniboxEditModel> omnibox_edit_model_;
+  std::unique_ptr<OmniboxClient> client_;
 
-  raw_ptr<OmniboxClient> client_;
+  std::unique_ptr<OmniboxEditModel> edit_model_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 

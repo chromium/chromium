@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
@@ -1288,6 +1289,16 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                          kRecentTabsTableViewControllerAccessibilityIdentifier),
                      grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests to dismiss the sign-in view by swipe down without an identity.
+// See http://crbug.com/1434238.
+- (void)testSwipeDownSignInViewWithoutAnIdentity {
+  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kUnifiedConsentScrollViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Test no crash.
 }
 
 @end

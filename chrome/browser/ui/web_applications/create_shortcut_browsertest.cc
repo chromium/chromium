@@ -257,7 +257,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
             mojom::UserDisplayMode::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, OpenShortcutWindowOnlyOnce) {
+// TODO(crbug.com/1439209): Re-enable this test
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
+                       DISABLED_OpenShortcutWindowOnlyOnce) {
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 

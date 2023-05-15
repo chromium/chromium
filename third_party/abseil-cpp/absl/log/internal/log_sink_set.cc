@@ -122,11 +122,11 @@ class AndroidLogSink final : public LogSink {
 
   void Send(const absl::LogEntry& entry) override {
     const int level = AndroidLogLevel(entry);
-    // TODO(b/37587197): make the tag ("native") configurable.
-    __android_log_write(level, "native",
+    const char* const tag = GetAndroidNativeTag();
+    __android_log_write(level, tag,
                         entry.text_message_with_prefix_and_newline_c_str());
     if (entry.log_severity() == absl::LogSeverity::kFatal)
-      __android_log_write(ANDROID_LOG_FATAL, "native", "terminating.\n");
+      __android_log_write(ANDROID_LOG_FATAL, tag, "terminating.\n");
   }
 
  private:

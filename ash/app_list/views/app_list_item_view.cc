@@ -33,6 +33,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,6 +73,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -87,7 +89,8 @@ constexpr int kMouseDragUIDelayInMs = 200;
 // 650ms.
 constexpr int kTouchLongpressDelayInMs = 300;
 
-// For touch initiated dragging, shift the curcor anchor point by the following:
+// For touch initiated dragging, shift the cursor anchor point of the scaled
+// icon by the following:
 static const int kTouchDragImageVerticalOffset = 25;
 
 // The drag and drop app icon should get scaled by this factor.
@@ -112,6 +115,35 @@ constexpr int kNewInstallDotPadding = 4;
 // The maximum number that can be shown on the item counter in refreshed folder
 // icons.
 constexpr size_t kMaxItemCounterCount = 100u;
+
+class IconBackgroundLayer : public ui::LayerOwner {
+ public:
+  explicit IconBackgroundLayer(views::View* icon_view)
+      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
+        icon_view_(icon_view) {
+    layer()->SetName("icon_background_layer");
+    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
+  }
+
+  IconBackgroundLayer(const IconBackgroundLayer&) = delete;
+  IconBackgroundLayer& operator=(const IconBackgroundLayer) = delete;
+
+  ~IconBackgroundLayer() override {
+    icon_view_->RemoveLayerFromRegions(layer());
+  }
+
+  // ui::LayerOwner:
+  std::unique_ptr<ui::Layer> RecreateLayer() override {
+    std::unique_ptr<ui::Layer> old_layer = ui::LayerOwner::RecreateLayer();
+
+    icon_view_->RemoveLayerFromRegionsKeepInLayerTree(old_layer.get());
+    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
+    return old_layer;
+  }
+
+ private:
+  views::View* const icon_view_;
+};
 
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
@@ -420,12 +452,12 @@ class AppListItemView::FolderIconView : public views::View,
   }
 
   // The folder item this icon view paints.
-  AppListFolderItem* folder_item_;
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
 
   // Whether Jelly style feature is enabled.
   const bool jelly_style_;
 
-  const AppListConfig* config_;
+  raw_ptr<const AppListConfig, ExperimentalAsh> config_;
 
   // The scaling factor used for cardified states in tablet mode.
   float icon_scale_;
@@ -477,23 +509,26 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
                                                 cros_tokens::kCrosSysFocusRing)
                                           : ui::kColorAshFocusRing);
-  focus_ring->SetHasFocusPredicate([&](View* view) -> bool {
+  focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+    const auto* v = views::AsViewClass<AppListItemView>(view);
+    CHECK(v);
+
     // With a `view_delegate_` present, focus ring should only show when
     // button is focused and keyboard traversal is engaged.
-    if (view_delegate_ && !view_delegate_->KeyboardTraversalEngaged()) {
+    if (v->view_delegate_ && !v->view_delegate_->KeyboardTraversalEngaged()) {
       return false;
     }
 
-    if (drag_state_ != DragState::kNone) {
+    if (v->drag_state_ != DragState::kNone) {
       return false;
     }
 
-    if (waiting_for_context_menu_options_ || IsShowingAppMenu()) {
+    if (v->waiting_for_context_menu_options_ || v->IsShowingAppMenu()) {
       return false;
     }
 
-    return view->HasFocus();
-  });
+    return v->HasFocus();
+  }));
 
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(1), app_list_config_->grid_focus_corner_radius());
@@ -595,6 +630,7 @@ AppListItemView::~AppListItemView() {
     item_weak_->RemoveObserver(this);
   }
   StopObservingImplicitAnimations();
+  icon_background_layer_.reset();
 }
 
 void AppListItemView::UpdateIconView(bool update_item_icon) {
@@ -865,6 +901,7 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
     return false;
   }
   drag_state_ = DragState::kInitialized;
+  SilentlyRequestFocus();
   return true;
 }
 
@@ -888,6 +925,10 @@ void AppListItemView::OnDragEnded() {
 
   SetUIState(UI_STATE_NORMAL);
   drag_state_ = DragState::kNone;
+}
+
+void AppListItemView::OnDragDone() {
+  EnsureSelected();
 }
 
 void AppListItemView::CancelContextMenu() {
@@ -1210,6 +1251,9 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   }
 
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    // Cancel drag timer set when the mouse was pressed, to prevent the app
+    // item from entering dragged state.
+    mouse_drag_timer_.Stop();
     return;
   }
 
@@ -1312,8 +1356,10 @@ bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
 
   SetUIState(UI_STATE_TOUCH_DRAGGING);
   auto data = std::make_unique<ui::OSExchangeData>();
-  WriteDragData(location - gfx::Vector2d(0, kTouchDragImageVerticalOffset),
-                data.get());
+  WriteDragData(
+      location - gfx::Vector2d(0, std::ceil(kTouchDragImageVerticalOffset /
+                                            kDragDropAppIconScale)),
+      data.get());
 
   gfx::Point widget_location(location);
   views::View::ConvertPointToWidget(this, &widget_location);
@@ -1424,8 +1470,8 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_layer_.OwnsLayer()) {
-      icon_background_layer_.layer()->SetColor(
+    if (icon_background_layer_) {
+      icon_background_layer_->layer()->SetColor(
           GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     }
   }
@@ -1482,8 +1528,13 @@ bool AppListItemView::HasNotificationBadge() {
   return item_weak_->has_notification_badge();
 }
 
-void AppListItemView::FireMouseDragTimerForTest() {
+bool AppListItemView::FireMouseDragTimerForTest() {
+  if (!mouse_drag_timer_.IsRunning()) {
+    return false;
+  }
+
   mouse_drag_timer_.FireNow();
+  return true;
 }
 
 bool AppListItemView::FireTouchDragTimerForTest() {
@@ -1708,9 +1759,9 @@ void AppListItemView::ItemBeingDestroyed() {
     folder_icon_->ResetFolderItem();
   }
 
-  // TODO(b/261985897): Consider canceling drag when the item is being
-  // destroyed.
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    // When drag and drop refactor is enabled, AppsGridView observes dragged
+    // item destruction to ensure the drag is finalized.
     return;
   }
 
@@ -1817,19 +1868,15 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
 void AppListItemView::EnsureIconBackgroundLayer() {
   const bool clip_inner_icons =
       is_folder_ && !features::IsAppCollectionFolderRefreshEnabled();
-  if (clip_inner_icons || icon_background_layer_.OwnsLayer()) {
+  if (clip_inner_icons || icon_background_layer_) {
     return;
   }
 
-  icon_background_layer_.Reset(
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR));
-  auto* background_layer = icon_background_layer_.layer();
-  background_layer->SetName("icon_background_layer");
+  icon_background_layer_ = std::make_unique<IconBackgroundLayer>(GetIconView());
   if (GetColorProvider()) {
-    background_layer->SetColor(
+    icon_background_layer_->layer()->SetColor(
         GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
   }
-  GetIconView()->AddLayerToRegion(background_layer, views::LayerRegion::kBelow);
 }
 
 ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
@@ -1850,8 +1897,7 @@ ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
   if (!setting_up_icon_animation_ && !extend_icon && !is_folder_) {
-    GetIconView()->RemoveLayerFromRegions(icon_background_layer_.layer());
-    icon_background_layer_.ReleaseLayer();
+    icon_background_layer_.reset();
   }
 }
 
@@ -1860,7 +1906,10 @@ ui::Layer* AppListItemView::GetIconBackgroundLayer() {
     return GetIconView()->layer();
   }
 
-  return icon_background_layer_.layer();
+  if (!icon_background_layer_) {
+    return nullptr;
+  }
+  return icon_background_layer_->layer();
 }
 
 BEGIN_METADATA(AppListItemView, views::Button)

@@ -14,7 +14,7 @@ import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_type
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchOptions, State} from '../../externs/ts/state.js';
+import {PropStatus, SearchLocation, SearchOptions, State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -36,6 +36,54 @@ import {ListSingleSelectionModel} from './ui/list_single_selection_model.js';
 const SIMULTANEOUS_RESCAN_INTERVAL = 500;
 // Used for operations that require almost instant rescan.
 const SHORT_RESCAN_INTERVAL = 100;
+
+/**
+ * Helper function that can decide if the scan of the given entry should be
+ * performed by recent scanner or other (search) scanner. In transition period
+ * between V1 and V2 versions of search, when the user searches in Recent, and
+ * uses Recent as location, we reuse the Recent scanner. Otherwise, the true
+ * search scanner is used.
+ * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
+ * @param {string=} query Search query string.
+ * @param {SearchOptions=} options search options.
+ * @private
+ */
+function isRecentScan(entry, query, options) {
+  if (util.isRecentRootType(entry.rootType)) {
+    if (!util.isSearchV2Enabled()) {
+      // If V2 of search is not enabled, being in recents is sufficient.
+      return true;
+    }
+    // The user is in Recent view. If query is empty, this is definitely
+    // a scan. Otherwise, we need to check the options.
+    if (!query) {
+      return true;
+    }
+    // Potential search in Recents. However, if options are present and are
+    // indicating that the user wishes to scan current entry, still use Recent
+    // scanner.
+    if (!options || options.location == SearchLocation.THIS_FOLDER) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Helper function that determines the category of files we are looking for
+ * based on the fake entry, query and options.
+ * @param {!FakeEntry} entry
+ * @param {string|undefined} query
+ * @param {SearchOptions|undefined} options
+ */
+function getFileCategory(entry, query, options) {
+  if (query) {
+    if (options) {
+      return options.fileCategory;
+    }
+  }
+  return entry.fileCategory;
+}
 
 /**
  * Data model of the file manager.
@@ -1457,15 +1505,12 @@ export class DirectoryModel extends EventTarget {
             chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
         (locationInfo && locationInfo.isDriveBased);
 
-    if (util.isRecentRootType(entry.rootType)) {
+    if (isRecentScan(entry, opt_query, opt_options)) {
+      const fakeEntry = /** @type {!FakeEntry} */ (entry);
       return () => {
-        const fakeEntry = /** @type {!FakeEntry} */ (entry);
         return new RecentContentScanner(
-            query,
-            this.volumeManager_,
-            fakeEntry.sourceRestriction,
-            fakeEntry.fileCategory,
-        );
+            query, this.volumeManager_, fakeEntry.sourceRestriction,
+            getFileCategory(fakeEntry, opt_query, opt_options));
       };
     }
     // TODO(b/271485133): Make sure the entry here is a fake entry, not real
@@ -1492,8 +1537,7 @@ export class DirectoryModel extends EventTarget {
         return new ContentScanner();
       };
     }
-    if (util.isTrashEnabled() &&
-        entry.rootType == VolumeManagerCommon.RootType.TRASH) {
+    if (entry.rootType == VolumeManagerCommon.RootType.TRASH) {
       return () => {
         return new TrashContentScanner(this.volumeManager_);
       };
@@ -1641,8 +1685,7 @@ export class DirectoryModel extends EventTarget {
         onSearchRescan(...args);
 
         // Notify the store-aware parts.
-        this.store_.dispatch(
-            updateSearch({query: query, status: PropStatus.SUCCESS}));
+        this.store_.dispatch(updateSearch({status: PropStatus.SUCCESS}));
       };
       this.addEventListener('scan-completed', this.onSearchCompleted_);
       this.clearAndScan_(newDirContents, callback);

@@ -110,6 +110,12 @@ struct EventHolder {
 // test, and test scope.
 EventHolder CreateWaitableEventForTest();
 
+// Returns the absolute path to a test file used by update client unit tests.
+// These test files exist in the source tree and are available to tests in
+// `//chrome/updater/test/data.` `file_name` is the relative name of the
+// file in that directory.
+[[nodiscard]] base::FilePath GetTestFilePath(const char* file_name);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_UTIL_UNITTEST_UTIL_H_

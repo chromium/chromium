@@ -42,7 +42,12 @@ def main():
   parser.add_argument("--ld-library-path",
                       help="LD_LIBRARY_PATH (or DYLD_LIBRARY_PATH on Mac) to "
                       "set")
+  parser.add_argument("--libclang-path",
+                      help="Path to the libclang shared libray.")
   parser.add_argument("-I", "--include", help="include path", action="append")
+  parser.add_argument("--bindgen-flags",
+                      help="flags to pass to bindgen",
+                      nargs="*")
   parser.add_argument(
       "clangargs",
       metavar="CLANGARGS",
@@ -50,10 +55,14 @@ def main():
       "https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.clang_args)",
       nargs="*")
   args = parser.parse_args()
-  genargs = []
 
-  # Bindgen settings we use for Chromium
+  # Args passed to the actual bindgen cli
+  genargs = []
   genargs.append('--no-layout-tests')
+  if args.bindgen_flags is not None:
+    for flag in args.bindgen_flags:
+      genargs.append("--" + flag)
+
   # TODO(danakj): We need to point bindgen to
   # //third_party/rust-toolchain/bin/rustfmt.
   genargs.append('--no-rustfmt-bindings')
@@ -73,6 +82,8 @@ def main():
       env["DYLD_LIBRARY_PATH"] = args.ld_library_path
     else:
       env["LD_LIBRARY_PATH"] = args.ld_library_path
+  if args.libclang_path:
+    env["LIBCLANG_PATH"] = args.libclang_path
   returncode = subprocess.run([args.exe, *genargs], env=env).returncode
   if returncode != 0:
     # Make sure we don't emit anything if bindgen failed.

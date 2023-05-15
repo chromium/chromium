@@ -4,6 +4,7 @@ pub type nlink_t = u64;
 pub type wchar_t = i32;
 pub type greg_t = u64;
 pub type __u64 = u64;
+pub type __s64 = i64;
 
 s! {
     pub struct ipc_perm {
@@ -176,6 +177,7 @@ pub const MAP_POPULATE: ::c_int = 0x08000;
 pub const MAP_NONBLOCK: ::c_int = 0x010000;
 pub const MAP_STACK: ::c_int = 0x020000;
 pub const MAP_HUGETLB: ::c_int = 0x040000;
+pub const MAP_SYNC: ::c_int = 0x080000;
 
 pub const EDEADLOCK: ::c_int = 35;
 pub const ENAMETOOLONG: ::c_int = 36;
@@ -710,3 +712,11 @@ pub const SYS_faccessat2: ::c_long = 439;
 pub const SYS_process_madvise: ::c_long = 440;
 pub const SYS_epoll_pwait2: ::c_long = 441;
 pub const SYS_mount_setattr: ::c_long = 442;
+pub const SYS_quotactl_fd: ::c_long = 443;
+pub const SYS_landlock_create_ruleset: ::c_long = 444;
+pub const SYS_landlock_add_rule: ::c_long = 445;
+pub const SYS_landlock_restrict_self: ::c_long = 446;
+pub const SYS_memfd_secret: ::c_long = 447;
+pub const SYS_process_mrelease: ::c_long = 448;
+pub const SYS_futex_waitv: ::c_long = 449;
+pub const SYS_set_mempolicy_home_node: ::c_long = 450;

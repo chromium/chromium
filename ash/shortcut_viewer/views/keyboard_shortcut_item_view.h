@@ -6,6 +6,7 @@
 #define ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_VIEW_H_
 
 #include "ash/public/cpp/keyboard_shortcut_item.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 #include "ui/views/view.h"
@@ -61,15 +62,15 @@ class KeyboardShortcutItemView : public views::View {
   void CalculateLayout(int width) const;
 
   // Not owned. Pointer to the keyboard shortcut item.
-  const ash::KeyboardShortcutItem* shortcut_item_;
+  raw_ptr<const ash::KeyboardShortcutItem, ExperimentalAsh> shortcut_item_;
 
   const ash::ShortcutCategory category_;
 
   // View of the text describing what action the shortcut performs.
-  views::StyledLabel* description_label_view_;
+  raw_ptr<views::StyledLabel, ExperimentalAsh> description_label_view_;
 
   // View of the text listing the keys making up the shortcut.
-  views::StyledLabel* shortcut_label_view_;
+  raw_ptr<views::StyledLabel, ExperimentalAsh> shortcut_label_view_;
 
   // Saves the results of the last CalculateLayout() call to avoid repeated
   // calculation.

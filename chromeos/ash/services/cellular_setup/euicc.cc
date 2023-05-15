@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -265,11 +266,39 @@ void Euicc::PerformRequestPendingProfiles(
   }
 
   NET_LOG(EVENT) << "Requesting pending profiles";
-  HermesEuiccClient::Get()->RequestPendingProfiles(
-      path_, /*root_smds=*/ESimManager::GetRootSmdsAddress(),
-      base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(inhibit_lock)));
+
+  if (ash::features::IsSmdsDbusMigrationEnabled()) {
+    HermesEuiccClient::Get()->RefreshSmdxProfiles(
+        path_, /*activation_code=*/ESimManager::GetRootSmdsAddress(),
+        /*restore_slot=*/true,
+        base::BindOnce(&Euicc::OnRefreshSmdxProfilesResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(inhibit_lock)));
+  } else {
+    HermesEuiccClient::Get()->RequestPendingProfiles(
+        path_, /*root_smds=*/ESimManager::GetRootSmdsAddress(),
+        base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(inhibit_lock)));
+  }
+}
+
+void Euicc::OnRefreshSmdxProfilesResult(
+    RequestPendingProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status,
+    const std::vector<dbus::ObjectPath>& profile_paths) {
+  NET_LOG(EVENT) << "Refresh SM-DX profiles found " << profile_paths.size()
+                 << " available profiles";
+  // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
+  // profile objects to be loaded.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     status == HermesResponseStatus::kSuccess
+                         ? mojom::ESimOperationResult::kSuccess
+                         : mojom::ESimOperationResult::kFailure),
+      kPendingProfileRefreshDelay);
 }
 
 void Euicc::OnRequestPendingProfilesResult(

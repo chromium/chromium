@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager_export.h"
@@ -45,8 +46,10 @@ class DISPLAY_MANAGER_EXPORT QueryContentProtectionTask
                       HDCPState state,
                       ContentProtectionMethod protection_method);
 
-  DisplayLayoutManager* const layout_manager_;            // Not owned.
-  NativeDisplayDelegate* const native_display_delegate_;  // Not owned.
+  const raw_ptr<DisplayLayoutManager, ExperimentalAsh>
+      layout_manager_;  // Not owned.
+  const raw_ptr<NativeDisplayDelegate, ExperimentalAsh>
+      native_display_delegate_;  // Not owned.
 
   const int64_t display_id_;
 

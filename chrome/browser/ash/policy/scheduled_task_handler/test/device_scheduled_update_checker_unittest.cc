@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -349,11 +350,12 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   // Owned by |device_scheduled_update_checker_|
-  FakeScheduledTaskExecutor* scheduled_task_executor_;
+  raw_ptr<FakeScheduledTaskExecutor, ExperimentalAsh> scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledUpdateCheckerForTest>
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;
-  ash::FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_;
   std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
   device::TestWakeLockProvider wake_lock_provider_;
 

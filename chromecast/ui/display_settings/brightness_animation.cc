@@ -4,9 +4,9 @@
 
 #include "chromecast/ui/display_settings/brightness_animation.h"
 
+#include <algorithm>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 
@@ -42,7 +42,7 @@ BrightnessAnimation::~BrightnessAnimation() {
 void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
                                             base::TimeDelta duration) {
   start_brightness_ = controller_->GetDisplayBrightness();
-  target_brightness_ = base::clamp(new_target_brightness, 0.0f, 1.0f);
+  target_brightness_ = std::clamp(new_target_brightness, 0.0f, 1.0f);
   DVLOG(4) << "Animating to new_target_brightness " << new_target_brightness
            << " from current_brightness_=" << current_brightness_;
 
@@ -60,7 +60,7 @@ void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
 }
 
 void BrightnessAnimation::AnimateToState(double state) {
-  state = base::clamp(state, 0.0, 1.0);
+  state = std::clamp(state, 0.0, 1.0);
   current_brightness_ =
       start_brightness_ + (target_brightness_ - start_brightness_) * state;
   ApplyValuesToDisplay();

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<!-- This manually crafted file is feeded to chrome/updater/tool:keystone_ticket_tool
+     to generate Keystone.legacy.ticketstore.
+
+     All value fields are in type<string>, except the `CreationDate` which is <date>.
+
+     Supported keys:
+       ProductID
+       Version
+       VersionPath
+       VersionKey
+       ExistenceChecker
+       Tag
+       TagPath
+       TagKey
+       BrandCode
+       BrandPath
+       BrandKey
+       Cohort
+       CohortHint
+       CohortName
+       CreationDate
+-->
+
+<plist version="1.0">
+<dict>
+  <key>com.chromium.corruptedapp</key>  <!-- Main key must be in lower case -->
+  <dict>
+    <key>ProductID</key><string>com.chromium.CorruptedApp</string>
+    <key>Version</key><string>1.2.1</string>
+    <key>ExistenceChecker</key><string>/</string>
+    <key>Tag</key><string>canary</string>
+    <key>CreationDate</key><date>2023-03-24T18:20:51Z</date>
+  </dict>
+
+  <key>com.chromium.popularapp</key>  <!-- Main key must be in lower case -->
+  <dict>
+    <key>ProductID</key><string>com.chromium.PopularApp</string>
+    <key>Version</key><string>101.100.1000.9999</string>
+    <key>ExistenceChecker</key><string>/</string>
+    <key>Tag</key><string>GOOG</string>
+    <key>TagPath</key><string>/Application/PopularApp.app</string>
+    <key>TagKey</key><string>KSTag</string>
+    <key>BrandPath</key><string>/</string>
+    <key>BrandKey</key><string>KSBrandID</string>
+    <key>Cohort</key><string>TestCohort</string>
+    <key>CohortHint</key><string>TestCohortHint</string>
+    <key>CohortName</key><string>TestCohortName</string>
+    <key>CreationDate</key><date>2023-03-24T18:20:51Z</date>
+  </dict>
+
+  <key>com.chromium.kipple</key>  <!-- Main key must be in lower case -->
+  <dict>
+    <key>ProductID</key><string>com.chromium.kipple</string>
+    <key>Version</key><string>1.2.3.4</string>
+    <key>ExistenceChecker</key><string>/</string>
+    <key>BrandPath</key><string>/</string>
+    <key>BrandKey</key><string>UnrecognizedBrandKey</string>
+    <key>CreationDate</key><date>2023-03-24T18:20:51Z</date>
+  </dict>
+
+  <key>com.chromium.nonexistapp</key>  <!-- Main key must be in lower case -->
+  <dict>
+    <key>ProductID</key><string>com.chromium.NonExistApp</string>
+    <key>Version</key><string>1.0.0.0</string>
+    <key>ExistenceChecker</key><string>/Applications/NoSuchDirectory.app</string>
+    <key>BrandPath</key><string>/</string>
+    <key>BrandKey</key><string>foo</string>
+    <key>CreationDate</key><date>2023-03-24T18:20:51Z</date>
+  </dict>
+
+  <key>com.google.keystone</key>  <!-- Main key must be in lower case -->
+  <dict>
+    <key>ProductID</key><string>com.google.Keystone</string>
+    <key>Version</key><string>1.100.18.0</string>
+    <key>ExistenceChecker</key>
+    <string>
+     /Users/CoolUser/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle
+    </string>
+    <key>Cohort</key><string>1:1lax:1lb3@5.4000000000000005E-5</string>
+    <key>CohortName</key><string>Omaha 4 Migration (Rollout)</string>
+    <key>CreationDate</key><date>2023-03-24T18:20:51Z</date>
+  </dict>
+</dict>
+</plist>

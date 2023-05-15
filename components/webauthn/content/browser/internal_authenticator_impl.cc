@@ -26,6 +26,11 @@ InternalAuthenticatorImpl::InternalAuthenticatorImpl(
   // Autofill only ever uses platform authenticators and can take place
   // on any webpage.
   authenticator_common_->DisableUI();
+
+  // WebAuthn policy is to disallow use on pages with "Not secure" or "None" TLS
+  // connection status. However, internal clients such as autofill may be called
+  // from these pages (e.g. on chrome://settings/payments).
+  authenticator_common_->DisableTLSCheck();
 }
 
 InternalAuthenticatorImpl::~InternalAuthenticatorImpl() = default;

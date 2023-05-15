@@ -16,6 +16,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 namespace base {
 class FilePath;
@@ -52,6 +53,8 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // Fill in |feedback_data| with all the data that we have collected.
   // CompressLogs() must have already been called.
   void PrepareReport(userfeedback::ExtensionSubmit* feedback_data) const;
+
+  void RedactDescription(redaction::RedactionTool& redactor);
 
   // Return true if we want to include the feedback item with a key of |key| in
   // the feedback report's system logs.

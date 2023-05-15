@@ -12,14 +12,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/containers/span.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using testing::_;
 using ::testing::InSequence;
@@ -46,16 +50,17 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(test_attributes, kSecAttrLabel,
-                         base::SysUTF8ToNSString("fake-label"));
+    CFDictionarySetValue(test_attributes, kSecAttrLabel, CFSTR("fake-label"));
     CFDictionarySetValue(test_attributes, kSecAttrKeyType,
                          kSecAttrKeyTypeECSECPrimeRandom);
-    CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits, @256);
+    CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
+                         base::apple::NSToCFPtrCast(@256));
     base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @NO);
+    CFDictionarySetValue(private_key_params, kSecAttrIsPermanent,
+                         kCFBooleanFalse);
     CFDictionarySetValue(test_attributes, kSecPrivateKeyAttrs,
                          private_key_params);
     test_key_ = base::ScopedCFTypeRef<SecKeyRef>(

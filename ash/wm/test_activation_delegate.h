@@ -6,7 +6,7 @@
 #define ASH_WM_TEST_ACTIVATION_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "ui/events/event_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
 
@@ -30,11 +30,9 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
   // Associates this delegate with a Window.
   void SetWindow(aura::Window* window);
 
-  bool window_was_active() const { return window_was_active_; }
   void set_activate(bool v) { activate_ = v; }
   int activated_count() const { return activated_count_; }
   int lost_active_count() const { return lost_active_count_; }
-  int should_activate_count() const { return should_activate_count_; }
   void Clear() {
     activated_count_ = lost_active_count_ = should_activate_count_ = 0;
     window_was_active_ = false;
@@ -50,12 +48,12 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
       aura::Window* gained_active,
       aura::Window* lost_active) override;
 
-  aura::Window* window_;
-  bool window_was_active_;
-  bool activate_;
-  int activated_count_;
-  int lost_active_count_;
-  mutable int should_activate_count_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  bool window_was_active_ = false;
+  bool activate_ = true;
+  int activated_count_ = 0;
+  int lost_active_count_ = 0;
+  mutable int should_activate_count_ = 0;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "base/state_transitions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -135,14 +138,13 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
   return referrer;
 }
 
-absl::optional<base::UnguessableToken> GetDevToolsNavigationToken(
-    DocumentLoader* document_loader) {
-  return document_loader ? document_loader->GetDevToolsNavigationToken()
-                         : static_cast<absl::optional<base::UnguessableToken>>(
-                               absl::nullopt);
-}
-
 }  // namespace
+
+std::ostream& operator<<(
+    std::ostream& o,
+    const DocumentSpeculationRules::PendingUpdateState& s) {
+  return o << static_cast<unsigned>(s);
+}
 
 // static
 const char DocumentSpeculationRules::kSupplementName[] =
@@ -165,10 +167,7 @@ DocumentSpeculationRules* DocumentSpeculationRules::FromIfExists(
 }
 
 DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
-    : Supplement(document),
-      host_(document.GetExecutionContext()),
-      devtools_navigation_token_(
-          GetDevToolsNavigationToken(document.Loader())) {}
+    : Supplement(document), host_(document.GetExecutionContext()) {}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   CountSpeculationRulesLoadOutcome(SpeculationRulesLoadOutcome::kSuccess);
@@ -181,6 +180,14 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
     InvalidateAllLinks();
     if (!rule_set->selectors().empty()) {
       UpdateSelectors();
+    }
+  }
+  if (!wants_pointer_events_ && rule_set->requires_unfiltered_input()) {
+    wants_pointer_events_ = true;
+    Document& document = *GetSupplementable();
+    if (auto* frame = document.GetFrame()) {
+      frame->GetEventHandlerRegistry().DidAddEventHandler(
+          document, EventHandlerRegistry::kPointerEvent);
     }
   }
   QueueUpdateSpeculationCandidates();
@@ -198,7 +205,27 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
       UpdateSelectors();
     }
   }
-  QueueUpdateSpeculationCandidates();
+  if (wants_pointer_events_ && rule_set->requires_unfiltered_input() &&
+      base::ranges::none_of(rule_sets_,
+                            &SpeculationRuleSet::requires_unfiltered_input)) {
+    wants_pointer_events_ = false;
+    Document& document = *GetSupplementable();
+    if (auto* frame = document.GetFrame()) {
+      frame->GetEventHandlerRegistry().DidRemoveEventHandler(
+          document, EventHandlerRegistry::kPointerEvent);
+    }
+  }
+
+  // When a rule set is removed, we want to assure that an update including the
+  // removal is promptly processed, so that the browser can cancel any activity
+  // that is no longer needed. This makes it more predictable when the author
+  // can re-add those rules to start a new speculation (to freshen it), rather
+  // than continuing an existing one.
+  //
+  // Since style doesn't necessarily become clean promptly enough for that (a
+  // scheduled microtask is what we have in mind), we want style to be forced
+  // clean by the deadline, if necessary.
+  QueueUpdateSpeculationCandidates(/*force_style_update=*/true);
 
   probe::DidRemoveSpeculationRuleSet(*GetSupplementable(), *rule_set);
 }
@@ -254,31 +281,19 @@ void DocumentSpeculationRules::HrefAttributeChanged(
 
 void DocumentSpeculationRules::ReferrerPolicyAttributeChanged(
     HTMLAnchorElement* link) {
-  if (!initialized_)
-    return;
-
-  DCHECK(link->isConnected());
-  InvalidateLink(link);
-
-  QueueUpdateSpeculationCandidates();
+  LinkAttributeChanged(link);
 }
 
 void DocumentSpeculationRules::RelAttributeChanged(HTMLAnchorElement* link) {
-  if (!initialized_)
-    return;
+  LinkAttributeChanged(link);
+}
 
-  DCHECK(link->isConnected());
-  InvalidateLink(link);
-
-  QueueUpdateSpeculationCandidates();
+void DocumentSpeculationRules::TargetAttributeChanged(HTMLAnchorElement* link) {
+  LinkAttributeChanged(link);
 }
 
 void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
-  if (!initialized_)
-    return;
-
-  InvalidateAllLinks();
-  QueueUpdateSpeculationCandidates();
+  DocumentPropertyChanged();
 }
 
 void DocumentSpeculationRules::DocumentBaseURLChanged() {
@@ -296,6 +311,10 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
   if (initialized_)
     InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::DocumentBaseTargetChanged() {
+  DocumentPropertyChanged();
 }
 
 void DocumentSpeculationRules::LinkMatchedSelectorsUpdated(
@@ -318,8 +337,7 @@ void DocumentSpeculationRules::LinkGainedOrLostComputedStyle(
 }
 
 void DocumentSpeculationRules::DocumentStyleUpdated() {
-  if (pending_update_state_ ==
-      PendingUpdateState::kUpdateWithCleanStylePending) {
+  if (pending_update_state_ == PendingUpdateState::kOnNextStyleUpdate) {
     UpdateSpeculationCandidates();
   }
 }
@@ -437,49 +455,61 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
   return host_.get();
 }
 
-void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
-  if (pending_update_state_ != PendingUpdateState::kNoUpdatePending) {
-    return;
-  }
+void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
+    bool force_style_update) {
+  const bool microtask_already_queued = IsMicrotaskQueued();
 
-  // If "selector_matches" is enabled and style isn't clean, we don't need to
-  // enqueue a microtask to run UpdateSpeculationCandidates, and instead wait
-  // for DocumentStyleUpdated to be called.
-  if (SelectorMatchesEnabled() &&
-      GetSupplementable()->NeedsLayoutTreeUpdate()) {
-    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
-    return;
+  bool needs_microtask = true;
+  if (force_style_update) {
+    SetPendingUpdateState(
+        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate);
+  } else if (pending_update_state_ == PendingUpdateState::kNoUpdate) {
+    SetPendingUpdateState(PendingUpdateState::kMicrotaskQueued);
+  } else {
+    // An update of some kind is already scheduled, whether on a microtask or
+    // the next style update. That's sufficient.
+    needs_microtask = false;
   }
 
   auto* execution_context = GetSupplementable()->GetExecutionContext();
-  if (!execution_context)
-    return;
+  if (needs_microtask && !microtask_already_queued && execution_context) {
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+        &DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask,
+        WrapWeakPersistent(this)));
+  }
+}
 
-  SetPendingUpdateState(PendingUpdateState::kUpdatePending);
-  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                    WrapWeakPersistent(this)));
+void DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask() {
+  DCHECK(IsMicrotaskQueued());
+
+  // Wait for style to be clean before proceeding. Or force it, if this update
+  // needs to happen promptly.
+  Document& document = *GetSupplementable();
+  if (SelectorMatchesEnabled() && document.NeedsLayoutTreeUpdate()) {
+    if (pending_update_state_ ==
+        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate) {
+      document.UpdateStyleAndLayoutTree();
+    } else {
+      SetPendingUpdateState(PendingUpdateState::kOnNextStyleUpdate);
+      return;
+    }
+  }
+
+  UpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
-  DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdatePending);
-
-  // Style may be invalidated after we enqueue a microtask, in which case we
-  // wait for style to be clean before proceeding.
-  if (SelectorMatchesEnabled() &&
-      GetSupplementable()->NeedsLayoutTreeUpdate()) {
-    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
-    return;
+  DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdate);
+  if (SelectorMatchesEnabled()) {
+    DCHECK(!GetSupplementable()->NeedsLayoutTreeUpdate());
   }
 
   // We are actually performing the update below, so mark as no update pending.
-  SetPendingUpdateState(PendingUpdateState::kNoUpdatePending);
+  SetPendingUpdateState(PendingUpdateState::kNoUpdate);
 
   mojom::blink::SpeculationHost* host = GetHost();
   auto* execution_context = GetSupplementable()->GetExecutionContext();
-  // devtools_navigation_token is expected to be non-null because a null token
-  // means the document is detached and will be destroyed shortly.
-  if (!host || !execution_context || !devtools_navigation_token_.has_value()) {
+  if (!host || !execution_context) {
     return;
   }
 
@@ -495,20 +525,16 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         if (!referrer)
           continue;
 
-        // The default Eagerness value for |"source": "list"| rules is
-        // |kEager|. More info can be found here:
-        // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
-        mojom::blink::SpeculationEagerness eagerness =
-            rule->eagerness().value_or(
-                mojom::blink::SpeculationEagerness::kEager);
+        CHECK(!rule->target_browsing_context_name_hint() ||
+              action == mojom::blink::SpeculationAction::kPrerender);
 
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(
             url, action, referrer.value(),
             rule->requires_anonymous_client_ip_when_cross_origin(),
             rule->target_browsing_context_name_hint().value_or(
                 mojom::blink::SpeculationTargetHint::kNoHint),
-            eagerness, rule->no_vary_search_expected().Clone(), rule_set,
-            /*anchor=*/nullptr));
+            rule->eagerness(), rule->no_vary_search_expected().Clone(),
+            rule->injection_world(), rule_set, /*anchor=*/nullptr));
       }
     }
   };
@@ -569,8 +595,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     mojom_candidates.push_back(candidate->ToMojom());
   }
 
-  host->UpdateSpeculationCandidates(devtools_navigation_token_.value(),
-                                    std::move(mojom_candidates));
+  host->UpdateSpeculationCandidates(std::move(mojom_candidates));
 
   if (eagerness_set.Has(SpeculationEagerness::kConservative)) {
     UseCounter::Count(GetSupplementable(),
@@ -637,23 +662,26 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             if (!referrer)
               continue;
 
-            // The default Eagerness value for |"source": "document"|
-            // rules is |kConservative|. More info can be found here:
-            // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
-            mojom::blink::SpeculationEagerness eagerness =
-                rule->eagerness().value_or(
-                    mojom::blink::SpeculationEagerness::kConservative);
+            mojom::blink::SpeculationTargetHint target_hint =
+                mojom::blink::SpeculationTargetHint::kNoHint;
+            if (action == mojom::blink::SpeculationAction::kPrerender) {
+              if (rule->target_browsing_context_name_hint()) {
+                target_hint = rule->target_browsing_context_name_hint().value();
+              } else {
+                // Obtain target hint from the link's target (if specified).
+                target_hint =
+                    SpeculationRuleSet::SpeculationTargetHintFromString(
+                        link->GetEffectiveTarget());
+              }
+            }
 
-            // TODO(crbug.com/1371522): We should be generating a target hint
-            // based on the link's target.
             SpeculationCandidate* candidate =
                 MakeGarbageCollected<SpeculationCandidate>(
                     link->HrefURL(), action, referrer.value(),
                     rule->requires_anonymous_client_ip_when_cross_origin(),
-                    rule->target_browsing_context_name_hint().value_or(
-                        mojom::blink::SpeculationTargetHint::kNoHint),
-                    eagerness, rule->no_vary_search_expected().Clone(),
-                    rule_set, link);
+                    target_hint, rule->eagerness(),
+                    rule->no_vary_search_expected().Clone(),
+                    rule->injection_world(), rule_set, link);
             link_candidates->push_back(std::move(candidate));
           }
         };
@@ -706,6 +734,23 @@ void DocumentSpeculationRules::InitializeIfNecessary() {
     else if (auto* area = DynamicTo<HTMLAreaElement>(node))
       pending_links_.insert(area);
   }
+}
+
+void DocumentSpeculationRules::LinkAttributeChanged(HTMLAnchorElement* link) {
+  if (!initialized_) {
+    return;
+  }
+  DCHECK(link->isConnected());
+  InvalidateLink(link);
+  QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::DocumentPropertyChanged() {
+  if (!initialized_) {
+    return;
+  }
+  InvalidateAllLinks();
+  QueueUpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {
@@ -789,10 +834,33 @@ void DocumentSpeculationRules::UpdateSelectors() {
 
 void DocumentSpeculationRules::SetPendingUpdateState(
     PendingUpdateState new_state) {
-  PendingUpdateState old_state = pending_update_state_;
-  // This is the only invalid state transition.
-  DCHECK(!(old_state == PendingUpdateState::kUpdateWithCleanStylePending &&
-           new_state == PendingUpdateState::kUpdatePending));
+#if DCHECK_IS_ON()
+  // TODO(jbroman): This could use "using enum" once that's allowed.
+  using S = PendingUpdateState;
+  DEFINE_STATIC_LOCAL(
+      base::StateTransitions<S>, transitions,
+      ({
+          // When there is no update, we can only queue an update.
+          {S::kNoUpdate,
+           {S::kMicrotaskQueued, S::kMicrotaskQueuedWithForcedStyleUpdate}},
+          // When an update is queued, it can complete, get upgraded to forcing
+          // style, or need to wait for style (lazily).
+          {S::kMicrotaskQueued,
+           {S::kNoUpdate, S::kMicrotaskQueuedWithForcedStyleUpdate,
+            S::kOnNextStyleUpdate}},
+          // When waiting for style, this can complete, or we can realize we
+          // need to queue another microtask to force an update, including
+          // forcing style, by a predictable moment.
+          {S::kOnNextStyleUpdate,
+           {S::kNoUpdate, S::kMicrotaskQueuedWithForcedStyleUpdate}},
+          // When a microtask with forced style has been queued, all it can do
+          // is complete.
+          {S::kMicrotaskQueuedWithForcedStyleUpdate, {S::kNoUpdate}},
+      }));
+  if (pending_update_state_ != new_state) {
+    DCHECK_STATE_TRANSITION(&transitions, pending_update_state_, new_state);
+  }
+#endif
   pending_update_state_ = new_state;
 }
 

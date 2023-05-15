@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -133,7 +134,7 @@ class QUIRKS_EXPORT QuirksManager {
   // These objects provide resources from the browser.
   std::unique_ptr<Delegate> delegate_;  // Impl runs from chrome/browser.
   scoped_refptr<base::TaskRunner> task_runner_;
-  PrefService* local_state_;  // For local prefs.
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;  // For local prefs.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Factory for callbacks.

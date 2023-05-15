@@ -22,6 +22,8 @@
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Recording.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/latency/latency_tracker.h"
@@ -105,20 +107,37 @@ bool SkiaOutputDevice::ScopedPaint::Draw(
   return device_->Draw(sk_surface_, std::move(ddl));
 }
 
+bool SkiaOutputDevice::ScopedPaint::Draw(
+    std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+    base::OnceClosure on_finished) {
+  return device_->Draw(sk_surface_, std::move(graphite_recording),
+                       std::move(on_finished));
+}
+
 SkiaOutputDevice::SkiaOutputDevice(
     GrDirectContext* gr_context,
+    skgpu::graphite::Context* graphite_context,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : gr_context_(gr_context),
+      graphite_context_(graphite_context),
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       memory_type_tracker_(
           std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
       latency_tracker_(std::make_unique<ui::LatencyTracker>()),
       latency_tracker_runner_(CreateLatencyTracerRunner()) {
-  DCHECK(gr_context);
-  capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
-  capabilities_.max_texture_size = gr_context->maxTextureSize();
+  if (gr_context_) {
+    CHECK(!graphite_context_);
+    capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
+    capabilities_.max_texture_size = gr_context->maxTextureSize();
+  } else {
+    CHECK(graphite_context_);
+    // TODO(crbug.com/1434131): Determine correct texture/render_target size
+    // once Graphite exposes it.
+    capabilities_.max_render_target_size = 8192;
+    capabilities_.max_texture_size = 8192;
+  }
 }
 
 SkiaOutputDevice::~SkiaOutputDevice() {
@@ -140,7 +159,13 @@ SkiaOutputDevice::BeginScopedPaint() {
 void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
 
 void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
-  gr_context_->submit(sync_cpu);
+  if (gr_context_) {
+    gr_context_->submit(sync_cpu);
+  } else {
+    CHECK(graphite_context_);
+    graphite_context_->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
+                                       : skgpu::graphite::SyncToCpu::kNo);
+  }
   std::move(callback).Run();
 }
 
@@ -374,6 +399,22 @@ bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
   }
 #endif
   return sk_surface->draw(ddl);
+}
+
+bool SkiaOutputDevice::Draw(
+    SkSurface* sk_surface,
+    std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+    base::OnceClosure on_finished) {
+  CHECK(sk_surface);
+  CHECK(graphite_recording);
+  CHECK(graphite_context_);
+  skgpu::graphite::InsertRecordingInfo info;
+  info.fRecording = graphite_recording.get();
+  info.fTargetSurface = sk_surface;
+  if (on_finished) {
+    gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
+  }
+  return graphite_context_->insertRecording(info);
 }
 
 }  // namespace viz

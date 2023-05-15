@@ -9,8 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -122,7 +123,6 @@ public class BookmarkEditTest {
         Assert.assertEquals("Incorrect url.", URL_A,
                 mBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        int currentModelChangedCount = mModelChangedCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
             mBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
@@ -285,7 +285,7 @@ public class BookmarkEditTest {
     }
 
     private void startEditActivity(BookmarkId bookmarkId) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = new Intent(context, BookmarkEditActivity.class);
         intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

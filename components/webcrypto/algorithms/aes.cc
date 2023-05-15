@@ -206,17 +206,17 @@ Status AesAlgorithm::DeserializeKeyForClone(
 
 Status AesAlgorithm::GetKeyLength(
     const blink::WebCryptoAlgorithm& key_length_algorithm,
-    bool* has_length_bits,
-    unsigned int* length_bits) const {
-  *has_length_bits = true;
+    absl::optional<unsigned int>* length_bits) const {
   *length_bits = key_length_algorithm.AesDerivedKeyParams()->LengthBits();
 
-  if (*length_bits == 128 || *length_bits == 256)
+  if (length_bits->value() == 128 || length_bits->value() == 256) {
     return Status::Success();
+  }
 
   // 192-bit AES is intentionally unsupported (http://crbug.com/533699).
-  if (*length_bits == 192)
+  if (length_bits->value() == 192) {
     return Status::ErrorAes192BitUnsupported();
+  }
 
   return Status::ErrorGetAesKeyLength();
 }

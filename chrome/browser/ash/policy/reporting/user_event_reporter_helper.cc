@@ -9,6 +9,9 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"
@@ -29,11 +32,6 @@ UserEventReporterHelper::UserEventReporterHelper(
     : report_queue_(std::move(report_queue)) {}
 
 UserEventReporterHelper::~UserEventReporterHelper() = default;
-
-bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  return ash::ChromeUserManager::Get()->ShouldReportUser(email);
-}
 
 bool UserEventReporterHelper::ReportingEnabled(
     const std::string& policy_path) const {
@@ -81,4 +79,5 @@ void UserEventReporterHelper::OnEnqueueDefault(Status status) {
              << status;
   }
 }
+
 }  // namespace reporting

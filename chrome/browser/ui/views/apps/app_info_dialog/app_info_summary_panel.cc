@@ -233,7 +233,8 @@ void AppInfoSummaryPanel::StartCalculatingAppSize() {
   if (!app_->path().empty()) {
     extensions::path_util::CalculateAndFormatExtensionDirectorySize(
         app_->path(), IDS_APPLICATION_INFO_SIZE_SMALL_LABEL,
-        base::BindOnce(&AppInfoSummaryPanel::OnAppSizeCalculated, AsWeakPtr()));
+        base::BindOnce(&AppInfoSummaryPanel::OnAppSizeCalculated,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

@@ -1,0 +1,98 @@
+This is a testharness.js-based test.
+PASS item 1
+FAIL item 2 assert_equals: 
+<item data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 3 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                <div><item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                </item></div>
+                <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+            </item>
+margin-bottom expected "0" but got "10"
+FAIL item 4 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                </item>
+margin-bottom expected "0" but got "10"
+FAIL item 5 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item>
+margin-bottom expected "0" but got "10"
+FAIL item 6 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 7 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 8 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 9 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                <div><item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                    <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                </item></div>
+                <div><item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                </item></div>
+            </item>
+margin-bottom expected "0" but got "10"
+FAIL item 10 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                    <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                </item>
+margin-bottom expected "0" but got "10"
+FAIL item 11 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 12 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item>
+margin-bottom expected "0" but got "10"
+FAIL item 13 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 14 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 15 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                    <div><item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item></div>
+                </item>
+margin-bottom expected "0" but got "10"
+FAIL item 16 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0">
+                        <div><item class="collapsed" data-expected-margin-bottom="0"></item></div>
+                    </item>
+margin-bottom expected "0" but got "10"
+FAIL item 17 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+FAIL item 18 assert_equals: 
+<item class="collapsed" data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+Harness: the test ran to completion.
+

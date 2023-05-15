@@ -82,7 +82,12 @@ ReadingListModelFactory::GetDefaultFactoryForTesting() {
 ReadingListModelFactory::ReadingListModelFactory()
     : ProfileKeyedServiceFactory(
           "ReadingListModel",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
@@ -95,9 +100,6 @@ KeyedService* ReadingListModelFactory::BuildServiceInstanceFor(
 
 void ReadingListModelFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries, false,
-      PrefRegistry::NO_REGISTRATION_FLAGS);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, false,

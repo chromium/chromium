@@ -4,12 +4,23 @@
 
 import './cloud_upload_dialog.js';
 import './file_handler_page.js';
+import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogPage} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {CloudProvider, MoveConfirmationPageElement} from './move_confirmation_page.js';
+
+
+window.addEventListener('load', () => {
+  const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
+  const theme = jellyEnabled ? 'refresh23' : 'legacy';
+  document.documentElement.setAttribute('theme', theme);
+  startColorChangeUpdater();
+});
 
 const dialogArgs =
     await CloudUploadBrowserProxy.getInstance().handler.getDialogArgs();
@@ -26,15 +37,17 @@ switch (dialogArgs.args.dialogPage) {
   }
   case DialogPage.kMoveConfirmationOneDrive: {
     const movePage = new MoveConfirmationPageElement();
-    movePage.setNumFiles(dialogArgs.args.fileNames.length);
-    movePage.setCloudProvider(CloudProvider.ONE_DRIVE);
+    await movePage.setDialogAttributes(
+        dialogArgs.args.fileNames.length, dialogArgs.args.operationType,
+        CloudProvider.ONE_DRIVE);
     document.body.append(movePage);
     break;
   }
   case DialogPage.kMoveConfirmationGoogleDrive: {
     const movePage = new MoveConfirmationPageElement();
-    movePage.setNumFiles(dialogArgs.args.fileNames.length);
-    movePage.setCloudProvider(CloudProvider.GOOGLE_DRIVE);
+    await movePage.setDialogAttributes(
+        dialogArgs.args.fileNames.length, dialogArgs.args.operationType,
+        CloudProvider.GOOGLE_DRIVE);
     document.body.append(movePage);
     break;
   }

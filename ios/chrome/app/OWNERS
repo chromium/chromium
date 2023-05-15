@@ -1,4 +1,6 @@
 marq@chromium.org
 rohitrao@chromium.org
 
+per-file credential_provider_migrator_app_agent.*=file://ios/chrome/browser/credential_provider/OWNERS
+
 per-file feed_app_agent*=edchin@google.com

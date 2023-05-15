@@ -45,34 +45,6 @@ class WaylandServerControllerTest : public ash::AshTestBase {
 
 }  // namespace
 
-TEST_F(WaylandServerControllerTest, RequestServer) {
-  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
-  ASSERT_EQ(WaylandServerController::Get(), &wsc);
-
-  base::RunLoop loop;
-  base::FilePath socket_path;
-  {
-    base::ScopedDisallowBlocking no_blocking;
-    WaylandServerController::Get()->CreateServer(
-        std::make_unique<test::TestSecurityDelegate>(),
-        base::BindLambdaForTesting(
-            [&loop, &socket_path](bool success,
-                                  const base::FilePath& new_path) {
-              socket_path = std::move(new_path);
-              loop.Quit();
-            }));
-  }
-  loop.Run();
-  EXPECT_FALSE(socket_path.empty());
-  EXPECT_TRUE(base::PathExists(socket_path));
-
-  {
-    base::ScopedDisallowBlocking no_blocking;
-    WaylandServerController::Get()->DeleteServer(socket_path);
-  }
-  EXPECT_FALSE(base::PathExists(socket_path));
-}
-
 TEST_F(WaylandServerControllerTest, RequestServerByFd) {
   WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
   ASSERT_EQ(WaylandServerController::Get(), &wsc);

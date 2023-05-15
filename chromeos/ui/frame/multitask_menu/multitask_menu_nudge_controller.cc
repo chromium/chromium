@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 namespace chromeos {
@@ -100,8 +101,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
       corner_radius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   widget->SetContentsView(std::move(contents_view));
   return widget;
@@ -117,6 +117,16 @@ MultitaskMenuNudgeController::Delegate::~Delegate() {
 MultitaskMenuNudgeController::Delegate::Delegate() {
   CHECK_EQ(nullptr, g_delegate_instance);
   g_delegate_instance = this;
+}
+
+bool MultitaskMenuNudgeController::Delegate::IsUserNew() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::IsInitialized()
+             ? user_manager::UserManager::Get()->IsCurrentUserNew()
+             : false;
+#else
+  return false;
+#endif
 }
 
 MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
@@ -150,7 +160,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
                                                   views::View* anchor_view) {
   // Delegate could be null if the associated window was created during OOBE.
-  if (!g_delegate_instance) {
+  if (!g_delegate_instance || g_delegate_instance->IsUserNew()) {
     return;
   }
 
@@ -191,7 +201,7 @@ void MultitaskMenuNudgeController::DismissNudge() {
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
   // Avoid sending prefs through the cros API or recording user actions if the
   // nudge isn't shown.
-  if (nudge_widget_ && !nudge_widget_->IsClosed()) {
+  if (!nudge_widget_ || nudge_widget_->IsClosed()) {
     return;
   }
 
@@ -322,12 +332,15 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   window_ = window;
-  window_observation_.Observe(window_);
 
   nudge_widget_ = CreateWidget(window_);
+  anchor_view_ = anchor_view;
+
   nudge_widget_->Show();
 
-  anchor_view_ = anchor_view;
+  // Note that order matters because in some cases, creating the widget may
+  // trigger some window observations.
+  window_observation_.Observe(window_.get());
 
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.

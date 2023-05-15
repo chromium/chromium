@@ -176,14 +176,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNotShowSkippedMerchants) {
   run_loop[5].Run();
 }
 
-// TODO(crbug.com/1246293): Flaky on Linux, ChromeOS, and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_TestNavigationUKMCollection DISABLED_TestNavigationUKMCollection
-#else
-#define MAYBE_TestNavigationUKMCollection TestNavigationUKMCollection
-#endif
-IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest,
-                       MAYBE_TestNavigationUKMCollection) {
+IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL foo_url(kFakeMerchantURLA);
   GURL bar_url(kFakeMerchantURLB);

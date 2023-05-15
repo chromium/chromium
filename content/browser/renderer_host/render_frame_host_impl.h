@@ -54,6 +54,7 @@
 #include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
+#include "content/browser/renderer_host/loading_state.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
@@ -212,6 +213,7 @@ class MessageFilter;
 }
 
 namespace network {
+struct AttributionReportingRuntimeFeatures;
 class ResourceRequestBody;
 }  // namespace network
 
@@ -318,6 +320,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Callback used with IsClipboardPasteContentAllowed() method.
   using IsClipboardPasteContentAllowedCallback =
       ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
+
+  // Data used with IsClipboardPasteContentAllowed() method.
+  using ClipboardPasteData = content::ClipboardPasteData;
 
   // An accessibility reset is only allowed to prevent very rare corner cases
   // or race conditions where the browser and renderer get out of sync. If
@@ -573,7 +578,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // description of the latter method for complete details.
   void IsClipboardPasteContentAllowed(
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // This is called when accessibility events arrive from renderer to browser.
@@ -767,6 +772,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // when the navigation commits. See also `GetLastCommittedURL`.
   void SetLastCommittedUrl(const GURL& url);
 
+  // RenderFrameHost represents a document in a frame. It is either:
+  // 1. The initial empty document,
+  // 2. A document created by a navigation.
+  //
+  // In case of (2), this returns the ID of the navigation who created this
+  // document.
+  //
+  // Note 1: This is updated after receiving DidCommitNavigation IPC.
+  // Note 2: Same-document navigation are not updating this field.
+  int64_t navigation_id() const { return navigation_id_; }
+
   // The most recent non-net-error URL to commit in this frame.  In almost all
   // cases, use GetLastCommittedURL instead.
   const GURL& last_successful_url() const { return last_successful_url_; }
@@ -936,12 +952,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns this RenderFrameHost's loading state. This method is only used by
   // FrameTreeNode. The proper way to check whether a frame is loading is to
   // call FrameTreeNode::IsLoading.
-  bool is_loading() const { return is_loading_; }
+  bool is_loading() const { return loading_state_ != LoadingState::NONE; }
 
-  // Sets `is_loading_` to true to handle renderer debug URLs. This is needed
-  // to generate DidStopLoading events for these URLs.
-  void SetIsLoadingForRendererDebugURL() { is_loading_ = true; }
+  LoadingState loading_state() const { return loading_state_; }
 
+  // Sets `loading_state_` to LOADING_UI_REQUESTED to handle renderer debug
+  // URLs. This is needed to generate DidStopLoading events for these URLs.
+  void SetIsLoadingForRendererDebugURL();
   // Returns true if this is a top-level frame, or if this frame
   // uses a proxy to communicate with its parent frame. Local roots are
   // distinguished by owning a RenderWidgetHost, which manages input events
@@ -1996,9 +2013,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void CreateCodeCacheHost(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
-  void CreateCodeCacheHostWithIsolationKey(
+  void CreateCodeCacheHostWithKeys(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
-      const net::NetworkIsolationKey& nik);
+      const net::NetworkIsolationKey& nik,
+      const blink::StorageKey& storage_key);
 
 #if BUILDFLAG(IS_ANDROID)
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
@@ -2386,11 +2404,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      blink::FencedFrame::ReportingDestination destination) override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      const network::AttributionReportingRuntimeFeatures&
+          attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destination)
-      override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      const network::AttributionReportingRuntimeFeatures&
+          attribution_reporting_runtime_features) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
   void CreatePortal(
@@ -2899,6 +2920,22 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetResourceCacheRemote(
       mojo::PendingRemote<blink::mojom::ResourceCache> pending_remote);
 
+  // Records metrics on sudden termination handlers found in this frame and
+  // subframes.
+  void RecordNavigationSuddenTerminationHandlers();
+
+  // Returns the devtools_navigation_token (see
+  // NavigationRequest::devtools_navigation_token()) associated with the last
+  // cross-document navigation in this RenderFrameHost. This is the same value
+  // that is stored in the DocumentLoader for the RFH's document in the renderer
+  // (and therefore it has per-document semantics). Returns absl::nullopt for a
+  // RenderFrameHost that is the initial empty document (see
+  // |is_initial_empty_document_| for definition).
+  // Note: This is different from the value returned by GetDevToolsFrameToken(),
+  // which is a stable identifier used by DevTools to identify frames and is
+  // kept constant across navigations in a frame.
+  const absl::optional<base::UnguessableToken>& GetDevToolsNavigationToken();
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2990,7 +3027,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                 bool for_legacy);
 
  private:
-  friend class ResumeCommitClosureSetObserver;
+  friend class CommitNavigationPauser;
   friend class RenderFrameHostPermissionsPolicyTest;
   friend class TestRenderFrameHost;
   friend class TestRenderViewHost;
@@ -3032,6 +3069,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       RenderFrameHostManagerUnloadBrowserTest,
       PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerUnloadBrowserTest,
+                           PostMessageToParentWhenSubframeNavigates);
   FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
                            AttemptDuplicateRenderViewHost);
   FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
@@ -3105,6 +3144,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            EvictionInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplPrerenderBrowserTest,
                            KeepPrerenderRFHOwnerAfterActivation);
+  FRIEND_TEST_ALL_PREFIXES(NavigationSuddenTerminationDisablerTypeBrowserTest,
+                           RecordUma);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaNotHttp);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaInitialEmptyDocument);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaSameOrigin);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaActivation);
+
   class SubresourceLoaderFactoriesConfig;
 
   FrameTreeNode* GetSibling(int relative_offset) const;
@@ -3615,6 +3669,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // report to be routed to the Reporting API.
   void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
 
+  // Bitfield values for recording navigation frame-type (main or subframe)
+  // combined with whether a sudden termination disabler is present. Currently
+  // it only covers unload.
+  enum NavigationSuddenTerminationDisablerType : uint32_t {
+    kMainFrame = 1 << 0,
+    kUnload = 1 << 1,
+    kInitialEmptyDocument = 1 << 2,
+    kNotHttp = 1 << 3,
+    kMaxValue = kNotHttp,
+  };
+  // Returns information to be recoreded in UMA about sudden termination
+  // disablers presence.
+  // The return value is ORed values from
+  // `NavigationSuddenTerminationDisablerType`.
+  // If `same_origin` is true, the tree traversal will only recurse into frames
+  // that are the same origin as `this`. E.g. a(b(a)) will not find the second
+  // a.
+  uint32_t FindSuddenTerminationHandlers(bool same_origin);
+
   // The reason for calling StartPendingDeletionOnSubtree() / what is causing
   // the RenderFrameHost to enter the "pending deletion" stage.
   enum class PendingDeletionReason {
@@ -3891,11 +3964,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // "reserved.top_navigation" beacon) will originate from the browser. All
   // other fenced frame beacon calls happen through a `fence.sendBeacon()`
   // JavaScript call which will originate from the renderer.
+  // `attribution_reporting_runtime_features` indicates whether Attribution
+  // Reporting API related runtime features are enabled and is needed for
+  // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
       const std::string& event_data,
       const std::string& event_type,
       blink::FencedFrame::ReportingDestination destination,
       bool from_renderer,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_features,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Indicates whether this frame has third-party storage
@@ -4043,6 +4121,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Track this frame's last committed origin.
   url::Origin last_committed_origin_;
+
+  // Tracks the id of the navigation that created the document. It is updated
+  // after receiving DidCommitNavigation IPC. Same-document navigation are not
+  // updating this field. It will be empty `0` for the initial empty document.
+  int64_t navigation_id_ = 0;
 
   // For about:blank and about:srcdoc documents, this tracks the inherited base
   // URL, snapshotted from the initiator's FrameLoadRequest. This is an empty
@@ -4224,8 +4307,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a
-  // document or not.
-  bool is_loading_ = false;
+  // document or not, and if so, whether it should show loading UI.
+  LoadingState loading_state_ = LoadingState::NONE;
 
   // The unique ID of the latest NavigationEntry that this RenderFrameHost is
   // showing. This may change even when this frame hasn't committed a page,
@@ -4711,6 +4794,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
     void set_navigation_or_document_handle(
         scoped_refptr<NavigationOrDocumentHandle> handle);
 
+    // See comments for |RenderFrameHostImpl::GetDevToolsNavigationToken()| for
+    // more details.
+    const absl::optional<base::UnguessableToken>& devtools_navigation_token()
+        const {
+      return devtools_navigation_token_;
+    }
+
+    void set_devtools_navigation_token(
+        const base::UnguessableToken& devtools_navigation_token) {
+      devtools_navigation_token_ = devtools_navigation_token;
+    }
+
     // Produces weak pointers to the hosting RenderFrameHostImpl. This is
     // invalidated whenever DocumentAssociatedData is destroyed, due to
     // RenderFrameHost deletion or cross-document navigation.
@@ -4726,6 +4821,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     std::vector<internal::DocumentServiceBase*> services_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
     base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
+    absl::optional<base::UnguessableToken> devtools_navigation_token_ =
+        absl::nullopt;
   };
 
   // Reset immediately before a RenderFrameHost is reused for hosting a new

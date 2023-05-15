@@ -51,16 +51,16 @@ ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
 
   VLOG(1) << "Host is " << host_window_->GetName();
 
-  host_window_observer_.Observe(host_window_);
+  host_window_observer_.Observe(host_window_.get());
 
   overlay_container_ = new OverlayNativeViewHost();
-  overlay_container_observer_.Observe(overlay_container_);
+  overlay_container_observer_.Observe(overlay_container_.get());
 
   auto* const widget = views::Widget::GetWidgetForNativeWindow(
       host_window_->GetToplevelWindow());
   DCHECK(widget);
   DCHECK(widget->GetContentsView());
-  widget->GetContentsView()->AddChildView(overlay_container_);
+  widget->GetContentsView()->AddChildView(overlay_container_.get());
 }
 
 ArcOverlayControllerImpl::~ArcOverlayControllerImpl() {

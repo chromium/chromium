@@ -7,14 +7,14 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 import android.content.Context;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,8 +28,8 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestionHost A handle to the object using the suggestions.
      */
     public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            ActionChipsDelegate actionChipsDelegate) {
-        super(context, suggestionHost, actionChipsDelegate, null);
+            OmniboxActionDelegate omniboxActionDelegate) {
+        super(context, suggestionHost, omniboxActionDelegate, null);
         mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 

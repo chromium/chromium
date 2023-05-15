@@ -164,13 +164,6 @@ static_library("test_support") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (!is_android) {
-    sources += [
-      "test/fake_security_domains_server.cc",
-      "test/fake_security_domains_server.h",
-    ]
-  }
-
   if (is_chromeos_lacros) {
     sources += [
       "test/fake_sync_explicit_passphrase_client_ash.cc",
@@ -209,7 +202,6 @@ source_set("unit_tests") {
     "driver/model_load_manager_unittest.cc",
     "driver/model_type_controller_unittest.cc",
     "driver/passphrase_type_metrics_provider_unittest.cc",
-    "driver/startup_controller_unittest.cc",
     "driver/sync_auth_manager_unittest.cc",
     "driver/sync_internals_util_unittest.cc",
     "driver/sync_service_crypto_unittest.cc",
@@ -246,7 +238,7 @@ source_set("unit_tests") {
     "engine/syncer_proto_util_unittest.cc",
     "engine/syncer_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
-    "invalidations/interested_data_types_manager_unittest.cc",
+    "invalidations/sync_invalidations_service_impl_unittest.cc",
     "model/client_tag_based_model_type_processor_unittest.cc",
     "model/client_tag_based_remote_update_handler_unittest.cc",
     "model/in_memory_metadata_change_list_unittest.cc",

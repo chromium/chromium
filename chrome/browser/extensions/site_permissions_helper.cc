@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -84,16 +85,19 @@ void SitePermissionsHelper::UpdateSiteAccess(
     const Extension& extension,
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess new_access) {
-  auto current_access = PermissionsManager::Get(profile_)->GetUserSiteAccess(
+  auto* permissions_manager = PermissionsManager::Get(profile_);
+  auto current_access = permissions_manager->GetUserSiteAccess(
       extension, web_contents->GetLastCommittedURL());
   if (new_access == current_access) {
     return;
   }
 
-  const GURL& current_url = web_contents->GetLastCommittedURL();
   ScriptingPermissionsModifier modifier(profile_, &extension);
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
-  DCHECK(permissions_manager->CanAffectExtension(extension));
+  CHECK(permissions_manager->CanAffectExtension(extension));
+
+  auto current_url = web_contents->GetLastCommittedURL();
+  CHECK(permissions_manager->CanUserSelectSiteAccess(extension, current_url,
+                                                     new_access));
 
   switch (new_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:
@@ -150,27 +154,18 @@ void SitePermissionsHelper::UpdateSiteAccess(
   } else if (blocked_actions != BLOCKED_ACTION_NONE) {
     runner->RunBlockedActions(&extension);
   }
+
+  // Clear extension's active tab permission since it is set when granting user
+  // site permissions.
+  if (revoking_current_site_permissions) {
+    TabHelper::FromWebContents(web_contents)
+        ->active_tab_permission_granter()
+        ->ClearActiveExtensionAndNotify(extension.id());
+  }
 }
 
 bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
   return blocked_actions & kRefreshRequiredActionsMask;
-}
-
-void SitePermissionsHelper::UpdateUserSiteSettings(
-    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
-    content::WebContents* web_contents,
-    extensions::PermissionsManager::UserSiteSetting site_setting) {
-  DCHECK(web_contents);
-
-  ExtensionActionRunner* runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!runner) {
-    return;
-  }
-
-  runner->HandleUserSiteSettingModified(
-      action_ids, web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-      site_setting);
 }
 
 bool SitePermissionsHelper::HasBeenBlocked(

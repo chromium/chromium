@@ -36,7 +36,7 @@ std::set<HoldingSpaceItem::Type> GetHoldingSpaceItemScreenCaptureTypes() {
           GetHoldingSpaceSection(HoldingSpaceSectionId::kScreenCaptures)) {
     for (const HoldingSpaceItem::Type& supported_type :
          section->supported_types) {
-      DCHECK(HoldingSpaceItem::IsScreenCapture(supported_type));
+      DCHECK(HoldingSpaceItem::IsScreenCaptureType(supported_type));
       types.insert(supported_type);
     }
   }
@@ -62,7 +62,7 @@ class HoldingSpaceItemScreenCaptureViewTest
     HoldingSpaceAshTestBase::SetUp();
 
     HoldingSpaceItem::Type type = GetParam();
-    ASSERT_TRUE(HoldingSpaceItem::IsScreenCapture(type));
+    ASSERT_TRUE(HoldingSpaceItem::IsScreenCaptureType(type));
 
     item_ = HoldingSpaceItem::CreateFileBackedItem(
         type, base::FilePath("file_path"), GURL("filesystem:file_system_url"),

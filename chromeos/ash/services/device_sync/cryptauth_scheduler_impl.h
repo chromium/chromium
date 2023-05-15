@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -167,9 +168,10 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  PrefService* pref_service_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  base::Clock* clock_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;
   cryptauthv2::ClientDirective client_directive_;
   base::flat_map<RequestType, std::unique_ptr<base::OneShotTimer>>
       request_timers_;

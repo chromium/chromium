@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
@@ -94,7 +95,8 @@ class CertProvisioningInvalidationHandler
   const CertScope scope_;
 
   // An invalidation service providing the handler with incoming invalidations.
-  invalidation::InvalidationService* const invalidation_service_;
+  const raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+      invalidation_service_;
 
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;
@@ -162,7 +164,7 @@ class CertProvisioningUserInvalidatorFactory
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 //=============== CertProvisioningUserInvalidator ==============================
@@ -175,7 +177,7 @@ class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
                 OnInvalidationCallback on_invalidation_callback) override;
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 //=============== CertProvisioningDeviceInvalidatorFactory =====================
@@ -190,7 +192,8 @@ class CertProvisioningDeviceInvalidatorFactory
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  policy::AffiliatedInvalidationServiceProvider* service_provider_ = nullptr;
+  raw_ptr<policy::AffiliatedInvalidationServiceProvider, ExperimentalAsh>
+      service_provider_ = nullptr;
 };
 
 //=============== CertProvisioningDeviceInvalidator ============================
@@ -214,7 +217,8 @@ class CertProvisioningDeviceInvalidator
 
   invalidation::Topic topic_;
   OnInvalidationCallback on_invalidation_callback_;
-  policy::AffiliatedInvalidationServiceProvider* service_provider_ = nullptr;
+  raw_ptr<policy::AffiliatedInvalidationServiceProvider, ExperimentalAsh>
+      service_provider_ = nullptr;
 };
 
 }  // namespace ash::cert_provisioning

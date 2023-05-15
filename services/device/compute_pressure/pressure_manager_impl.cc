@@ -80,10 +80,7 @@ void PressureManagerImpl::UpdateClients(mojom::PressureSource source,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time timestamp = base::Time::Now();
 
-  // TODO(crbug.com/1365627): Implement algorithm for pressure factors.
-  // https://wicg.github.io/compute-pressure/#contributing-factors
-
-  mojom::PressureUpdate update(source, state, {}, timestamp);
+  mojom::PressureUpdate update(source, state, timestamp);
   for (auto& client : clients_[source]) {
     client->OnPressureUpdated(update.Clone());
   }

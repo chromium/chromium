@@ -11,6 +11,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
@@ -90,7 +91,7 @@ class GbmSurfaceless : public gl::Presenter {
 
   EGLDisplay GetEGLDisplay();
 
-  GbmSurfaceFactory* const surface_factory_;
+  const raw_ptr<GbmSurfaceFactory, ExperimentalAsh> surface_factory_;
   const std::unique_ptr<DrmWindowProxy> window_;
   std::vector<DrmOverlayPlane> planes_;
 

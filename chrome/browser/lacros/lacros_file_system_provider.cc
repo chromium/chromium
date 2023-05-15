@@ -80,8 +80,8 @@ void OnLoadedIcon32x32(base::WeakPtr<Profile> weak_profile_ptr,
   }
 
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  int fsp_service_version = service->GetInterfaceVersion(
-      crosapi::mojom::FileSystemProviderService::Uuid_);
+  int fsp_service_version =
+      service->GetInterfaceVersion<crosapi::mojom::FileSystemProviderService>();
   if (fsp_service_version <
       int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
               kExtensionLoadedDeprecatedMinVersion}) {
@@ -306,8 +306,8 @@ void LacrosFileSystemProvider::OnExtensionUnloaded(
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service->GetInterfaceVersion(
-          crosapi::mojom::FileSystemProviderService::Uuid_) <
+  if (service
+          ->GetInterfaceVersion<crosapi::mojom::FileSystemProviderService>() <
       int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
               kExtensionUnloadedMinVersion}) {
     return;

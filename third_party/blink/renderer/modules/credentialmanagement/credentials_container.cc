@@ -1335,9 +1335,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
   }
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
-    // TODO(yigu): Ideally the logic should be handled in CredentialManager
-    // via Get. However currently it's only for password management and we
-    // should refactor the logic to make it generic.
+    // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
+    // CredentialManager via Get. However currently it's only for password
+    // management and we should refactor the logic to make it generic.
     if (!RuntimeEnabledFeatures::FedCmEnabled(context)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
@@ -1410,10 +1410,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       identity_provider_ptrs.push_back(std::move(identity_provider));
     }
 
-    // |autoReauthn| is default to false and can only be set when the feature
-    // is enabled.
-    DCHECK(RuntimeEnabledFeatures::FedCmAutoReauthnEnabled(context) ||
-           !options->identity()->autoReauthn());
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {
       if (signal->aborted()) {
@@ -1426,8 +1422,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
-    bool auto_reauthn = options->identity()->autoReauthn();
-
     mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
     if (RuntimeEnabledFeatures::FedCmRpContextEnabled() &&
         options->identity()->hasContext()) {
@@ -1435,9 +1429,25 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           options->identity()->context());
     }
 
+    CredentialMediationRequirement mediation_requirement;
+    if (options->mediation() == "conditional") {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Conditional mediation is not supported for this credential type"));
+      return promise;
+    }
+    if (options->mediation() == "silent") {
+      mediation_requirement = CredentialMediationRequirement::kSilent;
+    } else if (options->mediation() == "required") {
+      mediation_requirement = CredentialMediationRequirement::kRequired;
+    } else {
+      DCHECK_EQ("optional", options->mediation());
+      mediation_requirement = CredentialMediationRequirement::kOptional;
+    }
+
     if (!web_identity_requester_) {
-      web_identity_requester_ =
-          MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+      web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
+          WrapPersistent(context), mediation_requirement);
     }
 
     if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
@@ -1445,13 +1455,13 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
       mojom::blink::IdentityProviderGetParametersPtr get_params =
           mojom::blink::IdentityProviderGetParameters::New(
-              std::move(identity_provider_ptrs), auto_reauthn, rp_context);
+              std::move(identity_provider_ptrs), rp_context);
       idp_get_params.push_back(std::move(get_params));
 
       auto* auth_request =
           CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
       auth_request->RequestToken(
-          std::move(idp_get_params),
+          std::move(idp_get_params), mediation_requirement,
           WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
                         std::move(scoped_abort_state),
                         WrapPersistent(options)));
@@ -1469,9 +1479,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           std::move(scoped_abort_state));
     }
 
-    web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
-                                           options->identity()->providers(),
-                                           auto_reauthn, rp_context);
+    web_identity_requester_->AppendGetCall(
+        WrapPersistent(resolver), options->identity()->providers(), rp_context);
 
     return promise;
   }
@@ -1862,6 +1871,14 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->PreventSilentAccess(
+      WTF::BindOnce(&OnPreventSilentAccessComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+
+  // TODO(https://crbug.com/1441075): Unify the implementation for
+  // different CredentialTypes and avoid the duplication eventually.
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->PreventSilentAccess(
       WTF::BindOnce(&OnPreventSilentAccessComplete,
                     std::make_unique<ScopedPromiseResolver>(resolver)));
 

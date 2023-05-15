@@ -13,13 +13,10 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
 
-  constexpr uint8_t kMaxMask = 7;
-
   int min_version = provider.ConsumeIntegral<int>();
-  uint8_t mask = provider.ConsumeIntegralInRange<uint8_t>(0, kMaxMask);
   auto qr_data = provider.ConsumeRemainingBytes<uint8_t>();
 
   QRCodeGenerator qr;
-  std::ignore = qr.Generate(qr_data, min_version, mask);
+  std::ignore = qr.Generate(qr_data, min_version);
   return 0;
 }

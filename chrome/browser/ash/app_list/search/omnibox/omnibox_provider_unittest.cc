@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
@@ -156,7 +157,7 @@ class OmniboxProviderTest : public testing::Test {
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
   std::unique_ptr<OmniboxProvider> provider_;
 };

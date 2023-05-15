@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/cursor_shape_stub.h"
@@ -16,10 +17,15 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-namespace remoting {
+namespace {
+// Poll mouse shape at least 10 times a second.
+constexpr base::TimeDelta kMaxCursorCaptureInterval = base::Milliseconds(100);
 
-// Poll mouse shape 10 times a second.
-static const int kCursorCaptureIntervalMs = 100;
+// Poll mouse shape at most 100 times a second.
+constexpr base::TimeDelta kMinCursorCaptureInterval = base::Milliseconds(10);
+}  // namespace
+
+namespace remoting {
 
 MouseShapePump::MouseShapePump(
     std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor,
@@ -28,13 +34,16 @@ MouseShapePump::MouseShapePump(
       cursor_shape_stub_(cursor_shape_stub) {
   mouse_cursor_monitor_->Init(this,
                               webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
-  capture_timer_.Start(
-      FROM_HERE, base::Milliseconds(kCursorCaptureIntervalMs),
-      base::BindRepeating(&MouseShapePump::Capture, base::Unretained(this)));
+  StartCaptureTimer(kMaxCursorCaptureInterval);
 }
 
 MouseShapePump::~MouseShapePump() {
   DCHECK(thread_checker_.CalledOnValidThread());
+}
+
+void MouseShapePump::SetCursorCaptureInterval(base::TimeDelta new_interval) {
+  StartCaptureTimer(std::clamp(new_interval, kMinCursorCaptureInterval,
+                               kMaxCursorCaptureInterval));
 }
 
 void MouseShapePump::SetMouseCursorMonitorCallback(
@@ -46,6 +55,12 @@ void MouseShapePump::Capture() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   mouse_cursor_monitor_->Capture();
+}
+
+void MouseShapePump::StartCaptureTimer(base::TimeDelta capture_interval) {
+  capture_timer_.Start(
+      FROM_HERE, std::move(capture_interval),
+      base::BindRepeating(&MouseShapePump::Capture, base::Unretained(this)));
 }
 
 void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {

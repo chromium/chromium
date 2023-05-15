@@ -75,7 +75,7 @@ class ShellApkVersion(unittest.TestCase):
      SHELL_APK_RES_FILE_PATH = 'shell_apk/res/mipmap-xxxxxxhdpi/app_icon.png'
      CURRENT_VERSION_FILE_PATH = 'shell_apk/current_version/current_version.gni'
 
-     # template_shell_apk_version not updated. There should be a warning about
+     # template_shell_apk_version not updated. There should be an error about
      # template_shell_apk_version needing to be updated.
      input_api = CustomMockInputApi()
      input_api.files = input_api.makeMockAffectedFiles(
@@ -84,15 +84,15 @@ class ShellApkVersion(unittest.TestCase):
          MockAffectedFile(CURRENT_VERSION_FILE_PATH, 'variable=O',
                           'variable=N', action='M')
      ]
-     warnings = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
-                                                           MockOutputApi())
-     self.assertEqual(1, len(warnings))
-     self.assertEqual(self.UPDATE_CURRENT_VERSION_MESSAGE, warnings[0].message)
+     errors = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
+                                                         MockOutputApi())
+     self.assertEqual(1, len(errors))
+     self.assertEqual(self.UPDATE_CURRENT_VERSION_MESSAGE, errors[0].message)
      self.assertEqual([COMMON_SRC_FILE_PATH, SHELL_APK_SRC_FILE_PATH,
                        SHELL_APK_RES_FILE_PATH],
-                      warnings[0].items)
+                      errors[0].items)
 
-     # template_shell_apk_version updated. There should be no warnings.
+     # template_shell_apk_version updated. There should be no errors.
      input_api.files = input_api.makeMockAffectedFiles(
          changed_java_file_paths + [SHELL_APK_RES_FILE_PATH])
      input_api.files += [
@@ -100,9 +100,9 @@ class ShellApkVersion(unittest.TestCase):
                           ['current_shell_apk_version=1'],
                           ['current_shell_apk_version=2'], action='M')
      ]
-     warnings = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
-                                                           MockOutputApi())
-     self.assertEqual([], warnings)
+     errors = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
+                                                         MockOutputApi())
+     self.assertEqual([], errors)
 
 
 class OverlappingResourceFileNames(unittest.TestCase):

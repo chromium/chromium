@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -100,9 +101,9 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
 
   // Views created in the class will be part of tree of |this|, so these
   // child views will be deleted when |this| is deleted.
-  InformationTextArea* auxiliary_text_;
-  InformationTextArea* preedit_;
-  views::View* candidate_area_;
+  raw_ptr<InformationTextArea, ExperimentalAsh> auxiliary_text_;
+  raw_ptr<InformationTextArea, ExperimentalAsh> preedit_;
+  raw_ptr<views::View, ExperimentalAsh> candidate_area_;
 
   // The candidate views are used for rendering candidates.
   std::vector<CandidateView*> candidate_views_;

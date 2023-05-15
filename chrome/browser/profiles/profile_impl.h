@@ -54,6 +54,7 @@ namespace policy {
 class AsyncPolicyProvider;
 class ConfigurationPolicyProvider;
 class ProfilePolicyConnector;
+class ProfileCloudPolicyManager;
 }  // namespace policy
 
 namespace sync_preferences {
@@ -142,10 +143,9 @@ class ProfileImpl : public Profile {
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
-  policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
-      override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
+  policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
@@ -253,7 +253,6 @@ class ProfileImpl : public Profile {
   //   which can be:
   //     - |user_cloud_policy_manager_|;
   //     - |user_cloud_policy_manager_ash_|;
-  //     - or |active_directory_policy_manager_|.
   // - configuration_policy_provider() depends on |schema_registry_service_|
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
@@ -263,10 +262,10 @@ class ProfileImpl : public Profile {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::UserCloudPolicyManagerAsh>
       user_cloud_policy_manager_ash_;
-  std::unique_ptr<policy::ActiveDirectoryPolicyManager>
-      active_directory_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+  std::unique_ptr<policy::ProfileCloudPolicyManager>
+      profile_cloud_policy_manager_;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<policy::AsyncPolicyProvider> user_policy_provider_;

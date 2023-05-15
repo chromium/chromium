@@ -280,8 +280,11 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
                                     : StyleUtil::SetUpFocusRingForView(view);
     // Use a custom focus predicate as the default one checks if |view| actually
     // has focus which won't be happening since our widgets are not activatable.
-    focus_ring_->SetHasFocusPredicate(
-        [&](views::View* view) { return view->GetVisible() && has_focus_; });
+    focus_ring_->SetHasFocusPredicate(base::BindRepeating(
+        [](const HighlightableView* highlightable, const views::View* view) {
+          return view->GetVisible() && highlightable->has_focus_;
+        },
+        base::Unretained(this)));
   }
 
   if (needs_highlight_path_) {
@@ -581,8 +584,10 @@ bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   // currently has focus and we are already in region mode, as we still want to
   // create a default region in this case.
   CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-  if (view->GetView() ==
-          bar_view->capture_source_view()->region_toggle_button() &&
+  if (const CaptureModeSourceView* capture_source_view =
+          bar_view->GetCaptureSourceView();
+      capture_source_view &&
+      view->GetView() == capture_source_view->region_toggle_button() &&
       CaptureModeController::Get()->source() == CaptureModeSource::kRegion) {
     return false;
   }
@@ -673,7 +678,7 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
     // Similarly, if the recording type menu is closed while focus is in or
     // about to be in it, we manually focus the drop down button as long as it
     // still exists.
-    auto* capture_label_view = session_->capture_label_view_;
+    auto* capture_label_view = session_->capture_label_view_.get();
     if (capture_label_view && capture_label_view->GetWidget()->IsVisible() &&
         capture_label_view->IsRecordingTypeDropDownButtonVisible()) {
       current_focus_group_ = FocusGroup::kCaptureButton;
@@ -763,7 +768,7 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
       // interactable, meaning it has buttons that can be pressed. The capture
       // label widget can be hidden when it intersects with other capture UIs.
       // In that case, we shouldn't navigate to it via the keyboard.
-      auto* capture_label_view = session_->capture_label_view_;
+      auto* capture_label_view = session_->capture_label_view_.get();
       return capture_label_view &&
              capture_label_view->GetWidget()->IsVisible() &&
              capture_label_view->IsViewInteractable();
@@ -799,8 +804,11 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     case FocusGroup::kTypeSource: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-      CaptureModeTypeView* type_view = bar_view->capture_type_view();
-      CaptureModeSourceView* source_view = bar_view->capture_source_view();
+      CaptureModeTypeView* type_view = bar_view->GetCaptureTypeView();
+      CaptureModeSourceView* source_view = bar_view->GetCaptureSourceView();
+      if (!type_view || !source_view) {
+        break;
+      }
       for (auto* button :
            {type_view->image_toggle_button(), type_view->video_toggle_button(),
             source_view->fullscreen_toggle_button(),
@@ -815,7 +823,7 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kCaptureButton: {
-      auto* capture_label_view = session_->capture_label_view_;
+      auto* capture_label_view = session_->capture_label_view_.get();
       DCHECK(capture_label_view);
       items = capture_label_view->capture_button_container()
                   ->GetHighlightableItems();
@@ -943,7 +951,7 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
     a11y_widgets.push_back(bar_widget);
 
   // Add the label widget only if the button is visible.
-  if (auto* capture_label_view = session_->capture_label_view_;
+  if (auto* capture_label_view = session_->capture_label_view_.get();
       capture_label_view && capture_label_view->IsViewInteractable() &&
       capture_label_view->GetWidget()->IsVisible()) {
     a11y_widgets.push_back(capture_label_view->GetWidget());

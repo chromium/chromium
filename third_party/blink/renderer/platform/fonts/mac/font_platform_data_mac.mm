@@ -23,11 +23,11 @@
 
 #import "third_party/blink/renderer/platform/fonts/mac/font_platform_data_mac.h"
 
-#import <AppKit/NSFont.h>
+#import <AppKit/AppKit.h>
 #import <AvailabilityMacros.h>
 
+#include "base/apple/bridging.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
@@ -41,6 +41,10 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #import "third_party/skia/include/ports/SkTypeface_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 constexpr SkFourByteTag kOpszTag = SkSetFourByteTag('o', 'p', 's', 'z');
@@ -93,11 +97,10 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
 }
 
 static bool CanLoadInProcess(NSFont* ns_font) {
-  base::ScopedCFTypeRef<CGFontRef> cg_font(
-      CTFontCopyGraphicsFont(base::mac::NSToCFCast(ns_font), 0));
-  // Toll-free bridged types CFStringRef and NSString*.
-  base::scoped_nsobject<NSString> font_name(
-      base::mac::CFToNSCast(CGFontCopyPostScriptName(cg_font)));
+  base::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
+      base::apple::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
+  NSString* font_name =
+      base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font));
   return ![font_name isEqualToString:@"LastResort"];
 }
 
@@ -119,7 +122,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
   DCHECK(CanLoadInProcess(ns_font));
 
   sk_sp<SkTypeface> typeface =
-      SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(ns_font));
+      SkMakeTypefaceFromCTFont(base::apple::NSToCFPtrCast(ns_font));
 
   auto make_typeface_fontplatformdata = [&typeface, &size, &synthetic_bold,
                                          &synthetic_italic, &text_rendering,

@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_COORDINATOR_H_
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
-
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/view_observer.h"
@@ -27,9 +26,8 @@ class ChromeLabsCoordinator : public views::ViewObserver {
     kChromeOsOwnerUserType,
   };
 
-  ChromeLabsCoordinator(ChromeLabsButton* anchor_view,
-                        Browser* browser,
-                        const ChromeLabsBubbleViewModel* model);
+  ChromeLabsCoordinator(ChromeLabsButton* anchor_view, Browser* browser,
+                        const ChromeLabsModel* model);
   ~ChromeLabsCoordinator() override;
 
   bool BubbleExists();
@@ -54,8 +52,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
 
   raw_ptr<ChromeLabsButton, DanglingUntriaged> anchor_view_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
-  raw_ptr<const ChromeLabsBubbleViewModel, DanglingUntriaged>
-      chrome_labs_model_;
+  raw_ptr<const ChromeLabsModel, DanglingUntriaged> chrome_labs_model_;
   raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_ =
       nullptr;
 

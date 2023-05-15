@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_terminal_provider.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
@@ -32,7 +33,7 @@ class BruschettaTerminalProviderTest : public testing::Test {
   }
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  FakeBruschettaLauncher* launcher_;
+  raw_ptr<FakeBruschettaLauncher, ExperimentalAsh> launcher_;
   base::RunLoop run_loop_;
 };
 

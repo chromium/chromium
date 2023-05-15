@@ -111,10 +111,12 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/audio/audio_features.h"
 #else
 #include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -149,16 +151,33 @@ CastContentBrowserClient::CastContentBrowserClient(
       cast_network_contexts_(
           std::make_unique<CastNetworkContexts>(GetCorsExemptHeadersList())),
       cast_feature_list_creator_(cast_feature_list_creator) {
-  cast_feature_list_creator_->SetExtraEnableFeatures({
-    &::media::kInternalMediaSession, &features::kNetworkServiceInProcess,
+  std::vector<const base::Feature*> extra_enable_features = {
+    &::media::kInternalMediaSession,
+    &features::kNetworkServiceInProcess,
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
-        &features::kMojoVideoCapture,
+    &features::kMojoVideoCapture,
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
-        // Enable accelerated video decode if v4l2 codec is supported.
-        &::media::kVaapiVideoDecodeLinux,
+    // Enable accelerated video decode if v4l2 codec is supported.
+    &::media::kVaapiVideoDecodeLinux,
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
-  });
+  };
+
+  std::vector<const base::Feature*> extra_disable_features;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_tv()) {
+    // Use the software decoder provided by MediaCodec instead of the built in
+    // software decoder. This can improve av sync quality.
+    extra_enable_features.push_back(&::media::kAllowMediaCodecSoftwareDecoder);
+    // Disable AAudio on ATV for a better av sync quality, before we root cause
+    // the issue.
+    extra_disable_features.push_back(&::features::kUseAAudioDriver);
+  }
+#endif
+
+  cast_feature_list_creator_->SetExtraEnableFeatures(extra_enable_features);
+  cast_feature_list_creator_->SetExtraDisableFeatures(extra_disable_features);
 }
 
 CastContentBrowserClient::~CastContentBrowserClient() {

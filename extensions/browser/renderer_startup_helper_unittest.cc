@@ -116,6 +116,8 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override {}
 
+  void UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) override {}
+
   void ShouldSuspend(ShouldSuspendCallback callback) override {
     std::move(callback).Run();
   }
@@ -206,42 +208,36 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id_input) {
-    base::Value::Dict manifest = DictionaryBuilder()
+    base::Value::Dict manifest = base::Value::Dict()
                                      .Set("name", "extension")
                                      .Set("description", "an extension")
                                      .Set("manifest_version", 2)
-                                     .Set("version", "0.1")
-                                     .Build();
+                                     .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreateTheme(const std::string& id_input) {
-    base::Value::Dict manifest = DictionaryBuilder()
+    base::Value::Dict manifest = base::Value::Dict()
                                      .Set("name", "theme")
                                      .Set("description", "a theme")
-                                     .Set("theme", DictionaryBuilder().Build())
+                                     .Set("theme", base::Value::Dict())
                                      .Set("manifest_version", 2)
-                                     .Set("version", "0.1")
-                                     .Build();
+                                     .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreatePlatformApp(
       const std::string& id_input) {
-    base::Value::Dict background =
-        DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").Build())
-            .Build();
+    base::Value::Dict background = base::Value::Dict().Set(
+        "scripts", base::Value::List().Append("background.js"));
     base::Value::Dict manifest =
-        DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "platform_app")
             .Set("description", "a platform app")
-            .Set("app", DictionaryBuilder()
-                            .Set("background", std::move(background))
-                            .Build())
+            .Set("app",
+                 base::Value::Dict().Set("background", std::move(background)))
             .Set("manifest_version", 2)
-            .Set("version", "0.1")
-            .Build();
+            .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
   }
 

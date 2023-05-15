@@ -75,14 +75,14 @@ class RecommendAppsScreen : public BaseScreen {
   base::WeakPtr<RecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;
 
-  base::raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
+  raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
 
   // Skip the screen for testing if set to true.
   bool skip_for_testing_ = false;
 
   size_t recommended_app_count_ = 0;
 
-  base::raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<RecommendAppsScreen> weak_factory_{this};
 };

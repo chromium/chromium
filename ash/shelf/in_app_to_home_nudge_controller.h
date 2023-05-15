@@ -6,6 +6,7 @@
 #define ASH_SHELF_IN_APP_TO_HOME_NUDGE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -30,7 +31,7 @@ class ASH_EXPORT InAppToHomeNudgeController {
 
  private:
   // pointer to the shelf widget that owns the drag handle anchoring the nudge.
-  ShelfWidget* const shelf_widget_;
+  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
 };
 
 }  // namespace ash

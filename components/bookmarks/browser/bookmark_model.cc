@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,11 +22,13 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/bookmarks/browser/bookmark_undo_delegate.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"
+#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/typed_count_sorter.h"
@@ -106,8 +109,8 @@ class EmptyUndoDelegate : public BookmarkUndoDelegate {
 
  private:
   // BookmarkUndoDelegate:
-  void SetUndoProvider(BookmarkUndoProvider* provider) override {}
   void OnBookmarkNodeRemoved(BookmarkModel* model,
+                             BookmarkUndoProvider* undo_provider,
                              const BookmarkNode* parent,
                              size_t index,
                              std::unique_ptr<BookmarkNode> node) override {}
@@ -253,10 +256,97 @@ void BookmarkModel::Remove(const BookmarkNode* node,
                                  removed_urls);
   }
 
-  undo_delegate()->OnBookmarkNodeRemoved(this, parent, index.value(),
+  undo_delegate()->OnBookmarkNodeRemoved(this, this, parent, index.value(),
                                          std::move(owned_node));
 
   metrics::RecordBookmarkRemoved(source);
+}
+
+void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
+    const BookmarkNode* node,
+    BookmarkModel* dest_model,
+    const BookmarkNode* dest_parent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(node);
+  CHECK(dest_model);
+  CHECK(dest_parent);
+  CHECK(this != dest_model);
+  CHECK(loaded_);
+  CHECK(!is_root_node(node));
+  CHECK(node->HasAncestor(root_node()));
+  CHECK(dest_parent->HasAncestor(dest_model->root_node()));
+  const BookmarkNode* parent = node->parent();
+  CHECK(parent);
+  absl::optional<size_t> index = parent->GetIndexOf(node).value();
+  CHECK(index.has_value());
+  // Can't move permanent nodes.
+  CHECK(!is_permanent_node(node)) << "for type " << node->type();
+
+  // Group removing bookmarks from `this` and adding them to `dest_model` into
+  // one undo action.
+  ScopedGroupBookmarkActions undo_grouping(this);
+
+  // There are no special notifications for moving bookmarks between models, so
+  // observers of the source model get removal notifications, while observers of
+  // the destination model get bookmark addition notifications.
+  for (BookmarkModelObserver& observer : observers_) {
+    observer.OnWillRemoveBookmarks(this, parent, index.value(), node);
+  }
+
+  std::set<GURL> removed_urls;
+  std::unique_ptr<BookmarkNode> owned_node =
+      url_index_->Remove(AsMutable(node), &removed_urls);
+  RemoveNodeFromIndexRecursive(owned_node.get());
+
+  std::unique_ptr<BookmarkNode> subtree_copy =
+      CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(owned_node.get(),
+                                                      dest_model);
+  // `MoveToOtherModelWithNewNodeIdsAndUuids` can only be triggered by a user
+  // action at the moment. `AddNode` will take care of scheduling a save for
+  // `dest_model`.
+  const BookmarkNode* added_node = dest_model->AddNode(
+      AsMutable(dest_parent), dest_parent->children().size(),
+      std::move(subtree_copy), /*added_by_user=*/true);
+
+  // Current implementation requires that `BookmarkNodeAdded` is sent for all
+  // descendants (see `BookmarkNodeAdded` documentation).
+  // TODO(crbug.com/1440384): Revise the `BookmarkModelObserver` API.
+  dest_model->NotifyNodeAddedForAllDescendants(added_node,
+                                               /*added_by_user=*/true);
+
+  // TODO(crbug.com/1441911): Make sure this flow can never cause data loss.
+  if (store_) {
+    store_->ScheduleSave();
+  }
+
+  for (BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeRemoved(this, parent, index.value(), node,
+                                 removed_urls);
+  }
+
+  undo_delegate()->OnBookmarkNodeRemoved(this, this, parent, index.value(),
+                                         std::move(owned_node));
+  // TODO(https://crbug.com/1416567): Record metrics.
+}
+
+std::unique_ptr<BookmarkNode>
+BookmarkModel::CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(
+    const BookmarkNode* node,
+    BookmarkModel* dest_model) {
+  auto new_node = std::make_unique<BookmarkNode>(
+      dest_model->generate_next_node_id(), base::Uuid::GenerateRandomV4(),
+      node->GetTitledUrlNodeUrl());
+  new_node->SetTitle(node->GetTitle());
+  new_node->set_date_added(node->date_added());
+  new_node->set_date_folder_modified(node->date_folder_modified());
+
+  for (const auto& child : node->children()) {
+    std::unique_ptr<BookmarkNode> child_copy =
+        CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(child.get(),
+                                                        dest_model);
+    new_node->Add(std::move(child_copy));
+  }
+  return new_node;
 }
 
 void BookmarkModel::RemoveAllUserBookmarks() {
@@ -305,7 +395,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
 
   BeginGroupedChanges();
   for (auto& removed_node_data : removed_node_data_list) {
-    undo_delegate()->OnBookmarkNodeRemoved(this, removed_node_data.parent,
+    undo_delegate()->OnBookmarkNodeRemoved(this, this, removed_node_data.parent,
                                            removed_node_data.index,
                                            std::move(removed_node_data.node));
   }
@@ -959,17 +1049,18 @@ void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
 
   // We might be restoring a folder node that have already contained a set of
   // child nodes. We need to notify all of them.
-  NotifyNodeAddedForAllDescendants(node_ptr);
+  NotifyNodeAddedForAllDescendants(node_ptr, /*added_by_user=*/false);
 }
 
-void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node) {
+void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
+                                                     bool added_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (size_t i = 0; i < node->children().size(); ++i) {
     for (BookmarkModelObserver& observer : observers_) {
-      observer.BookmarkNodeAdded(this, node, i, false);
+      observer.BookmarkNodeAdded(this, node, i, added_by_user);
     }
-    NotifyNodeAddedForAllDescendants(node->children()[i].get());
+    NotifyNodeAddedForAllDescendants(node->children()[i].get(), added_by_user);
   }
 }
 
@@ -1156,9 +1247,6 @@ int64_t BookmarkModel::generate_next_node_id() {
 void BookmarkModel::SetUndoDelegate(BookmarkUndoDelegate* undo_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   undo_delegate_ = undo_delegate;
-  if (undo_delegate_) {
-    undo_delegate_->SetUndoProvider(this);
-  }
 }
 
 BookmarkUndoDelegate* BookmarkModel::undo_delegate() const {

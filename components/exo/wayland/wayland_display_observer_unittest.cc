@@ -8,6 +8,7 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,10 +68,10 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
   }
 
   int fds_[2] = {0, 0};
-  wl_display* wayland_display_ = nullptr;
-  wl_client* client_ = nullptr;
-  wl_resource* wl_output_resource_ = nullptr;
-  wl_resource* xdg_output_resource_ = nullptr;
+  raw_ptr<wl_display, ExperimentalAsh> wayland_display_ = nullptr;
+  raw_ptr<wl_client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<wl_resource, ExperimentalAsh> wl_output_resource_ = nullptr;
+  raw_ptr<wl_resource, ExperimentalAsh> xdg_output_resource_ = nullptr;
   std::unique_ptr<WaylandDisplayOutput> output_;
   std::unique_ptr<MockWaylandDisplayHandler> handler_;
 };

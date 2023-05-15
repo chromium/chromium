@@ -9,6 +9,8 @@
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -209,13 +211,13 @@ class UsageTimeLimitProcessor {
   const base::Time current_time_;
 
   // Unowned. The device's timezone.
-  const icu::TimeZone* const time_zone_;
+  const raw_ptr<const icu::TimeZone, ExperimentalAsh> time_zone_;
 
   // Current weekday, extracted from current time.
   internal::Weekday current_weekday_;
 
   // The previous state calculated by this class.
-  const absl::optional<State>& previous_state_;
+  const raw_ref<const absl::optional<State>, ExperimentalAsh> previous_state_;
 
   // The active time window limit. If this is set, it means that the user
   // session should be locked, in other words, there is a time window limit set
@@ -317,21 +319,25 @@ State UsageTimeLimitProcessor::GetState() {
   bool current_state_above_usage_limit =
       state.is_time_usage_limit_enabled && state.remaining_usage <= delta_zero;
   bool previous_state_below_usage_limit =
-      previous_state_ && previous_state_->is_time_usage_limit_enabled &&
-      previous_state_->remaining_usage > delta_zero;
+      previous_state_->has_value() &&
+      (*previous_state_)->is_time_usage_limit_enabled &&
+      (*previous_state_)->remaining_usage > delta_zero;
   bool previous_state_no_usage_limit =
-      previous_state_ && !previous_state_->is_time_usage_limit_enabled;
+      previous_state_->has_value() &&
+      !(*previous_state_)->is_time_usage_limit_enabled;
   bool previous_state_above_usage_limit =
-      previous_state_ && previous_state_->is_time_usage_limit_enabled &&
-      previous_state_->remaining_usage <= delta_zero;
+      previous_state_->has_value() &&
+      (*previous_state_)->is_time_usage_limit_enabled &&
+      (*previous_state_)->remaining_usage <= delta_zero;
   if ((previous_state_below_usage_limit || previous_state_no_usage_limit ||
-       !previous_state_) &&
+       !previous_state_->has_value()) &&
       current_state_above_usage_limit) {
     // Time usage limit just started being enforced.
     state.time_usage_limit_started = usage_timestamp_;
   } else if (previous_state_above_usage_limit) {
     // Time usage limit was already enforced.
-    state.time_usage_limit_started = previous_state_->time_usage_limit_started;
+    state.time_usage_limit_started =
+        (*previous_state_)->time_usage_limit_started;
   }
 
   state.next_state_change_time =
@@ -419,8 +425,9 @@ bool UsageTimeLimitProcessor::IsUsageLimitOverridden(
     return false;
   }
 
-  if (!time_usage_limit_ || !previous_state_)
+  if (!time_usage_limit_ || !previous_state_->has_value()) {
     return false;
+  }
 
   // If there's an override with duration, the usage limit is overridden only
   // if the override is active and duration is not over, since it works
@@ -433,12 +440,12 @@ bool UsageTimeLimitProcessor::IsUsageLimitOverridden(
 
   base::Time last_reset_time = ConvertPolicyTime(LockOverrideResetTime(), 0);
   bool usage_limit_enforced_previously =
-      previous_state_->is_time_usage_limit_enabled &&
-      previous_state_->remaining_usage <= base::Minutes(0);
+      (*previous_state_)->is_time_usage_limit_enabled &&
+      (*previous_state_)->remaining_usage <= base::Minutes(0);
   bool override_created_after_usage_limit_start =
-      !previous_state_->time_usage_limit_started.is_null() &&
+      !(*previous_state_)->time_usage_limit_started.is_null() &&
       time_limit_override_->created_at() >
-          previous_state_->time_usage_limit_started &&
+          (*previous_state_)->time_usage_limit_started &&
       time_limit_override_->created_at() >= last_reset_time;
   return usage_limit_enforced_previously &&
          override_created_after_usage_limit_start;
@@ -671,8 +678,9 @@ bool UsageTimeLimitProcessor::HasActiveOverride() {
 
   // Check if the usage time was increased before the override creation, which
   // invalidates it.
-  if (previous_state_ && previous_state_->is_time_usage_limit_enabled &&
-      previous_state_->remaining_usage <= base::Minutes(0)) {
+  if (previous_state_->has_value() &&
+      (*previous_state_)->is_time_usage_limit_enabled &&
+      (*previous_state_)->remaining_usage <= base::Minutes(0)) {
     if (enabled_time_usage_limit_ &&
         time_limit_override_->created_at() <
             enabled_time_usage_limit_->last_updated) {

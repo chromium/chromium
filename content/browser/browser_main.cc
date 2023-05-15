@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/debug/alias.h"
 #include "base/process/current_process.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/browser_main_runner_impl.h"
 #include "content/common/content_constants_internal.h"
@@ -30,6 +32,13 @@ int BrowserMain(MainFunctionParams parameters) {
     return exit_code;
 
   exit_code = main_runner->Run();
+
+  // Record the time shutdown started in convenient units. This can be compared
+  // to times stored in places like ReportThreadHang() and
+  // TaskAnnotator::RunTaskImpl() when analyzing hangs.
+  const int64_t shutdown_time =
+      base::TimeTicks::Now().since_origin().InSeconds();
+  base::debug::Alias(&shutdown_time);
 
   main_runner->Shutdown();
 

@@ -56,7 +56,7 @@ class NET_EXPORT ReportingHeaderParser {
   // `reporting_source`. `network_anonymization_key` is the NIK which will be
   // passed in with reports to be queued. This must match the NIK from
   // `isolation_source`, unless it is empty (which will be the case if the
-  // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
+  // network state partitioning is disabled).
   static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
       const base::UnguessableToken& reporting_source,

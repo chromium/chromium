@@ -10,6 +10,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -58,11 +59,11 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   MediaTray& operator=(const MediaTray&) = delete;
   ~MediaTray() override;
 
-  // MediaNotificationProviderObserver implementations.
+  // MediaNotificationProviderObserver:
   void OnNotificationListChanged() override;
   void OnNotificationListViewSizeChanged() override;
 
-  // TrayBackgroundview implementations.
+  // TrayBackgroundView:
   std::u16string GetAccessibleNameForTray() override;
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
@@ -74,12 +75,16 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void ClickedOutsideBubble() override;
   void AnchorUpdated() override;
 
-  // SessionObserver implementation.
+  // SessionObserver:
   void OnLockStateChanged(bool locked) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // Show/hide media tray.
   void UpdateDisplayState();
+
+  // If `item_id` is non-empty, the bubble contains just the media item
+  // specified by the ID. If it's an empty string then all the items are shown.
+  void ShowBubbleWithItem(const std::string& item_id);
 
   TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
 
@@ -88,7 +93,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
  private:
   friend class MediaTrayTest;
 
-  // TrayBubbleView::Delegate implementation.
+  // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
 
   // Called when theme change, set colors for media notification view.
@@ -98,18 +103,19 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnGlobalMediaControlsPinPrefChanged();
 
   void ShowEmptyState();
+  std::unique_ptr<TrayBubbleView> CreateTrayBubbleView();
 
   // Ptr to pin button in the dialog, owned by the view hierarchy.
-  views::Button* pin_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> pin_button_ = nullptr;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  views::ImageView* icon_;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_;
 
-  views::View* content_view_ = nullptr;
-  views::View* empty_state_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> content_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> empty_state_view_ = nullptr;
 
   bool bubble_has_shown_ = false;
 };

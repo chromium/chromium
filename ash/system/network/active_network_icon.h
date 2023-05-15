@@ -12,9 +12,14 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace gfx {
 class ImageSkia;
@@ -61,29 +66,36 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
 
   // Returns a network icon (which may be empty) and sets |animating| if
   // provided.
-  gfx::ImageSkia GetImage(Type type,
+  gfx::ImageSkia GetImage(const ui::ColorProvider* color_provider,
+                          Type type,
                           network_icon::IconType icon_type,
                           bool* animating);
 
   void PurgeNetworkIconCache();
 
  private:
-  gfx::ImageSkia GetSingleImage(network_icon::IconType icon_type,
+  gfx::ImageSkia GetSingleImage(const ui::ColorProvider* color_provider,
+                                network_icon::IconType icon_type,
                                 bool* animating);
-  gfx::ImageSkia GetDualImagePrimary(network_icon::IconType icon_type,
+  gfx::ImageSkia GetDualImagePrimary(const ui::ColorProvider* color_provider,
+                                     network_icon::IconType icon_type,
                                      bool* animating);
-  gfx::ImageSkia GetDualImageCellular(network_icon::IconType icon_type,
+  gfx::ImageSkia GetDualImageCellular(const ui::ColorProvider* color_provider,
+                                      network_icon::IconType icon_type,
                                       bool* animating);
   gfx::ImageSkia GetDefaultImageImpl(
+      const ui::ColorProvider* color_provider,
       const chromeos::network_config::mojom::NetworkStateProperties*
           default_network,
       network_icon::IconType icon_type,
       bool* animating);
 
-  // Called when there is no default network., Provides an empty or disabled
+  // Called when there is no default network. Provides an empty or disabled
   // wifi icon and sets |animating| if provided to false.
-  gfx::ImageSkia GetDefaultImageForNoNetwork(network_icon::IconType icon_type,
-                                             bool* animating);
+  gfx::ImageSkia GetDefaultImageForNoNetwork(
+      const ui::ColorProvider* color_provider,
+      network_icon::IconType icon_type,
+      bool* animating);
 
   void SetCellularUninitializedMsg();
 
@@ -95,7 +107,7 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   int cellular_uninitialized_msg_ = 0;
   base::Time uninitialized_state_time_;

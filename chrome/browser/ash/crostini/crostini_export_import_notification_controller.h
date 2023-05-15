@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
@@ -87,7 +88,7 @@ class CrostiniExportImportNotificationController
 
   void on_notification_closed() { hidden_ = true; }
 
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   guest_os::GuestId container_id_;
   // |delegate_| is responsible for handling click events. It is separate from
   // the controller because it needs to live as long as the notification is in

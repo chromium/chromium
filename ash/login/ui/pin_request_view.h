@@ -13,6 +13,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -110,7 +111,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     PinRequestViewState state() const;
 
    private:
-    PinRequestView* const view_;
+    const raw_ptr<PinRequestView, ExperimentalAsh> view_;
   };
 
   // Returns color used for dialog and UI elements specific for child user.
@@ -183,7 +184,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   PinRequestViewState state_ = PinRequestViewState::kNormal;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Callback to close the UI.
   PinRequest::OnPinRequestDone on_pin_request_done_;
@@ -199,13 +200,13 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   std::u16string default_description_;
   std::u16string default_accessible_title_;
 
-  views::Label* title_label_ = nullptr;
-  views::Label* description_label_ = nullptr;
-  AccessCodeInput* access_code_view_ = nullptr;
-  LoginPinView* pin_keyboard_view_ = nullptr;
-  LoginButton* back_button_ = nullptr;
-  FocusableLabelButton* help_button_ = nullptr;
-  ArrowButtonView* submit_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> description_label_ = nullptr;
+  raw_ptr<AccessCodeInput, ExperimentalAsh> access_code_view_ = nullptr;
+  raw_ptr<LoginPinView, ExperimentalAsh> pin_keyboard_view_ = nullptr;
+  raw_ptr<LoginButton, ExperimentalAsh> back_button_ = nullptr;
+  raw_ptr<FocusableLabelButton, ExperimentalAsh> help_button_ = nullptr;
+  raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};

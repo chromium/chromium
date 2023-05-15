@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -640,7 +639,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             updateBrowserControlsOffsets(false, topControlsOffsetY, bottomControlsOffsetY,
                     contentOffsetY, topControlsMinHeightOffsetY, bottomControlsMinHeightOffsetY);
         }
-        TabSwitchMetrics.setActualTabSwitchLatencyMetricRequired();
     }
 
     @Override

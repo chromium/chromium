@@ -117,9 +117,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     @Override
     public void showAccounts(String topFrameEtldPlusOne, String iframeEtldPlusOne,
             String idpEtldPlusOne, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn) {
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
         mMediator.showAccounts(topFrameEtldPlusOne, iframeEtldPlusOne, idpEtldPlusOne, accounts,
-                idpMetadata, clientMetadata, isAutoReauthn);
+                idpMetadata, clientMetadata, isAutoReauthn, rpContext);
     }
 
     @Override

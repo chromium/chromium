@@ -73,9 +73,9 @@ class BindingsManager final : public cast_api_bindings::Manager,
   // Used to open a MessageChannel for connecting API bindings.
   std::unique_ptr<BindingsMessagePortConnector> message_port_connector_;
 
-  base::raw_ref<MessagePortService> message_port_service_;
+  raw_ref<MessagePortService> message_port_service_;
 
-  base::raw_ref<Client> client_;
+  raw_ref<Client> client_;
 };
 
 }  // namespace cast_receiver

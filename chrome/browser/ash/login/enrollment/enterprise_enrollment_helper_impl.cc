@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -97,11 +98,9 @@ EnterpriseEnrollmentHelperImpl::~EnterpriseEnrollmentHelperImpl() {
 }
 
 void EnterpriseEnrollmentHelperImpl::Setup(
-    policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain,
     policy::LicenseType license_type) {
-  ad_join_delegate_ = ad_join_delegate;
   enrollment_config_ = enrollment_config;
   enrolling_user_domain_ = enrolling_user_domain;
   license_type_ = license_type;
@@ -168,7 +167,6 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   auth_data_ = std::move(auth_data);
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Re-enrollment is not implemented for Active Directory.
   // If an enrollment domain is already fixed in install attributes and
   // re-enrollment happens via login, domains need to be equal.
   // If there is a mismatch between domain set in install attributes and
@@ -207,7 +205,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
       policy_manager->device_store(), InstallAttributes::Get(),
       connector->GetStateKeysBroker(), attestation_flow, std::move(client),
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
-      ad_join_delegate_, enrollment_config_, license_type_, auth_data_.Clone(),
+      enrollment_config_, license_type_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
       policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
       policy::EnrollmentRequisitionManager::GetSubOrganization(),
@@ -227,11 +225,6 @@ bool EnterpriseEnrollmentHelperImpl::InProgress() const {
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Don't update device attributes for Active Directory management.
-  if (connector->IsActiveDirectoryManaged()) {
-    OnDeviceAttributeUpdatePermission(false);
-    return;
-  }
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
@@ -531,8 +524,7 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
       UMA(policy::kMetricEnrollmentNoDeviceIdentification);
       break;
     case policy::EnrollmentStatus::ACTIVE_DIRECTORY_POLICY_FETCH_FAILED:
-      UMA(policy::kMetricEnrollmentActiveDirectoryPolicyFetchFailed);
-      break;
+      NOTREACHED_NORETURN();
     case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
       UMA(policy::kMetricEnrollmentStoreDMTokenFailed);
       break;

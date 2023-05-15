@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -60,7 +61,7 @@ class UsbPrinterNotificationControllerImpl
   }
 
   std::map<std::string, std::unique_ptr<UsbPrinterNotification>> notifications_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   int next_notification_id_ = 0;
 };
 

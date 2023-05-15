@@ -29,6 +29,8 @@ enum class DroppedDataReason {
   MSBB_CONSENT_DISABLED = 12,
   APPS_CONSENT_DISABLED = 13,
   EXTENSION_URL_INVALID = 14,
+  // Captures dropped entries due to UkmReduceAddEntryIPC feature.
+  RECORDING_DISABLED_REDUCE_ADDENTRYIPC = 15,
   NUM_DROPPED_DATA_REASONS
 };
 

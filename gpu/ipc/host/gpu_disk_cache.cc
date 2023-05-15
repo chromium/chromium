@@ -564,12 +564,15 @@ void GpuDiskCacheFactory::ClearByPath(const base::FilePath& path,
     return;
   }
 
-  // We may end up creating the cache if the path that is specified isn't
-  // already an opened path. In this case, we don't need to set a blob loaded
-  // callback since the cache is being cleared anyways, hence the DoNothing
-  // callback.
-  ClearByCache(GetOrCreateByPath(path), delete_begin, delete_end,
-               std::move(callback));
+  // Don't need to do anything if there is no cache in the path. This happens
+  // when clearing an in-memory storage partition.
+  auto iter = gpu_cache_map_.find(path);
+  if (iter == gpu_cache_map_.end()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ClearByCache(iter->second, delete_begin, delete_end, std::move(callback));
 }
 
 void GpuDiskCacheFactory::CacheCleared(GpuDiskCache* cache) {
@@ -638,8 +641,8 @@ void GpuDiskCache::Cache(const std::string& key, const std::string& blob) {
 
   auto shim = std::make_unique<GpuDiskCacheEntry>(this, key, blob);
   shim->Cache();
-  auto* raw_ptr = shim.get();
-  entries_.insert(std::make_pair(raw_ptr, std::move(shim)));
+  auto* ptr = shim.get();
+  entries_.insert(std::make_pair(ptr, std::move(shim)));
 }
 
 int GpuDiskCache::Clear(base::Time begin_time,

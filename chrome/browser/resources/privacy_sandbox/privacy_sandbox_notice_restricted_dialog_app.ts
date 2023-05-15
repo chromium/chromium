@@ -4,6 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
@@ -32,8 +34,20 @@ export class PrivacySandboxNoticeRestrictedDialogAppElement extends
 
     this.resizeAndShowNativeDialog().then(() => {
       this.updateScrollableContents();
-      this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
+      this.maybeShowMoreButton().then(
+          () => this.promptActionOccurred(
+              PrivacySandboxPromptAction.NOTICE_SHOWN));
     });
+  }
+
+  private onRestrictedNoticeAcknowledge() {
+    this.promptActionOccurred(
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
+  }
+
+  private onRestrictedNoticeOpenSettings() {
+    this.promptActionOccurred(
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
   }
 }
 

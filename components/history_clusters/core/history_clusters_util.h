@@ -76,6 +76,19 @@ std::string GetHistogramNameSliceForRequestSource(
 // Returns whether `source` is a UI source.
 bool IsUIRequestSource(ClusteringRequestSource source);
 
+// Returns whether |visit| should be shown in the UI.
+bool IsShownVisitCandidate(const history::ClusterVisit& visit);
+
+// Returns whether `visit` could possibly be classified as one of the categories
+// in `categories`.
+bool IsVisitInCategories(const history::ClusterVisit& visit,
+                         const base::flat_set<std::string>& categories);
+
+// Returns whether `cluster` could possibly be classified as one of the
+// categories in `categories`.
+bool IsClusterInCategories(const history::Cluster& cluster,
+                           const base::flat_set<std::string>& categories);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

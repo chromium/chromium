@@ -16,4 +16,9 @@ std::string AddToHomescreenParams::GetAppIdentifier() {
                                    : native_app_package_name;
 }
 
+bool AddToHomescreenParams::HasMaskablePrimaryIcon() {
+  return app_type != AddToHomescreenParams::AppType::NATIVE &&
+         shortcut_info->is_primary_icon_maskable;
+}
+
 }  // namespace webapps

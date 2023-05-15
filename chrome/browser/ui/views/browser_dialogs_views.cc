@@ -61,10 +61,10 @@ void HideTaskManager() {
 }
 #endif
 
-void ShowBrowserModal(Browser* browser,
-                      std::unique_ptr<ui::DialogModel> dialog_model) {
-  constrained_window::ShowBrowserModal(std::move(dialog_model),
-                                       browser->window()->GetNativeWindow());
+views::Widget* ShowBrowserModal(Browser* browser,
+                                std::unique_ptr<ui::DialogModel> dialog_model) {
+  return constrained_window::ShowBrowserModal(
+      std::move(dialog_model), browser->window()->GetNativeWindow());
 }
 
 // TODO(pbos): Move bubble showing out of this file (like ShowBrowserModal) so

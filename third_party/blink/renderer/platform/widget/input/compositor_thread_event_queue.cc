@@ -199,4 +199,9 @@ std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
   return result;
 }
 
+WebInputEvent::Type CompositorThreadEventQueue::PeekType() const {
+  return empty() ? WebInputEvent::Type::kUndefined
+                 : queue_.front()->event().GetType();
+}
+
 }  // namespace blink

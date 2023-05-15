@@ -12,6 +12,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/status_area_widget.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace {
@@ -45,7 +46,7 @@ class UnifiedSystemTrayModel::DBusObserver
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
-  UnifiedSystemTrayModel* const owner_;
+  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> owner_;
 
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
 };
@@ -69,7 +70,7 @@ class UnifiedSystemTrayModel::SizeObserver : public display::DisplayObserver,
 
   void Update();
 
-  UnifiedSystemTrayModel* const owner_;
+  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> owner_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

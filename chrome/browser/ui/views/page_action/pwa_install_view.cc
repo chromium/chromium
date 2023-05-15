@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -180,7 +181,7 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? omnibox::kInstallDesktopChromeRefreshIcon
+             ? kInstallDesktopChromeRefreshIcon
              : omnibox::kInstallDesktopIcon;
 }
 

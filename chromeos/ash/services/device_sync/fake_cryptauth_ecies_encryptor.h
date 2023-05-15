@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "chromeos/ash/services/device_sync/cryptauth_ecies_encryptor_impl.h"
 
@@ -57,7 +58,7 @@ class FakeCryptAuthEciesEncryptorFactory
   // CryptAuthEciesEncryptorImpl::Factory:
   std::unique_ptr<CryptAuthEciesEncryptor> CreateInstance() override;
 
-  FakeCryptAuthEciesEncryptor* instance_ = nullptr;
+  raw_ptr<FakeCryptAuthEciesEncryptor, ExperimentalAsh> instance_ = nullptr;
 };
 
 }  // namespace device_sync

@@ -36,13 +36,10 @@ BASE_FEATURE(kCustomizeChromeSidePanel,
              "CustomizeChromeSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the removal of the NTP background scrim and forced dark foreground
-// colors for a specific subset of Chrome Web Store themes (see
-// crbug.com/1329552). This is enabled by default to allow finch to disable this
-// NTP treatment in the case of unexpected regressions.
-BASE_FEATURE(kCwsScrimRemoval,
-             "CwsScrimRemoval",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Forces a dark Google logo for a specific subset of Chrome Web Store themes
+// (see crbug.com/1329552). This is enabled by default to allow finch to disable
+// this NTP treatment in the case of unexpected regressions.
+BASE_FEATURE(kCwsDarkLogo, "CwsDarkLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
@@ -167,11 +164,10 @@ BASE_FEATURE(kNtpModulesRedesigned,
              "NtpModulesRedesigned",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, a different module layout where modules are organized in rows and
-// columns will be shown.
-BASE_FEATURE(kNtpModulesRedesignedLayout,
-             "NtpModulesRedesignedLayout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, MostVisited tiles will reflow when overflowing.
+BASE_FEATURE(kNtpMostVisitedReflowOnOverflow,
+             "NtpMostVisitedReflowOnOverflow",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, OneGoogleBar will be shown.
 BASE_FEATURE(kNtpOneGoogleBar,
@@ -222,7 +218,7 @@ BASE_FEATURE(kNtpRecipeTasksModule,
 // Controls whether the scrim is removed.
 BASE_FEATURE(kNtpRemoveScrim,
              "NtpRemoveScrim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
@@ -285,6 +281,23 @@ BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
              "NtpChromeCartInHistoryClusterModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
+             "NtpHistoryClustersModuleUseModelRanking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, ChromeCart module will show together with ChromeCart+History
+// cluster module when available.
+BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
+             "NtpChromeCartHistoryClusterCoexist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the History Clusters module will attempt to fetch clusters until
+// it has enough clusters for the module or the History Clusters service says
+// that all visits have been exhausted.
+BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
+             "NtpHistoryClustersModuleFetchClustersUntilExhausted",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,
@@ -323,6 +336,8 @@ const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
 const char kNtpHistoryClustersModuleDataParam[] =
     "NtpHistoryClustersModuleDataParam";
+const char kNtpChromeCartInHistoryClustersModuleDataParam[] =
+    "NtpChromeCartInHistoryClustersModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";

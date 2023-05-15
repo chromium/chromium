@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Descargar perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar á vista de lista</translation>
 <translation id="2377590462528165447">Compartíronse <ph name="NUMBER_OF_ITEMS" /> cartafoles con Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ficheiros seleccionados</translation>
 <translation id="2383454254762599978">Mover á papeleira</translation>
 <translation id="2387458720915042159">Tipo de conexión mediante proxy</translation>
 <translation id="2389832672041313158">Birmano (Myanmar)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">O dispositivo é de só lectura</translation>
 <translation id="4826849268470072925">Támil (ITRANS)</translation>
 <translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementos seleccionados</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="485316830061041779">Alemán</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Quedaches sen espazo</translation>
 <translation id="6993826899923627728">Estes elementos están na papeleira</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> cartafoles seleccionados</translation>
 <translation id="7008426324576352165">Para completar a carga, a túa organización precisa máis espazo de almacenamento.</translation>
 <translation id="7009985720488544166">A política do administrador bloqueou a función de mover <ph name="COUNT" /> ficheiros</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +787,7 @@
 <translation id="7252604552361840748">Busca a extensión anterior</translation>
 <translation id="7256405249507348194">Erro non recoñecido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servizos dispoñibles</translation>
+<translation id="7291818353625820805">Queres que as teclas se repitan? Desactiva os acentos na configuración do teclado</translation>
 <translation id="7292816689782057017">A política do administrador restrinxe a función de gardar nalgunhas localizacións.</translation>
 <translation id="7294063083760278948">Telugu (transliteración)</translation>
 <translation id="7295662345261934369">Compartir con outros usuarios</translation>

@@ -66,8 +66,7 @@ try_.builder(
     name = "mac-angle-chromium-try",
     executable = "recipe:angle_chromium_trybot",
     mirrors = [
-        # Not enough capacity on Mac AMD https://crbug.com/1380184.
-        # "ci/mac-angle-chromium-amd",
+        "ci/mac-angle-chromium-amd",
         "ci/mac-angle-chromium-builder",
         "ci/mac-angle-chromium-intel",
     ],

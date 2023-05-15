@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/active_host.h"
 
@@ -38,8 +39,8 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
   void HandleUnexpectedCurrentSession(
       const ActiveHost::ActiveHostStatus& active_host_status);
 
-  ActiveHost* active_host_;
-  base::Clock* clock_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   base::Time last_connection_start_;
 };

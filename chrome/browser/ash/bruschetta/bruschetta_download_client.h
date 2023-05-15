@@ -47,7 +47,7 @@ class BruschettaDownloadClient : public download::Client {
 
   bool MaybeCancelDownload(const std::string& guid);
 
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace bruschetta

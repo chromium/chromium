@@ -73,7 +73,7 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
   if (layer.should_check_backface_visibility())
     json->SetString("backfaceVisibility", "hidden");
 
-  if (Color::FromSkColor4f(layer.background_color()).Alpha() &&
+  if (!Color::FromSkColor4f(layer.background_color()).IsFullyTransparent() &&
       ((flags & kLayerTreeIncludesDebugInfo) ||
        // Omit backgroundColor for these layers because it's not interesting
        // and we want to avoid platform differences and changes with CLs

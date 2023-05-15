@@ -16,7 +16,7 @@ class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGTableCaption(Element*);
 
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

@@ -7,7 +7,10 @@
 #include <tuple>
 
 #include "device/vr/openxr/openxr_api_wrapper.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/pose.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
@@ -114,7 +117,7 @@ AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
       XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
   space_create_info.anchor = xr_anchor;
   space_create_info.poseInAnchorSpace = PoseIdentity();
-  if (FAILED(
+  if (XR_FAILED(
           extension_helper_->ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
               session_, &space_create_info, &anchor_space))) {
     std::ignore =
@@ -169,8 +172,8 @@ mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
     all_anchors_ids[index] = anchor_id.GetUnsafeValue();
 
     XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
-    if (FAILED(xrLocateSpace(anchor_space, mojo_space_, predicted_display_time,
-                             &anchor_from_mojo)) ||
+    if (XR_FAILED(xrLocateSpace(anchor_space, mojo_space_,
+                                predicted_display_time, &anchor_from_mojo)) ||
         !IsPoseValid(anchor_from_mojo.locationFlags)) {
       updated_anchors[index] =
           mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt);

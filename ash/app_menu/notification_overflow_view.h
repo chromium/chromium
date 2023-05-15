@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_item_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace message_center {
 class ProportionalImageView;
@@ -52,14 +53,15 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
 
   // The horizontal separator that is placed between the displayed
   // NotificationItemView and the overflow icons. Owned by the views hierarchy.
-  views::MenuSeparator* separator_;
+  raw_ptr<views::MenuSeparator, ExperimentalAsh> separator_;
 
   // The list of overflow icons. Listed in right to left ordering.
   std::vector<NotificationOverflowImageView*> image_views_;
 
   // The overflow icon shown when there are more than |kMaxOverflowIcons|
   // notifications.
-  message_center::ProportionalImageView* overflow_icon_ = nullptr;
+  raw_ptr<message_center::ProportionalImageView, ExperimentalAsh>
+      overflow_icon_ = nullptr;
 };
 
 }  // namespace ash

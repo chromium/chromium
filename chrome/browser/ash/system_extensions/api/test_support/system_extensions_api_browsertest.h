@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -111,8 +112,8 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
   struct Args {
     const base::StringPiece tests_dir;
     const base::StringPiece manifest_template;
-    const std::vector<std::string>& additional_src_files;
-    const std::vector<std::string>& additional_gen_files;
+    RAW_PTR_EXCLUSION const std::vector<std::string>& additional_src_files;
+    RAW_PTR_EXCLUSION const std::vector<std::string>& additional_gen_files;
   };
 
   explicit SystemExtensionsApiBrowserTest(const Args& args);

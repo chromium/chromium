@@ -25,15 +25,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "surface_unittest\.cc": [
-    "+components/viz/test",
-  ],
   ".*test.*\.cc": [
     "+chromeos/ash/components/test",
+    "+chromeos/ui/wm",
     "+components/viz/service/frame_sinks",
     "+components/viz/service/surfaces",
+    "+components/viz/test",
   ],
   "ui_lock_controller_unittest\.cc": [
+    "+chromeos/ash/components/login/auth",
     "+chromeos/dbus/power",
     "+chromeos/dbus/power_manager",
   ],

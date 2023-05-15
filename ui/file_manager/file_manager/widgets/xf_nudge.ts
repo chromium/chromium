@@ -42,6 +42,11 @@ export class XfNudge extends HTMLElement {
   private contentSlot_: HTMLElement;
 
   /**
+   * The dismiss button element.
+   */
+  private dismissButton_: HTMLElement;
+
+  /**
    * The direction of the nudge relative to the anchor.
    */
   private direction_: NudgeDirection = NudgeDirection.TOP_STARTWARD;
@@ -50,6 +55,11 @@ export class XfNudge extends HTMLElement {
    * The content of the nudge.
    */
   private content_: string = '';
+
+  /**
+   * Text used in the dismiss button. When empty the button is hidden.
+   */
+  private dismissText_: string = '';
 
   /**
    * How many times the nudge has been repositioned, this is reset when the
@@ -67,7 +77,21 @@ export class XfNudge extends HTMLElement {
 
     this.bubble_ = this.shadowRoot!.getElementById('bubble')!;
     this.contentSlot_ = this.shadowRoot!.getElementById('text')!;
+    this.dismissButton_ = this.shadowRoot!.getElementById('dismiss')!;
+    this.dismissButton_.addEventListener(
+        'click', this.dismissClicked_.bind(this));
     this.dot_ = this.shadowRoot!.getElementById('dot')!;
+  }
+
+  static get events() {
+    return {
+      DISMISS: 'dismiss',
+    } as const;
+  }
+
+  private dismissClicked_() {
+    this.dispatchEvent(new CustomEvent(
+        XfNudge.events.DISMISS, {bubbles: true, composed: true}));
   }
 
   /**
@@ -83,6 +107,8 @@ export class XfNudge extends HTMLElement {
       throw new Error('Attempted to show <xf-nudge> without an anchor');
     }
 
+    this.dismissButton_.innerText = this.dismissText_;
+    this.dismissButton_.toggleAttribute('hidden', this.dismissText_ === '');
     this.contentSlot_.innerText = this.content_;
     this.reposition();
   }
@@ -156,6 +182,17 @@ export class XfNudge extends HTMLElement {
    */
   get content() {
     return this.content_;
+  }
+
+  /**
+   * Sets the text for the dismiss button, when empty hides the button.
+   */
+  set dismissText(text: string) {
+    this.dismissText_ = text;
+  }
+
+  get dismissText() {
+    return this.dismissText_;
   }
 
   /**

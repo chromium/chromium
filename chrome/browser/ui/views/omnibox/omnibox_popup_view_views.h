@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
@@ -35,7 +36,7 @@ class OmniboxPopupViewViews : public views::View,
   OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
                         OmniboxEditModel* edit_model,
                         LocationBarView* location_bar_view);
-  OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
+  explicit OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
   OmniboxPopupViewViews& operator=(const OmniboxPopupViewViews&) = delete;
   ~OmniboxPopupViewViews() override;
 
@@ -65,10 +66,6 @@ class OmniboxPopupViewViews : public views::View,
   // Currently selected OmniboxResultView, or nullptr if nothing is selected.
   OmniboxResultView* GetSelectedResultView();
 
-  // Returns whether we're in experimental keyword mode and the input gives
-  // sufficient confidence that the user wants keyword mode.
-  bool InExplicitExperimentalKeywordMode();
-
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
@@ -78,6 +75,9 @@ class OmniboxPopupViewViews : public views::View,
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
+  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
+  std::u16string GetAccessibleButtonTextForResult(size_t line) override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -90,7 +90,7 @@ class OmniboxPopupViewViews : public views::View,
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
- private:
+ protected:
   friend class OmniboxPopupViewViewsTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
@@ -116,6 +116,7 @@ class OmniboxPopupViewViews : public views::View,
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;
 
+ private:
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
@@ -136,6 +137,16 @@ class OmniboxPopupViewViews : public views::View,
   PrefChangeRegistrar pref_change_registrar_;
 
   raw_ptr<OmniboxEditModel> edit_model_;
+};
+
+class OmniboxPopupViewWebUI : public OmniboxPopupViewViews {
+ public:
+  OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
+                        OmniboxEditModel* edit_model,
+                        LocationBarView* location_bar_view)
+      : OmniboxPopupViewViews(omnibox_view, edit_model, location_bar_view) {}
+  explicit OmniboxPopupViewWebUI(const OmniboxPopupViewViews&) = delete;
+  OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewViews&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_

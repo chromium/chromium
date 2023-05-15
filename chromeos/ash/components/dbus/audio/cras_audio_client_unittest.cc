@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "dbus/message.h"
@@ -674,7 +675,7 @@ class CrasAudioClientTest : public testing::Test {
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
-  dbus::Response* response_;
+  raw_ptr<dbus::Response, ExperimentalAsh> response_;
   // A callback to intercept and check the method call arguments.
   ArgumentCheckCallback argument_checker_;
 

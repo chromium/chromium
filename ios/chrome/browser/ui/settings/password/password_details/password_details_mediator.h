@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 namespace password_manager {
 struct CredentialUIEntry;
-class PasswordManagerClient;
 }  // namespace password_manager
 
 namespace syncer {
@@ -21,18 +21,9 @@ class SyncService;
 }  // namespace syncer
 
 class PrefService;
-
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
-
-// Provides PasswordManagerClient (per-tab object) on-demand, so there's no need
-// to worry about tabs being closed.
-class PasswordManagerClientProvider {
- public:
-  virtual ~PasswordManagerClientProvider() = default;
-
-  virtual password_manager::PasswordManagerClient* GetAny() = 0;
-};
+@protocol PasswordDetailsMediatorDelegate;
 
 // This mediator fetches and organises the credentials for its consumer.
 @interface PasswordDetailsMediator
@@ -41,16 +32,15 @@ class PasswordManagerClientProvider {
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
-- (instancetype)initWithPasswords:
-                    (const std::vector<password_manager::CredentialUIEntry>&)
-                        credentials
-                      displayName:(NSString*)displayName
-             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                          context:(DetailsContext)context
-    passwordManagerClientProvider:
-        (PasswordManagerClientProvider*)passwordManagerClientProvider
+- (instancetype)
+       initWithPasswords:
+           (const std::vector<password_manager::CredentialUIEntry>&)credentials
+             displayName:(NSString*)displayName
+    passwordCheckManager:(scoped_refptr<IOSChromePasswordCheckManager>)manager
+             prefService:(PrefService*)prefService
+             syncService:(syncer::SyncService*)syncService
+                 context:(DetailsContext)context
+                delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -76,6 +66,9 @@ class PasswordManagerClientProvider {
 // Returns YES if the account stores the same username for the website with a
 // different password, NO otherwise.
 - (BOOL)hasPasswordConflictInAccount:(PasswordDetails*)password;
+
+// Dismisses the compromised credential warning.
+- (void)didConfirmWarningDismissalForPassword:(PasswordDetails*)password;
 
 @end
 

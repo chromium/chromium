@@ -121,27 +121,20 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
       const ObjectMap& objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src) override;
-  void WriteText(const char* text_data, size_t text_len) override;
-  void WriteHTML(const char* markup_data,
-                 size_t markup_len,
-                 const char* url_data,
-                 size_t url_len) override;
-  void WriteUnsanitizedHTML(const char* markup_data,
-                            size_t markup_len,
-                            const char* url_data,
-                            size_t url_len) override;
-  void WriteSvg(const char* markup_data, size_t markup_len) override;
-  void WriteRTF(const char* rtf_data, size_t data_len) override;
+  void WriteText(base::StringPiece text) override;
+  void WriteHTML(base::StringPiece markup,
+                 absl::optional<base::StringPiece> source_url) override;
+  void WriteUnsanitizedHTML(
+      base::StringPiece markup,
+      absl::optional<base::StringPiece> source_url) override;
+  void WriteSvg(base::StringPiece markup) override;
+  void WriteRTF(base::StringPiece rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
-  void WriteBookmark(const char* title_data,
-                     size_t title_len,
-                     const char* url_data,
-                     size_t url_len) override;
+  void WriteBookmark(base::StringPiece title, base::StringPiece url) override;
   void WriteWebSmartPaste() override;
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
-                 const char* data_data,
-                 size_t data_len) override;
+                 base::span<const uint8_t> data) override;
 
   const std::unique_ptr<ClipboardInternal> clipboard_internal_;
 };

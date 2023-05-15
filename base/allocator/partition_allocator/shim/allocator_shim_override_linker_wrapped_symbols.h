@@ -71,12 +71,14 @@ extern char* __real_realpath(const char* path, char* resolved_path);
 
 SHIM_ALWAYS_EXPORT char* __wrap_realpath(const char* path,
                                          char* resolved_path) {
-  if (resolved_path)
+  if (resolved_path) {
     return __real_realpath(path, resolved_path);
+  }
 
   char buffer[kPathMaxSize];
-  if (!__real_realpath(path, buffer))
+  if (!__real_realpath(path, buffer)) {
     return nullptr;
+  }
   return __wrap_strdup(buffer);
 }
 
@@ -85,16 +87,18 @@ SHIM_ALWAYS_EXPORT char* __wrap_realpath(const char* path,
 SHIM_ALWAYS_EXPORT char* __wrap_strdup(const char* str) {
   std::size_t length = std::strlen(str) + 1;
   void* buffer = ShimMalloc(length, nullptr);
-  if (!buffer)
+  if (!buffer) {
     return nullptr;
+  }
   return reinterpret_cast<char*>(std::memcpy(buffer, str, length));
 }
 
 SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
   std::size_t length = std::min(std::strlen(str), n);
   char* buffer = reinterpret_cast<char*>(ShimMalloc(length + 1, nullptr));
-  if (!buffer)
+  if (!buffer) {
     return nullptr;
+  }
   std::memcpy(buffer, str, length);
   buffer[length] = '\0';
   return buffer;
@@ -105,14 +109,17 @@ SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
 extern char* __real_getcwd(char* buffer, size_t size);
 
 SHIM_ALWAYS_EXPORT char* __wrap_getcwd(char* buffer, size_t size) {
-  if (buffer)
+  if (buffer) {
     return __real_getcwd(buffer, size);
+  }
 
-  if (!size)
+  if (!size) {
     size = kPathMaxSize;
+  }
   char local_buffer[size];
-  if (!__real_getcwd(local_buffer, size))
+  if (!__real_getcwd(local_buffer, size)) {
     return nullptr;
+  }
   return __wrap_strdup(local_buffer);
 }
 
@@ -128,8 +135,9 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
       malloc(kInitialSize));  // Our malloc() doesn't return nullptr.
 
   int actual_size = vsnprintf(*strp, kInitialSize, fmt, va_args);
-  if (actual_size < 0)
+  if (actual_size < 0) {
     return actual_size;
+  }
   *strp =
       static_cast<char*>(realloc(*strp, static_cast<size_t>(actual_size + 1)));
 
@@ -139,8 +147,9 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
   //
   // This is very lightly used in Chromium in practice, see crbug.com/116558 for
   // details.
-  if (actual_size >= kInitialSize)
+  if (actual_size >= kInitialSize) {
     return vsnprintf(*strp, static_cast<size_t>(actual_size + 1), fmt, va_args);
+  }
 
   return actual_size;
 }

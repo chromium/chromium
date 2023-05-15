@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.media;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -43,7 +43,7 @@ public class MediaViewerUtilsTest {
     public void testCustomTabActivityInLightMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ false));
 
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
@@ -58,7 +58,7 @@ public class MediaViewerUtilsTest {
     public void testCustomTabActivityInDarkMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ true));
 
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));

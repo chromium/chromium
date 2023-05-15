@@ -101,8 +101,6 @@ class PageNodeImpl
   bool is_holding_weblock() const;
   bool is_holding_indexeddb_lock() const;
   const base::flat_set<FrameNodeImpl*>& main_frame_nodes() const;
-  base::TimeTicks usage_estimate_time() const;
-  uint64_t private_footprint_kb_estimate() const;
   const GURL& main_frame_url() const;
   int64_t navigation_id() const;
   const std::string& contents_mime_type() const;
@@ -120,9 +118,6 @@ class PageNodeImpl
                                             EmbeddingType embedder_type);
   void ClearEmbedderFrameNodeAndEmbeddingType();
 
-  void set_usage_estimate_time(base::TimeTicks usage_estimate_time);
-  void set_private_footprint_kb_estimate(
-      uint64_t private_footprint_kb_estimate);
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
   void set_freezing_vote(absl::optional<freezing::FreezingVote> freezing_vote);
   void set_page_state(PageState page_state);
@@ -267,13 +262,6 @@ class PageNodeImpl
   // The last time at which a main frame navigation was committed.
   base::TimeTicks navigation_committed_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The time the most recent resource usage estimate applies to.
-  base::TimeTicks usage_estimate_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The most current memory footprint estimate.
-  uint64_t private_footprint_kb_estimate_
-      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // Indicates whether or not this page has a non-empty beforeunload handler.
   // This is an aggregation of the same value on each frame in the page's frame

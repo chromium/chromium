@@ -753,7 +753,6 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 
   last_serialization_timestamp_ = now;
-  serialization_in_flight_ = true;
 
   SendPendingAccessibilityEvents();
 }
@@ -1226,7 +1225,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;
 
+  // If serialize_post_lifecycle_ is false, then this method is scheduled
+  // asynchronously and serialization_in_flight_ is set at the point of
+  // scheduling. If serialize_post_lifecycle_ is true, then this method is
+  // called synchronously, but should never be called if there's a previous
+  // serialization still in flight.
   DCHECK(!serialize_post_lifecycle_ || !serialization_in_flight_);
+  serialization_in_flight_ = true;
 
   if (!serialize_post_lifecycle_) {
     // Clear status here in case we return early.
@@ -1689,6 +1694,7 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   if (!serialize_post_lifecycle_) {
     legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   }
+  serialization_in_flight_ = false;
 }
 
 void RenderAccessibilityImpl::MaybeSendUKM() {

@@ -69,7 +69,8 @@ WaylandZAuraOutputManager::WaylandZAuraOutputManager(
        &OnPanelTransform,
        &OnName,
        &OnDescription,
-       &OnActivated};
+       &OnActivated,
+       &OnOverscanInsets};
   zaura_output_manager_add_listener(obj_.get(), &zaura_output_manager_listener,
                                     this);
 }
@@ -252,6 +253,18 @@ void WaylandZAuraOutputManager::OnActivated(
   const WaylandOutput::Id output_id = self->GetId(output);
   display::Screen::GetScreen()->SetDisplayForNewWindows(
       self->GetOutputMetrics(output_id)->display_id);
+}
+
+// static
+void WaylandZAuraOutputManager::OnOverscanInsets(
+    void* data,
+    zaura_output_manager* output_manager,
+    wl_output* output,
+    int32_t top,
+    int32_t left,
+    int32_t bottom,
+    int32_t right) {
+  // TODO(crbug.com/1432295): Handle overscan.
 }
 
 }  // namespace ui

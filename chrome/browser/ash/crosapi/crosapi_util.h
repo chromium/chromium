@@ -32,9 +32,6 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 // Represents how to launch Lacros Chrome.
 struct InitialBrowserAction {
   explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
-  InitialBrowserAction(crosapi::mojom::InitialBrowserAction action,
-                       std::vector<GURL> urls,
-                       crosapi::mojom::OpenUrlFrom from);
   InitialBrowserAction(InitialBrowserAction&&);
   InitialBrowserAction& operator=(InitialBrowserAction&&);
   ~InitialBrowserAction();

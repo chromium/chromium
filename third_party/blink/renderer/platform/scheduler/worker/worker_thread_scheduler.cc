@@ -180,6 +180,7 @@ void WorkerThreadScheduler::Shutdown() {
   DCHECK(initialized_);
   ThreadSchedulerBase::Shutdown();
   idle_helper_.Shutdown();
+  idle_helper_queue_->ShutdownTaskQueue();
   GetHelper().Shutdown();
 }
 

@@ -3,14 +3,43 @@
         padding: 0 var(--cr-section-padding);
         padding-top: 30px;
       }
+
+      #exception-list {
+        padding-top: 0;
+      }
+
+      #resetSettingsButton {
+        margin: 0 var(--cr-section-padding);
+        margin-top: 24px;
+      }
     </style>
+
+    <!-- Confirm reset settings dialog. -->
+    <cr-dialog id="confirmResetSettings" close-text="$i18n{close}">
+      <div slot="body">[[resetPermissionsMessage_]]</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCloseDialog_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onResetSettings_">
+          $i18n{siteSettingsSiteResetAll}
+        </cr-button>
+      </div>
+    </cr-dialog>
 
     <div id="empty-list-message"
         hidden$="[[hasExceptions_(chooserExceptions.*)]]">
       <div class="secondary">[[emptyListMessage_]]</div>
     </div>
 
-    <template is="dom-repeat" items="[[chooserExceptions]]">
+    <div hidden$="[[!hasExceptions_(chooserExceptions.*)]]">
+      <cr-button id="resetSettingsButton" role="button" aria-disabled="false"
+          on-click="onConfirmClearSettings_">
+        $i18n{siteSettingsReset}
+      </cr-button>
+    </div>
+
+    <template id="exception-list" is="dom-repeat" items="[[chooserExceptions]]">
       <chooser-exception-list-entry exception="[[item]]"
           on-show-tooltip="onShowTooltip_">
       </chooser-exception-list-entry>

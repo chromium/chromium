@@ -18,11 +18,12 @@
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -107,7 +108,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
         @[ base::SysUTF8ToNSString(kAccount) ]);
     id<SystemIdentity> identity =
         account_manager_service_->GetDefaultIdentity();
-    authentication_service_->SignIn(identity);
+    authentication_service_->SignIn(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {

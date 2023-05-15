@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/environment.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/win/registry.h"
 
 namespace {
@@ -41,7 +41,8 @@ bool GetTestKeyFromEnvironment(std::wstring* key) {
 
 ImporterTestRegistryOverrider::ImporterTestRegistryOverrider()
     : temporary_key_(kTestHKCUOverrideKeyPrefix +
-                     base::UTF8ToWide(base::GenerateGUID())) {
+                     base::UTF8ToWide(
+                         base::Uuid::GenerateRandomV4().AsLowercaseString())) {
   DCHECK(!GetTestKeyFromEnvironment(NULL));
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());

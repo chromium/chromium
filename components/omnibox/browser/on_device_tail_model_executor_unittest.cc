@@ -348,28 +348,23 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
   {
-    predictions = executor_->GenerateSuggestionsForPrefix(
-        /*prefix =*/"faceb", /*previous_query=*/"",
-        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
-        /*probability_threshold =*/0.05);
+    OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5, 20, 0.05);
+    predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_FALSE(predictions.empty());
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
                                  base::CompareCase::SENSITIVE));
   }
 
   {
-    predictions = executor_->GenerateSuggestionsForPrefix(
-        /*prefix =*/"", /*previous_query=*/"snapchat",
-        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
-        /*probability_threshold =*/0.05);
+    OnDeviceTailModelExecutor::ModelInput input("", "snapchat", 5, 20, 0.05);
+    predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_TRUE(predictions.empty());
   }
 
   {
-    predictions = executor_->GenerateSuggestionsForPrefix(
-        /*prefix =*/"faceb", /*previous_query=*/"snapchat",
-        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
-        /*probability_threshold =*/0.05);
+    OnDeviceTailModelExecutor::ModelInput input("faceb", "snapchat", 5, 20,
+                                                0.05);
+    predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_FALSE(predictions.empty());
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
                                  base::CompareCase::SENSITIVE));

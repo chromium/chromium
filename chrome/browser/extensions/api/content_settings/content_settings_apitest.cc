@@ -356,13 +356,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
   const char kExtensionPath[] = "content_settings/embeddedsettingsmetric";
   EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
 
-  size_t num_values = 0;
-  int images_type = ContentSettingTypeToHistogramValue(
-      ContentSettingsType::IMAGES, &num_values);
-  int geolocation_type = ContentSettingTypeToHistogramValue(
-      ContentSettingsType::GEOLOCATION, &num_values);
-  int cookies_type = ContentSettingTypeToHistogramValue(
-      ContentSettingsType::COOKIES, &num_values);
+  int images_type =
+      ContentSettingTypeToHistogramValue(ContentSettingsType::IMAGES);
+  int geolocation_type =
+      ContentSettingTypeToHistogramValue(ContentSettingsType::GEOLOCATION);
+  int cookies_type =
+      ContentSettingTypeToHistogramValue(ContentSettingsType::COOKIES);
 
   histogram_tester.ExpectBucketCount(
       "ContentSettings.ExtensionEmbeddedSettingSet", images_type, 1);

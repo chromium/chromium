@@ -6,6 +6,7 @@
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_ENDPOINT_OPTIONS_H_
 
 #include "build/build_config.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,6 +32,10 @@ struct EndpointOptions {
   // Note that using an isolated connection is DEPRECATED and new callers should
   // always pass a valid message pipe ID.
   absl::optional<uint64_t> message_pipe_id;
+
+  // Extra flags added when sending the outgoing invitation.
+  MojoSendInvitationFlags extra_send_invitation_flags =
+      MOJO_SEND_INVITATION_FLAG_NONE;
 
 #if BUILDFLAG(IS_WIN)
   // If non-empty, a security descriptor to use when creating the pipe. If

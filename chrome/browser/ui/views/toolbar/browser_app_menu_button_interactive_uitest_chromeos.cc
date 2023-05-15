@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,7 +44,7 @@ class VirtualKeyboardWaiter : public ui::VirtualKeyboardControllerObserver {
   }
   void OnKeyboardHidden() override { std::move(quit_closure_).Run(); }
 
-  ui::VirtualKeyboardController* controller_ = nullptr;
+  raw_ptr<ui::VirtualKeyboardController, ExperimentalAsh> controller_ = nullptr;
   base::RepeatingClosure quit_closure_;
 };
 
@@ -89,7 +90,8 @@ class BrowserAppMenuButtonVirtualKeyboardBrowserTest
   }
 
  protected:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
+      web_contents_ = nullptr;
 };
 
 // Regression test for crbug.com/1334994.

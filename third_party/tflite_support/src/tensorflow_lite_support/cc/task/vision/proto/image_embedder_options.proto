@@ -17,7 +17,7 @@ syntax = "proto2";
 
 package tflite.task.vision;
 
-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
+import "tensorflow/lite/acceleration/configuration/configuration.proto";
 import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
 
 // Options for setting up an ImageEmbedder.
@@ -58,7 +58,7 @@ message ImageEmbedderOptions {
   // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
   //
   // See settings definition at:
-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
+  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
   optional tflite.proto.ComputeSettings compute_settings = 8;
 
   // Reserved tags.

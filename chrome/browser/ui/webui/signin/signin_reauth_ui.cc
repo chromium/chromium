@@ -116,9 +116,7 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
 
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   signin_metrics::ReauthAccessPoint access_point =
       GetReauthAccessPointForReauthConfirmationURL(

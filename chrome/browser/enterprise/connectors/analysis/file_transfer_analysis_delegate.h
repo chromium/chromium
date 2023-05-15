@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -82,10 +83,9 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Returns a vector with the AnalysisSettings for file transfers from the
   // respective source url to the destination_url.
-  // If the transfer is not enabled for any of the transfers an empty vector is
-  // returned.
-  // Each entry in the returned vector corresponds to the entry in the
-  // `source_urls` vector with the same index.
+  // If the enterprise connectors are not enabled for any of the transfers an
+  // empty vector is returned. Each entry in the returned vector corresponds to
+  // the entry in the `source_urls` vector with the same index.
   static std::vector<absl::optional<AnalysisSettings>> IsEnabledVec(
       Profile* profile,
       const std::vector<storage::FileSystemURL>& source_urls,
@@ -128,7 +128,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   void ContentAnalysisCompleted(std::vector<RequestHandlerResult> results);
 
   AnalysisSettings settings_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   safe_browsing::DeepScanAccessPoint access_point_;
   std::vector<storage::FileSystemURL> scanning_urls_;
   storage::FileSystemURL source_url_;

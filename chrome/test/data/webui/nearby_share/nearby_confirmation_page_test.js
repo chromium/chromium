@@ -5,9 +5,8 @@
 import 'chrome://nearby/nearby_confirmation_page.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {NearbyConfirmationPageElement} from 'chrome://nearby/nearby_confirmation_page.js';
-import {ShareTarget, TransferStatus} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
-import {ShareType} from 'chrome://nearby/shared/mojo/nearby_share_share_type.mojom-webui.js';
+import {TransferStatus} from 'chrome://nearby/shared/nearby_share.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-webui.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chromeos/chai_assert.js';
@@ -187,8 +186,11 @@ suite('ConfirmatonPageTest', function() {
       MAX_VALUE: true,
     };
 
-    let key;
-    for (key of Object.keys(TransferStatus)) {
+    // TypeScript augments numerical enums with additional keys (reverse
+    // mappings), so need to filter those out when iterating over all keys.
+    const keys = Object.keys(TransferStatus)
+                     .filter(k => Number.isInteger(TransferStatus[k]));
+    for (const key of keys) {
       const isErrorState = !(key in nonErrorStates);
       const token = 'TestToken1234';
       if (isErrorState) {

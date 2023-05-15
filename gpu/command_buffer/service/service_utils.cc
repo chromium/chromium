@@ -201,7 +201,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
 }
 
 GrContextType ParseGrContextType(const base::CommandLine* command_line) {
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
@@ -215,13 +214,12 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
       return GrContextType::kGraphiteMetal;
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
+    LOG(ERROR) << "Skia Graphite backend = \"" << value
+               << "\" not found - falling back to Ganesh!";
   }
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-
   if (features::IsUsingVulkan()) {
     return GrContextType::kVulkan;
   }
-
   return GrContextType::kGL;
 }
 
@@ -271,8 +269,8 @@ WebGPUAdapterName ParseWebGPUAdapterName(
     auto value = command_line->GetSwitchValueASCII(switches::kUseWebGPUAdapter);
     if (value.empty()) {
       return WebGPUAdapterName::kDefault;
-    } else if (value == "compat") {
-      return WebGPUAdapterName::kCompat;
+    } else if (value == "opengles") {
+      return WebGPUAdapterName::kOpenGLES;
     } else if (value == "swiftshader") {
       return WebGPUAdapterName::kSwiftShader;
     } else if (value == "default") {
@@ -291,7 +289,9 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
     auto value =
         command_line->GetSwitchValueASCII(switches::kUseWebGPUPowerPreference);
     if (value.empty()) {
-      return WebGPUPowerPreference::kDefaultLowPower;
+      return WebGPUPowerPreference::kNone;
+    } else if (value == "none") {
+      return WebGPUPowerPreference::kNone;
     } else if (value == "default-low-power") {
       return WebGPUPowerPreference::kDefaultLowPower;
     } else if (value == "default-high-performance") {
@@ -305,7 +305,7 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
                   << "=" << value << ".";
     }
   }
-  return WebGPUPowerPreference::kDefaultLowPower;
+  return WebGPUPowerPreference::kNone;
 }
 
 }  // namespace gles2

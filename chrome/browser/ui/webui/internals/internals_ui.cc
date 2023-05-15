@@ -92,6 +92,7 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 #else
   source_->AddResourcePath("user-education",
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
+  webui::SetupChromeRefresh2023(source_.get());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // chrome://internals/session-service
@@ -146,6 +147,13 @@ void InternalsUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(pending_handler), std::move(pending_client), this,
       std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
+}
+
+void InternalsUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

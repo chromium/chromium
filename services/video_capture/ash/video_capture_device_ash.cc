@@ -27,7 +27,7 @@ VideoCaptureDeviceAsh::VideoCaptureDeviceAsh(
 
 VideoCaptureDeviceAsh::VideoCaptureDeviceAsh(
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
-    raw_ptr<video_capture::mojom::Device> device,
+    video_capture::mojom::Device* device,
     base::OnceClosure cleanup_callback) {
   receiver_.Bind(std::move(proxy_receiver));
   receiver_.set_disconnect_handler(std::move(cleanup_callback));

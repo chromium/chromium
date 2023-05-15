@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -115,15 +116,17 @@ class NetworkTestHelperBase {
   std::string last_created_service_path_;
   int wifi_index_ = 0;
 
-  ShillManagerClient::TestInterface* manager_test_;
-  ShillProfileClient::TestInterface* profile_test_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ShillServiceClient::TestInterface* service_test_;
-  ShillIPConfigClient::TestInterface* ip_config_test_;
+  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
+  raw_ptr<ShillIPConfigClient::TestInterface, ExperimentalAsh> ip_config_test_;
 
-  HermesEuiccClient::TestInterface* hermes_euicc_test_;
-  HermesManagerClient::TestInterface* hermes_manager_test_;
-  HermesProfileClient::TestInterface* hermes_profile_test_;
+  raw_ptr<HermesEuiccClient::TestInterface, ExperimentalAsh> hermes_euicc_test_;
+  raw_ptr<HermesManagerClient::TestInterface, ExperimentalAsh>
+      hermes_manager_test_;
+  raw_ptr<HermesProfileClient::TestInterface, ExperimentalAsh>
+      hermes_profile_test_;
 
   base::WeakPtrFactory<NetworkTestHelperBase> weak_ptr_factory_{this};
 };

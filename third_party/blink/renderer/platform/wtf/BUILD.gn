@@ -112,7 +112,6 @@ component("wtf") {
     "text/ascii_fast_path.h",
     "text/atomic_string.cc",
     "text/atomic_string.h",
-    "text/atomic_string_cf.cc",
     "text/atomic_string_encoding.h",
     "text/atomic_string_hash.h",
     "text/atomic_string_table.cc",
@@ -242,9 +241,11 @@ component("wtf") {
 
   if (is_apple) {
     sources += [
+      "text/atomic_string_cf.cc",
       "text/string_apple.mm",
       "text/string_impl_apple.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -270,8 +271,6 @@ component("wtf") {
       "CoreFoundation.framework",
       "Foundation.framework",
     ]
-  } else {
-    sources -= [ "text/atomic_string_cf.cc" ]
   }
 
   if (using_mismatched_sample_profile) {

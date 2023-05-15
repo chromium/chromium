@@ -23,6 +23,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/slim/features.h"
+#include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -64,6 +66,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/android/delegated_frame_host_android.h"
 #endif
@@ -388,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
   EXPECT_EQ(initial_local_surface_id,
-            dfh->content_layer_for_testing()->surface_id().local_surface_id());
+            dfh->content_layer()->surface_id().local_surface_id());
   EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
@@ -467,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // embedded.
   EXPECT_FALSE(dfh->HasPrimarySurface());
   EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
-  EXPECT_FALSE(dfh->content_layer_for_testing()->surface_id().is_valid());
+  EXPECT_FALSE(dfh->content_layer()->surface_id().is_valid());
   EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
@@ -1363,5 +1366,67 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
+                                       CompositorImpl* compositor,
+                                       base::RepeatingClosure resume_test,
+                                       const SkBitmap& btimap) {
+  ASSERT_FALSE(!compositor->GetLayerTreeForTesting()
+                    ->GetSurfaceRangesForTesting()
+                    .contains(range));
+  std::move(resume_test).Run();
+}
+
+class RenderWidgetHostViewCopyFromSurfaceBrowserTest
+    : public RenderWidgetHostViewBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostViewCopyFromSurfaceBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
+    }
+  }
+  ~RenderWidgetHostViewCopyFromSurfaceBrowserTest() override = default;
+
+  bool SetUpSourceSurface(const char* wait_message) override { return false; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+                       AsyncCopyFromSurface) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto* rwhv_android = static_cast<RenderWidgetHostViewAndroid*>(
+      GetRenderViewHost()->GetWidget()->GetView());
+  auto* compositor = static_cast<CompositorImpl*>(
+      rwhv_android->GetNativeView()->GetWindowAndroid()->GetCompositor());
+
+  const viz::SurfaceRange range_for_copy(rwhv_android->GetCurrentSurfaceId(),
+                                         rwhv_android->GetCurrentSurfaceId());
+  const viz::SurfaceRange range_for_mainframe(
+      absl::nullopt, rwhv_android->GetCurrentSurfaceId());
+  base::RunLoop run_loop;
+  GetRenderViewHost()->GetWidget()->GetView()->CopyFromSurface(
+      gfx::Rect(), gfx::Size(),
+      base::BindOnce(&CheckSurfaceRangeRemovedAfterCopy, range_for_copy,
+                     compositor, run_loop.QuitClosure()));
+  EXPECT_THAT(
+      compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting(),
+      testing::UnorderedElementsAre(std::make_pair(range_for_copy, 1),
+                                    std::make_pair(range_for_mainframe, 1)));
+  run_loop.Run(FROM_HERE);
+}
+
+INSTANTIATE_TEST_SUITE_P(EnableDisableSlim,
+                         RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+                         ::testing::Bool());
+#endif
 
 }  // namespace content

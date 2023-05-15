@@ -228,7 +228,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
           : (config_.profile() == VP9PROFILE_PROFILE2 ||
                      config_.profile() == HEVCPROFILE_REXT ||
                      config_.profile() == HEVCPROFILE_MAIN10 ||
-                     (config_.color_space_info().ToGfxColorSpace().IsHDR() &&
+                     (config_.color_space_info().GuessGfxColorSpace().IsHDR() &&
                       config_.codec() != VideoCodec::kH264)
                  ? 10
                  : 8);
@@ -907,11 +907,16 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   base::TimeDelta timestamp = picture_buffer->timestamp_;
 
+  // Prefer the frame color space over what's in the config.
+  auto picture_color_space = picture->get_colorspace().ToGfxColorSpace();
+  if (!picture_color_space.IsValid()) {
+    picture_color_space = config_.color_space_info().ToGfxColorSpace();
+  }
+
   MailboxHolderArray mailbox_holders;
   gfx::ColorSpace output_color_space;
   D3D11Status result = picture_buffer->ProcessTexture(
-      picture->get_colorspace().ToGfxColorSpace(), &mailbox_holders,
-      &output_color_space);
+      picture_color_space, &mailbox_holders, &output_color_space);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
@@ -960,6 +965,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     // preferred over metadata provide by the configuration.
     frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
                                                     : config_.hdr_metadata());
+  }
+
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    frame->set_shared_image_format_type(
+        SharedImageFormatType::kSharedImageFormat);
   }
 
   // TODO(crbug.com/1236801): WebGPU cannot import and create texture view on

@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2023-08-20">
+    units="microseconds" expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -832,7 +832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CullRect.UpdateTime" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>pdr@chromium.org</owner>
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImage.JpegDensity.KiBWeighted"
-    units="0.01 bits per pixel" expires_after="2023-08-20">
+    units="0.01 bits per pixel" expires_after="2023-10-22">
   <owner>jyrki@google.com</owner>
   <owner>compression-dev@google.com</owner>
   <summary>
@@ -1133,12 +1133,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records whether the user selected account is for sign-in or not. Records at
     most one sample per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.SignInStatusSetToSignout.NetError"
+    enum="NetErrorCodes" expires_after="2023-11-04">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the NetError from the accounts list endpoint. This histogram is only
+    recorded when the IDP Sign-In Status of an IDP is marked as signout as a
+    result of the accounts list endpoint not returning any accounts.
   </summary>
 </histogram>
 
@@ -1202,7 +1213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Status.SignInStateMatch"
-    enum="FedCmSignInStateMatchStatus" expires_after="2023-08-13">
+    enum="FedCmSignInStateMatchStatus" expires_after="2023-10-15">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1212,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.CancelOnDialog" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1226,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.ContinueOnDialog" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1273,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.TurnaroundTime" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1374,20 +1385,6 @@ chromium-metrics-reviews@google.com.
     creation fails due to sandbox flags not being permissive enough. If multiple
     sandbox flags are incorrectly set, it will log every sandbox flag that was
     not set correctly for each failed load.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Fetch.ReducedUserAgent" enum="Boolean"
-    expires_after="2023-04-30">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
-  <summary>
-    Whether the User-Agent header that was sent for a subresource request had a
-    reduced user agent string value. The reduced user agent string is only sent
-    in the presence of a valid UserAgentReduction origin trial token. This
-    histogram is recorded when a frame's subresource fetch request is being
-    prepared.
   </summary>
 </histogram>
 
@@ -1500,7 +1497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
-    units="microseconds" expires_after="2023-08-20">
+    units="microseconds" expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1712,7 +1709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMax4" units="microseconds"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1742,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal4" units="microseconds"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1757,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
-    units="microseconds" expires_after="2023-09-03">
+    units="microseconds" expires_after="2023-11-05">
   <owner>sky@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -2165,8 +2162,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Layout.CloneFragmentsForLayoutOverflow"
+    units="microseconds" expires_after="2023-10-27">
+  <owner>tkent@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    Time spent to clone physical fragments, recorded during LayoutOverflow
+    computation.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Layout.RebuildFragmentTreeSpine" units="microseconds"
+    expires_after="2023-10-27">
+  <owner>tkent@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    Time spent to rebuild container physical fragments, recorded on sub-tree
+    root layout.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Layout.UpdateLayerPositionsAfterLayout"
-    units="microseconds" expires_after="2023-08-13">
+    units="microseconds" expires_after="2023-10-15">
   <owner>pdr@chromium.org</owner>
   <owner>ikilpatrick@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -2198,6 +2215,29 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LazyLoadedImage.Size" units="KB"
+    expires_after="2023-10-10">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Total network response size for each lazy loaded image that has loaded. This
+    is recorded at the point that the image element completes loading. This
+    includes all entries in `Blink.LazyLoadedImageBeforeDocumentOnLoad.Size` as
+    well as lazy loaded images that load after document load.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LazyLoadedImageBeforeDocumentOnLoad.Size" units="KB"
+    expires_after="2023-10-10">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Total network response size for each lazy loaded image that has loaded
+    before the document has finished loading. This is recorded at the point that
+    the image element completes loading.
   </summary>
 </histogram>
 
@@ -2323,7 +2363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.CrossDocumentCachedResource2"
-    enum="ResourceType" expires_after="2023-06-04">
+    enum="ResourceType" expires_after="2023-10-15">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
@@ -2403,7 +2443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"
-    enum="RevalidationPolicy" expires_after="2023-08-13">
+    enum="RevalidationPolicy" expires_after="2023-10-15">
   <owner>hiroshige@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
@@ -2576,26 +2616,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Paint.PaintArtifactCompositorUpdateFirstReason"
-    enum="PaintArtifactCompositorUpdateReason" expires_after="2023-06-25">
-  <owner>pdr@chromium.org</owner>
-  <owner>rego@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Records the first reason to set PaintArtifactCompositor as needing update.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Paint.PaintArtifactCompositorUpdateReason"
-    enum="PaintArtifactCompositorUpdateReason" expires_after="2023-06-18">
-  <owner>pdr@chromium.org</owner>
-  <owner>rego@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Records the reason to set PaintArtifactCompositor as needing update.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.Paint.UpdateTime" units="microseconds"
     expires_after="2023-10-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
@@ -2666,7 +2686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -2814,7 +2834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
-    expires_after="2023-06-01">
+    expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2827,7 +2847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2839,7 +2859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe" units="count"
-    expires_after="2023-06-01">
+    expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2852,7 +2872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe.External"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2889,32 +2909,6 @@ chromium-metrics-reviews@google.com.
 
     Note that clients without high-resolution clocks will report 0 for very
     short times.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2023-06-04">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent preparing the document to ensure correct scroll behavior, such as
-    scroll chaining or other programatic scrolling. Includes time spent in style
-    update and layout.
-
-    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
-    AggregatedPreFCP metrics are only recorded if FCP is reached.
-
-    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
-
-    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
-    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
-    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -3117,7 +3111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -3141,7 +3135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3307,7 +3301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.Header"
-    enum="FeaturePolicyFeature" expires_after="2023-08-20">
+    enum="FeaturePolicyFeature" expires_after="2023-10-22">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -3340,7 +3334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.AnimatedCSSProperties"
-    enum="MappedCSSProperties" expires_after="2023-04-30">
+    enum="MappedCSSProperties" expires_after="2023-08-30">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -3359,7 +3353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.CSSProperties"
-    enum="MappedCSSProperties" expires_after="2023-04-30">
+    enum="MappedCSSProperties" expires_after="2023-08-30">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -3390,7 +3384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.Features" enum="FeatureObserver"
-    expires_after="2023-04-30">
+    expires_after="2023-08-30">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -3408,7 +3402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.MainFrame.Features"
-    enum="FeatureObserver" expires_after="2023-04-30">
+    enum="FeatureObserver" expires_after="2023-08-30">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -3427,7 +3421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2"
-    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+    enum="FeaturePolicyFeature" expires_after="2023-08-01">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
@@ -3442,7 +3436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+    enum="FeaturePolicyFeature" expires_after="2023-08-01">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
@@ -3459,7 +3453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation.Enforce"
-    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+    enum="FeaturePolicyFeature" expires_after="2023-08-01">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
@@ -3511,7 +3505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Allow2"
-    enum="FeaturePolicyFeature" expires_after="2023-08-20">
+    enum="FeaturePolicyFeature" expires_after="2023-10-22">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -3567,6 +3561,8 @@ chromium-metrics-reviews@google.com.
     include inspector, selection, editing, find-in-page and focus. Includes time
     spent in style update and layout.
 
+    Note: As of 04/2023, scroll updates are included in user driven behaviors.
+
     Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
     AggregatedPreFCP metrics are only recorded if FCP is reached.
 
@@ -3578,22 +3574,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold"
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2"
     enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially above the fold becomes visible before it finishes loading.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2"
+    enum="NQEEffectiveConnectionType" expires_after="2023-11-05">
   <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially below the fold becomes visible before it finishes loading.
@@ -3601,29 +3595,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2022-01-02">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
+    name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2{BlinkVisibleLoadTimeSuffixes}"
+    units="ms" expires_after="2023-09-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
-    Milliseconds spent waiting for an above the fold image element to load. 0ms
-    is recorded if the image is already loaded by the time user scrolls to it.
-    EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
-    histogram. {BlinkVisibleLoadTimeSuffixes}
+    Milliseconds spent waiting for an above-the-fold lazily loaded image to
+    load. 0ms is recorded if the image is already loaded by the time user
+    scrolls to it. EffectiveConnectionType (2G, 3G, etc) is recorded as suffix
+    to this histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"
       variants="BlinkVisibleLoadTimeSuffixes"/>
 </histogram>
 
 <histogram
-    name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2022-01-02">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
+    name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2{BlinkVisibleLoadTimeSuffixes}"
+    units="ms" expires_after="2023-09-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
-    Milliseconds spent waiting for a below the fold image element to load. 0ms
-    is recorded if the image is already loaded by the time user scrolls to it.
-    EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
+    Milliseconds spent waiting for a below-the-fold lazily loaded image to load.
+    0ms is recorded if the image is already loaded by the time user scrolls to
+    it. EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
     histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"

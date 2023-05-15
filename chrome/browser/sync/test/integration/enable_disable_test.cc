@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Stop and restart Sync.
   GetClient(0)->StopSyncServiceAndClearData();
-  GetClient(0)->StartSyncService();
+  GetClient(0)->EnableSyncFeature();
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Everything should have been redownloaded.
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       DoesNotRedownloadAfterKeepData) {
+                       DoesNotRedownloadAfterSyncUnpaused) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
@@ -417,16 +417,13 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   // exact count.
   ASSERT_GT(GetNumUpdatesDownloadedInLastCycle(), 0);
 
-  // Stop Sync and let it start up again in standalone transport mode.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
+  // Pause sync.
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
-  // Now start full Sync again.
+  // Resume sync.
   base::HistogramTester histogram_tester;
-  GetClient(0)->StartSyncService();
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // The bookmark should still be there, *without* having been redownloaded.
@@ -463,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   const std::string cache_guid = prefs.GetCacheGuid();
   ASSERT_NE("", cache_guid);
 
-  GetClient(0)->StopSyncServiceWithoutClearingData();
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   EXPECT_EQ(cache_guid, prefs.GetCacheGuid());
 }
 

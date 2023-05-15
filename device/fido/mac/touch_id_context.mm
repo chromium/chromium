@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -23,9 +24,11 @@
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/keychain.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 namespace {
 
@@ -47,7 +50,7 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
     return false;
   }
 
-  NSArray* entitlement_value_nsarray = base::mac::CFToNSCast(
+  NSArray* entitlement_value_nsarray = base::apple::CFToNSPtrCast(
       base::mac::CFCast<CFArrayRef>(entitlement_value_cftype));
   if (!entitlement_value_nsarray) {
     return false;
@@ -69,9 +72,10 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(params, kSecAttrKeySizeInBits, @256);
+  CFDictionarySetValue(params, kSecAttrKeySizeInBits,
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
-  CFDictionarySetValue(params, kSecAttrIsPermanent, @NO);
+  CFDictionarySetValue(params, kSecAttrIsPermanent, kCFBooleanFalse);
 
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key(
@@ -120,7 +124,7 @@ bool TouchIdContext::TouchIdAvailableImpl(AuthenticatorConfig config) {
     return false;
   }
 
-  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
+  LAContext* context = [[LAContext alloc] init];
   NSError* nserr;
   if (![context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
                             error:&nserr]) {
@@ -188,12 +192,10 @@ void TouchIdContext::PromptTouchId(const std::u16string& reason,
                                 // |error| is autoreleased in this block. It
                                 // is not currently passed onto the other
                                 // thread running the callback; but if it
-                                // were, it would have to be retained first
-                                // (and probably captured in a
-                                // scoped_nsobject<NSError>).
+                                // were, it would have to be retained first.
                                 DCHECK(error != nil);
                                 DVLOG(1) << "Touch ID prompt failed: "
-                                         << base::mac::NSToCFCast(error);
+                                         << base::apple::NSToCFPtrCast(error);
                               }
                               runner->PostTask(
                                   FROM_HERE,
@@ -206,6 +208,4 @@ void TouchIdContext::RunCallback(bool success) {
   std::move(callback_).Run(success);
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

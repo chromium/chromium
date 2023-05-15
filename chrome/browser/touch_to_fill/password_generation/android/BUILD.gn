@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("public") {
+  deps = [
+    "//base",
+    "//components/password_manager/content/browser:browser",
+  ]
+
+  sources = [
+    "touch_to_fill_password_generation_controller.cc",
+    "touch_to_fill_password_generation_controller.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  deps = [
+    ":public",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/password_manager/content/browser:browser",
+    "//content/test:test_support",
+  ]
+
+  sources = [ "touch_to_fill_password_generation_controller_unittest.cc" ]
+}

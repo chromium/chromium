@@ -268,21 +268,6 @@ Testing 'document.body':
         }
         backendNodeId : <number>
         childNodeCount : 1
-        children : [
-            [0] : {
-                type : node
-                value : {
-                    attributes : {
-                        some_attr_name : some_attr_value
-                    }
-                    backendNodeId : <number>
-                    childNodeCount : 2
-                    localName : div
-                    namespaceURI : http://www.w3.org/1999/xhtml
-                    nodeType : 1
-                }
-            }
-        ]
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -303,28 +288,6 @@ Testing 'document.querySelector('body > div')':
         }
         backendNodeId : <number>
         childNodeCount : 2
-        children : [
-            [0] : {
-                type : node
-                value : {
-                    backendNodeId : <number>
-                    nodeType : 3
-                    nodeValue : some text
-                }
-            }
-            [1] : {
-                type : node
-                value : {
-                    attributes : {
-                    }
-                    backendNodeId : <number>
-                    childNodeCount : 1
-                    localName : h2
-                    namespaceURI : http://www.w3.org/1999/xhtml
-                    nodeType : 1
-                }
-            }
-        ]
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1

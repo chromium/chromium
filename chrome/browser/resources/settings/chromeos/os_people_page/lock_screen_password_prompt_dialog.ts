@@ -16,7 +16,7 @@
  *   id="lockScreenPasswordPrompt"
  * </settings-lock-screen-password-prompt-dialog>
  */
-import '../../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
@@ -131,7 +132,7 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
   std::string response_;
   const size_t require_retries_;
   size_t attempts_ = 0;
-  TimeZoneProvider* provider_;
+  raw_ptr<TimeZoneProvider, ExperimentalAsh> provider_;
 };
 
 class TimeZoneReceiver {

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/policy_util.h"
@@ -196,11 +197,11 @@ class MergeListOfDictionaries {
 class MergeSettingsAndPolicies : public MergeListOfDictionaries {
  public:
   struct ValueParams {
-    const base::Value* user_policy;
-    const base::Value* device_policy;
-    const base::Value* user_setting;
-    const base::Value* shared_setting;
-    const base::Value* active_setting;
+    raw_ptr<const base::Value, ExperimentalAsh> user_policy;
+    raw_ptr<const base::Value, ExperimentalAsh> device_policy;
+    raw_ptr<const base::Value, ExperimentalAsh> user_setting;
+    raw_ptr<const base::Value, ExperimentalAsh> shared_setting;
+    raw_ptr<const base::Value, ExperimentalAsh> active_setting;
     bool user_editable;
     bool device_editable;
   };
@@ -537,7 +538,7 @@ class MergeToAugmented : public MergeToEffective {
   }
 
  private:
-  const chromeos::onc::OncValueSignature* signature_;
+  raw_ptr<const chromeos::onc::OncValueSignature, ExperimentalAsh> signature_;
 };
 
 }  // namespace

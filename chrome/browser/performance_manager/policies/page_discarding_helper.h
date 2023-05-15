@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -28,8 +29,6 @@ namespace performance_manager {
 namespace mechanism {
 class PageDiscarder;
 }  // namespace mechanism
-
-class SiteDataReader;
 
 namespace policies {
 
@@ -58,14 +57,18 @@ class PageNodeSortProxy {
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_marked_ && !rhs.is_marked_)
+    if (is_marked_ && !rhs.is_marked_) {
       return false;
-    if (!is_marked_ && rhs.is_marked_)
+    }
+    if (!is_marked_ && rhs.is_marked_) {
       return true;
-    if (is_protected_ && !rhs.is_protected_)
+    }
+    if (is_protected_ && !rhs.is_protected_) {
       return false;
-    if (!is_protected_ && rhs.is_protected_)
+    }
+    if (!is_protected_ && rhs.is_protected_) {
       return true;
+    }
     return last_visible_ > rhs.last_visible_;
   }
 
@@ -156,16 +159,14 @@ class PageDiscardingHelper : public GraphOwned,
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
 
-  using SiteDataReaderCallback =
-      base::RepeatingCallback<SiteDataReader*(const PageNode*)>;
-
-  // Sets a callback that will be invoked to create SiteDataReader objects for a
-  // given PageNode in tests.
-  void SetSiteDataReaderCallbackForTesting(SiteDataReaderCallback callback);
-
  protected:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
+
+  // Returns the PageLiveStateDecorator::Data associated with a PageNode.
+  // Exposed and made virtual to allowed injecting some fake data in tests.
+  virtual const PageLiveStateDecorator::Data* GetPageNodeLiveStateData(
+      const PageNode* page_node) const;
 
  private:
   bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
@@ -199,12 +200,6 @@ class PageDiscardingHelper : public GraphOwned,
       profiles_no_discard_patterns_;
 
   raw_ptr<Graph> graph_ = nullptr;
-
-  // A callback that is invoked to return a SiteDataReader for a given PageNode.
-  // The default returns the reader associated with SiteDataRecorder::Data, but
-  // this can be overridden to return test data using
-  // SetSiteDataReaderCallbackForTesting().
-  SiteDataReaderCallback site_data_reader_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

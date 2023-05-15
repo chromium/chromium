@@ -9,10 +9,10 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -25,15 +25,12 @@ using PageDiscarderBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesUrgent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::WindowedNotificationObserver load(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
-                              content::Referrer(),
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                              ui::PAGE_TRANSITION_TYPED, false);
-  auto* contents = browser()->OpenURL(page);
-  load.Wait();
+  content::RenderFrameHost* frame_host = NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(frame_host);
+  auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
   uint64_t total = 0;
   base::WeakPtr<PageNode> page_node =
@@ -77,15 +74,12 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesUrgent) {
 IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesProactive) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::WindowedNotificationObserver load(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
-                              content::Referrer(),
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                              ui::PAGE_TRANSITION_TYPED, false);
-  auto* contents = browser()->OpenURL(page);
-  load.Wait();
+  content::RenderFrameHost* frame_host = NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(frame_host);
+  auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
   uint64_t total = 0;
   base::WeakPtr<PageNode> page_node =

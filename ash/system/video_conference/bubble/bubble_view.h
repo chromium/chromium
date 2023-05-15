@@ -6,6 +6,11 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_BUBBLE_VIEW_H_
 
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
@@ -25,10 +30,14 @@ class BubbleView : public TrayBubbleView {
 
   // views::View:
   void AddedToWidget() override;
+  void ChildPreferredSizeChanged(View* child) override;
+
+  // TrayBubbleView:
+  bool CanActivate() const override;
 
  private:
   // Unowned by `BubbleView`.
-  VideoConferenceTrayController* controller_;
+  raw_ptr<VideoConferenceTrayController, ExperimentalAsh> controller_;
 };
 
 }  // namespace video_conference

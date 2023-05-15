@@ -4,11 +4,13 @@
 
 #include "ui/base/cursor/cursor.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -45,8 +47,16 @@ Cursor::Cursor(CursorType type) : type_(type) {}
 Cursor::Cursor(SkBitmap bitmap, gfx::Point hotspot, float image_scale_factor)
     : type_(CursorType::kCustom),
       custom_bitmap_(std::move(bitmap)),
-      custom_hotspot_(std::move(hotspot)),
-      image_scale_factor_(image_scale_factor) {}
+      image_scale_factor_(image_scale_factor) {
+  CHECK_GT(image_scale_factor_, 0);
+
+  // Clamp the hotspot to the custom image's dimensions.
+  if (!custom_bitmap_.empty()) {
+    custom_hotspot_ =
+        gfx::Point(std::clamp(hotspot.x(), 0, custom_bitmap_.width() - 1),
+                   std::clamp(hotspot.y(), 0, custom_bitmap_.height() - 1));
+  }
+}
 
 Cursor::Cursor(const Cursor& cursor) = default;
 
@@ -77,6 +87,24 @@ bool Cursor::operator==(const Cursor& cursor) const {
           (image_scale_factor_ == cursor.image_scale_factor_ &&
            custom_hotspot_ == cursor.custom_hotspot_ &&
            gfx::BitmapsAreEqual(custom_bitmap_, cursor.custom_bitmap_)));
+}
+
+// static
+bool Cursor::AreDimensionsValidForWeb(const gfx::Size& size,
+                                      float scale_factor) {
+  if (scale_factor == 0) {
+    return false;
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#icon_size_limits.
+  static constexpr int kMaximumCursorDIPSize = 128;
+  const gfx::Size size_in_dip = gfx::ScaleToCeiledSize(size, 1 / scale_factor);
+  if (size_in_dip.width() > kMaximumCursorDIPSize ||
+      size_in_dip.height() > kMaximumCursorDIPSize) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace ui

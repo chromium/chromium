@@ -41,6 +41,12 @@ class AXTreeSource {
   // null node.
   virtual AXNodeSource GetFromId(AXNodeID id) const = 0;
 
+  AXNodeSource EnsureGetFromId(AXNodeID id) const {
+    AXNodeSource node = GetFromId(id);
+    DCHECK(node);
+    return node;
+  }
+
   // Return the id of a node. All ids must be positive integers; 0 is not a
   // valid ID. IDs are unique only across the current tree source, not across
   // tree sources.

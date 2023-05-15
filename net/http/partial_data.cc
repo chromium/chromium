@@ -49,6 +49,7 @@ bool PartialData::Init(const HttpRequestHeaders& headers) {
 
   // We can handle this range request.
   byte_range_ = ranges[0];
+  user_byte_range_ = byte_range_;
   if (!byte_range_.IsValid())
     return false;
 
@@ -134,7 +135,12 @@ void PartialData::PrepareCacheValidation(disk_cache::Entry* entry,
   DCHECK_GE(cached_min_len_, 0);
 
   int len = GetNextRangeLen();
-  DCHECK_NE(0, len);
+  if (!len) {
+    // Stored body is empty, so just use the original range header.
+    headers->SetHeader(HttpRequestHeaders::kRange,
+                       user_byte_range_.GetHeaderValue());
+    return;
+  }
   range_present_ = false;
 
   headers->CopyFrom(extra_headers_);

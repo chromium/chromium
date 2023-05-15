@@ -14,12 +14,12 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -579,7 +579,8 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   AddDefaultIdentity();
   identity_ = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(identity_);
-  GetAuthenticationService()->SignIn(identity_);
+  GetAuthenticationService()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewIsVisible];

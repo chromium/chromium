@@ -9,8 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -118,8 +119,8 @@ public class ToolbarTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1230091")
     public void testNTPNavigatesToErrorPageOnDisconnectedNetwork() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         String testUrl = testServer.getURL(TEST_PAGE);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();

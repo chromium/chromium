@@ -7,8 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/geo/country_names.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -46,8 +45,6 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleName) {
   NSString* country = @"US";
   NSString* phoneNumber = @"6502345678";
   NSString* emailAddress = @"john@doe";
-
-  autofill::CountryNames::SetLocaleString("en-US");
 
   AutofillProfile* profile = new AutofillProfile();
   SetProfileFieldTypeValue(profile, autofill::NAME_FIRST, firstName);
@@ -97,8 +94,6 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleInitial) {
   NSString* country = @"US";
   NSString* phoneNumber = @"6502345678";
   NSString* emailAddress = @"john@doe";
-
-  autofill::CountryNames::SetLocaleString("en-US");
 
   AutofillProfile* profile = new AutofillProfile();
   SetProfileFieldTypeValue(profile, autofill::NAME_FIRST, firstName);

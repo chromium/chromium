@@ -729,6 +729,74 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
 
 #endif
 
+TEST_F(AXTableInfoTest, TableWithNoRows) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(5);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kGrid;
+  initial_state.nodes[0].child_ids = {11, 12, 13, 14};
+  initial_state.nodes[1].id = 11;
+  initial_state.nodes[1].role = ax::mojom::Role::kCell;
+  initial_state.nodes[1].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellRowIndex, 0);
+  initial_state.nodes[1].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
+  initial_state.nodes[2].id = 12;
+  initial_state.nodes[2].role = ax::mojom::Role::kCell;
+  initial_state.nodes[2].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellRowIndex, 0);
+  initial_state.nodes[2].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
+  initial_state.nodes[3].id = 13;
+  initial_state.nodes[3].role = ax::mojom::Role::kCell;
+  initial_state.nodes[3].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellRowIndex, 1);
+  initial_state.nodes[3].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
+  initial_state.nodes[4].id = 14;
+  initial_state.nodes[4].role = ax::mojom::Role::kCell;
+  initial_state.nodes[4].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellRowIndex, 1);
+  initial_state.nodes[4].int_attributes.emplace_back(
+      ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
+  AXTree tree(initial_state);
+  AXNode* table = tree.root();
+
+  EXPECT_TRUE(table->IsTable());
+  EXPECT_FALSE(table->IsTableRow());
+  EXPECT_FALSE(table->IsTableCellOrHeader());
+  EXPECT_EQ(2, table->GetTableColCount());
+  EXPECT_EQ(2, table->GetTableRowCount());
+
+  EXPECT_EQ(11, table->GetTableCellFromCoords(0, 0)->id());
+  EXPECT_EQ(12, table->GetTableCellFromCoords(0, 1)->id());
+  EXPECT_EQ(13, table->GetTableCellFromCoords(1, 0)->id());
+  EXPECT_EQ(14, table->GetTableCellFromCoords(1, 1)->id());
+  EXPECT_EQ(nullptr, table->GetTableCellFromCoords(2, 1));
+  EXPECT_EQ(nullptr, table->GetTableCellFromCoords(1, -1));
+
+  EXPECT_EQ(11, table->GetTableCellFromIndex(0)->id());
+  EXPECT_EQ(12, table->GetTableCellFromIndex(1)->id());
+  EXPECT_EQ(13, table->GetTableCellFromIndex(2)->id());
+  EXPECT_EQ(14, table->GetTableCellFromIndex(3)->id());
+  EXPECT_EQ(nullptr, table->GetTableCellFromIndex(-1));
+  EXPECT_EQ(nullptr, table->GetTableCellFromIndex(4));
+
+  AXNode* cell_0_0 = tree.GetFromId(11);
+  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  AXNode* cell_0_1 = tree.GetFromId(12);
+  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+  AXNode* cell_1_0 = tree.GetFromId(13);
+  EXPECT_EQ(1, cell_1_0->GetTableCellRowIndex());
+  EXPECT_EQ(0, cell_1_0->GetTableCellColIndex());
+  AXNode* cell_1_1 = tree.GetFromId(14);
+  EXPECT_EQ(1, cell_1_1->GetTableCellRowIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellColIndex());
+}
+
 TEST_F(AXTableInfoTest, TableWithNoIndices) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

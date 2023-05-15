@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
@@ -121,7 +122,7 @@ class AbortOnUnresponsivePerformer : public Observer {
       base::File::Error error) override {}
 
  private:
-  Service* service_;  // Not owned.
+  raw_ptr<Service, ExperimentalAsh> service_;  // Not owned.
   std::vector<std::unique_ptr<NotificationButtonClicker>> clickers_;
 };
 

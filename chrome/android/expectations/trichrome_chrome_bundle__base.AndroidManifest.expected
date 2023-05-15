@@ -91,7 +91,6 @@
       android:networkSecurityConfig="@xml/network_security_config"
       android:roundIcon="@drawable/ic_launcher_round"
       android:supportsRtl="true"
-      android:use32bitAbi="true"
       android:zygotePreloadName="org.chromium.chrome.app.TrichromeZygotePreload">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
@@ -104,14 +103,6 @@
         android:stateNotNeeded="true"
         android:theme="@style/Theme.PlayCore.Transparent">
     </activity>  # DIFF-ANCHOR: a2bae37c
-    <activity  # DIFF-ANCHOR: 28dc9019
-        android:name="com.google.ar.core.InstallActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:launchMode="singleTop"
-        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
-    </activity>  # DIFF-ANCHOR: 28dc9019
     <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true"/>
     <meta-data android:name="android.content.APP_RESTRICTIONS" android:resource="@xml/app_restrictions"/>
     <meta-data android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME" android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>

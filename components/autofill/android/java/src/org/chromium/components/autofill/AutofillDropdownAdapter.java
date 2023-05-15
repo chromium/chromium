@@ -102,6 +102,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (itemTagView != null) {
             itemTagView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+            itemTagView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
             height += mContext.getResources().getDimensionPixelSize(
                     R.dimen.autofill_dropdown_item_tag_height);
         }
@@ -142,14 +143,14 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             }
         }
 
-        labelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
         labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                mContext.getResources().getDimension(R.dimen.text_size_large));
+                mContext.getResources().getDimension(item.getLabelFontSizeResId()));
+        labelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
 
         if (secondaryLabelView != null) {
-            secondaryLabelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
             secondaryLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(R.dimen.text_size_large));
+                    mContext.getResources().getDimension(item.getLabelFontSizeResId()));
+            secondaryLabelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
         }
 
         // Layout of the sublabel view, which has a smaller font and usually sits below the main
@@ -159,6 +160,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (sublabelView != null) {
             sublabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+            sublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
         }
 
         TextView secondarySublabelView = populateLabelView(
@@ -166,6 +168,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (secondarySublabelView != null) {
             secondarySublabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+            secondarySublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
         }
 
         ImageView iconViewStart = (ImageView) layout.findViewById(R.id.start_dropdown_icon);

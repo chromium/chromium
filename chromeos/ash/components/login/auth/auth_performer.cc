@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -72,9 +73,7 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
 
 }  // namespace
 
-AuthPerformer::AuthPerformer(
-    base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client)
-    : client_(client) {
+AuthPerformer::AuthPerformer(UserDataAuthClient* client) : client_(client) {
   DCHECK(client_);
 }
 
@@ -225,9 +224,22 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     request.set_auth_factor_label(ref.label().value());
   }
   client_->AuthenticateAuthFactor(
-      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+      request,
+      base::BindOnce(&AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure,
+                     weak_factory_.GetWeakPtr(), std::move(context),
+                     std::move(callback)));
+}
+
+void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
+  if (auto error = user_data_auth::ReplyToCryptohomeError(reply);
+      error == user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND) {
+    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
+  }
+  OnAuthenticateAuthFactor(std::move(context), std::move(callback),
+                           std::move(reply));
 }
 
 void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,

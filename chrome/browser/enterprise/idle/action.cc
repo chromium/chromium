@@ -28,7 +28,9 @@
 #else
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profile_picker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -48,14 +50,11 @@ bool ProfileHasBrowsers(const Profile* profile) {
 
 // Wrapper Action for DialogManager. Shows a 30s warning dialog, shared across
 // profiles.
-//
-// Unlike other Actions, this does NOT correspond to the ActionType enum, or a
-// value in the IdleTimeoutActions policy. Instead, it's created by
-// ActionFactory if appropriate.
 class ShowDialogAction : public Action {
  public:
   explicit ShowDialogAction(base::flat_set<ActionType> action_types)
-      : Action(/*priority=*/-1), action_types_(action_types) {}
+      : Action(static_cast<int>(ActionType::kShowDialog)),
+        action_types_(action_types) {}
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
@@ -279,6 +278,41 @@ class ReloadPagesAction : public Action {
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Shows a bubble anchored to the 3-dot menu after other actions are finished.
+class ShowBubbleAction : public Action {
+ public:
+  explicit ShowBubbleAction(base::flat_set<ActionType> action_types)
+      : Action(static_cast<int>(ActionType::kShowBubble)),
+        action_types_(std::move(action_types)) {}
+
+  void Run(Profile* profile, Continuation continuation) override {
+    Browser* browser = chrome::FindBrowserWithActiveWindow();
+    if (browser && browser->profile() == profile &&
+        !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
+      // A browser for this profile has focus. Show the bubble there.
+      ShowIdleBubble(browser,
+                     profile->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout),
+                     ActionsToActionSet(action_types_));
+    } else {
+      // No active browser for this profile. Show the bubble when a browser
+      // gains focus, or on next startup. Let IdleServide::BrowserObserver do
+      // the work.
+      profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
+                                      true);
+    }
+    std::move(continuation).Run(true);
+  }
+
+  bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
+    return false;
+  }
+
+ private:
+  base::flat_set<ActionType> action_types_;
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 Action::Action(int priority) : priority_(priority) {}
@@ -349,8 +383,8 @@ ActionFactory::ActionQueue ActionFactory::Build(
     return a->ShouldNotifyUserOfPendingDestructiveAction(profile);
   });
   if (needs_dialog) {
-    actions.push_back(std::make_unique<ShowDialogAction>(
-        base::flat_set<ActionType>(action_types)));
+    actions.push_back(std::make_unique<ShowDialogAction>(action_types));
+    actions.push_back(std::make_unique<ShowBubbleAction>(action_types));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -365,5 +399,37 @@ void ActionFactory::SetBrowsingDataRemoverForTesting(
   CHECK_IS_TEST();
   browsing_data_remover_for_testing_ = remover;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IdleDialog::ActionSet ActionsToActionSet(
+    const base::flat_set<ActionType>& action_types) {
+  IdleDialog::ActionSet action_set = {.close = false, .clear = false};
+  for (ActionType action_type : action_types) {
+    switch (action_type) {
+      case ActionType::kCloseBrowsers:
+        action_set.close = true;
+        break;
+
+      case ActionType::kShowDialog:
+      case ActionType::kShowProfilePicker:
+      case ActionType::kShowBubble:
+        break;
+
+      case ActionType::kClearBrowsingHistory:
+      case ActionType::kClearDownloadHistory:
+      case ActionType::kClearCookiesAndOtherSiteData:
+      case ActionType::kClearCachedImagesAndFiles:
+      case ActionType::kClearPasswordSignin:
+      case ActionType::kClearAutofill:
+      case ActionType::kClearSiteSettings:
+      case ActionType::kClearHostedAppData:
+      case ActionType::kReloadPages:
+        action_set.clear = true;
+        break;
+    }
+  }
+  return action_set;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_idle

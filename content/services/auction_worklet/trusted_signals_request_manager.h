@@ -135,7 +135,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
                 LoadSignalsCallback load_signals_callback);
 
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
-                const GURL& render_urls,
+                const GURL& render_url,
                 std::set<std::string> ad_component_render_urls,
                 LoadSignalsCallback load_signals_callback);
 

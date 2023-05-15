@@ -66,13 +66,12 @@ constexpr int kHTTPStatusGone = 410;
 
 class DefaultConfigurator : public DMClient::Configurator {
  public:
-  explicit DefaultConfigurator(absl::optional<PolicyServiceProxyConfiguration>
-                                   policy_service_proxy_configuration);
+  DefaultConfigurator(const GURL& server_url,
+                      absl::optional<PolicyServiceProxyConfiguration>
+                          policy_service_proxy_configuration);
   ~DefaultConfigurator() override = default;
 
-  std::string GetDMServerUrl() const override {
-    return DEVICE_MANAGEMENT_SERVER_URL;
-  }
+  GURL GetDMServerUrl() const override { return server_url_; }
 
   std::string GetAgentParameter() const override {
     return base::StrCat({"Updater-", kUpdaterVersion});
@@ -86,13 +85,16 @@ class DefaultConfigurator : public DMClient::Configurator {
   }
 
  private:
+  const GURL server_url_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
 };
 
 DefaultConfigurator::DefaultConfigurator(
+    const GURL& server_url,
     absl::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration)
-    : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
+    : server_url_(server_url),
+      network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
           policy_service_proxy_configuration)) {}
 
 std::string DefaultConfigurator::GetPlatformParameter() const {
@@ -401,10 +403,11 @@ void DMClient::ReportPolicyValidationErrors(
 }
 
 std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator(
+    const GURL& server_url,
     absl::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration) {
   return std::make_unique<DefaultConfigurator>(
-      policy_service_proxy_configuration);
+      server_url, policy_service_proxy_configuration);
 }
 
 }  // namespace updater

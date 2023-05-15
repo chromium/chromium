@@ -496,36 +496,21 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // changed to handle SW decoding and not return
     // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
 
-    // This dapater is diffrent from rtc_video_decoder_dapater.
-    // Consider two cases:
-    // 1. If it's hardware decoder, the D3D11 supports decoding the VP9 kSVC
-    // stream, but DXVA not. Currently just a reasonably temporary measure. Once
-    // the DXVA supports decoding VP9 kSVC stream, the boolen
-    // |need_fallback_to_software| should be removed, and if the OS is windows
-    // but not win7, we will return true in 'Vp9HwSupportForSpatialLayers'
-    // instead of false to Media Capability.
-    // 2. If it's software(libvpx) decoder, currently libvpx can decode vp9 kSVC
+    // This adapter is different from rtc_video_decoder_adapter.
+    // If it's software(libvpx) decoder, currently libvpx can decode vp9 kSVC
     // stream properly. So only when |decoder_info_.is_hardware_accelerated| is
     // true, we will do the decoder capability check.
     if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
         input_image.SpatialIndex().value_or(0) > 0 &&
-        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() &&
+        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers(
+            video_decoder_type_) &&
         decoder_configured_ && decoder_info_.is_hardware_accelerated) {
-      bool need_fallback_to_software = true;
-#if BUILDFLAG(IS_WIN)
-      if (video_decoder_type_ == media::VideoDecoderType::kD3D11 &&
-          base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
-        need_fallback_to_software = false;
-      }
-#endif
-      if (need_fallback_to_software) {
-        DLOG(ERROR) << __func__
-                    << " fallback to software due to decoder doesn't support "
-                       "decoding VP9 multiple spatial layers.";
-        RecordRTCVideoDecoderFallbackReason(
-            config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-      }
+      DLOG(ERROR) << __func__
+                  << " fallback to software due to decoder doesn't support "
+                     "decoding VP9 multiple spatial layers.";
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
+      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
     }
   }
 

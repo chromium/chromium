@@ -242,6 +242,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         sPhotoPickerDelegate = delegate;
     }
 
+    @VisibleForTesting
     SelectFileDialog(long nativeSelectFileDialog) {
         mNativeSelectFileDialog = nativeSelectFileDialog;
     }
@@ -270,7 +271,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param window The WindowAndroid that can show intents
      */
     @CalledByNative
-    private void selectFile(
+    protected void selectFile(
             String[] fileTypes, boolean capture, boolean multiple, WindowAndroid window) {
         mFileTypes = new ArrayList<String>(Arrays.asList(fileTypes));
         mCapture = capture;
@@ -623,11 +624,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 if (!mWindowAndroid.hasPermission(Manifest.permission.CAMERA)) {
                     mWindowAndroid.requestPermissions(new String[] {Manifest.permission.CAMERA},
                             (permissions, grantResults) -> {
-                                assert grantResults.length == 1;
-                                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                                    onFileNotSelected();
+                                if (grantResults.length == 0
+                                        || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                                     return;
                                 }
+                                assert grantResults.length == 1;
                                 new GetCameraIntentTask(true, mWindowAndroid, this)
                                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             });
@@ -1139,21 +1140,21 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         return convertToSupportedPhotoPickerTypes(mFileTypes) != null;
     }
 
-    private void onFileSelected(
+    protected void onFileSelected(
             long nativeSelectFileDialogImpl, String filePath, String displayName) {
         recordImageCountHistograms(new String[] {filePath});
         SelectFileDialogJni.get().onFileSelected(
                 nativeSelectFileDialogImpl, SelectFileDialog.this, filePath, displayName);
     }
 
-    private void onMultipleFilesSelected(
+    protected void onMultipleFilesSelected(
             long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray) {
         recordImageCountHistograms(filePathArray);
         SelectFileDialogJni.get().onMultipleFilesSelected(
                 nativeSelectFileDialogImpl, SelectFileDialog.this, filePathArray, displayNameArray);
     }
 
-    private void onFileNotSelected(long nativeSelectFileDialogImpl) {
+    protected void onFileNotSelected(long nativeSelectFileDialogImpl) {
         recordImageCountHistograms(new String[] {});
         SelectFileDialogJni.get().onFileNotSelected(
                 nativeSelectFileDialogImpl, SelectFileDialog.this);

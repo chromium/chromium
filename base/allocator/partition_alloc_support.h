@@ -45,11 +45,11 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
+    bool enable_brp_for_ash = false;
     bool enable_brp_zapping = false;
     bool enable_brp_partition_memory_reclaimer = false;
     bool split_main_partition = false;
     bool use_dedicated_aligned_partition = false;
-    bool add_dummy_ref_count = false;
     bool process_affected_by_brp_flag = false;
   };
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to

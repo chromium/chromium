@@ -33,7 +33,7 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
  private:
   mojo::ReceiverSet<mojom::MultiCaptureService>
       multi_capture_service_receiver_set_;
-  base::raw_ptr<ash::MultiCaptureServiceClient, DanglingUntriaged>
+  raw_ptr<ash::MultiCaptureServiceClient, DanglingUntriaged>
       multi_capture_client_ = nullptr;
 };
 

@@ -25,7 +25,7 @@ namespace content {
 // These IDs can be considered to be unique for the lifetime of the browser
 // process. While they are finite and thus must eventually roll over, this case
 // may be considered sufficiently rare as to be ignorable.
-struct GlobalRoutingID {
+struct CONTENT_EXPORT GlobalRoutingID {
   GlobalRoutingID() = default;
 
   GlobalRoutingID(int child_id, int route_id)

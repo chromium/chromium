@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
+#include "components/segmentation_platform/internal/logging.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
@@ -174,7 +175,7 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   if (request_state->options->ignore_db_scores) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
-            << " executing model to get score";
+            << " ignoring DB score, executing model.";
     ExecuteModelAndGetScore(std::move(request_state),
                             DefaultModelManager::SegmentSource::DATABASE,
                             std::move(db_score_callback));
@@ -206,7 +207,7 @@ void SegmentResultProviderImpl::OnGotDatabaseModelScore(
                        DefaultModelManager::SegmentSource::DEFAULT_MODEL);
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
-            << " executing model to get score";
+            << " failed to get score from database, executing server model.";
     ExecuteModelAndGetScore(std::move(request_state),
                             fallback_source_to_execute,
                             std::move(db_score_callback));
@@ -269,6 +270,12 @@ void SegmentResultProviderImpl::GetCachedModelScore(
         std::make_unique<SegmentResult>(ResultState::kDatabaseScoreNotReady));
     return;
   }
+
+  VLOG(1) << __func__ << ": Retrieved prediction from database: "
+          << segmentation_platform::PredictionResultToDebugString(
+                 db_segment_info->prediction_result())
+          << " for segment "
+          << proto::SegmentId_Name(request_state->options->segment_id);
 
   float rank = ComputeDiscreteMapping(
       request_state->options->discrete_mapping_key, *db_segment_info);
@@ -342,11 +349,12 @@ void SegmentResultProviderImpl::OnModelExecuted(
   std::unique_ptr<SegmentResult> segment_result;
 
   bool success = result->status == ModelExecutionStatus::kSuccess;
+  bool is_default_model =
+      source == DefaultModelManager::SegmentSource::DEFAULT_MODEL;
 
   if (success) {
-    state = source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
-                ? ResultState::kDefaultModelScoreUsed
-                : ResultState::kTfliteModelScoreUsed;
+    state = is_default_model ? ResultState::kDefaultModelScoreUsed
+                             : ResultState::kTfliteModelScoreUsed;
     prediction_result = metadata_utils::CreatePredictionResult(
         result->scores, segment_info->model_metadata().output_config(),
         clock_->Now());
@@ -355,15 +363,23 @@ void SegmentResultProviderImpl::OnModelExecuted(
         request_state->options->discrete_mapping_key, *segment_info);
     segment_result =
         std::make_unique<SegmentResult>(state, prediction_result, rank);
+    VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")
+            << " model executed successfully. Result: "
+            << segmentation_platform::PredictionResultToDebugString(
+                   prediction_result)
+            << " for segment "
+            << proto::SegmentId_Name(request_state->options->segment_id);
   } else {
-    state = source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
-                ? ResultState::kDefaultModelExecutionFailed
-                : ResultState::kTfliteModelExecutionFailed;
+    state = is_default_model ? ResultState::kDefaultModelExecutionFailed
+                             : ResultState::kTfliteModelExecutionFailed;
     segment_result = std::make_unique<SegmentResult>(state);
+    VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")
+            << " model execution failed"
+            << " for segment "
+            << proto::SegmentId_Name(request_state->options->segment_id);
   }
 
-  if (source == DefaultModelManager::SegmentSource::DATABASE &&
-      request_state->options->save_results_to_db) {
+  if (!is_default_model && request_state->options->save_results_to_db) {
     // Saving results to database.
     segment_database_->SaveSegmentResult(
         segment_info->segment_id(),

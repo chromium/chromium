@@ -32,8 +32,6 @@ void UpdateSearchEngine(TemplateURLService* service) {
   std::vector<std::unique_ptr<TemplateURLData>> new_engines =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr,
                                                          &default_engine_index);
-  DCHECK(default_engine_index == 0);
-  DCHECK(new_engines[0]->prepopulate_id == kGoogleEnginePrepopulatedId);
   // The aim is to replace the old search engines with the new ones.
   // It is not possible to remove all of them, because removing the current
   // selected engine is not allowed.

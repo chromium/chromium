@@ -119,7 +119,7 @@ TEST(PaintShaderTest, DecodePaintRecord) {
 
   // The rasterization of the shader is internal to skia, so use a raster canvas
   // to verify that the decoded paint does not have the encoded image.
-  auto surface = SkSurface::MakeRaster(SkImageInfo::MakeN32Premul(100, 100));
+  auto surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(100, 100));
   surface->getCanvas()->drawPaint(canvas.paint_);
 
   // Using the shader requests decode for images at the correct scale.

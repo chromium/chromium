@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -79,7 +80,7 @@ class ShellSurfacePresentationTimeRecorder
                                 const gfx::PresentationFeedback& feedback);
 
  private:
-  ShellSurface* shell_surface_ = nullptr;
+  raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_ = nullptr;
   std::unique_ptr<Reporter> reporter_;
 
   uint64_t next_request_id_ = 0u;

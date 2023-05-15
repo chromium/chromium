@@ -85,6 +85,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return composition_list_;
   }
 
+  static absl::optional<double> InitialDuration();
   static const AtomicString& InitialName();
   static const StyleTimeline& InitialTimeline();
   static Timing::PlaybackDirection InitialDirection() {

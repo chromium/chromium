@@ -11,6 +11,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"
 #include "ui/message_center/message_center_observer.h"
@@ -62,7 +63,9 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // goes out of scope.
   std::string notification_id_;
 
-  NotificationIconsController* const controller_;
+  const raw_ptr<NotificationIconsController,
+                DanglingUntriaged | ExperimentalAsh>
+      controller_;
 };
 
 // Controller for notification icons in `UnifiedSystemTray` button. If the
@@ -145,6 +148,10 @@ class ASH_EXPORT NotificationIconsController
   NotificationIconTrayItemView* GetNotificationIconShownInTray(
       const std::string& id);
 
+  // Updates `icons_view_visible_` according to the size of the display
+  // associated with `shelf_`.
+  void UpdateIconsViewVisibleForDisplaySize();
+
   // Contains notification icon tray items that are added to tray container. All
   // items are owned by views hierarchy.
   std::vector<NotificationIconTrayItemView*> tray_items_;
@@ -158,20 +165,22 @@ class ASH_EXPORT NotificationIconsController
   bool icons_view_visible_ = false;
 
   // Owned by `RootWindowController`
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Owned by `UnifiedSystemTray`
-  UnifiedSystemTrayModel* const system_tray_model_;
+  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> system_tray_model_;
 
   // `NotificationCenterTray` owns this `NotificationIconsController` when the
   // QS revamp is enabled. `NotificationCenterTray` itself is owned by the views
   // hierarchy. Note that this will always be null if the QS revamp is not
   // enabled.
-  NotificationCenterTray* notification_center_tray_ = nullptr;
+  raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_ =
+      nullptr;
 
-  NotificationCounterView* notification_counter_view_ = nullptr;
-  QuietModeView* quiet_mode_view_ = nullptr;
-  SeparatorTrayItemView* separator_ = nullptr;
+  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_ =
+      nullptr;
+  raw_ptr<QuietModeView, ExperimentalAsh> quiet_mode_view_ = nullptr;
+  raw_ptr<SeparatorTrayItemView, ExperimentalAsh> separator_ = nullptr;
 
   // True when `notification_center_tray_` is currently updating, false
   // otherwise. This is used to avoid updating notification icons/indicators

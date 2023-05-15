@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
@@ -102,7 +103,8 @@ class SingleEntryPropertiesGetterForDriveFs {
   // Given parameters.
   ResultCallback callback_;
   const storage::FileSystemURL file_system_url_;
-  Profile* const running_profile_;
+  base::FilePath relative_path_;
+  const raw_ptr<Profile, ExperimentalAsh> running_profile_;
   // Note: when empty, all properties are returned.
   const std::set<extensions::api::file_manager_private::EntryPropertyName>
       requested_properties_;

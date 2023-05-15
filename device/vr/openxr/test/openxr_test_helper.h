@@ -5,23 +5,24 @@
 #ifndef DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 #define DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 
-#include <d3d11.h>
-#include <unknwn.h>
-#include <wrl.h>
-
 #include <array>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_defs.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl.h>
+#endif
 
 namespace gfx {
 class Transform;
@@ -262,7 +263,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   std::queue<XrEventDataBuffer> event_queue_;
 
-  device::VRTestHook* test_hook_ GUARDED_BY(lock_) = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION device::VRTestHook* test_hook_ GUARDED_BY(lock_) = nullptr;
   base::Lock lock_;
 };
 

@@ -30,7 +30,7 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
     const std::string& element_id,
     const std::string& value,
     const std::string& expected_value) {
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       RenderFrameHost(),
       base::StringPrintf("document.getElementById('%s').focus();",
                          element_id.c_str())));
@@ -113,7 +113,7 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
   if (!username_id.empty())
     FillElementWithValue(username_id, kUsername);
   FillElementWithValue(password_id, kPassword);
-  ASSERT_TRUE(content::ExecuteScript(RenderFrameHost(), submission_script));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), submission_script));
   ASSERT_TRUE(observer.Wait());
   WaitForPasswordStore();
 
@@ -143,9 +143,9 @@ void PasswordManagerInteractiveTestBase::SimulateUserDeletingFieldContent(
   SCOPED_TRACE(::testing::Message()
                << "SimulateUserDeletingFieldContent " << field_id);
   std::string focus("document.getElementById('" + field_id + "').focus();");
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), focus));
+  ASSERT_TRUE(content::ExecJs(WebContents(), focus));
   std::string select("document.getElementById('" + field_id + "').select();");
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), select));
+  ASSERT_TRUE(content::ExecJs(WebContents(), select));
   content::SimulateKeyPress(WebContents(), ui::DomKey::BACKSPACE,
                             ui::DomCode::BACKSPACE, ui::VKEY_BACK, false, false,
                             false, false);

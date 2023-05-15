@@ -1,0 +1,53 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_CONNECTION_H_
+#define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_CONNECTION_H_
+
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+
+namespace ash::quick_start {
+
+class FakeConnection : public Connection {
+ public:
+  class Factory : public Connection::Factory {
+   public:
+    Factory();
+    ~Factory() override;
+
+    // Connection::Factory:
+    std::unique_ptr<Connection> Create(
+        NearbyConnection* nearby_connection,
+        Connection::SessionContext session_context,
+        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
+        ConnectionClosedCallback on_connection_closed,
+        ConnectionAuthenticatedCallback on_connection_authenticated) override;
+
+    base::WeakPtr<FakeConnection> instance_;
+  };
+
+  FakeConnection(
+      NearbyConnection* nearby_connection,
+      Connection::SessionContext session_context,
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
+      ConnectionClosedCallback on_connection_closed,
+      ConnectionAuthenticatedCallback on_connection_authenticated);
+
+  ~FakeConnection() override;
+
+  // Connection:
+  void InitiateHandshake(const std::string& authentication_token,
+                         HandshakeSuccessCallback callback) override;
+
+  bool WasHandshakeInitiated();
+
+ private:
+  bool handshake_initiated_ = false;
+  HandshakeSuccessCallback handshake_success_callback_;
+
+  base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
+};
+}  // namespace ash::quick_start
+
+#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_CONNECTION_H_

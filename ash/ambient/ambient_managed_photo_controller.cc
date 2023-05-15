@@ -39,7 +39,7 @@ void AmbientManagedPhotoController::StartScreenUpdate() {
     return;
   }
 
-  state_ = State::kStarted;
+  is_active_ = true;
   image_attempt_no_ = 0;
 
   LoadImages();
@@ -47,15 +47,14 @@ void AmbientManagedPhotoController::StartScreenUpdate() {
 
 void AmbientManagedPhotoController::UpdateImageFilePaths(
     const std::vector<base::FilePath>& images) {
+  // Reset `error_state_` when a sufficient number of new images are received
   if (images.size() < kMinImagesRequired) {
     // TODO(b/269579804): Add Metrics
-    // TODO(b/175142676): Consider stopping managed screensaver if started
-    // with an insufficient no of images.
-
-    LOG(WARNING) << "AmbientManagedPhotoController updated with an "
-                    "insufficient number of images.";
+    SetErrorState(ErrorState::kInsufficientImages);
     return;
   }
+  SetErrorState(ErrorState::kNone);
+
   images_file_paths_ = images;
   image_attempt_no_ = 0;
 
@@ -65,10 +64,6 @@ void AmbientManagedPhotoController::UpdateImageFilePaths(
     weak_factory_.InvalidateWeakPtrs();
     current_image_index_ = 0;
 
-    // Transition back to started state as we have a fresh set of images to
-    // retry on.
-    state_ = State::kStarted;
-
     // Note: We do not clear the backend model here but rather just load
     // the next topic buffer size images from disk, this will automatically
     // fill the backend model with only the latest images.
@@ -76,8 +71,22 @@ void AmbientManagedPhotoController::UpdateImageFilePaths(
   }
 }
 
+bool AmbientManagedPhotoController::HasScreenUpdateErrors() const {
+  return error_state_ != ErrorState::kNone;
+}
+
+void AmbientManagedPhotoController::SetErrorState(ErrorState error_state) {
+  if (error_state == error_state_) {
+    return;
+  }
+  error_state_ = error_state;
+  if (observer_) {
+    observer_->OnErrorStateChanged();
+  }
+}
+
 void AmbientManagedPhotoController::StopScreenUpdate() {
-  state_ = State::kStopped;
+  is_active_ = false;
   images_file_paths_.clear();
   ambient_backend_model_.Clear();
   weak_factory_.InvalidateWeakPtrs();
@@ -86,7 +95,7 @@ void AmbientManagedPhotoController::StopScreenUpdate() {
 }
 
 bool AmbientManagedPhotoController::IsScreenUpdateActive() const {
-  return state_ != State::kStopped;
+  return is_active_;
 }
 
 void AmbientManagedPhotoController::OnMarkerHit(
@@ -97,14 +106,14 @@ void AmbientManagedPhotoController::OnMarkerHit(
              << " does not trigger a image refresh. Ignoring...";
     return;
   }
-  if (state_ == State::kStartedPhotoLoadFailure) {
+  if (error_state_ == ErrorState::kPhotoLoadFailure) {
     LOG(WARNING) << "Not loading the next image for the UI marker " << marker
                  << " as maximum photo loading attempts reached";
     return;
   }
 
   DVLOG(3) << "UI event " << marker << " triggering image load";
-  if (state_ != State::kStarted) {
+  if (!is_active_) {
     LOG(DFATAL) << "Received unexpected UI marker " << marker
                 << " while inactive";
     return;
@@ -159,7 +168,7 @@ void AmbientManagedPhotoController::HandlePhotoDecodingFailure(
     base::OnceCallback<void(bool success)> done_callback) {
   if (image_attempt_no_ >= GetMaxImageAttempts()) {
     LOG(ERROR) << "Image decoding failed, no valid image was decoded";
-    state_ = State::kStartedPhotoLoadFailure;
+    SetErrorState(ErrorState::kPhotoLoadFailure);
     std::move(done_callback).Run(false);
     return;
   }
@@ -193,6 +202,11 @@ void AmbientManagedPhotoController::OnPhotoDecoded(
 size_t AmbientManagedPhotoController::GetMaxImageAttempts() const {
   CHECK_GE(images_file_paths_.size(), kMinImagesRequired);
   return images_file_paths_.size() - 1;
+}
+
+void AmbientManagedPhotoController::SetObserver(Observer* observer) {
+  CHECK(!observer_);
+  observer_ = observer;
 }
 
 }  // namespace ash

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature.h"
 
 class Profile;
@@ -20,13 +20,13 @@ class WMDesksPrivateFeatureLacros : public WMDesksPrivateFeature {
   WMDesksPrivateFeatureLacros();
   ~WMDesksPrivateFeatureLacros() override;
 
-  void GetDeskTemplateJson(const base::GUID& template_uuid,
+  void GetDeskTemplateJson(const base::Uuid& template_uuid,
                            Profile* profile,
                            GetDeskTemplateJsonCallback callback) override;
 
   void LaunchDesk(std::string desk_name, LaunchDeskCallback callback) override;
 
-  void RemoveDesk(const base::GUID& desk_uuid,
+  void RemoveDesk(const base::Uuid& desk_uuid,
                   bool close_all,
                   RemoveDeskCallback callback) override;
 
@@ -38,19 +38,19 @@ class WMDesksPrivateFeatureLacros : public WMDesksPrivateFeature {
 
   void SaveActiveDesk(SaveActiveDeskCallback callback) override;
 
-  void DeleteSavedDesk(const base::GUID& desk_uuid,
+  void DeleteSavedDesk(const base::Uuid& desk_uuid,
                        DeleteSavedDeskCallback callback) override;
 
-  void RecallSavedDesk(const base::GUID& desk_uuid,
+  void RecallSavedDesk(const base::Uuid& desk_uuid,
                        RecallSavedDeskCallback callback) override;
 
   void GetSavedDesks(GetSavedDesksCallback callback) override;
 
   void GetActiveDesk(GetActiveDeskCallback callback) override;
 
-  void SwitchDesk(const base::GUID& desk_uuid,
+  void SwitchDesk(const base::Uuid& desk_uuid,
                   SwitchDeskCallback callback) override;
-  void GetDeskByID(const base::GUID& desk_uuid,
+  void GetDeskByID(const base::Uuid& desk_uuid,
                    GetDeskByIDCallback callback) override;
 };
 

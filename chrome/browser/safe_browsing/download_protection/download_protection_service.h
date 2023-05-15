@@ -344,7 +344,7 @@ class DownloadProtectionService {
 
   // Callback when deep scanning has finished, but we may want to do the
   // metadata check anyway.
-  void MaybeCheckMetdataAfterDeepScanning(
+  void MaybeCheckMetadataAfterDeepScanning(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback,
       DownloadCheckResult result);

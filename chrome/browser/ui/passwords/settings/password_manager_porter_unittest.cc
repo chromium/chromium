@@ -181,11 +181,9 @@ class MockPasswordManagerExporter
 
   ~MockPasswordManagerExporter() override = default;
 
-  MOCK_METHOD0(PreparePasswordsForExport, void());
-  MOCK_METHOD0(Cancel, void());
-  MOCK_METHOD1(SetDestination, void(const base::FilePath&));
-  MOCK_METHOD0(GetExportProgressStatus,
-               password_manager::ExportProgressStatus());
+  MOCK_METHOD(void, PreparePasswordsForExport, (), (override));
+  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, SetDestination, (const base::FilePath&), (override));
 };
 
 class FakePasswordParserService
@@ -226,9 +224,9 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
     ui::SelectFileDialog::SetFactory(
         new TestSelectFileDialogFactory(temp_file_path()));
 
-    std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
+    profile_ = CreateTestingProfile();
     porter_ = std::make_unique<PasswordManagerPorter>(
-        profile.get(), &presenter(),
+        profile_.get(), &presenter(),
         /*on_export_progress_callback=*/base::DoNothing());
 
     auto importer =
@@ -245,6 +243,8 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    porter_.reset();
+    profile_.reset();
     store_->ShutdownOnUIThread();
     task_environment()->RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -272,6 +272,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
  private:
   FakePasswordParserService service;
   mojo::Receiver<password_manager::mojom::CSVPasswordParser> receiver{&service};
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<PasswordManagerPorter> porter_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
@@ -388,6 +389,52 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
   password_manager::PasswordForm stored_form =
       store().stored_passwords().begin()->second[0];
   EXPECT_EQ(u"new_password", stored_form.password_value);
+}
+
+TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordsImportM2};
+
+  password_manager::PasswordForm test_form;
+  test_form.url = GURL("https://test.com");
+  test_form.signon_realm = test_form.url.spec();
+  test_form.username_value = u"username";
+  test_form.password_value = u"old_password";
+  test_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+
+  AddPasswordForm(test_form);
+  ASSERT_EQ(1u, store().stored_passwords().size());
+
+  ASSERT_TRUE(base::WriteFile(temp_file_path(),
+                              "origin,username,password\n"
+                              "https://test.com,username,new_password\n"));
+
+  const size_t expected_displayed_entires_size = 1;
+  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(
+          ::testing::Field(&password_manager::ImportResults::status,
+                           password_manager::ImportResults::Status::CONFLICTS),
+          ::testing::Field(&password_manager::ImportResults::displayed_entries,
+                           SizeIs(expected_displayed_entires_size)))))
+      .Times(1);
+  porter().Import(web_contents(),
+                  password_manager::PasswordForm::Store::kProfileStore,
+                  callback.Get());
+  task_environment()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  EXPECT_CALL(
+      callback,
+      Run(::testing::Field(
+          &password_manager::ImportResults::status,
+          password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE)))
+      .Times(1);
+  porter().Import(web_contents(),
+                  password_manager::PasswordForm::Store::kProfileStore,
+                  callback.Get());
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {

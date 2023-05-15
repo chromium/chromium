@@ -14,6 +14,7 @@
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,15 +56,27 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
   if (is_enable_message_) {
     title = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_TITLE);
-    description = l10n_util::GetStringUTF16(
-        IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kTailoredSecurityUpdatedMessages)) {
+      description = l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION_UPDATED);
+    } else {
+      description = l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION);
+    }
     icon_resource_id =
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SAFETY_CHECK);
   } else {
     title = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE);
-    description = l10n_util::GetStringUTF16(
-        IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kTailoredSecurityUpdatedMessages)) {
+      description = l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED);
+    } else {
+      description = l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
+    }
     icon_resource_id =
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD);
     message_->DisableIconTint();

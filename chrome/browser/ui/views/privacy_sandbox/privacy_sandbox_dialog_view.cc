@@ -170,6 +170,9 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
                      base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
                      base::Unretained(this)),
+      base::BindOnce(
+          &PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings,
+          base::Unretained(this)),
       prompt_type);
 
   SetUseDefaultFillLayout(true);
@@ -187,7 +190,8 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
   const int target_height = std::min(height, max_height);
   web_view_->SetPreferredSize(
       gfx::Size(web_view_->GetPreferredSize().width(), target_height));
-  GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      GetWidget(), browser_->window()->GetWebContentsModalDialogHost());
 }
 
 void PrivacySandboxDialogView::ShowNativeView() {
@@ -202,6 +206,11 @@ void PrivacySandboxDialogView::ShowNativeView() {
 void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {
   DCHECK(browser_);
   chrome::ShowPrivacySandboxSettings(browser_);
+}
+
+void PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings() {
+  CHECK(browser_);
+  chrome::ShowPrivacySandboxAdMeasurementSettings(browser_);
 }
 
 BEGIN_METADATA(PrivacySandboxDialogView, views::View)

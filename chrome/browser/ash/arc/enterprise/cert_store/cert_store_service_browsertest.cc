@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
@@ -336,7 +337,7 @@ class CertStoreServiceTest
   Profile* profile();
 
   // Owned by the CertStoreService instance.
-  FakeArcCertInstaller* installer_;
+  raw_ptr<FakeArcCertInstaller, ExperimentalAsh> installer_;
 
   std::vector<InstalledTestCert> installed_certs_;
 
@@ -376,7 +377,7 @@ class CertStoreServiceTest
   std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_;
 
   // Owned by the CertStoreService instance.
-  FakeArcKeymasterBridge* keymaster_bridge_;
+  raw_ptr<FakeArcKeymasterBridge, ExperimentalAsh> keymaster_bridge_;
 
   ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 };

@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -67,7 +68,7 @@ class LockScreenAppFocuser {
 
  private:
   bool reversed_tab_order_ = false;
-  views::Widget* lock_screen_app_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> lock_screen_app_widget_;
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {

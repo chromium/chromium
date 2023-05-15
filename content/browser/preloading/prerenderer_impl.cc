@@ -6,7 +6,6 @@
 
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -16,37 +15,21 @@
 
 namespace content {
 
-class PrerendererImpl::PrerenderHostObserver : public PrerenderHost::Observer {
- public:
-  explicit PrerenderHostObserver(PrerenderHost* prerender_host);
-  ~PrerenderHostObserver() override;
+namespace {
 
-  // PrerenderHost::Observer implementation:
-  void OnHostDestroyed(PrerenderFinalStatus final_status) override;
-
-  bool destroyed_by_memory_limit_exceeded() const {
-    return destroyed_by_memory_limit_exceeded_;
+PrerenderTriggerType GetTriggerType(
+    blink::mojom::SpeculationInjectionWorld world) {
+  switch (world) {
+    case blink::mojom::SpeculationInjectionWorld::kNone:
+      [[fallthrough]];
+    case blink::mojom::SpeculationInjectionWorld::kMain:
+      return PrerenderTriggerType::kSpeculationRule;
+    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+      return PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld;
   }
-
- private:
-  bool destroyed_by_memory_limit_exceeded_ = false;
-  base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
-      this};
-};
-
-PrerendererImpl::PrerenderHostObserver::PrerenderHostObserver(
-    PrerenderHost* prerender_host) {
-  if (prerender_host)
-    observation_.Observe(prerender_host);
 }
-PrerendererImpl::PrerenderHostObserver::~PrerenderHostObserver() = default;
 
-void PrerendererImpl::PrerenderHostObserver::OnHostDestroyed(
-    PrerenderFinalStatus final_status) {
-  observation_.Reset();
-  if (final_status == PrerenderFinalStatus::kMemoryLimitExceeded)
-    destroyed_by_memory_limit_exceeded_ = true;
-}
+}  // namespace
 
 struct PrerendererImpl::PrerenderInfo {
   GURL url;
@@ -61,9 +44,10 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
   registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
 }
+
 PrerendererImpl::~PrerendererImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CancelStartedPrerenders();
+  CancelStartedPrerenders(PrerenderFinalStatus::kTriggerDestroyed);
 }
 
 void PrerendererImpl::PrimaryPageChanged(Page& page) {
@@ -76,14 +60,13 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
   // before the next primary page swaps in so that the next page can trigger a
   // new prerender without hitting the max number of running prerenders.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CancelStartedPrerenders();
+  CancelStartedPrerenders(PrerenderFinalStatus::kTriggerPageNavigated);
 }
 
 // TODO(isaboori) Part of the logic in |ProcessCandidatesForPrerender| method is
 // about making preloading decisions and could be moved to PreloadingDecider
 // class.
 void PrerendererImpl::ProcessCandidatesForPrerender(
-    const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   if (!registry_)
     return;
@@ -164,9 +147,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(
-      removed_prerender_rules,
-      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+  registry_->CancelHosts(removed_prerender_rules,
+                         PrerenderCancellationReason(
+                             PrerenderFinalStatus::kSpeculationRuleRemoved));
   {
     base::flat_set<int> removed_prerender_rules_set(
         removed_prerender_rules.begin(), removed_prerender_rules.end());
@@ -189,13 +172,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Actually start the candidates once the diffing is done.
   for (const auto& candidate : candidates_to_start) {
-    MaybePrerender(initiator_devtools_navigation_token, candidate);
+    MaybePrerender(candidate);
   }
 }
 
 bool PrerendererImpl::MaybePrerender(
-    const absl::optional<base::UnguessableToken>&
-        initiator_devtools_navigation_token,
     const blink::mojom::SpeculationCandidatePtr& candidate) {
   DCHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
 
@@ -214,7 +195,7 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      content_preloading_predictor::kSpeculationRules,
+      GetPredictorForSpeculationRules(candidate->injection_world),
       PreloadingType::kPrerender, std::move(same_url_matcher));
 
   auto [begin, end] = base::ranges::equal_range(
@@ -245,13 +226,12 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url, PrerenderTriggerType::kSpeculationRule,
+      candidate->url, GetTriggerType(candidate->injection_world),
       /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
       rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
       rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
       rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt,
-      initiator_devtools_navigation_token);
+      /*url_match_predicate=*/absl::nullopt, rfhi.GetDevToolsNavigationToken());
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
   // have the same URL but its `target_browsing_context_name_hint` is
@@ -270,19 +250,6 @@ bool PrerendererImpl::MaybePrerender(
                                    {.url = candidate->url,
                                     .referrer = referrer,
                                     .prerender_host_id = prerender_host_id});
-
-        // TODO(crbug.com/1350676): Observe PrerenderHost created for
-        // prerendering in a new tab like the kNoHint and kSelf cases.
-        // TODO(crbug.com/1350676): Update the counter of
-        // `count_started_same_tab_prerenders_`. We cannot update this counter
-        // at this point because the counter is used to calculate the
-        // percentage of started prerenders that failed due to
-        // kMemoryLimitExceeded, which is done by observing PrerenderHosts,
-        // but this class cannot observe the started new-tab prerender at this
-        // moment. Rational: COUNT(kMemoryLimitExceeded && non-new-tab) /
-        // COUNT(non-new-tab) should be close to COUNT(kMemoryLimitExceeded) /
-        // COUNT(*), but COUNT(kMemoryLimitExceeded && non-new-tab) / COUNT(*)
-        // would follow another distribution.
         break;
       }
       // Handle the rule as kNoHint if the prerender-in-new-tab is not
@@ -296,11 +263,6 @@ bool PrerendererImpl::MaybePrerender(
       started_prerenders_.insert(end, {.url = candidate->url,
                                        .referrer = referrer,
                                        .prerender_host_id = prerender_host_id});
-      count_started_same_tab_prerenders_++;
-      // Start to observe PrerenderHost to get the information about
-      // FinalStatus.
-      observers_.push_back(std::make_unique<PrerenderHostObserver>(
-          registry_->FindNonReservedHostById(prerender_host_id)));
       break;
     }
   }
@@ -319,49 +281,18 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
   return begin != end;
 }
 
-void PrerendererImpl::CancelStartedPrerenders() {
-  // This function can be called twice and the histogram should be recorded in
-  // the first call. Also, skip recording the histogram when no prerendering
-  // starts.
-  if (count_started_same_tab_prerenders_ == 0) {
-    DCHECK(observers_.empty());
-    return;
-  }
-
-  // Record the percentage of destroyed prerenders due to the excessive memory
-  // usage.
-  // The closer the value is to 0, the less prerenders are cancelled by
-  // FinalStatus::kMemoryLimitExceeded. The result depends on Finch params
-  // `max_num_of_running_speculation_rules` and
-  // `acceptable_percent_of_system_memory`.
-  base::UmaHistogramPercentage(
-      "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
-      "SpeculationRule",
-      GetNumberOfDestroyedByMemoryExceeded() * 100 /
-          count_started_same_tab_prerenders_);
-
+void PrerendererImpl::CancelStartedPrerenders(
+    PrerenderFinalStatus final_status) {
   if (registry_) {
     std::vector<int> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
-    registry_->CancelHosts(
-        started_prerender_ids,
-        PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+    registry_->CancelHosts(started_prerender_ids,
+                           PrerenderCancellationReason(final_status));
   }
 
   started_prerenders_.clear();
-  count_started_same_tab_prerenders_ = 0;
-  observers_.clear();
-}
-
-int PrerendererImpl::GetNumberOfDestroyedByMemoryExceeded() {
-  int destroyed_prerenders_by_memory_limit_exceeded = 0;
-  for (auto& observer : observers_) {
-    if (observer->destroyed_by_memory_limit_exceeded())
-      destroyed_prerenders_by_memory_limit_exceeded++;
-  }
-  return destroyed_prerenders_by_memory_limit_exceeded;
 }
 
 }  // namespace content

@@ -30,22 +30,20 @@ namespace {
 // add-request.
 std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
     const std::string& extension_id,
-    const base::Value* request_data) {
+    const base::Value::Dict* request_data) {
   auto report = std::make_unique<ExtensionsWorkflowEvent>();
   report->set_id(extension_id);
   if (request_data) {
-    if (request_data->is_dict()) {
-      absl::optional<base::Time> timestamp =
-          ::base::ValueToTime(request_data->GetDict().Find(
-              extension_misc::kExtensionRequestTimestamp));
-      if (timestamp)
-        report->set_request_timestamp_millis(timestamp->ToJavaTime());
+    absl::optional<base::Time> timestamp = ::base::ValueToTime(
+        request_data->Find(extension_misc::kExtensionRequestTimestamp));
+    if (timestamp) {
+      report->set_request_timestamp_millis(timestamp->ToJavaTime());
+    }
 
-      const std::string* justification = request_data->FindStringKey(
-          extension_misc::kExtensionWorkflowJustification);
-      if (justification) {
-        report->set_justification(*justification);
-      }
+    const std::string* justification = request_data->FindString(
+        extension_misc::kExtensionWorkflowJustification);
+    if (justification) {
+      report->set_justification(*justification);
     }
     report->set_removed(false);
   } else {
@@ -100,8 +98,7 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   const base::Value::Dict& uploaded_requests =
       profile->GetPrefs()->GetDict(kCloudExtensionRequestUploadedIds);
 
-  for (auto it : pending_requests) {
-    const std::string& extension_id = it.first;
+  for (auto [extension_id, request_data] : pending_requests) {
     if (!ShouldUploadExtensionRequest(extension_id, webstore_update_url,
                                       extension_management)) {
       continue;
@@ -111,13 +108,11 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
     if (uploaded_requests.contains(extension_id))
       continue;
 
-    reports.push_back(
-        GenerateReport(extension_id, /*request_data=*/&it.second));
+    CHECK(request_data.is_dict());
+    reports.push_back(GenerateReport(extension_id, &request_data.GetDict()));
   }
 
-  for (auto it : uploaded_requests) {
-    const std::string& extension_id = it.first;
-
+  for (auto [extension_id, ignored] : uploaded_requests) {
     // Request is still pending, no need to send remove request.
     if (pending_requests.contains(extension_id))
       continue;

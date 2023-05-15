@@ -16,18 +16,37 @@
     width: 28px;
   }
 
-  .bottom {
+  :host-context([theme='legacy']) .bottom {
     fill: none;
     stroke: var(--cros-highlight-color);
   }
-  .top {
+  :host-context([theme='refresh23']) .bottom {
+    fill: none;
+    stroke: var(--cros-sys-primary_container);
+  }
+  :host-context([theme='legacy']) .top {
     fill: none;
     stroke: var(--cros-icon-color-prominent);
     stroke-linecap: round;
   }
-  text {
+  :host-context([theme='refresh23']) .top {
+    fill: none;
+    stroke: var(--cros-sys-primary);
+    stroke-linecap: round;
+  }
+  :host-context([theme='legacy']) text {
     fill: var(--cros-text-color-prominent);
     font: bold 14px Roboto;
+  }
+  :host-context([theme='refresh23']) text {
+    fill: var(--cros-sys-primary);
+    font: var(--cros-button-1-font);
+  }
+  :host-context([theme='legacy']) .errormark {
+    fill: rgb(217, 48, 37);
+  }
+  :host-context([theme='refresh23']) .errormark {
+    fill: var(--cros-sys-error);
   }
 </style>
 <div class='progress'>
@@ -41,7 +60,6 @@
     <text class='label' x='18' y='18' text-anchor='middle'
       alignment-baseline='central'></text>
     <circle class='errormark' visibility='hidden'
-      cx='25.5' cy='10.5' r='4'
-      fill='#D93025' stroke='none'></circle>
+      cx='25.5' cy='10.5' r='4' stroke='none'></circle>
   </svg>
 </div>

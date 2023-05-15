@@ -190,6 +190,9 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because it is not supported for WebContents.
   kPreloadingUnsupportedByWebContents = 15,
 
+  // Preloading was ineligible because it was triggered under memory pressure.
+  kMemoryPressure = 16,
+
   // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
   // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
   // defined under `//content`, namely `PrefetchStatus`.
@@ -275,8 +278,7 @@ enum class PreloadingTriggeringOutcome {
   kTriggeredButUpgradedToPrerender = 8,
 
   // Preloading was triggered but was pending for starting its initial
-  // navigation. This outcome should not be recorded when
-  // `kPrerender2SequentialPrerendering` is disabled.
+  // navigation.
   kTriggeredButPending = 9,
 
   // Used for triggers that do not perform a preloading operation. This may be

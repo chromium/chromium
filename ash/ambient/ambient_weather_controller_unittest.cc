@@ -39,7 +39,7 @@ TEST_F(AmbientWeatherControllerTest, RefreshesWeather) {
   info.temp_f = -70.0f;
   backend_controller()->SetWeatherInfo(info);
 
-  FastForwardToRefreshWeather();
+  FastForwardByWeatherRefreshInterval();
   EXPECT_FALSE(model->show_celsius());
   EXPECT_FLOAT_EQ(model->temperature_fahrenheit(), -70.0f);
 
@@ -48,7 +48,7 @@ TEST_F(AmbientWeatherControllerTest, RefreshesWeather) {
   backend_controller()->SetWeatherInfo(info);
   // Should stop refreshing after the `weather_refresher` is destroyed.
   weather_refresher.reset();
-  FastForwardToRefreshWeather();
+  FastForwardByWeatherRefreshInterval();
   // The old info should hold in the model since we're not refreshing.
   EXPECT_FALSE(model->show_celsius());
   EXPECT_FLOAT_EQ(model->temperature_fahrenheit(), -70.0f);

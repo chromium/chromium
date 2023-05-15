@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/arc_features_parser.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -160,9 +161,10 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   bool has_started_proto_processing_ = false;
   bool proto_compressed_and_encoded_ = false;
 
-  RecommendAppsFetcherDelegate* delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
 
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
+      url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> app_list_loader_;
 
   // Timer that enforces a custom (shorter) timeout on the attempt to download

@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/web/public/test/web_task_environment.h"

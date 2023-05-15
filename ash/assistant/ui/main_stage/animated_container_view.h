@@ -13,6 +13,7 @@
 #include "ash/assistant/ui/base/assistant_scroll_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -144,7 +145,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
       const base::WeakPtr<AnimatedContainerView>& weak_ptr,
       const ui::CallbackLayerAnimationObserver& observer);
 
-  AssistantViewDelegate* const delegate_;  // Owned by AssistantController.
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+      delegate_;  // Owned by AssistantController.
 
   // The animators used to trigger the animations of the individual views.
   std::vector<std::unique_ptr<ElementAnimator>> animators_;

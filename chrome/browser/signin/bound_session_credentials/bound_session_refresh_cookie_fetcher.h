@@ -1,50 +1,38 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
+#include "base/functional/callback_forward.h"
+#include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "net/cookies/canonical_cookie.h"
-
-class SigninClient;
-
+// This class makes the network request to the Gaia cookie rotation endpoint to
+// refresh bound Google authentication cookies. A new fetcher instance should be
+// created per request.
 class BoundSessionRefreshCookieFetcher {
  public:
-  // Returns the expected expiration date of the cookie. This is optional as
-  // set cookie might fail.
-  using RefreshCookieCompleteCallback =
-      base::OnceCallback<void(absl::optional<base::Time>)>;
+  struct Result {
+    net::Error net_error;
+    absl::optional<int> response_code;
+  };
+  // Reports the result of the fetch request.
+  using RefreshCookieCompleteCallback = base::OnceCallback<void(Result)>;
 
-  BoundSessionRefreshCookieFetcher(SigninClient* client,
-                                   const GURL& url,
-                                   const std::string& cookie_name);
-  virtual ~BoundSessionRefreshCookieFetcher();
+  BoundSessionRefreshCookieFetcher() = default;
+  virtual ~BoundSessionRefreshCookieFetcher() = default;
 
   BoundSessionRefreshCookieFetcher(const BoundSessionRefreshCookieFetcher&) =
       delete;
   BoundSessionRefreshCookieFetcher& operator=(
       const BoundSessionRefreshCookieFetcher&) = delete;
 
-  virtual void Start(RefreshCookieCompleteCallback callback);
-
- protected:
-  std::unique_ptr<net::CanonicalCookie> CreateFakeCookie(
-      base::Time cookie_expiration);
-  void OnRefreshCookieCompleted(std::unique_ptr<net::CanonicalCookie> cookie);
-  void InsertCookieInCookieJar(std::unique_ptr<net::CanonicalCookie> cookie);
-  void OnCookieSet(base::Time expiry_date,
-                   net::CookieAccessResult access_result);
-
-  const raw_ptr<SigninClient> client_;
-  const GURL url_;
-  const std::string cookie_name_;
-  RefreshCookieCompleteCallback callback_;
-  base::WeakPtrFactory<BoundSessionRefreshCookieFetcher> weak_ptr_factory_{
-      this};
+  // Starts the network request to the Gaia rotation endpoint. `callback` is
+  // called with the fetch results upon completion. Should be called no more
+  // than once per instance.
+  virtual void Start(RefreshCookieCompleteCallback callback) = 0;
 };
+
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_

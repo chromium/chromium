@@ -911,10 +911,69 @@ TEST_F(SpdySessionPoolTest, IPPoolingClientCert) {
   RunIPPoolingDisabledTest(&ssl);
 }
 
+namespace {
+enum class ChangeType {
+  kIpAddress = 0,
+  kSSLConfig,
+  kCertDatabase,
+  kCertVerifier
+};
+
+class SpdySessionGoAwayOnChangeTest
+    : public SpdySessionPoolTest,
+      public ::testing::WithParamInterface<ChangeType> {
+ public:
+  void SetUp() override {
+    SpdySessionPoolTest::SetUp();
+
+    if (GetParam() == ChangeType::kIpAddress) {
+      session_deps_.go_away_on_ip_change = true;
+    }
+  }
+
+  void SimulateChange() {
+    switch (GetParam()) {
+      case ChangeType::kIpAddress:
+        spdy_session_pool_->OnIPAddressChanged();
+        break;
+      case ChangeType::kSSLConfig:
+        session_deps_.ssl_config_service->NotifySSLContextConfigChange();
+        break;
+      case ChangeType::kCertDatabase:
+        // TODO(mattm): For more realistic testing this should call
+        // `CertDatabase::GetInstance()->NotifyObserversCertDBChanged()`,
+        // however that delivers notifications asynchronously, and running
+        // the message loop to allow the notification to be delivered allows
+        // other parts of the tested code to advance, breaking the test
+        // expectations.
+        spdy_session_pool_->OnSSLConfigChanged(
+            SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged);
+        break;
+      case ChangeType::kCertVerifier:
+        session_deps_.cert_verifier->SimulateOnCertVerifierChanged();
+        break;
+    }
+  }
+
+  Error ExpectedNetError() const {
+    switch (GetParam()) {
+      case ChangeType::kIpAddress:
+        return ERR_NETWORK_CHANGED;
+      case ChangeType::kSSLConfig:
+        return ERR_NETWORK_CHANGED;
+      case ChangeType::kCertDatabase:
+        return ERR_CERT_DATABASE_CHANGED;
+      case ChangeType::kCertVerifier:
+        return ERR_CERT_VERIFIER_CHANGED;
+    }
+  }
+};
+}  // namespace
+
 // Construct a Pool with SpdySessions in various availability states. Simulate
 // an IP address change. Ensure sessions gracefully shut down. Regression test
 // for crbug.com/379469.
-TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
+TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   MockConnect connect_data(SYNCHRONOUS, OK);
   session_deps_.host_resolver->set_synchronous_mode(true);
 
@@ -937,7 +996,6 @@ TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
 
   AddSSLSocketData();
 
-  session_deps_.go_away_on_ip_change = true;
   CreateNetworkSession();
 
   // Set up session A: Going away, but with an active stream.
@@ -1009,7 +1067,7 @@ TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
   sessionC->CloseSessionOnError(ERR_HTTP2_PROTOCOL_ERROR, "Error!");
   EXPECT_TRUE(sessionC->IsDraining());
 
-  spdy_session_pool_->OnIPAddressChanged();
+  SimulateChange();
 
   EXPECT_TRUE(sessionA->IsGoingAway());
   EXPECT_TRUE(sessionB->IsDraining());
@@ -1020,7 +1078,7 @@ TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
   EXPECT_FALSE(delegateA.StreamIsClosed());
 
   EXPECT_TRUE(delegateB.StreamIsClosed());  // Created stream was closed.
-  EXPECT_THAT(delegateB.WaitForClose(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(delegateB.WaitForClose(), IsError(ExpectedNetError()));
 
   sessionA->CloseSessionOnError(ERR_ABORTED, "Closing");
   sessionB->CloseSessionOnError(ERR_ABORTED, "Closing");
@@ -1028,6 +1086,13 @@ TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
   EXPECT_TRUE(delegateA.StreamIsClosed());
   EXPECT_THAT(delegateA.WaitForClose(), IsError(ERR_ABORTED));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SpdySessionGoAwayOnChangeTest,
+                         testing::Values(ChangeType::kIpAddress,
+                                         ChangeType::kSSLConfig,
+                                         ChangeType::kCertDatabase,
+                                         ChangeType::kCertVerifier));
 
 // Construct a Pool with SpdySessions in various availability states. Simulate
 // an IP address change. Ensure sessions gracefully shut down. Regression test

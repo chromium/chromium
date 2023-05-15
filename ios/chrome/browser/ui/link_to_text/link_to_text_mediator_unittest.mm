@@ -24,13 +24,13 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -162,32 +162,30 @@ class LinkToTextMediatorTest : public PlatformTest {
   std::unique_ptr<base::Value> CreateSuccessResponse(
       const std::string& selected_text,
       CGRect selection_rect) {
-    base::Value rect_value(base::Value::Type::DICT);
-    rect_value.SetDoubleKey("x", selection_rect.origin.x);
-    rect_value.SetDoubleKey("y", selection_rect.origin.y);
-    rect_value.SetDoubleKey("width", selection_rect.size.width);
-    rect_value.SetDoubleKey("height", selection_rect.size.height);
+    base::Value::Dict rect_value;
+    rect_value.Set("x", selection_rect.origin.x);
+    rect_value.Set("y", selection_rect.origin.y);
+    rect_value.Set("width", selection_rect.size.width);
+    rect_value.Set("height", selection_rect.size.height);
 
-    std::unique_ptr<base::Value> response_value =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
-    response_value->SetDoubleKey(
-        "status", static_cast<double>(LinkGenerationOutcome::kSuccess));
-    response_value->SetKey("fragment", kTestTextFragment.ToValue());
-    response_value->SetStringKey("selectedText", selected_text);
-    response_value->SetKey("selectionRect", std::move(rect_value));
-    return response_value;
+    base::Value::Dict response_value;
+    response_value.Set("status",
+                       static_cast<double>(LinkGenerationOutcome::kSuccess));
+    response_value.Set("fragment", kTestTextFragment.ToValue());
+    response_value.Set("selectedText", selected_text);
+    response_value.Set("selectionRect", std::move(rect_value));
+    return std::make_unique<base::Value>(std::move(response_value));
   }
 
   void SetCanonicalUrl(base::Value* value, const std::string& canonical_url) {
-    value->SetStringKey("canonicalUrl", canonical_url);
+    value->GetDict().Set("canonicalUrl", canonical_url);
   }
 
   std::unique_ptr<base::Value> CreateErrorResponse(
       LinkGenerationOutcome outcome) {
-    std::unique_ptr<base::Value> response_value =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
-    response_value->SetDoubleKey("status", static_cast<double>(outcome));
-    return response_value;
+    base::Value::Dict response_value;
+    response_value.Set("status", static_cast<double>(outcome));
+    return std::make_unique<base::Value>(std::move(response_value));
   }
 
   void ValidateLinkGeneratedSuccessUkm() {
@@ -403,7 +401,7 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
 
   std::unique_ptr<base::Value> malformed_response =
       std::make_unique<base::Value>(base::Value::Type::DICT);
-  malformed_response->SetStringKey("somethingElse", "abc");
+  malformed_response->GetDict().Set("somethingElse", "abc");
   SetLinkToTextResponse(malformed_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;

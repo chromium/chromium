@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace blink {
 
@@ -158,7 +159,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 
     const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
     const auto props = GetSkSurfaceProps();
-    return SkSurface::MakeRaster(info, &props);
+    return SkSurfaces::Raster(info, &props);
   }
 };
 
@@ -334,7 +335,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       // Note that the call below is guarenteed to not issue any GPU work for
       // the backend texture since we ensure that all skia work on the resource
       // is issued before releasing write access.
-      surface_->getBackendTexture(SkSurface::kFlushRead_BackendHandleAccess)
+      SkSurfaces::GetBackendTexture(surface_.get(),
+                                    SkSurfaces::BackendHandleAccess::kFlushRead)
           .glTextureParametersModified();
     }
   }
@@ -554,7 +556,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
     const auto props = GetSkSurfaceProps();
     if (is_accelerated_) {
-      return SkSurface::MakeFromBackendTexture(
+      return SkSurfaces::WrapBackendTexture(
           GetGrContext(), CreateGrTextureForResource(), GetGrSurfaceOrigin(),
           0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
           GetSkImageInfo().refColorSpace(), &props);
@@ -563,7 +565,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // For software raster path, we render into cpu memory managed internally
     // by SkSurface and copy the rendered results to the GMB before dispatching
     // it to the display compositor.
-    return SkSurface::MakeRaster(resource_->CreateSkImageInfo(), &props);
+    return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
   }
 
   GrBackendTexture CreateGrTextureForResource() const {
@@ -842,7 +844,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                             GrMipMapped::kNo, texture_info);
 
     const auto props = GetSkSurfaceProps();
-    return SkSurface::MakeFromBackendTexture(
+    return SkSurfaces::WrapBackendTexture(
         GetGrContext(), backend_texture, kTopLeft_GrSurfaceOrigin,
         0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
         GetSkImageInfo().refColorSpace(), &props);

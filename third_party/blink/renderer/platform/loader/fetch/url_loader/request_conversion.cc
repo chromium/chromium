@@ -346,6 +346,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->keepalive = src.GetKeepalive();
   dest->browsing_topics = src.GetBrowsingTopics();
+  dest->ad_auction_headers = src.GetAdAuctionHeaders();
   dest->has_user_gesture = src.HasUserGesture();
   dest->enable_load_timing = true;
   dest->enable_upload_progress = src.ReportUploadProgress();
@@ -402,6 +403,14 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   }
 
   dest->has_storage_access = src.GetHasStorageAccess();
+
+  dest->attribution_reporting_support = src.GetAttributionReportingSupport();
+
+  dest->attribution_reporting_eligibility =
+      src.GetAttributionReportingEligibility();
+
+  dest->attribution_reporting_runtime_features =
+      src.GetAttributionReportingRuntimeFeatures();
 }
 
 }  // namespace blink

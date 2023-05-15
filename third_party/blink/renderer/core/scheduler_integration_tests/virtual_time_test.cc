@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace virtual_time_test {
@@ -55,8 +56,8 @@ class VirtualTimeTest : public SimTest {
         mojom::blink::UserActivationOption::kDoNotActivate,
         mojom::blink::EvaluationTiming::kSynchronous,
         mojom::blink::LoadEventBlockingOption::kDoNotBlock,
-        base::BindOnce(&ScriptExecutionCallbackHelper::Completed,
-                       base::Unretained(&callback_helper)),
+        WTF::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                      base::Unretained(&callback_helper)),
         BackForwardCacheAware::kAllow,
         mojom::blink::WantResultOption::kWantResult,
         mojom::blink::PromiseResultOption::kDoNotWait);

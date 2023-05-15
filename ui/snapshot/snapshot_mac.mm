@@ -12,19 +12,22 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 bool GrabViewSnapshot(gfx::NativeView native_view,
                       const gfx::Rect& snapshot_bounds,
                       gfx::Image* image) {
   NSView* view = native_view.GetNativeNSView();
-  NSWindow* window = [view window];
-  NSScreen* screen = [[NSScreen screens] firstObject];
-  gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect([screen frame]));
-
+  NSWindow* window = view.window;
+  NSScreen* screen = NSScreen.screens.firstObject;
+  gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect(screen.frame));
 
   // Get the view bounds relative to the screen
-  NSRect frame = [view convertRect:[view bounds] toView:nil];
+  NSRect frame = [view convertRect:view.bounds toView:nil];
   frame = [window convertRectToScreen:frame];
 
   gfx::Rect view_bounds = gfx::Rect(NSRectToCGRect(frame));
@@ -41,17 +44,14 @@ bool GrabViewSnapshot(gfx::NativeView native_view,
   DCHECK_LE(screen_snapshot_bounds.right(), view_bounds.right());
   DCHECK_LE(screen_snapshot_bounds.bottom(), view_bounds.bottom());
 
-  base::ScopedCFTypeRef<CGImageRef> windowSnapshot(
-      CGWindowListCreateImage(screen_snapshot_bounds.ToCGRect(),
-                              kCGWindowListOptionIncludingWindow,
-                              [window windowNumber],
-                              kCGWindowImageBoundsIgnoreFraming));
+  base::ScopedCFTypeRef<CGImageRef> windowSnapshot(CGWindowListCreateImage(
+      screen_snapshot_bounds.ToCGRect(), kCGWindowListOptionIncludingWindow,
+      window.windowNumber, kCGWindowImageBoundsIgnoreFraming));
   if (CGImageGetWidth(windowSnapshot) <= 0)
     return false;
 
-  *image =
-      gfx::Image([[[NSImage alloc] initWithCGImage:windowSnapshot
-                                              size:NSZeroSize] autorelease]);
+  *image = gfx::Image([[NSImage alloc] initWithCGImage:windowSnapshot
+                                                  size:NSZeroSize]);
   return true;
 }
 
@@ -61,8 +61,7 @@ bool GrabWindowSnapshot(gfx::NativeWindow native_window,
   // Make sure to grab the "window frame" view so we get current tab +
   // tabstrip.
   NSWindow* window = native_window.GetNativeNSWindow();
-  return GrabViewSnapshot([[window contentView] superview], snapshot_bounds,
-                          image);
+  return GrabViewSnapshot(window.contentView.superview, snapshot_bounds, image);
 }
 
 void GrabWindowSnapshotAndScaleAsync(
@@ -83,7 +82,7 @@ void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
                              const gfx::Rect& source_rect,
                              GrabWindowSnapshotAsyncCallback callback) {
   NSWindow* window = native_window.GetNativeNSWindow();
-  return GrabViewSnapshotAsync([[window contentView] superview], source_rect,
+  return GrabViewSnapshotAsync(window.contentView.superview, source_rect,
                                std::move(callback));
 }
 

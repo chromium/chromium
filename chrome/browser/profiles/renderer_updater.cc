@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -19,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -32,10 +34,21 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 RendererUpdater::RendererUpdater(Profile* profile)
     : profile_(profile),
       is_off_the_record_(profile_->IsOffTheRecord()),
-      original_profile_(profile->GetOriginalProfile()) {
+      original_profile_(profile->GetOriginalProfile())
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      bound_session_cookie_refresh_service_(
+          BoundSessionCookieRefreshServiceFactory::GetForProfile(profile))
+#endif
+{
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(original_profile_));
 
@@ -46,6 +59,15 @@ RendererUpdater::RendererUpdater(Profile* profile)
   merge_session_running_ =
       ash::merge_session_throttling_utils::ShouldDelayRequestForProfile(
           original_profile_);
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (bound_session_cookie_refresh_service_) {
+    // `base::Unretained` is safe as `this` deregister itself on destruction.
+    bound_session_cookie_refresh_service_
+        ->SetRendererBoundSessionParamsUpdaterDelegate(base::BindRepeating(
+            &RendererUpdater::UpdateAllRenderers, base::Unretained(this)));
+  }
 #endif
 
   PrefService* pref_service = profile_->GetPrefs();
@@ -73,6 +95,13 @@ RendererUpdater::RendererUpdater(Profile* profile)
 RendererUpdater::~RendererUpdater() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!oauth2_login_manager_);
+#endif
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (bound_session_cookie_refresh_service_) {
+    bound_session_cookie_refresh_service_
+        ->SetRendererBoundSessionParamsUpdaterDelegate(
+            base::RepeatingClosure());
+  }
 #endif
 }
 
@@ -106,9 +135,20 @@ void RendererUpdater::InitializeRenderer(
       render_process_host,
       content_settings_manager.InitWithNewPipeAndPassReceiver(),
       std::make_unique<chrome::ContentSettingsManagerDelegate>());
+  mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+      bound_session_request_throttled_listener;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (bound_session_cookie_refresh_service_) {
+    bound_session_cookie_refresh_service_
+        ->AddBoundSessionRequestThrottledListenerReceiver(
+            bound_session_request_throttled_listener
+                .InitWithNewPipeAndPassReceiver());
+  }
+#endif
   renderer_configuration->SetInitialConfiguration(
       is_off_the_record_, std::move(chromeos_listener_receiver),
-      std::move(content_settings_manager));
+      std::move(content_settings_manager),
+      std::move(bound_session_request_throttled_listener));
 
   renderer_configuration->SetConfiguration(CreateRendererDynamicParams());
 }
@@ -171,6 +211,16 @@ void RendererUpdater::OnPrimaryAccountChanged(
   UpdateAllRenderers();
 }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+chrome::mojom::BoundSessionParamsPtr RendererUpdater::GetBoundSessionParams()
+    const {
+  if (bound_session_cookie_refresh_service_) {
+    return bound_session_cookie_refresh_service_->GetBoundSessionParams();
+  }
+  return chrome::mojom::BoundSessionParamsPtr();
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 void RendererUpdater::UpdateAllRenderers() {
   chrome::mojom::DynamicParamsPtr dynamic_params =
       CreateRendererDynamicParams();
@@ -178,8 +228,9 @@ void RendererUpdater::UpdateAllRenderers() {
   for (auto& renderer_configuration : renderer_configurations) {
     content::RenderProcessHost* render_process_host =
         renderer_configuration.first;
-    if (!render_process_host->IsInitializedAndNotDead())
+    if (!render_process_host->IsInitializedAndNotDead()) {
       continue;
+    }
     renderer_configuration.second->SetConfiguration(dynamic_params.Clone());
   }
 }
@@ -187,6 +238,9 @@ void RendererUpdater::UpdateAllRenderers() {
 chrome::mojom::DynamicParamsPtr RendererUpdater::CreateRendererDynamicParams()
     const {
   return chrome::mojom::DynamicParams::New(
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      GetBoundSessionParams(),
+#endif
       force_google_safesearch_.GetValue(), force_youtube_restrict_.GetValue(),
       allowed_domains_for_apps_.GetValue());
 }

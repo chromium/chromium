@@ -48,6 +48,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -86,6 +87,20 @@ class PersonalDataManager : public KeyedService,
                             public signin::IdentityManager::Observer,
                             public AccountInfoGetter {
  public:
+  // Profiles can be retrieved from the PersonalDataManager in different orders.
+  enum class ProfileOrder {
+    // Arbitrary order.
+    kNone,
+    // In descending order of frecency
+    // (`AutofillProfile::HasGreaterRankingThan())`.
+    kHighestFrecencyDesc,
+    // Most recently modified profiles first.
+    kMostRecentlyModifiedDesc,
+    // Most recently used profiles first.
+    kMostRecentlyUsedFirstDesc,
+    kMaxValue = kMostRecentlyUsedFirstDesc
+  };
+
   explicit PersonalDataManager(const std::string& app_locale);
   PersonalDataManager(const std::string& app_locale,
                       const std::string& country_code);
@@ -318,10 +333,12 @@ class PersonalDataManager : public KeyedService,
   // `GetProfiles()` returns all `kAccount` and `kLocalOrSyncable` profiles. By
   // using `GetProfilesFromSource()`, profiles from a single source are be
   // retrieved.
-  // The profiles are returned in unspecified order.
-  virtual std::vector<AutofillProfile*> GetProfiles() const;
+  // The profiles are returned in the specified `order`.
+  virtual std::vector<AutofillProfile*> GetProfiles(
+      ProfileOrder order = ProfileOrder::kNone) const;
   virtual std::vector<AutofillProfile*> GetProfilesFromSource(
-      AutofillProfile::Source profile_source) const;
+      AutofillProfile::Source profile_source,
+      ProfileOrder order = ProfileOrder::kNone) const;
   // Returns just SERVER_PROFILES.
   // TODO(crbug.com/1348294): Server profiles are only accessed in tests and the
   // concept should be removed.
@@ -526,6 +543,10 @@ class PersonalDataManager : public KeyedService,
   virtual void SetProfilesForAllSources(
       std::vector<AutofillProfile>* new_profiles);
 
+  // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
+  // database by adding, updating and removing credit cards.
+  void SetCreditCards(std::vector<CreditCard>* credit_cards);
+
   // Returns true if a `kLocalOrSyncable` profile identified by its guid is
   // blocked for migration to a `kAccount` profile.
   bool IsProfileMigrationBlocked(const std::string& guid) const;
@@ -569,8 +590,8 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
-  // Returns true if Sync is enabled for `model_type`.
-  bool IsSyncEnabledFor(syncer::ModelType model_type) const;
+  // Returns true if Sync is enabled for `data_type`.
+  bool IsSyncEnabledFor(syncer::UserSelectableType data_type) const;
 
   // Returns true if payments mandatory re-auth is enabled.
   bool IsAutofillPaymentMethodsMandatoryReauthEnabled();
@@ -673,10 +694,6 @@ class PersonalDataManager : public KeyedService,
   AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
-
-  // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
-  // database by adding, updating and removing credit cards.
-  void SetCreditCards(std::vector<CreditCard>* credit_cards);
 
   // Like `SetProfilesForAllSources()`, but assumes that all profiles in
   // `new_profiles` have the given `source`.

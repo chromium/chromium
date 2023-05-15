@@ -70,6 +70,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
       delete;
 
   static void AttachToWebContents(WebContents* web_contents);
+  static bool ShouldAllowSession(RenderFrameHost* frame_host,
+                                 DevToolsSession* session);
 
   FrameTreeNode* frame_tree_node() { return frame_tree_node_; }
 
@@ -79,6 +81,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void DidCreateFencedFrame(FencedFrame* fenced_frame);
 
   // DevToolsAgentHost overrides.
+  // TODO(caseq): remove (Dis)connectWebContents() on frame targets once
+  // front-end uses tab target mode.
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* web_contents) override;
   BrowserContext* GetBrowserContext() override;
@@ -124,6 +128,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
   void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
+  void GetUniqueFormControlId(int node_id,
+                              GetUniqueFormControlIdCallback callback) override;
   void UpdateRendererChannel(bool force) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
   std::string GetSubtype() override;
@@ -148,8 +154,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void UpdateFrameHost(RenderFrameHostImpl* frame_host);
   void ChangeFrameHostAndObservedProcess(RenderFrameHostImpl* frame_host);
   void UpdateFrameAlive();
-
-  bool ShouldAllowSession(DevToolsSession* session);
 
 #if BUILDFLAG(IS_ANDROID)
   device::mojom::WakeLock* GetWakeLock();

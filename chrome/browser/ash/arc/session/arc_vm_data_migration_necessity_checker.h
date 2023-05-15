@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_VM_DATA_MIGRATION_NECESSITY_CHECKER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,7 +39,7 @@ class ArcVmDataMigrationNecessityChecker {
   void OnHasDataToMigrateResponse(CheckCallback callback,
                                   absl::optional<bool> response);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<ArcVmDataMigrationNecessityChecker> weak_ptr_factory_{
       this};

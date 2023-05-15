@@ -15,9 +15,7 @@ by a child template that "extends" this file.
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="{{manifest_package|default('com.android.webview')}}"
-    {% if use_isolated_splits is defined and use_isolated_splits == 'true' %}
     android:isolatedSplits="true"
-    {% endif %}
     tools:ignore="MissingLeanbackLauncher">
 
     <uses-feature android:name="android.hardware.touchscreen"
@@ -44,10 +42,6 @@ by a child template that "extends" this file.
                  android:multiArch="true"
                  {% if force_32_bit is defined and force_32_bit == 'true' %}
                  android:use32bitAbi="true"
-                 {% endif %}
-                 {# TODO(crbug.com/1411557): Remove #}
-                 {% if force_32_bit is not defined %}
-                 {{ use32bitAbi|default('android:use32bitAbi="true"') }}
                  {% endif %}
                  android:extractNativeLibs="false">
         {# This part is shared between stand-alone WebView and Monochrome #}

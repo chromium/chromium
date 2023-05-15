@@ -53,13 +53,12 @@ struct DisplayDeleter {
 
 // Server configuration related enums and structs.
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
-enum class TextInputExtensionVersion { kV7, kV8 };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 
 struct ServerConfig {
-  TextInputExtensionVersion text_input_extension_version =
-      TextInputExtensionVersion::kV8;
+  TestZcrTextInputExtensionV1::Version text_input_extension_version =
+      TestZcrTextInputExtensionV1::Version::kV10;
   TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
@@ -68,7 +67,9 @@ struct ServerConfig {
   EnableAuraShellProtocol enable_aura_shell =
       EnableAuraShellProtocol::kDisabled;
   bool surface_submission_in_pixel_coordinates = true;
+  bool supports_viewporter_surface_scaling = false;
   bool use_aura_output_manager = false;
+  bool use_ime_keep_selection_fix = false;
 };
 
 class TestWaylandServerThread;
@@ -153,7 +154,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZAuraShell* zaura_shell() { return &zaura_shell_; }
   TestOutput* output() { return &output_; }
   TestZcrTextInputExtensionV1* text_input_extension_v1() {
-    return zcr_text_input_extension_v1_.get();
+    return &zcr_text_input_extension_v1_;
   }
   TestZwpTextInputManagerV1* text_input_manager_v1() {
     return &zwp_text_input_manager_v1_;
@@ -242,11 +243,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZAuraShell zaura_shell_;
   MockZcrColorManagerV1 zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;
-  // The version of text_input_extension_v1 can be selected dynamically when
-  // Start is called, but the versions of GlobalObjects need to be supplied on
-  // construction, so we have to delay construction of this particular global.
-  // TODO(crbug.com/1315587): Consider not heap-allocating GlobalObjects.
-  std::unique_ptr<TestZcrTextInputExtensionV1> zcr_text_input_extension_v1_;
+  TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;

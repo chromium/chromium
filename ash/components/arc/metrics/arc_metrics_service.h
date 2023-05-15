@@ -19,6 +19,7 @@
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -138,6 +139,8 @@ class ArcMetricsService : public KeyedService,
       mojom::LowLatencyStylusLibApiId api_id) override;
   void ReportLowLatencyStylusLibPredictionTarget(
       mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) override;
+  void ReportVpnServiceBuilderCompatApiUsage(
+      mojom::VpnServiceBuilderCompatApiId api_id) override;
   void ReportEntireFixupMetrics(base::TimeDelta duration,
                                 uint32_t number_of_directories,
                                 uint32_t number_of_failures) override;
@@ -250,7 +253,7 @@ class ArcMetricsService : public KeyedService,
     void OnConnectionReady() override;
     void OnConnectionClosed() override;
 
-    ArcMetricsService* arc_metrics_service_;
+    raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
   };
 
   class ArcBridgeServiceObserver : public arc::ArcBridgeService::Observer {
@@ -288,8 +291,9 @@ class ArcMetricsService : public KeyedService,
     // overrides.
     void OnConnectionClosed() override;
 
-    ArcMetricsService* arc_metrics_service_;
-    ArcBridgeServiceObserver* arc_bridge_service_observer_;
+    raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
+    raw_ptr<ArcBridgeServiceObserver, ExperimentalAsh>
+        arc_bridge_service_observer_;
   };
 
   class AppLauncherObserver : public ConnectionObserver<mojom::AppInstance> {
@@ -307,8 +311,9 @@ class ArcMetricsService : public KeyedService,
     // overrides.
     void OnConnectionClosed() override;
 
-    ArcMetricsService* arc_metrics_service_;
-    ArcBridgeServiceObserver* arc_bridge_service_observer_;
+    raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
+    raw_ptr<ArcBridgeServiceObserver, ExperimentalAsh>
+        arc_bridge_service_observer_;
   };
 
   void RecordArcUserInteraction(UserInteractionType type);
@@ -345,7 +350,8 @@ class ArcMetricsService : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Helper class for tracking engagement metrics.
   guest_os::GuestOsEngagementMetrics guest_os_engagement_metrics_;
@@ -380,7 +386,7 @@ class ArcMetricsService : public KeyedService,
   base::ObserverList<UserInteractionObserver> user_interaction_observers_;
   base::ObserverList<BootTypeObserver> boot_type_observers_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   std::unique_ptr<ArcMetricsAnr> metrics_anr_;
 
   // For reporting Arc.Provisioning.PreSignInTimeDelta.

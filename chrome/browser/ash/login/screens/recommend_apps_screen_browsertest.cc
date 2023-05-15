@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -124,7 +125,7 @@ class StubRecommendAppsFetcher : public RecommendAppsFetcher {
   void Retry() override { NOTREACHED(); }
 
  protected:
-  RecommendAppsFetcherDelegate* const delegate_;
+  const raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
   bool started_ = false;
 };
 
@@ -201,11 +202,11 @@ class RecommendAppsScreenTest : public OobeBaseTest {
     test::OobeJS().ExpectHiddenPath({kRecommendAppsId, "loadingDialog"});
   }
 
-  base::raw_ptr<RecommendAppsScreen, DanglingUntriaged> recommend_apps_screen_ =
+  raw_ptr<RecommendAppsScreen, DanglingUntriaged> recommend_apps_screen_ =
       nullptr;
   absl::optional<RecommendAppsScreen::Result> screen_result_;
-  base::raw_ptr<StubRecommendAppsFetcher, DanglingUntriaged>
-      recommend_apps_fetcher_ = nullptr;
+  raw_ptr<StubRecommendAppsFetcher, DanglingUntriaged> recommend_apps_fetcher_ =
+      nullptr;
 
   LoginManagerMixin login_manager_{&mixin_host_};
 

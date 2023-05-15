@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -150,7 +151,6 @@ const char EventRouter::kRegisteredLazyEvents[] = "events";
 const char EventRouter::kRegisteredServiceWorkerEvents[] =
     "serviceworkerevents";
 
-// static
 void EventRouter::DispatchExtensionMessage(
     content::RenderProcessHost* rph,
     int worker_thread_id,
@@ -169,26 +169,35 @@ void EventRouter::DispatchExtensionMessage(
   params->event_id = event_id;
   params->is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
   params->filtering_info = std::move(info);
-
-  Get(browser_context)
-      ->RouteDispatchEvent(rph, std::move(params), std::move(event_args));
+  RouteDispatchEvent(rph, std::move(params), std::move(event_args));
 }
 
 void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
                                      mojom::DispatchEventParamsPtr params,
                                      base::Value::List event_args) {
-  // TODO(crbug.com/1302000) Add bindings for worker threads to be directly
-  // channel-associated.
+  CHECK(base::Contains(observed_process_set_, rph));
+  int worker_thread_id = params->worker_thread_id;
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
-      rph_dispatcher_map_[rph];
+      rph_dispatcher_map_[rph][worker_thread_id];
+
   if (!dispatcher.is_bound()) {
-    IPC::ChannelProxy* channel = rph->GetChannel();
-    if (!channel) {
+    if (worker_thread_id == kMainThreadId) {
+      IPC::ChannelProxy* channel = rph->GetChannel();
+      if (!channel) {
+        return;
+      }
+      channel->GetRemoteAssociatedInterface(
+          dispatcher.BindNewEndpointAndPassReceiver());
+    } else {
+      // EventDispatcher for worker threads should be bound at
+      // `BindServiceWorkerEventDispatcher`.
       return;
     }
-    channel->GetRemoteAssociatedInterface(
-        dispatcher.BindNewEndpointAndPassReceiver());
   }
+
+  // The RenderProcessHost might be dead, but if the RenderProcessHost
+  // is alive then the dispatcher must be connected.
+  CHECK(!rph->IsInitializedAndNotDead() || dispatcher.is_connected());
   dispatcher->DispatchEvent(std::move(params), std::move(event_args));
 }
 
@@ -210,7 +219,6 @@ void EventRouter::DispatchEventToSender(
     const std::string& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    int render_process_id,
     int worker_thread_id,
     int64_t service_worker_version_id,
     base::Value::List event_args,
@@ -218,14 +226,28 @@ void EventRouter::DispatchEventToSender(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int event_id = g_extension_event_id.GetNext();
 
-  DoDispatchEventToSenderBookkeeping(
-      browser_context, extension_id, event_id, render_process_id,
-      service_worker_version_id, histogram_value, event_name);
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+    return;
+  }
 
-  DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
-                           event_id, event_name, std::move(event_args),
-                           UserGestureState::USER_GESTURE_UNKNOWN,
-                           std::move(info));
+  EventRouter* event_router = EventRouter::Get(browser_context);
+  CHECK(event_router);
+  auto* registry = ExtensionRegistry::Get(browser_context);
+  CHECK(registry);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  if (extension) {
+    event_router->IncrementInFlightEvents(browser_context, rph, extension,
+                                          event_id, event_name,
+                                          service_worker_version_id);
+    event_router->ReportEvent(histogram_value, extension,
+                              /*did_enqueue=*/false);
+  }
+  event_router->ObserveProcess(rph);
+  event_router->DispatchExtensionMessage(
+      rph, worker_thread_id, browser_context, extension_id, event_id,
+      event_name, std::move(event_args), UserGestureState::USER_GESTURE_UNKNOWN,
+      std::move(info));
 }
 
 // static.
@@ -516,6 +538,7 @@ void EventRouter::AddEventListener(const std::string& event_name,
                                    const std::string& extension_id) {
   listeners_.AddListener(EventListener::ForExtension(event_name, extension_id,
                                                      process, absl::nullopt));
+  CHECK(base::Contains(observed_process_set_, process));
 }
 
 void EventRouter::AddServiceWorkerEventListener(
@@ -529,6 +552,7 @@ void EventRouter::AddServiceWorkerEventListener(
       event_name, extension_id, process, process->GetBrowserContext(),
       service_worker_scope, service_worker_version_id, worker_thread_id,
       absl::nullopt));
+  CHECK(base::Contains(observed_process_set_, process));
 }
 
 void EventRouter::RemoveEventListener(const std::string& event_name,
@@ -559,6 +583,7 @@ void EventRouter::AddEventListenerForURL(const std::string& event_name,
                                          const GURL& listener_url) {
   listeners_.AddListener(
       EventListener::ForURL(event_name, listener_url, process, absl::nullopt));
+  CHECK(base::Contains(observed_process_set_, process));
 }
 
 void EventRouter::RemoveEventListenerForURL(const std::string& event_name,
@@ -596,6 +621,11 @@ void EventRouter::RemoveObserverForTesting(TestObserver* observer) {
 }
 
 void EventRouter::OnListenerAdded(const EventListener* listener) {
+  RenderProcessHost* process = listener->process();
+  if (process) {
+    ObserveProcess(process);
+  }
+
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
       listener->listener_url(), listener->browser_context(),
@@ -607,13 +637,6 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
     for (auto& observer : *it->second) {
       observer.OnListenerAdded(details);
     }
-  }
-
-  RenderProcessHost* process = listener->process();
-  if (process) {
-    bool inserted = observed_process_set_.insert(process).second;
-    if (inserted)
-      process->AddObserver(this);
   }
 }
 
@@ -632,6 +655,14 @@ void EventRouter::OnListenerRemoved(const EventListener* listener) {
   }
 }
 
+void EventRouter::ObserveProcess(RenderProcessHost* process) {
+  CHECK(process);
+  bool inserted = observed_process_set_.insert(process).second;
+  if (inserted) {
+    process->AddObserver(this);
+  }
+}
+
 void EventRouter::RenderProcessExited(
     RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
@@ -644,6 +675,7 @@ void EventRouter::RenderProcessExited(
 void EventRouter::RenderProcessHostDestroyed(RenderProcessHost* host) {
   listeners_.RemoveListenersForProcess(host);
   observed_process_set_.erase(host);
+  rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
 }
 
@@ -690,6 +722,7 @@ void EventRouter::AddFilteredEventListener(
     return;
   }
   listeners_.AddListener(std::move(regular_listener));
+  CHECK(base::Contains(observed_process_set_, process));
 
   DCHECK_EQ(add_lazy_listener, !!lazy_listener);
   if (lazy_listener) {
@@ -1089,34 +1122,6 @@ void EventRouter::DispatchEventToProcess(
   }
 }
 
-// static
-void EventRouter::DoDispatchEventToSenderBookkeeping(
-    content::BrowserContext* browser_context,
-    const std::string& extension_id,
-    int event_id,
-    int render_process_id,
-    int64_t service_worker_version_id,
-    events::HistogramValue histogram_value,
-    const std::string& event_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context))
-    return;
-
-  auto* registry = ExtensionRegistry::Get(browser_context);
-  DCHECK(registry);
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(extension_id);
-  if (!extension)
-    return;
-
-  EventRouter* event_router = EventRouter::Get(browser_context);
-  DCHECK(event_router);
-  event_router->IncrementInFlightEvents(
-      browser_context, RenderProcessHost::FromID(render_process_id), extension,
-      event_id, event_name, service_worker_version_id);
-  event_router->ReportEvent(histogram_value, extension, /*did_enqueue=*/false);
-}
-
 void EventRouter::IncrementInFlightEvents(BrowserContext* context,
                                           RenderProcessHost* process,
                                           const Extension* extension,
@@ -1230,9 +1235,25 @@ void EventRouter::DispatchPendingEvent(
   if (!params)
     return;
   DCHECK(event);
-  if (listeners_.HasProcessListener(params->render_process_host,
-                                    params->worker_thread_id,
-                                    params->extension_id)) {
+
+  // TODO(https://crbug.com/1442744): We shouldn't dispatch events to processes
+  // that don't have a listener for that event. Currently, we enforce this for
+  // the webRequest API (since a bug there can result in a request hanging
+  // indefinitely). We don't do this in all cases yet because extensions may be
+  // unknowingly relying on this behavior for listeners registered
+  // asynchronously (which is not supported, but may be happening).
+  bool check_for_specific_event =
+      base::StartsWith(event->event_name, "webRequest");
+  bool dispatch_to_process =
+      check_for_specific_event
+          ? listeners_.HasProcessListenerForEvent(
+                params->render_process_host, params->worker_thread_id,
+                params->extension_id, event->event_name)
+          : listeners_.HasProcessListener(params->render_process_host,
+                                          params->worker_thread_id,
+                                          params->extension_id);
+
+  if (dispatch_to_process) {
     DispatchEventToProcess(
         params->extension_id, params->url, params->render_process_host,
         params->service_worker_version_id, params->worker_thread_id, *event,
@@ -1347,6 +1368,33 @@ void EventRouter::RemoveLazyEventListenerImpl(
     DCHECK(prefs_did_exist);
     SetRegisteredEvents(extension_id, events, type);
   }
+}
+
+void EventRouter::BindServiceWorkerEventDispatcher(
+    int render_process_id,
+    int worker_thread_id,
+    mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher) {
+  auto* process = RenderProcessHost::FromID(render_process_id);
+  if (!process) {
+    return;
+  }
+  ObserveProcess(process);
+  mojo::AssociatedRemote<mojom::EventDispatcher>& worker_dispatcher =
+      rph_dispatcher_map_[process][worker_thread_id];
+  CHECK(!worker_dispatcher);
+  worker_dispatcher.Bind(std::move(event_dispatcher));
+  worker_dispatcher.set_disconnect_handler(
+      base::BindOnce(&EventRouter::UnbindServiceWorkerEventDispatcher,
+                     weak_factory_.GetWeakPtr(), process, worker_thread_id));
+}
+
+void EventRouter::UnbindServiceWorkerEventDispatcher(RenderProcessHost* host,
+                                                     int worker_thread_id) {
+  auto map = rph_dispatcher_map_.find(host);
+  if (map == rph_dispatcher_map_.end()) {
+    return;
+  }
+  map->second.erase(worker_thread_id);
 }
 
 Event::Event(events::HistogramValue histogram_value,

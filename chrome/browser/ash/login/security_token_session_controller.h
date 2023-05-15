@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -108,10 +109,12 @@ class SecurityTokenSessionController
   void SetNotificationDisplayedKnownUserFlag();
 
   const bool is_user_profile_;
-  PrefService* const local_state_;
-  const user_manager::User* const primary_user_;
-  chromeos::CertificateProviderService* certificate_provider_service_ = nullptr;
-  session_manager::SessionManager* const session_manager_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  raw_ptr<chromeos::CertificateProviderService, ExperimentalAsh>
+      certificate_provider_service_ = nullptr;
+  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
+      session_manager_;
   std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
@@ -124,7 +127,7 @@ class SecurityTokenSessionController
       extension_to_spkis_;
   base::flat_set<extensions::ExtensionId>
       extensions_missing_required_certificates_;
-  views::Widget* fullscreen_notification_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> fullscreen_notification_ = nullptr;
   base::OneShotTimer action_timer_;
   std::unique_ptr<chromeos::CertificateProvider> certificate_provider_;
   // Whether all of the user's certificates have been provided at least once by

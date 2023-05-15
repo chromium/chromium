@@ -21,8 +21,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
  public:
   RTCEncodedVideoUnderlyingSink(
       ScriptState*,
-      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>,
-      webrtc::TransformableFrameInterface::Direction);
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>);
 
   // UnderlyingSinkBase
   ScriptPromise start(ScriptState*,
@@ -42,7 +41,6 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       transformer_broker_;
-  webrtc::TransformableFrameInterface::Direction expected_direction_;
   THREAD_CHECKER(thread_checker_);
 };
 

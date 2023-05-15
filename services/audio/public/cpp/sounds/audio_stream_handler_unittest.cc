@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_message_loop.h"
+#include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
@@ -92,7 +92,7 @@ class AudioStreamHandlerTest : public ::testing::TestWithParam<TestParams> {
   }
 
  private:
-  base::TestMessageLoop message_loop_;
+  base::test::TaskEnvironment env_;
   const media::AudioCodec codec_;
   const bool is_bad_;
   const bool is_file_;

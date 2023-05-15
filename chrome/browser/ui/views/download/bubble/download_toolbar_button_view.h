@@ -33,6 +33,7 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
+  virtual base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() = 0;
 };
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
@@ -74,6 +75,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
+  base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override;
 
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();
@@ -157,6 +159,12 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Badge view drawn on top of the rest of the children. It is positioned at
   // the bottom right corner of this view's bounds.
   raw_ptr<views::ImageView> badge_image_view_ = nullptr;
+
+  // Maps number of in-progress downloads to the corresponding tooltip text, to
+  // avoid having to create the strings repeatedly. The entry for 0 is the
+  // default tooltip ("Downloads"), the entries for larger numbers are the
+  // tooltips for N in-progress downloads ("N downloads in progress").
+  std::map<int, std::u16string> tooltip_texts_;
 
   // Override for the icon color. Used for PWAs, which don't have full
   // ThemeProvider color support.

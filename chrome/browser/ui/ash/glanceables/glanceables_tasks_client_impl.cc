@@ -13,7 +13,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/check.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
@@ -32,6 +32,7 @@ using ::google_apis::tasks::ListTaskListsRequest;
 using ::google_apis::tasks::ListTasksRequest;
 using ::google_apis::tasks::PatchTaskRequest;
 using ::google_apis::tasks::Task;
+using ::google_apis::tasks::TaskLink;
 using ::google_apis::tasks::TaskList;
 using ::google_apis::tasks::TaskLists;
 using ::google_apis::tasks::Tasks;
@@ -65,56 +66,34 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
         }
     )");
 
-// Converts a single `raw_task` received from Google Tasks API to ash-friendly
-// type. Recursively converts all subtasks related to this task.
-// `grouped_subtasks` - allows to find subtasks by their parent id.
-std::unique_ptr<GlanceablesTask> ConvertIndividualTask(
-    const Task* const raw_task,
-    base::flat_map<std::string, std::vector<const Task*>>& grouped_subtasks) {
-  const auto iter = grouped_subtasks.find(raw_task->id());
-  std::vector<std::unique_ptr<GlanceablesTask>> converted_subtasks;
-  if (iter != grouped_subtasks.end()) {
-    converted_subtasks.reserve(iter->second.size());
-    for (const auto* const raw_subtask : iter->second) {
-      converted_subtasks.push_back(
-          ConvertIndividualTask(raw_subtask, grouped_subtasks));
-    }
-    grouped_subtasks.erase(iter);
-  }
-
-  return std::make_unique<GlanceablesTask>(
-      raw_task->id(), raw_task->title(),
-      /*completed=*/raw_task->status() == Task::Status::kCompleted,
-      std::move(converted_subtasks));
-}
-
-// Entry point to convert `raw_tasks` received from Google Tasks API to
-// ash-friendly types.
+// Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
 std::vector<std::unique_ptr<GlanceablesTask>> ConvertTasks(
     const std::vector<std::unique_ptr<Task>>& raw_tasks) {
-  // Find root level tasks and group all other subtasks by their parent id.
+  // Find root level tasks and collect task ids that have subtasks in one pass.
   std::vector<const Task*> root_tasks;
-  base::flat_map<std::string, std::vector<const Task*>> grouped_subtasks;
+  base::flat_set<std::string> tasks_with_subtasks;
   for (const auto& item : raw_tasks) {
     if (item->parent_id().empty()) {
       root_tasks.push_back(item.get());
-      continue;
+    } else {
+      tasks_with_subtasks.insert(item->parent_id());
     }
-
-    grouped_subtasks[item->parent_id()].push_back(item.get());
   }
 
+  // Convert `root_tasks` to ash-friendly types.
   std::vector<std::unique_ptr<GlanceablesTask>> converted_tasks;
   converted_tasks.reserve(root_tasks.size());
   for (const auto* const root_task : root_tasks) {
-    converted_tasks.push_back(
-        ConvertIndividualTask(root_task, grouped_subtasks));
-  }
-
-  if (!grouped_subtasks.empty()) {
-    // At this moment `grouped_subtasks` should be empty. If not - something is
-    // wrong with the returned data (some tasks point to invalid `parent_id()`).
-    return std::vector<std::unique_ptr<GlanceablesTask>>();
+    const bool completed = root_task->status() == Task::Status::kCompleted;
+    const bool has_subtasks = tasks_with_subtasks.contains(root_task->id());
+    const bool has_email_link =
+        std::find_if(root_task->links().begin(), root_task->links().end(),
+                     [](const auto& link) {
+                       return link->type() == TaskLink::Type::kEmail;
+                     }) != root_task->links().end();
+    converted_tasks.push_back(std::make_unique<GlanceablesTask>(
+        root_task->id(), root_task->title(), completed, root_task->due(),
+        has_subtasks, has_email_link));
   }
 
   return converted_tasks;

@@ -44,7 +44,8 @@ _SECTION_SORT_ORDER = {
     models.SECTION_DEX_METHOD: 3,
     models.SECTION_PAK_NONTRANSLATED: 4,
     models.SECTION_PAK_TRANSLATIONS: 5,
-    models.SECTION_OTHER: 6,
+    models.SECTION_ARSC: 6,
+    models.SECTION_OTHER: 7,
 }
 
 # Keys in build config for old .size files.

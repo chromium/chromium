@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +33,12 @@ using content::WebContents;
 
 namespace {
 
+bool IsBrowserClosing(Browser* browser) {
+  const BrowserList::BrowserSet& closing_browsers =
+      BrowserList::GetInstance()->currently_closing_browsers();
+  return base::Contains(closing_browsers, browser);
+}
+
 // Type used to indicate to match anything.
 const uint32_t kMatchAny = 0;
 
@@ -43,6 +50,7 @@ const uint32_t kMatchDisplayId = 1 << 3;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 const uint32_t kMatchCurrentWorkspace = 1 << 4;
 #endif
+const uint32_t kMatchNotClosing = 1 << 5;
 
 // Returns true if the specified |browser| matches the specified arguments.
 // |match_types| is a bitmask dictating what parameters to match:
@@ -52,6 +60,7 @@ const uint32_t kMatchCurrentWorkspace = 1 << 4;
 // . If it contains kMatchCanSupportWindowFeature
 //   |CanSupportWindowFeature(window_feature)| must return true.
 // . If it contains kMatchNormal, the browser must be a normal tabbed browser.
+// . If it contains kMatchNotClosing, the browser must not be a closing browser.
 bool BrowserMatches(Browser* browser,
                     Profile* profile,
                     Browser::WindowFeature window_feature,
@@ -115,6 +124,10 @@ bool BrowserMatches(Browser* browser,
                .id() == display_id;
   }
 
+  if ((match_types & kMatchNotClosing) && IsBrowserClosing(browser)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -140,6 +153,7 @@ Browser* FindBrowserWithTabbedOrAnyType(
     bool match_tabbed,
     bool match_original_profiles,
     bool match_current_workspace,
+    bool match_not_closing,
     int64_t display_id = display::kInvalidDisplayId) {
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   if (!browser_list_impl)
@@ -155,6 +169,10 @@ Browser* FindBrowserWithTabbedOrAnyType(
   if (match_current_workspace)
     match_types |= kMatchCurrentWorkspace;
 #endif
+  if (match_not_closing) {
+    match_types |= kMatchNotClosing;
+  }
+
   Browser* browser = FindBrowserMatching(
       browser_list_impl->begin_browsers_ordered_by_activation(),
       browser_list_impl->end_browsers_ordered_by_activation(), profile,
@@ -188,20 +206,24 @@ namespace chrome {
 
 Browser* FindTabbedBrowser(Profile* profile,
                            bool match_original_profiles,
-                           int64_t display_id) {
-  return FindBrowserWithTabbedOrAnyType(profile, true, match_original_profiles,
-                                        /*match_current_workspace=*/true,
-                                        display_id);
+                           int64_t display_id,
+                           bool ignore_closing_browsers) {
+  return FindBrowserWithTabbedOrAnyType(
+      profile, true, match_original_profiles,
+      /*match_current_workspace=*/true,
+      /*match_not_closing=*/ignore_closing_browsers, display_id);
 }
 
 Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles) {
   return FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
-                                        /*match_current_workspace=*/false);
+                                        /*match_current_workspace=*/false,
+                                        /*match_not_closing=*/false);
 }
 
 Browser* FindBrowserWithProfile(Profile* profile) {
   return FindBrowserWithTabbedOrAnyType(profile, false, false,
-                                        /*match_current_workspace=*/false);
+                                        /*match_current_workspace=*/false,
+                                        /*match_not_closing=*/false);
 }
 
 std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {

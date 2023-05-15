@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -22,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -1587,7 +1587,7 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
   return SharedHandleState(std::move(read_grant), std::move(write_grant));
 }
 
-base::GUID FileSystemAccessManagerImpl::GetUniqueId(
+base::Uuid FileSystemAccessManagerImpl::GetUniqueId(
     const FileSystemAccessFileHandleImpl& file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/1342961): This is a temporary hack to put something
@@ -1599,13 +1599,13 @@ base::GUID FileSystemAccessManagerImpl::GetUniqueId(
     return it->second;
   }
 
-  // Generate and store a new guid for this file.
-  auto guid = base::GUID::GenerateRandomV4();
-  file_ids_[file.url()] = guid;
-  return guid;
+  // Generate and store a new uuid for this file.
+  auto uuid = base::Uuid::GenerateRandomV4();
+  file_ids_[file.url()] = uuid;
+  return uuid;
 }
 
-base::GUID FileSystemAccessManagerImpl::GetUniqueId(
+base::Uuid FileSystemAccessManagerImpl::GetUniqueId(
     const FileSystemAccessDirectoryHandleImpl& directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/1342961): This is a temporary hack to put something
@@ -1617,10 +1617,10 @@ base::GUID FileSystemAccessManagerImpl::GetUniqueId(
     return it->second;
   }
 
-  // Generate and store a new guid for this directory.
-  auto guid = base::GUID::GenerateRandomV4();
-  directory_ids_[directory.url()] = guid;
-  return guid;
+  // Generate and store a new uuid for this directory.
+  auto uuid = base::Uuid::GenerateRandomV4();
+  directory_ids_[directory.url()] = uuid;
+  return uuid;
 }
 
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(

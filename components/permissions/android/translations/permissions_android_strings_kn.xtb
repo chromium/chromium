@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1569387923882100876">ಸಂಪರ್ಕಿಸಲಾದ ಸಾಧನ</translation>
-<translation id="1612196535745283361">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Chrome ಗೆ ಸ್ಥಳ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ. ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು <ph name="BEGIN_LINK" />
+<translation id="1612196535745283361">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Chrome ಗೆ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ. ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು <ph name="BEGIN_LINK" />
 ಈ ಸಾಧನಕ್ಕೆ ಆಫ್ ಮಾಡಲಾಗಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="1769234867324334094">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -15,13 +15,13 @@
 <translation id="4915549754973153784">ಸಾಧನಗಳಿಗೆ ಸ್ಕ್ಯಾನ್ ಮಾಡುವಾಗ <ph name="BEGIN_LINK" />ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="END_LINK" />...</translation>
 <translation id="4925793601605263825">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="5230560987958996918">ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ. ಈ ಕೆಳಗಿನ ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ:</translation>
-<translation id="5527082711130173040">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, Chrome ಗೆ ಸ್ಥಳ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK1" />ಅನುಮತಿಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ<ph name="END_LINK1" />. ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು ಸಹ <ph name="BEGIN_LINK2" />ಈ ಸಾಧನಕ್ಕೆ ಆಫ್ ಮಾಡಲಾಗಿದೆ<ph name="END_LINK2" />.</translation>
+<translation id="5527082711130173040">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, Chrome ಗೆ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK1" />ಅನುಮತಿಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ<ph name="END_LINK1" />. ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಸಹ <ph name="BEGIN_LINK2" />ಈ ಸಾಧನಕ್ಕೆ ಆಫ್ ಮಾಡಲಾಗಿದೆ<ph name="END_LINK2" />.</translation>
 <translation id="5817918615728894473">ಜೋಡಿಸು</translation>
 <translation id="5858741533101922242">ಬ್ಲೂಟೂತ್ ಅಡಾಪ್ಟರ್ ಆನ್ ಮಾಡಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="6049776452963514597">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="6092062101542170135">ಮುಂದುವರಿಸಲು, Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ NFC ಆನ್ ಮಾಡಿ</translation>
-<translation id="6656545060687952787">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Chrome ಗೆ ಸ್ಥಳ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK" />ಅನುಮತಿಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
+<translation id="6656545060687952787">ಸಾಧನಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Chrome ಗೆ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK" />ಅನುಮತಿಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445">ನಿಮ್ಮ ಸುತ್ತಲಿನ ಪರಿಸರದ 3D ನಕ್ಷೆಯನ್ನು ರಚಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="END_LINK1" /> ಅಥವಾ <ph name="BEGIN_LINK2" />ಮರು-ಸ್ಕ್ಯಾನ್‌ಮಾಡಿ<ph name="END_LINK2" /></translation>
 <translation id="781351614677332494">ಈ ಸೈಟ್ ಜೊತೆಗೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು <ph name="APP_NAME" /> ಗೆ ನಿಮ್ಮ ಸ್ಥಳದ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ.</translation>

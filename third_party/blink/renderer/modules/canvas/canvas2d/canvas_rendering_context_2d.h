@@ -99,7 +99,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   V8RenderingContext* AsV8RenderingContext() final;
   NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
 
-  bool isContextLost() const override;
+  bool isContextLost() const final {
+    return context_lost_mode_ != kNotLostContext;
+  }
 
   bool ShouldAntialias() const override;
   void SetShouldAntialias(bool) override;

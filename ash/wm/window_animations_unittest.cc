@@ -14,6 +14,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/aura/test/test_windows.h"
@@ -84,7 +85,7 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  ui::LayerAnimator* animator_;
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
   base::TimeDelta duration_;
 };
 
@@ -133,7 +134,7 @@ class FrameAnimator : public ui::ImplicitAnimationObserver {
     animation_started_ = true;
   }
 
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
   bool animation_started_ = false;
 };

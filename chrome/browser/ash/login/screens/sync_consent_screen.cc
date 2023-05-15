@@ -535,7 +535,14 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
 
     syncer::UserSelectableOsTypeSet os_empty_set;
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
-    exit_callback_.Run(Result::NEXT);
+
+    if (test_exit_delegate_) {
+      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
+                                                   exit_callback_);
+    } else {
+      exit_callback_.Run(Result::NEXT);
+    }
+
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
@@ -559,7 +566,13 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                      wallpaper_synced);
 
-    exit_callback_.Run(Result::NEXT);
+    if (test_exit_delegate_) {
+      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
+                                                   exit_callback_);
+    } else {
+      exit_callback_.Run(Result::NEXT);
+    }
+
     return;
   }
   BaseScreen::OnUserAction(args);

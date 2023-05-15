@@ -20,6 +20,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "url/gurl.h"
@@ -200,9 +202,32 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
   bool ua_overidden = !!str;
 
   if (ua_overidden) {
-    std::string override = base::android::ConvertJavaStringToUTF8(str);
-    web_contents()->SetUserAgentOverride(
-        blink::UserAgentOverride::UserAgentOnly(override), true);
+    std::string ua_string_override =
+        base::android::ConvertJavaStringToUTF8(str);
+    std::string ua_default = GetUserAgent();
+    blink::UserAgentOverride override_ua_with_metadata;
+    override_ua_with_metadata.ua_string_override = ua_string_override;
+
+    // If kUACHOverrideBlank is enabled, set user-agent metadata with the
+    // default blank value.
+    if (!ua_string_override.empty() &&
+        base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)) {
+      override_ua_with_metadata.ua_metadata_override =
+          blink::UserAgentMetadata();
+    }
+
+    // If the override user-agent is not empty and contains the default
+    // user-agent, then we propagate the default user-agent client hints.
+    if (base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint) &&
+        !ua_string_override.empty() &&
+        ua_string_override.find(ua_default) != std::string::npos) {
+      override_ua_with_metadata.ua_metadata_override =
+          embedder_support::GetUserAgentMetadata(
+              AwBrowserContext::GetDefault()->GetPrefService());
+    }
+
+    // Set overridden user-agent and default client hints metadata if applied.
+    web_contents()->SetUserAgentOverride(override_ua_with_metadata, true);
   }
 
   content::NavigationController& controller = web_contents()->GetController();

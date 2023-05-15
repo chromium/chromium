@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.sync;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -20,9 +21,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,6 +56,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -144,6 +147,67 @@ public class ManageSyncSettingsTest {
             Assert.assertTrue(dataType.isChecked());
             Assert.assertTrue(dataType.isEnabled());
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Sync"})
+    @Policies.
+    Add({ @Policies.Item(key = "SyncTypesListDisabled", string = "[\"passwords\", \"autofill\"]") })
+    public void testSyncWithManagedDataTypes() {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
+        Collection<CheckBoxPreference> dataTypes = getDataTypes(fragment).values();
+
+        // When a sync type is disabled by policy, the `Sync everything` toggle should be checked.
+        // and the user can still check it off and choose to sync everything that is not managed.
+        Assert.assertTrue(syncEverything.isEnabled());
+        Assert.assertTrue(syncEverything.isChecked());
+
+        // When one or more sync types are managed, the respective preference should be disabled and
+        // not checked, while all other preferences should be user selectable.
+        for (CheckBoxPreference dataType : dataTypes) {
+            if (dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_PASSWORDS)
+                    || dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_AUTOFILL)) {
+                Assert.assertFalse(dataType.isChecked());
+                Assert.assertFalse(dataType.isEnabled());
+            } else {
+                Assert.assertTrue(dataType.isChecked());
+                Assert.assertFalse(dataType.isEnabled());
+            }
+        }
+        CheckBoxPreference paymentsIntegration = (CheckBoxPreference) fragment.findPreference(
+                ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+        Assert.assertFalse(paymentsIntegration.isChecked());
+
+        // Toggle the Sync everything button, and only non-managed types should be enabled.
+        mSyncTestRule.togglePreference(syncEverything);
+
+        Assert.assertTrue(syncEverything.isEnabled());
+        Assert.assertFalse(syncEverything.isChecked());
+
+        for (CheckBoxPreference dataType : dataTypes) {
+            if (dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_PASSWORDS)
+                    || dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_AUTOFILL)) {
+                Assert.assertFalse(dataType.isChecked());
+                Assert.assertFalse(dataType.isEnabled());
+            } else {
+                Assert.assertTrue(dataType.isChecked());
+                Assert.assertTrue(dataType.isEnabled());
+            }
+        }
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+        Assert.assertFalse(paymentsIntegration.isChecked());
+
+        // Check that the preference shows the managed text.
+        onView(withText("Passwords"))
+                .check(matches(hasSibling(withText(R.string.managed_by_your_organization))));
+        onView(withText("Addresses and more"))
+                .check(matches(hasSibling(withText(R.string.managed_by_your_organization))));
+        onView(withText("Payment methods, offers, and addresses using Google Pay"))
+                .check(matches(hasSibling(withText(R.string.managed_by_your_organization))));
     }
 
     @Test

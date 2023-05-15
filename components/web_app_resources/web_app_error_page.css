@@ -1,0 +1,79 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:root {
+  --dark-color: rgb(31, 31, 31);
+  --light-color: rgb(227, 227, 227);
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: white;
+  }
+  div {
+    color: var(--dark-color);
+  }
+  svg {
+    fill: var(--dark-color);
+  }
+ }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--dark-color);
+  }
+  div {
+    color: var(--light-color);
+  }
+  svg {
+    fill: var(--light-color);
+  }
+}
+
+#appIconContainer {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+#centerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 50%;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#errorContainer {
+  align-items: center;
+  display: flex;
+}
+
+#offlineIcon {
+  display: none;
+  height: 24px;
+  margin-inline-end: 17px;
+  width: 24px;
+}
+
+.app-icon {
+  height: 128px;
+  width: 128px;
+}
+
+.center-bottom {
+  left: 50%;
+  position: fixed;
+  top: 90%;
+  transform: translate(-50%, -50%);
+}
+
+.message {
+  font-family: 'system-ui', sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+  text-align: center;
+}
+

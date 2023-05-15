@@ -78,7 +78,11 @@ base::i18n::TextDirection FakeTextInputClient::GetTextDirection() const {
 }
 
 int FakeTextInputClient::GetTextInputFlags() const {
-  return EF_NONE;
+  return flags_;
+}
+
+void FakeTextInputClient::SetFlags(const int flags) {
+  flags_ = flags;
 }
 
 bool FakeTextInputClient::CanComposeInline() const {

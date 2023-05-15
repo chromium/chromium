@@ -69,7 +69,7 @@ class SystemFeaturesDisableListPolicyHandler
 
  protected:
   // ListPolicyHandler:
-  void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
+  void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 
  private:
   SystemFeature ConvertToEnum(const std::string& system_feature);

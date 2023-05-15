@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Dekodér obrázkov</translation>
 <translation id="1785415724048343560">Odporúčané pre najlepší dojem</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
-<translation id="1864927262126810325">Zdroj: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Súvisiacim webom sa zobrazuje vaša aktivita v skupine</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zložiť</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku</translation>
 <translation id="3165022941318558018">Povoľte webu používať súbory cookie tretej strany</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
-<translation id="3203366800380907218">Z webu</translation>
 <translation id="321187648315454507">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> odosielať vám upozornenia, zapnite ich aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3248611290851046188">Tento web definuje záujmy, na základe ktorých vám môžu ostatné weby zobrazovať reklamy. Chrome poskytne tomuto webu aj vaše záujmy, aby vám mohol zobrazovať relevantnejšie reklamy.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
 <translation id="3721953990244350188">Zavrieť a zobraziť ďalšiu dostupnú akciu</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
-<translation id="5229337741799419985">Toto nastavenie funguje bez identifikácie vašej totožnosti alebo bez toho, aby weby videli vašu históriu prehliadania</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5264323282659631142">Odstrániť <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
-<translation id="6701547804986694515">Web, ktorý navštívite, môže v Chrome uložiť informácie potvrdzujúce, že nie ste robot. Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba.</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Zvyčajne blokujete upozornenia. Ak ich chcete povoliť, klepnite na Podrobnosti.</translation>
 <translation id="7366415735885268578">Pridanie webu</translation>
 <translation id="7383715096023715447">Nastavenia domény <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Toto nastavenie funguje bez identifikácie vašej totožnosti a neumožňuje webom zobraziť si vašu históriu prehliadania, ale v rámci overenia môžu weby zdieľať malé množstvo informácií</translation>
 <translation id="7423098979219808738">Najprv sa opýtať</translation>
 <translation id="7423538860840206698">Blokovať čítanie schránky</translation>
 <translation id="7425915948813553151">Tmavý motív pre weby</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Brániť webom v prístupe k senzorom</translation>
 <translation id="8823559166155093873">Blokovať súbory cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba</translation>
 <translation id="8899807382908246773">Obťažujúce reklamy</translation>
 <translation id="8903921497873541725">Priblížiť</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

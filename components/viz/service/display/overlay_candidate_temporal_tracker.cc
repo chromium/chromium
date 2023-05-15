@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
-
 namespace viz {
 
 OverlayCandidateTemporalTracker::OverlayCandidateTemporalTracker() = default;

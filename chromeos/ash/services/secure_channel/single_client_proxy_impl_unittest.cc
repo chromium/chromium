@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -251,8 +252,9 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeSingleClientProxyDelegate> fake_proxy_delegate_;
-  FakeClientConnectionParameters* fake_client_connection_parameters_;
-  FakeMessageReceiver* fake_message_receiver_;
+  raw_ptr<FakeClientConnectionParameters, ExperimentalAsh>
+      fake_client_connection_parameters_;
+  raw_ptr<FakeMessageReceiver, ExperimentalAsh> fake_message_receiver_;
 
   int next_message_counter_ = 0;
   std::unordered_set<int> sent_message_counters_;

@@ -18,6 +18,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -60,7 +61,7 @@ struct NotificationParams {
   std::u16string message;
   std::string notifier_name;
   GURL url;
-  const gfx::VectorIcon* icon;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
 };
 
 NotificationParams GetNonStylusNotificationParams(const std::string& map_key,

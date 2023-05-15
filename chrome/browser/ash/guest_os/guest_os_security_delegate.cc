@@ -17,20 +17,6 @@ GuestOsSecurityDelegate::GuestOsSecurityDelegate() : weak_factory_(this) {}
 GuestOsSecurityDelegate::~GuestOsSecurityDelegate() = default;
 
 // static
-void GuestOsSecurityDelegate::BuildServer(
-    std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
-    BuildCallback callback) {
-  // Ownership of the security_delegate is transferred to exo in the following
-  // request. Exo ensures the security_delegate lives until we call
-  // DeleteServer(), so we will retain a copy of its pointer for future use.
-  base::WeakPtr<GuestOsSecurityDelegate> cap_ptr =
-      security_delegate->weak_factory_.GetWeakPtr();
-  exo::WaylandServerController::Get()->CreateServer(
-      std::move(security_delegate),
-      base::BindOnce(std::move(callback), cap_ptr));
-}
-
-// static
 void GuestOsSecurityDelegate::MakeServerWithFd(
     std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
     base::ScopedFD fd,
@@ -45,25 +31,6 @@ void GuestOsSecurityDelegate::MakeServerWithFd(
   exo::WaylandServerController::Get()->ListenOnSocket(
       std::move(security_delegate), std::move(fd),
       base::BindOnce(std::move(callback), cap_ptr));
-}
-
-// static
-void GuestOsSecurityDelegate::MaybeRemoveServer(
-    base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
-    const base::FilePath& path) {
-  if (!security_delegate) {
-    return;
-  }
-  exo::WaylandServerController* controller =
-      exo::WaylandServerController::Get();
-  if (!controller) {
-    return;
-  }
-  controller->DeleteServer(path);
-}
-
-std::string GuestOsSecurityDelegate::GetSecurityContext() const {
-  return vm_tools::kConciergeSecurityContext;
 }
 
 }  // namespace guest_os

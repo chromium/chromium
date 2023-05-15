@@ -57,7 +57,6 @@ class LayoutObject;
 class LayoutText;
 class LocalFrame;
 class Page;
-class SubtreeLayoutScope;
 
 inline bool operator==(const mojom::blink::TextAutosizerPageInfo& lhs,
                        const mojom::blink::TextAutosizerPageInfo& rhs) {
@@ -109,7 +108,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     STACK_ALLOCATED();
 
    public:
-    explicit LayoutScope(LayoutBlock*, SubtreeLayoutScope* = nullptr);
+    explicit LayoutScope(LayoutBlock*);
     ~LayoutScope();
 
    protected:
@@ -312,13 +311,12 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     bool setting_enabled_;
   };
 
-  void BeginLayout(LayoutBlock*, SubtreeLayoutScope*);
+  void BeginLayout(LayoutBlock*);
   void EndLayout(LayoutBlock*);
   void RegisterInlineSize(const LayoutBlock& ng_block, LayoutUnit inline_size);
   void UnregisterInlineSize(const LayoutBlock& ng_block);
   void InflateAutoTable(LayoutNGTable*);
   float Inflate(LayoutObject*,
-                SubtreeLayoutScope*,
                 InflateBehavior = kThisBlockOnly,
                 float multiplier = 0);
   bool ShouldHandleLayout() const;
@@ -356,7 +354,6 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   float MultiplierFromBlock(const LayoutBlock*);
   void ApplyMultiplier(LayoutObject*,
                        float,
-                       SubtreeLayoutScope*,
                        RelayoutBehavior = kAlreadyInLayout);
   bool IsWiderOrNarrowerDescendant(Cluster*);
   Cluster* CurrentCluster() const;

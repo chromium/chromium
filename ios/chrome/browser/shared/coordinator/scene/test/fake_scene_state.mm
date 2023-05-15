@@ -5,13 +5,14 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,18 +21,19 @@
 
 @interface FakeSceneState ()
 // Redeclare interface provider readwrite.
-@property(nonatomic, strong, readwrite) id<BrowserInterfaceProvider>
-    interfaceProvider;
+@property(nonatomic, strong, readwrite) id<BrowserProviderInterface>
+    browserProviderInterface;
 
 @end
 
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
+  std::unique_ptr<TestBrowser> _inactive_browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
 }
 
-@synthesize interfaceProvider = _interfaceProvider;
+@synthesize browserProviderInterface = _browserProviderInterface;
 
 @synthesize window = _window;
 
@@ -41,17 +43,22 @@
     DCHECK(browserState);
     DCHECK(!browserState->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
-    self.interfaceProvider = [[StubBrowserInterfaceProvider alloc] init];
+    self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
 
     _browser = std::make_unique<TestBrowser>(browserState);
-    base::mac::ObjCCastStrict<StubBrowserInterface>(
-        self.interfaceProvider.mainInterface)
+    base::mac::ObjCCastStrict<StubBrowserProvider>(
+        self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
+
+    _inactive_browser = std::make_unique<TestBrowser>(browserState);
+    base::mac::ObjCCastStrict<StubBrowserProvider>(
+        self.browserProviderInterface.mainBrowserProvider)
+        .inactiveBrowser = _inactive_browser.get();
 
     _incognito_browser = std::make_unique<TestBrowser>(
         browserState->GetOffTheRecordChromeBrowserState());
-    base::mac::ObjCCastStrict<StubBrowserInterface>(
-        self.interfaceProvider.incognitoInterface)
+    base::mac::ObjCCastStrict<StubBrowserProvider>(
+        self.browserProviderInterface.incognitoBrowserProvider)
         .browser = _incognito_browser.get();
   }
   return self;
@@ -72,7 +79,8 @@
   auto test_web_state = std::make_unique<web::FakeWebState>();
   test_web_state->SetCurrentURL(URL);
   WebStateList* web_state_list =
-      self.interfaceProvider.mainInterface.browser->GetWebStateList();
+      self.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList();
   web_state_list->InsertWebState(
       WebStateList::kInvalidIndex, std::move(test_web_state),
       WebStateList::INSERT_NO_FLAGS, WebStateOpener());

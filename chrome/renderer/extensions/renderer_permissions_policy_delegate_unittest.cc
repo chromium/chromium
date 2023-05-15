@@ -50,12 +50,11 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
 scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
   return ExtensionBuilder()
       .SetManifest(
-          DictionaryBuilder()
+          base::Value::Dict()
               .Set("name", "Extension with ID " + id)
               .Set("version", "1.0")
               .Set("manifest_version", 2)
-              .Set("permissions", ListBuilder().Append("<all_urls>").Build())
-              .Build())
+              .Set("permissions", base::Value::List().Append("<all_urls>")))
       .SetID(id)
       .Build();
 }

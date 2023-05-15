@@ -70,15 +70,13 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
 }
 
 void SystemFeaturesDisableListPolicyHandler::ApplyList(
-    base::Value filtered_list,
+    base::Value::List filtered_list,
     PrefValueMap* prefs) {
-  DCHECK(filtered_list.is_list());
-
   base::Value::List enums_list;
   base::Value* old_list = nullptr;
   prefs->GetValue(policy_prefs::kSystemFeaturesDisableList, &old_list);
 
-  for (const auto& element : filtered_list.GetList()) {
+  for (const auto& element : filtered_list) {
     SystemFeature feature = ConvertToEnum(element.GetString());
     enums_list.Append(static_cast<int>(feature));
 

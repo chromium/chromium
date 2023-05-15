@@ -21,15 +21,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace {
-
-// Returns true if a notification with id `id` is in the message center.
-bool HasNotification(const std::string& id) {
-  return message_center::MessageCenter::Get()->FindNotificationById(id);
-}
-
-}  // namespace
-
 namespace ash {
 
 bool operator<(const PrivacyHubNotificationDescriptor& descriptor1,
@@ -154,7 +145,7 @@ PrivacyHubNotification::~PrivacyHubNotification() = default;
 
 void PrivacyHubNotification::Show() {
   SetNotificationContent();
-  if (HasNotification(id_)) {
+  if (IsShown()) {
     // The notification is already in the message center. Update the content and
     // pop it up again.
     message_center::MessageCenter::Get()->UpdateNotification(
@@ -170,12 +161,24 @@ void PrivacyHubNotification::Hide() {
                                                            /*by_user=*/false);
 }
 
+bool PrivacyHubNotification::IsShown() {
+  return message_center::MessageCenter::Get()->FindNotificationById(id_);
+}
+
 void PrivacyHubNotification::Update() {
-  if (HasNotification(id_)) {
+  if (IsShown()) {
     SetNotificationContent();
     message_center::MessageCenter::Get()->UpdateNotification(
         id_, builder_.BuildPtr());
   }
+}
+
+void PrivacyHubNotification::SetPriority(
+    message_center::NotificationPriority priority) {
+  message_center::RichNotificationData optional_fields =
+      builder_.GetOptionalFields();
+  optional_fields.priority = priority;
+  builder_.SetOptionalFields(optional_fields);
 }
 
 void PrivacyHubNotification::SetSensors(
@@ -235,9 +238,11 @@ void PrivacyHubNotification::SetNotificationContent() {
   DCHECK(descriptor != notification_descriptors_.end());
 
   if (has_sensors_changed_) {
-    message_center::RichNotificationData optional_fields;
+    message_center::RichNotificationData optional_fields =
+        builder_.GetOptionalFields();
     optional_fields.remove_on_click = true;
 
+    optional_fields.buttons.clear();
     for (int button_id : descriptor->button_ids()) {
       optional_fields.buttons.emplace_back(
           l10n_util::GetStringUTF16(button_id));

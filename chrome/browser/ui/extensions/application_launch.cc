@@ -299,8 +299,11 @@ WebContents* OpenEnabledApplication(Profile* profile,
   WebContents* tab = nullptr;
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
   prefs->SetActiveBit(extension->id(), true);
+  bool supports_web_file_handlers =
+      extensions::WebFileHandlers::SupportsWebFileHandlers(
+          extension->manifest_version());
 
-  if (CanLaunchViaEvent(extension)) {
+  if (CanLaunchViaEvent(extension) && !supports_web_file_handlers) {
     // When launching an app with a command line, there might be a file path to
     // work with that command line, so
     // LaunchPlatformAppWithCommandLineAndLaunchId should be called to handle
@@ -331,14 +334,10 @@ WebContents* OpenEnabledApplication(Profile* profile,
                             params.container);
 
   GURL url;
-  bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version());
   if (supports_web_file_handlers && params.intent->activity_name.has_value()) {
     // `params.intent->activity_name` is actually the `action` url set in the
     // manifest of the extension.
     url = extension->GetResourceURL(params.intent->activity_name.value());
-    params.container = apps::LaunchContainer::kLaunchContainerWindow;
   } else {
     url = UrlForExtension(extension, profile, params);
   }

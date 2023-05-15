@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
@@ -51,7 +52,7 @@ class NearbyInternalsContactHandler
   // manager.
   void HandleDownloadContacts(const base::Value::List& args);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   base::ScopedObservation<NearbyShareContactManager,
                           NearbyShareContactManager::Observer>
       observation_{this};

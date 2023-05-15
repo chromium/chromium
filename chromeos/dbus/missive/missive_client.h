@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
       bool force_confirm) = 0;
   virtual base::WeakPtr<MissiveClient> GetWeakPtr() = 0;
 
+  // Returns 'true' initially, and 'false' after Init() has been called.
+  bool is_disabled() const;
+
   // Returns sequenced task runner.
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner() const;
 
@@ -92,6 +95,9 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   // Sequenced task runner - must be first member of the class.
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   SEQUENCE_CHECKER(origin_checker_);
+
+  // Flag indicating that the client has been successfully initialized.
+  bool is_disabled_ GUARDED_BY_CONTEXT(origin_checker_) = true;
 };
 
 }  // namespace chromeos

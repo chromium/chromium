@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -475,11 +476,23 @@ void LayoutTheme::AdjustSliderContainerStyle(
     ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
-  if (builder.EffectiveAppearance() == kSliderVerticalPart) {
+  if (!RuntimeEnabledFeatures::
+          RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
+      builder.EffectiveAppearance() == kSliderVerticalPart) {
     builder.SetTouchAction(TouchAction::kPanX);
     builder.SetWritingMode(WritingMode::kVerticalRl);
     // It's always in RTL because the slider value increases up even in LTR.
     builder.SetDirection(TextDirection::kRtl);
+  } else if (RuntimeEnabledFeatures::
+                 FormControlsVerticalWritingModeSupportEnabled() &&
+             !IsHorizontalWritingMode(builder.GetWritingMode())) {
+    builder.SetTouchAction(TouchAction::kPanX);
+    // If FormControlsVerticalWritingModeDirectionSupport disabled, then it is
+    // always RTL because the slider value increases up even in LTR.
+    if (!RuntimeEnabledFeatures::
+            FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+      builder.SetDirection(TextDirection::kRtl);
+    }
   } else {
     builder.SetTouchAction(TouchAction::kPanY);
     builder.SetWritingMode(WritingMode::kHorizontalTb);
@@ -597,6 +610,14 @@ Color LayoutTheme::DefaultSystemColor(
   // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
 
   switch (css_value_id) {
+    case CSSValueID::kAccentcolor:
+      return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()
+                 ? GetAccentColorOrDefault(color_scheme)
+                 : Color();
+    case CSSValueID::kAccentcolortext:
+      return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()
+                 ? GetAccentColorText(color_scheme)
+                 : Color();
     case CSSValueID::kActivetext:
       return Color::FromRGBA32(0xFFFF0000);
     case CSSValueID::kButtonborder:
@@ -854,6 +875,24 @@ void LayoutTheme::UpdateForcedColorsState() {
   in_forced_colors_mode_ =
       WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
       ForcedColors::kNone;
+}
+
+Color LayoutTheme::GetAccentColorOrDefault(
+    mojom::blink::ColorScheme color_scheme) const {
+  // This is from the kAccent color from NativeThemeBase::GetControlColor
+  const Color kDefaultAccentColor = Color(0x00, 0x75, 0xFF);
+  Color accent_color = GetSystemAccentColor(color_scheme);
+  return accent_color == Color() ? kDefaultAccentColor : accent_color;
+}
+
+Color LayoutTheme::GetAccentColorText(
+    mojom::blink::ColorScheme color_scheme) const {
+  Color accent_color = GetAccentColorOrDefault(color_scheme);
+  // This logic matches AccentColorText in Firefox. If the accent color to draw
+  // text on is dark, then use white. If it's light, then use dark.
+  return color_utils::GetRelativeLuminance4f(accent_color.toSkColor4f()) <= 128
+             ? Color::kWhite
+             : Color::kBlack;
 }
 
 }  // namespace blink

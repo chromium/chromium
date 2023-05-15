@@ -65,6 +65,15 @@ public abstract class TabCreator {
             SerializedCriticalPersistedTabData serializedCriticalPersistedTabData, int id,
             boolean isIncognito, int index);
 
+    /*
+     * Creates a new tab which is detached from the tab model.
+     * @params type Information about where the tab was created from.
+     * @params boolean initializeRenderer whether to initialize renderer during WebContents creation
+     * or not.
+     */
+    @Nullable
+    public abstract Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer);
+
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for
      * {@link #createNewTab} with the default {@link LoadUrlParams} and no parent tab.

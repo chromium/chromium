@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_BASE_H_
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
@@ -36,11 +35,7 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
 
 class PersonalDataManagerTestBase {
  protected:
-  static std::vector<base::test::FeatureRef> GetDefaultEnabledFeatures();
-
-  explicit PersonalDataManagerTestBase(
-      const std::vector<base::test::FeatureRef>& additional_enabled_features =
-          {});
+  PersonalDataManagerTestBase();
 
   ~PersonalDataManagerTestBase();
 
@@ -69,7 +64,6 @@ class PersonalDataManagerTestBase {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
-  base::test::ScopedFeatureList scoped_features_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;

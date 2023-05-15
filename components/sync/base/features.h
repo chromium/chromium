@@ -67,9 +67,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 // likely to get combined into one commit message.
 BASE_DECLARE_FEATURE(kSyncExtensionTypesThrottling);
 
-// TODO(crbug.com/1425065): Remove this.
-BASE_DECLARE_FEATURE(kSyncResetPollIntervalOnStart);
-
 // If enabled, Segmentation data type will be synced.
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 
@@ -177,10 +174,23 @@ BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Influences how precisely SyncServiceImpl determines whether Sync-the-feature
+// is enabled. If the feature is on, the new approach is used, which leans on
+// the state reported by IdentityManager. If false, the legacy approach is used,
+// which is based on preference prefs::kSyncRequested.
+// TODO(crbug.com/1219990): Remove this.
+BASE_DECLARE_FEATURE(kSyncIgnoreSyncRequestedPreference);
+#endif  // BUILDFLAG(!IS_CHROMEOS_ASH)
+
 // If enabled, Sync will send a poll GetUpdates request on every browser
 // startup. This is a temporary hack; see crbug.com/1425026.
 // TODO(crbug.com/1425071): Remove this.
 BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
+
+// If enabled, and a poll GetUpdates request is scheduled on browser startup,
+// there won't be an additional delay.
+BASE_DECLARE_FEATURE(kSyncPollWithoutDelayOnStartup);
 
 #if BUILDFLAG(IS_IOS)
 // Feature flag to enable indicating the Account Storage error in the Account
@@ -192,6 +202,9 @@ BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
 #endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+
+// If enabled, ignore GetUpdates retry delay command from the server.
+BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 
 }  // namespace syncer
 

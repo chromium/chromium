@@ -11,9 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,7 +24,7 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace syncer {
+namespace trusted_vault {
 
 // Allows calling VaultService API using proto-over-http.
 class TrustedVaultRequest : public TrustedVaultConnection::Request {
@@ -121,6 +121,6 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   base::WeakPtrFactory<TrustedVaultRequest> weak_ptr_factory_{this};
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_REQUEST_H_

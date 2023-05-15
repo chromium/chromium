@@ -150,8 +150,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
   bool has_border_radius = style.HasBorderRadius();
   bool has_opaque_background =
       !background_is_skipped &&
-      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha() ==
-          255;
+      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).IsOpaque();
 
   GraphicsContextStateSaver state_saver(context, false);
 
@@ -265,7 +264,7 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   if (!style.BoxShadow())
     return;
   auto bounds = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
-      style, inner_rect, LayoutRectOutsets());
+      style, inner_rect, NGPhysicalBoxStrut());
   PaintInsetBoxShadow(info, bounds, style);
 }
 
@@ -442,7 +441,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   if (BoxPainterBase::ShouldForceWhiteBackgroundForPrintEconomy(doc, style)) {
     // Note that we can't reuse this variable below because the bgColor might
     // be changed.
-    bool should_paint_background_color = is_bottom_layer && color.Alpha();
+    bool should_paint_background_color =
+        is_bottom_layer && !color.IsFullyTransparent();
     if (image || should_paint_background_color) {
       color = Color::kWhite;
       image = nullptr;
@@ -476,7 +476,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   // need to trigger repaint even if the background is transparent to collect
   // artifacts in order to run the animation on the compositor.
   should_paint_color =
-      is_bottom_layer && (color.Alpha() || composite_bgcolor_animation) &&
+      is_bottom_layer &&
+      (!color.IsFullyTransparent() || composite_bgcolor_animation) &&
       (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
   should_paint_color_with_paint_worklet_image =
       should_paint_color && composite_bgcolor_animation;
@@ -522,8 +523,7 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   if (!one_tile_rect.Contains(dest_rect))
     return absl::nullopt;
 
-  const PhysicalOffset offset_in_tile =
-      geometry.SnappedDestRect().offset - dest_phase;
+  const PhysicalOffset offset_in_tile = dest_rect.offset - dest_phase;
   if (!image.HasIntrinsicSize()) {
     // This is a generated image sized according to the tile size so we can use
     // the snapped dest rect directly.
@@ -548,14 +548,14 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
 
   // Subset computation needs the same location as was used above, but needs the
   // unsnapped destination size to correctly calculate sprite subsets in the
-  // presence of zoom.
+  // presence of zoom. We rely on the caller to provide a suitable (snapped)
+  // size.
   const gfx::SizeF scale(
       geometry.TileSize().width / intrinsic_tile_size.width(),
       geometry.TileSize().height / intrinsic_tile_size.height());
   gfx::RectF visible_src_rect(
       offset_in_tile.left / scale.width(), offset_in_tile.top / scale.height(),
-      geometry.UnsnappedDestRect().Width() / scale.width(),
-      geometry.UnsnappedDestRect().Height() / scale.height());
+      dest_rect.Width() / scale.width(), dest_rect.Height() / scale.height());
 
   // Content providers almost always choose source pixels at integer locations,
   // so snap to integers. This is particularly important for sprite maps.
@@ -572,6 +572,16 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
         intrinsic_tile_size, visible_src_rect);
   }
   return visible_src_rect;
+}
+
+PhysicalRect GetSubsetDestRectForImage(const BackgroundImageGeometry& geometry,
+                                       const Image& image) {
+  // Use the snapped size if the image does not have any intrinsic dimensions,
+  // since in that case the image will have been sized according to tile size.
+  const PhysicalRect& rect = image.HasIntrinsicSize()
+                                 ? geometry.UnsnappedDestRect()
+                                 : geometry.SnappedDestRect();
+  return {geometry.SnappedDestRect().offset, rect.size};
 }
 
 // The unsnapped_subset_size should be the target painting area implied by the
@@ -805,8 +815,11 @@ inline bool PaintFastBottomLayer(const Document* document,
       // Use FastAndLossyFromRectF when converting the image border rect.
       // At this point it should have been derived from a snapped rectangle, so
       // the conversion from float should be as precise as it can be.
+      // If the destination is not a rounded fill, then use the same rectangle
+      // as in DrawTiledBackground() to get consistent results.
       const PhysicalRect dest_rect =
-          PhysicalRect::FastAndLossyFromRectF(image_rect);
+          info.is_rounded_fill ? PhysicalRect::FastAndLossyFromRectF(image_rect)
+                               : GetSubsetDestRectForImage(geometry, *image);
 
       absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect, *image, info.respect_image_orientation);
@@ -923,7 +936,7 @@ FloatRoundedRect RoundedBorderRectForClip(
     bool object_has_multiple_boxes,
     const PhysicalSize& flow_box_size,
     BackgroundBleedAvoidance bleed_avoidance,
-    LayoutRectOutsets border_padding_insets) {
+    const NGPhysicalBoxStrut& border_padding_insets) {
   if (!info.is_rounded_fill)
     return FloatRoundedRect();
 
@@ -1006,18 +1019,18 @@ void PaintFillLayerBackground(const Document* document,
   }
 }
 
-LayoutRectOutsets AdjustOutsetsForEdgeInclusion(
-    const LayoutRectOutsets outsets,
+NGPhysicalBoxStrut AdjustOutsetsForEdgeInclusion(
+    const NGPhysicalBoxStrut& outsets,
     const BoxPainterBase::FillLayerInfo& info) {
-  LayoutRectOutsets adjusted = outsets;
+  NGPhysicalBoxStrut adjusted = outsets;
   if (!info.sides_to_include.top)
-    adjusted.SetTop(LayoutUnit());
+    adjusted.top = LayoutUnit();
   if (!info.sides_to_include.right)
-    adjusted.SetRight(LayoutUnit());
+    adjusted.right = LayoutUnit();
   if (!info.sides_to_include.bottom)
-    adjusted.SetBottom(LayoutUnit());
+    adjusted.bottom = LayoutUnit();
   if (!info.sides_to_include.left)
-    adjusted.SetLeft(LayoutUnit());
+    adjusted.left = LayoutUnit();
   return adjusted;
 }
 
@@ -1029,14 +1042,14 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
 
 }  // anonymous namespace
 
-LayoutRectOutsets BoxPainterBase::ComputeSnappedBorders() const {
-  const LayoutRectOutsets border_widths = ComputeBorders();
-  return LayoutRectOutsets(
-      border_widths.Top().ToInt(), border_widths.Right().ToInt(),
-      border_widths.Bottom().ToInt(), border_widths.Left().ToInt());
+NGPhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
+  const NGPhysicalBoxStrut border_widths = ComputeBorders();
+  return NGPhysicalBoxStrut(
+      border_widths.top.ToInt(), border_widths.right.ToInt(),
+      border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
-LayoutRectOutsets BoxPainterBase::AdjustedBorderOutsets(
+NGPhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
     const FillLayerInfo& info) const {
   return AdjustOutsetsForEdgeInclusion(ComputeSnappedBorders(), info);
 }
@@ -1084,9 +1097,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     }
   }
 
-  LayoutRectOutsets border = ComputeSnappedBorders();
-  LayoutRectOutsets padding = ComputePadding();
-  LayoutRectOutsets border_padding_insets = -(border + padding);
+  NGPhysicalBoxStrut border = ComputeSnappedBorders();
+  NGPhysicalBoxStrut padding = ComputePadding();
+  NGPhysicalBoxStrut border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
@@ -1109,41 +1122,48 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   }
 
   absl::optional<RoundedInnerRectClipper> clip_to_border;
-  if (fill_layer_info.is_rounded_fill)
+  if (fill_layer_info.is_rounded_fill) {
+    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
+  }
 
   if (bg_layer.Clip() == EFillBox::kText) {
+    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
     PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
                               composite_op, geometry, rect, scrolled_paint_rect,
                               object_has_multiple_boxes);
     return;
   }
 
-  GraphicsContextStateSaver background_clip_state_saver(context, false);
-  switch (bg_layer.Clip()) {
-    case EFillBox::kPadding:
-    case EFillBox::kContent: {
-      if (fill_layer_info.is_rounded_fill)
-        break;
+  // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
+  absl::optional<GraphicsContextStateSaver> background_clip_state_saver;
+  if (!geometry.CanCompositeBackgroundAttachmentFixed()) {
+    switch (bg_layer.Clip()) {
+      case EFillBox::kPadding:
+      case EFillBox::kContent: {
+        if (fill_layer_info.is_rounded_fill) {
+          break;
+        }
 
-      // Clip to the padding or content boxes as necessary.
-      PhysicalRect clip_rect = scrolled_paint_rect;
-      clip_rect.Contract(
-          AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
-      if (bg_layer.Clip() == EFillBox::kContent) {
+        // Clip to the padding or content boxes as necessary.
+        PhysicalRect clip_rect = scrolled_paint_rect;
         clip_rect.Contract(
-            AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+            AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
+        if (bg_layer.Clip() == EFillBox::kContent) {
+          clip_rect.Contract(
+              AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+        }
+        background_clip_state_saver.emplace(context);
+        context.Clip(ToPixelSnappedRect(clip_rect));
+        break;
       }
-      background_clip_state_saver.Save();
-      context.Clip(ToPixelSnappedRect(clip_rect));
-      break;
+      case EFillBox::kBorder:
+        break;
+      case EFillBox::kText:  // fall through
+      default:
+        NOTREACHED();
+        break;
     }
-    case EFillBox::kBorder:
-      break;
-    case EFillBox::kText:  // fall through
-    default:
-      NOTREACHED();
-      break;
   }
 
   PaintFillLayerBackground(document_, context, fill_layer_info, node_, style_,

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -131,7 +132,7 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  ShillServiceClient::TestInterface* service_client_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_client_;
 };
 
 // Tests that network changes from shill are received by both the

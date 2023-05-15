@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
-import '../../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
 import './keyboard_remap_modifier_key_row.js';
 
@@ -186,7 +186,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     return ModifierKey;
   }
 
-  protected keyboard: Keyboard;
+  keyboard: Keyboard;
   private keyboards: Keyboard[];
   protected keyboardId: number;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
@@ -420,6 +420,16 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   private hasKeyboards(): boolean {
     return this.keyboards?.length > 0;
+  }
+
+  private computeKeyboardKeysDescription(): string {
+    if (!this.keyboard?.name) {
+      return '';
+    }
+    const keyboardName = this.keyboard.isExternal ?
+        this.keyboard.name :
+        this.i18n('builtInKeyboardName');
+    return this.i18n('remapKeyboardKeysDescription', keyboardName);
   }
 }
 

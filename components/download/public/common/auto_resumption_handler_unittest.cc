@@ -84,7 +84,8 @@ class AutoResumptionHandlerTest : public testing::Test {
                         bool allow_metered,
                         bool has_target_file_path = true) {
     ON_CALL(*download, GetGuid())
-        .WillByDefault(ReturnRefOfCopy(base::GenerateUuid()));
+        .WillByDefault(ReturnRefOfCopy(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
     ON_CALL(*download, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("http://example.com/foo")));
     ON_CALL(*download, GetState()).WillByDefault(Return(state));

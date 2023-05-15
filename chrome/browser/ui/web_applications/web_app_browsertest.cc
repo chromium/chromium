@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
@@ -227,14 +226,11 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     EXPECT_TRUE(WaitForLoadStop(web_contents));
     EXPECT_EQ(app_url, web_contents->GetVisibleURL());
 
-    bool matches;
     const bool result = app_browser->app_controller()->HasMinimalUiButtons();
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        web_contents,
-        "window.domAutomationController.send(window.matchMedia('(display-mode: "
-        "minimal-ui)').matches)",
-        &matches));
-    EXPECT_EQ(result, matches);
+    EXPECT_EQ(
+        result,
+        EvalJs(web_contents,
+               "window.matchMedia('(display-mode: minimal-ui)').matches"));
     CloseAndWait(app_browser);
 
     return result;
@@ -384,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
   // Changing background color should update the toolbar color.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
@@ -490,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
   // colors.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
@@ -516,28 +512,21 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "WithoutUseSystemThemeColor";
                          });
 
-IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, BackgroundColor) {
-  const AppId app_id = WaitForSwaInstall();
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  auto* app_controller = app_browser->app_controller();
-
-  // Ensure app controller is pulling the color from the OS.
-  EXPECT_EQ(app_controller->GetBackgroundColor().value(),
-            ash::GetSystemBackgroundColor());
-}
-
-IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, ThemeColor) {
+IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, Colors) {
   const AppId app_id = WaitForSwaInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   auto* app_controller = app_browser->app_controller();
   auto theme_color = app_controller->GetThemeColor().value();
+  auto bg_color = app_controller->GetBackgroundColor().value();
   if (UseSystemThemeColor()) {
     // Ensure app controller is pulling the color from the OS.
     EXPECT_EQ(theme_color, ash::GetSystemThemeColor());
+    EXPECT_EQ(bg_color, ash::GetSystemBackgroundColor());
   } else {
-    // If SWA has opted out, theme color should default to white or black
+    // If SWA has opted out, theme and bg color should default to white or black
     // depending on launch context.
     EXPECT_TRUE(theme_color == SK_ColorWHITE || theme_color == SK_ColorBLACK);
+    EXPECT_TRUE(bg_color == SK_ColorWHITE || bg_color == SK_ColorBLACK);
   }
 }
 
@@ -1492,10 +1481,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(
       base::BindLambdaForTesting([&](const AppId& installed_app_id) {
-        // The result is false because there are no shortcuts for registration.
+        // Verify that since the shortcuts menu items are not registered,
+        // none of the buckets are filled.
         EXPECT_THAT(
-            tester.GetAllSamples("WebApp.ShortcutsMenuRegistration.Result"),
-            BucketsAre(base::Bucket(false, 1)));
+            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+            BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
         run_loop_install.Quit();
       }));
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
@@ -1805,7 +1795,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
       app_browser->tab_strip_model()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       render_frame_host,
       "navigator.geolocation.getCurrentPosition(function(){});"));
 }

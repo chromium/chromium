@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -80,6 +81,15 @@ password_manager::PasswordForm GenerateFormFromCredential(
   DCHECK(!credential.stored_in.empty());
   form.in_store = *credential.stored_in.begin();
   return form;
+}
+
+password_manager::PasswordStoreChangeList GetChangesForAddedForms(
+    const std::vector<password_manager::PasswordForm>& forms) {
+  password_manager::PasswordStoreChangeList changes;
+  for (const auto& form : forms) {
+    changes.emplace_back(password_manager::PasswordStoreChange::ADD, form);
+  }
+  return changes;
 }
 
 }  // namespace
@@ -357,6 +367,39 @@ SavedPasswordsPresenter::EditSavedCredentials(
   return EditResult::kSuccess;
 }
 
+void SavedPasswordsPresenter::MoveCredentialsToAccount(
+    const std::vector<CredentialUIEntry>& credentials,
+    metrics_util::MoveToAccountStoreTrigger trigger) {
+  for (const auto& credential : credentials) {
+    std::vector<PasswordForm> move_form_candidates =
+        GetCorrespondingPasswordForms(credential);
+    // signon_realms of PasswordForms which are saved in account.
+    auto account_credentials_signon_realms = base::MakeFlatSet<std::string>(
+        move_form_candidates, {}, [](const auto& form) {
+          return form.IsUsingAccountStore() ? form.signon_realm : "";
+        });
+
+    for (const auto& form : move_form_candidates) {
+      if (form.IsUsingAccountStore()) {
+        continue;
+      }
+      CHECK(form.IsUsingProfileStore());
+
+      // Don't call AddLogin() if the credential already exists in the account
+      // store, 1) to avoid unnecessary sync cycles, 2) to avoid potential
+      // last_used_date update.
+      if (!account_credentials_signon_realms.contains(form.signon_realm)) {
+        account_store_->AddLogin(form);
+      }
+      profile_store_->RemoveLogin(form);
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      trigger);
+}
+
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
     const {
   if (base::FeatureList::IsEnabled(features::kPasswordsGrouping)) {
@@ -428,13 +471,14 @@ void SavedPasswordsPresenter::NotifyEdited(
     observer.OnEdited(credential);
 }
 
-void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
+void SavedPasswordsPresenter::NotifySavedPasswordsChanged(
+    const PasswordStoreChangeList& changes) {
   // Notify observers when there are no pending password store updates.
   if (pending_store_updates_ > 0) {
     return;
   }
   for (auto& observer : observers_)
-    observer.OnSavedPasswordsChanged();
+    observer.OnSavedPasswordsChanged(changes);
 }
 
 void SavedPasswordsPresenter::OnLoginsChanged(
@@ -459,7 +503,9 @@ void SavedPasswordsPresenter::OnLoginsChanged(
 
   RemoveForms(forms_to_remove);
   // TODO(crbug.com/1381203): Inject branding info for these credentials.
-  AddForms(forms_to_add);
+  AddForms(forms_to_add,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(), changes));
 }
 
 void SavedPasswordsPresenter::OnLoginsRetained(
@@ -476,7 +522,10 @@ void SavedPasswordsPresenter::OnLoginsRetained(
                 });
 
   // TODO(crbug.com/1381203): Inject branding info for these credentials.
-  AddForms(retained_passwords);
+  AddForms(retained_passwords,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          PasswordStoreChangeList()));
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(
@@ -484,7 +533,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
@@ -497,7 +546,10 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   for (auto& form : results) {
     forms.push_back(std::move(*form));
   }
-  AddForms(forms);
+  AddForms(forms,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          GetChangesForAddedForms(forms)));
 }
 
 PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(
@@ -522,7 +574,8 @@ void SavedPasswordsPresenter::RemoveForms(
   }
 }
 
-void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
+void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
+                                       base::OnceClosure completion) {
   for (const auto& form : forms) {
     // TODO(crbug.com/1359392): Consider replacing |sort_key_to_password_forms_|
     // when grouping is launched.
@@ -532,7 +585,7 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
 
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kPasswordsGrouping)) {
-    NotifySavedPasswordsChanged();
+    std::move(completion).Run();
     return;
   }
 
@@ -548,10 +601,10 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
   }
 
   // Notify observers after grouping is complete.
-  passwords_grouper_->GroupPasswords(
-      std::move(all_forms),
-      base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  passwords_grouper_->GroupCredentials(
+      std::move(all_forms), /*passkeys=*/{},
+      metrics_util::TimeCallback(std::move(completion),
+                                 "PasswordManager.PasswordsGrouping.Time"));
 }
 
 }  // namespace password_manager

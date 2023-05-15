@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
@@ -49,12 +50,6 @@ namespace net {
 
 namespace {
 
-void SwapCertList(ScopedCERTCertificateList* destination,
-                  ScopedCERTCertificateList source) {
-  ASSERT_TRUE(destination);
-  destination->swap(source);
-}
-
 std::string GetSubjectCN(CERTCertificate* cert) {
   char* cn = CERT_GetCommonName(&cert->subject);
   std::string s = cn;
@@ -66,6 +61,17 @@ bool GetCertIsPerm(const CERTCertificate* cert) {
   PRBool is_perm;
   CHECK_EQ(CERT_GetCertIsPerm(cert, &is_perm), SECSuccess);
   return is_perm != PR_FALSE;
+}
+
+const NSSCertDatabase::CertInfo* FindCertInfoForCert(
+    const NSSCertDatabase::CertInfoList& cert_info_list,
+    CERTCertificate* target_cert) {
+  for (const auto& c : cert_info_list) {
+    if (x509_util::IsSameCertificate(c.cert.get(), target_cert)) {
+      return &c;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -149,15 +155,164 @@ class CertDatabaseNSSTest : public TestWithTaskEnvironment {
 TEST_F(CertDatabaseNSSTest, ListCerts) {
   // This test isn't terribly useful, though it might help with memory
   // leak tests.
-  ScopedCERTCertificateList certs;
-  cert_db_->ListCerts(base::BindOnce(&SwapCertList, base::Unretained(&certs)));
-  EXPECT_EQ(0U, certs.size());
+  base::test::TestFuture<ScopedCERTCertificateList> future;
+  cert_db_->ListCerts(future.GetCallback());
 
-  RunUntilIdle();
-
+  ScopedCERTCertificateList certs = future.Take();
   // The test DB is empty, but let's assume there will always be something in
   // the other slots.
   EXPECT_LT(0U, certs.size());
+}
+
+TEST_F(CertDatabaseNSSTest, ListCertsInfo) {
+  // Since ListCertsInfo queries all the "permanent" certs NSS knows about,
+  // including NSS builtin trust anchors and any locally installed certs of the
+  // user running the test, it's hard to do really precise testing here. Try to
+  // do some general testing as well as testing that a cert added through
+  // ScopedTestNSSDB is handled properly.
+
+  // Load a test certificate
+  ScopedCERTCertificateList test_root_certs = CreateCERTCertificateListFromFile(
+      GetTestCertsDirectory(), "root_ca_cert.pem",
+      X509Certificate::FORMAT_AUTO);
+  ASSERT_EQ(1U, test_root_certs.size());
+  // Should be only a temp certificate at this point, and thus not be returned
+  // in the listed certs.
+  EXPECT_FALSE(GetCertIsPerm(test_root_certs[0].get()));
+
+  // Get lists of all certs both including and excluding NSS roots.
+  NSSCertDatabase::CertInfoList certs_including_nss;
+  NSSCertDatabase::CertInfoList certs_excluding_nss;
+  {
+    base::test::TestFuture<NSSCertDatabase::CertInfoList> future;
+    cert_db_->ListCertsInfo(future.GetCallback(),
+                            NSSCertDatabase::NSSRootsHandling::kInclude);
+    certs_including_nss = future.Take();
+  }
+  {
+    base::test::TestFuture<NSSCertDatabase::CertInfoList> future;
+    cert_db_->ListCertsInfo(future.GetCallback(),
+                            NSSCertDatabase::NSSRootsHandling::kExclude);
+    certs_excluding_nss = future.Take();
+  }
+
+  // The tests based on GetAnNssSslTrustedBuiltinRoot could be flaky in obscure
+  // local configurations (if the user running the test has manually imported
+  // the same certificate into their user NSS DB.) Oh well.
+  ScopedCERTCertificate nss_root = GetAnNssBuiltinSslTrustedRoot();
+  // (Also this will fail if we ever do the "don't load libnssckbi.so" thing.)
+  ASSERT_TRUE(nss_root);
+  {
+    const NSSCertDatabase::CertInfo* nss_root_info =
+        FindCertInfoForCert(certs_including_nss, nss_root.get());
+    ASSERT_TRUE(nss_root_info);
+    EXPECT_TRUE(nss_root_info->web_trust_anchor);
+    EXPECT_FALSE(nss_root_info->untrusted);
+    EXPECT_FALSE(nss_root_info->device_wide);
+    EXPECT_FALSE(nss_root_info->hardware_backed);
+    EXPECT_TRUE(nss_root_info->on_read_only_slot);
+  }
+  EXPECT_FALSE(FindCertInfoForCert(certs_excluding_nss, nss_root.get()));
+
+  // Test root cert should not be in the lists retrieved before it was imported.
+  EXPECT_FALSE(
+      FindCertInfoForCert(certs_including_nss, test_root_certs[0].get()));
+  EXPECT_FALSE(
+      FindCertInfoForCert(certs_excluding_nss, test_root_certs[0].get()));
+
+  // Import the NSS root into the test DB.
+  SECStatus srv =
+      PK11_ImportCert(test_nssdb_.slot(), nss_root.get(), CK_INVALID_HANDLE,
+                      net::x509_util::GetDefaultUniqueNickname(
+                          nss_root.get(), net::CA_CERT, test_nssdb_.slot())
+                          .c_str(),
+                      PR_FALSE /* includeTrust (unused) */);
+  ASSERT_EQ(SECSuccess, srv);
+
+  // Import test certificate to the test DB.
+  NSSCertDatabase::ImportCertFailureList failed;
+  EXPECT_TRUE(cert_db_->ImportCACerts(test_root_certs,
+                                      NSSCertDatabase::TRUSTED_SSL, &failed));
+  EXPECT_EQ(0U, failed.size());
+
+  // Get new lists of all certs both including and excluding NSS roots, which
+  // should now also include the test db certificates.
+  NSSCertDatabase::CertInfoList certs_including_nss_with_local;
+  NSSCertDatabase::CertInfoList certs_excluding_nss_with_local;
+  {
+    base::test::TestFuture<NSSCertDatabase::CertInfoList> future;
+    cert_db_->ListCertsInfo(future.GetCallback(),
+                            NSSCertDatabase::NSSRootsHandling::kInclude);
+    certs_including_nss_with_local = future.Take();
+  }
+  {
+    base::test::TestFuture<NSSCertDatabase::CertInfoList> future;
+    cert_db_->ListCertsInfo(future.GetCallback(),
+                            NSSCertDatabase::NSSRootsHandling::kExclude);
+    certs_excluding_nss_with_local = future.Take();
+  }
+
+  // After adding the certs to the test db, the number certs returned should be
+  // 1 more than before in kInclude and and 2 more in kExclude cases.
+  EXPECT_EQ(certs_including_nss_with_local.size(),
+            1 + certs_including_nss.size());
+  EXPECT_EQ(certs_excluding_nss_with_local.size(),
+            2 + certs_excluding_nss.size());
+
+  // Using kExclude should give a smaller number of results than kInclude.
+  // (Although this would be wrong if we ever do the "don't load libnssckbi.so"
+  // thing.)
+  EXPECT_LT(certs_excluding_nss_with_local.size(),
+            certs_including_nss_with_local.size());
+
+  // The NSS root that was imported to the test db should be in both lists now.
+  {
+    const NSSCertDatabase::CertInfo* nss_root_info =
+        FindCertInfoForCert(certs_including_nss_with_local, nss_root.get());
+    ASSERT_TRUE(nss_root_info);
+    EXPECT_TRUE(nss_root_info->web_trust_anchor);
+    EXPECT_FALSE(nss_root_info->untrusted);
+    EXPECT_FALSE(nss_root_info->device_wide);
+    EXPECT_FALSE(nss_root_info->hardware_backed);
+    // `on_read_only_slot` is not tested here as the way it is calculated could
+    // be potentially flaky if the cert exists on both a readonly and
+    // non-readonly slot.
+  }
+  {
+    const NSSCertDatabase::CertInfo* nss_root_info =
+        FindCertInfoForCert(certs_excluding_nss_with_local, nss_root.get());
+    ASSERT_TRUE(nss_root_info);
+    EXPECT_FALSE(nss_root_info->web_trust_anchor);
+    EXPECT_TRUE(nss_root_info->untrusted);
+    EXPECT_FALSE(nss_root_info->device_wide);
+    EXPECT_FALSE(nss_root_info->hardware_backed);
+    // `on_read_only_slot` is not tested here as the way it is calculated could
+    // be potentially flaky if the cert exists on both a readonly and
+    // non-readonly slot.
+  }
+
+  // Ensure the test root cert is present in the lists retrieved after it was
+  // imported, and that the info returned is as expected.
+  {
+    const NSSCertDatabase::CertInfo* test_cert_info = FindCertInfoForCert(
+        certs_including_nss_with_local, test_root_certs[0].get());
+    ASSERT_TRUE(test_cert_info);
+    EXPECT_TRUE(test_cert_info->web_trust_anchor);
+    EXPECT_FALSE(test_cert_info->untrusted);
+    EXPECT_FALSE(test_cert_info->device_wide);
+    EXPECT_FALSE(test_cert_info->hardware_backed);
+    EXPECT_FALSE(test_cert_info->on_read_only_slot);
+  }
+  {
+    const NSSCertDatabase::CertInfo* test_cert_info = FindCertInfoForCert(
+        certs_excluding_nss_with_local, test_root_certs[0].get());
+    ASSERT_TRUE(test_cert_info);
+    EXPECT_TRUE(test_cert_info->web_trust_anchor);
+    EXPECT_FALSE(test_cert_info->untrusted);
+    EXPECT_FALSE(test_cert_info->device_wide);
+    EXPECT_FALSE(test_cert_info->hardware_backed);
+    EXPECT_FALSE(test_cert_info->on_read_only_slot);
+  }
 }
 
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WrongPassword) {

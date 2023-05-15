@@ -18,6 +18,7 @@
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -547,10 +548,10 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     }
   }
 
-  AccessibilityControllerImpl* controller_ = nullptr;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  AccessibilityDetailedView* detailed_menu_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, ExperimentalAsh> detailed_menu_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

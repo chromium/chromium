@@ -2,8 +2,6 @@ import pytest
 
 from webdriver.error import NoSuchWindowException
 
-from tests.perform_actions.support.keys import Keys
-
 
 @pytest.fixture
 def session_new_window(capabilities, session):
@@ -77,23 +75,15 @@ def key_reporter(session, test_actions_page, request):
 
 
 @pytest.fixture
-def modifier_key(session):
-    if session.capabilities["platformName"] == "mac":
-        return Keys.META
-    else:
-        return Keys.CONTROL
-
-
-@pytest.fixture
 def test_actions_page(session, url):
     session.url = url("/webdriver/tests/support/html/test_actions.html")
 
 
 @pytest.fixture
 def test_actions_scroll_page(session, url):
-    session.url = url("/webdriver/tests/perform_actions/support/test_actions_scroll_wdspec.html")
+    session.url = url("/webdriver/tests/support/html/test_actions_scroll.html")
 
 
 @pytest.fixture
 def test_actions_pointer_page(session, url):
-    session.url = url("/webdriver/tests/perform_actions/support/test_actions_pointer_wdspec.html")
+    session.url = url("/webdriver/tests/support/html/test_actions_pointer.html")

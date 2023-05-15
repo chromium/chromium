@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
 #define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
 
 #include "base/memory/weak_ptr.h"
@@ -79,7 +80,7 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   void AttemptDeviceNameStateUpdate(bool is_user_owner);
 
   // Provides access and persistence for the device name value.
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // Stores the device name state that was last set.
   DeviceNameStore::DeviceNameState device_name_state_;
@@ -88,7 +89,7 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // value of false and gets updated in AttemptDeviceNameStateUpdate().
   bool is_user_owner_ = false;
 
-  policy::DeviceNamePolicyHandler* handler_;
+  raw_ptr<policy::DeviceNamePolicyHandler, ExperimentalAsh> handler_;
   std::unique_ptr<DeviceNameApplier> device_name_applier_;
 
   base::ScopedObservation<policy::DeviceNamePolicyHandler,

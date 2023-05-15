@@ -8,13 +8,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Java accessor for base/feature_list.h state.
  */
 @JNINamespace("android_webview")
-@MainDex
 public final class AwFeatureList {
     // Do not instantiate this class.
     private AwFeatureList() {}

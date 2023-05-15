@@ -55,8 +55,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       kResponseNotFound,
     };
 
-    static ReadResponseError ForError(
-        const IsolatedWebAppResponseReaderFactory::Error& error);
+    static ReadResponseError ForError(const UnusableSwbnFileError& error);
 
     static ReadResponseError ForError(
         const IsolatedWebAppResponseReader::Error& error);
@@ -95,8 +94,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class ReadResponseHeadStatus {
-    kSuccess = 0,
+  enum class ReadResponseHeadError {
     kResponseHeadParserInternalError = 1,
     kResponseHeadParserFormatError = 2,
     kResponseNotFoundError = 3,
@@ -111,7 +109,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                     IsolatedWebAppResponseReaderFactory::Error> reader);
+                     UnusableSwbnFileError> reader);
 
   void DoReadResponse(IsolatedWebAppResponseReader& reader,
                       network::ResourceRequest resource_request,
@@ -121,9 +119,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       ReadResponseCallback callback,
       base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppResponseReader::Error> response);
-
-  ReadResponseHeadStatus GetStatusFromError(
-      const IsolatedWebAppResponseReader::Error& error);
 
   enum class ReaderCacheState;
 

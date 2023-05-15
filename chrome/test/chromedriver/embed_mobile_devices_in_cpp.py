@@ -105,14 +105,28 @@ def main():
         words[i] = token
         titles.append(' '.join(words))
     for title in titles:
-      devices[title] = {
-        'userAgent': device['user-agent'].replace('%s', version),
-        'width': device['screen']['vertical']['width'],
-        'height': device['screen']['vertical']['height'],
-        'deviceScaleFactor': device['screen']['device-pixel-ratio'],
-        'touch': 'touch' in device['capabilities'],
-        'mobile': 'mobile' in device['capabilities'],
+      mobile_emulation = {
+        'userAgent': device['user-agent'],
+        'deviceMetrics': {
+          'width': device['screen']['vertical']['width'],
+          'height': device['screen']['vertical']['height'],
+          'deviceScaleFactor': device['screen']['device-pixel-ratio'],
+          'touch': 'touch' in device['capabilities'],
+          'mobile': 'mobile' in device['capabilities'],
+        }
       }
+      if 'user-agent-metadata' in device:
+        client_hints = device['user-agent-metadata']
+        mobile_emulation['clientHints'] = {
+            'architecture': client_hints['architecture'],
+            'bitness': '',
+            'platform': client_hints['platform'],
+            'platformVersion': client_hints['platformVersion'],
+            'model': client_hints['model'],
+            'mobile': client_hints['mobile'],
+            'wow64': False,
+        }
+      devices[title] = mobile_emulation
 
   output_dir = 'chrome/test/chromedriver/chrome'
   cpp_source.WriteSource('mobile_device_list',

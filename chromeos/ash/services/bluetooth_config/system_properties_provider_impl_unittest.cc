@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
@@ -115,7 +116,7 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  user_manager::FakeUserManager* fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   std::unique_ptr<SystemPropertiesProviderImpl> provider_;

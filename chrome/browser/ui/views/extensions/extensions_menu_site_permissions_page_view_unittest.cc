@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
@@ -13,11 +14,21 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/button/toggle_button.h"
+
+namespace {
+
+using PermissionsManager = extensions::PermissionsManager;
+using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+}  // namespace
 
 class ExtensionsSitePermissionsPageViewUnitTest
     : public ExtensionsToolbarUnitTest {
@@ -265,11 +276,146 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   // Directly change the show access requests pref for extension, since it can
   // be changed when menu is open, and verify toggle is updated and extension is
   // not requesting access in the toolbar.
-  extensions::SitePermissionsHelper(browser()->profile())
+  SitePermissionsHelper(browser()->profile())
       .SetShowAccessRequestsInToolbar(extension->id(), false);
   EXPECT_FALSE(
       site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
   EXPECT_THAT(GetExtensionsShowingRequests(), testing::IsEmpty());
+}
+
+// Tests that selecting a site acces option in the menu updates the extension
+// site access.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit("http://www.url.com");
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  auto* on_click_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick);
+  auto* on_site_button = site_permissions_page()->GetSiteAccessButtonForTesting(
+      PermissionsManager::UserSiteAccess::kOnSite);
+  auto* on_all_sites_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites);
+
+  // By default, an extension has site access to all sites.
+  EXPECT_FALSE(on_click_button->GetChecked());
+  EXPECT_FALSE(on_site_button->GetChecked());
+  EXPECT_TRUE(on_all_sites_button->GetChecked());
+
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(browser()->profile()));
+  ClickButton(on_click_button);
+  waiter.WaitForExtensionPermissionsUpdate();
+
+  // Selecting a different site access updates the extension site access, which
+  // is reflected in the UI.
+  EXPECT_TRUE(on_click_button->GetChecked());
+  EXPECT_FALSE(on_site_button->GetChecked());
+  EXPECT_FALSE(on_all_sites_button->GetChecked());
+}
+
+// Tests that the menu UI is properly updated when the extension's site access
+// is changed to "on click" while the menu is open.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       SiteAccessUpdatedWithMenuOpen_OnClick) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit("http://www.url.com");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  UpdateUserSiteAccess(*extension.get(), web_contents,
+                       PermissionsManager::UserSiteAccess::kOnClick);
+
+  auto* on_click_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick);
+  auto* on_site_button = site_permissions_page()->GetSiteAccessButtonForTesting(
+      PermissionsManager::UserSiteAccess::kOnSite);
+  auto* on_all_sites_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_TRUE(on_click_button->GetChecked());
+  EXPECT_FALSE(on_site_button->GetChecked());
+  EXPECT_FALSE(on_all_sites_button->GetChecked());
+}
+
+// Tests that the menu UI is properly updated when the extension's site access
+// is changed to "on site" while the menu is open.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       SiteAccessUpdatedWithMenuOpen_OnSite) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit("http://www.url.com");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  UpdateUserSiteAccess(*extension.get(), web_contents,
+                       PermissionsManager::UserSiteAccess::kOnSite);
+
+  auto* on_click_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick);
+  auto* on_site_button = site_permissions_page()->GetSiteAccessButtonForTesting(
+      PermissionsManager::UserSiteAccess::kOnSite);
+  auto* on_all_sites_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_FALSE(on_click_button->GetChecked());
+  EXPECT_TRUE(on_site_button->GetChecked());
+  EXPECT_FALSE(on_all_sites_button->GetChecked());
+}
+
+// Tests that the menu UI is properly updated when the extension's site access
+// is changed to "on all sites" while the menu is open.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       SiteAccessUpdatedWithMenuOpen_OnAllSites) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  // Withhold the extension host permissions since they are granted by default,
+  // so we can test changing site access to "on all sites".
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(profile()));
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+  waiter.WaitForExtensionPermissionsUpdate();
+
+  NavigateAndCommit("http://www.url.com");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  UpdateUserSiteAccess(*extension.get(), web_contents,
+                       PermissionsManager::UserSiteAccess::kOnAllSites);
+
+  auto* on_click_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick);
+  auto* on_site_button = site_permissions_page()->GetSiteAccessButtonForTesting(
+      PermissionsManager::UserSiteAccess::kOnSite);
+  auto* on_all_sites_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_FALSE(on_click_button->GetChecked());
+  EXPECT_FALSE(on_site_button->GetChecked());
+  EXPECT_TRUE(on_all_sites_button->GetChecked());
 }
 
 // Test that navigating to a new site where the user doesn't have runtime host

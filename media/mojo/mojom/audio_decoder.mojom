@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -12,7 +13,8 @@ interface AudioDecoder {
   //
   // TODO(sandersd): Rename to Initialize() if/when
   // media::AudioDecoder::Initialize() is renamed to Configure().
-  Construct(pending_associated_remote<AudioDecoderClient> client);
+  Construct(pending_associated_remote<AudioDecoderClient> client,
+            pending_remote<MediaLog> media_log);
 
   // Initializes the AudioDecoder with the audio codec configuration and CDM id.
   // For the unencrypted streams the |cdm_id| is ignored. Executed the callback

@@ -7,6 +7,8 @@ First pixel of canvas with willReadFrequently set to true: 255,0,255,255
 Second pixel of canvas with willReadFrequently set to true: 0,0,0,0
 First pixel of canvas with willReadFrequently set to false: 255,0,255,255
 Second pixel of canvas with willReadFrequently set to false: 0,0,0,0
+First pixel of canvas with willReadFrequently not set: 255,0,255,255
+Second pixel of canvas with willReadFrequently not set: 0,0,0,0
 PASS successfullyParsed is true
 
 TEST COMPLETE

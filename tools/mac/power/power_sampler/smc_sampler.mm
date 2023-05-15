@@ -8,6 +8,10 @@
 #include "base/strings/string_piece.h"
 #include "components/power_metrics/smc_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_sampler {
 
 namespace {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_INSTANCE_REGISTRY_UPDATER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_INSTANCE_REGISTRY_UPDATER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
@@ -46,8 +47,9 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  BrowserAppInstanceRegistry& browser_app_instance_registry_;
-  InstanceRegistry& instance_registry_;
+  const raw_ref<BrowserAppInstanceRegistry, ExperimentalAsh>
+      browser_app_instance_registry_;
+  const raw_ref<InstanceRegistry, ExperimentalAsh> instance_registry_;
 
   void OnInstance(const base::UnguessableToken& instance_id,
                   const std::string& app_id,

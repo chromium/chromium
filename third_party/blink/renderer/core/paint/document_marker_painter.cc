@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"

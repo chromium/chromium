@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
@@ -103,7 +104,7 @@ class NetBiosHostLocator : public HostLocator,
   int32_t outstanding_parse_requests_ = 0;
   GetInterfacesFunction get_interfaces_;
   NetBiosClientFactory client_factory_;
-  SmbProviderClient* smb_provider_client_;
+  raw_ptr<SmbProviderClient, ExperimentalAsh> smb_provider_client_;
   FindHostsCallback callback_;
   HostMap results_;
   // |netbios_clients_| is a container for storing NetBios clients that are

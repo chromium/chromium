@@ -594,6 +594,7 @@ var defaultTests = [
       chrome.test.assertEq('Running', item.status);
       chrome.test.assertTrue(item.showsTooltip);
       chrome.test.assertFalse(item.pinnedByPolicy);
+      chrome.test.assertFalse(item.pinStateForcedByType);
       chrome.test.assertFalse(item.hasNotification);
     }));
   },
@@ -1402,13 +1403,13 @@ var overviewDragTests = [
   }
 ];
 
-var splitviewLeftSnappedTests = [
-  function getSplitViewControllerStateLeftSnapped() {
+var splitviewPrimarySnappedTests = [
+  function getSplitViewControllerStatePrimarySnapped() {
     chrome.autotestPrivate.getAppWindowList(
         chrome.test.callbackPass(function(list) {
           var found = false;
           list.forEach(window => {
-            if (window.stateType == 'LeftSnapped')
+            if (window.stateType == 'PrimarySnapped')
               found = true;
           });
           chrome.test.assertTrue(found);
@@ -1606,7 +1607,7 @@ var systemWebAppsTests = [
       'arcPerformanceTracing': arcPerformanceTracingTests,
       'overviewDefault': overviewTests,
       'overviewDrag': overviewDragTests,
-      'splitviewLeftSnapped': splitviewLeftSnappedTests,
+      'splitviewPrimarySnapped': splitviewPrimarySnappedTests,
       'scrollableShelf': scrollableShelfTests,
       'shelf': shelfTests,
       'holdingSpace': holdingSpaceTests,

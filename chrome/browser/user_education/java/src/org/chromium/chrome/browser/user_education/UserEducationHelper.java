@@ -10,7 +10,6 @@ import android.view.View;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -100,11 +99,9 @@ public class UserEducationHelper {
             return;
         }
 
-        // If scroll optimizations were enabled, iphCommand would have been built lazily, and we
-        // would have to fetch the data that is needed from this point on.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
-            iphCommand.fetchFromResources();
-        }
+        // iphCommand would have been built lazily, and we would have to fetch the data that is
+        // needed from this point on.
+        iphCommand.fetchFromResources();
 
         String contentString = iphCommand.contentString;
         String accessibilityString = iphCommand.accessibilityText;

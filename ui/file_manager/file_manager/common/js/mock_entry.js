@@ -38,7 +38,7 @@ export class MockFileSystem {
   }
 
   get root() {
-    return this.entries['/'];
+    return /** @type {!DirectoryEntry} */ (this.entries['/']);
   }
 
   /**

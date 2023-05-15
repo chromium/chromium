@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="100506692671054486">pas de commande précédente</translation>
 <translation id="1009046985747440431">Appuyez sur la flèche vers le haut ou vers le bas pour parcourir le menu; appuyez sur Entrée pour sélectionner une option</translation>
 <translation id="1011903154582639569">Recherchez une touche, puis levez le doigt pour la sélectionner</translation>
 <translation id="1012173283529841972">Élément de liste</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Voile lavande</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3962990492275676168">Commencer la lecture à partir de la position actuelle</translation>
+<translation id="397094149579293440">aucun texte sélectionné</translation>
 <translation id="3970951409746498040">Brun sable</translation>
 <translation id="3989324057180830702">Bouton Activer/désactiver</translation>
 <translation id="3991317907213946254">Pêche clair</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Aucun en-tête de niveau 1 précédent</translation>
 <translation id="4787577491510559358">Annoncer le formatage pour l'élément actuel</translation>
 <translation id="479989351350248267">chercher</translation>
+<translation id="4802034228771424756">aucun champ de texte ciblé</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="481165870889056555">Énonce le titre de la page actuelle</translation>
 <translation id="4815668758102003883">Turquoise pâle</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Lien interne</translation>
 <translation id="4909019435900810068">Déplacer d'un mot vers l'arrière</translation>
 <translation id="4911349081560453449">Aucune case à cocher précédente</translation>
+<translation id="4919186071145887492">Impossible de <ph name="COMMAND" />, réessayez</translation>
 <translation id="492295894462528572">Avant-propos</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953585991029886728">Modifier le texte</translation>
+<translation id="4964701498510730546">le champ de texte est vide</translation>
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Aucun bouton précédent</translation>
 <translation id="4979404613699303341">Bouton précédent</translation>
+<translation id="4981239367072766915">entrée inconnue</translation>
 <translation id="4982917827052020884">Commençons par quelques touches que vous utiliserez régulièrement. Vous pouvez utiliser la touche Ctrl pour arrêter la diffusion vocale. Cette touche se trouve dans le bas de votre clavier, à gauche. Pour continuer, appuyez sur la touche Ctrl.</translation>
 <translation id="4983588134362688868">Aller au haut de la page</translation>
 <translation id="4986606102545753256">Fenêtre <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Annoncer l'état actuel de la pile</translation>
 <translation id="4997282455736854877">Case d'option de <ph name="NAME" /> sélectionnée</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, le bouton radio de l'option de menu est sélectionné</translation>
+<translation id="5014131807708055994">Impossible de <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Activer la journalisation vocale</translation>
 <translation id="5041394372352067729">Déplacer l'écran de braille dans le haut de la page</translation>
 <translation id="5042770794184672516">Augmenter le volume de la voix</translation>

@@ -145,7 +145,6 @@ CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
 CONTENT_EXPORT extern const char kForceEnablePepperVideoDecoderDevAPI[];
 CONTENT_EXPORT extern const char kForcePresentationReceiverForTesting[];
 CONTENT_EXPORT extern const char kForceRendererAccessibility[];
-CONTENT_EXPORT extern const char kForceSkiaAnalyticAntialiasing[];
 CONTENT_EXPORT extern const char kForceWebRtcIPHandlingPolicy[];
 extern const char kGpuLauncher[];
 CONTENT_EXPORT extern const char kGpuProcess[];
@@ -243,7 +242,6 @@ CONTENT_EXPORT extern const char kWebOtpBackendUserConsent[];
 CONTENT_EXPORT extern const char kWebOtpBackendAuto[];
 CONTENT_EXPORT extern const char kWebRtcLocalEventLogging[];
 extern const char kWebRtcMaxCaptureFramerate[];
-extern const char kWebRtcMaxCpuConsumptionPercentage[];
 CONTENT_EXPORT extern const char kWebXrForceRuntime[];
 CONTENT_EXPORT extern const char kWebXrRuntimeNone[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOrientationSensors[];
@@ -263,6 +261,7 @@ CONTENT_EXPORT extern const char kEnableLongpressDragSelection[];
 CONTENT_EXPORT extern const char kForceOnlineConnectionStateForIndicator[];
 CONTENT_EXPORT extern const char kRemoteDebuggingSocketName[];
 CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
+CONTENT_EXPORT extern const char kUserLevelMemoryPressureSignalParams[];
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

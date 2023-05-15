@@ -118,18 +118,23 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
 
-  // Drive & Office Docs:
+  // Office Docs - Web Drive:
   AppendFileHandler(*info,
                     ::file_manager::file_tasks::kActionIdWebDriveOfficeWord,
                     {"doc", "docx"});
   AppendFileHandler(*info,
                     ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel,
-                    {"xls", "xlsx"});
+                    {"xls", "xlsm", "xlsx"});
   AppendFileHandler(
       *info, ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint,
       {"ppt", "pptx"});
-  AppendFileHandler(*info, ::file_manager::file_tasks::kActionIdOpenInOffice,
-                    {"doc", "docx", "xls", "xlsx", "ppt", "pptx"});
+
+  // Office Docs - Microsoft 365: Alongside Web Drive, Files app has Microsoft
+  // 365 as a second file handler for Office files, (action ID:
+  // `::file_manager::file_tasks::kActionIdOpenInOffice`). However, the app
+  // service doesn't handle registering the same app twice to handle the same
+  // files in two different ways. Hence, file_tasks is responsible for adding
+  // this "open-in-office" file handler manually, when relevant.
 
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");

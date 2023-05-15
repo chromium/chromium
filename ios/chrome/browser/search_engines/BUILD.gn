@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/chrome_build.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("search_engines") {
@@ -39,11 +39,11 @@ source_set("search_engines") {
     "//components/search",
     "//components/search_engines",
     "//components/version_info",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/google",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
@@ -96,9 +96,9 @@ source_set("unit_tests") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/search_engines",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon:favicon",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common/app_group",
     "//ios/web",
@@ -135,7 +135,47 @@ source_set("search_engines_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("search_engine_js") {
-  primary_script = "resources/search_engine.js"
-  sources = [ "resources/search_engine.js" ]
+optimize_ts("search_engine_js") {
+  sources = [ "resources/search_engine.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "search_engines_app_interface.h",
+    "search_engines_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "search_engines_app_interface.h",
+    "search_engines_app_interface_stub.mm",
+  ]
+
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

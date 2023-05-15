@@ -30,6 +30,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -249,7 +250,7 @@ class CalendarViewTest : public AshTestBase {
     calendar_view_->check_upcoming_events_timer_.user_task().Run();
   }
 
-  CalendarSlidingSurface* calendar_sliding_surface_view() {
+  views::View* calendar_sliding_surface_view() {
     return calendar_view_->calendar_sliding_surface_;
   }
 
@@ -321,7 +322,7 @@ class CalendarViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  CalendarView* calendar_view_ = nullptr;
+  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
@@ -783,7 +784,7 @@ class DateCellFocusChangeListener : public views::FocusChangeListener {
   int steps_taken_ = 0;
 
   // Unowned.
-  views::FocusManager* const focus_manager_;
+  const raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
   // The string being looked for.
   const std::u16string looking_for_;
   // The number of steps it is acceptable to have made before finding the
@@ -1553,12 +1554,12 @@ class CalendarViewAnimationTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  CalendarView* calendar_view_ = nullptr;
+  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
-  CalendarModel* calendar_model_;
+  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 

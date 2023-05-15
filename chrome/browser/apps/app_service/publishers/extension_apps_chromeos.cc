@@ -900,9 +900,15 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
 
-  bool is_quickoffice = extension->is_extension() &&
-                        extension_misc::IsQuickOfficeExtension(extension->id());
-  if (extension->is_app() || is_quickoffice) {
+  // Legacy versions of the QuickOffice extension are treated as a Chrome App,
+  // to allow file handling. Once QuickOffice supports MV3, it can use the Web
+  // File Handlers extension API instead.
+  bool is_legacy_quick_office_extension =
+      extension_misc::IsQuickOfficeExtension(extension->id()) &&
+      !extensions::WebFileHandlers::SupportsWebFileHandlers(
+          extension->manifest_version());
+
+  if (extension->is_app() || is_legacy_quick_office_extension) {
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);

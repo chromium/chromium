@@ -5,6 +5,7 @@
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/inspect/cpp/component.h>
+#include <lib/trace-provider/provider.h>
 
 #include <utility>
 
@@ -35,6 +36,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+// Process ID used for logging and tracing. Should match the base name of the
+// .cm file used by the cast_runner component.
+constexpr char kProcessName[] = "cast_runner";
 
 // Config-data key for launching Cast content without using Scenic.
 constexpr char kHeadlessConfigKey[] = "headless";
@@ -68,7 +73,10 @@ int main(int argc, char** argv) {
   CHECK(InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
-  LogComponentStartWithVersion("cast_runner");
+  // Initialize tracing and logging.
+  trace::TraceProviderWithFdio trace_provider(async_get_default_dispatcher(),
+                                              kProcessName);
+  LogComponentStartWithVersion(kProcessName);
 
   // CastRunner is built even when `enable_cast_receiver=false` so that it can
   // always be tested. However, the statically linked WebEngineHost dependency
@@ -89,8 +97,11 @@ int main(int argc, char** argv) {
   const base::ScopedNaturalServiceBinding resolver_binding(outgoing_directory,
                                                            &resolver);
 
+  // Services from this component will be provided to each web instance.
+  WebInstanceHostWithServicesFromThisComponent web_instance_host(
+      *outgoing_directory);
+
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
-  WebInstanceHost web_instance_host(*outgoing_directory);
   CastRunner runner(
       web_instance_host,
       {.headless = command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||

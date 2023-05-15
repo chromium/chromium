@@ -102,6 +102,7 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
       permission_delegate->SetIdpSigninStatus(idp_origin, true);
     }
   } else {
+    RecordIdpSignOutNetError(fetch_status.response_code);
     // Ensures that we only fetch accounts unconditionally once.
     permission_delegate->SetIdpSigninStatus(idp_origin, false);
   }
@@ -134,6 +135,11 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
       return "Provider's FedCM well-known file has no config URLs.";
     }
+    case FederatedAuthRequestResult::
+        kErrorFetchingWellKnownInvalidContentType: {
+      return "Provider's FedCM well-known content type must be a JSON content "
+             "type.";
+    }
     case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
       return "Provider's FedCM config file not listed in its well-known file.";
     }
@@ -150,6 +156,10 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
       return "Provider's FedCM config file is invalid.";
     }
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType: {
+      return "Provider's FedCM config file content type must be a JSON content "
+             "type.";
+    }
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
       return "The provider's client metadata endpoint cannot be found.";
     }
@@ -160,6 +170,11 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse: {
       return "Provider's client metadata is invalid.";
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidContentType: {
+      return "Provider's client metadata content type must be a JSON content "
+             "type.";
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
@@ -176,6 +191,10 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
       return "Provider's accounts list is empty.";
     }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType: {
+      return "Provider's accounts list endpoint content type must be a JSON "
+             "content type.";
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
       return "The provider's id token endpoint cannot be found.";
     }
@@ -185,6 +204,10 @@ std::string GetConsoleErrorMessageFromResult(
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
+      return "Provider's token endpoint content type must be a JSON content "
+             "type.";
     }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return "The request has been aborted.";

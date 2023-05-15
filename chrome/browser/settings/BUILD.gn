@@ -41,6 +41,7 @@ android_library("test_support_java") {
     "//components/browser_ui/settings/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

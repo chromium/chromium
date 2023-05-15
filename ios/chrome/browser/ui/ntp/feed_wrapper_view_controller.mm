@@ -92,9 +92,8 @@
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
   self.contentCollectionView.backgroundColor =
-      IsContentSuggestionsUIModuleRefreshEnabled()
-          ? [UIColor clearColor]
-          : ntp_home::NTPBackgroundColor();
+      IsMagicStackEnabled() ? [UIColor clearColor]
+                            : ntp_home::NTPBackgroundColor();
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.contentCollectionView, self.view);
 }

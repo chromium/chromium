@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -86,6 +88,7 @@ class KeyboardModifierMetricsRecorderTest : public AshTestBase {
   ~KeyboardModifierMetricsRecorderTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
     AshTestBase::SetUp();
     ResetHistogramTester();
     recorder_ = Shell::Get()->keyboard_modifier_metrics_recorder();
@@ -101,8 +104,10 @@ class KeyboardModifierMetricsRecorderTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<KeyboardModifierMetricsRecorder> recorder_;
+  raw_ptr<KeyboardModifierMetricsRecorder, DanglingUntriaged | ExperimentalAsh>
+      recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class KeyboardModifierMetricsRecorderPrefChangedTest
@@ -124,7 +129,7 @@ class KeyboardModifierMetricsRecorderPrefChangedTest
   }
 
  protected:
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
 
   KeyboardModifierMetricsRecorderTestData data_;
   ui::mojom::ModifierKey modifier_key_from_;

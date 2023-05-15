@@ -33,7 +33,7 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetSigninStatus(
   if (!granted_object)
     return absl::nullopt;
 
-  return granted_object->value.GetDict().FindBool(kIdpSigninStatusKey);
+  return granted_object->value.FindBool(kIdpSigninStatusKey);
 }
 
 void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
@@ -47,27 +47,26 @@ void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
   new_object.Set(kIdpSigninStatusKey, base::Value(signin_status));
   if (granted_object) {
     UpdateObjectPermission(identity_provider, granted_object->value,
-                           base::Value(std::move(new_object)));
+                           std::move(new_object));
   } else {
-    GrantObjectPermission(identity_provider,
-                          base::Value(std::move(new_object)));
+    GrantObjectPermission(identity_provider, std::move(new_object));
   }
 }
 
 std::string
 FederatedIdentityIdentityProviderSigninStatusContext::GetKeyForObject(
-    const base::Value& object) {
-  return *object.GetDict().FindString(kIdpKey);
+    const base::Value::Dict& object) {
+  return *object.FindString(kIdpKey);
 }
 
 bool FederatedIdentityIdentityProviderSigninStatusContext::IsValidObject(
-    const base::Value& object) {
-  return object.is_dict() && object.GetDict().FindString(kIdpKey);
+    const base::Value::Dict& object) {
+  return object.FindString(kIdpKey);
 }
 
 std::u16string
 FederatedIdentityIdentityProviderSigninStatusContext::GetObjectDisplayName(
-    const base::Value& object) {
+    const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
-  return base::UTF8ToUTF16(*object.GetDict().FindString(kIdpKey));
+  return base::UTF8ToUTF16(*object.FindString(kIdpKey));
 }

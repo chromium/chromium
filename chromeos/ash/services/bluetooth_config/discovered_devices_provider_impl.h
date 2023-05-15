@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERED_DEVICES_PROVIDER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERED_DEVICES_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider.h"
 
 #include "base/memory/weak_ptr.h"
@@ -48,7 +49,7 @@ class DiscoveredDevicesProviderImpl : public DiscoveredDevicesProvider,
 
   std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices_;
 
-  DeviceCache* device_cache_;
+  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
 
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};

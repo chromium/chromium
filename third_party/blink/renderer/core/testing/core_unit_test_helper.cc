@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -157,6 +158,16 @@ void RenderingTest::SetChildFrameHTML(const String& html) {
   ChildDocument().OverrideIsInitialEmptyDocument();
   // And let the frame view exit the initial throttled state.
   ChildDocument().View()->BeginLifecycleUpdates();
+}
+
+NGConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
+    LayoutUnit inline_size) const {
+  NGConstraintSpaceBuilder builder(
+      WritingMode::kHorizontalTb,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      /* is_new_fc */ false);
+  builder.SetAvailableSize(LogicalSize(inline_size, LayoutUnit::Max()));
+  return builder.ToConstraintSpace();
 }
 
 }  // namespace blink

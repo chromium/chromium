@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
@@ -240,7 +240,7 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
 }
 
 NSString* WhatsNewFilePath() {
-  NSString* bundle_path = [base::mac::FrameworkBundle() bundlePath];
+  NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
   NSString* entries_file_path =
       [bundle_path stringByAppendingPathComponent:kfileName];
   return entries_file_path;

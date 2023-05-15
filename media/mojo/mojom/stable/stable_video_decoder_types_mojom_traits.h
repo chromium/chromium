@@ -7,7 +7,6 @@
 
 #include "base/notreached.h"
 #include "media/base/cdm_context.h"
-#include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/mojo/mojom/stable/stable_video_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
@@ -1172,48 +1171,6 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
     NOTREACHED();
     return false;
   }
-};
-
-template <>
-struct StructTraits<media::stable::mojom::VideoFrameDataView,
-                    scoped_refptr<media::VideoFrame>> {
-  static bool IsNull(const scoped_refptr<media::VideoFrame>& input) {
-    return !input;
-  }
-
-  static void SetToNull(scoped_refptr<media::VideoFrame>* input) {
-    *input = nullptr;
-  }
-
-  static media::VideoPixelFormat format(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static const gfx::Size& coded_size(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static const gfx::Rect& visible_rect(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static const gfx::Size& natural_size(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static base::TimeDelta timestamp(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static gfx::ColorSpace color_space(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static const media::VideoFrameMetadata& metadata(
-      const scoped_refptr<media::VideoFrame>& input);
-
-  static bool Read(media::stable::mojom::VideoFrameDataView input,
-                   scoped_refptr<media::VideoFrame>* output);
 };
 
 template <>

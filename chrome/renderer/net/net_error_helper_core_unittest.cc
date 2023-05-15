@@ -898,10 +898,10 @@ TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
            skia::SkColorToHexString(SK_ColorYELLOW));
   dict.Set("app_short_name", "Test Short Name");
   dict.Set(
-      "web_app_default_offline_message",
+      "web_app_error_page_message",
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
-  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
+  alternative_error_page_info->resource_id = IDR_WEBAPP_ERROR_PAGE_HTML;
 
   // Loading fails, and an error page is requested.
   std::string html;

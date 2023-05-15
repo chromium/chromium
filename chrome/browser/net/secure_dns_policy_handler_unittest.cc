@@ -547,8 +547,9 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersInvalid) {
       base::ASCIIToUTF16(base::Value::GetTypeName(base::Value::Type::STRING)));
   auto expected_error2 = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  auto expected_error3 =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR);
+  auto expected_error3 = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+      base::UTF8ToUTF16(policy::key::kDnsOverHttpsTemplatesWithIdentifiers));
   EXPECT_EQ(
       errors().GetErrorMessages(key::kDnsOverHttpsTemplatesWithIdentifiers),
       expected_error1);
@@ -564,6 +565,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersInvalid) {
   EXPECT_TRUE(salt.empty());
 }
 
+// The salt is optional, so this is a valid configuration.
 TEST_F(SecureDnsPolicyHandlerTest, NoSalt) {
   SetPolicyValue(key::kDnsOverHttpsMode,
                  base::Value(SecureDnsConfig::kModeSecure));
@@ -574,22 +576,13 @@ TEST_F(SecureDnsPolicyHandlerTest, NoSalt) {
 
   CheckAndApplyPolicySettings();
 
-  EXPECT_EQ(errors().size(), 2U);
-  auto expected_error1 = l10n_util::GetStringUTF16(
-      IDS_POLICY_SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS_IRRELEVANT_ERROR);
-  auto expected_error2 = l10n_util::GetStringUTF16(
-      IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  EXPECT_EQ(
-      errors().GetErrorMessages(key::kDnsOverHttpsTemplatesWithIdentifiers),
-      expected_error1);
-  EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsTemplates),
-            expected_error2);
+  EXPECT_TRUE(errors().empty());
 
   std::string templates_with_identifiers, salt;
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                                 &templates_with_identifiers));
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
-  EXPECT_EQ(templates_with_identifiers, "");
+  EXPECT_EQ(templates_with_identifiers, test_policy_identifiers_value);
   EXPECT_EQ(salt, "");
 }
 
@@ -603,8 +596,10 @@ TEST_F(SecureDnsPolicyHandlerTest, NoTemplatesWithIdentifiers) {
   EXPECT_EQ(errors().size(), 2U);
   auto expected_error1 = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  auto expected_error2 =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR);
+  auto expected_error2 = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+      base::UTF8ToUTF16(policy::key::kDnsOverHttpsTemplatesWithIdentifiers));
+
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsTemplates),
             expected_error1);
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsSalt), expected_error2);
@@ -629,8 +624,9 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersEmpty) {
   EXPECT_EQ(errors().size(), 2U);
   auto expected_error1 = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  auto expected_error2 =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR);
+  auto expected_error2 = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+      base::UTF8ToUTF16(policy::key::kDnsOverHttpsTemplatesWithIdentifiers));
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsTemplates),
             expected_error1);
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsSalt), expected_error2);

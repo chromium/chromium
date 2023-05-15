@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 FAIL Property width value 'calc(NaN * 1px)' assert_equals: expected "0px" but got "3.35544e+07px"
+FAIL Property width value 'calc(NaN * 1%)' assert_equals: expected "0px" but got "3.35544e+07px"
 PASS Property width value 'calc(infinity * 1px)'
+PASS Property width value 'calc(infinity * 1%)'
 PASS Property width value 'calc(infinity * 1cm)'
 FAIL Property width value 'calc(NaN * 1rem)' assert_equals: expected "0px" but got "3.35544e+07px"
 FAIL Property width value 'calc(10.135262721212548pc - 199pt / NaN)' assert_equals: expected "0px" but got "3.35544e+07px"

@@ -7,9 +7,9 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
@@ -102,7 +102,7 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
     // Need a local copy since we may set the id.
     chromeos::Printer printer = printer_arg;
     if (printer.id().empty()) {
-      printer.set_id(base::GenerateGUID());
+      printer.set_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
     }
 
     sync_bridge_->UpdatePrinter(PrinterToSpecifics(printer));

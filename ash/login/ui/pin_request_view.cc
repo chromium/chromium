@@ -253,7 +253,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   back_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_BACK_BUTTON_ACCESSIBLE_NAME));
   back_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  back_button_view->AddChildView(back_button_);
+  back_button_view->AddChildView(back_button_.get());
 
   auto add_spacer = [&](int height) {
     auto* spacer = new NonAccessibleView();
@@ -281,7 +281,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   title_label_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(title_label_);
-  AddChildView(title_label_);
+  AddChildView(title_label_.get());
 
   add_spacer(kTitleToDescriptionDistanceDp);
 
@@ -297,7 +297,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       gfx::FontList().Derive(kDescriptionFontSizeDeltaDp, gfx::Font::NORMAL,
                              gfx::Font::Weight::NORMAL));
   decorate_label(description_label_);
-  AddChildView(description_label_);
+  AddChildView(description_label_.get());
 
   add_spacer(kDescriptionToAccessCodeDistanceDp);
 
@@ -338,7 +338,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
                        /*on_submit=*/LoginPinView::OnPinSubmit());
   // Backspace key is always enabled and |access_code_| field handles it.
   pin_keyboard_view_->OnPasswordTextChanged(false);
-  AddChildView(pin_keyboard_view_);
+  AddChildView(pin_keyboard_view_.get());
 
   add_spacer(kPinKeyboardToFooterDistanceDp);
 
@@ -362,7 +362,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
   help_button_->SetVisible(request.help_button_enabled);
-  footer->AddChildView(help_button_);
+  footer->AddChildView(help_button_.get());
 
   auto* horizontal_spacer = new NonAccessibleView();
   footer->AddChildView(horizontal_spacer);
@@ -377,7 +377,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   submit_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  footer->AddChildView(submit_button_);
+  footer->AddChildView(submit_button_.get());
   add_spacer(kSubmitButtonBottomMarginDp);
 
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());

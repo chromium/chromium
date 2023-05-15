@@ -62,14 +62,13 @@ export interface OriginInfo {
  */
 export interface SiteGroup {
   etldPlus1: string;
+  displayName: string;
   numCookies: number;
   origins: OriginInfo[];
   fpsOwner?: string;
   fpsNumMembers?: number;
   fpsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
-  isolatedWebAppName?: string;
-  extensionName?: string;
 }
 
 /**
@@ -82,8 +81,6 @@ export interface RawSiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
-  isolatedWebAppName?: string;
-  extensionNameWithId?: string;
   type: string;
   setting: ContentSetting;
   source: SiteSettingSource;
@@ -100,7 +97,6 @@ export interface SiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
-  isolatedWebAppName?: string;
   setting: ContentSetting;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
@@ -116,7 +112,7 @@ export interface SiteException {
  */
 export interface RecentSitePermissions {
   origin: string;
-  isolatedWebAppName?: string;
+  displayName: string;
   incognito: boolean;
   recentPermissions: RawSiteException[];
 }
@@ -167,10 +163,8 @@ export interface MediaPickerEntry {
 
 export interface ZoomLevelEntry {
   displayName: string;
-  origin: string;
+  hostOrSpec: string;
   originForFavicon: string;
-  setting: string;
-  source: string;
   zoom: string;
 }
 
@@ -270,6 +264,10 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Gets the File System Access permission grants, grouped by origin.
    */
   getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]>;
+
+  revokeFileSystemGrant(origin: string, filePath: string): void;
+
+  revokeFileSystemGrants(origin: string): void;
 
   /**
    * Gets a list of category permissions for a given origin. Note that this
@@ -554,6 +552,14 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getFileSystemGrants() {
     return sendWithPromise('getFileSystemGrants');
+  }
+
+  revokeFileSystemGrant(origin: string, filePath: string) {
+    chrome.send('revokeFileSystemGrant', [origin, filePath]);
+  }
+
+  revokeFileSystemGrants(origin: string) {
+    chrome.send('revokeFileSystemGrants', [origin]);
   }
 
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {

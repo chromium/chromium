@@ -16,11 +16,8 @@ HighEfficiencyModePolicy* g_high_efficiency_mode_policy = nullptr;
 
 }
 
-const base::TimeDelta HighEfficiencyModePolicy::kDefaultDiscardTimeInterval =
-    base::Hours(2);
-
 HighEfficiencyModePolicy::HighEfficiencyModePolicy()
-    : time_before_discard_(kDefaultDiscardTimeInterval) {
+    : time_before_discard_(base::TimeDelta::Max()) {
   DCHECK(!g_high_efficiency_mode_policy);
   g_high_efficiency_mode_policy = this;
 }
@@ -102,23 +99,36 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
 
   if (high_efficiency_mode_enabled_) {
     DCHECK(active_discard_timers_.empty());
-    for (const PageNode* page_node : graph_->GetAllPageNodes()) {
-      if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
-        base::TimeDelta time_before_discard =
-            time_before_discard_ -
-            page_node->GetTimeSinceLastVisibilityChange();
-        StartDiscardTimerIfEnabled(page_node, time_before_discard.is_negative()
-                                                  ? base::Microseconds(0)
-                                                  : time_before_discard);
-      }
-    }
+    StartAllDiscardTimers();
   } else {
     active_discard_timers_.clear();
   }
 }
 
+base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForTesting()
+    const {
+  return time_before_discard_;
+}
+
+void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
+    base::TimeDelta time_before_discard) {
+  time_before_discard_ = time_before_discard;
+  if (high_efficiency_mode_enabled_) {
+    active_discard_timers_.clear();
+    StartAllDiscardTimers();
+  }
+}
+
 bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
   return high_efficiency_mode_enabled_;
+}
+
+void HighEfficiencyModePolicy::StartAllDiscardTimers() {
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+    if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
+      StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+    }
+  }
 }
 
 void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
@@ -128,10 +138,12 @@ void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
   if (IsHighEfficiencyDiscardingEnabled()) {
     // High Efficiency mode is enabled, so the tab should be discarded after the
     // amount of time specified by finch is elapsed.
+    CHECK_NE(time_before_discard_, base::TimeDelta::Max());
     active_discard_timers_[page_node].Start(
         FROM_HERE, time_before_discard,
         base::BindOnce(&HighEfficiencyModePolicy::DiscardPageTimerCallback,
-                       base::Unretained(this), page_node));
+                       base::Unretained(this), page_node,
+                       base::LiveTicks::Now(), time_before_discard));
   }
 }
 
@@ -142,7 +154,9 @@ void HighEfficiencyModePolicy::RemoveActiveTimer(const PageNode* page_node) {
 }
 
 void HighEfficiencyModePolicy::DiscardPageTimerCallback(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    base::LiveTicks posted_at,
+    base::TimeDelta requested_time_before_discard) {
   // When this callback is invoked, the `page_node` is guaranteed to still be
   // valid otherwise `OnBeforePageNodeRemoved` would've been called and the
   // timer destroyed.
@@ -152,8 +166,20 @@ void HighEfficiencyModePolicy::DiscardPageTimerCallback(
   // possible to get here and for High Efficiency Mode to be off.
   DCHECK(IsHighEfficiencyDiscardingEnabled());
 
-  PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
-      page_node, PageDiscardingHelper::DiscardReason::PROACTIVE);
+  // If the time elapsed according to `LiveTicks` is shorter than
+  // `requested_time_before_discard`, it means that the device was in a
+  // suspended state at some point between when the timer was started and now.
+  // In this case, start a new timer for the difference, which is the remaining
+  // time the tab should stay backgrounded to total
+  // `requested_time_before_discard` in background.
+  base::TimeDelta elapsed_not_suspended = base::LiveTicks::Now() - posted_at;
+  if (elapsed_not_suspended < requested_time_before_discard) {
+    StartDiscardTimerIfEnabled(
+        page_node, requested_time_before_discard - elapsed_not_suspended);
+  } else {
+    PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
+        page_node, PageDiscardingHelper::DiscardReason::PROACTIVE);
+  }
 }
 
 }  // namespace performance_manager::policies

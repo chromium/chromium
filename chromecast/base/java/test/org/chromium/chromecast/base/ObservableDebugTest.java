@@ -4,8 +4,8 @@
 
 package org.chromium.chromecast.base;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +23,10 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 public class ObservableDebugTest {
     @Test
-    public void testDebugSubscription() {
+    public void testDebugScope() {
         Controller<Unit> a = new Controller<>();
         List<String> events = new ArrayList<>();
-        Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
+        Scope sub = a.debug(events::add).subscribe(x -> () -> {});
         assertThat(events, contains("subscribe"));
         events.clear();
         sub.close();
@@ -37,7 +37,7 @@ public class ObservableDebugTest {
     public void testDebugUnitActivations() {
         Controller<Unit> a = new Controller<>();
         List<String> events = new ArrayList<>();
-        Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
+        Scope sub = a.debug(events::add).subscribe(x -> () -> {});
         events.clear();
         a.set(Unit.unit());
         assertThat(events, contains("open ()"));
@@ -53,7 +53,7 @@ public class ObservableDebugTest {
         // first.
         Controller<Unit> a = new Controller<>();
         List<String> events = new ArrayList<>();
-        Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
+        Scope sub = a.debug(events::add).subscribe(x -> () -> {});
         a.set(Unit.unit());
         events.clear();
         sub.close();
@@ -64,7 +64,7 @@ public class ObservableDebugTest {
     public void testDebugString() {
         Controller<String> a = new Controller<>();
         List<String> events = new ArrayList<>();
-        Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
+        Scope sub = a.debug(events::add).subscribe(x -> () -> {});
         events.clear();
         a.set("a");
         assertThat(events, contains("open a"));
@@ -78,10 +78,10 @@ public class ObservableDebugTest {
 
     @Test
     public void testDebugMultipleIntegers() {
-        Observable<Integer> a = Observable.make(
-                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3))::close);
+        Observable<Integer> a =
+                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3));
         List<String> events = new ArrayList<>();
-        Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
+        Scope sub = a.debug(events::add).subscribe(x -> () -> {});
         assertThat(events, contains("subscribe", "open 1", "open 2", "open 3"));
         events.clear();
         sub.close();

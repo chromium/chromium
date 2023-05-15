@@ -18,8 +18,14 @@ struct InterestGroupAd {
   url.mojom.Url render_url;
   // Optional size groups assigned to this Ad.
   string? size_group;
+  // Optional identifiers that may be passed to reporting functions, if
+  // sufficiently k-anonymous.
+  string? buyer_reporting_id;
+  string? buyer_and_seller_reporting_id;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
+  // Optional alias to use with B&A auctions
+  string? ad_render_id;
 };
 
 // The maximum size of a valid interest group in bytes.
@@ -229,14 +235,19 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
   AuctionAdConfigBuyerTimeouts value;
 };
 
+struct AdCurrency {
+  // Must meet blink::IsValidAdCurrencyCode
+  string currency_code;
+};
+
 // See blink::AuctionConfig::BuyerCurrencies
 struct AuctionAdConfigBuyerCurrencies {
   // Requirement for bid currency that, if specified, will apply to all bids
   // made by buyers not specified in `per_buyer_currencies`.
-  string? all_buyers_currency;
+  AdCurrency? all_buyers_currency;
 
   // Can provide a requirement for bid currency for buyers by origin.
-  map<url.mojom.Origin, string>? per_buyer_currencies;
+  map<url.mojom.Origin, AdCurrency>? per_buyer_currencies;
 };
 
 // See blink::AuctionConfig::MaybePromiseBuyerCurrencies
@@ -313,7 +324,7 @@ struct AuctionAdConfigNonSharedParams {
   // Expectations for currency provided by seller when modifying bids for
   // parent auctions or to help with mixed-currency reporting. If this is set,
   // any currency annotation from seller will be checked against it.
-  string? seller_currency;
+  AdCurrency? seller_currency;
 
   // Expectations for currencies used by buyers to bid. If a currency is
   // specified for a buyer here, and they annotate their bid with a currency,
@@ -366,6 +377,12 @@ struct AuctionAdConfigNonSharedParams {
   // participate in the auction. Interest groups that don't declare all these
   // capabilities will not participate in the auction.
   SellerCapabilities required_seller_capabilities;
+
+  // The requested ad creative size for the auction (strictly optional).
+  // If specified in the auction config, it is surfaced during the auction
+  // through browser signals and stored after the auction in the winning
+  // fenced frame config as its container size.
+  AdSize? requested_size;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.

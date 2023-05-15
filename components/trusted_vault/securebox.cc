@@ -25,7 +25,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -474,4 +474,4 @@ SecureBoxKeyPair::SecureBoxKeyPair(
 
 SecureBoxKeyPair::~SecureBoxKeyPair() = default;
 
-}  // namespace syncer
+}  // namespace trusted_vault

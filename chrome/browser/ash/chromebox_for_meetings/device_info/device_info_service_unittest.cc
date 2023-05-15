@@ -128,7 +128,8 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
-        device_info_remote_.BindNewPipeAndPassReceiver().PassPipe());
+        device_info_remote_.BindNewPipeAndPassReceiver().PassPipe(),
+        absl::nullopt);
     EXPECT_TRUE(device_info_remote_.is_connected());
 
     return device_info_remote_;

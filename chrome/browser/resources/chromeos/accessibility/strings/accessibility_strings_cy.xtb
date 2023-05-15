@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="100506692671054486">dim gorchymyn blaenorol</translation>
 <translation id="1009046985747440431">Pwyswch y saeth i fyny neu i lawr i lywio; y fysell Enter i weithredu</translation>
 <translation id="1011903154582639569">Dewch o hyd i fysell, a chodwch eich bys i deipio</translation>
 <translation id="1012173283529841972">Eitem rhestr</translation>
@@ -359,7 +360,7 @@
 <translation id="3270069636408109001">Dim tabl nesaf</translation>
 <translation id="3273791280096244679">Cadw'r label</translation>
 <translation id="3283583562490372694">wedi'i ddad-dicio</translation>
-<translation id="3286372614333682499">portread</translation>
+<translation id="3286372614333682499">fertigol</translation>
 <translation id="3286390186030710347">Llithrydd</translation>
 <translation id="3300733168898541351">dadwneud</translation>
 <translation id="3307886118343381874">Mynd i ben y bwrdd</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Coch Lafant</translation>
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="3962990492275676168">Dechrau darllen o'r lleoliad presennol</translation>
+<translation id="397094149579293440">dim testun wedi'i ddewis</translation>
 <translation id="3970951409746498040">Brown Tywod</translation>
 <translation id="3989324057180830702">btm tgl</translation>
 <translation id="3991317907213946254">Moccasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Dim pennawd lefel 1 blaenorol</translation>
 <translation id="4787577491510559358">Cyhoeddi fformatio ar gyfer yr eitem bresennol</translation>
 <translation id="479989351350248267">chwilio</translation>
+<translation id="4802034228771424756">dim maes testun wedi'i ffocysu</translation>
 <translation id="4804818685124855865">Datgysylltu</translation>
 <translation id="481165870889056555">Cyhoeddi teitl y dudalen bresennol</translation>
 <translation id="4815668758102003883">Gwyrddlas Gwelw</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Dolen fewnol</translation>
 <translation id="4909019435900810068">Symud yn ôl un gair</translation>
 <translation id="4911349081560453449">Dim blwch ticio blaenorol</translation>
+<translation id="4919186071145887492">Methu â <ph name="COMMAND" />, rhowch gynnig arall arni</translation>
 <translation id="492295894462528572">Rhagair</translation>
 <translation id="495046168593986294">Sgrolio i fyny</translation>
 <translation id="495170559598752135">Gweithrediadau</translation>
 <translation id="4953585991029886728">Golygu testun</translation>
+<translation id="4964701498510730546">mae'r maes testun yn wag</translation>
 <translation id="4973717656530883744">Isafswm <ph name="X" /></translation>
 <translation id="4974612477719259470">Dim botwm blaenorol</translation>
 <translation id="4979404613699303341">Botwm blaenorol</translation>
+<translation id="4981239367072766915">mewnbwn heb ei gydnabod</translation>
 <translation id="4982917827052020884">Gadewch i ni ddechrau gydag ychydig o fysellau y byddwch yn eu defnyddio'n rheolaidd. Gellir defnyddio'r fysell Control i atal unrhyw leferydd presennol. Byddwch yn gweld y fysell Control ar gornel chwith isaf eich bysellfwrdd. I barhau, pwyswch y fysell Control.</translation>
 <translation id="4983588134362688868">Neidio i frig y dudalen</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ffenestr</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Cyhoeddi statws presennol y batri</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botwm radio wedi'i ddewis</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botwm radio eitem dewislen wedi'i ddewis</translation>
+<translation id="5014131807708055994">Methu â <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Galluogi cofnodi lleferydd</translation>
 <translation id="5041394372352067729">Symud y sgrîn braille i frig y dudalen</translation>
 <translation id="5042770794184672516">Cynyddu lefel sain y lleferydd</translation>

@@ -537,7 +537,7 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
-  EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
+  EXPECT_EQ("2 B \xE2\x80\xA2 Scan is done",
             base::UTF16ToUTF8(model().GetStatusText()));
 
 #if BUILDFLAG(IS_MAC)
@@ -593,7 +593,7 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK,
        "Blocked by your organization"},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-       "Scan before opening"},
+       "Scan for malware \xE2\x80\xA2 Suspicious"},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
     SetupDownloadItemDefaults();
@@ -731,7 +731,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
        false,
-       DownloadCommands::Command::DEEP_SCAN,
+       absl::nullopt,
        {DownloadCommands::Command::DEEP_SCAN,
         DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
       {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
@@ -740,6 +740,10 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
        {}},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(test_case.danger_type));
@@ -795,7 +799,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
        false,
-       DownloadCommands::Command::DEEP_SCAN,
+       absl::nullopt,
        {DownloadCommands::Command::DEEP_SCAN,
         DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
       {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
@@ -804,6 +808,10 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
        {}},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(test_case.danger_type));
@@ -1016,10 +1024,8 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
           base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status),
           false);
   std::vector<int> expected_arabic =
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
-#elif BUILDFLAG(IS_POSIX)
-      {8207, 8235, 8207, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
 #else
       {8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236};
 #endif
@@ -1031,11 +1037,8 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
       GetBubbleStatusMessageWithBytes(u"5 MB", base::WideToUTF16(hebrew_status),
                                       false);
   std::vector<int> expected_hebrew =
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236, 8207};
-#elif BUILDFLAG(IS_POSIX)
-      {8207, 8235, 8207, 8234, 53,   32,   77,  66,
-       8236, 32,   8226, 32,   1488, 8236, 8207};
 #else
       {8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236};
 #endif

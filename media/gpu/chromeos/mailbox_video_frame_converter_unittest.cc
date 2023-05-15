@@ -134,7 +134,6 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
     auto mock_gpu_delegate = std::make_unique<StrictMock<MockGpuDelegate>>();
     mock_gpu_delegate_ = mock_gpu_delegate.get();
     converter_ = base::WrapUnique(new MailboxVideoFrameConverter(
-        /*unwrap_frame_cb=*/base::NullCallback(),
         /*gpu_task_runner=*/base::ThreadPool::CreateSingleThreadTaskRunner({}),
         std::move(mock_gpu_delegate),
         /*enable_unsafe_webgpu=*/false));

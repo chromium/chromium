@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
@@ -35,7 +35,7 @@ namespace ash {
 class ChromeLoginPerformer : public LoginPerformer {
  public:
   explicit ChromeLoginPerformer(Delegate* delegate,
-                                AuthMetricsRecorder* metrics_recorder);
+                                AuthEventsRecorder* metrics_recorder);
 
   ChromeLoginPerformer(const ChromeLoginPerformer&) = delete;
   ChromeLoginPerformer& operator=(const ChromeLoginPerformer&) = delete;

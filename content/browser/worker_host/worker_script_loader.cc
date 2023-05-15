@@ -10,6 +10,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/load_timing_info.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -94,12 +95,19 @@ void WorkerScriptLoader::Start() {
         resource_request_, browser_context,
         base::BindOnce(&WorkerScriptLoader::MaybeStartLoader,
                        weak_factory_.GetWeakPtr(), interceptor),
-        base::BindOnce(&WorkerScriptLoader::LoadFromNetwork,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(
+            [](base::WeakPtr<WorkerScriptLoader> self,
+               bool /*reset_subresource_loader_params*/,
+               const net::LoadTimingInfo&) {
+              if (self) {
+                self->LoadFromNetwork();
+              }
+            },
+            weak_factory_.GetWeakPtr()));
     return;
   }
 
-  LoadFromNetwork(false);
+  LoadFromNetwork();
 }
 
 void WorkerScriptLoader::MaybeStartLoader(
@@ -144,7 +152,7 @@ void WorkerScriptLoader::MaybeStartLoader(
   Start();
 }
 
-void WorkerScriptLoader::LoadFromNetwork(bool reset_subresource_loader_params) {
+void WorkerScriptLoader::LoadFromNetwork() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!completed_);
 

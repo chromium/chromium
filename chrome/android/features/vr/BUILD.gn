@@ -32,18 +32,23 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
-    "java/src/org/chromium/chrome/browser/vr/OnDispatchTouchEventCallback.java",
-    "java/src/org/chromium/chrome/browser/vr/VrCoreInstallUtils.java",
-    "java/src/org/chromium/chrome/browser/vr/VrCoreVersionChecker.java",
-    "java/src/org/chromium/chrome/browser/vr/VrDaydreamApi.java",
-    "java/src/org/chromium/chrome/browser/vr/VrDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/VrDelegateProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/VrShell.java",
-    "java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java",
-    "java/src/org/chromium/chrome/browser/vr/VrWindowAndroid.java",
-  ]
+  sources = []
+  if (enable_gvr_services) {
+    sources += [
+      "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
+      "java/src/org/chromium/chrome/browser/vr/OnDispatchTouchEventCallback.java",
+      "java/src/org/chromium/chrome/browser/vr/VrCoreInstallUtils.java",
+      "java/src/org/chromium/chrome/browser/vr/VrCoreVersionChecker.java",
+      "java/src/org/chromium/chrome/browser/vr/VrDaydreamApi.java",
+      "java/src/org/chromium/chrome/browser/vr/VrDelegateImpl.java",
+      "java/src/org/chromium/chrome/browser/vr/VrDelegateProviderImpl.java",
+      "java/src/org/chromium/chrome/browser/vr/VrShell.java",
+      "java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java",
+      "java/src/org/chromium/chrome/browser/vr/VrWindowAndroid.java",
+    ]
+  } else {
+    sources += [ "dummy/java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java" ]
+  }
 
   deps = [
     ":java_resources",
@@ -73,7 +78,6 @@ android_library("java") {
     "//components/page_info/android:java",
     "//components/policy/android:policy_java",
     "//content/public/android:content_java",
-    "//device/vr:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/gvr-android-sdk:gvr_common_java",
@@ -81,6 +85,10 @@ android_library("java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
+
+  if (enable_gvr_services) {
+    deps += [ "//device/vr:java" ]
+  }
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.vr"

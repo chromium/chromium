@@ -16,7 +16,7 @@
     // state
     void save(); // push state on state stack
     [NoAllocDirectCall] void restore(); // pop state stack if top state was pushed by save, and restore state
-    [RuntimeEnabled=Canvas2dLayers] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
+    [RuntimeEnabled=Canvas2dLayers, CallWith=ExecutionContext, RaisesException] void beginLayer(optional CanvasFilterInput? filter = null); // push state on state stack and creates bitmap for subsequent draw ops
     [RuntimeEnabled=Canvas2dLayers] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     void reset();

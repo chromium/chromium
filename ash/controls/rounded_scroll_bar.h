@@ -6,6 +6,7 @@
 #define ASH_CONTROLS_ROUNDED_SCROLL_BAR_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -71,7 +72,7 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   void OnThumbBoundsChanged();
 
   // Equivalent to GetThumb() but typed as the inner class `Thumb`.
-  Thumb* const thumb_;
+  const raw_ptr<Thumb, ExperimentalAsh> thumb_;
 
   // Insets for the scroll track.
   gfx::Insets insets_;

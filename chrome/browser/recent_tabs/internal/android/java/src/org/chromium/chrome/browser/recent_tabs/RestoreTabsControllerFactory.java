@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * A factory interface for building a RestoreTabsController instance.
@@ -24,9 +27,10 @@ public class RestoreTabsControllerFactory {
     /**
      * @return An instance of RestoreTabsControllerImpl.
      */
-    public static RestoreTabsControllerImpl createInstance(Profile profile,
+    public static RestoreTabsControllerImpl createInstance(Context context, Profile profile,
             RestoreTabsControllerFactory.ControllerListener listener,
-            TabCreatorManager tabCreatorManager) {
-        return new RestoreTabsControllerImpl(profile, listener, tabCreatorManager);
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
+        return new RestoreTabsControllerImpl(
+                context, profile, listener, tabCreatorManager, bottomSheetController);
     }
 }

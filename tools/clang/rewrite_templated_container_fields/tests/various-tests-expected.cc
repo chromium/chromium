@@ -1,11 +1,14 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
 
@@ -399,6 +402,10 @@ class O {
     auto* ptr3 = temp2.back().get();
     (void)ptr3;
 
+    int index = 0;
+    auto* ptr4 = temp2.at(index).get();
+    (void)ptr4;
+
     return temp2;
   }
 
@@ -554,7 +561,9 @@ void fctttttt() {
 
 namespace {
 namespace A {
-struct SA {};
+struct SA {
+  int count;
+};
 }  // namespace A
 
 namespace B {
@@ -562,14 +571,96 @@ struct S {
   // Expected rewrite: std::vector<raw_ptr<const A::SA>> member;
   std::vector<raw_ptr<const A::SA>> member;
 
-  void fct() {
+  bool fct() {
     // This tests whether we properly trim (anonymous namespace):: from the type
     // while conserving constness.
     // Expected rewrite: for(const A::SA* i : member)
     for (const A::SA* i : member) {
       (void)i;
     }
+
+    return std::any_of(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const A::SA* item) { return item != nullptr; });
+  }
+
+  std::vector<raw_ptr<const A::SA>>::iterator fct2() {
+    return std::find_if(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item == nullptr; });
+        [](const A::SA* item) { return item == nullptr; });
+  }
+
+  bool fct3() {
+    return std::all_of(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const A::SA* item) { return item != nullptr; });
+  }
+
+  int fct4() {
+    return std::accumulate(member.begin(), member.end(), 1,
+                           // Expected rewrite: [](int num, const A::SA* item) {
+                           [](int num, const A::SA* item) {
+                             return (item != nullptr) ? 1 + num : 0;
+                           });
+  }
+
+  int fct5() {
+    return std::count_if(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const A::SA* item) { return item != nullptr; });
+  }
+
+  void fct6() {
+    std::vector<int> copy;
+    std::transform(
+        member.begin(), member.end(), std::back_inserter(copy),
+        // Expected rewrite: [](const A::SA* item) { return item->count; });
+        [](const A::SA* item) { return item->count; });
+  }
+
+  std::vector<const A::SA*> fct7() {
+    std::vector<const A::SA*> copy;
+    std::copy_if(
+        member.begin(), member.end(), std::back_inserter(copy),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const A::SA* item) { return item != nullptr; });
+    return copy;
   }
 };
 }  // namespace B
+}  // namespace
+
+namespace {
+class AA {
+ public:
+  // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
+  virtual void set(std::vector<raw_ptr<int>> arg) = 0;
+};
+
+class BB : public AA {
+ public:
+  // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
+  void set(std::vector<raw_ptr<int>> arg) override { member = arg; }
+
+ private:
+  // Expected rewrite: std::vector<raw_ptr<int>> member;
+  std::vector<raw_ptr<int>> member;
+};
+
+class Mocked1 : public AA {
+ public:
+  // Expected rewrite: void, set, (std::vector<raw_ptr<int>>)
+  MOCK_METHOD(void, set, (std::vector<raw_ptr<int>>));
+};
+
+class Mocked2 : public AA {
+ public:
+  // Expected rewrite: set, void(std::vector<raw_ptr<int>> arg)
+  MOCK_METHOD1(set, void(std::vector<raw_ptr<int>> args));
+};
+
 }  // namespace

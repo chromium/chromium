@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/events/test/test_event.h"
 
 namespace {
 
@@ -113,6 +114,11 @@ TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
   // changed.
   FastForward(base::Seconds(kTimeSinceDownloadCompletedUpdateSeconds));
   EXPECT_NE(row_label, row_view()->GetSecondaryLabelTextForTesting());
+}
+
+TEST_F(DownloadBubbleRowViewTest, MainButtonPressed) {
+  EXPECT_CALL(*download_item(), OpenDownload()).Times(1);
+  row_view()->SimulateMainButtonClickForTesting(ui::test::TestEvent());
 }
 
 }  // namespace

@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -31,9 +30,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
@@ -81,6 +80,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "storage/common/database/database_identifier.h"
@@ -178,15 +178,18 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
       main_thread_scheduler_(main_thread_scheduler) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  sk_sp<font_service::FontLoader> font_loader;
+#endif
+
   // RenderThread may not exist in some tests.
   if (RenderThreadImpl::current()) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     mojo::PendingRemote<font_service::mojom::FontService> font_service;
     RenderThreadImpl::current()->BindHostReceiver(
         font_service.InitWithNewPipeAndPassReceiver());
-    font_loader_ =
-        sk_make_sp<font_service::FontLoader>(std::move(font_service));
-    SkFontConfigInterface::SetGlobal(font_loader_);
+    font_loader = sk_make_sp<font_service::FontLoader>(std::move(font_service));
+    SkFontConfigInterface::SetGlobal(font_loader);
 #endif
   }
 
@@ -195,7 +198,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #if BUILDFLAG(IS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #else
-    sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
+    sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader);
 #endif
   } else {
     DVLOG(1) << "Disabling sandbox support for testing.";
@@ -873,13 +876,16 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
         blink::mojom::ServiceWorkerContainerHostInterfaceBase>
         service_worker_container_host,
     const blink::WebString& client_id,
+    blink::mojom::ServiceWorkerFetchHandlerBypassOption
+        fetch_handler_bypass_option,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(service_worker_container_host),
-          /*remote_controller=*/mojo::NullRemote(), client_id.Utf8()),
+          /*remote_controller=*/mojo::NullRemote(), client_id.Utf8(),
+          fetch_handler_bypass_option),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }
@@ -993,13 +999,13 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
   return io_thread_id_;
 }
 
-attribution_reporting::mojom::OsSupport
-RendererBlinkPlatformImpl::GetOsSupportForAttributionReporting() {
+network::mojom::AttributionSupport
+RendererBlinkPlatformImpl::GetAttributionReportingSupport() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.
   if (!render_thread)
-    return attribution_reporting::mojom::OsSupport::kDisabled;
-  return render_thread->GetOsSupportForAttributionReporting();
+    return network::mojom::AttributionSupport::kWeb;
+  return render_thread->GetAttributionReportingSupport();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -1030,92 +1036,39 @@ void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
   render_thread->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
 }
 
-namespace {
-// Negative inert interval disables delayed memory pressure signals
-// This is intended to keep the old behavior.
-base::TimeDelta kDefaultInertInterval = base::TimeDelta::Min();
-
-bool IsFeatureEnabledWithoutActivation(const base::Feature& feature) {
-  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(feature);
-  // If --enable-features is specified with no study names, no group names, and
-  // no field trial parameters, no trial will be associated.
-  // e.g. --enable-features=UserLevelMemoryPressureSignalOn6GbDevices
-  if (!trial) {
-    // Since no trial is associated, base::FeatureList::IsEnabled() doesn't
-    // activate any trials.
-    return base::FeatureList::IsEnabled(feature);
-  }
-
-  // If no --enable-features or --enable-features is specified with a study
-  // name and a group name, a field trial is created and associated with
-  // the feature.
-  // In the case, see if there exists an activate group of the field trial.
-  // If there are no active groups, the condition of physcal memory didn't
-  // match and no base::FeatureList::IsEnable() was invoked.
-  // (e.g. amount of physcal_memory < 3.2GB)
-  if (!base::FieldTrialList::IsTrialActive(trial->trial_name())) {
-    // See the default value if there are no active groups.
-    return feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
-  }
-
-  // Since the field trial has been already activated, we can use IsEnabled().
-  return base::FeatureList::IsEnabled(feature);
-}
-
-bool IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() {
-  return IsFeatureEnabledWithoutActivation(
-      kUserLevelMemoryPressureSignalOn4GbDevices);
-}
-
-bool IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation() {
-  return IsFeatureEnabledWithoutActivation(
-      kUserLevelMemoryPressureSignalOn6GbDevices);
-}
-
-base::TimeDelta InertIntervalFor4GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kInertInterval{
-      &kUserLevelMemoryPressureSignalOn4GbDevices,
-      "inert_interval_after_loading", kDefaultInertInterval};
-  return kInertInterval.Get();
-}
-
-base::TimeDelta InertIntervalFor6GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kInertInterval{
-      &kUserLevelMemoryPressureSignalOn6GbDevices,
-      "inert_interval_after_loading", kDefaultInertInterval};
-  return kInertInterval.Get();
-}
-}  // namespace
-
 bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
-  return IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() ||
-         IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation();
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kUserLevelMemoryPressureSignalParams);
+  return enabled;
 }
 
-base::TimeDelta
-RendererBlinkPlatformImpl::InertIntervalOfUserLevelMemoryPressureSignal() {
-  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
-    return InertIntervalFor4GbDevices();
+std::pair<base::TimeDelta, base::TimeDelta> RendererBlinkPlatformImpl::
+    InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
+  constexpr std::pair<base::TimeDelta, base::TimeDelta>
+      kDefaultInertAndMinInterval =
+          std::make_pair(base::TimeDelta::Min(), base::Minutes(10));
+
+  if (!IsUserLevelMemoryPressureSignalEnabled()) {
+    return kDefaultInertAndMinInterval;
   }
 
-  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
-    return InertIntervalFor6GbDevices();
+  std::vector<base::StringPiece> parameters = base::SplitStringPiece(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUserLevelMemoryPressureSignalParams),
+      ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parameters.size() != 2) {
+    return kDefaultInertAndMinInterval;
   }
 
-  return base::TimeDelta();
-}
-
-base::TimeDelta
-RendererBlinkPlatformImpl::MinimumIntervalOfUserLevelMemoryPressureSignal() {
-  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
-    return MinimumIntervalOfUserLevelMemoryPressureSignalOn4GbDevices();
+  absl::optional<base::TimeDelta> inert_interval =
+      base::TimeDeltaFromString(parameters.at(0));
+  absl::optional<base::TimeDelta> minimum_interval =
+      base::TimeDeltaFromString(parameters.at(1));
+  if (!inert_interval.has_value() || !minimum_interval.has_value()) {
+    return kDefaultInertAndMinInterval;
   }
 
-  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
-    return MinimumIntervalOfUserLevelMemoryPressureSignalOn6GbDevices();
-  }
-
-  return base::TimeDelta();
+  return std::make_pair(inert_interval.value(), minimum_interval.value());
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

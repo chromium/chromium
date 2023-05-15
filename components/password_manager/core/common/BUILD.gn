@@ -42,7 +42,10 @@ source_set("features") {
     sources += [ "password_manager_feature_variations_android.h" ]
   }
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+  ]
 }
 
 if (is_ios) {

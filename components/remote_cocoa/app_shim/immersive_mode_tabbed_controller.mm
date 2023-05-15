@@ -14,11 +14,8 @@ namespace remote_cocoa {
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
     NSWindow* browser_window,
     NSWindow* overlay_window,
-    NSWindow* tab_window,
-    base::OnceClosure callback)
-    : ImmersiveModeController(browser_window,
-                              overlay_window,
-                              std::move(callback)),
+    NSWindow* tab_window)
+    : ImmersiveModeController(browser_window, overlay_window),
       tab_window_(tab_window) {
   browser_window.titleVisibility = NSWindowTitleHidden;
 
@@ -90,9 +87,7 @@ void ImmersiveModeTabbedController::Enable() {
       .active = YES;
 
   ObserveChildWindows(tab_window_);
-}
 
-void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   // Keep the titlebar hidden until the fullscreen transition is complete.
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
@@ -108,11 +103,6 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
   UpdateToolbarVisibility(last_used_style());
-
-  // Call the base implementation after adding the toolbar. Reparenting of child
-  // widgets occurs in base, which may cause a `RevealLock()`. If the toolbar is
-  // not set `RevealLock()` will have no control over revealing the titlebar.
-  ImmersiveModeController::FullscreenTransitionCompleted();
 }
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
@@ -145,6 +135,13 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
       break;
   }
   ImmersiveModeController::UpdateToolbarVisibility(style);
+
+  // macOS 10.15 does not call `OnTitlebarFrameDidChange` as often as newer
+  // versions of macOS. Add a layout call here and in `RevealLock` and
+  // `RevealUnlock` to pickup the slack. There is no harm in extra layout calls
+  // on newer versions of macOS, -setFrameOrigin: is essentially a NOP when the
+  // frame size doesn't change.
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::AddController() {
@@ -174,6 +171,7 @@ void ImmersiveModeTabbedController::RevealLock() {
 
   // Call after TitlebarReveal() for a proper layout.
   ImmersiveModeController::RevealLock();
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::RevealUnlock() {
@@ -186,6 +184,7 @@ void ImmersiveModeTabbedController::RevealUnlock() {
 
   // Call after TitlebarHide() for a proper layout.
   ImmersiveModeController::RevealUnlock();
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::TitlebarReveal() {
@@ -198,13 +197,7 @@ void ImmersiveModeTabbedController::TitlebarHide() {
 
 void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
   ImmersiveModeController::OnTitlebarFrameDidChange(frame);
-
-  // Find the tab overlay view's point on screen (bottom left).
-  NSPoint point_in_window = [tab_content_view_ convertPoint:NSZeroPoint
-                                                     toView:nil];
-  NSPoint point_on_screen =
-      [tab_content_view_.window convertPointToScreen:point_in_window];
-  [tab_window_ setFrameOrigin:point_on_screen];
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
@@ -212,6 +205,15 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
   // `tab_window_`.
   if (child == tab_window_) {
     return;
+  }
+
+  // Keep the tab window on top of its siblings. This will allow children of tab
+  // window to always be z-order on top of overlay window children.
+  // Practically this allows for the tab preview hover card to be z-order on top
+  // of omnibox results popup.
+  if (overlay_window().childWindows.lastObject != tab_window_) {
+    [overlay_window() removeChildWindow:tab_window_];
+    [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
   }
   ImmersiveModeController::OnChildWindowAdded(child);
 }
@@ -223,6 +225,14 @@ void ImmersiveModeTabbedController::OnChildWindowRemoved(NSWindow* child) {
     return;
   }
   ImmersiveModeController::OnChildWindowRemoved(child);
+}
+
+bool ImmersiveModeTabbedController::ShouldObserveChildWindow(NSWindow* child) {
+  // Filter out the `tab_window_`.
+  if (child == tab_window_) {
+    return false;
+  }
+  return ImmersiveModeController::ShouldObserveChildWindow(child);
 }
 
 bool ImmersiveModeTabbedController::IsTabbed() {

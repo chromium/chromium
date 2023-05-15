@@ -20,7 +20,7 @@ void FieldTrialRecorder::RecordFieldTrialAtStartup(
     CachedResultProvider* cached_result_provider) {
   for (const auto& config : configs) {
     if (config->on_demand_execution ||
-        !metadata_utils::HasMigratedToMultiOutput(config.get())) {
+        metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;
     }
 

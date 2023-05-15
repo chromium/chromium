@@ -38,19 +38,13 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
       },
       *info);
 
-  // Support Dark/Light mode.
-  if (ash::features::IsDarkLightModeEnabled()) {
-    info->theme_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
-    info->dark_mode_theme_color =
-        cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
-                                  /*is_dark_mode=*/true);
-    info->background_color = info->theme_color;
-    info->dark_mode_background_color = info->dark_mode_theme_color;
-  } else {
-    info->theme_color = 0xffffffff;
-    info->background_color = 0xffffffff;
-  }
+  info->theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                /*is_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;

@@ -23,6 +23,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
@@ -67,7 +68,7 @@ namespace ash {
 namespace {
 
 const char kWallpaperView[] = "WallpaperViewWidget";
-constexpr auto kTestRoundedDisplayRadii = gfx::RoundedCornersF(10, 10, 15, 15);
+constexpr auto kTestRoundedPanelRadii = gfx::RoundedCornersF(10, 10, 15, 15);
 
 template <typename T>
 class Resetter {
@@ -211,7 +212,7 @@ class TestHelper {
   float GetStoredZoomScale(int64_t id);
 
  private:
-  AshTestBase* delegate_;  // Not owned
+  raw_ptr<AshTestBase, ExperimentalAsh> delegate_;  // Not owned
 };
 
 TestHelper::TestHelper(AshTestBase* delegate) : delegate_(delegate) {}
@@ -349,7 +350,7 @@ class TestEventHandler : public ui::EventHandler {
 
  private:
   gfx::Point mouse_location_;
-  aura::Window* target_root_;
+  raw_ptr<aura::Window, ExperimentalAsh> target_root_;
 
   float touch_radius_x_;
   float touch_radius_y_;
@@ -391,7 +392,7 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kHostWindowBounds,
-        "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedDisplayRadii));
+        "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedPanelRadii));
     scoped_features_.InitAndEnableFeature(display::features::kRoundedDisplay);
     AshTestBase::SetUp();
 
@@ -805,7 +806,7 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
 
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 }
 
@@ -824,13 +825,13 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
 
-  // Primary display has rounded corners set in
+  // Primary display has panel radii set in
   // `WindowTreeHostManagerRoundedDisplayTest::SetUp()`.
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
-  // Adding a secondary display should not propagate the rounded corner
-  // property.
+  // Adding a secondary display should not propagate the radii of display's
+  // panel.
   display_manager()->OnNativeDisplaysChanged(
       {first_display_info_,
        display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
@@ -842,20 +843,20 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
       window_tree_host_manager->GetRoundedDisplayProvider(
           secondary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
   EXPECT_FALSE(secondary_display_rounded_display_provider);
 
-  // Removing the secondary display should not effect the rounded corner
-  // property.
+  // Removing the secondary display should not effect the radii of display's
+  // panel.
   display_manager()->OnNativeDisplaysChanged({first_display_info_});
   primary_display_rounded_display_provider =
       window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
-  // Changing the the metrics should not effect rounded corner property.
+  // Changing the the metrics should not effect radii of display's panel.
   display::ManagedDisplayInfo update_first_display_info = first_display_info_;
   update_first_display_info.set_device_scale_factor(2.0);
   update_first_display_info.SetBounds(gfx::Rect(400, 200));
@@ -864,7 +865,7 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   primary_display_rounded_display_provider =
       window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 }
 
@@ -883,9 +884,9 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
 
-  // Primary display has rounded corners set in
+  // Primary display has panel radii set in
   // `WindowTreeHostManagerRoundedDisplayTest::SetUp()`.
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
   // Adding a secondary display without rounded-display.
@@ -934,8 +935,8 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   RoundedDisplayProviderTestApi secondary_provider_test(
       new_secondary_display_rounded_display_provider);
 
-  // When a display is swapped. we should not have destroyed the rounded display
-  // provider instead just update the parent of the host window.
+  // When a display is swapped, we should update the parent of the host window
+  // of the provider instead of creating a new provider.
   EXPECT_EQ(new_secondary_display_rounded_display_provider,
             primary_display_rounded_display_provider);
 
@@ -943,6 +944,69 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   EXPECT_EQ(secondary_provider_test.GetHostWindow()->parent(),
             window_tree_host_manager->GetRootWindowForDisplayId(
                 secondary_display.id()));
+}
+
+class HostWindowObserver : aura::WindowObserver {
+ public:
+  explicit HostWindowObserver(const aura::Window* host_window)
+      : host_window_(host_window) {
+    // Host window need to be attached to a window tree host i.e part of window
+    // tree hierarchy.
+    DCHECK(host_window_->parent());
+  }
+
+  HostWindowObserver(const HostWindowObserver&) = delete;
+  HostWindowObserver& operator=(const HostWindowObserver&) = delete;
+
+  ~HostWindowObserver() override = default;
+
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override {
+    if (window == host_window_ && !parent) {
+      removed_from_host_ = true;
+    }
+  }
+
+  bool removed_from_host() const { return removed_from_host_; }
+
+ private:
+  bool removed_from_host_ = false;
+  const aura::Window* host_window_ = nullptr;
+};
+
+// Tests that RoundedDisplayProvider and its host window are correctly deleted
+// when we have only one display that display is being replaced i.e the primary
+// window tree host is temporarily stored and then attached to the new display.
+TEST_F(WindowTreeHostManagerRoundedDisplayTest,
+       RoundedDisplayProviderRemovedFromPrimaryWindowTreeHost) {
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  RoundedDisplayProvider* rounded_display_provider =
+      window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
+  RoundedDisplayProviderTestApi provider_test(rounded_display_provider);
+
+  HostWindowObserver observer(provider_test.GetHostWindow());
+
+  // First display has rounded corners.
+  display_manager()->OnNativeDisplaysChanged({first_display_info_});
+
+  // Since the primary display was removed and it was the only display,
+  // the primary window tree was temporarily stored and then attached to the new
+  // display.
+  display_manager()->OnNativeDisplaysChanged(
+      {display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
+
+  primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  // Confirms that RoundedDisplayProvider was deleted and the host_window was
+  // removed from the root_window of the primary window tree host.
+  EXPECT_FALSE(window_tree_host_manager->GetRoundedDisplayProvider(
+      primary_display.id()));
+  EXPECT_FALSE(observer.removed_from_host());
 }
 
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {

@@ -14,7 +14,7 @@
 @class AppState;
 @class SceneController;
 @class SceneState;
-@protocol BrowserInterfaceProvider;
+@protocol BrowserProviderInterface;
 
 // Describes the possible scene states.
 // This is an iOS 12 compatible version of UISceneActivationState enum.
@@ -75,8 +75,8 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 @property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
 
 // The interface provider associated with this scene.
-@property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
-    interfaceProvider;
+@property(nonatomic, strong, readonly) id<BrowserProviderInterface>
+    browserProviderInterface;
 
 // The persistent identifier for the scene session. This should be used instead
 // of -[UISceneSession persistentIdentifier].

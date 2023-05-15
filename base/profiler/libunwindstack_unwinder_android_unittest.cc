@@ -203,7 +203,9 @@ TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
                                     "callWithJavaFunction"});
 }
 
-TEST(LibunwindstackUnwinderAndroidTest, ReparsesMapsOnNewDynamicLibraryLoad) {
+// TODO(b/269239545): Delete or re-enable (and enable updatable maps) this test.
+TEST(LibunwindstackUnwinderAndroidTest,
+     DISABLED_ReparsesMapsOnNewDynamicLibraryLoad) {
   // The current version of /proc/self/maps is used to create
   // memory_regions_map_ object.
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();

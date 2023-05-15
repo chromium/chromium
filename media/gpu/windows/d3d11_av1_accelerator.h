@@ -19,13 +19,15 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_accelerator.h"
 
 typedef struct _DXVA_PicParams_AV1 DXVA_PicParams_AV1;
 typedef struct _DXVA_Tile_AV1 DXVA_Tile_AV1;
 
 namespace media {
 
-class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
+class D3D11AV1Accelerator : public D3DAccelerator,
+                            public AV1Decoder::AV1Accelerator {
  public:
   D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
                       MediaLog* media_log,
@@ -55,23 +57,12 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
 
-  void RecordFailure(const std::string& fail_type, D3D11Status error);
-  void RecordFailure(const std::string& fail_type,
-                     const std::string& message,
-                     D3D11Status::Codes reason);
-  void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
   void FillPicParams(size_t picture_index,
                      bool apply_grain,
                      const libgav1::ObuFrameHeader& frame_header,
                      const libgav1::ObuSequenceHeader& seq_header,
                      const AV1ReferenceFrameVector& ref_frames,
                      DXVA_PicParams_AV1* pp);
-
-  raw_ptr<D3D11VideoDecoderClient> client_;
-  std::unique_ptr<MediaLog> media_log_;
-  ComD3D11VideoDecoder video_decoder_;
-  ComD3D11VideoDevice video_device_;
-  std::unique_ptr<VideoContextWrapper> video_context_;
 };
 
 }  // namespace media

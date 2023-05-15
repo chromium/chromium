@@ -131,8 +131,6 @@ extern const char kActionIdWebDriveOfficePowerPoint[];
 extern const char kActionIdOpenInOffice[];
 extern const char kActionIdOpenWeb[];
 
-extern const char kODFSExtensionId[];
-
 // Checks which extension is installed and return the latest one installed or ""
 // if none is installed
 std::string GetODFSExtensionId(Profile* profile);
@@ -412,10 +410,27 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// Returns the group of extensions we consider to be 'Word', 'Excel' or
+// 'PowerPoint' files for the purpose of setting preferences. The extensions
+// contain the '.' character at the start.
+std::set<std::string> WordGroupExtensions();
+std::set<std::string> ExcelGroupExtensions();
+std::set<std::string> PowerPointGroupExtensions();
+
+// The same as above but MIME types.
+std::set<std::string> WordGroupMimeTypes();
+std::set<std::string> ExcelGroupMimeTypes();
+std::set<std::string> PowerPointGroupMimeTypes();
+
 // Updates the default task for each of the office file types.
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task);
+
+// Whether we have an explicit user preference stored for the file handler for
+// this extension. |extension| should contain the leading '.'.
+bool HasExplicitDefaultFileHandler(Profile* profile,
+                                   const std::string& extension);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
 // Updates the default task for each of the office file types to a Files
@@ -429,23 +444,65 @@ void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
                                         const std::string& action_id);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
-// Sets the user preference storing whether the setup flow for office files has
-// ever been completed.
-void SetOfficeSetupComplete(Profile* profile, bool complete = true);
-// Whether or not the setup flow for office files has ever been completed.
-bool OfficeSetupComplete(Profile* profile);
+// Sets the user preference storing whether we should always move office files
+// to Google Drive without first asking the user.
+void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool complete = true);
+// Whether we should always move office files to Google Drive without first
+// asking the user.
+bool GetAlwaysMoveOfficeFilesToDrive(Profile* profile);
 
 // Sets the user preference storing whether we should always move office files
-// without first asking the user.
-void SetAlwaysMoveOfficeFiles(Profile* profile, bool complete = true);
-// Whether we should always move office files without first asking the user.
-bool AlwaysMoveOfficeFiles(Profile* profile);
+// to OneDrive without first asking the user.
+void SetAlwaysMoveOfficeFilesToOneDrive(Profile* profile, bool complete = true);
+// Whether we should always move office files to OneDrive without first asking
+// the user.
+bool GetAlwaysMoveOfficeFilesToOneDrive(Profile* profile);
 
 // Sets the user preference storing whether the move confirmation dialog has
-// been shown before.
-void SetOfficeMoveConfirmationShown(Profile* profile, bool complete);
-// Whether the move confirmation dialog has been shown before.
-bool OfficeMoveConfirmationShown(Profile* profile);
+// been shown before for moving files to Drive.
+void SetOfficeMoveConfirmationShownForDrive(Profile* profile, bool complete);
+// Whether the move confirmation dialog has been shown before for moving files
+// to Drive.
+bool GetOfficeMoveConfirmationShownForDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for moving files to OneDrive.
+void SetOfficeMoveConfirmationShownForOneDrive(Profile* profile, bool complete);
+// Whether the move confirmation dialog has been shown before for moving files
+// to OneDrive.
+bool GetOfficeMoveConfirmationShownForOneDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a local source to Drive.
+void SetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile,
+                                                   bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a local source to Drive.
+bool GetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a local source to OneDrive.
+void SetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile,
+                                                      bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a local source to OneDrive.
+bool GetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a cloud source to Drive.
+void SetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile,
+                                                   bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a cloud source to Drive.
+bool GetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a cloud source to OneDrive.
+void SetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile,
+                                                      bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a cloud source to OneDrive.
+bool GetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile);
 
 // Sets the preference `office.file_moved_one_drive`.
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved);

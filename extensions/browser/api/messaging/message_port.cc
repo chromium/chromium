@@ -18,6 +18,7 @@ bool MessagePort::HasFrame(content::RenderFrameHost* rfh) const {
 void MessagePort::RevalidatePort() {}
 
 void MessagePort::DispatchOnConnect(
+    ChannelType channel_type,
     const std::string& channel_name,
     absl::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,

@@ -996,7 +996,7 @@ TEST(optionalTest, PointerStuff) {
 
 // MSVC has a bug with "cv-qualifiers in class construction", fixed in 2017. See
 // https://docs.microsoft.com/en-us/cpp/cpp-conformance-improvements-2017#bug-fixes
-// The compiler some incorrectly ingores the cv-qualifier when generating a
+// The compiler some incorrectly ignores the cv-qualifier when generating a
 // class object via a constructor call. For example:
 //
 // class optional {

@@ -10,7 +10,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
-import './tab_discard_exception_dialog.js';
+import './tab_discard_exception_add_dialog.js';
+import './tab_discard_exception_edit_dialog.js';
 import './tab_discard_exception_entry.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -27,9 +28,9 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
 
 import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
-import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './tab_discard_exception_dialog.js';
 import {TabDiscardExceptionEntry} from './tab_discard_exception_entry.js';
 import {getTemplate} from './tab_discard_exception_list.html.js';
+import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './tab_discard_exception_validation_mixin.js';
 
 export const TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE: number = 5;
 
@@ -81,7 +82,12 @@ export class TabDiscardExceptionListElement extends
         value: '',
       },
 
-      showDialog_: {
+      showAddDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showEditDialog_: {
         type: Boolean,
         value: false,
       },
@@ -100,7 +106,8 @@ export class TabDiscardExceptionListElement extends
   private siteList_: TabDiscardExceptionEntry[];
   private overflowSiteListExpanded: boolean;
   private selectedRule_: string;
-  private showDialog_: boolean;
+  private showAddDialog_: boolean;
+  private showEditDialog_: boolean;
   private tooltipText_: string;
 
   private metricsProxy_: PerformanceMetricsProxy =
@@ -123,8 +130,8 @@ export class TabDiscardExceptionListElement extends
   }
 
   private onAddClick_() {
-    this.selectedRule_ = '';
-    this.showDialog_ = true;
+    assert(!this.showEditDialog_);
+    this.showAddDialog_ = true;
   }
 
   private onMenuClick_(e: CustomEvent<{target: HTMLElement, site: string}>) {
@@ -135,7 +142,8 @@ export class TabDiscardExceptionListElement extends
 
   private onEditClick_() {
     assert(this.selectedRule_);
-    this.showDialog_ = true;
+    assert(!this.showAddDialog_);
+    this.showEditDialog_ = true;
     this.$.menu.get().close();
   }
 
@@ -146,8 +154,12 @@ export class TabDiscardExceptionListElement extends
     this.$.menu.get().close();
   }
 
-  private onDialogClose_() {
-    this.showDialog_ = false;
+  private onAddDialogClose_() {
+    this.showAddDialog_ = false;
+  }
+
+  private onEditDialogClose_() {
+    this.showEditDialog_ = false;
   }
 
   private onAddException_() {

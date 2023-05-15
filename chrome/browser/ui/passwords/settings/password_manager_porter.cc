@@ -115,10 +115,10 @@ void PasswordManagerPorter::Import(
     password_manager::PasswordForm::Store to_store,
     ImportResultsCallback results_callback) {
   DCHECK(web_contents);
-  // TODO(crbug/1417650): Handle importer_->IsState(CONFLICTS) gracefully.
   if (!import_results_callback_.is_null() ||
       (importer_ &&
-       importer_->IsState(password_manager::PasswordImporter::kInProgress))) {
+       (importer_->IsState(password_manager::PasswordImporter::kInProgress) ||
+        importer_->IsState(password_manager::PasswordImporter::kConflicts)))) {
     // Early return to prevent crashes due to already active import process in
     // other window.
     password_manager::ImportResults results;
@@ -168,10 +168,10 @@ void PasswordManagerPorter::ContinueImport(
 }
 
 void PasswordManagerPorter::ResetImporter(bool delete_file) {
-  // Importer can be reset only in kNotStarted or kFinished states.
+  // Importer can be reset only in kNotStarted, kFinished, kConflicts states,
+  // but not in kInProgress.
   if (!importer_ ||
-      (!importer_->IsState(password_manager::PasswordImporter::kNotStarted) &&
-       !importer_->IsState(password_manager::PasswordImporter::kFinished))) {
+      importer_->IsState(password_manager::PasswordImporter::kInProgress)) {
     return;
   }
   if (delete_file &&

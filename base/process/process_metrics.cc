@@ -90,6 +90,8 @@ Value::Dict SystemMetrics::ToDict() const {
   return res;
 }
 
+ProcessMetrics::~ProcessMetrics() = default;
+
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateCurrentProcessMetrics() {
 #if !BUILDFLAG(IS_MAC)
   return CreateProcessMetrics(base::GetCurrentProcessHandle());

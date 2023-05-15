@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 
 namespace ash {
@@ -34,7 +35,7 @@ class CaptivePortalView : public SimpleWebViewDialog {
  private:
   // Contains CaptivePortalWindowProxy to be notified when redirection state is
   // resolved.
-  CaptivePortalWindowProxy* proxy_;
+  raw_ptr<CaptivePortalWindowProxy, ExperimentalAsh> proxy_;
 
   bool redirected_;
 };

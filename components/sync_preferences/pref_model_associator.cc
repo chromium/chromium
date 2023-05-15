@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -33,16 +34,6 @@
 namespace sync_preferences {
 
 namespace {
-
-uint32_t GetWriteFlags(const std::string& pref_name) {
-  // Note: Just always use the default write flags here. The only other option
-  // that exists is LOSSY, which (a) currently (as of 2023-02) no syncable prefs
-  // use, and (b) even if any did, using regular writes instead of lossy ones
-  // here would only have a very minor performance impact.
-  // TODO(crbug.com/1404937): Plumb the proper write flags through
-  // PrefServiceForAssociator.
-  return WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS;
-}
 
 const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
   switch (pref.GetDataType()) {
@@ -150,7 +141,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
 
   if (sync_pref.IsValid()) {
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_pref);
-    DCHECK(pref_name == preference.name());
+    CHECK_EQ(pref_name, preference.name());
     base::JSONReader::Result parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(preference.value());
     if (!parsed_json.has_value()) {
@@ -167,7 +158,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
         // Overwrite updates to the account store.
         if (sync_value.is_none()) {
           LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
-          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+          user_prefs_->RemoveValue(pref_name,
+                                   pref_service_->GetWriteFlags(pref_name));
         } else if (*user_pref_value != sync_value) {
           SetPrefWithTypeCheck(pref_name, sync_value);
         }
@@ -180,7 +172,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
         // server.
         if (new_value.is_none()) {
           LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
-          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+          user_prefs_->RemoveValue(pref_name,
+                                   pref_service_->GetWriteFlags(pref_name));
         } else if (*user_pref_value != new_value) {
           SetPrefWithTypeCheck(pref_name, new_value);
         }
@@ -294,15 +287,22 @@ PrefModelAssociator::MergeDataAndStartSyncing(
 
 void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type_, type);
+  Stop(/*is_browser_shutdown=*/false);
+}
+
+void PrefModelAssociator::OnBrowserShutdown(syncer::ModelType type) {
+  DCHECK_EQ(type_, type);
+  Stop(/*is_browser_shutdown=*/true);
+}
+
+void PrefModelAssociator::Stop(bool is_browser_shutdown) {
   models_associated_ = false;
   sync_processor_.reset();
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    // TODO(crbug.com/1416480): StopSyncing() gets called when sync is being
-    // stopped (permanently), but also during browser shutdown, and in that case
-    // it's unnecessary (if mostly harmless) to clear the store. Plumb through
-    // an "is_shutdown" bit and don't clear in that case. Another alternative
-    // would be to just not call StopSyncing in case of browser
-    // shutdown (crbug.com/1400437).
+  if (!is_browser_shutdown &&
+      base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    // Avoid clearing account store in case of browser shutdown, since it
+    // tries to notify the observers which may or may not exist by this time
+    // during browser shutdown (crbug.com/1434902).
     dual_layer_user_prefs_->DisableTypeAndClearAccountStore(type_);
   }
   synced_preferences_.clear();
@@ -358,7 +358,8 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     }
 
     if (sync_change.change_type() == syncer::SyncChange::ACTION_DELETE) {
-      user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+      user_prefs_->RemoveValue(pref_name,
+                               pref_service_->GetWriteFlags(pref_name));
       continue;
     }
 
@@ -538,7 +539,8 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
   }
   // Write directly to the user controlled value store, which is ignored if the
   // preference is controlled by a higher-priority layer (e.g. policy).
-  user_prefs_->SetValue(pref_name, new_value.Clone(), GetWriteFlags(pref_name));
+  user_prefs_->SetValue(pref_name, new_value.Clone(),
+                        pref_service_->GetWriteFlags(pref_name));
   return true;
 }
 

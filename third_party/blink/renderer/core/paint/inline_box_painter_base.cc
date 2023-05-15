@@ -21,19 +21,19 @@ PhysicalRect InlineBoxPainterBase::ClipRectForNinePieceImageStrip(
     const NinePieceImage& image,
     const PhysicalRect& paint_rect) {
   PhysicalRect clip_rect(paint_rect);
-  LayoutRectOutsets outsets = style.ImageOutsets(image);
+  NGPhysicalBoxStrut outsets = style.ImageOutsets(image);
   if (sides_to_include.left) {
-    clip_rect.SetX(paint_rect.X() - outsets.Left());
-    clip_rect.SetWidth(paint_rect.Width() + outsets.Left());
+    clip_rect.SetX(paint_rect.X() - outsets.left);
+    clip_rect.SetWidth(paint_rect.Width() + outsets.left);
   }
   if (sides_to_include.right)
-    clip_rect.SetWidth(clip_rect.Width() + outsets.Right());
+    clip_rect.SetWidth(clip_rect.Width() + outsets.right);
   if (sides_to_include.top) {
-    clip_rect.SetY(paint_rect.Y() - outsets.Top());
-    clip_rect.SetHeight(paint_rect.Height() + outsets.Top());
+    clip_rect.SetY(paint_rect.Y() - outsets.top);
+    clip_rect.SetHeight(paint_rect.Height() + outsets.top);
   }
   if (sides_to_include.bottom)
-    clip_rect.SetHeight(clip_rect.Height() + outsets.Bottom());
+    clip_rect.SetHeight(clip_rect.Height() + outsets.bottom);
   return clip_rect;
 }
 

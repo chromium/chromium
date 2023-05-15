@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.url.GURL;
 
 import java.util.LinkedList;
 
@@ -23,20 +22,33 @@ public class VirtualCardEnrollmentFields {
     final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
     @VisibleForTesting
     final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
-    private final Bitmap mIssuerCardArt;
-    private final String mCardIdentifierString;
+    private final String mCardName;
+    private final String mCardNumber;
+    private final int mNetworkIconId;
+    private final GURL mCardArtUrl;
 
-    public VirtualCardEnrollmentFields(String cardIdentifierString, Bitmap issuerCardArt) {
-        mCardIdentifierString = cardIdentifierString;
-        mIssuerCardArt = issuerCardArt;
+    public VirtualCardEnrollmentFields(
+            String cardName, String cardNumber, int networkIconId, GURL cardArtUrl) {
+        mCardName = cardName;
+        mCardNumber = cardNumber;
+        mNetworkIconId = networkIconId;
+        mCardArtUrl = cardArtUrl;
     }
 
-    public Bitmap getIssuerCardArt() {
-        return mIssuerCardArt;
+    public String getCardName() {
+        return mCardName;
     }
 
-    public String getCardIdentifierString() {
-        return mCardIdentifierString;
+    public String getCardNumber() {
+        return mCardNumber;
+    }
+
+    public int getNetworkIconId() {
+        return mNetworkIconId;
+    }
+
+    public GURL getCardArtUrl() {
+        return mCardArtUrl;
     }
 
     public LinkedList<LegalMessageLine> getGoogleLegalMessages() {
@@ -50,14 +62,16 @@ public class VirtualCardEnrollmentFields {
     /**
      * Returns an instance of {@link VirtualCardEnrollmentFields}.
      *
-     * @param cardIdentifierString The text to be displayed in the enrollment dialog to help with
-     *         identifying the card.
-     * @param issuerCardArt The image associated with the card being enrolled.
+     * @param cardName The name of the card.
+     * @param cardNumber The card's last 4 digits.
+     * @param networkIconId The resource Id for the card's network icon.
+     * @param cardArtUrl The URL to fetch the card art associated with the card being enrolled.
      */
     @CalledByNative
     @VisibleForTesting
-    static VirtualCardEnrollmentFields create(String cardIdentifierString, Bitmap issuerCardArt) {
-        return new VirtualCardEnrollmentFields(cardIdentifierString, issuerCardArt);
+    static VirtualCardEnrollmentFields create(
+            String cardName, String cardNumber, int networkIconId, GURL cardArtUrl) {
+        return new VirtualCardEnrollmentFields(cardName, cardNumber, networkIconId, cardArtUrl);
     }
 
     /**

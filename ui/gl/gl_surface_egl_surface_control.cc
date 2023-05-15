@@ -371,19 +371,12 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
                 << image_color_space.ToString();
   }
 
-  if (uninitialized || surface_state.color_space != image_color_space) {
-    surface_state.color_space = image_color_space;
-    pending_transaction_->SetColorSpace(*surface_state.surface,
-                                        image_color_space);
-  }
-
-  if (uninitialized ||
+  if (uninitialized || surface_state.color_space != image_color_space ||
       surface_state.hdr_metadata != overlay_plane_data.hdr_metadata) {
-    DCHECK(!overlay_plane_data.hdr_metadata ||
-           surface_state.color_space.IsHDR());
+    surface_state.color_space = image_color_space;
     surface_state.hdr_metadata = overlay_plane_data.hdr_metadata;
-    pending_transaction_->SetHDRMetadata(*surface_state.surface,
-                                         surface_state.hdr_metadata);
+    pending_transaction_->SetColorSpace(
+        *surface_state.surface, image_color_space, surface_state.hdr_metadata);
   }
 
   if (frame_rate_update_pending_)

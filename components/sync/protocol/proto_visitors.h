@@ -191,7 +191,7 @@ VISIT_PROTO_FIELDS(
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(guid);
-  VISIT(origin);
+  VISIT(deprecated_origin);
   VISIT(use_count);
   VISIT(use_date);
   VISIT(profile_label);
@@ -224,6 +224,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_state);
   VISIT(address_home_zip);
   VISIT(address_home_country);
+  VISIT(address_home_landmark);
   VISIT(address_home_street_address);
   VISIT(address_home_sorting_code);
   VISIT(address_home_dependent_locality);
@@ -237,6 +238,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_ENUM(address_home_state_status);
   VISIT_ENUM(address_home_zip_status);
   VISIT_ENUM(address_home_country_status);
+  VISIT_ENUM(address_home_landmark_status);
   VISIT_ENUM(address_home_street_address_status);
   VISIT_ENUM(address_home_sorting_code_status);
   VISIT_ENUM(address_home_dependent_locality_status);
@@ -339,6 +341,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_subpremise_name);
   VISIT(address_apt_num);
   VISIT(address_floor);
+  VISIT(address_landmark);
   VISIT(phone_home_whole_number);
   VISIT(birthdate_day);
   VISIT(birthdate_month);
@@ -639,7 +642,6 @@ VISIT_PROTO_FIELDS(const sync_pb::GetUpdatesMessage& proto) {
   VISIT_REP(from_progress_marker);
   VISIT(streaming);
   VISIT(need_encryption_key);
-  VISIT(create_mobile_bookmarks_folder);
   VISIT_ENUM(get_updates_origin);
   VISIT(is_retry);
   VISIT_REP(client_contexts);
@@ -696,8 +698,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
   VISIT(notes_enabled_before_initial_sync_for_passwords);
 }
 
-VISIT_PROTO_FIELDS(
-    const sync_pb::ModelTypeState::Invalidation& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState::Invalidation& proto) {
   VISIT(hint);
   VISIT(version);
 }
@@ -885,6 +886,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues_PasswordIssue& proto) {
   VISIT(date_first_detection_windows_epoch_micros);
   VISIT(is_muted);
+  VISIT(trigger_notification_from_backend_on_detection);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes& proto) {
@@ -1489,6 +1491,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
   VISIT(updated_time_windows_epoch_micros);
   VISIT(desk);
   VISIT_ENUM(desk_type);
+  VISIT(client_cache_guid);
+  VISIT_ENUM(device_form_factor);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {

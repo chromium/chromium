@@ -78,7 +78,8 @@ class PageInfoDelegate {
 
   virtual std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() = 0;
-  virtual std::u16string GetWebAppShortName() = 0;
+
+  virtual bool IsIsolatedWebApp() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
   virtual void ShowAllSitesSettingsFilteredByFpsOwner(
@@ -92,6 +93,9 @@ class PageInfoDelegate {
   virtual void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) = 0;
   virtual void OnUIClosing() = 0;
 #endif
+
+  virtual std::u16string GetSubjectName(const GURL& url) = 0;
+
   virtual permissions::PermissionDecisionAutoBlocker*
   GetPermissionDecisionAutoblocker() = 0;
 

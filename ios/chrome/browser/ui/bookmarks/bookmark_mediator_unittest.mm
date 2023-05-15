@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/bookmarks/common/storage_type.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -20,7 +24,9 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +34,8 @@
 
 @interface BookmarkMediator ()
 - (NSString*)messageForAddingBookmarksInFolder:(BOOL)addFolder
+                             folderStorageType:
+                                 (bookmarks::StorageType)storageType
                                          title:(NSString*)folderTitle
                                          count:(int)count;
 @end
@@ -37,14 +45,33 @@ class FakeSyncSetupService : public SyncSetupService {
   FakeSyncSetupService(syncer::SyncService* sync_service)
       : SyncSetupService(sync_service) {}
 
-  bool IsDataTypePreferred(syncer::ModelType datatype) const override {
+  bool IsDataTypePreferred(syncer::UserSelectableType datatype) const override {
     return true;
   }
 };
 
 namespace {
 
-class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
+NSString* const kFolderName = @"folder name";
+NSString* const kEmail = @"foo1@gmail.com";
+
+// List of cases to tests.
+enum class SignInStatus {
+  // The user is signed out.
+  kSignOut,
+  // The user is signed in and using the local or syncable storage.
+  kSignedInOnlyWithLocalOrSyncableStorage,
+  // The user is signed in and using the account storage.
+  kSignedInOnlyWithAccountStorage,
+  // The user is signed in and syncing.
+  KSignedInAndSync
+};
+
+class BookmarkMediatorUnitTest
+    : public BookmarkIOSUnitTestSupport,
+      public testing::WithParamInterface<
+          std::tuple<int, bool, bool, SignInStatus>> {
+ public:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
     authentication_service_ = AuthenticationServiceFactory::GetForBrowserState(
@@ -54,29 +81,95 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
     sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithBookmarkModel:profile_bookmark_model_
-                            prefs:chrome_browser_state_->GetPrefs()
-            authenticationService:authentication_service_
-                 syncSetupService:sync_setup_service_.get()];
+        initWithWithProfileBookmarkModel:profile_bookmark_model_
+                    accountBookmarkModel:nullptr
+                                   prefs:chrome_browser_state_->GetPrefs()
+                   authenticationService:authentication_service_
+                             syncService:sync_service_
+                        syncSetupService:sync_setup_service_.get()];
   }
 
+  // Number of bookmark saved.
+  int GetBookmarkCountParam() { return std::get<0>(GetParam()); }
+  // Weather kEnableEmailInBookmarksReadingListSnackbar flag should be enabled.
+  bool GetShouldEnableSnackbarFeatureParam() { return std::get<1>(GetParam()); }
+  // Weather the bookmarks are saved in the default folder or not.
+  bool GetDefaultFolderSetParam() { return std::get<2>(GetParam()); }
+  SignInStatus GetSignInStatusParam() { return std::get<3>(GetParam()); }
+
  protected:
-  void SignInAndSync() {
+  // Signs in using `fakeIdentity1`.
+  FakeSystemIdentity* SignInOnly() {
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity);
-    authentication_service_->SignIn(fake_identity);
-    authentication_service_->GrantSyncConsent(fake_identity);
+    authentication_service_->SignIn(
+        fake_identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+    return fake_identity;
   }
 
-  void setEmailInSnackbarFlag(bool enabled) {
+  // Signs in and enable sync, using the same identity than `SignInOnly()`.
+  void SignInAndSync() {
+    FakeSystemIdentity* fake_identity = SignInOnly();
+    authentication_service_->GrantSyncConsent(
+        fake_identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+  }
+
+  // Enable or disable `kEnableEmailInBookmarksReadingListSnackbar` flag,
+  // according to `enabled`.
+  void SetEmailInSnackbarFlag(bool enabled) {
     if (enabled) {
       scope_.InitWithFeatures({kEnableEmailInBookmarksReadingListSnackbar}, {});
     } else {
       scope_.InitWithFeatures({}, {kEnableEmailInBookmarksReadingListSnackbar});
     }
+  }
+
+  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED` string with `count` value.
+  NSString* GetSavedToDeviceText(int count) {
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count);
+    return base::SysUTF16ToNSString(message);
+  }
+
+  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER` string with `count` and
+  // `folder_name` value.
+  NSString* GetSavedToFolderText(int count, NSString* folder_name) {
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "title",
+        base::SysNSStringToUTF16(folder_name));
+    return base::SysUTF16ToNSString(message);
+  }
+
+  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT` string with `count` and
+  // `email` value.
+  NSString* GetSavedToAccountText(int count, NSString* email) {
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "email", base::SysNSStringToUTF16(email));
+    return base::SysUTF16ToNSString(message);
+  }
+
+  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT` string with `count`,
+  // `folder_name` and `email` value.
+  NSString* GetSavedToFolderToAccountText(int count,
+                                          NSString* folder_name,
+                                          NSString* email) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "title", base::SysNSStringToUTF16(folder_name),
+        "email", base::SysNSStringToUTF16(email));
+    return base::SysUTF16ToNSString(message);
   }
 
   BookmarkMediator* mediator_;
@@ -87,135 +180,71 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
   base::test::ScopedFeatureList scope_;
 };
 
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedOutNoFolder) {
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:nil
-                                                     count:1],
-              @"Bookmarked");
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BookmarkMediatorUnitTest,
+    testing::Combine(
+        // Number of bookmarked saved.
+        testing::Values(1, 2),
+        // kEnableEmailInBookmarksReadingListSnackbar enabled or disabled.
+        testing::Bool(),
+        // Bookmark saved in the default folder or not.
+        testing::Bool(),
+        // Sign-in status.
+        testing::Values(SignInStatus::kSignOut,
+                        SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage,
+                        SignInStatus::kSignedInOnlyWithAccountStorage,
+                        SignInStatus::KSignedInAndSync)));
 
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedOutNoFolder) {
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:nil
-                                                     count:1],
-              @"Bookmarked");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedOutDefaultFolder) {
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:@"default folder"
-                                                     count:1],
-              @"Bookmarked");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedOutDefaultFolder) {
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:@"default folder"
-                                                     count:1],
-              @"Bookmarked");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedOutInFolder) {
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
-                                                     title:@"folder name"
-                                                     count:1],
-              @"Bookmarked to \"folder name\"");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedOutInFolder) {
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
-                                                     title:@"folder name"
-                                                     count:1],
-              @"Bookmarked to \"folder name\"");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInNoFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:nil
-                                                     count:1],
-              @"Bookmarked");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInNoFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:nil
-                                                     count:1],
-              @"Bookmark saved in your account, foo1@gmail.com");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInNoFolderPlural) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:nil
-                                                     count:2],
-              @"Bookmarks saved in your account, foo1@gmail.com");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInDefaultFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:@"default folder"
-                                                     count:1],
-              @"Bookmarked");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInDefaultFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:@"default folder"
-                                                     count:1],
-              @"Bookmark saved in your account, foo1@gmail.com");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInDefaultFolderPlural) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
-                                                     title:@"default folder"
-                                                     count:2],
-              @"Bookmarks saved in your account, foo1@gmail.com");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInInFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(false);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
-                                                     title:@"folder name"
-                                                     count:1],
-              @"Bookmarked to \"folder name\"");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInInFolder) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ(
-      [mediator_ messageForAddingBookmarksInFolder:YES
-                                             title:@"folder name"
-                                             count:1],
-      @"Bookmark saved to \"folder name\" in your account, foo1@gmail.com");
-}
-
-TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInInFolderPlural) {
-  SignInAndSync();
-  setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ(
-      [mediator_ messageForAddingBookmarksInFolder:YES
-                                             title:@"folder name"
-                                             count:2],
-      @"Bookmarks saved to \"folder name\" in your account, foo1@gmail.com");
+// Tests the snackbar message with all the different combinaisons with:
+// * One or two saved bookmarks
+// * kEnableEmailInBookmarksReadingListSnackbar enabled/disabled.
+// * Using the default folder or not
+// * Being signed-out/signed in/signed in with account storage/signed in + sync.
+TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
+  const int bookmark_count = GetBookmarkCountParam();
+  const SignInStatus signed_in_status = GetSignInStatusParam();
+  const bool default_folder_set = GetDefaultFolderSetParam();
+  const bool snackbar_feature_set = GetShouldEnableSnackbarFeatureParam();
+  bookmarks::StorageType bookmark_storage_type =
+      bookmarks::StorageType::kLocalOrSyncable;
+  switch (signed_in_status) {
+    case SignInStatus::kSignOut:
+      break;
+    case SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage:
+      SignInOnly();
+      break;
+    case SignInStatus::kSignedInOnlyWithAccountStorage:
+      SignInOnly();
+      bookmark_storage_type = bookmarks::StorageType::kAccount;
+      break;
+    case SignInStatus::KSignedInAndSync:
+      SignInAndSync();
+      break;
+  }
+  SetEmailInSnackbarFlag(snackbar_feature_set);
+  NSString* const snackbar_message =
+      [mediator_ messageForAddingBookmarksInFolder:default_folder_set
+                                 folderStorageType:bookmark_storage_type
+                                             title:kFolderName
+                                             count:bookmark_count];
+  NSString* expected_snackbar_message = nil;
+  if (((signed_in_status == SignInStatus::KSignedInAndSync) ||
+       (bookmark_storage_type == bookmarks::StorageType::kAccount)) &&
+      snackbar_feature_set) {
+    if (default_folder_set) {
+      expected_snackbar_message =
+          GetSavedToFolderToAccountText(bookmark_count, kFolderName, kEmail);
+    } else {
+      expected_snackbar_message = GetSavedToAccountText(bookmark_count, kEmail);
+    }
+  } else if (default_folder_set) {
+    expected_snackbar_message =
+        GetSavedToFolderText(bookmark_count, kFolderName);
+  } else {
+    expected_snackbar_message = GetSavedToDeviceText(bookmark_count);
+  }
+  ASSERT_NSEQ(snackbar_message, expected_snackbar_message);
 }
 
 }  // namespace

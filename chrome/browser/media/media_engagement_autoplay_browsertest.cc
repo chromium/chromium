@@ -105,10 +105,11 @@ class MediaEngagementAutoplayBrowserTest
   }
 
   void LoadSubFrame(const std::string& page) {
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-        GetWebContents(), "document.getElementsByName('subframe')[0].src = \"" +
-                              http_server_origin2_.GetURL("/" + page).spec() +
-                              "\""));
+    EXPECT_TRUE(content::ExecJs(
+        GetWebContents(),
+        "document.getElementsByName('subframe')[0].src = \"" +
+            http_server_origin2_.GetURL("/" + page).spec() + "\"",
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   }
 
   void SetScores(const url::Origin& origin, int visits, int media_playbacks) {

@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
@@ -141,7 +142,7 @@ class ArcAppInstallEventLogger
       int64_t android_id);
 
   // The delegate that events are forwarded to for inclusion in the log.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Whether |this| has set itself up as observer of other classes and needs to
   // remove itself as observer in the destructor.

@@ -6,5 +6,5 @@
 
 std::unique_ptr<KeyedService> CreateMockSyncService(
     web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
+  return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
 }

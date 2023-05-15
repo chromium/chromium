@@ -12,7 +12,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
@@ -29,7 +28,6 @@ import org.chromium.ui.base.WindowAndroid;
  *
  */
 @JNINamespace("content")
-@JNIAdditionalImport(Wrappers.class)
 public class SmsProviderGms {
     private static final String TAG = "SmsProviderGms";
     private static final int MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND = 202990000;

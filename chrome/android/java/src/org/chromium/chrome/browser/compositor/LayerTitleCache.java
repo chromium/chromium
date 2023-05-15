@@ -122,7 +122,7 @@ public class LayerTitleCache {
         Bitmap originalFavicon = TabFavicon.getBitmap(tab);
         if (originalFavicon == null) {
             originalFavicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(
-                    mContext.getResources(), tab.getUrl(), !isDarkTheme);
+                    mContext, tab.getUrl(), !isDarkTheme);
         }
 
         TitleBitmapFactory titleBitmapFactory =

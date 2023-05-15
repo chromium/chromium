@@ -1,6 +1,5 @@
 images
 node_modules
-package-lock.json
 tests.result.txt
 tests.log
 piex.out.js

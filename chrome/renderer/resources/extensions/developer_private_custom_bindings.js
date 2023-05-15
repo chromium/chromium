@@ -20,22 +20,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   bindFileSystemFunction('loadDirectory');
 
-  // developerPrivate.enable is the same as chrome.management.setEnabled.
-  // TODO(devlin): Migrate callers off developerPrivate.enable.
-  bindingsAPI.compiledApi.enable = chrome.management.setEnabled;
-
-  apiFunctions.setHandleRequest('allowFileAccess',
-                                function(id, allow, callback) {
-    chrome.developerPrivate.updateExtensionConfiguration(
-        {extensionId: id, fileAccess: allow}, callback);
-  });
-
-  apiFunctions.setHandleRequest('allowIncognito',
-                                function(id, allow, callback) {
-    chrome.developerPrivate.updateExtensionConfiguration(
-        {extensionId: id, incognitoAccess: allow}, callback);
-  });
-
   apiFunctions.setHandleRequest('inspect', function(options, callback) {
     var renderViewId = options.render_view_id;
     if (typeof renderViewId === 'string') {

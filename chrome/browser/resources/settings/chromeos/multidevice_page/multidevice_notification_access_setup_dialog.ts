@@ -41,7 +41,7 @@ export enum NotificationAccessSetupOperationStatus {
   NOTIFICATION_ACCESS_PROHIBITED = 6,
 }
 
-interface SettingsMultideviceNotificationAccessSetupDialogElement {
+export interface SettingsMultideviceNotificationAccessSetupDialogElement {
   $: {
     dialog: CrDialogElement,
   };
@@ -50,7 +50,7 @@ interface SettingsMultideviceNotificationAccessSetupDialogElement {
 const SettingsMultideviceNotificationAccessSetupDialogElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsMultideviceNotificationAccessSetupDialogElement extends
+export class SettingsMultideviceNotificationAccessSetupDialogElement extends
     SettingsMultideviceNotificationAccessSetupDialogElementBase {
   static get is() {
     return 'settings-multidevice-notification-access-setup-dialog' as const;

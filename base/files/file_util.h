@@ -272,6 +272,8 @@ BASE_EXPORT bool ReadFromFD(int fd, char* buffer, size_t bytes);
 // Performs the same function as CreateAndOpenTemporaryStreamInDir(), but
 // returns the file-descriptor wrapped in a ScopedFD, rather than the stream
 // wrapped in a ScopedFILE.
+// The caller is responsible for deleting the file `path` points to, if
+// appropriate.
 BASE_EXPORT ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& dir,
                                                           FilePath* path);
 
@@ -370,18 +372,25 @@ BASE_EXPORT bool GetTempDir(FilePath* path);
 BASE_EXPORT FilePath GetHomeDir();
 
 // Returns a new temporary file in |dir| with a unique name. The file is opened
-// for exclusive read, write, and delete access (note: exclusivity is unique to
-// Windows). On Windows, the returned file supports File::DeleteOnClose.
+// for exclusive read, write, and delete access.
 // On success, |temp_file| is populated with the full path to the created file.
+//
+// NOTE: Exclusivity is unique to Windows. On Windows, the returned file
+// supports File::DeleteOnClose. On other platforms, the caller is responsible
+// for deleting the file `temp_file` points to, if appropriate.
 BASE_EXPORT File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
                                                  FilePath* temp_file);
 
-// Creates a temporary file. The full path is placed in |path|, and the
+// Creates a temporary file. The full path is placed in `path`, and the
 // function returns true if was successful in creating the file. The file will
 // be empty and all handles closed after this function returns.
+// The caller is responsible for deleting the file `path` points to, if
+// appropriate.
 BASE_EXPORT bool CreateTemporaryFile(FilePath* path);
 
-// Same as CreateTemporaryFile but the file is created in |dir|.
+// Same as CreateTemporaryFile() but the file is created in `dir`.
+// The caller is responsible for deleting the file `temp_file` points to, if
+// appropriate.
 BASE_EXPORT bool CreateTemporaryFileInDir(const FilePath& dir,
                                           FilePath* temp_file);
 
@@ -391,11 +400,14 @@ BASE_EXPORT FilePath
 FormatTemporaryFileName(FilePath::StringPieceType identifier);
 
 // Create and open a temporary file stream for exclusive read, write, and delete
-// access (note: exclusivity is unique to Windows). The full path is placed in
-// |path|. Returns the opened file stream, or null in case of error.
+// access. The full path is placed in `path`. Returns the opened file stream, or
+// null in case of error.
+// NOTE: Exclusivity is unique to Windows. On Windows, the returned file
+// supports File::DeleteOnClose. On other platforms, the caller is responsible
+// for deleting the file `path` points to, if appropriate.
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 
-// Similar to CreateAndOpenTemporaryStream, but the file is created in |dir|.
+// Similar to CreateAndOpenTemporaryStream(), but the file is created in `dir`.
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                                          FilePath* path);
 

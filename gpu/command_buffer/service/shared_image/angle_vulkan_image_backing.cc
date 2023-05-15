@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -62,13 +63,13 @@ gl::ScopedEGLImage CreateEGLImage(VkImage image,
 }  // namespace
 
 class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   SkiaAngleVulkanImageRepresentation(GrDirectContext* gr_context,
                                      SharedImageManager* manager,
                                      AngleVulkanImageBacking* backing,
                                      MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker),
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
         context_state_(backing_impl()->context_state_) {}
 
   ~SkiaAngleVulkanImageRepresentation() override = default;
@@ -124,7 +125,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
           final_msaa_count != backing_impl()->surface_msaa_count_) {
         SkColorType sk_color_type = viz::ToClosestSkColorType(
             /*gpu_compositing=*/true, format(), plane);
-        surface = SkSurface::MakeFromBackendTexture(
+        surface = SkSurfaces::WrapBackendTexture(
             backing_impl()->gr_context(), promise_texture->backendTexture(),
             surface_origin(), final_msaa_count, sk_color_type,
             backing_impl()->color_space().ToSkColorSpace(), &surface_props);
@@ -348,7 +349,7 @@ AngleVulkanImageBacking::ProduceGLTexturePassthrough(
       manager, this, this, tracker, std::move(textures));
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 AngleVulkanImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

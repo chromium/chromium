@@ -10,10 +10,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
-#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -238,7 +238,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
   // the query is invalid (due to wrong axis).
   absl::optional<LayoutUnit> EvaluateAnchor(
       const NGLogicalAnchorReference& reference,
-      AnchorValue anchor_value,
+      CSSAnchorValue anchor_value,
       float percentage,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
@@ -247,7 +247,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
       bool is_y_axis,
       bool is_right_or_bottom) const;
   LayoutUnit EvaluateSize(const NGLogicalAnchorReference& reference,
-                          AnchorSizeValue anchor_size_value,
+                          CSSAnchorSizeValue anchor_size_value,
                           WritingMode container_writing_mode,
                           WritingMode self_writing_mode) const;
 };
@@ -330,11 +330,11 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   absl::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
-      AnchorValue anchor_value,
+      CSSAnchorValue anchor_value,
       float percentage) const;
   absl::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
-      AnchorSizeValue anchor_size_value) const;
+      CSSAnchorSizeValue anchor_size_value) const;
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
   const NGLogicalAnchorQueryMap* anchor_queries_ = nullptr;

@@ -49,7 +49,7 @@ class UkmDatabaseClient {
   UkmDatabaseClient();
   ~UkmDatabaseClient();
 
-  raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_for_testing_;
+  raw_ptr<ukm::UkmRecorderImpl, DanglingUntriaged> ukm_recorder_for_testing_;
   std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<segmentation_platform::UkmDataManager> ukm_data_manager_;
 };

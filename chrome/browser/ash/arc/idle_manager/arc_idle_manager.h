@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -52,6 +53,8 @@ class ArcIdleManager : public KeyedService,
   static ArcIdleManager* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -75,7 +78,7 @@ class ArcIdleManager : public KeyedService,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Owned by ArcServiceManager.
-  ArcBridgeService* const bridge_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
 };
 
 }  // namespace arc

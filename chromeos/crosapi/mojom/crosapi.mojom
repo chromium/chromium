@@ -33,6 +33,7 @@ import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
+import "chromeos/crosapi/mojom/download_status_updater.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
@@ -137,8 +138,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 107
-// Next method id: 110
+// Next version: 108
+// Next method id: 111
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -301,6 +302,13 @@ interface Crosapi {
   // Added in M92.
   [MinVersion=28] BindDownloadController@33(
       pending_receiver<DownloadController> receiver);
+
+  // Binds the DownloadStatusUpdater interface, which allows Lacros download
+  // status updates to be passed into Ash Chrome for rendering in the
+  // appropriate System UI surface(s).
+  // Added in M115.
+  [MinVersion=107] BindDownloadStatusUpdater@110(
+      pending_receiver<DownloadStatusUpdater> receiver);
 
   // Binds the DriveIntegrationService interface for getting information about
   // the local Google Drive mount.
@@ -863,28 +871,25 @@ enum InitialBrowserAction {
   // Uses the Lacros preference SessionStartupPref.
   [Default] kUseStartupPreference = 0,
 
-  // TODO(hidehiko): This should be kOpenNTPIncognitoWindow
-  kOpenIncognitoWindow = 1,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  kOpenIncognitoWindowDeprecated = 1,
 
-  // TODO(hidehiko): This should be kRestoreLastTab.
-  kRestoreLastSession = 2,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  kRestoreLastSessionDeprecated = 2,
 
   // Lacros will launch but will not show any windows. It will continue running
   // in the background until a browser window is shown. At that point it will no
   // longer run in the background and will close when all windows are closed.
   [MinVersion=1] kDoNotOpenWindow = 3,
 
-  // Opens a new window with a new tab, regardless of users' preference.
-  [MinVersion=2] kOpenNewTabPageWindow = 4,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=2] kOpenNewTabPageWindowDeprecated = 4,
 
-  // Opens a new window with specified URLs with the main profile.
-  // The URLs should be set with BrowserInitParams::startup_urls.
-  // Added in M96.
-  [MinVersion=3] kOpenWindowWithUrls = 5,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=3] kOpenWindowWithUrlsDeprecated = 5,
 
-  // Opens a new Guest mode window.
-  // Added in M100.
-  [MinVersion=4] kOpenGuestWindow = 6,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=4] kOpenGuestWindowDeprecated = 6,
 };
 
 // Whether / how mlservice on-device handwriting is supported.
@@ -951,8 +956,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 59
-// Next id: 59
+// Next version: 62
+// Next id: 62
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1101,7 +1106,7 @@ struct BrowserInitParams {
   // initial_browser_action == OpenWindowWithUrls.
   // Added in M96.
   [MinVersion=24]
-  array<url.mojom.Url>? startup_urls@24;
+  array<url.mojom.Url>? REMOVED_24@24;
 
   // The set of device settings for Lacros. Lacros should *NOT* use this data,
   // but rely on DeviceSettingsLacros::GetDeviceSettings instead.
@@ -1324,6 +1329,19 @@ struct BrowserInitParams {
   // regardless of this flag.
   [MinVersion=58]
   bool enable_cpu_mappable_native_gpu_memory_buffers@58;
+
+  // When this flag is set to true, OOP video decoding is available.
+  [MinVersion=59]
+  bool oop_video_decoding_enabled@59;
+
+  // Set to true when the `chromeos::features::kUploadOfficeToCloud` flag is
+  // enabled in Ash.
+  [MinVersion=60]
+  bool is_upload_office_to_cloud_enabled@60;
+
+  // When this flag is on, the clipboard history refresh feature is enabled.
+  [MinVersion=61]
+  bool enable_clipboard_history_refresh@61;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1398,7 +1416,7 @@ struct BrowserPostLoginParams {
   // URLs to be opened at the beginning. This works only when
   // initial_browser_action == OpenWindowWithUrls.
   // Added in M96.
-  array<url.mojom.Url>? startup_urls@11;
+  array<url.mojom.Url>? REMOVED_11@11;
 
   // When this flag is |true|, Lacros is the only browser.
   bool standalone_browser_is_only_browser@12;

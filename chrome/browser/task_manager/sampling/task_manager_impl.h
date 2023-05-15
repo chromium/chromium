@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -191,7 +192,8 @@ class TaskManagerImpl : public TaskManagerInterface,
   // Task provider handling crosapi task data.
   // Once CrosapiTaskProvider is created and added to the task_providers_, it
   // should never be removed from task_providers_ unless in the destructor.
-  CrosapiTaskProviderAsh* crosapi_task_provider_ = nullptr;
+  raw_ptr<CrosapiTaskProviderAsh, ExperimentalAsh> crosapi_task_provider_ =
+      nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // This will be set to true while there are observers and the task manager is

@@ -60,8 +60,8 @@ source_set("overlays") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
 }
@@ -91,12 +91,12 @@ source_set("unit_tests") {
   deps = [
     ":overlays",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays/test",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

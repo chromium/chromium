@@ -33,8 +33,9 @@ const char kOrigin[] = "https://origin.com";
 
 class MockObserver : public MediaSinkWithCastModesObserver {
  public:
-  MOCK_METHOD1(OnSinksUpdated,
-               void(const std::vector<MediaSinkWithCastModes>& sinks));
+  MOCK_METHOD(void,
+              OnSinksUpdated,
+              (const std::vector<MediaSinkWithCastModes>& sinks));
 };
 
 }  // namespace

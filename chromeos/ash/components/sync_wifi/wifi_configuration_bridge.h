@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
@@ -68,10 +69,10 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -159,12 +160,13 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   // the server and after local changes have been committed to the server.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
-  SyncedNetworkUpdater* synced_network_updater_;
-  LocalNetworkCollector* local_network_collector_;
-  NetworkConfigurationHandler* network_configuration_handler_;
-  SyncedNetworkMetricsLogger* metrics_recorder_;
-  TimerFactory* timer_factory_;
-  PrefService* pref_service_;
+  raw_ptr<SyncedNetworkUpdater, ExperimentalAsh> synced_network_updater_;
+  raw_ptr<LocalNetworkCollector, ExperimentalAsh> local_network_collector_;
+  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_;
+  raw_ptr<SyncedNetworkMetricsLogger, ExperimentalAsh> metrics_recorder_;
+  raw_ptr<TimerFactory, ExperimentalAsh> timer_factory_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   base::WeakPtr<NetworkMetadataStore> network_metadata_store_;
 
   base::WeakPtrFactory<WifiConfigurationBridge> weak_ptr_factory_{this};

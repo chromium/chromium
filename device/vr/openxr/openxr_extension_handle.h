@@ -5,7 +5,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_EXTENSION_HANDLE_H_
 
 #include "base/scoped_generic.h"
-#include "device/vr/openxr/openxr_util.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 

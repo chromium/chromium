@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -102,8 +103,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
   // since the widget is closed asynchronously and the model is updated prior
   // to animation completion.
-  HoldingSpaceViewDelegate* delegate_ = nullptr;
-  const HoldingSpaceItem* item_ = nullptr;
+  raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
 
   // Cache the id of the associated holding space item so that it can be
   // accessed even after `item_` has been destroyed. Note that `item_` may be

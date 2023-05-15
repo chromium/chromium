@@ -26,6 +26,20 @@ source_set("headless") {
   }
 }
 
+source_set("metrics") {
+  sources = [
+    "headless_mode_metrics.cc",
+    "headless_mode_metrics.h",
+  ]
+
+  deps = [
+    ":headless",
+    "//base",
+    "//components/headless/command_handler:switches",
+    "//content/public/browser",
+  ]
+}
+
 source_set("command_processor") {
   sources = [
     "headless_command_processor.cc",
@@ -52,6 +66,7 @@ if (!is_android) {
 
     if (is_linux || is_win || is_mac) {
       sources += [
+        "headless_mode_command_browsertest.cc",
         "headless_mode_devtooled_browsertest.cc",
         "headless_mode_devtooled_browsertest.h",
         "headless_mode_protocol_browsertest.cc",
@@ -88,6 +103,9 @@ if (!is_android) {
         "//chrome/browser/ui",
         "//components/devtools/simple_devtools_protocol_client",
         "//components/headless/clipboard",
+        "//components/headless/command_handler",
+        "//components/headless/command_handler:switches",
+        "//components/headless/test",
         "//content/public/browser",
         "//ui/display",
         "//ui/gfx",

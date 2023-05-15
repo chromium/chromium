@@ -166,7 +166,7 @@ CaptureLabelView::CaptureLabelView(
   capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
       std::move(on_capture_button_pressed),
       std::move(on_drop_down_button_pressed),
-      capture_mode_session_->is_in_projector_mode()));
+      capture_mode_session_->active_behavior()));
   capture_button_container_->SetPaintToLayer();
   capture_button_container_->layer()->SetFillsBoundsOpaquely(false);
   capture_button_container_->SetNotifyEnterExitOnChild(true);
@@ -177,7 +177,7 @@ CaptureLabelView::CaptureLabelView(
   label_->SetEnabledColorId(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
-  capture_mode_util::MaybeSetHighlightBorder(
+  capture_mode_util::SetHighlightBorder(
       this, kCaptureLabelRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow

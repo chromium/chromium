@@ -65,6 +65,7 @@ base::Value::Dict PaymentsRequest::BuildChromeUserContext(
     for (ClientBehaviorConstants signal : client_behavior_signals) {
       active_client_signals.Append(base::to_underlying(signal));
     }
+    base::ranges::sort(active_client_signals);
     chrome_user_context.Set("client_behavior_signals",
                             std::move(active_client_signals));
   }

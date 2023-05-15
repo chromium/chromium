@@ -176,7 +176,8 @@ void SendFeedback(content::BrowserContext* browser_context,
   FeedbackPrivateAPI::GetFactoryInstance()
       ->Get(browser_context)
       ->GetService()
-      ->SendFeedback(feedback_params, feedback_data, std::move(send_callback));
+      ->RedactThenSendFeedback(feedback_params, feedback_data,
+                               std::move(send_callback));
 }
 
 feedback_private::Status ToFeedbackStatus(bool success) {

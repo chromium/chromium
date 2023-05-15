@@ -58,7 +58,7 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
                                const NGPhysicalFragment* physical_fragment,
                                NGBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGContainerFragmentBuilder*>(builder)) {
+                     static_cast<NGFragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
@@ -129,7 +129,7 @@ NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,
                                const NGPhysicalFragment* physical_fragment,
                                NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGContainerFragmentBuilder*>(builder)) {
+                     static_cast<NGFragmentBuilder*>(builder)) {
   DCHECK_EQ(builder->bfc_block_offset_.has_value(),
             builder->line_box_bfc_block_offset_.has_value());
   if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
@@ -146,9 +146,9 @@ NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,
   }
 }
 
-NGLayoutResult::NGLayoutResult(NGContainerFragmentBuilderPassKey key,
+NGLayoutResult::NGLayoutResult(NGFragmentBuilderPassKey key,
                                EStatus status,
-                               NGContainerFragmentBuilder* builder)
+                               NGFragmentBuilder* builder)
     : NGLayoutResult(/* physical_fragment */ nullptr, builder) {
   bitfields_.status = status;
   DCHECK_NE(status, kSuccess)
@@ -213,7 +213,7 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 }
 
 NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                               NGContainerFragmentBuilder* builder)
+                               NGFragmentBuilder* builder)
     : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
       bitfields_(builder->is_self_collapsing_,
@@ -270,6 +270,10 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
 
   bitfields_.should_force_same_fragmentation_flow =
       builder->should_force_same_fragmentation_flow_;
+
+  if (builder->has_orthogonal_fallback_size_descendant_) {
+    EnsureRareData()->set_has_orthogonal_fallback_size_descendant(true);
+  }
 
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;

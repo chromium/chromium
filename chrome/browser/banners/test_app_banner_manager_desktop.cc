@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -90,11 +91,17 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   debug_log_.Append("OnDidGetManifest");
   AppBannerManagerDesktop::OnDidGetManifest(result);
 
-  // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
-  // complete the installability check in this case, instead it early exits
-  // with failure.
-  if (!result.NoBlockingErrors())
+  // The manifest URL changing in the middle of a pipeline doesn't always mean
+  // the page data will be reset. To ensure that installable_ isn't accidentally
+  // set twice, reset it here.
+  if (base::Contains(result.errors, MANIFEST_URL_CHANGED)) {
+    installable_.reset();
+  } else if (!result.NoBlockingErrors()) {
+    // AppBannerManagerDesktop does not call
+    // |OnDidPerformInstallableWebAppCheck| to complete the installability check
+    // in this case, instead it early exits with failure.
     SetInstallable(false);
+  }
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {

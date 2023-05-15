@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -54,11 +55,12 @@ ListMarker* ListMarker::Get(LayoutObject* marker) {
 LayoutObject* ListMarker::MarkerFromListItem(const LayoutObject* list_item) {
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Marker();
+  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+    return inline_list_item->Marker();
+  }
   return nullptr;
 }
 
-// TODO(1229581): Return LayoutNGListItem instead, and get rid of
-// ListItemBlockFlow() and ListItemValue().
 LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = marker.GetNode()->parentNode()->GetLayoutObject();
@@ -67,19 +69,12 @@ LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   return list_item;
 }
 
-LayoutBlockFlow* ListMarker::ListItemBlockFlow(
-    const LayoutObject& marker) const {
-  DCHECK_EQ(Get(&marker), this);
-  LayoutObject* list_item = ListItem(marker);
-  if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
-    return ng_list_item;
-  NOTREACHED();
-  return nullptr;
-}
-
 int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Value();
+  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+    return inline_list_item->Value();
+  }
   NOTREACHED();
   return 0;
 }
@@ -262,10 +257,6 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     if (!child) {
       LayoutListMarkerImage* image =
           LayoutListMarkerImage::CreateAnonymous(&marker.GetDocument());
-      // TODO(1229581): The IsLayoutNGObjectForListMarkerImage should no longer
-      // be necessary. It can be assumed to always be true.
-      if (marker.IsLayoutNGListMarker())
-        image->SetIsLayoutNGObjectForListMarkerImage(true);
       scoped_refptr<const ComputedStyle> image_style =
           marker.GetDocument()
               .GetStyleResolver()

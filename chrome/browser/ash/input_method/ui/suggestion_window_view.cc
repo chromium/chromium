@@ -250,6 +250,11 @@ void SuggestionWindowView::LearnMoreClicked() {
       .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
 }
 
+raw_ptr<views::ImageButton, ExperimentalAsh>
+SuggestionWindowView::getLearnMoreButton() {
+  return learn_more_button_;
+}
+
 void SuggestionWindowView::ResizeCandidateArea(
     const std::vector<std::u16string>& new_candidates,
     bool use_legacy_candidate) {

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_drop_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -24,7 +25,7 @@ class DragDropControllerTestApi {
   bool enabled() const { return controller_->enabled_; }
 
  private:
-  DragDropController* controller_;
+  raw_ptr<DragDropController, ExperimentalAsh> controller_;
 };
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuextent3ddict_unsignedlongenforcerangesequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuorigin2ddict_unsignedlongenforcerangesequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuorigin3ddict_unsignedlongenforcerangesequence.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
@@ -52,11 +53,15 @@ bool ConvertToDawn(const V8GPUColor* in,
 
 bool ConvertToDawn(const V8GPUExtent3D* in,
                    WGPUExtent3D* out,
+                   GPUDevice* device,
                    ExceptionState& exception_state) {
   switch (in->GetContentType()) {
     case V8GPUExtent3D::ContentType::kGPUExtent3DDict: {
       const GPUExtent3DDict* dict = in->GetAsGPUExtent3DDict();
       *out = {dict->width(), dict->height(), dict->depthOrArrayLayers()};
+      if (dict->hasDepth()) {
+        device->AddSingletonWarning(GPUSingletonWarning::kDepthKey);
+      }
       return true;
     }
 

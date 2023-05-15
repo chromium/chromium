@@ -197,8 +197,8 @@ pid_t ZygoteHostImpl::LaunchZygote(
 
     // First we receive a message from the zygote boot process.
     base::ProcessId boot_pid;
-    CHECK(ReceiveFixedMessage(fds[0], kZygoteBootMessage,
-                              sizeof(kZygoteBootMessage), &boot_pid));
+    PCHECK(ReceiveFixedMessage(fds[0], kZygoteBootMessage,
+                               sizeof(kZygoteBootMessage), &boot_pid));
 
     // Within the PID namespace, the zygote boot process thinks it's PID 1,
     // but its real PID can never be 1. This gives us a reliable test that
@@ -211,8 +211,8 @@ pid_t ZygoteHostImpl::LaunchZygote(
     // Now receive the message that the zygote's ready to go, along with the
     // main zygote process's ID.
     pid_t real_pid;
-    CHECK(ReceiveFixedMessage(fds[0], kZygoteHelloMessage,
-                              sizeof(kZygoteHelloMessage), &real_pid));
+    PCHECK(ReceiveFixedMessage(fds[0], kZygoteHelloMessage,
+                               sizeof(kZygoteHelloMessage), &real_pid));
     CHECK_GT(real_pid, 1);
 
     if (real_pid != pid) {

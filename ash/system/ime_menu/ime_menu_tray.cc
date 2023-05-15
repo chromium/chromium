@@ -36,6 +36,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -202,7 +203,7 @@ class ImeTitleView : public views::BoxLayoutView {
   ~ImeTitleView() override = default;
 
  private:
-  IconButton* settings_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
 };
 
 BEGIN_METADATA(ImeTitleView, views::BoxLayoutView)
@@ -264,7 +265,7 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kEmoji),
           kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
-      AddChildView(emoji_button_);
+      AddChildView(emoji_button_.get());
     }
 
     if (show_handwriting) {
@@ -273,7 +274,7 @@ class ImeButtonsView : public views::View {
                               base::Unretained(this),
                               input_method::ImeKeyset::kHandwriting),
           kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
-      AddChildView(handwriting_button_);
+      AddChildView(handwriting_button_.get());
     }
 
     if (show_voice) {
@@ -283,14 +284,14 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       voice_button_->SetID(kVoiceButtonId);
-      AddChildView(voice_button_);
+      AddChildView(voice_button_.get());
     }
   }
 
-  ImeMenuTray* ime_menu_tray_;
-  SystemMenuButton* emoji_button_;
-  SystemMenuButton* handwriting_button_;
-  SystemMenuButton* voice_button_;
+  raw_ptr<ImeMenuTray, ExperimentalAsh> ime_menu_tray_;
+  raw_ptr<SystemMenuButton, ExperimentalAsh> emoji_button_;
+  raw_ptr<SystemMenuButton, ExperimentalAsh> handwriting_button_;
+  raw_ptr<SystemMenuButton, ExperimentalAsh> voice_button_;
 };
 
 BEGIN_METADATA(ImeButtonsView, views::View)
@@ -395,35 +396,22 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   std::unique_ptr<TrayBubbleView> bubble_view =
       std::make_unique<TrayBubbleView>(init_params);
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add a title item with a separator on the top of the IME menu.
-  setup_layered_view(
-      bubble_view->AddChildView(std::make_unique<ImeTitleView>()));
+  bubble_view->AddChildView(std::make_unique<ImeTitleView>());
 
   // Adds IME list to the bubble.
   ime_list_view_ =
       bubble_view->AddChildView(std::make_unique<ImeMenuListView>());
   ime_list_view_->Init(ShouldShowKeyboardToggle(),
                        ImeListView::SHOW_SINGLE_IME);
-  setup_layered_view(ime_list_view_);
 
   if (ShouldShowBottomButtons()) {
-    setup_layered_view(
-        bubble_view->AddChildView(std::make_unique<ImeButtonsView>(
-            this, is_emoji_enabled_, is_handwriting_enabled_,
-            is_voice_enabled_)));
+    bubble_view->AddChildView(std::make_unique<ImeButtonsView>(
+        this, is_emoji_enabled_, is_handwriting_enabled_, is_voice_enabled_));
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -653,7 +641,7 @@ void ImeMenuTray::CreateLabel() {
   SetupLabelForTray(label_);
   label_->SetElideBehavior(gfx::TRUNCATE);
   label_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(label_);
+  tray_container()->AddChildView(label_.get());
 }
 
 void ImeMenuTray::CreateImageView() {
@@ -668,7 +656,7 @@ void ImeMenuTray::CreateImageView() {
   image_view_ = new ImeMenuImageView();
   image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(image_view_);
+  tray_container()->AddChildView(image_view_.get());
 }
 
 BEGIN_METADATA(ImeMenuTray, TrayBackgroundView)

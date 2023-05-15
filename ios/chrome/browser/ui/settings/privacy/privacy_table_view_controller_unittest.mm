@@ -22,17 +22,18 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -90,6 +91,9 @@ class PrivacyTableViewControllerTest
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(
             static_cast<int>(GetParam().incognitoModeAvailability)));
+
+    // TODO(crbug.com/1443624): Remove when feature is enabled by default.
+    feature_list_.InitAndEnableFeature(web::kBrowserLockdownModeAvailable);
   }
 
   void TearDown() override {
@@ -136,6 +140,7 @@ class PrivacyTableViewControllerTest
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   NSString* initialValueForSpdyProxyEnabled_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests PrivacyTableViewController is set up with all appropriate items
@@ -150,6 +155,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
@@ -166,7 +176,16 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
-      SafeBrowsingDetailText(), 1, 0);
+      SafeBrowsingDetailText(), currentSection, 0);
+
+  // Lockdown Mode section.
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE),
+        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
+  }
 
   // HTTPS-Only Mode section.
   if (base::FeatureList::IsEnabled(
@@ -226,7 +245,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // non-syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
 
   CreateController();
@@ -237,6 +257,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
@@ -250,7 +275,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
 
@@ -262,6 +288,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());

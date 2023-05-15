@@ -34,6 +34,7 @@ class MockSyncService : public SyncService {
   // SyncService implementation.
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
+  MOCK_METHOD(void, SetSyncFeatureRequested, (), (override));
   MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
   MOCK_METHOD(TransportState, GetTransportState, (), (const override));
   MOCK_METHOD(UserActionableError,
@@ -46,6 +47,7 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(GoogleServiceAuthError, GetAuthError, (), (const override));
   MOCK_METHOD(base::Time, GetAuthErrorTime, (), (const override));
   MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
+  MOCK_METHOD(bool, IsSyncFeatureDisabledViaDashboard, (), (const override));
   MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
               GetSetupInProgressHandle,
               (),
@@ -135,6 +137,7 @@ class MockSyncService : public SyncService {
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)> callback),
               (override));
+  MOCK_METHOD(bool, IsSyncFeatureConsideredRequested, (), (const override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

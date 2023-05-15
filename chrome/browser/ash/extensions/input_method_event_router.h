@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_INPUT_METHOD_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_INPUT_METHOD_EVENT_ROUTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class ExtensionInputMethodEventRouter
                           bool show_message) override;
 
  private:
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 };
 
 }  // namespace chromeos

@@ -8,6 +8,7 @@ import "components/attribution_reporting/registration_type.mojom";
 import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
 import "third_party/blink/public/mojom/conversions/attribution_reporting.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "services/network/public/mojom/attribution.mojom";
 
 // Mojo struct to represent blink::Impression native struct.
 struct Impression {
@@ -16,6 +17,9 @@ struct Impression {
   // that is associated with `attribution_src_token`.
   AttributionSrcToken attribution_src_token;
   AttributionNavigationType nav_type;
+  // Indicates whether Attribution Reporting API related runtime features are
+  // enabled.
+  network.mojom.AttributionReportingRuntimeFeatures runtime_features;
 };
 
 // Sent from renderer to browser process when a resource request matching the

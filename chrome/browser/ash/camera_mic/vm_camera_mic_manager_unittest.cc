@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -252,7 +253,8 @@ class VmCameraMicManagerTest : public testing::Test {
   TestingProfile testing_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  FakeNotificationDisplayService* fake_display_service_;
+  raw_ptr<FakeNotificationDisplayService, ExperimentalAsh>
+      fake_display_service_;
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

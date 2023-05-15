@@ -143,7 +143,7 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   const cast::common::ApplicationConfig config_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::raw_ref<CastWebService> web_service_;
+  raw_ref<CastWebService> web_service_;
 
   // The WebView associated with the window in which the Cast application is
   // displayed.

@@ -9,8 +9,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "url/gurl.h"
 
-namespace page_info {
-namespace about_this_site_validation {
+namespace page_info::about_this_site_validation {
 
 AboutThisSiteStatus ValidateSource(const proto::Hyperlink& source) {
   if (!source.has_label())
@@ -64,8 +63,7 @@ AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_info) {
   return AboutThisSiteStatus::kValid;
 }
 
-AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
-                                     bool allow_missing_description) {
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (!site_info.has_description() && !site_info.has_first_seen() &&
       !site_info.has_more_about())
     return AboutThisSiteStatus::kEmptySiteInfo;
@@ -74,9 +72,6 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
 
   if (site_info.has_description()) {
     status = ValidateDescription(site_info.description());
-  } else {
-    if (!allow_missing_description)
-      return AboutThisSiteStatus::kMissingDescription;
   }
 
   if (status != AboutThisSiteStatus::kValid)
@@ -88,9 +83,7 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
   if (status != AboutThisSiteStatus::kValid)
     return status;
 
-  // The kPageInfoAboutThisSiteMoreInfo requires a 'MoreAbout' URL.
-  if (base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreInfo) &&
-      !site_info.has_more_about()) {
+  if (!site_info.has_more_about()) {
     return AboutThisSiteStatus::kMissingMoreAbout;
   }
 
@@ -101,14 +94,12 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
 }
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata,
-    bool allow_missing_description) {
+    const absl::optional<proto::AboutThisSiteMetadata>& metadata) {
   if (!metadata)
     return AboutThisSiteStatus::kNoResult;
   if (!metadata->has_site_info())
     return AboutThisSiteStatus::kMissingSiteInfo;
-  return ValidateSiteInfo(metadata->site_info(), allow_missing_description);
+  return ValidateSiteInfo(metadata->site_info());
 }
 
-}  // namespace about_this_site_validation
-}  // namespace page_info
+}  // namespace page_info::about_this_site_validation

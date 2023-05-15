@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_USER_EDUCATION_CHROME_USER_EDUCATION_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_USER_EDUCATION_CHROME_USER_EDUCATION_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/user_education/user_education_delegate.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -24,6 +26,12 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
 
  private:
   // ash::UserEducationDelegate:
+  std::unique_ptr<user_education::HelpBubble> CreateHelpBubble(
+      const AccountId& account_id,
+      ash::HelpBubbleId help_bubble_id,
+      user_education::HelpBubbleParams help_bubble_params,
+      ui::ElementIdentifier element_id,
+      ui::ElementContext element_context) override;
   void RegisterTutorial(
       const AccountId& account_id,
       ash::TutorialId tutorial_id,

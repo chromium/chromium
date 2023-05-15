@@ -22,10 +22,10 @@ limitations under the License.
 #include "absl/status/status.h"        // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/c/common.h"
-#include "tensorflow/lite/core/shims/cc/interpreter.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
-#include "tensorflow/lite/core/shims/cc/model.h"
+#include "tensorflow/lite/core/c/common.h"
+#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/core/model.h"
+#include "tensorflow/lite/interpreter.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/tflite_wrapper.h"
 #include "tensorflow_lite_support/cc/task/core/error_reporter.h"
@@ -47,15 +47,15 @@ class TfLiteEngine {
  public:
   // Types.
   using InterpreterWrapper = ::tflite::support::TfLiteInterpreterWrapper;
-  using Model = ::tflite_shims::FlatBufferModel;
-  using Interpreter = ::tflite_shims::Interpreter;
+  using Model = ::tflite::FlatBufferModel;
+  using Interpreter = ::tflite::Interpreter;
   using ModelDeleter = std::default_delete<Model>;
   using InterpreterDeleter = std::default_delete<Interpreter>;
 
   // Constructors.
   explicit TfLiteEngine(
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
   // Model is neither copyable nor movable.
   TfLiteEngine(const TfLiteEngine&) = delete;
   TfLiteEngine& operator=(const TfLiteEngine&) = delete;

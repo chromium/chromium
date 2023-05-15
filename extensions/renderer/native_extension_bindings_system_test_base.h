@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
@@ -78,10 +79,11 @@ class TestIPCMessageSender : public IPCMessageSender {
                     const base::Value::Dict& filter,
                     bool remove_lazy_listener));
 
-  MOCK_METHOD4(SendOpenMessageChannel,
+  MOCK_METHOD5(SendOpenMessageChannel,
                void(ScriptContext* script_context,
                     const PortId& port_id,
                     const MessageTarget& target,
+                    ChannelType channel_type,
                     const std::string& channel_name));
   MOCK_METHOD2(SendOpenMessagePort,
                void(int routing_id, const PortId& port_id));

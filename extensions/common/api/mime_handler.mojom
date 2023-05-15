@@ -39,6 +39,9 @@ struct PdfPluginAttributes {
   // Indicates whether the plugin should allow running JavaScript. Loading XFA
   // for PDF forms will automatically be disabled if this flag is false.
   bool allow_javascript;
+
+  // Indicates whether the PDF viewer should use Skia renderer.
+  bool use_skia;
 };
 
 // Provides a mime handler guest methods to get and modify the stream associated

@@ -43,6 +43,14 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupId {
   base::Token token_;
 };
 
+// For use in std::unordered_map.
+struct TabGroupIdHash {
+ public:
+  size_t operator()(const tab_groups::TabGroupId& group_id) const {
+    return base::TokenHash()(group_id.token());
+  }
+};
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_TAB_GROUPS_TAB_GROUP_ID_H_

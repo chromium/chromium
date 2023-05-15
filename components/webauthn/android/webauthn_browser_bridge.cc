@@ -110,12 +110,36 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
                                              &credentials_metadata);
   client->OnWebAuthnRequestPending(
       render_frame_host, credentials_metadata, is_conditional_request,
-      base::BindOnce(
+      base::BindRepeating(
           &OnWebAuthnCredentialSelected,
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-void WebAuthnBrowserBridge::CancelRequest(
+void TriggerFullRequest(
+    const base::android::JavaRef<jobject>& jfull_request_runnable) {
+  base::android::RunRunnableAndroid(jfull_request_runnable);
+}
+
+void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host,
+    jboolean jhas_results,
+    const base::android::JavaParamRef<jobject>& jfull_request_runnable) {
+  auto* client = components::WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  client->OnCredManConditionalRequestPending(
+      render_frame_host, jhas_results,
+      base::BindRepeating(&TriggerFullRequest,
+                          base::android::ScopedJavaGlobalRef<jobject>(
+                              env, jfull_request_runnable)));
+}
+
+void WebAuthnBrowserBridge::CleanupRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host) const {
   auto* client = components::WebAuthnClientAndroid::GetClient();
@@ -131,5 +155,5 @@ void WebAuthnBrowserBridge::CancelRequest(
     return;
   }
 
-  client->CancelWebAuthnRequest(render_frame_host);
+  client->CleanupWebAuthnRequest(render_frame_host);
 }

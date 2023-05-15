@@ -41,12 +41,9 @@ void PerformanceHandler::RegisterMessages() {
 }
 
 void PerformanceHandler::OnJavascriptAllowed() {
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    performance_handler_observer_.Observe(
-        performance_manager::user_tuning::UserPerformanceTuningManager::
-            GetInstance());
-  }
+  performance_handler_observer_.Observe(
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance());
 }
 
 void PerformanceHandler::OnJavascriptDisallowed() {

@@ -382,17 +382,18 @@ _aesni_gcm_decrypt:
 
 	vzeroupper
 
+	movq	16(%rbp),%r12
 	vmovdqu	(%r8),%xmm1
 	addq	$-128,%rsp
 	movl	12(%r8),%ebx
 	leaq	L$bswap_mask(%rip),%r11
 	leaq	-128(%rcx),%r14
 	movq	$0xf80,%r15
-	vmovdqu	(%r9),%xmm8
+	vmovdqu	(%r12),%xmm8
 	andq	$-128,%rsp
 	vmovdqu	(%r11),%xmm0
 	leaq	128(%rcx),%rcx
-	leaq	32+32(%r9),%r9
+	leaq	32(%r9),%r9
 	movl	240-128(%rcx),%r10d
 	vpshufb	%xmm0,%xmm8,%xmm8
 
@@ -437,6 +438,7 @@ L$dec_no_key_aliasing:
 
 	call	_aesni_ctr32_ghash_6x
 
+	movq	16(%rbp),%r12
 	vmovups	%xmm9,-96(%rsi)
 	vmovups	%xmm10,-80(%rsi)
 	vmovups	%xmm11,-64(%rsi)
@@ -445,7 +447,7 @@ L$dec_no_key_aliasing:
 	vmovups	%xmm14,-16(%rsi)
 
 	vpshufb	(%r11),%xmm8,%xmm8
-	vmovdqu	%xmm8,-64(%r9)
+	vmovdqu	%xmm8,(%r12)
 
 	vzeroupper
 	leaq	-40(%rbp),%rsp
@@ -649,8 +651,9 @@ L$enc_no_key_aliasing:
 
 	call	_aesni_ctr32_6x
 
-	vmovdqu	(%r9),%xmm8
-	leaq	32+32(%r9),%r9
+	movq	16(%rbp),%r12
+	leaq	32(%r9),%r9
+	vmovdqu	(%r12),%xmm8
 	subq	$12,%rdx
 	movq	$192,%rax
 	vpshufb	%xmm0,%xmm8,%xmm8
@@ -828,8 +831,9 @@ L$enc_no_key_aliasing:
 	vpclmulqdq	$0x10,%xmm3,%xmm8,%xmm8
 	vpxor	%xmm7,%xmm2,%xmm2
 	vpxor	%xmm2,%xmm8,%xmm8
+	movq	16(%rbp),%r12
 	vpshufb	(%r11),%xmm8,%xmm8
-	vmovdqu	%xmm8,-64(%r9)
+	vmovdqu	%xmm8,(%r12)
 
 	vzeroupper
 	leaq	-40(%rbp),%rsp

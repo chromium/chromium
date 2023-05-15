@@ -37,7 +37,7 @@ PrintingManager::PrintingManager(
       cups_print_job_manager_(cups_print_job_manager) {
   DCHECK(history_service_);
   DCHECK(cups_print_job_manager_);
-  history_service_observation_.Observe(history_service_);
+  history_service_observation_.Observe(history_service_.get());
   cups_print_job_manager_->AddObserver(this);
 
   delete_print_job_history_allowed_.Init(prefs::kDeletePrintJobHistoryAllowed,

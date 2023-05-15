@@ -34,7 +34,8 @@ class CaptionBubbleSessionObserver;
 //
 class CaptionBubbleControllerViews : public CaptionBubbleController {
  public:
-  explicit CaptionBubbleControllerViews(PrefService* profile_prefs);
+  CaptionBubbleControllerViews(PrefService* profile_prefs,
+                               const std::string& application_locale);
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;
   CaptionBubbleControllerViews& operator=(const CaptionBubbleControllerViews&) =

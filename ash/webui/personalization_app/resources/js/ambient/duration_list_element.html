@@ -16,26 +16,12 @@
   </h3>
   <div>
     <cr-radio-group selected="{{selectedDuration_}}">
-      <cr-radio-button
-          name="[[durations_.kFiveMinutes]]"
-          label="for 5 minutes[temp]">
-      </cr-radio-button>
-      <cr-radio-button
-          name="[[durations_.kTenMinutes]]"
-          label="for 10 minutes[temp]">
-      </cr-radio-button>
-      <cr-radio-button
-          name="[[durations_.kThirtyMinutes]]"
-          label="for 30 minutes[temp]">
-      </cr-radio-button>
-      <cr-radio-button
-          name="[[durations_.kOneHour]]"
-          label="for 1 hour[temp]">
-      </cr-radio-button>
-      <cr-radio-button
-          name="[[durations_.kForever]]"
-          label="forever[temp]">
-      </cr-radio-button>
+      <template is="dom-repeat" items="[[options_]]" as="option">
+        <cr-radio-button
+          name="[[option.name]]"
+          label="[[option.label]]">
+        </cr-radio-button>
+      </template>
     </cr-radio-group>
   </div>
 </div>

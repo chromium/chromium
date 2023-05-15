@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -106,7 +107,7 @@ class MobileDataNotificationsTest : public testing::Test {
   void SetupUserManagerAndProfileManager() {
     user_manager_ = new ash::FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -165,7 +166,7 @@ class MobileDataNotificationsTest : public testing::Test {
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };

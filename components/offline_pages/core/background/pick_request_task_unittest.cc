@@ -101,8 +101,6 @@ class PickRequestTaskTest : public RequestQueueTaskTestBase {
                         bool cleanup_needed,
                         base::Time available_time);
 
-  void RequestCountCallback(size_t total_count, size_t available_count);
-
   void QueueRequests(const SavePageRequest& request1,
                      const SavePageRequest& request2);
 
@@ -130,8 +128,6 @@ class PickRequestTaskTest : public RequestQueueTaskTestBase {
   std::unique_ptr<PickRequestTask> task_;
   bool request_queue_not_picked_called_;
   bool cleanup_needed_;
-  size_t total_request_count_;
-  size_t available_request_count_;
   bool task_complete_called_;
 };
 
@@ -141,8 +137,6 @@ void PickRequestTaskTest::SetUp() {
   notifier_ = std::make_unique<RequestNotifierStub>();
   MakePickRequestTask();
   request_queue_not_picked_called_ = false;
-  total_request_count_ = 9999;
-  available_request_count_ = 9999;
   task_complete_called_ = false;
   last_picked_.reset();
   cleanup_needed_ = false;
@@ -166,12 +160,6 @@ void PickRequestTaskTest::RequestNotPicked(
   request_queue_not_picked_called_ = true;
 }
 
-void PickRequestTaskTest::RequestCountCallback(size_t total_count,
-                                               size_t available_count) {
-  total_request_count_ = total_count;
-  available_request_count_ = available_count;
-}
-
 // Test helper to queue the two given requests.
 void PickRequestTaskTest::QueueRequests(const SavePageRequest& request1,
                                         const SavePageRequest& request2) {
@@ -193,8 +181,6 @@ void PickRequestTaskTest::MakePickRequestTask() {
                      base::Unretained(this)),
       base::BindOnce(&PickRequestTaskTest::RequestNotPicked,
                      base::Unretained(this)),
-      base::BindOnce(&PickRequestTaskTest::RequestCountCallback,
-                     base::Unretained(this)),
       conditions, disabled_requests_, &prioritized_requests_);
 }
 
@@ -208,8 +194,6 @@ TEST_F(PickRequestTaskTest, PickFromEmptyQueue) {
   PumpLoop();
 
   EXPECT_TRUE(request_queue_not_picked_called_);
-  EXPECT_EQ(0UL, total_request_count_);
-  EXPECT_EQ(0UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
 }
 
@@ -234,8 +218,6 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithHigherRetryCount) {
 
   EXPECT_EQ(kRequestId2, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(2UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
 }
 
@@ -371,8 +353,6 @@ TEST_F(PickRequestTaskTest, ChooseNonExpiredRequest) {
 
   EXPECT_EQ(kRequestId1, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(1UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
   EXPECT_TRUE(cleanup_needed_);
 }
@@ -396,8 +376,6 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededStartLimit) {
 
   EXPECT_EQ(kRequestId2, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(1UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
   EXPECT_TRUE(cleanup_needed_);
 }
@@ -455,8 +433,6 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatIsNotDisabled) {
 
   EXPECT_EQ(kRequestId1, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(1UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
 }
 
@@ -487,8 +463,6 @@ TEST_F(PickRequestTaskTest, ChoosePrioritizedRequests) {
 
   EXPECT_EQ(kRequestId2, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(2UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
   EXPECT_EQ(1UL, prioritized_requests_.size());
 }
@@ -524,8 +498,6 @@ TEST_F(PickRequestTaskTest, ChooseFromTwoPrioritizedRequests) {
 
   EXPECT_EQ(kRequestId2, last_picked_->request_id());
   EXPECT_FALSE(request_queue_not_picked_called_);
-  EXPECT_EQ(2UL, total_request_count_);
-  EXPECT_EQ(2UL, available_request_count_);
   EXPECT_TRUE(task_complete_called_);
   EXPECT_EQ(2UL, prioritized_requests_.size());
 }

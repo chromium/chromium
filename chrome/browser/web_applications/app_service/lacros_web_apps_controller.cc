@@ -92,7 +92,7 @@ void LacrosWebAppsController::Init() {
     }
 
     remote_publisher_version_ =
-        service->GetInterfaceVersion(crosapi::mojom::AppPublisher::Uuid_);
+        service->GetInterfaceVersion<crosapi::mojom::AppPublisher>();
 
     service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
         receiver_.BindNewPipeAndPassRemoteWithVersion());

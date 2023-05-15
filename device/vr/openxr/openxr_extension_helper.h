@@ -5,22 +5,17 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_EXTENSION_HELPER_H_
 #define DEVICE_VR_OPENXR_OPENXR_EXTENSION_HELPER_H_
 
-#include <d3d11.h>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace device {
 struct OpenXrExtensionMethods {
   OpenXrExtensionMethods();
   ~OpenXrExtensionMethods();
-  // D3D
-  PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR{
-      nullptr};
-
   // Hand Tracking
   PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT{nullptr};
   PFN_xrDestroyHandTrackerEXT xrDestroyHandTrackerEXT{nullptr};
@@ -44,9 +39,11 @@ struct OpenXrExtensionMethods {
   PFN_xrLocateSceneComponentsMSFT xrLocateSceneComponentsMSFT{nullptr};
   PFN_xrGetSceneMeshBuffersMSFT xrGetSceneMeshBuffersMSFT{nullptr};
 
+#if BUILDFLAG(IS_WIN)
   // Time
   PFN_xrConvertWin32PerformanceCounterToTimeKHR
       xrConvertWin32PerformanceCounterToTimeKHR{nullptr};
+#endif
 };
 
 class OpenXrExtensionEnumeration {

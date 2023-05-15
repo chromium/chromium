@@ -9,6 +9,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -46,8 +47,8 @@ class ASH_EXPORT AutozoomFeaturePodController : public FeaturePodControllerBase,
 
   void UpdateTileVisibility();
 
-  FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<AutozoomFeaturePodController> weak_factory_{this};
 };

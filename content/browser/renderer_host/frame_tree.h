@@ -137,18 +137,22 @@ class CONTENT_EXPORT FrameTree {
 
   class CONTENT_EXPORT Delegate {
    public:
-    // A RenderFrameHost in the specified |frame_tree_node| started loading a
-    // new document. This corresponds to browser UI starting to show a spinner
-    // or other visual indicator for loading. This method is only invoked if the
-    // FrameTree hadn't been previously loading. |should_show_loading_ui| will
-    // be true unless the load is a fragment navigation, or triggered by
-    // history.pushState/replaceState.
-    virtual void DidStartLoading(FrameTreeNode* frame_tree_node,
-                                 bool should_show_loading_ui) = 0;
+    // The FrameTree changed its LoadingState. This can be a transition between
+    // not-loading and loading (in which case it will be accompanied by either a
+    // DidStartLoading or DidStopLoading), or a transition between not showing
+    // loading UI and showing loading UI while a navigation is in progress (in
+    // which case it will be called without either DidStartLoading or
+    // DidStopLoading).
+    virtual void LoadingStateChanged(LoadingState new_state) = 0;
 
-    // This is called when all nodes in the FrameTree stopped loading. This
-    // corresponds to the browser UI stop showing a spinner or other visual
-    // indicator for loading.
+    // The FrameTree has started loading in `frame_tree_node`. Note that this
+    // is only called when the FrameTree as a whole goes from not-loading to
+    // loading. If a second FrameTreeNode begins loading, a new DidStartLoading
+    // message will not be sent.
+    virtual void DidStartLoading(FrameTreeNode* frame_tree_node) = 0;
+
+    // The FrameTree has stopped loading. Sent only when all FrameTreeNodes have
+    // stopped loading.
     virtual void DidStopLoading() = 0;
 
     // Returns the delegate's top loading tree, which should be used to infer
@@ -467,10 +471,8 @@ class CONTENT_EXPORT FrameTree {
   // the listener installed by SetFrameRemoveListener.
   void FrameRemoved(FrameTreeNode* frame);
 
-  void DidStartLoadingNode(FrameTreeNode& node,
-                           bool should_show_loading_ui,
-                           bool was_previously_loading);
-  void DidStopLoadingNode(FrameTreeNode& node);
+  void NodeLoadingStateChanged(FrameTreeNode& node,
+                               LoadingState previous_frame_tree_loading_state);
   void DidCancelLoading();
 
   // Returns this FrameTree's total load progress. If the `root_` FrameTreeNode
@@ -480,6 +482,10 @@ class CONTENT_EXPORT FrameTree {
   // Returns true if at least one of the nodes in this frame tree or nodes in
   // any inner frame tree of the same WebContents is loading.
   bool IsLoadingIncludingInnerFrameTrees() const;
+
+  // Returns the LoadingState for the FrameTree as a whole, indicating whether
+  // a load is in progress, as well as whether loading UI should be shown.
+  LoadingState GetLoadingState() const;
 
   // Set page-level focus in all SiteInstances involved in rendering
   // this FrameTree, not including the current main frame's

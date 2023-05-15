@@ -169,6 +169,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
+  void PaintAsActiveChanged() override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
@@ -183,7 +184,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
   void SetOpacity(float opacity) override;
-  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  // See NativeWidgetPrivate::SetAspectRatio for more information.
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                      const gfx::Size& excluded_margin) override;
   void FlashFrame(bool flash_frame) override;
   void RunShellDrag(View* view,
                     std::unique_ptr<ui::OSExchangeData> data,

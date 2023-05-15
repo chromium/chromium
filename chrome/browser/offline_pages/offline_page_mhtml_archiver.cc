@@ -11,12 +11,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
@@ -94,7 +94,7 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   GURL url(web_contents->GetLastCommittedURL());
   std::u16string title(web_contents->GetTitle());
   base::FilePath file_path(
-      archives_dir.Append(base::GenerateGUID())
+      archives_dir.Append(base::Uuid::GenerateRandomV4().AsLowercaseString())
           .AddExtension(OfflinePageUtils::kMHTMLExtension));
   content::MHTMLGenerationParams params(file_path);
   params.use_binary_encoding = true;
@@ -120,16 +120,11 @@ void OfflinePageMHTMLArchiver::OnGenerateMHTMLDone(
     return;
   }
 
-  const base::Time digest_start_time = OfflineTimeNow();
-  base::UmaHistogramTimes(
-      model_utils::AddHistogramSuffix(
-          name_space, "OfflinePages.SavePage.CreateArchiveTime"),
-      digest_start_time - mhtml_start_time);
-
   if (result.file_digest) {
     OnComputeDigestDone(url, file_path, title, name_space, base::Time(),
                         result.file_size, result.file_digest.value());
   } else {
+    const base::Time digest_start_time = OfflineTimeNow();
     ComputeDigestOnFileThread(
         file_path,
         base::BindOnce(&OfflinePageMHTMLArchiver::OnComputeDigestDone,
@@ -150,13 +145,6 @@ void OfflinePageMHTMLArchiver::OnComputeDigestDone(
     DeleteFileAndReportFailure(file_path,
                                ArchiverResult::ERROR_DIGEST_CALCULATION_FAILED);
     return;
-  }
-
-  if (!digest_start_time.is_null()) {
-    base::UmaHistogramTimes(
-        model_utils::AddHistogramSuffix(
-            name_space, "OfflinePages.SavePage.ComputeDigestTime"),
-        OfflineTimeNow() - digest_start_time);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

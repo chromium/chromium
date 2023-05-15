@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -128,7 +129,7 @@ class NotificationProcessor {
   void RemoveNotificationsAndProcessNextRequest(
       base::flat_set<int64_t> removed_notification_ids);
 
-  NotificationManager* notification_manager_;
+  raw_ptr<NotificationManager, ExperimentalAsh> notification_manager_;
   base::queue<base::OnceClosure> pending_notification_requests_;
   base::flat_map<int64_t, NotificationImages> id_to_images_map_;
   std::unique_ptr<ImageDecoderDelegate> delegate_;

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
 namespace blink {
@@ -72,19 +71,18 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   PhysicalRect scrolled_paint_rect = rect;
   scrolled_paint_rect.offset -=
       PhysicalOffset(this_box.PixelSnappedScrolledContentOffset());
-  LayoutRectOutsets border = AdjustedBorderOutsets(info);
-  scrolled_paint_rect.SetWidth(border.Left() + this_box.ScrollWidth() +
-                               border.Right());
+  NGPhysicalBoxStrut border = AdjustedBorderOutsets(info);
+  scrolled_paint_rect.SetWidth(border.HorizontalSum() + this_box.ScrollWidth());
   scrolled_paint_rect.SetHeight(this_box.BorderTop() + this_box.ScrollHeight() +
                                 this_box.BorderBottom());
   return scrolled_paint_rect;
 }
 
-LayoutRectOutsets BoxModelObjectPainter::ComputeBorders() const {
+NGPhysicalBoxStrut BoxModelObjectPainter::ComputeBorders() const {
   return box_model_.BorderBoxOutsets();
 }
 
-LayoutRectOutsets BoxModelObjectPainter::ComputePadding() const {
+NGPhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
   return box_model_.PaddingOutsets();
 }
 

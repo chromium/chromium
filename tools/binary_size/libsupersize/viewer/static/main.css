@@ -151,6 +151,7 @@ ul {
 .node {
   align-items: center;
   display: flex;
+  flex-direction: row;
   padding-right: 8px;
   margin-right: -8px;
   text-decoration: none;
@@ -274,17 +275,8 @@ ul {
   vertical-align: middle;
 }
 
-.metadata-symbol-name {
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  padding-left: 5px;
-  word-break: break-word;
-}
-
 #div-metrics-view:not(.active),
-#div-metadata-view:not(.active),
-#pre-metadata-content:not(.active) {
+#div-metadata-view:not(.active) {
   display: none;
 }
 
@@ -331,6 +323,21 @@ ul {
 
 #div-metrics-view table .negative .diff {
   color: #080;
+}
+
+#div-metadata-view table {
+  border-collapse: collapse;
+}
+
+#div-metadata-view table td {
+  border: 1px solid rgba(0,0,0,0.25);
+  min-width: 80px;
+  vertical-align: top;
+  white-space: pre;
+}
+
+#div-metadata-view table td.metadata-changed {
+  background: #ffc;
 }
 
 #div-review-info{

@@ -28,7 +28,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -45,6 +44,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -659,7 +659,7 @@ TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   // Get a drive letter.
   std::wstring real_drive_letter = AsWString(
       ToUpperASCII(AsStringPiece16(temp_dir_.GetPath().value().substr(0, 2))));
-  if (!isalpha(real_drive_letter[0]) || ':' != real_drive_letter[1]) {
+  if (!IsAsciiAlpha(real_drive_letter[0]) || ':' != real_drive_letter[1]) {
     LOG(ERROR) << "Can't get a drive letter to test with.";
     return;
   }
@@ -4585,7 +4585,7 @@ TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
     ScopedFILE output_file(CreateAndOpenTemporaryStream(&output_filename));
     EXPECT_TRUE(output_file);
 
-    const std::string content = GenerateGUID();
+    const std::string content = Uuid::GenerateRandomV4().AsLowercaseString();
 #if BUILDFLAG(IS_WIN)
     HANDLE handle =
         reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(output_file.get())));

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="100506692671054486">nenhum comando anterior</translation>
 <translation id="1009046985747440431">Pressione a seta para cima ou para baixo para navegar e Enter para ativar</translation>
 <translation id="1011903154582639569">Encontre uma tecla e levante o dedo para digitá-la</translation>
 <translation id="1012173283529841972">Item da lista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Rosa-ravena</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3962990492275676168">Iniciar a leitura na posição atual</translation>
+<translation id="397094149579293440">nenhum texto foi selecionado</translation>
 <translation id="3970951409746498040">Marrom-arenoso</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mocassim</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Nenhum cabeçalho de nível 1 anterior</translation>
 <translation id="4787577491510559358">Anunciar formatação para item atual</translation>
 <translation id="479989351350248267">pesquisar</translation>
+<translation id="4802034228771424756">nenhum campo de texto está em foco</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="481165870889056555">Anunciar o título da página atual</translation>
 <translation id="4815668758102003883">Turquesa-pálido</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Link interno</translation>
 <translation id="4909019435900810068">Recuar uma palavra</translation>
 <translation id="4911349081560453449">Nenhuma caixa de seleção anterior</translation>
+<translation id="4919186071145887492">Não foi possível <ph name="COMMAND" />. Tente de novo</translation>
 <translation id="492295894462528572">Prefácio</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953585991029886728">Texto de edição</translation>
+<translation id="4964701498510730546">o campo de texto está vazio</translation>
 <translation id="4973717656530883744">Min <ph name="X" /></translation>
 <translation id="4974612477719259470">Nenhum botão anterior</translation>
 <translation id="4979404613699303341">Botão anterior</translation>
+<translation id="4981239367072766915">a entrada não foi reconhecida</translation>
 <translation id="4982917827052020884">Vamos começar com teclas usadas com frequência. A tecla Control pode ser usada para interromper qualquer fala atual. Ela fica no canto inferior esquerdo do seu teclado. Pressione a tecla Control para continuar.</translation>
 <translation id="4983588134362688868">Vai para a parte superior da página</translation>
 <translation id="4986606102545753256">Janela <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Ler em voz alta o status atual da bateria</translation>
 <translation id="4997282455736854877">Botão de opção <ph name="NAME" /> selecionado</translation>
 <translation id="5012724933919010465">Botão de opção <ph name="NAME" /> para item de menu selecionado</translation>
+<translation id="5014131807708055994">Não é possível <ph name="COMMAND" /> porque <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Ativar registros de fala</translation>
 <translation id="5041394372352067729">Mover exibição braille para o topo da página</translation>
 <translation id="5042770794184672516">Aumentar volume da voz</translation>

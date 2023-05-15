@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "ui/gfx/selection_bound.h"
 
 namespace blink {
 
@@ -75,7 +76,9 @@ class CORE_EXPORT CaretDisplayItemClient final
                   const PhysicalOffset& paint_offset,
                   DisplayItem::Type) const;
 
-  void RecordSelection(GraphicsContext&, const PhysicalOffset& paint_offset);
+  void RecordSelection(GraphicsContext&,
+                       const PhysicalOffset& paint_offset,
+                       gfx::SelectionBound::Type type);
 
   // DisplayItemClient.
   String DebugName() const final;

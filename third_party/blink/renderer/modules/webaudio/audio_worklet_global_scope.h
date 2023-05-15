@@ -111,7 +111,6 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
  private:
   typedef HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>
       ProcessorDefinitionMap;
-  typedef HeapVector<Member<AudioWorkletProcessor>> ProcessorInstances;
 
   network::mojom::RequestDestination GetDestination() const override {
     return network::mojom::RequestDestination::kAudioWorklet;
@@ -120,7 +119,6 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   bool is_closing_ = false;
 
   ProcessorDefinitionMap processor_definition_map_;
-  ProcessorInstances processor_instances_;
 
   // Gets set when the processor construction is invoked, and cleared out after
   // the construction. See the comment in `CreateProcessor()` method for the

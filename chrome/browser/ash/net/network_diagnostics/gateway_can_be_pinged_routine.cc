@@ -142,21 +142,22 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!parsed_value.has_value()) {
     return false;
   }
-  if (!parsed_value->is_dict() || parsed_value->DictSize() != 1) {
+  const base::Value::Dict* parsed_value_dict = parsed_value->GetIfDict();
+  if (!parsed_value_dict || parsed_value_dict->size() != 1) {
     return false;
   }
-  auto iter = parsed_value->GetDict().begin();
+  auto iter = parsed_value_dict->begin();
   const std::string& ip_addr = iter->first;
-  const base::Value& info = iter->second;
-  if (!info.is_dict()) {
+  const base::Value::Dict* info = iter->second.GetIfDict();
+  if (!info) {
     return false;
   }
-  const absl::optional<int> recvd_value = info.GetDict().FindInt("recvd");
+  const absl::optional<int> recvd_value = info->FindInt("recvd");
   if (!recvd_value || recvd_value.value() < 1) {
     return false;
   }
 
-  const absl::optional<double> avg_value = info.GetDict().FindDouble("avg");
+  const absl::optional<double> avg_value = info->FindDouble("avg");
   if (!avg_value) {
     return false;
   }

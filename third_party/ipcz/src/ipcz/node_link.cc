@@ -374,10 +374,25 @@ bool NodeLink::OnReferNonBroker(msg::ReferNonBroker& refer) {
     return false;
   }
 
+  DriverMemoryWithMapping link_memory =
+      NodeLinkMemory::AllocateMemory(node()->driver());
+  DriverMemoryWithMapping client_link_memory =
+      NodeLinkMemory::AllocateMemory(node()->driver());
+  if (!link_memory.mapping.is_valid() ||
+      !client_link_memory.mapping.is_valid()) {
+    // Not a validation failure, but we can't accept the referral because we
+    // can't allocate link memory for one side or the other.
+    msg::NonBrokerReferralRejected rejected;
+    rejected.params().referral_id = refer.params().referral_id;
+    Transmit(rejected);
+    return true;
+  }
+
   return NodeConnector::HandleNonBrokerReferral(
       node(), refer.params().referral_id, refer.params().num_initial_portals,
       WrapRefCounted(this),
-      MakeRefCounted<DriverTransport>(std::move(transport)));
+      MakeRefCounted<DriverTransport>(std::move(transport)),
+      std::move(link_memory), std::move(client_link_memory));
 }
 
 bool NodeLink::OnNonBrokerReferralAccepted(

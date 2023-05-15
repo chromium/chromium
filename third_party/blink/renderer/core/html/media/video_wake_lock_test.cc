@@ -279,6 +279,9 @@ class VideoWakeLockTest : public testing::Test {
                                  CSSPrimitiveValue::UnitType::kPixels);
   }
 
+  HTMLDivElement* div() { return div_; }
+  HTMLVideoElement* video() { return video_; }
+
  private:
   std::unique_ptr<VideoWakeLockTestWebFrameClient> client_;
   Persistent<HTMLDivElement> div_;
@@ -653,6 +656,22 @@ TEST_F(VideoWakeLockTest, MutedVideoTooFarOffscreenDoesNotTakeLock) {
                (1 - kThreshold * 1.10) * kNormalVideoSize.height());
   UpdateObservers();
   EXPECT_TRUE(HasWakeLock());
+}
+
+TEST_F(VideoWakeLockTest, WakeLockTracksDocumentsPage) {
+  // Create a document that has no Page.
+  auto* another_document = Document::Create(GetDocument());
+  ASSERT_FALSE(another_document->GetPage());
+
+  // Move the video there, and notify our wake lock.
+  another_document->AppendChild(video());
+  GetVideoWakeLock()->ElementDidMoveToNewDocument();
+  EXPECT_FALSE(GetVideoWakeLock()->GetPage());
+
+  // Move the video back to the main page and verify that the wake lock notices.
+  div()->AppendChild(video());
+  GetVideoWakeLock()->ElementDidMoveToNewDocument();
+  EXPECT_EQ(GetVideoWakeLock()->GetPage(), video()->GetDocument().GetPage());
 }
 
 }  // namespace blink

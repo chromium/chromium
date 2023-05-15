@@ -76,8 +76,8 @@ class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
 
   test::TestHelpBubbleDelegate test_delegate_;
   HelpBubbleFactoryViews factory_{&test_delegate_};
-  base::raw_ptr<views::View> contents_view_;
-  base::raw_ptr<views::View> anchor_view_;
+  raw_ptr<views::View> contents_view_;
+  raw_ptr<views::View> anchor_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

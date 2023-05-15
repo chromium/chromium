@@ -4,9 +4,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/mac/bundle_locations.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,7 +49,7 @@ void OverrideLocaleWithCocoaLocale() {
   // "Today" are in the same language as raw dates like "March 20, 1999" (Chrome
   // strings resources vs ICU generated strings).  This also makes the Mac acts
   // like other Chrome platforms.
-  NSArray* languageList = [base::mac::OuterBundle() preferredLocalizations];
+  NSArray* languageList = [base::apple::OuterBundle() preferredLocalizations];
   NSString* firstLocale = languageList[0];
   // Mac OS X uses "_" instead of "-", so swap to get a real locale value.
   std::string locale_value =

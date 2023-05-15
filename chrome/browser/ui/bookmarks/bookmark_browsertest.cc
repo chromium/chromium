@@ -613,10 +613,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   run_loop->Run();
 }
 
-// ChromeOS initializes two profiles (Default and test-user) and it's impossible
-// to distinguish UMA samples separately.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForDuplicates) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   const BookmarkNode* parent = bookmarks::GetParentForNewNodes(bookmark_model);
@@ -684,7 +680,61 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
               testing::ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForMostRecentlyUsed) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  BookmarkNode* parent = const_cast<BookmarkNode*>(bookmark_model->AddFolder(
+      bookmarks::GetParentForNewNodes(bookmark_model), 0, u"Test Folder"));
+  parent->set_date_added(base::Time::Now() - base::Days(3));
+
+  BookmarkNode* node = const_cast<BookmarkNode*>(bookmark_model->AddURL(
+      parent, parent->children().size(), u"title1", GURL("http://a.com")));
+  node->set_date_added(base::Time::Now() - base::Days(2));
+  node->set_date_last_used(base::Time::Now() - base::Days(1));
+
+  // This shouldn't count towards metrics because there's another node which
+  // is more recently saved/used.
+  node = const_cast<BookmarkNode*>(bookmark_model->AddURL(
+      parent, parent->children().size(), u"title1", GURL("http://a.com")));
+  node->set_date_added(base::Time::Now() - base::Days(3));
+  node->set_date_last_used(base::Time::Now() - base::Days(3));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForMostRecentlyUsed) {
+  WaitForBookmarkModel(browser()->profile());
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays"),
+      testing::ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlySavedBookmarkInDays"),
+      testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays"),
+      testing::ElementsAre(base::Bucket(/*min=*/3, /*count=*/1)));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       EmitUmaForMostRecentlyUsed_NoBookmarks) {
+  WaitForBookmarkModel(browser()->profile());
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays"),
+      testing::ElementsAre());
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlySavedBookmarkInDays"),
+      testing::ElementsAre());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays"),
+      testing::ElementsAre());
+}
 
 // Test that the bookmark star state updates in response to same document
 // navigations that change the URL

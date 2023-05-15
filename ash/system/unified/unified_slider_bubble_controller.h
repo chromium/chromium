@@ -10,6 +10,7 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
@@ -52,6 +53,10 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // True if a slider bubble is shown.
   bool IsBubbleShown() const;
 
+  // Returns the height of the bubble. Used to calculate baseline offset for
+  // notification popups or side aligned toasts.
+  int GetBubbleHeight() const;
+
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
@@ -89,12 +94,13 @@ class ASH_EXPORT UnifiedSliderBubbleController
   void StartAutoCloseTimer();
 
   // Unowned.
-  UnifiedSystemTray* const tray_;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
 
   base::OneShotTimer autoclose_;
 
-  TrayBubbleView* bubble_view_ = nullptr;
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  UnifiedSliderView* slider_view_ = nullptr;
 
   // Type of the currently shown slider.
   SliderType slider_type_ = SLIDER_TYPE_VOLUME;

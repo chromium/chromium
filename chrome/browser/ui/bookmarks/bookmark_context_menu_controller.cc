@@ -33,6 +33,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -309,6 +310,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Remove"));
       RecordBookmarkRemoved(opened_from_);
 
+      bookmarks::ScopedGroupBookmarkActions group_remove(model_);
       for (const auto* node : selection_)
         model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
       selection_.clear();

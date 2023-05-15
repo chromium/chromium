@@ -1164,53 +1164,53 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options.">
     Back up and restore your apps and settings
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options.">
     Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings > Accounts.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options.">
     New to Chromebook? Turn on sync so your preferences will be backed up.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen." translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen.">
     Manage sync options
   </message>
   <!-- Strings for OS sync consent screen options -->
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps.">
     Apps
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps.">
     Apps installed from the Play Store and web apps from Chrome browser
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings.">
     Settings
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings.">
     Keyboard and mouse behavior, language preferences, and more
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks.">
     Wi-Fi networks
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks.">
     Saved networks and passwords so you can connect instantly
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper.">
     Wallpaper
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper.">
     Remember your desktop background across devices
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option." >
     Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account.  Web apps will be synced through Chrome even if other browser sync features are turned off.
   </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option.">
     If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them.">
     Manage sync options
   </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them."  translateable="false">
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them.">
     Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings > Accounts.
   </message>
   <!-- Strings for recommend apps screen -->
@@ -3400,6 +3400,9 @@
   <message name="IDS_NETWORK_UI_RESET_EUICC_LABEL" desc="Label and button text for section of the debug networking page which allows developers and QA testers to reset Euicc.">
     Reset eSIM
   </message>
+  <message name="IDS_NETWORK_UI_RESET_APN_MIGRATOR_LABEL" desc="Label and button text for section of the debug networking page which allows developers and QA testers to reset ApnMigrator.">
+    Reset ApnMigrator
+  </message>
   <message name="IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL" desc="Label for section dealing with showing the 'Add new Wi-Fi network' dialog.">
     New Wi-Fi Network Dialog
   </message>
@@ -4204,21 +4207,21 @@
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
     <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_OWNER_LACROS" desc="Text shown in a pop-up dialog in the consolidated consent screen when the device owner clicks on the learn more for metrics opt-in when lacros is enabled.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers. Other app diagnostic and usage data, including for Android and web apps, will be collected if Apps sync is also enabled.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers. Other app diagnostic and usage data, including for Android and web apps, will be collected if apps sync is also turned on.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your ChromeOS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account. You can see your data, delete it, and change your account settings at account.google.com.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD_OWNER_LACROS" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in for a child device owner account when lacros is enabled..">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers. Other app diagnostic and usage data, including for Android and web apps, will be collected if Apps sync is also enabled.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers. Other app diagnostic and usage data, including for Android and web apps, will be collected if apps sync is also turned on.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_OWNER_LACROS" desc="Text shown in a pop-up dialog in the consolidated consent screen when the device owner clicks on the learn more for metrics opt-in when ARC is disabled when lacros is enabled..">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use and how much memory you typically use. Other app diagnostic and usage data, including for Android and web apps, will be collected if Apps sync is also enabled.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use and how much memory you typically use. Other app diagnostic and usage data, including for Android and web apps, will be collected if apps sync is also turned on.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD_OWNER_LACROS" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled in a child account when lacros is enabled..">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, and how much memory was typically used. Other app diagnostic and usage data, including for Android and web apps, will be collected if Apps sync is also enabled.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, and how much memory was typically used. Other app diagnostic and usage data, including for Android and web apps, will be collected if apps sync is also turned on.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for back-up.">
@@ -4463,6 +4466,9 @@
   </message>
   <message name="IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Couldn't print. Check printer and try again.
+  </message>
+  <message name="IDS_PRINT_JOB_EXPIRED_CERT_ERROR_NOTIFICATION_TITLE" desc="Title of the expired certificate error printing notification">
+    Printer SSL certificate is expired. Restart printer and try again.
   </message>
   <message name="IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE" desc="Title of the authorization error printing notification.">
     Authorization Failed
@@ -6051,14 +6057,11 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body for Steam (noun, name of app) installer while Steam is installing.">
     This may take a few minutes
   </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE" desc="Message containing the progress percentage of the ongoing Steam (noun, name of app) installation.">
+    <ph name="PERCENTAGE_COMPLETE">$1<ex>42</ex></ph>% completed
+  </message>
   <message name="IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE" desc="Message shown while the steam installer is initializing.">
     Starting installation
-  </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DLC" desc="Message shown while the steam installer is downloading its content.">
-    Downloading
-  </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DRYRUN" desc="Message shown while the steam installer is performing a post-installation trial.">
-    Performing setup
   </message>
   <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for Steam (noun, name of app) completes succesfully.">
     You’re all set!
@@ -6160,15 +6163,6 @@ Permissions you've already given to websites and apps may apply to this account.
   <!-- Strings for Add Supervision screen -->
   <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the ChromeOS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
     Set Up Parental Controls
-  </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_HEADING" desc="Heading string shown in the Add Supervision page when the network is not available.">
-    Can’t connect to the internet
-  </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_DESCRIPTION" desc="Description shown in the Add Supervision page when the network is not available.">
-    Check your internet connection
-  </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_BUTTON_LABEL" desc="Label of the button shown on the Add Supervision page when the network is not available.">
-    Close
   </message>
   <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE" desc="Title for the dialog shown when attempting to exit the Add Supervision screen.">
     Are you sure you want to exit?
@@ -6368,6 +6362,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT" desc="Label for autocorrect undo button in undo window.">
     Undo
   </message>
+  <message name="IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE" desc="String announced by screenreader when a button to learn more about autocorrect is highlighted.">
+    Autocorrect learn more button. Go to autocorrection settings page. Press enter to activate, escape to dismiss.
+  </message>
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON" desc="String announced by screenreader when a button to undo an autocorrect is highlighted. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
     Undo autocorrect button. Revert to <ph name="TYPED_WORD">$1<ex>hllo</ex></ph>.  Press enter to activate, escape to dismiss.
   </message>
@@ -6383,7 +6380,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     Emoji Picker
   </message>
   <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
-    GIF has been copied to your clipboard
+    GIF copied to clipboard
   </message>
 
   <!-- Strings for Custom Tab UI -->
@@ -6493,6 +6490,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Strings for multi-capture -->
+  <message name="IDS_MULTI_CAPTURE_NOTIFICATION_TITLE" desc="This is the title of the notification when an application starts capturing multiple surfaces.">
+    <ph name="APP_ORIGIN">$1</ph> is recording your screen
+  </message>
   <message name="IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE" desc="This is the message of the notification when an application starts capturing multiple surfaces.">
     Your system administrator has allowed <ph name="APP_ORIGIN">$1</ph> to record your screen
   </message>
@@ -6522,11 +6522,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
     ChromeOS-URLs
-  </message>
-
-     <!-- Strings for WebAppSettings -->
-  <message name="IDS_RUN_ON_OS_LOGIN_ENABLED" desc="This is the message of the notification when an application is automatically started on OS login.">
-    The app <ph name="APP_NAME">$1</ph> has been configured by your admin to run on OS login
   </message>
 
   <!-- Theme Selection -->
@@ -6579,18 +6574,41 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Scroll with two fingers on your touchpad in this area
   </message>
 
-  <!-- Drive Offline-->
-  <!-- TODO(b/278024582): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_DRIVE_OFFLINE_TITLE" desc="Title of the drive offline screen." translateable="false">
-    Keep your files available when you're offline
+  <!-- Display Size -->
+  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen." translateable="false">
+    Change text size
   </message>
-  <message name="IDS_OOBE_DRIVE_OFFLIBE_SUBTITLE" desc="Description of the drive offline screen." translateable="false">
-    Automatically download files in your My Drive so you can access and edit them without an internet connection.
+  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen." translateable="false">
+    Adjust the display size to make items on your screen, including text, larger or smaller.
   </message>
-  <message name="IDS_OOBE_DRIVE_OFFLIBE_ADDITIONAL_SUBTITLE" desc="Additional description of the drive offline screen." translateable="false">
-    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
+   <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION_ADDITIONAL" desc="Additional description of the display size screen." translateable="false">
+    You can also find this later in Settings &gt; Device &gt; Displays.
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen." translateable="false">
+    Display Size
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen." translateable="false">
+    Make everything bigger or smaller
   </message>
 
+  <!-- Drive Offline-->
+  <!-- TODO(b/278024582): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_DRIVE_PINNING_TITLE" desc="Title of the drive pinning screen." translateable="false">
+    Keep your files available when you're offline
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_SUBTITLE" desc="Description of the drive pinning screen." translateable="false">
+    Automatically download files in your My Drive so you can access and edit them without an internet connection.
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_ADDITIONAL_SUBTITLE" desc="Additional description of the drive pinning screen." translateable="false">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_ACCEPT_BUTTON" desc="Label for button to accept sync drive files pinning." translateable="false">
+    Turn on sync
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_DECLINE_BUTTON" desc="Label for button to decline sync drive files pinning." translateable="false">
+    Skip
+  </message>
 
   <!-- Strings for the locale switch notification inside the OOBE. -->
   <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
@@ -6623,6 +6641,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE" desc="Title of the theme selection tile in the CHOOBE screen." translateable="false">
     Select dark/light theme
   </message>
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen." translateable="false">
+    Change touchpad scrolling direction
+  </message>
+  <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen." translateable="false">
+    Display size
+  </message>
 
   <!-- Strings for the office fallback dialog -->
   <message name="IDS_OFFICE_FALLBACK_CANCEL" desc="Label for the button that cancels office fallback.">
@@ -6649,26 +6673,11 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE" desc="Explanation for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
     The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires Drive to be available.
   </message>
-  <message name="IDS_OFFICE_FALLBACK_TITLE_ONEDRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to OneDrive not being available.">
-    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when OneDrive is not available
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_REASON_ONEDRIVE_UNAVAILABLE" desc="Explanation for a dialog that appears when an office file is unable to be opened due to OneDrive not being available.">
-    The application <ph name="APPLICATION_NAME">$1<ex>Microsoft 365</ex></ph> requires OneDrive to be available.
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_TITLE_ERROR_OPENING_WEB" desc="Title for a dialog that appears when an office file is unable to be opened due to an error opening the URL.">
-    Can't open the URL for <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph>
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_REASON_ERROR_OPENING_WEB" desc="Explanation for a dialog that appears when an office file is unable to be opened due to OneDrive not being available.">
-    The application <ph name="APPLICATION_NAME">$1<ex>Microsoft 365</ex></ph> requires OneDrive to be available.
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_TITLE_INVALID_GOOGLE_DOCS_URL" desc="Title for a dialog that appears when an office file is unable to be opened due to the URL for the office file being inaccessible.">
-    Can't open the URL for <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph>
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_REASON_INVALID_GOOGLE_DOCS_URL" desc="Explanation for a dialog that appears when an office file is unable to be opened from Google Drive due to the URL for the office file being inaccessible.">
-    The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires a valid <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> URL.
-  </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS" desc="Office Fallback dialog instructions for the choices (buttons) the user has available to open the office file.">
     Choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE" desc="Office Fallback dialog instructions for when Google Drive is not available in Files app and the user should try to enable it." translateable="false">
+    Try enabling Google Drive in Settings.
   </message>
 
   <!-- security curtain -->
@@ -6679,4 +6688,13 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Your administrator has logged in to look into an issue. You can continue to use the device after the administrator gives the control back to you.
   </message>
 
+  <!-- Gaia Info -->
+  <message name="IDS_GAIA_INFO_TITLE" desc="Title of the Gaia Info screen.">
+    Use your Google Account on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_GAIA_INFO_DESCRIPTION" desc="Description of the Gaia Info screen.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>On the next screen, sign in with your Google Account.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>This is the same account you use for Gmail, YouTube, Chrome, and other Google services. Use your account for a personalized experience and easy access to all of your information.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>If you don't have a Google Account, you'll be able to create one on the next screen.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+  </message>
 </grit-part>

@@ -36,8 +36,14 @@ class PersistentRepeatingTimer;
 
 class DIPSService : public KeyedService {
  public:
-  using RecordBounceCallback = base::RepeatingCallback<
-      void(const GURL& url, base::Time time, bool stateful)>;
+  using RecordBounceCallback =
+      base::RepeatingCallback<void(const GURL& url,
+                                   const GURL& initial_url,
+                                   const GURL& final_url,
+                                   base::Time time,
+                                   bool stateful)>;
+  using DeletedSitesCallback =
+      base::OnceCallback<void(const std::vector<std::string>& sites)>;
 
   ~DIPSService() override;
 
@@ -49,6 +55,13 @@ class DIPSService : public KeyedService {
   static DIPSService* Get(content::BrowserContext* context);
 
   base::SequenceBound<DIPSStorage>* storage() { return &storage_; }
+  void RecordBounceForTesting(const GURL& url,
+                              const GURL& initial_url,
+                              const GURL& final_url,
+                              base::Time time,
+                              bool stateful) {
+    RecordBounce(url, initial_url, final_url, time, stateful);
+  }
 
   DIPSCookieMode GetCookieMode() const;
 
@@ -56,6 +69,10 @@ class DIPSService : public KeyedService {
                     const base::Time& delete_end,
                     network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
+
+  // This allows for deletion of state for sites deemed eligible when evaluated
+  // with no grace period.
+  void DeleteEligibleSitesImmediately(DeletedSitesCallback callback);
 
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain);
@@ -95,7 +112,11 @@ class DIPSService : public KeyedService {
                 DIPSRedirectChainInfoPtr chain,
                 size_t index,
                 const DIPSState url_state);
-  void RecordBounce(const GURL& url, base::Time time, bool stateful);
+  void RecordBounce(const GURL& url,
+                    const GURL& initial_url,
+                    const GURL& final_url,
+                    base::Time time,
+                    bool stateful);
   static void HandleRedirect(const DIPSRedirectInfo& redirect,
                              const DIPSRedirectChainInfo& chain,
                              RecordBounceCallback callback);
@@ -107,16 +128,24 @@ class DIPSService : public KeyedService {
 
   void OnStorageInitialized();
   void OnTimerFired();
-  void DeleteDIPSEligibleState(base::Time deletion_start,
+  void DeleteDIPSEligibleState(DeletedSitesCallback callback,
+                               base::Time deletion_start,
                                std::vector<std::string> sites_to_clear);
-  void PostDeletionTaskToUIThread(base::Time deletion_start,
+  void PostDeletionTaskToUIThread(base::OnceClosure callback,
+                                  base::Time deletion_start,
                                   std::vector<std::string> sites_to_clear);
   void RunDeletionTaskOnUIThread(
       std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
       base::OnceClosure callback);
 
   bool ShouldBlockThirdPartyCookies() const;
-  bool HasCookieException(const std::string& site) const;
+
+  // Checks whether there is an exception allowing |site| to use cookies when
+  // embedded by any other site.
+  bool Has3PCExceptionAs3P(const std::string& site) const;
+  // Checks whether there is an exception allowing all third-parties embedded
+  // under |url| to use cookies.
+  bool Has3PCExceptionAs1P(const GURL& url) const;
 
   base::RunLoop wait_for_file_deletion_;
   base::RunLoop wait_for_prepopulating_;

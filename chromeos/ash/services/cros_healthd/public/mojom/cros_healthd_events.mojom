@@ -244,7 +244,7 @@ struct AudioEventInfo {
 
 // Audio jack event info.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 2, NextIndex: 2
 [Stable]
 struct AudioJackEventInfo {
   [Stable, Extensible]
@@ -258,6 +258,18 @@ struct AudioJackEventInfo {
   };
 
   State state@0;
+
+  [Stable, Extensible]
+  enum DeviceType {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // The device is a headphone.
+    kHeadphone,
+    // The device is a microphone.
+    kMicrophone,
+  };
+
+  [MinVersion=1] DeviceType device_type@1;
 };
 
 // SD Card event info.

@@ -315,7 +315,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   PendingRequests pending_requests_;
   base::CallbackListSubscription subscription_;
   api::debugger::DetachReason detach_reason_ =
-      api::debugger::DETACH_REASON_TARGET_CLOSED;
+      api::debugger::DetachReason::kTargetClosed;
 
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
@@ -410,7 +410,7 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
 }
 
 void ExtensionDevToolsClientHost::InfoBarDestroyed() {
-  detach_reason_ = api::debugger::DETACH_REASON_CANCELED_BY_USER;
+  detach_reason_ = api::debugger::DetachReason::kCanceledByUser;
   RespondDetachedToPendingRequests();
   SendDetachedEvent();
   Close();

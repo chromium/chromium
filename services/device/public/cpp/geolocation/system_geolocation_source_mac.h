@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   // To be called from the macOS backend via callback when the position is
   // updated
   void PositionUpdated(const mojom::Geoposition& position);
+  void PositionError(const mojom::GeopositionError& error);
 
   void StartWatchingPosition(bool high_accuracy) override;
   void StopWatchingPosition() override;

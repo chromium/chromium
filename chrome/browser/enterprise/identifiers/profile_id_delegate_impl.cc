@@ -5,8 +5,8 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 
 #include "base/check.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
+#include "base/uuid.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
@@ -31,7 +31,7 @@ namespace {
 void CreateProfileGUID(PrefService* prefs) {
   if (prefs->GetString(kProfileGUIDPref).empty()) {
     prefs->SetString(kProfileGUIDPref,
-                     base::GUID::GenerateRandomV4().AsLowercaseString());
+                     base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 }
 

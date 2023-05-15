@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
@@ -29,8 +30,11 @@
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"
@@ -151,7 +155,7 @@ class DeviceNameContainerHighlightPathGenerator
   }
 
   // Owned by views hierarchy.
-  QuickSettingsSlider* const slider_;
+  const raw_ptr<QuickSettingsSlider, ExperimentalAsh> slider_;
 };
 
 }  // namespace
@@ -161,28 +165,30 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
   CreateItems();
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 
-  if (!captions::IsLiveCaptionFeatureSupported()) {
-    return;
-  }
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer) {
-    soda_installer->AddObserver(this);
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    speech::SodaInstaller* soda_installer =
+        speech::SodaInstaller::GetInstance();
+    if (soda_installer) {
+      soda_installer->AddObserver(this);
+    }
   }
 }
 
 AudioDetailedView::~AudioDetailedView() {
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    speech::SodaInstaller* soda_installer =
+        speech::SodaInstaller::GetInstance();
+    // `soda_installer` is not guaranteed to be valid, since it's possible for
+    // this class to out-live it. This means that this class cannot use
+    // ScopedObservation and needs to manage removing the observer itself.
+    if (soda_installer) {
+      soda_installer->RemoveObserver(this);
+    }
+  }
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
-  if (!captions::IsLiveCaptionFeatureSupported()) {
-    return;
-  }
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  // `soda_installer` is not guaranteed to be valid, since it's possible for
-  // this class to out-live it. This means that this class cannot use
-  // ScopedObservation and needs to manage removing the observer itself.
-  if (soda_installer) {
-    soda_installer->RemoveObserver(this);
-  }
 }
 
 views::View* AudioDetailedView::GetAsView() {
@@ -224,10 +230,13 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
 
   auto* sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
-  sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-  // TODO(b/262281693): Update the font for `sub_header_label_`.
+  sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   TrayPopupUtils::SetLabelFontList(sub_header_label_,
                                    TrayPopupUtils::FontStyle::kSubHeader);
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *sub_header_label_);
+  }
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
   container->AddChildView(sub_header_label_);
   return;
@@ -243,10 +252,15 @@ views::View* AudioDetailedView::AddDeviceSlider(
   device_name_container->tri_view()->SetContainerBorder(
       TriView::Container::CENTER,
       views::CreateEmptyBorder(kDevicesTriViewBorder));
-  // TODO(b/262281693): Update the font for `device_name_container` text label.
-  device_name_container->text_label()->SetEnabledColorId(
-      device.active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysSecondary);
+  const bool is_muted =
+      is_output_device
+          ? CrasAudioHandler::Get()->IsOutputMutedForDevice(device.id)
+          : CrasAudioHandler::Get()->IsInputMutedForDevice(device.id);
+  UpdateDeviceContainerColor(device_name_container, is_muted);
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *device_name_container->text_label());
+  }
   device_name_container->SetPaintToLayer();
   // If this device is the active one, disables event handling on
   // `device_name_container` so that `slider` can handle the events.
@@ -334,10 +348,15 @@ void AudioDetailedView::CreateLiveCaptionView() {
                            : kUnifiedMenuLiveCaptionOffIcon,
       cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
   live_caption_icon_ = toggle_icon.get();
-  // TODO(b/262281693): Update the font and color for `live_caption_view_` text.
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
+  if (chromeos::features::IsJellyEnabled()) {
+    live_caption_view_->text_label()->SetEnabledColorId(
+        cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
+                                          *live_caption_view_->text_label());
+  }
 
   // Creates a toggle button on the right.
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
@@ -431,6 +450,13 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
+  if (chromeos::features::IsJellyEnabled()) {
+    views::Label* noise_cancellation_label =
+        noise_cancellation_view->text_label();
+    noise_cancellation_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *noise_cancellation_label);
+  }
 
   // Create a non-clickable non-focusable toggle button on the right. The events
   // and focus behavior should be handled by `noise_cancellation_view_` instead.
@@ -502,7 +528,7 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
 }
 
 void AudioDetailedView::OnSettingsButtonClicked() {
-  DCHECK(features::IsAudioSettingsPageEnabled());
+  CHECK(features::IsAudioSettingsPageEnabled());
   if (!TrayPopupUtils::CanOpenWebUISettings()) {
     return;
   }
@@ -624,6 +650,11 @@ void AudioDetailedView::UpdateScrollableList() {
     device_map_[device_name_container] = device;
 
     if (features::IsQsRevampEnabled()) {
+      // Sets this flag to false to make the assigned color id effective.
+      // Otherwise it will use `color_utils::BlendForMinContrast()` to improve
+      // label readability over the background.
+      device_name_container->text_label()->SetAutoColorReadabilityEnabled(
+          /*enabled=*/false);
       last_output_device =
           AddDeviceSlider(container, device, device_name_container,
                           /*is_output_device=*/true);
@@ -653,6 +684,9 @@ void AudioDetailedView::UpdateScrollableList() {
     device_map_[device_name_container] = device;
 
     if (features::IsQsRevampEnabled()) {
+      // Sets this flag to false to make the assigned color id effective.
+      device_name_container->text_label()->SetAutoColorReadabilityEnabled(
+          /*enabled=*/false);
       AddDeviceSlider(container, device, device_name_container,
                       /*is_output_device=*/false);
     }
@@ -686,6 +720,42 @@ void AudioDetailedView::UpdateScrollableList() {
 
   container->SizeToPreferredSize();
   scroller()->Layout();
+}
+
+void AudioDetailedView::UpdateDeviceContainerColor(
+    HoverHighlightView* device_name_container,
+    bool is_muted) {
+  AudioDeviceMap::iterator iter = device_map_.find(device_name_container);
+  if (iter == device_map_.end()) {
+    return;
+  }
+  const ui::ColorId color_id =
+      iter->second.active
+          ? (is_muted ? cros_tokens::kCrosSysOnSurface
+                      : cros_tokens::kCrosSysSystemOnPrimaryContainer)
+          : cros_tokens::kCrosSysOnSurfaceVariant;
+  device_name_container->text_label()->SetEnabledColorId(color_id);
+  TrayPopupUtils::UpdateCheckMarkColor(device_name_container, color_id);
+}
+
+void AudioDetailedView::UpdateActiveDeviceColor(bool is_input, bool is_muted) {
+  uint64_t device_id =
+      is_input ? CrasAudioHandler::Get()->GetPrimaryActiveInputNode()
+               : CrasAudioHandler::Get()->GetPrimaryActiveOutputNode();
+  // Only the active node could trigger the mute state change. Iterates the
+  // `device_map_` to find the corresponding `device_name_container` and updates
+  // the color.
+  auto it = std::find_if(
+      std::begin(device_map_), std::end(device_map_),
+      [device_id](const std::pair<views::View*, AudioDevice>& audio_device) {
+        return device_id == audio_device.second.id;
+      });
+
+  if (it == std::end(device_map_)) {
+    return;
+  }
+  UpdateDeviceContainerColor(static_cast<HoverHighlightView*>(it->first),
+                             is_muted);
 }
 
 void AudioDetailedView::HandleViewClicked(views::View* view) {
@@ -766,6 +836,20 @@ void AudioDetailedView::OnSodaProgress(speech::LanguageCode language_code,
   std::u16string message = l10n_util::GetStringFUTF16Int(
       IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS, progress);
   MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::OnOutputMuteChanged(bool mute_on) {
+  UpdateActiveDeviceColor(/*is_input=*/false, mute_on);
+}
+
+void AudioDetailedView::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
+  UpdateActiveDeviceColor(/*is_input=*/true, mute_on);
+}
+
+void AudioDetailedView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
+  UpdateActiveDeviceColor(/*is_input=*/true, muted);
 }
 
 BEGIN_METADATA(AudioDetailedView, views::View)

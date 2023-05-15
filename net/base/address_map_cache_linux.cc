@@ -10,11 +10,7 @@
 
 namespace net {
 
-AddressMapCacheLinux::AddressMapCacheLinux(
-    AddressMap initial_address_map,
-    std::unordered_set<int> initial_online_links)
-    : cached_address_map_(std::move(initial_address_map)),
-      cached_online_links_(std::move(initial_online_links)) {}
+AddressMapCacheLinux::AddressMapCacheLinux() = default;
 AddressMapCacheLinux::~AddressMapCacheLinux() = default;
 
 AddressMapOwnerLinux::AddressMap AddressMapCacheLinux::GetAddressMap() const {
@@ -27,6 +23,17 @@ std::unordered_set<int> AddressMapCacheLinux::GetOnlineLinks() const {
   return cached_online_links_;
 }
 
+AddressMapCacheLinux* AddressMapCacheLinux::GetAddressMapCacheLinux() {
+  return this;
+}
+
+void AddressMapCacheLinux::SetCachedInfo(AddressMap address_map,
+                                         std::unordered_set<int> online_links) {
+  base::AutoLock autolock(lock_);
+  cached_address_map_ = std::move(address_map);
+  cached_online_links_ = std::move(online_links);
+}
+
 void AddressMapCacheLinux::ApplyDiffs(const AddressMapDiff& addr_diff,
                                       const OnlineLinksDiff& links_diff) {
   base::AutoLock autolock(lock_);
@@ -34,17 +41,14 @@ void AddressMapCacheLinux::ApplyDiffs(const AddressMapDiff& addr_diff,
     if (msg_opt.has_value()) {
       cached_address_map_[address] = msg_opt.value();
     } else {
-      DCHECK(cached_address_map_.count(address));
       cached_address_map_.erase(address);
     }
   }
 
   for (const auto& [if_index, is_now_online] : links_diff) {
     if (is_now_online) {
-      DCHECK_EQ(cached_online_links_.count(if_index), 0u);
       cached_online_links_.insert(if_index);
     } else {
-      DCHECK_EQ(cached_online_links_.count(if_index), 1u);
       cached_online_links_.erase(if_index);
     }
   }

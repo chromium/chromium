@@ -15,6 +15,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -92,12 +93,13 @@ class ASH_EXPORT AssistantUiControllerImpl
   void ShowUnboundErrorToast();
 
  private:
-  AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
+  const raw_ptr<AssistantControllerImpl, ExperimentalAsh>
+      assistant_controller_;  // Owned by Shell.
   AssistantUiModel model_;
   bool has_shown_onboarding_ = false;
 
   // Owned by AssistantService.
-  assistant::Assistant* assistant_ = nullptr;
+  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

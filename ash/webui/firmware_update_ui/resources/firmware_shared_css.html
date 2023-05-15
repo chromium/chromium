@@ -1,5 +1,9 @@
 <template>
   <style include="cr-shared-style cros-color-overrides">
+    :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+      border-radius: 20px;
+    }
+
     @media (prefers-color-scheme: dark) {
       cr-dialog::part(dialog) {
         background-color: var(--cros-bg-color-elevation-3);

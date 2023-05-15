@@ -22,10 +22,12 @@ class MockAutoReauthnPermissionDelegate
   MockAutoReauthnPermissionDelegate& operator=(
       const MockAutoReauthnPermissionDelegate&) = delete;
 
-  MOCK_METHOD0(HasAutoReauthnContentSetting, bool());
+  MOCK_METHOD0(IsAutoReauthnSettingEnabled, bool());
   MOCK_METHOD1(IsAutoReauthnEmbargoed, bool(const url::Origin&));
   MOCK_METHOD1(GetAutoReauthnEmbargoStartTime, base::Time(const url::Origin&));
   MOCK_METHOD1(RecordDisplayAndEmbargo, void(const url::Origin&));
+  MOCK_METHOD2(SetRequiresUserMediation, void(const GURL&, bool));
+  MOCK_METHOD1(RequiresUserMediation, bool(const GURL&));
 };
 
 }  // namespace content

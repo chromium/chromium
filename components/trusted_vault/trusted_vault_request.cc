@@ -10,8 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -25,7 +25,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -189,9 +189,9 @@ void TrustedVaultRequest::OnURLLoadComplete(
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
-  RecordTrustedVaultURLFetchResponse(/*http_response_code=*/http_response_code,
-                                     /*net_error=*/url_loader_->NetError(),
-                                     reason_for_uma_);
+  trusted_vault::RecordTrustedVaultURLFetchResponse(
+      /*http_response_code=*/http_response_code,
+      /*net_error=*/url_loader_->NetError(), reason_for_uma_);
 
   std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == 0) {
@@ -289,4 +289,4 @@ void TrustedVaultRequest::RunCompletionCallbackAndMaybeDestroySelf(
   std::move(completion_callback_).Run(status, response_body);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

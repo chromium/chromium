@@ -16,11 +16,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
@@ -50,15 +48,6 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
-// Converts NSString entered by the user to a GURL.
-GURL ConvertUserDataToGURL(NSString* urlString) {
-  if (urlString) {
-    return url_formatter::FixupURL(base::SysNSStringToUTF8(urlString),
-                                   std::string());
-  } else {
-    return GURL();
-  }
-}
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInfo = kSectionIdentifierEnumZero,
@@ -81,8 +70,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @property(nonatomic, assign) Browser* browser;
 
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
 // Done button item in navigation bar.
 @property(nonatomic, strong) UIBarButtonItem* doneItem;
 
@@ -93,10 +80,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 // YES if the URL item is displaying a valid URL.
 @property(nonatomic, assign) BOOL displayingValidURL;
-
-// Reports the changes to the delegate, that has the responsibility to save the
-// bookmark.
-- (void)commitBookmarkChanges;
 
 // The Save button is disabled if the form values are deemed non-valid. This
 // method updates the state of the Save button accordingly.
@@ -117,7 +100,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 @synthesize delegate = _delegate;
 @synthesize displayingValidURL = _displayingValidURL;
 @synthesize browser = _browser;
-@synthesize browserState = _browserState;
 @synthesize cancelItem = _cancelItem;
 @synthesize doneItem = _doneItem;
 @synthesize nameItem = _nameItem;
@@ -134,7 +116,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     // Browser may be OTR, which is why the original browser state is being
     // explicitly requested.
     _browser = browser;
-    _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
   }
   return self;
 }
@@ -214,7 +195,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - Private
 
 - (BOOL)inputURLIsValid {
-  return ConvertUserDataToGURL([self inputURLString]).is_valid();
+  return bookmark_utils_ios::ConvertUserDataToGURL([self inputURLString])
+      .is_valid();
 }
 
 // Retrieves input URL string from UI.
@@ -225,32 +207,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // Retrieves input bookmark name string from UI.
 - (NSString*)inputBookmarkName {
   return self.nameItem.text;
-}
-
-- (void)commitBookmarkChanges {
-  // To stop getting recursive events from committed bookmark editing changes
-  // ignore bookmark model updates notifications.
-  base::AutoReset<BOOL> autoReset(
-      [self.mutator ignoresBookmarkModelChangesPointer], YES);
-
-  GURL url = ConvertUserDataToGURL([self inputURLString]);
-  // If the URL was not valid, the `save` message shouldn't have been sent.
-  DCHECK([self inputURLIsValid]);
-
-  // Tell delegate if bookmark name or title has been changed.
-  if ([self.mutator bookmark] &&
-      ([self.mutator bookmark]->GetTitle() !=
-           base::SysNSStringToUTF16([self inputBookmarkName]) ||
-       [self.mutator bookmark]->url() != url)) {
-    [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
-  }
-
-  [self.snackbarCommandsHandler
-      showSnackbarMessage:
-          bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
-              [self.mutator bookmark], [self inputBookmarkName], url,
-              [self.mutator folder], [self.mutator bookmarkModel],
-              self.browserState)];
 }
 
 - (void)dismissBookmarkEditorView {
@@ -366,25 +322,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 - (void)deleteBookmark {
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksEditorDeletedBookmark"));
-  if ([self.mutator bookmark] && [self.mutator bookmarkModel]->loaded()) {
-    // To stop getting recursive events from committed bookmark editing changes
-    // ignore bookmark model updates notifications.
-    base::AutoReset<BOOL> autoReset(
-        [self.mutator ignoresBookmarkModelChangesPointer], YES);
-
-    // When launched from the star button, removing the current bookmark
-    // removes all matching nodes.
-    std::vector<const BookmarkNode*> nodesVector;
-    [self.mutator bookmarkModel]->GetNodesByURL([self.mutator bookmark]->url(),
-                                                &nodesVector);
-    std::set<const BookmarkNode*> nodes(nodesVector.begin(), nodesVector.end());
-
-    [self.snackbarCommandsHandler
-        showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                                nodes, [self.mutator bookmarkModel],
-                                self.browserState)];
-    [self.mutator setBookmark:nil];
-  }
+  [self.mutator deleteBookmark];
   [self.delegate bookmarkEditorWantsDismissal:self];
 }
 
@@ -401,7 +339,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)save {
   base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorSaved"));
-  [self commitBookmarkChanges];
+  [self.mutator commitBookmarkChangesWithURLString:[self inputURLString]
+                                              name:[self inputBookmarkName]];
   [self dismissBookmarkEditorView];
 }
 

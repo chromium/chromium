@@ -46,7 +46,6 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
@@ -918,8 +917,7 @@ void VideoOverlayWindowViews::SetUpViews() {
 void VideoOverlayWindowViews::OnRootViewReady() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
-  if (ash::features::IsDarkLightModeEnabled())
-    highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
+  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -1176,7 +1174,8 @@ void VideoOverlayWindowViews::ShowInactive() {
   // At this point, the aura surface will be created so we can set it to pip and
   // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
   desktop_window_tree_host->GetWaylandExtension()->SetPip();
-  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_));
+  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_),
+                                           /*excluded_margin=*/gfx::Size());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

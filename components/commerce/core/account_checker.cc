@@ -73,9 +73,12 @@ bool AccountChecker::IsSignedIn() {
 }
 
 bool AccountChecker::IsSyncingBookmarks() {
-  return sync_service_ && syncer::GetUploadToGoogleState(
-                              sync_service_, syncer::ModelType::BOOKMARKS) ==
-                              syncer::UploadState::ACTIVE;
+  // Treat both ACTIVE and INITIALIZING as valid sync states for bookmarks as
+  // long as the sync feature is enabled.
+  return sync_service_ && sync_service_->IsSyncFeatureActive() &&
+         syncer::GetUploadToGoogleState(sync_service_,
+                                        syncer::ModelType::BOOKMARKS) !=
+             syncer::UploadState::NOT_ACTIVE;
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {

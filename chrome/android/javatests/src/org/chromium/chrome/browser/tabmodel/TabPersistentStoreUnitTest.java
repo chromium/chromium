@@ -61,9 +61,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class TabPersistentStoreUnitTest {
-    private static final Integer REGULAR_TAB_ID_1 = 1;
-    private static final Integer INCOGNITO_TAB_ID_1 = 21;
-    private static final Integer INCOGNITO_TAB_ID_2 = 22;
     private static final Integer RESTORE_TAB_ID_1 = 31;
     private static final Integer RESTORE_TAB_ID_2 = 32;
     private static final Integer RESTORE_TAB_ID_3 = 33;

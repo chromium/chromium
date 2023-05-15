@@ -13,7 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/pref_names.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -49,25 +50,15 @@ using l10n_util::GetNSString;
 
 namespace {
 
-// Ordered list of all sync switches. If a new switch is added, a new entry
-// must be added in `kSyncableItemTypes`.
-static const SyncSetupService::SyncableDatatype kSyncSwitchItems[] = {
-    SyncSetupService::kSyncAutofill,       SyncSetupService::kSyncBookmarks,
-    SyncSetupService::kSyncOmniboxHistory, SyncSetupService::kSyncOpenTabs,
-    SyncSetupService::kSyncPasswords,      SyncSetupService::kSyncReadingList,
-    SyncSetupService::kSyncPreferences};
-
-// Map of all synceable types to the corresponding pref name.
-constexpr auto kSyncableItemTypes =
-    base::MakeFixedFlatMap<SyncSetupService::SyncableDatatype, const char*>({
-        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
-        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
-        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
-        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
-        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
-        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
-        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
-    });
+// Ordered list of all sync switches.
+static const syncer::UserSelectableType kSyncSwitchItems[] = {
+    syncer::UserSelectableType::kAutofill,
+    syncer::UserSelectableType::kBookmarks,
+    syncer::UserSelectableType::kHistory,
+    syncer::UserSelectableType::kTabs,
+    syncer::UserSelectableType::kPasswords,
+    syncer::UserSelectableType::kReadingList,
+    syncer::UserSelectableType::kPreferences};
 
 // Returns the configuration to be used for the accessory.
 UIImageConfiguration* AccessoryConfiguration() {
@@ -164,7 +155,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
 
-  for (SyncSetupService::SyncableDatatype dataType : kSyncSwitchItems) {
+  for (syncer::UserSelectableType dataType : kSyncSwitchItems) {
     TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
     [syncSwitchItems addObject:switchItem];
     [model addItem:switchItem
@@ -172,7 +163,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   }
   self.syncSwitchItems = syncSwitchItems;
 
-  if (![self isManagedSyncSettingsDataType:SyncSetupService::kSyncAutofill]) {
+  if (![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                               kAutofill]) {
     SyncSwitchItem* button =
         [[SyncSwitchItem alloc] initWithType:AutocompleteWalletItemType];
     button.text =
@@ -197,18 +189,17 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   if ([self.syncEverythingItem isKindOfClass:[TableViewInfoButtonItem class]]) {
     // It's possible that the sync everything pref remains true when a policy
     // change doesn't allow to sync everthing anymore. Fix that here.
-    BOOL isSyncingEverything = self.syncSetupService->IsSyncingAllDataTypes();
+    BOOL isSyncingEverything = self.syncSetupService->IsSyncEverythingEnabled();
     BOOL canSyncEverything = self.allItemsAreSynceable;
     if (isSyncingEverything && !canSyncEverything) {
-      self.syncSetupService->SetSyncingAllDataTypes(NO);
+      self.syncSetupService->SetSyncEverythingEnabled(NO);
     }
     return;
   }
 
   BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
   BOOL shouldSyncEverythingItemBeOn =
-      self.syncSetupService->IsSyncRequested() &&
-      self.syncSetupService->IsSyncingAllDataTypes();
+      self.syncSetupService->IsSyncEverythingEnabled();
   SyncSwitchItem* syncEverythingItem =
       base::mac::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
   BOOL needsUpdate =
@@ -236,13 +227,10 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       continue;
 
     SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
-    SyncSetupService::SyncableDatatype dataType =
-        static_cast<SyncSetupService::SyncableDatatype>(
-            syncSwitchItem.dataType);
-    syncer::ModelType modelType = self.syncSetupService->GetModelType(dataType);
+    syncer::UserSelectableType dataType =
+        static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
     BOOL isDataTypeSynced =
-        self.syncSetupService->IsSyncRequested() &&
-        self.syncSetupService->IsDataTypePreferred(modelType);
+        self.syncSetupService->IsDataTypePreferred(dataType);
     BOOL isEnabled = self.shouldSyncDataItemEnabled &&
                      ![self isManagedSyncSettingsDataType:dataType];
     BOOL needsUpdate = (syncSwitchItem.on != isDataTypeSynced) ||
@@ -264,15 +252,11 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
   SyncSwitchItem* syncSwitchItem =
       base::mac::ObjCCast<SyncSwitchItem>(self.autocompleteWalletItem);
-  syncer::ModelType autofillModelType =
-      self.syncSetupService->GetModelType(SyncSetupService::kSyncAutofill);
-  BOOL isAutofillOn =
-      self.syncSetupService->IsSyncRequested() &&
-      self.syncSetupService->IsDataTypePreferred(autofillModelType);
+  BOOL isAutofillOn = self.syncSetupService->IsDataTypePreferred(
+      syncer::UserSelectableType::kAutofill);
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
-                              self.autocompleteWalletPreference.value;
+  BOOL autocompleteWalletOn = self.autocompleteWalletPreference.value;
   BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
                      (syncSwitchItem.on != autocompleteWalletOn);
   syncSwitchItem.enabled = autocompleteWalletEnabled;
@@ -435,47 +419,51 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Creates a SyncSwitchItem or TableViewInfoButtonItem instance if the item is
 // managed.
 - (TableViewItem*)tableViewItemWithDataType:
-    (SyncSetupService::SyncableDatatype)dataType {
+    (syncer::UserSelectableType)dataType {
   NSInteger itemType = 0;
   int textStringID = 0;
   NSString* accessibilityIdentifier = nil;
   switch (dataType) {
-    case SyncSetupService::kSyncBookmarks:
+    case syncer::UserSelectableType::kBookmarks:
       itemType = BookmarksDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_BOOKMARKS;
       accessibilityIdentifier = kSyncBookmarksIdentifier;
       break;
-    case SyncSetupService::kSyncOmniboxHistory:
+    case syncer::UserSelectableType::kHistory:
       itemType = HistoryDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TYPED_URLS;
       accessibilityIdentifier = kSyncOmniboxHistoryIdentifier;
       break;
-    case SyncSetupService::kSyncPasswords:
+    case syncer::UserSelectableType::kPasswords:
       itemType = PasswordsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PASSWORDS;
       accessibilityIdentifier = kSyncPasswordsIdentifier;
       break;
-    case SyncSetupService::kSyncOpenTabs:
+    case syncer::UserSelectableType::kTabs:
       itemType = OpenTabsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TABS;
       accessibilityIdentifier = kSyncOpenTabsIdentifier;
       break;
-    case SyncSetupService::kSyncAutofill:
+    case syncer::UserSelectableType::kAutofill:
       itemType = AutofillDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_AUTOFILL;
       accessibilityIdentifier = kSyncAutofillIdentifier;
       break;
-    case SyncSetupService::kSyncPreferences:
+    case syncer::UserSelectableType::kPreferences:
       itemType = SettingsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PREFERENCES;
       accessibilityIdentifier = kSyncPreferencesIdentifier;
       break;
-    case SyncSetupService::kSyncReadingList:
+    case syncer::UserSelectableType::kReadingList:
       itemType = ReadingListDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_READING_LIST;
       accessibilityIdentifier = kSyncReadingListIdentifier;
       break;
-    case SyncSetupService::kNumberOfSyncableDatatypes:
+    case syncer::UserSelectableType::kThemes:
+    case syncer::UserSelectableType::kExtensions:
+    case syncer::UserSelectableType::kApps:
+    case syncer::UserSelectableType::kWifiConfigurations:
+    case syncer::UserSelectableType::kSavedTabGroups:
       NOTREACHED();
       break;
   }
@@ -485,7 +473,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   if (![self isManagedSyncSettingsDataType:dataType]) {
     SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
     switchItem.text = GetNSString(textStringID);
-    switchItem.dataType = dataType;
+    switchItem.dataType = static_cast<NSInteger>(dataType);
     switchItem.accessibilityIdentifier = accessibilityIdentifier;
     return switchItem;
   } else {
@@ -521,9 +509,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
-  return (!self.syncSetupService->IsSyncingAllDataTypes() ||
-          !self.allItemsAreSynceable ||
-          !self.syncSetupService->IsSyncRequested()) &&
+  return (!self.syncSetupService->IsSyncEverythingEnabled() ||
+          !self.allItemsAreSynceable) &&
          !self.disabledBecauseOfSyncError;
 }
 
@@ -540,7 +527,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }
 
 - (BOOL)syncConsentGiven {
-  return self.syncSetupService->IsFirstSetupComplete();
+  return self.syncSetupService->IsInitialSyncFeatureSetupComplete();
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate
@@ -606,7 +593,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
                 isKindOfClass:[TableViewInfoButtonItem class]])
           return;
 
-        self.syncSetupService->SetSyncingAllDataTypes(value);
+        self.syncSetupService->SetSyncEverythingEnabled(value);
         if (value) {
           // When sync everything is turned on, the autocomplete wallet
           // should be turned on. This code can be removed once
@@ -623,15 +610,12 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       case SettingsDataTypeItemType: {
         // Don't try to toggle if item is managed.
         DCHECK(syncSwitchItem);
-        SyncSetupService::SyncableDatatype dataType =
-            static_cast<SyncSetupService::SyncableDatatype>(
-                syncSwitchItem.dataType);
+        syncer::UserSelectableType dataType =
+            static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
         if ([self isManagedSyncSettingsDataType:dataType])
           break;
-        syncer::ModelType modelType =
-            self.syncSetupService->GetModelType(dataType);
-        self.syncSetupService->SetDataTypeEnabled(modelType, value);
-        if (dataType == SyncSetupService::kSyncAutofill) {
+        self.syncSetupService->SetDataTypeEnabled(dataType, value);
+        if (dataType == syncer::UserSelectableType::kAutofill) {
           // When the auto fill data type is updated, the autocomplete wallet
           // should be updated too. Autocomplete wallet should not be enabled
           // when auto fill data type disabled. This behaviour not be
@@ -642,9 +626,10 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
         break;
       }
       case AutocompleteWalletItemType:
-        if ([self
-                isManagedSyncSettingsDataType:SyncSetupService::kSyncAutofill])
+        if ([self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                    kAutofill]) {
           break;
+        }
         self.autocompleteWalletPreference.value = value;
         break;
       case SignOutItemType:
@@ -783,10 +768,6 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (self.syncSetupService->IsInitialSetupOngoing()) {
-    return;
-  }
-
   // Checks if the sync setup service state has changed from the saved state in
   // the table view model.
   absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
@@ -840,6 +821,9 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Returns the sync error item type or absl::nullopt if the item
 // is not an error.
 - (absl::optional<SyncSettingsItemType>)syncErrorItemType {
+  if (!self.syncConsentGiven) {
+    return absl::nullopt;
+  }
   if (self.isSyncDisabledByAdministrator) {
     return absl::make_optional<SyncSettingsItemType>(
         SyncDisabledByAdministratorErrorItemType);
@@ -896,21 +880,20 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
-- (BOOL)isManagedSyncSettingsDataType:(SyncSetupService::SyncableDatatype)type {
-  return self.userPrefService->FindPreference(kSyncableItemTypes.at(type))
-      ->IsManaged();
+- (BOOL)isManagedSyncSettingsDataType:(syncer::UserSelectableType)type {
+  return IsManagedSyncDataType(self.syncService, type);
 }
 
 #pragma mark - Properties
 
 - (BOOL)isSyncDisabledByAdministrator {
-  return self.syncService->GetDisableReasons().Has(
+  return self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 // Returns NO if any syncable item is managed, YES otherwise.
 - (BOOL)allItemsAreSynceable {
-  for (const auto& [type, pref_name] : kSyncableItemTypes) {
+  for (const auto& type : kSyncSwitchItems) {
     if ([self isManagedSyncSettingsDataType:type]) {
       return NO;
     }

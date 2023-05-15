@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -150,6 +151,8 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
       AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(
           &Combobox::ArrowButtonPressed, base::Unretained(this))));
 
+  UpdateFont();
+
   if (features::IsChromeRefresh2023()) {
     // TODO(crbug.com/1400024): This setter should be removed and the behavior
     // made default when ChromeRefresh2023 is finalized.
@@ -190,7 +193,7 @@ Combobox::~Combobox() {
 }
 
 const gfx::FontList& Combobox::GetFontList() const {
-  return style::GetFont(text_context_, text_style_);
+  return font_list_;
 }
 
 void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
@@ -203,6 +206,21 @@ void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
   } else {
     content_size_ = GetContentSize();
     OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
+  }
+}
+
+void Combobox::UpdateFont() {
+  // If the model uses a custom font, set the font to be the same as the font
+  // at the selected index.
+  if (GetModel() != nullptr && selected_index_.has_value()) {
+    std::vector<std::string> font_list =
+        GetModel()->GetLabelFontNameAt(selected_index_.value());
+    absl::optional<int> font_size = GetModel()->GetLabelFontSize();
+    font_list_ =
+        !font_list.empty() && font_size.has_value()
+            ? gfx::FontList(font_list, gfx::Font::FontStyle::NORMAL,
+                            font_size.value(), gfx::Font::Weight::NORMAL)
+            : style::GetFont(text_context_, text_style_);
   }
 }
 

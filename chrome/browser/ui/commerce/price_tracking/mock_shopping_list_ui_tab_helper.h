@@ -22,9 +22,9 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
 
   const gfx::Image& GetInvalidProductImage();
 
-  MOCK_METHOD0(GetProductImage, const gfx::Image&());
-  MOCK_METHOD0(ShouldShowPriceTrackingIconView, bool());
-  MOCK_METHOD0(IsPriceTracking, bool());
+  MOCK_METHOD(const gfx::Image&, GetProductImage, ());
+  MOCK_METHOD(bool, ShouldShowPriceTrackingIconView, ());
+  MOCK_METHOD(bool, IsPriceTracking, ());
   MOCK_METHOD(void,
               SetPriceTrackingState,
               (bool enable,

@@ -179,6 +179,22 @@ void AddV4L2GpuPermissions(
   static const char kDevJpegEncPath[] = "/dev/jpeg-enc";
   permissions->push_back(BrokerFilePermission::ReadWrite(kDevJpegEncPath));
 
+  // Additional device nodes for V4L2 JPEG decode encode accelerator drivers,
+  // as ChromeOS can have both /dev/jpeg-dec and /dev/jpeg-decN naming styles.
+  // See comments above for why we don't use a FileEnumerator.
+  static constexpr size_t MAX_V4L2_JPEG_NODES = 5;
+  for (size_t i = 0; i < MAX_V4L2_JPEG_NODES; i++) {
+    std::ostringstream jpegDecPath;
+    jpegDecPath << kDevJpegDecPath << i;
+    permissions->push_back(
+        BrokerFilePermission::ReadWrite(jpegDecPath.str()));
+
+    std::ostringstream jpegEncPath;
+    jpegEncPath << kDevJpegEncPath << i;
+    permissions->push_back(
+        BrokerFilePermission::ReadWrite(jpegEncPath.str()));
+  }
+
   if (UseChromecastSandboxAllowlist()) {
     static const char kAmlogicAvcEncoderPath[] = "/dev/amvenc_avc";
     permissions->push_back(
@@ -607,7 +623,7 @@ void LoadVulkanLibraries() {
   // Try to preload Vulkan libraries. Failure is not an error as not all may be
   // present.
   dlopen("libvulkan.so.1", dlopen_flag);
-  dlopen("libvulkan_radeon.so ", dlopen_flag);
+  dlopen("libvulkan_radeon.so", dlopen_flag);
   dlopen("libvulkan_intel.so", dlopen_flag);
   dlopen("libGLX_nvidia.so.0", dlopen_flag);
 }

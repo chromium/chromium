@@ -385,6 +385,7 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
                                        apk_spec.track_string_literals))
       add_syms(section_ranges, dex_symbols)
       metrics_by_file.update(dex_metrics_by_file)
+
   if pak_spec:
     section_ranges, pak_symbols = _CreatePakSymbols(
         pak_spec=pak_spec,
@@ -393,10 +394,20 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
         output_directory=output_directory)
     add_syms(section_ranges, pak_symbols)
   apk_metadata = {}
+
+  # This function can get called multiple times for the same APK file, to
+  # process .so files that are treated as containers. The |not native_spec|
+  # condition below skips these cases to prevent redundant symbol creation.
   if not native_spec and apk_spec:
-    section_ranges, new_raw_symbols, apk_metadata = apk.CreateApkOtherSymbols(
-        apk_spec)
-    add_syms(section_ranges, new_raw_symbols)
+    logging.info('Analyzing ARSC')
+    arsc_section_ranges, arsc_symbols, arsc_metrics_by_file = (
+        apk.CreateArscSymbols(apk_spec))
+    add_syms(arsc_section_ranges, arsc_symbols)
+    metrics_by_file.update(arsc_metrics_by_file)
+
+    other_section_ranges, other_symbols, apk_metadata = (
+        apk.CreateApkOtherSymbols(apk_spec))
+    add_syms(other_section_ranges, other_symbols)
 
   metadata = _CreateMetadata(container_spec, elf_info)
   assert not (metadata.keys() & apk_metadata.keys())
@@ -934,6 +945,7 @@ def _CreateContainerSpecs(apk_file_manager,
     if apk_spec.analyze_dex:
       apk_spec.ignore_apk_paths.update(i.filename for i in apk_infolist
                                        if i.filename.endswith('.dex'))
+    apk_spec.ignore_apk_paths.add(apk.RESOURCES_ARSC_FILE)
 
     for native_spec in native_specs:
       so_name = posixpath.basename(native_spec.apk_so_path)
@@ -957,16 +969,16 @@ def _IsOnDemand(apk_path):
       'AndroidManifest.xml', apk_path
   ]).decode('ascii')
 
-  def parse_attr(name):
-    # http://schemas.android.com/apk/res/android:isFeatureSplit(0x0101055b)=true
-    # http://schemas.android.com/apk/distribution:onDemand=true
-    m = re.search(name + r'(?:\(.*?\))?=(\w+)', output)
+  def parse_attr(namespace, name):
+    # A: http://schemas.android.com/apk/res/android:isFeatureSplit(0x...)=true
+    # A: http://schemas.android.com/apk/distribution:onDemand=true
+    m = re.search(f'A: (?:.*?/{namespace}:)?{name}' + r'(?:\(.*?\))?=(\w+)',
+                  output)
     return m and m.group(1) == 'true'
 
-  is_feature_split = parse_attr('android:isFeatureSplit')
+  is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
-  on_demand = parse_attr(
-      'distribution:onDemand') or 'distribution:on-demand' in output
+  on_demand = parse_attr('distribution', 'onDemand') or 'on-demand' in output
   on_demand = bool(on_demand and is_feature_split)
 
   return on_demand

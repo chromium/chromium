@@ -14,15 +14,16 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attestation_switches.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_switches.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
 
@@ -30,6 +31,7 @@ namespace enterprise_connectors {
 
 namespace {
 using policy::BrowserDMTokenStorage;
+using policy::CloudPolicyStore;
 
 // Size of nonce for challenge response.
 const size_t kChallengeResponseNonceBytesSize = 32;
@@ -97,9 +99,11 @@ absl::optional<std::string> CreateChallengeResponseString(
 
 DesktopAttestationService::DesktopAttestationService(
     BrowserDMTokenStorage* dm_token_storage,
-    DeviceTrustKeyManager* key_manager)
+    DeviceTrustKeyManager* key_manager,
+    CloudPolicyStore* browser_cloud_policy_store)
     : dm_token_storage_(dm_token_storage),
       key_manager_(key_manager),
+      browser_cloud_policy_store_(browser_cloud_policy_store),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
@@ -119,29 +123,23 @@ DesktopAttestationService::~DesktopAttestationService() = default;
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   key_manager_->ExportPublicKeyAsync(
       base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
                      weak_factory_.GetWeakPtr(), challenge, std::move(signals),
-                     std::move(callback)));
+                     levels, std::move(callback)));
 }
 
 void DesktopAttestationService::OnPublicKeyExported(
     const std::string& challenge,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
     absl::optional<std::string> exported_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!exported_key) {
-    // No key is available, so mark the device as untrusted (no challenge
-    // response).
-    std::move(callback).Run(
-        {std::string(), DTAttestationResult::kMissingSigningKey});
-    return;
-  }
-
   SignedData signed_data;
   if (challenge.empty() || !signed_data.ParseFromString(challenge)) {
     // Challenge is not properly formatted, so mark the device as untrusted (no
@@ -157,14 +155,15 @@ void DesktopAttestationService::OnPublicKeyExported(
                      google_keys_.va_signing_key(GetVAType()).modulus_in_hex()),
       base::BindOnce(&DesktopAttestationService::OnChallengeValidated,
                      weak_factory_.GetWeakPtr(), signed_data,
-                     exported_key.value(), std::move(signals),
+                     std::move(exported_key), std::move(signals), levels,
                      std::move(callback)));
 }
 
 void DesktopAttestationService::OnChallengeValidated(
     const SignedData& signed_data,
-    const std::string& exported_public_key,
+    const absl::optional<std::string>& exported_public_key,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
     bool is_va_challenge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -184,14 +183,22 @@ void DesktopAttestationService::OnChallengeValidated(
   }
 
   // Fill `key_info` out for Chrome Browser.
-  // TODO(crbug.com/1241870): Remove public key from signals.
   KeyInfo key_info;
   key_info.set_key_type(CBCM);
-  key_info.set_browser_instance_public_key(exported_public_key);
   // dm_token contains all of the information required by the server to retrieve
   // the device. device_id is necessary to validate the dm_token.
   key_info.set_dm_token(dm_token.value());
   key_info.set_device_id(dm_token_storage_->RetrieveClientId());
+
+  if (browser_cloud_policy_store_ &&
+      browser_cloud_policy_store_->has_policy()) {
+    const auto* policy = browser_cloud_policy_store_->policy();
+    key_info.set_customer_id(policy->obfuscated_customer_id());
+  }
+
+  if (exported_public_key) {
+    key_info.set_browser_instance_public_key(exported_public_key.value());
+  }
 
   // VA should accept signals JSON string.
   std::string signals_json;
@@ -222,9 +229,9 @@ void DesktopAttestationService::OnChallengeValidated(
 
 void DesktopAttestationService::OnResponseCreated(
     AttestationCallback callback,
-    absl::optional<std::string> serialized_response) {
+    absl::optional<std::string> encrypted_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!serialized_response) {
+  if (!encrypted_response) {
     // Failed to create a response, so mark the device as untrusted (no
     // challenge response).
     std::move(callback).Run(
@@ -233,30 +240,24 @@ void DesktopAttestationService::OnResponseCreated(
   }
 
   key_manager_->SignStringAsync(
-      serialized_response.value(),
+      encrypted_response.value(),
       base::BindOnce(&DesktopAttestationService::OnResponseSigned,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     serialized_response.value()));
+                     encrypted_response.value()));
 }
 
 void DesktopAttestationService::OnResponseSigned(
     AttestationCallback callback,
-    const std::string& serialized_response,
-    absl::optional<std::vector<uint8_t>> encrypted_response) {
+    const std::string& encrypted_response,
+    absl::optional<std::vector<uint8_t>> signed_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!encrypted_response) {
-    // Failed to sign the response, so mark the device as untrusted (no
-    // challenge response).
-    std::move(callback).Run(
-        {std::string(), DTAttestationResult::kFailedToSignResponse});
-    return;
-  }
-
   // Encode the challenge-response values into a JSON string and return them.
   SignedData signed_data;
-  signed_data.set_data(serialized_response);
-  signed_data.set_signature(encrypted_response->data(),
-                            encrypted_response->size());
+  signed_data.set_data(encrypted_response);
+
+  if (signed_response) {
+    signed_data.set_signature(signed_response->data(), signed_response->size());
+  }
 
   std::string serialized_attestation_response;
   if (!signed_data.SerializeToString(&serialized_attestation_response)) {
@@ -272,9 +273,10 @@ void DesktopAttestationService::OnResponseSigned(
   }
 
   std::move(callback).Run(
-      {json_response, json_response.empty()
-                          ? DTAttestationResult::kEmptySerializedResponse
-                          : DTAttestationResult::kSuccess});
+      {json_response,
+       json_response.empty() ? DTAttestationResult::kEmptySerializedResponse
+       : signed_response     ? DTAttestationResult::kSuccess
+                             : DTAttestationResult::kSuccessNoSignature});
 }
 
 }  // namespace enterprise_connectors

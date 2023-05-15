@@ -43,9 +43,6 @@ namespace blink {
 //
 // WebRtcVideoFrameAdapter keeps track of which crops and scales were
 // hard-applied during its lifetime.
-// TODO(https://crbug.com/webrtc/12469): Expose this information to the caller
-// or to the frame feeddback so that we may optionally use this information to
-// optimize future captured frames for these sizes.
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:

@@ -243,10 +243,6 @@ const TestDescription kTestDescriptions[] = {
      TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kEnabled},
 
     {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kIssuance, Outcome::kFailure,
-     TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kDisabled},
-
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
      Op::kRedemption, Outcome::kSuccess,
      TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kEnabled},
 

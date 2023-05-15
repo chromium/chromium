@@ -98,14 +98,6 @@ public class UpdateSuccessMetrics {
             boolean success =
                     !TextUtils.equals(state.getVersion(), VersionConstants.PRODUCT_VERSION);
 
-            if (!state.getRecordedSession()) {
-                HistogramUtils.recordResultHistogram(AttributionType.SESSION, state, success);
-            }
-
-            if (success || expired) {
-                HistogramUtils.recordResultHistogram(AttributionType.TIME_WINDOW, state, success);
-            }
-
             if (success || expired) {
                 mProvider.clear();
             } else if (!state.getRecordedSession()) {

@@ -3,12 +3,19 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_logging.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protobuf_http_client_messages_proto") {
   sources = [ "protobuf_http_client_messages.proto" ]
+}
+
+process_version("remoting_base_version") {
+  sources = [ "//chrome/VERSION" ]
+  template_file = "//remoting/base/version.h.in"
+  output = "$target_gen_dir/version.h"
 }
 
 source_set("base") {
@@ -162,7 +169,15 @@ source_set("breakpad") {
   deps = [ "//base" ]
 
   if (is_linux || is_chromeos) {
-    sources += [ "breakpad_linux.cc" ]
+    sources += [
+      "breakpad_linux.cc",
+      "breakpad_utils_linux.cc",
+      "breakpad_utils_linux.h",
+    ]
+    deps += [
+      ":remoting_base_version",
+      "//third_party/breakpad:client",
+    ]
   }
 
   if (is_mac) {

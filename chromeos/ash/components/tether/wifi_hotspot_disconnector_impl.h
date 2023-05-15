@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
 
@@ -56,10 +57,12 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
                                      base::OnceClosure success_callback,
                                      StringErrorCallback error_callback);
 
-  NetworkConnectionHandler* network_connection_handler_;
-  NetworkStateHandler* network_state_handler_;
-  PrefService* pref_service_;
-  NetworkConfigurationRemover* network_configuration_remover_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<NetworkConfigurationRemover, ExperimentalAsh>
+      network_configuration_remover_;
 
   base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_{this};
 };

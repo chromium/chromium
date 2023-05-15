@@ -6,6 +6,7 @@
 #define ASH_SHELF_SHELF_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -40,10 +41,10 @@ class ASH_EXPORT ShelfButton : public views::Button {
 
  private:
   // The shelf instance that this button belongs to. Unowned.
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // A class to which this button delegates handling some of its events.
-  ShelfButtonDelegate* const shelf_button_delegate_;
+  const raw_ptr<ShelfButtonDelegate, ExperimentalAsh> shelf_button_delegate_;
 };
 
 }  // namespace ash

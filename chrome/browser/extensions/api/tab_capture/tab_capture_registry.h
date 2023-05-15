@@ -62,7 +62,6 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
                          bool is_anonymous,
                          const GURL& origin,
                          content::DesktopMediaID source,
-                         const std::string& extension_name,
                          content::WebContents* caller_contents);
 
   // Called by MediaStreamDevicesController to verify the request before

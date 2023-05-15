@@ -126,6 +126,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
+    <style name="TextAppearance.Headline2Thick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
     <style name="TextAppearance.TextLarge.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>

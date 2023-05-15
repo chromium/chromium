@@ -631,8 +631,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_NoSync) {
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CopyOrMoveFile(
-                from_file, to_file,
-                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
+                from_file, to_file, {CopyOrMoveOption::kPreserveLastModified},
                 nosync));
   ASSERT_TRUE(FileExists(to_file));
 
@@ -661,8 +660,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Sync) {
   ASSERT_EQ(
       base::File::FILE_OK,
       file_util()->CopyOrMoveFile(
-          from_file, to_file,
-          CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified), sync));
+          from_file, to_file, {CopyOrMoveOption::kPreserveLastModified}, sync));
   ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;
@@ -690,8 +688,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Move) {
   ASSERT_EQ(
       base::File::FILE_OK,
       file_util()->CopyOrMoveFile(
-          from_file, to_file,
-          CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified), move));
+          from_file, to_file, {CopyOrMoveOption::kPreserveLastModified}, move));
   ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;

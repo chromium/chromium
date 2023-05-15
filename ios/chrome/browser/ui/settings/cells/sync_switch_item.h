@@ -25,7 +25,7 @@
 // drawn as in the "off" state, with dimmed text.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 
-// SyncSetupService::SyncableDatatype value for the item.
+// UserSelectableType for the item.
 @property(nonatomic, assign) NSInteger dataType;
 
 @end

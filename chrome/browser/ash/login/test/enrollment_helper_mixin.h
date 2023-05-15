@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -14,7 +15,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy {
-class ActiveDirectoryJoinDelegate;
 class EnrollmentStatus;
 }
 
@@ -73,19 +73,13 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   void ExpectAttributePromptUpdate(const std::string& asset_id,
                                    const std::string& location);
 
-  // Forces the Active Directory domain join flow during enterprise enrollment.
-  void SetupActiveDirectoryJoin(policy::ActiveDirectoryJoinDelegate* delegate,
-                                const std::string& expected_domain,
-                                const std::string& domain_join_config,
-                                const std::string& dm_token);
-
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
  private:
   // Unowned reference to last created mock.
-  EnterpriseEnrollmentHelperMock* mock_ = nullptr;
+  raw_ptr<EnterpriseEnrollmentHelperMock, ExperimentalAsh> mock_ = nullptr;
   base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
 };
 

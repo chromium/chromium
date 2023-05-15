@@ -130,6 +130,7 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 
 static void ReleaseFrameResources(
     base::WeakPtr<CanvasResourceProvider> resource_provider,
+    viz::ReleaseCallback&& viz_release_callback,
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
@@ -138,8 +139,24 @@ static void ReleaseFrameResources(
   // In such cases, ReleaseFrameResources will be called again when
   // CanvasResourceDispatcher destroys the corresponding FrameResource object,
   // at which time this resource will be safely recycled.
-  if (!resource || resource->HasLastUnrefCallback())
+  if (!resource) {
     return;
+  }
+
+  if (resource->HasLastUnrefCallback()) {
+    // Currently, there is no code path that should end up here with
+    // a viz_release_callback, but if we ever change ExternalCanvasResource's
+    // Bitmap() method to register a non-trivial release callback that needs
+    // to call the viz_release_callback, then we'll need to find another way
+    // hold on to the viz_release_callback in the current thread.  The CHECK
+    // below guards the current assumption that only the
+    // CanvasResourceDispatcher triggers calls to this method for
+    // ExternalCanvasResource objects.
+    CHECK(!viz_release_callback);
+    return;
+  }
+
+  resource->SetVizReleaseCallback(std::move(viz_release_callback));
 
   resource->WaitSyncToken(sync_token);
 
@@ -164,7 +181,13 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback = WTF::BindOnce(&ReleaseFrameResources, provider_);
+  // out_callback is stored in CanvasResourceDispatcher, which never leaves
+  // the current thread, so we used a bound argument to hold onto the
+  // viz::ReleaseCallback, which is not thread safe.  We will re-attach
+  // the callback to this CanvasResource in ReleaseFrameResources(), after
+  // references held by other threads have been released.
+  *out_callback = WTF::BindOnce(&ReleaseFrameResources, provider_,
+                                TakeVizReleaseCallback());
 
   if (!out_resource)
     return true;
@@ -187,8 +210,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
     return false;
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      mailbox, GLFilter(), TextureTarget(), GetSyncToken(), Size(),
-      GetSharedImageFormat(), IsOverlayCandidate());
+      mailbox, TextureTarget(), GetSyncToken(), Size(), GetSharedImageFormat(),
+      IsOverlayCandidate());
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -228,11 +251,6 @@ GrDirectContext* CanvasResource::GetGrContext() const {
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                            info_);
-}
-
-GLenum CanvasResource::GLFilter() const {
-  return filter_quality_ == cc::PaintFlags::FilterQuality::kNone ? GL_NEAREST
-                                                                 : GL_LINEAR;
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
@@ -453,11 +471,13 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         gpu_memory_buffer_.get(), gpu_memory_buffer_manager, GetColorSpace(),
-        surface_origin, surface_alpha_type, shared_image_usage_flags);
+        surface_origin, surface_alpha_type, shared_image_usage_flags,
+        "CanvasResourceRasterGmb");
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-        surface_alpha_type, shared_image_usage_flags, gpu::kNullSurfaceHandle);
+        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
+        gpu::kNullSurfaceHandle);
   }
 
   // Wait for the mailbox to be ready to be used.
@@ -620,8 +640,8 @@ void CanvasResourceRasterSharedImage::OnBitmapImageDestroyed(
   }
 
   auto weak_provider = resource->WeakProvider();
-  ReleaseFrameResources(std::move(weak_provider), std::move(resource),
-                        sync_token, is_lost);
+  ReleaseFrameResources(std::move(weak_provider), viz::ReleaseCallback(),
+                        std::move(resource), sync_token, is_lost);
 }
 
 void CanvasResourceRasterSharedImage::Transfer() {
@@ -707,9 +727,9 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   if (!ContextProviderWrapper() || !gpu_memory_buffer_->Map())
     return;
 
-  auto surface = SkSurface::MakeRasterDirect(CreateSkImageInfo(),
-                                             gpu_memory_buffer_->memory(0),
-                                             gpu_memory_buffer_->stride(0));
+  auto surface =
+      SkSurfaces::WrapPixels(CreateSkImageInfo(), gpu_memory_buffer_->memory(0),
+                             gpu_memory_buffer_->stride(0));
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
   surface->writePixels(pixmap, 0, 0);
@@ -1047,16 +1067,27 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   sync_token_ = sii->GenVerifiedSyncToken();
   raster_interface->WaitSyncTokenCHROMIUM(sync_token_.GetData());
 
+  // Relinquish shared image access before copy when using legacy GL raster.
+  if (!use_oop_rasterization_) {
+    raster_interface->EndSharedImageAccessDirectCHROMIUM(
+        back_buffer_texture_id_);
+  }
   // PresentSwapChain() flips the front and back buffers, but the mailboxes
   // still refer to the current front and back buffer after present.  So the
   // front buffer contains the content we just rendered, and it needs to be
   // copied into the back buffer to support a retained mode like canvas expects.
   // The wait sync token ensure that the present executes before we do the copy.
+  // Don't generate sync token after the copy so that it's not on critical path.
   raster_interface->CopySharedImage(front_buffer_mailbox_, back_buffer_mailbox_,
                                     GL_TEXTURE_2D, 0, 0, 0, 0, size_.width(),
                                     size_.height(), false /* unpack_flip_y */,
                                     false /* unpack_premultiply_alpha */);
-  // Don't generate sync token here so that the copy is not on critical path.
+  // Restore shared image access after copy when using legacy GL raster.
+  if (!use_oop_rasterization_) {
+    raster_interface->BeginSharedImageAccessDirectCHROMIUM(
+        back_buffer_texture_id_,
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  }
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

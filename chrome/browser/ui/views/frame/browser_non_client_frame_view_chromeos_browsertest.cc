@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -65,6 +66,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -166,7 +168,7 @@ class BrowserNonClientFrameViewChromeOSTestApi {
   }
 
  private:
-  BrowserNonClientFrameViewChromeOS* const frame_view_;
+  const raw_ptr<BrowserNonClientFrameViewChromeOS, ExperimentalAsh> frame_view_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -712,12 +714,15 @@ class WebAppNonClientFrameViewAshTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  chromeos::DefaultFrameHeader* frame_header_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
-  const std::vector<ContentSettingImageView*>* content_setting_views_ = nullptr;
-  AppMenuButton* web_app_menu_button_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> app_browser_ = nullptr;
+  raw_ptr<BrowserView, ExperimentalAsh> browser_view_ = nullptr;
+  raw_ptr<chromeos::DefaultFrameHeader, ExperimentalAsh> frame_header_ =
+      nullptr;
+  raw_ptr<WebAppFrameToolbarView, ExperimentalAsh> web_app_frame_toolbar_ =
+      nullptr;
+  raw_ptr<const std::vector<ContentSettingImageView*>, ExperimentalAsh>
+      content_setting_views_ = nullptr;
+  raw_ptr<AppMenuButton, ExperimentalAsh> web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);
@@ -1227,25 +1232,16 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
 
-  if (!chromeos::features::IsDarkLightModeEnabled()) {
-    // `kDefaultFrameColor` will only be used when dark/light mode feature is
-    // not enabled.
-    EXPECT_EQ(active_frame_color, SkColorSetRGB(0xFD, 0xFE, 0xFF))
-        << "RGB: " << SkColorGetR(active_frame_color) << ", "
-        << SkColorGetG(active_frame_color) << ", "
-        << SkColorGetB(active_frame_color);
-  } else {
-    const bool is_dark_mode_state =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetNativeTheme()
-            ->ShouldUseDarkColors();
-    EXPECT_EQ(active_frame_color, is_dark_mode_state
-                                      ? gfx::kGoogleGrey900
-                                      : SkColorSetRGB(0xFF, 0xFF, 0xFF))
-        << "RGB: " << SkColorGetR(active_frame_color) << ", "
-        << SkColorGetG(active_frame_color) << ", "
-        << SkColorGetB(active_frame_color);
-  }
+  const bool is_dark_mode_state =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetNativeTheme()
+          ->ShouldUseDarkColors();
+  EXPECT_EQ(active_frame_color, is_dark_mode_state
+                                    ? gfx::kGoogleGrey900
+                                    : SkColorSetRGB(0xFF, 0xFF, 0xFF))
+      << "RGB: " << SkColorGetR(active_frame_color) << ", "
+      << SkColorGetG(active_frame_color) << ", "
+      << SkColorGetB(active_frame_color);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1648,6 +1644,47 @@ IN_PROC_BROWSER_TEST_P(KioskBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
+namespace {
+
+class LockedFullscreenBrowserNonClientFrameViewChromeOSTest
+    : public TopChromeMdParamTest<InProcessBrowserTest> {
+ public:
+  LockedFullscreenBrowserNonClientFrameViewChromeOSTest() = default;
+  LockedFullscreenBrowserNonClientFrameViewChromeOSTest(
+      const LockedFullscreenBrowserNonClientFrameViewChromeOSTest&) = delete;
+  LockedFullscreenBrowserNonClientFrameViewChromeOSTest& operator=(
+      const LockedFullscreenBrowserNonClientFrameViewChromeOSTest&) = delete;
+  ~LockedFullscreenBrowserNonClientFrameViewChromeOSTest() override = default;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
+                       ToggleTabletMode) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  // Set locked fullscreen state.
+  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+
+  // We're fullscreen, immersive is disabled in locked fullscreen, and while
+  // we're at it, also make sure that the shelf is hidden.
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+
+  auto* widget = browser_view->GetWidget();
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+
+  // Enter tablet mode.
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #define INSTANTIATE_TEST_SUITE(name) \
@@ -1663,4 +1700,5 @@ INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
 INSTANTIATE_TEST_SUITE(KioskBrowserNonClientFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserNonClientFrameViewChromeOSTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

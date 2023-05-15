@@ -27,8 +27,9 @@ namespace media {
 class AudioSessionEventListenerTest : public testing::Test {
  public:
   AudioSessionEventListenerTest() {
-    if (!DevicesAvailable())
+    if (!DevicesAvailable()) {
       return;
+    }
 
     audio_client_ =
         CoreAudioUtil::CreateClient(std::string(), eRender, eConsole);
@@ -47,13 +48,27 @@ class AudioSessionEventListenerTest : public testing::Test {
         nullptr);
     EXPECT_TRUE(SUCCEEDED(hr));
 
-    listener_ = std::make_unique<AudioSessionEventListener>(
-        audio_client_.Get(),
+    hr = audio_client_->GetService(IID_PPV_ARGS(&audio_session_control_));
+    EXPECT_EQ(hr, S_OK);
+
+    listener_ = Microsoft::WRL::Make<AudioSessionEventListener>(
         base::BindOnce(&AudioSessionEventListenerTest::OnSessionDisconnected,
                        base::Unretained(this)));
+
+    if (audio_session_control_) {
+      hr = audio_session_control_->RegisterAudioSessionNotification(
+          listener_.Get());
+      EXPECT_EQ(hr, S_OK);
+    }
   }
 
-  ~AudioSessionEventListenerTest() override = default;
+  ~AudioSessionEventListenerTest() override {
+    if (audio_session_control_ && listener_) {
+      HRESULT hr = audio_session_control_->UnregisterAudioSessionNotification(
+          listener_.Get());
+      EXPECT_EQ(hr, S_OK);
+    }
+  }
 
   void SimulateSessionDisconnected() {
     listener_->OnSessionDisconnected(DisconnectReasonDeviceRemoval);
@@ -64,7 +79,8 @@ class AudioSessionEventListenerTest : public testing::Test {
  protected:
   base::win::ScopedCOMInitializer com_init_;
   Microsoft::WRL::ComPtr<IAudioClient> audio_client_;
-  std::unique_ptr<AudioSessionEventListener> listener_;
+  Microsoft::WRL::ComPtr<IAudioSessionControl> audio_session_control_;
+  Microsoft::WRL::ComPtr<AudioSessionEventListener> listener_;
 };
 
 TEST_F(AudioSessionEventListenerTest, Works) {

@@ -19,10 +19,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
@@ -55,7 +57,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -67,8 +68,6 @@
 using ash::mojom::CloseLockScreenNoteReason;
 using ash::mojom::LockScreenNoteOrigin;
 using ash::mojom::TrayActionState;
-using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 using extensions::lock_screen_data::LockScreenItemStorage;
 using lock_screen_apps::FakeLockScreenProfileCreator;
 
@@ -91,23 +90,20 @@ std::unique_ptr<arc::ArcSession> ArcSessionFactory() {
 
 scoped_refptr<const extensions::Extension> CreateTestNoteTakingApp(
     const std::string& app_id) {
-  ListBuilder action_handlers;
-  action_handlers.Append(DictionaryBuilder()
-                             .Set("action", "new_note")
-                             .Set("enabled_on_lock_screen", true)
-                             .Build());
-  DictionaryBuilder background;
-  background.Set("scripts", ListBuilder().Append("background.js").Build());
+  auto action_handlers =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("action", "new_note")
+                                     .Set("enabled_on_lock_screen", true));
+  auto background = base::Value::Dict().Set(
+      "scripts", base::Value::List().Append("background.js"));
   return extensions::ExtensionBuilder()
-      .SetManifest(DictionaryBuilder()
+      .SetManifest(base::Value::Dict()
                        .Set("name", "Test App")
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)
-                       .Set("app", DictionaryBuilder()
-                                       .Set("background", background.Build())
-                                       .Build())
-                       .Set("action_handlers", action_handlers.Build())
-                       .Build())
+                       .Set("app", base::Value::Dict().Set(
+                                       "background", std::move(background)))
+                       .Set("action_handlers", std::move(action_handlers)))
       .SetID(app_id)
       .Build();
 }
@@ -233,8 +229,9 @@ class TestAppManager : public lock_screen_apps::AppManager {
   void ResetLaunchCount() { launch_count_ = 0; }
 
  private:
-  const Profile* const expected_primary_profile_;
-  lock_screen_apps::LockScreenProfileCreator* lock_screen_profile_creator_;
+  const raw_ptr<const Profile, ExperimentalAsh> expected_primary_profile_;
+  raw_ptr<lock_screen_apps::LockScreenProfileCreator, ExperimentalAsh>
+      lock_screen_profile_creator_;
 
   base::RepeatingClosure change_callback_;
 
@@ -377,7 +374,7 @@ class TestAppWindow : public content::WebContentsObserver {
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-  extensions::AppWindow* window_;
+  raw_ptr<extensions::AppWindow, ExperimentalAsh> window_;
   bool closed_ = false;
   bool initialized_ = false;
 };
@@ -386,7 +383,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
  public:
   LockScreenAppStateTest()
       : fake_user_manager_(new ash::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
   LockScreenAppStateTest(const LockScreenAppStateTest&) = delete;
   LockScreenAppStateTest& operator=(const LockScreenAppStateTest&) = delete;
@@ -671,7 +668,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 
-  ash::FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Run loop used to throttle test until async state controller initialization
@@ -694,8 +691,9 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   TestStateObserver observer_;
   TestTrayAction tray_action_;
-  FakeLockScreenProfileCreator* lock_screen_profile_creator_ = nullptr;
-  TestAppManager* app_manager_ = nullptr;
+  raw_ptr<FakeLockScreenProfileCreator, ExperimentalAsh>
+      lock_screen_profile_creator_ = nullptr;
+  raw_ptr<TestAppManager, ExperimentalAsh> app_manager_ = nullptr;
 
   std::unique_ptr<TestAppWindow> app_window_;
   scoped_refptr<const extensions::Extension> app_;

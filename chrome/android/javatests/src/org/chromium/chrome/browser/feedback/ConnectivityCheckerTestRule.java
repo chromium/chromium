@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -60,7 +60,8 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
     }
 
     private void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mGenerated200Url = mTestServer.getURL("/echo?status=200");
         mGenerated204Url = mTestServer.getURL("/echo?status=204");
         mGenerated302Url = mTestServer.getURL("/echo?status=302");

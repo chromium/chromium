@@ -66,7 +66,7 @@ void AuraDesktopCapturer::Start(webrtc::DesktopCapturer::Callback* callback) {
   callback_ = callback;
   DCHECK(callback_);
 
-  source_display_id_ = ash_.GetPrimaryDisplayId();
+  source_display_id_ = ash_->GetPrimaryDisplayId();
 }
 
 void AuraDesktopCapturer::CaptureFrame() {
@@ -79,9 +79,9 @@ void AuraDesktopCapturer::CaptureFrame() {
     return;
   }
 
-  ash_.TakeScreenshotOfDisplay(
+  ash_->TakeScreenshotOfDisplay(
       source_display_id_,
-      base::BindOnce(ToDesktopFrame, ash_.GetDpi(*source),
+      base::BindOnce(ToDesktopFrame, ash_->GetDpi(*source),
                      source->bounds().origin())
           .Then(base::BindOnce(&AuraDesktopCapturer::OnFrameCaptured,
                                weak_factory_.GetWeakPtr())));
@@ -107,7 +107,7 @@ bool AuraDesktopCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool AuraDesktopCapturer::SelectSource(SourceId id) {
-  if (!ash_.GetDisplayForId(id)) {
+  if (!ash_->GetDisplayForId(id)) {
     return false;
   }
 
@@ -116,7 +116,7 @@ bool AuraDesktopCapturer::SelectSource(SourceId id) {
 }
 
 const display::Display* AuraDesktopCapturer::GetSourceDisplay() const {
-  return ash_.GetDisplayForId(source_display_id_);
+  return ash_->GetDisplayForId(source_display_id_);
 }
 
 }  // namespace remoting

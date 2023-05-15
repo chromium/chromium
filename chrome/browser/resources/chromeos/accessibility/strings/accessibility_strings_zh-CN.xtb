@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="100506692671054486">没有上一个命令</translation>
 <translation id="1009046985747440431">按向上或向下箭头键即可浏览；按 Enter 键即可激活</translation>
 <translation id="1011903154582639569">找到需要的键后，移开手指即可输入</translation>
 <translation id="1012173283529841972">列表项</translation>
@@ -215,7 +216,7 @@
 <translation id="2438712309510062123">建议</translation>
 <translation id="2450814015951372393">复选框</translation>
 <translation id="2450992626945324272">移到下一句</translation>
-<translation id="2461822463642141190">电流</translation>
+<translation id="2461822463642141190">当前</translation>
 <translation id="2462626033734746142">单选按钮组</translation>
 <translation id="2467741090055146971">取消选择</translation>
 <translation id="2471138580042810658">6 级标题</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">薰衣草紫红色</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3962990492275676168">从当前位置开始读</translation>
+<translation id="397094149579293440">未选择任何文本</translation>
 <translation id="3970951409746498040">沙棕色</translation>
 <translation id="3989324057180830702">切换按钮</translation>
 <translation id="3991317907213946254">鹿皮鞋色</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">没有上一个 1 级标题</translation>
 <translation id="4787577491510559358">播报当前项的格式</translation>
 <translation id="479989351350248267">搜索</translation>
+<translation id="4802034228771424756">未聚焦于任何文本字段</translation>
 <translation id="4804818685124855865">断开连接</translation>
 <translation id="481165870889056555">读出当前页面的标题</translation>
 <translation id="4815668758102003883">灰绿松石色</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">内部链接</translation>
 <translation id="4909019435900810068">后移 1 个字</translation>
 <translation id="4911349081560453449">没有上一个复选框</translation>
+<translation id="4919186071145887492">无法<ph name="COMMAND" />，请重试</translation>
 <translation id="492295894462528572">前言</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953585991029886728">编辑文本</translation>
+<translation id="4964701498510730546">文本字段为空</translation>
 <translation id="4973717656530883744">最小值为<ph name="X" /></translation>
 <translation id="4974612477719259470">没有上一个按钮</translation>
 <translation id="4979404613699303341">上一个按钮</translation>
+<translation id="4981239367072766915">无法识别所输入的内容</translation>
 <translation id="4982917827052020884">就从您将会经常用到的几个键说起吧。Ctrl 键可用于停止任何当前语音。它位于键盘的左下角。请按 Ctrl 键以继续。</translation>
 <translation id="4983588134362688868">跳至页首</translation>
 <translation id="4986606102545753256"><ph name="NAME" />，窗口</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">播报当前电池状态</translation>
 <translation id="4997282455736854877"><ph name="NAME" />，已选中的单选按钮</translation>
 <translation id="5012724933919010465"><ph name="NAME" />，已选中的菜单项单选按钮</translation>
+<translation id="5014131807708055994">无法<ph name="COMMAND" />，原因是<ph name="REASON" /></translation>
 <translation id="5020651427400641814">启用语音登录功能</translation>
 <translation id="5041394372352067729">将盲文显示移动到页首</translation>
 <translation id="5042770794184672516">调大朗读音量</translation>

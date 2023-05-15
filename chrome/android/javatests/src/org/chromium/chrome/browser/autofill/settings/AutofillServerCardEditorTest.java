@@ -22,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -72,6 +71,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -267,8 +267,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create(
-                        "Visa 1234", Bitmap.createBitmap(10, 20, Bitmap.Config.ALPHA_8));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -368,8 +367,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create(
-                        "Visa 1234", Bitmap.createBitmap(10, 20, Bitmap.Config.ALPHA_8));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -446,8 +444,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create(
-                        "Visa 1234", Bitmap.createBitmap(10, 20, Bitmap.Config.ALPHA_8));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -515,8 +512,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create(
-                        "Visa 1234", Bitmap.createBitmap(10, 20, Bitmap.Config.ALPHA_8));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(

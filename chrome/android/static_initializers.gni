@@ -17,7 +17,9 @@ import("//ui/gl/features.gni")
 # Define expectations only for GN args covered by trybots.
 if (current_toolchain == default_toolchain &&
     (target_cpu == "arm" || target_cpu == "arm64") &&
-    (!is_debug && !using_sanitizer && proprietary_codecs)) {
+    (!using_sanitizer && proprietary_codecs &&
+     # Optimizations can remove static initializers (https://crbug.com/1434325)
+     !is_debug && !is_high_end_android)) {
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
   _chrome_count = 0

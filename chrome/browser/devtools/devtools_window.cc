@@ -290,10 +290,10 @@ void DevToolsEventForwarder::SetWhitelistedShortcuts(
   for (const auto& list_item : parsed_message->GetList()) {
     if (!list_item.is_dict())
       continue;
-    int key_code = list_item.FindIntKey("keyCode").value_or(0);
+    int key_code = list_item.GetDict().FindInt("keyCode").value_or(0);
     if (key_code == 0)
       continue;
-    int modifiers = list_item.FindIntKey("modifiers").value_or(0);
+    int modifiers = list_item.GetDict().FindInt("modifiers").value_or(0);
     if (!KeyWhitelistingAllowed(key_code, modifiers)) {
       LOG(WARNING) << "Key whitelisting forbidden: "
                    << "(" << key_code << "," << modifiers << ")";
@@ -327,17 +327,16 @@ bool DevToolsEventForwarder::ForwardEvent(
   if (whitelisted_keys_.find(key) == whitelisted_keys_.end())
     return false;
 
-  base::Value event_data(base::Value::Type::DICT);
-  event_data.SetStringKey("type", event_type);
-  event_data.SetStringKey("key", ui::KeycodeConverter::DomKeyToKeyString(
-                                     static_cast<ui::DomKey>(event.dom_key)));
-  event_data.SetStringKey("code",
-                          ui::KeycodeConverter::DomCodeToCodeString(
-                              static_cast<ui::DomCode>(event.dom_code)));
-  event_data.SetIntKey("keyCode", key_code);
-  event_data.SetIntKey("modifiers", modifiers);
+  base::Value::Dict event_data;
+  event_data.Set("type", event_type);
+  event_data.Set("key", ui::KeycodeConverter::DomKeyToKeyString(
+                            static_cast<ui::DomKey>(event.dom_key)));
+  event_data.Set("code", ui::KeycodeConverter::DomCodeToCodeString(
+                             static_cast<ui::DomCode>(event.dom_code)));
+  event_data.Set("keyCode", key_code);
+  event_data.Set("modifiers", modifiers);
   devtools_window_->bindings_->CallClientMethod(
-      "DevToolsAPI", "keyEventUnhandled", std::move(event_data));
+      "DevToolsAPI", "keyEventUnhandled", base::Value(std::move(event_data)));
   return true;
 }
 

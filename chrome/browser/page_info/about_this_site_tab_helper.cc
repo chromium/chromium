@@ -89,8 +89,7 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   absl::optional<AboutThisSiteMetadata> about_this_site_metadata =
       metadata.ParsedMetadata<AboutThisSiteMetadata>();
 
-  auto status = ValidateMetadata(
-      about_this_site_metadata, page_info::IsMoreAboutThisSiteFeatureEnabled());
+  auto status = ValidateMetadata(about_this_site_metadata);
 
   base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
                                 status);

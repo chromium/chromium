@@ -45,8 +45,8 @@
 #include "content/web_test/browser/fake_bluetooth_chooser_factory.h"
 #include "content/web_test/browser/fake_bluetooth_delegate.h"
 #include "content/web_test/browser/mojo_echo.h"
+#include "content/web_test/browser/mojo_optional_numerics_unittest.h"
 #include "content/web_test/browser/mojo_web_test_helper.h"
-#include "content/web_test/browser/web_test_attribution_manager.h"
 #include "content/web_test/browser/web_test_bluetooth_fake_adapter_setter_impl.h"
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_browser_main_parts.h"
@@ -83,7 +83,6 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting_automation.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 
@@ -329,6 +328,12 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
                          ui_task_runner);
   registry->AddInterface(base::BindRepeating(&MojoEcho::Bind), ui_task_runner);
   registry->AddInterface(
+      base::BindRepeating(&optional_numerics_unittest::Params::Bind),
+      ui_task_runner);
+  registry->AddInterface(
+      base::BindRepeating(&optional_numerics_unittest::ResponseParams::Bind),
+      ui_task_runner);
+  registry->AddInterface(
       base::BindRepeating(&WebTestBluetoothFakeAdapterSetterImpl::Create),
       ui_task_runner);
   registry->AddInterface(base::BindRepeating(&bluetooth::FakeBluetooth::Create),
@@ -532,10 +537,6 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::CookieManagerAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindCookieManagerAutomation,
       base::Unretained(this)));
-  map->Add<blink::test::mojom::AttributionReportingAutomation>(
-      base::BindRepeating(
-          &WebTestContentBrowserClient::BindAttributionReportingAutomation,
-          base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -586,16 +587,6 @@ void WebTestContentBrowserClient::BindCookieManagerAutomation(
                                ->GetCookieManagerForBrowserProcess(),
                            render_frame_host->GetLastCommittedURL()),
                        std::move(receiver));
-}
-
-void WebTestContentBrowserClient::BindAttributionReportingAutomation(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::test::mojom::AttributionReportingAutomation>
-        receiver) {
-  attribution_reporting_receivers_.Add(
-      std::make_unique<WebTestAttributionManager>(
-          *GetWebTestBrowserContext()->GetDefaultStoragePartition()),
-      std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(

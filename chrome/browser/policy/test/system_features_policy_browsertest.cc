@@ -94,6 +94,11 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                    POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                    base::Value(disabled_mode), nullptr);
     }
+    // TODO(b/280518509): Remove this workaround once multidevice code
+    // supports runtime policy updates.
+    policies.Set(key::kPhoneHubAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+                 nullptr);
     UpdateProviderPolicy(policies);
   }
 

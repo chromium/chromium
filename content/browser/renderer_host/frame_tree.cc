@@ -771,12 +771,26 @@ double FrameTree::GetLoadProgress() {
 }
 
 bool FrameTree::IsLoadingIncludingInnerFrameTrees() const {
-  for (const FrameTreeNode* node :
-       const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
-    if (node->IsLoading())
-      return true;
+  return GetLoadingState() != LoadingState::NONE;
+}
+
+LoadingState FrameTree::GetLoadingState() const {
+  // The overall loading state for the FrameTree matches the root node's loading
+  // state if the root is loading.
+  if (root_.GetLoadingState() != LoadingState::NONE) {
+    return root_.GetLoadingState();
   }
-  return false;
+
+  // Otherwise, check if a subframe is loading without an associated navigation
+  // in the root frame. If so, we are loading, but we don't want to show
+  // loading UI.
+  for (const FrameTreeNode* node_to_check :
+       const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
+    if (node_to_check->IsLoading()) {
+      return LoadingState::LOADING_WITHOUT_UI;
+    }
+  }
+  return LoadingState::NONE;
 }
 
 void FrameTree::ReplicatePageFocus(bool is_focused) {
@@ -900,22 +914,22 @@ void FrameTree::DidAccessInitialMainDocument() {
   controller().DidAccessInitialMainDocument();
 }
 
-void FrameTree::DidStartLoadingNode(FrameTreeNode& node,
-                                    bool should_show_loading_ui,
-                                    bool was_previously_loading) {
-  if (was_previously_loading)
+void FrameTree::NodeLoadingStateChanged(
+    FrameTreeNode& node,
+    LoadingState previous_frame_tree_loading_state) {
+  LoadingState new_frame_tree_loading_state = GetLoadingState();
+  if (previous_frame_tree_loading_state == new_frame_tree_loading_state) {
     return;
+  }
 
-  root()->render_manager()->SetIsLoading(IsLoadingIncludingInnerFrameTrees());
-  delegate_->DidStartLoading(&node, should_show_loading_ui);
-}
-
-void FrameTree::DidStopLoadingNode(FrameTreeNode& node) {
-  if (IsLoadingIncludingInnerFrameTrees())
-    return;
-
-  root()->render_manager()->SetIsLoading(false);
-  delegate_->DidStopLoading();
+  root()->render_manager()->SetIsLoading(new_frame_tree_loading_state !=
+                                         LoadingState::NONE);
+  delegate_->LoadingStateChanged(new_frame_tree_loading_state);
+  if (previous_frame_tree_loading_state == LoadingState::NONE) {
+    delegate_->DidStartLoading(&node);
+  } else if (new_frame_tree_loading_state == LoadingState::NONE) {
+    delegate_->DidStopLoading();
+  }
 }
 
 void FrameTree::DidCancelLoading() {

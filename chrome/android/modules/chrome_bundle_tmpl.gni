@@ -35,7 +35,7 @@ template("chrome_bundle") {
       get_label_info(invoker.base_module_target, "target_gen_dir")
   _base_name = get_label_info(invoker.base_module_target, "name")
   _split_android_manifest =
-      "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
+      "${_base_target_gen_dir}/${_base_name}/AndroidManifest_split.xml"
 
   _chrome_module_desc = {
     name = "chrome"
@@ -43,6 +43,9 @@ template("chrome_bundle") {
     android_manifest_dep =
         "${invoker.base_module_target}__android_manifest__split"
     java_deps = [ "//chrome/android:chrome_all_java" ]
+    if (_is_monochrome) {
+      java_deps += [ "//chrome/android:monochrome_java" ]
+    }
     if (defined(invoker.chrome_deps)) {
       java_deps += invoker.chrome_deps
     }
@@ -52,8 +55,7 @@ template("chrome_bundle") {
   # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
   # access. For now, move all resources to the base module.
   # TODO(crbug.com/1278419): Macro resource types only work when all resources
-  # are in the same split. For now, keep all resources in the base module even
-  # in Chrome Modern.
+  # are in the same split. For now, keep all resources in the base module.
   _base_target_name = get_label_info(invoker.base_module_target, "name")
   android_resources("${_base_target_name}__all_dfm_resources") {
     recursive_resource_deps = true
@@ -97,7 +99,7 @@ template("chrome_bundle") {
     } else if (_is_monochrome) {
       _version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
     } else {
-      _version_code = chrome_modern_version_code
+      _version_code = chrome_version_code
     }
   }
 
@@ -181,29 +183,6 @@ template("chrome_bundle") {
   }
 
   android_app_bundle(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "add_view_trace_events",
-                             "base_module_target",
-                             "bundle_name",
-                             "compress_shared_libraries",
-                             "enable_lint",
-                             "expected_libs_and_assets",
-                             "expected_libs_and_assets_base",
-                             "expected_proguard_config",
-                             "expected_proguard_config_base",
-                             "keystore_name",
-                             "keystore_password",
-                             "keystore_path",
-                             "lint_baseline_file",
-                             "lint_jar_path",
-                             "lint_min_sdk_version",
-                             "lint_suppressions_file",
-                             "lint_suppressions_dep",
-                             "proguard_android_sdk_dep",
-                             "rotation_config",
-                             "static_library_provider",
-                           ])
     min_sdk_version = _min_sdk_version
     command_line_flags_file = "chrome-command-line"
     proguard_enabled = !is_java_debug
@@ -223,6 +202,12 @@ template("chrome_bundle") {
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.
     default_modules_for_testing = [ "dev_ui" ]
+
+    if (!is_java_debug && _is_monochrome) {
+      proguard_android_sdk_dep = webview_framework_dep
+    }
+
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 
   if (defined(invoker.expected_android_manifest_template)) {

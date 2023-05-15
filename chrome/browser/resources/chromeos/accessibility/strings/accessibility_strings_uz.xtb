@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="100506692671054486">avvalgi buyruq topilmadi</translation>
 <translation id="1009046985747440431">Tepaga yoki pastga oʻtish uchun shu strelkani, faollashtirish uchun esa Enter tugmasini bosing</translation>
 <translation id="1011903154582639569">Tugmani topib, ekranning yuqorisiga ko‘tarib, yozishni boshlang</translation>
 <translation id="1012173283529841972">Ro‘yxat obyekti</translation>
@@ -458,6 +459,7 @@
 <translation id="3936394396199829062">Oqimtir siyohrang</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3962990492275676168">Joriy joydan o‘qishni boshlash</translation>
+<translation id="397094149579293440">matn tanlanmagan</translation>
 <translation id="3970951409746498040">Toʻq qumrang</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Terirang</translation>
@@ -564,6 +566,7 @@
 <translation id="4786285211967466855">Bundan oldin boshqa 4-darajali sarlavha mavjud emas</translation>
 <translation id="4787577491510559358">Joriy element formati aytilsin</translation>
 <translation id="479989351350248267">qidiruv</translation>
+<translation id="4802034228771424756">matn maydoni fokusda emas</translation>
 <translation id="4804818685124855865">Uzilish</translation>
 <translation id="481165870889056555">Joriy sahifa sarlavhasini e’lon qilish</translation>
 <translation id="4815668758102003883">Xira feruzarang</translation>
@@ -586,13 +589,16 @@
 <translation id="489907760999452556">Ichki havola</translation>
 <translation id="4909019435900810068">Bitta oldingi soʻzga oʻtish</translation>
 <translation id="4911349081560453449">Bundan oldin boshqa belgilash katakchasi mavjud emas</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> imkonsiz, qayta urining</translation>
 <translation id="492295894462528572">Taqriz</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4953585991029886728">Matnni tahrirlash</translation>
+<translation id="4964701498510730546">matn maydoni boʻsh</translation>
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Avvalgi tugma mavjud emas</translation>
 <translation id="4979404613699303341">Avvalgi tugma</translation>
+<translation id="4981239367072766915">xato kiritildi</translation>
 <translation id="4982917827052020884">Muntazam ishlatiladigan tugmalardan boshlaymiz. Control tugmasidan istalgan joriy nutqni toʻxtatish uchun foydalanish mumkin. Control tugmasini klaviaturaning pastki chap burchagidan topish mumkin. Davom etish uchun Control tugmasini bosing.</translation>
 <translation id="4983588134362688868">Sahifaning boshiga o‘tish</translation>
 <translation id="4986606102545753256"><ph name="NAME" /> oynasi</translation>
@@ -600,6 +606,7 @@
 <translation id="4994420463726586413">Batareyaning joriy holati aytilsin</translation>
 <translation id="4997282455736854877">“<ph name="NAME" />” tanlash tugmasi belgilandi</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyu elementi (radio tugma) tanlandi</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> imkonsiz, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Ovozlar jurnalini yoqish</translation>
 <translation id="5041394372352067729">Breyl ekranini sahifa tepasiga joylash</translation>
 <translation id="5042770794184672516">Nutq ovozini ko‘tarish</translation>

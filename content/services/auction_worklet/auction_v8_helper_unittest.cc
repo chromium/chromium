@@ -86,7 +86,8 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
   }
 
   void ReportWin(
-      const std::string& interest_group_name,
+      mojom::ReportingIdField reporting_id_field,
+      const std::string& reporting_id,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -94,7 +95,10 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const std::string& seller_signals_json,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
+      const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
       double browser_signal_highest_scoring_other_bid,
+      const absl::optional<blink::AdCurrency>&
+          browser_signal_highest_scoring_other_bid_currency,
       bool browser_signal_made_highest_scoring_other_bid,
       absl::optional<double> browser_signal_ad_cost,
       absl::optional<uint16_t> browser_signal_modeling_signals,

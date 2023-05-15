@@ -219,7 +219,6 @@ void VideoDecoderShim::DecoderImpl::InitializeHardwareDecoder(
     media::VideoDecoderConfig config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   DCHECK(use_hw_decoder_);
-  CHECK(ShouldUseMojoVideoDecoderForPepper());
 
   DCHECK(gpu_factories->GetTaskRunner()->RunsTasksInCurrentSequence());
   if (!gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
@@ -289,14 +288,6 @@ void VideoDecoderShim::DecoderImpl::Reset() {
 }
 
 void VideoDecoderShim::DecoderImpl::Stop() {
-  // This DCHECK was not valid even before introducing the
-  // media::kUseMojoVideoDecoderForPepper path. However we keep it here because
-  // we don't want to change anything about the previous codepath as part of
-  // introducing the new flag-guarded codepath.
-  if (!ShouldUseMojoVideoDecoderForPepper()) {
-    DCHECK(decoder_);
-  }
-
   // Clear pending decodes now. We don't want OnDecodeComplete to call DoDecode
   // again.
   while (!pending_decodes_.empty())
@@ -416,8 +407,7 @@ std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider =
           RenderThreadImpl::current()->SharedMainThreadContextProvider();
-  if (ShouldUseMojoVideoDecoderForPepper() &&
-      !shared_main_thread_context_provider) {
+  if (!shared_main_thread_context_provider) {
     return nullptr;
   }
 
@@ -455,7 +445,6 @@ VideoDecoderShim::VideoDecoderShim(
       texture_pool_size_(texture_pool_size),
       num_pending_decodes_(0),
       use_hw_decoder_(use_hw_decoder) {
-  CHECK(!use_hw_decoder_ || ShouldUseMojoVideoDecoderForPepper());
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
   DCHECK(shared_main_thread_context_provider_.get());

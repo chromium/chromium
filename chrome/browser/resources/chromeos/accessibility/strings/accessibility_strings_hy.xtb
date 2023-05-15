@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="100506692671054486">նախորդ հրաման չկա</translation>
 <translation id="1009046985747440431">Նավարկելու համար սեղմեք վեր կամ վար սլաքով ստեղնը, ակտիվացնելու համար՝ Enter</translation>
 <translation id="1011903154582639569">Գտեք ստեղնը, այնուհետև բարձրացրեք մատը՝ տվյալ նիշը մուտքագրելու համար</translation>
 <translation id="1012173283529841972">Ցանկի միավոր</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Ալ նարդոս</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3962990492275676168">Կարդալ ընթացիկ տեղից</translation>
+<translation id="397094149579293440">ընտրված տեքստ չկա</translation>
 <translation id="3970951409746498040">Ավազե շագանակագույն</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Մոկասին</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">1-ին մակարդակի նախորդ վերնագիր չկա</translation>
 <translation id="4787577491510559358">Հնչեցնել ընթացիկ տարրի ձևաչափը</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">տեքստային դաշտ ընտրված չէ</translation>
 <translation id="4804818685124855865">Անջատել</translation>
 <translation id="481165870889056555">Հայտնել ընթացիկ էջի վերնագիրը</translation>
 <translation id="4815668758102003883">Խամրած փիրուզագույն</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Ներքին հղում</translation>
 <translation id="4909019435900810068">Մեկ բառ հետ գնալ</translation>
 <translation id="4911349081560453449">Նախորդ նշավանդակ չկա</translation>
+<translation id="4919186071145887492">Չհաջողվեց <ph name="COMMAND" />, նորից փորձեք</translation>
 <translation id="492295894462528572">Ներածություն</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4953585991029886728">Տեքստի խմբագրում</translation>
+<translation id="4964701498510730546">տեքստային դաշտը դատարկ է</translation>
 <translation id="4973717656530883744">Նվազագույնը <ph name="X" /></translation>
 <translation id="4974612477719259470">Նախորդ կոճակ չկա</translation>
 <translation id="4979404613699303341">Նախորդ կոճակը</translation>
+<translation id="4981239367072766915">չհաջողվեց ճանաչել մուտքագրված տվյալները</translation>
 <translation id="4982917827052020884">Եկեք սկսենք ստեղներից, որոնք դուք պարբերաբար օգտագործելու եք։ Ctrl ստեղնի օգնությամբ կարող եք անջատել տեքստի հնչեցումը։ Այն գտնվում է ստեղնաշարի ներքևի ձախ անկյունում։ Շարունակելու համար սեղմեք Ctrl ստեղնը։</translation>
 <translation id="4983588134362688868">Անցնել էջի վերև</translation>
 <translation id="4986606102545753256"><ph name="NAME" />՝ պատուհան</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Հնչեցնել մարտկոցի ընթացիկ կարգավիճակը</translation>
 <translation id="4997282455736854877">Ընտրված է <ph name="NAME" /> կետակոճակը</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ընտրացանկի տարրի կետակոճակն ընտրված է</translation>
+<translation id="5014131807708055994">Չհաջողվեց <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Միացնել խոսքի գրանցումը</translation>
 <translation id="5041394372352067729">Տեղափոխել Բրայլի ցուցադրիչը էջի վերև</translation>
 <translation id="5042770794184672516">Բարձրացնել խոսքի ձայնը</translation>

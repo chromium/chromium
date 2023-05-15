@@ -86,27 +86,10 @@ signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {
   return GetCapabilityByName(kIsAllowedForMachineLearningCapabilityName);
 }
 
-// Temporary implementation that return true for accounts that are not allowed
-// to run privacy sandbox trials and that are not subject for parental controls.
-//
-// TODO(crbug.com/1430845): Update to use the real account capability once it
-// is defined server-side.
 signin::Tribool AccountCapabilities::
     is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const {
-  signin::Tribool can_run_chrome_privacy_sandbox_trials =
-      AccountCapabilities::can_run_chrome_privacy_sandbox_trials();
-  signin::Tribool is_subject_to_parental_controls =
-      AccountCapabilities::is_subject_to_parental_controls();
-
-  if (can_run_chrome_privacy_sandbox_trials == signin::Tribool::kUnknown ||
-      is_subject_to_parental_controls == signin::Tribool::kUnknown) {
-    return signin::Tribool::kUnknown;
-  }
-  if (can_run_chrome_privacy_sandbox_trials == signin::Tribool::kTrue ||
-      is_subject_to_parental_controls == signin::Tribool::kTrue) {
-    return signin::Tribool::kFalse;
-  }
-  return signin::Tribool::kTrue;
+  return GetCapabilityByName(
+      kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);
 }
 
 signin::Tribool AccountCapabilities::is_subject_to_enterprise_policies() const {

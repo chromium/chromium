@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -146,7 +147,7 @@ bool WaylandWindowDragController::StartDragSession(
   data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
-  should_process_drag_event_ = false;
+  should_process_drag_motion_events_ = false;
 
   // Observe window so we can take ownership of the origin surface in case it
   // is destroyed during the DND session.
@@ -261,7 +262,11 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     return;
 
   // Forward cursor location update info to the input handling delegate.
-  should_process_drag_event_ = true;
+  should_process_drag_motion_events_ =
+      !(features::IsWaylandScreenCoordinatesEnabled() &&
+        static_cast<WaylandToplevelWindow*>(drag_target_window_)
+            ->IsScreenCoordinatesEnabled());
+
   pointer_location_ = location;
 
   if (*drag_source_ == DragEventSource::kMouse) {
@@ -462,8 +467,9 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   DCHECK_EQ(state_, State::kDetached);
   DCHECK(event);
 
-  if (!should_process_drag_event_)
+  if (!should_process_drag_motion_events_) {
     return;
+  }
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag
@@ -474,7 +480,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
     dragged_window_->SetOrigin(event->location() - drag_offset_);
   }
 
-  should_process_drag_event_ = false;
+  should_process_drag_motion_events_ = false;
 }
 
 // Dispatch mouse release event (to tell clients that the drop just happened)

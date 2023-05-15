@@ -177,7 +177,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   NGBoxFragmentBuilder container_builder(
       block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
-  NGInlineChildLayoutContext context(inline_node, &container_builder);
+  NGSimpleInlineChildLayoutContext context(inline_node, &container_builder);
   const NGLayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();

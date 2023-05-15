@@ -32,6 +32,8 @@ namespace blink {
 
 struct CORE_EXPORT CSSPropertyValueMetadata {
   DISALLOW_NEW();
+  CSSPropertyValueMetadata() = default;
+
   CSSPropertyValueMetadata(const CSSPropertyName&,
                            bool is_set_from_shorthand,
                            int index_in_shorthands_vector,

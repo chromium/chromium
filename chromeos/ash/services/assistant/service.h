@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -174,7 +175,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // so it is destroyed last.
   std::unique_ptr<ServiceContext> context_;
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   std::unique_ptr<ScopedAshSessionObserver> scoped_ash_session_observer_;
   std::unique_ptr<AssistantManagerService> assistant_manager_service_;
   std::unique_ptr<base::OneShotTimer> token_refresh_timer_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -110,7 +111,7 @@ class MagnificationManager
   void UpdateMagnifierFromPrefs();
   void UpdateDockedMagnifierFromPrefs();
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Last mouse event time - used for ignoring focus changes for a few

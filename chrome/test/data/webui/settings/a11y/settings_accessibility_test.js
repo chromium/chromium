@@ -15,10 +15,10 @@ GEN_INCLUDE([
  * @constructor
  * @extends {PolymerTest}
  */
-function SettingsAccessibilityV3Test() {}
+function SettingsAccessibilityTest() {}
 
 // Default accessibility audit options. Specify in test definition to use.
-SettingsAccessibilityV3Test.axeOptions = {
+SettingsAccessibilityTest.axeOptions = {
   'rules': {
     // Disable 'skip-link' check since there are few tab stops before the main
     // content.
@@ -37,7 +37,7 @@ SettingsAccessibilityV3Test.axeOptions = {
 };
 
 // Default accessibility audit options. Specify in test definition to use.
-SettingsAccessibilityV3Test.violationFilter = {
+SettingsAccessibilityTest.violationFilter = {
   'aria-valid-attr': function(nodeResult) {
     const attributeAllowlist = [
       'aria-active-attribute',  // Polymer components use aria-active-attribute.
@@ -66,7 +66,7 @@ SettingsAccessibilityV3Test.violationFilter = {
   },
 };
 
-SettingsAccessibilityV3Test.prototype = {
+SettingsAccessibilityTest.prototype = {
   __proto__: PolymerTest.prototype,
 
   /** @override */

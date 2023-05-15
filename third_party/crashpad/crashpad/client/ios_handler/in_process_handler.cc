@@ -19,7 +19,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "client/ios_handler/in_process_intermediate_dump_handler.h"
 #include "client/prune_crash_reports.h"

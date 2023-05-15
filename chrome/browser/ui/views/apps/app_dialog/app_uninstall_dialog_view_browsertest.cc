@@ -9,6 +9,7 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -157,7 +158,7 @@ class ArcAppsUninstallDialogViewBrowserTest
   }
 
  private:
-  ArcAppListPrefs* arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };
 

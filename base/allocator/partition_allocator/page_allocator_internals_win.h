@@ -93,11 +93,10 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PAGE_EXECUTE_READ;
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
-    default:
-      PA_NOTREACHED();
-      [[fallthrough]];
     case PageAccessibilityConfiguration::kInaccessible:
       return PAGE_NOACCESS;
+    default:
+      PA_NOTREACHED();
   }
 }
 

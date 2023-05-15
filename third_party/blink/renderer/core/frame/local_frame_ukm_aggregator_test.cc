@@ -257,6 +257,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
  private:
+  // Deterministically record metrics in test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+
   int64_t source_id_;
   scoped_refptr<LocalFrameUkmAggregator> aggregator_;
   ukm::TestUkmRecorder recorder_;
@@ -510,23 +513,19 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
       LocalFrameUkmAggregator::kContentDocumentUpdate, 23u);
 
   SimulateAndVerifyForcedLayoutReason(
-      DocumentUpdateReason::kScroll,
-      LocalFrameUkmAggregator::kScrollDocumentUpdate, 24u);
-
-  SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kHitTest,
-      LocalFrameUkmAggregator::kHitTestDocumentUpdate, 25u);
+      LocalFrameUkmAggregator::kHitTestDocumentUpdate, 24u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kJavaScript,
-      LocalFrameUkmAggregator::kJavascriptDocumentUpdate, 26u);
+      LocalFrameUkmAggregator::kJavascriptDocumentUpdate, 25u);
 
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kBeginMainFrame,
-                                      LocalFrameUkmAggregator::kCount, 27u);
+                                      LocalFrameUkmAggregator::kCount, 26u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kTest,
-                                      LocalFrameUkmAggregator::kCount, 28u);
+                                      LocalFrameUkmAggregator::kCount, 27u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kUnknown,
-                                      LocalFrameUkmAggregator::kCount, 29u);
+                                      LocalFrameUkmAggregator::kCount, 28u);
 }
 
 TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
@@ -754,6 +753,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PostFCP"),
         2);
   }
+
+ private:
+  // Deterministically record metrics in test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {

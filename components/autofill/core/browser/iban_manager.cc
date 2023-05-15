@@ -140,8 +140,9 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
   uma_recorder_.OnIbanSuggestionsShown(query_handler.field_id_);
 }
 
-void IBANManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                                  int frontend_id) {
+void IBANManager::OnSingleFieldSuggestionSelected(
+    const std::u16string& value,
+    Suggestion::FrontendId frontend_id) {
   uma_recorder_.OnIbanSuggestionSelected();
 }
 

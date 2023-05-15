@@ -26,7 +26,7 @@ namespace {
 class MockMediaRouterUIServiceObserver
     : public media_router::MediaRouterUIService::Observer {
  public:
-  MOCK_METHOD0(OnServiceDisabled, void());
+  MOCK_METHOD(void, OnServiceDisabled, ());
 };
 
 }  // namespace

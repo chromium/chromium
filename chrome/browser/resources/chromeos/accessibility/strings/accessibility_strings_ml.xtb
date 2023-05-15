@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="100506692671054486">മുമ്പത്തെ കമാൻഡുകൾ ഒന്നുമില്ല</translation>
 <translation id="1009046985747440431">നാവിഗേറ്റ് ചെയ്യാൻ മുകളിലേക്കോ താഴേക്കോ ഉള്ള അമ്പടയാള കീകൾ അമർത്തുക; സജീവമാക്കാൻ എന്റർ അമർത്തുക</translation>
 <translation id="1011903154582639569">ഒരു കീ കണ്ടെത്തുക, തുടർന്ന് ടൈപ്പ് ചെയ്യാൻ ഉയർത്തുക</translation>
 <translation id="1012173283529841972">ലിസ്റ്റ് ഇനം</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ലാവൻഡർ ബ്ലഷ്</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="3962990492275676168">നിലവിലെ സ്ഥാനത്ത് നിന്ന് വായിക്കാൻ ആരംഭിക്കുക</translation>
+<translation id="397094149579293440">ടെക്സ്റ്റ് തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
 <translation id="3970951409746498040">സാൻഡി ബ്രൗൺ</translation>
 <translation id="3989324057180830702">ടോഗിൾ ബട്ടൺ</translation>
 <translation id="3991317907213946254">മൊക്കസിൻ</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">മുൻ നില 1 ശീർഷകം ഒന്നുമില്ല</translation>
 <translation id="4787577491510559358">നിലവിലെ ഇനത്തിന്റെ ഫോർമാറ്റ് ചെയ്യൽ അറിയിക്കുക</translation>
 <translation id="479989351350248267">തിരയുക</translation>
+<translation id="4802034228771424756">ഫോക്കസ് ചെയ്ത ടെക്സ്റ്റ് ഫീൽഡില്ല</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="481165870889056555">നിലവിലെ പേജിന്റെ ശീർഷകം അറിയിക്കുക</translation>
 <translation id="4815668758102003883">പെയിൽ ടർകോയിസ്</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ആന്തരിക ലിങ്ക്</translation>
 <translation id="4909019435900810068">ഒരു വാക്ക് പിന്നോട്ട് നീക്കുക</translation>
 <translation id="4911349081560453449">മുൻ ചെക്ക്ബോക്‌സ് ഒന്നുമില്ല</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> എന്നതിന് കഴിഞ്ഞില്ല, വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="492295894462528572">മുഖവുര</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4953585991029886728">ടെക്സ്റ്റ് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="4964701498510730546">ടെക്സ്റ്റ് ഫീൽഡിൽ ഒന്നും നൽകിയിട്ടില്ല</translation>
 <translation id="4973717656530883744">കുറഞ്ഞത് <ph name="X" /></translation>
 <translation id="4974612477719259470">മുൻ ബട്ടൺ ഒന്നുമില്ല</translation>
 <translation id="4979404613699303341">മുൻ ബട്ടൺ</translation>
+<translation id="4981239367072766915">തിരിച്ചറിയാനാകാത്ത ഇൻപുട്ട്</translation>
 <translation id="4982917827052020884">ആദ്യം, പതിവായി ഉപയോഗിക്കേണ്ട കുറച്ച് കീകളെക്കുറിച്ച് പഠിച്ച് തുടങ്ങാം. നിലവിലെ സംഭാഷണം നിർത്താൻ Control കീ ഉപയോഗിക്കാം. കീബോർഡിന്റെ താഴെ ഇടതുകോണിൽ Control കീ കാണാം. തുടരാൻ, Control കീ അമർത്തുക.</translation>
 <translation id="4983588134362688868">പേജിന്റെ മുകളിലേയ്‌ക്ക് പോകുക</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, വിൻഡോ</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">നിലവിലെ ബാറ്ററി നില അറിയിക്കുക</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, മെനു ഇനത്തിന്റെ റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
+<translation id="5014131807708055994"><ph name="REASON" /> എന്ന കാരണത്താൽ <ph name="COMMAND" /> എന്നതിന് കഴിഞ്ഞില്ല</translation>
 <translation id="5020651427400641814">സംസാരത്തിലൂടെ ലോഗിംഗ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5041394372352067729">ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ പേജിന് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="5042770794184672516">സംഭാഷണ ശബ്ദം വർദ്ധിപ്പിക്കുക</translation>

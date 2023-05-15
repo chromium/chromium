@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="100506692671054486">мурунку буйрук жок</translation>
 <translation id="1009046985747440431">Чабыттоо үчүн өйдө же ылдый басыңыз; жандыруу үчүн Enter'ди басыңыз</translation>
 <translation id="1011903154582639569">Клавиатураны таап, экрандын үстүнө көтөрүп алып, терип баштаңыз</translation>
 <translation id="1012173283529841972">Тизмедеги нерсе</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Кызгылт сыя</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3962990492275676168">Дал ушул турган жерден окуп баштоо</translation>
+<translation id="397094149579293440">текст тандалган жок</translation>
 <translation id="3970951409746498040">Кумдай күрөң</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Ач күрөң</translation>
@@ -469,7 +471,7 @@
 <translation id="4035381225449278841">Жаз</translation>
 <translation id="4038098586530338813">кайталоо</translation>
 <translation id="4047216625641135770">Белги</translation>
-<translation id="4047910800766704982">Түзмөгүңүздө Интернет байланышы болгон учурда кадимки адамдын же адамдын үнүнө окшош үндү колдоно алсыз. Текст иштетүү үчүн Google'га жөнөтүлөт. Буну Жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
+<translation id="4047910800766704982">Түзмөгүңүздө Интернет байланышы болгон учурда кадимки адамдын же адамдын үнүнө окшош үндү колдоно алсыз. Текст иштетүү үчүн Google'га жөнөтүлөт. Буну Параметрлерден каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="4053520724192563562">Ачык саргылтым жашыл</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Барак жүктөлүп жатат</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Мурунку 1-деңгээлдин башкы аталышы жок</translation>
 <translation id="4787577491510559358">Учурдагы нерсе үчүн форматтоону жарыялоо</translation>
 <translation id="479989351350248267">издөө</translation>
+<translation id="4802034228771424756">текст талаасы тандалган жок</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
 <translation id="481165870889056555">Учурдагы баракчанын аталышын жарыялоо</translation>
 <translation id="4815668758102003883">Мала бирюза</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Ички шилтеме</translation>
 <translation id="4909019435900810068">Бир сөз артка жылдыруу</translation>
 <translation id="4911349081560453449">Мурунку белгилөө кутучасы жок</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> мүмкүн эмес. Кайталап көрүңүз</translation>
 <translation id="492295894462528572">Кириш сөз</translation>
 <translation id="495046168593986294">Өйдө сыдыруу</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4953585991029886728">Текстти түзөтүү</translation>
+<translation id="4964701498510730546">текст талаасы бош</translation>
 <translation id="4973717656530883744">Миним. <ph name="X" /></translation>
 <translation id="4974612477719259470">Мурунку баскыч жок</translation>
 <translation id="4979404613699303341">Мурунку баскыч</translation>
+<translation id="4981239367072766915">киргизилген маалымат таанылган жок</translation>
 <translation id="4982917827052020884">Сиз ар дайым колдоно турган баскычтардан баштайлы. Control баскычы менен текстти окууну токтото аласыз. Control баскычы баскычтобуңуздун төмөнкү сол бурчунда жайгашкан. Улантуу үчүн Control баскычын басыңыз.</translation>
 <translation id="4983588134362688868">Барактын башына секирүү</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, терезе</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Батареянын учурдагы абалын жарыялоо</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, радио баскыч тандалды</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, менюдагы нерсенин радио баскычы тандалды</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> мүмкүн эмес, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Айтылган сөздү киргизүүнү иштетүү</translation>
 <translation id="5041394372352067729">Брайл дисплейин барактын башына жылдыруу</translation>
 <translation id="5042770794184672516">Кептин үнүн катуулатуу</translation>

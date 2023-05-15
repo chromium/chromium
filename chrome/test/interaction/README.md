@@ -81,8 +81,7 @@ verbs, like `Check()` and `Do()` don't care about specific elements.
 Verbs fall into a number of different categories:
 - **Do** performs an action you specify.
 - **Log** prints its arguments to the output at log level `INFO`.
-    - By default, arguments are captured by value when the sequence is built.
-    - If you want a variable's value read at runtime, use `std::ref(var)`.
+  See [Logging](#logging) below.
 - **Check** verbs ensure that some condition is true; if it is not, the test
   fails. Some *Check* verbs use `Matcher`s, some use callbacks, etc. Examples
   include:
@@ -225,14 +224,13 @@ most concise. You may use any of the following:
 The following are, therefore, all valid:
 ```cpp
 void Func() {
-  LOG(INFO) << "Normal function.";
+  // ...
 }
 
 IN_PROC_BROWSER_TEST_F(MyTest, TestDo) {
-  auto lambda = [](){ LOG(INFO) << "Stored lambda."; };
-  auto once_callback = base::BindOnce([](){ LOG(INFO) << "Once callback."; });
-  auto repeating_callback =
-      base::BindRepeating([](){ LOG(INFO) << "Repeating callback."; });
+  auto lambda = [](){ Func(); };
+  auto once_callback = base::BindOnce(&Func);
+  auto repeating_callback = base::BindRepeating(&Func);
   int x = 1;
   int y = 2;
   RunTestSequence(
@@ -240,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(MyTest, TestDo) {
       Do(lambda),
       Do(std::move(once_callback)),
       Do(repeating_callback),
-      Do([x, &y](){ LOG(INFO) << "Bound args " << x << ", " << y; }));
+      Do([x, &y](){ Func(), LOG(INFO) << "Bound args " << x << ", " << y; }));
 }
 ```
 
@@ -248,6 +246,34 @@ Note that a few cases do still require you to use `base::Bind...`; specifically,
 the arguments to actions like `NameChildView` and `NameDescendantView`. When a
 verb does require an explicit argument it will be provided in the verb's method
 signature.
+
+### Logging
+
+Using the `Log` verb allows for printing of any number of arguments. They are
+sent to log level `INFO` when the `Log` step is executed. `Log` "knows" how to
+print anything that our logging macros can. So if you can do
+`LOG(INFO) << value` you can print it with the `Log` verb.
+
+There are a few different ways to pass values to `Log`:
+ - If you just pass a variable or literal, the value that is printed is the
+   value _at the time the sequence is created_.
+ - If you wrap a variable with `std::ref`, the value that is printed is the
+   value of the variable _at the time the `Log` step is executed_.
+ - You can also pass any callable object (callback, lambda, or function
+   pointer) that returns a loggable value. The callable object is executed when
+   the `Log` step runs and the result is printed.
+
+Example:
+```cpp
+int x = 1;
+RunTestSequence(
+  // Change the value of x.
+  Do([&](){ ++x; }),
+  // Print out old, current, and computed values.
+  Log("Original value: ", x,
+      " current value: ", std::ref(x),
+      " square of current value: ", [&x](){ return x*x; }));
+```
 
 ### Modifiers
 

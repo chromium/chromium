@@ -15,6 +15,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
@@ -147,19 +149,18 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     // tests. If a feature is integrated in the fieldtrial_testing_config.json,
     // it might not be considered under an official build. Adding it under a
     // InitWithFeatures to activate it would neglect that difference.
-    //
-    // Force init `kSystemProfileSelectionDefaultNone` to make sure that this
-    // test catches all new creation of services for System Profile, even during
-    // the transition period when the feature experiment is partially active.
-    //
+
     // clang-format off
     feature_list_.InitWithFeatures(
         {
-          kSystemProfileSelectionDefaultNone,
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
 #endif  // !BUILDFLAG(IS_ANDROID)
-          blink::features::kBrowsingTopics
+          blink::features::kBrowsingTopics,
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+          omnibox::kOnDeviceTailModel,
+          omnibox::kOnDeviceHeadProviderNonIncognito,
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
         },
         {});
     // clang-format on
@@ -210,6 +211,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   std::set<std::string> guest_otr_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "CleanupManagerLacros",
+    "DownloadBubbleUpdateService",
     "DownloadCoreService",
 #else
     "LiveCaptionController",
@@ -237,6 +239,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "HostContentSettingsMap",
     "MediaRouterUIService",
     "NotificationDisplayService",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OnDeviceTailModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "OneTimePermissionsTrackerKeyedService",
     "OptimizationGuideKeyedService",
 #if BUILDFLAG(ENABLE_PDF)
@@ -302,7 +307,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     "AboutSigninInternals",
     "AboutThisSiteServiceFactory",
-    "AccountInvestigator",
     "AccountReconcilor",
     "ActivityLog",
     "ActivityLogPrivateAPI",
@@ -321,7 +325,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "AppTerminationObserver",
     "AppWindowRegistry",
     "AudioAPI",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "AutocompleteScoringModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "AutofillImageFetcher",
     "AutofillPrivateEventRouter",
     "AutofillStrikeDatabase",
@@ -424,6 +430,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "NetworkingPrivateEventRouter",
     "NotificationDisplayService",
     "OmniboxAPI",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OnDeviceTailModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "OneTimePermissionsTrackerKeyedService",
     "OperationManager",
     "OptimizationGuideKeyedService",
@@ -443,7 +452,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PowerBookmarkService",
     "PrefWatcher",
     "PreferenceAPI",
-    "PrimaryAccountPolicyManager",
   #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     "PrintingMetricsService",
   #endif // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
@@ -485,8 +493,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ShoppingService",
     "SidePanelService",
     "SigninErrorController",
-    "SigninManager",
-    "SigninProfileAttributesUpdater",
     "SiteDataCacheFacadeFactory",
     "SiteEngagementService",
     "SocketManager",

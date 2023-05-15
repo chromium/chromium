@@ -40,8 +40,7 @@ CallbackFunctionBase::CallbackFunctionBase(
     v8::MaybeLocal<v8::Context> creation_context =
         callback_function->GetCreationContext();
     if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
-            incumbent_script_state->GetContext(), creation_context,
-            BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
+            incumbent_script_state->GetContext(), creation_context)) {
       ScriptState* callback_relevant_script_state =
           ScriptState::From(creation_context.ToLocalChecked());
       MakeCachedData(callback_relevant_script_state, incumbent_script_state);

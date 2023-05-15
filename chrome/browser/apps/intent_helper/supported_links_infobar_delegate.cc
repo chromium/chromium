@@ -81,8 +81,8 @@ void SupportedLinksInfoBarDelegate::RemoveSupportedLinksInfoBar(
 // static
 bool SupportedLinksInfoBarDelegate::IsSetSupportedLinksPreferenceSupported() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return (chromeos::LacrosService::Get()->GetInterfaceVersion(
-              crosapi::mojom::AppServiceProxy::Uuid_) >=
+  return (chromeos::LacrosService::Get()
+              ->GetInterfaceVersion<crosapi::mojom::AppServiceProxy>() >=
           static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
                                kSetSupportedLinksPreferenceMinVersion));
 #else

@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 
@@ -58,10 +59,11 @@ class NetworkConnectionHandlerTetherDelegate
   void OnRequestSuccess(int request_num);
   void OnRequestError(int request_num, const std::string& error_name);
 
-  NetworkConnectionHandler* network_connection_handler_;
-  ActiveHost* active_host_;
-  TetherConnector* tether_connector_;
-  TetherDisconnector* tether_disconnector_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<TetherConnector, ExperimentalAsh> tether_connector_;
+  raw_ptr<TetherDisconnector, ExperimentalAsh> tether_disconnector_;
 
   // Cache request callbacks in a map so that if the callbacks do not occur by
   // the time the object is deleted, all callbacks are invoked.

@@ -191,6 +191,8 @@ if (build_with_chromium) {
         "absl/base:config_test",
         "absl/base:prefetch_test",
         "absl/cleanup:cleanup_test",
+        # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.
+        # "absl/container:btree_test",
         "absl/container:common_policy_traits_test",
         "absl/container:inlined_vector_test",
         "absl/container:node_slot_policy_test",
@@ -201,6 +203,7 @@ if (build_with_chromium) {
         "absl/crc:non_temporal_memcpy_test",
         "absl/debugging:stacktrace_test",
         "absl/functional:any_invocable_test",
+        "absl/functional:function_ref_test",
         "absl/hash:hash_test",
         "absl/hash:low_level_hash_test",
         "absl/log:absl_check_test",
@@ -245,6 +248,7 @@ if (build_with_chromium) {
         "absl/time:time_test",
         "absl/types:optional_test",
         "absl/types:variant_test",
+        "absl/utility:if_constexpr_test",
         "//third_party/googletest:gtest_main",
       ]
     }

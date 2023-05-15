@@ -14,14 +14,14 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_service_utils.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
@@ -296,7 +296,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     // TODO(crbug.com/1081274): This re-ordering will be redundant once we
     // apply ordering changes to the account reconciler.
     TableViewItem* item = [self accountItem:identity];
-    if ([identity.userEmail isEqual:authenticatedEmail]) {
+    if ([identity.userEmail isEqualToString:authenticatedEmail]) {
       [model insertItem:item
           inSectionWithIdentifier:SectionIdentifierAccounts
                           atIndex:0];

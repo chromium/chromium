@@ -5,15 +5,17 @@
 import 'chrome://resources/ash/common/network/network_config.js';
 import 'chrome://resources/ash/common/network/network_icon.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -70,6 +72,19 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /**
+     * Whether the Jelly feature flag is enabled.
+     * @private
+     */
+    isJellyEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.valueExists('isJellyEnabled') &&
+            loadTimeData.getBoolean('isJellyEnabled');
+      },
+    },
   },
 
   /** @override */
@@ -85,6 +100,15 @@ Polymer({
       const params = new URLSearchParams(document.location.search.substring(1));
       this.type_ = params.get('type') || 'WiFi';
       this.guid_ = params.get('guid') || '';
+    }
+
+    if (this.isJellyEnabled_) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
+      document.head.appendChild(link);
+      document.body.classList.add('jelly-enabled');
+      startColorChangeUpdater();
     }
 
     this.$.networkConfig.init();

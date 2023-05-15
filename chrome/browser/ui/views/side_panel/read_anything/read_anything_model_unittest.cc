@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -21,18 +22,6 @@ using testing::FloatNear;
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
-              AccessibilityEventReceived,
-              (const content::AXEventNotificationDetails& details),
-              (override));
-  MOCK_METHOD(void,
-              OnActiveAXTreeIDChanged,
-              (const ui::AXTreeID& tree_id, const ukm::SourceId& ukm_source_id),
-              (override));
-  MOCK_METHOD(void,
-              OnAXTreeDestroyed,
-              (const ui::AXTreeID& tree_id),
-              (override));
-  MOCK_METHOD(void,
               OnReadAnythingThemeChanged,
               (const std::string& font_name,
                double font_scale,
@@ -41,12 +30,10 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                ui::ColorId separator_color_id,
                ui::ColorId dropdown_color_id,
                ui::ColorId selected_color_id,
+               ui::ColorId focus_ring_color_id,
                read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing),
               (override));
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  MOCK_METHOD(void, ScreenAIServiceReady, (), (override));
-#endif
 };
 
 class ReadAnythingModelTest : public TestWithBrowserView {
@@ -64,6 +51,16 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 
   ReadAnythingFontModel* GetFontModel() { return model_->GetFontModel(); }
 
+  // Initializing the model will populate the font model with options that work
+  // with the input language.
+  void InitModel(std::string language = "en") {
+    std::string font_name;
+    model_->Init(language, font_name, 0.5,
+                 read_anything::mojom::Colors::kDefaultValue,
+                 read_anything::mojom::LineSpacing::kLoose,
+                 read_anything::mojom::LetterSpacing::kStandard);
+  }
+
  protected:
   std::unique_ptr<ReadAnythingModel> model_;
 
@@ -79,16 +76,12 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
-  EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->AddObserver(&model_observer_2_);
@@ -98,70 +91,38 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_1_);
   model_->AddObserver(&model_observer_2_);
 
-  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
-  EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
 
-  EXPECT_CALL(model_observer_3_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_3_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_3_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->RemoveObserver(&model_observer_2_);
   model_->AddObserver(&model_observer_3_);
 }
 
-TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
+TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndexaa) {
+  InitModel();
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->SetSelectedFontByIndex(2);
-}
-
-TEST_F(ReadAnythingModelTest, NotificationsOnAccessibilityEventReceived) {
-  model_->AddObserver(&model_observer_1_);
-
-  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(1);
-
-  content::AXEventNotificationDetails details;
-  model_->AccessibilityEventReceived(details);
-}
-
-TEST_F(ReadAnythingModelTest, NotificationsOnActiveAXTreeIDChanged) {
-  model_->AddObserver(&model_observer_1_);
-
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(1);
-
-  ui::AXTreeID tree_id;
-  model_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId);
-}
-
-TEST_F(ReadAnythingModelTest, NotificationsOnAXTreeDestroyed) {
-  model_->AddObserver(&model_observer_1_);
-
-  EXPECT_CALL(model_observer_1_, OnAXTreeDestroyed(_)).Times(1);
-
-  ui::AXTreeID tree_id;
-  model_->OnAXTreeDestroyed(tree_id);
 }
 
 TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->DecreaseTextSize();
@@ -173,7 +134,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->IncreaseTextSize();
@@ -185,7 +146,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->SetSelectedColorsByIndex(2);
@@ -195,7 +156,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLineSpacingIndex) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->SetSelectedLineSpacingByIndex(2);
@@ -205,7 +166,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->SetSelectedLetterSpacingByIndex(2);
@@ -215,7 +176,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSystemThemeChanged) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,
-              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _))
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
 
   model_->OnSystemThemeChanged();
@@ -223,7 +184,9 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSystemThemeChanged) {
 
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language;
+  model_->Init(language, font_name, 0.5,
+               read_anything::mojom::Colors::kDefaultValue,
                read_anything::mojom::LineSpacing::kLoose,
                read_anything::mojom::LetterSpacing::kStandard);
   model_->DecreaseTextSize();
@@ -232,33 +195,58 @@ TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
 
 TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language;
+  model_->Init(language, font_name, 4.5,
+               read_anything::mojom::Colors::kDefaultValue,
                read_anything::mojom::LineSpacing::kLoose,
                read_anything::mojom::LetterSpacing::kStandard);
   model_->IncreaseTextSize();
   EXPECT_NEAR(model_->GetFontScale(), 4.5, 0.01);
 }
 
-TEST_F(ReadAnythingModelTest, FontModelIsValidFontName) {
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Standard font"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Sans-serif"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Serif"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Arial"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Comic Sans MS"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Times New Roman"));
-  EXPECT_FALSE(GetFontModel()->IsValidFontName("xxyyzz"));
-}
-
-TEST_F(ReadAnythingModelTest, FontModelGetCurrentFontName) {
-  EXPECT_EQ("Standard font", GetFontModel()->GetFontNameAt(0));
+TEST_F(ReadAnythingModelTest, FontModelGetFontNameEnglishOptions) {
+  InitModel();
+  EXPECT_EQ("Poppins", GetFontModel()->GetFontNameAt(0));
   EXPECT_EQ("Sans-serif", GetFontModel()->GetFontNameAt(1));
   EXPECT_EQ("Serif", GetFontModel()->GetFontNameAt(2));
-  EXPECT_EQ("Arial", GetFontModel()->GetFontNameAt(3));
-  EXPECT_EQ("Comic Sans MS", GetFontModel()->GetFontNameAt(4));
-  EXPECT_EQ("Times New Roman", GetFontModel()->GetFontNameAt(5));
+  EXPECT_EQ("Comic Neue", GetFontModel()->GetFontNameAt(3));
+  EXPECT_EQ("Lexend Deca", GetFontModel()->GetFontNameAt(4));
+  EXPECT_EQ("EB Garamond", GetFontModel()->GetFontNameAt(5));
+  EXPECT_EQ("STIX Two Text", GetFontModel()->GetFontNameAt(6));
+}
+
+TEST_F(ReadAnythingModelTest, FontModelGetFontNameChineseOptions) {
+  InitModel("zh");
+  EXPECT_EQ("Sans-serif", GetFontModel()->GetFontNameAt(0));
+  EXPECT_EQ("Serif", GetFontModel()->GetFontNameAt(1));
+}
+
+TEST_F(ReadAnythingModelTest, FontModelGetFontNameVietnameseOptions) {
+  InitModel("vi");
+  EXPECT_EQ("Sans-serif", GetFontModel()->GetFontNameAt(0));
+  EXPECT_EQ("Serif", GetFontModel()->GetFontNameAt(1));
+  EXPECT_EQ("Lexend Deca", GetFontModel()->GetFontNameAt(2));
+  EXPECT_EQ("EB Garamond", GetFontModel()->GetFontNameAt(3));
+  EXPECT_EQ("STIX Two Text", GetFontModel()->GetFontNameAt(4));
+}
+
+TEST_F(ReadAnythingModelTest, LabelFontListModelGetsCurrentFontList) {
+  InitModel();
+  std::string default_font = string_constants::kReadAnythingDefaultFontName;
+
+  const std::vector<std::string> expected_fonts = {
+      "Poppins",     "Sans-serif",  "Serif",        "Comic Neue",
+      "Lexend Deca", "EB Garamond", "STIX Two Text"};
+
+  for (size_t i = 0; i < expected_fonts.size(); i++) {
+    auto retrieved_fonts = GetFontModel()->GetLabelFontNameAt(i);
+    EXPECT_EQ(expected_fonts[i], retrieved_fonts[0]);
+    EXPECT_EQ(default_font, retrieved_fonts[1]);
+  }
 }
 
 TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {
+  InitModel();
   size_t testIndex = 2;
   model_->SetSelectedFontByIndex(testIndex);
   EXPECT_EQ(testIndex, GetFontModel()->GetDefaultIndexForTesting().value());
@@ -286,6 +274,28 @@ TEST_F(ReadAnythingModelTest, FontModelSetsDropdownAndForegroundColors) {
             GetFontModel()->GetDropdownBackgroundColorIdAt(0).value());
   EXPECT_EQ(color_info.selected_dropdown_color_id,
             GetFontModel()->GetDropdownSelectedBackgroundColorIdAt(0).value());
+}
+
+TEST_F(ReadAnythingModelTest, GetLabelFontList_DoesNotCrashBeforeSet) {
+  ReadAnythingColorsModel* color_model = model_->GetColorsModel();
+  EXPECT_EQ(nullptr, color_model->GetLabelFontListAt(0));
+
+  ReadAnythingLineSpacingModel* line_spacing_model =
+      model_->GetLineSpacingModel();
+  EXPECT_EQ(nullptr, line_spacing_model->GetLabelFontListAt(0));
+
+  ReadAnythingLetterSpacingModel* letter_spacing_model =
+      model_->GetLetterSpacingModel();
+  EXPECT_EQ(nullptr, letter_spacing_model->GetLabelFontListAt(0));
+}
+
+TEST_F(ReadAnythingModelTest, GetLabelFontList_GetsCorrectFontList) {
+  ReadAnythingColorsModel* color_model = model_->GetColorsModel();
+  color_model->SetLabelFontList("Arial");
+
+  const gfx::FontList* font_list = color_model->GetLabelFontListAt(0);
+  EXPECT_EQ(2, (int)font_list->GetFonts().size());
+  EXPECT_EQ("Arial", font_list->GetPrimaryFont().GetFontName());
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)

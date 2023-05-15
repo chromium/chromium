@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
@@ -53,7 +54,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
   bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // borealis::BorealisInstaller::Observer implementation.
   void OnStateUpdated(
@@ -66,7 +66,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // Public for testing purposes.
   std::u16string GetPrimaryMessage() const;
   std::u16string GetSecondaryMessage() const;
-  std::u16string GetProgressMessage() const;
 
   void SetInstallingStateForTesting(InstallingState new_state);
 
@@ -107,14 +106,20 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void StartInstallation();
 
   std::u16string app_name_;
-  Profile* profile_ = nullptr;
-  views::Label* primary_message_label_ = nullptr;
-  views::Label* secondary_message_label_ = nullptr;
-  views::ProgressBar* progress_bar_ = nullptr;
-  views::Label* installation_progress_message_label_ = nullptr;
-  views::BoxLayout* lower_container_layout_ = nullptr;
-  views::ImageView* big_image_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> primary_message_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> secondary_message_label_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh>
+      installation_progress_percentage_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> installation_progress_separator_ =
+      nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> installation_progress_eta_label_ =
+      nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> right_container_layout_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> big_image_ = nullptr;
 
+  base::Time install_start_time_;
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
   absl::optional<borealis::BorealisInstallResult> result_;

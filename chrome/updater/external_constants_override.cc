@@ -111,7 +111,7 @@ GURL ExternalConstantsOverrider::DeviceManagementURL() const {
   const base::Value* device_management_url_value =
       override_values_.Find(kDevOverrideKeyDeviceManagementUrl);
   CHECK(device_management_url_value->is_string())
-      << "Unexpected type of override[" << kDevOverrideKeyCrashUploadUrl
+      << "Unexpected type of override[" << kDevOverrideKeyDeviceManagementUrl
       << "]: " << base::Value::GetTypeName(device_management_url_value->type());
   return {GURL(device_management_url_value->GetString())};
 }

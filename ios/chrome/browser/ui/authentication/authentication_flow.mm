@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "base/strings/sys_string_conversions.h"
 
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
@@ -22,6 +25,7 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
@@ -108,9 +112,12 @@ enum AuthenticationState {
   BOOL _shouldShowManagedConfirmation;
   // YES if user policies have to be fetched.
   BOOL _shouldFetchUserPolicy;
+  // YES if user is opted into bookmark and reading list account storage.
+  BOOL _shouldShowSigninSnackbar;
 
   Browser* _browser;
   id<SystemIdentity> _identityToSignIn;
+  signin_metrics::AccessPoint _accessPoint;
   NSString* _identityToSignInHostedDomain;
 
   // Token to have access to user policies from dmserver.
@@ -132,6 +139,7 @@ enum AuthenticationState {
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
@@ -140,6 +148,7 @@ enum AuthenticationState {
     DCHECK(identity);
     _browser = browser;
     _identityToSignIn = identity;
+    _accessPoint = accessPoint;
     _localDataClearingStrategy = SHOULD_CLEAR_DATA_USER_CHOICE;
     _postSignInAction = postSignInAction;
     _presentingViewController = presentingViewController;
@@ -288,7 +297,7 @@ enum AuthenticationState {
 }
 
 - (void)continueSignin {
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
     // the user is being informed of an issue.
@@ -343,7 +352,7 @@ enum AuthenticationState {
       return;
 
     case COMMIT_SYNC:
-      [_performer commitSyncForBrowserState:browserState];
+      // TODO(crbug.com/1254359): This step should grant sync consent.
       [self continueSignin];
       return;
 
@@ -370,9 +379,6 @@ enum AuthenticationState {
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
         [_performer signOutImmediatelyFromBrowserState:browserState];
-        // Enabling/disabling sync does not take effect in the sync backend
-        // until committing changes.
-        [_performer commitSyncForBrowserState:browserState];
       }
       [self completeSignInWithSuccess:NO];
       return;
@@ -424,7 +430,7 @@ enum AuthenticationState {
 // is not subject to parental controls and then continues sign-in.
 - (void)checkMergeCaseForUnsupervisedAccounts {
   if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                  browserStatePrefs:_browser->GetBrowserState()
+                                  browserStatePrefs:[self originalBrowserState]
                                                         ->GetPrefs()])) {
     [_performer promptMergeCaseForIdentity:_identityToSignIn
                                    browser:_browser
@@ -440,7 +446,7 @@ enum AuthenticationState {
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState())
+          [self originalBrowserState])
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     // If the identity to sign-in is different than the current identity,
@@ -452,12 +458,13 @@ enum AuthenticationState {
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   if (accountManagerService->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
+                 atAccessPoint:self.accessPoint
               withHostedDomain:_identityToSignInHostedDomain
                 toBrowserState:browserState];
     _didSignIn = YES;
@@ -489,6 +496,10 @@ enum AuthenticationState {
     dispatch_async(dispatch_get_main_queue(), ^{
       signInCompletion(success);
     });
+  }
+  if (_shouldShowSigninSnackbar) {
+    [_performer showSnackbarWithSignInIdentity:_identityToSignIn
+                                       browser:_browser];
   }
   [self continueSignin];
 }
@@ -538,8 +549,11 @@ enum AuthenticationState {
       << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
       << ", readingListTransportUponSignInEnabled: "
       << readingListTransportUponSignInEnabled;
-  // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
-  // those APIs will be implemented.
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
+  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
+  syncUserSettings->SetBookmarksAndReadingListAccountStorageOptIn(true);
+  _shouldShowSigninSnackbar = YES;
   [self continueSignin];
 }
 
@@ -639,6 +653,14 @@ enum AuthenticationState {
                                             completion();
                                           }
                                         }];
+}
+
+#pragma mark - Private methods
+
+// The original chrome browser state used for services that don't exist in
+// incognito mode.
+- (ChromeBrowserState*)originalBrowserState {
+  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
 }
 
 #pragma mark - Used for testing

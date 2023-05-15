@@ -14,10 +14,11 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/views/controls/menu/menu_item_view.h"
+#include "components/user_manager/user_type.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -54,43 +55,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
             ->unified_system_tray_controller()));
   }
 
-  views::MenuItemView* GetMenuView() {
-    return GetPowerButton()->GetMenuViewForTesting();
-  }
-
-  bool IsMenuShowing() { return GetPowerButton()->IsMenuShowing(); }
-
-  views::View* GetSignOutButton() {
-    if (!IsMenuShowing()) {
-      return nullptr;
-    }
-
-    return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON);
-  }
-
-  views::View* GetLockButton() {
-    if (!IsMenuShowing()) {
-      return nullptr;
-    }
-
-    return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_LOCK_MENU_BUTTON);
-  }
-
-  views::View* GetRestartButton() {
-    if (!IsMenuShowing()) {
-      return nullptr;
-    }
-
-    return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_RESTART_MENU_BUTTON);
-  }
-
-  views::View* GetPowerOffButton() {
-    if (!IsMenuShowing()) {
-      return nullptr;
-    }
-
-    return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_OFF_MENU_BUTTON);
-  }
+  PillButton* GetSignOutButton() { return footer_->sign_out_button_; }
 
   views::Button* GetSettingsButton() { return footer_->settings_button_; }
 
@@ -103,18 +68,13 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
         footer_->GetViewByID(VIEW_ID_QS_POWER_BUTTON));
   }
 
-  views::View* GetUserAvatar() {
-    return static_cast<PowerButton*>(
-        footer_->GetViewByID(VIEW_ID_QS_USER_AVATAR_BUTTON));
-  }
-
   void LayoutFooter() { views::test::RunScheduledLayout(footer_); }
 
  private:
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  QuickSettingsFooter* footer_;
+  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -145,16 +105,6 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
   EXPECT_EQ(VIEW_ID_QS_BATTERY_BUTTON, GetBatteryButton()->GetID());
 
-  EXPECT_TRUE(GetUserAvatar()->GetVisible());
-  EXPECT_EQ(VIEW_ID_QS_USER_AVATAR_BUTTON, GetUserAvatar()->GetID());
-
-  // No menu buttons are visible before showing the menu.
-  EXPECT_FALSE(IsMenuShowing());
-  EXPECT_EQ(nullptr, GetRestartButton());
-  EXPECT_EQ(nullptr, GetSignOutButton());
-  EXPECT_EQ(nullptr, GetLockButton());
-  EXPECT_EQ(nullptr, GetPowerOffButton());
-
   // Test the UMA tracking.
   LeftClickOn(GetPowerButton());
 
@@ -163,14 +113,6 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
   histogram_tester->ExpectBucketCount("Ash.QuickSettings.Button.Activated",
                                       QsButtonCatalogName::kPowerButton,
                                       /*expected_count=*/1);
-
-  EXPECT_TRUE(IsMenuShowing());
-
-  // Show all buttons in the menu.
-  EXPECT_TRUE(GetLockButton()->GetVisible());
-  EXPECT_TRUE(GetSignOutButton()->GetVisible());
-  EXPECT_TRUE(GetPowerOffButton()->GetVisible());
-  EXPECT_TRUE(GetRestartButton()->GetVisible());
 
   // Close the power button menu.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -183,14 +125,14 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
                                       /*expected_count=*/1);
 }
 
-// Settings button and avatar button are hidden before login.
+// Settings button is hidden before login.
 TEST_F(QuickSettingsFooterTest, ButtonStatesNotLoggedIn) {
   SetUpView();
 
-  EXPECT_EQ(nullptr, GetUserAvatar());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
+  EXPECT_EQ(nullptr, GetSignOutButton());
 }
 
 // All buttons are shown after login.
@@ -198,28 +140,12 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesLoggedIn) {
   CreateUserSessions(1);
   SetUpView();
 
-  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_TRUE(GetSettingsButton()->GetVisible());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
 
-  // No menu buttons are visible before showing the menu.
-  EXPECT_FALSE(IsMenuShowing());
-  EXPECT_EQ(nullptr, GetRestartButton());
+  // No sign-out button because there is only one account on the device.
   EXPECT_EQ(nullptr, GetSignOutButton());
-  EXPECT_EQ(nullptr, GetLockButton());
-  EXPECT_EQ(nullptr, GetPowerOffButton());
-
-  // Clicks on the power button.
-  LeftClickOn(GetPowerButton());
-
-  EXPECT_TRUE(IsMenuShowing());
-
-  // Show all buttons in the menu.
-  EXPECT_TRUE(GetLockButton()->GetVisible());
-  EXPECT_TRUE(GetSignOutButton()->GetVisible());
-  EXPECT_TRUE(GetPowerOffButton()->GetVisible());
-  EXPECT_TRUE(GetRestartButton()->GetVisible());
 }
 
 // Settings button is hidden at the lock screen.
@@ -227,7 +153,6 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesLockScreen) {
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   SetUpView();
 
-  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
@@ -240,10 +165,72 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesAddingUser) {
   SetUserAddingScreenRunning(true);
   SetUpView();
 
-  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
+}
+
+TEST_F(QuickSettingsFooterTest, ButtonStatesGuestMode) {
+  SimulateGuestLogin();
+  SetUpView();
+
+  ASSERT_TRUE(GetSettingsButton());
+  EXPECT_TRUE(GetSettingsButton()->GetVisible());
+
+  ASSERT_TRUE(GetPowerButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+
+  ASSERT_TRUE(GetBatteryButton());
+  EXPECT_TRUE(GetBatteryButton()->GetVisible());
+
+  ASSERT_TRUE(GetSignOutButton());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_EQ(u"Exit guest", GetSignOutButton()->GetText());
+}
+
+TEST_F(QuickSettingsFooterTest, ButtonStatesPublicAccount) {
+  SimulateUserLogin("foo@example.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  SetUpView();
+
+  ASSERT_TRUE(GetSettingsButton());
+  EXPECT_TRUE(GetSettingsButton()->GetVisible());
+
+  ASSERT_TRUE(GetPowerButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+
+  ASSERT_TRUE(GetBatteryButton());
+  EXPECT_TRUE(GetBatteryButton()->GetVisible());
+
+  ASSERT_TRUE(GetSignOutButton());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_EQ(u"Exit session", GetSignOutButton()->GetText());
+}
+
+TEST_F(QuickSettingsFooterTest, SignOutShowsWithMultipleAccounts) {
+  GetSessionControllerClient()->set_existing_users_count(2);
+  CreateUserSessions(1);
+  SetUpView();
+
+  ASSERT_TRUE(GetSignOutButton());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_EQ(u"Sign out", GetSignOutButton()->GetText());
+}
+
+TEST_F(QuickSettingsFooterTest, SignOutButtonRecordsUmaAndSignsOut) {
+  GetSessionControllerClient()->set_existing_users_count(2);
+  CreateUserSessions(1);
+  SetUpView();
+
+  base::HistogramTester histogram_tester;
+  LeftClickOn(GetSignOutButton());
+
+  histogram_tester.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Ash.QuickSettings.Button.Activated",
+                                     QsButtonCatalogName::kSignOutButton,
+                                     /*expected_count=*/1);
+
+  EXPECT_EQ(1, GetSessionControllerClient()->request_sign_out_count());
 }
 
 // Settings button is disabled when kSettingsIconDisabled is set.

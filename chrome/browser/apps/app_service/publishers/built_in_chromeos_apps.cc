@@ -90,7 +90,8 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
   constexpr bool is_placeholder_icon = false;
   if (icon_key.resource_id != IconKey::kInvalidResourceId) {
     LoadIconFromResource(
-        icon_type, size_hint_in_dip, icon_key.resource_id, is_placeholder_icon,
+        /*profile=*/nullptr, /*app_id=*/app_id, icon_type, size_hint_in_dip,
+        icon_key.resource_id, is_placeholder_icon,
         static_cast<IconEffects>(icon_key.icon_effects), std::move(callback));
     return;
   }

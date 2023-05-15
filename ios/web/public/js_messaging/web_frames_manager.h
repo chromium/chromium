@@ -16,11 +16,6 @@ class WebFrame;
 
 // Stores and provides access to all WebFrame objects associated with a
 // particular WebState.
-// NOTE: Code that store references to WebFrames must clear them in
-// WebStateObserver::WebFrameWillBecomeUnavailable, which is emitted when
-// WebFrames in current page become invalid and will be removed from
-// WebFramesManager (e.g. A new navigation is committed or failed, the web
-// process crashed, etc.).
 class WebFramesManager {
  public:
   // Observer class to notify objects when WebFrames are added or removed.
@@ -38,7 +33,8 @@ class WebFramesManager {
 
     // Called when a frame is deleted or the user navigates away from
     // `web_frame` before it is removed from the WebFramesManager. Receivers of
-    // this callback must clear any stored references to `web_frame`.
+    // this callback must clear any stored references to the `web_frame` with
+    // `frame_id`.
     virtual void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
                                            const std::string& frame_id) {}
   };

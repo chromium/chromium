@@ -21,6 +21,8 @@
 #include "media/parsers/vp8_parser.h"
 
 namespace {
+constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP8_FRAME;
+
 constexpr size_t kVp8FrameLast = 0;
 constexpr size_t kVp8FrameGolden = 1;
 constexpr size_t kVp8FrameAltref = 2;
@@ -239,18 +241,14 @@ static_assert(kNumberOfBuffersInCaptureQueue <= 16,
 
 Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                       std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                       std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
-                                 std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)),
+                       gfx::Size display_resolution)
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
       ivf_parser_(std::move(ivf_parser)),
       vp8_parser_(std::make_unique<Vp8Parser>()) {
   DCHECK(v4l2_ioctl_);
   DCHECK(v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP8_FRAME));
 
   std::fill(ref_frames_.begin(), ref_frames_.end(), nullptr);
-  number_of_buffers_in_capture_queue_ = kNumberOfBuffersInCaptureQueue;
 }
 
 Vp8Decoder::~Vp8Decoder() = default;
@@ -258,8 +256,6 @@ Vp8Decoder::~Vp8Decoder() = default;
 // static
 std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
     const base::MemoryMappedFile& stream) {
-  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP8_FRAME;
-
   VLOG(2) << "Attempting to create decoder with codec "
           << media::FourccToString(kDriverCodecFourcc);
 
@@ -290,28 +286,12 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
     return nullptr;
   }
 
-  LOG(INFO) << "Ivf file header: " << file_header.width << " x "
-            << file_header.height;
-
   const gfx::Size bitstream_coded_size = GetResolutionFromBitstream(stream);
+  LOG(INFO) << "Ivf file header: "
+            << gfx::Size(file_header.width, file_header.height).ToString();
 
-  // TODO(b/256251694): might need to consider using more than 1 file descriptor
-  // (fd) & buffer with the output queue for 4K60 requirement.
-  // https://buganizer.corp.google.com/issues/202214561#comment31
-  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, bitstream_coded_size, V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInOutputQueue);
-  OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
-
-  // TODO(b/256543928): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
-  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, bitstream_coded_size,
-      V4L2_MEMORY_MMAP, kNumberOfBuffersInCaptureQueue);
-
-  return base::WrapUnique(
-      new Vp8Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
-                     std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+  return base::WrapUnique(new Vp8Decoder(
+      std::move(ivf_parser), std::move(v4l2_ioctl), bitstream_coded_size));
 }
 
 struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
@@ -551,6 +531,11 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       break;
   }
 
+  const bool is_OUTPUT_queue_new = !OUTPUT_queue_;
+  if (!OUTPUT_queue_) {
+    CreateOUTPUTQueue(kDriverCodecFourcc);
+  }
+
   const bool resolution_changed =
       frame_hdr.width != OUTPUT_queue_->resolution().width() ||
       frame_hdr.height != OUTPUT_queue_->resolution().height();
@@ -589,9 +574,18 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
 
   struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
-
+  // Before the CAPTURE queue is set up the first frame must be parsed by the
+  // driver. This is done so that when VIDIOC_G_FMT is called the frame
+  // dimensions and format will be ready. Specifying V4L2_CTRL_WHICH_CUR_VAL
+  // when VIDIOC_S_EXT_CTRLS processes the request immediately so that the frame
+  // is parsed by the driver and the state is readied.
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls,
+                           is_OUTPUT_queue_new && cur_val_is_supported_);
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
+
+  if (!CAPTURE_queue_) {
+    CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
+  }
 
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
   CAPTURE_queue_->DequeueBufferId(buffer_id);

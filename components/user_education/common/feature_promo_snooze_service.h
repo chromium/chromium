@@ -36,9 +36,9 @@ class FeaturePromoSnoozeService {
   // Snooze counts that are equal or larger than this value will be conflated.
   static constexpr int kUmaMaxSnoozeCount = 10;
 
-  // The snooze duration defaults to 1 day plus 2 additional hours in hope to
-  // stagger busy hours in the days.
-  static constexpr base::TimeDelta kDefaultSnoozeDuration = base::Hours(26);
+  // The snooze duration defaults to 7 days. This was determined by
+  // thoroughly testing for a helpful, yet non-intrusive time span.
+  static constexpr base::TimeDelta kDefaultSnoozeDuration = base::Hours(168);
 
   FeaturePromoSnoozeService();
   virtual ~FeaturePromoSnoozeService();

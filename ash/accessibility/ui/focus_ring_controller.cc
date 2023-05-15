@@ -19,7 +19,7 @@
 
 namespace ash {
 
-FocusRingController::FocusRingController() : visible_(false), widget_(NULL) {}
+FocusRingController::FocusRingController() = default;
 
 FocusRingController::~FocusRingController() {
   SetVisible(false);

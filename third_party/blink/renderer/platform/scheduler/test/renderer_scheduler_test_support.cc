@@ -46,13 +46,6 @@ CreateMockWebMainThreadSchedulerForTests() {
   return std::make_unique<SimpleMockMainThreadScheduler>();
 }
 
-void RunIdleTasksForTesting(WebThreadScheduler& scheduler,
-                            base::OnceClosure callback) {
-  MainThreadSchedulerImpl* scheduler_impl =
-      static_cast<MainThreadSchedulerImpl*>(&scheduler);
-  scheduler_impl->RunIdleTasksForTesting(std::move(callback));
-}
-
 scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunnerForTesting() {
   return base::SequencedTaskRunner::GetCurrentDefault();
 }

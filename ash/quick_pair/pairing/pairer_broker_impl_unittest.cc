@@ -23,6 +23,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -156,7 +157,7 @@ class FakeFastPairPairerFactory
   FakeFastPairPairer* fake_fast_pair_pairer() { return fake_fast_pair_pairer_; }
 
  protected:
-  FakeFastPairPairer* fake_fast_pair_pairer_ = nullptr;
+  raw_ptr<FakeFastPairPairer, ExperimentalAsh> fake_fast_pair_pairer_ = nullptr;
 };
 
 class FakeFastPairGattServiceClientImplFactory
@@ -184,7 +185,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  ash::quick_pair::FakeFastPairGattServiceClient*
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, ExperimentalAsh>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -321,11 +322,13 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
 
   base::HistogramTester histogram_tester_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  device::MockBluetoothDevice* mock_bluetooth_device_ptr_ = nullptr;
+  raw_ptr<device::MockBluetoothDevice, ExperimentalAsh>
+      mock_bluetooth_device_ptr_ = nullptr;
   std::unique_ptr<FakeFastPairPairerFactory> fast_pair_pairer_factory_;
 
   std::unique_ptr<PairerBrokerImpl> pairer_broker_;
-  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
+  raw_ptr<FakeFastPairHandshake, ExperimentalAsh> fake_fast_pair_handshake_ =
+      nullptr;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   std::unique_ptr<FakeFastPairDataEncryptor> fake_fast_pair_data_encryptor_;

@@ -9,7 +9,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {TriggerAttestation} from './attribution.mojom-webui.js';
+import {TriggerVerification} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -390,30 +390,30 @@ class RegistrationTableModel<T extends Registration> extends TableModel<T> {
 class Trigger extends Registration {
   readonly eventLevelStatus: string;
   readonly aggregatableStatus: string;
-  readonly attestation?: TriggerAttestation;
+  readonly verification?: TriggerVerification;
 
   constructor(mojo: WebUITrigger) {
     super(mojo.registration);
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
-    this.attestation = mojo.attestation;
+    this.verification = mojo.verification;
   }
 }
 
-const ATTESTATION_COLS: Array<Column<TriggerAttestation>> = [
-  new ValueColumn<TriggerAttestation, string>('Token', e => e.token),
-  new ValueColumn<TriggerAttestation, string>(
+const VERIFICATION_COLS: Array<Column<TriggerVerification>> = [
+  new ValueColumn<TriggerVerification, string>('Token', e => e.token),
+  new ValueColumn<TriggerVerification, string>(
       'Report ID', e => e.aggregatableReportId),
 ];
 
-class AttestationColumn implements Column<Trigger> {
+class ReportVerificationColumn implements Column<Trigger> {
   renderHeader(th: HTMLElement) {
-    th.innerText = 'Attestation';
+    th.innerText = 'Report Verification';
   }
 
   render(td: HTMLElement, row: Trigger) {
-    if (row.attestation) {
-      renderDL(td, row.attestation, ATTESTATION_COLS);
+    if (row.verification) {
+      renderDL(td, row.verification, VERIFICATION_COLS);
     }
   }
 }
@@ -425,7 +425,7 @@ class TriggerTableModel extends RegistrationTableModel<Trigger> {
           'Event-Level Status', (e) => e.eventLevelStatus),
       new ValueColumn<Trigger, string>(
           'Aggregatable Status', (e) => e.aggregatableStatus),
-      new AttestationColumn(),
+      new ReportVerificationColumn(),
     ]);
   }
 }
@@ -515,8 +515,9 @@ class EventLevelReport extends Report {
 
 class AggregatableAttributionReport extends Report {
   contributions: string;
-  attestationToken: string;
+  verificationToken: string;
   aggregationCoordinator: string;
+  isNullReport: boolean;
 
   constructor(mojo: WebUIReport) {
     super(mojo);
@@ -525,21 +526,27 @@ class AggregatableAttributionReport extends Report {
         mojo.data.aggregatableAttributionData!.contributions, bigintReplacer,
         ' ');
 
-    this.attestationToken =
-        mojo.data.aggregatableAttributionData!.attestationToken || '';
+    this.verificationToken =
+        mojo.data.aggregatableAttributionData!.verificationToken || '';
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
+    this.isNullReport = mojo.data.aggregatableAttributionData!.isNullReport;
   }
 }
 
-function commonReportTableColumns<T extends Report>(): Array<Column<T>> {
+function commonPreReportTableColumns<T extends Report>(): Array<Column<T>> {
   return [
-    new CodeColumn<T>('Report Body', (e) => e.reportBody),
     new ValueColumn<T, string>('Status', (e) => e.status),
     new ReportUrlColumn<T>(),
     new DateColumn<T>('Trigger Time', (e) => e.triggerTime),
     new DateColumn<T>('Report Time', (e) => e.reportTime),
+  ];
+}
+
+function commonPostReportTableColumns<T extends Report>(): Array<Column<T>> {
+  return [
+    new CodeColumn<T>('Report Body', (e) => e.reportBody),
   ];
 }
 
@@ -555,8 +562,9 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
       private readonly sendReportsButton: HTMLButtonElement,
       private readonly handler: HandlerInterface) {
     super(
-        commonReportTableColumns<T>().concat(cols),
-        5,  // Sort by report time by default; the extra column is added below
+        commonPreReportTableColumns<T>().concat(cols)
+            .concat(commonPostReportTableColumns<T>()),
+        4,  // Sort by report time by default; the extra column is added below
         'No sent or pending reports.',
     );
 
@@ -669,9 +677,8 @@ class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
         [
           new ValueColumn<EventLevelReport, bigint>(
               'Report Priority', (e) => e.reportPriority),
-          new ValueColumn<EventLevelReport, string>(
-              'Randomized Report',
-              (e) => e.attributedTruthfully ? 'no' : 'yes'),
+          new ValueColumn<EventLevelReport, boolean>(
+              'Randomized Report', (e) => !e.attributedTruthfully),
         ],
         showDebugReportsContainer,
         sendReportsButton,
@@ -690,9 +697,11 @@ class AggregatableAttributionReportTableModel extends
           new CodeColumn<AggregatableAttributionReport>(
               'Histograms', (e) => e.contributions),
           new ValueColumn<AggregatableAttributionReport, string>(
-              'Attestation Token', (e) => e.attestationToken),
+              'Verification Token', (e) => e.verificationToken),
           new ValueColumn<AggregatableAttributionReport, string>(
-            'Aggregation Coordinator', (e) => e.aggregationCoordinator),
+              'Aggregation Coordinator', (e) => e.aggregationCoordinator),
+          new ValueColumn<AggregatableAttributionReport, boolean>(
+              'Null Report', (e) => e.isNullReport),
         ],
         showDebugReportsContainer,
         sendReportsButton,
@@ -1014,8 +1023,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Prohibited by browser policy';
     case WebUITrigger_Status.kNoMatchingConfigurations:
       return 'Rejected: no matching event-level configurations';
-    case WebUITrigger_Status.kExcessiveEventLevelReports:
-      return 'Failure: Excessive event-level reports';
+    case WebUITrigger_Status.kExcessiveReports:
+      return 'Failure: Excessive reports';
     default:
       assertNotReached();
   }
@@ -1180,9 +1189,8 @@ class AttributionInternals implements ObserverInterface {
         debugModeContent.innerText = '';
       }
 
-      const osSupport = document.querySelector<HTMLElement>('#os-support')!;
-      osSupport.innerText = response.hasOsSupport ? 'enabled' : 'disabled';
-      osSupport.classList.toggle('disabled', !response.hasOsSupport);
+      const attributionSupport = document.querySelector<HTMLElement>('#attribution-support')!;
+      attributionSupport.innerText = response.attributionSupport;
     });
 
     this.updateSources();

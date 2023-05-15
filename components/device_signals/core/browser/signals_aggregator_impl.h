@@ -36,11 +36,11 @@ class SignalsAggregatorImpl : public SignalsAggregator {
                   GetSignalsCallback callback) override;
 
  private:
-  void OnUserPermissionChecked(const SignalsAggregationRequest& request,
-                               GetSignalsCallback callback,
-                               const UserPermission user_permission);
+  void GetSignalsWithPermission(const UserPermission user_permission,
+                                const SignalsAggregationRequest& request,
+                                GetSignalsCallback callback);
 
-  base::raw_ptr<UserPermissionService> permission_service_;
+  raw_ptr<UserPermissionService> permission_service_;
   std::vector<std::unique_ptr<SignalsCollector>> collectors_;
 
   base::WeakPtrFactory<SignalsAggregatorImpl> weak_factory_{this};

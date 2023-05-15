@@ -186,7 +186,10 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
     const GURL& override_url,
-    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+    base::OnceClosure launch_finished_callback) {
+  base::ScopedClosureRunner run_launch_finished(
+      std::move(launch_finished_callback));
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   DCHECK(extension);
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_CMD_LINE_APP,

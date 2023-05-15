@@ -43,7 +43,7 @@ class KeyboardLayoutMonitorWayland : public KeyboardLayoutMonitor {
   void UpdateState();
 
   XkbKeyMapUniquePtr keymap_;
-  base::raw_ptr<struct xkb_state> xkb_state_ = nullptr;
+  raw_ptr<struct xkb_state> xkb_state_ = nullptr;
   xkb_layout_index_t current_group_ = XKB_LAYOUT_INVALID;
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
       layout_changed_callback_;

@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/browsing_instance.h"
+#include "content/browser/coop_related_group.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -29,7 +31,6 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class BrowserContext;
-class BrowsingInstance;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
 class StoragePartitionImpl;
@@ -195,6 +196,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
     // foreground frames are given priority, and otherwise one is selected
     // randomly.
     REUSE_PENDING_OR_COMMITTED_SITE,
+
+    // Similar to REUSE_PENDING_OR_COMMITTED_SITE, but limits the number of
+    // main frames a RenderProcessHost can host to a certain threshold.
+    REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD,
 
     // In this mode, SiteInstances don't proactively reuse processes. An
     // existing process with an unmatched service worker for the site is reused
@@ -453,6 +458,19 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // is weaker than IsRelatedSiteInstance: if two SiteInstances belong to the
   // same BrowsingInstance, they are related and COOP related.
   bool IsCoopRelatedSiteInstance(const SiteInstanceImpl* instance) const;
+
+  // Returns the token uniquely identifying the BrowsingInstance this
+  // SiteInstance belongs to. Can safely be sent to the renderer unlike the
+  // BrowsingInstanceID.
+  base::UnguessableToken browsing_instance_token() const {
+    return browsing_instance_->token();
+  }
+
+  // Returns the token uniquely identifying the CoopRelatedGroup this
+  // SiteInstance belongs to. Can safely be sent to the renderer.
+  base::UnguessableToken coop_related_group_token() const {
+    return browsing_instance_->coop_related_group_token();
+  }
 
   // Returns the unique origin of all top-level documents in this
   // BrowsingInstance. This is only guaranteed by the use of a unique COOP value

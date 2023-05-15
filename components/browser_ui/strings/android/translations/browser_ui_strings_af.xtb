@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1785415724048343560">Aanbeveel vir beste ervaring</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
-<translation id="1864927262126810325">Vanaf <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Verwante werwe kan jou aktiwiteit in die groep sien</translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1915307458270490472">Sit neer</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou</translation>
 <translation id="3165022941318558018">Laat ’n werf toe om derdepartywebkoekies te gebruik</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gestoorde data</translation>
-<translation id="3203366800380907218">Op die web</translation>
 <translation id="321187648315454507">Om <ph name="APP_NAME" /> vir jou kennisgewings te laat stuur, moet jy kennisgewings ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3248611290851046188">Hierdie werf definieer belangstellings wat ander werwe kan gebruik om vir jou advertensies te wys. Hierdie werf kry ook jou belangstellings van Chrome af om vir jou relevanter advertensies te wys.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3628308229821498208">Voorgestelde soektogte</translation>
+<translation id="3707034683772193706">’n Werf wat jy besoek, kan ’n klein hoeveelheid inligting met Chrome deel, hoofsaaklik om te bekragtig dat jy nie ’n bot is nie</translation>
 <translation id="3721953990244350188">Maak toe en wys volgende beskikbare handeling</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Die kontakte wat jy kies, sal gedeel word met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laas vandag besoek</translation>
 <translation id="5225463052809312700">Skakel kamera aan</translation>
-<translation id="5229337741799419985">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5264323282659631142">Verwyder "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
@@ -313,9 +311,9 @@
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6653342741369270081">Druk die terugknoppie om volskerm te verlaat.</translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>
-<translation id="6701547804986694515">’n Werf wat jy besoek, kan inligting met Chrome stoor wat bekragtig dat jy nie ’n bot is nie. Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het, verifieer dat jy waarskynlik ’n regte persoon is</translation>
 <translation id="6722828510648505498">Blokkeer aanmeldporboodskappe van identiteitsdienste af.</translation>
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6749077623962119521">Stel toestemmings terug?</translation>
@@ -348,6 +346,7 @@
 <translation id="7302486331832100261">Jy blokkeer gewoonlik kennisgewings. Tik op Besonderhede om toe te laat.</translation>
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7383715096023715447">Instellings vir <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien, hoewel werwe ’n klein hoeveelheid inligting as deel van die verifikasie kan stoor</translation>
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
 <translation id="7425915948813553151">Donkertema vir werwe</translation>
@@ -437,6 +436,7 @@
 <translation id="8816026460808729765">Blokkeer werwe om toegang tot sensors kry</translation>
 <translation id="8823559166155093873">Blokkeer webkoekies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het verifieer dat jy waarskynlik ’n regte persoon is</translation>
 <translation id="8899807382908246773">Indringerige advertensies</translation>
 <translation id="8903921497873541725">Zoem in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

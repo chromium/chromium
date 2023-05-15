@@ -10,8 +10,24 @@ class BrowserMessageFilter;
 class RenderProcessHost;
 }
 
-namespace extensions {
-namespace bad_message {
+// Comparison of `extensions::bad_message::ReceivedBadMessage` vs
+// `mojo::ReportBadMessage`:
+//
+// * Both are an acceptable way to terminate a renderer process that has
+//   sent a malformed IPC.
+// * `extensions::bad_message::ReceivedBadMessage` has the following advantages:
+//     * Simplicity
+//     * Granular UMA (which may help with gathering go/chrometto traces when
+//       investigating unexpected reports of malformed IPCs)
+// * `mojo::ReportBadMessage` has the following advantages:
+//     * Can be used without knowing the `RenderProcessHost` or
+//       `render_process_id` (`mojo::RenderProcessHost` can be called at any
+//       time when synchronously handling a mojo method call; asynchronous bad
+//       message report is possible via `mojo::GetBadMessageCallback`).
+//     * It is less tightly coupled with the //extensions layer (i.e. moving
+//       the code to another layer or component is easier with
+//       `mojo::ReportBadMessage`).
+namespace extensions::bad_message {
 
 // The browser process often chooses to terminate a renderer if it receives
 // a bad IPC message. The reasons are tracked for metrics.
@@ -51,6 +67,8 @@ enum BadMessageReason {
   // DEPRECATED_EMF_INVALID_SOURCE_URL_FROM_WORKER = 25,
   EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST = 26,
   EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE = 27,
+  EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT = 28,
+  EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT = 29,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
@@ -74,7 +92,6 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 void ReceivedBadMessage(content::BrowserMessageFilter* filter,
                         BadMessageReason reason);
 
-}  // namespace bad_message
-}  // namespace extensions
+}  // namespace extensions::bad_message
 
 #endif  // EXTENSIONS_BROWSER_BAD_MESSAGE_H_

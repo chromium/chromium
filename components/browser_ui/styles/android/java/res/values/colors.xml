@@ -51,4 +51,10 @@ found in the LICENSE file.
 
     <!-- Chip Colors -->
     <macro name="default_chip_assistive_text_color_secondary" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
+
+    <!-- Clank Empty States Colors-->
+    <color name="empty_state_icon_bg_color">@color/material_primary_50</color>
+    <color name="empty_state_icon_bg_background_color">@color/material_primary_50</color>
+    <color name="empty_state_icon_bg_foreground_color">@color/material_primary_100</color>
+    <color name="empty_state_icon_color">@color/material_primary_600</color>
 </resources>

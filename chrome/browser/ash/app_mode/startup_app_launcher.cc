@@ -46,10 +46,6 @@ const net::BackoffEntry::Policy kKioskLaunchExtensionBackoffPolicy = {
     .always_use_initial_delay = false,
 };
 
-crosapi::BrowserManager* browser_manager() {
-  return crosapi::BrowserManager::Get();
-}
-
 crosapi::ChromeAppKioskServiceAsh* crosapi_chrome_app_kiosk_service() {
   return crosapi::CrosapiManager::Get()
       ->crosapi_ash()
@@ -57,47 +53,6 @@ crosapi::ChromeAppKioskServiceAsh* crosapi_chrome_app_kiosk_service() {
 }
 
 }  // namespace
-
-class LacrosLauncher : public crosapi::BrowserManagerObserver {
- public:
-  LacrosLauncher() = default;
-  LacrosLauncher(const LacrosLauncher&) = delete;
-  LacrosLauncher& operator=(const LacrosLauncher&) = delete;
-  ~LacrosLauncher() override = default;
-
-  void Start(base::OnceClosure callback) {
-    if (browser_manager()->IsRunning()) {
-      // Nothing to do if lacros is already running
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback));
-      return;
-    }
-
-    callback_ = std::move(callback);
-    browser_manager_observation_.Observe(browser_manager());
-    if (!browser_manager()->IsInitialized()) {
-      browser_manager()->InitializeAndStartIfNeeded();
-    }
-  }
-
- private:
-  // crosapi::BrowserManagerObserver
-  void OnStateChanged() override {
-    if (crosapi::BrowserManager::Get()->IsRunning()) {
-      browser_manager_observation_.Reset();
-      std::move(callback_).Run();
-    }
-  }
-
-  base::OnceClosure callback_;
-
-  // Observe the launch state of `BrowserManager`, and launch the
-  // lacros-chrome when it is ready. This object is only used when Lacros is
-  // enabled.
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      browser_manager_observation_{this};
-};
 
 StartupAppLauncher::StartupAppLauncher(
     Profile* profile,
@@ -136,19 +91,7 @@ void StartupAppLauncher::Initialize() {
          state_ != LaunchState::kLaunchSucceeded);
 
   if (should_skip_install_) {
-    if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-      LaunchLacros(base::BindOnce(&StartupAppLauncher::OnInstallSuccess,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      OnInstallSuccess();
-    }
-    return;
-  }
-
-  // Wait until user has configured the network. We will come back into this
-  // class through ContinueWithNetworkReady.
-  if (delegate_->IsShowingNetworkConfigScreen()) {
-    state_ = LaunchState::kInitializingNetwork;
+    OnInstallSuccess();
     return;
   }
 
@@ -223,25 +166,16 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
 }
 
 void StartupAppLauncher::BeginInstall() {
+  state_ = LaunchState::kInstallingApp;
+  observers_.NotifyAppInstalling();
   if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    // We need to make sure that the Lacros browser is running before we can
-    // install the kiosk app.
-    LaunchLacros(base::BindOnce(&StartupAppLauncher::InstallAppInLacros,
-                                weak_ptr_factory_.GetWeakPtr()));
+    InstallAppInLacros();
   } else {
     InstallAppInAsh();
   }
 }
 
-void StartupAppLauncher::LaunchLacros(base::OnceClosure next_step) {
-  state_ = LaunchState::kWaitingForLacros;
-  lacros_launcher_ = std::make_unique<LacrosLauncher>();
-  lacros_launcher_->Start(std::move(next_step));
-}
-
 void StartupAppLauncher::InstallAppInAsh() {
-  state_ = LaunchState::kInstallingApp;
-  observers_.NotifyAppInstalling();
   installer_ = std::make_unique<ChromeKioskAppInstaller>(
       profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_));
   installer_->BeginInstall(base::BindOnce(
@@ -249,9 +183,6 @@ void StartupAppLauncher::InstallAppInAsh() {
 }
 
 void StartupAppLauncher::InstallAppInLacros() {
-  DCHECK(state_ == LaunchState::kWaitingForLacros);
-  state_ = LaunchState::kInstallingApp;
-  observers_.NotifyAppInstalling();
   crosapi_chrome_app_kiosk_service()->InstallKioskApp(
       KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
       base::BindOnce(&StartupAppLauncher::OnInstallComplete,

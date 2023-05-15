@@ -873,7 +873,7 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
   }
 }
 
-raw_ptr<AuthenticatorRequestDialogModel>
+AuthenticatorRequestDialogModel*
 ChromeAuthenticatorRequestDelegate::GetDialogModelForTesting() {
   return dialog_model_.get();
 }

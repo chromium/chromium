@@ -147,8 +147,8 @@ class TestResultSink(object):
                 pair('web_tests_image_diff_total_pixels',
                      str(result.image_diff_stats['totalPixels'])))
 
-        if result.test_type:
-            tags.append(pair('web_tests_test_type', str(result.test_type)))
+        for test_type_str in sorted(result.test_type):
+            tags.append(pair('web_tests_test_type', test_type_str))
 
         for used_file in self._port.used_expectations_files():
             tags.append(

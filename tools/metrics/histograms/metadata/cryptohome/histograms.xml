@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -238,147 +238,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
-<histogram name="Cryptohome.Error.AllLocations" enum="CryptohomeErrorLocation"
-    expires_after="2023-05-01">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Background context on this histogram: A CryptohomeError in this context
-    refers to an error that occurred in response to a dbus request to selected
-    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
-    those related to authentication, and contains CryptohomeErrorInfo field in
-    the dbus Reply protobuf. Currently that includes methods that are called
-    during login. A CryptohomeError consists of a linear stack of
-    ErrorLocations, each one of them is an actual line in the cryptohomed
-    codebase which the error passed through, and could have certain attributes,
-    known as ErrorAction attached to them. The ErrorLocation in the bottom of
-    the stack could optionally have a TPM Error Code associated, if the source
-    of error is TPM related.
-
-    For this histogram, for every CryptohomeError that occurs, we individually
-    report each individual ErrorLocation's corresponding enum value when an
-    error ocurred.
-
-    This is useful to cryptohome developers in the sense that they'll be able to
-    know which lines that handle error in cryptohomed has been triggered due to
-    an error.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.Error.DevUnexpectedState"
-    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Background context on this histogram: A CryptohomeError in this context
-    refers to an error that occurred in response to a dbus request to selected
-    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
-    those related to authentication, and contains CryptohomeErrorInfo field in
-    the dbus Reply protobuf. Currently that includes methods that are called
-    during login. A CryptohomeError consists of a linear stack of
-    ErrorLocations, each one of them is an actual line in the cryptohomed
-    codebase which the error passed through, and could have certain attributes,
-    known as ErrorAction attached to them. The ErrorLocation in the bottom of
-    the stack could optionally have a TPM Error Code associated, if the source
-    of error is TPM related.
-
-    For this histogram, for every CryptohomeError, we individually report all
-    ErrorLocation that has the kDevCheckUnexpectedState ErrorAction associated
-    with it. The kDevCheckUnexpectedState ErrorAction is used by developers when
-    the developer believes that this error should never occur, so from a
-    notification standpoint, it functions similar to a DCHECK(), except it never
-    crashes cryptohome and handles the error in a graceful manner.
-
-    This is useful to cryptohome developers because they'll be alerted when any
-    of the situations that the developers doesn't expect to occur occurs.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.Error.HashedStack" enum="CryptohomeErrorHashed"
-    expires_after="2023-09-03">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Background context on this histogram: A CryptohomeError in this context
-    refers to an error that occurred in response to a dbus request to selected
-    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
-    those related to authentication, and contains CryptohomeErrorInfo field in
-    the dbus Reply protobuf. Currently that includes methods that are called
-    during login. A CryptohomeError consists of a linear stack of
-    ErrorLocations, each one of them is an actual line in the cryptohomed
-    codebase which the error passed through, and could have certain attributes,
-    known as ErrorAction attached to them. The ErrorLocation in the bottom of
-    the stack could optionally have a TPM Error Code associated, if the source
-    of error is TPM related.
-
-    For this histogram, we take the entire CryptohomeError's linear stack of
-    ErrorLocation, and hash the entire stack, then we report the hash. The
-    original stack of ErrorLocation is logged.
-
-    This is useful to cryptohome developers because we're able to classify the
-    CryptohomeError by the content of the stack, and identify new ways the error
-    can occur if they do occur.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.Error.LeafErrorWithoutTPM"
-    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Background context on this histogram: A CryptohomeError in this context
-    refers to an error that occurred in response to a dbus request to selected
-    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
-    those related to authentication, and contains CryptohomeErrorInfo field in
-    the dbus Reply protobuf. Currently that includes methods that are called
-    during login. A CryptohomeError consists of a linear stack of
-    ErrorLocations, each one of them is an actual line in the cryptohomed
-    codebase which the error passed through, and could have certain attributes,
-    known as ErrorAction attached to them. The ErrorLocation in the bottom of
-    the stack could optionally have a TPM Error Code associated, if the source
-    of error is TPM related.
-
-    For this histogram, for every CryptohomeError that occurred, we report the
-    last ErrorLocation in the stack of ErrorLocation in the CryptohomeError, if
-    the last ErrorLocation does not have a TPM Error Code associated with it.
-
-    This is useful to cryptohome developers because frequently, the last
-    ErrorLocation in the stack would be able to uniquely identify the error, and
-    this histogram doesn't involve hashing, so it would be more convenient for
-    the developers.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.Error.LeafErrorWithTPM"
-    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-09-03">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Background context on this histogram: A CryptohomeError in this context
-    refers to an error that occurred in response to a dbus request to selected
-    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
-    those related to authentication, and contains CryptohomeErrorInfo field in
-    the dbus Reply protobuf. Currently that includes methods that are called
-    during login. A CryptohomeError consists of a linear stack of
-    ErrorLocations, each one of them is an actual line in the cryptohomed
-    codebase which the error passed through, and could have certain attributes,
-    known as ErrorAction attached to them. The ErrorLocation in the bottom of
-    the stack could optionally have a TPM Error Code associated, if the source
-    of error is TPM related.
-
-    For this histogram, for every CryptohomeError that occurred, we report the
-    last ErrorLocation and the second last ErrorLocation in the CryptohomeError,
-    if the last ErrorLocation have a TPM Error Code associated with it. The
-    upper and lower 16-bit value of the reported value contains the second last
-    ErrorLocation and the TPM Error Code, correspondingly.
-
-    This is useful to cryptohome developers because frequently, the last and
-    second last ErrorLocation in the stack would be able to uniquely identify
-    the error, and this histogram doesn't involve hashing, so it woul dbe more
-    convenient for the developers.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
     expires_after="2023-10-08">
   <owner>apronin@chromium.org</owner>
@@ -469,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LECredential.LogReplayEntryCount" units="count"
-    expires_after="2023-08-19">
+    expires_after="2023-10-22">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -520,6 +379,10 @@ chromium-metrics-reviews@google.com.
     <variant name="GetDelayInSeconds"/>
     <variant name="Insert"/>
     <variant name="Remove"/>
+    <variant name="ReplayCheck"/>
+    <variant name="ReplayInsert"/>
+    <variant name="ReplayRemove"/>
+    <variant name="ReplayReset"/>
     <variant name="Reset"/>
     <variant name="ResetTree"/>
     <variant name="Sync"/>
@@ -600,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MaskedDownloadsItems" units="items"
-    expires_after="2023-06-18">
+    expires_after="2024-06-18">
   <owner>benreich@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -613,8 +476,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
-    expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The amount of consumed battery level during cryptohome encryption migration.
     This is logged when the battery level decreases during migration, and the
@@ -624,8 +487,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.FirstScreen"
-    enum="MigrationUIFirstScreen" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIFirstScreen" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The first screen in the encryption migration UI, which is shown when a user
     attempts to log in to the system and old encryption (eCryptfs) is detected.
@@ -633,8 +496,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.MigrationResult"
-    enum="MigrationUIMigrationResult" expires_after="2021-01-17">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIMigrationResult" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The result of encryption migration from eCryptfs to Ext4 dircrypto. The
     recorded result is what the migration UI in Chrome side is notified from
@@ -643,8 +506,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.RemoveCryptohomeResult"
-    enum="MigrationUIRemoveCryptohomeResult" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIRemoveCryptohomeResult" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The result of the removal of user's cryptohome. When the migration UI is
     notified that the migration failed, the UI tries to remove the user's
@@ -654,8 +517,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.UserChoice"
-    enum="MigrationUIUserChoice" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIUserChoice" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     User's choice when the system is ready to migrate encryption. The user can
     start migration or skip it. It is used to know how many users have skipped
@@ -664,8 +527,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.VisibleScreen" enum="MigrationUIScreen"
-    expires_after="2020-10-25">
-  <owner>fukino@chromium.org</owner>
+    expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     How many times each screen in migration UI is shown to the user. A screen is
     recorded as a visible screen when the screen is kept displayed at least for
@@ -684,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2023-08-13">
+    enum="CryptohomeOOPMountOperationResult" expires_after="2023-10-15">
   <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -808,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -884,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -897,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSPersist" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1121,6 +984,207 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="Ephemeral"/>
     <variant name="Persistent"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{ErrorBucket}.AllLocations"
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurs, we individually
+    report each individual ErrorLocation's corresponding enum value when an
+    error ocurred.
+
+    This histogram is also separated into several {ErrorBucket}s. The most
+    standard error bucket is 'Error', which collects the errors populated in
+    dbus responses. Other buckets are errors we collect in some subrountines,
+    like migration. Migration errors are not surfaced to dbus responses, but
+    silently fail instead. We collect those errors in separate buckets.
+
+    This is useful to cryptohome developers in the sense that they'll be able to
+    know which lines that handle error in cryptohomed has been triggered due to
+    an error.
+  </summary>
+  <token key="ErrorBucket">
+    <variant name="Error"/>
+    <variant name="RecreateAuthFactorError.Pin"/>
+    <variant name="UssMigrationError"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{ErrorBucket}.DevUnexpectedState"
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError, we individually report all
+    ErrorLocation that has the kDevCheckUnexpectedState ErrorAction associated
+    with it. The kDevCheckUnexpectedState ErrorAction is used by developers when
+    the developer believes that this error should never occur, so from a
+    notification standpoint, it functions similar to a DCHECK(), except it never
+    crashes cryptohome and handles the error in a graceful manner.
+
+    This histogram is also separated into several {ErrorBucket}s. The most
+    standard error bucket is 'Error', which collects the errors populated in
+    dbus responses. Other buckets are errors we collect in some subrountines,
+    like migration. Migration errors are not surfaced to dbus responses, but
+    silently fail instead. We collect those errors in separate buckets.
+
+    This is useful to cryptohome developers because they'll be alerted when any
+    of the situations that the developers doesn't expect to occur occurs.
+  </summary>
+  <token key="ErrorBucket">
+    <variant name="Error"/>
+    <variant name="RecreateAuthFactorError.Pin"/>
+    <variant name="UssMigrationError"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{ErrorBucket}.HashedStack"
+    enum="CryptohomeErrorHashed" expires_after="2023-11-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, we take the entire CryptohomeError's linear stack of
+    ErrorLocation, and hash the entire stack, then we report the hash. The
+    original stack of ErrorLocation is logged.
+
+    This histogram is also separated into several {ErrorBucket}s. The most
+    standard error bucket is 'Error', which collects the errors populated in
+    dbus responses. Other buckets are errors we collect in some subrountines,
+    like migration. Migration errors are not surfaced to dbus responses, but
+    silently fail instead. We collect those errors in separate buckets.
+
+    This is useful to cryptohome developers because we're able to classify the
+    CryptohomeError by the content of the stack, and identify new ways the error
+    can occur if they do occur.
+  </summary>
+  <token key="ErrorBucket">
+    <variant name="Error"/>
+    <variant name="RecreateAuthFactorError.Pin"/>
+    <variant name="UssMigrationError"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithoutTPM"
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurred, we report the
+    last ErrorLocation in the stack of ErrorLocation in the CryptohomeError, if
+    the last ErrorLocation does not have a TPM Error Code associated with it.
+
+    This histogram is also separated into several {ErrorBucket}s. The most
+    standard error bucket is 'Error', which collects the errors populated in
+    dbus responses. Other buckets are errors we collect in some subrountines,
+    like migration. Migration errors are not surfaced to dbus responses, but
+    silently fail instead. We collect those errors in separate buckets.
+
+    This is useful to cryptohome developers because frequently, the last
+    ErrorLocation in the stack would be able to uniquely identify the error, and
+    this histogram doesn't involve hashing, so it would be more convenient for
+    the developers.
+  </summary>
+  <token key="ErrorBucket">
+    <variant name="Error"/>
+    <variant name="RecreateAuthFactorError.Pin"/>
+    <variant name="UssMigrationError"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithTPM"
+    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-11-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurred, we report the
+    last ErrorLocation that does not have a TPM Error Code associated, and
+    optionally the last ErrorLoctaion that have a TPM Error Code associated if
+    one exist. The upper and lower 16-bit value of the reported value contains
+    the last ErrorLocation that does not have a TPM Error Code associated and
+    the TPM Error Code, correspondingly. If the CryptohomeError doesn't have a
+    TPM Error Code associated, we report only the last ErrorLocation in the
+    upper 16-bit value of the reported value, with zero for the other 16-bit. In
+    addition, we might also report success values in this histogram. Success
+    values map to zero.
+
+    This histogram is also separated into several {ErrorBucket}s. The most
+    standard error bucket is 'Error', which collects the errors populated in
+    dbus responses. Other buckets are errors we collect in some subrountines,
+    like migration. Migration errors are not surfaced to dbus responses, but
+    silently fail instead. We collect those errors in separate buckets.
+
+    This is useful to cryptohome developers because frequently, the last and
+    second last ErrorLocation in the stack would be able to uniquely identify
+    the error, and this histogram doesn't involve hashing, so it would be more
+    convenient for the developers.
+  </summary>
+  <token key="ErrorBucket">
+    <variant name="Error"/>
+    <variant name="RecreateAuthFactorError.Pin"/>
+    <variant name="UssMigrationError"/>
   </token>
 </histogram>
 

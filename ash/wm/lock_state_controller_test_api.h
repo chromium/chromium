@@ -6,6 +6,7 @@
 #define ASH_WM_LOCK_STATE_CONTROLLER_TEST_API_H_
 
 #include "ash/wm/lock_state_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -49,7 +50,7 @@ class LockStateControllerTestApi {
   }
 
  private:
-  LockStateController* controller_;  // not owned
+  raw_ptr<LockStateController, ExperimentalAsh> controller_;  // not owned
 };
 
 }  // namespace ash

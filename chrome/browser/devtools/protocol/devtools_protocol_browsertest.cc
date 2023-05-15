@@ -18,11 +18,16 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/dips/dips_features.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -37,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -215,6 +221,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
+  Attach();
+  SendCommandSync("Runtime.enable");
+
+  prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(*result.FindString("state"), "DisabledByPreference");
+}
+
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
     NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
@@ -314,6 +334,112 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kAutoAccept,
             registry->registration_mode());
 }
+
+class DevToolsProtocolTest_BounceTrackingMitigations
+    : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        dips::kFeature,
+        {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
+                       RunBounceTrackingMitigations) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  Attach();
+
+  const GURL bouncer(
+      embedded_test_server()->GetURL("example.test", "/title1.html"));
+
+  // Get DIPS Service
+  DIPSService* dips_service = DIPSService::Get(browser()->profile());
+  dips_service->WaitForInitCompleteForTesting();
+
+  // Record a stateful bounce for `bouncer`.
+  dips_service->storage()
+      ->AsyncCall(&DIPSStorage::RecordBounce)
+      .WithArgs(bouncer, base::Time::Now(), true);
+  dips_service->storage()->FlushPostedTasksForTesting();
+
+  SendCommandSync("Storage.runBounceTrackingMitigations");
+
+  const base::Value::List* deleted_sites_list =
+      result()->FindList("deletedSites");
+  ASSERT_TRUE(deleted_sites_list);
+
+  std::vector<std::string> deleted_sites;
+  for (const auto& site : *deleted_sites_list) {
+    deleted_sites.push_back(site.GetString());
+  }
+
+  EXPECT_THAT(deleted_sites, testing::ElementsAre("example.test"));
+}
+
+class DIPSStatusDevToolsProtocolTest
+    : public DevToolsProtocolTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
+  // The fields of `GetParam()` indicate/control the following:
+  //   `std::get<0>(GetParam())` => `dips::kFeature`
+  //   `std::get<1>(GetParam())` => `dips::kDeletionEnabled`
+  //   `std::get<2>(GetParam())` => `dips::kTriggeringAction`
+  //
+  // In order for Bounce Tracking Mitigations to take effect, `kFeature` must
+  // be true/enabled, `kDeletionEnabled` must be true, and `kTriggeringAction`
+  // must NOT be `none`.
+  //
+  // Note: Bounce Tracking Mitigations issues only report sites that would
+  // be affected when `kTriggeringAction` is set to 'stateful_bounce'.
+
+ protected:
+  void SetUp() override {
+    if (std::get<0>(GetParam())) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          dips::kFeature,
+          {{"delete", (std::get<1>(GetParam()) ? "true" : "false")},
+           {"triggering_action", std::get<2>(GetParam())}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(dips::kFeature);
+    }
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+  bool ShouldBeEnabled() {
+    return (std::get<0>(GetParam()) && std::get<1>(GetParam()) &&
+            (std::get<2>(GetParam()) != "none"));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DIPSStatusDevToolsProtocolTest,
+                       TrueWhenEnabledAndDeleting) {
+  AttachToBrowserTarget();
+
+  base::Value::Dict paramsDIPS;
+  paramsDIPS.Set("featureState", "DIPS");
+
+  SendCommand("SystemInfo.getFeatureState", std::move(paramsDIPS));
+  EXPECT_EQ(result()->FindBool("featureEnabled"), ShouldBeEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DIPSStatusDevToolsProtocolTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Values("none", "storage", "bounce", "stateful_bounce")));
 
 using DevToolsProtocolTest_AppId = DevToolsProtocolTest;
 
@@ -695,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   std::string target_id;
   base::Value::Dict ext_target;
   for (const auto& target : *result->FindList("targetInfos")) {
-    if (*target.FindStringKey("type") == "service_worker") {
+    if (*target.GetDict().FindString("type") == "service_worker") {
       ext_target = target.Clone().TakeDict();
       break;
     }
@@ -722,12 +848,74 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
 
   {
     base::Value::Dict params;
-    params.Set("targetId", *targetInfo->FindStringKey("targetId"));
+    params.Set("targetId", *targetInfo->GetDict().FindString("targetId"));
     params.Set("waitForDebuggerOnStart", false);
     SendCommandSync("Target.autoAttachRelated", std::move(params));
   }
   auto detached = WaitForNotification("Target.detachedFromTarget", true);
   EXPECT_THAT(*detached.FindString("sessionId"), Eq("sessionId"));
+}
+
+class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {
+ public:
+  PrerenderDataSaverProtocolTest()
+      : prerender_helper_(base::BindRepeating(
+            &PrerenderDataSaverProtocolTest::GetActiveWebContents,
+            base::Unretained(this))) {}
+
+ protected:
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    data_saver::OverrideIsDataSaverEnabledForTesting(true);
+    DevToolsProtocolTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  void TearDown() override {
+    data_saver::ResetIsDataSaverEnabledForTesting();
+    InProcessBrowserTest::TearDown();
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
+                       CheckReportedDisabledByDataSaverPreloadingState) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Attach();
+  SendCommandSync("Runtime.enable");
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  content::test::PrerenderHostRegistryObserver observer(
+      *GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  prerender_helper()->AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+
+  int host_id = prerender_helper()->GetHostForUrl(prerendering_url);
+  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(*result.FindString("state"), "DisabledByDataSaver");
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
 }  // namespace

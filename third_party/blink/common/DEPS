@@ -41,6 +41,7 @@ include_rules = [
     "+ui/base/dragdrop/mojom",
     "+ui/display",
     "+ui/events/base_event_utils.h",
+    "+ui/events/mojom/event_latency_metadata_mojom_traits.h",
     "+ui/gfx/presentation_feedback.h",
     "+ui/gfx/transform.h",
     "+ui/gfx/geometry",
@@ -52,5 +53,6 @@ include_rules = [
     "+url",
 ]
 specific_include_rules = {
-  '.*unittest.?.cc': [ "+v8", "+services/network/test" ]
+  '.*unittest.?.cc': [ "+v8", "+services/network/test" ],
+  'ad_display_size_utils.cc': [ "+third_party/re2/src/re2/re2.h" ]
 }

@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.SectionHeaderData;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -36,13 +40,16 @@ class BookmarkManagerViewBinder {
 
     static void bindSectionHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == BookmarkManagerProperties.BOOKMARK_LIST_ENTRY) {
+            Resources resources = view.getResources();
             BookmarkListEntry bookmarkListEntry =
                     model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
-            TextView title = view.findViewById(org.chromium.chrome.R.id.title);
-            title.setText(bookmarkListEntry.getHeaderTitle());
-            if (bookmarkListEntry.getSectionHeaderData().topPadding > 0) {
+            TextView title = view.findViewById(R.id.title);
+            SectionHeaderData sectionHeaderData = bookmarkListEntry.getSectionHeaderData();
+            title.setText(resources.getText(sectionHeaderData.titleRes));
+            final @DimenRes int topPaddingRes = sectionHeaderData.topPaddingRes;
+            if (topPaddingRes != Resources.ID_NULL) {
                 title.setPaddingRelative(title.getPaddingStart(),
-                        bookmarkListEntry.getSectionHeaderData().topPadding, title.getPaddingEnd(),
+                        resources.getDimensionPixelSize(topPaddingRes), title.getPaddingEnd(),
                         title.getPaddingBottom());
             }
         }

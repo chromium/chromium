@@ -14,6 +14,7 @@
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,7 +50,7 @@ class TrayItemViewAnimationWaiter {
   void OnTrayItemAnimationFinished() { run_loop_.Quit(); }
 
   // The tray item whose animation is being waited for.
-  TrayItemView* tray_item_ = nullptr;
+  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
 
   base::RunLoop run_loop_;
 

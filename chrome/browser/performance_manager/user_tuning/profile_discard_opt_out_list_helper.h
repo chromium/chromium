@@ -48,7 +48,7 @@ class ProfileDiscardOptOutListHelper {
     // relevant prefs in `pref_service`.
     ProfileDiscardOptOutTracker(const std::string& browser_context_id,
                                 PrefService* pref_service,
-                                raw_ptr<Delegate> delegate);
+                                Delegate* delegate);
     ~ProfileDiscardOptOutTracker();
 
    private:

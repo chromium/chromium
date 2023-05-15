@@ -215,7 +215,7 @@ class TimeLapseFixedSpeedSaver {
 /**
  * Maximum duration for the time-lapse video in seconds.
  */
-const TIME_LAPSE_MAX_DURATION = 60;
+export const TIME_LAPSE_MAX_DURATION = 30;
 
 /**
  * Default number of fps in case it's not defined from the original video.
@@ -226,6 +226,8 @@ const TIME_LAPSE_DEFAULT_FRAME_RATE = 30;
  * Time interval to repeatedly call |manageSavers|.
  */
 const SAVER_MANAGER_TIMEOUT_MS = 100;
+
+type ErrorCallback = (error: unknown) => void;
 
 /**
  * Used to save time-lapse video.
@@ -290,6 +292,16 @@ export class TimeLapseSaver {
    */
   private speedCheckpoint!: number;
 
+  /**
+   * Initial time lapse speed.
+   */
+  private initialSpeed!: number;
+
+  /**
+   * Callback listening when there is an error in the saver.
+   */
+  private onError: ErrorCallback|null = null;
+
   private constructor(
       encoderConfig: VideoEncoderConfig,
       private readonly resolution: Resolution, private readonly fps: number) {
@@ -306,10 +318,16 @@ export class TimeLapseSaver {
    * Initializes the saver with the given initial speed.
    */
   private async init(speed: number): Promise<void> {
+    this.initialSpeed = speed;
     this.currSpeedSaver = await this.createSaver(speed);
-    this.nextSpeedSaver = await this.createSaver(this.getNextSpeed(speed));
+    this.nextSpeedSaver =
+        await this.createSaver(TimeLapseSaver.getNextSpeed(speed));
     this.speedCheckpoint = speed * TIME_LAPSE_MAX_DURATION * this.fps;
     setTimeout(() => this.manageSavers(), SAVER_MANAGER_TIMEOUT_MS);
+  }
+
+  setErrorCallback(callback: ErrorCallback): void {
+    this.onError = callback;
   }
 
   /**
@@ -330,11 +348,14 @@ export class TimeLapseSaver {
    * Sends the frame to the encoder.
    */
   write(frame: VideoFrame, frameNo: number): void {
-    if (!frame.timestamp || this.ended || this.canceled) {
+    if (frame.timestamp === null || this.ended || this.canceled) {
       return;
     }
     this.frameNoMap.set(frame.timestamp, frameNo);
-    this.encoder.encode(frame, {keyFrame: true});
+    // Frames that are only in the initial speed video don't have to be encoded
+    // as key frames because they'll be dropped soon.
+    const keyFrame = frameNo % (this.initialSpeed * 2) === 0;
+    this.encoder.encode(frame, {keyFrame});
   }
 
   /**
@@ -394,7 +415,8 @@ export class TimeLapseSaver {
     this.currSpeedSaver = this.nextSpeedSaver;
 
     const speed = this.currSpeedSaver.speed;
-    this.nextSpeedSaver = await this.createSaver(this.getNextSpeed(speed));
+    this.nextSpeedSaver =
+        await this.createSaver(TimeLapseSaver.getNextSpeed(speed));
     this.speedCheckpoint = speed * TIME_LAPSE_MAX_DURATION * this.fps;
 
     // Drops unused frames.
@@ -412,30 +434,38 @@ export class TimeLapseSaver {
    * do here to avoid race conditions.
    */
   private async manageSavers(): Promise<void> {
-    if (this.ended) {
-      await this.nextSpeedSaver.cancel();
-      let done = false;
-      while (!done) {
-        done = this.writeNextFrame(this.currSpeedSaver);
+    try {
+      if (this.ended) {
+        await this.nextSpeedSaver.cancel();
+        let done = false;
+        while (!done) {
+          done = this.writeNextFrame(this.currSpeedSaver);
+        }
+        await this.currSpeedSaver.endWrite();
+        this.onFinished.signal();
+      } else if (this.canceled) {
+        await Promise.all([
+          this.currSpeedSaver.cancel(),
+          this.nextSpeedSaver.cancel(),
+        ]);
+        this.onFinished.signal();
+      } else {
+        this.writeNextFrame(this.currSpeedSaver);
+        this.writeNextFrame(this.nextSpeedSaver);
+        if (this.maxFrameNo >= this.speedCheckpoint) {
+          await this.updateSpeed();
+        }
       }
-      await this.currSpeedSaver.endWrite();
-    } else if (this.canceled) {
-      await Promise.all([
-        this.currSpeedSaver.cancel(),
-        this.nextSpeedSaver.cancel(),
-      ]);
-    } else {
-      this.writeNextFrame(this.currSpeedSaver);
-      this.writeNextFrame(this.nextSpeedSaver);
-      if (this.maxFrameNo >= this.speedCheckpoint) {
-        await this.updateSpeed();
+    } catch (e) {
+      if (this.onError !== null) {
+        this.onError(e);
+      } else {
+        throw e;
       }
     }
 
     // Repeatedly call this function until the saver is ended/canceled.
-    if (this.ended || this.canceled) {
-      this.onFinished.signal();
-    } else {
+    if (!this.onFinished.isSignaled()) {
       setTimeout(() => this.manageSavers(), SAVER_MANAGER_TIMEOUT_MS);
     }
   }
@@ -443,7 +473,7 @@ export class TimeLapseSaver {
   /**
    * Returns the time-lapse speed after the given speed.
    */
-  getNextSpeed(speed: number): number {
+  static getNextSpeed(speed: number): number {
     return speed * 2;
   }
 

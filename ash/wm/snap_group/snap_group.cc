@@ -5,69 +5,43 @@
 #include "ash/wm/snap_group/snap_group.h"
 
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_divider.h"
-#include "ui/wm/public/activation_client.h"
+#include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/window_positioning_utils.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "chromeos/ui/base/display_util.h"
 
 namespace ash {
 
 namespace {
 
-// TODO(michelefan@): Remove this logic when implementing split view divider for
-// arm2. Divider should be available for both arm1 and arm2.
-bool ShouldConsiderDivider() {
-  auto* snap_group_controller = Shell::Get()->snap_group_controller();
-  return snap_group_controller &&
-         snap_group_controller->IsArm1AutomaticallyLockEnabled();
-}
-
-bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
-  DCHECK_NE(win1, win2);
-  DCHECK_EQ(win1->parent(), win2->parent());
-
-  const auto& children = win1->parent()->children();
-  auto win1_iter = base::ranges::find(children, win1);
-  auto win2_iter = base::ranges::find(children, win2);
-  DCHECK(win1_iter != children.end());
-  DCHECK(win2_iter != children.end());
-  return win1_iter < win2_iter;
-}
+using ::chromeos::WindowStateType;
 
 }  // namespace
 
-SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2) {
-  StartObservingWindows(window1, window2);
+SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
+    : window1_(window1), window2_(window2) {
+  auto* split_view_controller =
+      SplitViewController::Get(window1_->GetRootWindow());
+  CHECK_EQ(split_view_controller->state(),
+           SplitViewController::State::kBothSnapped);
+
+  StartObservingWindows();
 }
 
 SnapGroup::~SnapGroup() {
   StopObservingWindows();
 }
 
-void SnapGroup::OnWindowStackingChanged(aura::Window* window) {
-  // Update the stacking order of the other window in the snap group so that the
-  // two windows are always placed on top, both of which will be stacked below
-  // the `split_view_divider` if applicable afterwards.
-  aura::Window* top_window =
-      IsStackedBelow(window1_, window2_) ? window2_ : window1_;
-  aura::Window* target_window = top_window == window1_ ? window2_ : window1_;
-  auto* parent_container = target_window->parent();
-  parent_container->StackChildBelow(target_window, top_window);
+void SnapGroup::MinimizeWindows() {
+  auto* window1_state = WindowState::Get(window1_);
+  auto* window2_state = WindowState::Get(window2_);
+  CHECK(!window1_state->IsMinimized() && !window2_state->IsMinimized());
 
-  if (ShouldConsiderDivider()) {
-    // Update the stacking order of the `split_view_divider` to be on top of the
-    // `top_window` which makes the overall stacking order become
-    // `divider_widget->GetNativeWindow()` --> `top_window` --> `target_window`.
-    aura::Window* root_window = window1_->GetRootWindow();
-    auto* split_view_controller = SplitViewController::Get(root_window);
-    DCHECK(split_view_controller);
-    auto* split_view_divider = split_view_controller->split_view_divider();
-    DCHECK(split_view_divider);
-    auto* divider_widget = split_view_divider->divider_widget();
-    DCHECK(divider_widget);
-    parent_container->StackChildAbove(divider_widget->GetNativeWindow(),
-                                      top_window);
-  }
+  window1_state->Minimize();
+  window2_state->Minimize();
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
@@ -79,13 +53,10 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
   Shell::Get()->snap_group_controller()->RemoveSnapGroup(this);
 }
 
-void SnapGroup::StartObservingWindows(aura::Window* window1,
-                                      aura::Window* window2) {
-  DCHECK(window1);
-  DCHECK(window2);
-  window1_ = window1;
+void SnapGroup::StartObservingWindows() {
+  CHECK(window1_);
+  CHECK(window2_);
   window1_->AddObserver(this);
-  window2_ = window2;
   window2_->AddObserver(this);
 }
 
@@ -99,6 +70,50 @@ void SnapGroup::StopObservingWindows() {
     window2_->RemoveObserver(this);
     window2_ = nullptr;
   }
+}
+
+void SnapGroup::RestoreWindowsBoundsOnSnapGroupRemoved() {
+  const display::Display& display1 =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window1_);
+  const display::Display& display2 =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window2_);
+
+  // TODO(michelefan@): Add multi-display support for snap group.
+  DCHECK_EQ(display1, display2);
+
+  gfx::Rect primary_window_bounds = window1_->GetBoundsInScreen();
+  const int primary_x = primary_window_bounds.x();
+  const int primary_y = primary_window_bounds.y();
+  const int primary_width = primary_window_bounds.width();
+  const int primary_height = primary_window_bounds.height();
+
+  gfx::Rect secondary_window_bounds = window2_->GetBoundsInScreen();
+  const int secondary_x = secondary_window_bounds.x();
+  const int secondary_y = secondary_window_bounds.y();
+  const int secondary_width = secondary_window_bounds.width();
+  const int secondary_height = secondary_window_bounds.height();
+
+  const int expand_delta = kSplitviewDividerShortSideLength / 2;
+
+  if (chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display1))) {
+    primary_window_bounds.SetRect(primary_x, primary_y,
+                                  primary_width + expand_delta, primary_height);
+    secondary_window_bounds.SetRect(secondary_x - expand_delta, secondary_y,
+                                    secondary_width + expand_delta,
+                                    secondary_height);
+  } else {
+    primary_window_bounds.SetRect(primary_x, primary_y, primary_width,
+                                  primary_height + expand_delta);
+    secondary_window_bounds.SetRect(secondary_x, secondary_y - expand_delta,
+                                    secondary_width,
+                                    secondary_height + expand_delta);
+  }
+
+  const SetBoundsWMEvent window1_event(primary_window_bounds, /*animate=*/true);
+  WindowState::Get(window1_)->OnWMEvent(&window1_event);
+  const SetBoundsWMEvent window2_event(secondary_window_bounds,
+                                       /*animate=*/true);
+  WindowState::Get(window2_)->OnWMEvent(&window2_event);
 }
 
 }  // namespace ash

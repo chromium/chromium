@@ -11,6 +11,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/button.h"
@@ -127,47 +128,63 @@ class ASH_EXPORT AccessibilityDetailedView
   bool IsSodaFeatureInTray(SodaFeature feature);
   void SetSodaFeatureSubtext(SodaFeature feature, std::u16string message);
 
-  HoverHighlightView* spoken_feedback_view_ = nullptr;
-  HoverHighlightView* select_to_speak_view_ = nullptr;
-  HoverHighlightView* dictation_view_ = nullptr;
-  HoverHighlightView* high_contrast_view_ = nullptr;
-  HoverHighlightView* screen_magnifier_view_ = nullptr;
-  HoverHighlightView* docked_magnifier_view_ = nullptr;
-  HoverHighlightView* large_cursor_view_ = nullptr;
-  HoverHighlightView* autoclick_view_ = nullptr;
-  HoverHighlightView* virtual_keyboard_view_ = nullptr;
-  HoverHighlightView* switch_access_view_ = nullptr;
-  HoverHighlightView* live_caption_view_ = nullptr;
-  HoverHighlightView* mono_audio_view_ = nullptr;
-  HoverHighlightView* caret_highlight_view_ = nullptr;
-  HoverHighlightView* highlight_mouse_cursor_view_ = nullptr;
-  HoverHighlightView* highlight_keyboard_focus_view_ = nullptr;
-  HoverHighlightView* sticky_keys_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> docked_magnifier_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> large_cursor_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> autoclick_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> virtual_keyboard_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> switch_access_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> mono_audio_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> caret_highlight_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> highlight_mouse_cursor_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> highlight_keyboard_focus_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> sticky_keys_view_ = nullptr;
 
   // Views that appear in the top section listing enabled items. Created if the
   // feature is enabled, otherwise nullptr. Owned by views hierarchy.
   // Only used with QsRevamp.
-  HoverHighlightView* spoken_feedback_top_view_ = nullptr;
-  HoverHighlightView* select_to_speak_top_view_ = nullptr;
-  HoverHighlightView* dictation_top_view_ = nullptr;
-  HoverHighlightView* high_contrast_top_view_ = nullptr;
-  HoverHighlightView* screen_magnifier_top_view_ = nullptr;
-  HoverHighlightView* docked_magnifier_top_view_ = nullptr;
-  HoverHighlightView* large_cursor_top_view_ = nullptr;
-  HoverHighlightView* autoclick_top_view_ = nullptr;
-  HoverHighlightView* virtual_keyboard_top_view_ = nullptr;
-  HoverHighlightView* switch_access_top_view_ = nullptr;
-  HoverHighlightView* live_caption_top_view_ = nullptr;
-  HoverHighlightView* mono_audio_top_view_ = nullptr;
-  HoverHighlightView* caret_highlight_top_view_ = nullptr;
-  HoverHighlightView* highlight_mouse_cursor_top_view_ = nullptr;
-  HoverHighlightView* highlight_keyboard_focus_top_view_ = nullptr;
-  HoverHighlightView* sticky_keys_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> docked_magnifier_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> large_cursor_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> autoclick_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> virtual_keyboard_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> switch_access_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> mono_audio_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> caret_highlight_top_view_ =
+      nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh>
+      highlight_mouse_cursor_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh>
+      highlight_keyboard_focus_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> sticky_keys_top_view_ = nullptr;
 
-  views::Button* help_view_ = nullptr;
-  views::Button* settings_view_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> help_view_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_view_ = nullptr;
 
   LoginStatus login_;
+
+  // Whether `features::kQsRevamp` is enabled. Used to avoid redundant
+  // base::Feature lookups when building the view.
+  const bool is_qs_revamp_enabled_;
 };
 
 }  // namespace ash

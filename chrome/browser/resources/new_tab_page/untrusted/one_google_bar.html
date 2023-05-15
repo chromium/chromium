@@ -4,31 +4,12 @@
     <meta charset="utf-8">
     <style>
       body {
-        --ntp-protected-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
-            0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
-        --ntp-protected-icon-background-color: rgba(0, 0, 0, .1);
-        --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .2);
         margin:  0;
         overflow: hidden;
       }
 
       .fade-in {
         animation: fadeIn 200ms;
-      }
-
-      /* TODO(crbug.com/1349999): Update this once OGB is updated with static
-      identifiers for the text and waffle menu control. */
-      body[apply-background-protection_] $i18n{ogbUnprotectedTextSelector} {
-        text-shadow: var(--ntp-protected-text-shadow) !important;
-      }
-
-      body[apply-background-protection_] $i18n{ogbButtonSelector} {
-        background-color: var(--ntp-protected-icon-background-color) !important;
-      }
-
-      body[apply-background-protection_] $i18n{ogbButtonSelector}:hover {
-        background-color: var(--ntp-protected-icon-background-color-hovered)
-            !important;
       }
 
       @keyframes fadeIn {

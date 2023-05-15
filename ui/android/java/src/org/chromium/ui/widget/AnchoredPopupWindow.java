@@ -411,7 +411,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param maxWidth The max width for the popup.
      */
     public void setMaxWidth(int maxWidth) {
-        mMaxWidthPx = maxWidth;
+        final float density = mRootView.getResources().getDisplayMetrics().density;
+        mMaxWidthPx = Math.max(maxWidth, (int) Math.ceil(density * MINIMAL_POPUP_WIDTH_DIP));
     }
 
     /**

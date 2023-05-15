@@ -92,6 +92,21 @@ interface RecordingService {
   // video content should be saved. Only ".webm" and ".gif" are currently
   // supported.
   //
+  // The *optional* pending_remotes `microphone_stream_factory` and
+  // `system_audio_stream_factory` should be provided if the microphone audio
+  // and system audio are desired to be recorded respectively. The following
+  // cases are possible:
+  // - Both `microphone_stream_factory` and `system_audio_stream_factory` are
+  //   not bound: this means no audio recording is desired.
+  // - `microphone_stream_factory` is bound: this means only microphone audio is
+  //   desired to be recorded.
+  // - `system_audio_stream_factory` is bound: this means only system audio is
+  //   desired to be recorded.
+  // - Both `microphone_stream_factory` and `system_audio_stream_factory` are
+  //   bound: this means both microphone and system audio will be recorded at
+  //   the same time and will be mixed together to produce a single audio stream
+  //   that will be muxed with the video.
+  //
   // The *optional* pending_remote `drive_fs_quota_delegate`, if provided, that
   // means that the given `output_file_path` lives on DriveFS, and the remaining
   // free space calculations has to be done through this delegate.
@@ -122,7 +137,9 @@ interface RecordingService {
   RecordFullscreen(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? microphone_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>?
+          system_audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
@@ -152,7 +169,9 @@ interface RecordingService {
   RecordWindow(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? microphone_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>?
+          system_audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
@@ -177,7 +196,9 @@ interface RecordingService {
   RecordRegion(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? microphone_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>?
+          system_audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,

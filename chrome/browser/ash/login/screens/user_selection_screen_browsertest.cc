@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -267,11 +266,6 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
 }
 
 class DarkLightEnabledTest : public LoginManagerTest, public ColorModeObserver {
- public:
-  DarkLightEnabledTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
-  }
-
  protected:
   void StartLogin(const AccountId& account_id) {
     DarkLightModeControllerImpl::Get()->AddObserver(this);
@@ -311,9 +305,6 @@ class DarkLightEnabledTest : public LoginManagerTest, public ColorModeObserver {
   const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
   bool wait_for_color_mode_change_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // OOBE + login of the first user.

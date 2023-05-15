@@ -76,6 +76,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Disable UI
   virtual void DisableUI() = 0;
 
+  // Disable the TLS security level check for the tab hosting this request.
+  virtual void DisableTLSCheck() = 0;
+
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor. Use this rather than keeping a copy of the
   // RenderFrameHost* that was passed in.

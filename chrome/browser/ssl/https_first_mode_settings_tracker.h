@@ -20,6 +20,8 @@ class Profile;
 // - Recording pref state in metrics and registering the client for a synthetic
 //   field trial based on that state.
 // - Changing the pref based on user's Advanced Protection status.
+// - Checking the Site Engagement scores of a site and enable/disable HFM based
+//   on that.
 class HttpsFirstModeService
     : public KeyedService,
       public safe_browsing::AdvancedProtectionStatusManager::
@@ -33,6 +35,10 @@ class HttpsFirstModeService
 
   // safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver:
   void OnAdvancedProtectionStatusChanged(bool enabled) override;
+
+  // Check the Site Engagement scores of the hostname of `url` and enable
+  // HFM on the hostname if the HTTPS score is high enough.
+  void MaybeEnableHttpsFirstModeForUrl(Profile* profile, const GURL& url);
 
  private:
   void OnHttpsFirstModePrefChanged();
@@ -55,6 +61,10 @@ class HttpsFirstModeServiceFactory : public ProfileKeyedServiceFactory {
   HttpsFirstModeServiceFactory(const HttpsFirstModeServiceFactory&) = delete;
   HttpsFirstModeServiceFactory& operator=(const HttpsFirstModeServiceFactory&) =
       delete;
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static BrowserContextKeyedServiceFactory::TestingFactory
+  GetDefaultFactoryForTesting();
 
  private:
   friend struct base::DefaultSingletonTraits<HttpsFirstModeServiceFactory>;

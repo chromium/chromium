@@ -69,10 +69,10 @@ TEST_F(AppDeduplicationServerConnectorTest,
 TEST_F(AppDeduplicationServerConnectorTest,
        GetDeduplicateAppsFromServerSuccess) {
   proto::DeduplicateResponse response;
-  auto* app_group = response.add_app_group();
-  auto* app = app_group->add_app();
-  app->set_app_id("com.skype.raider");
-  app->set_platform("phonehub");
+  auto* group = response.add_app_group();
+  group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  group->add_package_id();
+  group->set_package_id(0, "website:https://web.skype.com/");
 
   url_loader_factory_.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(),

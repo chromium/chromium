@@ -63,9 +63,11 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_linux && is_chrome_branded) {
-      sources += [
-        "chrome_linux64/updater_test",
-      ]
+      sources += [ "chrome_linux64/updater_test" ]
+    }
+
+    if (is_linux && !is_chrome_branded) {
+      sources += [ "chromium_linux64/updater_test" ]
     }
 
     outputs = [ "$root_build_dir/old_updater/{{source_target_relative}}" ]

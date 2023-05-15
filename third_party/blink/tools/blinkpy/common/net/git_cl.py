@@ -157,7 +157,6 @@ class GitCL(object):
             issue_number = self.get_issue_number()
             try_job_results = self.latest_try_jobs(
                 issue_number, cq_only=cq_only)
-            _log.debug('Fetched try results: %s', try_job_results)
             if (cl_status == 'closed' or
                 (try_job_results and self.all_finished(try_job_results))):
                 return CLStatus(

@@ -35,6 +35,7 @@ ASAN_MULTIPLIER = 4
 BACKEND_VALIDATION_MULTIPLIER = 6
 FIRST_LOAD_TEST_STARTED_MULTIPLER = 3
 
+MESSAGE_TIMEOUT_CONNECTION_ACK = 5
 # In most cases, this should be very fast, but the first test run after a page
 # load can be slow.
 MESSAGE_TIMEOUT_TEST_STARTED = 10
@@ -45,6 +46,7 @@ HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
 MAY_EXONERATE = 'may_exonerate'
+MESSAGE_TYPE_CONNECTION_ACK = 'CONNECTION_ACK'
 MESSAGE_TYPE_TEST_STARTED = 'TEST_STARTED'
 MESSAGE_TYPE_TEST_HEARTBEAT = 'TEST_HEARTBEAT'
 MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
@@ -167,6 +169,18 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           '*:api,operation,command_buffer,image_copy:origins_and_extents:'
           'initMethod="WriteTexture";checkMethod="PartialCopyT2B";format="%s";*'
       ) % f)
+
+    # Run shader tests in serial if backend validation is enabled on Mac.
+    # The validation layers significantly slow down shader compilation.
+    if sys.platform == 'darwin' and self._enable_dawn_backend_validation:
+      globs.add('webgpu:shader,execution*')
+
+    # Run limit tests in serial if backend validation is enabled on Windows.
+    # The validation layers add memory overhead which makes OOM likely when
+    # many browsers and tests run in parallel.
+    if sys.platform == 'win32' and self._enable_dawn_backend_validation:
+      globs.add('webgpu:api,validation,capability_checks,limits*')
+
     return globs
 
   def _GetSerialTests(self) -> Set[str]:
@@ -206,7 +220,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.websocket_server = websocket_server.WebsocketServer()
     cls.websocket_server.StartServer()
     browser_args = [
-        '--disable-dawn-features=disallow_unsafe_apis',
+        '--enable-dawn-features=allow_unsafe_apis',
         # When running tests in parallel, windows can be treated as occluded if
         # a newly opened window fully covers a previous one, which can cause
         # issues in a few tests. This is practically only an issue on Windows
@@ -493,6 +507,12 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'window.setupWebsocket("%s")' %
         WebGpuCtsIntegrationTest.websocket_server.server_port)
     WebGpuCtsIntegrationTest.websocket_server.WaitForConnection()
+
+    # Wait for the page to set up the websocket.
+    response = WebGpuCtsIntegrationTest.websocket_server.Receive(
+        MESSAGE_TIMEOUT_CONNECTION_ACK)
+    assert json.loads(response)['type'] == MESSAGE_TYPE_CONNECTION_ACK
+
     WebGpuCtsIntegrationTest._page_loaded = True
     return True
 
@@ -527,6 +547,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
     return [EXPECTATIONS_FILE]
+
+  @classmethod
+  def GetExpectationsFilesRepoPath(cls) -> str:
+    return os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party', 'dawn')
 
 
 class WebGpuMessageProtocolError(RuntimeError):

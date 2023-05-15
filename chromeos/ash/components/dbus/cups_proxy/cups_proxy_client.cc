@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cups_proxy/fake_cups_proxy_client.h"
 #include "dbus/bus.h"
@@ -57,7 +58,7 @@ class CupsProxyClientImpl : public CupsProxyClient {
   }
 
  private:
-  dbus::ObjectProxy* daemon_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> daemon_proxy_ = nullptr;
 
   // Passes the success/failure of |dbus_response| on to |result_callback|.
   void OnBootstrapMojoConnectionResponse(

@@ -164,8 +164,7 @@ class FuchsiaVideoEncodeAccelerator::OutputPacketsQueue {
   using ProcessCB =
       base::RepeatingCallback<void(int32_t buffer_index,
                                    const BitstreamBufferMetadata& metadata)>;
-  using ErrorCB = base::OnceCallback<void(VideoEncodeAccelerator::Error,
-                                          const std::string& message)>;
+  using ErrorCB = base::OnceCallback<void(EncoderStatus status)>;
 
   OutputPacketsQueue() = default;
 
@@ -361,11 +360,10 @@ bool FuchsiaVideoEncodeAccelerator::OutputPacketsQueue::
                               BitstreamBufferMetadata* metadata) {
   if (packet.size() > bitstream_buffer.size()) {
     std::move(error_cb_).Run(
-        VideoEncodeAccelerator::kPlatformFailureError,
-        base::StringPrintf("Encoded output is too large. Packet size: %zu "
-                           "Bitstream buffer size: "
-                           "%zu",
-                           packet.size(), bitstream_buffer.size()));
+        {EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StringPrintf("Encoded output is too large. Packet size: %zu "
+                            "Bitstream buffer size: %zu",
+                            packet.size(), bitstream_buffer.size())});
     return false;
   }
 
@@ -373,8 +371,8 @@ bool FuchsiaVideoEncodeAccelerator::OutputPacketsQueue::
   base::WritableSharedMemoryMapping mapping =
       region.MapAt(bitstream_buffer.offset(), packet.size());
   if (!mapping.IsValid()) {
-    std::move(error_cb_).Run(VideoEncodeAccelerator::kPlatformFailureError,
-                             "Failed to map BitstreamBuffer memory.");
+    std::move(error_cb_).Run({EncoderStatus::Codes::kSystemAPICallError,
+                              "Failed to map BitstreamBuffer memory."});
     return false;
   }
 
@@ -503,11 +501,11 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // TODO(crbug.com/1381293): Encode only the `visible_rect` of a frame.
   if (frame->coded_size().width() > config_->input_visible_size.width() ||
       frame->coded_size().height() > config_->input_visible_size.height()) {
-    OnError(VideoEncodeAccelerator::kInvalidArgumentError,
-            base::StringPrintf(
-                "Input frame size %s is larger than configured size %s",
-                frame->coded_size().ToString().c_str(),
-                config_->input_visible_size.ToString().c_str()));
+    OnError({EncoderStatus::Codes::kInvalidInputFrame,
+             base::StringPrintf(
+                 "Input frame size %s is larger than configured size %s",
+                 frame->coded_size().ToString().c_str(),
+                 config_->input_visible_size.ToString().c_str())});
     return;
   }
 
@@ -619,8 +617,8 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorOutputFormat(
   auto* format_details = format.mutable_format_details();
   if (!format_details->has_domain() || !format_details->domain().is_video() ||
       !format_details->domain().video().is_compressed()) {
-    OnError(kPlatformFailureError,
-            "Received invalid format from stream processor.");
+    OnError({EncoderStatus::Codes::kEncoderFailedEncode,
+             "Received invalid format from stream processor."});
   }
 }
 
@@ -644,7 +642,8 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorNoKey() {
 void FuchsiaVideoEncodeAccelerator::OnStreamProcessorError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnError(kPlatformFailureError, "Encountered stream processor error.");
+  OnError({EncoderStatus::Codes::kEncoderFailedEncode,
+           "Encountered stream processor error."});
 }
 
 void FuchsiaVideoEncodeAccelerator::ReleaseEncoder() {
@@ -658,16 +657,17 @@ void FuchsiaVideoEncodeAccelerator::ReleaseEncoder() {
   encoder_.reset();
 }
 
-void FuchsiaVideoEncodeAccelerator::OnError(
-    VideoEncodeAccelerator::Error error_type,
-    const std::string& error_message) {
-  DLOG(ERROR) << error_message;
+void FuchsiaVideoEncodeAccelerator::OnError(EncoderStatus status) {
+  CHECK(!status.is_ok());
+  LOG(ERROR) << "FuchsiaVideoEncodeAccelerator failed, error_code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
   if (media_log_) {
-    MEDIA_LOG(ERROR, media_log_) << error_message;
+    MEDIA_LOG(ERROR, media_log_) << status.message();
   }
   ReleaseEncoder();
   if (vea_client_) {
-    vea_client_->NotifyError(error_type);
+    vea_client_->NotifyErrorStatus(status);
   }
 }
 

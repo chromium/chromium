@@ -286,9 +286,11 @@ void AlertBridge::OnMojoDisconnect() {
 }
 
 void AlertBridge::SendResultAndDestroy(AlertDisposition disposition) {
-  DCHECK(callback_);
-  std::move(callback_).Run(disposition, [helper_ input],
-                           [helper_ shouldSuppress]);
+  if (!alert_dismissed_) {
+    DCHECK(callback_);
+    std::move(callback_).Run(disposition, [helper_ input],
+                             [helper_ shouldSuppress]);
+  }
   delete this;
 }
 
@@ -317,6 +319,11 @@ void AlertBridge::Show(mojom::AlertBridgeInitParamsPtr params,
   [helper_.get() performSelector:@selector(showAlert)
                       withObject:nil
                       afterDelay:0];
+}
+
+void AlertBridge::Dismiss() {
+  alert_dismissed_ = true;
+  OnMojoDisconnect();
 }
 
 }  // namespace remote_cocoa

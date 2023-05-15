@@ -192,7 +192,7 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "1643412073",
           "source_event_id": "555",
           "source_type": "navigation",

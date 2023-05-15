@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
 
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -33,6 +33,7 @@ using autofill_address_profile_infobar_overlays::
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
+using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for
 // SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller.
@@ -40,9 +41,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
   SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest()
-      : profile_(base::GenerateGUID(), "https://www.example.com/"),
-        installer_(&mock_handler_),
-        delegate_factory_() {
+      : installer_(&mock_handler_), delegate_factory_() {
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
@@ -101,4 +100,11 @@ TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
   EXPECT_CALL(mock_handler_, CancelModal(infobar_, fakeFromEditModal));
   request_->GetCallbackManager()->DispatchResponse(
       OverlayResponse::CreateWithInfo<CancelViewAction>(fakeFromEditModal));
+}
+
+TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
+       NoThanksAction) {
+  EXPECT_CALL(mock_handler_, NoThanksWasPressed(infobar_));
+  request_->GetCallbackManager()->DispatchResponse(
+      OverlayResponse::CreateWithInfo<NoThanksViewAction>());
 }

@@ -40,6 +40,9 @@ class PushNotificationClient {
   virtual NSArray<UNNotificationCategory*>*
   RegisterActionableNotifications() = 0;
 
+  // Signals to the client that a browser is ready.
+  virtual void OnBrowserReady() = 0;
+
   // Returns the feature's `client_id_`.
   PushNotificationClientId GetClientId();
 

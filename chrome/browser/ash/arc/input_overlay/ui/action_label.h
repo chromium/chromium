@@ -29,16 +29,11 @@ class ActionLabel : public views::LabelButton {
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,
-      int radius,
-      bool allow_reposition,
       TapLabelPosition label_position = TapLabelPosition::kTopLeft);
 
-  ActionLabel(int radius, MouseAction mouse_action, bool allow_reposition);
-  ActionLabel(int radius, const std::string& text, bool allow_reposition);
-  ActionLabel(int radius,
-              const std::string& text,
-              int index,
-              bool allow_reposition);
+  explicit ActionLabel(MouseAction mouse_action);
+  explicit ActionLabel(const std::string& text);
+  ActionLabel(const std::string& text, int index);
 
   ActionLabel(const ActionLabel&) = delete;
   ActionLabel& operator=(const ActionLabel&) = delete;
@@ -54,11 +49,6 @@ class ActionLabel : public views::LabelButton {
   // are called sibling labels. This label reacts to sibling's focus change.
   void OnSiblingUpdateFocus(bool sibling_focused);
 
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  // The label layout design is updated. This is used to update bounds
-  // for Alpha version.
-  virtual void UpdateBoundsAlpha() = 0;
   virtual void UpdateBounds() = 0;
   virtual void UpdateLabelPositionType(TapLabelPosition label_position) = 0;
 
@@ -110,8 +100,6 @@ class ActionLabel : public views::LabelButton {
   bool IsInputUnbound();
   // Calculate the accessible name.
   std::u16string CalculateAccessibleName();
-
-  bool allow_reposition_;
 };
 }  // namespace arc::input_overlay
 

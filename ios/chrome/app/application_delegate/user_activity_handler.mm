@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
@@ -22,19 +23,19 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
@@ -80,7 +81,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [activityType isEqualToString:kShortcutVoiceSearch] ||
       [activityType isEqualToString:kShortcutQRScanner] ||
       [activityType isEqualToString:kShortcutLens] ||
-      [activityType isEqualToString:kSiriShortcutSearchInChrome]) {
+      [activityType isEqualToString:kSiriShortcutSearchInChrome] ||
+      [activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return @[ kRegularMode, kIncognitoMode ];
   } else if ([activityType isEqualToString:kSiriShortcutOpenInChrome]) {
     return @[ kRegularMode ];
@@ -88,7 +90,13 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
              [activityType isEqualToString:kSiriShortcutOpenInIncognito]) {
     return @[ kIncognitoMode ];
   } else {
-    NOTREACHED();
+    // Use 32 as the maximum length of the reported value for this key (31
+    // characters + '\0'). See NSUserActivityTypes in Info.plist for the list of
+    // expected values.
+    static crash_reporter::CrashKeyString<32> key("activity");
+    crash_reporter::ScopedCrashKeyString crash_key(
+        &key, base::SysNSStringToUTF8(activityType));
+    base::debug::DumpWithoutCrashing();
   }
   return nil;
 }
@@ -418,8 +426,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                connectionInformation:
                    (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
-                   interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider
+                        browserState:(ChromeBrowserState*)browserState
                            initStage:(InitStage)initStage {
   BOOL handledShortcutItem =
       [UserActivityHandler handleShortcutItem:shortcutItem
@@ -432,8 +439,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         handleStartupParametersWithTabOpener:tabOpener
                        connectionInformation:connectionInformation
                           startupInformation:startupInformation
-                                browserState:interfaceProvider.currentInterface
-                                                 .browserState
+                                browserState:browserState
                                    initStage:initStage];
   }
   if (completionHandler) {
@@ -634,7 +640,13 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     return YES;
   }
 
-  NOTREACHED();
+  // Use 16 as the maximum length of the reported value for this key (15
+  // characters + '\0'). Expected values are UIApplicationShortcutItemType
+  // entries in Info.plist.
+  static crash_reporter::CrashKeyString<16> key("shortcut-item");
+  crash_reporter::ScopedCrashKeyString crash_key(
+      &key, base::SysNSStringToUTF8(shortcutItem.type));
+  base::debug::DumpWithoutCrashing();
   return NO;
 }
 

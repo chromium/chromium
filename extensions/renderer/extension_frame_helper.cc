@@ -441,16 +441,15 @@ void ExtensionFrameHelper::OnExtensionValidateMessagePort(int worker_thread_id,
 
 void ExtensionFrameHelper::OnExtensionDispatchOnConnect(
     int worker_thread_id,
-    const PortId& target_port_id,
-    const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info) {
+    const ExtensionMsg_OnConnectData& connect_data) {
   DCHECK_EQ(kMainThreadId, worker_thread_id);
   extension_dispatcher_->bindings_system()
       ->messaging_service()
-      ->DispatchOnConnect(extension_dispatcher_->script_context_set_iterator(),
-                          target_port_id, channel_name, source, info,
-                          render_frame());
+      ->DispatchOnConnect(
+          extension_dispatcher_->script_context_set_iterator(),
+          connect_data.target_port_id, connect_data.channel_type,
+          connect_data.channel_name, connect_data.tab_source,
+          connect_data.external_connection_info, render_frame());
 }
 
 void ExtensionFrameHelper::OnExtensionDeliverMessage(int worker_thread_id,

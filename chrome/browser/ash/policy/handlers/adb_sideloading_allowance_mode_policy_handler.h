@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
@@ -99,9 +100,9 @@ class AdbSideloadingAllowanceModePolicyHandler
   void MaybeShowPowerwashNotification(bool is_sideloading_enabled);
   void MaybeShowPowerwashUponRebootNotification();
 
-  ash::CrosSettings* const cros_settings_;
+  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
 
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   std::unique_ptr<ash::AdbSideloadingPolicyChangeNotification>
       adb_sideloading_policy_change_notification_;

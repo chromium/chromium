@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/signin/trusted_vault_configuration.h"
 #import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"

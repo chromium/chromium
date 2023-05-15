@@ -160,22 +160,21 @@
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ወጥቷል።</translation>
 <translation id="2307462900900812319">አውታረ መረብ አዋቅር</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{መታወቂያ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያለው ቅጥያ ሊገኝ አይችልም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}one{መታወቂያ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያለው ቅጥያ ሊገኝ አይችልም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}other{መታወቂያዎች <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያላቸው ቅጥያዎች ሊገኙ አይችሉም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}}</translation>
-<translation id="2325650632570794183">ይህ ፋይል አይነት አይደገፍም። የዚህ አይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
+<translation id="2325650632570794183">ይህ ፋይል ዓይነት አይደገፍም። የዚህ ዓይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
 <translation id="2326539130272988168">ቡልጋሪያኛ</translation>
 <translation id="2337715497728194187">ለBruschetta ያጋሩ</translation>
 <translation id="23721837607121582">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ወደ የዝርዝር እይታ ቀይር</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ፋይሎች ተመርጠዋል</translation>
 <translation id="2383454254762599978">ወደ መጣያ ውሰድ</translation>
-<translation id="2387458720915042159">የተኪ ግንኙነት አይነት</translation>
+<translation id="2387458720915042159">የተኪ ግንኙነት ዓይነት</translation>
 <translation id="2389832672041313158">በርማኛ/ማያንማር</translation>
 <translation id="2392369802118427583">አግብር</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ይገኛል</translation>
 <translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
 <translation id="2425665904502185219">ጠቅላላ የፋይል መጠን</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" />ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
-<translation id="2448312741937722512">አይነት</translation>
+<translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2452444014801043526">ሜጋፎን የያዘ ሰው</translation>
 <translation id="2464079411014186876">አይስክሬም</translation>
 <translation id="2464089476039395325">የኤችቲቲፒ ተኪ</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">ምንም የቅርብ ጊዜ ቪድዮዎች የሉም</translation>
 <translation id="3634507049637220048">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተወስደዋል።</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ፋይሎች ተመርጠዋል</translation>
 <translation id="3685122418104378273">የሞባይል ውሂብ ጥቅም ላይ በሚውልበት ጊዜ Google Drive ማመሳሰል በነባሪ ይሰናከላል።</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ን ሰርዝ።</translation>
 <translation id="3690128548376345212">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ያልነቃ፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">መሣሪያው ተነባቢ-ብቻ ነው</translation>
 <translation id="4826849268470072925">ታሚልኛ ITRANS</translation>
 <translation id="482932175346970750">በአሳሸዎ ውስጥ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> የሚለውን ይተይቡ</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ንጥሎች ተመርጠዋል</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="485316830061041779">ጀርመን</translation>
@@ -579,6 +578,7 @@
 <translation id="5533102081734025921">የ<ph name="IMAGE_TYPE" /> ምስል</translation>
 <translation id="5534520101572674276">መጠንን በማስላት ላይ</translation>
 <translation id="554153475311314364">በግሪክ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> አቃፊዎች ተመርጠዋል</translation>
 <translation id="5580591966435005537">ምናባዊ ማሽን</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">የሥርዓተ ነጥብ ስፋት ሙሉ ነው</translation>
@@ -601,6 +601,7 @@
 <translation id="5724172041621205163">ታይላንድኛ በፓቶቾት ቁልፍ ሰሌዳ</translation>
 <translation id="57383366388012121">ባለፈው ወር</translation>
 <translation id="5756666464756035725">የሃንጋሪኛ QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ንጥሎች ተመርጠዋል</translation>
 <translation id="5763377084591234761">ጀርመንኛ (ስዊዘርላንድ)</translation>
 <translation id="5769519078756170258">የሚገለል አስተናጋጅ ወይም ጎራ</translation>
 <translation id="5775750595919327203">ኡርዱ</translation>
@@ -756,7 +757,6 @@
 <translation id="6989942356279143254">ስዊድንኛ</translation>
 <translation id="6990081529015358884">ቦታ አልቆዎብዎታል</translation>
 <translation id="6993826899923627728">እነዚህ ንጥሎች የእርስዎ መጣያ ውስጥ ናቸው</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> አቃፊዎች ተመርጠዋል</translation>
 <translation id="7008426324576352165">የእርስዎ ድርጅት ሰቀላውን ለማጠናቀቅ ተጨማሪ ማከማቻ ያስፈልገዋል።</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ፋይሎችን ማንቀሳቀስ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +791,7 @@
 <translation id="7252604552361840748">ከላይ ያለውን ቅጥያ ያግኙ</translation>
 <translation id="7256405249507348194">ያልታወቀ ስህተት፦ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">የሚገኙ አገልግሎቶች</translation>
+<translation id="7291818353625820805">ቁልፎች እንዲደጋገሙ ይፈልጋሉ? በቁልፍ ሰሌዳ ቅንብሮች ውስጥ የአጽንዖት ምልክቶችን ያጥፉ</translation>
 <translation id="7292816689782057017">የአስተዳዳሪ መመሪያ ወደ አንዳንድ አካባቢዎች ማስቀመጥን ይገድባል።</translation>
 <translation id="7294063083760278948">በተለጉ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="7295662345261934369">ከሌሎች ጋር ተጋራ</translation>

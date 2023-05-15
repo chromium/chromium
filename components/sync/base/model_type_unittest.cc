@@ -27,7 +27,7 @@ TEST_F(ModelTypeTest, ModelTypeToValue) {
 }
 
 TEST_F(ModelTypeTest, ModelTypeSetToValue) {
-  const ModelTypeSet model_types(BOOKMARKS, APPS);
+  const ModelTypeSet model_types = {BOOKMARKS, APPS};
 
   base::Value::List value_list(ModelTypeSetToValue(model_types));
   ASSERT_EQ(2u, value_list.size());

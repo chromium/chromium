@@ -34,8 +34,7 @@ AutofillOfferNotificationInfoBarDelegateMobile::
     AutofillOfferNotificationInfoBarDelegateMobile(
         const GURL& offer_details_url,
         const CreditCard& card)
-    : credit_card_identifier_string_(
-          card.CardIdentifierStringForAutofillDisplay()),
+    : credit_card_identifier_string_(card.CardNameAndLastFourDigits()),
       network_icon_id_(CreditCard::IconResourceId(card.network())),
       deep_link_url_(offer_details_url),
       user_manually_closed_infobar_(false) {

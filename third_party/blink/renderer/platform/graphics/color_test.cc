@@ -36,6 +36,10 @@
 namespace blink {
 namespace {
 
+using ::testing::TestParamInfo;
+using ::testing::TestWithParam;
+using ::testing::ValuesIn;
+
 Color CreateSRGBColor(float r, float g, float b, float a) {
   return Color::FromColorSpace(Color::ColorSpace::kSRGB, r, g, b, a);
 }
@@ -658,5 +662,4 @@ TEST(BlinkColor, Unpremultiply) {
         << color_test.color_expected.alpha_;
   }
 }
-
 }  // namespace blink

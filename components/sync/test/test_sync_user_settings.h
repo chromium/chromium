@@ -25,23 +25,24 @@ class TestSyncUserSettings : public SyncUserSettings {
   explicit TestSyncUserSettings(TestSyncService* service);
   ~TestSyncUserSettings() override;
 
-  bool IsSyncRequested() const override;
-  void SetSyncRequested() override;
-  void ClearSyncRequested() override;
-
-  bool IsFirstSetupComplete() const override;
+  bool IsInitialSyncFeatureSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
 
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
+  bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
+#if BUILDFLAG(IS_IOS)
+  void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
+#endif  // BUILDFLAG(IS_IOS)
   ModelTypeSet GetPreferredDataTypes() const;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
+  bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
@@ -73,6 +74,10 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
+  void SetTypeIsManaged(UserSelectableType type, bool managed);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
+#endif
   void SetCustomPassphraseAllowed(bool allowed);
   void SetPassphraseRequired(bool required);
   void SetPassphraseRequiredForPreferredDataTypes(bool required);
@@ -85,8 +90,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   raw_ptr<TestSyncService> service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   UserSelectableOsTypeSet selected_os_types_;
+  UserSelectableOsTypeSet managed_os_types_;
 #endif
   UserSelectableTypeSet selected_types_;
+  UserSelectableTypeSet managed_types_;
 
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;

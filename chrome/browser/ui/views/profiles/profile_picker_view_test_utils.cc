@@ -23,7 +23,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
@@ -155,21 +154,15 @@ ProfileManagementStepTestView::~ProfileManagementStepTestView() = default;
 
 void ProfileManagementStepTestView::ShowAndWait(
     absl::optional<gfx::Size> view_size) {
-  LOG(WARNING) << "crbug.com/1380808 - Timing reference: before Display()";
   Display();
 
   // waits for the view to be shown to return. If we don't wait enough
   // and the test is flaky, try to poll the page to check the presence of some
   // UI elements to know when to stop waiting.
-  LOG(WARNING) << "crbug.com/1380808 - Timing reference: before waiting for "
-                  "the view to be shown";
   run_loop_.Run();
 
   if (view_size.has_value())
     GetWidget()->SetSize(view_size.value());
-
-  LOG(WARNING) << "crbug.com/1380808 - Timing reference: finished waiting for "
-                  "the view to be shown";
 }
 
 std::unique_ptr<ProfileManagementFlowController>
@@ -181,26 +174,16 @@ ProfileManagementStepTestView::CreateFlowController(
       run_loop_.QuitClosure());
 }
 
-void ProfileManagementStepTestView::OnNativeWidgetSizeChanged(
-    const gfx::Size& new_size) {
-  LOG(WARNING) << "crbug.com/1380808 - OnNativeWidgetSizeChanged: "
-               << new_size.ToString();
-}
-
-gfx::Size ProfileManagementStepTestView::CalculatePreferredSize() const {
-  gfx::Size preferred_size = ProfilePickerView::CalculatePreferredSize();
-  gfx::Size work_area_size = GetWidget()->GetWorkAreaBoundsInScreen().size();
-  LOG(WARNING)
-      << "crbug.com/1380808 - CalculatePreferredSize: work area size is "
-      << work_area_size.ToString() << " and will return "
-      << preferred_size.ToString();
-  return preferred_size;
-}
-
 // -- Other utils --------------------------------------------------------------
 namespace profiles::testing {
 
 void WaitForPickerWidgetCreated() {
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
   ViewAddedWaiter(ProfilePicker::GetViewForTesting()).Wait();
 }
 

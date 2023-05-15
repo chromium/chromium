@@ -27,6 +27,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_constants.h"
@@ -92,6 +93,26 @@ bool IsValidEmailAddress(const std::string& email) {
                            base::SPLIT_WANT_ALL)
              .size() == 2U;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+ChromeOsEnterpriseParams BuildEnterpriseParams(
+    const base::Value::Dict& message) {
+  return {.suppress_user_dialogs =
+              message.FindBool(kSuppressUserDialogs).value_or(false),
+          .suppress_notifications =
+              message.FindBool(kSuppressNotifications).value_or(false),
+          .terminate_upon_input =
+              message.FindBool(kTerminateUponInput).value_or(false),
+          .curtain_local_user_session =
+              message.FindBool(kCurtainLocalUserSession).value_or(false),
+          .allow_troubleshooting_tools =
+              message.FindBool(kAllowTroubleshootingTools).value_or(false),
+          .allow_reconnections =
+              message.FindBool(kAllowReconnections).value_or(false),
+          .allow_file_transfer =
+              message.FindBool(kAllowFileTransfer).value_or(false)};
+}
+#endif
 
 }  // namespace
 
@@ -247,20 +268,6 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     username = *username_from_message;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  bool suppress_user_dialogs =
-      message.FindBool(kSuppressUserDialogs).value_or(false);
-  bool suppress_notifications =
-      message.FindBool(kSuppressNotifications).value_or(false);
-  bool terminate_upon_input =
-      message.FindBool(kTerminateUponInput).value_or(false);
-  bool curtain_local_user_session =
-      message.FindBool(kCurtainLocalUserSession).value_or(false);
-#endif
-
-  bool is_enterprise_admin_user =
-      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
-
   std::string authorized_helper;
   const std::string* authorized_helper_value =
       message.FindString(kAuthorizedHelper);
@@ -359,20 +366,22 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   // only supported on ChromeOS.
   it2me_host_ = factory_->CreateIt2MeHost();
   it2me_host_->set_authorized_helper(authorized_helper);
+
+  auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
-  it2me_host_->set_enable_notifications(!suppress_notifications);
-  it2me_host_->set_terminate_upon_input(terminate_upon_input);
-  it2me_host_->set_enable_curtaining(curtain_local_user_session);
-  it2me_host_->set_is_enterprise_session(is_enterprise_admin_user);
+  bool is_enterprise_admin_user =
+      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
+  if (is_enterprise_admin_user) {
+    dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
+    it2me_host_->set_chrome_os_enterprise_params(
+        BuildEnterpriseParams(message));
+  }
 #endif
+
   it2me_host_->Connect(
       host_context_->Copy(), std::move(policies),
-      std::make_unique<It2MeConfirmationDialogFactory>(
-          is_enterprise_admin_user
-              ? It2MeConfirmationDialog::DialogStyle::kEnterprise
-              : It2MeConfirmationDialog::DialogStyle::kConsumer),
-      weak_ptr_, std::move(create_connection_context), username, ice_config);
+      std::make_unique<It2MeConfirmationDialogFactory>(dialog_style), weak_ptr_,
+      std::move(create_connection_context), username, ice_config);
 
   SendMessageToClient(std::move(response));
 }

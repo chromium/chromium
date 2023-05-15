@@ -214,10 +214,8 @@ bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
          !PermissionsData::CanExecuteScriptEverywhere(extension_id, location);
 }
 
-// The below functionality maps a context to a unique id by increasing a static
-// counter.
 int GetBrowserContextId(content::BrowserContext* context) {
-  using ContextIdMap = std::map<content::BrowserContext*, int>;
+  using ContextIdMap = std::map<std::string, int>;
 
   static int next_id = 0;
   static base::NoDestructor<ContextIdMap> context_map;
@@ -225,17 +223,15 @@ int GetBrowserContextId(content::BrowserContext* context) {
   // we need to get the original context to make sure we take the right context.
   content::BrowserContext* original_context =
       ExtensionsBrowserClient::Get()->GetOriginalContext(context);
-  auto iter = context_map->find(original_context);
+  const std::string& context_id = original_context->UniqueId();
+  auto iter = context_map->find(context_id);
   if (iter == context_map->end()) {
-    iter =
-        context_map->insert(std::make_pair(original_context, next_id++)).first;
+    iter = context_map->insert(std::make_pair(context_id, next_id++)).first;
   }
   DCHECK(iter->second != kUnspecifiedContextId);
   return iter->second;
 }
 
-// Returns whether the |extension| should be loaded in the given
-// |browser_context|.
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context) {
   // Renderers don't need to know about themes.
@@ -251,7 +247,6 @@ bool IsExtensionVisibleToContext(const Extension& extension,
          IsIncognitoEnabled(extension.id(), browser_context);
 }
 
-// Initializes file scheme access if the extension has such permission.
 void InitializeFileSchemeAccessForExtension(
     int render_process_id,
     const std::string& extension_id,

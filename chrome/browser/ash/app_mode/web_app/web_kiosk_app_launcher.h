@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -36,7 +37,6 @@ class WebKioskAppData;
 // Object responsible for preparing and launching web kiosk app. Is destroyed
 // upon app launch.
 class WebKioskAppLauncher : public KioskAppLauncher,
-                            public crosapi::BrowserManagerObserver,
                             public exo::WMHelper::ExoWindowObserver,
                             public ProfileObserver {
  public:
@@ -68,9 +68,6 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
  private:
-  // crosapi::BrowserManagerObserver:
-  void OnStateChanged() override;
-
   // exo::WMHelper::ExoWindowObserver:
   void OnExoWindowCreated(aura::Window* window) override;
 
@@ -97,13 +94,14 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
   bool is_installed_ = false;  // Whether the installation was completed.
   // |profile_| may become nullptr if the profile is being destroyed.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const AccountId account_id_;
   const bool should_skip_install_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   KioskAppLauncher::ObserverList observers_;
-  Browser* browser_ = nullptr;  // Browser instance that runs the web kiosk app.
+  raw_ptr<Browser, ExperimentalAsh> browser_ =
+      nullptr;  // Browser instance that runs the web kiosk app.
 
   // Web contents used for loading app info.
   std::unique_ptr<content::WebContents> web_contents_for_app_info_;
@@ -116,13 +114,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   base::RepeatingCallback<std::unique_ptr<web_app::WebAppDataRetriever>()>
       data_retriever_factory_;
 
-  BrowserWindow* test_browser_window_ = nullptr;
-
-  // Observe the launch state of `BrowserManager`, and launch the lacros-chrome
-  // when it is ready. This object is only used when Lacros is enabled.
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      observation_{this};
+  raw_ptr<BrowserWindow, ExperimentalAsh> test_browser_window_ = nullptr;
 
   base::WeakPtrFactory<WebKioskAppLauncher> weak_ptr_factory_{this};
 };

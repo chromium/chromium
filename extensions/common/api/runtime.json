@@ -658,6 +658,17 @@
         ]
       },
       {
+        "name": "onUserScriptConnect",
+        "nodoc": true,
+        "type": "function",
+        "nocompile": true,
+        "options": { "unmanaged": true },
+        "description": "Fired when a connection is made from a user script from this extension.",
+        "parameters": [
+          {"$ref": "Port", "name": "port"}
+        ]
+      },
+      {
         "name": "onConnectNative",
         "type": "function",
         "nocompile": true,
@@ -693,6 +704,24 @@
         "description": "Fired when a message is sent from another extension/app (by $(ref:runtime.sendMessage)). Cannot be used in a content script.",
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
+          {"name": "sender", "$ref": "MessageSender" },
+          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+        ],
+        "returns": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Return true from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
+        }
+      },
+      {
+        "name": "onUserScriptMessage",
+        "nodoc": true,
+        "type": "function",
+        "nocompile": true,
+        "options": { "unmanaged": true },
+        "description": "Fired when a message is sent from a user script associated with the same extension.",
+        "parameters": [
+          {"name": "message", "type": "any", "optional": true, "description": "The message sent by the user script."},
           {"name": "sender", "$ref": "MessageSender" },
           {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
         ],

@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -17,6 +20,7 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -32,11 +36,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -59,8 +65,6 @@ public class ChromeTabCreator extends TabCreator {
         boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab,
                 @NewTabPageLaunchOrigin int launchOrigin);
     }
-
-    private static final String TAG = "ChromeTabCreator";
 
     private final Activity mActivity;
     private final boolean mIncognito;
@@ -194,6 +198,49 @@ public class ChromeTabCreator extends TabCreator {
     }
 
     /**
+     * Creates an instance of a {@link Tab} that is fully detached from any activity.
+     *
+     * Also performs general tab initialization as well as detached specifics.
+     *
+     * @param type Information about how the tab is launched.
+     * @param initializeRenderer Whether to initialize renderer with WebContents creation.
+     *
+     * @return The newly created and initialized spare tab.
+     *
+     * TODO(crbug.com/1412572): Adapt this method to create other tabs.
+     */
+    @Override
+    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabCreator.buildDetachedTab")) {
+            Context context = ContextUtils.getApplicationContext();
+
+            // Don't create spare tab in incognito mode.
+            if (mIncognito) return null;
+
+            // TODO(crbug.com/1190971): Set isIncognito flag here if spare tabs are allowed for
+            // incognito mode.
+            TabDelegateFactory delegateFactory = createDefaultTabDelegateFactory();
+            Tab tab = TabBuilder.createLiveTab(true)
+                              .setWindow(mNativeWindow)
+                              .setLaunchType(type)
+                              .setDelegateFactory(delegateFactory)
+                              .setInitiallyHidden(true)
+                              .setInitializeRenderer(initializeRenderer)
+                              .build();
+
+            // Resize the webContents to avoid expensive post load resize when attaching the tab.
+            Rect bounds = TabUtils.estimateContentSize(context);
+            int width = bounds.right - bounds.left;
+            int height = bounds.bottom - bounds.top;
+            tab.getWebContents().setSize(width, height);
+
+            // Reparent the tab to detach it from the current activity.
+            ReparentingTask.from(tab).detach();
+            return tab;
+        }
+    }
+
+    /**
      * Creates a new tab and posts to UI.
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
@@ -281,6 +328,27 @@ public class ChromeTabCreator extends TabCreator {
                               .setInitiallyHidden(!openInForeground)
                               .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
+            } else if ((tab = WarmupManager.getInstance().takeSpareTab(mIncognito, type)) != null) {
+                // Load URL using spare tab if available. This occurs only if a spare tab has been
+                // created beforehand. The creation of a spare tab is a costly operation that should
+                // not be performed without testing. Spare tab is only used for navigations in the
+                // foreground and for high-end devices.
+                TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
+
+                // Reparent the tab to its parent, updating the DelegateFactory and NativeWindow.
+                tab.reparentTab(parent);
+                ReparentingTask.from(tab).finish(
+                        ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                mCompositorViewHolderSupplier.get(), mNativeWindow,
+                                createDefaultTabDelegateFactory()),
+                        null);
+                // Set tab to visible before loading the url. This will ensure metrics are recorded
+                // correctly with spare tab.
+                if (openInForeground) {
+                    tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
+                }
+                tab.loadUrl(loadUrlParams);
+                TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
             } else {
                 TraceEvent.begin("ChromeTabCreator.loadUrl");
                 tab = TabBuilder.createLiveTab(!openInForeground)
@@ -562,12 +630,5 @@ public class ChromeTabCreator extends TabCreator {
      */
     public TabDelegateFactory createDefaultTabDelegateFactory() {
         return mTabDelegateFactorySupplier != null ? mTabDelegateFactorySupplier.get() : null;
-    }
-
-    /**
-     * Sets the window to create tabs for.
-     */
-    public void setWindowAndroid(WindowAndroid window) {
-        mNativeWindow = window;
     }
 }

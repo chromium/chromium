@@ -49,10 +49,10 @@ component("auth") {
   sources = [
     "auth_attempt_state.cc",
     "auth_attempt_state.h",
+    "auth_events_recorder.cc",
+    "auth_events_recorder.h",
     "auth_factor_editor.cc",
     "auth_factor_editor.h",
-    "auth_metrics_recorder.cc",
-    "auth_metrics_recorder.h",
     "auth_performer.cc",
     "auth_performer.h",
     "auth_session_authenticator.cc",
@@ -157,7 +157,7 @@ source_set("unit_tests") {
     "//third_party/icu",
   ]
   sources = [
-    "auth_metrics_recorder_unittest.cc",
+    "auth_events_recorder_unittest.cc",
     "auth_performer_unittest.cc",
     "auth_session_authenticator_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",

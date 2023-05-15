@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -345,6 +346,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             }
             Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
                 if (confirmed) {
+                    RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                            DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
+                            DeleteBrowsingDataAction.MAX_VALUE);
+
                     SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
                             mSite, mDataClearedCallback);
                 }
@@ -1203,6 +1208,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         RecordHistogram.recordEnumeratedHistogram("SingleWebsitePreferences.NavigatedFromToReset",
                 navigationSource, SettingsNavigationSource.NUM_ENTRIES);
 
+        // Deletion horizontal product metrics
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);
         if (finishActivityImmediately) {
             getActivity().finish();
         }

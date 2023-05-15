@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -68,7 +69,7 @@ class KnownUserTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   // Owned by |scoped_user_manager_|.
-  FakeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<FakeUserManager, ExperimentalAsh> fake_user_manager_ = nullptr;
   std::unique_ptr<ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple local_state_;
 };

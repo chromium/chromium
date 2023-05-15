@@ -177,7 +177,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // parent to prevent cross-channel communication.
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
-      bool is_opaque_ads_mode);
+      base::span<const blink::mojom::PermissionsPolicyFeature>
+          required_permissions_to_load);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
@@ -266,7 +267,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features,
-      bool is_opaque_ads_mode);
+      base::span<const blink::mojom::PermissionsPolicyFeature>
+          required_permissions_to_load);
 
   // Returns whether or not the given feature is enabled by this policy for a
   // specific origin given a set of opt-in features. The opt-in features cannot

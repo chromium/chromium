@@ -24,13 +24,8 @@ void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   const base::StringPiece features_file =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
   auto result = base::JSONReader::ReadAndReturnValueWithError(features_file);
-
-  DCHECK(result.has_value())
+  CHECK(result.has_value())
       << "Could not load features: " << name_ << " " << result.error().message;
-
-  if (!result.has_value()) {
-    return;
-  }
 
   auto* value_as_dict = result->GetIfDict();
   CHECK(value_as_dict) << name_;

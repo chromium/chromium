@@ -136,9 +136,8 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) override {
       content::RenderFrameHost* rfh = driver.render_frame_host();
+      std::unique_ptr<T> new_driver = CreateDriver(rfh, &factory);
       ContentAutofillDriverFactoryTestApi test_api(&factory);
-      ContentAutofillRouter* router = &test_api.router();
-      std::unique_ptr<T> new_driver = CreateDriver(rfh, router);
       owner_->drivers_[rfh] = new_driver.get();
       // This is spectacularly hacky as it relies on an implementation detail of
       // ContentAutofillDriverFactory::DriverForFrame(), which fires this event:
@@ -158,9 +157,9 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
 
    private:
     std::unique_ptr<T> CreateDriver(content::RenderFrameHost* rfh,
-                                    ContentAutofillRouter* router) {
+                                    ContentAutofillDriverFactory* factory) {
       auto* client = ContentAutofillClient::FromWebContents(web_contents());
-      auto driver = std::make_unique<T>(rfh, router);
+      auto driver = std::make_unique<T>(rfh, factory);
       driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
           driver.get(), client, "en-US"));
       return driver;

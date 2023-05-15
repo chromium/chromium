@@ -322,7 +322,7 @@ void NetworkDeviceHandlerImpl::Init(
     NetworkStateHandler* network_state_handler) {
   DCHECK(network_state_handler);
   network_state_handler_ = network_state_handler;
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {

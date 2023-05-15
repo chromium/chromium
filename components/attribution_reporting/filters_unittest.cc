@@ -172,8 +172,7 @@ TEST(FilterDataTest, Create_ProhibitsSourceTypeFilter) {
 
 TEST(FiltersTest, FromJSON_AllowsSourceTypeFilter) {
   auto value = base::test::ParseJson(R"json({"source_type": ["event"]})json");
-  auto result = FiltersFromJSONForTesting(&value);
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_TRUE(FiltersFromJSONForTesting(&value).has_value());
 }
 
 TEST(FilterDataTest, Create_LimitsFilterCount) {

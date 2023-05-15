@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -200,14 +201,13 @@ void BucketManagerHost::DidGetBucket(
         case storage::QuotaError::kNone:
         case storage::QuotaError::kEntryExistsError:
         case storage::QuotaError::kFileOperationError:
-          NOTREACHED();
-          ABSL_FALLTHROUGH_INTENDED;
+          NOTREACHED_NORETURN();
         case storage::QuotaError::kNotFound:
         case storage::QuotaError::kDatabaseError:
         case storage::QuotaError::kUnknownError:
           return blink::mojom::BucketError::kUnknown;
       }
-    }(result.error());
+    }(result.error().quota_error);
     std::move(callback).Run(mojo::NullRemote(), error);
     return;
   }
@@ -228,20 +228,13 @@ void BucketManagerHost::DidGetBucket(
 void BucketManagerHost::DidGetBuckets(
     KeysCallback callback,
     storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-  if (!buckets.has_value()) {
-    std::move(callback).Run({}, false);
-    return;
-  }
-
   std::vector<std::string> keys;
-  for (auto& bucket : buckets.value()) {
+  for (const auto& bucket : buckets.value_or(std::set<storage::BucketInfo>())) {
     if (!bucket.is_default()) {
-      keys.push_back(bucket.name);
+      keys.insert(base::ranges::upper_bound(keys, bucket.name), bucket.name);
     }
   }
-  std::sort(keys.begin(), keys.end());
-
-  std::move(callback).Run(keys, true);
+  std::move(callback).Run(keys, buckets.has_value());
 }
 
 void BucketManagerHost::DidDeleteBucket(const std::string& bucket_name,

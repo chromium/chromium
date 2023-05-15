@@ -11,11 +11,9 @@
 
 namespace blink {
 
-NGInlineItemResult::NGInlineItemResult() : item(nullptr), item_index(0) {}
-
 NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
                                        unsigned index,
-                                       const NGTextOffset& text_offset,
+                                       const NGTextOffsetRange& text_offset,
                                        bool break_anywhere_if_overflow,
                                        bool should_create_line_box,
                                        bool has_unpositioned_floats)
@@ -27,21 +25,24 @@ NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
       has_unpositioned_floats(has_unpositioned_floats) {}
 
 void NGInlineItemResult::ShapeHyphen() {
-  DCHECK(!hyphen_string);
-  DCHECK(!hyphen_shape_result);
+  DCHECK(!hyphen);
   DCHECK(item);
   DCHECK(item->Style());
-  const ComputedStyle& style = *item->Style();
-  hyphen_string = style.HyphenString();
-  HarfBuzzShaper shaper(hyphen_string);
-  hyphen_shape_result = shaper.Shape(&style.GetFont(), style.Direction());
+  hyphen.Shape(*item->Style());
 }
 
 #if DCHECK_IS_ON()
 void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
   DCHECK(item);
+  text_offset.AssertValid();
+  DCHECK_GE(text_offset.start, item->StartOffset());
+  DCHECK_LE(text_offset.end, item->EndOffset());
   if (item->Type() == NGInlineItem::kText) {
-    text_offset.AssertNotEmpty();
+    if (!Length()) {
+      // Empty text item should not have a `shape_result`.
+      DCHECK(!shape_result);
+      return;
+    }
     if (allow_null_shape_result && !shape_result)
       return;
     DCHECK(shape_result);

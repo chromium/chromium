@@ -7,7 +7,6 @@ package org.chromium.content.app;
 import android.os.Process;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Handler that immediately kills the current process on an uncaught exception.
@@ -19,7 +18,6 @@ import org.chromium.build.annotations.MainDex;
  * This does not have any exception handling or crash reporting. Such handlers should be
  * chained before this handler.
  */
-@MainDex
 class KillChildUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
     private boolean mCrashing;
 

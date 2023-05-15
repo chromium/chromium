@@ -34,19 +34,27 @@
 
   self.actionHandler = actionHandler;
   self.presentationController.delegate = self;
-  if (@available(iOS 15, *)) {
-    self.modalPresentationStyle = UIModalPresentationPageSheet;
-    self.sheetPresentationController.preferredCornerRadius = 20;
+
+  self.modalPresentationStyle = UIModalPresentationPageSheet;
+  self.sheetPresentationController.preferredCornerRadius = 20;
+
+  if (@available(iOS 16, *)) {
+    self.sheetPresentationController.detents = @[
+      // Add custom detent to fit content vertically.
+      self.preferredHeightDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  } else {
     self.sheetPresentationController.detents = @[
       UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent,
+      UISheetPresentationControllerDetent.largeDetent
     ];
-    // prefersEdgeAttachedInCompactHeight just controls attaching to the bottom,
-    // not the sheet height.
-    self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  } else {
-    self.modalPresentationStyle = UIModalPresentationFormSheet;
   }
+
+  // prefersEdgeAttachedInCompactHeight just controls attaching to the bottom,
+  // not the sheet height.
+  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+
   return self;
 }
 

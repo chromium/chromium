@@ -2022,6 +2022,7 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_memory_object_fuchsia;
   bool b_GL_ANGLE_multi_draw;
   bool b_GL_ANGLE_provoking_vertex;
+  bool b_GL_ANGLE_renderability_validation;
   bool b_GL_ANGLE_request_extension;
   bool b_GL_ANGLE_robust_client_memory;
   bool b_GL_ANGLE_robust_resource_initialization;

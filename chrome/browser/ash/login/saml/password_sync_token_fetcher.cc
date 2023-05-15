@@ -190,8 +190,7 @@ void PasswordSyncTokenFetcher::OnAccessTokenFetchComplete(
 }
 
 void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
-  base::Value request_data(base::Value::Type::DICT);
-  request_data.SetStringKey(kTokenTypeKey, kTokenTypeValue);
+  auto request_data = base::Value::Dict().Set(kTokenTypeKey, kTokenTypeValue);
   std::string request_string;
   if (!base::JSONWriter::Write(request_data, &request_string)) {
     LOG(ERROR) << "Not able to serialize token request body.";

@@ -44,8 +44,7 @@ class ReportQueueManualTestContextTest : public testing::Test {
         std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
             new MockReportQueue(), base::OnTaskRunnerDeleter(task_runner_));
 
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("ABCDEF"));
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("ABCDEF"));
   }
 
   StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>> BuildQueue(

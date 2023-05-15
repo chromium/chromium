@@ -11,12 +11,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
-namespace page_info {
-namespace proto {
-class SiteInfo;
-}
-}  // namespace page_info
-
 class ChromePageInfoUiDelegate;
 class PageInfo;
 class PageInfoNavigationHandler;
@@ -70,7 +64,8 @@ class PageInfoViewFactory {
 
   // Creates a separator view with padding on top and bottom. Use with flex
   // layout only.
-  [[nodiscard]] static std::unique_ptr<views::View> CreateSeparator();
+  [[nodiscard]] static std::unique_ptr<views::View> CreateSeparator(
+      int horizontal_inset = 0);
 
   // Creates a label container view with padding on left and right side.
   // Supports multiple multiline labels in a column (ex. title and subtitle
@@ -156,8 +151,6 @@ class PageInfoViewFactory {
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreatePermissionPageView(
       ContentSettingsType type);
-  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSitePageView(
-      const page_info::proto::SiteInfo& info);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
 

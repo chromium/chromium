@@ -130,8 +130,10 @@ GpuMojoMediaClient::GpuMojoMediaClient(
 GpuMojoMediaClient::~GpuMojoMediaClient() = default;
 
 std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  return CreatePlatformAudioDecoder(std::move(task_runner));
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log) {
+  return CreatePlatformAudioDecoder(std::move(task_runner),
+                                    std::move(media_log));
 }
 
 std::unique_ptr<AudioEncoder> GpuMojoMediaClient::CreateAudioEncoder(

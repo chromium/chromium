@@ -256,18 +256,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
-                       RunsAudioVideoWebRTCCallInTwoTabsGetStatsCallback) {
-  StartServerAndOpenTabs();
-  SetupPeerconnectionWithLocalStream(left_tab_);
-  SetupPeerconnectionWithLocalStream(right_tab_);
-  NegotiateCall(left_tab_, right_tab_);
-
-  VerifyStatsGeneratedCallback(left_tab_);
-
-  DetectVideoAndHangUp();
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        GetPeerToPeerConnectionsCountChangeFromNetworkService) {
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 
@@ -277,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
   SetupPeerconnectionWithLocalStream(right_tab_);
   NegotiateCall(left_tab_, right_tab_);
 
-  VerifyStatsGeneratedCallback(left_tab_);
+  VerifyStatsGeneratedPromise(left_tab_);
   EXPECT_EQ(2u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 
   DetectVideoAndHangUp();

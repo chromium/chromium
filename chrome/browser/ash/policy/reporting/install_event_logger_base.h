@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOGGER_BASE_H_
 
 #include "ash/components/arc/arc_prefs.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -87,7 +88,7 @@ class InstallEventLoggerBase {
  protected:
   // The profile whose install requests to log.
   // This applies both to ARC++ apps and extensions.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Adds |event| to the log for all apps in |ids|.
   virtual void AddForSetOfApps(const std::set<AppId>& ids,

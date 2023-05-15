@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "dbus/message.h"
 
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
@@ -46,7 +47,8 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   if (error_name == hermes::kErrorWrongState) {
     return HermesResponseStatus::kErrorWrongState;
   }
-  if (error_name == hermes::kErrorNoResponse) {
+  if (error_name == hermes::kErrorNoResponse ||
+      error_name == DBUS_ERROR_NO_REPLY) {
     return HermesResponseStatus::kErrorNoResponse;
   }
   if (error_name == hermes::kErrorMalformedResponse) {
@@ -69,6 +71,12 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   }
   if (error_name == hermes::kErrorSendHttpsFailure) {
     return HermesResponseStatus::kErrorSendHttpsFailure;
+  }
+  if (error_name == hermes::kErrorUnexpectedModemManagerState) {
+    return HermesResponseStatus::kErrorUnexpectedModemManagerState;
+  }
+  if (error_name == hermes::kErrorModemMessageProcessing) {
+    return HermesResponseStatus::kErrorModemMessageProcessing;
   }
 
   return HermesResponseStatus::kErrorUnknown;
@@ -118,6 +126,10 @@ std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
       return stream << "[kErrorSendApduFailure]";
     case HermesResponseStatus::kErrorSendHttpsFailure:
       return stream << "[kErrorSendHttpsFailure]";
+    case HermesResponseStatus::kErrorUnexpectedModemManagerState:
+      return stream << "[kErrorUnexpectedModemManagerState]";
+    case HermesResponseStatus::kErrorModemMessageProcessing:
+      return stream << "[kErrorModemMessageProcessing]";
   }
   return stream << (static_cast<int>(status));
 }

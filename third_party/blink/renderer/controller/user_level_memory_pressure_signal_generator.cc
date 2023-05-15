@@ -40,19 +40,17 @@ void UserLevelMemoryPressureSignalGenerator::Initialize(
   DEFINE_STATIC_LOCAL(
       UserLevelMemoryPressureSignalGenerator, generator,
       (std::move(task_runner),
-       platform->InertIntervalOfUserLevelMemoryPressureSignal(),
-       platform->MinimumIntervalOfUserLevelMemoryPressureSignal()));
+       platform->InertAndMinimumIntervalOfUserLevelMemoryPressureSignal()));
   (void)generator;
 }
 
 UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::TimeDelta inert_interval,
-    base::TimeDelta minimum_interval)
+    std::pair<base::TimeDelta, base::TimeDelta> inert_and_minimum_interval)
     : UserLevelMemoryPressureSignalGenerator(
           std::move(task_runner),
-          inert_interval,
-          minimum_interval,
+          inert_and_minimum_interval.first,
+          inert_and_minimum_interval.second,
           base::DefaultTickClock::GetInstance(),
           ThreadScheduler::Current()->ToMainThreadScheduler()) {}
 

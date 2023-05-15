@@ -64,8 +64,9 @@ void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
   DCHECK_GE(blur, 0);
 
   // Detect when there's no effective shadow.
-  if (!color.Alpha())
+  if (color.IsFullyTransparent()) {
     return;
+  }
 
   SkColor sk_color = color.Rgb();
 

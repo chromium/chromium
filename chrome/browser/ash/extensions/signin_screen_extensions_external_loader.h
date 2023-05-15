@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_SIGNIN_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_SIGNIN_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -55,7 +56,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   // Starts loading the force-installed extensions specified via prefs.
   void UpdateStateFromPrefs();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   // Owned by ExtensionService, outlives |this|.
   ExternalCacheImpl external_cache_;
   PrefChangeRegistrar pref_change_registrar_;

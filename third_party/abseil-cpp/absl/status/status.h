@@ -398,7 +398,7 @@ inline StatusToStringMode& operator^=(StatusToStringMode& lhs,
 //
 //   * It may provide more fine-grained semantic information about the error to
 //     facilitate actionable remedies.
-//   * It may provide human-readable contexual information that is more
+//   * It may provide human-readable contextual information that is more
 //     appropriate to display to an end user.
 //
 // Example:
@@ -538,7 +538,7 @@ class Status final {
   //
   //   * It may provide more fine-grained semantic information about the error
   //     to facilitate actionable remedies.
-  //   * It may provide human-readable contexual information that is more
+  //   * It may provide human-readable contextual information that is more
   //     appropriate to display to an end user.
   //
   // A payload consists of a [key,value] pair, where the key is a string

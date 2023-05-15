@@ -113,7 +113,10 @@ class SavedPasswordsPresenterWaiter
     return presenter_->GetSavedCredentials().size() == n_passwords_;
   }
 
-  void OnSavedPasswordsChanged() override { CheckExitCondition(); }
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override {
+    CheckExitCondition();
+  }
 
   const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   const size_t n_passwords_;

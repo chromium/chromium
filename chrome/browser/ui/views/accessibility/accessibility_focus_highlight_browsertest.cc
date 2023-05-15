@@ -21,7 +21,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -59,11 +58,6 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kAccessibilityFocusHighlight);
     InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Force the CPU backend to use AAA. (https://crbug.com/1421297)
-    command_line->AppendSwitch(switches::kForceSkiaAnalyticAntialiasing);
   }
 
   bool ColorsApproximatelyEqual(SkColor color1, SkColor color2) {
@@ -184,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::string script("document.getElementById('div').focus();");
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
 
   // Now wait until at least 0.1% of the image has the focus ring's highlight
   // color. If it never does, the test will time out.
@@ -207,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
-  ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
   auto details = observer.Wait();
 
   gfx::Rect bounds = details.node_bounds_in_screen;
@@ -277,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
-  ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
   observer.Wait();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   AccessibilityFocusHighlight* highlight =

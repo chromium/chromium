@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_default.h"
 
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -46,13 +47,13 @@ static const float kMinCancelButtonSize = 5;
 static const float kMaxCancelButtonSize = 21;
 
 Color LayoutThemeDefault::active_selection_background_color_ =
-    Color::FromRGBA32(0xFF1967D2);
+    Color::FromRGBA32(kDefaultActiveSelectionBgColor);
 Color LayoutThemeDefault::active_selection_foreground_color_ =
-    Color::FromRGBA32(0xFF000000);
+    Color::FromRGBA32(kDefaultActiveSelectionFgColor);
 Color LayoutThemeDefault::inactive_selection_background_color_ =
-    Color::FromRGBA32(0xFFC8C8C8);
+    Color::FromRGBA32(kDefaultInactiveSelectionBgColor);
 Color LayoutThemeDefault::inactive_selection_foreground_color_ =
-    Color::FromRGBA32(0xFF323232);
+    Color::FromRGBA32(kDefaultInactiveSelectionFgColor);
 Color
     LayoutThemeDefault::active_list_box_selection_background_color_dark_mode_ =
         Color::FromRGBA32(0xFF99C8FF);

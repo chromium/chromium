@@ -36,8 +36,8 @@ namespace {
 using ::content::UsbChooser;
 
 UsbChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
-  return UsbChooserContextFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  return profile ? UsbChooserContextFactory::GetForProfile(profile) : nullptr;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -255,21 +255,28 @@ std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
 bool ChromeUsbDelegate::CanRequestDevicePermission(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  return GetChooserContext(browser_context)->CanRequestObjectPermission(origin);
+  return browser_context &&
+         GetChooserContext(browser_context)->CanRequestObjectPermission(origin);
 }
 
 void ChromeUsbDelegate::RevokeDevicePermissionWebInitiated(
     content::BrowserContext* browser_context,
     const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device) {
-  GetChooserContext(browser_context)
-      ->RevokeDevicePermissionWebInitiated(origin, device);
+  auto* chooser_context = GetChooserContext(browser_context);
+  if (chooser_context) {
+    chooser_context->RevokeDevicePermissionWebInitiated(origin, device);
+  }
 }
 
 const device::mojom::UsbDeviceInfo* ChromeUsbDelegate::GetDeviceInfo(
     content::BrowserContext* browser_context,
     const std::string& guid) {
-  return GetChooserContext(browser_context)->GetDeviceInfo(guid);
+  auto* chooser_context = GetChooserContext(browser_context);
+  if (!chooser_context) {
+    return nullptr;
+  }
+  return chooser_context->GetDeviceInfo(guid);
 }
 
 bool ChromeUsbDelegate::HasDevicePermission(
@@ -279,14 +286,19 @@ bool ChromeUsbDelegate::HasDevicePermission(
   if (IsDevicePermissionAutoGranted(origin, device))
     return true;
 
-  return GetChooserContext(browser_context)
-      ->HasDevicePermission(origin, device);
+  return browser_context && GetChooserContext(browser_context)
+                                ->HasDevicePermission(origin, device);
 }
 
 void ChromeUsbDelegate::GetDevices(
     content::BrowserContext* browser_context,
     blink::mojom::WebUsbService::GetDevicesCallback callback) {
-  GetChooserContext(browser_context)->GetDevices(std::move(callback));
+  auto* chooser_context = GetChooserContext(browser_context);
+  if (!chooser_context) {
+    std::move(callback).Run(std::vector<device::mojom::UsbDeviceInfoPtr>());
+    return;
+  }
+  chooser_context->GetDevices(std::move(callback));
 }
 
 void ChromeUsbDelegate::GetDevice(
@@ -295,23 +307,33 @@ void ChromeUsbDelegate::GetDevice(
     base::span<const uint8_t> blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client) {
-  GetChooserContext(browser_context)
-      ->GetDevice(guid, blocked_interface_classes, std::move(device_receiver),
-                  std::move(device_client));
+  auto* chooser_context = GetChooserContext(browser_context);
+  if (chooser_context) {
+    chooser_context->GetDevice(guid, blocked_interface_classes,
+                               std::move(device_receiver),
+                               std::move(device_client));
+  }
 }
 
 void ChromeUsbDelegate::AddObserver(content::BrowserContext* browser_context,
                                     Observer* observer) {
+  if (!browser_context) {
+    return;
+  }
   GetContextObserver(browser_context)->AddObserver(observer);
 }
 
 void ChromeUsbDelegate::RemoveObserver(content::BrowserContext* browser_context,
                                        Observer* observer) {
+  if (!browser_context) {
+    return;
+  }
   GetContextObserver(browser_context)->RemoveObserver(observer);
 }
 
 ChromeUsbDelegate::ContextObservation* ChromeUsbDelegate::GetContextObserver(
     content::BrowserContext* browser_context) {
+  CHECK(browser_context);
   if (!base::Contains(observations_, browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));

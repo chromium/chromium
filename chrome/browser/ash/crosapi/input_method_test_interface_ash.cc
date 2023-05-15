@@ -41,7 +41,9 @@ void OverrideTextInputMethod(ash::TextInputMethod* text_input_method) {
 
 bool HasCapability(const base::StringPiece capability) {
   return capability == kInputMethodTestCapabilitySendKeyModifiers ||
-         capability == kInputMethodTestCapabilityConfirmComposition;
+         capability == kInputMethodTestCapabilityConfirmComposition ||
+         capability == kInputMethodTestCapabilityAlwaysConfirmComposition ||
+         capability == kInputMethodTestCapabilityDeleteSurroundingText;
 }
 
 }  // namespace
@@ -206,6 +208,15 @@ void InputMethodTestInterfaceAsh::HasCapabilities(
 void InputMethodTestInterfaceAsh::ConfirmComposition(
     ConfirmCompositionCallback callback) {
   text_input_target_->ConfirmComposition(/*reset_engine=*/false);
+  std::move(callback).Run();
+}
+
+void InputMethodTestInterfaceAsh::DeleteSurroundingText(
+    uint32_t length_before_selection,
+    uint32_t length_after_selection,
+    DeleteSurroundingTextCallback callback) {
+  text_input_target_->DeleteSurroundingText(length_before_selection,
+                                            length_after_selection);
   std::move(callback).Run();
 }
 

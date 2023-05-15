@@ -409,7 +409,8 @@ struct ProbeCpuCStateInfo {
 
 // Information related to a particular logical CPU.
 //
-// Next ID: 5
+// Next ID: 6
+// Next MinVersion: 2
 [Stable]
 struct ProbeLogicalCpuInfo {
   // The max CPU clock speed in kHz.
@@ -422,6 +423,8 @@ struct ProbeLogicalCpuInfo {
   UInt64Value? idle_time_ms@3;
   // Information about the logical CPU's time in various C-states.
   array<ProbeCpuCStateInfo> c_states@4;
+  // The core number this logical CPU corresponds to.
+  [MinVersion=1] UInt32Value? core_id@5;
 };
 
 // Information related to a particular physical CPU.

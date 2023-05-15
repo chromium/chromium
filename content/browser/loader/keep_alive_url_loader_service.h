@@ -19,20 +19,29 @@
 
 namespace content {
 
-// A service that stores bound SharedURLLoaderFactory mojo pipes. Every remote
-// of the pipes can be used to create a URLLoader that loads fetch keepalive
-// requests. The service is responsible for keeping the loaders in
-// `loader_receivers_`.
+class PolicyContainerHost;
+
+// A service that stores bound SharedURLLoaderFactory mojo pipes and the loaders
+// they have created to load fetch keepalive requests.
 //
-// A renderer can ask this service to handle `fetch(..., {keepalive: true})` or
-// `navigator.sendBeacon()` requests by using a remote of URLLoaderFactory bound
-// to this service by `BindFactory()`,
+// A fetch keepalive request is originated from a JS call to
+// `fetch(..., {keepalive: true})` or `navigator.sendBeacon()`. A renderer can
+// ask this service to handle such request by using a remote of
+// mojom::URLLoaderFactory bound to this service by `BindFactory()`, which also
+// binds RenderFrameHostImpl-specific context with every receiver.
+//
+// Calling the remote `CreateLoaderAndStart()` will create a
+// `KeepAliveURLLoader` in browser. The service is also responsible for keeping
+// these loaders in `loader_receivers_` until the corresponding request
+// completes or fails.
 //
 // Handling keepalive requests in this service allows a request to continue even
 // if a renderer unloads before completion, i.e. the request is "keepalive".
 //
+// This service is created and stored in every `StoragePartitionImpl` instance.
+//
 // Design Doc:
-// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoaderService {
  public:
   explicit KeepAliveURLLoaderService();
@@ -47,9 +56,14 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   //
   // The remote of `receiver` can be passed to another process, i.e. renderer,
   // to handle fetch keepalive requests.
+  //
+  // `policy_container_host` is the policy host of the frame that is going to
+  // use the remote of `receiver` to load requests. It must not be null.
   void BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory);
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
+      scoped_refptr<PolicyContainerHost> policy_container_host);
 
   // For testing only:
   size_t NumLoadersForTesting() const;

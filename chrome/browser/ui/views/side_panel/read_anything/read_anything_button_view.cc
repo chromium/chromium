@@ -28,11 +28,19 @@ ReadAnythingButtonView::ReadAnythingButtonView(
   SetTooltipText(tooltip);
 }
 
+bool ReadAnythingButtonView::IsGroupFocusTraversable() const {
+  // Only the first item in the toolbar should be reachable with tab
+  return false;
+}
+
 void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
                                         int icon_size,
-                                        ui::ColorId icon_color) {
+                                        ui::ColorId icon_color,
+                                        ui::ColorId focus_ring_color) {
   views::SetImageFromVectorIconWithColorId(this, icon, icon_color, icon_color,
                                            icon_size);
+  DCHECK(views::FocusRing::Get(this));
+  views::FocusRing::Get(this)->SetColorId(focus_ring_color);
 }
 
 void ReadAnythingButtonView::Enable() {

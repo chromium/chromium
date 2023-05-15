@@ -219,9 +219,13 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       base::FeatureList::OVERRIDE_USE_DEFAULT;
   if (feature_name.find(kCrOSLateBootFeaturePrefix) == 0) {
     state = feature_list_accessor_->GetOverrideStateByFeatureName(feature_name);
+  } else {
+    LOG(ERROR) << "Invalid prefix on feature " << feature_name << " (want "
+               << kCrOSLateBootFeaturePrefix << ")";
   }
   if (state == base::FeatureList::OVERRIDE_USE_DEFAULT) {
-    LOG(ERROR) << "Unexpected feature name '" << feature_name << "'";
+    VLOG(1) << "Unexpected feature name '" << feature_name << "'"
+            << " (likely just indicates there isn't a variations seed).";
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS, "Unexpected feature name."));
@@ -261,7 +265,8 @@ void ChromeFeaturesServiceProvider::GetFeatureParams(
     }
 
     if (feature_name.find(kCrOSLateBootFeaturePrefix) != 0) {
-      LOG(ERROR) << "Unexpected feature name '" << feature_name << "'";
+      LOG(ERROR) << "Unexpected prefix on feature name '" << feature_name << "'"
+                 << " (want " << kCrOSLateBootFeaturePrefix << ")";
       std::move(response_sender)
           .Run(dbus::ErrorResponse::FromMethodCall(method_call,
                                                    DBUS_ERROR_INVALID_ARGS,
@@ -283,7 +288,8 @@ void ChromeFeaturesServiceProvider::GetFeatureParams(
     std::map<std::string, std::string> per_feature_map;
     if (!feature_list_accessor_->GetParamsByFeatureName(feature_name,
                                                         &per_feature_map)) {
-      LOG(ERROR) << "No trial found for '" << feature_name << "', skipping.";
+      VLOG(1) << "No trial found for '" << feature_name << "', skipping."
+              << " (likely just means there is no variations seed)";
       continue;
     }
     params_map[feature_name] = std::move(per_feature_map);

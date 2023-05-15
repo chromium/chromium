@@ -439,9 +439,9 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
          blink::mojom::PermissionStatus::GRANTED;
 }
 
-// Adjust the requested |bounds| for opening or placing a window and return the
-// id of the display where the window will be placed. The bounds may not extend
-// outside a single screen's work area, and the |host| requires permission to
+// Adjust the requested `rect` for opening or placing a window and return the id
+// of the display where the window will be placed. The bounds may not extend
+// outside a single screen's work area, and the `host` requires permission to
 // specify bounds on a screen other than its current screen.
 // TODO(crbug.com/897300): These adjustments are inaccurate for window.open(),
 // which specifies the inner content size, and for window.moveTo, resizeTo, etc.
@@ -449,17 +449,19 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
 // indicate uninitialized placement information in the renderer. Constraints
 // enforced later should resolve most inaccuracies, but this early enforcement
 // is needed to ensure bounds indicate the appropriate display.
-int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
+int64_t AdjustRequestedWindowBounds(gfx::Rect* rect, RenderFrameHost* host) {
   auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayMatching(*bounds);
+  auto display = screen->GetDisplayMatching(*rect);
 
   // Check, but do not prompt, for permission to place windows on other screens.
   // Sites generally need permission to get such bounds in the first place.
   // Also clamp offscreen bounds to the window's current screen.
-  if (!bounds->Intersects(display.bounds()) || !IsWindowManagementGranted(host))
-    display = screen->GetDisplayNearestView(host->GetNativeView());
-
-  bounds->AdjustToFit(display.work_area());
+  if (!rect->Intersects(display.bounds()) || !IsWindowManagementGranted(host)) {
+    // Use the main frame's NativeView; cross-origin iframes yield null.
+    gfx::NativeView view = host->GetOutermostMainFrame()->GetNativeView();
+    display = screen->GetDisplayNearestView(view);
+  }
+  rect->AdjustToFit(display.work_area());
   return display.id();
 }
 
@@ -1371,14 +1373,18 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   // TODO(cbentzel): remove this debugging code?
   if (delegate == delegate_)
     return;
-  if (delegate_)
+  const bool had_delegate = !!delegate_;
+  if (had_delegate) {
     delegate_->Detach(this);
+  }
   delegate_ = delegate;
   if (delegate_) {
     delegate_->Attach(this);
     // RenderFrameDevToolsAgentHost should not be told about the WebContents
     // until there is a `delegate_`.
-    RenderFrameDevToolsAgentHost::AttachToWebContents(this);
+    if (!had_delegate) {
+      RenderFrameDevToolsAgentHost::AttachToWebContents(this);
+    }
   }
 
   // Re-read values from the new delegate and apply them.
@@ -2034,7 +2040,8 @@ double WebContentsImpl::GetLoadProgress() {
 }
 
 bool WebContentsImpl::ShouldShowLoadingUI() {
-  return IsLoading() && should_show_loading_ui_;
+  return primary_frame_tree_.GetLoadingState() ==
+         LoadingState::LOADING_UI_REQUESTED;
 }
 
 bool WebContentsImpl::IsDocumentOnLoadCompletedInPrimaryMainFrame() {
@@ -2878,11 +2885,14 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.threaded_scrolling_enabled =
       !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
 
+#if BUILDFLAG(IS_ANDROID)
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
-          blink::features::kDefaultViewportIsDeviceWidth)) {
+          blink::features::kDefaultViewportIsDeviceWidth) &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
+#endif
 
   if (GetController().GetVisibleEntry() &&
       GetController().GetVisibleEntry()->GetIsOverridingUserAgent()) {
@@ -6872,17 +6882,14 @@ void WebContentsImpl::ResetLoadProgressState() {
 
 // Notifies the RenderWidgetHost instance about the fact that the page is
 // loading, or done loading.
-void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
-                                          LoadNotificationDetails* details) {
+void WebContentsImpl::LoadingStateChanged(LoadingState new_state) {
   if (IsBeingDestroyed())
     return;
 
-  bool is_loading = IsLoading();
-
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LoadingStateChanged",
-                        "is_loading", is_loading);
+                        "loading_state", new_state);
 
-  if (!is_loading) {
+  if (new_state == LoadingState::NONE) {
     load_state_ =
         net::LoadStateWithParam(net::LOAD_STATE_IDLE, std::u16string());
     load_state_host_.clear();
@@ -6890,34 +6897,11 @@ void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
     upload_position_ = 0;
   }
 
-  should_show_loading_ui_ = should_show_loading_ui;
-
-  if (delegate_)
-    delegate_->LoadingStateChanged(this, should_show_loading_ui_);
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_LOAD);
-
-  std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
-  if (is_loading) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-        "browser,navigation", "WebContentsImpl Loading", this, "URL", url,
-        "Primary Main FrameTreeNode id",
-        GetPrimaryFrameTree().root()->frame_tree_node_id());
-    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
-    observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
-  } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "browser,navigation", "WebContentsImpl Loading", this, "URL", url);
-    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
-    observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
+  if (delegate_) {
+    delegate_->LoadingStateChanged(
+        this, new_state == LoadingState::LOADING_UI_REQUESTED);
   }
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  int type = is_loading ? NOTIFICATION_LOAD_START : NOTIFICATION_LOAD_STOP;
-  NotificationDetails det = NotificationService::NoDetails();
-  if (details)
-    det = Details<LoadNotificationDetails>(details);
-  NotificationService::current()->Notify(
-      type, Source<NavigationController>(&GetController()), det);
+  NotifyNavigationStateChanged(INVALIDATE_TYPE_LOAD);
 }
 
 void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
@@ -7608,6 +7592,11 @@ void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
   OnPreferredSizeChanged(old_size);
 }
 
+// TODO(https://crbug.com/1424417): This function is used exclusively for COOP
+// reporting, to determine what other pages might try to access this page, for
+// the purpose of installing and removing access reporters. Update it to handle
+// CoopRelatedGroups instead of BrowsingContextGroups as a part of COOP:
+// restrict-properties reporting implementation.
 std::vector<RenderFrameHostImpl*>
 WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     RenderFrameHostImpl* render_frame_host) {
@@ -7638,14 +7627,21 @@ PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {
   return prerender_host_registry_.get();
 }
 
-void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
-                                      bool should_show_loading_ui) {
+void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
                         "frame_tree_node", frame_tree_node);
-  LoadingStateChanged(
-      frame_tree_node->GetFrameType() == FrameType::kPrimaryMainFrame &&
-          should_show_loading_ui,
-      nullptr);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+      "browser,navigation", "WebContentsImpl Loading", this, "URL", "NULL",
+      "Primary Main FrameTreeNode id",
+      GetPrimaryFrameTree().root()->frame_tree_node_id());
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
+  observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
+
+  // TODO(avi): Remove. http://crbug.com/170921
+  NotificationService::current()->Notify(
+      NOTIFICATION_LOAD_START, Source<NavigationController>(&GetController()),
+      NotificationService::NoDetails());
 
   // Reset the focus state from DidStartNavigation to false if a new load starts
   // afterward, in case loading logic triggers a FocusLocationBarByDefault call.
@@ -7663,6 +7659,9 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
 
 void WebContentsImpl::DidStopLoading() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidStopLoading");
+  if (IsBeingDestroyed()) {
+    return;
+  }
   std::unique_ptr<LoadNotificationDetails> details;
 
   // Use the last committed entry rather than the active one, in case a
@@ -7677,7 +7676,20 @@ void WebContentsImpl::DidStopLoading() {
         GetController().GetCurrentEntryIndex());
   }
 
-  LoadingStateChanged(true /* should_show_loading_ui */, details.get());
+  std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
+  TRACE_EVENT_NESTABLE_ASYNC_END1("browser,navigation",
+                                  "WebContentsImpl Loading", this, "URL", url);
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
+  observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
+
+  // TODO(avi): Remove. http://crbug.com/170921
+  NotificationDetails det = NotificationService::NoDetails();
+  if (details) {
+    det = Details<LoadNotificationDetails>(details.get());
+  }
+  NotificationService::current()->Notify(
+      NOTIFICATION_LOAD_STOP, Source<NavigationController>(&GetController()),
+      det);
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
@@ -9189,11 +9201,11 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
 void WebContentsImpl::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
   ++suppress_unresponsive_renderer_count_;
   GetContentClient()->browser()->IsClipboardPasteContentAllowed(
-      this, url, data_type, data,
+      this, url, data_type, std::move(clipboard_paste_data),
       base::BindOnce(
           &WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -9201,8 +9213,8 @@ void WebContentsImpl::IsClipboardPasteContentAllowed(
 
 void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
     IsClipboardPasteContentAllowedCallback callback,
-    const absl::optional<std::string>& data) {
-  std::move(callback).Run(data);
+    absl::optional<ClipboardPasteData> clipboard_paste_data) {
+  std::move(callback).Run(std::move(clipboard_paste_data));
   --suppress_unresponsive_renderer_count_;
 }
 

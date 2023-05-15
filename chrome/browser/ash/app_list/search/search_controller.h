@@ -123,6 +123,8 @@ class SearchController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void OnDefaultSearchIsGoogleSet(bool is_google);
+
   std::u16string get_query();
 
   base::Time session_start();

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -61,8 +62,9 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
   // corresponding pref.
   void AddToCount(const std::string& pref_name, int num);
 
-  chromeos::PowerManagerClient* power_manager_client_;  // Not owned.
-  PrefService* pref_service_;                 // Not owned.
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
+      power_manager_client_;                            // Not owned.
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;  // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 

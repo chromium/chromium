@@ -8,13 +8,15 @@
 
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -56,8 +58,8 @@ constexpr float kEnterOrExitZeroStateScale = 0.6f;
 constexpr base::TimeDelta kLabelFadeInDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kLabelFadeInDuration = base::Milliseconds(50);
 
-// |settings| will be initialized with a fast-out-slow-in animation with the
-// given |duration|.
+// `settings` will be initialized with a fast-out-slow-in animation with the
+// given `duration`.
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
                                  base::TimeDelta duration) {
   settings->SetTransitionDuration(duration);
@@ -69,8 +71,8 @@ void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
 
-// Animates the transform of the layer of the given |view| from the supplied
-// |begin_transform| to the identity transform.
+// Animates the transform of the layer of the given `view` from the supplied
+// `begin_transform` to the identity transform.
 void AnimateView(views::View* view, const gfx::Transform& begin_transform) {
   ui::Layer* layer = view->layer();
   layer->SetTransform(begin_transform);
@@ -113,9 +115,9 @@ void AnimateMiniViews(std::vector<DeskMiniView*> mini_views,
   }
 }
 
-// Gets the scale transform for |view|, it can be scale up or scale down. The
-// anchor of the scale animation will be a point whose |x| is the center of the
-// desks bar while |y| is the top of the given |view|. GetMirroredX is used here
+// Gets the scale transform for `view`, it can be scale up or scale down. The
+// anchor of the scale animation will be a point whose `x` is the center of the
+// desk bar while `y` is the top of the given `view`. GetMirroredX is used here
 // to make sure the transform is correct while in RTL layout.
 gfx::Transform GetScaleTransformForView(views::View* view, int bar_x_center) {
   return gfx::GetScaleTransform(
@@ -123,7 +125,7 @@ gfx::Transform GetScaleTransformForView(views::View* view, int bar_x_center) {
       kEnterOrExitZeroStateScale);
 }
 
-// Scales down the given |view| to |kEnterOrExitZeroStateScale| and fading out
+// Scales down the given `view` to `kEnterOrExitZeroStateScale` and fading out
 // it at the same time.
 void ScaleDownAndFadeOutView(views::View* view, int bar_x_center) {
   ui::Layer* layer = view->layer();
@@ -134,7 +136,7 @@ void ScaleDownAndFadeOutView(views::View* view, int bar_x_center) {
   layer->SetOpacity(0.f);
 }
 
-// Scales up the given |view| from |kEnterOrExitZeroStateScale| to identity and
+// Scales up the given `view` from `kEnterOrExitZeroStateScale` to identity and
 // fading in it at the same time.
 void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
   DCHECK(view);
@@ -165,16 +167,16 @@ void UpdateAccessibilityFocusInOverview() {
 }
 
 // A self-deleting object that performs a fade out animation on
-// |removed_mini_view|'s layer by changing its opacity from 1 to 0 and scales
-// down it around the center of |bar_view| while switching back to zero state.
-// |removed_mini_view_| and the object itself will be deleted when the
+// `removed_mini_view`'s layer by changing its opacity from 1 to 0 and scales
+// down it around the center of `bar_view` while switching back to zero state.
+// `removed_mini_view_` and the object itself will be deleted when the
 // animation is complete.
 // TODO(afakhry): Consider generalizing HidingWindowAnimationObserverBase to be
 // reusable for the mini_view removal animation.
 class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
  public:
   RemovedMiniViewAnimation(DeskMiniView* removed_mini_view,
-                           DesksBarView* bar_view,
+                           DeskBarViewBase* bar_view,
                            const bool to_zero_state)
       : removed_mini_view_(removed_mini_view), bar_view_(bar_view) {
     removed_mini_view_->set_is_animating_to_remove(true);
@@ -198,7 +200,7 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
 
   ~RemovedMiniViewAnimation() override {
     DCHECK(removed_mini_view_->parent());
-    removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_);
+    removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_.get());
 
     if (Shell::Get()->overview_controller()->InOverviewSession()) {
       DCHECK(bar_view_);
@@ -211,36 +213,36 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
   void OnImplicitAnimationsCompleted() override { delete this; }
 
  private:
-  DeskMiniView* removed_mini_view_;
-  DesksBarView* const bar_view_;
+  raw_ptr<DeskMiniView, ExperimentalAsh> removed_mini_view_;
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
 };
 
-// A self-deleting object that performs bounds changes animation for the desks
+// A self-deleting object that performs bounds changes animation for the desk
 // bar while it switches between zero state and expanded state.
 // `is_bounds_animation_on_going_` will be used to help hold Layout calls during
 // the animation. Since Layout is expensive and will be called lots of times
 // during the bounds changes animation without doing this. The object itself
 // will be deleted when the animation is complete.
-class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
+class DeskBarBoundsAnimation : public ui::ImplicitAnimationObserver {
  public:
-  DesksBarBoundsAnimation(DesksBarView* bar_view, bool to_zero_state)
+  DeskBarBoundsAnimation(DeskBarViewBase* bar_view, bool to_zero_state)
       : bar_view_(bar_view) {
     auto* desks_widget = bar_view_->GetWidget();
     const gfx::Rect current_widget_bounds =
         desks_widget->GetWindowBoundsInScreen();
     gfx::Rect target_widget_bounds = current_widget_bounds;
-    // When `to_zero_state` is false, desks bar is switching from zero to
+    // When `to_zero_state` is false, desk bar is switching from zero to
     // expanded state.
     if (to_zero_state) {
-      target_widget_bounds.set_height(DesksBarView::kZeroStateBarHeight);
+      target_widget_bounds.set_height(kDeskBarZeroStateHeight);
 
       if (chromeos::features::IsJellyrollEnabled()) {
-        // When `Jellyroll` is enabled, setting desks bar's bounds to its bounds
+        // When `Jellyroll` is enabled, setting desk bar's bounds to its bounds
         // at zero state directly to layout its contents at the correct position
         // first before the animation. When `Jellyroll` is enabled, we use the
         // same buttons (default desk button and library) for both expanded
         // state and zero state, the scale up and fade in animation is applied
-        // to the buttona during the desks bar states transition, thus the
+        // to the buttona during the desk bar states transition, thus the
         // buttons need to be layout and put at the correct positions before the
         // animation starts.
         desks_widget->SetBounds(target_widget_bounds);
@@ -250,17 +252,18 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
         bar_view_->set_is_bounds_animation_on_going(true);
       }
     } else {
-      // While switching desks bar from zero state to expanded state, setting
+      // While switching desk bar from zero state to expanded state, setting
       // its bounds to its bounds at expanded state directly without animation,
       // which will trigger Layout and make sure the contents of
-      // desks bar(e.g, desk mini view, new desk button) are at the correct
+      // desk bar(e.g, desk mini view, new desk button) are at the correct
       // positions before the animation. And set `is_bounds_animation_on_going_`
       // to be true, which will help hold Layout until the animation is done.
-      // Then set the bounds of the desks bar back to its bounds at zero state
+      // Then set the bounds of the desk bar back to its bounds at zero state
       // to start the bounds change animation. See more details at
       // `is_bounds_animation_on_going_`.
-      target_widget_bounds.set_height(bar_view_->GetExpandedBarHeight(
-          desks_widget->GetNativeWindow()->GetRootWindow()));
+      target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
+          desks_widget->GetNativeWindow()->GetRootWindow(),
+          DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
       desks_widget->SetBounds(target_widget_bounds);
       bar_view_->set_is_bounds_animation_on_going(true);
       desks_widget->SetBounds(current_widget_bounds);
@@ -277,15 +280,15 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
     desks_widget->SetBounds(target_widget_bounds);
   }
 
-  DesksBarBoundsAnimation(const DesksBarBoundsAnimation&) = delete;
-  DesksBarBoundsAnimation& operator=(const DesksBarBoundsAnimation&) = delete;
+  DeskBarBoundsAnimation(const DeskBarBoundsAnimation&) = delete;
+  DeskBarBoundsAnimation& operator=(const DeskBarBoundsAnimation&) = delete;
 
-  ~DesksBarBoundsAnimation() override {
+  ~DeskBarBoundsAnimation() override {
     DCHECK(bar_view_);
     bar_view_->set_is_bounds_animation_on_going(false);
     if (Shell::Get()->overview_controller()->InOverviewSession()) {
-      // Updated the desk buttons and layout the desks bar to make sure the
-      // buttons visibility will be updated on desks bar state changes. Also
+      // Updated the desk buttons and layout the desk bar to make sure the
+      // buttons visibility will be updated on desk bar state changes. Also
       // make sure the button's text will be updated correctly while going back
       // to zero state.
       bar_view_->UpdateDeskButtonsVisibility();
@@ -298,7 +301,7 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
   void OnImplicitAnimationsCompleted() override { delete this; }
 
  private:
-  DesksBarView* const bar_view_;
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
 };
 
 // A self-deleting class that performs the scale up / down animation for the
@@ -375,13 +378,13 @@ class DeskIconButtonScaleAnimation {
   // `desk_icon_button_` is valid through the lifetime of `this `. Since when
   // the `desk_icon_button_` is destroyed, `OnAborted` will be triggered and
   // then the destructor of `this` will be triggered.
-  CrOSNextDeskIconButton* const desk_icon_button_;
+  const raw_ptr<CrOSNextDeskIconButton, ExperimentalAsh> desk_icon_button_;
 };
 
 }  // namespace
 
 void PerformNewDeskMiniViewAnimation(
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> new_mini_views,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
@@ -421,7 +424,7 @@ void PerformNewDeskMiniViewAnimation(
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
 
-  // The new desk button and the library button in the expanded desks bar
+  // The new desk button and the library button in the expanded desk bar
   // always move to the right when a new desk is added.
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
@@ -447,7 +450,7 @@ void PerformNewDeskMiniViewAnimation(
 }
 
 void PerformRemoveDeskMiniViewAnimation(
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     DeskMiniView* removed_mini_view,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
@@ -486,8 +489,9 @@ void PerformRemoveDeskMiniViewAnimation(
   }
 }
 
-void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
-  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
+void PerformZeroStateToExpandedStateMiniViewAnimation(
+    DeskBarViewBase* bar_view) {
+  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views())
     ScaleUpAndFadeInView(mini_view, bar_x_center);
@@ -502,13 +506,13 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
-    DesksBarView* bar_view) {
+    DeskBarViewBase* bar_view) {
   bar_view->new_desk_button()->UpdateState(
       CrOSNextDeskIconButton::State::kExpanded);
   auto* library_button = bar_view->library_button();
 
   if (library_button) {
-    if (bar_view->overview_grid()->WillShowSavedDeskLibrary()) {
+    if (bar_view->overview_grid()->IsShowingSavedDeskLibrary()) {
       // For library button, when it's at zero state and clicked, the desks bar
       // will expand, the overview grid will show the saved desk library, the
       // library button should be activated and focused.
@@ -518,7 +522,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
     }
   }
 
-  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
+  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
 
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views()) {
@@ -528,7 +532,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   ScaleUpAndFadeInView(bar_view->new_desk_button(), bar_x_center);
   if (library_button) {
     ScaleUpAndFadeInView(library_button, bar_x_center);
-    // Library button could be at active state when the desks bar is switched
+    // Library button could be at active state when the desk bar is switched
     // from the zero state to the expanded state, for example when clicking on
     // the library button at zero state. Thus we should also try to fade in the
     // library button label here.
@@ -541,11 +545,11 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 }
 
 void PerformExpandedStateToZeroStateMiniViewAnimation(
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> removed_mini_views) {
   for (auto* mini_view : removed_mini_views)
     new RemovedMiniViewAnimation(mini_view, bar_view, /*to_zero_state=*/true);
-  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
+  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
   const gfx::Rect bounds = bar_view->bounds();
   ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
                           bounds.CenterPoint().x());
@@ -579,7 +583,7 @@ void PerformReorderDeskMiniViewAnimation(
   const int start_index = move_right ? old_index : new_index + 1;
   const int end_index = move_right ? new_index : old_index + 1;
 
-  // Since |old_index| and |new_index| are unequal valid indices, there
+  // Since `old_index` and `new_index` are unequal valid indices, there
   // must be at least two desks.
   int shift_x = mini_views[0]->GetMirroredBounds().x() -
                 mini_views[1]->GetMirroredBounds().x();
@@ -624,7 +628,7 @@ void PerformLibraryButtonVisibilityAnimation(
 
 void PerformDeskIconButtonScaleAnimationCrOSNext(
     CrOSNextDeskIconButton* button,
-    DesksBarView* bar_view,
+    DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x) {
   new DeskIconButtonScaleAnimation(button, new_desk_button_rects_transform);

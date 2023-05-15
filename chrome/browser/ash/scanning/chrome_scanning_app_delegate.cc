@@ -22,6 +22,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/scanning/scan_service.h"
+#include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -125,6 +127,21 @@ void ChromeScanningAppDelegate::ShowFileInFilesApp(
       base::BindOnce(&ChromeScanningAppDelegate::OnPathExists,
                      weak_ptr_factory_.GetWeakPtr(), path_to_file,
                      std::move(callback)));
+}
+
+ChromeScanningAppDelegate::BindScanServiceCallback
+ChromeScanningAppDelegate::GetBindScanServiceCallback(content::WebUI* web_ui) {
+  return base::BindRepeating(
+      [](Profile* profile,
+         mojo::PendingReceiver<ash::scanning::mojom::ScanService>
+             pending_receiver) {
+        ash::ScanService* service =
+            ash::ScanServiceFactory::GetForBrowserContext(profile);
+        if (service) {
+          service->BindInterface(std::move(pending_receiver));
+        }
+      },
+      Profile::FromWebUI(web_ui));
 }
 
 void ChromeScanningAppDelegate::OnPathExists(

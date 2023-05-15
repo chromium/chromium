@@ -13,6 +13,7 @@
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -31,7 +32,7 @@ enum class PaletteToolId;
 struct ASH_EXPORT PaletteToolView {
   PaletteGroup group;
   PaletteToolId tool_id;
-  views::View* view;
+  raw_ptr<views::View, ExperimentalAsh> view;
 };
 
 class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
@@ -113,7 +114,7 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   PaletteTool* FindToolById(PaletteToolId tool_id) const;
 
   // Unowned pointer to the delegate to provide external functionality.
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Unowned pointer to the active tool / group.
   std::map<PaletteGroup, PaletteTool*> active_tools_;

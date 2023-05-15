@@ -8,10 +8,12 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -203,10 +205,10 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
 
  private:
   // Unowned pointer to pref service.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Unowned pointer to the WebUI through which the account was added.
-  const content::WebUI* const web_ui_;
+  const raw_ptr<const content::WebUI, ExperimentalAsh> web_ui_;
 
   // Added account email.
   const std::string account_email_;
@@ -278,6 +280,8 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
                                             params.FindString("email")));
   params.Set("dontResizeNonEmbeddedPages", true);
   params.Set("enableGaiaActionButtons", true);
+  params.Set("forceDarkMode",
+             DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // For in-session login flows, request Gaia to ignore third party SAML IdP SSO
   // redirection policies (and redirect to SAML IdPs by default), otherwise some

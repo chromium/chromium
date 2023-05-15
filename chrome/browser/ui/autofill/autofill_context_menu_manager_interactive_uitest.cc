@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -66,6 +67,8 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
   AutofillContextMenuManagerFeedbackUIBrowserTest() {
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHAutofillFeedbackNewBadgeFeature});
     feature_.InitWithFeatures(
         /*enabled_features=*/{features::
                                   kAutofillShowManualFallbackInContextMenu,
@@ -79,7 +82,8 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            nullptr, render_view_context_menu_.get(), nullptr, nullptr);
+            nullptr, render_view_context_menu_.get(), nullptr, nullptr,
+            std::make_unique<ScopedNewBadgeTracker>(browser()->profile()));
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                  true);
@@ -87,6 +91,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
 
   void TearDownOnMainThread() override {
     autofill_context_menu_manager_.reset();
+    render_view_context_menu_.reset();
 
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -103,6 +108,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   base::test::ScopedFeatureList feature_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };

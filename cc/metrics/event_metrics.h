@@ -68,6 +68,11 @@ class CC_EXPORT EventMetrics {
   // Stages of event dispatch in different processes/threads.
   enum class DispatchStage {
     kGenerated,
+    // 'kScrollsBlockingTouchDispatchedToRenderer' is used by Scroll events to
+    // understand when a corresponding TouchMove event arrived in the Browser
+    // Main. If the related TouchMove wasn't blocking, this stage field is not
+    // set.
+    kScrollsBlockingTouchDispatchedToRenderer,
     kArrivedInBrowserMain,
     kArrivedInRendererCompositor,
     kRendererCompositorStarted,
@@ -77,16 +82,22 @@ class CC_EXPORT EventMetrics {
     kMaxValue = kRendererMainFinished,
   };
 
+  static std::unique_ptr<EventMetrics> Create(ui::EventType type,
+                                              base::TimeTicks timestamp);
+
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. For scroll and pinch events, use the
   // appropriate subcalss instead.
-  static std::unique_ptr<EventMetrics> Create(ui::EventType type,
-                                              base::TimeTicks timestamp);
+  static std::unique_ptr<EventMetrics> Create(
+      ui::EventType type,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   static std::unique_ptr<EventMetrics> CreateForTesting(
       ui::EventType type,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   // Used to create an instance for an event generated based on an existing
@@ -182,6 +193,9 @@ class CC_EXPORT EventMetrics {
   void CopyTimestampsFrom(const EventMetrics& other,
                           DispatchStage last_dispatch_stage);
 
+  void SetDispatchStageTimestamp(DispatchStage stage,
+                                 base::TimeTicks timestamp);
+
  private:
   friend class ScrollEventMetrics;
   friend class ScrollUpdateEventMetrics;
@@ -189,6 +203,7 @@ class CC_EXPORT EventMetrics {
   static std::unique_ptr<EventMetrics> CreateInternal(
       ui::EventType type,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   EventType type_;
@@ -232,6 +247,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll events other
   // than scroll-update.
+  // The |blocking_touch_dispatched_to_renderer| must be not null only for
+  // scrolls which corresponding TouchMove was blocking.
   //
   // TODO(b/224960731): Fix tests and stop supporting the case when
   // `arrived_in_browser_main_timestamp` is null.
@@ -240,11 +257,13 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       ui::ScrollInputType input_type,
       bool is_inertial,
       base::TimeTicks timestamp,
-      base::TimeTicks arrived_in_browser_main_timestamp);
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      base::TimeTicks blocking_touch_dispatched_to_renderer);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.
-  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain and
+  // kScrollsBlockingTouchDispatchedToRenderer.
   static std::unique_ptr<ScrollEventMetrics> CreateForBrowser(
       ui::EventType type,
       ui::ScrollInputType input_type,
@@ -319,6 +338,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll-update events.
+  // The |blocking_touch_dispatched_to_renderer| must be not null only for
+  // scrolls which corresponding TouchMove was blocking.
   //
   // TODO(b/224960731): Fix tests and stop supporting the case when
   // `arrived_in_browser_main_timestamp` is null.
@@ -330,11 +351,13 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       float delta,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      TraceId trace_id);
+      TraceId trace_id,
+      base::TimeTicks blocking_touch_dispatched_to_renderer);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.
-  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain and
+  // kScrollsBlockingTouchDispatchedToRenderer.
   static std::unique_ptr<ScrollUpdateEventMetrics> CreateForBrowser(
       ui::EventType type,
       ui::ScrollInputType input_type,

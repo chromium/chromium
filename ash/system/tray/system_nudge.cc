@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -114,8 +115,8 @@ class SystemNudge::SystemNudgeView : public views::View {
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
   }
 
-  views::View* label_ = nullptr;
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
 };
 
 SystemNudge::SystemNudge(const std::string& name,

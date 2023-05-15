@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
@@ -377,7 +378,9 @@ TEST(IPCTest, CrossCallValidation) {
 struct ServerEvents {
   HANDLE ping;
   HANDLE pong;
-  volatile LONG* state;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION volatile LONG* state;
   HANDLE mutex;
 };
 

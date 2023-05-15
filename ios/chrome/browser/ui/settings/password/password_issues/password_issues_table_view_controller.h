@@ -11,9 +11,18 @@
 
 @protocol PasswordIssuesPresenter;
 
+namespace password_manager {
+enum class WarningType;
+}
+
 // Screen with a list of compromised credentials.
 @interface PasswordIssuesTableViewController
     : SettingsRootTableViewController <PasswordIssuesConsumer>
+
+- (instancetype)initWithWarningType:(password_manager::WarningType)warningType
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithStyle:(UITableViewStyle*)style NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PasswordIssuesPresenter> presenter;
 

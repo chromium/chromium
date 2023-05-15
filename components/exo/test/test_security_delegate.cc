@@ -9,10 +9,6 @@
 
 namespace exo::test {
 
-std::string TestSecurityDelegate::GetSecurityContext() const {
-  return "test";
-}
-
 bool TestSecurityDelegate::CanLockPointer(aura::Window* toplevel) const {
   return toplevel->GetProperty(chromeos::kUseOverviewToExitPointerLock);
 }

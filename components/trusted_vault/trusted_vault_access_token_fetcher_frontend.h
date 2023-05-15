@@ -20,7 +20,7 @@ namespace signin {
 class PrimaryAccountAccessTokenFetcher;
 }
 
-namespace syncer {
+namespace trusted_vault {
 
 // Allows fetching access token for primary account on UI thread.
 class TrustedVaultAccessTokenFetcherFrontend
@@ -86,6 +86,6 @@ class TrustedVaultAccessTokenFetcherFrontend
       weak_ptr_factory_{this};
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_FRONTEND_H_

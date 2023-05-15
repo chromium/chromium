@@ -216,6 +216,10 @@
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#endif
+
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -263,6 +267,26 @@ void BindTextDetection(
     mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver) {
   GetShapeDetectionService()->BindTextDetection(std::move(receiver));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+webnn::mojom::WebNNService* GetWebNNService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<mojo::Remote<webnn::mojom::WebNNService>> remote;
+  if (!*remote) {
+    auto* gpu = GpuProcessHost::Get();
+    if (gpu) {
+      gpu->RunService(remote->BindNewPipeAndPassReceiver());
+    }
+  }
+
+  return remote->get();
+}
+
+void BindWebNNContextProvider(
+    mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
+  GetWebNNService()->BindWebNNContextProvider(std::move(receiver));
+}
+#endif
 
 #if BUILDFLAG(IS_MAC)
 void BindTextInputHost(
@@ -879,6 +903,14 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
     map->Add<ml::model_loader::mojom::MLService>(
         base::BindRepeating(&CreateMLService));
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kEnableMachineLearningNeuralNetworkService)) {
+    map->Add<webnn::mojom::WebNNContextProvider>(
+        base::BindRepeating(&BindWebNNContextProvider));
+  }
+#endif
 
   if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI)) {
     map->Add<blink::mojom::PendingBeaconHost>(base::BindRepeating(

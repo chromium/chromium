@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/companion/text_finder/text_finder.h"
@@ -19,6 +21,9 @@ namespace companion {
 
 class TextFinderManager : public content::PageUserData<TextFinderManager> {
  public:
+  using AllDoneCallback = base::OnceCallback<void(
+      const std::vector<std::pair<std::string, bool>>&)>;
+
   ~TextFinderManager() override;
 
   TextFinderManager(const TextFinderManager&) = delete;
@@ -33,13 +38,20 @@ class TextFinderManager : public content::PageUserData<TextFinderManager> {
       const std::string& text_directive,
       TextFinder::FinishedCallback callback);
 
+  // Creates multiple text finders for a vector of text directives. Calls
+  // `all_done_callback` when all text finders finish searching (via
+  // `base::BarrierCallback`).
+  void CreateTextFinders(const std::vector<std::string>& text_directives,
+                         AllDoneCallback all_done_callback);
+
   // Returns the number of text finder instances.
   size_t Size() const;
 
  private:
   friend class content::PageUserData<TextFinderManager>;
   friend class TextFinderManagerBaseTest;
-  FRIEND_TEST_ALL_PREFIXES(TextFinderManagerTest, TextFinderTest);
+  FRIEND_TEST_ALL_PREFIXES(TextFinderManagerTest, SingleTextFinderTest);
+  FRIEND_TEST_ALL_PREFIXES(TextFinderManagerTest, MultiTextFindersTest);
 
   explicit TextFinderManager(content::Page& page);
 

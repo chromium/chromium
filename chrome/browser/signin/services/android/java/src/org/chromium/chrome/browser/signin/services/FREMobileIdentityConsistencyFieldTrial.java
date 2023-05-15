@@ -227,15 +227,17 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @VariationsGroup
     private static int generateFirstRunStringVariationsGroup(
             int lowEntropyValue, int lowEntropySize) {
-        int variationsPercentage = 0;
+        double variationsPercentage = 0;
         switch (VersionConstants.CHANNEL) {
             case Channel.DEFAULT:
             case Channel.CANARY:
             case Channel.DEV:
+            case Channel.BETA:
                 variationsPercentage = 10;
                 break;
-            case Channel.BETA:
             case Channel.STABLE:
+                variationsPercentage = 0.5;
+                break;
         }
         // For A/B testing all experiment groups should have the same percentages.
         assert variationsPercentage * VariationsGroup.MAX_VALUE <= 100;

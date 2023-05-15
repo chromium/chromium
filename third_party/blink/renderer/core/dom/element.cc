@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -766,6 +767,26 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   }
 }
 
+namespace {
+Element* getElementByIdIncludingDisconnected(const Element& element,
+                                             AtomicString id) {
+  if (element.isConnected()) {
+    return element.GetTreeScope().getElementById(id);
+  }
+  // https://html.spec.whatwg.org/#attr-associated-element
+  // Attr associated element lookup does not depend on whether the element
+  // is connected. However, the TreeOrderedMap that is used for
+  // TreeScope::getElementById() only stores connected elements.
+  Node& root = element.TreeRoot();
+  for (Element& el : ElementTraversal::DescendantsOf(root)) {
+    if (el.GetIdAttribute() == id) {
+      return &el;
+    }
+  }
+  return nullptr;
+}
+}  // namespace
+
 Element* Element::GetElementAttribute(const QualifiedName& name) {
   HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
       GetExplicitlySetElementsForAttr(this, name);
@@ -791,7 +812,7 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
   }
 
   // Will return null if the id is empty.
-  return GetTreeScope().getElementById(id);
+  return getElementByIdIncludingDisconnected(*this, id);
 }
 
 void Element::SetElementArrayAttribute(
@@ -885,7 +906,8 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
   // Since this is based on ID we know it cannot cross shadow boundaries, so we
   // don't need to include additional logic to check that.
   for (auto id : tokens) {
-    Element* candidate = GetTreeScope().getElementById(AtomicString(id));
+    Element* candidate =
+        getElementByIdIncludingDisconnected(*this, AtomicString(id));
     if (candidate) {
       result_elements->push_back(candidate);
     }
@@ -3032,7 +3054,7 @@ scoped_refptr<const ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
   if (style->IsPseudoInitialStyle()) {
-    // :initial pseudo styles matched. We need to compute the style a second
+    // @initial pseudo styles matched. We need to compute the style a second
     // time to compute the actual style and trigger transitions using the
     // starting from the :initial style.
     new_style_recalc_context.old_style =
@@ -3653,6 +3675,20 @@ StyleRecalcChange Element::RecalcOwnStyle(
     rare_data->ClearPseudoElements();
   }
   SetComputedStyle(new_style);
+
+  // Update style containment tree if the style containment of the element
+  // has changed.
+  if ((!new_style && old_style && old_style->ContainsStyle()) ||
+      (old_style && new_style &&
+       old_style->ContainsStyle() != new_style->ContainsStyle())) {
+    StyleContainmentScopeTree& tree =
+        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+    if (new_style && new_style->ContainsStyle()) {
+      tree.CreateScopeForElement(*this);
+    } else {
+      tree.DestroyScopeForElement(*this);
+    }
+  }
 
   ProcessContainIntrinsicSizeChanges();
 
@@ -4413,14 +4449,48 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   return &shadow_root;
 }
 
+bool Element::AttachStreamingDeclarativeShadowRoot(
+    HTMLTemplateElement& template_element,
+    ShadowRootType type,
+    FocusDelegation focus_delegation,
+    SlotAssignmentMode slot_assignment) {
+  CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
+  CHECK(!template_element.IsNonStreamingDeclarativeShadowRoot());
+
+  // 12. Run attach a shadow root with shadow host equal to declarative shadow
+  // host element, mode equal to declarative shadow mode, and delegates focus
+  // equal to declarative shadow delegates focus. If an exception was thrown by
+  // attach a shadow root, catch it, and ignore the exception.
+  if (const char* error_message = ErrorMessageForAttachShadow()) {
+    template_element.SetDeclarativeShadowRootType(
+        DeclarativeShadowRootType::kNone);
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError, error_message));
+    return false;
+  }
+
+  ShadowRoot& shadow_root =
+      AttachShadowRootInternal(type, focus_delegation, slot_assignment);
+  // 13.1. Set declarative shadow host element's shadow host's "is declarative
+  // shadow root" property to true.
+  shadow_root.SetIsDeclarativeShadowRoot(true);
+  // 13.NEW. Set declarative shadow host element's shadow host's "available
+  // to element internals" to true.
+  shadow_root.SetAvailableToElementInternals(true);
+  return true;
+}
+
 // TODO(crbug.com/1396384) Remove this entire function when the older version
 // of declarative shadow DOM is removed.
-bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
-                                          ShadowRootType type,
-                                          FocusDelegation focus_delegation,
-                                          SlotAssignmentMode slot_assignment) {
-  DCHECK(template_element);
-  DCHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
+bool Element::AttachDeprecatedNonStreamingDeclarativeShadowRoot(
+    HTMLTemplateElement& template_element,
+    ShadowRootType type,
+    FocusDelegation focus_delegation,
+    SlotAssignmentMode slot_assignment) {
+  CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
+  CHECK(template_element.IsNonStreamingDeclarativeShadowRoot());
+
   Deprecation::CountDeprecation(
       GetDocument().GetExecutionContext(),
       mojom::blink::WebFeature::kDeclarativeShadowRoot);
@@ -4430,7 +4500,7 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
   // equal to declarative shadow delegates focus. If an exception was thrown by
   // attach a shadow root, catch it, and ignore the exception.
   if (const char* error_message = ErrorMessageForAttachShadow()) {
-    template_element->SetDeclarativeShadowRootType(
+    template_element.SetDeclarativeShadowRootType(
         DeclarativeShadowRootType::kNone);
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
@@ -4447,15 +4517,13 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
 
-  if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
-    // 13.2. Append the declarative template element's DocumentFragment to the
-    // newly-created shadow root.
-    shadow_root.ParserTakeAllChildrenFrom(
-        *template_element->DeclarativeShadowContent());
-    // 13.3. Remove the declarative template element from the document.
-    if (template_element->parentNode()) {
-      template_element->parentNode()->ParserRemoveChild(*template_element);
-    }
+  // 13.2. Append the declarative template element's DocumentFragment to the
+  // newly-created shadow root.
+  shadow_root.ParserTakeAllChildrenFrom(
+      *template_element.DeclarativeShadowContent());
+  // 13.3. Remove the declarative template element from the document.
+  if (template_element.parentNode()) {
+    template_element.parentNode()->ParserRemoveChild(template_element);
   }
   return true;
 }
@@ -4934,7 +5002,7 @@ void Element::DefaultEventHandler(Event& event) {
 }
 
 bool Element::DelegatesFocus() const {
-  return AuthorShadowRoot() && AuthorShadowRoot()->delegatesFocus();
+  return GetShadowRoot() && GetShadowRoot()->delegatesFocus();
 }
 
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
@@ -4952,7 +5020,9 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
     return nullptr;
   }
   Document& doc = GetDocument();
-  UseCounter::Count(doc, WebFeature::kDelegateFocus);
+  if (AuthorShadowRoot()) {
+    UseCounter::Count(doc, WebFeature::kDelegateFocus);
+  }
 
   Element* focused_element = doc.FocusedElement();
   if (focused_element &&
@@ -4960,7 +5030,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
     return focused_element;
   }
 
-  DCHECK(AuthorShadowRoot());
+  DCHECK(GetShadowRoot());
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     return GetFocusDelegate(/*autofocus_only=*/false, in_descendant_traversal);
   } else {
@@ -4970,13 +5040,14 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
 
 Element* Element::GetFocusDelegate(bool autofocus_only,
                                    bool in_descendant_traversal) const {
-  ShadowRoot* shadowroot = AuthorShadowRoot();
-  if (shadowroot && !shadowroot->delegatesFocus()) {
+  ShadowRoot* shadowroot = GetShadowRoot();
+  if (shadowroot && !shadowroot->IsUserAgent() &&
+      !shadowroot->delegatesFocus()) {
     return nullptr;
   }
 
   const ContainerNode* where_to_look = this;
-  if (shadowroot) {
+  if (shadowroot && shadowroot->delegatesFocus()) {
     where_to_look = shadowroot;
   }
 
@@ -6425,6 +6496,13 @@ void Element::UpdateFirstLetterPseudoElement(
   //
   // The StyleUpdatePhase tells where we are in the process of updating style
   // and layout tree.
+
+  // We need to update quotes to create the correct text fragments before the
+  // first letter element update.
+  if (StyleContainmentScopeTree* tree =
+          GetDocument().GetStyleEngine().GetStyleContainmentScopeTree()) {
+    tree->UpdateQuotes();
+  }
 
   PseudoElement* element = GetPseudoElement(kPseudoIdFirstLetter);
   if (!element) {

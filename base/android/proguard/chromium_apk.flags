@@ -27,28 +27,11 @@
   public <init>();
 }
 
-# AndroidX classes that are inflated via reflection.
--keep public class androidx.preference.Preference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.PreferenceScreen {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.PreferenceCategory {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.ListPreference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
-
 # SearchView is used in website_preferences_menu.xml and is constructed by
 # Android using reflection.
 -keep class androidx.appcompat.widget.SearchView {
   public <init>(...);
 }
-
-# Referenced by androidx.preference.PreferenceInflater.
--keep public class androidx.preference.SwitchPreference {}
 
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
 # If we annotated all Parcelables that get put into Bundles other than

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 
-#include <set>
+#include <array>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
@@ -27,8 +28,8 @@ namespace {
 // If running with `affiliated==false`, the test will use `kAffiliationID` as
 // device and `kAnotherAffiliationID` as user affiliation ID, which makes the
 // user non-affiliated (affiliation IDs don't overlap).
-constexpr char kAffiliationID[] = "some-affiliation-id";
-constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
+constexpr base::StringPiece kAffiliationID = "some-affiliation-id";
+constexpr base::StringPiece kAnotherAffiliationID = "another-affiliation-id";
 
 constexpr char kAffiliatedUserEmail[] = "affiliateduser@example.com";
 constexpr char kAffiliatedUserGaiaId[] = "1029384756";
@@ -50,21 +51,14 @@ AffiliationMixin::~AffiliationMixin() = default;
 
 void AffiliationMixin::SetUpInProcessBrowserTestFixture() {
   AffiliationTestHelper affiliation_helper = GetAffiliationTestHelper();
-  std::set<std::string> device_affiliation_ids;
-  device_affiliation_ids.insert(kAffiliationID);
   ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-      policy_test_helper_, device_affiliation_ids));
+      policy_test_helper_, std::array{kAffiliationID}));
   policy_test_helper_->InstallOwnerKey();
 
-  std::set<std::string> user_affiliation_ids;
-  if (affiliated_) {
-    user_affiliation_ids.insert(kAffiliationID);
-  } else {
-    user_affiliation_ids.insert(kAnotherAffiliationID);
-  }
   ASSERT_TRUE(user_policy_.get());
   ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
-      user_policy_.get(), account_id_, user_affiliation_ids));
+      user_policy_.get(), account_id_,
+      std::array{affiliated_ ? kAffiliationID : kAnotherAffiliationID}));
 }
 
 void AffiliationMixin::SetIsForActiveDirectory(bool is_for_active_directory) {

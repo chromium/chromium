@@ -74,6 +74,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   webui::SetupWebUIDataSource(
       source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
       IDR_EXTENSIONS_EXTENSIONS_HTML);
+  webui::SetupChromeRefresh2023(source);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     // Add common strings.
@@ -271,6 +272,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"packDialogKeyFile", IDS_EXTENSIONS_PACK_DIALOG_KEY_FILE_LABEL},
     {"packDialogContent", IDS_EXTENSION_PACK_DIALOG_HEADING},
     {"packDialogConfirm", IDS_EXTENSIONS_PACK_DIALOG_CONFIRM_BUTTON},
+    {"publishedInStoreRequiredByPolicy",
+     IDS_EXTENSIONS_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY},
     {"sitePermissions", IDS_EXTENSIONS_SITE_PERMISSIONS},
     {"sitePermissionsAllSitesPageTitle",
      IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_PAGE_TITLE},
@@ -386,7 +389,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "getMoreExtensionsUrl",
       base::ASCIIToUTF16(
           google_util::AppendGoogleLocaleParam(
-              GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+              extension_urls::AppendUtmSource(
+                  GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+                  extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
   source->AddString("hostPermissionsLearnMoreLink",

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ഉപകരണത്തിൽ സ്റ്റോറേജ് സ്പെയ്‌സ് കുറവായതിനാൽ നിങ്ങളുടെ റെക്കോർഡിംഗ് നിർത്തി. കൂടുതൽ വീഡിയോകൾ റെക്കോർഡ് ചെയ്യാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം സൃഷ്ടിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="2036868001356139588">ടൈമർ ദൈർഘ്യം</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> സജീവമാണ്</translation>
-<translation id="2128052519899549250">ടൈം ലാപ്‌സ് വീഡിയോ റെക്കോർഡ് ചെയ്യൂ</translation>
 <translation id="2134029355740465625">വീഡിയോ ക്രമീകരണം</translation>
 <translation id="2144806332417375165">ഇഷ്‌ടാനുസൃത വീഡിയോ പാരാമീറ്ററുകൾ</translation>
 <translation id="2175927920773552910">QR കോഡ്</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">ഡോക്യുമെന്റ് കണ്ടെത്തി</translation>
 <translation id="414641094616694804">ഈ ക്യാമറയ്ക്ക് റെസല്യൂഷൻ മാറ്റാനാകില്ല</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
-<translation id="4281620174117014503">മീഡിയം റെസല്യൂഷൻ</translation>
 <translation id="428234092390943511">പേജിന്റെ ലഘുചിത്രം</translation>
 <translation id="4383571725254449280">പ്രകടന ലോഗുകൾ പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="4445542136948522167">ഫോട്ടോ എടുക്കുന്നത് നിർത്തുക</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5320594929574852403">ഇടത് ദിശയിൽ നീങ്ങുന്നു</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ടൈം ലാപ്‍സ്</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="5671277269877808209">ചതുരം</translation>
+<translation id="574392208103952083">ഇടത്തരം</translation>
 <translation id="5746169159649715125">PDF ആയി സംരക്ഷിക്കുക</translation>
 <translation id="5753488212459587150">വിദഗ്‌ദ്ധ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5759254179196327752">ഡോക്യുമെന്റ് സ്‌കാൻ ചെയ്യുക</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ഡോക്യുമെന്റിന്റെ താഴ് ഭാഗത്തെ വലത് മൂല</translation>
+<translation id="7684446460490665873">ടൈം ലാപ്‌സ് വീഡിയോ റെക്കോർഡ് ചെയ്യൂ</translation>
 <translation id="7692090236657809299">പാൻ ടിൽറ്റ് സൂം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7726641833034062494">സാധാരണ വീഡിയോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7748344063862150053">ഡോക്യുമെന്റിന്റെ മുകൾ ഭാഗത്തെ വലത് മൂല</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">ഡോക്യുമെന്റിന്റെ എല്ലാ അരികുകളും ഫ്രെയിമിനകത്ത് ഉൾക്കൊള്ളിക്കുക</translation>
 <translation id="9045155556724273246">10 സെക്കൻഡ്</translation>
 <translation id="906331135292332864">ചിത്രം പ്രോസസ് ചെയ്യുന്നു...</translation>
+<translation id="9161584225258678723">ടൈം ലാപ്‌സ്</translation>
 <translation id="922762992951083513">മിറർ ചെയ്യൽ ഓണാക്കുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 </translationbundle>

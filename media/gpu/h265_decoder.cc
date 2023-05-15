@@ -904,8 +904,9 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
     curr_pic_->processed_ = true;
   }
 
-  return accelerator_->SubmitFrameMetadata(sps, pps, slice_hdr, ref_pic_list_,
-                                           curr_pic_);
+  return accelerator_->SubmitFrameMetadata(
+      sps, pps, slice_hdr, ref_pic_list_, ref_pic_set_lt_curr_,
+      ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_);
 }
 
 H265Decoder::H265Accelerator::Status H265Decoder::FinishPrevFrameIfPresent() {

@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.util.Pair;
 import android.view.KeyEvent;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.AnimRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -64,6 +63,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 
 /**
@@ -228,6 +228,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             if (reason == USER_NAVIGATION) connectionKeeper.recordClientConnectionStatus();
             handleFinishAndClose();
         });
+        if (BackPressManager.isEnabled()) {
+            mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
+            mBackPressManager.addHandler(
+                    mNavigationController, BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+        }
         component.resolveSessionHandler();
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
@@ -438,18 +443,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected boolean handleBackPressed() {
         return mNavigationController.navigateOnBack();
-    }
-
-    @Override
-    protected void initializeBackPressHandling() {
-        super.initializeBackPressHandling();
-        if (!BackPressManager.isEnabled()) return;
-        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                handleBackPressed();
-            }
-        });
     }
 
     @Override

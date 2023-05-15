@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_WINDOW_PREVIEW_H_
 #define ASH_SHELF_WINDOW_PREVIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -65,13 +66,13 @@ class WindowPreview : public views::View {
   void CloseButtonPressed();
 
   // Child views.
-  views::ImageButton* close_button_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::View* preview_container_view_ = nullptr;
-  WindowPreviewView* preview_view_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> preview_container_view_ = nullptr;
+  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

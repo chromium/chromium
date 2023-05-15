@@ -46,10 +46,10 @@ const std::string CreateErrorJsonString(
                      DeviceTrustErrorToString(dt_response.error.value()));
 
   if (dt_response.attestation_result &&
-      dt_response.attestation_result.value() != DTAttestationResult::kSuccess) {
+      !IsSuccessAttestationResult(dt_response.attestation_result.value())) {
     error_response.Set(
         kSpecificErrorCodePropertyName,
-        AttestationResultToString(dt_response.attestation_result.value()));
+        AttestationErrorToString(dt_response.attestation_result.value()));
   }
 
   std::string out_json;
@@ -130,8 +130,10 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   if (!device_trust_service_ || !device_trust_service_->IsEnabled())
     return PROCEED;
 
-  if (!device_trust_service_->Watches(url))
+  const std::set<DTCPolicyLevel> levels = device_trust_service_->Watches(url);
+  if (levels.empty()) {
     return PROCEED;
+  }
 
   // If we are starting an attestation flow.
   if (navigation_handle()->GetResponseHeaders() == nullptr) {
@@ -180,13 +182,14 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
           base::BindOnce(
               [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler,
                  const std::string& challenge,
+                 const std::set<DTCPolicyLevel>& levels,
                  DeviceTrustCallback resume_navigation_callback) {
                 if (throttler) {
                   throttler->device_trust_service_->BuildChallengeResponse(
-                      challenge, std::move(resume_navigation_callback));
+                      challenge, levels, std::move(resume_navigation_callback));
                 }
               },
-              weak_ptr_factory_.GetWeakPtr(), challenge,
+              weak_ptr_factory_.GetWeakPtr(), challenge, levels,
               std::move(resume_navigation_callback)));
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

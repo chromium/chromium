@@ -12,7 +12,9 @@
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/style/ash_color_id.h"
+#include "base/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/box_layout.h"
@@ -29,11 +31,10 @@ constexpr int kMediaStringMarginDip = 32;
 }  // namespace
 
 AmbientSlideshowPeripheralUi::AmbientSlideshowPeripheralUi(
-    AmbientViewDelegate* delegate,
-    JitterCalculator* glanceable_info_jitter_calculator)
-    : glanceable_info_jitter_calculator_(glanceable_info_jitter_calculator) {
+    AmbientViewDelegate* delegate)
+    : jitter_calculator_(std::make_unique<JitterCalculator>(
+          AmbientUiModel::Get()->GetSlideshowPeripheralUiJitterConfig())) {
   CHECK(delegate);
-  CHECK(glanceable_info_jitter_calculator_);
   SetID(AmbientViewID::kAmbientSlideshowPeripheralUi);
   InitLayout(delegate);
 }
@@ -89,9 +90,11 @@ MediaStringView::Settings AmbientSlideshowPeripheralUi::GetSettings() {
 }
 
 void AmbientSlideshowPeripheralUi::UpdateGlanceableInfoPosition() {
-  gfx::Vector2d jitter = glanceable_info_jitter_calculator_->Calculate();
+  gfx::Vector2d jitter = jitter_calculator_->Calculate();
   gfx::Transform transform;
   transform.Translate(jitter);
+
+  DVLOG(4) << "Shifting peripheral ui by " << jitter.ToString();
 
   ambient_info_view_->SetTextTransform(transform);
 

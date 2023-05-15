@@ -39,6 +39,11 @@ struct UrlIdentity {
     kRawSpec = kMinValue,
     // Omit cryptographic scheme. (i.e. https and wss)
     kOmitCryptographicScheme,
+    // Formats a URL in a concise and human-friendly way, omits the HTTP/HTTPS
+    // scheme, the username and password, the path and removes trivial
+    // subdomains. See
+    // `url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains()`.
+    kOmitSchemePathAndTrivialSubdomains,
     // Returns the hostname in unicode. Returns ASCII hostname if not IDN or
     // invalid.
     kHostname,

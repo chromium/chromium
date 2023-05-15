@@ -34,11 +34,31 @@ const device::BluetoothUUID kPasskeyCharacteristicUuidV2(
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
+const device::BluetoothUUID kAdditionalDataCharacteristicUuidV1("1237");
+const device::BluetoothUUID kAdditionalDataCharacteristicUuidV2(
+    "FE2C1237-8366-4814-8EB0-01DE32100BEA");
 
 constexpr uint8_t kProviderAddressStartIndex = 2;
 constexpr uint8_t kSeekerAddressStartIndex = 8;
 constexpr uint8_t kSeekerPasskey = 0x02;
 constexpr uint8_t kAccountKeyStartByte = 0x04;
+
+constexpr uint8_t kEmptyFlags = 0x00;
+
+// Action Request constants.
+constexpr uint8_t kActionRequestDeviceActionFlags = 0x80;
+constexpr uint8_t kActionRequestAdditionalDataFlags = 0x40;
+constexpr uint8_t kActionMessage = 0x10;
+constexpr size_t kMessageTypeIndex = 0;
+constexpr size_t kFlagsIndex = 1;
+constexpr size_t kMessageGroupIndex = 8;
+constexpr size_t kMessageCodeIndex = 9;
+constexpr size_t kDataIdOrSizeIndex = 10;
+constexpr size_t kAdditionalDataStartIndex = 11;
+constexpr uint8_t kAdditionalDataMaxSizeBytes = 5;
+
+// Personalized Name data request constants.
+constexpr uint8_t kPersonalizedNameDataId = 0x10;
 
 constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(15);
 constexpr int kMaxNumGattConnectionAttempts = 3;
@@ -118,6 +138,93 @@ constexpr const char* ToString(
       NOTREACHED();
       return "";
   }
+}
+
+// *** Prefer to use CreateActionRequestBeforeAdditionalData or create analogous
+// function for requesting device action using `kActionRequestDeviceActionFlag`.
+// ***
+//
+// Creates Action Request data array based on Table 2.2 of the Fast Pair spec:
+// https://developers.google.com/nearby/fast-pair/specifications/characteristics#table1.2.2.
+// Note: if the intended `additional_data` vector will have size 0, it is
+// sufficient to pass a `nullopt` instead of an empty vector.
+const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
+    const uint8_t flags,
+    const std::string& provider_address,
+    absl::optional<const uint8_t> message_group,
+    absl::optional<const uint8_t> message_code,
+    absl::optional<const uint8_t> data_id_or_size,
+    absl::optional<const std::vector<uint8_t>> additional_data) {
+  std::array<uint8_t, kBlockByteSize> request;
+
+  request[kMessageTypeIndex] = kActionMessage;
+  request[kFlagsIndex] = flags;
+
+  // Copy provider address bytes.
+  std::array<uint8_t, 6> provider_address_bytes;
+  device::ParseBluetoothAddress(provider_address, provider_address_bytes);
+  base::ranges::copy(
+      provider_address_bytes,
+      std::next(std::begin(request), kProviderAddressStartIndex));
+
+  // Construct `request` based on `flags`. Optional values CHECKed for are
+  // required based on the flag case.
+  switch (flags) {
+    case kEmptyFlags:
+      break;
+    case kActionRequestDeviceActionFlags:
+      CHECK(message_group.has_value());
+      CHECK(message_code.has_value());
+      CHECK(data_id_or_size.has_value());
+
+      request[kMessageGroupIndex] = message_group.value();
+      request[kMessageCodeIndex] = message_code.value();
+
+      if (additional_data.has_value()) {
+        CHECK(additional_data.value().size() <= kAdditionalDataMaxSizeBytes);
+        CHECK(data_id_or_size.value() == additional_data.value().size());
+        base::ranges::copy(
+            additional_data.value(),
+            std::next(std::begin(request), kAdditionalDataStartIndex));
+      } else {
+        CHECK(data_id_or_size.value() == 0);
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    case kActionRequestAdditionalDataFlags:
+      CHECK(data_id_or_size.has_value());
+
+      request[kDataIdOrSizeIndex] = data_id_or_size.value();
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  // Fill unused trailing bytes with random (salt) values.
+  if (flags == kActionRequestDeviceActionFlags) {
+    // `data_id_or_size` will contain the additional data size in this case.
+    if (data_id_or_size.value() < kAdditionalDataMaxSizeBytes) {
+      RAND_bytes(request.data() + kAdditionalDataStartIndex +
+                     additional_data.value().size(),
+                 kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+    }
+  } else {
+    RAND_bytes(request.data() + kAdditionalDataStartIndex,
+               kAdditionalDataMaxSizeBytes);
+  }
+
+  return request;
+}
+
+// Creates Action Request data array with flag 0x40 based on Table 2.2 of the
+// Fast Pair spec:
+// https://developers.google.com/nearby/fast-pair/specifications/characteristics#table1.2.2.
+// The flag indicates that an Additional Data packet write will follow this
+// request.
+const std::array<uint8_t, kBlockByteSize>
+CreateActionRequestBeforeAdditionalData(const std::string& provider_address) {
+  return CreateActionRequest(kActionRequestAdditionalDataFlags,
+                             provider_address, absl::nullopt, absl::nullopt,
+                             kPersonalizedNameDataId, absl::nullopt);
 }
 
 }  // namespace
@@ -323,6 +430,7 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   adapter_.reset();
   adapter_observation_.Reset();
   gatt_connection_.reset();
+  StopAllWriteRequestTimers();
   gatt_service_ = nullptr;
   account_key_characteristic_ = nullptr;
   key_based_characteristic_ = nullptr;
@@ -331,11 +439,8 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   gatt_disconnect_timer_.Stop();
   passkey_notify_session_timer_.Stop();
   keybased_notify_session_timer_.Stop();
-  passkey_write_request_timer_.Stop();
-  key_based_write_request_timer_.Stop();
   key_based_notify_session_.reset();
   passkey_notify_session_.reset();
-  account_key_write_request_timer_.Stop();
 }
 
 void FastPairGattServiceClientImpl::NotifyInitializedError(
@@ -355,7 +460,7 @@ void FastPairGattServiceClientImpl::NotifyInitializedError(
 
 void FastPairGattServiceClientImpl::NotifyWriteRequestError(
     PairFailure failure) {
-  key_based_write_request_timer_.Stop();
+  StopWriteRequestTimer(key_based_characteristic_);
 
   // |key_based_write_response_callback_| should always exist here.
   // If |OnWriteRequestError| is used to notify error before the timer
@@ -369,7 +474,7 @@ void FastPairGattServiceClientImpl::NotifyWriteRequestError(
 
 void FastPairGattServiceClientImpl::NotifyWritePasskeyError(
     PairFailure failure) {
-  passkey_write_request_timer_.Stop();
+  StopWriteRequestTimer(passkey_characteristic_);
 
   // |passkey_write_response_callback_| should always exist here.
   // If |OnWritePasskeyError| is used to notify error before the timer
@@ -383,7 +488,7 @@ void FastPairGattServiceClientImpl::NotifyWritePasskeyError(
 
 void FastPairGattServiceClientImpl::NotifyWriteAccountKeyError(
     ash::quick_pair::AccountKeyFailure failure) {
-  account_key_write_request_timer_.Stop();
+  StopWriteRequestTimer(account_key_characteristic_);
   DCHECK(write_account_key_callback_);
   std::move(write_account_key_callback_).Run(failure);
 }
@@ -461,6 +566,13 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
   // session for it later.
   account_key_characteristic_ = account_key_characteristics[0];
 
+  auto additional_data_characteristics = GetCharacteristicsByUUIDs(
+      kAdditionalDataCharacteristicUuidV1, kAdditionalDataCharacteristicUuidV2);
+  if (additional_data_characteristics.empty()) {
+    return PairFailure::kAdditionalDataCharacteristicDiscovery;
+  }
+  additional_data_characteristic_ = additional_data_characteristics[0];
+
   // No failure.
   return absl::nullopt;
 }
@@ -478,15 +590,13 @@ void FastPairGattServiceClientImpl::OnKeyBasedRequestNotifySession(
   key_based_notify_session_ = std::move(session);
 
   key_based_write_request_start_time_ = base::TimeTicks::Now();
-  key_based_write_request_timer_.Start(
-      FROM_HERE, kGattOperationTimeout,
+
+  WriteGattCharacteristicWithTimeout(
+      key_based_characteristic_, request_data,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWriteRequestError,
                      weak_ptr_factory_.GetWeakPtr(),
-                     PairFailure::kKeyBasedPairingResponseTimeout));
-
-  key_based_characteristic_->WriteRemoteCharacteristic(
-      request_data,
-      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+                     PairFailure::kKeyBasedPairingResponseTimeout),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequest,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequestError,
@@ -509,15 +619,13 @@ void FastPairGattServiceClientImpl::OnPasskeyNotifySession(
       FastPairGattConnectionSteps::kNotifiationsEnabledForKeybasedPairing);
 
   passkey_write_request_start_time_ = base::TimeTicks::Now();
-  passkey_write_request_timer_.Start(
-      FROM_HERE, kGattOperationTimeout,
+
+  WriteGattCharacteristicWithTimeout(
+      passkey_characteristic_, passkey_data,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWritePasskeyError,
                      weak_ptr_factory_.GetWeakPtr(),
-                     PairFailure::kPasskeyResponseTimeout));
-
-  passkey_characteristic_->WriteRemoteCharacteristic(
-      passkey_data,
-      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+                     PairFailure::kPasskeyResponseTimeout),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWritePasskey,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWritePasskeyError,
@@ -694,16 +802,14 @@ void FastPairGattServiceClientImpl::WriteAccountKey(
   const std::array<uint8_t, kBlockSizeBytes> data_to_write =
       fast_pair_data_encryptor->EncryptBytes(account_key);
 
-  account_key_write_request_timer_.Start(
-      FROM_HERE, kGattOperationTimeout,
+  WriteGattCharacteristicWithTimeout(
+      account_key_characteristic_,
+      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWriteAccountKeyError,
                      weak_ptr_factory_.GetWeakPtr(),
                      ash::quick_pair::AccountKeyFailure::
-                         kAccountKeyCharacteristicWriteTimeout));
-
-  account_key_characteristic_->WriteRemoteCharacteristic(
-      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
-      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+                         kAccountKeyCharacteristicWriteTimeout),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKey,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKeyError,
@@ -725,7 +831,7 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
       key_based_write_response_callback_) {
     RecordKeyBasedWriteRequestTime(base::TimeTicks::Now() -
                                    key_based_write_request_start_time_);
-    key_based_write_request_timer_.Stop();
+    StopWriteRequestTimer(key_based_characteristic_);
     std::move(key_based_write_response_callback_)
         .Run(value, /*failure=*/absl::nullopt);
     RecordNotifyKeyBasedCharacteristicTime(base::TimeTicks::Now() -
@@ -734,7 +840,7 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
              passkey_write_response_callback_) {
     RecordPasskeyWriteRequestTime(base::TimeTicks::Now() -
                                   passkey_write_request_start_time_);
-    passkey_write_request_timer_.Stop();
+    StopWriteRequestTimer(passkey_characteristic_);
     RecordNotifyPasskeyCharacteristicTime(base::TimeTicks::Now() -
                                           notify_passkey_start_time_);
     std::move(passkey_write_response_callback_)
@@ -766,7 +872,7 @@ void FastPairGattServiceClientImpl::OnWritePasskeyError(
 
 void FastPairGattServiceClientImpl::OnWriteAccountKey(
     base::TimeTicks write_account_key_start_time) {
-  account_key_write_request_timer_.Stop();
+  StopWriteRequestTimer(account_key_characteristic_);
   QP_LOG(INFO) << __func__;
   RecordWriteAccountKeyTime(base::TimeTicks::Now() -
                             write_account_key_start_time);
@@ -779,6 +885,143 @@ void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
   RecordWriteAccountKeyGattError(error);
   NotifyWriteAccountKeyError(GattErrorCodeToAccountKeyFailure(error));
   // |this| may be destroyed after this line.
+}
+
+void FastPairGattServiceClientImpl::WritePersonalizedName(
+    const std::string& name,
+    const std::string& provider_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
+    base::OnceCallback<void(absl::optional<PairFailure>)>
+        write_additional_data_callback) {
+  DCHECK(write_additional_data_callback_.is_null());
+  write_additional_data_callback_ = std::move(write_additional_data_callback);
+
+  // Write Action Request to inform the Additional Data characteristic that the
+  // next message is the personalized name.
+  const std::array<uint8_t, kBlockSizeBytes> encrypted_data =
+      fast_pair_data_encryptor->EncryptBytes(
+          CreateActionRequestBeforeAdditionalData(provider_address));
+
+  std::vector<uint8_t> encrypted_request;
+  encrypted_request.reserve(kBlockSizeBytes);
+
+  encrypted_request.insert(
+      encrypted_request.end(), std::begin(encrypted_data),
+      std::next(std::begin(encrypted_data), kBlockSizeBytes));
+
+  WriteGattCharacteristicWithTimeout(
+      additional_data_characteristic_, encrypted_request,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWritePersonalizedNameRequest,
+          weak_ptr_factory_.GetWeakPtr(), name, provider_address,
+          fast_pair_data_encryptor),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalDataError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairGattServiceClientImpl::WriteGattCharacteristicWithTimeout(
+    device::BluetoothRemoteGattCharacteristic* characteristic,
+    const std::vector<uint8_t>& encrypted_request,
+    device::BluetoothRemoteGattCharacteristic::WriteType write_type,
+    base::OnceClosure on_timeout,
+    base::OnceClosure on_success,
+    base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>
+        on_failure) {
+  CHECK(!characteristic_write_request_timers_.contains(characteristic) ||
+        !characteristic_write_request_timers_[characteristic]->IsRunning());
+  std::unique_ptr<base::OneShotTimer> timer =
+      std::make_unique<base::OneShotTimer>();
+  timer->Start(FROM_HERE, kGattOperationTimeout, std::move(on_timeout));
+  characteristic_write_request_timers_.insert(
+      {characteristic, std::move(timer)});
+  characteristic->WriteRemoteCharacteristic(
+      encrypted_request, write_type,
+      base::BindOnce(&FastPairGattServiceClientImpl::StopTimerRunSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), characteristic,
+                     std::move(on_success)),
+      base::BindOnce(&FastPairGattServiceClientImpl::StopTimerRunFailure,
+                     weak_ptr_factory_.GetWeakPtr(), characteristic,
+                     std::move(on_failure)));
+}
+
+void FastPairGattServiceClientImpl::StopTimerRunSuccess(
+    device::BluetoothRemoteGattCharacteristic* characteristic,
+    base::OnceClosure on_success) {
+  StopWriteRequestTimer(characteristic);
+  std::move(on_success).Run();
+}
+
+void FastPairGattServiceClientImpl::StopTimerRunFailure(
+    device::BluetoothRemoteGattCharacteristic* characteristic,
+    base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>
+        on_failure,
+    device::BluetoothGattService::GattErrorCode error) {
+  StopWriteRequestTimer(characteristic);
+  std::move(on_failure).Run(/*error=*/error);
+}
+
+void FastPairGattServiceClientImpl::StopAllWriteRequestTimers() {
+  for (auto& [characteristic, timer] : characteristic_write_request_timers_) {
+    if (timer->IsRunning()) {
+      timer->Stop();
+    }
+  }
+}
+
+void FastPairGattServiceClientImpl::StopWriteRequestTimer(
+    device::BluetoothRemoteGattCharacteristic* characteristic) {
+  if (characteristic_write_request_timers_.contains(characteristic)) {
+    characteristic_write_request_timers_[characteristic]->Stop();
+    characteristic_write_request_timers_.erase(characteristic);
+  }
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalData() {
+  QP_LOG(VERBOSE) << __func__;
+  std::move(write_additional_data_callback_).Run(/*error=*/absl::nullopt);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalDataError(
+    device::BluetoothGattService::GattErrorCode error) {
+  QP_LOG(WARNING) << ": Error: " << ToString(error);
+  std::move(write_additional_data_callback_)
+      .Run(
+          /*error=*/PairFailure::kAdditionalDataCharacteristicWrite);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout() {
+  QP_LOG(WARNING) << __func__;
+  std::move(write_additional_data_callback_)
+      .Run(
+          /*error=*/PairFailure::kAdditionalDataCharacteristicWriteTimeout);
+}
+
+void FastPairGattServiceClientImpl::OnWritePersonalizedNameRequest(
+    const std::string& name,
+    const std::string& provider_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor) {
+  QP_LOG(VERBOSE) << __func__;
+  std::array<uint8_t, kNonceSizeBytes> nonce;
+  RAND_bytes(nonce.data(), kNonceSizeBytes);
+  const std::vector<uint8_t> name_bytes(name.begin(), name.end());
+
+  const std::vector<uint8_t> additional_data_packet =
+      fast_pair_data_encryptor->CreateAdditionalDataPacket(nonce, name_bytes);
+
+  WriteGattCharacteristicWithTimeout(
+      additional_data_characteristic_, additional_data_packet,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalData,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalDataError,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace quick_pair

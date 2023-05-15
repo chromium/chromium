@@ -14,9 +14,9 @@ source_set("optimization_guide_internals") {
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web/public",
     "//ios/web/public/webui",
   ]

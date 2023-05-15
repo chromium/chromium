@@ -2161,19 +2161,24 @@ Status ExecuteFullPageScreenshot(Session* session,
     return status;
 
   std::unique_ptr<base::Value> layout_metrics;
+  // TODO(crbug.com/1444533): Pass base::Value::Dict* as return param.
   status = web_view->SendCommandAndGetResult(
       "Page.getLayoutMetrics", base::Value::Dict(), &layout_metrics);
   if (status.IsError())
     return status;
 
-  const auto width = layout_metrics->FindDoublePath("contentSize.width");
+  CHECK(layout_metrics && layout_metrics->is_dict());
+  const auto& layout_metrics_dict = layout_metrics->GetDict();
+  const auto width =
+      layout_metrics_dict.FindDoubleByDottedPath("contentSize.width");
   if (!width.has_value())
     return Status(kUnknownError, "invalid width type");
   int w = ceil(width.value());
   if (w == 0)
     return Status(kUnknownError, "invalid width 0");
 
-  const auto height = layout_metrics->FindDoublePath("contentSize.height");
+  const auto height =
+      layout_metrics_dict.FindDoubleByDottedPath("contentSize.height");
   if (!height.has_value())
     return Status(kUnknownError, "invalid height type");
   int h = ceil(height.value());

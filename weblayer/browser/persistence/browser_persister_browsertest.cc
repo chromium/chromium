@@ -7,13 +7,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, RestoresGuid) {
   Tab* tab = browser->CreateTab();
   const std::string original_guid = tab->GetGuid();
   EXPECT_FALSE(original_guid.empty());
-  EXPECT_TRUE(base::IsValidGUID(original_guid));
+  EXPECT_TRUE(base::Uuid::ParseCaseInsensitive(original_guid).is_valid());
   const GURL url = embedded_test_server()->GetURL("/simple_page.html");
   NavigateAndWaitForCompletion(url, tab);
   ShutdownBrowserPersisterAndWait(browser.get());

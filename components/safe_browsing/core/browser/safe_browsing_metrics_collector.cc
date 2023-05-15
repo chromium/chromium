@@ -187,8 +187,8 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
     case ThreatSource::CLIENT_SIDE_DETECTION:
       event = EventType::CSD_INTERSTITIAL_BYPASS;
       break;
-    case ThreatSource::REAL_TIME_CHECK:
-      event = EventType::REAL_TIME_INTERSTITIAL_BYPASS;
+    case ThreatSource::URL_REAL_TIME_CHECK:
+      event = EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS;
       break;
     default:
       NOTREACHED() << "Unexpected threat source.";
@@ -424,7 +424,7 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
       return false;
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
@@ -440,7 +440,7 @@ bool SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType(
     case EventType::USER_STATE_ENABLED:
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
@@ -463,38 +463,6 @@ std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
       return "EnhancedProtection";
     case UserState::kManaged:
       return "Managed";
-  }
-}
-
-std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
-    const EventType& event_type) {
-  switch (event_type) {
-    case EventType::USER_STATE_DISABLED:
-      return "UserStateDisabled";
-    case EventType::USER_STATE_ENABLED:
-      return "UserStateEnabled";
-    case EventType::DATABASE_INTERSTITIAL_BYPASS:
-      return "DatabaseInterstitialBypass";
-    case EventType::CSD_INTERSTITIAL_BYPASS:
-      return "CsdInterstitialBypass";
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
-      return "RealTimeInterstitialBypass";
-    case EventType::DANGEROUS_DOWNLOAD_BYPASS:
-      return "DangerousDownloadBypass";
-    case EventType::PASSWORD_REUSE_MODAL_BYPASS:
-      return "PasswordReuseModalBypass";
-    case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
-      return "ExtensionAllowlistInstallBypass";
-    case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
-      return "NonAllowlistedExtensionReEnabled";
-    case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
-      return "SafeBrowsingInterstitial";
-    case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
-      return "SSLInterstitial";
-    case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
-      return "PasswordProtection";
-    case EventType::SECURITY_SENSITIVE_DOWNLOAD:
-      return "Download";
   }
 }
 

@@ -5,13 +5,13 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_EXPANDED_MENU_VIEW_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_EXPANDED_MENU_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class IconButton;
 class SnapGroup;
-class SnapGroupLockOrUnlockButton;
 
 // A view that acts as the contents view of the snap group expanded menu widget
 // which will show or hide on the kebab button toggled. Note that this view will
@@ -36,9 +36,7 @@ class SnapGroupExpandedMenuView : public views::View {
   IconButton* update_secondary_window_button_for_testing() const {
     return update_secondary_window_button_;
   }
-  SnapGroupLockOrUnlockButton* unlock_button_for_testing() const {
-    return unlock_button_;
-  }
+  IconButton* unlock_button_for_testing() const { return unlock_button_; }
 
  private:
   // Called when the `swap_windows_button_` is clicked to swap the two windows
@@ -55,12 +53,21 @@ class SnapGroupExpandedMenuView : public views::View {
   // shown on the other half of the screen.
   void OnUpdateSecondaryWindowButtonPressed();
 
+  // Called when the unlock button in the expaned menu is pressed to unlock the
+  // snap group.
+  void OnUnLockButtonPressed();
+
+  // `snap_group_` is guaranteed to be non nullptr during `this` lifetime.
+  // TODO(michelefan): revisit this comment and related logic if we decided to
+  // show divider on one window snapped in clamshell.
+  const raw_ptr<SnapGroup, ExperimentalAsh> snap_group_;
+
   // Child views of this class, which are listed from top to bottom (horizontal
   // screen orientation) or left to right (vertical screen orientation).
-  IconButton* swap_windows_button_;
-  IconButton* update_primary_window_button_;
-  IconButton* update_secondary_window_button_;
-  SnapGroupLockOrUnlockButton* unlock_button_;
+  raw_ptr<IconButton, ExperimentalAsh> swap_windows_button_;
+  raw_ptr<IconButton, ExperimentalAsh> update_primary_window_button_;
+  raw_ptr<IconButton, ExperimentalAsh> update_secondary_window_button_;
+  raw_ptr<IconButton, ExperimentalAsh> unlock_button_;
 };
 
 }  // namespace ash

@@ -28,11 +28,26 @@ void MockAffiliatedMatchHelper::ExpectCallToGetAffiliatedAndroidRealms(
       .WillOnce(testing::Return(results_to_return));
 }
 
+void MockAffiliatedMatchHelper::ExpectCallToGetGroup(
+    const PasswordFormDigest& expected_observed_form,
+    const std::vector<std::string>& results_to_return) {
+  EXPECT_CALL(*this, OnGetGroup(expected_observed_form))
+      .WillOnce(testing::Return(results_to_return));
+}
+
 void MockAffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
     const PasswordFormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
   std::vector<std::string> affiliated_android_realms =
       OnGetAffiliatedAndroidRealmsCalled(observed_form);
+  std::move(result_callback).Run(affiliated_android_realms);
+}
+
+void MockAffiliatedMatchHelper::GetGroup(
+    const PasswordFormDigest& observed_form,
+    AffiliatedRealmsCallback result_callback) {
+  std::vector<std::string> affiliated_android_realms =
+      OnGetGroup(observed_form);
   std::move(result_callback).Run(affiliated_android_realms);
 }
 

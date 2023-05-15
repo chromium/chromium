@@ -148,6 +148,17 @@ absl::optional<Value> JSONReader::Read(StringPiece json,
 }
 
 // static
+absl::optional<Value::Dict> JSONReader::ReadDict(StringPiece json,
+                                                 int options,
+                                                 size_t max_depth) {
+  absl::optional<Value> value = Read(json, options, max_depth);
+  if (!value || !value->is_dict()) {
+    return absl::nullopt;
+  }
+  return std::move(*value).TakeDict();
+}
+
+// static
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
                                                            int options) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)

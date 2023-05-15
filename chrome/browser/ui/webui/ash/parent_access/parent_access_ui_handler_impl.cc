@@ -83,8 +83,8 @@ ParentAccessUIHandlerImpl::ParentAccessUIHandlerImpl(
   // ParentAccess state is only tracked when a dialog is created. i.e. not when
   // chrome://parent-access is directly accessed.
   if (delegate_) {
-    state_tracker_ =
-        std::make_unique<ParentAccessStateTracker>(params_->flow_type);
+    state_tracker_ = std::make_unique<ParentAccessStateTracker>(
+        params_->flow_type, params_->is_disabled);
   }
 }
 
@@ -233,6 +233,15 @@ void ParentAccessUIHandlerImpl::GetParentAccessURL(
   DCHECK(result.is_valid()) << "Invalid URL \"" << url << "\" for switch \""
                             << kParentAccessSwitch << "\"";
   std::move(callback).Run(result.spec());
+}
+
+void ParentAccessUIHandlerImpl::OnBeforeScreenDone(
+    OnBeforeScreenDoneCallback callback) {
+  if (state_tracker_) {
+    state_tracker_->OnWebUiStateChanged(
+        ParentAccessStateTracker::FlowResult::kParentAuthentication);
+  }
+  std::move(callback).Run();
 }
 
 const kids::platform::parentaccess::client::proto::ParentAccessToken*

@@ -218,20 +218,16 @@ void CrxCachePutCompleteOnCrxCacheBlockingTaskRunner(
     const CrxCache::Result& result) {
   if (result.error != UnpackerError::kNone) {
     update_client::DeleteFileAndEmptyParentDirectory(crx_path);
-    main_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                                  static_cast<int>(result.error), 0));
-    DVLOG(2) << "CrxCache->Put failed: " << static_cast<int>(result.error);
-    return;
+    DVLOG(2) << "crx_cache->Put failed: " << static_cast<int>(result.error);
   } else {
     update_client::DeleteEmptyDirectory(crx_path.DirName());
-    base::ThreadPool::PostTask(
-        FROM_HERE, kTaskTraits,
-        base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
-                       unpack_path, public_key, fingerprint,
-                       std::move(install_params), installer, progress_callback,
-                       std::move(callback)));
   }
+  base::ThreadPool::PostTask(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
+                     unpack_path, public_key, fingerprint,
+                     std::move(install_params), installer, progress_callback,
+                     std::move(callback)));
 }
 
 void UnpackCompleteOnBlockingTaskRunner(
@@ -989,6 +985,9 @@ void Component::StateCanUpdate::DoHandle() {
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+         component.update_context_->crx_cache_.has_value() &&
+#endif
          component.update_context_->config->EnabledDeltas();
 }
 
@@ -1045,13 +1044,9 @@ void Component::StateDownloadingDiff::DoHandle() {
 void Component::StateDownloadingDiff::DownloadProgress(int64_t downloaded_bytes,
                                                        int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (downloaded_bytes != -1 && total_bytes != -1)
-    CHECK_LE(downloaded_bytes, total_bytes);
-
   auto& component = Component::State::component();
   component.downloaded_bytes_ = downloaded_bytes;
   component.total_bytes_ = total_bytes;
-
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
@@ -1121,13 +1116,9 @@ void Component::StateDownloading::DoHandle() {
 void Component::StateDownloading::DownloadProgress(int64_t downloaded_bytes,
                                                    int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (downloaded_bytes != -1 && total_bytes != -1)
-    CHECK_LE(downloaded_bytes, total_bytes);
-
   auto& component = Component::State::component();
   component.downloaded_bytes_ = downloaded_bytes;
   component.total_bytes_ = total_bytes;
-
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
@@ -1188,8 +1179,6 @@ void Component::StateUpdatingDiff::DoHandle() {
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
   // we should remove this #if.
-  VLOG(1) << "Diff Updating.. prev fp: " << component.previous_fp_
-          << " Next fp: " << component.next_fp_;
   if (!update_context.crx_cache_.has_value()) {
     main_task_runner->PostTask(
         FROM_HERE,

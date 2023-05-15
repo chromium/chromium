@@ -328,15 +328,13 @@ struct VideoCaptureFeedback {
   // int::max used to signal no limit.
   int32 max_pixels;
 
-  // Reports that the consumer needs a cpu readable frame.
-  // TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
-  // shipped to 100%, |require_mapped_frame| can be removed in favor of checking
-  // if |mapped_sizes| is non-empty.
+  // Set by the consumer to request a CPU readable frame.  Currently, only
+  // supported for NV12 frames obtained from the Windows Media Foundation
+  // camera capturer.
   bool require_mapped_frame;
 
-  // Reports which sizes the video frame got mapped by the consumer for CPU
-  // access. Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
-  [MinVersion=1] array<gfx.mojom.Size>? mapped_sizes;
+  // DEPRECATED - DO NOT USE.  Only kept for backwards compatibility.
+  [MinVersion=1] array<gfx.mojom.Size>? DEPRECATED_mapped_sizes;
 
   // The frame that this feedback is associated with. Some consumers do not
   // break down their analysis on a per-frame basis; while some may expect to

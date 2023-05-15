@@ -100,16 +100,15 @@
     sub-label="$i18n{keyboardSendFunctionKeysDescription}"
     deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
 </settings-toggle-button>
-<!-- TODO(b/271486098):Once we have final copy, internationalise these strings-->
-<h2>Holding keys</h2>
+<h2>$i18n{keyboardHoldingKeys}</h2>
 <div class="subsection">
   <template is=dom-if if="[[shouldShowDiacriticSetting_]]">
     <settings-toggle-button
         class="hr continuation"
         pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
-        label="Show accent marks and special characters when holding alphabet keys"
-        sub-label="This will disable auto-repeat (if enabled) for alphabet keys. Only available for English (US)"
-        deep-link-focus-id$="[[Setting.kShowDiacritic]]""
+        label="$i18n{keyboardAccentMarks}"
+        sub-label="$i18n{keyboardAccentMarksSubLabel}"
+        deep-link-focus-id$="[[Setting.kShowDiacritic]]"
         >
     </settings-toggle-button>
   </template>
@@ -117,6 +116,7 @@
       class="hr continuation"
       pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
       label="$i18n{keyboardEnableAutoRepeat}"
+      sub-label="$i18n{keyboardEnableAutoRepeatSubLabel}"
       deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
   </settings-toggle-button>
   <iron-collapse
@@ -156,7 +156,6 @@
     on-click="onShowKeyboardShortcutViewerClick_"
     label="$i18n{showKeyboardShortcutViewer}"
     external
-    button-aria-description="$i18n{opensInNewTab}"
     deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]"></cr-link-row>
 <cr-link-row id="showLanguagesInput"
     class="hr" on-click="onShowInputSettingsClick_"

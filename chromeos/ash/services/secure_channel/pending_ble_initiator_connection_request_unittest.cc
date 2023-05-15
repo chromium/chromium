@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -77,7 +78,8 @@ class SecureChannelPendingBleInitiatorConnectionRequestTest
 
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;
-  FakeClientConnectionParameters* fake_client_connection_parameters_;
+  raw_ptr<FakeClientConnectionParameters, ExperimentalAsh>
+      fake_client_connection_parameters_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<PendingConnectionRequest<BleInitiatorFailureType>>

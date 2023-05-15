@@ -22,8 +22,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -112,14 +111,6 @@ class SettingsCupsEditPrinterDialogElement extends
         value: false,
       },
 
-      /**
-       * Flag used to specify whether the view PPD feature is available.
-       */
-      viewPpdEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isViewPpdEnabled'),
-      },
-
       networkProtocolActive_: {
         type: Boolean,
         computed: 'isNetworkProtocol_(pendingPrinter_.printerProtocol)',
@@ -204,13 +195,12 @@ class SettingsCupsEditPrinterDialogElement extends
   private isModelInvalid_: boolean;
   private isOnline_: boolean;
   private needsReconfigured_: boolean;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
   private networkProtocolActive_: boolean;
   private newUserPPD_: string;
   private pendingPrinter_: CupsPrinterInfo;
   private printerInfoChanged_: boolean;
   private userPPD_: string;
-  private viewPpdEnabled_: boolean;
 
   constructor() {
     super();
@@ -578,13 +568,6 @@ class SettingsCupsEditPrinterDialogElement extends
   private isInputFieldReadonly_(): boolean {
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
-  }
-
-  /**
-   * @return True if the View PPD button should be enabled.
-   */
-  private isViewPpdEnabled_(): boolean {
-    return this.viewPpdEnabled_ && !this.printerInfoChanged_;
   }
 }
 

@@ -84,6 +84,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, absl::nullopt);
     EXPECT_EQ(cluster.label, absl::nullopt);
+    EXPECT_EQ(cluster.label_source, LabelSource::kUnknown);
   }
 
   {
@@ -100,6 +101,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
+    EXPECT_EQ(cluster.label_source, LabelSource::kContentDerivedEntity);
   }
 
   {
@@ -114,6 +116,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"baz.com");
     EXPECT_EQ(cluster.label, u"baz.com and more");
+    EXPECT_EQ(cluster.label_source, LabelSource::kHostname);
   }
 
   {
@@ -128,6 +131,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
+    EXPECT_EQ(cluster.label_source, LabelSource::kContentDerivedEntity);
   }
 }
 
@@ -165,6 +169,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.raw_label, u"searchtermlabel");
   EXPECT_THAT(cluster.label, u"“searchtermlabel”");
+  EXPECT_EQ(cluster.label_source, LabelSource::kSearch);
 }
 
 TEST_F(LabelClusterFinalizerTest,
@@ -204,6 +209,7 @@ TEST_F(LabelClusterFinalizerTest,
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.raw_label, u"githublabel");
   EXPECT_THAT(cluster.label, u"“githublabel”");
+  EXPECT_EQ(cluster.label_source, LabelSource::kSearch);
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -130,7 +131,8 @@ class AccountAppsAvailabilityTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   AccountInfo primary_account_;
   // Owned by `scoped_user_manager_`.
-  user_manager::FakeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

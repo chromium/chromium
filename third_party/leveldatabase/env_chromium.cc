@@ -472,7 +472,7 @@ Options::Options() {
   // memory buffer which won't be written until it hits the maximum size
   // (leveldb::Options::write_buffer_size - 4MB by default). The downside here
   // is that databases opens take longer as the open is blocked on compaction.
-  reuse_logs = !base::SysInfo::IsLowEndDevice();
+  reuse_logs = !base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
 #endif
   // By default use a single shared block cache to conserve memory. The owner of
   // this object can create their own, or set to NULL to have leveldb create a
@@ -813,8 +813,9 @@ Status ChromiumEnv::GetChildren(const std::string& dir,
   }
 
   result->clear();
-  for (const auto& entry : entries_result.value())
+  for (const auto& entry : entries_result.value()) {
     result->push_back(entry.BaseName().AsUTF8Unsafe());
+  }
 
   return Status::OK();
 }
@@ -890,8 +891,7 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   Status result;
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
-  FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result =
-      base::unexpected(base::File::Error::FILE_ERROR_FAILED);
+  FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result;
   do {
     lock_result = filesystem_->LockFile(path);
   } while (!lock_result.has_value() && retrier.ShouldKeepTrying());
@@ -934,54 +934,52 @@ Status ChromiumEnv::GetTestDirectory(std::string* path) {
 
 Status ChromiumEnv::NewLogger(const std::string& fname,
                               leveldb::Logger** result) {
+  *result = nullptr;
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   if (!open_result.has_value()) {
-    *result = nullptr;
     return MakeIOError(fname, "Unable to create log file", kNewLogger,
                        open_result.error());
-  } else {
-    *result = new leveldb::ChromiumLogger(std::move(open_result.value()));
-    return Status::OK();
   }
+  *result = new leveldb::ChromiumLogger(std::move(open_result.value()));
+  return Status::OK();
 }
 
 Status ChromiumEnv::NewSequentialFile(const std::string& fname,
                                       leveldb::SequentialFile** result) {
+  *result = nullptr;
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!open_result.has_value()) {
-    *result = nullptr;
     return MakeIOError(fname, "Unable to create sequential file",
                        kNewSequentialFile, open_result.error());
-  } else {
-    *result = new ChromiumSequentialFile(fname, std::move(open_result.value()));
-    return Status::OK();
   }
+  *result = new ChromiumSequentialFile(fname, std::move(open_result.value()));
+  return Status::OK();
 }
 
 Status ChromiumEnv::NewRandomAccessFile(const std::string& fname,
                                         leveldb::RandomAccessFile** result) {
+  *result = nullptr;
   base::FilePath file_path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       file_path, base::File::FLAG_READ | base::File::FLAG_OPEN);
-  if (open_result.has_value()) {
-    base::File file = std::move(open_result.value());
-    if (file_cache_) {
-      *result = new ChromiumEvictableRandomAccessFile(
-          std::move(file_path), std::move(file), filesystem_.get(),
-          file_cache_.get());
-    } else {
-      *result =
-          new ChromiumRandomAccessFile(std::move(file_path), std::move(file));
-    }
-    return Status::OK();
+  if (!open_result.has_value()) {
+    return MakeIOError(fname, FileErrorString(open_result.error()),
+                       kNewRandomAccessFile, open_result.error());
   }
-  *result = nullptr;
-  return MakeIOError(fname, FileErrorString(open_result.error()),
-                     kNewRandomAccessFile, open_result.error());
+  base::File file = std::move(open_result.value());
+  if (file_cache_) {
+    *result = new ChromiumEvictableRandomAccessFile(
+        std::move(file_path), std::move(file), filesystem_.get(),
+        file_cache_.get());
+  } else {
+    *result =
+        new ChromiumRandomAccessFile(std::move(file_path), std::move(file));
+  }
+  return Status::OK();
 }
 
 Status ChromiumEnv::NewWritableFile(const std::string& fname,
@@ -1001,11 +999,11 @@ Status ChromiumEnv::NewWritableFile(const std::string& fname,
 
 Status ChromiumEnv::NewAppendableFile(const std::string& fname,
                                       leveldb::WritableFile** result) {
+  *result = nullptr;
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
   if (!open_result.has_value()) {
-    *result = nullptr;
     return MakeIOError(fname, "Unable to create appendable file",
                        kNewAppendableFile, open_result.error());
   }

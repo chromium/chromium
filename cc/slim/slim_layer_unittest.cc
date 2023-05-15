@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -147,6 +148,11 @@ TEST_P(SlimLayerTest, LayerProperties) {
   std::vector<Filter> filters;
   filters.push_back(Filter::CreateBrightness(0.5f));
   layer->SetFilters(std::move(filters));
+
+  EXPECT_FALSE(layer->HasRoundedCorner());
+  layer->SetRoundedCorner(gfx::RoundedCornersF(50));
+  EXPECT_EQ(layer->corner_radii(), gfx::RoundedCornersF(50));
+  EXPECT_TRUE(layer->HasRoundedCorner());
 }
 
 TEST_P(SlimLayerTest, SurfaceLayerProperties) {

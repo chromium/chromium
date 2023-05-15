@@ -13,7 +13,7 @@
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -41,6 +41,9 @@ TextFragmentsManagerImpl::TextFragmentsManagerImpl(WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
+  web::WebFramesManager* web_frames_manager =
+      GetJSFeature()->GetWebFramesManager(web_state);
+  web_frames_manager->AddObserver(this);
 }
 
 TextFragmentsManagerImpl::~TextFragmentsManagerImpl() {
@@ -109,6 +112,14 @@ void TextFragmentsManagerImpl::OnClickWithSender(
   }
 }
 
+void TextFragmentsManagerImpl::WebFrameBecameAvailable(
+    WebFramesManager* web_frames_manager,
+    WebFrame* web_frame) {
+  if (web_frame->IsMainFrame() && deferred_processing_params_) {
+    DoHighlight();
+  }
+}
+
 void TextFragmentsManagerImpl::DidFinishNavigation(
     WebState* web_state,
     NavigationContext* navigation_context) {
@@ -125,14 +136,7 @@ void TextFragmentsManagerImpl::DidFinishNavigation(
     return;
   }
   deferred_processing_params_ = std::move(params);
-  if (web::GetMainFrame(web_state_)) {
-    DoHighlight();
-  }
-}
-
-void TextFragmentsManagerImpl::WebFrameDidBecomeAvailable(WebState* web_state,
-                                                          WebFrame* web_frame) {
-  if (web_frame->IsMainFrame() && deferred_processing_params_) {
+  if (GetJSFeature()->GetWebFramesManager(web_state_)->GetMainWebFrame()) {
     DoHighlight();
   }
 }

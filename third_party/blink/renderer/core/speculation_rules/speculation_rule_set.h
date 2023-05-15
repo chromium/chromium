@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -43,21 +44,29 @@ class CORE_EXPORT SpeculationRuleSet final
   // the document's base URL) used for parsing a rule set.
   class CORE_EXPORT Source : public GarbageCollected<Source> {
    public:
-    Source(const String& source_text, Document&);
-    Source(const String& source_text, const KURL& base_url);
+    Source(const String& source_text, Document&, DOMNodeId node_id);
+    Source(const String& source_text,
+           const KURL& base_url,
+           uint64_t request_id);
 
     const String& GetSourceText() const;
+    const absl::optional<DOMNodeId>& GetNodeId() const;
+    const absl::optional<KURL>& GetSourceURL() const;
+    const absl::optional<uint64_t>& GetRequestId() const;
     KURL GetBaseURL() const;
 
     void Trace(Visitor*) const;
 
    private:
     String source_text_;
-    // Only set when the SpeculationRuleSet was "out-of-document" (i.e. loaded
-    // by a SpeculationRuleLoader).
-    absl::optional<KURL> base_url_;
-    // Only set when the SpeculationRuleSet was loaded from inline script.
+    // Fields below are only set when the SpeculationRuleSet was loaded from
+    // inline script.
     Member<Document> document_;
+    absl::optional<DOMNodeId> node_id_;
+    // Fields below are only set when the SpeculationRuleSet was
+    // "out-of-document" (i.e. loaded by a SpeculationRuleLoader).
+    absl::optional<KURL> base_url_;
+    absl::optional<uint64_t> request_id_;
   };
 
   SpeculationRuleSet(base::PassKey<SpeculationRuleSet>, Source* source);
@@ -81,6 +90,7 @@ class CORE_EXPORT SpeculationRuleSet final
   }
 
   bool has_document_rule() const { return has_document_rule_; }
+  bool requires_unfiltered_input() const { return requires_unfiltered_input_; }
 
   Source* source() const { return source_; }
 
@@ -93,6 +103,9 @@ class CORE_EXPORT SpeculationRuleSet final
   // Shorthand to check `error_type` is not `kNoError`.
   bool HasError() const;
   bool ShouldReportUMAForError() const;
+
+  static mojom::blink::SpeculationTargetHint SpeculationTargetHintFromString(
+      const StringView& target_hint_str);
 
   void Trace(Visitor*) const;
 
@@ -108,6 +121,13 @@ class CORE_EXPORT SpeculationRuleSet final
   Member<Source> source_;
   HeapVector<Member<StyleRule>> selectors_;
   bool has_document_rule_ = false;
+
+  // If true, this ruleset contains a rule which may not work correctly if input
+  // is filtered.
+  // TODO(crbug.com/1425870): Remove this once such rules work without this
+  // hack.
+  bool requires_unfiltered_input_ = false;
+
   SpeculationRuleSetErrorType error_type_ =
       SpeculationRuleSetErrorType::kNoError;
   String error_message_;

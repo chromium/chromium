@@ -14,10 +14,11 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 
 namespace {
 
-// TODO(https://crbug.com/1278249): Move file names into a shared constants
+// TODO(https://crbug.com/1443341): Move file names into a shared constants
 // file before adding more files.
 class ComponentModelFiles {
  public:
@@ -49,12 +50,6 @@ std::unique_ptr<ComponentModelFiles> ComponentModelFiles::LoadComponentFiles() {
           ->get_component_binary_path());
 }
 
-void LibraryInitState(bool successful) {
-  screen_ai::ScreenAIInstallState::GetInstance()->SetState(
-      successful ? screen_ai::ScreenAIInstallState::State::kReady
-                 : screen_ai::ScreenAIInstallState::State::kFailed);
-}
-
 }  // namespace
 
 namespace screen_ai {
@@ -66,43 +61,65 @@ void ScreenAIServiceRouter::BindScreenAIAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver) {
   LaunchIfNotRunning();
 
-  if (screen_ai_service_.is_bound())
+  // We should wait for Screen AI library to be loaded and initialized before
+  // sending requests to it. Hence we keep the connections until we know library
+  // is ready and bind them in `BindQueuedConnections`.
+  // Also applies to other Bind* functions.
+  if (service_is_ready_) {
     screen_ai_service_->BindAnnotator(std::move(receiver));
+  } else {
+    pending_annotators_.emplace_back(std::move(receiver));
+  }
 }
 
 void ScreenAIServiceRouter::BindScreenAIAnnotatorClient(
     mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> remote) {
   LaunchIfNotRunning();
 
-  if (screen_ai_service_.is_bound())
+  if (service_is_ready_) {
     screen_ai_service_->BindAnnotatorClient(std::move(remote));
+  } else {
+    pending_clients_.emplace_back(std::move(remote));
+  }
 }
 
 void ScreenAIServiceRouter::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver) {
   LaunchIfNotRunning();
 
-  if (screen_ai_service_.is_bound())
+  if (service_is_ready_) {
     screen_ai_service_->BindMainContentExtractor(std::move(receiver));
+  } else {
+    pending_main_content_extractors_.emplace_back(std::move(receiver));
+  }
 }
 
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
   if (screen_ai_service_.is_bound())
     return;
-
-  if (!ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
+  auto* screen_ai_install = ScreenAIInstallState::GetInstance();
+  if (!screen_ai_install->IsComponentAvailable()) {
     VLOG(0)
         << "ScreenAI service launch triggered when component is not available.";
     return;
   }
+#if BUILDFLAG(IS_WIN)
+  base::FilePath library_path = screen_ai_install->get_component_binary_path();
+  std::vector<base::FilePath> preload_libraries = {library_path};
+#endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(https://crbug.com/1278249): Make sure the library is sandboxed and
+  // TODO(https://crbug.com/1443341): Make sure the library is sandboxed and
   // loaded from the same folder and component updater doesn't download a new
   // version during sandbox creation.
   content::ServiceProcessHost::Launch(
       screen_ai_service_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName("Screen AI Service")
+#if BUILDFLAG(IS_WIN)
+          .WithPreloadedLibraries(
+              preload_libraries,
+              content::ServiceProcessHostPreloadLibraries::GetPassKey())
+#endif  // BUILDFLAG(IS_WIN)
           .Pass());
   DCHECK(screen_ai_service_.is_bound());
 
@@ -110,18 +127,49 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ComponentModelFiles::LoadComponentFiles),
-      base::BindOnce(
-          [](base::WeakPtr<ScreenAIServiceRouter> service_router,
-             std::unique_ptr<ComponentModelFiles> model_files) {
-            if (!service_router)
-              return;
-            service_router->screen_ai_service_->LoadAndInitializeLibrary(
-                std::move(model_files->screen2x_model_config_),
-                std::move(model_files->screen2x_model_),
-                model_files->library_binary_path_,
-                base::BindOnce(&LibraryInitState));
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ScreenAIServiceRouter::LoadAndInitializeLibrary,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScreenAIServiceRouter::LoadAndInitializeLibrary(
+    std::unique_ptr<ComponentModelFiles> model_files) {
+  DCHECK(screen_ai_service_.is_bound());
+  screen_ai_service_->LoadAndInitializeLibrary(
+      std::move(model_files->screen2x_model_config_),
+      std::move(model_files->screen2x_model_),
+      model_files->library_binary_path_,
+      base::BindOnce(&ScreenAIServiceRouter::SetLibraryLoadState,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScreenAIServiceRouter::SetLibraryLoadState(bool successful) {
+  screen_ai::ScreenAIInstallState::GetInstance()->SetState(
+      successful ? screen_ai::ScreenAIInstallState::State::kReady
+                 : screen_ai::ScreenAIInstallState::State::kFailed);
+
+  if (successful) {
+    service_is_ready_ = true;
+    BindQueuedConnections();
+  }
+}
+
+void ScreenAIServiceRouter::BindQueuedConnections() {
+  DCHECK(screen_ai_service_.is_bound());
+
+  for (auto& annotator : pending_annotators_) {
+    screen_ai_service_->BindAnnotator(std::move(annotator));
+  }
+  pending_annotators_.clear();
+
+  for (auto& client : pending_clients_) {
+    screen_ai_service_->BindAnnotatorClient(std::move(client));
+  }
+  pending_clients_.clear();
+
+  for (auto& extractor : pending_main_content_extractors_) {
+    screen_ai_service_->BindMainContentExtractor(std::move(extractor));
+  }
+  pending_main_content_extractors_.clear();
 }
 
 }  // namespace screen_ai

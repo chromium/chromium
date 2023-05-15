@@ -9,6 +9,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -48,6 +49,15 @@ void TestWallpaperController::ClearCounts() {
 void TestWallpaperController::SetClient(
     ash::WallpaperControllerClient* client) {
   was_client_set_ = true;
+}
+
+ash::WallpaperDragDropDelegate* TestWallpaperController::GetDragDropDelegate() {
+  return nullptr;
+}
+
+void TestWallpaperController::SetDragDropDelegate(
+    std::unique_ptr<ash::WallpaperDragDropDelegate> delegate) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void TestWallpaperController::SetDriveFsDelegate(
@@ -95,6 +105,10 @@ void TestWallpaperController::SetOnlineWallpaper(
   ++set_online_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo(params);
   std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::ShowOobeWallpaper() {
+  ++set_oobe_wallpaper_count_;
 }
 
 void TestWallpaperController::SetGooglePhotosWallpaper(
@@ -276,10 +290,10 @@ gfx::ImageSkia TestWallpaperController::GetWallpaperImage() {
   return current_wallpaper;
 }
 
-scoped_refptr<base::RefCountedMemory>
-TestWallpaperController::GetPreviewImage() {
+void TestWallpaperController::LoadPreviewImage(
+    LoadPreviewImageCallback callback) {
   current_wallpaper.MakeThreadSafe();
-  return gfx::Image(current_wallpaper).As1xPNGBytes();
+  std::move(callback).Run(gfx::Image(current_wallpaper).As1xPNGBytes());
 }
 
 bool TestWallpaperController::IsWallpaperBlurredForLockState() const {

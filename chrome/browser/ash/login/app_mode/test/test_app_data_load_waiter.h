@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -46,7 +47,7 @@ class TestAppDataLoadWaiter : public KioskAppManagerObserver {
   bool IsAppDataLoaded();
 
   std::unique_ptr<base::RunLoop> runner_;
-  KioskAppManager* manager_;
+  raw_ptr<KioskAppManager, ExperimentalAsh> manager_;
   WaitType wait_type_;
   bool loaded_;
   bool quit_;

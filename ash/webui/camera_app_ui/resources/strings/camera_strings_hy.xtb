@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Տեսագրումը կանգնեց, քանի որ սարքում բավարար տարածք չկա։ Նոր տեսագրությունների համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="2036868001356139588">Ժամաչափի տևողությունը</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> տեսախցիկն ակտիվ է</translation>
-<translation id="2128052519899549250">Ձայնագրել արագացված տեսանյութ</translation>
 <translation id="2134029355740465625">Տեսանյութի կարգավորումներ</translation>
 <translation id="2144806332417375165">Տեսանյութի հատուկ պարամետրեր</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Փաստաթուղթը ջնջված է</translation>
 <translation id="414641094616694804">Այս տեսախցիկի լուծաչափը հնարավոր չէ փոխել</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
-<translation id="4281620174117014503">Միջին լուծաչափ</translation>
 <translation id="428234092390943511">Էջի մանրապատկեր</translation>
 <translation id="4383571725254449280">Տպման վիճակագրության մատյաններ</translation>
 <translation id="4445542136948522167">Դադարեցնել լուսանկարումը</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5320594929574852403">Տեղափոխվում է ձախ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Արագացված տեսանյութ</translation>
 <translation id="5662366948659129155">Սկանավորվում է էջ <ph name="COUNT" />-ը</translation>
 <translation id="5671277269877808209">Քառակուսի</translation>
+<translation id="574392208103952083">Միջին</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
 <translation id="5753488212459587150">Միացնել փորձագետի ռեժիմը</translation>
 <translation id="5759254179196327752">Սկանավորել փաստաթուղթը</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7670511624014457267">60 կադր/վ</translation>
 <translation id="7671804233658741790">Փաստաթղթի ներքևի աջ անկյուն</translation>
+<translation id="7684446460490665873">Տեսագրել արագացված տեսանյութ</translation>
 <translation id="7692090236657809299">Միացնել տեղաշարժման, թեքման և մասշտաբի փոփոխման ընտրանքները</translation>
 <translation id="7726641833034062494">Տեսագրել սովորական տեսանյութ</translation>
 <translation id="7748344063862150053">Փաստաթղթի վերևի աջ անկյուն</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Փաստաթուղթը դրեք շրջանակի մեջ</translation>
 <translation id="9045155556724273246">10 վայրկյան</translation>
 <translation id="906331135292332864">Պատկերը մշակվում է...</translation>
+<translation id="9161584225258678723">Արագացված տեսանյութ</translation>
 <translation id="922762992951083513">Հայելապատճենման ռեժիմը միացված է</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 </translationbundle>

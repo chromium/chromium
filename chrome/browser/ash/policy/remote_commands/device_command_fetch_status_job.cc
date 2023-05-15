@@ -43,7 +43,8 @@ void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult result_callback) {
   if (manager && manager->GetStatusUploader() &&
       manager->GetSystemLogUploader()) {
     manager->GetStatusUploader()->ScheduleNextStatusUploadImmediately();
-    manager->GetSystemLogUploader()->ScheduleNextSystemLogUploadImmediately();
+    manager->GetSystemLogUploader()->ScheduleNextSystemLogUploadImmediately(
+        unique_id());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
                                   ResultType::kSuccess, absl::nullopt));

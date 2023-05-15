@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/os_and_policies_update_checker.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
@@ -80,7 +81,7 @@ class DeviceScheduledUpdateChecker
   void ResetState();
 
   // Used to retrieve Chrome OS settings. Not owned.
-  ash::CrosSettings* const cros_settings_;
+  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;

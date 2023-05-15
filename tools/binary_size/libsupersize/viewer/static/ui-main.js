@@ -24,6 +24,13 @@
   const _metricsTreeUi = new MetricsTreeUi(_metricsTreeModel);
   _metricsTreeUi.init();
 
+  /** @type {!MetadataTreeModel} */
+  const _metadataTreeModel = new MetadataTreeModel();
+
+  /** @type {!MetadataTreeUi} */
+  const _metadataTreeUi = new MetadataTreeUi(_metadataTreeModel);
+  _metadataTreeUi.init();
+
   /** @param {TreeProgress} message */
   function onProgressMessage(message) {
     const {error, percent} = message;
@@ -43,6 +50,12 @@
         '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
         'font-weight:bold;color:red;', '')
 
+    window.supersize.metadata = metadata;
+    for (const key of ['size_file', 'before_size_file']) {
+      if (metadata.hasOwnProperty(key))
+        preprocessSizeFileInPlace(metadata[key]);
+    }
+
     displayOrHideDownloadButton(beforeBlobUrl, loadBlobUrl);
 
     state.setDiffMode(diffMode);
@@ -50,8 +63,7 @@
 
     processBuildTreeResponse(message);
     renderAndShowMetricsTree(metadata);
-    setMetadataContent(metadata);
-    g_el.divMetadataView.classList.toggle('active', true);
+    renderAndShowMetadataTree(metadata);
     setReviewInfo(metadata);
   }
 
@@ -153,22 +165,21 @@
   }
 
   /**
-   * Modifies metadata in-place so they render better.
-   * @param {Object} metadata
+   * Modifies per-container metadata in-place so they render better.
+   * @param {Object} subMetadata
    */
-  function formatMetadataInPlace(metadata) {
-    if (metadata?.hasOwnProperty('elf_mtime')) {
-      const date = new Date(metadata['elf_mtime'] * 1000);
-      metadata['elf_mtime'] = date.toString();
+  function formatMetadataInPlace(subMetadata) {
+    if (subMetadata?.hasOwnProperty('elf_mtime')) {
+      const date = new Date(subMetadata['elf_mtime'] * 1000);
+      subMetadata['elf_mtime'] = date.toString();
     }
   }
 
   /**
-   * Renders the metadata for provided size file.
-   * @param {MetadataType} sizeMetadata
-   * @return {string}
+   * Modifies size_file / before_size_file in-place so they render better.
+   * @param {MetadataType} sizeFile
    */
-  function renderMetadata(sizeMetadata) {
+  function preprocessSizeFileInPlace(sizeFile) {
     const processContainer = (container) => {
       if (container?.hasOwnProperty('metadata')) {
         formatMetadataInPlace(container['metadata']);
@@ -178,35 +189,31 @@
         delete container['section_sizes'];
       }
     };
-    if (sizeMetadata?.hasOwnProperty('containers')) {
-      for (const container of sizeMetadata['containers']) {
+    if (sizeFile?.hasOwnProperty('containers')) {
+      for (const container of sizeFile['containers']) {
         processContainer(container);
       }
     } else {
       // Covers the case if the metadata is in old schema.
-      processContainer(sizeMetadata);
+      processContainer(sizeFile);
     }
-    return JSON.stringify(sizeMetadata, null, 2);
   }
 
   /**
-   * Sets the metadata from message to the HTML element.
-   * @param {MetadataType} metadata
+   * Renders the Metadata Tree.
+   * @param {?Object} metadata
    */
-  function setMetadataContent(metadata) {
-    let metadataStr = '';
-    if (metadata) {
-      const sizeMetadata = metadata['size_file'];
-      const sizeMetadataStr = renderMetadata(sizeMetadata);
-      if (metadata.hasOwnProperty('before_size_file')) {
-        const beforeMetadata = metadata['before_size_file'];
-        const beforeMetadataStr = renderMetadata(beforeMetadata);
-        metadataStr =
-            'Metadata for Before Size File:\n' + beforeMetadataStr + '\n\n\n';
-      }
-      metadataStr += 'Metadata for Load Size File:\n' + sizeMetadataStr;
+  function renderAndShowMetadataTree(metadata) {
+    _metadataTreeModel.extractAndStoreRoot(metadata);
+    /** @type {?DocumentFragment} */
+    let rootElement = null;
+    if (_metricsTreeModel.rootNode) {
+      rootElement =
+          _metadataTreeUi.makeNodeElement(_metadataTreeModel.rootNode);
     }
-    g_el.preMetadataContent.textContent = metadataStr;
+
+    dom.replace(g_el.ulMetadataTree, rootElement);
+    g_el.divMetadataView.classList.toggle('active', true);
   }
 
   /** @param {!Array<!URL>} urlsToLoad */
@@ -259,11 +266,6 @@
   g_el.frmOptions.addEventListener('submit', event => {
     event.preventDefault();
     rebuildTree();
-  });
-
-  // Toggles the metadata HTML element on click.
-  g_el.divMetadataView.addEventListener('click', () => {
-    g_el.preMetadataContent.classList.toggle('active');
   });
 
   const urlsToLoad = [];

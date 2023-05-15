@@ -258,9 +258,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableLazyInitializeMediaControls,
      raw_ref(features::kLazyInitializeMediaControls)},
     {wf::EnableLazyFrameLoading, raw_ref(features::kLazyFrameLoading)},
-    {wf::EnableLazyImageLoading, raw_ref(features::kLazyImageLoading)},
-    {wf::EnableLazyImageVisibleLoadTimeMetrics,
-     raw_ref(features::kLazyImageVisibleLoadTimeMetrics)},
     {wf::EnableMediaCastOverlayButton, raw_ref(media::kMediaCastOverlayButton)},
     {wf::EnableMediaEngagementBypassAutoplayPolicies,
      raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
@@ -324,9 +321,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
     {wf::EnableRemoveMobileViewportDoubleTap,
      raw_ref(features::kRemoveMobileViewportDoubleTap)},
-    {wf::EnableGetDisplayMediaSet, raw_ref(features::kGetDisplayMediaSet)},
-    {wf::EnableGetDisplayMediaSetAutoSelectAllScreens,
-     raw_ref(features::kGetDisplayMediaSetAutoSelectAllScreens)},
     {wf::EnableServiceWorkerBypassFetchHandler,
      raw_ref(features::kServiceWorkerBypassFetchHandler)},
   };
@@ -344,10 +338,16 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AttributionReporting",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
+          {"AttributionReportingCrossAppWeb",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
           {"AndroidDownloadableFontsMatching",
            raw_ref(features::kAndroidDownloadableFontsMatching)},
           {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
           {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"FledgeBiddingAndAuctionServer",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"FontSrcLocalMatching", raw_ref(features::kFontSrcLocalMatching)},
           {"LegacyWindowsDWriteFontFallback",
@@ -364,6 +364,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"TrustedTypesFromLiteral",
            raw_ref(features::kTrustedTypesFromLiteral)},
           {"WebAppTabStrip", raw_ref(features::kDesktopPWAsTabStrip)},
+          {"WebAppTabStripCustomizations",
+           raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
+          {"WebEnvironmentIntegrity",
+           raw_ref(features::kWebEnvironmentIntegrity)},
           {"WGIGamepadTriggerRumble",
            raw_ref(features::kEnableWindowsGamingInputDataFetcher)},
           {"UserAgentFull", raw_ref(blink::features::kFullUserAgent)},
@@ -656,6 +660,20 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kBrowsingTopicsXHR.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsXHR(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kFledgeBiddingAndAuctionServer)) {
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsFledgeBiddingAndAuctionServerEnabled())
+        << "FledgeBiddingAndAuctionServer cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kInterestGroupStorage.name << ","
+        << blink::features::kFledgeBiddingAndAuctionServer.name
+        << " in addition.";
+    WebRuntimeFeatures::EnableFledgeBiddingAndAuctionServer(false);
   }
 }
 

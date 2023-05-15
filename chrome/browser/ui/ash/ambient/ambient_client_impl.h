@@ -33,6 +33,9 @@ class AmbientClientImpl : public ash::AmbientClient {
   void DownloadImage(const std::string& url,
                      ash::ImageDownloader::DownloadCallback callback) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory()
+      override;
+
   void RequestWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
   bool ShouldUseProdServer() override;

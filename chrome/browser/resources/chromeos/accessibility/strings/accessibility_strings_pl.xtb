@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="100506692671054486">brak poprzedniego polecenia</translation>
 <translation id="1009046985747440431">Naciśnij strzałkę w górę lub w dół, by się poruszać, i Enter, by wybrać opcję</translation>
 <translation id="1011903154582639569">Znajdź klawisz, a potem unieś palec, by wpisać znak</translation>
 <translation id="1012173283529841972">Element listy</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Jasnolawendowy</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3962990492275676168">Zacznij czytać od bieżącego miejsca</translation>
+<translation id="397094149579293440">Nie wybrano tekstu.</translation>
 <translation id="3970951409746498040">Piaskowobrązowy</translation>
 <translation id="3989324057180830702">przełącznik</translation>
 <translation id="3991317907213946254">Bardzo jasna skóra</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Nie ma poprzedniego nagłówka poziomu 1</translation>
 <translation id="4787577491510559358">Informuj głosowo o formatowaniu bieżącego elementu</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">Nie zaznaczono pola tekstowego.</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
 <translation id="481165870889056555">Przeczytaj tytuł bieżącej strony</translation>
 <translation id="4815668758102003883">Bladoturkusowy</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Link wewnętrzny</translation>
 <translation id="4909019435900810068">Przejdź jedno słowo wstecz</translation>
 <translation id="4911349081560453449">Nie ma poprzedniego pola wyboru</translation>
+<translation id="4919186071145887492">Nie udało się wykonać polecenia <ph name="COMMAND" />. Spróbuj jeszcze raz.</translation>
 <translation id="492295894462528572">Przedmowa</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
 <translation id="495170559598752135">Czynności</translation>
 <translation id="4953585991029886728">Edytowanie tekstu</translation>
+<translation id="4964701498510730546">Pole tekstowe jest puste.</translation>
 <translation id="4973717656530883744">Minimalnie <ph name="X" /></translation>
 <translation id="4974612477719259470">Nie ma poprzedniego przycisku</translation>
 <translation id="4979404613699303341">Poprzedni przycisk</translation>
+<translation id="4981239367072766915">Nierozpoznane dane wejściowe.</translation>
 <translation id="4982917827052020884">Zacznijmy od kilku klawiszy, których będziesz używać regularnie. Za pomocą klawisza Ctrl możesz zatrzymać odczytywanie. Znajduje się on w lewym dolnym rogu klawiatury. Aby przejść dalej, naciśnij klawisz Ctrl.</translation>
 <translation id="4983588134362688868">Przejdź do góry strony</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, okno</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Informuj głosowo o stanie baterii</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, wybrany przycisk opcji</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, wybrany przycisk opcji pozycji menu</translation>
+<translation id="5014131807708055994">Nie można wykonać polecenia <ph name="COMMAND" />. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Włącz rejestrowanie mowy</translation>
 <translation id="5041394372352067729">Przenieś wyświetlacz brajlowski na górę strony</translation>
 <translation id="5042770794184672516">Zwiększ głośność mowy</translation>

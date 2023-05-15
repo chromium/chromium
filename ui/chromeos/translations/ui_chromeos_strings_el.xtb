@@ -168,7 +168,6 @@
 <translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
-<translation id="2378075407703503998">Έχουν επιλεγεί <ph name="SELCTED_FILE_COUNT" /> αρχεία</translation>
 <translation id="2383454254762599978">Μετακίνηση στον κάδο</translation>
 <translation id="2387458720915042159">Τύπος σύνδεσης διακομιστή μεσολάβησης</translation>
 <translation id="2389832672041313158">Βιρμανικά/Μιανμάρ</translation>
@@ -480,7 +479,6 @@
 <translation id="4823651846660089135">Η συσκευή είναι μόνο για ανάγνωση</translation>
 <translation id="4826849268470072925">Ταμίλ ITRANS</translation>
 <translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
-<translation id="4839847978919684242">Έχουν επιλεγεί <ph name="SELCTED_FILES_COUNT" /> στοιχεία</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
@@ -770,7 +768,6 @@
 <translation id="6989942356279143254">Σουηδικά</translation>
 <translation id="6990081529015358884">Δεν υπάρχει ελεύθερος χώρος</translation>
 <translation id="6993826899923627728">Αυτά τα στοιχεία βρίσκονται στον κάδο</translation>
-<translation id="6998711733709403587">Έχουν επιλεγεί <ph name="SELCTED_FOLDERS_COUNT" /> φάκελοι</translation>
 <translation id="7008426324576352165">Ο οργανισμός σας χρειάζεται περισσότερο αποθηκευτικό χώρο για να ολοκληρώσει τη μεταφόρτωση.</translation>
 <translation id="7009985720488544166">Η μετακίνηση <ph name="COUNT" /> αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -805,6 +802,7 @@
 <translation id="7252604552361840748">Βρείτε την επέκταση παραπάνω</translation>
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
+<translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>
 <translation id="7292816689782057017">Η πολιτική διαχειριστή περιορίζει την αποθήκευση σε ορισμένες τοποθεσίες.</translation>
 <translation id="7294063083760278948">Μεταγραφή σε Τελούγκου</translation>
 <translation id="7295662345261934369">Κοινοποίηση σε άλλα άτομα</translation>

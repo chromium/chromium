@@ -24,23 +24,12 @@
 
 namespace {
 
-// Type of flag ownership file.
-enum class FlagFile { kFlagMetadata, kFlagNeverExpire };
+constexpr char kMetadataFileName[] = "flag-metadata.json";
+constexpr char kNeverExpireFileName[] = "flag-never-expire-list.json";
 
-// Returns the filename based on the file enum.
-std::string FlagFileName(FlagFile file) {
-  switch (file) {
-    case FlagFile::kFlagMetadata:
-      return "flag-metadata.json";
-    case FlagFile::kFlagNeverExpire:
-      return "flag-never-expire-list.json";
-  }
-}
-
-// Returns the JSON file contents.
-base::Value FileContents(FlagFile file) {
-  std::string filename = FlagFileName(file);
-
+// Returns the file contents of a named file under $SRC/chrome/browser
+// interpreted as a JSON value.
+base::Value ReadFileContentsAsJSON(const std::string& filename) {
   base::FilePath metadata_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &metadata_path);
   JSONFileValueDeserializer deserializer(
@@ -50,8 +39,8 @@ base::Value FileContents(FlagFile file) {
   std::string error_message;
   std::unique_ptr<base::Value> json =
       deserializer.Deserialize(&error_code, &error_message);
-  DCHECK(json) << "Failed to load " << filename << ": " << error_code << " "
-               << error_message;
+  CHECK(json) << "Failed to load " << filename << ": " << error_code << " "
+              << error_message;
   return std::move(*json);
 }
 
@@ -66,7 +55,7 @@ using FlagMetadataMap = std::map<std::string, FlagMetadataEntry>;
 
 // Reads the flag metadata file.
 FlagMetadataMap LoadFlagMetadata() {
-  base::Value metadata_json = FileContents(FlagFile::kFlagMetadata);
+  base::Value metadata_json = ReadFileContentsAsJSON(kMetadataFileName);
 
   FlagMetadataMap metadata;
   for (const auto& entry_val : metadata_json.GetList()) {
@@ -86,7 +75,7 @@ FlagMetadataMap LoadFlagMetadata() {
 }
 
 std::vector<std::string> LoadFlagNeverExpireList() {
-  base::Value list_json = FileContents(FlagFile::kFlagNeverExpire);
+  base::Value list_json = ReadFileContentsAsJSON(kNeverExpireFileName);
 
   std::vector<std::string> result;
   for (const auto& entry : list_json.GetList()) {
@@ -149,34 +138,96 @@ bool IsValidLookingOwner(base::StringPiece owner) {
   return owner.find_first_of(R"(()<>[]:;@\,/)") == std::string::npos;
 }
 
-void EnsureNamesAreAlphabetical(
-    const std::vector<std::string>& normalized_names,
-    const std::vector<std::string>& names,
-    FlagFile file) {
-  if (normalized_names.size() < 2)
-    return;
-
-  for (size_t i = 1; i < normalized_names.size(); ++i) {
-    if (i == normalized_names.size() - 1) {
-      // The last item on the list has less context.
-      EXPECT_TRUE(normalized_names[i - 1] < normalized_names[i])
-          << "Correct alphabetical order does not place '" << names[i]
-          << "' after '" << names[i - 1] << "' in " << FlagFileName(file);
-    } else {
-      EXPECT_TRUE(normalized_names[i - 1] < normalized_names[i] &&
-                  normalized_names[i] < normalized_names[i + 1])
-          << "Correct alphabetical order does not place '" << names[i]
-          << "' between '" << names[i - 1] << "' and '" << names[i + 1]
-          << "' in " << FlagFileName(file);
-    }
-  }
-}
-
 std::string NormalizeName(const std::string& name) {
   std::string normalized_name = base::ToLowerASCII(name);
   std::replace(normalized_name.begin(), normalized_name.end(), '_', '-');
 
   return normalized_name;
+}
+
+constexpr char kStartSentinel[] = "(start of file)";
+
+using NameNameMap = std::map<std::string, std::string>;
+using NameVector = std::vector<std::string>;
+
+// Given a NameVector, returns a map from each name n to the name preceding n in
+// the NameVector. The returned map maps the first name to kStartSentinel.
+// Preconditions:
+//   * There are no duplicates in |strings|
+//   * No entry in |strings| equals kStartSentinel
+// Postconditions:
+//   * Every entry in |strings| appears as a key in the result map
+//   * Every entry in |strings| maps to another entry in |strings| or to
+//     kStartSentinel in the result map
+NameNameMap BuildAfterMap(const NameVector& strings) {
+  NameNameMap after_map;
+  CHECK_NE(strings[0], kStartSentinel);
+  after_map[strings[0]] = kStartSentinel;
+  for (size_t i = 1; i < strings.size(); ++i) {
+    CHECK_NE(strings[i], kStartSentinel);
+    CHECK(!after_map.contains(strings[i]));
+    after_map[strings[i]] = strings[i - 1];
+  }
+
+  // Postconditions:
+  for (const auto& entry : strings) {
+    CHECK(after_map.contains(entry));
+  }
+
+  return after_map;
+}
+
+// Given a vector of names, returns a vector of normalized names, and an inverse
+// mapping from normalized name to previous name. The inverse mapping is
+// populated only for names which were altered when normalized.
+// Preconditions: none
+// Postconditions:
+//   * Every (key, value) pair in |denormalized| have key != value
+//   * Every (key, value) pair in |denormalized| have key = NormalizeName(value)
+std::pair<NameVector, NameNameMap> NormalizeNames(const NameVector& names) {
+  NameNameMap denormalized;
+  NameVector normalized;
+  for (const auto& name : names) {
+    std::string n = NormalizeName(name);
+    normalized.push_back(n);
+    if (n != name) {
+      denormalized[n] = name;
+    }
+  }
+
+  // Postconditions:
+  for (const auto& pair : denormalized) {
+    CHECK_NE(pair.first, pair.second);
+    CHECK_EQ(pair.first, NormalizeName(pair.second));
+  }
+
+  return std::tie(normalized, denormalized);
+}
+
+// Given a list of flag names, adds test failures for any that do not appear in
+// alphabetical order. This is more complex than simply sorting the list and
+// checking whether the order changed - this function is supposed to emit error
+// messages which tell the user specifically which flags need to be moved and to
+// where in the file.
+void EnsureNamesAreAlphabetical(const NameVector& names,
+                                const std::string& filename) {
+  auto [normalized, denormalized] = NormalizeNames(names);
+  auto was_after = BuildAfterMap(normalized);
+
+  std::sort(normalized.begin(), normalized.end());
+  auto goes_after = BuildAfterMap(normalized);
+
+  auto denormalize = [&](const std::string& name) {
+    return denormalized.contains(name) ? denormalized[name] : name;
+  };
+
+  for (const auto& n : normalized) {
+    if (was_after[n] != goes_after[n]) {
+      ADD_FAILURE() << "In '" << filename << "': flag '" << denormalize(n)
+                    << "' should be right after '" << denormalize(goes_after[n])
+                    << "'";
+    }
+  }
 }
 
 bool IsUnexpireFlagFor(const flags_ui::FeatureEntry& entry, int milestone) {
@@ -273,29 +324,24 @@ void EnsureOwnersLookValid() {
 }
 
 void EnsureFlagsAreListedInAlphabeticalOrder() {
-  base::Value metadata_json = FileContents(FlagFile::kFlagMetadata);
-
-  std::vector<std::string> normalized_names;
-  std::vector<std::string> names;
-  for (const auto& entry_val : metadata_json.GetList()) {
-    const base::Value::Dict& entry = entry_val.GetDict();
-    normalized_names.push_back(NormalizeName(*entry.FindString("name")));
-    names.push_back(*entry.FindString("name"));
+  {
+    auto json = ReadFileContentsAsJSON(kMetadataFileName);
+    std::vector<std::string> names;
+    for (const auto& entry : json.GetList()) {
+      names.push_back(*entry.GetDict().FindString("name"));
+    }
+    EnsureNamesAreAlphabetical(names, kMetadataFileName);
   }
 
-  EnsureNamesAreAlphabetical(normalized_names, names, FlagFile::kFlagMetadata);
+  {
+    auto json = ReadFileContentsAsJSON(kNeverExpireFileName);
+    std::vector<std::string> names;
+    for (const auto& entry : json.GetList()) {
+      names.push_back(entry.GetString());
+    }
 
-  base::Value expiration_json = FileContents(FlagFile::kFlagNeverExpire);
-
-  normalized_names.clear();
-  names.clear();
-  for (const auto& entry : expiration_json.GetList()) {
-    normalized_names.push_back(NormalizeName(entry.GetString()));
-    names.push_back(entry.GetString());
+    EnsureNamesAreAlphabetical(names, kNeverExpireFileName);
   }
-
-  EnsureNamesAreAlphabetical(normalized_names, names,
-                             FlagFile::kFlagNeverExpire);
 }
 
 // TODO(https://crbug.com/1241068): Call this from the iOS flags unittests once

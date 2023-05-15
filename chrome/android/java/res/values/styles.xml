@@ -43,8 +43,10 @@ found in the LICENSE file.
     <!-- This is distinct from Theme.Chromium.Activity.Fullscreen.Transparent, which makes the
          payment handler window overlap the bottom nav bar. -->
     <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
-    <style name="Theme.Chromium.Activity.Fullscreen"
+    <style name="Base.V27.Theme.Chromium.Activity.Fullscreen"
         parent="Base.Theme.Chromium.Activity.Fullscreen" />
+    <style name="Theme.Chromium.Activity.Fullscreen"
+        parent="Base.V27.Theme.Chromium.Activity.Fullscreen" />
     <style name="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -102,6 +104,7 @@ found in the LICENSE file.
         <item name="colorPrimaryDark">@color/dark_status_bar_color</item>
         <item name="toolbarStyle">@style/ManageSpaceToolbarStyle</item>
         <item name="actionBarStyle">@style/ManageSpaceActionBarModern</item>
+        <item name="actionBarTheme">@style/ManageSpaceActionBarTheme</item>
     </style>
 
     <!-- Trusted Web Activities -->
@@ -182,6 +185,11 @@ found in the LICENSE file.
         <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193.
              The custom styling can be removed once Android N is deprecated. -->
         <item name="background">@color/dark_action_bar_color</item>
+    </style>
+    <style name="ManageSpaceActionBarTheme">
+        <!-- Sets the color of the back arrow (to match the color of the title text) -->
+        <item name="colorControlNormal">@color/default_icon_color_light_tint_list</item>
+        <item name="colorControlHighlight">@color/ripple_material_dark</item>
     </style>
     <style name="ManageSpaceToolbarStyle" parent="SettingsToolbarStyle">
         <item name="titleTextColor">@color/default_text_color_light</item>

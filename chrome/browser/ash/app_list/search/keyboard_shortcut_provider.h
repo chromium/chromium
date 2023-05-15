@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
@@ -37,7 +38,7 @@ class KeyboardShortcutProvider : public SearchProvider {
 
   void OnSearchComplete(ShortcutDataAndScores);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.

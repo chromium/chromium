@@ -416,6 +416,15 @@ enum class TimelineAttachment {
 };
 enum class TimelineScroller { kNearest, kRoot, kSelf };
 
+enum class CoordBox {
+  kContentBox,
+  kPaddingBox,
+  kBorderBox,
+  kFillBox,
+  kStrokeBox,
+  kViewBox
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

@@ -110,6 +110,9 @@ namespace printing {
     // The printer is unreachable and doesn't accept print jobs.
     UNREACHABLE,
 
+    // The SSL certificate is expired. Printer accepts jobs but they fail.
+    EXPIRED_CERTIFICATE,
+
     // The printer is available.
     AVAILABLE
   };

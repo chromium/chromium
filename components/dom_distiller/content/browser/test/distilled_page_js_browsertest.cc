@@ -40,10 +40,8 @@ class DistilledPageJsTest : public content::ContentBrowserTest {
   void LoadAndExecuteTestScript(const std::string& file) {
     distilled_page_->AppendScriptFile(file);
     distilled_page_->Load(embedded_test_server(), shell()->web_contents());
-    bool allTestsPassed;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        shell()->web_contents(), "mocha.run()", &allTestsPassed));
-    EXPECT_TRUE(allTestsPassed);
+    EXPECT_EQ(true, content::EvalJs(shell()->web_contents(), "mocha.run()",
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
   std::unique_ptr<FakeDistilledPage> distilled_page_;

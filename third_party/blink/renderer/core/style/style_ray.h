@@ -37,7 +37,7 @@ class StyleRay : public BasicShape {
   RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
 
-  void GetPath(Path&, const gfx::RectF&, float) override;
+  void GetPath(Path&, const gfx::RectF&, float) const override;
 
   ShapeType GetType() const override { return kStyleRayType; }
 

@@ -330,8 +330,10 @@ DOMHighResTimeStamp PerformanceResourceTiming::firstInterimResponseStart()
     return 0;
   }
 
-  base::TimeTicks response_start = info_->timing->first_early_hints_time;
-  if (response_start.is_null()) {
+  base::TimeTicks response_start = info_->timing->receive_headers_start;
+  if (response_start.is_null() ||
+      response_start ==
+          info_->timing->receive_non_informational_headers_start) {
     return 0;
   }
 

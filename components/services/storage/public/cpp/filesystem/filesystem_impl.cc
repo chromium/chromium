@@ -97,13 +97,16 @@ class FileLockImpl : public mojom::FileLock {
 
 }  // namespace
 
-FilesystemImpl::FilesystemImpl(const base::FilePath& root) : root_(root) {}
+FilesystemImpl::FilesystemImpl(const base::FilePath& root,
+                               ClientType client_type)
+    : root_(root), client_type_(client_type) {}
 
 FilesystemImpl::~FilesystemImpl() = default;
 
 void FilesystemImpl::Clone(mojo::PendingReceiver<mojom::Directory> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<FilesystemImpl>(root_),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<FilesystemImpl>(root_, client_type_),
+      std::move(receiver));
 }
 
 void FilesystemImpl::PathExists(const base::FilePath& path,
@@ -118,7 +121,7 @@ void FilesystemImpl::GetEntries(const base::FilePath& path,
   base::FileErrorOr<std::vector<base::FilePath>> result =
       GetDirectoryEntries(full_path, mode);
   if (!result.has_value()) {
-    std::move(callback).Run(result.error(), std::vector<base::FilePath>());
+    std::move(callback).Run(result.error(), {});
     return;
   }
 
@@ -189,8 +192,10 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       break;
   }
 
-  // This file may be passed to an untrusted process.
-  flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+  if (client_type_ == ClientType::kUntrusted) {
+    // This file may be passed to an untrusted process.
+    flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+  }
 
   const base::FilePath full_path = MakeAbsolute(path);
   base::File file(full_path, flags);

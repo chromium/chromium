@@ -129,13 +129,34 @@ source_set("safe_browsing_api_handler") {
   ]
 }
 
+android_library("native_java_unittests_java") {
+  testonly = true
+  deps = [
+    ":safe_browsing_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:jni_java",
+    "//third_party/junit",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [ "native_java_unittests/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.java" ]
+}
+
+generate_jni("native_j_unittests_jni_headers") {
+  testonly = true
+  sources = [ "native_java_unittests/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.java" ]
+}
+
 source_set("unit_tests_mobile") {
   testonly = true
   sources = [
     "remote_database_manager_unittest.cc",
-    "safe_browsing_api_handler_unittest.cc",
+    "safe_browsing_api_handler_bridge_unittest.cc",
+    "safe_browsing_api_handler_util_unittest.cc",
   ]
   deps = [
+    ":native_j_unittests_jni_headers",
+    ":native_java_unittests_java",
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",

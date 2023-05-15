@@ -18,7 +18,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
+#include "base/uuid.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
@@ -555,7 +555,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
                                          const std::u16string& type,
                                          base::Time last_modified,
                                          int64_t size) {
-    auto uuid = base::GenerateGUID();
+    auto uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     mojo::PendingRemote<blink::mojom::Blob> remote;
     base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
         FROM_HERE,
@@ -574,7 +574,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
 
   IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
                                          int64_t size) {
-    auto uuid = base::GenerateGUID();
+    auto uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     mojo::PendingRemote<blink::mojom::Blob> remote;
     base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
         FROM_HERE,

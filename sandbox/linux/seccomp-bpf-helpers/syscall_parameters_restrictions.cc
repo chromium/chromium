@@ -203,10 +203,8 @@ ResultExpr RestrictPrctl() {
 #endif  // BUILDFLAG(IS_ANDROID)
               },
              Allow())
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
       .Cases({PR_SET_VMA},
              If(arg == PR_SET_VMA_ANON_NAME, Allow()).Else(CrashSIGSYSPrctl()))
-#endif
       .Default(
           If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }

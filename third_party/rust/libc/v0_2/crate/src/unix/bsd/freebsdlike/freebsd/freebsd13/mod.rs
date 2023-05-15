@@ -468,6 +468,19 @@ pub const DOMAINSET_POLICY_INTERLEAVE: ::c_int = 4;
 
 pub const MINCORE_SUPER: ::c_int = 0x20;
 
+safe_f! {
+    pub {const} fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
+        let major = major as ::dev_t;
+        let minor = minor as ::dev_t;
+        let mut dev = 0;
+        dev |= ((major & 0xffffff00) as dev_t) << 32;
+        dev |= ((major & 0x000000ff) as dev_t) << 8;
+        dev |= ((minor & 0x0000ff00) as dev_t) << 24;
+        dev |= ((minor & 0xffff00ff) as dev_t) << 0;
+        dev
+    }
+}
+
 extern "C" {
     pub fn setgrent();
     pub fn mprotect(addr: *mut ::c_void, len: ::size_t, prot: ::c_int) -> ::c_int;
@@ -479,23 +492,6 @@ extern "C" {
         msgtyp: ::c_long,
         msgflg: ::c_int,
     ) -> ::ssize_t;
-    pub fn clock_nanosleep(
-        clk_id: ::clockid_t,
-        flags: ::c_int,
-        rqtp: *const ::timespec,
-        rmtp: *mut ::timespec,
-    ) -> ::c_int;
-
-    pub fn eventfd(init: ::c_uint, flags: ::c_int) -> ::c_int;
-
-    pub fn fdatasync(fd: ::c_int) -> ::c_int;
-
-    pub fn getrandom(buf: *mut ::c_void, buflen: ::size_t, flags: ::c_uint) -> ::ssize_t;
-    pub fn getentropy(buf: *mut ::c_void, buflen: ::size_t) -> ::c_int;
-    pub fn elf_aux_info(aux: ::c_int, buf: *mut ::c_void, buflen: ::c_int) -> ::c_int;
-    pub fn setproctitle_fast(fmt: *const ::c_char, ...);
-    pub fn timingsafe_bcmp(a: *const ::c_void, b: *const ::c_void, len: ::size_t) -> ::c_int;
-    pub fn timingsafe_memcmp(a: *const ::c_void, b: *const ::c_void, len: ::size_t) -> ::c_int;
 
     pub fn cpuset_getdomain(
         level: ::cpulevel_t,
@@ -514,14 +510,8 @@ extern "C" {
         policy: ::c_int,
     ) -> ::c_int;
 
-    pub fn copy_file_range(
-        infd: ::c_int,
-        inoffp: *mut ::off_t,
-        outfd: ::c_int,
-        outoffp: *mut ::off_t,
-        len: ::size_t,
-        flags: ::c_uint,
-    ) -> ::ssize_t;
+    pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
+    pub fn basename(path: *mut ::c_char) -> *mut ::c_char;
 }
 
 #[link(name = "kvm")]

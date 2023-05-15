@@ -11,6 +11,7 @@
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -180,8 +181,8 @@ class ApkWebAppService : public KeyedService,
   WebAppCallbackForTesting web_app_installed_callback_;
   WebAppCallbackForTesting web_app_uninstalled_callback_;
 
-  Profile* profile_;
-  ArcAppListPrefs* arc_app_list_prefs_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
 
   // Delegate implementation used in production.
   std::unique_ptr<Delegate> real_delegate_;

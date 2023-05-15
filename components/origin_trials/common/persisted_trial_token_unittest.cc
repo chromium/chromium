@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"

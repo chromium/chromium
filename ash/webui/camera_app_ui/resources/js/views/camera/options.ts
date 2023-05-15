@@ -23,7 +23,7 @@ import {OptionPanelOptions, PTZPanelOptions, StateOption} from '../view.js';
  * Creates a controller for the options of Camera view.
  */
 export class Options implements CameraUI {
-  private readonly toggleMic = dom.get('#toggle-mic', HTMLInputElement);
+  private readonly toggleMic = dom.get('#toggle-mic', HTMLButtonElement);
 
   private readonly openMirrorPanel =
       dom.get('#open-mirror-panel', HTMLButtonElement);
@@ -71,30 +71,22 @@ export class Options implements CameraUI {
     dom.get('#open-settings', HTMLButtonElement)
         .addEventListener('click', () => nav.open(ViewName.SETTINGS));
 
-    this.toggleMic.addEventListener('click', () => this.updateAudioByMic());
-
     this.initOpenMirrorPanel();
     this.initOpenGridPanel();
     this.initOpenTimerPanel();
     this.initOpenPTZPanel();
+    this.initToggleMic();
 
     // Restore saved mirroring states per video device.
     this.mirroringToggles =
         localStorage.getObject(LocalStorageKey.MIRRORING_TOGGLES);
-
-    util.bindElementAriaLabelWithState({
-      element: this.toggleMic,
-      state: state.State.MIC,
-      onLabel: I18nString.ARIA_MUTE_OFF,
-      offLabel: I18nString.ARIA_MUTE_ON,
-    });
   }
 
   private setAriaLabelForOptionButton(
       element: HTMLElement, titleLabel: I18nString,
       stateOptions: StateOption[]) {
     element.setAttribute('i18n-label', titleLabel);
-    for (const {ariaLabel, state: targetState, isDisableOption} of
+    for (const {ariaLabel, state: targetState, isDisableOption = false} of
              stateOptions) {
       const stateEnabled = state.get(targetState);
       if ((stateEnabled && !isDisableOption) ||
@@ -230,6 +222,30 @@ export class Options implements CameraUI {
     });
   }
 
+  private initToggleMic() {
+    const updateMicState = (newMicState: boolean) => {
+      state.set(state.State.MIC, newMicState);
+      // The checked state is whether the mic is muted or not, which is the
+      // inverse of whether the mic is enabled.
+      this.toggleMic.ariaChecked = newMicState ? 'false' : 'true';
+      this.updateAudioByMic();
+    };
+    updateMicState(localStorage.getBool(LocalStorageKey.TOGGLE_MIC, true));
+    this.toggleMic.addEventListener('click', () => {
+      const newMicState = !state.get(state.State.MIC);
+      updateMicState(newMicState);
+      localStorage.set(LocalStorageKey.TOGGLE_MIC, newMicState);
+    });
+    // The label on/off state is whether the mic is muted or not, which is also
+    // the inverse of whether the mic is enabled.
+    util.bindElementAriaLabelWithState({
+      element: this.toggleMic,
+      state: state.State.MIC,
+      onLabel: I18nString.ARIA_MUTE_OFF,
+      offLabel: I18nString.ARIA_MUTE_ON,
+    });
+  }
+
   onUpdateCapability(cameraInfo: CameraInfo): void {
     state.set(state.State.MULTI_CAMERA, cameraInfo.devicesInfo.length >= 2);
   }
@@ -293,8 +309,8 @@ export class Options implements CameraUI {
    * option.
    */
   private updateAudioByMic() {
-    if (this.audioTrack) {
-      this.audioTrack.enabled = this.toggleMic.checked;
+    if (this.audioTrack !== null) {
+      this.audioTrack.enabled = state.get(state.State.MIC);
     }
   }
 }

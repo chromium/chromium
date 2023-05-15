@@ -18,6 +18,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -371,7 +372,8 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   // Used to set up drive fs for for drive tests.
   base::ScopedTempDir test_cache_root_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  drive::DriveIntegrationService* drive_integration_service_ = nullptr;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      drive_integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
@@ -821,7 +823,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
 
   // Create a `crosapi::mojom::DownloadItem`.
   auto download = crosapi::mojom::DownloadItem::New();
-  download->guid = base::GUID::GenerateRandomV4().AsLowercaseString();
+  download->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   download->received_bytes = 0;
   download->has_received_bytes = true;
   download->total_bytes = -1;

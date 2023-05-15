@@ -1822,4 +1822,146 @@ TEST_F(ComputedStyleTest, MoveAssignBuilder) {
   EXPECT_EQ(one, style2->ScrollPaddingLeft());
 }
 
+TEST_F(ComputedStyleTest, ScrollTimelineNameNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetScrollTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder2.SetScrollTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ScrollTimelineAxisNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetScrollTimelineAxis(
+      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+  builder2.SetScrollTimelineAxis(
+      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ScrollTimelineAttachmentNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetScrollTimelineAttachment(
+      Vector<TimelineAttachment>(1u, TimelineAttachment::kDefer));
+  builder2.SetScrollTimelineAttachment(
+      Vector<TimelineAttachment>(1u, TimelineAttachment::kDefer));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ViewTimelineNameNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetViewTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder2.SetViewTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ViewTimelineAxisNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetViewTimelineAxis(
+      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+  builder2.SetViewTimelineAxis(
+      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ViewTimelineAttachmentNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetViewTimelineAttachment(
+      Vector<TimelineAttachment>(1u, TimelineAttachment::kDefer));
+  builder2.SetViewTimelineAttachment(
+      Vector<TimelineAttachment>(1u, TimelineAttachment::kDefer));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ViewTimelineInsetNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetViewTimelineInset(Vector<TimelineInset>(
+      1u, TimelineInset(Length::Fixed(1.0f), Length::Fixed(1.0f))));
+  builder2.SetViewTimelineInset(Vector<TimelineInset>(
+      1u, TimelineInset(Length::Fixed(1.0f), Length::Fixed(1.0f))));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
+TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder1.SetContainerType(kContainerTypeSize);
+  builder2.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder2.SetContainerType(kContainerTypeSize);
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
 }  // namespace blink

@@ -25,7 +25,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
-    "ENABLE_SKIA_GRAPHITE=$enable_skia_graphite",
     "SKIA_USE_DAWN=$skia_use_dawn",
     "SKIA_USE_METAL=$skia_use_metal",
   ]
@@ -48,6 +47,11 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_GET_BACKEND_TEXTURE",
     "SK_DISABLE_LEGACY_IMAGE_ENCODE_METHODS",
     "SK_DISABLE_LEGACY_IMAGE_ENCODER",
+    "SK_DISABLE_LEGACY_SKSURFACE_METHODS",
+
+    # Cannot turn this on until PDFium rolls into Chrome
+    # https://pdfium-review.googlesource.com/c/pdfium/+/107410
+    #"SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
   ]
 
   include_dirs = [ "//third_party/skia" ]
@@ -105,15 +109,15 @@ config("skia_config") {
         "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config",
       ]
     }
-    if (enable_skia_graphite) {
-      defines += [ "SK_GRAPHITE" ]
-      if (skia_use_dawn) {
-        defines += [ "SK_DAWN" ]
-        configs += [ "//third_party/dawn/include/dawn:public" ]
-      }
-      if (skia_use_metal) {
-        defines += [ "SK_METAL" ]
-      }
+
+    # Graphite
+    defines += [ "SK_GRAPHITE" ]
+    if (skia_use_dawn) {
+      defines += [ "SK_DAWN" ]
+      configs += [ "//third_party/dawn/include/dawn:public" ]
+    }
+    if (skia_use_metal) {
+      defines += [ "SK_METAL" ]
     }
   }
 }
@@ -266,6 +270,9 @@ component("skia") {
   if (is_linux || is_chromeos) {
     sources += [ "ext/fontmgr_default_linux.cc" ]
   }
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
     sources += [ "ext/skia_utils_ios.mm" ]
@@ -403,7 +410,6 @@ component("skia") {
   if (is_win) {
     # See SK_TYPEFACE_FACTORY_DIRECTWRITE
     sources += [
-      "//third_party/skia/src/ports/SkFontHost_win.cpp",
       "//third_party/skia/src/ports/SkFontMgr_win_dw.cpp",
       "//third_party/skia/src/ports/SkOSFile_win.cpp",
       "//third_party/skia/src/ports/SkRemotableFontMgr_win_dw.cpp",
@@ -463,18 +469,10 @@ component("skia") {
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts:fuchsia.fonts_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
       "//third_party/icu:icuuc",
     ]
-  }
-
-  if (is_clang && !is_nacl) {
-    # Skia won't compile with some of the more strict clang warnings.
-    # e.g. it does:
-    #  SkASSERT(!"sk_out_of_memory");
-    configs -= [ "//build/config/clang:extra_warnings" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -567,8 +565,21 @@ component("skia") {
       sources += skia_shared_vk_sources
       sources += skia_gpu_vk_chromium_private
     }
-    if (enable_skia_graphite) {
-      deps += [ ":skia_graphite" ]
+
+    public_deps += [ ":skia_graphite_public" ]
+    deps += [ ":skia_graphite_private" ]
+
+    # Even though we only use Dawn and Metal with Graphite, we need to build the
+    # Ganesh sources, since both Ganesh and Graphite use the same defines for
+    # enabling backends, otherwise we'll get undefined symbol errors in Ganesh.
+    if (skia_use_dawn) {
+      # It's ok to not make these public since they aren't meant to be used
+      # outside of Skia.
+      sources += skia_gpu_dawn_public
+      sources += skia_gpu_dawn_private
+    }
+    if (skia_use_metal) {
+      deps += [ ":skia_ganesh_metal" ]
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
@@ -767,50 +778,55 @@ skia_source_set("skia_opts") {
 }
 
 # Split out Graphite sources because of conflicting file names with Ganesh.
-if (enable_skia_graphite) {
-  skia_source_set("skia_graphite") {
+# Split into separate private and public source sets because we want to allow
+# shared GPU code in ":skia" to include private Graphite headers, but want to
+# limit external code to only depend on public headers. Only define these source
+# sets when skia_support_gpu is true so that on iOS non-Blink builds, headers in
+# these source sets are considered unknown and skipped by gn check.
+if (skia_support_gpu) {
+  skia_source_set("skia_graphite_public") {
     public = skia_graphite_public
-    sources = skia_graphite_sources
-    deps = []
     if (skia_use_dawn) {
-      sources += skia_shared_dawn_sources
-      sources += skia_graphite_dawn_sources
-      deps += [
-        ":skia_ganesh_dawn",
+      public += skia_graphite_dawn_public
+      public_deps = [
         "//third_party/dawn/src/dawn:cpp",
         "//third_party/dawn/src/dawn:proc",
       ]
     }
     if (skia_use_metal) {
-      sources += skia_shared_mtl_sources
-      sources += skia_graphite_mtl_sources
-      deps += [ ":skia_ganesh_metal" ]
+      public += skia_graphite_mtl_public
       frameworks = [ "Metal.framework" ]
     }
+    deps = [ "//gpu/config:workaround_list" ]
   }
 
-  # Even though we only use Dawn and Metal with Graphite, we need to build the
-  # Ganesh sources, since both Ganesh and Graphite use the same defines for
-  # enabling backends, or else we'll get undefined symbol errors in some cases.
-  if (skia_use_dawn) {
-    skia_source_set("skia_ganesh_dawn") {
-      public = skia_gpu_dawn_public
-      sources = skia_gpu_dawn_private
-
-      # Ganesh Dawn backend has SkASSERT(!"umimplemented") calls which cause
-      # -Wstring-conversion to fail - exempt this code since it's unused anyway.
-      cflags_cc = [ "-Wno-string-conversion" ]
+  # If a source set contains only sources and no public files, then dependents can
+  # include any file from sources.
+  skia_source_set("skia_graphite_private") {
+    sources = skia_graphite_sources
+    if (skia_use_dawn) {
+      sources += skia_shared_dawn_sources
+      sources += skia_graphite_dawn_sources
     }
+    if (skia_use_metal) {
+      sources += skia_shared_mtl_sources
+      sources += skia_graphite_mtl_sources
+    }
+    deps = [ "//gpu/config:workaround_list" ]
+    visibility = [ ":skia" ]
   }
+
   if (skia_use_metal) {
     # Split out Ganesh Metal sources, because they require ARC.
     skia_source_set("skia_ganesh_metal") {
-      public = skia_gpu_metal_public
-      sources = skia_gpu_metal_private
+      sources = skia_gpu_metal_public
+      sources += skia_gpu_metal_private
       cflags_objcc = [
         "-Wno-unguarded-availability",
         "-fobjc-arc",
       ]
+      deps = [ "//gpu/config:workaround_list" ]
+      visibility = [ ":skia" ]
     }
   }
 }
@@ -883,6 +899,7 @@ source_set("test_fonts") {
   if (is_mac) {
     public = [ "ext/test_fonts.h" ]
     sources = [ "ext/test_fonts_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//base" ]
   }
 }
@@ -897,6 +914,9 @@ test("skia_unittests") {
     "ext/skia_memory_dump_provider_unittest.cc",
     "ext/skia_utils_base_unittest.cc",
   ]
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_ios) {
     sources += [ "ext/skia_utils_ios_unittest.mm" ]
   }

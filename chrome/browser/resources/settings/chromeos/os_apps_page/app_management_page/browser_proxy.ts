@@ -2,20 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App, PageCallbackRouter, PageHandlerInterface, PermissionType, PermissionValue, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerInterface} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
-
-import {FakePageHandler} from './fake_page_handler.js';
 
 // Export this module instance that is bundled locally.
 export {AppManagementComponentBrowserProxy};
-
-export interface PermissionOption {
-  permissionValue: TriState;
-  isManaged: boolean;
-  value?: PermissionValue;
-}
 
 let instance: AppManagementBrowserProxy|null = null;
 
@@ -29,101 +20,11 @@ export class AppManagementBrowserProxy {
   }
 
   callbackRouter: PageCallbackRouter;
-  fakeHandler: FakePageHandler;
   handler: PageHandlerInterface;
 
   constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const useFake = urlParams.get('fakeBackend');
-
-    if (useFake) {
-      this.fakeHandler =
-          new FakePageHandler(this.callbackRouter.$.bindNewPipeAndPassRemote());
-      this.handler = this.fakeHandler.getRemote();
-
-      const permissionOptions:
-          Partial<Record<PermissionType, PermissionOption>> = {
-            [PermissionType.kLocation]: {
-              permissionValue: TriState.kAllow,
-              isManaged: true,
-            },
-            [PermissionType.kCamera]: {
-              permissionValue: TriState.kBlock,
-              isManaged: true,
-            },
-          };
-
-      const appList: App[] = [
-        FakePageHandler.createApp(
-            'blpcfgokakmgnkcojhhkbfblekacnbeo',
-            {
-              title: 'Built in app, not implemented',
-              type: AppType.kBuiltIn,
-              installReason: InstallReason.kSystem,
-            },
-            ),
-        FakePageHandler.createApp(
-            'aohghmighlieiainnegkcijnfilokake',
-            {
-              title: 'Arc app',
-              type: AppType.kArc,
-              installReason: InstallReason.kUser,
-            },
-            ),
-        FakePageHandler.createApp(
-            'blpcfgokakmgnkcojhhkbfbldkacnbeo',
-            {
-              title: 'Crostini app, not implemented',
-              type: AppType.kCrostini,
-              installReason: InstallReason.kUser,
-            },
-            ),
-        FakePageHandler.createApp(
-            'pjkljhegncpnkkknowihdijeoejaedia',
-            {
-              title: 'Chrome App',
-              type: AppType.kChromeApp,
-              description: 'A Chrome App installed from the Chrome Web Store.',
-            },
-            ),
-        FakePageHandler.createApp(
-            'aapocclcdoekwnckovdopfmtonfmgok',
-            {
-              title: 'Web App',
-              type: AppType.kWeb,
-            },
-            ),
-        FakePageHandler.createApp(
-            'pjkljhegncpnkkknbcohdijeoejaedia',
-            {
-              title: 'Chrome App, OEM installed',
-              type: AppType.kChromeApp,
-              description: 'A Chrome App installed by an OEM.',
-              installReason: InstallReason.kOem,
-            },
-            ),
-        FakePageHandler.createApp(
-            'aapocclcgogkmnckokdopfmhonfmgok',
-            {
-              title: 'Web App, policy applied',
-              type: AppType.kWeb,
-              isPinned: OptionalBool.kTrue,
-              isPolicyPinned: OptionalBool.kTrue,
-              installReason: InstallReason.kPolicy,
-              permissions:
-                  FakePageHandler.createWebPermissions(permissionOptions),
-            },
-            ),
-      ];
-
-      this.fakeHandler.setApps(appList);
-
-    } else {
-      this.handler = AppManagementComponentBrowserProxy.getInstance().handler;
-      this.callbackRouter =
-          AppManagementComponentBrowserProxy.getInstance().callbackRouter;
-    }
+    this.handler = AppManagementComponentBrowserProxy.getInstance().handler;
+    this.callbackRouter =
+        AppManagementComponentBrowserProxy.getInstance().callbackRouter;
   }
 }

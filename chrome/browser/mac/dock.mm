@@ -11,8 +11,8 @@
 
 #include <tuple>
 
+#include "base/apple/bundle_locations.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -190,7 +190,7 @@ ChromeInDockStatus ChromeIsInTheDock() {
     return ChromeInDockFailure;
   }
 
-  NSString* launch_path = [base::mac::OuterBundle() bundlePath];
+  NSString* launch_path = [base::apple::OuterBundle() bundlePath];
 
   return [PersistentAppPaths(persistent_apps) containsObject:launch_path]
              ? ChromeInDockTrue

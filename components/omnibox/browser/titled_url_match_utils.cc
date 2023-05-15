@@ -13,14 +13,18 @@
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/query_parser/snippet.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace bookmarks {
 namespace {
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 // Concatenates |ancestors| in reverse order and using '/' as the delimiter.
 std::u16string ConcatAncestorsTitles(
@@ -143,17 +147,19 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.from_keyword = true;
   }
 
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+    match.scoring_signals = absl::make_optional<ScoringSignals>();
     // Populate ACMatches with signals for ML model scoring and training.
     if (!titled_url_match.title_match_positions.empty())
-      match.scoring_signals.set_first_bookmark_title_match_position(
+      match.scoring_signals->set_first_bookmark_title_match_position(
           titled_url_match.title_match_positions[0].first);
-    match.scoring_signals.set_total_bookmark_title_match_length(
+    match.scoring_signals->set_total_bookmark_title_match_length(
         GetTotalTitleMatchLength(titled_url_match.title_match_positions));
-    match.scoring_signals.set_allowed_to_be_default_match(
+    match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
-    match.scoring_signals.set_length_of_url(url.spec().length());
-    match.scoring_signals.set_num_bookmarks_of_url(bookmark_count);
+    match.scoring_signals->set_length_of_url(url.spec().length());
+    match.scoring_signals->set_num_bookmarks_of_url(bookmark_count);
   }
 
   return match;

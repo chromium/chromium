@@ -29,8 +29,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorBadgeBackground] =
       PickGoogleColor(kColorAccent, kColorDialogBackground,
                       color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorBadgeForeground] =
-      GetColorWithMaxContrast(kColorButtonBackgroundProminent);
+  mixer[kColorBadgeForeground] = GetColorWithMaxContrast(kColorBadgeBackground);
   mixer[kColorBadgeInCocoaMenuBackground] = {kColorBadgeBackground};
   mixer[kColorBadgeInCocoaMenuForeground] = {kColorBadgeForeground};
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};
@@ -64,11 +63,6 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonHoverBackgroundText] = {kColorSysStateHoverOnSubtle};
   mixer[kColorCheckboxForegroundUnchecked] = {kColorSecondaryForeground};
   mixer[kColorCheckboxForegroundChecked] = {kColorButtonForeground};
-  mixer[kColorMultitaskFeedbackButtonLabelBackground] = {
-      dark_mode ? SetAlpha(SK_ColorWHITE, 0x1A)
-                : SetAlpha(SK_ColorBLACK, 0x0D)};
-  mixer[kColorMultitaskFeedbackButtonLabelForeground] = {
-      dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900};
   mixer[kColorCustomFrameCaptionForeground] = {SK_ColorWHITE};
   mixer[kColorDebugBoundsOutline] = SetAlpha(SK_ColorRED, 0x30);
   mixer[kColorDebugContentOutline] = SetAlpha(SK_ColorBLUE, 0x30);
@@ -80,11 +74,23 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorDropdownForegroundSelected] = {kColorPrimaryForeground};
   mixer[kColorFocusableBorderFocused] = {kColorItemHighlight};
   mixer[kColorFocusableBorderUnfocused] = {kColorMidground};
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(b/267817808): Replace cros_tokens::kCrosRefSecondary20 with
+  // cros_tokens::kCrosRefSecondary15 once it's added.
+  mixer[kColorFrameActive] = {dark_mode ? kColorRefSecondary20
+                                        : kColorSysHeader};
+#else
   mixer[kColorFrameActive] = {kColorFrameActiveUnthemed};
+#endif  // BUILDFLAG(IS_CHROMEOS)
   mixer[kColorFrameActiveUnthemed] = {
       dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
+#if BUILDFLAG(IS_CHROMEOS)
+  mixer[kColorFrameInactive] = {dark_mode ? kColorSysSurface1
+                                          : kColorSysSurface3};
+#else
   mixer[kColorFrameInactive] = {dark_mode ? gfx::kGoogleGrey800
                                           : gfx::kGoogleGrey200};
+#endif  // BUILDFLAG(IS_CHROMEOS)
   mixer[kColorHelpIconActive] = {kColorPrimaryForeground};
   mixer[kColorHelpIconInactive] = {kColorSecondaryForeground};
   mixer[kColorIcon] = {kColorSecondaryForeground};
@@ -109,11 +115,18 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =
       GetColorWithMaxContrast(kColorLiveCaptionBubbleBackgroundDefault);
+  mixer[kColorLiveCaptionBubbleForegroundSecondary] = PickGoogleColor(
+      GetResultingPaintColor(
+          SetAlpha(kColorLiveCaptionBubbleForegroundDefault, 0x8C),
+          kColorLiveCaptionBubbleBackgroundDefault),
+      kColorLiveCaptionBubbleBackgroundDefault,
+      color_utils::kMinimumReadableContrastRatio);
   mixer[kColorLiveCaptionBubbleCheckbox] = PickGoogleColor(
       kColorAccent, kColorLiveCaptionBubbleBackgroundDefault, 6.0f);
   mixer[kColorLiveCaptionBubbleLink] = {kColorLiveCaptionBubbleCheckbox};
   mixer[kColorMenuBackground] = {kColorPrimaryBackground};
   mixer[kColorMenuBorder] = {kColorMidground};
+  mixer[kColorMenuButtonBackground] = {kColorMenuBackground};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};
   mixer[kColorMenuIcon] = {kColorIcon};
   mixer[kColorMenuItemBackgroundAlertedInitial] =
@@ -128,7 +141,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorMenuItemForegroundHighlighted] = {kColorMenuItemForeground};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSecondaryForeground};
   mixer[kColorMenuItemForegroundSelected] = {kColorMenuItemForeground};
-  mixer[kColorMenuSeparator] = {kColorMidground};
+  mixer[kColorMenuSeparator] = {kColorSeparator};
   mixer[kColorNotificationActionsBackground] = {
       kColorNotificationBackgroundActive};
   mixer[kColorNotificationBackgroundActive] = {kColorSubtleEmphasisBackground};

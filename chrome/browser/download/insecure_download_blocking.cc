@@ -373,6 +373,19 @@ void PrintConsoleMessage(const InsecureDownloadData& data, bool is_blocked) {
     return;
   }
 
+  // When no initiator is defined, the file isn't mixed but is still insecure.
+  if (!data.initiator_.has_value()) {
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        base::StringPrintf(
+            "The file at '%s' was %s an insecure connection. "
+            "This file should be served over HTTPS.",
+            data.item_->GetURL().spec().c_str(),
+            (data.is_redirect_chain_secure_ ? "loaded over"
+                                            : "redirected through")));
+    return;
+  }
+
   web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(

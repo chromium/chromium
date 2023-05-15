@@ -24,6 +24,10 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
+// Used for settng the requested renderer size when testing.
+constexpr int kDefaultWidthForTesting = 800;
+constexpr int kDefaultHeightForTesting = 600;
+
 // TODO(dtapuska): Change this to be UITextInput and handle the other
 // events to implement the composition and selection ranges.
 @interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
@@ -393,6 +397,17 @@ bool RenderWidgetHostViewIOS::IsShowing() {
 gfx::Rect RenderWidgetHostViewIOS::GetBoundsInRootWindow() {
   return gfx::Rect([ui_view_->view_ bounds]);
 }
+
+gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
+  // When testing, we will not have a windowScene and, as a consequence, we will
+  // not have an intrinsic renderer size. This will cause tests to fail, though,
+  // so we will instead set a default size.
+  bool has_window_scene = [[ui_view_->view_ window] windowScene] != nil;
+  return has_window_scene
+             ? browser_compositor_->GetRendererSize()
+             : gfx::Size(kDefaultWidthForTesting, kDefaultHeightForTesting);
+}
+
 absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
   return absl::nullopt;
 }

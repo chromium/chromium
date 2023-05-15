@@ -716,10 +716,6 @@ TEST(CSSPropertyParserTest, ImageSetZeroResolution) {
   TestImageSetParsing("image-set(url(foo) 0x)", "image-set(url(\"foo\") 0x)");
 }
 
-TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
-  TestImageSetParsing("image-set(url(foo) -1x)", "image-set(url(\"foo\") -1x)");
-}
-
 TEST(CSSPropertyParserTest, ImageSetCalcResolutionUnitX) {
   TestImageSetParsing("image-set(url(foo) calc(1x))",
                       "image-set(url(\"foo\") calc(1dppx))");
@@ -883,6 +879,10 @@ TEST(CSSPropertyParserTest, ImageSetEmpty) {
 
 TEST(CSSPropertyParserTest, ImageSetMissingUrl) {
   TestImageSetParsingFailure("image-set(1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
+  TestImageSetParsingFailure("image-set(url(foo) -1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {

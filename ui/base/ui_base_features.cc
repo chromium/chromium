@@ -84,7 +84,7 @@ bool IsDeprecateAltClickEnabled() {
 
 BASE_FEATURE(kShortcutCustomizationApp,
              "ShortcutCustomizationApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsShortcutCustomizationAppEnabled() {
   return base::FeatureList::IsEnabled(kShortcutCustomizationApp);
@@ -104,6 +104,13 @@ bool IsShortcutCustomizationEnabled() {
 BASE_FEATURE(kLacrosResourcesFileSharing,
              "LacrosResourcesFileSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When the input method wants to commit the composition, always call
+// ConfirmCompositionText even if Ash thinks there's no composition.
+// Enabling this fixes b/265853952.
+BASE_FEATURE(kAlwaysConfirmComposition,
+             "AlwaysConfirmComposition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Update of the virtual keyboard settings UI as described in
@@ -417,10 +424,6 @@ BASE_FEATURE(kUseToastManager,
 bool UseToastManager() {
   return base::FeatureList::IsEnabled(kUseToastManager);
 }
-
-BASE_FEATURE(kKeepAndroidTintedResources,
-             "KeepAndroidTintedResources",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kEnableVariableRefreshRate,
@@ -429,6 +432,16 @@ BASE_FEATURE(kEnableVariableRefreshRate,
 bool IsVariableRefreshRateEnabled() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
 }
+
+// Fixes b/267944900.
+BASE_FEATURE(kWaylandKeepSelectionFix,
+             "WaylandKeepSelectionFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Fixes b/267944900.
+BASE_FEATURE(kWaylandCancelComposition,
+             "WaylandCancelComposition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWaylandScreenCoordinatesEnabled,
              "WaylandScreenCoordinatesEnabled",
@@ -460,6 +473,15 @@ bool IsChromeRefresh2023() {
   return base::FeatureList::IsEnabled(kChromeRefresh2023);
 }
 
+BASE_FEATURE(kChromeWebuiRefresh2023,
+             "ChromeWebuiRefresh2023",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsChromeWebuiRefresh2023() {
+  return IsChromeRefresh2023() &&
+         base::FeatureList::IsEnabled(kChromeWebuiRefresh2023);
+}
+
 constexpr base::FeatureParam<ChromeRefresh2023Level>::Option
     kChromeRefresh2023LevelOption[] = {{ChromeRefresh2023Level::kLevel1, "1"},
                                        {ChromeRefresh2023Level::kLevel2, "2"}};
@@ -471,13 +493,28 @@ const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
     &kChromeRefresh2023LevelOption);
 
 ChromeRefresh2023Level GetChromeRefresh2023Level() {
-  return IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
-                               : ChromeRefresh2023Level::kDisabled;
+  static const ChromeRefresh2023Level level =
+      IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
+                            : ChromeRefresh2023Level::kDisabled;
+  return level;
 }
 
+#if !BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kWebUiSystemFont,
              "WebUiSystemFont",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// When enabled, images will be written to the system clipboard as both a TIFF
+// and a PNG (as opposed to just a TIFF). This requires encoding the sanitized
+// bitmap to a PNG on the UI thread on copy, which may cause jank. This matches
+// the behavior of other platforms.
+// TODO(https://crbug.com/1443646): Remove this flag eventually.
+BASE_FEATURE(kMacClipboardWriteImageWithPng,
+             "MacClipboardWriteImageWithPng",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_APPLE)
 // Font Smoothing was enabled by default prior to introducing this feature.

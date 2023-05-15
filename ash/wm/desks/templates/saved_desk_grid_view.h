@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
@@ -42,7 +42,7 @@ class SavedDeskGridView : public views::View {
 
   // Sorts entries in alphabetical order. If `order_first_uuid` is valid, the
   // corresponding entry will be placed first.
-  void SortEntries(const base::GUID& order_first_uuid);
+  void SortEntries(const base::Uuid& order_first_uuid);
 
   // Updates existing saved desks and adds new saved desks to the grid. Also
   // sorts entries in alphabetical order. If `order_first_uuid` is valid, the
@@ -50,14 +50,14 @@ class SavedDeskGridView : public views::View {
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
   void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::GUID& order_first_uuid,
+                          const base::Uuid& order_first_uuid,
                           bool animate);
 
   // Removes saved desks from the grid by UUID. Will trigger an animation to
   // shuffle `grid_items_` to their final positions. If `delete_animation` is
   // false, then deleted items will simply disappear (shuffled items will still
   // animate).
-  void DeleteEntries(const std::vector<base::GUID>& uuids,
+  void DeleteEntries(const std::vector<base::Uuid>& uuids,
                      bool delete_animation);
 
   // Returns true if a saved desk name is being modified using an item view's
@@ -65,7 +65,7 @@ class SavedDeskGridView : public views::View {
   bool IsSavedDeskNameBeingModified() const;
 
   // Returns the item view associated with `uuid`.
-  SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
+  SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

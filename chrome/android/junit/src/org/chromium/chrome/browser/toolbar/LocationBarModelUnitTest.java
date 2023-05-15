@@ -4,15 +4,13 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.text.SpannableStringBuilder;
-import android.util.LruCache;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.Nullable;
@@ -52,7 +50,6 @@ import org.chromium.chrome.browser.toolbar.LocationBarModelUnitTest.ShadowTruste
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
@@ -67,8 +64,7 @@ import org.chromium.url.ShadowGURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowTrustedCdn.class})
-@DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS,
-        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
+@DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
@@ -127,6 +123,8 @@ public class LocationBarModelUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mRegularProfileMock);
+        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
         mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
@@ -193,6 +191,7 @@ public class LocationBarModelUnitTest {
         incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
+        incognitoLocationBarModel.destroy();
     }
 
     @Test
@@ -203,6 +202,7 @@ public class LocationBarModelUnitTest {
         incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
+        incognitoLocationBarModel.destroy();
     }
 
     @Test
@@ -213,6 +213,7 @@ public class LocationBarModelUnitTest {
         incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
+        incognitoLocationBarModel.destroy();
     }
 
     @Test
@@ -223,6 +224,7 @@ public class LocationBarModelUnitTest {
         regularLocationBarModel.initializeWithNative();
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
+        regularLocationBarModel.destroy();
     }
 
     @Test
@@ -233,6 +235,7 @@ public class LocationBarModelUnitTest {
         regularLocationBarModel.initializeWithNative();
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
+        regularLocationBarModel.destroy();
     }
 
     @Test
@@ -257,20 +260,38 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_urlChange() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
+        regularLocationBarModel.initializeWithNative();
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
+
+        String url = "http://www.example.com/";
+        doReturn(url).when(mMockGurl).getSpec();
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        regularLocationBarModel.updateVisibleGurl();
+
+        // The visible url should be cached and hasn't changed, so onUrlChanged shouldn't be called
+        regularLocationBarModel.notifyUrlChanged();
         verify(mLocationBarDataObserver, never()).onUrlChanged();
 
-        regularLocationBarModel.notifyUrlChanged();
-        verify(mLocationBarDataObserver).onUrlChanged();
-
+        // Setting to a new tab with a different url
+        String url2 = "http://www.example2.com/";
+        GURL mMockGurl2 = Mockito.mock(GURL.class);
+        doReturn(url2).when(mMockGurl2).getSpec();
+        doReturn(mMockGurl2)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
         regularLocationBarModel.setTab(mRegularTabMock, false);
-        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
+        verify(mLocationBarDataObserver).onUrlChanged();
 
         regularLocationBarModel.removeObserver(mLocationBarDataObserver);
         regularLocationBarModel.notifyUrlChanged();
-        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
+        verify(mLocationBarDataObserver).onUrlChanged();
+
+        regularLocationBarModel.destroy();
     }
 
     @Test
@@ -288,9 +309,15 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_setIsShowingTabSwitcher() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
+        regularLocationBarModel.initializeWithNative();
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        regularLocationBarModel.updateVisibleGurl();
 
         verify(mLocationBarDataObserver, never()).onTitleChanged();
         verify(mLocationBarDataObserver, never()).onUrlChanged();
@@ -298,100 +325,53 @@ public class LocationBarModelUnitTest {
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
         regularLocationBarModel.updateForNonStaticLayout(true, false);
+
+        // The omnibox is not showing, and we have not switched to a new tab yet, so don't expect
+        // notifications of a url change
+        verify(mLocationBarDataObserver, never()).onUrlChanged();
+        Assert.assertEquals(regularLocationBarModel.getCurrentGurl(), mMockGurl);
+
         verify(mLocationBarDataObserver).onTitleChanged();
-        verify(mLocationBarDataObserver).onUrlChanged();
         verify(mLocationBarDataObserver).onPrimaryColorChanged();
         verify(mLocationBarDataObserver).onSecurityStateChanged();
+
+        regularLocationBarModel.destroy();
     }
 
     @Test
     @MediumTest
     public void testObserversNotified_setIsShowingStartSurface() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
+        regularLocationBarModel.initializeWithNative();
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        regularLocationBarModel.updateVisibleGurl();
 
         verify(mLocationBarDataObserver, never()).onTitleChanged();
         verify(mLocationBarDataObserver, never()).onUrlChanged();
         verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
+        regularLocationBarModel.setShouldShowOmniboxInOverviewMode(true);
+        regularLocationBarModel.setLayoutStateProvider(mLayoutStateProvider);
         regularLocationBarModel.updateForNonStaticLayout(false, true);
+
         verify(mLocationBarDataObserver).onTitleChanged();
         verify(mLocationBarDataObserver).onUrlChanged();
-        verify(mLocationBarDataObserver).onPrimaryColorChanged();
+        verify(mLocationBarDataObserver, atLeast(1)).onPrimaryColorChanged();
         verify(mLocationBarDataObserver).onSecurityStateChanged();
+
+        regularLocationBarModel.destroy();
     }
 
-    @EnableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
     @Test
     @MediumTest
     public void testSpannableCache() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
-                mChromeAutocompleteSchemeClassifierJni);
-        LocationBarModel regularLocationBarModel =
-                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
-        doReturn(true).when(mRegularTabMock).isInitialized();
-        regularLocationBarModel.initializeWithNative();
-        LruCache<LocationBarModel.SpannableDisplayTextCacheKey, SpannableStringBuilder> cache =
-                regularLocationBarModel.getCacheForTesting();
-        Assert.assertEquals(cache.size(), 0);
-
-        String url = "http://www.example.com/";
-        doReturn(url).when(mMockGurl).getSpec();
-        doReturn(mMockGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-        doReturn(url)
-                .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
-        doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
-        regularLocationBarModel.updateVisibleGurl();
-        doReturn(mMockGurl).when(mUrlFormatterJniMock).fixupUrl(url);
-        doReturn(new int[] {0, 7, 7, 15})
-                .when(mOmniboxUrlEmphasizerJni)
-                .parseForEmphasizeComponents(any(), any());
-        regularLocationBarModel.getUrlBarData();
-        Assert.assertEquals(cache.size(), 1);
-        regularLocationBarModel.getUrlBarData();
-        Assert.assertEquals(cache.hitCount(), 1);
-
-        regularLocationBarModel.destroy();
-    }
-
-    @DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
-    @Test
-    @MediumTest
-    public void testNoCacheWhenScrollOptimizationsDisabled() {
-        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
-                mChromeAutocompleteSchemeClassifierJni);
-        LocationBarModel regularLocationBarModel =
-                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
-        doReturn(true).when(mRegularTabMock).isInitialized();
-        regularLocationBarModel.initializeWithNative();
-
-        String url = "http://www.example.com/";
-        doReturn(url).when(mMockGurl).getSpec();
-        doReturn(mMockGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-        doReturn(url)
-                .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
-        doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
-        Assert.assertTrue(regularLocationBarModel.updateVisibleGurl());
-        regularLocationBarModel.destroy();
-    }
-
-    @EnableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
-    @Test
-    @MediumTest
-    public void testCacheWhenScrollOptimizationsEnabled() {
-        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
-                mChromeAutocompleteSchemeClassifierJni);
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
         doReturn(true).when(mRegularTabMock).isInitialized();
@@ -429,35 +409,32 @@ public class LocationBarModelUnitTest {
         regularLocationBarModel.destroy();
     }
 
-    @EnableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
     @Test
     @MediumTest
     public void testUpdateVisibleGurlStartSurfaceShowing() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
-                mChromeAutocompleteSchemeClassifierJni);
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
         doReturn(true).when(mRegularTabMock).isInitialized();
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+
         regularLocationBarModel.initializeWithNative();
         regularLocationBarModel.setShouldShowOmniboxInOverviewMode(true);
         regularLocationBarModel.setLayoutStateProvider(mLayoutStateProvider);
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
-        doReturn(mMockGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-        Assert.assertNotEquals(regularLocationBarModel.getCurrentGurl(), UrlConstants.ntpGurl());
+
+        regularLocationBarModel.updateVisibleGurl();
+        Assert.assertEquals(regularLocationBarModel.getCurrentGurl(), mMockGurl);
 
         regularLocationBarModel.updateForNonStaticLayout(true, false);
-        verify(mLocationBarDataObserver).onUrlChanged();
         regularLocationBarModel.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
-
-        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
+        verify(mLocationBarDataObserver).onUrlChanged();
         Assert.assertEquals(regularLocationBarModel.getCurrentGurl(), UrlConstants.ntpGurl());
 
         regularLocationBarModel.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
-
-        verify(mLocationBarDataObserver, times(3)).onUrlChanged();
+        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
         Assert.assertEquals(regularLocationBarModel.getCurrentGurl(), mMockGurl);
 
         regularLocationBarModel.destroy();

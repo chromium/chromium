@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
@@ -273,6 +274,11 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // Adds a handle that will be shared with the target process. Does not take
   // ownership of the handle.
   virtual void AddHandleToShare(HANDLE handle) = 0;
+
+  // Adds a blob of data that will be made available in the child early in
+  // startup via sandbox::GetDelegateData(). The contents of this data should
+  // not vary between children with the same TargetConfig().
+  virtual void AddDelegateData(base::span<const uint8_t> data) = 0;
 };
 
 }  // namespace sandbox

@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -95,7 +94,7 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGContainerFragmentBuilder* builder,
+    NGFragmentBuilder* builder,
     PhysicalSize outer_size,
     PhysicalSize inner_size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
@@ -111,7 +110,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGContainerFragmentBuilder* builder,
+    NGFragmentBuilder* builder,
     PhysicalSize size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
@@ -516,7 +515,7 @@ void NGPhysicalBoxFragment::Dispose() {
 // TODO(kojii): Move to ng_physical_fragment.cc
 NGPhysicalFragment::OutOfFlowData*
 NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
-    NGContainerFragmentBuilder* builder) {
+    NGFragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
             !builder->oof_positioned_fragmentainer_descendants_.empty() ||
@@ -1217,8 +1216,13 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
     // text.
     const auto* const text_combine =
         DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
-    if (UNLIKELY(text_combine))
-      contents_rect.Unite(text_combine->RecalcContentsInkOverflow());
+    if (UNLIKELY(text_combine)) {
+      // Reset the cursor for text combine to provide a current item for
+      // decorations.
+      NGInlineCursor text_combine_cursor(*this, *items);
+      contents_rect.Unite(
+          text_combine->RecalcContentsInkOverflow(text_combine_cursor));
+    }
 
     // Even if this turned out to be an inline formatting context with
     // fragment items (handled above), we need to handle floating descendants.
@@ -1867,15 +1871,10 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
       has_inflow_blocks = true;
   }
 
-  // The below IFC check is skipped for LayoutMedia, which can have both of
-  // block children and inline children. See crbug.com/1379779.
-  if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled() ||
-      !RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() ||
-      !layout_object_->IsMedia()) {
-    // If we have line boxes, |IsInlineFormattingContext()| is true, but the
-    // reverse is not always true.
-    if (has_line_boxes || has_inlines)
-      DCHECK(IsInlineFormattingContext());
+  // If we have line boxes, |IsInlineFormattingContext()| is true, but the
+  // reverse is not always true.
+  if (has_line_boxes || has_inlines) {
+    DCHECK(IsInlineFormattingContext());
   }
 
   // If display-locked, we may not have any children.

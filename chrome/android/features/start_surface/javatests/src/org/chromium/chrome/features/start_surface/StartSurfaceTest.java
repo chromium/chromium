@@ -42,10 +42,10 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -75,6 +75,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -126,6 +127,9 @@ public class StartSurfaceTest {
     private static final long MAX_TIMEOUT_MS = 40000L;
     private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
+    private static final String HISTOGRAM_SPARE_TAB_FINAL_STATUS = "Android.SpareTab.FinalStatus";
+    private static final String HISTOGRAM_START_SURFACE_SPARE_TAB_SHOW_AND_CREATE =
+            "StartSurface.SpareTab.TimeBetweenShowAndCreate";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -461,6 +465,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisabledTest(message = "https://crbug.com/1434823")
     @CommandLineFlags.
     Add({START_SURFACE_TEST_BASE_PARAMS + "hide_switch_when_no_incognito_tabs/false"})
     public void testCreateNewTab_OpenNTPInsteadOfStart() {
@@ -939,6 +944,28 @@ public class StartSurfaceTest {
                 + " is not recorded correctly when click on the profile button.");
     }
 
+    /**
+     * Test whether the clicking action on the menu button in {@link StartSurface} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    @Feature({"StartSurface"})
+    public void testRecordHistogramMenuButtonClick_StartSurface() {
+        Assume.assumeTrue(mImmediateReturn);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+        onView(allOf(withId(R.id.menu_button_wrapper), withParent(withId(R.id.menu_anchor))))
+                .perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                + " is not recorded correctly when click on the menu button.");
+    }
+
     private void doTestNotLoadLastSelectedTabOnStartupImpl() {
         assumeTrue(mImmediateReturn);
 
@@ -960,5 +987,171 @@ public class StartSurfaceTest {
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;
+    }
+
+    /**
+     * Tests that on navigation from start surface using MV tiles should use spare tab.
+     */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void test_UsesSpareTabForNavigationFromMVTiles() {
+        if (!mImmediateReturn) return;
+
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_START_SURFACE_SPARE_TAB_SHOW_AND_CREATE);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // SpareTab should be created when the start surface is shown.
+        CriteriaHelper.pollUiThread(() -> { WarmupManager.getInstance().hasSpareTab(); });
+
+        // The renderer process count should be 0 as spareTab doesn't initialize renderer by
+        // default.
+        Assert.assertEquals(0, RenderProcessHostUtils.getCurrentRenderProcessCount());
+
+        StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+        StartSurfaceTestUtils.waitForCurrentTabLoaded(mActivityTestRule);
+
+        // SpareTab should be used when we navigate from start surface.
+        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_SPARE_TAB_FINAL_STATUS,
+                        WarmupManager.SpareTabFinalStatus.TAB_USED));
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Tests that on navigation from start surface using search box should use spare tab.
+     */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @DisabledTest(message = "crbug.com/1170673 - NoInstant_NoReturn version is flaky")
+    public void test_UsesSpareTabForNavigationFromSearchBox() {
+        if (!mImmediateReturn) return;
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // SpareTab should be created when the start surface is shown.
+        CriteriaHelper.pollUiThread(() -> { WarmupManager.getInstance().hasSpareTab(); });
+
+        // Navigate from StartSurface using search box.
+        onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule));
+        onViewWaiting(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+        ChromeTabUtils.waitForTabPageLoaded(cta.getActivityTab(), (String) null);
+
+        // SpareTab should be used when we navigate from start surface.
+        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_SPARE_TAB_FINAL_STATUS,
+                        WarmupManager.SpareTabFinalStatus.TAB_USED));
+    }
+
+    /**
+     * Tests that on navigation from start surface using carousel tab switcher shouldn't use spare
+     * tab.
+     */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void test_DoesntUseSpareTabForNavigationFromCarouselTabSwitcher() {
+        if (!mImmediateReturn) return;
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // SpareTab should be created when the start surface is shown.
+        CriteriaHelper.pollUiThread(() -> { WarmupManager.getInstance().hasSpareTab(); });
+
+        // Navigate from StartSurface using carousel tab switcher.
+        StartSurfaceTestUtils.clickFirstTabInCarousel();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+
+        // This shouldn't use spare tab and deletes spare tab once the start surface gets hidden.
+        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_SPARE_TAB_FINAL_STATUS,
+                        WarmupManager.SpareTabFinalStatus.TAB_DESTROYED));
+    }
+
+    /**
+     * Tests that we create a new renderer process during spare tab creation when
+     * initialize_renderer param enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void test_SpareTabCreatesNewRendererProcessWithParamEnabled() {
+        if (!mImmediateReturn) return;
+
+        // Set the param to true allowing renderer initialization.
+        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
+
+        // Show Start Surface.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // SpareTab should be created when the start surface is shown.
+        CriteriaHelper.pollUiThread(() -> { WarmupManager.getInstance().hasSpareTab(); });
+
+        // The renderer process count should be 1 as spareTab also initializes renderer when the
+        // flag is set
+        CriteriaHelper.pollUiThread(
+                () -> RenderProcessHostUtils.getCurrentRenderProcessCount() == 1);
+    }
+
+    /**
+     * Tests that spare tab is not used when we navigate from different surface other than start
+     * surface, using new tab button or loading a new URL directly.
+     */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void test_SpareTabNotUsedOnOtherSurface() {
+        if (!mImmediateReturn) return;
+
+        // Show Start Surface.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // SpareTab should be created when the start surface is shown.
+        CriteriaHelper.pollUiThread(() -> { WarmupManager.getInstance().hasSpareTab(); });
+
+        // Navigate from start surface using link
+        mActivityTestRule.loadUrlInNewTab("about:blank", false, TabLaunchType.FROM_LINK);
+
+        // This shouldn't use spare tab and deletes spare tab once the start surface gets hidden.
+        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_SPARE_TAB_FINAL_STATUS,
+                        WarmupManager.SpareTabFinalStatus.TAB_DESTROYED));
     }
 }

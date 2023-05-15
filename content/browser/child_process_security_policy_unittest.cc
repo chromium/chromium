@@ -251,8 +251,11 @@ class ChildProcessSecurityPolicyTest
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
     return p->IsIsolatedOrigin(
-        IsolationContext(browsing_instance_id, context,
-                         /*is_guest=*/false, /*is_fenced=*/false),
+        IsolationContext(
+            browsing_instance_id, context,
+            /*is_guest=*/false, /*is_fenced=*/false,
+            OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+                &browser_context_)),
         origin, false /* origin_requests_isolation */);
   }
 
@@ -3066,10 +3069,10 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
   // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
   TestBrowserContext context;
   {
-    auto origin_isolation_request =
-        static_cast<UrlInfo::OriginIsolationRequest>(
-            UrlInfo::OriginIsolationRequest::kOriginAgentCluster |
-            UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess);
+    auto origin_isolation_request = static_cast<
+        UrlInfo::OriginIsolationRequest>(
+        UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader |
+        UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
     UrlInfo url_info(UrlInfoInit(foo.GetURL())
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =

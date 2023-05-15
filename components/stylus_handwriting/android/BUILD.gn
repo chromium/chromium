@@ -60,7 +60,7 @@ robolectric_binary("components_stylus_handwriting_junit_tests") {
     "//base:base_junit_test_support",
     "//content/public/android:content_full_java",
     "//mojo/public/mojom/base:base_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/junit:junit",

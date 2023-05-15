@@ -379,6 +379,11 @@ using RemoveRawRefT = typename RemoveRawRef<T>::type;
 
 using base::raw_ref;
 
+template <base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty, typename T>
+auto ToRawRef(T& ref) {
+  return raw_ref<T, Traits>(ref);
+}
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ref. This also

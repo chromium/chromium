@@ -81,8 +81,7 @@ std::string MigratableCardView::GetGuid() const {
 }
 
 std::u16string MigratableCardView::GetCardIdentifierString() const {
-  return migratable_credit_card_.credit_card()
-      .CardIdentifierStringForAutofillDisplay();
+  return migratable_credit_card_.credit_card().CardNameAndLastFourDigits();
 }
 
 std::unique_ptr<views::View>

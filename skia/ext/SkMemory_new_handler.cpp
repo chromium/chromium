@@ -44,7 +44,7 @@ void sk_abort_no_print() {
 }
 
 void sk_out_of_memory(void) {
-    SkASSERT(!"sk_out_of_memory");
+    SkDEBUGFAIL("sk_out_of_memory");
     base::TerminateBecauseOutOfMemory(0);
     // Extra safety abort().
     abort();

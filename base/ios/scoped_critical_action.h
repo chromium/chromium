@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/synchronization/lock.h"
@@ -17,9 +16,6 @@
 
 namespace base {
 namespace ios {
-
-// Feature exposed publicly for unit-testing purposes.
-BASE_DECLARE_FEATURE(kScopedCriticalActionReuseEnabled);
 
 // This class attempts to allow the application to continue to run for a period
 // of time after it transitions to the background. The construction of an
@@ -132,10 +128,7 @@ class ScopedCriticalAction {
     Lock entries_map_lock_;
   };
 
-  // Depepending on whether reuse is globally enabled upon construction, either
-  // a dedicated Core instance is used or a reusable one.
-  scoped_refptr<Core> core_;
-  ActiveBackgroundTaskCache::Handle task_handle_;
+  const ActiveBackgroundTaskCache::Handle task_handle_;
 };
 
 }  // namespace ios

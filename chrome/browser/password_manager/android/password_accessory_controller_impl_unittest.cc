@@ -298,17 +298,18 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
+
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
@@ -318,18 +319,17 @@ TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(no_user_str(), no_user_str(), false, false)
-              .AppendField(u"S3cur3", password_for_str(no_user_str()), true,
-                           false)
-              .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(no_user_str(), no_user_str(), false, false)
+          .AppendField(u"S3cur3", password_for_str(no_user_str()), true, false)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
@@ -342,16 +342,12 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
-
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
   EXPECT_EQ(
-      result,
+      controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite)
           .AppendField(u"Alf", u"Alf", false, true)
@@ -376,17 +372,17 @@ TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
       url::Origin::Create(GURL(kExampleSite)));
 
   // Pretend that any input in the same frame was focused.
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
@@ -395,13 +391,14 @@ TEST_F(PasswordAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
       {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(PasswordAccessorySheetDataBuilder(
-                                     passwords_empty_str(kExampleDomain))
-                                     .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
@@ -411,77 +408,80 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
        CreateEntry("", "p455w0rd", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
+
   // Pretend a username field was focused. This should result in non-interactive
   // suggestion.
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"No username", u"No username", false, false)
-              .AppendField(u"p455w0rd", password_for_str(u"No username"), true,
-                           false)
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"No username", u"No username", false, false)
+          .AppendField(u"p455w0rd", password_for_str(u"No username"), true,
+                       false)
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
+
   // Pretend that we focus a password field now: By triggering a refresh with
   // |is_password_field| set to true, all suggestions other than the empty
   // username should become interactive.
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"No username", u"No username", false, false)
-              .AppendField(u"p455w0rd", password_for_str(u"No username"), true,
-                           true)
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, true)
-              .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"No username", u"No username", false, false)
+          .AppendField(u"p455w0rd", password_for_str(u"No username"), true,
+                       true)
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, true)
+          .Build());
 }
 
-TEST_F(PasswordAccessoryControllerTest, CachesIsReplacedByNewPasswords) {
+TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Alf", "M3lm4k", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Alf", u"Alf", false, true)
-              .AppendField(u"M3lm4k", password_for_str(u"Alf"), true, false)
-              .Build()));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Alf", u"Alf", false, true)
+          .AppendField(u"M3lm4k", password_for_str(u"Alf"), true, false)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, HidesEntriesForPSLMatchedOriginsInV1) {
@@ -517,9 +517,6 @@ TEST_F(PasswordAccessoryControllerTest, HidesEntriesForPSLMatchedOriginsInV1) {
 
 TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillKeyboardAccessory);
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get(),
        CreateEntry("Alf", "R4nd0m", GURL(kExampleSiteMobile), true, false)
@@ -555,29 +552,31 @@ TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
+
   // Pretend a username field was focused. This should result in non-emtpy
   // suggestions.
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
+
   // Pretend that the focus was lost or moved to an unfillable field. Now, only
   // the empty state message should be sent.
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(PasswordAccessorySheetDataBuilder(
-                                     passwords_empty_str(kExampleDomain))
-                                     .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kUnfillableElement,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
@@ -588,30 +587,31 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(
-          PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
-              .AddUserInfo(kExampleSite)
-              .AppendField(u"Ben", u"Ben", false, true)
-              .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
-              .Build()));
+
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"Ben"), true, false)
+          .Build());
+
   // Pretend that the focus was lost or moved to an unfillable field.
   NavigateAndCommit(GURL("https://random.other-site.org/"));
 
-  // Now, only the empty state message should be sent.
-  EXPECT_CALL(
-      mock_manual_filling_controller_,
-      RefreshSuggestions(PasswordAccessorySheetDataBuilder(
-                             passwords_empty_str(u"random.other-site.org"))
-                             .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kUnfillableElement,
       /*is_manual_generation_available=*/false);
+
+  // Now, only the empty state message should be sent.
+  EXPECT_EQ(controller()->GetSheetData(),
+            PasswordAccessorySheetDataBuilder(
+                passwords_empty_str(u"random.other-site.org"))
+                .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, OnAutomaticGenerationRequested) {
@@ -632,18 +632,21 @@ TEST_F(PasswordAccessoryControllerTest, AddsGenerationCommandWhenAvailable) {
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
-                                           passwords_empty_str(kExampleDomain));
-  data_builder
-      .AppendFooterCommand(generate_password_str(),
-                           autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL)
-      .AppendFooterCommand(manage_passwords_str(),
-                           autofill::AccessoryAction::MANAGE_PASSWORDS);
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(std::move(data_builder).Build()));
+
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(
+              generate_password_str(),
+              autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL)
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, NoGenerationCommandIfNotPasswordField) {
@@ -651,13 +654,15 @@ TEST_F(PasswordAccessoryControllerTest, NoGenerationCommandIfNotPasswordField) {
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(PasswordAccessorySheetDataBuilder(
-                                     passwords_empty_str(kExampleDomain))
-                                     .Build()));
+
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, OnManualGenerationRequested) {
@@ -675,11 +680,6 @@ TEST_F(PasswordAccessoryControllerTest, OnManualGenerationRequested) {
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
@@ -706,11 +706,6 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
 TEST_F(PasswordAccessoryControllerTest,
        NoSaveToggleIfIsBlocklistedAndSavingDisabled) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
 
   // Simulate saving being disabled (e.g. being in incognito or having password
   // saving disabled from settings).
@@ -736,11 +731,6 @@ TEST_F(PasswordAccessoryControllerTest,
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
@@ -769,11 +759,6 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
@@ -799,11 +784,6 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
 TEST_F(PasswordAccessoryControllerTest,
        RecordsAccessoryImpressionsForBlocklisted) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
 
   base::HistogramTester histogram_tester;
 
@@ -825,11 +805,6 @@ TEST_F(PasswordAccessoryControllerTest,
 
 TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblocklisted) {
   CreateSheetController();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
   base::HistogramTester histogram_tester;
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -883,12 +858,6 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
-      {});
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
@@ -910,12 +879,6 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory,
-       password_manager::features::kBiometricTouchToFill},
-      {});
   CreateSheetController();
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -942,12 +905,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory,
-       password_manager::features::kBiometricTouchToFill},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kBiometricTouchToFill);
   CreateSheetController();
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -978,12 +937,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory,
-       password_manager::features::kBiometricTouchToFill},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kBiometricTouchToFill);
   CreateSheetController();
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1015,12 +970,8 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory,
-       password_manager::features::kBiometricTouchToFill},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kBiometricTouchToFill);
   CreateSheetController();
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1087,16 +1038,14 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
+
   EXPECT_EQ(
-      last_sheet,
+      controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(show_other_passwords_str(),
@@ -1113,16 +1062,14 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
+
   EXPECT_EQ(
-      last_sheet,
+      controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(show_other_passwords_str(),
@@ -1141,17 +1088,13 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   NavigateAndCommit(GURL(kExampleHttpSite));
   FocusWebContentsOnMainFrame();
 
-  // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
+  // Trigger suggestion refresh(es).
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
-
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(
-      last_sheet,
+      controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleHttpSite16))
           .AppendFooterCommand(manage_passwords_str(),
@@ -1166,16 +1109,13 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController(security_state::WARNING);
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(
-      last_sheet,
+      controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(manage_passwords_str(),
@@ -1187,17 +1127,14 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
        HidesUseOtherPasswordsIfPasswordStoreIsEmpty) {
   CreateSheetController();
 
-  // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
+  // Trigger suggestion refresh(es).
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(
-      last_sheet,
+      controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(manage_passwords_str(),

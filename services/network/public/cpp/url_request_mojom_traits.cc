@@ -185,7 +185,9 @@ bool StructTraits<
           &out->devtools_accepted_stream_types) ||
       !data.ReadNetLogCreateInfo(&out->net_log_create_info) ||
       !data.ReadNetLogReferenceInfo(&out->net_log_reference_info) ||
-      !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain)) {
+      !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
+      !data.ReadAttributionReportingRuntimeFeatures(
+          &out->attribution_reporting_runtime_features)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -209,6 +211,7 @@ bool StructTraits<
   out->destination = data.destination();
   out->keepalive = data.keepalive();
   out->browsing_topics = data.browsing_topics();
+  out->ad_auction_headers = data.ad_auction_headers();
   out->has_user_gesture = data.has_user_gesture();
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
@@ -223,6 +226,9 @@ bool StructTraits<
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
   out->has_storage_access = data.has_storage_access();
+  out->attribution_reporting_support = data.attribution_reporting_support();
+  out->attribution_reporting_eligibility =
+      data.attribution_reporting_eligibility();
   return true;
 }
 

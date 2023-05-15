@@ -18,24 +18,19 @@ TEST(AdAuctionCurrenciesTest, IsValidAdCurrencyCode) {
   EXPECT_FALSE(IsValidAdCurrencyCode("ABc"));
 }
 
-TEST(AdAuctionCurrenciesTest, IsValidOrUnspecifiedAdCurrencyCode) {
-  EXPECT_FALSE(IsValidOrUnspecifiedAdCurrencyCode("A"));
-  EXPECT_FALSE(IsValidOrUnspecifiedAdCurrencyCode("ABCD"));
+TEST(AdAuctionCurrenciesTest, VerifyAdCurrencyCode) {
+  EXPECT_FALSE(
+      VerifyAdCurrencyCode(AdCurrency::From("ABC"), AdCurrency::From("CBA")));
   EXPECT_TRUE(
-      IsValidOrUnspecifiedAdCurrencyCode(blink::kUnspecifiedAdCurrency));
-  EXPECT_TRUE(IsValidOrUnspecifiedAdCurrencyCode("ABC"));
-  EXPECT_FALSE(IsValidOrUnspecifiedAdCurrencyCode("aBC"));
-  EXPECT_FALSE(IsValidOrUnspecifiedAdCurrencyCode("AbC"));
-  EXPECT_FALSE(IsValidOrUnspecifiedAdCurrencyCode("ABc"));
+      VerifyAdCurrencyCode(AdCurrency::From("ABC"), AdCurrency::From("ABC")));
+  EXPECT_TRUE(VerifyAdCurrencyCode(AdCurrency::From("ABC"), absl::nullopt));
+  EXPECT_TRUE(VerifyAdCurrencyCode(absl::nullopt, AdCurrency::From("ABC")));
+  EXPECT_TRUE(VerifyAdCurrencyCode(absl::nullopt, absl::nullopt));
 }
 
-TEST(AdAuctionCurrenciesTest, VerifyAdCurrencyCode) {
-  EXPECT_FALSE(VerifyAdCurrencyCode("ABC", "CBA"));
-  EXPECT_TRUE(VerifyAdCurrencyCode("ABC", "ABC"));
-  EXPECT_TRUE(VerifyAdCurrencyCode("ABC", blink::kUnspecifiedAdCurrency));
-  EXPECT_TRUE(VerifyAdCurrencyCode(blink::kUnspecifiedAdCurrency, "ABC"));
-  EXPECT_TRUE(VerifyAdCurrencyCode(blink::kUnspecifiedAdCurrency,
-                                   blink::kUnspecifiedAdCurrency));
+TEST(AdAuctionCurrenciesTest, PrintableAdCurrency) {
+  EXPECT_EQ(kUnspecifiedAdCurrency, PrintableAdCurrency(absl::nullopt));
+  EXPECT_EQ("USD", PrintableAdCurrency(AdCurrency::From("USD")));
 }
 
 }  // namespace blink

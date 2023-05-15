@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 
 #import "base/feature_list.h"
-#import "base/guid.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -121,7 +121,8 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Confirm) {
 
 // Tests that the factory creates a save card request.
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveCard) {
-  autofill::CreditCard card(base::GenerateGUID(), "https://www.example.com/");
+  autofill::CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "https://www.example.com/");
 
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveCard,
@@ -164,9 +165,7 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Translate) {
 
 // Tests that the factory creates a save address profile request.
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveAddressProfile) {
-  autofill::AutofillProfile profile(base::GenerateGUID(),
-                                    "https://www.example.com/");
-
+  autofill::AutofillProfile profile;
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

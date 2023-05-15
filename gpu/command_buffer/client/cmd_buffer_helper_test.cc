@@ -41,9 +41,8 @@ class CommandBufferHelperTest : public testing::Test {
  protected:
   void SetUp() override {
     command_buffer_ = std::make_unique<CommandBufferDirectLocked>();
-    api_mock_ =
-        std::make_unique<AsyncAPIMock>(true, command_buffer_->service());
-    command_buffer_->set_handler(api_mock_.get());
+    api_mock_ = std::make_unique<AsyncAPIMock>(true, command_buffer_.get(),
+                                               command_buffer_->service());
 
     // ignore noops in the mock - we don't want to inspect the internals of the
     // helper.

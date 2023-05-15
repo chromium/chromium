@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -46,7 +47,7 @@ class WallClockForwarder {
 
  private:
   // Unowned, must outlive this.
-  base::TestMockTimeTaskRunner* const runner_;
+  const raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> runner_;
 
   // Used to simulate a power suspend and resume.
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
@@ -113,8 +114,9 @@ class SessionLengthLimiterTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   bool user_activity_seen_;
 
-  MockSessionLengthLimiterDelegate* delegate_;  // Owned by
-                                                // session_length_limiter_.
+  raw_ptr<MockSessionLengthLimiterDelegate, ExperimentalAsh>
+      delegate_;  // Owned by
+                  // session_length_limiter_.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
 };
 

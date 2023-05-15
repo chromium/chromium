@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
@@ -159,8 +160,10 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, GetProgIdForApp) {
   // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key.
   const std::wstring prog_id1 = GetProgIdForApp(profile()->GetPath(), app_id1);
   EXPECT_LE(prog_id1.length(), kMaxProgIdLen);
-  for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++)
-    EXPECT_TRUE(std::isalnum(*itr) || (*itr == '.' && itr != prog_id1.begin()));
+  for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++) {
+    EXPECT_TRUE(base::IsAsciiAlphaNumeric(*itr) ||
+                (*itr == '.' && itr != prog_id1.begin()));
+  }
   // Check that different app ids in the same profile have different prog ids.
   EXPECT_NE(prog_id1, GetProgIdForApp(profile()->GetPath(), app_id2));
 
@@ -180,8 +183,10 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, GetProgIdForAppFileHandler) {
   const std::wstring prog_id1 = GetProgIdForAppFileHandler(
       profile()->GetPath(), app_id1, file_extensions1);
   EXPECT_LE(prog_id1.length(), kMaxProgIdLen);
-  for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++)
-    EXPECT_TRUE(std::isalnum(*itr) || (*itr == '.' && itr != prog_id1.begin()));
+  for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++) {
+    EXPECT_TRUE(base::IsAsciiAlphaNumeric(*itr) ||
+                (*itr == '.' && itr != prog_id1.begin()));
+  }
   // Check that different app ids in the same profile with the same file
   // extensions have different prog ids.
   EXPECT_NE(prog_id1, GetProgIdForAppFileHandler(profile()->GetPath(), app_id2,

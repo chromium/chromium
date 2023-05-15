@@ -11,6 +11,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
@@ -59,11 +60,11 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   void RecordDisabledNotifierCount(int disabled_count);
 
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   // Owned by the views hierarchy.
-  FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
 
   absl::optional<int> last_disabled_count_;
 

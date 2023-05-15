@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -147,6 +149,8 @@ CameraEffectsController::CameraEffectsController()
   // that will come later.
   media::CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
       this, base::DoNothing());
+
+  Shell::Get()->autozoom_controller()->AddObserver(this);
 }
 
 CameraEffectsController::~CameraEffectsController() {
@@ -157,6 +161,8 @@ CameraEffectsController::~CameraEffectsController() {
     // unregistered.
     effects_manager.UnregisterDelegate(this);
   }
+
+  Shell::Get()->autozoom_controller()->RemoveObserver(this);
   media::CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(
       this);
 }
@@ -211,6 +217,9 @@ absl::optional<int> CameraEffectsController::GetEffectState(
           current_effects_->blur_level, current_effects_->blur_enabled);
     case VcEffectId::kPortraitRelighting:
       return current_effects_->relight_enabled;
+    case VcEffectId::kCameraFraming:
+      return Shell::Get()->autozoom_controller()->GetState() !=
+             cros::mojom::CameraAutoFramingState::OFF;
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
@@ -247,6 +256,10 @@ void CameraEffectsController::OnEffectControlActivated(
     case VcEffectId::kPortraitRelighting: {
       new_effects->relight_enabled =
           state.value_or(!new_effects->relight_enabled);
+      break;
+    }
+    case VcEffectId::kCameraFraming: {
+      Shell::Get()->autozoom_controller()->Toggle();
       break;
     }
     case VcEffectId::kNoiseCancellation:
@@ -290,6 +303,39 @@ void CameraEffectsController::OnCameraEffectChanged(
     SetEffectsConfigToPref(new_effects.Clone());
     current_effects_ = new_effects.Clone();
   }
+}
+
+void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
+  if (!enabled) {
+    RemoveEffect(VcEffectId::kCameraFraming);
+    return;
+  }
+
+  // Using `base::Unretained()` is safe here since `this` owns the created
+  // VcHostedEffect after calling `AddEffect()` below.
+  std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
+      /*type=*/VcEffectType::kToggle,
+      /*get_state_callback=*/
+      base::BindRepeating(&CameraEffectsController::GetEffectState,
+                          base::Unretained(this), VcEffectId::kCameraFraming),
+      /*effect_id=*/VcEffectId::kCameraFraming);
+
+  auto effect_state = std::make_unique<VcEffectState>(
+      /*icon=*/&kVideoConferenceCameraFramingOnIcon,
+      /*label_text=*/
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_BUTTON_LABEL),
+      /*accessible_name_id=*/
+      IDS_ASH_STATUS_TRAY_AUTOZOOM_BUTTON_LABEL,
+      /*button_callback=*/
+      base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
+                          base::Unretained(this),
+                          /*effect_id=*/VcEffectId::kCameraFraming,
+                          /*value=*/absl::nullopt));
+  effect_state->set_disabled_icon(&kVideoConferenceCameraFramingOffIcon);
+  effect->AddState(std::move(effect_state));
+
+  effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
+  AddEffect(std::move(effect));
 }
 
 cros::mojom::SegmentationModel

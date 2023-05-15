@@ -95,8 +95,9 @@ void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
     return;
   }
 
-  viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform_to_target, clip_in_target, visible_rect, opacity);
+  viz::SharedQuadState* quad_state =
+      CreateAndAppendSharedQuadState(render_pass, data, transform_to_target,
+                                     clip_in_target, visible_rect, opacity);
 
   constexpr gfx::Rect kOcclusion;
   const gfx::Size image_bounds =

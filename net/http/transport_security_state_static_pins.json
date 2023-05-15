@@ -31,6 +31,8 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
+// Last updated: 2023-05-14 12:55 UTC
+//
 {
   "pinsets": [
     {
@@ -73,112 +75,12 @@
       ]
     },
     {
-      "name": "twitterCom",
-      "static_spki_hashes": [
-        "VeriSignClass1",
-        "VeriSignClass3_G4",
-        "VeriSignClass4_G3",
-        "VeriSignClass3_G3",
-        "VeriSignClass1_G3",
-        "VeriSignClass2_G3",
-        "VeriSignClass3_G2",
-        "VeriSignClass2_G2",
-        "VeriSignClass3_G5",
-        "VeriSignUniversal",
-        "GeoTrustGlobal",
-        "GeoTrustGlobal2",
-        "GeoTrustUniversal",
-        "GeoTrustUniversal2",
-        "GeoTrustPrimary",
-        "GeoTrustPrimary_G2",
-        "GeoTrustPrimary_G3",
-        "DigiCertGlobalRoot",
-        "DigiCertEVRoot",
-        "DigiCertAssuredIDRoot",
-        "Twitter1"
-      ],
-      "report_uri": "http://l.twimg.com/i/hpkp_report"
-    },
-    {
-      "name": "twitterCDN",
-      "static_spki_hashes": [
-        "VeriSignClass1",
-        "VeriSignClass3_G4",
-        "VeriSignClass4_G3",
-        "VeriSignClass3_G3",
-        "VeriSignClass1_G3",
-        "VeriSignClass2_G3",
-        "VeriSignClass3_G2",
-        "VeriSignClass2_G2",
-        "VeriSignClass3_G5",
-        "VeriSignUniversal",
-        "GeoTrustGlobal",
-        "GeoTrustGlobal2",
-        "GeoTrustUniversal",
-        "GeoTrustUniversal2",
-        "GeoTrustPrimary",
-        "GeoTrustPrimary_G2",
-        "GeoTrustPrimary_G3",
-        "DigiCertGlobalRoot",
-        "DigiCertEVRoot",
-        "DigiCertAssuredIDRoot",
-        "Twitter1",
-        "Entrust_2048",
-        "Entrust_EV",
-        "Entrust_G2",
-        "Entrust_SSL",
-        "AAACertificateServices",
-        "AddTrustClass1CARoot",
-        "AddTrustExternalCARoot",
-        "AddTrustPublicCARoot",
-        "AddTrustQualifiedCARoot",
-        "COMODOCertificationAuthority",
-        "SecureCertificateServices",
-        "TrustedCertificateServices",
-        "UTNDATACorpSGC",
-        "UTNUSERFirstClientAuthenticationandEmail",
-        "UTNUSERFirstHardware",
-        "UTNUSERFirstObject",
-        "GTECyberTrustGlobalRoot",
-        "BaltimoreCyberTrustRoot",
-        "GlobalSignRootCA",
-        "GlobalSignRootCA_R2",
-        "GlobalSignRootCA_R3"
-      ],
-      "report_uri": "http://l.twimg.com/i/hpkp_report"
-    },
-    {
-      "name": "dropbox",
-      "static_spki_hashes": [
-        "DigiCertAssuredIDRoot",
-        "DigiCertGlobalRoot",
-        "DigiCertEVRoot",
-        "EntrustRootEC1",
-        "Entrust_G2",
-        "Entrust_EV",
-        "Entrust_2048",
-        "TheGoDaddyGroupClass2",
-        "GoDaddyRoot_G2",
-        "GoDaddySecure"
-      ],
-      "report_uri": "https://log.getdropbox.com/hpkp"
-    },
-    {
       "name": "facebook",
       "static_spki_hashes": [
         "SymantecClass3EVG3",
         "DigiCertECCSecureServerCA",
         "DigiCertEVRoot",
         "FacebookBackup"
-      ]
-    },
-    {
-      "name": "spideroak",
-      "static_spki_hashes": [
-        "GeoTrustGlobal",
-        "DigiCertEVRoot",
-        "SpiderOak2",
-        "SpiderOak3"
       ]
     },
     {
@@ -2478,51 +2380,6 @@
       "pins": "facebook"
     },
     {
-      "name": "twitter.com",
-      "include_subdomains": false,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "www.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "api.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCDN"
-    },
-    {
-      "name": "oauth.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "mobile.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "dev.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "business.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCom"
-    },
-    {
-      "name": "platform.twitter.com",
-      "include_subdomains": true,
-      "pins": "twitterCDN"
-    },
-    {
-      "name": "twimg.com",
-      "include_subdomains": true,
-      "pins": "twitterCDN"
-    },
-    {
       "name": "torproject.org",
       "include_subdomains": false,
       "pins": "tor"
@@ -2546,31 +2403,6 @@
       "name": "dist.torproject.org",
       "include_subdomains": true,
       "pins": "tor"
-    },
-    {
-      "name": "dropbox.com",
-      "include_subdomains": true,
-      "pins": "dropbox"
-    },
-    {
-      "name": "www.dropbox.com",
-      "include_subdomains": true,
-      "pins": "dropbox"
-    },
-    {
-      "name": "dropboxstatic.com",
-      "include_subdomains": true,
-      "pins": "dropbox"
-    },
-    {
-      "name": "dropboxusercontent.com",
-      "include_subdomains": true,
-      "pins": "dropbox"
-    },
-    {
-      "name": "spideroak.com",
-      "include_subdomains": true,
-      "pins": "spideroak"
     }
   ]
 }

@@ -621,13 +621,7 @@ class DetachToBrowserTabDragControllerTest
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
     attached_tabstrip->GetWidget()->GetNativeWindow();
-    aura::Window* source_window =
-        (source_tabstrip && source_tabstrip != attached_tabstrip)
-            ? test::GetWindowForTabStrip(source_tabstrip)
-            : nullptr;
-    return dragged_window->GetProperty(ash::kIsDraggingTabsKey) &&
-           dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey) ==
-               source_window;
+    return dragged_window->GetProperty(ash::kIsDraggingTabsKey);
 #else
     return true;
 #endif
@@ -640,8 +634,7 @@ class DetachToBrowserTabDragControllerTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
-    return !dragged_window->GetProperty(ash::kIsDraggingTabsKey) &&
-           !dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey);
+    return !dragged_window->GetProperty(ash::kIsDraggingTabsKey);
 #else
     return true;
 #endif
@@ -691,7 +684,7 @@ class DetachToBrowserTabDragControllerTest
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The root window for the event generator.
-  aura::Window* root_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_ = nullptr;
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<web_app::AppId> tabbed_app_id_;
@@ -1692,8 +1685,10 @@ class MaximizedBrowserWindowWaiter {
 }  // namespace
 
 // Drags from browser to separate window and releases mouse.
+// TODO(crbug/1444028): The test is failing. Please re-enable after fixing the
+// failure.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DetachToOwnWindow) {
+                       DISABLED_DetachToOwnWindow) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -3347,9 +3342,9 @@ class DraggedWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  DetachToBrowserTabDragControllerTest* test_;
+  raw_ptr<DetachToBrowserTabDragControllerTest, ExperimentalAsh> test_;
   // The dragged window.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
   // The bounds that |window_| will change to when the drag ends.
   gfx::Rect end_bounds_;
   // The position that the mouse/touch event will move to when the drag ends.

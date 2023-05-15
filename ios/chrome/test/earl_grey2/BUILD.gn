@@ -46,6 +46,7 @@ chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   deps = [
     "//ios/chrome/browser/ui/bookmarks:eg2_tests",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser:eg2_tests",
+    "//ios/chrome/browser/ui/bookmarks/home:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -135,12 +136,14 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/content_settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
     "//ios/chrome/browser/ui/settings/language:eg2_tests",
+    "//ios/chrome/browser/ui/settings/notifications:eg2_tests",
+    "//ios/chrome/browser/ui/settings/notifications/tracking_price:eg2_tests",
     "//ios/chrome/browser/ui/settings/password:eg2_tests",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg2_tests",
-    "//ios/chrome/browser/ui/settings/price_notifications:eg2_tests",
-    "//ios/chrome/browser/ui/settings/price_notifications/tracking_price:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync:eg2_tests",
+    "//ios/chrome/browser/ui/settings/tabs:eg2_tests",
+    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -150,6 +153,7 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/signin:eg2_tests",
+    "//ios/chrome/browser/ui/authentication/signed_in_accounts:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:eg2_tests",
@@ -163,6 +167,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/ui/bring_android_tabs:eg2_tests",
     "//ios/chrome/browser/ui/browser_container:eg2_tests",
     "//ios/chrome/browser/ui/browser_view:eg2_tests",
     "//ios/chrome/browser/ui/dialogs:eg2_tests",
@@ -192,6 +197,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",
     "//ios/chrome/browser/ui/sad_tab:eg2_tests",
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
+    "//ios/chrome/browser/ui/search_with:eg2_tests",
     "//ios/chrome/browser/ui/send_tab_to_self:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/sharing/activity_services:eg2_tests",

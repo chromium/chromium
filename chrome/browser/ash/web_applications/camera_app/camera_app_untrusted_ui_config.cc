@@ -18,7 +18,8 @@ CameraAppUntrustedUIConfig::CameraAppUntrustedUIConfig()
 CameraAppUntrustedUIConfig::~CameraAppUntrustedUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-CameraAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+CameraAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
   return std::make_unique<CameraAppUntrustedUI>(web_ui);
 }
 

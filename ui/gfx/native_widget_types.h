@@ -55,32 +55,26 @@ enum class CursorType;
 #endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_WIN)
-using HFONT = struct HFONT__*;
 struct IAccessible;
 #elif BUILDFLAG(IS_IOS)
-struct CGContext;
 #ifdef __OBJC__
 struct objc_object;
 @class UIEvent;
-@class UIFont;
 @class UIImage;
 @class UIView;
 @class UIWindow;
 @class UITextField;
 #else
 class UIEvent;
-class UIFont;
 class UIImage;
 class UIView;
 class UIWindow;
 class UITextField;
 #endif  // __OBJC__
 #elif BUILDFLAG(IS_MAC)
-struct CGContext;
 #ifdef __OBJC__
 @class NSCursor;
 @class NSEvent;
-@class NSFont;
 @class NSImage;
 @class NSView;
 @class NSWindow;
@@ -89,7 +83,6 @@ struct CGContext;
 struct objc_object;
 class NSCursor;
 class NSEvent;
-class NSFont;
 class NSImage;
 class NSView;
 class NSWindow;
@@ -213,17 +206,14 @@ constexpr NativeWindow kNullNativeWindow = nullptr;
 #endif
 
 #if BUILDFLAG(IS_WIN)
-using NativeFont = HFONT;
 using NativeViewAccessible = IAccessible*;
 #elif BUILDFLAG(IS_IOS)
-using NativeFont = UIFont*;
 #ifdef __OBJC__
 using NativeViewAccessible = id;
 #else
 using NativeViewAccessible = struct objc_object*;
 #endif
 #elif BUILDFLAG(IS_MAC)
-using NativeFont = NSFont*;
 #ifdef __OBJC__
 using NativeViewAccessible = id;
 #else

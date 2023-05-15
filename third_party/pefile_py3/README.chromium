@@ -14,4 +14,4 @@ headers is accessible, as well as all the sections' details and data.
 
 Local Modifications:
  - Only pefile.py, ordlookup, and LICENSE are present.
- - OWNERS and README.chromium files were added.
+ - BUILD.gn, OWNERS, and README.chromium files were added.

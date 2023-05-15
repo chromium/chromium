@@ -65,9 +65,6 @@ class AudioChannelBrokerImpl
   template <typename TParams, typename TResult>
   struct GrpcCall {
     // The response to a gRPC Call.
-    //
-    // TODO(rwkeane): It's possible that this gets deleted by the async method,
-    // and that the reactor will need to be created as a subclass.
     class Response : public grpc::ClientUnaryReactor {
      public:
       using Callback =

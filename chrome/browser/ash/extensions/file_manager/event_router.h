@@ -15,6 +15,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
@@ -283,7 +284,7 @@ class EventRouter
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;

@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusReasons"
-    enum="PrinterStatusReasons" expires_after="2023-08-20">
+    enum="PrinterStatusReasons" expires_after="2023-10-22">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -339,6 +339,16 @@ chromium-metrics-reviews@google.com.
     usage of the various printer protocols. Since a selection occurs when print
     preview is opened, this will count at least one every time that happens if a
     CUPS printer was selected.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.SavedPrintersCount" units="printers"
+    expires_after="2024-1-27">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of saved printers when the user launches or refreshes the
+    OS Settings Printing page.
   </summary>
 </histogram>
 

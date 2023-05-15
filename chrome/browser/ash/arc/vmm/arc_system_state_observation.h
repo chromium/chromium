@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_OBSERVATION_H_
 #define CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_OBSERVATION_H_
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -14,7 +15,15 @@ class BrowserContext;
 
 namespace arc {
 
-class ArcSystemStateObservation : public ash::ThrottleService {
+class PeaceDurationProvider {
+ public:
+  virtual ~PeaceDurationProvider() = default;
+  virtual absl::optional<base::TimeDelta> GetPeaceDuration() = 0;
+  virtual void SetDurationResetCallback(base::RepeatingClosure cb) = 0;
+};
+
+class ArcSystemStateObservation : public ash::ThrottleService,
+                                  public PeaceDurationProvider {
  public:
   explicit ArcSystemStateObservation(content::BrowserContext* context);
 
@@ -24,7 +33,9 @@ class ArcSystemStateObservation : public ash::ThrottleService {
 
   ~ArcSystemStateObservation() override;
 
-  absl::optional<base::TimeDelta> GetPeaceDuration();
+  absl::optional<base::TimeDelta> GetPeaceDuration() override;
+
+  void SetDurationResetCallback(base::RepeatingClosure cb) override;
 
   base::WeakPtr<ArcSystemStateObservation> GetWeakPtr();
 
@@ -33,6 +44,7 @@ class ArcSystemStateObservation : public ash::ThrottleService {
 
  private:
   absl::optional<base::Time> last_peace_timestamp_;
+  base::RepeatingClosure active_callback_;
 
   base::WeakPtrFactory<ArcSystemStateObservation> weak_ptr_factory_{this};
 };

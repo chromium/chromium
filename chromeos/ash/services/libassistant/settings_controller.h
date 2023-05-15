@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
@@ -70,7 +71,7 @@ class SettingsController : public AssistantClientObserver,
 
   // Set in |OnAssistantClientCreated| and unset in
   // |OnDestroyingAssistantClient|.
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   absl::optional<bool> hotword_enabled_;
   absl::optional<bool> spoken_feedback_enabled_;

@@ -11,7 +11,6 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_topics_model_handler.h"
 #include "components/optimization_guide/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,11 +24,6 @@ class PageEntitiesModelHandler;
 // retrieved.
 using EntityMetadataRetrievedCallback =
     base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
-
-// Callback to inform the caller that the metadata for a set of entity IDs has
-// been retrieved.
-using BatchEntityMetadataRetrievedCallback = base::OnceCallback<void(
-    const base::flat_map<std::string, EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
@@ -61,11 +55,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // when done.
   void GetMetadataForEntityId(const std::string& entity_id,
                               EntityMetadataRetrievedCallback callback);
-
-  // Retrieves the metadata associated for each entry in |entity_ids|. Invokes
-  // |callback| when done.
-  void GetMetadataForEntityIds(const base::flat_set<std::string>& entity_ids,
-                               BatchEntityMetadataRetrievedCallback callback);
 
  private:
   friend class PageContentAnnotationsModelManagerTest;
@@ -102,11 +91,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider,
                               base::OnceCallback<void(bool)> callback);
 
-  // Set up the machinery for execution of the page topics v2 model. This should
-  // only be run at construction.
-  void SetUpPageTopicsV2Model(
-      OptimizationGuideModelProvider* optimization_guide_model_provider);
-
   // Set up the machinery for execution of the page visibility model. This
   // should only be run at construction.
   void SetUpPageVisibilityModel(
@@ -121,10 +105,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // Called when a |job| finishes executing, just before it is deleted.
   void OnJobExecutionComplete();
-
-  // The model handler responsible for executing the on demand page topics
-  // model.
-  std::unique_ptr<PageTopicsModelHandler> page_topics_model_handler_;
 
   // The model handler for the page visibility model.
   std::unique_ptr<PageVisibilityModelHandler> page_visibility_model_handler_;

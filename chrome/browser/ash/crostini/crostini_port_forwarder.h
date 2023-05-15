@@ -10,6 +10,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -159,7 +160,7 @@ class CrostiniPortForwarder : public KeyedService {
 
   base::ObserverList<Observer> observers_;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<CrostiniPortForwarder> weak_ptr_factory_{this};
 

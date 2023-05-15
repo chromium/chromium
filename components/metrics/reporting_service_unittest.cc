@@ -65,7 +65,7 @@ class TestLogStore : public LogStore {
       staged_log_hash_ = base::SHA1HashString(logs_.front().log);
     }
   }
-  void DiscardStagedLog() override {
+  void DiscardStagedLog(base::StringPiece reason) override {
     if (!has_staged_log())
       return;
     logs_.pop_front();
@@ -93,9 +93,10 @@ class TestReportingService : public ReportingService {
   TestReportingService(const TestReportingService&) = delete;
   TestReportingService& operator=(const TestReportingService&) = delete;
 
-  ~TestReportingService() override {}
+  ~TestReportingService() override = default;
 
   void AddLog(const TestLog& log) { log_store_.AddLog(log); }
+  bool HasUnsentLogs() { return log_store_.has_unsent_logs(); }
 
  private:
   // ReportingService:
@@ -144,7 +145,6 @@ TEST_F(ReportingServiceTest, BasicTest) {
 
   service.EnableReporting();
   task_runner_->RunPendingTasks();
-  client_.uploader()->is_uploading();
   EXPECT_TRUE(client_.uploader()->is_uploading());
   EXPECT_EQ(1, client_.uploader()->reporting_info().attempt_count());
   EXPECT_FALSE(client_.uploader()->reporting_info().has_last_response_code());
@@ -201,6 +201,33 @@ TEST_F(ReportingServiceTest, UserIdLogsNotUploadedIfUserNotConsented) {
   // disabled. |client_.uploader()| should be nullptr since it is lazily
   // created when a log is to be uploaded for the first time.
   EXPECT_EQ(client_.uploader(), nullptr);
+}
+
+TEST_F(ReportingServiceTest, ForceDiscard) {
+  TestReportingService service(&client_, GetLocalState());
+  service.AddLog(TestLog("log1"));
+
+  service.EnableReporting();
+
+  // Simulate the server returning a 500 error, which indicates that the server
+  // is unhealthy.
+  task_runner_->RunPendingTasks();
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  client_.uploader()->CompleteUpload(500);
+  task_runner_->RunPendingTasks();
+  // Verify that the log is not discarded so that it can be re-sent later.
+  EXPECT_TRUE(service.HasUnsentLogs());
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+
+  // Simulate the server returning a 500 error again, but this time, with
+  // |force_discard| set to true.
+  client_.uploader()->CompleteUpload(500, /*force_discard=*/true);
+  task_runner_->RunPendingTasks();
+  // Verify that the log was discarded, and that |service| is not uploading
+  // anymore since there are no more logs.
+  EXPECT_FALSE(service.HasUnsentLogs());
+  EXPECT_EQ(0U, task_runner_->NumPendingTasks());
+  EXPECT_FALSE(client_.uploader()->is_uploading());
 }
 
 }  // namespace metrics

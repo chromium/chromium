@@ -20,6 +20,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -42,6 +43,7 @@
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -178,6 +180,51 @@ ComPtr<IProofOfPossessionCookieInfoManager> MakeCookieInfoManager(
   return SUCCEEDED(hresult) ? manager : nullptr;
 }
 
+void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
+                     const DWORD cookie_info_count,
+                     net::HttpRequestHeaders& auth_headers) {
+  net::cookie_util::ParsedRequestCookies parsed_cookies;
+  if (base::FeatureList::IsEnabled(
+          enterprise_auth::kCloudApAuthAttachAsHeader)) {
+    // If the auth cookie name begins with 'x-ms-', attach the cookie as a
+    // new header. Otherwise, append it to the existing list of cookies.
+    static constexpr base::StringPiece kHeaderPrefix("x-ms-");
+    for (DWORD i = 0; i < cookie_info_count; ++i) {
+      const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+      auto ascii_cookie_name = base::WideToASCII(cookie.name);
+      if (base::StartsWith(ascii_cookie_name, kHeaderPrefix,
+                           base::CompareCase::INSENSITIVE_ASCII)) {
+        // Removing cookie attributes from the value before setting it as a
+        // header.
+        std::string ascii_cookie_value = base::WideToASCII(cookie.data);
+        std::string::size_type cookie_attributes_position =
+            ascii_cookie_value.find(";");
+        if (cookie_attributes_position != std::string::npos) {
+          ascii_cookie_value =
+              ascii_cookie_value.substr(0, cookie_attributes_position);
+        }
+        auth_headers.SetHeader(std::move(ascii_cookie_name),
+                               std::move(ascii_cookie_value));
+      } else {
+        parsed_cookies.emplace_back(std::move(ascii_cookie_name),
+                                    base::WideToASCII(cookie.data));
+      }
+    }
+  } else {
+    // Append all auth cookies to the existing set of cookies.
+    for (DWORD i = 0; i < cookie_info_count; ++i) {
+      const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+      parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
+                                  base::WideToASCII(cookie.data));
+    }
+  }
+  if (parsed_cookies.size() > 0) {
+    auth_headers.SetHeader(
+        net::HttpRequestHeaders::kCookie,
+        net::cookie_util::SerializeRequestCookieLine(parsed_cookies));
+  }
+}
+
 // Returns the proof-of-possession cookies and headers for the interactive
 // user to authenticate to the IdP/STS at `url`.
 net::HttpRequestHeaders GetAuthData(const GURL& url) {
@@ -197,19 +244,7 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
                                      &cookie_info_count, &cookie_info);
     if (SUCCEEDED(hresult)) {
       DCHECK(!cookie_info_count || cookie_info);
-      net::cookie_util::ParsedRequestCookies parsed_cookies;
-      // Append all auth cookies to the existing set of cookies.
-      for (DWORD i = 0; i < cookie_info_count; ++i) {
-        const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-        parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
-                                    base::WideToASCII(cookie.data));
-      }
-      if (parsed_cookies.size() > 0) {
-        auth_headers.SetHeader(
-            net::HttpRequestHeaders::kCookie,
-            net::cookie_util::SerializeRequestCookieLine(parsed_cookies));
-      }
-
+      ParseCookieInfo(cookie_info, cookie_info_count, auth_headers);
       if (cookie_info)
         FreeProofOfPossessionCookieInfoArray(cookie_info, cookie_info_count);
     }
@@ -414,6 +449,13 @@ void CloudApProviderWin::SetSupportLevelForTesting(
     return;
   support_level_for_testing_ = new SupportLevel;
   *support_level_for_testing_ = level.value();
+}
+
+void CloudApProviderWin::ParseCookieInfoForTesting(
+    const ProofOfPossessionCookieInfo* cookie_info,
+    const DWORD cookie_info_count,
+    net::HttpRequestHeaders& auth_headers) {
+  ParseCookieInfo(cookie_info, cookie_info_count, auth_headers);
 }
 
 }  // namespace enterprise_auth

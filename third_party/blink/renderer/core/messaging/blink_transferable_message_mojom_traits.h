@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
+#include "third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor_mojom_traits.h"
@@ -53,8 +54,8 @@ struct CORE_EXPORT StructTraits<blink::mojom::TransferableMessageDataView,
     return input.message->GetArrayBufferContentsArray();
   }
 
-  static Vector<SkBitmap> image_bitmap_contents_array(
-      const blink::BlinkCloneableMessage& input);
+  static Vector<blink::mojom::blink::SerializedStaticBitmapImagePtr>
+  image_bitmap_contents_array(const blink::BlinkCloneableMessage& input);
 
   static const blink::mojom::blink::UserActivationSnapshotPtr& user_activation(
       const blink::BlinkTransferableMessage& input) {

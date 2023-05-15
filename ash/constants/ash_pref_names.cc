@@ -126,6 +126,9 @@ const char kQuirksClientLastServerCheck[] = "quirks_client.last_server_check";
 const char kDeviceWiFiFastTransitionEnabled[] =
     "net.device_wifi_fast_transition_enabled";
 
+// A boolean pref indicating whether hotspot has been used before.
+const char kHasHotspotUsedBefore[] = "ash.hotspot.has_used_before";
+
 // A boolean pref that controls whether input noise cancellation is enabled.
 const char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";
@@ -155,6 +158,10 @@ const char kSamlPasswordExpirationTime[] = "saml.password_expiration_time";
 // A string pref - the URL where the user can update their password, according
 // to the SAML IdP.
 const char kSamlPasswordChangeUrl[] = "saml.password_change_url";
+
+// A dictionary pref that stores custom accelerators that overrides the default
+// system-provided accelerators.
+const char kShortcutCustomizationOverrides[] = "accelerator.overrides";
 
 // Boolean pref indicating whether the user has completed (or skipped) the
 // out-of-box experience (OOBE) sync consent screen. Before this pref is set
@@ -1031,6 +1038,11 @@ const char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 const char kShowTouchpadScrollScreenEnabled[] =
     "ash.touchpad_scroll_screen_oobe_enabled";
 
+// Boolean value indicating that the Display size screen should be
+// shown to the user during the first sign-in.
+const char kShowDisplaySizeScreenEnabled[] =
+    "ash.display_size_screen_oobe_enabled";
+
 // Integer prefs indicating the minimum and maximum lengths of the lock screen
 // pin.
 const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";
@@ -1449,6 +1461,63 @@ const char kOwnerPrimaryPointingStickButtonRight[] =
 
 // Copy of owner tap-to-click option to use on login screen.
 const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
+
+// A boolean pref set to true if a user simulates a right click using their
+// keyboard and touchpad with either Alt+Click or Search+Click.
+// The value of this pref will be used to set the default behavior for
+// remapping to right click once the setting is added/configurable in device
+// settings.
+// Default setting:
+//  Boolean Pref is false: Off
+//  Boolean Pref is true: Use state of "kUseSearchForRightClick" flag to
+//  determine if Alt+Click or Search+Click should be the default.
+const char kEventRemappedToRightClick[] =
+    "ash.settings.event_remapped_to_right_click";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the Delete "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to Delete.
+// Default setting:
+//  Pref contains a positive value: Alt+BackSpace
+//  Pref contains a negative value: Search+BackSpace
+const char kKeyEventRemappedToSixPackDelete[] =
+    "ash.settings.key_event_remapped_to_six_pack_delete";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the Home "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to Home.
+// Default setting:
+//  Pref contains a positive value: Control+Alt+Up
+//  Pref contains a negative value: Search+Left
+const char kKeyEventRemappedToSixPackHome[] =
+    "ash.settings.key_event_remapped_to_six_pack_home";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the End "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to End.
+// Default setting:
+//  Pref contains a positive value: Control+Alt+Down
+//  Pref contains a negative value: Search+Right
+const char kKeyEventRemappedToSixPackEnd[] =
+    "ash.settings.key_event_remapped_to_six_pack_end";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the PageUp "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to PageUp.
+// Default setting:
+//  Pref contains a positive value: Alt+Up
+//  Pref contains a negative value: Search+Up
+const char kKeyEventRemappedToSixPackPageUp[] =
+    "ash.settings.key_event_remapped_to_six_pack_page_up";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the PageDown "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to PageDown.
+// Default setting:
+//  Pref contains a positive value: Alt+Down
+//  Pref contains a negative value: Search+Down
+const char kKeyEventRemappedToSixPackPageDown[] =
+    "ash.settings.key_event_remapped_to_six_pack_page_down";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

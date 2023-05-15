@@ -58,8 +58,16 @@ template("js2gtest") {
     script = "//chrome/test/base/v8sh.py"
 
     sources = invoker.sources
+    v8_toolchain = v8_snapshot_toolchain
+    if (target_os == "mac" && host_os == "mac" && target_cpu == "x64" &&
+        host_cpu == "arm64") {
+      # This step runs V8 on the host in cross-builds. For x86_64 -> arm64
+      # cross-builds, this is fine since V8 has an arm64 emulator. For
+      # arm64 -> x86_64, we need a V8 that runs on arm64 natively.
+      v8_toolchain = "//build/toolchain/mac:clang_arm64_v8_arm64"
+    }
 
-    v8_shell_path = get_label_info("//v8:v8_shell($v8_snapshot_toolchain)",
+    v8_shell_path = get_label_info("//v8:v8_shell($v8_toolchain)",
                                    "root_out_dir") + "/v8_shell"
     if (host_os == "win") {
       v8_shell_path += ".exe"
@@ -103,7 +111,8 @@ template("js2gtest") {
       rebase_path(copied_source_pattern, root_build_dir),
     ]
 
-    deps = [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
+    deps = [ "//v8:v8_shell($v8_toolchain)" ]
+
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }

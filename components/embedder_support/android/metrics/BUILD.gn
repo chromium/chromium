@@ -84,6 +84,7 @@ source_set("unit_tests") {
     ":metrics",
     "//base/test:test_support",
     "//components/metrics",
+    "//components/metrics:content",
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gtest",

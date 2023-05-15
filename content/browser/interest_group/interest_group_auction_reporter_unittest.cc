@@ -67,6 +67,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
   // they don't have default initializers, so have to set them to placate memory
   // tools.
   out.bid = 1;
+  out.bid_in_seller_currency = 10;
   out.score = 1;
   out.highest_scoring_other_bid = 0;
   out.trace_id = 0;
@@ -135,6 +136,7 @@ class InterestGroupAuctionReporterTest
         interest_group,
         /*joining_url=*/kWinningBidderOrigin.GetURL());
 
+    winning_bid_info_.render_url = (*interest_group.ads)[0].render_url;
     winning_bid_info_.ad_metadata = kWinningAdMetadata;
 
     // The actual value doesn't matter for tests, but need to set some value as
@@ -203,7 +205,8 @@ class InterestGroupAuctionReporterTest
         CreateSellerWinningBidInfo(&component_auction_config);
     component_seller_winning_bid_info_->component_auction_modified_bid_params =
         auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-            /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false);
+            /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+            /*has_bid=*/false);
   }
 
   void SetUpReporterAndStart() {

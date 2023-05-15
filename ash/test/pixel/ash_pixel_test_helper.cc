@@ -4,7 +4,6 @@
 
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_util.h"
@@ -51,11 +50,6 @@ void AshPixelTestHelper::StabilizeUi() {
 }
 
 void AshPixelTestHelper::MaybeSetDarkMode() {
-  // If the dark/light mode feature is not enabled, the dark mode is used as
-  // default so return early.
-  if (!features::IsDarkLightModeEnabled())
-    return;
-
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   if (!dark_light_mode_controller->IsDarkModeEnabled())
     dark_light_mode_controller->ToggleColorMode();
@@ -71,7 +65,8 @@ void AshPixelTestHelper::SetWallpaper() {
     case pixel_test::WallpaperInitType::kRegular: {
       gfx::ImageSkia wallpaper_image = CreateSolidColorTestImage(
           {kWallpaperSize, kWallpaperSize}, kWallpaperColor);
-      controller->set_allow_blur_or_shield_for_testing();
+      controller->blur_manager()->set_allow_blur_for_testing();
+      controller->set_allow_shield_for_testing();
 
       // Use the one shot wallpaper to ensure that the custom wallpaper set by
       // pixel tests does not go away after changing display metrics.

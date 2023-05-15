@@ -49,6 +49,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -3107,10 +3108,9 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
   scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
     return ExtensionBuilder("Test")
         .SetManifestKey(
-            "oauth2", DictionaryBuilder()
+            "oauth2", base::Value::Dict()
                           .Set("client_id", "clientId")
-                          .Set("scopes", ListBuilder().Append("scope1").Build())
-                          .Build())
+                          .Set("scopes", base::Value::List().Append("scope1")))
         .SetID(id)
         .Build();
   }
@@ -3755,7 +3755,10 @@ IN_PROC_BROWSER_TEST_P(
   if (use_tab_feature_enabled()) {
     url_obvserver.Wait();
 
-    TabStripModel* tabs = browser()->tab_strip_model();
+    Browser* popup_browser = chrome::FindBrowserWithWebContents(
+        function->GetWebAuthFlowForTesting()->web_contents());
+    TabStripModel* tabs = popup_browser->tab_strip_model();
+    EXPECT_NE(browser(), popup_browser);
     ASSERT_EQ(tabs->GetActiveWebContents()->GetURL(), auth_url);
     tabs->CloseWebContentsAt(tabs->active_index(), 0);
   } else {

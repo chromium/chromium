@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -91,7 +92,7 @@ class PrefsAsh : public mojom::Prefs,
   void OnAppTerminating();
 
   // In production, owned by g_browser_process, which outlives this object.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   PrefChangeRegistrar local_state_registrar_;
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;

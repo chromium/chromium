@@ -28,18 +28,31 @@ class TestKioskExtensionBuilder {
   TestKioskExtensionBuilder(const TestKioskExtensionBuilder&) = delete;
   TestKioskExtensionBuilder& operator=(const TestKioskExtensionBuilder&) =
       delete;
+  TestKioskExtensionBuilder(TestKioskExtensionBuilder&&);
   ~TestKioskExtensionBuilder();
 
   const std::string& extension_id() const { return extension_id_; }
   const std::string& version() const { return version_; }
 
-  void set_kiosk_enabled(bool enabled) { kiosk_enabled_ = enabled; }
-  void set_offline_enabled(bool enabled) { offline_enabled_ = enabled; }
-  void set_version(const std::string& version) { version_ = version; }
+  TestKioskExtensionBuilder& set_kiosk_enabled(bool enabled) {
+    kiosk_enabled_ = enabled;
+    return *this;
+  }
 
-  void AddSecondaryExtension(const std::string& id);
-  void AddSecondaryExtensionWithEnabledOnLaunch(const std::string& id,
-                                                bool enabled_on_launch);
+  TestKioskExtensionBuilder& set_offline_enabled(bool enabled) {
+    offline_enabled_ = enabled;
+    return *this;
+  }
+
+  TestKioskExtensionBuilder& set_version(const std::string& version) {
+    version_ = version;
+    return *this;
+  }
+
+  TestKioskExtensionBuilder& AddSecondaryExtension(const std::string& id);
+  TestKioskExtensionBuilder& AddSecondaryExtensionWithEnabledOnLaunch(
+      const std::string& id,
+      bool enabled_on_launch);
 
   scoped_refptr<const extensions::Extension> Build() const;
 

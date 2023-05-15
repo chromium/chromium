@@ -49,8 +49,6 @@ std::string GetStringNameForOptimizationType(
       return "LinkPerformance";
     case proto::OptimizationType::SHOPPING_PAGE_PREDICTOR:
       return "ShoppingPagePredictor";
-    case proto::OptimizationType::LOGIN_DETECTION:
-      return "LoginDetection";
     case proto::OptimizationType::MERCHANT_TRUST_SIGNALS:
       return "MerchantTrustSignals";
     case proto::OptimizationType::PRICE_TRACKING:

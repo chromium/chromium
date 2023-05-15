@@ -364,7 +364,7 @@ class MultiProfilePolicyProviderHelper {
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_1_ = nullptr;
-  Profile* profile_2_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_2_ = nullptr;
 
   testing::NiceMock<MockConfigurationPolicyProvider> policy_for_profile_1_;
   testing::NiceMock<MockConfigurationPolicyProvider> policy_for_profile_2_;

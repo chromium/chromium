@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -248,29 +247,17 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
     info->icon_badge = &kUnifiedMenuBatteryXIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info->badge_outline = &kUnifiedMenuBatteryXOutlineMaskIcon;
-    } else {
-      info->badge_outline = &kUnifiedMenuBatteryXOutlineIcon;
-    }
+    info->badge_outline = &kUnifiedMenuBatteryXOutlineMaskIcon;
     info->charge_percent = 0;
     return;
   }
 
   if (IsUsbChargerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
-    } else {
-      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
-    }
+    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
   } else if (IsLinePowerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
-    } else {
-      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
-    }
+    info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
   } else {
     info->icon_badge = nullptr;
     info->badge_outline = nullptr;
@@ -283,11 +270,7 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   if (GetBatteryPercent() < kCriticalBatteryChargePercentage &&
       !info->icon_badge) {
     info->icon_badge = &kUnifiedMenuBatteryAlertIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
-    } else {
-      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
-    }
+    info->badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
   }
 }
 
@@ -295,11 +278,10 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 gfx::ImageSkia PowerStatus::GetBatteryImage(
     const BatteryImageInfo& info,
     int height,
-    SkColor bg_color,
     SkColor fg_color,
     absl::optional<SkColor> badge_color) {
-  auto* source = new BatteryImageSource(info, height, bg_color, fg_color,
-                                        std::move(badge_color));
+  auto* source =
+      new BatteryImageSource(info, height, fg_color, std::move(badge_color));
   return gfx::ImageSkia(base::WrapUnique(source), source->size());
 }
 

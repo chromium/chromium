@@ -110,9 +110,6 @@
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
   </message>
-  <message name="IDS_PROFILES_PASSWORDS_LINK" desc="Text of the menu item leading to the list of saved passwords.">
-    Passwords
-  </message>
   <message name="IDS_PROFILES_CREDIT_CARDS_LINK" desc="Text of the menu item leading to the list of saved credit cards.">
     Payment methods
   </message>

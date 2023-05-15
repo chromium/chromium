@@ -92,10 +92,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
   webui::EnableTrustedTypesCSP(source);
-
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

@@ -8,96 +8,35 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
+#include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/views/background.h"
-#include "ui/views/highlight_border.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
-namespace {
-
-bool IsInTabletMode() {
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
-}
-
-}  // namespace
-
-// -----------------------------------------------------------------------------
-// AlwaysOnTopWindowTargeter:
-
-// The window targeter that is installed on the always on top container window
-// when the split view mode is active.
-class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
- public:
-  explicit AlwaysOnTopWindowTargeter(aura::Window* divider_window)
-      : divider_window_(divider_window) {}
-
-  AlwaysOnTopWindowTargeter(const AlwaysOnTopWindowTargeter&) = delete;
-  AlwaysOnTopWindowTargeter& operator=(const AlwaysOnTopWindowTargeter&) =
-      delete;
-  ~AlwaysOnTopWindowTargeter() override = default;
-
- private:
-  bool GetHitTestRects(aura::Window* target,
-                       gfx::Rect* hit_test_rect_mouse,
-                       gfx::Rect* hit_test_rect_touch) const override {
-    if (target == divider_window_) {
-      *hit_test_rect_mouse = *hit_test_rect_touch = gfx::Rect(target->bounds());
-      hit_test_rect_touch->Inset(
-          gfx::Insets::VH(-SplitViewDivider::kDividerEdgeInsetForTouch,
-                          -SplitViewDivider::kDividerEdgeInsetForTouch));
-      return true;
-    }
-    return aura::WindowTargeter::GetHitTestRects(target, hit_test_rect_mouse,
-                                                 hit_test_rect_touch);
-  }
-
-  aura::Window* divider_window_;
-};
-
-// -----------------------------------------------------------------------------
-// SplitViewDivider:
-
 SplitViewDivider::SplitViewDivider(SplitViewController* controller)
     : controller_(controller) {
-  Shell::Get()->activation_client()->AddObserver(this);
-  CreateDividerWidget(controller);
-
-  aura::Window* always_on_top_container = Shell::GetContainer(
-      controller->root_window(), kShellWindowId_AlwaysOnTopContainer);
-  split_view_window_targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
-      always_on_top_container, std::make_unique<AlwaysOnTopWindowTargeter>(
-                                   divider_widget_->GetNativeWindow()));
-
   // Observe currently snapped windows.
   for (auto snap_pos : {SplitViewController::SnapPosition::kPrimary,
                         SplitViewController::SnapPosition::kSecondary}) {
@@ -106,16 +45,19 @@ SplitViewDivider::SplitViewDivider(SplitViewController* controller)
       AddObservedWindow(window);
     }
   }
+
+  // Create the divider widget after adding observed windows which the parent
+  // container of the divider will depend on.
+  CreateDividerWidget(controller);
 }
 
 SplitViewDivider::~SplitViewDivider() {
-  Shell::Get()->activation_client()->RemoveObserver(this);
   divider_widget_->Close();
-  split_view_window_targeter_.reset();
   for (auto* window : observed_windows_) {
     window->RemoveObserver(this);
     ::wm::TransientWindowManager::GetOrCreate(window)->RemoveObserver(this);
   }
+  dragged_window_ = nullptr;
   observed_windows_.clear();
 }
 
@@ -173,42 +115,6 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
                                   divider_position, is_dragging);
 }
 
-void SplitViewDivider::SetAlwaysOnTop(bool on_top) {
-  if (on_top) {
-    divider_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
-
-    // Special handling when put divider into always_on_top container. We want
-    // to put it at the bottom so it won't block other always_on_top windows.
-    aura::Window* always_on_top_container =
-        Shell::GetContainer(divider_widget_->GetNativeWindow()->GetRootWindow(),
-                            kShellWindowId_AlwaysOnTopContainer);
-    always_on_top_container->StackChildAtBottom(
-        divider_widget_->GetNativeWindow());
-  } else {
-    divider_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
-  }
-}
-
-void SplitViewDivider::StackOnTopOfTheObservedWindows() {
-  divider_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
-  aura::Window* root_window = controller_->root_window();
-  DCHECK(root_window);
-  DCHECK(root_window->IsRootWindow());
-  auto* parent_container =
-      root_window->GetChildById(kShellWindowId_MenuContainer);
-  auto* parent_container_layer = parent_container->layer();
-  for (auto* window : observed_windows_) {
-    if (window->parent() == parent_container) {
-      parent_container->StackChildAtTop(window);
-      parent_container_layer->StackAtTop(window->layer());
-    }
-  }
-
-  aura::Window* divider_native_window = divider_widget_->GetNativeWindow();
-  parent_container->StackChildAtTop(divider_native_window);
-  parent_container_layer->StackAtTop(divider_native_window->layer());
-}
-
 void SplitViewDivider::SetAdjustable(bool adjustable) {
   if (adjustable == IsAdjustable()) {
     return;
@@ -229,15 +135,16 @@ bool SplitViewDivider::IsAdjustable() const {
 }
 
 void SplitViewDivider::AddObservedWindow(aura::Window* window) {
-  if (!base::Contains(observed_windows_, window)) {
-    window->AddObserver(this);
-    observed_windows_.push_back(window);
-    ::wm::TransientWindowManager* transient_manager =
-        ::wm::TransientWindowManager::GetOrCreate(window);
-    transient_manager->AddObserver(this);
-    for (auto* transient_window : transient_manager->transient_children())
-      StartObservingTransientChild(transient_window);
+  CHECK(!base::Contains(observed_windows_, window));
+  window->AddObserver(this);
+  observed_windows_.push_back(window);
+  ::wm::TransientWindowManager* transient_manager =
+      ::wm::TransientWindowManager::GetOrCreate(window);
+  transient_manager->AddObserver(this);
+  for (auto* transient_window : transient_manager->transient_children()) {
+    StartObservingTransientChild(transient_window);
   }
+  RefreshStackingOrder();
 }
 
 void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
@@ -248,30 +155,21 @@ void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
     ::wm::TransientWindowManager* transient_manager =
         ::wm::TransientWindowManager::GetOrCreate(window);
     transient_manager->RemoveObserver(this);
-    for (auto* transient_window : transient_manager->transient_children())
+    for (auto* transient_window : transient_manager->transient_children()) {
       StopObservingTransientChild(transient_window);
+    }
+    RefreshStackingOrder();
   }
 }
 
-void SplitViewDivider::OnWindowDragStarted() {
-  is_dragging_window_ = true;
-  SetAlwaysOnTop(false);
-
-  aura::Window* divider_window = divider_widget_->GetNativeWindow();
-  divider_window->parent()->StackChildAtBottom(divider_window);
+void SplitViewDivider::OnWindowDragStarted(aura::Window* dragged_window) {
+  dragged_window_ = dragged_window;
+  RefreshStackingOrder();
 }
 
 void SplitViewDivider::OnWindowDragEnded() {
-  is_dragging_window_ = false;
-  if (IsInTabletMode()) {
-    SetAlwaysOnTop(true);
-  } else {
-    StackOnTopOfTheObservedWindows();
-  }
-}
-
-bool SplitViewDivider::IsWindowObserved(const aura::Window* window) const {
-  return base::Contains(observed_windows_, window);
+  dragged_window_ = nullptr;
+  RefreshStackingOrder();
 }
 
 void SplitViewDivider::OnWindowDestroying(aura::Window* window) {
@@ -308,20 +206,20 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));
 }
 
-void SplitViewDivider::OnWindowActivated(ActivationReason reason,
-                                         aura::Window* gained_active,
-                                         aura::Window* lost_active) {
-  if (IsInTabletMode() && !is_dragging_window_ &&
-      (!gained_active || base::Contains(observed_windows_, gained_active))) {
-    SetAlwaysOnTop(true);
-  } else if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
-    StackOnTopOfTheObservedWindows();
-  } else {
-    // If `gained_active` is not one of the observed windows, or there is one
-    // window that is currently being dragged, `divider_widget_` should not
-    // be placed on top.
-    SetAlwaysOnTop(false);
+void SplitViewDivider::OnWindowStackingChanged(aura::Window* window) {
+  // Skip the recursive update.
+  if (pause_update_) {
+    return;
   }
+
+  base::AutoReset<bool> lock(&pause_update_, true);
+  RefreshStackingOrder();
+}
+
+void SplitViewDivider::OnWindowAddedToRootWindow(aura::Window* window) {
+  // Stop observing `window` if it no longer belongs to the same root window as
+  // of the `controller_`.
+  RemoveObservedWindow(window);
 }
 
 void SplitViewDivider::OnTransientChildAdded(aura::Window* window,
@@ -335,12 +233,26 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
 }
 
 void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
-  DCHECK(!divider_widget_);
+  CHECK(!divider_widget_);
   // Native widget owns this widget.
   divider_widget_ = new views::Widget;
   divider_widget_->set_focus_on_creation(false);
+  aura::Window* parent_container = nullptr;
+  if (observed_windows_.empty()) {
+    // `observed_windows_` may still be empty for tablet mode, in this case we
+    // need to get a default parent container for the `divider_widget_`.
+    // TODO(michelefan): Remove this logic after refactoring the divider
+    // creation and removal logic in `SplitViewController`.
+    parent_container =
+        desks_util::GetActiveDeskContainerForRoot(controller_->root_window());
+  } else {
+    aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
+    CHECK(top_window);
+    parent_container = top_window->parent();
+  }
+  CHECK(parent_container);
   divider_widget_->Init(
-      CreateWidgetInitParams(controller->root_window(), "SplitViewDivider"));
+      CreateWidgetInitParams(parent_container, "SplitViewDivider"));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
   divider_view_ = divider_widget_->SetContentsView(
@@ -353,10 +265,60 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   // that are slightly outside the divider widget bounds be consumed by
   // `divider_widget_`.
   auto window_targeter = std::make_unique<aura::WindowTargeter>();
-  window_targeter->SetInsets(kSplitViewDividerExtraInset);
+  window_targeter->SetInsets(gfx::Insets::VH(-kSplitViewDividerExtraInset,
+                                             -kSplitViewDividerExtraInset));
   divider_widget_native_window->SetEventTargeter(std::move(window_targeter));
 
   divider_widget_->Show();
+}
+
+void SplitViewDivider::RefreshStackingOrder() {
+  if (observed_windows_.empty() || !divider_widget_) {
+    return;
+  }
+
+  aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
+  CHECK(top_window);
+  aura::Window* divider_window = divider_widget_->GetNativeWindow();
+
+  auto* divider_sibling_window =
+      dragged_window_ ? dragged_window_.get() : top_window;
+  CHECK(divider_sibling_window);
+
+  // The divider needs to have the same parent of the `divider_sibling_window`
+  // otherwise we need to reparent the divider as below.
+  if (divider_sibling_window->parent() != divider_window->parent()) {
+    views::Widget::ReparentNativeView(divider_window,
+                                      divider_sibling_window->parent());
+    CHECK(!wm::GetTransientParent(divider_window));
+  }
+
+  if (dragged_window_) {
+    divider_window->parent()->StackChildBelow(divider_window, dragged_window_);
+    return;
+  }
+
+  // Refresh the stacking order of the other window.
+  aura::Window* top_window_parent = top_window->parent();
+  // Keep a copy as the order of children will be changed while iterating.
+  const auto children = top_window_parent->children();
+
+  // Iterate through the siblings of the top window in an increasing z-order
+  // which reflects the relative order of siblings.
+  for (auto* window : children) {
+    if (!base::Contains(observed_windows_, window)) {
+      continue;
+    }
+
+    if (window == top_window) {
+      break;
+    }
+
+    top_window_parent->StackChildAbove(window, top_window);
+    top_window_parent->StackChildAbove(top_window, window);
+  }
+
+  top_window_parent->StackChildAbove(divider_window, top_window);
 }
 
 void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {

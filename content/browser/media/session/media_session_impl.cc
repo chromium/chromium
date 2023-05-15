@@ -4,11 +4,11 @@
 
 #include "content/browser/media/session/media_session_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -787,7 +787,7 @@ bool MediaSessionImpl::IsControllable() const {
 }
 
 void MediaSessionImpl::SetDuckingVolumeMultiplier(double multiplier) {
-  ducking_volume_multiplier_ = base::clamp(multiplier, 0.0, 1.0);
+  ducking_volume_multiplier_ = std::clamp(multiplier, 0.0, 1.0);
 }
 
 void MediaSessionImpl::SetAudioFocusGroupId(

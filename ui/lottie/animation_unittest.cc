@@ -1476,7 +1476,7 @@ class AnimationRestarter : public AnimationObserver {
   }
 
  private:
-  const base::raw_ptr<Animation> animation_;
+  const raw_ptr<Animation> animation_;
   base::ScopedObservation<Animation, AnimationObserver> observation_{this};
 };
 

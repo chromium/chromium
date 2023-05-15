@@ -6,7 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METRICS_FIELD_TRIAL_RECORDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/segmentation_platform/internal/selection/cached_result_provider.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {

@@ -307,12 +307,11 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& kv : objects)
-    DispatchPortableRepresentation(kv.first, kv.second);
+    DispatchPortableRepresentation(kv.second);
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
 }
 
-void TestClipboard::WriteText(const char* text_data, size_t text_len) {
-  std::string text(text_data, text_len);
+void TestClipboard::WriteText(base::StringPiece text) {
   GetDefaultStore().data[ClipboardFormatType::PlainTextType()] = text;
 #if BUILDFLAG(IS_WIN)
   // Create a dummy entry.
@@ -324,50 +323,35 @@ void TestClipboard::WriteText(const char* text_data, size_t text_len) {
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteHTML(const char* markup_data,
-                              size_t markup_len,
-                              const char* url_data,
-                              size_t url_len) {
-  std::u16string markup;
-  base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  GetDefaultStore().data[ClipboardFormatType::HtmlType()] =
-      base::UTF16ToUTF8(markup);
-  GetDefaultStore().html_src_url = std::string(url_data, url_len);
+void TestClipboard::WriteHTML(base::StringPiece markup,
+                              absl::optional<base::StringPiece> source_url) {
+  GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
+  GetDefaultStore().html_src_url = source_url.value_or("");
 }
 
-void TestClipboard::WriteUnsanitizedHTML(const char* markup_data,
-                                         size_t markup_len,
-                                         const char* url_data,
-                                         size_t url_len) {
-  GetDefaultStore().data[ClipboardFormatType::HtmlType()] =
-      std::string(markup_data, markup_len);
-  GetDefaultStore().html_src_url = std::string(url_data, url_len);
+void TestClipboard::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
+  WriteHTML(markup, source_url);
 }
 
-void TestClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
-  std::u16string markup;
-  base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  GetDefaultStore().data[ClipboardFormatType::SvgType()] =
-      base::UTF16ToUTF8(markup);
+void TestClipboard::WriteSvg(base::StringPiece markup) {
+  GetDefaultStore().data[ClipboardFormatType::SvgType()] = markup;
 }
 
-void TestClipboard::WriteRTF(const char* rtf_data, size_t data_len) {
-  GetDefaultStore().data[ClipboardFormatType::RtfType()] =
-      std::string(rtf_data, data_len);
+void TestClipboard::WriteRTF(base::StringPiece rtf) {
+  GetDefaultStore().data[ClipboardFormatType::RtfType()] = rtf;
 }
 
 void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   GetDefaultStore().filenames = std::move(filenames);
 }
 
-void TestClipboard::WriteBookmark(const char* title_data,
-                                  size_t title_len,
-                                  const char* url_data,
-                                  size_t url_len) {
-  GetDefaultStore().data[ClipboardFormatType::UrlType()] =
-      std::string(url_data, url_len);
+void TestClipboard::WriteBookmark(base::StringPiece title,
+                                  base::StringPiece url) {
+  GetDefaultStore().data[ClipboardFormatType::UrlType()] = url;
 #if !BUILDFLAG(IS_WIN)
-  GetDefaultStore().url_title = std::string(title_data, title_len);
+  GetDefaultStore().url_title = title;
 #endif
 }
 
@@ -390,9 +374,9 @@ void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
 }
 
 void TestClipboard::WriteData(const ClipboardFormatType& format,
-                              const char* data_data,
-                              size_t data_len) {
-  GetDefaultStore().data[format] = std::string(data_data, data_len);
+                              base::span<const uint8_t> data) {
+  GetDefaultStore().data[format] =
+      std::string(reinterpret_cast<const char*>(data.data()), data.size());
 }
 
 TestClipboard::DataStore::DataStore() = default;

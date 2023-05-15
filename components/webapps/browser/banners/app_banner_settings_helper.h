@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,11 +66,6 @@ class AppBannerSettingsHelper {
     // Records the latest time a banner was dismissed by the user. Used to
     // suppress the banner for some time if the user explicitly didn't want it.
     APP_BANNER_EVENT_DID_BLOCK,
-    // Records the latest time the user added a site to the homescreen from a
-    // banner, or launched that site from homescreen. Used to ensure banners are
-    // not shown for sites which were added, and to determine if sites were
-    // launched recently.
-    APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
     // Records when a site met the conditions to show an ambient badge.
     // Used to suppress the ambient badge from being shown too often.
     APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE,
@@ -125,11 +121,6 @@ class AppBannerSettingsHelper {
       const std::string& package_name_or_start_url,
       base::Time now);
 
-  // Returns whether the supplied app has ever been installed from |origin_url|.
-  static bool HasBeenInstalled(content::WebContents* web_contents,
-                               const GURL& origin_url,
-                               const std::string& package_name_or_start_url);
-
   // Get the time that |event| was recorded, or a nullopt if it no dict to
   // record yet(such as exceed max num per site) . Exposed for testing.
   static absl::optional<base::Time> GetSingleBannerEvent(
@@ -151,14 +142,6 @@ class AppBannerSettingsHelper {
       const std::string& package_name_or_start_url,
       base::Time time);
 
-  // Returns true if any site under |origin| was launched from homescreen in the
-  // last ten days. This allows services outside app banners to utilise the
-  // content setting that ensures app banners are not shown for sites which ave
-  // already been added to homescreen.
-  static bool WasLaunchedRecently(content::BrowserContext* browser_context,
-                                  const GURL& origin_url,
-                                  base::Time now);
-
   // Set the number of days which dismissing/ignoring the banner should prevent
   // a banner from showing.
   static void SetDaysAfterDismissAndIgnoreToTrigger(unsigned int dismiss_days,
@@ -167,9 +150,8 @@ class AppBannerSettingsHelper {
   // Set the total engagement weight required to trigger a banner.
   static void SetTotalEngagementToTrigger(double total_engagement);
 
-  // Resets the engagement weights, minimum minutes, and total engagement to
-  // trigger to their default values.
-  static void SetDefaultParameters();
+  static base::AutoReset<double> ScopeTotalEngagementForTesting(
+      double total_engagement);
 
   // Updates all values from field trial.
   static void UpdateFromFieldTrial();

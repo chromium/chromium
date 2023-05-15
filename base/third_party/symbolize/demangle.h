@@ -70,6 +70,8 @@
 #ifndef BASE_DEMANGLE_H_
 #define BASE_DEMANGLE_H_
 
+#include <stddef.h>
+
 #include "config.h"
 #include "glog/logging.h"
 

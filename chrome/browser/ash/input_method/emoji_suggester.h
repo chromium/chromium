@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggester.h"
@@ -34,7 +35,8 @@ class EmojiSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) override;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
                                      gfx::Range selection_range) override;
@@ -61,8 +63,9 @@ class EmojiSuggester : public Suggester {
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted);
 
-  SuggestionHandlerInterface* const suggestion_handler_;
-  Profile* profile_;
+  const raw_ptr<SuggestionHandlerInterface, ExperimentalAsh>
+      suggestion_handler_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // ID of the focused text field, nullopt if none is focused.
   absl::optional<int> focused_context_id_;

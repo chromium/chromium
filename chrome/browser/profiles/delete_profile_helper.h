@@ -69,8 +69,11 @@ class DeleteProfileHelper {
   // browsers tabs. Creates a new profile if the profile to be deleted is the
   // last non-supervised profile. In the Mac, loads the next non-supervised
   // profile if the profile to be deleted is the active profile.
+  // `profile_keep_alive` is used to avoid unloading the profile during the
+  // deletion process and is null if the profile is not loaded.
   void EnsureActiveProfileExistsBeforeDeletion(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ProfileLoadedCallback callback,
       const base::FilePath& profile_dir);
 
@@ -89,12 +92,15 @@ class DeleteProfileHelper {
   // scheduled for deletion, then finishes adding `profile_to_delete_dir` to the
   // queue of profiles to be deleted, and updates the kProfileLastUsed
   // preference based on `last_non_supervised_profile_path`. `keep_alive` may be
-  // null and is used to ensure shutdown does not start.
+  // null and is used to ensure shutdown does not start. `profile_keep_alive` is
+  // used to avoid unloading the profile during the deletion process and is null
+  // if the profile is not loaded.
   void OnNewActiveProfileInitialized(
       const base::FilePath& profile_to_delete_path,
       const base::FilePath& last_non_supervised_profile_path,
       ProfileLoadedCallback callback,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       Profile* loaded_profile);
 
   const raw_ref<ProfileManager>

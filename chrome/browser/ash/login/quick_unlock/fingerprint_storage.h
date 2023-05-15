@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_power_button_race_detector.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -116,7 +119,7 @@ class FingerprintStorage final
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
 
@@ -137,6 +140,10 @@ class FingerprintStorage final
 
   std::unique_ptr<FingerprintPowerButtonRaceDetector>
       fingerprint_power_button_race_detector_;
+
+  AuthPerformer auth_performer_;
+
+  LegacyFingerprintEngine legacy_fingerprint_engine_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 };

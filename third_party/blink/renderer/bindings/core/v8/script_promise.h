@@ -166,9 +166,6 @@ class CORE_EXPORT ScriptPromise final {
   }
 
  private:
-  static void IncreaseInstanceCount();
-  static void DecreaseInstanceCount();
-
   Member<ScriptState> script_state_;
   ScriptValue promise_;
 };

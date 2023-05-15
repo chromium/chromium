@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
@@ -117,7 +118,7 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
 
   std::string instance_id_;
   std::string instance_id_token_;
-  CryptAuthClientFactory* client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<CryptAuthFeatureStatusSetterImpl> weak_ptr_factory_{

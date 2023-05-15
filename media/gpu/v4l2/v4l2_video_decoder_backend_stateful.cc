@@ -22,7 +22,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/v4l2_stateful_workaround.h"
+#include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,9 +54,8 @@ absl::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(
     scoped_refptr<DecoderBuffer> buf,
-    VideoDecoder::DecodeCB cb,
-    int32_t id)
-    : buffer(std::move(buf)), decode_cb(std::move(cb)), bitstream_id(id) {}
+    VideoDecoder::DecodeCB cb)
+    : buffer(std::move(buf)), decode_cb(std::move(cb)) {}
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(DecodeRequest&&) =
     default;
@@ -135,8 +134,7 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
 
 void V4L2StatefulVideoDecoderBackend::EnqueueDecodeTask(
     scoped_refptr<DecoderBuffer> buffer,
-    VideoDecoder::DecodeCB decode_cb,
-    int32_t bitstream_id) {
+    VideoDecoder::DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
@@ -145,7 +143,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueDecodeTask(
   }
 
   decode_request_queue_.push(
-      DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
+      DecodeRequest(std::move(buffer), std::move(decode_cb)));
 
   DoDecodeWork();
 }
@@ -773,7 +771,7 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(device_);
   if (supported_profiles_.empty()) {
-    constexpr uint32_t kSupportedInputFourccs[] = {
+    const std::vector<uint32_t> kSupportedInputFourccs = {
       V4L2_PIX_FMT_H264,
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       V4L2_PIX_FMT_HEVC,
@@ -783,8 +781,7 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
     };
     scoped_refptr<V4L2Device> device = V4L2Device::Create();
     VideoDecodeAccelerator::SupportedProfiles profiles =
-        device->GetSupportedDecodeProfiles(std::size(kSupportedInputFourccs),
-                                           kSupportedInputFourccs);
+        device->GetSupportedDecodeProfiles(kSupportedInputFourccs);
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }

@@ -103,8 +103,8 @@ class SystemLiveCaptionService
   void CreateClient();
   void StopTimeoutFinished();
 
-  const base::raw_ptr<Profile> profile_;
-  base::raw_ptr<::captions::LiveCaptionController> controller_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<::captions::LiveCaptionController> controller_;
 
   ash::captions::CaptionBubbleContextAsh context_;
 

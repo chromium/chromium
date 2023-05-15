@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/field_types.h"
 
 #include <map>
 #include <memory>
@@ -169,12 +170,20 @@ class AutofillTableProfileTest
     : public AutofillTableTest,
       public testing::WithParamInterface<AutofillProfile::Source> {
  public:
+  void SetUp() override {
+    AutofillTableTest::SetUp();
+    if (profile_source() == AutofillProfile::Source::kAccount) {
+      // Only enable support for new setting visible features for kAccount
+      // source.
+      features_.InitAndEnableFeature(
+          features::kAutofillEnableNewStreetLevelFieldTypes);
+    }
+  }
   AutofillProfile::Source profile_source() const { return GetParam(); }
 
   // Creates an `AutofillProfile` with `profile_source()` as its source.
   AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(base::GenerateUuid(), /*origin=*/std::string(),
-                           profile_source());
+    return AutofillProfile(profile_source());
   }
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
@@ -208,6 +217,9 @@ class AutofillTableProfileTest
     s.BindString(1, guid);
     return s.Run();
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -873,7 +885,6 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
 // birthdate information.
 TEST_P(AutofillTableProfileTest, AutofillProfile) {
   AutofillProfile home_profile = CreateAutofillProfile();
-  home_profile.set_origin(std::string());
 
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
   // home_profile.SetRawInfoWithVerificationStatus(
@@ -953,6 +964,11 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kUserVerified);
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+    home_profile.SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
+  }
 
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
@@ -994,10 +1010,8 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 // Not part of the `AutofillTableProfileTest` fixture, as it doesn't benefit
 // from parameterization on the `profile_source()`.
 TEST_F(AutofillTableTest, GetAutofillProfiles) {
-  AutofillProfile local_profile(base::GenerateUuid(), "",
-                                AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile(base::GenerateUuid(), "",
-                                  AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile(AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile account_profile(AutofillProfile::Source::kAccount);
   EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
 
@@ -1012,8 +1026,8 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 
 // Tests that `RemoveAllAutofillProfiles()` cleares all kAccount profiles.
 TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
-  EXPECT_TRUE(table_->AddAutofillProfile(AutofillProfile(
-      base::GenerateUuid(), "", AutofillProfile::Source::kAccount)));
+  EXPECT_TRUE(table_->AddAutofillProfile(
+      AutofillProfile(AutofillProfile::Source::kAccount)));
 
   EXPECT_TRUE(
       table_->RemoveAllAutofillProfiles(AutofillProfile::Source::kAccount));
@@ -1027,7 +1041,7 @@ TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
 TEST_F(AutofillTableTest, IBAN) {
   // Add a valid IBAN.
   IBAN iban;
-  std::string guid = base::GenerateUuid();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   iban.set_guid(guid);
   iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
   iban.set_nickname(u"My doctor's IBAN");
@@ -1048,7 +1062,7 @@ TEST_F(AutofillTableTest, IBAN) {
 
   // Add another valid IBAN.
   IBAN another_iban;
-  std::string another_guid = base::GenerateUuid();
+  std::string another_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   another_iban.set_guid(another_guid);
   another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
@@ -1068,7 +1082,6 @@ TEST_F(AutofillTableTest, IBAN) {
   EXPECT_FALSE(s_target.Step());
 
   // Update the another_iban.
-  another_iban.set_origin("Interactive Autofill dialog");
   another_iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
   another_iban.set_nickname(u"My teacher's IBAN");
   EXPECT_TRUE(table_->UpdateIBAN(another_iban));
@@ -1204,6 +1217,10 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+    profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  }
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
   profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
@@ -1322,56 +1339,6 @@ TEST_F(AutofillTableTest, UpdateCreditCard) {
   ASSERT_TRUE(s_unchanged.Step());
   EXPECT_EQ(mock_modification_date, s_unchanged.ColumnInt64(0));
   EXPECT_FALSE(s_unchanged.Step());
-}
-
-TEST_P(AutofillTableProfileTest, UpdateProfileOriginOnly) {
-  // The origin is not supported for account profiles. This test is kept as part
-  // of AutofillTableProfileTest for the simplified modification of the
-  // date_modified.
-  if (profile_source() != AutofillProfile::Source::kLocalOrSyncable)
-    return;
-
-  // Add a profile to the db.
-  AutofillProfile profile = CreateAutofillProfile();
-  profile.SetRawInfo(NAME_FIRST, u"John");
-  profile.SetRawInfo(NAME_MIDDLE, u"Q.");
-  profile.SetRawInfo(NAME_LAST, u"Smith");
-  profile.SetRawInfo(EMAIL_ADDRESS, u"js@example.com");
-  profile.SetRawInfo(COMPANY_NAME, u"Google");
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 Apple Way");
-  profile.SetRawInfo(ADDRESS_HOME_LINE2, u"unit 5");
-  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Los Angeles");
-  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
-  profile.FinalizeAfterImport();
-  table_->AddAutofillProfile(profile);
-
-  // Set a mocked value for the profile's creation time.
-  const time_t kMockCreationDate = AutofillClock::Now().ToTimeT() - 13;
-  ASSERT_TRUE(SetDateModified(profile.guid(), kMockCreationDate));
-
-  // Get the profile.
-  std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid(), profile.source());
-  ASSERT_TRUE(db_profile);
-  EXPECT_EQ(profile, *db_profile);
-  time_t date_modified;
-  ASSERT_TRUE(GetDateModified(profile.guid(), date_modified));
-  EXPECT_EQ(kMockCreationDate, date_modified);
-
-  // Now, update just the profile's origin and save the update to the database.
-  // The modification date should change to reflect the update.
-  profile.set_origin("https://www.example.com/");
-  table_->UpdateAutofillProfile(profile);
-
-  // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
-  ASSERT_TRUE(db_profile);
-  EXPECT_EQ(profile, *db_profile);
-  ASSERT_TRUE(GetDateModified(profile.guid(), date_modified));
-  EXPECT_LT(kMockCreationDate, date_modified);
 }
 
 TEST_F(AutofillTableTest, UpdateCreditCardOriginOnly) {
@@ -3285,7 +3252,7 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
   // Add a valid VirtualCardUsageData.
   VirtualCardUsageData virtual_card_usage_data =
       test::GetVirtualCardUsageData1();
-  EXPECT_TRUE(table_->AddVirtualCardUsageData(virtual_card_usage_data));
+  EXPECT_TRUE(table_->AddOrUpdateVirtualCardUsageData(virtual_card_usage_data));
 
   // Get the inserted VirtualCardUsageData.
   std::string usage_data_id = *virtual_card_usage_data.usage_data_id();
@@ -3301,7 +3268,7 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
                            VirtualCardUsageData::VirtualCardLastFour(u"4444"),
                            virtual_card_usage_data.merchant_origin());
   EXPECT_TRUE(
-      table_->UpdateVirtualCardUsageData(virtual_card_usage_data_update));
+      table_->AddOrUpdateVirtualCardUsageData(virtual_card_usage_data_update));
   usage_data = table_->GetVirtualCardUsageData(usage_data_id);
   ASSERT_TRUE(usage_data);
   EXPECT_EQ(virtual_card_usage_data_update, *usage_data);
@@ -3313,14 +3280,26 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
 }
 
 TEST_F(AutofillTableTest, RemoveAllVirtualCardUsageData) {
-  EXPECT_TRUE(
-      table_->AddVirtualCardUsageData(test::GetVirtualCardUsageData1()));
+  EXPECT_TRUE(table_->AddOrUpdateVirtualCardUsageData(
+      test::GetVirtualCardUsageData1()));
 
   EXPECT_TRUE(table_->RemoveAllVirtualCardUsageData());
 
   std::vector<std::unique_ptr<VirtualCardUsageData>> usage_data;
   EXPECT_TRUE(table_->GetAllVirtualCardUsageData(&usage_data));
   EXPECT_TRUE(usage_data.empty());
+}
+
+TEST_F(AutofillTableTest, DontCrashWhenAddingValueToPoisonedDB) {
+  // Simulate a preceding fatal error.
+  db_->GetSQLConnection()->Poison();
+
+  // Simulate the submission of a form.
+  AutofillChangeList changes;
+  FormFieldData field;
+  field.name = u"Name";
+  field.value = u"Superman";
+  EXPECT_FALSE(table_->AddFormFieldValue(field, &changes));
 }
 
 }  // namespace autofill

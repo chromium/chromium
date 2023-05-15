@@ -15,6 +15,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/view.h"
@@ -55,7 +56,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   void SetResults(SearchModel::SearchResults* results);
   SearchModel::SearchResults* results() { return results_; }
 
-  int num_results() const { return num_results_; }
+  size_t num_results() const { return num_results_; }
 
   virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
 
@@ -164,17 +165,18 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // Updates UI with model. Returns the number of visible results.
   virtual int DoUpdate() = 0;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
-  int num_results_ = 0;
+  size_t num_results_ = 0;
 
   // If true, left/right key events will traverse this container
   bool horizontally_traversable_ = false;
 
-  SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
+  raw_ptr<SearchModel::SearchResults, ExperimentalAsh> results_ =
+      nullptr;  // Owned by SearchModel.
 
   // view delegate for notifications.
-  AppListViewDelegate* const view_delegate_;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
   // Whether the container is observing search result model, and updating when
   // results in the model change.

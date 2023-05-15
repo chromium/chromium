@@ -10,7 +10,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, r
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, mountGuestOs, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
 /**
  * The tag used to create a safe environment to display the preview.
@@ -87,6 +87,7 @@ async function i18nQuickViewLabelText(text) {
     'Device settings': 'METADATA_BOX_EXIF_DEVICE_SETTINGS',
     'Dimensions': 'METADATA_BOX_DIMENSION',
     'Duration': 'METADATA_BOX_DURATION',
+    'Encrypted': 'METADATA_BOX_ENCRYPTED',
     'File location': 'METADATA_BOX_FILE_LOCATION',
     'Frame rate': 'METADATA_BOX_FRAME_RATE',
     'General info': 'METADATA_BOX_GENERAL_INFO',
@@ -3097,20 +3098,6 @@ testcase.openQuickViewAndDeleteSingleSelection = async () => {
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
       'Pressing Delete failed.');
 
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    // Check: the delete confirm dialog should focus the 'Cancel' button.
-    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
-    defaultDialogButton =
-        await remoteCall.waitForElement(appId, defaultDialogButton);
-    chrome.test.assertEq('Cancel', defaultDialogButton.text);
-
-    // Click the delete confirm dialog 'Delete' button.
-    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    deleteDialogButton =
-        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete forever', deleteDialogButton.text);
-  }
-
   // Check: |hello.txt| should have been deleted.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
@@ -3155,20 +3142,6 @@ testcase.openQuickViewAndDeleteCheckSelection = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
       'Pressing Delete failed.');
-
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    // Check: the delete confirm dialog should focus the 'Cancel' button.
-    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
-    defaultDialogButton =
-        await remoteCall.waitForElement(appId, defaultDialogButton);
-    chrome.test.assertEq('Cancel', defaultDialogButton.text);
-
-    // Click the delete confirm dialog 'Delete' button.
-    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    deleteDialogButton =
-        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete forever', deleteDialogButton.text);
-  }
 
   // Check: |hello.txt| should have been deleted.
   await remoteCall.waitForElementLost(
@@ -3264,12 +3237,6 @@ testcase.openQuickViewDeleteEntireCheckSelection = async () => {
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
       'Pressing Delete failed.');
 
-  // Click the delete confirm dialog OK button.
-  const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
-  }
-
   // Check: |Beautiful Song.ogg| should have been deleted.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="Beautiful Song.ogg"]');
@@ -3302,11 +3269,6 @@ testcase.openQuickViewDeleteEntireCheckSelection = async () => {
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
       'Pressing Delete failed.');
 
-  // Click the delete confirm dialog OK button.
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
-  }
-
   // Check: |My Desktop Background.png| should have been deleted.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="My Desktop Background.png"]');
@@ -3329,12 +3291,6 @@ testcase.openQuickViewClickDeleteButton = async () => {
   // Click the Quick View delete button.
   const quickViewDeleteButton = ['#quick-view', '#delete-button:not([hidden])'];
   await remoteCall.waitAndClickElement(appId, quickViewDeleteButton);
-
-  // Click the delete confirm dialog OK button.
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
-  }
 
   // Check: |hello.txt| should have been deleted.
   await remoteCall.waitForElementLost(
@@ -3633,4 +3589,47 @@ testcase.openQuickViewUmaViaSelectionMenuKeyboard = async () => {
   chrome.test.assertEq(
       selectionMenuUMAValueAfterOpening,
       selectionMenuUMAValueBeforeOpening + 1);
+};
+
+/**
+ * Tests that Quick View does not display a CSE file preview.
+ */
+testcase.openQuickViewEncryptedFile = async () => {
+  const caller = getCaller();
+
+  /**
+   * The #innerContentPanel resides in the #quick-view shadow DOM as a child
+   * of the #dialog element, and contains the file preview result.
+   */
+  const contentPanel = ['#quick-view', '#dialog[open] #innerContentPanel'];
+
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+
+  // Open the file in Quick View.
+  await openQuickView(appId, ENTRIES.testCSEFile.nameText);
+
+  // Get the content panel 'No preview available' item text.
+  const noPreviewAvailableText =
+      await i18nQuickViewLabelText('No preview available');
+
+  // Wait for the innerContentPanel to load and display its content.
+  function checkInnerContentPanel(elements) {
+    const haveElements = Array.isArray(elements) && elements.length === 1;
+    if (!haveElements || elements[0].styles.display !== 'flex') {
+      return pending(caller, 'Waiting for inner content panel to load.');
+    }
+    // Check: the preview should not be shown.
+    chrome.test.assertEq(noPreviewAvailableText, elements[0].innerText);
+    return;
+  }
+  await repeatUntil(async () => {
+    return checkInnerContentPanel(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [contentPanel, ['display']]));
+  });
+
+  // Check: the correct file mimeType should be displayed.
+  const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
+  chrome.test.assertEq(
+      await i18nQuickViewLabelText('Encrypted') + ' text/plain', mimeType);
 };

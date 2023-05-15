@@ -7,6 +7,7 @@
 
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -60,9 +61,16 @@ void RecordSegmentSelectionComputed(
     SegmentId new_selection,
     absl::optional<SegmentId> previous_selection);
 
-// Records the post processed result whenever written to prefs. Also records
-// from which old value to which new value the topmost label is changing to.
-void RecordSegmentSelectionUpdated(
+// Records the post processed result whenever computed. This is recorded when
+// results are obtained by eithier executing the model or getting a valid score
+// from database.
+void RecordClassificationResultComputed(
+    const Config& config,
+    const proto::PredictionResult& new_result);
+
+// Records from which old value to which new value the topmost label is changing
+// to when prefs expired and is updated with new result.
+void RecordClassificationResultUpdated(
     const Config& config,
     const absl::optional<proto::PredictionResult>& old_result,
     const proto::PredictionResult& new_result);
@@ -199,11 +207,26 @@ enum class SegmentationSelectionFailureReason {
   kAtLeastOneSegmentDefaultExecFailed = 13,
   kAtLeastOneSegmentDefaultMissingMetadata = 14,
   kAtLeastOneSegmentTfliteExecFailed = 15,
-  kMaxValue = kAtLeastOneSegmentTfliteExecFailed
+  kSelectionAvailableInProtoPrefs = 16,
+  kInvalidSelectionResultInProtoPrefs = 17,
+  kProtoPrefsUpdateNotRequired = 18,
+  kProtoPrefsUpdated = 19,
+  kScoreUsedFromDatabase = 20,
+  kScoreComputedFromDefaultModel = 21,
+  kScoreComputedFromTfliteModel = 22,
+  kMultiOutputNotSupported = 23,
+  kOnDemandModelExecutionFailed = 24,
+  kClassificationResultFromPrefs = 25,
+  kClassificationResultNotAvailableInPrefs = 26,
+  kMaxValue = kClassificationResultNotAvailableInPrefs,
 };
 
 // Records the reason for failure or success to compute a segment selection.
 void RecordSegmentSelectionFailure(const Config& config,
+                                   SegmentationSelectionFailureReason reason);
+
+// Records the reason for failure or success to compute a segment selection.
+void RecordSegmentSelectionFailure(const std::string& segmentation_key,
                                    SegmentationSelectionFailureReason reason);
 
 // Keep in sync with SegmentationPlatformFeatureProcessingError in
@@ -272,6 +295,9 @@ enum class TrainingDataCollectionEvent {
 // Records analytics for training data collection.
 void RecordTrainingDataCollectionEvent(SegmentId segment_id,
                                        TrainingDataCollectionEvent event);
+
+SegmentationSelectionFailureReason GetSuccessOrFailureReason(
+    SegmentResultProvider::ResultState result_state);
 
 }  // namespace segmentation_platform::stats
 

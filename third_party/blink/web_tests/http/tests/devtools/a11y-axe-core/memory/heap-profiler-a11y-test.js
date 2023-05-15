@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult('Tests accessibility in heap profiler using the axe-core linter.');
-  await TestRunner.loadTestModule('axe_core_test_runner');
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
   await TestRunner.evaluateInPagePromise(`
       class MyTestClass {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -71,7 +72,7 @@ class EasyUnlockNotificationController {
   void ShowNotification(
       std::unique_ptr<message_center::Notification> notification);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<EasyUnlockNotificationController> weak_ptr_factory_{
       this};

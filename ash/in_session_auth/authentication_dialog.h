@@ -41,7 +41,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
     }
 
    private:
-    base::raw_ptr<AuthenticationDialog> const dialog_;
+    raw_ptr<AuthenticationDialog> const dialog_;
   };
 
   // |on_auth_complete| is called when the user has been authenticated
@@ -112,8 +112,8 @@ class AuthenticationDialog : public views::DialogDelegateView {
                             std::unique_ptr<UserContext> user_context,
                             absl::optional<AuthenticationError> auth_error);
 
-  base::raw_ptr<views::Textfield> password_field_;
-  base::raw_ptr<views::Label> invalid_password_label_;
+  raw_ptr<views::Textfield> password_field_;
+  raw_ptr<views::Label> invalid_password_label_;
 
   // See implementation of `CancelAuthAttempt` for details.
   bool is_closing_ = false;
@@ -128,7 +128,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // `auth_token_provider_` will outlive this dialog since it will
   // be destroyed after `AshShellInit`, which owns the aura
   // window hierarchy.
-  base::raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
+  raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
 
   std::unique_ptr<UserContext> user_context_;
 

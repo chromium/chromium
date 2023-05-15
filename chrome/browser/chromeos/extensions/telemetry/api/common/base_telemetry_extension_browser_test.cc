@@ -65,6 +65,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
         "permissions": [
           "os.attached_device_info",
           "os.diagnostics",
+          "os.events",
           "os.telemetry",
           "os.telemetry.serial_number",
           "os.telemetry.network_info"

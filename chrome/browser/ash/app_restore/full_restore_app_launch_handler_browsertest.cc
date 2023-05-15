@@ -21,6 +21,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1560,8 +1561,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  app_restore::ArcAppQueueRestoreHandler* arc_app_queue_restore_handler_ =
-      nullptr;
+  raw_ptr<app_restore::ArcAppQueueRestoreHandler, ExperimentalAsh>
+      arc_app_queue_restore_handler_ = nullptr;
   AppRestoreArcTestHelper arc_helper_;
 
  private:
@@ -3165,7 +3166,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Snap |window| to the left and store its window properties.
   // TODO(sammiequon): Store and check desk id and restore bounds.
   auto* window_state = WindowState::Get(window);
-  const WMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&left_snap_event);
   const chromeos::WindowStateType pre_save_state_type =
       window_state->GetStateType();

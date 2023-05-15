@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -24,17 +25,21 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/command_line.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
+using base::TimeTicks;
 using testing::Pair;
+using testing::Return;
 using testing::UnorderedElementsAre;
+
+using OriginState = HidConnectionTracker::OriginState;
 
 constexpr char kTestProfileName[] = "user@gmail.com";
 
@@ -42,8 +47,9 @@ class MockHidSystemTrayIcon : public HidSystemTrayIcon {
  public:
   MOCK_METHOD(void, StageProfile, (Profile*), (override));
   MOCK_METHOD(void, UnstageProfile, (Profile*, bool), (override));
-  MOCK_METHOD(void, AddProfile, (Profile*), (override));
-  MOCK_METHOD(void, RemoveProfile, (Profile*), (override));
+  MOCK_METHOD(bool, ContainProfile, (Profile*), (override));
+  MOCK_METHOD(void, ProfileAdded, (Profile*), (override));
+  MOCK_METHOD(void, ProfileRemoved, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
 };
 
@@ -51,7 +57,9 @@ class MockHidSystemTrayIcon : public HidSystemTrayIcon {
 
 class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
  public:
-  HidConnectionTrackerTest() = default;
+  HidConnectionTrackerTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   HidConnectionTrackerTest(const HidConnectionTrackerTest&) = delete;
   HidConnectionTrackerTest& operator=(const HidConnectionTrackerTest&) = delete;
   ~HidConnectionTrackerTest() override = default;
@@ -69,30 +77,44 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
         HidConnectionTrackerFactory::GetForProfile(profile(), /*create=*/true);
   }
 
+  void TearDown() override {
+    // Set the system tray icon to null to avoid uninteresting call to it during
+    // profile destruction.
+    TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
+    BrowserWithTestWindowTest::TearDown();
+  }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<const extensions::Extension> CreateExtensionWithName(
       const std::string& extension_name) {
-    extensions::DictionaryBuilder manifest;
-    manifest.Set("name", extension_name)
-        .Set("description", "For testing.")
-        .Set("version", "0.1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources",
-             extensions::ListBuilder().Append("index.html").Build());
+    auto manifest = base::Value::Dict()
+                        .Set("name", extension_name)
+                        .Set("description", "For testing.")
+                        .Set("version", "0.1")
+                        .Set("manifest_version", 2)
+                        .Set("web_accessible_resources",
+                             base::Value::List().Append("index.html"));
     scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder().SetManifest(manifest.Build()).Build();
-    if (!extension) {
-      return nullptr;
-    }
+        extensions::ExtensionBuilder(/*name=*/extension_name)
+            .MergeManifest(std::move(manifest))
+            .Build();
+    CHECK(extension);
+    return extension;
+  }
+
+  void AddExtensionToProfile(Profile* profile,
+                             const extensions::Extension* extension) {
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(profile()));
+            extensions::ExtensionSystem::Get(profile));
     extensions::ExtensionService* extension_service =
-        extension_system->CreateExtensionService(
-            base::CommandLine::ForCurrentProcess(), base::FilePath(),
-            /*autoupdate_enabled=*/false);
-    extension_service->AddExtension(extension.get());
-    return extension;
+        extension_system->extension_service();
+    if (!extension_service) {
+      extension_service = extension_system->CreateExtensionService(
+          base::CommandLine::ForCurrentProcess(), base::FilePath(),
+          /*autoupdate_enabled=*/false);
+    }
+    extension_service->AddExtension(extension);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -109,89 +131,228 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
     return profile;
   }
 
-  void TestDeviceConnection(bool has_system_tray_icon) {
-    auto origin1 = url::Origin::Create(GURL("https://www.example1.com"));
-    auto origin2 = url::Origin::Create(GURL("https://www.example2.com"));
+  void TestDeviceConnection(
+      bool has_system_tray_icon,
+      const std::vector<std::pair<url::Origin, std::string>>&
+          origin_name_pairs) {
+    ASSERT_EQ(origin_name_pairs.size(), 2u);
+    auto t0 = TimeTicks::Now();
 
-    // First connection that stages the profile.
+    // First connection of the first origin stages the profile.
     if (has_system_tray_icon) {
       EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
     }
-    hid_connection_tracker().IncrementConnectionCount(origin1);
+    hid_connection_tracker().IncrementConnectionCount(
+        origin_name_pairs[0].first);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
-                UnorderedElementsAre(Pair(origin1, 1)));
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[0].first,
+                         OriginState(1, t0, origin_name_pairs[0].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
 
-    // Connections from two origins come and go.
+    // The second origin comes in at t1.
+    task_environment()->FastForwardBy(base::Seconds(1));
+    auto t1 = TimeTicks::Now();
     if (has_system_tray_icon) {
       EXPECT_CALL(hid_system_tray_icon(),
                   NotifyConnectionCountUpdated(profile()))
-          .Times(4);
+          .Times(2);
     }
-    hid_connection_tracker().IncrementConnectionCount(origin1);
+    hid_connection_tracker().IncrementConnectionCount(
+        origin_name_pairs[1].first);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
-                UnorderedElementsAre(Pair(origin1, 2)));
-    hid_connection_tracker().IncrementConnectionCount(origin2);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[0].first,
+                         OriginState(1, t0, origin_name_pairs[0].second)),
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(1, t1, origin_name_pairs[1].second))));
+    hid_connection_tracker().IncrementConnectionCount(
+        origin_name_pairs[0].first);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 3);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
-                UnorderedElementsAre(Pair(origin1, 2), Pair(origin2, 1)));
-    hid_connection_tracker().DecrementConnectionCount(origin1);
-    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
-                UnorderedElementsAre(Pair(origin1, 1), Pair(origin2, 1)));
-    hid_connection_tracker().DecrementConnectionCount(origin1);
-    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
-                UnorderedElementsAre(Pair(origin2, 1)));
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[0].first,
+                         OriginState(2, t1, origin_name_pairs[0].second)),
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(1, t1, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
 
-    // The last connection that will unstage the profile.
+    // Two origins are removed 5 seconds apart.
     if (has_system_tray_icon) {
       EXPECT_CALL(hid_system_tray_icon(),
-                  UnstageProfile(profile(), /*immediate=*/false));
+                  NotifyConnectionCountUpdated(profile()))
+          .Times(2);
     }
-    hid_connection_tracker().DecrementConnectionCount(origin2);
+    hid_connection_tracker().DecrementConnectionCount(
+        origin_name_pairs[0].first);
+    hid_connection_tracker().DecrementConnectionCount(
+        origin_name_pairs[0].first);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[0].first,
+                         OriginState(0, t1, origin_name_pairs[0].second)),
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(1, t1, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+
+    task_environment()->FastForwardBy(base::Seconds(5));
+    auto t6 = TimeTicks::Now();
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()));
+    }
+    hid_connection_tracker().DecrementConnectionCount(
+        origin_name_pairs[1].first);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
-    EXPECT_TRUE(hid_connection_tracker().GetOriginsForTesting().empty());
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[0].first,
+                         OriginState(0, t1, origin_name_pairs[0].second)),
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(0, t6, origin_name_pairs[1].second))));
+
+    // The first origin is removed at t11.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()));
+    }
+    task_environment()->FastForwardBy(base::Seconds(5));
+    auto t11 = TimeTicks::Now();
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(0, t6, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+
+    // New connection on the second origin comes in at t11, so it won't be
+    // removed at t16.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()));
+    }
+    hid_connection_tracker().IncrementConnectionCount(
+        origin_name_pairs[1].first);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(1, t11, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+    task_environment()->FastForwardBy(base::Seconds(5));
+    auto t16 = TimeTicks::Now();
+    // Scheduled CleanUpOrigin is no-op at t16.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()))
+          .Times(0);
+      EXPECT_CALL(hid_system_tray_icon(),
+                  UnstageProfile(profile(), /*immediate=*/true))
+          .Times(0);
+    }
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(1, t11, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+
+    // The last connection of the second origin is gone at t16.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()));
+    }
+    hid_connection_tracker().DecrementConnectionCount(
+        origin_name_pairs[1].first);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
+    EXPECT_THAT(hid_connection_tracker().origins(),
+                UnorderedElementsAre(
+                    Pair(origin_name_pairs[1].first,
+                         OriginState(0, t16, origin_name_pairs[1].second))));
+    testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+
+    // The second origin is removed at time t26, and the profile is removed from
+    // the system tray icon because there are no active origins on this profile.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  UnstageProfile(profile(), /*immediate=*/true));
+    }
+    task_environment()->FastForwardBy(base::Seconds(10));
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
+    EXPECT_TRUE(hid_connection_tracker().origins().empty());
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void TestDeviceConnectionExtensionOrigins(bool has_system_tray_icon) {
+    auto extension1 = CreateExtensionWithName("Test Extension 1");
+    auto extension2 = CreateExtensionWithName("Test Extension 2");
+    AddExtensionToProfile(profile(), extension1.get());
+    AddExtensionToProfile(profile(), extension2.get());
+    TestDeviceConnection(has_system_tray_icon,
+                         {{extension1->origin(), extension1->name()},
+                          {extension2->origin(), extension2->name()}});
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
  private:
   raw_ptr<HidConnectionTracker> hid_connection_tracker_;
   raw_ptr<MockHidSystemTrayIcon> hid_system_tray_icon_;
 };
 
-TEST_F(HidConnectionTrackerTest, DeviceConnection) {
-  TestDeviceConnection(/*has_system_tray_icon=*/true);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(HidConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
+  TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/true);
 }
 
 // Test the scenario with null HID system tray icon and it doesn't cause crash.
-TEST_F(HidConnectionTrackerTest, DeviceConnectionWithNullSystemTrayIcon) {
+TEST_F(HidConnectionTrackerTest,
+       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
   TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
-  TestDeviceConnection(/*has_system_tray_icon=*/false);
+  TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
 
-TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
-  auto origin = url::Origin::Create(GURL("https://www.example.com"));
+TEST_F(HidConnectionTrackerTest, ProfileDestroyedExtensionOrigin) {
+  auto t0 = TimeTicks::Now();
   auto* profile_to_be_destroyed = CreateTestingProfile(kTestProfileName);
-
+  auto extension = CreateExtensionWithName("Test Extension");
+  auto origin = extension->origin();
   auto* connection_tracker =
       HidConnectionTrackerFactory::GetForProfile(profile_to_be_destroyed,
                                                  /*create=*/true);
+  AddExtensionToProfile(profile_to_be_destroyed, extension.get());
 
   EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile_to_be_destroyed));
   connection_tracker->IncrementConnectionCount(origin);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
-  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
-              UnorderedElementsAre(Pair(origin, 1)));
+  EXPECT_THAT(
+      connection_tracker->origins(),
+      UnorderedElementsAre(Pair(origin, OriginState(1, t0, "Test Extension"))));
+  testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
 
   EXPECT_CALL(hid_system_tray_icon(),
               NotifyConnectionCountUpdated(profile_to_be_destroyed));
-  connection_tracker->IncrementConnectionCount(origin);
-  EXPECT_EQ(connection_tracker->total_connection_count(), 2);
-  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
-              UnorderedElementsAre(Pair(origin, 2)));
+  connection_tracker->DecrementConnectionCount(origin);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 0);
+  EXPECT_THAT(
+      connection_tracker->origins(),
+      UnorderedElementsAre(Pair(origin, OriginState(0, t0, "Test Extension"))));
+  testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
 
+  // The profile is destroyed at t5.
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_CALL(hid_system_tray_icon(),
               UnstageProfile(profile_to_be_destroyed, /*immediate=*/true));
   profile_manager()->DeleteTestingProfile(kTestProfileName);
+  testing::Mock::VerifyAndClearExpectations(&hid_connection_tracker());
+
+  // The connection tracker is destroyed when the profile is destroyed. No
+  // UnstageProfile is sent to the system tray icon at time t10.
+  EXPECT_CALL(hid_system_tray_icon(),
+              UnstageProfile(profile_to_be_destroyed, /*immediate=*/true))
+      .Times(0);
+  task_environment()->FastForwardBy(base::Seconds(10));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

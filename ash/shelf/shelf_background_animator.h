@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/shelf/shelf_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -165,10 +166,10 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
   void NotifyObservers();
 
   // The shelf to observe for changes to the shelf background type, can be null.
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The wallpaper controller to observe for changes and to extract colors from.
-  WallpaperControllerImpl* wallpaper_controller_;
+  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> wallpaper_controller_;
 
   // The background type that this is animating towards or has reached.
   ShelfBackgroundType target_background_type_ = ShelfBackgroundType::kDefaultBg;

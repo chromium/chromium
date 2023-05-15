@@ -12,9 +12,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attestation_switches.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_switches.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_device_trust_key_manager.h"
@@ -22,6 +22,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,7 @@ constexpr char kFakeDeviceId[] = "fake_device_id";
 constexpr char kDisplayName[] = "display-name";
 constexpr char kDmToken[] = "fake-dm-token";
 constexpr char kInvalidDmToken[] = "INVALID_DM_TOKEN";
+constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 
 std::string GetSerializedSignedChallenge(bool use_dev = false) {
   std::string serialized_signed_challenge;
@@ -116,14 +118,22 @@ class DesktopAttestationServiceTest : public testing::Test {
 
     fake_dm_token_storage_.SetDMToken(kDmToken);
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
-    auto* factory = KeyPersistenceDelegateFactory::GetInstance();
-    DCHECK(factory);
-    test_key_pair_ = factory->CreateKeyPersistenceDelegate()->LoadKeyPair();
+    test_key_pair_ =
+        persistence_delegate_factory_.CreateKeyPersistenceDelegate()
+            ->LoadKeyPair();
 
     mock_key_manager_ = std::make_unique<test::MockDeviceTrustKeyManager>();
 
     attestation_service_ = std::make_unique<DesktopAttestationService>(
-        &fake_dm_token_storage_, mock_key_manager_.get());
+        &fake_dm_token_storage_, mock_key_manager_.get(),
+        &mock_browser_cloud_policy_store_);
+  }
+
+  void SetFakeBrowserPolicyData() {
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+    mock_browser_cloud_policy_store_.set_policy_data_for_testing(
+        std::move(policy_data));
   }
 
   void SetupPubkeyExport(bool can_export_pubkey = true) {
@@ -165,55 +175,57 @@ class DesktopAttestationServiceTest : public testing::Test {
     return signals;
   }
 
+  void VerifyAttestationResponse(
+      const AttestationResponse& attestation_response,
+      bool has_signature = true) {
+    ASSERT_FALSE(attestation_response.challenge_response.empty());
+    auto signed_data =
+        ParseDataFromResponse(attestation_response.challenge_response);
+    ASSERT_TRUE(signed_data);
+    EXPECT_FALSE(signed_data->data().empty());
+    EXPECT_EQ(signed_data->signature().empty(), !has_signature);
+
+    EXPECT_EQ(attestation_response.result_code,
+              has_signature ? DTAttestationResult::kSuccess
+                            : DTAttestationResult::kSuccessNoSignature);
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SigningKeyPair> test_key_pair_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   std::unique_ptr<test::MockDeviceTrustKeyManager> mock_key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
+  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kUseVaDevKeys, "");
 
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature();
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ true), CreateSignals(),
-      future.GetCallback());
-  const auto& attestation_response = future.Get();
-  ASSERT_FALSE(attestation_response.challenge_response.empty());
-  auto signed_data =
-      ParseDataFromResponse(attestation_response.challenge_response);
-  ASSERT_TRUE(signed_data);
-  EXPECT_FALSE(signed_data->data().empty());
-  EXPECT_FALSE(signed_data->signature().empty());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
-  EXPECT_EQ(attestation_response.result_code, DTAttestationResult::kSuccess);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature();
 
-  // TODO(crbug.com/1208881): Add signals and validate they effectively get
-  // added to the signed data.
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
-  const auto& attestation_response = future.Get();
-  ASSERT_FALSE(attestation_response.challenge_response.empty());
-  auto signed_data =
-      ParseDataFromResponse(attestation_response.challenge_response);
-  ASSERT_TRUE(signed_data);
-  EXPECT_FALSE(signed_data->data().empty());
-  EXPECT_FALSE(signed_data->signature().empty());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
-  EXPECT_EQ(attestation_response.result_code, DTAttestationResult::kSuccess);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
@@ -223,7 +235,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
+      GetSerializedSignedChallenge(), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   // No challenge response is returned if no valid DMToken was found.
@@ -239,7 +252,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
+      GetSerializedSignedChallenge(), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   // No challenge response is returned if no valid DMToken was found.
@@ -249,17 +263,17 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 }
 
 TEST_F(DesktopAttestationServiceTest,
-       BuildChallengeResponse_MissingSigningKey) {
+       BuildChallengeResponse_FailedPublicKeyExport) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport(/*can_export_pubkey=*/false);
+  SetupSignature();
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
-  const auto& response = future.Get();
-  ASSERT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.result_code, DTAttestationResult::kMissingSigningKey);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
@@ -267,7 +281,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      "", CreateSignals(), future.GetCallback());
+      "", CreateSignals(), std::set<enterprise_connectors::DTCPolicyLevel>(),
+      future.GetCallback());
 
   const auto& attestation_response = future.Get();
   ASSERT_TRUE(attestation_response.challenge_response.empty());
@@ -284,7 +299,8 @@ TEST_F(DesktopAttestationServiceTest,
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge_not_from_va, CreateSignals(), future.GetCallback());
+      challenge_not_from_va, CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   ASSERT_TRUE(attestation_response.challenge_response.empty());
@@ -292,22 +308,30 @@ TEST_F(DesktopAttestationServiceTest,
             DTAttestationResult::kBadChallengeSource);
 }
 
-TEST_F(DesktopAttestationServiceTest,
-       BuildChallengeResponse_EmptyEncryptedResponse) {
+TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_NoSignature) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature(/*can_sign=*/false);
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
-  const auto& response = future.Get();
-  ASSERT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.result_code, DTAttestationResult::kFailedToSignResponse);
+  VerifyAttestationResponse(future.Get(), /*has_signature=*/false);
 }
 
-// TODO(crbug.com/1208881): Add signals and validate they effectively get
-// added to the signed data in new tests.
+TEST_F(DesktopAttestationServiceTest,
+       BuildChallengeResponse_NoBrowserCustomerId) {
+  SetupPubkeyExport();
+  SetupSignature();
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
+
+  VerifyAttestationResponse(future.Get());
+}
 
 }  // namespace enterprise_connectors

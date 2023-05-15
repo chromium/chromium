@@ -15,6 +15,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
@@ -180,7 +181,11 @@ class PageInfo : private content_settings::CookieControlsView {
   // |PermissionInfo| contains information about a single permission |type| for
   // the current website.
   struct PermissionInfo {
-    PermissionInfo() = default;
+    PermissionInfo();
+    PermissionInfo(const PermissionInfo& other);
+    PermissionInfo& operator=(const PermissionInfo& other);
+    ~PermissionInfo();
+
     // Site permission |type|.
     ContentSettingsType type = ContentSettingsType::DEFAULT;
     // The current value for the permission |type| (e.g. ALLOW or BLOCK).
@@ -190,7 +195,11 @@ class PageInfo : private content_settings::CookieControlsView {
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
         content_settings::SETTING_SOURCE_NONE;
+    // Whether the permission is a one-time grant.
     bool is_one_time = false;
+    // Only set for settings that can have multiple permissions for different
+    // embedded origins.
+    absl::optional<url::Origin> requesting_origin;
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
@@ -239,6 +248,7 @@ class PageInfo : private content_settings::CookieControlsView {
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type,
                                ContentSetting value,
+                               absl::optional<url::Origin> requesting_origin,
                                bool is_one_time);
 
   // This method is called whenever access to an object is revoked.
@@ -307,12 +317,11 @@ class PageInfo : private content_settings::CookieControlsView {
 
   // For most sites, this returns a human-friendly string based on site origin,
   // without scheme, the username and password, the path or trivial subdomains.
-  // See |GetSimpleSiteInfo()|.
   //
-  // For Isolated Web Apps, the origin's host name is a non-human-readable
-  // string of characters, so instead of displaying the origin, the short name
-  // of the app will be displayed.
-  std::u16string GetSiteNameOrAppNameToDisplay() const;
+  // For Isolated Web Apps & Chrome Extensions, the origin's host name is a
+  // non-human-readable string of characters, so instead of displaying the
+  // origin, the short name of the app will be displayed.
+  std::u16string GetSubjectNameForDisplay() const;
 
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
@@ -321,9 +330,6 @@ class PageInfo : private content_settings::CookieControlsView {
   PageInfoUI* ui_for_testing() const { return ui_; }
 
   void SetSiteNameForTesting(const std::u16string& site_name);
-
-  void SetIsolatedWebAppNameForTesting(
-      const std::u16string& isolated_web_app_name);
 
   void SetSubscribedToPermissionChangeForTesting() {
     is_subscribed_to_permission_change_for_testing = true;
@@ -346,7 +352,20 @@ class PageInfo : private content_settings::CookieControlsView {
   // function does not update visible UI-- that's part of Present*().
   void ComputeUIInputs(const GURL& url);
 
-  // Sets (presents) the information about the site's permissions in the |ui_|.
+  // Populates the setting, default_setting, source and is_one_time fields of
+  // the |permission_info| struct based on the passed in information as well
+  // as the embargo status of the permission. permission_info.type must already
+  // be set.
+  void PopulatePermissionInfo(PermissionInfo& permission_info,
+                              HostContentSettingsMap* content_settings,
+                              const content_settings::SettingInfo& info,
+                              const base::Value& value) const;
+
+  // Returns whether |info| should be displayed in the UI.
+  bool ShouldShowPermission(const PageInfo::PermissionInfo& info) const;
+
+  // Sets (presents) the information about the site's permissions in the
+  // |ui_|.
   void PresentSitePermissions();
 
   // Helper function which `PresentSiteData` calls after the ignored empty
@@ -373,11 +392,6 @@ class PageInfo : private content_settings::CookieControlsView {
   void RecordPasswordReuseEvent();
 #endif
 
-  // Returns site origin in a concise and human-friendly way, without the
-  // HTTP/HTTPS scheme, the username and password, the path and trivial
-  // subdomains.
-  std::u16string GetSimpleSiteName() const;
-
   // Helper function to get the |HostContentSettingsMap| associated with
   // |PageInfo|.
   HostContentSettingsMap* GetContentSettings() const;
@@ -396,7 +410,7 @@ class PageInfo : private content_settings::CookieControlsView {
   GetPageSpecificContentSettings() const;
 
   // Whether the content setting of type |type| has changed via Page Info UI.
-  bool HasContentSettingChangedViaPageInfo(ContentSettingsType type);
+  bool HasContentSettingChangedViaPageInfo(ContentSettingsType type) const;
 
   // Notifies the delegate that the content setting of type |type| has changed
   // via Page Info UI.
@@ -433,9 +447,6 @@ class PageInfo : private content_settings::CookieControlsView {
   // The Omnibox URL of the website for which to display site permissions and
   // site information.
   GURL site_url_;
-
-  // The short name of an Isolated Web App. Empty for non-IWAs.
-  std::u16string isolated_web_app_name_;
 
   // Status of the website's identity verification check.
   SiteIdentityStatus site_identity_status_;
@@ -506,8 +517,6 @@ class PageInfo : private content_settings::CookieControlsView {
   std::u16string safe_browsing_details_;
 
   std::u16string site_name_for_testing_;
-
-  bool is_isolated_web_app_for_testing_ = false;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,

@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/gtest_prod_util.h"
-#include "ui/gfx/geometry/point.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -109,14 +109,15 @@ class ASH_EXPORT SplitViewDragIndicators {
 
   ~SplitViewDragIndicators();
 
+  WindowDraggingState current_window_dragging_state() const {
+    return current_window_dragging_state_;
+  }
+
   void SetDraggedWindow(aura::Window* dragged_window);
   void SetWindowDraggingState(WindowDraggingState window_dragging_state);
   void OnDisplayBoundsChanged();
   bool GetIndicatorTypeVisibilityForTesting(IndicatorType type) const;
   gfx::Rect GetLeftHighlightViewBounds() const;
-  WindowDraggingState current_window_dragging_state() const {
-    return current_window_dragging_state_;
-  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SplitViewDragIndicatorsTest,
@@ -125,7 +126,8 @@ class ASH_EXPORT SplitViewDragIndicators {
   class SplitViewDragIndicatorsView;
 
   // The root content view of |widget_|.
-  SplitViewDragIndicatorsView* indicators_view_ = nullptr;
+  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged | ExperimentalAsh>
+      indicators_view_ = nullptr;
 
   WindowDraggingState current_window_dragging_state_ =
       WindowDraggingState::kNoDrag;

@@ -205,14 +205,14 @@ void MetricsLogStore::StageNextLog() {
     ongoing_log_queue_.StageNextLog();
 }
 
-void MetricsLogStore::DiscardStagedLog() {
+void MetricsLogStore::DiscardStagedLog(base::StringPiece reason) {
   DCHECK(has_staged_log());
   if (initial_log_queue_.has_staged_log())
-    initial_log_queue_.DiscardStagedLog();
+    initial_log_queue_.DiscardStagedLog(reason);
   else if (alternate_ongoing_log_store_has_staged_log())
-    alternate_ongoing_log_queue_->DiscardStagedLog();
+    alternate_ongoing_log_queue_->DiscardStagedLog(reason);
   else if (ongoing_log_queue_.has_staged_log())
-    ongoing_log_queue_.DiscardStagedLog();
+    ongoing_log_queue_.DiscardStagedLog(reason);
 
   DCHECK(!has_staged_log());
 }

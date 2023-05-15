@@ -16,13 +16,12 @@
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/fakes/fake_language_detection_tab_helper_observer.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

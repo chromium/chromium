@@ -50,6 +50,9 @@ class DirectWritingTrigger
     // Track whether DW service is enabled or not.
     private boolean mDwServiceEnabled;
 
+    // Tracks whether handwriting hover icon is being shown or not.
+    private boolean mIsHandwritingIconShowing;
+
     private StylusWritingImeCallback mStylusWritingImeCallback;
     private DirectWritingServiceCallback mCallback;
 
@@ -157,6 +160,18 @@ class DirectWritingTrigger
         // enabled. Platform Crash occurs if it is created when DW setting is not enabled.
         if (mCallback != null) return;
         mCallback = new DirectWritingServiceCallback();
+        mCallback.setTriggerCallback(new DirectWritingServiceCallback.TriggerCallback() {
+            @Override
+            public void updateEditableBoundsToService() {
+                mBinder.updateEditableBounds(
+                        mEditableNodeBounds, mStylusWritingImeCallback.getContainerView());
+            }
+
+            @Override
+            public boolean isHandwritingIconShowing() {
+                return mIsHandwritingIconShowing;
+            }
+        });
     }
 
     @Override
@@ -353,6 +368,9 @@ class DirectWritingTrigger
                 }
             }
             case MotionEvent.ACTION_HOVER_EXIT: {
+                // Hover exit is not forwarded to blink, so reset hover icon showing state.
+                mIsHandwritingIconShowing = false;
+
                 if (!mRecognitionStarted) break;
                 // Post task to stop recognition and hide DW toolbar as stylus is moved away.
                 mHideDwToolbarCallbackToken = new Object();
@@ -443,6 +461,17 @@ class DirectWritingTrigger
         PointerIcon icon = PointerIcon.getSystemIcon(
                 currentView.getContext(), DirectWritingConstants.STYLUS_WRITING_ICON_VALUE);
         currentView.setPointerIcon(icon);
+        mIsHandwritingIconShowing = true;
         return true;
+    }
+
+    @Override
+    public void notifyStylusWritingCursorRemoved() {
+        mIsHandwritingIconShowing = false;
+    }
+
+    @VisibleForTesting
+    boolean isHandwritingIconShowing() {
+        return mIsHandwritingIconShowing;
     }
 }

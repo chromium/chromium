@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
@@ -54,7 +55,7 @@ class NearbyShareDeviceDataUpdaterImpl : public NearbyShareDeviceDataUpdater {
   void OnRpcFailure(ash::nearby::NearbyHttpError error);
 
   base::TimeDelta timeout_;
-  NearbyShareClientFactory* client_factory_ = nullptr;
+  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   std::unique_ptr<NearbyShareClient> client_;
   base::OneShotTimer timer_;
 };

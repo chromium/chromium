@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 
@@ -52,7 +53,7 @@ class MultiplexedChannel {
   void NotifyDisconnected();
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   const ConnectionDetails connection_details_;
 };
 

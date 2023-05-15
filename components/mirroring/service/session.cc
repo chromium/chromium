@@ -743,6 +743,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
     }
   } else /* MIRRORING */ {
     if (has_audio) {
+      base::UmaHistogramEnumeration(
+          "CastStreaming.Sender.Audio.NegotiatedCodec",
+          ToAudioCodec(audio_config->codec));
       auto audio_sender = std::make_unique<media::cast::AudioSender>(
           cast_environment_, *audio_config,
           base::BindOnce(&Session::OnEncoderStatusChange,
@@ -774,6 +777,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
     }
 
     if (has_video) {
+      base::UmaHistogramEnumeration(
+          "CastStreaming.Sender.Video.NegotiatedCodec",
+          ToVideoCodec(video_config->codec));
       auto video_sender = std::make_unique<media::cast::VideoSender>(
           cast_environment_, *video_config,
           base::BindRepeating(&Session::OnEncoderStatusChange,
@@ -887,14 +893,14 @@ void Session::CreateAndSendOffer() {
     const int32_t audio_ssrc = base::RandInt(kAudioSsrcMin, kAudioSsrcMax);
     if (state_ == MIRRORING) {
       FrameSenderConfig config = MirrorSettings::GetDefaultAudioConfig(
-          RtpPayloadType::AUDIO_OPUS, Codec::CODEC_AUDIO_OPUS);
+          RtpPayloadType::AUDIO_OPUS, Codec::kAudioOpus);
       AddSenderConfig(audio_ssrc, config, aes_key, aes_iv, session_params_,
                       &audio_configs);
       AddStreamObject(stream_index++, "OPUS", audio_configs.back(),
                       mirror_settings_, stream_list);
     } else /* REMOTING */ {
       FrameSenderConfig config = MirrorSettings::GetDefaultAudioConfig(
-          RtpPayloadType::REMOTE_AUDIO, Codec::CODEC_AUDIO_REMOTE);
+          RtpPayloadType::REMOTE_AUDIO, Codec::kAudioRemote);
       AddSenderConfig(audio_ssrc, config, aes_key, aes_iv, session_params_,
                       &audio_configs);
       AddStreamObject(stream_index++, "REMOTE_AUDIO", audio_configs.back(),
@@ -906,12 +912,12 @@ void Session::CreateAndSendOffer() {
     if (state_ == MIRRORING) {
       // First, check if hardware VP8 and H264 are available.
       const bool should_offer_hardware_vp8 =
-          media::cast::encoding_support::IsHardwareEnabled(
-              Codec::CODEC_VIDEO_VP8, supported_profiles_);
+          media::cast::encoding_support::IsHardwareEnabled(Codec::kVideoVp8,
+                                                           supported_profiles_);
 
       if (should_offer_hardware_vp8) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
+            RtpPayloadType::VIDEO_VP8, Codec::kVideoVp8);
         config.use_hardware_encoder = true;
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
@@ -920,9 +926,9 @@ void Session::CreateAndSendOffer() {
       }
 
       if (media::cast::encoding_support::IsHardwareEnabled(
-              Codec::CODEC_VIDEO_H264, supported_profiles_)) {
+              Codec::kVideoH264, supported_profiles_)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_H264, Codec::CODEC_VIDEO_H264);
+            RtpPayloadType::VIDEO_H264, Codec::kVideoH264);
         config.use_hardware_encoder = true;
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
@@ -931,20 +937,18 @@ void Session::CreateAndSendOffer() {
       }
 
       // Then add software AV1 and VP9 if enabled.
-      if (media::cast::encoding_support::IsSoftwareEnabled(
-              Codec::CODEC_VIDEO_AV1)) {
+      if (media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoAv1)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_AV1, Codec::CODEC_VIDEO_AV1);
+            RtpPayloadType::VIDEO_AV1, Codec::kVideoAv1);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "AV1", video_configs.back(),
                         mirror_settings_, stream_list);
       }
 
-      if (media::cast::encoding_support::IsSoftwareEnabled(
-              Codec::CODEC_VIDEO_VP9)) {
+      if (media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoVp9)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
+            RtpPayloadType::VIDEO_VP9, Codec::kVideoVp9);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "VP9", video_configs.back(),
@@ -953,10 +957,9 @@ void Session::CreateAndSendOffer() {
 
       // Finally, offer software VP8 if hardware VP8 was not offered.
       if (!should_offer_hardware_vp8 &&
-          media::cast::encoding_support::IsSoftwareEnabled(
-              Codec::CODEC_VIDEO_VP8)) {
+          media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoVp8)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
+            RtpPayloadType::VIDEO_VP8, Codec::kVideoVp8);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "VP8", video_configs.back(),
@@ -965,7 +968,7 @@ void Session::CreateAndSendOffer() {
 
     } else /* REMOTING */ {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::REMOTE_VIDEO, Codec::CODEC_VIDEO_REMOTE);
+          RtpPayloadType::REMOTE_VIDEO, Codec::kVideoRemote);
       AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                       &video_configs);
       AddStreamObject(stream_index++, "REMOTE_VIDEO", video_configs.back(),
@@ -997,6 +1000,10 @@ void Session::CreateAndSendOffer() {
       kOfferAnswerExchangeTimeout,
       base::BindOnce(&Session::OnAnswer, base::Unretained(this), audio_configs,
                      video_configs));
+
+  if (observer_) {
+    observer_->OnRemotingStateChanged(state_ == REMOTING);
+  }
 }
 
 void Session::ConnectToRemotingSource(

@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -103,7 +103,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
                   const std::string& surname,
                   const std::string& address) {
     autofill::AutofillProfile profile;
-    std::string id = base::GenerateGUID();
+    std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     address_ids_.push_back(id);
     profile.set_guid(id);
     profile.SetInfo(autofill::AutofillType(autofill::NAME_FIRST),

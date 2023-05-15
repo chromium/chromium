@@ -47,10 +47,10 @@ SearchResultPageAnchoredDialog::SearchResultPageAnchoredDialog(
   widget_->Init(std::move(params));
 
   // The |dialog| ownership is passed to the window hierarchy.
-  widget_observations_.AddObservation(widget_);
+  widget_observations_.AddObservation(widget_.get());
   widget_observations_.AddObservation(parent);
 
-  view_observations_.AddObservation(host_view_);
+  view_observations_.AddObservation(host_view_.get());
   view_observations_.AddObservation(widget_->GetContentsView());
 }
 

@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
@@ -15,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -60,6 +61,7 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
@@ -119,6 +121,15 @@ constexpr char kDomExceptionScript[] =
     "window.dispatchEvent("
     "new "
     "CustomEvent('simulate-unhandled-rejection-with-dom-exception-for-test'));";
+
+// Runs the provided `script` in a non-isolated JS world that can access
+// variables defined in global scope (otherwise only DOM queries are allowed).
+// The script's completion value must be a boolean.
+bool ExtractBoolInGlobalScope(content::WebContents* web_ui,
+                              const std::string& script) {
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+  return content::EvalJs(app, script).ExtractBool();
+}
 
 class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
@@ -205,26 +216,60 @@ class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
   }
 };
 
-class MediaAppIntegrationDarkLightModeEnabledTest
+class MediaAppIntegrationPhotosIntegrationTest
     : public MediaAppIntegrationTest {
  public:
-  MediaAppIntegrationDarkLightModeEnabledTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  void TestPhotosIntegrationForVideo(bool expect_flag_enabled,
+                                     const char* photos_version) {
+    TestPhotosIntegration(expect_flag_enabled, photos_version,
+                          /* flag= */ "photosAvailableForVideo");
+  }
+
+  void TestPhotosIntegrationForImage(bool expect_flag_enabled,
+                                     const char* photos_version) {
+    TestPhotosIntegration(expect_flag_enabled, photos_version,
+                          /* flag= */ "photosAvailableForImage");
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-};
+  void TestPhotosIntegration(bool expect_flag_enabled,
+                             const char* photos_version,
+                             const char* flag) {
+    InstallPhotosApp(profile(), photos_version);
+    content::WebContents* web_ui = LaunchWithNoFiles();
 
-class MediaAppIntegrationDarkLightModeDisabledTest
-    : public MediaAppIntegrationTest {
- public:
-  MediaAppIntegrationDarkLightModeDisabledTest() {
-    feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+    EXPECT_EQ(expect_flag_enabled, GetFlagInApp(web_ui, flag));
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
+  static apps::AppPtr MakePhotosApp(const char* photos_version) {
+    auto app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
+                                           arc::kGooglePhotosAppId);
+    // TODO(b/239776967): expand testing to adjust app readiness.
+    app->readiness = apps::Readiness::kReady;
+    app->version = photos_version;
+    return app;
+  }
+
+  static void InstallPhotosApp(Profile* profile, const char* photos_version) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+    std::vector<apps::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakePhotosApp(photos_version));
+    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
+                                     apps::AppType::kUnknown,
+                                     /*should_notify_initialized=*/false);
+  }
+
+  static bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {
+    constexpr char kGetLoadTimeData[] = R"(
+        (function getLoadTimeData() {
+          return !!loadTimeData?.data_['$1'];
+        })()
+    )";
+
+    return ExtractBoolInGlobalScope(
+        web_ui,
+        base::ReplaceStringPlaceholders(kGetLoadTimeData, {flag}, nullptr));
+  }
 };
 
 using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
@@ -254,7 +299,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::RunLoop run_loop_;
   std::string seen_notification_id_;
 
@@ -370,14 +415,11 @@ content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
 
 // Runs the provided `script` in a non-isolated JS world that can access
 // variables defined in global scope (otherwise only DOM queries are allowed).
-// The script must call `domAutomationController.send(result)` to return, where
-// `result` is a string.
+// The script's completion value must be a string.
 std::string ExtractStringInGlobalScope(content::WebContents* web_ui,
                                        const std::string& script) {
-  std::string result;
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(app, script, &result));
-  return result;
+  return content::EvalJs(app, script).ExtractString();
 }
 
 // Waits for the "filetraversalenabled" attribute to show up in the MediaApp's
@@ -849,7 +891,7 @@ startxref
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
   WaitForBrowserCount(2);
-  EXPECT_EQ(true, ExecuteScript(app, kOpenPdfInViewer));
+  EXPECT_EQ(true, ExecJs(app, kOpenPdfInViewer));
 
   WaitForBrowserCount(3);
   Browser* popup_browser = chrome::FindBrowserWithActiveWindow();
@@ -932,10 +974,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
     })();
   )";
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
-  EXPECT_EQ(true, ExecuteScript(app, kAdd270DegreeRotation));
+  EXPECT_EQ(true, ExecJs(app, kAdd270DegreeRotation));
 
   // Navigate to the next file in the directory.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
 
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
@@ -994,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // and captured in the error message correctly.
   constexpr char kConsoleError[] =
       "console.error('YIKES', {data: 'something'}, new Error('deep error'));";
-  EXPECT_EQ(true, ExecuteScript(web_ui, kConsoleError));
+  EXPECT_EQ(true, ExecJs(web_ui, kConsoleError));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find(
@@ -1011,7 +1053,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kDomExceptionScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kDomExceptionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find("error_message=Unhandled%20rejection%3A"
@@ -1043,7 +1085,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kUnhandledRejectionScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kUnhandledRejectionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find("error_message=Unhandled%20rejection%3A%20%5B"
@@ -1074,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kTypeErrorScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kTypeErrorScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find(
@@ -1134,7 +1176,33 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   histograms.ExpectBucketCount("Apps.MediaApp.Load.OtherOpenWindowCount", 0, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionNewEnoughForImageIntegration) {
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ true, "6.12");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionTooOldForImageIntegration) {
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false, "6.11");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionNewEnoughForVideoIntegration) {
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ true, "6.13");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionTooOldForVideoIntegration) {
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false, "5.3");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionDevelopment) {
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ true, "DEVELOPMENT");
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ true, "DEVELOPMENT");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
   web_app::AppId app_id = MediaAppAppId();
 
@@ -1146,17 +1214,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,
   EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), gfx::kGoogleGrey900);
   EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id),
             gfx::kGoogleGrey900);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeDisabledTest,
-                       HasCorrectThemeAndBackgroundColor) {
-  web_app::AppId app_id = MediaAppAppId();
-
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
-
-  EXPECT_EQ(registrar.GetAppThemeColor(app_id), gfx::kGoogleGrey900);
-  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), gfx::kGoogleGrey800);
 }
 
 // Ensures both the "audio" and "gallery" flavours of the MediaApp can be
@@ -1213,14 +1270,17 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
 
   constexpr char kWaitForPlayedLength[] = R"(
       (async function waitForPlayedLength() {
-        const audioElement = await waitForNode('audio');
+        const audioElement = await waitForNode('audio[src^="blob:"]');
+        console.log(`<audio> has played.length=${audioElement.played.length}.`);
         if (audioElement.played.length > 0) {
           return audioElement.played.length;
         }
+        console.log(`Wait: timeupdate on <audio src="${audioElement.src}">...`);
         // Wait for a timeupdate. If autoplay malfunctions, this will timeout.
         await new Promise(resolve => {
           audioElement.addEventListener('timeupdate', resolve, {once: true});
         });
+        console.log(`Returning. played.length=${audioElement.played.length}.`);
         return audioElement.played.length;
       })();
   )";
@@ -1312,22 +1372,22 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   WaitForNavigable(web_ui);
 
   // Navigate to the next file in the directory.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("800x600", WaitForImageAlt(web_ui, kFilePng800x600));
 
   // Navigating again should wraparound.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
   // Navigate backwards.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(-1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(-1)"));
   EXPECT_EQ("800x600", WaitForImageAlt(web_ui, kFilePng800x600));
 
   // Update the Jpeg, which invalidates open DOM File objects.
   TouchFileSync(copied_jpeg_640x480, base::Time::Now());
 
   // We should still be able to open the updated file.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
   // TODO(tapted): Test mixed file types. We used to test here with a file of a
@@ -1419,8 +1479,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   constexpr char kScript[] =
       "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
-      ".then(() => domAutomationController.send('bad-success'))"
-      ".catch(e => domAutomationController.send(e.name));";
+      ".then(() => 'bad-success')"
+      ".catch(e => e.name);";
   EXPECT_EQ("InvalidModificationError",
             ExtractStringInGlobalScope(web_ui, kScript));
 
@@ -1461,12 +1521,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, CheckArcWritable) {
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
-  bool result;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList().item(0).isArcWritable()"
-      ".then(result => domAutomationController.send(result));";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(app, kScript, &result));
-  EXPECT_FALSE(result);
+      "lastLoadedReceivedFileList().item(0).isArcWritable()";
+  EXPECT_EQ(false, content::EvalJs(app, kScript));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
@@ -1499,18 +1556,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
             .ExtractInt();
   } while (received_file_length != 2);
 
-  bool result;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList().item($1).isBrowserWritable()"
-      ".then(result => domAutomationController.send(result));";
+      "lastLoadedReceivedFileList().item($1).isBrowserWritable()";
   // The first file should be writable.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      app, base::ReplaceStringPlaceholders(kScript, {"0"}, nullptr), &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(app, base::ReplaceStringPlaceholders(
+                                           kScript, {"0"}, nullptr)));
   // The second file should not be writable.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      app, base::ReplaceStringPlaceholders(kScript, {"1"}, nullptr), &result));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false, content::EvalJs(app, base::ReplaceStringPlaceholders(
+                                            kScript, {"1"}, nullptr)));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, OpenVideoFile) {
@@ -1527,7 +1580,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
   constexpr char kToggleFullscreen[] = R"(
       (async function toggleFullscreen() {
         await customLaunchData.delegate.toggleBrowserFullscreenMode();
-        domAutomationController.send("success");
+        return "success";
       })();
   )";
 
@@ -1555,7 +1608,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
   constexpr char kMaybeTriggerPdfHats[] = R"(
       (async function triggerPdfHats() {
         await customLaunchData.delegate.maybeTriggerPdfHats();
-        domAutomationController.send("success");
+        return "success";
       })();
   )";
 
@@ -1664,13 +1717,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
           const blob = await response.blob();
 
           if (response.status === 200 && blob.size > 0) {
-            domAutomationController.send('success');
+            return 'success';
           } else {
-            domAutomationController.send(
-                `Failed: status:$${response.status} size:$${blob.size}`);
+            return `Failed: status:$${response.status} size:$${blob.size}`;
           }
         } catch (e) {
-          domAutomationController.send(`Failed: $${e}`);
+          return `Failed: $${e}`;
         }
       })();
   )";
@@ -1682,10 +1734,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationDarkLightModeEnabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationDarkLightModeDisabledTest);
+    MediaAppIntegrationPhotosIntegrationTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);

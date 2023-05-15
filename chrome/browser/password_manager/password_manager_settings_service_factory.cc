@@ -39,7 +39,12 @@ PasswordManagerSettingsServiceFactory::PasswordManagerSettingsServiceFactory()
           // used, but since this service is used to access settings which are
           // not specific to incognito the service can still be used as for the
           // regular profile.
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
 #if BUILDFLAG(IS_ANDROID)
   // The sync status is necessary on Android to decide which prefs to check.
   DependsOn(SyncServiceFactory::GetInstance());

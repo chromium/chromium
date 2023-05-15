@@ -101,6 +101,7 @@ struct ClientBucketData {
   std::string name;
   StorageType type;
   int64_t usage;
+  int64_t quota = 0;
 };
 
 struct UsageWithBreakdown {
@@ -215,11 +216,12 @@ class QuotaManagerImplTest : public testing::Test {
     std::map<BucketLocator, int64_t> buckets_data;
     for (const ClientBucketData& data : mock_data) {
       base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-      quota_manager_impl_->GetOrCreateBucketDeprecated(
-          {ToStorageKey(data.origin), data.name}, data.type,
-          future.GetCallback());
+      BucketInitParams params(ToStorageKey(data.origin), data.name);
+      params.quota = data.quota;
+      quota_manager_impl_->GetOrCreateBucketDeprecated(params, data.type,
+                                                       future.GetCallback());
       auto bucket = future.Take();
-      EXPECT_TRUE(bucket.has_value());
+      ASSERT_TRUE(bucket.has_value());
       buckets_data.insert(std::pair<BucketLocator, int64_t>(
           bucket->ToBucketLocator(), data.usage));
     }
@@ -331,6 +333,14 @@ class QuotaManagerImplTest : public testing::Test {
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
   }
 
+  bool CheckForSufficientSpace(const BucketLocator& bucket,
+                               int64_t bytes_to_be_written) {
+    base::test::TestFuture<QuotaErrorOr<int64_t>> future;
+    quota_manager_impl_->GetBucketSpaceRemaining(bucket, future.GetCallback());
+    auto result = future.Take();
+    return result.has_value() && (result.value() >= bytes_to_be_written);
+  }
+
   void SetQuotaSettings(int64_t pool_size,
                         int64_t per_storage_key_quota,
                         int64_t must_remain_available) {
@@ -374,9 +384,9 @@ class QuotaManagerImplTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  QuotaError EvictBucketData(const BucketLocator& bucket) {
-    base::test::TestFuture<QuotaError> future;
-    quota_manager_impl_->EvictBucketData(bucket, future.GetCallback());
+  int EvictBucketData(const BucketLocator& bucket) {
+    base::test::TestFuture<int> future;
+    quota_manager_impl_->EvictBucketData({bucket}, future.GetCallback());
     return future.Get();
   }
 
@@ -445,13 +455,19 @@ class QuotaManagerImplTest : public testing::Test {
     client->ModifyBucketAndNotify(bucket, delta);
   }
 
-  void GetEvictionBucket(StorageType type) {
+  // Gets just one bucket for eviction.
+  void GetEvictionBucket() {
     eviction_bucket_.reset();
-    // The quota manager's default eviction policy is to use an LRU eviction
-    // policy.
-    quota_manager_impl_->GetEvictionBucket(
-        type, base::BindOnce(&QuotaManagerImplTest::DidGetEvictionBucket,
-                             weak_factory_.GetWeakPtr()));
+    quota_manager_impl_->GetEvictionBuckets(
+        /*target_usage=*/1,
+        base::BindOnce(&QuotaManagerImplTest::DidGetEvictionBucket,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  std::set<BucketLocator> GetEvictionBuckets(int64_t target_usage) {
+    base::test::TestFuture<const std::set<BucketLocator>&> future;
+    quota_manager_impl_->GetEvictionBuckets(target_usage, future.GetCallback());
+    return future.Take();
   }
 
   std::set<BucketLocator> GetBucketsModifiedBetween(StorageType type,
@@ -489,15 +505,18 @@ class QuotaManagerImplTest : public testing::Test {
     usage_ = global_usage;
   }
 
-  void DidGetEvictionBucket(const absl::optional<BucketLocator>& bucket) {
-    eviction_bucket_ = bucket;
-    DCHECK(!bucket.has_value() ||
-           !bucket->storage_key.origin().GetURL().is_empty());
+  void DidGetEvictionBucket(const std::set<BucketLocator>& bucket) {
+    if (1u == bucket.size()) {
+      eviction_bucket_ = *bucket.begin();
+    } else {
+      EXPECT_TRUE(bucket.empty());
+      eviction_bucket_ = {};
+    }
   }
 
   void SetStoragePressureCallback(
-      base::RepeatingCallback<void(StorageKey)> callback) {
-    quota_manager_impl_->SetStoragePressureCallback(std::move(callback));
+      base::RepeatingCallback<void(const StorageKey&)> callback) {
+    quota_manager_impl_->SetStoragePressureCallback(callback);
   }
 
   void MaybeRunStoragePressureCallback(const StorageKey& storage_key,
@@ -689,22 +708,22 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseBootstrap) {
   // When bootstrapping is complete, queued calls to the QuotaDatabase
   // should return successfully and buckets for registered storage keys should
   // already exist.
-  auto bucket =
-      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp)
+          .has_value());
   EXPECT_FALSE(is_db_bootstrapping());
-  ASSERT_TRUE(bucket.has_value());
 
-  bucket = GetBucket(ToStorageKey("http://foo.com:8080/"), kDefaultBucketName,
-                     kTemp);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com:8080/"), kDefaultBucketName, kTemp)
+          .has_value());
 
-  bucket = GetBucket(ToStorageKey("https://foo.com:8081/"), kDefaultBucketName,
-                     kTemp);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(GetBucket(ToStorageKey("https://foo.com:8081/"),
+                        kDefaultBucketName, kTemp)
+                  .has_value());
 
-  bucket =
-      GetBucket(ToStorageKey("http://bar.com/"), kDefaultBucketName, kSync);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://bar.com/"), kDefaultBucketName, kSync)
+          .has_value());
 }
 
 TEST_F(QuotaManagerImplTest, CorruptionRecovery) {
@@ -735,15 +754,15 @@ TEST_F(QuotaManagerImplTest, CorruptionRecovery) {
   RegisterClientBucketData(database_client, kData2);
 
   // Basic sanity checks, make sure setup worked correctly.
-  auto bucket =
-      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.has_value());
-  bucket = GetBucket(ToStorageKey("http://foo.com:8080/"), kDefaultBucketName,
-                     kTemp);
-  ASSERT_TRUE(bucket.has_value());
-  bucket = GetBucket(ToStorageKey("https://foo.com:8081/"), kDefaultBucketName,
-                     kTemp);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp)
+          .has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com:8080/"), kDefaultBucketName, kTemp)
+          .has_value());
+  ASSERT_TRUE(GetBucket(ToStorageKey("https://foo.com:8081/"),
+                        kDefaultBucketName, kTemp)
+                  .has_value());
 
   // Corrupt the database to make bucket lookup fail.
   QuotaError corruption_error = CorruptDatabaseForTesting(
@@ -753,26 +772,22 @@ TEST_F(QuotaManagerImplTest, CorruptionRecovery) {
       }));
   ASSERT_EQ(QuotaError::kNone, corruption_error);
 
-  // Try to lookup a bucket, this should fail until the error threshold is
-  // reached.
-  for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase;
-       ++i) {
-    EXPECT_FALSE(quota_manager_impl_->is_db_disabled_for_testing());
-    EXPECT_FALSE(is_db_bootstrapping());
+  // Try to lookup a bucket, this should report a failure.
+  EXPECT_FALSE(quota_manager_impl_->is_db_disabled_for_testing());
+  EXPECT_FALSE(is_db_bootstrapping());
 
-    bucket =
-        GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-    ASSERT_FALSE(bucket.has_value());
-    EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
-  }
+  auto bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_FALSE(bucket.has_value());
+  EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
 
   // The last lookup attempt should have started another bootstrap attempt.
   EXPECT_TRUE(is_db_bootstrapping());
 
   // And with that bucket lookup should be working again.
-  bucket =
-      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp)
+          .has_value());
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageInfo) {
@@ -803,32 +818,6 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                            UsageInfo("bar.com", kSync, 50)));
 }
 
-TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
-  disable_database_bootstrap(true);
-  OpenDatabase();
-
-  // Disable quota database for database error behavior.
-  DisableQuotaDatabase();
-
-  ASSERT_FALSE(is_db_disabled());
-
-  StorageKey storage_key = ToStorageKey("http://a.com/");
-  std::string bucket_name = "bucket_a";
-
-  auto bucket = UpdateOrCreateBucket({storage_key, bucket_name});
-  ASSERT_FALSE(bucket.has_value());
-  ASSERT_FALSE(is_db_disabled());
-
-  bucket = UpdateOrCreateBucket({storage_key, bucket_name});
-  ASSERT_FALSE(bucket.has_value());
-  ASSERT_FALSE(is_db_disabled());
-
-  // Disables access to QuotaDatabase after error counts passes threshold.
-  bucket = GetBucket(storage_key, bucket_name, kTemp);
-  ASSERT_FALSE(bucket.has_value());
-  ASSERT_TRUE(is_db_disabled());
-}
-
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
@@ -839,7 +828,7 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
   BucketId created_bucket_id = bucket.value().id;
 
   bucket = UpdateOrCreateBucket({storage_key, bucket_name});
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   EXPECT_EQ(bucket.value().id, created_bucket_id);
 }
 
@@ -851,13 +840,12 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
   params.expiration = clock->Now() - base::Days(1);
 
-  auto bucket = UpdateOrCreateBucket(params);
-  ASSERT_FALSE(bucket.has_value());
+  ASSERT_FALSE(UpdateOrCreateBucket(params).has_value());
 
   // Create a new bucket.
   params.expiration = clock->Now() + base::Days(1);
   params.quota = 1000;
-  bucket = UpdateOrCreateBucket(params);
+  auto bucket = UpdateOrCreateBucket(params);
   ASSERT_TRUE(bucket.has_value());
   EXPECT_EQ(bucket->expiration, params.expiration);
   EXPECT_EQ(bucket->quota, 1000);
@@ -875,6 +863,7 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   clock->Advance(base::Days(20));
   params.expiration = base::Time();
   bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.has_value());
   EXPECT_EQ(bucket->expiration, params.expiration);
   EXPECT_EQ(bucket->quota, 500);
 
@@ -890,17 +879,15 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Overflow) {
 
   StorageKey storage_key = ToStorageKey("http://a.com/");
 
-  auto bucket_a = UpdateOrCreateBucket({storage_key, "bucket_a"});
-  EXPECT_TRUE(bucket_a.has_value());
-  auto bucket_b = UpdateOrCreateBucket({storage_key, "bucket_b"});
-  EXPECT_TRUE(bucket_b.has_value());
+  EXPECT_TRUE(UpdateOrCreateBucket({storage_key, "bucket_a"}).has_value());
+  EXPECT_TRUE(UpdateOrCreateBucket({storage_key, "bucket_b"}).has_value());
   auto bucket_c = UpdateOrCreateBucket({storage_key, "bucket_c"});
-  EXPECT_FALSE(bucket_c.has_value());
+  ASSERT_FALSE(bucket_c.has_value());
   EXPECT_EQ(QuotaError::kQuotaExceeded, bucket_c.error());
 
   // Default bucket shouldn't be limited by the quota.
-  auto bucket_default = UpdateOrCreateBucket({storage_key, "default"});
-  EXPECT_TRUE(bucket_default.has_value());
+  EXPECT_TRUE(
+      UpdateOrCreateBucket({storage_key, kDefaultBucketName}).has_value());
 }
 
 // Make sure `EvictExpiredBuckets` deletes expired buckets.
@@ -1006,23 +993,22 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForType) {
   StorageKey storage_key_c = ToStorageKey("http://c.com/");
 
   auto bucket = CreateBucketForTesting(storage_key_a, "bucket_a", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_a = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_b, "bucket_b", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_b = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kSync);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_c = bucket.value();
 
-  std::set<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
-  EXPECT_THAT(storage_keys,
+  EXPECT_THAT(GetStorageKeysForType(kTemp),
               testing::UnorderedElementsAre(storage_key_a, storage_key_b));
 
-  storage_keys = GetStorageKeysForType(kSync);
-  EXPECT_THAT(storage_keys, testing::UnorderedElementsAre(storage_key_c));
+  EXPECT_THAT(GetStorageKeysForType(kSync),
+              testing::UnorderedElementsAre(storage_key_c));
 }
 
 TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
@@ -1033,8 +1019,7 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
   DisableQuotaDatabase();
 
   // Return empty set when error is encountered.
-  std::set<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
-  EXPECT_TRUE(storage_keys.empty());
+  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
 }
 
 TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
@@ -1046,12 +1031,12 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
   RegisterClientBucketData(fs_client, kData);
   base::HistogramTester histograms;
 
-  auto bucket =
-      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_TRUE(
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp)
+          .has_value());
 
-  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
-                               /*sample=*/true, /*expected_count=*/1);
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+                              /*expected_count=*/0);
 
   // Corrupt QuotaDatabase so any future request returns a QuotaError.
   QuotaError corruption_error = CorruptDatabaseForTesting(
@@ -1062,13 +1047,13 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
   ASSERT_EQ(QuotaError::kNone, corruption_error);
 
   // Refetching the bucket with a corrupted database should return an error.
-  bucket =
+  auto bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
 
-  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
-                               /*sample=*/false, /*expected_count=*/1);
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+                              /*expected_count=*/1);
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForType) {
@@ -1077,19 +1062,19 @@ TEST_F(QuotaManagerImplTest, GetBucketsForType) {
   StorageKey storage_key_c = ToStorageKey("http://c.com/");
 
   auto bucket = CreateBucketForTesting(storage_key_a, "bucket_a", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_a = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_b, "bucket_b", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_b = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kSync);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_c = bucket.value();
 
   QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForType(kTemp);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
 
   std::set<BucketInfo> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
@@ -1097,6 +1082,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForType) {
   EXPECT_THAT(buckets, testing::Contains(bucket_b));
 
   result = GetBucketsForType(kSync);
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_THAT(buckets, testing::Contains(bucket_c));
@@ -1109,20 +1095,20 @@ TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
 
   auto bucket =
       CreateBucketForTesting(host_a_storage_key_1, kDefaultBucketName, kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo host_a_bucket_1 = bucket.value();
 
   bucket = CreateBucketForTesting(host_a_storage_key_2, "test", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo host_a_bucket_2 = bucket.value();
 
   bucket =
       CreateBucketForTesting(host_b_storage_key, kDefaultBucketName, kSync);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo host_b_bucket = bucket.value();
 
   QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForHost("a.com", kTemp);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
 
   std::set<BucketInfo> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
@@ -1130,6 +1116,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
   EXPECT_THAT(buckets, testing::Contains(host_a_bucket_2));
 
   result = GetBucketsForHost("b.com", kSync);
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_THAT(buckets, testing::Contains(host_b_bucket));
@@ -1141,24 +1128,24 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
   StorageKey storage_key_c = ToStorageKey("http://c.com/");
 
   auto bucket = CreateBucketForTesting(storage_key_a, "bucket_a1", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_a1 = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_a, "bucket_a2", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_a2 = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_b, "bucket_b", kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_b = bucket.value();
 
   bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kSync);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_c = bucket.value();
 
   QuotaErrorOr<std::set<BucketInfo>> result =
       GetBucketsForStorageKey(storage_key_a, kTemp);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
 
   std::set<BucketInfo> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
@@ -1166,12 +1153,11 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
   EXPECT_THAT(buckets, testing::Contains(bucket_a2));
 
   result = GetBucketsForStorageKey(storage_key_a, kSync);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value().empty());
 
   result = GetBucketsForStorageKey(storage_key_c, kSync);
-  EXPECT_TRUE(result.has_value());
-
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_THAT(buckets, testing::Contains(bucket_c));
@@ -1186,31 +1172,69 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey_Expiration) {
 
   BucketInitParams params(storage_key, "bucket_1");
   auto bucket = UpdateOrCreateBucket(params);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_1 = bucket.value();
 
   params.name = "bucket_2";
   params.expiration = clock->Now() + base::Days(1);
   bucket = UpdateOrCreateBucket(params);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_2 = bucket.value();
 
   params.name = "bucket_3";
   bucket = UpdateOrCreateBucket(params);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
   BucketInfo bucket_3 = bucket.value();
 
   clock->Advance(base::Days(2));
 
   QuotaErrorOr<std::set<BucketInfo>> result =
       GetBucketsForStorageKey(storage_key, kTemp, /*delete_expired=*/true);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
 
   std::set<BucketInfo> buckets = result.value();
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(*buckets.begin(), bucket_1);
 
   QuotaDatabase::SetClockForTesting(nullptr);
+}
+
+TEST_F(QuotaManagerImplTest, EnforceQuota) {
+  const int kPoolSize = 10000;
+  const int kPerStorageKeyQuota = 5000;
+  SetQuotaSettings(kPoolSize, kPerStorageKeyQuota,
+                   kMustRemainAvailableForSystem);
+
+  static const ClientBucketData kData[] = {
+      {"https://foo.com/", "logs", kTemp, /*usage=*/1000, /*quota=*/1025},
+      {
+          "https://foo.com/",
+          "cache",
+          kTemp,
+          /*usage=*/0,
+      },
+      {"https://foo.com/", kDefaultBucketName, kTemp, /*usage=*/3900},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kSync});
+  RegisterClientBucketData(fs_client, kData);
+
+  // Check a non-default bucket's custom quota is enforced.
+  auto logs_bucket = GetBucket(ToStorageKey("https://foo.com/"), "logs", kTemp);
+  EXPECT_TRUE(CheckForSufficientSpace(logs_bucket->ToBucketLocator(), 20));
+  EXPECT_FALSE(CheckForSufficientSpace(logs_bucket->ToBucketLocator(), 26));
+
+  // Check the StorageKey quota is enforced for a non-default bucket.
+  auto cache_bucket =
+      GetBucket(ToStorageKey("https://foo.com/"), "cache", kTemp);
+  EXPECT_TRUE(CheckForSufficientSpace(cache_bucket->ToBucketLocator(), 75));
+  EXPECT_FALSE(CheckForSufficientSpace(cache_bucket->ToBucketLocator(), 200));
+
+  // Check the StorageKeyQuota is enforced for a default bucket.
+  BucketLocator default_bucket =
+      BucketLocator::ForDefaultBucket(ToStorageKey("https://foo.com/"));
+  EXPECT_TRUE(CheckForSufficientSpace(default_bucket, 75));
+  EXPECT_FALSE(CheckForSufficientSpace(default_bucket, 200));
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
@@ -2102,7 +2126,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteBucket) {
 
   auto bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
 
   auto status = DeleteBucketData(bucket->ToBucketLocator(),
                                  {QuotaClientType::kFileSystem});
@@ -2173,7 +2197,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.has_value());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
+  EvictBucketData(bucket->ToBucketLocator());
 
   bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
@@ -2196,9 +2220,10 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   bucket = GetBucket(ToStorageKey("http://foo.com"), "logs", kTemp);
   ASSERT_TRUE(bucket.has_value());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
+  EvictBucketData(bucket->ToBucketLocator());
 
   bucket = GetBucket(ToStorageKey("http://foo.com"), "logs", kTemp);
+  ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
@@ -2230,7 +2255,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
       GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.has_value());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
+  EvictBucketData(bucket->ToBucketLocator());
 
   // Ensure use count and time since access are recorded.
   histograms.ExpectTotalCount(
@@ -2250,7 +2275,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
   bucket = GetBucket(ToStorageKey("http://bar.com"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.has_value());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
+  EvictBucketData(bucket->ToBucketLocator());
 
   // The new use count should be logged.
   histograms.ExpectTotalCount(
@@ -2298,16 +2323,16 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
-    ASSERT_NE(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
+    EvictBucketData(bucket->ToBucketLocator());
   }
 
   // The default bucket for "http://foo.com/" should still be in the database.
   bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-  EXPECT_TRUE(bucket.has_value());
+  ASSERT_TRUE(bucket.has_value());
 
   for (size_t i = 0; i < kNumberOfTemporaryBuckets - 1; ++i) {
-    GetEvictionBucket(kTemp);
+    GetEvictionBucket();
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(eviction_bucket().has_value());
     // "http://foo.com/" should not be in the LRU list.
@@ -2317,7 +2342,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
   }
 
   // Now the LRU list must be empty.
-  GetEvictionBucket(kTemp);
+  GetEvictionBucket();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(eviction_bucket().has_value());
 
@@ -2683,10 +2708,12 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   QuotaErrorOr<BucketInfo> bucket;
   bucket = GetBucket(foo_temp_bucket->storage_key, foo_temp_bucket->name,
                      foo_temp_bucket->type);
+  ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   bucket = GetBucket(bar_temp_bucket->storage_key, bar_temp_bucket->name,
                      bar_temp_bucket->type);
+  ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
@@ -2788,10 +2815,12 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   QuotaErrorOr<BucketInfo> bucket;
   bucket = GetBucket(foo_sync_bucket->storage_key, foo_sync_bucket->name,
                      foo_sync_bucket->type);
+  ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   bucket = GetBucket(bar_sync_bucket->storage_key, bar_sync_bucket->name,
                      bar_sync_bucket->type);
+  ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
@@ -2980,63 +3009,57 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
                               base::Time::Now());
   task_environment_.RunUntilIdle();
 
-  GetEvictionBucket(kTemp);
+  GetEvictionBucket();
   task_environment_.RunUntilIdle();
   EXPECT_EQ("http://a.com:1/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
 
   DeleteBucketData(*eviction_bucket(), AllQuotaClientTypes());
-  GetEvictionBucket(kTemp);
+  GetEvictionBucket();
   task_environment_.RunUntilIdle();
   EXPECT_EQ("http://a.com/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
 
   DeleteBucketData(*eviction_bucket(), AllQuotaClientTypes());
-  GetEvictionBucket(kTemp);
+  GetEvictionBucket();
   task_environment_.RunUntilIdle();
   EXPECT_EQ("http://c.com/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
 }
 
-TEST_F(QuotaManagerImplTest, GetLruEvictableBucket) {
-  StorageKey storage_key_a = ToStorageKey("http://a.com/");
-  StorageKey storage_key_b = ToStorageKey("http://b.com/");
-  StorageKey storage_key_c = ToStorageKey("http://c.com/");
+TEST_F(QuotaManagerImplTest, GetBucketsForEviction) {
+  static const ClientBucketData kData[] = {
+      {"http://a.com/", kDefaultBucketName, kTemp, 107},
+      {"http://b.com/", kDefaultBucketName, kTemp, 300},
+      {"http://c.com/", kDefaultBucketName, kTemp, 713},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(client, kData);
+  GetGlobalUsage(kTemp);
 
-  auto bucket =
-      CreateBucketForTesting(storage_key_a, kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.has_value());
-  BucketInfo bucket_a = bucket.value();
+  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"), kTemp,
+                              base::Time::Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://b.com/"), kTemp,
+                              base::Time::Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://c.com/"), kTemp,
+                              base::Time::Now());
 
-  bucket = CreateBucketForTesting(storage_key_b, kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.has_value());
-  BucketInfo bucket_b = bucket.value();
+  auto buckets = GetEvictionBuckets(110);
+  EXPECT_THAT(buckets, testing::UnorderedElementsAre(
+                           testing::Field(&BucketLocator::storage_key,
+                                          ToStorageKey("http://a.com")),
+                           testing::Field(&BucketLocator::storage_key,
+                                          ToStorageKey("http://b.com"))));
 
-  bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kSync);
-  ASSERT_TRUE(bucket.has_value());
-  BucketInfo bucket_c = bucket.value();
-
-  NotifyBucketAccessed(bucket_a.ToBucketLocator());
-  NotifyBucketAccessed(bucket_b.ToBucketLocator());
-  NotifyBucketAccessed(bucket_c.ToBucketLocator());
-
-  GetEvictionBucket(kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(bucket_a.ToBucketLocator(), eviction_bucket());
-
-  // Notify that the `bucket_a` is accessed.
-  NotifyBucketAccessed(bucket_a.ToBucketLocator());
-  GetEvictionBucket(kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(bucket_b.ToBucketLocator(), eviction_bucket());
-
-  // Notify that the `bucket_b` is accessed while GetEvictionBucket is running.
-  GetEvictionBucket(kTemp);
-  NotifyBucketAccessed(bucket_b.ToBucketLocator());
-  task_environment_.RunUntilIdle();
-  // Post-filtering must have excluded the returned storage key, so we will
-  // see empty result here.
-  EXPECT_FALSE(eviction_bucket().has_value());
+  // Notify that the `bucket_a` is accessed. Now b is the LRU (and also happens
+  // to satisfy the desire to evict 110b of data).
+  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"), kTemp,
+                              base::Time::Now());
+  buckets = GetEvictionBuckets(110);
+  EXPECT_THAT(buckets,
+              testing::UnorderedElementsAre(testing::Field(
+                  &BucketLocator::storage_key, ToStorageKey("http://b.com"))));
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
@@ -3343,10 +3366,12 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_SessionOnly) {
 TEST_F(QuotaManagerImplTest, MaybeRunStoragePressureCallback) {
   bool callback_ran = false;
   auto cb = base::BindRepeating(
-      [](bool* callback_ran, StorageKey storage_key) { *callback_ran = true; },
+      [](bool* callback_ran, const StorageKey& storage_key) {
+        *callback_ran = true;
+      },
       &callback_ran);
 
-  SetStoragePressureCallback(std::move(cb));
+  SetStoragePressureCallback(cb);
 
   int64_t kGBytes = QuotaManagerImpl::kMBytes * 1024;
   MaybeRunStoragePressureCallback(StorageKey(), 100 * kGBytes, 2 * kGBytes);
@@ -3578,9 +3603,9 @@ TEST_F(QuotaManagerImplTest, SimulateStoragePressure_Incognito) {
   bool callback_ran = false;
 
   auto cb = base::BindLambdaForTesting(
-      [&callback_ran](StorageKey storage_key) { callback_ran = true; });
+      [&callback_ran](const StorageKey& storage_key) { callback_ran = true; });
 
-  SetStoragePressureCallback(std::move(cb));
+  SetStoragePressureCallback(cb);
 
   ResetQuotaManagerImpl(/*is_incognito=*/true);
 
@@ -3604,9 +3629,9 @@ TEST_F(QuotaManagerImplTest,
 
   // Create bucket.
   auto bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.has_value());
   RunUntilObserverNotifies();
 
-  ASSERT_TRUE(bucket.has_value());
   ASSERT_EQ(observer_notifications_.size(), 1U);
   ObserverNotification notification = observer_notifications_[0];
   ASSERT_EQ(notification.type, kCreateOrUpdate);
@@ -3618,9 +3643,9 @@ TEST_F(QuotaManagerImplTest,
 
   // Update bucket.
   auto updated_bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(updated_bucket.has_value());
   RunUntilObserverNotifies();
 
-  ASSERT_TRUE(updated_bucket.has_value());
   ASSERT_EQ(observer_notifications_.size(), 1U);
   notification = observer_notifications_[0];
   ASSERT_EQ(notification.type, kCreateOrUpdate);
@@ -3654,9 +3679,9 @@ TEST_F(QuotaManagerImplTest, QuotaManagerObserver_NotifiedOnExpired) {
   params.expiration = clock->Now() + base::Days(5);
 
   auto bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.has_value());
   RunUntilObserverNotifies();
 
-  ASSERT_TRUE(bucket.has_value());
   ASSERT_EQ(observer_notifications_.size(), 1U);
   ObserverNotification notification = observer_notifications_[0];
   ASSERT_EQ(notification.type, kCreateOrUpdate);

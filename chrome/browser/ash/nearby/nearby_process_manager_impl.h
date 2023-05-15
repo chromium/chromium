@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -58,6 +59,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
     NearbyReferenceImpl(
         const mojo::SharedRemote<
             ::nearby::connections::mojom::NearbyConnections>& connections,
+        const mojo::SharedRemote<
+            ::ash::nearby::presence::mojom::NearbyPresence>& presence,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
             quick_start_decoder,
@@ -68,6 +71,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
     // NearbyProcessManager::NearbyProcessReference:
     const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const override;
+    const mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>&
+    GetNearbyPresence() const override;
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const override;
     const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
@@ -75,6 +80,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
     mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections_;
+    mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>
+        presence_;
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
     mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
         quick_start_decoder_;
@@ -103,7 +110,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
-  NearbyDependenciesProvider* nearby_dependencies_provider_;
+  raw_ptr<NearbyDependenciesProvider, ExperimentalAsh>
+      nearby_dependencies_provider_;
   std::unique_ptr<base::OneShotTimer> shutdown_debounce_timer_;
   base::RepeatingCallback<mojo::PendingRemote<sharing::mojom::Sharing>()>
       sharing_binder_;
@@ -116,6 +124,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   // by multiple clients.
   mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       connections_;
+  mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence> presence_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
   mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
       quick_start_decoder_;

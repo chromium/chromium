@@ -17,7 +17,7 @@
   <iron-collapse class="site-list"
       opened="[[unusedSitePermissionsReviewListExpanded_]]">
     <template is="dom-repeat" items="[[sites_]]">
-      <div class$="cr-row site-entry [[getRowClass_(item.visible)]]">
+      <div class$="list-item site-entry [[getRowClass_(item.visible)]]">
         <site-favicon url="[[item.origin]]"></site-favicon>
         <div class="display-name cr-padded-text">
           <div class="site-representation">[[item.origin]]</div>
@@ -30,7 +30,7 @@
         </cr-icon-button>
       </div>
     </template>
-    <div class="cr-row first">
+    <div class="list-item first">
       <cr-button class="action-button bulk-action-button"
           on-click="onGotItClick_">
         $i18n{safetyCheckUnusedSitePermissionsGotItLabel}

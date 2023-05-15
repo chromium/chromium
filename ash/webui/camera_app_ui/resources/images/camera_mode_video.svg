@@ -1,18 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
-    <title>mode_video_1x</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <path d="M30,17.4666667 L30,10 C30,8.16666667 28.5,6.66666667 26.6666667,6.66666667 L6.66666667,6.66666667 C4.83333333,6.66666667 3.33333333,8.16666667 3.33333333,10 L3.33333333,30 C3.33333333,31.8333333 4.83333333,33.3333333 6.66666667,33.3333333 L26.6666667,33.3333333 C28.5,33.3333333 30,31.8333333 30,30 L30,22.5333333 L36.6666667,29.1666667 L36.6666667,10.8333333 L30,17.4666667 Z M26.6666667,16.15 L26.6666667,30 L6.66666667,30 L6.66666667,10 L26.6666667,10 L26.6666667,16.15 Z" id="path-1"></path>
-    </defs>
-    <g id="mode_video_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="ic_video_24dp">
-            <rect id="swatch" x="0" y="0" width="40" height="40"></rect>
-            <mask id="mask-2" fill="white">
-                <use xlink:href="#path-1"></use>
-            </mask>
-            <use id="ic_videocam_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
-        </g>
-    </g>
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M30,17.4666667 L30,10 C30,8.16666667 28.5,6.66666667 26.6666667,6.66666667 L6.66666667,6.66666667 C4.83333333,6.66666667 3.33333333,8.16666667 3.33333333,10 L3.33333333,30 C3.33333333,31.8333333 4.83333333,33.3333333 6.66666667,33.3333333 L26.6666667,33.3333333 C28.5,33.3333333 30,31.8333333 30,30 L30,22.5333333 L36.6666667,29.1666667 L36.6666667,10.8333333 L30,17.4666667 Z M26.6666667,16.15 L26.6666667,30 L6.66666667,30 L6.66666667,10 L26.6666667,10 L26.6666667,16.15 Z"/>
 </svg>

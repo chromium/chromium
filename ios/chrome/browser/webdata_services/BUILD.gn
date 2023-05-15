@@ -16,8 +16,8 @@ source_set("webdata_services") {
     "//components/search_engines",
     "//components/signin/public/webdata",
     "//components/webdata_services",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web/public/thread",
   ]
 }

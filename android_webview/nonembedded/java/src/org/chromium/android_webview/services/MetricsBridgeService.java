@@ -137,7 +137,7 @@ public final class MetricsBridgeService extends Service {
                     mRecordsList.add(proto.toByteArray());
                 }
                 logParsingLogResult(ParsingLogResult.SUCCESS);
-            } catch (InvalidProtocolBufferException e) {
+            } catch (InvalidProtocolBufferException | IllegalStateException e) {
                 Log.e(TAG, "Malformed metrics log proto", e);
                 logParsingLogResult(ParsingLogResult.MALFORMED_PROTOBUF);
                 deleteMetricsLogFile();

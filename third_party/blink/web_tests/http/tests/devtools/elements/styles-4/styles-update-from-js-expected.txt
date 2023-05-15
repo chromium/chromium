@@ -9,18 +9,18 @@ Running: testSetStyleAttribute
 element.style { ()
     color: #daC0DE;
     border: 1px solid black;
-        border-top-color: black;
-        border-top-style: solid;
         border-top-width: 1px;
-        border-right-color: black;
-        border-right-style: solid;
         border-right-width: 1px;
-        border-bottom-color: black;
-        border-bottom-style: solid;
         border-bottom-width: 1px;
-        border-left-color: black;
-        border-left-style: solid;
         border-left-width: 1px;
+        border-top-style: solid;
+        border-right-style: solid;
+        border-bottom-style: solid;
+        border-left-style: solid;
+        border-top-color: black;
+        border-right-color: black;
+        border-bottom-color: black;
+        border-left-color: black;
         border-image-source: initial;
         border-image-slice: initial;
         border-image-width: initial;
@@ -49,18 +49,18 @@ Running: testSetViaParsedAttributes
 element.style { ()
     color: rgb(192, 255, 238);
     border: 3px dashed green;
-        border-top-color: green;
-        border-top-style: dashed;
         border-top-width: 3px;
-        border-right-color: green;
-        border-right-style: dashed;
         border-right-width: 3px;
-        border-bottom-color: green;
-        border-bottom-style: dashed;
         border-bottom-width: 3px;
-        border-left-color: green;
-        border-left-style: dashed;
         border-left-width: 3px;
+        border-top-style: dashed;
+        border-right-style: dashed;
+        border-bottom-style: dashed;
+        border-left-style: dashed;
+        border-top-color: green;
+        border-right-color: green;
+        border-bottom-color: green;
+        border-left-color: green;
         border-image-source: initial;
         border-image-slice: initial;
         border-image-width: initial;
@@ -87,7 +87,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#container.red ========
 [expanded] 
-Style Attribute { ()
+style attribute { ()
     color: rgb(192, 255, 238);
 
 
@@ -106,7 +106,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#container.red ========
 [expanded] 
-Style Attribute { ()
+style attribute { ()
     color: rgb(192, 255, 238);
 
 

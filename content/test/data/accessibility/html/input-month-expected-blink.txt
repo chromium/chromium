@@ -2,15 +2,14 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++dateTime inputType='month'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Month' placeholder='---------' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='---------'
-++++++++++++++++++inlineTextBox name='---------'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='Year' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
-++++++++++++++++staticText name='----'
-++++++++++++++++++inlineTextBox name='----'
-++++++++++popUpButton name='Show month picker' haspopup=menu
+++++++++++++spinButton name='Month' placeholder='---------' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='---------'
+++++++++++++++++inlineTextBox name='---------'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='Year' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++staticText name='----'
+++++++++++++++++inlineTextBox name='----'
+++++++++popUpButton name='Show month picker' haspopup=menu

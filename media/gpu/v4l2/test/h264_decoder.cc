@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 
@@ -17,25 +18,8 @@ namespace media {
 
 namespace v4l2_test {
 
-// H264SliceMetadata contains metadata about an H.264 picture
-// slice including how the slice is reordered. It is used as
-// elements in the decoded picture buffer class H264DPB.
-struct H264SliceMetadata {
-  H264SliceHeader slice_header;
-  int bottom_field_order_cnt = 0;
-  int frame_num = -1;
-  int frame_num_offset = 0;
-  int frame_num_wrap = 0;
-  uint64_t ref_ts_nsec = 0;  // Reference Timestamp in nanoseconds.
-  int pic_order_cnt = 0;
-  int pic_order_cnt_lsb = 0;
-  int pic_order_cnt_msb = 0;
-  int top_field_order_cnt = 0;
-  bool outputted = false;  // Whether this slice has been outputted.
-  bool ref = false;        // Whether this slice is a reference element.
-};
-
 namespace {
+constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
 constexpr uint8_t zigzag_4x4[] = {0, 1,  4,  8,  5, 2,  3,  6,
                                   9, 12, 13, 10, 7, 11, 14, 15};
@@ -46,11 +30,10 @@ constexpr uint8_t zigzag_8x8[] = {
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
-constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
-
-static_assert(kNumberOfBuffersInCaptureQueue <= 16,
-              "Too many CAPTURE buffers are used. The number of CAPTURE "
-              "buffers is currently assumed to be no larger than 16.");
+// TODO(b/234752983): Set number of buffers in CAPTURE queue dynamically.
+// |18| is the minimum number of buffers in the CAPTURE queue required to
+// successfully decode all ITUT baseline and main bitstreams.
+constexpr uint32_t kNumberOfBuffersInCaptureQueue = 18;
 
 // Comparator struct used for H.264 picture reordering
 struct H264PicOrderCompare {
@@ -59,6 +42,40 @@ struct H264PicOrderCompare {
     return a->pic_order_cnt < b->pic_order_cnt;
   }
 };
+
+// Extracts bit depth to |bit_depth| from the SPS. Returns true if is able
+// to successfully extract bit depth. Otherwise returns false.
+bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
+  // Spec 7.4.2.1.1
+  if (sps.bit_depth_luma_minus8 != sps.bit_depth_chroma_minus8) {
+    VLOGF(4) << "H264Decoder doesn't support different bit depths between luma"
+             << "and chroma, bit_depth_luma_minus8="
+             << sps.bit_depth_luma_minus8
+             << ", bit_depth_chroma_minus8=" << sps.bit_depth_chroma_minus8;
+    return false;
+  }
+  DCHECK_GE(sps.bit_depth_luma_minus8, 0);
+  DCHECK_LE(sps.bit_depth_luma_minus8, 6);
+  switch (sps.bit_depth_luma_minus8) {
+    case 0:
+      bit_depth = 8u;
+      break;
+    case 2:
+      bit_depth = 10u;
+      break;
+    case 4:
+      bit_depth = 12u;
+      break;
+    case 6:
+      bit_depth = 14u;
+      break;
+    default:
+      VLOGF(4) << "Invalid bit depth: "
+               << base::checked_cast<int>(sps.bit_depth_luma_minus8 + 8);
+      return false;
+  }
+  return true;
+}
 
 // Translates SPS into h264 sps ctrl structure.
 v4l2_ctrl_h264_sps SetupSPSCtrl(const H264SPS* sps) {
@@ -232,122 +249,233 @@ void SetupDecodeParams(const H264SliceHeader& slice,
   if (slice.idr_pic_flag)
     v4l2_decode_param->flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
 
-  v4l2_decode_param->top_field_order_cnt =
-      slice_metadata.pic_order_cnt_lsb + slice_metadata.pic_order_cnt_msb;
+  v4l2_decode_param->top_field_order_cnt = slice_metadata.top_field_order_cnt;
   v4l2_decode_param->bottom_field_order_cnt =
-      v4l2_decode_param->top_field_order_cnt + slice.delta_pic_order_cnt_bottom;
+      slice_metadata.bottom_field_order_cnt;
 }
 
 // Determines whether the current slice is part of the same
 // frame as the previous slice.
 // From h264 specification 7.4.1.2.4
-bool IsNewFrame(H264SliceHeader* prev_slice,
-                H264SliceHeader* curr_slice,
-                const H264SPS* sps) {
-  bool nalu_size_error = prev_slice->nalu_size < 1;
+bool IsNewFrame(const H264SliceMetadata& curr_picture,
+                const H264SliceHeader& curr_slice_hdr,
+                const H264SPS& sps) {
+  bool nalu_size_error = curr_picture.slice_header.nalu_size < 1;
 
   bool slice_changed =
-      curr_slice->frame_num != prev_slice->frame_num ||
-      curr_slice->pic_parameter_set_id != prev_slice->pic_parameter_set_id ||
-      curr_slice->nal_ref_idc != prev_slice->nal_ref_idc ||
-      curr_slice->idr_pic_flag != prev_slice->idr_pic_flag ||
-      curr_slice->idr_pic_id != prev_slice->idr_pic_id;
+      curr_slice_hdr.frame_num != curr_picture.slice_header.frame_num ||
+      curr_slice_hdr.pic_parameter_set_id !=
+          curr_picture.slice_header.pic_parameter_set_id ||
+      curr_slice_hdr.nal_ref_idc != curr_picture.slice_header.nal_ref_idc ||
+      curr_slice_hdr.idr_pic_flag != curr_picture.slice_header.idr_pic_flag ||
+      curr_slice_hdr.idr_pic_id != curr_picture.slice_header.idr_pic_id;
 
   bool slice_pic_order_changed = false;
 
-  if (sps->pic_order_cnt_type == 0) {
+  if (sps.pic_order_cnt_type == 0) {
     slice_pic_order_changed =
-        curr_slice->pic_order_cnt_lsb != prev_slice->pic_order_cnt_lsb ||
-        curr_slice->delta_pic_order_cnt_bottom !=
-            prev_slice->delta_pic_order_cnt_bottom;
+        curr_slice_hdr.pic_order_cnt_lsb !=
+            curr_picture.slice_header.pic_order_cnt_lsb ||
+        curr_slice_hdr.delta_pic_order_cnt_bottom !=
+            curr_picture.slice_header.delta_pic_order_cnt_bottom;
 
-  } else if (sps->pic_order_cnt_type == 1) {
+  } else if (sps.pic_order_cnt_type == 1) {
     slice_pic_order_changed =
-        curr_slice->delta_pic_order_cnt0 != prev_slice->delta_pic_order_cnt0 ||
-        curr_slice->delta_pic_order_cnt1 != prev_slice->delta_pic_order_cnt1;
+        curr_slice_hdr.delta_pic_order_cnt0 !=
+            curr_picture.slice_header.delta_pic_order_cnt0 ||
+        curr_slice_hdr.delta_pic_order_cnt1 !=
+            curr_picture.slice_header.delta_pic_order_cnt1;
   }
 
   return (nalu_size_error || slice_changed || slice_pic_order_changed);
 }
 
+// Returns the maximum DPB Macro Block Size (MBS) per level specified.
+// Based on spec table A-2.
+uint32_t GetMaxDPBMBS(uint8_t level) {
+  switch (level) {
+    case H264SPS::kLevelIDC1p0:
+      return 396;  // Level 1.0
+    case H264SPS::kLevelIDC1B:
+      return 396;  // Level 1b
+    case H264SPS::kLevelIDC1p1:
+      return 900;  // Level 1.1
+    case H264SPS::kLevelIDC1p2:
+      return 2376;  // Level 1.2
+    case H264SPS::kLevelIDC1p3:
+      return 2376;  // Level 1.3
+    case H264SPS::kLevelIDC2p0:
+      return 2376;  // Level 2.0
+    case H264SPS::kLevelIDC2p1:
+      return 4752;  // Level 2.1
+    case H264SPS::kLevelIDC2p2:
+      return 8100;  // Level 2.2
+    case H264SPS::kLevelIDC3p0:
+      return 8100;  // Level 3.0
+    case H264SPS::kLevelIDC3p1:
+      return 18000;  // Level 3.1
+    case H264SPS::kLevelIDC3p2:
+      return 20480;  // Level 3.2
+    case H264SPS::kLevelIDC4p0:
+      return 32768;  // Level 4.0
+    case H264SPS::kLevelIDC4p1:
+      return 32768;  // Level 4.1
+    case H264SPS::kLevelIDC4p2:
+      return 34816;  // Level 4.2
+    case H264SPS::kLevelIDC5p0:
+      return 110400;  // Level 5.0
+    case H264SPS::kLevelIDC5p1:
+      return 184320;  // Level 5.1
+    case H264SPS::kLevelIDC5p2:
+    default:
+      return 0;
+  }
+}
+
 }  // namespace
 
-int H264DPB::CountRefPics() {
-  int ret = 0;
-  for (auto& i : *this) {
-    if (i.second.ref) {
-      ret++;
+void H264Decoder::ProcessSPS(const int sps_id) {
+  const H264SPS* sps = parser_->GetSPS(sps_id);
+  gfx::Size new_pic_size = sps->GetCodedSize().value_or(gfx::Size());
+
+  int width_mb = new_pic_size.width() / 16;
+  int height_mb = new_pic_size.height() / 16;
+
+  // Spec A.3.1 and A.3.2
+  // For Baseline, Constrained Baseline and Main profile, the indicated level is
+  // Level 1b if level_idc is equal to 11 and constraint_set3_flag is equal to 1
+  uint8_t level = base::checked_cast<uint8_t>(sps->level_idc);
+  if ((sps->profile_idc == H264SPS::kProfileIDCBaseline ||
+       sps->profile_idc == H264SPS::kProfileIDCConstrainedBaseline ||
+       sps->profile_idc == H264SPS::kProfileIDCMain) &&
+      level == 11 && sps->constraint_set3_flag) {
+    level = 9;  // Level 1b
+  }
+  int max_dpb_mbs = base::checked_cast<int>(GetMaxDPBMBS(level));
+
+  // MaxDpbFrames from level limits per spec.
+  size_t max_dpb_frames = std::min(max_dpb_mbs / (width_mb * height_mb), 16);
+
+  size_t max_dpb_size =
+      std::max(static_cast<int>(max_dpb_frames),
+               std::max(sps->max_num_ref_frames, sps->max_dec_frame_buffering));
+
+  VideoCodecProfile new_profile =
+      H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
+  uint8_t new_bit_depth = 0;
+  ParseBitDepth(*sps, new_bit_depth);
+
+  if (sps->vui_parameters_present_flag && sps->bitstream_restriction_flag) {
+    max_num_reorder_frames_ =
+        base::checked_cast<size_t>(sps->max_num_reorder_frames);
+  } else if (sps->constraint_set3_flag) {
+    // max_num_reorder_frames not present, infer from profile/constraints
+    // (see VUI semantics in spec).
+    switch (sps->profile_idc) {
+      case 44:
+      case 86:
+      case 100:
+      case 110:
+      case 122:
+      case 244:
+        max_num_reorder_frames_ = 0;
+        break;
+      default:
+        max_num_reorder_frames_ = max_dpb_size;
+        break;
+    }
+  } else {
+    max_num_reorder_frames_ = max_dpb_size;
+  }
+
+  if (pic_size_ != new_pic_size || dpb_.max_dpb_size_ != max_dpb_size ||
+      profile_ != new_profile || bit_depth_ != new_bit_depth) {
+    FlushDPB();
+    profile_ = new_profile;
+    bit_depth_ = new_bit_depth;
+    pic_size_ = new_pic_size;
+    dpb_.max_dpb_size_ = max_dpb_size;
+  }
+}
+
+void H264Decoder::FlushDPB() {
+  std::vector<H264SliceMetadata*> transmittable_slices =
+      dpb_.GetNotOutputtedPicsAppending();
+  std::sort(transmittable_slices.begin(), transmittable_slices.end(),
+            H264PicOrderCompare());
+
+  for (auto* i : transmittable_slices) {
+    i->outputted = true;
+    slice_ready_queue_.push(*i);
+  }
+
+  dpb_.clear();
+}
+
+void H264Decoder::InitializeDecoderLogic() {
+  parser_ = std::make_unique<H264Parser>();
+  parser_->SetStream(data_stream_.data(), data_stream_.length());
+
+  // Advance through NALUs until the first SPS.  The start of the decodable
+  // data in an h.264 bistreams starts with an SPS.
+  while (true) {
+    H264NALU nalu;
+    H264Parser::Result res = parser_->AdvanceToNextNALU(&nalu);
+    CHECK(res == H264Parser::kOk);
+
+    if (nalu.nal_unit_type == H264NALU::kSPS) {
+      break;
     }
   }
-  return ret;
-}
 
-void H264DPB::Delete(const H264SliceMetadata& pic) {
-  erase(pic.ref_ts_nsec);
-}
+  int sps_id;
+  H264Parser::Result res = parser_->ParseSPS(&sps_id);
+  CHECK(res == H264Parser::kOk);
 
-void H264DPB::DeleteUnused() {
-  std::vector<uint64_t> keys;
-  for (auto& i : *this) {
-    if (i.second.outputted && !i.second.ref) {
-      keys.push_back(i.first);
+  // Process initial SPS in bitstream and navigate to first slice in bitstream
+  // to setup ProcessNextFrame for decoding.
+  ProcessSPS(sps_id);
+  std::unique_ptr<H264NALU> curr_nalu;
+  while (true) {
+    curr_nalu = std::make_unique<H264NALU>();
+    if (parser_->AdvanceToNextNALU(curr_nalu.get()) == H264Parser::kEOStream) {
+      break;
     }
-  }
-  for (auto i : keys) {
-    erase(i);
-  }
-}
 
-void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
-  int key = -1;
-  for (auto& i : *this) {
-    H264SliceMetadata pic = i.second;
-    if (pic.ref &&
-        (key < 0 || pic.frame_num_wrap < this->at(key).frame_num_wrap)) {
-      key = i.first;
+    if (curr_nalu->nal_unit_type == H264NALU::kIDRSlice ||
+        curr_nalu->nal_unit_type == H264NALU::kNonIDRSlice) {
+      break;
+    } else if (curr_nalu->nal_unit_type == H264NALU::kPPS) {
+      int pps_id;
+      CHECK(parser_->ParsePPS(&pps_id) == H264Parser::kOk);
     }
   }
 
-  if (key >= 0) {
-    this->at(key).ref = false;
-  }
+  curr_slice_hdr_ = std::make_unique<H264SliceHeader>();
+  CHECK(parser_->ParseSliceHeader(*curr_nalu, curr_slice_hdr_.get()) ==
+        H264Parser::kOk);
 }
 
-std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
-  std::vector<H264SliceMetadata*> data;
-  for (auto& i : *this) {
-    H264SliceMetadata pic = i.second;
-    if (!pic.outputted) {
-      data.push_back(&pic);
-    }
+VideoDecoder::Result H264Decoder::SubmitSlice() {
+  std::vector<uint8_t> slice_data(
+      sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
+  slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
+  slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
+                    curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
+
+  scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
+  OUTPUT_buffer->mmapped_planes()[0].CopyIn(&slice_data[0], slice_data.size());
+  OUTPUT_buffer->set_frame_number(global_pic_count_);
+
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0)) {
+    VLOG(4) << "VIDIOC_QBUF failed for OUTPUT queue.";
+    return VideoDecoder::kError;
   }
 
-  return data;
+  global_pic_count_++;
+  return VideoDecoder::kOk;
 }
 
-void H264DPB::MarkAllUnusedRef() {
-  for (auto& i : *this) {
-    i.second.ref = false;
-  }
-}
-
-void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
-                                 const int max_frame_num) {
-  for (auto& i : *this) {
-    if (i.second.ref) {
-      continue;
-    }
-
-    if (i.second.frame_num > curr_frame_num) {
-      i.second.frame_num_wrap = i.second.frame_num - max_frame_num;
-    } else {
-      i.second.frame_num_wrap = i.second.frame_num;
-    }
-  }
-}
-
-// Initializes H264 Slice Metadata based on slice header and
-// based on H264 specifications which it calculates its pic order count.
 VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
     const H264SliceHeader& slice_hdr,
     const H264SPS* sps,
@@ -360,7 +488,18 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
   slice_metadata->ref_ts_nsec = global_pic_count_;
   slice_metadata->ref = slice_hdr.nal_ref_idc != 0;
   slice_metadata->frame_num = slice_hdr.frame_num;
+  slice_metadata->pic_num = slice_hdr.frame_num;
   slice_metadata->pic_order_cnt_lsb = slice_hdr.pic_order_cnt_lsb;
+
+  slice_metadata->long_term_reference_flag = slice_hdr.long_term_reference_flag;
+
+  if (slice_hdr.adaptive_ref_pic_marking_mode_flag) {
+    static_assert(sizeof(slice_metadata->ref_pic_marking) ==
+                      sizeof(slice_hdr.ref_pic_marking),
+                  "Array sizes of ref pic marking do not match.");
+    memcpy(slice_metadata->ref_pic_marking, slice_hdr.ref_pic_marking,
+           sizeof(slice_metadata->ref_pic_marking));
+  }
 
   // Calculate H264 slice order counts.
   switch (sps->pic_order_cnt_type) {
@@ -403,12 +542,36 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
       break;
     }
     case 2: {
-      // TODO(b/234752983): Implement pic ordering for pic order count type 2
-      // as defined in H.264 section 8.2.1.3.
+      // Implements pic ordering for pic order count type 2 as defined
+      // in H.264 section 8.2.1.3.
+      if (slice_metadata->slice_header.idr_pic_flag) {
+        slice_metadata->frame_num_offset = 0;
+      } else if (prev_frame_num_ > slice_metadata->pic_num) {
+        slice_metadata->frame_num_offset =
+            prev_frame_num_offset_ +
+            (1 << (sps->log2_max_frame_num_minus4 + 4));
+      } else {
+        slice_metadata->frame_num_offset = prev_frame_num_offset_;
+      }
+
+      int temp_pic_order_cnt;
+      if (slice_metadata->slice_header.idr_pic_flag) {
+        temp_pic_order_cnt = 0;
+      } else if (!slice_metadata->slice_header.nal_ref_idc) {
+        temp_pic_order_cnt =
+            2 * (slice_metadata->frame_num_offset + slice_metadata->frame_num) -
+            1;
+      } else {
+        temp_pic_order_cnt =
+            2 * (slice_metadata->frame_num_offset + slice_metadata->frame_num);
+      }
+
+      slice_metadata->top_field_order_cnt = temp_pic_order_cnt;
+      slice_metadata->bottom_field_order_cnt = temp_pic_order_cnt;
       break;
     }
     default: {
-      DVLOG(1) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
+      VLOGF(4) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
       return VideoDecoder::kError;
     }
   }
@@ -421,26 +584,26 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
 }
 
 VideoDecoder::Result H264Decoder::StartNewFrame(
-    const int sps_id,
-    const int pps_id,
-    H264SliceHeader* slice_hdr,
     H264SliceMetadata* slice_metadata,
-    v4l2_ctrl_h264_decode_params* v4l2_decode_param) {
-  const H264SPS* sps = parser_->GetSPS(sps_id);
-  const H264PPS* pps = parser_->GetPPS(pps_id);
+    v4l2_ctrl_h264_decode_params* v4l2_decode_param,
+    bool is_OUTPUT_queue_new) {
+  const H264PPS* pps = parser_->GetPPS(curr_slice_hdr_->pic_parameter_set_id);
+  const H264SPS* sps = parser_->GetSPS(pps->seq_parameter_set_id);
 
-  if (InitializeSliceMetadata(*slice_hdr, sps, slice_metadata) ==
+  if (InitializeSliceMetadata(*(curr_slice_hdr_.get()), sps, slice_metadata) ==
       VideoDecoder::kError) {
     return VideoDecoder::kError;
   }
-  global_pic_count_++;
 
-  if (slice_hdr->idr_pic_flag) {
+  if (curr_slice_hdr_->idr_pic_flag) {
+    if (!curr_slice_hdr_->no_output_of_prior_pics_flag) {
+      FlushDPB();
+    }
     dpb_.clear();
   }
 
-  const int max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);
-  dpb_.UpdateFrameNumWrap(slice_hdr->frame_num, max_frame_num);
+  int max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);
+  dpb_.UpdatePicNums(curr_slice_hdr_->frame_num, max_frame_num);
 
   struct v4l2_ctrl_h264_sps v4l2_sps = SetupSPSCtrl(sps);
   struct v4l2_ctrl_h264_pps v4l2_pps = SetupPPSCtrl(pps);
@@ -460,7 +623,8 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls,
+                           is_OUTPUT_queue_new && cur_val_is_supported_);
 
   memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb));
   size_t i = 0;
@@ -468,171 +632,36 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   for (const auto& element : dpb_) {
     struct v4l2_h264_dpb_entry& entry = v4l2_decode_param->dpb[i++];
     entry = {.reference_ts = element.second.ref_ts_nsec * kTimestampToNanoSecs,
+             .pic_num = static_cast<unsigned short>(element.second.pic_num),
              .frame_num = static_cast<unsigned short>(element.second.frame_num),
              .fields = V4L2_H264_FRAME_REF,
              .top_field_order_cnt = element.second.top_field_order_cnt,
              .bottom_field_order_cnt = element.second.bottom_field_order_cnt,
              .flags = static_cast<uint32_t>(
                  V4L2_H264_DPB_ENTRY_FLAG_VALID |
-                 (element.second.ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0))};
+                 (element.second.ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0) |
+                 (element.second.long_term_reference_flag
+                      ? V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM
+                      : 0))};
   }
 
   return VideoDecoder::kOk;
 }
 
-// Processes NALU's until reaching the end of the current frame.  To
-// know the end of the current frame it may be necessary to start parsing
-// the next frame.  If this occurs the NALU that was parsed needs to be
-// held over until the next frame.  This is done in |pending_nalu_|
-// Not every frame has a SPS/PPS associated with it.  The SPS/PPS must
-// occur on an IDR frame.  Store the last seen slice header in
-// |pending_slice_header_| so it will be available for the next frame.
-H264Parser::Result H264Decoder::ProcessNextFrame(
-    const int frame_number,
-    std::unique_ptr<H264SliceHeader>* resulting_slice_header) {
-  bool reached_end_of_frame = false;
-
+void H264Decoder::ProcessNextFrame() {
   H264SliceMetadata slice_metadata = {};
-
   v4l2_ctrl_h264_decode_params v4l2_decode_param = {};
 
-  std::unique_ptr<H264SliceHeader> curr_slice_header =
-      std::move(pending_slice_header_);
-  std::unique_ptr<H264NALU> nalu = std::move(pending_nalu_);
-  while (!reached_end_of_frame) {
-    if (!nalu) {
-      nalu = std::make_unique<H264NALU>();
-      if (parser_->AdvanceToNextNALU(nalu.get()) == H264Parser::kEOStream) {
-        // If slice_metadata is not null when the parser has reached the end
-        // of the stream, then there is still frame data that has not been
-        // transmitted yet, hence FinishFrame() needs to be called.
-        if (slice_metadata.frame_num >= 0) {
-          FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
-          break;
-        }
-        return H264Parser::kOk;
-      }
-    }
-
-    switch (nalu->nal_unit_type) {
-      case H264NALU::kIDRSlice:
-      case H264NALU::kNonIDRSlice: {
-        if (!curr_slice_header) {
-          curr_slice_header = std::make_unique<H264SliceHeader>();
-          if (parser_->ParseSliceHeader(*nalu, curr_slice_header.get()) !=
-              H264Parser::kOk)
-            return H264Parser::kInvalidStream;
-        }
-
-        const int pps_id = curr_slice_header->pic_parameter_set_id;
-        const int sps_id =
-            parser_->GetPPS(curr_slice_header->pic_parameter_set_id)
-                ->seq_parameter_set_id;
-
-        // If pending_slice_header is not null, then the frame
-        // has already been started.
-        if (!pending_slice_header_) {
-          if (StartNewFrame(sps_id, pps_id, curr_slice_header.get(),
-                            &slice_metadata,
-                            &v4l2_decode_param) != VideoDecoder::kOk) {
-            return H264Parser::kInvalidStream;
-          }
-
-          pending_slice_header_ = std::move(curr_slice_header);
-          break;
-        }
-
-        if (IsNewFrame(pending_slice_header_.get(), curr_slice_header.get(),
-                       parser_->GetSPS(sps_id))) {
-          // The parser has read into the next frame.  This is the only
-          // way that the end of the current frame is indicated.  The
-          // parser can not be rewound, so the decoder needs to execute
-          // the end of this frame and save the next frames nalu data.
-          reached_end_of_frame = true;
-
-          FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
-
-          *resulting_slice_header = std::move(pending_slice_header_);
-          pending_slice_header_ = std::move(curr_slice_header);
-          pending_nalu_ = std::move(nalu);
-
-          // |pending_slice_header_| needs to be set after
-          // |resulting_slice_header| which can't be done at the end of the
-          // function, so return here.
-          return H264Parser::kOk;
-        }
-        // TODO(b/234752983): Add additional logic for when
-        // there are multiple slices per frame.
-        break;
-      }
-      case H264NALU::kSPS: {
-        int sps_id;
-        if (parser_->ParseSPS(&sps_id) != H264Parser::kOk)
-          return H264Parser::kInvalidStream;
-
-        // H.264 specification 7.4 designates a SPS as a frame boundary.
-        // If |slice_metadata| is set, then there is a pending frame that
-        // needs to be finished.
-        if (slice_metadata.frame_num >= 0) {
-          FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
-          reached_end_of_frame = true;
-        }
-        break;
-      }
-      case H264NALU::kPPS: {
-        int pps_id;
-        if (parser_->ParsePPS(&pps_id) != H264Parser::kOk)
-          return H264Parser::kInvalidStream;
-
-        // H.264 specification 7.4 designates a PPS as a frame boundary.
-        // If |slice_metadata| is set, then there is a pending frame that
-        // needs to be finished.
-        if (slice_metadata.frame_num >= 0) {
-          FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
-          reached_end_of_frame = true;
-        }
-        break;
-      }
-      case H264NALU::kAUD:
-      case H264NALU::kEOSeq:
-      case H264NALU::kEOStream: {
-        // H.264 specification 7.4 designates a AUD as a frame boundary,
-        // If |slice_metadata| is set, then there is a pending frame that
-        // needs to be finished.
-        if (slice_metadata.frame_num >= 0) {
-          FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
-          reached_end_of_frame = true;
-        }
-        break;
-      }
-      case H264NALU::kSEIMessage: {
-        // TODO(b/234752983): Implement SEI Message Handling.
-        break;
-      }
-      default: {
-        reached_end_of_frame = true;
-        break;
-      }
-    }
-
-    nalu = nullptr;
+  const bool is_OUTPUT_queue_new = !OUTPUT_queue_;
+  if (!OUTPUT_queue_) {
+    CreateOUTPUTQueue(kDriverCodecFourcc);
   }
 
-  *resulting_slice_header = std::move(pending_slice_header_);
-  return H264Parser::kOk;
-}
+  StartNewFrame(&slice_metadata, &v4l2_decode_param, is_OUTPUT_queue_new);
+  SetupDecodeParams(*curr_slice_hdr_, slice_metadata, &v4l2_decode_param);
 
-VideoDecoder::Result H264Decoder::FinishFrame(
-    const H264SliceHeader& curr_slice,
-    const int frame_num,
-    v4l2_ctrl_h264_decode_params& v4l2_decode_param,
-    H264SliceMetadata& slice_metadata) {
-  SetupDecodeParams(curr_slice, slice_metadata, &v4l2_decode_param);
+  const int pps_id = curr_slice_hdr_->pic_parameter_set_id;
+  const int sps_id = parser_->GetPPS(pps_id)->seq_parameter_set_id;
 
   struct v4l2_ext_control ctrls[] = {
       {.id = V4L2_CID_STATELESS_H264_DECODE_PARAMS,
@@ -645,76 +674,191 @@ VideoDecoder::Result H264Decoder::FinishFrame(
 
   v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
-  // Picture is a reference picture.
-  // H.264 section 8.2.4.
-  if (slice_metadata.ref) {
+  SubmitSlice();
+
+  while (true) {
+    std::unique_ptr<H264NALU> curr_nalu = std::make_unique<H264NALU>();
+    if (parser_->AdvanceToNextNALU(curr_nalu.get()) == H264Parser::kEOStream) {
+      stream_finished_ = true;
+      break;
+    }
+
+    if (curr_nalu->nal_unit_type == H264NALU::kNonIDRSlice ||
+        curr_nalu->nal_unit_type == H264NALU::kIDRSlice) {
+      curr_slice_hdr_ = std::make_unique<H264SliceHeader>();
+      CHECK(parser_->ParseSliceHeader(*curr_nalu, curr_slice_hdr_.get()) ==
+            H264Parser::kOk);
+
+      const H264SPS* sps = parser_->GetSPS(sps_id);
+      if (IsNewFrame(slice_metadata, *curr_slice_hdr_.get(), *sps)) {
+        break;
+      }
+
+    } else if (curr_nalu->nal_unit_type == H264NALU::kSPS) {
+      int sps_info;
+      H264Parser::Result res = parser_->ParseSPS(&sps_info);
+      CHECK(res == H264Parser::kOk);
+      ProcessSPS(sps_id);
+
+    } else if (curr_nalu->nal_unit_type == H264NALU::kPPS) {
+      int pps_info;
+      H264Parser::Result res = parser_->ParsePPS(&pps_info);
+      CHECK(res == H264Parser::kOk);
+    }
+    // All other NALU's can be safely dropped/ignored.
+  }
+
+  FinishPicture(slice_metadata, sps_id);
+
+  if (stream_finished_) {
+    FlushDPB();
+  }
+}
+
+void H264Decoder::FinishPicture(H264SliceMetadata picture, const int sps_id) {
+  v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
+
+  if (!CAPTURE_queue_) {
+    CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
+  }
+
+  uint32_t CAPTURE_id;
+  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_id);
+
+  CAPTURE_queue_->DequeueBufferId(CAPTURE_id);
+  picture.capture_queue_buffer_id = CAPTURE_id;
+
+  const std::set<uint32_t> reusable_buffer_slots =
+      GetReusableReferenceSlots(*CAPTURE_queue_->GetBuffer(CAPTURE_id).get(),
+                                CAPTURE_queue_->queued_buffer_ids());
+
+  for (const auto reusable_buffer_slot : reusable_buffer_slots) {
+    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
+      VLOGF(4) << "VIDIOC_QBUF failed for CAPTURE queue.";
+    }
+    // Keeps track of which indices are currently queued in the
+    // CAPTURE queue. This will be used to determine which indices
+    // can/cannot be refreshed.
+    CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
+  }
+
+  if (picture.ref) {
     // If picture is an IDR, need to unmark all unused reference pics.
     // H.264 section 8.2.4.1.2.
-    if (slice_metadata.slice_header.idr_pic_flag) {
+    if (picture.slice_header.idr_pic_flag) {
       dpb_.MarkAllUnusedRef();
-    } else if (slice_metadata.slice_header.adaptive_ref_pic_marking_mode_flag) {
-      // TODO(b/234752983): Handle Memory Mgmt operations
-      // as specified in specification 8.2.4.4.
+      if (picture.long_term_reference_flag) {
+        picture.long_term_frame_idx = 0;
+      }
+
+    } else if (picture.slice_header.adaptive_ref_pic_marking_mode_flag) {
+      for (size_t i = 0; i < std::size(picture.ref_pic_marking); ++i) {
+        H264DecRefPicMarking* ref_pic_marking = &picture.ref_pic_marking[i];
+
+        // Handle Memory Mgmt operations as specified in specification 8.2.5.4.
+        switch (ref_pic_marking->memory_mgmnt_control_operation) {
+          case 0:
+            break;
+
+          case 1: {
+            const int pic_num_x =
+                picture.pic_num -
+                (ref_pic_marking->difference_of_pic_nums_minus1 + 1);
+            dpb_.UnmarkPicByPicNum(pic_num_x);
+            break;
+          }
+
+          case 2: {
+            dpb_.UnmarkLongTerm(ref_pic_marking->long_term_pic_num);
+            break;
+          }
+
+          case 3: {
+            // H.264 section 8.2.5.4.3
+            const int pic_num_x =
+                picture.pic_num -
+                (ref_pic_marking->difference_of_pic_nums_minus1 + 1);
+            H264SliceMetadata* short_pic =
+                dpb_.GetShortRefPicByPicNum(pic_num_x);
+            if (short_pic) {
+              H264SliceMetadata* long_term_mark = dpb_.GetLongRefPicByFrameIdx(
+                  ref_pic_marking->long_term_frame_idx);
+
+              if (long_term_mark) {
+                long_term_mark->ref = false;
+              }
+
+              short_pic->long_term_reference_flag = true;
+              short_pic->long_term_frame_idx =
+                  ref_pic_marking->long_term_frame_idx;
+            }
+            break;
+          }
+
+          case 4: {
+            const int max_long_term_frame_idx =
+                ref_pic_marking->max_long_term_frame_idx_plus1 - 1;
+            dpb_.UnmarkLongTermPicsGreaterThanFrameIndex(
+                max_long_term_frame_idx);
+            break;
+          }
+
+          default:
+            break;
+        }
+      }
     } else {
       // Use a sliding window method decoded reference picture marking process
       // H.264 section 8.2.4.3.
-      int sps_id = parser_->GetPPS(curr_slice.pic_parameter_set_id)
-                       ->seq_parameter_set_id;
       const H264SPS* sps = parser_->GetSPS(sps_id);
       int num_ref_pics = dpb_.CountRefPics();
       if (num_ref_pics == std::max<int>(sps->max_num_ref_frames, 1)) {
         dpb_.UnmarkLowestFrameNumWrapShortRefPic();
       }
     }
+
+    prev_pic_order_.prev_ref_pic_order_cnt_msb = picture.pic_order_cnt_msb;
+    prev_pic_order_.prev_ref_pic_order_cnt_lsb = picture.pic_order_cnt_lsb;
   }
+
+  prev_frame_num_ = picture.frame_num;
+  prev_frame_num_offset_ = picture.frame_num_offset;
 
   dpb_.DeleteUnused();
 
   std::vector<H264SliceMetadata*> transmittable_slices =
       dpb_.GetNotOutputtedPicsAppending();
   // Include the current slice metadata to the list of transmittable slices.
-  transmittable_slices.push_back(&slice_metadata);
+  transmittable_slices.push_back(&picture);
+
   std::sort(transmittable_slices.begin(), transmittable_slices.end(),
             H264PicOrderCompare());
 
-  const int sps_id =
-      parser_->GetPPS(curr_slice.pic_parameter_set_id)->seq_parameter_set_id;
-  const H264SPS* sps = parser_->GetSPS(sps_id);
+  auto output_candidate = transmittable_slices.begin();
+  size_t slices_remaining = transmittable_slices.size();
 
   // Tries to output as many pictures as we can. A picture can be output,
   // if the number of decoded and not yet outputted pictures that would remain
   // in DPB afterwards would at least be equal to |max_num_reorder_frames|.
-  size_t max_num_reorder_frames = sps->max_num_reorder_frames;
-  auto output_candidate = transmittable_slices.begin();
-  size_t slices_remaining = transmittable_slices.size();
-  while (slices_remaining > max_num_reorder_frames) {
+  while (output_candidate != transmittable_slices.end() &&
+         (slices_remaining > max_num_reorder_frames_ ||
+          // If the DPB is full and the output candidate has not been
+          // outputted or is a reference picture then output this picture.
+          (dpb_.size() == dpb_.max_dpb_size_ &&
+           ((!(*output_candidate)->outputted || (*output_candidate)->ref)) &&
+           slices_remaining))) {
+    DVLOG_IF(1, slices_remaining <= max_num_reorder_frames_)
+        << "Invalid stream: max_num_reorder_frames not preserved";
+
     (*output_candidate)->outputted = true;
-    std::vector<uint8_t> slice_data(
-        sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
-    slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
-    slice_data.insert(slice_data.end(),
-                      (*output_candidate)->slice_header.nalu_data,
-                      (*output_candidate)->slice_header.nalu_data +
-                          (*output_candidate)->slice_header.nalu_size);
-
-    scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
-    OUTPUT_buffer->mmapped_planes()[0].CopyIn(&slice_data[0],
-                                              slice_data.size());
-    OUTPUT_buffer->set_frame_number(frame_num);
-
-    if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0)) {
-      VLOG(4) << "VIDIOC_QBUF failed for OUTPUT queue.";
-      return VideoDecoder::kError;
-    }
-
-    v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
+    slice_ready_queue_.push(**output_candidate);
 
     // If the outputted picture is not a reference picture, it doesn't have
     // to remain in the DPB and can be removed.
     if (!(*output_candidate)->ref) {
       // Current picture hasn't been inserted into DPB yet, so don't remove it
       // if we managed to output it immediately.
-      if ((*output_candidate)->ref_ts_nsec != slice_metadata.ref_ts_nsec) {
+      if ((*output_candidate)->ref_ts_nsec != picture.ref_ts_nsec) {
         dpb_.Delete(**output_candidate);
       }
     }
@@ -723,11 +867,13 @@ VideoDecoder::Result H264Decoder::FinishFrame(
     --slices_remaining;
   }
 
-  if (!slice_metadata.outputted || slice_metadata.ref) {
-    dpb_.insert({slice_metadata.ref_ts_nsec, slice_metadata});
+  if (!picture.outputted || picture.ref) {
+    dpb_.insert({picture.ref_ts_nsec, picture});
   }
 
-  return VideoDecoder::kOk;
+  uint32_t OUTPUT_queue_buffer_id;
+  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_queue_buffer_id);
+  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 }
 
 // static
@@ -750,18 +896,16 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
       break;
   }
 
-  int id;
-  H264Parser::Result res = parser->ParseSPS(&id);
+  int sps_id;
+  H264Parser::Result res = parser->ParseSPS(&sps_id);
   CHECK(res == H264Parser::kOk);
 
-  const H264SPS* sps = parser->GetSPS(id);
+  const H264SPS* sps = parser->GetSPS(sps_id);
   CHECK(sps);
 
   absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
   CHECK(coded_size);
   LOG(INFO) << "h.264 coded size : " << coded_size->ToString();
-
-  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
@@ -771,33 +915,17 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
     return nullptr;
   }
 
-  // TODO(stevecho): might need to consider using more than 1 file descriptor
-  // (fd) & buffer with the output queue for 4K60 requirement.
-  // https://buganizer.corp.google.com/issues/202214561#comment31
-  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, coded_size.value(), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInOutputQueue);
-  OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
-
-  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
-  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, coded_size.value(), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInCaptureQueue);
-
   return base::WrapUnique(
-      new H264Decoder(std::move(parser), std::move(v4l2_ioctl),
-                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+      new H264Decoder(std::move(v4l2_ioctl), coded_size.value(), stream));
 }
 
-H264Decoder::H264Decoder(std::unique_ptr<H264Parser> parser,
-                         std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                         std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                         std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
-                                 std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)),
-      parser_(std::move(parser)) {}
+H264Decoder::H264Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+                         gfx::Size display_resolution,
+                         const base::MemoryMappedFile& data_stream)
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
+      curr_slice_hdr_(nullptr),
+      stream_finished_(false),
+      data_stream_(data_stream) {}
 
 H264Decoder::~H264Decoder() = default;
 
@@ -805,11 +933,14 @@ std::set<uint32_t> H264Decoder::GetReusableReferenceSlots(
     const MmappedBuffer& buffer,
     std::set<uint32_t> queued_buffer_ids) {
   std::set<uint32_t> reusable_buffer_slots = {};
+  const std::set<int> dpb_ids = dpb_.GetHeldCaptureIds();
   for (size_t i = 0; i < CAPTURE_queue_->num_buffers(); i++) {
     // Check that index is not currently queued in the CAPTURE queue and
     // that it is not the same buffer index previously written to.
     if (!queued_buffer_ids.count(i) && i != buffer.buffer_id()) {
-      reusable_buffer_slots.insert(i);
+      if (dpb_ids.find(i) == dpb_ids.end()) {
+        reusable_buffer_slots.insert(i);
+      }
     }
   }
   return reusable_buffer_slots;
@@ -820,54 +951,35 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
                                                   std::vector<uint8_t>& v_plane,
                                                   gfx::Size& size,
                                                   const int frame_number) {
-  std::unique_ptr<H264SliceHeader> resulting_slice_header;
-  if (ProcessNextFrame(frame_number, &resulting_slice_header) !=
-      H264Parser::kOk) {
-    VLOG(4) << "Frame Processing Failed";
-    return VideoDecoder::kError;
+  // If this is the start of the Decoder, initialize Decoder state.
+  if (!parser_) {
+    InitializeDecoderLogic();
   }
 
-  if (!resulting_slice_header)
+  // Keep decoding until either decoder has parsed entire bitstream or there is
+  // a decoded frame ready.
+  while (!stream_finished_ && slice_ready_queue_.empty()) {
+    ProcessNextFrame();
+  }
+
+  if (stream_finished_ && slice_ready_queue_.empty()) {
     return VideoDecoder::kEOStream;
+  }
 
-  uint32_t buffer_id;
-  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
+  if (slice_ready_queue_.empty()) {
+    NOTREACHED() << "Stream ended with |slice_ready_queue_| empty";
+  }
 
-  // Keeps track of which indices are currently dequeued in the
-  // CAPTURE queue. This will be used to determine which indices
-  // can/cannot be refreshed.
-  CAPTURE_queue_->DequeueBufferId(buffer_id);
+  H264SliceMetadata picture = slice_ready_queue_.front();
+  last_decoded_frame_visible_ = picture.outputted;
+  scoped_refptr<MmappedBuffer> buffer =
+      CAPTURE_queue_->GetBuffer(picture.capture_queue_buffer_id);
 
-  CHECK_LT(buffer_id, kNumberOfBuffersInCaptureQueue)
-      << "Buffer ID of the buffer in CAPTURE queue is greater than number of "
-         "buffers";
-
-  scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
                buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
                CAPTURE_queue_->fourcc());
 
-  const std::set<uint32_t> reusable_buffer_slots =
-      GetReusableReferenceSlots(*CAPTURE_queue_->GetBuffer(buffer_id).get(),
-                                CAPTURE_queue_->queued_buffer_ids());
-
-  for (const auto reusable_buffer_slot : reusable_buffer_slots) {
-    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
-      VLOG(4) << "VIDIOC_QBUF failed for CAPTURE queue.";
-      return VideoDecoder::kError;
-    }
-    // Keeps track of which indices are currently queued in the
-    // CAPTURE queue. This will be used to determine which indices
-    // can/cannot be refreshed.
-    CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
-  }
-
-  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
-
-  CHECK_EQ(buffer_id, uint32_t(0)) << "OUTPUT Queue Index not zero";
-
-  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
-
+  slice_ready_queue_.pop();
   return VideoDecoder::kOk;
 }
 

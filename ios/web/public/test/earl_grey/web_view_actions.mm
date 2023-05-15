@@ -192,12 +192,20 @@ id<GREYAction> WebViewLongPressElementForContextMenu(
   return WebViewVerifiedActionOnElement(state, longpress, selector);
 }
 
-id<GREYAction> WebViewTapElement(WebState* state, ElementSelector* selector) {
+id<GREYAction> WebViewTapElement(WebState* state,
+                                 ElementSelector* selector,
+                                 bool verified) {
   CGRect rect = web::test::GetBoundingRectOfElement(state, selector);
+  if (CGRectIsEmpty(rect)) {
+    return WebViewElementNotFound(selector);
+  }
   CGPoint point = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
-  return CGRectIsEmpty(rect) ? WebViewElementNotFound(selector)
-                             : WebViewVerifiedActionOnElement(
-                                   state, grey_tapAtPoint(point), selector);
+
+  id<GREYAction> tap_action = grey_tapAtPoint(point);
+  if (!verified) {
+    return tap_action;
+  }
+  return WebViewVerifiedActionOnElement(state, tap_action, selector);
 }
 
 id<GREYAction> WebViewScrollElementToVisible(WebState* state,

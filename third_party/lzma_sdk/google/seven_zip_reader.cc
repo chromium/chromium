@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/ptr_util.h"
 #include "base/process/memory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +33,7 @@ extern "C" {
 
 namespace seven_zip {
 
-namespace {
+namespace internal {
 
 enum : uint32_t { kNoFolder = static_cast<uint32_t>(-1) };
 
@@ -422,84 +423,101 @@ DWORD FilterPageError(const base::span<uint8_t>& mapped_file,
 
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace
+}  // namespace internal
 
-void Extract(base::File seven_zip_file, Delegate& delegate) {
+// static
+std::unique_ptr<SevenZipReader> SevenZipReader::Create(
+    base::File seven_zip_file,
+    Delegate& delegate) {
   DCHECK(seven_zip_file.IsValid());
-
-  SevenZipReaderImpl impl;
-  Result open_result = impl.Initialize(std::move(seven_zip_file));
+  auto impl = std::make_unique<internal::SevenZipReaderImpl>();
+  Result open_result = impl->Initialize(std::move(seven_zip_file));
   if (open_result != Result::kSuccess) {
     delegate.OnOpenError(open_result);
-    return;
+    return nullptr;
   }
 
-  for (size_t entry_index = 0; entry_index < impl.num_entries();
-       ++entry_index) {
-    EntryInfo entry = impl.GetEntryInfo(entry_index);
-    if (entry.file_path.empty()) {
-      if (!delegate.EntryDone(Result::kNoFilename, entry))
-        return;
-      continue;
-    }
+  return base::WrapUnique(new SevenZipReader(std::move(impl), delegate));
+}
 
-    if (impl.IsDirectory(entry_index)) {
-      if (!delegate.OnDirectory(entry))
-        return;
-      continue;
-    }
+SevenZipReader::~SevenZipReader() = default;
 
-    base::span<uint8_t> output;
-    if (!delegate.OnEntry(entry, output))
-      return;
-    CHECK_EQ(output.size(), entry.file_size);
+void SevenZipReader::Extract() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (entry_index_ < impl_->num_entries()) {
+    bool should_continue = ExtractEntry();
+    entry_index_++;
+    if (!should_continue)
+      break;
+  }
+}
 
-    if (impl.NeedsTempFile(entry_index)) {
-      base::File temp_file(delegate.OnTempFileRequest());
-      if (!temp_file.IsValid())
-        return;
-      impl.SetTempFile(std::move(temp_file));
-    }
+SevenZipReader::SevenZipReader(
+    std::unique_ptr<internal::SevenZipReaderImpl> impl,
+    Delegate& delegate)
+    : impl_(std::move(impl)), delegate_(delegate) {}
 
-    Result extract_result = Result::kUnknownError;
+bool SevenZipReader::ExtractEntry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EntryInfo entry = impl_->GetEntryInfo(entry_index_);
+  if (entry.file_path.empty()) {
+    return delegate_.EntryDone(Result::kNoFilename, entry);
+  }
+
+  if (impl_->IsDirectory(entry_index_)) {
+    return delegate_.OnDirectory(entry);
+  }
+
+  base::span<uint8_t> output;
+  if (!delegate_.OnEntry(entry, output))
+    return false;
+  CHECK_EQ(output.size(), entry.file_size);
+
+  if (impl_->NeedsTempFile(entry_index_)) {
+    base::File temp_file(delegate_.OnTempFileRequest());
+    if (!temp_file.IsValid())
+      return false;
+    impl_->SetTempFile(std::move(temp_file));
+  }
+
+  Result extract_result = Result::kUnknownError;
 #if BUILDFLAG(IS_WIN)
-    int32_t ntstatus = 0;
-    __try {
-      extract_result = impl.ExtractFile(entry_index, output);
-    } __except (FilterPageError(impl.mapped_span(), output, GetExceptionCode(),
-                                GetExceptionInformation(), &ntstatus)) {
-      LOG(ERROR) << "EXCEPTION_IN_PAGE_ERROR while accessing mapped memory; "
-                    "NTSTATUS = "
-                 << ntstatus;
-      // Return kIoError for all known errors except DISK_FULL.
-      switch (ntstatus) {
-        case STATUS_DEVICE_DATA_ERROR:
-        case STATUS_DEVICE_HARDWARE_ERROR:
-        case STATUS_DEVICE_NOT_CONNECTED:
-        case STATUS_INVALID_DEVICE_REQUEST:
-        case STATUS_INVALID_LEVEL:
-        case STATUS_IO_DEVICE_ERROR:
-        case STATUS_IO_TIMEOUT:
-        case STATUS_NO_SUCH_DEVICE:
-          extract_result = Result::kIoError;
-          break;
-        case STATUS_DISK_FULL:
-          extract_result = Result::kDiskFull;
-          break;
-        default:
-          // This error indicates an unexpected error. Spikes in this are
-          // worth investigation.
-          extract_result = Result::kUnknownError;
-          break;
-      }
+  int32_t ntstatus = 0;
+  __try {
+    extract_result = impl_->ExtractFile(entry_index_, output);
+  } __except (internal::FilterPageError(impl_->mapped_span(), output,
+                                        GetExceptionCode(),
+                                        GetExceptionInformation(), &ntstatus)) {
+    LOG(ERROR) << "EXCEPTION_IN_PAGE_ERROR while accessing mapped memory; "
+                  "NTSTATUS = "
+               << ntstatus;
+    // Return kIoError for all known errors except DISK_FULL.
+    switch (ntstatus) {
+      case STATUS_DEVICE_DATA_ERROR:
+      case STATUS_DEVICE_HARDWARE_ERROR:
+      case STATUS_DEVICE_NOT_CONNECTED:
+      case STATUS_INVALID_DEVICE_REQUEST:
+      case STATUS_INVALID_LEVEL:
+      case STATUS_IO_DEVICE_ERROR:
+      case STATUS_IO_TIMEOUT:
+      case STATUS_NO_SUCH_DEVICE:
+        extract_result = Result::kIoError;
+        break;
+      case STATUS_DISK_FULL:
+        extract_result = Result::kDiskFull;
+        break;
+      default:
+        // This error indicates an unexpected error. Spikes in this are
+        // worth investigation.
+        extract_result = Result::kUnknownError;
+        break;
     }
+  }
 #else
-    extract_result = impl.ExtractFile(entry_index, output);
+  extract_result = impl_->ExtractFile(entry_index_, output);
 #endif  // BUILDFLAG(IS_WIN)
 
-    if (!delegate.EntryDone(extract_result, entry))
-      return;
-  }
+  return delegate_.EntryDone(extract_result, entry);
 }
 
 void EnsureLzmaSdkInitialized() {

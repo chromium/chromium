@@ -179,7 +179,8 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     }
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
-        kTopLeft_GrSurfaceOrigin, alpha_mode, usage, gpu::kNullSurfaceHandle);
+        kTopLeft_GrSurfaceOrigin, alpha_mode, usage, "WebGPUSwapBufferProvider",
+        gpu::kNullSurfaceHandle);
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 
     unused_swap_buffers_.push_back(base::MakeRefCounted<SwapBuffer>(
@@ -289,7 +290,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   // Populate the output resource
   *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->mailbox, GL_LINEAR, GetTextureTarget(),
+      current_swap_buffer_->mailbox, GetTextureTarget(),
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
       Format(), IsOverlayCandidate());
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);

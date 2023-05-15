@@ -56,40 +56,6 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
   return true;
 }
 
-bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
-                                     const PasswordForm& password_form,
-                                     BadMessageReason reason) {
-  return CheckChildProcessSecurityPolicyForURL(frame, password_form.url,
-                                               reason) &&
-         CheckChildProcessSecurityPolicyForURL(
-             frame, GURL(password_form.signon_realm), reason) &&
-         CheckChildProcessSecurityPolicyForURL(
-             frame, password_form.form_data.url, reason);
-}
-
-bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
-                                     const std::vector<PasswordForm>& forms,
-                                     BadMessageReason reason) {
-  for (const auto& form : forms) {
-    if (!bad_message::CheckChildProcessSecurityPolicy(frame, form, reason))
-      return false;
-  }
-  return true;
-}
-
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::FormData>& forms_data,
-    BadMessageReason reason) {
-  for (const auto& form_data : forms_data) {
-    if (!bad_message::CheckChildProcessSecurityPolicyForURL(
-            frame, form_data.url, reason)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
   if (frame->GetLifecycleState() ==
       content::RenderFrameHost::LifecycleState::kPrerendering) {

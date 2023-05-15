@@ -25,7 +25,7 @@ class BackoffOperatorTest : public PlatformTest {
         kMaxBackOffResetDurationInSeconds);
   }
 
-  void ReportError() { backoff_operator_->ReportError(); }
+  bool ReportError() { return backoff_operator_->ReportError(); }
   void ReportSuccess() { backoff_operator_->ReportSuccess(); }
   bool IsInBackoffMode() { return backoff_operator_->IsInBackoffMode(); }
   base::TimeDelta GetBackoffRemainingDuration() {
@@ -43,15 +43,15 @@ TEST_F(BackoffOperatorTest, TestBackoffAndTimerReset) {
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(0));
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 3: Entered backoff.
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(300));
 
@@ -81,7 +81,7 @@ TEST_F(BackoffOperatorTest, TestBackoffAndRequestSuccessReset) {
   ASSERT_FALSE(IsInBackoffMode());
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Request success resets the backoff counter.
@@ -89,11 +89,11 @@ TEST_F(BackoffOperatorTest, TestBackoffAndRequestSuccessReset) {
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Request success resets the backoff counter.
@@ -101,15 +101,15 @@ TEST_F(BackoffOperatorTest, TestBackoffAndRequestSuccessReset) {
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 3: Entered backoff.
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
 
   // Request success resets the backoff counter.
@@ -126,15 +126,15 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoff) {
   ASSERT_FALSE(IsInBackoffMode());
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 3: Entered backoff.
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(300));
 
@@ -156,11 +156,11 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoff) {
   // Exponential backoff 1: 600 seconds
   /////////////////////////////////////
 
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(600));
 
@@ -183,11 +183,11 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoff) {
   // Exponential backoff 2: 1200 seconds
   //////////////////////////////////////
 
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(1200));
 
@@ -210,11 +210,11 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoff) {
   // Exponential backoff 3: 1800 seconds (30 minutes)
   ///////////////////////////////////////////////////
 
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(1800));
 
@@ -237,11 +237,11 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoff) {
   // Exponential backoff 4: 1800 seconds (30 minutes)
   ///////////////////////////////////////////////////
 
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(1800));
 
@@ -270,15 +270,15 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoffWithResetOnSuccess) {
   ASSERT_FALSE(IsInBackoffMode());
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 3: Entered backoff.
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(300));
 
@@ -301,11 +301,11 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoffWithResetOnSuccess) {
   // Exponential backoff 1: 600 seconds
   /////////////////////////////////////
 
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(600));
 
@@ -329,15 +329,15 @@ TEST_F(BackoffOperatorTest, TestExponentialBackoffWithResetOnSuccess) {
   ReportSuccess();
 
   // Failure 1: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 2: No backoff.
-  ReportError();
+  EXPECT_FALSE(ReportError());
   EXPECT_FALSE(IsInBackoffMode());
 
   // Failure 3: Entered backoff.
-  ReportError();
+  EXPECT_TRUE(ReportError());
   EXPECT_TRUE(IsInBackoffMode());
   EXPECT_EQ(GetBackoffRemainingDuration(), base::Seconds(300));
 

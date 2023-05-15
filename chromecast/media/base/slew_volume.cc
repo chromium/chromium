@@ -9,7 +9,6 @@
 #include <cstring>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "media/base/vector_math.h"
 
 namespace {
@@ -185,7 +184,7 @@ void SlewVolume::ProcessData(bool repeat_transition,
     for (; slew_frames > 0; --slew_frames) {
       slew_cos_ -= slew_sin_ * slew_angle_;
       slew_sin_ += slew_cos_ * slew_angle_;
-      current_volume_ = base::clamp(slew_offset_ + slew_cos_, 0.0, 1.0);
+      current_volume_ = std::clamp(slew_offset_ + slew_cos_, 0.0, 1.0);
       for (int i = 0; i < channels; ++i) {
         Traits::ProcessSingleDatum(src, current_volume_, dest);
         ++src;

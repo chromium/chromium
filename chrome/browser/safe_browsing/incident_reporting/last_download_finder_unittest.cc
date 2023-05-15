@@ -15,13 +15,13 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/chrome_history_client.h"
@@ -264,7 +264,7 @@ class LastDownloadFinderTest : public testing::Test {
     row.interrupt_reason = history::ToHistoryDownloadInterruptReason(
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     row.id = download_id_++;
-    row.guid = base::GenerateGUID();
+    row.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     row.opened = false;
     row.last_access_time = now - base::Minutes(5);
     row.transient = false;

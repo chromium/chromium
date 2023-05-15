@@ -71,10 +71,9 @@ bool ExtensionListPolicyHandler::CheckListEntry(const base::Value& value) {
   return crx_file::id_util::IdIsValid(str);
 }
 
-void ExtensionListPolicyHandler::ApplyList(base::Value filtered_list,
+void ExtensionListPolicyHandler::ApplyList(base::Value::List filtered_list,
                                            PrefValueMap* prefs) {
-  DCHECK(filtered_list.is_list());
-  prefs->SetValue(pref_path_, std::move(filtered_list));
+  prefs->SetValue(pref_path_, base::Value(std::move(filtered_list)));
 }
 
 // ExtensionInstallForceListPolicyHandler implementation -----------------------

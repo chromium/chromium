@@ -16,6 +16,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -51,6 +53,14 @@ constexpr char kIssueDescriptionKey[] = "issueDescription";
 constexpr char kRequestedDataCollectorsKey[] = "requestedDataCollectors";
 constexpr char kRequestedPiiTypesKey[] = "requestedPiiTypes";
 constexpr char kRequesterId[] = "requesterMetadata";
+
+// JSON keys and values used for creating the upload metadata to File Storage
+// Server (go/crosman_fss_action#scotty-upload-agent).
+constexpr char kFileTypeKey[] = "File-Type";
+constexpr char kSupportFileType[] = "support_file";
+constexpr char kCommandIdKey[] = "Command-ID";
+constexpr char kContentTypeJson[] = "application/json";
+constexpr char kFilenameKey[] = "Filename";
 
 std::set<support_tool::DataCollectorType> GetDataCollectorTypes(
     const base::Value::List& requested_data_collectors) {
@@ -123,12 +133,21 @@ std::string ErrorsToString(const std::set<SupportToolError>& errors) {
   return base::JoinString(error_messages, ", ");
 }
 
-// Returns the upload_parameters string for LogUploadEvent.
+// Returns the upload_parameters string for LogUploadEvent. This will be used as
+// request metadata for the log upload request to the File Storage Server.
+// Contains File-Type, Command-ID and Filename fields.
+// The details of metadata format can be found in
+// go/crosman_fss_action#scotty-upload-agent.
 std::string GetUploadParameters(
     const base::FilePath& filename,
     policy::RemoteCommandJob::UniqueIDType command_id) {
-  return base::StringPrintf(policy::kUploadParametersFormatter, command_id,
-                            filename.BaseName().value().c_str());
+  base::Value::Dict upload_parameters_dict;
+  upload_parameters_dict.Set(kFilenameKey, filename.BaseName().value().c_str());
+  upload_parameters_dict.Set(kCommandIdKey, base::NumberToString(command_id));
+  upload_parameters_dict.Set(kFileTypeKey, kSupportFileType);
+  std::string json;
+  base::JSONWriter::Write(upload_parameters_dict, &json);
+  return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
 }
 
 }  // namespace
@@ -137,22 +156,6 @@ namespace policy {
 
 const char kCommandNotEnabledForUserMessage[] =
     "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
-
-// The format specified in
-// chrome/browser/policy/messaging_layer/upload/file_upload_impl.cc.
-// TODO(b/276945026): Test if the format from XMLWriter is accepted by File
-// Storage Server and update the code to use it if it is.
-const char kUploadParametersFormatter[] = R"(
-  "<File-Type>\r\n"
-  "  support_file\r\n"
-  "</File-Type>\r\n"
-  "<Command-ID>\r\n"
-  "  %ld\r\n"
-  "</Command-ID>\r\n"
-  "<Filename>\r\n"
-  "  %s\r\n"
-  "</Filename>\r\n"
-  "text/xml")";
 
 DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob()
     : target_dir_(kTargetDir) {}

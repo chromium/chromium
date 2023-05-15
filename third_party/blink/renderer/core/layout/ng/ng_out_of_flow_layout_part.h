@@ -87,7 +87,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     void PropagateSpaceShortage(LayoutUnit space_shortage);
 
     // The list of columns to balance.
-    NGContainerFragmentBuilder::ChildrenVector columns;
+    NGFragmentBuilder::ChildrenVector columns;
     // The list of OOF fragmentainer descendants of |columns|.
     HeapVector<NGLogicalOOFNodeForFragmentation>
         out_of_flow_fragmentainer_descendants;
@@ -410,8 +410,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   NGLogicalStaticPosition ToStaticPositionForLegacy(
       NGLogicalStaticPosition position) const;
 
-  const NGContainerFragmentBuilder::ChildrenVector&
-  FragmentationContextChildren() const {
+  const NGFragmentBuilder::ChildrenVector& FragmentationContextChildren()
+      const {
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());
     return column_balancing_info_ ? column_balancing_info_->columns
                                   : container_builder_->Children();

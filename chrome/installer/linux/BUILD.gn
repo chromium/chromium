@@ -109,6 +109,9 @@ if (use_qt) {
   # to prevent a hard dependency on QT for the package.
   packaging_files += [ "$root_out_dir/libqt5_shim.so" ]
 }
+if (use_qt6) {
+  packaging_files += [ "$root_out_dir/libqt6_shim.so" ]
+}
 
 action_foreach("calculate_deb_dependencies") {
   deps = [ ":installer_deps" ]
@@ -247,6 +250,12 @@ if (use_qt) {
   strip_binary("strip_qt5_shim") {
     binary_input = "$root_out_dir/libqt5_shim.so"
     deps = [ "//ui/qt:qt5_shim" ]
+  }
+}
+if (use_qt6) {
+  strip_binary("strip_qt6_shim") {
+    binary_input = "$root_out_dir/libqt6_shim.so"
+    deps = [ "//ui/qt:qt6_shim" ]
   }
 }
 
@@ -445,6 +454,12 @@ group("installer_deps") {
     public_deps += [
       ":strip_qt5_shim",
       "//ui/qt:qt5_shim",
+    ]
+  }
+  if (use_qt6) {
+    public_deps += [
+      ":strip_qt6_shim",
+      "//ui/qt:qt6_shim",
     ]
   }
 }

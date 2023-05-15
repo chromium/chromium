@@ -72,6 +72,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_no_recycler_view_java",
   ]

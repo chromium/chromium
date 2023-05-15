@@ -608,9 +608,9 @@ suite('SiteEntry', function() {
   test('extension site group is shown correctly', async function() {
     const extensionSiteGroup =
         JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    extensionSiteGroup.displayName = 'Test Extension';
     extensionSiteGroup.origins[0].origin =
         'chrome-extension://mhabknllooicelmdboebjilbohdbihln';
-    extensionSiteGroup.extensionName = 'Test Extension';
     testElement.siteGroup = extensionSiteGroup;
     flush();
 

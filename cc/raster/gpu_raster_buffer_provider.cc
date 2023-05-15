@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -365,7 +364,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     }
     backing_->mailbox = sii->CreateSharedImage(
         shared_image_format_, resource_size_, color_space_,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "GpuRasterTile",
         gpu::kNullSurfaceHandle);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -384,7 +383,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   // If playback_settings.msaa_sample_count <= 0, the MSAA is not used. It is
   // equivalent to MSAA sample count 1.
   uint32_t sample_count =
-      base::clamp(playback_settings.msaa_sample_count, 1, 64);
+      std::clamp(playback_settings.msaa_sample_count, 1, 64);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Gpu.Rasterization.Raster.MSAASampleCountLog2",
                               base::bits::Log2Floor(sample_count), 0, 7, 7);
   // With Raw Draw, the framebuffer will be the rasterization target. It cannot

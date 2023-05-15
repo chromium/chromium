@@ -19,6 +19,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -33,7 +34,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
-class DesksBarView;
+class LegacyDeskBarView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class SavedDeskSaveDeskButton;
@@ -285,12 +286,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // (screen_location, and whether that location intersects with the
   // desks bar widget). |for_drop| should be set to true if this is called when
   // the item is being dropped when the drag is complete.
-  // Returns true if |screen_location| does intersect with the DesksBarView.
+  // Returns true if |screen_location| does intersect with the
+  // LegacyDeskBarView.
   bool IntersectsWithDesksBar(const gfx::Point& screen_location,
                               bool update_desks_bar_drag_details,
                               bool for_drop);
 
-  // Updates the drag details for DesksBarView to end the drag and move the
+  // Updates the drag details for LegacyDeskBarView to end the drag and move the
   // window of |drag_item| to another desk if it was dropped on a mini_view of
   // a desk that is different than that of the active desk or if dropped on the
   // new desk button. Returns true if the window was successfully moved to
@@ -341,11 +343,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // save desk buttons if we are not exiting overview.
   void HideSavedDeskLibrary(bool exit_overview);
 
-  // True if the saved desk library is shown.
+  // True if the saved desk library is shown, or in the process of animating to
+  // be shown.
   bool IsShowingSavedDeskLibrary() const;
-
-  // True if the saved desk library will be shown shortly.
-  bool WillShowSavedDeskLibrary() const;
 
   // Returns true if any saved desk name is being modified in its item view on
   // this grid.
@@ -420,8 +420,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   const views::Widget* desks_widget() const { return desks_widget_.get(); }
 
-  const DesksBarView* desks_bar_view() const { return desks_bar_view_; }
-  DesksBarView* desks_bar_view() { return desks_bar_view_; }
+  const LegacyDeskBarView* desks_bar_view() const { return desks_bar_view_; }
+  LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }
 
   bool should_animate_when_exiting() const {
     return should_animate_when_exiting_;
@@ -454,20 +454,26 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   friend class DesksTemplatesTest;
   friend class OverviewTestBase;
 
-  // Struct which holds data required to perform nudges.
+  // Struct which holds data required to perform nudges. Nudge in the context of
+  // overview view means an overview item is currently being dragged vertically
+  // and may be closed when released, and the remaining windows will move
+  // towards their positions once the item is closed.
+  // TODO(conniekxu|sammiequon): Rename this as nudge has a different name in
+  // cros system UI.
   struct NudgeData {
     size_t index;
     gfx::RectF src;
     gfx::RectF dst;
   };
 
-  // Initializes the widget that contains the `DesksBarView` contents. Also will
-  // update the save desk buttons visibility after we initialize `DesksBarView`.
+  // Initializes the widget that contains the `LegacyDeskBarView` contents. Also
+  // will update the save desk buttons visibility after we initialize
+  // `LegacyDeskBarView`.
   void MaybeInitDesksWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.
-  // 1. Optimal height is determined. In this stage |height| is bisected to find
+  // 1. Optimal height is determined. In this stage `height` is bisected to find
   //    maximum height which still allows all the windows to fit.
   // 2. Row widths are balanced. In this stage the available width is reduced
   //    until some windows are no longer fitting or until the difference between
@@ -546,10 +552,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int GetDesksBarHeight() const;
 
   // Root window the grid is in.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // Pointer to the OverviewSession that spawned this grid.
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // Vector containing all the windows in this grid.
   std::vector<std::unique_ptr<OverviewItem>> window_list_;
@@ -565,7 +571,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
   // The contents view of the above |desks_widget_| if created.
-  DesksBarView* desks_bar_view_ = nullptr;
+  raw_ptr<LegacyDeskBarView, ExperimentalAsh> desks_bar_view_ = nullptr;
 
   // The drop target widget. The drop target is created when a window or
   // overview item is being dragged, and is destroyed when the drag ends or
@@ -611,7 +617,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Weak pointer to the window that is being dragged from the top, if there is
   // one.
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;

@@ -192,7 +192,8 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 
   device::FakeHidManager* hid_manager() { return &hid_manager_; }
 
-  void SimulateClickOnSystemTrayIconButton(Browser* browser) {
+  void SimulateClickOnSystemTrayIconButton(Browser* browser,
+                                           const Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS)
     auto expected_pinned_notification_id =
         HidPinnedNotification::GetNotificationId(browser->profile());
@@ -204,16 +205,29 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
         /*action_index=*/0, /*reply=*/absl::nullopt);
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/hidDevices");
 #else
     // On non-ChromeOS platforms, as they use status icon and there isn't good
     // test infra to simulate click on the status icon button, so simulate the
     // click event by invoking ExecuteCommand of HidConnectionTracker directly.
     auto* hid_status_icon =
         static_cast<HidStatusIcon*>(g_browser_process->hid_system_tray_icon());
-    hid_status_icon->ExecuteCommand(IDC_MANAGE_HID_DEVICES_FIRST, 0);
+
+    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "https://support.google.com/chrome?p=webhid");
+
+    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "chrome://settings/content/hidDevices");
+
+    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
+    EXPECT_EQ(
+        browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+        "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +
+            extension->id());
 #endif
-    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/hidDevices");
   }
 
  protected:
@@ -340,6 +354,11 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
         const devices = await navigator.hid.getDevices();
         device = devices[0];
         chrome.test.assertEq(1, devices.length);
+        // Bounce device a few times to make sure nothing unexpected happens.
+        await device.open();
+        await device.close();
+        await device.open();
+        await device.close();
         await device.open();
         chrome.test.notifyPass();
       } catch (e) {
@@ -347,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
       }
     });
   )";
-  LoadExtensionAndRunTest(kBackgroundJs);
-  SimulateClickOnSystemTrayIconButton(browser());
+  const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
+  SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

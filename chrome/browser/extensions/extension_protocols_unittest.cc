@@ -43,7 +43,6 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/identifiability_metrics.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -85,8 +84,7 @@ base::FilePath GetContentVerifierTestPath() {
 scoped_refptr<Extension> CreateTestExtension(const std::string& name,
                                              bool incognito_split_mode,
                                              const ExtensionId& extension_id) {
-  base::Value::Dict manifest;
-  manifest.Set("name", name);
+  auto manifest = base::Value::Dict().Set("name", name);
   manifest.Set("version", "1");
   manifest.Set("manifest_version", 2);
   manifest.Set("incognito", incognito_split_mode ? "split" : "spanning");
@@ -108,15 +106,13 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
 
 scoped_refptr<Extension> CreateWebStoreExtension() {
   base::Value::Dict manifest =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "WebStore")
           .Set("version", "1")
           .Set("manifest_version", 2)
-          .Set("icons",
-               DictionaryBuilder().Set("16", "webstore_icon_16.png").Build())
+          .Set("icons", base::Value::Dict().Set("16", "webstore_icon_16.png"))
           .Set("web_accessible_resources",
-               ListBuilder().Append("webstore_icon_16.png").Build())
-          .Build();
+               base::Value::List().Append("webstore_icon_16.png"));
 
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &path));
@@ -133,7 +129,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestKey("web_accessible_resources",
-                      ListBuilder().Append("test.dat").Build())
+                      base::Value::List().Append("test.dat"))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }

@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -208,8 +209,16 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/911087): Remove this test when enabling the feature.
 TEST_F(CreditCardAccessoryControllerTest,
        AllowedForWebContentsForNonVirtualCards) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableManualFallbackForVirtualCards,
+       features::kAutofillShowUnmaskedCachedCardInManualFillingView},
+      /*disabled_features=*/{features::kAutofillFillMerchantPromoCodeFields,
+                             autofill::features::kAutofillKeyboardAccessory});
   prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile());

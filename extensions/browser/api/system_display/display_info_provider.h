@@ -139,7 +139,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
-  const raw_ptr<display::Screen> screen_;
+  const raw_ptr<display::Screen, DanglingUntriaged> screen_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };

@@ -101,7 +101,8 @@ public class UrlBarDataTest {
     private void verifyOriginSpan(
             String expectedOrigin, @Nullable String expectedOriginSuffix, String url) {
         UrlBarData urlBarData = UrlBarData.forUrl(url);
-        String displayText = urlBarData.displayText.toString();
+        String displayText =
+                urlBarData.displayText == null ? "" : urlBarData.displayText.toString();
         Assert.assertEquals(expectedOriginSuffix == null ? expectedOrigin
                                                          : expectedOrigin + expectedOriginSuffix,
                 displayText);

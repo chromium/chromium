@@ -1,7 +1,7 @@
 Name: Byte Buddy agent
 Short Name: byte-buddy-agent
 URL: https://github.com/raphw/byte-buddy
-Version: 1.12.22
+Version: 1.14.4
 License: Apache 2.0
 License File: NOT_SHIPPED
 CPEPrefix: unknown

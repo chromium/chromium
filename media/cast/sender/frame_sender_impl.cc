@@ -508,7 +508,7 @@ void FrameSenderImpl::OnReceivedPli() {
 }
 
 CastStreamingFrameDropReason FrameSenderImpl::ShouldDropNextFrame(
-    base::TimeDelta frame_duration) const {
+    base::TimeDelta frame_duration) {
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =

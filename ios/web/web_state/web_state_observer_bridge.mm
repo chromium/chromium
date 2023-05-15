@@ -134,24 +134,6 @@ void WebStateObserverBridge::PermissionStateChanged(
   }
 }
 
-void WebStateObserverBridge::WebFrameDidBecomeAvailable(
-    web::WebState* web_state,
-    web::WebFrame* web_frame) {
-  SEL selector = @selector(webState:frameDidBecomeAvailable:);
-  if ([observer_ respondsToSelector:selector]) {
-    [observer_ webState:web_state frameDidBecomeAvailable:web_frame];
-  }
-}
-
-void WebStateObserverBridge::WebFrameWillBecomeUnavailable(
-    web::WebState* web_state,
-    web::WebFrame* web_frame) {
-  SEL selector = @selector(webState:frameWillBecomeUnavailable:);
-  if ([observer_ respondsToSelector:selector]) {
-    [observer_ webState:web_state frameWillBecomeUnavailable:web_frame];
-  }
-}
-
 void WebStateObserverBridge::RenderProcessGone(web::WebState* web_state) {
   if ([observer_ respondsToSelector:@selector(renderProcessGoneForWebState:)]) {
     [observer_ renderProcessGoneForWebState:web_state];

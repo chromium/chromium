@@ -63,10 +63,10 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_STARSCAN)
@@ -180,11 +180,6 @@ struct PartitionOptions {
     kEnabled,
   };
 
-  enum class AddDummyRefCount : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
-
   enum class UseConfigurablePool : uint8_t {
     kNo,
     kIfAvailable,
@@ -198,13 +193,12 @@ struct PartitionOptions {
       Cookie cookie,
       BackupRefPtr backup_ref_ptr,
       BackupRefPtrZapping backup_ref_ptr_zapping,
-      UseConfigurablePool use_configurable_pool,
-      AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled
-#if BUILDFLAG(ENABLE_PKEYS)
+      UseConfigurablePool use_configurable_pool
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       ,
-      int pkey = internal::kDefaultPkey
+      ThreadIsolationOption thread_isolation = ThreadIsolationOption()
 #endif
-      )
+          )
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
@@ -212,9 +206,9 @@ struct PartitionOptions {
         backup_ref_ptr(backup_ref_ptr),
         backup_ref_ptr_zapping(backup_ref_ptr_zapping),
         use_configurable_pool(use_configurable_pool)
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
         ,
-        pkey(pkey)
+        thread_isolation(thread_isolation)
 #endif
   {
   }
@@ -226,9 +220,8 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr;
   BackupRefPtrZapping backup_ref_ptr_zapping;
   UseConfigurablePool use_configurable_pool;
-  AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled;
-#if BUILDFLAG(ENABLE_PKEYS)
-  int pkey;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  ThreadIsolationOption thread_isolation;
 #endif
 };
 
@@ -291,8 +284,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
 
-#if BUILDFLAG(ENABLE_PKEYS)
-    int pkey;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    ThreadIsolationOption thread_isolation;
 #endif
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
@@ -436,11 +429,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static PartitionRoot* FromAddrInFirstSuperpage(
       uintptr_t address);
 
-  PA_ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  PA_ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span,
-                                                          size_t raw_size)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   PA_ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
                                                           size_t len)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -546,7 +534,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
-      PageAccessibilityWithPkeyIfEnabled(
+      PageAccessibilityWithThreadIsolationIfEnabled(
           PageAccessibilityConfiguration::Permissions) const;
 
   PA_ALWAYS_INLINE size_t
@@ -649,9 +637,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       return internal::kConfigurablePoolHandle;
     }
 #endif
-#if BUILDFLAG(ENABLE_PKEYS)
-    if (flags.pkey != internal::kDefaultPkey) {
-      return internal::kPkeyPoolHandle;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    if (flags.thread_isolation.enabled) {
+      return internal::kThreadIsolatedPoolHandle;
     }
 #endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1063,8 +1051,18 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   // supports reference counts.
   PA_DCHECK(root->brp_enabled());
 
-  // memset() can be really expensive.
+  // Iterating over the entire slot can be really expensive.
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+  auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
+  // If we have a hook the object segment is not necessarily filled
+  // with |kQuarantinedByte|.
+  if (PA_LIKELY(!hook)) {
+    unsigned char* object =
+        static_cast<unsigned char*>(root->SlotStartToObject(slot_start));
+    for (size_t i = 0; i < slot_span->GetUsableSize(root); ++i) {
+      PA_DCHECK(object[i] == kQuarantinedByte);
+    }
+  }
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1145,7 +1143,8 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
     *usable_size = slot_span->GetUsableSize(this);
   }
   PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
-  IncreaseTotalSizeOfAllocatedBytes(slot_span, raw_size);
+  IncreaseTotalSizeOfAllocatedBytes(
+      slot_start, slot_span->GetSlotSizeForBookkeeping(), raw_size);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   if (!slot_span->bucket->is_direct_mapped()) {
@@ -1414,12 +1413,15 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     uintptr_t slot_start,
     SlotSpan* slot_span) {
-  DecreaseTotalSizeOfAllocatedBytes(slot_span);
+  DecreaseTotalSizeOfAllocatedBytes(slot_start,
+                                    slot_span->GetSlotSizeForBookkeeping());
+
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   if (!slot_span->bucket->is_direct_mapped()) {
     internal::FreeSlotBitmapMarkSlotAsFree(slot_start);
   }
 #endif
+
   return slot_span->Free(slot_start);
 }
 
@@ -1498,7 +1500,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
   // corresponding pages were faulted in (without acquiring the lock). So there
   // is no need to touch pages manually here before the lock.
   ::partition_alloc::internal::ScopedGuard guard{lock_};
-  DecreaseTotalSizeOfAllocatedBytes(slot_span);
+  // TODO(thiabaud): Fix the accounting here. The size is correct, but the
+  // pointer is not. This only affects local tools that record each allocation,
+  // not our metrics.
+  DecreaseTotalSizeOfAllocatedBytes(
+      0u, slot_span->GetSlotSizeForBookkeeping() * size);
   slot_span->AppendFreeList(head, tail, size);
 }
 
@@ -1582,24 +1588,6 @@ PartitionRoot<thread_safe>::FromAddrInFirstSuperpage(uintptr_t address) {
   uintptr_t super_page = address & internal::kSuperPageBaseMask;
   PA_DCHECK(internal::IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
-}
-
-template <bool thread_safe>
-PA_ALWAYS_INLINE void
-PartitionRoot<thread_safe>::IncreaseTotalSizeOfAllocatedBytes(
-    SlotSpan* slot_span,
-    size_t raw_size) {
-  IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
-                                    slot_span->GetSlotSizeForBookkeeping(),
-                                    raw_size);
-}
-
-template <bool thread_safe>
-PA_ALWAYS_INLINE void
-PartitionRoot<thread_safe>::DecreaseTotalSizeOfAllocatedBytes(
-    SlotSpan* slot_span) {
-  DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
-                                    slot_span->GetSlotSizeForBookkeeping());
 }
 
 template <bool thread_safe>
@@ -1769,8 +1757,8 @@ PartitionRoot<thread_safe>::GetPageAccessibility() const {
     permissions = PageAccessibilityConfiguration::kReadWriteTagged;
   }
 #endif
-#if BUILDFLAG(ENABLE_PKEYS)
-  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  return PageAccessibilityConfiguration(permissions, flags.thread_isolation);
 #else
   return PageAccessibilityConfiguration(permissions);
 #endif
@@ -1778,10 +1766,10 @@ PartitionRoot<thread_safe>::GetPageAccessibility() const {
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE PageAccessibilityConfiguration
-PartitionRoot<thread_safe>::PageAccessibilityWithPkeyIfEnabled(
+PartitionRoot<thread_safe>::PageAccessibilityWithThreadIsolationIfEnabled(
     PageAccessibilityConfiguration::Permissions permissions) const {
-#if BUILDFLAG(ENABLE_PKEYS)
-  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  return PageAccessibilityConfiguration(permissions, flags.thread_isolation);
 #endif
   return PageAccessibilityConfiguration(permissions);
 }

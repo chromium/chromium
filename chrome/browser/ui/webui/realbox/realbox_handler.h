@@ -15,7 +15,6 @@
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +24,8 @@
 
 class GURL;
 class MetricsReporter;
+class OmniboxController;
+class OmniboxEditModel;
 class Profile;
 
 namespace content {
@@ -80,9 +81,11 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                              bool ctrl_key,
                              bool meta_key,
                              bool shift_key) override;
-  void DeleteAutocompleteMatch(uint8_t line) override;
+  void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
   void ExecuteAction(uint8_t line,
+                     uint8_t action_index,
+                     const GURL& url,
                      base::TimeTicks match_selection_timestamp,
                      uint8_t mouse_button,
                      bool alt_key,
@@ -91,24 +94,12 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                      bool shift_key) override;
   void OnNavigationLikely(
       uint8_t line,
+      const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
-
-  // OpenURL function used as a callback for execution of actions.
-  void OpenURL(const GURL& destination_url,
-               TemplateURLRef::PostContent* post_content,
-               WindowOpenDisposition disposition,
-               ui::PageTransition transition,
-               AutocompleteMatchType::Type type,
-               base::TimeTicks match_selection_timestamp,
-               bool destination_url_entered_without_scheme,
-               const std::u16string&,
-               const AutocompleteMatch&,
-               const AutocompleteMatch&,
-               IDNA2008DeviationCharacter);
 
   void SelectMatchAtLine(size_t old_line, size_t new_line);
 
@@ -150,11 +141,13 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
  private:
+  OmniboxEditModel* edit_model() const;
   AutocompleteController* autocomplete_controller() const;
+  const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<OmniboxEditModel> edit_model_;
+  std::unique_ptr<OmniboxController> controller_;
   base::ScopedObservation<AutocompleteControllerEmitter,
                           AutocompleteController::Observer>
       controller_emitter_observation_{this};

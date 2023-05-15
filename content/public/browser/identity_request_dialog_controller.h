@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/identity_request_account.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -48,7 +49,8 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
-                       const blink::mojom::RpContext& rp_context);
+                       const blink::mojom::RpContext& rp_context,
+                       const bool request_permission);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
@@ -57,6 +59,9 @@ struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
   blink::mojom::RpContext rp_context;
+  // Whether the dialog should ask for the user's permission to share
+  // the id/email/name/picture permission or not.
+  bool request_permission;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI
@@ -84,6 +89,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
+  using SigninToIdPCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;
 
@@ -111,7 +117,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowAccountsDialog(
       WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -121,11 +127,14 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  virtual void ShowFailureDialog(WebContents* rp_web_contents,
-                                 const std::string& top_frame_for_display,
-                                 const std::string& idp_for_display,
-                                 const IdentityProviderMetadata& idp_metadata,
-                                 DismissCallback dismiss_callback);
+  virtual void ShowFailureDialog(
+      WebContents* rp_web_contents,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const IdentityProviderMetadata& idp_metadata,
+      DismissCallback dismiss_callback,
+      SigninToIdPCallback signin_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;
@@ -134,10 +143,12 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
 
-  // Show a pop-up window that the IdP controls.
-  virtual void ShowPopUpWindow(const GURL& url,
-                               TokenCallback on_resolve,
-                               DismissCallback dismiss_callback);
+  // Show a modal dialog that loads content from the IdP.
+  virtual WebContents* ShowModalDialog(const GURL& url,
+                                       DismissCallback dismiss_callback);
+
+  // Closes the modal dialog.
+  virtual void CloseModalDialog();
 
  protected:
   bool is_interception_enabled_{false};

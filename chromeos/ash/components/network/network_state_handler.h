@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
@@ -800,10 +801,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
       TechnologyState::TECHNOLOGY_UNAVAILABLE;
 
   // Provides stub cellular networks. Not owned by this instance.
-  StubCellularNetworksProvider* stub_cellular_networks_provider_ = nullptr;
+  raw_ptr<StubCellularNetworksProvider, ExperimentalAsh>
+      stub_cellular_networks_provider_ = nullptr;
 
   // Not owned by this instance.
-  const TetherSortDelegate* tether_sort_delegate_ = nullptr;
+  raw_ptr<const TetherSortDelegate, ExperimentalAsh> tether_sort_delegate_ =
+      nullptr;
 
   // Ensure that Shutdown() gets called exactly once.
   bool did_shutdown_ = false;

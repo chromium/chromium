@@ -208,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, LoadAndUnloadLacrosTtsEngine) {
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
                        SpeakLacrosUtteranceWithLacrosTtsEngine) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kGetTtsUtteranceQueueSizeMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -230,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
                        SpeakAshUtteranceWithLacrosSpeechEngine) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kGetTtsVoicesMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
                        StopLacrosUtteranceWithLacrosTtsEngine) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::Tts::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::Tts>() <
       static_cast<int>(crosapi::mojom::Tts::kStopMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
   }
@@ -334,8 +334,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseBeforeSpeakWithLacrosTtsEngine) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::Tts::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::Tts>() <
       static_cast<int>(crosapi::mojom::Tts::kPauseMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
   }
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseBeforeSpeakWithLacrosTtsEngine) {
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseDuringSpeakWithLacrosTtsEngine) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::Tts::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::Tts>() <
       static_cast<int>(crosapi::mojom::Tts::kPauseMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
   }
@@ -366,8 +366,8 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseDuringSpeakWithLacrosTtsEngine) {
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, IsSpeaking) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::Tts::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::Tts>() <
       static_cast<int>(crosapi::mojom::Tts::kIsSpeakingMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
   }

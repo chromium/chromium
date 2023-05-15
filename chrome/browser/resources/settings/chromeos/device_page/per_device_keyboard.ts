@@ -13,13 +13,14 @@ import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../controls/settings_radio_group.js';
-import '../../controls/settings_slider.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_radio_group.js';
+import '/shared/settings/controls/settings_slider.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -98,11 +99,18 @@ export class SettingsPerDeviceKeyboardElement extends
           Setting.kKeyboardShortcuts,
         ]),
       },
+
+      /**
+       * Whether the setting for long press diacritics should be shown
+       */
+      shouldShowDiacriticSetting: Boolean,
     };
   }
 
   protected keyboards: Keyboard[];
   protected keyboardPolicies: KeyboardPolicies;
+  protected shouldShowDiacriticSetting: boolean =
+      loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
   private prefs: chrome.settingsPrivate.PrefObject;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
@@ -136,6 +144,10 @@ export class SettingsPerDeviceKeyboardElement extends
 
   protected hasKeyboards(): boolean {
     return this.keyboards.length > 0;
+  }
+
+  private computeIsLastDevice(index: number) {
+    return index === this.keyboards.length - 1;
   }
 }
 

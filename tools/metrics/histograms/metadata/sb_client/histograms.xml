@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-08-13">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-10-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentContainsMacros"
-    enum="BooleanContainsMacros" expires_after="2023-08-13">
+    enum="BooleanContainsMacros" expires_after="2023-10-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetError" enum="NetErrorCodes"
-    expires_after="2023-04-24">
+    expires_after="2024-04-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -576,6 +576,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
+    expires_after="2024-05-05">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration of running the TfLite classification, which is one step
+    in applying the TfLite model for phishing detection. This model is applied
+    roughly once per navigation.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
     enum="BooleanReady" expires_after="2023-07-24">
   <owner>andysjlim@chromium.org</owner>
@@ -588,19 +599,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.CacheDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2023-04-16">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    When a result is served from cache, this histogram records whether the
-    result was phishing or not.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.CancelClassificationReason"
     enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2023-06-04">
+    expires_after="2023-10-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -665,8 +666,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.FlatBufferScorer.CreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="2023-04-25">
-  <owner>drubery@chromium.org</owner>
+    enum="SBClientPhishingScorerCreationStatus" expires_after="2024-04-25">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the status when we create a FlatBuffer scorer object for the

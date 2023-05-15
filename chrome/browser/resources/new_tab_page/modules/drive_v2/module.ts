@@ -12,7 +12,7 @@ import {File} from '../../drive.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {DriveProxy} from '../drive/drive_module_proxy.js';
 import {InfoDialogElement} from '../info_dialog.js';
-import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
+import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 
@@ -84,6 +84,5 @@ async function createDriveElement(): Promise<DriveModuleElement> {
   return element;
 }
 
-export const driveDescriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
-    /*id*/ 'drive',
-    /*height*/ ModuleHeight.SHORT, createDriveElement);
+export const driveDescriptor: ModuleDescriptor = new ModuleDescriptor(
+    /*id*/ 'drive', createDriveElement);

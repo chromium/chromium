@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="100506692671054486">Kein vorheriger Befehl</translation>
 <translation id="1009046985747440431">Aufwärts- oder Abwärtspfeil drücken, um Elemente auszuwählen, und die Auswahl mit der Eingabetaste bestätigen</translation>
 <translation id="1011903154582639569">Um auf die gewählte Taste zu tippen, hebe den Finger an</translation>
 <translation id="1012173283529841972">Listenelement</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavendelrosa</translation>
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="3962990492275676168">Ab der aktuellen Position lesen</translation>
+<translation id="397094149579293440">kein Text ausgewählt</translation>
 <translation id="3970951409746498040">Sandbraun</translation>
 <translation id="3989324057180830702">Ein/Aus</translation>
 <translation id="3991317907213946254">Mokkasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Keine vorherige Überschrift der Ebene 1</translation>
 <translation id="4787577491510559358">Formatierung für aktuelles Element ansagen</translation>
 <translation id="479989351350248267">Suchtaste</translation>
+<translation id="4802034228771424756">kein fokussiertes Textfeld</translation>
 <translation id="4804818685124855865">Verbindung trennen</translation>
 <translation id="481165870889056555">Titel der aktuellen Seite ansagen</translation>
 <translation id="4815668758102003883">Blasses Türkis</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interner Link</translation>
 <translation id="4909019435900810068">Ein Wort zurück</translation>
 <translation id="4911349081560453449">Kein vorheriges Kästchen</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> nicht möglich – bitte versuche es noch einmal</translation>
 <translation id="492295894462528572">Vorwort</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953585991029886728">Text bearbeiten</translation>
+<translation id="4964701498510730546">Textfeld ist leer</translation>
 <translation id="4973717656530883744">Mind. <ph name="X" /></translation>
 <translation id="4974612477719259470">Keine vorherige Schaltfläche</translation>
 <translation id="4979404613699303341">Vorherige Schaltfläche</translation>
+<translation id="4981239367072766915">nicht erkannte Eingabe</translation>
 <translation id="4982917827052020884">Fangen wir mit ein paar Tasten an, die du regelmäßig verwenden wirst. Mit der Steuerung-Taste kannst du die Sprachausgabe anhalten. Du findest die Steuerung-Taste unten links auf deiner Tastatur. Drücke zum Fortfahren die Steuerung-Taste.</translation>
 <translation id="4983588134362688868">Zum Seitenanfang</translation>
 <translation id="4986606102545753256">Fenster "<ph name="NAME" />"</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Aktuellen Akkustatus ansagen</translation>
 <translation id="4997282455736854877">Optionsfeld "<ph name="NAME" />" ist ausgewählt.</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, Optionsfeld für Menüpunkt, ausgewählt</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> nicht möglich, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Sprachprotokollierung aktivieren</translation>
 <translation id="5041394372352067729">Braillezeile an den Seitenanfang verschieben</translation>
 <translation id="5042770794184672516">Sprachlautstärke erhöhen</translation>

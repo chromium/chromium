@@ -20,12 +20,9 @@ namespace {
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
 const CGFloat kIconSize = 56;
+const CGFloat kMagicStackIconSize = 52;
 // Standard width of tiles.
 const CGFloat kPreferredMaxWidth = 74;
-// Non-standard width of tiles. (Used only when the Content Suggestions UI
-// Module Refresh feature is enabled.)
-const CGFloat kModulePreferredMaxWidth = 74;
-const CGFloat kModulePreferredMaxWidthWide = 83;
 
 }  // namespace
 
@@ -37,72 +34,57 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
 
 @implementation ContentSuggestionsTileView
 
-- (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder {
+- (instancetype)initWithFrame:(CGRect)frame
+                     tileType:(ContentSuggestionsTileType)type {
   self = [super initWithFrame:frame];
   if (self) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      // Since modules are given more horizontal space on iPad, allow for more
-      // estimated width for the label to calculate content size.
-      CGFloat modulePreferredWidth = self.traitCollection.horizontalSizeClass ==
-                                             UIUserInterfaceSizeClassRegular
-                                         ? kModulePreferredMaxWidthWide
-                                         : kModulePreferredMaxWidth;
-
-      _titleLabel.preferredMaxLayoutWidth = modulePreferredWidth;
-    } else {
-      _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
-    }
-
+    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
-    _imageContainerView = [[UIView alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:_titleLabel];
+    // Use original rounded-square background image for Shorcuts regardless of
+    // if it is in the Magic Stack.
+    if (!IsMagicStackEnabled() ||
+        type == ContentSuggestionsTileType::kShortcuts) {
+      [self addSubview:_titleLabel];
 
-    // The squircle background view.
-    UIImageView* backgroundView =
-        [[UIImageView alloc] initWithFrame:self.bounds];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    backgroundView.image = backgroundImage;
-    backgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
-    [self addSubview:backgroundView];
-    [self addSubview:_imageContainerView];
+      // The squircle background view.
+      UIImageView* backgroundView =
+          [[UIImageView alloc] initWithFrame:self.bounds];
+      backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      backgroundView.image = backgroundImage;
+      backgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
+      [self addSubview:backgroundView];
+      [self addSubview:_imageContainerView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [backgroundView.widthAnchor constraintEqualToConstant:kIconSize],
-      [backgroundView.heightAnchor
-          constraintEqualToAnchor:backgroundView.widthAnchor],
-      [backgroundView.centerXAnchor
-          constraintEqualToAnchor:_titleLabel.centerXAnchor],
-    ]];
-    AddSameCenterConstraints(_imageContainerView, backgroundView);
-    UIView* containerView = backgroundView;
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled() && isPlaceholder) {
-      ApplyVisualConstraintsWithMetrics(
-          @[ @"V:|[container]-(space)-[title]-(>=0)-|" ],
-          @{@"container" : containerView, @"title" : _titleLabel},
-          @{@"space" : @(kSpaceIconTitle)});
+      // Use smaller icon size when Shorcuts are put in Magic Stack.`
+      CGFloat width = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
       [NSLayoutConstraint activateConstraints:@[
-        [_titleLabel.widthAnchor constraintEqualToConstant:kIconSize],
-        [_titleLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+        [backgroundView.widthAnchor constraintEqualToConstant:width],
+        [backgroundView.heightAnchor
+            constraintEqualToAnchor:backgroundView.widthAnchor],
+        [backgroundView.centerXAnchor
+            constraintEqualToAnchor:_titleLabel.centerXAnchor],
       ]];
-    } else {
+      AddSameCenterConstraints(_imageContainerView, backgroundView);
+      UIView* containerView = backgroundView;
+
       ApplyVisualConstraintsWithMetrics(
           @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
           @{@"container" : containerView, @"title" : _titleLabel},
           @{@"space" : @(kSpaceIconTitle)});
-    }
 
-    _imageBackgroundView = backgroundView;
+      _imageBackgroundView = backgroundView;
+    }
 
     _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
     [self addInteraction:self.pointerInteraction];
@@ -117,14 +99,10 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
 
 // Returns the font size for the location label.
 - (UIFont*)titleLabelFont {
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  } else {
-    return PreferredFontForTextStyleWithMaxCategory(
-        UIFontTextStyleCaption1,
-        self.traitCollection.preferredContentSizeCategory,
-        UIContentSizeCategoryAccessibilityLarge);
-  }
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleCaption1,
+      self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityLarge);
 }
 
 #pragma mark - UIView

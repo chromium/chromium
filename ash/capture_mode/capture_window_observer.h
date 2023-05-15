@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point.h"
@@ -68,13 +69,13 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   void RepaintCaptureRegion();
 
   // Current observed window.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // Stores current mouse or touch location in screen coordinate.
   gfx::Point location_in_screen_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
-  CaptureModeSession* const capture_mode_session_;
+  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
 };
 
 }  // namespace ash

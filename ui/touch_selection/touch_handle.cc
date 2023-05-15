@@ -9,8 +9,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -179,8 +177,8 @@ bool TouchHandle::WillHandleTouchEvent(const MotionEvent& event) {
         return false;
       const gfx::PointF touch_point(event.GetX(), event.GetY());
       const float touch_radius =
-          base::clamp(event.GetTouchMajor(), kMinTouchMajorForHitTesting,
-                      kMaxTouchMajorForHitTesting) *
+          std::clamp(event.GetTouchMajor(), kMinTouchMajorForHitTesting,
+                     kMaxTouchMajorForHitTesting) *
           0.5f;
       const gfx::RectF drawable_bounds = drawable_->GetVisibleBounds();
       // Only use the touch radius for targetting if the touch is at or below
@@ -289,37 +287,14 @@ void TouchHandle::UpdateHandleLayout() {
 
     mirror_vertical = top_y_clipped < bottom_y_clipped;
 
-    const float best_y_clipped =
-        mirror_vertical ? top_y_clipped : bottom_y_clipped;
-
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Event.TouchSelectionHandle.BottomHandleClippingPercentage",
-        static_cast<int>((bottom_y_clipped / handle_height) * 100));
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Event.TouchSelectionHandle.BestVerticalClippingPercentage",
-        static_cast<int>((best_y_clipped / handle_height) * 100));
-    UMA_HISTOGRAM_BOOLEAN(
-        "Event.TouchSelectionHandle.ShouldFlipHandleVertically",
-        mirror_vertical);
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Event.TouchSelectionHandle.FlippingImprovementPercentage",
-        static_cast<int>(((bottom_y_clipped - best_y_clipped) / handle_height) *
-                         100));
-
     if (orientation_ == TouchHandleOrientation::LEFT) {
       const float left_x_clipped = std::max(
           viewport_rect_.x() - (focus_bottom_.x() - handle_width), 0.f);
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Event.TouchSelectionHandle.LeftHandleClippingPercentage",
-          static_cast<int>((left_x_clipped / handle_height) * 100));
       if (left_x_clipped > 0)
         mirror_horizontal = true;
     } else if (orientation_ == TouchHandleOrientation::RIGHT) {
       const float right_x_clipped = std::max(
           (focus_bottom_.x() + handle_width) - viewport_rect_.right(), 0.f);
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Event.TouchSelectionHandle.RightHandleClippingPercentage",
-          static_cast<int>((right_x_clipped / handle_height) * 100));
       if (right_x_clipped > 0)
         mirror_horizontal = true;
     }
@@ -432,7 +407,7 @@ void TouchHandle::EndFade() {
 }
 
 void TouchHandle::SetAlpha(float alpha) {
-  alpha = base::clamp(alpha, 0.0f, 1.0f);
+  alpha = std::clamp(alpha, 0.0f, 1.0f);
   if (alpha_ == alpha)
     return;
   alpha_ = alpha;

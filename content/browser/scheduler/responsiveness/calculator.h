@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/responsiveness_calculator_delegate.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -27,7 +29,8 @@ namespace responsiveness {
 // which are protected by |io_thread_lock_|.
 class CONTENT_EXPORT Calculator {
  public:
-  Calculator();
+  explicit Calculator(
+      std::unique_ptr<ResponsivenessCalculatorDelegate> delegate);
 
   Calculator(const Calculator&) = delete;
   Calculator& operator=(const Calculator&) = delete;
@@ -59,9 +62,6 @@ class CONTENT_EXPORT Calculator {
   // "startup" and the beginning of recording
   // Browser.MainThreadsCongestion.
   void OnFirstIdle();
-
-  // Change the Power state of the process. Must be called from the UI thread.
-  void SetProcessSuspended(bool suspended);
 
   // Each congested task/event is fully defined by |start_time| and |end_time|.
   // Note that |duration| = |end_time| - |start_time|.
@@ -211,6 +211,9 @@ class CONTENT_EXPORT Calculator {
   // Note that the process may be suspended while a task or event is being
   // executed, so a very long execution time should be treated similarly.
   base::TimeTicks most_recent_activity_time_;
+
+  // Used to record embedder-specific responsiveness metrics.
+  std::unique_ptr<ResponsivenessCalculatorDelegate> delegate_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Listener for changes in application state, unregisters itself when

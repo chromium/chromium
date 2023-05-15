@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 class TimeDelta;
 }
@@ -98,7 +100,7 @@ class TestApi {
   static constexpr int kNumOfPurposes =
       static_cast<int>(Purpose::kNumOfPurposes);
 
-  TestApi* old_instance_;
+  raw_ptr<TestApi, ExperimentalAsh> old_instance_;
   bool overridden_;
   bool pin_purposes_enabled_by_policy_[kNumOfPurposes];
   bool fingerprint_purposes_enabled_by_policy_[kNumOfPurposes];

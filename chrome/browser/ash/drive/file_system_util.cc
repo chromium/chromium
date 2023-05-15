@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -26,14 +27,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/user.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 using content::BrowserThread;
 
-namespace drive {
-namespace util {
+namespace drive::util {
 
 DriveIntegrationService* GetIntegrationServiceByProfile(Profile* profile) {
   DriveIntegrationService* service =
@@ -106,6 +107,18 @@ bool IsDriveEnabledForProfile(Profile* profile) {
   return IsDriveAvailableForProfile(profile);
 }
 
+bool IsDriveFsBulkPinningEnabled() {
+  // TODO(b/279872186): Prior to M117 and only on canary builds the feature
+  // should be enabled by the feature management module OR a direct feature
+  // flag. After M117 these 2 flags should be required to enable the feature.
+  if (version_info::GetMajorVersionNumberAsInt() < 117) {
+    return base::FeatureList::IsEnabled(
+               ash::features::kFeatureManagementDriveFsBulkPinning) ||
+           base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
+  }
+  return ash::features::IsDriveFsBulkPinningEnabled();
+}
+
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
   auto* drive_integration_service = GetIntegrationServiceByProfile(profile);
   if (!drive_integration_service)
@@ -127,5 +140,4 @@ ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
   return DRIVE_CONNECTED;
 }
 
-}  // namespace util
-}  // namespace drive
+}  // namespace drive::util

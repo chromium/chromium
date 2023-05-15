@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -296,7 +297,7 @@ class CAPTURE_EXPORT RequestManager final
 
   std::unique_ptr<StreamCaptureInterface> capture_interface_;
 
-  CameraDeviceContext* device_context_;
+  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
 
   bool zero_shutter_lag_supported_;
 

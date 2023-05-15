@@ -94,7 +94,7 @@ class PowerBookmarkSyncBridgeTest : public ::testing::Test {
   std::unique_ptr<PowerBookmarkSyncBridge> bridge_;
 };
 
-TEST_F(PowerBookmarkSyncBridgeTest, MergeSyncDataAdd) {
+TEST_F(PowerBookmarkSyncBridgeTest, MergeFullSyncDataAdd) {
   auto power = MakePower(GURL("https://google.com"),
                          sync_pb::PowerBookmarkSpecifics::PowerType::
                              PowerBookmarkSpecifics_PowerType_POWER_TYPE_MOCK);
@@ -117,12 +117,12 @@ TEST_F(PowerBookmarkSyncBridgeTest, MergeSyncDataAdd) {
   EXPECT_CALL(delegate_, NotifyPowersChanged());
 
   ASSERT_FALSE(bridge_
-                   ->MergeSyncData(bridge_->CreateMetadataChangeList(),
-                                   std::move(entity_changes))
+                   ->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                                       std::move(entity_changes))
                    .has_value());
 }
 
-TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesAdd) {
+TEST_F(PowerBookmarkSyncBridgeTest, ApplyIncrementalSyncChangesAdd) {
   delegate_.CreatePower(
       MakePower(GURL("https://google.com"),
                 sync_pb::PowerBookmarkSpecifics::PowerType::
@@ -142,13 +142,14 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesAdd) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(delegate_, NotifyPowersChanged());
 
-  ASSERT_FALSE(bridge_
-                   ->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                                      std::move(entity_changes))
-                   .has_value());
+  ASSERT_FALSE(
+      bridge_
+          ->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                        std::move(entity_changes))
+          .has_value());
 }
 
-TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesUpdate) {
+TEST_F(PowerBookmarkSyncBridgeTest, ApplyIncrementalSyncChangesUpdate) {
   auto power1 = MakePower(GURL("https://google.com"),
                           sync_pb::PowerBookmarkSpecifics::PowerType::
                               PowerBookmarkSpecifics_PowerType_POWER_TYPE_MOCK);
@@ -166,13 +167,14 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesUpdate) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(delegate_, NotifyPowersChanged());
 
-  ASSERT_FALSE(bridge_
-                   ->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                                      std::move(entity_changes))
-                   .has_value());
+  ASSERT_FALSE(
+      bridge_
+          ->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                        std::move(entity_changes))
+          .has_value());
 }
 
-TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesDelete) {
+TEST_F(PowerBookmarkSyncBridgeTest, ApplyIncrementalSyncChangesDelete) {
   auto power1 = MakePower(GURL("https://google.com"),
                           sync_pb::PowerBookmarkSpecifics::PowerType::
                               PowerBookmarkSpecifics_PowerType_POWER_TYPE_MOCK);
@@ -187,13 +189,14 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesDelete) {
   syncer::EntityData data;
   entity_changes.push_back(syncer::EntityChange::CreateDelete(guid));
 
-  ASSERT_FALSE(bridge_
-                   ->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                                      std::move(entity_changes))
-                   .has_value());
+  ASSERT_FALSE(
+      bridge_
+          ->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                        std::move(entity_changes))
+          .has_value());
 }
 
-TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesFail) {
+TEST_F(PowerBookmarkSyncBridgeTest, ApplyIncrementalSyncChangesFail) {
   auto power = MakePower(GURL("https://google.com"),
                          sync_pb::PowerBookmarkSpecifics::PowerType::
                              PowerBookmarkSpecifics_PowerType_POWER_TYPE_MOCK);
@@ -203,16 +206,17 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesFail) {
   entity_changes.push_back(
       syncer::EntityChange::CreateAdd(power->guid_string(), std::move(data)));
 
-  // When `CreateOrMergePowerFromSync` call fails, `ApplySyncChanges` will
-  // return an error.
+  // When `CreateOrMergePowerFromSync` call fails, `ApplyIncrementalSyncChanges`
+  // will return an error.
   EXPECT_CALL(delegate_,
               CreateOrMergePowerFromSync(MatchesPowerByGUID(power->guid())))
       .WillRepeatedly(Return(false));
 
-  ASSERT_TRUE(bridge_
-                  ->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                                     std::move(entity_changes))
-                  .has_value());
+  ASSERT_TRUE(
+      bridge_
+          ->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                        std::move(entity_changes))
+          .has_value());
 }
 
 }  // namespace power_bookmarks

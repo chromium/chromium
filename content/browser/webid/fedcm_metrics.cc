@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "content/browser/webid/flags.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "url/gurl.h"
 
@@ -180,6 +182,9 @@ void FedCmMetrics::RecordIdpSigninMatchStatus(
       case IdpNetworkRequestManager::ParseStatus::kEmptyListError:
         match_status = FedCmIdpSigninMatchStatus::kMismatchWithNoContent;
         break;
+      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError:
+        match_status = FedCmIdpSigninMatchStatus::kMismatchWithInvalidResponse;
+        break;
       case IdpNetworkRequestManager::ParseStatus::kSuccess:
         match_status = FedCmIdpSigninMatchStatus::kMatchWithAccounts;
         break;
@@ -266,6 +271,16 @@ void RecordApprovedClientsSize(int size) {
   if (IsFedCmMultipleIdentityProvidersEnabled())
     return;
   base::UmaHistogramCounts10000("Blink.FedCm.ApprovedClientsSize", size);
+}
+
+void RecordIdpSignOutNetError(int response_code) {
+  int net_error = net::OK;
+  if (response_code < 0) {
+    // In this case, we got a net error, so change |net_error| to the value.
+    net_error = response_code;
+  }
+  base::UmaHistogramSparse("Blink.FedCm.SignInStatusSetToSignout.NetError",
+                           -net_error);
 }
 
 }  // namespace content

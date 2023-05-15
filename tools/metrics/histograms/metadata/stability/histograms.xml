@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
@@ -70,19 +70,6 @@ chromium-metrics-reviews@google.com.
     ranked process has reverse rank 0. This is a measure how good the hints to
     android are; if hints were perfect, then all android kills should have
     reverse rank 0.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Android.OomKillReverseRankSuccess"
-    enum="BooleanSuccess" expires_after="2020-04-10">
-  <obsolete>
-    Expired in 2020-04-10. Removed in M111.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Getting value for OomKillReverseRank may fail. Recorded when an applicable
-    child process is killed by android.
   </summary>
 </histogram>
 
@@ -383,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.Crashpad.Initialized" enum="BooleanSuccess"
-    expires_after="2023-05-03">
+    expires_after="2024-05-01">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -525,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.MobileSessionOOMShutdownHint"
-    enum="OOMShutdownHint" expires_after="2023-04-27">
+    enum="OOMShutdownHint" expires_after="2024-04-24">
   <owner>olivierrobin@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -548,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSVersion" enum="VersionComparison"
-    expires_after="2023-04-27">
+    expires_after="2023-10-04">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

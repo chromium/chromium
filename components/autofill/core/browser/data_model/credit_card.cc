@@ -164,7 +164,8 @@ std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
 }
 
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
-    : AutofillDataModel(guid, origin),
+    : AutofillDataModel(guid),
+      origin_(origin),
       record_type_(LOCAL_CARD),
       network_(kGenericCard),
       expiration_month_(0),
@@ -185,7 +186,9 @@ CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
   instrument_id_ = instrument_id;
 }
 
-CreditCard::CreditCard() : CreditCard(base::GenerateUuid(), std::string()) {}
+CreditCard::CreditCard()
+    : CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                 std::string()) {}
 
 CreditCard::CreditCard(const CreditCard& credit_card) = default;
 CreditCard::CreditCard(CreditCard&& credit_card) = default;
@@ -866,7 +869,7 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
   // cards matches.
   if (record_type() == MASKED_SERVER_CARD ||
       other.record_type() == MASKED_SERVER_CARD) {
-    bool last_four_digits_match = LastFourDigits() == other.LastFourDigits();
+    bool last_four_digits_match = HasSameNumberAs(other);
 
     bool months_match = expiration_month() == other.expiration_month() ||
                         expiration_month() == 0 ||
@@ -878,7 +881,21 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
     return last_four_digits_match && months_match && years_match;
   }
 
+  return HasSameNumberAs(other);
+}
+
+bool CreditCard::HasSameNumberAs(const CreditCard& other) const {
+  if (record_type() == CreditCard::MASKED_SERVER_CARD ||
+      other.record_type() == CreditCard::MASKED_SERVER_CARD) {
+    return LastFourDigits() == other.LastFourDigits();
+  }
+
   return StripSeparators(number_) == StripSeparators(other.number_);
+}
+
+bool CreditCard::HasSameExpirationDateAs(const CreditCard& other) const {
+  return expiration_month() == other.expiration_month() &&
+         expiration_year() == other.expiration_year();
 }
 
 bool CreditCard::operator==(const CreditCard& credit_card) const {
@@ -889,6 +906,10 @@ bool CreditCard::operator==(const CreditCard& credit_card) const {
 
 bool CreditCard::operator!=(const CreditCard& credit_card) const {
   return !operator==(credit_card);
+}
+
+bool CreditCard::IsVerified() const {
+  return !origin_.empty() && !GURL(origin_).is_valid();
 }
 
 bool CreditCard::IsEmpty(const std::string& app_locale) const {
@@ -981,8 +1002,7 @@ std::pair<std::u16string, std::u16string> CreditCard::LabelPieces() const {
     return std::make_pair(name_on_card_, std::u16string());
   }
 
-  return std::make_pair(CardIdentifierStringForAutofillDisplay(),
-                        name_on_card_);
+  return std::make_pair(CardNameAndLastFourDigits(), name_on_card_);
 }
 
 std::u16string CreditCard::Label() const {
@@ -1049,8 +1069,7 @@ std::u16string CreditCard::NetworkAndLastFourDigits(
                          : network + u"  " + obfuscated_string;
 }
 
-// TODO(crbug.com/1357204): Rename to CardNameAndLastFourDigits.
-std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
+std::u16string CreditCard::CardNameAndLastFourDigits(
     std::u16string customized_nickname,
     int obfuscation_length) const {
   std::u16string card_name = CardNameForAutofillDisplay(customized_nickname);
@@ -1096,7 +1115,7 @@ std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
     std::u16string customized_nickname) const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
-      CardIdentifierStringForAutofillDisplay(customized_nickname),
+      CardNameAndLastFourDigits(customized_nickname),
       GetInfo(AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale));
 }
 

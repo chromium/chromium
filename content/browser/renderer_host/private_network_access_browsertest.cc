@@ -28,9 +28,9 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/local_network_access_util.h"
+#include "content/public/test/resource_load_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "content/test/resource_load_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
@@ -56,6 +56,7 @@ using ::testing::ElementsAre;
 // `--host-resolver-rules` command-line switch. The exact values come from the
 // embedded HTTPS server, which has certificates for these domains
 constexpr char kLocalHost[] = "a.test";
+constexpr char kOtherLocalHost[] = "d.test";
 constexpr char kPrivateHost[] = "b.test";
 constexpr char kPublicHost[] = "c.test";
 
@@ -478,6 +479,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
 
     // Rules must be added on the main thread, otherwise `AddRule()` segfaults.
     host_resolver()->AddRule(kLocalHost, "127.0.0.1");
+    host_resolver()->AddRule(kOtherLocalHost, "127.0.0.1");
     host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
     host_resolver()->AddRule(kPublicHost, "127.0.0.1");
   }
@@ -520,6 +522,10 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
 
   GURL SecureLocalURL(const std::string& path) {
     return secure_local_server_.Get().GetURL(kLocalHost, path);
+  }
+
+  GURL OtherSecureLocalURL(const std::string& path) {
+    return secure_local_server_.Get().GetURL(kOtherLocalHost, path);
   }
 
   GURL SecurePrivateURL(const std::string& path) {
@@ -893,11 +899,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Navigate to the cached document.
-  //
-  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
-  // both of those seem to bypass the cache.
   ResourceLoadObserver observer(shell());
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   observer.WaitForResourceCompletion(url);
 
   blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
@@ -922,11 +925,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Navigate to the cached document.
-  //
-  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
-  // both of those seem to bypass the cache.
   ResourceLoadObserver observer(shell());
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   observer.WaitForResourceCompletion(url);
 
   blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
@@ -3070,8 +3070,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   // Check that the page can load a local resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(OtherSecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are disabled, requests:
@@ -3176,8 +3177,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
 
   // Check that the page can load a local resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(OtherSecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent but not enforced, requests:
@@ -3190,8 +3192,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   // Check that the page can load a local resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(OtherSecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent and enforced, requests:
@@ -3205,8 +3208,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 
   // Check that the page can load a local resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(OtherSecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent but not enforced, requests:
@@ -3519,7 +3523,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePublicToCachedLocalIsNotBlocked) {
-  GURL target = SecureLocalURL(kCacheablePath);
+  GURL target = OtherSecureLocalURL(kCacheableCorsPath);
 
   // Cache the resource first.
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
@@ -3548,7 +3552,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // are blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                        FromSecurePublicToCachedLocalIsBlocked) {
-  GURL target = SecureLocalURL(kCacheableCorsPath);
+  GURL target = OtherSecureLocalURL(kCacheableCorsPath);
 
   // Cache the resource first.
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
@@ -3577,7 +3581,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                        FromSecurePublicToCachedLocalIsNotBlocked) {
-  GURL target = SecureLocalURL(kCacheablePnaPath);
+  GURL target = OtherSecureLocalURL(kCacheablePnaPath);
 
   // Cache the resource first.
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
@@ -3808,11 +3812,13 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
 
 IN_PROC_BROWSER_TEST_F(
     PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
-    FetchWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+    FetchWorkerFromSecureTreatAsPublicToLocal) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
-  EXPECT_EQ(false,
+  // The request is exempt from Private Network Access checks because it is
+  // same-origin and the origin is potentially trustworthy.
+  EXPECT_EQ(true,
             EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
 }
 
@@ -3898,13 +3904,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
 
 IN_PROC_BROWSER_TEST_F(
     PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
-    FetchSharedWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+    FetchSharedWorkerFromSecureTreatAsPublicToLocal) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
+  // The request is exempt from Private Network Access checks because it is
+  // same-origin and the origin is potentially trustworthy.
   ExpectFetchSharedWorkerScriptResult(
-      false, EvalJs(root_frame_host(),
-                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4024,15 +4032,16 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
-  GURL url = SecureLocalURL("/empty.html");
+  GURL url = OtherSecureLocalURL("/empty.html");
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 
-  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+  constexpr base::StringPiece kScriptTemplate = R"(
     const iframe = document.createElement("iframe");
-    iframe.src = "/empty.html";
+    iframe.src = $1;
     document.body.appendChild(iframe);
-  )"));
+  )";
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(kScriptTemplate, url)));
 
   ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
 
@@ -4066,8 +4075,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
   GURL initiator_url = SecureLocalURL(kTreatAsPublicAddressPath);
   EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
 
-  GURL url =
-      SecureLocalURL(MakePnaPathForIframe(url::Origin::Create(initiator_url)));
+  GURL url = OtherSecureLocalURL(
+      MakePnaPathForIframe(url::Origin::Create(initiator_url)));
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 

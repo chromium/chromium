@@ -15,6 +15,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -63,7 +64,8 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  FakeFastPairGattServiceClient* fake_fast_pair_gatt_service_client_ = nullptr;
+  raw_ptr<FakeFastPairGattServiceClient, ExperimentalAsh>
+      fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
 class FastPairFakeDataEncryptorImplFactory
@@ -90,7 +92,7 @@ class FastPairFakeDataEncryptorImplFactory
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
-  FakeFastPairDataEncryptor* data_encryptor_ = nullptr;
+  raw_ptr<FakeFastPairDataEncryptor, ExperimentalAsh> data_encryptor_ = nullptr;
   bool successful_retrieval_ = true;
 };
 

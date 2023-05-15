@@ -68,16 +68,13 @@ template("chrome_ios_eg2_test_app_host") {
   ios_eg2_test_app_host(target_name) {
     forward_variables_from(invoker,
                            [
+                             "bundle_deps",
                              "entitlements_path",
                              "entitlements_target",
                              "eg_main_application_delegate",
                              "info_plist",
                              "info_plist_target",
                              "output_name",
-                           ],
-                           [
-                             "deps",
-                             "public_deps",
                            ])
 
     testonly = true

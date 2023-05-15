@@ -26,4 +26,16 @@ base::StringPiece PreloadingTypeToString(PreloadingType type) {
   }
 }
 
+PreloadingPredictor GetPredictorForSpeculationRules(
+    blink::mojom::SpeculationInjectionWorld world) {
+  switch (world) {
+    case blink::mojom::SpeculationInjectionWorld::kNone:
+      [[fallthrough]];
+    case blink::mojom::SpeculationInjectionWorld::kMain:
+      return content_preloading_predictor::kSpeculationRules;
+    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+      return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
+  }
+}
+
 }  // namespace content

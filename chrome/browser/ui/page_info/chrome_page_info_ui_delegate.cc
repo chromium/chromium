@@ -107,30 +107,25 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 #if !BUILDFLAG(IS_ANDROID)
 absl::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  if (!browser || !browser->is_type_normal()) {
+    // TODO(crbug.com/1435450): SidePanel is not available. Evaluate if we can
+    //                          show ATP in a different way.
+    return absl::nullopt;
+  }
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
         site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
-  return absl::nullopt;
-}
 
-void ChromePageInfoUiDelegate::AboutThisSiteSourceClicked(
-    GURL url,
-    const ui::Event& event) {
-  // TODO(crbug.com/1250653): Consider moving this to presenter as other methods
-  // that open web pages.
-  web_contents_->OpenURL(content::OpenURLParams(
-      url, content::Referrer(),
-      ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+  return absl::nullopt;
 }
 
 void ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl(
     const GURL& url,
     const ui::Event& event) {
-  DCHECK(page_info::IsMoreAboutThisSiteFeatureEnabled());
+  DCHECK(page_info::IsAboutThisSiteFeatureEnabled());
   ShowAboutThisSiteSidePanel(web_contents_, url);
 }
 #endif

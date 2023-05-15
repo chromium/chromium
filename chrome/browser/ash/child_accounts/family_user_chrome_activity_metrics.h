@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
@@ -71,7 +72,7 @@ class FamilyUserChromeActivityMetrics
   // prefs or report to UMA.
   void UpdateUserEngagement(bool is_user_active);
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   app_time::AppServiceWrapper app_service_wrapper_;
 
   // The time when the user becomes active.

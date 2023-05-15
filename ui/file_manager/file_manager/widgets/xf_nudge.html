@@ -41,11 +41,19 @@
   color: var(--cros-button-label-color-primary);
   font: var(--cros-body-2-font);
 }
+
+#dismiss {
+  --focus-shadow-color: var(--cros-sys-inverse_primary);
+  align-self: center;
+  border-radius: 8px;
+  color: var(--cros-button-label-color-primary);
+}
 </style>
 <div aria-hidden="true" id="container">
   <div id="dot"></div>
   <div id="bubble">
     <span class="icon"></span>
     <span id="text"></span>
+    <cr-button id="dismiss" aria-describedby="text" hidden></cr-button>
   </div>
 </div>

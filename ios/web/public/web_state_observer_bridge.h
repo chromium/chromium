@@ -71,14 +71,6 @@ enum Permission : NSUInteger;
     didChangeStateForPermission:(web::Permission)permission
     API_AVAILABLE(ios(15.0));
 
-// Invoked by WebStateObserverBridge::WebFrameDidBecomeAvailable.
-- (void)webState:(web::WebState*)webState
-    frameDidBecomeAvailable:(web::WebFrame*)webFrame;
-
-// Invoked by WebStateObserverBridge::WebFrameWillBecomeUnavailable.
-- (void)webState:(web::WebState*)webState
-    frameWillBecomeUnavailable:(web::WebFrame*)webFrame;
-
 // Invoked by WebStateObserverBridge::RenderProcessGone.
 - (void)renderProcessGoneForWebState:(web::WebState*)webState;
 
@@ -129,10 +121,6 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void PermissionStateChanged(web::WebState* web_state,
                               web::Permission permission) override
       API_AVAILABLE(ios(15.0));
-  void WebFrameDidBecomeAvailable(WebState* web_state,
-                                  WebFrame* web_frame) override;
-  void WebFrameWillBecomeUnavailable(WebState* web_state,
-                                     WebFrame* web_frame) override;
   void RenderProcessGone(web::WebState* web_state) override;
   void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;

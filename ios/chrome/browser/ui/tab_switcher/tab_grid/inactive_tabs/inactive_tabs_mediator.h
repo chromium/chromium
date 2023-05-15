@@ -8,9 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 
-@protocol InactiveTabsCommands;
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
 class SnapshotBrowserAgent;
@@ -24,7 +22,7 @@ class TabRestoreService;
 
 // This mediator provides data to the Inactive Tabs grid and handles
 // interactions.
-@interface InactiveTabsMediator : NSObject <GridCommands, GridImageDataSource>
+@interface InactiveTabsMediator : NSObject <GridCommands>
 
 // Initializer with:
 // `consumer` as the receiver of `webStateList` updates.
@@ -36,7 +34,6 @@ class TabRestoreService;
 - (instancetype)initWithConsumer:
                     (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)
                         consumer
-                  commandHandler:(id<InactiveTabsCommands>)commandHandler
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService
          sessionRestorationAgent:

@@ -18,13 +18,13 @@ namespace enterprise_connectors {
 
 std::string ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response) {
-  base::Value signed_data(base::Value::Type::DICT);
+  base::Value::Dict signed_data;
 
   std::string encoded;
   base::Base64Encode(challenge_response, &encoded);
 
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetKey("challengeResponse", base::Value(encoded));
+  base::Value::Dict dict;
+  dict.Set("challengeResponse", base::Value(encoded));
 
   std::string json;
   base::JSONWriter::Write(dict, &json);

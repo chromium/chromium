@@ -7,43 +7,24 @@
 #include <string>
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
-#include "base/strings/string_util.h"
 
 namespace ash::video_conference_utils {
 
-namespace {
-
-constexpr char kTestEffectHistogramName[] = "TestEffect";
-constexpr char kBackgroundBlurHistogramName[] = "BackgroundBlur";
-constexpr char kPortraitRelightingHistogramName[] = "PortraitRelighting";
-constexpr char kNoiseCancellationHistogramName[] = "NoiseCancellation";
-constexpr char kLiveCaptionHistogramName[] = "LiveCaption";
-constexpr char kVideoConferenceHistogramPrefix[] = "Ash.VideoConferenceTray";
-
-}  // namespace
-
 std::string GetEffectHistogramName(VcEffectId effect_id) {
-  std::string effect_name;
   switch (effect_id) {
     case VcEffectId::kTestEffect:
-      effect_name = kTestEffectHistogramName;
-      break;
+      return "Ash.VideoConferenceTray.TestEffect.Click";
     case VcEffectId::kBackgroundBlur:
-      effect_name = kBackgroundBlurHistogramName;
-      break;
+      return "Ash.VideoConferenceTray.BackgroundBlur.Click";
     case VcEffectId::kPortraitRelighting:
-      effect_name = kPortraitRelightingHistogramName;
-      break;
+      return "Ash.VideoConferenceTray.PortraitRelighting.Click";
     case VcEffectId::kNoiseCancellation:
-      effect_name = kNoiseCancellationHistogramName;
-      break;
+      return "Ash.VideoConferenceTray.NoiseCancellation.Click";
     case VcEffectId::kLiveCaption:
-      effect_name = kLiveCaptionHistogramName;
-      break;
+      return "Ash.VideoConferenceTray.LiveCaption.Click";
+    case VcEffectId::kCameraFraming:
+      return "Ash.VideoConferenceTray.CameraFraming.Click";
   }
-  return base::JoinString(
-      {kVideoConferenceHistogramPrefix, effect_name, "Click"},
-      /*separator=*/".");
 }
 
 }  // namespace ash::video_conference_utils

@@ -5,7 +5,7 @@
     flex-direction: column;
   }
 
-  #title {
+  #screen-title {
     font-family: var(--cros-font-family-google-sans);
     font-size: 24px;
     font-weight: 500;
@@ -13,7 +13,7 @@
     margin-top: 16px;
   }
 
-  #subtitle {
+  #screen-subtitle {
     align-items: center;
     color: var(--cros-color-secondary);
     display: flex;
@@ -54,13 +54,13 @@
 </style>
 
 <div part="content" id="content">
-  <h1 id="title">[[title]]</h1>
-  <template is="dom-if" if="[[subtitle]]">
-    <div id="subtitle">[[subtitle]]</div>
+  <h2 id="screen-title">[[screenTitle]]</h2>
+  <template is="dom-if" if="[[screenSubtitle]]">
+    <div id="screen-subtitle">[[screenSubtitle]]</div>
   </template>
   <div id="extension-title">
     <img id="extension-icon" src="[[extensionIconSrc]]" alt=""></img>
-    <h2 id="extension-name">[[extensionName]]</h2>
+    <h3 id="extension-name">[[extensionName]]</h3>
   </div>
   <template is="dom-if" if="[[extensionPermissions.length]]">
     <span id="permissions-header">

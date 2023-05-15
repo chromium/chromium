@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -44,7 +45,7 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
     const views::View* BackgroundView() const;
 
    private:
-    NoteActionLaunchButton* launch_button_;
+    raw_ptr<NoteActionLaunchButton, ExperimentalAsh> launch_button_;
   };
 
   explicit NoteActionLaunchButton(
@@ -63,10 +64,10 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
   class ActionButton;
 
   // The background bubble view.
-  BackgroundView* background_ = nullptr;
+  raw_ptr<BackgroundView, ExperimentalAsh> background_ = nullptr;
 
   // The actionable image button view.
-  ActionButton* action_button_ = nullptr;
+  raw_ptr<ActionButton, ExperimentalAsh> action_button_ = nullptr;
 };
 
 }  // namespace ash

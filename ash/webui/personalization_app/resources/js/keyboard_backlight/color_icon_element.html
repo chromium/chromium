@@ -22,14 +22,24 @@
     width: 36px;
   }
 
-  :host-context([aria-checked='false']) .color-inner-container,
-  :host-context(.zone-title-container) .color-inner-container {
+  :host-context([aria-checked='false']) .color-inner-container {
     height: 28px;
     width: 28px;
   }
 
   :host-context(.zone-title-container) .color-inner-container {
+    height: 27px;
     outline-color: white !important;
+    outline-offset: -1px !important;
+    width: 27px;
+  }
+
+  :host-context(.zone-title-container) .wallpaper-icon {
+    background-color: white !important;
+  }
+
+  :host-context(.zone-title-container) .wallpaper-icon svg {
+    fill: var(--cros-sys-primary);
   }
 
   .dark-icon {
@@ -41,7 +51,7 @@
   }
 </style>
 <template is="dom-if" if="[[isWallpaperColorId_(colorId)]]">
-  <div class="color-inner-container"
+  <div class="color-inner-container wallpaper-icon"
         style$="[[getWallpaperColorInnerContainerStyle_(wallpaperColor_)]]">
       <svg class$="[[getWallpaperIconColorClass_(wallpaperColor_)]]" viewBox="0 0 20 20" width="16" height="16">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0605 5.585L13.5805 6.935C14.3705 7.715 14.2005 8.985 13.4105 9.765L4.76469 18.4108C3.98364 19.1918 2.71731 19.1918 1.93626 18.4108L0.583834 17.0584C-0.196879 16.2776 -0.197265 15.012 0.582974 14.2308L7.40048 7.405L9.23048 5.585C10.0105 4.805 11.2805 4.805 12.0605 5.585ZM8.82101 8.81494L1.95101 15.6849L3.36101 17.1049L10.231 10.2249L8.82101 8.81494Z">

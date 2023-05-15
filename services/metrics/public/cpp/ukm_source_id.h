@@ -39,9 +39,9 @@ class METRICS_EXPORT SourceIdObj {
     // the max threshold.
     NAVIGATION_ID = 1,
     // Source ID used by AppLaunchEventLogger::Log and
-    // AppPlatformMetrics::GetSourceId. They will be kept in memory as long as
-    // the associated app is still running and the number of sources are within
-    // the max threshold.
+    // AppPlatformMetrics::GetSourceId and DesktopWebAppUkmRecorder. They will
+    // be kept in memory as long as the associated app is still running and the
+    // number of sources are within the max threshold.
     APP_ID = 2,
     // Source ID for background events that don't have an open tab but the
     // associated URL is still present in the browsing history. A new source of
@@ -57,11 +57,8 @@ class METRICS_EXPORT SourceIdObj {
     // type and associated events are expected to be recorded within the same
     // report interval; it will not be kept in memory between different reports.
     PAYMENT_APP_ID = 5,
-    // Source ID for desktop web apps, based on the start_url in the web app
-    // manifest. A new source of this type and associated events are expected to
-    // be recorded within the same report interval; it will not be kept in
-    // memory between different reports.
-    DESKTOP_WEB_APP_ID = 6,
+    // DEPRECATED. Use APP_ID instead.
+    DEPRECATED_DESKTOP_WEB_APP_ID = 6,
     // Source ID for web workers, namely SharedWorkers and ServiceWorkers. Web
     // workers may inherit a source ID from the spawner context (in the case of
     // dedicated workers), or may have their own source IDs (in the case of

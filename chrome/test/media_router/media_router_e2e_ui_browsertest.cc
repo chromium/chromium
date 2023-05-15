@@ -20,7 +20,6 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
   MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  test_ui_ = MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
   test_ui_->ShowDialog();
 
   // Wait until the dialog finishes rendering.
@@ -36,14 +35,14 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
 
   // Play the video on loop and wait 5s for it to play smoothly.
   std::string script = "document.getElementsByTagName('video')[0].loop=true;";
-  ExecuteScript(web_contents, script);
+  EXPECT_TRUE(ExecJs(web_contents, script));
   Wait(base::Seconds(5));
 
   // Go to full screen and wait 5s for it to play smoothly.
   script =
       "document.getElementsByTagName('video')[0]."
       "webkitRequestFullScreen();";
-  ExecuteScript(web_contents, script);
+  EXPECT_TRUE(ExecJs(web_contents, script));
   Wait(base::Seconds(5));
   if (!test_ui_->IsDialogShown()) {
     test_ui_->ShowDialog();

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -28,7 +28,8 @@
 
 - (void)start {
   self.viewController = [[SecondaryToolbarViewController alloc] init];
-  self.viewController.buttonFactory = [self buttonFactoryWithType:SECONDARY];
+  self.viewController.buttonFactory =
+      [self buttonFactoryWithType:ToolbarType::kSecondary];
   self.viewController.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.viewController.popupMenuCommandsHandler = HandlerForProtocol(

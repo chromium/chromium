@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -67,7 +68,7 @@ class CrostiniAppsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
-  AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
 };
 
 TEST_F(CrostiniAppsTest, AppReadinessUpdatesWhenCrostiniDisabled) {

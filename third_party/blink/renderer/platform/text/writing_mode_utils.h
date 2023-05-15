@@ -154,6 +154,40 @@ class LogicalToPhysical {
   Value block_end_;     // a.k.a. after
 };
 
+template <typename Value>
+class LogicalToLogical {
+  STACK_ALLOCATED();
+
+ public:
+  LogicalToLogical(WritingDirectionMode parent_writing_direction,
+                   WritingDirectionMode child_writing_direction,
+                   Value inline_start,
+                   Value inline_end,
+                   Value block_start,
+                   Value block_end)
+      : LogicalToLogical(child_writing_direction,
+                         LogicalToPhysical<Value>(parent_writing_direction,
+                                                  inline_start,
+                                                  inline_end,
+                                                  block_start,
+                                                  block_end)) {}
+
+  Value InlineStart() const { return logical_.InlineStart(); }
+
+  Value BlockStart() const { return logical_.BlockStart(); }
+
+ private:
+  LogicalToLogical(WritingDirectionMode child_writing_direction,
+                   LogicalToPhysical<Value> physical)
+      : logical_(child_writing_direction,
+                 physical.Top(),
+                 physical.Right(),
+                 physical.Bottom(),
+                 physical.Left()) {}
+
+  PhysicalToLogical<Value> logical_;
+};
+
 template <typename Value, typename Object>
 class LogicalToPhysicalGetter {
   STACK_ALLOCATED();

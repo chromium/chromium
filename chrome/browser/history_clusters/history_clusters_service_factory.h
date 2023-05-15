@@ -21,9 +21,12 @@ class HistoryClustersServiceFactory : public ProfileKeyedServiceFactory {
   static history_clusters::HistoryClustersService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
-  static HistoryClustersServiceFactory& GetInstance();
+  static HistoryClustersServiceFactory* GetInstance();
 
   static void EnsureFactoryBuilt();
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend base::NoDestructor<HistoryClustersServiceFactory>;

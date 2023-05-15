@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
@@ -168,7 +169,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ArcSelectFilesHandler> arc_select_files_handler_;
-  MockSelectFileDialogHolder* mock_dialog_holder_;
+  raw_ptr<MockSelectFileDialogHolder, ExperimentalAsh> mock_dialog_holder_;
 };
 
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_DialogType) {

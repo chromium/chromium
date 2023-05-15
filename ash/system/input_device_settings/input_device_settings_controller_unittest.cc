@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -21,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
@@ -35,50 +37,67 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
-const ui::InputDevice kSampleKeyboardInternal = {5,
+
+const ui::KeyboardDevice kSampleKeyboardInternal(5,
                                                  ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleKeyboardInternal",
                                                  "",
                                                  base::FilePath(),
                                                  0x1111,
                                                  0x1111,
-                                                 0};
-const ui::InputDevice kSampleKeyboardBluetooth = {
-    10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
-const ui::InputDevice kSampleKeyboardUsb = {15,
+                                                 0);
+const ui::KeyboardDevice kSampleKeyboardBluetooth(10,
+                                                  ui::INPUT_DEVICE_BLUETOOTH,
+                                                  "kSampleKeyboardBluetooth");
+const ui::KeyboardDevice kSampleKeyboardUsb(15,
                                             ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb",
                                             "",
                                             base::FilePath(),
                                             0x1111,
                                             0x2222,
-                                            0};
-const ui::InputDevice kSampleKeyboardUsb2 = {20,
+                                            0);
+const ui::KeyboardDevice kSampleKeyboardUsb2(20,
                                              ui::INPUT_DEVICE_USB,
                                              "kSampleKeyboardUsb2",
                                              "",
                                              base::FilePath(),
                                              0x1111,
                                              0x3333,
-                                             0};
-const ui::InputDevice kSampleTouchpadInternal = {1,
+                                             0);
+const ui::TouchpadDevice kSampleTouchpadInternal(1,
                                                  ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleTouchpadInternal",
                                                  "",
                                                  base::FilePath(),
                                                  0x1111,
                                                  0x4444,
-                                                 0};
-const ui::InputDevice kSamplePointingStickInternal = {
-    2, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
-const ui::InputDevice kSampleMouseInternal = {3, ui::INPUT_DEVICE_INTERNAL,
-                                              "kSampleMouseInternal"};
+                                                 0);
+const ui::TouchpadDevice kSampleHapticTouchpadInternal(
+    25,
+    ui::INPUT_DEVICE_INTERNAL,
+    "kSampleHapticTouchpadInternal",
+    "",
+    base::FilePath(),
+    0x1111,
+    0x4444,
+    0,
+    true);
+const ui::InputDevice kSamplePointingStickInternal(
+    2,
+    ui::INPUT_DEVICE_INTERNAL,
+    "kSamplePointingStickInternal");
+const ui::InputDevice kSampleMouseUsb(3,
+                                      ui::INPUT_DEVICE_USB,
+                                      "kSampleMouseUsb");
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -220,7 +239,6 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     session_controller->Reset();
 
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
     RegisterUserProfilePrefs(user_1_prefs->registry(), /*for_test=*/true);
     auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
@@ -266,7 +284,8 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
-  FakeKeyboardPrefHandler* keyboard_pref_handler_ = nullptr;
+  raw_ptr<FakeKeyboardPrefHandler, ExperimentalAsh> keyboard_pref_handler_ =
+      nullptr;
 };
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingOne) {
@@ -435,7 +454,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetKeyboardSetttingsValidMetric) {
+       RecordSetKeyboardSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
@@ -455,24 +474,45 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetTouchpadSetttingsValidMetric) {
+       RecordSetTouchpadSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadInternal});
+
+  // Set non-haptic touchpad with valid settings.
+  auto settings = mojom::TouchpadSettings::New();
+  settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
+  settings->haptic_sensitivity = kDefaultHapticSensitivity;
   controller_->SetTouchpadSettings((DeviceId)kSampleTouchpadInternal.id,
-                                   mojom::TouchpadSettings::New());
+                                   settings->Clone());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", true,
       /*expected_count=*/1u);
 
-  // Set touchpad with invalid id.
+  // Set non-haptic touchpad with invalid id.
   controller_->SetTouchpadSettings(/*id=*/4, mojom::TouchpadSettings::New());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", false,
       /*expected_count=*/1u);
+
+  // Set non-haptic touchpad with invalid settings.
+  controller_->SetTouchpadSettings((DeviceId)kSampleTouchpadInternal.id,
+                                   mojom::TouchpadSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", false,
+      /*expected_count=*/2u);
+
+  // Set haptic touchpad with valid settings.
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
+      {kSampleHapticTouchpadInternal});
+  controller_->SetTouchpadSettings((DeviceId)kSampleHapticTouchpadInternal.id,
+                                   mojom::TouchpadSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", true,
+      /*expected_count=*/2u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetPointingStickSetttingsValidMetric) {
+       RecordSetPointingStickSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetPointingStickDevices(
       {kSamplePointingStickInternal});
@@ -491,10 +531,10 @@ TEST_F(InputDeviceSettingsControllerTest,
       /*expected_count=*/1u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSetttingsValidMetric) {
+TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSettingsValidMetric) {
   base::HistogramTester histogram_tester;
-  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseInternal});
-  controller_->SetMouseSettings((DeviceId)kSampleMouseInternal.id,
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
+  controller_->SetMouseSettings((DeviceId)kSampleMouseUsb.id,
                                 mojom::MouseSettings::New());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", true,
@@ -523,7 +563,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdatedInvalidId) {
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   // The SetKeyboardSettings call should update both keyboards since they have
   // the same |device_key|.
-  ui::InputDevice sample_usb_keyboard_copy = kSampleKeyboardUsb;
+  ui::KeyboardDevice sample_usb_keyboard_copy = kSampleKeyboardUsb;
   sample_usb_keyboard_copy.id = kSampleKeyboardUsb2.id;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleKeyboardUsb, sample_usb_keyboard_copy});
@@ -569,8 +609,11 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
 
   // Test Metrics Updates when setTouchpadSettings is called.
   controller_->OnTouchpadListUpdated({kSampleTouchpadInternal}, {});
+  auto settings = mojom::TouchpadSettings::New();
+  settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
+  settings->haptic_sensitivity = kDefaultHapticSensitivity;
   controller_->SetTouchpadSettings(kSampleTouchpadInternal.id,
-                                   mojom::TouchpadSettings::New());
+                                   settings.Clone());
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.Internal.AccelerationEnabled.Changed",
       /*expected_count=*/1u);
@@ -599,6 +642,53 @@ TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
                                    settings.Clone());
   EXPECT_EQ(false, controller_->GetGeneralizedTopRowAreFKeys());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardSettingsAreValidWithEnterprisePolicy) {
+  // Test when top_row_are_fkeys_policy doesn't exist.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+
+  // Test when policy status is kRecommended.
+  std::unique_ptr<TestingPrefServiceSimple> pref_service =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  controller_->OnActiveUserPrefServiceChanged(pref_service.get());
+  pref_service->SetRecommendedPref(prefs::kSendFunctionKeys,
+                                   base::Value(kDefaultTopRowAreFKeys));
+  settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 2u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 2u);
+
+  // Test when policy status is kManaged and the settings are valid.
+  pref_service->SetManagedPref(prefs::kSendFunctionKeys,
+                               base::Value(kDefaultTopRowAreFKeys));
+  settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 3u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 3u);
+
+  // Test when policy status is kManaged and the settings are invalid.
+  pref_service->SetManagedPref(prefs::kSendFunctionKeys,
+                               base::Value(!kDefaultTopRowAreFKeys));
+  settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 3u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 3u);
+  controller_->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
 }
 
 }  // namespace ash

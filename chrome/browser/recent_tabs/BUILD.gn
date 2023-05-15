@@ -17,6 +17,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//components/sync_device_info:sync_device_info_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
@@ -33,6 +34,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs/internal:java",
     "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/bottomsheet/android:java",
   ]
 }
 

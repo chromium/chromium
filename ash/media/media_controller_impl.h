@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/media_controller.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -157,7 +158,7 @@ class ASH_EXPORT MediaControllerImpl
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_controller_observer_receiver_{this};
 
-  MediaClient* client_ = nullptr;
+  raw_ptr<MediaClient, ExperimentalAsh> client_ = nullptr;
 
   base::ObserverList<MediaCaptureObserver>::Unchecked observers_;
 };

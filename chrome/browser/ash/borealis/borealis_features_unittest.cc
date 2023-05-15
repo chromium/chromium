@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -37,7 +38,7 @@ class BorealisFeaturesTest : public testing::Test {
  public:
   BorealisFeaturesTest()
       : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {
     AllowBorealis(&profile_, &features_, user_manager_, /*also_enable=*/false);
   }
 
@@ -45,7 +46,7 @@ class BorealisFeaturesTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::test::ScopedFeatureList features_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

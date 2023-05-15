@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -93,7 +94,7 @@ class ASH_EXPORT BluetoothDetailedView {
   Delegate* delegate() { return delegate_; }
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

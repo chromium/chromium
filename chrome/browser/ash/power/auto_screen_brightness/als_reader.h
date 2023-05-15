@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -101,7 +102,7 @@ class LightProviderInterface {
  protected:
   explicit LightProviderInterface(AlsReader* als_reader);
 
-  AlsReader* als_reader_;
+  raw_ptr<AlsReader, ExperimentalAsh> als_reader_;
 };
 
 }  // namespace auto_screen_brightness

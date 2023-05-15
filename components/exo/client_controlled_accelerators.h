@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_CLIENT_CONTROLLED_ACCELERATORS_H_
 #define COMPONENTS_EXO_CLIENT_CONTROLLED_ACCELERATORS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -42,7 +43,7 @@ class ClientControlledAcceleratorTarget : public ui::AcceleratorTarget {
   bool CanHandleAccelerators() const override;
 
  private:
-  ClientControlledShellSurface* surface_;
+  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> surface_;
   std::map<ui::Accelerator, ClientControlledAcceleratorAction> accelerators_;
 };
 

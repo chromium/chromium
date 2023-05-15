@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_configurator.h"
@@ -113,7 +114,7 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
   std::unique_ptr<ActionLogger> logger_;
   std::unique_ptr<RefreshRateThrottleController> controller_;
   // Owned by DisplayConfigurator.
-  TestNativeDisplayDelegate* native_display_delegate_;
+  raw_ptr<TestNativeDisplayDelegate, ExperimentalAsh> native_display_delegate_;
 };
 
 TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {

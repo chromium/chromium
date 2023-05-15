@@ -63,16 +63,6 @@ public class TranslateCompactInfoBar extends InfoBar
     private int mTotalTranslationCount;
 
     // Histogram names for logging metrics.
-    private static final String INFOBAR_HISTOGRAM_TRANSLATE_LANGUAGE =
-            "Translate.CompactInfobar.Language.Translate";
-    private static final String INFOBAR_HISTOGRAM_MORE_LANGUAGES_LANGUAGE =
-            "Translate.CompactInfobar.Language.MoreLanguages";
-    private static final String INFOBAR_HISTOGRAM_PAGE_NOT_IN_LANGUAGE =
-            "Translate.CompactInfobar.Language.PageNotIn";
-    private static final String INFOBAR_HISTOGRAM_ALWAYS_TRANSLATE_LANGUAGE =
-            "Translate.CompactInfobar.Language.AlwaysTranslate";
-    private static final String INFOBAR_HISTOGRAM_NEVER_TRANSLATE_LANGUAGE =
-            "Translate.CompactInfobar.Language.NeverTranslate";
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
 
     // Need 2 instances of TranslateMenuHelper to prevent a race condition bug which happens when
@@ -295,8 +285,6 @@ public class TranslateCompactInfoBar extends InfoBar
                 return;
             case TARGET_TAB_INDEX:
                 recordInfobarAction(InfobarEvent.INFOBAR_TARGET_TAB_TRANSLATE);
-                recordInfobarLanguageData(
-                        INFOBAR_HISTOGRAM_TRANSLATE_LANGUAGE, mOptions.targetLanguageCode());
                 startTranslating(TARGET_TAB_INDEX);
                 return;
             default:
@@ -322,8 +310,6 @@ public class TranslateCompactInfoBar extends InfoBar
                 // Only show snackbar when "Always Translate" is enabled.
                 if (!mOptions.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE)) {
                     recordInfobarAction(InfobarEvent.INFOBAR_ALWAYS_TRANSLATE);
-                    recordInfobarLanguageData(INFOBAR_HISTOGRAM_ALWAYS_TRANSLATE_LANGUAGE,
-                            mOptions.sourceLanguageCode());
                     createAndShowSnackbar(ACTION_OVERFLOW_ALWAYS_TRANSLATE);
                 } else {
                     recordInfobarAction(InfobarEvent.INFOBAR_ALWAYS_TRANSLATE_UNDO);
@@ -334,8 +320,6 @@ public class TranslateCompactInfoBar extends InfoBar
                 // Only show snackbar when "Never Translate" is enabled.
                 if (!mOptions.getTranslateState(TranslateOptions.Type.NEVER_LANGUAGE)) {
                     recordInfobarAction(InfobarEvent.INFOBAR_NEVER_TRANSLATE);
-                    recordInfobarLanguageData(INFOBAR_HISTOGRAM_NEVER_TRANSLATE_LANGUAGE,
-                            mOptions.sourceLanguageCode());
                     createAndShowSnackbar(ACTION_OVERFLOW_NEVER_LANGUAGE);
                 } else {
                     recordInfobarAction(InfobarEvent.INFOBAR_NEVER_TRANSLATE_UNDO);
@@ -367,8 +351,6 @@ public class TranslateCompactInfoBar extends InfoBar
         // Reset target code in both UI and native.
         if (mNativeTranslateInfoBarPtr != 0 && mOptions.setTargetLanguage(code)) {
             recordInfobarAction(InfobarEvent.INFOBAR_MORE_LANGUAGES_TRANSLATE);
-            recordInfobarLanguageData(
-                    INFOBAR_HISTOGRAM_MORE_LANGUAGES_LANGUAGE, mOptions.targetLanguageCode());
             TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
                     TranslateCompactInfoBar.this, TranslateOption.TARGET_CODE, code);
             // Adjust UI.
@@ -381,8 +363,6 @@ public class TranslateCompactInfoBar extends InfoBar
     public void onSourceMenuItemClicked(String code) {
         // Reset source code in both UI and native.
         if (mNativeTranslateInfoBarPtr != 0 && mOptions.setSourceLanguage(code)) {
-            recordInfobarLanguageData(
-                    INFOBAR_HISTOGRAM_PAGE_NOT_IN_LANGUAGE, mOptions.sourceLanguageCode());
             TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
                     TranslateCompactInfoBar.this, TranslateOption.SOURCE_CODE, code);
             // Adjust UI.
@@ -519,14 +499,6 @@ public class TranslateCompactInfoBar extends InfoBar
         RecordHistogram.recordEnumeratedHistogram(
                 INFOBAR_HISTOGRAM, action, InfobarEvent.INFOBAR_HISTOGRAM_BOUNDARY);
     }
-
-    private void recordInfobarLanguageData(String histogram, String langCode) {
-        Integer hashCode = mOptions.getUMAHashCodeFromCode(langCode);
-        if (hashCode != null) {
-            RecordHistogram.recordSparseHistogram(histogram, hashCode);
-        }
-    }
-
 
     // Return the width of parent in pixels.  Return 0 if there is no parent.
     private int getParentWidth() {

@@ -23,7 +23,8 @@ enum LacrosFeedbackSource {
   [MinVersion=2] kLacrosSadTabPage = 4,
   [MinVersion=2] kLacrosChromeLabs = 5,
   [MinVersion=2] kLacrosQuickAnswers = 6,
-  [MinVersion=3] kLacrosWindowLayoutMenu = 7,
+  // Deprecated as the window layout menu feedback button has been removed.
+  [MinVersion=3] kDeprecatedLacrosWindowLayoutMenu = 7,
 };
 
 [Stable]

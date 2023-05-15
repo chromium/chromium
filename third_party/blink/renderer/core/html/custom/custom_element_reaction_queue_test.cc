@@ -15,6 +15,7 @@
 namespace blink {
 
 TEST(CustomElementReactionQueueTest, invokeReactions_one) {
+  CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
@@ -28,6 +29,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_one) {
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_many) {
+  CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
@@ -53,6 +55,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_many) {
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
+  CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
@@ -84,6 +87,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
 }
 
 TEST(CustomElementReactionQueueTest, clear_duringInvoke) {
+  CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();

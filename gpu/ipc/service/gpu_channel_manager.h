@@ -57,11 +57,11 @@ class GLShareGroup;
 
 namespace gpu {
 
+class BuiltInShaderCacheWriter;
 class SharedImageManager;
 struct GpuPreferences;
 class GpuChannel;
 class GpuChannelManagerDelegate;
-class GpuMemoryAblationExperiment;
 class GpuMemoryBufferFactory;
 class GpuWatchdogThread;
 class ImageDecodeAcceleratorWorker;
@@ -309,7 +309,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     base::flat_map<GpuPeakMemoryAllocationSource, uint64_t>
         current_memory_per_source_;
 
-    std::unique_ptr<GpuMemoryAblationExperiment> ablation_experiment_;
     base::WeakPtrFactory<GpuPeakMemoryMonitor> weak_factory_;
   };
 
@@ -337,6 +336,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   raw_ptr<GpuWatchdogThread> watchdog_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<BuiltInShaderCacheWriter> shader_cache_writer_;
+#endif
 
   std::unique_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<gles2::Outputter> outputter_;

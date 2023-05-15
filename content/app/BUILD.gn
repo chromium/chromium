@@ -148,6 +148,7 @@ source_set("app") {
       "mac_init.mm",
     ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 }

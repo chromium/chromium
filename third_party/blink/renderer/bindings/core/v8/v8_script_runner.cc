@@ -499,9 +499,15 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
+    Page* page = frame != nullptr ? frame->GetPage() : nullptr;
+    bool might_generate_compile_hints =
+        page ? page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData()
+             : false;
+
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
         V8CodeCache::GetCompileOptions(execution_context->GetV8CacheOptions(),
-                                       *classic_script);
+                                       *classic_script,
+                                       might_generate_compile_hints);
 
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     v8::MaybeLocal<v8::Value> maybe_result;
@@ -559,8 +565,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       }
 
 #if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
-      Page* page;
-      if (frame != nullptr && (page = frame->GetPage()) != nullptr) {
+      if (page != nullptr) {
         if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
           // TODO(chromium:1406506): Add a compile hints solution for workers.
           // TODO(chromium:1406506): Add a compile hints solution for fenced
@@ -702,7 +707,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     v8::Local<v8::Value> argv[],
     v8::Isolate* isolate) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
-  LocalFrame* frame = window ? window->GetFrame() : nullptr;
   TRACE_EVENT0("v8", "v8.callFunction");
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
@@ -724,10 +728,9 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
   }
 
-  DCHECK(!frame ||
-         BindingSecurity::ShouldAllowAccessToFrame(
-             ToLocalDOMWindow(function->GetCreationContextChecked()), frame,
-             BindingSecurity::ErrorReportOption::kDoNotReport));
+  DCHECK(!window || !window->GetFrame() ||
+         BindingSecurity::ShouldAllowAccessTo(
+             ToLocalDOMWindow(function->GetCreationContextChecked()), window));
   v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);

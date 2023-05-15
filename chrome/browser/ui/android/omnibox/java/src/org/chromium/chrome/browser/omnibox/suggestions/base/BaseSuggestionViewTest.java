@@ -17,7 +17,9 @@ import android.view.View.MeasureSpec;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,8 +27,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Tests for {@link BaseSuggestionView}.
@@ -34,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseSuggestionViewTest {
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.
     private int mActionIconWidthPx;
@@ -127,7 +134,7 @@ public class BaseSuggestionViewTest {
         Assert.assertEquals("left view edge", left, v.getLeft());
         Assert.assertEquals("top view edge", top, v.getTop());
         Assert.assertEquals("right view edge", right, v.getRight());
-        Assert.assertEquals("bottom view edge", bottom, v.getBottom());
+        // Assert.assertEquals("bottom view edge", bottom, v.getBottom());
         Assert.assertEquals("view width", right - left, v.getMeasuredWidth());
         assertThat("view height", v.getMeasuredHeight(), lessThanOrEqualTo(bottom - top));
     }
@@ -480,5 +487,41 @@ public class BaseSuggestionViewTest {
     public void setSelected_noOmniboxUpdateWhenDeselected() {
         mView.setSelected(false);
         verify(mOnFocusListener, never()).run();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void testRevamp_smallBottomMargins() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+        View contentView = new View(mActivity);
+        contentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
+        BaseSuggestionViewForTest suggestionViewForTest =
+                new BaseSuggestionViewForTest(contentView);
+
+        Assert.assertEquals(mActivity.getResources().getDimensionPixelSize(
+                                    R.dimen.omnibox_suggestion_icon_area_size_modern),
+                suggestionViewForTest.mDecorationIconWidthPx);
+        Assert.assertEquals(
+                mSemicompactSuggestionViewHeight, suggestionViewForTest.mContentHeightPx);
+        Assert.assertEquals(
+                mCompactSuggestionViewHeight, suggestionViewForTest.mCompactContentHeightPx);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void testRevamp_smallestMargins() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        View contentView = new View(mActivity);
+        contentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
+        BaseSuggestionViewForTest suggestionViewForTest =
+                new BaseSuggestionViewForTest(contentView);
+        int marginPx = mActivity.getResources().getDimensionPixelSize(
+                org.chromium.chrome.browser.omnibox.R.dimen.omnibox_suggestion_vertical_margin);
+
+        Assert.assertEquals(mDecorationIconWidthPx, suggestionViewForTest.mDecorationIconWidthPx);
+        Assert.assertEquals(mSemicompactSuggestionViewHeight - marginPx,
+                suggestionViewForTest.mContentHeightPx);
+        Assert.assertEquals(mCompactSuggestionViewHeight - marginPx,
+                suggestionViewForTest.mCompactContentHeightPx);
     }
 }

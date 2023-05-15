@@ -8,6 +8,10 @@
 #include "components/cronet/ios/test/start_cronet.h"
 #include "components/grpc_support/test/get_stream_engine.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface Cronet (ExposedForTesting)
 + (void)shutdownForTesting;
 @end

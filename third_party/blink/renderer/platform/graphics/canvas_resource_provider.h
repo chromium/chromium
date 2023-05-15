@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 
 class GrDirectContext;
 
@@ -521,7 +522,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 2;
+  static constexpr int kMaxRecycledCanvasResources = 3;
   // The maximum number of draw ops executed on the canvas, after which the
   // underlying GrContext is flushed.
   // Note: This parameter does not affect the flushing of recorded PaintOps.

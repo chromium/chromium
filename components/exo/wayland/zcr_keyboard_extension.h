@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 
 namespace exo {
@@ -20,7 +22,7 @@ struct WaylandKeyboardExtension {
   WaylandKeyboardExtension& operator=(const WaylandKeyboardExtension&) = delete;
 
   // Owned by Server, which always outlives zcr_keyboard_extension.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 void bind_keyboard_extension(wl_client* client,

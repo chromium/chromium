@@ -42,19 +42,14 @@ inline void UniteLayoutOverflowRect(LayoutRect& layout_overflow,
   layout_overflow.SetY(max_y - layout_overflow.Height());
 }
 
-// OverflowModel classes track content that spills out of an object.
-// SimpleOverflowModel is used by InlineFlowBox, and BoxOverflowModel is
-// used by LayoutBox.
-//
-// SimpleOverflowModel tracks 2 types of overflows: layout and visual
-// overflows. BoxOverflowModel separates visual overflow into self visual
-// overflow and contents visual overflow.
+// BoxOverflowModel class tracks content that spills out of an object.
+// It is used by LayoutBox.
 //
 // All overflows are in the coordinate space of the object (i.e. physical
 // coordinates with flipped block-flow direction). See documentation of
-// LayoutBoxModelObject and LayoutBox::noOverflowRect() for more details.
+// LayoutBoxModelObject and LayoutBox::NoOverflowRect() for more details.
 //
-// The classes model the overflows as rectangles that unite all the sources of
+// The class models the overflows as rectangles that unite all the sources of
 // overflow. This is the natural choice for layout overflow (scrollbars are
 // linear in nature, thus are modeled by rectangles in 2D). For visual overflow
 // and content visual overflow, this is a first order simplification though as
@@ -71,70 +66,15 @@ inline void UniteLayoutOverflowRect(LayoutRect& layout_overflow,
 // * 'height' / 'width' set to a value smaller than the one needed by the
 //   descendants.
 // Due to how scrollbars work, no overflow in the logical top and logical left
-// direction is allowed(see LayoutBox::addLayoutOverflow).
+// direction is allowed(see LayoutBox::AddLayoutOverflow).
 //
 // Visual overflow covers all the effects that visually bleed out of the box.
 // Its primary use is to determine the area to invalidate.
 // Visual overflow includes ('text-shadow' / 'box-shadow'), text stroke,
 // 'outline', 'border-image', etc.
 //
-// An overflow model object is allocated only when some of these fields have
-// non-default values in the owning object. Care should be taken to use adder
-// functions (addLayoutOverflow, addVisualOverflow, etc.) to keep this
-// invariant.
-
-class SimpleLayoutOverflowModel {
-  USING_FAST_MALLOC(SimpleLayoutOverflowModel);
-
- public:
-  SimpleLayoutOverflowModel(const LayoutRect& layout_rect)
-      : layout_overflow_(layout_rect) {}
-  SimpleLayoutOverflowModel(const SimpleLayoutOverflowModel&) = delete;
-  SimpleLayoutOverflowModel& operator=(const SimpleLayoutOverflowModel&) =
-      delete;
-
-  const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
-  void SetLayoutOverflow(const LayoutRect& rect) { layout_overflow_ = rect; }
-  void AddLayoutOverflow(const LayoutRect& rect) {
-    UniteLayoutOverflowRect(layout_overflow_, rect);
-  }
-
-  void Move(LayoutUnit dx, LayoutUnit dy) { layout_overflow_.Move(dx, dy); }
-
- private:
-  LayoutRect layout_overflow_;
-};
-
-class SimpleVisualOverflowModel {
-  USING_FAST_MALLOC(SimpleVisualOverflowModel);
-
- public:
-  SimpleVisualOverflowModel(const LayoutRect& visual_rect)
-      : visual_overflow_(visual_rect) {}
-  SimpleVisualOverflowModel(const SimpleVisualOverflowModel&) = delete;
-  SimpleVisualOverflowModel& operator=(const SimpleVisualOverflowModel&) =
-      delete;
-  const LayoutRect& VisualOverflowRect() const { return visual_overflow_; }
-  void SetVisualOverflow(const LayoutRect& rect) { visual_overflow_ = rect; }
-  void AddVisualOverflow(const LayoutRect& rect) {
-    visual_overflow_.Unite(rect);
-  }
-
-  void Move(LayoutUnit dx, LayoutUnit dy) {
-    visual_overflow_.Move(dx, dy);
-  }
-
- private:
-  LayoutRect visual_overflow_;
-};
-
-struct SimpleOverflowModel {
-  absl::optional<SimpleLayoutOverflowModel> layout_overflow;
-  absl::optional<SimpleVisualOverflowModel> visual_overflow;
-};
-
-// BoxModelOverflow tracks overflows of a LayoutBox. It separates visual
-// overflow into self visual overflow and contents visual overflow.
+// BoxModelOverflow separates visual overflow into self visual overflow and
+// contents visual overflow.
 //
 // Self visual overflow covers all the effects of the object itself that
 // visually bleed out of the box.
@@ -159,7 +99,11 @@ struct SimpleOverflowModel {
 // separately. The box should use self visual overflow as visual overflow if
 // it clips overflow, otherwise union of self visual overflow and contents
 // visual overflow.
-
+//
+// An overflow model object is allocated only when some of these fields have
+// non-default values in the owning object. Care should be taken to use adder
+// functions (AddLayoutOverflow, AddVisualOverflow, etc.) to keep this
+// invariant.
 class BoxLayoutOverflowModel {
  public:
   BoxLayoutOverflowModel(const LayoutRect& layout_rect)
@@ -172,16 +116,8 @@ class BoxLayoutOverflowModel {
     UniteLayoutOverflowRect(layout_overflow_, rect);
   }
 
-  void Move(LayoutUnit dx, LayoutUnit dy) { layout_overflow_.Move(dx, dy); }
-
-  LayoutUnit LayoutClientAfterEdge() const { return layout_client_after_edge_; }
-  void SetLayoutClientAfterEdge(LayoutUnit client_after_edge) {
-    layout_client_after_edge_ = client_after_edge;
-  }
-
  private:
   LayoutRect layout_overflow_;
-  LayoutUnit layout_client_after_edge_;
 };
 
 class BoxVisualOverflowModel {

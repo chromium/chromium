@@ -51,7 +51,7 @@
   }
 
   #restartButton {
-    margin-inline-start: var(--settings-controlled-by-spacing);
+    margin-inline-start: var(--cr-controlled-by-spacing);
   }
 </if>
 
@@ -130,7 +130,7 @@
                 languages.prospectiveUILanguage)]]"
             on-change="onUiLanguageChange_"
             disabled="[[disableUiLanguageCheckbox_(
-                detailLanguage_, languages.prospectiveUILanguage)]]">
+                detailLanguage_, languages.prospectiveUILanguage)]]" noink>
           <span>
             $i18n{displayInThisLanguage}
           </span>
@@ -146,7 +146,7 @@
               on-change="onTranslateCheckboxChange_"
               hidden="[[!prefs.translate.enabled.value]]"
               disabled="[[disableTranslateCheckbox_(
-                  detailLanguage_, languages.translateTarget)]]">
+                  detailLanguage_, languages.translateTarget)]]" noink>
             $i18n{offerToTranslateInThisLanguage} </cr-checkbox>
           <hr hidden="[[!shouldShowDialogSeparator_(languages.enabled.*)]]">
         </template>

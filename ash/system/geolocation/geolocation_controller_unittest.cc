@@ -14,6 +14,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -158,8 +159,8 @@ class GeolocationControllerTest : public AshTestBase {
  private:
   std::unique_ptr<GeolocationController> controller_;
   base::SimpleTestClock test_clock_;
-  base::OneShotTimer* timer_ptr_;
-  TestGeolocationUrlLoaderFactory* factory_;
+  raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
+  raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
   Geoposition position_;
 };
 

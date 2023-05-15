@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_DATA_SOURCE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_DATA_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/url_data_source.h"
@@ -40,7 +41,7 @@ class SystemExtensionsDataSource : public content::URLDataSource {
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const SystemExtensionId system_extension_id_;
   const GURL system_extension_base_url_;
 };

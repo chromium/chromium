@@ -45,50 +45,20 @@ constexpr base::TimeDelta kToolbarIconVisibilityTimeInterval =
 // after user comes out of the full screen.
 constexpr base::TimeDelta kToolbarIconActiveTimeInterval = base::Minutes(1);
 
-// Information extracted from iterating over all models, to avoid having to do
-// so multiple times.
-struct AllDownloadUIModelsInfo {
-  // Whether there are any downloads actively doing deep scanning.
-  bool has_deep_scanning = false;
-  // Whether any downloads are unactioned.
-  bool has_unactioned = false;
-  // From the button UI's perspective, whether the download is considered in
-  // progress. Consider dangerous downloads as completed, because we don't want
-  // to encourage users to interact with them.
-  int in_progress_count = 0;
-  // Count of in-progress downloads (by the above definition) that are paused.
-  int paused_count = 0;
-};
-
-AllDownloadUIModelsInfo GetAllModelsInfo(
-    const std::vector<DownloadUIModelPtr>& all_models) {
-  AllDownloadUIModelsInfo info;
-  for (const auto& model : all_models) {
-    if (model->GetDangerType() ==
-            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
-        model->GetState() != download::DownloadItem::CANCELLED) {
-      info.has_deep_scanning = true;
-    }
-    if (!model->WasActionedOn()) {
-      info.has_unactioned = true;
-    }
-    if (IsModelInProgress(model.get())) {
-      ++info.in_progress_count;
-      if (model->IsPaused()) {
-        ++info.paused_count;
-      }
-    }
-  }
-  return info;
-}
-
-// Whether there are no more in-progress downloads (by the above definition)
-// that are not paused, i.e., whether all actively downloading items are done.
-bool IsAllDone(const AllDownloadUIModelsInfo& info) {
+// Whether there are no more in-progress downloads that are not paused, i.e.,
+// whether all actively downloading items are done.
+bool IsAllDone(const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
   return info.in_progress_count == info.paused_count;
 }
 
 }  // namespace
+
+// static
+const DownloadDisplayController::AllDownloadUIModelsInfo&
+DownloadDisplayController::AllDownloadUIModelsInfo::EmptyInfo() {
+  static AllDownloadUIModelsInfo empty_info;
+  return empty_info;
+}
 
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
@@ -96,7 +66,6 @@ DownloadDisplayController::DownloadDisplayController(
     DownloadBubbleUIController* bubble_controller)
     : display_(display),
       browser_(browser),
-      download_manager_(browser_->profile()->GetDownloadManager()),
       bubble_controller_(bubble_controller) {
   bubble_controller_->SetDownloadDisplayController(this);
   // |display| can be null in tests.
@@ -115,7 +84,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
     return;
   }
 
-  UpdateButtonStateFromAllModels(true);
+  UpdateButtonStateFromAllModelsInfo();
   if (display_->IsFullscreenWithParentViewHidden()) {
     fullscreen_notification_shown_ = true;
     ExclusiveAccessContext* exclusive_access_context =
@@ -138,9 +107,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  std::vector<DownloadUIModelPtr> all_models =
-      UpdateButtonStateFromAllModels(true);
-  AllDownloadUIModelsInfo info = GetAllModelsInfo(all_models);
+  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromAllModelsInfo();
   bool will_show_details = may_show_details && is_done && IsAllDone(info);
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
@@ -160,14 +127,7 @@ void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  std::vector<DownloadUIModelPtr> all_models =
-      UpdateButtonStateFromAllModels(true);
-  // Hide the button if there is only one download item left and that item is
-  // about to be removed.
-  if (all_models.size() == 1 && all_models[0]->GetContentId() == id) {
-    HideToolbarButton();
-    return;
-  }
+  UpdateButtonStateFromAllModelsInfo();
 }
 
 void DownloadDisplayController::OnButtonPressed() {
@@ -220,7 +180,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   }
   fullscreen_notification_shown_ = false;
 
-  UpdateButtonStateFromAllModels(true);
+  UpdateButtonStateFromAllModelsInfo();
   if (download::ShouldShowDownloadBubble(browser_->profile()) &&
       details_shown_while_fullscreen_) {
     display_->ShowDetails();
@@ -229,17 +189,16 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
 }
 
 void DownloadDisplayController::OnResume() {
-  UpdateButtonStateFromAllModels(true);
+  UpdateButtonStateFromAllModelsInfo();
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState(
-    std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
-  if (all_models.empty()) {
+    const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+  if (info.all_models_size == 0) {
     HideToolbarButton();
     return;
   }
-  AllDownloadUIModelsInfo info = GetAllModelsInfo(all_models);
-  base::Time last_complete_time = GetLastCompleteTime(all_models);
+  base::Time last_complete_time = GetLastCompleteTime(info.last_completed_time);
 
   if (info.in_progress_count > 0) {
     icon_info_.icon_state = DownloadIconState::kProgress;
@@ -278,21 +237,13 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
   display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
-std::vector<DownloadUIModelPtr>
-DownloadDisplayController::UpdateButtonStateFromAllModels(bool may_retry) {
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models;
-  bool results_complete =
-      bubble_controller_->update_service()->GetAllModelsToDisplay(all_models);
-  UpdateToolbarButtonState(all_models);
-  if (!results_complete && may_retry) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(
-                &DownloadDisplayController::UpdateButtonStateFromAllModels),
-            weak_factory_.GetWeakPtr(), /*may_retry=*/false));
-  }
-  return all_models;
+const DownloadDisplayController::AllDownloadUIModelsInfo&
+DownloadDisplayController::UpdateButtonStateFromAllModelsInfo() {
+  const AllDownloadUIModelsInfo& info =
+      bubble_controller_->update_service()->GetAllModelsInfo(
+          GetWebAppIdForBrowser(browser_));
+  UpdateToolbarButtonState(info);
+  return info;
 }
 
 void DownloadDisplayController::ScheduleToolbarDisappearance(
@@ -311,15 +262,10 @@ void DownloadDisplayController::ScheduleToolbarInactive(
 }
 
 base::Time DownloadDisplayController::GetLastCompleteTime(
-    const std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
-  base::Time last_time = DownloadPrefs::FromDownloadManager(download_manager_)
+    base::Time last_completed_time_from_current_models) const {
+  base::Time last_time = DownloadPrefs::FromBrowserContext(browser_->profile())
                              ->GetLastCompleteTime();
-  for (const auto& model : all_models) {
-    if (last_time < model->GetEndTime()) {
-      last_time = model->GetEndTime();
-    }
-  }
-  return last_time;
+  return std::max(last_time, last_completed_time_from_current_models);
 }
 
 void DownloadDisplayController::MaybeShowButtonWhenCreated() {
@@ -327,12 +273,11 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
     return;
   }
 
-  std::vector<DownloadUIModelPtr> all_models =
-      UpdateButtonStateFromAllModels(true);
+  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromAllModelsInfo();
   if (display_->IsShowing()) {
     ScheduleToolbarDisappearance(
         kToolbarIconVisibilityTimeInterval -
-        (base::Time::Now() - GetLastCompleteTime(all_models)));
+        (base::Time::Now() - GetLastCompleteTime(info.last_completed_time)));
   }
 }
 
@@ -358,5 +303,6 @@ bool DownloadDisplayController::IsDisplayShowingDetails() {
 
 DownloadDisplayController::ProgressInfo
 DownloadDisplayController::GetProgress() {
-  return bubble_controller_->update_service()->GetProgressInfo();
+  return bubble_controller_->update_service()->GetProgressInfo(
+      GetWebAppIdForBrowser(browser_));
 }

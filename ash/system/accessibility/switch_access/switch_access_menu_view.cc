@@ -12,6 +12,7 @@
 #include "ash/system/accessibility/switch_access/switch_access_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -25,7 +26,7 @@ namespace {
 constexpr int kMaxColumns = 3;
 
 struct ButtonInfo {
-  const gfx::VectorIcon* icon;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
   int label_id;
 };
 

@@ -374,6 +374,10 @@ void LayerTreeHostImpl::UpdateBrowserControlsState(
       constraints, current, animate);
 }
 
+bool LayerTreeHostImpl::HasScrollLinkedAnimation(ElementId for_scroller) const {
+  return mutator_host_->HasScrollLinkedAnimation(for_scroller);
+}
+
 bool LayerTreeHostImpl::IsInHighLatencyMode() const {
   return impl_thread_phase_ == ImplThreadPhase::IDLE;
 }
@@ -2482,14 +2486,6 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
     metadata.local_surface_id =
         child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
-
-  metadata.previous_surfaces_visual_update_duration =
-      active_tree()->previous_surfaces_visual_update_duration();
-  metadata.current_surface_visual_update_duration =
-      active_tree()->visual_update_duration();
-  // We only want to report the durations from a Commit the first time. Not for
-  // subsequent Impl-only frames.
-  active_tree()->ClearVisualUpdateDurations();
 
   return metadata;
 }
@@ -4679,7 +4675,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage,
+          kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
     } else {
       DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
@@ -4688,7 +4684,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
 
-      sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
+      sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
           dst_info, shm.mapping.memory(), dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
@@ -4719,13 +4715,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // directly into the shared memory backing.
     sk_sp<SkSurface> scaled_surface;
     if (layer_tree_frame_sink_->context_provider()) {
-      scaled_surface = SkSurface::MakeRasterN32Premul(upload_size.width(),
-                                                      upload_size.height());
+      scaled_surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(
+          upload_size.width(), upload_size.height()));
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurface::MakeRasterDirect(
-          dst_info, shm.mapping.memory(), dst_info.minRowBytes());
+      scaled_surface = SkSurfaces::WrapPixels(dst_info, shm.mapping.memory(),
+                                              dst_info.minRowBytes());
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
     scaled_canvas->scale(canvas_scale_x, canvas_scale_y);
@@ -4744,7 +4740,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage,
+          kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(pixmap.addr()),
               pixmap.computeByteSize()));
@@ -4765,7 +4761,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                     ->GenUnverifiedSyncToken();
 
     transferable = viz::TransferableResource::MakeGpu(
-        mailbox, GL_LINEAR, texture_target, sync_token, upload_size, format,
+        mailbox, texture_target, sync_token, upload_size, format,
         overlay_candidate);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),

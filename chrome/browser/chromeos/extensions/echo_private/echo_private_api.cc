@@ -113,8 +113,8 @@ EchoPrivateGetRegistrationCodeFunction::Run() {
 #else
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
-      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
-          crosapi::mojom::EchoPrivate::Uuid_)) >=
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
           crosapi::mojom::EchoPrivate::kGetRegistrationCodeMinVersion) {
     lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
         ->GetRegistrationCode(type.value(), std::move(callback));
@@ -191,8 +191,8 @@ ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
 #else
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
-      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
-          crosapi::mojom::EchoPrivate::Uuid_)) >=
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
           crosapi::mojom::EchoPrivate::kGetOobeTimestampMinVersion) {
     lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()->GetOobeTimestamp(
         std::move(callback));

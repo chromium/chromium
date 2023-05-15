@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosSharedAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -135,6 +135,7 @@ suite('GooglePhotosAlbumsTest', function() {
            boolean) => test('displays error when albums fail to load', async () => {
         // Set values returned by |wallpaperProvider|.
         wallpaperProvider.setGooglePhotosAlbums(undefined);
+        wallpaperProvider.setGooglePhotosSharedAlbums(undefined);
 
         // Initialize |googlePhotosAlbumsElement|.
         googlePhotosAlbumsElement =
@@ -146,6 +147,8 @@ suite('GooglePhotosAlbumsTest', function() {
         personalizationStore.expectAction(PersonalizationActionName.SET_ERROR);
         await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
         await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
+        await fetchGooglePhotosSharedAlbums(
+            wallpaperProvider, personalizationStore);
         const {error} =
             await personalizationStore.waitForAction(
                 PersonalizationActionName.SET_ERROR) as SetErrorAction;

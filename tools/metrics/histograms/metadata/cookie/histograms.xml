@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookieSourceSchemeName" enum="CookieSourceSchemeName"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IsPartitionedValid" enum="BooleanValid"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>dylancutler@google.com</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PartitionCount" units="partitions"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -660,7 +660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PartitionedCookieCount" units="cookies"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -670,8 +670,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.PartitionedCookieCount.{NonceType}" units="cookies"
+    expires_after="2023-10-22">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the number of partitioned cookies whose partition key
+    is {NonceType}. This metric is only recorded when partitioned cookies are
+    enabled. This metric is recorded every 10 minutes.
+  </summary>
+  <token key="NonceType">
+    <variant name="Nonced"/>
+    <variant name="Unnonced"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.PartitionedCookiesInRequest" units="cookies"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -810,7 +825,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
-    expires_after="2023-04-30">
+    expires_after="2023-12-30">
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -850,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeDatabaseMigrationToV18" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>

@@ -686,5 +686,110 @@ TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
                               /*stringified_details=*/"{}");
 }
 
+TEST(PaymentRequestTest, SPCActivationlessShowEnabled) {
+  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(true);
+
+  PaymentRequestV8TestingScope scope;
+  MockFunctionScope funcs(scope.GetScriptState());
+
+  {
+    PaymentRequest* request = PaymentRequest::Create(
+        ExecutionContext::From(scope.GetScriptState()),
+        BuildSecurePaymentConfirmationMethodDataForTest(scope),
+        BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kSecurePaymentConfirmationActivationlessShow));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+    request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
+        .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+    EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&(scope.GetFrame())));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kSecurePaymentConfirmationActivationlessShow));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+  }
+
+  // After the first activationless SPC call is allowed, a second should fail.
+  {
+    PaymentRequest* request = PaymentRequest::Create(
+        ExecutionContext::From(scope.GetScriptState()),
+        BuildSecurePaymentConfirmationMethodDataForTest(scope),
+        BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+    request->show(scope.GetScriptState(), scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().Code(),
+              ToExceptionCode(DOMExceptionCode::kSecurityError));
+  }
+}
+
+TEST(PaymentRequestTest, SPCActivationlessShowDisabled) {
+  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(false);
+
+  PaymentRequestV8TestingScope scope;
+  MockFunctionScope funcs(scope.GetScriptState());
+  PaymentRequest* request = PaymentRequest::Create(
+      ExecutionContext::From(scope.GetScriptState()),
+      BuildSecurePaymentConfirmationMethodDataForTest(scope),
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kSecurePaymentConfirmationActivationlessShow));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+  request->show(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kSecurityError));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kSecurePaymentConfirmationActivationlessShow));
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+}
+
+TEST(PaymentRequestTest, SPCActivationlessNotConsumedWithActivation) {
+  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(true);
+
+  PaymentRequestV8TestingScope scope;
+  MockFunctionScope funcs(scope.GetScriptState());
+
+  // The first show call has an activation, so activationless SPC shouldn't be
+  // recorded or consumed.
+  {
+    PaymentRequest* request = PaymentRequest::Create(
+        ExecutionContext::From(scope.GetScriptState()),
+        BuildSecurePaymentConfirmationMethodDataForTest(scope),
+        BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+    LocalFrame::NotifyUserActivation(
+        &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
+    request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
+        .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kSecurePaymentConfirmationActivationlessShow));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+  }
+
+  // A following activationless SPC show call should be allowed, since the first
+  // did not consume the one allowed activationless call.
+  {
+    PaymentRequest* request = PaymentRequest::Create(
+        ExecutionContext::From(scope.GetScriptState()),
+        BuildSecurePaymentConfirmationMethodDataForTest(scope),
+        BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+    request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
+        .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kSecurePaymentConfirmationActivationlessShow));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+  }
+}
+
 }  // namespace
 }  // namespace blink

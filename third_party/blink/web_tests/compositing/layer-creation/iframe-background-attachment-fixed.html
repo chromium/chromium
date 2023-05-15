@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<pre id="mainThreadScrollingReasons"></pre>
-
 <iframe id="iframe" src="resources/background-attachment-fixed.html"></iframe>
 
 <div style="height: 2000px;">
 </div>
 
 <script>
-function scrollingLocationAndReasons(reasons) {
-  return reasons ? "scrolls on main: " + reasons : "scrolls on impl";
+function scrollingReasons(reasons) {
+  return reasons ? "scrolls on main thread, reasons: " + reasons : "scrolls on impl";
 }
 
 if (window.internals) {
@@ -16,13 +14,13 @@ if (window.internals) {
   internals.settings.setPreferCompositingToLCDTextEnabled(true);
 }
 
-if (window.testRunner)
-    testRunner.dumpAsText(true);
-
-window.addEventListener('load', function() {
-    reasons = internals.mainThreadScrollingReasons(document);
-    text = "Main frame " + scrollingLocationAndReasons(reasons);
-    text += "\nThe iFrame scrolls on main thread, reasons: " + document.getElementById("iframe").contentDocument.getElementById("mainThreadScrollingReasons").innerText;
-    document.getElementById("mainThreadScrollingReasons").innerText = text;
-});
+if (window.testRunner) {
+  testRunner.dumpAsText(true);
+  onload = () => {
+    var reasons = internals.mainThreadScrollingReasons(document);
+    text = "Main frame " + scrollingReasons(reasons);
+    text += "\nThe iFrame " + scrollingReasons(iframe.contentDocument.getElementById("mainThreadScrollingReasons").innerText);
+    testRunner.setCustomTextOutput(text);
+  };
+}
 </script>

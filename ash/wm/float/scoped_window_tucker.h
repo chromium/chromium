@@ -9,13 +9,11 @@
 
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
-
-namespace aura {
-class ScopedWindowTargeter;
-}
 
 namespace ash {
 
@@ -66,15 +64,13 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
 
   // The window that is being tucked. Will be tucked and untucked by the tuck
   // handle.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // True iff the window is tucked to the left screen edge, false otherwise.
   bool left_ = false;
 
-  // Used to remove the window targeter that was in use before tucking the
-  // window, if any. Re-installs the original targeter on the window after
-  // untucking.
-  std::unique_ptr<aura::ScopedWindowTargeter> targeter_;
+  // Blocks events from hitting the window while `this` is alive.
+  aura::ScopedWindowEventTargetingBlocker event_blocker_;
 
   views::UniqueWidgetPtr tuck_handle_widget_ =
       std::make_unique<views::Widget>();

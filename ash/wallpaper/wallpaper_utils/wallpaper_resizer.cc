@@ -7,30 +7,30 @@
 #include <utility>
 
 #include "ash/utility/cropping_util.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
 namespace {
 
-// Resizes |image| to |target_size| using |layout| and stores the
-// resulting bitmap at |resized_bitmap_out|.
+// Resizes `image` to `target_size` using `layout`.
 //
-// NOTE: |image| is intentionally a copy to ensure it exists for the duration of
+// NOTE: `image` is intentionally a copy to ensure it exists for the duration of
 // the function.
-void Resize(const gfx::ImageSkia image,
-            const gfx::Size& target_size,
-            WallpaperLayout layout,
-            SkBitmap* resized_bitmap_out) {
+SkBitmap Resize(const gfx::ImageSkia image,
+                const gfx::Size& target_size,
+                WallpaperLayout layout) {
   base::AssertLongCPUWorkAllowed();
 
   SkBitmap orig_bitmap = *image.bitmap();
@@ -74,8 +74,8 @@ void Resize(const gfx::ImageSkia image,
     }
   }
 
-  *resized_bitmap_out = new_bitmap;
-  resized_bitmap_out->setImmutable();
+  new_bitmap.setImmutable();
+  return new_bitmap;
 }
 
 }  // namespace
@@ -103,48 +103,45 @@ gfx::ImageSkia WallpaperResizer::GetResizedImage(const gfx::ImageSkia& image,
 
 WallpaperResizer::WallpaperResizer(const gfx::ImageSkia& image,
                                    const gfx::Size& target_size,
-                                   const WallpaperInfo& wallpaper_info,
-                                   scoped_refptr<base::TaskRunner> task_runner)
+                                   const WallpaperInfo& wallpaper_info)
     : image_(image),
       original_image_id_(GetImageId(image_)),
       target_size_(target_size),
       wallpaper_info_(wallpaper_info),
-      task_runner_(std::move(task_runner)) {
+      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   image_.MakeThreadSafe();
 }
 
-WallpaperResizer::~WallpaperResizer() {}
+WallpaperResizer::~WallpaperResizer() = default;
 
-void WallpaperResizer::StartResize() {
+void WallpaperResizer::StartResize(base::OnceClosure on_resize_done) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   start_calculation_time_ = base::TimeTicks::Now();
 
-  SkBitmap* resized_bitmap = new SkBitmap;
-  if (!task_runner_->PostTaskAndReply(
+  if (!sequenced_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&Resize, image_, target_size_, wallpaper_info_.layout,
-                         resized_bitmap),
+          base::BindOnce(&Resize, image_, target_size_, wallpaper_info_.layout),
           base::BindOnce(&WallpaperResizer::OnResizeFinished,
                          weak_ptr_factory_.GetWeakPtr(),
-                         base::Owned(resized_bitmap)))) {
+                         std::move(on_resize_done)))) {
     LOG(WARNING) << "PostSequencedWorkerTask failed. "
                  << "Wallpaper may not be resized.";
   }
 }
 
-void WallpaperResizer::AddObserver(WallpaperResizerObserver* observer) {
-  observers_.AddObserver(observer);
-}
+void WallpaperResizer::OnResizeFinished(base::OnceClosure on_resize_done,
+                                        const SkBitmap& resized_bitmap) {
+  auto resized_image = gfx::ImageSkia::CreateFrom1xBitmap(resized_bitmap);
 
-void WallpaperResizer::RemoveObserver(WallpaperResizerObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void WallpaperResizer::OnResizeFinished(SkBitmap* resized_bitmap) {
-  image_ = gfx::ImageSkia::CreateFrom1xBitmap(*resized_bitmap);
-  DVLOG(2) << __func__ << " size=" << image_.size().ToString()
+  DVLOG(2) << __func__ << " old=" << image_.size().ToString()
+           << " new=" << resized_image.size().ToString()
            << " time=" << base::TimeTicks::Now() - start_calculation_time_;
-  for (auto& observer : observers_)
-    observer.OnWallpaperResized();
+
+  image_ = resized_image;
+  std::move(on_resize_done).Run();
 }
 
 }  // namespace ash

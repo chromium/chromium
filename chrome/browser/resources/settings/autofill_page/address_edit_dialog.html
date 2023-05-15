@@ -9,7 +9,7 @@
 
       .address-column {
         margin-inline-end: 16px;
-        width: calc((var(--settings-input-max-width) - 16px) / 2);
+        width: calc((var(--cr-default-input-max-width) - 16px) / 2);
       }
 
       #select-row {
@@ -20,11 +20,11 @@
       }
 
       .md-select {
-        --md-select-width: var(--settings-input-max-width);
+        --md-select-width: var(--cr-default-input-max-width);
       }
 
       .long {
-        width: var(--settings-input-max-width);
+        width: var(--cr-default-input-max-width);
       }
 
       cr-input {
@@ -114,7 +114,7 @@
             [[validationError_]]<wbr>
           </div>
           <div id="accountSourceNotice">
-            [[i18n('editAccountAddressSourceNotice', accountInfo.email)]]
+            [[accountAddressSourceNotice_]]
           </div>
         </div>
       </div>

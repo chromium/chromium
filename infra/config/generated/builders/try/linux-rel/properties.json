@@ -170,5 +170,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.linux",
+  "cq": "required",
   "recipe": "chromium/orchestrator"
 }

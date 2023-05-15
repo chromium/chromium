@@ -34,12 +34,14 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
+#include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "components/prefs/pref_registry.h"
@@ -85,7 +87,10 @@ class MediatorTest : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    set_create_quick_pair_mediator(false);
+
     AshTestBase::SetUp();
+
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     ON_CALL(*adapter_, IsPresent()).WillByDefault(testing::Return(true));
@@ -137,12 +142,6 @@ class MediatorTest : public AshTestBase {
     mock_fast_pair_repository_ =
         static_cast<MockFastPairRepository*>(fast_pair_repository.get());
 
-    browser_delegate_ = std::make_unique<MockQuickPairBrowserDelegate>();
-    ON_CALL(*browser_delegate_, GetActivePrefService())
-        .WillByDefault(testing::Return(&pref_service_));
-    pref_service_.registry()->RegisterBooleanPref(ash::prefs::kFastPairEnabled,
-                                                  /*default_value=*/true);
-
     FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
         &MediatorTest::CreateHandshake, base::Unretained(this)));
 
@@ -193,15 +192,14 @@ class MediatorTest : public AshTestBase {
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  FakeFeatureStatusTracker* feature_status_tracker_;
-  MockScannerBroker* mock_scanner_broker_;
-  FakeRetroactivePairingDetector* fake_retroactive_pairing_detector_;
-  MockPairerBroker* mock_pairer_broker_;
-  MockUIBroker* mock_ui_broker_;
-  MockFastPairRepository* mock_fast_pair_repository_;
+  raw_ptr<FakeFeatureStatusTracker, ExperimentalAsh> feature_status_tracker_;
+  raw_ptr<MockScannerBroker, ExperimentalAsh> mock_scanner_broker_;
+  raw_ptr<FakeRetroactivePairingDetector, ExperimentalAsh>
+      fake_retroactive_pairing_detector_;
+  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_;
+  raw_ptr<MockUIBroker, ExperimentalAsh> mock_ui_broker_;
+  raw_ptr<MockFastPairRepository, ExperimentalAsh> mock_fast_pair_repository_;
   bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
-  std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
-  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<Mediator> mediator_;
 };
 

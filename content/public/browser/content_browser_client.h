@@ -22,6 +22,7 @@
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -222,6 +223,7 @@ class PresentationObserver;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
+class ResponsivenessCalculatorDelegate;
 class SerialDelegate;
 class SiteInstance;
 class SpeculationHostDelegate;
@@ -258,6 +260,29 @@ class TtsControllerDelegate;
 class SmartCardDelegate;
 #endif
 
+// Structure of data pasted from clipboard.
+struct CONTENT_EXPORT ClipboardPasteData {
+  ClipboardPasteData(std::string text,
+                     std::string image,
+                     std::vector<std::string> file_paths);
+  ClipboardPasteData();
+  ClipboardPasteData(const ClipboardPasteData&);
+  ClipboardPasteData(ClipboardPasteData&&);
+  ClipboardPasteData& operator=(ClipboardPasteData&&);
+  bool isEmpty();
+  ~ClipboardPasteData();
+
+  // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
+  std::string text;
+
+  // Binary image data to scan, such as png (here we assume the data
+  // struct holds one image only).
+  std::string image;
+
+  // A list of full file paths to scan.
+  std::vector<std::string> file_paths;
+};
+
 // Embedder API (or SPI) for participating in browser logic, to be implemented
 // by the client of the content browser. See ChromeContentBrowserClient for the
 // principal implementation. The methods are assumed to be called on the UI
@@ -271,8 +296,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Callback used with IsClipboardPasteContentAllowed() method.  If the paste
   // is not allowed, nullopt is passed to the callback.  Otherwise, the data
   // that should be pasted is passed in.
-  using IsClipboardPasteContentAllowedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& data)>;
+  using IsClipboardPasteContentAllowedCallback = base::OnceCallback<void(
+      absl::optional<ClipboardPasteData> clipboard_paste_data)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -645,10 +670,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Check if applications whose origin is |origin| are allowed to perform
   // all-screens-auto-selection, which allows automatic capturing of all
-  // screens with the getDisplayMediaSet API.
-  virtual bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-      content::BrowserContext* context,
-      const url::Origin& origin);
+  // screens with the getAllScreensMedia API.
+  virtual bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                           const url::Origin& origin);
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
@@ -891,6 +915,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* source_origin,
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
+
+  // Allows the embedder to control if web attribution reporting is allowed.
+  // This method must be idempotent.
+  virtual bool IsWebAttributionReportingAllowed();
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
@@ -1928,6 +1956,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // before the callback, the request has been canceled and the callback
   // should not be called.
   //
+  // NOTE: For the Negotiate challenge on ChromeOS the credentials are handled
+  // on OS level. In that case CreateLoginDelegate returns nullptr, since the
+  // credentials are not passed to the browser and the authentication
+  // should be cancelled. (See b/260522530).
+  //
   // |auth_required_callback| may not be called reentrantly. If the request may
   // be handled synchronously, CreateLoginDelegate must post the callback to a
   // separate event loop iteration, taking care not to call it if the
@@ -2199,7 +2232,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::WebContents* web_contents,
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData content_analyisis_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // Returns true if a copy to the clipboard from `url` is allowed by the
@@ -2388,13 +2421,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void OnDisplayInsecureContent(WebContents* web_contents) {}
 
 #if BUILDFLAG(IS_MAC)
-  // Gets the path for an embedder-specific helper child process. The
+  // Gets the suffix for an embedder-specific helper child process. The
   // |child_flags| is a value greater than
-  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The |helpers_path| is the location
-  // of the known //content Mac helpers in the framework bundle.
-  virtual base::FilePath GetChildProcessPath(
-      int child_flags,
-      const base::FilePath& helpers_path);
+  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The embedder-specific helper app
+  // bundle should be placed next to the known //content Mac helpers in the
+  // framework bundle.
+  virtual std::string GetChildProcessSuffix(int child_flags);
 #endif  // BUILDFLAG(IS_MAC)
 
   // Checks if Isolated Web Apps are enabled, e.g. by feature flag
@@ -2418,6 +2450,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // in RenderFrameHostImpl. Currently in Chrome, this is true for all
   // extension origins.
   virtual bool ShouldUseFirstPartyStorageKey(const url::Origin& origin);
+
+  // Allows the embedder to return a delegate for the responsiveness calculator.
+  // The default implementation returns nullptr.
+  virtual std::unique_ptr<ResponsivenessCalculatorDelegate>
+  CreateResponsivenessCalculatorDelegate();
 };
 
 }  // namespace content

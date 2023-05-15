@@ -92,7 +92,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

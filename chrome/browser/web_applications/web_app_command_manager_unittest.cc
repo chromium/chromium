@@ -59,7 +59,6 @@ class MockCommand : public WebAppCommandTemplate<LockType> {
   }
 
   MOCK_METHOD(void, StartWithLock, (std::unique_ptr<LockType>), (override));
-  MOCK_METHOD(void, OnSyncSourceRemoved, (), (override));
   MOCK_METHOD(void, OnShutdown, (), (override));
 
   base::WeakPtr<MockCommand> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
@@ -188,7 +187,7 @@ class WebAppCommandManagerTest : public WebAppTest {
   TestWebAppUrlLoader* url_loader() const { return url_loader_.get(); }
 
  private:
-  base::raw_ptr<TestWebAppUrlLoader> url_loader_;
+  raw_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
 TEST_F(WebAppCommandManagerTest, SimpleCommand) {
@@ -432,32 +431,6 @@ TEST_F(WebAppCommandManagerTest, OnShutdownCallsCompleteAndDestruct) {
     EXPECT_CALL(mock_closure, Run()).Times(1);
   }
   manager().Shutdown();
-}
-
-TEST_F(WebAppCommandManagerTest, NotifySyncCallsCompleteAndDestruct) {
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
-  auto command = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
-  base::WeakPtr<MockCommand<AppLock>> command_ptr = command->AsWeakPtr();
-  manager().ScheduleCommand(std::move(command));
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
-      loop.Quit();
-    });
-    loop.Run();
-  }
-  {
-    testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, OnSyncSourceRemoved()).Times(1).WillOnce([&]() {
-      ASSERT_TRUE(command_ptr);
-      command_ptr->CallSignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                                       mock_closure.Get());
-    });
-    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run()).Times(1);
-  }
-  manager().NotifySyncSourceRemoved({kTestAppId});
 }
 
 TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {

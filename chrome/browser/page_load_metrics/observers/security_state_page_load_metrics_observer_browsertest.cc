@@ -404,11 +404,11 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   SecurityStyleTestObserver observer(tab);
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "var img = document.createElement('img'); "
-      "img.src = 'http://example.com/image.png'; "
-      "document.body.appendChild(img);"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "var img = document.createElement('img'); "
+                      "img.src = 'http://example.com/image.png'; "
+                      "document.body.appendChild(img);"));
   observer.WaitForDidChangeVisibleSecurityState();
   CloseAllTabs();
 

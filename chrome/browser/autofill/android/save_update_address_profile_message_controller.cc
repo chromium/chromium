@@ -141,20 +141,12 @@ void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
   primary_action_callback_.Reset();
 }
 
-bool SaveUpdateAddressProfileMessageController::UserSignedIn() const {
-  return IdentityManagerFactory::GetForProfile(
-             Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-      ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-}
-
 std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
   if (original_profile_) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   }
 
   if (is_migration_to_account_) {
-    CHECK(UserSignedIn()) << "Received is_migration_to_account=true option "
-                             "when user is not logged in";
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE);
   }
@@ -188,9 +180,9 @@ std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   const CoreAccountInfo primary_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  CHECK(!primary_account_info.IsEmpty())
-      << "The user's address profile is going to be saved in their Google "
-         "Account, but user is not signed in";
+  if (primary_account_info.IsEmpty()) {
+    return std::u16string();
+  }
 
   return is_migration_to_account_
              ? l10n_util::GetStringUTF16(

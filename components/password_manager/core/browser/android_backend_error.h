@@ -36,7 +36,9 @@ enum class AndroidBackendErrorType {
   kCleanedUpWithoutResponse = 8,
   // Backend downstream implementation is not available.
   kBackendNotAvailable = 9,
-  kMaxValue = kBackendNotAvailable,
+  // Failed to create FacetId to obtain affiliated matches.
+  kFailedToCreateFacetId = 10,
+  kMaxValue = kFailedToCreateFacetId,
 };
 
 struct AndroidBackendError {

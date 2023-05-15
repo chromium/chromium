@@ -14,8 +14,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 /**
  * Tests for {@link DividerLineProcessor}.

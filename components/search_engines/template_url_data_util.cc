@@ -225,6 +225,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->is_active = static_cast<TemplateURLData::ActiveStatus>(
       dict.FindInt(DefaultSearchManager::kIsActive)
           .value_or(static_cast<int>(result->is_active)));
+  result->enforced_by_policy =
+      dict.FindBool(DefaultSearchManager::kEnforcedByPolicy)
+          .value_or(result->enforced_by_policy);
   return result;
 }
 
@@ -305,6 +308,8 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
                data.prefetch_likely_navigations);
   url_dict.Set(DefaultSearchManager::kIsActive,
                static_cast<int>(data.is_active));
+  url_dict.Set(DefaultSearchManager::kEnforcedByPolicy,
+               data.enforced_by_policy);
   return url_dict;
 }
 
@@ -352,7 +357,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
-    const base::Value& engine) {
+    const base::Value::Dict& engine_dict) {
   const std::string* string_value = nullptr;
 
   std::u16string name;
@@ -361,27 +366,27 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
   std::string favicon_url;
   std::string encoding;
 
-  string_value = engine.FindStringKey("name");
+  string_value = engine_dict.FindString("name");
   if (string_value) {
     name = base::UTF8ToUTF16(*string_value);
   }
-  string_value = engine.FindStringKey("keyword");
+  string_value = engine_dict.FindString("keyword");
   if (string_value) {
     keyword = base::UTF8ToUTF16(*string_value);
   }
-  string_value = engine.FindStringKey("search_url");
+  string_value = engine_dict.FindString("search_url");
   if (string_value) {
     search_url = *string_value;
   }
-  string_value = engine.FindStringKey("favicon_url");
+  string_value = engine_dict.FindString("favicon_url");
   if (string_value) {
     favicon_url = *string_value;
   }
-  string_value = engine.FindStringKey("encoding");
+  string_value = engine_dict.FindString("encoding");
   if (string_value) {
     encoding = *string_value;
   }
-  absl::optional<int> id = engine.FindIntKey("id");
+  absl::optional<int> id = engine_dict.FindInt("id");
 
   // The following fields are required for each search engine configuration.
   if (!name.empty() && !keyword.empty() && !search_url.empty() &&
@@ -389,7 +394,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     // These fields are optional.
     base::Value::List empty_list;
     const base::Value::List* alternate_urls =
-        engine.GetDict().FindList("alternate_urls");
+        engine_dict.FindList("alternate_urls");
     if (!alternate_urls)
       alternate_urls = &empty_list;
 
@@ -412,70 +417,70 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string preconnect_to_search_url;
     std::string prefetch_likely_navigations;
 
-    string_value = engine.FindStringKey("suggest_url");
+    string_value = engine_dict.FindString("suggest_url");
     if (string_value) {
       suggest_url = *string_value;
     }
-    string_value = engine.FindStringKey("image_url");
+    string_value = engine_dict.FindString("image_url");
     if (string_value) {
       image_url = *string_value;
     }
-    string_value = engine.FindStringKey("image_translate_url");
+    string_value = engine_dict.FindString("image_translate_url");
     if (string_value) {
       image_translate_url = *string_value;
     }
-    string_value = engine.FindStringKey("new_tab_url");
+    string_value = engine_dict.FindString("new_tab_url");
     if (string_value) {
       new_tab_url = *string_value;
     }
-    string_value = engine.FindStringKey("contextual_search_url");
+    string_value = engine_dict.FindString("contextual_search_url");
     if (string_value) {
       contextual_search_url = *string_value;
     }
-    string_value = engine.FindStringKey("logo_url");
+    string_value = engine_dict.FindString("logo_url");
     if (string_value) {
       logo_url = *string_value;
     }
-    string_value = engine.FindStringKey("doodle_url");
+    string_value = engine_dict.FindString("doodle_url");
     if (string_value) {
       doodle_url = *string_value;
     }
-    string_value = engine.FindStringKey("search_url_post_params");
+    string_value = engine_dict.FindString("search_url_post_params");
     if (string_value) {
       search_url_post_params = *string_value;
     }
-    string_value = engine.FindStringKey("suggest_url_post_params");
+    string_value = engine_dict.FindString("suggest_url_post_params");
     if (string_value) {
       suggest_url_post_params = *string_value;
     }
-    string_value = engine.FindStringKey("image_url_post_params");
+    string_value = engine_dict.FindString("image_url_post_params");
     if (string_value) {
       image_url_post_params = *string_value;
     }
-    string_value = engine.FindStringKey("side_search_param");
+    string_value = engine_dict.FindString("side_search_param");
     if (string_value) {
       side_search_param = *string_value;
     }
-    string_value = engine.FindStringKey("side_image_search_param");
+    string_value = engine_dict.FindString("side_image_search_param");
     if (string_value) {
       side_image_search_param = *string_value;
     }
     string_value =
-        engine.FindStringKey("image_translate_source_language_param_key");
+        engine_dict.FindString("image_translate_source_language_param_key");
     if (string_value) {
       image_translate_source_language_param_key = *string_value;
     }
     string_value =
-        engine.FindStringKey("image_translate_target_language_param_key");
+        engine_dict.FindString("image_translate_target_language_param_key");
     if (string_value) {
       image_translate_target_language_param_key = *string_value;
     }
-    string_value = engine.FindStringKey("image_search_branding_label");
+    string_value = engine_dict.FindString("image_search_branding_label");
     if (string_value) {
       image_search_branding_label = base::UTF8ToUTF16(*string_value);
     }
     const base::Value::List* additional_params_list =
-        engine.GetDict().FindList(DefaultSearchManager::kSearchIntentParams);
+        engine_dict.FindList(DefaultSearchManager::kSearchIntentParams);
     if (additional_params_list) {
       for (const auto& additional_param_value : *additional_params_list) {
         const auto* additional_param = additional_param_value.GetIfString();
@@ -484,11 +489,11 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         }
       }
     }
-    string_value = engine.FindStringKey("preconnect_to_search_url");
+    string_value = engine_dict.FindString("preconnect_to_search_url");
     if (string_value) {
       preconnect_to_search_url = *string_value;
     }
-    string_value = engine.FindStringKey("prefetch_likely_navigations");
+    string_value = engine_dict.FindString("prefetch_likely_navigations");
     if (string_value) {
       prefetch_likely_navigations = *string_value;
     }

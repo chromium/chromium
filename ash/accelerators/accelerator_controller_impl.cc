@@ -14,7 +14,6 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
-#include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
@@ -23,6 +22,7 @@
 #include "ash/ime/ime_switch_type.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/multi_profile_uma.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -32,10 +32,12 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/aura/env.h"
@@ -45,21 +47,75 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
+
+/*
+The encoding schema is as the following:
+
+- The low 16 bits represent the key code.
+- The modifiers are stored in the high 16 bits. Only the following 4 bits are
+being used:
+  - The 31 bit: Command key
+  - The 30 bit: Alt key
+  - The 29 bit: Control key
+  - The 28 bit: Shift key
+
+Examples:
+  ctl+Z:        0001'0000'0000'0000'0000'0000'0101'1010
+  alt+shift+A:  0010'1000'0000'0000'0000'0000'0100'0001
+  */
+int GetEncodedShortcut(const ui::Accelerator& accelerator) {
+  // EF_SHIFT_DOWN: 28th bit.
+  const int kShiftDown = 1 << 27;
+  // EF_CONTROL_DOWN: 29th bit.
+  const int kControlDown = 1 << 28;
+  // EF_ALT_DOWN: 30th bit.
+  const int kAltDown = 1 << 29;
+  // EF_COMMAND_DOWN: 31th bit.
+  const int kCommandDown = 1 << 30;
+
+  int encoded_modifier = 0;
+  if (accelerator.IsShiftDown()) {
+    encoded_modifier |= kShiftDown;
+  }
+  if (accelerator.IsCtrlDown()) {
+    encoded_modifier |= kControlDown;
+  }
+  if (accelerator.IsAltDown()) {
+    encoded_modifier |= kAltDown;
+  }
+  if (accelerator.IsCmdDown()) {
+    encoded_modifier |= kCommandDown;
+  }
+
+  // Currently KeyboardCode only has 2^8 values. It will be a long time until we
+  // get to 2^16. Even if KeyboardCode has 2^28+ values for some reason, only
+  // the top 5 bits will be overwritten.
+  return encoded_modifier | accelerator.key_code();
+}
+
 namespace {
 
 using ::base::UserMetricsAction;
 using ::chromeos::WindowStateType;
 using input_method::InputMethodManager;
 
-static_assert(DESKS_ACTIVATE_0 == DESKS_ACTIVATE_1 - 1 &&
-                  DESKS_ACTIVATE_1 == DESKS_ACTIVATE_2 - 1 &&
-                  DESKS_ACTIVATE_2 == DESKS_ACTIVATE_3 - 1 &&
-                  DESKS_ACTIVATE_3 == DESKS_ACTIVATE_4 - 1 &&
-                  DESKS_ACTIVATE_4 == DESKS_ACTIVATE_5 - 1 &&
-                  DESKS_ACTIVATE_5 == DESKS_ACTIVATE_6 - 1 &&
-                  DESKS_ACTIVATE_6 == DESKS_ACTIVATE_7 - 1,
+static_assert(AcceleratorAction::kDesksActivate0 ==
+                      AcceleratorAction::kDesksActivate1 - 1 &&
+                  AcceleratorAction::kDesksActivate1 ==
+                      AcceleratorAction::kDesksActivate2 - 1 &&
+                  AcceleratorAction::kDesksActivate2 ==
+                      AcceleratorAction::kDesksActivate3 - 1 &&
+                  AcceleratorAction::kDesksActivate3 ==
+                      AcceleratorAction::kDesksActivate4 - 1 &&
+                  AcceleratorAction::kDesksActivate4 ==
+                      AcceleratorAction::kDesksActivate5 - 1 &&
+                  AcceleratorAction::kDesksActivate5 ==
+                      AcceleratorAction::kDesksActivate6 - 1 &&
+                  AcceleratorAction::kDesksActivate6 ==
+                      AcceleratorAction::kDesksActivate7 - 1,
               "DESKS_ACTIVATE* actions must be consecutive");
 
 ui::Accelerator CreateAccelerator(ui::KeyboardCode keycode,
@@ -78,6 +134,13 @@ void RecordUmaHistogram(const char* histogram_name,
       histogram_name, 1, DEPRECATED_USAGE_COUNT, DEPRECATED_USAGE_COUNT + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
+}
+
+void RecordActionUmaHistogram(AcceleratorAction action,
+                              const ui::Accelerator& accelerator) {
+  base::UmaHistogramSparse(base::StrCat({"Ash.Accelerators.Actions.",
+                                         GetAcceleratorActionName(action)}),
+                           GetEncodedShortcut(accelerator));
 }
 
 void RecordImeSwitchByAccelerator() {
@@ -597,207 +660,209 @@ bool AcceleratorControllerImpl::CanPerformAction(
   // false should be returned to give the web contents a chance at handling the
   // accelerator.
   switch (action) {
-    case CYCLE_BACKWARD_MRU:
-    case CYCLE_FORWARD_MRU:
+    case AcceleratorAction::kCycleBackwardMru:
+    case AcceleratorAction::kCycleForwardMru:
       return accelerators::CanCycleMru();
-    case CYCLE_SAME_APP_WINDOWS_BACKWARD:
-    case CYCLE_SAME_APP_WINDOWS_FORWARD:
+    case AcceleratorAction::kCycleSameAppWindowsBackward:
+    case AcceleratorAction::kCycleSameAppWindowsForward:
       return accelerators::CanCycleSameAppWindows();
-    case DESKS_ACTIVATE_DESK_LEFT:
-    case DESKS_ACTIVATE_DESK_RIGHT:
-    case DESKS_MOVE_ACTIVE_ITEM_LEFT:
-    case DESKS_MOVE_ACTIVE_ITEM_RIGHT:
-    case DESKS_NEW_DESK:
-    case DESKS_REMOVE_CURRENT_DESK:
-    case DESKS_ACTIVATE_0:
-    case DESKS_ACTIVATE_1:
-    case DESKS_ACTIVATE_2:
-    case DESKS_ACTIVATE_3:
-    case DESKS_ACTIVATE_4:
-    case DESKS_ACTIVATE_5:
-    case DESKS_ACTIVATE_6:
-    case DESKS_ACTIVATE_7:
-    case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
+    case AcceleratorAction::kDesksActivateDeskLeft:
+    case AcceleratorAction::kDesksActivateDeskRight:
+    case AcceleratorAction::kDesksMoveActiveItemLeft:
+    case AcceleratorAction::kDesksMoveActiveItemRight:
+    case AcceleratorAction::kDesksNewDesk:
+    case AcceleratorAction::kDesksRemoveCurrentDesk:
+    case AcceleratorAction::kDesksActivate0:
+    case AcceleratorAction::kDesksActivate1:
+    case AcceleratorAction::kDesksActivate2:
+    case AcceleratorAction::kDesksActivate3:
+    case AcceleratorAction::kDesksActivate4:
+    case AcceleratorAction::kDesksActivate5:
+    case AcceleratorAction::kDesksActivate6:
+    case AcceleratorAction::kDesksActivate7:
+    case AcceleratorAction::kDesksToggleAssignToAllDesks:
       return true;
-    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
-    case DEBUG_MICROPHONE_MUTE_TOGGLE:
-    case DEBUG_PRINT_LAYER_HIERARCHY:
-    case DEBUG_PRINT_VIEW_HIERARCHY:
-    case DEBUG_PRINT_WINDOW_HIERARCHY:
-    case DEBUG_SHOW_TOAST:
-    case DEBUG_SYSTEM_UI_STYLE_VIEWER:
-    case DEBUG_TOGGLE_DARK_MODE:
-    case DEBUG_TOGGLE_DYNAMIC_COLOR:
-    case DEBUG_TOGGLE_GLANCEABLES:
-    case DEBUG_TOGGLE_SHOW_DEBUG_BORDERS:
-    case DEBUG_TOGGLE_SHOW_FPS_COUNTER:
-    case DEBUG_TOGGLE_SHOW_PAINT_RECTS:
-    case DEBUG_TOGGLE_TOUCH_PAD:
-    case DEBUG_TOGGLE_TOUCH_SCREEN:
-    case DEBUG_TOGGLE_TABLET_MODE:
-    case DEBUG_TOGGLE_WALLPAPER_MODE:
-    case DEBUG_TRIGGER_CRASH:
-    case DEBUG_TOGGLE_HUD_DISPLAY:
+    case AcceleratorAction::kDebugKeyboardBacklightToggle:
+    case AcceleratorAction::kDebugMicrophoneMuteToggle:
+    case AcceleratorAction::kDebugPrintLayerHierarchy:
+    case AcceleratorAction::kDebugPrintViewHierarchy:
+    case AcceleratorAction::kDebugPrintWindowHierarchy:
+    case AcceleratorAction::kDebugShowToast:
+    case AcceleratorAction::kDebugSystemUiStyleViewer:
+    case AcceleratorAction::kDebugToggleDarkMode:
+    case AcceleratorAction::kDebugToggleDynamicColor:
+    case AcceleratorAction::kDebugToggleGlanceables:
+    case AcceleratorAction::kDebugTogglePowerButtonMenu:
+    case AcceleratorAction::kDebugToggleShowDebugBorders:
+    case AcceleratorAction::kDebugToggleShowFpsCounter:
+    case AcceleratorAction::kDebugToggleShowPaintRects:
+    case AcceleratorAction::kDebugToggleTouchPad:
+    case AcceleratorAction::kDebugToggleTouchScreen:
+    case AcceleratorAction::kDebugToggleTabletMode:
+    case AcceleratorAction::kDebugToggleWallpaperMode:
+    case AcceleratorAction::kDebugTriggerCrash:
+    case AcceleratorAction::kDebugToggleHudDisplay:
       return debug::DebugAcceleratorsEnabled();
-    case DEV_ADD_REMOVE_DISPLAY:
-    case DEV_TOGGLE_APP_LIST:
-    case DEV_TOGGLE_UNIFIED_DESKTOP:
+    case AcceleratorAction::kDevAddRemoveDisplay:
+    case AcceleratorAction::kDevToggleAppList:
+    case AcceleratorAction::kDevToggleUnifiedDesktop:
       return debug::DeveloperAcceleratorsEnabled();
-    case DISABLE_CAPS_LOCK:
+    case AcceleratorAction::kDisableCapsLock:
       return CanHandleDisableCapsLock(previous_accelerator);
-    case LOCK_SCREEN:
+    case AcceleratorAction::kLockScreen:
       return accelerators::CanLock();
-    case MAGNIFIER_ZOOM_IN:
-    case MAGNIFIER_ZOOM_OUT:
+    case AcceleratorAction::kMagnifierZoomIn:
+    case AcceleratorAction::kMagnifierZoomOut:
       return accelerators::CanPerformMagnifierZoom();
-    case MICROPHONE_MUTE_TOGGLE:
+    case AcceleratorAction::kMicrophoneMuteToggle:
       return true;
-    case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
+    case AcceleratorAction::kMoveActiveWindowBetweenDisplays:
       return accelerators::CanMoveActiveWindowBetweenDisplays();
-    case NEW_INCOGNITO_WINDOW:
+    case AcceleratorAction::kNewIncognitoWindow:
       return accelerators::CanCreateNewIncognitoWindow();
-    case PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT:
+    case AcceleratorAction::kPasteClipboardHistoryPlainText:
       return true;
-    case PRIVACY_SCREEN_TOGGLE:
+    case AcceleratorAction::kPrivacyScreenToggle:
       return accelerators::CanTogglePrivacyScreen();
-    case ROTATE_SCREEN:
+    case AcceleratorAction::kRotateScreen:
       return true;
-    case SCALE_UI_DOWN:
-    case SCALE_UI_RESET:
-    case SCALE_UI_UP:
+    case AcceleratorAction::kScaleUiDown:
+    case AcceleratorAction::kScaleUiReset:
+    case AcceleratorAction::kScaleUiUp:
       return true;
-    case SHOW_STYLUS_TOOLS:
+    case AcceleratorAction::kShowStylusTools:
       return accelerators::CanShowStylusTools();
-    case START_AMBIENT_MODE:
-      return accelerators::CanStartAmbientMode();
-    case START_ASSISTANT:
+    case AcceleratorAction::kStartAssistant:
       return true;
-    case SWAP_PRIMARY_DISPLAY:
+    case AcceleratorAction::kSwapPrimaryDisplay:
       return accelerators::CanSwapPrimaryDisplay();
-    case SWITCH_IME:
+    case AcceleratorAction::kSwitchIme:
       return CanHandleSwitchIme(accelerator);
-    case SWITCH_TO_NEXT_IME:
+    case AcceleratorAction::kSwitchToNextIme:
       return accelerators::CanCycleInputMethod();
-    case SWITCH_TO_LAST_USED_IME:
+    case AcceleratorAction::kSwitchToLastUsedIme:
       return accelerators::CanCycleInputMethod();
-    case SWITCH_TO_PREVIOUS_USER:
-    case SWITCH_TO_NEXT_USER:
+    case AcceleratorAction::kSwitchToPreviousUser:
+    case AcceleratorAction::kSwitchToNextUser:
       return accelerators::CanCycleUser();
-    case TOGGLE_APP_LIST:
+    case AcceleratorAction::kToggleAppList:
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
-    case TOGGLE_CALENDAR:
+    case AcceleratorAction::kToggleCalendar:
       return true;
-    case TOGGLE_CAPS_LOCK:
+    case AcceleratorAction::kToggleCapsLock:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
-    case TOGGLE_CLIPBOARD_HISTORY:
+    case AcceleratorAction::kToggleClipboardHistory:
       return true;
-    case TOGGLE_DICTATION:
+    case AcceleratorAction::kToggleDictation:
       return accelerators::CanToggleDictation();
-    case TOGGLE_DOCKED_MAGNIFIER:
+    case AcceleratorAction::kToggleDockedMagnifier:
       return true;
-    case TOGGLE_FLOATING:
+    case AcceleratorAction::kToggleFloating:
       return accelerators::CanToggleFloatingWindow();
-    case TOGGLE_FULLSCREEN_MAGNIFIER:
+    case AcceleratorAction::kToggleFullscreenMagnifier:
       return true;
-    case TOGGLE_GAME_DASHBOARD:
+    case AcceleratorAction::kToggleGameDashboard:
       return accelerators::CanToggleGameDashboard();
-    case TOGGLE_MESSAGE_CENTER_BUBBLE:
+    case AcceleratorAction::kToggleMessageCenterBubble:
       return true;
-    case TOGGLE_MIRROR_MODE:
+    case AcceleratorAction::kToggleMirrorMode:
       return true;
-    case TOGGLE_OVERVIEW:
+    case AcceleratorAction::kToggleOverview:
       return accelerators::CanToggleOverview();
-    case TOGGLE_MULTITASK_MENU:
+    case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
+      return accelerators::CanMinimizeSnapGroupWindows();
+    case AcceleratorAction::kToggleMultitaskMenu:
       return accelerators::CanToggleMultitaskMenu();
-    case TOUCH_HUD_CLEAR:
-    case TOUCH_HUD_MODE_CHANGE:
+    case AcceleratorAction::kTouchHudClear:
+    case AcceleratorAction::kTouchHudModeChange:
       return accelerators::CanActivateTouchHud();
-    case UNPIN:
+    case AcceleratorAction::kUnpin:
       return accelerators::CanUnpinWindow();
-    case WINDOW_CYCLE_SNAP_LEFT:
-    case WINDOW_CYCLE_SNAP_RIGHT:
+    case AcceleratorAction::kWindowCycleSnapLeft:
+    case AcceleratorAction::kWindowCycleSnapRight:
       return accelerators::CanWindowSnap();
-    case FOCUS_PIP:
+    case AcceleratorAction::kFocusPip:
       return accelerators::CanFindPipWidget();
-    case FOCUS_CAMERA_PREVIEW:
+    case AcceleratorAction::kFocusCameraPreview:
       return accelerators::CanFocusCameraPreview();
-    case MINIMIZE_TOP_WINDOW_ON_BACK:
+    case AcceleratorAction::kMinimizeTopWindowOnBack:
       return accelerators::CanMinimizeTopWindowOnBack();
-    case TAKE_PARTIAL_SCREENSHOT:
-    case TAKE_SCREENSHOT:
-    case TAKE_WINDOW_SCREENSHOT:
-      return accelerators::CanScreenshot(action == TAKE_SCREENSHOT);
-    case TOGGLE_PROJECTOR_MARKER:
+    case AcceleratorAction::kTakePartialScreenshot:
+    case AcceleratorAction::kTakeScreenshot:
+    case AcceleratorAction::kTakeWindowScreenshot:
+      return accelerators::CanScreenshot(action ==
+                                         AcceleratorAction::kTakeScreenshot);
+    case AcceleratorAction::kToggleProjectorMarker:
       return accelerators::CanToggleProjectorMarker();
-    case TOGGLE_RESIZE_LOCK_MENU:
+    case AcceleratorAction::kToggleResizeLockMenu:
       return accelerators::CanToggleResizeLockMenu();
-    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
-    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
+    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
+    case AcceleratorAction::kDebugTuckFloatedWindowRight:
       return debug::CanTuckFloatedWindow();
-    case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
+    case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       return true;
 
     // The following are always enabled.
-    case BRIGHTNESS_DOWN:
-    case BRIGHTNESS_UP:
-    case EXIT:
-    case FOCUS_NEXT_PANE:
-    case FOCUS_PREVIOUS_PANE:
-    case FOCUS_SHELF:
-    case KEYBOARD_BACKLIGHT_TOGGLE:
-    case KEYBOARD_BRIGHTNESS_DOWN:
-    case KEYBOARD_BRIGHTNESS_UP:
-    case LAUNCH_APP_0:
-    case LAUNCH_APP_1:
-    case LAUNCH_APP_2:
-    case LAUNCH_APP_3:
-    case LAUNCH_APP_4:
-    case LAUNCH_APP_5:
-    case LAUNCH_APP_6:
-    case LAUNCH_APP_7:
-    case LAUNCH_LAST_APP:
-    case LOCK_PRESSED:
-    case LOCK_RELEASED:
-    case MEDIA_FAST_FORWARD:
-    case MEDIA_NEXT_TRACK:
-    case MEDIA_PAUSE:
-    case MEDIA_PLAY:
-    case MEDIA_PLAY_PAUSE:
-    case MEDIA_PREV_TRACK:
-    case MEDIA_REWIND:
-    case MEDIA_STOP:
-    case NEW_TAB:
-    case NEW_WINDOW:
-    case OPEN_CALCULATOR:
-    case OPEN_CROSH:
-    case OPEN_DIAGNOSTICS:
-    case OPEN_FEEDBACK_PAGE:
-    case OPEN_FILE_MANAGER:
-    case OPEN_GET_HELP:
-    case POWER_PRESSED:
-    case POWER_RELEASED:
-    case PRINT_UI_HIERARCHIES:
-    case RESTORE_TAB:
-    case ROTATE_WINDOW:
-    case SHOW_EMOJI_PICKER:
-    case TOGGLE_IME_MENU_BUBBLE:
-    case SHOW_SHORTCUT_VIEWER:
-    case SHOW_TASK_MANAGER:
-    case SUSPEND:
-    case TOGGLE_FULLSCREEN:
-    case TOGGLE_HIGH_CONTRAST:
-    case TOGGLE_MAXIMIZED:
-    case TOGGLE_SPOKEN_FEEDBACK:
-    case TOGGLE_SYSTEM_TRAY_BUBBLE:
-    case TOGGLE_WIFI:
-    case VOLUME_DOWN:
-    case VOLUME_MUTE:
-    case VOLUME_UP:
-    case WINDOW_MINIMIZE:
+    case AcceleratorAction::kBrightnessDown:
+    case AcceleratorAction::kBrightnessUp:
+    case AcceleratorAction::kExit:
+    case AcceleratorAction::kFocusNextPane:
+    case AcceleratorAction::kFocusPreviousPane:
+    case AcceleratorAction::kFocusShelf:
+    case AcceleratorAction::kKeyboardBacklightToggle:
+    case AcceleratorAction::kKeyboardBrightnessDown:
+    case AcceleratorAction::kKeyboardBrightnessUp:
+    case AcceleratorAction::kLaunchApp0:
+    case AcceleratorAction::kLaunchApp1:
+    case AcceleratorAction::kLaunchApp2:
+    case AcceleratorAction::kLaunchApp3:
+    case AcceleratorAction::kLaunchApp4:
+    case AcceleratorAction::kLaunchApp5:
+    case AcceleratorAction::kLaunchApp6:
+    case AcceleratorAction::kLaunchApp7:
+    case AcceleratorAction::kLaunchLastApp:
+    case AcceleratorAction::kLockPressed:
+    case AcceleratorAction::kLockReleased:
+    case AcceleratorAction::kMediaFastForward:
+    case AcceleratorAction::kMediaNextTrack:
+    case AcceleratorAction::kMediaPause:
+    case AcceleratorAction::kMediaPlay:
+    case AcceleratorAction::kMediaPlayPause:
+    case AcceleratorAction::kMediaPrevTrack:
+    case AcceleratorAction::kMediaRewind:
+    case AcceleratorAction::kMediaStop:
+    case AcceleratorAction::kNewTab:
+    case AcceleratorAction::kNewWindow:
+    case AcceleratorAction::kOpenCalculator:
+    case AcceleratorAction::kOpenCrosh:
+    case AcceleratorAction::kOpenDiagnostics:
+    case AcceleratorAction::kOpenFeedbackPage:
+    case AcceleratorAction::kOpenFileManager:
+    case AcceleratorAction::kOpenGetHelp:
+    case AcceleratorAction::kPowerPressed:
+    case AcceleratorAction::kPowerReleased:
+    case AcceleratorAction::kPrintUiHierarchies:
+    case AcceleratorAction::kRestoreTab:
+    case AcceleratorAction::kRotateWindow:
+    case AcceleratorAction::kShowEmojiPicker:
+    case AcceleratorAction::kToggleImeMenuBubble:
+    case AcceleratorAction::kShowShortcutViewer:
+    case AcceleratorAction::kShowTaskManager:
+    case AcceleratorAction::kSuspend:
+    case AcceleratorAction::kToggleFullscreen:
+    case AcceleratorAction::kToggleHighContrast:
+    case AcceleratorAction::kToggleMaximized:
+    case AcceleratorAction::kToggleSpokenFeedback:
+    case AcceleratorAction::kToggleSystemTrayBubble:
+    case AcceleratorAction::kToggleWifi:
+    case AcceleratorAction::kVolumeDown:
+    case AcceleratorAction::kVolumeMute:
+    case AcceleratorAction::kVolumeUp:
+    case AcceleratorAction::kWindowMinimize:
       return true;
   }
 }
@@ -810,538 +875,545 @@ void AcceleratorControllerImpl::PerformAction(
   if (restriction != RESTRICTION_NONE)
     return;
 
-  if ((action == VOLUME_DOWN || action == VOLUME_UP) &&
+  if ((action == AcceleratorAction::kVolumeDown ||
+       action == AcceleratorAction::kVolumeUp) &&
       Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     if (tablet_volume_controller_.ShouldSwapSideVolumeButtons(
             accelerator.source_device_id()))
-      action = action == VOLUME_DOWN ? VOLUME_UP : VOLUME_DOWN;
+      action = action == AcceleratorAction::kVolumeDown
+                   ? AcceleratorAction::kVolumeUp
+                   : AcceleratorAction::kVolumeDown;
 
-    tablet_volume_controller_.StartTabletModeVolumeAdjustTimer(action ==
-                                                               VOLUME_UP);
+    tablet_volume_controller_.StartTabletModeVolumeAdjustTimer(
+        action == AcceleratorAction::kVolumeUp);
   }
 
   // If your accelerator invokes more than one line of code, please either
   // implement it in your module's controller code or pull it into a HandleFoo()
   // function above.
   switch (action) {
-    case BRIGHTNESS_DOWN: {
+    case AcceleratorAction::kBrightnessDown: {
       base::RecordAction(UserMetricsAction("Accel_BrightnessDown_F6"));
       accelerators::BrightnessDown();
       break;
     }
-    case BRIGHTNESS_UP: {
+    case AcceleratorAction::kBrightnessUp: {
       base::RecordAction(UserMetricsAction("Accel_BrightnessUp_F7"));
       accelerators::BrightnessUp();
       break;
     }
-    case CYCLE_BACKWARD_MRU:
+    case AcceleratorAction::kCycleBackwardMru:
       RecordCycleBackwardMru(accelerator);
       accelerators::CycleBackwardMru(/*same_app_only=*/false);
       break;
-    case CYCLE_FORWARD_MRU:
+    case AcceleratorAction::kCycleForwardMru:
       RecordCycleForwardMru(accelerator);
       accelerators::CycleForwardMru(/*same_app_only=*/false);
       break;
-    case CYCLE_SAME_APP_WINDOWS_BACKWARD:
+    case AcceleratorAction::kCycleSameAppWindowsBackward:
       // TODO(b/250699271): Add metrics
       accelerators::CycleBackwardMru(/*same_app_only=*/true);
       break;
-    case CYCLE_SAME_APP_WINDOWS_FORWARD:
+    case AcceleratorAction::kCycleSameAppWindowsForward:
       // TODO(b/250699271): Add metrics
       accelerators::CycleForwardMru(/*same_app_only=*/true);
       break;
-    case DESKS_ACTIVATE_DESK_LEFT:
+    case AcceleratorAction::kDesksActivateDeskLeft:
       // UMA metrics are recorded in the function.
       accelerators::ActivateDesk(/*activate_left=*/true);
       break;
-    case DESKS_ACTIVATE_DESK_RIGHT:
+    case AcceleratorAction::kDesksActivateDeskRight:
       // UMA metrics are recorded in the function.
       accelerators::ActivateDesk(/*activate_left=*/false);
       break;
-    case DESKS_MOVE_ACTIVE_ITEM_LEFT:
+    case AcceleratorAction::kDesksMoveActiveItemLeft:
       // UMA metrics are recorded in the function.
       accelerators::MoveActiveItem(/*going_left=*/true);
       break;
-    case DESKS_MOVE_ACTIVE_ITEM_RIGHT:
+    case AcceleratorAction::kDesksMoveActiveItemRight:
       // UMA metrics are recorded in the function.
       accelerators::MoveActiveItem(/*going_left=*/false);
       break;
-    case DESKS_NEW_DESK:
+    case AcceleratorAction::kDesksNewDesk:
       // UMA metrics are recorded in the function.
       accelerators::NewDesk();
       break;
-    case DESKS_REMOVE_CURRENT_DESK:
+    case AcceleratorAction::kDesksRemoveCurrentDesk:
       // UMA metrics are recorded in the function.
       accelerators::RemoveCurrentDesk();
       break;
-    case DESKS_ACTIVATE_0:
-    case DESKS_ACTIVATE_1:
-    case DESKS_ACTIVATE_2:
-    case DESKS_ACTIVATE_3:
-    case DESKS_ACTIVATE_4:
-    case DESKS_ACTIVATE_5:
-    case DESKS_ACTIVATE_6:
-    case DESKS_ACTIVATE_7:
+    case AcceleratorAction::kDesksActivate0:
+    case AcceleratorAction::kDesksActivate1:
+    case AcceleratorAction::kDesksActivate2:
+    case AcceleratorAction::kDesksActivate3:
+    case AcceleratorAction::kDesksActivate4:
+    case AcceleratorAction::kDesksActivate5:
+    case AcceleratorAction::kDesksActivate6:
+    case AcceleratorAction::kDesksActivate7:
       accelerators::ActivateDeskAtIndex(action);
       break;
-    case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
+    case AcceleratorAction::kDesksToggleAssignToAllDesks:
       accelerators::ToggleAssignToAllDesk();
       break;
-    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
-    case DEBUG_MICROPHONE_MUTE_TOGGLE:
-    case DEBUG_PRINT_LAYER_HIERARCHY:
-    case DEBUG_PRINT_VIEW_HIERARCHY:
-    case DEBUG_PRINT_WINDOW_HIERARCHY:
-    case DEBUG_SHOW_TOAST:
-    case DEBUG_TOGGLE_DARK_MODE:
-    case DEBUG_TOGGLE_DYNAMIC_COLOR:
-    case DEBUG_TOGGLE_GLANCEABLES:
-    case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
-    case DEBUG_SYSTEM_UI_STYLE_VIEWER:
+    case AcceleratorAction::kDebugKeyboardBacklightToggle:
+    case AcceleratorAction::kDebugMicrophoneMuteToggle:
+    case AcceleratorAction::kDebugPrintLayerHierarchy:
+    case AcceleratorAction::kDebugPrintViewHierarchy:
+    case AcceleratorAction::kDebugPrintWindowHierarchy:
+    case AcceleratorAction::kDebugShowToast:
+    case AcceleratorAction::kDebugToggleDarkMode:
+    case AcceleratorAction::kDebugToggleDynamicColor:
+    case AcceleratorAction::kDebugToggleGlanceables:
+    case AcceleratorAction::kDebugTogglePowerButtonMenu:
+    case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
+    case AcceleratorAction::kDebugSystemUiStyleViewer:
       debug::PerformDebugActionIfEnabled(action);
       break;
-    case DEBUG_TOGGLE_SHOW_DEBUG_BORDERS:
+    case AcceleratorAction::kDebugToggleShowDebugBorders:
       debug::ToggleShowDebugBorders();
       break;
-    case DEBUG_TOGGLE_SHOW_FPS_COUNTER:
+    case AcceleratorAction::kDebugToggleShowFpsCounter:
       debug::ToggleShowFpsCounter();
       break;
-    case DEBUG_TOGGLE_SHOW_PAINT_RECTS:
+    case AcceleratorAction::kDebugToggleShowPaintRects:
       debug::ToggleShowPaintRects();
       break;
-    case DEBUG_TOGGLE_TOUCH_PAD:
-    case DEBUG_TOGGLE_TOUCH_SCREEN:
-    case DEBUG_TOGGLE_TABLET_MODE:
-    case DEBUG_TOGGLE_WALLPAPER_MODE:
-    case DEBUG_TRIGGER_CRASH:
-    case DEBUG_TOGGLE_HUD_DISPLAY:
+    case AcceleratorAction::kDebugToggleTouchPad:
+    case AcceleratorAction::kDebugToggleTouchScreen:
+    case AcceleratorAction::kDebugToggleTabletMode:
+    case AcceleratorAction::kDebugToggleWallpaperMode:
+    case AcceleratorAction::kDebugTriggerCrash:
+    case AcceleratorAction::kDebugToggleHudDisplay:
       debug::PerformDebugActionIfEnabled(action);
       break;
-    case DEV_ADD_REMOVE_DISPLAY:
+    case AcceleratorAction::kDevAddRemoveDisplay:
       Shell::Get()->display_manager()->AddRemoveDisplay();
       break;
-    case DEV_TOGGLE_APP_LIST:
+    case AcceleratorAction::kDevToggleAppList:
       RecordToggleAppList(accelerator);
       accelerators::ToggleAppList(AppListShowSource::kSearchKey,
                                   base::TimeTicks());
       break;
-    case DEV_TOGGLE_UNIFIED_DESKTOP:
+    case AcceleratorAction::kDevToggleUnifiedDesktop:
       accelerators::ToggleUnifiedDesktop();
       break;
-    case DISABLE_CAPS_LOCK:
+    case AcceleratorAction::kDisableCapsLock:
       base::RecordAction(base::UserMetricsAction("Accel_Disable_Caps_Lock"));
       accelerators::DisableCapsLock();
       break;
-    case EXIT:
+    case AcceleratorAction::kExit:
       // UMA metrics are recorded in the handler.
       exit_warning_handler_.HandleAccelerator();
       break;
-    case FOCUS_NEXT_PANE:
+    case AcceleratorAction::kFocusNextPane:
       base::RecordAction(UserMetricsAction("Accel_Focus_Next_Pane"));
       accelerators::RotatePaneFocus(FocusCycler::FORWARD);
       break;
-    case FOCUS_PREVIOUS_PANE:
+    case AcceleratorAction::kFocusPreviousPane:
       base::RecordAction(UserMetricsAction("Accel_Focus_Previous_Pane"));
       accelerators::RotatePaneFocus(FocusCycler::BACKWARD);
       break;
-    case FOCUS_SHELF:
+    case AcceleratorAction::kFocusShelf:
       base::RecordAction(UserMetricsAction("Accel_Focus_Shelf"));
       accelerators::FocusShelf();
       break;
-    case FOCUS_CAMERA_PREVIEW:
+    case AcceleratorAction::kFocusCameraPreview:
       accelerators::FocusCameraPreview();
       break;
-    case FOCUS_PIP:
+    case AcceleratorAction::kFocusPip:
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));
       accelerators::FocusPip();
       break;
-    case KEYBOARD_BACKLIGHT_TOGGLE:
+    case AcceleratorAction::kKeyboardBacklightToggle:
       if (ash::features::IsKeyboardBacklightToggleEnabled()) {
         base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
         accelerators::ToggleKeyboardBacklight();
       }
       break;
-    case KEYBOARD_BRIGHTNESS_DOWN: {
+    case AcceleratorAction::kKeyboardBrightnessDown: {
       base::RecordAction(UserMetricsAction("Accel_KeyboardBrightnessDown_F6"));
       accelerators::KeyboardBrightnessDown();
       break;
     }
-    case KEYBOARD_BRIGHTNESS_UP: {
+    case AcceleratorAction::kKeyboardBrightnessUp: {
       base::RecordAction(UserMetricsAction("Accel_KeyboardBrightnessUp_F7"));
       accelerators::KeyboardBrightnessUp();
       break;
     }
-    case LAUNCH_APP_0:
+    case AcceleratorAction::kLaunchApp0:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(0);
       break;
-    case LAUNCH_APP_1:
+    case AcceleratorAction::kLaunchApp1:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(1);
       break;
-    case LAUNCH_APP_2:
+    case AcceleratorAction::kLaunchApp2:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(2);
       break;
-    case LAUNCH_APP_3:
+    case AcceleratorAction::kLaunchApp3:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(3);
       break;
-    case LAUNCH_APP_4:
+    case AcceleratorAction::kLaunchApp4:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(4);
       break;
-    case LAUNCH_APP_5:
+    case AcceleratorAction::kLaunchApp5:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(5);
       break;
-    case LAUNCH_APP_6:
+    case AcceleratorAction::kLaunchApp6:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(6);
       break;
-    case LAUNCH_APP_7:
+    case AcceleratorAction::kLaunchApp7:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
       accelerators::LaunchAppN(7);
       break;
-    case LAUNCH_LAST_APP:
+    case AcceleratorAction::kLaunchLastApp:
       base::RecordAction(base::UserMetricsAction("Accel_Launch_Last_App"));
       accelerators::LaunchLastApp();
       break;
-    case LOCK_PRESSED:
-    case LOCK_RELEASED:
-      accelerators::LockPressed(action == LOCK_PRESSED);
+    case AcceleratorAction::kLockPressed:
+    case AcceleratorAction::kLockReleased:
+      accelerators::LockPressed(action == AcceleratorAction::kLockPressed);
       break;
-    case LOCK_SCREEN:
+    case AcceleratorAction::kLockScreen:
       base::RecordAction(base::UserMetricsAction("Accel_LockScreen_L"));
       accelerators::LockScreen();
       break;
-    case MAGNIFIER_ZOOM_IN:
+    case AcceleratorAction::kMagnifierZoomIn:
       accelerators::ActiveMagnifierZoom(1);
       break;
-    case MAGNIFIER_ZOOM_OUT:
+    case AcceleratorAction::kMagnifierZoomOut:
       accelerators::ActiveMagnifierZoom(-1);
       break;
-    case MEDIA_FAST_FORWARD:
+    case AcceleratorAction::kMediaFastForward:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Fast_Forward"));
       accelerators::MediaFastForward();
       break;
-    case MEDIA_NEXT_TRACK:
+    case AcceleratorAction::kMediaNextTrack:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Next_Track"));
       accelerators::MediaNextTrack();
       break;
-    case MEDIA_PAUSE:
+    case AcceleratorAction::kMediaPause:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Pause"));
       accelerators::MediaPause();
       break;
-    case MEDIA_PLAY:
+    case AcceleratorAction::kMediaPlay:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Play"));
       accelerators::MediaPlay();
       break;
-    case MEDIA_PLAY_PAUSE:
+    case AcceleratorAction::kMediaPlayPause:
       base::RecordAction(base::UserMetricsAction("Accel_Media_PlayPause"));
       accelerators::MediaPlayPause();
       break;
-    case MEDIA_PREV_TRACK:
+    case AcceleratorAction::kMediaPrevTrack:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Prev_Track"));
       accelerators::MediaPrevTrack();
       break;
-    case MEDIA_REWIND:
+    case AcceleratorAction::kMediaRewind:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Rewind"));
       accelerators::MediaRewind();
       break;
-    case MEDIA_STOP:
+    case AcceleratorAction::kMediaStop:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Stop"));
       accelerators::MediaStop();
       break;
-    case MICROPHONE_MUTE_TOGGLE:
+    case AcceleratorAction::kMicrophoneMuteToggle:
       base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
       accelerators::MicrophoneMuteToggle();
       break;
-    case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
+    case AcceleratorAction::kMoveActiveWindowBetweenDisplays:
       accelerators::MoveActiveWindowBetweenDisplays();
       break;
-    case NEW_INCOGNITO_WINDOW:
+    case AcceleratorAction::kNewIncognitoWindow:
       base::RecordAction(base::UserMetricsAction("Accel_New_Incognito_Window"));
       accelerators::NewIncognitoWindow();
       break;
-    case NEW_TAB:
+    case AcceleratorAction::kNewTab:
       RecordNewTab(accelerator);
       accelerators::NewTab();
       break;
-    case NEW_WINDOW:
+    case AcceleratorAction::kNewWindow:
       base::RecordAction(base::UserMetricsAction("Accel_New_Window"));
       accelerators::NewWindow();
       break;
-    case OPEN_CALCULATOR:
+    case AcceleratorAction::kOpenCalculator:
       base::RecordAction(base::UserMetricsAction("Accel_Open_Calculator"));
       accelerators::OpenCalculator();
       break;
-    case OPEN_CROSH:
+    case AcceleratorAction::kOpenCrosh:
       base::RecordAction(base::UserMetricsAction("Accel_Open_Crosh"));
       accelerators::OpenCrosh();
       break;
-    case OPEN_DIAGNOSTICS:
+    case AcceleratorAction::kOpenDiagnostics:
       base::RecordAction(base::UserMetricsAction("Accel_Open_Diagnostics"));
       accelerators::OpenDiagnostics();
       break;
-    case OPEN_FEEDBACK_PAGE:
+    case AcceleratorAction::kOpenFeedbackPage:
       base::RecordAction(base::UserMetricsAction("Accel_Open_Feedback_Page"));
       accelerators::OpenFeedbackPage();
       break;
-    case OPEN_FILE_MANAGER:
+    case AcceleratorAction::kOpenFileManager:
       base::RecordAction(base::UserMetricsAction("Accel_Open_File_Manager"));
       accelerators::OpenFileManager();
       break;
-    case OPEN_GET_HELP:
+    case AcceleratorAction::kOpenGetHelp:
       accelerators::OpenHelp();
       break;
-    case PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT:
+    case AcceleratorAction::kPasteClipboardHistoryPlainText:
       accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/true);
       break;
-    case POWER_PRESSED:
-    case POWER_RELEASED:
+    case AcceleratorAction::kPowerPressed:
+    case AcceleratorAction::kPowerReleased:
       if (!base::SysInfo::IsRunningOnChromeOS()) {
         // There is no powerd, the Chrome OS power manager, in linux desktop,
         // so call the PowerButtonController here.
-        accelerators::PowerPressed(action == POWER_PRESSED);
+        accelerators::PowerPressed(action == AcceleratorAction::kPowerPressed);
       }
       // We don't do anything with these at present on the device,
       // (power button events are reported to us from powerm via
       // D-BUS), but we consume them to prevent them from getting
       // passed to apps -- see http://crbug.com/146609.
       break;
-    case PRINT_UI_HIERARCHIES:
+    case AcceleratorAction::kPrintUiHierarchies:
       debug::PrintUIHierarchies();
       break;
-    case PRIVACY_SCREEN_TOGGLE:
+    case AcceleratorAction::kPrivacyScreenToggle:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Privacy_Screen"));
       accelerators::TogglePrivacyScreen();
       break;
-    case ROTATE_SCREEN:
+    case AcceleratorAction::kRotateScreen:
       accelerators::RotateScreen();
       break;
-    case RESTORE_TAB:
+    case AcceleratorAction::kRestoreTab:
       base::RecordAction(base::UserMetricsAction("Accel_Restore_Tab"));
       accelerators::RestoreTab();
       break;
-    case ROTATE_WINDOW:
+    case AcceleratorAction::kRotateWindow:
       base::RecordAction(UserMetricsAction("Accel_Rotate_Active_Window"));
       accelerators::RotateActiveWindow();
       break;
-    case SCALE_UI_DOWN:
+    case AcceleratorAction::kScaleUiDown:
       accelerators::ZoomDisplay(false /* down */);
       break;
-    case SCALE_UI_RESET:
+    case AcceleratorAction::kScaleUiReset:
       accelerators::ResetDisplayZoom();
       break;
-    case SCALE_UI_UP:
+    case AcceleratorAction::kScaleUiUp:
       accelerators::ZoomDisplay(true /* up */);
       break;
-    case SHOW_EMOJI_PICKER:
+    case AcceleratorAction::kShowEmojiPicker:
       base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
       accelerators::ShowEmojiPicker();
       break;
-    case TOGGLE_IME_MENU_BUBBLE:
+    case AcceleratorAction::kToggleImeMenuBubble:
       base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
       accelerators::ToggleImeMenuBubble();
       break;
-    case TOGGLE_PROJECTOR_MARKER:
+    case AcceleratorAction::kToggleProjectorMarker:
       accelerators::ToggleProjectorMarker();
       break;
-    case SHOW_SHORTCUT_VIEWER:
+    case AcceleratorAction::kShowShortcutViewer:
       if (features::ShouldOnlyShowNewShortcutApp()) {
         accelerators::ShowShortcutCustomizationApp();
       } else {
         accelerators::ShowKeyboardShortcutViewer();
       }
       break;
-    case SHOW_STYLUS_TOOLS:
+    case AcceleratorAction::kShowStylusTools:
       base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));
       accelerators::ShowStylusTools();
       break;
-    case SHOW_TASK_MANAGER:
+    case AcceleratorAction::kShowTaskManager:
       base::RecordAction(UserMetricsAction("Accel_Show_Task_Manager"));
       accelerators::ShowTaskManager();
       break;
-    case START_AMBIENT_MODE:
-      accelerators::ToggleAmbientMode();
-      break;
-    case START_ASSISTANT:
+    case AcceleratorAction::kStartAssistant:
       // TODO(longbowei): Move this to CanToggleAssistant().
       if (ShouldToggleAssistant(accelerator)) {
         RecordToggleAssistant(accelerator);
         accelerators::ToggleAssistant();
       }
       break;
-    case SUSPEND:
+    case AcceleratorAction::kSuspend:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));
       accelerators::Suspend();
       break;
-    case SWAP_PRIMARY_DISPLAY:
+    case AcceleratorAction::kSwapPrimaryDisplay:
       base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));
       accelerators::ShiftPrimaryDisplay();
       break;
-    case SWITCH_IME:
+    case AcceleratorAction::kSwitchIme:
       HandleSwitchIme(accelerator);
       break;
-    case SWITCH_TO_LAST_USED_IME:
+    case AcceleratorAction::kSwitchToLastUsedIme:
       HandleSwitchToLastUsedIme(accelerator);
       break;
-    case SWITCH_TO_NEXT_IME:
+    case AcceleratorAction::kSwitchToNextIme:
       RecordSwitchToNextIme(accelerator);
       accelerators::SwitchToNextIme();
       break;
-    case SWITCH_TO_NEXT_USER:
+    case AcceleratorAction::kSwitchToNextUser:
       MultiProfileUMA::RecordSwitchActiveUser(
           MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Next_User"));
       accelerators::CycleUser(CycleUserDirection::NEXT);
       break;
-    case SWITCH_TO_PREVIOUS_USER:
+    case AcceleratorAction::kSwitchToPreviousUser:
       MultiProfileUMA::RecordSwitchActiveUser(
           MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Previous_User"));
       accelerators::CycleUser(CycleUserDirection::PREVIOUS);
       break;
-    case TAKE_PARTIAL_SCREENSHOT:
+    case AcceleratorAction::kTakePartialScreenshot:
       // UMA metrics are recorded in the function.
       accelerators::MaybeTakePartialScreenshot();
       break;
-    case TAKE_SCREENSHOT:
+    case AcceleratorAction::kTakeScreenshot:
       base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
       accelerators::TakeScreenshot(accelerator.key_code() == ui::VKEY_SNAPSHOT);
       break;
-    case TAKE_WINDOW_SCREENSHOT:
+    case AcceleratorAction::kTakeWindowScreenshot:
       // UMA metrics are recorded in the function.
       accelerators::MaybeTakeWindowScreenshot();
       break;
-    case TOGGLE_APP_LIST: {
+    case AcceleratorAction::kToggleAppList: {
       RecordToggleAppList(accelerator);
       accelerators::ToggleAppList(AppListShowSource::kSearchKey,
                                   base::TimeTicks());
       break;
     }
-    case TOGGLE_CALENDAR:
+    case AcceleratorAction::kToggleCalendar:
       accelerators::ToggleCalendar();
       break;
-    case TOGGLE_CAPS_LOCK:
+    case AcceleratorAction::kToggleCapsLock:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Caps_Lock"));
       accelerators::ToggleCapsLock();
       break;
-    case TOGGLE_CLIPBOARD_HISTORY:
+    case AcceleratorAction::kToggleClipboardHistory:
       accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/false);
       break;
-    case TOGGLE_DICTATION:
+    case AcceleratorAction::kToggleDictation:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));
       accelerators::ToggleDictation();
       break;
-    case TOGGLE_DOCKED_MAGNIFIER:
+    case AcceleratorAction::kToggleDockedMagnifier:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Docked_Magnifier"));
       accelerators::ToggleDockedMagnifier();
       break;
-    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
-    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
+    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
+    case AcceleratorAction::kDebugTuckFloatedWindowRight:
       debug::PerformDebugActionIfEnabled(action);
       break;
-    case TOGGLE_FLOATING:
+    case AcceleratorAction::kToggleFloating:
       // UMA metrics are recorded in the function.
       accelerators::ToggleFloating();
       break;
-    case TOGGLE_FULLSCREEN:
+    case AcceleratorAction::kToggleFullscreen:
       RecordToggleFullscreen(accelerator);
       accelerators::ToggleFullscreen();
       break;
-    case TOGGLE_FULLSCREEN_MAGNIFIER:
+    case AcceleratorAction::kToggleFullscreenMagnifier:
       base::RecordAction(
           UserMetricsAction("Accel_Toggle_Fullscreen_Magnifier"));
       accelerators::ToggleFullscreenMagnifier();
       break;
-    case TOGGLE_GAME_DASHBOARD:
+    case AcceleratorAction::kToggleGameDashboard:
       accelerators::ToggleGameDashboard();
       break;
-    case TOGGLE_HIGH_CONTRAST:
+    case AcceleratorAction::kToggleHighContrast:
       base::RecordAction(UserMetricsAction("Accel_Toggle_High_Contrast"));
       accelerators::ToggleHighContrast();
       break;
-    case TOGGLE_MAXIMIZED:
+    case AcceleratorAction::kToggleMaximized:
       accelerators::ToggleMaximized();
       break;
-    case TOGGLE_MESSAGE_CENTER_BUBBLE:
+    case AcceleratorAction::kToggleMessageCenterBubble:
       base::RecordAction(
           UserMetricsAction("Accel_Toggle_Message_Center_Bubble"));
       accelerators::ToggleMessageCenterBubble();
       break;
-    case TOGGLE_MIRROR_MODE:
+    case AcceleratorAction::kToggleMirrorMode:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Mirror_Mode"));
       accelerators::ToggleMirrorMode();
       break;
-    case TOGGLE_MULTITASK_MENU:
+    case AcceleratorAction::kToggleMultitaskMenu:
       accelerators::ToggleMultitaskMenu();
       return;
-    case TOGGLE_OVERVIEW:
+    case AcceleratorAction::kToggleOverview:
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();
       break;
-    case TOGGLE_RESIZE_LOCK_MENU:
+    case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
+      base::RecordAction(base::UserMetricsAction(
+          "Accel_Toggle_Snap_Group_Windows_Minimize_Restore"));
+      accelerators::MinimizeWindowsInSnapGroup();
+      break;
+    case AcceleratorAction::kToggleResizeLockMenu:
       base::RecordAction(
           base::UserMetricsAction("Accel_Toggle_Resize_Lock_Menu"));
       accelerators::ToggleResizeLockMenu();
       break;
-    case TOGGLE_SPOKEN_FEEDBACK:
+    case AcceleratorAction::kToggleSpokenFeedback:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Spoken_Feedback"));
       accelerators::ToggleSpokenFeedback();
       break;
-    case TOGGLE_SYSTEM_TRAY_BUBBLE:
+    case AcceleratorAction::kToggleSystemTrayBubble:
       base::RecordAction(UserMetricsAction("Accel_Toggle_System_Tray_Bubble"));
       accelerators::ToggleSystemTrayBubble();
       break;
-    case TOGGLE_WIFI:
+    case AcceleratorAction::kToggleWifi:
       accelerators::ToggleWifi();
       break;
-    case TOUCH_HUD_CLEAR:
+    case AcceleratorAction::kTouchHudClear:
       accelerators::TouchHudClear();
       break;
-    case TOUCH_HUD_MODE_CHANGE:
+    case AcceleratorAction::kTouchHudModeChange:
       accelerators::TouchHudModeChange();
       break;
-    case UNPIN:
+    case AcceleratorAction::kUnpin:
       accelerators::UnpinWindow();
       break;
-    case VOLUME_DOWN:
+    case AcceleratorAction::kVolumeDown:
       base::RecordAction(UserMetricsAction("Accel_VolumeDown_F9"));
       output_volume_metric_delay_timer_.Reset();
       accelerators::VolumeDown();
       break;
-    case VOLUME_MUTE:
+    case AcceleratorAction::kVolumeMute:
       if (accelerator.key_code() == ui::VKEY_VOLUME_MUTE)
         base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
       accelerators::VolumeMute();
       break;
-    case VOLUME_UP:
+    case AcceleratorAction::kVolumeUp:
       base::RecordAction(UserMetricsAction("Accel_VolumeUp_F10"));
       output_volume_metric_delay_timer_.Reset();
       accelerators::VolumeUp();
       break;
-    case WINDOW_CYCLE_SNAP_LEFT:
+    case AcceleratorAction::kWindowCycleSnapLeft:
       base::RecordAction(UserMetricsAction("Accel_Window_Snap_Left"));
-      accelerators::WindowSnap(AcceleratorAction::WINDOW_CYCLE_SNAP_LEFT);
+      accelerators::WindowSnap(AcceleratorAction::kWindowCycleSnapLeft);
       break;
-    case WINDOW_CYCLE_SNAP_RIGHT:
+    case AcceleratorAction::kWindowCycleSnapRight:
       base::RecordAction(UserMetricsAction("Accel_Window_Snap_Right"));
-      accelerators::WindowSnap(AcceleratorAction::WINDOW_CYCLE_SNAP_RIGHT);
+      accelerators::WindowSnap(AcceleratorAction::kWindowCycleSnapRight);
       break;
-    case WINDOW_MINIMIZE:
+    case AcceleratorAction::kWindowMinimize:
       base::RecordAction(
           base::UserMetricsAction("Accel_Toggle_Minimized_Minus"));
       accelerators::WindowMinimize();
       break;
-    case MINIMIZE_TOP_WINDOW_ON_BACK:
+    case AcceleratorAction::kMinimizeTopWindowOnBack:
       base::RecordAction(
           base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
       accelerators::TopWindowMinimizeOnBack();
       break;
   }
 
+  RecordActionUmaHistogram(action, accelerator);
   NotifyActionPerformed(action);
 
   // Reset any in progress composition.

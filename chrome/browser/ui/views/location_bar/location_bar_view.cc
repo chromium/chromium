@@ -177,15 +177,15 @@ LocationBarView::LocationBarView(Browser* browser,
   set_suppress_default_focus_handling();
   if (!is_popup_mode_) {
     views::FocusRing::Install(this);
-    views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
-      DCHECK(views::IsViewClass<LocationBarView>(view));
-      auto* v = static_cast<LocationBarView*>(view);
-
-      // Show focus ring when the Omnibox is visibly focused and the popup is
-      // closed.
-      return v->omnibox_view_->model()->is_caret_visible() &&
-             !v->GetOmniboxPopupView()->IsOpen();
-    });
+    views::FocusRing::Get(this)->SetHasFocusPredicate(
+        base::BindRepeating([](const View* view) {
+          const auto* v = views::AsViewClass<LocationBarView>(view);
+          CHECK(v);
+          // Show focus ring when the Omnibox is visibly focused and the popup
+          // is closed.
+          return v->omnibox_view_->model()->is_caret_visible() &&
+                 !v->GetOmniboxPopupView()->IsOpen();
+        }));
     if (features::IsChromeRefresh2023()) {
       views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     }
@@ -333,6 +333,7 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(
       PageActionIconType::kVirtualCardManualFallback);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
+  params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
   // TODO(crbug.com/1167060): Place this in the proper order upon having final
   // mocks.
@@ -578,36 +579,69 @@ void LocationBarView::Layout() {
                              !location_icon_view_->ShouldShowLabel() &&
                              !ShouldShowKeywordBubble();
 
-  // We have an odd indent value because this is what matches the odd text
-  // indent value in OmniboxMatchCellView.
-  constexpr int kTextJogIndentDp = 11;
-  int leading_edit_item_padding = should_indent ? kTextJogIndentDp : 0;
-
-  // Additionally, the text should be indented further if a chip is visible
-  // and the lock icon is hidden. This is treated separately, because the
-  // indentation constant has a distinct value.
-  if (ShouldChipOverrideLocationIcon()) {
-    constexpr int kTextIndentLocationBarIconOverriddenDp = 8;
-    leading_edit_item_padding += kTextIndentLocationBarIconOverriddenDp;
-  }
-
-  // CR23 location bar icons have solid borders. Add padding between their
-  // borders and the omnibox so that they don't touch/overlap. Pre-CR23 icons &
-  // the keyword text (both before and after CR23) don't have solid borders;
-  // they instead have invisible borders that provide sufficient padding. Don't
-  // add any more padding in those cases, as then the whitespace would be too
-  // large.
+  // There are 2 CR23 features that impact location bar layout. Make sure layout
+  // is correct when neither, either, or both are enabled. Touch UI, whether the
+  // popup is open (see `should_indent` comment above), whether a keyword is
+  // selected, and whether the permission chip is shown also affect layout.
+  // TODO(manukh): The permutation space is pretty large, and we don't have
+  //   mocks for every single case. So we do something that looks right for now,
+  //   and can iron out the details post CR23. E.g. this probably shifts some
+  //   touch UI layout even when the CR23 features are disabled.
+  // TODO(manukh): Once we decide what to launch, we can keep just one of these,
+  //   and move it to layout_constants.cc.
+  // The padding between the left edges of the location bar and the LHS icon
+  // (e.g. the page info icon, the google G icon, the selected suggestion icon,
+  // etc)
+  int icon_left = 0;
+  // The padding between the LHS icon and the text.
+  int text_left = 0;
+  // Indentation to match the suggestion icons & texts.
+  int icon_indent = 0;
+  int text_indent = 0;
+  // Indentation to match the suggestion icons & texts when in keyword mode.
+  int icon_keyword_indent = 0;
+  int text_keyword_indent = 0;
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() &&
-      !ShouldShowKeywordBubble()) {
-    leading_edit_item_padding += 5;
+      OmniboxFieldTrial::IsCr23LayoutEnabled()) {
+    icon_left = 4;
+    text_left = 8;
+    icon_indent = 8;
+    text_indent = 5;
+    icon_keyword_indent = 4;
+    text_keyword_indent = -9;
+  } else if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    icon_left = 4;
+    text_left = 5;
+    icon_indent = 2;
+    text_indent = 12;
+    icon_keyword_indent = -2;
+    text_keyword_indent = -6;
+  } else if (OmniboxFieldTrial::IsCr23LayoutEnabled()) {
+    icon_left = 2;
+    text_left = 0;
+    icon_indent = 6;
+    text_indent = 9;
+    icon_keyword_indent = 6;
+    text_keyword_indent = -1;
+  } else {
+    icon_left = 2;
+    text_left = 0;
+    icon_indent = 0;
+    text_indent = 11;
+    icon_keyword_indent = 0;
+    text_keyword_indent = 0;
   }
-
-  // We always subtract the left padding of the OmniboxView itself to allow for
-  // an extended I-beam click target without affecting actual layout.
-  leading_edit_item_padding -= omnibox_view_->GetInsets().left();
+  if (should_indent) {
+    icon_left += icon_indent;
+    text_left += text_indent;
+  }
+  if (ShouldShowKeywordBubble()) {
+    icon_left += icon_keyword_indent;
+    text_left += text_keyword_indent;
+  }
 
   LocationBarLayout leading_decorations(LocationBarLayout::Position::kLeftEdge,
-                                        leading_edit_item_padding);
+                                        text_left);
   LocationBarLayout trailing_decorations(
       LocationBarLayout::Position::kRightEdge, edge_padding);
 
@@ -620,10 +654,6 @@ void LocationBarView::Layout() {
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
           ? GetLayoutConstant(LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING)
           : GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
-  const int leading_decorations_edge_padding =
-      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-          ? GetLayoutConstant(LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING)
-          : edge_padding;
   const int trailing_decorations_edge_padding =
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
           ? GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING)
@@ -637,15 +667,14 @@ void LocationBarView::Layout() {
   if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
       !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, leading_decorations_edge_padding,
-                                      chip_controller_->chip());
+                                      0, icon_left, chip_controller_->chip());
   }
 
   location_icon_view_->SetVisible(false);
   if (ShouldShowKeywordBubble()) {
-    leading_decorations.AddDecoration(
-        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
-        leading_decorations_edge_padding, selected_keyword_view_);
+    leading_decorations.AddDecoration(vertical_padding, location_height, false,
+                                      kLeadingDecorationMaxFraction, icon_left,
+                                      selected_keyword_view_);
     if (selected_keyword_view_->GetKeyword() != keyword) {
       selected_keyword_view_->SetKeyword(keyword);
       const TemplateURL* template_url =
@@ -656,30 +685,19 @@ void LocationBarView::Layout() {
           (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
         image = extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
             template_url->GetExtensionId());
-      } else if (template_url && template_url->type() == TemplateURL::NORMAL &&
-                 OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()) {
-        image =
-            omnibox_view()
-                ->model()
-                ->client()
-                ->GetFaviconForKeywordSearchProvider(
-                    template_url,
-                    base::BindOnce(&LocationBarView::OnKeywordFaviconFetched,
-                                   base::Unretained(this)));
       }
       selected_keyword_view_->SetCustomImage(image);
     }
   } else if (location_icon_view_->GetShowText() &&
              !ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
-    leading_decorations.AddDecoration(
-        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
-        leading_decorations_edge_padding, location_icon_view_);
+    leading_decorations.AddDecoration(vertical_padding, location_height, false,
+                                      kLeadingDecorationMaxFraction, icon_left,
+                                      location_icon_view_);
   } else if (!ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, leading_decorations_edge_padding,
-                                      location_icon_view_);
+                                      0, icon_left, location_icon_view_);
   }
 
   auto add_trailing_decoration = [&](View* view) {
@@ -1098,6 +1116,11 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 }
 
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
+  return const_cast<OmniboxPopupView*>(
+      std::as_const(*this).GetOmniboxPopupView());
+}
+
+const OmniboxPopupView* LocationBarView::GetOmniboxPopupView() const {
   DCHECK(IsInitialized());
   return omnibox_view_->model()->get_popup_view();
 }
@@ -1506,6 +1529,14 @@ void LocationBarView::RecordPageInfoMetrics() {
 
 ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+  bool dark_mode = false;
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    if (location_icon_view_ && location_icon_view_->GetBackground()) {
+      dark_mode = color_utils::IsDark(
+          location_icon_view_->GetBackground()->get_color());
+    }
+  }
+
   return omnibox_view_
              ? omnibox_view_->GetIcon(
                    GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
@@ -1513,7 +1544,7 @@ ui::ImageModel LocationBarView::GetLocationIcon(
                    View::GetColorProvider()->GetColor(kColorOmniboxResultsIcon),
                    View::GetColorProvider()->GetColor(
                        kColorOmniboxResultsStarterPackIcon),
-                   std::move(on_icon_fetched))
+                   std::move(on_icon_fetched), dark_mode)
              : ui::ImageModel();
 }
 

@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//webui-gallery/shared/sp_empty_state.js';
 import '//webui-gallery/shared/sp_filter_chip.js';
 import '//webui-gallery/shared/sp_footer.js';
 import '//webui-gallery/shared/sp_heading.js';

@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -50,15 +52,18 @@ class DeviceTrustService : public KeyedService {
   virtual bool IsEnabled() const;
 
   // Uses the challenge stored in `serialized_challenge` to generate a
-  // challenge-response containing device signals and a device identity
-  // signature to be used in an attestation flow. Returns the challenge response
-  // asynchronously via `callback`.
+  // challenge-response containing device signals and a device identity. This
+  // detail, along with the policy `levels` the connector is enabled for, will
+  // be used in the  attestation flow to build the challenge response respective
+  // to its policy level. Returns the challenge response asynchronously via
+  // `callback`.
   virtual void BuildChallengeResponse(const std::string& serialized_challenge,
+                                      const std::set<DTCPolicyLevel>& levels,
                                       DeviceTrustCallback callback);
 
-  // Returns whether the Device Trust connector watches navigations to the given
-  // `url` or not.
-  virtual bool Watches(const GURL& url) const;
+  // Returns the policy levels at which the current `url` navigation is being
+  // watched for.
+  virtual const std::set<DTCPolicyLevel> Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
   void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
@@ -72,9 +77,11 @@ class DeviceTrustService : public KeyedService {
   DeviceTrustService();
 
  private:
-  void OnChallengeParsed(DeviceTrustCallback callback,
+  void OnChallengeParsed(const std::set<DTCPolicyLevel>& levels,
+                         DeviceTrustCallback callback,
                          const std::string& challenge);
   void OnSignalsCollected(const std::string& challenge,
+                          const std::set<DTCPolicyLevel>& levels,
                           DeviceTrustCallback callback,
                           base::Value::Dict signals);
   void OnAttestationResponseReceived(

@@ -12,14 +12,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
-#include "ash/wm/desks/desks_bar_view.h"
-#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -38,6 +36,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -89,7 +88,7 @@ gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window) {
   return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
 }
 
-DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
+DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
                            aura::Window* root_window,
                            Desk* desk)
     : owner_bar_(owner_bar), root_window_(root_window), desk_(desk) {
@@ -128,14 +127,21 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
       chromeos::features::IsJellyrollEnabled() ? kPreviewFocusRingRadius
                                                : kPreviewFocusRingRadiusOld);
 
-  preview_focus_ring->SetHasFocusPredicate([&](views::View* view) {
-    return (owner_bar_->dragged_item_over_bar() &&
-            IsPointOnMiniView(
-                owner_bar_->last_dragged_item_screen_location())) ||
-           desk_preview_->IsViewHighlighted() ||
-           (desk_ && desk_->is_active() && owner_bar_->overview_grid() &&
-            !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary());
-  });
+  preview_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const DeskMiniView* mini_view, const views::View* view) {
+        const auto* desk_preview = views::AsViewClass<DeskPreviewView>(view);
+        CHECK(desk_preview);
+        return desk_preview->IsViewHighlighted() ||
+               (mini_view->owner_bar_->dragged_item_over_bar() &&
+                mini_view->IsPointOnMiniView(
+                    mini_view->owner_bar_
+                        ->last_dragged_item_screen_location())) ||
+               (mini_view->desk_ && mini_view->desk_->is_active() &&
+                mini_view->owner_bar_->overview_grid() &&
+                !mini_view->owner_bar_->overview_grid()
+                     ->IsShowingSavedDeskLibrary());
+      },
+      base::Unretained(this)));
 
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
@@ -190,7 +196,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   auto* controller = DesksController::Get();
 
   // Don't show desk buttons when hovered while the dragged window is on
-  // the DesksBarView.
+  // the desk bar view.
   // For switch access, setting desk buttons to visible allows users to
   // navigate to it.
   const bool visible =

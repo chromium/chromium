@@ -285,7 +285,6 @@ suite('AppListTest', () => {
     openInWindow.click();
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertTrue(openInWindow.checked);
     assertEquals(
         1,
@@ -296,7 +295,6 @@ suite('AppListTest', () => {
     openInWindow.click();
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertFalse(openInWindow.checked);
     assertEquals(
         1,
@@ -325,7 +323,6 @@ suite('AppListTest', () => {
     launchOnStartup.click();
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertTrue(launchOnStartup.checked);
     assertEquals(
         1,
@@ -336,7 +333,6 @@ suite('AppListTest', () => {
     launchOnStartup.click();
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertFalse(launchOnStartup.checked);
     assertEquals(
         1,
@@ -367,7 +363,6 @@ suite('AppListTest', () => {
     launchOnStartup.click();
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertFalse(launchOnStartup.checked);
     assertEquals(
         0,
@@ -752,5 +747,56 @@ suite('AppListTest', () => {
     assertEquals(
         button.href, 'https://support.google.com/chrome?p=install_web_apps');
     assertEquals(button.innerText, 'Learn how to install web apps');
+  });
+
+  test('context menu not closed on checkbox click', async () => {
+    // Test for crbug.com/1435592: Clicking the checkbox options on
+    // the context menu does not close it.
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(apps.appList.length >= 1);
+
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    const launchOnStartup =
+        contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
+    assertTrue(!!launchOnStartup);
+    assertFalse(launchOnStartup.checked);
+    const openInWindow =
+        contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
+    assertTrue(!!openInWindow);
+    assertFalse(openInWindow.checked);
+
+    // Launch on Startup check.
+    launchOnStartup.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    assertTrue(launchOnStartup.checked);
+    assertFalse(contextMenu.hidden);
+
+    // Open In Window check.
+    openInWindow.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    assertTrue(openInWindow.checked);
+    assertFalse(contextMenu.hidden);
+  });
+
+  test('context menu opens on shift+f10 triggered on focused app', async () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+
+    document.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'F10', shiftKey: true}));
+
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    assertFalse(contextMenu.hidden);
   });
 });

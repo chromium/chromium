@@ -1,29 +1,33 @@
-<style>
-  :host {
-    --horizontal-rule-color: var(--google-grey-300);
+<style include="sp-shared-style">
+  :host-context([chrome-refresh-2023]):host {
+    display: block;
+    padding: var(--sp-body-padding) 0;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --horizontal-rule-color: var(--google-grey-700);
-    }
+  sp-heading {
+    margin: 8px 16px;
   }
 
-  .header {
-    color: var(--cr-primary-text-color);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    margin: 0 16px 16px;
-    padding-top: 16px;
-  }
-
-  .horizontal-rule {
-    background-color: var(--horizontal-rule-color);
+  .sp-cards-separator {
+    background-color: var(--google-grey-300);
     border: none;
     height: 2px;
     margin: 0;
     width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .sp-cards-separator {
+      background-color: var(--google-grey-700);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) .sp-cards-separator {
+    background: transparent;
+  }
+
+  :host-context([chrome-refresh-2023]) .sp-card {
+    max-width: calc(320px - 2 * var(--sp-body-padding));
   }
 
   customize-chrome-appearance {
@@ -43,21 +47,27 @@
 </style>
 <iron-pages selected="[[page_]]" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
-    <div id="appearance" class="section">
-      <h2 class="header">$i18n{appearanceHeader}</h2>
+    <div id="appearance" class="section sp-card">
+      <sp-heading hide-back-button>
+        <h2 slot="heading">$i18n{appearanceHeader}</h2>
+      </sp-heading>
       <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
         id="appearanceElement">
       </customize-chrome-appearance>
     </div>
-    <hr class="horizontal-rule">
-    <div id="shortcuts" class="section">
-      <h2 class="header">$i18n{shortcutsHeader}</h2>
+    <hr class="sp-cards-separator">
+    <div id="shortcuts" class="section sp-card">
+      <sp-heading hide-back-button>
+        <h2 slot="heading">$i18n{shortcutsHeader}</h2>
+      </sp-heading>
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>
     <template is="dom-if" if="[[modulesEnabled_]]">
-      <hr class="horizontal-rule">
-      <div id="modules" class="section">
-        <h2 class="header">$i18n{cardsHeader}</h2>
+      <hr class="sp-cards-separator">
+      <div id="modules" class="section sp-card">
+        <sp-heading hide-back-button>
+          <h2 slot="heading">$i18n{cardsHeader}</h2>
+        </sp-heading>
         <customize-chrome-cards></customize-chrome-cards>
       </div>
     </template>
@@ -68,7 +78,7 @@
       on-chrome-colors-select="onChromeColorsSelect_">
   </customize-chrome-categories>
   <customize-chrome-themes on-back-click="onBackClick_"
-      page-name="themes" id="themesPage" 
+      page-name="themes" id="themesPage"
       selected-collection="[[selectedCollection_]]">
   </customize-chrome-themes>
   <customize-chrome-chrome-colors on-back-click="onBackClick_"

@@ -16,7 +16,7 @@
 
 namespace blink {
 
-base::Token GUIDToToken(const base::GUID& guid) {
+base::Token GUIDToToken(const base::Uuid& guid) {
   std::string lowercase = guid.AsLowercaseString();
 
   // |lowercase| is either empty, or follows the expected pattern.
@@ -43,7 +43,7 @@ base::Token GUIDToToken(const base::GUID& guid) {
   return base::Token(high, low);
 }
 
-base::GUID TokenToGUID(const base::Token& token) {
+base::Uuid TokenToGUID(const base::Token& token) {
   const std::string hex_str = base::StringPrintf("%016" PRIx64 "%016" PRIx64,
                                                  token.high(), token.low());
   const base::StringPiece hex_string_piece(hex_str);
@@ -52,7 +52,7 @@ base::GUID TokenToGUID(const base::Token& token) {
        hex_string_piece.substr(12, 4), "-", hex_string_piece.substr(16, 4), "-",
        hex_string_piece.substr(20, 12)});
 
-  return base::GUID::ParseLowercase(lowercase);
+  return base::Uuid::ParseLowercase(lowercase);
 }
 
 }  // namespace blink

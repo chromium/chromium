@@ -54,6 +54,9 @@ STATIC_ASSERT_ENUM(
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::CLIENT_UNAUTHORIZED,
     printing::printing_manager::mojom::PrinterErrorCode::kClientUnauthorized);
+STATIC_ASSERT_ENUM(
+    PrinterErrorCode::EXPIRED_CERTIFICATE,
+    printing::printing_manager::mojom::PrinterErrorCode::kExpiredCertificate);
 }  // namespace
 
 using PrinterReason = ::printing::PrinterStatus::PrinterReason;
@@ -95,6 +98,8 @@ PrinterErrorCode PrinterErrorCodeFromPrinterStatusReasons(
       case PrinterReason::Reason::kPaused:
       case PrinterReason::Reason::kMovingToPaused:
         return PrinterErrorCode::STOPPED;
+      case PrinterReason::Reason::kCupsPkiExpired:
+        return PrinterErrorCode::EXPIRED_CERTIFICATE;
       case PrinterReason::Reason::kMediaLow:
       case PrinterReason::Reason::kTonerLow:
       case PrinterReason::Reason::kDeveloperLow:

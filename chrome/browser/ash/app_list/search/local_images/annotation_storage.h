@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_ANNOTATION_STORAGE_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_ANNOTATION_STORAGE_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -42,17 +43,13 @@ struct ImageInfo {
 
 // A search result with `relevance` to the supplied query.
 struct FileSearchResult {
-  // THe full path to the file.
-  base::FilePath path;
   // The file's last modified time.
   base::Time last_modified;
   // The file's relevance on the scale from 0-1. It represents how closely a
   // query matches the file's annotation.
   double relevance;
 
-  FileSearchResult(const base::FilePath& path,
-                   const base::Time& last_modified,
-                   double relevance);
+  FileSearchResult(const base::Time& last_modified, double relevance);
 
   ~FileSearchResult();
   FileSearchResult(const FileSearchResult&);
@@ -96,7 +93,7 @@ class AnnotationStorage {
 
   // Searches for annotations using FuzzyTokenizedStringMatch with relevance to
   // `query` above a fixed threshold.
-  std::vector<FileSearchResult> LinearSearchAnnotations(
+  std::map<base::FilePath, FileSearchResult> LinearSearchAnnotations(
       const std::u16string& query);
 
  private:

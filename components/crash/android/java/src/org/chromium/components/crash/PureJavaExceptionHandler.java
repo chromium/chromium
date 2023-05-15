@@ -5,7 +5,6 @@
 package org.chromium.components.crash;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.
@@ -13,7 +12,6 @@ import org.chromium.build.annotations.MainDex;
  * This happens before native is loaded, and will replace by JavaExceptionReporter after native
  * finishes loading.
  */
-@MainDex
 public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler mParent;
     private boolean mHandlingException;

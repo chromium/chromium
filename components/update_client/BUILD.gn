@@ -198,8 +198,13 @@ static_library("update_client") {
   }
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
+  visibility = [
+    ":unit_tests",
+    "//chrome/test:test_support",
+    "//components/component_updater:unit_tests",
+  ]
   sources = [
     "net/url_loader_post_interceptor.cc",
     "net/url_loader_post_interceptor.h",
@@ -209,6 +214,8 @@ static_library("test_support") {
     "test_configurator.h",
     "test_installer.cc",
     "test_installer.h",
+    "test_utils.cc",
+    "test_utils.h",
   ]
 
   public_deps = [ ":update_client" ]
@@ -246,6 +253,10 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx",
     "//components/test/data/update_client/jebgalgnebhfojomionfpkfelancnnkf.crx",
+    "//components/test/data/update_client/puffin_patch_test/puffin_app_v1.crx3",
+    "//components/test/data/update_client/puffin_patch_test/puffin_app_v1_to_v2.puff",
+    "//components/test/data/update_client/puffin_patch_test/puffin_app_v2.crx3",
+    "//components/test/data/update_client/puffin_patch_test/puffin_app_v2_to_v1.puff",
     "//components/test/data/update_client/runaction_test_win.crx3",
     "//components/test/data/update_client/updatecheck_reply_1.json",
     "//components/test/data/update_client/updatecheck_reply_4.json",

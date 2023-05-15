@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/browser_state.h"
 
 namespace autofill {

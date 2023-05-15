@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86_64 android-U AVD (userdebug build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "MSb1Vp2C8-H7iJoLte1wgL6oqDtFMLlpI8bppWCUL6EC"  # 32.1.12
+  dest_path: "generic_androidu"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-upsidedowncake/google_apis/x86_64"
+  version: "KG8hpMcAc1OrhFZ-UBuYb3GwK7a-3TZRq8UJqBsg9owC"  # r3, UPB1.230309.013
+  dest_path: "generic_androidu"
+}
+system_image_name: "system-images;android-UpsideDownCake;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-upsidedowncake/google_apis/x86_64"
+  version: "WIgPA8j-YTI1W7MVC3eckiSYVxEDqLc7UZI3mkTjyPoC"  # created in bb_id 8781558768666395489
+  dest_path: "generic_androidu"
+}
+avd_name: "android_u_google_apis_x86_64"

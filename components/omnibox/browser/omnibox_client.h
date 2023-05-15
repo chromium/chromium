@@ -87,7 +87,7 @@ class OmniboxClient {
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
-  virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter();
+  virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
@@ -170,9 +170,6 @@ class OmniboxClient {
                              const std::u16string& user_text,
                              const AutocompleteResult& result,
                              bool has_focus) {}
-
-  // Called when input has been accepted.
-  virtual void OnInputAccepted(const AutocompleteMatch& match) {}
 
   // Called when the edit model is being reverted back to its unedited state.
   virtual void OnRevert() {}

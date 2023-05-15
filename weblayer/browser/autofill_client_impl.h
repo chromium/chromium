@@ -125,16 +125,6 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool TryToShowFastCheckout(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& field,
-      base::WeakPtr<autofill::AutofillManager> autofill_manager) override;
-  void HideFastCheckout(bool allow_further_runs) override;
-  bool IsFastCheckoutSupported(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& field,
-      const autofill::AutofillManager& autofill_manager) override;
-  bool IsShowingFastCheckoutUI() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
@@ -163,7 +153,7 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
-  void ExecuteCommand(int id) override;
+  void ExecuteCommand(autofill::Suggestion::FrontendId id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 

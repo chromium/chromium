@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -61,8 +62,8 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>
       arc_session_manager_observation_{this};
-  Profile* profile_;  // unowned
-  apps::AppServiceProxy* app_service_proxy_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // unowned
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 };
 

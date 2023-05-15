@@ -83,6 +83,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void Hide() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
+  // Returns the currently set Gaia path
+  virtual GaiaPath GetGaiaPath() = 0;
   // Show error UI at the end of GAIA flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
@@ -142,6 +144,7 @@ class GaiaScreenHandler
   void Show() override;
   void Hide() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
+  GaiaPath GetGaiaPath() override;
   void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
@@ -208,10 +211,8 @@ class GaiaScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void InitAfterJavascriptAllowed() override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
@@ -443,7 +444,7 @@ class GaiaScreenHandler
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
-  const base::raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
+  const raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   NetworkStateInformer::State last_network_state_ =
       NetworkStateInformer::UNKNOWN;

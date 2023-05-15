@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
@@ -197,9 +198,10 @@ class ZeroconfScannerDetectorTest : public testing::Test {
   // with this class in listers_ when the test starts and is transferred to
   // detector_ when the detector is created. Throughout, the listers remain
   // available to the test via these pointers.
-  FakeServiceDiscoveryDeviceLister* escl_lister_;
-  FakeServiceDiscoveryDeviceLister* escls_lister_;
-  FakeServiceDiscoveryDeviceLister* generic_scanner_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> escl_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> escls_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh>
+      generic_scanner_lister_;
 
   // Detector under test.
   std::unique_ptr<ZeroconfScannerDetector> detector_;

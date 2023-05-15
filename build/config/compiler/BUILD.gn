@@ -181,6 +181,13 @@ declare_args() {
   # Allow projects that wish to stay on C++17 to override Chromium's default.
   # TODO(crbug.com/1402249): evaluate removing this end of 2023
   use_cxx17 = false
+
+  # Enable ShadowCallStack for compiled binaries. SCS stores a pointer to a
+  # shadow call stack in register x18. Hence, x18 must not be used by the OS
+  # or libraries. We assume that to be the case for high end Android
+  # configurations. For more details see
+  # https://clang.llvm.org/docs/ShadowCallStack.html
+  enable_shadow_call_stack = false
 }
 
 declare_args() {
@@ -260,6 +267,7 @@ config("compiler") {
   cflags_cc = []
   cflags_objc = []
   cflags_objcc = []
+  rustflags = []
   ldflags = []
   defines = []
   configs = []
@@ -322,28 +330,44 @@ config("compiler") {
     # --------------------------------
     cflags += [ "-fno-strict-aliasing" ]  # See http://crbug.com/32204
 
-    # Stack protection.
-    if (is_apple) {
-      # The strong variant of the stack protector significantly increases
-      # binary size, so only enable it in debug mode.
-      if (is_debug) {
-        cflags += [ "-fstack-protector-strong" ]
-      } else {
-        cflags += [ "-fstack-protector" ]
-      }
-    } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
-      # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
-      # See also https://crbug.com/533294
-      if (current_os != "zos") {
-        cflags += [ "--param=ssp-buffer-size=4" ]
-      }
+    # Stack protection. ShadowCallStack and Stack protector address the same
+    # problems. Therefore, we only enable one or the other. Clang advertises SCS as
+    # a stronger alternative to StackProtector, so we give SCS precedence over SP.
+    if (enable_shadow_call_stack) {
+      # On Aarch64, SCS requires the x18 register to be unused because it will hold
+      # a pointer to the shadow stack. For Android we know that Clang doesn't use
+      # x18 by default. On other OSs adding "-ffixed-x18" might be required.
+      assert(is_android)
 
-      # The x86 toolchain currently has problems with stack-protector.
-      if (is_android && current_cpu == "x86") {
-        cflags += [ "-fno-stack-protector" ]
-      } else if (current_os != "aix") {
-        # Not available on aix.
-        cflags += [ "-fstack-protector" ]
+      scs_parameters = [
+        "-fsanitize=shadow-call-stack",
+        "-fno-stack-protector",
+      ]
+      cflags += scs_parameters
+      ldflags += scs_parameters
+    } else {
+      if (is_apple) {
+        # The strong variant of the stack protector significantly increases
+        # binary size, so only enable it in debug mode.
+        if (is_debug) {
+          cflags += [ "-fstack-protector-strong" ]
+        } else {
+          cflags += [ "-fstack-protector" ]
+        }
+      } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
+        # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
+        # See also https://crbug.com/533294
+        if (current_os != "zos") {
+          cflags += [ "--param=ssp-buffer-size=4" ]
+        }
+
+        # The x86 toolchain currently has problems with stack-protector.
+        if (is_android && current_cpu == "x86") {
+          cflags += [ "-fno-stack-protector" ]
+        } else if (current_os != "aix") {
+          # Not available on aix.
+          cflags += [ "-fstack-protector" ]
+        }
       }
     }
 
@@ -450,6 +474,7 @@ config("compiler") {
     asmflags += [ "-fPIC" ]
     cflags += [ "-fPIC" ]
     ldflags += [ "-fPIC" ]
+    rustflags += [ "-Crelocation-model=pic" ]
 
     if (!is_clang) {
       # Use pipes for communicating between sub-processes. Faster.
@@ -685,6 +710,7 @@ config("compiler") {
         "/lldltocache:" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
         "/lldltocachepolicy:$cache_policy",
+        "-mllvm:-disable-auto-upgrade-debug-info",
       ]
     } else {
       ldflags += [ "-flto=thin" ]
@@ -725,6 +751,14 @@ config("compiler") {
       }
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
+
+      if (!is_chromeos) {
+        # TODO(https://crbug.com/972449): turn on for ChromeOS when that
+        # toolchain has this flag.
+        # We only use one version of LLVM within a build so there's no need to
+        # upgrade debug info, which can be expensive since it runs the verifier.
+        ldflags += [ "-Wl,-mllvm,-disable-auto-upgrade-debug-info" ]
+      }
     }
 
     # TODO(https://crbug.com/1211155): investigate why this isn't effective on
@@ -838,6 +872,24 @@ config("compiler") {
     }
   }
 
+  if (clang_embed_bitcode) {
+    assert(!use_thin_lto,
+           "clang_embed_bitcode is only supported in non-ThinLTO builds")
+    cflags += [
+      "-Xclang",
+      "-fembed-bitcode=all",
+    ]
+  }
+
+  if (lld_emit_indexes_and_imports) {
+    assert(use_thin_lto,
+           "lld_emit_indexes_and_imports is only supported with ThinLTO builds")
+    ldflags += [
+      "-Wl,--save-temps=import",
+      "-Wl,--thinlto-emit-index-files",
+    ]
+  }
+
   # Pass the same C/C++ flags to the objective C/C++ compiler.
   cflags_objc += cflags_c
   cflags_objcc += cflags_cc
@@ -852,7 +904,7 @@ config("compiler") {
 
   # Rust compiler flags setup.
   # ---------------------------
-  rustflags = [
+  rustflags += [
     # Overflow checks are optional in Rust, but even if switched
     # off they do not cause undefined behavior (the overflowing
     # behavior is defined). Because containers are bounds-checked
@@ -887,6 +939,14 @@ config("compiler") {
     # directory from appearing in build outputs.
     "-Zremap-cwd-prefix=.",
   ]
+
+  if (!is_win || force_rustc_color_output) {
+    # Colorize error output. The analogous flag is passed for clang. This must
+    # be platform-gated since rustc will unconditionally output ANSI escape
+    # sequences, ignoring the platform, when stderr is not a terminal.
+    rustflags += [ "--color=always" ]
+  }
+
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
@@ -896,21 +956,6 @@ config("compiler") {
   }
   if (is_official_build) {
     rustflags += [ "-Ccodegen-units=1" ]
-  }
-}
-
-# Defers LTO optimization to the linker, for use when:
-# * Having the C++ toolchain do the linking against Rust staticlibs, and it
-#   will be using LTO.
-# * Having Rust toolchain invoke the linker, and you're linking Rust and C++
-#   together, so this defers LTO to the linker.
-#
-# Otherwise, Rust does LTO during compilation.
-#
-# https://doc.rust-lang.org/rustc/linker-plugin-lto.html
-config("rust_defer_lto_to_linker") {
-  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
-    rustflags = [ "-Clinker-plugin-lto" ]
   }
 }
 
@@ -926,7 +971,10 @@ config("thinlto_optimize_default") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
-    rustflags = [ "-Clto=thin" ]
+    # We always point Rust to a linker that performs LTO, so we don't want Rust
+    # to preemptively do so during compilation too or they conflict. But we do
+    # want Rust to generate LTO metadata in order for the linker to do its job.
+    rustflags = [ "-Clinker-plugin-lto=yes" ]
   }
 }
 
@@ -952,7 +1000,10 @@ config("thinlto_optimize_max") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
-    rustflags = [ "-Clto=thin" ]
+    # We always point Rust to a linker that performs LTO, so we don't want Rust
+    # to preemptively do so during compilation too or they conflict. But we do
+    # want Rust to generate LTO metadata in order for the linker to do its job.
+    rustflags = [ "-Clinker-plugin-lto=yes" ]
   }
 }
 
@@ -1257,7 +1308,7 @@ config("compiler_cpu_abi") {
         ldflags += [ "-m64" ]
       }
     } else if (current_cpu == "riscv64") {
-      if (is_clang) {
+      if (is_clang && !is_android) {
         cflags += [ "--target=riscv64-linux-gnu" ]
         ldflags += [ "--target=riscv64-linux-gnu" ]
       }
@@ -2395,6 +2446,7 @@ config("win_pdbaltpath") {
 
 # Full symbols.
 config("symbols") {
+  rustflags = []
   if (is_win) {
     if (is_clang) {
       cflags = [
@@ -2433,11 +2485,13 @@ config("symbols") {
     if (!is_nacl && current_os != "aix") {
       if (use_dwarf5) {
         cflags += [ "-gdwarf-5" ]
+        rustflags += [ "-Zdwarf-version=5" ]
       } else if (!is_apple) {
         # Recent clang versions default to DWARF5 on Linux, and Android is about
         # to switch. TODO: Adopt that in controlled way.
         # Apple platforms still default to 4, so the flag is not needed there.
         cflags += [ "-gdwarf-4" ]
+        rustflags += [ "-Zdwarf-version=4" ]
       }
     }
 
@@ -2528,13 +2582,14 @@ config("symbols") {
       ]
     }
   }
-  rustflags = [ "-g" ]
+  rustflags += [ "-g" ]
 }
 
 # Minimal symbols.
 # This config guarantees to hold symbol for stack trace which are shown to user
 # when crash happens in unittests running on buildbot.
 config("minimal_symbols") {
+  rustflags = []
   if (is_win) {
     # Functions, files, and line tables only.
     cflags = []
@@ -2562,15 +2617,18 @@ config("minimal_symbols") {
       # at least 10.11.
       # TODO(thakis): Remove this once mac_deployment_target is 10.11.
       cflags += [ "-gdwarf-4" ]
+      rustflags += [ "-Zdwarf-version=4" ]
     } else if (!use_dwarf5 && !is_nacl && current_os != "aix") {
       # On aix -gdwarf causes linker failures due to thread_local variables.
       # Recent clang versions default to DWARF5 on Linux, and Android is about
       # to switch. TODO: Adopt that in controlled way.
       cflags += [ "-gdwarf-4" ]
+      rustflags += [ "-Zdwarf-version=4" ]
     }
 
     if (use_dwarf5 && !is_nacl) {
       cflags += [ "-gdwarf-5" ]
+      rustflags += [ "-Zdwarf-version=5" ]
     }
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
@@ -2602,7 +2660,7 @@ config("minimal_symbols") {
 
     asmflags = cflags
   }
-  rustflags = [ "-Cdebuginfo=1" ]
+  rustflags += [ "-Cdebuginfo=1" ]
 }
 
 # This configuration contains function names only. That is, the compiler is

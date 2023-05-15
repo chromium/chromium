@@ -17,6 +17,10 @@
 #include "base/system/sys_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace shape_detection {
 
 namespace {
@@ -136,7 +140,7 @@ BarcodeDetectionImplMacVision::BarcodeDetectionImplMacVision(
 
     UpdateSymbologyHint(hint, symbology_hints);
   }
-  symbology_hints_.reset([symbology_hints retain]);
+  symbology_hints_ = symbology_hints;
 
   // The repeating callback will not be run if BarcodeDetectionImplMacVision
   // object has already been destroyed.
@@ -144,7 +148,7 @@ BarcodeDetectionImplMacVision::BarcodeDetectionImplMacVision(
       [VNDetectBarcodesRequest class],
       base::BindRepeating(&BarcodeDetectionImplMacVision::OnBarcodesDetected,
                           weak_factory_.GetWeakPtr()),
-      symbology_hints_.get());
+      symbology_hints_);
 }
 
 BarcodeDetectionImplMacVision::~BarcodeDetectionImplMacVision() = default;
@@ -225,7 +229,7 @@ BarcodeDetectionImplMacVision::GetSupportedSymbologies(
   base::flat_set<shape_detection::mojom::BarcodeFormat> results;
   NSArray<NSString*>* symbologies = vision_api->GetSupportedSymbologies();
 
-  results.reserve([symbologies count]);
+  results.reserve(symbologies.count);
   for (VNBarcodeSymbology symbology : symbologies) {
     auto converted = ToBarcodeFormat(symbology);
     if (converted == shape_detection::mojom::BarcodeFormat::UNKNOWN) {
@@ -241,7 +245,7 @@ BarcodeDetectionImplMacVision::GetSupportedSymbologies(
 
 NSArray<VNBarcodeSymbology>*
 BarcodeDetectionImplMacVision::GetSymbologyHintsForTesting() {
-  return symbology_hints_.get();
+  return symbology_hints_;
 }
 
 }  // namespace shape_detection

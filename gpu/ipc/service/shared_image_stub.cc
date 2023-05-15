@@ -138,7 +138,8 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) {
+                                        uint32_t usage,
+                                        std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
   if (!mailbox.IsSharedImage()) {
@@ -152,10 +153,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(mailbox, std::move(handle), format, plane,
                                    size, color_space, surface_origin,
-                                   alpha_type, usage, std::move(debug_label))) {
+                                   alpha_type, usage, GetLabel(debug_label))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return false;
@@ -170,7 +170,8 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) {
+                                        uint32_t usage,
+                                        std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
   // TODO(kylechar): Add support for single-planar formats and remove this.
@@ -190,10 +191,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(mailbox, format, size, color_space,
                                    surface_origin, alpha_type, usage,
-                                   std::move(debug_label), std::move(handle))) {
+                                   GetLabel(debug_label), std::move(handle))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image with "
                   "multiplanar format";
     OnError();
@@ -244,11 +244,10 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(
           params->mailbox, params->format, params->size, params->color_space,
           params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
-          params->usage, std::move(debug_label))) {
+          params->usage, GetLabel(params->debug_label))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
@@ -294,11 +293,10 @@ void SharedImageStub::OnCreateSharedImageWithData(
   auto subspan =
       memory.subspan(params->pixel_data_offset, params->pixel_data_size);
 
-  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(
           params->mailbox, params->format, params->size, params->color_space,
           params->surface_origin, params->alpha_type, params->usage,
-          std::move(debug_label), subspan)) {
+          GetLabel(params->debug_label), subspan)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
@@ -320,7 +318,7 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
   if (!CreateSharedImage(params->mailbox, std::move(params->buffer_handle),
                          params->format, params->size, params->color_space,
                          params->surface_origin, params->alpha_type,
-                         params->usage)) {
+                         params->usage, GetLabel(params->debug_label))) {
     return;
   }
 
@@ -334,7 +332,8 @@ void SharedImageStub::OnCreateGMBSharedImage(
   if (!CreateSharedImage(params->mailbox, std::move(params->buffer_handle),
                          params->format, params->plane, params->size,
                          params->color_space, params->surface_origin,
-                         params->alpha_type, params->usage)) {
+                         params->alpha_type, params->usage,
+                         GetLabel(params->debug_label))) {
     return;
   }
 
@@ -501,7 +500,10 @@ void SharedImageStub::OnRegisterSharedImageUploadBuffer(
 }
 
 bool SharedImageStub::MakeContextCurrent(bool needs_gl) {
-  DCHECK(context_state_);
+  // Software Renderer doesn't have valid context_state_.
+  if (!context_state_) {
+    return true;
+  }
 
   if (context_state_->context_lost()) {
     LOG(ERROR) << "SharedImageStub: context already lost";
@@ -519,20 +521,23 @@ bool SharedImageStub::MakeContextCurrent(bool needs_gl) {
 ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
   auto* channel_manager = channel_->gpu_channel_manager();
   DCHECK(!context_state_);
-  ContextResult result;
-  context_state_ = channel_manager->GetSharedContextState(&result);
-  if (result != ContextResult::kSuccess) {
-    LOG(ERROR) << "SharedImageStub: unable to create context";
-    context_state_ = nullptr;
-    return result;
-  }
-  DCHECK(context_state_);
-  DCHECK(!context_state_->context_lost());
-  // Some shared image backing factories will use GL in ctor, so we need GL even
-  // if chrome is using non-GL backing.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
-    context_state_ = nullptr;
-    return ContextResult::kTransientFailure;
+
+  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+    ContextResult result;
+    context_state_ = channel_manager->GetSharedContextState(&result);
+    if (result != ContextResult::kSuccess) {
+      LOG(ERROR) << "SharedImageStub: unable to create context";
+      context_state_ = nullptr;
+      return result;
+    }
+    DCHECK(context_state_);
+    DCHECK(!context_state_->context_lost());
+    // Some shared image backing factories will use GL in ctor, so we need GL
+    // even if chrome is using non-GL backing.
+    if (!MakeContextCurrent(/*needs_gl=*/true)) {
+      context_state_ = nullptr;
+      return ContextResult::kTransientFailure;
+    }
   }
 
   factory_ = std::make_unique<SharedImageFactory>(
@@ -596,10 +601,10 @@ void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,
                            std::vector<gpu::SyncToken>({sync_token})));
 }
 
-std::string SharedImageStub::GetLabel() const {
+std::string SharedImageStub::GetLabel(const std::string& debug_label) const {
   // For cross process shared images, compose the label from the client id and
   // client pid for easier identification in debug tools.
-  return "Cid:" + base::NumberToString(channel_->client_id()) +
+  return debug_label + "_Cid:" + base::NumberToString(channel_->client_id()) +
          "_Pid:" + base::NumberToString(channel_->client_pid());
 }
 

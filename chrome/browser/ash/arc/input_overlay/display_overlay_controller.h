@@ -13,23 +13,20 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class View;
 class Widget;
 }  // namespace views
 
-namespace ash {
-class PillButton;
-}  // namespace ash
-
 namespace arc::input_overlay {
 
 class Action;
 class ActionEditMenu;
 class ActionView;
+class ButtonOptionsMenu;
 class EditFinishView;
+class EditingList;
 class EducationalView;
 class InputMappingView;
 class InputMenuView;
@@ -42,7 +39,6 @@ class TouchInjector;
 // menu, and educational dialog. It also handles the visibility of the
 // |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler,
-                                 public views::WidgetObserver,
                                  public aura::WindowObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
@@ -84,7 +80,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnActionAdded(Action* action);
   // Remove the action view when removing |action|.
   void OnActionRemoved(Action* action);
-  void OnActionTrashButtonPressed(Action* action);
+
+  int GetInputMappingListSize();
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
@@ -93,24 +90,26 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
-
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
  private:
   friend class ArcInputOverlayManagerTest;
+  friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
+  friend class EditingList;
   friend class EducationalView;
   friend class InputMappingView;
   friend class InputMenuView;
+  friend class MenuEntryView;
   friend class MenuEntryViewTest;
 
   // Display overlay is added for starting |display_mode|.
@@ -147,18 +146,14 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
-  // TODO(b/250900717): Below are used temporarily. It will be updated/removed
-  // when the final UX/UI is ready.
-  void AddButtonForAddActionTap();
-  void RemoveButtonForAddActionTap();
-  void OnAddActionTapButtonPressed();
-  void AddButtonForAddActionMove();
-  void RemoveButtonForAddActionMove();
-  void OnAddActionMoveButtonPressed();
+  bool HasButtonOptionsMenu() const;
+  void RemoveButtonOptionsMenu();
+
+  void AddEditingList();
+  void RemoveEditingList();
 
   views::Widget* GetOverlayWidget();
-  gfx::Point CalculateMenuEntryPosition();
-  views::View* GetParentView();
+  views::View* GetOverlayWidgetContentsView();
   bool HasMenuView() const;
   // Used for edit mode, in which the input mapping must be temporarily visible
   // regardless of user setting, until it is overridden when the user presses
@@ -181,34 +176,27 @@ class DisplayOverlayController : public ui::EventHandler,
   // window is moved back to the front of task stack on ARC side for view mode.
   void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
 
-  bool ShowingNudge();
-
-  void UpdateForBoundsChanged(const gfx::Rect& bounds);
+  void UpdateForBoundsChanged();
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
-  void TriggerWidgetBoundsChangedForTesting();
 
   const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
+  raw_ptr<ButtonOptionsMenu> button_options_menu_ = nullptr;
   raw_ptr<MenuEntryView> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
   raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  raw_ptr<ash::PillButton> nudge_view_alpha_ = nullptr;
   raw_ptr<NudgeView> nudge_view_ = nullptr;
-  // TODO(b/250900717): Below are temporary UIs for editor feature.
-  raw_ptr<ash::PillButton> add_action_tap_ = nullptr;
-  raw_ptr<ash::PillButton> add_action_move_ = nullptr;
+  raw_ptr<EditingList> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

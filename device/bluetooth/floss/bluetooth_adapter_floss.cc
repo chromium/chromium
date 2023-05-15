@@ -591,7 +591,8 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
     return;
   }
 
-  device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret));
+  device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret),
+                       absl::nullopt);
   if (device->HasReadProperties()) {
     NotifyDevicePairedChanged(device, device->IsPaired());
   }
@@ -742,6 +743,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
 
   BLUETOOTH_LOG(EVENT) << __func__ << device_found;
 
+  UpdateDeviceProperties(true, device_found);
+}
+
+void BluetoothAdapterFloss::UpdateDeviceProperties(
+    bool is_triggered_by_inquiry,
+    const FlossDeviceId& device_found) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
   auto device_floss = CreateBluetoothDeviceFloss(device_found);
   BluetoothDeviceFloss* new_device_ptr = nullptr;
 
@@ -758,9 +768,16 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
         static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   }
 
+  BluetoothDeviceFloss::PropertiesState state =
+      BluetoothDeviceFloss::PropertiesState::kTriggeredByScan;
+  if (is_triggered_by_inquiry) {
+    state = BluetoothDeviceFloss::PropertiesState::kTriggeredByInquiry;
+  }
+
   // Trigger property reads for new devices.
   if (new_device_ptr) {
     new_device_ptr->InitializeDeviceProperties(
+        state,
         base::BindOnce(&BluetoothAdapterFloss::OnInitializeDeviceProperties,
                        weak_ptr_factory_.GetWeakPtr(), new_device_ptr));
 
@@ -781,12 +798,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
       static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
 
   // If the name has changed, we should also reinitialize the device properties.
+  // For dual mode devices, if this is the first inquiry result received or
+  // first scan result received, reinitialize the device properties.
   // NotifyDeviceChanged will get called after properties are re-init.
-  if (device_floss->GetName() && device->GetName() != device_floss->GetName()) {
-    device->SetName(device_floss->GetName().value_or(""));
+  if ((!device_found.name.empty() && device->GetName() != device_found.name) ||
+      !(device->GetPropertiesState() & state)) {
+    device->SetName(device_found.name);
     device->InitializeDeviceProperties(
-        base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
-                       weak_ptr_factory_.GetWeakPtr(), device));
+        state, base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+                              weak_ptr_factory_.GetWeakPtr(), device));
   }
 }
 
@@ -915,8 +935,9 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
       // Mark that no actions should be triggered for pairing delegate.
       device->pairing()->SetActive(false);
     }
-    LOG(ERROR) << "Received BondStateChanged with error status = " << status;
-    device->SetBondState(bond_state);
+    LOG(ERROR) << "Received BondStateChanged with error status = " << status
+               << " for " << remote_device.address;
+    device->SetBondState(bond_state, BtifStatusToConnectErrorCode(status));
     if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
       // Since we're no longer bonded, update connection state so that
       // ConnectCallback can process the error correctly.
@@ -926,7 +947,6 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     NotifyDevicePairedChanged(device, device->IsPaired());
 
     // TODO(b/192289534): Record status in UMA.
-    device->TriggerConnectCallback(BtifStatusToConnectErrorCode(status));
     return;
   }
 
@@ -934,13 +954,11 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     return;
   }
 
-  device->SetBondState(bond_state);
+  device->SetBondState(bond_state, absl::nullopt);
   NotifyDeviceChanged(device);
   NotifyDevicePairedChanged(device, device->IsPaired());
 
-  if (bond_state == FlossAdapterClient::BondState::kBonded) {
-    device->ConnectAllEnabledProfiles();
-  } else if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
+  if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
     // If we're no longer bonded (or paired/connected), we should clear the
     // device so it doesn't show up in found devices list.
     AdapterClearedDevice(remote_device);
@@ -959,7 +977,7 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   if (!device) {
     BLUETOOTH_LOG(EVENT) << "Adding newly connected device to devices_ map: "
                          << device_id.address;
-    AdapterFoundDevice(device_id);
+    UpdateDeviceProperties(false, device_id);
     return;
   }
 
@@ -1384,11 +1402,9 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
 
-  // We are currently in an LE discovery session. Also emit a DeviceFound event
-  // since we have updated data for this device.
-  if (le_discovery_session_) {
-    AdapterFoundDevice(device_ptr->AsFlossDeviceId());
-  }
+  // Update properties and emit a |DeviceFound| if newly found or
+  // |DeviceChanged|.
+  UpdateDeviceProperties(false, device_ptr->AsFlossDeviceId());
 }
 
 void BluetoothAdapterFloss::AdvertisementFound(uint8_t scanner_id,

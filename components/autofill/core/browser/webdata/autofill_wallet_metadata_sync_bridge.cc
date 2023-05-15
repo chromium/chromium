@@ -373,11 +373,18 @@ AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletMetadataSyncBridge::MergeSyncData(
+AutofillWalletMetadataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // First upload local entities that are not mentioned in |entity_data|.
+  // Because Wallet Metadata is deleted when Sync (for this data type) is turned
+  // off, there should usually not be any pre-existing local data here, but it
+  // can happen in some corner cases such as when PDM manages to change metadata
+  // during the initial sync procedure (e.g. the remote sync data was just
+  // downloaded, but first passed to the AUTOFILL_WALLET bridge, with the side
+  // effect of creating wallet metadata entries immediately before this function
+  // is invoked).
   UploadInitialLocalData(metadata_change_list.get(), entity_data);
 
   return MergeRemoteChanges(std::move(metadata_change_list),
@@ -385,7 +392,7 @@ AutofillWalletMetadataSyncBridge::MergeSyncData(
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletMetadataSyncBridge::ApplySyncChanges(
+AutofillWalletMetadataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -601,7 +608,8 @@ void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
   // Strip |local_keys_to_upload| of the keys of data provided by the server.
   for (const std::unique_ptr<EntityChange>& change : entity_data) {
     DCHECK_EQ(change->type(), EntityChange::ACTION_ADD)
-        << "Illegal change; can only be called during initial MergeSyncData()";
+        << "Illegal change; can only be called during initial "
+           "MergeFullSyncData()";
     local_keys_to_upload.erase(change->storage_key());
   }
   // Upload the remaining storage keys

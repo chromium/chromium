@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.PermittedExtensions"
-    units="Extension Count" expires_after="2023-09-03">
+    units="Extension Count" expires_after="2023-11-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.BackgroundPageType"
-    enum="ExtensionBackgroundPageType" expires_after="2023-04-30">
+    enum="ExtensionBackgroundPageType" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -304,8 +304,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.BadMessageFunctionName{IsKiosk}"
-    enum="ExtensionFunctions" expires_after="never">
+<histogram name="Extensions.BadMessageFunctionName" enum="ExtensionFunctions"
+    expires_after="never">
 <!-- expires-never: Monitoring core extension system health. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -314,14 +314,8 @@ chromium-metrics-reviews@google.com.
     The number of times each Extension function call sends a bad message,
     killing the renderer. This may indicate a bug in that API's implementation
     on the renderer. Note a similar, aggregate metric is BadMessageTerminate_EFD
-    which counts the number of bad messages that are sent overall. In M-102 this
-    histogram was split and events from kiosk extensions are recorded in the
-    separate Extensions.BadMessageFunctionName.Kiosk histogram.
+    which counts the number of bad messages that are sent overall.
   </summary>
-  <token key="IsKiosk">
-    <variant name="" summary="from non-kiosk extension"/>
-    <variant name=".Kiosk" summary="from kiosk extension"/>
-  </token>
 </histogram>
 
 <histogram name="Extensions.BadSyncDataReason" enum="BadSyncDataReason"
@@ -527,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionTotalDisables" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -602,6 +596,68 @@ chromium-metrics-reviews@google.com.
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Width of the window created via chrome.windows.create.</summary>
+</histogram>
+
+<histogram name="Extensions.CWSInfoService.FetchSuccess" enum="BooleanSuccess"
+    expires_after="2024-05-04">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the overall extension metadata fetch from the Chrome Web
+    Store (CWS) succeeded or not. This is recorded once for a fetch (which can
+    include multiple network requests). Metadata fetches occur periodically
+    (default period is 24 hours). But they can also occur on-demand, for
+    example, when new extensions are installed.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.CWSInfoService.MetadataChanged"
+    enum="BooleanChanged" expires_after="2024-05-04">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the extension metadata retrieved from the Chrome Web Store
+    (CWS) by the latest fetch is different from that currently saved. This
+    difference can result from store metadata changing, for example an extension
+    getting unpublished. Metadata is also changed when data for newly installed
+    extensions is retrieved for the first time.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.CWSInfoService.NetworkResponseCodeOrError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-04">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the network result for an individual network request within a
+    metadata fetch.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.CWSInfoService.NetworkRetriesTillSuccess"
+    units="retries" expires_after="2024-05-04">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Counts how many retries were needed to successfully complete an individual
+    request within a metadata fetch. This is emitted only for a successful
+    request. Requests are made in batches at every fetch interval (default is 24
+    hours).
+  </summary>
+</histogram>
+
+<histogram name="Extensions.CWSInfoService.NumRequestsInFetch" units="requests"
+    expires_after="2024-05-04">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of individual network requests made to retrieve metadata
+    for all installed extensions. Each request is limited to a small number of
+    extension ids (default is 3) so multiple requests are necessary when the
+    number of installed extensions is greater than the per-request limit. This
+    histogram is emitted before sending the first request in a fetch. It is
+    recorded regardless of whether the fetch succeeds or fails.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.Database.Database.Restore"
@@ -748,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2023-08-20">
+    units="rules" expires_after="2023-10-22">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1012,7 +1068,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Disabled" units="units" expires_after="2023-04-30">
+<histogram name="Extensions.Disabled" units="units" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1038,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DisabledForPermissions" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1319,7 +1375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionLocation" enum="ExtensionLocation"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1348,7 +1404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2023-08-11">
+    expires_after="2023-10-15">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1403,7 +1459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1462,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FileAccessAllowed" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1497,7 +1553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FileAccessNotAllowed" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -1944,7 +2000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FromWebstoreInconsistency"
-    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2023-04-30">
+    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2118,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2204,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.GuestView.ChangeOwnerWebContentsOnAttach"
-    enum="Boolean" expires_after="2023-08-13">
+    enum="Boolean" expires_after="2023-10-15">
   <owner>mcnee@chromium.org</owner>
   <owner>src/components/guest_view/OWNERS</owner>
   <summary>
@@ -2218,7 +2274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HasPermissions_Install3" enum="Boolean"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2252,7 +2308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HasPermissions_Load3" enum="Boolean"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2286,7 +2342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HomepageOverrides" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2329,7 +2385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HostPermissions.GrantedAccess"
-    enum="HostPermissionsAccess" expires_after="2023-04-30">
+    enum="HostPermissionsAccess" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2361,7 +2417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HostPermissions.GrantedAccessForBroadRequests"
-    enum="HostPermissionsAccess" expires_after="2023-04-30">
+    enum="HostPermissionsAccess" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2393,7 +2449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.HostPermissions.GrantedAccessForTargetedRequests"
-    enum="HostPermissionsAccess" expires_after="2023-04-30">
+    enum="HostPermissionsAccess" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2425,7 +2481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.IncognitoAllowed" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2462,7 +2518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.IncognitoNotAllowed" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2673,7 +2729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its new versions
     (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
@@ -2720,7 +2776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallType" enum="ExtensionType"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its new versions
     (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
@@ -2774,7 +2830,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadAll" units="units" expires_after="2023-04-30">
+<histogram name="Extensions.LoadAll" units="units" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2798,7 +2854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAllComponentTime" units="ms"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its new versions
     (Extensions.LoadAllComponentTime.NonUser and
@@ -2845,7 +2901,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadAllTime2" units="ms" expires_after="2023-04-30">
+<histogram name="Extensions.LoadAllTime2" units="ms" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its new versions
     (Extensions.LoadAllTime2.NonUser and Extensions.LoadAllTime2.User) that emit
@@ -2892,7 +2948,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadApp" units="units" expires_after="2023-04-30">
+<histogram name="Extensions.LoadApp" units="units" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2916,7 +2972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAppExternal" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2943,7 +2999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAppUser" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2969,7 +3025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadBrowserAction" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2996,7 +3052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadExtension" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3020,7 +3076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadExtensionExternal" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3047,7 +3103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadExtensionUser" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3084,7 +3140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadHostedApp" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3110,7 +3166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadNoExtensionAction" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3139,7 +3195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadOffStoreItems" units="Number of items"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3169,7 +3225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadPackagedApp" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3195,7 +3251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadPlatformApp" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3218,7 +3274,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadTheme" units="units" expires_after="2023-04-30">
+<histogram name="Extensions.LoadTheme" units="units" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3242,7 +3298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadType" enum="ExtensionType"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3270,7 +3326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadUserScript" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3374,7 +3430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ManifestVersion" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3472,7 +3528,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Navigation.Scheme" enum="NavigationScheme"
+<histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
     expires_after="2024-01-01">
   <owner>jkokatsu@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3500,7 +3556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NewTabPageOverrides" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3528,7 +3584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NonWebstoreLocation" enum="ExtensionLocation"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3557,7 +3613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3584,7 +3640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedDisabled" units="extensions"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3702,7 +3758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Permissions_Install3" enum="ExtensionPermission3"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3737,7 +3793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Permissions_Load3" enum="ExtensionPermission3"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3810,7 +3866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts"
-    enum="BooleanHasWithheldHosts" expires_after="2023-04-30">
+    enum="BooleanHasWithheldHosts" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3845,7 +3901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.RuntimeHostPermissions.GrantedHostCount"
-    units="Granted hosts" expires_after="2023-04-30">
+    units="Granted hosts" expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3926,7 +3982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.SearchEngineOverrides" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -4004,22 +4060,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
-    enum="Boolean" expires_after="2023-08-20">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+<histogram name="Extensions.ServiceWorkerBackground.StartWorker_FailStatus"
+    enum="ServiceWorkerStatusCode" expires_after="2023-04-28">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    Tracks whether background service worker starting succeeded or not.
+    Tracks when a background service worker fails to start what is the
+    ServiceWorkerStatusCode that occurred. Logged each time a service worker
+    fails to start when we attempt to start it for extension tasks.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
+    enum="Boolean" expires_after="2023-10-22">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks whether background service worker starting succeeded or not. Logged
+    each time a service worker has been started for extension tasks.
   </summary>
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerTime" units="ms"
-    expires_after="2022-10-01">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    expires_after="2024-04-26">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     The amount of time it takes to start the background service worker of an
-    extension.
+    extension that succeeded in starting. Logged when we've confirmed the
+    service worker is started for extension tasks to run.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.StartWorkerTime_Fail"
+    units="ms" expires_after="2024-04-26">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The amount of time it takes to start the background service worker of an
+    extension that failed in starting. Logged when we've confirmed the service
+    worker has failed for extension tasks to run.
   </summary>
 </histogram>
 
@@ -4092,7 +4172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.StartupPagesOverrides" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -4483,7 +4563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.WebRequestBlockingCount" units="extensions"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -4516,7 +4596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.WebRequestCount" units="extensions"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -4669,7 +4749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles

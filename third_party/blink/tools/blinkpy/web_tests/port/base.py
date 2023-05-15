@@ -70,8 +70,6 @@ from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.servers import apache_http
 from blinkpy.web_tests.servers import pywebsocket
 from blinkpy.web_tests.servers import wptserve
-from blinkpy.web_tests.skia_gold import blink_skia_gold_properties as sgp
-from blinkpy.web_tests.skia_gold import blink_skia_gold_session_manager as sgsm
 
 _log = logging.getLogger(__name__)
 
@@ -126,6 +124,8 @@ VALID_FILE_NAME_REGEX = re.compile(r'^[\w\-=]+$')
 # This sub directory will be inside the results directory and it will
 # contain all the disc artifacts created by web tests
 ARTIFACTS_SUB_DIR = 'layout-test-results'
+
+ARCHIVED_RESULTS_LIMIT = 25
 
 ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
 
@@ -287,15 +287,6 @@ class Port(object):
         self._virtual_test_suites = None
         self._used_expectation_files = None
 
-        self._skia_gold_temp_dir = None
-        self._skia_gold_session_manager = None
-        self._skia_gold_properties = None
-
-    def __del__(self):
-        if self._skia_gold_temp_dir:
-            self._filesystem.rmtree(self._skia_gold_temp_dir,
-                                    ignore_errors=True)
-
     def __str__(self):
         return 'Port{name=%s, version=%s, architecture=%s, test_configuration=%s}' % (
             self._name, self._version, self._architecture,
@@ -421,31 +412,6 @@ class Port(object):
             # Release with DCHECK is also slower than pure Release.
             return 2 * timeout_ms
         return timeout_ms
-
-    def skia_gold_temp_dir(self):
-        return self._skia_gold_temp_dir
-
-    def skia_gold_properties(self):
-        if not self._skia_gold_properties:
-            self._skia_gold_properties = sgp.BlinkSkiaGoldProperties(
-                self._options)
-        return self._skia_gold_properties
-
-    def skia_gold_session_manager(self):
-        if not self._skia_gold_session_manager:
-            self._skia_gold_temp_dir = self._filesystem.mkdtemp()
-            self._skia_gold_session_manager = sgsm.BlinkSkiaGoldSessionManager(
-                str(self._skia_gold_temp_dir), self.skia_gold_properties())
-        return self._skia_gold_session_manager
-
-    def skia_gold_json_keys(self):
-        return {
-            'configuration': self._options.configuration.lower(),
-            'version': self._version,
-            'port': self.port_name,
-            'architecture': self._architecture,
-            'ignore': '1',
-        }
 
     @memoized
     def _build_args_gn_content(self):
@@ -1118,7 +1084,9 @@ class Port(object):
                                                     filename))
 
     @memoized
-    def wpt_manifest(self, path):
+    def wpt_manifest(self,
+                     path: str,
+                     exclude_jsshell: bool = True) -> WPTManifest:
         assert path in self.WPT_DIRS
         # Convert '/' to the platform-specific separator.
         path = self._filesystem.normpath(path)
@@ -1130,7 +1098,7 @@ class Port(object):
                 'manifest_update', False):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
-        return WPTManifest(self.host, manifest_path)
+        return WPTManifest(self.host, manifest_path, exclude_jsshell)
 
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""
@@ -1819,10 +1787,7 @@ class Port(object):
         """
         assert not self._websocket_server, 'Already running a websocket server.'
         output_dir = output_dir or self.artifacts_directory()
-        server = pywebsocket.PyWebSocket(
-            self,
-            output_dir,
-            python_executable=self._options.python_executable)
+        server = pywebsocket.PyWebSocket(self, output_dir)
         server.start()
         self._websocket_server = server
 
@@ -2118,6 +2083,68 @@ class Port(object):
 
     def default_configuration(self):
         return 'Release'
+
+    def _delete_dirs(self, dir_list):
+        for dir_path in dir_list:
+            self._filesystem.rmtree(dir_path)
+
+    def rename_results_folder(self):
+        try:
+            timestamp = time.strftime(
+                "%Y-%m-%d-%H-%M-%S",
+                time.localtime(
+                    self._filesystem.mtime(
+                        self._filesystem.join(self.artifacts_directory(),
+                                              'results.html'))))
+        except OSError as error:
+            # It might be possible that results.html was not generated in previous run, because the test
+            # run was interrupted even before testing started. In those cases, don't archive the folder.
+            # Simply override the current folder contents with new results.
+            import errno
+            if error.errno in (errno.EEXIST, errno.ENOENT):
+                _log.info(
+                    'No results.html file found in previous run, skipping it.')
+            return None
+        archived_name = ''.join(
+            (self._filesystem.basename(self.artifacts_directory()), '_',
+             timestamp))
+        archived_path = self._filesystem.join(
+            self._filesystem.dirname(self.artifacts_directory()),
+            archived_name)
+        self._filesystem.move(self.artifacts_directory(), archived_path)
+
+    def _get_artifact_directories(self, artifacts_directory_path):
+        results_directory_path = self._filesystem.dirname(
+            artifacts_directory_path)
+        file_list = self._filesystem.listdir(results_directory_path)
+        results_directories = []
+        for name in file_list:
+            file_path = self._filesystem.join(results_directory_path, name)
+            if (artifacts_directory_path in file_path
+                    and self._filesystem.isdir(file_path)):
+                results_directories.append(file_path)
+        results_directories.sort(key=self._filesystem.mtime)
+        return results_directories
+
+    def limit_archived_results_count(self):
+        _log.info('Clobbering excess archived results in %s' %
+                  self._filesystem.dirname(self.artifacts_directory()))
+        results_directories = self._get_artifact_directories(
+            self.artifacts_directory())
+        self._delete_dirs(results_directories[:-ARCHIVED_RESULTS_LIMIT])
+
+    def clobber_old_results(self):
+        dir_above_results_path = self._filesystem.dirname(
+            self.artifacts_directory())
+        _log.info('Clobbering old results in %s.' % dir_above_results_path)
+        if not self._filesystem.exists(dir_above_results_path):
+            return
+        results_directories = self._get_artifact_directories(
+            self.artifacts_directory())
+        self._delete_dirs(results_directories)
+
+        # Port specific clean-up.
+        self.clobber_old_port_specific_results()
 
     def clobber_old_port_specific_results(self):
         pass

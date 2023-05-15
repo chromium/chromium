@@ -757,10 +757,6 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
     auto input = std::make_unique<apps::IconValue>();
     input->icon_type = apps::IconType::kUnknown;
 
-    std::vector<float> scales;
-    scales.push_back(1.0f);
-    gfx::ImageSkia::SetSupportedScales(scales);
-
     gfx::ImageSkia image = gfx::test::CreateImageSkia(1, 2);
     input->uncompressed = image;
 
@@ -781,10 +777,6 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
   {
     auto input = std::make_unique<apps::IconValue>();
     input->icon_type = apps::IconType::kUncompressed;
-
-    std::vector<float> scales;
-    scales.push_back(1.0f);
-    gfx::ImageSkia::SetSupportedScales(scales);
 
     gfx::ImageSkia image = gfx::test::CreateImageSkia(3, 4);
     input->uncompressed = image;

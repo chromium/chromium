@@ -8,6 +8,10 @@
 
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 extern "C" {
 bool CGFontRenderingGetFontSmoothingDisabled(void) API_AVAILABLE(macos(10.14));
 }
@@ -15,7 +19,7 @@ bool CGFontRenderingGetFontSmoothingDisabled(void) API_AVAILABLE(macos(10.14));
 namespace content {
 
 void SystemColorsDidChange(int aqua_color_variant) {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
 
   // Register the defaults in the NSArgumentDomain, which is considered
   // volatile. Registering in the normal application domain fails from within
@@ -30,7 +34,7 @@ void SystemColorsDidChange(int aqua_color_variant) {
 }
 
 bool IsSubpixelAntialiasingAvailable() {
-  if (__builtin_available(macOS 10.14, *)) {
+  if (@available(macOS 10.14, *)) {
     // See https://trac.webkit.org/changeset/239306/webkit for more info.
     return !CGFontRenderingGetFontSmoothingDisabled();
   }

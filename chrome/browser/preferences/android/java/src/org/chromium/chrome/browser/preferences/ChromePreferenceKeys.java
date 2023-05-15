@@ -106,6 +106,8 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_LAST_USED_URL = "enhanced_bookmark_last_used_url";
     public static final String BOOKMARKS_LAST_USED_PARENT =
             "enhanced_bookmark_last_used_parent_folder";
+    public static final String BOOKMARKS_SORT_ORDER = "Chrome.Bookmarks.BookmarkRowSortOrder";
+    public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
     /**
      * Whether Chrome is set as the default browser.
@@ -297,8 +299,6 @@ public final class ChromePreferenceKeys {
     // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME used to be employed for the FRE too, thus the "first_run_"
     // prefix. The string should NOT be changed without some sort of migration.
     public static final String BACKUP_FLOW_SIGNIN_ACCOUNT_NAME = "first_run_signin_account_name";
-    public static final String LEGACY_FIRST_RUN_AND_BACKUP_SIGNIN_COMPLETE =
-            "first_run_signin_complete";
     public static final String FIRST_RUN_FLOW_SIGNIN_SETUP = "first_run_signin_setup";
     // Needed by ChromeBackupAgent
     public static final String FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE = "lightweight_first_run_flow";
@@ -918,9 +918,12 @@ public final class ChromePreferenceKeys {
      */
     public static final String UI_THEME_SETTING = "ui_theme_setting";
 
-    public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
+    // Diagnostic counters for short sessions; see histogram
+    // UMA.PreNative.ChromeTabbedActivityCounter.
+    public static final String UMA_ON_PRECREATE_COUNTER = "Chrome.UMA.OnPreCreateCounter";
+    public static final String UMA_ON_RESUME_COUNTER = "Chrome.UMA.OnResumeCounter";
 
-    public static final String VIDEO_TUTORIALS_SHARE_URL_SET = "Chrome.VideoTutorials.ShareUrls";
+    public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
@@ -995,6 +998,8 @@ public final class ChromePreferenceKeys {
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 BLUETOOTH_NOTIFICATION_IDS,
+                BOOKMARKS_SORT_ORDER,
+                BOOKMARKS_VISUALS_PREF,
                 CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,
@@ -1112,9 +1117,10 @@ public final class ChromePreferenceKeys {
                 SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
+                UMA_ON_PRECREATE_COUNTER,
+                UMA_ON_RESUME_COUNTER,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
-                VIDEO_TUTORIALS_SHARE_URL_SET,
                 WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),

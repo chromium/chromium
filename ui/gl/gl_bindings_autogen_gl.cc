@@ -299,6 +299,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_multi_draw");
   ext.b_GL_ANGLE_provoking_vertex =
       gfx::HasExtension(extensions, "GL_ANGLE_provoking_vertex");
+  ext.b_GL_ANGLE_renderability_validation =
+      gfx::HasExtension(extensions, "GL_ANGLE_renderability_validation");
   ext.b_GL_ANGLE_request_extension =
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   ext.b_GL_ANGLE_robust_client_memory =

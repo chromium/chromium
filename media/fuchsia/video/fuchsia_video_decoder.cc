@@ -121,7 +121,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
     mailbox_ =
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
             gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, usage);
+            kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder");
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
                              ->GenVerifiedSyncToken();
   }
@@ -317,11 +317,6 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
   protected_output_ =
       secure_mode != media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
-
-  LOG(ERROR) << "+++ SECURE MODE = " << static_cast<int>(secure_mode)
-             << " use_overlays=" << use_overlays_for_video_ << " force="
-             << base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    switches::kForceProtectedVideoOutputBuffers);
 
   // Reset output buffers since we won't be able to re-use them.
   ReleaseOutputBuffers();

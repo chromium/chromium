@@ -26,6 +26,10 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
   tile_service_ = std::make_unique<query_tiles::FakeTileService>();
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  on_device_tail_model_service_ =
+      std::make_unique<FakeOnDeviceTailModelService>();
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
@@ -90,3 +94,10 @@ const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
 scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
   return top_sites_;
 }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+OnDeviceTailModelService*
+FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
+  return on_device_tail_model_service_.get();
+}
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

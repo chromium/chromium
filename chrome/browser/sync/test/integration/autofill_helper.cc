@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -207,9 +207,9 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
 AutofillProfile CreateUniqueAutofillProfile() {
   AutofillProfile profile;
   autofill::test::SetProfileInfoWithGuid(
-      &profile, base::GenerateGUID().c_str(), "First", "Middle", "Last",
-      "email@domain.tld", "Company", "123 Main St", "Apt 456", "Nowhere", "OK",
-      "73038", "US", "12345678910");
+      &profile, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str(),
+      "First", "Middle", "Last", "email@domain.tld", "Company", "123 Main St",
+      "Apt 456", "Nowhere", "OK", "73038", "US", "12345678910");
   profile.FinalizeAfterImport();
   return profile;
 }

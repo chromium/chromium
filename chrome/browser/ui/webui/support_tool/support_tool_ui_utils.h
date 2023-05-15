@@ -48,10 +48,10 @@ extern const char kModuleQuery[];
 extern const char kDataCollectorIncluded[];
 extern const char kDataCollectorProtoEnum[];
 
-// String keys of URL generation result that Support Tool UI accepts.
-extern const char kUrlGenerationResultSuccess[];
-extern const char kUrlGenerationResultUrl[];
-extern const char kUrlGenerationResultErrorMessage[];
+// String keys of token generation result that Support Tool UI accepts.
+extern const char kSupportTokenGenerationResultSuccess[];
+extern const char kSupportTokenGenerationResultToken[];
+extern const char kSupportTokenGenerationResultErrorMessage[];
 
 }  // namespace support_tool_ui
 
@@ -121,6 +121,12 @@ base::Value::Dict GetStartDataCollectionResult(bool success,
 // in `data_collector_items`.
 base::Value::Dict GenerateCustomizedURL(
     std::string case_id,
+    const base::Value::List* data_collector_items);
+
+// Generates a support token from `data_collector_items` and returns the result
+// in a format Support Tool UI expects. Returns a result with error when there's
+// no data collector selected in `data_collector_items`.
+base::Value::Dict GenerateSupportToken(
     const base::Value::List* data_collector_items);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SUPPORT_TOOL_SUPPORT_TOOL_UI_UTILS_H_

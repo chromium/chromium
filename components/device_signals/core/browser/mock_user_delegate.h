@@ -16,8 +16,12 @@ class MockUserDelegate : public UserDelegate {
   ~MockUserDelegate() override;
 
   MOCK_METHOD(bool, IsAffiliated, (), (const, override));
-  MOCK_METHOD(bool, IsManaged, (), (const, override));
+  MOCK_METHOD(bool, IsManagedUser, (), (const, override));
   MOCK_METHOD(bool, IsSameUser, (const std::string&), (const, override));
+  MOCK_METHOD(std::set<policy::PolicyScope>,
+              GetPolicyScopesNeedingSignals,
+              (),
+              (const, override));
 };
 
 }  // namespace device_signals

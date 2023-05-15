@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -46,16 +47,18 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
+#import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_constants.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -364,6 +367,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return matcher;
 }
 
++ (id<GREYMatcher>)omniboxAutocompleteLabel {
+  return grey_allOf(
+      grey_accessibilityID(kOmniboxAutocompleteLabelAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(LocationBarSteadyView* element) {
@@ -611,8 +620,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kPrivacySafeBrowsingTableViewId);
 }
 
-+ (id<GREYMatcher>)settingsPriceNotificationsTableView {
-  return grey_accessibilityID(kPriceNotificationsTableViewId);
++ (id<GREYMatcher>)settingsNotificationsTableView {
+  return grey_accessibilityID(kNotificationsTableViewId);
+}
+
++ (id<GREYMatcher>)settingsInactiveTabsTableView {
+  return grey_accessibilityID(kInactiveTabsSettingsTableViewId);
+}
+
++ (id<GREYMatcher>)settingsTabsTableView {
+  return grey_accessibilityID(kTabsSettingsTableViewId);
 }
 
 + (id<GREYMatcher>)settingsTrackingPriceTableView {
@@ -628,6 +645,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_allOf(grey_kindOfClass([UITableViewCell class]),
                     grey_accessibilityID(kSettingsGoogleServicesCellId),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)inactiveTabsSettingsButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS)];
+}
+
++ (id<GREYMatcher>)tabsSettingsButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_TABS_MANAGEMENT_SETTINGS)];
 }
 
 + (id<GREYMatcher>)manageSyncSettingsButton {
@@ -671,9 +698,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabelID:(IDS_IOS_SETTINGS_PRIVACY_TITLE)];
 }
 
-+ (id<GREYMatcher>)settingsMenuPriceNotificationsButton {
++ (id<GREYMatcher>)settingsMenuNotificationsButton {
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_PRICE_NOTIFICATIONS_TITLE)];
+      buttonWithAccessibilityLabelID:(IDS_IOS_NOTIFICATIONS_TITLE)];
 }
 
 + (id<GREYMatcher>)settingsMenuPasswordsButton {
@@ -1008,8 +1035,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title {
   GREYMatchesBlock matches = ^BOOL(TableViewURLCell* cell) {
-    return [cell.titleLabel.text isEqual:title] &&
-           [cell.URLLabel.text isEqual:URL];
+    return [cell.titleLabel.text isEqualToString:title] &&
+           [cell.URLLabel.text isEqualToString:URL];
   };
 
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
@@ -1059,6 +1086,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   };
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                               descriptionBlock:describe];
+}
+
++ (id<GREYMatcher>)passwordsTableViewMatcher {
+  return grey_accessibilityID(kPasswordsTableViewId);
+}
+
++ (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher {
+  return grey_accessibilityID(kDefaultBrowserSettingsTableViewId);
 }
 
 #pragma mark - Overflow Menu Destinations

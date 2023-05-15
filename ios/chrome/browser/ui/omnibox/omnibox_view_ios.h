@@ -171,9 +171,6 @@ class OmniboxViewIOS : public OmniboxView,
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
   void UpdateSchemeStyle(const gfx::Range& scheme_range) override {}
 
-  // Removes the query refinement chip from the omnibox.
-  void RemoveQueryRefinementChip();
-
   OmniboxTextFieldIOS* field_;
 
   WebOmniboxEditModelDelegate* edit_model_delegate_;  // weak, owns us

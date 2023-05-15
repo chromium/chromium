@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,8 +94,8 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // variable refresh rate setting.
   bool ShouldConfigureVrr() const;
 
-  NativeDisplayDelegate* delegate_;       // Not owned.
-  DisplayLayoutManager* layout_manager_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> delegate_;       // Not owned.
+  raw_ptr<DisplayLayoutManager, ExperimentalAsh> layout_manager_;  // Not owned.
 
   // Requested display state.
   MultipleDisplayState new_display_state_;

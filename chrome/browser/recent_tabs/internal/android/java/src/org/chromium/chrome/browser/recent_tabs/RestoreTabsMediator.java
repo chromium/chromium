@@ -21,6 +21,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,10 +77,20 @@ public class RestoreTabsMediator {
         };
     }
 
-    public void showOptions() {
+    public void showHomeScreen() {
+        if (mModel.get(RestoreTabsProperties.CURRENT_SCREEN)
+                == RestoreTabsProperties.ScreenType.HOME_SCREEN) {
+            return;
+        }
+
         setDeviceListItems(mForeignSessionHelper.getMobileAndTabletForeignSessions());
         setTabListItems();
-        setCurrentScreen(mModel.get(RestoreTabsProperties.CURRENT_SCREEN));
+
+        // On initialization, the current screen is not set to prevent re-setting the home screen at
+        // this call site. Some property keys like HOME_SCREEN_DELEGATE are set after initialization
+        // and with the streamlined binding of keys based on screen type, logic for those keys will
+        // not be run until the home screen is set here, re-binding all the screen relevant keys.
+        setCurrentScreen(RestoreTabsProperties.ScreenType.HOME_SCREEN);
         mModel.set(RestoreTabsProperties.VISIBLE, true);
     }
 
@@ -105,6 +116,11 @@ public class RestoreTabsMediator {
         assert sessions != null && sessions.size() != 0;
 
         ForeignSession previousSelection = mModel.get(RestoreTabsProperties.SELECTED_DEVICE);
+
+        // Sort the incoming list of foreign sessions by the most recent modified time.
+        Collections.sort(sessions,
+                (ForeignSession s1,
+                        ForeignSession s2) -> Long.compare(s2.modifiedTime, s1.modifiedTime));
         ForeignSession newSelection = sessions.get(0);
 
         // Populate all model entries.
@@ -210,6 +226,8 @@ public class RestoreTabsMediator {
         if (screenType == RestoreTabsProperties.ScreenType.DEVICE_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(RestoreTabsProperties.DEVICE_MODEL_LIST));
+            mModel.set(RestoreTabsProperties.DETAIL_SCREEN_TITLE,
+                    R.string.restore_tabs_device_screen_sheet_title);
             mModel.set(RestoreTabsProperties.REVIEW_TABS_SCREEN_DELEGATE, null);
         } else if (screenType == RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,

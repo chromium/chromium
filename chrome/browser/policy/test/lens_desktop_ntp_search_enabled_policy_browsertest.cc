@@ -23,17 +23,16 @@ namespace {
 
 bool RealboxContainsVisibleElement(content::WebContents* contents,
                                    const std::string& id) {
-  bool result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "var elem = "
-      "document.getElementsByTagName('ntp-app')[0].shadowRoot.getElementById('"
-      "realbox').shadowRoot.getElementById('" +
-          id +
-          "');"
-          "domAutomationController.send(!!elem && !elem.hidden);",
-      &result));
-  return result;
+  return content::EvalJs(
+             contents,
+             "var elem = "
+             "document.getElementsByTagName('ntp-app')[0].shadowRoot."
+             "getElementById('"
+             "realbox').shadowRoot.getElementById('" +
+                 id +
+                 "');"
+                 "!!elem && !elem.hidden;")
+      .ExtractBool();
 }
 
 }  // namespace

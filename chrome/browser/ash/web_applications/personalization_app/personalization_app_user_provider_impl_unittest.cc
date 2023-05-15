@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -257,7 +258,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   TestUserImageObserver test_user_image_observer_;
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;

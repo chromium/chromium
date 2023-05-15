@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
@@ -47,7 +48,7 @@ class TraceCategoryTest : public testing::Test {
     return is_new_cat;
   }
 
-  static CategoryRegistry::Range GetAllCategories() {
+  static base::span<TraceCategory> GetAllCategories() {
     return CategoryRegistry::GetAllCategories();
   }
 

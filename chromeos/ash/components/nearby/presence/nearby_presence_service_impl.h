@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_NEARBY_PRESENCE_SERVICE_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_NEARBY_PRESENCE_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -29,7 +30,7 @@ class NearbyPresenceServiceImpl : public NearbyPresenceService,
   // KeyedService:
   void Shutdown() override;
 
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 };
 
 }  // namespace ash::nearby::presence

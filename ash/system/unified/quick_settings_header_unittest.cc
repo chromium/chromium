@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
@@ -94,11 +95,11 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  TestShellDelegate* test_shell_delegate_ = nullptr;
+  raw_ptr<TestShellDelegate, ExperimentalAsh> test_shell_delegate_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
-  QuickSettingsHeader* header_ = nullptr;
+  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
 };
 
 TEST_F(QuickSettingsHeaderTest, HiddenByDefaultBeforeLogin) {

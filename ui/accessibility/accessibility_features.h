@@ -46,6 +46,15 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityTreeForViews);
 // directly.
 AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityRestrictiveIA2AXModes);
+
+// Returns true if the more restrictive approach that only enables the web
+// content related AXModes on an IA2 query when the data is being queried on an
+// web content node.
+//
+// TODO(1441211): Remove flag once the change has been confirmed safe.
+AX_BASE_EXPORT bool IsAccessibilityRestrictiveIA2AXModesEnabled();
+
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFocusHighlight);
 
 // Returns true if the accessibility focus highlight feature is enabled,
@@ -215,8 +224,8 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithScreen2x);
 // distills web pages using an ML model.
 AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 
-// Returns true if Screen AI Service is needed as either
-// ScreenAIVisualAnnotations or ReadAnythingWithScreen2x are enabled.
+// Returns true if Screen AI Service is needed as any of the features relying on
+// it are enabled.
 AX_BASE_EXPORT bool IsScreenAIServiceNeeded();
 
 // If enabled, ScreenAI library writes some debug data in /tmp.

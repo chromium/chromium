@@ -170,16 +170,24 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.bidCurrency !== 'CAD')
       throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
-    if (Object.keys(browserSignals).length !== 8) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
+    // We don't have sellerCurrency in top-level, so we just get a blanked out
+    // indication that bidder currency was used.
+    if (browserSignals.bidCurrency !== '???')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
     validateBid(browserSignals.bid);
     if (browserSignals.desirability !== 37)
       throw 'Wrong desireability ' + browserSignals.desirability;
     if (browserSignals.highestScoringOtherBid !== 0) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
+    }
+    if (browserSignals.highestScoringOtherBidCurrency !== '???') {
+      throw 'Wrong highestScoringOtherBidCurrency ' +
+          browserSignals.highestScoringOtherBidCurrency;
     }
     if (browserSignals.dataVersion !== 1234)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;

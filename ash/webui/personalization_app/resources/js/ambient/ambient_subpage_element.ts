@@ -27,7 +27,6 @@ import {dismissTimeOfDayBanner, setAmbientModeEnabled} from './ambient_controlle
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {getTemplate} from './ambient_subpage_element.html.js';
-import {ToggleRow} from './toggle_row_element.js';
 import {getZerosArray} from './utils.js';
 
 export class AmbientSubpage extends WithPersonalizationStore {
@@ -55,6 +54,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         value: null,
         observer: 'onAmbientModeEnabledChanged_',
+      },
+      duration_: {
+        type: Number,
+        value: null,
       },
       temperatureUnit_: {
         type: Number,
@@ -91,8 +94,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private albums_: AmbientModeAlbum[]|null;
   private ambientModeEnabled_: boolean|null;
   private animationTheme_: AnimationTheme|null;
+  private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
+  private isScreenSaverDurationEnabled_: boolean;
   private isPersonalizationJellyEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
@@ -130,6 +135,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
         'temperatureUnit_', state => state.ambient.temperatureUnit);
     this.watch<AmbientSubpage['topicSource_']>(
         'topicSource_', state => state.ambient.topicSource);
+    this.watch<AmbientSubpage['duration_']>(
+        'duration_', state => state.ambient.duration);
     this.updateFromStore();
 
     getAmbientProvider().setPageViewed();
@@ -164,17 +171,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
         this.queryParams['scrollTo'] === ScrollableTarget.TOPIC_SOURCE_LIST) {
       afterNextRender(this, () => this.scrollToTopicSourceList_());
     }
-  }
-
-  private onClickAmbientModeButton_(event: Event) {
-    event.stopPropagation();
-    this.setAmbientModeEnabled_(!this.ambientModeEnabled_);
-  }
-
-  private onToggleStateChanged_(event: Event) {
-    const toggleRow = event.currentTarget as ToggleRow;
-    const ambientModeEnabled = toggleRow!.checked;
-    this.setAmbientModeEnabled_(ambientModeEnabled);
   }
 
   private setAmbientModeEnabled_(ambientModeEnabled: boolean) {
@@ -226,7 +222,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
-        this.topicSource_ === null || this.temperatureUnit_ === null;
+        this.topicSource_ === null || this.temperatureUnit_ === null ||
+        (this.isScreenSaverDurationEnabled_ && this.duration_ === null);
   }
 
   private getPlaceholders_(x: number): number[] {

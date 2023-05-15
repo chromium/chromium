@@ -65,7 +65,6 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
            LayoutEmbeddedContent::IsOfType(type);
   }
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
-  bool NeedsPreferredWidthsRecalculation() const override;
 
   PluginAvailability plugin_availability_ = kPluginAvailable;
   String unavailable_plugin_replacement_text_;

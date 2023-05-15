@@ -735,7 +735,7 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(
           Network::SetCookieBlockedReasonEnum::SchemefulSameSiteStrict);
     } else {
@@ -745,7 +745,7 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(
           Network::SetCookieBlockedReasonEnum::SchemefulSameSiteLax);
     } else {
@@ -756,7 +756,7 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::
                                     SchemefulSameSiteUnspecifiedTreatedAsLax);
     } else {
@@ -847,7 +847,7 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(
           Network::CookieBlockedReasonEnum::SchemefulSameSiteStrict);
     } else {
@@ -857,7 +857,7 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(
           Network::CookieBlockedReasonEnum::SchemefulSameSiteLax);
     } else {
@@ -867,7 +867,7 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
-    if (status.HasDowngradeWarning()) {
+    if (status.HasSchemefulDowngradeWarning()) {
       blockedReasons->push_back(Network::CookieBlockedReasonEnum::
                                     SchemefulSameSiteUnspecifiedTreatedAsLax);
     } else {
@@ -3026,7 +3026,10 @@ CreateNetworkFactoryForDevTools(
 
   // Don't allow trust token redemption.
   params->trust_token_redemption_policy =
-      network::mojom::TrustTokenRedemptionPolicy::kForbid;
+      network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
+  // Don't allow trust token issuance.
+  params->trust_token_issuance_policy =
+      network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
   // Let DevTools fetch resources without CORS and CORB. Source maps are valid
   // JSON and would otherwise require a CORS fetch + correct response headers.
   // See BUG(chromium:1076435) for more context.
@@ -3112,7 +3115,8 @@ void NetworkHandler::LoadNetworkResource(
         frame->GetIsolationInfoForSubresources(),
         frame->BuildClientSecurityState(),
         /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
-        network::mojom::TrustTokenRedemptionPolicy::kForbid,
+        network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
+        network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
         frame->GetCookieSettingOverrides(),
         "NetworkHandler::LoadNetworkResource");
 

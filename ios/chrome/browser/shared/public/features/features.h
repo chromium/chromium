@@ -54,6 +54,9 @@ BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 // the promo manager.
 BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
 
+// Feature flag that enables the default browser video promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
+
 // Feature flag to use the new Edit menu API for browser view.
 BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
 
@@ -62,9 +65,28 @@ extern const char kIOSEditMenuPartialTranslateNoIncognitoParam[];
 // Feature flag to enable partial translate in the edit menu.
 BASE_DECLARE_FEATURE(kIOSEditMenuPartialTranslate);
 
+// Helper function to check if kIOSEditMenuPartialTranslate is enabled and on
+// supported OS.
+bool IsPartialTranslateEnabled();
+
 // Helper function to check if kIOSEditMenuPartialTranslate is enabled in
 // incognito.
 bool ShouldShowPartialTranslateInIncognito();
+
+// Feature param under kIOSEditMenuSearchWith to select the title.
+extern const char kIOSEditMenuSearchWithTitleParamTitle[];
+extern const char kIOSEditMenuSearchWithTitleSearchParam[];
+extern const char kIOSEditMenuSearchWithTitleSearchWithParam[];
+extern const char kIOSEditMenuSearchWithTitleWebSearchParam[];
+// Feature flag to enable search with in the edit menu.
+BASE_DECLARE_FEATURE(kIOSEditMenuSearchWith);
+
+// Helper function to check if kIOSEditMenuSearchWith is enabled and on
+// supported OS.
+bool IsSearchWithEnabled();
+
+// Feature flag to hide search web in the edit menu.
+BASE_DECLARE_FEATURE(kIOSEditMenuHideSearchWeb);
 
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.
@@ -72,9 +94,6 @@ BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);
 
 // Feature flag that swaps the omnibox textfield implementation.
 BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
-
-// Feature flag to enable using Lens to search for images.
-BASE_DECLARE_FEATURE(kUseLensToSearchForImage);
 
 // Feature flag to enable the Lens entrypoint in the home screen widget.
 BASE_DECLARE_FEATURE(kEnableLensInHomeScreenWidget);
@@ -104,33 +123,23 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Chrome.
 BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 
-// Feature flag to switch images to SFSymbols in the omnibox when enabled.
-BASE_DECLARE_FEATURE(kUseSFSymbolsInOmnibox);
-
 // Feature flag for the follow up of the SF Symbols.
 BASE_DECLARE_FEATURE(kSFSymbolsFollowUp);
 
 // Feature flag to enable Apple Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
 
-// Parameter name for the parameter controlling whether or not experience kit
-// maps should be enabled in search result pages or not.
-extern const char kExperienceKitMapsVariationName[];
-
-// Variation to enable experience kit Maps in search result pages.
-extern const char kEnableExperienceKitMapsVariationSrp[];
-
-// Feature flag to enable Maps in experience kit.
-BASE_DECLARE_FEATURE(kMapsExperienceKit);
-
-// Feature flag to enable Mini Map in experience kit.
-BASE_DECLARE_FEATURE(kEnableMiniMap);
-
 // When enabled sort tab by last usage in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridRecencySort);
 
 // Whether the tab grid tabs should be sorted by recency.
 bool IsTabGridSortedByRecency();
+
+// When enabled uses new transitions in the TabGrid.
+BASE_DECLARE_FEATURE(kTabGridNewTransitions);
+
+// Whether the new tab grid tabs transitions should be enabled.
+bool IsNewTabGridTransitionsEnabled();
 
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
@@ -172,6 +181,11 @@ bool IsIndicateSyncErrorInOverflowMenuEnabled();
 
 // Feature flag to move the steady-state (unfocused) omnibox to the bottom.
 BASE_DECLARE_FEATURE(kBottomOmniboxSteadyState);
+
+// Returns true if `kBottomOmniboxSteadyState` feature flag is enabled.
+// This checks that the flag is enabled, not that the omnibox is currently at
+// the bottom.
+bool IsBottomOmniboxSteadyStateEnabled();
 
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.

@@ -430,7 +430,7 @@ LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
   return result;
 }
 
-void LayoutMultiColumnSet::ComputeVisualOverflow(bool recompute_floats) {
+void LayoutMultiColumnSet::ComputeVisualOverflow() {
   NOT_DESTROYED();
   LayoutRect previous_visual_overflow_rect = VisualOverflowRectAllowingUnset();
   ClearVisualOverflow();
@@ -461,25 +461,6 @@ void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
     overflow_rect.Unite(rect);
   }
   AddContentsVisualOverflow(overflow_rect);
-}
-
-void LayoutMultiColumnSet::AddLayoutOverflowFromChildren() {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  // It's useless to calculate overflow if we haven't determined the page
-  // logical height yet.
-  if (!IsPageLogicalHeightKnown())
-    return;
-  UpdateGeometryIfNeeded();
-  LayoutRect overflow_rect;
-  for (const auto& group : fragmentainer_groups_) {
-    LayoutRect rect = group.CalculateOverflow();
-    rect.Move(group.OffsetFromColumnSet());
-    overflow_rect.Unite(rect);
-  }
-  AddLayoutOverflow(overflow_rect);
 }
 
 void LayoutMultiColumnSet::InsertedIntoTree() {

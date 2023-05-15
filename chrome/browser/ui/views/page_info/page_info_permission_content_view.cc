@@ -151,13 +151,20 @@ void PageInfoPermissionContentView::SetPermissionInfo(
       permissions::PermissionUtil::IsPermission(type_) &&
       permissions::PermissionUtil::CanPermissionBeAllowedOnce(
           permission_.type) &&
-      (permission_.default_setting != CONTENT_SETTING_BLOCK ||
-       permission_.setting != CONTENT_SETTING_DEFAULT));
+      (permission_.setting != CONTENT_SETTING_BLOCK));
   PreferredSizeChanged();
 }
 
 void PageInfoPermissionContentView::OnToggleButtonPressed() {
   PageInfoUI::ToggleBetweenAllowAndBlock(permission_);
+
+  // One time permissible permissions show a remember me checkbox only for the
+  // non-deny state.
+  if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+          permission_.type)) {
+    PreferredSizeChanged();
+  }
+
   PermissionChanged();
 }
 
@@ -168,5 +175,6 @@ void PageInfoPermissionContentView::OnRememberSettingPressed() {
 
 void PageInfoPermissionContentView::PermissionChanged() {
   presenter_->OnSitePermissionChanged(permission_.type, permission_.setting,
+                                      permission_.requesting_origin,
                                       permission_.is_one_time);
 }

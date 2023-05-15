@@ -4,12 +4,110 @@
 
 #include "components/autofill/core/browser/field_types.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
+
+// This map should be extended for every added ServerFieldType.
+static constexpr auto kTypeNameToFieldType =
+    base::MakeFixedFlatMap<base::StringPiece, ServerFieldType>(
+        {{"NO_SERVER_DATA", NO_SERVER_DATA},
+         {"UNKNOWN_TYPE", UNKNOWN_TYPE},
+         {"EMPTY_TYPE", EMPTY_TYPE},
+         {"NAME_FIRST", NAME_FIRST},
+         {"NAME_MIDDLE", NAME_MIDDLE},
+         {"NAME_LAST", NAME_LAST},
+         {"NAME_MIDDLE_INITIAL", NAME_MIDDLE_INITIAL},
+         {"NAME_FULL", NAME_FULL},
+         {"NAME_SUFFIX", NAME_SUFFIX},
+         {"EMAIL_ADDRESS", EMAIL_ADDRESS},
+         {"PHONE_HOME_NUMBER", PHONE_HOME_NUMBER},
+         {"PHONE_HOME_CITY_CODE", PHONE_HOME_CITY_CODE},
+         {"PHONE_HOME_COUNTRY_CODE", PHONE_HOME_COUNTRY_CODE},
+         {"PHONE_HOME_CITY_AND_NUMBER", PHONE_HOME_CITY_AND_NUMBER},
+         {"PHONE_HOME_WHOLE_NUMBER", PHONE_HOME_WHOLE_NUMBER},
+         {"ADDRESS_HOME_LINE1", ADDRESS_HOME_LINE1},
+         {"ADDRESS_HOME_LINE2", ADDRESS_HOME_LINE2},
+         {"ADDRESS_HOME_APT_NUM", ADDRESS_HOME_APT_NUM},
+         {"ADDRESS_HOME_CITY", ADDRESS_HOME_CITY},
+         {"ADDRESS_HOME_STATE", ADDRESS_HOME_STATE},
+         {"ADDRESS_HOME_ZIP", ADDRESS_HOME_ZIP},
+         {"ADDRESS_HOME_COUNTRY", ADDRESS_HOME_COUNTRY},
+         {"CREDIT_CARD_NAME_FULL", CREDIT_CARD_NAME_FULL},
+         {"CREDIT_CARD_NUMBER", CREDIT_CARD_NUMBER},
+         {"CREDIT_CARD_EXP_MONTH", CREDIT_CARD_EXP_MONTH},
+         {"CREDIT_CARD_EXP_2_DIGIT_YEAR", CREDIT_CARD_EXP_2_DIGIT_YEAR},
+         {"CREDIT_CARD_EXP_4_DIGIT_YEAR", CREDIT_CARD_EXP_4_DIGIT_YEAR},
+         {"CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+         {"CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+          CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+         {"CREDIT_CARD_TYPE", CREDIT_CARD_TYPE},
+         {"CREDIT_CARD_VERIFICATION_CODE", CREDIT_CARD_VERIFICATION_CODE},
+         {"COMPANY_NAME", COMPANY_NAME},
+         {"FIELD_WITH_DEFAULT_VALUE", FIELD_WITH_DEFAULT_VALUE},
+         {"MERCHANT_EMAIL_SIGNUP", MERCHANT_EMAIL_SIGNUP},
+         {"MERCHANT_PROMO_CODE", MERCHANT_PROMO_CODE},
+         {"PASSWORD", PASSWORD},
+         {"ACCOUNT_CREATION_PASSWORD", ACCOUNT_CREATION_PASSWORD},
+         {"ADDRESS_HOME_STREET_ADDRESS", ADDRESS_HOME_STREET_ADDRESS},
+         {"ADDRESS_HOME_SORTING_CODE", ADDRESS_HOME_SORTING_CODE},
+         {"ADDRESS_HOME_DEPENDENT_LOCALITY", ADDRESS_HOME_DEPENDENT_LOCALITY},
+         {"ADDRESS_HOME_LINE3", ADDRESS_HOME_LINE3},
+         {"NOT_ACCOUNT_CREATION_PASSWORD", NOT_ACCOUNT_CREATION_PASSWORD},
+         {"USERNAME", USERNAME},
+         {"USERNAME_AND_EMAIL_ADDRESS", USERNAME_AND_EMAIL_ADDRESS},
+         {"NEW_PASSWORD", NEW_PASSWORD},
+         {"PROBABLY_NEW_PASSWORD", PROBABLY_NEW_PASSWORD},
+         {"NOT_NEW_PASSWORD", NOT_NEW_PASSWORD},
+         {"CREDIT_CARD_NAME_FIRST", CREDIT_CARD_NAME_FIRST},
+         {"CREDIT_CARD_NAME_LAST", CREDIT_CARD_NAME_LAST},
+         {"PHONE_HOME_EXTENSION", PHONE_HOME_EXTENSION},
+         {"CONFIRMATION_PASSWORD", CONFIRMATION_PASSWORD},
+         {"AMBIGUOUS_TYPE", AMBIGUOUS_TYPE},
+         {"SEARCH_TERM", SEARCH_TERM},
+         {"PRICE", PRICE},
+         {"NOT_PASSWORD", NOT_PASSWORD},
+         {"SINGLE_USERNAME", SINGLE_USERNAME},
+         {"NOT_USERNAME", NOT_USERNAME},
+         {"UPI_VPA", UPI_VPA},
+         {"ADDRESS_HOME_STREET_NAME", ADDRESS_HOME_STREET_NAME},
+         {"ADDRESS_HOME_HOUSE_NUMBER", ADDRESS_HOME_HOUSE_NUMBER},
+         {"ADDRESS_HOME_SUBPREMISE", ADDRESS_HOME_SUBPREMISE},
+         {"ADDRESS_HOME_OTHER_SUBUNIT", ADDRESS_HOME_OTHER_SUBUNIT},
+         {"NAME_LAST_FIRST", NAME_LAST_FIRST},
+         {"NAME_LAST_CONJUNCTION", NAME_LAST_CONJUNCTION},
+         {"NAME_LAST_SECOND", NAME_LAST_SECOND},
+         {"NAME_HONORIFIC_PREFIX", NAME_HONORIFIC_PREFIX},
+         {"ADDRESS_HOME_PREMISE_NAME", ADDRESS_HOME_PREMISE_NAME},
+         {"ADDRESS_HOME_DEPENDENT_STREET_NAME",
+          ADDRESS_HOME_DEPENDENT_STREET_NAME},
+         {"ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME",
+          ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME},
+         {"ADDRESS_HOME_ADDRESS", ADDRESS_HOME_ADDRESS},
+         {"ADDRESS_HOME_ADDRESS_WITH_NAME", ADDRESS_HOME_ADDRESS_WITH_NAME},
+         {"ADDRESS_HOME_FLOOR", ADDRESS_HOME_FLOOR},
+         {"NAME_FULL_WITH_HONORIFIC_PREFIX", NAME_FULL_WITH_HONORIFIC_PREFIX},
+         {"BIRTHDATE_DAY", BIRTHDATE_DAY},
+         {"BIRTHDATE_MONTH", BIRTHDATE_MONTH},
+         {"BIRTHDATE_YEAR_4_DIGITS", BIRTHDATE_4_DIGIT_YEAR},
+         {"PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX",
+          PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX},
+         {"PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX",
+          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX},
+         {"PHONE_HOME_NUMBER_PREFIX", PHONE_HOME_NUMBER_PREFIX},
+         {"PHONE_HOME_NUMBER_SUFFIX", PHONE_HOME_NUMBER_SUFFIX},
+         {"IBAN_VALUE", IBAN_VALUE},
+         {"CREDIT_CARD_STANDALONE_VERIFICATION_CODE",
+          CREDIT_CARD_STANDALONE_VERIFICATION_CODE},
+         {"NUMERIC_QUANTITY", NUMERIC_QUANTITY},
+         {"ONE_TIME_CODE", ONE_TIME_CODE},
+         {"ADDRESS_HOME_LANDMARK", ADDRESS_HOME_LANDMARK}});
 
 ServerFieldType ToSafeServerFieldType(
     std::underlying_type_t<ServerFieldType> raw_value,
@@ -32,8 +130,8 @@ ServerFieldType ToSafeServerFieldType(
            !(67 <= t && t <= 72) &&
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
-           // Reserved for server-side only use.
-           t != 127 && !(130 <= t && t <= 152);
+           // Reserved for server-side only use. Except 136.
+           t != 127 && (t == 136 || !(130 <= t && t <= 153));
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -85,6 +183,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
+    case ADDRESS_HOME_LANDMARK:
       return true;
 
     case CREDIT_CARD_NAME_FULL:
@@ -326,12 +425,19 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "CREDIT_CARD_STANDALONE_VERIFICATION_CODE";
     case ONE_TIME_CODE:
       return "ONE_TIME_CODE";
+    case ADDRESS_HOME_LANDMARK:
+      return "ADDRESS_HOME_LANDMARK";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }
+  NOTREACHED_NORETURN();
+}
 
-  NOTREACHED();
-  return "";
+ServerFieldType TypeNameToFieldType(base::StringPiece type_name) {
+  if (kTypeNameToFieldType.contains(type_name)) {
+    return kTypeNameToFieldType.at(type_name);
+  }
+  return UNKNOWN_TYPE;
 }
 
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {

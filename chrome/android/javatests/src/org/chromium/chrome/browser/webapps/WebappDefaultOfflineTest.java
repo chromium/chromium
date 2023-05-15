@@ -71,6 +71,9 @@ public class WebappDefaultOfflineTest {
         assertEquals("\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.getElementById('icon').src;"));
+        assertEquals("\"inline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+                        "document.getElementById('offlineIcon').style.display;"));
     }
 
     private WebappInfo getDefaultWebappInfo(String url) {

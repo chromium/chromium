@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_MOUNT_PROVIDER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
@@ -37,7 +38,7 @@ class BruschettaMountProvider : public guest_os::GuestOsMountProvider {
   FRIEND_TEST_ALL_PREFIXES(BruschettaMountProviderTest,
                            TestPrepareLaunchFailure);
   void OnRunning(PrepareCallback callback, BruschettaResult result);
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::GuestId guest_id_;
   base::CallbackListSubscription unmount_subscription_;
   base::WeakPtrFactory<BruschettaMountProvider> weak_ptr_factory_{this};

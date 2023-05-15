@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Pang-decode ng larawan</translation>
 <translation id="1785415724048343560">Inirerekomenda para sa pinakamagandang experience</translation>
 <translation id="1818308510395330587">Para payagan ang <ph name="APP_NAME" /> na gumamit ng AR, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Mula sa <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Makikita ng mga nauugnay na site ang iyong aktibidad sa grupo</translation>
 <translation id="1887786770086287077">Naka-off ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Ibaba</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo</translation>
 <translation id="3165022941318558018">Payagan ang isang site na gumamit ng third-party na cookies</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ang naka-store na data</translation>
-<translation id="3203366800380907218">Mula sa web</translation>
 <translation id="321187648315454507">Para payagan ang <ph name="APP_NAME" /> na magpadala sa iyo ng mga notification, i-on din ang mga notification sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3248611290851046188">Tinutukoy ng site na ito ang mga interes na magagamit ng iba pang site para magpakita sa iyo ng mga ad. Kinukuha rin ng site na ito ang mga interes mo mula sa Chrome para makapagpakita sa iyo ng higit pang nauugnay na ad.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">I-mute ang mga site na nagpe-play ng tunog</translation>
 <translation id="3602290021589620013">I-preview</translation>
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
+<translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
 <translation id="3721953990244350188">I-dismiss at ipakita ang susunod na available na pagkilos</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
-<translation id="5229337741799419985">Gumagana ang setting na ito nang hindi ka tinutukoy o pinapayagan ang mga site na makita ang iyong history ng pag-browse</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5264323282659631142">Alisin ang '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">I-drag mula sa itaas at pindutin ang button na bumalik upang lumabas sa full screen.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6689172468748959065">Mga larawan sa profile</translation>
 <translation id="6697925417670533197">Mga aktibong pag-download</translation>
-<translation id="6701547804986694515">Puwedeng mag-save ang site na binibisita mo ng impormasyon sa Chrome na nagva-validate na hindi ka bot. Habang patuloy kang nagba-browse, puwedeng sumangguni ang mga site sa Chrome at i-verify sa unang site na malamang na totoong tao ka.</translation>
 <translation id="6722828510648505498">I-block ang mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
 <translation id="6746124502594467657">Ibaba</translation>
 <translation id="6749077623962119521">I-reset ang mga pahintulot?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Kadalasan mong bina-block ang mga notification. Para payagan, i-tap ang Mga Detalye.</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7383715096023715447">Mga setting para sa <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Gumagana ang setting na ito nang hindi ka tinutukoy o hindi pinapayagan ang mga site na makita ang iyong history ng pag-browse, bagama't puwedeng mag-share ang mga site ng kaunting impormasyon bilang bahagi ng pag-verify</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">I-block ang mga site sa pag-access sa mga sensor</translation>
 <translation id="8823559166155093873">I-block ang cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Habang patuloy kang nagba-browse, puwedeng sumangguni ang mga site sa Chrome at i-verify sa naunang site na binisita mo kung malamang na totoong tao ka.</translation>
 <translation id="8899807382908246773">Mga nakakasagabal na ad</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

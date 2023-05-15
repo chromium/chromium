@@ -3,58 +3,28 @@
 // found in the LICENSE file.
 
 
-import './test_api/test_api.js';
+
 import './components/common_styles/oobe_flex_layout_styles.css.js';
 import './components/api_keys_notice.js';
 // clang-format on
 
 
+
 import {assert} from '//resources/ash/common/assert.js';
 import {$} from '//resources/ash/common/util.js';
-import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {refreshColorCss, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
+import * as OobeTestApi from './test_api/test_api.js';
 import {loadTimeData} from './i18n_setup.js';
+import { addScreensToMainContainer } from './login_ui_tools.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
-import {TraceEvent, traceExecution} from './oobe_trace.js';
+import { TraceEvent, traceExecution } from './oobe_trace.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from './screens.js';
 
 // Everything has been imported at this point.
 traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
-
-/**
- * Add screens from the given list into the main screen container.
- * Screens are added with the following properties:
- *    - Classes: "step hidden" + any extra classes the screen may have
- *    - Attribute: "hidden"
- *
- * If a screen should be added only under some certain conditions, it must have
- * the `condition` property associated with a boolean flag. If the condition
- * yields true it will be added, otherwise it is skipped.
- * @param {Array<{tag: string, id: string}>}
- */
-function addScreensToMainContainer(screenList) {
-  const screenContainer = $('inner-container');
-  for (const screen of screenList) {
-    if (screen.condition) {
-      if (!loadTimeData.getBoolean(screen.condition)) {
-        continue;
-      }
-    }
-
-    const screenElement = document.createElement(screen.tag);
-    screenElement.id = screen.id;
-    screenElement.classList.add('step', 'hidden');
-    screenElement.setAttribute('hidden', '');
-    if (screen.extra_classes) {
-      screenElement.classList.add(...screen.extra_classes);
-    }
-    screenContainer.appendChild(screenElement);
-    assert(
-        !!$(screen.id).shadowRoot, `Error! No shadow root in <${screen.tag}>`);
-  }
-}
 
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
@@ -84,6 +54,26 @@ function prepareGlobalValues() {
   window.Oobe = Oobe;
 }
 
+// Load Simon backdrop asset and trigger event once backdrop is ready to show.
+function loadSimonBackdrop() {
+  const backdropContainer = $('welcome-backdrop');
+  if (!backdropContainer || backdropContainer.style.backgroundImage !== '') {
+    return;
+  }
+
+  // Load of background-img can't be observed by js, therefore load to img
+  // first. BackdropContainer will take the file from cache instead of
+  // downloading it again.
+  const srcUrl = 'internal_assets/welcome_backdrop.svg';
+  var img = new Image();
+  img.addEventListener('load', function f(e) {
+    img.removeEventListener('load', f);
+    backdropContainer.style.backgroundImage = 'url(' + srcUrl + ')';
+    chrome.send('backdropLoaded');
+  });
+  img.src = srcUrl;
+}
+
 function initializeOobe() {
   if (document.readyState === 'loading') {
     return;
@@ -91,14 +81,29 @@ function initializeOobe() {
   document.removeEventListener('DOMContentLoaded', initializeOobe);
   traceExecution(TraceEvent.DOM_CONTENT_LOADED);
 
+  // Prepare Simon flow backdrop.
+  const isOobeSimonEnabled = loadTimeData.getBoolean('isOobeSimonEnabled');
+  if (isOobeSimonEnabled) {
+    loadSimonBackdrop();
+  }
+
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {
+    // Start listening for color changes in 'chrome://theme/colors.css'. Force
+    // reload it once to account for any missed color change events between
+    // loading oobe.html and here.
     startColorChangeUpdater();
+    refreshColorCss();
   }
 
   // Initialize the on-screen debugger if present.
   if (OobeDebugger.DebuggerUI) {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
+  }
+
+  // Add the OOBE Test API
+  if (OobeTestApi.OobeApiProvider) {
+    window.OobeAPI = new OobeTestApi.OobeApiProvider();
   }
 
   Oobe.initialize();

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
@@ -108,8 +109,8 @@ class NearbySchedulerBase
   bool retry_failures_;
   bool require_connectivity_;
   std::string pref_name_;
-  PrefService* pref_service_ = nullptr;
-  const base::Clock* clock_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_ = nullptr;
   base::OneShotTimer timer_;
 };
 

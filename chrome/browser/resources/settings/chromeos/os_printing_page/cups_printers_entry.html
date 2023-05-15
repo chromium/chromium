@@ -1,4 +1,8 @@
 <style include="settings-shared">
+  :host-context(body.jelly-enabled) .list-item:focus-within {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
   .icon-more-vert {
     background-color: none;
   }
@@ -19,6 +23,11 @@
           <iron-icon
             hidden="[[!printerEntry.printerInfo.isManaged]]"
             icon="cr20:domain">
+          </iron-icon>
+          <iron-icon id="printerStatusIcon"
+            hidden="[[!showPrinterIcon_(printerEntry.printerType)]]"
+            icon="[[getPrinterIcon_(printerEntry.printerType,
+                printerEntry.printerInfo.printerStatusReason)]]">
           </iron-icon>
           [[printerEntry.printerInfo.printerName]]
       </span>

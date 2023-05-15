@@ -488,36 +488,6 @@ class TelemetryExtensionApiGuardBrowserTest
         extensions_features::kTelemetryExtensionPendingApprovalApi);
   }
 
- protected:
-  std::string GetManifestFile(const std::string& matches_origin) override {
-    return base::StringPrintf(R"(
-      {
-        "key": "%s",
-        "name": "Test Telemetry Extension",
-        "version": "1",
-        "manifest_version": 3,
-        "chromeos_system_extension": {},
-        "background": {
-          "service_worker": "sw.js"
-        },
-        "permissions": [
-          "os.diagnostics",
-          "os.events",
-          "os.telemetry",
-          "os.telemetry.serial_number",
-          "os.telemetry.network_info"
-        ],
-        "externally_connectable": {
-          "matches": [
-            "%s"
-          ]
-        },
-        "options_page": "options.html"
-      }
-    )",
-                              public_key().c_str(), matches_origin.c_str());
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };

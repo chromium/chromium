@@ -9,8 +9,8 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -228,7 +228,8 @@ void VpnServiceForExtensionAsh::CreateConfiguration(
   properties.Set(shill::kObjectPathSuffixProperty, key);
   properties.Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn);
   properties.Set(shill::kProfileProperty, profile->path);
-  properties.Set(shill::kGuidProperty, base::GenerateGUID());
+  properties.Set(shill::kGuidProperty,
+                 base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   auto [success, failure] = AdaptCallback(std::move(callback));
   ash::NetworkHandler::Get()

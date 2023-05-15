@@ -81,7 +81,7 @@ void MultiprofilesIntroDialog::InitDialog() {
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label);
-  AddChildView(never_show_again_checkbox_);
+  AddChildView(never_show_again_checkbox_.get());
 }
 
 }  // namespace ash

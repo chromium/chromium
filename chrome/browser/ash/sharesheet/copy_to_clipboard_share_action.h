@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_H_
 #define CHROME_BROWSER_ASH_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
@@ -38,7 +39,7 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
   // Virtual so that it can be overridden in testing.
   virtual void ShowToast(ash::ToastData toast_data);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace sharesheet

@@ -6,6 +6,7 @@
 #define ASH_KEYBOARD_UI_KEYBOARD_LAYOUT_MANAGER_H_
 
 #include "ash/keyboard/ui/keyboard_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 
@@ -36,7 +37,7 @@ class KEYBOARD_EXPORT KeyboardLayoutManager : public aura::LayoutManager {
                       const gfx::Rect& requested_bounds) override;
 
  private:
-  KeyboardUIController* controller_;
+  raw_ptr<KeyboardUIController, ExperimentalAsh> controller_;
 };
 
 }  // namespace keyboard

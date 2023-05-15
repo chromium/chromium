@@ -15,6 +15,7 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -50,7 +51,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   const views::Widget* GetWidget() const override { return widget_; }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
   std::vector<views::View*> accessible_panes_;
 };
 

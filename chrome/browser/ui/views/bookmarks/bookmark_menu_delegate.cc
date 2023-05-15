@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/event_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -35,6 +36,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
@@ -169,8 +171,15 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
     bool has_children =
         (start_child_index < node->children().size()) || show_managed;
     if (has_children && parent->GetSubmenu() &&
-        !parent->GetSubmenu()->GetMenuItems().empty())
+        !parent->GetSubmenu()->GetMenuItems().empty()) {
       parent->AppendSeparator();
+      // Add a "Bookmarks" title.
+      if (features::IsChromeRefresh2023()) {
+        parent->AppendMenuItem(
+            IDC_BOOKMARKS_LIST_TITLE,
+            l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
+      }
+    }
 
     if (show_managed)
       BuildMenuForManagedNode(parent);

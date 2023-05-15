@@ -1,0 +1,12 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<div id="div" contenteditable="true"></div>
+<script>
+test(function() {
+    var div = document.getElementById('div');
+    div.appendChild(document.createTextNode(''));
+    div.focus();
+    assert_false(document.queryCommandEnabled('SelectAll'));
+}, 'SelectAll is not enabled if the contenteditable contains only empty string');
+</script>

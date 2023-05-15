@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -37,12 +38,12 @@ class CrtcController {
 
   ~CrtcController();
 
-  drmModeModeInfo mode() const { return state_.mode; }
+  drmModeModeInfo mode() const { return state_->mode; }
   uint32_t crtc() const { return crtc_; }
   uint32_t connector() const { return connector_; }
   const scoped_refptr<DrmDevice>& drm() const { return drm_; }
-  bool is_enabled() const { return state_.properties.active.value; }
-  bool vrr_enabled() const { return state_.properties.vrr_enabled.value; }
+  bool is_enabled() const { return state_->properties.active.value; }
+  bool vrr_enabled() const { return state_->properties.vrr_enabled.value; }
 
   bool AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
                            const DrmOverlayPlaneList& planes,
@@ -72,7 +73,8 @@ class CrtcController {
   // TODO(dnicoara) Add support for hardware mirroring (multiple connectors).
   const uint32_t connector_;
 
-  const HardwareDisplayPlaneManager::CrtcState& state_;
+  const raw_ref<const HardwareDisplayPlaneManager::CrtcState, ExperimentalAsh>
+      state_;
 };
 
 }  // namespace ui

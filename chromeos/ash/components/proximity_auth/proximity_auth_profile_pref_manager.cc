@@ -40,9 +40,6 @@ void ProximityAuthProfilePrefManager::RegisterPrefs(
       prefs::kProximityAuthLastPromotionCheckTimestampMs, 0L);
   registry->RegisterIntegerPref(prefs::kProximityAuthPromotionShownCount, 0);
   registry->RegisterDictionaryPref(prefs::kProximityAuthRemoteBleDevices);
-  registry->RegisterBooleanPref(
-      prefs::kProximityAuthIsChromeOSLoginEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockAllowed() const {
@@ -92,23 +89,6 @@ void ProximityAuthProfilePrefManager::SetPromotionShownCount(int count) {
 
 int ProximityAuthProfilePrefManager::GetPromotionShownCount() const {
   return pref_service_->GetInteger(prefs::kProximityAuthPromotionShownCount);
-}
-
-void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
-    bool has_shown) {
-  // This is persisted within SyncPrefsToLocalState() instead, since the local
-  // state must act as the source of truth for this pref.
-
-  // TODO(crbug.com/1152491): Add a NOTREACHED() to ensure this method is not
-  // called. It is currently incorrectly, though harmlessly, called by virtual
-  // Chrome OS on Linux.
-}
-
-bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
-  // This method previously depended on easy unlock local state prefs, which are
-  // now deprecated with the removal of sign in with Smart Lock.
-  // TODO(b/227674947): Delete this method.
-  return false;
 }
 
 void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(

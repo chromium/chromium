@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
@@ -40,7 +41,6 @@
 
 class LocationBarView;
 class OmniboxClient;
-class OmniboxPopupViewViews;
 
 namespace content {
 class WebContents;
@@ -154,9 +154,7 @@ class OmniboxViewViews
   bool IsCommandIdEnabled(int command_id) const override;
 
   // For testing only.
-  OmniboxPopupViewViews* GetPopupContentsViewForTesting() const {
-    return popup_view_.get();
-  }
+  OmniboxPopupView* GetPopupViewForTesting() const;
 
  protected:
   // OmniboxView:
@@ -324,7 +322,12 @@ class OmniboxViewViews
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
 
-  std::unique_ptr<OmniboxPopupViewViews> popup_view_;
+  // When true, the `popup_view_` is a WebUI implementation; when false,
+  // it is a Views implementation.
+  bool popup_is_webui_;
+
+  // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
+  std::unique_ptr<OmniboxPopupView> popup_view_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   std::vector<gfx::Range> saved_temporary_selection_;

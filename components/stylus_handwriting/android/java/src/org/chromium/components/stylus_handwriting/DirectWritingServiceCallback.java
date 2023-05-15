@@ -59,6 +59,21 @@ class DirectWritingServiceCallback
     static final String GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE = "arch_type_remove_space";
     static final String GESTURE_I_TYPE_FUNCTIONAL = "i_type_functional";
 
+    /**
+     * Callback interface for DirectWritingTrigger class.
+     */
+    public interface TriggerCallback {
+        /**
+         * Update editable bounds to Direct Writing service.
+         */
+        void updateEditableBoundsToService();
+
+        /**
+         * @return true if stylus handwriting icon is showing, false otherwise.
+         */
+        boolean isHandwritingIconShowing();
+    }
+
     private EditorInfo mEditorInfo;
     private int mLastSelectionStart;
     private int mLastSelectionEnd;
@@ -67,6 +82,11 @@ class DirectWritingServiceCallback
     private Point mCursorPosition;
 
     private StylusWritingImeCallback mStylusWritingImeCallback;
+    private TriggerCallback mTriggerCallback;
+
+    void setTriggerCallback(TriggerCallback callback) {
+        mTriggerCallback = callback;
+    }
 
     private final Handler mHandler = new Handler((android.os.Looper.getMainLooper())) {
         @Override
@@ -95,6 +115,9 @@ class DirectWritingServiceCallback
                     break;
                 case DirectWritingConstants.MSG_FORCE_HIDE_KEYBOARD:
                     mStylusWritingImeCallback.hideKeyboard();
+                    break;
+                case DirectWritingConstants.MSG_UPDATE_EDIT_BOUNDS:
+                    mTriggerCallback.updateEditableBoundsToService();
                     break;
                 default:
                     break;
@@ -369,6 +392,19 @@ class DirectWritingServiceCallback
         msg.obj = action;
         msg.setData(bundle);
         mHandler.sendMessage(msg);
+    }
+
+    @BinderThread
+    @Override
+    public void updateBoundedEditTextRect() {
+        Message msg = mHandler.obtainMessage(DirectWritingConstants.MSG_UPDATE_EDIT_BOUNDS);
+        mHandler.sendMessage(msg);
+    }
+
+    @BinderThread
+    @Override
+    public boolean isHoverIconShowing() {
+        return mTriggerCallback.isHandwritingIconShowing();
     }
 
     // All of the below IDirectWritingServiceCallback interface implementations are default or no-op

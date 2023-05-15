@@ -85,6 +85,7 @@ void InitPixelTestFeatures(
   }
   if (params.use_chrome_refresh_2023_style) {
     enabled_features.push_back(features::kChromeRefresh2023);
+    enabled_features.push_back(features::kChromeWebuiRefresh2023);
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (params.use_fre_style) {

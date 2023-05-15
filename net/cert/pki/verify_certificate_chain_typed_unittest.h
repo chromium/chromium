@@ -89,6 +89,11 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, UnknownExtension) {
       "target-unknown-critical-extension/target_only-trusted_leaf.test");
 }
 
+TYPED_TEST_P(VerifyCertificateChainSingleRootTest, MSApplicationPolicies) {
+  this->RunTest("target-msapplicationpolicies-no-eku/main.test");
+  this->RunTest("target-msapplicationpolicies-and-eku/main.test");
+}
+
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WeakSignature) {
   this->RunTest("target-signed-with-sha1/main.test");
   this->RunTest("intermediate-signed-with-sha1/main.test");
@@ -319,6 +324,7 @@ REGISTER_TYPED_TEST_SUITE_P(VerifyCertificateChainSingleRootTest,
                             BasicConstraintsCa,
                             BasicConstraintsPathlen,
                             UnknownExtension,
+                            MSApplicationPolicies,
                             WeakSignature,
                             WrongSignature,
                             LastCertificateNotTrusted,

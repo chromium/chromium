@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -12,15 +13,12 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/common/manifest_url_handlers.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace errors = extensions::manifest_errors;
 
-using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::ExtensionBuilder;
-using extensions::ListBuilder;
 
 namespace {
 
@@ -32,12 +30,11 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
       ExtensionBuilder()
           .SetID(extension_misc::kQuickOfficeExtensionId)
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "MIME type handler test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("mime_types", ListBuilder().Append("text/plain").Build())
-                  .Build())
+                  .Set("mime_types", base::Value::List().Append("text/plain")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -52,12 +49,11 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "MIME types test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("mime_types", ListBuilder().Append("text/plain").Build())
-                  .Build())
+                  .Set("mime_types", base::Value::List().Append("text/plain")))
           .Build();
 
   ASSERT_TRUE(extension.get());

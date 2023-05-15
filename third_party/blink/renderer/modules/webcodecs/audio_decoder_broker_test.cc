@@ -23,6 +23,7 @@
 #include "media/mojo/services/interface_factory_impl.h"
 #include "media/mojo/services/mojo_audio_decoder_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
+#include "media/mojo/services/mojo_media_client.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,6 +87,19 @@ class FakeAudioDecoder : public media::MockAudioDecoder {
   OutputCB output_cb_;
 };
 
+class FakeMojoMediaClient : public media::MojoMediaClient {
+ public:
+  FakeMojoMediaClient() = default;
+  FakeMojoMediaClient(const FakeMojoMediaClient&) = delete;
+  FakeMojoMediaClient& operator=(const FakeMojoMediaClient&) = delete;
+
+  std::unique_ptr<media::AudioDecoder> CreateAudioDecoder(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<media::MediaLog> media_log) override {
+    return std::make_unique<FakeAudioDecoder>();
+  }
+};
+
 // Other end of remote InterfaceFactory requested by AudioDecoderBroker. Used
 // to create our (fake) media::mojom::AudioDecoder.
 class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
@@ -108,8 +122,8 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {
     audio_decoder_receivers_.Add(
-        std::make_unique<media::MojoAudioDecoderService>(
-            &cdm_service_context_, std::make_unique<FakeAudioDecoder>()),
+        std::make_unique<media::MojoAudioDecoderService>(&mojo_media_client_,
+                                                         &cdm_service_context_),
         std::move(receiver));
   }
   void CreateAudioEncoder(
@@ -157,6 +171,7 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
+  FakeMojoMediaClient mojo_media_client_;
   media::MojoCdmServiceContext cdm_service_context_;
   mojo::Receiver<media::mojom::InterfaceFactory> receiver_{this};
   mojo::UniqueReceiverSet<media::mojom::AudioDecoder> audio_decoder_receivers_;

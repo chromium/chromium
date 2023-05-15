@@ -6,17 +6,17 @@
 <script>
 function attemptPlayVideo() {
   // This content has both an audio and a video track.
-  attemptPlay('bigbuck.webm');
+  return attemptPlay('bigbuck.webm');
 }
 
 function attemptPlayAudioOnly() {
   // This content only has an audio track (no video).
-  attemptPlay('audio-only.webm');
+  return attemptPlay('audio-only.webm');
 }
 
 function attemptPlayVideoOnly() {
   // This content only has a video track (no audio).
-  attemptPlay('video-only.webm');
+  return attemptPlay('video-only.webm');
 }
 
 function mute() {
@@ -28,11 +28,7 @@ function attemptPlay(src) {
   const video = document.querySelector('video');
   video.src = src;
 
-  video.play().then(() => {
-    window.domAutomationController.send(true);
-  }, function() {
-    window.domAutomationController.send(false);
-  });
+  return video.play().then(() => true, () => false);
 }
 
 function setMediaMetadata(artwork) {
@@ -70,10 +66,12 @@ function seekToFour() {
 function waitForSignificantPlayback() {
   const video = document.querySelector('video');
 
-  video.addEventListener('timeupdate', () => {
-    if (video.currentTime > 7)
-      window.domAutomationController.send(true);
-  });
+  return new Promise(resolve => {
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime > 7)
+        resolve(true);
+    });
+});
 }
 
 function finishPlaying() {
@@ -83,11 +81,9 @@ function finishPlaying() {
 
 function enterPictureInPicture() {
   const video = document.querySelector('video');
-  video.requestPictureInPicture().then(() => {
-    window.domAutomationController.send(true);
-  }).catch(() => {
-    window.domAutomationController.send(false);
-  });
+  return video.requestPictureInPicture()
+    .then(() => true)
+    .catch(() => false);
 }
 
 </script>

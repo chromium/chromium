@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
@@ -244,7 +245,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   base::ObserverList<NetworkConnectionObserver, true>::Unchecked observers_;
 
   // Delegate used to start a connection to a tether network.
-  TetherDelegate* tether_delegate_;
+  raw_ptr<TetherDelegate, ExperimentalAsh> tether_delegate_;
 
  private:
   // Only to be used by NetworkConnectionHandler implementation (and not by

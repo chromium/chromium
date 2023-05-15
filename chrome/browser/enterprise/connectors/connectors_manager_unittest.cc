@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <set>
+#include <utility>
 
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -32,6 +33,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
 namespace enterprise_connectors {
@@ -140,7 +145,18 @@ class ConnectorsManagerTest : public testing::Test {
       auto maybe_pref_value =
           base::JSONReader::Read(pref_value, base::JSON_ALLOW_TRAILING_COMMAS);
       EXPECT_TRUE(maybe_pref_value.has_value());
-      pref_service_->Set(pref, maybe_pref_value.value());
+      if (maybe_pref_value.has_value()) {
+        pref_service_->Set(pref, maybe_pref_value.value());
+      }
+    }
+
+    void UpdateScopedConnectorPref(const char* pref_value) {
+      auto maybe_pref_value =
+          base::JSONReader::Read(pref_value, base::JSON_ALLOW_TRAILING_COMMAS);
+      EXPECT_TRUE(maybe_pref_value.has_value());
+      ASSERT_NE(pref_service_, nullptr);
+      ASSERT_NE(pref_, nullptr);
+      pref_service_->Set(pref_, maybe_pref_value.value());
     }
 
     ~ScopedConnectorPref() { pref_service_->ClearPref(pref_); }
@@ -901,5 +917,94 @@ TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
 INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
                          ConnectorsManagerReportingTest,
                          testing::ValuesIn(kAllReportingConnectors));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class ConnectorsManagerLocalAnalysisConnectorTest
+    : public ConnectorsManagerTest,
+      public testing::WithParamInterface<AnalysisConnector> {
+ public:
+  AnalysisConnector connector() const { return GetParam(); }
+
+  const char* pref() const { return ConnectorPref(connector()); }
+};
+
+TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
+  ConnectorsManager manager(
+      std::make_unique<BrowserCrashEventRouter>(profile_),
+      std::make_unique<ExtensionInstallEventRouter>(profile_), pref_service(),
+      GetServiceProviderConfig());
+  FakeContentAnalysisSdkManager content_analysis_sdk_manager;
+
+  // The cache is initially empty.
+  ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
+
+  // Once the pref is updated, the settings should be cached, and analysis
+  // settings can be obtained.
+  // Select local service provider first.
+  {
+    ScopedConnectorPref scoped_pref(pref_service(), pref(),
+                                    kNormalLocalAnalysisSettingsPref);
+    // Force create connection with local agent.
+    content_analysis::sdk::Client::Config config{"local_user_agent"};
+    content_analysis_sdk_manager.GetClient(config);
+
+    const auto& cached_settings =
+        manager.GetAnalysisConnectorsSettingsForTesting();
+    ASSERT_FALSE(cached_settings.empty());
+    ASSERT_EQ(1u, cached_settings.count(connector()));
+    ASSERT_EQ(1u, cached_settings.at(connector()).size());
+
+    // Connection should be established.
+    ASSERT_FALSE(content_analysis_sdk_manager.NoConnectionEstablished());
+
+    auto settings = cached_settings.at(connector())
+                        .at(0)
+                        .GetAnalysisSettings(GURL(kDlpAndMalwareUrl));
+    ASSERT_TRUE(settings.has_value());
+    expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
+    expected_block_password_protected_files_ = true;
+    expected_block_large_files_ = true;
+    expected_block_unsupported_file_types_ = true;
+
+    // The "local_test" service provider doesn't support the "malware" tag, so
+    // remove it from expectations.
+    expected_tags_ = {{"dlp", TagSettings()}};
+
+    ValidateSettings(settings.value());
+
+    // Change to cloud service provider.
+    scoped_pref.UpdateScopedConnectorPref(kNormalCloudAnalysisSettingsPref);
+
+    // Connection should be deleted.
+    ASSERT_TRUE(content_analysis_sdk_manager.NoConnectionEstablished());
+    ASSERT_FALSE(cached_settings.empty());
+    ASSERT_EQ(1u, cached_settings.count(connector()));
+    ASSERT_EQ(1u, cached_settings.at(connector()).size());
+
+    // Connection should be deleted.
+    ASSERT_TRUE(content_analysis_sdk_manager.NoConnectionEstablished());
+
+    settings = cached_settings.at(connector())
+                   .at(0)
+                   .GetAnalysisSettings(GURL(kDlpAndMalwareUrl));
+    ASSERT_TRUE(settings.has_value());
+    expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
+    expected_block_password_protected_files_ = true;
+    expected_block_large_files_ = true;
+    expected_block_unsupported_file_types_ = true;
+
+    expected_tags_ = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
+
+    ValidateSettings(settings.value());
+  }
+
+  // The cache should be empty again after the pref is reset.
+  ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerLocalAnalysisConnectorTest,
+                         ConnectorsManagerLocalAnalysisConnectorTest,
+                         testing::ValuesIn(kAllAnalysisConnectors));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_connectors

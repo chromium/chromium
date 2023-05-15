@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -19,7 +20,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -107,13 +107,16 @@
 #include "chrome/test/base/test_switches.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
@@ -199,7 +202,7 @@ class WebContentCapturingObserver : public content::TestNavigationObserver {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
 };
 
 // During test, the test extensions can send a list of entries (directories
@@ -1362,7 +1365,7 @@ class DriveFsTestVolume : public TestVolume {
         {entry.folder_feature.is_machine_root,
          entry.folder_feature.is_arbitrary_sync_folder,
          entry.folder_feature.is_external_media},
-        "", entry.alternate_url);
+        "", entry.alternate_url, (entry.entry_type == AddEntriesMessage::LINK));
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }
@@ -1374,15 +1377,66 @@ class DriveFsTestVolume : public TestVolume {
   }
 
   void SetFileSyncStatus(const std::string* path,
-                         const drivefs::mojom::ItemEvent::State sync_status) {
+                         const drivefs::mojom::ItemEvent::State sync_status,
+                         const drivefs::mojom::ItemEventReason reason,
+                         int64_t bytes_transferred,
+                         int64_t bytes_to_transfer) {
+    const base::FilePath file_path(*path);
+    const auto& md =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
+
     drivefs::mojom::SyncingStatus syncing_status;
-    syncing_status.item_events.emplace_back(
-        absl::in_place, /* stable_id */ 1, /* group_id */ 1, *path, sync_status,
-        /* bytes_transferred */ 50, /* bytes_to_transfer */ 100,
-        drivefs::mojom::ItemEventReason::kTransfer);
+    drivefs::mojom::ItemEventPtr event = drivefs::mojom::ItemEvent::New();
+    event->stable_id = md.value().stable_id;
+    event->group_id = 1;
+    event->path = *path;
+    event->state = sync_status;
+    event->bytes_transferred = bytes_transferred;
+    event->bytes_to_transfer = bytes_to_transfer;
+    event->reason = reason;
+    event->is_download = (reason == drivefs::mojom::ItemEventReason::kPin);
+    LOG(ERROR) << "Sending sync status event for: " << event->stable_id << " : "
+               << event->path;
+    syncing_status.item_events.push_back(std::move(event));
 
     auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
     drivefs_delegate->OnSyncingStatusUpdate(syncing_status.Clone());
+    drivefs_delegate.FlushForTesting();
+  }
+
+  void SetFileProgress(const std::string* path, const int progress) {
+    const base::FilePath file_path(*path);
+    const auto& md =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
+
+    auto progress_event = drivefs::mojom::ProgressEvent::New();
+    base::FilePath full_path = mount_path();
+    CHECK(base::FilePath("/").AppendRelativePath(base::FilePath(*path),
+                                                 &full_path))
+        << "Failed to convert to full path";
+    progress_event->path = full_path.AsUTF8Unsafe();
+    progress_event->progress = progress;
+    progress_event->stable_id = md.value().stable_id;
+
+    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
+    drivefs_delegate->OnItemProgress(std::move(progress_event));
+    drivefs_delegate.FlushForTesting();
+  }
+
+  void SetSyncError(const std::string* path) {
+    const base::FilePath file_path(*path);
+    const auto& md =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
+
+    auto drive_error = drivefs::mojom::DriveError::New();
+    drive_error->path = base::FilePath(*path);
+    drive_error->stable_id = md.value().stable_id;
+
+    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
+    drivefs_delegate->OnError(std::move(drive_error));
     drivefs_delegate.FlushForTesting();
   }
 
@@ -1513,11 +1567,12 @@ class DriveFsTestVolume : public TestVolume {
   absl::optional<drivefs::mojom::DialogResult> last_dialog_result_;
 
   // Profile associated with this volume: not owned.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   // Integration service used for testing: not owned.
-  drive::DriveIntegrationService* integration_service_ = nullptr;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      integration_service_ = nullptr;
 
-  Profile* const original_profile_;
+  const raw_ptr<Profile, ExperimentalAsh> original_profile_;
   std::map<base::FilePath, const AddEntriesMessage::TestEntryInfo> entries_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
@@ -1598,7 +1653,8 @@ class DocumentsProviderTestVolume : public TestVolume {
   }
 
  protected:
-  arc::FakeFileSystemInstance* const file_system_instance_;
+  const raw_ptr<arc::FakeFileSystemInstance, ExperimentalAsh>
+      file_system_instance_;
   const std::string authority_;
   const std::string root_document_id_;
   const bool read_only_;
@@ -1864,7 +1920,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
   int cid_;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string name_;
   guest_os::VmType vm_type_;
 };
@@ -1888,7 +1944,7 @@ class GuestOsTestVolume : public LocalTestVolume {
 
   const base::FilePath& mount_path() const { return root_path(); }
 
-  MockGuestOsMountProvider* provider_;
+  raw_ptr<MockGuestOsMountProvider, ExperimentalAsh> provider_;
 };
 
 FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;
@@ -2030,11 +2086,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kFilesSinglePartitionFormat);
   }
 
-  if (options.enable_trash) {
-    enabled_features.push_back(ash::features::kFilesTrash);
+  if (options.enable_drive_trash) {
     enabled_features.push_back(ash::features::kFilesTrashDrive);
   } else {
-    disabled_features.push_back(ash::features::kFilesTrash);
     disabled_features.push_back(ash::features::kFilesTrashDrive);
   }
 
@@ -2057,9 +2111,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.enable_upload_office_to_cloud) {
-    enabled_features.push_back(ash::features::kUploadOfficeToCloud);
+    enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   } else {
-    disabled_features.push_back(ash::features::kUploadOfficeToCloud);
+    disabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   }
 
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
@@ -2098,8 +2152,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.enable_drive_bulk_pinning) {
     enabled_features.push_back(ash::features::kDriveFsBulkPinning);
+    enabled_features.push_back(
+        ash::features::kFeatureManagementDriveFsBulkPinning);
   } else {
     disabled_features.push_back(ash::features::kDriveFsBulkPinning);
+    disabled_features.push_back(
+        ash::features::kFeatureManagementDriveFsBulkPinning);
   }
 
   if (options.feature_ids.size() > 0) {
@@ -2599,9 +2657,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       CHECK(web_contents) << "Couldn't find the SWA WebContents without appId"
                           << " command data: " << *data;
     }
-    CHECK(ExecuteScriptAndExtractString(
-        web_contents,
-        base::StrCat({"test.swaTestMessageListener(", *data, ")"}), output));
+    *output = content::EvalJs(
+                  web_contents,
+                  base::StrCat({"test.swaTestMessageListener(", *data, ")"}),
+                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString();
     return;
   }
 
@@ -2646,7 +2706,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                 ash::file_manager::kChromeUIFileManagerUntrustedURL) {
               const std::string* script = value.FindString("data");
               EXPECT_TRUE(script);
-              CHECK(ExecuteScriptAndExtractString(frame, *script, output));
+              *output =
+                  content::EvalJs(frame, *script,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                      .ExtractString();
               found = true;
               return content::RenderFrameHost::FrameIterationAction::kStop;
             }
@@ -3002,10 +3065,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "setOfficeSetupComplete") {
-    absl::optional<bool> complete = value.FindBool("complete");
-    ASSERT_TRUE(complete.has_value());
-    file_tasks::SetOfficeSetupComplete(profile(), complete.value());
+  if (name == "setOfficeFileHandler") {
+    file_manager::file_tasks::SetWordFileHandlerToFilesSWA(
+        profile(), file_manager::file_tasks::kActionIdWebDriveOfficeWord);
     return;
   }
 
@@ -3038,6 +3100,70 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(timestamp.has_value());
     profile()->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive,
                                    base::Time::FromJsTime(timestamp.value()));
+    return;
+  }
+
+  if (name == "setSpacedFreeSpace") {
+    absl::optional<int> free_space = value.FindInt("freeSpace");
+    ASSERT_TRUE(free_space.has_value());
+    ash::FakeSpacedClient::Get()->set_free_disk_space(free_space.value());
+    return;
+  }
+
+  if (name == "forcePinManagerSpaceCheck") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->CheckFreeSpace();
+    return;
+  }
+
+  if (name == "setBulkPinningEnabledPref") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    profile()->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
+                                      enabled.value());
+    return;
+  }
+
+  if (name == "setBulkPinningOnline") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->SetOnline(enabled.value());
+    return;
+  }
+
+  if (name == "forceBulkPinningCalculateRequiredSpace") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->CalculateRequiredSpace();
+    return;
+  }
+
+  if (name == "getBulkPinningStage") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    auto progress = integration_service->GetPinManager()->GetProgress();
+    *output = drivefs::pinning::ToString(progress.stage);
+    return;
+  }
+
+  if (name == "getBulkPinningRequiredSpace") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    auto progress = integration_service->GetPinManager()->GetProgress();
+    *output = base::NumberToString(progress.required_space);
     return;
   }
 
@@ -3135,8 +3261,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     CHECK(base::Contains(swa_web_contents_, *app_id))
         << "Couldn't find the SWA WebContents for appId: " << *app_id;
     web_contents = swa_web_contents_[*app_id];
-    SimulateMouseClickAt(web_contents, 0 /* modifiers */,
-                         blink::WebMouseEvent::Button::kLeft,
+
+    absl::optional<bool> leftClick = value.FindBool("leftClick");
+    ASSERT_TRUE(leftClick.has_value());
+    auto button = leftClick.value() ? blink::WebMouseEvent::Button::kLeft
+                                    : blink::WebMouseEvent::Button::kRight;
+    SimulateMouseClickAt(web_contents, 0 /* modifiers */, button,
                          gfx::Point(*click_x, *click_y));
     return;
   }
@@ -3198,18 +3328,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "isTrashEnabled") {
-    *output = options.enable_trash ? "true" : "false";
-    return;
-  }
-
   if (name == "isBannersFrameworkEnabled") {
     *output = options.enable_banners_framework ? "true" : "false";
     return;
   }
 
   if (name == "isDarkModeEnabled") {
-    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                   ? "true"
                   : "false";
@@ -3355,13 +3479,52 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(sync_status);
     ASSERT_TRUE(path);
     drive_volume_->SetFileSyncStatus(
-        path, *sync_status == "in_progress"
-                  ? drivefs::mojom::ItemEvent::State::kInProgress
-              : *sync_status == "queued"
-                  ? drivefs::mojom::ItemEvent::State::kQueued
-              : *sync_status == "completed"
-                  ? drivefs::mojom::ItemEvent::State::kCompleted
-                  : drivefs::mojom::ItemEvent::State::kFailed);
+        path,
+        *sync_status == "in_progress"
+            ? drivefs::mojom::ItemEvent::State::kInProgress
+        : *sync_status == "queued" ? drivefs::mojom::ItemEvent::State::kQueued
+        : *sync_status == "completed"
+            ? drivefs::mojom::ItemEvent::State::kCompleted
+            : drivefs::mojom::ItemEvent::State::kFailed,
+        drivefs::mojom::ItemEventReason::kTransfer, 50, 100);
+    return;
+  }
+
+  if (name == "setDrivePinSyncingEvent") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path);
+    absl::optional<int64_t> bytes_transferred =
+        value.FindInt("bytesTransferred");
+    absl::optional<int64_t> bytes_to_transfer =
+        value.FindInt("bytesToTransfer");
+    ASSERT_TRUE(bytes_transferred.has_value());
+    ASSERT_TRUE(bytes_to_transfer.has_value());
+    using EventState = drivefs::mojom::ItemEvent::State;
+    EventState state = EventState::kQueued;
+    if (bytes_transferred < bytes_to_transfer) {
+      state = EventState::kInProgress;
+    } else if (bytes_transferred == bytes_to_transfer) {
+      state = EventState::kCompleted;
+    }
+    drive_volume_->SetFileSyncStatus(
+        path, state, drivefs::mojom::ItemEventReason::kPin,
+        bytes_transferred.value(), bytes_to_transfer.value());
+    return;
+  }
+
+  if (name == "setDriveSyncProgress") {
+    auto* path = value.FindString("path");
+    auto progress = value.FindInt("progress");
+    ASSERT_TRUE(path);
+    ASSERT_TRUE(progress.has_value());
+    drive_volume_->SetFileProgress(path, *progress);
+    return;
+  }
+
+  if (name == "setDriveSyncError") {
+    auto* path = value.FindString("path");
+    ASSERT_TRUE(path);
+    drive_volume_->SetSyncError(path);
     return;
   }
 
@@ -3543,20 +3706,17 @@ void FileManagerBrowserTestBase::LoadSwaTestUtils(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  bool result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "test.swaLoadTestUtils()", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(web_contents, "test.swaLoadTestUtils()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 std::string FileManagerBrowserTestBase::GetSwaAppId(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  std::string app_id;
-  CHECK(content::ExecuteScriptAndExtractString(web_contents,
-                                               "test.getSwaAppId()", &app_id));
-  return app_id;
+  return content::EvalJs(web_contents, "test.getSwaAppId()",
+                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 std::vector<content::WebContents*>

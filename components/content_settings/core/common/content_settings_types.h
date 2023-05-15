@@ -327,6 +327,9 @@ enum class ContentSettingsType : int32_t {
   // should be enabled.
   THIRD_PARTY_STORAGE_PARTITIONING,
 
+  // Used to indicate whether HTTPS-First Mode is enabled on the hostname.
+  HTTPS_ENFORCED,
+
   NUM_TYPES,
 };
 

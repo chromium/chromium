@@ -156,7 +156,8 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
-      const std::vector<AssistiveSuggestion>& suggestions) override {}
+      const std::vector<AssistiveSuggestion>& suggestions,
+      const absl::optional<SuggestionsTextContext>& context) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}
@@ -209,7 +210,8 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
-      const std::vector<AssistiveSuggestion>& suggestions) override {}
+      const std::vector<AssistiveSuggestion>& suggestions,
+      const absl::optional<SuggestionsTextContext>& context) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}

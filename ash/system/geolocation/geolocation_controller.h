@@ -161,10 +161,10 @@ class ASH_EXPORT GeolocationController
   // being able to retrieve a valid geoposition.
   void StoreCachedGeoposition() const;
 
-  network::SharedURLLoaderFactory* const factory_;
+  const raw_ptr<network::SharedURLLoaderFactory, ExperimentalAsh> factory_;
 
   // May be null if a user has not logged in yet.
-  base::raw_ptr<PrefService> active_user_pref_service_;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   // The IP-based geolocation provider.
   SimpleGeolocationProvider provider_;
@@ -175,7 +175,7 @@ class ASH_EXPORT GeolocationController
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // Optional Used in tests to override the time of "Now".
-  base::Clock* clock_ = nullptr;  // Not owned.
+  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
 
   // The ID of the current timezone in the format similar to "America/Chicago".
   std::u16string current_timezone_id_;

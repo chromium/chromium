@@ -12,6 +12,7 @@
 
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
+#include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 class DevToolsClient;
@@ -24,7 +25,6 @@ class WebView;
 class WebViewImpl;
 class WebViewsInfo;
 struct BrowserInfo;
-struct DeviceMetrics;
 
 class ChromeImpl : public Chrome {
  public:
@@ -64,7 +64,7 @@ class ChromeImpl : public Chrome {
              std::unique_ptr<DevToolsClient> websocket_client,
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
-             std::unique_ptr<DeviceMetrics> device_metrics,
+             absl::optional<MobileDevice> mobile_device,
              SyncWebSocketFactory socket_factory,
              std::string page_load_strategy);
 
@@ -84,8 +84,8 @@ class ChromeImpl : public Chrome {
     int height;
   };
   virtual Status GetWindow(const std::string& target_id, Window* window);
-  Status ParseWindow(const base::Value& params, Window* window);
-  Status ParseWindowBounds(const base::Value& params, Window* window);
+  Status ParseWindow(const base::Value::Dict& params, Window* window);
+  Status ParseWindowBounds(const base::Value::Dict& params, Window* window);
   Status GetWindowBounds(int window_id, Window* window);
   Status SetWindowBounds(Window* window,
                          const std::string& target_id,
@@ -93,7 +93,7 @@ class ChromeImpl : public Chrome {
   Status GetWebViewsInfo(WebViewsInfo* views_info);
 
   bool quit_ = false;
-  std::unique_ptr<DeviceMetrics> device_metrics_;
+  absl::optional<MobileDevice> mobile_device_;
   SyncWebSocketFactory socket_factory_;
   std::unique_ptr<DevToolsHttpClient> devtools_http_client_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;

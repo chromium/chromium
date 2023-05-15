@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -54,7 +55,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
       const std::string& serialized_proto,
       const std::string& request_id);
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Cache the last retrieved ICE servers.

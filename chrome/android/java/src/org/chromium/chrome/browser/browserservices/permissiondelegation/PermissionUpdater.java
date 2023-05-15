@@ -9,9 +9,7 @@ import android.net.Uri;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
@@ -78,10 +76,7 @@ public class PermissionUpdater {
         browsableIntent.setAction(Intent.ACTION_VIEW);
         browsableIntent.addCategory(Intent.CATEGORY_BROWSABLE);
 
-        try (TimingMetric unused = TimingMetric.mediumUptime(
-                     BrowserServicesTimingMetrics.BROWSABLE_INTENT_RESOLUTION_TIME)) {
-            return PackageManagerUtils.resolveActivity(browsableIntent, 0) != null;
-        }
+        return PackageManagerUtils.resolveActivity(browsableIntent, 0) != null;
     }
 
     void getLocationPermission(Origin origin, String lastCommittedUrl, long callback) {

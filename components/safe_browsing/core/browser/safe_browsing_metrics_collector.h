@@ -46,7 +46,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     CSD_INTERSTITIAL_BYPASS = 3,
     // The user bypasses the interstitial that is triggered by real time URL
     // check.
-    REAL_TIME_INTERSTITIAL_BYPASS = 4,
+    URL_REAL_TIME_INTERSTITIAL_BYPASS = 4,
     // The user bypasses the dangerous download warning based on server
     // verdicts.
     DANGEROUS_DOWNLOAD_BYPASS = 5,
@@ -135,7 +135,6 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   static bool IsBypassEventType(const EventType& type);
   static bool IsSecuritySensitiveEventType(const EventType& type);
   static std::string GetUserStateMetricSuffix(const UserState& user_state);
-  static std::string GetEventTypeMetricSuffix(const EventType& event_type);
 
   // For daily metrics.
   void LogMetricsAndScheduleNextLogging();

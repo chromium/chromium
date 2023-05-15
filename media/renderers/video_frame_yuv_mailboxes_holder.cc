@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -139,7 +140,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
           PlaneSharedImageFormat(num_channels, caps.texture_rg);
       holders_[plane].mailbox = sii->CreateSharedImage(
           format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, mailbox_usage, gpu::kNullSurfaceHandle);
+          kPremul_SkAlphaType, mailbox_usage, "VideoFrameYUV",
+          gpu::kNullSurfaceHandle);
       holders_[plane].texture_target = GL_TEXTURE_2D;
     }
 
@@ -238,7 +240,7 @@ bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
     if (color_type == kGray_8_SkColorType)
       color_type = kAlpha_8_SkColorType;
 
-    auto surface = SkSurface::MakeFromBackendTexture(
+    auto surface = SkSurfaces::WrapBackendTexture(
         gr_context, yuva_backend_textures.texture(plane),
         kTopLeft_GrSurfaceOrigin, /*sampleCnt=*/1, color_type,
         SkColorSpace::MakeSRGB(), nullptr);

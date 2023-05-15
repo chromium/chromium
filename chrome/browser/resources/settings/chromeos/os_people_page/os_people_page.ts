@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
@@ -26,10 +26,11 @@ import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {OsPageVisibility} from '../os_page_visibility.js';
+import {OsPageAvailability} from '../os_page_availability.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -62,9 +63,9 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       syncStatus: Object,
 
       /**
-       * Dictionary defining page visibility.
+       * Dictionary defining page availability.
        */
-      pageVisibility: Object,
+      pageAvailability: Object,
 
       authToken_: {
         type: Object,
@@ -92,7 +93,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       isAccountManagerEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAccountManagerEnabled');
+          return isAccountManagerEnabled();
         },
         readOnly: true,
       },
@@ -157,11 +158,22 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         ]),
       },
 
+      /**
+       * Whether to show the new UI for OS Sync Settings
+       * which include sublabel and Apps toggle
+       * shared between Ash and Lacros.
+       */
+      showSyncSettingsRevamp_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
+        readOnly: true,
+      },
+
     };
   }
 
   syncStatus: SyncStatus;
-  pageVisibility: OsPageVisibility;
+  pageAvailability: OsPageAvailability;
   private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;
@@ -172,6 +184,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   private showParentalControls_: boolean;
   private focusConfig_: Map<string, string>;
   private showPasswordPromptDialog_: boolean;
+  private showSyncSettingsRevamp_: boolean;
   private setModes_: Object|undefined;
   private syncBrowserProxy_: SyncBrowserProxy;
   private clearAccountPasswordTimeoutId_: number|undefined;
@@ -226,6 +239,13 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
     if (!this.setModes_) {
       Router.getInstance().navigateToPreviousRoute();
     }
+  }
+
+  private getSyncAdvancedTitle_(): string {
+    if (this.showSyncSettingsRevamp_) {
+      return this.i18n('syncAdvancedDevicePageTitle');
+    }
+    return this.i18n('syncAdvancedPageTitle');
   }
 
   private afterRenderShowDeepLink_(

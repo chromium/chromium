@@ -71,9 +71,13 @@
     </cr-action-menu>
   </template>
 </cr-lazy-render>
-<template is="dom-if" if="[[showDialog_]]" restamp>
-  <tab-discard-exception-dialog prefs="{{prefs}}"
-      rule-to-edit="[[selectedRule_]]"
-      on-close="onDialogClose_" on-add-exception="onAddException_">
-  </tab-discard-exception-dialog>
+<template is="dom-if" if="[[showAddDialog_]]" restamp>
+  <tab-discard-exception-add-dialog prefs="{{prefs}}"
+      on-close="onAddDialogClose_" on-add-exception="onAddException_">
+  </tab-discard-exception-add-dialog>
+</template>
+<template is="dom-if" if="[[showEditDialog_]]" restamp>
+  <tab-discard-exception-edit-dialog prefs="{{prefs}}"
+      on-close="onEditDialogClose_" rule-to-edit="[[selectedRule_]]">
+  </tab-discard-exception-edit-dialog>
 </template>

@@ -87,7 +87,7 @@ suite('CategoriesTest', () => {
   test('back button creates event', async () => {
     await setInitialSettings(0);
     const eventPromise = eventToPromise('back-click', categoriesElement);
-    categoriesElement.$.backButton.click();
+    categoriesElement.$.heading.getBackButton().click();
     const event = await eventPromise;
     assertTrue(!!event);
   });

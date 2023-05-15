@@ -158,13 +158,11 @@ const char kFrameIdKey[] = "frame_id";
   std::vector<FormData> forms;
   NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
   autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
-                             pageURL.DeprecatedGetOriginAsURL(), &forms);
+                             pageURL.DeprecatedGetOriginAsURL(),
+                             *self.fieldDataManager, &forms);
   if (forms.size() != 1) {
     return;
   }
-
-  // Extract FieldDataManager data for observed fields.
-  [self extractKnownFieldData:forms[0]];
 
   [self.delegate formHelper:self didSubmitForm:forms[0] inFrame:frame];
 }
@@ -177,26 +175,11 @@ const char kFrameIdKey[] = "frame_id";
              frameOrigin:(const GURL&)frameOrigin {
   std::vector<FormData> formsData;
   if (!autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
-                                  frameOrigin, &formsData)) {
+                                  frameOrigin, *self.fieldDataManager,
+                                  &formsData)) {
     return;
   }
-  // Extract FieldDataManager data for observed form fields.
-  for (FormData& form : formsData) {
-    [self extractKnownFieldData:form];
-  }
   *forms = std::move(formsData);
-}
-
-// Extracts known field data.
-- (void)extractKnownFieldData:(FormData&)form {
-  for (auto& field : form.fields) {
-    if (self.fieldDataManager->HasFieldData(field.unique_renderer_id)) {
-      field.user_input =
-          self.fieldDataManager->GetUserInput(field.unique_renderer_id);
-      field.properties_mask = self.fieldDataManager->GetFieldPropertiesMask(
-          field.unique_renderer_id);
-    }
-  }
 }
 
 - (void)recordFormFillingSuccessMetrics:(bool)success {
@@ -338,11 +321,14 @@ const char kFrameIdKey[] = "frame_id";
     return;
   }
 
+  scoped_refptr<autofill::FieldDataManager> fieldDataManager =
+      _fieldDataManager;
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
             FormData formData;
-            if (!JsonStringToFormData(jsonString, &formData, pageURL)) {
+            if (!JsonStringToFormData(jsonString, &formData, pageURL,
+                                      *fieldDataManager)) {
               completionHandler(NO, FormData());
               return;
             }
@@ -366,8 +352,8 @@ const char kFrameIdKey[] = "frame_id";
 
 - (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message {
   web::WebFrame* frame = nullptr;
-  std::string* frame_id =
-      message.body()->FindStringKey(password_manager::kFrameIdKey);
+  const auto& dict = message.body()->GetDict();
+  const std::string* frame_id = dict.FindString(password_manager::kFrameIdKey);
   if (frame_id) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
@@ -383,14 +369,11 @@ const char kFrameIdKey[] = "frame_id";
   }
 
   FormData form;
-  if (!autofill::ExtractFormData(*message.body(), false, std::u16string(),
-                                 pageURL, pageURL.DeprecatedGetOriginAsURL(),
-                                 &form)) {
+  if (!autofill::ExtractFormData(dict, false, std::u16string(), pageURL,
+                                 pageURL.DeprecatedGetOriginAsURL(),
+                                 *self.fieldDataManager, &form)) {
     return;
   }
-
-  // Extract FieldDataManager data for observed fields.
-  [self extractKnownFieldData:form];
 
   if (_webState && self.delegate) {
     [self.delegate formHelper:self didSubmitForm:form inFrame:frame];

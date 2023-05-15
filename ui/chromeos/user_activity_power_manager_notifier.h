@@ -5,6 +5,7 @@
 #ifndef UI_CHROMEOS_USER_ACTIVITY_POWER_MANAGER_NOTIFIER_H_
 #define UI_CHROMEOS_USER_ACTIVITY_POWER_MANAGER_NOTIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -68,7 +69,7 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
   void MaybeNotifyUserActivity(
       power_manager::UserActivityType user_activity_type);
 
-  UserActivityDetector* detector_;  // not owned
+  raw_ptr<UserActivityDetector, ExperimentalAsh> detector_;  // not owned
 
   mojo::Remote<device::mojom::Fingerprint> fingerprint_;
   mojo::Receiver<device::mojom::FingerprintObserver>

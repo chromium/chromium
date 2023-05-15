@@ -306,5 +306,29 @@ TEST_F(FormStructureSectioningTest,
               BucketsAre(Bucket(4, 2)));
 }
 
+TEST_F(FormStructureSectioningTest, ExpandOverUnfocusableFields) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kAutofillUseParameterizedSectioning,
+      {{features::kAutofillSectioningModeExpandOverUnfocusableFields.name,
+        "true"}});
+
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      CreateFields({{.field_type = NAME_FULL},
+                    {.field_type = ADDRESS_HOME_COUNTRY, .is_focusable = false},
+                    {.field_type = ADDRESS_HOME_STREET_NAME}});
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
+
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  const Section expected_section =
+      Section::FromFieldIdentifier(*fields[0], frame_token_ids);
+  EXPECT_EQ(GetSections(fields), std::vector<Section>(3, expected_section));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("000"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 1, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(3, 1)));
+}
+
 }  // namespace
 }  // namespace autofill

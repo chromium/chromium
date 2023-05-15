@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("privacy_sandbox_attestations") {
+  sources = [
+    "privacy_sandbox_attestations.cc",
+    "privacy_sandbox_attestations.h",
+  ]
+
+  deps = [ "//components/privacy_sandbox:features" ]
+
+  public_deps = [
+    "//base",
+    "//net:net",
+  ]
+}

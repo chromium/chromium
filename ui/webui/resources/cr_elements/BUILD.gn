@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-import("//ui/webui/webui_features.gni")
 
 build_webui("build") {
   grd_prefix = "webui_cr_elements"
@@ -123,5 +122,4 @@ build_webui("build") {
   ]
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
-  optimize = optimize_webui
 }

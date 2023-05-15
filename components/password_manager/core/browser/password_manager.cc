@@ -305,6 +305,7 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kPasswordDismissCompromisedAlertEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOfferToSavePasswordsEnabledGMS, true);
   registry->RegisterBooleanPref(prefs::kSavePasswordsSuspendedByError, false);
@@ -315,7 +316,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);
   registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
                                 false);
-  registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
   registry->RegisterBooleanPref(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterIntegerPref(
@@ -505,14 +505,10 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
 }
 
 void PasswordManager::UpdateFormManagers() {
-  std::vector<PasswordFormManager*> form_managers;
-  for (const auto& form_manager : form_managers_)
-    form_managers.push_back(form_manager.get());
-
   // Get the fetchers and all the drivers.
   std::vector<FormFetcher*> fetchers;
   std::vector<PasswordManagerDriver*> drivers;
-  for (PasswordFormManager* form_manager : form_managers) {
+  for (const auto& form_manager : form_managers_) {
     fetchers.push_back(form_manager->GetFormFetcher());
     if (form_manager->GetDriver())
       drivers.push_back(form_manager->GetDriver().get());
@@ -553,8 +549,6 @@ bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
 
 void PasswordManager::OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                               const FormData& form_data) {
-  base::UmaHistogramEnumeration("PasswordManager.FormSubmission.PerProfileType",
-                                client_->GetProfileType());
   ProvisionallySaveForm(form_data, driver, false);
 }
 

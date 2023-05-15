@@ -45,6 +45,11 @@ class MirroringMediaControllerHost : public mojom::MediaStatusObserver {
   bool can_freeze() const { return can_freeze_; }
   bool is_frozen() const { return is_frozen_; }
 
+  // TODO(b/271446487): Once mojom::MediaStatus changes are implemented, remove
+  // this function and have tests call
+  // MirroringMediaControllerHost::OnMediaStatusUpdated() directly.
+  void set_is_frozen_for_test(bool is_frozen) { is_frozen_ = is_frozen; }
+
   void Freeze();
   void Unfreeze();
 

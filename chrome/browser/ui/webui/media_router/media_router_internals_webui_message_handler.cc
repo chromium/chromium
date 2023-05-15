@@ -32,12 +32,12 @@ MediaRouterInternalsWebUIMessageHandler::
                                             MediaRouterDebugger& debugger)
     : router_(router), debugger_(debugger) {
   DCHECK(router_);
-  debugger_.AddObserver(*this);
+  debugger_->AddObserver(*this);
 }
 
 MediaRouterInternalsWebUIMessageHandler::
     ~MediaRouterInternalsWebUIMessageHandler() {
-  debugger_.RemoveObserver(*this);
+  debugger_->RemoveObserver(*this);
 }
 
 void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
@@ -122,13 +122,13 @@ void MediaRouterInternalsWebUIMessageHandler::HandleSetMirroringStatsEnabled(
   const bool should_enable = args[1].GetBool();
 
   if (should_enable) {
-    debugger_.EnableRtcpReports();
+    debugger_->EnableRtcpReports();
     ResolveJavascriptCallback(
         callback_id,
         base::Value("Mirroring Stats will be fetched and displayed "
                     "on your next mirroring session."));
   } else {
-    debugger_.DisableRtcpReports();
+    debugger_->DisableRtcpReports();
 
     ResolveJavascriptCallback(
         callback_id, base::Value("Mirroring Stats will not be fetched or "
@@ -141,7 +141,8 @@ void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, debugger_.ShouldFetchMirroringStats());
+  ResolveJavascriptCallback(callback_id,
+                            debugger_->ShouldFetchMirroringStats());
 }
 
 void MediaRouterInternalsWebUIMessageHandler::OnMirroringStatsUpdated(

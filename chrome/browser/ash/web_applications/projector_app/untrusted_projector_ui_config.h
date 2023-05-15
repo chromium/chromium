@@ -42,7 +42,8 @@ class UntrustedProjectorUIConfig : public content::WebUIConfig {
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PROJECTOR_APP_UNTRUSTED_PROJECTOR_UI_CONFIG_H_

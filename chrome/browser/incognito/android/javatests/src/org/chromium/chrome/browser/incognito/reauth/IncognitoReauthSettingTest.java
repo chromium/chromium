@@ -19,7 +19,7 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.provider.Settings;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.LargeTest;
 
@@ -65,7 +65,7 @@ public class IncognitoReauthSettingTest {
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);
         Intents.init();
         intending(anyIntent()).respondWith(result);
-        String summaryText = InstrumentationRegistry.getContext().getResources().getString(
+        String summaryText = ApplicationProvider.getApplicationContext().getResources().getString(
                 R.string.settings_incognito_tab_lock_summary_android_setting_off);
         summaryText = summaryText.replaceAll("</?link>", "");
         onView(withText(summaryText)).perform(click());

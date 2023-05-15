@@ -17,7 +17,11 @@ enum SmartCardDisposition {
   SecureContext,
   IsolatedContext
 ] interface SmartCardConnection {
+  [CallWith=ScriptState, RaisesException]
   Promise<void> disconnect(optional SmartCardDisposition disposition = "leave");
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<ArrayBuffer> transmit(BufferSource sendBuffer);
 
   Promise<SmartCardConnectionStatus> status();
 

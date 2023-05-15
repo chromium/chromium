@@ -27,10 +27,10 @@ std::unique_ptr<InterpolableColor> InterpolableColor::Create(Color color) {
 
   // All params are stored pre-multiplied.
   // https://www.w3.org/TR/css-color-4/#interpolation-alpha
-  result->param0_.Set(color.Param0() * color.FloatAlpha());
-  result->param1_.Set(color.Param1() * color.FloatAlpha());
-  result->param2_.Set(color.Param2() * color.FloatAlpha());
-  result->alpha_.Set(color.FloatAlpha());
+  result->param0_.Set(color.Param0() * color.Alpha());
+  result->param1_.Set(color.Param1() * color.Alpha());
+  result->param2_.Set(color.Param2() * color.Alpha());
+  result->alpha_.Set(color.Alpha());
 
   return result;
 }
@@ -162,10 +162,10 @@ void InterpolableColor::ConvertToColorSpace(Color::ColorSpace color_space) {
 
   Color underlying_color = GetColor();
   underlying_color.ConvertToColorSpace(color_space);
-  param0_.Set(underlying_color.Param0() * underlying_color.FloatAlpha());
-  param1_.Set(underlying_color.Param1() * underlying_color.FloatAlpha());
-  param2_.Set(underlying_color.Param2() * underlying_color.FloatAlpha());
-  alpha_.Set(underlying_color.FloatAlpha());
+  param0_.Set(underlying_color.Param0() * underlying_color.Alpha());
+  param1_.Set(underlying_color.Param1() * underlying_color.Alpha());
+  param2_.Set(underlying_color.Param2() * underlying_color.Alpha());
+  alpha_.Set(underlying_color.Alpha());
 
   color_space_ = color_space;
 }

@@ -36,10 +36,8 @@ class CursorPositionTest : public FontTestBase {
         "TestFont",
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
-    TextRun text_run(
-        text, /* xpos */ 0, /* expansion */ 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        ltr ? TextDirection::kLtr : TextDirection::kRtl, false);
+    TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
+                     false);
 
     if (end == -1)
       end = text_run.length();
@@ -63,10 +61,8 @@ class CursorPositionTest : public FontTestBase {
         "TestFont",
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
-    TextRun text_run(
-        text, /* xpos */ 0, /* expansion */ 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        ltr ? TextDirection::kLtr : TextDirection::kRtl, false);
+    TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
+                     false);
 
     return font.OffsetForPosition(
         text_run, position, partial ? kIncludePartialGlyphs : kOnlyFullGlyphs,

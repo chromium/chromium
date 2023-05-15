@@ -36,7 +36,7 @@ class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
   bool CheckListEntry(const base::Value& value) override;
 
   // Sets |prefs| at pref_path() to |filtered_list|.
-  void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
+  void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 
  private:
   const char* pref_path_;

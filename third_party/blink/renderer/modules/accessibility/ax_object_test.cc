@@ -51,6 +51,41 @@ TEST_F(AccessibilityTest, IsAncestorOf) {
   EXPECT_FALSE(button->IsAncestorOf(*root));
 }
 
+TEST_F(AccessibilityTest, GetClosestElementChecksStartingNode) {
+  SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
+
+  const AXObject* button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, button);
+  const Element* closestElement = button->GetClosestElement();
+  ASSERT_NE(nullptr, closestElement);
+
+  EXPECT_TRUE(closestElement == button->GetElement());
+}
+
+TEST_F(AccessibilityTest, GetClosestElementSearchesAmongAncestors) {
+  SetBodyInnerHTML(R"HTML(
+        <style>
+        button::before{
+            content: "Content";
+        }
+        </style>
+        <button id="button">button</button>
+      )HTML");
+
+  AXObject* button = GetAXObjectByElementId("button");
+  // Need to force child update for layout tree traversals to occur
+  button->SetNeedsToUpdateChildren();
+  button->UpdateChildrenIfNecessary();
+  // Guaranteed to have no element since this should be the AX node created from
+  // pseudo element content
+  const AXObject* nodeWithNoElement =
+      button->DeepestFirstChildIncludingIgnored();
+  ASSERT_EQ(nullptr, nodeWithNoElement->GetElement());
+
+  EXPECT_TRUE(nodeWithNoElement->GetClosestElement() ==
+              button->GetElement()->GetPseudoElement(kPseudoIdBefore));
+}
+
 TEST_F(AccessibilityTest, IsEditableInTextField) {
   SetBodyInnerHTML(R"HTML(
       <input type="text" id="input" value="Test">

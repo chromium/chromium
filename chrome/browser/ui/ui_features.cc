@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ui_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -65,6 +66,38 @@ BASE_FEATURE(kEvDetailsInPageInfo,
 BASE_FEATURE(kGetTheMostOutOfChrome,
              "GetTheMostOutOfChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when saving/updating their passwords.
+BASE_FEATURE(kIOSPromoPasswordBubble,
+             "IOSPromoPasswordBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This array lists the different activation params that can be passed in the
+// experiment config, with their corresponding string.
+constexpr base::FeatureParam<IOSPromoPasswordBubbleActivation>::Option
+    kIOSPromoPasswordBubbleActivationOptions[] = {
+        {IOSPromoPasswordBubbleActivation::kContextualDirect,
+         "contextual-direct"},
+        {IOSPromoPasswordBubbleActivation::kContextualIndirect,
+         "contextual-indirect"},
+        {IOSPromoPasswordBubbleActivation::kNonContextualDirect,
+         "non-contextual-direct"},
+        {IOSPromoPasswordBubbleActivation::kNonContextualIndirect,
+         "non-contextual-indirect"},
+        {IOSPromoPasswordBubbleActivation::kAlwaysShowWithPasswordBubbleDirect,
+         "always-show-direct"},
+        {IOSPromoPasswordBubbleActivation::
+             kAlwaysShowWithPasswordBubbleIndirect,
+         "always-show-indirect"}};
+
+constexpr base::FeatureParam<IOSPromoPasswordBubbleActivation>
+    kIOSPromoPasswordBubbleActivationParam{
+        &kIOSPromoPasswordBubble, "activation",
+        IOSPromoPasswordBubbleActivation::kContextualDirect,
+        &kIOSPromoPasswordBubbleActivationOptions};
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -162,14 +195,6 @@ BASE_FEATURE(kSplitTabStrip,
 BASE_FEATURE(kTabGroupsCollapseFreezing,
              "TabGroupsCollapseFreezing",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Directly controls the "new" badge (as opposed to old "master switch"; see
-// https://crbug.com/1169907 for master switch deprecation and
-// https://crbug.com/968587 for the feature itself)
-// https://crbug.com/1173792
-BASE_FEATURE(kTabGroupsNewBadgePromo,
-             "TabGroupsNewBadgePromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables users to explicitly save and recall tab groups.
 // https://crbug.com/1223929

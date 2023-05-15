@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/atomic_sequence_num.h"
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
@@ -34,13 +35,14 @@ base::UnguessableToken BufferBacking::GetGUID() const {
   return base::UnguessableToken();
 }
 
-MemoryBufferBacking::MemoryBufferBacking(uint32_t size)
-    : memory_(new char[size]), size_(size) {}
+MemoryBufferBacking::MemoryBufferBacking(uint32_t size, uint32_t alignment)
+    : memory_(new char[size + alignment]), size_(size), alignment_(alignment) {}
 
 MemoryBufferBacking::~MemoryBufferBacking() = default;
 
 void* MemoryBufferBacking::GetMemory() const {
-  return memory_.get();
+  return alignment_ > 0 ? base::bits::AlignUp(memory_.get(), alignment_)
+                        : memory_.get();
 }
 
 uint32_t MemoryBufferBacking::GetSize() const {

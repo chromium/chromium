@@ -285,7 +285,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // Menu items may be validated during browser startup, before the
       // TabStripModel has been populated. Short-circuit to false in that case.
       result->new_toggle_state =
-          !model->empty() &&
+          !model->empty() && model->active_index() != TabStripModel::kNoTab &&
           !model->WillContextMenuMuteSites(model->active_index());
       break;
     }
@@ -372,7 +372,8 @@ void BrowserFrameMac::PopulateCreateWindowParams(
       params->window_title_hidden = true;
   } else if (browser_view_->GetIsPictureInPictureType()) {
     params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
-    params->style_mask = NSWindowStyleMaskFullSizeContentView;
+    params->style_mask = NSWindowStyleMaskFullSizeContentView |
+                         NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
   } else {
     params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
   }

@@ -2,10 +2,10 @@
 <style>
   cr-icon-button,
   cr-button {
-    margin-inline-start: 0;
+    margin-inline: 0;
   }
 
-  cr-button {
+  :host-context([theme='legacy']) cr-button {
     --active-bg: var(--cros-button-background-color-secondary-hover);
     /* The shadow can only be customized via rgb values, to turn the shadow
        off make the shadow appear as the background color. */
@@ -19,11 +19,39 @@
     --text-color: var(--cros-button-label-color-secondary);
   }
 
-  cr-icon-button {
+  :host-context([theme='refresh23']) cr-button {
+    --active-bg: none;
+    --hover-bg-color: var(--cros-sys-hover_on_subtle);
+    --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+    --paper-ripple-opacity: 100%;
+    --text-color: var(--cros-sys-primary);
+    border: none;
+    border-radius: 18px;
+    box-shadow: none;
+    font: var(--cros-button-2-font);
+    height: 36px;
+    padding-inline: 16px;
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      cr-button:focus {
+    outline: 2px solid var(--cros-sys-focus_ring);
+    outline-offset: 2px;
+  }
+
+  :host-context([theme='legacy']) cr-icon-button {
     --cr-active-bg-color: var(--cros-icon-button-pressed-color);
     --cr-focus-outline-color: var(--cros-focus-ring-color);
     --cr-hover-background-color: var(--cros-ripple-color);
     --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+  }
+
+  :host-context([theme='refresh23']) cr-icon-button {
+    --cr-active-bg-color: var(--cros-sys-pressed_on_subtle);
+    --cr-focus-outline-color: var(--cros-sys-focus_ring);
+    --cr-hover-background-color: var(--cros-sys-hover_on_subtle);
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    border-radius: 12px;
   }
 
   @keyframes setcollapse {
@@ -78,11 +106,11 @@
   }
 
   :host([data-category='dismiss']) #dismiss {
-    display: unset;
+    display: inline-block;
   }
 
   :host([data-category='extra-button']) #extra-button {
-    display: unset;
+    display: inline-block;
   }
 </style>
 <cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>

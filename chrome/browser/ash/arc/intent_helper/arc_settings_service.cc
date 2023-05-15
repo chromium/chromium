@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
@@ -249,8 +250,9 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // ConnectionObserver<mojom::AppInstance>:
   void OnConnectionReady() override;
 
-  Profile* const profile_;
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Manages pref observation registration.
   PrefChangeRegistrar registrar_;

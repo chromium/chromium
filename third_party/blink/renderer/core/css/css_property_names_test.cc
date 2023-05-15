@@ -13,14 +13,14 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
   ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
 
   {
-    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(false);
+    ScopedScrollTimelineForTest scroll_timeline_enabled(false);
     EXPECT_EQ(
         CSSPropertyID::kAnimation,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
   }
 
   {
-    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+    ScopedScrollTimelineForTest scroll_timeline_enabled(true);
     EXPECT_EQ(
         CSSPropertyID::kAlternativeAnimationWithTimeline,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
@@ -29,7 +29,7 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
 
 TEST(CSSPropertyNamesTest, AlternativeAnimationWithDelayStartEnd) {
   // CSSAnimationDelayStartEnd depends on CSSScrollTimeline.
-  ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+  ScopedScrollTimelineForTest scroll_timeline_enabled(true);
 
   {
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);

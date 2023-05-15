@@ -620,7 +620,7 @@ TEST(X509CertificateTest, ExtractExtension) {
   base::StringPiece contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringPiece(), &present, &critical,
+      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
       &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
@@ -639,7 +639,7 @@ TEST(X509CertificateTest, ExtractExtension) {
   ASSERT_TRUE(uid_cert);
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringPiece(), &present, &critical,
+      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
       &contents));
   EXPECT_TRUE(present);
   EXPECT_FALSE(critical);

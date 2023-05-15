@@ -119,6 +119,12 @@
 namespace content {
 namespace {
 
+// TODO(https://crbug.com/1439948): Remove this base::Feature kill switch once
+// the feature safely rolls out.
+BASE_FEATURE(kUpdateSessionHistoryIndexBeforeNavigationStateChanged,
+             "UpdateSessionHistoryIndexBeforeNavigationStateChanged",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Invoked when entries have been pruned, or removed. For example, if the
 // current entries are [google, digg, yahoo], with the current entry google,
 // and the user types in cnet, then digg and yahoo are pruned.
@@ -1096,13 +1102,7 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 void NavigationControllerImpl::GoBack() {
   const absl::optional<int> target_index = GetIndexForGoBack();
 
-  // TODO(mcnee): `GoBack` has been permissive about being called when it's not
-  // possible to go back. Fix any callers that do this. If there are no issues,
-  // change this to `DCHECK(CanGoBack())`.
-  if (!target_index.has_value()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  CHECK(target_index.has_value());
 
   GoToIndex(*target_index);
 }
@@ -1113,13 +1113,7 @@ void NavigationControllerImpl::GoForward() {
   // redirect or pushState.
   const absl::optional<int> target_index = GetIndexForGoForward();
 
-  // TODO(mcnee): `GoForward` has been permissive about being called when it's
-  // not possible to go forward. Fix any callers that do this. If there are no
-  // issues, change this to `DCHECK(CanGoForward())`.
-  if (!target_index.has_value()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  CHECK(target_index.has_value());
 
   GoToIndex(*target_index);
 }
@@ -1188,9 +1182,14 @@ void NavigationControllerImpl::GoToOffsetFromRenderer(
     RenderFrameHostImpl* initiator_rfh,
     absl::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
-  // Note: This is actually reached in unit tests.
-  if (!CanGoToOffset(offset))
+  // If the renderer sent an out-of-bounds offset, cancel and notify the
+  // renderer.
+  if (!CanGoToOffset(offset)) {
+    initiator_rfh->GetAssociatedLocalFrame()->TraverseCancelled(
+        /*navigation_api_key=*/std::string(),
+        blink::mojom::TraverseCancelledReason::kNotFound);
     return;
+  }
 
   GoToIndex(GetIndexForOffset(offset), initiator_rfh,
             soft_navigation_heuristics_task_id,
@@ -2190,6 +2189,16 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   if (ui::PageTransitionIsRedirect(params.transition) && !is_same_document)
     entry->GetFavicon() = FaviconStatus();
 
+  // Update the last committed index to reflect the committed entry. Do this
+  // before calling DiscardNonCommittedEntriesWithCommitDetails, so that the
+  // delegate sees the correct committed index when notified of navigation
+  // state changes. (Otherwise CanGoBack may incorrectly return true, as in
+  // https://crbug.com/1439948.)
+  if (base::FeatureList::IsEnabled(
+          kUpdateSessionHistoryIndexBeforeNavigationStateChanged)) {
+    last_committed_entry_index_ = GetIndexOfEntry(entry);
+  }
+
   // We should also usually discard the pending entry if it corresponds to a
   // different navigation, since that one is now likely canceled.  In rare
   // cases, we leave the pending entry for another navigation in place when we
@@ -2201,8 +2210,12 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   if (!keep_pending_entry)
     DiscardNonCommittedEntriesWithCommitDetails(commit_details);
 
-  // Update the last committed index to reflect the committed entry.
-  last_committed_entry_index_ = GetIndexOfEntry(entry);
+  if (!base::FeatureList::IsEnabled(
+          kUpdateSessionHistoryIndexBeforeNavigationStateChanged)) {
+    // Update the last committed index to reflect the committed entry.
+    // (This is legacy behavior, in case the kill-switch needs to be used.)
+    last_committed_entry_index_ = GetIndexOfEntry(entry);
+  }
 }
 
 void NavigationControllerImpl::RendererDidNavigateNewSubframe(
@@ -3676,12 +3689,7 @@ void NavigationControllerImpl::HandleRendererDebugURL(
   // the renderer process is done handling the URL.
   // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    bool was_loading = frame_tree_node->frame_tree()
-                           .LoadingTree()
-                           ->IsLoadingIncludingInnerFrameTrees();
     frame_tree_node->current_frame_host()->SetIsLoadingForRendererDebugURL();
-    frame_tree_node->DidStartLoading(true /* should_show_loading_ui */,
-                                     was_loading);
   }
   frame_tree_node->current_frame_host()->HandleRendererDebugURL(url);
 }
@@ -3954,11 +3962,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   auto navigation_request = NavigationRequest::Create(
       node, std::move(common_params), std::move(commit_params),
       !params.is_renderer_initiated, params.was_opener_suppressed,
-      params.initiator_frame_token.has_value()
-          ? &(params.initiator_frame_token.value())
-          : nullptr,
-      params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
-      params.is_form_submission,
+      params.initiator_frame_token, params.initiator_process_id,
+      extra_headers_crlf, frame_entry, entry, params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, params.initiator_activation_and_ad_status,
       params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
@@ -4085,7 +4090,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   return NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
-      nullptr /* initiator_frame_token */,
+      absl::nullopt /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, is_form_submission,
       nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
@@ -4210,13 +4215,10 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           node, std::move(common_params), std::move(commit_params),
-          false /* was_opener_suppressed */,
-          nullptr /* initiator_frame_token */,
-          ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-          "" /* extra_headers */, nullptr /* frame_entry */,
-          nullptr /* entry */, false /* is_form_submission */,
-          nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
-          false /* is_pdf */);
+          false /* was_opener_suppressed */, "" /* extra_headers */,
+          nullptr /* frame_entry */, nullptr /* entry */,
+          false /* is_form_submission */, nullptr /* navigation_ui_data */,
+          absl::nullopt /* impression */, false /* is_pdf */);
   navigation_request->set_post_commit_error_page_html(error_page_html);
   navigation_request->set_net_error(error);
   node->TakeNavigationRequest(std::move(navigation_request));
@@ -4646,8 +4648,6 @@ NavigationControllerImpl::ShouldNavigateToEntryForNavigationApiKey(
     FrameNavigationEntry* target_entry,
     const std::string& navigation_api_key) {
   if (!target_entry || !target_entry->committed_origin())
-    return HistoryNavigationAction::kStopLooking;
-  if (current_entry->site_instance() != target_entry->site_instance())
     return HistoryNavigationAction::kStopLooking;
   if (!current_entry->committed_origin()->IsSameOriginWith(
           *target_entry->committed_origin())) {

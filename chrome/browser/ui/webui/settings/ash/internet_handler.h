@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/tether/gms_core_notifications_state_tracker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -62,9 +63,9 @@ class InternetHandler
 
   std::vector<base::Value> device_names_without_notifications_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  tether::GmsCoreNotificationsStateTracker*
+  raw_ptr<tether::GmsCoreNotificationsStateTracker, ExperimentalAsh>
       gms_core_notifications_state_tracker_;
 };
 

@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
 
 #if BUILDFLAG(IS_APPLE)
   using PositionUpdateCallback =
-      base::RepeatingCallback<void(const mojom::Geoposition&)>;
+      base::RepeatingCallback<void(mojom::GeopositionResultPtr)>;
 #endif
 
   virtual ~SystemGeolocationSource() = default;

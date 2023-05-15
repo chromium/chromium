@@ -244,6 +244,7 @@ public class SharedPreferencesManager {
      * @param defaultValue The default value to return if the preference is not set.
      * @return The value of the preference.
      */
+    @CalledByNative
     public int readInt(String key, int defaultValue) {
         mKeyChecker.checkIsKeyInUse(key);
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -555,6 +556,7 @@ public class SharedPreferencesManager {
      * @param key The name of the preference to modify.
      * @param value The new value for the preference.
      */
+    @CalledByNative
     public void writeString(String key, String value) {
         mKeyChecker.checkIsKeyInUse(key);
         SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
@@ -599,6 +601,7 @@ public class SharedPreferencesManager {
      * @return The value of the preference if stored; defaultValue otherwise.
      */
     @Nullable
+    @CalledByNative
     public String readString(String key, @Nullable String defaultValue) {
         mKeyChecker.checkIsKeyInUse(key);
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

@@ -987,16 +987,15 @@ VirtualCtap2Device::CheckUserVerification(
           AuthenticatorSupportedOptions::ClientPinAvailability::
               kSupportedAndPinSet;
 
-  // (CTAP2.1) 5. "If the alwaysUv option ID is present and true and the "up"
-  // option is present and true then:"
-  if (options.always_uv && user_presence_required) {
+  // (CTAP2.1) 5. "If the alwaysUv option ID is present and true"
+  if (options.always_uv &&
+      (user_presence_required || config_.always_uv_for_up_false)) {
     // 5.1 "If the authenticator is not protected by some form of user
     // verification:"
     if (!can_do_uv) {
       // 5.1.1 "If the clientPin option ID is present: (clientPin is supported)"
-      if (options.client_pin_availability ==
-          AuthenticatorSupportedOptions::ClientPinAvailability::
-              kSupportedAndPinSet) {
+      if (options.client_pin_availability !=
+          AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported) {
         return CtapDeviceResponseCode::kCtap2ErrPinRequired;
       } else {
         return CtapDeviceResponseCode::kCtap2ErrOperationDenied;

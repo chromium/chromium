@@ -447,15 +447,14 @@ policy::UserCloudPolicyManagerAsh*
 OffTheRecordProfileImpl::GetUserCloudPolicyManagerAsh() {
   return GetOriginalProfile()->GetUserCloudPolicyManagerAsh();
 }
-
-policy::ActiveDirectoryPolicyManager*
-OffTheRecordProfileImpl::GetActiveDirectoryPolicyManager() {
-  return GetOriginalProfile()->GetActiveDirectoryPolicyManager();
-}
 #else
 policy::UserCloudPolicyManager*
 OffTheRecordProfileImpl::GetUserCloudPolicyManager() {
   return GetOriginalProfile()->GetUserCloudPolicyManager();
+}
+policy::ProfileCloudPolicyManager*
+OffTheRecordProfileImpl::GetProfileCloudPolicyManager() {
+  return GetOriginalProfile()->GetProfileCloudPolicyManager();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

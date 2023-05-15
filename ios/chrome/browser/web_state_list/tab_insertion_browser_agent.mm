@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "build/blink_buildflags.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -85,6 +86,9 @@ web::WebState* TabInsertionBrowserAgent::InsertWebStateOpenedByDOM(
     web::WebState* parent) {
   web::WebState::CreateParams createParams(browser_state_);
   createParams.created_with_opener = YES;
+#if BUILDFLAG(USE_BLINK)
+  createParams.opener_web_state = parent;
+#endif
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(createParams);
   int insertion_flags =

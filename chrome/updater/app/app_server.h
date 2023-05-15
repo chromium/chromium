@@ -19,6 +19,9 @@ class GlobalPrefs;
 class UpdateService;
 struct RegistrationRequest;
 
+// Returns true if the command line has the switch `--service update-internal`.
+bool IsInternalService();
+
 // AppServer runs as the updater server process. Multiple servers of different
 // application versions can be run side-by-side. Each such server is called a
 // "candidate". Exactly one candidate is "active" at any given time. Only the

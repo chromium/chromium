@@ -58,7 +58,7 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
 
   using OutputDeviceMixers = std::vector<std::unique_ptr<OutputDeviceMixer>>;
   using ListenerToDeviceMap =
-      base::flat_map<base::raw_ptr<ReferenceOutput::Listener>, std::string>;
+      base::flat_map<raw_ptr<ReferenceOutput::Listener>, std::string>;
 
   // Forwards device change notifications to OutputDeviceMixers.
   void OnDeviceChange();

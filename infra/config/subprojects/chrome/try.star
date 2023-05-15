@@ -140,7 +140,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "fuchsia-fyi-astro",
+    builder = "fuchsia-internal-images-roller",
 )
 
 chrome_internal_verifier(

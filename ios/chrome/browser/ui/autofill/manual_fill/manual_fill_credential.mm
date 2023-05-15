@@ -46,16 +46,16 @@
     return NO;
   }
   ManualFillCredential* otherObject = (ManualFillCredential*)object;
-  if (![otherObject.host isEqual:self.host]) {
+  if (![otherObject.host isEqualToString:self.host]) {
     return NO;
   }
-  if (![otherObject.username isEqual:self.username]) {
+  if (![otherObject.username isEqualToString:self.username]) {
     return NO;
   }
-  if (![otherObject.password isEqual:self.password]) {
+  if (![otherObject.password isEqualToString:self.password]) {
     return NO;
   }
-  if (![otherObject.siteName isEqual:self.siteName]) {
+  if (![otherObject.siteName isEqualToString:self.siteName]) {
     return NO;
   }
   if (otherObject.URL != self.URL) {

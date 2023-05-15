@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -89,13 +88,8 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_DOWNLOADS = "downloads";
     public static final String PREF_DEVELOPER = "developer";
 
-    // Used for elevating the privacy section behind the flag (see crbug.com/1099233).
-    public static final int PRIVACY_ORDER_DEFAULT = 18;
-    public static final int PRIVACY_ORDER_ELEVATED = 12;
-
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
-    private SignInPreference mSignInPreference;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
     private Profile mProfile;
@@ -139,7 +133,7 @@ public class MainSettings extends PreferenceFragmentCompat
     public void onStart() {
         super.onStart();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (signinManager.isSigninSupported()) {
+        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.addSignInStateObserver(this);
         }
         SyncService syncService = SyncService.get();
@@ -152,7 +146,7 @@ public class MainSettings extends PreferenceFragmentCompat
     public void onStop() {
         super.onStop();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (signinManager.isSigninSupported()) {
+        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.removeSignInStateObserver(this);
         }
         SyncService syncService = SyncService.get();
@@ -232,7 +226,6 @@ public class MainSettings extends PreferenceFragmentCompat
             Preference preference = getPreferenceScreen().getPreference(index);
             mAllPreferences.put(preference.getKey(), preference);
         }
-        mSignInPreference = (SignInPreference) mAllPreferences.get(PREF_SIGN_IN);
         mManageSync = (ChromeBasePreference) findPreference(PREF_MANAGE_SYNC);
     }
 
@@ -242,7 +235,8 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
-        if (IdentityServicesProvider.get().getSigninManager(mProfile).isSigninSupported()) {
+        if (IdentityServicesProvider.get().getSigninManager(mProfile).isSigninSupported(
+                    /*requireUpdatedPlayServices=*/false)) {
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);

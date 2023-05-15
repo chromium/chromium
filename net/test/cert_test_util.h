@@ -67,6 +67,11 @@ ScopedCERTCertificateList CreateCERTCertificateListFromFile(
     const base::FilePath& certs_dir,
     base::StringPiece cert_file,
     int format);
+
+// Returns an NSS built-in root certificate which is trusted for issuing TLS
+// server certificates. If multiple ones are available, it is not specified
+// which one is returned. If none are available, returns nullptr.
+ScopedCERTCertificate GetAnNssBuiltinSslTrustedRoot();
 #endif
 
 // Imports all of the certificates in |cert_file|, a file in |certs_dir|, into a

@@ -36,7 +36,7 @@ class PersonalDataManagerProfileChecker
   void OnPersonalDataChanged() override;
 
  private:
-  const base::raw_ptr<autofill::PersonalDataManager> pdm_;
+  const raw_ptr<autofill::PersonalDataManager> pdm_;
   const testing::Matcher<std::vector<autofill::AutofillProfile>> matcher_;
 };
 

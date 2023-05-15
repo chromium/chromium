@@ -23,19 +23,14 @@ constexpr char kActiveFromKey[] = "active_from";
 constexpr char kActiveToKey[] = "active_to";
 
 absl::optional<AppActivity::ActiveTime> AppActivityFromDict(
-    const base::Value& value) {
-  if (!value.is_dict()) {
-    VLOG(1) << "Value is not a dictionary";
-    return absl::nullopt;
-  }
-
-  const std::string* active_from = value.FindStringKey(kActiveFromKey);
+    const base::Value::Dict& dict) {
+  const std::string* active_from = dict.FindString(kActiveFromKey);
   if (!active_from) {
     VLOG(1) << "Invalid |active_from| entry in dictionary";
     return absl::nullopt;
   }
 
-  const std::string* active_to = value.FindStringKey(kActiveToKey);
+  const std::string* active_to = dict.FindString(kActiveToKey);
   if (!active_to) {
     VLOG(1) << "Invalid |active_to| entry in dictionary.";
     return absl::nullopt;
@@ -81,7 +76,12 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
   }
 
   for (const auto& value : *list) {
-    absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(value);
+    auto* dict = value.GetIfDict();
+    if (!dict) {
+      VLOG(1) << "Value is not a dictionary";
+      continue;
+    }
+    absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(*dict);
     if (!entry)
       continue;
     active_times.push_back(entry.value());
@@ -216,18 +216,18 @@ void PersistedAppInfo::UpdateAppActivityPreference(
            base::NumberToString(active_running_time().InMicroseconds()));
 
   if (replace_activity) {
-    base::Value::List active_times_value;
+    base::Value::List active_times_list;
     for (const auto& entry : active_times_) {
-      active_times_value.Append(AppActivityToDict(entry));
+      active_times_list.Append(AppActivityToDict(entry));
     }
 
-    dict.SetByDottedPath(kActiveTimesKey, std::move(active_times_value));
+    dict.SetByDottedPath(kActiveTimesKey, std::move(active_times_list));
     return;
   }
 
-  base::Value::List* value = dict.FindList(kActiveTimesKey);
-  if (!value) {
-    value =
+  base::Value::List* list = dict.FindList(kActiveTimesKey);
+  if (!list) {
+    list =
         &dict.SetByDottedPath(kActiveTimesKey, base::Value::List())->GetList();
   }
 
@@ -237,14 +237,15 @@ void PersistedAppInfo::UpdateAppActivityPreference(
   // start index into |active_times_|
   size_t start_index = 0;
 
-  // If the last entry in |value| can be merged with the first entry in
+  // If the last entry in |list| can be merged with the first entry in
   // |active_times_| merge them.
-  base::Value::List& list_view = *value;
+  base::Value::List& list_view = *list;
   if (list_view.size() > 0) {
     base::Value& mergeable_entry = list_view[list_view.size() - 1];
+    CHECK(mergeable_entry.is_dict());
     absl::optional<AppActivity::ActiveTime> active_time =
-        AppActivityFromDict(mergeable_entry);
-    DCHECK(active_time.has_value());
+        AppActivityFromDict(mergeable_entry.GetDict());
+    CHECK(active_time.has_value());
 
     absl::optional<AppActivity::ActiveTime> merged =
         AppActivity::ActiveTime::Merge(active_time.value(), active_times_[0]);
@@ -255,7 +256,7 @@ void PersistedAppInfo::UpdateAppActivityPreference(
   }
 
   for (size_t i = start_index; i < active_times_.size(); i++) {
-    value->Append(AppActivityToDict(active_times_[i]));
+    list->Append(AppActivityToDict(active_times_[i]));
   }
 }
 

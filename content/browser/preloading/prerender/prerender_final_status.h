@@ -111,7 +111,17 @@ enum class PrerenderFinalStatus {
   kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation = 65,
   kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation = 66,
 
-  kMaxValue = kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation,
+  kMemoryPressureOnTrigger = 67,
+  kMemoryPressureAfterTriggered = 68,
+
+  // A trigger page removed a prerendering URL from
+  // <script type="speculationrules">.
+  kSpeculationRuleRemoved = 69,
+
+  kTriggerPageNavigated = 70,
+  kOtherPrerenderedPageActivated = 71,
+
+  kMaxValue = kOtherPrerenderedPageActivated,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

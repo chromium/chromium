@@ -187,7 +187,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
          forControlEvents:UIControlEventTouchUpInside];
-  BOOL isIncognito = self.style == INCOGNITO;
+  BOOL isIncognito = self.style == ToolbarStyle::kIncognito;
 
   [self configureButton:newTabButton width:kAdaptiveToolbarButtonWidth];
 

@@ -108,7 +108,7 @@ class CONTENT_EXPORT PrefetchService {
   // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
   using OnPrefetchToServeReady = base::OnceCallback<void(
       base::WeakPtr<PrefetchContainer> prefetch_to_serve)>;
-  void GetPrefetchToServe(const GURL& url,
+  void GetPrefetchToServe(const PrefetchContainer::Key& key,
                           OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Copies any cookies in the isolated network context associated with
@@ -260,7 +260,24 @@ class CONTENT_EXPORT PrefetchService {
   // prefetch if needed, and updates its state.
   void ReturnPrefetchToServe(
       base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnPrefetchToServeReady on_prefetch_to_serve_ready,
+      const GURL& nav_url);
+
+  // Helper function for |GetPrefetchToServe| to wait for head of a
+  // potentially matching CL in order to decide if we can use it or not for
+  // the current navigation.
+  // Once we make the decision to use a prefetch, call |PrepareToServe| and
+  // |GetPrefetchToServe| again in order to enforce that prefetches that are
+  // served are served from |prefetches_ready_to_serve_|.
+  void WaitOnPrefetchToServeHead(
+      const PrefetchContainer::Key& key,
+      base::WeakPtr<PrefetchContainer> prefetch_container,
       OnPrefetchToServeReady on_prefetch_to_serve_ready);
+
+  // Helper function for |GetPrefetchToServe| which identifies the
+  // |prefetch_container| that could potentially be served.
+  PrefetchContainer* FindPrefetchContainerToServe(
+      const PrefetchContainer::Key& key);
 
   // Checks if there is a prefetch in |all_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.
@@ -310,7 +327,11 @@ class CONTENT_EXPORT PrefetchService {
   // response, and have started the cookie copy process. A prefetch is added to
   // this map when |PrepareToServe| is called on it, and once in this map, it
   // can be returned by |GetPrefetchToServe|.
-  std::map<GURL, base::WeakPtr<PrefetchContainer>> prefetches_ready_to_serve_;
+  //
+  // Unlike other maps, the URL in `PrefetchContainer::Key` can be different
+  // from `PrefetchContainer::GetURL()` due to No-Vary-Search.
+  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
+      prefetches_ready_to_serve_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

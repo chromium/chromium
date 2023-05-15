@@ -22,6 +22,7 @@ class SequencedTaskRunner;
 
 namespace media {
 
+class MediaLog;
 class MojoDecoderBufferWriter;
 
 // An AudioDecoder that proxies to a mojom::AudioDecoder.
@@ -29,6 +30,7 @@ class MojoAudioDecoder final : public AudioDecoder,
                                public mojom::AudioDecoderClient {
  public:
   MojoAudioDecoder(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   MediaLog* media_log,
                    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder);
 
   MojoAudioDecoder(const MojoAudioDecoder&) = delete;
@@ -96,6 +98,10 @@ class MojoAudioDecoder final : public AudioDecoder,
 
   // Receiver for AudioDecoderClient, bound to the |task_runner_|.
   mojo::AssociatedReceiver<AudioDecoderClient> client_receiver_{this};
+
+  // Raw pointer is safe since both `this` and the `media_log` are owned by
+  // WebMediaPlayerImpl with the correct declaration order.
+  raw_ptr<MediaLog> media_log_;
 
   InitCB init_cb_;
   OutputCB output_cb_;

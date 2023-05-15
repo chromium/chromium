@@ -6,10 +6,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 void InitializeMac() {
-  [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+  [NSUserDefaults.standardUserDefaults registerDefaults:@{
     // Exceptions routed to -[NSApplication reportException:] should crash
     // immediately, as opposed being swallowed or presenting UI that gives the
     // user a choice in the matter.

@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -74,14 +75,15 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
     absl::optional<message_center::Notification> notification =
         GetNotification(base::UTF16ToUTF8(origin));
     ASSERT_TRUE(notification);
-    EXPECT_EQ(u"", notification->title());
+    EXPECT_EQ(origin + u" is recording your screen", notification->title());
     EXPECT_EQ(u"Your system administrator has allowed " + origin +
                   u" to record your screen",
               notification->message());
   }
 
  protected:
-  user_manager::FakeUserManager* user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;

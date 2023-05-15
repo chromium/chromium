@@ -8,8 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -41,7 +43,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
-using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 using StrictMockDownloadItem = StrictMock<download::MockDownloadItem>;
 using DownloadIconState = download::DownloadIconState;
@@ -132,29 +133,52 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   ~MockDownloadBubbleUpdateService() override = default;
 
-  bool GetAllModelsToDisplay(
-      std::vector<DownloadUIModelPtr>& models,
-      bool force_backfill_download_items = true) override {
-    models.clear();
+  void UpdateInfoForModel(
+      const DownloadUIModel& model,
+      DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+    ++info.all_models_size;
+    info.last_completed_time =
+        std::max(info.last_completed_time, model.GetEndTime());
+    if (model.GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
+        model.GetState() != download::DownloadItem::CANCELLED) {
+      info.has_deep_scanning = true;
+    }
+    if (!model.WasActionedOn()) {
+      info.has_unactioned = true;
+    }
+    if (IsModelInProgress(&model)) {
+      ++info.in_progress_count;
+      if (model.IsPaused()) {
+        ++info.paused_count;
+      }
+    }
+  }
+
+  const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo(
+      const web_app::AppId* web_app_id) override {
+    info_ = DownloadDisplayController::AllDownloadUIModelsInfo{};
     int download_item_index = 0, offline_item_index = 0;
     // Compose a list of models from the items stored in the test fixture.
     for (ModelType type : model_types_) {
       if (type == ModelType::kDownloadItem) {
         auto model = DownloadItemModel::Wrap(
-            download_items_.at(download_item_index++).get());
-        if (model->ShouldShowInBubble()) {
-          models.push_back(std::move(model));
+            download_items_->at(download_item_index++).get());
+        if (!model->ShouldShowInBubble()) {
+          continue;
         }
+        UpdateInfoForModel(*model, info_);
       } else {
         auto model = OfflineItemModel::Wrap(
             OfflineItemModelManagerFactory::GetForBrowserContext(profile_),
-            offline_items_.at(offline_item_index++));
-        if (model->ShouldShowInBubble()) {
-          models.push_back(std::move(model));
+            offline_items_->at(offline_item_index++));
+        if (!model->ShouldShowInBubble()) {
+          continue;
         }
+        UpdateInfoForModel(*model, info_);
       }
     }
-    return true;
+    return info_;
   }
 
   void AddModel(ModelType type) { model_types_.push_back(type); }
@@ -169,16 +193,21 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
     }
   }
 
+  bool IsInitialized() const override { return true; }
+
   MOCK_METHOD(DownloadDisplayController::ProgressInfo,
               GetProgressInfo,
-              (),
+              (const web_app::AppId*),
               (const override));
 
  private:
   raw_ptr<Profile> profile_;
+  DownloadDisplayController::AllDownloadUIModelsInfo info_;
   std::vector<ModelType> model_types_;
-  const std::vector<std::unique_ptr<StrictMockDownloadItem>>& download_items_;
-  const OfflineItemList& offline_items_;
+  const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>,
+                ExperimentalAsh>
+      download_items_;
+  const raw_ref<const OfflineItemList, ExperimentalAsh> offline_items_;
 };
 
 class MockDownloadCoreService : public DownloadCoreService {
@@ -207,8 +236,7 @@ std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
 class DownloadDisplayControllerTest : public testing::Test {
  public:
   DownloadDisplayControllerTest()
-      : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   }
   DownloadDisplayControllerTest(const DownloadDisplayControllerTest&) = delete;
@@ -219,8 +247,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
-    EXPECT_CALL(*manager_.get(), GetBrowserContext())
-        .WillRepeatedly(Return(profile_.get()));
 
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&BuildMockDownloadCoreService));
@@ -243,10 +269,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
     bubble_controller_ = std::make_unique<DownloadBubbleUIController>(
         browser_.get(), mock_update_service_.get());
-    bubble_controller_->set_manager_for_testing(manager_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
         display_.get(), browser_.get(), bubble_controller_.get());
-    controller_->set_manager_for_testing(manager_.get());
     display_->SetController(controller_.get());
   }
 
@@ -260,7 +284,6 @@ class DownloadDisplayControllerTest : public testing::Test {
   Browser* browser() { return browser_.get(); }
 
  protected:
-  NiceMock<content::MockDownloadManager>& manager() { return *manager_.get(); }
   download::MockDownloadItem& item(size_t index) { return *items_[index]; }
   FakeDownloadDisplay& display() { return *display_; }
   DownloadDisplayController& controller() { return *controller_; }
@@ -308,8 +331,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     if (state == DownloadState::IN_PROGRESS) {
       in_progress_count_++;
     }
-    EXPECT_CALL(manager(), InProgressCount())
-        .WillRepeatedly(Return(in_progress_count_));
     // Set actioned_on to false (it defaults to true) because the controller
     // will generally set this to false in OnNewItem().
     DownloadItemModel(&item(index)).SetActionedOn(false);
@@ -318,8 +339,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }
-    EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
-        .WillRepeatedly(SetArgPointee<0>(items));
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
     mock_update_service_->AddModel(
@@ -327,7 +346,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     DownloadDisplayController::ProgressInfo progress_info;
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
-    EXPECT_CALL(*mock_update_service_, GetProgressInfo())
+    EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(progress_info));
     controller().OnNewItem(/*show_animation=*/false);
   }
@@ -343,7 +362,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
     progress_info.progress_certain = false;
-    EXPECT_CALL(*mock_update_service_, GetProgressInfo())
+    EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(progress_info));
     mock_update_service_->AddModel(
         MockDownloadBubbleUpdateService::ModelType::kOfflineItem);
@@ -373,22 +392,22 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(Return(danger_type));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
-      DownloadPrefs::FromDownloadManager(&manager())
-          ->SetLastCompleteTime(base::Time::Now());
+      DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+          base::Time::Now());
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
     if (state == DownloadState::COMPLETE || in_progress_dangerous) {
       in_progress_count_--;
-      EXPECT_CALL(manager(), InProgressCount())
-          .WillRepeatedly(Return(in_progress_count_));
     }
     controller().OnUpdatedItem(
         state == DownloadState::COMPLETE || in_progress_dangerous,
         may_show_details);
   }
 
-  void OnRemovedItem(const ContentId& id) { controller().OnRemovedItem(id); }
+  void OnRemovedItem(const std::string& id) {
+    controller().OnRemovedItem(ContentId{"LEGACY_DOWNLOAD", id});
+  }
 
   void RemoveLastDownload() {
     items_.pop_back();
@@ -396,8 +415,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }
-    EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
-        .WillRepeatedly(SetArgPointee<0>(items));
     mock_update_service_->RemoveLastDownload();
   }
 
@@ -441,7 +458,6 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<FakeDownloadDisplay> display_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   std::vector<OfflineItem> offline_items_;
-  std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   std::unique_ptr<StrictMock<MockDownloadBubbleUpdateService>>
       mock_update_service_;
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
@@ -730,30 +746,6 @@ TEST_F(DownloadDisplayControllerTest,
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnRemovedItem) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  std::string same_id = "Download 1";
-  std::string different_id = "Download 2";
-  EXPECT_CALL(item(0), GetGuid()).WillRepeatedly(ReturnRef(same_id));
-
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", different_id));
-  // The download display is still shown, because the removed download is
-  // different. Details are not shown because there is still a download in
-  // progress.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
-
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", same_id));
-  // The download display is hided, because the only item in the download list
-  // is about to be removed.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
-}
-
-TEST_F(DownloadDisplayControllerTest,
-       UpdateToolbarButtonState_OnRemovedItemMultipleDownloads) {
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::IN_PROGRESS);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar1.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   std::vector<std::string> ids = {"Download 1", "Download 2"};
@@ -763,13 +755,15 @@ TEST_F(DownloadDisplayControllerTest,
   // The download display is still shown, because there are multiple downloads
   // in the list. Details are not shown because there is still a download in
   // progress.
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", ids[0]));
+  RemoveLastDownload();
+  OnRemovedItem(ids[1]);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
+  // Display is hidden because the last download was deleted.
   RemoveLastDownload();
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", ids[0]));
+  OnRemovedItem(ids[0]);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
@@ -833,8 +827,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
   // Set the last complete time to more than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(61));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(61));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -848,8 +842,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
   // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(59));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -883,8 +877,8 @@ TEST_F(DownloadDisplayControllerTest,
        InitialState_NewLastDownloadWithEmptyItem) {
   base::Time current_time = base::Time::Now();
   // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(59));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());

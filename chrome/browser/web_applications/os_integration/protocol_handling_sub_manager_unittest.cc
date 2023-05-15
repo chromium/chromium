@@ -345,17 +345,17 @@ TEST_P(ProtocolHandlingExecuteTest, Unregister) {
 #endif
 
   if (AreProtocolsRegisteredWithOs()) {
-    // TODO(crbug.com/1404819): Update tests to verify protocol handling
-    // unregistration as part of update.
-    // There should only be a single value for registration, as unregistration
-    // is a no-op for OsIntegrationTestOverrideImpl::Get().
     ASSERT_THAT(
         OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
         testing::ElementsAre(
-            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
+            std::make_tuple(app_id, std::vector<std::string>())));
   }
 }
 
+// This test has extra assertions since Windows registers protocol handlers
+// differently than Mac/Linux where protocol handlers are bundled as part
+// of the shortcuts OS integration process.
 TEST_P(ProtocolHandlingExecuteTest, UpdateHandlers) {
   apps::ProtocolHandlerInfo protocol_handler_approved;
   const std::string handler_url1 =
@@ -400,8 +400,17 @@ TEST_P(ProtocolHandlingExecuteTest, UpdateHandlers) {
                 testing::ElementsAre(protocol_handler_approved.protocol));
 #endif
     if (AreProtocolsRegisteredWithOs()) {
-      // TODO(crbug.com/1404819): Update tests to verify protocol handling
-      // unregistration as part of update.
+#if BUILDFLAG(IS_WIN)
+      ASSERT_THAT(
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+          testing::ElementsAre(
+              std::make_tuple(
+                  app_id, std::vector({protocol_handler_approved.protocol,
+                                       protocol_handler_disapproved.protocol})),
+              std::make_tuple(app_id, std::vector<std::string>()),
+              std::make_tuple(
+                  app_id, std::vector({protocol_handler_approved.protocol}))));
+#else
       ASSERT_THAT(
           OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::ElementsAre(
@@ -410,6 +419,7 @@ TEST_P(ProtocolHandlingExecuteTest, UpdateHandlers) {
                                        protocol_handler_disapproved.protocol})),
               std::make_tuple(
                   app_id, std::vector({protocol_handler_approved.protocol}))));
+#endif  // BUILDFLAG(IS_WIN)
     }
   } else {
     ASSERT_FALSE(os_integration_state.has_protocols_handled());
@@ -483,20 +493,9 @@ TEST_P(ProtocolHandlingExecuteTest, MultipleSynchronizeEmptyData) {
                 testing::IsEmpty());
 #endif
     if (AreProtocolsRegisteredWithOs()) {
-      // TODO(crbug.com/1404819): Update tests to streamline proper
-      // representation of protocols registered, independent of OSes.
-      // These values are set by the ShortcutHandlingSubManager.
-#if BUILDFLAG(IS_WIN)
       ASSERT_THAT(
           OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::IsEmpty());
-#else
-      ASSERT_THAT(
-          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-          testing::ElementsAre(
-              std::make_tuple(app_id1, std::vector<std::string>()),
-              std::make_tuple(app_id1, std::vector<std::string>())));
-#endif
     }
   } else {
     ASSERT_FALSE(os_integration_state.has_protocols_handled());

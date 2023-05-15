@@ -4,31 +4,39 @@
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 
-#include <memory>
-
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -44,7 +52,13 @@ constexpr base::TimeDelta kHideDelay = base::Milliseconds(500);
 const int kResizeWidgetPadding = 15;
 
 // Distance between the resize widget and lock widget.
-const int kResizeWidgetAndLockWidgetDistance = 75;
+const int kResizeWidgetAndLockWidgetDistance = 85;
+
+constexpr int kLockButtonCornerRadius = 20;
+
+// The size of the resize widget when the feature flag `Jellyroll` is enabled.
+constexpr int kLongSideCrOSNext = 64;
+constexpr int kShortSideCrOSNext = 52;
 
 // Returns the widget init params needed to create the resize widget or snap
 // group lock widget.
@@ -122,20 +136,13 @@ bool Intersects(int x1, int max_1, int x2, int max_2) {
   return x2 <= max_1 && max_2 > x1;
 }
 
-// Returns true if the entry point to create and remove the snap group through
-// the multi-window resizer is enabled.
-bool CanShowLockWidget() {
-  auto* snap_group_controller = Shell::Get()->snap_group_controller();
-  return snap_group_controller &&
-         snap_group_controller->IsArm2ManuallyLockEnabled();
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // ResizeView:
 // View contained in the widget. Passes along mouse events to the
 // MultiWindowResizeController so that it can start/stop the resize loop.
+
 class MultiWindowResizeController::ResizeView : public views::View {
  public:
   ResizeView(MultiWindowResizeController* controller, Direction direction)
@@ -148,41 +155,92 @@ class MultiWindowResizeController::ResizeView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override {
     const bool vert = direction_ == Direction::kLeftRight;
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      return gfx::Size(vert ? kLongSideCrOSNext : kShortSideCrOSNext,
+                       vert ? kShortSideCrOSNext : kLongSideCrOSNext);
+    }
+
     return gfx::Size(vert ? kShortSide : kLongSide,
                      vert ? kLongSide : kShortSide);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setColor(SkColorSetA(SK_ColorBLACK, 0x7F));
-    flags.setAntiAlias(true);
-    canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), 2, flags);
+    if (!chromeos::features::IsJellyrollEnabled()) {
+      cc::PaintFlags flags;
+      flags.setColor(SkColorSetA(SK_ColorBLACK, 0x7F));
+      flags.setAntiAlias(true);
+      canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), 2, flags);
 
-    // Craft the left arrow.
-    const SkRect kArrowBounds = SkRect::MakeXYWH(4, 28, 4, 8);
-    SkPath path;
-    path.moveTo(kArrowBounds.right(), kArrowBounds.y());
-    path.lineTo(kArrowBounds.x(), kArrowBounds.centerY());
-    path.lineTo(kArrowBounds.right(), kArrowBounds.bottom());
-    path.close();
+      // Craft the left arrow.
+      const SkRect kArrowBounds = SkRect::MakeXYWH(4, 28, 4, 8);
+      SkPath path;
+      path.moveTo(kArrowBounds.right(), kArrowBounds.y());
+      path.lineTo(kArrowBounds.x(), kArrowBounds.centerY());
+      path.lineTo(kArrowBounds.right(), kArrowBounds.bottom());
+      path.close();
 
-    // Do the same for the right arrow.
-    SkMatrix flip;
-    flip.setScale(-1, 1, kShortSide / 2, kLongSide / 2);
-    path.addPath(path, flip);
+      // Do the same for the right arrow.
+      SkMatrix flip;
+      flip.setScale(-1, 1, kShortSide / 2, kLongSide / 2);
+      path.addPath(path, flip);
 
-    // The arrows are drawn for the vertical orientation; rotate if need be.
-    if (direction_ == Direction::kTopBottom) {
-      SkMatrix transform;
-      constexpr int kHalfShort = kShortSide / 2;
-      constexpr int kHalfLong = kLongSide / 2;
-      transform.setRotate(90, kHalfShort, kHalfLong);
-      transform.postTranslate(kHalfLong - kHalfShort, kHalfShort - kHalfLong);
-      path.transform(transform);
+      // The arrows are drawn for the vertical orientation; rotate if need be.
+      if (direction_ == Direction::kTopBottom) {
+        SkMatrix transform;
+        constexpr int kHalfShort = kShortSide / 2;
+        constexpr int kHalfLong = kLongSide / 2;
+        transform.setRotate(90, kHalfShort, kHalfLong);
+        transform.postTranslate(kHalfLong - kHalfShort, kHalfShort - kHalfLong);
+        path.transform(transform);
+      }
+
+      flags.setColor(SK_ColorWHITE);
+      canvas->DrawPath(path, flags);
+      return;
     }
 
-    flags.setColor(SK_ColorWHITE);
-    canvas->DrawPath(path, flags);
+    cc::PaintFlags flags;
+
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+
+    canvas->DrawPath(GeneratePath(GetLocalBounds()), flags);
+
+    // Paint the chevron icons.
+    constexpr int kIconSize = 20;
+    constexpr int kHalfLong = kLongSideCrOSNext / 2;
+
+    // Paint the left / up chevron icon.
+    canvas->Save();
+    int long_offset = (kHalfLong - kIconSize) / 2;
+    int short_offset = (kShortSideCrOSNext - kIconSize) / 2;
+    canvas->Translate(direction_ == Direction::kLeftRight
+                          ? gfx::Vector2d(long_offset, short_offset)
+                          : gfx::Vector2d(short_offset, long_offset));
+    gfx::PaintVectorIcon(
+        canvas,
+        direction_ == Direction::kLeftRight ? kOverflowShelfLeftIcon
+                                            : kChevronUpSmallIcon,
+        kIconSize,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    canvas->Restore();
+
+    // Paint the right / down chevron icon.
+    canvas->Save();
+    long_offset = kHalfLong + (kHalfLong - kIconSize) / 2;
+    canvas->Translate(direction_ == Direction::kLeftRight
+                          ? gfx::Vector2d(long_offset, short_offset)
+                          : gfx::Vector2d(short_offset, long_offset));
+    gfx::PaintVectorIcon(
+        canvas,
+        direction_ == Direction::kLeftRight ? kOverflowShelfRightIcon
+                                            : kChevronDownSmallIcon,
+        kIconSize,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    canvas->Restore();
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -214,14 +272,81 @@ class MultiWindowResizeController::ResizeView : public views::View {
   static constexpr int kLongSide = 64;
   static constexpr int kShortSide = 28;
 
-  MultiWindowResizeController* controller_;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> controller_;
   const Direction direction_;
+
+  SkPath GeneratePath(const gfx::Rect& bounds) {
+    //           /\
+    //      ----    ----
+    //    /              \
+    //    \              /
+    //      ----    ----
+    //           \/
+    //
+    // Generate the path for the shape above when `direction_` is
+    // `Direction::kLeftRight`. If the `direction_` is `Direction::kTopBottom`,
+    // generate the path for the shape above with 90 degree rotated.
+
+    static constexpr int kLargeCurveRadius = 16;
+    static constexpr int kSmallCurveRadius = 10;
+
+    // The resize shape is symmetric horizontally and vertically, hence only
+    // need to manually generate the path for the quarter and then flip twice;
+    const gfx::RectF quarter_bounds(bounds.x(), bounds.y(), bounds.width() / 2,
+                                    bounds.height() / 2);
+    SkPath path;
+    if (direction_ == Direction::kLeftRight) {
+      //           /|
+      //      ----  |
+      //    / ____  |
+
+      // Generate the path for the quarter of the resize shape which looks like
+      // the shape above, starting from left bottom to the right top and then
+      // back to the left bottom.
+      path.moveTo(quarter_bounds.x(), quarter_bounds.bottom());
+      path.arcTo(
+          quarter_bounds.x(), quarter_bounds.bottom() - kLargeCurveRadius,
+          quarter_bounds.x() + kLargeCurveRadius,
+          quarter_bounds.bottom() - kLargeCurveRadius, kLargeCurveRadius);
+      path.lineTo(quarter_bounds.right() - kSmallCurveRadius,
+                  quarter_bounds.bottom() - kLargeCurveRadius);
+      path.arcTo(quarter_bounds.right(),
+                 quarter_bounds.bottom() - kLargeCurveRadius,
+                 quarter_bounds.right(), quarter_bounds.y(), kSmallCurveRadius);
+      path.lineTo(quarter_bounds.right(), quarter_bounds.bottom());
+    } else {
+      // Similar to the way when `direction_` is `Direction::kLeftRight`,
+      // starting from the right top to the left bottom and then back to the
+      // right top.
+      path.moveTo(quarter_bounds.right(), quarter_bounds.y());
+      path.arcTo(quarter_bounds.right() - kLargeCurveRadius, quarter_bounds.y(),
+                 quarter_bounds.right() - kLargeCurveRadius,
+                 quarter_bounds.y() + kLargeCurveRadius, kLargeCurveRadius);
+      path.lineTo(quarter_bounds.right() - kLargeCurveRadius,
+                  quarter_bounds.bottom() - kSmallCurveRadius);
+      path.arcTo(quarter_bounds.right() - kLargeCurveRadius,
+                 quarter_bounds.bottom(), quarter_bounds.x(),
+                 quarter_bounds.bottom(), kSmallCurveRadius);
+      path.lineTo(quarter_bounds.right(), quarter_bounds.bottom());
+    }
+    path.close();
+
+    // Flip vertically and horizontally and vertically to get the full path.
+    SkMatrix flip;
+    flip.setScale(1, -1, quarter_bounds.width(), quarter_bounds.height());
+    path.addPath(path, flip);
+    flip.setScale(-1, 1, quarter_bounds.width(), quarter_bounds.height());
+    path.addPath(path, flip);
+
+    return path;
+  }
 };
 
 // -----------------------------------------------------------------------------
 // ResizeMouseWatcherHost:
 // MouseWatcherHost implementation for MultiWindowResizeController. Forwards
 // Contains() to MultiWindowResizeController.
+
 class MultiWindowResizeController::ResizeMouseWatcherHost
     : public views::MouseWatcherHost {
  public:
@@ -236,13 +361,13 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   bool Contains(const gfx::Point& point_in_screen, EventType type) override {
     return (type == EventType::kPress)
                ? host_->IsOverResizeWidget(point_in_screen) ||
-                     (CanShowLockWidget() &&
+                     (host_->ShouldConsiderLockWidget() &&
                       host_->IsOverLockWidget(point_in_screen))
                : host_->IsOverWindows(point_in_screen);
   }
 
  private:
-  MultiWindowResizeController* host_;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> host_;
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()
@@ -261,13 +386,16 @@ bool MultiWindowResizeController::ResizeWindows::Equals(
 
 // -----------------------------------------------------------------------------
 // MultiWindowResizeController:
+
 MultiWindowResizeController::MultiWindowResizeController() {
   Shell::Get()->overview_controller()->AddObserver(this);
 }
 
 MultiWindowResizeController::~MultiWindowResizeController() {
-  if (Shell::Get()->overview_controller())
+  if (Shell::Get()->overview_controller()) {
     Shell::Get()->overview_controller()->RemoveObserver(this);
+  }
+
   ResetResizer();
 }
 
@@ -556,19 +684,31 @@ void MultiWindowResizeController::ShowNow() {
     base::UmaHistogramBoolean(
         kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true);
 
-    if (CanShowLockWidget()) {
+    if (IsSnapGroupEnabledInClamshellMode()) {
       DCHECK(!lock_widget_.get());
       lock_widget_ = std::make_unique<views::Widget>();
       lock_widget_->Init(CreateWidgetParams(
           parent_window, /*widget_name=*/"SnapGroupLockWidget"));
-      lock_button_ = lock_widget_->SetContentsView(
-          std::make_unique<SnapGroupLockOrUnlockButton>(window1, window2));
-
+      lock_button_ = lock_widget_->SetContentsView(std::make_unique<IconButton>(
+          base::BindRepeating(&MultiWindowResizeController::OnLockButtonPressed,
+                              base::Unretained(this)),
+          IconButton::Type::kMediumFloating, &kLockScreenEasyUnlockCloseIcon,
+          IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS,
+          /*is_togglable=*/false,
+          /*has_border=*/true));
       gfx::Rect lock_widget_show_bounds_in_screen =
           ConvertRectToScreen(windows_.window1->parent(),
                               CalculateLockWidgetBounds(resize_widget_bounds));
       lock_widget_->SetBounds(lock_widget_show_bounds_in_screen);
       lock_widget_->Show();
+      lock_button_->SetPaintToLayer();
+      lock_button_->layer()->SetFillsBoundsOpaquely(false);
+      lock_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+          kColorAshShieldAndBase80, kLockButtonCornerRadius));
+      lock_button_->SetImageHorizontalAlignment(
+          views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+      lock_button_->SetImageVerticalAlignment(
+          views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
     }
   }
 
@@ -731,17 +871,14 @@ gfx::Rect MultiWindowResizeController::CalculateLockWidgetBounds(
     const gfx::Rect& resize_widget_bounds) const {
   if (windows_.direction == Direction::kLeftRight) {
     return gfx::Rect(
-        resize_widget_bounds.top_center().x() -
-            snap_group::kLockButtonCornerRadius,
+        resize_widget_bounds.top_center().x() - kLockButtonCornerRadius,
         resize_widget_bounds.y() + kResizeWidgetAndLockWidgetDistance,
-        snap_group::kLockButtonCornerRadius * 2,
-        snap_group::kLockButtonCornerRadius * 2);
+        kLockButtonCornerRadius * 2, kLockButtonCornerRadius * 2);
   } else {
     return gfx::Rect(
         resize_widget_bounds.x() + kResizeWidgetAndLockWidgetDistance,
-        resize_widget_bounds.y() - snap_group::kLockButtonCornerRadius,
-        snap_group::kLockButtonCornerRadius * 2,
-        snap_group::kLockButtonCornerRadius * 2);
+        resize_widget_bounds.y() - kLockButtonCornerRadius,
+        kLockButtonCornerRadius * 2, kLockButtonCornerRadius * 2);
   }
 }
 
@@ -761,7 +898,7 @@ bool MultiWindowResizeController::IsOverWindows(
     return true;
   }
 
-  if (CanShowLockWidget() && IsOverLockWidget(location_in_screen)) {
+  if (ShouldConsiderLockWidget() && IsOverLockWidget(location_in_screen)) {
     return true;
   }
 
@@ -802,6 +939,22 @@ bool MultiWindowResizeController::IsOverComponent(
   gfx::Point window_loc(location_in_screen);
   ::wm::ConvertPointFromScreen(window, &window_loc);
   return window_util::GetNonClientComponent(window, window_loc) == component;
+}
+
+void MultiWindowResizeController::OnLockButtonPressed() {
+  aura::Window* window1 = windows_.window1;
+  aura::Window* window2 = windows_.window2;
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+  snap_group_controller->AddSnapGroup(window1, window2);
+  ResetResizer();
+}
+
+bool MultiWindowResizeController::ShouldConsiderLockWidget() const {
+  return WindowState::Get(windows_.window1)->IsSnapped() &&
+         WindowState::Get(windows_.window2)->IsSnapped() &&
+         IsSnapGroupEnabledInClamshellMode();
 }
 
 }  // namespace ash

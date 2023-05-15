@@ -8,6 +8,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -141,7 +142,7 @@ class FakeTabletMode : public ash::TabletMode {
   }
 
  private:
-  ash::TabletModeObserver* observer_ = nullptr;
+  raw_ptr<ash::TabletModeObserver, ExperimentalAsh> observer_ = nullptr;
   bool in_tablet_mode = false;
 };
 

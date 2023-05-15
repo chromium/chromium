@@ -101,4 +101,8 @@ const char kGaiaCookieLastListAccountsData[] =
 const char kRestrictAccountsToPatterns[] =
     "signin.restrict_accounts_to_patterns";
 
+// Boolean which indicates if the user is allowed to sign into Chrome on the
+// next startup.
+const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
+
 }  // namespace prefs

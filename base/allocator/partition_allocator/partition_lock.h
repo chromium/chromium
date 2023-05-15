@@ -14,8 +14,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -25,8 +25,8 @@ class PA_LOCKABLE Lock {
   inline constexpr Lock();
   void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-#if BUILDFLAG(ENABLE_PKEYS)
-    LiftPkeyRestrictionsScope lift_pkey_restrictions;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
 
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
@@ -66,6 +66,9 @@ class PA_LOCKABLE Lock {
 
   void Release() PA_UNLOCK_FUNCTION() {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
@@ -74,8 +77,8 @@ class PA_LOCKABLE Lock {
   void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-#if BUILDFLAG(ENABLE_PKEYS)
-    LiftPkeyRestrictionsScope lift_pkey_restrictions;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
               base::PlatformThread::CurrentRef());

@@ -13,13 +13,13 @@
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "quick_start_conversions.h"
-#include "sandbox/policy/sandbox.h"
 
 namespace ash::quick_start {
 
@@ -27,9 +27,6 @@ namespace {
 
 using CBOR = cbor::Value;
 using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
-
-using GetWifiCredentialsFailureReason = mojom::GetWifiCredentialsFailureReason;
-using GetWifiCredentialsResponse = mojom::GetWifiCredentialsResponse;
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
@@ -49,7 +46,7 @@ constexpr char kWifiNetworkInformationKey[] = "wifi_network";
 constexpr char kWifiNetworkSsidKey[] = "wifi_ssid";
 
 // Key in wifi_network dictionary containing the password of the wifi network.
-constexpr char kWifiNetworkPasswordKey[] = "pre_shared_key";
+constexpr char kWifiNetworkPasswordKey[] = "wifi_pre_shared_key";
 
 // Key in wifi_network dictionary containing the security type of the wifi
 // network.
@@ -57,6 +54,21 @@ constexpr char kWifiNetworkSecurityTypeKey[] = "wifi_security_type";
 
 // Key in wifi_network dictionary containing if the wifi network is hidden.
 constexpr char kWifiNetworkIsHiddenKey[] = "wifi_hidden_ssid";
+
+// Key in Notify Source of Update response containing bool acknowledging the
+// message.
+constexpr char kNotifySourceOfUpdateAckKey[] = "forced_update_acknowledged";
+
+// Key in UserVerificationResult containing the result
+constexpr char kUserVerificationResultKey[] = "user_verification_result";
+
+// Key in UserVerificationResult indicating if this is the first user
+// verification
+constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
+
+// Key in UserVerificationRequested indicating if user verification was
+// requested
+constexpr char kAwaitingUserVerificationKey[] = "awaiting_user_verification";
 
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
     base::span<const uint8_t> response) {
@@ -143,8 +155,11 @@ mojom::GetAssertionResponsePtr BuildGetAssertionResponseError(
 }  // namespace
 
 QuickStartDecoder::QuickStartDecoder(
-    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver,
+    base::OnceClosure on_disconnect)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
+}
 
 QuickStartDecoder::~QuickStartDecoder() = default;
 
@@ -219,57 +234,140 @@ QuickStartDecoder::DoDecodeBootstrapConfigurations(
 void QuickStartDecoder::DecodeBootstrapConfigurations(
     const std::vector<uint8_t>& data,
     DecodeBootstrapConfigurationsCallback callback) {
-  DCHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
   std::move(callback).Run(DoDecodeBootstrapConfigurations(data));
 }
 
 void QuickStartDecoder::DecodeWifiCredentialsResponse(
     const std::vector<uint8_t>& data,
     DecodeWifiCredentialsResponseCallback callback) {
-  DCHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
-  std::move(callback).Run(DoDecodeWifiCredentialsResponse(data));
+  DoDecodeWifiCredentialsResponse(data, std::move(callback));
 }
 
-mojom::GetWifiCredentialsResponsePtr
-QuickStartDecoder::DoDecodeWifiCredentialsResponse(
-    const std::vector<uint8_t>& data) {
+void QuickStartDecoder::DecodeUserVerificationRequested(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationRequestedCallback callback) {
+  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
+      QuickStartMessage::ReadMessage(data,
+                                     QuickStartMessageType::kQuickStartPayload);
+  if (!message) {
+    LOG(ERROR)
+        << "Failed to read UserVerificationRequested as QuickStartMessage";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  absl::optional<bool> is_awaiting_user_verification =
+      message->GetPayload()->FindBool(kAwaitingUserVerificationKey);
+  if (!is_awaiting_user_verification.has_value()) {
+    LOG(ERROR) << "UserVerificationRequested message does not include "
+                  "await_user_verification.";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(mojom::UserVerificationRequested::New(
+                              is_awaiting_user_verification.value()),
+                          absl::nullopt);
+}
+
+void QuickStartDecoder::DecodeUserVerificationResult(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationResultCallback callback) {
+  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
+      QuickStartMessage::ReadMessage(data,
+                                     QuickStartMessageType::kQuickStartPayload);
+
+  if (!message) {
+    LOG(ERROR) << "Failed to read UserVerificationResult as QuickStartMessage";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  absl::optional<int> user_verification_result_code =
+      message->GetPayload()->FindInt(kUserVerificationResultKey);
+
+  if (!user_verification_result_code.has_value()) {
+    LOG(ERROR) << "User Verification Result was not include in verification "
+                  "result message";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  mojom::UserVerificationResult user_verification_result =
+      static_cast<mojom::UserVerificationResult>(
+          user_verification_result_code.value());
+
+  if (!mojom::IsKnownEnumValue(user_verification_result)) {
+    LOG(ERROR) << "User Verification Result is an unknown status code";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  absl::optional<bool> is_first_user_verification =
+      message->GetPayload()->FindBool(kIsFirstUserVerificationKey);
+  if (!is_first_user_verification.has_value()) {
+    LOG(ERROR) << "Message does not contain key is_first_user_verification";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::UserVerificationResponse::New(user_verification_result,
+                                           is_first_user_verification.value()),
+      absl::nullopt);
+}
+
+void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
+    const std::vector<uint8_t>& data,
+    DecodeWifiCredentialsResponseCallback callback) {
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
       QuickStartMessage::ReadMessage(data,
                                      QuickStartMessageType::kQuickStartPayload);
 
   if (!message) {
     LOG(ERROR) << "Message cannot be parsed as a JSON Dictionary.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kFailedToDecodeMessage);
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
   }
 
   base::Value::Dict* wifi_network_information =
       message->GetPayload()->FindDict(kWifiNetworkInformationKey);
   if (!wifi_network_information) {
     LOG(ERROR) << "Wifi Network information not present in payload";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiInformation);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* ssid = wifi_network_information->FindString(kWifiNetworkSsidKey);
   if (!ssid) {
     LOG(ERROR) << "SSID cannot be found within WifiCredentialsResponse.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiSSID);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   if (ssid->length() == 0) {
     LOG(ERROR) << "SSID has a length of 0.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kEmptyWifiSSID);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* password =
       wifi_network_information->FindString(kWifiNetworkPasswordKey);
   if (!password) {
     LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiPassword);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* security_type_string =
@@ -277,8 +375,9 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!security_type_string) {
     LOG(ERROR)
         << "Security Type cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiSecurityType);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   absl::optional<mojom::WifiSecurityType> security_type =
@@ -287,8 +386,9 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!security_type.has_value()) {
     {
       LOG(ERROR) << "Security type was not a valid value.";
-      return GetWifiCredentialsResponse::NewFailureReason(
-          GetWifiCredentialsFailureReason::kInvalidWifiSecurityType);
+      std::move(callback).Run(
+          nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+      return;
     }
   }
 
@@ -297,18 +397,20 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!is_hidden.has_value()) {
     LOG(ERROR)
         << "Wifi Hide Status cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
-  return GetWifiCredentialsResponse::NewCredentials(mojom::WifiCredentials::New(
-      *ssid, security_type.value(), is_hidden.value(), *password));
+  std::move(callback).Run(
+      mojom::WifiCredentials::New(*ssid, security_type.value(),
+                                  is_hidden.value(), *password),
+      absl::nullopt);
 }
 
 void QuickStartDecoder::DecodeGetAssertionResponse(
     const std::vector<uint8_t>& data,
     DecodeGetAssertionResponseCallback callback) {
-  DCHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
   std::move(callback).Run(DoDecodeGetAssertionResponse(data));
 }
 
@@ -338,6 +440,27 @@ QuickStartDecoder::ExtractFidoDataFromJsonResponse(
   }
 
   return base::Base64Decode(*fido_message);
+}
+
+void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
+    const std::vector<uint8_t>& data,
+    DecodeNotifySourceOfUpdateResponseCallback callback) {
+  std::move(callback).Run(DoDecodeNotifySourceOfUpdateResponse(data));
+}
+
+absl::optional<bool> QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
+    const std::vector<uint8_t>& data) {
+  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
+      QuickStartMessage::ReadMessage(data,
+                                     QuickStartMessageType::kQuickStartPayload);
+
+  if (!message) {
+    LOG(ERROR) << "Notify Source of Update message cannot be parsed as a JSON "
+                  "Dictionary.";
+    return absl::nullopt;
+  }
+
+  return message->GetPayload()->FindBool(kNotifySourceOfUpdateAckKey);
 }
 
 }  // namespace ash::quick_start

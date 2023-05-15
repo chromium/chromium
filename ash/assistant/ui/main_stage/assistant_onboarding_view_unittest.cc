@@ -17,7 +17,6 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -27,12 +26,11 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -285,7 +283,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
     VectorIconWithColor(const gfx::VectorIcon& icon, SkColor color)
         : icon(icon), color(color) {}
 
-    const gfx::VectorIcon& icon;
+    const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon;
     SkColor color;
   };
 
@@ -305,11 +303,8 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
         {SkColorSetRGB(0x8A, 0x0E, 0x9E), SkColorSetRGB(0xf8, 0x82, 0xff),
          SkColorSetRGB(0xaa, 0x00, 0xb8)},
         {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
-    const bool is_dark_light_enabled = features::IsDarkLightModeEnabled();
-    const bool is_dark_mode_status =
-        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
     const int color_index =
-        is_dark_light_enabled ? (is_dark_mode_status ? 1 : 2) : 0;
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? 1 : 2;
     return kForegroundColors[index][color_index];
   };
 
@@ -391,7 +386,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
 
       ASSERT_PIXELS_EQ(
           suggestion_view->GetIcon(),
-          gfx::CreateVectorIcon(expected_suggestion.icon_with_color->icon,
+          gfx::CreateVectorIcon(*expected_suggestion.icon_with_color->icon,
                                 /*size=*/24,
                                 expected_suggestion.icon_with_color->color));
     }
@@ -484,13 +479,10 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
 }
 
 TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kDarkLightMode);
   AshColorProvider* color_provider = AshColorProvider::Get();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 

@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
@@ -265,18 +267,28 @@ std::u16string ExtensionActionViewController::GetTooltip(
 
 bool ExtensionActionViewController::IsEnabled(
     content::WebContents* web_contents) const {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return false;
+  }
+
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  if (extension_action_->GetIsVisible(tab_id)) {
+    return true;
+  }
 
   extensions::SitePermissionsHelper::SiteInteraction site_interaction =
       GetSiteInteraction(web_contents);
+  if (site_interaction ==
+          extensions::SitePermissionsHelper::SiteInteraction::kWithheld ||
+      site_interaction ==
+          extensions::SitePermissionsHelper::SiteInteraction::kActiveTab) {
+    return true;
+  }
 
-  return extension_action_->GetIsVisible(
-             sessions::SessionTabHelper::IdForTab(web_contents).id()) ||
-         site_interaction ==
-             extensions::SitePermissionsHelper::SiteInteraction::kWithheld ||
-         site_interaction ==
-             extensions::SitePermissionsHelper::SiteInteraction::kActiveTab;
+  extensions::SidePanelService* side_panel_service =
+      extensions::SidePanelService::Get(browser_->profile());
+  return side_panel_service &&
+         side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
 }
 
 bool ExtensionActionViewController::IsShowingPopup() const {
@@ -361,11 +373,16 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   // This method is only called to execute an action by the user, so we can
   // always grant tab permissions.
   constexpr bool kGrantTabPermissions = true;
-  if (action_runner->RunAction(extension(), kGrantTabPermissions) ==
-      extensions::ExtensionAction::ACTION_SHOW_POPUP) {
+  extensions::ExtensionAction::ShowAction action =
+      action_runner->RunAction(extension(), kGrantTabPermissions);
+
+  if (action == extensions::ExtensionAction::ACTION_SHOW_POPUP) {
     constexpr bool kByUser = true;
     GetPreferredPopupViewController()->TriggerPopup(
         PopupShowAction::kShow, kByUser, ShowPopupCallback());
+  } else if (action == extensions::ExtensionAction::ACTION_TOGGLE_SIDE_PANEL) {
+    extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
+                                                          extension()->id());
   }
 }
 
@@ -610,10 +627,16 @@ ExtensionActionViewController::GetIconImageSource(
   // We only grayscale the icon if it cannot interact with the page and the icon
   // is disabled.
   bool action_is_visible = extension_action_->GetIsVisible(tab_id);
+
+  extensions::SidePanelService* side_panel_service =
+      extensions::SidePanelService::Get(browser_->profile());
+  bool has_side_panel_action =
+      side_panel_service &&
+      side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
   bool grayscale =
       GetSiteInteraction(web_contents) ==
           extensions::SitePermissionsHelper::SiteInteraction::kNone &&
-      !action_is_visible;
+      !action_is_visible && !has_side_panel_action;
   image_source->set_grayscale(grayscale);
 
   if (base::FeatureList::IsEnabled(

@@ -156,10 +156,10 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
 
 ScanningUI::ScanningUI(
     content::WebUI* web_ui,
-    BindScanServiceCallback callback,
     std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
-      bind_pending_receiver_callback_(std::move(callback)) {
+      bind_pending_receiver_callback_(
+          scanning_app_delegate->GetBindScanServiceCallback(web_ui)) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),

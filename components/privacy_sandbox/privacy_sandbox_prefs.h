@@ -16,6 +16,9 @@ extern const char kPrivacySandboxM1EEANoticeAcknowledged[];
 // Un-synced boolean pref indicating whether the notice shown in ROW was
 // acknowledged.
 extern const char kPrivacySandboxM1RowNoticeAcknowledged[];
+// Un-synced boolean pref indicating whether the restricted notice was
+// acknowledged.
+extern const char kPrivacySandboxM1RestrictedNoticeAcknowledged[];
 // Un-synced integer pref indicating PromptSuppressedReason for the prompt.
 extern const char kPrivacySandboxM1PromptSuppressed[];
 // Un-synced boolean pref indicating if Topics API is enabled.
@@ -27,6 +30,9 @@ extern const char kPrivacySandboxM1AdMeasurementEnabled[];
 // Un-synced boolean pref indicating if the Privacy Sandbox was ever indicated
 // as restricted by account capabilities.
 extern const char kPrivacySandboxM1Restricted[];
+// Un-synced boolean pref indicating if the Privacy Sandbox was ever indicated
+// as unrestricted by account capabilities.
+extern const char kPrivacySandboxM1Unrestricted[];
 
 // Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
 // enabled, but each API will respect its own enabling logic if this pref is

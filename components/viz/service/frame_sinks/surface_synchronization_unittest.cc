@@ -665,6 +665,9 @@ class OnBeginFrameAcksSurfaceSynchronizationTest
 
   bool BeginFrameAcksEnabled() const { return GetParam(); }
 
+  // SurfaceSynchronizationTest:
+  void SetUp() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -675,6 +678,15 @@ OnBeginFrameAcksSurfaceSynchronizationTest::
     scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
   } else {
     scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
+  }
+}
+
+void OnBeginFrameAcksSurfaceSynchronizationTest::SetUp() {
+  SurfaceSynchronizationTest::SetUp();
+  if (BeginFrameAcksEnabled()) {
+    parent_support().SetWantsBeginFrameAcks();
+    child_support1().SetWantsBeginFrameAcks();
+    child_support2().SetWantsBeginFrameAcks();
   }
 }
 
@@ -762,7 +774,6 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   TransferableResource resource;
   resource.id = ResourceId(1337);
   resource.format = SharedImageFormat::SinglePlane(ALPHA_8);
-  resource.filter = 1234;
   resource.size = gfx::Size(1234, 5678);
   std::vector<TransferableResource> resource_list = {resource};
   parent_support().SubmitCompositorFrame(

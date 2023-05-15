@@ -20,6 +20,15 @@
     float: left;
     height: 200px;
     margin-inline-end: 10px;
+    width: 200px;
+  }
+
+  :host-context(body.jelly-enabled) #smartPrivacyIllo {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #smartPrivacyIlloJelly {
+    display: none;
   }
 
   .large-icon {
@@ -42,9 +51,16 @@
 </iron-media-query>
 <div class="banner underbar">
   <!-- No alt since image is purely decorative. -->
-  <img class="left-float-graphic"
-       src="[[getImageSource_(isDarkModeActive_)]]"
-       alt="" aria-hidden="true">
+  <img id="smartPrivacyIllo"
+      class="left-float-graphic"
+      src="[[getImageSource_(isDarkModeActive_)]]"
+      alt="" aria-hidden="true">
+
+  <iron-icon id="smartPrivacyIlloJelly"
+      icon="os-settings-illo:smart-privacy"
+      class="left-float-graphic">
+  </iron-icon>
+
   <div>
     <iron-icon class="large-icon" icon="cr:security">
     </iron-icon>

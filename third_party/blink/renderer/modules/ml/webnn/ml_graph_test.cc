@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -194,6 +195,73 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
                 .dimensions = {1, 2, 2, 1},
                 .values = {2.0, 3.0, 6.0, 7.0}},
         .expected = {2.0, 4.0, 6.0, 8.0}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct PReluTester {
+  OperandInfo<T> input;
+  OperandInfo<T> slope;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* slope_operand =
+        BuildConstant(builder, slope.dimensions, slope.type, slope.values,
+                      scope.GetExceptionState());
+    auto* output_operand =
+        builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, PReluTest) {
+  V8TestingScope scope;
+  {
+    // Test prelu operator with input_shape = {3} and slope_shape =
+    // {3}.
+    PReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {3},
+                                 .values = {1.0, -2.0, 3.0}},
+                       .slope = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {3},
+                                 .values = {1.0, 2.0, 3.0}},
+                       .expected = {1.0, -4.0, 3.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test prelu operator with input_shape = {1, 2, 3, 3} and slope_shape = {1,
+    // 3}.
+    PReluTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0,
+                             -9.0, -10.0, -11.0, -12.0, -13.0, -14.0, -15.0,
+                             -16.0, -17.0, -18.0}},
+        .slope = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3},
+                  .values = {1.0, 2.0, 3.0}},
+        .expected = {-1.0, -4.0, -9.0, -4.0, -10.0, -18.0, -7.0, -16.0, -27.0,
+                     -10.0, -22.0, -36.0, -13.0, -28.0, -45.0, -16.0, -34.0,
+                     -54.0}}
         .Test(*this, scope);
   }
 }
@@ -617,6 +685,172 @@ TEST_P(MLGraphTest, Conv2dTest) {
                                .dimensions = {4},
                                .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
         .expected = {0.0, 0.0, 6.0, 6.0}}
+        .Test(*this, scope, builder, options);
+  }
+}
+
+template <typename T>
+struct ConvTranspose2dTester {
+  OperandInfo<T> input;
+  OperandInfo<T> filter;
+  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  Vector<T> expected;
+
+  void Test(
+      MLGraphTest& helper,
+      V8TestingScope& scope,
+      MLGraphBuilder* builder,
+      MLConvTranspose2dOptions* options = MLConvTranspose2dOptions::Create()) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* filter_operand =
+        BuildConstant(builder, filter.dimensions, filter.type, filter.values,
+                      scope.GetExceptionState());
+    if (bias) {
+      options->setBias(BuildConstant(builder, bias.value().dimensions,
+                                     bias.value().type, bias.value().values,
+                                     scope.GetExceptionState()));
+    }
+    auto* output_operand = BuildConvTranspose2d(scope, builder, input_operand,
+                                                filter_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, ConvTranspose2dTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test convTranspose2d operator for nhwc input layout and ohwi filter
+    // layout.
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(
+        V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
+    ConvTranspose2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3, 3, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
+        .expected = {1.0,  5.0,   14.0,  19.0,  15.0,  11.0,  40.0,
+                     82.0, 74.0,  36.0,  39.0,  114.0, 195.0, 165.0,
+                     81.0, 65.0,  163.0, 235.0, 173.0, 66.0,  28.0,
+                     74.0, 140.0, 118.0, 72.0}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test fused convTranspose2d operator for nhwc input layout and ohwi filter
+    // layout, fusing with bias operand and relu activation.
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(
+        V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
+    options->setActivation(builder->relu(scope.GetExceptionState()));
+    ConvTranspose2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3, 3, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {3, 3, 3, 1},
+                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                              9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0,
+                              1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
+        .bias = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {3},
+                                   .values = {-6000.0, -7000.0, 8000.0}},
+        .expected = {0.0, 0.0, 8001.0, 0.0, 0.0, 8004.0, 0.0, 0.0, 8010.0,
+                     0.0, 0.0, 8012.0, 0.0, 0.0, 8009.0, 0.0, 0.0, 8008.0,
+                     0.0, 0.0, 8026.0, 0.0, 0.0, 8056.0, 0.0, 0.0, 8054.0,
+                     0.0, 0.0, 8036.0, 0.0, 0.0, 8030.0, 0.0, 0.0, 8084.0,
+                     0.0, 0.0, 8165.0, 0.0, 0.0, 8144.0, 0.0, 0.0, 8090.0,
+                     0.0, 0.0, 8056.0, 0.0, 0.0, 8134.0, 0.0, 0.0, 8236.0,
+                     0.0, 0.0, 8186.0, 0.0, 0.0, 8108.0, 0.0, 0.0, 8049.0,
+                     0.0, 0.0, 8112.0, 0.0, 0.0, 8190.0, 0.0, 0.0, 8144.0,
+                     0.0, 0.0, 8081.0}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test convTranspose2d operator by setting padding=1.
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(
+        V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
+    options->setPadding({1, 1, 1, 1});
+    ConvTranspose2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 5, 5, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
+        .expected = {48.0,  100.0, 127.0, 145.0, 101.0, 126.0, 186.0,
+                     231.0, 213.0, 132.0, 132.0, 249.0, 285.0, 267.0,
+                     153.0, 156.0, 231.0, 213.0, 177.0, 147.0, 129.0,
+                     217.0, 217.0, 199.0, 95.0}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test convTranspose2d operator by setting strides=2, padding=1.
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(
+        V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
+    options->setStrides({2, 2});
+    options->setPadding({1, 1, 1, 1});
+    ConvTranspose2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3, 3, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
+        .expected = {9.0,   16.0, 18.0, 25.0, 27.0, 18.0, 41.0, 27.0, 59.0,
+                     36.0,  36.0, 43.0, 45.0, 52.0, 54.0, 45.0, 95.0, 54.0,
+                     113.0, 63.0, 63.0, 70.0, 72.0, 79.0, 81.0}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test convTranspose2d by setting outputSizes={1, 8, 8, 1}.
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(
+        V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
+    options->setStrides({2, 2});
+    options->setOutputSizes({8, 8});
+    ConvTranspose2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3, 3, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
+        .expected = {1.0,  3.0,  7.0,  6.0,  13.0,  9.0,  15.0, 0.0,
+                     7.0,  9.0,  16.0, 18.0, 25.0,  27.0, 6.0,  0.0,
+                     8.0,  18.0, 41.0, 27.0, 59.0,  36.0, 54.0, 0.0,
+                     28.0, 36.0, 43.0, 45.0, 52.0,  54.0, 12.0, 0.0,
+                     23.0, 45.0, 95.0, 54.0, 113.0, 63.0, 93.0, 0.0,
+                     49.0, 63.0, 70.0, 72.0, 79.0,  81.0, 18.0, 0.0,
+                     28.0, 42.0, 88.0, 48.0, 100.0, 54.0, 72.0, 0.0,
+                     0.0,  0.0,  0.0,  0.0,  0.0,   0.0,  0.0,  0.0}}
         .Test(*this, scope, builder, options);
   }
 }

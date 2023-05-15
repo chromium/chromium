@@ -82,8 +82,7 @@ bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
   const PrefService::Preference* pref =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
           prefs::kDarkModeScheduleType);
-  if (pref->IsManaged() || pref->IsRecommended() ||
-      !features::IsDarkLightModeEnabled()) {
+  if (pref->IsManaged() || pref->IsRecommended()) {
     return true;
   }
 

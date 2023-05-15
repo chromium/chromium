@@ -30,6 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -165,9 +166,9 @@ class BatteryLabelView : public BatteryInfoViewBase {
   }
 
   // Owned by this view, which is owned by views hierarchy.
-  views::Label* percentage_ = nullptr;
-  views::Label* separator_view_ = nullptr;
-  views::Label* status_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> percentage_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> separator_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> status_ = nullptr;
 
   //  If true, this view will only show the status and let the `BatteryIconView`
   //  show the rest. If false, the `percentage_` and separator will be visible.
@@ -189,12 +190,11 @@ class BatteryIconView : public BatteryInfoViewBase {
     SetLayoutManager(std::move(layout));
 
     battery_image_ = AddChildView(std::make_unique<views::ImageView>());
-    if (features::IsDarkLightModeEnabled()) {
-      // The battery icon requires its own layer to properly render the masked
-      // outline of the badge within the battery icon.
-      battery_image_->SetPaintToLayer();
-      battery_image_->layer()->SetFillsBoundsOpaquely(false);
-    }
+    // The battery icon requires its own layer to properly render the masked
+    // outline of the badge within the battery icon.
+    battery_image_->SetPaintToLayer();
+    battery_image_->layer()->SetFillsBoundsOpaquely(false);
+
     ConfigureIcon();
 
     percentage_ = AddChildView(std::make_unique<views::Label>());
@@ -243,13 +243,12 @@ class BatteryIconView : public BatteryInfoViewBase {
         PowerStatus::Get()->GetBatteryImageInfo();
     info.alert_if_low = false;
     battery_image_->SetImage(PowerStatus::GetBatteryImage(
-        info, kUnifiedTrayBatteryIconSize, battery_icon_color,
-        battery_icon_color, badge_color));
+        info, kUnifiedTrayBatteryIconSize, battery_icon_color, badge_color));
   }
 
   // Owned by this view, which is owned by views hierarchy.
-  views::Label* percentage_ = nullptr;
-  views::ImageView* battery_image_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> percentage_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> battery_image_ = nullptr;
 };
 
 std::u16string FormatDate(const base::Time& time) {
@@ -304,10 +303,10 @@ class DateView : public views::Button, public ClockObserver {
   void Refresh() override;
 
   // Owned by the views hierarchy.
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 
   // Unowned.
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
@@ -428,19 +427,20 @@ class ManagementPowerDateComboView : public views::View {
 
   // Pointer to the actual child view is maintained for unit testing, owned by
   // `ManagementPowerDateComboView`.
-  EnterpriseManagedView* enterprise_managed_view_ = nullptr;
+  raw_ptr<EnterpriseManagedView, ExperimentalAsh> enterprise_managed_view_ =
+      nullptr;
 
   // Pointer to the actual child view is maintained for unit testing, owned by
   // `ManagementPowerDateComboView`.
-  SupervisedUserView* supervised_view_ = nullptr;
+  raw_ptr<SupervisedUserView, ExperimentalAsh> supervised_view_ = nullptr;
 
   // Separator between date and battery views, owned by
   // `ManagementPowerDateComboView`.
-  views::Separator* separator_view_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_view_ = nullptr;
 
   // Pointer to the actual child view is maintained for unit testing, owned by
   // `ManagementPowerDateComboView`.
-  DateView* date_view_ = nullptr;
+  raw_ptr<DateView, ExperimentalAsh> date_view_ = nullptr;
 };
 
 UnifiedSystemInfoView::UnifiedSystemInfoView(

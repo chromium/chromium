@@ -9,6 +9,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_waiter.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -44,6 +46,8 @@ IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
   Browser::Create(Browser::CreateParams(&profile_to_delete, true));
   profiles::SetLastUsedProfile(profile_path_to_delete.BaseName());
   // Schedule profile deletion.
+  ProfileKeepAliveAddedWaiter keep_alive_added_waiter(
+      &profile_to_delete, ProfileKeepAliveOrigin::kProfileDeletionProcess);
   base::RunLoop loop;
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
       profile_path_to_delete,
@@ -61,6 +65,8 @@ IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
         loop.Quit();
       }),
       ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
+  // Check that kProfileDeletionProcess was added.
+  keep_alive_added_waiter.Wait();
   loop.Run();
   // The `ScopedKeepAlive` has been released.
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(

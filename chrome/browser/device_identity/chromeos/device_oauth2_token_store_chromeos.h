@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_DEVICE_OAUTH2_TOKEN_STORE_CHROMEOS_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_DEVICE_OAUTH2_TOKEN_STORE_CHROMEOS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -62,7 +63,7 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
 
   State state_ = State::STOPPED;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   base::CallbackListSubscription service_account_identity_subscription_;
 

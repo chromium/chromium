@@ -31,6 +31,11 @@ export interface GetColorsCSSOptions {
    * mode values and ignores the documents prefers-color-scheme.
    */
   lockTheme?: 'light' | 'dark';
+  /**
+   * Opt into using material 3 color tokens (see go/cros-tokens). If true any
+   * legacy mappings specified in the input json5 files will be added into the
+   * document.
+   */
   useDynamicColors?: boolean;
 }
 
@@ -74,11 +79,14 @@ const TYPOGRAPHY_CSS = window ? `
 ` : '';
 
 const LEGACY_MAPPINGS_CSS = window ? `
-{%- if legacy_mappings %}
-{%-   for name, value in legacy_mappings.items() %}
-  {{name | to_css_var_name_unscoped}}: {{value | process_simple_ref}};
-{%    endfor -%}
-{% endif -%}
+{%- for name, color in legacy_mappings[Modes.DEFAULT].items() %}
+{%-   if needs_rgb_variant(color) %}
+    {{name | to_css_var_name_unscoped}}-rgb: {{color | css_color_rgb}};
+{%-   endif %}
+    {{name | to_css_var_name_unscoped}}: {{css_color_var(name, color, mode, True)}};
+    {{name | to_css_var_name_unscoped}}-light: {{css_color_var(name, color, Modes.LIGHT, True)}};
+    {{name | to_css_var_name_unscoped}}-dark: {{css_color_var(name, color, Modes.DARK, True)}};
+{%  endfor -%}
 ` : '';
 
 /**
@@ -90,59 +98,48 @@ const LEGACY_MAPPINGS_CSS = window ? `
  * that all TS constant references resolve correctly.
  */
 export function getColorsCSS(options?: GetColorsCSSOptions) {
-  const legacyMappings = options?.useDynamicColors ? LEGACY_MAPPINGS_CSS : '';
-
-  let cssString;
-  if (options?.lockTheme === 'light') {
-    // Tag strings which are safe with a special comment so copybara can add
-    // the right safety wrappers whem moving this code into Google3.
+  // Tag strings which are safe with a special comment so copybara can add
+  // the right safety wrappers whem moving this code into Google3.
+  let cssString = /* SAFE */ ("");
+{% for lockTheme in ['\'light\'', '\'dark\'', 'undefined'] -%}
+{%-   for useDynamicColors in ['true', 'false'] %}
+  if (options?.lockTheme === {{lockTheme}} && !!options?.useDynamicColors === {{useDynamicColors}}) {
     cssString = /* SAFE */ (`
       html:not(body), :host {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
-        ${legacyMappings}
+{%-       if lockTheme == '\'dark\'' %}
+        ${DARK_MODE_OVERRIDES_CSS}
+{%-       endif %}
+{%-       if useDynamicColors == 'true' %}
+        ${LEGACY_MAPPINGS_CSS}
+{%-       endif %}
       }
       :host([inverted-colors]) {
-        ${DARK_MODE_OVERRIDES_CSS}
-      }
-    `);
-  } else if (options?.lockTheme === 'dark') {
-    cssString = /* SAFE */ (`
-      html:not(body), :host {
+{%-       if lockTheme == '\'dark\'' %}
         ${DEFAULT_CSS}
-        ${UNTYPED_CSS}
-        ${TYPOGRAPHY_CSS}
+{%-       else %}
         ${DARK_MODE_OVERRIDES_CSS}
-        ${legacyMappings}
+{%-       endif %}
       }
-      :host([inverted-colors]) {
-        ${DEFAULT_CSS}
-      }
-    `);
-  } else {
-    cssString = /* SAFE */ (`
-      html:not(body), :host {
-        ${DEFAULT_CSS}
-        ${UNTYPED_CSS}
-        ${TYPOGRAPHY_CSS}
-        ${legacyMappings}
-      }
-      :host([inverted-colors]) {
-        ${DARK_MODE_OVERRIDES_CSS}
-      }
-
+{%       if lockTheme == 'undefined' %}
       @media (prefers-color-scheme: dark) {
         html:not(body), :host {
           ${DARK_MODE_OVERRIDES_CSS}
+{%-       if useDynamicColors == 'true' %}
+          ${LEGACY_MAPPINGS_CSS}
+{%-       endif %}
         }
         :host([inverted-colors]) {
           ${DEFAULT_CSS}
         }
       }
+{%-       endif %}
     `);
   }
-
+{%-   endfor -%}
+{%- endfor %}
   return cssString;
 }
 

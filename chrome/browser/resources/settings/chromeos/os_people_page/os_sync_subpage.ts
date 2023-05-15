@@ -99,9 +99,9 @@ export class OsSettingsSyncSubpageElement extends
       },
 
       /**
-       * Dictionary defining page visibility.
+       * Dictionary defining page availability.
        */
-      pageVisibility: Object,
+      pageAvailability: Object,
 
       /**
        * The current sync preferences, supplied by SyncBrowserProxy.
@@ -176,6 +176,17 @@ export class OsSettingsSyncSubpageElement extends
         computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
             'syncPrefs.explicitPassphraseTime)',
       },
+
+      /**
+       * Whether to show the new UI for OS Sync Settings
+       * which include sublabel and Apps toggle
+       * shared between Ash and Lacros.
+       */
+      showSyncSettingsRevamp_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
+        readOnly: true,
+      },
     };
   }
 
@@ -194,6 +205,7 @@ export class OsSettingsSyncSubpageElement extends
   private encryptionExpanded_: boolean;
   forceEncryptionExpanded: boolean;
   private existingPassphrase_: string;
+  private showSyncSettingsRevamp_: boolean;
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
@@ -412,6 +424,24 @@ export class OsSettingsSyncSubpageElement extends
   private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
     this.pageStatus_ = PageStatus.CONFIGURE;
+  }
+
+  private onManageChromeBrowserSyncClick_(): void {
+    chrome.send('OpenBrowserSyncSettings');
+  }
+
+  private getManageSyncedDataSubtitle_(): string {
+    if (this.showSyncSettingsRevamp_) {
+      return this.i18n('manageSyncedDataSubtitle');
+    }
+    return '';
+  }
+
+  private getSyncAdvancedTitle_(): string {
+    if (this.showSyncSettingsRevamp_) {
+      return this.i18n('syncAdvancedDevicePageTitle');
+    }
+    return this.i18n('syncAdvancedPageTitle');
   }
 
   private onSyncDashboardLinkClick_() {

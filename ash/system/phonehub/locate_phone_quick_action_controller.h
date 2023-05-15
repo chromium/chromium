@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_LOCATE_PHONE_QUICK_ACTION_CONTROLLER_H_
 
 #include "ash/system/phonehub/quick_action_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 
 namespace base {
@@ -49,8 +50,9 @@ class LocatePhoneQuickActionController
   // phone. Make changes to item's state if necessary.
   void CheckRequestedState();
 
-  phonehub::FindMyDeviceController* find_my_device_controller_ = nullptr;
-  QuickActionItem* item_ = nullptr;
+  raw_ptr<phonehub::FindMyDeviceController, ExperimentalAsh>
+      find_my_device_controller_ = nullptr;
+  raw_ptr<QuickActionItem, ExperimentalAsh> item_ = nullptr;
 
   // Keep track the current state of the item.
   ActionState state_ = ActionState::kOff;

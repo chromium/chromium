@@ -6,9 +6,11 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "url/origin.h"
 
@@ -19,16 +21,22 @@ FederatedIdentityAutoReauthnPermissionContext::
           HostContentSettingsMapFactory::GetForProfile(browser_context)),
       permission_autoblocker_(
           PermissionDecisionAutoBlockerFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context))),
+      password_settings_service_(
+          PasswordManagerSettingsServiceFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))) {}
 
 FederatedIdentityAutoReauthnPermissionContext::
     ~FederatedIdentityAutoReauthnPermissionContext() = default;
 
 bool FederatedIdentityAutoReauthnPermissionContext::
-    HasAutoReauthnContentSetting() {
+    IsAutoReauthnSettingEnabled() {
   return host_content_settings_map_->GetDefaultContentSetting(
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-             /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
+             /*provider_id=*/nullptr) !=
+             ContentSetting::CONTENT_SETTING_BLOCK &&
+         password_settings_service_->IsSettingEnabled(
+             password_manager::PasswordManagerSetting::kAutoSignIn);
 }
 
 bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
@@ -49,11 +57,24 @@ FederatedIdentityAutoReauthnPermissionContext::GetAutoReauthnEmbargoStartTime(
 void FederatedIdentityAutoReauthnPermissionContext::RecordDisplayAndEmbargo(
     const url::Origin& relying_party_embedder) {
   const GURL rp_embedder_url = relying_party_embedder.GetURL();
-  host_content_settings_map_->SetContentSettingDefaultScope(
-      rp_embedder_url, rp_embedder_url,
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-      CONTENT_SETTING_BLOCK);
   permission_autoblocker_->RecordDisplayAndEmbargo(
       rp_embedder_url,
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
+}
+
+void FederatedIdentityAutoReauthnPermissionContext::SetRequiresUserMediation(
+    const GURL& rp_url,
+    bool requires_user_mediation) {
+  host_content_settings_map_->SetContentSettingDefaultScope(
+      rp_url, rp_url,
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
+      requires_user_mediation ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW);
+}
+
+bool FederatedIdentityAutoReauthnPermissionContext::RequiresUserMediation(
+    const GURL& rp_url) {
+  return host_content_settings_map_->GetContentSetting(
+             rp_url, rp_url,
+             ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION) ==
+         ContentSetting::CONTENT_SETTING_BLOCK;
 }

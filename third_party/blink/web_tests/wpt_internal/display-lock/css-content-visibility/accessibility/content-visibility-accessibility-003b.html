@@ -1,0 +1,47 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility focus</title>
+<link rel="author" title="Aaron Leventhal" href="mailto:aleventhal@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto subtrees are exposed by accessibility focus">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="height:10000px;">
+  spacer so that everything below will be offscreen (and won't get viewport-activated)
+</div>
+<div id="hidden" style="content-visibility: auto">
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  let axHidden = axElementById("hidden");
+  t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count when locked"); });
+
+  const listener = (e) => {
+    if (!e.skipped) {
+      let axHidden = axElementById("hidden");
+      t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count after activation"); });
+      const axChild = axHidden.childAtIndex(2);
+      t.step(() => { assert_true(axChild.isIgnored, "After update, isIgnored is true on whitespace node"); });
+      t.done();
+    }
+  };
+
+  hidden.addEventListener("contentvisibilityautostatechange", listener);
+  t.add_cleanup(() => hidden.removeEventListener("contentvisibilityautostatechange", listener));
+
+  axElementById("child").takeFocus();
+}, "A11y tree is updated after ContentVisibilityAutoStateChange fires when element gains focus from a11y focus action");
+
+</script>

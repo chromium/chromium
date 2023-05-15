@@ -19,7 +19,7 @@ class VulkanImage;
 class VulkanImplementation;
 
 // A generic Skia vulkan representation which can be used by Ozone backing.
-class SkiaVkOzoneImageRepresentation : public SkiaImageRepresentation {
+class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
  public:
   SkiaVkOzoneImageRepresentation(
       SharedImageManager* manager,

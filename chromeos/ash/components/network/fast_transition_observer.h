@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -34,7 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
   // Callback used when prefs::kFastTransitionEnabled changes
   void OnPreferenceChanged(const std::string& pref_name);
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

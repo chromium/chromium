@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Decoder di immagini</translation>
 <translation id="1785415724048343560">Consigliato per un'esperienza ottimale</translation>
 <translation id="1818308510395330587">Per consentire all'app <ph name="APP_NAME" /> di utilizzare la realtà aumentata, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Da <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">I siti correlati possono vedere le tue attività nel gruppo</translation>
 <translation id="1887786770086287077">L'accesso alla posizione è disattivato per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Chiudi</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello</translation>
 <translation id="3165022941318558018">Consenti a un sito di utilizzare i cookie di terze parti</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> di dati memorizzati</translation>
-<translation id="3203366800380907218">Dal Web</translation>
 <translation id="321187648315454507">Per consentire all'app <ph name="APP_NAME" /> di inviarti notifiche, devi attivare le notifiche anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3248611290851046188">Questo sito definisce interessi che possono essere usati da altri siti per mostrarti annunci. Questo sito riceve i tuoi interessi anche da Chrome per mostrarti annunci più pertinenti.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Disattiva l'audio nei siti che riproducono suoni</translation>
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3628308229821498208">Ricerche suggerite</translation>
+<translation id="3707034683772193706">Un sito che visiti può salvare una piccola quantità di informazioni con Chrome, principalmente per verificare che tu non sia un bot</translation>
 <translation id="3721953990244350188">Chiudi e mostra la prossima azione disponibile</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3763247130972274048">Tocca due volte il video a sinistra o a destra per saltare di 10 secondi</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
 <translation id="5225463052809312700">Attiva fotocamera</translation>
-<translation id="5229337741799419985">Questa impostazione funziona senza identificarti e senza consentire ai siti di accedere alla tua cronologia di navigazione</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5264323282659631142">Rimuovi "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Trascina dall'alto e tocca il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>
-<translation id="6701547804986694515">Un sito che visiti può salvare su Chrome informazioni che confermano che non sei un bot. Mentre continui a navigare, i siti possono controllare su Chrome e verificare con un sito che hai visitato in precedenza che potresti essere una persona reale</translation>
 <translation id="6722828510648505498">Blocca le richieste di accesso da servizi di identità.</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Di solito blocchi le notifiche. Per consentirle, tocca Dettagli.</translation>
 <translation id="7366415735885268578">Aggiunta di un sito</translation>
 <translation id="7383715096023715447">Impostazioni di <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Questa impostazione funziona senza identificarti o consentire ai siti di vedere la cronologia di navigazione, ma i siti possono condividere una piccola quantità di informazioni durante la verifica</translation>
 <translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7423538860840206698">Lettura degli appunti non consentita</translation>
 <translation id="7425915948813553151">Tema scuro per i siti</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Impedisci ai siti di accedere ai sensori</translation>
 <translation id="8823559166155093873">Blocca i cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Mentre continui a navigare, i siti possono controllare su Chrome e verificare con un sito che hai visitato in precedenza che potresti essere una persona reale</translation>
 <translation id="8899807382908246773">Annunci invasivi</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

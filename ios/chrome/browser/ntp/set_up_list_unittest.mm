@@ -6,13 +6,17 @@
 
 #import "base/test/gtest_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/ntp/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -22,10 +26,13 @@
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using set_up_list_prefs::SetUpListItemState;
 
 // Test fixture for testing the SetUpList class.
 class SetUpListTest : public PlatformTest {
@@ -41,11 +48,15 @@ class SetUpListTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+    prefs_ = browser_state_->GetPrefs();
   }
+
+  ~SetUpListTest() override { [set_up_list_ disconnect]; }
 
   // Builds a new instance of SetUpList.
   void BuildSetUpList() {
-    set_up_list_ = [SetUpList buildFromPrefs:browser_state_->GetPrefs()
+    set_up_list_ = [SetUpList buildFromPrefs:prefs_
+                                  localState:local_state_.Get()
                        authenticationService:auth_service_];
   }
 
@@ -56,8 +67,10 @@ class SetUpListTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    auth_service_->SignIn(identity);
-    auth_service_->GrantSyncConsent(identity);
+    auth_service_->SignIn(identity,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service_->GrantSyncConsent(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   // Ensures that Chrome is considered as default browser.
@@ -72,29 +85,43 @@ class SetUpListTest : public PlatformTest {
         browser_state_->GetPrefs(), enable);
   }
 
-  // Returns a boolean indicating whether or not the built SetUpList includes
-  // an item with the given `type`.
-  bool ListIncludes(SetUpListItemType type) {
+  // Returns the item with the given `type`. Returns nil if not found.
+  SetUpListItem* FindItem(SetUpListItemType type) {
     for (SetUpListItem* item in set_up_list_.items) {
       if (item.type == type) {
-        return true;
+        return item;
       }
     }
-    return false;
+    return nil;
   }
 
-  // Expects the built SetUpList to include an item with the given `type`.
-  void ExpectListToInclude(SetUpListItemType type) {
-    EXPECT_TRUE(ListIncludes(type));
+  // Expects the built SetUpList to include an item with the given `type` and
+  // expects it to have the given `complete` status.
+  void ExpectListToInclude(SetUpListItemType type, BOOL complete) {
+    SetUpListItem* item = FindItem(type);
+    EXPECT_TRUE(item);
+    EXPECT_EQ(item.complete, complete);
   }
 
   // Expects the built SetUpList to not include an item with the given `type`.
   void ExpectListToNotInclude(SetUpListItemType type) {
-    EXPECT_FALSE(ListIncludes(type));
+    SetUpListItem* item = FindItem(type);
+    EXPECT_EQ(item, nil);
   }
 
- private:
+  // Gets the state of the item with the given `type` from prefs.
+  SetUpListItemState GetItemState(SetUpListItemType type) {
+    return set_up_list_prefs::GetItemState(local_state_.Get(), type);
+  }
+
+  // Sets the state of the item with the given `type` from prefs.
+  void SetItemState(SetUpListItemType type, SetUpListItemState state) {
+    set_up_list_prefs::SetItemState(local_state_.Get(), type, state);
+  }
+
+ protected:
   web::WebTaskEnvironment task_environment_;
+  PrefService* prefs_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   AuthenticationService* auth_service_;
@@ -103,42 +130,93 @@ class SetUpListTest : public PlatformTest {
 
 // Tests that the SetUpList uses the correct criteria when including the
 // SyncInSync item.
-TEST_F(SetUpListTest, buildListWithSignInSync) {
+TEST_F(SetUpListTest, BuildListWithSignInSync) {
   BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kSignInSync);
+  ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
 
   SignInFakeIdentity();
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
+            SetUpListItemState::kCompleteNotInList);
+
+  SetItemState(SetUpListItemType::kSignInSync,
+               SetUpListItemState::kCompleteInList);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
+            SetUpListItemState::kCompleteNotInList);
+
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kSignInSync);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
 // DefaultBrowser item.
-TEST_F(SetUpListTest, buildListWithDefaultBrowser) {
+TEST_F(SetUpListTest, BuildListWithDefaultBrowser) {
   SetFalseChromeLikelyDefaultBrowser();
   BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kDefaultBrowser);
+  ExpectListToInclude(SetUpListItemType::kDefaultBrowser, NO);
 
   SetTrueChromeLikelyDefaultBrowser();
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kDefaultBrowser, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
+            SetUpListItemState::kCompleteNotInList);
+
+  SetItemState(SetUpListItemType::kDefaultBrowser,
+               SetUpListItemState::kCompleteInList);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kDefaultBrowser, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
+            SetUpListItemState::kCompleteNotInList);
+
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kDefaultBrowser);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
 // Autofill item.
-TEST_F(SetUpListTest, buildListWithAutofill) {
+TEST_F(SetUpListTest, BuildListWithAutofill) {
   FakeEnableCredentialProvider(false);
   BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kAutofill);
+  ExpectListToInclude(SetUpListItemType::kAutofill, NO);
 
   FakeEnableCredentialProvider(true);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kAutofill, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
+            SetUpListItemState::kCompleteNotInList);
+
+  SetItemState(SetUpListItemType::kAutofill,
+               SetUpListItemState::kCompleteInList);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kAutofill, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
+            SetUpListItemState::kCompleteNotInList);
+
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kAutofill);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
 // Follow item.
-TEST_F(SetUpListTest, buildListWithFollow) {
+TEST_F(SetUpListTest, BuildListWithFollow) {
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kFollow);
+}
+
+// Test that SetUpList observes local state changes, updates the item, and calls
+// the delegate.
+TEST_F(SetUpListTest, ObservesPrefs) {
+  BuildSetUpList();
+  id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
+  set_up_list_.delegate = delegate;
+  SetUpListItem* item = FindItem(SetUpListItemType::kSignInSync);
+  EXPECT_FALSE(item.complete);
+  OCMExpect([delegate setUpListItemDidComplete:item]);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kSignInSync);
+  EXPECT_TRUE(item.complete);
+  [delegate verify];
 }

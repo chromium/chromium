@@ -21,9 +21,13 @@
 #include <algorithm>
 #include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <limits>
 
+#include "absl/base/attributes.h"
+#include "absl/base/call_once.h"
 #include "absl/base/config.h"
 #include "absl/time/time.h"
 
@@ -37,15 +41,12 @@ constexpr int64_t KernelTimeout::kMaxNanos;
 #endif
 
 int64_t KernelTimeout::SteadyClockNow() {
-#ifdef __GOOGLE_GRTE_VERSION__
-  // go/btm requires synchronized clocks, so we have to use the system
-  // clock.
-  return absl::GetCurrentTimeNanos();
-#else
+  if (!SupportsSteadyClock()) {
+    return absl::GetCurrentTimeNanos();
+  }
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
       .count();
-#endif
 }
 
 KernelTimeout::KernelTimeout(absl::Time t) {

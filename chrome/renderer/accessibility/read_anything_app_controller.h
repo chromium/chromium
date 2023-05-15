@@ -20,8 +20,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+#include "url/gurl.h"
 
 namespace content {
 class RenderFrame;
@@ -58,7 +58,7 @@ class ReadAnythingAppControllerTest;
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
-      public read_anything::mojom::Page,
+      public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
   static gin::WrapperInfo kWrapperInfo;
@@ -81,26 +81,20 @@ class ReadAnythingAppController
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
-  // read_anything::mojom::Page:
+  // read_anything::mojom::UntrustedPage:
   void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,
       const std::vector<ui::AXEvent>& events) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                               ukm::SourceId ukm_source_id) override;
+                               ukm::SourceId ukm_source_id,
+                               const GURL& hostname) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
 #endif
-
-  // ui::AXTreeObserver:
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
-                              bool root_changed,
-                              const std::vector<Change>& changes) override;
-  // TODO(crbug.com/1266555): Implement OnNodeWillBeDeleted to capture the
-  // deletion of child trees.
 
   // gin templates:
   ui::AXNodeID RootId() const;
@@ -128,6 +122,7 @@ class ReadAnythingAppController
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
+  bool isSelectable() const;
 
   void Distill();
   void Draw();
@@ -173,12 +168,14 @@ class ReadAnythingAppController
 
   content::RenderFrame* render_frame_;
   std::unique_ptr<AXTreeDistiller> distiller_;
-  mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
-  mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
-  mojo::Receiver<read_anything::mojom::Page> receiver_{this};
+  mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
+      page_handler_factory_;
+  mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
+  mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
+
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 

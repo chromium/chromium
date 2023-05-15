@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -18,16 +19,17 @@ class DownloadBubbleNavigationHandler;
 
 // This class encapsulates the "partial view" in the download bubble. This gives
 // a compact representation of downloads that recently completed.
-class DownloadBubblePartialView : public views::View {
+class DownloadBubblePartialView : public views::View,
+                                  public views::FocusChangeListener {
  public:
   METADATA_HEADER(DownloadBubblePartialView);
 
   static std::unique_ptr<DownloadBubblePartialView> Create(
-      raw_ptr<Browser> browser,
-      raw_ptr<DownloadBubbleUIController> bubble_controller,
-      raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+      Browser* browser,
+      DownloadBubbleUIController* bubble_controller,
+      DownloadBubbleNavigationHandler* navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-      base::OnceClosure on_mouse_entered_closure);
+      base::OnceClosure on_interacted_closure);
 
   DownloadBubblePartialView(const DownloadBubblePartialView&) = delete;
   DownloadBubblePartialView& operator=(const DownloadBubblePartialView&) =
@@ -35,17 +37,28 @@ class DownloadBubblePartialView : public views::View {
   ~DownloadBubblePartialView() override;
 
   // views::View
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* before, views::View* now) override;
+  void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
  private:
   DownloadBubblePartialView(
-      raw_ptr<Browser> browser,
-      raw_ptr<DownloadBubbleUIController> bubble_controller,
-      raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+      Browser* browser,
+      DownloadBubbleUIController* bubble_controller,
+      DownloadBubbleNavigationHandler* navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-      base::OnceClosure on_mouse_entered_closure);
+      base::OnceClosure on_interacted_closure);
 
-  base::OnceClosure on_mouse_entered_closure_;
+  // Run the |on_interacted_closure_|.
+  void OnInteracted();
+
+  // A callback to be run when this view has been hovered over by the mouse or
+  // focused by the keyboard.
+  base::OnceClosure on_interacted_closure_;
 };
 
 #endif

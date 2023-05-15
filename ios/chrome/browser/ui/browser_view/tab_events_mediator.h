@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+class ChromeBrowserState;
 @class NewTabPageCoordinator;
-class WebStateList;
-@protocol TabConsumer;
 class SessionRestorationBrowserAgent;
+@protocol TabConsumer;
+class UrlLoadingNotifierBrowserAgent;
+class WebStateList;
 
 // Mediator that handles tab events.
 // The required dependencies are injected into the mediator instance on init,
@@ -27,10 +29,15 @@ class SessionRestorationBrowserAgent;
 // into or removed from the web state list.
 // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove this
 // dependency.
+// TODO(crbug.com/1430080): TabEventsMediator should not have knoledge of
+// browserState.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
                     restorationAgent:(SessionRestorationBrowserAgent*)
-                                         sessionRestorationBrowserAgent;
+                                         sessionRestorationBrowserAgent
+                        browserState:(ChromeBrowserState*)browserState
+                     loadingNotifier:
+                         (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier;
 
 // Disconnects all observers set by the mediator on any web states in its
 // web state list. After `disconnect` is called, the mediator will not add

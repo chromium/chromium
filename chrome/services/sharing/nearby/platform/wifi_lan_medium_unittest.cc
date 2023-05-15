@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -309,7 +310,8 @@ class WifiLanMediumTest : public ::testing::Test {
   base::OnceClosure on_listen_calls_finished_;
 
   // TCP socket factory:
-  ash::nearby::FakeTcpSocketFactory* fake_socket_factory_;
+  raw_ptr<ash::nearby::FakeTcpSocketFactory, ExperimentalAsh>
+      fake_socket_factory_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
 
@@ -328,7 +330,8 @@ class WifiLanMediumTest : public ::testing::Test {
       cros_network_config_;
 
   // Firewall hole factory:
-  ash::nearby::FakeFirewallHoleFactory* fake_firewall_hole_factory_;
+  raw_ptr<ash::nearby::FakeFirewallHoleFactory, ExperimentalAsh>
+      fake_firewall_hole_factory_;
   mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
 

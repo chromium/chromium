@@ -21,7 +21,6 @@ found in the LICENSE file.
     <dimen name="creator_profile_text_padding">10dp</dimen>
 
     <!-- Bottomsheet toolbar dimensions: container -->
-    <dimen name="creator_bottomsheet_toolbar_container_height">70dp</dimen>
     <dimen name="creator_bottomsheet_toolbar_top_height">4dp</dimen>
     <dimen name="creator_bottomsheet_toolbar_bottom_height">2dp</dimen>
     <dimen name="creator_bottomsheet_toolbar_progressbar_height">2dp</dimen>
@@ -34,11 +33,10 @@ found in the LICENSE file.
     <dimen name="creator_bottomsheet_toolbar_drag_handlebar_margin">4dp</dimen>
 
     <!-- Bottomsheet toolbar dimensions: close/open icons -->
-    <dimen name="creator_bottomsheet_toolbar_icon_width">40dp</dimen>
-    <dimen name="creator_bottomsheet_toolbar_icon_height">40dp</dimen>
-    <dimen name="creator_bottomsheet_toolbar_icon_padding">8dp</dimen>
-    <dimen name="creator_bottomsheet_toolbar_icon_marginBottom">6dp</dimen>
-    <dimen name="creator_bottomsheet_toolbar_icon_marginEnd">8dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_width">48dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_height">48dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_padding">12dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_marginBottom">2dp</dimen>
 
     <!-- Bottomsheet toolbar dimensions: fav icon -->
     <dimen name="creator_bottomsheet_toolbar_favicon_width">24dp</dimen>
@@ -52,7 +50,10 @@ found in the LICENSE file.
     <dimen name="creator_bottomsheet_toolbar_security_icon_margin">3dp</dimen>
 
     <!-- Bottomsheet toolbar dimensions: text -->
-    <dimen name="creator_bottomsheet_toolbar_text_marginTop">16dp</dimen>
-    <dimen name="creator_bottomsheet_toolbar_text_marginStart">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_text_margin">16dp</dimen>
     <dimen name="creator_bottomsheet_toolbar_text_marginEnd">4dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: page info -->
+    <dimen name="creator_bottomsheet_toolbar_page_info_marginBottom">6dp</dimen>
+
 </resources>

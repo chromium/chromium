@@ -124,6 +124,39 @@ class MergeJSLibTest(unittest.TestCase):
         finally:
             shutil.rmtree(scripts_dir)
 
+    def test_trailing_curly_brace_stripped(self):
+        test_script_file = """{
+  "text":"test\\ncontents\\n0",
+  "url":"//a/b/c/1.js",
+  "sourceMapURL":"data:application/json;base64,eyJzb3VyY2VzIjogWyJhL2IvYy8xLmpzIl0sICJzb3VyY2VSb290IjogIiJ9"
+}}"""
+
+        scripts_dir = None
+
+        try:
+            scripts_dir = tempfile.mkdtemp()
+            file_path = os.path.join(scripts_dir, '0.js.json')
+            with open(file_path, 'w') as f:
+                f.write(test_script_file)
+            expected_files = [
+                file_path,
+                os.path.join(scripts_dir, 'parsed_scripts', 'a', 'b', 'c',
+                             '1.js'),
+                os.path.join(scripts_dir, 'parsed_scripts',
+                             'parsed_scripts.json')
+            ]
+
+            merger.write_parsed_scripts(scripts_dir, source_dir='')
+            actual_files = []
+
+            for root, _, files in os.walk(scripts_dir):
+                for file_name in files:
+                    actual_files.append(os.path.join(root, file_name))
+
+            self.assertCountEqual(expected_files, actual_files)
+        finally:
+            shutil.rmtree(scripts_dir)
+
     def test_non_data_urls_are_ignored(self):
         test_script_file = """{
 "text": "test\\ncontents",

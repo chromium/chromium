@@ -251,7 +251,7 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
   static void SetUpTestCase() {
     // Reusable test data.
     video_sender_config_ = GetDefaultVideoSenderConfig();
-    video_sender_config_.codec = CODEC_VIDEO_H264;
+    video_sender_config_.codec = Codec::kVideoH264;
     const gfx::Size size(kVideoWidth, kVideoHeight);
     frame_ = media::VideoFrame::CreateFrame(
         PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());

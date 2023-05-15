@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -169,7 +170,7 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
     signal_->SetValue();
   }
 
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   std::set<OAuth2LoginManager::SessionRestoreState> states_;
   bool waiting_for_state_ = false;
   OAuth2LoginManager::SessionRestoreState final_state_ =
@@ -185,9 +186,9 @@ class ThreadBlocker {
       : unblock_event_(new base::WaitableEvent(
             base::WaitableEvent::ResetPolicy::MANUAL,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BlockThreadOnThread, base::Owned(unblock_event_)));
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&BlockThreadOnThread,
+                                         base::Owned(unblock_event_.get())));
   }
 
   ThreadBlocker(const ThreadBlocker&) = delete;
@@ -200,7 +201,7 @@ class ThreadBlocker {
   static void BlockThreadOnThread(base::WaitableEvent* event) { event->Wait(); }
 
   // `unblock_event_` is deleted after BlockThreadOnThread returns.
-  base::WaitableEvent* const unblock_event_;
+  const raw_ptr<base::WaitableEvent, ExperimentalAsh> unblock_event_;
 };
 
 // Helper class that is added as a RequestMonitor of embedded test server to
@@ -860,10 +861,7 @@ class MergeSessionTest : public OAuth2Test,
 
   void JsExpectAsync(content::WebContents* web_contents,
                      const std::string& expression) {
-    content::DOMMessageQueue dom_message_queue(web_contents);
-    content::ExecuteScriptAsync(
-        web_contents,
-        "window.domAutomationController.send(!!(" + expression + "));");
+    content::ExecuteScriptAsync(web_contents, "!!(" + expression + ");");
   }
 
   void JsExpectOnBackgroundPageAsync(const std::string& extension_id,
@@ -882,12 +880,8 @@ class MergeSessionTest : public OAuth2Test,
   }
 
   void JsExpect(content::WebContents* contents, const std::string& expression) {
-    bool result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        contents,
-        "window.domAutomationController.send(!!(" + expression + "));",
-        &result));
-    ASSERT_TRUE(result) << expression;
+    ASSERT_EQ(true, content::EvalJs(contents, "!!(" + expression + ");"))
+        << expression;
   }
 
   const GURL& GetBackGroundPageUrl(const std::string& extension_id) {

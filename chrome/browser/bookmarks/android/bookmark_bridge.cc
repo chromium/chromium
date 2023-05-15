@@ -14,16 +14,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
@@ -44,6 +45,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/page_image_service/image_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +106,15 @@ std::unique_ptr<icu::Collator> GetICUCollator() {
   return collator_;
 }
 
+// static
+void HandleImageUrlResponse(
+    base::android::ScopedJavaGlobalRef<jobject> callback,
+    const GURL& image_url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  RunObjectCallbackAndroid(callback,
+                           url::GURLAndroid::FromNativeGURL(env, image_url));
+}
+
 // The key used to connect the instance of the bookmark bridge to the bookmark
 // model.
 const char kBookmarkBridgeUserDataKey[] = "bookmark_bridge";
@@ -130,7 +141,8 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_GetForProfile(
         profile, model, ManagedBookmarkServiceFactory::GetForProfile(profile),
         PartnerBookmarksShim::BuildForBrowserContext(
             chrome::GetBrowserContextRedirectedInIncognito(profile)),
-        ReadingListManagerFactory::GetForBrowserContext(profile));
+        ReadingListManagerFactory::GetForBrowserContext(profile),
+        page_image_service::ImageServiceFactory::GetForBrowserContext(profile));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
@@ -143,12 +155,14 @@ BookmarkBridge::BookmarkBridge(
     BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     PartnerBookmarksShim* partner_bookmarks_shim,
-    ReadingListManager* reading_list_manager)
+    ReadingListManager* reading_list_manager,
+    page_image_service::ImageService* image_service)
     : profile_(profile),
       bookmark_model_(model),
       managed_bookmark_service_(managed_bookmark_service),
       partner_bookmarks_shim_(partner_bookmarks_shim),
       reading_list_manager_(reading_list_manager),
+      image_service_(image_service),
       weak_ptr_factory_(this) {
   profile_observation_.Observe(profile_.get());
   bookmark_model_->AddObserver(this);
@@ -187,6 +201,26 @@ BookmarkBridge::~BookmarkBridge() {
 void BookmarkBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
   // This will call the destructor because the user data is a unique pointer.
   bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
+}
+
+void BookmarkBridge::GetImageUrlForBookmark(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_url,
+    const JavaParamRef<jobject>& j_callback) {
+  ScopedJavaGlobalRef<jobject> callback(j_callback);
+  if (!image_service_) {
+    RunObjectCallbackAndroid(callback, nullptr);
+    return;
+  }
+
+  page_image_service::mojom::Options options;
+  options.suggest_images = true;
+  options.optimization_guide_images = true;
+  image_service_->FetchImageFor(
+      page_image_service::mojom::ClientId::Bookmarks,
+      *url::GURLAndroid::ToNativeGURL(env, j_url), options,
+      base::BindOnce(&HandleImageUrlResponse, callback));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -260,11 +294,11 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
       PartnerBookmarksReader::CreatePartnerBookmarksRootForTesting();
   BookmarkNode* partner_bookmark_a =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
+          1, base::Uuid::GenerateRandomV4(), GURL("http://www.a.com")));
   partner_bookmark_a->SetTitle(u"Partner Bookmark A");
   BookmarkNode* partner_bookmark_b =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          2, base::GUID::GenerateRandomV4(), GURL("http://www.b.com")));
+          2, base::Uuid::GenerateRandomV4(), GURL("http://www.b.com")));
   partner_bookmark_b->SetTitle(u"Partner Bookmark B");
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
       std::move(root_partner_node));
@@ -272,7 +306,7 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
   DCHECK(partner_bookmarks_shim_->IsLoaded());
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkByID(
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkById(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong id,
@@ -289,7 +323,7 @@ bool BookmarkBridge::IsDoingExtensiveChanges(JNIEnv* env,
   return bookmark_model_->IsDoingExtensiveChanges();
 }
 
-void BookmarkBridge::GetTopLevelFolderParentIDs(
+void BookmarkBridge::GetTopLevelFolderParentIds(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj) {
@@ -299,7 +333,7 @@ void BookmarkBridge::GetTopLevelFolderParentIDs(
       GetBookmarkType(bookmark_model_->root_node()));
 }
 
-void BookmarkBridge::GetTopLevelFolderIDs(
+void BookmarkBridge::GetTopLevelFolderIds(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean get_special,
@@ -488,7 +522,7 @@ jint BookmarkBridge::GetChildCount(JNIEnv* env,
   return static_cast<jint>(node->children().size());
 }
 
-void BookmarkBridge::GetChildIDs(JNIEnv* env,
+void BookmarkBridge::GetChildIds(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  jlong id,
                                  jint type,

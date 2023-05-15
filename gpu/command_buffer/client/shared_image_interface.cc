@@ -21,10 +21,11 @@ Mailbox SharedImageInterface::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    base::StringPiece debug_label) {
   return CreateSharedImage(gpu_memory_buffer, gpu_memory_buffer_manager,
                            gfx::BufferPlane::DEFAULT, color_space,
-                           surface_origin, alpha_type, usage);
+                           surface_origin, alpha_type, usage, debug_label);
 }
 
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,

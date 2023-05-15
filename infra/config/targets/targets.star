@@ -432,11 +432,6 @@ targets.console_test_launcher(
 )
 
 targets.console_test_launcher(
-    name = "chrome_cleaner_unittests",
-    label = "//chrome/chrome_cleaner:chrome_cleaner_unittests",
-)
-
-targets.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",
 )
@@ -515,6 +510,10 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "chrome_public_wpt",
     label = "//chrome/android:chrome_public_wpt",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
 )
 
 targets.compile_target(
@@ -583,16 +582,28 @@ targets.generated_script(
 targets.generated_script(
     name = "wpt_tests_isolate",
     label = "//:wpt_tests_isolate",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
 )
 
 targets.generated_script(
     name = "wpt_tests_isolate_content_shell",
     label = "//:wpt_tests_isolate_content_shell",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
 )
 
 targets.generated_script(
     name = "wpt_tests_ios",
     label = "//ios/chrome/test/wpt:wpt_tests_ios",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
 )
 
 targets.compile_target(
@@ -623,6 +634,16 @@ targets.compile_target(
 targets.generated_script(
     name = "variations_smoke_tests",
     label = "//chrome/test:variations_smoke_tests",
+)
+
+targets.script(
+    name = "variations_desktop_smoke_tests",
+    label = "//chrome/test/variations:variations_desktop_smoke_tests",
+    script = "//testing/scripts/run_isolated_script_test.py",
+    args = [
+        "--xvfb",
+        "../../chrome/test/variations/run_variations_tests.py",
+    ],
 )
 
 targets.script(
@@ -802,7 +823,7 @@ targets.console_test_launcher(
 
 targets.console_test_launcher(
     name = "gnrt_unittests",
-    label = "//tools/crates/gnrt:gnrt_unittests",
+    label = "//tools/crates/gnrt/lib:gnrt_unittests",
 )
 
 targets.compile_target(
@@ -934,6 +955,11 @@ targets.windowed_test_launcher(
 targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
+)
+
+targets.console_test_launcher(
+    name = "env_chromium_unittests",
+    label = "//third_party/leveldatabase:env_chromium_unittests",
 )
 
 targets.windowed_test_launcher(
@@ -1189,11 +1215,6 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "ios_swift_interop_xcuitests_module",
-    label = "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests_module",
-)
-
-targets.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
 )
@@ -1315,6 +1336,11 @@ targets.console_test_launcher(
 )
 
 targets.console_test_launcher(
+    name = "leveldb_unittests",
+    label = "//third_party/leveldatabase:leveldb_unittests",
+)
+
+targets.console_test_launcher(
     name = "libcups_unittests",
     label = "//chrome/services/cups_proxy:libcups_unittests",
 )
@@ -1418,6 +1444,11 @@ targets.script(
 targets.generated_script(
     name = "module_installer_junit_tests",
     label = "//components/module_installer/android:module_installer_junit_tests",
+)
+
+targets.generated_script(
+    name = "monochrome_finch_smoke_tests",
+    label = "//clank/android_webview/components:monochrome_finch_smoke_tests",
 )
 
 targets.console_test_launcher(
@@ -1632,8 +1663,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "performance_test_suite_android_clank_chrome",
-    label = "//chrome/test:performance_test_suite_android_clank_chrome",
+    name = "performance_test_suite_android_clank_monochrome",
+    label = "//chrome/test:performance_test_suite_android_clank_monochrome",
 )
 
 targets.generated_script(
@@ -1769,21 +1800,6 @@ targets.generated_script(
 targets.generated_script(
     name = "resource_sizes_lacros_chrome",
     label = "//chromeos/lacros:resource_sizes_lacros_chrome",
-)
-
-targets.generated_script(
-    name = "resource_sizes_monochrome_public_minimal_apks",
-    label = "//chrome/android:resource_sizes_monochrome_public_minimal_apks",
-)
-
-targets.generated_script(
-    name = "resource_sizes_trichrome",
-    label = "//chrome/android:resource_sizes_trichrome",
-)
-
-targets.generated_script(
-    name = "resource_sizes_system_webview_bundle",
-    label = "//android_webview:resource_sizes_system_webview_bundle",
 )
 
 targets.compile_target(
@@ -1922,6 +1938,10 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "system_webview_wpt",
     label = "//android_webview/test:system_webview_wpt",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
 )
 
 targets.script(

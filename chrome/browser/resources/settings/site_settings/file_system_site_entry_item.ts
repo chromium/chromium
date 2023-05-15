@@ -13,10 +13,21 @@ import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
+
 import {getTemplate} from './file_system_site_entry_item.html.js';
 import {FileSystemGrant} from './file_system_site_list.js';
 
-export class FileSystemSiteEntryItemElement extends PolymerElement {
+const FileSystemSiteEntryItemElementBase = BaseMixin(PolymerElement);
+
+export interface FileSystemSiteEntryItemElement {
+  $: {
+    removeGrant: HTMLElement,
+  };
+}
+
+export class FileSystemSiteEntryItemElement extends
+    FileSystemSiteEntryItemElementBase {
   static get is() {
     return 'file-system-site-entry-item';
   }
@@ -38,6 +49,10 @@ export class FileSystemSiteEntryItemElement extends PolymerElement {
 
   private getClassForListItem_(): string {
     return this.grant.isDirectory ? 'icon-folder-open' : 'icon-file';
+  }
+
+  private onRemoveGrantClick_() {
+    this.fire('revoke-grant', this.grant);
   }
 }
 

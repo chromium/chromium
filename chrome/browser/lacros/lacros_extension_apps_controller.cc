@@ -40,6 +40,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 
@@ -329,6 +330,18 @@ void LacrosExtensionAppsController::FinallyLaunch(
     std::move(callback).Run(std::move(result));
 
   } else if (which_type_.IsExtensions()) {
+    // Web File Handlers use the `file_handlers` manifest key for registration.
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
+            extension->manifest_version())) {
+      // Launch Web File Handlers.
+      params.container = apps::LaunchContainer::kLaunchContainerTab;
+      OpenApplication(profile, std::move(params));
+      result->instance_id = base::UnguessableToken::Create();
+      result->state = crosapi::mojom::LaunchResultState::kSuccess;
+      std::move(callback).Run(std::move(result));
+      return;
+    }
+
     // This code path is used only by fileBrowserHandler to open Lacros
     // extension, and is triggered by user using a Lacros extension to handle
     // file open. Therefore we check |launch_params| first, and if that passes,

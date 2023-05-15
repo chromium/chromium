@@ -64,10 +64,11 @@ class PolicyProvider : public ObservableProvider {
 
   void ReadManagedContentSettings(bool overwrite);
 
-  void GetContentSettingsFromPreferences(OriginIdentifierValueMap* rules);
+  void GetContentSettingsFromPreferences()
+      EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
 
-  void GetAutoSelectCertificateSettingsFromPreferences(
-      OriginIdentifierValueMap* value_map);
+  void GetAutoSelectCertificateSettingsFromPreferences()
+      EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
 
   void ReadManagedContentSettingsTypes(ContentSettingsType content_type);
 
@@ -76,10 +77,6 @@ class PolicyProvider : public ObservableProvider {
   raw_ptr<PrefService> prefs_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Used around accesses to the |value_map_| object to guarantee
-  // thread safety.
-  mutable base::Lock lock_;
 };
 
 }  // namespace content_settings

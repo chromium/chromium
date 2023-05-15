@@ -204,10 +204,6 @@ class SafeBrowsingDatabaseManager
   // method must be called on the IO thread.
   virtual bool MatchDownloadAllowlistUrl(const GURL& url) = 0;
 
-  // Check if the given IP address (either IPv4 or IPv6) matches the malware
-  // IP blocklist.
-  virtual bool MatchMalwareIP(const std::string& ip_address) = 0;
-
   //
   // Methods to check the config of the DatabaseManager.
   //

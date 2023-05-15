@@ -33,11 +33,9 @@ SpdySessionKey::SpdySessionKey(
       is_proxy_session_(is_proxy_session),
       socket_tag_(socket_tag),
       network_anonymization_key_(
-          !base::FeatureList::IsEnabled(
-              features::kPartitionConnectionsByNetworkIsolationKey)
-              ? NetworkAnonymizationKey()
-              : network_anonymization_key),
-
+          NetworkAnonymizationKey::IsPartitioningEnabled()
+              ? network_anonymization_key
+              : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy) {
   // IsProxySession::kTrue should only be used with direct connections, since
   // using multiple layers of proxies on top of each other isn't supported.

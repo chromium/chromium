@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
@@ -161,7 +162,7 @@ class ArcAccessibilityTreeTracker::FocusChangeObserver
   }
 
  private:
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
   // Different from other inner classes, this doesn't use ScopedObservation
   // because exo::WMHelper can be destroyed earlier than this class.
 };
@@ -206,7 +207,7 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   }
 
  private:
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };
@@ -253,7 +254,7 @@ class ArcAccessibilityTreeTracker::ChildWindowsObserver
   }
 
  private:
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };
@@ -282,7 +283,7 @@ class ArcAccessibilityTreeTracker::ArcInputMethodManagerServiceObserver
   base::ScopedObservation<ArcInputMethodManagerService,
                           ArcInputMethodManagerService::Observer>
       arc_imms_observation_{this};
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
 };
 
 class ArcAccessibilityTreeTracker::MojoConnectionObserver
@@ -310,7 +311,7 @@ class ArcAccessibilityTreeTracker::MojoConnectionObserver
                        mojom::AccessibilityHelperHost>,
       ConnectionObserver<mojom::AccessibilityHelperInstance>>
       helper_instance_connection_observation_{this};
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
 };
 
 class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
@@ -338,7 +339,7 @@ class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
   base::ScopedObservation<ash::ArcNotificationSurfaceManager,
                           ash::ArcNotificationSurfaceManager::Observer>
       arc_notification_observation_{this};
-  ArcAccessibilityTreeTracker* owner_;
+  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> owner_;
 };
 
 class ArcAccessibilityTreeTracker::UmaRecorder {
@@ -468,7 +469,7 @@ class ArcAccessibilityTreeTracker::UmaRecorder {
 
   base::flat_map<ArcAccessibilityFeature, base::TimeTicks> start_time_;
   std::set<ArcAccessibilityFeature> enabled_features_;
-  const ArcAccessibilityTreeTracker* tree_tracker_;
+  raw_ptr<const ArcAccessibilityTreeTracker, ExperimentalAsh> tree_tracker_;
 };
 
 ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
@@ -574,7 +575,7 @@ bool ArcAccessibilityTreeTracker::EnableTree(const ui::AXTreeID& tree_id) {
     return false;
   }
 
-  return accessibility_helper_instance_.RequestSendAccessibilityTree(
+  return accessibility_helper_instance_->RequestSendAccessibilityTree(
       std::move(window_key));
 }
 
@@ -743,7 +744,7 @@ void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(
       std::make_unique<aura::WindowTracker>();
   window_tracker->Add(window);
 
-  accessibility_helper_instance_.SetNativeChromeVoxArcSupportForFocusedWindow(
+  accessibility_helper_instance_->SetNativeChromeVoxArcSupportForFocusedWindow(
       enabled,
       base::BindOnce(
           &ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed,
@@ -871,7 +872,7 @@ void ArcAccessibilityTreeTracker::UpdateChildWindowIds(aura::Window* window) {
   // The window ID is new to us. Request the entire tree.
   arc::mojom::AccessibilityWindowKeyPtr window_key =
       arc::mojom::AccessibilityWindowKey::NewWindowId(*window_id);
-  accessibility_helper_instance_.RequestSendAccessibilityTree(
+  accessibility_helper_instance_->RequestSendAccessibilityTree(
       std::move(window_key));
 }
 

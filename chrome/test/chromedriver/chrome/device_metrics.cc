@@ -4,15 +4,13 @@
 
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 
-DeviceMetrics::DeviceMetrics(int width, int height, double device_scale_factor,
-                             bool touch, bool mobile)
-  : width(width),
-    height(height),
-    device_scale_factor(device_scale_factor),
-    touch(touch),
-    mobile(mobile),
-    fit_window(false),
-    text_autosizing(true),
-    font_scale_factor(1) {}
-
-DeviceMetrics::~DeviceMetrics() {}
+DeviceMetrics::DeviceMetrics(int width,
+                             int height,
+                             double device_scale_factor,
+                             bool touch,
+                             bool mobile)
+    : width(width),
+      height(height),
+      device_scale_factor(device_scale_factor),
+      touch(touch),
+      mobile(mobile) {}

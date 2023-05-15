@@ -30,16 +30,6 @@ class ThreadProcessDispatcher : public Dispatcher {
   // Processes IPC requests coming from calls to NtOpenThread() in the target.
   bool NtOpenThread(IPCInfo* ipc, uint32_t desired_access, uint32_t thread_id);
 
-  // Processes IPC requests coming from calls to NtOpenProcess() in the target.
-  bool NtOpenProcess(IPCInfo* ipc,
-                     uint32_t desired_access,
-                     uint32_t process_id);
-
-  // Processes IPC requests from calls to NtOpenProcessToken() in the target.
-  bool NtOpenProcessToken(IPCInfo* ipc,
-                          HANDLE process,
-                          uint32_t desired_access);
-
   // Processes IPC requests from calls to NtOpenProcessTokenEx() in the target.
   bool NtOpenProcessTokenEx(IPCInfo* ipc,
                             HANDLE process,

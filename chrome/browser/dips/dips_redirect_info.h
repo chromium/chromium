@@ -19,7 +19,8 @@ struct DIPSRedirectChainInfo {
  public:
   DIPSRedirectChainInfo(const GURL& initial_url,
                         const GURL& final_url,
-                        int length);
+                        size_t length,
+                        bool is_partial_chain);
   ~DIPSRedirectChainInfo();
 
   const GURL initial_url;
@@ -30,7 +31,10 @@ struct DIPSRedirectChainInfo {
   const std::string final_site;
   // initial_site == final_site, cached.
   const bool initial_and_final_sites_same;
-  const int length;
+  const size_t length;
+  // True if the chain is missing the end URL. This occurs when redirects are
+  // trimmed from the front of the in-progress redirect chain.
+  const bool is_partial_chain;
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
@@ -43,15 +47,13 @@ struct DIPSRedirectInfo {
   // Constructor for server-side redirects.
   DIPSRedirectInfo(const GURL& url,
                    DIPSRedirectType redirect_type,
-                   CookieAccessType access_type,
-                   int index,
+                   SiteDataAccessType access_type,
                    ukm::SourceId source_id,
                    base::Time time);
   // Constructor for client-side redirects.
   DIPSRedirectInfo(const GURL& url,
                    DIPSRedirectType redirect_type,
-                   CookieAccessType access_type,
-                   int index,
+                   SiteDataAccessType access_type,
                    ukm::SourceId source_id,
                    base::Time time,
                    base::TimeDelta client_bounce_delay,
@@ -62,15 +64,15 @@ struct DIPSRedirectInfo {
 
   const GURL url;
   const DIPSRedirectType redirect_type;
-  CookieAccessType access_type;  // may be updated by late cookie notifications
-  // Index of this URL within the overall chain.
-  const int index;
+  SiteDataAccessType
+      access_type;  // may be updated by late cookie notifications
   const ukm::SourceId source_id;
   const base::Time time;
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
   absl::optional<bool> has_interaction;
+  size_t chain_index = 0u;
 
   // The following properties are only applicable for client-side redirects:
 

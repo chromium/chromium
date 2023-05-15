@@ -26,12 +26,12 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -79,8 +79,8 @@
 #include "printing/printing_context.h"
 #include "printing/printing_context_factory_for_test.h"
 #include "printing/printing_features.h"
-#include "printing/printing_utils.h"
 #include "printing/test_printing_context.h"
+#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -98,13 +98,6 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
 namespace printing {
 
 using testing::_;
@@ -117,14 +110,39 @@ namespace {
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
 const int kDefaultDocumentCookie = PrintSettings::NewCookie();
 
-const PrinterSemanticCapsAndDefaults::Paper kTestPaper{
-    /*display_name=*/"Letter", /*vendor_id=*/"45",
-    /*size_um=*/gfx::Size(215900, 279400),
-    /*printable_area_um=*/gfx::Rect(0, 0, 215900, 279400)};
+// Sticky settings containing an extension printer as the most recently used
+// destination. This must be in sync with
+// //chrome/test/data/printing/test_extension/background.js.
+constexpr char kStickySettingsWithExtensionPrinter[] = R"({
+    "version": 2,
+    "recentDestinations": [
+      {
+        "id": "%s:printer",
+        "origin": "extension",
+        "capabilities": null,
+        "displayName": "test extension printer",
+        "extensionId": "%s",
+        "extensionName": "Test Printer Provider Extension"
+      }
+    ]
+  })";
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-constexpr char kFakeDmToken[] = "fake-dm-token";
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+// Sticky settings containing an extension printer with a missing printable area
+// as the most recently used destination. This must be in sync with
+// //chrome/test/data/printing/test_extension/background.js.
+constexpr char kStickySettingsWithExtensionPrinterMissingPrintableArea[] = R"({
+    "version": 2,
+    "recentDestinations": [
+      {
+        "id": "%s:printer_missing_printable_area",
+        "origin": "extension",
+        "capabilities": null,
+        "displayName": "extension printer missing printable area",
+        "extensionId": "%s",
+        "extensionName": "Test Printer Provider Extension"
+      }
+    ]
+  })";
 
 class KillPrintRenderFrame
     : public mojom::PrintRenderFrameInterceptorForTesting {
@@ -392,160 +410,6 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
   PrintAllowance allowance_ = PrintAllowance::kUnknown;
 };
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
- public:
-  class Observer : public PrintViewManagerBase::Observer {
-   public:
-    void OnPrintNow(const content::RenderFrameHost* rfh) override {
-      print_now_called_ = true;
-    }
-
-    void OnScriptedPrint() override { scripted_print_called_ = true; }
-
-    bool print_now_called() const { return print_now_called_; }
-
-    bool scripted_print_called() const { return scripted_print_called_; }
-
-   private:
-    bool print_now_called_ = false;
-    bool scripted_print_called_ = false;
-  };
-
-  static TestPrintViewManagerForContentAnalysis* CreateForWebContents(
-      content::WebContents* web_contents) {
-    auto manager =
-        std::make_unique<TestPrintViewManagerForContentAnalysis>(web_contents);
-    auto* manager_ptr = manager.get();
-    web_contents->SetUserData(PrintViewManager::UserDataKey(),
-                              std::move(manager));
-    return manager_ptr;
-  }
-
-  explicit TestPrintViewManagerForContentAnalysis(
-      content::WebContents* web_contents)
-      : TestPrintViewManager(web_contents) {
-    AddObserver(observer_);
-    PrintViewManager::SetReceiverImplForTesting(this);
-  }
-
-  ~TestPrintViewManagerForContentAnalysis() override {
-    PrintViewManager::SetReceiverImplForTesting(nullptr);
-  }
-
-  void WaitOnScanning() { scanning_run_loop_.Run(); }
-
-  void WaitOnPreview() { preview_run_loop_.Run(); }
-
-  bool print_now_called() const { return observer_.print_now_called(); }
-
-  bool scripted_print_called() const {
-    return observer_.scripted_print_called();
-  }
-
-  const absl::optional<bool>& preview_allowed() const {
-    return preview_allowed_;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void set_allowed_by_dlp(bool allowed) { allowed_by_dlp_ = allowed; }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
- protected:
-  void OnGotSnapshotCallback(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::DidPrintDocumentParamsPtr params) override {
-    ASSERT_TRUE(web_contents());
-    ASSERT_TRUE(params);
-    EXPECT_TRUE(params->content->metafile_data_region.IsValid());
-    EXPECT_EQ(data.url,
-              web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
-
-    PrintViewManager::OnGotSnapshotCallback(
-        std::move(callback), std::move(data), rfh_id, std::move(params));
-  }
-
-  void OnCompositedForContentAnalysis(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::PrintCompositor::Status status,
-      base::ReadOnlySharedMemoryRegion page_region) override {
-    EXPECT_TRUE(content::RenderFrameHost::FromID(rfh_id));
-    EXPECT_EQ(status, mojom::PrintCompositor::Status::kSuccess);
-
-    // The settings passed to this function should match the content of the
-    // print Connector policy.
-    EXPECT_EQ(data.settings.tags.size(), 1u);
-    EXPECT_TRUE(base::Contains(data.settings.tags, "dlp"));
-    EXPECT_TRUE(data.settings.cloud_or_local_settings.is_cloud_analysis());
-    EXPECT_EQ(data.settings.cloud_or_local_settings.dm_token(), kFakeDmToken);
-    EXPECT_EQ(data.settings.block_until_verdict,
-              enterprise_connectors::BlockUntilVerdict::kBlock);
-    EXPECT_TRUE(data.settings.block_large_files);
-    EXPECT_EQ(data.url,
-              web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
-
-    // The snapshot should be valid and populated.
-    EXPECT_TRUE(LooksLikePdf(page_region.Map().GetMemoryAsSpan<char>()));
-
-    PrintViewManager::OnCompositedForContentAnalysis(
-        base::BindOnce(
-            [](base::OnceCallback<void(bool should_proceed)> callback,
-               base::RunLoop* scanning_run_loop, bool allowed) {
-              std::move(callback).Run(allowed);
-              scanning_run_loop->Quit();
-            },
-            std::move(callback), &scanning_run_loop_),
-        std::move(data), rfh_id, status, std::move(page_region));
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnDlpPrintingRestrictionsChecked(
-      content::GlobalRenderFrameHostId rfh_id,
-      base::OnceCallback<void(bool should_proceed)> callback,
-      bool should_proceed) override {
-    PrintViewManager::OnDlpPrintingRestrictionsChecked(
-        rfh_id, std::move(callback), allowed_by_dlp_);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  void CompleteScriptedPrint(content::RenderFrameHost* rfh,
-                             mojom::ScriptedPrintParamsPtr params,
-                             ScriptedPrintCallback callback) override {
-    std::move(callback).Run(nullptr);
-
-    for (auto& observer : GetObservers())
-      observer.OnScriptedPrint();
-  }
-
- private:
-  void PrintPreviewRejectedForTesting() override {
-    preview_allowed_ = false;
-    preview_run_loop_.Quit();
-  }
-
-  void PrintPreviewAllowedForTesting() override {
-    preview_allowed_ = true;
-    preview_run_loop_.Quit();
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool allowed_by_dlp_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Indicates whether the preview was allowed after checking against content
-  // analysis and DLP (if on CrOS). This is unpopulated until then.
-  absl::optional<bool> preview_allowed_;
-
-  base::RunLoop preview_run_loop_;
-  base::RunLoop scanning_run_loop_;
-  Observer observer_;
-};
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
 PrintBrowserTest::PrintBrowserTest() = default;
 PrintBrowserTest::~PrintBrowserTest() = default;
 
@@ -594,13 +458,14 @@ void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
       /*display_name=*/"test printer",
       /*printer_description=*/"A printer for testing.",
       /*printer_status=*/0,
-      /*is_default=*/true, kTestDummyPrintInfoOptions);
+      /*is_default=*/true, test::kPrintInfoOptions);
 
   auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
-  default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
-  default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
-  default_caps->papers.push_back(kTestPaper);
+  default_caps->dpis = test::kPrinterCapabilitiesDefaultDpis;
+  default_caps->default_dpi = test::kPrinterCapabilitiesDpi;
+  default_caps->papers.push_back(test::kPaperLetter);
+  default_caps->papers.push_back(test::kPaperLegal);
   test_print_backend_->AddValidPrinter(
       printer_name, std::move(default_caps),
       std::make_unique<PrinterBasicInfo>(printer_info));
@@ -623,7 +488,9 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
                                                   params.pages_per_sheet);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
              /*print_preview_disabled=*/false, params.print_only_selection);
 
   print_preview_observer.WaitUntilPreviewIsReady();
@@ -642,7 +509,9 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
                                                   params.pages_per_sheet);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
              /*print_preview_disabled=*/false, params.print_only_selection);
 
   print_preview_observer.WaitUntilPreviewIsReady();
@@ -654,6 +523,10 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
   // exit when all expected messages are received.
 void PrintBrowserTest::SetNumExpectedMessages(unsigned int num) {
   num_expected_messages_ = num;
+}
+
+void PrintBrowserTest::ResetNumReceivedMessages() {
+  num_received_messages_ = 0;
 }
 
 void PrintBrowserTest::WaitUntilCallbackReceived() {
@@ -822,10 +695,7 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   void PrintAndWaitUntilPreviewIsReady() {
     TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
 
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false,
-               /*has_selection=*/false);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
     print_preview_observer.WaitUntilPreviewIsReady();
   }
@@ -838,17 +708,22 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
       extension = LoadExtension(
           test_data_dir.AppendASCII("printing").AppendASCII("test_extension"));
+      extension_id_ = extension->id();
       ASSERT_TRUE(extension);
     }
 
     GURL url(chrome::kChromeUIExtensionsURL);
-    std::string query =
-        base::StringPrintf("options=%s", extension->id().c_str());
+    std::string query = base::StringPrintf("options=%s", extension_id_.c_str());
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
+
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
+
+ private:
+  extensions::ExtensionId extension_id_;
 };
 
 class SitePerProcessPrintExtensionBrowserTest
@@ -1338,9 +1213,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
 
   // Adds the observer to get the status for the preview.
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false, /*has_selection*/ false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
   // Makes sure that `subframe_rph` is terminated.
   process_watcher.Wait();
@@ -1400,10 +1273,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
@@ -1427,10 +1297,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceled) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1453,10 +1320,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlocked) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1583,6 +1447,101 @@ IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest, PrintOptionPage) {
   PrintAndWaitUntilPreviewIsReady();
 }
 
+// Test fetching an extension printer.
+IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest,
+                       UpdatePrintSettingsExtensionPrinter) {
+  // Size and printable area are in device units, which is different for macOS.
+  // See PrintSettings::device_units_per_inch().
+#if BUILDFLAG(IS_MAC)
+  static constexpr gfx::Size kLetterPdfPhysicalSize{612, 792};
+  static constexpr gfx::Rect kExpectedPrintableArea{72, 72, 432, 684};
+  static constexpr gfx::Size kExpectedContentSize{432, 656};
+#else
+  static constexpr gfx::Size kLetterPdfPhysicalSize{2550, 3300};
+  static constexpr gfx::Rect kExpectedPrintableArea{300, 300, 1800, 2850};
+  static constexpr gfx::Size kExpectedContentSize{1800, 2732};
+#endif
+  LoadExtensionAndNavigateToOptionPage();
+
+  // The extension id may vary from device to device, so directly use the
+  // extension id instead of a hardcoded value.
+  const char* test_extension_id = extension_id().c_str();
+  std::string extension_printer_settings =
+      base::StringPrintf(kStickySettingsWithExtensionPrinter, test_extension_id,
+                         test_extension_id);
+
+  // Setting a recent destination as an extension printer triggers extension
+  // printer handling instead of defaulting to "Save as PDF" or a local printer.
+  auto* sticky_settings = PrintPreviewStickySettings::GetInstance();
+  sticky_settings->StoreAppState(extension_printer_settings);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  TestPrintViewManager print_view_manager(web_contents);
+  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  const mojom::PrintPagesParamsPtr& snooped_params =
+      print_view_manager.snooped_params();
+  ASSERT_TRUE(snooped_params);
+  EXPECT_EQ(gfx::Size(kDefaultPdfDpi, kDefaultPdfDpi),
+            snooped_params->params->dpi);
+  EXPECT_EQ(kLetterPdfPhysicalSize, snooped_params->params->page_size);
+  // This must be in sync with
+  // //chrome/test/data/printing/test_extension/background.js.
+  EXPECT_EQ(kExpectedPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kExpectedContentSize, snooped_params->params->content_size);
+}
+
+// Test fetching an extension printer that has missing printable area. The
+// printable area should be set to a default value.
+IN_PROC_BROWSER_TEST_F(
+    PrintExtensionBrowserTest,
+    UpdatePrintSettingsExtensionPrinterMissingPrintableArea) {
+  // Size is in device units, which is different for macOS. See
+  // PrintSettings::device_units_per_inch().
+#if BUILDFLAG(IS_MAC)
+  static constexpr gfx::Size kIsoA4PdfPhysicalSize{595, 841};
+#else
+  static constexpr gfx::Size kIsoA4PdfPhysicalSize{2480, 3507};
+#endif
+
+  LoadExtensionAndNavigateToOptionPage();
+
+  // The extension id may vary from device to device, so directly use the
+  // extension id instead of a hardcoded value.
+  const char* test_extension_id = extension_id().c_str();
+  std::string extension_printer_settings = base::StringPrintf(
+      kStickySettingsWithExtensionPrinterMissingPrintableArea,
+      test_extension_id, test_extension_id);
+
+  // Setting a recent destination as an extension printer triggers extension
+  // printer handling instead of defaulting to "Save as PDF" or a local printer.
+  auto* sticky_settings = PrintPreviewStickySettings::GetInstance();
+  sticky_settings->StoreAppState(extension_printer_settings);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  TestPrintViewManager print_view_manager(web_contents);
+  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  const mojom::PrintPagesParamsPtr& snooped_params =
+      print_view_manager.snooped_params();
+  ASSERT_TRUE(snooped_params);
+  EXPECT_EQ(gfx::Size(kDefaultPdfDpi, kDefaultPdfDpi),
+            snooped_params->params->dpi);
+  EXPECT_EQ(kIsoA4PdfPhysicalSize, snooped_params->params->page_size);
+  // The default printable area is platform-dependent, so just check that the
+  // printable area and content size are non-empty.
+  EXPECT_FALSE(snooped_params->params->printable_area.IsEmpty());
+  EXPECT_FALSE(snooped_params->params->content_size.IsEmpty());
+}
+
 // Printing an extension option page with site per process is enabled.
 // The test should not crash or timeout.
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
@@ -1668,9 +1627,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false, /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   content::WebContents* preview_dialog =
       print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
   ASSERT_TRUE(preview_dialog);
@@ -1678,28 +1635,28 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   // The script will ensure we return the id of <zoom-out-button> when
   // focused. Focus the element after PDF plugin in tab order.
   const char kScript[] = R"(
-    const button = document.getElementsByTagName('print-preview-app')[0]
-                       .$['previewArea']
-                       .shadowRoot.querySelector('iframe')
-                       .contentDocument.querySelector('pdf-viewer-pp')
-                       .shadowRoot.querySelector('#zoomToolbar')
-                       .$['zoom-out-button'];
-    button.addEventListener('focus', (e) => {
-      window.domAutomationController.send(e.target.id);
-    });
+    new Promise(resolve => {
+      const button = document.getElementsByTagName('print-preview-app')[0]
+                         .$['previewArea']
+                         .shadowRoot.querySelector('iframe')
+                         .contentDocument.querySelector('pdf-viewer-pp')
+                         .shadowRoot.querySelector('#zoomToolbar')
+                         .$['zoom-out-button'];
+      button.addEventListener('focus', (e) => {
+        window.domAutomationController.send(e.target.id);
+      });
 
-    const select_tag = document.getElementsByTagName('print-preview-app')[0]
-                           .$['sidebar']
-                           .$['destinationSettings']
-                           .$['destinationSelect'];
-    select_tag.addEventListener('focus', () => {
-      window.domAutomationController.send(true);
+      const select_tag = document.getElementsByTagName('print-preview-app')[0]
+                             .$['sidebar']
+                             .$['destinationSettings']
+                             .$['destinationSelect'];
+      select_tag.addEventListener('focus', () => {
+        resolve(true);
+      });
+      select_tag.focus();
     });
-    select_tag.focus();)";
-  bool success = false;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(preview_dialog, kScript, &success));
-  ASSERT_TRUE(success);
+    )";
+  ASSERT_EQ(true, content::EvalJs(preview_dialog, kScript));
 
   // Simulate a <shift-tab> press and wait for a focus message.
   content::DOMMessageQueue msg_queue(preview_dialog);
@@ -1958,261 +1915,5 @@ IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, ScriptedPrint) {
 IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
   RunPrintTest("document.execCommand('print');");
 }
-
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-struct ContentAnalysisTestCase {
-  bool content_analysis_allows_print = false;
-  bool oop_enabled = false;
-};
-
-class ContentAnalysisPrintBrowserTest
-    : public PrintBrowserTest,
-      public testing::WithParamInterface<ContentAnalysisTestCase> {
- public:
-  ContentAnalysisPrintBrowserTest() {
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting(kFakeDmToken));
-    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-        base::BindRepeating(
-            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
-            base::DoNothing(),
-            base::BindRepeating(
-                &ContentAnalysisPrintBrowserTest::ScanningResponse,
-                base::Unretained(this)),
-            kFakeDmToken));
-    enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
-        base::Milliseconds(0));
-  }
-
-  void SetUp() override {
-    if (oop_enabled()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {
-              {features::kEnableOopPrintDrivers,
-               {{features::kEnableOopPrintDriversJobPrint.name, "true"}}},
-              {features::kEnablePrintContentAnalysis, {}},
-          },
-          {});
-    } else {
-      feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
-    }
-
-    test_printing_context_factory()->SetPrinterNameForSubsequentContexts(
-        "printer_name");
-    PrintBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    safe_browsing::SetAnalysisConnector(
-        browser()->profile()->GetPrefs(),
-        enterprise_connectors::AnalysisConnector::PRINT,
-        R"({
-          "service_provider": "google",
-          "enable": [ {"url_list": ["*"], "tags": ["dlp"]} ],
-          "block_until_verdict": 1,
-          "block_large_files": true
-        })");
-    PrintBrowserTest::SetUpOnMainThread();
-  }
-
-  bool content_analysis_allows_print() const {
-    return GetParam().content_analysis_allows_print;
-  }
-  bool oop_enabled() { return GetParam().oop_enabled; }
-
-  enterprise_connectors::ContentAnalysisResponse ScanningResponse(
-      const std::string& contents,
-      const base::FilePath& path) {
-    enterprise_connectors::ContentAnalysisResponse response;
-
-    auto* result = response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-
-    if (!content_analysis_allows_print()) {
-      auto* rule = result->add_triggered_rules();
-      rule->set_rule_name("blocking_rule_name");
-      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    }
-
-    return response;
-  }
-
-  int new_document_called_count() {
-    return test_printing_context_factory()->new_document_called_count();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class ContentAnalysisScriptedPreviewlessPrintBrowserTest
-    : public ContentAnalysisPrintBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    cmd_line->AppendSwitch(switches::kDisablePrintPreview);
-    ContentAnalysisPrintBrowserTest::SetUpCommandLine(cmd_line);
-  }
-
-  void RunScriptedPrintTest(const std::string& script) {
-    AddPrinter("printer_name");
-    ASSERT_TRUE(embedded_test_server()->Started());
-    GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
-    auto* print_view_manager =
-        TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-            web_contents);
-    content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
-
-    print_view_manager->WaitOnScanning();
-    ASSERT_EQ(print_view_manager->scripted_print_called(),
-              content_analysis_allows_print());
-
-    // Validate that `NewDocument` was never call as that can needlessly
-    // prompt the user.
-    ASSERT_EQ(new_document_called_count(), 0);
-  }
-};
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1396386): Remove this when tests are fixed.
-  if (oop_enabled())
-    return;
-#endif
-
-  AddPrinter("printer_name");
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
-
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/true,
-             /*has_selection=*/false);
-
-  print_view_manager->WaitOnScanning();
-
-  // PrintNow uses the same code path as scripted prints to scan printed pages,
-  // so print_now_called() should always happen and scripted_print_called()
-  // should be called with the same result that is expected from scanning.
-  ASSERT_TRUE(print_view_manager->print_now_called());
-  ASSERT_EQ(print_view_manager->scripted_print_called(),
-            content_analysis_allows_print());
-
-  // Validate that `NewDocument` was never call as that can needlessly
-  // prompt the user.
-  ASSERT_EQ(new_document_called_count(), 0);
-}
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
-  AddPrinter("printer_name");
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
-
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
-
-  print_view_manager->WaitOnScanning();
-  ASSERT_EQ(print_view_manager->preview_allowed(),
-            content_analysis_allows_print());
-
-  // Validate that `NewDocument` was never call as that can needlessly
-  // prompt the user.
-  ASSERT_EQ(new_document_called_count(), 0);
-}
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-                       DocumentExecPrint) {
-  RunScriptedPrintTest("document.execCommand('print');");
-}
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-                       WindowPrint) {
-  RunScriptedPrintTest("window.print()");
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
-                       BlockedByDLPThenNoContentAnalysis) {
-  AddPrinter("printer_name");
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
-  print_view_manager->set_allowed_by_dlp(false);
-
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
-
-  print_view_manager->WaitOnPreview();
-  ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
-  ASSERT_FALSE(print_view_manager->preview_allowed().value());
-
-  // This is always 0 because printing is always blocked by the DLP policy.
-  ASSERT_EQ(new_document_called_count(), 0);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ContentAnalysisPrintBrowserTest,
-    testing::Values(
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
-                                /*oop_enabled=*/true},
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
-                                /*oop_enabled=*/false},
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
-                                /*oop_enabled=*/true},
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
-                                /*oop_enabled=*/false}));
-
-#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-    // TODO(crbug.com/1396386): Add back oop_enabled=true values when tests are
-    // fixed.
-    testing::Values(
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
-                                /*oop_enabled=*/false},
-        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
-                                /*oop_enabled=*/false}));
-#endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-
-#endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
 
 }  // namespace printing

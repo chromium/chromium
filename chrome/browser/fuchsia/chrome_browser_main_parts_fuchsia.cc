@@ -136,7 +136,7 @@ class ChromeBrowserMainPartsFuchsia::ViewPresenter final {
     return view_controller;
   }
 
-  base::raw_ptr<ElementManagerImpl> element_manager_;
+  raw_ptr<ElementManagerImpl> element_manager_;
   fuchsia::element::GraphicalPresenterPtr graphical_presenter_;
 };
 

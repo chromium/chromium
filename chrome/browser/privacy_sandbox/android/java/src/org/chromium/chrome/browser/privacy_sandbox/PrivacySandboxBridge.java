@@ -27,8 +27,7 @@ public class PrivacySandboxBridge {
     }
 
     public static boolean isRestrictedNoticeEnabled() {
-        // TODO: This value will come from a feature parameter.
-        return false;
+        return PrivacySandboxBridgeJni.get().isRestrictedNoticeEnabled();
     }
 
     public static void setPrivacySandboxEnabled(boolean enabled) {
@@ -115,6 +114,7 @@ public class PrivacySandboxBridge {
         boolean isPrivacySandboxEnabled();
         boolean isPrivacySandboxManaged();
         boolean isPrivacySandboxRestricted();
+        boolean isRestrictedNoticeEnabled();
         boolean isFirstPartySetsDataAccessEnabled();
         boolean isFirstPartySetsDataAccessManaged();
         boolean isPartOfManagedFirstPartySet(String origin);

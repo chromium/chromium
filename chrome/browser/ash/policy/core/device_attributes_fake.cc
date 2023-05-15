@@ -26,10 +26,6 @@ std::string FakeDeviceAttributes::GetSSOProfile() const {
   return fake_sso_profile_;
 }
 
-std::string FakeDeviceAttributes::GetRealm() const {
-  return fake_realm_;
-}
-
 std::string FakeDeviceAttributes::GetDeviceAssetID() const {
   return fake_device_asset_id_;
 }
@@ -78,10 +74,6 @@ void FakeDeviceAttributes::SetFakeEnterpriseDomainManager(
 
 void FakeDeviceAttributes::SetFakeSsoProfile(const std::string& sso_profile) {
   fake_sso_profile_ = sso_profile;
-}
-
-void FakeDeviceAttributes::SetFakeRealm(const std::string& realm) {
-  fake_realm_ = realm;
 }
 
 void FakeDeviceAttributes::SetFakeDeviceAssetId(

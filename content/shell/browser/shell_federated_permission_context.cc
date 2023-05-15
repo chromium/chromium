@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_federated_permission_context.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
 #include "content/shell/common/shell_switches.h"
@@ -44,13 +46,28 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
 }
 
 // FederatedIdentityAutoReauthnPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasAutoReauthnContentSetting() {
+bool ShellFederatedPermissionContext::IsAutoReauthnSettingEnabled() {
   return auto_reauthn_permission_;
 }
 
 bool ShellFederatedPermissionContext::IsAutoReauthnEmbargoed(
     const url::Origin& relying_party_embedder) {
   return false;
+}
+
+void ShellFederatedPermissionContext::SetRequiresUserMediation(
+    const GURL& rp_url,
+    bool requires_user_mediation) {
+  if (requires_user_mediation) {
+    require_user_mediation_sites_.insert(rp_url);
+  } else {
+    require_user_mediation_sites_.erase(rp_url);
+  }
+}
+
+bool ShellFederatedPermissionContext::RequiresUserMediation(
+    const GURL& rp_url) {
+  return require_user_mediation_sites_.contains(rp_url);
 }
 
 base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
@@ -98,11 +115,19 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const std::string& account_id) {
-  return sharing_permissions_.find(std::tuple(
-             relying_party_requester.Serialize(),
-             relying_party_embedder.Serialize(), identity_provider.Serialize(),
-             account_id)) != sharing_permissions_.end();
+    const absl::optional<std::string>& account_id) {
+  bool skip_account_check = !account_id;
+  return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
+                      [&](const auto& entry) {
+                        return relying_party_requester.Serialize() ==
+                                   std::get<0>(entry) &&
+                               relying_party_embedder.Serialize() ==
+                                   std::get<1>(entry) &&
+                               identity_provider.Serialize() ==
+                                   std::get<2>(entry) &&
+                               (skip_account_check ||
+                                account_id.value() == std::get<3>(entry));
+                      }) != sharing_permissions_.end();
 }
 
 void ShellFederatedPermissionContext::GrantSharingPermission(

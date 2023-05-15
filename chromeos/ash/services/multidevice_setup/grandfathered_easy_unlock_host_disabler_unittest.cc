@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
@@ -209,7 +210,7 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
-  base::MockOneShotTimer* mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
 
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;

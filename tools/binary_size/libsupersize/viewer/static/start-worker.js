@@ -4,12 +4,6 @@
 
 'use strict';
 
-/** @type {Object} */
-window.supersize = window.supersize || {};
-
-/** @type {?Worker} */
-window.supersize.worker = null;
-
 /**
  * We use a worker to keep large tree creation logic off the UI thread.
  * This class is used to interact with the worker.

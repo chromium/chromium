@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +47,8 @@
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
@@ -186,7 +189,7 @@ class EventRewriterTest : public ChromeAshTestBase {
  public:
   EventRewriterTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
   ~EventRewriterTest() override {}
 
   void SetUp() override {
@@ -198,17 +201,30 @@ class EventRewriterTest : public ChromeAshTestBase {
     auto deprecation_controller =
         std::make_unique<DeprecationNotificationController>(&message_center_);
     deprecation_controller_ = deprecation_controller.get();
+    ChromeAshTestBase::SetUp();
+
+    input_device_settings_controller_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    input_device_settings_controller_mock_ =
+        std::make_unique<MockInputDeviceSettingsController>();
+    keyboard_settings = mojom::KeyboardSettings::New();
+    EXPECT_CALL(*input_device_settings_controller_mock_,
+                GetKeyboardSettings(testing::_))
+        .WillRepeatedly(testing::Return(keyboard_settings.get()));
+
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(
-        nullptr, std::move(deprecation_controller), nullptr);
+        nullptr, std::move(deprecation_controller),
+        input_device_settings_controller_mock_.get());
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
     rewriter_ = std::make_unique<ui::EventRewriterAsh>(
         delegate_.get(), keyboard_capability_.get(), nullptr, false,
         &fake_ime_keyboard_);
-    ChromeAshTestBase::SetUp();
   }
 
   void TearDown() override {
+    input_device_settings_controller_mock_.reset();
+    input_device_settings_controller_resetter_.reset();
     ChromeAshTestBase::TearDown();
     // Shutdown() deletes the IME mock object.
     input_method::Shutdown();
@@ -238,21 +254,35 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   void InitModifierKeyPref(IntegerPrefMember* int_pref,
                            const std::string& pref_name,
-                           ui::mojom::ModifierKey modifierKey) {
-    if (int_pref->GetPrefName() != pref_name)  // skip if already initialized.
-      int_pref->Init(pref_name, prefs());
-    int_pref->SetValue(static_cast<int>(modifierKey));
+                           ui::mojom::ModifierKey remap_from,
+                           ui::mojom::ModifierKey remap_to) {
+    if (!features::IsInputDeviceSettingsSplitEnabled()) {
+      if (int_pref->GetPrefName() !=
+          pref_name) {  // skip if already initialized.
+        int_pref->Init(pref_name, prefs());
+      }
+      int_pref->SetValue(static_cast<int>(remap_to));
+      return;
+    }
+
+    if (remap_from == remap_to) {
+      keyboard_settings->modifier_remappings.erase(remap_from);
+      return;
+    }
+
+    keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  ui::InputDevice SetupKeyboard(
+  ui::KeyboardDevice SetupKeyboard(
       const std::string& name,
       const std::string& layout = "",
       ui::InputDeviceType type = ui::INPUT_DEVICE_INTERNAL,
       bool has_custom_top_row = false) {
     // Add a fake device to udev.
-    const ui::InputDevice keyboard(kKeyboardDeviceId, type, name, /*phys=*/"",
-                                   base::FilePath(kKbdSysPath), /*vendor=*/-1,
-                                   /*product=*/-1, /*version=*/-1);
+    const ui::KeyboardDevice keyboard(kKeyboardDeviceId, type, name,
+                                      /*phys=*/"", base::FilePath(kKbdSysPath),
+                                      /*vendor=*/-1,
+                                      /*product=*/-1, /*version=*/-1);
 
     // Old CrOS keyboards supply an integer/enum as a sysfs property to identify
     // their layout type. New keyboards provide the mapping of scan codes to
@@ -371,18 +401,26 @@ class EventRewriterTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  FakeChromeUserManager* fake_user_manager_;  // Not owned.
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+      fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
-  input_method::MockInputMethodManagerImpl* input_method_manager_mock_;
+  raw_ptr<input_method::MockInputMethodManagerImpl, ExperimentalAsh>
+      input_method_manager_mock_;
   testing::FakeUdevLoader fake_udev_;
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      input_device_settings_controller_resetter_;
+  std::unique_ptr<MockInputDeviceSettingsController>
+      input_device_settings_controller_mock_;
+  mojom::KeyboardSettingsPtr keyboard_settings;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterAsh> rewriter_;
-  DeprecationNotificationController* deprecation_controller_;  // Not owned.
+  raw_ptr<DeprecationNotificationController, ExperimentalAsh>
+      deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
 
@@ -407,6 +445,10 @@ TEST_F(EventRewriterTest, TestKeyRewriteLatency) {
 }
 
 TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
+  // This test is not useful once device settings split is launched.
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kInputDeviceSettingsSplit);
+
   // First, test non Apple keyboards, they should all behave the same.
   TestNonAppleKeyboardVariants({
       // VKEY_A, Alt modifier.
@@ -489,6 +531,7 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
   // Now simulate the user remapped the Command key back to Search.
   IntegerPrefMember command;
   InitModifierKeyPref(&command, ::prefs::kLanguageRemapExternalCommandKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kMeta);
 
   TestExternalAppleKeyboard({
@@ -527,6 +570,7 @@ TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
   delegate_->SuppressModifierKeyRewrites(false);
@@ -551,6 +595,10 @@ TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
 }
 
 TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
+  // This test is irrelevant once input device settings split launches.
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kInputDeviceSettingsSplit);
+
   // Simulate the default initialization of the Meta key on external keyboards
   // remap pref to Search.
   Preferences::RegisterProfilePrefs(prefs()->registry());
@@ -594,11 +642,13 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
   // Remap Chrome OS Search to Ctrl.
   IntegerPrefMember internal_search;
   InitModifierKeyPref(&internal_search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kControl);
 
   // Remap external Meta to Alt.
   IntegerPrefMember meta;
   InitModifierKeyPref(&meta, ::prefs::kLanguageRemapExternalMetaKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kAlt);
 
   TestChromeKeyboardVariants({
@@ -664,10 +714,15 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
 
 // For crbug.com/133896.
 TEST_F(EventRewriterTest, TestRewriteCommandToControlWithControlRemapped) {
+  // This test is irrelevant once input device settings split launches.
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kInputDeviceSettingsSplit);
+
   // Remap Control to Alt.
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
   TestNonAppleKeyboardVariants({
@@ -878,6 +933,11 @@ void EventRewriterTest::TestRewriteNumPadKeysOnAppleKeyboard() {
   // Ctrl.
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    keyboard_settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
+
   TestExternalAppleKeyboard({
       // XK_KP_End (= NumPad 1 without Num Lock), Win modifier.
       // The result should be "Num Pad 1 with Control + Num Lock modifiers".
@@ -1003,12 +1063,15 @@ TEST_F(EventRewriterTest, TestRewriteModifiersDisableSome) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kVoid);
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kVoid);
   IntegerPrefMember escape;
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kVoid);
 
   TestChromeKeyboardVariants({
@@ -1067,6 +1130,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersDisableSome) {
   // Remap Alt to Control.
   IntegerPrefMember alt;
   InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
   TestChromeKeyboardVariants({
@@ -1092,6 +1156,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToControl) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kControl);
 
   TestChromeKeyboardVariants({
@@ -1106,6 +1171,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToControl) {
   // Remap Alt to Control too.
   IntegerPrefMember alt;
   InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
   TestChromeKeyboardVariants({
@@ -1157,6 +1223,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToEscape) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kEscape);
 
   TestChromeKeyboardVariants({
@@ -1173,6 +1240,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapEscapeToAlt) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember escape;
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
   TestAllKeyboardVariants({
@@ -1193,6 +1261,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapAltToControl) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember alt;
   InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
   TestAllKeyboardVariants({
@@ -1224,16 +1293,19 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapUnderEscapeControlAlt) {
   // Remap Escape to Alt.
   IntegerPrefMember escape;
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
   // Remap Alt to Control.
   IntegerPrefMember alt;
   InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
   // Remap Control to Search.
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kMeta);
 
   TestAllKeyboardVariants({
@@ -1281,21 +1353,25 @@ TEST_F(EventRewriterTest,
   // Remap Escape to Alt.
   IntegerPrefMember escape;
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
   // Remap Alt to Control.
   IntegerPrefMember alt;
   InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
   // Remap Control to Search.
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kMeta);
 
   // Remap Search to Backspace.
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kBackspace);
 
   TestChromeKeyboardVariants({
@@ -1332,6 +1408,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapBackspaceToEscape) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember backspace;
   InitModifierKeyPref(&backspace, ::prefs::kLanguageRemapBackspaceKeyTo,
+                      ui::mojom::ModifierKey::kBackspace,
                       ui::mojom::ModifierKey::kEscape);
 
   TestAllKeyboardVariants({
@@ -1349,6 +1426,7 @@ TEST_F(EventRewriterTest,
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember escape;
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
   SetupKeyboard("Internal Keyboard");
@@ -1364,6 +1442,7 @@ TEST_F(EventRewriterTest,
 
   // Remap Escape to Control before releasing Escape.
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
+                      ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kControl);
 
   // Release Escape.
@@ -1399,6 +1478,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kCapsLock);
 
   SetupKeyboard("Internal Keyboard");
@@ -1548,6 +1628,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
   // Remap Caps Lock to Control.
   IntegerPrefMember caps_lock;
   InitModifierKeyPref(&caps_lock, ::prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kControl);
 
   // Press Caps Lock. CapsLock is enabled but we have remapped the key to
@@ -1605,6 +1686,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
   // Remap CapsLock to Search.
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kMeta);
 
   // Now that CapsLock is enabled, press the remapped CapsLock button again
@@ -1631,6 +1713,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
   // Remap CapsLock key back to CapsLock.
   IntegerPrefMember capslock;
   InitModifierKeyPref(&capslock, ::prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kCapsLock);
 
   // Now press CapsLock again and now expect that the CapsLock modifier is
@@ -1661,6 +1744,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockToControl) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kControl);
 
   TestExternalGenericKeyboard({
@@ -1695,6 +1779,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kControl);
 
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
@@ -2708,6 +2793,7 @@ TEST_F(EventRewriterTest,
        TestRewriteFunctionKeysCustomLayoutsActionSuppressedUnchanged) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   // An action key on these devices is one where the scan code matches an entry
   // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
@@ -2738,10 +2824,12 @@ TEST_F(EventRewriterTest,
        TestRewriteFunctionKeysCustomLayoutsActionSuppressedWithTopRowAreFKeys) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   BooleanPrefMember send_function_keys_pref;
   send_function_keys_pref.Init(prefs::kSendFunctionKeys, prefs());
   send_function_keys_pref.SetValue(true);
+  keyboard_settings->top_row_are_fkeys = true;
 
   // An action key on these devices is one where the scan code matches an entry
   // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
@@ -3032,6 +3120,7 @@ TEST_F(EventRewriterTest,
        TestFunctionKeysLayout2SuppressMetaTopRowKeyRewrites) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   // With Meta + Top Row Key rewrites suppressed, F-Keys should be translated to
   // the equivalent action key and not lose the Search modifier.
@@ -3099,17 +3188,28 @@ TEST_F(EventRewriterTest,
          ui::DomKey::F12}}});
 }
 
+TEST_F(EventRewriterTest, RecordEventRemappedToRightClick) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  BooleanPrefMember remap_to_right_click;
+  remap_to_right_click.Init(prefs::kEventRemappedToRightClick, prefs());
+  remap_to_right_click.SetValue(false);
+  delegate_->RecordEventRemappedToRightClick();
+  EXPECT_EQ(true, prefs()->GetBoolean(prefs::kEventRemappedToRightClick));
+}
+
 TEST_F(
     EventRewriterTest,
     TestFunctionKeysLayout2SuppressMetaTopRowKeyRewritesWithTreatTopRowAsFKeys) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   // Enable preference treat-top-row-as-function-keys.
   // That causes action keys to be mapped back to Fn keys.
   BooleanPrefMember top_row_as_fn_key;
   top_row_as_fn_key.Init(prefs::kSendFunctionKeys, prefs());
   top_row_as_fn_key.SetValue(true);
+  keyboard_settings->top_row_are_fkeys = true;
 
   // With Meta + Top Row Key rewrites suppressed and TopRowAsFKeys enabled,
   // F-Keys should not be translated and search modifier should be kept.
@@ -3705,6 +3805,7 @@ TEST_F(EventRewriterTest,
        TestRewriteActionKeysWilcoLayoutsSuppressMetaTopRowKeyRewrites) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
   // unchanged and keep the search modifier.
@@ -3841,12 +3942,14 @@ TEST_F(
     TestRewriteActionKeysWilcoLayoutsSuppressMetaTopRowKeyRewritesWithTopRowAreFkeys) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+  keyboard_settings->suppress_meta_fkey_rewrites = true;
 
   // Enable preference treat-top-row-as-function-keys.
   // That causes action keys to be mapped back to Fn keys.
   BooleanPrefMember top_row_as_fn_key;
   top_row_as_fn_key.Init(prefs::kSendFunctionKeys, prefs());
   top_row_as_fn_key.SetValue(true);
+  keyboard_settings->top_row_are_fkeys = true;
 
   // With |SuppressMetaTopRowKeyComboRewrites| and TopRowAreFKeys, all action
   // keys should be remapped to F-Keys and keep the Search modifier.
@@ -3966,6 +4069,7 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
   BooleanPrefMember top_row_as_fn_key;
   top_row_as_fn_key.Init(prefs::kSendFunctionKeys, prefs());
   top_row_as_fn_key.SetValue(true);
+  keyboard_settings->top_row_are_fkeys = true;
 
   KeyTestCase wilco_standard_tests[] = {
       // Back -> F1, Search + Back -> Back
@@ -4215,6 +4319,7 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysWithControlRemapped) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kMeta);
 
   TestChromeKeyboardVariants({
@@ -4237,6 +4342,7 @@ TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
   SetupKeyboard("Internal Keyboard");
@@ -4263,6 +4369,7 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
   SetupKeyboard("Internal Keyboard");
@@ -4319,7 +4426,7 @@ class TestEventSource : public ui::EventSource {
   }
 
  private:
-  ui::EventProcessor* processor_;
+  raw_ptr<ui::EventProcessor, ExperimentalAsh> processor_;
 };
 
 // Tests of event rewriting that depend on the Ash window manager.
@@ -4328,7 +4435,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   EventRewriterAshTest()
       : source_(&buffer_),
         fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
   EventRewriterAshTest(const EventRewriterAshTest&) = delete;
   EventRewriterAshTest& operator=(const EventRewriterAshTest&) = delete;
@@ -4368,9 +4475,23 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
   void InitModifierKeyPref(IntegerPrefMember* int_pref,
                            const std::string& pref_name,
-                           ui::mojom::ModifierKey modifierKey) {
-    int_pref->Init(pref_name, prefs());
-    int_pref->SetValue(static_cast<int>(modifierKey));
+                           ui::mojom::ModifierKey remap_from,
+                           ui::mojom::ModifierKey remap_to) {
+    if (!features::IsInputDeviceSettingsSplitEnabled()) {
+      if (int_pref->GetPrefName() !=
+          pref_name) {  // skip if already initialized.
+        int_pref->Init(pref_name, prefs());
+      }
+      int_pref->SetValue(static_cast<int>(remap_to));
+      return;
+    }
+
+    if (remap_from == remap_to) {
+      keyboard_settings->modifier_remappings.erase(remap_from);
+      return;
+    }
+
+    keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
   void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
@@ -4379,6 +4500,15 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+    input_device_settings_controller_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    input_device_settings_controller_mock_ =
+        std::make_unique<MockInputDeviceSettingsController>();
+    keyboard_settings = mojom::KeyboardSettings::New();
+    EXPECT_CALL(*input_device_settings_controller_mock_,
+                GetKeyboardSettings(testing::_))
+        .WillRepeatedly(testing::Return(keyboard_settings.get()));
+
     sticky_keys_controller_ = Shell::Get()->sticky_keys_controller();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
     delegate_->set_pref_service_for_testing(prefs());
@@ -4391,23 +4521,31 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   }
 
   void TearDown() override {
+    input_device_settings_controller_mock_.reset();
+    input_device_settings_controller_resetter_.reset();
     rewriter_.reset();
     ChromeAshTestBase::TearDown();
   }
 
  protected:
-  StickyKeysController* sticky_keys_controller_;
+  raw_ptr<StickyKeysController, ExperimentalAsh> sticky_keys_controller_;
+  std::unique_ptr<MockInputDeviceSettingsController>
+      input_device_settings_controller_mock_;
+  mojom::KeyboardSettingsPtr keyboard_settings;
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterAsh> rewriter_;
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      input_device_settings_controller_resetter_;
 
   EventBuffer buffer_;
   TestEventSource source_;
 
-  FakeChromeUserManager* fake_user_manager_;  // Not owned.
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+      fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
@@ -4426,6 +4564,7 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   BooleanPrefMember send_function_keys_pref;
   send_function_keys_pref.Init(prefs::kSendFunctionKeys, prefs());
   send_function_keys_pref.SetValue(true);
+  keyboard_settings->top_row_are_fkeys = true;
   ui::EventDispatchDetails details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   PopEvents(&events);
@@ -4438,6 +4577,7 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   // If the pref isn't set when an event is sent to a regular window, F1 is
   // rewritten to the back key.
   send_function_keys_pref.SetValue(false);
+  keyboard_settings->top_row_are_fkeys = false;
   details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   PopEvents(&events);
@@ -4453,9 +4593,10 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
 // Alt+Click or Search+Click. After a transition period this will
 // default to Search+Click and the Alt+Click logic will be removed.
 void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
-  std::vector<ui::InputDevice> touchpad_devices(2);
+  std::vector<ui::TouchpadDevice> touchpad_devices(2);
   constexpr int kTouchpadId1 = 10;
   constexpr int kTouchpadId2 = 11;
   touchpad_devices[0].id = kTouchpadId1;
@@ -4640,7 +4781,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
   scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
-  std::vector<ui::InputDevice> touchpad_devices(1);
+  std::vector<ui::TouchpadDevice> touchpad_devices(1);
   constexpr int kTouchpadId1 = 10;
   touchpad_devices[0].id = kTouchpadId1;
   static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
@@ -4861,6 +5002,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
   // Remap Control to Alt.
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
   // Sends the same events once again and expect that it will be rewritten to
@@ -4990,7 +5132,7 @@ class StickyKeysOverlayTest : public EventRewriterAshTest {
     ASSERT_TRUE(overlay_);
   }
 
-  StickyKeysOverlay* overlay_;
+  raw_ptr<StickyKeysOverlay, ExperimentalAsh> overlay_;
 };
 
 TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {
@@ -5268,6 +5410,9 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
+  void RecordEventRemappedToRightClick() override {}
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
@@ -5351,6 +5496,8 @@ class ModifierPressedMetricsTest
                      std::vector<std::string>>> {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kInputDeviceSettingsSplit);
     EventRewriterTest::SetUp();
     std::tie(event_, modifier_key_usage_mapping_, key_pref_names_) = GetParam();
   }
@@ -5474,6 +5621,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
   for (const auto& pref_name : key_pref_names_) {
     IntegerPrefMember pref_member;
     InitModifierKeyPref(&pref_member, pref_name,
+                        ui::mojom::ModifierKey::kControl,
                         ui::mojom::ModifierKey::kBackspace);
   }
 
@@ -5533,6 +5681,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
   for (const auto& pref_name : key_pref_names_) {
     IntegerPrefMember pref_member;
     InitModifierKeyPref(&pref_member, pref_name,
+                        ui::mojom::ModifierKey::kControl,
                         ui::mojom::ModifierKey::kControl);
   }
 
@@ -5757,5 +5906,43 @@ TEST_F(EventRewriterSettingsSplitTest, ModifierRemapping) {
          ui::DomKey::Constant<'a'>::Character},
         {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
          ui::DomKey::Constant<'a'>::Character}}});
+}
+
+class KeyEventRemappedToSixPackKeyTest
+    : public EventRewriterTest,
+      public testing::WithParamInterface<
+          std::tuple<ui::KeyboardCode, bool, int, const char*>> {
+ public:
+  void SetUp() override {
+    EventRewriterTest::SetUp();
+    std::tie(key_code_, alt_based_, expected_pref_value_, pref_name_) =
+        GetParam();
+  }
+
+ protected:
+  ui::KeyboardCode key_code_;
+  bool alt_based_;
+  int expected_pref_value_;
+  const char* pref_name_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KeyEventRemappedToSixPackKeyTest,
+    testing::ValuesIn(std::vector<
+                      std::tuple<ui::KeyboardCode, bool, int, const char*>>{
+        {ui::VKEY_DELETE, false, -1, prefs::kKeyEventRemappedToSixPackDelete},
+        {ui::VKEY_HOME, true, 1, prefs::kKeyEventRemappedToSixPackHome},
+        {ui::VKEY_PRIOR, false, -1, prefs::kKeyEventRemappedToSixPackPageDown},
+        {ui::VKEY_END, true, 1, prefs::kKeyEventRemappedToSixPackEnd},
+        {ui::VKEY_NEXT, false, -1, prefs::kKeyEventRemappedToSixPackPageUp}}));
+
+TEST_P(KeyEventRemappedToSixPackKeyTest, KeyEventRemappedTest) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember int_pref;
+  int_pref.Init(pref_name_, prefs());
+  int_pref.SetValue(0);
+  delegate_->RecordSixPackEventRewrite(key_code_, alt_based_);
+  EXPECT_EQ(expected_pref_value_, prefs()->GetInteger(pref_name_));
 }
 }  // namespace ash

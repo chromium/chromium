@@ -31,7 +31,6 @@ class Ads;
 class AuctionAdInterestGroup;
 class AuctionAdInterestGroupKey;
 class AuctionAdConfig;
-class ScopedAbortState;
 class ScriptPromiseResolver;
 class V8UnionFencedFrameConfigOrUSVString;
 
@@ -197,13 +196,6 @@ class MODULES_EXPORT NavigatorAuction final
   // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolver* resolver,
                           const absl::optional<KURL>& creative_url);
-  // Completion callback for Mojo call made by runAdAuction().
-  void AuctionComplete(
-      ScriptPromiseResolver*,
-      std::unique_ptr<ScopedAbortState>,
-      bool resolve_to_config,
-      bool manually_aborted,
-      const absl::optional<FencedFrame::RedactedFencedFrameConfig>&);
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
                              const absl::optional<KURL>&);

@@ -290,11 +290,11 @@ TEST_F(KeystoreServiceAshTest, UserKeystoreUnsupportedEcCurveGenerateKeyFail) {
 TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
   // matter here.
-  EXPECT_CALL(platform_keys_service_,
-              SignRSAPKCS1Digest(absl::optional<TokenId>(TokenId::kUser),
-                                 GetDataBin(), GetPublicKeyBin(),
-                                 HashAlgorithm::HASH_ALGORITHM_SHA256,
-                                 /*callback=*/_))
+  EXPECT_CALL(
+      platform_keys_service_,
+      SignRsaPkcs1(absl::optional<TokenId>(TokenId::kUser), GetDataBin(),
+                   GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                   /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
@@ -310,11 +310,10 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
 TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
   // matter here.
-  EXPECT_CALL(
-      platform_keys_service_,
-      SignECDSADigest(absl::optional<TokenId>(TokenId::kSystem), GetDataBin(),
-                      GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA512,
-                      /*callback=*/_))
+  EXPECT_CALL(platform_keys_service_,
+              SignEcdsa(absl::optional<TokenId>(TokenId::kSystem), GetDataBin(),
+                        GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA512,
+                        /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
@@ -347,7 +346,7 @@ TEST_F(KeystoreServiceAshTest, UsingkRsassaPkcs1V15NoneSignSuccess) {
 }
 
 TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
-  EXPECT_CALL(platform_keys_service_, SignECDSADigest)
+  EXPECT_CALL(platform_keys_service_, SignEcdsa)
       .WillOnce(RunOnceCallback<4>(std::vector<uint8_t>(),
                                    Status::kErrorKeyNotAllowedForSigning));
 

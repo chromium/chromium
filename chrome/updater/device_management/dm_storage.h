@@ -145,6 +145,9 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
       ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
   GetOmahaPolicySettings() const;
 
+  // Returns the folder that caches the downloaded policies.
+  base::FilePath policy_cache_folder() const { return policy_cache_root_; }
+
  private:
   friend class base::RefCountedThreadSafe<DMStorage>;
   ~DMStorage();

@@ -36,8 +36,6 @@ from blinkpy.web_tests.models.test_results import TestResult, build_test_result
 
 _log = logging.getLogger(__name__)
 
-SKIA_GOLD_CORPUS = 'blink-web-tests'
-
 
 def run_single_test(port, options, results_directory, worker_name, driver,
                     test_input):
@@ -494,7 +492,7 @@ class SingleTestRunner(object):
     def _compare_text(self, expected_driver_output, driver_output):
 
         if expected_driver_output.text:
-            driver_output.test_type = 'text'
+            driver_output.test_type.add('text')
         if not expected_driver_output.text or not driver_output.text:
             return []
 
@@ -577,7 +575,7 @@ class SingleTestRunner(object):
 
     def _compare_audio(self, expected_driver_output, driver_output):
         if expected_driver_output.audio:
-            driver_output.test_type = 'audio'
+            driver_output.test_type.add('audio')
         if not expected_driver_output.audio or not driver_output.audio:
             return []
         if self._port.do_audio_results_differ(expected_driver_output.audio,
@@ -600,7 +598,7 @@ class SingleTestRunner(object):
 
     def _compare_image(self, expected_driver_output, driver_output):
         if expected_driver_output.image and expected_driver_output.image_hash:
-            driver_output.test_type = 'image'
+            driver_output.test_type.add('image')
         if not expected_driver_output.image or not expected_driver_output.image_hash:
             return []
         # The presence of an expected image, but a lack of an outputted image
@@ -609,34 +607,6 @@ class SingleTestRunner(object):
         # image. This even occurs when results_directory is set.
         if not driver_output.image or not driver_output.image_hash:
             return []
-
-        # Do a dry run upload to Skia Gold, ignoring any of its output, for
-        # data collection to see if we can switch to using Gold for web tests
-        # in the future.
-        # This is currently not run since other options besides Gold are being
-        # investigated and this code can make local runs slow, see
-        # crbug.com/1394307.
-        # try:
-        #     gold_keys = self._port.skia_gold_json_keys()
-        #     gold_session = (
-        #         self._port.skia_gold_session_manager().GetSkiaGoldSession(
-        #             gold_keys, corpus=SKIA_GOLD_CORPUS))
-        #     gold_properties = self._port.skia_gold_properties()
-        #     use_luci = not gold_properties.local_pixel_tests
-        #     img_path = self._filesystem.join(
-        #         str(self._port.skia_gold_temp_dir()),
-        #         '%s.png' % self._test_name.replace('/', '_'))
-        #     self._filesystem.write_binary_file(img_path, driver_output.image)
-        #     status, error = gold_session.RunComparison(name=self._test_name,
-        #                                                png_file=img_path,
-        #                                                use_luci=use_luci)
-        #     _log.debug('Ran Skia Gold dry run, got status %s and error %s',
-        #                status, error)
-        # except Exception as e:
-        #     _log.warning(
-        #         'Got exception while dry running Skia Gold. This can be '
-        #         'safely ignored unless you are actively working with Gold: %s',
-        #         e)
 
         if driver_output.image_hash != expected_driver_output.image_hash:
             max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
@@ -721,8 +691,7 @@ class SingleTestRunner(object):
                 break
 
         assert expected_output
-        # TODO(crbug.com/1396136): Update the test_type to use a string array.
-        test_output.test_type = 'image'
+        test_output.test_type.add('image')
 
         # Combine compare_text_result and test_result
         expected_output.text = expected_text_output.text

@@ -5,6 +5,7 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -63,7 +64,7 @@ class ElementAnimator {
  private:
   // The parent |AnimatedContainerView| owns both |view_| and |this| and will
   // delete |this| when |view_| is removed.
-  views::View* const view_;
+  const raw_ptr<views::View, ExperimentalAsh> view_;
 };
 
 }  // namespace ash

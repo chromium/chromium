@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "components/exo/wayland/test/test_buffer.h"
 
@@ -38,7 +39,7 @@ class ShmBufferFactory {
 
  private:
   std::unique_ptr<wl_shm_pool> shm_pool_;
-  BufferListener* buffer_listener_ = nullptr;
+  raw_ptr<BufferListener, ExperimentalAsh> buffer_listener_ = nullptr;
 };
 
 }  // namespace exo::wayland::test

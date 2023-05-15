@@ -86,7 +86,7 @@ const Value::Dict* UnitConverter::FindProperDestinationUnit(
 
 const Value::Dict* UnitConverter::GetConversionForCategory(
     const std::string& target_category) {
-  for (const Value& conversion : rule_set_) {
+  for (const Value& conversion : *rule_set_) {
     const base::Value::Dict& conversion_dict = conversion.GetDict();
     const auto* category =
         conversion_dict.FindStringByDottedPath(kCategoryPath);

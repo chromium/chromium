@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"

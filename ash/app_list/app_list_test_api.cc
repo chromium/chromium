@@ -37,6 +37,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_observer.h"
@@ -262,8 +263,8 @@ class WindowAddedWaiter : public aura::WindowObserver {
     run_loop_.Quit();
   }
 
-  aura::Window* const container_;
-  aura::Window* added_window_ = nullptr;
+  const raw_ptr<aura::Window, ExperimentalAsh> container_;
+  raw_ptr<aura::Window, ExperimentalAsh> added_window_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -289,7 +290,7 @@ class ScopedItemMoveAnimationDisabler {
   }
 
  private:
-  AppsGridView* const apps_grid_;
+  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_;
 };
 
 }  // namespace
@@ -303,20 +304,27 @@ AppListModel* AppListTestApi::GetAppListModel() {
 
 void AppListTestApi::ShowBubbleAppListAndWait() {
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST, {});
+      AcceleratorAction::kToggleAppList, {});
   WaitForBubbleWindow(
       /*wait_for_opening_animation=*/true);
 }
 
 void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
+  WaitForBubbleWindowInRootWindow(Shell::GetPrimaryRootWindow(),
+                                  wait_for_opening_animation);
+}
+
+void AppListTestApi::WaitForBubbleWindowInRootWindow(
+    aura::Window* root_window,
+    bool wait_for_opening_animation) {
   DCHECK(!Shell::Get()->IsInTabletMode());
 
   // Wait for the window only when the app list window does not exist.
   auto* app_list_controller = Shell::Get()->app_list_controller();
   if (!app_list_controller->GetWindow()) {
     // Wait for a child window to be added to the app list container.
-    aura::Window* container = Shell::GetContainer(
-        Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
+    aura::Window* container =
+        Shell::GetContainer(root_window, kShellWindowId_AppListContainer);
     WindowAddedWaiter waiter(container);
     waiter.Wait();
 

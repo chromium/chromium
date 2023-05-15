@@ -116,7 +116,8 @@ protocol_request::Request MakeProtocolRequest(
   CHECK(base::StartsWith(session_id, "{", base::CompareCase::SENSITIVE));
   CHECK(base::EndsWith(session_id, "}", base::CompareCase::SENSITIVE));
   request.session_id = session_id;
-  request.request_id = base::StrCat({"{", base::GenerateUuid(), "}"});
+  request.request_id = base::StrCat(
+      {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"});
 
   request.updatername = prod_id;
   request.updaterversion = browser_version;

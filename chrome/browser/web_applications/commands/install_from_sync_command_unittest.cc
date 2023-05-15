@@ -234,7 +234,7 @@ class InstallFromSyncTest : public WebAppTest {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id));
   }
 
-  base::raw_ptr<TestWebAppUrlLoader> command_manager_url_loader_;
+  raw_ptr<TestWebAppUrlLoader> command_manager_url_loader_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
@@ -726,52 +726,6 @@ TEST_F(InstallFromSyncTest, ShutdownDoesNotCrash) {
       }));
   command_manager().ScheduleCommand(std::move(command));
   loop.Run();
-}
-
-TEST_F(InstallFromSyncTest, SyncUninstall) {
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
-
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop loop;
-  WebAppDataRetriever::GetWebAppInstallInfoCallback callback;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(
-          [&](content::WebContents* web_contents,
-              WebAppDataRetriever::GetWebAppInstallInfoCallback arg_callback) {
-            callback = std::move(arg_callback);
-            loop.Quit();
-          });
-
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
-  bool result_populated = false;
-  InstallResult result;
-  auto command =
-      CreateCommand(std::move(data_retriever), CreateParams(app_id, kWebAppUrl),
-                    base::BindLambdaForTesting(
-                        [&](const AppId& id, webapps::InstallResultCode code) {
-                          result_populated = true;
-                          result.installed_app_id = id;
-                          result.install_code = code;
-                        }));
-  command_manager().ScheduleCommand(std::move(command));
-  loop.Run();
-  command_manager().NotifySyncSourceRemoved({app_id});
-
-  // Running this should do nothing.
-  ASSERT_FALSE(callback.is_null());
-  std::move(callback).Run(CreateSiteInstallInfo());
-
-  ASSERT_TRUE(result_populated);
-  EXPECT_EQ(webapps::InstallResultCode::kHaltedBySyncUninstall,
-            result.install_code);
-  EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
 }  // namespace

@@ -59,8 +59,10 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "DCompSurface";
     case SharedImageBackingType::kDXGISwapChain:
       return "DXGISwapChain";
+    case SharedImageBackingType::kWrappedGraphiteTexture:
+      return "WrappedGraphiteTexture";
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -168,10 +170,24 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return ProduceSkiaGanesh(manager, tracker, context_state);
+  // For testing if no context state, then default to SkiaGanesh representation.
+  if (!context_state || context_state->gr_context()) {
+    return ProduceSkiaGanesh(manager, tracker, context_state);
+  }
+  CHECK(context_state->graphite_context());
+  return ProduceSkiaGraphite(manager, tracker, context_state);
 }
 
-std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+SharedImageBacking::ProduceSkiaGanesh(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  return nullptr;
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+SharedImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

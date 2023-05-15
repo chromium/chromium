@@ -43,6 +43,9 @@ class ASH_EXPORT NetworkListNetworkItemView
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
 
+  // ash::NetworkListItemView
+  void OnThemeChanged() override;
+
   void SetupCellularSubtext();
   void SetupNetworkSubtext();
   void UpdateDisabledTextColor();

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -177,7 +178,8 @@ class FakeInputDevice {
   }
 
   media::AudioParameters audio_parameters_;
-  media::AudioCapturerSource::CaptureCallback* callback_;
+  raw_ptr<media::AudioCapturerSource::CaptureCallback, ExperimentalAsh>
+      callback_;
   std::unique_ptr<media::AudioBlockFifo> audio_blocks_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =

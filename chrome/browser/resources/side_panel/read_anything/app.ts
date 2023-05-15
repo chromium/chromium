@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
 import '../strings.m.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {rgbToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 
@@ -118,12 +118,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //                will be translated to other languages.
   private defaultFontName_: string = 'sans-serif';
   private validFontNames_: Array<{name: string, css: string}> = [
-    {name: 'Standard font', css: 'Standard font'},
+    {name: 'Poppins', css: 'Poppins'},
     {name: 'Sans-serif', css: 'sans-serif'},
     {name: 'Serif', css: 'serif'},
-    {name: 'Arial', css: 'Arial'},
-    {name: 'Comic Sans MS', css: '"Comic Sans MS"'},
-    {name: 'Times New Roman', css: '"Times New Roman"'},
+    {name: 'Comic Neue', css: '"Comic Neue"'},
+    {name: 'Lexend Deca', css: '"Lexend Deca"'},
+    {name: 'EB Garamond', css: '"EB Garamond"'},
+    {name: 'STIX Two Text', css: '"STIX Two Text"'},
   ];
 
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
@@ -146,6 +147,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.showLoading();
 
     document.onselectionchange = () => {
+      if (!this.hasContent_) {
+        return;
+      }
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
       const selection = shadowRoot.getSelection();
@@ -226,9 +230,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   showLoading() {
-    this.emptyStateImagePath_ = 'chrome://resources/images/throbber_small.svg';
+    this.emptyStateImagePath_ = '//resources/images/throbber_small.svg';
     this.emptyStateDarkImagePath_ =
-        'chrome://resources/images/throbber_small_dark.svg';
+        '//resources/images/throbber_small_dark.svg';
     this.emptyStateHeading_ =
         loadTimeData.getString('readAnythingLoadingMessage');
     this.emptyStateSubheading_ = '';
@@ -260,10 +264,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // If there is no content to show, the empty state container will be shown.
     const node = this.buildSubtree_(rootId);
+    // The empty state header tells the user to select text to distill. Some web
+    // pages don't work with selection, so we show a different message.
     if (!node.textContent) {
+      if (chrome.readAnything.isSelectable()) {
+        this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
+      } else {
+        this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
+      }
       this.emptyStateImagePath_ = './images/empty_state.svg';
       this.emptyStateDarkImagePath_ = './images/empty_state.svg';
-      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
       this.emptyStateSubheading_ =
           loadTimeData.getString('emptyStateSubheader');
       this.hasContent_ = false;

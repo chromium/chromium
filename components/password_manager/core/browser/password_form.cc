@@ -124,6 +124,7 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("signon_realm", form.signon_realm);
   target.Set("is_public_suffix_match", form.is_public_suffix_match);
   target.Set("is_affiliation_based_match", form.is_affiliation_based_match);
+  target.Set("is_grouped_match", form.is_grouped_match);
   target.Set("url", form.url.possibly_invalid_spec());
   target.Set("action", form.action.possibly_invalid_spec());
   target.Set("submit_element", form.submit_element);
@@ -244,13 +245,20 @@ std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
 }
 
 InsecurityMetadata::InsecurityMetadata() = default;
-InsecurityMetadata::InsecurityMetadata(base::Time create_time, IsMuted is_muted)
-    : create_time(create_time), is_muted(is_muted) {}
+InsecurityMetadata::InsecurityMetadata(
+    base::Time create_time,
+    IsMuted is_muted,
+    TriggerBackendNotification trigger_notification_from_backend)
+    : create_time(create_time),
+      is_muted(is_muted),
+      trigger_notification_from_backend(trigger_notification_from_backend) {}
 InsecurityMetadata::InsecurityMetadata(const InsecurityMetadata& rhs) = default;
 InsecurityMetadata::~InsecurityMetadata() = default;
 
 bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs) {
-  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted;
+  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted &&
+         *lhs.trigger_notification_from_backend ==
+             *rhs.trigger_notification_from_backend;
 }
 
 PasswordNote::PasswordNote() = default;
@@ -415,6 +423,7 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
              rhs.was_parsed_using_autofill_predictions &&
          lhs.is_public_suffix_match == rhs.is_public_suffix_match &&
          lhs.is_affiliation_based_match == rhs.is_affiliation_based_match &&
+         lhs.is_grouped_match == rhs.is_grouped_match &&
          lhs.affiliated_web_realm == rhs.affiliated_web_realm &&
          lhs.app_display_name == rhs.app_display_name &&
          lhs.app_icon_url == rhs.app_icon_url &&

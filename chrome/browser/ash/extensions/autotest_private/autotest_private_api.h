@@ -13,6 +13,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -907,7 +908,7 @@ class AutotestPrivateAPI : public BrowserContextKeyedAPI,
   base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
       clipboard_observation_{this};
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   bool test_mode_;  // true for AutotestPrivateApiTest.AutotestPrivate test.
 };
 

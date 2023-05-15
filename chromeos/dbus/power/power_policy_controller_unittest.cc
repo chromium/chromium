@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -42,7 +43,7 @@ class PowerPolicyControllerTest : public testing::Test {
     return FakePowerManagerClient::Get();
   }
 
-  PowerPolicyController* policy_controller_;
+  raw_ptr<PowerPolicyController, ExperimentalAsh> policy_controller_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

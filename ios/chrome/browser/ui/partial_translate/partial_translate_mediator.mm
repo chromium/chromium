@@ -4,17 +4,18 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/partial_translate/partial_translate_api.h"
 #import "ios/web/public/web_state.h"
@@ -104,7 +105,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   FullscreenController* _fullscreenController;
 }
 
-- (instancetype)initWithWebStateList:(base::WeakPtr<WebStateList>)webStateList
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
               withBaseViewController:(UIViewController*)baseViewController
                          prefService:(PrefService*)prefs
                 fullscreenController:(FullscreenController*)fullscreenController
@@ -112,7 +113,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   if (self = [super init]) {
     DCHECK(webStateList);
     DCHECK(baseViewController);
-    _webStateList = webStateList;
+    _webStateList = webStateList->AsWeakPtr();
     _baseViewController = baseViewController;
     _fullscreenController = fullscreenController;
     _incognito = incognito;
@@ -154,7 +155,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
     // Feature is not available.
     return NO;
   }
-  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (!IsPartialTranslateEnabled()) {
     // Feature is not enabled.
     return NO;
   }

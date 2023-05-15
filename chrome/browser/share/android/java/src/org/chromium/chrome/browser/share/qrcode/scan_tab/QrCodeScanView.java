@@ -30,8 +30,6 @@ import org.chromium.ui.widget.ButtonCompat;
 class QrCodeScanView {
     public interface PermissionPrompter { void promptForCameraPermission(); }
 
-    public interface PermissionPromptAllowedChecker { Boolean canPromptForPermission(); }
-
     private final Context mContext;
     private final FrameLayout mView;
     private final PreviewCallback mCameraPreviewCallback;

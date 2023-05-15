@@ -161,6 +161,9 @@ class POLICY_EXPORT PolicyLogger {
   // Checks if browser is running on Android.
   bool IsPolicyLoggingEnabled() const;
 
+  // Sets `is_log_deletion_enabled_` to allow scheduling old log deletion.
+  void EnableLogDeletion();
+
   // Returns the logs size for testing purposes.
   size_t GetPolicyLogsSizeForTesting() const;
 
@@ -180,6 +183,13 @@ class POLICY_EXPORT PolicyLogger {
   // Posts a new log deletion task and sets the `is_log_deletion_scheduled_`
   // flag.
   void ScheduleOldLogsDeletion();
+
+  // Log deletion scheduling fails in unit tests when there is no task
+  // environment (See crbug.com/1434241). To avoid having  a task environment in
+  // every existing and new unit test that calls a function with logs, this flag
+  // is disabled in unit tests, and enabled everywhere else early in the policy
+  // stack initialization from `BrowserPolicyConnector::Init`.
+  bool is_log_deletion_enabled_{false};
 
   bool is_log_deletion_scheduled_{false};
 

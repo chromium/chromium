@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_failure_type.h"
@@ -81,7 +82,7 @@ class BleListenerOperation
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
   void OnConnectionFailure(BleListenerFailureType failure_type);
 
-  BleConnectionManager* ble_connection_manager_;
+  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
 
   bool is_attempt_active_ = false;
   base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};

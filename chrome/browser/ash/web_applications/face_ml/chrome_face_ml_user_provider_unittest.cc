@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,7 +39,7 @@ class ChromeFaceMLUserProviderTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

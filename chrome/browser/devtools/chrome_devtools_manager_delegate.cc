@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -90,8 +91,10 @@ bool GetExtensionInfo(content::WebContents* wc,
     *type = ChromeDevToolsManagerDelegate::kTypeApp;
     return true;
   }
-  if (extensions::GetViewType(wc) ==
-      extensions::mojom::ViewType::kExtensionPopup) {
+
+  auto view_type = extensions::GetViewType(wc);
+  if (view_type == extensions::mojom::ViewType::kExtensionPopup ||
+      view_type == extensions::mojom::ViewType::kExtensionSidePanel) {
     // Note that we are intentionally not setting name here, so that we can
     // construct a name based on the URL or page title in
     // RenderFrameDevToolsAgentHost::GetTitle()
@@ -247,8 +250,19 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     case Availability::kAllowed:
       return true;
     case Availability::kDisallowedForForceInstalledExtensions:
-      return !extension ||
-             !extensions::Manifest::IsPolicyLocation(extension->location());
+      if (!extension) {
+        return true;
+      }
+      if (extensions::Manifest::IsPolicyLocation(extension->location())) {
+        return false;
+      }
+      // We also disallow inspecting component extensions, but only for managed
+      // profiles.
+      if (extensions::Manifest::IsComponentLocation(extension->location()) &&
+          profile->GetProfilePolicyConnector()->IsManaged()) {
+        return false;
+      }
+      return true;
     default:
       NOTREACHED() << "Unknown developer tools policy";
       return true;

@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_RING_HANDLER_H_
 #define ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_RING_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -52,8 +53,8 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   void AnimateToState(double state) override;
   void AnimationStopped() override;
 
-  AutoclickRingView* view_ = nullptr;
-  views::Widget* ring_widget_ = nullptr;
+  raw_ptr<AutoclickRingView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> ring_widget_ = nullptr;
   // Location of the simulated mouse event from auto click in screen
   // coordinates.
   gfx::Point tap_down_location_;

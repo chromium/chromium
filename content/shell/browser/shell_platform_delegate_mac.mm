@@ -4,11 +4,13 @@
 
 #include "content/shell/browser/shell_platform_delegate.h"
 
+#import <Cocoa/Cocoa.h>
+
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -20,32 +22,37 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
-#import "ui/base/cocoa/underlay_opengl_hosting_window.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Receives notification that the window is closing so that it can start the
-// tear-down process. Is responsible for deleting itself when done.
-@interface ContentShellWindowDelegate : NSObject <NSWindowDelegate> {
- @private
-  raw_ptr<content::Shell> _shell;
-}
-- (id)initWithShell:(content::Shell*)shell;
-- (content::Shell*)shell;
+// tear-down process.
+@interface ContentShellWindowDelegate : NSObject <NSWindowDelegate>
+
+@property(readonly) NSWindow* window;
+
+- (id)initWithShell:(content::Shell*)shell window:(NSWindow*)window;
+- (void)showDevTools:(id)sender;
+
 @end
 
-@implementation ContentShellWindowDelegate
-
-- (id)initWithShell:(content::Shell*)shell {
-  if ((self = [super init])) {
-    _shell = shell;
-  }
-  return self;
+@implementation ContentShellWindowDelegate {
+  raw_ptr<content::Shell> _shell;
+  NSWindow* __strong _window;
 }
 
-// Called by CrShellWindow so that it doesn't need to hold
-// raw_ptr<content::Shell>.
-- (content::Shell*)shell {
-  return _shell;
+@synthesize window = _window;
+
+- (id)initWithShell:(content::Shell*)shell window:(NSWindow*)window {
+  if ((self = [super init])) {
+    _shell = shell;
+    _window = window;
+    window.delegate = self;
+  }
+  return self;
 }
 
 // Called when the window is about to close. Perform the self-destruction
@@ -53,13 +60,12 @@
 // the various global lists. By returning YES, we allow the window to be
 // removed from the screen.
 - (BOOL)windowShouldClose:(id)sender {
-  NSWindow* window = base::mac::ObjCCastStrict<NSWindow>(sender);
-  [window autorelease];
+  CHECK_EQ(base::mac::ObjCCastStrict<NSWindow>(sender), _window);
   // Don't leave a dangling pointer if the window lives beyond
   // this method. See crbug.com/719830.
-  [window setDelegate:nil];
+  _window.delegate = nil;
+  _window = nil;
   _shell.ClearAndDelete();
-  [self release];
 
   return YES;
 }
@@ -72,21 +78,8 @@
   _shell->URLEntered(base::SysNSStringToUTF8([sender stringValue]));
 }
 
-@end
-
-@interface CrShellWindow : UnderlayOpenGLHostingWindow
-- (void)showDevTools:(id)sender;
-@end
-
-@implementation CrShellWindow
-
 - (void)showDevTools:(id)sender {
-  // This is prefered as holding a raw_ptr<content::Shell> because the delegate
-  // is responsible for destroying the shell on `windowShouldClose` event which
-  // would lead the raw_ptr to dangle.
-  ContentShellWindowDelegate* delegate =
-      base::mac::ObjCCastStrict<ContentShellWindowDelegate>(self.delegate);
-  delegate.shell->ShowDevTools();
+  _shell->ShowDevTools();
 }
 
 @end
@@ -107,19 +100,18 @@ void MakeShellButton(NSRect* rect,
                      NSString* title,
                      NSView* parent,
                      int control,
-                     NSView* target,
+                     id target,
                      NSString* key,
                      NSUInteger modifier) {
-  base::scoped_nsobject<NSButton> button(
-      [[NSButton alloc] initWithFrame:*rect]);
-  [button setTitle:title];
-  [button setBezelStyle:NSBezelStyleSmallSquare];
-  [button setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin)];
-  [button setTarget:target];
-  [button setAction:@selector(performAction:)];
-  [button setTag:control];
-  [button setKeyEquivalent:key];
-  [button setKeyEquivalentModifierMask:modifier];
+  NSButton* button = [[NSButton alloc] initWithFrame:*rect];
+  button.title = title;
+  button.bezelStyle = NSBezelStyleSmallSquare;
+  button.autoresizingMask = (NSViewMaxXMargin | NSViewMinYMargin);
+  button.target = target;
+  button.action = @selector(performAction:);
+  button.tag = control;
+  button.keyEquivalent = key;
+  button.keyEquivalentModifierMask = modifier;
   [parent addSubview:button];
   rect->origin.x += kButtonWidth;
 }
@@ -129,8 +121,8 @@ void MakeShellButton(NSRect* rect,
 namespace content {
 
 struct ShellPlatformDelegate::ShellData {
-  gfx::NativeWindow window;
-  NSTextField* url_edit_view = nullptr;
+  ContentShellWindowDelegate* __strong delegate;
+  NSTextField* __weak url_edit_view;
 };
 
 struct ShellPlatformDelegate::PlatformData {};
@@ -151,83 +143,80 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   int width = initial_size.width();
   int height = initial_size.height();
 
-  if (!Shell::ShouldHideToolbar())
+  if (!Shell::ShouldHideToolbar()) {
     height += kURLBarHeight;
+  }
   NSRect initial_window_bounds = NSMakeRect(0, 0, width, height);
   NSRect content_rect = initial_window_bounds;
   NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                           NSWindowStyleMaskMiniaturizable |
                           NSWindowStyleMaskResizable;
-  CrShellWindow* window =
-      [[CrShellWindow alloc] initWithContentRect:content_rect
-                                       styleMask:style_mask
-                                         backing:NSBackingStoreBuffered
-                                           defer:NO];
-  [window setTitle:kWindowTitle];
-  NSView* content = [window contentView];
+  NSWindow* window =
+      [[NSWindow alloc] initWithContentRect:content_rect
+                                  styleMask:style_mask
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+  window.title = kWindowTitle;
+  NSView* content = window.contentView;
 
   // If the window is allowed to get too small, it will wreck the view bindings.
   NSSize min_size = NSMakeSize(kMinimumWindowWidth, kMinimumWindowHeight);
   min_size = [content convertSize:min_size toView:nil];
   // Note that this takes window coordinates.
-  [window setContentMinSize:min_size];
+  window.contentMinSize = min_size;
 
-  // Set the shell window to participate in Lion Fullscreen mode. Set
-  // Setting this flag has no effect on Snow Leopard or earlier.
-  NSUInteger collectionBehavior = [window collectionBehavior];
-  collectionBehavior |= NSWindowCollectionBehaviorFullScreenPrimary;
-  [window setCollectionBehavior:collectionBehavior];
+  // Set the shell window to participate in fullscreen mode.
+  window.collectionBehavior |= NSWindowCollectionBehaviorFullScreenPrimary;
 
   // Rely on the window delegate to clean us up rather than immediately
-  // releasing when the window gets closed. We use the delegate to do
-  // everything from the autorelease pool so the shell isn't on the stack
-  // during cleanup (ie, a window close from javascript).
-  [window setReleasedWhenClosed:NO];
+  // releasing when the window gets closed. We use the delegate to do everything
+  // from the autorelease pool so the shell isn't on the stack during cleanup
+  // (ie, a window close from javascript). Also, releasedWhenClosed == YES is
+  // incompatible with ARC.
+  window.releasedWhenClosed = NO;
 
-  // Create a window delegate to watch for when it's asked to go away. It will
-  // clean itself up so we don't need to hold a reference.
+  // Create a window delegate to watch for when it's asked to go away.
   ContentShellWindowDelegate* delegate =
-      [[ContentShellWindowDelegate alloc] initWithShell:shell];
-  [window setDelegate:delegate];
+      [[ContentShellWindowDelegate alloc] initWithShell:shell window:window];
 
   if (!Shell::ShouldHideToolbar()) {
     NSRect button_frame =
         NSMakeRect(0, NSMaxY(initial_window_bounds) - kURLBarHeight,
                    kButtonWidth, kURLBarHeight);
 
-    MakeShellButton(&button_frame, @"Back", content, IDC_NAV_BACK,
-                    (NSView*)delegate, @"[", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Back", content, IDC_NAV_BACK, delegate,
+                    @"[", NSEventModifierFlagCommand);
     MakeShellButton(&button_frame, @"Forward", content, IDC_NAV_FORWARD,
-                    (NSView*)delegate, @"]", NSEventModifierFlagCommand);
-    MakeShellButton(&button_frame, @"Reload", content, IDC_NAV_RELOAD,
-                    (NSView*)delegate, @"r", NSEventModifierFlagCommand);
-    MakeShellButton(&button_frame, @"Stop", content, IDC_NAV_STOP,
-                    (NSView*)delegate, @".", NSEventModifierFlagCommand);
+                    delegate, @"]", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Reload", content, IDC_NAV_RELOAD, delegate,
+                    @"r", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Stop", content, IDC_NAV_STOP, delegate,
+                    @".", NSEventModifierFlagCommand);
 
     button_frame.size.width =
         NSWidth(initial_window_bounds) - NSMinX(button_frame);
-    base::scoped_nsobject<NSTextField> url_edit_view(
-        [[NSTextField alloc] initWithFrame:button_frame]);
+    NSTextField* url_edit_view =
+        [[NSTextField alloc] initWithFrame:button_frame];
     [content addSubview:url_edit_view];
-    [url_edit_view setAutoresizingMask:(NSViewWidthSizable | NSViewMinYMargin)];
-    [url_edit_view setTarget:delegate];
-    [url_edit_view setAction:@selector(takeURLStringValueFrom:)];
-    [[url_edit_view cell] setWraps:NO];
-    [[url_edit_view cell] setScrollable:YES];
-    shell_data.url_edit_view = url_edit_view.get();
+    url_edit_view.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;
+    url_edit_view.target = delegate;
+    url_edit_view.action = @selector(takeURLStringValueFrom:);
+    url_edit_view.cell.wraps = NO;
+    url_edit_view.cell.scrollable = YES;
+    shell_data.url_edit_view = url_edit_view;
   }
 
   // Show the new window.
   [window makeKeyAndOrderFront:nil];
 
-  shell_data.window = window;
+  shell_data.delegate = delegate;
 }
 
 gfx::NativeWindow ShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  return shell_data.window;
+  return shell_data.delegate.window;
 }
 
 void ShellPlatformDelegate::CleanUp(Shell* shell) {
@@ -240,16 +229,17 @@ void ShellPlatformDelegate::SetContents(Shell* shell) {
   ShellData& shell_data = shell_data_map_[shell];
 
   NSView* web_view = shell->web_contents()->GetNativeView().GetNativeNSView();
-  [web_view setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+  web_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-  NSView* content = [shell_data.window.GetNativeNSWindow() contentView];
-  [content addSubview:web_view];
+  NSWindow* window = shell_data.delegate.window;
+  [window.contentView addSubview:web_view];
 
-  NSRect frame = [content bounds];
-  if (!Shell::ShouldHideToolbar())
+  NSRect frame = window.contentView.bounds;
+  if (!Shell::ShouldHideToolbar()) {
     frame.size.height -= kURLBarHeight;
-  [web_view setFrame:frame];
-  [web_view setNeedsDisplay:YES];
+  }
+  web_view.frame = frame;
+  web_view.needsDisplay = YES;
 }
 
 void ShellPlatformDelegate::ResizeWebContent(Shell* shell,
@@ -260,7 +250,7 @@ void ShellPlatformDelegate::ResizeWebContent(Shell* shell,
   int toolbar_height = Shell::ShouldHideToolbar() ? 0 : kURLBarHeight;
   NSRect frame = NSMakeRect(0, 0, content_size.width(),
                             content_size.height() + toolbar_height);
-  [shell_data.window.GetNativeNSWindow().contentView setFrame:frame];
+  shell_data.delegate.window.contentView.frame = frame;
 }
 
 void ShellPlatformDelegate::EnableUIControl(Shell* shell,
@@ -284,19 +274,20 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       NOTREACHED() << "Unknown UI control";
       return;
   }
-  [[[shell_data.window.GetNativeNSWindow() contentView] viewWithTag:id]
+  [[shell_data.delegate.window.contentView viewWithTag:id]
       setEnabled:is_enabled];
 }
 
 void ShellPlatformDelegate::SetAddressBarURL(Shell* shell, const GURL& url) {
-  if (Shell::ShouldHideToolbar())
+  if (Shell::ShouldHideToolbar()) {
     return;
+  }
 
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   NSString* url_string = base::SysUTF8ToNSString(url.spec());
-  [shell_data.url_edit_view setStringValue:url_string];
+  shell_data.url_edit_view.stringValue = url_string;
 }
 
 void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {}
@@ -306,8 +297,7 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  NSString* title_string = base::SysUTF16ToNSString(title);
-  [shell_data.window.GetNativeNSWindow() setTitle:title_string];
+  shell_data.delegate.window.title = base::SysUTF16ToNSString(title);
 }
 
 void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
@@ -316,7 +306,7 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  [shell_data.window.GetNativeNSWindow() performClose:nil];
+  [shell_data.delegate.window performClose:nil];
   return true;  // The performClose() will do the destruction of Shell.
 }
 
@@ -332,7 +322,7 @@ void ShellPlatformDelegate::ActivateContents(Shell* shell,
   // This makes the window the active window for the application, and when the
   // app is active, the window will be also. That makes all RenderWidgetHosts
   // for the window active (which is separate from focused on mac).
-  [shell_data.window.GetNativeNSWindow() makeKeyAndOrderFront:nil];
+  [shell_data.delegate.window makeKeyAndOrderFront:nil];
   // This makes the application active so that we can actually move focus
   // between windows and the renderer can receive focus/blur events.
   [NSApp activateIgnoringOtherApps:YES];
@@ -346,23 +336,23 @@ bool ShellPlatformDelegate::HandleKeyboardEvent(
     Shell* shell,
     WebContents* source,
     const NativeWebKeyboardEvent& event) {
-  if (event.skip_in_browser || Shell::ShouldHideToolbar())
+  if (event.skip_in_browser || Shell::ShouldHideToolbar()) {
     return false;
+  }
 
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   // The event handling to get this strictly right is a tangle; cheat here a bit
   // by just letting the menus have a chance at it.
-  if ([event.os_event type] == NSEventTypeKeyDown) {
-    if (([event.os_event modifierFlags] & NSEventModifierFlagCommand) &&
-        [[event.os_event characters] isEqual:@"l"]) {
-      [shell_data.window.GetNativeNSWindow()
-          makeFirstResponder:shell_data.url_edit_view];
+  if (event.os_event.type == NSEventTypeKeyDown) {
+    if ((event.os_event.modifierFlags & NSEventModifierFlagCommand) &&
+        [event.os_event.characters isEqual:@"l"]) {
+      [shell_data.delegate.window makeFirstResponder:shell_data.url_edit_view];
       return true;
     }
 
-    [[NSApp mainMenu] performKeyEquivalent:event.os_event];
+    [NSApp.mainMenu performKeyEquivalent:event.os_event];
     return true;
   }
   return false;

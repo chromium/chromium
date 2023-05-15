@@ -42,7 +42,7 @@ class ASH_EXPORT OverviewHighlightableView {
   void SetHighlightVisibility(bool visible);
 
   // Returns true if this is the current highlighted view.
-  bool IsViewHighlighted() { return is_highlighted_; }
+  bool IsViewHighlighted() const { return is_highlighted_; }
 
   // Returns the point the accessibility magnifiers should focus when this is
   // highlighted. If not overridden, this will return the centerpoint.

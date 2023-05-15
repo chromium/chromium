@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -181,10 +180,11 @@ std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  return (sync_service &&
-          sync_service->GetUserSettings()->IsFirstSetupComplete() &&
-          sync_service->IsSyncFeatureActive() &&
-          sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+  return (
+      sync_service &&
+      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
+      sync_service->IsSyncFeatureActive() &&
+      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
 }
 
 GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
@@ -222,6 +222,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kPasswordBreachDialog:
       case ManagePasswordsReferrer::kSafetyCheck:
       case ManagePasswordsReferrer::kBiometricAuthenticationBeforeFillingDialog:
+      case ManagePasswordsReferrer::kChromeMenuItem:
         NOTREACHED();
     }
 

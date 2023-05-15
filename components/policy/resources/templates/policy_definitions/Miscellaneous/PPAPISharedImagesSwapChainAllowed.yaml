@@ -23,9 +23,9 @@ desc: |-
   policy while the browser is running.
 
 supported_on:
-# TODO(crbug.com/1410109): Remove this policy on ~May 6 after 114 has branched.
-- chrome.*:110-
-- chrome_os:110-
+- chrome.*:110-114
+- chrome_os:110-114
+deprecated: true
 device_only: false
 supported_chrome_os_management:
 - google_cloud

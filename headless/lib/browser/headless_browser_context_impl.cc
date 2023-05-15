@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

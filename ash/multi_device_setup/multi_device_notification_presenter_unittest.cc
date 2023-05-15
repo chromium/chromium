@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/token.h"
@@ -292,7 +293,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-  TestSystemTrayClient* test_system_tray_client_;
+  raw_ptr<TestSystemTrayClient, ExperimentalAsh> test_system_tray_client_;
   TestMessageCenter test_message_center_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
       fake_multidevice_setup_;

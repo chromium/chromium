@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
@@ -111,7 +112,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   const ChromeDeviceMetadataParameters chrome_passed_device_params_;
 
   // Singleton lives throughout class lifetime.
-  system::StatisticsProvider* const statistics_provider_;
+  const raw_ptr<system::StatisticsProvider, ExperimentalAsh>
+      statistics_provider_;
 
   // Number of retry attempts at reading the oobe completed file.
   int retry_oobe_completed_count_ = 0;

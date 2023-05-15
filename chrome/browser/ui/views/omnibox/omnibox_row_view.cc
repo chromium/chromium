@@ -75,10 +75,13 @@ class OmniboxRowView::HeaderView : public views::View {
 
     views::FocusRing::Install(header_toggle_button_);
     views::FocusRing::Get(header_toggle_button_)
-        ->SetHasFocusPredicate([&](View* view) {
-          return view->GetVisible() &&
-                 row_view_->model_->GetPopupSelection() == GetHeaderSelection();
-        });
+        ->SetHasFocusPredicate(base::BindRepeating(
+            [](const HeaderView* header, const View* view) {
+              return view->GetVisible() &&
+                     header->row_view_->model_->GetPopupSelection() ==
+                         header->GetHeaderSelection();
+            },
+            base::Unretained(this)));
 
     if (row_view_->pref_service_) {
       pref_change_registrar_.Init(row_view_->pref_service_);
@@ -269,8 +272,6 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
                         u"FOCUSED_BUTTON_HEADER"},
                        {OmniboxPopupSelection::NORMAL, u"NORMAL"},
                        {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH,
-                        u"FOCUSED_BUTTON_TAB_SWITCH"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                         u"FOCUSED_BUTTON_ACTION"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,

@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/devtools_util.h"
@@ -202,10 +203,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
       process_manager->GetLazyKeepaliveActivities(extension);
   EXPECT_TRUE(activities.empty());
 
+  DevToolsWindowCreationObserver observer;
   devtools_util::InspectBackgroundPage(extension, profile());
-  EXPECT_EQ(1, process_manager->GetLazyKeepaliveCount(extension));
-  activities = process_manager->GetLazyKeepaliveActivities(extension);
-  EXPECT_THAT(activities, testing::UnorderedElementsAre(dev_tools_activity));
+  observer.WaitForLoad();
+
+  // This is due to how these keepalive counters are managed by the extension
+  // process manager:
+  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:extensions/browser/process_manager.cc;drc=8ce14ef97f8607b1b57f8d02da575ed5150eea9e;l=924
+  // It bumps them each time it sees a DevToolsAgentHost associated to an
+  // extension, and in case of the tab target mode, there's one agent host for
+  // the WebContents and one for the render frame.
+  const int expected_keepalive_count =
+      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget) ? 2 : 1;
+
+  EXPECT_EQ(expected_keepalive_count,
+            process_manager->GetLazyKeepaliveCount(extension));
+  EXPECT_THAT(activities, testing::Each(dev_tools_activity));
 
   // Opening DevTools will cause the background page to load. Wait for it.
   WaitForExtensionViewsToLoad();
@@ -230,10 +243,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   extension = ExtensionRegistry::Get(profile())
       ->enabled_extensions().GetByID(extension_id);
 
-  // Keepalive count should stabilize back to 1, because DevTools is still open.
-  EXPECT_EQ(1, process_manager->GetLazyKeepaliveCount(extension));
+  // Keepalive count should stabilize back to original count, because DevTools
+  // is still open.
+  EXPECT_EQ(expected_keepalive_count,
+            process_manager->GetLazyKeepaliveCount(extension));
   activities = process_manager->GetLazyKeepaliveActivities(extension);
-  EXPECT_THAT(activities, testing::UnorderedElementsAre(dev_tools_activity));
+  EXPECT_THAT(activities, testing::Each(dev_tools_activity));
 }
 
 // Tests whether the extension runtime stays valid when an extension reloads
@@ -312,15 +327,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_TRUE(bg_contents);
 
   // Now check whether the extension runtime is valid (see kTargetJs).
-  bool is_valid = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      bg_contents, "domAutomationController.send(is_valid);", &is_valid));
-  EXPECT_TRUE(is_valid);
+  EXPECT_EQ(true, content::EvalJs(bg_contents, "is_valid;"));
 
   // Tidy up.
+  scoped_refptr<content::DevToolsAgentHost> agent_host(
+      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
+          ? content::DevToolsAgentHost::GetOrCreateForTab(bg_contents)
+          : content::DevToolsAgentHost::GetOrCreateFor(bg_contents));
   DevToolsWindowTesting::CloseDevToolsWindowSync(
-      DevToolsWindow::FindDevToolsWindow(
-          content::DevToolsAgentHost::GetOrCreateFor(bg_contents).get()));
+      DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 // Tests that changing a Service Worker based extension to an event page doesn't

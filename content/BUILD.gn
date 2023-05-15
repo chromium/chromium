@@ -94,11 +94,7 @@ grit("content_resources") {
     "grit/content_resources_map.h",
     "content_resources.pak",
   ]
-  deps = [
-    "//components/ukm/debug:build_ts",
-    "//content/browser/resources/histograms:build_ts",
-    "//gpu/ipc/common:vulkan_interface_js__generator",
-  ]
+  deps = [ "//components/ukm/debug:build_ts" ]
 
   if (is_chromeos_ash) {
     deps += [
@@ -108,19 +104,6 @@ grit("content_resources") {
       "//url/mojom:url_mojom_origin_js__generator",
     ]
   }
-}
-
-grit("dev_ui_content_resources") {
-  source = "dev_ui_content_resources.grd"
-
-  outputs = [
-    "grit/dev_ui_content_resources.h",
-    "dev_ui_content_resources.pak",
-  ]
-  deps = [
-    "//content/browser/resources/gpu:html_wrapper_files",
-    "//content/browser/resources/process:build_ts",
-  ]
 }
 
 # This target exists to "hold" the content_export header so we can do proper

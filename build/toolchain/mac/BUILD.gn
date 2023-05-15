@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/mac/mac_sdk.gni")
+import("//build/config/v8_target_cpu.gni")
 import("//build/toolchain/apple/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -74,49 +75,42 @@ mac_toolchain("clang_x86") {
 mac_toolchain("clang_x86_v8_arm") {
   toolchain_args = {
     current_cpu = "x86"
-
-    if (defined(v8_current_cpu)) {
-      v8_current_cpu = "arm"
-    }
+    v8_current_cpu = "arm"
   }
 }
 
 mac_toolchain("clang_x86_v8_mipsel") {
   toolchain_args = {
     current_cpu = "x86"
-
-    if (defined(v8_current_cpu)) {
-      v8_current_cpu = "mipsel"
-    }
+    v8_current_cpu = "mipsel"
   }
 }
 
 mac_toolchain("clang_x64_v8_arm64") {
   toolchain_args = {
     current_cpu = "x64"
-
-    if (defined(v8_current_cpu)) {
-      v8_current_cpu = "arm64"
-    }
+    v8_current_cpu = "arm64"
   }
 }
 
 mac_toolchain("clang_x64_v8_mips64el") {
   toolchain_args = {
     current_cpu = "x64"
-
-    if (defined(v8_current_cpu)) {
-      v8_current_cpu = "mips64el"
-    }
+    v8_current_cpu = "mips64el"
   }
 }
 
 mac_toolchain("clang_arm64_v8_x64") {
   toolchain_args = {
     current_cpu = "arm64"
+    v8_current_cpu = "x64"
+  }
+}
 
-    if (defined(v8_current_cpu)) {
-      v8_current_cpu = "x64"
-    }
+# Needed to run v8 on the host during a arm64 -> x86_64 cross-build
+mac_toolchain("clang_arm64_v8_arm64") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    v8_current_cpu = "arm64"
   }
 }

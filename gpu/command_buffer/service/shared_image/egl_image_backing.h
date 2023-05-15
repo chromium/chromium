@@ -21,8 +21,6 @@ class SharedGLFenceEGL;
 
 namespace gpu {
 class GpuDriverBugWorkarounds;
-class GLTextureImageRepresentation;
-class SkiaImageRepresentation;
 struct Mailbox;
 
 // Implementation of SharedImageBacking that is used to create EGLImage targets
@@ -64,7 +62,7 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

@@ -222,7 +222,7 @@ void PreinstalledWebAppWindowExperiment::FirstTimeSetup() {
 }
 
 void PreinstalledWebAppWindowExperiment::SetFirstTimePrefsThenMaybeStart() {
-  bool eligible = utils::DetermineEligibility(registrar_unsafe());
+  bool eligible = utils::DetermineEligibility(profile_, registrar_unsafe());
   utils::SetEligibilityPref(profile_->GetPrefs(), eligible);
 
   if (!eligible) {

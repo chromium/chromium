@@ -26,8 +26,7 @@ namespace device {
 
 class PublicKeyCredentialUserEntity;
 
-namespace fido {
-namespace mac {
+namespace fido::mac {
 
 // CredentialMetadata is the metadata for a Touch ID credential.
 //
@@ -196,8 +195,8 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
     const std::string& user_display_name,
     bool is_resident);
 
-}  // namespace mac
-}  // namespace fido
+}  // namespace fido::mac
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_MAC_CREDENTIAL_METADATA_H_

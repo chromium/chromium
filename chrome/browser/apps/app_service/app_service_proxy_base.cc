@@ -491,8 +491,9 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     // |activity_label| -> {index, is_generic}
     std::map<std::string, IndexAndGeneric> best_handler_map;
     bool is_file_handling_intent = !intent->files.empty();
-    size_t index = 0;
-    for (const auto& filter : update.IntentFilters()) {
+    const apps::IntentFilters& filters = update.IntentFilters();
+    for (size_t i = 0; i < filters.size(); i++) {
+      const IntentFilterPtr& filter = filters[i];
       DCHECK(filter);
       if (exclude_browsers && filter->IsBrowserFilter()) {
         continue;
@@ -510,12 +511,10 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
         auto it = best_handler_map.find(activity_label);
         if (it == best_handler_map.end() ||
             (it->second.is_generic && !generic)) {
-          best_handler_map[activity_label] = IndexAndGeneric{index, generic};
+          best_handler_map[activity_label] = IndexAndGeneric{i, generic};
         }
       }
-      index++;
     }
-    const auto& filters = update.IntentFilters();
     for (const auto& handler_entry : best_handler_map) {
       const IntentFilterPtr& filter = filters[handler_entry.second.index];
       IntentLaunchInfo entry = CreateIntentLaunchInfo(intent, filter, update);

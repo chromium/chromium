@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,11 +65,11 @@ class TestSyncSchedulerImpl : public SyncSchedulerImpl {
  private:
   std::unique_ptr<base::OneShotTimer> CreateTimer() override {
     mock_timer_ = new base::MockOneShotTimer();
-    return base::WrapUnique(mock_timer_);
+    return base::WrapUnique(mock_timer_.get());
   }
 
   // A timer instance for testing. Owned by the parent scheduler.
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
 };
 
 }  // namespace

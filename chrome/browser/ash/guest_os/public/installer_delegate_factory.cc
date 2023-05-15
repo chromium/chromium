@@ -11,7 +11,6 @@ namespace guest_os {
 std::unique_ptr<ash::guest_os_installer::mojom::PageHandler>
 InstallerDelegateFactory(
     ash::GuestOSInstallerUI* webui,
-    const GURL& url,
     mojo::PendingRemote<ash::guest_os_installer::mojom::Page> pending_page,
     mojo::PendingReceiver<ash::guest_os_installer::mojom::PageHandler>
         pending_page_handler) {

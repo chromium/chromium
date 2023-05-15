@@ -13,11 +13,14 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 import './passwords_shared.css.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_preview_item.html.js';
 
-export class PasswordPreviewItemElement extends PolymerElement {
+const PasswordPreviewItemElementBase = I18nMixin(PolymerElement);
+
+export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
   static get is() {
     return 'password-preview-item';
   }
@@ -60,6 +63,12 @@ export class PasswordPreviewItemElement extends PolymerElement {
 
   private onShowPasswordButtonClick_(): void {
     this.passwordHidden_ = !this.passwordHidden_;
+  }
+
+  private getShowHidePasswordButtonA11yLabel_(): string {
+    return this.i18n(
+        (this.passwordHidden_) ? 'showPasswordLabel' : 'hidePasswordLabel',
+        this.username, this.url);
   }
 }
 

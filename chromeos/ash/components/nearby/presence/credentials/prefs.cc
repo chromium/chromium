@@ -15,6 +15,10 @@ const char kNearbyPresenceDeviceIdPrefName[] =
     "nearby_presence.local_device_id";
 const char kNearbyPresenceUserNamePrefName[] = "nearby_presence.user_name";
 const char kNearbyPresenceProfileUrlPrefName[] = "nearby_presence.profile_url";
+const char kNearbyPresenceSharedCredentialIdListPrefName[] =
+    "nearby_presence.shared_credential_id_list";
+const char kNearbyPresenceSchedulingFirstTimeRegistrationPrefName[] =
+    "nearby_presence.scheduling.first_time_registration";
 
 }  // namespace prefs
 
@@ -26,6 +30,10 @@ void RegisterNearbyPresenceCredentialPrefs(PrefRegistrySimple* registry) {
                                /*default_value=*/std::string());
   registry->RegisterStringPref(prefs::kNearbyPresenceProfileUrlPrefName,
                                /*default_value=*/std::string());
+  registry->RegisterListPref(
+      prefs::kNearbyPresenceSharedCredentialIdListPrefName);
+  registry->RegisterDictionaryPref(
+      prefs::kNearbyPresenceSchedulingFirstTimeRegistrationPrefName);
 }
 
 }  // namespace ash::nearby::presence

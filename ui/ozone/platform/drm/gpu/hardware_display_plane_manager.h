@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -275,7 +276,7 @@ class HardwareDisplayPlaneManager {
 
   // Object containing the connection to the graphics device and wraps the API
   // calls to control it. Not owned.
-  DrmDevice* const drm_;
+  const raw_ptr<DrmDevice, ExperimentalAsh> drm_;
 
   bool has_universal_planes_ = false;
 

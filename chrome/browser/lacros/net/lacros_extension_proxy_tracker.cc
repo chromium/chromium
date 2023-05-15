@@ -88,8 +88,8 @@ bool LacrosExtensionProxyTracker::AshVersionSupportsExtensionSetProxies() {
     return false;
   }
 
-  int network_settings_version = service->GetInterfaceVersion(
-      crosapi::mojom::NetworkSettingsService::Uuid_);
+  int network_settings_version =
+      service->GetInterfaceVersion<crosapi::mojom::NetworkSettingsService>();
   if (network_settings_version <
       int{crosapi::mojom::NetworkSettingsService::MethodMinVersions::
               kSetExtensionProxyMinVersion}) {

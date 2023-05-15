@@ -17,6 +17,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -114,6 +115,7 @@ void NativeRendererMessagingService::ValidateMessagePort(
 void NativeRendererMessagingService::DispatchOnConnect(
     ScriptContextSetIterable* context_set,
     const PortId& target_port_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo& source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -127,8 +129,8 @@ void NativeRendererMessagingService::DispatchOnConnect(
       info.target_id, restrict_to_render_frame,
       base::BindRepeating(
           &NativeRendererMessagingService::DispatchOnConnectToScriptContext,
-          base::Unretained(this), target_port_id, channel_name, &source, info,
-          &port_created));
+          base::Unretained(this), target_port_id, channel_type, channel_name,
+          &source, info, &port_created));
   // Note: |restrict_to_render_frame| may have been deleted at this point!
 
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
@@ -182,15 +184,18 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
                  PortId(script_context->context_id(), data->next_port_id++,
                         is_opener, format));
 
+  ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
+                                 ? ChannelType::kNative
+                                 : ChannelType::kConnect;
   bindings_system_->GetIPCMessageSender()->SendOpenMessageChannel(
-      script_context, port->port_id(), target, channel_name);
+      script_context, port->port_id(), target, channel_type, channel_name);
   return port;
 }
 
 v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
-    const std::string& method_name,
+    ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -213,8 +218,8 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
                  message.format);
 
   return one_time_message_handler_.SendMessage(script_context, port_id, target,
-                                               method_name, message, async_type,
-                                               response_callback);
+                                               channel_type, message,
+                                               async_type, response_callback);
 }
 
 void NativeRendererMessagingService::PostMessageToPort(
@@ -285,6 +290,7 @@ void NativeRendererMessagingService::ValidateMessagePortInContext(
 
 void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
     const PortId& target_port_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -298,26 +304,8 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
 
   // First, determine the event we'll use to connect.
   std::string target_extension_id = script_context->GetExtensionID();
-  // TODO(devlin): Isolate `is_external` logic. It's duplicated in
-  // messaging_service.cc.
-  bool is_external =
-      info.source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
-      ((info.source_endpoint.type == MessagingEndpoint::Type::kExtension ||
-        info.source_endpoint.type == MessagingEndpoint::Type::kContentScript) &&
-       info.source_endpoint.extension_id != target_extension_id);
-  std::string event_name;
-  if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
-    event_name = messaging_util::kOnConnectNativeEvent;
-  } else if (channel_name == messaging_util::kSendRequestChannel) {
-    event_name = is_external ? messaging_util::kOnRequestExternalEvent
-                             : messaging_util::kOnRequestEvent;
-  } else if (channel_name == messaging_util::kSendMessageChannel) {
-    event_name = is_external ? messaging_util::kOnMessageExternalEvent
-                             : messaging_util::kOnMessageEvent;
-  } else {
-    event_name = is_external ? messaging_util::kOnConnectExternalEvent
-                             : messaging_util::kOnConnectEvent;
-  }
+  std::string event_name = messaging_util::GetEventForChannel(
+      info.source_endpoint, target_extension_id, channel_type);
 
   // If there are no listeners for the given event, then we know the port won't
   // be used in this context.
@@ -328,8 +316,8 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
   *port_created = true;
 
   DispatchOnConnectToListeners(script_context, target_port_id,
-                               target_extension_id, channel_name, source, info,
-                               event_name);
+                               target_extension_id, channel_type, channel_name,
+                               source, info, event_name);
 }
 
 void NativeRendererMessagingService::DeliverMessageToScriptContext(
@@ -428,6 +416,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     ScriptContext* script_context,
     const PortId& target_port_id,
     const ExtensionId& target_extension_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -479,11 +468,13 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   v8::Local<v8::Object> sender = sender_builder.Build();
 
-  if (channel_name == "chrome.extension.sendRequest" ||
-      channel_name == "chrome.runtime.sendMessage") {
+  if (channel_type == ChannelType::kSendRequest ||
+      channel_type == ChannelType::kSendMessage) {
     one_time_message_handler_.AddReceiver(script_context, target_port_id,
                                           sender, event_name);
   } else {
+    CHECK(channel_type == ChannelType::kConnect ||
+          channel_type == ChannelType::kNative);
     gin::Handle<GinPort> port =
         CreatePort(script_context, channel_name, target_port_id);
     port->SetSender(v8_context, sender);

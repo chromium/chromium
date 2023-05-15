@@ -10,4 +10,7 @@ import "services/network/public/mojom/structured_headers.mojom";
 interface StructuredHeadersParser {
   // Parses an item with optional parameters.
   ParseItem(string header) => (network.mojom.StructuredHeadersParameterizedItem? result);
+
+  // Parses a list.
+  ParseList(string header) => (array<network.mojom.StructuredHeadersParameterizedMember>? result);
 };

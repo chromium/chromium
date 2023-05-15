@@ -77,7 +77,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -967,7 +967,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
                  /* allow_layout_object_relevance_check */ true);
 }
 
-AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
+AXObject* AXObjectCacheImpl::Get(NGAbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1226,7 +1226,7 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
 }
 
 AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
-    AbstractInlineTextBox* inline_text_box) {
+    NGAbstractInlineTextBox* inline_text_box) {
   return MakeGarbageCollected<AXInlineTextBox>(inline_text_box, *this);
 }
 
@@ -1396,8 +1396,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
                        parent_if_known);
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
-                                         AXObject* parent) {
+AXObject* AXObjectCacheImpl::GetOrCreate(
+    NGAbstractInlineTextBox* inline_text_box,
+    AXObject* parent) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1605,10 +1606,9 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
   if (!node)
     return;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-
   auto iter = node_object_mapping_.find(node);
   if (iter != node_object_mapping_.end()) {
+    LayoutObject* layout_object = node->GetLayoutObject();
     DCHECK(!layout_object || layout_object_mapping_.find(layout_object) ==
                                  layout_object_mapping_.end())
         << "AXObject cannot be backed by both a layout object and node.";
@@ -1631,11 +1631,11 @@ void AXObjectCacheImpl::Remove(Document* document) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
+void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box) {
   Remove(inline_text_box, /* notify_parent */ true);
 }
 
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box,
+void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box,
                                bool notify_parent) {
   if (!inline_text_box)
     return;
@@ -2353,8 +2353,11 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #endif  // DCHECK_IS_ON()
 
   if (obj) {
-    obj->ChildrenChangedWithCleanLayout();
+    // Increment the modification count before the children are changed,
+    // because some of the children may need to recompute their ignored/included
+    // status, which affects where they belong as a child of |obj|.
     modification_count_++;
+    obj->ChildrenChangedWithCleanLayout();
     // TODO(accessibility) Only needed for <select> size changes.
     // This can turn into a DCHECK if the shadow DOM is used for <select>
     // elements instead of AXMenuList* and AXListBox* classes.
@@ -2834,14 +2837,10 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
 #if DCHECK_IS_ON()
-  // Make sure none of the layout views are in the process of being laid out.
-  // Notifications should only be sent after the layoutObject has finished
-  auto* ax_layout_object = DynamicTo<AXLayoutObject>(obj);
-  if (ax_layout_object) {
-    LayoutObject* layout_object = ax_layout_object->GetLayoutObject();
-    if (layout_object && layout_object->View())
-      DCHECK(!layout_object->View()->GetLayoutState());
-  }
+  // Make sure that we're not in the process of being laid out. Notifications
+  // should only be sent after the LayoutObject has finished
+  DCHECK(GetDocument().Lifecycle().GetState() !=
+         DocumentLifecycle::kInPerformLayout);
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 #endif  // DCHECK_IS_ON()
@@ -4539,6 +4538,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(node_object_mapping_);
+  visitor->Trace(inline_text_box_object_mapping_);
   visitor->Trace(active_aria_modal_dialog_);
 
   visitor->Trace(objects_);

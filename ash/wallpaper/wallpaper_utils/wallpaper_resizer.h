@@ -9,21 +9,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
-#include "base/memory/ref_counted.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/task/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
-
-class WallpaperResizerObserver;
 
 // Stores the current wallpaper data and resize it to |target_size| if needed.
 class ASH_EXPORT WallpaperResizer {
@@ -39,8 +33,7 @@ class ASH_EXPORT WallpaperResizer {
 
   WallpaperResizer(const gfx::ImageSkia& image,
                    const gfx::Size& target_size,
-                   const WallpaperInfo& info,
-                   scoped_refptr<base::TaskRunner> task_runner);
+                   const WallpaperInfo& info);
 
   WallpaperResizer(const WallpaperResizer&) = delete;
   WallpaperResizer& operator=(const WallpaperResizer&) = delete;
@@ -53,18 +46,12 @@ class ASH_EXPORT WallpaperResizer {
 
   // Called on the UI thread to run Resize() on the task runner and post an
   // OnResizeFinished() task back to the UI thread on completion.
-  void StartResize();
-
-  // Add/Remove observers.
-  void AddObserver(WallpaperResizerObserver* observer);
-  void RemoveObserver(WallpaperResizerObserver* observer);
+  void StartResize(base::OnceClosure on_resize_done);
 
  private:
-  // Copies |resized_bitmap| to |image_| and notifies observers after Resize()
-  // has finished running.
-  void OnResizeFinished(SkBitmap* resized_bitmap);
-
-  base::ObserverList<WallpaperResizerObserver>::Unchecked observers_;
+  // Copies `resized_bitmap` to `image_` and runs callback `on_resize_done`.
+  void OnResizeFinished(base::OnceClosure on_resize_done,
+                        const SkBitmap& resized_bitmap);
 
   // Image that should currently be used for wallpaper. It initially
   // contains the original image and is updated to contain the resized
@@ -82,7 +69,7 @@ class ASH_EXPORT WallpaperResizer {
   // metrics.
   base::TimeTicks start_calculation_time_;
 
-  scoped_refptr<base::TaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   base::WeakPtrFactory<WallpaperResizer> weak_ptr_factory_{this};
 };

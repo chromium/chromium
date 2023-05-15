@@ -34,9 +34,17 @@ void ExternalUseClient::ImageContext::OnContextLost() {
 void ExternalUseClient::ImageContext::SetImage(
     sk_sp<SkImage> image,
     std::vector<GrBackendFormat> backend_formats) {
-  DCHECK(!image_);
+  CHECK(!image_);
   image_ = std::move(image);
-  backend_formats_ = backend_formats;
+  backend_formats_ = std::move(backend_formats);
+}
+
+void ExternalUseClient::ImageContext::SetImage(
+    sk_sp<SkImage> image,
+    std::vector<skgpu::graphite::TextureInfo> texture_infos) {
+  CHECK(!image_);
+  image_ = std::move(image);
+  texture_infos_ = std::move(texture_infos);
 }
 
 }  // namespace viz

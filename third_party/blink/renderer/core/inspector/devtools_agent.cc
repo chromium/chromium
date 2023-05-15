@@ -9,10 +9,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
@@ -153,6 +156,14 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
       // but it also won't simply be dropped.
       std::move(split_callback.second).Run();
     }
+  }
+
+  void GetUniqueFormControlId(
+      int nodeId,
+      GetUniqueFormControlIdCallback callback) override {
+    // GetUniqueFormControlId on a worker doesn't make sense because there is no
+    // DOM.
+    NOTREACHED();
   }
 
  private:
@@ -324,6 +335,17 @@ void DevToolsAgent::ReportChildTargets(bool report,
     io_agent_->ReportChildTargets(report, wait_for_debugger,
                                   std::move(callback));
   }
+}
+
+void DevToolsAgent::GetUniqueFormControlId(
+    int nodeId,
+    GetUniqueFormControlIdCallback callback) {
+  auto* node = blink::DOMNodeIds::NodeForId(nodeId);
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
+    std::move(callback).Run(form_control->UniqueRendererFormControlId());
+    return;
+  }
+  std::move(callback).Run(0);  // invalid ID.
 }
 
 // static

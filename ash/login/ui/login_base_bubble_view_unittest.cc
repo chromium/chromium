@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +43,7 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(anchor_);
+    container_->AddChildView(anchor_.get());
 
     SetWidget(CreateWidgetWithContent(container_));
 
@@ -54,12 +55,12 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
         views::BoxLayout::Orientation::kVertical));
     bubble_->AddChildView(label);
 
-    container_->AddChildView(bubble_);
+    container_->AddChildView(bubble_.get());
   }
 
-  LoginBaseBubbleView* bubble_;
-  views::View* container_;
-  AnchorView* anchor_;
+  raw_ptr<LoginBaseBubbleView, ExperimentalAsh> bubble_;
+  raw_ptr<views::View, ExperimentalAsh> container_;
+  raw_ptr<AnchorView, ExperimentalAsh> anchor_;
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {

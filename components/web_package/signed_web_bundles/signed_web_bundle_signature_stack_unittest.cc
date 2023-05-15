@@ -67,7 +67,6 @@ TEST(SignedWebBundleSignatureStack,
   auto result = SignedWebBundleSignatureStack::Create(entries);
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_EQ(result->size(), 1ul);
-
   EXPECT_EQ(result->entries()[0], entry);
   EXPECT_EQ(result->derived_web_bundle_id(),
             SignedWebBundleId::Create(kEd25519SignedWebBundleId1));
@@ -88,7 +87,6 @@ TEST(SignedWebBundleSignatureStack,
   auto result = SignedWebBundleSignatureStack::Create(entries);
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_EQ(result->size(), 2ul);
-
   EXPECT_EQ(result->entries()[0], entry1);
   EXPECT_EQ(result->entries()[1], entry2);
 }
@@ -107,7 +105,6 @@ TEST(SignedWebBundleSignatureStack,
   auto result = SignedWebBundleSignatureStack::Create(std::move(entries));
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_EQ(result->size(), 1ul);
-
   EXPECT_EQ(result->entries()[0].complete_entry_cbor(),
             entry->complete_entry_cbor);
   EXPECT_EQ(result->entries()[0].attributes_cbor(), entry->attributes_cbor);

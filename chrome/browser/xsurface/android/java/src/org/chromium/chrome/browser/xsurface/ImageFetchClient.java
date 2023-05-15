@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.xsurface;
 
 /**
+ * Implemented in Chromium.
+ *
  * An object that can send an HTTP GET request and receive bytes in response. This interface should
  * only be used for fetching images.
  */

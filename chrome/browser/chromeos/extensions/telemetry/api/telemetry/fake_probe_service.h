@@ -10,6 +10,7 @@
 
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
@@ -23,6 +24,9 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
 
   void BindPendingReceiver(
       mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver);
+
+  mojo::PendingRemote<crosapi::mojom::TelemetryProbeService>
+  BindNewPipeAndPassRemote();
 
   // crosapi::mojom::TelemetryProbeService overrides.
   void ProbeTelemetryInfo(

@@ -47,8 +47,7 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
   }
 
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     auto* choobe_controller =
         WizardController::default_controller()->choobe_flow_controller();
     if (choobe_controller) {
@@ -75,20 +74,10 @@ void TouchpadScrollScreen::OnScrollUpdate(bool is_reverse_scroll) {
   profile->GetPrefs()->SetBoolean(prefs::kNaturalScroll, is_reverse_scroll);
 }
 
-bool TouchpadScrollScreen::GetUserSyncedPreferences() {
-  bool is_reverse_scrolling = false;
-
-  // Directly access PrefServiceSyncable instead of PrefService because
-  // we need to know whether the prefs have been loaded.
-  sync_preferences::PrefServiceSyncable* prefs =
-      PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
-  const bool sync_complete =
-      ignore_pref_sync_for_testing_ || prefs->AreOsPriorityPrefsSyncing();
-
-  if (sync_complete) {
-    is_reverse_scrolling = prefs->GetUserPrefValue(prefs::kNaturalScroll);
-  }
-
+bool TouchpadScrollScreen::GetNaturalScrollPrefValue() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  bool is_reverse_scrolling =
+      profile->GetPrefs()->GetBoolean(prefs::kNaturalScroll);
   return is_reverse_scrolling;
 }
 
@@ -97,7 +86,7 @@ void TouchpadScrollScreen::ShowImpl() {
     return;
   }
 
-  view_->SetReverseScrolling(GetUserSyncedPreferences());
+  view_->SetReverseScrolling(GetNaturalScrollPrefValue());
   view_->Show();
 }
 
@@ -118,6 +107,19 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   }
 
   BaseScreen::OnUserAction(args);
+}
+
+ScreenSummary TouchpadScrollScreen::GetScreenSummary() {
+  ScreenSummary summary;
+  summary.screen_id = TouchpadScrollScreenView::kScreenId;
+  summary.icon_id = "oobe-32:scroll-direction";
+  summary.title_id = "choobeTouchpadScrollTitle";
+  summary.is_revisitable = false;
+  summary.is_synced = !ProfileManager::GetActiveUserProfile()
+                           ->GetPrefs()
+                           ->FindPreference(prefs::kNaturalScroll)
+                           ->IsDefaultValue();
+  return summary;
 }
 
 }  // namespace ash

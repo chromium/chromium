@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,6 +72,9 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -100,7 +102,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -125,7 +126,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
-    private Map<CustomViewBinder, Integer> mCustomViewTypeOffsetMap;
 
     /**
      * This is non null for the case of ChromeTabbedActivity when the corresponding {@link
@@ -429,7 +429,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         final boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
         final boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
-        final boolean isHttpOrHttpsScheme = UrlUtilities.isHttpOrHttps(url);
 
         // Update the icon row items (shown in narrow form factors).
         boolean shouldShowIconRow = shouldShowIconRow();
@@ -693,16 +692,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     /**
-     * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether price tracking is enabled and the button should be highlighted.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldHighlightPriceTracking(@NonNull Tab currentTab) {
-        // TODO(crbug.com/1266624): Read this information from power bookmarks when available.
-        return false;
-    }
-
-    /**
      * @return Whether the update Chrome menu item should be displayed.
      */
     protected boolean shouldShowUpdateMenuItem() {
@@ -892,13 +881,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     private ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
-        ResolveInfo resolveInfo = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)) {
-            String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());
-            resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(context,
-                    currentTab.getUrl().getSpec(),
-                    WebappRegistry.getInstance().findWebApkWithManifestId(manifestId));
-        }
+        String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());
+        ResolveInfo resolveInfo =
+                WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrl().getSpec(),
+                        WebappRegistry.getInstance().findWebApkWithManifestId(manifestId));
+
         if (resolveInfo == null) {
             // If a WebAPK with matching manifestId can't be found, fallback to query without it.
             resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
@@ -1007,27 +994,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @Override
     public boolean isMenuIconAtStart() {
         return false;
-    }
-
-    private int getUmaEnumForMenuItem(@Nullable @IdRes Integer menuItemId) {
-        if (menuItemId == null) return AppMenuHighlightItem.UNKNOWN;
-
-        if (menuItemId == R.id.downloads_menu_id) {
-            return AppMenuHighlightItem.DOWNLOADS;
-        } else if (menuItemId == R.id.all_bookmarks_menu_id) {
-            return AppMenuHighlightItem.BOOKMARKS;
-        } else if (menuItemId == R.id.translate_id) {
-            return AppMenuHighlightItem.TRANSLATE;
-        } else if (menuItemId == R.id.add_to_homescreen_id) {
-            return AppMenuHighlightItem.ADD_TO_HOMESCREEN;
-        } else if (menuItemId == R.id.offline_page_id) {
-            return AppMenuHighlightItem.DOWNLOAD_THIS_PAGE;
-        } else if (menuItemId == R.id.bookmark_this_page_id) {
-            return AppMenuHighlightItem.BOOKMARK_THIS_PAGE;
-        } else if (menuItemId == R.id.app_menu_footer) {
-            return AppMenuHighlightItem.DATA_REDUCTION_FOOTER;
-        }
-        return AppMenuHighlightItem.UNKNOWN;
     }
 
     /**
@@ -1255,6 +1221,22 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (directShareTitle != null) {
             item.setTitle(
                     mContext.getString(R.string.accessibility_menu_share_via, directShareTitle));
+        }
+    }
+
+    /** Records user clicking on the menu button in New tab page or Start surface. */
+    @Override
+    public void onMenuShown() {
+        if (isInStartSurfaceHomepage()) {
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
+            return;
+        }
+        Tab currentTab = mActivityTabProvider.get();
+        if (currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrl())
+                && !currentTab.isIncognito()) {
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
         }
     }
 }

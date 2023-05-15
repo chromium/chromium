@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,7 +36,7 @@ class InputMethodPersistenceTest : public testing::Test {
   InputMethodPersistenceTest()
       : mock_profile_manager_(TestingBrowserProcess::GetGlobal()),
         fake_user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
   void SetUp() override {
     ASSERT_TRUE(mock_profile_manager_.SetUp());
@@ -68,10 +69,11 @@ class InputMethodPersistenceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable* mock_user_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+      mock_user_prefs_;
   MockInputMethodManagerImpl mock_manager_;
   TestingProfileManager mock_profile_manager_;
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

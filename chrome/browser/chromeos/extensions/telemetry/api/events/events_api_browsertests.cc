@@ -23,7 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -34,14 +34,15 @@
 
 namespace chromeos {
 
-class PendingApprovalTelemetryExtensionEventsApiBrowserTest
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
+class TelemetryExtensionEventsApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
-  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -65,42 +66,11 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
   }
 
  protected:
-  std::string GetManifestFile(const std::string& matches_origin) override {
-    return base::StringPrintf(R"(
-      {
-        "key": "%s",
-        "name": "Test Telemetry Extension",
-        "version": "1",
-        "manifest_version": 3,
-        "chromeos_system_extension": {},
-        "background": {
-          "service_worker": "sw.js"
-        },
-        "permissions": [
-          "os.diagnostics",
-          "os.events",
-          "os.telemetry",
-          "os.telemetry.serial_number",
-          "os.telemetry.network_info"
-        ],
-        "externally_connectable": {
-          "matches": [
-            "%s"
-          ]
-        },
-        "options_page": "options.html"
-      }
-    )",
-                              public_key().c_str(), matches_origin.c_str());
-  }
-
   FakeEventsService* GetFakeService() {
     return fake_events_service_impl_.get();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // SAFETY: This pointer is owned in a unique_ptr by the EventManager. Since
   // the EventManager lives longer than this test, it is always safe to access
@@ -114,14 +84,13 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        IsEventSupported_Error) {
-  auto exception = crosapi::mojom::TelemetryExtensionException::New();
-  exception->reason =
-      crosapi::mojom::TelemetryExtensionException::Reason::kUnexpected;
+  auto exception = crosapi::TelemetryExtensionException::New();
+  exception->reason = crosapi::TelemetryExtensionException::Reason::kUnexpected;
   exception->debug_message = "My test message";
 
-  auto input = crosapi::mojom::TelemetryExtensionSupportStatus::NewException(
+  auto input = crosapi::TelemetryExtensionSupportStatus::NewException(
       std::move(exception));
 
   GetFakeService()->SetIsEventSupportedResponse(std::move(input));
@@ -140,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     )");
 
   auto unmapped =
-      crosapi::mojom::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0);
+      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0);
   GetFakeService()->SetIsEventSupportedResponse(std::move(unmapped));
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -157,11 +126,10 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        IsEventSupported_Success) {
-  auto supported =
-      crosapi::mojom::TelemetryExtensionSupportStatus::NewSupported(
-          crosapi::mojom::TelemetryExtensionSupported::New());
+  auto supported = crosapi::TelemetryExtensionSupportStatus::NewSupported(
+      crosapi::TelemetryExtensionSupported::New());
 
   GetFakeService()->SetIsEventSupportedResponse(std::move(supported));
 
@@ -178,9 +146,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     ]);
     )");
 
-  auto unsupported =
-      crosapi::mojom::TelemetryExtensionSupportStatus::NewUnsupported(
-          crosapi::mojom::TelemetryExtensionUnsupported::New());
+  auto unsupported = crosapi::TelemetryExtensionSupportStatus::NewUnsupported(
+      crosapi::TelemetryExtensionUnsupported::New());
 
   GetFakeService()->SetIsEventSupportedResponse(std::move(unsupported));
 
@@ -198,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StartListeningToEvents_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -206,14 +173,15 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
-        auto audio_jack_info =
-            crosapi::mojom::TelemetryAudioJackEventInfo::New();
+        auto audio_jack_info = crosapi::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
-            crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+            crosapi::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
-            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
-            crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack,
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
                 std::move(audio_jack_info)));
       }));
 
@@ -222,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();
@@ -234,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StartListeningToEvents_ErrorPwaClosed) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -249,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StopListeningToEvents) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -257,14 +226,15 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
-        auto audio_jack_info =
-            crosapi::mojom::TelemetryAudioJackEventInfo::New();
+        auto audio_jack_info = crosapi::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
-            crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+            crosapi::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
-            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
-            crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack,
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
                 std::move(audio_jack_info)));
       }));
 
@@ -273,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();
@@ -288,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this, &remote_set_size]() {
         auto* remote_set = GetFakeService()->GetObserversByCategory(
-            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack);
+            crosapi::TelemetryEventCategoryEnum::kAudioJack);
         ASSERT_TRUE(remote_set);
 
         remote_set->FlushForTesting();
@@ -308,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   EXPECT_EQ(remote_set_size.Get(), 0UL);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        ClosePwaConnection) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -316,14 +287,15 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
-        auto audio_jack_info =
-            crosapi::mojom::TelemetryAudioJackEventInfo::New();
+        auto audio_jack_info = crosapi::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
-            crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+            crosapi::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
-            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
-            crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack,
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
                 std::move(audio_jack_info)));
       }));
 
@@ -332,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();
@@ -347,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this, &remote_set_size]() {
         auto* remote_set = GetFakeService()->GetObserversByCategory(
-            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack);
+            crosapi::TelemetryEventCategoryEnum::kAudioJack);
         ASSERT_TRUE(remote_set);
 
         remote_set->FlushForTesting();
@@ -358,6 +331,73 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   browser()->tab_strip_model()->CloseSelectedTabs();
 
   EXPECT_EQ(remote_set_size.Get(), 0UL);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckApisWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function sdCardNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onSdCardEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionEventsApiBrowserTest
+    : public TelemetryExtensionEventsApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckApisWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto sd_card_info = crosapi::TelemetrySdCardEventInfo::New();
+        sd_card_info->state = crosapi::TelemetrySdCardEventInfo::State::kAdd;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kSdCard,
+            crosapi::TelemetryEventInfo::NewSdCardEventInfo(
+                std::move(sd_card_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onSdCardEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("sd_card");
+      }
+    ]);
+  )");
 }
 
 }  // namespace chromeos

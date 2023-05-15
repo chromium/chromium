@@ -12,6 +12,7 @@
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -36,7 +37,7 @@ class AmbientAnimationPlayer;
 class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
-class AmbientMultiScreenMetricsRecorder;
+class AmbientSessionMetricsRecorder;
 class AmbientViewDelegateImpl;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
@@ -51,7 +52,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
       AmbientViewDelegateImpl* view_delegate,
       AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+      AmbientSessionMetricsRecorder* session_metrics_recorder,
       AmbientAnimationFrameRateController* frame_rate_controller);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
@@ -60,7 +61,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   JitterCalculator* GetJitterCalculatorForTesting();
 
  private:
-  void Init(AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
+  void Init(AmbientSessionMetricsRecorder* session_metrics_recorder);
 
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
@@ -78,19 +79,21 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void RestartThroughputTracking();
   void ApplyJitter();
 
-  const base::raw_ptr<AmbientViewDelegateImpl> view_delegate_;
-  const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
+  const raw_ptr<AmbientViewDelegateImpl> view_delegate_;
+  const raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
-  const base::raw_ptr<AmbientAnimationFrameRateController>
-      frame_rate_controller_;
+  const raw_ptr<AmbientAnimationFrameRateController> frame_rate_controller_;
   AmbientAnimationPhotoProvider animation_photo_provider_;
   std::unique_ptr<AmbientAnimationAttributionProvider>
       animation_attribution_provider_;
 
-  views::AnimatedImageView* animated_image_view_ = nullptr;
-  views::BoxLayoutView* glanceable_info_container_ = nullptr;
-  views::BoxLayoutView* media_string_container_ = nullptr;
+  raw_ptr<views::AnimatedImageView, ExperimentalAsh> animated_image_view_ =
+      nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> glanceable_info_container_ =
+      nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> media_string_container_ =
+      nullptr;
   std::unique_ptr<AmbientAnimationShieldController> shield_view_controller_;
   std::unique_ptr<AmbientAnimationPlayer> animation_player_;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{

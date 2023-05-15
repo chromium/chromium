@@ -1,8 +1,55 @@
+<style include="cr-shared-style settings-shared">
+  .high-efficiency-radio-group {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #enabledOnTimerButton::part(labelWrapper) {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
 <settings-toggle-button id="toggleButton" on-change="onChange_"
-    pref="{{prefs.performance_tuning.high_efficiency_mode.enabled}}"
+    pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
     label="$i18n{highEfficiencyModeLabel}"
     sub-label="$i18n{highEfficiencyModeDescription}"
-    learn-more-url="$i18n{highEfficiencyLearnMoreUrl}">
+    learn-more-url="$i18n{highEfficiencyLearnMoreUrl}"
+    numeric-unchecked-value="[[highEfficiencyModeStateEnum_.DISABLED]]"
+    numeric-checked-value="[[toggleButtonCheckedValue_(
+        isHighEfficiencyMultistateModeEnabled_)]]">
 </settings-toggle-button>
+<template is="dom-if" if="[[isHighEfficiencyMultistateModeEnabled_]]">
+  <iron-collapse id="radioGroupCollapse"
+      opened="[[isHighEfficiencyModeEnabled_(
+          prefs.performance_tuning.high_efficiency_mode.state.value)]]">
+    <div class="high-efficiency-radio-group">
+      <settings-radio-group id="radioGroup" on-change="onChange_"
+          pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
+          group-aria-label="$i18n{highEfficiencyModeRadioGroupAriaLabel}">
+        <controlled-radio-button
+            label="$i18n{highEfficiencyModeHeuristicsLabel}"
+            name="[[highEfficiencyModeStateEnum_.ENABLED]]"
+            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
+        </controlled-radio-button>
+        <controlled-radio-button id="enabledOnTimerButton"
+            label="$i18n{highEfficiencyModeOnTimerLabel}"
+            name="[[highEfficiencyModeStateEnum_.ENABLED_ON_TIMER]]"
+            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]"
+            exportparts="labelWrapper">
+          <settings-dropdown-menu id="discardTimeDropdown"
+              label="$i18n{highEfficiencyModeOnTimerLabel}"
+              disabled="[[!isHighEfficiencyModeEnabledOnTimer_(
+                  prefs.performance_tuning.high_efficiency_mode.state.value)]]"
+              pref="{{prefs.performance_tuning.high_efficiency_mode.time_before_discard_in_minutes}}"
+              menu-options="[[discardTimerOptions_]]"
+              on-click="onDropdownClick_">
+          </settings-dropdown-menu>
+        </controlled-radio-button>
+      </settings-radio-group>
+    </div>
+  </iron-collapse>
+</template>
 <tab-discard-exception-list id="tabDiscardExceptionsList" prefs="{{prefs}}">
 </tab-discard-exception-list>

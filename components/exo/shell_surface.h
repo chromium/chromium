@@ -8,6 +8,7 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_observer.h"
@@ -171,7 +172,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     void set_needs_configure() { needs_configure_ = true; }
 
    private:
-    ShellSurface* const shell_surface_;
+    const raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_;
     const bool force_configure_;
     bool needs_configure_ = false;
   };
@@ -196,7 +197,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
   ConfigureCallback configure_callback_;
   OriginChangeCallback origin_change_callback_;
-  ScopedConfigure* scoped_configure_ = nullptr;
+  raw_ptr<ScopedConfigure, ExperimentalAsh> scoped_configure_ = nullptr;
   base::circular_deque<std::unique_ptr<Config>> pending_configs_;
   // Stores the config which is acked but not yet committed. This will keep the
   // compositor locked until reset after Commit() is called.

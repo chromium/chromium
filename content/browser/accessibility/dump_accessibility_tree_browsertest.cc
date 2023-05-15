@@ -2059,16 +2059,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
-// TODO(crbug.com/1428918): Re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AccessibilityFencedFrameScrollable \
-  DISABLED_AccessibilityFencedFrameScrollable
-#else
-#define MAYBE_AccessibilityFencedFrameScrollable \
-  AccessibilityFencedFrameScrollable
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeFencedFrameTest,
-                       MAYBE_AccessibilityFencedFrameScrollable) {
+                       AccessibilityFencedFrameScrollable) {
   RunHtmlTest(FILE_PATH_LITERAL("fencedframe-scrollable-mparch.html"));
 }
 
@@ -2839,8 +2831,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityPortal) 
   RunHtmlTest(FILE_PATH_LITERAL("portal.html"));
 }
 
+// TODO(crbug.com/1367886): Flaky on multiple platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityPortalNameFromText) {
+                       DISABLED_AccessibilityPortalNameFromText) {
   RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-text.html"));
 }
 
@@ -3416,6 +3409,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("clear-children-while-computing-name.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       FrozenAncestorCannotChangeDescendants) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("frozen-ancestor-cannot-change-descendants.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, HiddenTable) {
   RunRegressionTest(FILE_PATH_LITERAL("hidden-table.html"));
 }
@@ -3535,6 +3534,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLSpace) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLUnknown) {
   RunMathMLTest(FILE_PATH_LITERAL("unknown.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MalformedMap) {
+  RunHtmlTest(FILE_PATH_LITERAL("malformed-map.html"));
 }
 
 //

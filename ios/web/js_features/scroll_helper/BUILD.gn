@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("scroll_helper") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -19,9 +19,9 @@ source_set("scroll_helper") {
   ]
 }
 
-optimize_js("scroll_helper_js") {
+optimize_ts("scroll_helper_js") {
   visibility = [ ":scroll_helper" ]
 
-  primary_script = "resources/scroll_helper.js"
-  sources = [ "resources/scroll_helper.js" ]
+  sources = [ "resources/scroll_helper.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }

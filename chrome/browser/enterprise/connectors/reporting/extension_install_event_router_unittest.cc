@@ -71,7 +71,7 @@ class ExtensionInstallEventRouterTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeProfileUsername);
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("fake-token"));
+        policy::DMToken::CreateValidToken("fake-token"));
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&CreateMockRealtimeReportingClient));

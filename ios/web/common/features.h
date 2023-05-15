@@ -61,10 +61,6 @@ BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
 // should be used instead of directly checking this feature.
 BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 
-// Feature flag that enables getting more of the surrounding text when the user
-// long presses at a certain location.
-BASE_DECLARE_FEATURE(kLongPressSurroundingText);
-
 // Feature flag to enable Emails detection.
 BASE_DECLARE_FEATURE(kEnableEmails);
 
@@ -102,6 +98,9 @@ bool IsLoadSimulatedRequestAPIEnabled();
 
 // When true, the fullscreen API should be used to enable fullscreen mode.
 bool IsFullscreenAPIEnabled();
+
+// When true, an option to enable Web Inspector should be present in Settings.
+bool IsWebInspectorSupportEnabled();
 
 // When true, session serialization optimizations should be enabled.
 bool UseSessionSerializationOptimizations();

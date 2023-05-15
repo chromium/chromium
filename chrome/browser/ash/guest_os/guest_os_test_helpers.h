@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TEST_HELPERS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -28,7 +29,7 @@ class MockMountProvider : public GuestOsMountProvider {
       base::FilePath mount_path,
       base::FilePath relative_path) override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::GuestId container_id_;
 };
 }  // namespace guest_os

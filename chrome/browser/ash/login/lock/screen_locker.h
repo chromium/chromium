@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/login_types.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
-#include "chrome/browser/ash/login/ui/login_display.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -288,7 +288,7 @@ class ScreenLocker
   session_manager::UnlockType TransformUnlockType();
 
   // Delegate used to talk to the view.
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
 
   // Users that can unlock the device.
   user_manager::UserList users_;
@@ -325,7 +325,7 @@ class ScreenLocker
 
   // Delegate to forward all login status events to.
   // Tests can use this to receive login status events.
-  AuthStatusConsumer* auth_status_consumer_ = nullptr;
+  raw_ptr<AuthStatusConsumer, ExperimentalAsh> auth_status_consumer_ = nullptr;
 
   // Number of bad login attempts in a row.
   int incorrect_passwords_count_ = 0;

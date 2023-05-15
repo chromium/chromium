@@ -17,6 +17,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -103,8 +104,9 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  SplitViewDragIndicators* split_view_drag_indicators_ = nullptr;
-  OverviewSession* overview_session_ = nullptr;
+  raw_ptr<SplitViewDragIndicators, ExperimentalAsh>
+      split_view_drag_indicators_ = nullptr;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_ = nullptr;
 };
 
 TEST_F(SplitViewDragIndicatorsTest, Dragging) {

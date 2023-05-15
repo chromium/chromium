@@ -243,4 +243,24 @@ public class PaymentRequestIntegrationTest {
         Mockito.verify(journeyLogger, Mockito.times(1))
                 .setSelectedMethod(Mockito.eq(PaymentMethodCategory.PLAY_BILLING));
     }
+
+    @Test
+    @Feature({"Payments"})
+    public void testGooglePayAuthenticationRequestAndSelectionAreLogged() {
+        setInstrumentMethodName(MethodStrings.GOOGLE_PAY_AUTHENTICATION);
+        setAndroidPaymentApp();
+        JourneyLogger journeyLogger = Mockito.mock(JourneyLogger.class);
+        PaymentRequest request =
+                defaultBuilder()
+                        .setJourneyLogger(journeyLogger)
+                        .setSupportedMethod(MethodStrings.GOOGLE_PAY_AUTHENTICATION)
+                        .buildAndInit();
+        show(request);
+        List<Integer> expectedMethods = new ArrayList<>();
+        expectedMethods.add(PaymentMethodCategory.GOOGLE_PAY_AUTHENTICATION);
+        Mockito.verify(journeyLogger, Mockito.times(1))
+                .setRequestedPaymentMethods(Mockito.eq(expectedMethods));
+        Mockito.verify(journeyLogger, Mockito.times(1))
+                .setSelectedMethod(Mockito.eq(PaymentMethodCategory.GOOGLE_PAY_AUTHENTICATION));
+    }
 }

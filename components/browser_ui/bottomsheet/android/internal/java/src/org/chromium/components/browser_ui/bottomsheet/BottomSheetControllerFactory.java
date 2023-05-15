@@ -27,8 +27,24 @@ public class BottomSheetControllerFactory {
     public static ManagedBottomSheetController createBottomSheetController(
             final Supplier<ScrimCoordinator> scrim, Callback<View> initializedCallback,
             Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
-        return new BottomSheetControllerImpl(
-                scrim, initializedCallback, window, keyboardDelegate, root);
+        return new BottomSheetControllerImpl(scrim, initializedCallback, window, keyboardDelegate,
+                root, /*alwaysFullWidth=*/false);
+    }
+
+    /**
+     * Create {@link BottomSheetController} of full-width bottom sheets.
+     * @param scrim A supplier of scrim to be shown behind the sheet.
+     * @param initializedCallback A callback for the sheet having been created.
+     * @param window The activity's window.
+     * @param keyboardDelegate A means of hiding the keyboard.
+     * @param root The view that should contain the sheet.
+     * @return A new instance of the {@link BottomSheetController}.
+     */
+    public static ManagedBottomSheetController createFullWidthBottomSheetController(
+            final Supplier<ScrimCoordinator> scrim, Callback<View> initializedCallback,
+            Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
+        return new BottomSheetControllerImpl(scrim, initializedCallback, window, keyboardDelegate,
+                root, /*alwaysFullWidth=*/true);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the

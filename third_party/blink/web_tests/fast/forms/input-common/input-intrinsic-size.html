@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<link rel="help" href="https://crbug.com/1432386">
+<link rel="help" href="https://crbug.com/1432710">
+<link rel="help" href="https://crbug.com/1433510">
+<link rel="help" href="https://crbug.com/1434198">
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+const types = ['hidden', 'text', 'search', 'tel', 'url', 'email', 'password',
+  'date', 'month', 'week', 'time', 'datetime-local', 'number', 'range',
+  'color', 'checkbox', 'radio', 'file', 'submit', 'image', 'reset', 'button'];
+for (let type of types) {
+  const input = document.createElement('input');
+  input.type = type;
+  document.body.append(input);
+  const originalRect = input.getBoundingClientRect();
+  if (type == 'image') {
+    // The behavior of type=image without an image is not similar to other
+    // types.
+  } else if (type == 'hidden') {
+    test(() => {
+      assert_equals(originalRect.width, 0);
+      assert_equals(originalRect.height, 0);
+    }, 'Hidden size should be 0x0');
+  } else {
+    test(() => {
+      const i = document.body.appendChild(input.cloneNode());
+      i.style.position = 'absolute';
+      const rect = i.getBoundingClientRect();
+      assert_equals(rect.width, originalRect.width);
+      assert_equals(rect.height, originalRect.height);
+    }, `${type}: absolute posistion`);
+
+    test(() => {
+      const c = document.createElement('div');
+      document.body.append(c);
+      const i = c.appendChild(input.cloneNode());
+      i.style.height = '100%';
+      const rect = i.getBoundingClientRect();
+      assert_equals(rect.width, originalRect.width);
+      assert_equals(rect.height, originalRect.height);
+    }, `${type}: percent height`);
+
+    test(() => {
+      const i = document.body.appendChild(input.cloneNode());
+      i.style.height = 'auto';
+      i.style.minHeight = '4px';
+      const rect = i.getBoundingClientRect();
+      assert_equals(rect.width, originalRect.width);
+      assert_equals(rect.height, originalRect.height);
+    }, `${type}: min-height`);
+
+    test(() => {
+      const i = document.body.appendChild(input.cloneNode());
+      i.style.appearance = 'none';
+      i.style.display = 'inline';
+      const rect = i.getBoundingClientRect();
+      if (type == 'checkbox' || type == 'radio') {
+        // These types without appearance work as inline elements.
+        assert_equals(rect.width, 0);
+      } else {
+        assert_equals(rect.width, originalRect.width);
+        assert_equals(rect.height, originalRect.height);
+      }
+    }, `${type}: display:inline`);
+
+    test(() => {
+      const i = document.body.appendChild(input.cloneNode());
+      i.style.display = 'inline list-item';
+      const rect = i.getBoundingClientRect();
+      assert_equals(rect.width, originalRect.width);
+      assert_equals(rect.height, originalRect.height);
+    }, `${type}: display:inline list-item`);
+  }
+}
+</script>
+</body>
+

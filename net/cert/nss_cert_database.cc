@@ -6,6 +6,7 @@
 
 #include <cert.h>
 #include <certdb.h>
+#include <certt.h>
 #include <dlfcn.h>
 #include <keyhi.h>
 #include <pk11pub.h>
@@ -27,6 +28,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"
+#include "net/cert/internal/trust_store_nss.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
@@ -68,6 +70,26 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
  private:
   raw_ptr<CertDatabase> cert_db_;
 };
+
+// TODO(https://crbug.com/1412591): once the other IsUntrusted impl is deleted,
+// rename this.
+bool IsUntrustedUsingTrustStore(const CERTCertificate* cert,
+                                CertificateTrust trust) {
+  if (trust.IsDistrusted()) {
+    return true;
+  }
+
+  // Self-signed certificates that don't have any trust bits set are untrusted.
+  // Other certificates that don't have any trust bits set may still be trusted
+  // if they chain up to a trust anchor.
+  // TODO(mattm): this is weird, but just match the behavior of the existing
+  // IsUntrusted function for now.
+  if (SECITEM_CompareItem(&cert->derIssuer, &cert->derSubject) == SECEqual) {
+    return !trust.IsTrustAnchor();
+  }
+
+  return false;
+}
 
 }  // namespace
 
@@ -124,13 +146,14 @@ void NSSCertDatabase::ListCertsInSlot(ListCertsCallback callback,
       std::move(callback));
 }
 
-void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback) {
+void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback,
+                                    NSSRootsHandling nss_roots_handling) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabase::ListCertsInfoImpl,
                      /*slot=*/nullptr,
-                     /*add_certs_info=*/true),
+                     /*add_certs_info=*/true, nss_roots_handling),
       std::move(callback));
 }
 
@@ -485,8 +508,8 @@ ScopedCERTCertificateList NSSCertDatabase::ExtractCertificates(
 // static
 ScopedCERTCertificateList NSSCertDatabase::ListCertsImpl(
     crypto::ScopedPK11Slot slot) {
-  CertInfoList certs_info =
-      ListCertsInfoImpl(std::move(slot), /*add_certs_info=*/false);
+  CertInfoList certs_info = ListCertsInfoImpl(
+      std::move(slot), /*add_certs_info=*/false, NSSRootsHandling::kInclude);
 
   return ExtractCertificates(std::move(certs_info));
 }
@@ -494,7 +517,8 @@ ScopedCERTCertificateList NSSCertDatabase::ListCertsImpl(
 // static
 NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
     crypto::ScopedPK11Slot slot,
-    bool add_certs_info) {
+    bool add_certs_info,
+    NSSRootsHandling nss_roots_handling) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
@@ -502,37 +526,67 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  CertInfoList certs_info;
-  crypto::ScopedCERTCertList cert_list = nullptr;
-  if (slot)
-    cert_list.reset(PK11_ListCertsInSlot(slot.get()));
-  else
-    cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
-  // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
-  // that was backing the specified slot is not available anymore.
-  // Treat it as no certificates being present on the slot.
-  if (!cert_list) {
-    LOG(WARNING) << (slot ? "PK11_ListCertsInSlot" : "PK11_ListCerts")
-                 << " returned null";
+  if (nss_roots_handling == NSSRootsHandling::kExclude) {
+    // This assumes that using a new TrustStoreNSS instance on each
+    // ListCertsInfo call is not expensive. If that ever changes this might
+    // need to be rethought.
+    TrustStoreNSS trust_store_nss(
+        TrustStoreNSS::kIgnoreSystemTrust,
+        slot ? TrustStoreNSS::UserSlotTrustSetting(
+                   crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot.get())))
+             : TrustStoreNSS::UseTrustFromAllUserSlots());
+
+    std::vector<TrustStoreNSS::ListCertsResult> cert_list(
+        trust_store_nss.ListCertsIgnoringNSSRoots());
+
+    CertInfoList certs_info;
+    for (const auto& node : cert_list) {
+      CertInfo cert_info;
+      cert_info.cert = x509_util::DupCERTCertificate(node.cert.get());
+      if (add_certs_info) {
+        cert_info.untrusted =
+            IsUntrustedUsingTrustStore(cert_info.cert.get(), node.trust);
+        cert_info.web_trust_anchor = node.trust.IsTrustAnchor();
+        cert_info.on_read_only_slot = IsReadOnly(cert_info.cert.get());
+        cert_info.hardware_backed = IsHardwareBacked(cert_info.cert.get());
+      }
+      certs_info.push_back(std::move(cert_info));
+    }
     return certs_info;
-  }
-
-  CERTCertListNode* node;
-  for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
-       node = CERT_LIST_NEXT(node)) {
-    CertInfo cert_info;
-    cert_info.cert = x509_util::DupCERTCertificate(node->cert);
-
-    if (add_certs_info) {
-      cert_info.on_read_only_slot = IsReadOnly(cert_info.cert.get());
-      cert_info.untrusted = IsUntrusted(cert_info.cert.get());
-      cert_info.web_trust_anchor = IsWebTrustAnchor(cert_info.cert.get());
-      cert_info.hardware_backed = IsHardwareBacked(cert_info.cert.get());
+  } else {
+    CertInfoList certs_info;
+    crypto::ScopedCERTCertList cert_list = nullptr;
+    if (slot) {
+      cert_list.reset(PK11_ListCertsInSlot(slot.get()));
+    } else {
+      cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
+    }
+    // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
+    // that was backing the specified slot is not available anymore.
+    // Treat it as no certificates being present on the slot.
+    if (!cert_list) {
+      LOG(WARNING) << (slot ? "PK11_ListCertsInSlot" : "PK11_ListCerts")
+                   << " returned null";
+      return certs_info;
     }
 
-    certs_info.push_back(std::move(cert_info));
+    CERTCertListNode* node;
+    for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
+         node = CERT_LIST_NEXT(node)) {
+      CertInfo cert_info;
+      cert_info.cert = x509_util::DupCERTCertificate(node->cert);
+
+      if (add_certs_info) {
+        cert_info.on_read_only_slot = IsReadOnly(cert_info.cert.get());
+        cert_info.untrusted = IsUntrusted(cert_info.cert.get());
+        cert_info.web_trust_anchor = IsWebTrustAnchor(cert_info.cert.get());
+        cert_info.hardware_backed = IsHardwareBacked(cert_info.cert.get());
+      }
+
+      certs_info.push_back(std::move(cert_info));
+    }
+    return certs_info;
   }
-  return certs_info;
 }
 
 void NSSCertDatabase::NotifyCertRemovalAndCallBack(DeleteCertCallback callback,

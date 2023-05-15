@@ -14,8 +14,9 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -112,7 +113,8 @@ public class TabSuspensionTest {
             mTokenTracker = new TokenTracker(mUsageStatsBridge);
             mEventTracker = new EventTracker(mUsageStatsBridge);
         });
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mStartingUrl = mTestServer.getURLWithHostName(STARTING_FQDN, "/defaultresponse");
         mDifferentUrl = mTestServer.getURLWithHostName(DIFFERENT_FQDN, "/defaultresponse");
 
@@ -276,7 +278,7 @@ public class TabSuspensionTest {
     @MediumTest
     public void testTabAddedFromCustomTab() {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mStartingUrl);
+                ApplicationProvider.getApplicationContext(), mStartingUrl);
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);

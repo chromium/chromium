@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
@@ -46,8 +47,8 @@ class UserAvatarCustomizationSelectorsEnabledPolicyTest : public PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-  ash::UserImageManager* user_image_manager_;
-  const user_manager::User* user_;
+  raw_ptr<ash::UserImageManager, ExperimentalAsh> user_image_manager_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> user_;
   base::FilePath test_data_dir_;
 };
 

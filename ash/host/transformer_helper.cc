@@ -8,6 +8,7 @@
 
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/root_window_transformer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
@@ -65,7 +66,7 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
  private:
   ~SimpleRootWindowTransformer() override = default;
 
-  const aura::Window* root_window_;
+  raw_ptr<const aura::Window, ExperimentalAsh> root_window_;
   const gfx::Transform transform_;
 };
 

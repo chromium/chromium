@@ -10,8 +10,9 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -75,7 +76,7 @@ public class CustomTabsFeatureUsageTest {
     }
 
     private Activity startBlankUiTestActivity() {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent emptyIntent = new Intent(context, BlankUiTestActivity.class);
         emptyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return InstrumentationRegistry.getInstrumentation().startActivitySync(emptyIntent);
@@ -96,7 +97,7 @@ public class CustomTabsFeatureUsageTest {
     public void testNormalFeatureUsage() throws Exception {
         Activity emptyActivity = startBlankUiTestActivity();
         Intent intent = CustomTabsIntentTestUtils.createCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage, false, builder -> {});
+                ApplicationProvider.getApplicationContext(), mTestPage, false, builder -> {});
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         connection.newSession(token);
@@ -118,7 +119,7 @@ public class CustomTabsFeatureUsageTest {
     public void testNormalFeatureUsageIncognito() throws Exception {
         startBlankUiTestActivity();
         Intent intent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
         mIncognitoCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);

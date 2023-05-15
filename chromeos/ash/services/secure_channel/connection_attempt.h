@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -128,8 +129,8 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
   }
 
  private:
-  ConnectionAttemptDelegate* delegate_;
-  base::Clock* clock_;
+  raw_ptr<ConnectionAttemptDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   const ConnectionAttemptDetails connection_attempt_details_;
   const base::Time start_attempt_timestamp_;
 

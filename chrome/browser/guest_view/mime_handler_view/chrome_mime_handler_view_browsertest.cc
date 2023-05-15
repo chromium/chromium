@@ -365,22 +365,20 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   auto url_with_beforeunload =
       embedded_test_server()->GetURL("b.com", "/test_page.html?beforeunload");
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      main_frame,
-      base::StringPrintf(
-          "object.data = '%s';"
-          " object.onload = () => window.domAutomationController.send(true);",
-          url_with_beforeunload.spec().c_str()),
-      &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(main_frame,
+                                  base::StringPrintf(
+                                      "object.data = '%s';"
+                                      "new Promise(resolve => {"
+                                      "  object.onload = () => resolve(true);"
+                                      "});",
+                                      url_with_beforeunload.spec().c_str())));
   // Give user gesture to the frame, set the <object> to text/csv resource and
   // handle the "beforeunload" dialog.
   content::PrepContentsForBeforeUnloadTest(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  ASSERT_TRUE(content::ExecuteScript(main_frame,
-                                     "object.data = './testEmbedded.csv';"
-                                     "object.type = 'text/csv';"));
+  ASSERT_TRUE(content::ExecJs(main_frame,
+                              "object.data = './testEmbedded.csv';"
+                              "object.type = 'text/csv';"));
   javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(alert->is_before_unload_dialog());
@@ -464,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_NoDialog) {
 
   // Wait for a round trip to the outer renderer to ensure any beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
+  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(), ""));
 
   // Try to navigate away from the page. If the beforeunload listener is
   // triggered and a dialog is shown, this navigation will never complete,
@@ -480,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_ShowDialog) {
 
   // Wait for a round trip to the outer renderer to ensure the beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
+  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(), ""));
 
   web_contents->GetController().LoadURL(GURL(url::kAboutBlankURL), {},
                                         ui::PAGE_TRANSITION_TYPED, "");
@@ -531,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 
   // Wait for a round trip to the outer renderer to ensure any beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
+  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(), ""));
 
   // Try to navigate away, this should invoke a beforeunload dialog.
   web_contents->GetController().LoadURL(GURL(url::kAboutBlankURL), {},
@@ -707,10 +705,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
   // Verify that print dialog comes up.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* main_frame = web_contents->GetPrimaryMainFrame();
-  // Use setTimeout() to prevent ExecuteScript() from blocking on the print
+  // Use setTimeout() to prevent ExecJs() from blocking on the print
   // dialog.
-  ASSERT_TRUE(content::ExecuteScript(
-      main_frame, "setTimeout(function() { window.print(); }, 0)"));
+  ASSERT_TRUE(content::ExecJs(main_frame,
+                              "setTimeout(function() { window.print(); }, 0)"));
   print_preview_delegate.WaitUntilPreviewIsReady();
 }
 #endif

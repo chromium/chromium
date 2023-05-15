@@ -31,6 +31,10 @@ const char kNewChromeWebstoreBaseURL[] = "https://chromewebstore.google.com/";
 const char kChromeWebstoreUpdateURL[] =
     "https://clients2.google.com/service/update2/crx";
 
+const char kAppMenuUtmSource[] = "ext_app_menu";
+const char kExtensionsMenuUtmSource[] = "ext_extensions_menu";
+const char kExtensionsSidebarUtmSource[] = "ext_sidebar";
+
 GURL GetWebstoreLaunchURL() {
   extensions::ExtensionsClient* client = extensions::ExtensionsClient::Get();
   if (client)
@@ -43,6 +47,11 @@ GURL GetNewWebstoreLaunchURL() {
   if (client)
     return client->GetNewWebstoreBaseURL();
   return GURL(kNewChromeWebstoreBaseURL);
+}
+
+GURL AppendUtmSource(const GURL& url,
+                     const base::StringPiece& utm_source_value) {
+  return net::AppendQueryParameter(url, "utm_source", utm_source_value);
 }
 
 // TODO(csharrison,devlin): Migrate the following methods to return

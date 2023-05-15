@@ -79,16 +79,25 @@ function isAllContentVisible(element: HTMLElement) {
   return element.clientHeight >= element.scrollHeight - lastBottomMargin;
 }
 
+async function verifyActionOccured(
+    browserProxy: TestPrivacySandboxDialogBrowserProxy,
+    targetAction: PrivacySandboxPromptAction) {
+  const [action] = await browserProxy.whenCalled('promptActionOccurred');
+  assertEquals(action, targetAction);
+  browserProxy.reset();
+}
+
+function testClickButton(buttonSelector: string, element: HTMLElement|null) {
+  const actionButton =
+      element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+  assertTrue(
+      !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
+  actionButton.click();
+}
+
 suite('PrivacySandboxDialogConsent', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  function testClickButton(
-      buttonSelector: string, element: HTMLElement = page) {
-    const actionButton =
-        element.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    actionButton.click();
-  }
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -125,13 +134,13 @@ suite('PrivacySandboxDialogConsent', function() {
   });
 
   test('acceptClicked', async function() {
-    testClickButton('#confirmButton');
+    testClickButton('#confirmButton', page);
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.CONSENT_ACCEPTED);
   });
 
   test('declineClicked', async function() {
-    testClickButton('#declineButton');
+    testClickButton('#declineButton', page);
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.CONSENT_DECLINED);
   });
@@ -150,7 +159,7 @@ suite('PrivacySandboxDialogConsent', function() {
     // After clicking on the collapse section, the content area expands and
     // becomes scrollable with a separator in the bottom. The collapse section
     // is opened and the native UI is notified about the action.
-    testClickButton('#expandSection cr-expand-button');
+    testClickButton('#expandSection cr-expand-button', page);
     // TODO(crbug.com/1286276): Add testing for the scroll position.
     const [openedAction] =
         await browserProxy.whenCalled('promptActionOccurred');
@@ -164,7 +173,7 @@ suite('PrivacySandboxDialogConsent', function() {
 
     // After clicking on the collapse section again, the content area collapses
     // and returns to the initial state.
-    testClickButton('#expandSection cr-expand-button');
+    testClickButton('#expandSection cr-expand-button', page);
     const [closedAction] =
         await browserProxy.whenCalled('promptActionOccurred');
     hasScrollbar = doesElemenHaveScrollbar(contentArea!);
@@ -185,12 +194,6 @@ suite('PrivacySandboxDialogConsent', function() {
 suite('PrivacySandboxDialogNotice', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  function testClickButton(buttonSelector: string) {
-    const actionButton =
-        page.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    actionButton.click();
-  }
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -227,13 +230,13 @@ suite('PrivacySandboxDialogNotice', function() {
   });
 
   test('ackClicked', async function() {
-    testClickButton('#ackButton');
+    testClickButton('#ackButton', page);
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('settingsClicked', async function() {
-    testClickButton('#settingsButton');
+    testClickButton('#settingsButton', page);
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
@@ -248,21 +251,6 @@ suite('PrivacySandboxDialogNotice', function() {
 suite('PrivacySandboxDialogCombined', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  function testClickButton(
-      buttonSelector: string, element: HTMLElement|null = page) {
-    const actionButton =
-        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    assertTrue(
-        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
-    actionButton.click();
-  }
-
-  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, targetAction);
-    browserProxy.reset();
-  }
 
   function getActiveStep(): PrivacySandboxDialogConsentStepElement|
       PrivacySandboxDialogNoticeStepElement {
@@ -283,7 +271,8 @@ suite('PrivacySandboxDialogCombined', function() {
   });
 
   test('moreButton', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
     await flushTasks();
@@ -326,7 +315,7 @@ suite('PrivacySandboxDialogCombined', function() {
         consentStep.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
     await verifyActionOccured(
-        PrivacySandboxPromptAction.CONSENT_MORE_BUTTON_CLICKED);
+        browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_BUTTON_CLICKED);
     await consentStep.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -344,98 +333,115 @@ suite('PrivacySandboxDialogCombined', function() {
 
   test('acceptConsentAndAckNotice', async function() {
     // Verify that dialog starts with consent step.
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Accept the consent step.
     testClickButton('#confirmButton', consentStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_ACCEPTED);
 
     // Resolving consent step triggers saving step.
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
 
     // After saving step has ended (with a delay), the notice is shown.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
     testClickButton('#ackButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('acceptConsentAndOpenSettings', async function() {
     // Verify that dialog starts with consent step.
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Accept the consent step.
     testClickButton('#confirmButton', consentStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_ACCEPTED);
 
     // Resolving consent step triggers saving step.
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
 
     // After saving step has ended (with a delay), the notice is shown.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Click 'Open settings' button.
     testClickButton('#settingsButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
   test('declineConsentAndAckNotice', async function() {
     // Verify that dialog starts with consent step.
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Decline the consent step.
     testClickButton('#declineButton', consentStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_DECLINED);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_DECLINED);
 
     // Resolving consent step triggers saving step.
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
 
     // After saving step has ended (with a delay), the notice is shown.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
     testClickButton('#ackButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('declineConsentAndOpenSettings', async function() {
     // Verify that dialog starts with consent step.
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Decline the consent step.
     testClickButton('#declineButton', consentStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_DECLINED);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_DECLINED);
 
     // Resolving consent step triggers saving step.
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
 
     // After saving step has ended (with a delay), the notice is shown.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Click 'Open settings' button.
     testClickButton('#settingsButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
   test('learnMoreClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
@@ -450,14 +456,14 @@ suite('PrivacySandboxDialogCombined', function() {
     // action.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+        browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
     // After clicking on the collapse section again, the content area collapses
     // and returns to the initial state.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
+        browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
   });
 });
@@ -465,21 +471,6 @@ suite('PrivacySandboxDialogCombined', function() {
 suite('PrivacySandboxDialogNoticeEEA', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  function testClickButton(
-      buttonSelector: string, element: HTMLElement|null = page) {
-    const actionButton =
-        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    assertTrue(
-        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
-    actionButton.click();
-  }
-
-  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, targetAction);
-    browserProxy.reset();
-  }
 
   function getActiveStep(): PrivacySandboxDialogNoticeStepElement {
     return page.shadowRoot!.querySelector('.active')!;
@@ -500,7 +491,8 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
   });
 
   test('moreButton', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
     await flushTasks();
@@ -543,7 +535,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
         noticeStep.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
     await noticeStep.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -561,28 +553,33 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
 
   test('ackClicked', async function() {
     // Verify that dialog starts with notice step.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
     testClickButton('#ackButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('settingsClicked', async function() {
     // Verify that dialog starts with notice step.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
     testClickButton('#settingsButton', noticeStep);
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
   test('learnMoreClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
@@ -597,14 +594,14 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     // action.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
     // After clicking on the collapse section again, the content area collapses
     // and returns to the initial state.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
   });
 });
@@ -612,21 +609,6 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
 suite('PrivacySandboxDialogNoticeROW', function() {
   let page: PrivacySandboxNoticeDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  function testClickButton(
-      buttonSelector: string, element: HTMLElement|null = page) {
-    const actionButton =
-        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    assertTrue(
-        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
-    actionButton.click();
-  }
-
-  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, targetAction);
-    browserProxy.reset();
-  }
 
   setup(async function() {
     browserProxy = new TestPrivacySandboxDialogBrowserProxy();
@@ -641,7 +623,8 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('moreButton', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -683,7 +666,7 @@ suite('PrivacySandboxDialogNoticeROW', function() {
         page.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
     await page.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -700,19 +683,24 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('ackClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    testClickButton('#ackButton');
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#ackButton', page);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('settingsClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    testClickButton('#settingsButton');
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#settingsButton', page);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
   test('learnMoreClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
     // The collapse section is closed.
     const learnMoreElement =
@@ -725,14 +713,14 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     // action.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
     // After clicking on the collapse section again, the content area collapses
     // and returns to the initial state.
     testClickButton('cr-expand-button', learnMoreElement);
     await verifyActionOccured(
-        PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
   });
 });
@@ -740,19 +728,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
 suite('PrivacySandboxDialogNoticeRestricted', function() {
   let page: PrivacySandboxNoticeRestrictedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, targetAction);
-    browserProxy.reset();
-  }
-
-  function testClickButton(
-      buttonSelector: string, element: HTMLElement = page) {
-    const actionButton =
-        element.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
-    actionButton.click();
-  }
 
   setup(async function() {
     browserProxy = new TestPrivacySandboxDialogBrowserProxy();
@@ -769,14 +744,93 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   test('validDialog', async function() {
     // Asserting very basic functionality for now.
     // TODO(b/277180677): add more tests as functionality is implemented.
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     assertTrue(!!page.shadowRoot!.querySelector('div'));
   });
 
   test('settingsClicked', async function() {
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    testClickButton('#settingsButton');
-    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#settingsButton', page);
+    await verifyActionOccured(
+        browserProxy,
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
+  });
+
+  test('acknowledgeClicked', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#ackButton', page);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
+  });
+
+  // TODO(b/277180533): determine whether some of the more button test logic can
+  // be shared.
+  // TODO(crbug.com/1432915): various more button test issues. Re-enable once
+  // resolved.
+  test.skip('moreButton', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await flushTasks();
+
+    const scrollable: HTMLElement =
+        page.shadowRoot!.querySelector('[scrollable]')!;
+    // Turn-off scroll animations.
+    scrollable.style.scrollBehavior = 'auto';
+    const allContentVisible = isAllContentVisible(scrollable);
+    assertEquals(
+        isChildVisible(page, '#moreButton'), !allContentVisible,
+        `more button should only be visible when some of the dialog content
+        wasn't visible`);
+
+    assertEquals(
+        isChildVisible(page, '#ackButton'), true,
+        `ack button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), allContentVisible,
+        allContentVisible ?
+            'ack button should visible if all content dialog is visible' :
+            `ack button should not be visible if some of the dialog content \
+            isn't visible from the start`);
+
+    assertEquals(
+        isChildVisible(page, '#settingsButton'), true,
+        `settings button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), allContentVisible,
+        allContentVisible ?
+            'settings button should visible if all content dialog is visible' :
+            `settings button should not be visible if some of the dialog \
+            content isn't visible from the start`);
+
+    if (allContentVisible) {
+      return;
+    }
+    const moreButton: HTMLElement =
+        page.shadowRoot!.querySelector('#moreButton')!;
+    // Click until reaching the bottom.
+    while (isChildVisible(page, '#moreButton')) {
+      moreButton.click();
+      await waitForScrollToFinish(scrollable);
+    }
+
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+    await page.whenWasScrolledToBottomForTest();
+
+    // After scrolling down, the "More" button is hidden and dialog button are
+    // visible in the parent bounds.
+    assertEquals(
+        isChildVisible(page, '#moreButton'), false,
+        'more button should not be visible anymore');
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), true,
+        'ack button should be visible after scrolling to the bottom');
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), true,
+        'settings button should be visible after scrolling to the bottom');
   });
 });
 

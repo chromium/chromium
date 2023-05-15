@@ -17,7 +17,7 @@ namespace crypto {
 class OpenSSLErrStackTracer;
 }  // namespace crypto
 
-namespace syncer {
+namespace trusted_vault {
 
 // Encrypts |payload| according to SecureBox v2 spec:
 // 1. Encryption key is derived from |shared_secret| using HKDF-SHA256.
@@ -146,6 +146,6 @@ class SecureBoxKeyPair {
   std::unique_ptr<SecureBoxPublicKey> public_key_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_SECUREBOX_H_

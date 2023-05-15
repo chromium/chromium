@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -47,12 +46,10 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
+import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
-import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -645,10 +642,7 @@ public class FeedSurfaceMediator
         FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
-                mCoordinator.getHybridListRenderer(),
-                reliabilityLogger != null ? reliabilityLogger.getLaunchLogger()
-                                          : new FeedLaunchReliabilityLogger() {},
-                mHeaderCount);
+                mCoordinator.getHybridListRenderer(), reliabilityLogger, mHeaderCount);
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
     }
@@ -685,14 +679,6 @@ public class FeedSurfaceMediator
         mCurrentStream.unbind(shouldPlaceSpacer);
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
-
-        // This is the catch-all feed launch end event to ensure a complete flow is logged
-        // even if we don't know a more specific reason for the stream unbinding.
-        FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
-        if (reliabilityLogger != null) {
-            reliabilityLogger.logLaunchFinishedIfInProgress(
-                    DiscoverLaunchResult.FRAGMENT_STOPPED, /*userMightComeBack=*/false);
-        }
     }
 
     void onSurfaceOpened() {
@@ -1243,13 +1229,9 @@ public class FeedSurfaceMediator
     private void logSwitchedFeeds(Stream switchedToStream) {
         // Log the end of an ongoing launch and the beginning of a new one.
         FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
-        if (reliabilityLogger == null) {
-            return;
+        if (reliabilityLogger != null) {
+            reliabilityLogger.onSwitchStream(getStreamType(switchedToStream));
         }
-        reliabilityLogger.logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.SWITCHED_FEED_TABS, /*userMightComeBack=*/false);
-        reliabilityLogger.getLaunchLogger().logSwitchedFeeds(
-                getStreamType(switchedToStream), SystemClock.elapsedRealtimeNanos());
     }
 
     private boolean isSuggestionsVisible() {

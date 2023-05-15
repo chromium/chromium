@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_SESSION_SHUTDOWN_CONFIRMATION_DIALOG_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -33,7 +34,7 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 }  // namespace ash

@@ -128,6 +128,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
       const gfx::Size& size,
       CanvasResourceProvider* resource_provider) const;
 
+  void CopyToSwapTexture();
+
   // Can't use DawnObjectBase, because the device can be reconfigured.
   const DawnProcTable& GetProcs() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
@@ -136,13 +138,24 @@ class GPUCanvasContext : public CanvasRenderingContext,
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   Member<GPUDevice> device_;
+
+  // If the system doesn't support the requested format but it's one that WebGPU
+  // is required to offer, a texture_ will be allocated separately with the
+  // desired format and the will be copied to swap_texture_, allocated by the
+  // swap buffer provider with the system-supported format, when we're ready to
+  // present. Otherwise texture_ and swap_texture_ will point to the same
+  // texture, allocated by the swap buffer provider.
   Member<GPUTexture> texture_;
+  Member<GPUTexture> swap_texture_;
+
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
   V8GPUCanvasAlphaMode::Enum alpha_mode_;
   scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 
   bool new_texture_required_ = true;
+  bool copy_to_swap_texture_required_ = false;
+  bool suppress_preferred_format_warning_ = false;
   bool stopped_ = false;
 
   // Matches [[configuration]] != null in the WebGPU specification.
@@ -150,6 +163,10 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // Matches [[texture_descriptor]] in the WebGPU specification except that it
   // never becomes null.
   WGPUTextureDescriptor texture_descriptor_;
+  // The texture descriptor for the swap_texture is tracked separately, since
+  // it may have different usage in the case that a copy is required.
+  WGPUTextureDescriptor swap_texture_descriptor_;
+  WGPUDawnTextureInternalUsageDescriptor texture_internal_usage_;
   std::unique_ptr<WGPUTextureFormat[]> view_formats_;
 };
 

@@ -38,6 +38,10 @@ def create_config(config_args, development):
                 return ''
 
             @property
+            def codesign_requirements_outer_app(self):
+                return ''
+
+            @property
             def provisioning_profile_basename(self):
                 return None
 

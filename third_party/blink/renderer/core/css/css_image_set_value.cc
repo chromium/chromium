@@ -81,6 +81,13 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
                          return left->ComputedResolution() <
                                 right->ComputedResolution();
                        });
+      auto* last = std::unique(options_.begin(), options_.end(),
+                               [](const CSSImageSetOptionValue* left,
+                                  const CSSImageSetOptionValue* right) {
+                                 return left->ComputedResolution() ==
+                                        right->ComputedResolution();
+                               });
+      options_.erase(last, options_.end());
     }
   }
 

@@ -41,7 +41,8 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             CustomTabsConnection connection, @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground, boolean showMaximizeButton,
-            int decorationType, int sideSheetPosition, int sideSheetAnimation) {
+            int decorationType, int sideSheetPosition, int sideSheetAnimation,
+            int roundedCornersPosition) {
         if (initialHeight <= 0
                 && (!ChromeFeatureList.sCctResizableSideSheet.isEnabled() || initialWidth <= 0)) {
             return new CustomTabHeightStrategy();
@@ -56,7 +57,8 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                             -> connection.onActivityLayout(
                                     session, left, top, right, bottom, state),
                     lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground,
-                    showMaximizeButton, decorationType, sideSheetPosition, sideSheetAnimation);
+                    showMaximizeButton, decorationType, sideSheetPosition, sideSheetAnimation,
+                    roundedCornersPosition);
         } else {
             return new PartialCustomTabBottomSheetStrategy(activity, initialHeight,
                     isPartialCustomTabFixedHeight,
@@ -95,8 +97,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
 
     /**
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
+     * @return {@code true} if the animation will be performed.
      */
-    public void handleCloseAnimation(Runnable finishRunnable) {
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
         throw new IllegalStateException(
                 "Custom close animation should be performed only on partial CCT.");
     }

@@ -354,7 +354,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   // Extra Action with the same ID is removed.
   EXPECT_EQ(2, (int)injector_->actions().size());
   auto* actionA = injector_->actions()[0].get();
@@ -509,7 +509,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
 
@@ -571,7 +571,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(1u, injector_->actions().size());
   auto* action = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
@@ -668,7 +668,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
   auto* hover_action = static_cast<ActionMove*>(injector_->actions()[0].get());
@@ -747,7 +747,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterTouchToTouch) {
   // Setup.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
 
   // Verify initial states.
@@ -874,8 +874,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
-  injector_->set_allow_reposition(true);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   // Simulate a menu entry position change.
   auto menu_entry_location_point = gfx::Point(5, 5);
   injector_->SaveMenuEntryLocation(menu_entry_location_point);
@@ -921,8 +920,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
       *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<AppDataProto>, std::string) {}));
-  injector->set_allow_reposition(true);
-  injector->ParseActions(*json_value);
+  injector->ParseActions(json_value->GetDict());
   injector->OnProtoDataAvailable(*proto);
   EXPECT_EQ(injector_->actions().size(), injector->actions().size());
   for (size_t i = 0; i < injector_->actions().size(); i++) {
@@ -940,7 +938,7 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->set_beta(true);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
 
   // Add->Save.
@@ -1028,7 +1026,7 @@ TEST_F(TouchInjectorTest, TestDeleteAction) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->set_beta(true);
-  injector_->ParseActions(*json_value);
+  injector_->ParseActions(json_value->GetDict());
   TouchInjectorResetAndAddTwoActions(injector_.get());
   ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
                     /*size_pending_delete_user_actions=*/0u,

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -94,7 +95,8 @@ class GeolocationHandlerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
-  ShillManagerClient::TestInterface* manager_test_ = nullptr;
+  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_ =
+      nullptr;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
 };

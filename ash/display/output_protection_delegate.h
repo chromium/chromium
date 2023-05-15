@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -55,7 +56,7 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   bool RegisterClientIfNecessary();
 
   // Native window being observed.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // Display ID of the observed window.
   int64_t display_id_;

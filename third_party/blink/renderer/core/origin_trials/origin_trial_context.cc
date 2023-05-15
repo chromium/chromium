@@ -499,6 +499,12 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "PrivacySandboxAdsAPIs")
     return base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIs);
 
+  if (trial_name == "FledgeBiddingAndAuctionServer") {
+    return base::FeatureList::IsEnabled(features::kInterestGroupStorage) &&
+           base::FeatureList::IsEnabled(
+               features::kFledgeBiddingAndAuctionServer);
+  }
+
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
 
@@ -530,6 +536,16 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "CompressionDictionaryTransport") {
     return base::FeatureList::IsEnabled(
         features::kCompressionDictionaryTransport);
+  }
+
+  if (trial_name == "AttributionReportingCrossAppWeb") {
+    return base::FeatureList::IsEnabled(features::kConversionMeasurement) &&
+           base::FeatureList::IsEnabled(
+               network::features::kAttributionReportingCrossAppWeb);
+  }
+
+  if (trial_name == "ComputePressure") {
+    return base::FeatureList::IsEnabled(features::kComputePressure);
   }
 
   return true;

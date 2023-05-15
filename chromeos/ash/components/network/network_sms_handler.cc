@@ -14,6 +14,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -36,6 +39,8 @@ namespace ash {
 const char NetworkSmsHandler::kNumberKey[] = "number";
 const char NetworkSmsHandler::kTextKey[] = "text";
 const char NetworkSmsHandler::kTimestampKey[] = "timestamp";
+const base::TimeDelta NetworkSmsHandler::kFetchSmsDetailsTimeout =
+    base::Seconds(60);
 
 class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
@@ -66,10 +71,12 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void DeleteCallback(const dbus::ObjectPath& sms_path, bool success);
   void GetMessages();
   void MessageReceived(const base::Value::Dict& dictionary);
+  void OnFetchSmsDetailsTimeout(const dbus::ObjectPath& sms_path);
 
-  NetworkSmsHandler* host_;
+  raw_ptr<NetworkSmsHandler, ExperimentalAsh> host_;
   std::string service_name_;
   dbus::ObjectPath object_path_;
+  base::OneShotTimer fetch_sms_details_timer_;
   bool deleting_messages_ = false;
   bool retrieving_messages_ = false;
   std::vector<dbus::ObjectPath> delete_queue_;
@@ -83,6 +90,10 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
                                          const std::string& service_name,
                                          const dbus::ObjectPath& object_path)
     : host_(host), service_name_(service_name), object_path_(object_path) {
+  NET_LOG(DEBUG)
+      << "SMS handler for " << object_path.value()
+      << " created, setting SMS receive handler and fetching existing messages";
+
   // Set the handler for received Sms messages.
   ModemMessagingClient::Get()->SetSmsReceivedHandler(
       service_name_, object_path_,
@@ -111,15 +122,21 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
   retrieval_queue_.clear();
   delete_queue_.clear();
 
-  if (!paths.has_value())
+  if (!paths.has_value()) {
+    NET_LOG(DEBUG) << "No paths returned";
     return;
+  }
 
   NET_LOG(EVENT) << "Bulk fetched [" << paths->size() << "] message(s)";
   retrieval_queue_.reserve(paths->size());
   retrieval_queue_.assign(std::make_move_iterator(paths->begin()),
                           std::make_move_iterator(paths->end()));
-  if (!retrieving_messages_)
-    GetMessages();
+  if (retrieving_messages_) {
+    NET_LOG(DEBUG) << "Already retrieving messages, not starting queue";
+    return;
+  }
+
+  GetMessages();
 }
 
 // Messages must be deleted one at a time, since we can not guarantee
@@ -127,6 +144,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
 // the back of the list so that the indices are valid.
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::DeleteMessages() {
   if (delete_queue_.empty()) {
+    NET_LOG(DEBUG) << "Delete queue is empty, finished deleting messages";
     deleting_messages_ = false;
     return;
   }
@@ -168,6 +186,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::DeleteCallback(
 // many requests to a single threaded server.
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetMessages() {
   if (retrieval_queue_.empty()) {
+    NET_LOG(DEBUG) << "Retrieval queue is empty, finished retrieving messages";
     retrieving_messages_ = false;
     if (!deleting_messages_)
       DeleteMessages();
@@ -179,6 +198,11 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetMessages() {
   NET_LOG(EVENT) << "Fetching details for " << sms_path.value() << ", ["
                  << retrieval_queue_.size()
                  << "] message(s) left in the retrieval queue";
+  fetch_sms_details_timer_.Start(
+      FROM_HERE, kFetchSmsDetailsTimeout,
+      base::BindOnce(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+                         OnFetchSmsDetailsTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), sms_path));
   SMSClient::Get()->GetAll(
       service_name_, sms_path,
       base::BindOnce(
@@ -191,17 +215,27 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
     SmsReceivedCallback(const dbus::ObjectPath& sms_path, bool complete) {
   NET_LOG(EVENT) << "Message received: " << sms_path.value();
   // Only handle complete messages.
-  if (!complete)
+  if (!complete) {
+    NET_LOG(DEBUG) << "Message is not complete, not handling: "
+                   << sms_path.value();
     return;
+  }
+
   retrieval_queue_.push_back(sms_path);
-  if (!retrieving_messages_)
-    GetMessages();
+  if (retrieving_messages_) {
+    NET_LOG(DEBUG)
+        << "SMS received but already retrieving messages, not starting queue";
+    return;
+  }
+
+  GetMessages();
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetCallback(
     const dbus::ObjectPath& sms_path,
     const base::Value::Dict& dictionary) {
   NET_LOG(EVENT) << "Message details fetched for: " << sms_path.value();
+  fetch_sms_details_timer_.Stop();
   MessageReceived(dictionary);
   GetMessages();
 }
@@ -226,6 +260,13 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
     new_dictionary.Set(kTimestampKey, *timestamp);
   }
   host_->MessageReceived(new_dictionary);
+}
+
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+    OnFetchSmsDetailsTimeout(const dbus::ObjectPath& sms_path) {
+  NET_LOG(ERROR) << "SMSClient::GetAll() timed out for " << sms_path.value()
+                 << ", moving to next message.";
+  GetMessages();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -227,6 +227,7 @@ class MediaInternalsAudioLogTest
   }
 
  protected:
+  const content::BrowserTaskEnvironment task_environment_;
   MediaInternals::UpdateCallback update_cb_;
   const media::AudioParameters test_params_;
   const media::AudioLogFactory::AudioComponent test_component_;
@@ -241,8 +242,6 @@ class MediaInternalsAudioLogTest
                        media::AudioParameters::DUCKING);
     return params;
   }
-
-  const content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_P(MediaInternalsAudioLogTest, AudioLogCreateStartStopErrorClose) {

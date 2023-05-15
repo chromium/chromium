@@ -5,7 +5,6 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 
 #include <utility>
-#include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -14,9 +13,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
@@ -27,14 +23,12 @@
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/views/background.h"
@@ -88,7 +82,7 @@ gfx::Rect GetWorkAreaBoundsNoOverlapWithShelf(aura::Window* root_window) {
   aura::Window* window =
       root_window->GetChildById(kShellWindowId_OverlayContainer);
   gfx::Rect bounds = screen_util::GetDisplayWorkAreaBoundsInParent(window);
-  ::wm::ConvertRectToScreen(root_window, &bounds);
+  wm::ConvertRectToScreen(root_window, &bounds);
 
   bounds.Subtract(Shelf::ForWindow(root_window)->GetIdealBounds());
   return bounds;
@@ -145,8 +139,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
 
     SetBorder(std::make_unique<views::HighlightBorder>(
         /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+        views::HighlightBorder::Type::kHighlightBorder1));
 
     label_ = AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));
@@ -214,7 +207,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
   // left/top one.
   const bool is_right_or_bottom_;
 
-  views::Label* label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 // View which contains two highlights on each side indicator where a user should
@@ -307,9 +300,6 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       case IndicatorType::kRightText:
         return right_rotated_view_;
     }
-
-    NOTREACHED();
-    return nullptr;
   }
 
   void SetDraggedWindow(aura::Window* dragged_window) {
@@ -334,7 +324,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   // animate when changing states, but not when bounds or orientation is
   // changed.
   void Layout(bool animate) {
-    // TODO(crbug.com/1369702): Attempt to simplify this logic.
+    // TODO(b/252514604): Attempt to simplify this logic.
     const bool horizontal =
         SplitViewController::IsLayoutHorizontal(GetWidget()->GetNativeWindow());
     const int display_width = horizontal ? width() : height();
@@ -385,22 +375,11 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
             SplitViewController::SnapPosition::kNone ||
         drag_ending_in_snap) {
       // Get the preview area bounds from the split view controller.
-      preview_area_bounds =
+      preview_area_bounds = gfx::Rect(
           SplitViewController::Get(GetWidget()->GetNativeWindow())
-              ->GetSnappedWindowBoundsInScreen(snap_position, dragged_window_);
+              ->GetSnappedWindowBoundsInScreen(snap_position, dragged_window_)
+              .size());
 
-      aura::Window* root_window =
-          GetWidget()->GetNativeWindow()->GetRootWindow();
-      wm::ConvertRectFromScreen(root_window, &preview_area_bounds);
-
-      // Preview area should have no overlap with the shelf.
-      preview_area_bounds.Subtract(
-          Shelf::ForWindow(root_window)->GetIdealBounds());
-
-      gfx::Rect work_area_bounds =
-          GetWorkAreaBoundsNoOverlapWithShelf(root_window);
-      wm::ConvertRectFromScreen(root_window, &work_area_bounds);
-      preview_area_bounds.set_y(preview_area_bounds.y() - work_area_bounds.y());
       if (!drag_ending_in_snap)
         preview_area_bounds.Inset(kHighlightScreenEdgePaddingDp);
 
@@ -430,6 +409,11 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
           }
         }
       } else {
+        preview_area_bounds.set_origin(
+            gfx::Point(width() - kHighlightScreenEdgePaddingDp -
+                           preview_area_bounds.width(),
+                       height() - kHighlightScreenEdgePaddingDp -
+                           preview_area_bounds.height()));
         other_bounds.set_origin(highlight_padding_point);
         left_highlight_bounds = other_bounds;
         right_highlight_bounds = preview_area_bounds;
@@ -616,16 +600,18 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     right_rotated_view_->layer()->SetTransform(right_rotation);
   }
 
-  SplitViewHighlightView* left_highlight_view_ = nullptr;
-  SplitViewHighlightView* right_highlight_view_ = nullptr;
-  RotatedImageLabelView* left_rotated_view_ = nullptr;
-  RotatedImageLabelView* right_rotated_view_ = nullptr;
+  raw_ptr<SplitViewHighlightView, ExperimentalAsh> left_highlight_view_ =
+      nullptr;
+  raw_ptr<SplitViewHighlightView, ExperimentalAsh> right_highlight_view_ =
+      nullptr;
+  raw_ptr<RotatedImageLabelView, ExperimentalAsh> left_rotated_view_ = nullptr;
+  raw_ptr<RotatedImageLabelView, ExperimentalAsh> right_rotated_view_ = nullptr;
 
   WindowDraggingState window_dragging_state_ = WindowDraggingState::kNoDrag;
   WindowDraggingState previous_window_dragging_state_ =
       WindowDraggingState::kNoDrag;
 
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 };
 
 SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {

@@ -32,6 +32,8 @@ export enum UrlParam {
   // If this parameter is true, password check will start automatically when
   // navigating to Checkup section.
   START_CHECK = 'start',
+  // Triggers import on the Settings page.
+  START_IMPORT = 'import',
 }
 
 export class Route {
@@ -85,6 +87,7 @@ export class Router {
   }
 
   private currentRoute_: Route = new Route(Page.PASSWORDS);
+  private previousRoute_: Route|null = null;
   private routeObservers_: Set<RouteObserverMixinInterface> = new Set();
 
   constructor() {
@@ -106,6 +109,10 @@ export class Router {
 
   get currentRoute(): Route {
     return this.currentRoute_;
+  }
+
+  get previousRoute(): Route|null {
+    return this.previousRoute_;
   }
 
   /**
@@ -144,6 +151,7 @@ export class Router {
 
   private notifyObservers_(oldRoute: Route) {
     assert(oldRoute !== this.currentRoute_);
+    this.previousRoute_ = oldRoute;
 
     for (const observer of this.routeObservers_) {
       observer.currentRouteChanged(this.currentRoute_, oldRoute);
@@ -210,7 +218,7 @@ export const RouteObserverMixin = dedupingMixin(
           Router.getInstance().removeObserver(this);
         }
 
-        currentRouteChanged(_newRoute: Route, _oldRoute: Route): void {
+        currentRouteChanged(_newRoute: Route, _oldRoute?: Route): void {
           assertNotReached();
         }
       }
@@ -219,5 +227,5 @@ export const RouteObserverMixin = dedupingMixin(
     });
 
 export interface RouteObserverMixinInterface {
-  currentRouteChanged(newRoute: Route, oldRoute: Route): void;
+  currentRouteChanged(newRoute: Route, oldRoute?: Route): void;
 }

@@ -51,6 +51,7 @@ enum SpdyStreamType {
   SPDY_REQUEST_RESPONSE_STREAM,
   // A server-initiated stream where the server just sends a response
   // with a body and the client does not send anything.
+  // TODO(https://crbug.com/1426477): Remove.
   SPDY_PUSH_STREAM
 };
 
@@ -97,6 +98,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
     // Called when response headers have been received.  In case of a pushed
     // stream, the pushed request headers are also passed.
+    // TODO(https://crbug.com/1426477): Remove.
     virtual void OnHeadersReceived(
         const spdy::Http2HeaderBlock& response_headers,
         const spdy::Http2HeaderBlock* pushed_request_headers) = 0;
@@ -273,6 +275,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Called by the SpdySession when a frame carrying request headers opening a
   // push stream is received. Stream transits to STATE_RESERVED_REMOTE state.
+  // TODO(https://crbug.com/1426477): Remove.
   void OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers, GURL url);
 
   // Called by the SpdySession when response data has been received
@@ -394,6 +397,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   int64_t raw_received_bytes() const { return raw_received_bytes_; }
   int64_t raw_sent_bytes() const { return raw_sent_bytes_; }
   int recv_bytes() const { return recv_bytes_; }
+  // TODO(https://crbug.com/1426477): Remove.
   bool ShouldRetryRSTPushStream() const;
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
@@ -451,6 +455,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // read. While buffered by |pending_recv_data_| it's not until
   // PushedStreamReplay() is invoked that reads are considered
   // to have occurred, driving the state machine forward.
+  // TODO(https://crbug.com/1426477): Remove.
   void PushedStreamReplay();
 
   // Produces the HEADERS frame for the stream. The stream must

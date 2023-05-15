@@ -43,7 +43,7 @@ class ASH_EXPORT SystemTextfieldController : public views::TextfieldController,
 
  private:
   // The textfield that the controller binds with.
-  base::raw_ptr<SystemTextfield> const textfield_;
+  raw_ptr<SystemTextfield> const textfield_;
   // Indicates if selecting all text should be deferred.
   bool defer_select_all_ = false;
 };

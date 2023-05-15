@@ -27,6 +27,8 @@
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "net/base/address_map_cache_linux.h"
+#include "net/base/address_map_linux.h"
+#include "net/base/address_tracker_linux_test_util.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -39,11 +41,9 @@
 #define IFA_F_HOMEADDRESS 0x10
 #endif
 
-bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs) {
-  return memcmp(&lhs, &rhs, sizeof(struct ifaddrmsg)) == 0;
-}
+using net::internal::AddressTrackerLinux;
 
-namespace net::internal {
+namespace net::test {
 namespace {
 
 const int kTestInterfaceEth = 1;
@@ -68,8 +68,6 @@ char* TestGetInterfaceName(int interface_index, char* buf) {
 
 }  // namespace
 
-typedef std::vector<char> Buffer;
-
 class AddressTrackerLinuxTest : public testing::Test {
  protected:
   AddressTrackerLinuxTest() = default;
@@ -83,8 +81,7 @@ class AddressTrackerLinuxTest : public testing::Test {
 #if BUILDFLAG(IS_LINUX)
       const auto& [address_map, online_links] =
           tracker_->GetInitialDataAndStartRecordingDiffs();
-      address_map_cache_ =
-          std::make_unique<AddressMapCacheLinux>(address_map, online_links);
+      address_map_cache_.SetCachedInfo(address_map, online_links);
 #endif  // BUILDFLAG(IS_LINUX)
     } else {
       tracker_ = std::make_unique<AddressTrackerLinux>();
@@ -93,8 +90,8 @@ class AddressTrackerLinuxTest : public testing::Test {
     tracker_->get_interface_name_ = TestGetInterfaceName;
   }
 
-  bool HandleAddressMessage(const Buffer& buf) {
-    Buffer writable_buf = buf;
+  bool HandleAddressMessage(const NetlinkBuffer& buf) {
+    NetlinkBuffer writable_buf = buf;
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
@@ -105,8 +102,8 @@ class AddressTrackerLinuxTest : public testing::Test {
     return address_changed;
   }
 
-  bool HandleLinkMessage(const Buffer& buf) {
-    Buffer writable_buf = buf;
+  bool HandleLinkMessage(const NetlinkBuffer& buf) {
+    NetlinkBuffer writable_buf = buf;
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
@@ -117,8 +114,8 @@ class AddressTrackerLinuxTest : public testing::Test {
     return link_changed;
   }
 
-  bool HandleTunnelMessage(const Buffer& buf) {
-    Buffer writable_buf = buf;
+  bool HandleTunnelMessage(const NetlinkBuffer& buf) {
+    NetlinkBuffer writable_buf = buf;
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
@@ -159,141 +156,22 @@ class AddressTrackerLinuxTest : public testing::Test {
       return;
     }
 #if BUILDFLAG(IS_LINUX)
-    address_map_cache_->ApplyDiffs(tracker_->address_map_diff_for_testing(),
-                                   tracker_->online_links_diff_for_testing());
-    EXPECT_EQ(address_map_cache_->GetAddressMap(), tracker_->GetAddressMap());
-    EXPECT_EQ(address_map_cache_->GetOnlineLinks(), tracker_->GetOnlineLinks());
+    address_map_cache_.ApplyDiffs(tracker_->address_map_diff_for_testing(),
+                                  tracker_->online_links_diff_for_testing());
+    EXPECT_EQ(address_map_cache_.GetAddressMap(), tracker_->GetAddressMap());
+    EXPECT_EQ(address_map_cache_.GetOnlineLinks(), tracker_->GetOnlineLinks());
     tracker_->address_map_diff_for_testing().clear();
     tracker_->online_links_diff_for_testing().clear();
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
 #if BUILDFLAG(IS_LINUX)
-  std::unique_ptr<AddressMapCacheLinux> address_map_cache_;
+  AddressMapCacheLinux address_map_cache_;
 #endif
   bool tracking_;
 };
 
 namespace {
-
-class NetlinkMessage {
- public:
-  explicit NetlinkMessage(uint16_t type) : buffer_(NLMSG_HDRLEN) {
-    header()->nlmsg_type = type;
-    Align();
-  }
-
-  void AddPayload(const void* data, size_t length) {
-    CHECK_EQ(static_cast<size_t>(NLMSG_HDRLEN),
-             buffer_.size()) << "Payload must be added first";
-    Append(data, length);
-    Align();
-  }
-
-  void AddAttribute(uint16_t type, const void* data, size_t length) {
-    struct nlattr attr;
-    attr.nla_len = NLA_HDRLEN + length;
-    attr.nla_type = type;
-    Append(&attr, sizeof(attr));
-    Align();
-    Append(data, length);
-    Align();
-  }
-
-  void AppendTo(Buffer* output) const {
-    CHECK_EQ(NLMSG_ALIGN(output->size()), output->size());
-    output->reserve(output->size() + NLMSG_LENGTH(buffer_.size()));
-    output->insert(output->end(), buffer_.begin(), buffer_.end());
-  }
-
- private:
-  void Append(const void* data, size_t length) {
-    const char* chardata = reinterpret_cast<const char*>(data);
-    buffer_.insert(buffer_.end(), chardata, chardata + length);
-  }
-
-  void Align() {
-    header()->nlmsg_len = buffer_.size();
-    buffer_.insert(buffer_.end(), NLMSG_ALIGN(buffer_.size()) - buffer_.size(),
-                   0);
-    CHECK(NLMSG_OK(header(), buffer_.size()));
-  }
-
-  struct nlmsghdr* header() {
-    return reinterpret_cast<struct nlmsghdr*>(&buffer_[0]);
-  }
-
-  Buffer buffer_;
-};
-
-#define INFINITY_LIFE_TIME 0xFFFFFFFF
-
-void MakeAddrMessageWithCacheInfo(uint16_t type,
-                                  uint8_t flags,
-                                  uint8_t family,
-                                  int index,
-                                  const IPAddress& address,
-                                  const IPAddress& local,
-                                  uint32_t preferred_lifetime,
-                                  Buffer* output) {
-  NetlinkMessage nlmsg(type);
-  struct ifaddrmsg msg = {};
-  msg.ifa_family = family;
-  msg.ifa_flags = flags;
-  msg.ifa_index = index;
-  nlmsg.AddPayload(&msg, sizeof(msg));
-  if (address.size())
-    nlmsg.AddAttribute(IFA_ADDRESS, address.bytes().data(), address.size());
-  if (local.size())
-    nlmsg.AddAttribute(IFA_LOCAL, local.bytes().data(), local.size());
-  struct ifa_cacheinfo cache_info = {};
-  cache_info.ifa_prefered = preferred_lifetime;
-  cache_info.ifa_valid = INFINITY_LIFE_TIME;
-  nlmsg.AddAttribute(IFA_CACHEINFO, &cache_info, sizeof(cache_info));
-  nlmsg.AppendTo(output);
-}
-
-void MakeAddrMessage(uint16_t type,
-                     uint8_t flags,
-                     uint8_t family,
-                     int index,
-                     const IPAddress& address,
-                     const IPAddress& local,
-                     Buffer* output) {
-  MakeAddrMessageWithCacheInfo(type, flags, family, index, address, local,
-                               INFINITY_LIFE_TIME, output);
-}
-
-void MakeLinkMessage(uint16_t type,
-                     uint32_t flags,
-                     uint32_t index,
-                     Buffer* output) {
-  NetlinkMessage nlmsg(type);
-  struct ifinfomsg msg = {};
-  msg.ifi_index = index;
-  msg.ifi_flags = flags;
-  nlmsg.AddPayload(&msg, sizeof(msg));
-  output->clear();
-  nlmsg.AppendTo(output);
-}
-
-// Creates a netlink message generated by wireless_send_event. These events
-// should be ignored.
-void MakeWirelessLinkMessage(uint16_t type,
-                             uint32_t flags,
-                             uint32_t index,
-                             Buffer* output) {
-  NetlinkMessage nlmsg(type);
-  struct ifinfomsg msg = {};
-  msg.ifi_index = index;
-  msg.ifi_flags = flags;
-  msg.ifi_change = 0;
-  nlmsg.AddPayload(&msg, sizeof(msg));
-  char data[8] = {0};
-  nlmsg.AddAttribute(IFLA_WIRELESS, data, sizeof(data));
-  output->clear();
-  nlmsg.AppendTo(output);
-}
 
 const unsigned char kAddress0[] = { 127, 0, 0, 1 };
 const unsigned char kAddress1[] = { 10, 0, 0, 1 };
@@ -310,7 +188,7 @@ TEST_F(AddressTrackerLinuxTest, NewAddress) {
   const IPAddress kAddr2(kAddress2);
   const IPAddress kAddr3(kAddress3);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET, kTestInterfaceEth,
                   kAddr0, kEmpty, &buffer);
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -344,7 +222,7 @@ TEST_F(AddressTrackerLinuxTest, NewAddressChange) {
   const IPAddress kEmpty;
   const IPAddress kAddr0(kAddress0);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET, kTestInterfaceEth,
                   kAddr0, kEmpty, &buffer);
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -379,7 +257,7 @@ TEST_F(AddressTrackerLinuxTest, NewAddressDuplicate) {
 
   const IPAddress kAddr0(kAddress0);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET, kTestInterfaceEth,
                   kAddr0, kAddr0, &buffer);
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -402,7 +280,7 @@ TEST_F(AddressTrackerLinuxTest, DeleteAddress) {
   const IPAddress kAddr1(kAddress1);
   const IPAddress kAddr2(kAddress2);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, 0, AF_INET, kTestInterfaceEth, kAddr0, kEmpty,
                   &buffer);
   MakeAddrMessage(RTM_NEWADDR, 0, AF_INET, kTestInterfaceEth, kAddr1, kAddr2,
@@ -442,7 +320,7 @@ TEST_F(AddressTrackerLinuxTest, DeprecatedLifetime) {
   const IPAddress kEmpty;
   const IPAddress kAddr3(kAddress3);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, 0, AF_INET6, kTestInterfaceEth, kEmpty, kAddr3,
                   &buffer);
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -486,7 +364,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
   const IPAddress kAddr0(kAddress0);
   const IPAddress kAddr3(kAddress3);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   // Ignored family.
   MakeAddrMessage(RTM_NEWADDR, 0, AF_UNSPEC, kTestInterfaceEth, kAddr3, kAddr0,
                   &buffer);
@@ -503,7 +381,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
   NetlinkMessage nlmsg(RTM_NEWADDR);
   struct ifaddrmsg msg = {};
   msg.ifa_family = AF_INET;
-  nlmsg.AddPayload(&msg, sizeof(msg));
+  nlmsg.AddPayload(msg);
   // Ignored attribute.
   struct ifa_cacheinfo cache_info = {};
   nlmsg.AddAttribute(IFA_CACHEINFO, &cache_info, sizeof(cache_info));
@@ -517,7 +395,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
 TEST_F(AddressTrackerLinuxTest, AddInterface) {
   InitializeAddressTracker(true);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
 
   // Ignores loopback.
   MakeLinkMessage(RTM_NEWLINK,
@@ -570,7 +448,7 @@ TEST_F(AddressTrackerLinuxTest, AddInterface) {
 TEST_F(AddressTrackerLinuxTest, RemoveInterface) {
   InitializeAddressTracker(true);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
 
   // Should disappear when not IFF_LOWER_UP.
   MakeLinkMessage(RTM_NEWLINK, IFF_UP | IFF_LOWER_UP | IFF_RUNNING,
@@ -623,7 +501,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoreInterface) {
   IgnoreInterface(kIgnoredInterfaceName);
   InitializeAddressTracker(true);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   const IPAddress kEmpty;
   const IPAddress kAddr0(kAddress0);
 
@@ -645,7 +523,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoreInterface_NonIgnoredInterface) {
   IgnoreInterface(kIgnoredInterfaceName);
   InitializeAddressTracker(true);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   const IPAddress kEmpty;
   const IPAddress kAddr0(kAddress0);
 
@@ -666,7 +544,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoreInterface_NonIgnoredInterface) {
 TEST_F(AddressTrackerLinuxTest, TunnelInterface) {
   InitializeAddressTracker(true);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
 
   // Ignores without "tun" prefixed name.
   MakeLinkMessage(RTM_NEWLINK,
@@ -722,7 +600,7 @@ TEST_F(AddressTrackerLinuxTest, NonTrackingMode) {
   const IPAddress kEmpty;
   const IPAddress kAddr0(kAddress0);
 
-  Buffer buffer;
+  NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET, kTestInterfaceEth,
                   kAddr0, kEmpty, &buffer);
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -811,6 +689,9 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 }
 
 }  // namespace
+}  // namespace net::test
+
+namespace net::internal {
 
 // This is a regression test for https://crbug.com/1224428.
 //

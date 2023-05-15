@@ -4,12 +4,16 @@
 
 #include "content/renderer/renderer_main_platform_delegate.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 RendererMainPlatformDelegate::RendererMainPlatformDelegate(
     const MainFunctionParams& parameters) {}
 
-RendererMainPlatformDelegate::~RendererMainPlatformDelegate() {}
+RendererMainPlatformDelegate::~RendererMainPlatformDelegate() = default;
 
 void RendererMainPlatformDelegate::PlatformInitialize() {}
 

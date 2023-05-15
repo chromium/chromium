@@ -20,8 +20,9 @@ import android.widget.FrameLayout;
 import android.widget.RemoteViews;
 
 import androidx.annotation.LayoutRes;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -76,7 +77,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.setUp(ApplicationProvider.getApplicationContext());
         mContext = InstrumentationRegistry.getInstrumentation()
                            .getTargetContext()
                            .getApplicationContext();
@@ -110,7 +111,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @After
     public void tearDown() {
-        ChromeApplicationTestUtils.tearDown(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.tearDown(ApplicationProvider.getApplicationContext());
     }
 
     @Test

@@ -21,7 +21,12 @@ FileSuggestKeyedServiceFactory* FileSuggestKeyedServiceFactory::GetInstance() {
 FileSuggestKeyedServiceFactory::FileSuggestKeyedServiceFactory()
     : ProfileKeyedServiceFactory(
           "FileSuggestKeyedService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(file_manager::file_tasks::FileTasksNotifierFactory::GetInstance());
 }

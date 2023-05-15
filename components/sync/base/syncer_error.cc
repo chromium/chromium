@@ -36,7 +36,6 @@ std::string GetSyncerErrorString(SyncerError::Value value) {
     ENUM_CASE(SERVER_RETURN_DISABLED_BY_ADMIN);
     ENUM_CASE(SERVER_RETURN_CLIENT_DATA_OBSOLETE);
     ENUM_CASE(SERVER_RETURN_ENCRYPTION_OBSOLETE);
-    ENUM_CASE(SERVER_MORE_TO_DOWNLOAD);
     ENUM_CASE(SYNCER_OK);
   }
   NOTREACHED();
@@ -81,8 +80,7 @@ std::string SyncerError::ToString() const {
 }
 
 bool SyncerError::IsActualError() const {
-  return value_ != UNSET && value_ != SYNCER_OK &&
-         value_ != SERVER_MORE_TO_DOWNLOAD;
+  return value_ != UNSET && value_ != SYNCER_OK;
 }
 
 }  // namespace syncer

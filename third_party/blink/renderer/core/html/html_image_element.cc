@@ -376,9 +376,9 @@ void HTMLImageElement::ParseAttribute(
     }
   } else if (name == html_names::kAttributionsrcAttr) {
     LocalDOMWindow* window = GetDocument().domWindow();
-    if (!params.new_value.empty() && window && window->GetFrame()) {
-      window->GetFrame()->GetAttributionSrcLoader()->Register(
-          GetDocument().CompleteURL(params.new_value), this);
+    if (window && window->GetFrame()) {
+      window->GetFrame()->GetAttributionSrcLoader()->Register(params.new_value,
+                                                              /*element=*/this);
     }
   } else {
     HTMLElement::ParseAttribute(params);
@@ -831,11 +831,13 @@ static bool SourceSizeValue(const Element* element,
   return exists;
 }
 
-FetchParameters::ResourceWidth HTMLImageElement::GetResourceWidth() const {
-  FetchParameters::ResourceWidth resource_width;
+absl::optional<float> HTMLImageElement::GetResourceWidth() const {
+  absl::optional<float> resource_width;
+  float width_value;
   Element* element = source_.Get();
-  resource_width.is_set = SourceSizeValue(element ? element : this,
-                                          GetDocument(), resource_width.width);
+  if (SourceSizeValue(element ? element : this, GetDocument(), width_value)) {
+    resource_width = width_value;
+  }
   return resource_width;
 }
 
@@ -981,43 +983,6 @@ void HTMLImageElement::AssociateWith(HTMLFormElement* form) {
     form_->Associate(*this);
     form_->DidAssociateByParser();
   }
-}
-
-// Minimum height or width of the image to start lazyloading.
-constexpr int kMinDimensionToLazyLoad = 10;
-
-HTMLImageElement::LazyLoadDimensionType
-HTMLImageElement::GetAttributeLazyLoadDimensionType(
-    const String& attribute_value) {
-  HTMLDimension dimension;
-  if (ParseDimensionValue(attribute_value, dimension) &&
-      dimension.IsAbsolute()) {
-    return dimension.Value() <= kMinDimensionToLazyLoad
-               ? LazyLoadDimensionType::kAbsoluteSmall
-               : LazyLoadDimensionType::kAbsoluteNotSmall;
-  }
-  return LazyLoadDimensionType::kNotAbsolute;
-}
-
-HTMLImageElement::LazyLoadDimensionType
-HTMLImageElement::GetInlineStyleDimensionsType(
-    const CSSPropertyValueSet* property_set) {
-  if (!property_set)
-    return LazyLoadDimensionType::kNotAbsolute;
-  const CSSValue* height =
-      property_set->GetPropertyCSSValue(CSSPropertyID::kHeight);
-  const CSSValue* width =
-      property_set->GetPropertyCSSValue(CSSPropertyID::kWidth);
-  const auto* width_prim = DynamicTo<CSSPrimitiveValue>(width);
-  const auto* height_prim = DynamicTo<CSSPrimitiveValue>(height);
-  if (!width_prim || !height_prim || !width_prim->IsPx() ||
-      !height_prim->IsPx()) {
-    return LazyLoadDimensionType::kNotAbsolute;
-  }
-  return (height_prim->GetDoubleValue() <= kMinDimensionToLazyLoad) &&
-                 (width_prim->GetDoubleValue() <= kMinDimensionToLazyLoad)
-             ? LazyLoadDimensionType::kAbsoluteSmall
-             : LazyLoadDimensionType::kAbsoluteNotSmall;
 }
 
 }  // namespace blink

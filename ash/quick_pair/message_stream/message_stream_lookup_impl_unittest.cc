@@ -12,6 +12,7 @@
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -102,7 +103,7 @@ class MessageStreamFakeBluetoothDevice
   bool dont_invoke_callback_ = false;
   bool error_ = false;
   std::string error_message_;
-  FakeBluetoothAdapter* fake_adapter_;
+  raw_ptr<FakeBluetoothAdapter, ExperimentalAsh> fake_adapter_;
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
 };
@@ -202,9 +203,9 @@ class MessageStreamLookupImplTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  MessageStream* message_stream_ = nullptr;
+  raw_ptr<MessageStream, ExperimentalAsh> message_stream_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  MessageStreamFakeBluetoothDevice* device_;
+  raw_ptr<MessageStreamFakeBluetoothDevice, ExperimentalAsh> device_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_POINTER_DELEGATE_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_POINTER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/pointer_delegate.h"
 #include "components/exo/wayland/wayland_input_delegate.h"
 
@@ -49,10 +50,10 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
   wl_client* client() const;
 
   // The pointer resource associated with the pointer.
-  wl_resource* const pointer_resource_;
+  const raw_ptr<wl_resource, ExperimentalAsh> pointer_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  SerialTracker* const serial_tracker_;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
 };
 
 }  // namespace wayland

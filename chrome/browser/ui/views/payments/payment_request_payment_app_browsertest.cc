@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     const std::string click_buy_button_js =
         "(function() { "
         "document.getElementById('buyWithRequestedEmail').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_buy_button_js));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsPayButtonEnabled());
 
@@ -505,10 +505,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
   NavigateTo("/payment_request_bobpay_and_cards_test.html");
   SetDownloaderAndIgnorePortInOriginComparisonForTesting();
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
-      "true /*= requestShippingContact */);"));
+      "true /*= requestShippingContact */);",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Pay button should be enabled without any autofill profiles since the

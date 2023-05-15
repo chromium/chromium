@@ -263,6 +263,12 @@ TEST_F(FieldTrialParamsTest, FeatureParamString) {
   EXPECT_EQ("", f.Get());         // not registered
 }
 
+TEST_F(FieldTrialParamsTest, FeatureParamString_Disable) {
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
+  static const FeatureParam<std::string> a{&kFeature, "a", "default"};
+  EXPECT_EQ("default", a.Get());
+}
+
 TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
@@ -296,6 +302,12 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   EXPECT_EQ(0, c.Get());  // invalid
   EXPECT_EQ(0, d.Get());  // empty
   EXPECT_EQ(0, e.Get());  // empty
+}
+
+TEST_F(FieldTrialParamsTest, FeatureParamInt_Disable) {
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
+  static const FeatureParam<int> a{&kFeature, "a", 123};
+  EXPECT_EQ(123, a.Get());
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
@@ -338,6 +350,12 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   EXPECT_EQ(0, f.Get());  // empty
 }
 
+TEST_F(FieldTrialParamsTest, FeatureParamDouble_Disable) {
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
+  static const FeatureParam<double> a{&kFeature, "a", 0.123};
+  EXPECT_EQ(0.123, a.Get());
+}
+
 TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
@@ -370,22 +388,22 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   EXPECT_TRUE(f.Get());       // empty
 }
 
+TEST_F(FieldTrialParamsTest, FeatureParamBool_Disable) {
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
+  static const FeatureParam<bool> a{&kFeature, "a", true};
+  EXPECT_EQ(true, a.Get());
+}
+
 TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
   static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
-  static const FeatureParam<base::TimeDelta> a{&kFeature, "a",
-                                               base::TimeDelta()};
-  static const FeatureParam<base::TimeDelta> b{&kFeature, "b",
-                                               base::TimeDelta()};
-  static const FeatureParam<base::TimeDelta> c{&kFeature, "c",
-                                               base::TimeDelta()};
-  static const FeatureParam<base::TimeDelta> d{&kFeature, "d",
-                                               base::TimeDelta()};
-  static const FeatureParam<base::TimeDelta> e{&kFeature, "e",
-                                               base::TimeDelta()};
-  static const FeatureParam<base::TimeDelta> f{&kFeature, "f",
-                                               base::TimeDelta()};
+  static const FeatureParam<TimeDelta> a{&kFeature, "a", TimeDelta()};
+  static const FeatureParam<TimeDelta> b{&kFeature, "b", TimeDelta()};
+  static const FeatureParam<TimeDelta> c{&kFeature, "c", TimeDelta()};
+  static const FeatureParam<TimeDelta> d{&kFeature, "d", TimeDelta()};
+  static const FeatureParam<TimeDelta> e{&kFeature, "e", TimeDelta()};
+  static const FeatureParam<TimeDelta> f{&kFeature, "f", TimeDelta()};
 
   std::map<std::string, std::string> params;
   params["a"] = "1.5s";
@@ -400,12 +418,18 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
-  EXPECT_EQ(a.Get(), base::Seconds(1.5));
-  EXPECT_EQ(b.Get(), base::Minutes(62));
-  EXPECT_EQ(c.Get(), base::TimeDelta());  // invalid
-  EXPECT_EQ(d.Get(), base::TimeDelta());  // invalid
-  EXPECT_EQ(e.Get(), base::TimeDelta());  // empty
-  EXPECT_EQ(f.Get(), base::TimeDelta());  // empty
+  EXPECT_EQ(a.Get(), Seconds(1.5));
+  EXPECT_EQ(b.Get(), Minutes(62));
+  EXPECT_EQ(c.Get(), TimeDelta());  // invalid
+  EXPECT_EQ(d.Get(), TimeDelta());  // invalid
+  EXPECT_EQ(e.Get(), TimeDelta());  // empty
+  EXPECT_EQ(f.Get(), TimeDelta());  // empty
+}
+
+TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta_Disable) {
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
+  static const FeatureParam<TimeDelta> a{&kFeature, "a", Seconds(1.5)};
+  EXPECT_EQ(Seconds(1.5), a.Get());
 }
 
 enum Hand { ROCK, PAPER, SCISSORS };

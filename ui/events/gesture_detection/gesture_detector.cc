@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -447,7 +446,7 @@ void GestureDetector::Init(const Config& config) {
   DCHECK_GT(config.maximum_swipe_deviation_angle, 0);
   DCHECK_LE(config.maximum_swipe_deviation_angle, 45);
   const float maximum_swipe_deviation_angle =
-      base::clamp(config.maximum_swipe_deviation_angle, 0.001f, 45.0f);
+      std::clamp(config.maximum_swipe_deviation_angle, 0.001f, 45.0f);
   min_swipe_direction_component_ratio_ =
       1.f / tan(gfx::DegToRad(maximum_swipe_deviation_angle));
 

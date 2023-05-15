@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Nagrywanie zostało zatrzymane z powodu zbyt małej ilości miejsca na urządzeniu. Aby nagrać więcej filmów, musisz zwolnić miejsce.</translation>
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
-<translation id="2128052519899549250">Nagrywanie filmów poklatkowych</translation>
 <translation id="2134029355740465625">Ustawienia wideo</translation>
 <translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -54,7 +53,7 @@
 <translation id="3411958449466169012">Wyłącz licznik</translation>
 <translation id="3448774564454087943">Film nie został zapisany, ponieważ jest za krótki</translation>
 <translation id="346539236881580388">Zrób ponownie</translation>
-<translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
+<translation id="3517926952904427380">Nie można zrobić zdjęcia portretowego</translation>
 <translation id="3566302376254083266">Przesuwam w kierunku lewego górnego rogu</translation>
 <translation id="3573890771273113519">Przełącz w tryb skanowania</translation>
 <translation id="3583444040776960729">Lewy dolny róg dokumentu</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Wykryto dokument</translation>
 <translation id="414641094616694804">Ta kamera nie umożliwia zmiany rozdzielczości</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
-<translation id="4281620174117014503">Rozdzielczość średnia</translation>
 <translation id="428234092390943511">Miniatura strony</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
 <translation id="4445542136948522167">Nie rób zdjęcia</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5320594929574852403">Przesuwam w lewo</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Tryb poklatkowy</translation>
 <translation id="5662366948659129155">Skanowanie strony <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kwadrat</translation>
+<translation id="574392208103952083">Średni</translation>
 <translation id="5746169159649715125">Zapisz jako PDF</translation>
 <translation id="5753488212459587150">Włącz tryb eksperta</translation>
 <translation id="5759254179196327752">Skanuj dokument</translation>
@@ -122,7 +120,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="6888362557094394345">Przesuwam w dół</translation>
 <translation id="695140971690006676">Zresetuj wszystko</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Pionowo</translation>
+<translation id="6965830616442491568">Portet</translation>
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
 <translation id="7191890674911603392">Typ rekordu</translation>
@@ -138,6 +136,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7670511624014457267">60 kl./s</translation>
 <translation id="7671804233658741790">Prawy dolny róg dokumentu</translation>
+<translation id="7684446460490665873">Nagrywanie filmów poklatkowych</translation>
 <translation id="7692090236657809299">Włącz przesunięcie, pochylenie i powiększenie</translation>
 <translation id="7726641833034062494">Nagraj zwykły film</translation>
 <translation id="7748344063862150053">Prawy górny róg dokumentu</translation>
@@ -163,6 +162,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="9045010116236796332">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Przetwarzam obraz...</translation>
+<translation id="9161584225258678723">Tryb poklatkowy</translation>
 <translation id="922762992951083513">Odbicie lustrzane włączone</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 </translationbundle>

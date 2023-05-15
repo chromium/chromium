@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
 
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 namespace web {
 class WebState;

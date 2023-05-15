@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 // Implementations of methods in Shorthand subclasses that aren't generated.
 
@@ -84,7 +85,7 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationRangeStart:
     case CSSPropertyID::kAnimationRangeEnd:
       // New animation-* properties are  "reset only", see kAnimationDelayEnd.
-      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
       return nullptr;
     default:
       NOTREACHED();
@@ -300,8 +301,10 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenRange& range,
   if (start_range && start_range->IsValueList() && !end_range) {
     CSSValueList* implied_end = CSSValueList::CreateSpaceSeparated();
     const CSSValue& name = To<CSSValueList>(start_range)->First();
-    implied_end->Append(name);
-    end_range = implied_end;
+    if (name.IsIdentifierValue()) {
+      implied_end->Append(name);
+      end_range = implied_end;
+    }
   }
 
   if (!start_range) {
@@ -403,7 +406,7 @@ bool AnimationRange::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
 
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
@@ -1372,7 +1375,8 @@ bool FlexFlow::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      flexFlowShorthand(), important, context, range, properties);
+      flexFlowShorthand(), important, context, range, properties,
+      /* use_initial_value_function */ true);
 }
 
 const CSSValue* FlexFlow::CSSValueFromComputedStyleInternal(
@@ -3188,8 +3192,8 @@ const CSSValue* ScrollPaddingInline::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-// Consume a single name and a single axis, and append the result to
-// `name_list` and `axis_list` respectively.
+// Consume a single name, axis, and attachment, then append the result to
+// `name_list`, `axis_list`, and `attachment_list` respectively.
 bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
                              const CSSParserContext& context,
                              CSSValueList* name_list,
@@ -3208,12 +3212,23 @@ bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
     return false;
   }
 
-  CSSValue* axis = ConsumeSingleTimelineAxis(range);
+  // Axis and attachment may appear in any order.
+  CSSValue* axis = nullptr;
+  CSSValue* attachment = nullptr;
+
+  while (true) {
+    if (!axis && (axis = ConsumeSingleTimelineAxis(range))) {
+      continue;
+    }
+    if (!attachment && (attachment = ConsumeSingleTimelineAttachment(range))) {
+      continue;
+    }
+    break;
+  }
+
   if (!axis) {
     axis = CSSIdentifierValue::Create(CSSValueID::kBlock);
   }
-
-  CSSValue* attachment = ConsumeSingleTimelineAttachment(range);
   if (!attachment) {
     attachment = CSSIdentifierValue::Create(CSSValueID::kLocal);
   }
@@ -3290,6 +3305,89 @@ static CSSValue* CSSValueForTimelineShorthand(
 }
 
 }  // namespace
+
+bool ScrollStart::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  CSSValue* block_value = css_parsing_utils::ConsumeScrollStart(range, context);
+  if (!block_value) {
+    return false;
+  }
+  CSSValue* inline_value =
+      css_parsing_utils::ConsumeScrollStart(range, context);
+  if (!inline_value) {
+    inline_value = CSSIdentifierValue::Create(CSSValueID::kStart);
+  }
+  AddProperty(scrollStartShorthand().properties()[0]->PropertyID(),
+              scrollStartShorthand().id(), *block_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(scrollStartShorthand().properties()[1]->PropertyID(),
+              scrollStartShorthand().id(), *inline_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return range.AtEnd();
+}
+
+const CSSValue* ScrollStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const CSSValue* block_value =
+      scrollStartShorthand().properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  const CSSValue* inline_value =
+      scrollStartShorthand().properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  if (!(IsA<CSSIdentifierValue>(inline_value) &&
+        To<CSSIdentifierValue>(*inline_value).GetValueID() ==
+            CSSValueID::kStart)) {
+    return MakeGarbageCollected<CSSValuePair>(
+        block_value, inline_value, CSSValuePair::kDropIdenticalValues);
+  }
+  return block_value;
+}
+
+bool ScrollStartTarget::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  CSSValue* block_value = css_parsing_utils::ConsumeScrollStartTarget(range);
+  if (!block_value) {
+    return false;
+  }
+  CSSValue* inline_value = css_parsing_utils::ConsumeScrollStartTarget(range);
+  if (!inline_value) {
+    inline_value = CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  AddProperty(scrollStartTargetShorthand().properties()[0]->PropertyID(),
+              scrollStartTargetShorthand().id(), *block_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(scrollStartTargetShorthand().properties()[1]->PropertyID(),
+              scrollStartTargetShorthand().id(), *inline_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return range.AtEnd();
+}
+
+const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const CSSValue* block_value =
+      scrollStartTargetShorthand().properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  const CSSValue* inline_value =
+      scrollStartTargetShorthand().properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  if (To<CSSIdentifierValue>(*inline_value).GetValueID() != CSSValueID::kNone) {
+    return MakeGarbageCollected<CSSValuePair>(
+        block_value, inline_value, CSSValuePair::kDropIdenticalValues);
+  }
+  return block_value;
+}
 
 bool ScrollTimeline::ParseShorthand(
     bool important,

@@ -479,10 +479,24 @@ bool DirectRenderer::ShouldSkipQuad(const DrawQuad& quad,
   if (render_pass_scissor.IsEmpty())
     return true;
 
-  gfx::Rect target_rect = cc::MathUtil::MapEnclosingClippedRect(
-      quad.shared_quad_state->quad_to_target_transform, quad.visible_rect);
-  if (quad.shared_quad_state->clip_rect)
+  gfx::Rect target_rect = quad.visible_rect;
+
+  auto* rpdq = quad.DynamicCast<AggregatedRenderPassDrawQuad>();
+  if (rpdq) {
+    // Render pass draw quads can have pixel-moving filters that expand their
+    // visible bounds.
+    auto filter_it = render_pass_filters_.find(rpdq->render_pass_id);
+    if (filter_it != render_pass_filters_.end()) {
+      target_rect = filter_it->second->ExpandRectForPixelMovement(target_rect);
+    }
+  }
+
+  target_rect = cc::MathUtil::MapEnclosingClippedRect(
+      quad.shared_quad_state->quad_to_target_transform, target_rect);
+
+  if (quad.shared_quad_state->clip_rect) {
     target_rect.Intersect(*quad.shared_quad_state->clip_rect);
+  }
 
   target_rect.Intersect(render_pass_scissor);
   return target_rect.IsEmpty();
@@ -776,8 +790,7 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.size = surface_size_for_swap_buffers();
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format = SharedImageFormat::SinglePlane(
-        GetResourceFormat(reshape_buffer_format()));
+    requirements.format = GetSharedImageFormat(reshape_buffer_format());
 
     // All root render pass backings allocated by the renderer needs to
     // eventually go into some composition tree. Other things that own/allocate

@@ -1,0 +1,64 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+rust_static_library("lib") {
+  # Mark this tool testonly so we can use more third-party crates. This tool
+  # is neither built into Chromium nor used directly in the build process. It
+  # is only run by developers and the output is checked in.
+  testonly = true
+
+  crate_name = "gnrt_lib"
+  crate_root = "lib.rs"
+  sources = [
+    "config.rs",
+    "crates.rs",
+    "deps.rs",
+    "gn.rs",
+    "lib.rs",
+    "manifest.rs",
+    "paths.rs",
+    "platforms.rs",
+    "util.rs",
+  ]
+
+  deps = [
+    "//third_party/rust/cargo_metadata/v0_14:test_support",
+    "//third_party/rust/cargo_platform/v0_1:test_support",
+    "//third_party/rust/log/v0_4:test_support",
+    "//third_party/rust/once_cell/v1:test_support",
+    "//third_party/rust/semver/v1:test_support",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/toml/v0_5:test_support",
+  ]
+}
+
+test("gnrt_unittests") {
+  sources = [
+    "crates_unittest.rs",
+    "deps_unittest.rs",
+    "gn_unittest.rs",
+    "manifest_unittest.rs",
+    "platforms_unittest.rs",
+  ]
+
+  inputs = [ "test_metadata.json" ]
+
+  deps = [
+    ":lib",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+    "//third_party/rust/cargo_metadata/v0_14:test_support",
+    "//third_party/rust/cargo_platform/v0_1:test_support",
+    "//third_party/rust/semver/v1:test_support",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/tempfile/v3:test_support",
+    "//third_party/rust/toml/v0_5:test_support",
+  ]
+}

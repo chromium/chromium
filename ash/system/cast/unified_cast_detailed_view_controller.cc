@@ -5,7 +5,7 @@
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/cast/tray_cast.h"
+#include "ash/system/cast/cast_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 

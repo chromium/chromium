@@ -23,6 +23,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -139,8 +140,11 @@ class WebDatabaseHostImplTest : public ::testing::Test {
 
   void LockProcessToURL(const GURL& url) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcessForTesting(
-        IsolationContext(BrowsingInstanceId(1), browser_context(),
-                         /*is_guest=*/false, /*is_fenced=*/false),
+        IsolationContext(
+            BrowsingInstanceId(1), browser_context(),
+            /*is_guest=*/false, /*is_fenced=*/false,
+            OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+                &browser_context_)),
         process_id(), url);
   }
 
@@ -197,7 +201,7 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(example_url),
           storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key,
             blink::StorageKey::CreateFromStringForTesting(example_url));

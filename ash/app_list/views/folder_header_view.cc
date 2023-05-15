@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -235,7 +236,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   }
 
   // The parent FolderHeaderView, owns this.
-  FolderHeaderView* const folder_header_view_;
+  const raw_ptr<FolderHeaderView, ExperimentalAsh> folder_header_view_;
 
   // Name of the folder when FolderNameView is focused, used to track folder
   // rename metric.

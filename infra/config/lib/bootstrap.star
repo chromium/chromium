@@ -57,6 +57,11 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     # TODO(gbeaty) When finalized input properties are exported to BQ, remove
     # this.
     "sheriff_rotations",
+
+    # Export a try builder's CQ status (required, path-based) to BQ if set.
+    # TODO(estaab): When finalized input properties are exported to BQ, remove
+    # this.
+    "cq",
 ]
 
 # Nodes for storing the ability of recipes to be bootstrapped

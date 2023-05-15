@@ -434,17 +434,16 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 }
 void WorkerThreadDispatcher::OnDispatchOnConnect(
     int worker_thread_id,
-    const PortId& target_port_id,
-    const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info) {
+    const ExtensionMsg_OnConnectData& connect_data) {
   DCHECK_EQ(worker_thread_id, content::WorkerThread::GetCurrentId());
   WorkerThreadDispatcher::GetBindingsSystem()
       ->messaging_service()
-      ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(),
-                          target_port_id, channel_name, source, info,
-                          // Render frames do not matter.
-                          nullptr);
+      ->DispatchOnConnect(
+          Dispatcher::GetWorkerScriptContextSet(), connect_data.target_port_id,
+          connect_data.channel_type, connect_data.channel_name,
+          connect_data.tab_source, connect_data.external_connection_info,
+          // Render frames do not matter.
+          nullptr);
 }
 
 void WorkerThreadDispatcher::OnValidateMessagePort(int worker_thread_id,
@@ -512,7 +511,8 @@ void WorkerThreadDispatcher::DidInitializeContext(
         WorkerThreadDispatcher::Get()
             ->GetServiceWorkerHostOnIO()
             ->DidInitializeServiceWorkerContext(
-                extension_id, service_worker_version_id, thread_id);
+                extension_id, service_worker_version_id, thread_id,
+                WorkerThreadDispatcher::Get()->BindEventDispatcher(thread_id));
       },
       service_worker_data->context()->GetExtensionID(),
       service_worker_version_id, thread_id));
@@ -557,6 +557,7 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
             ->DidStopServiceWorkerContext(extension_id, activation_token,
                                           service_worker_scope,
                                           service_worker_version_id, thread_id);
+        WorkerThreadDispatcher::Get()->UnbindEventDispatcher(thread_id);
       },
       service_worker_data->context()->GetExtensionID(),
       service_worker_data->activation_sequence(), service_worker_scope,
@@ -625,6 +626,27 @@ void WorkerThreadDispatcher::RemoveWorkerData(
     base::AutoLock lock(task_runner_map_lock_);
     task_runner_map_.erase(worker_thread_id);
   }
+}
+
+mojo::PendingAssociatedRemote<mojom::EventDispatcher>
+WorkerThreadDispatcher::BindEventDispatcher(int worker_thread_id) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  mojo::PendingAssociatedRemote<mojom::EventDispatcher> remote;
+  mojo::ReceiverId receiver_id =
+      event_dispatchers_.Add(this, remote.InitWithNewEndpointAndPassReceiver());
+  event_dispatcher_ids_.insert({worker_thread_id, receiver_id});
+  return remote;
+}
+
+void WorkerThreadDispatcher::UnbindEventDispatcher(int worker_thread_id) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  auto it = event_dispatcher_ids_.find(worker_thread_id);
+  if (it == event_dispatcher_ids_.end()) {
+    return;
+  }
+  mojo::ReceiverId receiver_id = it->second;
+  event_dispatchers_.Remove(receiver_id);
+  event_dispatcher_ids_.erase(receiver_id);
 }
 
 }  // namespace extensions

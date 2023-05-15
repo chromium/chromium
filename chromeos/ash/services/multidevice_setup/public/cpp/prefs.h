@@ -29,7 +29,6 @@ enum class EcheSupportReceivedFromPhoneHub {
 extern const char kInstantTetheringAllowedPrefName[];
 extern const char kMessagesAllowedPrefName[];
 extern const char kSmartLockAllowedPrefName[];
-extern const char kSmartLockSigninAllowedPrefName[];
 extern const char kPhoneHubAllowedPrefName[];
 extern const char kPhoneHubCameraRollAllowedPrefName[];
 extern const char kPhoneHubNotificationsAllowedPrefName[];

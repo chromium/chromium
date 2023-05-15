@@ -159,7 +159,6 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/omnibox/',
     'chrome/browser/resources/settings/',
     'chrome/browser/resources/tools/',
-    'chrome/browser/resources/video_tutorials/',
   ]
 
   normalized_excluded_paths = []

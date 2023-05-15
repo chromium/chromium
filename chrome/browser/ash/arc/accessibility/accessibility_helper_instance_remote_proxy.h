@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_HELPER_INSTANCE_REMOTE_PROXY_H_
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "base/memory/raw_ptr.h"
 
 namespace arc {
 
@@ -49,7 +50,8 @@ class AccessibilityHelperInstanceRemoteProxy {
       mojom::AccessibilityWindowKeyPtr window_key_ptr) const;
 
  private:
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 
 }  // namespace arc

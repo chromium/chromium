@@ -5,11 +5,11 @@
 #include "ash/wm/test_session_state_animator.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -71,7 +71,7 @@ class TestSessionStateAnimator::AnimationSequence
   bool sequence_aborted_;
 
   // The TestSessionAnimator that created this.  Not owned.
-  TestSessionStateAnimator* animator_;
+  raw_ptr<TestSessionStateAnimator, ExperimentalAsh> animator_;
 };
 
 TestSessionStateAnimator::ActiveAnimation::ActiveAnimation(

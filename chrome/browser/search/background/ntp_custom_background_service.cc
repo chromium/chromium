@@ -383,6 +383,11 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Do not refresh background & color if extension theme is in use.
+  if (theme_service_->UsingExtensionTheme()) {
+    return;
+  }
+
   const base::Value::Dict& background_info =
       profile_->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict);
   int64_t refresh_timestamp = 0;

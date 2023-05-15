@@ -96,6 +96,9 @@ TEST(PersistedDataTest, RegistrationRequest) {
   data.version = base::Version("1.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+  data.cohort = "testcohort";
+  data.cohort_name = "testcohortname";
+  data.cohort_hint = "testcohorthint";
 
   metadata->RegisterApp(data);
   EXPECT_TRUE(metadata->GetProductVersion("someappid").IsValid());
@@ -105,6 +108,9 @@ TEST(PersistedDataTest, RegistrationRequest) {
             metadata->GetExistenceCheckerPath("someappid").value());
   EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
+  EXPECT_STREQ("testcohort", metadata->GetCohort("someappid").c_str());
+  EXPECT_STREQ("testcohortname", metadata->GetCohortName("someappid").c_str());
+  EXPECT_STREQ("testcohorthint", metadata->GetCohortHint("someappid").c_str());
 
 #if BUILDFLAG(IS_WIN)
   base::win::RegKey key;

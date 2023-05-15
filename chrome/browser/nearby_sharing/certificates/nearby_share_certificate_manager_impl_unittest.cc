@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
@@ -34,6 +36,7 @@ const char kSecretIdPrefix[] = "secret_id_";
 const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kDeviceId[] = "123456789A";
 const char kDefaultDeviceName[] = "Josh's Chromebook";
+const char kTestProfileUserName[] = "test@google.com";
 
 const std::vector<std::string> kPublicCertificateIds = {"id1", "id2", "id3"};
 
@@ -60,6 +63,10 @@ class NearbyShareCertificateManagerImplTest
 
     contact_manager_ = std::make_unique<FakeNearbyShareContactManager>();
 
+    profile_info_provider_ =
+        std::make_unique<FakeNearbyShareProfileInfoProvider>();
+    profile_info_provider_->set_profile_user_name(kTestProfileUserName);
+
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kNearbySharingSchedulerDownloadPublicCertificatesPrefName);
@@ -80,7 +87,7 @@ class NearbyShareCertificateManagerImplTest
 
     cert_manager_ = NearbyShareCertificateManagerImpl::Factory::Create(
         local_device_data_manager_.get(), contact_manager_.get(),
-        pref_service_.get(),
+        profile_info_provider_.get(), pref_service_.get(),
         /*proto_database_provider=*/nullptr, base::FilePath(), &client_factory_,
         task_environment_.GetMockClock());
     cert_manager_->AddObserver(this);
@@ -388,6 +395,7 @@ class NearbyShareCertificateManagerImplTest
     metadata2.set_full_name("full_name2");
     metadata2.set_icon_url("icon_url2");
     metadata2.set_bluetooth_mac_address("bluetooth_mac_address2");
+    metadata2.set_account_name("account_name2");
     for (auto metadata : {metadata1, metadata2}) {
       auto private_cert = NearbySharePrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts, t0, metadata);
@@ -396,11 +404,14 @@ class NearbyShareCertificateManagerImplTest
     }
   }
 
-  FakeNearbyShareCertificateStorage* cert_store_;
-  ash::nearby::FakeNearbyScheduler* private_cert_exp_scheduler_;
-  ash::nearby::FakeNearbyScheduler* public_cert_exp_scheduler_;
-  ash::nearby::FakeNearbyScheduler* upload_scheduler_;
-  ash::nearby::FakeNearbyScheduler* download_scheduler_;
+  raw_ptr<FakeNearbyShareCertificateStorage, ExperimentalAsh> cert_store_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      private_cert_exp_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      public_cert_exp_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh> upload_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      download_scheduler_;
   bool is_bluetooth_adapter_present_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
@@ -418,6 +429,7 @@ class NearbyShareCertificateManagerImplTest
   std::unique_ptr<FakeNearbyShareLocalDeviceDataManager>
       local_device_data_manager_;
   std::unique_ptr<FakeNearbyShareContactManager> contact_manager_;
+  std::unique_ptr<FakeNearbyShareProfileInfoProvider> profile_info_provider_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<NearbyShareCertificateManager> cert_manager_;
 };
@@ -751,6 +763,26 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   nearbyshare::proto::EncryptedMetadata metadata = GetNearbyShareTestMetadata();
   metadata.clear_full_name();
   metadata.clear_icon_url();
+
+  VerifyPrivateCertificates(/*expected_metadata=*/metadata);
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       RefreshPrivateCertificates_MissingAccountName) {
+  cert_store_->ReplacePrivateCertificates(
+      std::vector<NearbySharePrivateCertificate>());
+
+  // Full name and icon URL are missing in local device data manager.
+  profile_info_provider_->set_profile_user_name(absl::nullopt);
+
+  cert_manager_->Start();
+  HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
+                                  /*expected_success=*/true);
+  RunUpload(/*success=*/true);
+
+  // The account name isn't set.
+  nearbyshare::proto::EncryptedMetadata metadata = GetNearbyShareTestMetadata();
+  metadata.clear_account_name();
 
   VerifyPrivateCertificates(/*expected_metadata=*/metadata);
 }

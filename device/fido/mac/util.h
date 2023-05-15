@@ -22,9 +22,7 @@
 #include "device/fido/p256_public_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 // MakeAttestedCredentialData returns an AttestedCredentialData instance for
 // the Touch ID authenticator credential ID and public key or |absl::nullopt|
@@ -73,8 +71,6 @@ CodeSigningState ProcessIsSigned();
 // closed).
 bool DeviceHasBiometricsAvailable();
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_UTIL_H_

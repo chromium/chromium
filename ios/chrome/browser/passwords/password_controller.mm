@@ -55,14 +55,14 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
@@ -76,7 +76,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -110,7 +109,6 @@ using password_manager::PasswordManagerClient;
 using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
 using safe_browsing::PasswordReuseDetectionManagerClient;
-using web::WebFrame;
 using web::WebState;
 
 namespace {
@@ -573,8 +571,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
                               inFrame:(web::WebFrame*)frame {
-  BottomSheetTabHelper::FromWebState(_webState)->AttachListeners(rendererIds,
-                                                                 frame);
+  BottomSheetTabHelper* bottomSheetTabHelper =
+      BottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->AttachListeners(rendererIds, frame);
+  }
 }
 
 - (BOOL)shouldShowAccountStorageNotice {

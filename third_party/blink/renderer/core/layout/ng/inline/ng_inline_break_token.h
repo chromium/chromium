@@ -34,32 +34,19 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   static NGInlineBreakToken* Create(
       NGInlineNode node,
       const ComputedStyle* style,
-      const NGInlineItemTextIndex& index,
+      const NGInlineItemTextIndex& start,
       unsigned flags /* NGInlineBreakTokenFlags */,
       const NGBreakToken* sub_break_token = nullptr);
-  static NGInlineBreakToken* Create(
-      NGInlineNode node,
-      const ComputedStyle* style,
-      unsigned item_index,
-      unsigned text_offset,
-      unsigned flags /* NGInlineBreakTokenFlags */,
-      const NGBreakToken* sub_break_token = nullptr) {
-    return Create(node, style, NGInlineItemTextIndex{item_index, text_offset},
-                  flags, sub_break_token);
-  }
 
   // The style at the end of this break token. The next line should start with
   // this style.
   const ComputedStyle* Style() const { return style_.get(); }
 
-  const NGInlineItemTextIndex& ItemTextIndex() const { return index_; }
-  wtf_size_t ItemIndex() const { return index_.item_index; }
-  wtf_size_t TextOffset() const { return index_.text_offset; }
-
-  // True if the offset of `this` is equal to or after `other`.
-  bool IsAtEqualOrAfter(const NGInlineBreakToken& other) const {
-    return index_ >= other.index_;
-  }
+  // The point where the next layout should start, or where the previous layout
+  // ended.
+  const NGInlineItemTextIndex& Start() const { return start_; }
+  wtf_size_t StartItemIndex() const { return start_.item_index; }
+  wtf_size_t StartTextOffset() const { return start_.text_offset; }
 
   bool UseFirstLineStyle() const {
     return flags_ & kUseFirstLineStyle;
@@ -93,7 +80,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   NGInlineBreakToken(PassKey,
                      NGInlineNode node,
                      const ComputedStyle*,
-                     const NGInlineItemTextIndex& index,
+                     const NGInlineItemTextIndex& start,
                      unsigned flags /* NGInlineBreakTokenFlags */,
                      const NGBreakToken* sub_break_token);
 
@@ -109,7 +96,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   const Member<const NGBreakToken>* SubBreakTokenAddress() const;
 
   scoped_refptr<const ComputedStyle> style_;
-  NGInlineItemTextIndex index_;
+  NGInlineItemTextIndex start_;
 
   // This is an array of one item if |kHasSubBreakToken|, or zero.
   Member<const NGBreakToken> sub_break_token_[];

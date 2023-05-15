@@ -510,7 +510,7 @@ bool NGLineTruncator::TruncateChild(
   scoped_refptr<ShapeResult> shape_result =
       child.shape_result->CreateShapeResult();
   DCHECK(shape_result);
-  const NGTextOffset original_offset = child.text_offset;
+  const NGTextOffsetRange original_offset = child.text_offset;
   // Compute the offset to truncate.
   unsigned offset_to_fit = shape_result->OffsetToFit(
       IsLtr(line_direction_) ? space_for_child
@@ -531,10 +531,12 @@ NGLogicalLineItem NGLineTruncator::TruncateText(const NGLogicalLineItem& item,
                                                 const ShapeResult& shape_result,
                                                 unsigned offset_to_fit,
                                                 TextDirection direction) {
-  const NGTextOffset new_text_offset =
+  const NGTextOffsetRange new_text_offset =
       direction == shape_result.Direction()
-          ? NGTextOffset(item.StartOffset(), item.StartOffset() + offset_to_fit)
-          : NGTextOffset(item.StartOffset() + offset_to_fit, item.EndOffset());
+          ? NGTextOffsetRange(item.StartOffset(),
+                              item.StartOffset() + offset_to_fit)
+          : NGTextOffsetRange(item.StartOffset() + offset_to_fit,
+                              item.EndOffset());
   scoped_refptr<ShapeResultView> new_shape_result = ShapeResultView::Create(
       &shape_result, new_text_offset.start, new_text_offset.end);
   DCHECK(item.inline_item);

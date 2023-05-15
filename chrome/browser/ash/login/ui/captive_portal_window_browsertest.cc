@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -75,7 +76,8 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;
-  NetworkPortalDetectorTestImpl* network_portal_detector_;
+  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+      network_portal_detector_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {

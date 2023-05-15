@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="100506692671054486">không có lệnh nào trước đó</translation>
 <translation id="1009046985747440431">Nhấn phím mũi tên lên hoặc xuống để di chuyển; nhấn phím enter để kích hoạt</translation>
 <translation id="1011903154582639569">Tìm phím rồi nhấc tay lên để nhập</translation>
 <translation id="1012173283529841972">Mục danh sách</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Màu hồng tím oải hương</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3962990492275676168">Bắt đầu đọc từ vị trí hiện tại</translation>
+<translation id="397094149579293440">không có văn bản nào được chọn</translation>
 <translation id="3970951409746498040">Màu nâu cát</translation>
 <translation id="3989324057180830702">nút bật/tắt</translation>
 <translation id="3991317907213946254">Màu rắn hổ mang</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Không có tiêu đề cấp 1 nào trước đó</translation>
 <translation id="4787577491510559358">Cho biết định dạng của mục hiện có</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">không có trường văn bản nào được đặt tiêu điểm</translation>
 <translation id="4804818685124855865">Ngắt kết nối</translation>
 <translation id="481165870889056555">Thông báo tiêu đề của trang hiện tại</translation>
 <translation id="4815668758102003883">Màu ngọc lam nhạt</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Liên kết bên trong</translation>
 <translation id="4909019435900810068">Lùi lại một từ</translation>
 <translation id="4911349081560453449">Không có hộp đánh dấu nào trước đó</translation>
+<translation id="4919186071145887492">Không thể <ph name="COMMAND" />, hãy thử lại</translation>
 <translation id="492295894462528572">Lời tựa</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
 <translation id="495170559598752135">Tác vụ</translation>
 <translation id="4953585991029886728">Chỉnh sửa văn bản</translation>
+<translation id="4964701498510730546">trường văn bản vẫn trống</translation>
 <translation id="4973717656530883744">Tối thiểu <ph name="X" /></translation>
 <translation id="4974612477719259470">Không có nút nào trước đó</translation>
 <translation id="4979404613699303341">Nút trước</translation>
+<translation id="4981239367072766915">dữ liệu đầu vào không xác định</translation>
 <translation id="4982917827052020884">Hãy bắt đầu với một số phím mà bạn thường xuyên sử dụng. Bạn có thể dùng phím Control để dừng mọi giọng đọc hiện tại. Tìm phím Control ở góc dưới cùng bên trái bàn phím. Để tiếp tục, hãy nhấn phím Control.</translation>
 <translation id="4983588134362688868">Chuyển đến đầu trang</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, cửa sổ</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Cho biết tình trạng pin hiện tại</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, nút radio đã được chọn</translation>
 <translation id="5012724933919010465">Đã chọn nút chọn cho mục trong trình đơn <ph name="NAME" /></translation>
+<translation id="5014131807708055994">Không thể <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Bật tính năng ghi nhật ký bằng lời nói</translation>
 <translation id="5041394372352067729">Di chuyển màn hình chữ nổi về đầu trang</translation>
 <translation id="5042770794184672516">Tăng âm lượng giọng nói</translation>

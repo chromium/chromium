@@ -9,7 +9,18 @@ import "ocidl.idl";
 // Public interfaces for the Chromium Updater.
 // For documentation, see the similar types defined in updater::UpdateService.
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-C3485D9F-C684-4C43-B85B-E339EA395C29",
+      "system":"PLACEHOLDER-GUID-EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5"
+    },
+    "tokensToSuffix": ["IUpdateState"]
+  }
+)
 [
+  object,
+  oleautomation,
   uuid(PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6),
   helpstring("IUpdateState Interface"),
   pointer_default(unique)
@@ -27,28 +38,20 @@ interface IUpdateState : IUnknown {
   [propget] HRESULT installerText([out, retval] BSTR*);
   [propget] HRESULT installerCommandLine([out, retval] BSTR*);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
+    },
+    "tokensToSuffix": ["ICompleteStatus"]
+  }
+)
 [
   object,
-  dual,
-  uuid(PLACEHOLDER-GUID-C3485D9F-C684-4C43-B85B-E339EA395C29),
-  helpstring("IUpdateStateUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdateStateUser : IUpdateState {
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5),
-  helpstring("IUpdateStateSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdateStateSystem : IUpdateState {
-};
-
-[
+  oleautomation,
   uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
   helpstring("ICompleteStatus Interface"),
   pointer_default(unique)
@@ -57,28 +60,20 @@ interface ICompleteStatus : IUnknown {
   [propget] HRESULT statusCode([out, retval] LONG*);
   [propget] HRESULT statusMessage([out, retval] BSTR*);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-B54493A0-65B7-408C-B650-06265D2182AC",
+      "system":"PLACEHOLDER-GUID-057B500A-4BA2-496A-B1CD-C5DED3CCC61B"
+    },
+    "tokensToSuffix": ["IUpdaterObserver", "IUpdateState", "ICompleteStatus"]
+  }
+)
 [
   object,
-  dual,
-  uuid(PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA),
-  helpstring("ICompleteStatusUser Interface"),
-  pointer_default(unique)
-]
-interface ICompleteStatusUser : ICompleteStatus {
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07),
-  helpstring("ICompleteStatusSystem Interface"),
-  pointer_default(unique)
-]
-interface ICompleteStatusSystem : ICompleteStatus {
-};
-
-[
+  oleautomation,
   uuid(PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E),
   helpstring("IUpdaterObserver Interface"),
   pointer_default(unique)
@@ -87,32 +82,20 @@ interface IUpdaterObserver : IUnknown {
   HRESULT OnStateChange([in] IUpdateState* update_state);
   HRESULT OnComplete([in] ICompleteStatus* status);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-34ADC89D-552B-4102-8AE5-D613A691335B",
+      "system":"PLACEHOLDER-GUID-F0D6763A-0182-4136-B1FA-508E334CFFC1"
+    },
+    "tokensToSuffix": ["IUpdaterCallback"]
+  }
+)
 [
   object,
   oleautomation,
-  uuid(PLACEHOLDER-GUID-B54493A0-65B7-408C-B650-06265D2182AC),
-  helpstring("IUpdaterObserverUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterObserverUser : IUnknown {
-  HRESULT OnStateChange([in] IUpdateStateUser* update_state);
-  HRESULT OnComplete([in] ICompleteStatusUser* status);
-};
-
-[
-  object,
-  oleautomation,
-  uuid(PLACEHOLDER-GUID-057B500A-4BA2-496A-B1CD-C5DED3CCC61B),
-  helpstring("IUpdaterObserverSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterObserverSystem : IUnknown {
-  HRESULT OnStateChange([in] IUpdateStateSystem* update_state);
-  HRESULT OnComplete([in] ICompleteStatusSystem* status);
-};
-
-[
   uuid(PLACEHOLDER-GUID-8BAB6F84-AD67-4819-B846-CC890880FD3B),
   helpstring("IUpdaterCallback Interface"),
   pointer_default(unique)
@@ -120,28 +103,20 @@ interface IUpdaterObserverSystem : IUnknown {
 interface IUpdaterCallback : IUnknown {
   HRESULT Run([in] LONG result);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-02AFCB67-0899-4676-91A9-67D92B3B7918",
+      "system":"PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1"
+    },
+    "tokensToSuffix": ["IUpdater", "IUpdaterCallback", "IUpdaterObserver"]
+  }
+)
 [
   object,
-  dual,
-  uuid(PLACEHOLDER-GUID-34ADC89D-552B-4102-8AE5-D613A691335B),
-  helpstring("IUpdaterCallbackUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterCallbackUser : IUpdaterCallback {
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-F0D6763A-0182-4136-B1FA-508E334CFFC1),
-  helpstring("IUpdaterCallbackSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterCallbackSystem : IUpdaterCallback {
-};
-
-[
+  oleautomation,
   uuid(PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B),
   helpstring("IUpdater Interface"),
   pointer_default(unique)
@@ -186,102 +161,7 @@ interface IUpdater : IUnknown {
       [in, string] const WCHAR* install_settings,
       [in] IUpdaterObserver* observer);
 };
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-02AFCB67-0899-4676-91A9-67D92B3B7918),
-  helpstring("IUpdaterUser Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterUser : IUnknown {
-  HRESULT GetVersion([out, retval] BSTR* version);
-  HRESULT FetchPolicies([in] IUpdaterCallbackUser* callback);
-  HRESULT RegisterApp([in, string] const WCHAR* app_id,
-                      [in, string] const WCHAR* brand_code,
-                      [in, string] const WCHAR* brand_path,
-                      [in, string] const WCHAR* tag,
-                      [in, string] const WCHAR* version,
-                      [in, string] const WCHAR* existence_checker_path,
-                      [in] IUpdaterCallbackUser* callback);
-  HRESULT RunPeriodicTasks([in] IUpdaterCallbackUser* callback);
-  HRESULT CheckForUpdate([in, string] const WCHAR* app_id,
-                         [in] LONG priority,
-                         [in] BOOL same_version_update_allowed,
-                         [in] IUpdaterObserverUser* observer);
-  HRESULT Update([in, string] const WCHAR* app_id,
-                 [in, string] const WCHAR* install_data_index,
-                 [in] LONG priority,
-                 [in] BOOL same_version_update_allowed,
-                 [in] IUpdaterObserverUser* observer);
-  HRESULT UpdateAll([in] IUpdaterObserverUser* observer);
-  HRESULT Install([in, string] const WCHAR* app_id,
-                  [in, string] const WCHAR* brand_code,
-                  [in, string] const WCHAR* brand_path,
-                  [in, string] const WCHAR* tag,
-                  [in, string] const WCHAR* version,
-                  [in, string] const WCHAR* existence_checker_path,
-                  [in, string] const WCHAR* client_install_data,
-                  [in, string] const WCHAR* install_data_index,
-                  [in] LONG priority,
-                  [in] IUpdaterObserverUser* observer);
-  HRESULT CancelInstalls([in, string] const WCHAR* app_id);
-  HRESULT RunInstaller(
-      [in, string] const WCHAR* app_id,
-      [in, string] const WCHAR* installer_path,
-      [in, string] const WCHAR* install_args,
-      [in, string] const WCHAR* install_data,
-      [in, string] const WCHAR* install_settings,
-      [in] IUpdaterObserverUser* observer);
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1),
-  helpstring("IUpdaterSystem Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterSystem : IUnknown {
-  HRESULT GetVersion([out, retval] BSTR* version);
-  HRESULT FetchPolicies([in] IUpdaterCallbackSystem* callback);
-  HRESULT RegisterApp([in, string] const WCHAR* app_id,
-                      [in, string] const WCHAR* brand_code,
-                      [in, string] const WCHAR* brand_path,
-                      [in, string] const WCHAR* tag,
-                      [in, string] const WCHAR* version,
-                      [in, string] const WCHAR* existence_checker_path,
-                      [in] IUpdaterCallbackSystem* callback);
-  HRESULT RunPeriodicTasks([in] IUpdaterCallbackSystem* callback);
-  HRESULT CheckForUpdate([in, string] const WCHAR* app_id,
-                         [in] LONG priority,
-                         [in] BOOL same_version_update_allowed,
-                         [in] IUpdaterObserverSystem* observer);
-  HRESULT Update([in, string] const WCHAR* app_id,
-                 [in, string] const WCHAR* install_data_index,
-                 [in] LONG priority,
-                 [in] BOOL same_version_update_allowed,
-                 [in] IUpdaterObserverSystem* observer);
-  HRESULT UpdateAll([in] IUpdaterObserverSystem* observer);
-  HRESULT Install([in, string] const WCHAR* app_id,
-                  [in, string] const WCHAR* brand_code,
-                  [in, string] const WCHAR* brand_path,
-                  [in, string] const WCHAR* tag,
-                  [in, string] const WCHAR* version,
-                  [in, string] const WCHAR* existence_checker_path,
-                  [in, string] const WCHAR* client_install_data,
-                  [in, string] const WCHAR* install_data_index,
-                  [in] LONG priority,
-                  [in] IUpdaterObserverSystem* observer);
-  HRESULT CancelInstalls([in, string] const WCHAR* app_id);
-  HRESULT RunInstaller(
-      [in, string] const WCHAR* app_id,
-      [in, string] const WCHAR* installer_path,
-      [in, string] const WCHAR* install_args,
-      [in, string] const WCHAR* install_data,
-      [in, string] const WCHAR* install_settings,
-      [in] IUpdaterObserverSystem* observer);
-};
+END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC),

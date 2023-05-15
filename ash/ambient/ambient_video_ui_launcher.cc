@@ -49,8 +49,10 @@ void VerifyVideoExistsOnDisc(AmbientVideo video) {
 
 }  // namespace
 
-AmbientVideoUiLauncher::AmbientVideoUiLauncher(PrefService* pref_service)
-    : pref_service_(pref_service) {
+AmbientVideoUiLauncher::AmbientVideoUiLauncher(
+    PrefService* pref_service,
+    AmbientViewDelegate* view_delegate)
+    : pref_service_(pref_service), view_delegate_(view_delegate) {
   CHECK(pref_service_);
 }
 AmbientVideoUiLauncher::~AmbientVideoUiLauncher() = default;
@@ -80,7 +82,7 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
   CHECK(is_active_);
   return std::make_unique<AmbientVideoView>(GetAmbientVideoPath(current_video_),
-                                            GetVideoHtmlPath());
+                                            GetVideoHtmlPath(), view_delegate_);
 }
 
 void AmbientVideoUiLauncher::Finalize() {

@@ -181,6 +181,7 @@ source_set("nonembedded") {
     "//components/component_updater/installer_policies:installer_policies_no_content_deps",
     "//components/prefs",
     "//components/update_client",
+    "//components/update_client:buildflags",
     "//components/update_client:in_process_patcher",
     "//components/update_client:in_process_unzipper",
     "//components/version_info",

@@ -998,7 +998,10 @@ class PrintRenderFrameHelperPreviewTest
     PrintRenderFrameHelper* print_render_frame_helper =
         GetPrintRenderFrameHelper();
     print_render_frame_helper->InitiatePrintPreview(
-        mojo::NullAssociatedRemote(), false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        mojo::NullAssociatedRemote(),
+#endif
+        /*has_selection=*/false);
     print_render_frame_helper->PrintPreview(print_settings_.Clone());
     preview_ui()->WaitUntilPreviewUpdate();
   }

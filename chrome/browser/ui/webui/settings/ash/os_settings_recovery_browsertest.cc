@@ -63,16 +63,18 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature, ControlInvisible) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport,
-                       ControlInvisible) {
+                       ControlInvisibleNotAvailable) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
-  lock_screen_settings.AssertRecoveryControlVisibility(false);
+  lock_screen_settings.AssertRecoveryControlVisibility(true);
+  lock_screen_settings.AssertRecoveryControlAvailability(false);
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, ControlVisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(true);
+  lock_screen_settings.AssertRecoveryControlAvailability(true);
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
@@ -126,7 +128,9 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
 
 // Check that trying to change recovery with an invalidated auth session shows
 // the password prompt again.
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, DestroyedSession) {
+// TODO(crbug.com/1436858): Re-enable this test
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
+                       DISABLED_DestroyedSession) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
 

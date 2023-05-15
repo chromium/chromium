@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -31,7 +32,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
 
 // Maximum string length for COM strings.
@@ -144,6 +144,9 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
 }
 
 HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
+  if (!callback) {
+    return E_INVALIDARG;
+  }
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
@@ -171,8 +174,9 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterCallback* callback) {
-  if (!callback)
+  if (!callback) {
     return E_INVALIDARG;
+  }
 
   // Validates that string parameters are not longer than 16K characters.
   absl::optional<RegistrationRequest> request =
@@ -252,6 +256,9 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
 // `update_service` on the main sequence. The callbacks received from
 // `update_service` arrive in the main sequence too.
 HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
+  if (!callback) {
+    return E_INVALIDARG;
+  }
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
@@ -284,7 +291,9 @@ class StateChangeCallbackFilter {
   StateChangeCallbackFilter(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       Microsoft::WRL::ComPtr<IUpdaterObserver> observer)
-      : task_runner_(task_runner), observer_(observer) {}
+      : task_runner_(task_runner), observer_(observer) {
+    CHECK(observer);
+  }
   StateChangeCallbackFilter(const StateChangeCallbackFilter&) = delete;
   StateChangeCallbackFilter& operator=(const StateChangeCallbackFilter&) =
       delete;
@@ -300,7 +309,7 @@ class StateChangeCallbackFilter {
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&IUpdaterObserver::OnStateChange, observer_,
-                       Microsoft::WRL::Make<UpdateStateImpl>(update_state)),
+                       MakeComObjectOrCrash<UpdateStateImpl>(update_state)),
         base::BindOnce([](HRESULT hr) {
           VLOG(4) << "IUpdaterObserver::OnStateChange returned " << std::hex
                   << hr;
@@ -322,6 +331,10 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
                                     LONG priority,
                                     BOOL same_version_update_allowed,
                                     IUpdaterObserver* observer) {
+  if (!observer) {
+    return E_INVALIDARG;
+  }
+
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
@@ -352,7 +365,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::Update "
@@ -378,6 +391,10 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                             LONG priority,
                             BOOL same_version_update_allowed,
                             IUpdaterObserver* observer) {
+  if (!observer) {
+    return E_INVALIDARG;
+  }
+
   // This task runner is responsible for sequencing the callbacks posted
   // by the `UpdateService` and calling the outbound COM functions to
   // notify the client about state changes in the `UpdateService`.
@@ -412,7 +429,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::Update "
@@ -430,6 +447,10 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
 
 // See the comment for the UpdaterImpl::Update.
 HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
+  if (!observer) {
+    return E_INVALIDARG;
+  }
+
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
 
@@ -454,7 +475,7 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::UpdateAll "
@@ -478,8 +499,9 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
-  if (!observer)
+  if (!observer) {
     return E_INVALIDARG;
+  }
 
   // Validates that string parameters are not longer than 16K characters.
   absl::optional<RegistrationRequest> request =
@@ -553,7 +575,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(1) << "UpdaterImpl::Install "
@@ -591,6 +613,10 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
   VLOG(1) << __func__;
+
+  if (!observer) {
+    return E_INVALIDARG;
+  }
 
   for (const wchar_t* str :
        {app_id, installer_path, install_args, install_data, install_settings}) {
@@ -657,7 +683,7 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::RunInstaller "
@@ -679,6 +705,10 @@ HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
 
 // See the comment for the UpdaterImpl::Update.
 HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
+  if (!callback) {
+    return E_INVALIDARG;
+  }
+
   using IUpdaterInternalCallbackPtr =
       Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
@@ -712,6 +742,10 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
+  if (!callback) {
+    return E_INVALIDARG;
+  }
+
   using IUpdaterInternalCallbackPtr =
       Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();

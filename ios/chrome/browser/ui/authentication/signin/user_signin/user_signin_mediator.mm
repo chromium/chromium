@@ -111,7 +111,7 @@
     // We need to set Sync requested in order to display the preferences
     // correctly and differentiate the special state where the user is
     // signed in, but the sync feature can't start yet.
-    self.syncService->GetUserSettings()->SetSyncRequested();
+    self.syncService->SetSyncFeatureRequested();
   } else {
     [self.delegate userSigninMediatorSigninFailed];
   }
@@ -152,9 +152,6 @@
       if ([self.authenticationService->GetPrimaryIdentity(
               signin::ConsentLevel::kSignin)
               isEqual:self.delegate.signinIdentityOnStart]) {
-        // Call StopAndClear() to clear the encryption passphrase, in case the
-        // user entered it before canceling the sync opt-in flow.
-        _syncService->StopAndClear();
         if (completion)
           completion();
       } else {
@@ -174,10 +171,6 @@
       NOTREACHED_NORETURN();
     }
   }
-
-  // All codepaths above clear the sync-requested bit, either because the user
-  // is signed out or because SyncService::StopAndClear() does the job.
-  CHECK(!self.syncService->GetUserSettings()->IsSyncRequested());
 }
 
 - (void)signinWithIdentityOnStartAfterSignout {
@@ -197,7 +190,8 @@
   if (!authenticationService)
     return;
 
-  authenticationService->SignIn(identity);
+  signin_metrics::AccessPoint accessPoint = self.authenticationFlow.accessPoint;
+  authenticationService->SignIn(identity, accessPoint);
 }
 
 - (void)disconnect {
@@ -251,7 +245,9 @@
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-  self.authenticationService->GrantSyncConsent(identity);
+
+  signin_metrics::AccessPoint accessPoint = self.authenticationFlow.accessPoint;
+  self.authenticationService->GrantSyncConsent(identity, accessPoint);
 
   // FirstSetupComplete flag should be turned on after the authentication
   // service has granted user consent to start Sync when tapping "Yes, I'm in."

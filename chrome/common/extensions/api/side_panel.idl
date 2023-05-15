@@ -18,7 +18,9 @@ namespace sidePanel {
   dictionary PanelOptions {
     // If specified, the side panel options will only apply to the tab with
     // this id. If omitted, these options set the default behavior (used for any
-    // tab that doesn't have specific settings).
+    // tab that doesn't have specific settings). Note: if the same path is set
+    // for this tabId and the default tabId, then the panel for this tabId will
+    // be a different instance than the panel for the default tabId.
     long? tabId;
     // The path to the side panel HTML file to use. This must be a local
     // resource within the extension package.
@@ -64,13 +66,13 @@ namespace sidePanel {
     // operation.
     // |behavior|: The new behavior to be set.
     // |callback|: Called when the new behavior has been set.
-    [nodoc, supportsPromises] static void setPanelBehavior(
+    [supportsPromises] static void setPanelBehavior(
         PanelBehavior behavior,
         optional VoidCallback callback);
 
     // Returns the extension's current side panel behavior.
     // |callback|: Called with the extension's side panel behavior.
-    [nodoc, supportsPromises] static void getPanelBehavior(
+    [supportsPromises] static void getPanelBehavior(
         PanelBehaviorCallback callback);
   };
 };

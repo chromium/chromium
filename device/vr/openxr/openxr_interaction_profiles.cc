@@ -62,7 +62,7 @@ GetOpenXrInputProfilesMap() {
           // Microsoft Motion Controller
           {OpenXrInteractionProfileType::kMicrosoftMotion,
            {{"",
-             {"windows-mixed-reality",
+             {"microsoft-mixed-reality", "windows-mixed-reality",
               "generic-trigger-squeeze-touchpad-thumbstick"}}}},
 
           // Khronos Simple Controller
@@ -95,7 +95,8 @@ GetOpenXrInputProfilesMap() {
           // Samsung Odyssey
           {OpenXrInteractionProfileType::kSamsungOdyssey,
            {{"",
-             {"samsung-odyssey", "windows-mixed-reality",
+             {"samsung-odyssey", "microsoft-mixed-reality",
+              "windows-mixed-reality",
               "generic-trigger-squeeze-touchpad-thumbstick"}}}},
 
           // HP Reverb G2

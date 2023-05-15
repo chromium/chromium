@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"

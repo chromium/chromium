@@ -55,7 +55,7 @@ TEST(TextureLayerImplTest, Occlusion) {
   LayerTreeImplTestBase impl;
 
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
       gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                      gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
       layer_size, viz::SinglePlaneFormat::kRGBA_8888,

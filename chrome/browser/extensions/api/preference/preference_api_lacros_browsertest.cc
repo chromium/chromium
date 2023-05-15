@@ -67,6 +67,22 @@ class ExtensionPreferenceApiLacrosBrowserTest
         prefs->GetBoolean(prefs::kLacrosAccessibilityAutoclickEnabled));
   }
 
+  void SetUp() override {
+    // When the test changes the value of
+    // chrome.accessibilityFeatures.autoclick in Ash, the pref value change is
+    // observed by AccessibilityController and will trigger popping up a dialog
+    // in Ash with the prompt about confirmation of disabling autoclick. The
+    // dialog is not closed when the test is torn down in Lacros, and will
+    // affect other tests running after it if the test runs with shared Ash.
+    // Therefore, we start a unique Ash to run with this test suite to avoid
+    // the test isolation issue.
+    StartUniqueAshChrome(
+        {}, {}, {},
+        "crbug.com/1435317 Switch to shared ash when autoclick disable "
+        "confirmation dialog issue is fixed");
+    ExtensionApiTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     if (!IsServiceAvailable()) {
       GTEST_SKIP() << "The Lacros service is not available.";
@@ -96,8 +112,8 @@ class ExtensionPreferenceApiLacrosBrowserTest
   }
 
   bool IsServiceAvailable() {
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::Prefs::Uuid_) <
+    if (chromeos::LacrosService::Get()
+            ->GetInterfaceVersion<crosapi::mojom::Prefs>() <
         static_cast<int>(crosapi::mojom::Prefs::MethodMinVersions::
                              kGetExtensionPrefWithControlMinVersion)) {
       LOG(WARNING) << "Unsupported ash version.";

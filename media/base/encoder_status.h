@@ -10,23 +10,47 @@
 namespace media {
 
 struct EncoderStatusTraits {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep the consistency with
+  // EncoderStatus in tools/metrics/histograms/enums.xml.
   enum class Codes : StatusCodeType {
+    // No failure happens.
     kOk = 0,
+    // The encoder initialization has never completed successfully.
     kEncoderInitializeNeverCompleted = 1,
+    // The encoder has been initialized more than once.
     kEncoderInitializeTwice = 2,
+    // Failure in encoding process.
     kEncoderFailedEncode = 3,
+    // The given codec profile is not supported by the encoder.
     kEncoderUnsupportedProfile = 4,
+    // The given codec is not supported by the encoder.
     kEncoderUnsupportedCodec = 5,
+    // The given encoder configuration is not supported by the encoder.
     kEncoderUnsupportedConfig = 6,
+    // Failure in the encoder initialization.
     kEncoderInitializationError = 7,
+    // Failure in flushing process.
     kEncoderFailedFlush = 8,
+    // Failure in mojo connection.
     kEncoderMojoConnectionError = 9,
+    // The format of the given frame is not supported by the encoder.
     kUnsupportedFrameFormat = 10,
+    // Failure in scaling the given frame.
     kScalingError = 11,
+    // Failure in converting the format of the given frame.
     kFormatConversionError = 12,
+    // Failure due to a hardware driver.
     kEncoderHardwareDriverError = 13,
+    // The encoder is in the illegal state.
     kEncoderIllegalState = 14,
-    kSystemAPICallError = 14,
+    // The system API (e.g. Linux system call) fails.
+    kSystemAPICallError = 15,
+    // The given frame is invalid, e.g., storage type and visible rectangle.
+    kInvalidInputFrame = 16,
+    // The given output buffer or its id  is invalid.
+    kInvalidOutputBuffer = 17,
+    kMaxValue = kInvalidOutputBuffer,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

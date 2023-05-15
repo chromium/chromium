@@ -17,11 +17,19 @@ UserManager::Observer::~Observer() = default;
 
 void UserManager::Observer::LocalStateChanged(UserManager* user_manager) {}
 
+void UserManager::Observer::OnUserListLoaded() {}
+
+void UserManager::Observer::OnDeviceLocalUserListUpdated() {}
+
+void UserManager::Observer::OnUserLoggedIn(const User& user) {}
+
 void UserManager::Observer::OnUserImageChanged(const User& user) {}
 
 void UserManager::Observer::OnUserImageIsEnterpriseManagedChanged(
     const User& user,
     bool is_enterprise_managed) {}
+
+void UserManager::Observer::OnUserProfileCreated(const User& user) {}
 
 void UserManager::Observer::OnUserProfileImageUpdateFailed(const User& user) {}
 
@@ -30,6 +38,8 @@ void UserManager::Observer::OnUserProfileImageUpdated(
     const gfx::ImageSkia& profile_image) {}
 
 void UserManager::Observer::OnUsersSignInConstraintsChanged() {}
+
+void UserManager::Observer::OnUserAffiliationUpdated(const User& user) {}
 
 void UserManager::Observer::OnUserRemoved(const AccountId& account_id,
                                           UserRemovalReason reason) {}

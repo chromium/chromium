@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/sticky_keys/sticky_keys_state.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/size.h"
@@ -66,7 +67,8 @@ class ASH_EXPORT StickyKeysOverlay : public ui::ImplicitAnimationObserver {
 
   bool is_visible_ = false;
   std::unique_ptr<views::Widget> overlay_widget_;
-  StickyKeysOverlayView* overlay_view_;  // owned by |overlay_widget_|.
+  raw_ptr<StickyKeysOverlayView, ExperimentalAsh>
+      overlay_view_;  // owned by |overlay_widget_|.
   gfx::Size widget_size_;
 };
 

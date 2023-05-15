@@ -162,10 +162,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     std::vector<IdentityRequestAccount> accounts;
     for (const AccountConfig& account_config : config_.accounts) {
-      accounts.emplace_back(account_config.id,
-                            GenerateEmailForUserId(account_config.id),
-                            kAccountName, kAccountGivenName,
-                            GURL(kAccountPicture), account_config.login_state);
+      accounts.emplace_back(
+          account_config.id, GenerateEmailForUserId(account_config.id),
+          kAccountName, kAccountGivenName, GURL(kAccountPicture),
+          std::vector<std::string>(), account_config.login_state);
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -192,17 +192,21 @@ class TestApiPermissionDelegate : public MockApiPermissionDelegate {
 
 class TestPermissionDelegate : public MockPermissionDelegate {
  public:
-  bool HasSharingPermission(const url::Origin& relying_party_requester,
-                            const url::Origin& relying_party_embedder,
-                            const url::Origin& identity_provider,
-                            const std::string& account_id) override {
+  bool HasSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const absl::optional<std::string>& account_id) override {
     url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
     url::Origin idp_origin_with_data =
         url::Origin::Create(GURL(kPersonalizedButtonFrameUrl));
-    return (relying_party_requester == rp_origin_with_data &&
-            relying_party_embedder == rp_origin_with_data &&
-            identity_provider == idp_origin_with_data &&
-            accounts_with_sharing_permission_.count(account_id));
+    bool has_granted_permission_per_profile =
+        relying_party_requester == rp_origin_with_data &&
+        relying_party_embedder == rp_origin_with_data &&
+        identity_provider == idp_origin_with_data;
+    return has_granted_permission_per_profile && account_id
+               ? accounts_with_sharing_permission_.count(account_id.value())
+               : !accounts_with_sharing_permission_.empty();
   }
 
   absl::optional<bool> GetIdpSigninStatus(
@@ -300,7 +304,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   }
 
  protected:
-  base::raw_ptr<RenderFrameHost> iframe_render_frame_host_;
+  raw_ptr<RenderFrameHost> iframe_render_frame_host_;
   std::unique_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;

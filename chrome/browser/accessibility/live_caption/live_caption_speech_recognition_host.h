@@ -68,7 +68,7 @@ class LiveCaptionSpeechRecognitionHost
 #endif
 
  private:
-  explicit LiveCaptionSpeechRecognitionHost(
+  LiveCaptionSpeechRecognitionHost(
       content::RenderFrameHost& frame_host,
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
           pending_receiver);

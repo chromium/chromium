@@ -123,6 +123,7 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_webui_js_bridge_generator.py",
       "$mojom_generator_script",
       "//build/action_helpers.py",
+      "//build/gn_helpers.py",
       "//build/zip_helpers.py",
     ]
 

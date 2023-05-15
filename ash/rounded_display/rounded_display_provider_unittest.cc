@@ -94,9 +94,9 @@ TEST_F(RoundedDisplayProviderTest, CorrectNumberOfGuttersAreProvided) {
   RoundedDisplayProviderTestApi test_api(provider_.get());
   const gfx::RoundedCornersF radii = CreateHorizontallyUniformRadii(10, 12);
 
-  // We expect 4 non-overlays and 2 overlay gutters to be created.
+  // We expect 2 overlay gutters to be created.
   provider_->Init(radii, kDefaultTestStrategy);
-  EXPECT_EQ(test_api.GetGutters().size(), 6u);
+  EXPECT_EQ(test_api.GetGutters().size(), 2u);
 }
 
 TEST_F(RoundedDisplayProviderTest,
@@ -108,7 +108,7 @@ TEST_F(RoundedDisplayProviderTest,
 
   const auto& gutters = test_api.GetGutters();
 
-  EXPECT_EQ(gutters.size(), 6u);
+  EXPECT_EQ(gutters.size(), 2u);
 
   // Check that we have two overlay gutters that in the scanout direction.
   EXPECT_THAT(gutters, testing::Contains(GutterWithMatchingCorners(
@@ -128,7 +128,7 @@ TEST_F(RoundedDisplayProviderTest,
 
   const auto& gutters = test_api.GetGutters();
 
-  EXPECT_EQ(gutters.size(), 6u);
+  EXPECT_EQ(gutters.size(), 2u);
 
   // Check that we have two overlay gutters that in the scanout direction.
   EXPECT_THAT(gutters, testing::Contains(GutterWithMatchingCorners(
@@ -175,7 +175,7 @@ TEST_P(RoundedDisplayProviderSurfaceUpdateTest,
   UpdateDisplay(initial_display_spec_);
 
   gfx::RoundedCornersF radii =
-      display_manager()->GetDisplayInfo(display_id).rounded_corners_radii();
+      display_manager()->GetDisplayInfo(display_id).panel_corners_radii();
 
   provider_->Init(radii, kDefaultTestStrategy);
 

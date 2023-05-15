@@ -9,6 +9,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/unified/power_button.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/views/view.h"
 
@@ -17,6 +18,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class IconButton;
+class PillButton;
 class UnifiedSystemTrayController;
 
 // A base class for both `QsBatteryLabelView` and `QsBatteryIconView`. This view
@@ -104,10 +106,11 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
   void UpdateSettingsButtonState();
 
   // Owned.
-  IconButton* settings_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
 
   // Owned by views hierarchy.
-  PowerButton* power_button_ = nullptr;
+  raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
+  raw_ptr<PillButton, ExperimentalAsh> sign_out_button_ = nullptr;
 
   // The registrar used to watch prefs changes.
   PrefChangeRegistrar local_state_pref_change_registrar_;

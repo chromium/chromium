@@ -4,7 +4,8 @@
 
 #include "media/base/video_encoder.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/system/sys_info.h"
@@ -23,10 +24,10 @@ uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
 
   // Scale default bitrate to the given frame size and fps
   base::ClampedNumeric<uint64_t> result = kDefaultBitrateForHD30fps;
-  result *= base::clamp(framerate, 1u, 300u);
-  result *= base::clamp(frame_size.GetArea(), 1, kMaxArea);
+  result *= std::clamp(framerate, 1u, 300u);
+  result *= std::clamp(frame_size.GetArea(), 1, kMaxArea);
   result /= kHDArea * 30u;  // HD resolution, 30 fps
-  return base::clamp(result.RawValue(), kMinBitrate, kMaxBitrate);
+  return std::clamp(result.RawValue(), kMinBitrate, kMaxBitrate);
 }
 
 int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size) {

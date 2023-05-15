@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/ui/captive_portal_view.h"
@@ -37,7 +38,7 @@ class CaptivePortalWidget : public views::Widget {
       const override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 CaptivePortalWidget::CaptivePortalWidget(Profile* profile)

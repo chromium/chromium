@@ -376,6 +376,10 @@ s! {
         pub seq: ::c_ushort,
         pub key: ::key_t,
     }
+
+    pub struct eui64 {
+        pub octet: [u8; EUI64_LEN],
+    }
 }
 
 s_no_extra_traits! {
@@ -626,6 +630,7 @@ pub const MAP_FAILED: *mut ::c_void = !0 as *mut ::c_void;
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
 
+pub const MNT_EXPUBLIC: ::c_int = 0x20000000;
 pub const MNT_NOATIME: ::c_int = 0x10000000;
 pub const MNT_NOCLUSTERR: ::c_int = 0x40000000;
 pub const MNT_NOCLUSTERW: ::c_int = 0x80000000;
@@ -819,12 +824,15 @@ pub const CLOCK_VIRTUAL: ::clockid_t = 1;
 pub const CLOCK_PROF: ::clockid_t = 2;
 pub const CLOCK_MONOTONIC: ::clockid_t = 4;
 pub const CLOCK_UPTIME: ::clockid_t = 5;
+pub const CLOCK_BOOTTIME: ::clockid_t = CLOCK_UPTIME;
 pub const CLOCK_UPTIME_PRECISE: ::clockid_t = 7;
 pub const CLOCK_UPTIME_FAST: ::clockid_t = 8;
 pub const CLOCK_REALTIME_PRECISE: ::clockid_t = 9;
 pub const CLOCK_REALTIME_FAST: ::clockid_t = 10;
+pub const CLOCK_REALTIME_COARSE: ::clockid_t = CLOCK_REALTIME_FAST;
 pub const CLOCK_MONOTONIC_PRECISE: ::clockid_t = 11;
 pub const CLOCK_MONOTONIC_FAST: ::clockid_t = 12;
+pub const CLOCK_MONOTONIC_COARSE: ::clockid_t = CLOCK_MONOTONIC_FAST;
 pub const CLOCK_SECOND: ::clockid_t = 13;
 pub const CLOCK_THREAD_CPUTIME_ID: ::clockid_t = 14;
 pub const CLOCK_PROCESS_CPUTIME_ID: ::clockid_t = 15;
@@ -1329,6 +1337,8 @@ pub const ONLRET: ::tcflag_t = 0x40;
 
 pub const CMGROUP_MAX: usize = 16;
 
+pub const EUI64_LEN: usize = 8;
+
 // https://github.com/freebsd/freebsd/blob/master/sys/net/bpf.h
 pub const BPF_ALIGNMENT: usize = SIZEOF_LONG;
 
@@ -1720,6 +1730,13 @@ extern "C" {
     pub fn memset_s(s: *mut ::c_void, smax: ::size_t, c: ::c_int, n: ::size_t) -> ::c_int;
     pub fn gethostid() -> ::c_long;
     pub fn sethostid(hostid: ::c_long);
+
+    pub fn eui64_aton(a: *const ::c_char, e: *mut eui64) -> ::c_int;
+    pub fn eui64_ntoa(id: *const eui64, a: *mut ::c_char, len: ::size_t) -> ::c_int;
+    pub fn eui64_ntohost(hostname: *mut ::c_char, len: ::size_t, id: *const eui64) -> ::c_int;
+    pub fn eui64_hostton(hostname: *const ::c_char, id: *mut eui64) -> ::c_int;
+
+    pub fn eaccess(path: *const ::c_char, mode: ::c_int) -> ::c_int;
 }
 
 #[link(name = "rt")]

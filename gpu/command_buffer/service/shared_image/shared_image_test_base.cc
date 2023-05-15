@@ -118,8 +118,9 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 
   context_state_ = base::MakeRefCounted<SharedContextState>(
       base::MakeRefCounted<gl::GLShareGroup>(), gl_surface_, gl_context_,
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing(), context_type,
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(), context_type
 #if BUILDFLAG(ENABLE_VULKAN)
+      ,
       vulkan_context_provider_.get()
 #endif
   );
@@ -152,7 +153,6 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
   // state then code here needs to be updated to handle them.
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
-  EXPECT_FALSE(scoped_read_access->TakeEndState());
 
   viz::SharedImageFormat format = skia_representation->format();
   gfx::Size size = skia_representation->size();
@@ -186,6 +186,7 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
                                   cc::ExactPixelComparator()))
         << "plane_index=" << plane;
   }
+  scoped_read_access->ApplyBackendSurfaceEndState();
 }
 
 }  // namespace gpu

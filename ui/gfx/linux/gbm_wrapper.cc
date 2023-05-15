@@ -47,9 +47,9 @@ int GetPlaneCount(struct gbm_bo* bo) {
   return gbm_bo_get_plane_count(bo);
 }
 
-int GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
+base::ScopedFD GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
 #if defined(MINIGBM)
-  return gbm_bo_get_plane_fd(bo, plane);
+  return base::ScopedFD(gbm_bo_get_plane_fd(bo, plane));
 #else
   const int plane_count = GetPlaneCount(bo);
   DCHECK(plane_count > 0 && plane < static_cast<size_t>(plane_count));
@@ -70,10 +70,12 @@ int GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
 
   // Older DRM implementations blocked DRM_RDWR, but gave a read/write mapping
   // anyways
-  if (ret)
+  if (ret) {
     ret = drmPrimeHandleToFD(dev_fd, plane_handle, DRM_CLOEXEC, &fd);
+    return base::ScopedFD();
+  }
 
-  return ret ? ret : fd;
+  return base::ScopedFD(fd);
 #endif
 }
 
@@ -195,22 +197,16 @@ class Buffer final : public ui::GbmBuffer {
     DCHECK(!mmap_data_);
     uint32_t stride;
     void* addr;
-    addr =
-#if defined(MINIGBM)
-        gbm_bo_map2(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                    GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_, 0);
-#else
-        gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                   GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
-#endif
+    addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
+                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
 
     if (!addr)
       return nullptr;
     SkImageInfo info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    return SkSurface::MakeRasterDirectReleaseProc(
-        info, addr, stride, &Buffer::UnmapGbmBo, this, &props);
+    return SkSurfaces::WrapPixels(info, addr, stride, &Buffer::UnmapGbmBo, this,
+                                  &props);
   }
 
  private:
@@ -252,8 +248,7 @@ std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,
   for (size_t i = 0; i < static_cast<size_t>(plane_count); ++i) {
     // The fd returned by gbm_bo_get_fd is not ref-counted and need to be
     // kept open for the lifetime of the buffer.
-    base::ScopedFD fd(GetPlaneFdForBo(bo, i));
-
+    auto fd = GetPlaneFdForBo(bo, i);
     if (!fd.is_valid()) {
       PLOG(ERROR) << "Failed to export buffer to dma_buf";
       gbm_bo_destroy(bo);
@@ -327,8 +322,12 @@ class Device final : public ui::GbmDevice {
       fd_data.num_fds = gbm_bo_get_plane_count(bo);
       fd_data.modifier = gbm_bo_get_modifier(bo);
 
+      // Store fds in the vector of base::ScopedFDs. Will be released
+      // automatically.
+      std::vector<base::ScopedFD> fds;
       for (size_t i = 0; i < static_cast<size_t>(fd_data.num_fds); ++i) {
-        fd_data.fds[i] = GetPlaneFdForBo(bo, i);
+        fds.emplace_back(GetPlaneFdForBo(bo, i));
+        fd_data.fds[i] = fds.back().get();
         fd_data.strides[i] = gbm_bo_get_stride_for_plane(bo, i);
         fd_data.offsets[i] = gbm_bo_get_offset(bo, i);
       }

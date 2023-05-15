@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(PPAPITest,
   // In other tests, we use one call to RunTest so that the tests can all run
   // in one plugin instance. This saves time on loading the plugin (especially
   // for NaCl). Here, we actually want to destroy the Instance, to test whether
-  // the destructor can run ExecuteScript successfully. That's why we have two
+  // the destructor can run ExecJs successfully. That's why we have two
   // separate calls to RunTest; the second one forces a navigation which
   // destroys the instance from the prior RunTest.
   // See test_instance_deprecated.cc for more information.

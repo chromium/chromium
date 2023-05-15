@@ -123,15 +123,16 @@ SendTabToSelfBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> SendTabToSelfBridge::MergeSyncData(
+absl::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entries_.empty());
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+SendTabToSelfBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::vector<const SendTabToSelfEntry*> added;

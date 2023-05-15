@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PLUGIN_VM_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PLUGIN_VM_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -33,7 +34,7 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler {
   // Relaunches Plugin VM.
   void HandleRelaunchPluginVm(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<PluginVmHandler> weak_ptr_factory_{this};
 };

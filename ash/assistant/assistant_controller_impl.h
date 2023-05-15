@@ -28,7 +28,9 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
+#include "ash/shell_observer.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -54,7 +56,8 @@ class ASH_EXPORT AssistantControllerImpl
       public CrasAudioHandler::AudioObserver,
       public AccessibilityObserver,
       public AssistantInterfaceBinder,
-      public ColorModeObserver {
+      public ColorModeObserver,
+      public ShellObserver {
  public:
   AssistantControllerImpl();
 
@@ -107,6 +110,9 @@ class ASH_EXPORT AssistantControllerImpl
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
+  // ShellObserver:
+  void OnShellDestroying() override;
+
   AssistantAlarmTimerControllerImpl* alarm_timer_controller() {
     return &assistant_alarm_timer_controller_;
   }
@@ -152,7 +158,7 @@ class ASH_EXPORT AssistantControllerImpl
 
   // |assistant_| can be nullptr if libassistant creation is not yet completed,
   // i.e. it cannot take a request.
-  assistant::Assistant* assistant_ = nullptr;
+  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
 
   // Assistant sub-controllers.
   AssistantAlarmTimerControllerImpl assistant_alarm_timer_controller_{this};

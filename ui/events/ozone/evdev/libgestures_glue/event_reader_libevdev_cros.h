@@ -8,6 +8,7 @@
 #include <libevdev/libevdev.h>
 
 #include <memory>
+#include <ostream>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -79,6 +80,8 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
       HapticTouchpadEffectStrength strength) override;
   void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) override;
 
+  std::ostream& DescribeForLog(std::ostream& os) const override;
+
  private:
   static void OnSynReport(void* data,
                           EventStateRec* evstate,
@@ -87,7 +90,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Returns true if this is a haptic touchpad, UI haptics are enabled, and it
   // is actively being touched.
-  bool CanHandleHapticFeedback();
+  bool CanHandleHapticFeedback() const;
 
   // Input modalities for this device.
   bool has_keyboard_;

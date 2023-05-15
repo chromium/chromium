@@ -60,7 +60,7 @@ void CellularESimUninstallHandler::Init(
   network_connection_handler_ = network_connection_handler;
   network_state_handler_ = network_state_handler;
 
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 void CellularESimUninstallHandler::UninstallESim(

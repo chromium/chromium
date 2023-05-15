@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -64,11 +65,11 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // This is called before profile is detroyed.
   void OnProfileDestroyed();
 
-  TokenHandleUtil* token_handle_util_ = nullptr;
+  raw_ptr<TokenHandleUtil, ExperimentalAsh> token_handle_util_ = nullptr;
   AccountId account_id_;
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   base::TimeTicks tokeninfo_response_start_time_ = base::TimeTicks();
   TokenFetchingCallback callback_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;

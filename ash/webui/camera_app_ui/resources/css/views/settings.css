@@ -2,15 +2,11 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-
-.menu-item.expandable::after {
-  background-image: url(/images/settings_button_expand.svg);
-  content: '';
-  display: block;
+.menu-item.expandable .expand {
   margin-inline-end: 16px;
   margin-inline-start: auto;
 }
 
-html[dir=rtl] .menu-item.expandable::after {
+html[dir=rtl] .menu-item.expandable .expand {
   transform: scale(-1, 1);
 }

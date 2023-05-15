@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(LoginGuestTest, GuestIsOTR) {
 
 // Verifies the cursor is hidden at startup on login screen.
 IN_PROC_BROWSER_TEST_F(LoginCursorTest, CursorHidden) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
   // Cursor should be hidden at startup
   EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
 

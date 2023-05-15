@@ -298,11 +298,6 @@ extern const char kFollowCountAfterUnfollow[];
 // After engaging with the Following feed.
 extern const char kFollowCountWhenEngaged[];
 
-// Histogram for an action taken on the regular NTP (not start surface).
-extern const char kActionOnNTP[];
-// Histogram for an action taken on the start surface.
-extern const char kActionOnStartSurface[];
-
 // Histogram name for last visible card when switching from Discover to
 // Following feed.
 extern const char kDiscoverIndexWhenSwitchingFeed[];
@@ -312,6 +307,9 @@ extern const char kFollowingIndexWhenSwitchingFeed[];
 
 // Histogram name for sign-in related UI triggered by Feed entry points.
 extern const char kFeedSignInUI[];
+
+// Histogram name for Feed sync related UI triggered by Feed entry points.
+extern const char kFeedSyncPromo[];
 
 #pragma mark - User Actions
 
@@ -407,10 +405,17 @@ extern const char kShowFeedSignInOnlyUIWithUserId[];
 extern const char kShowFeedSignInOnlyUIWithoutUserId[];
 
 // User actions triggered when a user taps on Feed personalization controls and
-// a corresponding sign-in related UI is shown. Ex. A sign in half sheet, a
+// a corresponding sign-in related UI is shown. Ex. A sign-in half sheet, a
 // sign-in only flow, or a disabled toast is shown.
 extern const char kShowSyncHalfSheetFromFeed[];
 extern const char kShowSignInOnlyFlowFromFeed[];
 extern const char kShowSignInDisableToastFromFeed[];
+
+#pragma mark - User Actions for Feed Sync Promo
+
+// User actions triggered when a user taps on the Feed sync promo and a sync
+// related UI is shown.
+extern const char kShowSyncFlowFromFeed[];
+extern const char kShowDisableToastFromFeed[];
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_CONSTANTS_H_

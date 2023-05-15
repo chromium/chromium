@@ -46,7 +46,6 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:@"user"
-                                  validationIdentifier:@"validationIdentifier"
                                                   note:@"note"];
 }
 
@@ -76,16 +75,15 @@ TEST_F(ArchivableCredentialStoreTest, update) {
   [credentialStore addCredential:credential];
   EXPECT_EQ(1u, credentialStore.credentials.count);
 
-  ArchivableCredential* updatedCredential = [[ArchivableCredential alloc]
-           initWithFavicon:@"other_favicon"
-        keychainIdentifier:@"other_keychainIdentifier"
-                      rank:credential.rank + 10
-          recordIdentifier:@"recordIdentifier"
-         serviceIdentifier:@"other_serviceIdentifier"
-               serviceName:@"other_serviceName"
-                      user:@"other_user"
-      validationIdentifier:@"other_validationIdentifier"
-                      note:@"other_note"];
+  ArchivableCredential* updatedCredential =
+      [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
+                                 keychainIdentifier:@"other_keychainIdentifier"
+                                               rank:credential.rank + 10
+                                   recordIdentifier:@"recordIdentifier"
+                                  serviceIdentifier:@"other_serviceIdentifier"
+                                        serviceName:@"other_serviceName"
+                                               user:@"other_user"
+                                               note:@"other_note"];
 
   [credentialStore updateCredential:updatedCredential];
   EXPECT_EQ(1u, credentialStore.credentials.count);

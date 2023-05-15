@@ -22,8 +22,8 @@ source_set("signin_headers") {
     ":constants",
     "//base",
     "//components/signin/public/base",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -45,27 +45,45 @@ source_set("signin_impl") {
   deps = [
     ":signin_headers",
     ":signin_protected",
+    ":signin_screen_provider",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin",
     "//ios/chrome/browser/ui/authentication/signin/forced_signin",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication",
+    "//ios/chrome/browser/ui/authentication/signin/two_screens_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
+  ]
+}
+
+source_set("signin_screen_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_screen_provider.h",
+    "signin_screen_provider.mm",
+    "signin_sync_screen_provider.h",
+    "signin_sync_screen_provider.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_provider_protected",
+    "//ios/chrome/browser/ui/screen:screen_type",
   ]
 }
 
@@ -81,12 +99,12 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
@@ -138,6 +156,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/signin:test_constants",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/unified_consent:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
@@ -150,19 +169,4 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("signin_screen_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "signin_screen_provider.h",
-    "signin_screen_provider.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/screen:screen_provider",
-    "//ios/chrome/browser/ui/screen:screen_provider_protected",
-    "//ios/chrome/browser/ui/screen:screen_type",
-  ]
 }

@@ -122,8 +122,6 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
 
 }  // namespace
 
-ProcessMetrics::~ProcessMetrics() { }
-
 size_t GetMaxFds() {
   // Windows is only limited by the amount of physical memory.
   return std::numeric_limits<size_t>::max();

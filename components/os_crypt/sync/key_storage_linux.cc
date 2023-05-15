@@ -56,7 +56,9 @@ enum class BackendUsage {
   kKwalletFailed = 11,
   kKwallet5 = 12,
   kKwallet5Failed = 13,
-  kMaxValue = kKwallet5Failed,
+  kKwallet6 = 14,
+  kKwallet6Failed = 15,
+  kMaxValue = kKwallet6Failed,
 };
 
 constexpr BackendUsage SelectedBackendToMetric(
@@ -79,6 +81,8 @@ constexpr BackendUsage SelectedBackendToMetric(
       return used ? BackendUsage::kKwallet : BackendUsage::kKwalletFailed;
     case os_crypt::SelectedLinuxBackend::KWALLET5:
       return used ? BackendUsage::kKwallet5 : BackendUsage::kKwallet5Failed;
+    case os_crypt::SelectedLinuxBackend::KWALLET6:
+      return used ? BackendUsage::kKwallet6 : BackendUsage::kKwallet6Failed;
   }
   NOTREACHED();
   return BackendUsage::kDeferFailed;
@@ -101,6 +105,8 @@ const char* SelectedLinuxBackendToString(
       return "KWALLET";
     case os_crypt::SelectedLinuxBackend::KWALLET5:
       return "KWALLET5";
+    case os_crypt::SelectedLinuxBackend::KWALLET6:
+      return "KWALLET6";
   }
   NOTREACHED();
   return nullptr;
@@ -193,12 +199,17 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
 
 #if defined(USE_KWALLET)
   if (selected_backend == os_crypt::SelectedLinuxBackend::KWALLET ||
-      selected_backend == os_crypt::SelectedLinuxBackend::KWALLET5) {
+      selected_backend == os_crypt::SelectedLinuxBackend::KWALLET5 ||
+      selected_backend == os_crypt::SelectedLinuxBackend::KWALLET6) {
     DCHECK(!config.product_name.empty());
     base::nix::DesktopEnvironment used_desktop_env =
-        selected_backend == os_crypt::SelectedLinuxBackend::KWALLET
-            ? base::nix::DESKTOP_ENVIRONMENT_KDE4
-            : base::nix::DESKTOP_ENVIRONMENT_KDE5;
+        base::nix::DESKTOP_ENVIRONMENT_KDE4;
+    if (selected_backend == os_crypt::SelectedLinuxBackend::KWALLET5) {
+      used_desktop_env = base::nix::DESKTOP_ENVIRONMENT_KDE5;
+    }
+    if (selected_backend == os_crypt::SelectedLinuxBackend::KWALLET6) {
+      used_desktop_env = base::nix::DESKTOP_ENVIRONMENT_KDE6;
+    }
     key_storage = std::make_unique<KeyStorageKWallet>(used_desktop_env,
                                                       config.product_name);
     if (key_storage->WaitForInitOnTaskRunner()) {

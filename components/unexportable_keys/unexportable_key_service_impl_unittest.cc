@@ -234,10 +234,8 @@ TEST_F(UnexportableKeyServiceImplTest,
                                              from_wrapped_future.GetCallback());
   // `service()` should return the result immediately.
   EXPECT_TRUE(from_wrapped_future.IsReady());
-  ServiceErrorOr<UnexportableKeyId> unwrapped_key_id =
-      from_wrapped_future.Get();
   // Key IDs should be the same.
-  EXPECT_EQ(key_id, unwrapped_key_id);
+  EXPECT_EQ(key_id, from_wrapped_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, Sign) {

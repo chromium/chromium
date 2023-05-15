@@ -28,7 +28,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   ~FakeLoginDisplayHost() override;
 
   // LoginDisplayHost:
-  LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
   views::Widget* GetLoginWindowWidget() const override;

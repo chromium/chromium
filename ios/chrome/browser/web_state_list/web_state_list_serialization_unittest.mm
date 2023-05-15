@@ -8,9 +8,9 @@
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -133,8 +133,9 @@ TEST_F(WebStateListSerializationTest, SerializationRoundTrip) {
                                   &restored_web_state_list);
 
   // Verify that the WebUsageEnabled bit is left to default value.
-  for (int i = 0; i < restored_web_state_list.count(); ++i)
+  for (int i = 0; i < restored_web_state_list.count(); ++i) {
     EXPECT_TRUE(restored_web_state_list.GetWebStateAt(i)->IsWebUsageEnabled());
+  }
 }
 
 TEST_F(WebStateListSerializationTest, Serialize) {

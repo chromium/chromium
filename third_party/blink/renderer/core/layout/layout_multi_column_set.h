@@ -258,10 +258,9 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void PaintObject(const PaintInfo&,
                    const PhysicalOffset& paint_offset) const override;
 
-  void ComputeVisualOverflow(bool recompute_floats) final;
+  void ComputeVisualOverflow() final;
 
   void AddVisualOverflowFromChildren();
-  void AddLayoutOverflowFromChildren() override;
 
   // This function updates frame_location_, frame_size_, and build
   // fragmentainer_groups_.

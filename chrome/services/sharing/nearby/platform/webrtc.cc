@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -107,7 +108,7 @@ class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
   }
 
  private:
-  sharing::IpcPacketSocketFactory* socket_factory_;
+  raw_ptr<sharing::IpcPacketSocketFactory, ExperimentalAsh> socket_factory_;
 };
 
 // This object only exists to forward incoming mojo messages. It will be created

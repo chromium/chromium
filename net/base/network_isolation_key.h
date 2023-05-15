@@ -23,6 +23,10 @@ class CrossSiteFlagEnabledNetworkIsolationKeyDataView;
 }
 
 namespace net {
+class CookiePartitionKey;
+}
+
+namespace net {
 
 // Key used to isolate shared network stack resources used by requests based on
 // the context on which they were made.
@@ -40,10 +44,18 @@ class NET_EXPORT NetworkIsolationKey {
     ~SerializationPasskey() = default;
   };
 
+  class CookiePartitionKeyPasskey {
+   private:
+    friend class CookiePartitionKey;
+    CookiePartitionKeyPasskey() = default;
+    ~CookiePartitionKeyPasskey() = default;
+  };
+
   // This constructor is used for deserialization when `GetMode()` returns
   // `kCrossSiteFlagEnabled`.
   NetworkIsolationKey(SerializationPasskey,
                       SchemefulSite top_frame_site,
+                      SchemefulSite frame_site,
                       bool is_cross_site,
                       absl::optional<base::UnguessableToken> nonce);
 
@@ -101,6 +113,11 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
+    if (GetMode() != Mode::kFrameSiteEnabled) {
+      return std::tie(top_frame_site_, is_cross_site_, nonce_) ==
+             std::tie(other.top_frame_site_, other.is_cross_site_,
+                      other.nonce_);
+    }
     return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) ==
            std::tie(other.top_frame_site_, other.frame_site_,
                     other.is_cross_site_, other.nonce_);
@@ -113,6 +130,11 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
+    if (GetMode() != Mode::kFrameSiteEnabled) {
+      return std::tie(top_frame_site_, is_cross_site_, nonce_) <
+             std::tie(other.top_frame_site_, other.is_cross_site_,
+                      other.nonce_);
+    }
     return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) <
            std::tie(other.top_frame_site_, other.frame_site_,
                     other.is_cross_site_, other.nonce_);
@@ -153,7 +175,8 @@ class NET_EXPORT NetworkIsolationKey {
     // This scheme indicates that "2.5-key" NetworkIsolationKeys are used to
     // partition the HTTP cache. This key will have the following properties:
     // `top_frame_site_` -> the schemeful site of the top level page.
-    // `frame_site_` -> absl::nullopt.
+    // `frame_site_` -> should only be accessed for serialization or building
+    // nonced CookiePartitionKeys.
     // `is_cross_site_` -> a boolean indicating whether the frame site is
     // schemefully cross-site from the top-level site.
     kCrossSiteFlagEnabled,
@@ -168,7 +191,10 @@ class NET_EXPORT NetworkIsolationKey {
   const absl::optional<SchemefulSite>& GetFrameSite() const;
 
   // Do not use outside of testing. Returns the `frame_site_`.
-  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
+  const absl::optional<SchemefulSite> GetFrameSiteForTesting() const {
+    if (GetMode() == Mode::kCrossSiteFlagEnabled) {
+      return absl::nullopt;
+    }
     return frame_site_;
   }
 
@@ -185,9 +211,17 @@ class NET_EXPORT NetworkIsolationKey {
   const absl::optional<SchemefulSite>& GetFrameSiteForSerialization(
       SerializationPasskey) const {
     CHECK(!IsEmpty());
-    CHECK_EQ(GetMode(), Mode::kFrameSiteEnabled);
     return frame_site_;
   }
+  // We also need to access the frame site directly when constructing
+  // CookiePartitionKey for nonced partitions. We also use a passkey for this
+  // case.
+  const absl::optional<SchemefulSite>& GetFrameSiteForCookiePartitionKey(
+      CookiePartitionKeyPasskey) const {
+    CHECK(!IsEmpty());
+    return frame_site_;
+  }
+
   // Same as above but for the is-cross-site bit.
   const absl::optional<bool>& GetIsCrossSiteForSerialization(
       SerializationPasskey) const {
@@ -211,9 +245,7 @@ class NET_EXPORT NetworkIsolationKey {
   // The origin/etld+1 of the top frame of the page making the request.
   absl::optional<SchemefulSite> top_frame_site_;
 
-  // The origin/etld+1 of the frame that initiates the request. This will be
-  // absl::nullopt when `GetMode()` returns `Mode::kCrossSiteFlagEnabled`, or
-  // for an empty `NetworkIsolationKey`.
+  // The origin/etld+1 of the frame that initiates the request.
   absl::optional<SchemefulSite> frame_site_;
 
   // A boolean indicating whether the frame origin is cross-site from the

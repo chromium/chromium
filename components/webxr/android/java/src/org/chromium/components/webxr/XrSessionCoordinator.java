@@ -10,6 +10,7 @@ import android.view.Surface;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -42,6 +43,17 @@ public class XrSessionCoordinator {
         int VR = 2;
     }
 
+    // ArDelegateImpl needs to know if there's an active immersive session so that it can handle
+    // back button presses from ChromeActivity's onBackPressed(). It's only set while a session is
+    // in progress, and reset to null on session end. The XrImmersiveOverlay member has a strong
+    // reference to the ChromeActivity, and that shouldn't be retained beyond the duration of a
+    // session.
+    private static XrSessionCoordinator sActiveSessionInstance;
+
+    /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
+    private static XrSessionTypeSupplier sActiveSessionAvailableSupplier =
+            new XrSessionTypeSupplier(SessionType.NONE);
+
     private long mNativeXrSessionCoordinator;
 
     // The native ArCoreDevice runtime creates a XrSessionCoordinator instance in its constructor,
@@ -50,20 +62,10 @@ public class XrSessionCoordinator {
     // turn contains a reference to XrSessionCoordinator for making JNI calls back to the device.
     private XrImmersiveOverlay mImmersiveOverlay;
 
-    // ArDelegateImpl needs to know if there's an active immersive session so that it can handle
-    // back button presses from ChromeActivity's onBackPressed(). It's only set while a session is
-    // in progress, and reset to null on session end. The XrImmersiveOverlay member has a strong
-    // reference to the ChromeActivity, and that shouldn't be retained beyond the duration of a
-    // session.
-    private static XrSessionCoordinator sActiveSessionInstance;
-
     private @SessionType int mActiveSessionType = SessionType.NONE;
 
-    private static WebContents sWebContents;
-
-    /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
-    private static XrSessionTypeSupplier sActiveSessionAvailableSupplier =
-            new XrSessionTypeSupplier(SessionType.NONE);
+    // The WebContents that triggered the currently active session.
+    private WebContents mWebContents;
 
     // Helper, obtains android Activity out of passed in WebContents instance.
     // Equivalent to ChromeActivity.fromWebContents(), but does not require that
@@ -82,18 +84,29 @@ public class XrSessionCoordinator {
     }
 
     /**
-     * Gets the current application context. Should not be called until after a start*Session call
-     * has succeeded, but if called after an endSession call may return null.
+     * Gets the Activity of the currently active Session as a Context. Will return null if not
+     * called between startSession and endSession.
+     *
+     * @return Context The current activity as a Context.
+     */
+    @CalledByNative
+    private static Context getCurrentActivityContext() {
+        if (sActiveSessionInstance == null || sActiveSessionInstance.mWebContents == null) {
+            return null;
+        }
+
+        return getActivity(sActiveSessionInstance.mWebContents);
+    }
+
+    /**
+     * Gets the current application context. May not correspond to an activity, and would not be
+     * suitable for calls requiring such.
      *
      * @return Context The application context.
      */
     @CalledByNative
     private static Context getApplicationContext() {
-        if (sWebContents == null) {
-            return null;
-        }
-
-        return getActivity(sWebContents);
+        return ContextUtils.getApplicationContext();
     }
 
     private XrSessionCoordinator(long nativeXrSessionCoordinator) {
@@ -111,9 +124,9 @@ public class XrSessionCoordinator {
         mImmersiveOverlay = new XrImmersiveOverlay();
         mImmersiveOverlay.show(overlayDelegate, webContents, this);
 
-        sWebContents = webContents;
-        sActiveSessionInstance = this;
+        mWebContents = webContents;
         mActiveSessionType = sessionType;
+        sActiveSessionInstance = this;
         sActiveSessionAvailableSupplier.set(sessionType);
     }
 
@@ -152,8 +165,8 @@ public class XrSessionCoordinator {
         mImmersiveOverlay.cleanupAndExit();
         mImmersiveOverlay = null;
         mActiveSessionType = SessionType.NONE;
+        mWebContents = null;
         sActiveSessionInstance = null;
-        sWebContents = null;
         sActiveSessionAvailableSupplier.set(SessionType.NONE);
     }
 

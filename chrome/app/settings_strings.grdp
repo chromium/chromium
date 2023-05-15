@@ -357,8 +357,11 @@
   <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before exporting passwords to a file.">
     export passwords
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
-    Autofill
+  <message name="IDS_SETTINGS_AUTOFILL_AND_PASSWORDS" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
+    Autofill and passwords
+  </message>
+  <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
+    replace existing passwords
   </message>
   <message name="IDS_SETTINGS_GOOGLE_PAYMENTS" desc="Label used to differentiate when an address or credit card entry comes from Google Pay. This should follow the casing of the 'Google Pay' brand. 'Google Pay' should not be translated as it is the product name.">
     Google Pay
@@ -841,23 +844,11 @@
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_SNACKBAR" desc="Text in the snackbar that appears after the user successfuly moved local passwords to their Google Account.">
     Passwords moved to your Google Account
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that confirms whether the user wishes to move a password to their Google Account.">
-    Move to Google Account?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_BODY" desc="Description message for the dialog that confirms whether the user wishes to move a password to their Google Account.">
-    Move your password to your Google Account to access it securely wherever you're signed in
-  </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_MOVE_BUTTON_TEXT" desc="Text for the button that confirms moving multiple passwords to the user Google Account.">
     Move passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action of moving multiple passwords to the user Google Account.">
     Don't move
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_MOVE_BUTTON_TEXT" desc="Text for the button that confirms moving a password to the user Google Account.">
-    Move
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action of moving a password to the user Google Account.">
-    Cancel
   </message>
   <message name="IDS_SETTINGS_PASSWORD_OPEN_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_BUTTON_TEXT" desc="Text for the button that opens the dialog that moves multiple passwords to the user Google Account.">
     Get started
@@ -964,9 +955,6 @@
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_INVALID_URL" desc="An error message for a row that wasn't imported, because the URL is in an unacceptable format. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     URL format should be https://www.example.com
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_NON_ASCII_URL" desc="An error message for a row that wasn't imported, because provided URL contains non-ASCII characters. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    URL can only contain ASCII characters
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT" desc="An error message for which summarizes all rows that weren't imported, because we weren't able to read them completely due to incorrect formatting. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     {NUM_PASSWORDS, plural,
@@ -1543,6 +1531,12 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
     Memory Saver
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer" translateable="false">
+    Select when your tabs become inactive
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies." translateable="false">
+    Memory saver options
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_BUTTON_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focusing the tab discarding exceptions list add button. Sites added to the list will not be discarded by memory saver.">
     Add to the "always keep these sites active" list
   </message>
@@ -1809,17 +1803,20 @@
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_HEADER" desc="The header used for the section that informs users of the anti-abuse features.">
     When on
   </message>
-  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="A description that informs users how their browsing could be helped by the anti-abuse features.">
-    Browsing is faster because a site is less likely to ask you to verify you're a real person
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="A description that informs users that Chrome saves a small amount of data when the anti-abuse features are enabled.">
+    A site you visit can save a small amount of info with Chrome, mainly to validate you're not a bot
   </message>
-  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="A description that informs users that the anti-abuse features do not reveal their browsing history.">
-    This setting works without identifying you or allowing sites to see your browsing history
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="A description that informs users how the anti-abuse features work.">
+    As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_THREE" desc="A description that informs users how their browsing could be helped by the anti-abuse features.">
+    Browsing is faster because a site is less likely to ask you to verify you're a real person
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="The header used for the section that informs users of additional things to consider when the anti-abuse features are enabled.">
     Things to consider
   </message>
-  <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="A description that informs users that site can save info with Chrome when the anti-abuse features are enabled.">
-    A site you visit can save info with Chrome that validates you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
+  <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="A description that informs users that the anti-abuse features do not reveal their browsing history.">
+    This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
   </message>
 
   <!-- Privacy Sandbox -->
@@ -1955,6 +1952,9 @@
   <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_SUB_LABEL" desc="A string that describes 'Ad privacy', the label that appears just above it. For context, this new 'Ad privacy' / 'Customize the info...' pair of strings is similar to the existing 'Clear browsing data' / 'Clear history, cookies...' that you find on chrome://settings/privacy. * 'Customize': From our word list: 'This word describes user agency in refining their personalized recommendations, elements of the experience, or sometimes products'. Please don't confuse with 'personalize', which we reserve to mean: '...when Google provides recommendations and other content for users based on their data'.  **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
     Customize the info used by sites to show you ads
   </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_RESTRICTED_LINK_ROW_SUB_LABEL" desc="A string like `IDS_SETTINGS_AD_PRIVACY_LINK_ROW_SUB_LABEL` that describes 'Ad privacy', but shown when some ads APIs are disabled (in other words, the privacy sandbox is in a restricted state). Intended to focus on ad measurement capabilities.">
+    Manage info used by sites to measure ad performance
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Privacy Page -->
   <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE" desc="A new page title for a page that includes 3 settings. This same text appears as a label on chrome://settings/privacy between 'Third-party cookies' and 'Security'. This same pair of words is used in the Consent and Notice flow and must be consistently translated in both contexts. We mean privacy associated with ads, and not privacy from ads. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
@@ -2023,7 +2023,7 @@
     Sites
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION" desc="A paragraph beneath the 'Sites' label. It explains how users can control the sites that appear in the list. * 'block sites': When a user blocks a site, that site may no longer save info with Chrome about the user's visit. As the user continues to browse, they will not see ads suggested by the blocked site. * 'auto-deletes': We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-    You can block sites you don't want. Chrome also auto-deletes sites from the list that are older than 4 weeks.
+    You can block sites you don't want. Chrome also auto-deletes sites from the list that are older than 30 days.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE" desc="A button label that opens a dialog box allowing the user to learn more about the Site-suggested ads setting.">
     Learn more
@@ -2077,7 +2077,7 @@
     For example, if you visit a site that sells long-distance running shoes, the site might decide that you're interested in running marathons. Later, if you visit a different site, that site can show you an ad for running shoes suggested by the first site.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" desc="3 of 3 paragraphs on the Learn more page for Site-suggested ads. * 'Auto-deletes': This could just read 'Chrome deletes...' but we include the 'auto' to suggest that the deletion happens regularly and as part of the system. * 'A site you visit again...': We want to reassure the user. We just told them sites are automatically deleted. And yet, a user might see the same site in the list month after month if they visit that site regularly.">
-    Chrome auto-deletes sites that are older than 4 weeks. A site you visit again might reappear on the list. Or you can block a site from suggesting ads for you.
+    Chrome auto-deletes sites that are older than 30 days. A site you visit again might reappear on the list. Or you can block a site from suggesting ads for you.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE_A11Y_LABEL" desc="Text read by screen readers to help users distinguish this 'Learn more' link from others that might get added to this page.">
     Learn more about site-suggested ads
@@ -2422,6 +2422,11 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their extensions settings.">
     Review extensions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS" desc="This text describes that potentially harmful extensions need to be reviewed by the user. The placeholder will be a numeral.">
+    {NUM_EXTENSIONS, plural,
+     =1 {Review <ph name="BEGIN_BOLD">&lt;b&gt;</ph>1 extension<ph name="END_BOLD">&lt;/b&gt;</ph> that was taken down from the Chrome Web Store}
+     other {Review <ph name="BEGIN_BOLD">&lt;b&gt;</ph>{NUM_EXTENSIONS} extensions<ph name="END_BOLD">&lt;/b&gt;</ph> that were taken down from the Chrome Web Store}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the site settings notification page. The number represents the number of notification permissions to be reviewed.">
     {NUM_SITES, plural,
@@ -2899,9 +2904,6 @@
   <message name="IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_ANY_HOST" desc="Template text for a child row in the content Exceptions page view. Controls the permission setting for the parent page when embedded on any site.">
     embedded on any host
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CATEGORY" desc="Name of the settings page which allows users to modify a specific category under site settings.">
-    Permission Category
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES" desc="Label for the all sites site settings.">
     All sites
   </message>
@@ -2926,8 +2928,17 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_EDIT_HEADER" desc="The header name for a list of files that the user has granted edit permissions from the File System Access API.">
     Edit
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_REMOVE_GRANT_LABEL" desc="A label that represents removing a site's permission to access a file or folder, previously granted access from the File System Access API.">
+    Remove grant
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_REMOVE_GRANTS" desc="A menu option that represents removing all of a site's permissions to access a files or folders, previously granted access from the File System Access API.">
+    Remove
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_HEADER" desc="The header name for a list of files that the user has granted view permissions from the File System Access API.">
     View
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_SITE_DETAILS" desc="A menu option that navigates to the site details page for the selected site.">
+    View site details
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_ENTRY_PARTITIONED_LABEL" desc="The label which is applied to site entries which are partitioned. These entries represent data whose access scope is limited to the site the labeled entry appears under">
     Partitioned
@@ -3151,20 +3162,20 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
     Not allowed to show insecure content
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
-    Sites usually use Javascript to display interactive features, like video games or web forms
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the JavaScript content setting.">
+    Sites usually use JavaScript to display interactive features, like video games or web forms
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
-    Sites can use Javascript
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the JavaScript content setting.">
+    Sites can use JavaScript
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
-    Don't allow sites to use Javascript
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the JavaScript content setting.">
+    Don't allow sites to use JavaScript
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
-    Allowed to use Javascript
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the JavaScript content setting.">
+    Allowed to use JavaScript
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
-    Not allowed to use Javascript
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript content setting.">
+    Not allowed to use JavaScript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -3295,9 +3306,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the pop-ups content setting.">
     Not allowed to send pop-ups or use redirects
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ENABLE" desc="Label for the toggle enabling protected content.">
-    Allow sites to play protected content (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION" desc="Description of the protected content content setting.">
     To play content protected by copyright, sites may need to use a content protection service
   </message>
@@ -3313,9 +3321,6 @@
   <if expr="chromeos_ash or chromeos_lacros or is_win">
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION" desc="Text that is displayed on the Protected Content section of Content Settings. This text explains that enabling protected content may require using a uniquely identifiable machine identifier.">
       Sites may also need to recognize your device using an identifier
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ENABLE_IDENTIFIERS" desc="The label of the checkbox for enabling machine identifiers to uniquely identiy the user for protected content.">
-      Allow identifiers for protected content (computer restart may be required)
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_ALLOWED" desc="Label for the enabled option of the protected content content setting.">
       Sites can use identifiers to play protected content
@@ -3407,20 +3412,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ASK" desc="The ask label for the AR feature in site settings.">
     Ask when a site wants to create a 3D map of your surroundings or track camera position
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ASK_RECOMMENDED" desc="The ask label for the AR feature in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to create a 3D map of your surroundings or track camera position (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK" desc="The block label for the AR feature in site settings.">
     Do not allow sites to create a 3D map of your surroundings or track camera position
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ASK" desc="The ask label for clipboard access in site settings.">
-    Ask when a site wants to see text and images copied to the clipboard
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ASK_RECOMMENDED" desc="The ask label for clipboard access in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to see text and images copied to the clipboard (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCK" desc="The block label for clipboard access in site settings.">
-    Do not allow sites to see text and images copied to the clipboard
   </message>
   <message name="IDS_SETTINGS_COOKIES_PAGE" desc="Title of the cookies settings page">
     Cookies and other site data
@@ -3568,9 +3561,6 @@
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
   </message>
-  <message name="IDS_SETTINGS_COOKIES_SITE_SPECIFIC_EXCEPTIONS" desc="Title of cookies page section for managing site specific cookie settings">
-    Manage site specific exceptions
-  </message>
   <message name="IDS_SETTINGS_COOKIES_ALLOW_EXCEPTIONS" desc="Title of the list containing site exceptions always allowing them to use cookies">
     Sites that can always use cookies
   </message>
@@ -3592,83 +3582,32 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="The ask label for HID devices in site settings.">
     Ask when a site wants to access HID devices
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK_RECOMMENDED" desc="The ask label for HID devices in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to access HID devices (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCK" desc="The block label for HID devices in site settings.">
     Do not allow any sites to access HID devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCK" desc="Label explaining that insecure content is blocked by default in secure sites. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
     Insecure content is blocked by default on secure sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_ALLOW_RECOMMENDED" desc="The allow label for payment handler installation in site settings (with the 'recommended' suffix).">
-    Allow sites to install payment handlers (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDF_DOWNLOAD_PDFS" desc="Label for downloading PDF documents instead of automatically opening them in Chrome.">
     Download PDF files instead of automatically opening them in Chrome
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK_RECOMMENDED" desc="The ask label for the VR feature in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to use your virtual reality devices and data (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_RECENT_ACTIVITY" desc="Label for the section which contains the user's recent permissions changes">
     Recent activity
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_ASK_RECOMMENDED" desc="The ask label for MIDI devices in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK_RECOMMENDED" desc="The ask label for Bluetooth devices in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to access Bluetooth devices (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_ASK_RECOMMENDED" desc="The ask label for USB devices in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to access USB devices (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK_RECOMMENDED" desc="The ask label for serial ports in site settings (with the 'recommended' suffix).">
     Ask when a site wants to access serial ports (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK_RECOMMENDED" desc="The ask label for File System Access write permission in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to edit files or folders on your device (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_ZOOM_LEVEL" desc="Title tooltip and accessibility text for the button to remove zoom levels in site settings">
     Remove zoom level
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MAY_SAVE_COOKIES" desc="Label for the cookies option description site settings.">
-    Sites can save and read cookie data
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_FIRST" desc="Label for ask first option in site settings.">
-    Ask first
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_FIRST_RECOMMENDED" desc="The 'ask first' label in site settings -- a recommended setting for some categories, such as when sites want to use Geolocation.">
-    Ask first (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_ACCESSING_RECOMMENDED" desc="The 'ask before accessing' label in site settings -- a recommended setting for some categories, such as when sites want to access geolocation information.">
-    Ask before accessing (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_SENDING" desc="The 'ask before sending' label in site settings.">
     Ask before sending
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_SENDING_RECOMMENDED" desc="The 'ask before sending' label in site settings -- a recommended setting for some categories, such as when sites want to send push notifications.">
-    Ask before sending (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATICALLY_BLOCKED_NOTIFICATIONS" desc="The label in notifications site settings -- a setting that is automatically set when the user declines notification permission prompts a few times.">
     Automatically blocked because you declined notifications a few times
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_BLOCKED_NOTIFICATIONS_INDICATOR" desc="The label in notifications site settings -- a setting that enables showing a blocked indicator in the address bar when notifications are blocked for all sites. It can be set by the user or automatically set by Chrome when a user has denied notifications several times.">
     Show an indicator in the address bar when notification are blocked
-  </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_ENABLE_QUIET_NOTIFICATION_PROMPTS" desc="The label of a checkbox in the Settings page for Web Notifications, controlling how prominent UI should be used to inform the user when a site asks whether it can send notifications to the user. When the checkbox is checked, the user will see a `quieter message` (a blocked indicator in the address bar) instead of the pop-up bubble. The setting can be set by the user or automatically set by Chrome when a user has denied notifications several times.">
-    Use quieter messaging (blocks notification prompts from interrupting you)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ENABLE_QUIET_NOTIFICATION_PROMPTS_DESCRIPTION" desc="The label description for 'quiet notifications' option in notifications site settings -- if a site requests to send notifications, the request will be blocked and a blocked indicator icon will appear in the address bar.">
-    Sites will be blocked from asking to show you notifications. If a site requests notifications, a blocked indicator will appear in the address bar.
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCK" desc="Label text shown in the Settings page when the default setting for Web Notifications is that new sites are blocked from asking the user if they can send notifications.">
-    Sites can't ask to send notifications
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ASK" desc="Label text shown in the Settings page when the default setting for Web Notifications is that new sites can prompt the user to ask if they want to receive notifications.">
-    Sites can ask to send notifications
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_ALL_RECOMMENDED" desc="Label for the global 'Show all' toggle (category default) in site settings -- a recommended setting for some categories, such as when sites want to show images.">
-    Show all (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW" desc="The sub-label for links to manage cookies when the current cookie setting is allow.">
     {COUNT, plural,
@@ -3691,29 +3630,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW_SITES" desc="The 'allow cookies' label in site settings.">
     Allow sites to save and read cookie data
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW_SITES_RECOMMENDED" desc="The 'allow cookies' label in site settings -- the recommended setting for when sites want to read/write cookie information.">
-    Allow sites to save and read cookie data (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOW_RECENTLY_CLOSED_SITES_RECOMMENDED" desc="The allow label for background sync in site settings (with the 'recommended' suffix).">
-    Allow recently closed sites to finish sending and receiving data (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCK" desc="The block label for background sync in site settings.">
-    Do not allow recently closed sites to finish sending and receiving data
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_ASK_RECOMMENDED" desc="The allow label for protocol handlers in site settings (with the 'recommended' suffix).">
     Allow sites to ask to become default handlers for protocols (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_BLOCKED" desc="The block label for protocol handlers in site settings.">
     Do not allow any site to handle protocols
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_RECOMMENDED" desc="A label for the ‘Ads’ setting toggle. ‘Blocked’ refers to ads being blocked.">
-    Blocked on sites that show intrusive or misleading ads (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOW_RECOMMENDED" desc="The allow label for sound in site settings (with the 'recommended' suffix).">
-    Allow sites to play sound (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_ASK_RECOMMENDED" desc="The allow label for automatic download in site settings (with the 'recommended' suffix).">
-    Ask when a site tries to download files automatically after the first file (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_MANAGEMENT_DESCRIPTION" desc="Description of the window management site setting.">
     Sites usually ask for information about your displays so they can open and place windows intelligently, like showing documents or full-screen content side by side
@@ -3730,17 +3651,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_MANAGEMENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the window management site setting.">
     Not allowed to manage windows on all your displays
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
-    Block sites from knowing when you're actively using this device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED_RECOMMENDED" desc="A generic Allowed label to show in Site Settings when Allow is the recommended option.">
-    Allowed (recommended)
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCKED" desc="A generic Blocked label to show in Site Settings when Blocked is NOT the recommended option.">
     Blocked
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCKED_RECOMMENDED" desc="A generic Blocked label to show in Site Settings when Blocked is the recommended option.">
-    Blocked (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOW" desc="Label for allow sites in site settings.">
     Allow
@@ -3748,14 +3660,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCK" desc="Label for add block sites in site settings.">
     Block
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLOCK_SOUND" desc="Label for add muted sites in site settings.">
-    Mute
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SESSION_ONLY" desc="Label for sites in site settings allowing cookies for the current session only.">
     Clear on exit
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_URL" desc="Label for site URL text entry in site settings.">
-    Site URL
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_DEFAULT_MENU" desc="Label for the default menu item to ask for permission for a particular site.">
     Ask (default)
@@ -3829,9 +3735,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE" desc="The clear storage button label, used to delete non-cookie storage on the Site Details page.">
     Clear data
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_GROUP_RESET" desc="The Reset button, used to clear all permissions for a group of sites.">
-    Reset permissions
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_GROUP_DELETE" desc="The clear storage button label, used to delete storage data for a group of sites.">
     Clear data
@@ -3919,38 +3822,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" desc="A bullet in a list of data that gets deleted from the user's device when they choose 'Clear data' for a specific site. 1) Go to chrome://settings/content. 2) From the 'Recent activity' list, choose a site. 3) Click the 'Clear data' button. The 'Clear site data?' dialog appears. This string will appear as a new bullet at the bottom of the dialog.">
     Data that affects ad personalization is deleted
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_APPS" desc="Text for the dialog that warns about loss of offline data for installed app when clearing all storage data for site.">
-    Offline data in installed app will also be cleared
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_RESET_DIALOG_TITLE" desc="Title of the dialog that warns about resetting all permissions for a group of sites.">
-    Reset site permissions?
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_RESET_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for a group of sites.">
-    Sites under <ph name="SITE_GROUP_NAME">$1<ex>google.co.uk</ex></ph> will also be reset.
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_DIALOG_TITLE" desc="Title of the dialog that warns about clearing all storage data for a group of sites.">
-    Clear site data?
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_CONFIRMATION" desc="Text for the dialog that warns about clearing all storage data for a group of sites.">
-    All data stored by <ph name="SITE_GROUP_NAME">$1<ex>google.co.uk</ex></ph> and any sites under it will be deleted. This includes cookies. You'll be signed out of these sites, including in open tabs.
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_CONFIRMATION_NEW" desc="Text for the dialog that warns about clearing all storage data for a group of sites.">
-    This will clear all data and cookies stored by <ph name="SITE_GROUP_NAME">$1<ex>google.co.uk</ex></ph> and any sites under it
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about clearing all storage data for a group of sites that has only one installed app.">
-    This will clear all data and cookies stored by <ph name="SITE_GROUP_NAME">$1<ex>google.co.uk</ex></ph>, any sites under it, and its installed app
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_CONFIRMATION_INSTALLED_PLURAL" desc="Text for the dialog that warns about clearing all storage data for a group of sites that have more than one installed apps.">
-    This will clear all data and cookies stored by <ph name="SITE_GROUP_NAME">$1<ex>google.co.uk</ex></ph>, any sites under it, and its installed apps
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing all storage data.">
-    You’ll be signed out of these sites, including in open tabs
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when clearing all storage data.">
     Any offline data will be cleared
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_APPS" desc="Text for the dialog that warns about installed apps losing offline data when clearing all storage data for the site group.">
-    Offline data in installed apps will also be cleared
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>?
@@ -4117,6 +3990,18 @@
   <message name="IDS_SETTINGS_NO_HID_DEVICES_FOUND" desc="Explanation for not showing HID devices in site settings.">
     No HID devices found
   </message>
+  <message name="IDS_SETTINGS_RESET_BLUETOOTH_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all Bluetooth devices.">
+    Reset all Bluetooth device permissions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_HID_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all HID devices.">
+    Reset all HID device permissions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_SERIAL_PORTS_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all serial ports.">
+    Reset all Serial port permisions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_USB_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all USB devices.">
+    Reset all USB device permissions?
+  </message>
   <message name="IDS_SETTINGS_ADD_SITE_TITLE" desc="Title for the Add Site dialog">
     Add a site
   </message>
@@ -4133,76 +4018,10 @@
   </if>
 
   <!-- Cookies Window -->
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_NAME_LABEL" desc="The Cookie Name label" meaning="Name of an inanimate object">
-    Name
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_CONTENT_LABEL" desc="The Cookie Content label">
-    Content
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_DOMAIN_LABEL" desc="The Cookie Domain label">
-    Domain
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_PATH_LABEL" desc="The Cookie Path label">
-    Path
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_SENDFOR_LABEL" desc="The Cookie Send For label">
-    Send for
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_ACCESSIBLE_TO_SCRIPT_LABEL" desc="The Cookie Accessible to Script label">
-    Accessible to script
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_CREATED_LABEL" desc="The Cookie Created label">
-    Created
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_COOKIE_EXPIRES_LABEL" desc="The Cookie Expires label">
-    Expires
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_FLASH_LSO" desc="The text shown when Flash has Local Shared Objects (informally known as 'Flash cookies') stored">
-    Flash data
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES" desc="A label showing the number of cookies set on a site.">
     {NUM_COOKIES, plural,
         =1 {1 cookie}
         other {{NUM_COOKIES} cookies}}
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_LOCAL_STORAGE_ORIGIN_LABEL" desc="The Local Storage Origin label">
-    Origin
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_LOCAL_STORAGE_SIZE_ON_DISK_LABEL" desc="The Local Storage Size on disk label">
-    Size on disk
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_LOCAL_STORAGE_LAST_MODIFIED_LABEL" desc="The Local Storage Last modified label">
-    Last modified
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_DATABASE_STORAGE" desc="The text shown when there is either Web Database or Indexed Database Storage (names of HTML standards) in the Cookies table">
-    Database storage
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_LOCAL_STORAGE" desc="Label for local storage (name of an HTML standard)">
-    Local storage
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_FILE_SYSTEM" desc="The text shown when there is a file system (name of an HTML standard) in the Cookies table">
-    File system
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_FILE_SYSTEM_TEMPORARY_USAGE_LABEL" desc="Label for a temporary file system's disk usage.">
-    Temporary storage
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_FILE_SYSTEM_PERSISTENT_USAGE_LABEL" desc="Label for a persistent file system's disk usage.">
-    Persistent storage
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_SERVICE_WORKER" desc="The text shown when there is data for Service Workers within an origin (name of a Web standard) in the Cookies table">
-    Service Workers
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_SHARED_WORKER" desc="The text shown when there is data for Shared Workers within an origin (name of a Web standard) in the Cookies table">
-    Shared Workers
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_SHARED_WORKER_WORKER_LABEL" desc="Label for the URL of a Shared Worker's (name of an HTML standard) main script">
-    URL
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_CACHE_STORAGE" desc="The text shown when there is Cache Storage (name of a Web standard) in the Cookies table">
-    Cache Storage
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_QUOTA_STORAGE" desc="The text shown when there is Quota Managed Storage in the Cookies table">
-    Quota-managed storage
   </message>
 
   <!-- Sync / People Page -->
@@ -4435,113 +4254,6 @@
     </message>
     <message name="IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL" desc="Non-interactive label that describes that the primary profile uses the computer's proxy settings.">
       This profile uses ChromeOS proxy settings.
-    </message>
-  </if>
-
-  <!-- Chrome Cleanup Page -->
-  <if expr="is_win and _google_chrome">
-    <message name="IDS_SETTINGS_RESET_CLEAN_UP_COMPUTER_PAGE_TITLE" desc="Title for an item in the 'Reset and clean up' section of Chrome Settings. 'Clean up' refers to cleaning up harmful software on the user's computer. Imperative.">
-      Clean up computer
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXPLANATION" desc="Text that appears below the list of files, programs, and registry entries to be removed by Chrome as part of a cleanup process. 'privacy white paper' is a guide to Chrome's privacy policy and practices. In 'unwanted software protection,' the word 'unwanted' modifies 'software,' i.e. 'protection from unwanted software'.">
-      Items not listed here will also be removed, if needed. Learn more about &lt;a href=&quot;<ph name="URL">$1<ex>https://www.google.com/chrome/browser/privacy/whitepaper.html#unwantedsoftware</ex></ph>&quot;&gt;unwanted software protection&lt;/a&gt; in the Chrome privacy white paper.
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_FILES_AND_PROGRAMS" desc="Introduces a bullet list containing the names of files and programs to be quarantined by Chrome (i.e. removed from the original location, moved and archived in the Quarantine folder).">
-      Files and programs to be quarantined:
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_ITEMS_TO_BE_REMOVED" desc="Label for an expansion arrow. On expansion, the screen displays a list of files and programs that Chrome will remove or quarantine. Placeholder can be 2 or more items.">
-      {NUM_ITEMS, plural,
-        =1 {1 item}
-        other {{NUM_ITEMS} items}}
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_REGISTRY_ENTRIES" desc="Introduces a bullet list containing the names of registry entries to be removed/changed by Chrome.">
-      Registry entries to be removed or changed:
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_MORE" desc="Link; on click, the screen shows items to be removed by Chrome. Items could include files, programs, or registry entries. This link is for advanced users. Placeholder can be 2 or more items.">
-      {NUM_DOWNLOADS, plural,
-        =1 {1 more}
-        other {{NUM_DOWNLOADS} more}}
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CLEANUP_ERROR" desc="Body of a generic error message that could appear during the cleanup of harmful software. Multiple causes for the error are possible.">
-      An error occurred while Chrome was removing harmful software
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_FIND_AND_REMOVE" desc="Subtitle of the 'Find an remove harmful software' item. Imperative.">
-      Chrome can find harmful software on your computer and remove it
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_NO_INTERNET_CONNECTION" desc="Body of error message that could appear during the cleanup of harmful software. Imperative instruction to user. This message will only appear on Windows desktop/laptop computers. Imperative.">
-      Connect to a network and try again
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_PERMISSIONS_NEEDED" desc="Body of error message that could appear during the cleanup of harmful software. Imperative. ">
-      Click Try Again, and accept the prompt on your computer
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CURRENTLY_REMOVING" desc="Description in the Chrome Cleanup web page that Chrome browser shows when unwanted software, like ad injectors or software that changes the user's settings without their knowledge, is being removed by Chrome from the user's computer. Appears under the title 'Removing harmful software...' Actor is Chrome; we are indicating that harmful software is currently being removed. 'it' is harmful software. Preferrably, the translation for this string should parallel IDS_CHROME_CLEANUP_PROMPT_EXPLANATION.">
-      There's harmful software on your computer. Chrome is removing it, restoring your settings, and disabling extensions. This will make your browser work normally again.
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_SCAN_ERROR" desc="Body of error message that could appear during the cleanup of harmful software.">
-      An error occurred while Chrome was searching for harmful software
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_FIND_BUTTON_LABEL" desc="Button for the 'Find harmful software' item in Chrome Settings. Imperative. On click, Chrome looks for harmful software on the user's computer. Imperative.">
-      Find
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_FOOTER_POWERED_BY" desc="Branding footer on the web page for Chrome Cleanup. COMPANY_NAME is the name of a technology service that Chrome uses to remove harmful software from the user's computer. It is not necessary to translate 'powered by' literally; use an appropriate word for your language to convey the meaning of 'uses'. A similar use in other Google products is 'Powered by Google Translate.'">
-      Powered by <ph name="COMPANY_NAME">$1<ex>Google</ex></ph>
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_LINK_SHOW_FILES" desc="A link, appearing on the Chrome Cleanup web page, that the user can click to show the files that will be removed. Imperative.">
-      Show files to be removed
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_REMOVE_BUTTON_LABEL" desc="Button on the Chrome Cleanup web page. Allows users to start a cleanup of unwanted software on their computer and restore browser settings to default values. 'Remove' is imperative.">
-      Remove
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_RESTART_BUTTON_LABEL" desc="Button on the web page for Chrome Cleanup. Clicking this button causes the user's computer to turn off (shut down) and turn back on again. Imperative. ">
-      Restart computer
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_DONE" desc="Message confirming that Chrome has removed harmful software. Exclamation point is nice in EN-US but is optional in your language; please use or omit as appropriate. The UI will also display a checkmark icon to indicate the operation is done. ">
-      Done! Harmful software removed. To turn extensions back on, visit &lt;a href=&quot;chrome://extensions&quot;&gt;Extensions&lt;/a&gt;.
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_CANT_REMOVE" desc="An error message, appearing on the Chrome Cleanup web page, that Chrome tried to clean up unwanted software, as requested by the user, but was unsuccessful. Omits subject, i.e. Chrome can't remove harmful software.">
-      Cleanup failed
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_PERMISSIONS_NEEDED" desc="Title of error message that could appear during the cleanup of harmful software. 'permission' refers to the user granting permission, e.g. from an operating system prompt, before the cleanup operation can continue.">
-      Chrome needs permission to continue
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_FIND_HARMFUL_SOFTWARE" desc="Title of an item in Chrome Settings. Imperative.">
-      Find harmful software
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_NO_INTERNET_CONNECTION" desc="Title of error message that could appear during the cleanup of harmful software.">
-      No internet connection
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_NOTHING_FOUND" desc="Message displayed after Chrome looks for harmful software but doesn't find any. ">
-      No harmful software found
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_REMOVE" desc="Title of the Chrome Cleanup web page. Chrome browser shows the webpage when unwanted software, like ad injectors or software that changes the user's settings without their knowledge, is found on the user's computer. Appears above a description of what the cleanup does. 'Remove' is imperative.">
-      Remove harmful software
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_REMOVED" desc="A confirmation, appearing on the Chrome Cleanup web page, that the cleanup of unwanted software is finished. Omits 'was', i.e. Harmful software was removed. Appears next to a Done button, which lets user dismiss the confirmation.">
-      Harmful software removed
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_REMOVING" desc="A status message, appearing on the Chrome cleanup web page, that the cleanup of unwanted software initiated by the user is in progress. Omits subject, i.e. 'Chrome is removing harmful software.' If appropriate for your language, include ellipsis to show that the operation is in progress.">
-      Removing harmful software...
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_RESTART" desc="A status message, appearing on the Chrome Cleanup web page, that the cleanup of unwanted software initiated by the user was performed but isn't finished. User must take additional action to finish the cleanup. 'Restart' is imperative. Short for 'To finish removing harmful software...'">
-      To finish removing harmful software, restart your computer
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_SCANNING" desc="Message displayed after the user clicks the 'Find' button to find harmful software. Ellipses indicate that the operation is in process.">
-      Checking for harmful software...
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_SCANNING_FAILED" desc="Title of error message that could appear during the cleanup of harmful software.">
-      Search failed
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TRY_AGAIN_BUTTON_LABEL" desc="Generic button that appears next to a message indicating that an operation failed during the cleanup of harmful software." meaning="Button referred to in the string 'Click Try Again, and accept the prompt on your computer', IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_PERMISSIONS_NEEDED">
-      Try again
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_LOGS_PERMISSION_PREF" desc="A checkbox label for the 'Report harmful software removal details' preference.">
-      Report details to Google about harmful software, system settings, and processes that were found on your computer during this cleanup
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_TITLE_CLEANUP_UNAVAILABLE" desc="Title of error message that could appear before the cleanup of harmful software because Chrome failed to contact the server. This message will only appear on Windows desktop/laptop computers.">
-      Cleanup is currently unavailable
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CLEANUP_UNAVAILABLE" desc="Body of error message that could appear during the cleanup of harmful software. Imperative instruction to user. This message will only appear on Windows desktop/laptop computers.">
-      Please try again later
     </message>
   </if>
 
@@ -4841,7 +4553,7 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC" desc="The description of an option in Chrome's privacy settings for managing phones that can be used for signing into websites. A 'security key' is typically a USB peripherial used to secure sign-ins. In this case a phone can be used as a security key.">
     Control which phones you use as security keys
   </message>
-  <message name="IDS_SETTINGS_EXTENSION_DISPLAY_NAME" desc="The title of a page containing site settings for an extension. The display name contains a human-readable extension name followed by the extension ID.">
-    <ph name="EXTENSION_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
+  <message name="IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME" desc="The title of a page containing site settings for an extension or Isolated Web App (IWA). The display name contains a human-readable extension/IWA name followed by the extension/IWA ID.">
+    <ph name="EXTENSION_OR_APP_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_OR_APP_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
   </message>
 </grit-part>

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
@@ -111,7 +112,7 @@ class GameProviderTest : public testing::Test,
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<Profile> profile_;
 
-  GameProvider* provider_ = nullptr;
+  raw_ptr<GameProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,

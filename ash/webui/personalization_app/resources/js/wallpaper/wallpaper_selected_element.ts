@@ -16,6 +16,7 @@ import '../../css/cros_button_style.css.js';
 import './info_svg_element.js';
 import './google_photos_shared_album_dialog_element.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
@@ -119,7 +120,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       showDailyRefreshButton_: {
         type: Boolean,
         computed:
-            'isDailyRefreshable_(path,googlePhotosAlbumId,photosByAlbumId_)',
+            'isDailyRefreshable_(collectionId, path,googlePhotosAlbumId,photosByAlbumId_)',
       },
 
       showRefreshButton_: {
@@ -354,8 +355,13 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   private isDailyRefreshable_(
-      path: string, googlePhotosAlbumId: string|undefined,
+      collectionId: string, path: string, googlePhotosAlbumId: string|undefined,
       photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>) {
+    // Special collection where daily refresh is disabled.
+    if (collectionId ===
+        loadTimeData.getString('timeOfDayWallpaperCollectionId')) {
+      return false;
+    }
     const isNonEmptyGooglePhotosAlbum = !!googlePhotosAlbumId &&
         !!photosByAlbumId &&
         isNonEmptyArray(photosByAlbumId[googlePhotosAlbumId]);

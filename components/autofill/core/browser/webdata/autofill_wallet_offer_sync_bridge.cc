@@ -85,7 +85,8 @@ AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError>
+AutofillWalletOfferSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -94,7 +95,7 @@ absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletOfferSyncBridge::ApplySyncChanges(
+AutofillWalletOfferSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This bridge does not support incremental updates, so whenever this is

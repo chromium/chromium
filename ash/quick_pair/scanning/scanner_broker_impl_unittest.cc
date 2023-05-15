@@ -17,6 +17,7 @@
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
@@ -53,7 +54,8 @@ class FakeFastPairScannerFactory
   }
 
  private:
-  ash::quick_pair::FakeFastPairScanner* fake_fast_pair_scanner_ = nullptr;
+  raw_ptr<ash::quick_pair::FakeFastPairScanner, ExperimentalAsh>
+      fake_fast_pair_scanner_ = nullptr;
 };
 
 class FakeFastPairDiscoverableScanner
@@ -110,8 +112,8 @@ class FakeFastPairDiscoverableScannerFactory
 
  protected:
   bool create_instance_ = false;
-  FakeFastPairDiscoverableScanner* fake_fast_pair_discoverable_scanner_ =
-      nullptr;
+  raw_ptr<FakeFastPairDiscoverableScanner, ExperimentalAsh>
+      fake_fast_pair_discoverable_scanner_ = nullptr;
 };
 
 class FakeFastPairNotDiscoverableScanner
@@ -169,8 +171,8 @@ class FakeFastPairNotDiscoverableScannerFactory
 
  protected:
   bool create_instance_ = false;
-  FakeFastPairNotDiscoverableScanner* fake_fast_pair_not_discoverable_scanner_ =
-      nullptr;
+  raw_ptr<FakeFastPairNotDiscoverableScanner, ExperimentalAsh>
+      fake_fast_pair_not_discoverable_scanner_ = nullptr;
 };
 
 }  // namespace

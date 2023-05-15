@@ -176,10 +176,10 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-tee
   HeapVector<Member<ReadableStream>> tee(ScriptState*, ExceptionState&);
 
-  // TODO(domenic): cloneForBranch2 argument from spec not supported yet
   void Tee(ScriptState*,
            ReadableStream** branch1,
            ReadableStream** branch2,
+           bool clone_for_branch2,
            ExceptionState&);
 
   void ByteStreamTee(ScriptState*,
@@ -209,13 +209,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
       MessagePort* port,
       std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
       ExceptionState&);
-
-  // Returns a reader that doesn't have the |for_author_code_| flag set. This is
-  // used in contexts where reads should not be interceptable by user code. This
-  // corresponds to calling AcquireReadableStreamDefaultReader(stream, false) in
-  // specification language. The caller must ensure that the stream is not
-  // locked.
-  ReadableStreamDefaultReader* GetReaderNotForAuthorCode(ScriptState*);
 
   //
   // Readable stream abstract operations
@@ -342,15 +335,12 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#readable-stream-has-default-reader
   static bool HasDefaultReader(const ReadableStream*);
 
-  //
-  // TODO(ricea): Functions for transferable streams.
-  //
-
   // Calls Tee() on |readable|, converts the two branches to a JavaScript array
   // and returns them.
   static HeapVector<Member<ReadableStream>> CallTeeAndReturnBranchArray(
       ScriptState* script_state,
       ReadableStream* readable,
+      bool clone_for_branch2,
       ExceptionState& exception_state);
 
   bool is_disturbed_ = false;

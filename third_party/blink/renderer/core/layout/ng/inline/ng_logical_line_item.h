@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -55,7 +55,7 @@ struct NGLogicalLineItem {
   // Create an in-flow text fragment.
   NGLogicalLineItem(const NGInlineItem& inline_item,
                     NGInlineItemResult& item_result,
-                    const NGTextOffset& text_offset,
+                    const NGTextOffsetRange& text_offset,
                     LayoutUnit block_offset,
                     LayoutUnit inline_size,
                     LayoutUnit text_height,
@@ -69,7 +69,7 @@ struct NGLogicalLineItem {
         has_only_trailing_spaces(item_result.has_only_trailing_spaces) {}
   NGLogicalLineItem(const NGInlineItem& inline_item,
                     scoped_refptr<const ShapeResultView> shape_result,
-                    const NGTextOffset& text_offset,
+                    const NGTextOffsetRange& text_offset,
                     LayoutUnit block_offset,
                     LayoutUnit inline_size,
                     LayoutUnit text_height,
@@ -115,7 +115,7 @@ struct NGLogicalLineItem {
         bidi_level(bidi_level) {}
   NGLogicalLineItem(const NGLogicalLineItem& source_item,
                     scoped_refptr<const ShapeResultView> shape_result,
-                    const NGTextOffset& text_offset)
+                    const NGTextOffsetRange& text_offset)
       : inline_item(source_item.inline_item),
         shape_result(std::move(shape_result)),
         text_offset(text_offset),
@@ -214,7 +214,7 @@ struct NGLogicalLineItem {
   // |inline_item| is null only for ellipsis items.
   const NGInlineItem* inline_item = nullptr;
   scoped_refptr<const ShapeResultView> shape_result;
-  NGTextOffset text_offset;
+  NGTextOffsetRange text_offset;
 
   // Data to create a generated text fragment.
   String text_content;

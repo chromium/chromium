@@ -223,7 +223,9 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   void SetOutstandingLimitForTesting(size_t limit) {
     SetOutstandingLimitForTesting(limit, limit);
   }
-  void SetOutstandingLimitForTesting(size_t tight_limit, size_t normal_limit);
+  void SetOutstandingLimitForTesting(size_t tight_limit,
+                                     size_t normal_limit,
+                                     size_t tight_medium_limit = 0);
 
   // FrameOrWorkerScheduler lifecycle observer callback.
   void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
@@ -315,14 +317,18 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   void MaybeRun();
 
   // Grants a client to run,
-  void Run(ClientId, ResourceLoadSchedulerClient*, bool throttleable);
+  void Run(ClientId,
+           ResourceLoadSchedulerClient*,
+           bool throttleable,
+           ResourceLoadPriority priority);
 
   size_t GetOutstandingLimit(ResourceLoadPriority priority) const;
 
   void ShowConsoleMessageIfNeeded();
 
   bool IsRunningThrottleableRequestsLessThanOutStandingLimit(
-      size_t out_standing_limit);
+      size_t out_standing_limit,
+      ResourceLoadPriority priority);
 
   bool CanRequestForMultiplexedConnectionsInTight() const;
 
@@ -340,6 +346,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Used when |policy_| is |kTight|.
   size_t tight_outstanding_limit_ = kOutstandingUnlimited;
+  size_t tight_medium_limit_ = 0u;
 
   // Used when |policy_| is |kNormal|.
   size_t normal_outstanding_limit_ = kOutstandingUnlimited;
@@ -358,6 +365,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   HashMap<ClientId, IsMultiplexedConnection> running_requests_;
 
   HashSet<ClientId> running_throttleable_requests_;
+  HashSet<ClientId> running_medium_requests_;
 
   // Holds a flag to omit repeating console messages.
   bool is_console_info_shown_ = false;

@@ -55,11 +55,13 @@ TEST_F(WaylandClientPerfTests, Simple) {
   exo::wayland::clients::Simple client;
   EXPECT_TRUE(client.Init(params));
 
-  client.Run(kWarmUpFrames, false, nullptr);
+  const exo::wayland::clients::Simple::RunParam run_params = {false, false};
+
+  client.Run(kWarmUpFrames, run_params, nullptr);
 
   exo::wayland::clients::Simple::PresentationFeedback feedback;
   auto start_time = base::Time::Now();
-  client.Run(kTestFrames, false, &feedback);
+  client.Run(kTestFrames, run_params, &feedback);
   auto time_delta = base::Time::Now() - start_time;
   float fps = kTestFrames / time_delta.InSecondsF();
   auto reporter = SetUpReporter(kStorySimple);

@@ -255,7 +255,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
 
-  const ModelTypeSet kTypes = ModelTypeSet(BOOKMARKS);
+  const ModelTypeSet kTypes = {BOOKMARKS};
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
       .WillRepeatedly(Return(kTypes));
 
@@ -264,7 +264,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const std::string kFCMRegistrationToken = "fcm_token";
-  const ModelTypeSet kInterestedDataTypes(BOOKMARKS);
+  const ModelTypeSet kInterestedDataTypes = {BOOKMARKS};
 
   DeviceInfo::PhoneAsASecurityKeyInfo paask_info =
       SamplePhoneAsASecurityKeyInfo();

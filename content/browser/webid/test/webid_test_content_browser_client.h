@@ -7,12 +7,14 @@
 
 #include <memory>
 
+#include "content/browser/webid/identity_registry.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 
 namespace content {
 
 class MDocProvider;
+class FederatedIdentityModalDialogViewDelegate;
 
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
 // be stubbed for tests.
@@ -37,6 +39,15 @@ class WebIdTestContentBrowserClient
       std::unique_ptr<IdentityRequestDialogController> controller);
 
   void SetMDocProvider(std::unique_ptr<MDocProvider> provider);
+
+  void SetIdentityRegistry(WebContents* web_contents,
+                           FederatedIdentityModalDialogViewDelegate* delegate,
+                           const url::Origin& url);
+
+  IdentityRequestDialogController*
+  GetIdentityRequestDialogControllerForTests() {
+    return test_dialog_controller_.get();
+  }
 
   MDocProvider* GetMDocProviderForTests() { return test_mdoc_provider_.get(); }
 

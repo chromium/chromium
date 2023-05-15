@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -111,7 +112,8 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
   base::test::ScopedFeatureList feature_list_;
   base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
       policy_changed_repeating_future_;
-  PolicyService* policy_service_ = nullptr;  // owned by BrowserPolicyConnector.
+  raw_ptr<PolicyService, ExperimentalAsh> policy_service_ =
+      nullptr;  // owned by BrowserPolicyConnector.
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   std::string external_data_;
 };

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +26,34 @@
 using read_anything::mojom::LetterSpacing;
 using read_anything::mojom::LineSpacing;
 
+namespace {
+
+const char* kLanguagesSupportedByPoppins[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",
+    "nl", "pl", "pt", "ro", "sk", "sl", "sv", "sw", "tr"};
+
+const char* kLanguagesSupportedByComicNeue[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr", "hr",
+    "hu", "id", "it", "ms", "nl", "pl", "pt", "sk", "sl", "sv",  "sw"};
+
+const char* kLanguagesSupportedByLexendDeca[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl",
+    "pt", "ro", "sk", "sl", "sv", "sw", "tr", "vi"};
+
+const char* kLanguagesSupportedByEbGaramond[] = {
+    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
+
+const char* kLanguagesSupportedByStixTwoText[] = {
+    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
+
+}  // namespace
+
 ReadAnythingModel::ReadAnythingModel()
     : font_name_(string_constants::kReadAnythingDefaultFontName),
       font_scale_(kReadAnythingDefaultFontScale),
@@ -36,15 +65,19 @@ ReadAnythingModel::ReadAnythingModel()
 
 ReadAnythingModel::~ReadAnythingModel() = default;
 
-void ReadAnythingModel::Init(const std::string& font_name,
+void ReadAnythingModel::Init(const std::string& lang_code,
+                             const std::string& font_name,
                              double font_scale,
                              read_anything::mojom::Colors colors,
                              LineSpacing line_spacing,
                              LetterSpacing letter_spacing) {
+  font_model_->SetDefaultLanguage(lang_code);
+
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
-  if (font_model_->IsValidFontName(font_name)) {
-    font_model_->SetSelectedIndex(font_model_->GetFontNameIndex(font_name));
+  size_t font_index = font_model_->GetFontNameIndex(font_name);
+  if (font_model_->IsValidFontIndex(font_index)) {
+    font_model_->SetSelectedIndex(font_index);
   }
 
   font_scale_ = GetValidFontScale(font_scale);
@@ -78,6 +111,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   separator_color_id_ = initial_colors.separator_color_id;
   dropdown_color_id_ = initial_colors.dropdown_color_id;
   selected_dropdown_color_id_ = initial_colors.selected_dropdown_color_id;
+  focus_ring_color_id_ = initial_colors.focus_ring_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -117,6 +151,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   separator_color_id_ = new_colors.separator_color_id;
   dropdown_color_id_ = new_colors.dropdown_color_id;
   selected_dropdown_color_id_ = new_colors.selected_dropdown_color_id;
+  focus_ring_color_id_ = new_colors.focus_ring_color_id;
 
   NotifyThemeChanged();
 }
@@ -136,35 +171,6 @@ void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
   letter_spacing_ = letter_spacing_model_->GetLetterSpacingAt(new_index);
   NotifyThemeChanged();
 }
-
-void ReadAnythingModel::AccessibilityEventReceived(
-    const content::AXEventNotificationDetails& details) {
-  for (Observer& obs : observers_) {
-    obs.AccessibilityEventReceived(details);
-  }
-}
-
-void ReadAnythingModel::OnActiveAXTreeIDChanged(
-    const ui::AXTreeID& tree_id,
-    const ukm::SourceId& ukm_source_id) {
-  for (Observer& obs : observers_) {
-    obs.OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
-  }
-}
-
-void ReadAnythingModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
-  for (Observer& obs : observers_) {
-    obs.OnAXTreeDestroyed(tree_id);
-  }
-}
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void ReadAnythingModel::ScreenAIServiceReady() {
-  for (Observer& obs : observers_) {
-    obs.ScreenAIServiceReady();
-  }
-}
-#endif
 
 double ReadAnythingModel::GetValidFontScale(double font_scale) {
   if (font_scale < kReadAnythingMinimumFontScale)
@@ -200,7 +206,7 @@ void ReadAnythingModel::NotifyThemeChanged() {
     obs.OnReadAnythingThemeChanged(
         font_name_, font_scale_, foreground_color_id_, background_color_id_,
         separator_color_id_, dropdown_color_id_, selected_dropdown_color_id_,
-        line_spacing_, letter_spacing_);
+        focus_ring_color_id_, line_spacing_, letter_spacing_);
   }
 }
 
@@ -208,19 +214,34 @@ void ReadAnythingModel::NotifyThemeChanged() {
 // ReadAnythingFontModel
 ///////////////////////////////////////////////////////////////////////////////
 
-ReadAnythingFontModel::ReadAnythingFontModel() {
-  // TODO(1266555): i18n and replace temp fonts with finalized fonts.
-  font_choices_.emplace_back(u"Standard font");
-  font_choices_.emplace_back(u"Sans-serif");
-  font_choices_.emplace_back(u"Serif");
-  font_choices_.emplace_back(u"Arial");
-  font_choices_.emplace_back(u"Comic Sans MS");
-  font_choices_.emplace_back(u"Times New Roman");
-  font_choices_.shrink_to_fit();
-}
+ReadAnythingFontModel::ReadAnythingFontModel() {}
 
-bool ReadAnythingFontModel::IsValidFontName(const std::string& font_name) {
-  return base::Contains(font_choices_, base::UTF8ToUTF16(font_name));
+void ReadAnythingFontModel::SetDefaultLanguage(const std::string& lang) {
+  if (base::Contains(kLanguagesSupportedByPoppins, lang)) {
+    FontInfo kPoppins = {u"Poppins", ReadAnythingFont::kPoppins};
+    font_choices_.emplace_back(kPoppins);
+  }
+  FontInfo kSansSerif = {u"Sans-serif", ReadAnythingFont::kSansSerif};
+  FontInfo kSerif = {u"Serif", ReadAnythingFont::kSerif};
+  font_choices_.emplace_back(kSansSerif);
+  font_choices_.emplace_back(kSerif);
+  if (base::Contains(kLanguagesSupportedByComicNeue, lang)) {
+    FontInfo kComicNeue = {u"Comic Neue", ReadAnythingFont::kComicNeue};
+    font_choices_.emplace_back(kComicNeue);
+  }
+  if (base::Contains(kLanguagesSupportedByLexendDeca, lang)) {
+    FontInfo kLexendDeca = {u"Lexend Deca", ReadAnythingFont::kLexendDeca};
+    font_choices_.emplace_back(kLexendDeca);
+  }
+  if (base::Contains(kLanguagesSupportedByEbGaramond, lang)) {
+    FontInfo kEbGaramond = {u"EB Garamond", ReadAnythingFont::kEbGaramond};
+    font_choices_.emplace_back(kEbGaramond);
+  }
+  if (base::Contains(kLanguagesSupportedByStixTwoText, lang)) {
+    FontInfo kStixTwoText = {u"STIX Two Text", ReadAnythingFont::kStixTwoText};
+    font_choices_.emplace_back(kStixTwoText);
+  }
+  font_choices_.shrink_to_fit();
 }
 
 bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
@@ -228,7 +249,10 @@ bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
 }
 
 size_t ReadAnythingFontModel::GetFontNameIndex(std::string font_name) {
-  auto it = base::ranges::find(font_choices_, base::UTF8ToUTF16(font_name));
+  auto it = base::ranges::find_if(
+      font_choices_, [font_name](const FontInfo& font_info) {
+        return base::UTF8ToUTF16(font_name) == font_info.name;
+      });
   return static_cast<size_t>(it - font_choices_.begin());
 }
 
@@ -256,26 +280,31 @@ std::u16string ReadAnythingFontModel::GetItemAt(size_t index) const {
 
 std::u16string ReadAnythingFontModel::GetDropDownTextAt(size_t index) const {
   DCHECK_LT(index, GetItemCount());
-  return font_choices_[index];
+  return font_choices_[index].name;
 }
 
 std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
   DCHECK_LT(index, GetItemCount());
-  return base::UTF16ToUTF8(font_choices_[index]);
+  return base::UTF16ToUTF8(font_choices_[index].name);
 }
 
 // This method uses the text from the drop down at |index| and constructs a
 // FontList to be used by the |ReadAnythingFontCombobox::MenuModel| to make
 // each option to display in its associated font.
 // This text is not visible to the user.
-// We append 'Arial' and '18px' to have a back-up font and a set size in case
+// We add the default font to have a back-up font and a set size in case
 // the chosen font does not work for some reason.
-// E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
-std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
+// E.g. User chooses 'Serif', this method returns {'Serif, Sans-serif'}.
+std::vector<std::string> ReadAnythingFontModel::GetLabelFontNameAt(
+    size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
-  base::StringAppendF(&font_label, "%s",
-                      string_constants::kReadAnythingDefaultFontSyle);
-  return font_label;
+  std::vector<std::string> font_vector = {
+      font_label, string_constants::kReadAnythingDefaultFontName};
+  return font_vector;
+}
+
+absl::optional<int> ReadAnythingFontModel::GetLabelFontSize() {
+  return kMenuLabelFontSizePx;
 }
 
 absl::optional<ui::ColorId>
@@ -307,6 +336,7 @@ ReadAnythingColorsModel::ColorInfo::ColorInfo(
     ui::ColorId separator_color_id,
     ui::ColorId dropdown_color_id,
     ui::ColorId selected_dropdown_color_id,
+    ui::ColorId focus_ring_color_id,
     ColorInfo::ReadAnythingColor logging_value)
     : name(name),
       icon_asset(icon_asset),
@@ -315,6 +345,7 @@ ReadAnythingColorsModel::ColorInfo::ColorInfo(
       separator_color_id(separator_color_id),
       dropdown_color_id(dropdown_color_id),
       selected_dropdown_color_id(selected_dropdown_color_id),
+      focus_ring_color_id(focus_ring_color_id),
       logging_value(logging_value) {}
 ReadAnythingColorsModel::ColorInfo::ColorInfo(const ColorInfo& other) = default;
 ReadAnythingColorsModel::ColorInfo::ColorInfo(ColorInfo&&) = default;
@@ -333,6 +364,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparator,
       kColorReadAnythingDropdownBackground,
       kColorReadAnythingDropdownSelected,
+      kColorReadAnythingFocusRingBackground,
       ColorInfo::ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
@@ -343,6 +375,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorLight,
       kColorReadAnythingDropdownBackgroundLight,
       kColorReadAnythingDropdownSelectedLight,
+      kColorReadAnythingFocusRingBackgroundLight,
       ColorInfo::ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
@@ -353,6 +386,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorDark,
       kColorReadAnythingDropdownBackgroundDark,
       kColorReadAnythingDropdownSelectedDark,
+      kColorReadAnythingFocusRingBackgroundDark,
       ColorInfo::ReadAnythingColor::kDark};
 
   ColorInfo kYellowColors = {
@@ -363,6 +397,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorYellow,
       kColorReadAnythingDropdownBackgroundYellow,
       kColorReadAnythingDropdownSelectedYellow,
+      kColorReadAnythingFocusRingBackgroundYellow,
       ColorInfo::ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
@@ -373,6 +408,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorBlue,
       kColorReadAnythingDropdownBackgroundBlue,
       kColorReadAnythingDropdownSelectedBlue,
+      kColorReadAnythingFocusRingBackgroundBlue,
       ColorInfo::ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);

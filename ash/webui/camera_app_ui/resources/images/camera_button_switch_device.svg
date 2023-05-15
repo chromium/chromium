@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
-    <title>btn_switch_1x</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="btn_switch_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="component/switchcamera" fill="#FEFEFE">
-            <g id="Group" transform="translate(4.000000, 4.000000)">
-                <circle id="Oval-2" cx="20" cy="20" r="6"></circle>
-                <g id="Group-2">
-                    <path d="M36.0014647,32 C32.3526394,36.8577868 26.5432713,40 20,40 C8.954305,40 0,31.045695 0,20 L3,20 C3,29.3888407 10.6111593,37 20,37 C24.704999,37 28.9635724,35.0886249 32.0415948,32 L36.0014647,32 Z M40,20 L37,20 C37,10.6111593 29.3888407,3 20,3 C15.295001,3 11.0364276,4.91137512 7.9584052,8 L3.99853525,8 C7.64736057,3.14221319 13.4567287,0 20,0 C31.045695,0 40,8.954305 40,20 Z" id="Combined-Shape"></path>
-                </g>
-                <polygon id="Rectangle-2" points="3 2 13 12 3 12"></polygon>
-                <polygon id="Rectangle-2" transform="translate(32.000000, 33.000000) rotate(180.000000) translate(-32.000000, -33.000000) " points="27 28 37 38 27 38"></polygon>
-            </g>
-        </g>
+    <g transform="translate(4.000000, 4.000000)">
+        <circle cx="20" cy="20" r="6"></circle>
+        <path d="M36.0014647,32 C32.3526394,36.8577868 26.5432713,40 20,40 C8.954305,40 0,31.045695 0,20 L3,20 C3,29.3888407 10.6111593,37 20,37 C24.704999,37 28.9635724,35.0886249 32.0415948,32 L36.0014647,32 Z M40,20 L37,20 C37,10.6111593 29.3888407,3 20,3 C15.295001,3 11.0364276,4.91137512 7.9584052,8 L3.99853525,8 C7.64736057,3.14221319 13.4567287,0 20,0 C31.045695,0 40,8.954305 40,20 Z"></path>
+        <polygon points="3 2 13 12 3 12"></polygon>
+        <polygon transform="translate(32.000000, 33.000000) rotate(180.000000) translate(-32.000000, -33.000000) " points="27 28 37 38 27 38"></polygon>
     </g>
 </svg>

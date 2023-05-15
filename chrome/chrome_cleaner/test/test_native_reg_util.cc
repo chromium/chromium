@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_cleaner/os/registry.h"
 
@@ -30,7 +30,8 @@ ScopedTempRegistryKey::ScopedTempRegistryKey() {
       base::Time::Now().ToDeltaSinceWindowsEpoch();
   key_path_ = base::StrCat(
       {kTempTestKeyPath, base::NumberToWString(timestamp.InMicroseconds()),
-       kTimestampDelimiter, base::ASCIIToWide(base::GenerateGUID())});
+       kTimestampDelimiter,
+       base::ASCIIToWide(base::Uuid::GenerateRandomV4().AsLowercaseString())});
 
   CHECK(ERROR_SUCCESS ==
         reg_key_.Create(HKEY_LOCAL_MACHINE, key_path_.c_str(), KEY_ALL_ACCESS));

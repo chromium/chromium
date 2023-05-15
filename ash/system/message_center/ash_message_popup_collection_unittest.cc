@@ -262,19 +262,20 @@ TEST_P(AshMessagePopupCollectionTest, DockedMode) {
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, TrayHeight) {
+TEST_P(AshMessagePopupCollectionTest, BaselineOffset) {
   const gfx::Rect popup_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetPopupOriginX(popup_size);
   int baseline = popup_collection()->GetBaseline();
 
-  // Simulate the system tray bubble being open.
-  const int kTrayHeight = 100;
-  popup_collection()->SetTrayBubbleHeight(kTrayHeight);
+  // Simulate a secondary bubble (e.g. QS slider) being shown on screen.
+  const int kSecondaryBubbleHeight = 100;
+  popup_collection()->SetBaselineOffset(kSecondaryBubbleHeight);
 
   EXPECT_EQ(origin_x, popup_collection()->GetPopupOriginX(popup_size));
-  EXPECT_EQ(baseline - kTrayHeight - message_center::kMarginBetweenPopups,
-            popup_collection()->GetBaseline());
+  EXPECT_EQ(
+      baseline - kSecondaryBubbleHeight - message_center::kMarginBetweenPopups,
+      popup_collection()->GetBaseline());
 }
 
 TEST_P(AshMessagePopupCollectionTest, Extended) {

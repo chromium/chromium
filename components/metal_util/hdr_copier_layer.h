@@ -17,6 +17,7 @@ struct HDRMetadata;
 }  // namespace gfx
 
 @class CALayer;
+@protocol MTLDevice;
 
 namespace metal {
 
@@ -35,7 +36,7 @@ CALayer* METAL_UTIL_EXPORT CreateHDRCopierLayer();
 void METAL_UTIL_EXPORT
 UpdateHDRCopierLayer(CALayer* layer,
                      IOSurfaceRef buffer,
-                     intptr_t metal_device,
+                     id<MTLDevice> device,
                      const gfx::ColorSpace& color_space,
                      const absl::optional<gfx::HDRMetadata>& hdr_metadata);
 

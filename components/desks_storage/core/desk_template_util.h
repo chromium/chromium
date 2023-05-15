@@ -14,9 +14,6 @@
 
 namespace desks_storage::desk_template_util {
 
-inline constexpr char kFloatingWorkspaceTemplateUuid[] =
-    "c098bdcf-5803-484b-9bfd-d3a9a4b497ab";
-
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
     const base::Uuid& uuid,

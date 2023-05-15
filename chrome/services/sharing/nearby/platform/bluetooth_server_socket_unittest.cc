@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -122,7 +123,7 @@ class BluetoothServerSocketTest : public testing::Test {
   }
 
  protected:
-  FakeServerSocket* fake_server_socket_ = nullptr;
+  raw_ptr<FakeServerSocket, ExperimentalAsh> fake_server_socket_ = nullptr;
 
   std::unique_ptr<BluetoothServerSocket> bluetooth_server_socket_;
 

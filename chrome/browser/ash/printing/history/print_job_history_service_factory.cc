@@ -35,7 +35,7 @@ PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
     : ProfileKeyedServiceFactory(
           "PrintJobHistoryService",
           ProfileSelections::Builder()
-              .WithGuest(ProfileSelections::kRegularProfileDefault)
+              .WithGuest(ProfileSelection::kOriginalOnly)
               // We do not want an instance of PrintJobHistory on the lock
               // screen.  The result is multiple print job notifications.
               // https://crbug.com/1011532

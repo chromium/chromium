@@ -50,7 +50,8 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
     // No world ID.
     return script_context_set_.Register(
         web_frame_.frame(),
-        v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), v8_context_), 0);
+        v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), v8_context_),
+        /*world_id=*/0, /*is_webview=*/false);
   }
 
   void RequestGarbageCollection() {

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -70,7 +71,7 @@ class AttestationFlowIntegratedTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
   base::HistogramTester histogram_tester_;
 };
 

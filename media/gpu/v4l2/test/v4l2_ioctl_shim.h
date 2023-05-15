@@ -12,6 +12,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -28,7 +29,7 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
 
   class MmappedPlane {
    public:
-    void* start_addr;
+    raw_ptr<void> start_addr;
     const size_t length;
     size_t bytes_used;
 
@@ -197,16 +198,12 @@ class V4L2IoctlShim {
   // Stops streaming |queue| (via VIDIOC_STREAMOFF).
   void StreamOff(const enum v4l2_buf_type type) const;
 
-  // Sets the value of controls which specify decoding parameters
-  // for each frame.
+  // Sets the value of controls which specify decoding parameters for each
+  // frame. |immediate| forces the call to be processed immediately when
+  // |MediaIocRequestAlloc| is next called as opposed to being put in the queue.
   void SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                   v4l2_ext_controls* ext_ctrls) const;
-
-  // Sets the value of controls which specify decoding parameters
-  // for each frame. Submits with V4L2_CTRL_WHICH_CUR_VAL to produce an
-  // immediate result instead of queuing up.
-  void SetExtCtrlsImmediate(const std::unique_ptr<V4L2Queue>& queue,
-                            v4l2_ext_controls* ext_ctrls) const;
+                   v4l2_ext_controls* ext_ctrls,
+                   bool immediate = false) const;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.

@@ -474,6 +474,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSearchCompanion"));
       break;
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromSetUpList"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -592,6 +596,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSearchCompanion"));
       break;
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromSetUpList"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -620,8 +628,159 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
 }
 
 #if BUILDFLAG(IS_IOS)
-void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {
-  base::UmaHistogramEnumeration("Signin.AccountConsistencyPromoAction", action);
+void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
+                                      AccessPoint access_point) {
+  switch (access_point) {
+    // The histogram is recorded for these access points.
+    case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      break;
+
+    // But not these access points.
+    case AccessPoint::ACCESS_POINT_START_PAGE:
+    case AccessPoint::ACCESS_POINT_NTP_LINK:
+    case AccessPoint::ACCESS_POINT_MENU:
+    case AccessPoint::ACCESS_POINT_SETTINGS:
+    case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+    case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
+    case AccessPoint::ACCESS_POINT_CONTENT_AREA:
+    case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case AccessPoint::ACCESS_POINT_RECENT_TABS:
+    case AccessPoint::ACCESS_POINT_UNKNOWN:
+    case AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
+    case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+    case AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
+    case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
+    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+    case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case AccessPoint::ACCESS_POINT_READING_LIST:
+    case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case AccessPoint::ACCESS_POINT_MAX:
+      NOTREACHED() << "Signin.AccountConsistencyPromoAction histogram is not"
+                   << "recorded for access point "
+                   << static_cast<int>(access_point);
+      break;
+  }
+
+  // Log to the appropriate histogram given the action.
+  std::string histogram;
+  switch (action) {
+    case AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS:
+      histogram = "Signin.AccountConsistencyPromoAction.SuppressedNoAccounts";
+      break;
+    case AccountConsistencyPromoAction::DISMISSED_BACK:
+      histogram = "Signin.AccountConsistencyPromoAction.DismissedBack";
+      break;
+    case AccountConsistencyPromoAction::DISMISSED_BUTTON:
+      histogram = "Signin.AccountConsistencyPromoAction.DismissedButton";
+      break;
+    case AccountConsistencyPromoAction::DISMISSED_SCRIM:
+      histogram = "Signin.AccountConsistencyPromoAction.DismissedScrim";
+      break;
+    case AccountConsistencyPromoAction::DISMISSED_SWIPE_DOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.DismissedSwipeDown";
+      break;
+    case AccountConsistencyPromoAction::DISMISSED_OTHER:
+      histogram = "Signin.AccountConsistencyPromoAction.DismissedOther";
+      break;
+    case AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED:
+      histogram = "Signin.AccountConsistencyPromoAction.AddAccountStarted";
+      break;
+    case AccountConsistencyPromoAction::SIGNED_IN_WITH_DEFAULT_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount";
+      break;
+    case AccountConsistencyPromoAction::SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount";
+      break;
+    case AccountConsistencyPromoAction::SIGNED_IN_WITH_NO_DEVICE_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SignedInWithNoDeviceAccount";
+      break;
+    case AccountConsistencyPromoAction::SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.Shown";
+      break;
+    case AccountConsistencyPromoAction::SHOWN_WITH_NO_DEVICE_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.ShownWithNoDeviceAccount";
+      break;
+    case AccountConsistencyPromoAction::SUPPRESSED_SIGNIN_NOT_ALLOWED:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SuppressedSigninNotAllowed";
+      break;
+    case AccountConsistencyPromoAction::SIGNED_IN_WITH_ADDED_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount";
+      break;
+    case AccountConsistencyPromoAction::AUTH_ERROR_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.AuthErrorShown";
+      break;
+    case AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.GenericErrorShown";
+      break;
+    case AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED:
+      histogram = "Signin.AccountConsistencyPromoAction.AddAccountCompleted";
+      break;
+    case AccountConsistencyPromoAction::
+        ADD_ACCOUNT_COMPLETED_WITH_NO_DEVICE_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction."
+          "AddAccountCompletedWithNoDeviceAccount";
+      break;
+    case AccountConsistencyPromoAction::SUPPRESSED_CONSECUTIVE_DISMISSALS:
+      histogram =
+          "Signin.AccountConsistencyPromoAction."
+          "SuppressedConsecutiveDismissals";
+      break;
+    case AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.TimeoutErrorShown";
+      break;
+    case AccountConsistencyPromoAction::SUPPRESSED_ALREADY_SIGNED_IN:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.SuppressedAlreadySignedIn";
+      break;
+    case AccountConsistencyPromoAction::SIGN_IN_FAILED:
+      histogram = "Signin.AccountConsistencyPromoAction.SignInFailed";
+      break;
+    case AccountConsistencyPromoAction::
+        ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction."
+          "AddAccountStartedWithNoDeviceAccount";
+      break;
+  }
+
+  base::UmaHistogramEnumeration(histogram, access_point,
+                                AccessPoint::ACCESS_POINT_MAX);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

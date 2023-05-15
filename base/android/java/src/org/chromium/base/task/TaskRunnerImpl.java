@@ -161,7 +161,7 @@ public class TaskRunnerImpl implements TaskRunner {
             if (delay == 0) {
                 mPreNativeTasks.add(task);
                 schedulePreNativeTask();
-            } else {
+            } else if (!schedulePreNativeDelayedTask(task, delay)) {
                 Pair<Runnable, Long> preNativeDelayedTask = new Pair<>(task, delay);
                 mPreNativeDelayedTasks.add(preNativeDelayedTask);
             }
@@ -198,6 +198,16 @@ public class TaskRunnerImpl implements TaskRunner {
      */
     protected void schedulePreNativeTask() {
         PostTask.getPrenativeThreadPoolExecutor().execute(mRunPreNativeTaskClosure);
+    }
+
+    /**
+     * Overridden in subclasses that support Delayed tasks pre-native.
+     *
+     * @return true if the task has been scheduled and does not need to be forwarded to the native
+     *         task runner.
+     */
+    protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
+        return false;
     }
 
     /**

@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
@@ -51,8 +50,6 @@ import javax.annotation.concurrent.GuardedBy;
  * any thread it is protected by mUrlRequestAdapterLock.
  */
 @JNINamespace("cronet")
-// Qualifies VersionSafeCallbacks.UrlRequestStatusListener which is used in onStatus, a JNI method.
-@JNIAdditionalImport(VersionSafeCallbacks.class)
 @VisibleForTesting
 public final class CronetUrlRequest extends UrlRequestBase {
     private final boolean mAllowDirectExecutor;
@@ -704,10 +701,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 }
                 try {
                     mCallback.onSucceeded(CronetUrlRequest.this, mResponseInfo);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onSucceeded method", e);
                 }
+                maybeReportMetrics();
             }
         };
         postTaskToExecutor(task);
@@ -752,10 +749,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
             public void run() {
                 try {
                     mCallback.onCanceled(CronetUrlRequest.this, mResponseInfo);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onCanceled method", e);
                 }
+                maybeReportMetrics();
             }
         };
         postTaskToExecutor(task);
@@ -826,10 +823,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
             public void run() {
                 try {
                     mCallback.onFailed(CronetUrlRequest.this, mResponseInfo, mException);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onFailed method", e);
                 }
+                maybeReportMetrics();
             }
         };
         try {

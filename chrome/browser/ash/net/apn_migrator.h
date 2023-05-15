@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -43,6 +45,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void SetShillCustomApnListForNetwork(const NetworkState& network,
                                        const base::Value::List* apn_list);
 
+  void OnSetShillCustomApnListSuccess(const std::string iccid);
+
+  void OnSetShillCustomApnListFailure(const std::string iccid,
+                                      const std::string guid,
+                                      const std::string& error_name);
+
   // Migrate the |network|'s custom APNs to the APN Revamp feature. If the
   // migration requires the network's managed properties, this function will
   // invoke an async call, and mark the network as "in migration".
@@ -56,12 +64,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
+  // ICCIDs that are currently being migrated.
   base::flat_set<std::string> iccids_in_migration_;
 
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  ManagedNetworkConfigurationHandler* network_configuration_handler_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkMetadataStore* network_metadata_store_ = nullptr;
+  // ICCIDs of networks that have been configured in shill with the revamped APN
+  // list. Networks must be updated in shill with the migrated APNs each time
+  // the revamp flag is enabled.
+  base::flat_set<std::string> iccids_shill_updated_with_migrated_apns_;
+
+  raw_ptr<ManagedCellularPrefHandler, ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkMetadataStore, ExperimentalAsh> network_metadata_store_ =
+      nullptr;
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

@@ -255,10 +255,4 @@ interface NativeWidgetNSWindowHost {
   HandleAccelerator(ui.mojom.Accelerator accelerator,
                     bool require_priority_handler) =>
       (bool was_handled);
-
-  // Check if the receiving widget's bubble anchor view is contained within the
-  // target widget represented by |widget_id|. If the receiving widget is not a
-  // bubble or if an anchor view is not set, false will be returned.
-  [Sync]
-  BubbleAnchorViewContainedInWidget(uint64 widget_id) => (bool contained);
 };

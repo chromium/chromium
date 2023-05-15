@@ -9,7 +9,8 @@ FAIL public to private: failed preflight. assert_equals: fetch error expected (s
 FAIL public to private: success. assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
 PASS public to public: success.
 FAIL treat-as-public to local: failed preflight. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
-FAIL treat-as-public to local: success. assert_equals: response ok expected true but got false
+FAIL treat-as-public to local: success. assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
+PASS treat-as-public to local (same-origin): no preflight required.
 FAIL treat-as-public to private: failed preflight. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 FAIL treat-as-public to private: success. assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
 PASS treat-as-public to public: success.

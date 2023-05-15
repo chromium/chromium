@@ -73,7 +73,7 @@ static bool IsValidColorString(const String& value) {
   if (value.length() != 7)
     return false;
   Color color;
-  return color.SetFromString(value) && !color.HasAlpha();
+  return color.SetFromString(value) && color.IsOpaque();
 }
 
 ColorInputType::ColorInputType(HTMLInputElement& element)

@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 
 #include <algorithm>
-#include <cctype>
-#include <cwctype>
 #include <ios>
 #include <limits>
 #include <memory>
@@ -19,6 +17,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -196,19 +195,20 @@ TabHoverCardBubbleView::FilenameElider::FindImageDimensions(
       base::StringPiece16(text).substr(paren_pos + 1));
 
   // Look for the image width.
-  if (!std::isdigit(it.get()))
+  if (!base::IsAsciiDigit(it.get())) {
     return std::u16string::npos;
-  while (it.Advance() && std::isdigit(it.get())) {
+  }
+  while (it.Advance() && base::IsAsciiDigit(it.get())) {
     // empty loop
   }
 
   // Look for the × character and the height.
   constexpr char16_t kMultiplicationSymbol = u'\u00D7';
   if (it.end() || it.get() != kMultiplicationSymbol || !it.Advance() ||
-      !std::isdigit(it.get())) {
+      !base::IsAsciiDigit(it.get())) {
     return std::u16string::npos;
   }
-  while (it.Advance() && std::isdigit(it.get())) {
+  while (it.Advance() && base::IsAsciiDigit(it.get())) {
     // empty loop
   }
 

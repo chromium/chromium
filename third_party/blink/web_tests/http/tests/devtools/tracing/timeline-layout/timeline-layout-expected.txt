@@ -42,6 +42,44 @@ Layout Properties:
 {
     data : {
         beginData : {
+            dirtyObjects : 3
+            frame : <string>
+            partialLayout : false
+            stackTrace : <object>
+            totalObjects : 22
+        }
+        endData : {
+            layoutRoots : [
+                {
+                    depth : 1
+                    nodeId : <number>
+                    quads : [
+                        [
+                            0
+                            0
+                            800
+                            0
+                            800
+                            600
+                            0
+                            600
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "Layout"
+}
+Text details for Layout: test://evaluations/0/timeline-layout.js:40:32
+Layout Properties:
+{
+    data : {
+        beginData : {
             dirtyObjects : 2
             frame : <string>
             partialLayout : true
@@ -63,6 +101,44 @@ Layout Properties:
                             208
                             8
                             208
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "Layout"
+}
+Text details for Layout: test://evaluations/0/timeline-layout.js:40:32
+Layout Properties:
+{
+    data : {
+        beginData : {
+            dirtyObjects : 3
+            frame : <string>
+            partialLayout : false
+            stackTrace : <object>
+            totalObjects : 22
+        }
+        endData : {
+            layoutRoots : [
+                {
+                    depth : 1
+                    nodeId : <number>
+                    quads : [
+                        [
+                            0
+                            0
+                            800
+                            0
+                            800
+                            600
+                            0
+                            600
                         ]
                     ]
                 }

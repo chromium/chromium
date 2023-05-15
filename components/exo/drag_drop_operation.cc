@@ -7,6 +7,7 @@
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -149,7 +150,7 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
     operation_->OnDragIconCaptured(scoped_bitmap.GetOutScopedBitmap());
   }
 
-  DragDropOperation* const operation_;
+  const raw_ptr<DragDropOperation, ExperimentalAsh> operation_;
   base::WeakPtrFactory<IconSurface> weak_ptr_factory_{this};
 };
 

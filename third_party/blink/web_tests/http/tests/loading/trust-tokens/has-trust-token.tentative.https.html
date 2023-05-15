@@ -10,21 +10,15 @@
 
   promise_test((t) => {
       return promise_rejects_js(t, TypeError, document.hasPrivateToken(
-        "http://not-a-secure-url.example", 'private-state-token'));
+        "http://not-a-secure-url.example"));
     },
     'hasPrivateToken requires a secure URL as its issuer argument.');
 
   promise_test((t) => {
       return promise_rejects_js(t, TypeError, document.hasPrivateToken(
-        "file:///", 'private-state-token'));
+        "file:///"));
     },
     'hasPrivateToken requires a HTTP(S) URL as its issuer argument.');
-
-  promise_test((t) => {
-      return promise_rejects_js(t, TypeError, document.hasPrivateToken(
-        "https://issuer.example/", 'some-other-token'));
-    },
-    'hasPrivateToken type must be private-state-token.');
 
   // These hasPrivateToken calls all affect global state: each call in the form
   // of hasPrivateToken(issuer) will result in |issuer| becoming associated in
@@ -39,23 +33,23 @@
           await new Promise(res => window.testRunner.clearTrustTokenState(res));
       });
 
-      let result = await document.hasPrivateToken("https://issuer.example/", 'private-state-token');
+      let result = await document.hasPrivateToken("https://issuer.example/");
       assert_false(result, "The client should not possess any private state tokens for " +
         "https://issuer.example since it has not executed an issuance operation" +
         " against that issuer.");
 
-      result = await document.hasPrivateToken("https://issuer2.example/", 'private-state-token');
+      result = await document.hasPrivateToken("https://issuer2.example/");
       assert_false(result, "The client should not possess any private state tokens for" +
         " https://issuer2.example since it has not executed an issuance " +
         "operation against that issuer.");
 
       await promise_rejects_dom(t, "OperationError", document.hasPrivateToken(
-          "https://issuer3.example/", 'private-state-token'),
+          "https://issuer3.example/"),
         "The first two hasPrivateToken operations associated this top-level" +
         " origin with the maximum number of issuers (2), so an attempt to " +
         " execute hasPrivateToken against another issuer should fail.");
 
-      result = await document.hasPrivateToken("https://issuer2.example/", 'private-state-token');
+      result = await document.hasPrivateToken("https://issuer2.example/");
       assert_false(result, "Since this top-level origin is already associated " +
         "with https://issuer2.example, subsequent hasPrivateToken operations should " +
         "not error out even though the top-level origin is at its " +
@@ -65,7 +59,7 @@
         await new Promise(res =>
           window.testRunner.clearTrustTokenState(res)
         );
-        result = await document.hasPrivateToken("https://issuer3.example/", 'private-state-token');
+        result = await document.hasPrivateToken("https://issuer3.example/");
         assert_false(result, "Since state was cleared, it should be possible to" +
           "run hasPrivateToken against more issuers.");
       }

@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -97,9 +98,13 @@ class BruschettaService : public KeyedService,
   void OnRemoveVm(base::OnceCallback<void(bool)> callback,
                   guest_os::GuestId guest_id,
                   guest_os::GuestOsRemover::Result result);
-  void OnUninstallDlc(base::OnceCallback<void(bool)> callback,
-                      guest_os::GuestId guest_id,
-                      const std::string& result);
+  void OnUninstallToolsDlc(base::OnceCallback<void(bool)> callback,
+                           guest_os::GuestId guest_id,
+                           const std::string& result);
+  void OnUninstallAllDlcs(base::OnceCallback<void(bool)> callback,
+                          guest_os::GuestId guest_id,
+                          const std::string& tools_result,
+                          const std::string& firmware_result);
 
   base::flat_map<std::string, VmRegistration> runnable_vms_;
   base::flat_map<std::string, RunningVmPolicy> running_vms_;
@@ -116,7 +121,7 @@ class BruschettaService : public KeyedService,
                           ash::ConciergeClient::VmObserver>
       vm_observer_{this};
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Must be last
   base::WeakPtrFactory<BruschettaService> weak_ptr_factory_{this};

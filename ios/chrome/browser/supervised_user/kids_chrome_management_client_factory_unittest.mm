@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
 
 #import "components/supervised_user/core/browser/kids_chrome_management_client.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 

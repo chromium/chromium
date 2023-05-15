@@ -15,8 +15,6 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -36,10 +34,6 @@ constexpr int kIconDipSize = 24;
 using AssistantDialogPlateTest = AssistantAshTestBase;
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kDarkLightMode);
-  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -83,35 +77,6 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       !initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
-}
-
-TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
-
-  ShowAssistantUi();
-
-  views::View* assistant_dialog_plate =
-      page_view()->GetViewByID(AssistantViewID::kDialogPlate);
-  views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
-      assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
-  AssistantButton* keyboard_input_toggle =
-      static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
-          AssistantViewID::kKeyboardInputToggle));
-
-  EXPECT_EQ(assistant_text_field->GetTextColor(),
-            assistant_text_field->GetColorProvider()->GetColor(
-                cros_tokens::kColorPrimaryDark));
-
-  // When dark light mode is not on, the default color is dark.
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-                             gfx::kGoogleGrey200)
-           .bitmap(),
-      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
-
-  // Avoid test teardown issues by explicitly closing the launcher.
-  CloseAssistantUi();
 }
 
 }  // namespace ash

@@ -90,6 +90,13 @@ TEST(MediaRouteTest, TestIsLocalMirroringRoute) {
   MediaRoute local_mirroring_route(kRouteId1, MediaSource(kTabSource), kSinkId,
                                    kDescription, /*is_local=*/true);
   EXPECT_TRUE(local_mirroring_route.IsLocalMirroringRoute());
+
+  MediaRoute local_route_with_mirroring_controller(
+      kRouteId1, MediaSource(kSource), kSinkId, kDescription,
+      /*is_local=*/true);
+  local_route_with_mirroring_controller.set_controller_type(
+      RouteControllerType::kMirroring);
+  EXPECT_TRUE(local_route_with_mirroring_controller.IsLocalMirroringRoute());
 }
 
 }  // namespace media_router

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
@@ -147,11 +149,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
           "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
       return false;
     }
-  } else {
-    // If Wallet sync is running even when sync the feature is off, the account
-    // Wallet feature must be on.
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kAutofillEnableAccountWalletStorage));
   }
 
   // Also don't offer upload for users that have an explicit sync passphrase.
@@ -308,6 +305,18 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
   std::string country_code = base::ToUpperASCII(user_country_code);
   return IBAN::IsIbanApplicableInCountry(user_country_code) ||
          prefs::HasSeenIban(pref_service);
+}
+
+bool IsDeviceAuthAvailable(
+    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(device_authenticator);
+  return device_authenticator->CanAuthenticateWithBiometrics() &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnablePaymentsMandatoryReauth);
+#else
+  return false;
+#endif
 }
 
 }  // namespace autofill

@@ -5,42 +5,33 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/transient_window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace views {
 class Widget;
 }  // namespace views
-
-namespace aura {
-class ScopedWindowTargeter;
-}  // namespace aura
 
 namespace ash {
 
 class SplitViewController;
 class SplitViewDividerView;
 
-// Split view divider. It passes the mouse/gesture events to SplitViewController
-// to resize the left and right windows accordingly. The divider widget should
-// always placed above its observed windows to be able to receive events.
+// Observes the windows in the split view and controls the stacking orders among
+// the split view divider and its observed windows. The divider widget should
+// always be placed above its observed windows to be able to receive events
+// unless it's being dragged.
 class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
-                                    public ::wm::ActivationChangeObserver,
                                     public ::wm::TransientWindowObserver {
  public:
-  // The distance to the divider edge in which a touch gesture will be
-  // considered as a valid event on the divider.
-  static constexpr int kDividerEdgeInsetForTouch = 8;
-
   explicit SplitViewDivider(SplitViewController* controller);
-
   SplitViewDivider(const SplitViewDivider&) = delete;
   SplitViewDivider& operator=(const SplitViewDivider&) = delete;
   ~SplitViewDivider() override;
@@ -58,55 +49,38 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // snapping animation of a window.
   void DoSpawningAnimation(int spawn_position);
 
-  // Updates |divider_widget_|'s bounds.
+  // Updates `divider_widget_`'s bounds.
   void UpdateDividerBounds();
 
   // Calculates the divider's expected bounds according to the divider's
   // position.
   gfx::Rect GetDividerBoundsInScreen(bool is_dragging);
 
-  // Sets the z-order of the `divider_widget_` to be
-  // `ui::ZOrderLevel::kFloatingUIElement` so that it is always on top which
-  // applies to tablet split view mode.
-  // TODO (b/272365643): Unify the implementation of the split view divider in
-  // the clamshell and tablet mode. The split view divider should be in the same
-  // container as the two snapped windows in the tablet mode.
-  void SetAlwaysOnTop(bool on_top);
-
-  // Stacks the `divider_widget_` to be right on top of the two observed windows
-  // with `ui::ZOrderLevel::kNormal` as the z-order which applies to clamshell
-  // mode when the feature flag `kSnapGroup` is enabled and the feature param
-  // `kAutomaticallyLockGroup` is true.
-  void StackOnTopOfTheObservedWindows();
-
   // Sets the adjustability of the divider bar. Unadjustable divider does not
   // receive event and the divider bar view is not visible. When the divider is
   // moved for the virtual keyboard, the divider will be set unadjustable.
   void SetAdjustable(bool adjustable);
-  // Gets the adjustability of the divider bar.
+
+  // Returns true if the divider bar is adjustable.
   bool IsAdjustable() const;
 
   void AddObservedWindow(aura::Window* window);
   void RemoveObservedWindow(aura::Window* window);
 
   // Called when a window tab(s) are being dragged around the workspace. The
-  // divider should be placed beneath the dragged window during dragging.
-  void OnWindowDragStarted();
+  // divider should be placed beneath the dragged window during dragging and be
+  // placed above the dragged window when drag is completed.
+  void OnWindowDragStarted(aura::Window* dragged_window);
   void OnWindowDragEnded();
-
-  bool IsWindowObserved(const aura::Window* window) const;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
-
-  // wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowStackingChanged(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
 
   // ::wm::TransientWindowObserver:
   void OnTransientChildAdded(aura::Window* window,
@@ -114,38 +88,48 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
 
-  SplitViewDividerView* divider_view_for_testing() const {
-    return divider_view_;
+  SplitViewDividerView* divider_view_for_testing() { return divider_view_; }
+  const aura::Window::Windows& observed_windows_for_testing() const {
+    return observed_windows_;
   }
 
  private:
   void CreateDividerWidget(SplitViewController* controller);
 
+  // Refreshes the stacking order of the `divider_widget_` to be right on top of
+  // the `observed_windows_` and reparents the split view divider to be on the
+  // same parent container of the above window of the `observed_windows_` while
+  // not dragging. The `divider_widget` will be temporarily stacked below the
+  // window being dragged and reparented if the window being dragged has
+  // different parent with the divider widget native window.
+  void RefreshStackingOrder();
+
   void StartObservingTransientChild(aura::Window* transient);
   void StopObservingTransientChild(aura::Window* transient);
 
-  SplitViewController* controller_;
-
-  // The window targeter that is installed on the always on top container window
-  // when the split view mode is active. It deletes itself when the split view
-  // mode is ended. Upon destruction, it restores the previous window targeter
-  // (if any) on the always on top container window.
-  std::unique_ptr<aura::ScopedWindowTargeter> split_view_window_targeter_;
+  raw_ptr<SplitViewController, ExperimentalAsh> controller_;
 
   // Split view divider widget. It's a black bar stretching from one edge of the
   // screen to the other, containing a small white drag bar in the middle. As
   // the user presses on it and drag it to left or right, the left and right
   // window will be resized accordingly.
-  views::Widget* divider_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> divider_widget_ = nullptr;
 
   // The contents view of the `divider_widget_`.
-  SplitViewDividerView* divider_view_ = nullptr;
+  raw_ptr<SplitViewDividerView, ExperimentalAsh> divider_view_ = nullptr;
 
-  // If true there is a window whose tabs are currently being dragged around.
-  bool is_dragging_window_ = false;
+  // This variable indicates the dragging state and records the window being
+  // dragged which will be used to refresh the stacking order of the
+  // `divider_widget_` to be stacked below the `dragged_window_`.
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 
-  // Tracks observed windows.
+  // The window(s) observed by the divider which will be updated upon adding or
+  // removing window.
   aura::Window::Windows observed_windows_;
+
+  // If true, skip the stacking order update. This is used to avoid recursive
+  // update when updating the stacking order.
+  bool pause_update_ = false;
 
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

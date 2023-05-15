@@ -57,7 +57,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
           .AddPermission("activeTab")
           .SetManifestKey("automation", true)
           .SetManifestKey("optional_permissions",
-                          extensions::ListBuilder().Append("storage").Build())
+                          base::Value::List().Append("storage"))
           .AddPermission("https://example.com/*")
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();

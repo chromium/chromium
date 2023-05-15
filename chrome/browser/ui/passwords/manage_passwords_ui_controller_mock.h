@@ -34,21 +34,25 @@ class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
       const std::vector<std::unique_ptr<password_manager::PasswordForm>>&());
   MOCK_CONST_METHOD0(GetCurrentInteractionStats,
                      password_manager::InteractionsStats*());
-  MOCK_METHOD0(OnBubbleShown, void());
-  MOCK_METHOD0(OnBubbleHidden, void());
-  MOCK_METHOD0(OnNoInteraction, void());
-  MOCK_METHOD0(OnNopeUpdateClicked, void());
-  MOCK_METHOD0(NeverSavePassword, void());
-  MOCK_METHOD1(UpdatePassword, void(const password_manager::PasswordForm&));
-  MOCK_METHOD2(SavePassword,
-               void(const std::u16string&, const std::u16string&));
-  MOCK_METHOD2(ChooseCredential,
-               void(const password_manager::PasswordForm&,
-                    password_manager::CredentialType));
-  MOCK_METHOD1(NavigateToPasswordManagerSettingsPage,
-               void(password_manager::ManagePasswordsReferrer));
-  MOCK_METHOD0(NavigateToChromeSignIn, void());
-  MOCK_METHOD0(OnDialogHidden, void());
+  MOCK_METHOD(void, OnBubbleShown, (), (override));
+  MOCK_METHOD(void, OnBubbleHidden, (), (override));
+  MOCK_METHOD(void, OnNoInteraction, (), (override));
+  MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
+  MOCK_METHOD(void, NeverSavePassword, (), (override));
+  MOCK_METHOD(void,
+              SavePassword,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              ChooseCredential,
+              (const password_manager::PasswordForm&,
+               password_manager::CredentialType),
+              (override));
+  MOCK_METHOD(void,
+              NavigateToPasswordManagerSettingsPage,
+              (password_manager::ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(void, OnDialogHidden, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_

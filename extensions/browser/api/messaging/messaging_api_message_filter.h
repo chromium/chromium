@@ -18,6 +18,7 @@ class RenderProcessHost;
 }
 
 namespace extensions {
+enum class ChannelType;
 struct Message;
 struct PortContext;
 struct PortId;
@@ -56,6 +57,7 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
 
   void OnOpenChannelToExtension(const PortContext& source_context,
                                 const ExtensionMsg_ExternalConnectionInfo& info,
+                                ChannelType channel_type,
                                 const std::string& channel_name,
                                 const extensions::PortId& port_id);
   void OnOpenChannelToNativeApp(const PortContext& source_context,
@@ -63,6 +65,7 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
                                 const extensions::PortId& port_id);
   void OnOpenChannelToTab(const PortContext& source_context,
                           const ExtensionMsg_TabTargetConnectionInfo& info,
+                          ChannelType channel_type,
                           const std::string& channel_name,
                           const extensions::PortId& port_id);
   void OnOpenMessagePort(const PortContext& port_context,

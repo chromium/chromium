@@ -164,7 +164,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   SetShowCloseButton(false);
   // The title isn't visible, it is set for a11y purposes and the actual visible
   // title is a custom label in the content view.
-  SetTitle(presenter_->GetSiteNameOrAppNameToDisplay());
+  SetTitle(presenter_->GetSubjectNameForDisplay());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -231,19 +231,6 @@ void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(permissions_page_view));
   AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
-}
-
-void PageInfoBubbleView::OpenAboutThisSitePage(
-    const page_info::proto::SiteInfo& info) {
-  presenter_->RecordPageInfoAction(
-      PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-  std::unique_ptr<views::View> about_this_site_page_view =
-      view_factory_->CreateAboutThisSitePageView(info);
-  about_this_site_page_view->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
-  page_container_->SwitchToPage(std::move(about_this_site_page_view));
-  AnnouncePageOpened(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER));
 }
 
 void PageInfoBubbleView::OpenAdPersonalizationPage() {

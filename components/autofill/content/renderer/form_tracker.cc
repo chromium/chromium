@@ -259,9 +259,10 @@ bool FormTracker::CanInferFormSubmitted() {
   // user has interacted with are gone, to decide if submission has occurred.
   if (!last_interacted_form_.IsNull()) {
     return !base::ranges::any_of(last_interacted_form_.GetFormControlElements(),
-                                 &form_util::IsWebElementFocusable);
+                                 &form_util::IsWebElementFocusableForAutofill);
   } else if (!last_interacted_formless_element_.IsNull())
-    return !form_util::IsWebElementFocusable(last_interacted_formless_element_);
+    return !form_util::IsWebElementFocusableForAutofill(
+        last_interacted_formless_element_);
 
   return false;
 }

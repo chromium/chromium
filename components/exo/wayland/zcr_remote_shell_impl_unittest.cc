@@ -248,7 +248,7 @@ TEST_F(WaylandRemoteShellTest, TabletTransition) {
   auto* const window = widget->GetNativeWindow();
 
   // Snap window.
-  ash::WMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
+  ash::WindowSnapWMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
   ash::WindowState::Get(window)->OnWMEvent(&event);
   shell_surface->SetSnapPrimary(chromeos::kDefaultSnapRatio);
   shell_surface->SetGeometry(gfx::Rect(0, 0, 400, 520));

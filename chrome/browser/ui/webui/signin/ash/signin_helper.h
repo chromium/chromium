@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -49,7 +50,8 @@ class SigninHelper : public GaiaAuthConsumer {
     bool is_account_addition_ = false;
     // A non-owning pointer to AccountAppsAvailability which is a KeyedService
     // and should outlive this class.
-    AccountAppsAvailability* account_apps_availability_ = nullptr;
+    raw_ptr<AccountAppsAvailability, ExperimentalAsh>
+        account_apps_availability_ = nullptr;
   };
 
   SigninHelper(
@@ -116,9 +118,11 @@ class SigninHelper : public GaiaAuthConsumer {
   // The user's refresh token fetched in `this` object.
   std::string refresh_token_;
   // A non-owning pointer to Chrome OS AccountManager.
-  account_manager::AccountManager* const account_manager_;
+  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
+      account_manager_;
   // A non-owning pointer to AccountManagerMojoService.
-  crosapi::AccountManagerMojoService* const account_manager_mojo_service_;
+  const raw_ptr<crosapi::AccountManagerMojoService, ExperimentalAsh>
+      account_manager_mojo_service_;
   // Sets the ARC availability
   // after account addition. Owned by this class.
   std::unique_ptr<ArcHelper> arc_helper_;

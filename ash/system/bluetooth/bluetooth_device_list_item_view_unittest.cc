@@ -16,6 +16,7 @@
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -139,7 +140,8 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
-  BluetoothDeviceListItemView* bluetooth_device_list_item_;
+  raw_ptr<BluetoothDeviceListItemView, ExperimentalAsh>
+      bluetooth_device_list_item_;
 };
 
 TEST_F(BluetoothDeviceListItemViewTest, HasCorrectLabel) {

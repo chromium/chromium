@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -17,6 +19,12 @@
 namespace arc {
 
 class ArcBridgeService;
+
+enum class SwapState {
+  ENABLE,
+  FORCE_ENABLE,
+  DISABLE,
+};
 
 // ARCVM vmm features manager.
 class ArcVmmManager : public KeyedService {
@@ -37,7 +45,7 @@ class ArcVmmManager : public KeyedService {
   // SetSwapState change the ARCVM vmm swap state in crosvm. When swap enabled,
   // the crosvm process will be STOP and guest memory will be moved to the
   // staging memory.
-  void SetSwapState(bool enable);
+  void SetSwapState(SwapState state);
 
   void set_user_id_hash(const std::string& user_id_hash) {
     user_id_hash_ = user_id_hash;
@@ -45,11 +53,8 @@ class ArcVmmManager : public KeyedService {
 
   static void EnsureFactoryBuilt();
 
-  ArcSystemStateObservation* system_state_observation_for_testing() {
-    return arc_system_state_observation_.get();
-  }
-
  private:
+  friend class ArcVmmManagerTest;
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
   class AcceleratorTarget;
@@ -57,7 +62,25 @@ class ArcVmmManager : public KeyedService {
   void SendSwapRequest(vm_tools::concierge::SwapOperation operation,
                        base::OnceClosure success_callback);
 
+  void SendAggressiveBalloonRequest(bool enable,
+                                    base::OnceClosure success_callback);
+
   void PostWithSwapDelay(base::OnceClosure callback);
+
+  // Called by `SendSwapRequest` and should not be called by other caller.
+  // Enable aggressive balloon and reclaim ARCVM guest memory.
+  // Shrink memory before enable swap. The function send enable swap request
+  // after shrink success.
+  void ShrinkArcVmMemoryAndEnableSwap(
+      vm_tools::concierge::SwapOperation requested_operation);
+
+  // Called by callback from `ShrinkArcVmMemoryAndEnableSwap` and should not be
+  // called by other caller. Update shrink result.
+  void SetShrinkResult(bool success);
+
+  // Log the time stamp and result of last shrink memory request.
+  absl::optional<base::Time> last_shrink_timestamp_;
+  absl::optional<bool> last_shrink_result_;
 
   // The default delay from swap enabled and swap out. Basically it's used for
   // keyboard swap. In finch, it will be replaced by the flag parameter.
@@ -70,9 +93,13 @@ class ArcVmmManager : public KeyedService {
   // flag and parameters.
   std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
 
-  std::unique_ptr<ArcSystemStateObservation> arc_system_state_observation_;
-
   std::string user_id_hash_;
+
+  base::RepeatingCallback<
+      void(ArcVmWorkingSetTrimExecutor::ResultCallback, ArcVmReclaimType, int)>
+      trim_call_;
+
+  raw_ptr<content::BrowserContext> context_ = nullptr;
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };

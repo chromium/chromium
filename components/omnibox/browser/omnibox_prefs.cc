@@ -5,21 +5,46 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 
 #include "base/check.h"
-#include "base/metrics/sparse_histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 namespace omnibox {
+namespace {
 
-const char kToggleSuggestionGroupIdOffHistogram[] =
-    "Omnibox.ToggleSuggestionGroupId.Off";
-const char kToggleSuggestionGroupIdOnHistogram[] =
-    "Omnibox.ToggleSuggestionGroupId.On";
+// Returns an equivalent omnibox::UMAGroupId value for omnibox::GroupId.
+constexpr UMAGroupId ToUMAGroupId(GroupId group_id) {
+  switch (group_id) {
+    case GROUP_INVALID:
+      return UMAGroupId::kInvalid;
+    case GROUP_PREVIOUS_SEARCH_RELATED:
+      return UMAGroupId::kPreviousSearchRelated;
+    case GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS:
+      return UMAGroupId::kPreviousSearchRelatedEntityChips;
+    case GROUP_TRENDS:
+      return UMAGroupId::kTrends;
+    case GROUP_TRENDS_ENTITY_CHIPS:
+      return UMAGroupId::kTrendsEntityChips;
+    case GROUP_RELATED_QUERIES:
+      return UMAGroupId::kRelatedQueries;
+    case GROUP_VISITED_DOC_RELATED:
+      return UMAGroupId::kVisitedDocRelated;
+    default:
+      return UMAGroupId::kUnknown;
+  }
+}
+
+}  // namespace
+
+const char kGroupIdToggledOffHistogram[] = "Omnibox.GroupId.ToggledOff";
+const char kGroupIdToggledOnHistogram[] = "Omnibox.GroupId.ToggledOn";
 
 // A client-side toggle for document (Drive) suggestions.
 // Also gated by a feature and server-side Admin Panel controls.
@@ -86,12 +111,11 @@ void SetUserPreferenceForSuggestionGroupVisibility(
   ScopedDictPrefUpdate update(prefs, kSuggestionGroupVisibility);
   update->Set(base::NumberToString(suggestion_group_id), visibility);
 
-  base::SparseHistogram::FactoryGet(
+  base::UmaHistogramEnumeration(
       visibility == SuggestionGroupVisibility::SHOWN
-          ? kToggleSuggestionGroupIdOnHistogram
-          : kToggleSuggestionGroupIdOffHistogram,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(suggestion_group_id);
+          ? kGroupIdToggledOnHistogram
+          : kGroupIdToggledOffHistogram,
+      ToUMAGroupId(GroupIdForNumber(suggestion_group_id)));
 }
 
 void SetUserPreferenceForZeroSuggestCachedResponse(

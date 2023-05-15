@@ -136,17 +136,17 @@ AggregatableTriggerData::FromJSON(base::Value& value) {
   }
 
   auto key_piece = ParseKeyPiece(*dict);
-  if (!key_piece.has_value())
+  if (!key_piece.has_value()) {
     return base::unexpected(key_piece.error());
-
+  }
   auto source_keys = ParseSourceKeys(*dict);
-  if (!source_keys.has_value())
+  if (!source_keys.has_value()) {
     return base::unexpected(source_keys.error());
-
+  }
   auto filters = FilterPair::FromJSON(*dict);
-  if (!filters.has_value())
+  if (!filters.has_value()) {
     return base::unexpected(filters.error());
-
+  }
   return AggregatableTriggerData(*key_piece, std::move(*source_keys),
                                  std::move(*filters));
 }

@@ -6,9 +6,9 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

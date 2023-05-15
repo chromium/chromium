@@ -14,6 +14,7 @@ source_set("web_state") {
     "//ios/web/common",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",

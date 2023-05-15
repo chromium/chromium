@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
 #include "content/browser/about_url_loader_factory.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -71,6 +72,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_info.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/http_content_disposition.h"
@@ -83,6 +85,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -325,6 +328,18 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
 
+  new_request->attribution_reporting_support = AttributionManager::GetSupport();
+
+  new_request->attribution_reporting_eligibility =
+      request_info.begin_params->impression.has_value()
+          ? network::mojom::AttributionReportingEligibility::kNavigationSource
+          : network::mojom::AttributionReportingEligibility::kUnset;
+
+  if (request_info.begin_params->impression.has_value()) {
+    new_request->attribution_reporting_runtime_features =
+        request_info.begin_params->impression->runtime_features;
+  }
+
   return new_request;
 }
 
@@ -525,7 +540,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   // Set up an interceptor for prefetch.
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_);
+          frame_tree_node_id_, request_info_->previous_render_frame_host_id);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }
@@ -671,9 +686,13 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
-    bool reset_subresource_loader_params) {
+    bool reset_subresource_loader_params,
+    const net::LoadTimingInfo& timing_info) {
   if (reset_subresource_loader_params)
     subresource_loader_params_.reset();
+
+  intercepting_worker_start_time_ = timing_info.service_worker_start_time;
+  intercepting_worker_ready_time_ = timing_info.service_worker_ready_time;
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
@@ -826,6 +845,13 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
 
   response_body_ = std::move(response_body);
   received_response_ = true;
+
+  if (!intercepting_worker_start_time_.is_null()) {
+    head_->load_timing.service_worker_start_time =
+        intercepting_worker_start_time_;
+    head_->load_timing.service_worker_ready_time =
+        intercepting_worker_ready_time_;
+  }
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new

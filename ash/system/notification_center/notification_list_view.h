@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -250,12 +251,13 @@ class ASH_EXPORT NotificationListView
   // Updates the state between each Clear All animation phase.
   void UpdateClearAllAnimation();
 
-  NotificationCenterView* const message_center_view_;
+  const raw_ptr<NotificationCenterView, ExperimentalAsh> message_center_view_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Non-null during State::EXPAND_OR_COLLAPSE. Keeps track of the
   // MessageViewContainer that is animating.
-  MessageViewContainer* expand_or_collapsing_container_ = nullptr;
+  raw_ptr<MessageViewContainer, ExperimentalAsh>
+      expand_or_collapsing_container_ = nullptr;
 
   // If true, ChildPreferredSizeChanged() will be ignored. This is used in
   // CollapseAllNotifications() to prevent PreferredSizeChanged() triggered

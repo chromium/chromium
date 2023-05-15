@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -65,13 +66,14 @@ class TrashBaseTest : public testing::Test {
   // DriveIntegrationService tied to the TestingProfile.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  drive::DriveIntegrationService* integration_service_ = nullptr;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
-  crostini::CrostiniManager* crostini_manager_;
+  raw_ptr<crostini::CrostiniManager, ExperimentalAsh> crostini_manager_;
   file_manager::FakeDiskMountManager disk_mount_manager_;
 
   base::ScopedTempDir temp_dir_;

@@ -512,7 +512,7 @@ public class AwSettings {
      * See {@link android.webkit.WebSettings#setNeedInitialFocus}.
      */
     public void setShouldFocusFirstNode(boolean flag) {
-        if (TRACE) Log.i(TAG, "setNeedInitialFocusNode=" + flag);
+        if (TRACE) Log.i(TAG, "setNeedInitialFocus=" + flag);
         synchronized (mAwSettingsLock) {
             mShouldFocusFirstNode = flag;
         }
@@ -1134,10 +1134,10 @@ public class AwSettings {
     }
 
     /**
-     * See {@link android.webkit.WebSettings#setImagesEnabled}.
+     * See {@link android.webkit.WebSettings#setBlockNetworkImage}.
      */
     public void setImagesEnabled(boolean flag) {
-        if (TRACE) Log.i(TAG, "setBlockNetworkImage=" + flag);
+        if (TRACE) Log.i(TAG, "setBlockNetworkImage=" + !flag);
         synchronized (mAwSettingsLock) {
             if (mImagesEnabled != flag) {
                 mImagesEnabled = flag;
@@ -1147,7 +1147,7 @@ public class AwSettings {
     }
 
     /**
-     * See {@link android.webkit.WebSettings#getImagesEnabled}.
+     * See {@link android.webkit.WebSettings#getBlockNetworkImage}.
      */
     public boolean getImagesEnabled() {
         synchronized (mAwSettingsLock) {

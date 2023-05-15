@@ -26,7 +26,7 @@ class ScriptPromiseResolver;
 // in their web applications. This feature is still
 // under development, and is not part of the standard. It can be enabled
 // by passing --enable-blink-features=EyeDropperAPI. See
-// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/EyeDropper/explainer.md
+// https://github.com/WICG/eyedropper-api/blob/main/README.md
 // for more details.
 class EyeDropper final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

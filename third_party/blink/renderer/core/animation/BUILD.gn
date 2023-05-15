@@ -79,6 +79,8 @@ blink_core_sources("animation") {
     "css_clip_interpolation_type.h",
     "css_color_interpolation_type.cc",
     "css_color_interpolation_type.h",
+    "css_content_visibility_interpolation_type.cc",
+    "css_content_visibility_interpolation_type.h",
     "css_custom_length_interpolation_type.cc",
     "css_custom_length_interpolation_type.h",
     "css_custom_list_interpolation_type.cc",

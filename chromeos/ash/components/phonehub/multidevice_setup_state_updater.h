@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
@@ -50,9 +51,11 @@ class MultideviceSetupStateUpdater
   void EnablePhoneHubIfAwaitingVerifiedHost();
   void UpdateIsAwaitingVerifiedHost();
 
-  PrefService* pref_service_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<MultideviceFeatureAccessManager, ExperimentalAsh>
+      multidevice_feature_access_manager_;
   MultideviceFeatureAccessManager::AccessStatus notification_access_status_;
   MultideviceFeatureAccessManager::AccessStatus camera_roll_access_status_;
 };

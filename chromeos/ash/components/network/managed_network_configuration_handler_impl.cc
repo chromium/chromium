@@ -14,11 +14,11 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
@@ -464,7 +464,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       }
     }
   } else {
-    guid = base::GenerateGUID();
+    guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
 
   base::Value::Dict shill_dictionary =

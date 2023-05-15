@@ -18,6 +18,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -29,6 +30,29 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+namespace {
+
+using base::TimeTicks;
+
+std::string GetOriginName(Profile* profile, const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    const auto* extension_registry =
+        extensions::ExtensionRegistry::Get(profile);
+    CHECK(extension_registry);
+    const extensions::Extension* extension =
+        extension_registry->GetExtensionById(
+            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+    // The extension must be installed if we are generating the name.
+    CHECK(extension);
+    return extension->name();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
 HidConnectionTracker::HidConnectionTracker(Profile* profile)
     : profile_(profile) {}
 
@@ -37,15 +61,22 @@ HidConnectionTracker::~HidConnectionTracker() {
 }
 
 void HidConnectionTracker::IncrementConnectionCount(const url::Origin& origin) {
-  CHECK_GE(origins_[origin], 0);
-  origins_[origin]++;
+  bool to_stage_profile = origins_.empty();
+  auto& state = origins_[origin];
+
+  CHECK_GE(state.count, 0);
+  if (state.count == 0) {
+    state.name = GetOriginName(profile_, origin);
+  }
+  state.count++;
+  state.timestamp = TimeTicks::Now();
   total_connection_count_++;
 
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {
     return;
   }
-  if (total_connection_count_ == 1) {
+  if (to_stage_profile) {
     hid_system_tray_icon->StageProfile(profile_);
   } else {
     hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
@@ -55,24 +86,26 @@ void HidConnectionTracker::IncrementConnectionCount(const url::Origin& origin) {
 void HidConnectionTracker::DecrementConnectionCount(const url::Origin& origin) {
   auto it = origins_.find(origin);
   CHECK(it != origins_.end());
-  auto& connection_count = it->second;
-  CHECK_GT(connection_count, 0);
 
-  connection_count--;
+  auto& state = it->second;
+  CHECK_GT(state.count, 0);
+  state.count--;
+  state.timestamp = TimeTicks::Now();
   total_connection_count_--;
-  if (connection_count == 0) {
-    origins_.erase(it);
+  if (state.count == 0) {
+    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&HidConnectionTracker::CleanUpOrigin,
+                           weak_factory_.GetWeakPtr(), origin, state.timestamp),
+            kOriginInactiveTime);
   }
 
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {
     return;
   }
-  if (total_connection_count_ == 0) {
-    hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/false);
-  } else {
-    hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
-  }
+  hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
 }
 
 void HidConnectionTracker::ShowContentSettingsExceptions() {
@@ -91,6 +124,30 @@ void HidConnectionTracker::CleanUp() {
     auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
     if (hid_system_tray_icon) {
       hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
+    }
+  }
+}
+
+void HidConnectionTracker::CleanUpOrigin(const url::Origin& origin,
+                                         const TimeTicks& timestamp) {
+  auto it = origins_.find(origin);
+  if (it == origins_.end()) {
+    // This can happen if the connection bounces within 1 microsecond, which is
+    // the base unit of base::TimeTicks. The first CleanUpOrigin call will clear
+    // the origin because it sees the timestamp as the same.
+    return;
+  }
+  auto& state = it->second;
+  if (state.count == 0 && state.timestamp == timestamp) {
+    origins_.erase(it);
+    auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
+    if (!hid_system_tray_icon) {
+      return;
+    }
+    if (origins_.empty()) {
+      hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
+    } else {
+      hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
     }
   }
 }

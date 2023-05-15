@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -107,7 +108,7 @@ class ArcPowerBridge::WakeLockRequestor {
   const device::mojom::WakeLockType type_;
 
   // The WakeLockProvider implementation we use to request WakeLocks. Not owned.
-  device::mojom::WakeLockProvider* const provider_;
+  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
 
   // Number of outstanding Android requests.
   int num_android_requests_ = 0;
@@ -294,6 +295,20 @@ void ArcPowerBridge::PowerChanged(
   power_instance->PowerSupplyInfoChanged();
 }
 
+void ArcPowerBridge::BatterySaverModeStateChanged(
+    const power_manager::BatterySaverModeState& state) {
+  mojom::PowerInstance* power_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->power(), OnBatterySaverModeStateChanged);
+  if (!power_instance) {
+    return;
+  }
+
+  mojom::BatterySaverModeStatePtr mojo_state =
+      mojom::BatterySaverModeState::New();
+  mojo_state->active = state.enabled();
+  power_instance->OnBatterySaverModeStateChanged(std::move(mojo_state));
+}
+
 void ArcPowerBridge::OnPowerStateChanged(
     chromeos::DisplayPowerState power_state) {
   if (android_idle_control_disabled_)
@@ -403,6 +418,27 @@ void ArcPowerBridge::OnPreAnr(mojom::AnrType type) {
 
 void ArcPowerBridge::OnAnrRecoveryFailed(::arc::mojom::AnrType type) {
   base::UmaHistogramEnumeration("Arc.Anr.RecoveryFailed", type);
+}
+
+void ArcPowerBridge::GetBatterySaverModeState(
+    GetBatterySaverModeStateCallback callback) {
+  chromeos::PowerManagerClient::Get()->GetBatterySaverModeState(
+      base::BindOnce(&ArcPowerBridge::OnBatterySaverModeStateReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcPowerBridge::OnBatterySaverModeStateReceived(
+    GetBatterySaverModeStateCallback callback,
+    absl::optional<power_manager::BatterySaverModeState> state) {
+  mojom::BatterySaverModeStatePtr mojo_state =
+      mojom::BatterySaverModeState::New();
+  if (state.has_value()) {
+    mojo_state->active = state->enabled();
+  } else {
+    LOG(ERROR)
+        << "PowerManagerClient::GetBatterySaverModeState reports an error";
+  }
+  std::move(callback).Run(std::move(mojo_state));
 }
 
 void ArcPowerBridge::UpdateAndroidScreenBrightness(double percent) {

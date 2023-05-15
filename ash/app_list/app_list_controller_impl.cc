@@ -64,6 +64,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -98,6 +99,9 @@ constexpr float kOverviewFadeAnimationScale = 0.92f;
 // fading transitions.
 constexpr base::TimeDelta kOverviewFadeAnimationDuration =
     base::Milliseconds(350);
+
+// The app id for the settings app used for testing quick app access.
+constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 
 // Update layer animation settings for launcher scale and opacity animation that
 // runs on overview mode change.
@@ -156,7 +160,8 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
   }
 
   base::OnceClosure callback_;
-  ui::LayerAnimator* animator_;  // Owned by the layer that is animating.
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh>
+      animator_;  // Owned by the layer that is animating.
   base::CallbackListSubscription subscription_;
 };
 
@@ -345,11 +350,13 @@ void AppListControllerImpl::OpenSearchBoxIphUrl() {
   client_->OpenSearchBoxIphUrl();
 }
 
-void AppListControllerImpl::SetActiveModel(int profile_id,
-                                           AppListModel* model,
-                                           SearchModel* search_model) {
+void AppListControllerImpl::SetActiveModel(
+    int profile_id,
+    AppListModel* model,
+    SearchModel* search_model,
+    QuickAppAccessModel* quick_app_access_model) {
   profile_id_ = profile_id;
-  model_provider_->SetActiveModel(model, search_model);
+  model_provider_->SetActiveModel(model, search_model, quick_app_access_model);
   UpdateSearchBoxUiVisibilities();
 }
 
@@ -433,6 +440,10 @@ void AppListControllerImpl::OnSessionStateChanged(
     if (in_clamshell)
       DismissAppList();
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kQuickAppAccessTestUI)) {
+    SetHomeButtonQuickApp(kOsSettingsAppId);
   }
 
   if (in_clamshell)
@@ -1206,9 +1217,6 @@ void AppListControllerImpl::InvokeSearchResultAction(
 void AppListControllerImpl::ViewShown(int64_t display_id) {
   UpdateSearchBoxUiVisibilities();
 
-  if (client_)
-    client_->ViewShown(display_id);
-
   // Note that IsHomeScreenVisible() might still return false at this point, as
   // the home screen visibility takes into account whether the app list view is
   // obscured by an app window, or overview UI. This method gets called when the
@@ -1227,9 +1235,6 @@ bool AppListControllerImpl::AppListTargetVisibility() const {
 }
 
 void AppListControllerImpl::ViewClosing() {
-  if (client_)
-    client_->ViewClosing();
-
   split_view_observation_.Reset();
 }
 
@@ -1249,8 +1254,7 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
                                     is_tablet_mode, last_show_timestamp_);
       break;
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
-      // TODO(b/266734005): Implement user action to record launching from quick
-      // app access.
+      // Metrics for quick app launch already recorded at RecordApplaunched().
       break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromSearchBox:

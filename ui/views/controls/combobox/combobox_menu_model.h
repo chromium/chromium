@@ -42,6 +42,7 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
 
  protected:
   ui::ComboboxModel* GetModel() const { return model_; }
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
 
  private:
   bool UseCheckmarks() const;
@@ -55,7 +56,6 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   std::u16string GetLabelAt(size_t index) const override;
   std::u16string GetSecondaryLabelAt(size_t index) const override;
   bool IsItemDynamicAt(size_t index) const override;
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
   bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;

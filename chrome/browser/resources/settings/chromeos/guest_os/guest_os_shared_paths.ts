@@ -25,10 +25,18 @@ interface PathObject {
   pathDisplayText: string;
 }
 
+export interface SettingsGuestOsSharedPathsElement {
+  $: {
+    guestOsInstructionsRemove: HTMLElement,
+    guestOsList: HTMLElement,
+    guestOsListEmpty: HTMLElement,
+  };
+}
+
 const SettingsGuestOsSharedPathsElementBase = I18nMixin(PolymerElement);
 
 /** @polymer */
-class SettingsGuestOsSharedPathsElement extends
+export class SettingsGuestOsSharedPathsElement extends
     SettingsGuestOsSharedPathsElementBase {
   static get is() {
     return 'settings-guest-os-shared-paths';
@@ -75,6 +83,7 @@ class SettingsGuestOsSharedPathsElement extends
     ];
   }
 
+  prefs: {[key: string]: any};
   guestOsType: GuestOsType;
   private browserProxy_: GuestOsBrowserProxy;
   private sharedPaths_: PathObject[];

@@ -6,272 +6,156 @@ package org.chromium.chrome.browser.app.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.robolectric.Shadows.shadowOf;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-
-import androidx.annotation.Nullable;
-
-import com.google.common.collect.ImmutableSet;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowApplication;
 
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
-import org.chromium.chrome.browser.history.HistoryActivity;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
-import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettings;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
-import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.omnibox.action.OmniboxActionType;
-import org.chromium.components.omnibox.action.OmniboxPedal;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.TestActivity;
 
-import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Tests for {@link ActionChipsDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowLog.class, ShadowLooper.class,
-                ActionChipsDelegateImplUnitTest.ShadowPasswordManagerLauncher.class})
 public class ActionChipsDelegateImplUnitTest {
-    /** Shadow PasswordManagerLauncher, used to capture Password Manager launch events. */
-    @Implements(PasswordManagerLauncher.class)
-    public static class ShadowPasswordManagerLauncher {
-        public static boolean sPasswordSettingsRequested;
-
-        @Implementation
-        public static void showPasswordSettings(Activity activity, int referrer,
-                ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-                boolean managePasskeys) {
-            sPasswordSettingsRequested = true;
-        }
-
-        public static void reset() {
-            sPasswordSettingsRequested = false;
-        }
-    }
-
-    /** List of all supported OmniboxPedalTypes. */
-    public static final Set<Integer> SUPPORTED_PEDALS = ImmutableSet.of(
-            OmniboxPedalType.CLEAR_BROWSING_DATA, OmniboxPedalType.MANAGE_PASSWORDS,
-            OmniboxPedalType.UPDATE_CREDIT_CARD, OmniboxPedalType.LAUNCH_INCOGNITO,
-            OmniboxPedalType.RUN_CHROME_SAFETY_CHECK, OmniboxPedalType.MANAGE_SITE_SETTINGS,
-            OmniboxPedalType.MANAGE_CHROME_SETTINGS, OmniboxPedalType.VIEW_CHROME_HISTORY,
-            OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
-
-    /** List of all supported OmniboxActionTypes. */
-    public static final Set<Integer> SUPPORTED_ACTIONS =
-            ImmutableSet.of(OmniboxActionType.PEDAL, OmniboxActionType.HISTORY_CLUSTERS);
-
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock HistoryClustersCoordinator mHistoryClustersCoordinator;
-
-    private ShadowActivity mShadowActivity;
-    private ShadowLooper mShadowLooper;
-    private OneshotSupplierImpl<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
-    private ActionChipsDelegate mDelegate;
+    private @Mock Consumer<String> mMockOpenUrl;
+    private @Mock Consumer<String> mMockOpenHistoryClustersUi;
+    private @Mock Runnable mMockOpenIncognitoPage;
+    private @Mock Runnable mMockOpenPasswordSettings;
+    private @Mock SettingsLauncher mMockSettingsLauncher;
+    private @Mock Tab mTab;
+    private Context mContext;
+    private OmniboxActionDelegate mDelegate;
 
     @Before
     public void setUp() {
-        var activity = Robolectric.buildActivity(Activity.class).get();
-        mShadowActivity = shadowOf(activity);
-        mShadowLooper = ShadowLooper.shadowMainLooper();
-
-        mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
-
-        mDelegate =
-                new ActionChipsDelegateImpl(activity, mHistoryClustersCoordinatorSupplier, null);
+        mContext = ContextUtils.getApplicationContext();
+        mDelegate = new ActionChipsDelegateImpl(mContext,
+                ()
+                        -> mTab,
+                mMockSettingsLauncher, mMockOpenUrl, mMockOpenIncognitoPage,
+                mMockOpenPasswordSettings, mMockOpenHistoryClustersUi);
     }
 
     @After
     public void cleanUp() {
-        // Other than tests that verify this value (and reset it to its original state) no other
-        // tests should ever trigger PasswordManager.
-        assertFalse(ShadowPasswordManagerLauncher.sPasswordSettingsRequested);
-        // Other than tests that verify an intent being started (and remove it from the queue) no
-        // other tests should ever invoke intents.
-        assertNull(mShadowActivity.getNextStartedActivity());
-        // Other than tests that interact with mHistoryClustersCoordinator (and confirm appropriate
-        // calls to be made) no other tests should interact with this instance.
-        verifyNoMoreInteractions(mHistoryClustersCoordinator);
-    }
-
-    /**
-     * Confirm that an intent has been emitted to start a particular Fragment of the Search
-     * activity.
-     *
-     * @param fragmentClass When specified, expect particular settings fragment to be requested.
-     */
-    private void checkSettingsActivityFragmentStarted(@Nullable Class fragmentClass) {
-        var intent = mShadowActivity.getNextStartedActivity();
-        assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
-        assertEquals(fragmentClass == null ? null : fragmentClass.getName(),
-                intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT));
-    }
-
-    /**
-     * Verify that a histogram recording the use of particular type of OmniboxPedal has been
-     * recorded.
-     *
-     * @param type The type of Pedal to check for.
-     */
-    private void checkOmniboxPedalUsageRecorded(@OmniboxPedalType int type) {
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Omnibox.SuggestionUsed.Pedal", type));
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting("Omnibox.SuggestionUsed.Pedal"));
-    }
-
-    /**
-     * Create Omnibox Pedal action of a given type.
-     */
-    private OmniboxAction buildPedal(@OmniboxPedalType int type) {
-        return new OmniboxPedal("hint", type);
-    }
-
-    /**
-     * Create HistoryCluster Action with a supplied query.
-     */
-    private OmniboxAction buildHistoryClustersAction(String query) {
-        return new HistoryClustersAction("hint", query);
+        verifyNoMoreInteractions(mMockOpenIncognitoPage);
+        verifyNoMoreInteractions(mMockOpenPasswordSettings);
+        verifyNoMoreInteractions(mMockOpenHistoryClustersUi);
+        verifyNoMoreInteractions(mMockOpenUrl);
     }
 
     @Test
-    public void executePedal_manageChromeSettings() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_CHROME_SETTINGS));
-        checkSettingsActivityFragmentStarted(null);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+    public void openHistoryClustersPage() {
+        mDelegate.openHistoryClustersPage("query");
+        verify(mMockOpenHistoryClustersUi, times(1)).accept("query");
     }
 
     @Test
-    public void executePedal_clearBrowsingData() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.CLEAR_BROWSING_DATA));
-        checkSettingsActivityFragmentStarted(ClearBrowsingDataTabsFragment.class);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.CLEAR_BROWSING_DATA);
+    public void openIncognitoTab() {
+        mDelegate.openIncognitoTab();
+        verify(mMockOpenIncognitoPage, times(1)).run();
     }
 
     @Test
-    public void executePedal_managePasswords() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_PASSWORDS));
-        assertTrue(ShadowPasswordManagerLauncher.sPasswordSettingsRequested);
-        ShadowPasswordManagerLauncher.reset();
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_PASSWORDS);
+    public void openPasswordManager() {
+        mDelegate.openPasswordManager();
+        verify(mMockOpenPasswordSettings, times(1)).run();
     }
 
     @Test
-    public void executePedal_updateCreditCard() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.UPDATE_CREDIT_CARD));
-        checkSettingsActivityFragmentStarted(AutofillPaymentMethodsFragment.class);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.UPDATE_CREDIT_CARD);
+    public void openSettingsPage() {
+        mDelegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
+        verify(mMockSettingsLauncher, times(1))
+                .launchSettingsActivity(mContext, SettingsFragment.ACCESSIBILITY);
     }
 
     @Test
-    public void executePedal_runChromeSafetyCheck() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK));
-        checkSettingsActivityFragmentStarted(SafetyCheckSettingsFragment.class);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+    public void isIncognito() {
+        doReturn(true).when(mTab).isIncognito();
+        assertTrue(mDelegate.isIncognito());
+
+        doReturn(false).when(mTab).isIncognito();
+        assertFalse(mDelegate.isIncognito());
     }
 
     @Test
-    public void executePedal_manageSiteSettings() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_SITE_SETTINGS));
-        checkSettingsActivityFragmentStarted(SiteSettings.class);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_SITE_SETTINGS);
+    public void loadPageInCurrentTab_useCurrentInteractableTab() {
+        doReturn(true).when(mTab).isUserInteractable();
+        mDelegate.loadPageInCurrentTab("url");
+
+        verify(mTab, times(1)).isUserInteractable();
+        var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
+        assertEquals("url", loadParamsCaptor.getValue().getUrl());
+        verifyNoMoreInteractions(mTab);
     }
 
     @Test
-    public void executePedal_manageChromeAccessibility() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY));
-        checkSettingsActivityFragmentStarted(AccessibilitySettings.class);
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+    public void loadPageInCurrentTab_openNewTabIfNonInteractable() {
+        doReturn(false).when(mTab).isUserInteractable();
+        mDelegate.loadPageInCurrentTab("url");
+
+        verify(mTab, times(1)).isUserInteractable();
+        verifyNoMoreInteractions(mTab);
+        verify(mMockOpenUrl).accept("url");
     }
 
     @Test
-    public void executePedal_launchIncognito_fromCustomActivity() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.LAUNCH_INCOGNITO));
-
-        var intent = mShadowActivity.getNextStartedActivity();
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
-
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.LAUNCH_INCOGNITO);
+    public void startActivity_targetSelf() {
+        ShadowApplication.getInstance().checkActivities(true);
+        Intent i = new Intent();
+        i.setClass(mContext, TestActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertTrue(IntentUtils.intentTargetsSelf(mContext, i));
+        assertTrue(mDelegate.startActivity(i));
+        // Added during intent invocation.
+        assertTrue(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
     }
 
     @Test
-    public void executePedal_viewChromeHistory_fromCustomActivity() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
-
-        var intent = mShadowActivity.getNextStartedActivity();
-        assertEquals(HistoryActivity.class.getName(), intent.getComponent().getClassName());
-        assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_INCOGNITO_MODE, true));
-
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.VIEW_CHROME_HISTORY);
+    public void startActivity_targetOther() {
+        // Do not arm the package resolution.
+        ShadowApplication.getInstance().checkActivities(false);
+        Intent i = new Intent("some magic here");
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertFalse(IntentUtils.intentTargetsSelf(mContext, i));
+        assertTrue(mDelegate.startActivity(i));
+        // Might be added during intent invocation.
+        assertFalse(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
     }
 
     @Test
-    public void executePedal_playChromeDinoGame_fromCustomActivity() {
-        mDelegate.execute(buildPedal(OmniboxPedalType.PLAY_CHROME_DINO_GAME));
-
-        var intent = mShadowActivity.getNextStartedActivity();
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        assertEquals(UrlConstants.CHROME_DINO_URL, intent.getDataString());
-        assertTrue(
-                intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
-
-        checkOmniboxPedalUsageRecorded(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
-    }
-
-    @Test
-    public void executeNonPedal_historyClusters_noCoordinator() {
-        String testJourneyName = "example journey name";
-        mDelegate.execute(buildHistoryClustersAction(testJourneyName));
-        verifyNoMoreInteractions(mHistoryClustersCoordinator);
-    }
-
-    @Test
-    public void executeNonPedal_historyClusters_withCoordinator() {
-        String testJourneyName = "example journey name";
-
-        mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
-        mShadowLooper.runToEndOfTasks();
-
-        mDelegate.execute(buildHistoryClustersAction(testJourneyName));
-        verify(mHistoryClustersCoordinator).openHistoryClustersUi(testJourneyName);
+    public void startActivity_failure() {
+        ShadowApplication.getInstance().checkActivities(true);
+        Intent i = new Intent("some magic here");
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertFalse(mDelegate.startActivity(i));
     }
 }

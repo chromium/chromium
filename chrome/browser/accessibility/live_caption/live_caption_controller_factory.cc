@@ -60,7 +60,8 @@ KeyedService* LiveCaptionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new LiveCaptionController(
       Profile::FromBrowserContext(context)->GetPrefs(),
-      g_browser_process->local_state(), context);
+      g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale(), context);
 }
 
 }  // namespace captions

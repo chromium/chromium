@@ -2135,11 +2135,20 @@ void TemplateURLService::UpdateProvidersCreatedByPolicy(
         continue;
       }
 
-      TemplateURLID id = template_url->id();
-      RemoveFromMaps(template_url);
-      i = template_urls->erase(i);
-      if (web_data_service_)
-        web_data_service_->RemoveKeyword(id);
+      // If the previous default search provider was set as a recommended policy
+      // and the new provider is not set by policy, keep the previous provider
+      // in the database. This allows the recommended provider to remain in the
+      // list if the user switches to a different provider.
+      if (template_url->enforced_by_policy() || default_from_prefs) {
+        TemplateURLID id = template_url->id();
+        RemoveFromMaps(template_url);
+        i = template_urls->erase(i);
+        if (web_data_service_) {
+          web_data_service_->RemoveKeyword(id);
+        }
+      } else {
+        ++i;
+      }
     } else {
       ++i;
     }
@@ -2154,6 +2163,7 @@ void TemplateURLService::UpdateProvidersCreatedByPolicy(
     if (new_data.sync_guid.empty())
       new_data.GenerateSyncGUID();
     new_data.created_by_policy = true;
+    new_data.enforced_by_policy = is_mandatory;
     new_data.safe_for_autoreplace = false;
     new_data.is_active = TemplateURLData::ActiveStatus::kTrue;
     std::unique_ptr<TemplateURL> new_dse_ptr =

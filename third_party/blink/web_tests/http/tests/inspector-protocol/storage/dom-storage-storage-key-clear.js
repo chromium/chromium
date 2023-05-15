@@ -2,6 +2,9 @@
   const {dp, session} = await testRunner.startBlank(
       `Tests that clearing data works for DOMStorage with storageKey\n`);
 
+  // Clear storage to prevent leaking from other tests.
+  await session.evaluate('window.localStorage.clear()')
+
   await dp.DOMStorage.enable();
   await dp.Page.enable();
 

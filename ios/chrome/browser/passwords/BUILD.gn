@@ -36,6 +36,7 @@ source_set("passwords") {
   ]
   deps = [
     ":infobar_delegates",
+    ":password_checkup_metrics",
     ":store_factory",
     "//base",
     "//base:i18n",
@@ -68,17 +69,17 @@ source_set("passwords") {
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/autofill/bottom_sheet",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/safe_browsing:features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
@@ -149,8 +150,8 @@ source_set("store_factory") {
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
     "//components/sync",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/webdata_services",
@@ -188,18 +189,45 @@ source_set("public") {
   deps = [ "//base" ]
 }
 
+source_set("password_checkup_metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_metrics.h",
+    "password_checkup_metrics.mm",
+  ]
+  public_deps = [ ":password_checkup_utils" ]
+  deps = [ "//base" ]
+}
+
+source_set("password_checkup_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_utils.h",
+    "password_checkup_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_password_check_manager_unittest.mm",
     "ios_chrome_password_manager_client_unittest.mm",
+    "password_checkup_utils_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
     "password_tab_helper_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
+    ":password_checkup_metrics",
     ":passwords",
     "//base",
     "//base/test:test_support",
@@ -222,10 +250,13 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//ios/chrome/browser/autofill",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/credential_provider_promo:features",
-    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/web:web_internal",
@@ -260,6 +291,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/passwords/bottom_sheet:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -289,7 +321,7 @@ source_set("eg_app_support+eg2") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/web/public",

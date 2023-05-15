@@ -5,11 +5,8 @@
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -26,6 +23,7 @@
   __weak id<FirstRunScreenDelegate> _delegate;
   // Coordinator to display the tangible sync view.
   TangibleSyncCoordinator* _tangibleSyncCoordinator;
+  BOOL _firstRun;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -33,6 +31,7 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
                                         delegate:(id<FirstRunScreenDelegate>)
                                                      delegate {
   self = [super initWithBaseViewController:navigationController
@@ -40,6 +39,7 @@
   if (self) {
     _baseNavigationController = navigationController;
     _delegate = delegate;
+    _firstRun = firstRun;
   }
   return self;
 }
@@ -61,22 +61,18 @@
       SyncServiceFactory::GetForBrowserState(browserState);
 
   BOOL shouldSkipSyncScreen =
-      syncService->GetDisableReasons().Has(
+      syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      syncSetupService->IsFirstSetupComplete();
+      syncSetupService->IsInitialSyncFeatureSetupComplete();
   if (shouldSkipSyncScreen) {
     // Don't show sync screen if sync is disabled.
     [_delegate screenWillFinishPresenting];
     return;
   }
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  AppState* appState = sceneState.appState;
-  // This screen can only be used for First Run.
-  DCHECK(appState.initStage == InitStageFirstRun);
   _tangibleSyncCoordinator = [[TangibleSyncCoordinator alloc]
-      initFirstRunWithBaseNavigationController:self.baseNavigationController
-                                       browser:self.browser];
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser
+                              firstRun:_firstRun];
   __weak __typeof(self) weakSelf = self;
   _tangibleSyncCoordinator.coordinatorCompleted = ^() {
     [weakSelf tangibleSyncCoordinatorCompleted];

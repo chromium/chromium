@@ -108,13 +108,13 @@ void AlwaysOnTopController::ReparentWindow(aura::Window* window) {
 
 void AlwaysOnTopController::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
-  if (params.old_parent == always_on_top_container_ ||
-      params.old_parent == pip_container_) {
+  if (params.old_parent == always_on_top_container_.get() ||
+      params.old_parent == pip_container_.get()) {
     RemoveWindow(params.target);
   }
 
-  if (params.new_parent == always_on_top_container_ ||
-      params.new_parent == pip_container_) {
+  if (params.new_parent == always_on_top_container_.get() ||
+      params.new_parent == pip_container_.get()) {
     AddWindow(params.target);
   }
 }

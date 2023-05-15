@@ -30,9 +30,10 @@ export interface StartDataCollectionResult {
   errorMessage: string;
 }
 
-export interface UrlGenerationResult {
+export interface SupportTokenGenerationResult {
   success: boolean;
-  url: string;
+  // It will be filled only if `success` is true.
+  token: string;
   errorMessage: string;
 }
 
@@ -59,7 +60,10 @@ export interface BrowserProxy {
   showExportedDataInFolder(): void;
 
   generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]):
-      Promise<UrlGenerationResult>;
+      Promise<SupportTokenGenerationResult>;
+
+  generateSupportToken(dataCollectors: DataCollectorItem[]):
+      Promise<SupportTokenGenerationResult>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -100,6 +104,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]) {
     return sendWithPromise('generateCustomizedUrl', caseId, dataCollectors);
+  }
+
+  generateSupportToken(dataCollectors: DataCollectorItem[]) {
+    return sendWithPromise('generateSupportToken', dataCollectors);
   }
 
   static getInstance(): BrowserProxy {

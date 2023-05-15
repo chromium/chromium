@@ -23,7 +23,7 @@ extern const BASE_EXPORT FeatureParam<double>
     kOptimizedRealtimeThreadingMacBusy;
 extern const BASE_EXPORT FeatureParam<double>
     kOptimizedRealtimeThreadingMacBusyLimit;
-extern const BASE_EXPORT Feature kUseThreadQoSMac;
+extern const BASE_EXPORT Feature kUserInteractiveCompositingMac;
 #endif
 
 #if BUILDFLAG(IS_WIN)

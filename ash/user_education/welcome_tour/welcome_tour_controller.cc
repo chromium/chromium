@@ -4,11 +4,7 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/hotseat_widget.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/user_education_constants.h"
@@ -17,9 +13,13 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "base/check_op.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
@@ -29,27 +29,31 @@ WelcomeTourController* g_instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
-aura::Window* GetPrimaryRootWindow() {
-  auto* window_tree_host_manager = Shell::Get()->window_tree_host_manager();
-  return window_tree_host_manager
-             ? window_tree_host_manager->GetPrimaryRootWindow()
-             : nullptr;
+views::View* GetMatchingViewInPrimaryRootWindow(
+    ui::ElementIdentifier element_id) {
+  return user_education_util::GetMatchingViewInRootWindow(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(), element_id);
 }
 
-Shelf* GetPrimaryShelf() {
-  auto* primary_root_window = GetPrimaryRootWindow();
-  return primary_root_window ? Shelf::ForWindow(primary_root_window) : nullptr;
+views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
+    ui::ElementIdentifier element_id) {
+  return views::ElementTrackerViews::GetInstance()->GetElementForView(
+      GetMatchingViewInPrimaryRootWindow(element_id));
 }
 
-HotseatWidget* GetPrimaryHotseatWidget() {
-  auto* primary_shelf = GetPrimaryShelf();
-  return primary_shelf ? primary_shelf->hotseat_widget() : nullptr;
-}
-
-ShelfView* GetPrimaryShelfView() {
-  auto* primary_hotseat_widget = GetPrimaryHotseatWidget();
-  return primary_hotseat_widget ? primary_hotseat_widget->GetShelfView()
-                                : nullptr;
+user_education::TutorialDescription::NameElementsCallback
+NameMatchingElementInPrimaryRootWindowCallback(ui::ElementIdentifier element_id,
+                                               const char* element_name) {
+  return base::BindRepeating(
+      [](ui::ElementIdentifier element_id, const char* element_name,
+         ui::InteractionSequence* sequence, ui::TrackedElement*) {
+        if (auto* element = GetMatchingElementInPrimaryRootWindow(element_id)) {
+          sequence->NameElement(element, base::StringPiece(element_name));
+          return true;
+        }
+        return false;
+      },
+      element_id, element_name);
 }
 
 }  // namespace
@@ -85,7 +89,11 @@ void WelcomeTourController::RemoveObserver(
 }
 
 ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
-  return views::ElementTrackerViews::GetContextForView(GetPrimaryShelfView());
+  // NOTE: Don't use `GetMatchingElementInPrimaryRootWindow()` here as
+  // `views::TrackedElementViews` only exist while views are shown and that may
+  // not be the case when this method is called.
+  return views::ElementTrackerViews::GetContextForView(
+      GetMatchingViewInPrimaryRootWindow(kShelfViewElementId));
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.
@@ -105,25 +113,53 @@ WelcomeTourController::GetTutorialDescriptions() {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kShelfViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourShelf))
           .AddDefaultNextButton());
+
+  // Wait for "Next" button click before proceeding to the next bubble step.
+  // NOTE: This event step also ensures that the next bubble step will show on
+  // the primary display by naming the primary root window's status area.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::EventStep(
+          user_education::kHelpBubbleNextButtonClickedEvent,
+          kShelfViewElementId)
+          .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
+              kUnifiedSystemTrayElementId, kUnifiedSystemTrayElementName)));
 
   // Step 2: Status area.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(
-          kUnifiedSystemTrayElementId)
+          kUnifiedSystemTrayElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourStatusArea))
           .AddDefaultNextButton());
+
+  // Wait for "Next" button click before proceeding to the next bubble step.
+  // NOTE: This event step also ensures that the next bubble step will show on
+  // the primary display by naming the primary root window's home button.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::EventStep(
+          user_education::kHelpBubbleNextButtonClickedEvent,
+          kUnifiedSystemTrayElementName)
+          .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
+              kHomeButtonElementId, kHomeButtonElementName)));
 
   // Step 3: Home button.
   tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::BubbleStep(kHomeButtonElementId)
+      user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourHomeButton))
           .AddDefaultNextButton());
 
   // Step 4: Search box.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourSearchBox))
           .AddDefaultNextButton());
 
   // Step 5: Settings app.
@@ -131,14 +167,17 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(
           kSettingsAppListItemViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourSettingsApp))
           .AddDefaultNextButton());
 
   // Step 6: Explore app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(
           kExploreAppListItemViewElementId)
-          .SetBubbleBodyText(
-              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT));
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourExploreApp)));
 
   return tutorial_descriptions_by_id;
 }

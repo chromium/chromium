@@ -220,6 +220,11 @@ class EventListenerMap {
   bool HasProcessListener(content::RenderProcessHost* process,
                           int worker_thread_id,
                           const std::string& extension_id) const;
+  // As above, but checks for a specific event.
+  bool HasProcessListenerForEvent(content::RenderProcessHost* process,
+                                  int worker_thread_id,
+                                  const std::string& extension_id,
+                                  const std::string& event_name) const;
 
   // Removes any listeners that |extension_id| has added, both lazy and regular.
   void RemoveListenersForExtension(const std::string& extension_id);

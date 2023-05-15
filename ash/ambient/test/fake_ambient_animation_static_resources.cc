@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ambient_theme.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -13,8 +14,8 @@
 
 namespace ash {
 
-FakeAmbientAnimationStaticResources::FakeAmbientAnimationStaticResources() =
-    default;
+FakeAmbientAnimationStaticResources::FakeAmbientAnimationStaticResources()
+    : ui_settings_(AmbientTheme::kFeelTheBreeze) {}
 
 FakeAmbientAnimationStaticResources::~FakeAmbientAnimationStaticResources() =
     default;
@@ -44,8 +45,9 @@ gfx::ImageSkia FakeAmbientAnimationStaticResources::GetStaticImageAsset(
   return iter == images_.end() ? gfx::ImageSkia() : iter->second;
 }
 
-AmbientTheme FakeAmbientAnimationStaticResources::GetAmbientTheme() const {
-  return ambient_theme_;
+const AmbientUiSettings& FakeAmbientAnimationStaticResources::GetUiSettings()
+    const {
+  return ui_settings_;
 }
 
 }  // namespace ash

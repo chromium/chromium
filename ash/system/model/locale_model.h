@@ -48,6 +48,9 @@ class LocaleModel {
   }
 
  private:
+  // Adds a fake locale with a label like "German - Deutsch".
+  void AddFakeLocale(const std::string& locale);
+
   std::vector<LocaleInfo> locale_list_;
 
   std::string current_locale_iso_code_;

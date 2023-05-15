@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -61,14 +62,14 @@ class ASH_EXPORT TaskSwitchTimeTracker {
   std::string histogram_name_;
 
   // The histogram to log data to. Set via GetHistogram() using lazy load.
-  base::HistogramBase* histogram_ = nullptr;
+  raw_ptr<base::HistogramBase, ExperimentalAsh> histogram_ = nullptr;
 
   // Tracks the last time OnTaskSwitch() was called. A value of
   // base::TimeTicks() should be interpreted as not set.
   base::TimeTicks last_action_time_ = base::TimeTicks();
 
   // The clock used to determine the |last_action_time_|.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 };
 
 }  // namespace ash

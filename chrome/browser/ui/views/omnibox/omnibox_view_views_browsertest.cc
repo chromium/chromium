@@ -33,6 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -86,6 +87,10 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
  protected:
   OmniboxViewViewsTest() = default;
   ~OmniboxViewViewsTest() override = default;
+
+  OmniboxTriggeredFeatureService* triggered_feature_service() {
+    return &triggered_feature_service_;
+  }
 
   static void GetOmniboxViewForBrowser(const Browser* browser,
                                        OmniboxView** omnibox_view) {
@@ -163,6 +168,8 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
 #endif
     return native_window;
   }
+
+  OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, PasteAndGoDoesNotLeavePopupOpen) {
@@ -457,7 +464,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
                           TestSchemeClassifier());
   results.AppendMatches(matches);
   results.SortAndCull(
-      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
+      triggered_feature_service());
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -505,7 +513,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   input.set_current_url(GURL("http://autocomplete-result/"));
   results.AppendMatches(matches);
   results.SortAndCull(
-      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
+      triggered_feature_service());
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -608,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
                           TestSchemeClassifier());
   results.AppendMatches(matches);
   results.SortAndCull(
-      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
+      triggered_feature_service());
 
   // The omnibox popup should open with suggestions displayed.
   chrome::FocusLocationBar(browser());
@@ -684,10 +694,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   match.description = u"Google";
   match.allowed_to_be_default_match = true;
 
-  OmniboxPopupViewViews* popup_view =
-      omnibox_view_views->GetPopupContentsViewForTesting();
+  OmniboxPopupView* popup_view = omnibox_view_views->GetPopupViewForTesting();
   ui::AXNodeData popup_node_data_1;
-  popup_view->GetAccessibleNodeData(&popup_node_data_1);
+  popup_view->GetPopupAccessibleNodeData(&popup_node_data_1);
   EXPECT_FALSE(popup_node_data_1.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(popup_node_data_1.HasState(ax::mojom::State::kCollapsed));
   EXPECT_TRUE(popup_node_data_1.HasState(ax::mojom::State::kInvisible));
@@ -708,13 +717,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
                           TestSchemeClassifier());
   results.AppendMatches(matches);
   results.SortAndCull(
-      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
+      triggered_feature_service());
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
   EXPECT_TRUE(omnibox_view->model()->PopupIsOpen());
   ui::AXNodeData popup_node_data_2;
-  popup_view->GetAccessibleNodeData(&popup_node_data_2);
+  popup_view->GetPopupAccessibleNodeData(&popup_node_data_2);
   EXPECT_TRUE(popup_node_data_2.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(popup_node_data_2.HasState(ax::mojom::State::kCollapsed));
   EXPECT_FALSE(popup_node_data_2.HasState(ax::mojom::State::kInvisible));
@@ -831,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
                           TestSchemeClassifier());
   results.AppendMatches(matches);
   results.SortAndCull(
-      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+      input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
+      triggered_feature_service());
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();

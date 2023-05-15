@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 
-#include "ash/clipboard/clipboard_history_controller_impl.h"
-#include "ash/shell.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
+#include "base/unguessable_token.h"
 
 namespace crosapi {
 
@@ -21,13 +21,22 @@ void ClipboardHistoryAsh::ShowClipboard(
     const gfx::Rect& anchor_point,
     ui::MenuSourceType menu_source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
-  auto* clipboard_history_controller =
-      ash::Shell::Get()->clipboard_history_controller();
-  if (!clipboard_history_controller)
-    return;
+  if (auto* clipboard_history_controller =
+          ash::ClipboardHistoryController::Get()) {
+    clipboard_history_controller->ShowMenu(anchor_point, menu_source_type,
+                                           show_source);
+  }
+}
 
-  clipboard_history_controller->ShowMenu(anchor_point, menu_source_type,
-                                         show_source);
+void ClipboardHistoryAsh::PasteClipboardItemById(
+    const base::UnguessableToken& item_id,
+    int event_flags,
+    mojom::ClipboardHistoryControllerShowSource paste_source) {
+  if (auto* clipboard_history_controller =
+          ash::ClipboardHistoryController::Get()) {
+    clipboard_history_controller->PasteClipboardItemById(
+        item_id.ToString(), event_flags, paste_source);
+  }
 }
 
 }  // namespace crosapi

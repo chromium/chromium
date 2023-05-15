@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 
 namespace device {
@@ -27,7 +27,7 @@ FakeUsbDeviceInfo::FakeUsbDeviceInfo(uint16_t usb_version,
                                      const std::string& manufacturer_string,
                                      const std::string& product_string,
                                      const std::string& serial_number) {
-  device_info_.guid = base::GenerateGUID();
+  device_info_.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   device_info_.usb_version_major = usb_version >> 8;
   device_info_.usb_version_minor = usb_version >> 4 & 0xf;
   device_info_.usb_version_subminor = usb_version & 0xf;

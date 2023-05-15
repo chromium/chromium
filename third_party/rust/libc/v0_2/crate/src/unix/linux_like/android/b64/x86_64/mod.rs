@@ -728,6 +728,17 @@ pub const SYS_pwritev2: ::c_long = 328;
 pub const SYS_pkey_mprotect: ::c_long = 329;
 pub const SYS_pkey_alloc: ::c_long = 330;
 pub const SYS_pkey_free: ::c_long = 331;
+pub const SYS_statx: ::c_long = 332;
+pub const SYS_pidfd_send_signal: ::c_long = 424;
+pub const SYS_io_uring_setup: ::c_long = 425;
+pub const SYS_io_uring_enter: ::c_long = 426;
+pub const SYS_io_uring_register: ::c_long = 427;
+pub const SYS_open_tree: ::c_long = 428;
+pub const SYS_move_mount: ::c_long = 429;
+pub const SYS_fsopen: ::c_long = 430;
+pub const SYS_fsconfig: ::c_long = 431;
+pub const SYS_fsmount: ::c_long = 432;
+pub const SYS_fspick: ::c_long = 433;
 
 // offsets in user_regs_structs, from sys/reg.h
 pub const R15: ::c_int = 0;

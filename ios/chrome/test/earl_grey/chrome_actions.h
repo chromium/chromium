@@ -34,7 +34,14 @@ id<GREYAction> TurnTableViewSwitchOn(BOOL on);
 
 // Action to tap a web element described by the given `selector` on the current
 // web state.
+// Checks the effect of the tap using JavaScript.
 id<GREYAction> TapWebElement(ElementSelector* selector);
+
+// Action to tap a web element described by the given `selector` on the current
+// web state.
+// Does not check the effect of the tap. This function is expected to be use
+// when the effect of the tap is on the browser side (e.g. showing a popup).
+id<GREYAction> TapWebElementUnverified(ElementSelector* selector);
 
 // Action to tap a web element with id equal to `element_id` on the current web
 // state.

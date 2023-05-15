@@ -154,10 +154,10 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   }
 
   // Storing key and trust level information.
-  base::Value keyinfo(base::Value::Type::DICT);
+  base::Value::Dict keyinfo;
   const std::string encoded_key = base::Base64Encode(wrapped);
-  keyinfo.SetKey(kSigningKeyName, base::Value(encoded_key));
-  keyinfo.SetKey(kSigningKeyTrustLevel, base::Value(trust_level));
+  keyinfo.Set(kSigningKeyName, base::Value(encoded_key));
+  keyinfo.Set(kSigningKeyTrustLevel, base::Value(trust_level));
   std::string keyinfo_str;
   if (!base::JSONWriter::Write(keyinfo, &keyinfo_str)) {
     return RecordFailure(

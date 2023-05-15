@@ -9,31 +9,15 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-
-namespace {
-
-bool ContainsProfile(const std::vector<base::WeakPtr<Profile>>& profiles,
-                     Profile* profile) {
-  return base::ranges::count_if(profiles, [profile](const auto& entry) {
-           return entry && entry.get() == profile;
-         }) > 0;
-}
-
-size_t EraseProfile(std::vector<base::WeakPtr<Profile>>& profiles,
-                    Profile* profile) {
-  return base::EraseIf(profiles, [profile](const auto& entry) {
-    return entry && entry.get() == profile;
-  });
-}
-
-}  // namespace
 
 // static
 gfx::ImageSkia HidSystemTrayIcon::GetStatusTrayIcon() {
@@ -42,23 +26,24 @@ gfx::ImageSkia HidSystemTrayIcon::GetStatusTrayIcon() {
 }
 
 // static
-std::u16string HidSystemTrayIcon::GetManageHidDeviceButtonLabel(
-    Profile* profile) {
-  std::u16string profile_name =
-      base::UTF8ToUTF16(profile->GetProfileUserName());
-  if (profile_name.empty()) {
-    return l10n_util::GetStringUTF16(
-        IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE);
+std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_origins,
+                                                size_t num_connections) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (num_origins == 1) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION,
+        static_cast<int>(num_connections));
   }
-  return l10n_util::GetStringFUTF16(
-      IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE_WITH_PROFILE_NAME,
-      profile_name);
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS,
+      static_cast<int>(num_connections));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
 }
 
 // static
-std::u16string HidSystemTrayIcon::GetTooltipLabel(size_t num_devices) {
-  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP,
-                                          static_cast<int>(num_devices));
+std::u16string HidSystemTrayIcon::GetContentSettingsLabel() {
+  return l10n_util::GetStringUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_HID_SETTINGS);
 }
 
 HidSystemTrayIcon::HidSystemTrayIcon() = default;
@@ -66,35 +51,45 @@ HidSystemTrayIcon::~HidSystemTrayIcon() = default;
 
 void HidSystemTrayIcon::StageProfile(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (EraseProfile(unstaging_profiles_, profile) > 0) {
-    // Connection tracker's connection count is updated even the profile is just
-    // moved from unstaging to staging.
+  auto it = profiles_.find(profile);
+  if (it != profiles_.end()) {
+    // If the |profile| is tracked, it must be unstaging.
+    CHECK(!it->second);
+    // Connection tracker's connection count is updated even the profile is
+    // just moved from unstaging to staging.
     NotifyConnectionCountUpdated(profile);
+    it->second = true;
     return;
   }
-  AddProfile(profile);
+  profiles_[profile] = true;
+  ProfileAdded(profile);
 }
 
 void HidSystemTrayIcon::UnstageProfile(Profile* profile, bool immediate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto it = profiles_.find(profile);
+  // The |profile| must be tracked. However, it can be unstaging. For example,
+  // A profile is scheduled to be removed followed by profile destruction.
+  CHECK(it != profiles_.end());
+
   if (immediate) {
-    RemoveProfile(profile);
-    EraseProfile(unstaging_profiles_, profile);
+    profiles_.erase(it);
+    ProfileRemoved(profile);
     return;
   }
-  if (ContainsProfile(unstaging_profiles_, profile)) {
-    return;
-  }
+
+  // For non-immediate case, the |profile| must be staging.
+  CHECK(it->second);
+  it->second = false;
   // In order to avoid bouncing the system tray icon, schedule |profile| to be
   // removed from the system tray icon later.
-  unstaging_profiles_.push_back(profile->GetWeakPtr());
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostDelayedTask(
           FROM_HERE,
           // This class is supposedly safe as it is owned by
           // g_browser_process. However, to avoid corner
           // scenarios in tests, use weak ptr just to be safe.
-          base::BindOnce(&HidSystemTrayIcon::CleanUpProfiles,
+          base::BindOnce(&HidSystemTrayIcon::CleanUpProfile,
                          weak_factory_.GetWeakPtr(), profile->GetWeakPtr()),
           kProfileUnstagingTime);
   // Connection tracker's connection count is updated even in scheduled
@@ -102,15 +97,24 @@ void HidSystemTrayIcon::UnstageProfile(Profile* profile, bool immediate) {
   NotifyConnectionCountUpdated(profile);
 }
 
-void HidSystemTrayIcon::CleanUpProfiles(base::WeakPtr<Profile> profile) {
+void HidSystemTrayIcon::CleanUpProfile(base::WeakPtr<Profile> profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (profile) {
-    if (EraseProfile(unstaging_profiles_, profile.get()) > 0) {
-      RemoveProfile(profile.get());
+    auto it = profiles_.find(profile.get());
+    if (it != profiles_.end() && !it->second) {
+      profiles_.erase(it);
+      ProfileRemoved(profile.get());
     }
     return;
   }
-  // When removing |profile| from |unstaging_profiles_|, cleans up other
-  // destroyed profiles too as it loops through the |unstaging_profiles_|.
-  base::EraseIf(unstaging_profiles_, [](const auto& entry) { return !entry; });
+  // If the |profile| is destroyed, |profiles_| shouldn't have an entry for
+  // |profile|. This is because HidConnectionTracker::CleanUp() is called on
+  // browser context (i.e. profile) shutdown and calls UnstageProfile() with
+  // immediate set to true so the entry will be removed from |profiles_|
+  // immediately.
+}
+
+bool HidSystemTrayIcon::ContainProfile(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return profiles_.contains(profile);
 }

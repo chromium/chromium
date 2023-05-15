@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data_controls") {
+  sources = [
+    "data_controls_policy_handler.cc",
+    "data_controls_policy_handler.h",
+    "dlp_rules_manager_base.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    ":data_controls",
+    "//base",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

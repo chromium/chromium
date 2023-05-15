@@ -12,13 +12,14 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using syncer::UserSelectableOsType;
+using syncer::UserSelectableOsTypeSet;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
 namespace {
-
-// TODO(https://crbug.com/1280212): See if this test can be enabled on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // See also TwoClientExtensionSettingsAndAppSettingsSyncTest.
 class SingleClientAppSettingsSyncTest : public AppsSyncTestBase {
@@ -31,14 +32,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsSyncTest, Basics) {
   ASSERT_TRUE(SetupSync());
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APP_SETTINGS));
 
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
   EXPECT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::APP_SETTINGS));
-}
+#else
+  EXPECT_TRUE(
+      settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APP_SETTINGS));
 
+  settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
+  EXPECT_FALSE(
+      settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::APP_SETTINGS));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 }  // namespace

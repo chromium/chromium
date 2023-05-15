@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class Profile;
@@ -72,7 +73,7 @@ class ArcAppPerformanceTracingTestHelper {
 
  private:
   // Unowned pointer.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };

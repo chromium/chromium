@@ -12,6 +12,8 @@ namespace url {
 class Origin;
 }
 
+class GURL;
+
 namespace content {
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
@@ -24,11 +26,11 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   // Returns whether the FedCM API's auto re-authn is unblocked based on content
   // settings. A caller should also use `IsAutoReauthnEmbargoed()` to determine
   // whether auto re-authn is allowed or not.
-  virtual bool HasAutoReauthnContentSetting() = 0;
+  virtual bool IsAutoReauthnSettingEnabled() = 0;
 
   // Returns whether the FedCM API's auto re-authn feature is embargoed for the
   // passed-in |relying_party_embedder|. A caller should also use
-  // `HasAutoReauthnContentSetting()` to determine whether auto re-authn is
+  // `IsAutoReauthnSettingEnabled()` to determine whether auto re-authn is
   // allowed or not.
   virtual bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) = 0;
@@ -43,6 +45,15 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   // the permission under embargo for the passed-in |relying_party_embedder|.
   virtual void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) = 0;
+
+  // Updates the "RequiresUserMediation" bit for the site. It's set to true when
+  // `navigator.credentials.preventSilentAccess` is called and set to false
+  // after a successful authentication flow by FedCM.
+  virtual void SetRequiresUserMediation(const GURL& rp_url,
+                                        bool requires_user_mediation) = 0;
+
+  // Returns if the site requires user mediation for re-authentication.
+  virtual bool RequiresUserMediation(const GURL& rp_url) = 0;
 };
 
 }  // namespace content

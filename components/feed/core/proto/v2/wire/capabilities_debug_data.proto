@@ -11,6 +11,6 @@ import "components/feed/core/proto/v2/wire/capability.proto";
 option optimize_for = LITE_RUNTIME;
 
 message CapabilitiesDebugData {
-  repeated Capability client_specified_capabilities = 1;
-  repeated Capability server_fulfilled_capabilities = 2;
+  repeated Capability client_specified_capabilities = 1 [packed = true];
+  repeated Capability server_fulfilled_capabilities = 2 [packed = true];
 }

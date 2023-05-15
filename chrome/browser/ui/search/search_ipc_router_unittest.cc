@@ -56,33 +56,34 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
  public:
   virtual ~MockSearchIPCRouterDelegate() {}
 
-  MOCK_METHOD1(FocusOmnibox, void(bool focus));
-  MOCK_METHOD1(OnDeleteMostVisitedItem, void(const GURL& url));
-  MOCK_METHOD1(OnUndoMostVisitedDeletion, void(const GURL& url));
-  MOCK_METHOD0(OnUndoAllMostVisitedDeletions, void());
-  MOCK_METHOD1(OnSetCustomBackgroundURL, void(const GURL& url));
+  MOCK_METHOD(void, FocusOmnibox, (bool focus));
+  MOCK_METHOD(void, OnDeleteMostVisitedItem, (const GURL& url));
+  MOCK_METHOD(void, OnUndoMostVisitedDeletion, (const GURL& url));
+  MOCK_METHOD(void, OnUndoAllMostVisitedDeletions, ());
+  MOCK_METHOD(void, OnSetCustomBackgroundURL, (const GURL& url));
 };
 
 class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
  public:
   ~MockSearchIPCRouterPolicy() override {}
 
-  MOCK_METHOD1(ShouldProcessFocusOmnibox, bool(bool));
-  MOCK_METHOD0(ShouldProcessDeleteMostVisitedItem, bool());
-  MOCK_METHOD0(ShouldProcessUndoMostVisitedDeletion, bool());
-  MOCK_METHOD0(ShouldProcessUndoAllMostVisitedDeletions, bool());
-  MOCK_METHOD1(ShouldSendSetInputInProgress, bool(bool));
-  MOCK_METHOD0(ShouldSendOmniboxFocusChanged, bool());
-  MOCK_METHOD0(ShouldSendMostVisitedInfo, bool());
-  MOCK_METHOD0(ShouldSendNtpTheme, bool());
-  MOCK_METHOD0(ShouldProcessThemeChangeMessages, bool());
+  MOCK_METHOD(bool, ShouldProcessFocusOmnibox, (bool));
+  MOCK_METHOD(bool, ShouldProcessDeleteMostVisitedItem, ());
+  MOCK_METHOD(bool, ShouldProcessUndoMostVisitedDeletion, ());
+  MOCK_METHOD(bool, ShouldProcessUndoAllMostVisitedDeletions, ());
+  MOCK_METHOD(bool, ShouldSendSetInputInProgress, (bool));
+  MOCK_METHOD(bool, ShouldSendOmniboxFocusChanged, ());
+  MOCK_METHOD(bool, ShouldSendMostVisitedInfo, ());
+  MOCK_METHOD(bool, ShouldSendNtpTheme, ());
+  MOCK_METHOD(bool, ShouldProcessThemeChangeMessages, ());
 };
 
 class MockEmbeddedSearchClientFactory
     : public SearchIPCRouter::EmbeddedSearchClientFactory {
  public:
-  MOCK_METHOD0(GetEmbeddedSearchClient,
-               search::mojom::EmbeddedSearchClient*(void));
+  MOCK_METHOD(search::mojom::EmbeddedSearchClient*,
+              GetEmbeddedSearchClient,
+              ());
 
   MOCK_METHOD(void,
               BindFactoryReceiver,

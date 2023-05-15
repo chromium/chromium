@@ -4,9 +4,9 @@
 
 #include "third_party/blink/public/web/web_document.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/web/web_origin_trials.h"

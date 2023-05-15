@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_APPS_AVAILABILITY_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -137,9 +138,10 @@ class AccountAppsAvailability
   std::vector<base::OnceClosure> initialization_callbacks_;
 
   // Non-owning pointers:
-  account_manager::AccountManagerFacade* const account_manager_facade_;
-  signin::IdentityManager* const identity_manager_;
-  PrefService* const prefs_;
+  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // A list of observers registered via `AddObserver`.
   base::ObserverList<Observer> observer_list_;

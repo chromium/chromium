@@ -12,7 +12,7 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -48,6 +48,10 @@ class JavaScriptFeaturePageContentWorldTest : public WebTestWithWebState {
         ->SetJavaScriptFeatures({feature()});
   }
 
+  WebFrame* GetMainFrame() {
+    return feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+  }
+
   FakeJavaScriptFeature* feature() { return &feature_; }
 
  private:
@@ -72,7 +76,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
 
-  feature()->ReplaceDivContents(GetMainFrame(web_state()));
+  feature()->ReplaceDivContents(GetMainFrame());
 
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
@@ -90,7 +94,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -119,7 +123,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -148,8 +152,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessageCommonJS(GetMainFrame(web_state()),
-                                          parameters);
+  feature()->ReplyWithPostMessageCommonJS(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -175,7 +178,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_message());
 
   __block bool count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -189,7 +192,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ExecuteJavaScript(@"invalidFunction();");
 
   count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -206,7 +209,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ExecuteJavaScript(@"invalidFunction();");
 
   count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -230,6 +233,10 @@ class JavaScriptFeatureAnyContentWorldTest : public WebTestWithWebState {
 
     static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
         ->SetJavaScriptFeatures({feature()});
+  }
+
+  WebFrame* GetMainFrame() {
+    return feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
   }
 
   FakeJavaScriptFeature* feature() { return &feature_; }
@@ -256,7 +263,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest,
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
 
-  feature()->ReplaceDivContents(GetMainFrame(web_state()));
+  feature()->ReplaceDivContents(GetMainFrame());
 
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
@@ -273,7 +280,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, MessageHandlerInIsolatedWorld) {
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return feature()->last_received_web_state();
@@ -298,7 +305,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
   ASSERT_FALSE(feature()->last_received_message());
 
   __block bool count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -312,7 +319,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
   ExecuteJavaScript(@"invalidFunction();");
 
   count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -329,7 +336,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
   ExecuteJavaScript(@"invalidFunction();");
 
   count_received = false;
-  feature()->GetErrorCount(GetMainFrame(web_state()),
+  feature()->GetErrorCount(GetMainFrame(),
                            base::BindOnce(^void(const base::Value* count) {
                              ASSERT_TRUE(count);
                              ASSERT_TRUE(count->is_double());
@@ -370,7 +377,9 @@ TEST_F(JavaScriptFeatureIsolatedWorldTest,
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
 
-  feature()->ReplaceDivContents(GetMainFrame(web_state()));
+  WebFrame* frame =
+      feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+  feature()->ReplaceDivContents(frame);
 
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));

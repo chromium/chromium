@@ -11,10 +11,10 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {ApnProperties, ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnState, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
@@ -69,7 +69,7 @@ class ApnListItem extends ApnListItemBase {
 
   constructor() {
     super();
-    /** @private {!CrosNetworkConfigRemote} */
+    /** @private {!CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
@@ -83,6 +83,11 @@ class ApnListItem extends ApnListItemBase {
         .showAt(/** @type {!HTMLElement} */ (event.target));
   }
 
+  /** @private */
+  closeMenu_() {
+    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
+  }
+
   /**
    * Opens APN Details dialog.
    * TODO(b/162365553): Implement.
@@ -90,6 +95,7 @@ class ApnListItem extends ApnListItemBase {
    */
   onDetailsClicked_() {
     assert(!!this.apn);
+    this.closeMenu_();
     this.dispatchEvent(new CustomEvent('show-apn-detail-dialog', {
       composed: true,
       bubbles: true,
@@ -108,6 +114,7 @@ class ApnListItem extends ApnListItemBase {
   onDisableClicked_() {
     assert(this.guid);
     assert(this.apn);
+    this.closeMenu_();
     if (!this.apn.id) {
       console.error('Only custom APNs can be disabled.');
       return;
@@ -140,6 +147,7 @@ class ApnListItem extends ApnListItemBase {
   onEnableClicked_() {
     assert(this.guid);
     assert(this.apn);
+    this.closeMenu_();
     if (!this.apn.id) {
       console.error('Only custom APNs can be enabled.');
       return;
@@ -174,6 +182,7 @@ class ApnListItem extends ApnListItemBase {
   onRemoveClicked_() {
     assert(this.guid);
     assert(this.apn);
+    this.closeMenu_();
     if (!this.apn.id) {
       console.error('Only custom APNs can be removed.');
       return;
@@ -188,7 +197,6 @@ class ApnListItem extends ApnListItemBase {
       return;
     }
 
-    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
     this.networkConfig_.removeCustomApn(
         this.guid, /** @type {string} */ (this.apn.id));
   }

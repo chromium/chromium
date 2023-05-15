@@ -38,7 +38,6 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/common/verifier_formats.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/test_extensions_client.h"
@@ -486,8 +485,8 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
   base::WriteFile(extensions_dir_.GetPath().Append(
                       FILE_PATH_LITERAL("manifest.fingerprint")),
                   fingerprint);
-  absl::optional<base::Value::Dict> manifest(RewriteManifestFile(
-      DictionaryBuilder().Set(kVersionStr, kTestVersion).Build()));
+  absl::optional<base::Value::Dict> manifest(
+      RewriteManifestFile(base::Value::Dict().Set(kVersionStr, kTestVersion)));
   auto* key = manifest->FindString("key");
   auto* version = manifest->FindString(kVersionStr);
   auto* differential_fingerprint =

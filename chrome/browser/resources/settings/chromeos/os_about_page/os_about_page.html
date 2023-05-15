@@ -177,7 +177,6 @@
             on-click="onReleaseNotesClick_"
             label="$i18n{aboutShowReleaseNotes}"
             external
-            button-aria-description="$i18n{opensInNewTab}"
             deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
         </cr-link-row>
       </template>
@@ -187,14 +186,12 @@
             label="$i18n{aboutShowReleaseNotes}"
             title="$i18n{aboutReleaseNotesOffline}"
             external
-            button-aria-description="$i18n{opensInNewTab}"
             deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
         </cr-link-row>
       </template>
       <cr-link-row class="hr" id="help" on-click="onHelpClick_"
           label="$i18n{aboutGetHelpUsingChromeOs}"
           external
-          button-aria-description="$i18n{opensInNewTab}"
           deep-link-focus-id$="[[Setting.kGetHelpWithChromeOs]]">
       </cr-link-row>
 <if expr="_google_chrome">
@@ -203,7 +200,6 @@
           hidden="[[!prefs.feedback_allowed.value]]"
           label="[[getReportIssueLabel_()]]"
           external
-          button-aria-description="$i18n{opensInNewTab}"
           deep-link-focus-id$="[[Setting.kReportAnIssue]]">
       </cr-link-row>
 </if>
@@ -211,14 +207,12 @@
           on-click="onDiagnosticsClick_"
           label="$i18n{aboutDiagnostics}"
           external
-          button-aria-description="$i18n{opensInNewTab}"
           deep-link-focus-id$="[[Setting.kDiagnostics]]">
       </cr-link-row>
       <cr-link-row class="hr" id="firmwareUpdates"
           on-click="onFirmwareUpdatesClick_"
           label="$i18n{aboutFirmwareUpdates}"
           external
-          button-aria-description="$i18n{opensInNewTab}"
           using-slotted-label
           deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
         <iron-icon id="firmwareUpdateBadge"
@@ -240,8 +234,7 @@
       <cr-link-row class="hr" on-click="onManagementPageClick_"
           start-icon="cr:domain" label="$i18n{managementPage}"
           hidden$="[[!isManaged_]]"
-          external
-          button-aria-description="$i18n{opensInNewTab}">
+          external>
       </cr-link-row>
     </div>
     <template is="dom-if" route-path="/help/details">

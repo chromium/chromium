@@ -66,6 +66,10 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
 
 EmojiUI::~EmojiUI() = default;
 
+bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client) {
+  return input_client != nullptr;
+}
+
 void EmojiUI::Show(Profile* profile) {
   if (TabletMode::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
@@ -76,6 +80,12 @@ void EmojiUI::Show(Profile* profile) {
       IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
+
+  // Does not show emoji picker if there is no input client.
+  if (!ShouldShow(input_client)) {
+    return;
+  }
+
   const bool incognito_mode =
       input_client ? !input_client->ShouldDoLearning() : false;
   gfx::Rect caret_bounds =

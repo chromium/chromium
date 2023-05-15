@@ -16,9 +16,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
-#include "content/public/browser/ax_event_notification_details.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/models/combobox_model.h"
 
 using read_anything::mojom::LetterSpacing;
@@ -38,13 +35,40 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   ReadAnythingFontModel& operator=(const ReadAnythingFontModel&) = delete;
   ~ReadAnythingFontModel() override;
 
+  // Enum for logging the user-chosen font.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReadAnythingFont {
+    kPoppins = 0,
+    kSansSerif = 1,
+    kSerif = 2,
+    kComicNeue = 3,
+    kLexendDeca = 4,
+    kEbGaramond = 5,
+    kStixTwoText = 6,
+    kMaxValue = kStixTwoText,
+  };
+
+  // Simple struct to hold the various fonts to keep code cleaner.
+  struct FontInfo {
+    // The name of the font
+    std::u16string name;
+
+    // The enum value of the font.
+    ReadAnythingFontModel::ReadAnythingFont enum_value;
+  };
+
   std::string GetFontNameAt(size_t index);
-  bool IsValidFontName(const std::string& font_name);
   bool IsValidFontIndex(size_t index);
+  void SetDefaultLanguage(const std::string& lang);
   size_t GetFontNameIndex(std::string font_name);
   void SetSelectedIndex(size_t index);
-  std::string GetLabelFontListAt(size_t index);
+  std::vector<std::string> GetLabelFontNameAt(size_t index) override;
+  absl::optional<int> GetLabelFontSize() override;
   size_t GetSelectedIndex() { return selected_index_; }
+  ReadAnythingFont GetFontLoggingValue() {
+    return font_choices_[selected_index_].enum_value;
+  }
 
   absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
       size_t index) const override;
@@ -77,7 +101,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 
  private:
   // Styled font names for the drop down options in front-end.
-  std::vector<std::u16string> font_choices_;
+  std::vector<FontInfo> font_choices_;
 
   size_t selected_index_ = 0;
 
@@ -116,6 +140,7 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
               ui::ColorId separator_color_id,
               ui::ColorId dropdown_color_id,
               ui::ColorId selected_color_id,
+              ui::ColorId focus_ring_color_id,
               ColorInfo::ReadAnythingColor logging_value);
     ColorInfo(const ColorInfo& other);
     ColorInfo(ColorInfo&&);
@@ -144,6 +169,9 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
     // The selected / hover color of the dropdown menu, used for the combobox
     // menu model.
     ui::ColorId selected_dropdown_color_id;
+
+    // The color of the focus ring, used for all elements in the toolbar.
+    ui::ColorId focus_ring_color_id;
 
     // The enum value used to log this theme.
     ColorInfo::ReadAnythingColor logging_value;
@@ -249,11 +277,6 @@ class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void AccessibilityEventReceived(
-        const content::AXEventNotificationDetails& details) {}
-    virtual void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                                         const ukm::SourceId& ukm_source_id) {}
-    virtual void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {}
     virtual void OnReadAnythingThemeChanged(
         const std::string& font_name,
         double font_scale,
@@ -262,11 +285,9 @@ class ReadAnythingModel {
         ui::ColorId separator_color_id,
         ui::ColorId dropdown_color_id,
         ui::ColorId selected_color_id,
+        ui::ColorId focus_ring_color_id,
         read_anything::mojom::LineSpacing line_spacing,
         read_anything::mojom::LetterSpacing letter_spacing) = 0;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    virtual void ScreenAIServiceReady() {}
-#endif
   };
 
   ReadAnythingModel();
@@ -274,7 +295,8 @@ class ReadAnythingModel {
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
 
-  void Init(const std::string& font_name,
+  void Init(const std::string& lang_code,
+            const std::string& font_name,
             double font_scale,
             read_anything::mojom::Colors colors,
             read_anything::mojom::LineSpacing line_spacing,
@@ -282,15 +304,6 @@ class ReadAnythingModel {
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
-
-  void AccessibilityEventReceived(
-      const content::AXEventNotificationDetails& details);
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                               const ukm::SourceId& ukm_source_id);
-  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void ScreenAIServiceReady();
-#endif
 
   void SetSelectedFontByIndex(size_t new_index);
   double GetValidFontScale(double font_scale);
@@ -332,6 +345,7 @@ class ReadAnythingModel {
   ui::ColorId separator_color_id_ = kColorReadAnythingSeparator;
   ui::ColorId dropdown_color_id_ = kColorReadAnythingDropdownBackground;
   ui::ColorId selected_dropdown_color_id_ = kColorReadAnythingDropdownSelected;
+  ui::ColorId focus_ring_color_id_ = kColorReadAnythingFocusRingBackground;
 
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;

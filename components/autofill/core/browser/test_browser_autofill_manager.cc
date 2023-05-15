@@ -127,14 +127,6 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     run_loop_->Quit();
   }
 
-  // If the feature is disabled, StoreUploadVotesAndLogQualityCallback does
-  // not get called.
-  // TODO(crbug.com/1383502): Remove the following if clause.
-  if (!observed_submission &&
-      !base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
-    run_loop_->Quit();
-  }
-
   if (expected_observed_submission_ != absl::nullopt)
     EXPECT_EQ(expected_observed_submission_, observed_submission);
 
@@ -165,8 +157,6 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
 void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
     FormSignature form_signature,
     base::OnceClosure callback) {
-  // TODO(crbug.com/1383502): Remove this DCHECK statement.
-  DCHECK(base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes));
   BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
       form_signature, std::move(callback));
   run_loop_->Quit();
@@ -199,7 +189,8 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
   return false;
 }
 
-int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
+Suggestion::FrontendId TestBrowserAutofillManager::GetPackedCreditCardID(
+    int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
@@ -292,7 +283,7 @@ void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
   expected_observed_submission_ = expected;
 }
 
-int TestBrowserAutofillManager::MakeFrontendId(
+Suggestion::FrontendId TestBrowserAutofillManager::MakeFrontendId(
     const MakeFrontendIdParams& params) {
   return suggestion_generator_for_test()->MakeFrontendIdFromBackendId(
       Suggestion::BackendId(params.credit_card_id.empty()

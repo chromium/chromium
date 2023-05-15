@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
@@ -481,11 +482,13 @@ uint32_t ScrollManager::GetNonCompositedMainThreadScrollingReasons() const {
     if (!scrollable_area || !scrollable_area->ScrollsOverflow())
       continue;
 
-    // TODO(bokan): This DCHECK is occasionally tripped. See crbug.com/944706.
-    // DCHECK(!scrollable_area->UsesCompositedScrolling() ||
-    //        !scrollable_area->GetNonCompositedMainThreadScrollingReasons());
-    non_composited_main_thread_scrolling_reasons |=
-        scrollable_area->GetNonCompositedMainThreadScrollingReasons();
+    if (auto* compositor =
+            cur_box->GetFrameView()->GetPaintArtifactCompositor()) {
+      non_composited_main_thread_scrolling_reasons |=
+          (compositor->GetMainThreadScrollingReasons(
+               *cur_box->FirstFragment().PaintProperties()->Scroll()) &
+           cc::MainThreadScrollingReason::kNonCompositedReasons);
+    }
   }
   return non_composited_main_thread_scrolling_reasons;
 }

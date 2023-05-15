@@ -152,7 +152,7 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
   // Mark data as committed.
   syncer::EntityChangeList change_list;
   change_list.push_back(syncer::EntityChange::CreateDelete(storage_key));
-  bridge()->ApplySyncChanges(nullptr, std::move(change_list));
+  bridge()->ApplyIncrementalSyncChanges(nullptr, std::move(change_list));
 
   EXPECT_EQ(bridge()->GetCallbacksCountForTesting(), 0u);
   histogram_tester.ExpectUniqueSample("Sync.SharingMessage.CommitResult",

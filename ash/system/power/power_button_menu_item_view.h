@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -54,10 +56,10 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Owned by views hierarchy.
-  views::ImageView* icon_view_ = nullptr;
-  views::Label* title_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
 
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 }  // namespace ash

@@ -40,6 +40,7 @@ size_t ServiceSkottieTransferCacheEntry::CachedSize() const {
 
 bool ServiceSkottieTransferCacheEntry::Deserialize(
     GrDirectContext* context,
+    skgpu::graphite::Recorder* graphite_recorder,
     base::span<const uint8_t> data) {
   skottie_ = SkottieWrapper::CreateNonSerializable(data);
   cached_size_ = data.size();

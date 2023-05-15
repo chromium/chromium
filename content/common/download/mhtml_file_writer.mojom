@@ -88,6 +88,5 @@ interface MhtmlFileWriter {
   // thread serializing the frame.
   SerializeAsMHTML(SerializeAsMHTMLParams params)
     =>  (MhtmlSaveStatus status,
-        array<string> digests_of_uris_to_skip,
-        mojo_base.mojom.TimeDelta renderer_main_thread_time);
+        array<string> digests_of_uris_to_skip);
 };

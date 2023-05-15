@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -50,13 +51,14 @@ class CopyOrMoveIOTask : public IOTask {
                CompleteCallback complete_callback) override;
 
   // Resumes the copy or move.
+  // TODO(b/281973963): Adapt for policy warnings.
   void Resume(ResumeParams params) override;
 
   // Cancels the copy or move.
   void Cancel() override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   std::vector<storage::FileSystemURL> source_urls_;

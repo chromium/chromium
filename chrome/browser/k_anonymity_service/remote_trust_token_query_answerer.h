@@ -57,7 +57,7 @@ class RemoteTrustTokenQueryAnswerer
       pending_has_redemption_record_request_;
 
   const url::Origin top_frame_origin_;
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   mojo::Remote<network::mojom::TrustTokenQueryAnswerer> cached_answerer_;
   base::WeakPtrFactory<RemoteTrustTokenQueryAnswerer> weak_ptr_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -101,9 +102,7 @@ class AppLaunchSplashScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
+  void DeclareJSCallbacks() override;
 
   // AppLaunchSplashScreenView implementation:
   void Show(KioskAppManagerBase::App app_data) override;
@@ -126,13 +125,13 @@ class AppLaunchSplashScreenHandler
   void HandleConfigureNetwork();
   void DoToggleNetworkConfig(bool visible);
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   bool is_shown_ = false;
   bool is_network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
-  ErrorScreen* error_screen_;
+  raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;
 
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;

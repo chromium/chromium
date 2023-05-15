@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -88,7 +89,7 @@ class KeepAliveOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   multidevice::RemoteDeviceRef remote_device_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;

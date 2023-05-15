@@ -31,7 +31,7 @@
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_util.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 
 namespace ash {

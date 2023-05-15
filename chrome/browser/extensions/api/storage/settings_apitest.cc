@@ -38,7 +38,6 @@
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -700,7 +699,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
   base::Value::Dict policy =
-      extensions::DictionaryBuilder()
+      base::Value::Dict()
           .Set("string-policy", "value")
           .Set("string-enum-policy", "value-1")
           .Set("another-string-policy", 123)  // Test invalid policy value.
@@ -708,24 +707,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
           .Set("int-enum-policy", 1)
           .Set("double-policy", 456e7)
           .Set("boolean-policy", true)
-          .Set("list-policy", extensions::ListBuilder()
-                                  .Append("one")
-                                  .Append("two")
-                                  .Append("three")
-                                  .Build())
+          .Set("list-policy",
+               base::Value::List().Append("one").Append("two").Append("three"))
           .Set("dict-policy",
-               extensions::DictionaryBuilder()
-                   .Set("list", extensions::ListBuilder()
-                                    .Append(extensions::DictionaryBuilder()
-                                                .Set("one", 1)
-                                                .Set("two", 2)
-                                                .Build())
-                                    .Append(extensions::DictionaryBuilder()
-                                                .Set("three", 3)
-                                                .Build())
-                                    .Build())
-                   .Build())
-          .Build();
+               base::Value::Dict().Set(
+                   "list",
+                   base::Value::List()
+                       .Append(base::Value::Dict().Set("one", 1).Set("two", 2))
+                       .Append(base::Value::Dict().Set("three", 3))));
   SetPolicies(policy);
   // Now run the extension.
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
@@ -740,11 +729,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   message_.clear();
 
   // Set policies for the test extension.
-  base::Value::Dict policy = extensions::DictionaryBuilder()
+  base::Value::Dict policy = base::Value::Dict()
                                  .Set("constant-policy", "aaa")
                                  .Set("changes-policy", "bbb")
-                                 .Set("deleted-policy", "ccc")
-                                 .Build();
+                                 .Set("deleted-policy", "ccc");
   SetPolicies(policy);
 
   ExtensionTestMessageListener ready_listener("ready");
@@ -760,11 +748,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // Now change the policies and wait until the extension is done.
-  policy = extensions::DictionaryBuilder()
+  policy = base::Value::Dict()
                .Set("constant-policy", "aaa")
                .Set("changes-policy", "ddd")
-               .Set("new-policy", "eee")
-               .Build();
+               .Set("new-policy", "eee");
   SetPolicies(policy);
   EXPECT_TRUE(events_result_catcher_.GetNextResult())
       << events_result_catcher_.message();

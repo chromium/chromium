@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -71,7 +72,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     void SetAdaptiveCharging(bool enabled);
 
    private:
-    PowerHandler* handler_;  // Not owned.
+    raw_ptr<PowerHandler, ExperimentalAsh> handler_;  // Not owned.
   };
 
   explicit PowerHandler(PrefService* prefs);
@@ -161,7 +162,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // the idle behavior of the device when on |power_source|.
   bool IsIdleManaged(PowerSource power_source);
 
-  PrefService* const prefs_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // Used to watch power management prefs for changes so the UI can be notified.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

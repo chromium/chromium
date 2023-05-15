@@ -25,6 +25,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -73,9 +74,6 @@ constexpr int kBubbleMinWidthDip = 200;
 // Maximum width of the bubble. Longer strings will cause wrapping.
 constexpr int kBubbleMaxWidthDip = 340;
 
-// The insets from the bubble border to the text inside.
-constexpr auto kBubbleContentsInsets = gfx::Insets::VH(16, 20);
-
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
   switch (arrow) {
@@ -122,6 +120,27 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // Prominent style gives a button hover highlight.
     SetProminent(true);
     GetViewAccessibility().OverrideIsLeaf(true);
+
+    if (features::IsChromeRefresh2023()) {
+      views::FocusRing::Get(this)->SetColorId(
+          delegate_->GetHelpBubbleForegroundColorId());
+
+      // The default behavior in 2023 refresh is for MD buttons is to have the
+      // alpha baked into the color, but we currently don't have that yet, so
+      // switch back to using the old default alpha blending mode.
+      auto* const ink_drop = views::InkDrop::Get(this);
+      ink_drop->SetBaseColorId(
+          is_default_button_
+              ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
+              : delegate_->GetHelpBubbleForegroundColorId());
+      ink_drop->SetHighlightOpacity(absl::nullopt);
+    } else {
+      // Focus ring rendering varies significantly between pre- and post-refresh
+      // Chrome. The pre-refresh tactic of setting the focus color to background
+      // is actually a hack; the post-refresh approach is more "correct".
+      views::FocusRing::Get(this)->SetColorId(
+          delegate_->GetHelpBubbleBackgroundColorId());
+    }
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
   MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
@@ -154,11 +173,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
   void OnThemeChanged() override {
     views::MdTextButton::OnThemeChanged();
 
-    const auto* color_provider = GetColorProvider();
-    views::FocusRing::Get(this)->SetColorId(
-        delegate_->GetHelpBubbleBackgroundColorId());
-
-    const SkColor foreground_color = color_provider->GetColor(
+    const SkColor foreground_color = GetColorProvider()->GetColor(
         is_default_button_
             ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
             : delegate_->GetHelpBubbleForegroundColorId());
@@ -170,7 +185,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
   }
 
  private:
-  const base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  const raw_ptr<const HelpBubbleDelegate> delegate_;
   bool is_default_button_;
 };
 
@@ -216,7 +231,7 @@ class ClosePromoButton : public views::ImageButton {
   }
 
  private:
-  const base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  const raw_ptr<const HelpBubbleDelegate> delegate_;
 };
 
 BEGIN_METADATA(ClosePromoButton, views::ImageButton)
@@ -269,7 +284,7 @@ class DotView : public views::View {
  private:
   static constexpr int kStrokeWidth = 1;
 
-  base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  raw_ptr<const HelpBubbleDelegate> delegate_;
   const gfx::Size size_;
   const bool should_fill_;
 };
@@ -406,23 +421,22 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
-  // Add close button (optional).
-  if (params.buttons.empty() || params.force_close_button) {
-    std::u16string alt_text = params.close_button_alt_text;
+  // Add close button.
+  std::u16string alt_text = params.close_button_alt_text;
 
-    // This can be empty if a test doesn't set it. Set a reasonable default to
-    // avoid an assertion (generated when a button with no text has no
-    // accessible name).
-    if (alt_text.empty())
-      alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
-
-    // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-    close_button_ = (params.progress ? progress_container : top_text_container)
-                        ->AddChildView(std::make_unique<ClosePromoButton>(
-                            delegate, alt_text,
-                            base::BindRepeating(&DialogDelegate::CancelDialog,
-                                                base::Unretained(this))));
+  // This can be empty if a test doesn't set it. Set a reasonable default to
+  // avoid an assertion (generated when a button with no text has no
+  // accessible name).
+  if (alt_text.empty()) {
+    alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
   }
+
+  // Since we set the cancel callback, we will use CancelDialog() to dismiss.
+  close_button_ = (params.progress ? progress_container : top_text_container)
+                      ->AddChildView(std::make_unique<ClosePromoButton>(
+                          delegate, alt_text,
+                          base::BindRepeating(&DialogDelegate::CancelDialog,
+                                              base::Unretained(this))));
 
   // Add other buttons.
   if (!params.buttons.empty()) {
@@ -487,18 +501,23 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   const int default_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
+  // The insets from the bubble border to the text inside.
+  const gfx::Insets contents_insets = features::IsChromeRefresh2023()
+                                          ? gfx::Insets(20)
+                                          : gfx::Insets::VH(16, 20);
+
   // Create primary layout (vertical).
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(kBubbleContentsInsets)
+      .SetInteriorMargin(contents_insets)
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, 0, default_spacing, 0))
       .SetIgnoreDefaultMainAxisMargins(true);
 
   // Set up top row container layout.
-  const int kCloseButtonHeight = 24;
+  const int kCloseButtonHeight = features::IsChromeRefresh2023() ? 20 : 24;
   auto& progress_layout =
       progress_container
           ->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -557,8 +576,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // the top text container, but still need to be inset to align with the
   // title.
   if (icon_view_) {
-    const int indent = kBubbleContentsInsets.left() + kBodyIconBackgroundSize +
-                       default_spacing;
+    const int indent =
+        contents_insets.left() + kBodyIconBackgroundSize + default_spacing;
     for (size_t i = 1; i < labels_.size(); ++i) {
       labels_[i]->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, indent, 0, 0));
@@ -566,13 +585,13 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   }
 
   // Set up button container layout.
-  // Add in the default spacing between bubble content and bottom/buttons.
+
+  // Add in spacing between bubble content and bottom/buttons.
   button_container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(
-          layout_provider->GetDistanceMetric(
-              views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-          0, 0, 0));
+      gfx::Insets::TLBR(layout_provider->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
+                        0, 0, 0));
 
   // Create button container internal layout.
   auto& button_layout =
@@ -592,7 +611,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // cases - and only those cases - the bubble can switch to a vertical button
   // alignment.
   if (button_container->GetMinimumSize().width() >
-      kBubbleMaxWidthDip - kBubbleContentsInsets.width()) {
+      kBubbleMaxWidthDip - contents_insets.width()) {
     button_layout.SetOrientation(views::LayoutOrientation::kVertical)
         .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
         .SetDefault(views::kMarginsKey, gfx::Insets::VH(default_spacing, 0))

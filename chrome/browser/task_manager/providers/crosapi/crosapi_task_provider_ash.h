@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"

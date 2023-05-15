@@ -16,9 +16,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /**
  * Shows the permissions and other settings for a group of websites.
@@ -130,6 +132,10 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
             }
             Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
                 if (confirmed) {
+                    RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                            DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
+                            DeleteBrowsingDataAction.MAX_VALUE);
+
                     SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
                             mSiteGroup, mDataClearedCallback);
                 }
@@ -163,6 +169,10 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         if (getActivity() == null) return;
         SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup);
+
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);
+
         SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup,
                 mDataClearedCallback);
     }

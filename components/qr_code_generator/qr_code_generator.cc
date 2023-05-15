@@ -576,14 +576,13 @@ QRCodeGenerator::~QRCodeGenerator() = default;
 QRCodeGenerator::GeneratedCode::GeneratedCode() = default;
 QRCodeGenerator::GeneratedCode::GeneratedCode(
     QRCodeGenerator::GeneratedCode&&) = default;
+QRCodeGenerator::GeneratedCode& QRCodeGenerator::GeneratedCode::operator=(
+    QRCodeGenerator::GeneratedCode&&) = default;
 QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 
 absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     base::span<const uint8_t> in,
-    absl::optional<int> min_version,
-    absl::optional<uint8_t> mask) {
-  CHECK(!mask || *mask <= kMaxMask);
-
+    absl::optional<int> min_version) {
   if (in.size() > kMaxInputSize) {
     return absl::nullopt;
   }
@@ -615,10 +614,13 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
       VersionClassForVersion(version_info->version);
   if (version_info != version_info_) {
     version_info_ = version_info;
-    d_.resize(version_info_->total_size());
   }
-  // Previous data and "set" bits must be cleared.
-  memset(&d_[0], 0, version_info_->total_size());
+
+  // If this is the first time `Generate` is called, then `d_` is a brand-new
+  // (empty) vector.  If `Generate` has been called in the past, then `d_` is a
+  // vector in a moved-from state.  Either way, we need to construct a new
+  // vector.
+  d_ = std::vector<uint8_t>(version_info_->total_size(), 0);
 
   const size_t framed_input_size =
       version_info_->group1_data_bytes() + version_info_->group2_data_bytes();
@@ -757,12 +759,11 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
   DCHECK_EQ(k, total_bytes);
 
-  uint8_t best_mask = mask.value_or(0);
+  // Evaluate each masking function to find the one with the lowest penalty
+  // score.
+  uint8_t best_mask = 0;
   absl::optional<unsigned> lowest_penalty;
-
-  // If |mask| was not specified, then evaluate each masking function to find
-  // the one with the lowest penalty score.
-  for (uint8_t mask_num = 0; !mask && mask_num <= kMaxMask; mask_num++) {
+  for (uint8_t mask_num = 0; mask_num <= kMaxMask; mask_num++) {
     // FormatInformationForECC returns an array of encoded formatting words for
     // the QR code that this code generates. See tables 10 and 12. For example:
     //                  00 011
@@ -788,8 +789,10 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
           kMaskFunctions[best_mask]);
 
   GeneratedCode code;
-  code.data = base::span<uint8_t>(&d_[0], version_info_->total_size());
+  code.data = std::move(d_);
   code.qr_size = version_info_->size;
+  CHECK_EQ(code.data.size(), version_info_->total_size());
+  CHECK_EQ(code.data.size(), static_cast<size_t>(code.qr_size * code.qr_size));
   return code;
 }
 

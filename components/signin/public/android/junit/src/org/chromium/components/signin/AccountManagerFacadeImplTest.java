@@ -357,6 +357,9 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.TRUE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.TRUE);
+        Assert.assertEquals(
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
+                Tribool.TRUE);
     }
 
     @Test
@@ -374,6 +377,9 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
+        Assert.assertEquals(
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
+                Tribool.FALSE);
     }
 
     @Test
@@ -391,6 +397,9 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);
+        Assert.assertEquals(
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
+                Tribool.UNKNOWN);
     }
 
     private Account setFeaturesForAccount(String email, String... features) {

@@ -102,7 +102,7 @@ bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }
 
-bool WebClient::EnableWebInspector() const {
+bool WebClient::EnableWebInspector(BrowserState* browser_state) const {
   return false;
 }
 

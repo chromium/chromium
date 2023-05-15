@@ -94,10 +94,6 @@ class MousePrefHandlerTest : public AshTestBase {
   }
 
   void InitializePrefService() {
-    local_state()->registry()->RegisterBooleanPref(
-        prefs::kOwnerPrimaryMouseButtonRight, /*default_value=*/false);
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
-
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     pref_service_->registry()->RegisterDictionaryPref(
@@ -548,6 +544,22 @@ TEST_F(MousePrefHandlerTest, NewMouse_ManagedEnterprisePolicy_GetsDefaults) {
 
   const auto* settings_dict = GetSettingsDict(kMouseKey1);
   EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+}
+
+TEST_F(MousePrefHandlerTest, LoginScreen_ManagedEnterprisePolicy) {
+  mojom::MousePolicies policies;
+  policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kManaged, !kDefaultSwapRight);
+
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+
+  pref_handler_->InitializeLoginScreenMouseSettings(local_state(), account_id_1,
+                                                    policies, &mouse);
+
+  EXPECT_EQ(!kDefaultSwapRight, mouse.settings->swap_right);
+  mouse.settings->swap_right = kDefaultSwapRight;
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
 }
 
 TEST_F(MousePrefHandlerTest,

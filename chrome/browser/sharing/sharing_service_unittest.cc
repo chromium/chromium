@@ -7,10 +7,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
@@ -210,6 +210,11 @@ class SharingServiceTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
+ private:
+  // `sharing_service_` must outlive the raw_ptrs below.
+  std::unique_ptr<SharingService> sharing_service_;
+
+ protected:
   testing::NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
   raw_ptr<testing::NiceMock<MockSharingHandlerRegistry>> handler_registry_;
   raw_ptr<testing::NiceMock<MockSharingFCMHandler>> fcm_handler_;
@@ -222,7 +227,6 @@ class SharingServiceTest : public testing::Test {
   bool device_candidates_initialized_ = false;
 
  private:
-  std::unique_ptr<SharingService> sharing_service_;
   absl::optional<SharingSendMessageResult> send_message_result_;
   std::unique_ptr<chrome_browser_sharing::ResponseMessage>
       send_message_response_;
@@ -258,7 +262,8 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
               -> std::vector<std::unique_ptr<syncer::DeviceInfo>> {
             std::vector<std::unique_ptr<syncer::DeviceInfo>> device_candidates;
             device_candidates.push_back(CreateFakeDeviceInfo(
-                base::GenerateGUID(), kDeviceName, CreateSharingInfo()));
+                base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName,
+                CreateSharingInfo()));
             return device_candidates;
           });
 
@@ -270,8 +275,9 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 }
 
 TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
-  std::unique_ptr<syncer::DeviceInfo> device_info = CreateFakeDeviceInfo(
-      base::GenerateGUID(), kDeviceName, CreateSharingInfo());
+  std::unique_ptr<syncer::DeviceInfo> device_info =
+      CreateFakeDeviceInfo(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kDeviceName, CreateSharingInfo());
 
   chrome_browser_sharing::ResponseMessage expected_response_message;
 
@@ -308,8 +314,7 @@ TEST_F(SharingServiceTest, DeviceRegistration) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -349,7 +354,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -384,8 +389,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -426,8 +430,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   // Create new SharingService instance with feature enabled at constructor.
   GetSharingService();
@@ -507,8 +510,7 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   // Create new SharingService instance with FCM already registered at
   // constructor.
@@ -519,7 +521,7 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
 }
 
 TEST_F(SharingServiceTest, GetDeviceByGuid) {
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
       .WillOnce(
           [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_PARENTAL_CONTROL_METRICS_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_PARENTAL_CONTROL_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class FamilyUserParentalControlMetrics
   void OnNewDay() override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   bool first_report_on_current_device_ = false;
 };
 }  // namespace ash

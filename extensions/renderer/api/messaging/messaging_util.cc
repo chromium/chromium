@@ -10,7 +10,9 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -83,10 +85,12 @@ const char kSendMessageChannel[] = "chrome.runtime.sendMessage";
 const char kSendRequestChannel[] = "chrome.extension.sendRequest";
 
 const char kOnMessageEvent[] = "runtime.onMessage";
+const char kOnUserScriptMessageEvent[] = "runtime.onUserScriptMessage";
 const char kOnMessageExternalEvent[] = "runtime.onMessageExternal";
 const char kOnRequestEvent[] = "extension.onRequest";
 const char kOnRequestExternalEvent[] = "extension.onRequestExternal";
 const char kOnConnectEvent[] = "runtime.onConnect";
+const char kOnUserScriptConnectEvent[] = "runtime.onUserScriptConnect";
 const char kOnConnectExternalEvent[] = "runtime.onConnectExternal";
 const char kOnConnectNativeEvent[] = "runtime.onConnectNative";
 
@@ -265,6 +269,15 @@ bool GetTargetExtensionId(ScriptContext* script_context,
     }
   }
 
+  if (script_context->context_type() == Feature::USER_SCRIPT_CONTEXT) {
+    // User scripts should *always* have an associated extension.
+    CHECK(script_context->extension());
+    if (script_context->extension()->id() != target_id) {
+      *error_out = "User scripts may not message external extensions.";
+      return false;
+    }
+  }
+
   *target_out = std::move(target_id);
   return true;
 }
@@ -342,6 +355,50 @@ bool IsSendRequestDisabled(ScriptContext* script_context) {
   const Extension* extension = script_context->extension();
   return extension && Manifest::IsUnpackedLocation(extension->location()) &&
          BackgroundInfo::HasLazyBackgroundPage(extension);
+}
+
+std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
+                               const ExtensionId& target_extension_id,
+                               ChannelType channel_type) {
+  bool is_external_event =
+      MessagingEndpoint::IsExternal(source_endpoint, target_extension_id);
+  bool is_user_script_event =
+      source_endpoint.type == MessagingEndpoint::Type::kUserScript;
+  // We (deliberately) do not support external user script events.
+  CHECK(!is_user_script_event || !is_external_event);
+
+  std::string event_name;
+  switch (channel_type) {
+    case ChannelType::kSendRequest:
+      CHECK(!is_user_script_event);
+      event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
+                                     : messaging_util::kOnRequestEvent;
+      break;
+    case ChannelType::kSendMessage:
+      if (is_external_event) {
+        event_name = messaging_util::kOnMessageExternalEvent;
+      } else if (is_user_script_event) {
+        event_name = messaging_util::kOnUserScriptMessageEvent;
+      } else {
+        event_name = messaging_util::kOnMessageEvent;
+      }
+      break;
+    case ChannelType::kConnect:
+      if (is_external_event) {
+        event_name = messaging_util::kOnConnectExternalEvent;
+      } else if (is_user_script_event) {
+        event_name = messaging_util::kOnUserScriptConnectEvent;
+      } else {
+        event_name = messaging_util::kOnConnectEvent;
+      }
+      break;
+    case ChannelType::kNative:
+      CHECK(!is_user_script_event);
+      event_name = messaging_util::kOnConnectNativeEvent;
+      break;
+  }
+
+  return event_name;
 }
 
 }  // namespace messaging_util

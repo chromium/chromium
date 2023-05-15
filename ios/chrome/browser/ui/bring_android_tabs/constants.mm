@@ -11,11 +11,20 @@
 NSString* const kBringAndroidTabsPromptConfirmationAlertAXId =
     @"kBringAndroidTabsPromptConfirmationAlertAccessibilityIdentifier";
 
-NSString* const kBringAndroidTabsPromptBottomMessageAXId =
-    @"kBringAndroidTabsPromptBottomMessageAccessibilityIdentifier";
+NSString* const kBringAndroidTabsPromptBottomMessageCloseButtonAXId =
+    @"kBringAndroidTabsPromptBottomMessageCloseButtonAccessibilityIdentifier";
+
+NSString* const kBringAndroidTabsPromptBottomMessageReviewButtonAXId =
+    @"kBringAndroidTabsPromptBottomMessageReviewButtonAccessibilityIdentifier";
 
 NSString* const kBringAndroidTabsPromptTabListAXId =
     @"kBringAndroidTabsPromptTabListAccessibilityIdentifier";
+
+NSString* const kBringAndroidTabsPromptTabListCancelButtonAXId =
+    @"kBringAndroidTabsPromptTabListCancelButtonAccessibilityIdentifier";
+
+NSString* const kBringAndroidTabsPromptTabListOpenButtonAXId =
+    @"kBringAndroidTabsPromptTabListOpenButtonAccessibilityIdentifier";
 
 CGFloat const kBringAndroidTabsFaviconSize = 48;
 

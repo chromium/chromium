@@ -31,7 +31,7 @@ namespace test {
 void SetupMockDemoModeNoEnrollmentHelper() {
   std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
       std::make_unique<EnterpriseEnrollmentHelperMock>();
-  EXPECT_CALL(*mock, Setup(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock, Setup(_, _, _)).Times(0);
   EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
 }
 
@@ -39,7 +39,7 @@ void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
   std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
       std::make_unique<EnterpriseEnrollmentHelperMock>();
   auto* mock_ptr = mock.get();
-  EXPECT_CALL(*mock, Setup(_, ConfigIsAttestation(), _, _));
+  EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _, _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
       .WillRepeatedly(testing::Invoke([mock_ptr, result]() {

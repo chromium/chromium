@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -57,7 +58,7 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   void OnRefreshTokenTimeout();
 
   const CoreAccountId account_id_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   PrepareCallback callback_;
   bool context_prepared_ = false;

@@ -64,6 +64,11 @@ class ComponentLoader {
   std::string Add(int manifest_resource_id,
                   const base::FilePath& root_directory);
 
+  // Convenience method for registering a component extension by parsed
+  // manifest.
+  std::string Add(base::Value::Dict manifest,
+                  const base::FilePath& root_directory);
+
   // Loads a component extension from file system. Replaces previously added
   // extension with the same ID.
   std::string AddOrReplace(const base::FilePath& path);

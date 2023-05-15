@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -289,10 +290,12 @@ class ASH_EXPORT RootWindowController {
 
   std::unique_ptr<AshWindowTreeHost> ash_host_;
   // |ash_host_| as a WindowTreeHost.
-  aura::WindowTreeHost* window_tree_host_;
+  raw_ptr<aura::WindowTreeHost, DanglingUntriaged | ExperimentalAsh>
+      window_tree_host_;
 
   // LayoutManagers are owned by the window they are installed on.
-  RootWindowLayoutManager* root_window_layout_manager_ = nullptr;
+  raw_ptr<RootWindowLayoutManager, DanglingUntriaged | ExperimentalAsh>
+      root_window_layout_manager_ = nullptr;
 
   std::unique_ptr<WallpaperWidgetController> wallpaper_widget_controller_;
 
@@ -319,8 +322,8 @@ class ASH_EXPORT RootWindowController {
 
   // Heads-up displays for touch events. These HUDs are not owned by the root
   // window controller and manage their own lifetimes.
-  TouchHudDebug* touch_hud_debug_ = nullptr;
-  TouchHudProjection* touch_hud_projection_ = nullptr;
+  raw_ptr<TouchHudDebug, ExperimentalAsh> touch_hud_debug_ = nullptr;
+  raw_ptr<TouchHudProjection, ExperimentalAsh> touch_hud_projection_ = nullptr;
 
   std::unique_ptr<::wm::ScopedCaptureClient> capture_client_;
 

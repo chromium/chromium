@@ -31,6 +31,7 @@ class ConstructorFails : public TestCustomElementDefinition {
 }  // namespace
 
 TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
+  CustomElementTestingScope testing_scope;
   Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
@@ -53,6 +54,7 @@ TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
 
 TEST_F(CustomElementDefinitionTest,
        upgrade_clearsReactionQueueOnFailure_backupStack) {
+  CustomElementTestingScope testing_scope;
   Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";

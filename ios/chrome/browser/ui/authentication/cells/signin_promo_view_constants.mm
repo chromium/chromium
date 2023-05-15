@@ -8,8 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kSigninPromoViewId = @"kSigninPromoViewId";
-NSString* const kSigninPromoPrimaryButtonId = @"kSigninPromoPrimaryButtonId";
-NSString* const kSigninPromoSecondaryButtonId =
-    @"kSigninPromoSecondaryButtonId";
-NSString* const kSigninPromoCloseButtonId = @"kSigninPromoCloseButtonId";
+NSString* const kSigninPromoViewId = @"SigninPromoViewId";
+NSString* const kSigninPromoPrimaryButtonId = @"SigninPromoPrimaryButtonId";
+NSString* const kSigninPromoSecondaryButtonId = @"SigninPromoSecondaryButtonId";
+NSString* const kSigninPromoCloseButtonId = @"SigninPromoCloseButtonId";
+NSString* const kSigninPromoActivityIndicatorId =
+    @"SigninPromoActivityIndicatorId";

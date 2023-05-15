@@ -11,7 +11,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
@@ -232,26 +231,6 @@ public class TrustedWebActivityUmaRecorder {
     public void recordLocationPermissionRequestResult(boolean enabled) {
         RecordHistogram.recordBooleanHistogram(
                 "TrustedWebActivity.LocationPermissionRequestIsGranted", enabled);
-    }
-
-    public void recordQualityEnforcementViolation(
-            WebContents webContents, @QualityEnforcementViolationType int type) {
-        RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.QualityEnforcementViolation",
-                type, QualityEnforcementViolationType.MAX_VALUE + 1);
-
-        if (webContents != null) {
-            new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
-                    /* eventName = */ "TrustedWebActivity.QualityEnforcementViolation",
-                    /* metricName = */ "ViolationType",
-                    /* metricValue = */ type);
-        }
-    }
-
-    public void recordQualityEnforcementViolationCrashed(
-            @QualityEnforcementViolationType int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "TrustedWebActivity.QualityEnforcementViolation.Crashed", type,
-                QualityEnforcementViolationType.MAX_VALUE + 1);
     }
 
     public void recordExtraCommandSuccess(String command, boolean success) {

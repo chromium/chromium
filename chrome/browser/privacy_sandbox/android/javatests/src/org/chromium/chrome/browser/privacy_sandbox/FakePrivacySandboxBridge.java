@@ -17,6 +17,7 @@ import java.util.Set;
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxEnabled = true;
     private boolean mIsPrivacySandboxRestricted /* = false*/;
+    private boolean mIsRestrictedNoticeEnabled /* = false*/;
 
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
@@ -76,6 +77,11 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
+    public boolean isRestrictedNoticeEnabled() {
+        return mIsRestrictedNoticeEnabled;
+    }
+
+    @Override
     public boolean isFirstPartySetsDataAccessEnabled() {
         return false;
     }
@@ -105,6 +111,10 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
 
     public void setPrivacySandboxRestricted(boolean restricted) {
         mIsPrivacySandboxRestricted = restricted;
+    }
+
+    public void setRestrictedNoticeEnabled(boolean restrictedNoticeEnabled) {
+        mIsRestrictedNoticeEnabled = restrictedNoticeEnabled;
     }
 
     @Override

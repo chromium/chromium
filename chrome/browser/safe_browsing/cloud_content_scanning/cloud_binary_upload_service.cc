@@ -38,6 +38,15 @@ const char kSbEnterpriseUploadUrl[] =
 const char kSbConsumerUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/consumer";
 
+constexpr int kInitialBackoffSeconds = 3;
+constexpr int kBackoffFactor = 2;
+constexpr int kMaxRetryAttempt = 2;
+
+bool* IgnoreFCMDelaysStorage() {
+  static bool ignore = false;
+  return &ignore;
+}
+
 bool IsConsumerScanRequest(const CloudBinaryUploadService::Request& request) {
   for (const std::string& tag : request.content_analysis_request().tags()) {
     if (tag == "dlp")
@@ -248,8 +257,42 @@ void CloudBinaryUploadService::QueueForDeepScanning(
     UploadForDeepScanning(std::move(request));
 }
 
+void CloudBinaryUploadService::RemoveFCMRetryDelaysForTesting() {
+  *IgnoreFCMDelaysStorage() = true;
+}
+
+void CloudBinaryUploadService::RetryFCMConnection(
+    Request* request,
+    int retry_count,
+    base::TimeDelta next_backoff) {
+  if (!IsActive(request)) {
+    return;
+  }
+
+  if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
+    if (retry_count >= kMaxRetryAttempt) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CloudBinaryUploadService::FinishRequest,
+                         weakptr_factory_.GetWeakPtr(), request,
+                         Result::FAILED_TO_GET_TOKEN,
+                         enterprise_connectors::ContentAnalysisResponse()));
+    } else {
+      content::GetUIThreadTaskRunner({})->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&CloudBinaryUploadService::RetryFCMConnection,
+                         weakptr_factory_.GetWeakPtr(), request,
+                         retry_count + 1, next_backoff * kBackoffFactor),
+          next_backoff);
+    }
+    return;
+  }
+
+  OnFCMConnected(request);
+}
+
 void CloudBinaryUploadService::UploadForDeepScanning(
-    std::unique_ptr<CloudBinaryUploadService::Request> request) {
+    std::unique_ptr<Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool is_auth_request = request->IsAuthRequest();
@@ -262,43 +305,62 @@ void CloudBinaryUploadService::UploadForDeepScanning(
   active_tokens_[raw_request] = token;
 
   if ((!binary_fcm_service_ || !binary_fcm_service_->Connected()) &&
-      !is_auth_request) {
-    content::GetUIThreadTaskRunner({})->PostTask(
+      !is_auth_request &&
+      raw_request->analysis_connector() !=
+          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+    base::TimeDelta first_backoff;
+    if (*IgnoreFCMDelaysStorage()) {
+      first_backoff = base::Seconds(0);
+    } else {
+      first_backoff = base::Seconds(kInitialBackoffSeconds);
+    }
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&CloudBinaryUploadService::FinishRequest,
+        base::BindOnce(&CloudBinaryUploadService::RetryFCMConnection,
                        weakptr_factory_.GetWeakPtr(), raw_request,
-                       Result::FAILED_TO_GET_TOKEN,
-                       enterprise_connectors::ContentAnalysisResponse()));
+                       /*retry_count*/ 0, first_backoff * kBackoffFactor),
+        first_backoff);
+    return;
+  }
+  OnFCMConnected(raw_request);
+}
+
+void CloudBinaryUploadService::OnFCMConnected(Request* request) {
+  if (!IsActive(request)) {
     return;
   }
 
-  // Auth requests are never going to need waiting for an async response, so
-  // don't bother getting a token from `binary_fcm_service_`.
-  if (is_auth_request) {
-    raw_request->GetRequestData(
+  bool is_auth_request = request->IsAuthRequest();
+  // Auth requests and paste requests are never going to need waiting for an
+  // async response, so don't bother getting a token from `binary_fcm_service_`.
+  if (is_auth_request ||
+      request->analysis_connector() ==
+          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+    request->GetRequestData(
         base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
-                       weakptr_factory_.GetWeakPtr(), raw_request));
+                       weakptr_factory_.GetWeakPtr(), request));
   } else {
     binary_fcm_service_->SetCallbackForToken(
-        token, base::BindRepeating(&CloudBinaryUploadService::OnGetResponse,
-                                   weakptr_factory_.GetWeakPtr(), raw_request));
+        request->request_token(),
+        base::BindRepeating(&CloudBinaryUploadService::OnGetResponse,
+                            weakptr_factory_.GetWeakPtr(), request));
     binary_fcm_service_->GetInstanceID(
         base::BindOnce(&CloudBinaryUploadService::OnGetInstanceID,
-                       weakptr_factory_.GetWeakPtr(), raw_request));
+                       weakptr_factory_.GetWeakPtr(), request));
   }
 
   // `request` might have been destroyed by:
   // - `OnGetRequestData` or
   // - `OnGetInstanceID`.
-  if (!IsActive(raw_request)) {
+  if (!IsActive(request)) {
     return;
   }
 
-  active_timers_[raw_request] = std::make_unique<base::OneShotTimer>();
-  active_timers_[raw_request]->Start(
+  active_timers_[request] = std::make_unique<base::OneShotTimer>();
+  active_timers_[request]->Start(
       FROM_HERE, is_auth_request ? kAuthTimeout : kScanningTimeout,
       base::BindOnce(&CloudBinaryUploadService::OnTimeout,
-                     weakptr_factory_.GetWeakPtr(), raw_request));
+                     weakptr_factory_.GetWeakPtr(), request));
 }
 
 void CloudBinaryUploadService::OnGetInstanceID(Request* request,

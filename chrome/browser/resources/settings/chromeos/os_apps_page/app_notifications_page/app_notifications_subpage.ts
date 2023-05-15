@@ -9,7 +9,7 @@
  */
 
 import './app_notification_row.js';
-import '../../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

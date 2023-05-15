@@ -222,8 +222,7 @@ TEST_F(ItemsBubbleControllerTest, ShouldReturnPasswordSyncState) {
 
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
+      /*types=*/{syncer::UserSelectableType::kPasswords});
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
       password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);

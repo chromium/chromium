@@ -112,10 +112,10 @@ class AssistantHost {
   void ResetRemote();
 
   // Owned by |Service|.
-  base::raw_ptr<AssistantManagerServiceImpl> service_;
+  raw_ptr<AssistantManagerServiceImpl> service_;
 
   // Owned by |AssistantManagerServiceImpl|.
-  base::raw_ptr<LibassistantServiceHost> libassistant_service_host_;
+  raw_ptr<LibassistantServiceHost> libassistant_service_host_;
 
   mojo::Remote<libassistant::mojom::LibassistantService> libassistant_service_;
 

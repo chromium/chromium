@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/network_icon.h"
@@ -25,11 +26,13 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/i18n/number_formatting.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -167,6 +170,7 @@ bool ShouldShowContactCarrier(
 }
 
 gfx::ImageSkia GetNetworkImageForNetwork(
+    const ui::ColorProvider* color_provider,
     const NetworkStatePropertiesPtr& network_properties) {
   gfx::ImageSkia network_image;
 
@@ -175,10 +179,10 @@ gfx::ImageSkia GetNetworkImageForNetwork(
           LoginStatus::NOT_LOGGED_IN) {
     network_image =
         network_icon::GetImageForPSimPendingActivationWhileLoggedOut(
-            network_icon::ICON_TYPE_LIST);
+            color_provider, network_icon::ICON_TYPE_LIST);
   } else {
     const gfx::ImageSkia image = network_icon::GetImageForNonVirtualNetwork(
-        network_properties.get(), network_icon::ICON_TYPE_LIST,
+        color_provider, network_properties.get(), network_icon::ICON_TYPE_LIST,
         /*badge_vpn=*/false);
 
     if (NetworkTypeMatchesType(network_properties->type,
@@ -188,8 +192,11 @@ gfx::ImageSkia GetNetworkImageForNetwork(
       // Mobile icons which are not connecting or connected should display a
       // small "X" icon superimposed so that it is clear that they are
       // disconnected.
-      const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary);
+      const SkColor icon_color =
+          chromeos::features::IsJellyrollEnabled()
+              ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+              : AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kIconColorPrimary);
       network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
           image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
                                        image.height(), icon_color));
@@ -250,13 +257,26 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 
   Reset();
 
+  if (chromeos::features::IsJellyrollEnabled() && !GetColorProvider()) {
+    return;
+  }
+
   const std::u16string label = GetLabel();
-  AddIconAndLabel(GetNetworkImageForNetwork(network_properties_), label);
+
+  AddIconAndLabel(
+      GetNetworkImageForNetwork(GetColorProvider(), network_properties_),
+      label);
 
   if (network_properties_.get()->type == NetworkType::kCellular) {
     SetupCellularSubtext();
   } else {
     SetupNetworkSubtext();
+  }
+
+  if (text_label() && chromeos::features::IsJellyEnabled()) {
+    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *text_label());
   }
 
   if (IsNetworkDisabled(network_properties)) {
@@ -294,7 +314,15 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 void NetworkListNetworkItemView::NetworkIconChanged() {
   DCHECK(views::IsViewClass<views::ImageView>(left_view()));
   static_cast<views::ImageView*>(left_view())
-      ->SetImage(GetNetworkImageForNetwork(network_properties_));
+      ->SetImage(
+          GetNetworkImageForNetwork(GetColorProvider(), network_properties_));
+}
+
+void NetworkListNetworkItemView::OnThemeChanged() {
+  NetworkListItemView::OnThemeChanged();
+  if (!network_properties_.is_null()) {
+    NetworkIconChanged();
+  }
 }
 
 void NetworkListNetworkItemView::SetupCellularSubtext() {
@@ -306,7 +334,7 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
     return;
   }
 
-  if (text_label()) {
+  if (text_label() && !chromeos::features::IsJellyEnabled()) {
     const SkColor primary_text_color =
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -314,9 +342,16 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
   }
 
   SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
-  const SkColor sub_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorWarning);
-  sub_text_label()->SetEnabledColor(sub_text_color);
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *sub_text_label());
+  } else {
+    const SkColor sub_text_color =
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorWarning);
+    sub_text_label()->SetEnabledColor(sub_text_color);
+  }
 }
 
 void NetworkListNetworkItemView::SetupNetworkSubtext() {
@@ -365,8 +400,7 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
       network_properties()->type_state->get_tether()->battery_percentage;
   icon_info.charge_percent = battery_percentage;
   image_icon->SetImage(PowerStatus::GetBatteryImage(
-      icon_info, kMobileNetworkBatteryIconSize,
-      ColorUtil::GetSecondToneColor(icon_color), icon_color));
+      icon_info, kMobileNetworkBatteryIconSize, icon_color));
 
   // Show the numeric battery percentage on hover.
   image_icon->SetTooltipText(base::FormatPercent(battery_percentage));

@@ -842,6 +842,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (password_store) {
+      // No sync completion callback is needed for profile passwords, since the
+      // login token is persisted and can be used after cookie deletion.
       // TODO:(crbug.com/1167715) - Test that associated compromised credentials
       // are removed.
       password_store->RemoveLoginsByURLAndTime(
@@ -898,6 +900,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (account_store) {
+      // A sync completion callback is passed in for account
+      // passwords, in order to ensure that the passwords are cleared before the
+      // user is signed out via cookie deletion.
       // TODO:(crbug.com/1167715) - Test that associated compromised credentials
       // are removed.
       account_store->RemoveLoginsByURLAndTime(

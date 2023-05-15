@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
 
 #include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserContextKeyedServiceFactory;
@@ -40,7 +41,7 @@ class ArcKeyboardShortcutBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
 };
 
 }  // namespace arc

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
@@ -69,7 +70,7 @@ class MultiDeviceSetupClientHolder : public KeyedService {
     weak_factory_.InvalidateWeakPtrs();
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<MultiDeviceSetupClient> multidevice_setup_client_;
   base::WeakPtrFactory<MultiDeviceSetupClientHolder> weak_factory_{this};
 };

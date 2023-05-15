@@ -95,9 +95,6 @@ def main(argv):
   parser.add_argument('--tiered-stop-at-level-one',
                       action='store_true',
                       help='JVM flag: -XX:TieredStopAtLevel=1.')
-  parser.add_argument('--use-jdk-11',
-                      action='store_true',
-                      help='Use older JDK11 instead of modern JDK.')
   parser.add_argument('extra_program_args',
                       nargs='*',
                       help='This captures all '
@@ -116,11 +113,8 @@ def main(argv):
   run_dir = os.path.dirname(args.output)
   classpath = [os.path.relpath(p, run_dir) for p in classpath]
 
-  if args.use_jdk_11:
-    java_home = build_utils.JAVA_11_HOME_DEPRECATED
-  else:
-    java_home = build_utils.JAVA_HOME
-  java_path = os.path.relpath(os.path.join(java_home, 'bin', 'java'), run_dir)
+  java_path = os.path.relpath(
+      os.path.join(build_utils.JAVA_HOME, 'bin', 'java'), run_dir)
 
   with action_helpers.atomic_output(args.output, mode='w') as script:
     script.write(

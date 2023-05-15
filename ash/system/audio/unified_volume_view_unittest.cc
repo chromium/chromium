@@ -39,15 +39,14 @@ class UnifiedVolumeViewTest : public AshTestBase {
 
   // Checks `level` corresponds to the expected icon.
   void CheckSliderIcon(float level) {
-    const gfx::VectorIcon* icon =
-        slider_icon()->GetImageModel().GetVectorIcon().vector_icon();
+    const gfx::VectorIcon& icon = GetIcon(level);
 
     if (level <= 0.0) {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
+      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
     } else if (level <= 0.5) {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
+      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
     } else {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
+      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
     }
   }
 
@@ -61,8 +60,8 @@ class UnifiedVolumeViewTest : public AshTestBase {
 
   views::Slider* slider() { return unified_volume_view()->slider(); }
 
-  views::ImageView* slider_icon() {
-    return unified_volume_view()->slider_icon();
+  const gfx::VectorIcon& GetIcon(float level) {
+    return unified_volume_view()->GetVolumeIconForLevel(level);
   }
 
   UnifiedSystemTrayController* controller() {
@@ -81,9 +80,8 @@ class UnifiedVolumeViewTest : public AshTestBase {
 // `LiveCaption` button, and a drill-in button that leads to
 // `AudioDetailedView`.
 TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
-  EXPECT_STREQ(
-      unified_volume_view()->children()[0]->children()[0]->GetClassName(),
-      "QuickSettingsSlider");
+  EXPECT_STREQ(unified_volume_view()->children()[0]->GetClassName(),
+               "QuickSettingsSlider");
 
   // TODO(b/257151067): Updates the a11y name id and tooltip text.
   auto* live_caption_button =
@@ -169,9 +167,9 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeUp) {
   CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
-  // The slider level should be 0 and icon appears as muted.
-  EXPECT_EQ(slider()->GetValue(), 0);
-  CheckSliderIcon(0);
+  // The slider level should remain as `level`.
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_UP);
   // The slider level and icon should be restored.
@@ -192,14 +190,14 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
   CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
-  // The slider level should be 0 and icon appears as muted.
-  EXPECT_EQ(slider()->GetValue(), 0);
-  CheckSliderIcon(0);
+  // The slider level should remain as `level`.
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_DOWN);
   // The slider level and icon should remain muted.
   EXPECT_EQ(slider()->GetValue(), 0);
-  CheckSliderIcon(0);
+  CheckSliderIcon(/*level=*/0);
 }
 
 }  // namespace ash

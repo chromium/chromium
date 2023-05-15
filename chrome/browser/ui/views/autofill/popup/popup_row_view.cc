@@ -36,9 +36,10 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
   base::WeakPtr<AutofillPopupController> controller = popup_view.controller();
   DCHECK(controller);
 
-  int frontend_id = controller->GetSuggestionAt(line_number).frontend_id;
+  Suggestion::FrontendId frontend_id =
+      controller->GetSuggestionAt(line_number).frontend_id;
   std::unique_ptr<PopupRowStrategy> strategy;
-  switch (frontend_id) {
+  switch (frontend_id.as_popup_item_id()) {
     // These frontend ids should never be displayed in a `PopupRowView`.
     case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
     case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
@@ -52,7 +53,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                                    line_number);
       break;
     default:
-      if (IsFooterFrontendId(frontend_id)) {
+      if (IsFooterFrontendId(frontend_id.as_popup_item_id())) {
         strategy =
             std::make_unique<PopupFooterStrategy>(controller, line_number);
       } else {

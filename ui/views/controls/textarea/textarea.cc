@@ -30,6 +30,7 @@ bool Textarea::OnMouseWheel(const ui::MouseWheelEvent& event) {
   GetRenderText()->SetDisplayOffset(GetRenderText()->GetUpdatedDisplayOffset() +
                                     gfx::Vector2d(0, event.y_offset()));
   UpdateCursorViewPosition();
+  UpdateCursorVisibility();
   SchedulePaint();
   return true;
 }

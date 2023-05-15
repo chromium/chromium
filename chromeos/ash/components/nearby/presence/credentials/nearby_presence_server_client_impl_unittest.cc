@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/null_task_runner.h"
@@ -170,16 +171,19 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
         std::make_unique<FakeNearbyApiCallFlow>();
     api_call_flow_ = api_call_flow.get();
 
-    client_ = std::make_unique<NearbyPresenceServerClientImpl>(
+    client_ = NearbyPresenceServerClientImpl::Factory::Create(
         std::move(api_call_flow), identity_test_environment_.identity_manager(),
         shared_factory_);
   }
 
   const std::string& http_method() { return api_call_flow_->http_method_; }
+
   const GURL& request_url() { return api_call_flow_->request_url_; }
+
   const std::string& serialized_request() {
     return api_call_flow_->serialized_request_;
   }
+
   const NearbyApiCallFlow::QueryParameters& request_as_query_parameters() {
     return api_call_flow_->request_as_query_parameters_;
   }
@@ -203,7 +207,7 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  FakeNearbyApiCallFlow* api_call_flow_;
+  raw_ptr<FakeNearbyApiCallFlow, ExperimentalAsh> api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<NearbyPresenceServerClient> client_;
 };

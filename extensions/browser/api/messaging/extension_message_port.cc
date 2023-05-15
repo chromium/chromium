@@ -26,6 +26,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_messages.h"
@@ -285,6 +286,7 @@ void ExtensionMessagePort::RevalidatePort() {
 }
 
 void ExtensionMessagePort::DispatchOnConnect(
+    ChannelType channel_type,
     const std::string& channel_name,
     absl::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
@@ -297,9 +299,10 @@ void ExtensionMessagePort::DispatchOnConnect(
   SendToPort(base::BindRepeating(
       &ExtensionMessagePort::BuildDispatchOnConnectIPC,
       // Called synchronously.
-      base::Unretained(this), channel_name, base::OptionalToPtr(source_tab),
-      source_frame, guest_process_id, guest_render_frame_routing_id,
-      source_endpoint, target_extension_id, source_url, source_origin));
+      base::Unretained(this), channel_type, channel_name,
+      base::OptionalToPtr(source_tab), source_frame, guest_process_id,
+      guest_render_frame_routing_id, source_endpoint, target_extension_id,
+      source_url, source_origin));
 }
 
 void ExtensionMessagePort::DispatchOnDisconnect(
@@ -555,6 +558,7 @@ void ExtensionMessagePort::SendToIPCTarget(const IPCTarget& target,
 }
 
 std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
+    ChannelType channel_type,
     const std::string& channel_name,
     const base::Value::Dict* source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
@@ -584,9 +588,15 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
   info.guest_process_id = guest_process_id;
   info.guest_render_frame_routing_id = guest_render_frame_routing_id;
 
+  ExtensionMsg_OnConnectData connect_data;
+  connect_data.target_port_id = port_id_;
+  connect_data.channel_type = channel_type;
+  connect_data.channel_name = channel_name;
+  connect_data.tab_source = std::move(source);
+  connect_data.external_connection_info = std::move(info);
+
   return std::make_unique<ExtensionMsg_DispatchOnConnect>(
-      MSG_ROUTING_NONE, target.worker_thread_id, port_id_, channel_name, source,
-      info);
+      MSG_ROUTING_NONE, target.worker_thread_id, connect_data);
 }
 
 std::unique_ptr<IPC::Message>

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Tallennus päättyi, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit tallentaa lisää videoita.</translation>
 <translation id="2036868001356139588">Ajastimen kesto</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivinen.</translation>
-<translation id="2128052519899549250">Tallenna nopeutettua kuvaa</translation>
 <translation id="2134029355740465625">Videoasetukset</translation>
 <translation id="2144806332417375165">Omat videoparametrit</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Dokumentti havaittiin</translation>
 <translation id="414641094616694804">Kamera ei voi muuttaa resoluutiota</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
-<translation id="4281620174117014503">Keskitason resoluutio</translation>
 <translation id="428234092390943511">Sivun pikkukuva</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>
 <translation id="4445542136948522167">Lopeta kuvan ottaminen</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5320594929574852403">Siirretään vasemmalle</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Nopeutettu kuva</translation>
 <translation id="5662366948659129155">Skannataan sivua <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Neliö</translation>
+<translation id="574392208103952083">Keskivahva</translation>
 <translation id="5746169159649715125">Tallenna PDF-muodossa</translation>
 <translation id="5753488212459587150">Ota asiantuntijatila käyttöön</translation>
 <translation id="5759254179196327752">Skannaa dokumentti</translation>
@@ -122,7 +120,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="6888362557094394345">Siirretään alaspäin</translation>
 <translation id="695140971690006676">Palauta kaikki</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Pystysuunta</translation>
+<translation id="6965830616442491568">Muotokuva</translation>
 <translation id="698156982839284926">3 sekuntia</translation>
 <translation id="7134221860976209830">10 sekunnin ajastin</translation>
 <translation id="7191890674911603392">Tietuetyyppi</translation>
@@ -138,6 +136,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Dokumentin oikea alakulma</translation>
+<translation id="7684446460490665873">Tallenna nopeutettua kuvaa</translation>
 <translation id="7692090236657809299">Ota panorointi, kallistus ja zoomaus käyttöön</translation>
 <translation id="7726641833034062494">Kuvaa normaali video</translation>
 <translation id="7748344063862150053">Dokumentin oikea yläkulma</translation>
@@ -163,6 +162,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="9045010116236796332">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä</translation>
 <translation id="9045155556724273246">10 sekuntia</translation>
 <translation id="906331135292332864">Käsitellään kuvaa…</translation>
+<translation id="9161584225258678723">Nopeutettu kuva</translation>
 <translation id="922762992951083513">Peili päällä</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 </translationbundle>

@@ -50,11 +50,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/background/background_contents.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -947,22 +948,15 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
 // A delegate that allows a child to try to install an extension and tracks
 // whether the parent permission dialog would have opened.
 class TestSupervisedUserExtensionsDelegate
-    : public SupervisedUserExtensionsDelegate {
+    : public SupervisedUserExtensionsDelegateImpl {
  public:
   explicit TestSupervisedUserExtensionsDelegate(
       content::BrowserContext* context)
-      : context_(context) {}
+      : SupervisedUserExtensionsDelegateImpl(context) {}
   ~TestSupervisedUserExtensionsDelegate() override = default;
 
   // SupervisedUserExtensionsDelegate:
   bool IsChild() const override { return true; }
-
-  bool IsExtensionAllowedByParent(
-      const extensions::Extension& extension) const override {
-    SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserContext(context_);
-    return supervised_user_service->IsExtensionAllowed(extension);
-  }
 
   void RequestToAddExtensionOrShowError(
       const extensions::Extension& extension,
@@ -1017,14 +1011,6 @@ class TestSupervisedUserExtensionsDelegate
   int show_block_dialog_count() const { return show_block_dialog_count_; }
 
  private:
-  // Returns true if |context_| represents a supervised child account who may
-  // install extensions with parent permission.
-  bool CanInstallExtensions() const {
-    SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserContext(context_);
-    return supervised_user_service->CanInstallExtensions();
-  }
-
   // Shows a parent permission dialog for |extension| and call |done_callback|
   // when it completes.
   void ShowParentPermissionDialogForExtension(
@@ -1045,13 +1031,9 @@ class TestSupervisedUserExtensionsDelegate
       ExtensionInstalledBlockedByParentDialogAction blocked_action,
       base::OnceClosure done_callback) {
     show_block_dialog_count_++;
-    SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
-        SupervisedUserExtensionsMetricsRecorder::EnablementState::
-            kFailedToEnable);
     std::move(done_callback).Run();
   }
 
-  const raw_ptr<content::BrowserContext> context_;
   ExtensionApprovalResult dialog_result_ = ExtensionApprovalResult::kFailed;
   int show_dialog_count_ = 0;
   int show_block_dialog_count_ = 0;
@@ -1071,8 +1053,12 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     return params;
   }
 
-  SupervisedUserService* GetSupervisedUserService() {
+  supervised_user::SupervisedUserService* GetSupervisedUserService() {
     return SupervisedUserServiceFactory::GetForProfile(profile());
+  }
+
+  SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate() {
+    return supervised_user_delegate_;
   }
 
   void SetUp() override {
@@ -1096,12 +1082,13 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     supervised_user_delegate_ =
         new TestSupervisedUserExtensionsDelegate(profile());
     management_api_->set_supervised_user_extensions_delegate_for_test(
-        base::WrapUnique(supervised_user_delegate_));
+        base::WrapUnique(supervised_user_delegate_.get()));
   }
 
   std::unique_ptr<content::WebContents> web_contents_;
-  ManagementAPI* management_api_ = nullptr;
-  TestSupervisedUserExtensionsDelegate* supervised_user_delegate_ = nullptr;
+  raw_ptr<ManagementAPI, ExperimentalAsh> management_api_ = nullptr;
+  raw_ptr<TestSupervisedUserExtensionsDelegate, ExperimentalAsh>
+      supervised_user_delegate_ = nullptr;
 };
 
 TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
@@ -1145,16 +1132,10 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
     EXPECT_EQ(supervised_user_delegate_->show_block_dialog_count(), 1);
   }
 
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
-  EXPECT_EQ(
-      1,
-      user_action_tester.GetActionCount(
-          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
+  // Metrics reporting cannot be tested here, because the current implementation
+  // of `TestSupervisedUserExtensionsDelegate` overrides the
+  // `ShowInstallBlockedByParentDialogForExtension` method that records the
+  // metric in the production code.
 }
 
 // Tests enabling an extension via management API after it was disabled due to
@@ -1179,7 +1160,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
   const std::string extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
-  GetSupervisedUserService()->AddExtensionApproval(*extension);
+  GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
   // The extension should be enabled now.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
 
@@ -1264,7 +1245,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   const std::string extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
-  GetSupervisedUserService()->AddExtensionApproval(*extension);
+  GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
   // The extension should be enabled now.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
 
@@ -1537,7 +1518,7 @@ class ManagementApiSupervisedUserTestWithSetup
 
     // Install a ManagementAPIDelegate to sense extension enable.
     delegate_ = new TestManagementAPIDelegate;
-    management_api_->set_delegate_for_test(base::WrapUnique(delegate_));
+    management_api_->set_delegate_for_test(base::WrapUnique(delegate_.get()));
 
     // Add a generic extension.
     extension_ = ExtensionBuilder("Test").Build();
@@ -1545,7 +1526,7 @@ class ManagementApiSupervisedUserTestWithSetup
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
   }
 
-  TestManagementAPIDelegate* delegate_ = nullptr;
+  raw_ptr<TestManagementAPIDelegate, ExperimentalAsh> delegate_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 
@@ -1630,7 +1611,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_PreviouslyAllowed) {
                               disable_reason::DISABLE_USER_ACTION);
 
   // Simulate previous parent approval.
-  GetSupervisedUserService()->AddExtensionApproval(*extension_);
+  GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension_);
 
   // Simulate a call to chrome.management.setEnabled().
   std::string error;

@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_handler.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
-#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -26,15 +25,6 @@
 namespace optimization_guide {
 
 namespace {
-
-const char kPageTopicsModelMetadataTypeUrl[] =
-    "type.googleapis.com/"
-    "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
-
-// The current version the client supports for the topics model. This
-// should be incremented any time there is a client code change to how the
-// topics model works that needs to be side-channeled to the server.
-extern const int32_t kTopicsModelVersion = 2;
 
 base::TaskTraits GetTaskTraits() {
   base::TaskTraits task_traits = {base::MayBlock(),
@@ -85,25 +75,6 @@ void PageContentAnnotationsModelManager::
   page_entities_model_handler_ = std::move(page_entities_model_handler);
 }
 
-void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
-    OptimizationGuideModelProvider* optimization_guide_model_provider) {
-  if (!features::PageTopicsBatchAnnotationsEnabled())
-    return;
-
-  if (page_topics_model_handler_)
-    return;
-
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
-  proto::PageTopicsModelMetadata model_metadata;
-  model_metadata.set_version(kTopicsModelVersion);
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-  page_topics_model_handler_ = std::make_unique<PageTopicsModelHandler>(
-      optimization_guide_model_provider,
-      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      any_metadata);
-}
-
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
   if (!features::PageVisibilityBatchAnnotationsEnabled())
@@ -130,32 +101,9 @@ void PageContentAnnotationsModelManager::GetMetadataForEntityId(
   std::move(callback).Run(absl::nullopt);
 }
 
-void PageContentAnnotationsModelManager::GetMetadataForEntityIds(
-    const base::flat_set<std::string>& entity_ids,
-    BatchEntityMetadataRetrievedCallback callback) {
-  if (page_entities_model_handler_) {
-    page_entities_model_handler_->GetMetadataForEntityIds(entity_ids,
-                                                          std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run({});
-}
-
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     AnnotationType type,
     base::OnceCallback<void(bool)> callback) {
-  if (type == AnnotationType::kPageTopics) {
-    // No-op if the executor is already setup.
-    SetUpPageTopicsV2Model(optimization_guide_model_provider_);
-
-    if (page_topics_model_handler_) {
-      page_topics_model_handler_->AddOnModelUpdatedCallback(
-          base::BindOnce(std::move(callback), true));
-      return;
-    }
-  }
-
   if (type == AnnotationType::kContentVisibility) {
     // No-op if the executor is already setup.
     SetUpPageVisibilityModel(optimization_guide_model_provider_);
@@ -184,9 +132,6 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
 absl::optional<ModelInfo>
 PageContentAnnotationsModelManager::GetModelInfoForType(
     AnnotationType type) const {
-  if (type == AnnotationType::kPageTopics && page_topics_model_handler_) {
-    return page_topics_model_handler_->GetModelInfo();
-  }
   if (type == AnnotationType::kContentVisibility &&
       page_visibility_model_handler_) {
     return page_visibility_model_handler_->GetModelInfo();
@@ -228,10 +173,6 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
 
   JobQueue::Pointer job_ptr = job_queue_.FirstMax();
   if (job_ptr.is_null()) {
-    // There are no more jobs to run, so unload all models.
-    if (page_topics_model_handler_) {
-      page_topics_model_handler_->UnloadModel();
-    }
     if (page_visibility_model_handler_) {
       page_visibility_model_handler_->UnloadModel();
     }
@@ -250,26 +191,10 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
 
   // Reset every other model from memory so that there aren't a bunch of models
   // all loaded at the same time.
-  if (job->type() != AnnotationType::kPageTopics &&
-      page_topics_model_handler_) {
-    page_topics_model_handler_->UnloadModel();
-  }
+
   if (job->type() != AnnotationType::kContentVisibility &&
       page_visibility_model_handler_) {
     page_visibility_model_handler_->UnloadModel();
-  }
-
-  if (job->type() == AnnotationType::kPageTopics) {
-    if (!page_topics_model_handler_) {
-      job->FillWithNullOutputs();
-      job->OnComplete();
-      job.reset();
-      std::move(on_job_complete_callback).Run();
-      return;
-    }
-    page_topics_model_handler_->ExecuteJob(std::move(on_job_complete_callback),
-                                           std::move(job));
-    return;
   }
 
   if (job->type() == AnnotationType::kContentVisibility) {

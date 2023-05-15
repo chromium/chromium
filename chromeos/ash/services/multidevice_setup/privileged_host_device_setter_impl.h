@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PRIVILEGED_HOST_DEVICE_SETTER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PRIVILEGED_HOST_DEVICE_SETTER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/privileged_host_device_setter_base.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
@@ -48,7 +49,7 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
   void SetHostDevice(const std::string& host_instance_id_or_legacy_device_id,
                      SetHostDeviceCallback callback) override;
 
-  MultiDeviceSetupBase* multidevice_setup_;
+  raw_ptr<MultiDeviceSetupBase, ExperimentalAsh> multidevice_setup_;
 };
 
 }  // namespace multidevice_setup

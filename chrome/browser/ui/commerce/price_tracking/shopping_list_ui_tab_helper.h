@@ -64,6 +64,7 @@ class ShoppingListUiTabHelper
   // content::WebContentsObserver implementation
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
+  void DidStopLoading() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
@@ -109,6 +110,14 @@ class ShoppingListUiTabHelper
 
   void HandleSubscriptionChange(const CommerceSubscription& sub);
 
+  void TriggerUpdateForIconView();
+
+  bool IsInitialNavigationCommitted(
+      const content::LoadCommittedDetails& load_details);
+
+  bool IsSameDocumentWithSameCommittedUrl(
+      const content::LoadCommittedDetails& load_details);
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
@@ -137,6 +146,10 @@ class ShoppingListUiTabHelper
   // callback from the (un)subscribe event. If no value, there is no pending
   // state, otherwise true means "tracking" and false means "not tracking".
   absl::optional<bool> pending_tracking_state_;
+
+  // A flag to indicating whether the first load after a navigation has
+  // completed.
+  bool is_first_load_for_nav_finished_{false};
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

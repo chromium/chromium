@@ -13,6 +13,7 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
@@ -151,21 +152,20 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   bool FilterSearchResultsByCategory(const SearchResult::Category& category,
                                      const SearchResult& result) const;
 
-  AppListViewDelegate* view_delegate_;  // Not owned.
-
   // Whether the result updates will be animated. If set,
   // `ScheduleResultAnimations()` is expected to be called whenever list of
   // results shown in the list changes.
   const bool animates_result_updates_;
 
-  views::View* results_container_;
+  raw_ptr<views::View, ExperimentalAsh> results_container_;
 
   std::vector<SearchResultView*> search_result_views_;  // Not owned.
 
   // The SearchResultListViewType dictates what kinds of results will be shown.
   absl::optional<SearchResultListType> list_type_ =
       SearchResultListType::kBestMatch;
-  views::Label* title_label_ = nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ =
+      nullptr;  // Owned by view hierarchy.
 
   // The search result list view's location in the
   // productivity_launcher_search_view_'s list of 'search_result_list_view_'.
@@ -185,9 +185,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // search result actions. Used to filter those results out from the list of
   // shown results until results in the search model get refreshed.
   std::set<std::string> removed_results_;
-
-  // The number of results shown by the list view.
-  size_t num_results_ = 0;
 };
 
 }  // namespace ash

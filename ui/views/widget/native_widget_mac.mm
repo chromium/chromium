@@ -608,7 +608,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
   if (show_state == ui::SHOW_STATE_INACTIVE) {
     window_state = WindowVisibilityState::kShowInactive;
   } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
-    window_state = WindowVisibilityState::kHideWindow;
+    window_state = WindowVisibilityState::kMiniaturizeWindow;
   } else if (show_state == ui::SHOW_STATE_DEFAULT) {
     window_state = delegate_->CanActivate()
                        ? window_state
@@ -724,10 +724,11 @@ void NativeWidgetMac::SetOpacity(float opacity) {
   GetNSWindowMojo()->SetOpacity(opacity);
 }
 
-void NativeWidgetMac::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+void NativeWidgetMac::SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                                     const gfx::Size& excluded_margin) {
   if (!GetNSWindowMojo())
     return;
-  GetNSWindowMojo()->SetAspectRatio(aspect_ratio);
+  GetNSWindowMojo()->SetAspectRatio(aspect_ratio, excluded_margin);
 }
 
 void NativeWidgetMac::FlashFrame(bool flash_frame) {

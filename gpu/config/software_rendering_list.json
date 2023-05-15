@@ -1628,7 +1628,7 @@
         "type": "chromeos"
       },
       "vendor_id": "0x8086",
-      "device_id": ["0x0a16", "0x0a1e", "0x0d26"],
+      "device_id": ["0x0a16", "0x0a1e", "0x0d26", "0x0a06", "0x0a26"],
       "features": [
         "accelerated_2d_canvas"
       ]

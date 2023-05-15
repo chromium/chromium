@@ -21,7 +21,7 @@ import {Constructor} from '../common/types.js';
 
 import {getTemplate} from './settings_scheduler_slider.html.js';
 
-interface SettingsSchedulerSliderElement {
+export interface SettingsSchedulerSliderElement {
   $: {
     dummyRippleContainer: HTMLDivElement,
     endKnob: HTMLDivElement,
@@ -78,7 +78,7 @@ const SettingsSchedulerSliderElementBase =
     Constructor<PolymerElement&I18nMixinInterface&PrefsMixinInterface&
                 IronResizableBehavior&PaperRippleBehavior>;
 
-class SettingsSchedulerSliderElement extends
+export class SettingsSchedulerSliderElement extends
     SettingsSchedulerSliderElementBase {
   static get is() {
     return 'settings-scheduler-slider';

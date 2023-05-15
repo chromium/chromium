@@ -17,22 +17,13 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace wm {
 
-namespace {
-
 using ::ui::mojom::CursorType;
-
-SkBitmap GetTestBitmap() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  return bitmap;
-}
-
-}  // namespace
 
 TEST(CursorLoaderTest, InvisibleCursor) {
   CursorLoader cursor_loader;
@@ -89,7 +80,7 @@ TEST(CursorLoaderTest, GetCursorData) {
     }
   }
 
-  const SkBitmap kBitmap = GetTestBitmap();
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(20, 20);
   constexpr gfx::Point kHotspot = gfx::Point(10, 10);
   const ui::Cursor custom_cursor = ui::Cursor::NewCustom(kBitmap, kHotspot);
   absl::optional<ui::CursorData> cursor_data =

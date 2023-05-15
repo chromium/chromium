@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -87,8 +88,8 @@ class FakeErrorTolerantBleAdvertisementFactory
     EXPECT_EQ(1u, num_deleted);
   }
 
-  BluetoothHelper* bluetooth_helper_;
-  BleSynchronizerBase* ble_synchronizer_base_;
+  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
 
   absl::optional<DeviceIdPair> last_created_device_id_pair_;
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>

@@ -94,6 +94,17 @@ struct UpgradeParams {
 
   // Flag to enable ARC Nearby Share support.
   bool enable_arc_nearby_share = true;
+
+  // Flag to enable a delay for killing high priority app under memory pressure.
+  bool enable_priority_app_lmk_delay = false;
+
+  // Delay time in second until a high priority app can be considered to be
+  // killed.
+  uint32_t priority_app_lmk_delay_second = 0;
+
+  // Comma separated list of high priority apps that would have a delay before
+  // considered to be killed.
+  std::string priority_app_lmk_delay_list;
 };
 
 }  // namespace arc

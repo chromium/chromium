@@ -103,13 +103,23 @@ void JSBasedEventListener::Invoke(
   if (v8_context_of_event_target.IsEmpty())
     return;
 
+  // Step 6: Let |global| be listener callback’s associated Realm’s global
+  // object.
+  LocalDOMWindow* window =
+      ToLocalDOMWindow(script_state_of_listener->GetContext());
+
   // Check if the current context, which is set to the listener's relevant
   // context by creating |listener_script_state_scope|, has access to the
   // event target's relevant context before creating |js_event|. SecurityError
   // is thrown if it doesn't have access.
   if (!BindingSecurity::ShouldAllowAccessToV8Context(
-          script_state_of_listener->GetContext(), v8_context_of_event_target,
-          BindingSecurity::ErrorReportOption::kReport)) {
+          script_state_of_listener->GetContext(), v8_context_of_event_target)) {
+    LocalDOMWindow* target_window =
+        DynamicTo<LocalDOMWindow>(execution_context_of_event_target);
+    if (window && target_window) {
+      window->PrintErrorMessage(target_window->CrossDomainAccessErrorMessage(
+          window, DOMWindow::CrossDocumentAccessPolicy::kDisallowed));
+    }
     return;
   }
 
@@ -117,11 +127,6 @@ void JSBasedEventListener::Invoke(
       ToV8(event, v8_context_of_event_target->Global(), isolate);
   if (js_event.IsEmpty())
     return;
-
-  // Step 6: Let |global| be listener callback’s associated Realm’s global
-  // object.
-  LocalDOMWindow* window =
-      ToLocalDOMWindow(script_state_of_listener->GetContext());
 
   // Step 7: Let |current_event| be undefined.
   Event* current_event = nullptr;

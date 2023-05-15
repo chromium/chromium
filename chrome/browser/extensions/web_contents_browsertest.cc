@@ -86,10 +86,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
       browser(),
       GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(browser()), "testTabsAPI()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true,
+            content::EvalJs(GetActiveWebContents(browser()), "testTabsAPI()"));
 
   // There was a bug where we would crash if we navigated to a page in the same
   // extension because no new render view was getting created, so we would not
@@ -97,10 +95,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(browser()), "testTabsAPI()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true,
+            content::EvalJs(GetActiveWebContents(browser()), "testTabsAPI()"));
 }
 
 // Ensure that platform app frames can't be loaded in a tab even on a redirect.

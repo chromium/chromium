@@ -21,8 +21,6 @@
 
 namespace ash {
 
-class JitterCalculator;
-
 // AmbientBackgroundImageView--------------------------------------------------
 // A custom ImageView to display photo image and details information on ambient.
 // It also handles specific mouse/gesture events to dismiss ambient when user
@@ -32,9 +30,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
  public:
   METADATA_HEADER(AmbientBackgroundImageView);
 
-  AmbientBackgroundImageView(
-      AmbientViewDelegate* delegate,
-      JitterCalculator* glanceable_info_jitter_calculator);
+  explicit AmbientBackgroundImageView(AmbientViewDelegate* delegate);
   AmbientBackgroundImageView(const AmbientBackgroundImageView&) = delete;
   AmbientBackgroundImageView& operator=(const AmbientBackgroundImageView&) =
       delete;
@@ -81,15 +77,13 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   bool HasPairedImages() const;
 
   // Owned by |AmbientController| and should always outlive |this|.
-  AmbientViewDelegate* delegate_ = nullptr;
-
-  const base::raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
+  raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
 
   // View to display current image(s) on ambient. Owned by the view hierarchy.
-  views::View* image_container_ = nullptr;
-  views::FlexLayout* image_layout_ = nullptr;
-  views::ImageView* image_view_ = nullptr;
-  views::ImageView* related_image_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> image_container_ = nullptr;
+  raw_ptr<views::FlexLayout, ExperimentalAsh> image_layout_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> related_image_view_ = nullptr;
 
   // The unscaled images used for scaling and displaying in different bounds.
   gfx::ImageSkia image_unscaled_;
@@ -102,7 +96,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
   ::ambient::TopicType topic_type_ = ::ambient::TopicType::kOther;
 
-  AmbientSlideshowPeripheralUi* ambient_peripheral_ui_ = nullptr;
+  raw_ptr<AmbientSlideshowPeripheralUi, ExperimentalAsh>
+      ambient_peripheral_ui_ = nullptr;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       observed_views_{this};

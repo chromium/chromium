@@ -1090,7 +1090,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       "GL_OES_EGL_image",
       "GL_OES_EGL_image_external",
       "GL_OES_EGL_image_external_essl3",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       "GL_ANGLE_texture_rectangle",
 #endif
       "GL_ANGLE_vulkan_image",
@@ -2622,8 +2622,11 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   }
 
   gl::GLContextAttribs attribs;
+  attribs.bind_generates_resource = false;
   attribs.global_texture_share_group = true;
   attribs.global_semaphore_share_group = true;
+  attribs.robust_resource_initialization = true;
+  attribs.robust_buffer_access = true;
   auto gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
                                               gl_surface.get(), attribs);
   if (!gl_context) {

@@ -25,10 +25,11 @@ class AutofillProfile;
 class AutofillProfileComparator;
 class AutofillTable;
 
-// This is used to respond to ApplySyncChanges() and MergeSyncData(). Attempts
-// to lazily load local data, and then react to sync data by maintaining
-// internal state until flush calls are made, at which point the applicable
-// modification should be sent towards local and sync directions.
+// This is used to respond to ApplyIncrementalSyncChanges() and
+// MergeFullSyncData(). Attempts to lazily load local data, and then react to
+// sync data by maintaining internal state until flush calls are made, at which
+// point the applicable modification should be sent towards local and sync
+// directions.
 class AutofillProfileSyncDifferenceTracker {
  public:
   explicit AutofillProfileSyncDifferenceTracker(AutofillTable* table);

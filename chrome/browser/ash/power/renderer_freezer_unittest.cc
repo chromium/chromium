@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -31,7 +33,6 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -158,7 +159,7 @@ class RendererFreezerTest : public testing::Test {
   }
 
   // Owned by |renderer_freezer_|.
-  TestDelegate* test_delegate_;
+  raw_ptr<TestDelegate, ExperimentalAsh> test_delegate_;
   std::unique_ptr<RendererFreezer> renderer_freezer_;
 
  private:
@@ -278,7 +279,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   }
 
   // Owned by |profile_manager_|.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
@@ -313,22 +314,16 @@ TEST_F(RendererFreezerTestWithExtensions, DoesNotFreezeGcmExtensionRenderers) {
   scoped_refptr<const extensions::Extension> gcm_app =
       extensions::ExtensionBuilder()
           .SetManifest(
-              extensions::DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "GCM App")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("app",
-                       extensions::DictionaryBuilder()
-                           .Set("background",
-                                extensions::DictionaryBuilder()
-                                    .Set("scripts", extensions::ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
-                  .Set("permissions",
-                       extensions::ListBuilder().Append("gcm").Build())
-                  .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "background",
+                                  base::Value::Dict().Set(
+                                      "scripts", base::Value::List().Append(
+                                                     "background.js"))))
+                  .Set("permissions", base::Value::List().Append("gcm")))
           .Build();
 
   // Now install it and give it a renderer.
@@ -349,20 +344,15 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
   scoped_refptr<const extensions::Extension> background_app =
       extensions::ExtensionBuilder()
           .SetManifest(
-              extensions::DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "Background App")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("app",
-                       extensions::DictionaryBuilder()
-                           .Set("background",
-                                extensions::DictionaryBuilder()
-                                    .Set("scripts", extensions::ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
-                  .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "background",
+                                  base::Value::Dict().Set(
+                                      "scripts", base::Value::List().Append(
+                                                     "background.js")))))
           .Build();
 
   // Now install it and give it a renderer.

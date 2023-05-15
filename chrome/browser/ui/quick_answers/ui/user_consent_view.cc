@@ -13,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -137,17 +138,11 @@ UserConsentView::UserConsentView(
   }
 
   InitLayout();
-  InitWidget();
 
   // Focus should cycle to each of the buttons the view contains and back to it.
   SetFocusBehavior(FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
   views::FocusRing::Install(this);
-
-  // Allow tooltips to be shown despite menu-controller owning capture.
-  GetWidget()->SetNativeWindowProperty(
-      views::TooltipManager::kGroupingPropertyKey,
-      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 
   // Read out user-consent text if screen-reader is active.
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
@@ -156,8 +151,41 @@ UserConsentView::UserConsentView(
 
 UserConsentView::~UserConsentView() = default;
 
-const char* UserConsentView::GetClassName() const {
-  return "UserConsentView";
+views::UniqueWidgetPtr UserConsentView::CreateWidget(
+    const gfx::Rect& anchor_view_bounds,
+    const std::u16string& intent_type,
+    const std::u16string& intent_text,
+    base::WeakPtr<QuickAnswersUiController> controller) {
+  views::Widget::InitParams params;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.shadow_elevation = 2;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+
+  // Parent the widget to the owner of the menu.
+  auto* active_menu_controller = views::MenuController::GetActiveInstance();
+  DCHECK(active_menu_controller && active_menu_controller->owner());
+
+  // This widget has to be a child of menu owner's widget to make keyboard focus
+  // work.
+  params.parent = active_menu_controller->owner()->GetNativeView();
+  params.child = true;
+  params.name = kWidgetName;
+
+  views::UniqueWidgetPtr widget =
+      std::make_unique<views::Widget>(std::move(params));
+  UserConsentView* user_consent_view =
+      widget->SetContentsView(std::make_unique<UserConsentView>(
+          anchor_view_bounds, intent_type, intent_text, controller));
+  user_consent_view->UpdateWidgetBounds();
+
+  // Allow tooltips to be shown despite menu-controller owning capture.
+  widget->SetNativeWindowProperty(
+      views::TooltipManager::kGroupingPropertyKey,
+      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
+
+  return widget;
 }
 
 gfx::Size UserConsentView::CalculatePreferredSize() const {
@@ -315,30 +343,6 @@ void UserConsentView::InitButtonBar() {
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
 }
 
-void UserConsentView::InitWidget() {
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-
-  // Parent the widget to the owner of the menu.
-  auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  DCHECK(active_menu_controller && active_menu_controller->owner());
-
-  // This widget has to be a child of menu owner's widget to make keyboard focus
-  // work.
-  params.parent = active_menu_controller->owner()->GetNativeView();
-  params.child = true;
-  params.name = kWidgetName;
-
-  views::Widget* widget = new views::Widget();
-  widget->Init(std::move(params));
-  widget->SetContentsView(this);
-  UpdateWidgetBounds();
-}
-
 void UserConsentView::UpdateWidgetBounds() {
   const gfx::Size size = GetPreferredSize();
   int x = anchor_view_bounds_.x();
@@ -360,5 +364,8 @@ void UserConsentView::UpdateWidgetBounds() {
 
   GetWidget()->SetBounds(bounds);
 }
+
+BEGIN_METADATA(UserConsentView, views::View)
+END_METADATA
 
 }  // namespace quick_answers

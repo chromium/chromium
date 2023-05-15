@@ -43,6 +43,9 @@ std::atomic<TimeNowFunction> g_time_now_from_system_time_function{
 std::atomic<TimeTicksNowFunction> g_time_ticks_now_function{
     &subtle::TimeTicksNowIgnoringOverride};
 
+std::atomic<LiveTicksNowFunction> g_live_ticks_now_function{
+    &subtle::LiveTicksNowIgnoringOverride};
+
 std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function{
     &subtle::ThreadTicksNowIgnoringOverride};
 
@@ -376,6 +379,25 @@ std::ostream& operator<<(std::ostream& os, TimeTicks time_ticks) {
   const TimeDelta as_time_delta = time_ticks - TimeTicks();
   return os << as_time_delta.InMicroseconds() << " bogo-microseconds";
 }
+
+// LiveTicks ------------------------------------------------------------------
+
+// static
+LiveTicks LiveTicks::Now() {
+  return internal::g_live_ticks_now_function.load(std::memory_order_relaxed)();
+}
+
+#if !BUILDFLAG(IS_WIN)
+namespace subtle {
+LiveTicks LiveTicksNowIgnoringOverride() {
+  // On non-windows platforms LiveTicks is equivalent to TimeTicks already.
+  // Subtract the empty `TimeTicks` from `TimeTicks::Now()` to get a `TimeDelta`
+  // that can be added to the empty `LiveTicks`.
+  return LiveTicks() + (TimeTicks::Now() - TimeTicks());
+}
+}  // namespace subtle
+
+#endif
 
 // ThreadTicks ----------------------------------------------------------------
 

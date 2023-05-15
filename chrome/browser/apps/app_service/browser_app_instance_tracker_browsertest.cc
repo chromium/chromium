@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -106,7 +108,7 @@ struct TestInstance {
   uint64_t id;
   std::string type;
   std::string app_id;
-  aura::Window* window;
+  raw_ptr<aura::Window> window;
   std::string title;
   bool is_browser_active;
   bool is_web_contents_active;
@@ -156,10 +158,10 @@ class Recorder : public apps::BrowserAppInstanceObserver {
  public:
   explicit Recorder(apps::BrowserAppInstanceTracker& tracker)
       : tracker_(tracker) {
-    tracker_.AddObserver(this);
+    tracker_->AddObserver(this);
   }
 
-  ~Recorder() override { tracker_.RemoveObserver(this); }
+  ~Recorder() override { tracker_->RemoveObserver(this); }
 
   void OnBrowserWindowAdded(
       const apps::BrowserWindowInstance& instance) override {
@@ -218,7 +220,7 @@ class Recorder : public apps::BrowserAppInstanceObserver {
     return {};
   }
 
-  apps::BrowserAppInstanceTracker& tracker_;
+  const raw_ref<apps::BrowserAppInstanceTracker, ExperimentalAsh> tracker_;
   std::vector<TestInstance> calls_;
 };
 

@@ -341,7 +341,7 @@ class InlinedVector {
   // can be used to access and modify the contained elements.
   //
   // NOTE: only elements within [`data()`, `data() + size()`) are valid.
-  pointer data() noexcept {
+  pointer data() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return storage_.GetIsAllocated() ? storage_.GetAllocatedData()
                                      : storage_.GetInlinedData();
   }
@@ -351,7 +351,7 @@ class InlinedVector {
   // modify the contained elements.
   //
   // NOTE: only elements within [`data()`, `data() + size()`) are valid.
-  const_pointer data() const noexcept {
+  const_pointer data() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return storage_.GetIsAllocated() ? storage_.GetAllocatedData()
                                      : storage_.GetInlinedData();
   }
@@ -359,14 +359,14 @@ class InlinedVector {
   // `InlinedVector::operator[](...)`
   //
   // Returns a `reference` to the `i`th element of the inlined vector.
-  reference operator[](size_type i) {
+  reference operator[](size_type i) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(i < size());
     return data()[i];
   }
 
   // Overload of `InlinedVector::operator[](...)` that returns a
   // `const_reference` to the `i`th element of the inlined vector.
-  const_reference operator[](size_type i) const {
+  const_reference operator[](size_type i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(i < size());
     return data()[i];
   }
@@ -377,7 +377,7 @@ class InlinedVector {
   //
   // NOTE: if `i` is not within the required range of `InlinedVector::at(...)`,
   // in both debug and non-debug builds, `std::out_of_range` will be thrown.
-  reference at(size_type i) {
+  reference at(size_type i) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ABSL_PREDICT_FALSE(i >= size())) {
       base_internal::ThrowStdOutOfRange(
           "`InlinedVector::at(size_type)` failed bounds check");
@@ -390,7 +390,7 @@ class InlinedVector {
   //
   // NOTE: if `i` is not within the required range of `InlinedVector::at(...)`,
   // in both debug and non-debug builds, `std::out_of_range` will be thrown.
-  const_reference at(size_type i) const {
+  const_reference at(size_type i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ABSL_PREDICT_FALSE(i >= size())) {
       base_internal::ThrowStdOutOfRange(
           "`InlinedVector::at(size_type) const` failed bounds check");
@@ -401,14 +401,14 @@ class InlinedVector {
   // `InlinedVector::front()`
   //
   // Returns a `reference` to the first element of the inlined vector.
-  reference front() {
+  reference front() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(!empty());
     return data()[0];
   }
 
   // Overload of `InlinedVector::front()` that returns a `const_reference` to
   // the first element of the inlined vector.
-  const_reference front() const {
+  const_reference front() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(!empty());
     return data()[0];
   }
@@ -416,14 +416,14 @@ class InlinedVector {
   // `InlinedVector::back()`
   //
   // Returns a `reference` to the last element of the inlined vector.
-  reference back() {
+  reference back() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(!empty());
     return data()[size() - 1];
   }
 
   // Overload of `InlinedVector::back()` that returns a `const_reference` to the
   // last element of the inlined vector.
-  const_reference back() const {
+  const_reference back() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(!empty());
     return data()[size() - 1];
   }
@@ -431,63 +431,82 @@ class InlinedVector {
   // `InlinedVector::begin()`
   //
   // Returns an `iterator` to the beginning of the inlined vector.
-  iterator begin() noexcept { return data(); }
+  iterator begin() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND { return data(); }
 
   // Overload of `InlinedVector::begin()` that returns a `const_iterator` to
   // the beginning of the inlined vector.
-  const_iterator begin() const noexcept { return data(); }
+  const_iterator begin() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data();
+  }
 
   // `InlinedVector::end()`
   //
   // Returns an `iterator` to the end of the inlined vector.
-  iterator end() noexcept { return data() + size(); }
+  iterator end() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data() + size();
+  }
 
   // Overload of `InlinedVector::end()` that returns a `const_iterator` to the
   // end of the inlined vector.
-  const_iterator end() const noexcept { return data() + size(); }
+  const_iterator end() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data() + size();
+  }
 
   // `InlinedVector::cbegin()`
   //
   // Returns a `const_iterator` to the beginning of the inlined vector.
-  const_iterator cbegin() const noexcept { return begin(); }
+  const_iterator cbegin() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return begin();
+  }
 
   // `InlinedVector::cend()`
   //
   // Returns a `const_iterator` to the end of the inlined vector.
-  const_iterator cend() const noexcept { return end(); }
+  const_iterator cend() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return end();
+  }
 
   // `InlinedVector::rbegin()`
   //
   // Returns a `reverse_iterator` from the end of the inlined vector.
-  reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+  reverse_iterator rbegin() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return reverse_iterator(end());
+  }
 
   // Overload of `InlinedVector::rbegin()` that returns a
   // `const_reverse_iterator` from the end of the inlined vector.
-  const_reverse_iterator rbegin() const noexcept {
+  const_reverse_iterator rbegin() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return const_reverse_iterator(end());
   }
 
   // `InlinedVector::rend()`
   //
   // Returns a `reverse_iterator` from the beginning of the inlined vector.
-  reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
+  reverse_iterator rend() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return reverse_iterator(begin());
+  }
 
   // Overload of `InlinedVector::rend()` that returns a `const_reverse_iterator`
   // from the beginning of the inlined vector.
-  const_reverse_iterator rend() const noexcept {
+  const_reverse_iterator rend() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return const_reverse_iterator(begin());
   }
 
   // `InlinedVector::crbegin()`
   //
   // Returns a `const_reverse_iterator` from the end of the inlined vector.
-  const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+  const_reverse_iterator crbegin() const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return rbegin();
+  }
 
   // `InlinedVector::crend()`
   //
   // Returns a `const_reverse_iterator` from the beginning of the inlined
   // vector.
-  const_reverse_iterator crend() const noexcept { return rend(); }
+  const_reverse_iterator crend() const noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return rend();
+  }
 
   // `InlinedVector::get_allocator()`
   //
@@ -597,20 +616,23 @@ class InlinedVector {
   //
   // Inserts a copy of `v` at `pos`, returning an `iterator` to the newly
   // inserted element.
-  iterator insert(const_iterator pos, const_reference v) {
+  iterator insert(const_iterator pos,
+                  const_reference v) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(pos, v);
   }
 
   // Overload of `InlinedVector::insert(...)` that inserts `v` at `pos` using
   // move semantics, returning an `iterator` to the newly inserted element.
-  iterator insert(const_iterator pos, value_type&& v) {
+  iterator insert(const_iterator pos,
+                  value_type&& v) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(pos, std::move(v));
   }
 
   // Overload of `InlinedVector::insert(...)` that inserts `n` contiguous copies
   // of `v` starting at `pos`, returning an `iterator` pointing to the first of
   // the newly inserted elements.
-  iterator insert(const_iterator pos, size_type n, const_reference v) {
+  iterator insert(const_iterator pos, size_type n,
+                  const_reference v) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
@@ -638,7 +660,8 @@ class InlinedVector {
   // Overload of `InlinedVector::insert(...)` that inserts copies of the
   // elements of `list` starting at `pos`, returning an `iterator` pointing to
   // the first of the newly inserted elements.
-  iterator insert(const_iterator pos, std::initializer_list<value_type> list) {
+  iterator insert(const_iterator pos, std::initializer_list<value_type> list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(pos, list.begin(), list.end());
   }
 
@@ -650,7 +673,7 @@ class InlinedVector {
   template <typename ForwardIterator,
             EnableIfAtLeastForwardIterator<ForwardIterator> = 0>
   iterator insert(const_iterator pos, ForwardIterator first,
-                  ForwardIterator last) {
+                  ForwardIterator last) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
@@ -670,7 +693,8 @@ class InlinedVector {
   // NOTE: this overload is for iterators that are "input" category.
   template <typename InputIterator,
             DisableIfAtLeastForwardIterator<InputIterator> = 0>
-  iterator insert(const_iterator pos, InputIterator first, InputIterator last) {
+  iterator insert(const_iterator pos, InputIterator first,
+                  InputIterator last) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
@@ -687,7 +711,8 @@ class InlinedVector {
   // Constructs and inserts an element using `args...` in the inlined vector at
   // `pos`, returning an `iterator` pointing to the newly emplaced element.
   template <typename... Args>
-  iterator emplace(const_iterator pos, Args&&... args) {
+  iterator emplace(const_iterator pos,
+                   Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
@@ -715,7 +740,7 @@ class InlinedVector {
   // Constructs and inserts an element using `args...` in the inlined vector at
   // `end()`, returning a `reference` to the newly emplaced element.
   template <typename... Args>
-  reference emplace_back(Args&&... args) {
+  reference emplace_back(Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return storage_.EmplaceBack(std::forward<Args>(args)...);
   }
 
@@ -745,8 +770,8 @@ class InlinedVector {
   // Erases the element at `pos`, returning an `iterator` pointing to where the
   // erased element was located.
   //
-  // NOTE: may return `end()`, which is not dereferencable.
-  iterator erase(const_iterator pos) {
+  // NOTE: may return `end()`, which is not dereferenceable.
+  iterator erase(const_iterator pos) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos < end());
 
@@ -757,8 +782,9 @@ class InlinedVector {
   // range [`from`, `to`), returning an `iterator` pointing to where the first
   // erased element was located.
   //
-  // NOTE: may return `end()`, which is not dereferencable.
-  iterator erase(const_iterator from, const_iterator to) {
+  // NOTE: may return `end()`, which is not dereferenceable.
+  iterator erase(const_iterator from,
+                 const_iterator to) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     ABSL_HARDENING_ASSERT(from >= begin());
     ABSL_HARDENING_ASSERT(from <= to);
     ABSL_HARDENING_ASSERT(to <= end());
@@ -816,8 +842,8 @@ class InlinedVector {
 
   void MoveAssignment(MemcpyPolicy, InlinedVector&& other) {
     // Assumption check: we shouldn't be told to use memcpy to implement move
-    // asignment unless we have trivially destructible elements and an allocator
-    // that does nothing fancy.
+    // assignment unless we have trivially destructible elements and an
+    // allocator that does nothing fancy.
     static_assert(absl::is_trivially_destructible<value_type>::value, "");
     static_assert(std::is_same<A, std::allocator<value_type>>::value, "");
 

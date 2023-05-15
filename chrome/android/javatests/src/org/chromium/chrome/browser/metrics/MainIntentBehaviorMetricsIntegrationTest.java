@@ -14,8 +14,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -220,7 +221,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         intent.setData(Uri.parse("about:blank"));
         if (addLauncherCategory) intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeTabbedActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
 
         mActivityTestRule.startActivityCompletely(intent);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -231,7 +232,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (addLauncherCategory) intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeTabbedActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
 
         mActivityTestRule.startActivityCompletely(intent);
         mActivityTestRule.waitForActivityNativeInitializationComplete();

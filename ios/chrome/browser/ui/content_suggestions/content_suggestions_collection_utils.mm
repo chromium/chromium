@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -103,6 +104,8 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
+  // If Magic Stack is not enabled, this value is zero (e.g. no-op).
+  top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
   if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(trait_collection)) {
     top_margin += kShrunkDoodleTopMarginOther;
   } else {
@@ -181,7 +184,10 @@ void ConfigureSearchHintLabel(UILabel* search_hint_label,
   if (base::i18n::IsRTL()) {
     [search_hint_label setTextAlignment:NSTextAlignmentRight];
   }
-  search_hint_label.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  NSString* textColor = IsMagicStackEnabled()
+                            ? @"fake_omnibox_placeholder_color"
+                            : kTextfieldPlaceholderColor;
+  search_hint_label.textColor = [UIColor colorNamed:textColor];
   search_hint_label.adjustsFontForContentSizeCategory = YES;
   search_hint_label.textAlignment = NSTextAlignmentCenter;
 }

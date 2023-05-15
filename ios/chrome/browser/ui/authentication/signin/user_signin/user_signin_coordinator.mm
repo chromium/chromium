@@ -6,9 +6,9 @@
 
 #import "base/ios/block_types.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -374,9 +374,9 @@ using signin_metrics::PromoAction;
   [self.mediator cancelSignin];
 }
 
-// Called when `self.viewController` is dismissed. The sign-in is
-// finished and `runCompletionCallbackWithSigninResult:completionInfo:` is
-// called.
+// Called when `self.viewController` is dismissed. The sign-in ends based on
+// `signinResult` and  `runCompletionCallbackWithSigninResult:completionInfo:`
+// is called.
 - (void)viewControllerDismissedWithResult:(SigninCoordinatorResult)signinResult
                            completionInfo:
                                (SigninCompletionInfo*)completionInfo {
@@ -417,8 +417,10 @@ using signin_metrics::PromoAction;
 }
 
 // Displays the user sign-in view controller using the available base
-// controller. First run requires an additional transitional fade animation when
-// presenting this view.
+// controller if the orientation is supported. First run requires an additional
+// transitional fade animation when presenting this view.
+// If the orientation is not supported, the view controller is not displayed
+// and the coordinator is aborted using `SigninCoordinatorResultInterrupted`.
 - (void)presentUserSigninViewController {
   // Always set the -UIViewController.modalPresentationStyle before accessing
   // -UIViewController.presentationController.
@@ -433,23 +435,25 @@ using signin_metrics::PromoAction;
       UIInterfaceOrientation orientation = GetInterfaceOrientation();
       NSUInteger supportedOrientationsMask =
           [self.viewController supportedInterfaceOrientations];
-      if (!((1 << orientation) & supportedOrientationsMask)) {
-        SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-            signinCompletionInfoWithIdentity:self.unifiedConsentCoordinator
-                                                 .selectedIdentity];
-        [self runCompletionCallbackWithSigninResult:
-                  SigninCoordinatorResultInterrupted
-                                     completionInfo:completionInfo];
-        return;
+      BOOL isOrientationSupported =
+          ((1 << orientation) & supportedOrientationsMask) != 0;
+      if (isOrientationSupported) {
+        break;
       }
-      [self presentUserViewControllerToBaseViewController];
-      break;
+      SigninCompletionInfo* completionInfo =
+          [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+      // The view controller has never been presented. We can call
+      // -[UserSigninCoordinator
+      // viewControllerDismissedWithResult:completionInfo].
+      [self viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
+                               completionInfo:completionInfo];
+      return;
     }
     case UserSigninIntentSignin: {
-      [self presentUserViewControllerToBaseViewController];
       break;
     }
   }
+  [self presentUserViewControllerToBaseViewController];
 }
 
 // Presents `self.viewController`.
@@ -554,6 +558,7 @@ using signin_metrics::PromoAction;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity
+                   accessPoint:self.logger.accessPoint
               postSignInAction:postSignInAction
       presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

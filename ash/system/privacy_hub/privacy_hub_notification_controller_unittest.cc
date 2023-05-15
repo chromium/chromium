@@ -68,8 +68,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ =
-        Shell::Get()->system_notification_controller()->privacy_hub_.get();
+    controller_ = PrivacyHubNotificationController::Get();
   }
   void TearDown() override { AshTestBase::TearDown(); }
 
@@ -142,11 +141,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
 
  private:
-  base::raw_ptr<PrivacyHubNotificationController> controller_;
+  raw_ptr<PrivacyHubNotificationController> controller_;
   const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
   std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 

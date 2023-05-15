@@ -42,7 +42,7 @@ class ASH_EXPORT AmbientWeatherController {
 
     explicit ScopedRefresher(AmbientWeatherController* controller);
 
-    const base::raw_ptr<AmbientWeatherController> controller_;
+    const raw_ptr<AmbientWeatherController> controller_;
   };
 
   AmbientWeatherController();

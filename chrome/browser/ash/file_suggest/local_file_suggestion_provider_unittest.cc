@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
@@ -93,7 +94,7 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     WaitForProviderToBeInitialized();
   }
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -153,11 +154,7 @@ TEST_F(LocalFileSuggestionProviderTest, OldFilesNotReturned) {
 class LocalFileSuggestionProviderTrashTest
     : public LocalFileSuggestionProviderTest {
  public:
-  LocalFileSuggestionProviderTrashTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(ash::features::kFilesTrash);
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  LocalFileSuggestionProviderTrashTest() = default;
 
   LocalFileSuggestionProviderTrashTest(
       const LocalFileSuggestionProviderTrashTest&) = delete;
@@ -190,7 +187,6 @@ class LocalFileSuggestionProviderTrashTest
 
  private:
   base::FilePath trash_folder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(LocalFileSuggestionProviderTrashTest,

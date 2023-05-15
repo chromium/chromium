@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/webui/help_app_ui/search/search.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -48,7 +49,7 @@ class HelpAppResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string url_path_;
   const std::string help_app_content_id_;
 };
@@ -86,10 +87,10 @@ class HelpAppProvider : public SearchProvider,
   void OnLoadIcon(apps::IconValuePtr icon_value);
   void LoadIcon();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  ash::help_app::SearchHandler* search_handler_;
-  apps::AppServiceProxy* app_service_proxy_;
+  raw_ptr<ash::help_app::SearchHandler, ExperimentalAsh> search_handler_;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last search query. It is reset when the view is closed.

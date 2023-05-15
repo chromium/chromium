@@ -44,7 +44,6 @@ import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
-import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
@@ -636,7 +635,7 @@ public class CronetUrlRequestContextTest {
         callback.startNextRead(request);
         callback.waitForNextStep();
         callback.startNextRead(request);
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
     }
@@ -655,7 +654,7 @@ public class CronetUrlRequestContextTest {
         request.start();
         assertEquals(1, cronetEngine.getActiveRequestCount());
         request.cancel();
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
         assertTrue(callback.mOnCanceledCalled);
@@ -676,11 +675,60 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(badUrl, callback, callback.getExecutor()).build();
         request.start();
         assertEquals(1, cronetEngine.getActiveRequestCount());
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
         assertTrue(callback.mOnErrorCalled);
         assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
+    }
+
+    @Test
+    @SmallTest
+    // TODO: the Java implementation currently fails this test - it incorrectly
+    // increments the count on the second start.
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCountOnDoubleStart() throws Exception {
+        CronetEngine cronetEngine = mTestRule.startCronetTestFramework().mCronetEngine;
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        callback.setAutoAdvance(false);
+        UrlRequest request =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor()).build();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+        request.start();
+        assertEquals(1, cronetEngine.getActiveRequestCount());
+        boolean threwException = false;
+        try {
+            request.start();
+        } catch (Exception e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        assertEquals(1, cronetEngine.getActiveRequestCount());
+        callback.setAutoAdvance(true);
+        callback.blockForDone();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+    }
+
+    @Test
+    @SmallTest
+    // Only native Cronet has code paths that throw exceptions directly from start() on invalid
+    // requests.
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCountOnInvalidRequest() throws Exception {
+        CronetEngine cronetEngine = mTestRule.startCronetTestFramework().mCronetEngine;
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = cronetEngine.newUrlRequestBuilder("", callback, callback.getExecutor())
+                                     .setHttpMethod("")
+                                     .build();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+        boolean threwException = false;
+        try {
+            request.start();
+        } catch (Exception e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        assertEquals(0, cronetEngine.getActiveRequestCount());
     }
 
     @Test
@@ -1483,7 +1531,7 @@ public class CronetUrlRequestContextTest {
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
         CronetUrlRequestContextTestJni.get().verifyUrlRequestContextConfig(
                 CronetUrlRequestContext.createNativeUrlRequestContextConfig(
-                        (CronetEngineBuilderImpl) builder.mBuilderDelegate),
+                        CronetTestUtil.getCronetEngineBuilderImpl(builder)),
                 getTestStorage(getContext()));
     }
 
@@ -1506,7 +1554,7 @@ public class CronetUrlRequestContextTest {
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
         CronetUrlRequestContextTestJni.get().verifyUrlRequestContextQuicOffConfig(
                 CronetUrlRequestContext.createNativeUrlRequestContextConfig(
-                        (CronetEngineBuilderImpl) builder.mBuilderDelegate),
+                        CronetTestUtil.getCronetEngineBuilderImpl(builder)),
                 getTestStorage(getContext()));
     }
 

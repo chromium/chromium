@@ -14,11 +14,11 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -54,8 +54,6 @@ constexpr char kPrivateKeySelectionEnabled[] = "privateKeySelectionEnabled";
 constexpr char kChoosePrivateKeyRules[] = "choosePrivateKeyRules";
 constexpr char kPolicyAppInstallType[] = "installType";
 constexpr char kPolicyAppInstallTypeForceInstalled[] = "FORCE_INSTALLED";
-constexpr char kPolicyAppInstallTypeAvailable[] = "AVAILABLE";
-constexpr char kPolicyAppInstallTypeOptional[] = "OPTIONAL";
 
 // invert_bool_value: If the Chrome policy and the ARC policy with boolean value
 // have opposite semantics, set this to true so the bool is inverted before
@@ -362,28 +360,6 @@ void MapChromeToArcPolicies(base::Value::Dict& filtered_policies,
                 /* invert_bool_value */ true, &filtered_policies);
 }
 
-static void ConvertDeprecatedAppInstallTypes(
-    base::Value::Dict& filtered_policies) {
-  base::Value::List* apps =
-      filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
-  if (apps == nullptr) {
-    return;
-  }
-
-  for (base::Value& app : *apps) {
-    if (!app.is_dict()) {
-      NOTREACHED() << "App object is not a dict.";
-      continue;
-    }
-
-    base::Value::Dict& dict = app.GetDict();
-    if (*dict.FindString(kPolicyAppInstallType) ==
-        kPolicyAppInstallTypeOptional) {
-      dict.Set(kPolicyAppInstallType, kPolicyAppInstallTypeAvailable);
-    }
-  }
-}
-
 void OverrideArcPolicies(base::Value::Dict& filtered_policies,
                          const policy::PolicyMap& policy_map,
                          const std::string& guid,
@@ -446,7 +422,6 @@ base::Value::Dict GetFilteredDictPolicies(
 
   OverrideArcPolicies(filtered_policies, policy_map, guid, is_affiliated,
                       profile);
-  ConvertDeprecatedAppInstallTypes(filtered_policies);
   return filtered_policies;
 }
 
@@ -537,7 +512,7 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
     : context_(context),
       arc_bridge_service_(bridge_service),
       policy_service_(policy_service),
-      instance_guid_(base::GenerateGUID()) {
+      instance_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
   VLOG(2) << "ArcPolicyBridge::ArcPolicyBridge";
   arc_bridge_service_->policy()->SetHost(this);
   arc_bridge_service_->policy()->AddObserver(this);

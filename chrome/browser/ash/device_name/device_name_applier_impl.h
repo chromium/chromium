@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
 #define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/device_name/device_name_applier.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -48,7 +49,7 @@ class DeviceNameApplierImpl : public DeviceNameApplier {
   void ClearRetryAttempts();
 
   std::string device_name_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   // Provides us the backoff timers for SetBluetoothAdapterName().
   net::BackoffEntry retry_backoff_;

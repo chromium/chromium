@@ -2,11 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/chromeos/extensions/api/api_sources.gni")
-import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//tools/json_schema_compiler/json_schema_api.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
@@ -33,21 +30,6 @@ source_set("telemetry") {
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
-  ]
-}
-
-function_registration("api_registration") {
-  sources = chromeos_system_extensions_api_schema_sources
-  impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api/telemetry"
-  configs = [ "//build/config:precompiled_headers" ]
-  bundle_name = "ChromeOS"
-  root_namespace = chromeos_system_extensions_api_root_namespace
-  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
-
-  deps = [
-    ":telemetry",
-    "//base",
-    "//extensions/common",
   ]
 }
 
@@ -82,7 +64,7 @@ source_set("browser_tests") {
       "fake_probe_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+    deps += [ "//chrome/browser/ash/telemetry_extension/telemetry" ]
   }
 
   if (is_chromeos_lacros) {

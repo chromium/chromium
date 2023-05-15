@@ -225,6 +225,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
+      {"appManagementArcManagePermissionsLabel",
+       IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS},
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},
       {"appManagementContactsPermissionLabel", IDS_APP_MANAGEMENT_CONTACTS},
       {"appManagementFileHandlingHeader",
@@ -270,6 +272,10 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+      {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
+      {"appManagementPermissionAllowedWithDetails",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS},
+      {"appManagementPermissionDenied", IDS_APP_MANAGEMENT_PERMISSION_DENIED},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementPinToShelfLabel", IDS_APP_MANAGEMENT_PIN_TO_SHELF},
       {"appManagementPresetWindowSizesLabel",
@@ -422,6 +428,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "appManagementAppDetailsEnabled",
       base::FeatureList::IsEnabled(::features::kAppManagementAppDetails));
+
+  html_source->AddBoolean("appManagementArcReadOnlyPermissions",
+                          arc::IsReadOnlyPermissionsEnabled());
 
   html_source->AddString("appNotificationsBrowserSettingsURL",
                          chrome::kAppNotificationsBrowserSettingsURL);

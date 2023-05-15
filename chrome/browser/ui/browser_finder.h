@@ -41,10 +41,13 @@ namespace chrome {
 // against both non-incognito and incognito profiles. If
 // |match_original_profiles| is false, only an exact match may be returned.
 // If |display_id| is not equal to display::kInvalidDisplayId, only the browsers
-// in the corresponding display may be returned.
+// in the corresponding display may be returned. If |ignore_closing_browsers| is
+// false, browsers that are in the closing state (i.e. browsers registered in
+// |BrowserList::currently_closing_browsers_|) may be returned.
 Browser* FindTabbedBrowser(Profile* profile,
                            bool match_original_profiles,
-                           int64_t display_id = display::kInvalidDisplayId);
+                           int64_t display_id = display::kInvalidDisplayId,
+                           bool ignore_closing_browsers = false);
 
 // Finds an existing browser window of any kind.
 Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles);

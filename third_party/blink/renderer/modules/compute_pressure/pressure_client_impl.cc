@@ -13,23 +13,12 @@
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-using device::mojom::blink::PressureFactor;
 using device::mojom::blink::PressureSource;
 using device::mojom::blink::PressureState;
 
 namespace blink {
 
 namespace {
-
-V8PressureFactor::Enum PressureFactorToV8PressureFactor(PressureFactor factor) {
-  switch (factor) {
-    case PressureFactor::kThermal:
-      return V8PressureFactor::Enum::kThermal;
-    case PressureFactor::kPowerSupply:
-      return V8PressureFactor::Enum::kPowerSupply;
-  }
-  NOTREACHED_NORETURN();
-}
 
 V8PressureState::Enum PressureStateToV8PressureState(PressureState state) {
   switch (state) {
@@ -70,18 +59,12 @@ void PressureClientImpl::OnPressureUpdated(
   }
 
   auto source = PressureSourceToV8PressureSource(update->source);
-  Vector<V8PressureFactor> v8_factors;
-  for (const auto& factor : update->factors) {
-    v8_factors.push_back(
-        V8PressureFactor(PressureFactorToV8PressureFactor(factor)));
-  }
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
   HeapVector<Member<blink::PressureObserver>> observers(observers_);
   for (const auto& observer : observers) {
     observer->OnUpdate(GetExecutionContext(), source,
                        PressureStateToV8PressureState(update->state),
-                       v8_factors,
                        ConvertTimeToDOMHighResTimeStamp(update->timestamp));
   }
 }

@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_util.h"
 #import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator_delegate.h"

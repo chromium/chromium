@@ -1,0 +1,151 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Maintains the state of the `<xf-cloud-panel>` and ensures the
+ * information is passed to it appropriately.
+ * @suppress {checkTypes} TS already checks this file.
+ */
+
+import {util} from '../common/js/util.js';
+import {State} from '../externs/ts/state.js';
+import {getStore, Store} from '../state/store.js';
+import {CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
+
+export type BulkPinProgress = chrome.fileManagerPrivate.BulkPinProgress;
+export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
+
+/**
+ * The `CloudPanelContainer` acts as a translation layer between the data in the
+ * store relating to bulk pinning and the `<xf-cloud-panel>` element that
+ * presents the data.
+ */
+export class CloudPanelContainer {
+  /**
+   * The store element.
+   */
+  private store_: Store;
+
+  /**
+   * The previously stored progress, used to identify if any changes have
+   * occurred. Store updates could happen to any key within the store, so make
+   * sure it's to one that this container uses.
+   */
+  private progress_: BulkPinProgress|null = null;
+
+  /**
+   * The driveFsBulkPinningEnabled preference, used to identify if it has
+   * changed or not.
+   */
+  private bulkPinningPreference_: boolean|undefined = false;
+
+  /**
+   * Keeps track of the number of updates.
+   * NOTE: Used for testing only.
+   */
+  private updates_ = 0;
+
+  constructor(private panel_: XfCloudPanel, private test_: boolean = false) {
+    this.store_ = getStore();
+    this.store_.subscribe(this);
+
+    this.panel_.addEventListener(
+        XfCloudPanel.events.DRIVE_SETTINGS_CLICKED,
+        this.onDriveSettingsClick_.bind(this));
+  }
+
+  get updates() {
+    return this.updates_;
+  }
+
+  /**
+   * When the "Google Drive settings" button is clicked, open OS Settings to the
+   * Google Drive page.
+   */
+  private onDriveSettingsClick_(_: CloudPanelSettingsClickEvent) {
+    chrome.fileManagerPrivate.openSettingsSubpage('googleDrive');
+  }
+
+  onStateChanged(state: State) {
+    const bulkPinProgress = state.bulkPinning;
+    const bulkPinPref = state.preferences?.driveFsBulkPinningEnabled;
+    if (!bulkPinProgress) {
+      this.bulkPinningPreference_ = bulkPinPref;
+      return;
+    }
+
+    // Check if any of the required state has changed between store changes.
+    if ((this.progress_ &&
+         (this.progress_.stage === bulkPinProgress.stage &&
+          this.progress_.filesToPin === bulkPinProgress.filesToPin &&
+          this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
+          this.progress_.bytesToPin === bulkPinProgress.bytesToPin)) &&
+        this.bulkPinningPreference_ === bulkPinPref) {
+      return;
+    }
+    this.progress_ = bulkPinProgress;
+    this.bulkPinningPreference_ = bulkPinPref;
+
+    // If the bulk pinning cloud panel can't be shown, make sure to close any
+    // open variants of it. This ensures if the panel is open when the
+    // preference is disabled, it will not stay open with stale data.
+    if (!util.canBulkPinningCloudPanelShow(
+            bulkPinProgress.stage, bulkPinPref)) {
+      this.panel_.close();
+      return;
+    }
+
+    // If the bulk pinning is paused, this indicates that it is currently
+    // offline. This could be from either the network not being connected or
+    // cellular being disabled for syncing.
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED) {
+      this.updatePanelType_(CloudPanelType.OFFLINE);
+      return;
+    }
+
+    // Not enough space indicates the available local storage is insufficient to
+    // store all the files required by the users My drive.
+    if (bulkPinProgress.stage === BulkPinStage.NOT_ENOUGH_SPACE) {
+      this.updatePanelType_(CloudPanelType.NOT_ENOUGH_SPACE);
+      return;
+    }
+    this.panel_.removeAttribute('type');
+
+    // Files to pin can't be negative the pinned bytes should never exceed
+    // the bytes to pin (>100%).
+    if (bulkPinProgress.filesToPin < 0 ||
+        (bulkPinProgress.pinnedBytes > bulkPinProgress.bytesToPin)) {
+      return;
+    }
+
+    this.panel_.setAttribute('items', String(bulkPinProgress.filesToPin));
+    const percentage = (bulkPinProgress.bytesToPin === 0) ?
+        '100' :
+        (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
+            .toFixed(0);
+    this.panel_.setAttribute('percentage', String(percentage));
+    this.increaseUpdates_();
+  }
+
+  /**
+   * Updates the underlying panel to the `type` and removes the in progress
+   * attributes.
+   */
+  private updatePanelType_(type: CloudPanelType) {
+    this.panel_.setAttribute('type', type);
+    this.panel_.removeAttribute('items');
+    this.panel_.removeAttribute('percentage');
+    this.increaseUpdates_();
+  }
+
+  /**
+   * If in a test environment, keep track of the number of updates that have
+   * been performed based on state changes.
+   */
+  private increaseUpdates_() {
+    if (this.test_) {
+      ++this.updates_;
+    }
+  }
+}

@@ -167,6 +167,15 @@ found in the LICENSE file.
         <pre>--force-renderer-accessibility</pre>
       </p>
       <p>
+        To force the accessibility AXMode to one of the three predefined bundles
+        (basic, form-controls, or complete), run Chrome with the
+        --force-renderer-accessibility flag and optional argument:
+        <pre>--force-renderer-accessibility=[basic|form-controls|complete]</pre>
+
+        If the optional parameter is absent, the AXMode bundle will default to
+        complete.
+      </p>
+      <p>
         To disable accessibility, run Chrome with this flag:
         <pre>--disable-renderer-accessibility</pre>
       </p>

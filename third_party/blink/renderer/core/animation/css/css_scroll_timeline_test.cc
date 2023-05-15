@@ -24,17 +24,17 @@
 namespace blink {
 
 class CSSScrollTimelineTest : public PageTestBase,
-                              private ScopedCSSScrollTimelineForTest {
+                              private ScopedScrollTimelineForTest {
  public:
-  CSSScrollTimelineTest() : ScopedCSSScrollTimelineForTest(true) {}
+  CSSScrollTimelineTest() : ScopedScrollTimelineForTest(true) {}
 
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();
   }
 
   const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
-  GetUnvalidatedTimelines() {
-    return GetFrame().GetUnvalidatedScrollSnapshotClientsForTesting();
+  GetScrollSnapshotClientsForTesting() {
+    return GetFrame().GetScrollSnapshotClientsForTesting();
   }
 };
 
@@ -196,7 +196,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
     <div id=main></div>
   )HTML");
 
-  ASSERT_TRUE(GetUnvalidatedTimelines().empty());
+  ASSERT_TRUE(GetScrollSnapshotClientsForTesting().empty());
 
   Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   element->setAttribute(blink::html_names::kIdAttr, "element");
@@ -216,7 +216,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   observer->observe(element);
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, GetUnvalidatedTimelines().size());
+  EXPECT_EQ(1u, GetScrollSnapshotClientsForTesting().size());
 }
 
 namespace {

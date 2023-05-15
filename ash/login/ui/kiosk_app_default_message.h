@@ -9,6 +9,7 @@
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/shelf/shelf_background_animator.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace views {
@@ -38,8 +39,8 @@ class ASH_EXPORT KioskAppDefaultMessage
   gfx::Point CalculatePosition() override;
 
  private:
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
 
   ShelfBackgroundAnimator background_animator_;
   base::ScopedObservation<ShelfBackgroundAnimator,

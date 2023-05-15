@@ -40,6 +40,47 @@ struct VerifySuggesterTestCase {
   EnabledSuggestions enabled_suggestions;
 };
 
+class SuggesterContextBasedTest : public testing::Test {
+ protected:
+  SuggesterContextBasedTest() {}
+};
+
+TEST_F(SuggesterContextBasedTest, NoDiacriticsInPassword) {
+  AssistiveSuggesterClientFilter filter(ReturnUrl("https://www.discord.com"),
+                                        ReturnWindowProperty({}));
+  EnabledSuggestions enabled_suggestions;
+
+  filter.FetchEnabledSuggestionsThen(
+      base::BindLambdaForTesting([&](const EnabledSuggestions& enabled) {
+        enabled_suggestions = enabled;
+      }),
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD));
+
+  EnabledSuggestions expected = {.emoji_suggestions = true,
+                                 .multi_word_suggestions = true,
+                                 .personal_info_suggestions = true,
+                                 .diacritic_suggestions = false};
+  EXPECT_EQ(enabled_suggestions, expected);
+}
+
+TEST_F(SuggesterContextBasedTest, YesDiacriticsNormally) {
+  AssistiveSuggesterClientFilter filter(ReturnUrl("https://www.discord.com"),
+                                        ReturnWindowProperty({}));
+  EnabledSuggestions enabled_suggestions;
+
+  filter.FetchEnabledSuggestionsThen(
+      base::BindLambdaForTesting([&](const EnabledSuggestions& enabled) {
+        enabled_suggestions = enabled;
+      }),
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
+
+  EnabledSuggestions expected = {.emoji_suggestions = true,
+                                 .multi_word_suggestions = true,
+                                 .personal_info_suggestions = true,
+                                 .diacritic_suggestions = true};
+  EXPECT_EQ(enabled_suggestions, expected);
+}
+
 using SuggesterAllowlist = testing::TestWithParam<VerifySuggesterTestCase>;
 
 TEST_P(SuggesterAllowlist, VerifySuggesterAllowedState) {
@@ -55,7 +96,8 @@ TEST_P(SuggesterAllowlist, VerifySuggesterAllowedState) {
   filter.FetchEnabledSuggestionsThen(
       base::BindLambdaForTesting([&](const EnabledSuggestions& enabled) {
         enabled_suggestions = enabled;
-      }));
+      }),
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_NONE));
 
   EXPECT_EQ(enabled_suggestions, test_case.enabled_suggestions);
 }

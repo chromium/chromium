@@ -13,6 +13,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace views {
@@ -96,7 +97,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     SearchResult::Tags GetTags() const { return tags_; }
 
    private:
-    views::Label* label_;  // Owned by views hierarchy.
+    raw_ptr<views::Label, ExperimentalAsh> label_;  // Owned by views hierarchy.
     SearchResult::Tags tags_;
   };
 
@@ -246,33 +247,39 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void OnSearchResultActionActivated(size_t index) override;
   bool IsSearchResultHoveredOrSelected() override;
 
+  bool IsInlineSearchResult();
+
   // Parent list view. Owned by views hierarchy.
-  SearchResultListView* const list_view_;
+  const raw_ptr<SearchResultListView, ExperimentalAsh> list_view_;
 
-  AppListViewDelegate* const view_delegate_;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
-  SearchResultPageDialogController* const dialog_controller_;
+  const raw_ptr<SearchResultPageDialogController,
+                DanglingUntriaged | ExperimentalAsh>
+      dialog_controller_;
 
-  MaskedImageView* icon_ = nullptr;         // Owned by views hierarchy.
-  views::ImageView* badge_icon_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<MaskedImageView, ExperimentalAsh> icon_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::ImageView, ExperimentalAsh> badge_icon_ =
+      nullptr;  // Owned by views hierarchy.
 
-  views::FlexLayoutView* text_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> text_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* big_title_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> big_title_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* big_title_main_text_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh>
+      big_title_main_text_container_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh>
+      big_title_superscript_container_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> body_text_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* big_title_superscript_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> title_and_details_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* body_text_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> title_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* title_and_details_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> details_container_ =
       nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* title_container_ =
-      nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* details_container_ =
-      nullptr;  // Owned by views hierarchy.
-  views::FlexLayoutView* keyboard_shortcut_container_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> keyboard_shortcut_container_ =
       nullptr;                                     // Owned by views hierarchy.
   std::vector<LabelAndTag> big_title_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>
@@ -281,11 +288,14 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>
       keyboard_shortcut_container_tags_;     // Owned by views hierarchy.
-  views::Label* result_text_separator_label_ =
-      nullptr;                                      // Owned by views hierarchy.
-  views::Label* rating_separator_label_ = nullptr;  // Owned by views hierarchy.
-  views::Label* rating_ = nullptr;           // Owned by views hierarchy.
-  views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> result_text_separator_label_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> rating_separator_label_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> rating_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::ImageView, ExperimentalAsh> rating_star_ =
+      nullptr;  // Owned by views hierarchy.
 
   // Whether the removal confirmation dialog is invoked by long press touch.
   bool confirm_remove_by_long_press_ = false;

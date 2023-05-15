@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/apple/backup_util.h"
 #import "base/base_paths.h"
 #import "base/containers/contains.h"
 #import "base/files/file_enumerator.h"
@@ -17,7 +18,6 @@
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
-#import "base/mac/backup_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
@@ -27,7 +27,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -181,7 +180,7 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   NSData* data = UIImageJPEGRepresentation(image, kJPEGImageQuality);
-  if (!data && base::FeatureList::IsEnabled(kPDFSnapshot)) {
+  if (!data) {
     // Use UIImagePNGRepresentation instead when ImageJPEGRepresentation returns
     // nil. It happens when the underlying CGImageRef contains data in an
     // unsupported bitmap format.
@@ -220,7 +219,7 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   base::FilePath image_path = ImagePath(snapshot_id, IMAGE_TYPE_GREYSCALE,
                                         image_scale, cache_directory);
   WriteImageToDisk(grey_image, image_path);
-  base::mac::SetBackupExclusion(image_path);
+  base::apple::SetBackupExclusion(image_path);
 }
 
 void DeleteImageWithSnapshotID(const base::FilePath& cache_directory,

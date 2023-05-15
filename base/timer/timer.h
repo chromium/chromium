@@ -250,7 +250,7 @@ class BASE_EXPORT OneShotTimer : public internal::DelayTimerBase {
 
   // Run the scheduled task immediately, and stop the timer. The timer needs to
   // be running.
-  void FireNow();
+  virtual void FireNow();
 
  private:
   void OnStop() final;

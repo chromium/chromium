@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -238,7 +239,7 @@ class ModellerImpl : public Modeller,
   std::unique_ptr<Trainer, base::OnTaskRunnerDeleter> trainer_;
 
   // This will be replaced by a mock tick clock during tests.
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   base::OneShotTimer model_timer_;
 

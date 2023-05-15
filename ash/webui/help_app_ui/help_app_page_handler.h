@@ -6,8 +6,11 @@
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_PAGE_HANDLER_H_
 
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+class GURL;
 
 namespace ash {
 
@@ -34,10 +37,11 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
+  void OpenUrlInBrowser(const GURL& url) override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;
-  HelpAppUI* help_app_ui_;  // Owns |this|.
+  raw_ptr<HelpAppUI, ExperimentalAsh> help_app_ui_;  // Owns |this|.
   bool is_lss_enabled_;
   bool is_launcher_search_enabled_;
 };

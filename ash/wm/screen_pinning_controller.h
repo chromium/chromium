@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -98,7 +99,7 @@ class ASH_EXPORT ScreenPinningController
   void OnWindowDestroying(aura::Window* window) override;
 
   // Pinned window should be on top in the parent window.
-  aura::Window* pinned_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> pinned_window_ = nullptr;
 
   // Owns the WindowDimmers. There is one WindowDimmer for the parent of
   // |pinned_window_| and one for each display other than the display

@@ -4,7 +4,8 @@
 
 #include "ui/gfx/geometry/rrect_f.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rrect_f_builder.h"
 

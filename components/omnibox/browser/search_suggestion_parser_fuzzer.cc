@@ -30,22 +30,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   std::unique_ptr<std::string> response_body =
       std::make_unique<std::string>(reinterpret_cast<const char*>(data), size);
-  absl::optional<base::Value> value =
+  absl::optional<base::Value::List> root_list =
       SearchSuggestionParser::DeserializeJsonData(
           SearchSuggestionParser::ExtractJsonData(nullptr,
                                                   std::move(response_body)));
-  if (value) {
+  if (root_list) {
     AutocompleteInput input;
     {
       // Set-up the input so downstream won't reject it.
-      if (value->is_list()) {
-        const base::Value::List& root_list = value->GetList();
-        if (!root_list.empty() && root_list[0].is_string()) {
-          std::string query = root_list[0].GetString();
-          input = AutocompleteInput(base::UTF8ToUTF16(query),
-                                    metrics::OmniboxEventProto::OTHER,
-                                    TestSchemeClassifier());
-        }
+      if (!root_list->empty() && (*root_list)[0].is_string()) {
+        std::string query = (*root_list)[0].GetString();
+        input = AutocompleteInput(base::UTF8ToUTF16(query),
+                                  metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
       }
     }
     // This is primarily only used to decide where to store the results,
@@ -54,7 +51,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     SearchSuggestionParser::Results results;
     // Copied from BaseSearchProvider::ParseSuggestResults()
     SearchSuggestionParser::ParseSuggestResults(
-        *value, input, TestSchemeClassifier(), -1, is_keyword, &results);
+        *root_list, input, TestSchemeClassifier(), -1, is_keyword, &results);
   }
   return 0;
 }

@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -43,7 +42,6 @@ using syncer::MockModelTypeChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
-const char kLocaleString[] = "en-US";
 const std::string kExpectedClientTagAndStorageKey =
     "VirtualCardUsageData|12345|google|https://www.google.com";
 
@@ -63,7 +61,6 @@ std::vector<VirtualCardUsageData> ExtractVirtualCardUsageDataFromDataBatch(
 class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
-    CountryNames::SetLocaleString(kLocaleString);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
@@ -187,9 +184,9 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, GetAllDataForDebugging) {
               testing::UnorderedElementsAre(usage_data1, usage_data2));
 }
 
-// Tests that when sync changes are applied, `ApplySyncChanges()` merges remotes
-// changes into the local store.
-TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncChanges) {
+// Tests that when sync changes are applied, `ApplyIncrementalSyncChanges()`
+// merges remotes changes into the local store.
+TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   VirtualCardUsageData virtual_card_usage_data1 =
       test::GetVirtualCardUsageData1();
   VirtualCardUsageData virtual_card_usage_data2 =
@@ -201,11 +198,11 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncChanges) {
       *virtual_card_usage_data1.usage_data_id(),
       VirtualCardUsageDataToEntity(virtual_card_usage_data1)));
 
-  // `MergeSyncData()` returns an error if it fails.
-  EXPECT_EQ(bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                                    std::move(entity_change_list_merge)),
+  // `MergeFullSyncData()` returns an error if it fails.
+  EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                                        std::move(entity_change_list_merge)),
             absl::nullopt);
-  // Expect `MergeSyncData()` was successful.
+  // Expect `MergeFullSyncData()` was successful.
   EXPECT_THAT(GetVirtualCardUsageDataFromTable(),
               testing::UnorderedElementsAre(virtual_card_usage_data1));
 
@@ -224,9 +221,9 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncChanges) {
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
 
-  // `ApplySyncChanges()` returns an error if it fails.
-  EXPECT_FALSE(bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          std::move(entity_change_list)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list)));
 
   // Expect that the local data has changed.
   EXPECT_THAT(GetVirtualCardUsageDataFromTable(),
@@ -249,10 +246,10 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncChanges) {
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
 
-  // `ApplySyncChanges()` returns an error if it fails.
-  EXPECT_FALSE(
-      bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                 std::move(entity_change_list_update)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      std::move(entity_change_list_update)));
 
   // Expect that the local data has changed.
   EXPECT_THAT(GetVirtualCardUsageDataFromTable(),
@@ -267,8 +264,8 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       *old_data.usage_data_id(), VirtualCardUsageDataToEntity(old_data)));
-  EXPECT_EQ(bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                                    std::move(entity_change_list)),
+  EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                                        std::move(entity_change_list)),
             absl::nullopt);
 
   EXPECT_CALL(backend(), CommitChanges());
@@ -299,8 +296,8 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncData_LogDataValidity) {
 
   EXPECT_CALL(backend(), CommitChanges());
   base::HistogramTester histogram_tester;
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(entity_change_list));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(entity_change_list));
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardUsageData.SyncedUsageDataBeingValid", true, 1);
   histogram_tester.ExpectBucketCount(

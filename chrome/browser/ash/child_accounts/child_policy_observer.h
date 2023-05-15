@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 
@@ -89,7 +90,7 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   PolicyReadyCallback on_policy_ready_;
 
   // Profile of the child user, not owned.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash

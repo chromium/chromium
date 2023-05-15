@@ -29,6 +29,11 @@ class InputOverlayUkm;
 namespace badging {
 class BadgeManager;
 }  // namespace badging
+
+namespace web_app {
+class DesktopWebAppUkmRecorder;
+}  // namespace web_app
+
 namespace ukm {
 
 BASE_FEATURE(kUkmAppLogging, "UkmAppLogging", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -44,6 +49,8 @@ class AppSourceUrlRecorder {
   friend class arc::input_overlay::InputOverlayUkm;
 
   friend class badging::BadgeManager;
+
+  friend class web_app::DesktopWebAppUkmRecorder;
 
   // Get a UKM SourceId with the prefix "app://" for a Chrome app with `app_id`,
   // a unique hash string to identify the app. For example,

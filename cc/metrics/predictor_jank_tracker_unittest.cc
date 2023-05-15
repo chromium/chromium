@@ -29,17 +29,19 @@ class PredictorJankTrackerTest : public testing::Test {
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
   base::TimeTicks base_presentation_ts_;
   const char* missed_fast_histogram_name =
-      "Event.Jank.ScrollUpdate.FastScroll.MissedVsync.FrameAboveJankyThreshold";
+      "Event.Jank.ScrollUpdate.FastScroll.MissedVsync."
+      "FrameAboveJankyThreshold2";
   const char* fast_histogram_name =
       "Event.Jank.ScrollUpdate.FastScroll.NoMissedVsync."
-      "FrameAboveJankyThreshold";
+      "FrameAboveJankyThreshold2";
   const char* missed_slow_histogram_name =
-      "Event.Jank.ScrollUpdate.SlowScroll.MissedVsync.FrameAboveJankyThreshold";
+      "Event.Jank.ScrollUpdate.SlowScroll.MissedVsync."
+      "FrameAboveJankyThreshold2";
   const char* slow_histogram_name =
       "Event.Jank.ScrollUpdate.SlowScroll.NoMissedVsync."
-      "FrameAboveJankyThreshold";
+      "FrameAboveJankyThreshold2";
   const char* janky_percentage_name =
-      "Event.Latency.ScrollUpdate.JankyFramePercentage";
+      "Event.Jank.PredictorJankyFramePercentage";
   constexpr static base::TimeDelta vsync_interval = base::Milliseconds(16);
 };
 

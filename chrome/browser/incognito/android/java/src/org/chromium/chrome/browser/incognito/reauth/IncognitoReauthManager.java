@@ -9,6 +9,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,7 +40,7 @@ public class IncognitoReauthManager {
     }
 
     public IncognitoReauthManager() {
-        this(new ReauthenticatorBridge(DeviceAuthRequester.INCOGNITO_REAUTH_PAGE));
+        this(ReauthenticatorBridge.create(DeviceAuthRequester.INCOGNITO_REAUTH_PAGE));
     }
 
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {
@@ -74,6 +76,9 @@ public class IncognitoReauthManager {
      *
      * For a more complete check, rely on the method {@link
      * IncognitoReauthManager#isIncognitoReauthEnabled(Profile)} instead.
+     *
+     * TODO(crbug.com/1227656): Remove the check on accessibility once the GTS is fully rolled out
+     * to accessibility users.
      */
     public static boolean isIncognitoReauthFeatureAvailable() {
         if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
@@ -82,6 +87,8 @@ public class IncognitoReauthManager {
         // The implementation relies on {@link BiometricManager} which was introduced in API
         // level 29. Android Q is not supported due to a potential bug in BiometricPrompt.
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                && !DeviceClassManager.enableAccessibilityLayout(
+                        ContextUtils.getApplicationContext())
                 && ChromeFeatureList.sIncognitoReauthenticationForAndroid.isEnabled();
     }
 
@@ -91,7 +98,7 @@ public class IncognitoReauthManager {
      *
      * @return A boolean indicating if Incognito re-authentication is possible or not.
      */
-    public static boolean isIncognitoReauthEnabled(Profile profile) {
+    public static boolean isIncognitoReauthEnabled(@NonNull Profile profile) {
         return isIncognitoReauthFeatureAvailable()
                 && IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()
                 && isIncognitoReauthSettingEnabled(profile);

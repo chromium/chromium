@@ -347,8 +347,7 @@ class RenderViewContextMenu
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
-  // Implemented in RenderViewContextMenuViews.
-  void ExecOpenInReadAnything() override {}
+  void ExecOpenInReadAnything();
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);
@@ -371,6 +370,10 @@ class RenderViewContextMenu
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;
+
+  // URL of current page and current main frame url
+  GURL current_url_;
+  GURL main_frame_url_;
 
   ui::SimpleMenuModel profile_link_submenu_model_;
   std::vector<base::FilePath> profile_link_paths_;

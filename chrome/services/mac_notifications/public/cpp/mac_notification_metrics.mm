@@ -6,27 +6,24 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace mac_notifications {
 
 bool IsAppBundleAlertStyle() {
-  NSDictionary* infoDictionary = [base::mac::MainBundle() infoDictionary];
+  NSDictionary* infoDictionary = [base::apple::MainBundle() infoDictionary];
   NSString* alertStyle = infoDictionary[@"NSUserNotificationAlertStyle"];
   return [alertStyle isEqualToString:@"alert"];
 }
 
 std::string MacNotificationStyleSuffix(bool is_alert) {
   return is_alert ? "Alert" : "Banner";
-}
-
-void LogMacNotificationDelivered(bool is_alert, bool success) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Notifications.macOS.Delivered.",
-                    MacNotificationStyleSuffix(is_alert)}),
-      success);
 }
 
 void LogMacNotificationActionReceived(bool is_alert, bool is_valid) {

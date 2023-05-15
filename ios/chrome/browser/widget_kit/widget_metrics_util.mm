@@ -30,7 +30,8 @@ enum class WidgetKitExtensionKind {
   kLockscreenLauncherIncognito = 5,
   kLockscreenLauncherVoiceSearch = 6,
   kLockscreenLauncherGame = 7,
-  kMaxValue = kLockscreenLauncherGame,
+  kShortcuts = 8,
+  kMaxValue = kShortcuts,
 };
 
 WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
@@ -45,6 +46,9 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   }
   if ([kind isEqualToString:@"QuickActionsWidget"]) {
     return WidgetKitExtensionKind::kQuickActions;
+  }
+  if ([kind isEqualToString:@"ShortcutsWidget"]) {
+    return WidgetKitExtensionKind::kShortcuts;
   }
   if ([kind isEqualToString:@"LockscreenLauncherSearchWidget"]) {
     return WidgetKitExtensionKind::kLockscreenLauncherSearch;

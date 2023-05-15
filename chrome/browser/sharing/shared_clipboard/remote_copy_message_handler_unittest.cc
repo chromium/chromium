@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
@@ -94,8 +94,9 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
     image_ = CreateTestSkBitmap(/*w=*/10, /*h=*/20, SK_ColorRED);
 
     chrome_browser_sharing::SharingMessage message =
-        SharedClipboardTestBase::CreateMessage(base::GenerateGUID(),
-                                               kDeviceNameInMessage);
+        SharedClipboardTestBase::CreateMessage(
+            base::Uuid::GenerateRandomV4().AsLowercaseString(),
+            kDeviceNameInMessage);
     message.mutable_remote_copy_message()->set_image_url(image_url);
     return message;
   }
@@ -138,7 +139,8 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
 
 TEST_F(RemoteCopyMessageHandlerTest, NotificationWithoutDeviceName) {
   message_handler_->OnMessage(
-      CreateMessageWithText(base::GenerateGUID(), kEmptyDeviceName, kText),
+      CreateMessageWithText(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            kEmptyDeviceName, kText),
       base::DoNothing());
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(
@@ -151,7 +153,8 @@ TEST_F(RemoteCopyMessageHandlerTest, NotificationWithoutDeviceName) {
 
 TEST_F(RemoteCopyMessageHandlerTest, NotificationWithDeviceName) {
   message_handler_->OnMessage(
-      CreateMessageWithText(base::GenerateGUID(), kDeviceNameInMessage, kText),
+      CreateMessageWithText(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            kDeviceNameInMessage, kText),
       base::DoNothing());
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(l10n_util::GetStringFUTF16(

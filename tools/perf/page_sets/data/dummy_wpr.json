@@ -1,0 +1,9 @@
+{
+    "archives": {
+        "google_main_page": {
+            "DEFAULT": "dummy_wpr_43ed203978.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
+    "platform_specific": true
+}

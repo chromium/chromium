@@ -119,10 +119,9 @@
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
+            page-availability="[[pageAvailability_]]"
             on-iron-activate="onSectionSelect_"
-            advanced-opened="{{advancedOpenedInMenu_}}"
-            show-kerberos-section="[[showKerberosSection_]]"
-            show-reset="[[showReset_]]">
+            advanced-opened="{{advancedOpenedInMenu_}}">
         </os-settings-menu>
       </template>
     </div>
@@ -132,25 +131,21 @@
   <div id="left">
     <template is="dom-if" if="[[showNavMenu_]]">
       <os-settings-menu
+          page-availability="[[pageAvailability_]]"
           on-iron-activate="onSectionSelect_"
-          advanced-opened="{{advancedOpenedInMenu_}}"
-          show-kerberos-section="[[showKerberosSection_]]"
-          show-reset="[[showReset_]]">
+          advanced-opened="{{advancedOpenedInMenu_}}">
       </os-settings-menu>
     </template>
   </div>
-  <os-settings-main id="main" prefs="{{prefs}}"
+  <os-settings-main id="main"
+      prefs="{{prefs}}"
       toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-      page-visibility="[[pageVisibility_]]"
+      page-availability="[[pageAvailability_]]"
       show-android-apps="[[showAndroidApps_]]"
       show-arcvm-manage-usb="[[showArcvmManageUsb_]]"
-      show-crostini="[[showCrostini_]]"
       show-plugin-vm="[[showPluginVm_]]"
-      show-reset="[[showReset_]]"
-      show-startup="[[showStartup_]]"
       have-play-store-app="[[havePlayStoreApp_]]"
-      advanced-toggle-expanded="{{advancedOpenedInMain_}}"
-      show-kerberos-section="[[showKerberosSection_]]">
+      advanced-toggle-expanded="{{advancedOpenedInMain_}}">
   </os-settings-main>
   <!-- An additional child of the flex #container to take up space,
         aligned with the right-hand child of the flex toolbar. -->

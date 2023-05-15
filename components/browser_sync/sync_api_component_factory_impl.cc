@@ -32,7 +32,7 @@
 #include "components/history/core/browser/sync/history_model_type_controller.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/sync/password_model_type_controller.h"
+#include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -259,22 +259,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // Wallet data sync is enabled by default. Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA)) {
-      if (base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableAccountWalletStorage)) {
-        controllers.push_back(
-            CreateWalletModelTypeControllerWithInMemorySupport(
-                syncer::AUTOFILL_WALLET_DATA,
-                base::BindRepeating(&AutofillWalletDelegateFromDataService),
-                sync_service));
-      } else {
-        // Create without a transport-mode delegate otherwise.
-        // Since the feature is already enabled by default, this path is only
-        // executed in integration tests.
-        controllers.push_back(CreateWalletModelTypeController(
-            syncer::AUTOFILL_WALLET_DATA,
-            base::BindRepeating(&AutofillWalletDelegateFromDataService),
-            sync_service));
-      }
+      controllers.push_back(CreateWalletModelTypeControllerWithInMemorySupport(
+          syncer::AUTOFILL_WALLET_DATA,
+          base::BindRepeating(&AutofillWalletDelegateFromDataService),
+          sync_service));
     }
 
     // Wallet metadata sync depends on Wallet data sync. Register if neither
@@ -302,11 +290,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_USAGE)) {
-      controllers.push_back(
-          CreateWalletModelTypeControllerWithInMemorySupport(
-              syncer::AUTOFILL_WALLET_USAGE,
-              base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
-              sync_service));
+      controllers.push_back(CreateWalletModelTypeControllerWithInMemorySupport(
+          syncer::AUTOFILL_WALLET_USAGE,
+          base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
+          sync_service));
     }
   }
 
@@ -392,12 +379,13 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (profile_password_store_) {
       // |profile_password_store_| can be null in tests.
       controllers.push_back(
-          std::make_unique<password_manager::PasswordModelTypeController>(
+          std::make_unique<password_manager::CredentialModelTypeController>(
+              syncer::PASSWORDS,
               profile_password_store_->CreateSyncControllerDelegate(),
               account_password_store_
                   ? account_password_store_->CreateSyncControllerDelegate()
                   : nullptr,
-              account_password_store_, sync_client_->GetPrefService(),
+              sync_client_->GetPrefService(),
               sync_client_->GetIdentityManager(), sync_service));
     }
   }
@@ -486,12 +474,15 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 #if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
-    controllers.push_back(std::make_unique<ModelTypeController>(
-        syncer::WEBAUTHN_CREDENTIAL,
-        /*delegate_for_full_sync_mode=*/
-        CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
-        /*delegate_for_transport_mode=*/
-        CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL)));
+    controllers.push_back(
+        std::make_unique<password_manager::CredentialModelTypeController>(
+            syncer::WEBAUTHN_CREDENTIAL,
+            /*delegate_for_full_sync_mode=*/
+            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
+            /*delegate_for_transport_mode=*/
+            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
+            sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+            sync_service));
   }
 #endif
 

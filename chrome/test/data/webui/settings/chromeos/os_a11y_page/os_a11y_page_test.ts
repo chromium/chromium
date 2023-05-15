@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
 import {CrSettingsPrefs, OsA11yPageBrowserProxyImpl, OsSettingsA11yPageElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -71,14 +74,14 @@ suite('<os-settings-a11y-page>', () => {
 
   test('Checking pdf ocr toggle visibility in the TTS page', async () => {
     // Need to have this test here as the screen reader state is passed from
-    // the os-settings-a11y-page to the settings-text-to-speech-page.
+    // the os-settings-a11y-page to the settings-text-to-speech-subpage.
     // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
     Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
     flush();
     const ttsPage =
-        page.shadowRoot!.querySelector('settings-text-to-speech-page');
+        page.shadowRoot!.querySelector('settings-text-to-speech-subpage');
 
     // Disable ChromeVox to hide the PDF OCR toggle.
     webUIListenerCallback('screen-reader-state-changed', false);

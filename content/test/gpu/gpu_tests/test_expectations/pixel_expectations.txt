@@ -12,6 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
+#             chromeos-board-jacuzzi chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -24,7 +25,9 @@
 #         lacros-chrome cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
+#         apple apple-apple-m1 apple-apple-m2
+#             apple-angle-metal-renderer:-apple-m1
+#             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
@@ -208,10 +211,14 @@ crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
 # Test is too slow for old phones and laptops, and in Debug mode.
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
+crbug.com/1440215 [ android android-pixel-4 ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Failure ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
+
+# Fuchsia devices do not have enough memory for this test.
+crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
 
 # MediaFoundation for Clear DirectComposition only supported on WIN10_RS3.
 [ android ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
@@ -275,7 +282,6 @@ crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLConte
 
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
-crbug.com/1213674 [ mac amd-0x6821 passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
@@ -289,26 +295,21 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
-crbug.com/974380 [ no-clang-coverage win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
-crbug.com/974380 [ no-clang-coverage win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
-# Producing blank images on Macmini and Macbook Pro
-crbug.com/974380 [ mac no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Google Pixel devices, Samsung
-# devices or Lacros FYI x64 Release (Intel) yet.
+# devices or kevin yet.
 crbug.com/1230619 [ android android-pixel-2 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-pixel-4 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
-# Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
-crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
@@ -339,8 +340,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
 
-# Vulkan Swiftshader WebGPU interop - missing source image
-crbug.com/1307787 [ linux no-clang-coverage renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
@@ -355,7 +354,8 @@ crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportV
 crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ no-clang-coverage win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ intel-0x9bc5 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
@@ -370,9 +370,9 @@ crbug.com/1373965 [ fuchsia oop-c ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOO
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 # Pixel_MediaRecorderFromVideoElement fails on several FYI bots
-crbug.com/1382332 [ amd-0x6821 asan mac-x86_64 monterey release ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ angle-disabled chromeos cros-chrome no-passthrough ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-server-x lacros-chrome passthrough target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
@@ -392,7 +392,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAcceler
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
 # Lacros consistent failures on CrOS devices, skip to save some time
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -401,6 +400,8 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_VP9 [ Skip
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLContextRestored [ Skip ]
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
 
+# Lacros on jacuzzi produces the wrong aspect ratio image
+crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

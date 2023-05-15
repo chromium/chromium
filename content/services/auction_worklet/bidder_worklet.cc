@@ -29,6 +29,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
@@ -51,6 +52,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -82,8 +84,9 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   if (maybe_json) {
-    if (!v8_helper->AppendJsonValue(context, *maybe_json, args))
+    if (!v8_helper->AppendJsonValue(context, *maybe_json, args)) {
       return false;
+    }
   } else {
     args->push_back(v8::Null(isolate));
   }
@@ -136,6 +139,13 @@ bool HasKAnonFailureComponent(
   return false;
 }
 
+absl::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
+  if (delta.is_zero()) {
+    return absl::nullopt;
+  }
+  return delta;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -181,8 +191,9 @@ BidderWorklet::BidderWorklet(
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
-  if (!paused_)
+  if (!paused_) {
     Start();
+  }
 }
 
 BidderWorklet::~BidderWorklet() {
@@ -208,8 +219,9 @@ bool BidderWorklet::IsKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const GURL& script_source_url,
     const mojom::BidderWorkletBidPtr& bid) {
-  if (!bid)
+  if (!bid) {
     return true;
+  }
   if (!BidderWorklet::IsKAnon(
           bidder_worklet_non_shared_params,
           blink::KAnonKeyForAdBid(url::Origin::Create(script_source_url),
@@ -303,12 +315,14 @@ void BidderWorklet::BeginGenerateBid(
 }
 
 void BidderWorklet::SendPendingSignalsRequests() {
-  if (trusted_signals_request_manager_)
+  if (trusted_signals_request_manager_) {
     trusted_signals_request_manager_->StartBatchedTrustedSignalsRequest();
+  }
 }
 
 void BidderWorklet::ReportWin(
-    const std::string& interest_group_name,
+    mojom::ReportingIdField reporting_id_field,
+    const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -316,7 +330,10 @@ void BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_highest_scoring_other_bid,
+    const absl::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
     bool browser_signal_made_highest_scoring_other_bid,
     absl::optional<double> browser_signal_ad_cost,
     absl::optional<uint16_t> browser_signal_modeling_signals,
@@ -332,14 +349,18 @@ void BidderWorklet::ReportWin(
 
   report_win_tasks_.emplace_front();
   auto report_win_task = report_win_tasks_.begin();
-  report_win_task->interest_group_name = interest_group_name;
+  report_win_task->reporting_id_field = reporting_id_field,
+  report_win_task->reporting_id = reporting_id;
   report_win_task->auction_signals_json = auction_signals_json;
   report_win_task->per_buyer_signals_json = per_buyer_signals_json;
   report_win_task->seller_signals_json = seller_signals_json;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
+  report_win_task->browser_signal_bid_currency = browser_signal_bid_currency;
   report_win_task->browser_signal_highest_scoring_other_bid =
       browser_signal_highest_scoring_other_bid;
+  report_win_task->browser_signal_highest_scoring_other_bid_currency =
+      browser_signal_highest_scoring_other_bid_currency;
   report_win_task->browser_signal_made_highest_scoring_other_bid =
       browser_signal_made_highest_scoring_other_bid;
   report_win_task->browser_signal_ad_cost = browser_signal_ad_cost;
@@ -350,9 +371,10 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
-  if (has_bidding_signals_data_version)
+  if (has_bidding_signals_data_version) {
     report_win_task->bidding_signals_data_version =
         bidding_signals_data_version;
+  }
   report_win_task->callback = std::move(report_win_callback);
   report_win_task->trace_id = trace_id;
 
@@ -408,7 +430,7 @@ void BidderWorklet::FinishGenerateBid(
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
-    const std::string& expected_buyer_currency,
+    const absl::optional<blink::AdCurrency>& expected_buyer_currency,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals) {
   GenerateBidTaskList::iterator task = finalize_receiver_set_.current_context();
@@ -484,6 +506,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
+    mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs)
     : context_recycler_for_rerun(std::move(context_recycler_for_rerun)),
       bid(std::move(bid)),
@@ -494,6 +517,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
       update_priority_signals_overrides(
           std::move(update_priority_signals_overrides)),
       pa_requests(std::move(pa_requests)),
+      reject_reason(reject_reason),
       error_msgs(std::move(error_msgs)) {}
 
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
@@ -505,7 +529,8 @@ BidderWorklet::V8State::SingleGenerateBidResult::operator=(
     SingleGenerateBidResult&&) = default;
 
 void BidderWorklet::V8State::ReportWin(
-    const std::string& interest_group_name,
+    mojom::ReportingIdField reporting_id_field,
+    const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     DirectFromSellerSignalsRequester::Result
@@ -515,7 +540,10 @@ void BidderWorklet::V8State::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_highest_scoring_other_bid,
+    const absl::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
     bool browser_signal_made_highest_scoring_other_bid,
     const absl::optional<double>& browser_signal_ad_cost,
     const absl::optional<uint16_t>& browser_signal_modeling_signals,
@@ -556,15 +584,32 @@ void BidderWorklet::V8State::ReportWin(
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
+
+  const char* reporting_id_field_name = nullptr;
+  switch (reporting_id_field) {
+    case mojom::ReportingIdField::kInterestGroupName:
+      reporting_id_field_name = "interestGroupName";
+      break;
+    case mojom::ReportingIdField::kBuyerReportingId:
+      reporting_id_field_name = "buyerReportingId";
+      break;
+    case mojom::ReportingIdField::kBuyerAndSellerReportingId:
+      reporting_id_field_name = "buyerAndSellerReportingId";
+      break;
+  }
+
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           url::Origin::Create(script_source_url_).Serialize()) ||
-      !browser_signals_dict.Set("interestGroupName", interest_group_name) ||
+      !browser_signals_dict.Set(reporting_id_field_name, reporting_id) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      !browser_signals_dict.Set(
+          "bidCurrency",
+          blink::PrintableAdCurrency(browser_signal_bid_currency)) ||
       (browser_signal_ad_cost.has_value() &&
        !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
       (browser_signal_modeling_signals.has_value() &&
@@ -577,6 +622,10 @@ void BidderWorklet::V8State::ReportWin(
                                 static_cast<double>(browser_signal_recency)) ||
       !browser_signals_dict.Set("highestScoringOtherBid",
                                 browser_signal_highest_scoring_other_bid) ||
+      !browser_signals_dict.Set(
+          "highestScoringOtherBidCurrency",
+          blink::PrintableAdCurrency(
+              browser_signal_highest_scoring_other_bid_currency)) ||
       !browser_signals_dict.Set(
           "madeHighestScoringOtherBid",
           browser_signal_made_highest_scoring_other_bid) ||
@@ -692,7 +741,7 @@ void BidderWorklet::V8State::GenerateBid(
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
-    const std::string& expected_buyer_currency,
+    const absl::optional<blink::AdCurrency>& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
@@ -801,7 +850,7 @@ void BidderWorklet::V8State::GenerateBid(
                      std::move(result->pa_requests),
                      std::move(result->non_kanon_pa_requests),
                      /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
-                     std::move(result->error_msgs)));
+                     result->reject_reason, std::move(result->error_msgs)));
 }
 
 absl::optional<BidderWorklet::V8State::SingleGenerateBidResult>
@@ -815,7 +864,7 @@ BidderWorklet::V8State::GenerateSingleBid(
     const DirectFromSellerSignalsRequester::Result&
         direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
-    const std::string& expected_buyer_currency,
+    const absl::optional<blink::AdCurrency>& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const url::Origin* browser_signal_top_level_seller_origin,
     const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
@@ -892,7 +941,9 @@ BidderWorklet::V8State::GenerateSingleBid(
           /*debug_win_report_url=*/absl::nullopt,
           /*set_priority=*/absl::nullopt,
           /*update_priority_signals_overrides=*/{},
-          /*pa_requests=*/{}, std::move(errors_out)));
+          /*pa_requests=*/{},
+          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+          std::move(errors_out)));
     }
 
     context_recycler = fresh_context_recycler.get();
@@ -1121,6 +1172,7 @@ BidderWorklet::V8State::GenerateSingleBid(
             ->TakeSetPrioritySignalsOverrides(),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
+        context_recycler->set_bid_bindings()->reject_reason(),
         std::move(errors_out)));
   }
 
@@ -1138,7 +1190,7 @@ BidderWorklet::V8State::GenerateSingleBid(
           ->TakeSetPrioritySignalsOverrides(),
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(errors_out)));
+      mojom::RejectReason::kNotAvailable, std::move(errors_out)));
 }
 
 std::unique_ptr<ContextRecycler>
@@ -1267,13 +1319,16 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/
           PrivateAggregationRequests(), std::move(non_kanon_pa_requests),
-          bidding_latency, std::move(error_msgs)));
+          bidding_latency,
+          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+          std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!paused_)
+  if (!paused_) {
     return;
+  }
 
   paused_ = false;
   Start();
@@ -1322,8 +1377,9 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
     return;
   }
 
-  if (error_msg.has_value())
+  if (error_msg.has_value()) {
     load_code_error_msgs_.push_back(std::move(error_msg.value()));
+  }
 
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
@@ -1354,8 +1410,9 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
     return;
   }
 
-  if (error_msg.has_value())
+  if (error_msg.has_value()) {
     load_code_error_msgs_.push_back(std::move(error_msg.value()));
+  }
 
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWasmHelper,
@@ -1390,8 +1447,9 @@ void BidderWorklet::RunReadyTasks() {
 
   // While reportWin() doesn't use WASM, since we do load it, we wait for it in
   // order to ensure determinism if the load fails.
-  if (!IsCodeReady())
+  if (!IsCodeReady()) {
     return;
+  }
 
   // Run all ReportWin() tasks that are ready. RunReportWinIfReady() does *not*
   // modify `report_win_tasks_` when invoked, so this is safe.
@@ -1541,8 +1599,9 @@ bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!IsReadyToGenerateBid(*task))
+  if (!IsReadyToGenerateBid(*task)) {
     return;
+  }
 
   // If there was a trusted signals request, it should have already completed
   // and been cleaned up before `signals_received_callback_invoked` was set to
@@ -1652,8 +1711,9 @@ bool BidderWorklet::IsReadyToReportWin(const ReportWinTask& task) const {
 
 void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!IsReadyToReportWin(*task))
+  if (!IsReadyToReportWin(*task)) {
     return;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "fledge", "wait_report_win_deps", task->trace_id, "data",
@@ -1675,7 +1735,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
       v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BidderWorklet::V8State::ReportWin, base::Unretained(v8_state_.get()),
-          std::move(task->interest_group_name),
+          std::move(task->reporting_id_field), std::move(task->reporting_id),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
           std::move(task->direct_from_seller_result_per_buyer_signals),
@@ -1683,7 +1743,9 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->seller_signals_json),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),
+          std::move(task->browser_signal_bid_currency),
           std::move(task->browser_signal_highest_scoring_other_bid),
+          std::move(task->browser_signal_highest_scoring_other_bid_currency),
           std::move(task->browser_signal_made_highest_scoring_other_bid),
           std::move(task->browser_signal_ad_cost),
           std::move(task->browser_signal_modeling_signals),
@@ -1709,6 +1771,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     PrivateAggregationRequests pa_requests,
     PrivateAggregationRequests non_kanon_pa_requests,
     base::TimeDelta bidding_latency,
+    mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -1724,7 +1787,15 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(update_priority_signals_overrides), std::move(pa_requests),
-      std::move(non_kanon_pa_requests), bidding_latency, error_msgs);
+      std::move(non_kanon_pa_requests), bidding_latency,
+      mojom::GenerateBidDependencyLatencies::New(
+          /*code_ready_latency=*/NullOptIfZero(task->wait_code),
+          /*config_promises_latency=*/NullOptIfZero(task->wait_promises),
+          /*direct_from_seller_signals_latency=*/
+          NullOptIfZero(task->wait_direct_from_seller_signals),
+          /*trusted_bidding_signals_latency=*/
+          NullOptIfZero(task->wait_trusted_signals)),
+      reject_reason, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
 

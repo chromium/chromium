@@ -97,6 +97,9 @@ class TestNetworkContext : public mojom::NetworkContext {
   void ComputeHttpCacheSize(base::Time start_time,
                             base::Time end_time,
                             ComputeHttpCacheSizeCallback callback) override {}
+  void ClearCorsPreflightCache(
+      mojom::ClearDataFilterPtr filter,
+      ClearCorsPreflightCacheCallback callback) override {}
   void ClearHostCache(mojom::ClearDataFilterPtr filter,
                       ClearHostCacheCallback callback) override {}
   void ClearHttpAuthCache(base::Time start_time,

@@ -95,8 +95,16 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   DCHECK_EQ(old_child->Parent(), owner);
   DCHECK_EQ(this, owner->VirtualChildren());
 
-  if (old_child->IsFloatingOrOutOfFlowPositioned())
-    To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
+  if (RuntimeEnabledFeatures::LayoutDisableBrokenFloatInvalidationEnabled()) {
+    if (!owner->DocumentBeingDestroyed() &&
+        old_child->IsOutOfFlowPositioned()) {
+      LayoutBlock::RemovePositionedObject(To<LayoutBox>(old_child));
+    }
+  } else {
+    if (old_child->IsFloatingOrOutOfFlowPositioned()) {
+      To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
+    }
+  }
 
   if (!owner->DocumentBeingDestroyed()) {
     // So that we'll get the appropriate dirty bit set (either that a normal
@@ -117,9 +125,6 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     if (notify_layout_object) {
       LayoutCounter::LayoutObjectSubtreeWillBeDetached(old_child);
       old_child->WillBeRemovedFromTree();
-    } else if (old_child->IsBox() &&
-               To<LayoutBox>(old_child)->IsOrthogonalWritingModeRoot()) {
-      To<LayoutBox>(old_child)->UnmarkOrthogonalWritingModeRoot();
     }
 
     if (old_child->IsInLayoutNGInlineFormattingContext()) {

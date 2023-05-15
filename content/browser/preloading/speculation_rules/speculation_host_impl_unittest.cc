@@ -127,8 +127,7 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates));
+  remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
   EXPECT_EQ(1u, observer.candidates_.size());
   EXPECT_EQ(kPrerenderingUrl, observer.candidates_[0]->url);
@@ -156,8 +155,7 @@ TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
   const GURL kPrerenderingUrl = GURL("blob:https://bar");
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates));
+  remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "SH_NON_HTTP");
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
@@ -192,8 +190,7 @@ TEST_F(SpeculationHostImplTest,
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates));
+  remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "SH_TARGET_HINT_ON_PREFETCH");
 }
@@ -250,46 +247,11 @@ TEST_F(SpeculationHostImplTest, AllCandidatesProcessedByDelegate) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates));
+  remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
 
   // Since SpeculationHostDelegate has removed all candidates,
   // SpeculationHostImpl cannot start prerendering for the prerender candidate.
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-}
-
-// Tests that SpeculationHostImpl crashes the renderer process if it receives
-// inconsistent devtools navigation token.
-TEST_F(SpeculationHostImplTest, ReportInvalidDevtoolsMessage) {
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  // Set up the error handler for bad mojo messages.
-  std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
-      base::BindLambdaForTesting([&](const std::string& error) {
-        EXPECT_FALSE(error.empty());
-        EXPECT_TRUE(bad_message_error.empty());
-        bad_message_error = error;
-      }));
-
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  const GURL kPrerenderingUrl = GURL("https://bar");
-  candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates));
-  remote.FlushForTesting();
-
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates2;
-  candidates2.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
-  remote->UpdateSpeculationCandidates(base::UnguessableToken::Create(),
-                                      std::move(candidates2));
-  remote.FlushForTesting();
-  EXPECT_EQ(bad_message_error, "SH_INVALID_DEVTOOLS_TOKEN");
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 

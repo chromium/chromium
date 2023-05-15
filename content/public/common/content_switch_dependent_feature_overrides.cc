@@ -172,7 +172,7 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(blink::features::kConversionMeasurement),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnablePrivacySandboxAdsApis,
-     std::cref(blink::features::kAttributionReportingCrossAppWeb),
+     std::cref(network::features::kAttributionReportingCrossAppWeb),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnablePrivacySandboxAdsApis,
      std::cref(blink::features::kFencedFrames),

@@ -43,6 +43,7 @@ class TabListContainerViewBinder {
     public static void bind(
             PropertyModel model, TabListRecyclerView view, PropertyKey propertyKey) {
         if (IS_VISIBLE == propertyKey) {
+            updateMargins(model, view);
             if (model.get(IS_VISIBLE)) {
                 view.startShowing(model.get(ANIMATE_VISIBILITY_CHANGES));
             } else {
@@ -63,21 +64,39 @@ class TabListContainerViewBinder {
             ((LinearLayoutManager) view.getLayoutManager())
                     .scrollToPositionWithOffset(index, offset);
         } else if (TOP_MARGIN == propertyKey) {
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-            final int newTopMargin = model.get(TOP_MARGIN);
-            if (newTopMargin == params.topMargin) return;
-
-            params.topMargin = newTopMargin;
-            ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind TOP_MARGIN");
+            updateMargins(model, view);
         } else if (BOTTOM_CONTROLS_HEIGHT == propertyKey) {
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-            params.bottomMargin = model.get(BOTTOM_CONTROLS_HEIGHT);
-            ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind BOTTOM_CONTROLS_HEIGHT");
+            updateMargins(model, view);
         } else if (SHADOW_TOP_OFFSET == propertyKey) {
             view.setShadowTopOffset(model.get(SHADOW_TOP_OFFSET));
         } else if (BOTTOM_PADDING == propertyKey) {
             view.setBottomPadding(model.get(BOTTOM_PADDING));
         }
+    }
+
+    private static void updateMargins(PropertyModel model, TabListRecyclerView view) {
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        final int oldTopMargin = params.topMargin;
+        final int oldBottomMargin = params.bottomMargin;
+        if (model.get(IS_VISIBLE)) {
+            params.topMargin = model.get(TOP_MARGIN);
+            params.bottomMargin = model.get(BOTTOM_CONTROLS_HEIGHT);
+        } else {
+            // Treat the bottom margin as 0 to avoid layout shift in tab shrink animations.
+            // IS_VISIBLE will be set to true after the tab shrink animation see
+            // {@link TabSwitcherMediator#showTabSwitcherView(boolean)}.
+            params.bottomMargin = 0;
+
+            // Leave the top margin unchanged to avoid relayouts during scrolls and for top
+            // toolbar indicators while the view is not visible. Once visible the offset will
+            // adjust accordingly.
+        }
+        if (!model.get(IS_VISIBLE)
+                || (oldTopMargin == params.topMargin && oldBottomMargin == params.bottomMargin)) {
+            return;
+        }
+
+        ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind updateMargins");
     }
 
     private static int computeOffset(TabListRecyclerView view, PropertyModel model) {

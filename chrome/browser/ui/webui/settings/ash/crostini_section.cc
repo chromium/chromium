@@ -447,14 +447,15 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     html_source->AddString("crostiniContainerUpgradeSubtext", "");
   }
 
-  // Should the crostini section in settings be displayed?
+  // Crostini section in settings is always displayed.
+  // Should we show that Crostini is supported?
   html_source->AddBoolean(
-      "showCrostini",
+      "isCrostiniSupported",
       crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile_));
 
   // Should we actually enable the button to install it?
   html_source->AddBoolean(
-      "allowCrostini",
+      "isCrostiniAllowed",
       crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_));
 
   // Should Bruschetta be displayed in the settings at all?

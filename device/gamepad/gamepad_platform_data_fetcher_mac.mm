@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +22,10 @@
 #import <Foundation/Foundation.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace device {
 
 namespace {
@@ -34,8 +38,8 @@ const uint16_t kMultiAxisUsageNumber = 0x08;
 
 NSDictionary* DeviceMatching(uint32_t usage_page, uint32_t usage) {
   return @{
-    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsagePageKey)) : @(usage_page),
-    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsageKey)) : @(usage)
+    @kIOHIDDeviceUsagePageKey : @(usage_page),
+    @kIOHIDDeviceUsageKey : @(usage)
   };
 }
 
@@ -55,16 +59,13 @@ void GamepadPlatformDataFetcherMac::OnAddedToProvider() {
     return;
   }
 
-  base::scoped_nsobject<NSArray> criteria(
-      [[NSArray alloc] initWithObjects:DeviceMatching(kGenericDesktopUsagePage,
-                                                      kJoystickUsageNumber),
-                                       DeviceMatching(kGenericDesktopUsagePage,
-                                                      kGameUsageNumber),
-                                       DeviceMatching(kGenericDesktopUsagePage,
-                                                      kMultiAxisUsageNumber),
-                                       nil]);
+  NSArray* criteria = @[
+    DeviceMatching(kGenericDesktopUsagePage, kJoystickUsageNumber),
+    DeviceMatching(kGenericDesktopUsagePage, kGameUsageNumber),
+    DeviceMatching(kGenericDesktopUsagePage, kMultiAxisUsageNumber),
+  ];
   IOHIDManagerSetDeviceMatchingMultiple(hid_manager_ref_,
-                                        base::mac::NSToCFCast(criteria));
+                                        base::apple::NSToCFPtrCast(criteria));
 
   RegisterForNotifications();
 }
@@ -142,27 +143,28 @@ GamepadDeviceMac* GamepadPlatformDataFetcherMac::GetGamepadFromHidDevice(
 }
 
 void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
-  using base::mac::CFToNSCast;
+  using base::apple::CFToNSPtrCast;
   using base::mac::CFCastStrict;
 
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
 
-  NSNumber* location_id = CFToNSCast(CFCastStrict<CFNumberRef>(
+  NSNumber* location_id = CFToNSPtrCast(CFCastStrict<CFNumberRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))));
-  int location_int = [location_id intValue];
+  int location_int = location_id.intValue;
 
-  NSNumber* vendor_id = CFToNSCast(CFCastStrict<CFNumberRef>(
+  NSNumber* vendor_id = CFToNSPtrCast(CFCastStrict<CFNumberRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey))));
-  NSNumber* product_id = CFToNSCast(CFCastStrict<CFNumberRef>(
+  NSNumber* product_id = CFToNSPtrCast(CFCastStrict<CFNumberRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey))));
-  NSNumber* version_number = CFToNSCast(CFCastStrict<CFNumberRef>(
+  NSNumber* version_number = CFToNSPtrCast(CFCastStrict<CFNumberRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVersionNumberKey))));
-  NSString* product = CFToNSCast(CFCastStrict<CFStringRef>(
+  NSString* product = CFToNSPtrCast(CFCastStrict<CFStringRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey))));
-  uint16_t vendor_int = [vendor_id intValue];
-  uint16_t product_int = [product_id intValue];
-  uint16_t version_int = [version_number intValue];
+  uint16_t vendor_int = vendor_id.intValue;
+  uint16_t product_int = product_id.intValue;
+  uint16_t version_int = version_number.intValue;
   std::string product_name = base::SysNSStringToUTF8(product);
 
   // Filter out devices that have gamepad-like HID usages but aren't gamepads.

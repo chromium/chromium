@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
@@ -61,22 +62,16 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Starts certificate obtention and upload.
   void Start();
 
-  // Gets a certificate. If |force_new_key| is false, fetches existing
-  // certificate if any. Otherwise, fetches new certificate.
-  void GetCertificate(bool force_new_key);
+  // Gets a fresh certificate.
+  void GetCertificate();
 
-  // Checks the Attestation Features and gets a suitable certificate.
+  // Checks the Attestation Features and gets a fresh certificate.
   void OnGetFeaturesReady(
-      bool force_new_key,
       AttestationFlow::CertificateCallback callback,
       const ash::attestation::AttestationFeatures* features);
 
   // Handles failure of getting a certificate.
   void HandleGetCertificateFailure(AttestationStatus status);
-
-  // Checks if fetched certificate has expired. If so, starts again with
-  // fetching new certificate.
-  void CheckCertificateExpiry(const std::string& pem_certificate_chain);
 
   // Uploads an enterprise certificate to the policy server if it has not been
   // already uploaded. If it was uploaded - reports success without further
@@ -95,8 +90,9 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Run all callbacks with |status|.
   void RunCallbacks(Status status);
 
-  policy::CloudPolicyClient* policy_client_;
-  AttestationFlow* attestation_flow_ = nullptr;
+  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged | ExperimentalAsh>
+      policy_client_;
+  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_ = nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   // Callbacks to run when a certificate is uploaded (or we fail to).
   std::queue<UploadCallback> callbacks_;

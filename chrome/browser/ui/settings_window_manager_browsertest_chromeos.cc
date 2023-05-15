@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -84,7 +85,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
   }
 
  protected:
-  chrome::SettingsWindowManager* settings_manager_;
+  raw_ptr<chrome::SettingsWindowManager, ExperimentalAsh> settings_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {

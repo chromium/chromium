@@ -61,12 +61,10 @@ class MODULES_EXPORT BackgroundFetchManager final
 
   // Creates a vector of mojom::blink::FetchAPIRequestPtr objects for the given
   // set of |requests|, which can be either Request objects or URL strings.
-  // |has_requests_with_body| will be set if any of the |requests| has a body.
   static Vector<mojom::blink::FetchAPIRequestPtr> CreateFetchAPIRequestVector(
       ScriptState* script_state,
       const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
-      ExceptionState& exception_state,
-      bool* has_requests_with_body);
+      ExceptionState& exception_state);
 
   void DidLoadIcons(const String& id,
                     Vector<mojom::blink::FetchAPIRequestPtr> requests,
@@ -75,16 +73,13 @@ class MODULES_EXPORT BackgroundFetchManager final
                     ScriptPromiseResolver* resolver,
                     const SkBitmap& icon,
                     int64_t ideal_to_chosen_icon_size);
-  void DidFetch(base::Time time_started,
-                ScriptPromiseResolver* resolver,
+  void DidFetch(ScriptPromiseResolver* resolver,
                 mojom::blink::BackgroundFetchError error,
                 BackgroundFetchRegistration* registration);
-  void DidGetRegistration(base::Time time_started,
-                          ScriptPromiseResolver* resolver,
+  void DidGetRegistration(ScriptPromiseResolver* resolver,
                           mojom::blink::BackgroundFetchError error,
                           BackgroundFetchRegistration* registration);
-  void DidGetDeveloperIds(base::Time time_started,
-                          ScriptPromiseResolver* resolver,
+  void DidGetDeveloperIds(ScriptPromiseResolver* resolver,
                           mojom::blink::BackgroundFetchError error,
                           const Vector<String>& developer_ids);
 

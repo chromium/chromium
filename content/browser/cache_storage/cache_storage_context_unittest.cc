@@ -120,7 +120,7 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(kExampleStorageKey),
           storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key,
             blink::StorageKey::CreateFromStringForTesting(kExampleStorageKey));
@@ -130,7 +130,7 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
   result = quota_manager_proxy_sync.GetBucket(
       blink::StorageKey::CreateFromStringForTesting(kGoogleStorageKey),
       storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key,
             blink::StorageKey::CreateFromStringForTesting(kGoogleStorageKey));

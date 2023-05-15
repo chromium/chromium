@@ -15,6 +15,9 @@ specific_include_rules = {
     "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
     "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
   ],
+  "browser_user_education_service.cc": [
+    "+ash/user_education/views/help_bubble_factory_views_ash.h",
+  ],
   "chrome_views_delegate_chromeos\.cc": [
     "+ash/shell.h",
   ],

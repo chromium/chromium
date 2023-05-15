@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_client.h"
 
 class Profile;
@@ -29,7 +30,7 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   proximity_auth::ProximityAuthPrefManager* GetPrefManager() override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash

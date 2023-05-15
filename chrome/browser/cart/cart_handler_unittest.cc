@@ -19,6 +19,7 @@
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_db.h"
 #include "content/public/test/browser_task_environment.h"
@@ -182,6 +183,31 @@ class CartHandlerTest : public testing::Test {
   const GURL fake_merchant_url_;
   const GURL mock_merchant_url_;
 };
+
+// Verifies that the ChromeCart feature status is correctly retrieved.
+TEST_F(CartHandlerTest, TestGetCartFeatureEnabled) {
+  base::RunLoop run_loop[2];
+  const std::string cart_key = "chrome_cart";
+
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& disabled_list = update.Get();
+
+  disabled_list.Append(base::Value(cart_key));
+
+  ASSERT_TRUE(base::Contains(disabled_list, base::Value(cart_key)));
+  handler_->GetCartFeatureEnabled(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), false));
+  run_loop[0].Run();
+
+  disabled_list.EraseValue(base::Value(cart_key));
+
+  ASSERT_FALSE(base::Contains(disabled_list, base::Value(cart_key)));
+  handler_->GetCartFeatureEnabled(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+}
 
 // Verifies the hide status is flipped by hiding and restoring.
 TEST_F(CartHandlerTest, TestHideStatusChange) {

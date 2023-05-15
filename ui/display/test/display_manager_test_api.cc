@@ -13,8 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 

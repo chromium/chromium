@@ -12,7 +12,6 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "geolocation_privacy_switch_controller.h"
 
 class PrefRegistrySimple;
 

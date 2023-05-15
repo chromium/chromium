@@ -80,13 +80,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ActualLogUploadInterval" units="minutes"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The actual interval between log upload start and previous log upload
     finished within the same process. A value of 0 indicates there was no
     previous upload. Prior to M71, logging for this metric was broken.
+  </summary>
+</histogram>
+
+<histogram name="UMA.AndroidPreNative.ChromeTabbedActivityCounter"
+    enum="ChromeTabbedActivityCounter" expires_after="2024-04-24">
+  <owner>gabrielgs@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Counts of how many times onPreCreate and onStart were called when a
+    foreground session bigns in the native C++ code. The counters are reset when
+    this histogram is emitted. This histogram is a diagnostic tool for
+    understanding Clank short sessions, by capturing some information about the
+    cases where Java code starts up, but native C++ code is never reached.
   </summary>
 </histogram>
 
@@ -134,7 +147,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2023-08-20">
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2023-10-22">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -144,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ClientIdSource" enum="ClientIdSource"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>The source of the client id when its creation is forced.</summary>
@@ -286,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -405,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
-    expires_after="2023-08-12">
+    expires_after="2023-10-15">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -615,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentHistograms.InitResult"
-    enum="PersistentHistogramsInitResult" expires_after="2023-08-13">
+    enum="PersistentHistogramsInitResult" expires_after="2023-10-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -625,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PrimaryUserType" enum="UserType"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -702,7 +715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ProtoCompressionRatio" units="%"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -737,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -764,8 +777,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StackProfiler.SampleInOrder" enum="BooleanOrdered"
+    expires_after="2023-08-01">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records if the timestamp for a stack profiler sample is received in order.
+    Emitted once per stack sample. Temporary for researching crbug.com/1084272.
+  </summary>
+</histogram>
+
 <histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -775,7 +798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StartupVisibility" enum="StartupVisibility"
-    expires_after="2023-08-20">
+    expires_after="2023-10-22">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -915,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2023-10-08">
+    expires_after="2023-10-22">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

@@ -212,15 +212,11 @@ bool CanvasRenderingContext2D::IsComposited() const {
 }
 
 void CanvasRenderingContext2D::Stop() {
-  if (!isContextLost()) {
+  if (LIKELY(!isContextLost())) {
     // Never attempt to restore the context because the page is being torn down.
     context_restorable_ = false;
     LoseContext(kSyntheticLostContext);
   }
-}
-
-bool CanvasRenderingContext2D::isContextLost() const {
-  return context_lost_mode_ != kNotLostContext;
 }
 
 void CanvasRenderingContext2D::SendContextLostEventIfNeeded() {
@@ -355,8 +351,9 @@ void CanvasRenderingContext2D::scrollPathIntoView(Path2D* path2d) {
 }
 
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
-  if (!IsTransformInvertible() || path.IsEmpty())
+  if (UNLIKELY(!IsTransformInvertible() || path.IsEmpty())) {
     return;
+  }
 
   canvas()->GetDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kJavaScript);
@@ -1043,8 +1040,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
-  TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion, direction,
-                   bidi_override);
+  TextRun text_run(text, direction, bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x),
@@ -1091,8 +1087,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
       [this, text = std::move(text), direction, bidi_override, location](
           cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
-        TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
-                         direction, bidi_override);
+        TextRun text_run(text, direction, bidi_override);
         text_run.SetNormalizeSpace(true);
         TextRunPaintInfo text_run_paint_info(text_run);
         this->AccessFont().DrawBidiText(c, text_run_paint_info, location,
@@ -1187,8 +1182,9 @@ void CanvasRenderingContext2D::DrawFocusIfNeededInternal(
 bool CanvasRenderingContext2D::FocusRingCallIsValid(const Path& path,
                                                     Element* element) {
   DCHECK(element);
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible())) {
     return false;
+  }
   if (path.IsEmpty())
     return false;
   if (!element->IsDescendantOf(canvas()))

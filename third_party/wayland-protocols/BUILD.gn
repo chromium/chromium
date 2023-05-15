@@ -116,6 +116,10 @@ wayland_protocol("secure_output_protocol") {
   sources = [ "unstable/secure-output/secure-output-unstable-v1.xml" ]
 }
 
+wayland_protocol("single_pixel_buffer") {
+  sources = [ "src/staging/single-pixel-buffer/single-pixel-buffer-v1.xml" ]
+}
+
 wayland_protocol("stylus_protocol") {
   sources = [ "unstable/stylus/stylus-unstable-v2.xml" ]
 }

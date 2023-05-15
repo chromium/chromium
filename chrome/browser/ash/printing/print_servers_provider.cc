@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -69,14 +70,15 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
   std::set<GURL> print_server_urls;
   task_data.servers.reserve(json_blob.GetList().size());
   for (const base::Value& val : json_blob.GetList()) {
-    if (!val.is_dict()) {
+    auto* val_dict = val.GetIfDict();
+    if (!val_dict) {
       LOG(WARNING) << "Entry in print servers policy skipped. "
                    << "Not a dictionary.";
       continue;
     }
-    const std::string* id = val.FindStringKey("id");
-    const std::string* url = val.FindStringKey("url");
-    const std::string* name = val.FindStringKey("display_name");
+    const std::string* id = val_dict->FindString("id");
+    const std::string* url = val_dict->FindString("url");
+    const std::string* name = val_dict->FindString("display_name");
     if (!id || !url || !name) {
       LOG(WARNING) << "Entry in print servers policy skipped. The following "
                    << "fields are required: id, url, display_name.";
@@ -321,7 +323,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // The current resultant list of servers.
   std::vector<PrintServer> result_servers_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   std::string allowlist_pref_;
 

@@ -1210,6 +1210,7 @@ component("net") {
 
   if (is_linux || is_chromeos || is_android) {
     sources += [
+      "base/address_map_linux.cc",
       "base/address_map_linux.h",
       "base/address_tracker_linux.cc",
       "base/address_tracker_linux.h",
@@ -1266,6 +1267,7 @@ component("net") {
       "proxy_resolution/proxy_resolver_mac.cc",
       "proxy_resolution/proxy_resolver_mac.h",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -1781,9 +1783,15 @@ proto_library("isolation_info_proto") {
 
 component("extras") {
   sources = [
+    "extras/shared_dictionary/shared_dictionary_info.cc",
+    "extras/shared_dictionary/shared_dictionary_info.h",
+    "extras/shared_dictionary/shared_dictionary_storage_isolation_key.cc",
+    "extras/shared_dictionary/shared_dictionary_storage_isolation_key.h",
     "extras/sqlite/cookie_crypto_delegate.h",
     "extras/sqlite/sqlite_persistent_cookie_store.cc",
     "extras/sqlite/sqlite_persistent_cookie_store.h",
+    "extras/sqlite/sqlite_persistent_shared_dictionary_store.cc",
+    "extras/sqlite/sqlite_persistent_shared_dictionary_store.h",
     "extras/sqlite/sqlite_persistent_store_backend_base.cc",
     "extras/sqlite/sqlite_persistent_store_backend_base.h",
   ]
@@ -1997,6 +2005,13 @@ static_library("test_support") {
     "url_request/url_request_test_util.cc",
     "url_request/url_request_test_util.h",
   ]
+
+  if (is_linux || is_chromeos || is_android) {
+    sources += [
+      "base/address_tracker_linux_test_util.cc",
+      "base/address_tracker_linux_test_util.h",
+    ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 
@@ -2806,7 +2821,9 @@ test("net_unittests") {
 
   if (!is_cronet_build) {
     sources += [
+      "extras/shared_dictionary/shared_dictionary_storage_isolation_key_unittest.cc",
       "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
+      "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
       "log/trace_net_log_observer_unittest.cc",
     ]
   }
@@ -2833,7 +2850,10 @@ test("net_unittests") {
   }
 
   if (is_linux) {
-    sources += [ "proxy_resolution/proxy_config_service_linux_unittest.cc" ]
+    sources += [
+      "base/network_change_notifier_linux_unittest.cc",
+      "proxy_resolution/proxy_config_service_linux_unittest.cc",
+    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -2915,6 +2935,7 @@ test("net_unittests") {
       ":extras",
       "//components/sqlite_proto",
       "//sql",
+      "//sql:test_support",
     ]
   }
 
@@ -2991,6 +3012,7 @@ test("net_unittests") {
 
   if (is_apple) {
     sources += [ "base/mac/url_conversions_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

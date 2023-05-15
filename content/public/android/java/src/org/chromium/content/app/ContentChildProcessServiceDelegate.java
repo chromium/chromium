@@ -21,7 +21,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.content.browser.ChildProcessCreationParamsImpl;
 import org.chromium.content.browser.ContentChildProcessConstants;
 import org.chromium.content.common.IGpuProcessCallback;
@@ -35,7 +34,6 @@ import java.util.List;
  * access to view surfaces.
  */
 @JNINamespace("content")
-@MainDex
 public class ContentChildProcessServiceDelegate implements ChildProcessServiceDelegate {
     private static final String TAG = "ContentCPSDelegate";
 

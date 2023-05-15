@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">ડિવાઇસમાં અપર્યાપ્ત સ્ટોરેજ સ્પેસ હોવાને કારણે તમારું રેકોર્ડિંગ બંધ થઈ ગયું. વધુ વીડિયો રેકોર્ડ કરવા માટે, તમારે તમારા ડિવાઇસમાં જગ્યા ખાલી કરવી જરૂરી છે.</translation>
 <translation id="2036868001356139588">ટાઇમર અવધિ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> સક્રિય</translation>
-<translation id="2128052519899549250">ટાઇમ લૅપ્સ વીડિયો રેકોર્ડ કરો</translation>
 <translation id="2134029355740465625">વીડિયો સેટિંગ</translation>
 <translation id="2144806332417375165">કસ્ટમ વીડિયો પેરામીટર</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">દસ્તાવેજની ભાળ મળી</translation>
 <translation id="414641094616694804">આ કૅમેરા રિઝોલ્યુશનમાં ફેરફાર કરી શકતો નથી</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
-<translation id="4281620174117014503">મધ્યમ રિઝોલ્યુશન</translation>
 <translation id="428234092390943511">પેજ થંબનેલ</translation>
 <translation id="4383571725254449280">કાર્યપ્રદર્શનના લૉગ પ્રિન્ટ કરો</translation>
 <translation id="4445542136948522167">ફોટા લેવાનું બંધ કરો</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5320594929574852403">ડાબી દિશામાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">ટાઇમ-લૅપ્સ</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="5671277269877808209">ચોરસ</translation>
+<translation id="574392208103952083">મધ્યમ</translation>
 <translation id="5746169159649715125">PDF તરીકે સાચવો</translation>
 <translation id="5753488212459587150">નિષ્ણાત મોડ ચાલુ કરો</translation>
 <translation id="5759254179196327752">દસ્તાવેજને સ્કૅન કરો</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">દસ્તાવેજનો સૌથી નીચેનો જમણો ખૂણો</translation>
+<translation id="7684446460490665873">ટાઇમ લૅપ્સ વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7692090236657809299">પૅન, ટિલ્ટ કે નાનું-મોટું કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="7726641833034062494">સામાન્ય વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7748344063862150053">દસ્તાવેજનો સૌથી ઉપરનો જમણો ખૂણો</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો</translation>
 <translation id="9045155556724273246">10 સેકન્ડ</translation>
 <translation id="906331135292332864">છબી પર પ્રક્રિયા કરી રહ્યાં છીએ…</translation>
+<translation id="9161584225258678723">ટાઇમ લૅપ્સ</translation>
 <translation id="922762992951083513">મિરર કરવાનું ચાલુ કરો</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 </translationbundle>

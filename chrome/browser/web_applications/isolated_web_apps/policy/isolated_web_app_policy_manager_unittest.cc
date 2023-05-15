@@ -88,11 +88,11 @@ constexpr char kWebBundleId8[] =
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
-  base::Value policy_entry(base::Value::Type::DICT);
-  policy_entry.SetStringKey(web_app::kPolicyWebBundleIdKey, web_bundle_id);
-  policy_entry.SetStringKey(web_app::kPolicyUpdateManifestUrlKey,
-                            update_manifest_url);
-  return policy_entry;
+  base::Value::Dict policy_entry =
+      base::Value::Dict()
+          .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id)
+          .Set(web_app::kPolicyUpdateManifestUrlKey, update_manifest_url);
+  return base::Value(std::move(policy_entry));
 }
 
 std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {

@@ -13,6 +13,10 @@ _cros_components_ts_files = [
   "checkbox/checkbox.ts",
   "radio/radio.ts",
   "switch/switch.ts",
+  "helpers/helpers.ts",
+  "async_helpers/async_helpers.ts",
+  "lottie_renderer/lottie-renderer.ts",
+  "lottie_renderer/worker.ts",
 ]
 
 ts_library("cros_components__ts_library") {
@@ -20,7 +24,8 @@ ts_library("cros_components__ts_library") {
   visibility = [ ":*" ]
 
   root_dir = "src/"
-  out_dir = "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
+  out_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
 
   in_files = _cros_components_ts_files
 
@@ -48,7 +53,8 @@ copy("rename_tsconfig") {
 }
 
 rewrite_imports("cros_components_ts") {
-  base_dir = "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
+  base_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
 
   # Rollup maps URLs like `chrome://resources/cros_components/*` to
   # files in
@@ -63,6 +69,11 @@ rewrite_imports("cros_components_ts") {
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
     "@material/|chrome://resources/mwc/@material/",
+
+    # Add js prefix's to any internal imports so they work at runtime.
+    "../async_helpers/async_helpers|../async_helpers/async_helpers.js",
+    "../helpers/helpers|../helpers/helpers.js",
+    "./worker|./worker.js",
   ]
 
   deps = [
@@ -78,8 +89,12 @@ generate_grd("cros_components_grdp") {
   manifest_files = []
 
   deps = [ ":cros_components_ts" ]
-  manifest_files +=
-      filter_include(get_target_outputs(":cros_components_ts"),
-                     [ "*.manifest" ])
+  manifest_files += filter_include(get_target_outputs(":cros_components_ts"),
+                                   [ "*.manifest" ])
   resource_path_prefix = "cros_components"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "src/lottie_renderer/lottie_worker.js" ]
+  resource_path_rewrites = [
+    "src/lottie_renderer/lottie_worker.js|lottie_renderer/lottie_worker.js",
+  ]
 }

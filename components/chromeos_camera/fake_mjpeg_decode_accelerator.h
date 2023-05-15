@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
@@ -63,7 +64,7 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   // GPU IO task runner.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  Client* client_ = nullptr;
+  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
 
   base::Thread decoder_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;

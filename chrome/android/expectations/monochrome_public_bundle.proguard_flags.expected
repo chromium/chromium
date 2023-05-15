@@ -1,3 +1,16 @@
+# File: ../../third_party/androidx/androidx_annotations.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-keep @androidx.annotation.Keep class *
+-keepclasseswithmembers,allowaccessmodification class * {
+  @androidx.annotation.Keep <fields>;
+}
+-keepclasseswithmembers,allowaccessmodification class * {
+  @androidx.annotation.Keep <methods>;
+}
+
 # File: ../../third_party/androidx/androidx_fragment.flags
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -24,6 +37,28 @@
 -assumevalues class ** {
   boolean mUseDynamicGroup return false;
 }
+
+# File: ../../third_party/androidx/androidx_preferences.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# AndroidX classes that are inflated via reflection.
+-keep public class androidx.preference.ListPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.Preference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceCategory {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceScreen {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+# Referenced by androidx.preference.PreferenceInflater.
+-keep public class androidx.preference.SwitchPreference {}
 
 # File: ../../build/android/chromium_annotations.flags
 # Copyright 2022 The Chromium Authors
@@ -89,6 +124,14 @@
     @org.chromium.build.annotations.AlwaysInline *;
 }
 
+# Keep all logs (Log.VERBOSE = 2). R8 does not allow setting to 0.
+-maximumremovedandroidloglevel 1 class ** {
+   @org.chromium.build.annotations.DoNotStripLogs <methods>;
+}
+-maximumremovedandroidloglevel 1 @org.chromium.build.annotations.DoNotStripLogs class ** {
+   <methods>;
+}
+
 # Never merge classes horizontally or vertically with this annotation.
 # Relevant to classes being used as a key in maps or sets.
 -keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.build.annotations.DoNotClassMerge class *
@@ -128,28 +171,11 @@
   public <init>();
 }
 
-# AndroidX classes that are inflated via reflection.
--keep public class androidx.preference.Preference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.PreferenceScreen {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.PreferenceCategory {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep public class androidx.preference.ListPreference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
-
 # SearchView is used in website_preferences_menu.xml and is constructed by
 # Android using reflection.
 -keep class androidx.appcompat.widget.SearchView {
   public <init>(...);
 }
-
-# Referenced by androidx.preference.PreferenceInflater.
--keep public class androidx.preference.SwitchPreference {}
 
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
 # If we annotated all Parcelables that get put into Bundles other than
@@ -194,20 +220,8 @@
 # Contains flags that can be safely shared with Cronet, and thus would be
 # appropriate for third-party apps to include.
 
--keep @androidx.annotation.Keep class *
--keepclasseswithmembers,allowaccessmodification class * {
-  @androidx.annotation.Keep <fields>;
-}
--keepclasseswithmembers,allowaccessmodification class * {
-  @androidx.annotation.Keep <methods>;
-}
-
-# Even unused methods kept due to explicit jni registration:
-# https://crbug.com/688465.
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class !org.chromium.base.library_loader.**,** {
-  native <methods>;
-}
--keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class org.chromium.base.library_loader.** {
+# Allow unused native methods to be removed, but prevent renaming on those that are kept.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
   native <methods>;
 }
 
@@ -260,6 +274,14 @@
 }
 -checkdiscard class ** {
   @org.chromium.build.annotations.CheckDiscard *;
+}
+
+# We always expect ServiceLoader.load() calls to be resolved by R8.
+-whyareyounotinlining class java.util.ServiceLoader { *** load(...); }
+
+# This has a ServiceLoader.load() failure that we filter out in dex.py.
+-checkdiscard class kotlinx.coroutines.internal.FastServiceLoader {
+  *;
 }
 
 # File: ../../chrome/android/proguard/main.flags
@@ -322,6 +344,11 @@
 # File: ../../third_party/gvr-android-sdk/proguard-gvr-chromium.txt
 -dontwarn com.google.common.logging.nano.Vr$**
 -dontwarn com.google.vr.**
+
+# Since we manually register, we need to keep every native method.
+-keepclasseswithmembers,includedescriptorclasses class com.google.vr.** {
+    native <methods>;
+}
 
 # File: ../../third_party/gvr-android-sdk/src/proguard-gvr.txt
 # Don't obfuscate any NDK/SDK code. This makes the debugging of stack traces
@@ -854,17 +881,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-# Remove Log.d(), Log.v(), and all isLoggable() where the return value is
-# unused (e.g. if it was guarding a call to Log.d()).
--assumenosideeffects class android.util.Log {
-  static int d(...);
-  static int v(...);
-  # Don't use "return false" here because some code guards info logs behind
-  # isLoggable(DEBUG) as a way to enable logs via adb.
-  # https://crbug.com/1366880
-  static boolean isLoggable(...);
-}
+# Remove Log.d(), Log.v(), and corresponding isLoggable() calls.
+# Log.DEBUG = 3, Log.VERBOSE = 2.
+# https://stackoverflow.com/questions/73876633/what-does-the-r8-maximumremovedandroidloglevel-option
+-maximumremovedandroidloglevel 3
 
 # Makes try-with-resources less inefficient. Saved 3.8kb when added.
 -assumenosideeffects class java.lang.Throwable {
@@ -897,21 +917,6 @@
 # Remove fields of type Logger.
 -assumenosideeffects class * {
   java.util.logging.Logger * return _NONNULL_;
-}
-
-# File: ../../third_party/android_deps/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar:META-INF/proguard/androidx-annotations.pro
--keep @android.support.annotation.Keep class * {*;}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <methods>;
-}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <fields>;
-}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <init>(...);
 }
 
 # File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro

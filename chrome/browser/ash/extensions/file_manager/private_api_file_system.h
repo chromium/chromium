@@ -16,11 +16,12 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
@@ -57,7 +58,7 @@ struct HashAndFilePath {
 };
 
 namespace policy {
-class DlpFilesController;
+class DlpFilesControllerAsh;
 }  // namespace policy
 
 }  // namespace drive
@@ -324,7 +325,7 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::vector<storage::FileSystemURL> source_urls_;
   storage::FileSystemURL destination_url_;
@@ -347,7 +348,7 @@ class FileManagerPrivateInternalGetDlpMetadataFunction
 
  private:
   void OnGetDlpMetadata(
-      std::vector<policy::DlpFilesController::DlpFileMetadata> dlp_metadata);
+      std::vector<policy::DlpFilesControllerAsh::DlpFileMetadata> dlp_metadata);
 
   std::vector<storage::FileSystemURL> source_urls_;
 };
@@ -553,6 +554,20 @@ class FileManagerPrivateProgressPausedTasksFunction : public ExtensionFunction {
 
  protected:
   ~FileManagerPrivateProgressPausedTasksFunction() override = default;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.showPolicyDialog method.
+class FileManagerPrivateShowPolicyDialogFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.showPolicyDialog",
+                             FILEMANAGERPRIVATE_SHOWPOLICYDIALOG)
+
+ protected:
+  ~FileManagerPrivateShowPolicyDialogFunction() override = default;
 
   // ExtensionFunction overrides
   ResponseAction Run() override;

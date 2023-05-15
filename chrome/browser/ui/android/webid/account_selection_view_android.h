@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "content/public/browser/web_contents.h"
 
 // This class provides an implementation of the AccountSelectionView interface
 // and communicates via JNI with its AccountSelectionBridge Java counterpart.
@@ -21,22 +22,26 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
+  content::WebContents* ShowModalDialog(const GURL& url) override;
+  void CloseModalDialog() override;
 
   void OnAccountSelected(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& idp_config_url,
       const base::android::JavaParamRef<jobjectArray>& account_string_fields,
       const base::android::JavaParamRef<jobject>& account_picture_url,
+      const base::android::JavaParamRef<jobjectArray>& account_hints,
       bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
 

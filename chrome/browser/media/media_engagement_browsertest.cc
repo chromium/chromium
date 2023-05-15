@@ -232,7 +232,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   }
 
   void ExecuteScript(const std::string& script) {
-    EXPECT_TRUE(content::ExecuteScript(GetWebContents(), script));
+    EXPECT_TRUE(content::ExecJs(GetWebContents(), script));
   }
 
   void OpenTabAsLink() {
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreloadBrowserTest,
   EXPECT_TRUE(MediaEngagementPreloadedList::GetInstance()->loaded());
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1222896
 #define MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed \
   DISABLED_SessionNewTabNavigateSameURLWithOpener_Typed

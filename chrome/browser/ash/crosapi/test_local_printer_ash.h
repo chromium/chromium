@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_TEST_LOCAL_PRINTER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_TEST_LOCAL_PRINTER_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -27,7 +28,7 @@ class TestLocalPrinterAsh : public crosapi::LocalPrinterAsh {
   scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile) override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const scoped_refptr<chromeos::PpdProvider> ppd_provider_;
 };
 

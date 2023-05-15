@@ -11,6 +11,7 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,7 +81,8 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
     }
   }
 
-  ClipboardHistoryMenuModelAdapter* const menu_model_adapter_;
+  const raw_ptr<ClipboardHistoryMenuModelAdapter, ExperimentalAsh>
+      menu_model_adapter_;
 };
 
 // ClipboardHistoryMenuModelAdapter --------------------------------------------
@@ -91,12 +93,11 @@ ClipboardHistoryMenuModelAdapter::Create(
     ui::SimpleMenuModel::Delegate* delegate,
     ClipboardHistoryController::OnMenuClosingCallback on_menu_closing_callback,
     base::RepeatingClosure menu_closed_callback,
-    const ClipboardHistory* clipboard_history,
-    const ClipboardHistoryResourceManager* resource_manager) {
+    const ClipboardHistory* clipboard_history) {
   return base::WrapUnique(new ClipboardHistoryMenuModelAdapter(
       std::make_unique<MenuModelWithWillCloseCallback>(
           delegate, std::move(on_menu_closing_callback)),
-      std::move(menu_closed_callback), clipboard_history, resource_manager));
+      std::move(menu_closed_callback), clipboard_history));
 }
 
 ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
@@ -323,12 +324,10 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
     std::unique_ptr<MenuModelWithWillCloseCallback> model,
     base::RepeatingClosure menu_closed_callback,
-    const ClipboardHistory* clipboard_history,
-    const ClipboardHistoryResourceManager* resource_manager)
+    const ClipboardHistory* clipboard_history)
     : views::MenuModelAdapter(model.get(), std::move(menu_closed_callback)),
       model_(std::move(model)),
-      clipboard_history_(clipboard_history),
-      resource_manager_(resource_manager) {}
+      clipboard_history_(clipboard_history) {}
 
 void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocusFromSelectedItem(
     bool reverse) {
@@ -433,8 +432,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 
   std::unique_ptr<ClipboardHistoryItemView> item_view =
       ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
-          GetItemFromCommandId(command_id).id(), clipboard_history_,
-          resource_manager_, container);
+          GetItemFromCommandId(command_id).id(), clipboard_history_, container);
   item_view->Init();
   item_views_by_command_id_.insert(std::make_pair(command_id, item_view.get()));
   container->AddChildView(std::move(item_view));

@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -31,7 +33,6 @@ class Widget;
 namespace ash {
 
 class MultiWindowResizeControllerTest;
-class SnapGroupLockOrUnlockButton;
 class WorkspaceWindowResizer;
 
 // MultiWindowResizeController is responsible for determining and showing a
@@ -79,9 +80,7 @@ class ASH_EXPORT MultiWindowResizeController
   void OnOverviewModeStarting() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
-  SnapGroupLockOrUnlockButton* lock_button_for_testing() const {
-    return lock_button_;
-  }
+  IconButton* lock_button_for_testing() const { return lock_button_; }
 
  private:
   friend class MultiWindowResizeControllerTest;
@@ -109,10 +108,10 @@ class ASH_EXPORT MultiWindowResizeController
     bool is_valid() const { return window1 && window2; }
 
     // The left/top window to resize.
-    aura::Window* window1 = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> window1 = nullptr;
 
     // Other window to resize.
-    aura::Window* window2 = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> window2 = nullptr;
 
     // Direction
     Direction direction;
@@ -169,7 +168,7 @@ class ASH_EXPORT MultiWindowResizeController
   // Hides the `resize_widget_` and `lock_widget_` if they get created.
   void Hide();
 
-  // Resets the window resizer and hides the resize widget.
+  // Resets the window resizer and hides the widgets.
   void ResetResizer();
 
   // Initiates a resize.
@@ -210,6 +209,13 @@ class ASH_EXPORT MultiWindowResizeController
                        const gfx::Point& location_in_screen,
                        int component) const;
 
+  // Called when the lock button is pressed to create a snap group.
+  void OnLockButtonPressed();
+
+  // Returns true if a lock wiget should be considered i.e. when two windows are
+  // both snapped and the feature flag `kSnapGroup` is enabled.
+  bool ShouldConsiderLockWidget() const;
+
   // Windows and direction to resize.
   ResizeWindows windows_;
 
@@ -223,7 +229,7 @@ class ASH_EXPORT MultiWindowResizeController
   std::unique_ptr<views::Widget> lock_widget_;
 
   // The contents view of the `lock_widget_`.
-  SnapGroupLockOrUnlockButton* lock_button_;
+  raw_ptr<IconButton, ExperimentalAsh> lock_button_;
 
   // If non-null we're in a resize loop.
   std::unique_ptr<WorkspaceWindowResizer> window_resizer_;

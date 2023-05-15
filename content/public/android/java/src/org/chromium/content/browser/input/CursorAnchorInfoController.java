@@ -5,8 +5,10 @@
 package org.chromium.content.browser.input;
 
 import android.graphics.Matrix;
+import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
+import android.view.inputmethod.EditorBoundsInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,10 +47,10 @@ final class CursorAnchorInfoController {
     private boolean mHasPendingImmediateRequest;
     private boolean mMonitorModeEnabled;
 
-    // Parmeter for CursorAnchorInfo, updated by setCompositionCharacterBounds.
+    // Parameter for CursorAnchorInfo, updated by setCompositionCharacterBounds.
     @Nullable
     private float[] mCompositionCharacterBounds;
-    // Paremeters for CursorAnchorInfo, updated by onUpdateFrameInfo.
+    // Parameters for CursorAnchorInfo, updated by onUpdateFrameInfo.
     private boolean mHasCoordinateInfo;
     private float mScale;
     private float mTranslationX;
@@ -58,6 +60,10 @@ final class CursorAnchorInfoController {
     private float mInsertionMarkerHorizontal;
     private float mInsertionMarkerTop;
     private float mInsertionMarkerBottom;
+
+    // Data updated on stylus writing.
+    @Nullable
+    private EditorBoundsInfo mEditorBoundsInfo;
 
     @Nullable
     private CursorAnchorInfo mLastCursorAnchorInfo;
@@ -133,6 +139,22 @@ final class CursorAnchorInfoController {
                 updateCursorAnchorInfo(view);
             }
         }
+    }
+
+    /**
+     * Sends one CursorAnchorInfo object with the EditorBoundsInfo field set. All subsequent
+     * CursorAnchorInfo updates will not have this field set unless they are sent through this
+     * method.
+     * @param editorBoundsInfo The EditorBoundsInfo sent with the CursorAnchorInfo. This is not
+     *         cached.
+     * @param view The attached view.
+     */
+    public void updateWithEditorBoundsInfo(EditorBoundsInfo editorBoundsInfo, View view) {
+        if (!mIsEditable) return;
+        mLastCursorAnchorInfo = null;
+        mEditorBoundsInfo = editorBoundsInfo;
+        updateCursorAnchorInfo(view);
+        mEditorBoundsInfo = null;
     }
 
     /**
@@ -253,6 +275,9 @@ final class CursorAnchorInfoController {
             mMatrix.setScale(mScale, mScale);
             mMatrix.postTranslate(mTranslationX, mTranslationY);
             mCursorAnchorInfoBuilder.setMatrix(mMatrix);
+            if (mEditorBoundsInfo != null && Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+                mCursorAnchorInfoBuilder.setEditorBoundsInfo(mEditorBoundsInfo);
+            }
             if (mHasInsertionMarker) {
                 mCursorAnchorInfoBuilder.setInsertionMarkerLocation(
                         mInsertionMarkerHorizontal,

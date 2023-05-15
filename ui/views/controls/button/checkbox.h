@@ -64,6 +64,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // |icon_state| is a bitmask using the IconState enum.
   virtual SkColor GetIconImageColor(int icon_state) const;
+  virtual SkColor GetIconContainerColor(int icon_state) const;
 
   // Gets the vector icon to use based on the current state of |checked_|.
   virtual const gfx::VectorIcon& GetVectorIcon() const;

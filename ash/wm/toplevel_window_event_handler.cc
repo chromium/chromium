@@ -21,7 +21,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -141,7 +140,7 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
                                   chromeos::WindowStateType type) override;
 
  private:
-  ToplevelWindowEventHandler* handler_;
+  raw_ptr<ToplevelWindowEventHandler, ExperimentalAsh> handler_;
   std::unique_ptr<WindowResizer> resizer_;
 
   // Whether ScopedWindowResizer grabbed capture.

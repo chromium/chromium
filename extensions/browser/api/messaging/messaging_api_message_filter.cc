@@ -18,6 +18,7 @@
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
@@ -105,12 +106,57 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       return true;
     }
 
+    case MessagingEndpoint::Type::kUserScript: {
+      if (!source_endpoint.extension_id) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
+        return false;
+      }
+      bool is_user_script_expected =
+          ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+              process, *source_endpoint.extension_id);
+      if (!is_user_script_expected) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
+        return false;
+      }
+
+      return true;
+    }
+
     case MessagingEndpoint::Type::kWebPage:
       // NOTE: We classify hosted apps as kWebPage, but we don't include
       // the extension ID in the source for those messages.
       if (source_endpoint.extension_id) {
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE);
+        return false;
+      }
+      return true;
+  }
+}
+
+bool IsValidMessagingTarget(RenderProcessHost& process,
+                            const MessagingEndpoint& source_endpoint,
+                            const ExtensionId& target_id) {
+  switch (source_endpoint.type) {
+    case MessagingEndpoint::Type::kNativeApp:
+    case MessagingEndpoint::Type::kExtension:
+    case MessagingEndpoint::Type::kWebPage:
+    case MessagingEndpoint::Type::kContentScript:
+      // The API allows these to target any source. The connection may be
+      // refused (e.g. if the target extension isn't installed or doesn't accept
+      // a connection from the source), but it isn't a sign of a bad IPC.
+      return true;
+    case MessagingEndpoint::Type::kUserScript:
+      // User scripts can only target their own corresponding extension.
+      // `source_endpoint.extension_id` should have been validated above in
+      // `IsValidMessagingSource()`.
+      CHECK(source_endpoint.extension_id);
+      if (source_endpoint.extension_id != target_id) {
+        bad_message::ReceivedBadMessage(
+            &process,
+            bad_message::EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT);
         return false;
       }
       return true;
@@ -408,6 +454,7 @@ bool MessagingAPIMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void MessagingAPIMessageFilter::OnOpenChannelToExtension(
     const PortContext& source_context,
     const ExtensionMsg_ExternalConnectionInfo& info,
+    ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -420,6 +467,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
   if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+      !IsValidMessagingTarget(*process, info.source_endpoint, info.target_id) ||
       !IsValidSourceUrl(*process, info.source_url, source_context) ||
       !IsValidSourceContext(*process, source_context)) {
     // No need to call ReceivedBadMessage here, because it will be called (when
@@ -432,7 +480,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   MessageService::Get(browser_context_)
       ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
                                nullptr /* opener_port */, info.target_id,
-                               info.source_url, channel_name);
+                               info.source_url, channel_type, channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
@@ -462,6 +510,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
     const PortContext& source_context,
     const ExtensionMsg_TabTargetConnectionInfo& info,
+    ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -483,7 +532,8 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         info.document_id, *extension_id, channel_name);
+                         info.document_id, *extension_id, channel_type,
+                         channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,

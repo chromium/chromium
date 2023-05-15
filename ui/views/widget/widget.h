@@ -783,8 +783,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // underlying windowing system.
   void SetOpacity(float opacity);
 
-  // Sets the aspect ratio of the widget's content, which will be maintained
-  // during interactive resizing. This size disregards title bar and borders.
+  // Sets the aspect ratio of the widget's client view, which will be maintained
+  // during interactive resizing.  Note that for widgets that have a client view
+  // that is framed by custom-drawn borders / window frame / etc, the widget
+  // size will be chosen so that the aspect ratio of client view, not the entire
+  // widget, will be `aspect_ratio`.
+  //
   // Once set, some platforms ensure the content will only size to integer
   // multiples of |aspect_ratio|.
   void SetAspectRatio(const gfx::SizeF& aspect_ratio);
@@ -1071,6 +1075,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Called when the ShouldPaintAsActive() of parent changes.
   void OnParentShouldPaintAsActiveChanged();
+
+  // Notifies registered callbacks and the native widget of changes to
+  // the ShouldPaintAsActive() state.
+  void NotifyPaintAsActiveChanged();
 
   base::WeakPtr<Widget> GetWeakPtr();
 

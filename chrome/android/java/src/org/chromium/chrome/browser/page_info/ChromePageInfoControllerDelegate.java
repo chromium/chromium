@@ -222,8 +222,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
-            final PageInfoRowView adPersonalizationRow =
-                    new PageInfoRowView(rowWrapper.getContext(), null);
+            var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
             adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
             rowWrapper.addView(adPersonalizationRow);
             controllers.add(new PageInfoAdPersonalizationController(
@@ -232,22 +231,21 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
         // Add history row.
         final Tab tab = TabUtils.fromWebContents(mWebContents);
-        final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+        var historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
         historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
         rowWrapper.addView(historyRow);
         controllers.add(new PageInfoHistoryController(
                 mainController, historyRow, this, () -> { return tab; }));
 
         if (PageInfoAboutThisSiteController.isFeatureEnabled()) {
-            final PageInfoRowView aboutThisSiteRow =
-                    new PageInfoRowView(rowWrapper.getContext(), null);
+            var aboutThisSiteRow = new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
             rowWrapper.addView(aboutThisSiteRow);
-            controllers.add(new PageInfoAboutThisSiteController(mainController,
-                    mEphemeralTabCoordinatorSupplier, aboutThisSiteRow, this, mWebContents));
+            new PageInfoAboutThisSiteController(mainController, mEphemeralTabCoordinatorSupplier,
+                    aboutThisSiteRow, this, mWebContents);
         }
         if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
-            final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            var storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
             storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
             rowWrapper.addView(storeInfoRow);
             controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,

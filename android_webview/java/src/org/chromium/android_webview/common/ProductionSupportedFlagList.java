@@ -112,6 +112,8 @@ public final class ProductionSupportedFlagList {
                     "Disables WebView from checking for app recovery mitigations."),
             Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_APP_RECOVERY,
                     "Enables WebView to check for app recovery mitigations."),
+            Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+                    "Enables user-agent client hints in WebView."),
             Flag.baseFeature("DefaultPassthroughCommandDecoder",
                     "Use the passthrough GLES2 command decoder."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
@@ -122,6 +124,8 @@ public final class ProductionSupportedFlagList {
                             + "support."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                     "Use thread-safe media path, requires Android P."),
+            Flag.baseFeature(VizFeatures.ALLOW_BYPASS_RENDER_PASS_QUADS,
+                    "Enable bypass render pass for RenderPassDrawQuads"),
             Flag.baseFeature(VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC,
                     "More robust heuristic for calling Invalidate"),
             Flag.baseFeature(
@@ -177,9 +181,6 @@ public final class ProductionSupportedFlagList {
                     "Enables Autofill to use its new method to retrieve parsing patterns."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                     "Enables Autofill to retrieve the page language for form parsing."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_RATIONALIZE_STREET_ADDRESS_AND_HOUSE_NUMBER,
-                    "Rationalizes (street address, house number) field sequences to "
-                            + "(street name, house number)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ALWAYS_PARSE_PLACEHOLDERS,
                     "When enabled, Autofill local heuristics consider the placeholder attribute "
                             + "for determining field types."),
@@ -267,6 +268,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.EARLY_EXIT_ON_NOOP_CLASS_OR_STYLE_CHANGE,
                     "Early exit when the style or class attribute of a DOM element is set to the"
                             + " same value as before."),
+            Flag.baseFeature(BlinkFeatures.MAIN_THREAD_HIGH_PRIORITY_IMAGE_LOADING,
+                    "If enabled, image load tasks on visible pages have high priority."),
             Flag.baseFeature(BlinkFeatures.THREADED_PRELOAD_SCANNER,
                     "If enabled, the HTMLPreloadScanner will run on a worker thread."),
             Flag.baseFeature(BlinkFeatures.TIMED_HTML_PARSER_BUDGET,
@@ -309,10 +312,10 @@ public final class ProductionSupportedFlagList {
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
             Flag.baseFeature(BlinkFeatures.CSS_PAINTING_FOR_SPELLING_GRAMMAR_ERRORS,
                     "Use the new CSS-based painting for spelling and grammar errors"),
-            Flag.baseFeature(
-                    CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
                     "Make RTCVideoEncoder encode call asynchronous."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
+                    "Initialize VideoEncodeAccelerator on the first encode."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "
                             + " including synchronized decoding."),
@@ -327,6 +330,7 @@ public final class ProductionSupportedFlagList {
                             + "instances of the image are outside of the "
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
+            Flag.baseFeature(BlinkFeatures.COMPOSITE_SCROLL_AFTER_PAINT),
             Flag.baseFeature(BlinkFeatures.DELAY_OUT_OF_VIEWPORT_LAZY_IMAGES,
                     "Delays out-of-viewport lazy loaded images."),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
@@ -352,6 +356,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.REPORTING_SERVICE_FLUSH_PREFS_ON_UPLOAD_IN_BACKGROUND,
                     "Controls whether we immediately flush Local State after "
                             + "uploading a UMA log while in background."),
+            Flag.baseFeature(MetricsFeatures.SUBPROCESS_METRICS_PROVIDER_LEAKY,
+                    "Whether SubprocessMetricsProvider should be leaky, so that it can listen "
+                            + "to subprocesses exiting even after the MetricsService has been "
+                            + "destroyed."),
             Flag.baseFeature(ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                     "When enabled runs the main thread at compositing priority."),
             Flag.baseFeature(AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT,
@@ -391,6 +399,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("LessChattyNetworkService"),
             Flag.baseFeature(BlinkFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                     "Enables Autofill to detect if form controls are removed from the DOM"),
+            Flag.baseFeature(
+                    NetFeatures.PARTITIONED_COOKIES, "Enables the Partitioned cookie attribute"),
             Flag.baseFeature(NetFeatures.SUPPORT_PARTITIONED_BLOB_URL,
                     "Enables the new Blob URL implementation needed for third-party storage"
                             + " partitioning"),
@@ -416,6 +426,14 @@ public final class ProductionSupportedFlagList {
                     "Enables converting trackpad click gestures to mouse events"
                             + " in order for them to be interpreted similar to a desktop"
                             + " experience (i.e. double-click to select word.)"),
+            Flag.baseFeature(NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB,
+                    "Enable attribution reporting to cross the app/web barrier by letting "
+                            + "the WebView use OS-level attribution."),
+            Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP,
+                    "Reduces the thread pool cap to use less threads"),
+            Flag.baseFeature(BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
+                    "Enables showing the cancel dialog by calling preventDefault() "
+                            + "on beforeunload event."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

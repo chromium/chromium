@@ -10,6 +10,7 @@
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
@@ -107,7 +108,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   }
 
   // Ownership passed to Shell owned CellularSetupNotifier instance.
-  base::MockOneShotTimer* mock_notification_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_notification_timer_;
 
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;

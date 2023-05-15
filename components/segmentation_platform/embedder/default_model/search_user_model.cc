@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -39,6 +40,8 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
         kOnlySearch.data(),
         kOnlySearch.size()),
 };
+
+constexpr char kUkmInputEnabled[] = "ukm-input-enabled";
 
 std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
@@ -73,10 +76,32 @@ void SearchUserModel::InitAndFetchModel(
   MetadataWriter writer(&search_user_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
       kSearchUserMinSignalCollectionLength, kSearchUserSignalStorageLength);
+  search_user_metadata.set_upload_tensors(true);
 
   // Set features.
   writer.AddUmaFeatures(kSearchUserUMAFeatures.data(),
                         kSearchUserUMAFeatures.size());
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformSearchUser, kUkmInputEnabled, false)) {
+    std::string query =
+        "SELECT COUNT(id) FROM metrics WHERE metric_hash = '64BD7CCE5A95BF00'";
+    const std::array<UkmMetricHash, 1> kNavigationMetric = {
+        UkmMetricHash::FromUnsafeValue(7259095400115977984ull)};
+    const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1>
+        kPageLoadEvent{MetadataWriter::SqlFeature::EventAndMetrics{
+            .event_hash =
+                UkmEventHash::FromUnsafeValue(12426032810838168341ull),
+            .metrics = kNavigationMetric.data(),
+            .metrics_size = kNavigationMetric.size()}};
+
+    MetadataWriter::SqlFeature sql_feature{
+        .sql = query.c_str(),
+        .events = kPageLoadEvent.data(),
+        .events_size = kPageLoadEvent.size()};
+    MetadataWriter::SqlFeature features[] = {sql_feature};
+    writer.AddSqlFeatures(features, 1);
+  }
 
   // Set OutputConfig.
   writer.AddOutputConfigForBinnedClassifier(

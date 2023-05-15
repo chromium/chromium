@@ -17,6 +17,7 @@ public class Account {
     private final String mName;
     private final String mGivenName;
     private final GURL mPictureUrl;
+    private final String[] mHints;
     private final boolean mIsSignIn;
 
     /**
@@ -27,13 +28,14 @@ public class Account {
      */
     @CalledByNative
     public Account(String subject, String email, String name, String givenName, GURL pictureUrl,
-            boolean isSignIn) {
+            String[] hints, boolean isSignIn) {
         assert subject != null : "Account subject is null!";
         mSubject = subject;
         mEmail = email;
         mName = name;
         mGivenName = givenName;
         mPictureUrl = pictureUrl;
+        mHints = hints;
         mIsSignIn = isSignIn;
     }
 
@@ -57,12 +59,16 @@ public class Account {
         return mPictureUrl;
     }
 
+    public String[] getHints() {
+        return mHints;
+    }
+
     public boolean isSignIn() {
         return mIsSignIn;
     }
 
-    // Return all the String fields. Note that this excludes non-string fields in particular
-    // mPictureUrl.
+    // Return all the String fields. Note that this excludes non-string fields, in particular
+    // mPictureUrl and mHints.
     public String[] getStringFields() {
         return new String[] {mSubject, mEmail, mName, mGivenName};
     }

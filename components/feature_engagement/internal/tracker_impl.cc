@@ -370,6 +370,10 @@ void TrackerImpl::UnregisterPriorityNotificationHandler(
   priority_notification_handlers_.erase(feature.name);
 }
 
+const Configuration* TrackerImpl::GetConfigurationForTesting() const {
+  return configuration_.get();
+}
+
 bool TrackerImpl::IsInitialized() const {
   return event_model_->IsReady() && availability_model_->IsReady();
 }

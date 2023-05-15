@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
 
-#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -122,12 +124,20 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     device_policy_ = device_policy;
   }
 
-  void set_user_affiliation_ids(std::set<std::string> ids) {
-    user_affiliation_ids_ = std::move(ids);
+  void set_user_affiliation_ids(
+      const base::span<const base::StringPiece>& ids) {
+    user_affiliation_ids_.clear();
+    for (const auto& id : ids) {
+      user_affiliation_ids_.emplace_back(id);
+    }
   }
 
-  void set_device_affiliation_ids(std::set<std::string> ids) {
-    device_affiliation_ids_ = std::move(ids);
+  void set_device_affiliation_ids(
+      const base::span<const base::StringPiece>& ids) {
+    device_affiliation_ids_.clear();
+    for (const auto& id : ids) {
+      device_affiliation_ids_.emplace_back(id);
+    }
   }
 
   void set_refresh_user_policy_error(authpolicy::ErrorType error) {
@@ -164,8 +174,8 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   // Stores the password received in the last `AuthenticateUser()` call.
   std::string auth_password_;
 
-  std::set<std::string> user_affiliation_ids_;
-  std::set<std::string> device_affiliation_ids_;
+  std::vector<std::string> user_affiliation_ids_;
+  std::vector<std::string> device_affiliation_ids_;
 
   dbus::ObjectProxy::SignalCallback user_kerberos_files_changed_callback_;
 

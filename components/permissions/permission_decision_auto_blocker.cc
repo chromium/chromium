@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -150,7 +149,7 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
     ContentSettingsType permission,
     int dismiss_count) {
   if (permission == ContentSettingsType::FEDERATED_IDENTITY_API) {
-    int duration_index = base::clamp(
+    int duration_index = std::clamp(
         dismiss_count - 1, 0,
         static_cast<int>(
             std::size(kFederatedIdentityApiEmbargoDurationDismiss) - 1));

@@ -56,7 +56,6 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
     TransferableResource r;
     r.id = ResourceId(mailbox_char);
     r.is_software = !gpu;
-    r.filter = 456;
     r.size = gfx::Size(10, 11);
     r.mailbox_holder.mailbox = MailboxFromChar(mailbox_char);
     if (gpu) {
@@ -130,7 +129,6 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
     verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
   EXPECT_EQ(exported[0].is_software, tran.is_software);
-  EXPECT_EQ(exported[0].filter, tran.filter);
   EXPECT_EQ(exported[0].size, tran.size);
   EXPECT_EQ(exported[0].mailbox_holder.mailbox, tran.mailbox_holder.mailbox);
   EXPECT_EQ(exported[0].mailbox_holder.sync_token, verified_sync_token);
@@ -176,7 +174,6 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
       verified_sync_token.SetVerifyFlush();
     EXPECT_EQ(exported[i].id, to_send[i]);
     EXPECT_EQ(exported[i].is_software, tran[i].is_software);
-    EXPECT_EQ(exported[i].filter, tran[i].filter);
     EXPECT_EQ(exported[i].size, tran[i].size);
     EXPECT_EQ(exported[i].mailbox_holder.mailbox,
               tran[i].mailbox_holder.mailbox);
@@ -512,13 +509,13 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-      gpu::kNullSurfaceHandle);
+      "TestLabel", gpu::kNullSurfaceHandle);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   constexpr gfx::Size size(64, 64);
-  auto tran = TransferableResource::MakeGpu(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
-      SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  auto tran = TransferableResource::MakeGpu(mailbox, GL_TEXTURE_2D, sync_token,
+                                            size, SinglePlaneFormat::kRGBA_8888,
+                                            false /* is_overlay_candidate */);
   ResourceId resource = provider().ImportResource(
       tran, base::BindOnce(&MockReleaseCallback::Released,
                            base::Unretained(&release)));

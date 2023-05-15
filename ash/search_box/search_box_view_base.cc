@@ -14,10 +14,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -80,16 +82,17 @@ constexpr base::TimeDelta kButtonFadeInDuration = base::Milliseconds(100);
 
 void SetupLabelView(views::Label* label,
                     const gfx::FontList& font_list,
-                    gfx::Insets border_insets) {
+                    gfx::Insets border_insets,
+                    ui::ColorId color_id) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->GetViewAccessibility().OverrideIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColorId(kColorAshTextColorSuggestion);
+  label->SetEnabledColorId(color_id);
+  label->SetFontList(font_list);
   label->SetVisible(true);
   label->SetElideBehavior(gfx::ELIDE_TAIL);
   label->SetMultiLine(false);
-  label->SetFontList(font_list);
   label->SetBorder(views::CreateEmptyBorder(border_insets));
 }
 
@@ -267,7 +270,7 @@ class SearchBoxTextfield : public views::Textfield {
   }
 
  private:
-  SearchBoxViewBase* const search_box_view_;
+  const raw_ptr<SearchBoxViewBase, ExperimentalAsh> search_box_view_;
 };
 
 // Used to animate the transition between icon images. When a new icon is set,
@@ -372,13 +375,12 @@ SearchBoxViewBase::SearchBoxViewBase()
   search_icon_->layer()->SetFillsBoundsOpaquely(false);
 
   search_box_->SetBorder(views::NullBorder());
-  search_box_->SetTextColor(kSearchTextColor);
   search_box_->SetBackgroundColor(SK_ColorTRANSPARENT);
   search_box_->set_controller(this);
   search_box_->SetTextInputType(ui::TEXT_INPUT_TYPE_SEARCH);
   search_box_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   auto font_list = search_box_->GetFontList().DeriveWithSizeDelta(2);
-  search_box_->SetFontList(font_list);
+  SetPreferredStyleForSearchboxText(font_list, kSearchTextColor);
   search_box_->SetCursorEnabled(is_search_box_active_);
 
   text_container_ = content_container_->AddChildView(
@@ -390,7 +392,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   content_container_->SetFlexForView(text_container_, 1,
                                      /*use_min_size=*/false);
 
-  text_container_->AddChildView(search_box_);
+  text_container_->AddChildView(search_box_.get());
   ghost_text_container_ =
       text_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   ghost_text_container_->SetCrossAxisAlignment(
@@ -415,10 +417,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   category_ghost_text_ =
       ghost_text_container_->AddChildView(std::make_unique<views::Label>());
 
-  SetupLabelView(separator_label_, font_list, kGhostTextLabelPadding);
-  SetupLabelView(autocomplete_ghost_text_, font_list, kGhostTextLabelPadding);
-  SetupLabelView(category_separator_label_, font_list, kGhostTextLabelPadding);
-  SetupLabelView(category_ghost_text_, font_list, kGhostTextLabelPadding);
+  SetPreferredStyleForAutocompleteText(font_list, kColorAshTextColorSuggestion);
 
   separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
@@ -654,6 +653,26 @@ void SearchBoxViewBase::ClearSearch() {
 void SearchBoxViewBase::OnSearchBoxActiveChanged(bool active) {}
 
 void SearchBoxViewBase::UpdateSearchBoxFocusPaint() {}
+
+void SearchBoxViewBase::SetPreferredStyleForAutocompleteText(
+    const gfx::FontList& font_list,
+    ui::ColorId text_color_id) {
+  SetupLabelView(separator_label_, font_list, kGhostTextLabelPadding,
+                 text_color_id);
+  SetupLabelView(autocomplete_ghost_text_, font_list, kGhostTextLabelPadding,
+                 text_color_id);
+  SetupLabelView(category_separator_label_, font_list, kGhostTextLabelPadding,
+                 text_color_id);
+  SetupLabelView(category_ghost_text_, font_list, kGhostTextLabelPadding,
+                 text_color_id);
+}
+
+void SearchBoxViewBase::SetPreferredStyleForSearchboxText(
+    const gfx::FontList& font_list,
+    ui::ColorId text_color_id) {
+  search_box_->SetTextColor(text_color_id);
+  search_box_->SetFontList(font_list);
+}
 
 void SearchBoxViewBase::UpdateButtonsVisibility() {
   DCHECK(close_button_);

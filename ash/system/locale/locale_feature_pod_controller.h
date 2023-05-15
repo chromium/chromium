@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -16,7 +17,8 @@ class UnifiedSystemTrayController;
 
 // Controller of locale feature pod button. The button appears in demo mode and
 // allows setting the language for demo mode content. To work on demo mode, see
-// instructions at go/demo-mode-g3-cookbook.
+// instructions at go/demo-mode-g3-cookbook. To force the feature tile to show
+// in the emulator pass --qs-show-locale-tile.
 class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
  public:
   explicit LocaleFeaturePodController(
@@ -36,7 +38,7 @@ class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
 
  private:
   // Unowned.
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   base::WeakPtrFactory<LocaleFeaturePodController> weak_factory_{this};
 };

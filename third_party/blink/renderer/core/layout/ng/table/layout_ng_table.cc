@@ -252,7 +252,7 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGTable::UpdateBlockLayout() {
   NOT_DESTROYED();
 
   if (IsOutOfFlowPositioned()) {
@@ -260,7 +260,6 @@ void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
     return;
   }
   UpdateInFlowBlockLayout();
-  UpdateMargins();
 }
 
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
@@ -475,15 +474,15 @@ LayoutUnit LayoutNGTable::PaddingRight() const {
   return LayoutNGMixin<LayoutBlock>::PaddingRight();
 }
 
-LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
+NGPhysicalBoxStrut LayoutNGTable::BorderBoxOutsets() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
   if (PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders().ToLayoutRectOutsets();
+    return GetPhysicalFragment(0)->Borders();
   }
   NOTREACHED();
-  return LayoutRectOutsets();
+  return {};
 }
 
 // Effective column index is index of columns with mergeable

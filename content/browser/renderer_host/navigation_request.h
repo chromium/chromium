@@ -209,8 +209,6 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,
       bool was_opener_suppressed,
-      const blink::LocalFrameToken* initiator_frame_token,
-      int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
@@ -241,7 +239,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool was_opener_suppressed,
-      const blink::LocalFrameToken* initiator_frame_token,
+      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
       int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
@@ -798,6 +796,12 @@ class CONTENT_EXPORT NavigationRequest
   // Must only be called after ReadyToCommitNavigation().
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
+  // Returns a new refptr to this navigation's PolicyContainerHost.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  // It is invalid to call after `TakePolicyContainerHost()`.
+  scoped_refptr<PolicyContainerHost> GetPolicyContainerHost();
+
   // Moves this navigation's PolicyContainerHost out of this instance.
   //
   // Must only be called after ReadyToCommitNavigation().
@@ -977,6 +981,45 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_navigation_state_->prerender_main_frame_replication_state;
   }
 
+  // Origin-keyed Agent Cluster (OAC) state needs to be tracked for origins that
+  // opt-in or opt-out, so that a given origin is treated consistently within a
+  // given BrowsingInstance. This ensures that foo.example.com will have the
+  // same OAC state in a BrowsingInstance even if multiple documents in the
+  // origin have different headers.
+  //
+  // This function ensures that this OAC state is tracked in cases where it is
+  // not handled elsewhere. For example, OAC origins that end up in origin-keyed
+  // processes already track their OAC state during SiteInstance creation.
+  // However, SiteInstance does not track origin state in the following cases,
+  // which this function handles:
+  //
+  // 1) If process isolation for OAC is disabled (e.g., on low-memory Android
+  // devices), the origin will use a site-keyed SiteInstance that does not
+  // record OAC state for the origin.
+  //
+  // 2) If the origin has no header but ends up with OAC-by-default (and
+  // kOriginKeyedProcessesByDefault is not enabled), the origin will use a
+  // site-keyed SiteInstance.
+  //
+  // 3) If the origin opts-out of OAC using a header, it will use a site-keyed
+  // SiteInstance.
+  //
+  // 4)If the origin opts-in to OAC using a header, but it is first placed in a
+  // speculative RenderFrameHost before the header is received, it creates a
+  // SiteInfo with default isolation and an origin-keyed process (by default).
+  // In this case, the origin was not tracked when the SiteInstance was created,
+  // and needs to be tracked later when the opt-in header is observed.
+  //
+  // In all of these cases, this function updates the BrowsingInstance to keep
+  // track of the OAC state for this NavigationRequest's origin.
+  //
+  // TODO(wjmaclean): Cases 1 and 2 will not be necessary once we use
+  // origin-keyed SiteInstances within a site-keyed process, via
+  // SiteInstanceGroup. Cases 3 and 4 will still be needed at that point, but
+  // might become simpler.
+  void AddOriginAgentClusterStateIfNecessary(
+      const IsolationContext& isolation_context);
+
   // Store a console message, which will be sent to the final RenderFrameHost
   // immediately after requesting the navigation to commit.
   //
@@ -1014,9 +1057,6 @@ class CONTENT_EXPORT NavigationRequest
       const;
 
   const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
-
-  const absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-  ComputeDeprecatedFencedFrameMode() const;
 
   void RenderFallbackContentForObjectTag();
 
@@ -1124,7 +1164,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // For subframe NavigationRequests, these set and return the main frame's
   // NavigationRequest token, in the case that the main frame returns it from
-  // GetNavigationTokenForDeferringSubframes().
+  // GetNavigationTokenForDeferringSubframes(). Note that by the time
+  // `main_frame_same_document_history_token()` is called, the NavigationRequest
+  // represented by that token may have already finished and been deleted, so
+  // any attempt to lookup based on this token must null-check the request.
   void set_main_frame_same_document_history_token(
       absl::optional<base::UnguessableToken> token) {
     main_frame_same_document_navigation_token_ = token;
@@ -1188,6 +1231,22 @@ class CONTENT_EXPORT NavigationRequest
     CHECK(HasWebUI());
     return std::move(web_ui_);
   }
+
+  enum ErrorPageProcess {
+    kNotErrorPage,
+    kPostCommitErrorPage,
+    kCurrentProcess,
+    kDestinationProcess,
+    kIsolatedProcess
+  };
+  // Helper to determine whether a navigation is committing an error page and
+  // should stay in the current process (kCurrentProcess), the destination
+  // URL's process (kDestinationProcess), an isolated process
+  // (kIsolatedProcess), or is a post-commit error page that does not have any
+  // specific process requirements and goes through the "normal navigation"
+  // path. Returns kNotErrorPage if the navigation is not anerror page
+  // navigation.
+  ErrorPageProcess ComputeErrorPageProcess();
 
  private:
   friend class NavigationRequestTest;
@@ -1253,16 +1312,6 @@ class CONTENT_EXPORT NavigationRequest
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
 
-  // Use to manually set Origin-keyed Agent Cluster (OAC) isolation state in
-  // the event that process-isolation isn't being used for OAC, or
-  // OAC-by-default means that we're tracking explicit opt-out requests (which
-  // by definition are same-process).
-  // TODO(wjmaclean): When we switch to using separate SiteInstances even for
-  // same-process OAC, then this function can be removed.
-  void AddSameProcessOriginAgentClusterStateIfNecessary(
-      const IsolationContext& isolation_context,
-      const GURL& url);
-
   // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
   bool IsOriginAgentClusterOptInRequested();
@@ -1272,8 +1321,13 @@ class CONTENT_EXPORT NavigationRequest
   // AreOriginAgentClustersEnabledByDefault() is false.
   bool IsOriginAgentClusterOptOutRequested();
 
-  // Returns whether this navigation request should use an origin-keyed
-  // agent cluster (but not an origin-keyed process).
+  // Returns whether this NavigationRequest should use an origin-keyed agent
+  // cluster, specifically in cases where no Origin-Agent-Cluster header has
+  // been observed, either because no response has yet been received or because
+  // it had no such header. (Returns false if the header is observed.)
+  //
+  // Note that an origin-keyed process may be used if this returns true, if
+  // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
 
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of
@@ -1315,8 +1369,11 @@ class CONTENT_EXPORT NavigationRequest
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       bool is_download,
       absl::optional<SubresourceLoaderParams> subresource_loader_params);
-  // TODO(https://crbug.com/1220337): Implement this logic for
-  // OnRequestFailedInternal() and BeginNavigationImpl() as well.
+  void SelectFrameHostForOnRequestFailedInternal(
+      bool exists_in_cache,
+      bool skip_throttles,
+      const absl::optional<std::string>& error_page_content);
+  void SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
   // true, the registered NavigationThrottle(s) won't get a chance to intercept
@@ -1329,15 +1386,6 @@ class CONTENT_EXPORT NavigationRequest
       bool skip_throttles,
       const absl::optional<std::string>& error_page_content,
       bool collapse_frame);
-
-  // Helper to determine whether an error page for the provided error code
-  // should stay in the current process.
-  enum ErrorPageProcess {
-    kCurrentProcess,
-    kDestinationProcess,
-    kIsolatedProcess
-  };
-  ErrorPageProcess ComputeErrorPageProcess(int net_error);
 
   // Called when the NavigationThrottles have been checked by the
   // NavigationHandle.

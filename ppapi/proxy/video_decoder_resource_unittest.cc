@@ -96,8 +96,7 @@ class VideoDecoderResourceTest : public PluginProxyTest {
     HostResource host_resource;
     host_resource.SetHostResource(pp_instance(), kGraphics3D);
     scoped_refptr<ppapi::proxy::Graphics3D> graphics_3d(
-        new ppapi::proxy::Graphics3D(host_resource, gfx::Size(640, 480), false,
-                                     false));
+        new ppapi::proxy::Graphics3D(host_resource, gfx::Size(640, 480)));
 
     return graphics_3d->GetReference();
   }

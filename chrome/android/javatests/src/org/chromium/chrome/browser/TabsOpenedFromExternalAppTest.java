@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -153,7 +153,8 @@ public class TabsOpenedFromExternalAppTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -179,7 +180,7 @@ public class TabsOpenedFromExternalAppTest {
         if (extras != null) intent.putExtras(extras);
 
         if (firstParty) {
-            Context context = InstrumentationRegistry.getTargetContext();
+            Context context = ApplicationProvider.getApplicationContext();
             intent.setPackage(context.getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
         }

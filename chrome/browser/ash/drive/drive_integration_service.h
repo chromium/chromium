@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -94,6 +95,9 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 
   // Triggered when the mirroring functionality is disabled.
   virtual void OnMirroringDisabled() {}
+
+  // Triggered when the bulk pinning manager reports progress.
+  virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
@@ -105,7 +109,8 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // that are used to integrate Drive to Chrome. The object of this class is
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
-                                public drivefs::DriveFsHost::MountObserver {
+                                public drivefs::DriveFsHost::MountObserver,
+                                public drivefs::pinning::PinManager::Observer {
  public:
   class PreferenceWatcher;
   class BulkPinningPrefUpdater;
@@ -172,6 +177,9 @@ class DriveIntegrationService : public KeyedService,
   void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
                      absl::optional<base::TimeDelta> remount_delay) override;
+
+  // PinManager::Observer implementation
+  void OnProgress(const drivefs::pinning::Progress& progress) override;
 
   EventLogger* event_logger() { return logger_.get(); }
 
@@ -298,6 +306,16 @@ class DriveIntegrationService : public KeyedService,
   // files.
   void GetTotalPinnedSize(base::OnceCallback<void(int64_t)> callback);
 
+  void ClearOfflineFiles(base::OnceCallback<void(drive::FileError)> callback);
+
+  // Tells Drive to immediately start uploading the file at |path|, which is a
+  // relative path in Drive. This avoids queuing delays for newly created files,
+  // when we are sure that there are no more subsequent operations on the file
+  // that we should wait for.
+  void ImmediatelyUpload(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::ImmediatelyUploadCallback callback);
+
   // Called by lacros to register a bridge that this service can call into when
   // DriveFS wants to initiate a connection to an extension in lacros.
   void RegisterDriveFsNativeMessageHostBridge(
@@ -413,9 +431,13 @@ class DriveIntegrationService : public KeyedService,
       drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
       bool exists);
 
+  void OnUpdateFromPairedDocComplete(const base::FilePath& drive_path,
+                                     base::OnceClosure callback,
+                                     drive::FileError error);
+
   friend class DriveIntegrationServiceFactory;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   State state_;
   bool enabled_;
   bool mount_failed_ = false;

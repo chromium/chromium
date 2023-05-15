@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 using base::TimeTicks;
 
@@ -206,6 +208,132 @@ void CleanupExtraFiles(const base::FilePath& store_path,
       base::DeleteFile(name);
   }
 }
+
+// A ZeroCopyOutputStream that writes to a file using base::File. Any errors
+// during serialization close the file.
+class BaseFileOutputStream
+    : public google::protobuf::io::CopyingOutputStreamAdaptor {
+ public:
+  // Creates and opens `output_file`, overwriting any previous contents.
+  explicit BaseFileOutputStream(const base::FilePath& output_file)
+      : CopyingOutputStreamAdaptor(&stream_), stream_(output_file) {}
+  BaseFileOutputStream(const BaseFileOutputStream&) = delete;
+  BaseFileOutputStream& operator=(const BaseFileOutputStream&) = delete;
+
+  // Closes the file, if it was still open.
+  ~BaseFileOutputStream() override = default;
+
+  // Returns `base::File::FILE_OK` if no error and the file is still open; else
+  // the error that led to closure of the file.
+  base::File::Error GetError() const { return stream_.GetError(); }
+
+ private:
+  class CopyingBaseFileOutputStream
+      : public google::protobuf::io::CopyingOutputStream {
+   public:
+    explicit CopyingBaseFileOutputStream(const base::FilePath& output_file)
+        : file_(output_file,
+                base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
+                    base::File::FLAG_WIN_EXCLUSIVE_READ |
+                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                    base::File::FLAG_WIN_SHARE_DELETE) {}
+    CopyingBaseFileOutputStream(const CopyingBaseFileOutputStream&) = delete;
+    CopyingBaseFileOutputStream& operator=(const CopyingBaseFileOutputStream&) =
+        delete;
+    ~CopyingBaseFileOutputStream() override = default;
+
+    base::File::Error GetError() const { return file_.error_details(); }
+
+    // CopyingOutputStream:
+    bool Write(const void* buffer, int size) override {
+      if (!file_.IsValid()) {
+        return false;
+      }
+      int bytes_written =
+          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size);
+      if (bytes_written == size) {
+        return true;
+      }
+      file_ = base::File(base::File::GetLastFileError());
+      return false;
+    }
+
+   private:
+    base::File file_;
+  };
+
+  CopyingBaseFileOutputStream stream_;
+};
+
+// A ZeroCopyInputStream that reads from a file using base::File. Any errors
+// during deserialization close the file.
+class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
+ public:
+  // Creates and opens `input_file`.
+  explicit BaseFileInputStream(const base::FilePath& input_file)
+      : stream_(input_file), impl_(&stream_) {}
+  BaseFileInputStream(const BaseFileInputStream&) = delete;
+  BaseFileInputStream& operator=(const BaseFileInputStream&) = delete;
+
+  // Closes the file, if it was still open.
+  ~BaseFileInputStream() override = default;
+
+  // Returns `base::File::FILE_OK` if no error and the file is still open; else
+  // the error that led to closure of the file.
+  base::File::Error GetError() const { return stream_.GetError(); }
+
+  // google::protobuf::io::ZeroCopyInputStream:
+  bool Next(const void** data, int* size) override {
+    return impl_.Next(data, size);
+  }
+  void BackUp(int count) override { return impl_.BackUp(count); }
+  bool Skip(int count) override { return impl_.Skip(count); }
+  int64_t ByteCount() const override { return impl_.ByteCount(); }
+
+ private:
+  class CopyingBaseFileInputStream
+      : public google::protobuf::io::CopyingInputStream {
+   public:
+    explicit CopyingBaseFileInputStream(const base::FilePath& input_file)
+        : file_(input_file,
+                base::File::FLAG_OPEN | base::File::FLAG_READ |
+                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                    base::File::FLAG_WIN_SHARE_DELETE) {}
+    CopyingBaseFileInputStream(const CopyingBaseFileInputStream&) = delete;
+    CopyingBaseFileInputStream& operator=(const CopyingBaseFileInputStream&) =
+        delete;
+    ~CopyingBaseFileInputStream() override = default;
+
+    base::File::Error GetError() const { return file_.error_details(); }
+
+    // google::protobuf::io::CopyingInputStream:
+    int Read(void* buffer, int size) override {
+      if (!file_.IsValid()) {
+        return -1;
+      }
+      const int bytes_read =
+          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size);
+      if (bytes_read >= 0) {
+        return bytes_read;
+      }
+      file_ = base::File(base::File::GetLastFileError());
+      return -1;
+    }
+
+    int Skip(int count) override {
+      if (file_.Seek(base::File::FROM_CURRENT, count) != -1) {
+        return count;
+      }
+      return CopyingInputStream::Skip(count);
+    }
+
+   private:
+    base::File file_;
+  };
+
+  CopyingBaseFileInputStream stream_;
+  google::protobuf::io::CopyingInputStreamAdaptor impl_;
+};
 
 }  // namespace
 
@@ -740,22 +868,21 @@ StoreReadResult V4Store::ReadFromDisk() {
   V4StoreFileFormat file_format;
   int64_t file_size;
   {
-    // A temporary scope to make sure that |contents| get destroyed as soon as
-    // we are doing using it.
-    std::string contents;
-    if (!base::ReadFileToStringWithMaxSize(store_path_, &contents,
-                                           kMaxStoreSizeBytes)) {
+    BaseFileInputStream input_stream(store_path_);
+    if (!file_format.ParseFromZeroCopyStream(&input_stream)) {
+      return input_stream.GetError() != base::File::FILE_OK
+                 ? FILE_UNREADABLE_FAILURE
+                 : PROTO_PARSING_FAILURE;
+    }
+    // `ParseFromZeroCopyStream` will return true if the file didn't exist, so
+    // explicitly check for an error when reading from the file.
+    if (input_stream.GetError() != base::File::FILE_OK) {
       return FILE_UNREADABLE_FAILURE;
     }
-
-    if (contents.empty()) {
+    file_size = input_stream.ByteCount();
+    if (!file_size) {
       return FILE_EMPTY_FAILURE;
     }
-
-    if (!file_format.ParseFromString(contents)) {
-      return PROTO_PARSING_FAILURE;
-    }
-    file_size = static_cast<int64_t>(contents.size());
   }
 
   if (file_format.magic_number() != kFileMagic) {
@@ -826,24 +953,31 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
       },
       new_filename, store_path_, base::Unretained(file_format)));
 
-  if (!hash_prefix_map_->WriteToDisk(file_format))
+  int64_t written = 0;
+  // `write_session` must remain alive until `file_format` is committed to disk.
+  // Additionally, note that `hash_prefix_map_` is unusable throughout the
+  // lifetime of `write_session`.
+  if (auto write_session = hash_prefix_map_->WriteToDisk(file_format);
+      write_session) {
+    file_format->set_magic_number(kFileMagic);
+    file_format->set_version_number(kFileVersion);
+    {
+      BaseFileOutputStream output_stream(new_filename);
+      if (!file_format->SerializeToZeroCopyStream(&output_stream) ||
+          !output_stream.Flush()) {
+        return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+      }
+      written = output_stream.ByteCount();
+    }
+  } else {
     return UNEXPECTED_WRITE_FAILURE;
-
-  file_format->set_magic_number(kFileMagic);
-  file_format->set_version_number(kFileVersion);
-  std::string file_format_string;
-  file_format->SerializeToString(&file_format_string);
-  size_t written = base::WriteFile(new_filename, file_format_string.data(),
-                                   file_format_string.size());
-
-  if (file_format_string.size() != written)
-    return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+  }
 
   if (!base::Move(new_filename, store_path_))
     return UNABLE_TO_RENAME_FAILURE;
 
   // Update |file_size_| now because we wrote the file correctly.
-  file_size_ = static_cast<int64_t>(written);
+  file_size_ = written;
   for (const auto& hash_file : file_format->hash_files())
     file_size_ += hash_file.file_size();
 

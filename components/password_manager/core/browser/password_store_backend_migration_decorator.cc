@@ -35,27 +35,6 @@ bool ShouldAttemptMigration(const PrefService* prefs) {
              prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
 }
 
-// Returns if the limit of automatic reenrollment attempts if set, and, if yes,
-// whether the user has reached the limit.
-bool ReachedReenrollmentAttemptsLimit(const PrefService* prefs) {
-  int max_reenrollement_attempts =
-      password_manager::features::kMaxUPMReenrollmentAttempts.Get();
-  return max_reenrollement_attempts &&
-         prefs->GetInteger(
-             prefs::kTimesAttemptedToReenrollToGoogleMobileServices) >=
-             max_reenrollement_attempts;
-}
-
-// Returns if the limit of automatic reenrollments if set, and, if yes,
-// whether the user has reached the limit.
-bool ReachedReenrollmentsLimit(const PrefService* prefs) {
-  int max_reenrollements =
-      password_manager::features::kMaxUPMReenrollments.Get();
-  return max_reenrollements &&
-         prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) >=
-             max_reenrollements;
-}
-
 }  // namespace
 
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
@@ -127,14 +106,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   // attempt will be performed.
   if (!migrator_ ||
       !prefs_->GetBoolean(
-          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors) ||
-      !base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerReenrollment)) {
-    return;
-  }
-
-  if (ReachedReenrollmentAttemptsLimit(prefs_) ||
-      ReachedReenrollmentsLimit(prefs_)) {
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
     return;
   }
 

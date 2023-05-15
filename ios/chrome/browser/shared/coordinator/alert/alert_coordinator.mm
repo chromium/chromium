@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 

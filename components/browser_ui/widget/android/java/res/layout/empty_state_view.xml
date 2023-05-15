@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/empty_state_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/default_list_row_padding"
+    android:layout_marginStart="@dimen/default_list_row_padding"
+    android:gravity="center"
+    android:padding="@dimen/card_padding"
+    android:scaleType="fitCenter"
+    android:autoSizeTextType="uniform"
+    android:orientation="vertical">
+
+  <ImageView
+      android:id="@+id/empty_state_icon"
+      android:contentDescription="@null"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+  <!-- TODO(crbugs/1439882) Replace the type style when '18pt Google Sans with 24pt leading' become available in Clank -->
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/empty_state_text_title"
+      android:maxWidth="@dimen/empty_state_text_width"
+      android:paddingTop="@dimen/empty_state_heading_padding_top"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+      app:leading="@dimen/text_size_large_leading"/>
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/empty_state_text_description"
+      android:maxWidth="@dimen/empty_state_text_width"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingTop="@dimen/empty_state_subheading_padding_top"
+      android:textAlignment="center"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      app:leading="@dimen/text_size_medium_leading"/>
+</LinearLayout>
+

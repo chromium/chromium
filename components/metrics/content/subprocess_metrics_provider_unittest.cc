@@ -28,7 +28,7 @@ const uint32_t TEST_MEMORY_SIZE = 64 << 10;  // 64 KiB
 
 class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
  public:
-  HistogramFlattenerDeltaRecorder() {}
+  HistogramFlattenerDeltaRecorder() = default;
 
   HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
       delete;
@@ -58,11 +58,13 @@ class SubprocessMetricsProviderTest : public testing::Test {
 
  protected:
   SubprocessMetricsProviderTest() {
-    // MergeHistogramDeltas needs to be called beause it uses a histogram
+    SubprocessMetricsProvider::CreateInstance();
+
+    // MergeHistogramDeltas needs to be called because it uses a histogram
     // macro which caches a pointer to a histogram. If not done before setting
     // a persistent global allocator, then it would point into memory that
     // will go away.
-    provider_.MergeHistogramDeltas();
+    SubprocessMetricsProvider::GetInstance()->MergeHistogramDeltas();
 
     // Create a dedicated StatisticsRecorder for this test.
     test_recorder_ = base::StatisticsRecorder::CreateTemporaryForTesting();
@@ -76,8 +78,6 @@ class SubprocessMetricsProviderTest : public testing::Test {
     base::GlobalHistogramAllocator::ReleaseForTesting();
   }
 
-  SubprocessMetricsProvider* provider() { return &provider_; }
-
   std::unique_ptr<base::PersistentHistogramAllocator> CreateDuplicateAllocator(
       base::PersistentHistogramAllocator* allocator) {
     // Just wrap around the data segment in-use by the passed allocator.
@@ -89,7 +89,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
 
   std::vector<std::string> GetSnapshotHistogramNames() {
     // Merge the data from the allocator into the StatisticsRecorder.
-    provider_.MergeHistogramDeltas();
+    SubprocessMetricsProvider::GetInstance()->MergeHistogramDeltas();
 
     // Flatten what is known to see what has changed since the last time.
     HistogramFlattenerDeltaRecorder flattener;
@@ -101,17 +101,15 @@ class SubprocessMetricsProviderTest : public testing::Test {
     return flattener.GetRecordedDeltaHistogramNames();
   }
 
-  void EnableRecording() { provider_.OnRecordingEnabled(); }
-  void DisableRecording() { provider_.OnRecordingDisabled(); }
-
   void RegisterSubprocessAllocator(
       int id,
       std::unique_ptr<base::PersistentHistogramAllocator> allocator) {
-    provider_.RegisterSubprocessAllocator(id, std::move(allocator));
+    SubprocessMetricsProvider::GetInstance()->RegisterSubprocessAllocator(
+        id, std::move(allocator));
   }
 
   void DeregisterSubprocessAllocator(int id) {
-    provider_.DeregisterSubprocessAllocator(id);
+    SubprocessMetricsProvider::GetInstance()->DeregisterSubprocessAllocator(id);
   }
 
  private:
@@ -120,7 +118,6 @@ class SubprocessMetricsProviderTest : public testing::Test {
   // test. This must be constructed before the |provider_| field.
   content::BrowserTaskEnvironment task_environment_;
 
-  SubprocessMetricsProvider provider_;
   std::unique_ptr<base::StatisticsRecorder> test_recorder_;
 };
 

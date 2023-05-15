@@ -10,6 +10,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -110,8 +111,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
                                          const std::string& notification_id);
   void RemoveNotificationIfVisible(const std::string& notification_id);
 
-  Profile* profile_;
-  NetworkConnect* network_connect_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<NetworkConnect, DanglingUntriaged | ExperimentalAsh> network_connect_;
 
   // The ID of the currently showing notification.
   std::string showing_notification_id_;

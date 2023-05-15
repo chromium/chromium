@@ -7,16 +7,20 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+/*
+Style Module that defines overrides for cr-elements on ChromeOS. This file
+plumbs semantic colors and fonts into cr-elements.
 
-/* Style Module that defines color overrides for cr-elements on Chrome OS.
-
-This file plumbs semantic colors from cros_styles.css into cr-elements.
-
-To get Chrome OS System Colors, an element must:
+To get ChromeOS System colors, an element must:
 - be beneath a <html> element with a "cros" attribute
 - have a <style include="cros-color-overrides"> module in its style module list
 - import the following URL in JS/TS
   //resources/cr_elements/chromeos/cros_color_overrides.css.js
+
+To get ChromeOS Jelly colors, an element must:
+- have an ancestor <body> element with the "jelly-enabled" class
+- include "cros-color-overrides" style module in HTML
+- import "//resources/cr_elements/chromeos/cros_color_overrides.css.js" in JS/TS
 */
 
 :host-context([cros]) a:not(.item)[href] {
@@ -174,6 +178,10 @@ To get Chrome OS System Colors, an element must:
   box-shadow: 0 0 12px 0 var(--cros-sys-shadow);
 }
 
+:host-context(body.jelly-enabled) cr-dialog > [slot='title'] {
+  font: var(--cros-display-7-font);
+}
+
 /* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
@@ -199,6 +207,12 @@ To get Chrome OS System Colors, an element must:
   --md-select-text-color: var(--cros-sys-on_surface);
 }
 
+/* Menu */
+:host-context(body.jelly-enabled) cr-action-menu {
+  --cr-menu-background-color: var(--cros-sys-base_elevated);
+  --cr-menu-background-focus-color: var(--cros-sys-hover_on_subtle);
+}
+
 /* Radio button */
 :host-context(body.jelly-enabled),
 :host-context(body.jelly-enabled) cr-radio-button {
@@ -207,6 +221,13 @@ To get Chrome OS System Colors, an element must:
   --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
   --cr-radio-button-unchecked-ripple-color:
       var(--cros-sys-ripple_neutral_on_subtle);
+}
+
+:host-context(body.jelly-enabled) cr-card-radio-button {
+  --cr-card-background-color: var(--cros-sys-app_base);
+  --cr-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
 }
 
 /* Search field */

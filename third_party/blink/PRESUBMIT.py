@@ -81,12 +81,6 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
         'third_party/blink/public/mojom/loader/transferrable_url_loader',
         'third_party/blink/public/mojom/loader/code_cache',
-        # The `shared_storage_worklet_service` and `private_aggregation_host`
-        # are tentatively included here when shared storage is migrating to
-        # the blink-style worklet infrastructure.
-        # TODO(crbug.com/1414951): Remove once the migration completes.
-        'third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service',
-        'third_party/blink/public/mojom/private_aggregation/private_aggregation_host',
         'media/mojo/mojom/interface_factory',
         'media/mojo/mojom/audio_decoder',
         'media/mojo/mojom/audio_encoder',

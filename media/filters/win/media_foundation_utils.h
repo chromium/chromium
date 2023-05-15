@@ -7,8 +7,10 @@
 
 #include <mfidl.h>
 
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
@@ -17,6 +19,11 @@
 class IMFMediaType;
 
 namespace media {
+
+// Callback to transform a Media Foundation sample when converting from the
+// DecoderBuffer if needed.
+using TransformSampleCB =
+    base::OnceCallback<HRESULT(Microsoft::WRL::ComPtr<IMFSample>& sample)>;
 
 // Given an AudioDecoderConfig, get its corresponding IMFMediaType format.
 // Note:
@@ -61,6 +68,20 @@ MEDIA_EXPORT GUID
 VideoCodecToMFSubtype(VideoCodec codec,
                       VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN);
 
+// Converts the DecoderBuffer back to a Media Foundation sample.
+// `TransformSampleCB` is to allow derived classes to transform the Media
+// Foundation sample if needed.
+MEDIA_EXPORT HRESULT
+GenerateSampleFromDecoderBuffer(const scoped_refptr<DecoderBuffer>& buffer,
+                                IMFSample** sample_out,
+                                GUID* last_key_id,
+                                TransformSampleCB transform_sample_cb);
+
+// Creates a DecryptConfig from a Media Foundation sample.
+MEDIA_EXPORT HRESULT
+CreateDecryptConfigFromSample(IMFSample* mf_sample,
+                              const GUID& key_id,
+                              std::unique_ptr<DecryptConfig>* decrypt_config);
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_WIN_MEDIA_FOUNDATION_UTILS_H_

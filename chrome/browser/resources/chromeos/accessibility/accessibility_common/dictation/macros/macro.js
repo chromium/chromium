@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Context, ContextChecker} from '../context_checker.js';
+
 import {MacroName} from './macro_names.js';
 
 /**
@@ -29,16 +31,14 @@ export const MacroError = {
  * Results of checking whether the macro is able to execute in the current
  * context or the MacroError if not.
  * |canTryAction| is true if the macro could be executed in the current context.
- * |willImmediatelyDisambiguate| is true if the macro would need to disambiguate
- * in order to execute an action. If |canTryAction| is false,
- * |willImmediatelyDisambiguate| may be undefined. Similar to CheckContextResult
- * in google3/intelligence/dbw/proto/macros/results/check_context_result.proto.
+ * Similar to CheckContextResult in
+ * google3/intelligence/dbw/proto/macros/results/check_context_result.proto.
  * TODO(crbug.com/1264544): Information for disambiguation, like a list of
  * matched nodes, could be added here.
  * @typedef {{
  *   canTryAction: boolean,
- *   willImmediatelyDisambiguate: (boolean|undefined),
  *   error: (MacroError|undefined),
+ *   failedContext: (!Context|undefined),
  * }}
  */
 let CheckContextResult;
@@ -62,10 +62,13 @@ let RunMacroResult;
 export class Macro {
   /**
    * @param {MacroName} macroName The name of this macro.
+   * @param {!ContextChecker=} checker
    */
-  constructor(macroName) {
+  constructor(macroName, checker) {
     /** @private {MacroName} */
     this.macroName_ = macroName;
+    /** @private {!ContextChecker|undefined} */
+    this.checker_ = checker;
   }
 
   /**
@@ -89,14 +92,26 @@ export class Macro {
   /**
    * Checks whether a macro can attempt to run in the current context.
    * If this macro has several steps, just checks the first step.
-   * @return {CheckContextResult}
-   * @abstract
+   * @return {!CheckContextResult}
    */
-  checkContext() {}
+  checkContext() {
+    if (!this.checker_) {
+      // Unable to check context.
+      return this.createSuccessCheckContextResult_();
+    }
+
+    const failedContext = this.checker_.getFailedContext();
+    if (!failedContext) {
+      return this.createSuccessCheckContextResult_();
+    }
+
+    return this.createFailureCheckContextResult_(
+        MacroError.BAD_CONTEXT, failedContext);
+  }
 
   /**
    * Attempts to execute a macro in the current context.
-   * @returns {RunMacroResult}
+   * @return {RunMacroResult}
    * @abstract
    */
   run() {}
@@ -104,22 +119,22 @@ export class Macro {
   /**
    * Protected helper method to create a CheckContextResult with an error.
    * @param {MacroError} error
-   * @return {CheckContextResult}
+   * @param {!Context} failedContext
+   * @return {!CheckContextResult}
    * @protected
    */
-  createFailureCheckContextResult_(error) {
-    return {canTryAction: false, error};
+  createFailureCheckContextResult_(error, failedContext) {
+    return {canTryAction: false, error, failedContext};
   }
 
   /**
    * Protected helper method to create a CheckContextResult representing
    * success.
-   * @param {boolean} willImmediatelyDisambiguate
-   * @return {CheckContextResult}
+   * @return {!CheckContextResult}
    * @protected
    */
-  createSuccessCheckContextResult_(willImmediatelyDisambiguate) {
-    return {canTryAction: true, willImmediatelyDisambiguate};
+  createSuccessCheckContextResult_() {
+    return {canTryAction: true};
   }
 
   /**

@@ -94,12 +94,6 @@ cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
   return paint_recorder_.getRecordingCanvas();
 }
 
-cc::PaintCanvas* PaintRenderingContext2D::GetDrawingPaintCanvas() {
-  DCHECK(paint_recorder_.getRecordingCanvas());
-  did_record_draw_commands_in_paint_recorder_ = true;
-  return paint_recorder_.getRecordingCanvas();
-}
-
 void PaintRenderingContext2D::WillDraw(const SkIRect&,
                                        CanvasPerformanceMonitor::DrawType) {}
 

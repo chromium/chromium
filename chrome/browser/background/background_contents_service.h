@@ -30,10 +30,6 @@
 class PrefService;
 class Profile;
 
-namespace base {
-class CommandLine;
-}  // namespace base
-
 namespace content {
 class SessionStorageNamespace;
 }
@@ -43,7 +39,12 @@ class Extension;
 }  // namespace extensions
 
 namespace gfx {
+class Image;
 class Rect;
+}
+
+namespace message_center {
+class NotificationDelegate;
 }
 
 class BackgroundContentsServiceObserver;
@@ -62,8 +63,7 @@ class BackgroundContentsService
       public BackgroundContents::Delegate,
       public KeyedService {
  public:
-  BackgroundContentsService(Profile* profile,
-                            const base::CommandLine* command_line);
+  explicit BackgroundContentsService(Profile* profile);
 
   BackgroundContentsService(const BackgroundContentsService&) = delete;
   BackgroundContentsService& operator=(const BackgroundContentsService&) =
@@ -79,11 +79,6 @@ class BackgroundContentsService
   // Get the crash notification's delegate id for the extension.
   static std::string GetNotificationDelegateIdForExtensionForTesting(
       const std::string& extension_id);
-
-  // Show a popup notification balloon with a crash message for a given app/
-  // extension.
-  static void ShowBalloonForTesting(const extensions::Extension* extension,
-                                    Profile* profile);
 
   // Disable closing the crash notification balloon for tests.
   static void DisableCloseBalloonForTesting(
@@ -144,6 +139,10 @@ class BackgroundContentsService
   // registered in the pref. This is typically used to reload a crashed
   // background page.
   void LoadBackgroundContentsForExtension(const std::string& extension_id);
+
+  // Show a popup notification balloon with a crash message for a given app/
+  // extension.
+  void ShowBalloonForTesting(const extensions::Extension* extension);
 
  private:
   friend class BackgroundContentsServiceTest;
@@ -231,16 +230,28 @@ class BackgroundContentsService
 
   void HandleExtensionCrashed(const extensions::Extension* extension);
 
+  // Display the notification with the given image.
+  void NotificationImageReady(
+      const std::string extension_name,
+      const std::string extension_id,
+      const std::u16string message,
+      scoped_refptr<message_center::NotificationDelegate> delegate,
+      const gfx::Image& icon);
+
+  // Show a popup notification balloon with a crash message for a given app/
+  // extension.
+  void ShowBalloon(const extensions::Extension* extension);
+
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<PrefService, FlakyDanglingUntriaged> prefs_ = nullptr;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {

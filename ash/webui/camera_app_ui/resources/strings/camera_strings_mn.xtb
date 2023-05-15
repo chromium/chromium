@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул таны бичлэг зогссон. Илүү олон видео бичихийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="2036868001356139588">Цаг хэмжигчийн үргэлжлэх хугацаа</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> идэвхтэй байна</translation>
-<translation id="2128052519899549250">Цагийн урсцын видеог бичих</translation>
 <translation id="2134029355740465625">Видеоны тохиргоо</translation>
 <translation id="2144806332417375165">Захиалгат видеоны параметр</translation>
 <translation id="2175927920773552910">QR код</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Документ илэрлээ</translation>
 <translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
-<translation id="4281620174117014503">Дундаж нягтрал</translation>
 <translation id="428234092390943511">Хуудасны өнгөц зураг</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>
 <translation id="4445542136948522167">Зураг авахыг зогсоох</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5320594929574852403">Зүүн тийш зөөж байна</translation>
 <translation id="5374917190292010970">4000 (2160p)</translation>
-<translation id="5577251651370645658">Цагийн урсац</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-р хуудсыг скан хийж байна</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
+<translation id="574392208103952083">Дунд зэрэг</translation>
 <translation id="5746169159649715125">PDF хэлбэрээр хадгалах</translation>
 <translation id="5753488212459587150">Мэргэжилтний горимыг идэвхжүүлэх</translation>
 <translation id="5759254179196327752">Документыг скан хийх</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Документын баруун доод булан</translation>
+<translation id="7684446460490665873">Цагийн урсцын видеог бичих</translation>
 <translation id="7692090236657809299">Чиглүүлэгчийн хазайлт томруулалтыг идэвхжүүлэх</translation>
 <translation id="7726641833034062494">Энгийн видео бичих</translation>
 <translation id="7748344063862150053">Документын баруун дээд булан</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">Документын бүх ирмэгийг хүрээнд байрлуулна уу</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Зургийг боловсруулж байна...</translation>
+<translation id="9161584225258678723">Цагийн урсац</translation>
 <translation id="922762992951083513">Тусгал үүсгэхийг асаах</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 </translationbundle>

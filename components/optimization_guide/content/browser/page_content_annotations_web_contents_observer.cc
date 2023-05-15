@@ -145,23 +145,19 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
                        proto::SALIENT_IMAGE));
   }
 
-  bool is_google_search_url =
-      google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
-
-  // Persist search metadata, if applicable if it's a Google search URL or if
-  // it's a search-y URL as determined by the TemplateURLService if the flag is
-  // enabled.
-  if (template_url_service_ &&
-      (is_google_search_url ||
-       optimization_guide::features::
-           ShouldPersistSearchMetadataForNonGoogleSearches())) {
-    base::UmaHistogramBoolean(
-        "OptimizationGuide.PageContentAnnotations."
-        "TemplateURLServiceLoadedAtNavigationFinish",
-        template_url_service_->loaded());
-
+  // Persist search metadata, if applicable if it's a search-y URL as determined
+  // by the TemplateURLService.
+  if (template_url_service_) {
     auto search_metadata = template_url_service_->ExtractSearchMetadata(
         navigation_handle->GetURL());
+
+    if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
+      base::UmaHistogramBoolean(
+          "OptimizationGuide.PageContentAnnotations."
+          "GoogleSearchMetadataExtracted",
+          search_metadata.has_value());
+    }
+
     if (search_metadata) {
       if (page_data) {
         page_data->set_annotation_was_requested();

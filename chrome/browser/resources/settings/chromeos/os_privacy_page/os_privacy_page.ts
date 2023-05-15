@@ -12,20 +12,21 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import './metrics_consent_toggle_button.js';
 import './peripheral_data_access_protection_dialog.js';
 
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -36,10 +37,17 @@ import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} 
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_subpage.js';
 
+export interface OsSettingsPrivacyPageElement {
+  $: {
+    verifiedAccessToggle: SettingsToggleButtonElement,
+  };
+}
+
 const OsSettingsPrivacyPageElementBase = PrefsMixin(
     LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement))));
 
-class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
+export class OsSettingsPrivacyPageElement extends
+    OsSettingsPrivacyPageElementBase {
   static get is() {
     return 'os-settings-privacy-page' as const;
   }
@@ -410,9 +418,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     // previous element.
     if (this.dataAccessShiftTabPressed_) {
       this.dataAccessShiftTabPressed_ = false;
-      this.shadowRoot!
-          .querySelector<SettingsToggleButtonElement>(
-              '#enableVerifiedAccess')!.focus();
+      this.$.verifiedAccessToggle.focus();
       return;
     }
 
@@ -470,6 +476,11 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
             });
           });
     }
+  }
+
+  private onVerifiedAccessChange_(): void {
+    const enabled = this.$.verifiedAccessToggle.checked;
+    recordSettingChange(Setting.kVerifiedAccess, {boolValue: enabled});
   }
 
   /**

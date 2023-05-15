@@ -56,16 +56,28 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/commerce/PriceNotificationPreferenceFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/commerce/PriceUtilsTest.java",
   ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/payments/content/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 

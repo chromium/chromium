@@ -70,6 +70,20 @@ void CSSAnimation::setRangeEnd(const RangeBoundary* range_end,
   ignore_css_range_end_ = true;
 }
 
+void CSSAnimation::SetRange(const absl::optional<TimelineOffset>& range_start,
+                            const absl::optional<TimelineOffset>& range_end) {
+  if (GetIgnoreCSSRangeStart() && GetIgnoreCSSRangeEnd()) {
+    return;
+  }
+
+  const absl::optional<TimelineOffset>& adjusted_range_start =
+      GetIgnoreCSSRangeStart() ? GetRangeStartInternal() : range_start;
+  const absl::optional<TimelineOffset>& adjusted_range_end =
+      GetIgnoreCSSRangeEnd() ? GetRangeEndInternal() : range_end;
+
+  Animation::SetRange(adjusted_range_start, adjusted_range_end);
+}
+
 void CSSAnimation::setStartTime(const V8CSSNumberish* start_time,
                                 ExceptionState& exception_state) {
   PlayStateTransitionScope scope(*this);
@@ -88,26 +102,6 @@ void CSSAnimation::FlushStyles() const {
   // disassociated from its owning element.
   if (GetDocument()) {
     GetDocument()->UpdateStyleAndLayoutTree();
-  }
-
-  // Force resolution of source and offsets.
-  if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline())) {
-    // A full layout update is required to ensure correctness.
-    // UpdateStyleAndLayoutTree does not perform a full update of the layout.
-    // The size of the scroll-container and subject size affect timeline-offsets
-    // in keyframes. Any change to the scroll-container size or insets also
-    // affects the intrinsic iteration duration, and should be reflected in a
-    // call to getComputedTiming for the animation's effect. Though currentTime
-    // for the timeline is fixed until the next frame, calls to
-    // getCurrentTime(range) should likely reflect the affect of any layout
-    // changes.
-    GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-    if (effect()) {
-      // Any change to the scroll bounds or target size can affect the
-      // intrinsic iteration duration.
-      effect()->InvalidateNormalizedTiming();
-    }
-    scroll_timeline->FlushStyleUpdate();
   }
 }
 

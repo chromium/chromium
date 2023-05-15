@@ -51,13 +51,17 @@ class NodeConnector : public msg::NodeMessageListener {
   // non-broker node referral from `referrer`, referring a new non-broker node
   // on the remote end of `transport_to_referred_node`. This performs a
   // handshake with the referred node before introducing it and the referrer to
-  // each other.
+  // each other. `link_memory` and `client_link_memory` must be valid and will
+  // be passed respectively to the referred node (for its link to the broker)
+  // and the referring node (for its link to the referred node).
   static bool HandleNonBrokerReferral(
       Ref<Node> node,
       uint64_t referral_id,
       uint32_t num_initial_portals,
       Ref<NodeLink> referrer,
-      Ref<DriverTransport> transport_to_referred_node);
+      Ref<DriverTransport> transport_to_referred_node,
+      DriverMemoryWithMapping link_memory,
+      DriverMemoryWithMapping client_link_memory);
 
   virtual bool Connect() = 0;
 

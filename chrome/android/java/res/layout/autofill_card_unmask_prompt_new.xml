@@ -85,17 +85,16 @@ found in the LICENSE file.
                     android:gravity="start" />
 
                 <include
-                    android:id="@+id/card_details_container"
-                    layout="@layout/autofill_card_unmask_prompt_card_details"
+                    layout="@layout/autofill_cc_details_new"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginHorizontal="20dp" />
+                    android:layout_marginTop="13dp"
+                    android:layout_marginHorizontal="24dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="14dp"
                     android:layout_marginStart="4dp"
                     android:orientation="horizontal">
 

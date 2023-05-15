@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -76,8 +78,7 @@
 
 - (void)tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:
     (TabsSettingsTableViewController*)tabsSettingsTableViewController {
-  // TODO(crbug.com/1418021): Add metrics when the user go to inactive tabs
-  // settings.
+  base::RecordAction(base::UserMetricsAction("Settings.Tabs.InactiveTabs"));
   [self.handler showInactiveTabsSettings];
 }
 

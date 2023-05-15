@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -108,19 +109,19 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
   void OnGetMyDevicesFailure(NetworkRequestError error);
 
   // Used to determine the time.
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // Creates CryptAuthClient instances for each sync attempt.
-  CryptAuthClientFactory* cryptauth_client_factory_;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> cryptauth_client_factory_;
 
   // Notifies when GCM push messages trigger device sync. Not owned and must
   // outlive this instance.
-  CryptAuthGCMManager* gcm_manager_;
+  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
 
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. |pref_service_| must outlive the lifetime of this
   // instance.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // All devices currently synced from CryptAuth.
   std::vector<cryptauth::ExternalDeviceInfo> synced_devices_;

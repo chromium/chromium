@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
-#include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/selection_state.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -45,6 +45,8 @@ class CORE_EXPORT NGHighlightPainter {
     STACK_ALLOCATED();
 
    public:
+    // ComputeSelectionStyle must be called to finish initializing. Until then,
+    // only Status() may be called.
     explicit SelectionPaintState(
         const NGInlineCursor& containing_block,
         const PhysicalOffset& box_offset,
@@ -193,6 +195,14 @@ class CORE_EXPORT NGHighlightPainter {
                               DOMNodeId,
                               bool paint_marker_backgrounds,
                               absl::optional<AffineTransform> rotation);
+
+  // Return the text content offset for a particular fragment offset.
+  static unsigned GetTextContentOffset(const Text& text, unsigned offset);
+
+  // Query various style pieces for the given marker type
+  static PseudoId PseudoFor(DocumentMarker::MarkerType type);
+  static TextDecorationLine LineFor(DocumentMarker::MarkerType type);
+  static Color ColorFor(DocumentMarker::MarkerType type);
 
   SelectionPaintState* Selection() { return selection_; }
 

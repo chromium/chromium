@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
@@ -74,14 +75,15 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
 
   SkPath GetArtworkClipPath();
 
-  UnifiedMediaControlsController* const controller_ = nullptr;
+  const raw_ptr<UnifiedMediaControlsController, ExperimentalAsh> controller_ =
+      nullptr;
 
-  views::ImageView* artwork_view_ = nullptr;
-  views::ImageView* drop_down_icon_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::Label* artist_label_ = nullptr;
-  MediaActionButton* play_pause_button_ = nullptr;
-  views::View* button_row_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> artwork_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> drop_down_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> artist_label_ = nullptr;
+  raw_ptr<MediaActionButton, ExperimentalAsh> play_pause_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> button_row_ = nullptr;
 
   bool is_in_empty_state_ = false;
 };

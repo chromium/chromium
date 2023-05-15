@@ -22,6 +22,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -74,9 +75,10 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
 
 // Test that product info is processed correctly.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
-  // Ensure a feature that uses product info is enabled.
+  // Ensure a feature that uses product info is enabled. This doesn't
+  // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -117,7 +119,9 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
 // if it is disabled.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
   // Ensure a feature that uses product info is disabled.
-  test_features_.InitAndDisableFeature(kCommerceProductInfoApiEnabled);
+  test_features_.InitWithFeatures({},
+                                  {kShoppingList, kShoppingListRegionLaunched,
+                                   ntp_features::kNtpChromeCartModule});
 
   base::RunLoop run_loop;
   shopping_service_->GetProductInfoForUrl(
@@ -136,7 +140,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -178,8 +182,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
 // Test that no object is provided for a negative optimization guide response.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
-       kCommerceAllowServerImages},
+      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
@@ -202,8 +205,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 // Test that the product info cache only keeps track of live tabs.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
-       kCommerceAllowServerImages},
+      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
   std::string url = "http://example.com/foo";
@@ -252,8 +254,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
-       kCommerceAllowServerImages},
+      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
@@ -302,18 +303,21 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));
 }
 
-// Test that product info is inserted into the cache without a client
-// necessarily querying for it.
-TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
+// Test the full lifecycle of product info assuming the page loads after
+// optimization guide has provided a response.
+TEST_F(ShoppingServiceTest,
+       TestProductInfoCacheFullLifecycleWithFallback_PageNotLoaded) {
   test_features_.InitWithFeatures(
-      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
-       kCommerceAllowServerImages},
+      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
   std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
   base::Value js_result(json);
   web.SetMockJavaScriptResult(&js_result);
+
+  // Assume the page hasn't finished loading.
+  web.SetIsFirstLoadForNavigationFinished(false);
 
   // Intentionally exclude the image URL to ensure the javascript fallback
   // works.
@@ -356,14 +360,84 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
                              &run_loop));
   run_loop.Run();
 
-  // Use a RunLoop here as well since this functionality depends on a JSON
-  // sanitizer running on a different thread internally.
+  // The page will have finished its initial load prior to DidFinishLoad.
+  web.SetIsFirstLoadForNavigationFinished(true);
   DidFinishLoad(&web);
+  // The js should only be able to run now after all loading has completed (for
+  // at least the timeout duration).
+  SimulateProductInfoJsTaskFinished();
 
   // At this point we should have the image in the cache.
   cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
+
+  // Close the "tab" and make sure the cache is empty.
+  WebWrapperDestroyed(&web);
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));
+}
+
+// Test the full lifecycle of product info assuming the page has loaded prior
+// to optimization guide providing a response. This will happen for single-page
+// webapps.
+TEST_F(ShoppingServiceTest,
+       TestProductInfoCacheFullLifecycleWithFallback_PageLoaded) {
+  test_features_.InitWithFeatures(
+      {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
+  base::Value js_result(json);
+  web.SetMockJavaScriptResult(&js_result);
+
+  // Assume the page has already loaded for the navigation. This is usually the
+  // case for single-page webapps.
+  web.SetIsFirstLoadForNavigationFinished(true);
+
+  // Intentionally exclude the image URL to ensure the javascript fallback
+  // works.
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, "", kOfferId, kClusterId, kCountryCode);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  DidNavigatePrimaryMainFrame(&web);
+  // If the page was already loaded, assume the js has time to run now.
+  SimulateProductInfoJsTaskFinished();
+
+  // By this point there should be something in the cache.
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));
+
+  // We should be able to access the cached data.
+  absl::optional<ProductInfo> cached_info =
+      shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
+  ASSERT_EQ(kTitle, cached_info->title);
+  // Since the fallback will run immediately, we should have a populated image
+  // URL.
+  ASSERT_EQ(kImageUrl, cached_info->image_url);
+  ASSERT_EQ(kOfferId, cached_info->offer_id);
+  ASSERT_EQ(kClusterId, cached_info->product_cluster_id);
+  ASSERT_EQ(kCountryCode, cached_info->country_code);
+
+  // The main API should still work.
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                const absl::optional<ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_TRUE(info.has_value());
+
+                               ASSERT_EQ(kTitle, info->title);
+                               ASSERT_EQ(kImageUrl, info->image_url);
+                               ASSERT_EQ(kOfferId, info->offer_id);
+                               ASSERT_EQ(kClusterId, info->product_cluster_id);
+                               ASSERT_EQ(kCountryCode, info->country_code);
+                               run_loop->Quit();
+                             },
+                             &run_loop));
+  run_loop.Run();
 
   // Close the "tab" and make sure the cache is empty.
   WebWrapperDestroyed(&web);

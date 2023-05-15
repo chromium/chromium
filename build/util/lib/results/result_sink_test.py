@@ -104,6 +104,47 @@ class ClientTest(unittest.TestCase):
         'omg test failure')
 
   @mock.patch('requests.Session.post')
+  def testPostWithTestLogAndHTMLSummary(self, mock_post):
+    # This is under max length, but will be over when test log
+    # artifact is included.
+    test_artifact = '<text-artifact artifact-id="%s" />' % 'b' * (
+        result_sink.HTML_SUMMARY_MAX - 35)
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     '//some/test.cc',
+                     html_artifact=test_artifact)
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
+    self.assertTrue(
+        len(data['testResults'][0]['summaryHtml']) <
+        result_sink.HTML_SUMMARY_MAX)
+    self.assertTrue(result_sink._HTML_SUMMARY_ARTIFACT in data['testResults'][0]
+                    ['summaryHtml'])
+    self.assertTrue(
+        result_sink._TEST_LOG_ARTIFACT in data['testResults'][0]['summaryHtml'])
+
+  @mock.patch('requests.Session.post')
+  def testPostWithTooLongSummary(self, mock_post):
+    # This will be over max length.
+    test_artifact = ('<text-artifact artifact-id="%s" />' % 'b' *
+                     result_sink.HTML_SUMMARY_MAX)
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     '//some/test.cc',
+                     html_artifact=test_artifact)
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
+    self.assertTrue(
+        len(data['testResults'][0]['summaryHtml']) <
+        result_sink.HTML_SUMMARY_MAX)
+    self.assertTrue(result_sink._HTML_SUMMARY_ARTIFACT in data['testResults'][0]
+                    ['summaryHtml'])
+
+  @mock.patch('requests.Session.post')
   def testPostWithTestFile(self, mock_post):
     self.client.Post('some-test', result_types.PASS, 0, 'some-test-log',
                      '//some/test.cc')

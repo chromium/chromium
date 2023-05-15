@@ -61,7 +61,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
                               int32_t bitstream_buffer_id,
                               size_t payload_size,
                               bool key_frame);
-  void OnNotifyError(media::VideoEncodeAccelerator::Error error);
+  void OnNotifyErrorStatus(const media::EncoderStatus& status);
 
   std::unique_ptr<EncoderImpl> encoder_impl_;
 

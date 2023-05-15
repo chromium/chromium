@@ -39,19 +39,21 @@ window.navigator.presentation.defaultRequest.onconnectionavailable = function(e)
  * Waits until one sink is available.
  */
 function waitUntilDeviceAvailable() {
-  startSessionRequest.getAvailability(presentationUrl).then(
+  return startSessionRequest.getAvailability(presentationUrl).then(
   function(availability) {
     console.log('availability ' + availability.value + '\n');
     if (availability.value) {
-      sendResult(true, '');
+      return stringifyAndSaveResult(true, '');
     } else {
-      availability.onchange = function(newAvailability) {
-        if (newAvailability)
-          sendResult(true, '');
-      }
+      return new Promise(resolve => {
+        availability.onchange = function(newAvailability) {
+          if (newAvailability)
+            resolve();
+        }
+      }).then(() => stringifyAndSaveResult(true, ''));
     }
   }).catch(function(e) {
-    sendResult(false, 'got error: ' + e);
+    return stringifyAndSaveResult(false, 'got error: ' + e);
   });
 }
 
@@ -61,7 +63,7 @@ function waitUntilDeviceAvailable() {
 function startSession() {
   startSessionPromise = startSessionRequest.start();
   console.log('start session');
-  sendResult(true, '');
+  return stringifyAndSaveResult(true, '');
 }
 
 /**
@@ -69,20 +71,22 @@ function startSession() {
  */
 function checkSession() {
   if (!startSessionPromise) {
-    sendResult(false, 'Did not attempt to start session');
+    return stringifyAndSaveResult(false, 'Did not attempt to start session');
   } else {
-    startSessionPromise.then(function(session) {
+    return startSessionPromise.then(function(session) {
       if(!session) {
-        sendResult(false, 'Failed to start session: connection is null');
+        return stringifyAndSaveResult(false,
+          'Failed to start session: connection is null');
       } else {
         // set the new session
         startedConnection = session;
-        waitForConnectedStateAndSendResult(startedConnection);
+        return waitForConnectedStateAndSendResult(startedConnection);
       }
     }).catch(function(e) {
       // terminate old session if exists
       startedConnection && startedConnection.terminate();
-      sendResult(false, 'Failed to start session: encountered exception ' + e);
+      return stringifyAndSaveResult(false,
+        'Failed to start session: encountered exception ' + e);
     })
   }
 }
@@ -95,13 +99,15 @@ function checkSession() {
 function waitForConnectedStateAndSendResult(connection) {
   console.log(`connection state is "${connection.state}"`);
   if (connection.state == 'connected') {
-    sendResult(true, '');
+    return stringifyAndSaveResult(true, '');
   } else if (connection.state == 'connecting') {
-    connection.onconnect = () => {
-      sendResult(true, '');
-    };
+    return new Promise(resolve => {
+      connection.onconnect = () => {
+        resolve();
+      };
+    }).then(() => stringifyAndSaveResult(true, ''));
   } else {
-    sendResult(false,
+    return stringifyAndSaveResult(false,
       `Expect connection state to be "connecting" or "connected", actual: \
       "${connection.state}"`);
   }
@@ -114,19 +120,20 @@ function waitForConnectedStateAndSendResult(connection) {
  */
 function checkStartFailed(expectedErrorName, expectedErrorMessageSubstring) {
   if (!startSessionPromise) {
-    sendResult(false, 'Did not attempt to start session');
+    return stringifyAndSaveResult(false, 'Did not attempt to start session');
   } else {
-    startSessionPromise.then(function(session) {
-      sendResult(false, 'start() unexpectedly succeeded.');
+    return startSessionPromise.then(function(session) {
+      return stringifyAndSaveResult(false, 'start() unexpectedly succeeded.');
     }).catch(function(e) {
       if (expectedErrorName != e.name) {
-        sendResult(false, 'Got unexpected error. ' + e.name + ': ' + e.message);
+        return stringifyAndSaveResult(false,
+          'Got unexpected error. ' + e.name + ': ' + e.message);
       } else if (e.message.indexOf(expectedErrorMessageSubstring) == -1) {
-        sendResult(false,
+        return stringifyAndSaveResult(false,
             'Error message is not correct, it should contain "' +
             expectedErrorMessageSubstring + '"');
       } else {
-        sendResult(true, '');
+        return stringifyAndSaveResult(true, '');
       }
     })
   }
@@ -137,12 +144,14 @@ function checkStartFailed(expectedErrorName, expectedErrorMessageSubstring) {
  */
 function terminateSessionAndWaitForStateChange() {
   if (startedConnection) {
-    startedConnection.onterminate = function() {
-      sendResult(true, '');
-    };
-    startedConnection.terminate();
+    return new Promise(resolve => {
+      startedConnection.onterminate = function() {
+        resolve();
+      };
+      startedConnection.terminate();
+    }).then(() => stringifyAndSaveResult(true, ''));
   } else {
-    sendResult(false, 'startedConnection does not exist.');
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
 }
 
@@ -152,15 +161,17 @@ function terminateSessionAndWaitForStateChange() {
 function closeConnectionAndWaitForStateChange() {
   if (startedConnection) {
     if (startedConnection.state == 'closed') {
-      sendResult(false, 'startedConnection is unexpectedly closed.');
-      return;
+      return stringifyAndSaveResult(false,
+        'startedConnection is unexpectedly closed.');
     }
-    startedConnection.onclose = function() {
-      sendResult(true, '');
-    };
-    startedConnection.close();
+    return new Promise(resolve => {
+      startedConnection.onclose = function() {
+        resolve();
+      };
+      startedConnection.close();
+    }).then(() => stringifyAndSaveResult(true, ''));
   } else {
-    sendResult(false, 'startedConnection does not exist.');
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
 }
 
@@ -170,25 +181,26 @@ function closeConnectionAndWaitForStateChange() {
  */
 function checkSendMessageFailed(initialState) {
   if (!startedConnection) {
-    sendResult(false, 'startedConnection does not exist.');
-    return;
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
   if (startedConnection.state != initialState) {
-    sendResult(false, 'startedConnection.state is "' + startedConnection.state +
+    return stringifyAndSaveResult(false,
+      'startedConnection.state is "' + startedConnection.state +
                '", but we expected "' + initialState + '".');
-    return;
   }
 
   try {
     startedConnection.send('test message');
   } catch (e) {
     if (e.name == 'InvalidStateError') {
-      sendResult(true, '');
+      return stringifyAndSaveResult(true, '');
     } else {
-      sendResult(false, 'Got an unexpected error: ' + e.name);
+      return stringifyAndSaveResult(false,
+        'Got an unexpected error: ' + e.name);
     }
   }
-  sendResult(false, 'Expected InvalidStateError but it was never thrown.');
+  return stringifyAndSaveResult(false,
+    'Expected InvalidStateError but it was never thrown.');
 }
 
 /**
@@ -196,18 +208,19 @@ function checkSendMessageFailed(initialState) {
  */
 function sendMessageAndExpectConnectionCloseOnError() {
   if (!startedConnection) {
-    sendResult(false, 'startedConnection does not exist.');
-    return;
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
-  startedConnection.onclose = function(event) {
-    var reason = event.reason;
-    if (reason != 'error') {
-      sendResult(false, 'Unexpected close reason: ' + reason);
-      return;
-    }
-    sendResult(true, '');
-  };
-  startedConnection.send('foo');
+  return new Promise(resolve => {
+    startedConnection.onclose = function(event) {
+      var reason = event.reason;
+      if (reason != 'error') {
+        return resolve(stringifyAndSaveResult(false,
+          'Unexpected close reason: ' + reason));
+      }
+      return resolve(stringifyAndSaveResult(true, ''));
+    };
+    startedConnection.send('foo');
+  });
 }
 
 /**
@@ -216,26 +229,26 @@ function sendMessageAndExpectConnectionCloseOnError() {
  */
 function sendMessageAndExpectResponse(message) {
   if (!startedConnection) {
-    sendResult(false, 'startedConnection does not exist.');
-    return;
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
   if (startedConnection.state != 'connected') {
-    sendResult(false,
+    return stringifyAndSaveResult(false,
         `Expected the connection state to be connected but it was \
          ${startedConnection.state}`);
-    return;
   }
-  startedConnection.onmessage = function(receivedMessage) {
-    var expectedResponse = 'Pong: ' + message;
-    var actualResponse = receivedMessage.data;
-    if (actualResponse != expectedResponse) {
-      sendResult(false, 'Expected message: ' + expectedResponse +
-          ', but got: ' + actualResponse);
-      return;
-    }
-    sendResult(true, '');
-  };
-  startedConnection.send(message);
+  return new Promise(resolve => {
+    startedConnection.onmessage = function(receivedMessage) {
+      var expectedResponse = 'Pong: ' + message;
+      var actualResponse = receivedMessage.data;
+      if (actualResponse != expectedResponse) {
+        return resolve(stringifyAndSaveResult(false,
+          'Expected message: ' + expectedResponse +
+            ', but got: ' + actualResponse));
+      }
+      return resolve(stringifyAndSaveResult(true, ''));
+    };
+    startedConnection.send(message);
+  });
 }
 
 /**
@@ -244,24 +257,24 @@ function sendMessageAndExpectResponse(message) {
  */
 function initiateCloseFromReceiverPage() {
   if (!startedConnection) {
-    sendResult(false, 'startedConnection does not exist.');
-    return;
+    return stringifyAndSaveResult(false, 'startedConnection does not exist.');
   }
   if (startedConnection.state != 'connected') {
-    sendResult(false,
+    return stringifyAndSaveResult(false,
         `Expected the connection state to be connected but it was \
          ${startedConnection.state}`);
-    return;
   }
-  startedConnection.onclose = (event) => {
-    const reason = event.reason;
-    if (reason != 'closed') {
-      sendResult(false, 'Unexpected close reason: ' + reason);
-      return;
-    }
-    sendResult(true, '');
-  };
-  startedConnection.send('close');
+  return new Promise(resolve => {
+    startedConnection.onclose = (event) => {
+      const reason = event.reason;
+      if (reason != 'closed') {
+        return resolve(stringifyAndSaveResult(false,
+          'Unexpected close reason: ' + reason));
+      }
+      return resolve(stringifyAndSaveResult(true, ''));
+    };
+    startedConnection.send('close');
+  });
 }
 
 /**
@@ -270,15 +283,17 @@ function initiateCloseFromReceiverPage() {
  */
 function reconnectSession(sessionId) {
   var reconnectSessionRequest = new PresentationRequest(presentationUrl);
-  reconnectSessionRequest.reconnect(sessionId).then(function(session) {
+  return reconnectSessionRequest.reconnect(sessionId).then(function(session) {
     if (!session) {
-      sendResult(false, 'reconnectSession returned null session');
+      return stringifyAndSaveResult(false,
+        'reconnectSession returned null session');
     } else {
       reconnectedSession = session;
-      waitForConnectedStateAndSendResult(reconnectedSession);
+      return waitForConnectedStateAndSendResult(reconnectedSession);
     }
   }).catch(function(error) {
-    sendResult(false, 'reconnectSession failed: ' + error.message);
+    return stringifyAndSaveResult(false,
+      'reconnectSession failed: ' + error.message);
   });
 }
 
@@ -289,13 +304,13 @@ function reconnectSession(sessionId) {
  */
 function reconnectSessionAndExpectFailure(sessionId, expectedErrorMessage) {
   var reconnectSessionRequest = new PresentationRequest(presentationUrl);
-  reconnectSessionRequest.reconnect(sessionId).then(function(session) {
-    sendResult(false, 'reconnect() unexpectedly succeeded.');
+  return reconnectSessionRequest.reconnect(sessionId).then(function(session) {
+    return stringifyAndSaveResult(false, 'reconnect() unexpectedly succeeded.');
   }).catch(function(error) {
     if (error.message.indexOf(expectedErrorMessage) > -1) {
-      sendResult(true, '');
+      return stringifyAndSaveResult(true, '');
     } else {
-      sendResult(false,
+      return stringifyAndSaveResult(false,
         'Error message mismatch. Expected: ' + expectedErrorMessage +
         ', actual: ' + error.message);
     }
@@ -308,16 +323,9 @@ function reconnectSessionAndExpectFailure(sessionId, expectedErrorMessage) {
  * @param errorMessage empty string if test passes, error message if test
  *                      fails.
  */
-function sendResult(passed, errorMessage) {
-  if (useDomAutomationController) {
-    window.domAutomationController.send(JSON.stringify({
-      passed: passed,
-      errorMessage: errorMessage
-    }));
-  } else {
-    lastExecutionResult = JSON.stringify({
-      passed: passed,
-      errorMessage: errorMessage
-    });
-  }
+function stringifyAndSaveResult(passed, errorMessage) {
+  return lastExecutionResult = JSON.stringify({
+    passed,
+    errorMessage,
+  });
 }

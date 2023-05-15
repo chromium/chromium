@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -28,6 +29,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/workspace/workspace_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -56,7 +58,6 @@ class DragWindowFromShelfController;
 class HomeToOverviewNudgeController;
 class InAppToHomeNudgeController;
 class PanelLayoutManagerTest;
-class ScopedDragDropObserver;
 class Shelf;
 class ShelfLayoutManagerObserver;
 class ShelfLayoutManagerTestBase;
@@ -149,8 +150,19 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // Sets the bounds of the shelf and status widgets.
   void LayoutShelf(bool animate = false);
 
-  // Updates the visibility state.
-  void UpdateVisibilityState();
+  // Sets display work area insets for the current shelf state, and target
+  // bounds.
+  void UpdateShelfWorkAreaInsets();
+
+  // Updates display work area to account for the current shelf state and
+  // bounds.
+  void UpdateDisplayWorkArea();
+
+  // Updates the visibility state. Relayouts the shelf if the visibility state
+  // changes, or if `force_layout` is set.
+  // `force_layout` should be used when state is set in response to events that
+  // both affect the shelf bounds/layout and may change shelf visibility.
+  void UpdateVisibilityState(bool force_layout);
 
   // Shows the shelf and hotseat for the back gesture.
   void UpdateVisibilityStateForBackGesture();
@@ -254,8 +266,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   void OnShelfAutoHideBehaviorChanged() override;
 
   // ShellObserver:
-  void OnShelfAlignmentChanged(aura::Window* root_window,
-                               ShelfAlignment old_alignment) override;
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
   void OnShellDestroying() override;
@@ -304,7 +314,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   void OnDeskSwitchAnimationFinished() override;
 
   ShelfVisibilityState visibility_state() const {
-    return state_.visibility_state;
+    return state_.visibility_state.value_or(SHELF_VISIBLE);
   }
 
   bool is_active_session_state() const { return state_.IsActiveSessionState(); }
@@ -352,6 +362,10 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   HotseatState CalculateHotseatState(ShelfVisibilityState visibility_state,
                                      ShelfAutoHideState auto_hide_state) const;
 
+  // Called when the shelf alignment changes - updates shelf visibility state
+  // and bounds to reflect the new shelf alignment.
+  void HandleShelfAlignmentChange();
+
   // Called when the visibility for a tray bubble in the shelf's status area
   // changes.
   void OnShelfTrayBubbleVisibilityChanged(bool bubble_shown);
@@ -360,6 +374,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
       const gfx::Rect& shelf_bounds_for_workarea_calculation,
       const gfx::Insets& shelf_insets,
       const gfx::Insets& in_session_shelf_insets);
+
+  // Called from the scrollable shelf container when it updates its bounds.
+  void HandleScrollableShelfContainerBoundsChange() const;
 
  private:
   void UpdateWorkAreaInsetsAndNotifyObserversInternal(
@@ -405,7 +422,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     // appropriate.
     bool Equals(const State& other) const;
 
-    ShelfVisibilityState visibility_state = SHELF_VISIBLE;
+    absl::optional<ShelfVisibilityState> visibility_state;
     ShelfAutoHideState auto_hide_state = SHELF_AUTO_HIDE_HIDDEN;
     WorkspaceWindowState window_state = WorkspaceWindowState::kDefault;
 
@@ -432,7 +449,11 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   void ResumeWorkAreaUpdate();
 
   // Sets the visibility of the shelf to |state|.
-  void SetState(ShelfVisibilityState visibility_state);
+  // Relayouts the shelf if the shelf state (visibility, or autohide state)
+  // changes, or if `force_layout` is set.
+  // `force_layout` should be used when state is set in response to events that
+  // both affect the shelf bounds/layout and may change shelf visibility.
+  void SetState(ShelfVisibilityState visibility_state, bool force_layout);
 
   // Returns shelf visibility state based on current value of auto-hide
   // behavior setting.
@@ -450,22 +471,20 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   bool IsDraggingWindowFromTopOrCaptionArea() const;
 
   // Calculates shelf target bounds assuming visibility of
-  // |state.visibilty_state| and |hotseat_target_state|. Returns the desired
-  // shelf insets.
-  gfx::Insets UpdateTargetBoundsAndCalculateShelfInsets(
-      const State& state,
-      HotseatState hotseat_target_state);
+  // `state.visibilty_state` and `hotseat_target_state`.
+  void UpdateTargetBounds(const State& state,
+                          HotseatState hotseat_target_state);
 
-  // Calculates the target bounds using |state_| and updates the
-  // |user_work_area_bounds_|.
-  void CalculateTargetBoundsAndUpdateWorkArea();
+  // Calculates the target bounds using `state_`.
+  void CalculateTargetBounds();
 
   // Updates the target bounds if a gesture-drag is in progress. This is only
   // used by |CalculateTargetBounds()|.
   void UpdateTargetBoundsForGesture(HotseatState target_hotseat_state);
 
   // Updates the auto-hide state for drag-drop actions.
-  void UpdateAutoHideForDragDrop(const ui::DropTargetEvent* event);
+  void UpdateAutoHideForDragDrop(ScopedDragDropObserver::EventType event_type,
+                                 const ui::DropTargetEvent* event);
 
   // Updates the auto-hide state immediately.
   void UpdateAutoHideStateNow();
@@ -599,10 +618,12 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   ShelfLayoutPhase phase_ = ShelfLayoutPhase::kAtRest;
 
+  bool updating_work_area_ = false;
+
   float target_opacity_ = 0.0f;
 
-  ShelfWidget* const shelf_widget_;
-  Shelf* const shelf_;
+  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Count of pending visibility update suspensions. Skip updating the shelf
   // visibility state if it is greater than 0.
@@ -742,6 +763,12 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // Tracks whether the shelf and hotseat have been asked to be shown and
   // extended by the back gesture.
   bool state_forced_by_back_gesture_ = false;
+
+  // Indicates whether shelf layout during shelf state update (in `SetState()`)
+  // should be animated. If the shelf bounds and layout should be updated
+  // without animation, `state_change_animation_disabled_` should be set before
+  // calling `SetState()` or `UpdateVisibility()`.
+  bool state_change_animation_disabled_ = false;
 
   // Callback to update the shelf's state when the visibility of system tray
   // changes.

@@ -287,13 +287,12 @@ static LayoutRect GetVisibleRect(ScrollableArea* scroller) {
       ScrollerLayoutBox(scroller)->OverflowClipRect(LayoutPoint());
 
   const ComputedStyle* style = ScrollerLayoutBox(scroller)->Style();
-  LayoutRectOutsets scroll_padding(
+  visible_rect.ContractEdges(
       MinimumValueForLength(style->ScrollPaddingTop(), visible_rect.Height()),
       MinimumValueForLength(style->ScrollPaddingRight(), visible_rect.Width()),
       MinimumValueForLength(style->ScrollPaddingBottom(),
                             visible_rect.Height()),
       MinimumValueForLength(style->ScrollPaddingLeft(), visible_rect.Width()));
-  visible_rect.Contract(scroll_padding);
   return visible_rect;
 }
 

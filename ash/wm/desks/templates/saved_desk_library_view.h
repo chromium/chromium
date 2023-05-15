@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -48,7 +49,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
 
   // Retrieves the item view for a given saved desk, or nullptr.
-  SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
+  SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
 
   // Updates existing saved desks and adds new saved desks to the grid. Also
   // sorts entries in alphabetical order. If `order_first_uuid` is valid, the
@@ -56,19 +57,19 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
   void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::GUID& order_first_uuid,
+                          const base::Uuid& order_first_uuid,
                           bool animate);
 
   // Deletes all entries identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
-  void DeleteEntries(const std::vector<base::GUID>& uuids,
+  void DeleteEntries(const std::vector<base::Uuid>& uuids,
                      bool delete_animation);
 
   // This performs the launch animation for Save & Recall. The `DeskItemView`
   // identified by `uuid` is animated up into the position of the desk preview
   // housed in `mini_view`. It then crossfades into the desk preview. The
   // `DeskItemView` is also removed from the grid.
-  void AnimateDeskLaunch(const base::GUID& uuid, DeskMiniView* mini_view);
+  void AnimateDeskLaunch(const base::Uuid& uuid, DeskMiniView* mini_view);
 
  private:
   friend class SavedDeskLibraryEventHandler;
@@ -88,9 +89,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // This returns the screen space bounds of the desk preview that `mini_view`
   // holds. It is intended to be called when launching a Save & Recall desk so
-  // that the `SavedDeskItemView` can be animated up to the `DesksBarView`. It
-  // takes animation into consideration and will return the position where the
-  // desk preview will end up, rather than where it currently is.
+  // that the `SavedDeskItemView` can be animated up to the desk bar view.
+  // It takes animation into consideration and will return the position where
+  // the desk preview will end up, rather than where it currently is.
   absl::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
       const DeskMiniView* mini_view);
 
@@ -104,12 +105,14 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Pointers to the grids with saved desks of specific types. These will be set
   // depending on which features are enabled.
-  SavedDeskGridView* desk_template_grid_view_ = nullptr;
-  SavedDeskGridView* save_and_recall_grid_view_ = nullptr;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> desk_template_grid_view_ =
+      nullptr;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> save_and_recall_grid_view_ =
+      nullptr;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   // Adds a fade in/out gradient to the top/bottom of `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
@@ -122,7 +125,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   std::vector<views::Label*> grid_labels_;
 
   // Label that shows up when the library has no items.
-  views::Label* no_items_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;
 
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;

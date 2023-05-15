@@ -148,6 +148,19 @@ class WorkerImportScriptsAndFetchRequestNetworkIsolationKeyBrowserTest
     : public WorkerNetworkIsolationKeyBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<bool /* test_same_network_isolation_key */, WorkerType>> {
+ public:
+  WorkerImportScriptsAndFetchRequestNetworkIsolationKeyBrowserTest() {
+    // This test was written assuming that iframes/workers corresponding to
+    // different cross-origin frames (same top-level site) would not share an
+    // HTTP cache partition, but this is not the case when the experiment to
+    // replace the frame origin with an "is-cross-site" bit in the Network
+    // Isolation Key is active. Therefore, disable it for this test.
+    feature_list_.InitAndDisableFeature(
+        net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that network isolation key is filled in correctly for service/shared
@@ -227,8 +240,19 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(WorkerType::kServiceWorker,
                                          WorkerType::kSharedWorker)));
 
-using ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest =
-    WorkerNetworkIsolationKeyBrowserTest;
+class ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest
+    : public WorkerNetworkIsolationKeyBrowserTest {
+ public:
+  ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest() {
+    // TODO(crbug.com/1147281): Tests under this class fail when
+    // kThirdPartyStoragePartitioning is enabled.
+    feature_list_.InitAndDisableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Test that network isolation key is filled in correctly for service worker's
 // main script request. The test navigates to "a.test" and creates an iframe
@@ -245,6 +269,9 @@ using ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest =
 // Note that it's sufficient not to test the cache miss when subframe origins
 // are different as in that case the two script urls must be different and it
 // also won't trigger an update.
+//
+// TODO(crbug.com/1147281): Update test to not depend on
+// kThirdPartyStoragePartitioning being disabled.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest,
     ServiceWorkerMainScriptRequest) {
@@ -299,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 using SharedWorkerMainScriptRequestNetworkIsolationKeyBrowserTest =
-    ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest;
+    WorkerNetworkIsolationKeyBrowserTest;
 
 // Test that network isolation key is filled in correctly for shared worker's
 // main script request. The test navigates to "a.test" and creates an iframe

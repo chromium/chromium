@@ -88,7 +88,7 @@ class WPTManifest(object):
         [[reference_url1, "=="], [reference_url2, "!="], ...]
     """
 
-    def __init__(self, host, manifest_path):
+    def __init__(self, host, manifest_path, exclude_jsshell: bool = True):
         self.host = host
         self.port = self.host.port_factory.get()
         self.raw_dict = json.loads(
@@ -104,6 +104,7 @@ class WPTManifest(object):
         self.test_types = ('manual', 'reftest', 'print-reftest', 'testharness',
                            'crashtest')
         self.test_name_to_file = {}
+        self._exclude_jsshell = exclude_jsshell
 
     @property
     def wpt_dir(self):
@@ -169,7 +170,9 @@ class WPTManifest(object):
             if test_type not in items:
                 continue
             for filename, records in items[test_type].items():
-                for item in filter(self._is_not_jsshell, records):
+                if self._exclude_jsshell:
+                    records = filter(self._is_not_jsshell, records)
+                for item in records:
                     url_for_item = self._get_url_from_item(item)
                     url_items[url_for_item] = item
                     self.test_name_to_file[url_for_item] = filename

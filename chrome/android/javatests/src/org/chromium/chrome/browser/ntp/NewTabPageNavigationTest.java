@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -52,7 +52,8 @@ public class NewTabPageNavigationTest {
     public void setUp() {
         mHomepageTestRule.useChromeNTPForTest();
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
     }
 
     @After

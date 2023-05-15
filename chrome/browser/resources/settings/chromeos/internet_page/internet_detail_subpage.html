@@ -8,11 +8,11 @@
   }
 
   cr-policy-indicator {
-    margin-inline-start: var(--settings-controlled-by-spacing);
+    margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
   cr-policy-network-indicator-mojo {
-    margin: 0 var(--settings-controlled-by-spacing);
+    margin: 0 var(--cr-controlled-by-spacing);
   }
 
   #networkState[connected] {
@@ -42,7 +42,7 @@
 
   .warning {
     color: var(--cr-secondary-text-color);
-    margin-inline-start: var(--settings-controlled-by-spacing);
+    margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
   .signin-button {
@@ -325,6 +325,23 @@
     </template>
   </template>
 
+  <!-- Passpoint provider link -->
+  <template is="dom-if" if="[[shouldShowPasspointProviderRow_(
+        managedProperties_)]]">
+    <div id="passpointProviderRow" class="settings-box two-line"
+        on-click="onPasspointRowClicked_">
+      <div class="flex settings-box-text">
+        <div>$i18n{passpointProviderLabel}</div>
+        <div class="secondary">
+          [[getPasspointSubscriptionName_(passpointSubscription_)]]
+        </div>
+      </div>
+      <cr-icon-button class="subpage-arrow"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </div>
+  </template>
+
   <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
                               propertiesReceived_, showMeteredToggle_,
                               deviceState_)]]">
@@ -522,19 +539,21 @@
       $i18nPolymer{networkSectionPasspointRemovalTitle}
     </div>
     <div slot="body">
-      <localized-link
-          localized-string=
-              "$i18nPolymer{networkSectionPasspointRemovalDescription}"
-          link-url="$i18nRaw{wifiPasspointLearnMoreUrl}">
-      </localized-link>
+      $i18nPolymer{networkSectionPasspointRemovalDescription}
+      <a href="$i18nRaw{wifiPasspointLearnMoreUrl}" target="_blank"
+          aria-label="$i18n{passpointLearnMoreA11yLabel}">
+        $i18n{learnMoreLabel}
+      </a>
     </div>
     <div slot="button-container">
       <cr-button id="passpointRemovalCancelButton" class="cancel-button"
-          on-click="onPasspointRemovalDialogCancel_">
+          on-click="onPasspointRemovalDialogCancel_"
+          aria-label="$i18n{passpointRemoveCancelA11yLabel}">
         $i18n{cancel}
       </cr-button>
       <cr-button id="passpointRemovalConfirmButton" class="action-button"
-          on-click="onPasspointRemovalDialogConfirm_">
+          on-click="onPasspointRemovalDialogConfirm_"
+          aria-label="$i18n{passpointRemoveConfirmA11yLabel}">
         $i18n{confirm}
       </cr-button>
     </div>

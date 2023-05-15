@@ -14,6 +14,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
@@ -53,7 +54,8 @@ class TestObserver : public ScreenBacklightObserver {
   }
 
  private:
-  BacklightsForcedOffSetter* const backlights_forced_off_setter_;
+  const raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
+      backlights_forced_off_setter_;
 
   std::vector<bool> forced_off_states_;
 

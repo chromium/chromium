@@ -13,7 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.LargeTest;
@@ -84,7 +84,8 @@ public class IncognitoPermissionLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mPermissionTestPage = mTestServer.getURL(PERMISSION_HTML_PATH);
 
         // Permission related settings.
@@ -130,6 +131,10 @@ public class IncognitoPermissionLeakageTest {
         Espresso.onView(withText(containsString("Block"))).perform(click());
     }
 
+    /**
+     * A class providing test parameters encapsulating different Activity type pairs spliced on
+     * Regular and Incognito mode.
+     */
     public static class RegularAndIncognito implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {

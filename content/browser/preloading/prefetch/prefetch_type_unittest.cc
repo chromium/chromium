@@ -24,17 +24,17 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
       blink::mojom::SpeculationEagerness::kConservative);
 
   EXPECT_TRUE(prefetch_type1.IsIsolatedNetworkContextRequired());
-  EXPECT_TRUE(prefetch_type1.IsProxyRequired());
+  EXPECT_TRUE(prefetch_type1.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type1.GetEagerness(),
             blink::mojom::SpeculationEagerness::kEager);
 
   EXPECT_TRUE(prefetch_type2.IsIsolatedNetworkContextRequired());
-  EXPECT_FALSE(prefetch_type2.IsProxyRequired());
+  EXPECT_FALSE(prefetch_type2.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type2.GetEagerness(),
             blink::mojom::SpeculationEagerness::kEager);
 
   EXPECT_FALSE(prefetch_type3.IsIsolatedNetworkContextRequired());
-  EXPECT_FALSE(prefetch_type3.IsProxyRequired());
+  EXPECT_FALSE(prefetch_type3.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type3.GetEagerness(),
             blink::mojom::SpeculationEagerness::kConservative);
 }
@@ -78,7 +78,7 @@ TEST_F(PrefetchTypeTest, WptProxyTest) {
   };
   for (auto& prefetch_type : prefetch_types) {
     EXPECT_FALSE(prefetch_type.IsProxyBypassedForTesting());
-    if (prefetch_type.IsProxyRequired()) {
+    if (prefetch_type.IsProxyRequiredWhenCrossOrigin()) {
       prefetch_type.SetProxyBypassedForTest();
       EXPECT_TRUE(prefetch_type.IsProxyBypassedForTesting());
     }

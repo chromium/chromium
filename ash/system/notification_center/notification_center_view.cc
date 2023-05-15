@@ -24,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -91,7 +92,7 @@ NotificationCenterView::NotificationCenterView(
       last_scroll_position_from_bottom_(0),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
-  auto* scroll_bar = new RoundedMessageCenterScrollBar(this);
+  auto* scroll_bar = new MessageCenterScrollBar(this);
   scroll_bar->SetInsets(kScrollBarInsets);
   scroll_bar_ = scroll_bar;
 
@@ -123,13 +124,15 @@ void NotificationCenterView::Init() {
   scroller_->SetContents(
       std::make_unique<ScrollerContentsView>(notification_list_view_));
   scroller_->SetBackgroundColor(absl::nullopt);
-  scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
+  scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_.get()));
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->SetPaintToLayer();
-  scroller_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
+  scroller_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{
+      static_cast<float>(chromeos::features::IsJellyEnabled()
+                             ? kJellyMessageCenterScrollViewCornerRadius
+                             : kMessageCenterScrollViewCornerRadius)});
 
-  AddChildView(scroller_);
+  AddChildView(scroller_.get());
 
   // Make sure the scroll view takes up the entirety of available height in the
   // revamped notification center view. With the QsRevamp we do not manually
@@ -146,7 +149,7 @@ void NotificationCenterView::Init() {
                             base::Unretained(this)));
   }
 
-  AddChildView(notification_bar_);
+  AddChildView(notification_bar_.get());
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {

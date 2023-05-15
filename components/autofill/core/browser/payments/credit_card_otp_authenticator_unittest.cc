@@ -31,11 +31,10 @@ const char16_t kMaskedEmailAddress[] = u"a******b@google.com";
 const int64_t kTestBillingCustomerNumber = 123456;
 }  // namespace
 
-class CreditCardOtpAuthenticatorTest
-    : public testing::Test,
-      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
+class CreditCardOtpAuthenticatorTestBase : public testing::Test {
  public:
-  CreditCardOtpAuthenticatorTest() = default;
+  CreditCardOtpAuthenticatorTestBase() = default;
+  ~CreditCardOtpAuthenticatorTestBase() override = default;
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -63,14 +62,6 @@ class CreditCardOtpAuthenticatorTest
 
     card_ = test::GetMaskedServerCard();
     card_.set_record_type(CreditCard::VIRTUAL_CARD);
-    selected_otp_challenge_option_.type = GetParam();
-    selected_otp_challenge_option_.id =
-        CardUnmaskChallengeOption::ChallengeOptionId(kTestChallengeId);
-    if (GetParam() == CardUnmaskChallengeOptionType::kSmsOtp) {
-      selected_otp_challenge_option_.challenge_info = kMaskedPhoneNumber;
-    } else if (GetParam() == CardUnmaskChallengeOptionType::kEmailOtp) {
-      selected_otp_challenge_option_.challenge_info = kMaskedEmailAddress;
-    }
   }
 
   void TearDown() override {
@@ -114,7 +105,7 @@ class CreditCardOtpAuthenticatorTest
   }
 
   std::string OtpAuthenticatorContextToken() {
-    return authenticator_->context_token_;
+    return authenticator_->ContextTokenForTesting();
   }
 
   void verifySelectChallengeOptionRequest(const std::string& context_token,
@@ -128,8 +119,15 @@ class CreditCardOtpAuthenticatorTest
               selected_otp_challenge_option_.id);
   }
 
-  std::string GetOtpAuthType() {
-    return autofill_metrics::GetOtpAuthType(GetParam());
+  void CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType type) {
+    selected_otp_challenge_option_.type = type;
+    selected_otp_challenge_option_.id =
+        CardUnmaskChallengeOption::ChallengeOptionId(kTestChallengeId);
+    if (type == CardUnmaskChallengeOptionType::kSmsOtp) {
+      selected_otp_challenge_option_.challenge_info = kMaskedPhoneNumber;
+    } else if (type == CardUnmaskChallengeOptionType::kEmailOtp) {
+      selected_otp_challenge_option_.challenge_info = kMaskedEmailAddress;
+    }
   }
 
  protected:
@@ -141,6 +139,23 @@ class CreditCardOtpAuthenticatorTest
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;
   CardUnmaskChallengeOption selected_otp_challenge_option_;
+};
+
+class CreditCardOtpAuthenticatorTest
+    : public CreditCardOtpAuthenticatorTestBase,
+      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
+ public:
+  CreditCardOtpAuthenticatorTest() = default;
+  ~CreditCardOtpAuthenticatorTest() override = default;
+
+  void SetUp() override {
+    CreditCardOtpAuthenticatorTestBase::SetUp();
+    CreateSelectedOtpChallengeOption(GetParam());
+  }
+
+  std::string GetOtpAuthType() {
+    return autofill_metrics::GetOtpAuthType(GetParam());
+  }
 };
 
 TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
@@ -563,5 +578,81 @@ INSTANTIATE_TEST_SUITE_P(
     CreditCardOtpAuthenticatorTest,
     testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
                     CardUnmaskChallengeOptionType::kEmailOtp));
+
+// Params of the CreditCardOtpAuthenticatorCardMetadataTest:
+// -- bool card_name_available;
+// -- bool card_art_available;
+// -- bool metadata_enabled;
+class CreditCardOtpAuthenticatorCardMetadataTest
+    : public CreditCardOtpAuthenticatorTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  CreditCardOtpAuthenticatorCardMetadataTest() = default;
+  ~CreditCardOtpAuthenticatorCardMetadataTest() override = default;
+
+  void SetUp() override {
+    CreditCardOtpAuthenticatorTestBase::SetUp();
+    CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
+  }
+
+  bool CardNameAvailable() { return std::get<0>(GetParam()); }
+  bool CardArtAvailable() { return std::get<1>(GetParam()); }
+  bool MetadataEnabled() { return std::get<2>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardOtpAuthenticatorCardMetadataTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
+  base::test::ScopedFeatureList metadata_feature_list;
+  if (MetadataEnabled()) {
+    metadata_feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableCardProductName,
+                              features::kAutofillEnableCardArtImage},
+        /*disabled_features=*/{});
+  } else {
+    metadata_feature_list.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kAutofillEnableCardProductName,
+                               features::kAutofillEnableCardArtImage});
+  }
+  if (CardNameAvailable()) {
+    card_.set_product_description(u"fake product description");
+  }
+  if (CardArtAvailable()) {
+    card_.set_card_art_url(GURL("https://www.example.com"));
+  }
+
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsClient will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+
+  // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+  // TestPaymentsClient just stores the unmask request detail, won't invoke
+  // the callback. OnDidGetRealPan below will manually invoke the callback.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+  // Verify that the otp is correctly set in UnmaskRequestDetails.
+  EXPECT_EQ(payments_client_->unmask_request()->otp, u"111111");
+  // Also verify that risk data is set in UnmaskRequestDetails.
+  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  std::vector<ClientBehaviorConstants> signals =
+      payments_client_->unmask_request()->client_behavior_signals;
+  if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
+    EXPECT_NE(
+        signals.end(),
+        base::ranges::find(
+            signals,
+            ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
+  } else {
+    EXPECT_TRUE(signals.empty());
+  }
+}
 
 }  // namespace autofill

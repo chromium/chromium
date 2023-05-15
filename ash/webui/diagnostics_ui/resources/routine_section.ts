@@ -521,9 +521,11 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         'chargeTestResultText' :
         'dischargeTestResultText';
     const percentText = loadTimeData.getStringF(
-        'percentageLabel', this.powerRoutineResult.percentChange.toFixed(2));
+        'percentageLabel',
+        (this.powerRoutineResult?.percentChange || 0).toFixed(2));
     return loadTimeData.getStringF(
-        stringId, percentText, this.powerRoutineResult.timeElapsedSeconds);
+        stringId, percentText,
+        this.powerRoutineResult?.timeElapsedSeconds || 0);
   }
 
   private setBadgeAndStatusText(badgeType: BadgeType, statusText: string):

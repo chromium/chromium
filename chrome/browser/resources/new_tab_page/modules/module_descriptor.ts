@@ -10,19 +10,12 @@ import {WindowProxy} from '../window_proxy.js';
  * module descriptor and register it at the NTP.
  */
 
-export type InitializeModuleCallback = () => Promise<HTMLElement|null>;
-
-export type InitializeModuleCallbackV2 = () => Promise<HTMLElement>;
+export type InitializeModuleCallback = () =>
+    Promise<HTMLElement[]|HTMLElement|null>;
 
 export interface Module {
-  element: HTMLElement;
+  elements: HTMLElement[];
   descriptor: ModuleDescriptor;
-}
-
-export enum ModuleHeight {
-  DYNAMIC = -1,
-  SHORT = 166,
-  TALL = 358,
 }
 
 export class ModuleDescriptor {
@@ -38,15 +31,11 @@ export class ModuleDescriptor {
     return this.id_;
   }
 
-  get height(): ModuleHeight {
-    return ModuleHeight.DYNAMIC;
-  }
-
   /**
-   * Initializes the module and returns the module element on success.
+   * Initializes the module and returns one or more module elements on success.
    * @param timeout Timeout in milliseconds after which initialization aborts.
    */
-  async initialize(timeout: number): Promise<HTMLElement|null> {
+  async initialize(timeout: number): Promise<HTMLElement[]|HTMLElement|null> {
     const loadStartTime = WindowProxy.getInstance().now();
     const element = await Promise.race([
       this.initializeCallback_(),
@@ -66,28 +55,5 @@ export class ModuleDescriptor {
     recordDuration('NewTabPage.Modules.LoadDuration', duration);
     recordDuration(`NewTabPage.Modules.LoadDuration.${this.id_}`, duration);
     return element;
-  }
-}
-
-export class ModuleDescriptorV2 extends ModuleDescriptor {
-  private height_: ModuleHeight;
-
-  constructor(
-      id: string, height: ModuleHeight,
-      initializeCallback: InitializeModuleCallbackV2) {
-    super(id, initializeCallback);
-    this.height_ = height;
-  }
-
-  override get height() {
-    return this.height_;
-  }
-
-  /**
-   * Like |ModuleDescriptor.initialize()| but returns an empty element on
-   * timeout.
-   */
-  override async initialize(timeout: number): Promise<HTMLElement> {
-    return (await super.initialize(timeout)) || document.createElement('div');
   }
 }

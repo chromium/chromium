@@ -49,12 +49,12 @@ struct CONTENT_EXPORT AttributionConfig {
     uint64_t event_source_trigger_data_cardinality = 2;
 
     // Controls randomized response rates for the API: when a source is
-    // registered, these rates are used to determine whether any subsequent
-    // attributions for the source are handled truthfully, or whether the source
-    // is immediately attributed with zero or more fake reports and real
-    // attributions are dropped. Must be in the range [0, 1].
-    double navigation_source_randomized_response_rate = .0024;
-    double event_source_randomized_response_rate = .0000025;
+    // registered, this parameter is used to determine the probability that any
+    // subsequent attributions for the source are handled truthfully, or whether
+    // the source is immediately attributed with zero or more fake reports and
+    // real attributions are dropped. Must be non-negative and non-NaN, but may
+    // be infinite.
+    double randomized_response_epsilon = 14;
 
     // Controls how many reports can be in the storage per attribution
     // destination.
@@ -104,6 +104,11 @@ struct CONTENT_EXPORT AttributionConfig {
     // Controls the report delivery time.
     base::TimeDelta min_delay = kDefaultMinDelay;
     base::TimeDelta delay_span = kDefaultDelaySpan;
+
+    double null_reports_rate_include_source_registration_time = .008;
+    double null_reports_rate_exclude_source_registration_time = .05;
+
+    int max_aggregatable_reports_per_source = 20;
 
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`

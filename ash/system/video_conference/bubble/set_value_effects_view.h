@@ -5,20 +5,44 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_SET_VALUE_EFFECTS_VIEW_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_SET_VALUE_EFFECTS_VIEW_H_
 
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
+class TabSlider;
+class VcHostedEffect;
 class VideoConferenceTrayController;
 
 namespace video_conference {
 
-// The set-value effects view, that resides in the video conference bubble. It
-// functions as a "factory" that constructs and hosts selector-views for effects
-// that are set to one of several integral values. The selector-views host the
-// individual effects and are registered with the
-// `VideoConferenceTrayEffectsManager`, which is in turn owned by the passed-in
-// controller.
+// The slider that allows user to pick a value for an effect of type
+// `VcEffectType::kSetValue`. This view consists a label (for the effect name)
+// and a tab slider that allows the user to select from one of several integer
+// values.
+class SetValueEffectSlider : public views::View {
+ public:
+  explicit SetValueEffectSlider(const VcHostedEffect* effect);
+
+  SetValueEffectSlider(const SetValueEffectSlider&) = delete;
+  SetValueEffectSlider& operator=(const SetValueEffectSlider&) = delete;
+
+  ~SetValueEffectSlider() override = default;
+
+  TabSlider* tab_slider() { return tab_slider_; }
+
+  VcEffectId effect_id() { return effect_id_; }
+
+ private:
+  // Owned by the views hierarchy.
+  TabSlider* tab_slider_ = nullptr;
+
+  // The id associated with this effect.
+  const VcEffectId effect_id_;
+};
+
+// The set-value effects view that resides in the video conference bubble,
+// containing all the `SetValueEffectSlider` views in this bubble.
 class SetValueEffectsView : public views::View {
  public:
   explicit SetValueEffectsView(VideoConferenceTrayController* controller);

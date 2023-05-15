@@ -126,6 +126,11 @@ class WizardContext {
   // ash::OOBE_SCREEN_UNKNOWN.
   OobeScreenId screen_after_managed_tos;
 
+  // This is set to true when the user hits the keyboard shortcut triggering the
+  // associated LoginAccelerator. This is used in place of a feature flag to
+  // determine whether to display the Quick Start calls to action.
+  bool quick_start_enabled = false;
+
   // This ID maps onto the instance_id used in
   // ash::multidevice::RemoteDevice. If a user connects their phone during Quick
   // Start, Quick Start saves this ID. After Quick Start, the multidevice screen

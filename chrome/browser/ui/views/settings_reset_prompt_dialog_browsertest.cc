@@ -84,7 +84,7 @@ class MockSettingsResetPromptModel
       startup_urls_to_reset_ = startup_urls_;
 
     ON_CALL(*this, ShouldPromptForReset()).WillByDefault(Return(true));
-    ON_CALL(*this, MockPerformReset(_, _)).WillByDefault(Return());
+    ON_CALL(*this, PerformReset(_, _)).WillByDefault(Return());
     ON_CALL(*this, DialogShown()).WillByDefault(Return());
 
     ON_CALL(*this, homepage()).WillByDefault(Return(GURL(kHomepageUrl)));
@@ -117,21 +117,22 @@ class MockSettingsResetPromptModel
 
   ~MockSettingsResetPromptModel() override {}
 
-  void PerformReset(std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-                    base::OnceClosure callback) override {
-    MockPerformReset(default_settings.get(), std::move(callback));
-  }
-  MOCK_METHOD2(MockPerformReset,
-               void(BrandcodedDefaultSettings*, base::OnceClosure));
-  MOCK_CONST_METHOD0(ShouldPromptForReset, bool());
-  MOCK_METHOD0(DialogShown, void());
-  MOCK_CONST_METHOD0(homepage, GURL());
-  MOCK_CONST_METHOD0(homepage_reset_state, ResetState());
-  MOCK_CONST_METHOD0(default_search, GURL());
-  MOCK_CONST_METHOD0(default_search_reset_state, ResetState());
-  MOCK_CONST_METHOD0(startup_urls, const std::vector<GURL>&());
-  MOCK_CONST_METHOD0(startup_urls_to_reset, const std::vector<GURL>&());
-  MOCK_CONST_METHOD0(startup_urls_reset_state, ResetState());
+  MOCK_METHOD(void,
+              PerformReset,
+              (std::unique_ptr<BrandcodedDefaultSettings>, base::OnceClosure),
+              (override));
+  MOCK_METHOD(bool, ShouldPromptForReset, (), (const, override));
+  MOCK_METHOD(void, DialogShown, (), (override));
+  MOCK_METHOD(GURL, homepage, (), (const, override));
+  MOCK_METHOD(ResetState, homepage_reset_state, (), (const, override));
+  MOCK_METHOD(GURL, default_search, (), (const, override));
+  MOCK_METHOD(ResetState, default_search_reset_state, (), (const, override));
+  MOCK_METHOD(const std::vector<GURL>&, startup_urls, (), (const, override));
+  MOCK_METHOD(const std::vector<GURL>&,
+              startup_urls_to_reset,
+              (),
+              (const, override));
+  MOCK_METHOD(ResetState, startup_urls_reset_state, (), (const, override));
 
  private:
   std::vector<GURL> startup_urls_;

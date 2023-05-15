@@ -67,7 +67,8 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
   // Compute the converted model with asynchronous call of `Model` interface.
   void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
-                        ScriptPromiseResolver* resolver) override;
+                        ScriptPromiseResolver* resolver,
+                        ExceptionState& exception_state) override;
 
   // Compute the converted model with synchronous call of `Model` interface.
   void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,

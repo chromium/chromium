@@ -211,11 +211,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+// TODO(https://crbug.com/1417034): Test consistently fails on bots.
 // Verifies that the navigation of an os:// scheme page is opening an app on
 // the ash side and does not produce a navigation on the Lacros side.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
+                       DISABLED_OsSchemeRedirectSucceed) {
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kGetOpenAshBrowserWindowsMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";

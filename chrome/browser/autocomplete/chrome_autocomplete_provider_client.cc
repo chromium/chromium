@@ -90,7 +90,9 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
+#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#include "components/omnibox/browser/on_device_tail_model_service.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
@@ -326,6 +328,16 @@ AutocompleteScoringModelService*
 ChromeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return AutocompleteScoringModelServiceFactory::GetInstance()->GetForProfile(
+      profile_);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
+OnDeviceTailModelService*
+ChromeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return OnDeviceTailModelServiceFactory::GetInstance()->GetForProfile(
       profile_);
 #else
   return nullptr;

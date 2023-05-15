@@ -64,8 +64,7 @@ class GenericV4L2Device : public V4L2Device {
       v4l2_buf_type buf_type) override;
 
   VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
-      const size_t num_formats,
-      const uint32_t pixelformats[]) override;
+      const std::vector<uint32_t>& pixelformats) override;
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedEncodeProfiles()
       override;

@@ -5,7 +5,6 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -16,8 +15,8 @@
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -111,17 +110,19 @@ bool DraggedItemIsVisibleOnAllDesks(OverviewItem* item) {
 }
 
 // Returns the scaled-down size of the dragged item that should be used when
-// it's dragged over the DesksBarView that belongs to |overview_grid|.
+// it's dragged over the LegacyDeskBarView that belongs to |overview_grid|.
 // |window_original_size| is the size of the item's window before it was scaled
 // up for dragging.
 gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
                                      const gfx::SizeF& window_original_size) {
   DCHECK(overview_grid);
-  const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+  const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
   DCHECK(desks_bar_view);
 
   const int expanded_desks_bar_height =
-      DesksBarView::GetExpandedBarHeight(overview_grid->root_window());
+      LegacyDeskBarView::GetPreferredBarHeight(
+          overview_grid->root_window(), LegacyDeskBarView::Type::kOverview,
+          LegacyDeskBarView::State::kExpanded);
 
   // We should always use the expanded desks bar height here even if the desks
   // bar is actually in zero state to calculate `scale_factor`. Because if zero
@@ -154,7 +155,7 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
   }
 
   // Add the margins overview mode adds around the window's contents.
-  scaled_size.Enlarge(2 * kWindowMargin, 2 * kWindowMargin + kHeaderHeightDp);
+  scaled_size.Enlarge(kDraggingEnlargeDp, kDraggingEnlargeDp + kHeaderHeightDp);
   return scaled_size;
 }
 
@@ -226,7 +227,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   const gfx::RectF target_item_bounds_;
 };
 
@@ -381,8 +382,8 @@ void OverviewWindowDragController::StartNormalDragMode(
     // bottom-edge of the desks bar (may be different edges if we are dragging
     // from different directions).
     gfx::SizeF item_no_header_size = original_scaled_size_;
-    item_no_header_size.Enlarge(float{-kWindowMargin * 2},
-                                float{-kWindowMargin * 2 - kHeaderHeightDp});
+    item_no_header_size.Enlarge(float{-kDraggingEnlargeDp},
+                                float{-kDraggingEnlargeDp - kHeaderHeightDp});
 
     // We must update the desks bar widget bounds before we cache its bounds
     // below, in case it needs to be pushed down due to splitview indicators.
@@ -399,8 +400,9 @@ void OverviewWindowDragController::StartNormalDragMode(
           GetItemSizeWhenOnDesksBar(grid.get(), window_original_size);
       grid_desks_bar_data.desks_bar_bounds = grid_desks_bar_data.shrink_bounds =
           gfx::RectF(grid->desks_bar_view()->GetBoundsInScreen());
-      const int expanded_height =
-          DesksBarView::GetExpandedBarHeight(grid->root_window());
+      const int expanded_height = LegacyDeskBarView::GetPreferredBarHeight(
+          grid->root_window(), LegacyDeskBarView::Type::kOverview,
+          LegacyDeskBarView::State::kExpanded);
       grid_desks_bar_data.desks_bar_bounds.set_height(expanded_height);
       grid_desks_bar_data.shrink_bounds.set_height(expanded_height);
       grid_desks_bar_data.shrink_bounds.Inset(gfx::InsetsF::VH(
@@ -608,7 +610,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
       // target bounds, and offset up the centerpoint by half that amount, so
       // that the transformed bounds of the window contents move up to be
       // centered around the cursor.
-      centerpoint.Offset(0, (-kWindowMargin - kHeaderHeightDp) / 2);
+      centerpoint.Offset(0, -kHeaderHeightDp / 2);
     }
 
     const auto iter = per_grid_desks_bar_data_.find(overview_grid);
@@ -734,10 +736,10 @@ OverviewWindowDragController::CompleteNormalDrag(
     // passed parameters |snap_position_| and |location_in_screen| won't be used
     // in this function for this case, but they are passed in as placeholders.
     aura::Window* window = item_->GetWindow();
-    WindowState::Get(window)->set_snap_action_source(
-        WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
     SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->OnWindowDragEnded(window, snap_position_, rounded_screen_point);
+        ->OnWindowDragEnded(
+            window, snap_position_, rounded_screen_point,
+            WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
 
     // Update window grid bounds and |snap_position_| in case the screen
     // orientation was changed.
@@ -922,8 +924,6 @@ void OverviewWindowDragController::SnapWindow(
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
-  WindowState::Get(window)->set_snap_action_source(
-      WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
 
   // If `window` is currently fullscreen, snapping it will trigger a work area
   // change, which triggers `OverviewSession::OnDisplayMetricsChanged`. Display
@@ -932,8 +932,10 @@ void OverviewWindowDragController::SnapWindow(
   // See crbug.com/1330042 for more details. `item_` will be deleted after
   // SplitViewController::SnapWindow().
   item_ = nullptr;
-  split_view_controller->SnapWindow(window, snap_position,
-                                    /*activate_window=*/true);
+  split_view_controller->SnapWindow(
+      window, snap_position,
+      WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap,
+      /*activate_window=*/true);
 }
 
 OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {

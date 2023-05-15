@@ -16,56 +16,27 @@ namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-#define RETURN_ON_HR_FAILURE(expr_name, expr, code)                           \
-  do {                                                                        \
-    HRESULT expr_value = (expr);                                              \
-    if (FAILED(expr_value)) {                                                 \
-      RecordFailure(#expr_name, logging::SystemErrorCodeToString(expr_value), \
-                    code);                                                    \
-      return false;                                                           \
-    }                                                                         \
+#define RETURN_ON_HR_FAILURE(expr_name, expr, code) \
+  do {                                              \
+    HRESULT expr_value = (expr);                    \
+    if (FAILED(expr_value)) {                       \
+      RecordFailure(#expr_name, code, expr_value);  \
+      return false;                                 \
+    }                                               \
   } while (0)
-
-std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
-CreateSubsampleMappingBlock(const std::vector<SubsampleEntry>& from) {
-  std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> to(from.size());
-  for (const auto& entry : from) {
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK subsample = {
-        .ClearSize = entry.clear_bytes, .EncryptedSize = entry.cypher_bytes};
-    to.push_back(subsample);
-  }
-  return to;
-}
 
 D3D11VP9Accelerator::D3D11VP9Accelerator(
     D3D11VideoDecoderClient* client,
     MediaLog* media_log,
     ComD3D11VideoDevice video_device,
     std::unique_ptr<VideoContextWrapper> video_context)
-    : client_(client),
-      media_log_(media_log),
-      status_feedback_(0),
-      video_device_(std::move(video_device)),
-      video_context_(std::move(video_context)) {
-  DCHECK(client);
-  DCHECK(media_log_);
-  client->SetDecoderCB(base::BindRepeating(
-      &D3D11VP9Accelerator::SetVideoDecoder, base::Unretained(this)));
-}
+    : D3DAccelerator(client,
+                     media_log,
+                     std::move(video_device),
+                     std::move(video_context)),
+      status_feedback_(0) {}
 
-D3D11VP9Accelerator::~D3D11VP9Accelerator() {}
-
-void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
-                                        D3D11Status error) {
-  RecordFailure(fail_type, error.message(), error.code());
-}
-
-void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
-                                        const std::string& reason,
-                                        D3D11Status::Codes code) {
-  MEDIA_LOG(ERROR, media_log_)
-      << "DX11VP9Failure(" << fail_type << ")=" << reason;
-}
+D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
 
 scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
   D3D11PictureBuffer* picture_buffer = client_->GetPicture();
@@ -75,14 +46,6 @@ scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
 }
 
 bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
-  const bool is_encrypted = pic.decrypt_config();
-  if (is_encrypted) {
-    RecordFailure("crypto_config",
-                  "Cannot find the decrypt context for the frame.",
-                  D3D11Status::Codes::kCryptoConfigFailed);
-    return false;
-  }
-
   HRESULT hr;
   do {
     ID3D11VideoDecoderOutputView* output_view = nullptr;
@@ -90,8 +53,8 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
     if (result.has_value()) {
       output_view = std::move(result).value();
     } else {
-      D3D11Status error = std::move(result).error();
-      RecordFailure("AcquireOutputView", error.message(), error.code());
+      RecordFailure("Picture AcquireOutputView failed",
+                    std::move(result).error().code());
       return false;
     }
 
@@ -100,8 +63,8 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
   } while (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING);
 
   if (FAILED(hr)) {
-    RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
-                  D3D11Status::Codes::kDecoderBeginFrameFailed);
+    RecordFailure("DecoderBeginFrame",
+                  D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
     return false;
   }
 
@@ -339,18 +302,6 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     buffers[2].DataOffset = 0;
     buffers[2].DataSize = copy_size;
 
-    const DecryptConfig* config = pic.decrypt_config();
-    if (config) {
-      buffers[2].pIV = const_cast<char*>(config->iv().data());
-      buffers[2].IVSize = config->iv().size();
-      // Subsamples matter iff there is IV, for decryption.
-      if (!config->subsamples().empty()) {
-        buffers[2].pSubSampleMappingBlock =
-            CreateSubsampleMappingBlock(config->subsamples()).data();
-        buffers[2].SubSampleMappingCount = config->subsamples().size();
-      }
-    }
-
     RETURN_ON_HR_FAILURE(SubmitDecoderBuffers,
                          video_context_->SubmitDecoderBuffers(
                              video_decoder_.Get(), buffers_count, buffers),
@@ -388,8 +339,8 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
 
   HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
-    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
-                  D3D11Status::Codes::kDecoderEndFrameFailed);
+    RecordFailure("DecoderEndFrame", D3D11Status::Codes::kDecoderEndFrameFailed,
+                  hr);
     return DecodeStatus::kFail;
   }
 
@@ -410,10 +361,6 @@ bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
 bool D3D11VP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> picture,
                                           Vp9FrameContext* frame_context) {
   return false;
-}
-
-void D3D11VP9Accelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
-  video_decoder_ = std::move(video_decoder);
 }
 
 }  // namespace media

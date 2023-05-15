@@ -1307,6 +1307,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accel_Toggle_Snap_Group_Windows_Minimize_Restore">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Records how often the snap group windows are minimized or restored from
+    accelerator.
+  </description>
+</action>
+
 <action name="Accel_Toggle_Spoken_Feedback">
   <owner>dtseng@chromium.org</owner>
   <owner>aleventhal@chromium.org</owner>
@@ -7054,6 +7063,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.Sync.ShowDisableToastFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed sync promo and triggered a service disabled message
+    to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.Sync.ShowSyncFlowFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed sync promo and triggered a sync flow to be shown.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.WebFeed.Selected">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
@@ -11867,6 +11895,75 @@ should be able to be added at any place in this file.
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>The user toogled a media permission state.</description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.AddCountryCode">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Add Country Code button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.AddToContacts">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the add to contacts button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Call">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Call button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Copy">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Copy button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Display">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The user long pressed a phone number and the phone number experience context
+    menu was displayed.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Facetime">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the facetime button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.SendMessage">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the send message button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.OneTap.Call">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user tapped on an underlined phone number and was
+    prompted to make a phone call.
+  </description>
 </action>
 
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
@@ -17862,6 +17959,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.Signin.SnackbarUndoTapped">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.org</owner>
+  <description>
+    User tapped on 'Undo' button on a snackbar shown right after signin through
+    promos in bookmarks or reading list page (iOS only).
+  </description>
+</action>
+
 <action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
   <owner>chrome-analysis-team@google.com</owner>
   <description>
@@ -19104,6 +19210,44 @@ should be able to be added at any place in this file.
   <owner>gambard@chromium.org</owner>
   <description>
     User confirmed provided credentials in HTTP Authentication dialog. iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsCloseAll">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User pressed 'Close All Inactive' from the inactive tabs view. iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsCloseAllConfirm">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User pressed 'Close All' from the 'Close All Inactive' confirmation toast.
+    iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsSettingsBack">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Reported when user goes back from Inactive Tabs Settings UI to Tabs Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsSettingsClose">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Reported when Inactive Tabs Settings UI was dismissed. iOS only.
   </description>
 </action>
 
@@ -20609,6 +20753,15 @@ should be able to be added at any place in this file.
   <description>User switched on torch in the QR Scanner.</description>
 </action>
 
+<action name="MobileReadingListAccessibilityClose">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when a user closes Reading List on iOS by performing a VoiceOver
+    dismiss action.
+  </description>
+</action>
+
 <action name="MobileReadingListAdd">
   <owner>gambard@chromium.org</owner>
   <description>
@@ -20619,13 +20772,26 @@ should be able to be added at any place in this file.
 <action name="MobileReadingListClose">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <description>Recorded when a user closes Reading List on iOS.</description>
+  <description>
+    Recorded when a user closes Reading List on iOS by tapping the
+    dismiss(&quot;Done&quot;) button.
+  </description>
 </action>
 
 <action name="MobileReadingListDeleteEntry">
   <owner>gambard@chromium.org</owner>
   <description>
     User deleted a single entry from the ReadingList using swipe to delete.
+  </description>
+</action>
+
+<action name="MobileReadingListDeleteFromSnackbarUndo">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on the &quot;undo&quot; button from the
+    snackbar which is shown when items are added to the reading list, to remove
+    the new items.
   </description>
 </action>
 
@@ -21424,6 +21590,25 @@ should be able to be added at any place in this file.
   <description>User adds one new bookmark, in the iOS tab grid.</description>
 </action>
 
+<action name="MobileTabGridOpenInactiveTab">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an inactive tab by tapping on it.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenInactiveTabSearchResult">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an inactive tab by tapping on it from search
+    results.
+  </description>
+</action>
+
 <action name="MobileTabGridOpenIncognitoTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -21650,6 +21835,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridUserScrolled">
+  <owner>lpromero@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>User in the iOS tab grid scrolled the grid of tabs.</description>
+</action>
+
+<action name="MobileTabGridUserScrolledToTop">
+  <owner>lpromero@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid tapped the status bar to scroll to the top of the
+    grid of tabs.
+  </description>
+</action>
+
 <action name="MobileTabNewTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -21698,6 +21900,23 @@ should be able to be added at any place in this file.
   <description>
     Users returned to the tab that was active, either by tapping the tab card or
     pressing the back button, when the grid tab switcher is enabled.
+  </description>
+</action>
+
+<action name="MobileTabsSettingsBack">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user goes back from Tabs Settings UI to root Settings screen.
+    iOS only.
+  </description>
+</action>
+
+<action name="MobileTabsSettingsClose">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when Tabs Settings UI was dismissed. iOS only.
   </description>
 </action>
 
@@ -22275,6 +22494,23 @@ should be able to be added at any place in this file.
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Search By Image in context menu. iOS only.
+  </description>
+</action>
+
+<action name="MobileWebInspectorSettingsBack">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    Reported when user goes back from Web Inspector Settings UI to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileWebInspectorSettingsClose">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    Reported when Web Inspector Settings UI was dismissed. iOS only.
   </description>
 </action>
 
@@ -23994,11 +24230,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OpenFileSystemPersistent" not_user_triggered="true">
+  <obsolete>Deprecated 04/2023</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OpenFileSystemTemporary" not_user_triggered="true">
+  <obsolete>Deprecated 04/2023</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
@@ -26613,6 +26851,26 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PaymentsUserAuthSuccessfulForMandatoryAuthToggle">
+  <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
+  <description>
+    Recorded when user completes a successful auth after trying to change the
+    mandatory auth toggle in the chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="PaymentsUserAuthTriggeredForMandatoryAuthToggle">
+  <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
+  <description>
+    Recorded when user is asked for an auth after trying to change the mandatory
+    auth toggle in the chrome://settings/payments page.
+  </description>
+</action>
+
 <action name="PDF.FitToHeightButton">
   <obsolete>Removed with Out of Process PDF (issue 303491)</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -26909,14 +27167,85 @@ should be able to be added at any place in this file.
   <description>User pressed back on a Phishing interstitial.</description>
 </action>
 
+<action name="PhishingInterstitial.CloseInterstitialWithoutUI">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User exits interstitial page without clicking the back button on a Phishing
+    interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.Diagnostic">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show diagnostic on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.EnhancedProtectionMessage">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show enhanced protection message on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.EnhancedProtectionSettings">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to open enhanced protection settings on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.LearnMore">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to learn more on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.PrivacyPolicy">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show privacy policy on a Phishing interstitial.
+  </description>
+</action>
+
 <action name="PhishingInterstitial.Proceed">
   <owner>psarouthakis@chromium.org</owner>
   <description>User proceeded on a Phishing interstitial.</description>
 </action>
 
+<action name="PhishingInterstitial.ReportPhishingError">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to report an error on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.SetExtendedReportingDisabled">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to disable extended reporting on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.SetExtendedReportingEnabled">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to enable extended reporting on a Phishing interstitial.
+  </description>
+</action>
+
 <action name="PhishingInterstitial.Show">
   <owner>psarouthakis@chromium.org</owner>
   <description>User saw the Phishing interstitial.</description>
+</action>
+
+<action name="PhishingInterstitial.WhitePaper">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show white paper on a Phishing interstitial.
+  </description>
 </action>
 
 <action name="PhysicalWeb.NotificationPressed">
@@ -28935,6 +29264,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Ad Measurement API in the Ad Measurement
     setting page.
@@ -28944,6 +29274,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Ad Measurement API in the Ad Measurement
     setting page.
@@ -28953,12 +29284,14 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User opened Ad measurement subpage.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User selected &quot;Learn more&quot; about Ad Personalization.
   </description>
@@ -28967,6 +29300,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Ad Personalization subpage from main sandbox settings page.
   </description>
@@ -28975,6 +29309,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.SiteRemoved">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -28985,6 +29320,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.TopicRemoved">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -28996,6 +29332,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox APIs in the privacy sandbox page.
   </description>
@@ -29005,6 +29342,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox APIs in the privacy sandbox page.
   </description>
@@ -29014,6 +29352,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User changes cookie setting and moves from a state where 3P cookies are
     enabled, to one where 3P cookies are disabled. Only recorded if the privacy
@@ -29027,6 +29366,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User accepted the privacy sandbox consent.</description>
 </action>
 
@@ -29034,6 +29374,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     Consent dialog closed with no interaction (e.g. browser shutdown).
   </description>
@@ -29043,6 +29384,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User declined the privacy sandbox consent.</description>
 </action>
 
@@ -29050,6 +29392,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User closed the Learn More in the Privacy Sandbox Consent.
   </description>
@@ -29059,6 +29402,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User expanded the Learn More in the Privacy Sandbox Consent.
   </description>
@@ -29068,6 +29412,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the More button in the Privacy Sandbox Consent.
   </description>
@@ -29077,12 +29422,14 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User is shown the Privacy Sandbox consent.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the all sites subpage, by clicking on the pref in the Fledge
     settings page.
@@ -29092,6 +29439,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.BlockedSitesOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the blocked sites section, by clicking on the button in the
     Topics settings page.
@@ -29101,6 +29449,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Fledge API in the Fledge settings page.
   </description>
@@ -29109,6 +29458,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Fledge API in the Fledge settings page.
   </description>
@@ -29117,6 +29467,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.LearnMoreClicked">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the learn more about fledge section, by clicking on the button
     in the Fledge settings page.
@@ -29126,6 +29477,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Fledge subpage from main sandbox settings page.
   </description>
@@ -29134,6 +29486,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.SiteAdded">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
   </description>
@@ -29142,6 +29495,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.SiteRemoved">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
   </description>
@@ -29150,6 +29504,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.FlocSubpageOpened">
   <owner>andzaytsev@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opens the FLoC subpage by clicking on an element on the privacy sandbox
     page.
@@ -29160,6 +29515,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User acknowledged the Privacy Sandbox notice.</description>
 </action>
 
@@ -29167,6 +29523,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     Notice dialog closed with no interaction (e.g. browser shutdown).
   </description>
@@ -29176,6 +29533,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User dismissed the Privacy Sandbox notice.</description>
 </action>
 
@@ -29183,6 +29541,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the link &quot;estimates your interests&quot; from the
     Privacy Sandbox notice. It opens Privacy Sandbox settings page with
@@ -29194,6 +29553,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User closed the Learn More in the Privacy Sandbox Notice.
   </description>
@@ -29203,6 +29563,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User expanded the Learn More in the Privacy Sandbox Notice.
   </description>
@@ -29212,6 +29573,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the More button in the Privacy Sandbox Notice.
   </description>
@@ -29221,6 +29583,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened settings from the Privacy Sandbox notice.
   </description>
@@ -29230,6 +29593,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User is shown the Privacy Sandbox notice.</description>
 </action>
 
@@ -29237,6 +29601,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the toast shown on the cookies page after blocking 3P cookies to
     open the privacy sandbox page.
@@ -29247,6 +29612,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the privacy sandbox row in the privacy page to open the privacy
     sandbox page.
@@ -29257,6 +29623,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the details button in the privacy sandbox page to see the
     privacy sandbox explainer.
@@ -29266,6 +29633,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on &quot;Interests you removed&quot;, to visit the blocked
     interests subpage.
@@ -29275,6 +29643,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.SiteAdded">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -29285,6 +29654,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.TopicAdded">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -29292,15 +29662,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.RestrictedNotice.Acknowledged">
+  <owner>djmitche@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>tommasin@chromium.org</owner>
+  <description>
+    User acknowledged the Restricted Privacy Sandbox notice.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.RestrictedNotice.OpenedSettings">
+  <owner>djmitche@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>tommasin@chromium.org</owner>
+  <description>
+    User opened settings from the Restricted Privacy Sandbox notice.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User opened Fraud prevention subpage.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.BlockedTopicsOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the blocked Topics section, by clicking on the button in the
     Topics settings page.
@@ -29310,6 +29700,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Topics API in the Topics setting page.
   </description>
@@ -29318,6 +29709,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Topics API in the Topics settings page.
   </description>
@@ -29326,6 +29718,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.LearnMoreClicked">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the learn more about topics section, by clicking on the button
     in the Topics settings page.
@@ -29335,6 +29728,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Topics subpage from main sandbox settings page.
   </description>
@@ -29343,6 +29737,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.TopicAdded">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
   </description>
@@ -29351,6 +29746,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.TopicRemoved">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
   </description>
@@ -29448,6 +29844,13 @@ should be able to be added at any place in this file.
   <description>User clicks the extensions row in safety check.</description>
 </action>
 
+<action name="Settings.SafetyCheck.ReviewExtensionsThroughSafetyCheck">
+  <owner>psarouthakis@google.com</owner>
+  <description>
+    User clicks the review button in the extensions safety check.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.ReviewUnusedSitePermissions">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -29485,6 +29888,22 @@ should be able to be added at any place in this file.
   <owner>fernandex@chromium.org</owner>
   <description>
     Reported when user navigates to Google Sync Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.Tabs">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user navigates to Tabs Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.Tabs.InactiveTabs">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user navigates to Inactive Tabs Settings. iOS only.
   </description>
 </action>
 
@@ -30995,6 +31414,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromSetUpList">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when showing sign in that originates from the Set Up List on the
+    NTP. iOS only.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromSigninPromo" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -31705,6 +32133,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSetUpList">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST. iOS only.
   </description>
 </action>
 
@@ -34916,6 +35353,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_Closed">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User right-clicked the tab group header on a SavedTabGroup, and pressed the
+    close group button.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Deleted">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User performed an action that would delete a SavedTabGroup (Ex: Right-click
+    a button in the bookmarks bar and press delete group, close the last tab in
+    a group, unsave a group). This user action is not emitted when a change
+    originated from the sync service that would cause a group to be deleted.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Focused">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User attempted to open a SavedTabGroup that was already open by clicking a
+    SavedTabGroup button in the bookmarks bar, but focused the group instead.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Opened">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking a SavedTabGroup button in the
+    bookmarks bar.
+  </description>
+</action>
+
 <action name="TabGroups_SwitchGroupedTab">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -35414,6 +35889,12 @@ should be able to be added at any place in this file.
     The user selected the &quot;Share Highlight&quot; option in the Text
     Fragments popup menu.
   </description>
+</action>
+
+<action name="TextSelectionChanged">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>wbjacksonjr@chromium.org</owner>
+  <description>The text selection changed.</description>
 </action>
 
 <action name="TextToSpeech.Pause">
@@ -36993,8 +37474,11 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessageOptIn feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
+  <suffix name="AutofillFeedbackNewBadge"
+      label="For AutofillFeedbackNewBadge feature."/>
   <suffix name="AutofillVirtualCardSuggestion"
       label="For AutofillVirtualCardSuggestion feature."/>
+  <suffix name="BackNavigationMenu" label="For BackNavigationMenu feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
   <suffix name="BadgedTranslateManualTrigger"
       label="For BadgedTranslateManualTrigger feature."/>
@@ -37017,6 +37501,7 @@ should be able to be added at any place in this file.
       label="For ChromeReengagementNotification2 feature."/>
   <suffix name="ChromeReengagementNotification3"
       label="For ChromeReengagementNotification3 feature."/>
+  <suffix name="CompanionSidePanel" label="For companion side panel feature."/>
   <suffix name="ContextualPageActions_PriceTracking"
       label="For Contextual page actions price tracking feature."/>
   <suffix name="ContextualPageActions_PriceTrackingActionChip"
@@ -37131,6 +37616,10 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserOverflowMenuBadge feature"/>
   <suffix name="iOSDefaultBrowserSettingsBadge"
       label="For iOSDefaultBrowserSettingsBadge feature"/>
+  <suffix name="iOSHistoryOnOverflowMenuFeature"
+      label="For iOSHistoryOnOverflowMenuFeature feature"/>
+  <suffix name="iOSNewTabToolbarItemFeature"
+      label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
   <suffix name="iOSPromoCredentialProviderExtension"
       label="For iOSPromoCredentialProviderExtension feature"/>
@@ -37138,6 +37627,10 @@ should be able to be added at any place in this file.
       label="For iOSPromoDefaultBrowser feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
+  <suffix name="iOSShareToolbarItemFeature"
+      label="For iOSShareToolbarItemFeature feature"/>
+  <suffix name="iOSTabGridToolbarItemFeature"
+      label="For iOSTabGridToolbarItemFeature feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"
@@ -37161,8 +37654,6 @@ should be able to be added at any place in this file.
   <suffix name="NewTabPageHomeButton"
       label="For NewTabPageHomeButton feature."/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
-  <suffix name="OverflowMenuTip"
-      label="For the overflow menu help tip on iOS."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>
   <suffix name="PageZoom" label="For Page Zoom feature."/>
@@ -37182,6 +37673,8 @@ should be able to be added at any place in this file.
   <suffix name="PreviewsOmniboxUI"
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="PriceDropNTP" label="For PriceDropNTP feature."/>
+  <suffix name="PriceTrackingChipFeature"
+      label="For PriceTrackingChipFeature feature."/>
   <suffix name="PriceTrackingInSidePanel"
       label="For PriceTrackingInSidePanelFeature feature."/>
   <suffix name="PriceTrackingPageActionIconLabel"

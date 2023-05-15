@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/touch_to_fill/touch_to_fill_keyboard_suppressor.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -121,7 +122,7 @@ class TouchToFillKeyboardSuppressorTest
   FormGlobalId some_form_ = test::MakeFormGlobalId();
   FieldGlobalId some_field_ = test::MakeFieldGlobalId();
 
-  content::RenderFrameHost* child_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> child_rfh_ = nullptr;
 };
 
 // Tests that the keyboard is and remains suppressed if TTF is intended to be

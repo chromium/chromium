@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,6 +53,7 @@ enum class DownloadBubbleSubpageAction {
   kMaxValue = kPressedPrimaryButton
 };
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
+
 }  // namespace
 
 void DownloadBubbleSecurityView::AddHeader() {
@@ -161,6 +164,29 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     checkbox_->SetChecked(false);
     checkbox_->SetText(ui_info.checkbox_label);
   }
+
+  if (model_->GetDangerType() ==
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    size_t link_offset;
+    std::u16string link_text = l10n_util::GetStringUTF16(
+        IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
+    std::u16string link_label_text = l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER, link_text,
+        &link_offset);
+    deep_scanning_link_->SetText(link_label_text);
+
+    gfx::Range link_range(link_offset, link_offset + link_text.length());
+    views::StyledLabel::RangeStyleInfo link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &DownloadBubbleUIController::ProcessDownloadButtonPress,
+            bubble_controller_, model_.get(),
+            DownloadCommands::LEARN_MORE_SCANNING, /*is_main_view=*/false));
+    deep_scanning_link_->AddStyleRange(link_range, link_style);
+    deep_scanning_link_->SetVisible(true);
+    deep_scanning_link_->SizeToFit(min_label_width);
+  } else {
+    deep_scanning_link_->SetVisible(false);
+  }
 }
 
 void DownloadBubbleSecurityView::AddIconAndText() {
@@ -221,6 +247,11 @@ void DownloadBubbleSecurityView::AddIconAndText() {
                                /*adjust_height_for_width=*/true));
   // Set min height for checkbox, so that it can layout label accordingly.
   checkbox_->SetMinSize(gfx::Size(0, kCheckboxHeight));
+
+  deep_scanning_link_ =
+      wrapper->AddChildView(std::make_unique<views::StyledLabel>());
+  deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 }
 
 void DownloadBubbleSecurityView::ProcessButtonClick(
@@ -230,9 +261,12 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   // First open primary dialog, and then execute the command. If a deletion
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
-  navigation_handler_->OpenPrimaryDialog();
-  bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
-                                                 /*is_main_view=*/false);
+  if (navigation_handler_ && bubble_controller_) {
+    navigation_handler_->OpenPrimaryDialog();
+    bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
+                                                   /*is_main_view=*/false);
+  }
+
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
@@ -242,8 +276,7 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
     bool is_secondary_button,
-    bool has_checkbox,
-    ui::ColorId color_id) {
+    bool has_checkbox) {
   ui::DialogButton button_type =
       is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
 
@@ -255,7 +288,9 @@ void DownloadBubbleSecurityView::UpdateButton(
     bubble_delegate_->SetCancelCallback(std::move(callback));
     bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
-    button->SetEnabledTextColorIds(color_id);
+    if (button_info.color) {
+      button->SetEnabledTextColorIds(*button_info.color);
+    }
     secondary_button_ = button;
   } else {
     bubble_delegate_->SetAcceptCallback(std::move(callback));
@@ -281,14 +316,14 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   if (ui_info.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
     UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
-                 ui_info.has_checkbox, ui_info.GetColorForSecondaryText());
+                 ui_info.has_checkbox);
   }
 
   if (ui_info.subpage_buttons.size() > 1) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
                                  ui::DIALOG_BUTTON_CANCEL);
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
-                 ui_info.has_checkbox, ui_info.GetColorForSecondaryText());
+                 ui_info.has_checkbox);
   }
 }
 
@@ -339,11 +374,11 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
 }
 
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
-    DownloadBubbleUIController* bubble_controller,
-    DownloadBubbleNavigationHandler* navigation_handler,
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     views::BubbleDialogDelegate* bubble_delegate)
-    : bubble_controller_(bubble_controller),
-      navigation_handler_(navigation_handler),
+    : bubble_controller_(std::move(bubble_controller)),
+      navigation_handler_(std::move(navigation_handler)),
       bubble_delegate_(bubble_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);

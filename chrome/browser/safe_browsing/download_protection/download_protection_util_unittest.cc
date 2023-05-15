@@ -125,11 +125,11 @@ TEST(DownloadProtectionUtilTest, HigherWeightArchivesSelectedFirst) {
   }
 
   ClientDownloadRequest::ArchivedBinary zip;
-  zip.set_file_basename("a.zip");
+  zip.set_file_path("a.zip");
   zip.set_is_archive(true);
 
   ClientDownloadRequest::ArchivedBinary msi;
-  msi.set_file_basename("a.msi");
+  msi.set_file_path("a.msi");
   msi.set_is_executable(true);
 
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
@@ -144,9 +144,9 @@ TEST(DownloadProtectionUtilTest, HigherWeightArchivesSelectedFirst) {
   // Selecting a single deepest entry leads to just one zip in front of the
   // higher-weight files. So we expect this order.
   ASSERT_EQ(selected_binaries.size(), 3);
-  EXPECT_EQ(selected_binaries[0].file_basename(), "a.zip");
-  EXPECT_EQ(selected_binaries[1].file_basename(), "a.msi");
-  EXPECT_EQ(selected_binaries[2].file_basename(), "a.zip");
+  EXPECT_EQ(selected_binaries[0].file_path(), "a.zip");
+  EXPECT_EQ(selected_binaries[1].file_path(), "a.msi");
+  EXPECT_EQ(selected_binaries[2].file_path(), "a.zip");
 }
 
 TEST(DownloadProtectionUtilTest, EncryptedFileSelected) {
@@ -161,11 +161,11 @@ TEST(DownloadProtectionUtilTest, EncryptedFileSelected) {
   }
 
   ClientDownloadRequest::ArchivedBinary zip;
-  zip.set_file_basename("a.zip");
+  zip.set_file_path("a.zip");
   zip.set_is_archive(true);
 
   ClientDownloadRequest::ArchivedBinary encrypted;
-  encrypted.set_file_basename("encrypted.dll");
+  encrypted.set_file_path("encrypted.dll");
   encrypted.set_is_executable(true);
   encrypted.set_is_encrypted(true);
 
@@ -178,8 +178,8 @@ TEST(DownloadProtectionUtilTest, EncryptedFileSelected) {
       selected_binaries = SelectArchiveEntries(binaries);
 
   ASSERT_EQ(selected_binaries.size(), 2);
-  EXPECT_EQ(selected_binaries[0].file_basename(), "encrypted.dll");
-  EXPECT_EQ(selected_binaries[1].file_basename(), "a.zip");
+  EXPECT_EQ(selected_binaries[0].file_path(), "encrypted.dll");
+  EXPECT_EQ(selected_binaries[1].file_path(), "a.zip");
 }
 
 TEST(DownloadProtectionUtilTest, OnlyOneEncryptedFilePrioritized) {
@@ -194,11 +194,11 @@ TEST(DownloadProtectionUtilTest, OnlyOneEncryptedFilePrioritized) {
   }
 
   ClientDownloadRequest::ArchivedBinary exe;
-  exe.set_file_basename("evil.exe");
+  exe.set_file_path("evil.exe");
   exe.set_is_archive(true);
 
   ClientDownloadRequest::ArchivedBinary encrypted;
-  encrypted.set_file_basename("encrypted.dll");
+  encrypted.set_file_path("encrypted.dll");
   encrypted.set_is_executable(true);
   encrypted.set_is_encrypted(true);
 
@@ -207,7 +207,7 @@ TEST(DownloadProtectionUtilTest, OnlyOneEncryptedFilePrioritized) {
   *binaries.Add() = exe;
   *binaries.Add() = encrypted;
 
-  encrypted.set_file_basename("other_encrypted.dll");
+  encrypted.set_file_path("other_encrypted.dll");
   *binaries.Add() = encrypted;
 
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
@@ -215,9 +215,9 @@ TEST(DownloadProtectionUtilTest, OnlyOneEncryptedFilePrioritized) {
 
   // Only one encrypted DLL is prioritized over the more relevant exe.
   ASSERT_EQ(selected_binaries.size(), 3);
-  EXPECT_EQ(selected_binaries[0].file_basename(), "encrypted.dll");
-  EXPECT_EQ(selected_binaries[1].file_basename(), "evil.exe");
-  EXPECT_EQ(selected_binaries[2].file_basename(), "other_encrypted.dll");
+  EXPECT_EQ(selected_binaries[0].file_path(), "encrypted.dll");
+  EXPECT_EQ(selected_binaries[1].file_path(), "evil.exe");
+  EXPECT_EQ(selected_binaries[2].file_path(), "other_encrypted.dll");
 }
 
 TEST(DownloadProtectionUtilTest, DeepestEntrySelected) {
@@ -232,11 +232,11 @@ TEST(DownloadProtectionUtilTest, DeepestEntrySelected) {
   }
 
   ClientDownloadRequest::ArchivedBinary zip;
-  zip.set_file_basename("a.zip");
+  zip.set_file_path("a.zip");
   zip.set_is_archive(true);
 
   ClientDownloadRequest::ArchivedBinary deep;
-  deep.set_file_basename("hidden/in/deep/path/file.exe");
+  deep.set_file_path("hidden/in/deep/path/file.exe");
   deep.set_is_executable(true);
 
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
@@ -248,9 +248,8 @@ TEST(DownloadProtectionUtilTest, DeepestEntrySelected) {
       selected_binaries = SelectArchiveEntries(binaries);
 
   ASSERT_EQ(selected_binaries.size(), 2);
-  EXPECT_EQ(selected_binaries[0].file_basename(),
-            "hidden/in/deep/path/file.exe");
-  EXPECT_EQ(selected_binaries[1].file_basename(), "a.zip");
+  EXPECT_EQ(selected_binaries[0].file_path(), "hidden/in/deep/path/file.exe");
+  EXPECT_EQ(selected_binaries[1].file_path(), "a.zip");
 }
 
 TEST(DownloadProtectionUtilTest, OnlyOneDeepestEntryPrioritized) {
@@ -265,11 +264,11 @@ TEST(DownloadProtectionUtilTest, OnlyOneDeepestEntryPrioritized) {
   }
 
   ClientDownloadRequest::ArchivedBinary exe;
-  exe.set_file_basename("evil.exe");
+  exe.set_file_path("evil.exe");
   exe.set_is_executable(true);
 
   ClientDownloadRequest::ArchivedBinary deep;
-  deep.set_file_basename("hidden/in/deep/path/random.dll");
+  deep.set_file_path("hidden/in/deep/path/random.dll");
   deep.set_is_executable(true);
 
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
@@ -277,7 +276,7 @@ TEST(DownloadProtectionUtilTest, OnlyOneDeepestEntryPrioritized) {
   *binaries.Add() = exe;
   *binaries.Add() = deep;
 
-  deep.set_file_basename("hidden/in/deep/path/other.dll");
+  deep.set_file_path("hidden/in/deep/path/other.dll");
   *binaries.Add() = deep;
 
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
@@ -285,11 +284,9 @@ TEST(DownloadProtectionUtilTest, OnlyOneDeepestEntryPrioritized) {
 
   // One deep entry is prioritized over the more relevant entry at the root.
   ASSERT_EQ(selected_binaries.size(), 3);
-  EXPECT_EQ(selected_binaries[0].file_basename(),
-            "hidden/in/deep/path/random.dll");
-  EXPECT_EQ(selected_binaries[1].file_basename(), "evil.exe");
-  EXPECT_EQ(selected_binaries[2].file_basename(),
-            "hidden/in/deep/path/other.dll");
+  EXPECT_EQ(selected_binaries[0].file_path(), "hidden/in/deep/path/random.dll");
+  EXPECT_EQ(selected_binaries[1].file_path(), "evil.exe");
+  EXPECT_EQ(selected_binaries[2].file_path(), "hidden/in/deep/path/other.dll");
 }
 
 }  // namespace safe_browsing

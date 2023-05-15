@@ -31,7 +31,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Look for a container query container in the shadow-including inclusive
   // ancestor chain of 'starting_element'.
   static Element* FindContainer(Element* starting_element,
-                                const ContainerSelector&);
+                                const ContainerSelector&,
+                                const TreeScope* selector_tree_scope);
   static bool EvalAndAdd(Element* style_container_candidate,
                          const StyleRecalcContext&,
                          const ContainerQuery&,

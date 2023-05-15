@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -52,8 +53,6 @@ class ProximityAuthProfilePrefManager
   int64_t GetLastPromotionCheckTimestampMs() const override;
   void SetPromotionShownCount(int count) override;
   int GetPromotionShownCount() const override;
-  void SetHasShownLoginDisabledMessage(bool has_shown) override;
-  bool HasShownLoginDisabledMessage() const override;
 
   // ash::multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
@@ -63,14 +62,14 @@ class ProximityAuthProfilePrefManager
  private:
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 
   // The account id of the current profile.
   AccountId account_id_;
 
   // Used to determine the FeatureState of Smart Lock.
-  ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_ =
-      nullptr;
+  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_ = nullptr;
 
   base::WeakPtrFactory<ProximityAuthProfilePrefManager> weak_ptr_factory_{this};
 };

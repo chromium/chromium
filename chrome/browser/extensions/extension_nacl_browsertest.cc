@@ -138,18 +138,13 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
     if (!IsNaClPluginLoaded())
       return;
 
-    bool embedded_plugin_created = false;
-    bool content_handler_plugin_created = false;
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "window.domAutomationController.send(EmbeddedPluginCreated());",
-        &embedded_plugin_created));
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "window.domAutomationController.send(ContentHandlerPluginCreated());",
-        &content_handler_plugin_created));
+    bool embedded_plugin_created =
+        content::EvalJs(web_contents, "EmbeddedPluginCreated();").ExtractBool();
+    bool content_handler_plugin_created =
+        content::EvalJs(web_contents, "ContentHandlerPluginCreated();")
+            .ExtractBool();
 
     EXPECT_EQ(embedded_plugin_created,
               (expected_to_succeed & PLUGIN_TYPE_EMBED) != 0);
@@ -271,18 +266,18 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
       embed.name = "nacl_module";
       embed.type = "application/x-pnacl";
       embed.src = "doesnt-exist.nmf";
-      embed.addEventListener('error', function() {
-          window.domAutomationController.send(true);
+      new Promise(resolve => {
+        embed.addEventListener('error', function() {
+            resolve(true);
+        });
+        document.body.appendChild(embed);
       });
-      document.body.appendChild(embed);
        )";
-  bool done;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(subframe, script, &done));
-  EXPECT_TRUE(done);
+  EXPECT_EQ(true, EvalJs(subframe, script));
 
   // If we get here, then it means that the renderer didn't crash (the crash
   // would have prevented the "error" event from firing and so
-  // ExecuteScriptAndExtractBool above wouldn't return).
+  // EvalJs above wouldn't return).
 }
 
 }  // namespace

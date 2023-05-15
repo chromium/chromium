@@ -66,11 +66,10 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            bool is_malware,
                                            bool is_allowlisted) {
-    base::Value attributes(base::Value::Type::DICT);
-    if (is_malware)
-      attributes.SetBoolKey("_malware", true);
-
-    attributes.SetBoolKey("_esbAllowlist", is_allowlisted);
+    auto attributes = base::Value::Dict().Set("_esbAllowlist", is_allowlisted);
+    if (is_malware) {
+      attributes.Set("_malware", true);
+    }
 
     service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
@@ -465,7 +464,7 @@ TEST_F(ExtensionAllowlistUnitTest, MissingAttributeAreIgnored) {
             extension_prefs()->GetDisableReasons(kExtensionId2));
 
   // Simulate an update check with no custom attribute defined.
-  base::Value attributes(base::Value::Type::DICT);
+  base::Value::Dict attributes;
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId1, attributes);
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId2, attributes);
 

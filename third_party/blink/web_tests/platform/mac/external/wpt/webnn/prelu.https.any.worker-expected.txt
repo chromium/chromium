@@ -5,6 +5,7 @@ FAIL prelu float32 3D tensors / sync Failed to execute 'buildSync' on 'MLGraphBu
 FAIL prelu float32 4D tensors / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL prelu float32 5D tensors / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL prelu float32 broadcast 4D x 1D slope / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL prelu float32 broadcast 4D x 1D slope of shape [1] / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL prelu float32 broadcast 4D x 2D slope / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL prelu float32 broadcast 4D x 3D slope / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL prelu float32 broadcast 4D x 4D slope / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -14,6 +15,7 @@ FAIL prelu float32 3D tensors / async promise_test: Unhandled rejection with val
 FAIL prelu float32 4D tensors / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL prelu float32 5D tensors / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL prelu float32 broadcast 4D x 1D slope / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL prelu float32 broadcast 4D x 1D slope of shape [1] / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL prelu float32 broadcast 4D x 2D slope / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL prelu float32 broadcast 4D x 3D slope / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL prelu float32 broadcast 4D x 4D slope / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

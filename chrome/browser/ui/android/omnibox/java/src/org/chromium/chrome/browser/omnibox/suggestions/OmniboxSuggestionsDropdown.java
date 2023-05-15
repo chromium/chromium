@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
@@ -361,7 +362,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
-                TimingMetric metric = SuggestionsMetrics.recordSuggestionListMeasureTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime()) {
             OmniboxAlignment omniboxAlignment = mEmbedder.getCurrentAlignment();
             maybeUpdateLayoutParams(omniboxAlignment.top);
             boolean useAlignmentSpecifiedHeight = OmniboxFeatures.omniboxConsumesImeInsets();
@@ -457,7 +458,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Layout");
-                TimingMetric metric = SuggestionsMetrics.recordSuggestionListLayoutTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionListLayoutTime()) {
             super.onLayout(changed, l, t, r, b);
         }
     }

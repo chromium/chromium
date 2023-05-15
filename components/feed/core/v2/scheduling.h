@@ -16,8 +16,6 @@ namespace feedstore {
 class Metadata;
 }
 namespace feed {
-constexpr base::TimeDelta kSuppressRefreshDuration = base::Minutes(30);
-
 // A schedule for making Feed refresh requests.
 // |anchor_time| + |refresh_offsets[i]| is the time each fetch should be made.
 struct RequestSchedule {

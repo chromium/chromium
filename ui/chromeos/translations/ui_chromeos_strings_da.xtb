@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skift til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> filer valgt</translation>
 <translation id="2383454254762599978">Flyt til papirkurven</translation>
 <translation id="2387458720915042159">Proxy-forbindelsestype</translation>
 <translation id="2389832672041313158">Burmesisk/myanmarsk</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">Du har ikke åbnet nogen videoer for nylig</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> filer er valgt</translation>
 <translation id="3685122418104378273">Synkronisering af Google Drev er som standard deaktiveret, når du bruger mobildata.</translation>
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">Enheden er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Indtast <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i din browser</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementer valgt</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Vis</translation>
 <translation id="485316830061041779">Tysk</translation>
@@ -579,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Græsk translitteration</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mapper er valgt</translation>
 <translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
@@ -601,6 +601,7 @@
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
 <translation id="57383366388012121">Sidste måned</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY-tastatur</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementer er valgt</translation>
 <translation id="5763377084591234761">Tysk (Schweiz)</translation>
 <translation id="5769519078756170258">Host eller domæne, der skal ekskluderes</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -756,7 +757,6 @@
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Der er ikke mere plads</translation>
 <translation id="6993826899923627728">Disse elementer er i din papirkurv</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> filer er valgt</translation>
 <translation id="7008426324576352165">Din organisation skal bruge lagerplads for at gennemføre uploaden.</translation>
 <translation id="7009985720488544166">Administratorpolitikken tillader ikke, at du flytter <ph name="COUNT" /> filer</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +791,7 @@
 <translation id="7252604552361840748">Find udvidelsen ovenfor</translation>
 <translation id="7256405249507348194">Ukendt fejl: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgængelige tjenester</translation>
+<translation id="7291818353625820805">Skal tasterne gentages? Deaktiver accenttegn i tastaturindstillingerne</translation>
 <translation id="7292816689782057017">Administratorpolitikken begrænser lagring til visse placeringer.</translation>
 <translation id="7294063083760278948">Telugu translitteration</translation>
 <translation id="7295662345261934369">Del med andre</translation>

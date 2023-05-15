@@ -2,91 +2,105 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-web_component_files = [
-  "emoji_button.ts",
-  "emoji_category_button.ts",
-  "emoji_error.ts",
-  "emoji_group.ts",
-  "emoji_group_button.ts",
-  "emoji_image.ts",
-  "emoji_picker.ts",
-  "emoji_search.ts",
-  "emoji_variants.ts",
-  "text_group_button.ts",
-]
+preprocess_folder = "$target_gen_dir/preprocessed"
 
-# Files that are passed as input to html_to_wrapper().
-html_files = [ "icons.html" ]
-foreach(f, web_component_files) {
-  html_files +=
-      [ string_replace(f, "." + get_path_info(f, "extension"), ".html") ]
+build_webui("build") {
+  grd_prefix = "emoji_picker"
+
+  static_files = [
+    "generic_error_dark.svg",
+    "generic_error.svg",
+    "index.html",
+    "network_error_dark.svg",
+    "network_error.svg",
+    "no_results_dark.svg",
+    "no_results.svg",
+  ]
+
+  web_component_files = [
+    "emoji_button.ts",
+    "emoji_category_button.ts",
+    "emoji_error.ts",
+    "emoji_group.ts",
+    "emoji_group_button.ts",
+    "emoji_image.ts",
+    "emoji_picker.ts",
+    "emoji_search.ts",
+    "emoji_variants.ts",
+    "text_group_button.ts",
+  ]
+
+  non_web_component_files = [
+    "constants.ts",
+    "emoji_picker_api_proxy.ts",
+    "events.ts",
+    "metadata_extension.ts",
+    "prefix_search.ts",
+    "store.ts",
+    "structs/trie.ts",
+    "types.ts",
+  ]
+
+  icons_html_files = [ "icons.html" ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts" ]
+
+  ts_composite = true
+  ts_definitions = [ "$preprocess_folder/fuse.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [
+    ":copy_fuse",
+    ":copy_fuse_dts",
+    "//ash/webui/common/resources:generate_definitions",
+  ]
+
+  extra_grdp_deps = [
+    ":build_fuse_grdp",
+    ":generate_json_files",
+  ]
+  extra_grdp_files = [
+    "$target_gen_dir/fuse_resources.grdp",
+    "emoji_ordering.grdp",
+  ]
 }
-html_wrapper_files = []
-foreach(f, html_files) {
-  html_wrapper_files += [ f + ".ts" ]
-}
 
-non_component_ts_files = [
-  "constants.ts",
-  "emoji_picker_api_proxy.ts",
-  "events.ts",
-  "metadata_extension.ts",
-  "prefix_search.ts",
-  "store.ts",
-  "structs/trie.ts",
-  "types.ts",
-]
-
-mojo_files = [ "emoji_picker.mojom-webui.ts" ]
-
-resources_grd_file = "$target_gen_dir/resources.grd"
-
-preprocessed_folder = "$target_gen_dir/preprocessed"
-
-copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator" ]
-  sources = []
-  foreach(_f, mojo_files) {
-    sources += [ "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/" + _f ]
-  }
-  outputs = [ "$preprocessed_folder/{{source_file_part}}" ]
+generate_grd("build_fuse_grdp") {
+  grd_prefix = "emoji_picker"
+  out_grd = "$target_gen_dir/fuse_resources.grdp"
+  input_files = [ "fuse.js" ]
+  input_files_base_dir = rebase_path(preprocess_folder, root_build_dir)
+  deps = [ ":copy_fuse" ]
 }
 
 copy("copy_fuse") {
   sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
-  outputs = [ "$preprocessed_folder/fuse.js" ]
+  outputs = [ "$preprocess_folder/fuse.js" ]
 }
 
 copy("copy_fuse_dts") {
   sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
-  outputs = [ "$preprocessed_folder/fuse.d.ts" ]
+  outputs = [ "$preprocess_folder/fuse.d.ts" ]
 }
 
-grit("resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = resources_grd_file
+# Generate json files listed in emoji_ordering.grdp.
+group("generate_json_files") {
   deps = [
-    ":build_grd",
     ":emoji_data",
     ":emoji_data_remaining",
     ":emoticon_data",
     ":symbol_data",
     ":symbol_test_data",
   ]
-  outputs = [
-    "grit/emoji_picker_resources.h",
-    "grit/emoji_picker_resources_map.cc",
-    "grit/emoji_picker_resources_map.h",
-    "emoji_picker_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
 }
 
 action_foreach("emoji_data") {
@@ -190,55 +204,4 @@ action("symbol_data") {
 copy("symbol_test_data") {
   sources = [ "./symbol_test_ordering.json" ]
   outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-  out_folder = preprocessed_folder
-}
-
-copy("copy_checked_in_ts_js_files") {
-  sources = web_component_files + non_component_ts_files
-  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-}
-
-ts_library("build_ts") {
-  composite = true
-  root_dir = "$target_gen_dir/preprocessed"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
-  in_files = web_component_files + non_component_ts_files + html_wrapper_files +
-             mojo_files + [ "fuse.js" ]
-  definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_elements:build_ts",
-    "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
-  ]
-  extra_deps = [
-    ":copy_checked_in_ts_js_files",
-    ":copy_fuse",
-    ":copy_fuse_dts",
-    ":copy_mojo",
-    ":html_wrapper_files",
-    "//ash/webui/common/resources:generate_definitions",
-  ]
-}
-
-generate_grd("build_grd") {
-  deps = [ ":build_ts" ]
-  grd_prefix = "emoji_picker"
-  out_grd = resources_grd_file
-  input_files = [
-    "generic_error_dark.svg",
-    "generic_error.svg",
-    "index.html",
-    "no_results_dark.svg",
-    "no_results.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [ "emoji_ordering.grdp" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

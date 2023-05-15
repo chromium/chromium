@@ -11,8 +11,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class GURL;
-
 namespace ash {
 class GuestOSInstallerUI;
 }
@@ -22,10 +20,8 @@ namespace guest_os {
 std::unique_ptr<ash::guest_os_installer::mojom::PageHandler>
 InstallerDelegateFactory(
     ash::GuestOSInstallerUI*,
-    const GURL&,
     mojo::PendingRemote<ash::guest_os_installer::mojom::Page>,
     mojo::PendingReceiver<ash::guest_os_installer::mojom::PageHandler>);
-
 }
 
 #endif

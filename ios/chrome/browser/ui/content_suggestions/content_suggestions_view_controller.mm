@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/action_list_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -47,40 +48,21 @@
 #endif
 
 namespace {
-// The width of the modules.
-const int kModuleWidthCompact = 343;
-const int kModuleWidthRegular = 432;
-
-// The spacing between the modules.
-const float kModuleVerticalSpacing = 16.0f;
-const float kModuleMinimizedVerticalSpacing = 14.0f;
-
-// The horizontal spacing between trending query views.
-const float kTrendingQueryViewHorizontalSpacing = 12.0f;
 
 // The bottom padding for the vertical stack view.
 const float kBottomStackViewPadding = 6.0f;
 
-// Returns the module width depending on the horizontal trait collection.
-CGFloat GetModuleWidthForHorizontalTraitCollection(
-    UITraitCollection* traitCollection) {
-  return traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular
-             ? kModuleWidthRegular
-             : kModuleWidthCompact;
-}
+// The minimum scroll velocity in order to swipe between modules in the Magic
+// Stack.
+const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
-// Returns the spacing between modules.
-CGFloat ModuleVerticalSpacing() {
-  return ShouldMinimizeSpacingForModuleRefresh()
-             ? kModuleMinimizedVerticalSpacing
-             : kModuleVerticalSpacing;
-}
 }  // namespace
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
-    URLDropDelegate>
+    URLDropDelegate,
+    UIScrollViewDelegate>
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
@@ -97,49 +79,32 @@ CGFloat ModuleVerticalSpacing() {
 // The Return To Recent Tab view.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
-// Module container of `returnToRecentTabTile`.
-@property(nonatomic, strong)
-    ContentSuggestionsModuleContainer* returnToRecentTabContainer;
 // StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
-// Module Container for the Most Visited Tiles.
-@property(nonatomic, strong)
-    ContentSuggestionsModuleContainer* mostVisitedModuleContainer;
+// Module Container for the `mostVisitedViews` when being shown in Magic Stack.
+@property(nonatomic, strong) ActionListModule* mostVisitedModuleContainer;
 // Width Anchor of the Most Visited Tiles container.
 @property(nonatomic, strong)
     NSLayoutConstraint* mostVisitedContainerWidthAnchor;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
-// Module Container for the Shortcuts.
-@property(nonatomic, strong)
-    ContentSuggestionsModuleContainer* shortcutsModuleContainer;
-// Width Anchor of the Shortcuts container.
-@property(nonatomic, strong) NSLayoutConstraint* shortcutsContainerWidthAnchor;
+// Module Container for the Shortcuts when being shown in Magic Stack.
+@property(nonatomic, strong) ActionListModule* shortcutsModuleContainer;
 // StackView holding all of `shortcutsViews`.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
-// Module Container for Trending Queries.
-@property(nonatomic, strong)
-    ContentSuggestionsModuleContainer* trendingQueriesModuleContainer;
-@property(nonatomic, strong) UIView* trendingQueriesContainingView;
-// Width Anchor of the Trending Queries module container.
-@property(nonatomic, strong)
-    NSLayoutConstraint* trendingQueriesContainerWidthAnchor;
-// List of all of the Trending Query views.
-@property(nonatomic, strong)
-    NSMutableArray<QuerySuggestionView*>* trendingQueryViews;
-// List of all UITapGestureRecognizers created for the Trending Queries.
-@property(nonatomic, strong)
-    NSMutableArray<UITapGestureRecognizer*>* trendingQueryTapRecognizers;
-// Set to YES when the trending queries fetch has been received.
-@property(nonatomic, assign) BOOL trendingQueriesReceived;
-
 @end
 
-@implementation ContentSuggestionsViewController
+@implementation ContentSuggestionsViewController {
+  UIScrollView* _magicStackScrollView;
+  UIStackView* _magicStack;
+  BOOL _shouldShowMagicStack;
+  NSArray<NSNumber*>* _magicStackModuleOrder;
+  NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
+}
 
 - (instancetype)init {
   return [super initWithNibName:nil bundle:nil];
@@ -152,8 +117,7 @@ CGFloat ModuleVerticalSpacing() {
   self.dragDropHandler.dropDelegate = self;
   [self.view addInteraction:[[UIDropInteraction alloc]
                                 initWithDelegate:self.dragDropHandler]];
-
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+  if (IsMagicStackEnabled()) {
     self.view.backgroundColor = [UIColor clearColor];
   } else {
     self.view.backgroundColor = ntp_home::NTPBackgroundColor();
@@ -162,9 +126,6 @@ CGFloat ModuleVerticalSpacing() {
 
   self.verticalStackView = [[UIStackView alloc] init];
   self.verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    self.verticalStackView.spacing = ModuleVerticalSpacing();
-  }
   self.verticalStackView.axis = UILayoutConstraintAxisVertical;
   // A centered alignment will ensure the views are centered.
   self.verticalStackView.alignment = UIStackViewAlignmentCenter;
@@ -183,10 +144,6 @@ CGFloat ModuleVerticalSpacing() {
   // `IsContentSuggestionsUIModuleRefreshEnabled()` is NO, then we add
   // `kBottomStackViewPadding`
   CGFloat bottomSpacing = kBottomStackViewPadding;
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    bottomSpacing =
-        ShouldMinimizeSpacingForModuleRefresh() ? 0 : kModuleVerticalSpacing;
-  }
   [NSLayoutConstraint activateConstraints:@[
     [self.verticalStackView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
@@ -199,23 +156,11 @@ CGFloat ModuleVerticalSpacing() {
                        constant:-bottomSpacing]
   ]];
 
-  CGFloat horizontalSpacing =
-      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
   if (self.returnToRecentTabTile) {
     UIView* parentView = self.returnToRecentTabTile;
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.returnToRecentTabContainer = [[ContentSuggestionsModuleContainer
-          alloc]
-          initWithContentView:self.returnToRecentTabTile
-                   moduleType:ContentSuggestionsModuleTypeReturnToRecentTab];
-      parentView = self.returnToRecentTabContainer;
-      [self.verticalStackView
-          addArrangedSubview:self.returnToRecentTabContainer];
-    } else {
-      [self addUIElement:self.returnToRecentTabTile
-          withCustomBottomSpacing:content_suggestions::
-                                      kReturnToRecentTabSectionBottomMargin];
-    }
+    [self addUIElement:self.returnToRecentTabTile
+        withCustomBottomSpacing:content_suggestions::
+                                    kReturnToRecentTabSectionBottomMargin];
     CGFloat cardWidth = content_suggestions::SearchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint activateConstraints:@[
@@ -224,127 +169,13 @@ CGFloat ModuleVerticalSpacing() {
           constraintEqualToConstant:ReturnToRecentTabHeight()]
     ]];
   }
-  if (IsContentSuggestionsUIModuleRefreshEnabled() ||
-      [self.mostVisitedViews count] > 0) {
-    self.mostVisitedStackView = [[UIStackView alloc] init];
-    self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-    self.mostVisitedStackView.spacing = horizontalSpacing;
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.mostVisitedStackView.backgroundColor =
-          ntp_home::NTPBackgroundColor();
-      self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-      self.mostVisitedModuleContainer =
-          [[ContentSuggestionsModuleContainer alloc]
-              initWithContentView:self.mostVisitedStackView
-                       moduleType:ContentSuggestionsModuleTypeMostVisited];
-      if (!self.mostVisitedViews) {
-        self.mostVisitedViews = [NSMutableArray array];
-        self.mostVisitedModuleContainer.isPlaceholder = YES;
-        // Add placeholder tiles if Most Visited Tiles are not ready yet.
-        for (int i = 0; i < 4; i++) {
-          ContentSuggestionsMostVisitedTileView* view =
-              [[ContentSuggestionsMostVisitedTileView alloc]
-                  initWithConfiguration:nil];
-          [self.mostVisitedViews addObject:view];
-        }
-      }
-      [self.verticalStackView
-          addArrangedSubview:self.mostVisitedModuleContainer];
-      CGFloat width =
-          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
-      self.mostVisitedContainerWidthAnchor =
-          [self.mostVisitedModuleContainer.widthAnchor
-              constraintEqualToConstant:width];
-      [NSLayoutConstraint
-          activateConstraints:@[ self.mostVisitedContainerWidthAnchor ]];
-    } else {
-      self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-      [self addUIElement:self.mostVisitedStackView
-          withCustomBottomSpacing:kMostVisitedBottomMargin];
-      CGFloat width =
-          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-      CGFloat height =
-          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-              .height;
-      [NSLayoutConstraint activateConstraints:@[
-        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-        [self.mostVisitedStackView.heightAnchor
-            constraintGreaterThanOrEqualToConstant:height]
-      ]];
-    }
+  if ([self.mostVisitedViews count] > 0) {
+    [self createAndInsertMostVisitedModule];
     [self populateMostVisitedModule];
   }
-  BOOL noTrendingQueriesToShow =
-      self.trendingQueriesReceived && [self.trendingQueryViews count] == 0;
-  if (IsTrendingQueriesModuleEnabled() && !noTrendingQueriesToShow) {
-    self.trendingQueriesContainingView = [[UIView alloc] init];
-    self.trendingQueriesModuleContainer =
-        [[ContentSuggestionsModuleContainer alloc]
-            initWithContentView:self.trendingQueriesContainingView
-                     moduleType:ContentSuggestionsModuleTypeTrendingQueries];
-    if (!self.trendingQueryViews) {
-      self.trendingQueriesModuleContainer.isPlaceholder = YES;
-      self.trendingQueryViews = [NSMutableArray array];
-      // Add placeholder tiles if Most Visited Tiles are not ready yet.
-      for (int i = 0; i < 4; i++) {
-        QuerySuggestionView* view =
-            [[QuerySuggestionView alloc] initWithConfiguration:nil];
-        view.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.trendingQueryViews addObject:view];
-      }
-    }
-    [self.verticalStackView
-        addArrangedSubview:self.trendingQueriesModuleContainer];
-    self.trendingQueriesContainerWidthAnchor =
-        [self.trendingQueriesModuleContainer.widthAnchor
-            constraintEqualToConstant:
-                GetModuleWidthForHorizontalTraitCollection(
-                    self.traitCollection)];
-    [NSLayoutConstraint
-        activateConstraints:@[ self.trendingQueriesContainerWidthAnchor ]];
-    [self populateTrendingQueriesModule];
-  }
   if (self.shortcutsViews) {
-    self.shortcutsStackView = [[UIStackView alloc] init];
-    self.shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
-    self.shortcutsStackView.spacing = horizontalSpacing;
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
-      self.shortcutsStackView.backgroundColor = ntp_home::NTPBackgroundColor();
-    } else {
-      self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
-    }
-    NSUInteger index = 0;
-    for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-      view.accessibilityIdentifier = [NSString
-          stringWithFormat:
-              @"%@%li",
-              kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(contentSuggestionsElementTapped:)];
-      [view addGestureRecognizer:tapRecognizer];
-      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-      [self.shortcutsStackView addArrangedSubview:view];
-      index++;
-    }
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.shortcutsModuleContainer = [[ContentSuggestionsModuleContainer alloc]
-          initWithContentView:self.shortcutsStackView
-                   moduleType:ContentSuggestionsModuleTypeShortcuts];
-      [self.verticalStackView addArrangedSubview:self.shortcutsModuleContainer];
-      CGFloat width =
-          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
-      self.shortcutsContainerWidthAnchor =
-          [self.shortcutsModuleContainer.widthAnchor
-              constraintEqualToConstant:width];
-      [NSLayoutConstraint
-          activateConstraints:@[ self.shortcutsContainerWidthAnchor ]];
-    } else {
+    self.shortcutsStackView = [self createShortcutsStackView];
+    if (!_shouldShowMagicStack) {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
       CGFloat width =
@@ -358,6 +189,11 @@ CGFloat ModuleVerticalSpacing() {
             constraintGreaterThanOrEqualToConstant:height]
       ]];
     }
+  }
+
+  if (_shouldShowMagicStack) {
+    CHECK(IsMagicStackEnabled());
+    [self createMagicStack];
   }
 }
 
@@ -388,34 +224,12 @@ CGFloat ModuleVerticalSpacing() {
   self.urlLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
-#pragma mark - UITraitEnvironment
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (IsContentSuggestionsUIModuleRefreshEnabled() &&
-      previousTraitCollection.horizontalSizeClass !=
-          self.traitCollection.horizontalSizeClass) {
-    self.shortcutsContainerWidthAnchor.constant =
-        GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
-    self.mostVisitedContainerWidthAnchor.constant =
-        GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
-    if (IsTrendingQueriesModuleEnabled()) {
-      self.trendingQueriesContainerWidthAnchor.constant =
-          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
-    }
-  }
-}
-
 #pragma mark - ContentSuggestionsConsumer
 
 - (void)showReturnToRecentTabTileWithConfig:
     (ContentSuggestionsReturnToRecentTabItem*)config {
   if (self.returnToRecentTabTile) {
     [self.returnToRecentTabTile removeFromSuperview];
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.returnToRecentTabContainer removeFromSuperview];
-    }
   }
 
   self.returnToRecentTabTile = [[ContentSuggestionsReturnToRecentTabView alloc]
@@ -430,23 +244,12 @@ CGFloat ModuleVerticalSpacing() {
   // tile to the StackView, otherwise, add to the verticalStackView.
   if (self.isViewLoaded) {
     UIView* parentView = self.returnToRecentTabTile;
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.returnToRecentTabContainer = [[ContentSuggestionsModuleContainer
-          alloc]
-          initWithContentView:self.returnToRecentTabTile
-                   moduleType:ContentSuggestionsModuleTypeReturnToRecentTab];
-      parentView = self.returnToRecentTabContainer;
-      [self.verticalStackView
-          insertArrangedSubview:self.returnToRecentTabContainer
-                        atIndex:0];
-    } else {
-      [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
-                                            atIndex:0];
-      [self.verticalStackView
-          setCustomSpacing:content_suggestions::
-                               kReturnToRecentTabSectionBottomMargin
-                 afterView:self.returnToRecentTabTile];
-    }
+    [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
+                                          atIndex:0];
+    [self.verticalStackView
+        setCustomSpacing:content_suggestions::
+                             kReturnToRecentTabSectionBottomMargin
+               afterView:self.returnToRecentTabTile];
     CGFloat cardWidth = content_suggestions::SearchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint activateConstraints:@[
@@ -484,19 +287,12 @@ CGFloat ModuleVerticalSpacing() {
 - (void)hideReturnToRecentTabTile {
   [self.returnToRecentTabTile removeFromSuperview];
   self.returnToRecentTabTile = nil;
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    // Remove module container.
-    [self.returnToRecentTabContainer removeFromSuperview];
-  }
 }
 
 - (void)setMostVisitedTilesWithConfigs:
     (NSArray<ContentSuggestionsMostVisitedItem*>*)configs {
   if (!configs) {
     return;
-  }
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    self.mostVisitedModuleContainer.isPlaceholder = NO;
   }
   if ([self.mostVisitedViews count]) {
     for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
@@ -511,9 +307,6 @@ CGFloat ModuleVerticalSpacing() {
   if ([configs count] == 0) {
     // No Most Visited Tiles to show. Remove module.
     [self.mostVisitedStackView removeFromSuperview];
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.mostVisitedModuleContainer removeFromSuperview];
-    }
     return;
   }
   NSInteger index = 0;
@@ -528,6 +321,11 @@ CGFloat ModuleVerticalSpacing() {
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
     [self.mostVisitedViews addObject:view];
     index++;
+  }
+  // If viewDidLoad has been called before the first valid Most Visited Tiles
+  // are available, construct `mostVisitedStackView`.
+  if (self.verticalStackView && !self.mostVisitedStackView) {
+    [self createAndInsertMostVisitedModule];
   }
   [self populateMostVisitedModule];
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
@@ -569,45 +367,6 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-- (void)setTrendingQueriesWithConfigs:
-    (NSArray<QuerySuggestionConfig*>*)configs {
-  DCHECK(IsTrendingQueriesModuleEnabled());
-  self.trendingQueriesReceived = YES;
-  if (!self.trendingQueriesContainingView) {
-    self.trendingQueriesContainingView = [[UIView alloc] init];
-  }
-  self.trendingQueriesModuleContainer.isPlaceholder = NO;
-
-  if ([self.trendingQueryViews count]) {
-    for (QuerySuggestionView* view in self.trendingQueryViews) {
-      [view removeFromSuperview];
-    }
-    [self.trendingQueryViews removeAllObjects];
-    [self.trendingQueryTapRecognizers removeAllObjects];
-  } else {
-    self.trendingQueryViews = [NSMutableArray array];
-  }
-
-  if ((int)[configs count] < kMaxTrendingQueries) {
-    // No Trending Queries to show. Remove module.
-    [self.trendingQueriesContainingView removeFromSuperview];
-    [self.trendingQueriesModuleContainer removeFromSuperview];
-    [self.audience moduleWasRemoved];
-    return;
-  }
-
-  for (QuerySuggestionConfig* config in configs) {
-    QuerySuggestionView* view =
-        [[QuerySuggestionView alloc] initWithConfiguration:config];
-    //      view.menuProvider = self.menuProvider;
-    view.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@", config.query];
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.trendingQueryViews addObject:view];
-  }
-  [self populateTrendingQueriesModule];
-}
-
 - (void)updateMostVisitedTileConfig:(ContentSuggestionsMostVisitedItem*)config {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
     if (view.config == config) {
@@ -619,35 +378,24 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
+- (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
+  _shouldShowMagicStack = YES;
+  _magicStackModuleOrder = order;
+}
+
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    height += [self.mostVisitedModuleContainer calculateIntrinsicHeight] +
-              ModuleVerticalSpacing();
-  } else if ([self.mostVisitedViews count] > 0) {
+  if ([self.mostVisitedViews count] > 0 &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
     height += MostVisitedCellSize(
                   UIApplication.sharedApplication.preferredContentSizeCategory)
                   .height +
               kMostVisitedBottomMargin;
   }
-  if (IsContentSuggestionsUIModuleRefreshEnabled() &&
-      IsTrendingQueriesModuleEnabled() &&
-      [self.trendingQueriesModuleContainer superview]) {
-    height += [self.trendingQueriesModuleContainer calculateIntrinsicHeight];
-    // Only skip bottom spacing if minimizing spacing and Trending Queries is
-    // the last module.
-    if (!ShouldMinimizeSpacingForModuleRefresh() ||
-        !ShouldHideShortcutsForTrendingQueries()) {
-      height += ModuleVerticalSpacing();
-    }
-  }
-  if ([self.shortcutsViews count] > 0) {
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      height += [self.shortcutsModuleContainer calculateIntrinsicHeight];
-      if (!ShouldMinimizeSpacingForModuleRefresh()) {
-        height += ModuleVerticalSpacing();
-      }
-    } else {
+  if (_shouldShowMagicStack) {
+    height += _magicStackScrollView.contentSize.height;
+  } else {
+    if ([self.shortcutsViews count] > 0) {
       height +=
           MostVisitedCellSize(
               UIApplication.sharedApplication.preferredContentSizeCategory)
@@ -656,9 +404,6 @@ CGFloat ModuleVerticalSpacing() {
   }
   if (self.returnToRecentTabTile) {
     height += ReturnToRecentTabHeight();
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      height += ModuleVerticalSpacing();
-    }
   }
   return height;
 }
@@ -719,12 +464,29 @@ CGFloat ModuleVerticalSpacing() {
       }
       [self.suggestionCommandHandler openMostRecentTab];
     }
-  } else if ([sender.view isKindOfClass:[QuerySuggestionView class]]) {
-    QuerySuggestionView* querySuggestionView =
-        static_cast<QuerySuggestionView*>(sender.view);
-    [self.suggestionCommandHandler
-        loadSuggestedQuery:querySuggestionView.config];
   }
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    _magicStackScrollViewWidthAnchor.constant = [MagicStackModuleContainer
+        moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  DCHECK(IsMagicStackEnabled());
+  targetContentOffset->x =
+      [self getNextPageOffsetForOffset:scrollView.contentOffset.x
+                              velocity:velocity.x];
 }
 
 #pragma mark - Private
@@ -736,24 +498,35 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-// Add the elements in `mostVisitedViews` into `verticalStackView`, constructing
-// `verticalStackView` beforehand if it has not been yet.
-- (void)populateMostVisitedModule {
-  // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct `mostVisitedStackView`.
-  if (!IsContentSuggestionsUIModuleRefreshEnabled() && self.verticalStackView &&
-      !self.mostVisitedStackView) {
-    self.mostVisitedStackView = [[UIStackView alloc] init];
-    self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-    self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-    self.mostVisitedStackView.spacing =
-        ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
-    // Find correct insertion position in the stack.
-    int insertionIndex = 0;
-    if (self.returnToRecentTabTile) {
-      insertionIndex++;
+- (void)createAndInsertMostVisitedModule {
+  CGFloat horizontalSpacing =
+      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+  self.mostVisitedStackView = [[UIStackView alloc] init];
+  self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
+  self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
+  self.mostVisitedStackView.spacing = horizontalSpacing;
+  self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
+
+  // Find correct insertion position in the stack.
+  int insertionIndex = 0;
+  if (self.returnToRecentTabTile) {
+    insertionIndex++;
+  }
+  if (IsMagicStackEnabled()) {
+    self.mostVisitedModuleContainer = [[ActionListModule alloc]
+        initWithContentView:self.mostVisitedStackView
+                       type:ContentSuggestionsModuleType::kMostVisited];
+    if (ShouldPutMostVisitedSitesInMagicStack()) {
+      [_magicStack insertArrangedSubview:self.mostVisitedModuleContainer
+                                 atIndex:0];
+    } else {
+      [self.verticalStackView
+          insertArrangedSubview:self.mostVisitedModuleContainer
+                        atIndex:insertionIndex];
+      [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
+                                     afterView:self.mostVisitedModuleContainer];
     }
+  } else {
     [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
                                           atIndex:insertionIndex];
     [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
@@ -768,6 +541,10 @@ CGFloat ModuleVerticalSpacing() {
           constraintEqualToConstant:size.height]
     ]];
   }
+}
+
+// Add the elements in `mostVisitedViews` into `verticalStackView`.
+- (void)populateMostVisitedModule {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
     view.menuProvider = self.menuProvider;
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
@@ -780,56 +557,104 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-- (void)populateTrendingQueriesModule {
-  for (QuerySuggestionView* view in self.trendingQueryViews) {
+- (UIStackView*)createShortcutsStackView {
+  UIStackView* shortcutsStackView = [[UIStackView alloc] init];
+  shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
+  shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
+  shortcutsStackView.spacing =
+      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+  shortcutsStackView.alignment = UIStackViewAlignmentTop;
+  NSUInteger index = 0;
+  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
+    view.accessibilityIdentifier = [NSString
+        stringWithFormat:
+            @"%@%li", kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
+            index];
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(contentSuggestionsElementTapped:)];
     [view addGestureRecognizer:tapRecognizer];
-    tapRecognizer.enabled = YES;
-    [self.trendingQueryTapRecognizers addObject:tapRecognizer];
-    [self.trendingQueriesContainingView addSubview:view];
+    [self.mostVisitedTapRecognizers addObject:tapRecognizer];
+    [shortcutsStackView addArrangedSubview:view];
+    index++;
   }
-  QuerySuggestionView* query1 = self.trendingQueryViews[0];
-  [query1 addBottomSeparator];
-  QuerySuggestionView* query2 = self.trendingQueryViews[1];
-  [query2 addBottomSeparator];
-  QuerySuggestionView* query3 = self.trendingQueryViews[2];
-  QuerySuggestionView* query4 = self.trendingQueryViews[3];
+  return shortcutsStackView;
+}
+
+- (void)createMagicStack {
+  CGFloat width = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  _magicStackScrollView = [[UIScrollView alloc] init];
+  [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
+  _magicStackScrollView.clipsToBounds = NO;
+  _magicStackScrollView.delegate = self;
+  [self addUIElement:_magicStackScrollView
+      withCustomBottomSpacing:kMostVisitedBottomMargin];
+
+  _magicStack = [[UIStackView alloc] init];
+  _magicStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _magicStack.axis = UILayoutConstraintAxisHorizontal;
+  _magicStack.distribution = UIStackViewDistributionEqualSpacing;
+  _magicStack.spacing = 10;
+  _magicStack.alignment = UIStackViewAlignmentCenter;
+  [_magicStackScrollView addSubview:_magicStack];
+
+  // Add Magic Stack modules in order dictated by `_magicStackModuleOrder`.
+  for (NSNumber* moduleType in _magicStackModuleOrder) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[moduleType intValue];
+    switch (type) {
+      case ContentSuggestionsModuleType::kShortcuts:
+        self.shortcutsModuleContainer = [[ActionListModule alloc]
+            initWithContentView:self.shortcutsStackView
+                           type:type];
+        [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
+        break;
+      case ContentSuggestionsModuleType::kMostVisited:
+        if (ShouldPutMostVisitedSitesInMagicStack()) {
+          [_magicStack addArrangedSubview:self.mostVisitedModuleContainer];
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  AddSameConstraints(_magicStack, _magicStackScrollView);
+  // Define width of ScrollView. Instrinsic content height of the
+  // StackView within the ScrollView will define the height of the
+  // ScrollView.
+  _magicStackScrollViewWidthAnchor =
+      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
   [NSLayoutConstraint activateConstraints:@[
-    [query1.topAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView.topAnchor],
-    [query1.leadingAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .leadingAnchor],
-    [query2.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:query1.trailingAnchor
-                                    constant:
-                                        kTrendingQueryViewHorizontalSpacing],
-    [query2.topAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView.topAnchor],
-    [query2.trailingAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .trailingAnchor],
-    [query3.leadingAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .leadingAnchor],
-    [query3.bottomAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .bottomAnchor],
-    [query3.topAnchor constraintEqualToAnchor:query1.bottomAnchor],
-    [query4.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:query3.trailingAnchor
-                                    constant:
-                                        kTrendingQueryViewHorizontalSpacing],
-    [query4.bottomAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .bottomAnchor],
-    [query4.trailingAnchor
-        constraintEqualToAnchor:self.trendingQueriesContainingView
-                                    .trailingAnchor],
-    [query4.topAnchor constraintEqualToAnchor:query3.topAnchor]
+    // Ensures only horizontal scrolling
+    [_magicStack.heightAnchor
+        constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
+    _magicStackScrollViewWidthAnchor
   ]];
+}
+
+// Determines the final page offset given the scroll `offset` and the `velocity`
+// scroll. If the drag is slow enough, then the closest page is the final state.
+// If the drag is in the negative direction, then go to the page previous to the
+// closest current page. If the drag is in the positive direction, then go to
+// the page after the closest current page.
+- (CGFloat)getNextPageOffsetForOffset:(CGFloat)offset
+                             velocity:(CGFloat)velocity {
+  CGFloat moduleWidth = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  NSUInteger moduleCount = [_magicStackModuleOrder count];
+
+  // Find closest page to the current scroll offset.
+  CGFloat closestPage = roundf(offset / moduleWidth);
+  closestPage = fminf(closestPage, moduleCount);
+
+  if (fabs(velocity) < kMagicStackMinimumPaginationScrollVelocity) {
+    return closestPage * moduleWidth;
+  }
+  if (velocity < 0) {
+    return (closestPage - 1) * moduleWidth;
+  }
+  return (closestPage + 1) * moduleWidth;
 }
 
 @end

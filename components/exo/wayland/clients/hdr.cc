@@ -156,9 +156,10 @@ void HdrClient::InitColorManagement() {
   CHECK(globals_.color_manager)
       << "Server doesn't support zcr_color_manager_v1.";
 
+  // This is only for the single output scenario.
   color_management_output_.reset(
       zcr_color_manager_v1_get_color_management_output(
-          globals_.color_manager.get(), globals_.output.get()));
+          globals_.color_manager.get(), globals_.outputs.back().get()));
   CHECK(color_management_output_) << "Can't create color management output.";
   zcr_color_management_output_v1_add_listener(
       color_management_output_.get(), &kOutputColorMangerListener, this);

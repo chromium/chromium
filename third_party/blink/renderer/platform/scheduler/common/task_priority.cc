@@ -20,6 +20,8 @@ ProtoPriority ToProtoPriority(TaskPriority priority) {
       return ProtoPriority::CONTROL_PRIORITY;
     case TaskPriority::kHighestPriority:
       return ProtoPriority::HIGHEST_PRIORITY;
+    case TaskPriority::kExtremelyHighPriority:
+      return ProtoPriority::EXTREMELY_HIGH_PRIORITY;
     case TaskPriority::kVeryHighPriority:
       return ProtoPriority::VERY_HIGH_PRIORITY;
     case TaskPriority::kHighPriorityContinuation:
@@ -67,6 +69,8 @@ const char* TaskPriorityToString(TaskPriority priority) {
       return "control";
     case TaskPriority::kHighestPriority:
       return "highest";
+    case TaskPriority::kExtremelyHighPriority:
+      return "render_blocking";
     case TaskPriority::kVeryHighPriority:
       return "very_high";
     case TaskPriority::kHighPriorityContinuation:

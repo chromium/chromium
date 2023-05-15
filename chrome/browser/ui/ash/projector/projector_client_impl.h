@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -103,7 +104,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   // Called when app registry becomes ready.
   void SetAppIsDisabled(bool disabled);
 
-  ash::ProjectorController* const controller_;
+  const raw_ptr<ash::ProjectorController, ExperimentalAsh> controller_;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<SpeechRecognitionRecognizerClientImpl> speech_recognizer_;

@@ -7,6 +7,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 
 class GURL;
 
@@ -52,6 +53,10 @@ class PrivacySandboxSettings : public KeyedService {
     // When this returns false, access control functions for Topics will
     // return as not allowed.
     virtual bool HasAppropriateTopicsConsent() const = 0;
+
+    // Whether the profile is subject to being given notice of restrictions to
+    // the standard set of Privacy Sandbox APIs.
+    virtual bool IsSubjectToM1NoticeRestricted() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -188,6 +193,15 @@ class PrivacySandboxSettings : public KeyedService {
   // Virtual to allow mocking in tests.
   virtual bool IsPrivacySandboxRestricted() const = 0;
 
+  // Returns whether the privacy sandbox restricted notice should be shown,
+  // based on account characteristics. Forwards to the delegate. Virtual for
+  // mocking in tests.
+  virtual bool IsSubjectToM1NoticeRestricted() const = 0;
+
+  // Returns whether the Privacy Sandbox is partially enabled based on
+  // restrictions.
+  virtual bool IsRestrictedNoticeEnabled() const = 0;
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.
@@ -198,6 +212,10 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
+
+  // Overrides the privacy sandbox attestations map for testing.
+  virtual void SetPrivacySandboxAttestationsMapForTesting(
+      const PrivacySandboxAttestationsMap& attestations_map) = 0;
 };
 
 }  // namespace privacy_sandbox

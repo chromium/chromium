@@ -1,3 +1,4 @@
 file://chrome/browser/web_applications/OWNERS
 
+per-file sub_apps_service_impl*=giovax@chromium.org
 per-file sub_apps_service_impl*=isandrk@chromium.org

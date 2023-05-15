@@ -7,6 +7,7 @@ import json
 import tempfile
 from typing import Optional, Type, Union
 
+from skia_gold_common import output_managerless_skia_gold_session
 from skia_gold_common import skia_gold_properties
 from skia_gold_common import skia_gold_session
 
@@ -16,10 +17,13 @@ KeysInputType = Union[dict, str]
 class SkiaGoldSessionManager():
   def __init__(self, working_dir: str,
                gold_properties: skia_gold_properties.SkiaGoldProperties):
-    """Abstract class to manage one or more skia_gold_session.SkiaGoldSessions.
+    """Class to manage one or more skia_gold_session.SkiaGoldSessions.
 
     A separate session is required for each instance/corpus/keys_file
     combination, so this class will lazily create them as necessary.
+
+    The base implementation is usable on its own, but is meant to be overridden
+    as necessary.
 
     Args:
       working_dir: The working directory under which each individual
@@ -86,7 +90,7 @@ class SkiaGoldSessionManager():
     Returns:
       A reference to a SkiaGoldSession class.
     """
-    raise NotImplementedError
+    return output_managerless_skia_gold_session.OutputManagerlessSkiaGoldSession
 
 
 def _GetKeysAsDict(keys_input: KeysInputType) -> dict:

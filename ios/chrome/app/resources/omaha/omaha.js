@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Requests the debug information from the backend.
- */
-function requestOmahaDebugInformation() {
-  chrome.send('requestOmahaDebugInformation');
-}
+import 'chrome://resources/js/ios/web_ui.js';
+
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {$} from 'chrome://resources/js/util_ts.js';
+
 
 /**
  * Update the visibility state of the given element. Using the hidden attribute
@@ -20,14 +19,17 @@ function setVisible(element, visible) {
 }
 
 /**
- * Callback from backend with the debug informations. Construct the UI.
+ * Callback with the debug information. Construct the UI.
  * @param {Object} information The debug information.
  */
 function updateOmahaDebugInformation(information) {
-  for (key in information) {
+  for (const key in information) {
     $(key).textContent = information[key];
     setVisible($(key + '-tr'), true);
   }
 }
 
-document.addEventListener('DOMContentLoaded', requestOmahaDebugInformation);
+document.addEventListener('DOMContentLoaded', async () => {
+  const information = await sendWithPromise('requestOmahaDebugInformation');
+  updateOmahaDebugInformation(information);
+});

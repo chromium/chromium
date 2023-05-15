@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, osPageVisibility, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
@@ -37,7 +36,7 @@ suite('MainPageTests', function() {
     settingsMain = document.createElement('os-settings-main');
     settingsMain.prefs = settingsPrefs.prefs;
     settingsMain.toolbarSpinnerActive = false;
-    settingsMain.pageVisibility = osPageVisibility;
+    settingsMain.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMain);
   });
 
@@ -102,7 +101,7 @@ suite('MainPageTests', function() {
    * @param {string} Expected 'display' value for the basic page.
    * @param {string} Expected 'display' value for the advanced page.
    */
-  async function assertPageVisibility(expectedBasic, expectedAdvanced) {
+  async function assertPageDisplay(expectedBasic, expectedAdvanced) {
     flush();
     const page = settingsMain.shadowRoot.querySelector('os-settings-page');
     assertEquals(
@@ -123,7 +122,7 @@ suite('MainPageTests', function() {
     Router.getInstance().navigateTo(routes.DEVICE);
     flush();
 
-    await assertPageVisibility('block', 'block');
+    await assertPageDisplay('block', 'block');
   });
 
   test('updates the title based on current route', function() {

@@ -356,8 +356,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool HandleAccelerator(const ui::Accelerator& accelerator,
                          bool require_priority_handler,
                          bool* was_handled) override;
-  bool BubbleAnchorViewContainedInWidget(uint64_t widget_id,
-                                         bool* contained) override;
 
   // remote_cocoa::mojom::NativeWidgetNSWindowHost, synchronous callbacks:
   void GetSheetOffsetY(GetSheetOffsetYCallback callback) override;
@@ -405,9 +403,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void HandleAccelerator(const ui::Accelerator& accelerator,
                          bool require_priority_handler,
                          HandleAcceleratorCallback callback) override;
-  void BubbleAnchorViewContainedInWidget(
-      uint64_t widget_id,
-      BubbleAnchorViewContainedInWidgetCallback callback) override;
 
   // DialogObserver:
   void OnDialogChanged() override;

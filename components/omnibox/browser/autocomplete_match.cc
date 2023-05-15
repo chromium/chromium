@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -31,6 +32,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -278,14 +280,16 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       answer(match.answer),
       transition(match.transition),
       type(match.type),
-      has_tab_match(match.has_tab_match),
+      suggest_type(match.suggest_type),
       subtypes(match.subtypes),
+      has_tab_match(match.has_tab_match),
       associated_keyword(match.associated_keyword
                              ? new AutocompleteMatch(*match.associated_keyword)
                              : nullptr),
       keyword(match.keyword),
       from_keyword(match.from_keyword),
       actions(match.actions),
+      takeover_action(match.takeover_action),
       from_previous(match.from_previous),
       search_terms_args(
           match.search_terms_args
@@ -338,12 +342,14 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   answer = std::move(match.answer);
   transition = std::move(match.transition);
   type = std::move(match.type);
-  has_tab_match = std::move(match.has_tab_match);
+  suggest_type = std::move(match.suggest_type);
   subtypes = std::move(match.subtypes);
+  has_tab_match = std::move(match.has_tab_match);
   associated_keyword = std::move(match.associated_keyword);
   keyword = std::move(match.keyword);
   from_keyword = std::move(match.from_keyword);
   actions = std::move(match.actions);
+  takeover_action = std::move(match.takeover_action);
   from_previous = std::move(match.from_previous);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
@@ -401,8 +407,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   answer = match.answer;
   transition = match.transition;
   type = match.type;
-  has_tab_match = match.has_tab_match;
+  suggest_type = match.suggest_type;
   subtypes = match.subtypes;
+  has_tab_match = match.has_tab_match;
   associated_keyword.reset(
       match.associated_keyword
           ? new AutocompleteMatch(*match.associated_keyword)
@@ -410,6 +417,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   keyword = match.keyword;
   from_keyword = match.from_keyword;
   actions = match.actions;
+  takeover_action = match.takeover_action;
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
@@ -1190,13 +1198,52 @@ void AutocompleteMatch::FilterOmniboxActions(
                }) != nullptr;
       });
 
-  auto allowed_action_id = allowed_action_id_iter != allowed_action_ids.end()
-                               ? *allowed_action_id_iter
-                               : OmniboxActionId::LAST;
+  OmniboxActionId allowed_action_id =
+      allowed_action_id_iter != allowed_action_ids.end()
+          ? *allowed_action_id_iter
+          : OmniboxActionId::LAST;
 
   std::erase_if(actions, [&](const auto& action) {
     return action->ActionId() != allowed_action_id;
   });
+}
+
+void AutocompleteMatch::FilterAndSortActionsInSuggest() {
+  if (actions.empty()) {
+    return;
+  }
+
+  // Sort: Call -> Directions -> Reviews, or Reviews -> Directions -> Call.
+  bool sort_descending =
+      OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.Get();
+  auto less_comparator = [sort_descending](auto k1, auto k2) -> bool {
+    bool is_less_ascending = (k1 == omnibox::ActionInfo_ActionType_CALL) ||
+                             (k2 == omnibox::ActionInfo_ActionType_REVIEWS);
+    return is_less_ascending ^ sort_descending;
+  };
+  std::multimap<omnibox::ActionInfo::ActionType, scoped_refptr<OmniboxAction>,
+                decltype(less_comparator)>
+      actions_in_suggest_to_reinsert(less_comparator);
+
+  // Collect all Actions in Suggest.
+  omnibox::ActionInfo::ActionType remove_action_type =
+      OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.Get();
+  actions.erase(
+      std::remove_if(
+          actions.begin(), actions.end(),
+          [&actions_in_suggest_to_reinsert,
+           remove_action_type](const scoped_refptr<OmniboxAction>& action) {
+            auto* ais = OmniboxActionInSuggest::FromAction(action.get());
+            if (ais != nullptr && ais->Type() != remove_action_type) {
+              actions_in_suggest_to_reinsert.emplace(ais->Type(), action);
+            }
+            return ais != nullptr;
+          }),
+      actions.end());
+
+  for (auto pair : actions_in_suggest_to_reinsert) {
+    actions.emplace_back(std::move(pair.second));
+  }
 }
 
 bool AutocompleteMatch::IsTrivialAutocompletion() const {
@@ -1313,6 +1360,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
       fill_into_edit == duplicate_match.fill_into_edit &&
       IsSearchHistoryType(duplicate_match.type)) {
     type = duplicate_match.type;
+    suggest_type = duplicate_match.suggest_type;
   }
 
   // And always absorb the higher relevance score of duplicates.
@@ -1323,10 +1371,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   from_previous = from_previous && duplicate_match.from_previous;
 
-  // Take the `actions` so that they will be presented instead of buried.
+  // Absorb the `actions` and `takeover_action` so they won't be buried.
   if (actions.empty() && !duplicate_match.actions.empty() &&
       IsActionCompatible()) {
     actions = std::move(duplicate_match.actions);
+    takeover_action = std::move(duplicate_match.takeover_action);
   }
 
   // Prefer fresh suggestion text over potentially stale shortcut text for
@@ -1361,192 +1410,201 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 }
 
 void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
-  // Take the maximum.
-  if (other.scoring_signals.has_typed_count()) {
-    scoring_signals.set_typed_count(std::max(
-        scoring_signals.typed_count(), other.scoring_signals.typed_count()));
+  if (!other.scoring_signals.has_value()) {
+    return;
+  }
+
+  if (!scoring_signals.has_value()) {
+    scoring_signals = absl::make_optional<ScoringSignals>();
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_visit_count()) {
-    scoring_signals.set_visit_count(std::max(
-        scoring_signals.visit_count(), other.scoring_signals.visit_count()));
-  }
-
-  // Take the minimum.
-  if (scoring_signals.has_elapsed_time_last_visit_secs() &&
-      other.scoring_signals.has_elapsed_time_last_visit_secs()) {
-    scoring_signals.set_elapsed_time_last_visit_secs(
-        std::min(scoring_signals.elapsed_time_last_visit_secs(),
-                 other.scoring_signals.elapsed_time_last_visit_secs()));
-  } else if (other.scoring_signals.has_elapsed_time_last_visit_secs()) {
-    scoring_signals.set_elapsed_time_last_visit_secs(
-        other.scoring_signals.elapsed_time_last_visit_secs());
+  if (other.scoring_signals->has_typed_count()) {
+    scoring_signals->set_typed_count(std::max(
+        scoring_signals->typed_count(), other.scoring_signals->typed_count()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_shortcut_visit_count()) {
-    scoring_signals.set_shortcut_visit_count(
-        std::max(scoring_signals.shortcut_visit_count(),
-                 other.scoring_signals.shortcut_visit_count()));
+  if (other.scoring_signals->has_visit_count()) {
+    scoring_signals->set_visit_count(std::max(
+        scoring_signals->visit_count(), other.scoring_signals->visit_count()));
   }
 
   // Take the minimum.
-  if (scoring_signals.has_shortest_shortcut_len() &&
-      other.scoring_signals.has_shortest_shortcut_len()) {
-    scoring_signals.set_shortest_shortcut_len(
-        std::min(scoring_signals.shortest_shortcut_len(),
-                 other.scoring_signals.shortest_shortcut_len()));
-  } else if (other.scoring_signals.has_shortest_shortcut_len()) {
-    scoring_signals.set_shortest_shortcut_len(
-        other.scoring_signals.shortest_shortcut_len());
+  if (scoring_signals->has_elapsed_time_last_visit_secs() &&
+      other.scoring_signals->has_elapsed_time_last_visit_secs()) {
+    scoring_signals->set_elapsed_time_last_visit_secs(
+        std::min(scoring_signals->elapsed_time_last_visit_secs(),
+                 other.scoring_signals->elapsed_time_last_visit_secs()));
+  } else if (other.scoring_signals->has_elapsed_time_last_visit_secs()) {
+    scoring_signals->set_elapsed_time_last_visit_secs(
+        other.scoring_signals->elapsed_time_last_visit_secs());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals->has_shortcut_visit_count()) {
+    scoring_signals->set_shortcut_visit_count(
+        std::max(scoring_signals->shortcut_visit_count(),
+                 other.scoring_signals->shortcut_visit_count()));
   }
 
   // Take the minimum.
-  if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec() &&
-      other.scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
-    scoring_signals.set_elapsed_time_last_shortcut_visit_sec(
-        std::min(scoring_signals.elapsed_time_last_shortcut_visit_sec(),
-                 other.scoring_signals.elapsed_time_last_shortcut_visit_sec()));
-  } else if (other.scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
-    scoring_signals.set_elapsed_time_last_shortcut_visit_sec(
-        other.scoring_signals.elapsed_time_last_shortcut_visit_sec());
+  if (scoring_signals->has_shortest_shortcut_len() &&
+      other.scoring_signals->has_shortest_shortcut_len()) {
+    scoring_signals->set_shortest_shortcut_len(
+        std::min(scoring_signals->shortest_shortcut_len(),
+                 other.scoring_signals->shortest_shortcut_len()));
+  } else if (other.scoring_signals->has_shortest_shortcut_len()) {
+    scoring_signals->set_shortest_shortcut_len(
+        other.scoring_signals->shortest_shortcut_len());
+  }
+
+  // Take the minimum.
+  if (scoring_signals->has_elapsed_time_last_shortcut_visit_sec() &&
+      other.scoring_signals->has_elapsed_time_last_shortcut_visit_sec()) {
+    scoring_signals->set_elapsed_time_last_shortcut_visit_sec(std::min(
+        scoring_signals->elapsed_time_last_shortcut_visit_sec(),
+        other.scoring_signals->elapsed_time_last_shortcut_visit_sec()));
+  } else if (other.scoring_signals
+                 ->has_elapsed_time_last_shortcut_visit_sec()) {
+    scoring_signals->set_elapsed_time_last_shortcut_visit_sec(
+        other.scoring_signals->elapsed_time_last_shortcut_visit_sec());
   }
 
   // Take the OR result.
-  if (other.scoring_signals.has_is_host_only()) {
-    scoring_signals.set_is_host_only(scoring_signals.is_host_only() ||
-                                     other.scoring_signals.is_host_only());
+  if (other.scoring_signals->has_is_host_only()) {
+    scoring_signals->set_is_host_only(scoring_signals->is_host_only() ||
+                                      other.scoring_signals->is_host_only());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_num_bookmarks_of_url()) {
-    scoring_signals.set_num_bookmarks_of_url(
-        std::max(scoring_signals.num_bookmarks_of_url(),
-                 other.scoring_signals.num_bookmarks_of_url()));
+  if (other.scoring_signals->has_num_bookmarks_of_url()) {
+    scoring_signals->set_num_bookmarks_of_url(
+        std::max(scoring_signals->num_bookmarks_of_url(),
+                 other.scoring_signals->num_bookmarks_of_url()));
   }
 
   // Take the minimum.
-  if (scoring_signals.has_first_bookmark_title_match_position() &&
-      other.scoring_signals.has_first_bookmark_title_match_position()) {
-    scoring_signals.set_first_bookmark_title_match_position(
-        std::min(scoring_signals.first_bookmark_title_match_position(),
-                 other.scoring_signals.first_bookmark_title_match_position()));
-  } else if (other.scoring_signals.has_first_bookmark_title_match_position()) {
-    scoring_signals.set_first_bookmark_title_match_position(
-        other.scoring_signals.first_bookmark_title_match_position());
+  if (scoring_signals->has_first_bookmark_title_match_position() &&
+      other.scoring_signals->has_first_bookmark_title_match_position()) {
+    scoring_signals->set_first_bookmark_title_match_position(
+        std::min(scoring_signals->first_bookmark_title_match_position(),
+                 other.scoring_signals->first_bookmark_title_match_position()));
+  } else if (other.scoring_signals->has_first_bookmark_title_match_position()) {
+    scoring_signals->set_first_bookmark_title_match_position(
+        other.scoring_signals->first_bookmark_title_match_position());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_bookmark_title_match_length()) {
-    scoring_signals.set_total_bookmark_title_match_length(
-        std::max(scoring_signals.total_bookmark_title_match_length(),
-                 other.scoring_signals.total_bookmark_title_match_length()));
+  if (other.scoring_signals->has_total_bookmark_title_match_length()) {
+    scoring_signals->set_total_bookmark_title_match_length(
+        std::max(scoring_signals->total_bookmark_title_match_length(),
+                 other.scoring_signals->total_bookmark_title_match_length()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_num_input_terms_matched_by_bookmark_title()) {
-    scoring_signals.set_num_input_terms_matched_by_bookmark_title(std::max(
-        scoring_signals.num_input_terms_matched_by_bookmark_title(),
-        other.scoring_signals.num_input_terms_matched_by_bookmark_title()));
+  if (other.scoring_signals->has_num_input_terms_matched_by_bookmark_title()) {
+    scoring_signals->set_num_input_terms_matched_by_bookmark_title(std::max(
+        scoring_signals->num_input_terms_matched_by_bookmark_title(),
+        other.scoring_signals->num_input_terms_matched_by_bookmark_title()));
   }
 
   // Take the minimum.
-  if (scoring_signals.has_first_url_match_position() &&
-      other.scoring_signals.has_first_url_match_position()) {
-    scoring_signals.set_first_url_match_position(
-        std::min(scoring_signals.first_url_match_position(),
-                 other.scoring_signals.first_url_match_position()));
-  } else if (other.scoring_signals.has_first_url_match_position()) {
-    scoring_signals.set_first_url_match_position(
-        other.scoring_signals.first_url_match_position());
+  if (scoring_signals->has_first_url_match_position() &&
+      other.scoring_signals->has_first_url_match_position()) {
+    scoring_signals->set_first_url_match_position(
+        std::min(scoring_signals->first_url_match_position(),
+                 other.scoring_signals->first_url_match_position()));
+  } else if (other.scoring_signals->has_first_url_match_position()) {
+    scoring_signals->set_first_url_match_position(
+        other.scoring_signals->first_url_match_position());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_url_match_length()) {
-    scoring_signals.set_total_url_match_length(
-        std::max(scoring_signals.total_url_match_length(),
-                 other.scoring_signals.total_url_match_length()));
+  if (other.scoring_signals->has_total_url_match_length()) {
+    scoring_signals->set_total_url_match_length(
+        std::max(scoring_signals->total_url_match_length(),
+                 other.scoring_signals->total_url_match_length()));
   }
 
   // Take the OR result.
-  if (other.scoring_signals.has_host_match_at_word_boundary()) {
-    scoring_signals.set_host_match_at_word_boundary(
-        scoring_signals.host_match_at_word_boundary() ||
-        other.scoring_signals.host_match_at_word_boundary());
+  if (other.scoring_signals->has_host_match_at_word_boundary()) {
+    scoring_signals->set_host_match_at_word_boundary(
+        scoring_signals->host_match_at_word_boundary() ||
+        other.scoring_signals->host_match_at_word_boundary());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_host_match_length()) {
-    scoring_signals.set_total_host_match_length(
-        std::max(scoring_signals.total_host_match_length(),
-                 other.scoring_signals.total_host_match_length()));
+  if (other.scoring_signals->has_total_host_match_length()) {
+    scoring_signals->set_total_host_match_length(
+        std::max(scoring_signals->total_host_match_length(),
+                 other.scoring_signals->total_host_match_length()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_path_match_length()) {
-    scoring_signals.set_total_path_match_length(
-        std::max(scoring_signals.total_path_match_length(),
-                 other.scoring_signals.total_path_match_length()));
+  if (other.scoring_signals->has_total_path_match_length()) {
+    scoring_signals->set_total_path_match_length(
+        std::max(scoring_signals->total_path_match_length(),
+                 other.scoring_signals->total_path_match_length()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_query_or_ref_match_length()) {
-    scoring_signals.set_total_query_or_ref_match_length(
-        std::max(scoring_signals.total_query_or_ref_match_length(),
-                 other.scoring_signals.total_query_or_ref_match_length()));
+  if (other.scoring_signals->has_total_query_or_ref_match_length()) {
+    scoring_signals->set_total_query_or_ref_match_length(
+        std::max(scoring_signals->total_query_or_ref_match_length(),
+                 other.scoring_signals->total_query_or_ref_match_length()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_total_title_match_length()) {
-    scoring_signals.set_total_title_match_length(
-        std::max(scoring_signals.total_title_match_length(),
-                 other.scoring_signals.total_title_match_length()));
+  if (other.scoring_signals->has_total_title_match_length()) {
+    scoring_signals->set_total_title_match_length(
+        std::max(scoring_signals->total_title_match_length(),
+                 other.scoring_signals->total_title_match_length()));
   }
 
   // Take the OR result.
-  if (other.scoring_signals.has_has_non_scheme_www_match()) {
-    scoring_signals.set_has_non_scheme_www_match(
-        scoring_signals.has_non_scheme_www_match() ||
-        other.scoring_signals.has_non_scheme_www_match());
+  if (other.scoring_signals->has_has_non_scheme_www_match()) {
+    scoring_signals->set_has_non_scheme_www_match(
+        scoring_signals->has_non_scheme_www_match() ||
+        other.scoring_signals->has_non_scheme_www_match());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_num_input_terms_matched_by_title()) {
-    scoring_signals.set_num_input_terms_matched_by_title(
-        std::max(scoring_signals.num_input_terms_matched_by_title(),
-                 other.scoring_signals.num_input_terms_matched_by_title()));
+  if (other.scoring_signals->has_num_input_terms_matched_by_title()) {
+    scoring_signals->set_num_input_terms_matched_by_title(
+        std::max(scoring_signals->num_input_terms_matched_by_title(),
+                 other.scoring_signals->num_input_terms_matched_by_title()));
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_num_input_terms_matched_by_url()) {
-    scoring_signals.set_num_input_terms_matched_by_url(
-        std::max(scoring_signals.num_input_terms_matched_by_url(),
-                 other.scoring_signals.num_input_terms_matched_by_url()));
+  if (other.scoring_signals->has_num_input_terms_matched_by_url()) {
+    scoring_signals->set_num_input_terms_matched_by_url(
+        std::max(scoring_signals->num_input_terms_matched_by_url(),
+                 other.scoring_signals->num_input_terms_matched_by_url()));
   }
 
   // Take the minimum.
-  if (scoring_signals.has_length_of_url() &&
-      other.scoring_signals.has_length_of_url()) {
-    scoring_signals.set_length_of_url(
-        std::min(scoring_signals.length_of_url(),
-                 other.scoring_signals.length_of_url()));
-  } else if (other.scoring_signals.has_length_of_url()) {
-    scoring_signals.set_length_of_url(other.scoring_signals.length_of_url());
+  if (scoring_signals->has_length_of_url() &&
+      other.scoring_signals->has_length_of_url()) {
+    scoring_signals->set_length_of_url(
+        std::min(scoring_signals->length_of_url(),
+                 other.scoring_signals->length_of_url()));
+  } else if (other.scoring_signals->has_length_of_url()) {
+    scoring_signals->set_length_of_url(other.scoring_signals->length_of_url());
   }
 
   // Take the maximum.
-  if (other.scoring_signals.has_site_engagement()) {
-    scoring_signals.set_site_engagement(
-        std::max(scoring_signals.site_engagement(),
-                 other.scoring_signals.site_engagement()));
+  if (other.scoring_signals->has_site_engagement()) {
+    scoring_signals->set_site_engagement(
+        std::max(scoring_signals->site_engagement(),
+                 other.scoring_signals->site_engagement()));
   }
 
   // Take the OR result.
-  if (other.scoring_signals.has_allowed_to_be_default_match()) {
-    scoring_signals.set_allowed_to_be_default_match(
-        scoring_signals.allowed_to_be_default_match() ||
-        other.scoring_signals.allowed_to_be_default_match());
+  if (other.scoring_signals->has_allowed_to_be_default_match()) {
+    scoring_signals->set_allowed_to_be_default_match(
+        scoring_signals->allowed_to_be_default_match() ||
+        other.scoring_signals->allowed_to_be_default_match());
   }
 }
 
@@ -1709,8 +1767,8 @@ void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("keyword", keyword);
 }
 
-OmniboxAction* AutocompleteMatch::GetPrimaryAction() const {
-  return actions.empty() ? nullptr : actions[0].get();
+OmniboxAction* AutocompleteMatch::GetActionAt(size_t index) const {
+  return index >= actions.size() ? nullptr : actions[index].get();
 }
 
 #if DCHECK_IS_ON()

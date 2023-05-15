@@ -16,7 +16,8 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:focusable="true"
       android:focusableInTouchMode="true"
-      android:importantForAccessibility="no">
+      android:importantForAccessibility="no"
+      android:textDirection="locale">
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/edit_button"
@@ -92,12 +93,16 @@ found in the LICENSE file.
           android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <include
+    <TextView
+        android:id="@+id/autofill_address_profile_prompt_source_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/nickname_input_layout"
-        layout="@layout/autofill_address_profile_prompt_source_notice" />
+        android:layout_marginStart="@dimen/dialog_padding_sides"
+        android:breakStrategy="balanced"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        tools:text="@string/autofill_save_in_account_prompt_address_source_notice" />
   </RelativeLayout>
 </ScrollView>

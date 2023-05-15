@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -292,21 +292,6 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
-
-  // TODO(crbug.com/1375791): Consider overriding Attribution-Reporting-Support
-  // header.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb) &&
-      !request.HttpHeaderField(http_names::kAttributionReportingEligible)
-           .IsNull() &&
-      request.HttpHeaderField(http_names::kAttributionReportingSupport)
-          .IsNull()) {
-    if (AttributionSrcLoader* attribution_src_loader =
-            GetFrame()->GetAttributionSrcLoader()) {
-      request.AddHttpHeaderField(http_names::kAttributionReportingSupport,
-                                 attribution_src_loader->GetSupportHeader());
-    }
-  }
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set
@@ -365,7 +350,6 @@ void FrameFetchContext::PrepareRequest(
   String user_agent =
       ua_full ? GetFullUserAgent()
               : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
-  base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
   if (GetResourceFetcherProperties().IsDetached())
@@ -377,6 +361,14 @@ void FrameFetchContext::PrepareRequest(
 
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+
+  if (const AttributionSrcLoader* attribution_src_loader =
+          GetFrame()->GetAttributionSrcLoader()) {
+    request.SetAttributionReportingSupport(
+        attribution_src_loader->GetSupport());
+    request.SetAttributionReportingRuntimeFeatures(
+        attribution_src_loader->GetRuntimeFeatures());
+  }
 
   GetLocalFrameClient()->DispatchWillSendRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();
@@ -430,7 +422,7 @@ void FrameFetchContext::ModifyRequestForCSP(ResourceRequest& resource_request) {
 }
 
 void FrameFetchContext::AddClientHintsIfNecessary(
-    const FetchParameters::ResourceWidth& resource_width,
+    const absl::optional<float> resource_width,
     ResourceRequest& request) {
   // If the feature is enabled, then client hints are allowed only on secure
   // URLs.
@@ -517,7 +509,7 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
 
 void FrameFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const FetchParameters::ResourceWidth& resource_width,
+    const absl::optional<float> resource_width,
     ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   if (!GetResourceFetcherProperties().IsDetached())

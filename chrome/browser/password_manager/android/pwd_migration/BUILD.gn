@@ -1,0 +1,113 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("utils") {
+  sources = [
+    "../local_passwords_migration_warning_util.cc",
+    "../local_passwords_migration_warning_util.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//ui/android:android",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":utils",
+    "//chrome/browser",
+  ]
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java" ]
+}
+
+android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningProperties.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.pwd_migration"
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//third_party/espresso:espresso_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.pwd_migration"
+
+  # Consult izuzic@ before adding more tests to this target.
+  # This target will exist only temporary.
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningRenderTest.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources = [ "java/res/layout/pwd_migration_warning.xml" ]
+}

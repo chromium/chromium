@@ -1,0 +1,11 @@
+This tests that navigation timing entries don't require HTTP.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS entries.length is 1
+PASS entries[0].name is document.URL
+PASS new URL(entries[0].name).protocol is "file:"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

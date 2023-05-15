@@ -54,7 +54,7 @@ void AddButtonImageToOSExchangeData(SavedTabGroupButton* button,
 
 }  // anonymous namespace
 
-SavedTabGroupDragData::SavedTabGroupDragData(const base::GUID guid)
+SavedTabGroupDragData::SavedTabGroupDragData(const base::Uuid guid)
     : guid_(guid) {}
 
 // static
@@ -83,7 +83,7 @@ SavedTabGroupDragData::ReadFromOSExchangeData(const ui::OSExchangeData* data) {
     return absl::nullopt;
   }
 
-  base::GUID guid = base::GUID::ParseCaseInsensitive(guid_str);
+  base::Uuid guid = base::Uuid::ParseCaseInsensitive(guid_str);
   if (!guid.is_valid()) {
     return absl::nullopt;
   }

@@ -99,6 +99,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean isFocusedElementEditable() {
+        return false;
+    }
+
+    @Override
     public RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id) {
         return null;
     }
@@ -118,6 +123,9 @@ public class MockWebContents implements WebContents {
     public @Visibility int getVisibility() {
         return Visibility.VISIBLE;
     }
+
+    @Override
+    public void updateWebContentsVisibility(@Visibility int visibility) {}
 
     @Override
     public String getTitle() {

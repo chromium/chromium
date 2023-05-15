@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
@@ -298,6 +298,8 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       prefs->GetString(prefs::kDemoModeCountry);
   demo_app_installer_attributes["is_cloud_gaming_device"] =
       chromeos::features::IsCloudGamingDeviceEnabled() ? "true" : "false";
+  demo_app_installer_attributes["is_feature_aware_device"] =
+      ash::features::IsFeatureAwareDeviceDemoModeEnabled() ? "true" : "false";
   return demo_app_installer_attributes;
 }
 
@@ -326,9 +328,7 @@ void CrOSComponentInstaller::Load(const std::string& name,
     LoadInternal(name, std::move(load_callback));
   } else {
     // A compatible component is installed, do not load it.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback), Error::NONE,
-                                  base::FilePath()));
+    std::move(load_callback).Run(Error::NONE, base::FilePath());
   }
 }
 
@@ -347,11 +347,29 @@ bool CrOSComponentInstaller::Unload(const std::string& name) {
          component_updater_->UnregisterComponent(id);
 }
 
+void CrOSComponentInstaller::GetVersion(
+    const std::string& name,
+    base::OnceCallback<void(const base::Version&)> version_callback) const {
+  if (!IsCompatible(name)) {
+    // `name` does not match to any component.
+    std::move(version_callback).Run(base::Version());
+    return;
+  }
+
+  // Path compatible to `name` must exist.
+  CHECK(!GetCompatiblePath(name).empty());
+
+  ash::ImageLoaderClient::Get()->RequestComponentVersion(
+      name,
+      base::BindOnce(&CrOSComponentInstaller::FinishGetVersion,
+                     weak_factory_.GetWeakPtr(), std::move(version_callback)));
+}
+
 void CrOSComponentInstaller::RegisterInstalled() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(GetInstalled),
       base::BindOnce(&CrOSComponentInstaller::RegisterN,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CrOSComponentInstaller::RegisterCompatiblePath(
@@ -421,19 +439,18 @@ void CrOSComponentInstaller::Install(const std::string& name,
                                      LoadCallback load_callback) {
   const ComponentConfig* config = FindConfig(name);
   if (!config) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  Error::UNKNOWN_COMPONENT, base::FilePath()));
+    std::move(load_callback).Run(Error::UNKNOWN_COMPONENT, base::FilePath());
     return;
   }
 
-  Register(*config,
-           base::BindOnce(
-               &CrOSComponentInstaller::StartInstall, base::Unretained(this),
-               name, GenerateId(config->sha2hash), update_policy,
-               base::BindOnce(&CrOSComponentInstaller::FinishInstall,
-                              base::Unretained(this), name, mount_policy,
-                              update_policy, std::move(load_callback))));
+  Register(
+      *config,
+      base::BindOnce(
+          &CrOSComponentInstaller::StartInstall, weak_factory_.GetWeakPtr(),
+          name, GenerateId(config->sha2hash), update_policy,
+          base::BindOnce(&CrOSComponentInstaller::FinishInstall,
+                         weak_factory_.GetWeakPtr(), name, mount_policy,
+                         update_policy, std::move(load_callback))));
 }
 
 void CrOSComponentInstaller::StartInstall(
@@ -446,9 +463,7 @@ void CrOSComponentInstaller::StartInstall(
   const bool is_compatible = IsCompatible(name);
   if (update_policy == UpdatePolicy::kSkip ||
       (is_compatible && update_policy != UpdatePolicy::kForce)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(install_callback),
-                                  update_client::Error::NONE));
+    std::move(install_callback).Run(update_client::Error::NONE);
     return;
   }
 
@@ -469,22 +484,17 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
     if (error == update_client::Error::UPDATE_IN_PROGRESS) {
       err = Error::UPDATE_IN_PROGRESS;
     }
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(load_callback), err, base::FilePath()));
+    std::move(load_callback).Run(err, base::FilePath());
   } else if (!IsCompatible(name)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  update_policy == UpdatePolicy::kSkip
-                                      ? Error::NOT_FOUND
-                                      : Error::COMPATIBILITY_CHECK_FAILED,
-                                  base::FilePath()));
+    std::move(load_callback)
+        .Run(update_policy == UpdatePolicy::kSkip
+                 ? Error::NOT_FOUND
+                 : Error::COMPATIBILITY_CHECK_FAILED,
+             base::FilePath());
   } else if (mount_policy == MountPolicy::kMount) {
     LoadInternal(name, std::move(load_callback));
   } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback), Error::NONE,
-                                  base::FilePath()));
+    std::move(load_callback).Run(Error::NONE, base::FilePath());
   }
 }
 
@@ -512,7 +522,8 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
   ash::ImageLoaderClient::Get()->LoadComponentAtPath(
       name, path,
       base::BindOnce(&CrOSComponentInstaller::FinishLoad,
-                     base::Unretained(this), std::move(load_callback), name));
+                     weak_factory_.GetWeakPtr(), std::move(load_callback),
+                     name));
 }
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
@@ -539,6 +550,12 @@ void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
   }
 }
 
+void CrOSComponentInstaller::FinishGetVersion(
+    base::OnceCallback<void(const base::Version&)> version_callback,
+    absl::optional<std::string> result) const {
+  std::move(version_callback).Run(base::Version(result.value_or("")));
+}
+
 void CrOSComponentInstaller::RegisterN(
     const std::vector<ComponentConfig>& configs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -555,8 +572,7 @@ void CrOSComponentInstaller::DispatchLoadCallback(LoadCallback callback,
                                                   base::FilePath path,
                                                   bool success) {
   Error error = success ? Error::NONE : Error::MOUNT_FAILURE;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), error, std::move(path)));
+  std::move(callback).Run(error, std::move(path));
 }
 
 void CrOSComponentInstaller::DispatchFailedLoads(

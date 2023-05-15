@@ -7,13 +7,15 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './collapse_radio_button.js';
-import './secure_dns.js';
-import '../controls/settings_radio_group.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_radio_group.js';
+import '/shared/settings/controls/settings_toggle_button.js';
+import '/shared/settings/privacy_page/secure_dns.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
+import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -27,8 +29,6 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';

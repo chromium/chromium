@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_FAST_INITIATION_SCANNER_FEATURE_USAGE_METRICS_H_
 #define CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_FAST_INITIATION_SCANNER_FEATURE_USAGE_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -31,7 +32,7 @@ class FastInitiationScannerFeatureUsageMetrics final
   void RecordUsage(bool success);
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   ash::feature_usage::FeatureUsageMetrics feature_usage_metrics_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };

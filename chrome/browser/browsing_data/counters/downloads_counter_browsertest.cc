@@ -9,11 +9,11 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -118,7 +118,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
                                   const GURL& url,
                                   std::string mime_type,
                                   bool incognito) {
-    std::string guid = base::GenerateGUID();
+    std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
     std::vector<GURL> url_chain;
     url_chain.push_back(url);

@@ -314,6 +314,10 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetFocusedFrame(
   return rfh->GetJavaRenderFrameHost();
 }
 
+bool WebContentsAndroid::IsFocusedElementEditable(JNIEnv* env) {
+  return web_contents_->IsFocusedElementEditable();
+}
+
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderFrameHostFromId(
     JNIEnv* env,
     jint render_process_id,
@@ -426,6 +430,12 @@ ScopedJavaLocalRef<jobjectArray> WebContentsAndroid::GetInnerWebContents(
 
 jint WebContentsAndroid::GetVisibility(JNIEnv* env) {
   return static_cast<jint>(web_contents_->GetVisibility());
+}
+
+void WebContentsAndroid::UpdateWebContentsVisibility(JNIEnv* env,
+                                                     jint visibiity) {
+  web_contents_->UpdateWebContentsVisibility(
+      static_cast<Visibility>(visibiity));
 }
 
 RenderWidgetHostViewAndroid*

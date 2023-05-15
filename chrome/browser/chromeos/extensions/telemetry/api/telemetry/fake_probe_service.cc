@@ -13,9 +13,16 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
+
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
 
 FakeProbeService::FakeProbeService() : receiver_(this) {}
 
@@ -25,12 +32,17 @@ FakeProbeService::~FakeProbeService() {
 }
 
 void FakeProbeService::BindPendingReceiver(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::TelemetryProbeService> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 
+mojo::PendingRemote<crosapi::TelemetryProbeService>
+FakeProbeService::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
 void FakeProbeService::ProbeTelemetryInfo(
-    const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
+    const std::vector<crosapi::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   actual_requested_categories_.clear();
   actual_requested_categories_.insert(actual_requested_categories_.end(),
@@ -46,18 +58,16 @@ void FakeProbeService::GetOemData(GetOemDataCallback callback) {
 }
 
 void FakeProbeService::SetExpectedLastRequestedCategories(
-    std::vector<crosapi::mojom::ProbeCategoryEnum>
-        expected_requested_categories) {
+    std::vector<crosapi::ProbeCategoryEnum> expected_requested_categories) {
   expected_requested_categories_ = std::move(expected_requested_categories);
 }
 
 void FakeProbeService::SetProbeTelemetryInfoResponse(
-    crosapi::mojom::ProbeTelemetryInfoPtr response_info) {
+    crosapi::ProbeTelemetryInfoPtr response_info) {
   telem_info_ = std::move(response_info);
 }
 
-void FakeProbeService::SetOemDataResponse(
-    crosapi::mojom::ProbeOemDataPtr oem_data) {
+void FakeProbeService::SetOemDataResponse(crosapi::ProbeOemDataPtr oem_data) {
   oem_data_ = std::move(oem_data);
 }
 

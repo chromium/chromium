@@ -214,6 +214,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::WINDOW_MANAGEMENT,
      IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
      IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
+    {ContentSettingsType::STORAGE_ACCESS, IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS,
+     IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
 #endif
   };
   return kPermissionUIInfo;
@@ -351,6 +353,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       message_id = IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK;
+      break;
+    case ContentSettingsType::STORAGE_ACCESS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK;
       break;
     default:
       NOTREACHED();
@@ -681,9 +686,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
         DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
         DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
             permission.type));
-        message_id = delegate->IsMultipleTabsOpen()
-                         ? IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_MULTIPLE_TAB
-                         : IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_ONE_TAB;
+        message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE;
 #endif
       } else {
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED;
@@ -807,11 +810,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
   switch (permission.setting) {
     case CONTENT_SETTING_ALLOW:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
-      if (permission.is_one_time) {
-        permission.setting = CONTENT_SETTING_DEFAULT;
-      } else {
-        SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
-      }
+      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
       permission.is_one_time = false;
       break;
     case CONTENT_SETTING_BLOCK:

@@ -47,7 +47,6 @@
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/gpu_memory_ablation_experiment.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -56,6 +55,7 @@
 #endif
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
@@ -64,6 +64,11 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "gpu/ipc/service/built_in_shader_cache_loader.h"
+#include "gpu/ipc/service/built_in_shader_cache_writer.h"
 #endif
 
 namespace gpu {
@@ -161,10 +166,7 @@ void SetCrashKeyTimeDelta(base::debug::CrashKeyString* key,
 GpuChannelManager::GpuPeakMemoryMonitor::GpuPeakMemoryMonitor(
     GpuChannelManager* channel_manager,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : ablation_experiment_(
-          std::make_unique<GpuMemoryAblationExperiment>(channel_manager,
-                                                        task_runner)),
-      weak_factory_(this) {}
+    : weak_factory_(this) {}
 
 GpuChannelManager::GpuPeakMemoryMonitor::~GpuPeakMemoryMonitor() = default;
 
@@ -178,12 +180,6 @@ GpuChannelManager::GpuPeakMemoryMonitor::GetPeakMemoryUsage(
   if (sequence != sequence_trackers_.end()) {
     *out_peak_memory = sequence->second.total_memory_;
     allocation_per_source = sequence->second.peak_memory_per_source_;
-
-    uint64_t ablation_memory =
-        ablation_experiment_->GetPeakMemory(sequence_num);
-    *out_peak_memory += ablation_memory;
-    allocation_per_source[GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB] +=
-        ablation_memory;
   }
   return allocation_per_source;
 }
@@ -193,7 +189,6 @@ void GpuChannelManager::GpuPeakMemoryMonitor::StartGpuMemoryTracking(
   sequence_trackers_.emplace(
       sequence_num,
       SequenceTracker(current_memory_, current_memory_per_source_));
-  ablation_experiment_->StartSequence(sequence_num);
   TRACE_EVENT_ASYNC_BEGIN2("gpu", "PeakMemoryTracking", sequence_num, "start",
                            current_memory_, "start_sources",
                            StartTrackingTracedValue());
@@ -207,7 +202,6 @@ void GpuChannelManager::GpuPeakMemoryMonitor::StopGpuMemoryTracking(
                            sequence->second.total_memory_, "end_sources",
                            StopTrackingTracedValue(sequence->second));
     sequence_trackers_.erase(sequence);
-    ablation_experiment_->StopSequence(sequence_num);
   }
 }
 
@@ -290,7 +284,6 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
   current_memory_ += diff;
   current_memory_per_source_[source] += diff;
 
-  ablation_experiment_->OnMemoryAllocated(old_size, new_size);
   if (old_size < new_size) {
     // When memory has increased, iterate over the sequences to update their
     // peak.
@@ -383,7 +376,6 @@ GpuChannelManager::GpuChannelManager(
 
 GpuChannelManager::~GpuChannelManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
   // Clear |gpu_channels_| first to prevent reentrancy problems from GpuChannel
   // destructor.
   auto gpu_channels = std::move(gpu_channels_);
@@ -426,8 +418,25 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
 
     // Use the EGL blob cache extension for the passthrough decoder.
     if (use_passthrough_cmd_decoder()) {
-      program_cache_ = std::make_unique<gles2::PassthroughProgramCache>(
-          gpu_preferences_.gpu_program_cache_size, disable_disk_cache);
+      gles2::PassthroughProgramCache::ValueAddedHook* value_add_hook = nullptr;
+#if BUILDFLAG(IS_MAC)
+      if (base::FeatureList::IsEnabled(
+              features::kWriteMetalShaderCacheToDisk)) {
+        shader_cache_writer_ = std::make_unique<BuiltInShaderCacheWriter>();
+        value_add_hook = shader_cache_writer_.get();
+      }
+#endif
+      std::unique_ptr<gles2::PassthroughProgramCache> cache =
+          std::make_unique<gles2::PassthroughProgramCache>(
+              gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
+              value_add_hook);
+#if BUILDFLAG(IS_MAC)
+      auto entries = BuiltInShaderCacheLoader::TakeEntries();
+      for (auto& entry : *entries) {
+        cache->Set(std::move(entry.key), std::move(entry.value));
+      }
+#endif
+      program_cache_ = std::move(cache);
     } else {
       program_cache_ = std::make_unique<gles2::MemoryProgramCache>(
           gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
@@ -809,7 +818,9 @@ void GpuChannelManager::PerformImmediateCleanup() {
     fence_helper->PerformImmediateCleanup();
   }
 #endif
-  shared_context_state_->gr_context()->flushAndSubmit(true);
+  if (auto* context = shared_context_state_->gr_context()) {
+    context->flushAndSubmit(true);
+  }
 }
 
 void GpuChannelManager::HandleMemoryPressure(
@@ -1052,7 +1063,7 @@ void GpuChannelManager::OnContextLost(int context_lost_count,
   // Work around issues with recovery by allowing a new GPU process to launch.
   if (force_restart || gpu_driver_bug_workarounds_.exit_on_context_lost ||
       (shared_context_state_ && !shared_context_state_->GrContextIsGL())) {
-    delegate_->MaybeExitOnContextLost();
+    delegate_->MaybeExitOnContextLost(synthetic_loss);
   }
 }
 

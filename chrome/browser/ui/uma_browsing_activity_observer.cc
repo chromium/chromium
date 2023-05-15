@@ -87,7 +87,6 @@ void UMABrowsingActivityObserver::Observe(
     if (!load.is_navigation_to_different_page())
       return;  // Don't log for subframes or other trivial types.
 
-    LogRenderProcessHostCount();
     LogBrowserTabCount();
   }
 }
@@ -113,23 +112,11 @@ void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {
                                base::TimeDelta(time_since_upgrade).InHours());
 }
 
-void UMABrowsingActivityObserver::LogRenderProcessHostCount() const {
-  int hosts_count = 0;
-  for (content::RenderProcessHost::iterator i(
-           content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance())
-    ++hosts_count;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("MPArch.RPHCountPerLoad", hosts_count, 1, 50, 50);
-}
-
 void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int tab_count = 0;
   int tab_group_count = 0;
   int collapsed_tab_group_count = 0;
   int customized_tab_group_count = 0;
-  int app_window_count = 0;
-  int popup_window_count = 0;
-  int tabbed_window_count = 0;
   int pinned_tab_count = 0;
   std::map<base::StringPiece, int> unique_domain;
 
@@ -174,13 +161,6 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                                   browser->tab_strip_model()->count(), 1, 200,
                                   50);
     }
-    if (browser->is_type_app() || browser->is_type_app_popup() ||
-        browser->is_type_devtools())
-      app_window_count++;
-    else if (browser->is_type_popup())
-      popup_window_count++;
-    else if (browser->is_type_normal())
-      tabbed_window_count++;
   }
 
   // Record how many tabs share a domain based on the total number of tabs open.
@@ -226,14 +206,6 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   // Record how many tab groups are collapsed across all windows.
   UMA_HISTOGRAM_COUNTS_100("TabGroups.CollapsedGroupCountPerLoad",
                            collapsed_tab_group_count);
-
-  // Record how many windows are open, by type.
-  UMA_HISTOGRAM_COUNTS_100("WindowManager.AppWindowCountPerLoad",
-                           app_window_count);
-  UMA_HISTOGRAM_COUNTS_100("WindowManager.PopUpWindowCountPerLoad",
-                           popup_window_count);
-  UMA_HISTOGRAM_COUNTS_100("WindowManager.TabbedWindowCountPerLoad",
-                           tabbed_window_count);
 }
 
 std::string UMABrowsingActivityObserver::AppendTabBucketCountToHistogramName(

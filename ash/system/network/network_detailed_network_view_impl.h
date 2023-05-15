@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_IMPL_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/style/rounded_container.h"
 #include "ash/system/network/network_detailed_network_view.h"
@@ -68,11 +69,12 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   // wifi header, and wifi network entries. These containers are only used and
   // added to the `network_list_` when the `features::IsQsRevampEnabled()` is
   // true.
-  RoundedContainer* first_list_view_ = nullptr;
-  RoundedContainer* mobile_top_container_ = nullptr;
-  RoundedContainer* mobile_network_list_view_ = nullptr;
-  RoundedContainer* wifi_top_container_ = nullptr;
-  RoundedContainer* wifi_network_list_view_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> first_list_view_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> mobile_top_container_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> mobile_network_list_view_ =
+      nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> wifi_top_container_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> wifi_network_list_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -322,7 +322,6 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/OwnedScope.java",
       "$java_src_dir/org/chromium/chromecast/base/Scope.java",
       "$java_src_dir/org/chromium/chromecast/base/Sequencer.java",
-      "$java_src_dir/org/chromium/chromecast/base/Subscription.java",
       "$java_src_dir/org/chromium/chromecast/base/Unit.java",
 
       # TODO(sanfin): Move these files to another target.
@@ -372,6 +371,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndThenTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableDebugTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableDelayTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableDistinctUntilChangedTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFilterTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFlatMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFoldTest.java",

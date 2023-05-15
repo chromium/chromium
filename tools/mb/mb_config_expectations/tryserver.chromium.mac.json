@@ -85,6 +85,19 @@
       "use_remoteexec": true
     }
   },
+  "gpu-fyi-try-mac-arm64-apple-m2-retina-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "gpu-fyi-try-mac-intel-asan": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -488,6 +501,15 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "mac-cr23-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
       "use_remoteexec": true
     }
   },

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -339,7 +340,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   DevToolsIOContext* const io_context_;
 
   std::unique_ptr<Network::Frontend> frontend_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   StoragePartition* storage_partition_;
   RenderFrameHostImpl* host_;
   bool enabled_;

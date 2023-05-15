@@ -11,6 +11,8 @@ enum class RemoteAppsError {
   kNone = 0,
   kAppIdDoesNotExist,
   kFolderIdDoesNotExist,
+  kFailedToPinAnApp,
+  kPinningMultipleAppsNotSupported,
   // Manager has not been initialized.
   kNotReady,
 };

@@ -661,8 +661,8 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
   GURL popup_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
   content::TestNavigationObserver popup_observer(nullptr);
   popup_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(ExecuteScript(opener_contents,
-                            "window.open('" + popup_url.spec() + "');"));
+  EXPECT_TRUE(
+      ExecJs(opener_contents, "window.open('" + popup_url.spec() + "');"));
   popup_observer.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   content::WebContents* popup_contents =
@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
 
   // Close the popup.
   content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
-  EXPECT_TRUE(ExecuteScript(popup_contents, "window.close();"));
+  EXPECT_TRUE(ExecJs(popup_contents, "window.close();"));
   destroyed_watcher.Wait();
 
   // Check that we've only dispatched visibilitychange once.
@@ -743,8 +743,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithCrossSiteIframe) {
   // Install a dialog-showing beforeunload handler in the iframe.
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  EXPECT_TRUE(
-      ExecuteScript(child, "window.onbeforeunload = () => { return 'x' };"));
+  EXPECT_TRUE(ExecJs(child, "window.onbeforeunload = () => { return 'x' };"));
 
   // Close the browser and make sure the beforeunload dialog is shown and can
   // be clicked.
@@ -768,8 +767,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithSameSiteIframe) {
             web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Install a dialog-showing beforeunload handler in the iframe.
-  EXPECT_TRUE(
-      ExecuteScript(child, "window.onbeforeunload = () => { return 'x' };"));
+  EXPECT_TRUE(ExecJs(child, "window.onbeforeunload = () => { return 'x' };"));
 
   // Close the browser and make sure the beforeunload dialog is shown and can
   // be clicked.

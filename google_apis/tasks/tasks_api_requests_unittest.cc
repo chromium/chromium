@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -16,8 +15,8 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
-#include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -31,18 +30,6 @@ namespace {
 
 constexpr char kTaskListId[] = "random-task-list-id";
 constexpr char kTaskId[] = "random-task-id";
-
-// Helper class to temporary override `GaiaUrls` singleton.
-class GaiaUrlsOverrider {
- public:
-  GaiaUrlsOverrider() { GaiaUrls::SetInstanceForTesting(&test_gaia_urls_); }
-  GaiaUrlsOverrider(const GaiaUrlsOverrider&) = delete;
-  GaiaUrlsOverrider& operator=(const GaiaUrlsOverrider&) = delete;
-  ~GaiaUrlsOverrider() { GaiaUrls::SetInstanceForTesting(nullptr); }
-
- private:
-  GaiaUrls test_gaia_urls_;
-};
 
 }  // namespace
 
@@ -63,10 +50,11 @@ class TasksApiRequestsTest : public testing::Test {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &TasksApiRequestsTest::HandleDataFileRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        switches::kGoogleApisUrl, test_server_.base_url().spec());
-    gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverrider>();
-    ASSERT_EQ(GaiaUrls::GetInstance()->google_apis_origin_url(),
+
+    gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
+        base::CommandLine::ForCurrentProcess(), "tasks_api_origin_url",
+        test_server_.base_url().spec());
+    ASSERT_EQ(GaiaUrls::GetInstance()->tasks_api_origin_url(),
               test_server_.base_url().spec());
   }
 
@@ -86,13 +74,12 @@ class TasksApiRequestsTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::test::ScopedCommandLine command_line_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<RequestSender> request_sender_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_;
 
-  std::unique_ptr<GaiaUrlsOverrider> gaia_urls_overrider_;
+  std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   net::test_server::HttpRequest last_request_;
   std::string test_file_path_;
 };
@@ -146,7 +133,7 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(future.Get().has_value());
+  ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
 }
 
@@ -201,7 +188,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(future.Get().has_value());
+  ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
 }
 

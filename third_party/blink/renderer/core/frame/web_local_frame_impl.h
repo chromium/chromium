@@ -308,7 +308,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                       const WebNode& constrain_to_node) override;
   bool WillPrintSoon() override;
   float GetPrintPageShrink(uint32_t page) override;
-  float PrintPage(uint32_t page_to_print, cc::PaintCanvas*) override;
+  void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) override;
   void PrintEnd() override;
   void DispatchAfterPrintEvent() override;
   bool GetPrintPresetOptionsForPlugin(const WebNode&,

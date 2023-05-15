@@ -28,8 +28,6 @@ TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches_Sync) {
   // For the purposes of this test, IdentityManager has no primary account.
 
   // Sync is disabled.
-  sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
   sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
   EXPECT_FALSE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
@@ -79,8 +77,6 @@ TEST_F(SyncUtilsTest,
   syncer::TestSyncService sync_service;
 
   // For the purposes of this test, disable sync.
-  sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
   sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
   sync_service.GetUserSettings()->SetSelectedTypes(
       /* sync_everything */ false, {});
@@ -121,8 +117,7 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   // return true.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kHistory));
+      /*types=*/{syncer::UserSelectableType::kHistory});
 
   EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
@@ -134,8 +129,7 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   // History is not being synced.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
+      /*types=*/{syncer::UserSelectableType::kAutofill});
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
   sync_service.GetUserSettings()->SetSelectedTypes(
@@ -143,14 +137,23 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
       /*types=*/syncer::UserSelectableTypeSet::All());
 
   // Local sync is enabled.
+  ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
   sync_service.SetLocalSyncEnabled(true);
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
   sync_service.SetLocalSyncEnabled(false);
 
-  // The sync feature is disabled.
+  // The user didn't turn sync-the-feature on.
+  ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+  sync_service.SetHasSyncConsent(false);
+  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  sync_service.SetHasSyncConsent(true);
+
+  // The sync feature is disabled for some reason (e.g. via enterprise policy).
+  ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
   sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
   sync_service.SetDisableReasons({});

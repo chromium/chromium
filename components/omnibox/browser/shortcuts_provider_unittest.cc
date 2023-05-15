@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -279,14 +280,12 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // Even though these are enabled by default on desktop, they aren't enabled by
   // default on mobile. To avoid having 2 sets of tests around, explicitly
   // enable them for all platforms for tests.
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{omnibox::kRichAutocompletion,
-        {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-         {"RichAutocompletionAutocompleteShortcutText", "true"},
-         {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}}},
-       {omnibox::kShortcutExpanding, {}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox::kRichAutocompletion,
+      {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+       {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+       {"RichAutocompletionAutocompleteShortcutText", "true"},
+       {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}});
   RichAutocompletionParams::ClearParamsForTesting();
 }
 
@@ -328,6 +327,7 @@ int ShortcutsProviderTest::CalculateAggregateScore(
 
 void ShortcutsProviderTest::GetMatchesWithScoringSignals(
     const AutocompleteInput& input) {
+  provider_->matches_.clear();
   provider_->GetMatches(input, /*populate_scoring_signals=*/true);
 }
 
@@ -781,18 +781,37 @@ TEST_F(ShortcutsProviderTest, GetMatchesWithScoringSignals) {
   AutocompleteInput input(u"wi", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   GetMatchesWithScoringSignals(input);
-  const auto& matches = provider_->matches();
+  auto& matches = provider_->matches();
   EXPECT_EQ(matches.size(), 3u);
+  // These matches are all HISTORY_URL type, so should have scoring signals
+  // attached.
+  EXPECT_TRUE(AutocompleteScoringSignalsAnnotator::IsEligibleMatch(matches[0]));
+  EXPECT_TRUE(matches[0].scoring_signals.has_value());
+  EXPECT_TRUE(AutocompleteScoringSignalsAnnotator::IsEligibleMatch(matches[1]));
+  EXPECT_TRUE(matches[1].scoring_signals.has_value());
+  EXPECT_TRUE(AutocompleteScoringSignalsAnnotator::IsEligibleMatch(matches[2]));
+  EXPECT_TRUE(matches[2].scoring_signals.has_value());
   // There are 2 shortcuts with the wilson7 url which have the same aggregate
   // text length, visit count, and last visit as the 1 winston shortcut.
-  EXPECT_EQ(matches[0].scoring_signals.shortcut_visit_count(), 3);
-  EXPECT_EQ(matches[0].scoring_signals.shortest_shortcut_len(), 7);
+  EXPECT_EQ(matches[0].scoring_signals->shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[0].scoring_signals->shortest_shortcut_len(), 7);
 
-  EXPECT_EQ(matches[1].scoring_signals.shortcut_visit_count(), 3);
-  EXPECT_EQ(matches[1].scoring_signals.shortest_shortcut_len(), 7);
+  EXPECT_EQ(matches[1].scoring_signals->shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[1].scoring_signals->shortest_shortcut_len(), 7);
 
-  EXPECT_EQ(matches[2].scoring_signals.shortcut_visit_count(), 2);
-  EXPECT_EQ(matches[2].scoring_signals.shortest_shortcut_len(), 7);
+  EXPECT_EQ(matches[2].scoring_signals->shortcut_visit_count(), 2);
+  EXPECT_EQ(matches[2].scoring_signals->shortest_shortcut_len(), 7);
+
+  // Check again with an ineligible (SEARCH_HISTORY) type match and confirm
+  // that the match does not have scoring signals attached.
+  AutocompleteInput input2(u"que", metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  GetMatchesWithScoringSignals(input2);
+  EXPECT_EQ(matches.size(), 1u);
+
+  EXPECT_FALSE(
+      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(matches[0]));
+  EXPECT_FALSE(matches[0].scoring_signals.has_value());
 }
 
 TEST_F(ShortcutsProviderTest, Score) {

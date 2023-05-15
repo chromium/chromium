@@ -67,9 +67,6 @@ import java.util.List;
  */
 public class AccountManagementFragment extends PreferenceFragmentCompat
         implements Listener, SignInStateObserver, ProfileDataCache.Observer, CustomDividerFragment {
-    private static final String TAG = "AcctManagementPref";
-
-    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     /**

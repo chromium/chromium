@@ -6,9 +6,13 @@
 
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "url/gurl.h"
+#include "url/url_canon.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -230,6 +234,40 @@ std::string PatternParser::ToString(
   }
 
   return str;
+}
+
+GURL PatternParser::ToRepresentativeUrl(
+    const ContentSettingsPattern::PatternParts& parts) {
+  if (parts.scheme == url::kFileScheme) {
+    if (parts.is_path_wildcard) {
+      return GURL();
+    }
+    return GURL(parts.scheme + url::kStandardSchemeSeparator + parts.path);
+  }
+
+  if (parts.host.empty()) {
+    return GURL();
+  }
+
+  std::string default_port;
+  GURL::Replacements r;
+  r.SetHostStr(parts.host);
+
+  if (!parts.is_scheme_wildcard) {
+    r.SetSchemeStr(parts.scheme);
+    default_port = base::NumberToString(
+        url::DefaultPortForScheme(parts.scheme.c_str(), parts.scheme.length()));
+    r.SetPortStr(default_port);
+  }
+
+  if (!parts.is_port_wildcard) {
+    r.SetPortStr(parts.port);
+  }
+
+  GURL url("https://example.com");
+  url = url.ReplaceComponents(r);
+  DCHECK(url.is_valid()) << "parts: " << ToString(parts);
+  return url;
 }
 
 }  // namespace content_settings

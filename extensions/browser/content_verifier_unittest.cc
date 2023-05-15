@@ -205,10 +205,10 @@ class ContentVerifierTest : public ExtensionsTest {
   // Create a test extension with a content script and possibly a background
   // page or background script.
   scoped_refptr<Extension> CreateTestExtension() {
-    base::Value::Dict manifest;
-    manifest.Set("name", "Dummy Extension");
-    manifest.Set("version", "1");
-    manifest.Set("manifest_version", 2);
+    auto manifest = base::Value::Dict()
+                        .Set("name", "Dummy Extension")
+                        .Set("version", "1")
+                        .Set("manifest_version", 2);
 
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {

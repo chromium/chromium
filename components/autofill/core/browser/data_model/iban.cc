@@ -176,10 +176,9 @@ constexpr char16_t kCapitalizedIbanPattern[] =
 constexpr char16_t kEllipsisOneDot = u'\u2022';
 constexpr char16_t kEllipsisOneSpace = u'\u2006';
 
-IBAN::IBAN(const std::string& guid)
-    : AutofillDataModel(guid, /*origin=*/std::string()) {}
+IBAN::IBAN(const std::string& guid) : AutofillDataModel(guid) {}
 
-IBAN::IBAN() : IBAN(base::GenerateUuid()) {}
+IBAN::IBAN() : IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 IBAN::IBAN(const IBAN& iban) : IBAN() {
   operator=(iban);

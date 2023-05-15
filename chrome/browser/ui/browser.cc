@@ -1908,7 +1908,7 @@ void Browser::PortalWebContentsCreated(WebContents* portal_web_contents) {
   TabHelpers::AttachTabHelpers(portal_web_contents);
 
   // Make the portal show up in the task manager.
-  task_manager::WebContentsTags::CreateForPortal(portal_web_contents);
+  WebContentsBecamePortal(portal_web_contents);
 }
 
 void Browser::WebContentsBecamePortal(WebContents* portal_web_contents) {
@@ -3219,7 +3219,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(https://1278249): Update function name (and trigger chain) when usage
+// TODO(crbug.com/1443349): Update function name (and trigger chain) when usage
 // is finalized.
 void Browser::RunScreenAIAnnotator() {
   screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(profile())

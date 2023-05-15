@@ -50,6 +50,12 @@ NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state);
 // `web_state`.
 NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
 
+// Executes 1-tap action for the given `match`'s type and returns YES. Returns
+// NO if no direct 1-tap action is defined.
+BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
+                                NSTextCheckingResult* match,
+                                UIViewController* presenting_view_controller);
+
 // Returns `CRWContextMenuItem` items for the given `match`, for the given
 // `web_state`.
 NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(

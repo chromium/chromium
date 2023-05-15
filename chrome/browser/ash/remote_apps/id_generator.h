@@ -18,7 +18,7 @@ class IdGenerator {
   virtual std::string GenerateId() = 0;
 };
 
-// Generates IDs using |base::GenerateGUID()|.
+// Generates IDs using |base::Uuid::GenerateRandomV4().AsLowercaseString()|.
 class GuidIdGenerator : public IdGenerator {
  public:
   GuidIdGenerator() = default;

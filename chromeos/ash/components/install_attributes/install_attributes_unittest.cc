@@ -36,7 +36,6 @@ void CopyLockResult(base::RunLoop* loop,
 }  // namespace
 
 static const char kTestDomain[] = "example.com";
-static const char kTestRealm[] = "realm.example.com";
 static const char kTestDeviceId[] = "133750519";
 static const char kTestUserDeprecated[] = "test@example.com";
 
@@ -143,18 +142,6 @@ TEST_F(InstallAttributesTest, IsEnterpriseManagedCloud) {
   EXPECT_FALSE(install_attributes_->IsActiveDirectoryManaged());
 }
 
-TEST_F(InstallAttributesTest, IsEnterpriseManagedRealm) {
-  install_attributes_->Init(GetTempPath());
-  EXPECT_FALSE(install_attributes_->IsEnterpriseManaged());
-  ASSERT_EQ(InstallAttributes::LOCK_SUCCESS,
-            LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE_AD,
-                                       std::string(),  // domain
-                                       kTestRealm, kTestDeviceId));
-  EXPECT_TRUE(install_attributes_->IsEnterpriseManaged());
-  EXPECT_FALSE(install_attributes_->IsCloudManaged());
-  EXPECT_TRUE(install_attributes_->IsActiveDirectoryManaged());
-}
-
 TEST_F(InstallAttributesTest, IsEnterpriseManagedDemoMode) {
   install_attributes_->Init(GetTempPath());
   EXPECT_FALSE(install_attributes_->IsEnterpriseManaged());
@@ -181,22 +168,6 @@ TEST_F(InstallAttributesTest, GettersCloud) {
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
   EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(kTestDeviceId, install_attributes_->GetDeviceId());
-}
-
-TEST_F(InstallAttributesTest, GettersAD) {
-  install_attributes_->Init(GetTempPath());
-  EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
-  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
-  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
-  ASSERT_EQ(InstallAttributes::LOCK_SUCCESS,
-            LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE_AD,
-                                       std::string(),  // domain
-                                       kTestRealm, kTestDeviceId));
-  EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE_AD, install_attributes_->GetMode());
-  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
-  EXPECT_EQ(kTestRealm, install_attributes_->GetRealm());
   EXPECT_EQ(kTestDeviceId, install_attributes_->GetDeviceId());
 }
 

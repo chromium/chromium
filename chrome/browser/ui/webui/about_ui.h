@@ -41,11 +41,20 @@ class AboutUIHTMLSource : public content::URLDataSource {
   void FinishDataRequest(const std::string& html,
                          content::URLDataSource::GotDataCallback callback);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetOSCreditsPrefixForTesting(const base::FilePath& prefix) {
+    os_credits_prefix_ = prefix;
+  }
+#endif
+
   Profile* profile() { return profile_; }
 
  private:
   std::string source_name_;
   raw_ptr<Profile> profile_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::FilePath os_credits_prefix_;
+#endif
 };
 
 class AboutUI : public content::WebUIController {

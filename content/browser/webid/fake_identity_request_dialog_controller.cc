@@ -18,7 +18,7 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
 void FakeIdentityRequestDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
+    const absl::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -63,13 +63,10 @@ std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
 }
 
-void FakeIdentityRequestDialogController::ShowPopUpWindow(
+content::WebContents* FakeIdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
-    TokenCallback on_resolve,
     DismissCallback dismiss_callback) {
-  // Pretends that the url is loaded and calls the
-  // IdentityProvider.resolve() method with the fake token below.
-  std::move(on_resolve).Run("--fake-token-from-pop-up-window--");
+  return nullptr;
 }
 
 }  // namespace content

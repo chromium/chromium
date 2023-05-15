@@ -33,15 +33,14 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
-#include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-class AbstractInlineTextBox;
 class ContentCaptureManager;
+class NGAbstractInlineTextBox;
 struct NGInlineItemsData;
 struct NGInlineItemSpan;
 class NGOffsetMapping;
@@ -255,7 +254,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  scoped_refptr<AbstractInlineTextBox> FirstAbstractInlineTextBox();
+  NGAbstractInlineTextBox* FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
     NOT_DESTROYED();

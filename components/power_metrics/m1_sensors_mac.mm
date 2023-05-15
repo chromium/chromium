@@ -4,15 +4,21 @@
 
 #include "components/power_metrics/m1_sensors_mac.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <IOKit/hid/IOHIDDeviceKeys.h>
 #import <IOKit/hidsystem/IOHIDServiceClient.h>
 
 #include <utility>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/m1_sensors_internal_types_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 extern "C" {
 
@@ -57,11 +63,10 @@ std::unique_ptr<M1SensorsReader> M1SensorsReader::Create() {
     return nullptr;
 
   NSDictionary* filter = @{
-    @kIOHIDPrimaryUsagePageKey : [NSNumber numberWithInt:kHIDPage_AppleVendor],
-    @kIOHIDPrimaryUsageKey :
-        [NSNumber numberWithInt:kHIDUsage_AppleVendor_TemperatureSensor],
+    @kIOHIDPrimaryUsagePageKey : @(kHIDPage_AppleVendor),
+    @kIOHIDPrimaryUsageKey : @(kHIDUsage_AppleVendor_TemperatureSensor),
   };
-  IOHIDEventSystemClientSetMatching(system, base::mac::NSToCFCast(filter));
+  IOHIDEventSystemClientSetMatching(system, base::apple::NSToCFPtrCast(filter));
 
   return base::WrapUnique(new M1SensorsReader(std::move(system)));
 }
@@ -77,17 +82,17 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
   double sum_p_core_temp = 0;
   double sum_e_core_temp = 0;
 
-  for (id service_obj in base::mac::CFToNSCast(services.get())) {
-    IOHIDServiceClientRef service = (IOHIDServiceClientRef)service_obj;
+  for (CFIndex i = 0; i < CFArrayGetCount(services); ++i) {
+    IOHIDServiceClientRef service =
+        (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services, i);
 
-    base::ScopedCFTypeRef<CFStringRef> product_cf(
-        base::mac::CFCast<CFStringRef>(
-            IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
-    if (product_cf == nil)
+    base::ScopedCFTypeRef<CFStringRef> product(base::mac::CFCast<CFStringRef>(
+        IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
+    if (product == nil) {
       continue;
+    }
 
-    if ([base::mac::CFToNSCast(product_cf.get())
-            hasPrefix:@"pACC MTR Temp Sensor"]) {
+    if (CFStringHasPrefix(product, CFSTR("pACC MTR Temp Sensor"))) {
       absl::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {
@@ -96,8 +101,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
       }
     }
 
-    if ([base::mac::CFToNSCast(product_cf.get())
-            hasPrefix:@"eACC MTR Temp Sensor"]) {
+    if (CFStringHasPrefix(product, CFSTR("eACC MTR Temp Sensor"))) {
       absl::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {

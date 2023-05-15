@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -61,7 +62,14 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
       base::Value(chrome::kChromeUIInspectURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(InspectUITest, SharedWorker) {
+// TODO(b/280457934): Fix shared worker crash for Javascript coverage builds
+// and re-enable.
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+#define MAYBE_SharedWorker DISABLED_SharedWorker
+#else
+#define MAYBE_SharedWorker SharedWorker
+#endif
+IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_SharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

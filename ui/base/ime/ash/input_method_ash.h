@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
                              bool visible) override;
   void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                              uint32_t num_char16s_after_cursor) override;
+  void ReplaceSurroundingText(uint32_t length_before_selection,
+                              uint32_t length_after_selection,
+                              base::StringPiece16 replacement_text) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(ui::KeyEvent* event) override;
   ui::InputMethod* GetInputMethod() override;

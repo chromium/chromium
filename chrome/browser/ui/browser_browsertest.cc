@@ -951,8 +951,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   // Click a target=_blank link.
   WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ExecuteScript(
-      contents, "simulateClick(\"test-anchor-with-blank-target\", {})"));
+  ASSERT_TRUE(
+      ExecJs(contents, "simulateClick(\"test-anchor-with-blank-target\", {})"));
 
   // The new tab should have inherited the tab group from the first tab.
   EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(1));
@@ -1369,7 +1369,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
 
 // Chromeos defaults to restoring the last session, so this test isn't
 // applicable.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Makes sure pinned tabs are restored correctly on start.
 IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1431,7 +1431,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   EXPECT_TRUE(new_model->IsTabPinned(1));
   EXPECT_FALSE(new_model->IsTabPinned(2));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(1126339): fix the way how exo creates accelerated widgets. At the
 // moment, they are created only after the client attaches a buffer to a surface,

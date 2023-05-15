@@ -16,12 +16,11 @@ namespace ash {
 // Abstract class responsible for transferring images downloaded by policy from
 // chrome to ash. There can only be a single instance of this class or its
 // children.
+// TODO(b/278873241): remove unused interface
 class ASH_PUBLIC_EXPORT AmbientManagedPhotoSource {
  public:
   using ScreensaverImagesRepeatingCallback =
       base::RepeatingCallback<void(const std::vector<base::FilePath>& images)>;
-
-  static AmbientManagedPhotoSource* Get();
 
   virtual std::vector<base::FilePath> GetScreensaverImages() = 0;
 

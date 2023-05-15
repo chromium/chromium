@@ -18,7 +18,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 
@@ -122,12 +121,11 @@ class WebstoreInstallerMV2BrowserTest : public WebstoreInstallerBrowserTest {
   // The manifest used by the test installer must match `kCrxFilename` manifest
   // in the test directory.
   base::Value::Dict GetManifest() {
-    return DictionaryBuilder()
+    return base::Value::Dict()
         .Set("name", "Installer Extension")
         .Set("manifest_version", 2)
         .Set("version", "1.0")
-        .Set("permissions", ListBuilder().Append("tabs").Build())
-        .Build();
+        .Set("permissions", base::Value::List().Append("tabs"));
   }
 };
 
@@ -218,12 +216,11 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
   // Th manifest used by the test installer must match
   // `kCrxWithPermissionsFilename` manifest in the test directory.
   base::Value::Dict GetManifest() {
-    return DictionaryBuilder()
+    return base::Value::Dict()
         .Set("name", "Installer Extension")
         .Set("manifest_version", 3)
         .Set("version", "1.0")
-        .Set("host_permissions", ListBuilder().Append("<all_urls>").Build())
-        .Build();
+        .Set("host_permissions", base::Value::List().Append("<all_urls>"));
   }
 
  private:

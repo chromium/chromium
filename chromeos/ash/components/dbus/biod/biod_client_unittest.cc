@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -175,7 +176,7 @@ class BiodClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  BiodClient* client_;
+  raw_ptr<BiodClient, ExperimentalAsh> client_;
 
   // Maps from biod signal name to the corresponding callback provided by
   // |client_|.

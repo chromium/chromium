@@ -86,15 +86,22 @@ bool AuraOutputManager::SendOutputMetrics(wl_resource* output_resource,
                                    insets.top(), insets.left(), insets.bottom(),
                                    insets.right());
 
+  if (wl_resource_get_version(manager_resource_) >=
+      ZAURA_OUTPUT_MANAGER_OVERSCAN_INSETS_SINCE_VERSION) {
+    const auto& overscan = output_metrics.physical_overscan_insets;
+    zaura_output_manager_send_overscan_insets(
+        manager_resource_, output_resource, overscan.top(), overscan.left(),
+        overscan.bottom(), overscan.right());
+  }
+
   // The float value is bit_cast<> into a uint32_t. It must later be cast back
   // into a float. This is because wayland does not support native transport of
   // floats. As different CPU architectures may use different endian
   // representations for IEEE 754 floats, this implicitly assumes that the
   // caller and receiver are the same machine.
-  const int32_t bit_cast_value =
-      base::bit_cast<uint32_t>(output_metrics.device_scale_factor);
   zaura_output_manager_send_device_scale_factor(
-      manager_resource_, output_resource, bit_cast_value);
+      manager_resource_, output_resource,
+      base::bit_cast<uint32_t>(output_metrics.device_scale_factor));
 
   zaura_output_manager_send_logical_transform(
       manager_resource_, output_resource, output_metrics.logical_transform);

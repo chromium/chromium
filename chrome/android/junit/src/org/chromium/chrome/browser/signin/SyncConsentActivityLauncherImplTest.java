@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -87,12 +88,16 @@ public class SyncConsentActivityLauncherImplTest {
 
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsDisabledByPolicy() {
+        HistogramWatcher watchSigninDisabledToastShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Signin.SyncDisabledNotificationShown",
+                        SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         Assert.assertFalse(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                mContext, SigninAccessPoint.SETTINGS));
+                mContext, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
         Assert.assertTrue(ShadowToast.showedCustomToast(
                 mContext.getResources().getString(R.string.managed_by_your_organization),
                 R.id.toast_text));
+        watchSigninDisabledToastShownHistogram.assertExpected();
     }
 }

@@ -563,7 +563,8 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
     should_dump = false;
 
 #if DCHECK_IS_ON()
-  if (layer->NeedsPositionUpdate()) {
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled() &&
+      layer->NeedsPositionUpdate()) {
     WriteIndent(ts, indent);
     ts << " NEEDS POSITION UPDATE\n";
   }

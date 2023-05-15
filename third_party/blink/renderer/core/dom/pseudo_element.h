@@ -73,6 +73,8 @@ class CORE_EXPORT PseudoElement : public Element {
   // the closest ancestor which is a real dom node.
   virtual Node* InnerNodeForHitTesting() const;
 
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
+
   // Returns the DOM element that this pseudo element originates from. If the
   // pseudo element is nested inside another pseudo element, this returns the
   // DOM element which the pseudo element tree originates from.

@@ -223,13 +223,6 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
-    const base::FilePath& item_path,
-    const HoldingSpaceProgress& progress) {
-  return AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path,
-                       progress);
-}
-
 void HoldingSpaceKeyedService::SetSuggestions(
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         suggestions) {
@@ -261,8 +254,9 @@ void HoldingSpaceKeyedService::SetSuggestions(
 
   std::set<std::string> item_ids_to_remove;
   for (const auto& item : holding_space_model_.items()) {
-    if (HoldingSpaceItem::IsSuggestion(item->type()))
+    if (HoldingSpaceItem::IsSuggestionType(item->type())) {
       item_ids_to_remove.insert(item->id());
+    }
   }
 
   // Allow the duplicate suggestions to be added because the order among
@@ -351,8 +345,9 @@ void HoldingSpaceKeyedService::RemoveItem(const std::string& id) {
 absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
 HoldingSpaceKeyedService::OpenItemWhenComplete(const HoldingSpaceItem* item) {
   // Currently it is only possible to open download type items when complete.
-  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
+  if (HoldingSpaceItem::IsDownloadType(item->type()) && downloads_delegate_) {
     return downloads_delegate_->OpenWhenComplete(item);
+  }
   return holding_space_metrics::ItemFailureToLaunchReason::
       kNoHandlerForItemType;
 }

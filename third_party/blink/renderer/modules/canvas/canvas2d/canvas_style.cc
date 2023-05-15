@@ -34,9 +34,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkShader.h"
 
@@ -77,39 +74,33 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
   }
 }
 
-CanvasStyle::CanvasStyle(Color color) : type_(kColor), color_(color) {}
+CanvasStyle::CanvasStyle() : type_(kColor), color_(Color::kBlack) {}
 
-CanvasStyle::CanvasStyle(CanvasGradient* gradient)
-    : type_(kGradient), gradient_(gradient) {}
+CanvasStyle::CanvasStyle(const CanvasStyle& other) {
+  // Default copy constructor would not use memcpy because Member<> fields
+  // are not technically POD, but it is still safe to memcpy them.
+  memcpy(this, &other, sizeof(CanvasStyle));
+}
 
-CanvasStyle::CanvasStyle(CanvasPattern* pattern)
-    : type_(kImagePattern), pattern_(pattern) {}
-
-void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags) const {
-  ImageDrawOptions draw_options;
+void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
+                               float global_alpha) const {
   switch (type_) {
     case kColor:
-      flags.setShader(nullptr);
+      ApplyColorToFlags(flags, global_alpha);
       break;
     case kGradient:
       GetCanvasGradient()->GetGradient()->ApplyToFlags(flags, SkMatrix::I(),
-                                                       draw_options);
+                                                       ImageDrawOptions());
+      flags.setColor(SkColor4f(0.0f, 0.0f, 0.0f, global_alpha));
       break;
     case kImagePattern:
       GetCanvasPattern()->GetPattern()->ApplyToFlags(
           flags, AffineTransformToSkMatrix(GetCanvasPattern()->GetTransform()));
+      flags.setColor(SkColor4f(0.0f, 0.0f, 0.0f, global_alpha));
       break;
     default:
       NOTREACHED();
   }
-}
-
-Color CanvasStyle::PaintColor() const {
-  if (type_ == kColor) {
-    return color_;
-  }
-  DCHECK(type_ == kGradient || type_ == kImagePattern);
-  return Color::kBlack;
 }
 
 void CanvasStyle::Trace(Visitor* visitor) const {

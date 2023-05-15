@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -39,7 +40,8 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
     void ResetToLast();
 
    private:
-    const base::circular_deque<std::string>& queries_;
+    const raw_ref<const base::circular_deque<std::string>, ExperimentalAsh>
+        queries_;
     size_t cur_pos_;
   };
 

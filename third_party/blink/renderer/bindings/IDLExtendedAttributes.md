@@ -1679,6 +1679,8 @@ Basically all constant values are defined in the spec, and thus the values in Bl
 
 Summary: `[ImplementedAs]` specifies a method name in Blink, if the method name in an IDL file and the method name in Blink are different.
 
+[ImplementedAs] can also be used for dictionary members.
+
 `[ImplementedAs]` is _discouraged_. Please use only if absolutely necessary: rename Blink internal names to align with IDL.
 
 Usage: The possible usage is `[ImplementedAs=XXX]`, where XXX is a method name in Blink. `[ImplementedAs]` can be specified on interfaces, methods and attributes.

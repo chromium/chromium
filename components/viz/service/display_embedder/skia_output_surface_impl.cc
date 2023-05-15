@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -50,6 +51,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -81,15 +83,36 @@ struct FulfillForPlane {
   const int plane_index_ = 0;
 };
 
-sk_sp<SkPromiseImageTexture> Fulfill(void* fulfill) {
-  DCHECK(fulfill);
+sk_sp<SkPromiseImageTexture> FulfillGanesh(void* fulfill) {
+  CHECK(fulfill);
   auto* fulfill_for_plane = static_cast<FulfillForPlane*>(fulfill);
   const auto& promise_textures =
       fulfill_for_plane->context_->promise_image_textures();
   int plane_index = fulfill_for_plane->plane_index_;
+  CHECK(promise_textures.empty() ||
+        plane_index < static_cast<int>(promise_textures.size()));
   return promise_textures.empty()
              ? nullptr
              : sk_ref_sp(promise_textures[plane_index].get());
+}
+
+std::tuple<skgpu::graphite::BackendTexture, void*> FulfillGraphite(
+    void* fulfill) {
+  CHECK(fulfill);
+  auto* fulfill_for_plane = static_cast<FulfillForPlane*>(fulfill);
+  const auto& graphite_textures =
+      fulfill_for_plane->context_->graphite_textures();
+  int plane_index = fulfill_for_plane->plane_index_;
+  CHECK(graphite_textures.empty() ||
+        plane_index < static_cast<int>(graphite_textures.size()));
+  auto texture = graphite_textures.empty() ? skgpu::graphite::BackendTexture()
+                                           : graphite_textures[plane_index];
+  return std::make_tuple(texture, fulfill);
+}
+
+void ReleaseGraphite(void* fulfill) {
+  // Do nothing. This is called by Graphite after GPU is done with the texture,
+  // but we don't rely on it for synchronization or cleanup.
 }
 
 void CleanUp(void* fulfill) {
@@ -112,21 +135,41 @@ OutputSurface::Type GetOutputSurfaceType(SkiaOutputSurfaceDependency* deps) {
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     SkDeferredDisplayListRecorder* root_ddl_recorder)
-    : ddl_recorder_(root_ddl_recorder) {}
+    : ddl_recorder_(root_ddl_recorder), canvas_(ddl_recorder_->getCanvas()) {}
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    SkSurfaceCharacterization characterization)
-    : ScopedPaint(characterization, gpu::Mailbox()) {}
-
-SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    SkSurfaceCharacterization characterization,
-    gpu::Mailbox mailbox)
+    const SkSurfaceCharacterization& characterization,
+    const gpu::Mailbox& mailbox)
     : mailbox_(mailbox) {
   ddl_recorder_storage_.emplace(characterization);
   ddl_recorder_ = &ddl_recorder_storage_.value();
+  canvas_ = ddl_recorder_->getCanvas();
 }
 
-SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() = default;
+SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
+    skgpu::graphite::Recorder* recorder,
+    const SkImageInfo& image_info,
+    skgpu::graphite::TextureInfo texture_info,
+    const gpu::Mailbox& mailbox)
+    : graphite_recorder_(recorder), mailbox_(mailbox) {
+  CHECK(graphite_recorder_);
+  canvas_ = graphite_recorder_->makeDeferredCanvas(image_info, texture_info);
+}
+
+SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() {
+  CHECK(!canvas_);
+}
+
+sk_sp<SkDeferredDisplayList> SkiaOutputSurfaceImpl::ScopedPaint::DetachDDL() {
+  canvas_ = nullptr;
+  return ddl_recorder_->detach();
+}
+
+std::unique_ptr<skgpu::graphite::Recording>
+SkiaOutputSurfaceImpl::ScopedPaint::SnapRecording() {
+  canvas_ = nullptr;
+  return graphite_recorder_->snap();
+}
 
 SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBufferDamageTracker(
     size_t number_of_buffers)
@@ -312,8 +355,14 @@ void SkiaOutputSurfaceImpl::DiscardBackbuffer() {
 }
 
 void SkiaOutputSurfaceImpl::RecreateRootDDLRecorder() {
-  DCHECK(characterization_.isValid());
-  root_ddl_recorder_.emplace(characterization_);
+  if (graphite_recorder_) {
+    return;
+  }
+  SkSurfaceCharacterization characterization =
+      CreateSkSurfaceCharacterizationCurrentFrame(
+          size_, color_type_, alpha_type_, /*mipmap=*/false, sk_color_space_);
+  CHECK(characterization.isValid());
+  root_ddl_recorder_.emplace(characterization);
   // This will trigger the lazy initialization of the recorder
   std::ignore = root_ddl_recorder_->getCanvas();
   reset_ddl_recorder_on_swap_ = false;
@@ -325,13 +374,24 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK(params.alpha_type == kPremul_SkAlphaType ||
          params.alpha_type == kOpaque_SkAlphaType);
 
+  size_ = params.size;
+  format_ = GetSharedImageFormat(params.format);
+  alpha_type_ = params.alpha_type;
+
+  const auto format_index = static_cast<int>(params.format);
+  color_type_ = capabilities_.sk_color_types[format_index];
+  DCHECK(color_type_ != kUnknown_SkColorType)
+      << "SkColorType is invalid for buffer format_index: " << format_index;
+
+  sk_color_space_ = params.color_space.ToSkColorSpace();
+
   // SetDrawRectangle() will need to be called at the new size.
   has_set_draw_rectangle_for_frame_ = false;
 
   if (use_damage_area_from_skia_output_device_) {
-    damage_of_current_buffer_ = gfx::Rect(params.size);
+    damage_of_current_buffer_ = gfx::Rect(size_);
   } else if (frame_buffer_damage_tracker_) {
-    frame_buffer_damage_tracker_->FrameBuffersChanged(params.size);
+    frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
   }
 
   if (is_using_raw_draw_ && is_raw_draw_using_msaa_) {
@@ -345,28 +405,18 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
     sample_count_ = 1;
   }
 
-  const auto format_index = static_cast<int>(params.format);
-  const auto& color_type = capabilities_.sk_color_types[format_index];
-  DCHECK(color_type != kUnknown_SkColorType)
-      << "SkColorType is invalid for buffer format_index: " << format_index;
-
-  auto sk_color_space = params.color_space.ToSkColorSpace();
-  characterization_ = CreateSkSurfaceCharacterizationCurrentFrame(
-      params.size, color_type, params.alpha_type, /*mipmap=*/false,
-      std::move(sk_color_space));
-
+  SkImageInfo image_info = SkImageInfo::Make(
+      size_.width(), size_.height(), color_type_, alpha_type_, sk_color_space_);
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
-                             base::Unretained(impl_on_gpu_.get()),
-                             characterization_, params.color_space,
+                             base::Unretained(impl_on_gpu_.get()), image_info,
+                             params.color_space, sample_count_,
                              params.device_scale_factor, GetDisplayTransform());
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
   FlushGpuTasks(SyncMode::kNoWait);
 
-  size_ = params.size;
-  format_ = params.format;
   RecreateRootDDLRecorder();
 }
 
@@ -408,11 +458,23 @@ gfx::OverlayTransform SkiaOutputSurfaceImpl::GetDisplayTransform() {
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
-  DCHECK(!current_paint_);
-  DCHECK(root_ddl_recorder_);
-  reset_ddl_recorder_on_swap_ = true;
-  current_paint_.emplace(&root_ddl_recorder_.value());
-  return current_paint_->ddl_recorder()->getCanvas();
+  CHECK(!current_paint_);
+  CHECK(root_ddl_recorder_ || graphite_recorder_);
+  if (graphite_recorder_) {
+    // TODO(crbug.com/1434131): Use correct alpha type once Graphite supports
+    // non-premultiplied alpha surfaces.
+    SkImageInfo image_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
+                          kPremul_SkAlphaType, sk_color_space_);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format_);
+    CHECK(texture_info.isValid());
+    current_paint_.emplace(graphite_recorder_, image_info, texture_info);
+  } else {
+    reset_ddl_recorder_on_swap_ = true;
+    current_paint_.emplace(&root_ddl_recorder_.value());
+  }
+  return current_paint_->canvas();
 }
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImage(
@@ -423,13 +485,13 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
-  images_in_current_paint_.push_back(
-      static_cast<ImageContextImpl*>(image_context));
+  ImageContextImpl* image_context_impl =
+      static_cast<ImageContextImpl*>(image_context);
+  images_in_current_paint_.push_back(image_context_impl);
 
   const auto& mailbox_holder = image_context->mailbox_holder();
-  auto* impl = static_cast<ImageContextImpl*>(image_context);
 
-  if (representation_factory_) {
+  if (is_using_raw_draw_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
     auto const& sync_token = mailbox_holder.sync_token;
     if (sync_token.HasData() &&
@@ -438,9 +500,10 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
       FlushGpuTasks(SyncMode::kWaitForTasksStarted);
       image_context->mutable_mailbox_holder()->sync_token.Clear();
     }
-
-    if (impl->BeginRasterAccess(representation_factory_.get()))
+    CHECK(representation_factory_);
+    if (image_context_impl->BeginRasterAccess(representation_factory_.get())) {
       return;
+    }
   }
 
   if (image_context->has_image())
@@ -448,47 +511,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
   auto format = image_context->format();
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    SkColorType color_type =
-        ToClosestSkColorType(/*gpu_compositing=*/true, format);
-    GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, /*plane_index=*/0,
-        image_context->mailbox_holder().texture_target,
-        image_context->ycbcr_info());
-    FulfillForPlane* fulfill = new FulfillForPlane(impl);
-    auto image = SkImages::PromiseTextureFrom(
-        gr_context_thread_safe_, backend_format,
-        gfx::SizeToSkISize(image_context->size()), GrMipMapped::kNo,
-        image_context->origin(), color_type, image_context->alpha_type(),
-        image_context->color_space(), Fulfill, CleanUp, fulfill);
-    image_context->SetImage(std::move(image), {backend_format});
+    MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false);
   } else {
-    SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
-    SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
-    // TODO(crbug.com/828599): This should really default to rec709.
-    SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
-    yuv_color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
-                                      &sk_yuv_color_space);
-    SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()),
-                         plane_config, subsampling, sk_yuv_color_space);
-
-    std::vector<GrBackendFormat> formats;
-    void* fulfills[4] = {};
-    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
-         ++plane_index) {
-      DCHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
-      formats.push_back(GetGrBackendFormatForTexture(
-          format, plane_index, image_context->mailbox_holder().texture_target,
-          image_context->ycbcr_info()));
-      fulfills[plane_index] = new FulfillForPlane(impl, plane_index);
-    }
-
-    GrYUVABackendTextureInfo yuva_backend_info(
-        yuva_info, formats.data(), GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
-    auto image = SkImages::PromiseTextureFromYUVA(
-        gr_context_thread_safe_, yuva_backend_info,
-        image_context->color_space(), Fulfill, CleanUp, fulfills);
-    DCHECK(image);
-    image_context->SetImage(std::move(image), formats);
+    MakePromiseSkImageMultiPlane(image_context_impl, yuv_color_space);
   }
 
   if (mailbox_holder.sync_token.HasData()) {
@@ -506,44 +531,153 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   DCHECK(current_paint_);
   DCHECK(static_cast<size_t>(SkYUVAInfo::NumPlanes(plane_config)) ==
          contexts.size());
-
   auto* y_context = static_cast<ImageContextImpl*>(contexts[0]);
   // Note: YUV to RGB conversion is handled by a color filter in SkiaRenderer.
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(y_context->size()), plane_config,
                        subsampling, kIdentity_SkYUVColorSpace);
-
-  GrBackendFormat formats[4] = {};
-  SkDeferredDisplayListRecorder::PromiseImageTextureContext
-      texture_contexts[4] = {};
-  void* fulfills[4] = {};
+  sk_sp<SkImage> image;
+  if (graphite_recorder_) {
+    for (auto* context : contexts) {
+      // NOTE: We don't have promises for individual planes, but still need
+      // texture info for fallback.
+      context->SetImage(
+          nullptr, {gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(),
+                                                context->format())});
+    }
+    // TODO(crbug.com/1434131): Make Graphite YUVA promise image once that's
+    // supported by Skia.
+    auto y_format = y_context->format();
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), y_format,
+                                    /*plane_index=*/0, /*mipmapped=*/false);
+    SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
+                                                  y_format, /*plane_index=*/0);
+    SkColorInfo color_info(color_type, y_context->alpha_type(),
+                           y_context->color_space());
+    void* fulfill = new FulfillForPlane(y_context);
+    image = SkImage::MakeGraphitePromiseTexture(
+        graphite_recorder_, gfx::SizeToSkISize(y_context->size()), texture_info,
+        color_info, skgpu::graphite::Volatile::kNo, FulfillGraphite, CleanUp,
+        ReleaseGraphite, fulfill);
+  } else {
+    GrBackendFormat formats[4] = {};
+    void* fulfills[4] = {};
+    for (size_t i = 0; i < contexts.size(); ++i) {
+      auto* context = static_cast<ImageContextImpl*>(contexts[i]);
+      formats[i] =
+          GetGrBackendFormatForTexture(context->format(), /*plane_index=*/0,
+                                       context->mailbox_holder().texture_target,
+                                       /*ycbcr_info=*/absl::nullopt);
+      // NOTE: We don't have promises for individual planes, but still need
+      // format for fallback.
+      context->SetImage(nullptr, {formats[i]});
+      fulfills[i] = new FulfillForPlane(context);
+    }
+    GrYUVABackendTextureInfo yuva_backend_info(
+        yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
+    image = SkImages::PromiseTextureFromYUVA(
+        gr_context_thread_safe_, yuva_backend_info,
+        std::move(image_color_space), FulfillGanesh, CleanUp, fulfills);
+  }
   for (size_t i = 0; i < contexts.size(); ++i) {
     auto* context = static_cast<ImageContextImpl*>(contexts[i]);
-    DCHECK_EQ(context->origin(), kTopLeft_GrSurfaceOrigin);
-    formats[i] =
-        GetGrBackendFormatForTexture(context->format(), /*plane_index=*/0,
-                                     context->mailbox_holder().texture_target,
-                                     /*ycbcr_info=*/absl::nullopt);
-
-    // NOTE: We don't have promises for individual planes, but still need format
-    // for fallback
-    context->SetImage(nullptr, {formats[i]});
-
+    CHECK_EQ(context->origin(), kTopLeft_GrSurfaceOrigin);
     if (context->mailbox_holder().sync_token.HasData()) {
       resource_sync_tokens_.push_back(context->mailbox_holder().sync_token);
       context->mutable_mailbox_holder()->sync_token.Clear();
     }
     images_in_current_paint_.push_back(context);
-    texture_contexts[i] = context;
-    fulfills[i] = new FulfillForPlane(context);
   }
-
-  GrYUVABackendTextureInfo yuva_backend_info(
-      yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
-  auto image = SkImages::PromiseTextureFromYUVA(
-      gr_context_thread_safe_, yuva_backend_info, std::move(image_color_space),
-      Fulfill, CleanUp, fulfills);
-  DCHECK(image);
+  CHECK(image);
   return image;
+}
+
+void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
+    ImageContextImpl* image_context,
+    bool mipmap) {
+  CHECK(!image_context->has_image());
+  auto format = image_context->format();
+  CHECK(format.is_single_plane() || format.PrefersExternalSampler());
+  FulfillForPlane* fulfill = new FulfillForPlane(image_context);
+  SkColorType color_type =
+      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+  if (graphite_recorder_) {
+    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+        dependency_->gr_context_type(), format, /*plane_index=*/0, mipmap);
+    SkColorInfo color_info(color_type, image_context->alpha_type(),
+                           image_context->color_space());
+    auto image = SkImage::MakeGraphitePromiseTexture(
+        graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
+        texture_info, color_info, skgpu::graphite::Volatile::kNo,
+        FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
+    image_context->SetImage(std::move(image), {texture_info});
+  } else {
+    CHECK(gr_context_thread_safe_);
+    GrBackendFormat backend_format = GetGrBackendFormatForTexture(
+        format, /*plane_index=*/0,
+        image_context->mailbox_holder().texture_target,
+        image_context->ycbcr_info());
+    auto image = SkImages::PromiseTextureFrom(
+        gr_context_thread_safe_, backend_format,
+        gfx::SizeToSkISize(image_context->size()),
+        mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
+        color_type, image_context->alpha_type(), image_context->color_space(),
+        FulfillGanesh, CleanUp, fulfill);
+    image_context->SetImage(std::move(image), {backend_format});
+  }
+}
+
+void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
+    ImageContextImpl* image_context,
+    const gfx::ColorSpace& yuv_color_space) {
+  CHECK(!image_context->has_image());
+  auto format = image_context->format();
+  CHECK(format.is_multi_plane());
+  SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
+  SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
+  // TODO(crbug.com/828599): This should really default to rec709.
+  SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
+  yuv_color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                    &sk_yuv_color_space);
+  SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
+                       subsampling, sk_yuv_color_space);
+  if (graphite_recorder_) {
+    // TODO(crbug.com/1434131): Make Graphite YUVA promise image once that's
+    // supported by Skia.
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format,
+                                    /*plane_index=*/0, /*mipmapped=*/false);
+    SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
+                                                  format, /*plane_index=*/0);
+    SkColorInfo color_info(color_type, image_context->alpha_type(),
+                           image_context->color_space());
+    void* fulfill = new FulfillForPlane(image_context, /*plane_index=*/0);
+    auto image = SkImage::MakeGraphitePromiseTexture(
+        graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
+        texture_info, color_info, skgpu::graphite::Volatile::kNo,
+        FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
+    image_context->SetImage(std::move(image), {texture_info});
+  } else {
+    CHECK(gr_context_thread_safe_);
+    std::vector<GrBackendFormat> formats;
+    void* fulfills[4] = {};
+    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+         ++plane_index) {
+      CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
+      formats.push_back(GetGrBackendFormatForTexture(
+          format, plane_index, image_context->mailbox_holder().texture_target,
+          image_context->ycbcr_info()));
+      fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
+    }
+
+    GrYUVABackendTextureInfo yuva_backend_info(
+        yuva_info, formats.data(), GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
+    auto image = SkImages::PromiseTextureFromYUVA(
+        gr_context_thread_safe_, yuva_backend_info,
+        image_context->color_space(), FulfillGanesh, CleanUp, fulfills);
+    DCHECK(image);
+    image_context->SetImage(std::move(image), formats);
+  }
 }
 
 gpu::SyncToken SkiaOutputSurfaceImpl::ReleaseImageContexts(
@@ -663,17 +797,33 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
-  DCHECK(!current_paint_);
-  DCHECK(resource_sync_tokens_.empty());
+  CHECK(!current_paint_);
+  CHECK(resource_sync_tokens_.empty());
 
   SkColorType color_type =
       ToClosestSkColorType(/*gpu_compositing=*/true, format);
-  SkSurfaceCharacterization characterization =
+  if (graphite_recorder_) {
+    SkImageInfo image_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
+                          kPremul_SkAlphaType, color_space);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format);
+    if (!texture_info.isValid()) {
+      DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
+      return nullptr;
+    }
+    current_paint_.emplace(graphite_recorder_, image_info, texture_info);
+  } else {
+    SkSurfaceCharacterization characterization =
       CreateSkSurfaceCharacterizationRenderPass(
           surface_size, color_type, kPremul_SkAlphaType, mipmap,
           std::move(color_space), is_overlay, scanout_dcomp_surface);
-  if (!characterization.isValid())
-    return nullptr;
+    if (!characterization.isValid()) {
+      DLOG(ERROR) << "BeginPaintRenderPass: invalid SkSurfaceCharacterization";
+      return nullptr;
+    }
+    current_paint_.emplace(characterization, mailbox);
+  }
 
   // We are going to overwrite the render pass when it is not for overlay, so we
   // need to reset the image_context and a new promise image will be created
@@ -685,8 +835,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     }
   }
 
-  current_paint_.emplace(characterization, mailbox);
-  return current_paint_->ddl_recorder()->getCanvas();
+  return current_paint_->canvas();
 }
 
 SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
@@ -696,8 +845,8 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
   DCHECK(current_paint_);
   DCHECK(!overdraw_surface_ddl_recorder_);
 
-  nway_canvas_.emplace(characterization_.width(), characterization_.height());
-  nway_canvas_->addCanvas(current_paint_->ddl_recorder()->getCanvas());
+  nway_canvas_.emplace(size_.width(), size_.height());
+  nway_canvas_->addCanvas(current_paint_->canvas());
 
   // Overdraw feedback uses |SkOverdrawCanvas|, which relies on a buffer with an
   // 8-bit unorm alpha channel to work. RGBA8 is always supported, so we use it.
@@ -705,10 +854,9 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 
   SkSurfaceCharacterization characterization =
       CreateSkSurfaceCharacterizationRenderPass(
-          gfx::Size(characterization_.width(), characterization_.height()),
-          color_type_with_alpha, characterization_.imageInfo().alphaType(),
-          /*mipmap=*/false, characterization_.refColorSpace(),
-          /*is_overlay=*/false, /*scanout_dcomp_surface=*/false);
+          size_, color_type_with_alpha, alpha_type_, /*mipmap=*/false,
+          sk_color_space_, /*is_overlay=*/false,
+          /*scanout_dcomp_surface=*/false);
   if (characterization.isValid()) {
     overdraw_surface_ddl_recorder_.emplace(characterization);
     overdraw_canvas_.emplace((overdraw_surface_ddl_recorder_->getCanvas()));
@@ -724,16 +872,24 @@ void SkiaOutputSurfaceImpl::EndPaint(
     const gfx::Rect& update_rect,
     bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(current_paint_);
-  auto ddl = current_paint_->ddl_recorder()->detach();
+  CHECK(current_paint_);
 
+  sk_sp<SkDeferredDisplayList> ddl;
   sk_sp<SkDeferredDisplayList> overdraw_ddl;
-  if (overdraw_surface_ddl_recorder_) {
-    overdraw_ddl = overdraw_surface_ddl_recorder_->detach();
-    DCHECK(overdraw_ddl);
-    overdraw_canvas_.reset();
-    overdraw_surface_ddl_recorder_.reset();
-    nway_canvas_.reset();
+  std::unique_ptr<skgpu::graphite::Recording> graphite_recording;
+
+  if (graphite_recorder_) {
+    graphite_recording = current_paint_->SnapRecording();
+  } else {
+    ddl = current_paint_->DetachDDL();
+
+    if (overdraw_surface_ddl_recorder_) {
+      overdraw_ddl = overdraw_surface_ddl_recorder_->detach();
+      DCHECK(overdraw_ddl);
+      overdraw_canvas_.reset();
+      overdraw_surface_ddl_recorder_.reset();
+      nway_canvas_.reset();
+    }
   }
 
   // If the current paint mailbox is empty, we are painting a frame, otherwise
@@ -743,13 +899,13 @@ void SkiaOutputSurfaceImpl::EndPaint(
   if (current_paint_->mailbox().IsZero()) {
     // Draw on the root render pass.
     current_buffer_modified_ = true;
-
-    auto task = base::BindOnce(
-        &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
-        base::Unretained(impl_on_gpu_.get()), std::move(ddl),
-        std::move(overdraw_ddl), std::move(images_in_current_paint_),
-        resource_sync_tokens_, std::move(on_finished),
-        std::move(return_release_fence_cb), draw_rectangle_);
+    auto task =
+        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
+                       base::Unretained(impl_on_gpu_.get()), std::move(ddl),
+                       std::move(overdraw_ddl), std::move(graphite_recording),
+                       std::move(images_in_current_paint_),
+                       resource_sync_tokens_, std::move(on_finished),
+                       std::move(return_release_fence_cb), draw_rectangle_);
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/true);
     draw_rectangle_.reset();
@@ -757,7 +913,7 @@ void SkiaOutputSurfaceImpl::EndPaint(
     auto task = base::BindOnce(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
         base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
-        std::move(ddl), std::move(overdraw_ddl),
+        std::move(ddl), std::move(overdraw_ddl), std::move(graphite_recording),
         std::move(images_in_current_paint_), resource_sync_tokens_,
         std::move(on_finished), std::move(return_release_fence_cb), update_rect,
         is_overlay);
@@ -780,26 +936,14 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
 
   auto& image_context = render_pass_image_cache_[id];
   if (!image_context) {
-    gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
+    gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), GL_TEXTURE_2D);
     image_context = std::make_unique<ImageContextImpl>(
         mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/absl::nullopt, std::move(color_space),
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {
-    SkColorType color_type =
-        ToClosestSkColorType(true /* gpu_compositing */, format);
-    GrBackendFormat backend_format =
-        GetGrBackendFormatForTexture(format, /*plane_index=*/0, GL_TEXTURE_2D,
-                                     /*ycbcr_info=*/absl::nullopt);
-    FulfillForPlane* fulfill = new FulfillForPlane(image_context.get());
-    auto image = SkImages::PromiseTextureFrom(
-        gr_context_thread_safe_, backend_format,
-        gfx::SizeToSkISize(image_context->size()),
-        mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
-        color_type, image_context->alpha_type(), image_context->color_space(),
-        Fulfill, CleanUp, fulfill);
-    image_context->SetImage(std::move(image), {backend_format});
+    MakePromiseSkImageSinglePlane(image_context.get(), mipmap);
     if (!image_context->has_image()) {
       return nullptr;
     }
@@ -1273,8 +1417,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     int plane_index,
     uint32_t gl_texture_target,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  if (dependency_->gr_context_type() == gpu::GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
+  if (dependency_->gr_context_type() == gpu::GrContextType::kVulkan) {
     if (!ycbcr_info) {
       return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
@@ -1293,8 +1437,10 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
 #endif  // BUILDFLAG(IS_LINUX)
-#endif  // BUILDFLAG(ENABLE_VULKAN)
   } else {
+#else
+  {
+#endif  // BUILDFLAG(ENABLE_VULKAN)
     CHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
     // Convert internal format from GLES2 to platform GL.
     bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
@@ -1437,12 +1583,14 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
+    base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CreateSharedImage,
                              base::Unretained(impl_on_gpu_.get()), mailbox,
-                             format, size, color_space, usage, surface_handle);
+                             format, size, color_space, usage,
+                             std::string(debug_label), surface_handle);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/false);
 

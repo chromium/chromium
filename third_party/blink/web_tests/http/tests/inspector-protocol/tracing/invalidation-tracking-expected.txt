@@ -10,6 +10,15 @@ Object: {
 			invalidationSet: string
 			nodeId: number
 			nodeName: string
+			stackTrace: [
+				{
+					columnNumber: number
+					functionName: string
+					lineNumber: number
+					scriptId: string
+					url: string
+				}
+			]
 		}
 	}
 	cat: string
@@ -30,6 +39,15 @@ Array: [
 				nodeId: number
 				nodeName: string
 				reason: string
+				stackTrace: [
+					{
+						columnNumber: number
+						functionName: string
+						lineNumber: number
+						scriptId: string
+						url: string
+					}
+				]
 				subtree: boolean
 			}
 		}
@@ -49,6 +67,15 @@ Array: [
 				nodeId: number
 				nodeName: string
 				reason: string
+				stackTrace: [
+					{
+						columnNumber: number
+						functionName: string
+						lineNumber: number
+						scriptId: string
+						url: string
+					}
+				]
 				subtree: boolean
 			}
 		}
@@ -105,4 +132,8 @@ Object: {
 	tid: number
 	ts: number
 }
+Style recalc initiator:
+forceLayout
+Layout initiator:
+forceLayout
 

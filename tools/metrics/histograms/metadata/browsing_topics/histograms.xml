@@ -117,6 +117,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.OverrideList.FileLoadResult"
+    enum="BrowsingTopicsOverrideListFileLoadResult" expires_after="2024-04-24">
+  <owner>robertogden@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The result of a single attempt to load the override list from disk, and
+    parse it into a native object. Recorded once for every attempted load. Note
+    that if an attempt fails it will not be re-attempted for the same file until
+    the next browsing session, but a successful load will be recorded one or
+    more times during a browsing session.
+  </summary>
+</histogram>
+
+<histogram name="BrowsingTopics.OverrideList.UsedOverride" enum="Boolean"
+    expires_after="2024-04-24">
+  <owner>robertogden@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When the override list is checked, whether it contained the given input.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.Result.FakeTopicCount" units="topics"
     expires_after="2024-03-01">
   <owner>yaoxia@chromium.org</owner>

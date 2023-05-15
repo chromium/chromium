@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
-#include "chrome/browser/ash/login/test/active_directory_login_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -68,6 +68,19 @@ const test::UIPath kReviewSettingsCheckBox = {kSyncConsent,
                                               "reviewSettingsBox"};
 const test::UIPath kAcceptButton = {kSyncConsent, "acceptButton"};
 const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
+
+const test::UIPath kLacrosOverviewDialog = {kSyncConsent,
+                                            "syncConsentLacrosOverviewDialog"};
+
+const test::UIPath kLacrosAcceptButton = {kSyncConsent, "syncEverythingButton"};
+const test::UIPath kLacrosManageButton = {kSyncConsent, "manageButton"};
+const test::UIPath kLacrosNextButton = {kSyncConsent, "nextButton"};
+
+const test::UIPath kAppsSyncToggle = {kSyncConsent, "appsTogglebutton"};
+const test::UIPath kSettingsSyncToggle = {kSyncConsent, "settingsTogglebutton"};
+const test::UIPath kWifiSyncToggle = {kSyncConsent, "wifiTogglebutton"};
+const test::UIPath kWallpaperSyncToggle = {kSyncConsent,
+                                           "wallpaperTogglebutton"};
 
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -209,12 +222,10 @@ class SyncConsentTest
     }
 
     // If the screen has already exited, don't try to show it again.
-    // Although, sync consent screen is not the first screen in the onboarding
-    // flow when OobeConsolidatedConsent feature is enabled, it can be reached
-    // and skipped after its predecessors are skipped.
-    if (features::IsOobeConsolidatedConsentEnabled() && !screen_exited_)
+    if (!screen_exited_) {
       LoginDisplayHost::default_host()->StartWizard(
           SyncConsentScreenView::kScreenId);
+    }
 
     // Sync Consent screen may skip, so OobeScreenWaiter will not stop. Use
     // custom predicate instead.
@@ -790,6 +801,152 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
   WaitForScreenShown();
 
   overviewDialogWaiter->Wait();
+}
+
+class SyncConsentLacrosRevampTest : public SyncConsentTest {
+ public:
+  SyncConsentLacrosRevampTest() {
+    sync_feature_list_.InitWithFeatures(
+        {features::kLacrosSupport, features::kOsSyncConsentRevamp}, {});
+  }
+  ~SyncConsentLacrosRevampTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList sync_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, TurnOnSync) {
+  LoginAndShowSyncConsentScreenWithCapability();
+  WaitForScreenShown();
+
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
+  test::OobeJS().ExpectVisiblePath(kLacrosManageButton);
+  test::OobeJS().TapOnPath(kLacrosAcceptButton);
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+
+  // Expect all data types are disabled for minor users when initialized.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  syncer::SyncUserSettings* settings = GetSyncUserSettings();
+
+  EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, SkippedSyncByPolicy) {
+  // Set up screen and policy.
+  SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(true);
+
+  LoginAndShowSyncConsentScreenWithCapability();
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
+}
+
+class SyncConsentTestLacrosRevampWithParams
+    : public SyncConsentTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+ public:
+  SyncConsentTestLacrosRevampWithParams() {
+    std::tie(is_app_synced, is_settings_synced, is_wifi_synced,
+             is_wallpaper_synced) = GetParam();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kLacrosSupport, features::kOsSyncConsentRevamp}, {});
+  }
+
+  SyncConsentTestLacrosRevampWithParams(
+      const SyncConsentTestLacrosRevampWithParams&) = delete;
+  SyncConsentTestLacrosRevampWithParams& operator=(
+      const SyncConsentTestLacrosRevampWithParams&) = delete;
+
+  ~SyncConsentTestLacrosRevampWithParams() override = default;
+
+ protected:
+  bool is_app_synced;
+  bool is_settings_synced;
+  bool is_wifi_synced;
+  bool is_wallpaper_synced;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SyncConsentTestLacrosRevampWithParams,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams, ManageSync) {
+  LoginAndShowSyncConsentScreenWithCapability();
+  WaitForScreenShown();
+
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
+  test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
+  test::OobeJS().TapOnPath(kLacrosManageButton);
+
+  // check Toggle are enabled by default
+  test::OobeJS().ExpectAttributeEQ("checked", kAppsSyncToggle, true);
+  test::OobeJS().ExpectAttributeEQ("checked", kSettingsSyncToggle, true);
+  test::OobeJS().ExpectAttributeEQ("checked", kWifiSyncToggle, true);
+  test::OobeJS().ExpectAttributeEQ("checked", kWallpaperSyncToggle, true);
+
+  // disable Toggle
+  if (!is_app_synced) {
+    test::OobeJS().TapOnPath(kAppsSyncToggle);
+  }
+
+  if (!is_settings_synced) {
+    test::OobeJS().TapOnPath(kSettingsSyncToggle);
+  }
+
+  if (!is_wifi_synced) {
+    test::OobeJS().TapOnPath(kWifiSyncToggle);
+  }
+
+  if (!is_wallpaper_synced) {
+    test::OobeJS().TapOnPath(kWallpaperSyncToggle);
+  }
+
+  // check Toggle reflect Param
+  test::OobeJS().ExpectAttributeEQ("checked", kAppsSyncToggle, is_app_synced);
+  test::OobeJS().ExpectAttributeEQ("checked", kSettingsSyncToggle,
+                                   is_settings_synced);
+  test::OobeJS().ExpectAttributeEQ("checked", kWifiSyncToggle, is_wifi_synced);
+
+  // Wallpaper sync is a special case; its implementation relies upon
+  // OS Settings to be synced. Thus, the wallpaper label and toggle are
+  // only enabled when the Settings sync toggle is on.
+  test::OobeJS().ExpectAttributeEQ("checked", kWallpaperSyncToggle,
+                                   is_wallpaper_synced && is_settings_synced);
+
+  test::OobeJS().TapOnPath(kLacrosNextButton);
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+
+  // Expect all data types are disabled for minor users when initialized.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  syncer::SyncUserSettings* settings = GetSyncUserSettings();
+
+  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
+  EXPECT_EQ(
+      settings->GetSelectedOsTypes().Has(syncer::UserSelectableOsType::kOsApps),
+      is_app_synced);
+  EXPECT_EQ(settings->GetSelectedOsTypes().Has(
+                syncer::UserSelectableOsType::kOsPreferences),
+            is_settings_synced);
+  EXPECT_EQ(settings->GetSelectedOsTypes().Has(
+                syncer::UserSelectableOsType::kOsWifiConfigurations),
+            is_wifi_synced);
+
+  EXPECT_EQ(profile->GetPrefs()->GetBoolean(settings::prefs::kSyncOsWallpaper),
+            is_wallpaper_synced && is_settings_synced);
 }
 
 }  // namespace

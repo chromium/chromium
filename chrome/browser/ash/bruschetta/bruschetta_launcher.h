@@ -9,10 +9,11 @@
 #include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,8 +24,6 @@ namespace bruschetta {
 // Launches Bruschetta. One instance per VM.
 class BruschettaLauncher {
  public:
-  struct Files;
-
   BruschettaLauncher(std::string vm_name, Profile* profile);
   virtual ~BruschettaLauncher();
   BruschettaLauncher(const BruschettaLauncher&) = delete;
@@ -40,14 +39,16 @@ class BruschettaLauncher {
   base::WeakPtr<BruschettaLauncher> GetWeakPtr();
 
  private:
-  void StartVm(std::unique_ptr<Files> files);
+  void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  absl::optional<vm_tools::concierge::StartVmResponse> response);
 
-  base::File MaybeOpenBios();
+  void EnsureToolsDlcInstalled();
+  void OnMountToolsDlc(guest_os::GuestOsDlcInstallation::Result install_result);
 
-  void EnsureDlcInstalled();
-  void OnMountDlc(const ash::DlcserviceClient::InstallResult& install_result);
+  void EnsureFirmwareDlcInstalled();
+  void OnMountFirmwareDlc(
+      guest_os::GuestOsDlcInstallation::Result install_result);
 
   void OnContainerRunning(guest_os::GuestInfo info);
 
@@ -55,11 +56,13 @@ class BruschettaLauncher {
   void Finish(BruschettaResult result);
 
   std::string vm_name_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;
   absl::optional<base::CallbackListSubscription> subscription_;
+
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 
   // Must be last.
   base::WeakPtrFactory<BruschettaLauncher> weak_factory_{this};

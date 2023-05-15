@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -26,7 +27,7 @@ enum class OverviewAnimationState : int32_t {
 
 struct OverviewItemInfo {
   // A window represented by an overview item.
-  aura::Window* window = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
 
   // Screen bounds of an overview item.
   gfx::Rect bounds_in_screen;

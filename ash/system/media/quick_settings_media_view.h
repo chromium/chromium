@@ -9,6 +9,7 @@
 #include <map>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "ui/views/view.h"
 
 namespace global_media_controls {
@@ -22,7 +23,6 @@ class MediaScrollView;
 }  // namespace
 
 class PaginationController;
-class PaginationModel;
 class PaginationView;
 class QuickSettingsMediaViewController;
 
@@ -49,10 +49,17 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   // Updates the media item order given the id order in the list.
   void UpdateItemOrder(std::list<std::string> ids);
 
+  // Helper functions for testing.
+  PaginationModel* pagination_model_for_testing() { return &pagination_model_; }
+  std::map<const std::string, global_media_controls::MediaItemUIView*>
+  items_for_testing() {
+    return items_;
+  }
+
  private:
   raw_ptr<QuickSettingsMediaViewController> controller_ = nullptr;
 
-  std::unique_ptr<PaginationModel> pagination_model_;
+  PaginationModel pagination_model_{this};
 
   std::unique_ptr<PaginationController> pagination_controller_;
 

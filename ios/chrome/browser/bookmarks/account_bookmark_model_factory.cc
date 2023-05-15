@@ -18,9 +18,9 @@
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -45,7 +45,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
               browser_state))));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kAccount);
-  // TODO(crbug.com/1424820): Support undo/redo operations.
+  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
+      ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;
 }
 

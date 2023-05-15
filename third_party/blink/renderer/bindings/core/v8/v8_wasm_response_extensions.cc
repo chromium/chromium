@@ -68,8 +68,8 @@ void SendCachedData(String response_url,
   base::span<const uint8_t> serialized_data = cached_metadata->SerializedData();
   CachedMetadataSender::SendToCodeCacheHost(
       code_cache_host, mojom::blink::CodeCacheType::kWebAssembly, response_url,
-      response_time, execution_context->GetSecurityOrigin(),
-      cache_storage_cache_name, serialized_data.data(), serialized_data.size());
+      response_time, cache_storage_cache_name, serialized_data.data(),
+      serialized_data.size());
 }
 
 class WasmCodeCachingCallback {

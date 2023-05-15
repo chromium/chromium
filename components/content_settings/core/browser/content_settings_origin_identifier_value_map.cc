@@ -7,8 +7,10 @@
 #include <memory>
 #include <tuple>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -26,20 +28,22 @@ class RuleIteratorImpl : public RuleIterator {
   RuleIteratorImpl(
       const OriginIdentifierValueMap::Rules::const_iterator& current_rule,
       const OriginIdentifierValueMap::Rules::const_iterator& rule_end,
-      std::unique_ptr<base::AutoLock> auto_lock)
+      scoped_refptr<RefCountedAutoLock> auto_lock,
+      base::AutoReset<bool> iterating)
       : current_rule_(current_rule),
         rule_end_(rule_end),
-        auto_lock_(std::move(auto_lock)) {}
+        auto_lock_(std::move(auto_lock)),
+        iterating_(std::move(iterating)) {}
   ~RuleIteratorImpl() override = default;
 
   bool HasNext() const override { return (current_rule_ != rule_end_); }
 
-  Rule Next() override {
+  std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
-    Rule to_return(current_rule_->first.primary_pattern,
-                   current_rule_->first.secondary_pattern,
-                   current_rule_->second.value.Clone(),
-                   current_rule_->second.metadata);
+    auto to_return = std::make_unique<UnownedRule>(
+        current_rule_->first.primary_pattern,
+        current_rule_->first.secondary_pattern, &current_rule_->second.value,
+        auto_lock_, current_rule_->second.metadata);
     ++current_rule_;
     return to_return;
   }
@@ -47,7 +51,8 @@ class RuleIteratorImpl : public RuleIterator {
  private:
   OriginIdentifierValueMap::Rules::const_iterator current_rule_;
   OriginIdentifierValueMap::Rules::const_iterator rule_end_;
-  std::unique_ptr<base::AutoLock> auto_lock_;
+  scoped_refptr<RefCountedAutoLock> auto_lock_;
+  base::AutoReset<bool> iterating_;
 };
 
 }  // namespace
@@ -71,20 +76,22 @@ OriginIdentifierValueMap::ValueEntry::ValueEntry() = default;
 OriginIdentifierValueMap::ValueEntry::~ValueEntry() = default;
 
 std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
-    ContentSettingsType content_type,
-    base::Lock* lock) const {
+    ContentSettingsType content_type) const NO_THREAD_SAFETY_ANALYSIS {
   // We access |entries_| here, so we need to lock |auto_lock| first. The lock
   // must be passed to the |RuleIteratorImpl| in a locked state, so that nobody
   // can access |entries_| after |find()| but before the |RuleIteratorImpl| is
   // created.
-  std::unique_ptr<base::AutoLock> auto_lock;
-  if (lock)
-    auto_lock = std::make_unique<base::AutoLock>(*lock);
+  scoped_refptr<RefCountedAutoLock> auto_lock =
+      MakeRefCounted<RefCountedAutoLock>(lock_);
   auto it = entries_.find(content_type);
-  if (it == entries_.end())
+  if (it == entries_.end()) {
     return nullptr;
+  }
+  CHECK(!iterating_);
+  base::AutoReset<bool> iterating(&iterating_, true);
   return std::make_unique<RuleIteratorImpl>(
-      it->second.begin(), it->second.end(), std::move(auto_lock));
+      it->second.begin(), it->second.end(), std::move(auto_lock),
+      std::move(iterating));
 }
 
 size_t OriginIdentifierValueMap::size() const {
@@ -124,6 +131,7 @@ void OriginIdentifierValueMap::SetValue(
     ContentSettingsType content_type,
     base::Value value,
     const RuleMetaData& metadata) {
+  CHECK(!iterating_);
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
   // TODO(raymes): Remove this after we track down the cause of
@@ -139,6 +147,7 @@ void OriginIdentifierValueMap::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
+  CHECK(!iterating_);
   PatternPair patterns(primary_pattern, secondary_pattern);
   auto it = entries_.find(content_type);
   if (it == entries_.end())
@@ -149,10 +158,12 @@ void OriginIdentifierValueMap::DeleteValue(
 }
 
 void OriginIdentifierValueMap::DeleteValues(ContentSettingsType content_type) {
+  CHECK(!iterating_);
   entries_.erase(content_type);
 }
 
 void OriginIdentifierValueMap::clear() {
+  CHECK(!iterating_);
   // Delete all owned value objects.
   entries_.clear();
 }

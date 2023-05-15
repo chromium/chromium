@@ -31,6 +31,12 @@ class CompanionUrlBuilder {
   GURL BuildCompanionURL(GURL page_url);
   GURL BuildCompanionURL(GURL page_url, const std::string& text_query);
 
+  // Returns the `base_url` with the query parameters set to the protobuf
+  // representation of the `page_url` and associated state.
+  GURL AppendCompanionParamsToURL(GURL base_url,
+                                  GURL page_url,
+                                  const std::string& text_query);
+
   // Returns the protobuf representation of the `page_url` and
   // associated state. Used to notify the companion page both during initial
   // load and subsequent state updates.

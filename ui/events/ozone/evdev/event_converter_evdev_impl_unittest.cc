@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -56,6 +57,90 @@ class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
 };
 
 }  // namespace ui
+
+constexpr char kDefaultDeviceLogDescription[] =
+    R"(class=ui::EventConverterEvdevImpl id=1
+ keyboard_type=ui::KeyboardType::NOT_KEYBOARD
+ has_keyboard=1
+ has_touchpad=0
+ has_caps_lock_led=0
+ has_stylus_switch=0
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_UNKNOWN
+ name=""
+ phys=""
+ enabled=1
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=0000
+ product_id=0000
+ version=0000
+)";
+
+constexpr char kLogitechKeyboardK120LogDescription[] =
+    R"(class=ui::EventConverterEvdevImpl id=1
+ keyboard_type=ui::KeyboardType::VALID_KEYBOARD
+ has_keyboard=1
+ has_touchpad=0
+ has_caps_lock_led=1
+ has_stylus_switch=0
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_USB
+ name="Logitech USB Keyboard"
+ phys=""
+ enabled=1
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=046D
+ product_id=C31C
+ version=0110
+)";
+
+constexpr char kDrawciaStylusGarageLogDescription[] =
+    R"(class=ui::EventConverterEvdevImpl id=1
+ keyboard_type=ui::KeyboardType::NOT_KEYBOARD
+ has_keyboard=1
+ has_touchpad=0
+ has_caps_lock_led=0
+ has_stylus_switch=1
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_UNKNOWN
+ name="PRP0001:00"
+ phys=""
+ enabled=1
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=0001
+ product_id=0001
+ version=0100
+)";
+
+constexpr char kRedrixTouchpadLogDescription[] =
+    R"(class=ui::EventConverterEvdevImpl id=1
+ keyboard_type=ui::KeyboardType::NOT_KEYBOARD
+ has_keyboard=1
+ has_touchpad=1
+ has_caps_lock_led=0
+ has_stylus_switch=0
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_INTERNAL
+ name="ELAN2703:00 04F3:323B Touchpad"
+ phys=""
+ enabled=1
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=04F3
+ product_id=323B
+ version=0100
+)";
 
 // Test fixture.
 class EventConverterEvdevImplTest : public testing::Test {
@@ -141,6 +226,55 @@ class EventConverterEvdevImplTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
+};
+
+class EventConverterEvdevImplLogTest : public EventConverterEvdevImplTest {
+ public:
+  EventConverterEvdevImplLogTest() = default;
+
+  EventConverterEvdevImplLogTest(const EventConverterEvdevImplLogTest&) =
+      delete;
+  EventConverterEvdevImplLogTest& operator=(
+      const EventConverterEvdevImplLogTest&) = delete;
+
+  void SetUp() override {}  // Do not SetUpDevice by default
+
+  void AdjustId(ui::EventDeviceInfo& devinfo,
+                uint16_t input_id::*field,
+                uint16_t value) {
+    input_id id = {.bustype = devinfo.bustype(),
+                   .vendor = devinfo.vendor_id(),
+                   .product = devinfo.product_id(),
+                   .version = devinfo.version()};
+    id.*field = value;
+    devinfo.SetId(id);
+  }
+
+  void AdjustAxis(ui::EventDeviceInfo& devinfo,
+                  unsigned int code,
+                  int32_t input_absinfo::*field,
+                  int32_t value) {
+    input_absinfo ai = devinfo.GetAbsInfoByCode(code);
+    ai.*field = value;
+    devinfo.SetAbsInfo(code, ai);
+  }
+
+  std::string LogSubst(std::string description,
+                       std::string key,
+                       std::string replacement) {
+    EXPECT_TRUE(RE2::Replace(&description, "\n(\\s*" + key + ")=[^\n]+\n",
+                             "\n\\1=" + replacement + "\n"));
+    return description;
+  }
+
+  void Check(const ui::EventDeviceInfo& devinfo, std::string comparison) {
+    SetUpDevice(devinfo);
+
+    std::stringstream output;
+    device()->DescribeForLog(output);
+
+    EXPECT_EQ(output.str(), comparison);
+  }
 };
 
 // Test fixture which defers device set up, tests need to call SetUpDevice().
@@ -700,7 +834,8 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
 
   SetTestNowSeconds(1510019415);
   ClearDispatchedEvents();
-  GetInputController()->SetPrimaryButtonRight(absl::nullopt, false);
+  GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
+                                              false);
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(4u, size());
 
@@ -740,7 +875,8 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   SetTestNowSeconds(1510019417);
 
   ClearDispatchedEvents();
-  GetInputController()->SetPrimaryButtonRight(absl::nullopt, true);
+  GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
+                                              true);
   dev->ProcessEvents(mock_kernel_queue2, std::size(mock_kernel_queue2));
   EXPECT_EQ(4u, size());
 
@@ -773,4 +909,131 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
   EXPECT_TRUE(ui::EvdevBitUint64IsSet(key_bits.data(), 30));
   // BTN_A shouldn't be supported.
   EXPECT_FALSE(ui::EvdevBitUint64IsSet(key_bits.data(), 305));
+}
+
+// Verify log conversions for EventDeviceInfoImpl, base EventDeviceInfo,
+// and InputDevice member.
+TEST_F(EventConverterEvdevImplLogTest, Basic) {
+  Check(ui::EventDeviceInfo(), kDefaultDeviceLogDescription);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, BasicKeyboard) {
+  ui::EventDeviceInfo devinfo;
+  ui::CapabilitiesToDeviceInfo(ui::kLogitechKeyboardK120, &devinfo);
+  Check(devinfo, kLogitechKeyboardK120LogDescription);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, BasicStylusGarage) {
+  ui::EventDeviceInfo devinfo;
+  ui::CapabilitiesToDeviceInfo(ui::kDrawciaStylusGarage, &devinfo);
+  Check(devinfo, kDrawciaStylusGarageLogDescription);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, BasicTouchpad) {
+  ui::EventDeviceInfo devinfo;
+  ui::CapabilitiesToDeviceInfo(ui::kRedrixTouchpad, &devinfo);
+  Check(devinfo, kRedrixTouchpadLogDescription);
+}
+
+// Twiddle each field that can reasonably be changed independently.
+TEST_F(EventConverterEvdevImplLogTest, ChangeVendor) {
+  ui::EventDeviceInfo devinfo;
+  AdjustId(devinfo, &input_id::vendor, 0x0ABC);
+
+  std::string log = LogSubst(kDefaultDeviceLogDescription, "vendor_id", "0ABC");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeProduct) {
+  ui::EventDeviceInfo devinfo;
+  AdjustId(devinfo, &input_id::product, 0x0105);
+
+  std::string log =
+      LogSubst(kDefaultDeviceLogDescription, "product_id", "0105");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeVersion) {
+  ui::EventDeviceInfo devinfo;
+  AdjustId(devinfo, &input_id::version, 0xDEF0);
+
+  std::string log = LogSubst(kDefaultDeviceLogDescription, "version", "DEF0");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeName) {
+  ui::EventDeviceInfo devinfo;
+  devinfo.SetName("changed the name");
+
+  std::string log =
+      LogSubst(kDefaultDeviceLogDescription, "name", "\"changed the name\"");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeInputDeviceType) {
+  ui::EventDeviceInfo devinfo;
+  devinfo.SetDeviceType(ui::InputDeviceType::INPUT_DEVICE_USB);
+
+  std::string log = LogSubst(kDefaultDeviceLogDescription, "input_device_type",
+                             "ui::InputDeviceType::INPUT_DEVICE_USB");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeEnabled) {
+  ui::EventDeviceInfo devinfo;
+  SetUpDevice(devinfo);
+
+  device()->SetEnabled(false);
+
+  std::stringstream output;
+  device()->DescribeForLog(output);
+  std::string log = LogSubst(kDefaultDeviceLogDescription, "enabled", "0");
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeImposter) {
+  ui::EventDeviceInfo devinfo;
+  SetUpDevice(devinfo);
+
+  device()->SetSuspectedImposter(true);
+
+  std::stringstream output;
+  device()->DescribeForLog(output);
+  std::string log =
+      LogSubst(kDefaultDeviceLogDescription, "suspected_imposter", "1");
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeKeyboardType) {
+  ui::EventDeviceInfo devinfo;
+
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(EV_CNT)> ev_bits = {};
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> key_bits = {};
+  ui::EvdevSetBit(ev_bits.data(), EV_KEY);
+  for (int key = KEY_ESC; key <= KEY_D; key++) {
+    ui::EvdevSetBit(key_bits.data(), key);
+  }
+
+  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
+  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+
+  std::string log = LogSubst(kDefaultDeviceLogDescription, "keyboard_type",
+                             "ui::KeyboardType::VALID_KEYBOARD");
+  Check(devinfo, log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeCapslockLED) {
+  ui::EventDeviceInfo devinfo;
+
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(EV_CNT)> ev_bits = {};
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(LED_CNT)> led_bits = {};
+  ui::EvdevSetBit(ev_bits.data(), EV_LED);
+  ui::EvdevSetBit(led_bits.data(), LED_CAPSL);
+
+  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
+  devinfo.SetLedEvents(led_bits.data(), led_bits.size());
+
+  std::string log =
+      LogSubst(kDefaultDeviceLogDescription, "has_caps_lock_led", "1");
+  Check(devinfo, log);
 }

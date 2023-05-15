@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -86,7 +87,11 @@ public class EmptyCoordinator implements OfflineItemFilterObserver, FilterCoordi
             if (mShowingPrefetch) {
                 textId = R.string.download_manager_prefetch_tab_empty;
             } else {
-                textId = R.string.download_manager_no_downloads;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+                    textId = R.string.download_manager_no_downloads_empty_state;
+                } else {
+                    textId = R.string.download_manager_no_downloads;
+                }
             }
 
             mModel.set(EmptyProperties.EMPTY_TEXT_RES_ID, textId);

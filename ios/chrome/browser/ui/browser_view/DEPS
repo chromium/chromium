@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/browser_view",
+  "+ios/chrome/browser/ui",
 ]
 
 specific_include_rules = {

@@ -102,6 +102,8 @@ void VideoFramePump::SetMouseCursorPosition(
   capturer_->SetMouseCursorPosition(position);
 }
 
+void VideoFramePump::SetTargetFramerate(int framerate) {}
+
 void VideoFramePump::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {

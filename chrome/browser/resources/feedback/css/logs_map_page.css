@@ -8,6 +8,49 @@ body {
   user-select: auto;
 }
 
+html:has(body.jelly-enabled) {
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-body-2-font);
+}
+
+html:has(body.jelly-enabled) button {
+  font: var(--cros-button-2-font);
+}
+
+html:has(body.jelly-enabled) #header,
+html:has(body.jelly-enabled) #header h1,
+html:has(body.jelly-enabled) #header p {
+  background-color: var(--cros-sys-primary);
+  border: none;
+  color: var(--cros-sys-on_primary);
+  text-shadow: none;
+}
+
+html:has(body.jelly-enabled) #header h1::before {
+  background-color: var(--cros-sys-on_primary);
+}
+
+html:has(body.jelly-enabled) #tableTitle {
+  font: var(--cros-headline-1-font);
+}
+
+html:has(body.jelly-enabled) #title {
+  font: var(--cros-title-1-font);
+}
+
+html:has(body.jelly-enabled) #description {
+  font: var(--cros-annotation-2-font);
+}
+
+html:has(body.jelly-enabled) .list td {
+  font: var(--cros-body-2-font);
+}
+
+html:has(body.jelly-enabled) tr > *:nth-child(1),
+html:has(body.jelly-enabled) tr > *:nth-child(2) {
+  border-inline-end: 1px solid var(--feedback-separator-color);
+}
+
 #detailsTable {
   margin-top: .5em;
 }

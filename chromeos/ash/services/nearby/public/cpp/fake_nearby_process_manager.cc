@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
@@ -20,11 +21,14 @@ FakeNearbyProcessManager::FakeNearbyProcessReference::
     FakeNearbyProcessReference(
         const mojo::SharedRemote<
             ::nearby::connections::mojom::NearbyConnections>& connections,
+        const mojo::SharedRemote<
+            ::ash::nearby::presence::mojom::NearbyPresence>& presence,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
             quick_start_decoder,
         base::OnceClosure destructor_callback)
     : connections_(connections),
+      presence_(presence),
       decoder_(decoder),
       quick_start_decoder_(quick_start_decoder),
       destructor_callback_(std::move(destructor_callback)) {}
@@ -38,6 +42,12 @@ const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
 FakeNearbyProcessManager::FakeNearbyProcessReference::GetNearbyConnections()
     const {
   return connections_;
+}
+
+const mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>&
+FakeNearbyProcessManager::FakeNearbyProcessReference::GetNearbyPresence()
+    const {
+  return presence_;
 }
 
 const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
@@ -63,6 +73,7 @@ size_t FakeNearbyProcessManager::GetNumActiveReferences() const {
 void FakeNearbyProcessManager::SimulateProcessStopped(
     NearbyProcessShutdownReason shutdown_reason) {
   active_connections_.reset();
+  active_presence_.reset();
   active_decoder_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -85,6 +96,11 @@ FakeNearbyProcessManager::GetNearbyProcessReference(
   if (!active_connections_) {
     active_connections_ = std::make_unique<MockNearbyConnections>();
   }
+
+  if (!active_presence_) {
+    active_presence_ = std::make_unique<presence::FakeNearbyPresence>();
+  }
+
   if (!active_decoder_) {
     active_decoder_ = std::make_unique<MockNearbySharingDecoder>();
   }
@@ -98,7 +114,8 @@ FakeNearbyProcessManager::GetNearbyProcessReference(
       id, std::move(on_process_stopped_callback));
 
   return std::make_unique<FakeNearbyProcessReference>(
-      active_connections_->shared_remote(), active_decoder_->shared_remote(),
+      active_connections_->shared_remote(), active_presence_->shared_remote(),
+      active_decoder_->shared_remote(),
       active_quick_start_decoder_->shared_remote(),
       base::BindOnce(&FakeNearbyProcessManager::OnReferenceDeleted,
                      weak_ptr_factory_.GetWeakPtr(), id));
@@ -112,6 +129,7 @@ void FakeNearbyProcessManager::OnReferenceDeleted(
 
   if (id_to_process_stopped_callback_map_.empty()) {
     active_connections_.reset();
+    active_presence_.reset();
     active_decoder_.reset();
   }
 }

@@ -19,10 +19,10 @@ class MockPage : public downloads::mojom::Page {
 
   mojo::PendingRemote<downloads::mojom::Page> BindAndGetRemote();
 
-  MOCK_METHOD1(RemoveItem, void(int));
-  MOCK_METHOD2(UpdateItem, void(int, downloads::mojom::DataPtr));
-  MOCK_METHOD2(InsertItems, void(int, std::vector<downloads::mojom::DataPtr>));
-  MOCK_METHOD0(ClearAll, void());
+  MOCK_METHOD(void, RemoveItem, (int));
+  MOCK_METHOD(void, UpdateItem, (int, downloads::mojom::DataPtr));
+  MOCK_METHOD(void, InsertItems, (int, std::vector<downloads::mojom::DataPtr>));
+  MOCK_METHOD(void, ClearAll, ());
 
   mojo::Receiver<downloads::mojom::Page> receiver_{this};
 };

@@ -234,13 +234,13 @@ absl::optional<base::TimeDelta> ResetTimeFromDict(
     return absl::nullopt;
   }
 
-  absl::optional<int> hour = reset_dict->FindIntKey(kHourInt);
+  absl::optional<int> hour = reset_dict->GetDict().FindInt(kHourInt);
   if (!hour) {
     DLOG(ERROR) << "Invalid reset hour.";
     return absl::nullopt;
   }
 
-  absl::optional<int> minutes = reset_dict->FindIntKey(kMinInt);
+  absl::optional<int> minutes = reset_dict->GetDict().FindInt(kMinInt);
   if (!minutes) {
     DLOG(ERROR) << "Invalid reset minutes.";
     return absl::nullopt;

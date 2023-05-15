@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -33,7 +34,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -145,17 +145,17 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
     const char kAppendFrameScriptTemplate[] = R"(
         var f = document.createElement('iframe');
         f.src = $1;
-        f.onload = function(e) {
-            window.domAutomationController.send(true);
-            f.onload = undefined;
-        }
-        document.body.appendChild(f); )";
+        new Promise(resolve => {
+          f.onload = function(e) {
+              resolve(true);
+              f.onload = undefined;
+          }
+          document.body.appendChild(f);
+        });
+        )";
     std::string append_frame_script =
         content::JsReplace(kAppendFrameScriptTemplate, url.spec());
-    bool loaded = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(frame, append_frame_script,
-                                                     &loaded));
-    EXPECT_TRUE(loaded);
+    EXPECT_EQ(true, content::EvalJs(frame, append_frame_script));
     content::RenderFrameHost* child_frame = content::ChildFrameAt(frame, 0);
     EXPECT_EQ(url, child_frame->GetLastCommittedURL());
     return child_frame;
@@ -264,19 +264,21 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   const Extension* MakeExtension(
       const std::vector<std::string>& host_patterns) {
     ChromeTestExtensionLoader loader(profile());
-    DictionaryBuilder manifest;
-    manifest.Set("name", "Cookies test extension")
-        .Set("version", "1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", ListBuilder().Append("*.html").Build())
-        .Set("content_security_policy", kCspHeader)
-        .Set("permissions",
-             ListBuilder()
-                 .Append(host_patterns.begin(), host_patterns.end())
-                 .Build());
+    base::Value::List permissions;
+    for (const auto& host_pattern : host_patterns) {
+      permissions.Append(host_pattern);
+    }
+    auto manifest = base::Value::Dict()
+                        .Set("name", "Cookies test extension")
+                        .Set("version", "1")
+                        .Set("manifest_version", 2)
+                        .Set("web_accessible_resources",
+                             base::Value::List().Append("*.html"))
+                        .Set("content_security_policy", kCspHeader)
+                        .Set("permissions", std::move(permissions));
     extension_dir_->WriteFile(FILE_PATH_LITERAL("empty.html"), "");
     extension_dir_->WriteFile(FILE_PATH_LITERAL("script.js"), "");
-    extension_dir_->WriteManifest(manifest.ToJSON());
+    extension_dir_->WriteManifest(manifest);
 
     const Extension* extension =
         loader.LoadExtension(extension_dir_->UnpackedPath()).get();

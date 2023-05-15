@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -29,11 +30,6 @@
 
 namespace bruschetta {
 
-struct BruschettaLauncher::Files {
-  base::ScopedFD firmware;
-  absl::optional<base::ScopedFD> pflash;
-};
-
 namespace {
 
 // TODO(b/233289313): Once we have an installer and multiple Bruschettas this
@@ -41,47 +37,6 @@ namespace {
 // instructions have people using for the alpha, and the same disk name that
 // people following the instructions will have (base64 encoded "bru").
 const char kDiskName[] = "YnJ1.img";
-
-const char kOldBiosPath[] = "Downloads/bios";
-
-// We currently support three different paths here, for backwards compatibility.
-// 1) A firmware image at kOldBiosPath with flash data embedded in the firmware
-// 2) A firmware image at kBiosPath with flash data at kPflashPath
-// 3) A firmware image at kBiosPath, with flash data handled by concierge
-//
-// TODO(b/265096855): Remove support for options 1&2 once they're no longer in
-// use.
-std::unique_ptr<BruschettaLauncher::Files> OpenFdsBlocking(
-    base::FilePath profile_path) {
-  base::File firmware(profile_path.Append(kBiosPath),
-                      base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!firmware.IsValid()) {
-    firmware = base::File(profile_path.Append(kOldBiosPath),
-                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!firmware.IsValid()) {
-      PLOG(ERROR) << "Failed to open firmware";
-      return nullptr;
-    }
-    BruschettaLauncher::Files files = {
-        .firmware = base::ScopedFD(firmware.TakePlatformFile()),
-        .pflash = absl::nullopt,
-    };
-    return std::make_unique<BruschettaLauncher::Files>(std::move(files));
-  }
-
-  base::File pflash(profile_path.Append(kPflashPath),
-                    base::File::FLAG_OPEN | base::File::FLAG_READ);
-
-  BruschettaLauncher::Files files = {
-      .firmware = base::ScopedFD(firmware.TakePlatformFile()),
-      .pflash = absl::nullopt,
-  };
-  if (pflash.IsValid()) {
-    files.pflash = base::ScopedFD(pflash.TakePlatformFile());
-  }
-
-  return std::make_unique<BruschettaLauncher::Files>(std::move(files));
-}
 
 }  // namespace
 
@@ -98,7 +53,7 @@ void BruschettaLauncher::EnsureRunning(
   }
   callbacks_.AddUnsafe(std::move(callback));
   if (!launch_in_progress) {
-    EnsureDlcInstalled();
+    EnsureToolsDlcInstalled();
     // If we're not complete after 4 minutes time out the entire launch.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -108,40 +63,46 @@ void BruschettaLauncher::EnsureRunning(
   }
 }
 
-void BruschettaLauncher::EnsureDlcInstalled() {
-  dlcservice::InstallRequest request;
-  request.set_id(kToolsDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
-      base::BindOnce(&BruschettaLauncher::OnMountDlc,
+void BruschettaLauncher::EnsureToolsDlcInstalled() {
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kToolsDlc,
+      base::BindOnce(&BruschettaLauncher::OnMountToolsDlc,
                      weak_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
-void BruschettaLauncher::OnMountDlc(
-    const ash::DlcserviceClient::InstallResult& install_result) {
-  if (install_result.error != dlcservice::kErrorNone) {
-    LOG(ERROR) << "Error installing DLC: " << install_result.error;
+void BruschettaLauncher::OnMountToolsDlc(
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  in_progress_dlc_.reset();
+  if (!install_result.has_value()) {
+    LOG(ERROR) << "Error installing tools DLC: " << install_result.error();
     Finish(BruschettaResult::kDlcInstallError);
     return;
   }
 
-  // TODO(b/264495837, b/264495396): Eventually we should stop storing these
-  // files in the user's Downloads directory.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&OpenFdsBlocking, profile_->GetPath()),
-      base::BindOnce(&BruschettaLauncher::StartVm, weak_factory_.GetWeakPtr()));
+  EnsureFirmwareDlcInstalled();
 }
 
-void BruschettaLauncher::StartVm(
-    std::unique_ptr<BruschettaLauncher::Files> files) {
-  if (!files) {
-    LOG(ERROR) << "Error opening BIOS or pflash files";
-    Finish(BruschettaResult::kBiosNotAccessible);
+void BruschettaLauncher::EnsureFirmwareDlcInstalled() {
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kUefiDlc,
+      base::BindOnce(&BruschettaLauncher::OnMountFirmwareDlc,
+                     weak_factory_.GetWeakPtr()),
+      base::DoNothing());
+}
+
+void BruschettaLauncher::OnMountFirmwareDlc(
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  if (!install_result.has_value()) {
+    LOG(ERROR) << "Error installing firmware DLC: " << install_result.error();
+    Finish(BruschettaResult::kDlcInstallError);
     return;
   }
 
+  StartVm();
+}
+
+void BruschettaLauncher::StartVm() {
   auto* client = ash::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "Error connecting to concierge. Client is NULL.";
@@ -170,22 +131,13 @@ void BruschettaLauncher::StartVm(
   vm_tools::concierge::StartVmRequest request;
   request.set_start_termina(false);
   request.set_name(vm_name_);
-  *request.mutable_vm()->mutable_tools_dlc_id() = kToolsDlc;
-  *request.mutable_owner_id() = user_hash;
+  request.mutable_vm()->set_tools_dlc_id(kToolsDlc);
+  request.mutable_vm()->set_bios_dlc_id(kUefiDlc);
+  request.set_owner_id(user_hash);
   request.set_vm_username(vm_username);
   request.set_start_termina(false);
   request.set_timeout(240);
   request.set_vtpm_proxy(launch_policy.vtpm_enabled);
-
-  // fds and request.fds must have the same order.
-  std::vector<base::ScopedFD> fds;
-  request.add_fds(vm_tools::concierge::StartVmRequest::BIOS);
-  fds.push_back(std::move(files->firmware));
-  if (files->pflash) {
-    request.add_fds(vm_tools::concierge::StartVmRequest::PFLASH);
-    fds.push_back(std::move(*files->pflash));
-  }
-  files.reset();
 
   auto* disk = request.mutable_disks()->Add();
   *disk->mutable_path() =
@@ -193,10 +145,9 @@ void BruschettaLauncher::StartVm(
   disk->set_writable(true);
   disk->set_do_mount(false);
 
-  client->StartVmWithFds(
-      std::move(fds), request,
-      base::BindOnce(&BruschettaLauncher::OnStartVm, weak_factory_.GetWeakPtr(),
-                     launch_policy));
+  client->StartVm(request,
+                  base::BindOnce(&BruschettaLauncher::OnStartVm,
+                                 weak_factory_.GetWeakPtr(), launch_policy));
 }
 
 void BruschettaLauncher::OnStartVm(

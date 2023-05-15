@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -17,10 +18,12 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_test_base.h"
 #include "chrome/browser/media/router/providers/cast/mock_mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
+#include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
+#include "media/base/media_switches.h"
 #include "media/cast/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -503,6 +506,36 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
 }
 
+TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
+  MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
+
+  // A random int indicating the new tab source.
+  const int new_tab_source = 3;
+
+  EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
+
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId())
+      .WillOnce(testing::Return(new_tab_source));
+
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(mojom::MediaStatus::PlayState::PLAYING, status->play_state);
+      });
+
+  activity_->OnSourceChanged();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+}
+
 TEST_F(MirroringActivityTest, ReportsNotEnabledByDefault) {
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
   MakeActivity(source);
@@ -535,16 +568,164 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
 
 TEST_F(MirroringActivityTest, Pause) {
   MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
 
-  EXPECT_CALL(*mirroring_service_, Pause()).Times(testing::Exactly(1));
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+
   activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
 TEST_F(MirroringActivityTest, Play) {
   MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
 
-  EXPECT_CALL(*mirroring_service_, Resume()).Times(testing::Exactly(1));
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+
   activity_->Play();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+}
+
+TEST_F(MirroringActivityTest, PauseAndPlay) {
+  base::HistogramTester uma_recorder;
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
+  MediaSource source = MediaSource::ForTab(kTabId);
+  MakeActivity(source, kFrameTreeNodeId,
+               CastDiscoveryType::kAccessCodeManualEntry);
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+
+  activity_->DidStart();
+  activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  activity_->Play();
+  base::RunLoop().RunUntilIdle();
+  activity_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeCount", 1);
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeDuration", 1);
+}
+
+TEST_F(MirroringActivityTest, PauseAndReset) {
+  base::HistogramTester uma_recorder;
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
+  MediaSource source = MediaSource::ForTab(kTabId);
+  MakeActivity(source, kFrameTreeNodeId,
+               CastDiscoveryType::kAccessCodeManualEntry);
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+
+  activity_->DidStart();
+  activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  activity_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeCount", 1);
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeDuration", 1);
+}
+
+TEST_F(MirroringActivityTest, OnRemotingStateChanged) {
+  MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
+
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  expected_status->can_play_pause = false;
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+        EXPECT_EQ(expected_status->can_play_pause, status->can_play_pause);
+      });
+
+  activity_->OnRemotingStateChanged(/*is_remoting*/ true);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+
+  expected_status->can_play_pause = true;
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+        EXPECT_EQ(expected_status->can_play_pause, status->can_play_pause);
+      });
+
+  activity_->OnRemotingStateChanged(/*is_remoting*/ false);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+}
+
+TEST_F(MirroringActivityTest, GetTargetPlayoutDelay) {
+  MakeActivity();
+
+  // Expect no command line switch will return the same value.
+  const base::TimeDelta default_playout_delay = base::Milliseconds(400);
+  EXPECT_EQ(activity_->GetTargetPlayoutDelay(default_playout_delay).value(),
+            default_playout_delay);
+
+  // Expect no command line switch and a nullopt will return a nullopt.
+  EXPECT_EQ(activity_->GetTargetPlayoutDelay(absl::nullopt), absl::nullopt);
+
+  // Test that an invalid switch (alpha-numeric string) will return the
+  // parameter value.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "foo");
+  EXPECT_EQ(activity_->GetTargetPlayoutDelay(default_playout_delay).value(),
+            default_playout_delay);
+
+  // Test that a valid switch will override the target playout delay.
+  const base::TimeDelta switch_playout_delay = base::Milliseconds(200);
+  command_line->AppendSwitchASCII(
+      switches::kCastMirroringTargetPlayoutDelay,
+      base::NumberToString(switch_playout_delay.InMilliseconds()));
+  EXPECT_EQ(activity_->GetTargetPlayoutDelay(switch_playout_delay).value(),
+            switch_playout_delay);
+
+  // Test that returned value is the switch even with nullopt.
+  EXPECT_EQ(activity_->GetTargetPlayoutDelay(absl::nullopt).value(),
+            switch_playout_delay);
 }
 
 }  // namespace media_router

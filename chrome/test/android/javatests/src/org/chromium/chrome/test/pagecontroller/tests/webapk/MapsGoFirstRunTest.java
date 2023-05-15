@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -171,10 +171,10 @@ public class MapsGoFirstRunTest {
      * no browser choice on launch.
      */
     private void launchWebapk() {
-        String chromePackageName = InstrumentationRegistry.getTargetContext().getPackageName();
+        String chromePackageName = ApplicationProvider.getApplicationContext().getPackageName();
         Log.d(TAG, "Launching %s in Chrome (%s)", MAPS_GO_PACKAGE, chromePackageName);
 
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         final Intent intent =
                 context.getPackageManager().getLaunchIntentForPackage(MAPS_GO_PACKAGE);
         if (intent == null) {

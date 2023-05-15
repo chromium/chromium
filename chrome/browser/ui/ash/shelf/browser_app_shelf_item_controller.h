@@ -12,6 +12,8 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
@@ -77,8 +79,8 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   void OnLoadMediumIcon(apps::IconValuePtr icon_value);
   void OnLoadBittyIcon(apps::IconValuePtr icon_value);
 
-  Profile* profile_;
-  apps::BrowserAppInstanceRegistry& registry_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ref<apps::BrowserAppInstanceRegistry, ExperimentalAsh> registry_;
 
   // ShelfContextMenu instance needs to be alive for the duration of the
   // GetMenuModel call.

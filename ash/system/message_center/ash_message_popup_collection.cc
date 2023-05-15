@@ -48,7 +48,7 @@ const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
     "ash/message_center/MessagePopup";
 
 AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
-    : screen_(nullptr), shelf_(shelf), tray_bubble_height_(0) {
+    : screen_(nullptr), shelf_(shelf) {
   shelf_->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
@@ -67,41 +67,43 @@ void AshMessagePopupCollection::StartObserving(
   screen_ = screen;
   work_area_ = display.work_area();
   display_observer_.emplace(this);
-  if (tray_bubble_height_ > 0)
+  if (baseline_offset_ > 0) {
     UpdateWorkArea();
+  }
 }
 
-void AshMessagePopupCollection::SetTrayBubbleHeight(int height) {
-  const int old_tray_bubble_height = tray_bubble_height_;
+void AshMessagePopupCollection::SetBaselineOffset(int baseline_offset) {
+  const int old_baseline_offset = baseline_offset_;
 
-  tray_bubble_height_ = height;
+  baseline_offset_ = baseline_offset;
 
   // If the shelf is shown during auto-hide state, the distance from the edge
   // should be reduced by the height of shelf's shown height.
   if (shelf_->GetVisibilityState() == SHELF_AUTO_HIDE &&
       shelf_->GetAutoHideState() == SHELF_AUTO_HIDE_SHOWN) {
-    tray_bubble_height_ -= ShelfConfig::Get()->shelf_size();
+    baseline_offset_ -= ShelfConfig::Get()->shelf_size();
   }
 
-  if (tray_bubble_height_ > 0)
-    tray_bubble_height_ += message_center::kMarginBetweenPopups;
-  else
-    tray_bubble_height_ = 0;
+  if (baseline_offset_ > 0) {
+    baseline_offset_ += message_center::kMarginBetweenPopups;
+  } else {
+    baseline_offset_ = 0;
+  }
 
-  if (old_tray_bubble_height != tray_bubble_height_)
+  if (old_baseline_offset != baseline_offset_) {
     ResetBounds();
+  }
 }
 
 int AshMessagePopupCollection::GetPopupOriginX(
     const gfx::Rect& popup_bounds) const {
-  // In Ash, RTL UI language mirrors the whole ash layout, so the popup
-  // widgets should be at the bottom-left instead of bottom right.
-  if (base::i18n::IsRTL())
-    return work_area_.x() + kPopupMarginX;
-
-  if (IsFromLeft())
-    return work_area_.x() + kPopupMarginX;
-  return work_area_.right() - kPopupMarginX - popup_bounds.width();
+  // Popups should always follow the status area and will usually show on the
+  // bottom-right of the screen. They will show at the bottom-left whenever the
+  // shelf is left-aligned or for RTL when the shelf is not right aligned.
+  return ((base::i18n::IsRTL() && GetAlignment() != ShelfAlignment::kRight) ||
+          IsFromLeft())
+             ? work_area_.x() + kPopupMarginX
+             : work_area_.right() - kPopupMarginX - popup_bounds.width();
 }
 
 int AshMessagePopupCollection::GetBaseline() const {
@@ -113,14 +115,14 @@ int AshMessagePopupCollection::GetBaseline() const {
 
   // Decrease baseline by `kShelfDisplayOffset` to compensate for the adjustment
   // of edges in `Shelf::GetSystemTrayAnchorRect()`.
-  return work_area_.bottom() - tray_bubble_insets.bottom() -
-         tray_bubble_height_ - hotseat_height - kShelfDisplayOffset;
+  return work_area_.bottom() - tray_bubble_insets.bottom() - baseline_offset_ -
+         hotseat_height - kShelfDisplayOffset;
 }
 
 gfx::Rect AshMessagePopupCollection::GetWorkArea() const {
   gfx::Rect work_area_without_tray_bubble = work_area_;
   work_area_without_tray_bubble.set_height(
-      work_area_without_tray_bubble.height() - tray_bubble_height_);
+      work_area_without_tray_bubble.height() - baseline_offset_);
   return work_area_without_tray_bubble;
 }
 

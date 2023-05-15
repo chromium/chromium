@@ -27,8 +27,10 @@ class RequestContentScript;
 class ScriptExecutor;
 
 // Class for
-// 1) observing when a content script gets injected into a process,
-// 2) checking if a content script was ever injected into a given process.
+// 1) observing when an extension script (content script or user script) gets
+//    injected into a process,
+// 2) checking if an extension script (content script or user script) was ever
+//    injected into a given process.
 //
 // WARNING: False positives might happen.  This class is primarily meant to help
 // make security decisions.  This focus means that it is known and
@@ -43,8 +45,28 @@ class ScriptExecutor;
 //   tracked)
 //
 // This class may only be used on the UI thread.
+// TODO(https://crbug.com/1429408): Rename this to ScriptInjectionTracker or
+// similar? It's not just content scripts, per se.
 class ContentScriptTracker {
  public:
+  // The type of script being executed. We make this distinction because these
+  // scripts have different privileges associated with them.
+  // Note that this is similar, but not identical, to `mojom::ExecutionWorld`,
+  // which refers to the world in which a script will be executed. Technically,
+  // content scripts can choose to execute in the main world, but would still be
+  // considered ScriptType::kContentScript.
+  // TODO(https://crbug.com/1186557): The above is true (and how this class has
+  // historically tracked injections), but if a script only executes in the main
+  // world, it won't have content script bindings or be associated with a
+  // Feature::CONTENT_SCRIPT_CONTEXT. Should we just not track those, or track
+  // them separately? The injection world can be determined dynamically by
+  // looking at `UserScript::execution_world` for persistent scripts and
+  // `mojom::JSInjection::world` for one-time scripts.
+  enum class ScriptType {
+    kContentScript,
+    kUserScript,
+  };
+
   // Only static methods.
   ContentScriptTracker() = delete;
 
@@ -54,9 +76,15 @@ class ContentScriptTracker {
       const content::RenderProcessHost& process,
       const ExtensionId& extension_id);
 
+  // Answers whether the `process` has ever in the past run a user script from
+  // an extension with the given `extension_id`.
+  static bool DidProcessRunUserScriptFromExtension(
+      const content::RenderProcessHost& process,
+      const ExtensionId& extension_id);
+
   // Returns all the IDs for extensions that have ever in the past run a content
   // script in `process`.
-  static ExtensionIdSet GetExtensionsThatRanScriptsInProcess(
+  static ExtensionIdSet GetExtensionsThatRanContentScriptsInProcess(
       const content::RenderProcessHost& process);
 
   // The few methods below are called by ExtensionWebContentsObserver to notify
@@ -81,6 +109,7 @@ class ContentScriptTracker {
   // The caller needs to ensure that if `host_id.type() == HostID::EXTENSIONS`,
   // then the extension with the given `host_id` exists and is enabled.
   static void WillExecuteCode(base::PassKey<ScriptExecutor> pass_key,
+                              ScriptType script_type,
                               content::RenderFrameHost* frame,
                               const mojom::HostID& host_id);
 

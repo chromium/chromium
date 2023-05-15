@@ -244,9 +244,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-compact-code-space-with-stack");
   SetV8FlagsIfOverridden(features::kV8CompactWithStack, "--compact-with-stack",
                          "--no-compact-with-stack");
-  SetV8FlagsIfOverridden(features::kV8CrashOnEvacuationFailure,
-                         "--crash-on-aborted-evacuation",
-                         "--no-crash-on-aborted-evacuation");
   SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
   SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
                          "--no-flush-bytecode");
@@ -261,6 +258,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
         static_cast<int>(
             features::kV8MemoryReducerStartDelay.Get().InMilliseconds()));
   }
+  SetV8FlagsIfOverridden(features::kV8ConcurrentMarkingHighPriorityThreads,
+                         "--concurrent-marking-high-priority-threads",
+                         "--no-concurrent-marking-high-priority-threads");
   SetV8FlagsIfOverridden(features::kV8LazyFeedbackAllocation,
                          "--lazy-feedback-allocation",
                          "--no-lazy-feedback-allocation");
@@ -285,6 +285,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8MegaDomIC, "--mega-dom-ic",
                          "--no-mega-dom-ic");
   SetV8FlagsIfOverridden(features::kV8Maglev, "--maglev", "--no-maglev");
+  SetV8FlagsIfOverridden(features::kV8MinorMC, "--minor-mc", "--no-minor-mc");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
   SetV8FlagsIfOverridden(features::kV8Turbofan, "--turbofan", "--no-turbofan");
@@ -300,6 +301,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-write-protect-code-memory");
   SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
                          "--no-slow-histograms");
+  SetV8FlagsIfOverridden(features::kV8MemoryReducerSingleGC,
+                         "--memory-reducer-single-gc",
+                         "--no-memory-reducer-single-gc");
 
   if (base::FeatureList::IsEnabled(features::kV8ConcurrentSparkplug)) {
     if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
@@ -331,6 +335,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
                            "--no-slow-histograms");
   }
+
+  SetV8FlagsIfOverridden(features::kV8IgnitionElideRedundantTdzChecks,
+                         "--ignition-elide-redundant-tdz-checks",
+                         "--no-ignition-elide-redundant-tdz-checks");
 
   // JavaScript language features.
   SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
@@ -364,6 +372,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
                          "--use-libm-trig-functions",
                          "--no-use-libm-trig-functions");
+
+  SetV8FlagsIfOverridden(features::kJavaScriptCompileHintsMagic,
+                         "--compile-hints-magic", "--no-compile-hints-magic");
 
   // WebAssembly features.
 

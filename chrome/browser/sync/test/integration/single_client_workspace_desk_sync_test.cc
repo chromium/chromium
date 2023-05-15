@@ -4,9 +4,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
-#include "base/guid.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
+#include "base/uuid.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -47,7 +47,7 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
  public:
   SingleClientWorkspaceDeskSyncTest() : SyncTest(SINGLE_CLIENT) {
     kTestUuid1_ =
-        base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
+        base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
   }
 
   SingleClientWorkspaceDeskSyncTest(const SingleClientWorkspaceDeskSyncTest&) =
@@ -71,7 +71,7 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
     GetClient(0)->AwaitSyncSetupCompletion();
   }
 
-  base::GUID kTestUuid1_;
+  base::Uuid kTestUuid1_;
 
  private:
   base::SimpleTestClock clock_;

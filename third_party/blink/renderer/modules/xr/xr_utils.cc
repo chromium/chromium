@@ -180,7 +180,6 @@ String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
 }
 
 absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
-    const ExecutionContext* context,
     const String& feature_string) {
   if (feature_string == "viewer") {
     return device::mojom::XRSessionFeature::REF_SPACE_VIEWER;
@@ -202,24 +201,19 @@ absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::LIGHT_ESTIMATION;
   } else if (feature_string == "camera-access") {
     return device::mojom::XRSessionFeature::CAMERA_ACCESS;
-  } else if (RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context) &&
-             feature_string == "plane-detection") {
+  } else if (feature_string == "plane-detection") {
     return device::mojom::XRSessionFeature::PLANE_DETECTION;
   } else if (feature_string == "depth-sensing") {
     return device::mojom::XRSessionFeature::DEPTH;
-  } else if (RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context) &&
-             feature_string == "image-tracking") {
+  } else if (feature_string == "image-tracking") {
     return device::mojom::XRSessionFeature::IMAGE_TRACKING;
-  } else if (RuntimeEnabledFeatures::WebXRHandInputEnabled(context) &&
-             feature_string == "hand-tracking") {
+  } else if (feature_string == "hand-tracking") {
     return device::mojom::XRSessionFeature::HAND_INPUT;
   } else if (feature_string == "secondary-views") {
     return device::mojom::XRSessionFeature::SECONDARY_VIEWS;
-  } else if (RuntimeEnabledFeatures::WebXRLayersEnabled(context) &&
-             feature_string == "layers") {
+  } else if (feature_string == "layers") {
     return device::mojom::XRSessionFeature::LAYERS;
-  } else if (RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context) &&
-             feature_string == "front-facing") {
+  } else if (feature_string == "front-facing") {
     return device::mojom::XRSessionFeature::FRONT_FACING;
   }
 
@@ -265,6 +259,35 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
   }
 
   return "";
+}
+
+bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
+                                const ExecutionContext* context) {
+  switch (feature) {
+    case device::mojom::XRSessionFeature::PLANE_DETECTION:
+      return RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context);
+    case device::mojom::XRSessionFeature::IMAGE_TRACKING:
+      return RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context);
+    case device::mojom::XRSessionFeature::HAND_INPUT:
+      return RuntimeEnabledFeatures::WebXRHandInputEnabled(context);
+    case device::mojom::XRSessionFeature::LAYERS:
+      return RuntimeEnabledFeatures::WebXRLayersEnabled(context);
+    case device::mojom::XRSessionFeature::FRONT_FACING:
+      return RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context);
+    case device::mojom::XRSessionFeature::HIT_TEST:
+    case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
+    case device::mojom::XRSessionFeature::ANCHORS:
+    case device::mojom::XRSessionFeature::CAMERA_ACCESS:
+    case device::mojom::XRSessionFeature::DEPTH:
+    case device::mojom::XRSessionFeature::REF_SPACE_VIEWER:
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL:
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR:
+    case device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR:
+    case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
+    case device::mojom::XRSessionFeature::DOM_OVERLAY:
+    case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+      return true;
+  }
 }
 
 }  // namespace blink

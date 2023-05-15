@@ -415,26 +415,7 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
-    if (RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(
-            GetExecutionContext())) {
-      // Temporarily allow `src` to be set in a fenced frame if API changes is
-      // disabled. This functionality will be removed by fenced frames launch.
-      return;
-    }
-    if (config_) {
-      DCHECK(config_->url());
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Changing the `src` attribute on a fenced frame has no effect after "
-          "it has already been installed a config with a specified url."));
-      return;
-    }
-
-    KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-    Navigate(url);
-  } else if (params.name == html_names::kSandboxAttr) {
+  if (params.name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, params.new_value);
 
     network::mojom::blink::WebSandboxFlags current_flags =
@@ -473,10 +454,6 @@ void HTMLFencedFrameElement::ParseAttribute(
   }
 }
 
-bool HTMLFencedFrameElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == html_names::kSrcAttr;
-}
-
 bool HTMLFencedFrameElement::IsPresentationAttribute(
     const QualifiedName& name) const {
   if (name == html_names::kWidthAttr || name == html_names::kHeightAttr)
@@ -501,6 +478,7 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 void HTMLFencedFrameElement::Navigate(
     const KURL& url,
     absl::optional<bool> deprecated_should_freeze_initial_size,
+    absl::optional<gfx::Size> container_size,
     absl::optional<gfx::Size> content_size,
     String embedder_shared_storage_context) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
@@ -589,6 +567,11 @@ void HTMLFencedFrameElement::Navigate(
           ? FencedFrameCreationOutcome::kSuccessDefault
           : FencedFrameCreationOutcome::kSuccessOpaque);
 
+  // Inherit the container size from the FencedFrameConfig, if one is present.
+  if (container_size.has_value()) {
+    SetContainerSize(*container_size);
+  }
+
   // Handle size freezing.
   // This isn't strictly correct, because the size is frozen on navigation
   // start rather than navigation commit (i.e. if the navigation fails, the
@@ -641,7 +624,7 @@ void HTMLFencedFrameElement::NavigateToConfig() {
             ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
   Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
-           config_->content_size(PassKey()),
+           config_->container_size(PassKey()), config_->content_size(PassKey()),
            config_->GetSharedStorageContext());
 }
 
@@ -666,9 +649,6 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   if (config_) {
     NavigateToConfig();
-  } else if (!RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(
-                 GetExecutionContext())) {
-    Navigate(GetNonEmptyURLAttribute(html_names::kSrcAttr));
   }
 }
 
@@ -856,6 +836,15 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
 
   // Otherwise, we need to wait for the next layout.
   should_freeze_frame_size_on_next_layout_ = true;
+}
+
+void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
+  setAttribute(html_names::kWidthAttr, String::Format("%dpx", size.width()),
+               ASSERT_NO_EXCEPTION);
+  setAttribute(html_names::kHeightAttr, String::Format("%dpx", size.height()),
+               ASSERT_NO_EXCEPTION);
+
+  frame_delegate_->MarkContainerSizeStale();
 }
 
 void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size,

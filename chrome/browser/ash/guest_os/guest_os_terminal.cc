@@ -192,15 +192,17 @@ void LaunchTerminal(Profile* profile,
                     const std::vector<std::string>& terminal_args) {
   GURL url = GenerateTerminalURL(profile, /*settings_profile=*/std::string(),
                                  container_id, cwd, terminal_args);
-  LaunchTerminalWithUrl(profile, display_id, url);
+  LaunchTerminalWithUrl(profile, display_id, /*restore_id=*/0, url);
 }
 
-void LaunchTerminalHome(Profile* profile, int64_t display_id) {
-  LaunchTerminalWithUrl(profile, display_id, GURL(GetTerminalHomeUrl()));
+void LaunchTerminalHome(Profile* profile, int64_t display_id, int restore_id) {
+  LaunchTerminalWithUrl(profile, display_id, restore_id,
+                        GURL(GetTerminalHomeUrl()));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
+                           int restore_id,
                            const GURL& url) {
   if (url.DeprecatedGetOriginAsURL() != chrome::kChromeUIUntrustedTerminalURL) {
     LOG(ERROR) << "Trying to launch terminal with an invalid url: " << url;
@@ -218,6 +220,8 @@ void LaunchTerminalWithUrl(Profile* profile,
 
   // Terminal Home page will be restored by app service.
   params->omit_from_session_restore = true;
+
+  params->restore_id = restore_id;
 
   // Always launch asynchronously to avoid disturbing the caller. See
   // https://crbug.com/1262890#c12 for more details.
@@ -293,7 +297,7 @@ void LaunchTerminalWithIntent(
 
   GURL url = GenerateTerminalURL(profile, settings_profile, guest_id, cwd,
                                  /*terminal_args=*/{});
-  LaunchTerminalWithUrl(profile, display_id, url);
+  LaunchTerminalWithUrl(profile, display_id, /*restore_id=*/0, url);
   std::move(callback).Run(true, "");
 }
 
@@ -493,9 +497,9 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value& shortcut) {
+    const base::Value::Dict& shortcut) {
   base::flat_map<std::string, std::string> extras;
-  for (const auto it : shortcut.GetDict()) {
+  for (const auto it : shortcut) {
     if (it.second.is_string()) {
       extras[it.first] = it.second.GetString();
     }
@@ -579,13 +583,14 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  auto shortcut = base::JSONReader::Read(shortcut_id);
-  if (!shortcut || !shortcut->is_dict()) {
+  absl::optional<base::Value::Dict> shortcut =
+      base::JSONReader::ReadDict(shortcut_id);
+  if (!shortcut) {
     return false;
   }
-  const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
+  const std::string* shortcut_value = shortcut->FindString(kShortcutKey);
   if (shortcut_value && *shortcut_value == kShortcutValueSSH) {
-    const std::string* profileId = shortcut->FindStringKey(kProfileIdKey);
+    const std::string* profileId = shortcut->FindString(kProfileIdKey);
     if (!profileId) {
       return false;
     }
@@ -603,7 +608,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
           {"?", kSettingsProfileUrlParam, "=", escape(*settings_profile)});
     }
     LaunchTerminalWithUrl(
-        profile, display_id,
+        profile, display_id, /*restore_id=*/0,
         GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
                            "html/terminal_ssh.html", settings_profile_param,
                            "#profile-id:", escape(*profileId)})));
@@ -614,7 +619,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     return false;
   }
   auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
-  intent->extras = ExtrasFromShortcutId(std::move(*shortcut));
+  intent->extras = ExtrasFromShortcutId(*shortcut);
   LaunchTerminalWithIntent(profile, display_id, std::move(intent),
                            base::DoNothing());
   return true;

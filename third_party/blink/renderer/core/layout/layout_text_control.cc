@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/text_run_constructor.h"
+#include "third_party/blink/renderer/core/layout/text_utils.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -172,10 +172,7 @@ float GetAvgCharWidth(const ComputedStyle& style) {
   }
 
   const UChar kCh = '0';
-  const String str = String(&kCh, 1u);
-  TextRun text_run =
-      ConstructTextRun(str, style, TextRun::kAllowTrailingExpansion);
-  return font.Width(text_run);
+  return ComputeTextWidth(StringView(&kCh, 1u), style);
 }
 
 }  // namespace layout_text_control

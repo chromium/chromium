@@ -104,12 +104,12 @@ base::Value::Dict DlpRule::Create() const {
   }
 
   base::Value::List dst_urls_list;
-  for (std::string dst : dst_urls) {
+  for (const std::string& dst : dst_urls) {
     dst_urls_list.Append(dst);
   }
 
   base::Value::List dst_components_list;
-  for (std::string component : dst_components) {
+  for (const std::string& component : dst_components) {
     dst_components_list.Append(component);
   }
 

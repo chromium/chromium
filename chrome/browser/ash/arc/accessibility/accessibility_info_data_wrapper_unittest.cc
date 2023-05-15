@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 
 #include <memory>
@@ -55,7 +56,7 @@ class TestTreeSource : public AXTreeSourceArc {
   explicit TestTreeSource(aura::Window* window)
       : AXTreeSourceArc(nullptr, window) {}
   AccessibilityInfoDataWrapper* GetRoot() const override { return root_; }
-  AccessibilityInfoDataWrapper* root_;
+  raw_ptr<AccessibilityInfoDataWrapper, ExperimentalAsh> root_;
 };
 
 }  // namespace

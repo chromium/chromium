@@ -124,11 +124,6 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
 
   void EnableBetaFlag() { arc_test_input_overlay_manager_->beta_ = true; }
 
-  void TriggerDisplayOverlayOnWindowBoundsChange() {
-    arc_test_input_overlay_manager_->display_overlay_controller_
-        ->TriggerWidgetBoundsChangedForTesting();
-  }
-
   bool IsObserving(aura::Window* window) const {
     return arc_test_input_overlay_manager_->window_observations_
         .IsObservingSource(window);
@@ -406,9 +401,6 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
       ash::Shell::GetPrimaryRootWindow()->GetBoundsInScreen());
   arc_window->GetNativeWindow()->SetBoundsInScreen(gfx::Rect(10, 10, 150, 150),
                                                    display);
-  // No overlay widget attached to |arc_window| in this test, so it needs to
-  // trigger the |OnWidgetBoundsChanged()| call manually.
-  TriggerDisplayOverlayOnWindowBoundsChange();
   EXPECT_EQ(injector->content_bounds(),
             gfx::RectF(10, 10 + caption_height, 150, 150 - caption_height));
   EXPECT_POINTF_NEAR(

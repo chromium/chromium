@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -91,7 +92,7 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
   TestQuickAnswersStateObserver* observer() { return observer_.get(); }
 
  private:
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 

@@ -64,6 +64,9 @@ class TestReportDescriptors {
   // The report descriptor for a FIDO U2F HID device.
   // https://fidoalliance.org/specs/fido-u2f-v1.0-ps-20141009/fido-u2f-hid-protocol-ps-20141009.html
   static base::span<const uint8_t> FidoU2fHid();
+
+  // The report descriptor for an RFIDeas pcProx badge reader.
+  static base::span<const uint8_t> RfideasPcproxBadgeReader();
 };
 
 }  // namespace device

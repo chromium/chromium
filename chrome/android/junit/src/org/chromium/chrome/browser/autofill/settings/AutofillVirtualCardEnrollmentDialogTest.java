@@ -11,7 +11,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.text.SpannableString;
 import android.view.View;
 import android.widget.TextView;
@@ -22,6 +21,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -33,18 +33,22 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
     private static final String ACCEPT_BUTTON_TEXT = "Yes";
@@ -52,6 +56,9 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private Callback<Integer> mResultHandlerMock;
@@ -64,8 +71,8 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     @Before
     public void setUp() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mVirtualCardEnrollmentFields = VirtualCardEnrollmentFields.create(
-                "card label", Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8));
+        mVirtualCardEnrollmentFields =
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));
         mVirtualCardEnrollmentFields.mIssuerLegalMessages.add(createLegalMessageLine("issuer"));
         mDialog =

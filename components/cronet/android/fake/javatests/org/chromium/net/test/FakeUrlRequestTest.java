@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
@@ -461,7 +460,6 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
     }
 
-    @DisabledTest(message = "crbug.com/994722")
     @Test
     @SmallTest
     public void testStatusIdleWhenWaitingForRedirect() {
@@ -476,6 +474,8 @@ public class FakeUrlRequestTest {
                         .build();
 
         request.start();
+        callback.waitForNextStep();
+        assertEquals(ResponseStep.ON_RECEIVED_REDIRECT, callback.mResponseStep);
         checkStatus(request, Status.IDLE);
         callback.setAutoAdvance(true);
         request.followRedirect();
@@ -506,7 +506,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertEquals(callback.mResponseStep, ResponseStep.ON_SUCCEEDED);
+        assertEquals(ResponseStep.ON_SUCCEEDED, callback.mResponseStep);
         assertTrue(request.isDone());
     }
 
@@ -686,7 +686,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertEquals(callback.mResponseStep, ResponseStep.ON_FAILED);
+        assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
         // Checks that the exception from {@link DirectPreventingExecutor} was successfully returned
         // to the callabck in the onFailed method.
         assertTrue(callback.mError.getCause() instanceof InlineExecutionProhibitedException);
@@ -788,7 +788,6 @@ public class FakeUrlRequestTest {
         }
     }
 
-    @DisabledTest(message = "crbug.com/994722")
     @Test
     @SmallTest
     public void testReadWhileRedirectingFails() {
@@ -807,12 +806,13 @@ public class FakeUrlRequestTest {
         } catch (IllegalStateException e) {
             assertEquals("Invalid state transition - expected 4 but was 3", e.getMessage());
         }
+        callback.waitForNextStep();
+        assertEquals(ResponseStep.ON_RECEIVED_REDIRECT, callback.mResponseStep);
         callback.setAutoAdvance(true);
         request.followRedirect();
         callback.blockForDone();
     }
 
-    @DisabledTest(message = "crbug.com/994722")
     @Test
     @SmallTest
     public void testShuttingDownCronetEngineWithActiveRequestFails() {
@@ -823,15 +823,15 @@ public class FakeUrlRequestTest {
                 (FakeUrlRequest) mFakeCronetEngine
                         .newUrlRequestBuilder(url, callback, callback.getExecutor())
                         .build();
-
         request.start();
-
         try {
             mFakeCronetEngine.shutdown();
             fail("Shutdown not checked for active requests.");
         } catch (IllegalStateException e) {
             assertEquals("Cannot shutdown with active requests.", e.getMessage());
         }
+        callback.waitForNextStep();
+        assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);
         callback.setAutoAdvance(true);
         callback.startNextRead(request);
         callback.blockForDone();
@@ -1421,12 +1421,13 @@ public class FakeUrlRequestTest {
     }
 
     /** This test uses a direct executor for callbacks, and non direct for upload */
-    @DisabledTest(message = "crbug/1412467")
     @Test
     @SmallTest
     public void testDirectExecutorProhibitedByDefault() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        Executor myExecutor = new Executor() {
+        // Everything submitted to this executor will be executed immediately on the thread
+        // that submitted the Runnable (blocking it until the runnable completes)
+        Executor directExecutor = new Executor() {
             @Override
             public void execute(Runnable command) {
                 command.run();
@@ -1435,7 +1436,7 @@ public class FakeUrlRequestTest {
         String url = "url";
         FakeUrlRequest.Builder builder =
                 (FakeUrlRequest.Builder) mFakeCronetEngine.newUrlRequestBuilder(
-                        url, callback, myExecutor);
+                        url, callback, directExecutor);
         mFakeCronetController.addResponseMatcher(new EchoBodyResponseMatcher());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1447,10 +1448,8 @@ public class FakeUrlRequestTest {
         builder.addHeader("Content-Type", "useless/string");
         builder.build().start();
         callback.blockForDone();
-
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
-
         assertContains("Exception posting task to executor", callback.mError.getMessage());
         assertContains("Inline execution is prohibited for this request",
                 callback.mError.getCause().getMessage());
@@ -1642,7 +1641,7 @@ public class FakeUrlRequestTest {
      * A Cronet callback that does nothing.
      */
 
-    private static class StubCallback extends UrlRequest.Callback {
+    static class StubCallback extends UrlRequest.Callback {
         @Override
         public void onRedirectReceived(org.chromium.net.UrlRequest urlRequest,
                 UrlResponseInfo urlResponseInfo, String s) {}

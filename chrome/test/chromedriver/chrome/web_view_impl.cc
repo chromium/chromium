@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -31,6 +31,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/download_directory_override_manager.h"
+#include "chrome/test/chromedriver/chrome/fedcm_tracker.h"
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
@@ -217,7 +218,9 @@ base::Value::Dict GenerateTouchPoint(const TouchEvent& event) {
 class ObjectGroup {
  public:
   explicit ObjectGroup(DevToolsClient* client)
-      : client_(client), object_group_name_(base::GenerateGUID()) {}
+      : client_(client),
+        object_group_name_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+  }
 
   ~ObjectGroup() {
     base::Value::Dict params;
@@ -313,7 +316,7 @@ WebViewImpl::WebViewImpl(const std::string& id,
                          const WebViewImpl* parent,
                          const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
-                         const DeviceMetrics* device_metrics,
+                         absl::optional<MobileDevice> mobile_device,
                          std::string page_load_strategy)
     : id_(id),
       w3c_compliant_(w3c_compliant),
@@ -325,7 +328,9 @@ WebViewImpl::WebViewImpl(const std::string& id,
       frame_tracker_(new FrameTracker(client_.get(), this, browser_info)),
       dialog_manager_(new JavaScriptDialogManager(client_.get(), browser_info)),
       mobile_emulation_override_manager_(
-          new MobileEmulationOverrideManager(client_.get(), device_metrics)),
+          new MobileEmulationOverrideManager(client_.get(),
+                                             std::move(mobile_device),
+                                             browser_info->major_version)),
       geolocation_override_manager_(
           new GeolocationOverrideManager(client_.get())),
       network_conditions_override_manager_(
@@ -372,7 +377,7 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
   WebViewImpl* child = new WebViewImpl(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      nullptr,
+      absl::nullopt,
       IsNonBlocking() ? PageLoadStrategy::kNone : PageLoadStrategy::kNormal);
   if (!IsNonBlocking()) {
     // Find Navigation Tracker for the top of the WebViewImpl hierarchy
@@ -533,7 +538,7 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   }
 
   base::Value& entry = (*entries)[*current_index + delta];
-  absl::optional<int> entry_id = entry.FindIntKey("id");
+  absl::optional<int> entry_id = entry.GetDict().FindInt("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
   params.Set("entryId", *entry_id);
@@ -1669,6 +1674,19 @@ bool WebViewImpl::IsNonBlocking() const {
   if (navigation_tracker_)
     return navigation_tracker_->IsNonBlocking();
   return parent_->IsNonBlocking();
+}
+
+Status WebViewImpl::GetFedCmTracker(FedCmTracker** out_tracker) {
+  if (!fedcm_tracker_) {
+    fedcm_tracker_ = std::make_unique<FedCmTracker>(client_.get());
+    Status status = fedcm_tracker_->Enable(client_.get());
+    if (!status.IsOk()) {
+      fedcm_tracker_.reset();
+      return status;
+    }
+  }
+  *out_tracker = fedcm_tracker_.get();
+  return Status(kOk);
 }
 
 FrameTracker* WebViewImpl::GetFrameTracker() const {

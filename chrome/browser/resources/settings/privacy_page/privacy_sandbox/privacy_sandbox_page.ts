@@ -11,6 +11,7 @@ import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_li
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
@@ -20,8 +21,6 @@ import {getTemplate} from './privacy_sandbox_page.html.js';
 export interface SettingsPrivacySandboxPageElement {
   $: {
     privacySandboxAdMeasurementLinkRow: CrLinkRowElement,
-    privacySandboxFledgeLinkRow: CrLinkRowElement,
-    privacySandboxTopicsLinkRow: CrLinkRowElement,
   };
 }
 
@@ -47,9 +46,15 @@ export class SettingsPrivacySandboxPageElement extends
         type: Object,
         notify: true,
       },
+
+      isPrivacySandboxRestricted_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
+      },
     };
   }
 
+  private isPrivacySandboxRestricted_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

@@ -29,7 +29,6 @@ static_library("favicon_base") {
     "//base",
     "//net",
     "//ui/base",
-    "//ui/base:ui_data_pack",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",

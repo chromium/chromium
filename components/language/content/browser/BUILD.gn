@@ -30,6 +30,7 @@ static_library("browser") {
     "//components/prefs:prefs",
     "//content/public/browser",
     "//net",
+    "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom",
   ]
 }

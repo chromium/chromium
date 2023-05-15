@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key_subtle.h"
@@ -61,7 +62,8 @@ class TpmChallengeKeyTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  MockTpmChallengeKeySubtle* mock_tpm_challenge_key_subtle_ = nullptr;
+  raw_ptr<MockTpmChallengeKeySubtle, ExperimentalAsh>
+      mock_tpm_challenge_key_subtle_ = nullptr;
   std::unique_ptr<TpmChallengeKey> challenge_key_;
   // In the current implementation of TpmChallengeKey the profile is just
   // forwarded, so actual value does not matter.

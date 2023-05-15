@@ -4,12 +4,12 @@
 
 #include "remoting/host/desktop_resizer_x11.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -191,11 +191,11 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
   // Clamp the specified size to something valid for the X server.
   if (auto response = randr_->GetScreenSizeRange({root_}).Sync()) {
     int width =
-        base::clamp(static_cast<uint16_t>(preferred.dimensions().width()),
-                    response->min_width, response->max_width);
+        std::clamp(static_cast<uint16_t>(preferred.dimensions().width()),
+                   response->min_width, response->max_width);
     int height =
-        base::clamp(static_cast<uint16_t>(preferred.dimensions().height()),
-                    response->min_height, response->max_height);
+        std::clamp(static_cast<uint16_t>(preferred.dimensions().height()),
+                   response->min_height, response->max_height);
     // Additionally impose a minimum size of 640x480, since anything smaller
     // doesn't seem very useful.
     ScreenResolution actual(

@@ -32,27 +32,6 @@ namespace safe_browsing {
 
 namespace {
 
-// Histogram bucket values for metadata read operations. Do not reorder.
-enum MetadataReadResult {
-  READ_SUCCESS = 0,
-  OPEN_FAILURE = 1,
-  NOT_FOUND = 2,
-  GET_INFO_FAILURE = 3,
-  FILE_TOO_BIG = 4,
-  READ_FAILURE = 5,
-  PARSE_FAILURE = 6,
-  MALFORMED_DATA = 7,
-  NUM_READ_RESULTS
-};
-
-// Histogram bucket values for metadata write operations. Do not reorder.
-enum MetadataWriteResult {
-  WRITE_SUCCESS = 0,
-  SERIALIZATION_FAILURE = 1,
-  WRITE_FAILURE = 2,
-  NUM_WRITE_RESULTS
-};
-
 // The name of the metadata file in the profile directory.
 const base::FilePath::CharType kDownloadMetadataBasename[] =
     FILE_PATH_LITERAL("DownloadMetadata");
@@ -134,62 +113,33 @@ void ReadMetadataInBackground(const base::FilePath& metadata_path,
                               DownloadMetadata* metadata) {
   using base::File;
   DCHECK(metadata);
-  MetadataReadResult result = NUM_READ_RESULTS;
   File metadata_file(metadata_path, File::FLAG_OPEN | File::FLAG_READ);
-  if (metadata_file.IsValid()) {
-    base::File::Info info;
-    if (metadata_file.GetInfo(&info)) {
-      if (info.size <= INT_MAX) {
-        const int size = static_cast<int>(info.size);
-        std::unique_ptr<char[]> file_data(new char[info.size]);
-        if (metadata_file.Read(0, file_data.get(), size)) {
-          if (!metadata->ParseFromArray(file_data.get(), size))
-            result = PARSE_FAILURE;
-          else if (!MetadataIsValid(*metadata))
-            result = MALFORMED_DATA;
-          else
-            result = READ_SUCCESS;
-        } else {
-          result = READ_FAILURE;
-        }
-      } else {
-        result = FILE_TOO_BIG;
-      }
-    } else {
-      result = GET_INFO_FAILURE;
+  base::File::Info info;
+  if (metadata_file.IsValid() && metadata_file.GetInfo(&info) &&
+      info.size <= INT_MAX) {
+    const int size = static_cast<int>(info.size);
+    std::unique_ptr<char[]> file_data(new char[info.size]);
+    if (metadata_file.Read(0, file_data.get(), size) &&
+        metadata->ParseFromArray(file_data.get(), size) &&
+        MetadataIsValid(*metadata)) {
+      return;
     }
-  } else if (metadata_file.error_details() != File::FILE_ERROR_NOT_FOUND) {
-    result = OPEN_FAILURE;
-  } else {
-    result = NOT_FOUND;
   }
-  if (result != READ_SUCCESS)
-    metadata->Clear();
-  UMA_HISTOGRAM_ENUMERATION(
-      "SBIRS.DownloadMetadata.ReadResult", result, NUM_READ_RESULTS);
+  metadata->Clear();
 }
 
 // Writes |download_metadata| to |metadata_path|.
 void WriteMetadataInBackground(const base::FilePath& metadata_path,
                                DownloadMetadata* download_metadata) {
-  MetadataWriteResult result = NUM_WRITE_RESULTS;
   std::string file_data;
   if (download_metadata->SerializeToString(&file_data)) {
-    result =
-        base::ImportantFileWriter::WriteFileAtomically(metadata_path, file_data)
-            ? WRITE_SUCCESS
-            : WRITE_FAILURE;
-  } else {
-    result = SERIALIZATION_FAILURE;
+    base::ImportantFileWriter::WriteFileAtomically(metadata_path, file_data);
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "SBIRS.DownloadMetadata.WriteResult", result, NUM_WRITE_RESULTS);
 }
 
 // Deletes |metadata_path|.
 void DeleteMetadataInBackground(const base::FilePath& metadata_path) {
-  bool success = base::DeleteFile(metadata_path);
-  UMA_HISTOGRAM_BOOLEAN("SBIRS.DownloadMetadata.DeleteSuccess", success);
+  base::DeleteFile(metadata_path);
 }
 
 // Runs |callback| with the DownloadDetails in |download_metadata|.

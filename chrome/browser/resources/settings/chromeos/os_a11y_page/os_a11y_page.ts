@@ -8,27 +8,17 @@
  * a subpage with Accessibility settings for ChromeOS.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
-import './manage_a11y_page.js';
-import './text_to_speech_page.js';
-import './display_and_magnification_page.js';
-import './keyboard_and_text_input_page.js';
-import './cursor_and_touchpad_page.js';
-import './audio_and_captions_page.js';
-import './chromevox_subpage.js';
-import './select_to_speak_subpage.js';
-import './switch_access_subpage.js';
-import './tts_subpage.js';
 
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
@@ -164,7 +154,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     }
     if (routes.A11Y_TEXT_TO_SPEECH) {
       this.addFocusConfig(
-          routes.A11Y_TEXT_TO_SPEECH, '#text-to-speech-page-trigger');
+          routes.A11Y_TEXT_TO_SPEECH, '#textToSpeechSubpageTrigger');
     }
     if (routes.A11Y_DISPLAY_AND_MAGNIFICATION) {
       this.addFocusConfig(

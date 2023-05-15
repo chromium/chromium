@@ -20,6 +20,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -144,7 +145,7 @@ bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
       !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
     return false;
   }
-  if (HoldingSpaceItem::IsSuggestion(type) &&
+  if (HoldingSpaceItem::IsSuggestionType(type) &&
       !features::IsHoldingSpaceSuggestionsEnabled()) {
     return false;
   }
@@ -188,7 +189,7 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
            holding_space_service->model_for_testing();
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observation_{this};
@@ -236,7 +237,7 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
     }
   }
 
-  const HoldingSpaceItem* wait_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
   bool wait_item_updated_ = false;
 
@@ -284,7 +285,7 @@ class ItemRemovedWaiter : public HoldingSpaceModelObserver {
     }
   }
 
-  const HoldingSpaceItem* wait_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
   bool wait_item_removed_ = false;
 
@@ -315,7 +316,7 @@ class ItemsInitializedWaiter : public HoldingSpaceModelObserver {
 
     base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
         model_observer{this};
-    model_observer.Observe(model_);
+    model_observer.Observe(model_.get());
 
     wait_loop_ = std::make_unique<base::RunLoop>();
     wait_loop_->Run();
@@ -349,7 +350,7 @@ class ItemsInitializedWaiter : public HoldingSpaceModelObserver {
     return true;
   }
 
-  HoldingSpaceModel* const model_;
+  const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
   ItemFilter filter_;
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
@@ -411,7 +412,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
 
@@ -601,7 +602,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   std::map<Profile*, testing::NiceMock<MockDownloadManager>*>
       download_managers_;
@@ -2624,7 +2625,8 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         EXPECT_EQ(
             holding_space_model->ContainsItem(type, file_path),
             holding_space_service
-                ->AddPhoneHubCameraRollItem(file_path, HoldingSpaceProgress())
+                ->AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+                                file_path, HoldingSpaceProgress())
                 .empty());
         break;
       case HoldingSpaceItem::Type::kPrintedPdf:
@@ -2730,7 +2732,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   ASSERT_EQ(model->items().size(), 1u);
 
-  const bool is_suggestion = HoldingSpaceItem::IsSuggestion(GetType());
+  const bool is_suggestion = HoldingSpaceItem::IsSuggestionType(GetType());
   if (is_suggestion) {
     // For suggestion items, the new suggestions should always replace old ones.
     EXPECT_NE(model->items()[0].get(), item);
@@ -3024,7 +3026,7 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
   TestingProfile* incognito_profile() { return incognito_profile_; }
 
  private:
-  TestingProfile* incognito_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> incognito_profile_ = nullptr;
 };
 
 TEST_F(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {

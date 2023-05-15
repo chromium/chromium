@@ -49,4 +49,15 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
             mHandler.post(mRunPreNativeTaskClosure);
         }
     }
+
+    @Override
+    protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
+        if (mHandler == null) return false;
+        // In theory it would be fine to delay these tasks until native is initialized and post them
+        // to the native task runner, but in practice some tests don't initialize native and still
+        // expect delayed tasks to eventually run. There's no good reason not to support them here,
+        // there are so few of these tasks that they're very unlikely to cause performance problems.
+        mHandler.postDelayed(task, delay);
+        return true;
+    }
 }

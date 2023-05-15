@@ -10,11 +10,11 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -51,9 +51,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // potential IPH bubble.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
-// Whether the user is still in the same session as when the popup menu IPH was
-// triggered
-@property(nonatomic, assign) BOOL inSessionWithPopupMenuIPH;
+// Whether the user is still in the same session as when the history menu item
+// IPH was triggered
+@property(nonatomic, assign) BOOL inSessionWithHistoryMenuItemIPH;
 
 // The tracker for feature engagement. May return null after the coordinator has
 // been stopped (thus the returned value must be checked for null).
@@ -100,13 +100,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)showOverflowMenuIPHInViewController:(UIViewController*)menu {
-  // There are 2 reasons to show the IPH in the overflow menu:
-  // 1. The alternate flow is enabled and the feature tracker says it can show.
-  // 2. The user is still in a session where they saw the initial IPH.
-  BOOL shouldShowIPH =
-      (IsNewOverflowMenuAlternateIPHEnabled() && [self canShowIPH]) ||
-      self.inSessionWithPopupMenuIPH;
-  if (!shouldShowIPH) {
+  // Show the IPH in the overflow menu only if user is still in a session where
+  // they saw the initial IPH.
+  if (!self.inSessionWithHistoryMenuItemIPH) {
     return;
   }
 
@@ -122,7 +118,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     return;
   }
 
-  self.inSessionWithPopupMenuIPH = NO;
+  self.inSessionWithHistoryMenuItemIPH = NO;
   self.uiConfiguration.highlightDestinationsRow = YES;
   [self.overflowMenuBubblePresenter presentInViewController:menu
                                                        view:menu.view
@@ -132,7 +128,8 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 #pragma mark - Popup Menu Button Bubble/IPH methods
 
 - (BubbleViewControllerPresenter*)newPopupMenuBubblePresenter {
-  NSString* text = l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_TIP);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP);
 
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
@@ -164,11 +161,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)prepareToShowPopupMenuBubble {
-  // The alternate IPH flow only shows the IPH when entering the menu.
-  if (IsNewOverflowMenuAlternateIPHEnabled()) {
-    return;
-  }
-
   // If the Feature Engagement Tracker isn't ready, queue up and re-show when
   // it has finished initializing.
   if (!self.featureEngagementTracker->IsInitialized()) {
@@ -227,7 +219,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
   // Present the bubble after the delay.
   self.popupMenuBubblePresenter = bubblePresenter;
-  self.inSessionWithPopupMenuIPH = YES;
+  self.inSessionWithHistoryMenuItemIPH = YES;
   [self.popupMenuBubblePresenter
       presentInViewController:self.baseViewController
                          view:self.baseViewController.view
@@ -263,9 +255,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 - (void)overflowMenuIPHDidDismissWithSnoozeAction:
     (feature_engagement::Tracker::SnoozeAction)snoozeAction {
-  if (IsNewOverflowMenuAlternateIPHEnabled()) {
-    [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
-  }
   self.overflowMenuBubblePresenter = nil;
   self.uiConfiguration.highlightDestinationsRow = NO;
 }
@@ -275,7 +264,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
-    self.inSessionWithPopupMenuIPH = NO;
+    self.inSessionWithHistoryMenuItemIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
     [self prepareToShowPopupMenuBubble];
   }
@@ -287,7 +276,8 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // displayed. Once this is called, the IPH MUST be shown and dismissed.
 - (BOOL)canShowIPH {
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  const base::Feature& feature = feature_engagement::kIPHOverflowMenuTipFeature;
+  const base::Feature& feature =
+      feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;
   return tracker && tracker->ShouldTriggerHelpUI(feature);
 }
 
@@ -297,7 +287,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
   if (tracker) {
     const base::Feature& feature =
-        feature_engagement::kIPHOverflowMenuTipFeature;
+        feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;
     tracker->DismissedWithSnooze(feature, snoozeAction);
   }
 }

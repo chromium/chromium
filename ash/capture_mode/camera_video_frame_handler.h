@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
@@ -52,7 +54,8 @@ class BufferHandleHolder {
 // Defines an object that will subscribe to a camera device, whose remote video
 // source is the given `camera_video_source`. It will handle the reception of
 // the video frames from that device and provide them to its `Delegate`.
-class CameraVideoFrameHandler : public video_capture::mojom::VideoFrameHandler {
+class ASH_EXPORT CameraVideoFrameHandler
+    : public video_capture::mojom::VideoFrameHandler {
  public:
   // Defines an interface for a delegate of this class, which will be provided
   // by the video frames received from the camera device.
@@ -118,7 +121,7 @@ class CameraVideoFrameHandler : public video_capture::mojom::VideoFrameHandler {
   // `VideoSource` gets disconnected.
   void OnFatalErrorOrDisconnection();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   mojo::Receiver<video_capture::mojom::VideoFrameHandler>
       video_frame_handler_receiver_{this};

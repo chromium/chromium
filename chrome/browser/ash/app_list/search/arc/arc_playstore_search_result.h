@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -63,7 +64,8 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
   // |profile_| is owned by ProfileInfo.
-  AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+      list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};
 };

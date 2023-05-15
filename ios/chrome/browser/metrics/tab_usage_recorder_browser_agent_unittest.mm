@@ -13,10 +13,10 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -222,7 +222,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestSwitchedModeTabs) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_c = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordPrimaryBrowserChange(false, nullptr);
+  tab_usage_recorder_->RecordPrimaryBrowserChange(false);
 
   // Switch from A (incognito evicted) to B (incognito evicted).
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);

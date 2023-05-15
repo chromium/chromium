@@ -14,27 +14,65 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVDownloadTask;
 @class CWVLookalikeURLHandler;
+@class CWVNavigationAction;
+@class CWVNavigationResponse;
 @class CWVSSLErrorHandler;
 @class CWVUnsafeURLHandler;
 @class CWVWebView;
+
+typedef NS_ENUM(NSInteger, CWVNavigationActionPolicy) {
+  // Cancel the navigation
+  CWVNavigationActionPolicyCancel,
+  // Allow the navigation to continue.
+  CWVNavigationActionPolicyAllow,
+};
+
+typedef NS_ENUM(NSInteger, CWVNavigationResponsePolicy) {
+  // Cancel the navigation
+  CWVNavigationResponsePolicyCancel,
+  // Allow the navigation to continue.
+  CWVNavigationResponsePolicyAllow,
+};
 
 // Navigation delegate protocol for CWVWebViews.  Allows embedders to hook
 // page loading and receive events for navigation.
 @protocol CWVNavigationDelegate<NSObject>
 @optional
 
-// Asks delegate if WebView should start the load. WebView will
-// load the request if this method is not implemented.
+// DEPRECATED: Use `-[CWVNavigationDelegate
+// webView:decidePolicyForNavigationAction:decisionHandler:]` instead, this
+// method will not work when recommended API is implemented.
+//
+// Asks delegate if WebView should start the load. WebView will load the request
+// if this method is not implemented.
 - (BOOL)webView:(CWVWebView*)webView
     shouldStartLoadWithRequest:(NSURLRequest*)request
                 navigationType:(CWVNavigationType)navigationType;
 
-// Asks delegate if WebView should continue the load. WebView
-// will load the response if this method is not implemented.
-// |forMainFrame| indicates whether the frame being navigated is the main frame.
+// DEPRECATED: Use `-[CWVNavigationDelegate
+// webView:decidePolicyForNavigationResponse:decisionHandler:]` instead, this
+// method will not work when recommended API is implemented.
+//
+// Asks delegate if WebView should continue the load. WebView will load the
+// response if this method is not implemented. `forMainFrame` indicates whether
+// the frame being navigated is the main frame.
 - (BOOL)webView:(CWVWebView*)webView
     shouldContinueLoadWithResponse:(NSURLResponse*)response
                       forMainFrame:(BOOL)forMainFrame;
+
+// Decides whether to allow or cancel a navigation. WebView will load the
+// response if this method is not implemented.
+- (void)webView:(CWVWebView*)webView
+    decidePolicyForNavigationAction:(CWVNavigationAction*)navigationAction
+                    decisionHandler:
+                        (void (^)(CWVNavigationActionPolicy))decisionHandler;
+
+// Decides whether to allow or cancel a navigation after its response is known.
+// WebView will load the response if this method is not implemented.
+- (void)webView:(CWVWebView*)webView
+    decidePolicyForNavigationResponse:(CWVNavigationResponse*)navigationResponse
+                      decisionHandler:(void (^)(CWVNavigationResponsePolicy))
+                                          decisionHandler;
 
 // Notifies the delegate that main frame navigation has started.
 // Deprecated, use |webViewDidStartNavigation| instead.

@@ -199,6 +199,8 @@ class NGInlineItemsBuilderTemplate {
   bool has_ruby_ = false;
   bool is_block_level_ = true;
   bool has_unicode_bidi_plain_text_ = false;
+  bool is_bisect_line_break_disabled_ = false;
+  bool is_score_line_break_disabled_ = false;
 
   // Append a character.
   // Currently this function is for adding control characters such as

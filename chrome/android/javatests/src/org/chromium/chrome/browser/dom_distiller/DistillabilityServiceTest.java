@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -62,8 +62,8 @@ public class DistillabilityServiceTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 

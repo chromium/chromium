@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -25,6 +26,10 @@
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::NiceMock;
 
 // Most VideoTrackAdapter functionality is tested in MediaStreamVideoSourceTest.
 // These tests focus on the computation of cropped frame sizes in edge cases
@@ -207,8 +212,8 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
  public:
   VideoTrackAdapterFixtureTest()
       : testing_render_thread_("TestingRenderThread"),
-        frame_received_(base::WaitableEvent::ResetPolicy::MANUAL,
-                        base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+        frame_processed_(base::WaitableEvent::ResetPolicy::MANUAL,
+                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
   ~VideoTrackAdapterFixtureTest() override = default;
 
  protected:
@@ -220,18 +225,26 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
           FROM_HERE, base::BindOnce(&VideoTrackAdapter::RemoveTrack, adapter_,
                                     null_track_.get()));
     }
+    base::WaitableEvent source_deleted;
+    testing_render_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          mock_source_.reset();
+          source_deleted.Signal();
+        }));
+    source_deleted.Wait();
     testing_render_thread_.Stop();
   }
 
   void CreateAdapter(media::VideoCaptureFormat capture_format) {
-    mock_source_ =
-        std::make_unique<MockMediaStreamVideoSource>(capture_format, false);
-    // Create the VideoTrackAdapter instance on |testing_render_thread_|.
+    // Create the MockMediaStreamVideoSource and VideoTrackAdapter instances on
+    // |testing_render_thread_|.
     base::WaitableEvent adapter_created(
         base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
+          mock_source_ = std::make_unique<NiceMock<MockMediaStreamVideoSource>>(
+              capture_format, false);
           adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
               platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());
           adapter_created.Signal();
@@ -261,9 +274,8 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             &VideoTrackAdapter::AddTrack, adapter_, track,
             base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDelivered,
                                 base::Unretained(this)),
-            base::BindRepeating(
-                &VideoTrackAdapterFixtureTest::OnNotifyFrameDropped,
-                base::Unretained(this)),
+            base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDropped,
+                                base::Unretained(this)),
             base::BindRepeating(
                 &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
                 base::Unretained(this)),
@@ -274,6 +286,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
     frame_validation_callback_ = std::move(callback);
+  }
+
+  void SetFrameDroppedCallback(VideoCaptureNotifyFrameDroppedCB callback) {
+    frame_dropped_callback_ = std::move(callback);
   }
 
   // Deliver |frame| to |adapter_| and wait until OnFrameDelivered signals that
@@ -289,14 +305,14 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
                          estimated_capture_time));
     };
 
-    frame_received_.Reset();
+    frame_processed_.Reset();
     // Bounce the call to DeliverFrameOnVideoTaskRunner off
     // |testing_render_thread_| to synchronize with the
     // AddTrackOnVideoTaskRunner / ReconfigureTrackOnVideoTaskRunner that would
     // be invoked through ConfigureTrack.
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting(deliver_frame));
-    frame_received_.Wait();
+    frame_processed_.Wait();
   }
 
   void OnFrameDelivered(
@@ -305,8 +321,71 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
       base::TimeTicks estimated_capture_time) {
     if (frame_validation_callback_) {
       frame_validation_callback_.Run(frame, {}, estimated_capture_time);
+      frame_processed_.Signal();
     }
-    frame_received_.Signal();
+  }
+
+  void OnFrameDropped() {
+    if (frame_dropped_callback_) {
+      frame_dropped_callback_.Run();
+      frame_processed_.Signal();
+    }
+  }
+
+  // Configures a track and an adapter with the given target frame rate,
+  // generates `num_frames` frames with 10x10 resolution at the given
+  // `actual_input_frame_rate` and returns the number of delivered and dropped
+  // frames.
+  std::tuple<int, int> GenerateAndCountFrames(
+      int num_frames,
+      absl::optional<double> target_frame_rate,
+      double actual_input_frame_rate) {
+    const gfx::Size resolution(10, 10);
+    // Any capture format will work. Frames will generated at the
+    // `actual_input_frame_rate`.
+    const media::VideoCaptureFormat stream_format(
+        resolution, /*frame_rate=*/10.0, media::PIXEL_FORMAT_I420);
+    CreateAdapter(stream_format);
+
+    VideoTrackAdapterSettings adapter_settings(
+        /*target_size=*/absl::nullopt,
+        /*min_aspect_ratio=*/0.0000,
+        /*max_aspect_ratio=*/resolution.width(), target_frame_rate);
+    ConfigureTrack(adapter_settings);
+    base::WaitableEvent did_process_all_frames;
+    int num_delivered = 0;
+    int num_dropped = 0;
+
+    SetFrameValidationCallback(base::BindLambdaForTesting(
+        [&](scoped_refptr<media::VideoFrame> frame,
+            std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+            base::TimeTicks estimated_capture_time) {
+          num_delivered++;
+          if (num_delivered + num_dropped == num_frames) {
+            did_process_all_frames.Signal();
+          }
+        }));
+    SetFrameDroppedCallback(base::BindLambdaForTesting([&]() {
+      num_dropped++;
+      if (num_delivered + num_dropped == num_frames) {
+        did_process_all_frames.Signal();
+      }
+    }));
+
+    for (int i = 0; i < num_frames; ++i) {
+      auto frame = CreateTestFrame(
+          /*coded_size=*/resolution,
+          /*visible_rect=*/
+          gfx::Rect(0, 0, resolution.width(), resolution.height()),
+          /*natural_size*/ resolution,
+          /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
+          media::PIXEL_FORMAT_I420,
+          /*timestamp=*/i * base::Seconds(1.0 / actual_input_frame_rate));
+      DeliverAndValidateFrame(std::move(frame), base::TimeTicks());
+    }
+
+    did_process_all_frames.Wait();
+    return {num_delivered, num_dropped};
   }
 
   void TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
@@ -337,16 +416,16 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,
                     base::TimeTicks estimated_capture_time));
-  MOCK_METHOD0(OnNotifyFrameDropped, void());
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
   base::Thread testing_render_thread_;
-  std::unique_ptr<MockMediaStreamVideoSource> mock_source_;
+  std::unique_ptr<NiceMock<MockMediaStreamVideoSource>> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 
-  base::WaitableEvent frame_received_;
+  base::WaitableEvent frame_processed_;
   VideoCaptureDeliverFrameCB frame_validation_callback_;
+  VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
 
   // For testing we use a nullptr for MediaStreamVideoTrack.
   std::unique_ptr<MediaStreamVideoTrack> null_track_;
@@ -524,6 +603,84 @@ TEST_F(VideoTrackAdapterFixtureTest,
           /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
           /*track_callback=*/base::DoNothing(), adapter_settings));
   settings_callback_run_.Wait();
+}
+
+TEST_F(VideoTrackAdapterFixtureTest, FrameRateReduction) {
+  const double kInputFrameRate = 30.0;
+  const double kTargetFrameRate = 10.0;
+  const int kNumFrames = 1000;
+
+  auto [num_delivered, num_dropped] =
+      GenerateAndCountFrames(kNumFrames, kTargetFrameRate, kInputFrameRate);
+  EXPECT_EQ(num_delivered + num_dropped, kNumFrames);
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      static_cast<double>(num_delivered) / kNumFrames,
+      kTargetFrameRate / kInputFrameRate, /*tolerance=*/0.05));
+}
+
+TEST_F(VideoTrackAdapterFixtureTest,
+       DoNotDropFramesWithSlightlyHighInputFrameRate) {
+  const int kNumFrames = 1000;
+  auto [num_delivered, num_dropped] = GenerateAndCountFrames(
+      kNumFrames, /*target_frame_rate=*/10.0, /*actual_input_frame_rate=*/10.4);
+  EXPECT_EQ(num_delivered, kNumFrames);
+  EXPECT_EQ(num_dropped, 0);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest, DoNotDropFramesIfNoTargetFrameRate) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] =
+      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/absl::nullopt,
+                             /*actual_input_frame_rate=*/10.0);
+  EXPECT_EQ(num_delivered, kNumFrames);
+  EXPECT_EQ(num_dropped, 0);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest, DropFramesIfTargetFrameRateIsInfinite) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] = GenerateAndCountFrames(
+      kNumFrames, /*target_frame_rate=*/std::numeric_limits<double>::infinity(),
+      /*actual_input_frame_rate=*/10.0);
+  EXPECT_EQ(num_delivered, kNumFrames);
+  EXPECT_EQ(num_dropped, 0);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest,
+       DoNotDropFramesIfTimeBetweenFramesIsNegative) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] =
+      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/10.0,
+                             /*actual_input_frame_rate=*/-10.0);
+  EXPECT_EQ(num_delivered, kNumFrames);
+  EXPECT_EQ(num_dropped, 0);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest,
+       DoNotDropFramesIfTimeBetweenFramesIsTooLong) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] =
+      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/10.0,
+                             /*actual_input_frame_rate=*/0.0000001);
+  EXPECT_EQ(num_delivered, kNumFrames);
+  EXPECT_EQ(num_dropped, 0);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest, DropFramesIfTimeBetweenFramesIsTooShort) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] =
+      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/10.0,
+                             /*actual_input_frame_rate=*/10000000.0);
+  EXPECT_EQ(num_delivered, 1);
+  EXPECT_EQ(num_dropped, kNumFrames - 1);
+}
+
+TEST_F(VideoTrackAdapterFixtureTest, DropFramesIfTimeBetweenFramesIsZero) {
+  const int kNumFrames = 100;
+  auto [num_delivered, num_dropped] = GenerateAndCountFrames(
+      kNumFrames, /*target_frame_rate=*/10.0,
+      /*actual_input_frame_rate=*/std::numeric_limits<double>::infinity());
+  EXPECT_EQ(num_delivered, 1);
+  EXPECT_EQ(num_dropped, kNumFrames - 1);
 }
 
 class VideoTrackAdapterEncodedTest : public ::testing::Test {

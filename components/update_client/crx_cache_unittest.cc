@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,26 +33,6 @@ base::FilePath BuildCrxFilePathForTest(const base::FilePath& dir_path,
       .AppendASCII(base::JoinString({id, fp}, "_"));
 }
 
-base::FilePath DuplicateTestFile(const char* file) {
-  base::FilePath source_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
-  source_path = source_path.AppendASCII("components")
-                    .AppendASCII("test")
-                    .AppendASCII("data")
-                    .AppendASCII("update_client")
-                    .AppendASCII(file);
-  base::FilePath dest_path;
-  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &dest_path);
-  dest_path = dest_path.AppendASCII("test_dir")
-                  .AppendASCII("test")
-                  .AddExtensionASCII("crx3");
-  if (!base::PathExists(dest_path.DirName())) {
-    base::CreateDirectory(dest_path.DirName());
-  }
-  EXPECT_TRUE(base::CopyFile(source_path, dest_path));
-  return dest_path;
-}
-
 }  // namespace
 
 class CrxCacheTest : public testing::Test {
@@ -59,9 +40,7 @@ class CrxCacheTest : public testing::Test {
   CrxCacheTest() = default;
   ~CrxCacheTest() override = default;
 
- protected:
-  // TODO(crbug.com/1353588): We clearly have a TaskEnvironment member
-  // (see env_ below) so why are we getting this warning?
+ private:
   base::test::TaskEnvironment env_;
 };
 
@@ -133,7 +112,9 @@ TEST_F(CrxCacheTest, CheckPutWithExistingEmptyCrxCachePathSucceeds) {
   CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   cache->Put(
-      DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), id, fp,
+      DuplicateTestFile(temp_dir.GetPath(),
+                        "jebgalgnebhfojomionfpkfelancnnkf.crx"),
+      id, fp,
       base::BindLambdaForTesting([&loop](const CrxCache::Result& result) {
         EXPECT_EQ(result.error, UnpackerError::kNone);
         base::FilePath crx_cache_path = result.crx_cache_path;
@@ -155,7 +136,9 @@ TEST_F(CrxCacheTest, CheckPutWithNonExistentCrxCacheDirSucceeds) {
   CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   cache->Put(
-      DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), id, fp,
+      DuplicateTestFile(temp_dir.GetPath(),
+                        "jebgalgnebhfojomionfpkfelancnnkf.crx"),
+      id, fp,
       base::BindLambdaForTesting([&loop](const CrxCache::Result& result) {
         EXPECT_EQ(result.error, UnpackerError::kNone);
         base::FilePath crx_cache_path = result.crx_cache_path;
@@ -173,8 +156,8 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath expected_crx_path =
       BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  base::FilePath jebg_duplicate_path =
-      DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx");
+  base::FilePath jebg_duplicate_path = DuplicateTestFile(
+      temp_dir.GetPath(), "jebgalgnebhfojomionfpkfelancnnkf.crx");
   {
     base::RunLoop loop;
     // Put jebg successfully.
@@ -185,13 +168,15 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
         base::BindLambdaForTesting([&loop](const CrxCache::Result& result) {
           EXPECT_EQ(result.error, UnpackerError::kNone);
           EXPECT_TRUE(base::ContentsEqual(
-              DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
+              GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
               result.crx_cache_path));
           EXPECT_TRUE(base::DeleteFile(result.crx_cache_path));
+          // Corrupt the file for the next test, so we can verify it was
+          // actually replaced.
           std::string corrupted_data("c0rrupt3d d4t4");
           EXPECT_TRUE(base::WriteFile(result.crx_cache_path, corrupted_data));
           EXPECT_FALSE(base::ContentsEqual(
-              DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
+              GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
               result.crx_cache_path));
           loop.Quit();
         }));
@@ -203,13 +188,17 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
     // Put replaces existing jebg to avoid error path.
     CrxCache::Options options(expected_crx_path.DirName());
     scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
+    // Duplicate the input file (again) since the old file was moved to the
+    // cache.
     cache->Put(
-        jebg_duplicate_path, id, fp,
+        DuplicateTestFile(temp_dir.GetPath(),
+                          "jebgalgnebhfojomionfpkfelancnnkf.crx"),
+        id, fp,
         base::BindLambdaForTesting([&loop](const CrxCache::Result& result) {
           EXPECT_EQ(result.error, UnpackerError::kNone);
           EXPECT_TRUE(base::PathExists(result.crx_cache_path));
           EXPECT_TRUE(base::ContentsEqual(
-              DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
+              GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
               result.crx_cache_path));
           loop.Quit();
         }));

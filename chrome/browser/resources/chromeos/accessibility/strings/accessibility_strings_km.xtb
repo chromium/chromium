@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="100506692671054486">គ្មាន​ឃ្លាបញ្ជា​ពីមុនទេ</translation>
 <translation id="1009046985747440431">ចុច​ព្រួញ​ឡើងលើ ឬចុះក្រោម​ដើម្បី​រុករក, ចុច enter ដើម្បី​បើកដំណើរការ</translation>
 <translation id="1011903154582639569">ស្វែងរក​គ្រាប់ចុច បន្ទាប់មក​លើកម្រាមដៃ​ដើម្បីវាយបញ្ចូល</translation>
 <translation id="1012173283529841972">ធាុតបញ្ជី</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ពណ៌ស្វាយខ្ចី</translation>
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
 <translation id="3962990492275676168">ចាប់ផ្តើមអានចេញពីទីតាំងបច្ចុប្បន្ន</translation>
+<translation id="397094149579293440">គ្មាន​អក្សរដែលបានជ្រើសរើស</translation>
 <translation id="3970951409746498040">ត្នោតខ្ចី</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">លឿង​ស្រគាំ</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">គ្មានផ្នែកក្បាលកម្រិតទី 1 មុនទេ</translation>
 <translation id="4787577491510559358">ប្រកាស​ទម្រង់​សម្រាប់​ធាតុ​បច្ចុប្បន្ន</translation>
 <translation id="479989351350248267">ស្វែងរក</translation>
+<translation id="4802034228771424756">គ្មាន​កន្លែងបញ្ចូល​អក្សរដែល​បានផ្តោតទេ</translation>
 <translation id="4804818685124855865">ផ្តាច់</translation>
 <translation id="481165870889056555">ប្រកាសចំណងជើងទំព័របច្ចុប្បន្ន</translation>
 <translation id="4815668758102003883">ផ្ទៃមេឃ</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">តំណខាងក្នុង</translation>
 <translation id="4909019435900810068">ផ្លាស់ទីថយក្រោយ​មួយពាក្យ</translation>
 <translation id="4911349081560453449">គ្មានប្រអប់ធីកមុនទេ</translation>
+<translation id="4919186071145887492">មិនអាច<ph name="COMMAND" />បានទេ សូមព្យាយាម​ម្ដងទៀត</translation>
 <translation id="492295894462528572">សេចក្ដី​ផ្ដើម</translation>
 <translation id="495046168593986294">រំកិលឡើងលើ</translation>
 <translation id="495170559598752135">សកម្មភាព</translation>
 <translation id="4953585991029886728">កែប្រែអត្ថបទ</translation>
+<translation id="4964701498510730546">កន្លែង​បញ្ចូលអក្សរ​គឺទទេ</translation>
 <translation id="4973717656530883744">អបបរមា <ph name="X" /></translation>
 <translation id="4974612477719259470">គ្មានប៊ូតុងមុនទេ</translation>
 <translation id="4979404613699303341">ប៊ូតុងពីមុន</translation>
+<translation id="4981239367072766915">មិនស្គាល់​ការបញ្ចូល</translation>
 <translation id="4982917827052020884">សូមចាប់ផ្ដើម​ដោយប្រើ​គ្រាប់ចុច​ពីរបី​ដែលអ្នក​នឹងប្រើ​ជាប្រចាំ​។ គ្រាប់ចុច Control អាចត្រូវបានប្រើ​ដើម្បី​បញ្ឈប់​ការនិយាយ​បច្ចុប្បន្ន​។ រកមើល​គ្រាប់ចុច Control នៅជ្រុងខាងក្រោម​ផ្នែកខាងឆ្វេង​នៃក្ដារចុច​របស់អ្នក​។ ដើម្បី​បន្ត សូមចុច​គ្រាប់ចុច Control។</translation>
 <translation id="4983588134362688868">លោតទៅខាងលើទំព័រ</translation>
 <translation id="4986606102545753256">ផ្ទាំង <ph name="NAME" /></translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ប្រកាស​ស្ថានភាព​ថ្ម​បច្ចុប្បន្ន</translation>
 <translation id="4997282455736854877"><ph name="NAME" /> ប៊ូតុងវិទ្យុត្រូវបានជ្រើសរើស</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, បានជ្រើសរើសប៊ូតុង​មូលរបស់ធាតុម៉ឺនុយ</translation>
+<translation id="5014131807708055994">មិនអាច<ph name="COMMAND" />បានទេ ដោយសារ<ph name="REASON" /></translation>
 <translation id="5020651427400641814">បើក​ការធ្វើ​កំណត់ហេតុ​ការនិយាយ</translation>
 <translation id="5041394372352067729">ផ្លាស់ទីអេក្រង់ប្រែលទៅខាងលើទំព័រ</translation>
 <translation id="5042770794184672516">បង្កើតកម្រិតសម្លេងការនិយាយ</translation>

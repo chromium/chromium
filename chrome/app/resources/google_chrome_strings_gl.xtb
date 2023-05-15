@@ -19,12 +19,14 @@
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS Flex.</translation>
+<translation id="1341711321000856656">Podes cambiar de perfil para ver os contrasinais doutro perfil de Chrome</translation>
 <translation id="1363996462118479832">Chrome OS non puido sincronizar os teus datos porque se produciu un erro ao iniciar sesión.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador ten instalada unha versión máis recente de Google Chrome. Se o software non funciona, desinstala Google Chrome e téntao de novo.</translation>
 <translation id="139993653570221430">Se cambias de idea, podes modificar a configuración de Chrome en calquera momento. Con todo, as probas inscríbense na experiencia actual de publicación de anuncios, polo que non verás cambios de inmediato.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Actualizouse Chrome. Podes usar a versión máis recente tan pronto como o reinicies. Despois volverán abrirse as pestanas actuais.}=1{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. A ventá do modo de incógnito non se volverá abrir.}other{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1434626383986940139">Aplicacións de Chrome Canary</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome estaba conectado a un dispositivo de interface humana}=1{Google Chrome está conectado a un dispositivo de interface humana}other{Google Chrome está conectado a dispositivos de interface humana}}</translation>
+<translation id="1492280395845991349">Reiniciar para completar a actualización de Chrome</translation>
 <translation id="1507198376417198979">Personaliza o teu novo perfil de Chrome</translation>
 <translation id="1516530951338665275">Google Chrome precisa acceso mediante Bluetooth para continuar coa vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
@@ -84,6 +86,7 @@
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2534507159460261402">Google Pay (copiouse en Chrome)</translation>
+<translation id="2556847002339236023">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />. Elimináronse os datos de navegación. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="2559253115192232574">Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren. Chrome pode compartir ata 3 intereses.</translation>
 <translation id="2563121210305478421">Queres reiniciar Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
@@ -95,6 +98,7 @@
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2689103672227170538">Esta extensión cambiou a páxina que se mostra ao iniciar Chrome.</translation>
+<translation id="2712234843277364121">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección da caixa correspondente a esta opción.</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder ao micrófono neste sitio</translation>
 <translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
@@ -114,6 +118,7 @@
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{As extensións de Google Chrome tiñan acceso a dispositivos de interface humana}=1{As extensións de Google Chrome teñen acceso a dispositivos de interface humana}other{As extensións de Google Chrome teñen acceso a # dispositivos de interface humana}}</translation>
 <translation id="303514781271618814">Chrome está explorando novas funcións que lles permiten aos sitios ofrecer a mesma experiencia de navegación usando menos datos</translation>
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3038232873781883849">Esperando para realizar a instalación…</translation>
@@ -207,6 +212,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Este ficheiro pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
+<translation id="4828579605166583682">Google Chrome está tentando substituír os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
 <translation id="4873783916118289636">Revisa os controis clave de privacidade e seguranza en Chrome</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se execute en segundo plano</translation>
@@ -218,6 +224,7 @@
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Unha extensión de Google Chrome tiña acceso a dispositivos de interface humana}=1{Unha extensión de Google Chrome ten acceso a 1 dispositivo de interface humana}other{Unha extensión de Google Chrome ten acceso a # dispositivos de interface humana}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{O teu administrador pecha Chrome automaticamente cando non se usa durante 1 minuto. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}other{O teu administrador pecha Chrome automaticamente cando non se usa durante # minutos. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}}</translation>
 <translation id="5098668839038261629">Se activas esta opción, tamén se pechará a túa sesión en Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
@@ -268,6 +275,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
 <translation id="6145313976051292476">Abrir PDF en Chrome</translation>
 <translation id="6155960517327665396">Chrome funciona máis rápido grazas a Aforro de memoria</translation>
+<translation id="6157638032135951407">A túa organización elimina os datos de Chrome cando non se usan durante <ph name="TIMEOUT_DURATION" />. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
@@ -281,7 +289,9 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{O teu administrador elimina os datos de navegación automaticamente cando non se usa durante 1 minuto. Poden incluír o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}other{O teu administrador elimina os datos de navegación automaticamente cando non se usa durante # minutos. Poden incluír o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}}</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
+<translation id="648319183876919572">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas e sitios web perigosos</translation>
 <translation id="6493527311031785448">Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome pechouse automaticamente</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="659498884637196217">No xestor de contrasinais de Google neste dispositivo</translation>
@@ -318,6 +328,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7161904924553537242">Dámosche a benvida a Google Chrome</translation>
 <translation id="7177959540995930968">Podes obter máis información sobre estas funcións na configuración de Chrome.</translation>
+<translation id="7193885263065350793">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
@@ -411,6 +422,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
+<translation id="9054037008353851982">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar os cambios, reinicia Chrome</translation>
 <translation id="9195993889682885387">Chrome pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>

@@ -373,9 +373,9 @@ gpu::MailboxHolder MailboxToSurfaceBridgeImpl::CreateSharedImage(
   DCHECK(sii);
 
   gpu::MailboxHolder mailbox_holder;
-  mailbox_holder.mailbox = sii->CreateSharedImage(buffer, nullptr, color_space,
-                                                  kTopLeft_GrSurfaceOrigin,
-                                                  kPremul_SkAlphaType, usage);
+  mailbox_holder.mailbox = sii->CreateSharedImage(
+      buffer, nullptr, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage, "WebXrMailboxToSurfaceBridge");
   mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
       buffer->GetFormat()));

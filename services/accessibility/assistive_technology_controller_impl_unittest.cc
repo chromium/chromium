@@ -4,6 +4,7 @@
 
 #include "services/accessibility/assistive_technology_controller_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "services/accessibility/fake_service_client.h"
 #include "services/accessibility/os_accessibility_service.h"
@@ -32,7 +33,8 @@ class AssistiveTechnologyControllerTest : public testing::Test {
   }
 
  protected:
-  AssistiveTechnologyControllerImpl* at_controller_ = nullptr;
+  raw_ptr<AssistiveTechnologyControllerImpl, ExperimentalAsh> at_controller_ =
+      nullptr;
   std::unique_ptr<FakeServiceClient> client_;
 
  private:

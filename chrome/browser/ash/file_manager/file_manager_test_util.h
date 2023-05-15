@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -46,7 +47,7 @@ class FolderInMyFiles {
   FolderInMyFiles(const FolderInMyFiles&) = delete;
   FolderInMyFiles& operator=(const FolderInMyFiles&) = delete;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   base::FilePath folder_;
   std::vector<base::FilePath> files_;
 };

@@ -69,20 +69,6 @@ class GFX_EXPORT ImageSkia {
 
   ~ImageSkia();
 
-  // Changes the value of GetSupportedScales() to |scales|.
-  static void SetSupportedScales(const std::vector<float>& scales);
-
-  // Returns a vector with the scale factors which are supported by this
-  // platform, in ascending order.
-  static const std::vector<float>& GetSupportedScales();
-
-  // Returns the maximum scale supported by this platform.
-  static float GetMaxSupportedScale();
-
-  // Returns the resource scale factor value that ImageSkia uses when
-  // looking for the resource for a given device scale factor.
-  static float MapToResourceScale(float device_scale_factor);
-
   // Creates an image from the passed in bitmap, which is designed for display
   // at the device scale factor given in `scale`. The DIP width and height will
   // be based on that scale factor. A scale factor of 0 is equivalent to

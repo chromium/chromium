@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -60,9 +61,9 @@ class ArcPackageSyncModelTypeController
   void OnOsSyncFeaturePrefChanged();
 
   std::unique_ptr<syncer::ModelTypeSyncBridge> bridge_;
-  syncer::SyncService* const sync_service_;
-  Profile* const profile_;
-  ArcAppListPrefs* const arc_prefs_;
+  const raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_prefs_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PACKAGE_SYNC_MODEL_TYPE_CONTROLLER_H_

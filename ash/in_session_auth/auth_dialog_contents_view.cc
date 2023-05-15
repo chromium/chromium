@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -249,8 +250,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
-  FingerprintLabel* label_ = nullptr;
-  AnimatedRoundedImageView* icon_ = nullptr;
+  raw_ptr<FingerprintLabel, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_ = nullptr;
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
   bool can_use_pin_ = false;
   base::OneShotTimer reset_state_;

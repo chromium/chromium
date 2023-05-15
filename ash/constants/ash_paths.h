@@ -59,8 +59,10 @@ enum {
                                         // maintained for the signin profile.
   DIR_PREINSTALLED_COMPONENTS,          // Directory that contains pre-installed
                                         // components.
-  DIR_DEVICE_POLICY_EXTERNAL_DATA,  // Directory where device policy external
-                                    // data resources are cached.
+  DIR_DEVICE_POLICY_EXTERNAL_DATA,     // Directory where device policy external
+                                       // data resources are cached.
+  DIR_DEVICE_POLICY_SCREENSAVER_DATA,  // Directory where the device policy
+                                       // managed screensaver images are cached.
   PATH_END
 };
 

@@ -150,17 +150,18 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         }
 
         // Set card icon. It can be either a custom card art or the network icon.
-        ImageView cardIconContainer = v.findViewById(R.id.card_icon);
+        ImageView cardIconContainer = v.findViewById(R.id.settings_page_card_icon);
         cardIconContainer.setImageDrawable(getCardIcon(getContext(), mCard.getCardArtUrl(),
                 mCard.getIssuerIconDrawableId(), getSettingsPageIconWidthId(),
                 getSettingsPageIconHeightId(), R.dimen.card_art_corner_radius,
                 ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
 
-        ((TextView) v.findViewById(R.id.card_name)).setText(mCard.getCardNameForAutofillDisplay());
+        ((TextView) v.findViewById(R.id.settings_page_card_name))
+                .setText(mCard.getCardNameForAutofillDisplay());
         ((TextView) v.findViewById(R.id.card_last_four))
                 .setText(mCard.getObfuscatedLastFourDigits());
-        ((TextView) v.findViewById(R.id.card_expiration))
-                .setText(mCard.getFormattedExpirationDate(getActivity()));
+        ((TextView) v.findViewById(R.id.settings_page_card_expiration))
+                .setText(mCard.getFormattedExpirationDateWithTwoDigitYear(getActivity()));
         v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {
             logServerCardEditorButtonClicks(showVirtualCardEnrollmentButton()
                             ? CardType.VIRTUAL_CARD

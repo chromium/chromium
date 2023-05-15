@@ -72,6 +72,9 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   friend class BrowserTaskExecutor;
   friend class BrowserUIThreadSchedulerTest;
 
+  using QueueEnabledVoter =
+      base::sequence_manager::TaskQueue::QueueEnabledVoter;
+
   explicit BrowserUIThreadScheduler(
       base::sequence_manager::SequenceManager* sequence_manager);
 
@@ -102,9 +105,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   // Can be expanded to modify queue priorities as well.
   void UpdateTaskQueueStates();
 
-  base::sequence_manager::TaskQueue::QueueEnabledVoter&
-  GetBrowserTaskRunnerVoter(QueueType queue_type) {
-    return *queue_data_[static_cast<size_t>(queue_type)].voter_.get();
+  QueueEnabledVoter& GetBrowserTaskRunnerVoter(QueueType queue_type) {
+    return *queue_enabled_voters_[static_cast<size_t>(queue_type)].get();
   }
 
   // Policy controls the scheduling policy for UI main thread, like which
@@ -145,8 +147,9 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
       owned_sequence_manager_;
 
   BrowserTaskQueues task_queues_;
-  std::array<BrowserTaskQueues::QueueData, BrowserTaskQueues::kNumQueueTypes>
-      queue_data_;
+  std::array<std::unique_ptr<QueueEnabledVoter>,
+             BrowserTaskQueues::kNumQueueTypes>
+      queue_enabled_voters_;
 
   scoped_refptr<Handle> handle_;
 

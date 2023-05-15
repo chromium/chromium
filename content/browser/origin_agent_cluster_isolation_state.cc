@@ -8,6 +8,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -17,8 +18,11 @@ OriginAgentClusterIsolationState
 OriginAgentClusterIsolationState::CreateForDefaultIsolation(
     BrowserContext* context) {
   if (SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(context)) {
-    return CreateForOriginAgentCluster(
-        false /* requires_origin_keyed_process */);
+    // If OAC-by-default is enabled, we also check to see if origin-keyed
+    // processes have been enabled as the default.
+    bool requires_origin_keyed_process =
+        base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+    return CreateForOriginAgentCluster(requires_origin_keyed_process);
   }
   return CreateNonIsolated();
 }

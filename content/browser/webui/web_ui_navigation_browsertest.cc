@@ -109,7 +109,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
           web_url.spec().c_str());
 
       TestNavigationObserver navigation_observer(shell()->web_contents());
-      EXPECT_TRUE(ExecuteScript(shell(), script));
+      EXPECT_TRUE(ExecJs(shell(), script));
       navigation_observer.Wait();
 
       EXPECT_EQ(1U, root->child_count());
@@ -736,8 +736,8 @@ const char kOpenUrlViaClickTargetFunc[] =
 
 // Adds a link with given url and target=_blank, and clicks on it.
 void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
-  EXPECT_TRUE(ExecuteScript(adapter, std::string(kOpenUrlViaClickTargetFunc) +
-                                         "(\"" + url.spec() + "\");"));
+  EXPECT_TRUE(ExecJs(adapter, std::string(kOpenUrlViaClickTargetFunc) + "(\"" +
+                                  url.spec() + "\");"));
 }
 
 // Verify that two WebUIs with a shared domain have different SiteInstance
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       base::StringPrintf("location.href = '%s';", web_url.spec().c_str());
 
   TestNavigationObserver navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecuteScript(shell(), script));
+  EXPECT_TRUE(ExecJs(shell(), script));
   navigation_observer.Wait();
 
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());

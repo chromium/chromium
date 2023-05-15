@@ -85,7 +85,7 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  tray_container()->AddChildView(icon_);
+  tray_container()->AddChildView(icon_.get());
 
   // Since OverviewButtonTray is located on the rightmost position of a
   // horizontal shelf, no separator is required.

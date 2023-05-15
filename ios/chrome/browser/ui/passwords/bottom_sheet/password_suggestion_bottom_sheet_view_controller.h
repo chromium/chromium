@@ -9,8 +9,8 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
-@protocol PasswordControllerDelegate;
 @protocol PasswordSuggestionBottomSheetDelegate;
+@protocol PasswordSuggestionBottomSheetHandler;
 
 // Password Bottom Sheet UI, which includes a table to display password
 // suggestions, a button to use a suggestion and a button to revert to using the
@@ -18,8 +18,9 @@
 @interface PasswordSuggestionBottomSheetViewController
     : ConfirmationAlertViewController <PasswordSuggestionBottomSheetConsumer>
 
-// Initialize with the favicon loader.
-- (instancetype)init;
+// Initialize with the delegate used to open the password manager.
+- (instancetype)initWithHandler:
+    (id<PasswordSuggestionBottomSheetHandler>)handler;
 
 // The delegate for the bottom sheet view controller.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetDelegate> delegate;

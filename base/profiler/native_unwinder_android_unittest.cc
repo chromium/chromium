@@ -16,6 +16,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "base/profiler/register_context.h"
@@ -65,8 +66,8 @@ class NativeUnwinderAndroidMemoryRegionsMapForTesting
   std::unique_ptr<unwindstack::Memory> TakeMemory() override { return nullptr; }
 
  private:
-  unwindstack::Maps* maps_;
-  unwindstack::Memory* memory_;
+  raw_ptr<unwindstack::Maps> maps_;
+  raw_ptr<unwindstack::Memory> memory_;
 };
 
 class NativeUnwinderAndroidMapDelegateForTesting

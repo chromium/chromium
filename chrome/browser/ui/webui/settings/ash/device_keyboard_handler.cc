@@ -17,6 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace {
 
@@ -29,7 +30,7 @@ struct KeyboardsStateResult {
 
 KeyboardsStateResult GetKeyboardsState() {
   KeyboardsStateResult result;
-  for (const ui::InputDevice& keyboard :
+  for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     switch (ash::Shell::Get()->keyboard_capability()->GetDeviceType(keyboard)) {
       case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:

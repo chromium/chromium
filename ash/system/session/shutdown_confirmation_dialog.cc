@@ -54,7 +54,7 @@ ShutdownConfirmationDialog::ShutdownConfirmationDialog(
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetMultiLine(true);
   label_->SetText(l10n_util::GetStringUTF16(dialog_text_id));
-  AddChildView(label_);
+  AddChildView(label_.get());
 
   // Parent the dialog widget to the PowerButtonAnimationContainer
   int container_id = kShellWindowId_PowerButtonAnimationContainer;

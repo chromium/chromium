@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -476,7 +477,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const NGBlockNode& flex_item,
-    absl::optional<LayoutUnit> override_inline_size) const {
+    absl::optional<LayoutUnit> override_inline_size,
+    Phase phase) const {
   const ComputedStyle& child_style = flex_item.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
                                          child_style.GetWritingDirection(),
@@ -484,6 +486,9 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
   space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
+  if (phase == Phase::kRowIntrinsicSize) {
+    space_builder.SetIsInFlexIntrinsicSizing(true);
+  }
 
   if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
     if (is_column_)
@@ -732,8 +737,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // We want the child's intrinsic inline sizes in its writing mode, so
         // pass child's writing mode as the first parameter, which is nominally
         // |container_writing_mode|.
-        const auto child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+        const auto child_space = BuildSpaceForIntrinsicBlockSize(
+            child, max_content_contribution, phase);
         min_max_sizes =
             child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
       }
@@ -829,8 +834,12 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             border_padding_in_child_writing_mode);
       }
       if (!layout_result) {
-        NGConstraintSpace child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(
+            child, max_content_contribution, phase);
+        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
+          disable_side_effects.emplace();
+        }
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
@@ -885,7 +894,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           // algorithm, which will eventually lead to a forced block size.
           LayoutUnit caption_block_size = table_child->ComputeCaptionBlockSize(
               BuildSpaceForIntrinsicBlockSize(*table_child,
-                                              max_content_contribution));
+                                              max_content_contribution, phase));
           flex_base_border_box += caption_block_size;
         }
       }
@@ -1852,6 +1861,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           ConstraintSpace().FragmentainerOffset() + offset.block_offset,
           has_container_separation, &container_builder_, !is_column_,
           current_column_break_info);
+
+      if (current_column_break_info) {
+        current_column_break_info->break_after =
+            container_builder_.PreviousBreakAfter();
+      }
     }
 
     if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
@@ -1975,12 +1989,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
-    container_builder_.AddResult(*layout_result, offset,
-                                 /* relative_offset */ absl::nullopt,
-                                 /* inline_container */ nullptr,
-                                 current_column_break_info
-                                     ? &current_column_break_info->break_after
-                                     : nullptr);
+    container_builder_.AddResult(*layout_result, offset);
+    if (current_column_break_info) {
+      current_column_break_info->break_after =
+          container_builder_.PreviousBreakAfter();
+    }
     baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                         is_first_line, is_last_line);
     if (last_item_in_line) {
@@ -2110,13 +2123,11 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   }
 
   // The button should have at most one child.
-  const NGContainerFragmentBuilder::ChildrenVector& children =
+  const NGFragmentBuilder::ChildrenVector& children =
       container_builder_.Children();
   if (children.size() < 1) {
     const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
-    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine(
-        layout_block->IsHorizontalWritingMode() ? kHorizontalLine
-                                                : kVerticalLine);
+    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine();
     if (container_builder_.FirstBaseline() != baseline) {
       UseCounter::Count(Node().GetDocument(),
                         WebFeature::kWrongBaselineOfEmptyLineButton);

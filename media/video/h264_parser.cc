@@ -19,45 +19,6 @@
 
 namespace media {
 
-namespace {
-// Converts [|start|, |end|) range with |encrypted_ranges| into a vector of
-// SubsampleEntry. |encrypted_ranges| must be with in the range defined by
-// |start| and |end|.
-// It is OK to pass in empty |encrypted_ranges|; this will return a vector
-// with single SubsampleEntry with clear_bytes set to the size of the buffer.
-std::vector<SubsampleEntry> EncryptedRangesToSubsampleEntry(
-    const uint8_t* start,
-    const uint8_t* end,
-    const Ranges<const uint8_t*>& encrypted_ranges) {
-  std::vector<SubsampleEntry> subsamples;
-  const uint8_t* cur = start;
-  for (size_t i = 0; i < encrypted_ranges.size(); ++i) {
-    SubsampleEntry subsample = {};
-
-    const uint8_t* encrypted_start = encrypted_ranges.start(i);
-    DCHECK_GE(encrypted_start, cur)
-        << "Encrypted range started before the current buffer pointer.";
-    subsample.clear_bytes = encrypted_start - cur;
-
-    const uint8_t* encrypted_end = encrypted_ranges.end(i);
-    subsample.cypher_bytes = encrypted_end - encrypted_start;
-
-    subsamples.push_back(subsample);
-    cur = encrypted_end;
-    DCHECK_LE(cur, end) << "Encrypted range is outside the buffer range.";
-  }
-
-  // If there is more data in the buffer but not covered by encrypted_ranges,
-  // then it must be in the clear.
-  if (cur < end) {
-    SubsampleEntry subsample = {};
-    subsample.clear_bytes = end - cur;
-    subsamples.push_back(subsample);
-  }
-  return subsamples;
-}
-}  // namespace
-
 bool H264SliceHeader::IsPSlice() const {
   return (slice_type % 5 == kPSlice);
 }
@@ -538,60 +499,6 @@ bool H264Parser::ParseNALUs(const uint8_t* stream,
   }
   NOTREACHED();
   return false;
-}
-
-H264Parser::Result H264Parser::ReadUE(int* val, int* num_bits_read) {
-  int num_bits = -1;
-  int bit;
-  int rest;
-
-  // Count the number of contiguous zero bits.
-  do {
-    READ_BITS_OR_RETURN(1, &bit);
-    num_bits++;
-  } while (bit == 0);
-
-  if (num_bits > 31)
-    return kInvalidStream;
-
-  // Calculate exp-Golomb code value of size num_bits.
-  // Special case for |num_bits| == 31 to avoid integer overflow. The only
-  // valid representation as an int is 2^31 - 1, so the remaining bits must
-  // be 0 or else the number is too large.
-  *val = (1u << num_bits) - 1u;
-
-  // Calculate the total read bits count.
-  if (num_bits_read)
-    *num_bits_read = 1 + num_bits * 2;
-
-  if (num_bits == 31) {
-    READ_BITS_OR_RETURN(num_bits, &rest);
-    return (rest == 0) ? kOk : kInvalidStream;
-  }
-
-  if (num_bits > 0) {
-    READ_BITS_OR_RETURN(num_bits, &rest);
-    *val += rest;
-  }
-
-  return kOk;
-}
-
-H264Parser::Result H264Parser::ReadSE(int* val, int* num_bits_read) {
-  int ue;
-  Result res;
-
-  // See Chapter 9 in the spec.
-  res = ReadUE(&ue, num_bits_read);
-  if (res != kOk)
-    return res;
-
-  if (ue % 2 == 0)
-    *val = -(ue / 2);
-  else
-    *val = ue / 2 + 1;
-
-  return kOk;
 }
 
 H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {

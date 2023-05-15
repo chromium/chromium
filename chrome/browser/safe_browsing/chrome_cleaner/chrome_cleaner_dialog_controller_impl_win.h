@@ -74,15 +74,17 @@ class ChromeCleanerDialogControllerImpl
   void OnInteractionDone();
   void ShowChromeCleanerPrompt();
 
-  raw_ptr<ChromeCleanerController> cleaner_controller_ = nullptr;
+  raw_ptr<ChromeCleanerController, DanglingUntriaged> cleaner_controller_ =
+      nullptr;
   bool dialog_shown_ = false;
 
   // In case there is no browser available to prompt a user
   // signal it, this way we can prompt it once a browser gets available..
   bool prompt_pending_ = false;
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
   std::unique_ptr<ChromeCleanerPromptDelegate> prompt_delegate_impl_;
-  raw_ptr<ChromeCleanerPromptDelegate> prompt_delegate_ = nullptr;
+  raw_ptr<ChromeCleanerPromptDelegate, DanglingUntriaged> prompt_delegate_ =
+      nullptr;
 };
 
 }  // namespace safe_browsing

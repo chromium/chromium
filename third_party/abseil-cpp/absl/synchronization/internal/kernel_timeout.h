@@ -128,6 +128,11 @@ class KernelTimeout {
   // case of a spurious wakeup.
   std::chrono::nanoseconds ToChronoDuration() const;
 
+  // Returns true if steady (aka monotonic) clocks are supported by the system.
+  // This method exists because go/btm requires synchronized clocks, and
+  // thus requires we use the system (aka walltime) clock.
+  static constexpr bool SupportsSteadyClock() { return true; }
+
  private:
   // Returns the current time, expressed as a count of nanoseconds since the
   // epoch used by an arbitrary clock. The implementation tries to use a steady

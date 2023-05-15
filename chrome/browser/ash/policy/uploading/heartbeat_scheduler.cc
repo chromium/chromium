@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -96,7 +97,7 @@ class HeartbeatRegistrationHelper {
                                  gcm::GCMClient::Result result);
 
   // GCMDriver to use to register.
-  gcm::GCMDriver* const gcm_driver_;
+  const raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
 
   // Callback to invoke when we have completed GCM registration.
   RegistrationHelperCallback callback_;

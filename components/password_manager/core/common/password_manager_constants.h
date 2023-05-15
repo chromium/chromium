@@ -17,6 +17,7 @@ constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
 constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
 constexpr int kMaxPasswordNoteLength = 1000;
+constexpr int kMaxPasswordsPerCSVFile = 3000;
 
 }  // namespace password_manager::constants
 

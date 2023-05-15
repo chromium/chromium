@@ -454,7 +454,7 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   }
 
   guest_login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
+      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   guest_login_performer_->LoginOffTheRecord();
 }
 

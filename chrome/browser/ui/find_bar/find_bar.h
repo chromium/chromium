@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
 
 class FindBarController;
@@ -23,6 +24,12 @@ class FindNotificationDetails;
 namespace gfx {
 class Range;
 }
+
+#if BUILDFLAG(IS_MAC)
+namespace views {
+class Widget;
+}
+#endif
 
 class FindBar {
  public:
@@ -90,6 +97,12 @@ class FindBar {
   // Returns a pointer to the testing interface to the FindBar, or NULL
   // if there is none.
   virtual const FindBarTesting* GetFindBarTesting() const = 0;
+
+#if BUILDFLAG(IS_MAC)
+  // Get the host widget. Used by immersive fullscreen to detect the find bar
+  // widget and reparent as necessary.
+  virtual views::Widget* GetHostWidget() = 0;
+#endif
 };
 
 class FindBarTesting {

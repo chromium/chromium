@@ -8,6 +8,8 @@
 #include <set>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
@@ -89,6 +91,11 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 
+class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
+ public:
+  MOCK_METHOD(void, OnError, (PersistentPrefStore::PrefReadError), (override));
+};
+
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient()
@@ -123,19 +130,23 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
  public:
   explicit DualLayerUserPrefStoreTestBase(bool initialize) {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
+    account_store_ = base::MakeRefCounted<TestingPrefStore>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, &pref_model_associator_client_);
+        local_store_, account_store_, &pref_model_associator_client_);
 
     if (initialize) {
       local_store_->NotifyInitializationCompleted();
+      account_store_->NotifyInitializationCompleted();
     }
   }
 
   TestingPrefStore* local_store() { return local_store_.get(); }
+  TestingPrefStore* account_store() { return account_store_.get(); }
   DualLayerUserPrefStore* store() { return dual_layer_store_.get(); }
 
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
+  scoped_refptr<TestingPrefStore> account_store_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
   TestPrefModelAssociatorClient pref_model_associator_client_;
 };
@@ -163,10 +174,9 @@ class DualLayerUserPrefStoreInitializationTest
 
 TEST_F(DualLayerUserPrefStoreInitializationTest,
        ForwardsInitializationSuccess) {
-  // The account store (an in-memory store) always starts out already
-  // initialized, but the local store is *not* initialized yet.
+  // The local store and the account store are *not* initialized yet.
   ASSERT_FALSE(local_store()->IsInitializationComplete());
-  ASSERT_TRUE(store()->GetAccountPrefStore()->IsInitializationComplete());
+  ASSERT_FALSE(account_store()->IsInitializationComplete());
 
   // Accordingly, the dual-layer store is not initialized either.
   EXPECT_FALSE(store()->IsInitializationComplete());
@@ -174,10 +184,11 @@ TEST_F(DualLayerUserPrefStoreInitializationTest,
   MockPrefStoreObserver observer;
   store()->AddObserver(&observer);
 
-  // Once the local store is successfully initialized, so it the dual-layer
+  local_store()->NotifyInitializationCompleted();
+  // Only when both the stores are successfully initialized, does the dual-layer
   // store.
   EXPECT_CALL(observer, OnInitializationCompleted(true));
-  local_store()->NotifyInitializationCompleted();
+  account_store()->NotifyInitializationCompleted();
 
   EXPECT_TRUE(store()->IsInitializationComplete());
   EXPECT_EQ(store()->GetReadError(), PersistentPrefStore::PREF_READ_ERROR_NONE);
@@ -187,10 +198,9 @@ TEST_F(DualLayerUserPrefStoreInitializationTest,
 
 TEST_F(DualLayerUserPrefStoreInitializationTest,
        ForwardsInitializationFailure) {
-  // The account store (an in-memory store) always starts out already
-  // initialized, but the local store is *not* initialized yet.
+  // The local store and the account store are *not* initialized yet.
   ASSERT_FALSE(local_store()->IsInitializationComplete());
-  ASSERT_TRUE(store()->GetAccountPrefStore()->IsInitializationComplete());
+  ASSERT_FALSE(account_store()->IsInitializationComplete());
 
   // Accordingly, the dual-layer store is not initialized either.
   EXPECT_FALSE(store()->IsInitializationComplete());
@@ -203,16 +213,92 @@ TEST_F(DualLayerUserPrefStoreInitializationTest,
       PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE);
   local_store()->set_read_success(false);
 
-  // Once the local store reports the error, the dual-layer store should forward
-  // it accordingly.
+  // Since the local store reports the error, the dual-layer store should
+  // forward it accordingly.
   EXPECT_CALL(observer, OnInitializationCompleted(false));
   local_store()->NotifyInitializationCompleted();
+  account_store()->NotifyInitializationCompleted();
 
   EXPECT_TRUE(store()->IsInitializationComplete());
   EXPECT_EQ(store()->GetReadError(),
             PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE);
 
   store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldForwardLocalPrefStoreReadError) {
+  local_store()->set_read_error(
+      PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED);
+  // Read error is forwarded.
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->ReadPrefs());
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->GetReadError());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldForwardAccountPrefStoreReadError) {
+  account_store()->set_read_error(
+      PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED);
+  // Read error is forwarded.
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->ReadPrefs());
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->GetReadError());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldForwardLocalPrefStoreAsyncReadError) {
+  local_store()->set_read_error(
+      PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED);
+
+  // The callee is expected to take the ownership, hence the assignment to a raw
+  // ptr.
+  auto* read_error_delegate =
+      new ::testing::StrictMock<MockReadErrorDelegate>();
+  EXPECT_CALL(*read_error_delegate,
+              OnError(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED));
+  store()->ReadPrefsAsync(read_error_delegate);
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->GetReadError());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldForwardAccountPrefStoreAsyncReadError) {
+  account_store()->set_read_error(
+      PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED);
+
+  // The callee is expected to take the ownership, hence the assignment to a raw
+  // ptr.
+  auto* read_error_delegate =
+      new ::testing::StrictMock<MockReadErrorDelegate>();
+  EXPECT_CALL(*read_error_delegate,
+              OnError(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED));
+  store()->ReadPrefsAsync(read_error_delegate);
+  EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_ACCESS_DENIED,
+            store()->GetReadError());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldReportInitializationCompleteAfterRead) {
+  EXPECT_FALSE(store()->IsInitializationComplete());
+  store()->ReadPrefs();
+  EXPECT_TRUE(store()->IsInitializationComplete());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       ShouldReportInitializationCompleteAsyncReadAsync) {
+  // Should report init completion after async read for underlying stores is
+  // complete.
+  local_store()->SetBlockAsyncRead(true);
+  account_store()->SetBlockAsyncRead(true);
+  EXPECT_FALSE(store()->IsInitializationComplete());
+  store()->ReadPrefsAsync(nullptr);
+  local_store()->SetBlockAsyncRead(false);
+  EXPECT_FALSE(store()->IsInitializationComplete());
+  account_store()->SetBlockAsyncRead(false);
+  EXPECT_TRUE(store()->IsInitializationComplete());
 }
 
 TEST_F(DualLayerUserPrefStoreTest, ReadsFromLocalStore) {
@@ -595,11 +681,6 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChangesInUnderlyingStores) {
   store()->GetLocalPrefStore()->RemoveValue(kPref1, 0);
   store()->GetAccountPrefStore()->RemoveValue(kPref2, 0);
 
-  // TODO(crbug.com/1416477): Verify that OnPrefValueChanged() only gets called
-  // when the *effective* value changes, i.e. not when a pref is changed in the
-  // local store that also has a value in the account store. (Though this
-  // shouldn't happen in practice anyway.)
-
   store()->RemoveObserver(&observer);
 }
 
@@ -709,6 +790,20 @@ TEST_F(DualLayerUserPrefStoreTest, ShouldAddOnlySyncablePrefsToAccountStore) {
   // Value is only set in the local store.
   EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(),
                              kNonSyncablePrefName, kNewValue));
+}
+
+TEST_F(DualLayerUserPrefStoreTest, ShouldCommitPendingWritesForBothStores) {
+  base::test::SingleThreadTaskEnvironment task_env;
+
+  ::testing::StrictMock<base::MockOnceClosure> reply_callback;
+  ::testing::StrictMock<base::MockOnceClosure> done_callback;
+
+  EXPECT_CALL(reply_callback, Run);
+  EXPECT_CALL(done_callback, Run);
+  store()->CommitPendingWrite(reply_callback.Get(), done_callback.Get());
+  task_env.RunUntilIdle();
+  EXPECT_TRUE(local_store()->committed());
+  EXPECT_TRUE(account_store()->committed());
 }
 
 class DualLayerUserPrefStoreTestForTypes
@@ -844,10 +939,12 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
  public:
   DualLayerUserPrefStoreMergeTest() {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
+    account_store_ = base::MakeRefCounted<TestingPrefStore>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, &pref_model_associator_client_);
+        local_store_, account_store_, &pref_model_associator_client_);
 
     local_store_->NotifyInitializationCompleted();
+    account_store_->NotifyInitializationCompleted();
 
     dual_layer_store_->AddObserver(&observer_);
 
@@ -867,6 +964,7 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
 
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
+  scoped_refptr<TestingPrefStore> account_store_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
   MergeTestPrefModelAssociatorClient pref_model_associator_client_;
   testing::StrictMock<MockPrefStoreObserver> observer_;

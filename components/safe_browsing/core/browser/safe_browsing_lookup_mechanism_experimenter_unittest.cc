@@ -59,7 +59,6 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
             GURL(),
             SBThreatTypeSet({}),
             /*database_manager=*/nullptr,
-            /*can_check_db=*/true,
             MechanismExperimentHashDatabaseCache::kNoExperiment),
         is_safe_synchronously_(is_safe_synchronously),
         time_to_completion_(time_to_completion),

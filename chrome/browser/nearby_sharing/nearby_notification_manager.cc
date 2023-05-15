@@ -11,6 +11,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -38,12 +39,14 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -85,7 +88,11 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
 
-  notification.set_accent_color(ash::kSystemNotificationColorNormal);
+  if (chromeos::features::IsJellyEnabled()) {
+    notification.set_accent_color_id(cros_tokens::kCrosSysPrimary);
+  } else {
+    notification.set_accent_color(ash::kSystemNotificationColorNormal);
+  }
   notification.set_vector_small_image(kNearbyShareIcon);
   notification.set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);
@@ -396,7 +403,7 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
   bool awaiting_remote_acceptance_ = false;
 };
 
@@ -433,7 +440,7 @@ class ConnectionRequestNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
@@ -610,8 +617,8 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
     }
   }
 
-  NearbyNotificationManager* manager_;
-  Profile* profile_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   ShareTarget share_target_;
   NearbyNotificationManager::ReceivedContentType type_;
   SkBitmap image_;
@@ -653,7 +660,7 @@ class NearbyDeviceTryingToShareNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 class NearbyVisibilityReminderNotificationDelegate
@@ -691,7 +698,7 @@ class NearbyVisibilityReminderNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 bool ShouldShowNearbyDeviceTryingToShareNotification(

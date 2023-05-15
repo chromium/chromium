@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -89,7 +90,7 @@ class ShelfSpinnerController::ShelfSpinnerData {
   base::Time removal_time() const { return removal_time_; }
 
  private:
-  ShelfSpinnerItemController* controller_;
+  raw_ptr<ShelfSpinnerItemController, ExperimentalAsh> controller_;
   base::Time creation_time_;
   base::Time removal_time_;
 };

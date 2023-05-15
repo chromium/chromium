@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +35,9 @@ namespace {
 
 using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
+// TODO(crbug.com/1432264): Delete this class.
+// 1) Expect*() functions can be in the anonymous namespace or the test fixture.
+// 2) The mock and non-override method should be deleted.
 class OverloadedMockAffiliationService : public MockAffiliationService {
  public:
   OverloadedMockAffiliationService() {
@@ -44,12 +48,23 @@ class OverloadedMockAffiliationService : public MockAffiliationService {
               OnGetAffiliationsAndBrandingCalled,
               (const FacetURI&, StrategyOnCacheMiss));
 
+  MOCK_METHOD(std::vector<GroupedFacets>,
+              OnGetGroupingInfoCalled,
+              (std::vector<FacetURI>));
+
   void GetAffiliationsAndBranding(const FacetURI& facet_uri,
                                   StrategyOnCacheMiss cache_miss_strategy,
                                   ResultCallback result_callback) override {
     AffiliatedFacets affiliation =
         OnGetAffiliationsAndBrandingCalled(facet_uri, cache_miss_strategy);
     std::move(result_callback).Run(affiliation, !affiliation.empty());
+  }
+
+  void GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                       GroupsCallback callback) override {
+    std::vector<GroupedFacets> affiliation =
+        OnGetGroupingInfoCalled(facet_uris);
+    std::move(callback).Run(affiliation);
   }
 
   void ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
@@ -59,6 +74,13 @@ class OverloadedMockAffiliationService : public MockAffiliationService {
     EXPECT_CALL(*this, OnGetAffiliationsAndBrandingCalled(
                            expected_facet_uri, expected_cache_miss_strategy))
         .WillOnce(testing::Return(affiliations_to_return));
+  }
+
+  void ExpectCallToGetGroupingInfoAndSucceedWithResult(
+      const std::vector<FacetURI>& facet_uris,
+      const std::vector<GroupedFacets>& groups_to_return) {
+    EXPECT_CALL(*this, OnGetGroupingInfoCalled({facet_uris}))
+        .WillOnce(testing::Return(groups_to_return));
   }
 
   void ExpectCallToGetAffiliationsAndBrandingAndEmulateFailure(
@@ -144,6 +166,19 @@ AffiliatedFacets GetTestEquivalenceClassAlpha() {
   };
 }
 
+std::vector<GroupedFacets> GetTestEquivalenceGroupClassAlpha() {
+  std::vector<Facet> facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))};
+
+  GroupedFacets result_group;
+  result_group.facets = facets;
+  result_group.branding_info = FacetBrandingInfo{
+      kTestAndroidFacetNameAlpha3, GURL(kTestAndroidFacetIconURLAlpha3)};
+  return {result_group};
+}
+
 AffiliatedFacets GetTestEquivalenceClassBeta() {
   return {
       Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1)),
@@ -201,11 +236,36 @@ class AffiliatedMatchHelperTest : public testing::Test,
     return last_result_realms_;
   }
 
+  std::vector<std::string> GetGroup(const PasswordFormDigest& observed_form) {
+    expecting_result_callback_ = true;
+    match_helper()->GetGroup(
+        observed_form,
+        base::BindOnce(&AffiliatedMatchHelperTest::OnAffiliatedRealmsCallback,
+                       base::Unretained(this)));
+    RunUntilIdle();
+    EXPECT_FALSE(expecting_result_callback_);
+    return last_result_realms_;
+  }
+
   OverloadedMockAffiliationService* mock_affiliation_service() {
     return mock_affiliation_service_.get();
   }
 
   AffiliatedMatchHelper* match_helper() { return match_helper_.get(); }
+
+  void InitGroupsFeature() {
+    feature_list_.Reset();
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kFillingAcrossGroupedSites,
+                                features::kFillingAcrossAffiliatedWebsites},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kFillingAcrossGroupedSites},
+          /*disabled_features=*/{features::kFillingAcrossAffiliatedWebsites});
+    }
+  }
 
  private:
   void OnAffiliatedRealmsCallback(
@@ -322,6 +382,31 @@ TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::UnorderedElementsAre(kTestWebRealmAlpha2,
                                             kTestAndroidRealmAlpha3));
+}
+
+TEST_P(AffiliatedMatchHelperTest, GetGroup) {
+  InitGroupsFeature();
+  mock_affiliation_service()->ExpectCallToGetGroupingInfoAndSucceedWithResult(
+      {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)},
+      GetTestEquivalenceGroupClassAlpha());
+  // This verifies that |kTestWebRealmAlpha2| is returned.
+  EXPECT_THAT(GetGroup(GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
+              testing::UnorderedElementsAre(kTestWebRealmAlpha2,
+                                            kTestAndroidRealmAlpha3));
+}
+
+TEST_P(AffiliatedMatchHelperTest, GetGroupWhenNoMatch) {
+  InitGroupsFeature();
+  std::vector<Facet> facet = {
+      Facet(Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)))};
+  FacetBrandingInfo branding_info;
+  GroupedFacets result_grouped_facet;
+  std::vector<GroupedFacets> expected_result = {result_grouped_facet};
+  mock_affiliation_service()->ExpectCallToGetGroupingInfoAndSucceedWithResult(
+      {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)}, expected_result);
+
+  EXPECT_THAT(GetGroup(GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
+              testing::IsEmpty());
 }
 
 TEST_P(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {

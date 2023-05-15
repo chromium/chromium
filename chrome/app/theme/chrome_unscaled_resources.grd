@@ -46,11 +46,6 @@
             <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="google_chrome/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
             <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="google_chrome/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
-          <if expr="is_win">
-            <!-- External company logo, displayed in the Chrome Cleanup WebUI if
-                cleanup functionality is powered by an external company. -->
-            <include name="IDR_CHROME_CLEANUP_PARTNER" file="google_chrome/win/chrome_cleanup_powered_by_company.svg" type="BINDATA" />
-          </if>
           <!-- NOTE: product_logo_*.* files beyond what's listed above are
               referenced by installer code; don't remove them unless you know
               what you're doing! -->
@@ -156,6 +151,7 @@
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_STEAM_192" file="borealis/logo_borealis_steam_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_SPLASH" file="borealis/logo_borealis_splash.png" type="BINDATA" />
+        <include name="IDR_LOGO_BOREALIS_FLAIR" file="borealis/logo_borealis_flair_64.png" type="BINDATA" />
         <!-- TODO(b/248938308): Replace the below large .png files with svg/lottie when we update to WebUI. -->
         <include name="IDR_BOREALIS_INSTALLER_COMPLETE_LIGHT" file="borealis/borealis_installer_complete_light.png" type="BINDATA" />
         <include name="IDR_BOREALIS_INSTALLER_COMPLETE_DARK" file="borealis/borealis_installer_complete_dark.png" type="BINDATA" />

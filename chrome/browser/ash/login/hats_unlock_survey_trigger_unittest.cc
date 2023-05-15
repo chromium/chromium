@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -45,7 +46,7 @@ class FakeImpl : public HatsUnlockSurveyTrigger::Impl {
   bool should_show_survey_ = true;
   bool show_survey_called_ = false;
   base::flat_map<std::string, std::string> product_specific_data_;
-  const HatsConfig* hats_config_;
+  raw_ptr<const HatsConfig, ExperimentalAsh> hats_config_;
 };
 
 }  // namespace
@@ -77,7 +78,7 @@ class HatsUnlockSurveyTriggerTest : public BrowserWithTestWindowTest {
   }
 
   AccountId account_id_;
-  FakeImpl* fake_impl_;
+  raw_ptr<FakeImpl, ExperimentalAsh> fake_impl_;
   std::unique_ptr<HatsUnlockSurveyTrigger> unlock_survey_trigger_;
 };
 

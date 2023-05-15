@@ -53,6 +53,15 @@ void FakeContentAnalysisSdkManager::ResetClient(
   fake_clients_.erase(config);
 }
 
+void FakeContentAnalysisSdkManager::ResetAllClients() {
+  ContentAnalysisSdkManager::ResetAllClients();
+  fake_clients_.clear();
+}
+
+bool FakeContentAnalysisSdkManager::NoConnectionEstablished() {
+  return fake_clients_.empty();
+}
+
 FakeContentAnalysisSdkClient* FakeContentAnalysisSdkManager::GetFakeClient(
     const content_analysis::sdk::Client::Config& config) {
   auto it = fake_clients_.find(config);

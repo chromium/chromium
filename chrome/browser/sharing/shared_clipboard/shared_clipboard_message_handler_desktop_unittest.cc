@@ -4,9 +4,9 @@
 
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop.h"
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/uuid.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
@@ -64,7 +64,7 @@ class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
 }  // namespace
 
 TEST_F(SharedClipboardMessageHandlerTest, NotificationWithoutDeviceName) {
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce(
@@ -85,13 +85,14 @@ TEST_F(SharedClipboardMessageHandlerTest, NotificationWithoutDeviceName) {
 
 TEST_F(SharedClipboardMessageHandlerTest,
        NotificationWithDeviceNameFromDeviceInfo) {
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce(
             [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
-              return CreateFakeDeviceInfo(base::GenerateGUID(),
-                                          kDeviceNameInDeviceInfo);
+              return CreateFakeDeviceInfo(
+                  base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  kDeviceNameInDeviceInfo);
             });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);
@@ -107,7 +108,7 @@ TEST_F(SharedClipboardMessageHandlerTest,
 
 TEST_F(SharedClipboardMessageHandlerTest,
        NotificationWithDeviceNameFromMessage) {
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce(

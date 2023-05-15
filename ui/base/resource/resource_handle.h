@@ -9,8 +9,8 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/strings/string_piece.h"
-#include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
@@ -19,7 +19,7 @@ class RefCountedStaticMemory;
 
 namespace ui {
 
-class UI_DATA_PACK_EXPORT ResourceHandle {
+class COMPONENT_EXPORT(UI_DATA_PACK) ResourceHandle {
  public:
   // What type of encoding the text resources use.
   enum TextEncodingType {

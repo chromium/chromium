@@ -4,10 +4,12 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -51,6 +53,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -287,6 +290,12 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
     responses_.clear();
   }
 
+  // Overrides the maximum number of candidates that the OverlayProcessor can
+  // consider each frame.
+  void SetMaximumOverlaysConsidered(int overlays_considered) {
+    max_overlays_considered_ = overlays_considered;
+  }
+
  private:
   std::vector<gfx::Rect> expected_rects_;
   std::vector<bool> responses_;
@@ -308,19 +317,10 @@ class MultiSingleOnTopProcessor : public MultiOverlayProcessorBase {
   }
 };
 
-class MultiUnderlayProcessor : public MultiOverlayProcessorBase {
+class SizeSortedMultiSingleOnTopProcessor : public MultiOverlayProcessorBase {
  public:
-  MultiUnderlayProcessor() {
-    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
-  }
-};
-
-class SizeSortedMultiOverlayProcessor : public MultiOverlayProcessorBase {
- public:
-  SizeSortedMultiOverlayProcessor() {
-    strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
+  SizeSortedMultiSingleOnTopProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
-    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
   }
 
   // Sort candidates only by their display_rect area.
@@ -335,6 +335,112 @@ class SizeSortedMultiOverlayProcessor : public MultiOverlayProcessorBase {
               [](const auto& a, const auto& b) {
                 return a.relative_power_gain > b.relative_power_gain;
               });
+  }
+
+  void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
+                               OverlayCandidateList* surfaces) override {
+    for (auto& candidate : *surfaces) {
+      candidate.overlay_handled = true;
+    }
+  }
+};
+
+class MultiUnderlayProcessor : public MultiOverlayProcessorBase {
+ public:
+  MultiUnderlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+  }
+};
+
+class SizeSortedMultiOverlayProcessorBase : public MultiOverlayProcessorBase {
+ public:
+  // Sort candidates only by their display_rect area.
+  void SortProposedOverlayCandidates(
+      std::vector<OverlayProposedCandidate>* proposed_candidates) override {
+    // We want the power gains to be assigned for the OverlayCombinationCache.
+    for (auto& proposed_candidate : *proposed_candidates) {
+      proposed_candidate.relative_power_gain =
+          proposed_candidate.candidate.display_rect.size().GetArea();
+    }
+    std::sort(proposed_candidates->begin(), proposed_candidates->end(),
+              [](const auto& a, const auto& b) {
+                return a.relative_power_gain > b.relative_power_gain;
+              });
+  }
+};
+
+class SizeSortedMultiOverlayProcessor
+    : public SizeSortedMultiOverlayProcessorBase {
+ public:
+  SizeSortedMultiOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+  }
+};
+
+class SizeSortedMultiUnderlayProcessor
+    : public SizeSortedMultiOverlayProcessorBase {
+ public:
+  SizeSortedMultiUnderlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+  }
+};
+
+class TypeAndSizeSortedMultiOverlayProcessor
+    : public MultiOverlayProcessorBase {
+ public:
+  TypeAndSizeSortedMultiOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+  }
+
+  void SortProposedOverlayCandidates(
+      std::vector<OverlayProposedCandidate>* proposed_candidates) override {
+    // We want the power gains to be assigned for the OverlayCombinationCache.
+    for (auto& proposed_candidate : *proposed_candidates) {
+      proposed_candidate.relative_power_gain =
+          proposed_candidate.candidate.display_rect.size().GetArea();
+    }
+    std::sort(
+        proposed_candidates->begin(), proposed_candidates->end(),
+        [](const auto& a, const auto& b) {
+          if (a.candidate.requires_overlay || b.candidate.requires_overlay) {
+            return a.candidate.requires_overlay &&
+                   !b.candidate.requires_overlay;
+          }
+
+          if (a.candidate.has_rounded_display_masks ||
+              b.candidate.has_rounded_display_masks) {
+            return a.candidate.has_rounded_display_masks &&
+                   !b.candidate.has_rounded_display_masks;
+          }
+
+          return a.relative_power_gain > b.relative_power_gain;
+        });
+  }
+};
+
+// This processor only allows only candidates with rounded-display masks after
+// sorting them.
+class AllowCandidateWithMasksSortedMultiOverlayProcessor
+    : public MultiOverlayProcessorBase {
+ public:
+  AllowCandidateWithMasksSortedMultiOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+  }
+
+  void SortProposedOverlayCandidates(
+      std::vector<OverlayProposedCandidate>* proposed_candidates) override {
+    // After sort we should only be left with candidates with rounded-display
+    // masks.
+    base::EraseIf(*proposed_candidates, [](OverlayProposedCandidate& cand) {
+      return !cand.candidate.has_rounded_display_masks;
+    });
+
+    // We want the power gains to be assigned for the OverlayCombinationCache.
+    for (auto& proposed_candidate : *proposed_candidates) {
+      proposed_candidate.relative_power_gain =
+          proposed_candidate.candidate.display_rect.size().GetArea();
+    }
   }
 };
 
@@ -430,8 +536,8 @@ static ResourceId CreateResourceInLayerTree(
     bool is_overlay_candidate,
     SharedImageFormat format) {
   auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, format, is_overlay_candidate);
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+      size, format, is_overlay_candidate);
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -734,19 +840,6 @@ SkM44 GetNonIdentityColorMatrix() {
   return matrix;
 }
 
-gfx::RectF ScaleForBufferDamageUV(const gfx::RectF buffer_damage_no_uv,
-                                  const gfx::SizeF resource_size) {
-  auto transformed_damage = buffer_damage_no_uv;
-  gfx::RectF uv = {kUVTopLeft.x(), kUVTopLeft.y(),
-                   kUVBottomRight.x() - kUVTopLeft.x(),
-                   kUVBottomRight.y() - kUVTopLeft.y()};
-
-  transformed_damage.Scale(uv.width(), uv.height());
-  transformed_damage.Offset(uv.x() * resource_size.width(),
-                            uv.y() * resource_size.height());
-  return transformed_damage;
-}
-
 template <typename OverlayProcessorType>
 class OverlayTest : public testing::Test {
  protected:
@@ -825,8 +918,17 @@ using MultiOverlayTest = UseMultipleOverlaysTest<MultiOverlayProcessor>;
 using MultiUnderlayTest = UseMultipleOverlaysTest<MultiUnderlayProcessor>;
 using MultiSingleOnTopOverlayTest =
     UseMultipleOverlaysTest<MultiSingleOnTopProcessor>;
+using SizeSortedMultiSingeOnTopOverlayTest =
+    UseMultipleOverlaysTest<SizeSortedMultiSingleOnTopProcessor>;
+
+using SizeSortedMultiUnderlayOverlayTest =
+    UseMultipleOverlaysTest<SizeSortedMultiUnderlayProcessor>;
 using SizeSortedMultiOverlayTest =
     UseMultipleOverlaysTest<SizeSortedMultiOverlayProcessor>;
+using TypeAndSizeSortedMultiOverlayTest =
+    UseMultipleOverlaysTest<TypeAndSizeSortedMultiOverlayProcessor>;
+using AllowCandidateWithMasksSortedMultiOverlayTest =
+    UseMultipleOverlaysTest<AllowCandidateWithMasksSortedMultiOverlayProcessor>;
 
 TEST(OverlayTest, OverlaysProcessorHasStrategy) {
   auto overlay_processor = std::make_unique<TestOverlayProcessor>();
@@ -1255,6 +1357,39 @@ TEST_F(DeathMultiSingleOnTopOverlayTest,
       &damage_rect_, &content_bounds_));
 }
 
+TEST_F(DeathMultiSingleOnTopOverlayTest,
+       RoundedDisplayMaskCandidatesOverlapsEachOther) {
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kOverlayTopLeftRect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  // Add a quad with rounded-display masks.
+  CreateFullscreenQuadWithRoundedDisplayMasks(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  EXPECT_DCHECK_DEATH(overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_));
+}
+
 TEST_F(MultiSingleOnTopOverlayTest,
        PromoteRoundedDisplayMaskCandidateIfOccludeOtherCandidates) {
   // Given different rect sizes, the candidate will be out of draw order once
@@ -1269,7 +1404,6 @@ TEST_F(MultiSingleOnTopOverlayTest,
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       /*is_overlay_candidate=*/true, kCandidateRect1,
       RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(0, 10));
-  overlay_processor_->AddExpectedRect(kCandidateRect1, true);
 
   constexpr gfx::Rect kCandidateRect2 = {0, 0, 64, 64};
 
@@ -1279,14 +1413,19 @@ TEST_F(MultiSingleOnTopOverlayTest,
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
                         kCandidateRect2);
-  overlay_processor_->AddExpectedRect(kCandidateRect2, true);
 
   // This candidate occludes quad with rounded-display masks.
   CreateCandidateQuadAt(resource_provider_.get(),
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
                         kOverlayTopRightRect);
+
+  overlay_processor_->AddExpectedRect(kCandidateRect2, true);
   overlay_processor_->AddExpectedRect(kOverlayTopRightRect, true);
+
+  // Candidates with masks are appended at the end of the surfaces in
+  // `CheckOverlaySupportImpl()` in their respective draw order.
+  overlay_processor_->AddExpectedRect(kCandidateRect1, true);
 
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
@@ -1380,8 +1519,6 @@ TEST_F(MultiSingleOnTopOverlayTest,
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       /*is_overlay_candidate=*/true, kCandidateWithMaskRect2,
       RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 10));
-  overlay_processor_->AddExpectedRect(kCandidateWithMaskRect2,
-                                      /*response=*/true);
 
   constexpr gfx::Rect kCandidateRect1 = gfx::Rect(10, 0, 50, 50);
 
@@ -1391,7 +1528,6 @@ TEST_F(MultiSingleOnTopOverlayTest,
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
                         kCandidateRect1);
-  overlay_processor_->AddExpectedRect(kCandidateRect1, /*response=*/true);
 
   constexpr gfx::Rect kCandidateRect2 = gfx::Rect(0, 90, 50, 50);
 
@@ -1399,7 +1535,15 @@ TEST_F(MultiSingleOnTopOverlayTest,
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
                         kCandidateRect2);
+
+  overlay_processor_->AddExpectedRect(kCandidateRect1, /*response=*/true);
+
   overlay_processor_->AddExpectedRect(kCandidateRect2, /*response=*/true);
+
+  // Candidates with masks are appended at the end of the surfaces in
+  // `CheckOverlaySupportImpl()` in their respective draw order.
+  overlay_processor_->AddExpectedRect(kCandidateWithMaskRect2,
+                                      /*response=*/true);
 
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
@@ -1515,7 +1659,7 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
   auto color_mat = GetIdentityColorMatrix();
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect));
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
   auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
   auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
@@ -1558,9 +1702,10 @@ TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
   OverlayCandidate candidate_a;
   SurfaceDamageRectList surface_damage_rect_list;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect));
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
   auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
   auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
@@ -2325,55 +2470,6 @@ TEST_F(SingleOverlayOnTopTest, AllowPositiveScaleTransform) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(1U, candidate_list.size());
-}
-
-TEST_F(SingleOverlayOnTopTest, TargetOffsetCandidateDamageRect) {
-  constexpr auto kOverlayRectInContent = gfx::Rect(13, 27, 32, 16);
-  gfx::Rect rect = kOverlayRectInContent;
-  auto pass = CreateRenderPass();
-  CreateCandidateQuadAt(resource_provider_.get(),
-                        child_resource_provider_.get(), child_provider_.get(),
-                        pass->shared_quad_state_list.back(), pass.get(), rect);
-  constexpr auto kOverlayOffsetTarget = gfx::Vector2d(23.f, 45.f);
-  pass->shared_quad_state_list.back()->quad_to_target_transform.Translate(
-      kOverlayOffsetTarget);
-  OverlayCandidateList candidate_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list;
-  constexpr gfx::Rect display_rect = {
-      kOverlayRectInContent.x() + kOverlayOffsetTarget.x(),
-      kOverlayRectInContent.y() + kOverlayOffsetTarget.y(),
-      kOverlayRectInContent.width(), kOverlayRectInContent.height()};
-
-  constexpr auto kIntendedBufferOffset = gfx::Vector2d(5.f, 7.f);
-  gfx::Rect damage_in_target_space = display_rect;
-  auto inside_quad_offset =
-      kIntendedBufferOffset + display_rect.OffsetFromOrigin();
-  damage_in_target_space.set_origin(
-      gfx::Point(inside_quad_offset.x(), inside_quad_offset.y()));
-  surface_damage_rect_list.push_back(damage_in_target_space);
-  overlay_processor_->AddExpectedRect(gfx::RectF(display_rect));
-  overlay_processor_->ProcessForOverlays(
-      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
-      &damage_rect_, &content_bounds_);
-  EXPECT_EQ(1U, candidate_list.size());
-  // |transformed_damage| would correspond to candidate buffer damage if our
-  // texture uvs were 0,0 1x1.
-  gfx::RectF transformed_damage = {
-      kIntendedBufferOffset.x(), kIntendedBufferOffset.y(),
-      kOverlayRectInContent.width() - kIntendedBufferOffset.x(),
-      kOverlayRectInContent.height() - kIntendedBufferOffset.y()};
-  // However, the default uvs for candidates are 0.1,0.2 .9x.8  (see the value
-  // of |kUVTopLeft|). So the damage in buffer space is actually smaller because
-  // the uvs have the effect of magnifying portions of the buffer.
-  transformed_damage = ScaleForBufferDamageUV(
-      transformed_damage, gfx::SizeF(kOverlayRectInContent.size()));
-  EXPECT_RECTF_NEAR(transformed_damage, candidate_list[0].damage_rect, 0.0001f);
 }
 
 TEST_F(SingleOverlayOnTopTest, AcceptMirrorYTransform) {
@@ -4557,9 +4653,10 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect));
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a default candidate is not a required overlay.
@@ -4580,9 +4677,10 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect));
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a HW protected video candidate requires overlay.
@@ -4604,9 +4702,10 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect));
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
@@ -4640,9 +4739,10 @@ TEST_F(SingleOverlayOnTopTest,
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, primary_rect);
+      &color_mat, primary_rect, &render_pass_filters);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
@@ -4752,9 +4852,10 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
     OverlayCandidate candidate;
     auto color_mat = GetIdentityColorMatrix();
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     auto candidate_factory = OverlayCandidateFactory(
         pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-        &color_mat, gfx::RectF());
+        &color_mat, gfx::RectF(), &render_pass_filters);
     candidate_factory.FromDrawQuad(quad_candidate, candidate);
 
     // Before the 'EstimateOccludedDamage' function is called the damage area
@@ -5236,22 +5337,13 @@ TEST_F(DelegatedTest, ScaledBufferDamage) {
       overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
-  // Expected damage is basically the intersection of the rect with the screen
-  // damage but relative to that rect.
-  const auto kExpectedRectRelDamage = gfx::RectF(25 - 15, 0, 5, 32 - 10);
-  const auto kExpectedScaledRelDamage =
-      gfx::ScaleRect(kExpectedRectRelDamage, 0.5f, 0.25f);
+  // Damage is not assigned to specific candidates.
   EXPECT_EQ(main_pass->quad_list.size(), candidate_list.size());
   EXPECT_TRUE(damage_rect_.IsEmpty());
-  EXPECT_RECTF_NEAR(candidate_list[0].damage_rect,
-                    ScaleForBufferDamageUV(kExpectedScaledRelDamage,
-                                           gfx::SizeF(kResourceSize)),
-                    0.001f);
-  EXPECT_RECTF_NEAR(
-      candidate_list[1].damage_rect,
-      ScaleForBufferDamageUV(kExpectedRectRelDamage,
-                             gfx::SizeF(kSmallCandidateRect.size())),
-      0.001f);
+  EXPECT_TRUE(candidate_list[0].damage_rect.IsEmpty());
+  EXPECT_TRUE(candidate_list[1].damage_rect.IsEmpty());
+  EXPECT_RECTF_NEAR(overlay_processor_->GetUnassignedDamage(),
+                    gfx::RectF(kDisplayDamage), 0.0001f);
 }
 
 TEST_F(DelegatedTest, QuadTypes) {
@@ -5299,9 +5391,10 @@ TEST_F(DelegatedTest, NonAxisAlignedCandidateStatus) {
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect),
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
       true /* is_delegated_context */);
 
   pass->shared_quad_state_list.back()->quad_to_target_transform =
@@ -5979,7 +6072,383 @@ TEST_F(MultiOverlayTest, CappedAtMaxOverlays) {
   EXPECT_EQ(damage_rect_, kBottomTwo);
 }
 
-TEST_F(SizeSortedMultiOverlayTest, UnderlaysAreSorted) {
+TEST_F(MultiOverlayTest, RoundedDisplayMaskCandidateFailsToPromote) {
+  overlay_processor_->SetMaximumOverlaysConsidered(6);
+
+  const gfx::Rect kRoundedDisplayMaskLeftRect(0, 0, 32, 100);
+  const gfx::Rect kRoundedDisplayMaskRightRect(224, 0, 32, 100);
+  const gfx::Rect kNormalLeft(kOverlayTopLeftRect);
+  const gfx::Rect kNormalRight(kOverlayTopRightRect);
+
+  auto pass = CreateRenderPass();
+  SurfaceDamageRectList surface_damage_rect_list;
+  const auto kRoundedDisplayMaskInfo =
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(16, 16);
+
+  // Create a candidate with rounded display masks in top left.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kRoundedDisplayMaskLeftRect,
+      kRoundedDisplayMaskInfo);
+
+  // Create a candidate with rounded display masks in top right.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kRoundedDisplayMaskRightRect,
+      kRoundedDisplayMaskInfo);
+
+  // This candidate is occluded by top left candidate with rounded display
+  // masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kNormalLeft);
+
+  // This candidate is occluded by top right candidate with rounded display
+  // masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kNormalRight);
+
+  // Create a quad that will the next quad to become an underlay.
+  auto* sqs = pass->CreateAndAppendSharedQuadState();
+  CreateFullscreenOpaqueQuad(resource_provider_.get(), sqs, pass.get());
+
+  CreateFullscreenCandidateQuad(resource_provider_.get(),
+                                child_resource_provider_.get(),
+                                child_provider_.get(), sqs, pass.get());
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->AddExpectedRect(kNormalLeft, true);
+  overlay_processor_->AddExpectedRect(kNormalRight, true);
+  overlay_processor_->AddExpectedRect(kOverlayRect, true);
+
+  // Candidates with masks are appended at the end of the surfaces in
+  // `CheckOverlaySupportImpl()`
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskLeftRect, true);
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskRightRect, false);
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Since the mask candidate in top right will fail to promote, we will also
+  // composite the SingleOnTop candidate occlude by this failing candidate. The
+  // underlay candidate will promoted normally since it is not effected by the
+  // failing mask candidate (even though it is occluded).
+  ASSERT_EQ(candidate_list.size(), 3u);
+
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[0].display_rect), kNormalLeft);
+  EXPECT_EQ(candidate_list[0].plane_z_order, 1);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[1].display_rect), kOverlayRect);
+  EXPECT_EQ(candidate_list[1].plane_z_order, -1);
+
+  // Candidates with masks are appended at the end of the `candidate_list` in
+  // draw order.
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[2].display_rect),
+            kRoundedDisplayMaskLeftRect);
+  EXPECT_EQ(candidate_list[2].plane_z_order, 2);
+}
+
+TEST_F(MultiOverlayTest,
+       DontPromoteCandidatesWithMasksIfAreOnlyOverlayCandidatesNotRejected) {
+  overlay_processor_->SetMaximumOverlaysConsidered(6);
+
+  const gfx::Rect kRoundedDisplayMaskLeftRect(0, 0, 32, 100);
+  const gfx::Rect kRoundedDisplayMaskRightRect(224, 0, 32, 100);
+  const gfx::Rect kNormalLeft(kOverlayTopLeftRect);
+  const gfx::Rect kNormalRight(kOverlayTopRightRect);
+
+  auto pass = CreateRenderPass();
+  SurfaceDamageRectList surface_damage_rect_list;
+  const auto kRoundedDisplayMaskInfo =
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(16, 16);
+
+  // Create a candidate with rounded display masks in top left.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kRoundedDisplayMaskLeftRect,
+      kRoundedDisplayMaskInfo);
+
+  // Create a candidate with rounded display masks in top right.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kRoundedDisplayMaskRightRect,
+      kRoundedDisplayMaskInfo);
+
+  // This candidate is occluded by top left candidate with rounded display
+  // masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kNormalLeft);
+
+  // This candidate is occluded by top right candidate with rounded display
+  // masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kNormalRight);
+
+  // Create a quad that will the next quad to become an underlay.
+  auto* sqs = pass->CreateAndAppendSharedQuadState();
+  CreateFullscreenOpaqueQuad(resource_provider_.get(), sqs, pass.get());
+
+  CreateFullscreenCandidateQuad(resource_provider_.get(),
+                                child_resource_provider_.get(),
+                                child_provider_.get(), sqs, pass.get());
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->AddExpectedRect(kNormalLeft, false);
+  overlay_processor_->AddExpectedRect(kNormalRight, false);
+  overlay_processor_->AddExpectedRect(kOverlayRect, true);
+
+  // Candidates with masks are appended at the end of the surfaces in
+  // `CheckOverlaySupportImpl()`
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskLeftRect, true);
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskRightRect, true);
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Since both the overlay (SingleOnTop) candidates without masks failed to
+  // promote, we end up composting both candidates with masks as well. Only the
+  // underlay candidate is promoted.
+  ASSERT_EQ(candidate_list.size(), 1u);
+
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[0].display_rect), kOverlayRect);
+  EXPECT_EQ(candidate_list[0].plane_z_order, -1);
+}
+
+// Since AllowCandidateWithMasksSortedMultiOverlayProcessor will only allow
+// candidates with masks after sorting in `SortProposedOverlayCandidates()`.
+TEST_F(AllowCandidateWithMasksSortedMultiOverlayTest,
+       DontPromoteCandidatesWithMasksIfAreOnlySingleOnTopCandidates) {
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kOverlayTopLeftRect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  // Add a quad with rounded-display masks.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kOverlayTopRightRect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // None of the candidates will be promoted.
+  // Since AllowCandidateWithMasksSortedMultiOverlayProcessor will only allow
+  // candidates with rounded-display masks after sorting(i.e only candidates to
+  // pass sorting hubristic), we can skip promoting these candidates.
+  ASSERT_EQ(0U, candidate_list.size());
+  EXPECT_EQ(3U, main_pass->quad_list.size());
+}
+
+TEST_F(TypeAndSizeSortedMultiOverlayTest,
+       PrioritizationWithRoundedDisplayMasks) {
+  enum OverlayCandidateType { kNormal, kHasRoundedDisplayMasks };
+
+  constexpr gfx::Rect kRoundedDisplayMaskRectSmallest(0, 0, 32, 32);
+  constexpr gfx::Rect kRoundedDisplayMaskRectSmall(64, 0, 64, 64);
+  constexpr gfx::Rect kNormalBiggest(128, 0, 256, 256);
+  constexpr gfx::Rect kNormalBig(0, 0, 128, 128);
+  constexpr gfx::Rect kNormalSmallest(128, 0, 32, 32);
+  // Intersects with both mask rects.
+  constexpr gfx::Rect kNormalSmall(128, 64, 64, 64);
+
+  // The draw order of these candidates is scrambled, so we can verify that the
+  // plane_z_orders are are based on draw quad order.
+  constexpr std::pair<gfx::Rect, OverlayCandidateType> kCandidatesInfo[]{
+      {kRoundedDisplayMaskRectSmall,
+       OverlayCandidateType::kHasRoundedDisplayMasks},
+      {kRoundedDisplayMaskRectSmallest,
+       OverlayCandidateType::kHasRoundedDisplayMasks},
+      {kNormalBiggest, OverlayCandidateType::kNormal},
+      {kNormalSmallest, OverlayCandidateType::kNormal},
+      {kNormalBig, OverlayCandidateType::kNormal},
+      {kNormalSmall, OverlayCandidateType::kNormal}};
+
+  constexpr gfx::Rect kAllCands(0, 0, 128, 128);
+  const auto kRoundedDisplayMaskInfo =
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(16, 16);
+
+  damage_rect_ = kAllCands;
+  auto pass = CreateRenderPass();
+
+  for (auto info : kCandidatesInfo) {
+    switch (info.second) {
+      case kNormal:
+        CreateCandidateQuadAt(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get(), info.first);
+        break;
+      case kHasRoundedDisplayMasks:
+        CreateQuadWithRoundedDisplayMasksAt(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get(),
+            /*is_overlay_candidate=*/true, info.first, kRoundedDisplayMaskInfo);
+        break;
+    }
+  }
+
+  {
+    // Add something behind them.
+    auto* sqs = pass->CreateAndAppendSharedQuadState();
+    CreateFullscreenOpaqueQuad(resource_provider_.get(), sqs, pass.get());
+  }
+
+  overlay_processor_->AddExpectedRect(kNormalBiggest, true);
+  overlay_processor_->AddExpectedRect(kNormalBig, true);
+
+  // Candidates with masks are appended at the end of the surfaces in
+  // `CheckOverlaySupportImpl()`
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskRectSmall, true);
+  overlay_processor_->AddExpectedRect(kRoundedDisplayMaskRectSmallest, true);
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  SurfaceDamageRectList surface_damage_rect_list;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(candidate_list.size(), 4u);
+
+  // We expect the two rounded masks to get promoted regardless of their surface
+  // area. Candidates with rounded masks are followed by candidate with largest
+  // surface area.
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[0].display_rect), kNormalBiggest);
+  EXPECT_EQ(candidate_list[0].plane_z_order, 1);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[1].display_rect), kNormalBig);
+  EXPECT_EQ(candidate_list[1].plane_z_order, 1);
+
+  // Candidates with masks are appended at the end of the `candidate_list` in
+  // draw order.
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[2].display_rect),
+            kRoundedDisplayMaskRectSmall);
+  EXPECT_EQ(candidate_list[2].plane_z_order, 2);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[3].display_rect),
+            kRoundedDisplayMaskRectSmallest);
+  EXPECT_EQ(candidate_list[3].plane_z_order, 2);
+}
+
+TEST_F(SizeSortedMultiOverlayTest, OverlaysAreSorted) {
+  constexpr gfx::Rect kBiggest(0, 0, 128, 128);
+  constexpr gfx::Rect kBig(128, 28, 100, 100);
+  // kSmall rect intersects with kSmallest rect.
+  constexpr gfx::Rect kSmall(66, 128, 64, 64);
+  constexpr gfx::Rect kSmallest(128, 128, 32, 32);
+  // The draw order of these candidates is scrambled, so we can verify that the
+  // plane_z_orders are are based on draw quad order.
+  constexpr gfx::Rect kCandRects[]{kBiggest, kSmallest, kBig};
+  constexpr gfx::Rect kAllCands(0, 0, 228, 192);
+
+  damage_rect_ = kAllCands;
+  auto pass = CreateRenderPass();
+
+  // Quad with rounded_display mask occluded candidate at `kSmallest`.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kSmall,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(16, 16));
+
+  for (auto& cand_rect : kCandRects) {
+    CreateCandidateQuadAt(resource_provider_.get(),
+                          child_resource_provider_.get(), child_provider_.get(),
+                          pass->shared_quad_state_list.back(), pass.get(),
+                          cand_rect);
+  }
+  // Candidates will be sorted by surface area. All will be promoted.
+  overlay_processor_->AddExpectedRect(kBiggest, true);
+  overlay_processor_->AddExpectedRect(kBig, true);
+  overlay_processor_->AddExpectedRect(kSmall, true);
+  overlay_processor_->AddExpectedRect(kSmallest, true);
+
+  {
+    // Add something behind them.
+    auto* sqs = pass->CreateAndAppendSharedQuadState();
+    CreateFullscreenOpaqueQuad(resource_provider_.get(), sqs, pass.get());
+  }
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  SurfaceDamageRectList surface_damage_rect_list;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(candidate_list.size(), 4u);
+  // Expect all four are promoted to overlays, and their plane_z_order is based
+  // on draw order.
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[0].display_rect), kBiggest);
+  EXPECT_EQ(candidate_list[0].plane_z_order, 1);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[1].display_rect), kBig);
+  EXPECT_EQ(candidate_list[1].plane_z_order, 1);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[2].display_rect), kSmall);
+  EXPECT_EQ(candidate_list[2].plane_z_order, 2);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate_list[3].display_rect), kSmallest);
+  EXPECT_EQ(candidate_list[3].plane_z_order, 1);
+}
+
+TEST_F(SizeSortedMultiUnderlayOverlayTest, UnderlaysAreSorted) {
   constexpr gfx::Rect kBiggest(0, 0, 128, 128);
   constexpr gfx::Rect kBig(128, 28, 100, 100);
   constexpr gfx::Rect kSmall(64, 128, 64, 64);

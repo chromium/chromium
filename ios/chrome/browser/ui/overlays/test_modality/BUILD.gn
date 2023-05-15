@@ -38,10 +38,10 @@ source_set("unit_tests") {
   deps = [
     ":test_modality",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/test_modality",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/ui/overlays/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

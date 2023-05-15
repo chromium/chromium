@@ -137,7 +137,8 @@ MultideviceFeatureOptInView::MultideviceFeatureOptInView(
       multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   DCHECK(multidevice_feature_access_manager_);
   setup_mode_ = GetPermissionSetupMode(multidevice_feature_access_manager_);
-  access_manager_observation_.Observe(multidevice_feature_access_manager_);
+  access_manager_observation_.Observe(
+      multidevice_feature_access_manager_.get());
   // Checks and updates its visibility upon creation.
   UpdateVisibility(/*was_visible=*/false);
 }

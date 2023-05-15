@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   ASSERT_TRUE(popup_contents);
 
   content::WebContentsDestroyedWatcher contents_destroyed(popup_contents);
-  EXPECT_TRUE(content::ExecuteScript(popup_contents, "window.close()"));
+  EXPECT_TRUE(content::ExecJs(popup_contents, "window.close()"));
   contents_destroyed.Wait();
 
   frames = process_manager->GetRenderFrameHostsForExtension(extension->id());
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   // Close the popup.
   content::WebContentsDestroyedWatcher contents_destroyed(popup_contents);
-  EXPECT_TRUE(content::ExecuteScript(popup_contents, "window.close()"));
+  EXPECT_TRUE(content::ExecJs(popup_contents, "window.close()"));
   contents_destroyed.Wait();
 
   frames = process_manager->GetRenderFrameHostsForExtension(extension->id());

@@ -19,6 +19,8 @@ import '../controls/settings_checkbox.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
+import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -30,9 +32,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
@@ -135,10 +135,11 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
-      isChildAccount_: {
+      isChildAccountWithDisallowedHistoryDeletion_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isChildAccount');
+          return loadTimeData.getBoolean('isChildAccount') &&
+                 !loadTimeData.getBoolean('allowDeletingBrowserHistory');
         },
       },
 
@@ -225,7 +226,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
-  private isChildAccount_: boolean;
+  private isChildAccountWithDisallowedHistoryDeletion_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;

@@ -93,6 +93,9 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #endif
 );
 
+const Feature kUserInteractiveCompositingMac{"UserInteractiveCompositingMac",
+                                             FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
@@ -118,6 +121,8 @@ const FeatureParam<double> kOptimizedRealtimeThreadingMacBusy{
 // (kOptimizedRealtimeThreadingMacBusy, 1].
 const FeatureParam<double> kOptimizedRealtimeThreadingMacBusyLimit{
     &kOptimizedRealtimeThreadingMac, "busy_limit", 1.0};
+std::atomic<bool> g_user_interactive_compositing(
+    kUserInteractiveCompositingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -154,6 +159,8 @@ void PlatformThread::InitFeaturesPostFieldTrial() {
     g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
     g_use_optimized_realtime_threading.store(
         IsOptimizedRealtimeThreadingMacEnabled());
+    g_user_interactive_compositing.store(
+        FeatureList::IsEnabled(kUserInteractiveCompositingMac));
   }
 }
 
@@ -320,12 +327,17 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
       break;
     case ThreadType::kDefault:
-      // TODO(1329208): Experiment with prioritizing kCompositing on Mac like on
-      // other platforms.
-      [[fallthrough]];
-    case ThreadType::kCompositing:
       priority = ThreadPriorityForTest::kNormal;
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+      break;
+    case ThreadType::kCompositing:
+      if (g_user_interactive_compositing.load(std::memory_order_relaxed)) {
+        priority = ThreadPriorityForTest::kDisplay;
+        pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+      } else {
+        priority = ThreadPriorityForTest::kNormal;
+        pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+      }
       break;
     case ThreadType::kDisplayCritical: {
       priority = ThreadPriorityForTest::kDisplay;

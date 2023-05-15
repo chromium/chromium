@@ -15,7 +15,7 @@ QUERY_DATA = [{
     'typ_tags': ['win'],
     'typ_expectations': ['PASS'],
     'step_name': ['blink_wpt_tests on Windows-10'],
-    'test_type': 'image',
+    'test_type': ['image', 'text'],
     'image_diff_max_difference': 10,
     'image_diff_total_pixels': 1,
 }, {
@@ -24,7 +24,7 @@ QUERY_DATA = [{
     'typ_tags': ['mac'],
     'typ_expectations': ['FAILURE'],
     'step_name': ['blink_wpt_tests on MAC-12'],
-    'test_type': 'image',
+    'test_type': ['image'],
     'image_diff_max_difference': 100,
     'image_diff_total_pixels': 10,
 }]

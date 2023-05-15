@@ -10,9 +10,11 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -30,14 +32,26 @@ namespace safe_browsing {
 namespace {
 
 // Mock class for TailoredSecurityService.
-class MockTailoredSecurityService : public TailoredSecurityService {
+class MockTailoredSecurityService : public ChromeTailoredSecurityService {
  public:
-  MockTailoredSecurityService() : TailoredSecurityService(nullptr, nullptr) {}
-  MOCK_METHOD0(AddQueryRequest, void());
+  MockTailoredSecurityService()
+      : ChromeTailoredSecurityService(nullptr, nullptr) {}
+  MockTailoredSecurityService(ChromeBrowserState* browser_state,
+                              signin::IdentityManager* identity_manager)
+      : ChromeTailoredSecurityService(browser_state, identity_manager) {}
   MOCK_METHOD0(RemoveQueryRequest, void());
   MOCK_METHOD2(MaybeNotifySyncUser, void(bool, base::Time));
-  MOCK_METHOD0(GetURLLoaderFactory,
-               scoped_refptr<network::SharedURLLoaderFactory>());
+
+  void CheckQueryRequest() {
+    TailoredSecurityService::StartRequest(
+        base::BindOnce(&MockTailoredSecurityService::FakeCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // Methods created to simulate and validate behavior.
+  void FakeCallback(bool is_enabled, base::Time previous_update) {}
+
+  base::WeakPtrFactory<MockTailoredSecurityService> weak_ptr_factory_{this};
 };
 
 // Starts and finishes a mock navigation successfully.
@@ -67,42 +81,51 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
     // Needed to create InfoBarManager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    mock_service_ = std::make_unique<MockTailoredSecurityService>(
+        chrome_browser_state_.get(), GetIdentityManager());
+    TailoredSecurityTabHelper::CreateForWebState(&web_state_,
+                                                 mock_service_.get());
+    tab_helper_ = TailoredSecurityTabHelper::FromWebState(&web_state_);
+  }
+
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForBrowserState(
+        chrome_browser_state_.get());
+  }
+
+  size_t GetActiveQueryRequest() {
+    return mock_service_.get()->active_query_request_;
+  }
+
+  bool IsSavedCallbackNull() {
+    return mock_service_.get()->saved_callback_.is_null();
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState web_state_;
+  std::unique_ptr<MockTailoredSecurityService> mock_service_;
+  TailoredSecurityTabHelper* tab_helper_;
 };
 
 // Tests if query request is added when a WebState is shown and removing the
 // request when the WebState is hidden.
 TEST_F(TailoredSecurityTabHelperTest, QueryRequestOnFocus) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
-
-  EXPECT_CALL(mock_service, AddQueryRequest());
   PerformFakeNavigation("https://google.com", &web_state_);
+  EXPECT_EQ(GetActiveQueryRequest(), static_cast<size_t>(1));
 
-  EXPECT_CALL(mock_service, RemoveQueryRequest());
-  tab_helper->WasHidden(nullptr);
+  EXPECT_CALL(*mock_service_.get(), RemoveQueryRequest());
+  tab_helper_->WasHidden(nullptr);
 }
 
 // Tests how the tab helper responds to a mock navigation.
 TEST_F(TailoredSecurityTabHelperTest, QueryRequestOnNavigation) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
+  tab_helper_->WasShown(nullptr);
 
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
-
-  tab_helper->WasShown(nullptr);
-
-  EXPECT_CALL(mock_service, AddQueryRequest());
   PerformFakeNavigation("https://google.com", &web_state_);
+  EXPECT_EQ(GetActiveQueryRequest(), static_cast<size_t>(1));
 
-  EXPECT_CALL(mock_service, RemoveQueryRequest());
+  EXPECT_CALL(*mock_service_.get(), RemoveQueryRequest());
   PerformFakeNavigation("https://example.com", &web_state_);
 }
 
@@ -110,16 +133,12 @@ TEST_F(TailoredSecurityTabHelperTest, QueryRequestOnNavigation) {
 // enabled message prompt.
 TEST_F(TailoredSecurityTabHelperTest,
        SyncNotificationForConsentedEnabledMessage) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
   InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   web_state_.WasShown();
 
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Enhanced Protection.
-  tab_helper->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
+  tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
   EXPECT_TRUE(
       safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -129,15 +148,9 @@ TEST_F(TailoredSecurityTabHelperTest,
 // disabled message prompt.
 TEST_F(TailoredSecurityTabHelperTest,
        SyncNotificationForConsentedDisabledMessage) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
-  InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
-
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Standard Protection.
-  tab_helper->OnSyncNotificationMessageRequest(/*is_enabled=*/false);
+  tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/false);
   EXPECT_TRUE(
       safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
@@ -146,15 +159,11 @@ TEST_F(TailoredSecurityTabHelperTest,
 // Tests that method early returns if the WebState is hidden and doesn't change
 // the SafeBrowsingState for sync notifications.
 TEST_F(TailoredSecurityTabHelperTest, OnSyncNotificationRequestEarlyReturn) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   web_state_.WasHidden();
 
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Standard Protection.
-  tab_helper->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
+  tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
   EXPECT_TRUE(
       safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
@@ -164,18 +173,15 @@ TEST_F(TailoredSecurityTabHelperTest, OnSyncNotificationRequestEarlyReturn) {
 // true.
 TEST_F(TailoredSecurityTabHelperTest,
        InfoBarCreatedOnTailoredSecurityBitChanged) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
   InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
   // When a nonsynced in-flow message prompt is triggered, the message prompt
   // should show for the WebState that is currently shown.
   web_state_.WasShown();
-  tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/true, base::Time::Now());
+  tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
+                                            base::Time::Now());
   EXPECT_TRUE(infobar_manager->infobar_count() == 1);
   EXPECT_TRUE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
@@ -183,18 +189,15 @@ TEST_F(TailoredSecurityTabHelperTest,
 
 // Tests that an infobar is not created when the WebState is hidden.
 TEST_F(TailoredSecurityTabHelperTest, InfobarNotCreatedOnHiddenWebState) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
   InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
   // When a nonsynced in-flow message prompt is triggered, the message prompt
   // should not show for the WebState that is currently hidden.
   web_state_.WasHidden();
-  tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/true, base::Time::Now());
+  tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
+                                            base::Time::Now());
   EXPECT_TRUE(infobar_manager->infobar_count() == 0);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
@@ -203,16 +206,12 @@ TEST_F(TailoredSecurityTabHelperTest, InfobarNotCreatedOnHiddenWebState) {
 // Tests that an infobar isn't created when the tailored security bit is changed
 // to false.
 TEST_F(TailoredSecurityTabHelperTest, EarlyReturnOnTailoredSecurityBitChanged) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
   InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
-  tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/false,
-                                           base::Time::Now());
+  tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/false,
+                                            base::Time::Now());
   EXPECT_TRUE(infobar_manager->infobar_count() == 0);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
@@ -222,20 +221,52 @@ TEST_F(TailoredSecurityTabHelperTest, EarlyReturnOnTailoredSecurityBitChanged) {
 // kThresholdForInFlowNotification.
 TEST_F(TailoredSecurityTabHelperTest,
        TailoredSecurityBitChangedAfterFiveMinutes) {
-  MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
   InfoBarManagerImpl::CreateForWebState(&web_state_);
-  TailoredSecurityTabHelper* tab_helper =
-      TailoredSecurityTabHelper::FromWebState(&web_state_);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
-  tab_helper->OnTailoredSecurityBitChanged(
+  tab_helper_->OnTailoredSecurityBitChanged(
       /*enabled=*/true,
       base::Time::Now() - (kThresholdForInFlowNotification + base::Minutes(1)));
   EXPECT_TRUE(infobar_manager->infobar_count() == 0);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
+}
+
+// Test represents receiving a query request while the app is backgrounded and
+// checking that no callback was sent.
+TEST_F(TailoredSecurityTabHelperTest,
+       TailoredSecurityWhenAppBackgroundedNoCallbackSent) {
+  tab_helper_->WasShown(nullptr);
+
+  // Represents app backgrounding and disabling querying.
+  mock_service_->SetCanQuery(false);
+  mock_service_->CheckQueryRequest();
+  EXPECT_FALSE(IsSavedCallbackNull());
+  PerformFakeNavigation("https://google.com", &web_state_);
+  EXPECT_EQ(GetActiveQueryRequest(), static_cast<size_t>(0));
+}
+
+// Test represents receiving a query request while the app is backgrounded,
+// storing the callback, and then calling it when the app is re-foregrounds.
+TEST_F(TailoredSecurityTabHelperTest,
+       TailoredSecuritySettingCanQueryTrueSendsPendingQuery) {
+  tab_helper_->WasShown(nullptr);
+
+  // Represents app not backgrounded and working normally.
+  mock_service_->CheckQueryRequest();
+  EXPECT_TRUE(IsSavedCallbackNull());
+
+  // Represents app backgrounded, receiving a background request, not querying.
+  mock_service_->SetCanQuery(false);
+  mock_service_->CheckQueryRequest();
+  EXPECT_FALSE(IsSavedCallbackNull());
+  PerformFakeNavigation("https://google.com", &web_state_);
+  EXPECT_EQ(GetActiveQueryRequest(), static_cast<size_t>(0));
+
+  // Represents app foregrounded and using stored callback.
+  mock_service_->SetCanQuery(true);
+  EXPECT_TRUE(IsSavedCallbackNull());
 }
 
 }  // namespace safe_browsing

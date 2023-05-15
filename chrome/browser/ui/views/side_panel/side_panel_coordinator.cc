@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -89,9 +90,9 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
   views::ConfigureVectorImageButton(button.get());
   ConfigureControlButton(button.get());
   button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP));
   button->SetToggledTooltipText(
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_HEADER_UNPIN_BUTTON_TOOLTIP));
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
@@ -294,8 +295,10 @@ void SidePanelCoordinator::Close() {
   ClearCachedEntryViews();
 
   // TODO(pbos): Make this button observe panel-visibility state instead.
-  SetSidePanelButtonTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  if (!companion::IsCompanionFeatureEnabled()) {
+    SetSidePanelButtonTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  }
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may already
   // have deleted the content view, so check that it still exists.
@@ -375,6 +378,12 @@ bool SidePanelCoordinator::IsSidePanelShowing() const {
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(
+    const SidePanelEntry::Key& entry_key) const {
+  return IsSidePanelShowing() && current_entry_ &&
+         current_entry_->key() == entry_key;
+}
+
+bool SidePanelCoordinator::IsSidePanelEntryShowing(
     const SidePanelEntry* entry) const {
   return IsSidePanelShowing() && current_entry_ &&
          current_entry_.get() == entry;
@@ -431,8 +440,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  SidePanelUtil::RecordEntryShowTriggeredMetrics(entry->key().id(),
-                                                 open_trigger);
+  SidePanelUtil::RecordEntryShowTriggeredMetrics(
+      browser_view_->browser(), entry->key().id(), open_trigger);
 
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
@@ -479,8 +488,10 @@ bool SidePanelCoordinator::IsGlobalEntryShowing(
 
 void SidePanelCoordinator::InitializeSidePanel() {
   // TODO(pbos): Make this button observe panel-visibility state instead.
-  SetSidePanelButtonTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  if (!companion::IsCompanionFeatureEnabled()) {
+    SetSidePanelButtonTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  }
 
   auto container = std::make_unique<views::FlexLayoutView>();
   // Align views vertically top to bottom.
@@ -539,12 +550,11 @@ void SidePanelCoordinator::PopulateSidePanel(
   } else {
     content->RequestFocus();
   }
-  header_open_in_new_tab_button_->SetVisible(
-      current_entry_->SupportsNewTabButton());
   UpdateNewTabButtonState();
   if (auto* side_panel_container =
           browser_view_->toolbar()->side_panel_container()) {
     UpdateHeaderPinButtonState();
+    side_panel_container->UpdateSidePanelContainerButtonsState();
   }
 }
 
@@ -935,8 +945,10 @@ void SidePanelCoordinator::OnTabStripModelChanged(
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
   if (header_open_in_new_tab_button_ && current_entry_) {
-    header_open_in_new_tab_button_->SetEnabled(
-        current_entry_->GetOpenInNewTabURL().is_valid());
+    bool has_open_in_new_tab_button =
+        current_entry_->SupportsNewTabButton() &&
+        current_entry_->GetOpenInNewTabURL().is_valid();
+    header_open_in_new_tab_button_->SetVisible(has_open_in_new_tab_button);
   }
 }
 

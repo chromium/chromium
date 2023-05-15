@@ -50,4 +50,13 @@ export class DeskApiImpl implements DeskApi {
     }
     chrome.wmDesksPrivate.switchDesk(deskId, callback);
   }
+
+
+  getDeskById(
+      deskId: string, callback: chrome.wmDesksPrivate.GetDeskByIdCallback) {
+    if (typeof chrome.wmDesksPrivate.getDeskByID !== 'function') {
+      throw new Error('getDeskByID is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.getDeskByID(deskId, callback);
+  }
 }

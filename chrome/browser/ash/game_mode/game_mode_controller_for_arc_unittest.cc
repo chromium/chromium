@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/window_properties.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 #include "ash/components/arc/arc_features.h"
@@ -66,7 +67,7 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
   }
 
   ArcAppTest arc_app_test_;
-  aura::client::FocusClient* focus_client_ = nullptr;
+  raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_ = nullptr;
   base::test::ScopedFeatureList features_;
   TestingPrefServiceSimple local_pref_service_;
 };

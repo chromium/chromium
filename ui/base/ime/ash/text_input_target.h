@@ -20,7 +20,12 @@ namespace ash {
 
 struct SurroundingTextInfo {
   std::u16string surrounding_text;
+
+  // This is relative to the beginning of |surrounding_text|.
   gfx::Range selection_range;
+
+  // Offset of the surrounding_text in the field in UTF-16.
+  size_t offset;
 };
 
 // An interface representing an input target that supports text editing via a
@@ -72,6 +77,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   // Called when the engine request deleting surrounding string.
   virtual void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                                      uint32_t num_char16s_after_cursor) = 0;
+
+  // Deletes any active composition, and the current selection plus the
+  // specified number of char16 values before and after the selection, and
+  // replaces it with |replacement_string|.
+  // Places the cursor at the end of |replacement_string|.
+  virtual void ReplaceSurroundingText(uint32_t length_before_selection,
+                                      uint32_t length_after_selection,
+                                      base::StringPiece16 replacement_text) = 0;
 
   // Called from the extension API.
   // WARNING: This could return a stale cache that doesn't reflect reality, due

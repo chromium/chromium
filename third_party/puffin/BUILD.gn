@@ -33,7 +33,6 @@ proto_library("libpuffin-proto") {
 
 static_library("libpuffpatch") {
   configs += [ ":target_defaults" ]
-  complete_static_lib = true
   deps = [
     ":libpuffin-proto",
     "//base",

@@ -176,8 +176,8 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
 
-  // Return an OmniboxPedal instance if the supplied OmniboxAction instance
-  // represents one.
+  // Downcasts the given OmniboxAction to an OmniboxPedal if the supplied
+  // instance represents one, otherwise returns nullptr.
   static const OmniboxPedal* FromAction(const OmniboxAction* action);
 
   // Called after the OmniboxPedalProvider finishes loading all pedals data.

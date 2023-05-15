@@ -5,28 +5,32 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -119,6 +123,8 @@ GURL GetLocalizedURL(const GURL& original) {
 class PasswordIssuesMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordsGrouping);
     BlockCleanupTest::SetUp();
     // Create BrowserState.
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -130,6 +136,12 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
     chrome_browser_state_ = test_cbs_builder.Build();
 
     store_ =
@@ -174,7 +186,8 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
-             base::Time::Now(), password_manager::IsMuted(muted))}};
+             base::Time::Now(), password_manager::IsMuted(muted),
+             password_manager::TriggerBackendNotification(false))}};
     form.in_store = PasswordForm::Store::kProfileStore;
     store()->AddLogin(form);
   }
@@ -213,6 +226,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   scoped_refptr<TestPasswordStore> store_;
@@ -281,6 +295,8 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   // Reused.
   MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
                         InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom3, kUsername2, kPassword,
+                        InsecureType::kReused);
   // Dismissed Compromised
   MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
                         InsecureType::kLeaked, /*muted=*/true);
@@ -309,6 +325,8 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   CreateMediator(WarningType::kReusedPasswordsWarning);
 
   CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample2String);
+  CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExample3String,
+             /*expected_username=*/GetUsername2());
 
   EXPECT_FALSE(consumer().dismissedWarningsButtonText);
 

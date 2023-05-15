@@ -11,10 +11,16 @@ namespace remoting {
 // These parameters are not exposed through the public Mojom APIs, for security
 // reasons.
 struct ChromeOsEnterpriseParams {
+  // Local machine configuration.
   bool suppress_user_dialogs = false;
   bool suppress_notifications = false;
   bool terminate_upon_input = false;
   bool curtain_local_user_session = false;
+
+  // Remote machine configuration.
+  bool allow_troubleshooting_tools = false;
+  bool allow_reconnections = false;
+  bool allow_file_transfer = false;
 };
 
 }  // namespace remoting

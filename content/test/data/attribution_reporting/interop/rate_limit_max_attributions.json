@@ -361,7 +361,7 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0001372,
           "scheduled_report_time": "1643325573",
           "source_event_id": "111",
           "source_type": "navigation",
@@ -373,7 +373,7 @@
       {
         "payload": {
           "attribution_destination": [ "https://another-destination.test", "https://destination.test" ],
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0001372,
           "scheduled_report_time": "1643325575",
           "source_event_id": "222",
           "source_type": "navigation",
@@ -385,7 +385,7 @@
       {
         "payload": {
           "attribution_destination": [ "https://another-destination.test", "https://destination.test" ],
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0001372,
           "scheduled_report_time": "1643325575",
           "source_event_id": "222",
           "source_type": "navigation",
@@ -397,7 +397,7 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "1643411977",
           "source_event_id": "333",
           "source_type": "navigation",
@@ -409,7 +409,7 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "1643411981",
           "source_event_id": "555",
           "source_type": "navigation",

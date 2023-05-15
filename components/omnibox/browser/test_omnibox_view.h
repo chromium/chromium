@@ -9,23 +9,24 @@
 
 #include <string>
 
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/gfx/range/range.h"
 
 struct AutocompleteMatch;
 class OmniboxEditModelDelegate;
+class OmniboxEditModel;
 
 // Fake implementation of OmniboxView for use in tests.
 class TestOmniboxView : public OmniboxView {
  public:
-  explicit TestOmniboxView(OmniboxEditModelDelegate* edit_model_delegate)
-      : OmniboxView(edit_model_delegate, nullptr) {}
+  TestOmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
+                  std::unique_ptr<OmniboxClient> client)
+      : OmniboxView(edit_model_delegate, std::move(client)) {}
 
   TestOmniboxView(const TestOmniboxView&) = delete;
   TestOmniboxView& operator=(const TestOmniboxView&) = delete;
 
-  void SetModel(std::unique_ptr<OmniboxEditModel> model);
+  void SetEditModel(std::unique_ptr<OmniboxEditModel> edit_model);
 
   const std::u16string& inline_autocompletion() const {
     return inline_autocompletion_;

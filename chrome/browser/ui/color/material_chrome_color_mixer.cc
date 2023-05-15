@@ -24,6 +24,14 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // overriding when required to do so according to the new material spec.
   // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
   ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuExpandedForegroundDefault] = {
+      ui::kColorSysOnTonalContainer};
+  mixer[kColorAppMenuChipInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuChipInkDropRipple] = {ui::kColorSysStateRipplePrimary};
   mixer[kColorAvatarButtonHighlightNormal] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};
@@ -55,6 +63,17 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionIconBadgeBackgroundDefault] =
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorFeaturePromoBubbleBackground] = {ui::kColorSysPrimary};
+  mixer[kColorFeaturePromoBubbleButtonBorder] = {
+      kColorFeaturePromoBubbleForeground};
+  mixer[kColorFeaturePromoBubbleCloseButtonInkDrop] =
+      AdjustHighlightColorForContrast(kColorFeaturePromoBubbleForeground,
+                                      kColorFeaturePromoBubbleBackground);
+  mixer[kColorFeaturePromoBubbleDefaultButtonBackground] = {
+      kColorFeaturePromoBubbleForeground};
+  mixer[kColorFeaturePromoBubbleDefaultButtonForeground] = {
+      kColorFeaturePromoBubbleBackground};
+  mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
@@ -94,10 +113,13 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       {ui::kColorSysStateDisabled}, {kColorToolbar})};
   mixer[kColorToolbarButtonIconPressed] = {kColorToolbarButtonIconHovered};
   mixer[kColorToolbarButtonText] = {ui::kColorSysOnSurfaceSecondary};
-  mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSysOutline};
+  mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSysSurfaceVariant};
   mixer[kColorToolbarFeaturePromoHighlight] = {ui::kColorSysPrimary};
-  mixer[kColorToolbarInkDrop] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorToolbarInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorToolbarInkDropRipple] = {ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorToolbarExtensionSeparatorEnabled] = {ui::kColorSysOnBaseDivider};
+  mixer[kColorToolbarExtensionSeparatorDisabled] = {
+      kColorToolbarButtonIconInactive};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorToolbarSeparatorDefault] =
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorToolbar, 0x3A);

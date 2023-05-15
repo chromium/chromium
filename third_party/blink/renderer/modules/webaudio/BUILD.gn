@@ -108,8 +108,6 @@ blink_modules_sources("webaudio") {
     "cross_thread_audio_worklet_processor_info.h",
     "deferred_task_handler.cc",
     "deferred_task_handler.h",
-    "delay_dsp_kernel.cc",
-    "delay_dsp_kernel.h",
     "delay_handler.cc",
     "delay_handler.h",
     "delay_node.cc",

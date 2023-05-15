@@ -13,6 +13,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -55,7 +56,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
     ~ScopedSelectionRestore();
 
    private:
-    HoldingSpaceViewDelegate* const delegate_;
+    const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
     std::vector<std::string> selected_item_ids_;
     absl::optional<std::string> selected_range_start_item_id_;
     absl::optional<std::string> selected_range_end_item_id_;
@@ -186,7 +187,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   void OpenItemsAndScheduleClose(
       const std::vector<const HoldingSpaceItemView*>& views);
 
-  HoldingSpaceTrayBubble* const bubble_;
+  const raw_ptr<HoldingSpaceTrayBubble, ExperimentalAsh> bubble_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
@@ -194,11 +195,13 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // Caches a view for which mouse released events should be temporarily
   // ignored. This is to prevent us from selecting a view on mouse pressed but
   // then unselecting that same view on mouse released.
-  HoldingSpaceItemView* ignore_mouse_released_ = nullptr;
+  raw_ptr<HoldingSpaceItemView, ExperimentalAsh> ignore_mouse_released_ =
+      nullptr;
 
   // Caches views from which range-based selections should start and end. This
   // is used when determining the range for selection performed via shift-click.
-  HoldingSpaceItemView* selected_range_start_ = nullptr;
+  raw_ptr<HoldingSpaceItemView, ExperimentalAsh> selected_range_start_ =
+      nullptr;
   HoldingSpaceItemView* selected_range_end_ = nullptr;
 
   // Dictates how UI should represent holding space item views' selected states

@@ -361,11 +361,9 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
 
   void TransitionToCommittedForNewPage() override {}
 
-  bool NavigateBackForward(
+  void NavigateBackForward(
       int offset,
-      absl::optional<scheduler::TaskAttributionId>) const override {
-    return false;
-  }
+      absl::optional<scheduler::TaskAttributionId>) const override {}
   void DidDispatchPingLoader(const KURL&) override {}
   void SelectorMatchChanged(const Vector<String>&,
                             const Vector<String>&) override {}

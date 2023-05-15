@@ -74,7 +74,7 @@ using chrome_test_util::SecondarySignInButton;
   [ChromeEarlGrey loadURL:bookmarkURL];
   [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
       assertWithMatcher:grey_notNil()];
-  [BookmarkEarlGrey waitForBookmarkModelLoaded:YES];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:bookmarkTitle];
   // Sign-in+sync with identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

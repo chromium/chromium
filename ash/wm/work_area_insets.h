@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -106,7 +107,8 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   void UpdateWorkArea();
 
   // RootWindowController associated with this work area.
-  RootWindowController* const root_window_controller_ = nullptr;
+  const raw_ptr<RootWindowController, ExperimentalAsh> root_window_controller_ =
+      nullptr;
 
   // Cached bounds of user work area in screen coordinates DIPs.
   gfx::Rect user_work_area_bounds_;

@@ -11,6 +11,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -27,15 +28,15 @@ class AmbientSlideshowPeripheralUi : public views::View,
  public:
   METADATA_HEADER(AmbientSlideshowPeripheralUi);
 
-  AmbientSlideshowPeripheralUi(
-      AmbientViewDelegate* delegate,
-      JitterCalculator* glanceable_info_jitter_calculator);
-
+  explicit AmbientSlideshowPeripheralUi(AmbientViewDelegate* delegate);
   ~AmbientSlideshowPeripheralUi() override;
 
   // MediaStringView::Delegate:
   MediaStringView::Settings GetSettings() override;
 
+  // Applies jitter to all elements of the UI using the `jitter_calculator`
+  // provided in the constructor. The caller is responsible for invoking this at
+  // the desired frequency to prevent screen burn.
   void UpdateGlanceableInfoPosition();
 
   void UpdateImageDetails(const std::u16string& details,
@@ -44,11 +45,11 @@ class AmbientSlideshowPeripheralUi : public views::View,
  private:
   void InitLayout(AmbientViewDelegate* delegate);
 
-  const base::raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
+  std::unique_ptr<JitterCalculator> jitter_calculator_;
 
-  AmbientInfoView* ambient_info_view_ = nullptr;
+  raw_ptr<AmbientInfoView, ExperimentalAsh> ambient_info_view_ = nullptr;
 
-  MediaStringView* media_string_view_ = nullptr;
+  raw_ptr<MediaStringView, ExperimentalAsh> media_string_view_ = nullptr;
 };
 
 }  // namespace ash

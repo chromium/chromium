@@ -193,7 +193,7 @@ void PopupCellView::RefreshStyle() {
 
   // Set style for each label in this cell depending on its current selection
   // state.
-  for (raw_ptr<views::Label>& label : tracked_labels_) {
+  for (views::Label* label : tracked_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
 
     // If the current suggestion is selected or the label is disabled,

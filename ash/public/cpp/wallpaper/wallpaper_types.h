@@ -69,7 +69,8 @@ enum class WallpaperType {
                             // contains the album id.
   kOnceGooglePhotos = 11,   // `WallpaperInfo.location` contains the Google
                             // Photos photo id.
-  kCount = 12
+  kOobe = 12,               // Wallpaper shown during OOBE if not overridden.
+  kCount = 13
 };
 
 // The color profile type, ordered as the color profiles applied in

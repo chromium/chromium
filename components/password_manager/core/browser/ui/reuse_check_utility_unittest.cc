@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,12 +45,21 @@ TEST(ReuseCheckUtilityTest, CheckNoReuse) {
 }
 
 TEST(ReuseCheckUtilityTest, ReuseDetected) {
+  base::HistogramTester histogram_tester;
+
   std::vector<CredentialUIEntry> credentials;
   credentials.push_back(
       CreateCredential(u"user1", u"password", {"https://test1.com"}));
   credentials.push_back(
       CreateCredential(u"user2", u"password", {"https://test2.com"}));
+  credentials.push_back(
+      CreateCredential(u"user", u"password2", {"https://test3.com"}));
   EXPECT_THAT(BulkReuseCheck(credentials, {}), ElementsAre(u"password"));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ReuseCheck.CheckedPasswords", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ReuseCheck.ReusedPasswords", 1, 1);
 }
 
 TEST(ReuseCheckUtilityTest, ReuseDetectedSameWebsite) {

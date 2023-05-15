@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -50,7 +51,8 @@ class ArcPropertyBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Store pending requests when connection is not ready.
   std::vector<mojom::PropertyInstance::GetGcaMigrationPropertyCallback>

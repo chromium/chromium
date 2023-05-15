@@ -169,7 +169,7 @@ bool PowerButtonScreenshotController::InterceptScreenshotChord() {
       now <= volume_up_key_pressed_time_ + kScreenshotChordDelay;
   if (consume_volume_down_ || consume_volume_up_) {
     Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-        TAKE_SCREENSHOT, {});
+        AcceleratorAction::kTakeScreenshot, {});
 
     base::RecordAction(base::UserMetricsAction("Accel_PowerButton_Screenshot"));
   }
@@ -180,7 +180,8 @@ void PowerButtonScreenshotController::OnVolumeControlTimeout(
     const ui::Accelerator& accelerator,
     bool down) {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      down ? VOLUME_DOWN : VOLUME_UP, accelerator);
+      down ? AcceleratorAction::kVolumeDown : AcceleratorAction::kVolumeUp,
+      accelerator);
 }
 
 }  // namespace ash

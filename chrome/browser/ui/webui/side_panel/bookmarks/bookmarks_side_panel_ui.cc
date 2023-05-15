@@ -67,6 +67,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMore", IDS_BOOKMARKS_EDIT_MORE},
       {"tooltipMove", IDS_BOOKMARKS_EDIT_MOVE_TO_ANOTHER_FOLDER},
+      {"tooltipOrganize", IDS_BOOKMARK_MANAGER_ORGANIZE_MENU},
+      {"tooltipNewFolder", IDS_BOOKMARKS_NEW_FOLDER_TOOLTIP},
+      {"tooltipEdit", IDS_EDIT},
+      {"tooltipBack", IDS_BOOKMARKS_BACK_BUTTON_TOOLTIP},
       {"shoppingListFolderTitle", IDS_SIDE_PANEL_TRACKED_PRODUCTS},
       {"shoppingListTrackPriceButtonDescription",
        IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY},
@@ -192,9 +196,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
                         ? base::NumberToString(managed->managed_node()->id())
                         : "");
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

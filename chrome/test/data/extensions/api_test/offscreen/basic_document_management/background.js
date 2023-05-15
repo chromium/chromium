@@ -9,13 +9,21 @@ const VALID_PARAMS =
       justification: 'ignored',
     };
 
+async function hasOffscreenDocument() {
+  const contexts =
+      await chrome.runtime.getContexts(
+          {contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT]});
+  chrome.test.assertTrue(!!contexts);
+  chrome.test.assertTrue(contexts.length <= 1);
+  return contexts.length == 1;
+}
 
 chrome.test.runTests([
   async function createDocumentAndEnsureItExistsAndThenClose() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
 
     await chrome.offscreen.createDocument(VALID_PARAMS);
-    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+    chrome.test.assertTrue(await hasOffscreenDocument());
 
     // Sanity check that the document exists and can be reached by passing a
     // message and expecting a reply. Note that general offscreen document
@@ -32,13 +40,13 @@ chrome.test.runTests([
 
     // Close the document to tidy up for the next test.
     await chrome.offscreen.closeDocument();
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
 
     chrome.test.succeed();
   },
 
   async function createDocumentWithAbsoluteSameOriginUrlSucceeds() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
 
     await chrome.offscreen.createDocument(
         {
@@ -46,7 +54,7 @@ chrome.test.runTests([
           reasons: ['TESTING'],
           justification: 'ignored',
         });
-    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+    chrome.test.assertTrue(await hasOffscreenDocument());
 
     // Tidy up.
     await chrome.offscreen.closeDocument();
@@ -54,7 +62,7 @@ chrome.test.runTests([
   },
 
   async function createDocumentWithInvalidUrlsRejects() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
 
     const urlsToTest = [
       // Web URL
@@ -77,15 +85,15 @@ chrome.test.runTests([
               }),
           'Error: Invalid URL.');
       // No document should have been created.
-      chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+      chrome.test.assertFalse(await hasOffscreenDocument());
     }
     chrome.test.succeed();
   },
 
   async function cannotCreateMoreThanOneOffscreenDocument() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
     await chrome.offscreen.createDocument(VALID_PARAMS);
-    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+    chrome.test.assertTrue(await hasOffscreenDocument());
 
     await chrome.test.assertPromiseRejects(
         chrome.offscreen.createDocument(VALID_PARAMS),
@@ -97,7 +105,7 @@ chrome.test.runTests([
   },
 
   async function callingCloseDocumentWhenNoneOpenRejects() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
     await chrome.test.assertPromiseRejects(
         chrome.offscreen.closeDocument(),
         'Error: No current offscreen document.');
@@ -116,20 +124,23 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function callingCreateDocumentWithMultipleReasonsRejects() {
-    await chrome.test.assertPromiseRejects(
-        chrome.offscreen.createDocument(
+  async function callingCreateDocumentWithMultipleReasonsIsAccepted() {
+    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    await chrome.offscreen.createDocument(
         {
           url: 'offscreen.html',
           reasons: ['TESTING', 'AUDIO_PLAYBACK'],
           justification: 'ignored',
-        }),
-        'Error: Only a single `reason` is currently supported.');
+        });
+    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+
+    // Tidy up.
+    await chrome.offscreen.closeDocument();
     chrome.test.succeed();
   },
 
   async function nonexistentRelativePathIsAccepted() {
-    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    chrome.test.assertFalse(await hasOffscreenDocument());
     // Questionable behavior: A non-existent relative path is accepted and the
     // document is created. In many cases, this could be an extension bug, but
     // there are valid cases when extensions may do this (e.g., with custom
@@ -142,7 +153,16 @@ chrome.test.runTests([
           reasons: ['TESTING'],
           justification: 'ignored',
         });
-    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+
+    // However, the document is *not* associated with the extension (because it
+    // commits to an error page). Because of this, `runtime.getContexts()` does
+    // not return the context.
+    // TODO(devlin): That leads to a bit of a problem where an extension has an
+    // offscreen document (and thus trying to create a new one won't succeed),
+    // but the result isn't included in runtime.getContexts(), implying there
+    // isn't one. But, `offscreen.closeDocument()` would still work. Is that a
+    // big enough thorn that we need to fix it?
+    chrome.test.assertFalse(await hasOffscreenDocument());
 
     // Tidy up.
     await chrome.offscreen.closeDocument();

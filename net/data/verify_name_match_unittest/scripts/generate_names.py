@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -45,7 +45,7 @@ class NameGenerator:
     self.rdns = []
 
   def token(self):
-    return "NAME"
+    return b"NAME"
 
   def add_rdn(self):
     rdn = RDN()
@@ -68,22 +68,27 @@ class NameGenerator:
 
 def generate(s, fn):
   out_fn = os.path.join('..', 'names', fn + '.pem')
-  conf_tempfile = tempfile.NamedTemporaryFile()
+  conf_tempfile = tempfile.NamedTemporaryFile(mode='wt', encoding='utf-8')
   conf_tempfile.write(str(s))
   conf_tempfile.flush()
   der_tmpfile = tempfile.NamedTemporaryFile()
-  description_tmpfile = tempfile.NamedTemporaryFile()
-  subprocess.check_call(['openssl', 'asn1parse', '-genconf', conf_tempfile.name,
-                         '-i', '-out', der_tmpfile.name],
-                        stdout=description_tmpfile)
+  subprocess.check_call([
+      'openssl', 'asn1parse', '-genconf', conf_tempfile.name, '-i', '-out',
+      der_tmpfile.name
+  ],
+                        stdout=subprocess.DEVNULL)
   conf_tempfile.close()
 
-  output_file = open(out_fn, 'w')
+  description_tmpfile = tempfile.NamedTemporaryFile()
+  subprocess.check_call(['der2ascii', '-i', der_tmpfile.name],
+                        stdout=description_tmpfile)
+
+  output_file = open(out_fn, 'wb')
   description_tmpfile.seek(0)
   output_file.write(description_tmpfile.read())
-  output_file.write('-----BEGIN NAME-----\n')
-  output_file.write(base64.encodestring(der_tmpfile.read()))
-  output_file.write('-----END NAME-----\n')
+  output_file.write(b'-----BEGIN NAME-----\n')
+  output_file.write(base64.encodebytes(der_tmpfile.read()))
+  output_file.write(b'-----END NAME-----\n')
   output_file.close()
 
 
@@ -137,9 +142,7 @@ def main():
   for valuetype in ('UTF8', 'BMPSTRING', 'UNIVERSALSTRING'):
     n=NameGenerator()
     n.add_rdn().add_attr('countryName', 'PRINTABLESTRING', 'JP')
-    n.add_rdn().add_attr('localityName',
-                         valuetype,
-                         "\xe6\x9d\xb1\xe4\xba\xac",
+    n.add_rdn().add_attr('localityName', valuetype, "\u6771\u4eac",
                          "FORMAT:UTF8")
 
     filename_base = 'unicode_bmp-' + valuetype + '-' + 'unmangled'
@@ -148,9 +151,7 @@ def main():
   for valuetype in ('UTF8', 'UNIVERSALSTRING'):
     n=NameGenerator()
     n.add_rdn().add_attr('countryName', 'PRINTABLESTRING', 'JP')
-    n.add_rdn().add_attr('localityName',
-                         valuetype,
-                         "\xf0\x9d\x90\x80\xf0\x9d\x90\x99",
+    n.add_rdn().add_attr('localityName', valuetype, "\U0001d400\U0001d419",
                          "FORMAT:UTF8")
 
     filename_base = 'unicode_supplementary-' + valuetype + '-' + 'unmangled'
@@ -337,13 +338,11 @@ value=PRINTABLESTRING:"US"
   rdn1 = n.add_rdn()
   rdn1.add_attr('countryName', 'PRINTABLESTRING', 'AA')
   rdn1.add_attr('stateOrProvinceName', 'T61STRING', '  AbCd  Ef  ')
-  rdn1.add_attr('localityName', 'UTF8', "  Ab\xe6\x9d\xb1\xe4\xba\xac ",
-                "FORMAT:UTF8")
-  rdn1.add_attr('organizationName',
-                'BMPSTRING', " aB  \xe6\x9d\xb1\xe4\xba\xac  cD ",
+  rdn1.add_attr('localityName', 'UTF8', "  Ab\u6771\u4eac ", "FORMAT:UTF8")
+  rdn1.add_attr('organizationName', 'BMPSTRING', " aB  \u6771\u4eac  cD ",
                 "FORMAT:UTF8")
   rdn1.add_attr('organizationalUnitName', 'UNIVERSALSTRING',
-                " \xf0\x9d\x90\x80  A  bC ", "FORMAT:UTF8")
+                " \U0001d400  A  bC ", "FORMAT:UTF8")
   rdn1.add_attr('domainComponent', 'IA5STRING', 'eXaMpLe')
   rdn2 = n.add_rdn()
   rdn2.add_attr('localityName', 'UTF8', "AAA")
@@ -356,11 +355,9 @@ value=PRINTABLESTRING:"US"
   rdn1 = n.add_rdn()
   rdn1.add_attr('countryName', 'UTF8', 'aa')
   rdn1.add_attr('stateOrProvinceName', 'T61STRING', '  AbCd  Ef  ')
-  rdn1.add_attr('localityName', 'UTF8', "ab\xe6\x9d\xb1\xe4\xba\xac",
-                "FORMAT:UTF8")
-  rdn1.add_attr('organizationName', 'UTF8', "ab \xe6\x9d\xb1\xe4\xba\xac cd",
-                "FORMAT:UTF8")
-  rdn1.add_attr('organizationalUnitName', 'UTF8', "\xf0\x9d\x90\x80 a bc",
+  rdn1.add_attr('localityName', 'UTF8', "ab\u6771\u4eac", "FORMAT:UTF8")
+  rdn1.add_attr('organizationName', 'UTF8', "ab \u6771\u4eac cd", "FORMAT:UTF8")
+  rdn1.add_attr('organizationalUnitName', 'UTF8', "\U0001d400 a bc",
                 "FORMAT:UTF8")
   rdn1.add_attr('domainComponent', 'UTF8', 'example')
   rdn2 = n.add_rdn()

@@ -65,9 +65,9 @@ constexpr char kRedactedNetworkHealthSnapshot[] =
     "Type: kEthernet\n"
     "State: kOnline\n"
     "Portal State: kOnline\n"
-    "MAC Address: [MAC OUI=aa:aa:aa IFACE=1]\n"
-    "IPV4 Address: <IPv4: 1>\n"
-    "IPV6 Addresses: <IPv6: 1>\n"
+    "MAC Address: (MAC OUI=aa:aa:aa IFACE=1)\n"
+    "IPV4 Address: (IPv4: 1)\n"
+    "IPV6 Addresses: (IPv6: 1)\n"
     "\n"
     "Name: wifi_none_1\n"
     "GUID: wifi_none_1\n"
@@ -78,9 +78,9 @@ constexpr char kRedactedNetworkHealthSnapshot[] =
     "Signal Strength (Average): 81.25555419921875\n"
     "Signal Strength (Deviation): 3.1622776985168457\n"
     "Signal Strength (Samples): [80,80,75,75,82,82,75,75,80,80,85,85,85]\n"
-    "MAC Address: [MAC OUI=aa:bb:cc IFACE=2]\n"
+    "MAC Address: (MAC OUI=aa:bb:cc IFACE=2)\n"
     "IPV4 Address: N/A\n"
-    "IPV6 Addresses: <IPv6: 2>\n"
+    "IPV6 Addresses: (IPv6: 2)\n"
     "\n";
 
 const PIIMap kExpectedPIIMap = {

@@ -6,7 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"

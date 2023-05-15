@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.text.TextWatcher;
 import android.view.ActionMode;
 
 import org.chromium.base.Callback;
@@ -120,10 +119,6 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<UrlTextChangeListener> URL_TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** The callback to be notified on text changes. @see TextWatcher. */
-    public static final WritableObjectPropertyKey<TextWatcher> TEXT_CHANGED_LISTENER =
-            new WritableObjectPropertyKey<>();
-
     /**
      * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
@@ -144,6 +139,6 @@ class UrlBarProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
                     FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
-                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER,
-                    BRANDED_COLOR_SCHEME, INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
+                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, BRANDED_COLOR_SCHEME,
+                    INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
 }

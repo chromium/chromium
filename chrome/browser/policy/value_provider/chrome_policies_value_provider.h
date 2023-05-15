@@ -43,7 +43,7 @@ class ChromePoliciesValueProvider : public policy::PolicyValueProvider,
  private:
   void OnRefreshPoliciesDone();
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ChromePoliciesValueProvider> weak_ptr_factory_{this};
 };
 

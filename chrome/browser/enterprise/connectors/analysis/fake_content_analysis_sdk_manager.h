@@ -24,6 +24,8 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
   void ResetClient(
       const content_analysis::sdk::Client::Config& config) override;
 
+  void ResetAllClients() override;
+
   void SetClientSendStatus(int status);
 
   void SetClientSendResponse(
@@ -32,6 +34,8 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
   void SetClientAckStatus(int status);
 
   void SetClientCancelStatus(int status);
+
+  bool NoConnectionEstablished();
 
   FakeContentAnalysisSdkClient* GetFakeClient(
       const content_analysis::sdk::Client::Config& config);

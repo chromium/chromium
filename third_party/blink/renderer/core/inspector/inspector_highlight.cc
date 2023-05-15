@@ -244,7 +244,7 @@ const ShapeOutsideInfo* ShapeOutsideInfoForNode(Node* node,
 
 String ToHEXA(const Color& color) {
   return String::Format("#%02X%02X%02X%02X", color.Red(), color.Green(),
-                        color.Blue(), color.Alpha());
+                        color.Blue(), color.AlphaAsInteger());
 }
 
 std::unique_ptr<protocol::ListValue> ToRGBAList(const Color& color) {
@@ -419,7 +419,7 @@ void AppendLineStyleConfig(
     const absl::optional<LineStyle>& line_style,
     std::unique_ptr<protocol::DictionaryValue>& parent_config,
     String line_name) {
-  if (!line_style || line_style->IsTransparent()) {
+  if (!line_style || line_style->IsFullyTransparent()) {
     return;
   }
 
@@ -435,7 +435,7 @@ void AppendBoxStyleConfig(
     const absl::optional<BoxStyle>& box_style,
     std::unique_ptr<protocol::DictionaryValue>& parent_config,
     String box_name) {
-  if (!box_style || box_style->IsTransparent()) {
+  if (!box_style || box_style->IsFullyTransparent()) {
     return;
   }
 
@@ -2321,7 +2321,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
   bool include_descendants =
       container_query_container_highlight_config.descendant_border &&
       !container_query_container_highlight_config.descendant_border
-           ->IsTransparent();
+           ->IsFullyTransparent();
   if (element && include_descendants) {
     std::unique_ptr<protocol::ListValue> descendants_info =
         protocol::ListValue::create();

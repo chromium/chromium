@@ -21,6 +21,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -32,7 +34,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
@@ -52,6 +54,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
@@ -89,6 +94,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -163,6 +169,12 @@ public class FeedV2NewTabPageTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mAccountManagerTestRule).around(mActivityTestRule);
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private ExternalAuthUtils mExternalAuthUtils;
+
     /** Parameter provider for enabling/disabling the signin promo card. */
     public static class SigninPromoParams implements ParameterProvider {
         @Override
@@ -192,6 +204,11 @@ public class FeedV2NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
+        // Pretend Google Play services are available as it is required for the sign-in
+        when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
+
         SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
@@ -211,7 +228,8 @@ public class FeedV2NewTabPageTest {
         });
 
         mFeedServer = new TestFeedServer();
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
         mMostVisitedSites = new FakeMostVisitedSites();

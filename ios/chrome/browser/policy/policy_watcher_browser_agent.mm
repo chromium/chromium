@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/backup_util.h"
+#import "base/apple/backup_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -17,12 +17,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -76,8 +76,10 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
 
+  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
+  // go through proper APIs (SyncService/SyncUserSettings).
   browser_prefs_change_observer_.Add(
-      syncer::prefs::kSyncManaged,
+      syncer::prefs::internal::kSyncManaged,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
           base::Unretained(this)));
@@ -133,9 +135,11 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   BOOL syncDisabledAlertShown =
       [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
+  // go through proper APIs (SyncService/SyncUserSettings).
   BOOL isSyncDisabledByAdministrator =
       browser_->GetBrowserState()->GetPrefs()->GetBoolean(
-          syncer::prefs::kSyncManaged);
+          syncer::prefs::internal::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
     SceneState* scene_state =
@@ -163,12 +167,12 @@ void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   if (backup_allowed) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::ClearBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::apple::ClearBackupExclusion),
                        std::move(storage_dir)));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::SetBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::apple::SetBackupExclusion),
                        std::move(storage_dir)));
   }
 }

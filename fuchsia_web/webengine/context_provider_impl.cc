@@ -24,6 +24,13 @@ void ContextProviderImpl::Create(
     return;
   }
 
+  // The CreateInstanceForContextWithCopiedArgs() call below requires that
+  // `params` has a service directory.
+  if (!params.has_service_directory()) {
+    context_request.Close(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
   // Create the instance and request access to its outgoing service directory.
   fidl::InterfaceHandle<fuchsia::io::Directory> services_handle;
   zx_status_t result =

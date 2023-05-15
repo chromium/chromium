@@ -7,9 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 FakeTouchIdContext::FakeTouchIdContext() = default;
 FakeTouchIdContext::~FakeTouchIdContext() = default;
@@ -27,6 +29,4 @@ void FakeTouchIdContext::PromptTouchId(const std::u16string& reason,
   // destroyed, so no members should be used beyond this point.
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

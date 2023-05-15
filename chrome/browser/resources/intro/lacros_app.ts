@@ -10,7 +10,6 @@ import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {IntroBrowserProxy, IntroBrowserProxyImpl, LacrosIntroProfileInfo} from './browser_proxy.js';
@@ -52,11 +51,6 @@ export class LacrosIntroAppElement extends LacrosIntroAppElementBase {
         type: Boolean,
         value: false,
       },
-
-      isTangibleSyncEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isTangibleSyncEnabled'),
-      },
     };
   }
 
@@ -73,7 +67,6 @@ export class LacrosIntroAppElement extends LacrosIntroAppElementBase {
   private subtitle_: string;
   private managementDisclaimer_: string;
   private disableProceedButton_: boolean;
-  private isTangibleSyncEnabled_: boolean;
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
 
@@ -89,10 +82,6 @@ export class LacrosIntroAppElement extends LacrosIntroAppElementBase {
   private onProceed_() {
     this.disableProceedButton_ = true;
     this.browserProxy_.continueWithAccount();
-  }
-
-  private getTangibleSyncStyleClass_() {
-    return this.isTangibleSyncEnabled_ ? 'tangible-sync-style' : '';
   }
 }
 

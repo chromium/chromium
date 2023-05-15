@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -122,13 +121,6 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #endif
   profile_database_->LoadDatabase();
 
-  // Ensure the CountryNames instance has the locale set. It is used in
-  // the autofill profile bridge, but putting it into the bridge directly
-  // creates a data race with PDM, where the locale is set as well. This is
-  // a tmp solution until the bug below is resolved.
-  // TODO(1430250): Find a unified place for setting the locale
-  autofill::CountryNames::SetLocaleString(application_locale);
-
   profile_autofill_web_data_ =
       base::MakeRefCounted<autofill::AutofillWebDataService>(
           profile_database_, ui_task_runner, db_task_runner);
@@ -169,32 +161,29 @@ WebDataServiceWrapper::WebDataServiceWrapper(
                        db_task_runner, profile_autofill_web_data_));
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)) {
-    base::FilePath account_storage_path;
+  base::FilePath account_storage_path;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    account_storage_path = context_path.Append(kAccountWebDataFilename);
+  account_storage_path = context_path.Append(kAccountWebDataFilename);
 #else
-    account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
+  account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    account_database_ = base::MakeRefCounted<WebDatabaseService>(
-        account_storage_path, ui_task_runner, db_task_runner);
-    account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
-    account_database_->LoadDatabase();
+  account_database_ = base::MakeRefCounted<WebDatabaseService>(
+      account_storage_path, ui_task_runner, db_task_runner);
+  account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
+  account_database_->LoadDatabase();
 
-    account_autofill_web_data_ =
-        base::MakeRefCounted<autofill::AutofillWebDataService>(
-            account_database_, ui_task_runner, db_task_runner);
-    account_autofill_web_data_->Init(
-        base::BindOnce(show_error_callback, ERROR_LOADING_ACCOUNT_AUTOFILL));
+  account_autofill_web_data_ =
+      base::MakeRefCounted<autofill::AutofillWebDataService>(
+          account_database_, ui_task_runner, db_task_runner);
+  account_autofill_web_data_->Init(
+      base::BindOnce(show_error_callback, ERROR_LOADING_ACCOUNT_AUTOFILL));
+  account_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
+                     account_autofill_web_data_, application_locale));
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData)) {
     account_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
-                       account_autofill_web_data_, application_locale));
-    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData)) {
-      account_autofill_web_data_->GetAutofillBackend(
-          base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
-                         db_task_runner, account_autofill_web_data_));
-    }
+        base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
+                       db_task_runner, account_autofill_web_data_));
   }
 }
 
@@ -202,8 +191,7 @@ WebDataServiceWrapper::~WebDataServiceWrapper() {}
 
 void WebDataServiceWrapper::Shutdown() {
   profile_autofill_web_data_->ShutdownOnUISequence();
-  if (account_autofill_web_data_)
-    account_autofill_web_data_->ShutdownOnUISequence();
+  account_autofill_web_data_->ShutdownOnUISequence();
   keyword_web_data_->ShutdownOnUISequence();
   token_web_data_->ShutdownOnUISequence();
 
@@ -212,8 +200,7 @@ void WebDataServiceWrapper::Shutdown() {
 #endif
 
   profile_database_->ShutdownDatabase();
-  if (account_database_)
-    account_database_->ShutdownDatabase();
+  account_database_->ShutdownDatabase();
 }
 
 scoped_refptr<autofill::AutofillWebDataService>

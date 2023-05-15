@@ -33,6 +33,7 @@ sync_pb::PasswordIssues CreatePasswordIssues(
             .ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
     remote_issue.set_is_muted(false);
+    remote_issue.set_trigger_notification_from_backend_on_detection(true);
     switch (type) {
       case InsecureType::kLeaked:
         *remote_issues.mutable_leaked_password_issue() = remote_issue;

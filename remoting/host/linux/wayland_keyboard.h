@@ -67,9 +67,9 @@ class WaylandKeyboard {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::raw_ptr<struct wl_seat> wl_seat_ = nullptr;
-  base::raw_ptr<struct wl_keyboard> wl_keyboard_ = nullptr;
-  base::raw_ptr<struct xkb_context> xkb_context_ =
+  raw_ptr<struct wl_seat> wl_seat_ = nullptr;
+  raw_ptr<struct wl_keyboard> wl_keyboard_ = nullptr;
+  raw_ptr<struct xkb_context> xkb_context_ =
       xkb_context_new(XKB_CONTEXT_NO_FLAGS);
 };
 

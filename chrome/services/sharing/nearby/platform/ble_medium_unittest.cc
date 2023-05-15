@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -157,7 +158,7 @@ class BleMediumTest : public testing::Test {
               std::string(byte_array.data(), byte_array.size()));
   }
 
-  bluetooth::FakeAdapter* fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleMedium> ble_medium_;
 

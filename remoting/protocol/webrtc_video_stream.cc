@@ -408,10 +408,11 @@ void WebrtcVideoStream::BoostFramerate(base::TimeDelta capture_interval,
                                 boost_duration));
 }
 
-void WebrtcVideoStream::OnTargetFramerateChanged(int framerate) {
+void WebrtcVideoStream::SetTargetFramerate(int framerate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(framerate, 0);
   DCHECK_LE(framerate, 1000);
+  target_framerate_ = framerate;
 
   if (!transceiver_) {
     LOG(WARNING) << "No transceiver, can't set updated framerate.";
@@ -504,15 +505,35 @@ void WebrtcVideoStream::OnEncodedFrameSent(
 void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  VLOG(0) << "WebRTC requested max framerate: " << wants.max_framerate_fps
-          << " FPS";
+  auto framerate = wants.max_framerate_fps;
+  VLOG(0) << "WebRTC requested max framerate: " << framerate << " FPS";
+
+  // OnSinkAddedOrUpdated() is called when:
+  //   - A new stream is added
+  //   - An SDP renegotiation is requested
+  //   - A new max framerate is requested
+  //   - WebRTC artificially lowers the framerate due to network conditions
+  //
+  // We need to update the max_framerate for the stream in some of the scenarios
+  // but not for the others. In order to determine whether to update the
+  // RTPSender, we check the current max_framerate rather than the framerate in
+  // |wants|.
+  auto sender = transceiver_->sender();
+  if (sender) {
+    for (auto& encoding : sender->GetParameters().encodings) {
+      if (encoding.max_framerate != target_framerate_) {
+        VLOG(0) << "Setting target framerate for new sink: "
+                << target_framerate_;
+        SetTargetFramerate(target_framerate_);
+      }
+    }
+  }
 
   // Unretained is sound as |core_| is owned by |this| and destroyed on
   // |core_task_runner_|.
   core_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebrtcVideoStream::Core::SetMaxFramerateFps,
-                     base::Unretained(core_.get()), wants.max_framerate_fps));
+      FROM_HERE, base::BindOnce(&WebrtcVideoStream::Core::SetMaxFramerateFps,
+                                base::Unretained(core_.get()), framerate));
 }
 
 void WebrtcVideoStream::OnVideoSizeChanged(webrtc::DesktopSize frame_size,

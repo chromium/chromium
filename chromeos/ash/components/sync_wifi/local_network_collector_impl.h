@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/sync_wifi/local_network_collector.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
@@ -109,8 +110,9 @@ class LocalNetworkCollectorImpl
   GetNetworkFromProto(const sync_pb::WifiConfigurationSpecifics& proto);
   void OnFixAutoconnectComplete(bool success, const std::string& error);
 
-  chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config_;
-  SyncedNetworkMetricsLogger* metrics_recorder_;
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, ExperimentalAsh>
+      cros_network_config_;
+  raw_ptr<SyncedNetworkMetricsLogger, ExperimentalAsh> metrics_recorder_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>

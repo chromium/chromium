@@ -72,6 +72,7 @@ class LocationIconView : public IconLabelBubbleView {
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   SkColor GetForegroundColor() const override;
   bool ShouldShowSeparator() const override;
+  bool ShouldShowLabelAfterAnimation() const override;
   bool ShowBubble(const ui::Event& event) override;
   bool IsBubbleShowing() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -128,7 +129,7 @@ class LocationIconView : public IconLabelBubbleView {
   void UpdateIcon();
 
   // Updates background based on the current state and theme.
-  void UpdateBackground();
+  void UpdateBackground() override;
 
   // Handles the arrival of an asynchronously fetched icon.
   void OnIconFetched(const gfx::Image& image);

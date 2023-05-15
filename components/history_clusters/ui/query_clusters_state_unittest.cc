@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +39,11 @@ class QueryClustersStateTest : public testing::Test {
 
   QueryClustersStateTest(const QueryClustersStateTest&) = delete;
   QueryClustersStateTest& operator=(const QueryClustersStateTest&) = delete;
+
+  QueryClustersFilterParams GetQueryClustersFilterParamsForState(
+      QueryClustersState* state) {
+    return state->filter_params_;
+  }
 
  protected:
   OnGotClustersResult InjectRawClustersAndAwaitPostProcessing(
@@ -79,6 +85,67 @@ class QueryClustersStateTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 };
+
+TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
+  Config config;
+  config.apply_zero_state_filtering = true;
+  config.persist_clusters_in_history_db = true;
+  config.use_navigation_context_clusters = true;
+  SetConfigForTesting(config);
+
+  QueryClustersState state(nullptr, "");
+
+  QueryClustersFilterParams filter_params =
+      GetQueryClustersFilterParamsForState(&state);
+  EXPECT_TRUE(filter_params.is_search_initiated);
+  EXPECT_TRUE(filter_params.has_related_searches);
+}
+
+TEST_F(QueryClustersStateTest, FilterParamsNotSetForZeroStateFeatureDisabled) {
+  Config config;
+  config.apply_zero_state_filtering = false;
+  config.persist_clusters_in_history_db = true;
+  config.use_navigation_context_clusters = true;
+  SetConfigForTesting(config);
+
+  QueryClustersState state(nullptr, "");
+
+  QueryClustersFilterParams filter_params =
+      GetQueryClustersFilterParamsForState(&state);
+  EXPECT_FALSE(filter_params.is_search_initiated);
+  EXPECT_FALSE(filter_params.has_related_searches);
+}
+
+TEST_F(QueryClustersStateTest,
+       FilterParamsNotSetForZeroStateContextClusteringDisabled) {
+  Config config;
+  config.apply_zero_state_filtering = true;
+  config.persist_clusters_in_history_db = false;
+  config.use_navigation_context_clusters = false;
+  SetConfigForTesting(config);
+
+  QueryClustersState state(nullptr, "");
+
+  QueryClustersFilterParams filter_params =
+      GetQueryClustersFilterParamsForState(&state);
+  EXPECT_FALSE(filter_params.is_search_initiated);
+  EXPECT_FALSE(filter_params.has_related_searches);
+}
+
+TEST_F(QueryClustersStateTest, FilterParamsEnabledButNotSetForQuery) {
+  Config config;
+  config.apply_zero_state_filtering = true;
+  config.persist_clusters_in_history_db = true;
+  config.use_navigation_context_clusters = true;
+  SetConfigForTesting(config);
+
+  QueryClustersState state(nullptr, "query");
+
+  QueryClustersFilterParams filter_params =
+      GetQueryClustersFilterParamsForState(&state);
+  EXPECT_FALSE(filter_params.is_search_initiated);
+  EXPECT_FALSE(filter_params.has_related_searches);
+}
 
 TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
   base::HistogramTester histogram_tester;

@@ -21,16 +21,22 @@ namespace mojom {
 enum class PrinterType;
 }
 
-extern const char kDummyPrinterName[];
-constexpr int kTestPrinterDpi = 600;
+namespace test {
+
+extern const char kPrinterName[];
+constexpr int kPrinterDpi = 600;
+
+// Some common paper sizes that can be used for fake device configurations.
+extern const PrinterSemanticCapsAndDefaults::Paper kPaperLetter;
+extern const PrinterSemanticCapsAndDefaults::Paper kPaperLegal;
 
 // Support values for `MakeDefaultPrintSettings()`.
-constexpr int kTestPrinterDefaultRenderDpi = 72;
-constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrinterDefaultRenderDpi,
-                                                kTestPrinterDefaultRenderDpi);
-constexpr int kTestPrintSettingsCopies = 42;
-extern const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis;
-extern const PrinterBasicInfoOptions kTestDummyPrintInfoOptions;
+constexpr int kPrinterDefaultRenderDpi = 72;
+constexpr gfx::Size kPrinterCapabilitiesDpi(kPrinterDefaultRenderDpi,
+                                            kPrinterDefaultRenderDpi);
+constexpr int kPrintSettingsCopies = 42;
+extern const std::vector<gfx::Size> kPrinterCapabilitiesDefaultDpis;
+extern const PrinterBasicInfoOptions kPrintInfoOptions;
 
 // Creates a print ticket with some default values. Based on ticket creation in
 // chrome/browser/resources/print_preview/native_layer.js.
@@ -47,6 +53,14 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
     const std::string& printer_name);
 
+// Simpler version of StartPrint() provided for convenience with the common
+// defaults:
+// - null `print_renderer`
+// - `print_preview_disabled` set to false
+// - `has_selection` set to false
+void StartPrint(content::WebContents* web_contents);
+
+}  // namespace test
 }  // namespace printing
 
 #endif  // CHROME_BROWSER_PRINTING_PRINT_TEST_UTILS_H_

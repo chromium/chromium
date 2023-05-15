@@ -9,12 +9,12 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/net/network_diagnostics/host_resolver.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,13 +27,13 @@
 #include "net/base/net_errors.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace ash::network_diagnostics {
 
 // Implements the UdpProber class.
 class UdpProberImpl final : public network::mojom::UDPSocketListener,
@@ -68,7 +68,10 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
  private:
   // Processes the results of the DNS resolution done by |host_resolver_|.
   void OnHostResolutionComplete(
-      HostResolver::ResolutionResult& resolution_result);
+      int result,
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>& resolved_addresses,
+      const absl::optional<net::HostResolverEndpointResults>&);
 
   // On success, the UDP socket is connected to the destination and is ready to
   // send data. On failure, the UdpProberImpl exits with a failure.
@@ -105,7 +108,7 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
   // Times the prober.
   base::OneShotTimer timer_;
   // Host resolver used for DNS lookup.
-  std::unique_ptr<HostResolver> host_resolver_;
+  std::unique_ptr<network::SimpleHostResolver> host_resolver_;
   // Stores the callback invoked once probe is complete or interrupted.
   UdpProbeCompleteCallback callback_;
   // Holds the UDPSocket remote.
@@ -126,7 +129,7 @@ UdpProberImpl::UdpProberImpl(NetworkContextGetter network_context_getter,
                              base::TimeDelta timeout_after_host_resolution,
                              UdpProbeCompleteCallback callback)
     : network_context_getter_(std::move(network_context_getter)),
-      host_port_pair_(host_port_pair),
+      host_port_pair_(std::move(host_port_pair)),
       data_(std::move(data)),
       tag_(tag),
       timeout_after_host_resolution_(timeout_after_host_resolution),
@@ -140,29 +143,43 @@ UdpProberImpl::UdpProberImpl(NetworkContextGetter network_context_getter,
       network_context_getter_.Run();
   DCHECK(network_context);
 
-  host_resolver_ = std::make_unique<HostResolver>(
-      host_port_pair_, network_context,
+  host_resolver_ = network::SimpleHostResolver::Create(network_context);
+
+  network::mojom::ResolveHostParametersPtr parameters =
+      network::mojom::ResolveHostParameters::New();
+  parameters->dns_query_type = net::DnsQueryType::A;
+  parameters->source = net::HostResolverSource::DNS;
+  parameters->cache_usage =
+      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
+
+  // Unretained(this) is safe here because the callback is invoked directly by
+  // |host_resolver_| which is owned by |this|.
+  host_resolver_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(host_port_pair_),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
       base::BindOnce(&UdpProberImpl::OnHostResolutionComplete,
-                     weak_factory_.GetWeakPtr()));
+                     base::Unretained(this)));
 }
 
 UdpProberImpl::~UdpProberImpl() = default;
 
 void UdpProberImpl::OnHostResolutionComplete(
-    HostResolver::ResolutionResult& resolution_result) {
+    int result,
+    const net::ResolveErrorInfo&,
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool success = resolution_result.result == net::OK &&
-                 !resolution_result.resolved_addresses->empty() &&
-                 resolution_result.resolved_addresses.has_value();
-  if (!success) {
-    OnDone(resolution_result.result, ProbeExitEnum::kDnsFailure);
+  if (result != net::OK) {
+    CHECK(!resolved_addresses);
+    OnDone(result, ProbeExitEnum::kDnsFailure);
     return;
   }
+  CHECK(resolved_addresses);
 
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
-  DCHECK(network_context);
+  CHECK(network_context);
 
   auto pending_receiver = udp_socket_remote_.BindNewPipeAndPassReceiver();
   udp_socket_remote_.set_disconnect_handler(
@@ -180,10 +197,9 @@ void UdpProberImpl::OnHostResolutionComplete(
       FROM_HERE, timeout_after_host_resolution_,
       base::BindOnce(&UdpProberImpl::OnDone, weak_factory_.GetWeakPtr(),
                      net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout));
-  udp_socket_remote_->Connect(
-      resolution_result.resolved_addresses.value().front(), nullptr,
-      base::BindOnce(&UdpProberImpl::OnConnectComplete,
-                     weak_factory_.GetWeakPtr()));
+  udp_socket_remote_->Connect(resolved_addresses->front(), nullptr,
+                              base::BindOnce(&UdpProberImpl::OnConnectComplete,
+                                             weak_factory_.GetWeakPtr()));
 }
 
 void UdpProberImpl::OnConnectComplete(
@@ -264,5 +280,4 @@ std::unique_ptr<UdpProber> UdpProber::Start(
       timeout_after_host_resolution, std::move(callback));
 }
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics

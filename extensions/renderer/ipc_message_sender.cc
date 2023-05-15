@@ -7,12 +7,13 @@
 #include <map>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/uuid.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
@@ -136,6 +137,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
+                              ChannelType channel_type,
                               const std::string& channel_name) override {
     content::RenderFrame* render_frame = script_context->GetRenderFrame();
     DCHECK(render_frame);
@@ -143,14 +145,39 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         PortContext::ForFrame(render_frame->GetRoutingID());
     const Extension* extension = script_context->extension();
 
+    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // channel name in at all for non-connect messages; we no longer need to.
+    std::string channel_name_to_use =
+        channel_type == ChannelType::kConnect ? channel_name : std::string();
+
     switch (target.type) {
       case MessageTarget::EXTENSION: {
         ExtensionMsg_ExternalConnectionInfo info;
         if (extension && !extension->is_hosted_app()) {
-          info.source_endpoint =
-              script_context->context_type() == Feature::CONTENT_SCRIPT_CONTEXT
-                  ? MessagingEndpoint::ForContentScript(extension->id())
-                  : MessagingEndpoint::ForExtension(extension->id());
+          switch (script_context->context_type()) {
+            case Feature::BLESSED_EXTENSION_CONTEXT:
+            case Feature::UNBLESSED_EXTENSION_CONTEXT:
+            case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+            case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForExtension(extension->id());
+              break;
+            case Feature::CONTENT_SCRIPT_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForContentScript(extension->id());
+              break;
+            case Feature::USER_SCRIPT_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForUserScript(extension->id());
+              break;
+            case Feature::UNSPECIFIED_CONTEXT:
+            case Feature::WEB_PAGE_CONTEXT:
+            case Feature::BLESSED_WEB_PAGE_CONTEXT:
+            case Feature::WEBUI_CONTEXT:
+            case Feature::WEBUI_UNTRUSTED_CONTEXT:
+              NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
+                                    << script_context->GetDebugString();
+          }
         } else {
           info.source_endpoint = MessagingEndpoint::ForWebPage();
         }
@@ -161,7 +188,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
             "MainThreadIPCMessageSender::SendOpenMessageChannel/extension",
             *target.extension_id);
         render_thread_->Send(new ExtensionHostMsg_OpenChannelToExtension(
-            frame_context, info, channel_name, port_id));
+            frame_context, info, channel_type, channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::TAB: {
@@ -174,10 +201,11 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         if (target.document_id)
           info.document_id = *target.document_id;
         render_frame->Send(new ExtensionHostMsg_OpenChannelToTab(
-            frame_context, info, channel_name, port_id));
+            frame_context, info, channel_type, channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::NATIVE_APP:
+        CHECK_EQ(ChannelType::kNative, channel_type);
         render_frame->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             frame_context, *target.native_application_name, port_id));
         break;
@@ -283,7 +311,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     params->worker_thread_id = worker_thread_id;
     params->service_worker_version_id = service_worker_version_id_;
 
-    std::string guid = base::GenerateGUID();
+    std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     request_id_to_guid_[params->request_id] = guid;
 
     // Keeps the worker alive during extension function call. Balanced in
@@ -383,10 +411,16 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
+                              ChannelType channel_type,
                               const std::string& channel_name) override {
     DCHECK(!script_context->GetRenderFrame());
     DCHECK(script_context->IsForServiceWorker());
     const Extension* extension = script_context->extension();
+
+    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // channel name in at all for non-connect messages; we no longer need to.
+    std::string channel_name_to_use =
+        channel_type == ChannelType::kConnect ? channel_name : std::string();
 
     switch (target.type) {
       case MessageTarget::EXTENSION: {
@@ -401,7 +435,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
             "WorkerThreadIPCMessageSender::SendOpenMessageChannel/extension",
             *target.extension_id);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToExtension(
-            PortContextForCurrentWorker(), info, channel_name, port_id));
+            PortContextForCurrentWorker(), info, channel_type,
+            channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::TAB: {
@@ -410,10 +445,12 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         info.tab_id = *target.tab_id;
         info.frame_id = *target.frame_id;
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToTab(
-            PortContextForCurrentWorker(), info, channel_name, port_id));
+            PortContextForCurrentWorker(), info, channel_type,
+            channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::NATIVE_APP:
+        CHECK_EQ(ChannelType::kNative, channel_type);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             PortContextForCurrentWorker(), *target.native_application_name,
             port_id));

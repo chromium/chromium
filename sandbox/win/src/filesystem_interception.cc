@@ -65,30 +65,42 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
   NTSTATUS status = orig_CreateFile(
       file, desired_access, object_attributes, io_status, allocation_size,
       file_attributes, sharing, disposition, options, ea_buffer, ea_length);
-  if (STATUS_ACCESS_DENIED != status)
+  if (STATUS_ACCESS_DENIED != status) {
     return status;
+  }
 
   // We don't trust that the IPC can work this early.
-  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
     return status;
+  }
 
   do {
-    if (!ValidParameter(file, sizeof(HANDLE), WRITE))
+    if (!ValidParameter(file, sizeof(HANDLE), WRITE)) {
       break;
-    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE))
+    }
+    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE)) {
       break;
+    }
+    // From around 22H2 19045.2846 CopyFileExW() uses the ea_buffer to pass
+    // extra FILE_CONTAINS_EXTENDED_CREATE_INFORMATION flags. No sandboxed
+    // processes need to have CopyFile succeed so we do not broker these calls.
+    if ((options & FILE_VALID_OPTION_FLAGS) != options) {
+      break;
+    }
 
     void* memory = GetGlobalIPCMemory();
-    if (!memory)
+    if (!memory) {
       break;
+    }
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
     size_t name_len;
     uint32_t attributes;
     NTSTATUS ret =
         CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
-    if (!NT_SUCCESS(ret) || !name || !name_len)
+    if (!NT_SUCCESS(ret) || !name || !name_len) {
       break;
+    }
     if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name, name_len, desired_access,
                          disposition == FILE_OPEN)) {
       break;
@@ -101,13 +113,15 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE, name.get(),
                                 attributes, desired_access, file_attributes,
                                 sharing, disposition, options, &answer);
-    if (SBOX_ALL_OK != code)
+    if (SBOX_ALL_OK != code) {
       break;
+    }
 
     status = answer.nt_status;
 
-    if (!NT_SUCCESS(answer.nt_status))
+    if (!NT_SUCCESS(answer.nt_status)) {
       break;
+    }
 
     __try {
       *file = answer.handle;

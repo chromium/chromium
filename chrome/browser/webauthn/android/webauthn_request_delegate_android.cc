@@ -55,20 +55,19 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     content::RenderFrameHost* frame_host,
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     bool is_conditional_request,
-    base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
+    base::RepeatingCallback<void(const std::vector<uint8_t>& id)> callback) {
   webauthn_account_selection_callback_ = std::move(callback);
 
   std::vector<PasskeyCredential> display_credentials;
-  base::ranges::transform(
-      credentials, std::back_inserter(display_credentials),
-      [](const auto& credential) {
-        return PasskeyCredential(
-            PasskeyCredential::Username(credential.user.name),
-            PasskeyCredential::DeviceName(l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK)),
-            PasskeyCredential::BackendId(
-                base::Base64Encode(credential.cred_id)));
-      });
+  base::ranges::transform(credentials, std::back_inserter(display_credentials),
+                          [](const auto& credential) {
+                            return PasskeyCredential(
+                                PasskeyCredential::Source::kAndroidPhone,
+                                credential.rp_id, credential.cred_id,
+                                credential.user.id,
+                                credential.user.name.value_or(""),
+                                credential.user.display_name.value_or(""));
+                          });
 
   if (is_conditional_request) {
     conditional_request_in_progress_ = true;
@@ -88,7 +87,7 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
       std::make_unique<TouchToFillControllerWebAuthnDelegate>(this));
 }
 
-void WebAuthnRequestDelegateAndroid::CancelWebAuthnRequest(
+void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
     content::RenderFrameHost* frame_host) {
   if (conditional_request_in_progress_) {
     // Prevent autofill from offering WebAuthn credentials in the popup.
@@ -101,13 +100,14 @@ void WebAuthnRequestDelegateAndroid::CancelWebAuthnRequest(
   }
 
   conditional_request_in_progress_ = false;
-  std::move(webauthn_account_selection_callback_).Run(std::vector<uint8_t>());
+  webauthn_account_selection_callback_.Reset();
 }
 
 void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
-  conditional_request_in_progress_ = false;
-  std::move(webauthn_account_selection_callback_).Run(user_id);
+  if (webauthn_account_selection_callback_) {
+    webauthn_account_selection_callback_.Run(user_id);
+  }
 }
 
 content::WebContents* WebAuthnRequestDelegateAndroid::web_contents() {

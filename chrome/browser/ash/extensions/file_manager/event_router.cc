@@ -22,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
@@ -196,6 +198,24 @@ file_manager_private::IOTaskType GetIOTaskType(
   }
 }
 
+file_manager_private::PolicyErrorType GetPolicyErrorType(
+    absl::optional<file_manager::io_task::PolicyErrorType> type) {
+  if (!type.has_value()) {
+    return file_manager_private::PolicyErrorType::POLICY_ERROR_TYPE_NONE;
+  }
+  switch (type.value()) {
+    case io_task::PolicyErrorType::kDlp:
+      return file_manager_private::POLICY_ERROR_TYPE_DLP;
+    case io_task::PolicyErrorType::kEnterpriseConnectors:
+      return file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
+    case io_task::PolicyErrorType::kDlpWarningTimeout:
+      return file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT;
+    default:
+      NOTREACHED();
+      return file_manager_private::POLICY_ERROR_TYPE_NONE;
+  }
+}
+
 std::string FileErrorToErrorName(base::File::Error error_code) {
   switch (error_code) {
     case base::File::FILE_ERROR_NOT_FOUND:
@@ -320,7 +340,7 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
   }
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 class DriveFsEventRouterImpl : public DriveFsEventRouter {
@@ -416,8 +436,9 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
     extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
   }
 
-  Profile* const profile_;
-  const std::map<base::FilePath, std::unique_ptr<FileWatcher>>* const
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<const std::map<base::FilePath, std::unique_ptr<FileWatcher>>,
+                ExperimentalAsh>
       file_watchers_;
 };
 
@@ -585,6 +606,7 @@ void EventRouter::Shutdown() {
       DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
     integration_service->RemoveObserver(this);
+    integration_service->RemoveObserver(drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->RemoveObserver(
         drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->set_dialog_handler({});
@@ -651,6 +673,7 @@ void EventRouter::ObserveEvents() {
       DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
     integration_service->AddObserver(this);
+    integration_service->AddObserver(drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->AddObserver(
         drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->set_dialog_handler(
@@ -1219,6 +1242,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.task_id = status.task_id;
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
+  event_status.policy_error = GetPolicyErrorType(status.policy_error);
   event_status.destination_volume_id = status.GetDestinationVolumeId();
   event_status.show_notification = status.show_notification;
 

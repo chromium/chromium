@@ -70,7 +70,7 @@ bool IsOnlineLoginEnforced(const std::wstring& sid);
 GURL EscrowServiceUrl();
 
 // Enrolls the machine to with the Google MDM server if not already.
-HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties);
+HRESULT EnrollToGoogleMdmIfNeeded(const base::Value::Dict& properties);
 
 // Constructs the password lsa store key for the given |sid|.
 std::wstring GetUserPasswordLsaStoreKey(const std::wstring& sid);

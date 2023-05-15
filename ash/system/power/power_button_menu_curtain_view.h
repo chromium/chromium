@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/check_deref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"
@@ -29,6 +31,9 @@ class ASH_EXPORT PowerButtonMenuCurtainView
 
   void ScheduleShowHideAnimation(bool show);
 
+  // views::View:
+  void OnThemeChanged() override;
+
   METADATA_HEADER(PowerButtonMenuCurtainView);
 
  private:
@@ -37,6 +42,17 @@ class ASH_EXPORT PowerButtonMenuCurtainView
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  views::ImageView& enterprise_icon() {
+    return CHECK_DEREF(enterprise_icon_.get());
+  }
+  views::Label& title_text() { return CHECK_DEREF(title_text_.get()); }
+  views::Label& description_text() {
+    return CHECK_DEREF(description_text_.get());
+  }
+
+  raw_ptr<views::ImageView> enterprise_icon_;
+  raw_ptr<views::Label> title_text_;
+  raw_ptr<views::Label> description_text_;
   std::unique_ptr<ash::SystemShadow> shadow_;
 };
 

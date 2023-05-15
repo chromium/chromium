@@ -43,9 +43,7 @@ class MODULES_EXPORT PresentationReceiver final
 
   // mojom::blink::PresentationReceiver
   void OnReceiverConnectionAvailable(
-      mojom::blink::PresentationInfoPtr,
-      mojo::PendingRemote<mojom::blink::PresentationConnection>,
-      mojo::PendingReceiver<mojom::blink::PresentationConnection>) override;
+      mojom::blink::PresentationConnectionResultPtr result) override;
 
   void RegisterConnection(ReceiverPresentationConnection*);
   void RemoveConnection(ReceiverPresentationConnection*);

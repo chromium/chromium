@@ -1032,8 +1032,7 @@ TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
 
   auto* canvas = GetDocument().getElementById("canvas");
   canvas->setAttribute(html_names::kClassAttr, "updated");
-  GetDocument().View()->SetPaintArtifactCompositorNeedsUpdate(
-      PaintArtifactCompositorUpdateReason::kTest);
+  GetDocument().View()->SetPaintArtifactCompositorNeedsUpdate();
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(

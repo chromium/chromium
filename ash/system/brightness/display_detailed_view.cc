@@ -34,9 +34,9 @@ namespace ash {
 namespace {
 
 constexpr auto kScrollViewMargin = gfx::Insets::TLBR(0, 12, 16, 12);
-constexpr auto kTileMargin = gfx::Insets::TLBR(4, 4, 8, 4);
-constexpr auto kSliderPadding = gfx::Insets::TLBR(4, 0, 0, 0);
-constexpr auto kSliderBorder = gfx::Insets::VH(0, 4);
+constexpr auto kTileMargin = gfx::Insets::TLBR(4, 4, 12, 4);
+constexpr auto kSliderPadding = gfx::Insets::TLBR(0, 0, 4, 0);
+constexpr auto kSliderBorder = gfx::Insets(4);
 
 }  // namespace
 
@@ -90,7 +90,7 @@ DisplayDetailedView::DisplayDetailedView(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, kSliderPadding,
           /*between_child_spacing=*/0));
-  slider_layout->SetFlexForView(unified_brightness_view->slider()->parent(),
+  slider_layout->SetFlexForView(unified_brightness_view->slider(),
                                 /*flex=*/1);
   scroll_content()->AddChildView(std::move(unified_brightness_view));
   // Sets the ID for testing.
@@ -105,7 +105,7 @@ views::View* DisplayDetailedView::GetScrollContentForTest() {
 }
 
 void DisplayDetailedView::CreateExtraTitleRowButtons() {
-  DCHECK(!settings_button_);
+  CHECK(!settings_button_);
 
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
 

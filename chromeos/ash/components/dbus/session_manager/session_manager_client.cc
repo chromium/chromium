@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/path_service.h"
@@ -1226,7 +1227,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     std::move(callback).Run(AdbSideloadResponseCode::SUCCESS, is_allowed);
   }
 
-  dbus::ObjectProxy* session_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> session_manager_proxy_ = nullptr;
   std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};

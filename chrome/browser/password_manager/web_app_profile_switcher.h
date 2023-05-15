@@ -61,7 +61,7 @@ class WebAppProfileSwitcher : public ProfileObserver {
   web_app::AppId app_id_;
 
   // The profile for which the app is already open.
-  base::raw_ref<Profile> active_profile_;
+  raw_ref<Profile> active_profile_;
 
   // The callback that needs to be invoked when the profile is switched,
   // or when switching is aborted.

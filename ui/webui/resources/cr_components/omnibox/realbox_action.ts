@@ -32,6 +32,15 @@ class RealboxActionElement extends PolymerElement {
       },
 
       /**
+       * Index of the action in the autocomplete result. Used to inform handler
+       * of action that was selected.
+       */
+      actionIndex: {
+        type: Number,
+        value: -1,
+      },
+
+      /**
        * Index of the match in the autocomplete result. Used to inform embedder
        * of events such as click, keyboard events etc.
        */
@@ -65,10 +74,31 @@ class RealboxActionElement extends PolymerElement {
   }
 
   action: Action;
+  actionIndex: number;
   matchIndex: number;
   override ariaLabel: string;
   private hintHtml_: TrustedHTML;
   private tooltip_: string;
+
+  private onActionClick_(e: MouseEvent|KeyboardEvent) {
+    this.dispatchEvent(new CustomEvent('execute-action', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        event: e,
+        actionIndex: this.actionIndex,
+      },
+    }));
+
+    e.preventDefault();   // Prevents default browser action (navigation).
+    e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+  }
+
+  private onActionKeyDown_(e: KeyboardEvent) {
+    if (e.key && (e.key === 'Enter' || e.key === ' ')) {
+      this.onActionClick_(e);
+    }
+  }
 
   //============================================================================
   // Helpers

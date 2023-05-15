@@ -4,24 +4,6 @@
     height: 100%;
   }
 
-  .title {
-    color: var(--google-grey-900);
-    font-family: 'Google Sans', Roboto, sans-serif;
-    font-size: 28px;
-    padding-top: 20px;
-  }
-
-  .sub-title {
-    color: var(--google-grey-700);
-    font-family: Roboto;
-    font-size: 14px;
-    padding-top: 8px;
-  }
-
-  .error-icon {
-    fill: var(--google-blue-600);
-  }
-
   #webviewDiv {
     height: 100vh;
   }
@@ -30,40 +12,7 @@
     display: flex;
     height: 100%;
   }
-
-  #offlineContentDiv {
-    padding-inline-start: 32px;
-  }
-
-  #networkUnavailableDiv {
-    padding-inline-start: 190px;
-    padding-top: 50px;
-  }
-
-  #closeButtonDiv {
-    padding-inline-start: 632px;
-    padding-top: 116px;
-  }
 </style>
-<div id="offlineContentDiv" role="dialog" aria-modal="true"
-    aria-label="$i18n{pageTitle}">
-  <div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" width="32px" height="32px" viewBox="0 0 22 22">
-      <path d="M11 15h2v2h-2v-2zm0-8h2v6h-2V7zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z">
-      <path fill="none" d="M0 0h24v24H0V0z">
-    </svg>
-  </div>
-  <div class="title">$i18n{networkDownHeading}</div>
-  <div class="sub-title">$i18n{networkDownDescription}</div>
-  <div id="networkUnavailableDiv">
-    <img role="presentation" src="images/network_unavailable.svg">
-  </div>
-  <div id="closeButtonDiv">
-    <cr-button class="action-button" on-click="closeDialog_" tabindex="0">
-      $i18n{networkDownButtonLabel}
-    </cr-button>
-  </div>
-</div>
 <div id="webviewDiv" role="dialog" aria-modal="true"
     aria-label="$i18n{pageTitle}">
   <webview id="webview"></webview>

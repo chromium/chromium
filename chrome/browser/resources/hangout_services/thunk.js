@@ -73,14 +73,6 @@ chrome.runtime.onMessageExternal.addListener(function(
     } else if (method === 'logging.stop') {
       chrome.webrtcLoggingPrivate.stop(requestInfo, origin, doSendResponse);
       return true;
-    } else if (method === 'logging.upload') {
-      chrome.webrtcLoggingPrivate.upload(requestInfo, origin, doSendResponse);
-      return true;
-    } else if (method === 'logging.uploadStored') {
-      const logId = message['logId'];
-      chrome.webrtcLoggingPrivate.uploadStored(
-          requestInfo, origin, logId, doSendResponse);
-      return true;
     } else if (method === 'logging.stopAndUpload') {
       // Stop everything and upload. This is allowed to be called even if
       // logs have already been stopped or not started. Therefore, ignore
@@ -123,11 +115,6 @@ chrome.runtime.onMessageExternal.addListener(function(
       return true;
     } else if (method === 'logging.discard') {
       chrome.webrtcLoggingPrivate.discard(requestInfo, origin, doSendResponse);
-      return true;
-    } else if (method === 'getNaclArchitecture') {
-      chrome.runtime.getPlatformInfo(function(obj) {
-        doSendResponse(obj.nacl_arch);
-      });
       return true;
     } else if (method === 'logging.startRtpDump') {
       const incoming = message['incoming'] || false;

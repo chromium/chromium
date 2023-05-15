@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -126,7 +127,8 @@ class ScopedLacrosOnlyHandle {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
@@ -291,7 +293,8 @@ class BrowserTabsModelProviderImplTest
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
 
   bool enable_tab_sync_ = true;
-  std::vector<const sync_sessions::SyncedSession*>* sessions_ = nullptr;
+  raw_ptr<std::vector<const sync_sessions::SyncedSession*>, ExperimentalAsh>
+      sessions_ = nullptr;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };
 

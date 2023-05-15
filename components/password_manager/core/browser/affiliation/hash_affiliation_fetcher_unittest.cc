@@ -130,8 +130,10 @@ void HashAffiliationFetcherTest::VerifyRequestPayload(
   EXPECT_THAT(actual_hash_prefixes,
               testing::UnorderedElementsAreArray(expected_hash_prefixes));
 
-  // Change password info requires grouping info enabled.
-  EXPECT_EQ(request.mask().grouping_info(), request_info.change_password_info);
+  if (request_info.change_password_info) {
+    // Change password info requires grouping info enabled.
+    EXPECT_TRUE(request.mask().grouping_info());
+  }
   EXPECT_EQ(request.mask().change_password_info(),
             request_info.change_password_info);
 }
@@ -185,7 +187,7 @@ TEST_F(HashAffiliationFetcherTest,
   ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(hash_prefixes, request_info));
 }
 
-TEST_F(HashAffiliationFetcherTest, BasicReqestAndResponse) {
+TEST_F(HashAffiliationFetcherTest, BasicRequestAndResponse) {
   const char kNotExampleAndroidFacetURI[] =
       "android://hash1234@com.example.not";
   const char kNotExampleWebFacetURI[] = "https://not.example.com";

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -32,7 +33,6 @@ enum class Action;
 class ClipboardHistory;
 class ClipboardHistoryItem;
 class ClipboardHistoryItemView;
-class ClipboardHistoryResourceManager;
 
 // Used to show the clipboard history menu, which holds the last few things
 // copied.
@@ -44,8 +44,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
       ClipboardHistoryController::OnMenuClosingCallback
           on_menu_closing_callback,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history,
-      const ClipboardHistoryResourceManager* resource_manager);
+      const ClipboardHistory* clipboard_history);
 
   ClipboardHistoryMenuModelAdapter(const ClipboardHistoryMenuModelAdapter&) =
       delete;
@@ -105,8 +104,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<MenuModelWithWillCloseCallback> model,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history,
-      const ClipboardHistoryResourceManager* resource_manager);
+      const ClipboardHistory* clipboard_history);
 
   // Advances the pseduo focus from the selected history item view (backward if
   // `reverse` is true).
@@ -129,7 +127,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   std::unique_ptr<MenuModelWithWillCloseCallback> const model_;
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
-  views::MenuItemView* root_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_view_ =
+      nullptr;
   // Responsible for showing |root_view_|.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -148,11 +147,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // It updates synchronously when a item is removed.
   ItemViewsByCommandId item_views_by_command_id_;
 
-  const ClipboardHistory* const clipboard_history_;
-
-  // Resource manager used to fetch image models. Owned by
-  // ClipboardHistoryController.
-  const ClipboardHistoryResourceManager* const resource_manager_;
+  const raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
 
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.

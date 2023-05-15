@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">由於裝置儲存空間不足，因此已停止錄影。如要錄製更多影片，請先騰出裝置空間。</translation>
 <translation id="2036868001356139588">計時器時間</translation>
 <translation id="2064538373111010176">開咗「<ph name="CAMERA" />」</translation>
-<translation id="2128052519899549250">錄製延時攝影影片</translation>
 <translation id="2134029355740465625">影片設定</translation>
 <translation id="2144806332417375165">自訂影片參數</translation>
 <translation id="2175927920773552910">二維條碼</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">此相機無法變更解像度</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
-<translation id="4281620174117014503">中解像度</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
 <translation id="4445542136948522167">停止拍照</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5320594929574852403">向左移</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">延時攝影</translation>
 <translation id="5662366948659129155">正在掃瞄第 <ph name="COUNT" /> 頁</translation>
 <translation id="5671277269877808209">正方形</translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5753488212459587150">啟用專業模式</translation>
 <translation id="5759254179196327752">掃瞄文件</translation>
@@ -138,6 +136,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">每秒畫格數：60</translation>
 <translation id="7671804233658741790">文件右下角</translation>
+<translation id="7684446460490665873">錄製延時攝影影片</translation>
 <translation id="7692090236657809299">啟用平移、傾斜和縮放功能</translation>
 <translation id="7726641833034062494">錄製一般影片</translation>
 <translation id="7748344063862150053">文件右上角</translation>
@@ -163,6 +162,7 @@
 <translation id="9045010116236796332">將鏡頭對準文件，確認各邊都在方框內</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">正在處理圖片…</translation>
+<translation id="9161584225258678723">延時攝影</translation>
 <translation id="922762992951083513">開啟鏡像</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 </translationbundle>

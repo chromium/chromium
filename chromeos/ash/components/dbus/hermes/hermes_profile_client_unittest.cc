@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_test_utils.h"
@@ -50,7 +51,7 @@ class HermesProfileClientTest : public HermesClientTestBase {
 
  protected:
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  HermesProfileClient* client_;
+  raw_ptr<HermesProfileClient, ExperimentalAsh> client_;
 };
 
 TEST_F(HermesProfileClientTest, TestEnableProfile) {

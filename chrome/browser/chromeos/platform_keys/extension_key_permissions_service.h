@@ -210,8 +210,8 @@ class ExtensionKeyPermissionsService {
       bool can_user_grant_permission);
 
   const std::string extension_id_;
-  raw_ptr<extensions::StateStore, DanglingUntriaged> extensions_state_store_ =
-      nullptr;
+  raw_ptr<extensions::StateStore, FlakyDanglingUntriaged>
+      extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   const raw_ptr<policy::PolicyService> profile_policies_;
   const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;

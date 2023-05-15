@@ -1,6 +1,6 @@
 [
     {
-        "duration": "35.0",
+        "duration": "33.0",
         "name": "rendering.desktop/css_value_type_shadow"
     },
     {
@@ -8,119 +8,119 @@
         "name": "rendering.desktop/main_30fps_impl_60fps"
     },
     {
-        "duration": "70.0",
+        "duration": "64.0",
         "name": "v8.browsing_desktop/browse:media:googleplaystore:2021"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:media:imgur"
     },
     {
-        "duration": "128.0",
+        "duration": "123.0",
         "name": "v8.browsing_desktop/browse:media:pinterest:2018"
     },
     {
-        "duration": "103.0",
+        "duration": "98.0",
         "name": "v8.browsing_desktop/browse:media:tumblr:2018"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:media:youtube:2019"
     },
     {
-        "duration": "102.0",
+        "duration": "98.0",
         "name": "v8.browsing_desktop/browse:media:youtubetv:2019"
     },
     {
-        "duration": "112.0",
+        "duration": "107.0",
         "name": "v8.browsing_desktop/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "89.0",
+        "duration": "80.0",
         "name": "v8.browsing_desktop/browse:news:cnn:2021"
     },
     {
-        "duration": "83.0",
+        "duration": "78.0",
         "name": "v8.browsing_desktop/browse:news:flipboard:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:news:hackernews:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:news:nytimes:2020"
     },
     {
-        "duration": "106.0",
+        "duration": "97.0",
         "name": "v8.browsing_desktop/browse:news:reddit:2020"
     },
     {
-        "duration": "87.0",
+        "duration": "82.0",
         "name": "v8.browsing_desktop/browse:search:google:2020"
     },
     {
-        "duration": "69.0",
+        "duration": "65.0",
         "name": "v8.browsing_desktop/browse:search:google_india:2021"
     },
     {
-        "duration": "113.0",
+        "duration": "108.0",
         "name": "v8.browsing_desktop/browse:social:facebook_infinite_scroll:2018"
     },
     {
-        "duration": "96.0",
+        "duration": "90.0",
         "name": "v8.browsing_desktop/browse:social:tumblr_infinite_scroll:2018"
     },
     {
-        "duration": "86.0",
+        "duration": "77.0",
         "name": "v8.browsing_desktop/browse:social:twitter:2018"
     },
     {
-        "duration": "99.0",
+        "duration": "94.0",
         "name": "v8.browsing_desktop/browse:social:twitter_infinite_scroll:2018"
     },
     {
-        "duration": "97.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tech:discourse_infinite_scroll:2018"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:autocad:2021"
     },
     {
-        "duration": "72.0",
+        "duration": "67.0",
         "name": "v8.browsing_desktop/browse:tools:docs_scrolling"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:gmail-compose:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:gmail-labelclick:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:gmail-openconversation:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:gmail-search:2020"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:maps:2019"
     },
     {
-        "duration": "90.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:photoshop:2021"
     },
     {
-        "duration": "184.0",
+        "duration": "201.0",
         "name": "v8.browsing_desktop/browse:tools:photoshop_warm:2021"
     },
     {
-        "duration": "40.0",
+        "duration": "35.0",
         "name": "v8.browsing_desktop/browse:tools:sheets:2019"
     }
 ]

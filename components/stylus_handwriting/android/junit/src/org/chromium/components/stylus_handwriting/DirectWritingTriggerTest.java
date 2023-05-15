@@ -22,9 +22,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+
+import androidx.annotation.RequiresApi;
 
 import org.junit.After;
 import org.junit.Before;
@@ -329,5 +330,29 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder, never()).updateEditableBounds(editableBounds, mContainerView);
         verify(mDwServiceBinder, never())
                 .onStopRecognition(any(), eq(editableBounds), eq(mContainerView));
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.S)
+    @Feature({"Stylus Handwriting"})
+    public void testHoverIconHandling_stylusCursorRemoved() {
+        assertTrue(mDwTrigger.didHandleCursorUpdate(mContainerView));
+        assertTrue(mDwTrigger.isHandwritingIconShowing());
+        mDwTrigger.notifyStylusWritingCursorRemoved();
+        assertFalse(mDwTrigger.isHandwritingIconShowing());
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.S)
+    @Feature({"Stylus Handwriting"})
+    public void testHoverIconHandling_onHoverExit() {
+        mDwTrigger.updateDWSettings(mContext);
+        assertTrue(mDwTrigger.didHandleCursorUpdate(mContainerView));
+        assertTrue(mDwTrigger.isHandwritingIconShowing());
+
+        MotionEvent hoverExitEvent =
+                getMotionEvent(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.ACTION_HOVER_EXIT);
+        mDwTrigger.handleHoverEvent(hoverExitEvent, mContainerView);
+        assertFalse(mDwTrigger.isHandwritingIconShowing());
     }
 }

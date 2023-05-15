@@ -279,7 +279,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * @param {string} element_id
    * @param {string} string_id
    * @param {SanitizeInnerHtmlOpts=} opts
-   * @param  {Array<string>|string} anchor_ids
+   * @param  {...string} anchor_ids
    */
   updateElementWithStringAndAnchorTag_(
       element_id, string_id, opts, ...anchor_ids) {

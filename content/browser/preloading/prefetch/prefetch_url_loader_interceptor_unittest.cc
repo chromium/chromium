@@ -41,6 +41,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_timing_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -190,8 +191,11 @@ class TestPrefetchService : public PrefetchService {
 
 class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
  public:
-  explicit TestPrefetchURLLoaderInterceptor(int frame_tree_node_id)
-      : PrefetchURLLoaderInterceptor(frame_tree_node_id) {}
+  explicit TestPrefetchURLLoaderInterceptor(
+      int frame_tree_node_id,
+      const GlobalRenderFrameHostId& previous_render_frame_host_id)
+      : PrefetchURLLoaderInterceptor(frame_tree_node_id,
+                                     previous_render_frame_host_id) {}
   ~TestPrefetchURLLoaderInterceptor() override = default;
 
   void AddPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container) {
@@ -244,7 +248,8 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     navigation_simulator->Start();
 
     interceptor_ = std::make_unique<TestPrefetchURLLoaderInterceptor>(
-        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+        main_rfh()->GetGlobalId());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
@@ -443,7 +448,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -473,7 +481,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -517,7 +525,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -546,7 +557,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
 
   // A decision on whether the navigation should be intercepted shouldn't be
   // made until after the cookie copy process is completed.
@@ -598,7 +609,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/false,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -622,7 +636,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -661,7 +675,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -692,7 +706,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
@@ -714,7 +731,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -742,7 +759,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -769,7 +789,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -797,7 +817,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -826,7 +849,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -867,7 +890,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -896,7 +922,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -919,7 +945,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -948,7 +977,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -975,7 +1004,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -1004,7 +1036,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
 
   // A decision on whether the navigation should be intercepted shouldn't be
   // made until after the cookie copy process is completed.
@@ -1059,7 +1091,10 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -1090,7 +1125,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
       request1, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -1111,7 +1146,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
       request2, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kRedirectUrl),
-      base::BindOnce([](bool) { NOTREACHED(); }));
+      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
 
   on_start_cookie_copy_run_loop.Run();
   task_environment()->FastForwardBy(base::Milliseconds(20));

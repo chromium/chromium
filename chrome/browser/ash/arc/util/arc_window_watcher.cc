@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -95,8 +96,8 @@ class Tracker : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
-  aura::Window* arc_window_ =
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, ExperimentalAsh> arc_window_ =
       nullptr;  // set to window_ when we know it is ARC.
   bool display_reported_ = false;
 };

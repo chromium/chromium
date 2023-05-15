@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async t => {
+  let onabort_called = false;
+  navigation.onnavigate = t.step_func(e => {
+    (function() {
+      let signal = AbortSignal.any([e.signal]);
+      signal.onabort = () => onabort_called = true;
+      signal = null;
+    })();
+    gc();
+    e.preventDefault();
+  });
+  await promise_rejects_dom(t, "AbortError", navigation.navigate("#1").committed);
+  assert_true(onabort_called);
+});
+</script>

@@ -10,9 +10,10 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_web_state_list_observer.h"
 
@@ -80,6 +81,7 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
 // static
 WebSessionStateCache* WebSessionStateCacheFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
+  CHECK(web::UseNativeSessionRestorationCache());
   WebSessionStateCacheWrapper* wrapper =
       static_cast<WebSessionStateCacheWrapper*>(
           GetInstance()->GetServiceForBrowserState(browser_state, true));

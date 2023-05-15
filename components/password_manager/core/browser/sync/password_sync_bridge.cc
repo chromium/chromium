@@ -347,8 +347,8 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     return;  // Sync processor not yet ready, don't sync.
   }
 
-  // ActOnPasswordStoreChanges() can be called from ApplySyncChanges(). Do
-  // nothing in this case.
+  // ActOnPasswordStoreChanges() can be called from
+  // ApplyIncrementalSyncChanges(). Do nothing in this case.
   if (is_processing_remote_sync_changes_) {
     return;
   }
@@ -393,7 +393,7 @@ PasswordSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This method merges the local and remote passwords based on their client
@@ -658,13 +658,18 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     metrics_util::
         LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
             entity_data.size() - password_count);
+  } else {
+    base::UmaHistogramCustomCounts(
+        "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync",
+        key_to_local_specifics_map.size(), 0, 1000, 100);
   }
 
   sync_enabled_or_disabled_cb_.Run();
   return absl::nullopt;
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+PasswordSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   base::AutoReset<bool> processing_changes(&is_processing_remote_sync_changes_,

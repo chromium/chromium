@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -79,7 +80,7 @@ class SavedDeskIconView : public views::View {
   size_t sorting_key_;
 
   // Owned by the views hierarchy.
-  views::Label* count_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> count_label_ = nullptr;
 
  private:
   friend class SavedDeskIconViewTestApi;
@@ -140,7 +141,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   // this will be an app id.
   std::string icon_identifier_;
 
-  RoundedImageView* icon_view_ = nullptr;
+  raw_ptr<RoundedImageView, ExperimentalAsh> icon_view_ = nullptr;
 
   // Callback from the icon container that updates the icon order and overflow
   // icon.

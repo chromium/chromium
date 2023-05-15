@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -52,17 +53,17 @@ class StringSourceStream : public net::SourceStream {
     if (!MayHaveMoreBytes())
       return net::OK;
     const size_t read_size =
-        std::min(src_.size() - read_ofs_, static_cast<size_t>(buffer_size));
-    memcpy(dest_buffer->data(), src_.data() + read_ofs_, read_size);
+        std::min(src_->size() - read_ofs_, static_cast<size_t>(buffer_size));
+    memcpy(dest_buffer->data(), src_->data() + read_ofs_, read_size);
     read_ofs_ += read_size;
     return read_size;
   }
   std::string Description() const override { return ""; }
-  bool MayHaveMoreBytes() const override { return read_ofs_ < src_.size(); }
+  bool MayHaveMoreBytes() const override { return read_ofs_ < src_->size(); }
 
  private:
   size_t read_ofs_ = 0;
-  const std::string& src_;
+  const raw_ref<const std::string, ExperimentalAsh> src_;
 };
 
 class PpdLineReaderImpl : public PpdLineReader {

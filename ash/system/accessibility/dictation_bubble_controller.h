@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -86,8 +87,9 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   base::ObserverList<Observer> observers_;
 
   // Owned by views hierarchy.
-  DictationBubbleView* dictation_bubble_view_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<DictationBubbleView, ExperimentalAsh> dictation_bubble_view_ =
+      nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};

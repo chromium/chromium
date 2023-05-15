@@ -898,8 +898,8 @@ class SessionRestoreImpl : public BrowserListObserver {
          tab_groups) {
       if (session_tab_group->saved_guid.has_value() &&
           saved_tab_group_keyed_service) {
-        const base::GUID& saved_guid =
-            base::GUID::ParseLowercase(session_tab_group->saved_guid.value());
+        const base::Uuid& saved_guid =
+            base::Uuid::ParseLowercase(session_tab_group->saved_guid.value());
 
         saved_tab_group_keyed_service->StoreLocalToSavedId(
             saved_guid, new_group_ids.at(session_tab_group->id));

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -143,8 +144,8 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // Clocks that can be mocked in tests to fast-forward time.
-  const base::Clock* const clock_;
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   PrefChangeRegistrar local_state_registrar_;
 

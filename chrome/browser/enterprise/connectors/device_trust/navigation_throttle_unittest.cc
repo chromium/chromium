@@ -88,9 +88,11 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
     fake_connector_ = std::make_unique<FakeDeviceTrustConnectorService>(
         profile_.GetTestingPrefService());
-    fake_connector_->Initialize();
 
-    fake_connector_->update_policy(GetTrustedUrls());
+    fake_connector_->UpdateInlinePolicy(GetTrustedUrls(),
+                                        DTCPolicyLevel::kBrowser);
+    fake_connector_->UpdateInlinePolicy(GetTrustedUrls(),
+                                        DTCPolicyLevel::kUser);
 
     EXPECT_CALL(mock_device_trust_service_, Watches(_))
         .WillRepeatedly(Invoke(
@@ -120,10 +122,15 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     base::RunLoop run_loop;
     throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
     EXPECT_CALL(mock_device_trust_service_,
-                BuildChallengeResponse(kChallenge, _))
+                BuildChallengeResponse(
+                    kChallenge,
+                    std::set<DTCPolicyLevel>{DTCPolicyLevel::kBrowser,
+                                             DTCPolicyLevel::kUser},
+                    _))
         .WillOnce(
             [&response](
                 const std::string& serialized_challenge,
+                std::set<DTCPolicyLevel> levels,
                 test::MockDeviceTrustService::DeviceTrustCallback callback) {
               std::move(callback).Run(response);
             });
@@ -203,7 +210,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
 
   EXPECT_CALL(test_handle, RemoveRequestHeader("X-Device-Trust"));
   EXPECT_CALL(mock_device_trust_service_,
-              BuildChallengeResponse(kChallenge, _));
+              BuildChallengeResponse(kChallenge, _, _));
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 
@@ -257,7 +264,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestChallengeNotFromIdp) {
   auto throttle = CreateThrottle(&test_handle);
 
   EXPECT_CALL(test_handle, RemoveRequestHeader(_)).Times(0);
-  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(_, _))
+  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(_, _, _))
       .Times(0);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
@@ -275,10 +282,16 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
   throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
 
   test::MockDeviceTrustService::DeviceTrustCallback captured_callback;
-  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(kChallenge, _))
+  EXPECT_CALL(
+      mock_device_trust_service_,
+      BuildChallengeResponse(kChallenge,
+                             std::set<DTCPolicyLevel>{DTCPolicyLevel::kBrowser,
+                                                      DTCPolicyLevel::kUser},
+                             _))
       .WillOnce(
           [&captured_callback](
               const std::string& serialized_challenge,
+              std::set<DTCPolicyLevel> levels,
               test::MockDeviceTrustService::DeviceTrustCallback callback) {
             captured_callback = std::move(callback);
           });

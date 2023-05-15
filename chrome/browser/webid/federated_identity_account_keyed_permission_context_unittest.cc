@@ -65,7 +65,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
     base::Value::List account_list;
     account_list.Append(account);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
-    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+    context()->GrantObjectPermission(rp, std::move(new_object));
   }
   auto granted_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, granted_objects.size());
@@ -127,7 +127,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
     account_list.Append(account_a);
     account_list.Append(account_b);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
-    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+    context()->GrantObjectPermission(rp, std::move(new_object));
   }
   {
     base::Value::Dict new_object;
@@ -135,7 +135,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
     base::Value::List account_list;
     account_list.Append(account_c);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
-    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+    context()->GrantObjectPermission(rp, std::move(new_object));
   }
 
   // Permissions in the old format should only be returned when
@@ -266,7 +266,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
   base::Value::Dict new_object;
   new_object.Set(kTestIdpOriginKey, site.Serialize());
   new_object.Set("bug", base::Value("wrong"));
-  context()->GrantObjectPermission(site, base::Value(std::move(new_object)));
+  context()->GrantObjectPermission(site, std::move(new_object));
 
   context()->GrantPermission(site, site, site, account);
   EXPECT_TRUE(context()->HasPermission(site, site, site, account));

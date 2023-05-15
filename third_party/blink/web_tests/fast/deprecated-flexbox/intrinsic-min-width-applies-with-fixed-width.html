@@ -4,8 +4,6 @@
     width: 10px;
     min-width: -webkit-min-content;
     min-width: -moz-min-content;
-    min-width: -ie-min-content;
-    min-width: -o-min-content;
     min-width: min-content;
     outline: 2px solid;
     display: -webkit-box;
@@ -14,8 +12,6 @@
     width: 10px;
     min-width: -webkit-max-content;
     min-width: -moz-max-content;
-    min-width: -ie-max-content;
-    min-width: -o-max-content;
     min-width: max-content;
     outline: 2px solid;
     display: -webkit-box;
@@ -24,8 +20,6 @@
     width: 10px;
     min-width: -webkit-fit-content;
     min-width: -moz-fit-content;
-    min-width: -ie-fit-content;
-    min-width: -o-fit-content;
     min-width: fit-content;
     outline: 2px solid;
     display: -webkit-box;
@@ -45,7 +39,7 @@ div {
 <body onload="checkLayout('body > div')">
 <p>Check that min-width intrinsic size still applies if a fixed width is set.</p>
 
-<div class="min-content" data-expected-width=20>
+<div class="min-content" data-expected-width=40>
     <div class="child"></div><div class="child"></div>
 </div>
 
@@ -58,13 +52,13 @@ div {
 </div>
 
 <div style="width: 30px">
-    <div class="fit-content" data-expected-width=30>
+    <div class="fit-content" data-expected-width=40>
         <div class="child"></div><div class="child"></div>
     </div>
 </div>
 
 <div style="width: 10px">
-    <div class="fit-content" data-expected-width=20>
+    <div class="fit-content" data-expected-width=40>
         <div class="child"></div><div class="child"></div>
     </div>
 </div>

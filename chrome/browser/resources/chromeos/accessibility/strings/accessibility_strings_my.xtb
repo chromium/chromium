@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="100506692671054486">ယခင်ကွန်မန်း မရှိပါ</translation>
 <translation id="1009046985747440431">ရွှေ့ကြည့်ရန် အပေါ် သို့မဟုတ် အောက် မြားကို နှိပ်ပါ။ ဖွင့်ရန် enter ကို နှိပ်ပါ</translation>
 <translation id="1011903154582639569">ကီးကိုရှာပြီး စာရိုက်ရန်အတွက် မ လိုက်ပါ</translation>
 <translation id="1012173283529841972">အရာ စာရင်း</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ခရမ်းပြာရဲရဲ</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="3962990492275676168">လက်ရှိတည်နေရာမှ စတင်ဖတ်ရန်</translation>
+<translation id="397094149579293440">ရွေးထားသော စာသားမရှိပါ</translation>
 <translation id="3970951409746498040">သဲညို</translation>
 <translation id="3989324057180830702">အဖွင့်အပိတ်ခလုတ်</translation>
 <translation id="3991317907213946254">ညိုဝါ</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">ယခင် အဆင့် ၁ ခေါင်းစီး မရှိပါ</translation>
 <translation id="4787577491510559358">လက်ရှိအရာအတွက် ဖော်မက်ကို ကြေညာရန်</translation>
 <translation id="479989351350248267">ရှာဖွေမှု</translation>
+<translation id="4802034228771424756">အထူးပြသထားသော စာသားအကွက် မရှိပါ</translation>
 <translation id="4804818685124855865">အဆက်ဖြတ်ရန်</translation>
 <translation id="481165870889056555">လက်ရှိစာမျက်နှာ၏ ခေါင်းစဉ်အား ကြေညာရန်</translation>
 <translation id="4815668758102003883">စိမ်းပြာဖျော့</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">အတွင်းပိုင်း လင့်</translation>
 <translation id="4909019435900810068">စကားလုံးတစ်လုံးစာ အနောက်ဆုတ်ရန်</translation>
 <translation id="4911349081560453449">ယခင် အမှန်ခြစ်ရန်အကွက် မရှိပါ</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> မရပါ၊ ထပ်လုပ်ကြည့်ပါ</translation>
 <translation id="492295894462528572">စကားချီး</translation>
 <translation id="495046168593986294">အပေါ်သို့ လှိမ့်ရန်</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4953585991029886728">စာသား တည်းဖြတ်ရန်</translation>
+<translation id="4964701498510730546">စာသားအကွက် အလွတ်ဖြစ်နေသည်</translation>
 <translation id="4973717656530883744">နည်းဆုံး <ph name="X" /></translation>
 <translation id="4974612477719259470">ယခင် ခလုတ် မရှိပါ</translation>
 <translation id="4979404613699303341">အရင်ခလုတ်</translation>
+<translation id="4981239367072766915">အမျိုးအမည်မသိ ထည့်သွင်းမှု</translation>
 <translation id="4982917827052020884">ပုံမှန်အသုံးပြုမည့် ကီးအချို့ဖြင့် စလိုက်ရအောင်။ လက်ရှိပြောဆိုမှုမှန်သမျှကို ရပ်ရန် Control ကီးကို သုံးနိုင်သည်။ သင့်ကီးဘုတ်၏ ဘယ်ဘက်အောက်ခြေထောင့်တွင် Control ကီးကို ရှာပါ။ ရှေ့ဆက်ရန် Control ကီးကို နှိပ်ပါ။</translation>
 <translation id="4983588134362688868">စာမျက်နှာ ထိပ်ပိုင်းသို့ ခုန်သွားရန်</translation>
 <translation id="4986606102545753256"><ph name="NAME" />၊ ဝင်းဒိုး</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">လက်ရှိဘက်ထရီ အခြေအနေကို ကြေညာရန်</translation>
 <translation id="4997282455736854877"><ph name="NAME" />၊ ရေဒီယို ခလုတ် ရွေးထား</translation>
 <translation id="5012724933919010465"><ph name="NAME" />၊ မီနူး အကြောင်းအရာ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> မရပါ၊ <ph name="REASON" /></translation>
 <translation id="5020651427400641814">စကားသံမှတ်သားခြင်းကို ဖွင့်ရန်</translation>
 <translation id="5041394372352067729">မျက်မမြင်စာကို စာမျက်နှာ၏ အပေါ်သို့ ပို့ရန်</translation>
 <translation id="5042770794184672516">စကားပြောသံ ပမာဏ မြှင့်ရန်</translation>

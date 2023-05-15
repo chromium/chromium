@@ -28,11 +28,11 @@
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3D12Backend.h>
-using dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle;
-using dawn::native::d3d12::ExternalImageDXGI;
-using dawn::native::d3d12::ExternalImageDXGIBeginAccessDescriptor;
-using dawn::native::d3d12::ExternalImageDXGIFenceDescriptor;
+#include <dawn/native/D3DBackend.h>
+using dawn::native::d3d::ExternalImageDescriptorDXGISharedHandle;
+using dawn::native::d3d::ExternalImageDXGI;
+using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
+using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gfx {
@@ -198,7 +198,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

@@ -238,6 +238,17 @@ def ProcessJavacOutput(output, target_name):
 
   output = build_utils.FilterReflectiveAccessJavaWarnings(output)
 
+  # Warning currently cannot be silenced via javac flag.
+  if 'Unsafe is internal proprietary API' in output:
+    # Example:
+    # HiddenApiBypass.java:69: warning: Unsafe is internal proprietary API and
+    # may be removed in a future release
+    # import sun.misc.Unsafe;
+    #                 ^
+    output = re.sub(r'.*?Unsafe is internal proprietary API[\s\S]*?\^\n', '',
+                    output)
+    output = re.sub(r'\d+ warnings\n', '', output)
+
   lines = (l for l in output.split('\n') if ApplyFilters(l))
   lines = (Elaborate(l) for l in lines)
 
@@ -450,15 +461,23 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
 
   # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
   # rules run both in parallel, with Error Prone only used for checks.
-  _RunCompiler(changes,
-               options,
-               javac_cmd + javac_args,
-               java_files,
-               options.jar_path,
-               kt_files=kt_files,
-               jar_info_path=jar_info_path,
-               intermediates_out_dir=intermediates_out_dir,
-               enable_partial_javac=True)
+  try:
+    _RunCompiler(changes,
+                 options,
+                 javac_cmd + javac_args,
+                 java_files,
+                 options.jar_path,
+                 kt_files=kt_files,
+                 jar_info_path=jar_info_path,
+                 intermediates_out_dir=intermediates_out_dir,
+                 enable_partial_javac=True)
+  except build_utils.CalledProcessError as e:
+    # Do not output stacktrace as it takes up space on gerrit UI, forcing
+    # you to click though to find the actual compilation error. It's never
+    # interesting to see the Python stacktrace for a Java compilation error.
+    sys.stderr.write(e.output)
+    sys.exit(1)
+
   logging.info('Completed all steps in _OnStaleMd5')
 
 

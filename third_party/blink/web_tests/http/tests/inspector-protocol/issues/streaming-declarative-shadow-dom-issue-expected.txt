@@ -1,0 +1,3 @@
+Verifies that Streaming declarative shadow DOM (<template shadowrootmode>) does not trigger a deprecation issue.
+Success - no issues reported
+

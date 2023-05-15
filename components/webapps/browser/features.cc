@@ -14,13 +14,6 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAmbientBadgeSiteEngagement,
-             "AmbientBadgeSiteEngagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement{
-    &kAmbientBadgeSiteEngagement, "minimal_engagement", 0};
-
 BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
              "AmbientBadgeSuppressFirstVisit",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -46,6 +39,22 @@ extern const base::FeatureParam<int>
         &kInstallableAmbientBadgeMessage,
         "installable_ambient_badge_message_throttle_domains_capacity", 100};
 
+// Enables or disables the installable ambient badge message.
+BASE_FEATURE(kInstallPromptGlobalGuardrails,
+             "InstallPromptGlobalGuardrails",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<int>
+    kInstallPromptGlobalGuardrails_DismissCount{&kInstallPromptGlobalGuardrails,
+                                                "dismiss_count", 3};
+extern const base::FeatureParam<base::TimeDelta>
+    kInstallPromptGlobalGuardrails_DismissPeriod{
+        &kInstallPromptGlobalGuardrails, "dismiss_period", base::Days(7)};
+extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount{
+    &kInstallPromptGlobalGuardrails, "ignore_count", 3};
+extern const base::FeatureParam<base::TimeDelta>
+    kInstallPromptGlobalGuardrails_IgnorePeriod{&kInstallPromptGlobalGuardrails,
+                                                "ignore_period", base::Days(3)};
+
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
@@ -57,11 +66,6 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
 BASE_FEATURE(kWebApkInstallFailureRetry,
              "WebApkInstallFailureRetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables PWA Unique IDs for WebAPKs.
-BASE_FEATURE(kWebApkUniqueId,
-             "WebApkUniqueId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When the user clicks "Create Shortcut" in the dot menu, the current page is
@@ -91,6 +95,11 @@ BASE_FEATURE(kSkipServiceWorkerForInstallPrompt,
              "SkipServiceWorkerForInstallPromot",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use segmentation to decide whether install prompt should be shown.
+BASE_FEATURE(kInstallPromptSegmentation,
+             "InstallPromptSegmentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool SkipInstallServiceWorkerCheck() {
   return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly);
 }
@@ -99,6 +108,19 @@ bool SkipServiceWorkerForInstallPromotion() {
   return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly) &&
          base::FeatureList::IsEnabled(kSkipServiceWorkerForInstallPrompt);
 }
+
+// Keys to use when querying the variations params.
+BASE_FEATURE(kAppBannerTriggering,
+             "AppBannerTriggering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey{
+    &kAppBannerTriggering, "site_engagement_total",
+    kDefaultTotalEngagementToTrigger};
+extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey{
+    &kAppBannerTriggering, "days_after_dismiss",
+    kMinimumBannerBlockedToBannerShown};
+extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
+    &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
 
 }  // namespace features
 }  // namespace webapps

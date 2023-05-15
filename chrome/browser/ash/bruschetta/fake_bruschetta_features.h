@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_FAKE_BRUSCHETTA_FEATURES_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_FAKE_BRUSCHETTA_FEATURES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,7 +31,7 @@ class FakeBruschettaFeatures : public BruschettaFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakeBruschettaFeatures is created and replaced at destruction.
-  BruschettaFeatures* original_features_;
+  raw_ptr<BruschettaFeatures, ExperimentalAsh> original_features_;
 
   absl::optional<bool> enabled_;
 };

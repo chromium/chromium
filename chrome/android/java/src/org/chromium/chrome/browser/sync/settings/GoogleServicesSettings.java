@@ -56,7 +56,12 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 public class GoogleServicesSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Listener,
                                                     FragmentHelpAndFeedbackLauncher {
-    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
+    // No longer used. Do not delete. Do not reuse these same strings.
+    // private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
+    // public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
+    // public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION =
+    // "autofill_assistant_subsection";
+
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     @VisibleForTesting
@@ -65,10 +70,6 @@ public class GoogleServicesSettings
     private static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
-    @VisibleForTesting
-    public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
-    @VisibleForTesting
-    public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
     @VisibleForTesting
     public static final String PREF_USAGE_STATS_REPORTING = "usage_stats_reporting";
     @VisibleForTesting
@@ -129,12 +130,6 @@ public class GoogleServicesSettings
                 (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
         mUrlKeyedAnonymizedData.setOnPreferenceChangeListener(this);
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-
-        Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
-
-        if (shouldShowAssistantVoiceSearchSetting()) {
-            autofillAssistantSubsection.setVisible(true);
-        }
 
         mContextualSearch = findPreference(PREF_CONTEXTUAL_SEARCH);
         if (!ContextualSearchFieldTrial.isEnabled()) {
@@ -306,15 +301,6 @@ public class GoogleServicesSettings
             }
             return false;
         };
-    }
-
-    /**
-     * Whether or not the Assistant voice search section with a toggle should be shown.
-     */
-    public boolean shouldShowAssistantVoiceSearchSetting() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
     }
 
     // SignOutDialogListener implementation:

@@ -187,7 +187,6 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "off",
@@ -530,8 +529,7 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    # Bump to 8 cores if needed.
-    cores = 4,
+    cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(

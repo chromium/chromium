@@ -280,11 +280,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, PercentageHeightChild) {
   EXPECT_EQ(expectation, dump);
 }
 
-// Disabled because out-of-flow positioned objects enter legacy code (regardless
-// of the out-of-flow positioned object being laid out by NG or not). Invoking
-// layout on our own outside of the lifecycle machinery will eventually fail a
-// CHECK in SubtreeLayoutScope::SubtreeLayoutScope().
-TEST_F(NGFieldsetLayoutAlgorithmTest, DISABLED_AbsposChild) {
+TEST_F(NGFieldsetLayoutAlgorithmTest, AbsposChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset {
@@ -306,7 +302,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, DISABLED_AbsposChild) {
     offset:0,0 size:126x126
       offset:13,0 size:30x30
       offset:3,30 size:120x93
-      offset:3,30 size:120x93
+        offset:0,0 size:120x93
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

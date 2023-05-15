@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/assistant/platform/audio_devices.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -141,7 +142,7 @@ class AudioDevices::ScopedCrasAudioHandlerObserver
   //    - Subscribe for changes
   //    - Fetch the current state.
   void StartObserving() {
-    scoped_observer_.Observe(cras_audio_handler_);
+    scoped_observer_.Observe(cras_audio_handler_.get());
     FetchAudioNodes();
   }
 
@@ -158,9 +159,9 @@ class AudioDevices::ScopedCrasAudioHandlerObserver
     parent_->SetAudioDevices(audio_devices);
   }
 
-  AudioDevices* const parent_;
+  const raw_ptr<AudioDevices, ExperimentalAsh> parent_;
   // Owned by |AssistantManagerServiceImpl|.
-  CrasAudioHandler* const cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
   base::ScopedObservation<CrasAudioHandler, CrasAudioHandler::AudioObserver>
       scoped_observer_{this};
 };
@@ -215,7 +216,7 @@ class AudioDevices::HotwordModelUpdater {
         }));
   }
 
-  CrasAudioHandler* const cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
   uint64_t hotword_device_;
   std::string locale_;
 

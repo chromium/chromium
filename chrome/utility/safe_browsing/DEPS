@@ -1,4 +1,9 @@
 include_rules = [
   "+sandbox/mac/seatbelt.h",
   "+third_party/zlib",
+  "+components/safe_browsing/core/common",
+  "+components/safe_browsing/content/common",
+  "+third_party/lzma_sdk/google",
+  "+third_party/unrar/google",
+  "+third_party/maldoca",
 ]

@@ -58,11 +58,9 @@ AddressFamily GetRealAddressFamily(const IPAddress& address) {
 
 QuicConnectionLogger::QuicConnectionLogger(
     quic::QuicSession* session,
-    const char* const connection_description,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const NetLogWithSource& net_log)
     : session_(session),
-      connection_description_(connection_description),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       event_logger_(session, net_log) {}
 
@@ -101,8 +99,6 @@ QuicConnectionLogger::~QuicConnectionLogger() {
           duplicate_stream_frame_per_thousand, 1, 1000, 75);
     }
   }
-
-  RecordAggregatePacketLossRate();
 }
 
 void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
@@ -498,8 +494,9 @@ void QuicConnectionLogger::OnCryptoHandshakeMessageReceived(
 
       int sample = GetAddressMismatch(local_address_from_shlo_,
                                       local_address_from_self_);
-      // We are seemingly talking to an older server that does not support the
-      // feature, so we can't report the results in the histogram.
+      // If `sample` is negative, we are seemingly talking to an older server
+      // that does not support the feature, so we can't report the results in
+      // the histogram.
       if (sample >= 0) {
         UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.SelfShloAddressMismatch",
                                   static_cast<QuicAddressMismatch>(sample),
@@ -542,16 +539,6 @@ void QuicConnectionLogger::OnCertificateVerified(
   event_logger_.OnCertificateVerified(result);
 }
 
-base::HistogramBase* QuicConnectionLogger::Get6PacketHistogram(
-    const char* which_6) const {
-  // This histogram takes a binary encoding of the 6 consecutive packets
-  // received.  As a result, there are 64 possible sample-patterns.
-  string prefix("Net.QuicSession.6PacketsPatternsReceived_");
-  return base::LinearHistogram::FactoryGet(
-      prefix + which_6 + connection_description_, 1, 64, 65,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-}
-
 float QuicConnectionLogger::ReceivedPacketLossRate() const {
   if (!largest_received_packet_number_.IsInitialized())
     return 0.0f;
@@ -591,25 +578,6 @@ void QuicConnectionLogger::OnTransportParametersResumed(
 
 void QuicConnectionLogger::OnZeroRttRejected(int reason) {
   event_logger_.OnZeroRttRejected(reason);
-}
-
-void QuicConnectionLogger::RecordAggregatePacketLossRate() const {
-  // For short connections under 22 packets in length, we'll rely on the
-  // Net.QuicSession.21CumulativePacketsReceived_* histogram to indicate packet
-  // loss rates.  This way we avoid tremendously anomalous contributions to our
-  // histogram.  (e.g., if we only got 5 packets, but lost 1, we'd otherwise
-  // record a 20% loss in this histogram!). We may still get some strange data
-  // (1 loss in 22 is still high :-/).
-  if (!largest_received_packet_number_.IsInitialized() ||
-      largest_received_packet_number_ - first_received_packet_number_ < 22)
-    return;
-
-  string prefix("Net.QuicSession.PacketLossRate_");
-  base::HistogramBase* histogram = base::Histogram::FactoryGet(
-      prefix + connection_description_, 1, 1000, 75,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(static_cast<base::HistogramBase::Sample>(
-      ReceivedPacketLossRate() * 1000));
 }
 
 }  // namespace net

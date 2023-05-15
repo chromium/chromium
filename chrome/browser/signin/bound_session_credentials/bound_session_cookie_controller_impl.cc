@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "components/signin/public/base/signin_client.h"
+#include "net/http/http_status_code.h"
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     SigninClient* client,
@@ -38,7 +40,7 @@ void BoundSessionCookieControllerImpl::Initialize() {
 
 void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
-  if (cookie_expiration_time_ > base::Time::Now()) {
+  if (IsCookieFresh()) {
     // Cookie is fresh.
     std::move(resume_blocked_request).Run();
     return;
@@ -57,7 +59,7 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   // TODO(b/263264391): Subtract a safety margin (e.g 2 seconds) from the cookie
   // expiration time.
   cookie_expiration_time_ = expiration_time;
-  if (cookie_expiration_time_ > base::Time::Now()) {
+  if (IsCookieFresh()) {
     ResumeBlockedRequests();
   }
   delegate_->OnCookieExpirationDateChanged();
@@ -66,10 +68,13 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
 BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
-             ? std::make_unique<BoundSessionRefreshCookieFetcher>(client_, url_,
-                                                                  cookie_name_)
+             ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(client_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(client_, url_,
                                                                cookie_name_);
+}
+
+bool BoundSessionCookieControllerImpl::IsCookieFresh() {
+  return cookie_expiration_time() > base::Time::Now();
 }
 
 void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
@@ -86,22 +91,25 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
-    absl::optional<base::Time> expiration_time) {
+    BoundSessionRefreshCookieFetcher::Result result) {
   refresh_cookie_fetcher_.reset();
-  if (expiration_time.has_value()) {
-    // Cookie fetch succeeded.
-    // We do not check for null time and honor the expiration date of the cookie
-    // sent by the server.
-    // TODO(b/263264391): Rely on the observer notification to complete the
-    // request.
-    if (expiration_time.value() < base::Time::Now()) {
-      NOTIMPLEMENTED();
+  if (result.net_error == net::OK && result.response_code == net::HTTP_OK) {
+    // Requests are resumed once the cookie is set in the cookie jar. The
+    // cookie is expected to be fresh and `this` is notified with its
+    // expiration date before `OnCookieRefreshFetched` is called.
+    if (IsCookieFresh()) {
+      CHECK(resume_blocked_requests_.empty());
+      return;
+    } else {
+      // The request should include `Set-Cookie` header. `this` is expected to
+      // have been notified of the new cookie inserted in the cookie jar by the
+      // time `OnCookieRefreshFetched()` is called.
+      base::debug::DumpWithoutCrashing();
     }
-    SetCookieExpirationTimeAndNotify(expiration_time.value());
-  } else {
-    ResumeBlockedRequests();
   }
   // TODO(b/263263352): Handle error cases.
+  ResumeBlockedRequests();
+  NOTIMPLEMENTED();
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {

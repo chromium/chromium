@@ -73,9 +73,17 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpIsSubjectToM1NoticeRestrictedResponse(
+      bool is_subject_to_restricted_notice) {
+    ON_CALL(*this, IsSubjectToM1NoticeRestricted).WillByDefault([=]() {
+      return is_subject_to_restricted_notice;
+    });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
   MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
+  MOCK_METHOD(bool, IsSubjectToM1NoticeRestricted, (), (const, override));
 };
 
 // A declarative test case is a collection of key value pairs, which each define
@@ -107,6 +115,7 @@ enum class StateKey {
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
   kHasAppropriateTopicsConsent = 24,
+  kM1RestrictedNoticeAcknowledged = 25,
 };
 
 // Defines the input to the functions under test.
@@ -156,6 +165,7 @@ enum class OutputKey {
   kM1AdMeasurementEnabled = 28,
   kIsAttributionReportingEverAllowed = 29,
   kIsAttributionReportingEverAllowedMetric = 30,
+  kM1RestrictedNoticeAcknowledged = 31,
 };
 
 // To allow multiple input keys to map to the same value, without having to

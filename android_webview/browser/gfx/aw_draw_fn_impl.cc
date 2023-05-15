@@ -4,11 +4,13 @@
 
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 
+#include <sys/prctl.h>
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
 #include "base/android/build_info.h"
+#include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,6 +27,10 @@ using content::BrowserThread;
 namespace android_webview {
 
 namespace {
+
+BASE_FEATURE(kCheckDrawFunctorThread,
+             "CheckDrawFunctorThread",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 AwDrawFnFunctionTable* g_draw_fn_function_table = nullptr;
 
@@ -246,6 +252,23 @@ void AwDrawFnImpl::OnSync(AwDrawFn_OnSyncParams* params) {
 }
 
 void AwDrawFnImpl::OnContextDestroyed() {
+  if (render_thread_id_) {
+    auto current_id = base::PlatformThread::CurrentId();
+    if (render_thread_id_.value() != current_id) {
+      constexpr size_t kBufferLen = 64;
+      char name[kBufferLen] = {};
+      int err = prctl(PR_GET_NAME, name);
+
+      if (!err) {
+        LOG(FATAL) << "OnContextDestroyed called on: " << current_id << "/"
+                   << name << " rt: " << render_thread_id_.value();
+      } else {
+        LOG(FATAL) << "OnContextDestroyed called on: " << current_id
+                   << " rt: " << render_thread_id_.value();
+      }
+    }
+  }
+
   if (interop_)
     interop_->MakeGLContextCurrentIgnoreFailure();
 
@@ -261,6 +284,11 @@ void AwDrawFnImpl::OnContextDestroyed() {
 }
 
 void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
+  if (!render_thread_id_ &&
+      base::FeatureList::IsEnabled(kCheckDrawFunctorThread)) {
+    render_thread_id_ = base::PlatformThread::CurrentId();
+  }
+
   auto color_space = params->version >= 2 ? CreateColorSpace(params) : nullptr;
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
@@ -270,6 +298,11 @@ void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
 }
 
 void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
+  if (!render_thread_id_ &&
+      base::FeatureList::IsEnabled(kCheckDrawFunctorThread)) {
+    render_thread_id_ = base::PlatformThread::CurrentId();
+  }
+
   // We should never have a |vulkan_context_provider_| if we are calling VkInit.
   // This means context destroyed was not correctly called.
   DCHECK(!vulkan_context_provider_);

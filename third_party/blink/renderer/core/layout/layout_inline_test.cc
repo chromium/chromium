@@ -174,14 +174,7 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
   //
   // TODO(xiaochengh): Expose this issue in a real Chrome use case.
 
-  if (!lots_of_boxes->IsInLayoutNGInlineFormattingContext()) {
-    bool hit_outcome =
-        lots_of_boxes->HitTestCulledInline(hit_result, location, hit_offset);
-    // Assert checks that we both hit something and that the area covered
-    // by "something" totally contains the hit region.
-    EXPECT_TRUE(hit_outcome);
-    return;
-  }
+  ASSERT_TRUE(lots_of_boxes->IsInLayoutNGInlineFormattingContext());
 
   const auto* div = To<LayoutBlockFlow>(lots_of_boxes->Parent());
   NGInlineCursor cursor(*div);
@@ -189,7 +182,7 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
     DCHECK(cursor.Current().IsLineBox());
     NGInlineCursor line_cursor = cursor.CursorForDescendants();
     bool hit_outcome = lots_of_boxes->HitTestCulledInline(
-        hit_result, location, hit_offset, &line_cursor);
+        hit_result, location, hit_offset, line_cursor);
     EXPECT_FALSE(hit_outcome);
   }
   // Make sure that the inline is hit

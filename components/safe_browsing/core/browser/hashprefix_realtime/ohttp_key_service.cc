@@ -4,10 +4,12 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "net/base/net_errors.h"
@@ -21,9 +23,9 @@
 namespace {
 
 constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
-// TODO(crbug.com/1407283): Update the endpoint when it is finalized.
+
 constexpr char kKeyFetchServerUrl[] =
-    "https://safebrowsingohttpgateway.googleapis.com/key";
+    "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
 // Key older than 7 days is considered expired and should be refetched.
 constexpr base::TimeDelta kKeyExpirationDuration = base::Days(7);
 
@@ -99,6 +101,20 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
       "default."
   )");
 
+bool IsEnabled(const PrefService& pref_service) {
+  safe_browsing::SafeBrowsingState state =
+      safe_browsing::GetSafeBrowsingState(pref_service);
+  return (state == safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
+          !base::FeatureList::IsEnabled(
+              safe_browsing::kSafeBrowsingLookupMechanismExperiment)) ||
+         // The service is enabled when enhanced protection and lookup mechanism
+         // experiment are both enabled, because Chrome needs to send HPRT
+         // requests to conduct the experiment.
+         (state == safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION &&
+          base::FeatureList::IsEnabled(
+              safe_browsing::kSafeBrowsingLookupMechanismExperiment));
+}
+
 }  // namespace
 
 namespace safe_browsing {
@@ -131,15 +147,13 @@ OhttpKeyService::OhttpKeyService(
       base::BindRepeating(&OhttpKeyService::OnSafeBrowsingStateChanged,
                           weak_factory_.GetWeakPtr()));
 
-  SetEnabled(GetSafeBrowsingState(*pref_service_) ==
-             SafeBrowsingState::STANDARD_PROTECTION);
+  SetEnabled(IsEnabled(*pref_service_));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::OnSafeBrowsingStateChanged() {
-  SetEnabled(GetSafeBrowsingState(*pref_service_) ==
-             SafeBrowsingState::STANDARD_PROTECTION);
+  SetEnabled(IsEnabled(*pref_service_));
 }
 
 void OhttpKeyService::SetEnabled(bool enable) {
@@ -208,7 +222,8 @@ void OhttpKeyService::NotifyLookupResponse(
     return;
   }
 
-  if (response_code == net::HTTP_OK && headers->HasHeader(kKeyRotatedHeader)) {
+  if (response_code == net::HTTP_OK && headers &&
+      headers->HasHeader(kKeyRotatedHeader)) {
     server_triggered_fetch_scheduled_ = true;
     // The key is still valid, but it is close to expiration. It is a soft
     // failure, so do not clear the key immediately.
@@ -336,14 +351,18 @@ void OhttpKeyService::PopulateKeyFromPref() {
   base::Time expiration_time = pref_service_->GetTime(
       prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime);
   if (!key.empty() && expiration_time > base::Time::Now()) {
-    ohttp_key_ = {key, expiration_time};
+    std::string decoded_key;
+    base::Base64Decode(key, &decoded_key);
+    ohttp_key_ = {decoded_key, expiration_time};
   }
 }
 
 void OhttpKeyService::StoreKeyToPref() {
   if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
+    std::string base64_encoded_key;
+    base::Base64Encode(ohttp_key_->key, &base64_encoded_key);
     pref_service_->SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
-                             ohttp_key_->key);
+                             base64_encoded_key);
     pref_service_->SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
                            ohttp_key_->expiration);
   }

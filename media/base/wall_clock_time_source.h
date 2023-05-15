@@ -34,20 +34,24 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
       const std::vector<base::TimeDelta>& media_timestamps,
       std::vector<base::TimeTicks>* wall_clock_times) override;
 
-  void SetTickClockForTesting(const base::TickClock* tick_clock);
-
  private:
+  friend class VideoRendererAlgorithmTest;
+  friend class VideoRendererImplTest;
+  friend class WallClockTimeSourceTest;
+
+  // Construct a time source with an alternate clock for testing.
+  explicit WallClockTimeSource(const base::TickClock* tick_clock);
+
   base::TimeDelta CurrentMediaTime_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Allow for an injectable tick clock for testing.
-  raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
+  const raw_ptr<const base::TickClock> tick_clock_;
 
-  bool ticking_ GUARDED_BY(lock_);
+  bool ticking_ GUARDED_BY(lock_) = false;
 
   // While ticking we can interpolate the current media time by measuring the
   // delta between our reference ticks and the current system ticks and scaling
   // that time by the playback rate.
-  double playback_rate_ GUARDED_BY(lock_);
+  double playback_rate_ GUARDED_BY(lock_) = 1.0;
   base::TimeDelta base_timestamp_ GUARDED_BY(lock_);
   base::TimeTicks reference_time_ GUARDED_BY(lock_);
 

@@ -266,7 +266,7 @@ async function openFileDialogSendEscapeKey(volume, name) {
  * @returns {!Promise<string>} dialog's id.
  */
 export async function waitForDialog() {
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await remoteCall.waitForWindow();
 
   // Wait for Files app to finish loading.
   await remoteCall.waitFor('isFileManagerLoaded', dialog, true);
@@ -897,11 +897,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
     ['Play files', '--', 'Folder'],
     ['Downloads', '--', 'Folder'],
     ['Linux files', '--', 'Folder'],
-    ['Trash', '--', 'Folder'],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
@@ -920,13 +916,8 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
   await remoteCall.fakeKeyDown(appId, menuVisible, ...escKey);
   await remoteCall.waitForElementLost(appId, menuVisible);
 
-  // Right-click 100px inside of #file-list (in an empty space).
-  const offsetBottom = -100;
-  const offsetRight = -100;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'rightClickOffset', appId, ['#file-list', offsetBottom, offsetRight]),
-      'right click failed');
+  // Right-click inside of #file-list (in an empty space).
+  await remoteCall.rightClickFileListBlankSpace(appId);
 
   // Check that context menu is NOT displayed because there is no visible menu
   // items.
@@ -1004,7 +995,7 @@ testcase.openFileDialogGuestOs = async () => {
   await openEntryChoosingWindow({type: 'openFile'});
 
   // Wait for the dialog to be fully loaded.
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await remoteCall.waitForWindow();
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
@@ -1036,7 +1027,7 @@ testcase.saveFileDialogGuestOs = async () => {
   await openEntryChoosingWindow({type: 'saveFile'});
 
   // Wait for the dialog to be fully loaded.
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await remoteCall.waitForWindow();
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 

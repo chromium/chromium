@@ -120,7 +120,7 @@ float TabGroupStyle::GetSelectedTabOpacity() const {
 
 // static
 int TabGroupStyle::GetChipCornerRadius() {
-  return TabStyle::Get()->GetCornerRadius() -
+  return TabStyle::Get()->GetBottomCornerRadius() -
          TabGroupUnderline::kStrokeThickness;
 }
 

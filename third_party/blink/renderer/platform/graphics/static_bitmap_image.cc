@@ -37,7 +37,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
 }
 
 gfx::Size StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
-  auto info = GetSkImageInfoInternal();
+  auto info = GetSkImageInfo();
   gfx::Size size(info.width(), info.height());
   if (config.apply_orientation && orientation_.UsesWidthAsHeight())
     size.Transpose();

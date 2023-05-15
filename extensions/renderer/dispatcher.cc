@@ -376,8 +376,9 @@ void Dispatcher::DidCreateScriptContext(
     int32_t world_id) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  ScriptContext* context =
-      script_context_set_->Register(frame, v8_context, world_id);
+  ScriptContext* context = script_context_set_->Register(
+      frame, v8_context, world_id,
+      /*is_webview=*/webview_partition_id_.has_value());
 
   // Initialize origin permissions for content scripts, which can't be
   // initialized in |ActivateExtension|.
@@ -1209,7 +1210,7 @@ void Dispatcher::SetSystemFont(const std::string& font_family,
 
 void Dispatcher::SetWebViewPartitionID(const std::string& partition_id) {
   // |webview_partition_id_| cannot be changed once set.
-  CHECK(webview_partition_id_.empty() || webview_partition_id_ == partition_id);
+  CHECK(!webview_partition_id_ || webview_partition_id_ == partition_id);
   webview_partition_id_ = partition_id;
 }
 
@@ -1235,6 +1236,11 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
     }
   }
   UpdateAllBindings();
+}
+
+void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
+  IsolatedWorldManager::GetInstance().SetUserScriptWorldCsp(info->extension_id,
+                                                            info->csp);
 }
 
 void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
@@ -1304,15 +1310,14 @@ void Dispatcher::OnDeliverMessage(int worker_thread_id,
 
 void Dispatcher::OnDispatchOnConnect(
     int worker_thread_id,
-    const PortId& target_port_id,
-    const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info) {
+    const ExtensionMsg_OnConnectData& connect_data) {
   DCHECK_EQ(kMainThreadId, worker_thread_id);
-  DCHECK(!target_port_id.is_opener);
+  DCHECK(!connect_data.target_port_id.is_opener);
 
   bindings_system_->messaging_service()->DispatchOnConnect(
-      script_context_set_.get(), target_port_id, channel_name, source, info,
+      script_context_set_.get(), connect_data.target_port_id,
+      connect_data.channel_type, connect_data.channel_name,
+      connect_data.tab_source, connect_data.external_connection_info,
       nullptr);  // All render frames.
 }
 
@@ -1327,11 +1332,7 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                base::Value::List event_args) {
-  if (params->worker_thread_id != kMainThreadId) {
-    WorkerThreadDispatcher::Get()->DispatchEvent(std::move(params),
-                                                 std::move(event_args));
-    return;
-  }
+  CHECK_EQ(params->worker_thread_id, kMainThreadId);
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
 

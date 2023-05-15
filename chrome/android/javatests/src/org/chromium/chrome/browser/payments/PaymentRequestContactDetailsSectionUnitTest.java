@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -38,8 +38,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
             boolean requestPayerName, boolean requestPayerPhone, boolean requestPayerEmail) {
         mContactEditor = new ContactEditor(
                 requestPayerName, requestPayerPhone, requestPayerEmail, /*saveToDisk=*/true);
-        mContactDetailsSection = new ContactDetailsSection(
-                InstrumentationRegistry.getTargetContext(), autofillProfiles, mContactEditor, null);
+        mContactDetailsSection =
+                new ContactDetailsSection(ApplicationProvider.getApplicationContext(),
+                        autofillProfiles, mContactEditor, null);
     }
 
     /** Tests the creation of the contact list, with most complete first. */
@@ -49,13 +50,12 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_MostCompleteFirst() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. First entry is incomplete.
-        profiles.add(
-                new AutofillProfile("guid-1", "https://www.example.test", "" /* honorific prefix */,
-                        "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                        "90210", "", "US", "" /* no phone number */, "jm@example.test", ""));
-        profiles.add(new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "" /* no phone number */, "jm@example.test", ""));
+        profiles.add(new AutofillProfile("guid-2", "" /* honorific prefix */, "Jane Doe",
+                "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "", "US",
+                "555-212-1212", "jane@example.test", ""));
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -82,12 +82,12 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_AllComplete() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. All entries complete.
-        profiles.add(new AutofillProfile("guid-1", "https://www.example.test",
-                "" /* honorific prefix */, "John Major", "Acme Inc.", "123 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "514-555-1212", "jm@example.test", ""));
-        profiles.add(new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "514-555-1212", "jm@example.test", ""));
+        profiles.add(new AutofillProfile("guid-2", "" /* honorific prefix */, "Jane Doe",
+                "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "", "US",
+                "555-212-1212", "jane@example.test", ""));
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -114,10 +114,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_NotRequestingMissingValue() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Entry is incomplete but it will not matter.
-        profiles.add(
-                new AutofillProfile("guid-1", "https://www.example.test", "" /* honorific prefix */,
-                        "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                        "90210", "", "US", "" /* no phone number */, "jm@example.test", ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "" /* no phone number */, "jm@example.test", ""));
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 false /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -139,9 +138,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_WithCompleteAddress() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // First entry is complete.
-        profiles.add(new AutofillProfile("guid-1", "https://www.example.test",
-                "" /* honorific prefix */, "John Major", "Acme Inc.", "123 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "514-555-1212", "jm@example.test", ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "514-555-1212", "jm@example.test", ""));
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
@@ -155,11 +154,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals(null, items.get(0).getEditMessage());
 
         // We update the contact list with a new, complete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", "");
+        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
+                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
+                "US", "555-212-1212", "jane@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be last.
         items = mContactDetailsSection.getItems();
@@ -184,9 +183,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_WithNewButIncomplete() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. All entries complete.
-        profiles.add(new AutofillProfile("guid-1", "https://www.example.test",
-                "" /* honorific prefix */, "John Major", "Acme Inc.", "123 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "514-555-1212", "jm@example.test", ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "514-555-1212", "jm@example.test", ""));
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
@@ -200,11 +199,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals(null, items.get(0).getEditMessage());
 
         // We update the contact list with a new address, which has a missing email.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "" /* No email */, "");
+        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
+                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
+                "US", "555-212-1212", "" /* No email */, "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item, because it is incomplete, to be last.
         items = mContactDetailsSection.getItems();
@@ -237,11 +236,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 
         // We update the contact list with a new, complete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", "");
+        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
+                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
+                "US", "555-212-1212", "jane@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be first. The selection is not changed.
         items = mContactDetailsSection.getItems();
@@ -262,9 +261,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_UpdateExistingItem() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // This entry is missing an email, which will get added later on.
-        profiles.add(new AutofillProfile("guid-1", "https://www.example.test",
-                "" /* honorific prefix */, "John Major", "Acme Inc.", "123 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "514-555-1212", "" /* No email */, ""));
+        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "514-555-1212", "" /* No email */, ""));
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -280,11 +279,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals("Email required", items.get(0).getEditMessage());
 
         // We update the contact list with the same profile GUID, complete this time.
-        AutofillProfile newProfile = new AutofillProfile("guid-1", "https://www.example.test",
-                "" /* honorific prefix */, "John Major", "Acme Inc.", "456 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "514-555-1212", "john@example.test", "");
+        AutofillProfile newProfile = new AutofillProfile("guid-1", "" /* honorific prefix */,
+                "John Major", "Acme Inc.", "456 Main", "California", "Los Angeles", "", "90210", "",
+                "US", "514-555-1212", "john@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -312,11 +311,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 
         // We update the contact list with a new, incomplete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "https://www.example.test",
-                "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
-                "Seattle", "", "10110", "", "US", "555-212-1212", "" /* no email */, "");
+        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
+                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
+                "US", "555-212-1212", "" /* no email */, "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be first, but unselected because incomplete.
         items = mContactDetailsSection.getItems();

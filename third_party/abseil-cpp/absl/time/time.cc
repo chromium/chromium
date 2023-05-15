@@ -137,7 +137,7 @@ inline TimeConversion InfinitePastTimeConversion() {
 }
 
 // Makes a Time from sec, overflowing to InfiniteFuture/InfinitePast as
-// necessary. If sec is min/max, then consult cs+tz to check for overlow.
+// necessary. If sec is min/max, then consult cs+tz to check for overflow.
 Time MakeTimeWithOverflow(const cctz::time_point<cctz::seconds>& sec,
                           const cctz::civil_second& cs,
                           const cctz::time_zone& tz,

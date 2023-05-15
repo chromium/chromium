@@ -98,7 +98,7 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
 
 std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
-  auto driver = std::make_unique<ContentAutofillDriver>(rfh, &router_);
+  auto driver = std::make_unique<ContentAutofillDriver>(rfh, this);
   driver_init_hook_.Run(driver.get());
   return driver;
 }

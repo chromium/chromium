@@ -561,16 +561,13 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 
 // ABSL_HAVE_STD_ANY
 //
-// Checks whether C++17 std::any is available by checking whether <any> exists.
+// Checks whether C++17 std::any is available.
 #ifdef ABSL_HAVE_STD_ANY
 #error "ABSL_HAVE_STD_ANY cannot be directly set."
-#endif
-
-#ifdef __has_include
-#if __has_include(<any>) && defined(__cplusplus) && __cplusplus >= 201703L && \
+#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
+    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
     !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_ANY 1
-#endif
 #endif
 
 // ABSL_HAVE_STD_OPTIONAL
@@ -578,13 +575,10 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // Checks whether C++17 std::optional is available.
 #ifdef ABSL_HAVE_STD_OPTIONAL
 #error "ABSL_HAVE_STD_OPTIONAL cannot be directly set."
-#endif
-
-#ifdef __has_include
-#if __has_include(<optional>) && defined(__cplusplus) && \
-    __cplusplus >= 201703L && !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
+#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) &&  \
+    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
+    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_OPTIONAL 1
-#endif
 #endif
 
 // ABSL_HAVE_STD_VARIANT
@@ -592,13 +586,10 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // Checks whether C++17 std::variant is available.
 #ifdef ABSL_HAVE_STD_VARIANT
 #error "ABSL_HAVE_STD_VARIANT cannot be directly set."
-#endif
-
-#ifdef __has_include
-#if __has_include(<variant>) && defined(__cplusplus) && \
-    __cplusplus >= 201703L && !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
+#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
+    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
+    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_VARIANT 1
-#endif
 #endif
 
 // ABSL_HAVE_STD_STRING_VIEW
@@ -606,28 +597,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // Checks whether C++17 std::string_view is available.
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 #error "ABSL_HAVE_STD_STRING_VIEW cannot be directly set."
-#endif
-
-#ifdef __has_include
-#if __has_include(<string_view>) && defined(__cplusplus) && \
-    __cplusplus >= 201703L
-#define ABSL_HAVE_STD_STRING_VIEW 1
-#endif
-#endif
-
-// For MSVC, `__has_include` is supported in VS 2017 15.3, which is later than
-// the support for <optional>, <any>, <string_view>, <variant>. So we use
-// _MSC_VER to check whether we have VS 2017 RTM (when <optional>, <any>,
-// <string_view>, <variant> is implemented) or higher. Also, `__cplusplus` is
-// not correctly set by MSVC, so we use `_MSVC_LANG` to check the language
-// version.
-// TODO(zhangxy): fix tests before enabling aliasing for `std::any`.
-#if defined(_MSC_VER) && _MSC_VER >= 1910 &&         \
-    ((defined(_MSVC_LANG) && _MSVC_LANG > 201402) || \
-     (defined(__cplusplus) && __cplusplus > 201402))
-// #define ABSL_HAVE_STD_ANY 1
-#define ABSL_HAVE_STD_OPTIONAL 1
-#define ABSL_HAVE_STD_VARIANT 1
+#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
+    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
 #define ABSL_HAVE_STD_STRING_VIEW 1
 #endif
 

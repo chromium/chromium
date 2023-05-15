@@ -77,13 +77,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-// TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#endif
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -427,6 +420,20 @@ void OnWebAppInstallabilityChecked(
   NOTREACHED();
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extensions::SupervisedUserExtensionsDelegate*
+GetSupervisedUserExtensionsDelegateFromContext(
+    content::BrowserContext* context) {
+  extensions::SupervisedUserExtensionsDelegate*
+      supervised_user_extensions_delegate =
+          extensions::ManagementAPI::GetFactoryInstance()
+              ->Get(context)
+              ->GetSupervisedUserExtensionsDelegate();
+  CHECK(supervised_user_extensions_delegate);
+  return supervised_user_extensions_delegate;
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 }  // namespace
 
 ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
@@ -676,11 +683,11 @@ void ChromeManagementAPIDelegate::EnableExtension(
   // We add approval for the extension here under the assumption that prior
   // to this point, the supervised child user has already been prompted
   // for, and received parent permission to install the extension.
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context);
-  supervised_user_service->AddExtensionApproval(*extension);
-  supervised_user_service->RecordExtensionEnablementUmaMetrics(
-      /*enabled=*/true);
+  extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
+      GetSupervisedUserExtensionsDelegateFromContext(context);
+
+  extensions_delegate->AddExtensionApproval(*extension);
+  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // If the extension was disabled for a permissions increase, the Management
@@ -697,10 +704,9 @@ void ChromeManagementAPIDelegate::DisableExtension(
     const std::string& extension_id,
     extensions::disable_reason::DisableReason disable_reason) const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context);
-  supervised_user_service->RecordExtensionEnablementUmaMetrics(
-      /*enabled=*/false);
+  extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
+      GetSupervisedUserExtensionsDelegateFromContext(context);
+  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::ExtensionSystem::Get(context)
       ->extension_service()

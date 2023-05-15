@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,6 +28,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
+struct wp_fractional_scale_v1;
 struct zwp_linux_buffer_release_v1;
 struct zcr_blending_v1;
 
@@ -37,6 +39,7 @@ class WaylandOutput;
 class WaylandWindow;
 class WaylandBufferHandle;
 class WaylandZcrColorManagementSurface;
+class WaylandZAuraSurface;
 
 // Wrapper of a wl_surface, owned by a WaylandWindow or a WlSubsurface.
 class WaylandSurface {
@@ -64,6 +67,18 @@ class WaylandSurface {
   const std::vector<uint32_t>& entered_outputs() const {
     return entered_outputs_;
   }
+
+  // Creates a zaura_surface extension object for this surface if it does not
+  // already exist and is supported by the server. Returns the surface
+  // extension.
+  WaylandZAuraSurface* CreateZAuraSurface();
+
+  // Resets the zaura_surface extension object for this surface if it exists.
+  // This may be done for the purposes of unmapping the toplevel surface when
+  // hiding the window (see crrev.com/c/3628350/comment/b6315793_85f0b073).
+  void ResetZAuraSurface();
+
+  WaylandZAuraSurface* zaura_surface() { return zaura_surface_.get(); }
 
   // Requests an explicit release for the next commit.
   void RequestExplicitRelease(ExplicitReleaseCallback callback);
@@ -307,11 +322,15 @@ class WaylandSurface {
     bool contains_video = false;
   };
 
-  // The wayland scale refers to the scale factor used for calls to wayland
-  // apis such as wl_region_add. When SurfaceSubmissionInPixelCoordinates is
-  // true, this is always 1. Otherwise this is buffer_scale_float casted to an
-  // integer.
-  int GetWaylandScale(const State& state);
+  // The wayland scale refers to the scale factor between the buffer coordinates
+  // and Wayland surface coordinates. When SurfaceSubmissionInPixelCoordinates
+  // is true, this is always 1. Otherwise, this is buffer_scale_float unless the
+  // value is less than 1. In that case 1 is returned. Additionally, if
+  // viewporter surface scaling is disabled, the value will be rounded up to the
+  // next integer.
+  float GetWaylandScale(const State& state);
+
+  bool IsViewportScaled(const State& state);
 
   // Tracks the last sent src and dst values across wayland protocol s.t. we
   // skip resending them when possible.
@@ -325,7 +344,7 @@ class WaylandSurface {
 
   wl::Object<wl_region> CreateAndAddRegion(
       const std::vector<gfx::Rect>& region_px,
-      int32_t buffer_scale);
+      float buffer_scale);
 
   // wl_surface states that are stored in Wayland client. It moves to |state_|
   // on ApplyPendingState().
@@ -352,8 +371,10 @@ class WaylandSurface {
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
   wl::Object<wp_content_type_v1> content_type_;
+  wl::Object<wp_fractional_scale_v1> fractional_scale_;
   std::unique_ptr<WaylandZcrColorManagementSurface>
       zcr_color_management_surface_;
+  std::unique_ptr<WaylandZAuraSurface> zaura_surface_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;
   ExplicitReleaseCallback next_explicit_release_request_;
@@ -362,6 +383,10 @@ class WaylandSurface {
   // it is technically possible to handle this value as mutable, in practice
   // it's constant.
   const bool surface_submission_in_pixel_coordinates_;
+
+  // Same as above except it caches
+  // connection->UseViewporterSurfaceScaling().
+  const bool use_viewporter_surface_scaling_;
 
   // For top level window, stores outputs that the window is currently rendered
   // at.
@@ -383,6 +408,12 @@ class WaylandSurface {
   static void Leave(void* data,
                     struct wl_surface* wl_surface,
                     struct wl_output* output);
+
+  // wp_fractional_scale_v1_listener
+  static void PreferredScale(
+      void* data,
+      struct wp_fractional_scale_v1* wp_fractional_scale_v1,
+      uint32_t scale);
 
   // zwp_linux_buffer_release_v1_listener
   static void FencedRelease(

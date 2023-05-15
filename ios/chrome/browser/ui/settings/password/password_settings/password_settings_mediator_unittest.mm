@@ -15,8 +15,8 @@
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -48,9 +48,11 @@ void SetSyncStatus(SyncServiceForPasswordTests* sync_service,
                               ? syncer::SyncService::TransportState::ACTIVE
                               : syncer::SyncService::TransportState::DISABLED));
   ON_CALL(*sync_service, GetActiveDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*(sync_service->GetMockUserSettings()), GetEncryptedDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*(sync_service->GetMockUserSettings()), GetPassphraseType())
       .WillByDefault(testing::Return(passphrase_type));
 }

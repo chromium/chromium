@@ -16,7 +16,9 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -66,6 +68,13 @@ int AdSizeToPixels(double size, blink::AdSize::LengthUnit unit) {
                                 .GetSizeInPixel()
                                 .width();
       return static_cast<int>(size / 100.0 * screen_width);
+    }
+    case blink::AdSize::LengthUnit::kScreenHeight: {
+      double screen_height = display::Screen::GetScreen()
+                                 ->GetPrimaryDisplay()
+                                 .GetSizeInPixel()
+                                 .height();
+      return static_cast<int>(size / 100.0 * screen_height);
     }
     case blink::AdSize::LengthUnit::kInvalid:
       NOTREACHED_NORETURN();
@@ -164,6 +173,16 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
+  // We don't know at this point if the test being run needs the FLEDGE or
+  // Shared Storage permissions set. To be safe, we set both here.
+  config.required_permissions_to_load.insert(
+      config.required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+  config.required_permissions_to_load.insert(
+      config.required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
   return urn;
 }
 
@@ -186,6 +205,7 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 blink::FencedFrame::RedactedFencedFrameConfig
 FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
+    absl::optional<blink::AdSize> container_size,
     const blink::AdDescriptor& ad_descriptor,
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
@@ -213,6 +233,13 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.mapped_url_.emplace(SubstituteSizeIntoURL(ad_descriptor),
                              VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
+  if (container_size.has_value() &&
+      blink::IsValidAdSize(container_size.value())) {
+    gfx::Size container_gfx_size = AdSizeToGfxSize(container_size.value());
+    config.container_size_.emplace(container_gfx_size,
+                                   VisibilityToEmbedder::kTransparent,
+                                   VisibilityToContent::kOpaque);
+  }
   if (ad_descriptor.size) {
     gfx::Size content_size = AdSizeToGfxSize(ad_descriptor.size.value());
     config.content_size_.emplace(content_size,
@@ -227,13 +254,20 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
                                   VisibilityToContent::kOpaque);
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
+  config.required_permissions_to_load =
+      std::vector<blink::mojom::PermissionsPolicyFeature>(
+          std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
+          std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_descriptors.size());
   for (const auto& ad_component_descriptor : ad_component_descriptors) {
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
     // For an ad component, the `fenced_frame_reporter` from its parent fenced
-    // frame is reused.
+    // frame is reused. The pointer to its parent's fenced frame reporter is
+    // copied to each ad component. This has the advantage that we do not need
+    // to traverse to its parent every time we need its parent's reporter.
     // TODO(crbug.com/1420638): Once the representation of size in fenced frame
     // config is finalized, pass the ad component size from the winning bid to
     // its fenced frame config.
@@ -243,10 +277,12 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
       nested_configs.emplace_back(
           /*mapped_url=*/SubstituteSizeIntoURL(ad_component_descriptor),
           /*content_size=*/component_content_size,
+          /*fenced_frame_reporter=*/fenced_frame_reporter,
           /*is_ad_component=*/true);
     } else {
       nested_configs.emplace_back(
           /*mapped_url=*/SubstituteSizeIntoURL(ad_component_descriptor),
+          /*fenced_frame_reporter=*/fenced_frame_reporter,
           /*is_ad_component=*/true);
     }
   }
@@ -328,6 +364,10 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
                                mapping_result.budget_metadata,
                                std::move(mapping_result.fenced_frame_reporter));
     config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+    config->required_permissions_to_load = {
+        std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
+        std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures)};
+
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 
@@ -339,7 +379,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     properties = FencedFrameProperties(final_it->second);
   }
 
-  for (raw_ptr<MappingResultObserver> observer : observers) {
+  for (MappingResultObserver* observer : observers) {
     observer->OnFencedFrameURLMappingComplete(properties);
   }
 

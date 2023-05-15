@@ -45,22 +45,22 @@ bool TimeIsBetween(const base::Time& time,
 //     },
 //     more origin_string map...
 // }
-base::Value ToDictValue(const CdmPrefData& pref_data) {
-  base::Value dict(base::Value::Type::DICT);
-
+base::Value::Dict ToDictValue(const CdmPrefData& pref_data) {
   // Origin ID
-  dict.SetKey(kOriginId, base::UnguessableTokenToValue(pref_data.origin_id()));
-  dict.SetKey(kOriginIdCreationTime,
-              base::TimeToValue(pref_data.origin_id_creation_time()));
+  auto dict =
+      base::Value::Dict()
+          .Set(kOriginId, base::UnguessableTokenToValue(pref_data.origin_id()))
+          .Set(kOriginIdCreationTime,
+               base::TimeToValue(pref_data.origin_id_creation_time()));
 
   // Optional Client Token
   const absl::optional<std::vector<uint8_t>> client_token =
       pref_data.client_token();
   if (client_token.has_value() && !client_token->empty()) {
     std::string encoded_client_token = base::Base64Encode(client_token.value());
-    dict.SetStringKey(kClientToken, encoded_client_token);
-    dict.SetKey(kClientTokenCreationTime,
-                base::TimeToValue(pref_data.client_token_creation_time()));
+    dict.Set(kClientToken, encoded_client_token);
+    dict.Set(kClientTokenCreationTime,
+             base::TimeToValue(pref_data.client_token_creation_time()));
   }
 
   return dict;

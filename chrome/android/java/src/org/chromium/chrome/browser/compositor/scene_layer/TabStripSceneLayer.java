@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor.scene_layer;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -33,9 +32,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     private static boolean sTestFlag;
     private long mNativePtr;
     private final float mDpToPx;
-    private SceneLayer mChildSceneLayer;
-    private int mOrientation;
-    private int mNumReaddBackground;
 
     public TabStripSceneLayer(Context context) {
         mDpToPx = context.getResources().getDisplayMetrics().density;
@@ -92,27 +88,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
 
-    private boolean shouldReadBackground(int orientation) {
-        // Sometimes layer trees do not get updated on rotation on Nexus 10.
-        // This is a workaround that reads the background to prevent it.
-        // See https://crbug.com/503930 for more.
-        if (Build.MODEL == null || !Build.MODEL.contains("Nexus 10")) return false;
-        if (mOrientation != orientation) {
-            // This is a random number. Empirically this is enough.
-            mNumReaddBackground = 10;
-            mOrientation = orientation;
-        }
-        mNumReaddBackground--;
-        return mNumReaddBackground >= 0;
-    }
-
     private void pushButtonsAndBackground(StripLayoutHelperManager layoutHelper,
             ResourceManager resourceManager, float yOffset) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
-                height, yOffset * mDpToPx, shouldReadBackground(layoutHelper.getOrientation()),
-                layoutHelper.getBackgroundColor());
+                height, yOffset * mDpToPx, layoutHelper.getBackgroundColor());
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -201,8 +182,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
         void updateTabStripLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int width, int height, float yOffset, boolean shouldReadBackground,
-                @ColorInt int backgroundColor);
+                int width, int height, float yOffset, @ColorInt int backgroundColor);
         void updateNewTabButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, int backgroundResourceId, float x, float y, float touchTargetOffset,
                 boolean visible, int tint, int backgroundTint, float buttonAlpha,

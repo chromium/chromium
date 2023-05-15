@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cors.mojom";
@@ -322,6 +323,12 @@ struct URLRequest {
   // https://github.com/patcg-individual-drafts/topics
   bool browsing_topics;
 
+  // True if this is an ad auction request eligible for attaching the
+  // `Sec-Ad-Auction-Fetch` request header and processing the
+  // `X-Ad-Auction-Result` response header.
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
+  bool ad_auction_headers;
+
   // True if the request was user initiated.
   bool has_user_gesture;
 
@@ -493,6 +500,22 @@ struct URLRequest {
   // assumption, the browser process has already determined that this access is
   // ok.
   bool has_storage_access;
+
+ // Indicates whether web or OS-level Attribution Reporting is supported.
+  AttributionSupport attribution_reporting_support;
+
+  // Indicates the value of the request's `Attribution-Reporting-Eligible`
+  // header; how this header is interpreted depends on the context in which
+  // the request is made.
+  AttributionReportingEligibility attribution_reporting_eligibility =
+    AttributionReportingEligibility.kUnset;
+
+  // Indicates whether Attribution Reporting API related runtime features are
+  // enabled.
+  //
+  // TODO(https://crbug.com/1443602): Get rid of this with proper OT
+  // infrastructure support in the network service.
+  AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

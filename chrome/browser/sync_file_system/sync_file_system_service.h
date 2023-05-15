@@ -48,6 +48,9 @@ class LocalSyncRunner;
 class RemoteSyncRunner;
 class SyncEventObserver;
 
+// Service implementing the chrome.syncFileSystem() API for the deprecated
+// Chrome Apps platform.
+// https://developer.chrome.com/docs/extensions/reference/syncFileSystem/
 class SyncFileSystemService
     : public KeyedService,
       public SyncProcessRunner::Client,

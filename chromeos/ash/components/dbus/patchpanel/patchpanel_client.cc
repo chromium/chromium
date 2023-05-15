@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
@@ -104,7 +105,7 @@ class PatchPanelClientImpl : public PatchPanelClient {
   }
 
   // D-Bus proxy for the PatchPanel daemon, not owned.
-  dbus::ObjectProxy* patchpanel_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> patchpanel_proxy_ = nullptr;
 
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;

@@ -74,15 +74,11 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
                                                 num_tabs),
                add_to_existing_group_submenu_.get());
-    if (base::FeatureList::IsEnabled(features::kTabGroupsNewBadgePromo))
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
   } else if (!tab_strip->delegate()->IsForWebApp()) {
     AddItem(TabStripModel::CommandAddToNewGroup,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
-    if (base::FeatureList::IsEnabled(features::kTabGroupsNewBadgePromo))
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
   }
 
   for (const auto& selection : indices) {

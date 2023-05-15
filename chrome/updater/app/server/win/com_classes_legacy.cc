@@ -102,7 +102,8 @@ namespace updater {
 // Implements `IAppVersionWeb`.
 class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
  public:
-  AppVersionWebImpl() = default;
+  AppVersionWebImpl()
+      : IDispatchImpl<IAppVersionWeb>(IID_MAPS_USERSYSTEM(IAppVersionWeb)) {}
   AppVersionWebImpl(const AppVersionWebImpl&) = delete;
   AppVersionWebImpl& operator=(const AppVersionWebImpl&) = delete;
 
@@ -140,7 +141,8 @@ class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
 // of the install.
 class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
  public:
-  CurrentStateImpl() = default;
+  CurrentStateImpl()
+      : IDispatchImpl<ICurrentState>(IID_MAPS_USERSYSTEM(ICurrentState)) {}
   CurrentStateImpl(const CurrentStateImpl&) = delete;
   CurrentStateImpl& operator=(const CurrentStateImpl&) = delete;
 
@@ -337,7 +339,8 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 class AppWebImpl : public IDispatchImpl<IAppWeb> {
  public:
   AppWebImpl()
-      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+      : IDispatchImpl<IAppWeb>(IID_MAPS_USERSYSTEM(IAppWeb)),
+        task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::WithBaseSyncPrimitives()})) {}
   AppWebImpl(const AppWebImpl&) = delete;
   AppWebImpl& operator=(const AppWebImpl&) = delete;
@@ -466,7 +469,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_FAIL;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+    return MakeAndInitializeComObject<AppVersionWebImpl>(
         current, base::ASCIIToWide(result->current_version->GetString()));
   }
 
@@ -477,12 +480,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_FAIL;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+    return MakeAndInitializeComObject<AppVersionWebImpl>(
         next, base::ASCIIToWide(state_update_->next_version.GetString()));
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
-    return Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+    return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
         command, GetUpdaterScope(), base::UTF8ToWide(app_id_), command_id);
   }
 
@@ -575,7 +578,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           (result_.value() == UpdateService::Result::kSuccess) ? 0 : -1;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<CurrentStateImpl>(
+    return MakeAndInitializeComObject<CurrentStateImpl>(
         current_state, state_value, available_version, bytes_downloaded,
         total_bytes_to_download,
         /*download_time_remaining_ms=*/-1,
@@ -640,7 +643,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 // by Chrome's on-demand client.
 class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
  public:
-  AppBundleWebImpl() = default;
+  AppBundleWebImpl()
+      : IDispatchImpl<IAppBundleWeb>(IID_MAPS_USERSYSTEM(IAppBundleWeb)) {}
   AppBundleWebImpl(const AppBundleWebImpl&) = delete;
   AppBundleWebImpl& operator=(const AppBundleWebImpl&) = delete;
 
@@ -658,8 +662,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     is_install_ = true;
-    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
-        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
+    return MakeAndInitializeComObject<AppWebImpl>(
+        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
@@ -670,8 +674,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     is_install_ = false;
-    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
-        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
+    return MakeAndInitializeComObject<AppWebImpl>(
+        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 
   IFACEMETHODIMP createAllInstalledApps() override {
@@ -771,15 +775,16 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   bool is_install_ = false;
 };
 
-LegacyOnDemandImpl::LegacyOnDemandImpl() = default;
+LegacyOnDemandImpl::LegacyOnDemandImpl()
+    : IDispatchImpl<IGoogleUpdate3Web>(IID_MAPS_USERSYSTEM(IGoogleUpdate3Web)) {
+}
 
 LegacyOnDemandImpl::~LegacyOnDemandImpl() = default;
 
 STDMETHODIMP LegacyOnDemandImpl::createAppBundleWeb(
     IDispatch** app_bundle_web) {
   CHECK(app_bundle_web);
-
-  return Microsoft::WRL::MakeAndInitialize<AppBundleWebImpl>(app_bundle_web);
+  return MakeAndInitializeComObject<AppBundleWebImpl>(app_bundle_web);
 }
 
 LegacyProcessLauncherImpl::LegacyProcessLauncherImpl() = default;
@@ -843,7 +848,8 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
   return E_NOTIMPL;
 }
 
-LegacyAppCommandWebImpl::LegacyAppCommandWebImpl() = default;
+LegacyAppCommandWebImpl::LegacyAppCommandWebImpl()
+    : IDispatchImpl<IAppCommandWeb>(IID_MAPS_USERSYSTEM(IAppCommandWeb)) {}
 LegacyAppCommandWebImpl::~LegacyAppCommandWebImpl() = default;
 
 HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
@@ -852,7 +858,7 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     const std::wstring& command_id) {
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
-  return app_command_runner_.has_value() ? S_OK : app_command_runner_.error();
+  return app_command_runner_.error_or(S_OK);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -918,7 +924,14 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
-    : policy_service_(
+    : IDispatchImpl<IPolicyStatus3, IPolicyStatus2, IPolicyStatus>(
+          {IID_MAP_ENTRY_USER(IPolicyStatus3),
+           IID_MAP_ENTRY_USER(IPolicyStatus2),
+           IID_MAP_ENTRY_USER(IPolicyStatus)},
+          {IID_MAP_ENTRY_SYSTEM(IPolicyStatus3),
+           IID_MAP_ENTRY_SYSTEM(IPolicyStatus2),
+           IID_MAP_ENTRY_SYSTEM(IPolicyStatus)}),
+      policy_service_(
           AppServerSingletonInstance()->config()->GetPolicyService()) {}
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
@@ -1354,46 +1367,18 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
              : E_FAIL;
 }
 
-// TODO(crbug.com/1344200): Implement the IDispatch methods.
-STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::GetIDsOfNames(REFIID,
-                                             LPOLESTR*,
-                                             UINT,
-                                             LCID,
-                                             DISPID*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
-                                      REFIID,
-                                      LCID,
-                                      WORD,
-                                      DISPPARAMS*,
-                                      VARIANT*,
-                                      EXCEPINFO*,
-                                      UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-PolicyStatusValueImpl::PolicyStatusValueImpl() = default;
+PolicyStatusValueImpl::PolicyStatusValueImpl()
+    : IDispatchImpl<IPolicyStatusValue>(
+          {{__uuidof(IPolicyStatusValueUser), __uuidof(IPolicyStatusValue)}},
+          {{__uuidof(IPolicyStatusValueSystem),
+            __uuidof(IPolicyStatusValue)}}) {}
 PolicyStatusValueImpl::~PolicyStatusValueImpl() = default;
 
 template <typename T>
-HRESULT PolicyStatusValueImpl::Create(
+[[nodiscard]] HRESULT PolicyStatusValueImpl::Create(
     const T& value,
     IPolicyStatusValue** policy_status_value) {
-  return Microsoft::WRL::MakeAndInitialize<PolicyStatusValueImpl>(
+  return MakeAndInitializeComObject<PolicyStatusValueImpl>(
       policy_status_value,
       value.effective_policy() ? value.effective_policy()->source : "",
       value.effective_policy()
@@ -1456,38 +1441,6 @@ STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
 
   *conflict_value = base::win::ScopedBstr(conflict_value_).Release();
   return S_OK;
-}
-
-// TODO(crbug.com/1344200): Implement the IDispatch methods.
-STDMETHODIMP PolicyStatusValueImpl::GetTypeInfoCount(UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::GetIDsOfNames(REFIID,
-                                                  LPOLESTR*,
-                                                  UINT,
-                                                  LCID,
-                                                  DISPID*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::Invoke(DISPID,
-                                           REFIID,
-                                           LCID,
-                                           WORD,
-                                           DISPPARAMS*,
-                                           VARIANT*,
-                                           EXCEPINFO*,
-                                           UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
 }
 
 }  // namespace updater

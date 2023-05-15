@@ -6,6 +6,7 @@
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_MESSAGE_RECEIVER_IMPL_H_
 
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
+#include "base/memory/raw_ptr.h"
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
@@ -25,7 +26,8 @@ class EcheMessageReceiverImpl
   // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
-  secure_channel::ConnectionManager* connection_manager_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
 };
 
 }  // namespace eche_app

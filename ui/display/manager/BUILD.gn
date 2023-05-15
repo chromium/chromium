@@ -10,12 +10,10 @@ assert(is_chromeos_ash || is_castos || is_cast_android)
 component("manager") {
   sources = [
     "display_manager_export.h",
-    "display_manager_util.cc",
-    "display_manager_util.h",
-    "display_manager_utilities.cc",
-    "display_manager_utilities.h",
     "managed_display_info.cc",
     "managed_display_info.h",
+    "util/display_manager_util.cc",
+    "util/display_manager_util.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -56,6 +54,8 @@ component("manager") {
       "display_layout_store.h",
       "display_manager.cc",
       "display_manager.h",
+      "display_port_observer.cc",
+      "display_port_observer.h",
       "display_properties_parser.cc",
       "display_properties_parser.h",
       "json_converter.cc",
@@ -73,6 +73,7 @@ component("manager") {
     deps += [
       "//chromeos/ash/components/system",
       "//chromeos/ui/base",
+      "//third_party/re2:re2",
     ]
   }
 }

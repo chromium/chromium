@@ -11,6 +11,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 
@@ -21,11 +22,21 @@ namespace {
 // Gets the shield color based on the state. This is used for the login, lock,
 // overview and tablet mode.
 SkColor GetWallpaperShieldColor(const views::Widget* widget) {
+  ui::ColorId color;
+
+  auto* controller = Shell::Get()->wallpaper_controller();
+  if (controller->IsOobeWallpaper()) {
+    color = chromeos::features::IsJellyrollEnabled()
+                ? cros_tokens::kCrosSysScrim2
+                : static_cast<ui::ColorId>(kColorAshShieldAndBase60);
+  } else {
+    color = Shell::Get()->session_controller()->IsUserSessionBlocked()
+                ? kColorAshShieldAndBase80
+                : kColorAshShieldAndBase40;
+  }
+
   DCHECK(widget);
-  return widget->GetColorProvider()->GetColor(
-      Shell::Get()->session_controller()->IsUserSessionBlocked()
-          ? kColorAshShieldAndBase80
-          : kColorAshShieldAndBase40);
+  return widget->GetColorProvider()->GetColor(color);
 }
 
 }  // namespace

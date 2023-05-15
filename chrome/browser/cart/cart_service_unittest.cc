@@ -352,15 +352,14 @@ class CartServiceTest : public testing::Test {
   }
 
   std::string getDomainName(base::StringPiece domain) {
-    std::string* res = service_->domain_name_mapping_->FindStringKey(domain);
+    std::string* res = service_->domain_name_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;
   }
 
   std::string getDomainCartURL(base::StringPiece domain) {
-    std::string* res =
-        service_->domain_cart_url_mapping_->FindStringKey(domain);
+    std::string* res = service_->domain_cart_url_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;
@@ -1599,7 +1598,7 @@ TEST_F(CartServiceTest, TestAcknowledgeDiscountConsent) {
 }
 
 // Tests HasActiveCartForURL API correctly checks cart existence.
-TEST_F(CartServiceTest, TestHHasActiveCartForURL) {
+TEST_F(CartServiceTest, TestHasActiveCartForURL) {
   base::RunLoop run_loop[4];
   const GURL url_with_cart_A = GURL("https://www.foo.com/A");
   const GURL url_with_cart_B = GURL("https://www.foo.com/B");
@@ -1639,6 +1638,22 @@ TEST_F(CartServiceTest, TestHHasActiveCartForURL) {
       base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
                      base::Unretained(this), run_loop[3].QuitClosure(), false));
   run_loop[3].Run();
+}
+
+TEST_F(CartServiceTest, TestIsCartEnabled) {
+  const std::string cart_key = "chrome_cart";
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& disabled_list = update.Get();
+
+  disabled_list.Append(base::Value(cart_key));
+
+  ASSERT_TRUE(base::Contains(disabled_list, base::Value(cart_key)));
+  ASSERT_FALSE(service_->IsCartEnabled());
+
+  disabled_list.EraseValue(base::Value(cart_key));
+
+  ASSERT_FALSE(base::Contains(disabled_list, base::Value(cart_key)));
+  ASSERT_TRUE(service_->IsCartEnabled());
 }
 
 class CartServiceNoDiscountTest : public CartServiceTest {

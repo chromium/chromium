@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-09-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2023-08-27">
+    units="ms" expires_after="2023-09-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-09-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
-    units="ms" expires_after="2023-08-27">
+    units="ms" expires_after="2023-09-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -194,6 +194,64 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount"
+    units="hostnames" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the accumulated number of host that have HFM enabled at some point
+    due to the site engagement heuristic. Includes hosts that have HTTP allowed.
+    Recorded at the time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstModeWithEngagementHeuristic.Duration"
+    units="seconds" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the duration a host has HFM enabled due to the site engagement
+    heuristic. Only recorded for hosts removed from the HFM list. Recorded at
+    the time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
+    units="hostnames" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the current number of host that have HFM enabled due to the site
+    engagement heuristic. Includes hosts that have HTTP allowed. Recorded at the
+    time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
+<histogram
+    name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
+    enum="HttpsFirstModeNavigationEvent" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Same as Security.HttpsFirstMode.NavigationEvent but only recorded iff HFM is
+    disabled by the UI setting and enabled by the Site Engagement Heuristic
+    because the site's HTTPS score is high and HTTP score is low.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstModeWithEngagementHeuristic.State"
+    enum="SiteEngagementHeuristicState" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether the HTTPS-First Mode got enabled or disabled on a site due
+    to its HTTP and HTTPS site engagement scores. Only recorded if the enabled
+    state changes. Recorded even for sites allowlisted to load over HTTP.
+  </summary>
+</histogram>
+
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
     enum="JsonParserExtension" expires_after="2023-09-10">
   <owner>rsesek@chromium.org</owner>
@@ -236,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
-    enum="Boolean" expires_after="2023-08-20">
+    enum="Boolean" expires_after="2023-10-22">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -246,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteStatus"
-    enum="AboutThisSiteStatus" expires_after="2023-08-27">
+    enum="AboutThisSiteStatus" expires_after="2023-11-05">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -266,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.Cookies.HasFPSInfo" enum="Boolean"
-    expires_after="M115">
+    expires_after="M119">
   <owner>tommasin@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
@@ -318,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2023-08-20">
+    enum="PrivateNetworkAccessCheckResult" expires_after="2023-10-22">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
@@ -611,7 +669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -756,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2023-05-09">
+    expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -775,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2023-05-09">
+    units="processes" expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -790,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2023-05-09">
+    units="processes" expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>

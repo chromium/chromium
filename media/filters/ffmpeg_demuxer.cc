@@ -1354,6 +1354,14 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
       continue;
     }
 
+    // Skip disabled tracks. The mov demuxer translates MOV_TKHD_FLAG_ENABLED to
+    // AV_DISPOSITION_DEFAULT.
+    if (container() == container_names::CONTAINER_MOV &&
+        !(stream->disposition & AV_DISPOSITION_DEFAULT)) {
+      stream->discard = AVDISCARD_ALL;
+      continue;
+    }
+
     // Attempt to create a FFmpegDemuxerStream from the AVStream. This will
     // return nullptr if the AVStream is invalid. Validity checks will verify
     // things like: codec, channel layout, sample/pixel format, etc...

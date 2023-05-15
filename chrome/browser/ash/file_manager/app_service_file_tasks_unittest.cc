@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -24,14 +25,17 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -109,6 +113,12 @@ class AppServiceFileTasksTest : public testing::Test {
 
   std::vector<FullTaskDescriptor> FindAppServiceTasks(
       const std::vector<FakeFile>& files) {
+    auto resulting_tasks = FindAppServiceTasksImpl(files);
+    return resulting_tasks->tasks;
+  }
+
+  std::unique_ptr<ResultingTasks> FindAppServiceTasksImpl(
+      const std::vector<FakeFile>& files) {
     std::vector<extensions::EntryInfo> entries;
     std::vector<GURL> file_urls;
     std::vector<std::string> dlp_source_urls;
@@ -125,15 +135,23 @@ class AppServiceFileTasksTest : public testing::Test {
       dlp_source_urls.push_back("");
     }
 
-    std::vector<FullTaskDescriptor> tasks;
+    auto resulting_tasks = std::make_unique<ResultingTasks>();
     file_tasks::FindAppServiceTasks(profile(), entries, file_urls,
-                                    dlp_source_urls, &tasks);
+                                    dlp_source_urls, &resulting_tasks->tasks);
     // Sort by app ID so we don't rely on ordering.
-    std::sort(
-        tasks.begin(), tasks.end(), [](const auto& left, const auto& right) {
-          return left.task_descriptor.app_id < right.task_descriptor.app_id;
-        });
-    return tasks;
+    base::ranges::sort(
+        resulting_tasks->tasks, base::ranges::less(),
+        [](const auto& task) { return task.task_descriptor.app_id; });
+
+    return resulting_tasks;
+  }
+
+  std::unique_ptr<ResultingTasks> FindAppServiceTasksWithPolicy(
+      const std::vector<FakeFile>& files) {
+    auto resulting_tasks = FindAppServiceTasksImpl(files);
+    ChooseAndSetDefaultTaskFromPolicyPrefs(
+        profile(), ConvertFakeFilesToEntryInfos(files), resulting_tasks.get());
+    return resulting_tasks;
   }
 
   void AddTextApp() {
@@ -160,35 +178,24 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeApp() {
     extensions::ExtensionBuilder baz_app;
     baz_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Baz")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("background",
-                          extensions::DictionaryBuilder()
-                              .Set("scripts", extensions::ListBuilder()
-                                                  .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Set(
-                "file_handlers",
-                extensions::DictionaryBuilder()
-                    .Set("any", extensions::DictionaryBuilder()
-                                    .Set("extensions", extensions::ListBuilder()
-                                                           .Append("*")
-                                                           .Append("bar")
-                                                           .Build())
-                                    .Build())
-                    .Set("image", extensions::DictionaryBuilder()
-                                      .Set("types", extensions::ListBuilder()
-                                                        .Append("image/*")
-                                                        .Build())
-                                      .Build())
-                    .Build())
-            .Build());
+            .Set("app", base::Value::Dict().Set(
+                            "background",
+                            base::Value::Dict().Set(
+                                "scripts",
+                                base::Value::List().Append("background.js"))))
+            .Set("file_handlers",
+                 base::Value::Dict()
+                     .Set("any",
+                          base::Value::Dict().Set(
+                              "extensions",
+                              base::Value::List().Append("*").Append("bar")))
+                     .Set("image", base::Value::Dict().Set(
+                                       "types", base::Value::List().Append(
+                                                    "image/*")))));
     baz_app.SetID(kChromeAppId);
     auto filters =
         apps_util::CreateIntentFiltersForChromeApp(baz_app.Build().get());
@@ -200,68 +207,49 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeAppWithVerbs() {
     extensions::ExtensionBuilder foo_app;
     foo_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Foo")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("background",
-                          extensions::DictionaryBuilder()
-                              .Set("scripts", extensions::ListBuilder()
-                                                  .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Set(
-                "file_handlers",
-                extensions::DictionaryBuilder()
-                    .Set("any_with_directories",
-                         extensions::DictionaryBuilder()
-                             .Set("include_directories", true)
-                             .Set("types",
-                                  extensions::ListBuilder().Append("*").Build())
-                             .Set("verb", "open_with")
-                             .Build())
-                    .Set("html_handler",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Html")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/html")
-                                               .Build())
-                             .Set("verb", "open_with")
-                             .Build())
-                    .Set("plain_text",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Build())
-                    .Set("share_plain_text",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Share Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Set("verb", "share_with")
-                             .Build())
-                    .Set("any_pack", extensions::DictionaryBuilder()
-                                         .Set("types", extensions::ListBuilder()
-                                                           .Append("*")
-                                                           .Build())
-                                         .Set("verb", "pack_with")
-                                         .Build())
-                    .Set("plain_text_add_to",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Set("verb", "add_to")
-                             .Build())
-                    .Build())
-            .Build());
+            .Set("app", base::Value::Dict().Set(
+                            "background",
+                            base::Value::Dict().Set(
+                                "scripts",
+                                base::Value::List().Append("background.js"))))
+            .Set("file_handlers",
+                 base::Value::Dict()
+                     .Set("any_with_directories",
+                          base::Value::Dict()
+                              .Set("include_directories", true)
+                              .Set("types", base::Value::List().Append("*"))
+                              .Set("verb", "open_with"))
+                     .Set("html_handler",
+                          base::Value::Dict()
+                              .Set("title", "Html")
+                              .Set("types",
+                                   base::Value::List().Append("text/html"))
+                              .Set("verb", "open_with"))
+                     .Set("plain_text",
+                          base::Value::Dict()
+                              .Set("title", "Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain")))
+                     .Set("share_plain_text",
+                          base::Value::Dict()
+                              .Set("title", "Share Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain"))
+                              .Set("verb", "share_with"))
+                     .Set("any_pack",
+                          base::Value::Dict()
+                              .Set("types", base::Value::List().Append("*"))
+                              .Set("verb", "pack_with"))
+                     .Set("plain_text_add_to",
+                          base::Value::Dict()
+                              .Set("title", "Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain"))
+                              .Set("verb", "add_to"))));
     foo_app.SetID(kChromeAppWithVerbsId);
     auto filters =
         apps_util::CreateIntentFiltersForChromeApp(foo_app.Build().get());
@@ -274,24 +262,19 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddExtension() {
     extensions::ExtensionBuilder fbh_app;
     fbh_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Fbh")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
             .Set("permissions",
-                 extensions::ListBuilder().Append("fileBrowserHandler").Build())
+                 base::Value::List().Append("fileBrowserHandler"))
             .Set("file_browser_handlers",
-                 extensions::ListBuilder()
-                     .Append(extensions::DictionaryBuilder()
-                                 .Set("id", "open")
-                                 .Set("default_title", "open title")
-                                 .Set("file_filters",
-                                      extensions::ListBuilder()
-                                          .Append("filesystem:*.txt")
-                                          .Build())
-                                 .Build())
-                     .Build())
-            .Build());
+                 base::Value::List().Append(
+                     base::Value::Dict()
+                         .Set("id", "open")
+                         .Set("default_title", "open title")
+                         .Set("file_filters", base::Value::List().Append(
+                                                  "filesystem:*.txt")))));
     fbh_app.SetID(kExtensionId);
     auto filters =
         apps_util::CreateIntentFiltersForExtension(fbh_app.Build().get());
@@ -353,10 +336,22 @@ class AppServiceFileTasksTest : public testing::Test {
                                 app_service_proxy_);
   }
 
+  std::vector<extensions::EntryInfo> ConvertFakeFilesToEntryInfos(
+      const std::vector<FakeFile>& files) {
+    std::vector<extensions::EntryInfo> entries;
+    for (const FakeFile& fake_file : files) {
+      entries.emplace_back(
+          util::GetMyFilesFolderForProfile(profile()).AppendASCII(
+              fake_file.file_name),
+          fake_file.mime_type, fake_file.is_directory);
+    }
+    return entries;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 
@@ -940,10 +935,10 @@ TEST_F(AppServiceFileTasksTestEnabled, CrositiniTasksControlledByPolicy) {
 // Tests applying policies when listing tasks.
 class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
  protected:
-  class MockFilesController : public policy::DlpFilesController {
+  class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
     explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-        : DlpFilesController(rules_manager) {}
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,
@@ -955,7 +950,7 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
   AppServiceFileTasksPolicyTest()
       : user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_))) {}
+            base::WrapUnique(user_manager_.get()))) {}
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -996,9 +991,10 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
 
   void TearDown() override { scoped_user_manager_.reset(); }
 
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

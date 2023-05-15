@@ -282,6 +282,18 @@ LICENSE_AND_HEADER = """\
 
 """
 
+def WriteReset(out_file, functions):
+ for group in functions:
+    if 'ifdef' in group:
+      out_file.write('#if %s\n' % group['ifdef'])
+
+    for func in group['functions']:
+      out_file.write('%s = nullptr;\n' % func)
+
+    if 'ifdef' in group:
+      out_file.write('#endif  // %s\n' % group['ifdef'])
+    out_file.write('\n')
+
 def WriteFunctionsInternal(out_file, functions, gen_content,
                            check_extension=False):
   for group in functions:
@@ -447,6 +459,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       VkDevice vk_device,
       uint32_t api_version,
       const gfx::ExtensionSet& enabled_extensions);
+
+  void ResetForTesting();
 
   // This is used to allow thread safe access to a given vulkan queue when
   // multiple gpu threads are accessing it. Note that this map will be only
@@ -661,6 +675,25 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   out_file.write("""\
 
   return true;
+}
+
+void VulkanFunctionPointers::ResetForTesting() {
+  base::AutoLock lock(write_lock_);
+
+  per_queue_lock_map.clear();
+  loader_library_ = nullptr;
+  vkGetInstanceProcAddr = nullptr;
+
+""")
+
+  WriteReset(
+      out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
+  WriteReset(
+      out_file, VULKAN_INSTANCE_FUNCTIONS)
+  WriteReset(
+      out_file, VULKAN_DEVICE_FUNCTIONS)
+
+  out_file.write("""\
 }
 
 }  // namespace gpu

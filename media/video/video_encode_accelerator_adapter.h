@@ -80,7 +80,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   void BitstreamBufferReady(int32_t buffer_id,
                             const BitstreamBufferMetadata& metadata) override;
 
-  void NotifyError(VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const EncoderStatus& status) override;
 
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 

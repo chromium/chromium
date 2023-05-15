@@ -31,6 +31,9 @@ class MouseShapePump : public webrtc::MouseCursorMonitor::Callback {
 
   ~MouseShapePump() override;
 
+  // Restarts the mouse shape capture timer using |new_capture_interval|.
+  void SetCursorCaptureInterval(base::TimeDelta new_capture_interval);
+
   // Sets or unsets the callback to which to delegate MouseCursorMonitor events
   // after they have been processed.
   void SetMouseCursorMonitorCallback(
@@ -38,6 +41,8 @@ class MouseShapePump : public webrtc::MouseCursorMonitor::Callback {
 
  private:
   void Capture();
+
+  void StartCaptureTimer(base::TimeDelta capture_interval);
 
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;

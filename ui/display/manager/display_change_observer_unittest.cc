@@ -25,8 +25,8 @@
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -163,22 +163,19 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiSpecifiedForInternalDisplay) {
       display_change_observer_.get(), display_snapshot.get(),
       default_display_mode_.get());
 
-  EXPECT_EQ(display_info.rounded_corners_radii(),
+  EXPECT_EQ(display_info.panel_corners_radii(),
             gfx::RoundedCornersF(16, 16, 15, 15));
 }
 
-TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiNotSetForExternalDisplays) {
-  // Specifies radii for connectors that are different from the connector of
-  // the display(snapshot) under test.
+TEST_F(DisplayChangeObserverPanelRadiiTest, IgnoreRadiiIfNotInternalDisplay) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kDisplayProperties,
-      "[{\"connector-type\": 14, \"rounded-corners\": {\"bottom-left\": 15, "
+      "[{\"connector-type\": 15, \"rounded-corners\": {\"bottom-left\": 15, "
       "\"bottom-right\": 15, \"top-left\": 16, \"top-right\": 16}}]");
 
   InitializeDisplayChangeObserver();
 
-  // Radii is not specified for the connection protocol
-  // `DisplayConnectionProtocol::k9PinDin` through command line.
+  // The snapshot is of a display that is not a internal display.
   std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
           .SetId(123)
@@ -190,7 +187,7 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiNotSetForExternalDisplays) {
       display_change_observer_.get(), display_snapshot.get(),
       default_display_mode_.get());
 
-  EXPECT_TRUE(display_info.rounded_corners_radii().IsEmpty());
+  EXPECT_TRUE(display_info.panel_corners_radii().IsEmpty());
 }
 
 TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
@@ -304,8 +301,8 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
       /*connector_index=*/0x0001, gfx::Point(), gfx::Size(),
       DISPLAY_CONNECTION_TYPE_UNKNOWN,
       /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
-      PrivacyScreenState::kNotSupported, false, false, false, std::string(), {},
-      nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
+      PrivacyScreenState::kNotSupported, false, false, false, std::string(),
+      base::FilePath(), {}, nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
       /*bits_per_channel=*/8u, /*hdr_static_metadata=*/{}, kVrrNotCapable,
       absl::nullopt, DrmFormatsAndModifiers());
 

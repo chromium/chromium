@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string script = "var f = document.createElement('iframe');\n"
                        "f.src = '" + cross_site_url.spec() + "';\n"
                        "document.body.appendChild(f);\n";
-  EXPECT_TRUE(ExecuteScript(contents, script));
+  EXPECT_TRUE(ExecJs(contents, script));
   EXPECT_TRUE(WaitForLoadStop(contents));
 
   // The page should still have focus.  The cross-process subframe navigation

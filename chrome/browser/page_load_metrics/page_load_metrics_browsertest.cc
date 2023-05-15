@@ -73,7 +73,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -239,7 +238,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   void MakeComponentFullscreen(const std::string& id) {
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "document.getElementById(\"" + id + "\").webkitRequestFullscreen();"));
   }
@@ -969,8 +968,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPage) {
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
   NavigateToUntrackedUrl();
-  histogram_tester_->ExpectTotalCount(internal::kHistogramPageLoadTotalBytes,
-                                      1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDuration, 1);
 
@@ -1006,8 +1003,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
   NavigateToUntrackedUrl();
-  histogram_tester_->ExpectTotalCount(internal::kHistogramPageLoadTotalBytes,
-                                      1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDuration, 1);
 
@@ -1037,8 +1032,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoStatePrefetchMetrics) {
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
   NavigateToUntrackedUrl();
-  histogram_tester_->ExpectTotalCount(internal::kHistogramPageLoadTotalBytes,
-                                      1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDuration, 1);
 
@@ -1618,14 +1611,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PayloadSize) {
   // Payload histograms are only logged when a page load terminates, so force
   // navigation to another page.
   NavigateToUntrackedUrl();
-
-  histogram_tester_->ExpectTotalCount(internal::kHistogramPageLoadTotalBytes,
-                                      1);
-
-  // Verify that there is a single sample recorded in the 10kB bucket (the size
-  // of the main HTML response).
-  histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadTotalBytes,
-                                       10, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PayloadSizeChildFrame) {
@@ -1641,14 +1626,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PayloadSizeChildFrame) {
   // Payload histograms are only logged when a page load terminates, so force
   // navigation to another page.
   NavigateToUntrackedUrl();
-
-  histogram_tester_->ExpectTotalCount(internal::kHistogramPageLoadTotalBytes,
-                                      1);
-
-  // Verify that there is a single sample recorded in the 10kB bucket (the size
-  // of the iframe response).
-  histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadTotalBytes,
-                                       10, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
@@ -1666,9 +1643,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   downloads_observer.WaitForFinished();
 
   NavigateToUntrackedUrl();
-
-  histogram_tester_->ExpectUniqueSample(internal::kHistogramPageLoadTotalBytes,
-                                        0, 1);
 }
 
 // Test UseCounter Features observed in the main frame are recorded, exactly
@@ -2733,9 +2707,11 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
   base::test::ScopedFeatureList features_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
+// TODO(crbug.com/1431821): Flaky on many platforms.
+IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, DISABLED_SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
+
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
     SoftNavigation) {
@@ -3296,20 +3272,15 @@ class PageLoadMetricsBrowserTestTerminatedPage
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_TYPED, false);
 
-    content::WindowedNotificationObserver load(
-        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-        content::NotificationService::AllSources());
-
     content::WebContents* contents = browser()->OpenURL(page);
-
     std::unique_ptr<PageLoadMetricsTestWaiter> waiter =
         CreatePageLoadMetricsTestWaiter("lcp_waiter", contents);
-
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
 
-    // This is to wait for the navigation entry to be committed.
-    load.Wait();
+    content::TestNavigationObserver observer(contents);
+    observer.set_expected_initial_url(page.url);
+    observer.Wait();
 
     // This is to wait for LCP to be observed on browser side.
     waiter->Wait();

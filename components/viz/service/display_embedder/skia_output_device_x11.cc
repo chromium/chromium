@@ -70,17 +70,17 @@ SkiaOutputDeviceX11::~SkiaOutputDeviceX11() {
   connection_->FreeGC({gc_});
 }
 
-bool SkiaOutputDeviceX11::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
-  if (!SkiaOutputDeviceOffscreen::Reshape(characterization, color_space,
+bool SkiaOutputDeviceX11::Reshape(const SkImageInfo& image_info,
+                                  const gfx::ColorSpace& color_space,
+                                  int sample_count,
+                                  float device_scale_factor,
+                                  gfx::OverlayTransform transform) {
+  if (!SkiaOutputDeviceOffscreen::Reshape(image_info, color_space, sample_count,
                                           device_scale_factor, transform)) {
     return false;
   }
-  auto ii = SkImageInfo::MakeN32(
-      characterization.width(), characterization.height(), kOpaque_SkAlphaType);
+  auto ii = SkImageInfo::MakeN32(image_info.width(), image_info.height(),
+                                 kOpaque_SkAlphaType);
   std::vector<uint8_t> mem(ii.computeMinByteSize());
   pixels_ = base::RefCountedBytes::TakeVector(&mem);
   return true;

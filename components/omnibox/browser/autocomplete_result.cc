@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -43,6 +44,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
+#include "omnibox_triggered_feature_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -235,15 +237,12 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // suggestions. Skipping those suggestions is fine, since
   // `SetAllowedToBeDefault()` here is only intended to make
   // `allowed_to_be_default` more conservative (true -> false, not vice versa).
-  static bool prevent_default_previous_matches =
-      OmniboxFieldTrial::kAutocompleteStabilityPreventDefaultPreviousMatches
-          .Get();
   for (auto& m : matches_) {
     if (!m.from_previous)
       continue;
     if (input.prevent_inline_autocomplete() && m.allowed_to_be_default_match) {
       m.SetAllowedToBeDefault(input);
-    } else if (prevent_default_previous_matches) {
+    } else {
       // Transferred matches may no longer match the new input. E.g., when the
       // user types 'gi' (and presses enter), don't inline (and navigate to)
       // 'gi[oogle.com]'.
@@ -267,7 +266,8 @@ void AutocompleteResult::AppendMatches(const ACMatches& matches) {
 void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
-    const AutocompleteMatch* preserve_default_match) {
+    OmniboxTriggeredFeatureService* triggered_feature_service,
+    absl::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
 
@@ -299,29 +299,26 @@ void AutocompleteResult::SortAndCull(
     //  by the grouping framework.
     // If we are trying to keep a default match from a previous pass stable,
     // search the current results for it, and if found, make it the top match.
-    if (preserve_default_match) {
+    if (default_match_to_preserve.has_value()) {
       const auto default_match_fields =
-          GetMatchComparisonFields(*preserve_default_match);
+          GetMatchComparisonFields(default_match_to_preserve.value());
       top_match =
           base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
             // Find a match that is a duplicate AND has the same fill_into_edit.
             // Don't preserve suggestions that are not default-able; e.g.,
             // typing 'xy' shouldn't preserve default 'xz.com/xy'.
-            static bool prevent_default_previous_matches =
-                OmniboxFieldTrial::
-                    kAutocompleteStabilityPreventDefaultPreviousMatches.Get();
             return default_match_fields == GetMatchComparisonFields(match) &&
-                   preserve_default_match->fill_into_edit ==
+                   default_match_to_preserve->fill_into_edit ==
                        match.fill_into_edit &&
-                   (!prevent_default_previous_matches ||
-                    match.allowed_to_be_default_match);
+                   match.allowed_to_be_default_match;
           });
     }
 
     // Otherwise, if there's no default match from a previous pass to preserve,
     // find the top match based on our normal undemoted scoring method.
-    if (top_match == matches_.end())
+    if (top_match == matches_.end()) {
       top_match = FindTopMatch(input, &matches_);
+    }
 
     RotateMatchToFront(top_match, &matches_);
 
@@ -395,11 +392,27 @@ void AutocompleteResult::SortAndCull(
              base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
             base::FeatureList::IsEnabled(
                 omnibox::kRealboxSecondaryZeroSuggest)) {
-          size_t max_previous_search_related =
-              OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
-                  .Get();
-          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
-              max_previous_search_related, suggestion_groups_map_));
+          // Report whether secondary zero-prefix suggestions were triggered.
+          if (base::ranges::any_of(
+                  suggestion_groups_map_, [](const auto& entry) {
+                    return entry.second.side_type() ==
+                           omnibox::GroupConfig_SideType_SECONDARY;
+                  })) {
+            triggered_feature_service->FeatureTriggered(
+                metrics::
+                    OmniboxEventProto_Feature_REMOTE_SECONDARY_ZERO_SUGGEST);
+          }
+
+          // Don't show the secondary zero-prefix suggestions in the
+          // counterfactual arm.
+          if (!OmniboxFieldTrial::kRealboxSecondaryZeroSuggestCounterfactual
+                   .Get()) {
+            size_t max_previous_search_related =
+                OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
+                    .Get();
+            sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+                max_previous_search_related, suggestion_groups_map_));
+          }
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
@@ -517,10 +530,6 @@ void AutocompleteResult::SortAndCull(
         << debug_info;
   }
 #endif
-
-  if constexpr (is_android) {
-    TrimOmniboxActions();
-  }
 }
 
 void AutocompleteResult::TrimOmniboxActions() {
@@ -531,19 +540,27 @@ void AutocompleteResult::TrimOmniboxActions() {
   // - Slots 4 and beyond permit only HISTORY_CLUSTERS.
   // - In every case, ACTION_IN_SUGGEST is preferred over HISTORY_CLUSTERS
   // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
-  std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
-                                           OmniboxActionId::HISTORY_CLUSTERS,
-                                           OmniboxActionId::PEDAL};
-  std::vector<OmniboxActionId> include_at_most_pedals{
-      OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
-  std::vector<OmniboxActionId> include_at_most_history_clusters{
-      OmniboxActionId::HISTORY_CLUSTERS};
+  // - TAB_SWITCH actions are not considered because they're never attached.
+  if constexpr (is_android) {
+    static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 2;
+    static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
+    std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                             OmniboxActionId::HISTORY_CLUSTERS,
+                                             OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_at_most_pedals{
+        OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_at_most_history_clusters{
+        OmniboxActionId::HISTORY_CLUSTERS};
 
-  for (size_t index = 0u; index < matches_.size(); ++index) {
-    matches_[index].FilterOmniboxActions(
-        index < 2   ? include_all
-        : index < 3 ? include_at_most_pedals
-                    : include_at_most_history_clusters);
+    for (size_t index = 0u; index < matches_.size(); ++index) {
+      matches_[index].FilterOmniboxActions(
+          index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD ? include_all
+          : index < PEDALS_CUTOFF_THRESHOLD           ? include_at_most_pedals
+                                            : include_at_most_history_clusters);
+      if (index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD) {
+        matches_[index].FilterAndSortActionsInSuggest();
+      }
+    }
   }
 }
 
@@ -664,9 +681,11 @@ void AutocompleteResult::AttachPedalsToMatches(
   for (size_t i = 0; i < max_index && pedals_found.size() < kMaxPedalCount;
        i++) {
     AutocompleteMatch& match = matches_[i];
-    // Skip matches that already have an `action` or are not suitable
-    // for actions.
-    if (!match.actions.empty() || !match.IsActionCompatible()) {
+    // Skip matches that already have a pedal or are not suitable for actions.
+    constexpr auto is_pedal = [](const auto& action) {
+      return action->ActionId() == OmniboxActionId::PEDAL;
+    };
+    if (match.GetActionWhere(is_pedal) || !match.IsActionCompatible()) {
       continue;
     }
 
@@ -694,8 +713,9 @@ void AutocompleteResult::ConvertOpenTabMatches(
     // possibly re-change the description.
     // Note: explicitly check for value rather than deferring to implicit
     // boolean conversion of absl::optional.
-    if (match.has_tab_match.has_value())
+    if (match.has_tab_match.has_value()) {
       continue;
+    }
     batch_lookup_map.insert({match.destination_url, {}});
   }
 
@@ -703,15 +723,29 @@ void AutocompleteResult::ConvertOpenTabMatches(
     client->GetTabMatcher().FindMatchingTabs(&batch_lookup_map, input);
 
     for (auto& match : matches_) {
-      if (match.has_tab_match.has_value())
+      if (match.has_tab_match.has_value()) {
         continue;
+      }
 
       auto tab_info = batch_lookup_map.find(match.destination_url);
       DCHECK(tab_info != batch_lookup_map.end());
-      if (tab_info == batch_lookup_map.end())
+      if (tab_info == batch_lookup_map.end()) {
         continue;
+      }
 
       match.has_tab_match = tab_info->second.has_matching_tab;
+      // Do not attach the action for iOS or Android since they have separate
+      // UI treatment for tab matches (no button row as on desktop and realbox).
+      if (!is_android && !is_ios && match.has_tab_match.value()) {
+        // The default action for suggestions from the open tab provider in
+        // keyword mode is to switch to the open tab so no button is necessary.
+        if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() ||
+            !match.from_keyword ||
+            match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
+          match.actions.push_back(
+              base::MakeRefCounted<TabSwitchAction>(match.destination_url));
+        }
+      }
 #if BUILDFLAG(IS_ANDROID)
       match.UpdateMatchingJavaTab(tab_info->second.android_tab);
 #endif

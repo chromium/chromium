@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Nahrávanie bolo zastavené, pretože v zariadení nie je dostatok priestoru. Ak chcete nahrávať ďalšie videá, musíte v zariadení uvoľniť priestor.</translation>
 <translation id="2036868001356139588">Trvanie časovača</translation>
 <translation id="2064538373111010176">Aktívny fotoaparát: <ph name="CAMERA" /></translation>
-<translation id="2128052519899549250">Nahrať časozberné video</translation>
 <translation id="2134029355740465625">Nastavenia videí</translation>
 <translation id="2144806332417375165">Vlastné parametre videa</translation>
 <translation id="2175927920773552910">QR kód</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Bol rozpoznaný dokument</translation>
 <translation id="414641094616694804">Rozlíšenie tejto kamery sa nedá zmeniť</translation>
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
-<translation id="4281620174117014503">Stredné rozlíšenie</translation>
 <translation id="428234092390943511">Miniatúra stránky</translation>
 <translation id="4383571725254449280">Tlačiť denníky výkonnosti</translation>
 <translation id="4445542136948522167">Zastaviť fotenie</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5320594929574852403">Presúvate doľava</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Časozber</translation>
 <translation id="5662366948659129155">Skenuje sa <ph name="COUNT" />. strana</translation>
 <translation id="5671277269877808209">Štvorec</translation>
+<translation id="574392208103952083">Stredné</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
 <translation id="5753488212459587150">Povoliť expertný režim</translation>
 <translation id="5759254179196327752">Skenovať dokument</translation>
@@ -122,7 +120,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="6888362557094394345">Presúvate nadol</translation>
 <translation id="695140971690006676">Resetovať všetko</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Na výšku</translation>
+<translation id="6965830616442491568">Portrét</translation>
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="7134221860976209830">Desaťsekundový časovač</translation>
 <translation id="7191890674911603392">Typ záznamu</translation>
@@ -138,6 +136,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7670511624014457267">60 sním./s</translation>
 <translation id="7671804233658741790">Pravý dolný roh dokumentu</translation>
+<translation id="7684446460490665873">Nahrať časozberné video</translation>
 <translation id="7692090236657809299">Zapnite posunutie, naklonenie a priblíženie</translation>
 <translation id="7726641833034062494">Nahrať normálne video</translation>
 <translation id="7748344063862150053">Pravý horný roh dokumentu</translation>
@@ -163,6 +162,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="9045010116236796332">Umiestnite všetky okraje dokumentu do rámu</translation>
 <translation id="9045155556724273246">10 sekúnd</translation>
 <translation id="906331135292332864">Obrázok sa spracúva…</translation>
+<translation id="9161584225258678723">Časozber</translation>
 <translation id="922762992951083513">Zapnúť zrkadlenie</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 </translationbundle>

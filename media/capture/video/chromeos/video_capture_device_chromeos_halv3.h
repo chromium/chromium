@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -42,7 +43,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
                        SetPhotoOptionsCallback callback) final;
 
  private:
-  VideoCaptureDeviceChromeOSDelegate* vcd_delegate_;
+  raw_ptr<VideoCaptureDeviceChromeOSDelegate, ExperimentalAsh> vcd_delegate_;
 
   ClientType client_type_;
 };

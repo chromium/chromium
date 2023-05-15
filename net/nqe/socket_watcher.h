@@ -91,6 +91,10 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   // Minimum interval betweeen consecutive incoming notifications.
   const base::TimeDelta rtt_notifications_minimum_interval_;
 
+  // True if socket watchers constructed by this factory can use the RTT from
+  // the sockets that are connected to the private addresses.
+  const bool allow_rtt_private_address_;
+
   // True if the RTT observations from this socket can be notified using
   // |updated_rtt_observation_callback_|.
   const bool run_rtt_callback_;

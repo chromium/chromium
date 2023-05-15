@@ -6,6 +6,7 @@
 #define ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_UNTRUSTED_PAGE_HANDLER_H_
 
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom.h"
+#include "base/memory/raw_ptr.h"
 
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,7 +32,7 @@ class DemoModeUntrustedPageHandler
 
   mojo::Receiver<mojom::demo_mode::UntrustedPageHandler> receiver_;
 
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 }  // namespace ash

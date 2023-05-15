@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -294,7 +295,8 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   }
 
   FakeRmadClientForTest* fake_rmad_client_() {
-    return google::protobuf::down_cast<FakeRmadClientForTest*>(rmad_client_);
+    return google::protobuf::down_cast<FakeRmadClientForTest*>(
+        rmad_client_.get());
   }
 
   void SetupWiFiNetwork(const std::string& guid) {
@@ -335,8 +337,9 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   }
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
-  RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
-  VersionUpdater* version_updater_ = nullptr;
+  raw_ptr<RmadClient, ExperimentalAsh> rmad_client_ =
+      nullptr;  // Unowned convenience pointer.
+  raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
 
  private:
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>

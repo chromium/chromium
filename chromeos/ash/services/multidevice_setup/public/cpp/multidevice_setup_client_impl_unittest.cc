@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -434,7 +435,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   const base::test::TaskEnvironment task_environment_;
 
-  FakeMultiDeviceSetup* fake_multidevice_setup_;
+  raw_ptr<FakeMultiDeviceSetup, ExperimentalAsh> fake_multidevice_setup_;
   std::unique_ptr<FakeMultiDeviceSetupInitializerFactory>
       fake_multidevice_setup_impl_factory_;
   std::unique_ptr<MultiDeviceSetupService> service_;

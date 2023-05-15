@@ -8,9 +8,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 
@@ -51,7 +52,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // identified by `uuid`. Returns nullptr if not found.
   ash::DeskTemplate* FindOtherEntryWithName(const std::u16string& name,
                                             ash::DeskTemplateType type,
-                                            const base::GUID& uuid) const;
+                                            const base::Uuid& uuid) const;
 
   // Update UI for saved desk library. More specifically, it updates the
   // visibility of the library button, save desk button, and the saved desk
@@ -62,13 +63,13 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Calls the DeskModel to get all the saved desk entries, with a callback to
   // `OnGetAllEntries`. `saved_desk_name` is used for the name overwrite nudge
   // for duplicate desk names.
-  void GetAllEntries(const base::GUID& item_to_focus,
+  void GetAllEntries(const base::Uuid& item_to_focus,
                      const std::u16string& saved_desk_name,
                      aura::Window* const root_window);
 
   // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
   // record histogram if `record_for_type` is specified.
-  void DeleteEntry(const base::GUID& uuid,
+  void DeleteEntry(const base::Uuid& uuid,
                    absl::optional<DeskTemplateType> record_for_type);
 
   // Launches `saved_desk` into a new desk.
@@ -92,7 +93,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override;
+  void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
   friend class SavedDeskPresenterTestApi;
@@ -104,7 +105,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted saved desk.
-  void OnDeleteEntry(const base::GUID& uuid,
+  void OnDeleteEntry(const base::Uuid& uuid,
                      absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
@@ -121,7 +122,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Helper functions for updating the UI.
   void AddOrUpdateUIEntries(
       const std::vector<const DeskTemplate*>& new_entries);
-  void RemoveUIEntries(const std::vector<base::GUID>& uuids);
+  void RemoveUIEntries(const std::vector<base::Uuid>& uuids);
 
   // Returns a copy of a duplicated name to be stored.  This function works by
   // taking the name to be duplicated and adding a "(1)" to it. If the name
@@ -136,7 +137,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   static void FireWindowWatcherTimerForTesting();
 
   // Pointer to the session which owns `this`.
-  OverviewSession* const overview_session_;
+  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>

@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +81,10 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
               FillSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
-  MOCK_METHOD(void, TouchToFillClosed, (ShowVirtualKeyboard), (override));
+  MOCK_METHOD(void,
+              KeyboardReplacingSurfaceClosed,
+              (ShowVirtualKeyboard),
+              (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
@@ -221,7 +225,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth) {
   // Test that we correctly log the absence of an Android credential.
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
                                        std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
@@ -263,7 +268,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
                                        std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(driver(), TriggerFormSubmission());
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
@@ -292,7 +298,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Dont_Submit) {
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
                                        std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
@@ -328,7 +335,8 @@ TEST_F(TouchToFillControllerAutofillTest, Dont_Submit_With_Empty_Username) {
   EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
   EXPECT_CALL(driver(),
               FillSuggestion(std::u16string(u""), std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -359,7 +367,8 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
   EXPECT_CALL(driver(),
               FillSuggestion(std::u16string(u""), std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -382,7 +391,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   // Test that we correctly log the absence of an Android credential.
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
                                        std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
@@ -419,7 +429,8 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
                                        std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
@@ -450,7 +461,8 @@ TEST_F(TouchToFillControllerAutofillTest,
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
   EXPECT_CALL(driver(), FillSuggestion(_, _)).Times(0);
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(true)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
@@ -527,7 +539,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   // Test that we correctly log the presence of an Android credential.
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"bob"),
                                        std::u16string(u"s3cr3t")));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
@@ -598,7 +611,8 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -633,7 +647,8 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(
                   password_manager::ManagePasswordsReferrer::kTouchToFill));
@@ -686,9 +701,9 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
   MockTouchToFillView* weak_view = mock_view.get();
   touch_to_fill_controller().set_view(std::move(mock_view));
 
-  PasskeyCredential credential(PasskeyCredential::Username("alice@example.com"),
-                               PasskeyCredential::DeviceName(u"Pixel 7"),
-                               PasskeyCredential::BackendId("12345"));
+  PasskeyCredential credential(PasskeyCredential::Source::kAndroidPhone,
+                               "example.com", {1, 2, 3, 4}, {5, 6, 7, 8},
+                               "alice@example.com");
   std::vector<PasskeyCredential> credentials({credential});
 
   EXPECT_CALL(*weak_view,
@@ -702,8 +717,10 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
-  EXPECT_CALL(*webauthn_credentials_delegate(), SelectPasskey(credential.id()));
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(*webauthn_credentials_delegate(),
+              SelectPasskey(base::Base64Encode(credential.credential_id())));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
@@ -741,7 +758,8 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
   touch_to_fill_controller().Show(
       credentials, {}, MakeTouchToFillControllerDelegate(submission_readiness));
 
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(driver(),
               FillSuggestion(credential.username(), credential.password()));
   EXPECT_CALL(driver(), TriggerFormSubmission())
@@ -768,7 +786,8 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
   touch_to_fill_controller().Show(
       credentials, {}, MakeTouchToFillControllerDelegate(submission_readiness));
 
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
+  EXPECT_CALL(driver(),
+              KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   uma_recorder.ExpectUniqueSample(

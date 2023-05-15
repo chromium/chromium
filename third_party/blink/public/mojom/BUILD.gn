@@ -48,7 +48,6 @@ mojom("mojom_platform") {
     "context_menu/context_menu.mojom",
     "conversions/attribution_data_host.mojom",
     "conversions/attribution_reporting.mojom",
-    "conversions/attribution_reporting_automation.mojom",
     "conversions/conversions.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
@@ -149,6 +148,7 @@ mojom("mojom_platform") {
     "notifications/notification_service.mojom",
     "oom_intervention/oom_intervention.mojom",
     "opengraph/metadata.mojom",
+    "origin_trials/origin_trials_settings.mojom",
     "parakeet/ad_request.mojom",
     "payments/payment_app.mojom",
     "peerconnection/peer_connection_tracker.mojom",
@@ -196,8 +196,6 @@ mojom("mojom_platform") {
     "service_worker/service_worker_stream_handle.mojom",
     "service_worker/service_worker_worker_client.mojom",
     "service_worker/service_worker_worker_client_registry.mojom",
-    "shared_storage/shared_storage.mojom",
-    "shared_storage/shared_storage_worklet_service.mojom",
     "site_engagement/site_engagement.mojom",
     "smart_card/smart_card.mojom",
     "sms/webotp_service.mojom",
@@ -212,6 +210,7 @@ mojom("mojom_platform") {
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
+    "url_pattern.mojom",
     "use_counter/use_counter_feature.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
@@ -297,6 +296,7 @@ mojom("mojom_platform") {
     "//ui/base/mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
+    "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
@@ -615,8 +615,8 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.ManifestUrlPattern"
-          cpp = "::blink::Manifest::UrlPattern"
+          mojom = "blink.mojom.UrlPattern"
+          cpp = "::blink::UrlPattern"
         },
         {
           mojom = "blink.mojom.UrlPatternPart"
@@ -639,10 +639,19 @@ mojom("mojom_platform") {
           cpp = "::liburlpattern::Modifier"
         },
       ]
-      traits_headers = [
-        "//third_party/blink/public/common/manifest/manifest_mojom_traits.h",
-      ]
+      traits_headers =
+          [ "//third_party/blink/public/common/url_pattern_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AdCurrency"
+          cpp = "::blink::AdCurrency"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
+      traits_public_deps = [ "//url/mojom:mojom_traits" ]
     },
   ]
   cpp_typemaps = [
@@ -930,19 +939,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::std::u16string"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::std::u16string"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/shared_storage/shared_storage_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "blink.mojom.UseCounterFeature"
           cpp = "::blink::UseCounterFeature"
         },
@@ -1013,19 +1009,6 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request_headers_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/renderer/platform/wtf" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::WTF::String"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::WTF::String"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/platform/mojo/shared_storage_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps
@@ -1239,6 +1222,7 @@ mojom("mojom_core") {
     "messaging/cloneable_message.mojom",
     "messaging/delegated_capability.mojom",
     "messaging/message_port_descriptor.mojom",
+    "messaging/static_bitmap_image.mojom",
     "messaging/task_attribution_id.mojom",
     "messaging/transferable_message.mojom",
     "messaging/user_activation_snapshot.mojom",
@@ -1282,6 +1266,7 @@ mojom("mojom_core") {
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/payments/mojom",
+    "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
@@ -1304,6 +1289,7 @@ mojom("mojom_core") {
     # Direct deps (instead of transitive deps) are necessary for java targets.
     public_deps += [
       "//services/network/public/mojom:cookies_mojom",
+      "//services/network/public/mojom:mojom_attribution",
       "//services/network/public/mojom:url_loader_base",
       "//third_party/blink/public/mojom/tokens",
       "//ui/base/ime/mojom",
@@ -1341,6 +1327,20 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/scheduler/task_attribution_id.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/task_attribution_id_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AcceleratedStaticBitmapImage"
+          cpp = "::blink::AcceleratedImageInfo"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/messaging/accelerated_image_info.h",
+      ]
+      traits_private_headers = [ "//third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h" ]
+      traits_deps = [ "//gpu/ipc/common" ]
     },
   ]
 
@@ -1469,12 +1469,15 @@ mojom("mojom_modules") {
   sources = [
     "buckets/bucket_manager_host.mojom",
     "indexeddb/indexeddb.mojom",
+    "shared_storage/shared_storage.mojom",
+    "shared_storage/shared_storage_worklet_service.mojom",
   ]
 
   public_deps = [
     ":android_mojo_bindings",
     ":mojom_core",
     "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   overridden_deps_blink = [
@@ -1542,6 +1545,19 @@ mojom("mojom_modules") {
       ]
       traits_deps = [ "//third_party/blink/renderer/platform/wtf" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.SharedStorageKeyArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "blink.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
+    },
   ]
 
   cpp_typemaps = [
@@ -1590,6 +1606,19 @@ mojom("mojom_modules") {
         "//third_party/blink/public/common/indexeddb/web_idb_types.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.SharedStorageKeyArgument"
+          cpp = "::std::u16string"
+        },
+        {
+          mojom = "blink.mojom.SharedStorageValueArgument"
+          cpp = "::std::u16string"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/shared_storage/shared_storage_mojom_traits.h" ]
     },
   ]
 }

@@ -4,16 +4,15 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_slider.js';
+import '/shared/settings/controls/settings_slider.js';
 import '../settings_shared.css.js';
-import '../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
 import {getTemplate} from './appearance_fonts_page.html.js';
 

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -324,6 +325,21 @@ void FakeHermesEuiccClient::RefreshInstalledProfiles(
       interactive_delay_);
 }
 
+void FakeHermesEuiccClient::RefreshSmdxProfiles(
+    const dbus::ObjectPath& euicc_path,
+    const std::string& activation_code,
+    bool restore_slot,
+    RefreshSmdxProfilesCallback callback) {
+  DCHECK(ash::features::IsSmdsDbusMigrationEnabled());
+  last_restore_slot_arg_ = restore_slot;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeHermesEuiccClient::DoRefreshSmdxProfiles,
+                     weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                     activation_code, std::move(callback)),
+      interactive_delay_);
+}
+
 void FakeHermesEuiccClient::RequestPendingProfiles(
     const dbus::ObjectPath& euicc_path,
     const std::string& root_smds,
@@ -481,6 +497,32 @@ void FakeHermesEuiccClient::DoRequestInstalledProfiles(
     GetInstalledProfiles(euicc_properties).ReplaceValue(profiles);
   }
   std::move(callback).Run(HermesResponseStatus::kSuccess);
+}
+
+void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
+    const dbus::ObjectPath& euicc_path,
+    const std::string& activation_code,
+    RefreshSmdxProfilesCallback callback) {
+  // Use CHECK() here since the only caller has a DCHECK().
+  CHECK(ash::features::IsSmdsDbusMigrationEnabled());
+
+  DVLOG(1) << "Refresh SM-DX Profiles Requested";
+
+  std::vector<dbus::ObjectPath> profile_paths;
+
+  if (!error_status_queue_.empty()) {
+    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    error_status_queue_.pop();
+    return;
+  }
+
+  // Configure a single profile that uses the activation code that was provided
+  // and immediately return the path to this profile.
+  profile_paths.push_back(AddFakeCarrierProfile(
+      euicc_path, hermes::profile::State::kPending, activation_code,
+      AddCarrierProfileBehavior::kAddProfileWithService));
+
+  std::move(callback).Run(HermesResponseStatus::kSuccess, profile_paths);
 }
 
 void FakeHermesEuiccClient::DoRequestPendingProfiles(

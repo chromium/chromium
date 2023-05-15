@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -50,7 +51,7 @@ class LockScreenNetworkUI : public ui::MojoWebDialogUI {
 
  private:
   // The main message handler owned by the corresponding WebUI.
-  NetworkConfigMessageHandler* main_handler_;
+  raw_ptr<NetworkConfigMessageHandler, ExperimentalAsh> main_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

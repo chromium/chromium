@@ -132,11 +132,17 @@ class ASH_EXPORT PrivacyHubNotification {
   // Hide the notification from the message center.
   void Hide();
 
+  // Returns true if this notificaiton is shown (present in the message center).
+  bool IsShown();
+
   // Silently updates the notification when needed, for example, when an
   // application stops accessing a sensor and the name of that application needs
   // to be removed from the notification without letting the notification pop up
   // again.
   void Update();
+
+  // Updates priority for notification that will be created via Show/Update.
+  void SetPriority(message_center::NotificationPriority priority);
 
   // Updates the value of `sensors_`.
   void SetSensors(SensorDisabledNotificationDelegate::SensorSet sensors);

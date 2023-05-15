@@ -35,14 +35,17 @@ class FlashDeviceTest(unittest.TestCase):
         swarming_patcher = mock.patch('flash_device.running_unattended',
                                       return_value=False)
         check_patcher = mock.patch('flash_device.check_ssh_config_file')
+        time_sleep = mock.patch('time.sleep')
         self._ffx_mock = ffx_patcher.start()
         self._sdk_hash_mock = sdk_hash_patcher.start()
         self._check_patcher_mock = check_patcher.start()
         self._swarming_mock = swarming_patcher.start()
+        self._time_sleep = time_sleep.start()
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
         self.addCleanup(self._check_patcher_mock.stop)
         self.addCleanup(self._swarming_mock.stop)
+        self.addCleanup(self._time_sleep.stop)
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
@@ -120,11 +123,11 @@ class FlashDeviceTest(unittest.TestCase):
 
         self._swarming_mock.return_value = True
         with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device._add_exec_to_flash_binaries'), \
                 mock.patch('flash_device.boot_device') as mock_boot, \
                 mock.patch('flash_device.get_system_info') as mock_sys_info, \
                 mock.patch('flash_device.subprocess.run'):
-            mock_boot.side_effect = RuntimeError('Incorrect state')
+            mock_boot.side_effect = common.StateTransitionError(
+                'Incorrect state')
             self._ffx_mock.return_value.stdout = \
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
                 '{"value": "wrong_product"}]}]'
@@ -146,7 +149,6 @@ class FlashDeviceTest(unittest.TestCase):
 
         self._swarming_mock.return_value = True
         with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device._add_exec_to_flash_binaries'), \
                 mock.patch('flash_device.boot_device') as mock_boot, \
                 mock.patch('flash_device.subprocess.run'):
             self._ffx_mock.return_value.stdout = \
@@ -161,73 +163,23 @@ class FlashDeviceTest(unittest.TestCase):
                                               common.BootMode.REGULAR, None)
             self.assertEqual(self._ffx_mock.call_count, 3)
 
-    def test_update_system_info_mismatch_adds_exec_to_flash_binaries(self
-                                                                     ) -> None:
-        """Test update adds exec bit to flash binaries if flashing."""
-
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device.get_host_arch',
-                           return_value='foo_arch'), \
-                mock.patch('flash_device.add_exec_to_file') as add_exec:
-            self._ffx_mock.return_value.stdout = \
-                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
-                '{"value": "wrong_product"}]}]'
-            flash_device.update(_TEST_IMAGE_DIR,
-                                'check',
-                                None,
-                                should_pave=False)
-            add_exec.assert_has_calls([
-                mock.call(os.path.join(_TEST_IMAGE_DIR, 'flash.sh')),
-                mock.call(
-                    os.path.join(_TEST_IMAGE_DIR, 'host_foo_arch', 'fastboot'))
-            ],
-                                      any_order=True)
-
-    def test_update_adds_exec_to_flash_binaries_depending_on_location(
-            self) -> None:
-        """Test update adds exec bit to flash binaries if flashing."""
-
-        # First exists is for image dir, second is for fastboot binary.
-        # Missing this fastboot binary means that the test will default to a
-        # different path.
-        with mock.patch('os.path.exists', side_effect=[True, False]), \
-                mock.patch('flash_device.get_host_arch',
-                           return_value='foo_arch'), \
-                mock.patch('flash_device.add_exec_to_file') as add_exec:
-            self._ffx_mock.return_value.stdout = \
-                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
-                '{"value": "wrong_product"}]}]'
-            flash_device.update(_TEST_IMAGE_DIR,
-                                'check',
-                                None,
-                                should_pave=False)
-            add_exec.assert_has_calls([
-                mock.call(os.path.join(_TEST_IMAGE_DIR, 'flash.sh')),
-                mock.call(
-                    os.path.join(_TEST_IMAGE_DIR,
-                                 'fastboot.exe.linux-foo_arch'))
-            ],
-                                      any_order=True)
-
     def test_incorrect_target_info(self) -> None:
         """Test update when |os_check| is 'check' and system info was not
         retrieved."""
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device._add_exec_to_flash_binaries'):
+        with mock.patch('os.path.exists', return_value=True):
             self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
             flash_device.update(_TEST_IMAGE_DIR,
                                 'check',
                                 None,
                                 should_pave=False)
-            self.assertEqual(self._ffx_mock.call_count, 3)
+            self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_update_with_serial_num(self) -> None:
         """Test update when |serial_num| is specified."""
 
         with mock.patch('time.sleep'), \
                 mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device.boot_device') as mock_boot, \
-                mock.patch('flash_device._add_exec_to_flash_binaries'):
+                mock.patch('flash_device.boot_device') as mock_boot:
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',
                                 None,
@@ -236,7 +188,7 @@ class FlashDeviceTest(unittest.TestCase):
             mock_boot.assert_called_once_with(mock.ANY,
                                               common.BootMode.BOOTLOADER,
                                               'test_serial')
-        self.assertEqual(self._ffx_mock.call_count, 3)
+        self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_reboot_failure(self) -> None:
         """Test update when |serial_num| is specified."""
@@ -291,7 +243,6 @@ class FlashDeviceTest(unittest.TestCase):
         self._swarming_mock.return_value = True
         with mock.patch('time.sleep'), \
              mock.patch('os.path.exists', return_value=True), \
-             mock.patch('flash_device._add_exec_to_flash_binaries'), \
              mock.patch('flash_device.boot_device') as mock_boot, \
              mock.patch('subprocess.run'):
             flash_device.update(_TEST_IMAGE_DIR,

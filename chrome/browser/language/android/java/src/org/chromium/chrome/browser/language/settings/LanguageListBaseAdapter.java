@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
-import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +26,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,26 +121,16 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
     /**
      * Keeps track of whether drag is enabled / active for language preference lists.
      */
-    private class LanguageDragStateDelegate implements DragStateDelegate {
-        private AccessibilityManager mA11yManager;
-        private AccessibilityStateChangeListener mA11yListener;
-        private boolean mA11yEnabled;
-
+    private class LanguageDragStateDelegate
+            implements DragStateDelegate, AccessibilityState.Listener {
         public LanguageDragStateDelegate() {
-            mA11yManager =
-                    (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
-            mA11yEnabled = mA11yManager.isEnabled();
-            mA11yListener = enabled -> {
-                mA11yEnabled = enabled;
-                notifyDataSetChanged();
-            };
-            mA11yManager.addAccessibilityStateChangeListener(mA11yListener);
+            AccessibilityState.addListener(this);
         }
 
         // DragStateDelegate implementation
         @Override
         public boolean getDragEnabled() {
-            return !mA11yEnabled;
+            return !AccessibilityState.isPerformGesturesEnabled();
         }
 
         @Override
@@ -150,11 +139,9 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         }
 
         @Override
-        public void setA11yStateForTesting(boolean a11yEnabled) {
-            mA11yManager.removeAccessibilityStateChangeListener(mA11yListener);
-            mA11yListener = null;
-            mA11yManager = null;
-            mA11yEnabled = a11yEnabled;
+        public void onAccessibilityStateChanged(AccessibilityState.State oldAccessibilityState,
+                AccessibilityState.State newAccessibilityState) {
+            notifyDataSetChanged();
         }
     }
 

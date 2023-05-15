@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- GM3 dynamic colors for Android S and above.-->
+  <color name="material_primary_900">@color/material_dynamic_primary10</color>
+  <color name="material_primary_800">@color/material_dynamic_primary20</color>
+  <color name="material_primary_600">@color/material_dynamic_primary40</color>
+  <color name="material_primary_200">@color/material_dynamic_primary80</color>
+  <color name="material_primary_100">@color/material_dynamic_primary90</color>
+  <color name="material_primary_50">@color/material_dynamic_primary95</color>
+</resources>

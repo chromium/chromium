@@ -4,8 +4,6 @@
 
 #include "components/services/screen_ai/screen_ai_library_wrapper.h"
 
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -73,22 +71,13 @@ bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
       "Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows",
       static_cast<int>(error));
   if (error != ERROR_SUCCESS) {
-    // TODO(crbug.com/1278249): Remove after Windows load library issue is
-    // fixed.
-    base::debug::Alias(&error);
-    base::debug::DumpWithoutCrashing();
     VLOG(0) << "Library load error: " << library_.GetError()->code;
     return false;
   }
 #else
 
   if (!library_.GetError()->message.empty()) {
-    std::string error = library_.GetError()->message;
-    // TODO(crbug.com/1278249): Remove after library load issues are fixed.
-    base::debug::Alias(&error);
-    DEBUG_ALIAS_FOR_CSTR(library_load_error, error.c_str(), 1024);
-    base::debug::DumpWithoutCrashing();
-    VLOG(0) << "Library load error: " << error;
+    VLOG(0) << "Library load error: " << library_.GetError()->message;
     return false;
   }
 #endif
@@ -189,21 +178,27 @@ bool ScreenAILibraryWrapper::InitMainContentExtraction(
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::PerformOcr(
-    const SkBitmap& image,
-    chrome_screen_ai::VisualAnnotation& annotation_proto) {
+absl::optional<chrome_screen_ai::VisualAnnotation>
+ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
   CHECK(perform_ocr_);
   CHECK(free_library_allocated_char_array_);
+
+  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
   std::unique_ptr<char, decltype(free_library_allocated_char_array_)>
       library_buffer(perform_ocr_(image, annotation_proto_length),
                      free_library_allocated_char_array_);
 
-  bool result = library_buffer
-                    ? annotation_proto.ParseFromArray(library_buffer.get(),
-                                                      annotation_proto_length)
-                    : false;
+  if (!library_buffer) {
+    return annotation_proto;
+  }
+
+  annotation_proto = chrome_screen_ai::VisualAnnotation();
+  if (!annotation_proto->ParseFromArray(library_buffer.get(),
+                                        annotation_proto_length)) {
+    annotation_proto.reset();
+  }
 
   // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
   // official.
@@ -211,25 +206,31 @@ bool ScreenAILibraryWrapper::PerformOcr(
   free_library_allocated_char_array_(library_buffer.release());
 #endif
 
-  return result;
+  return annotation_proto;
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::ExtractLayout(
-    const SkBitmap& image,
-    chrome_screen_ai::VisualAnnotation& annotation_proto) {
+absl::optional<chrome_screen_ai::VisualAnnotation>
+ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
   CHECK(extract_layout_);
   CHECK(free_library_allocated_char_array_);
+
+  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
   std::unique_ptr<char, decltype(free_library_allocated_char_array_)>
       library_buffer(extract_layout_(image, annotation_proto_length),
                      free_library_allocated_char_array_);
 
-  bool result = library_buffer
-                    ? annotation_proto.ParseFromArray(library_buffer.get(),
-                                                      annotation_proto_length)
-                    : false;
+  if (!library_buffer) {
+    return annotation_proto;
+  }
+
+  annotation_proto = chrome_screen_ai::VisualAnnotation();
+  if (!annotation_proto->ParseFromArray(library_buffer.get(),
+                                        annotation_proto_length)) {
+    annotation_proto.reset();
+  }
 
   // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
   // official.
@@ -237,15 +238,16 @@ bool ScreenAILibraryWrapper::ExtractLayout(
   free_library_allocated_char_array_(library_buffer.release());
 #endif
 
-  return result;
+  return annotation_proto;
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::ExtractMainContent(
-    const std::string& serialized_view_hierarchy,
-    std::vector<int32_t>& node_ids) {
+absl::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
+    const std::string& serialized_view_hierarchy) {
   CHECK(extract_main_content_);
   CHECK(free_library_allocated_int32_array_);
+
+  absl::optional<std::vector<int32_t>> node_ids;
 
   uint32_t nodes_count = 0;
   std::unique_ptr<int32_t, decltype(free_library_allocated_int32_array_)>
@@ -255,12 +257,12 @@ bool ScreenAILibraryWrapper::ExtractMainContent(
                      free_library_allocated_int32_array_);
 
   if (!library_buffer) {
-    return false;
+    return node_ids;
   }
 
-  node_ids.resize(nodes_count);
+  node_ids = std::vector<int32_t>(nodes_count);
   if (nodes_count != 0) {
-    memcpy(node_ids.data(), library_buffer.get(),
+    memcpy(node_ids->data(), library_buffer.get(),
            nodes_count * sizeof(int32_t));
   }
 
@@ -270,7 +272,7 @@ bool ScreenAILibraryWrapper::ExtractMainContent(
   free_library_allocated_int32_array_(library_buffer.release());
 #endif
 
-  return true;
+  return node_ids;
 }
 
 }  // namespace screen_ai

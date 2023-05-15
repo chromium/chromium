@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
 
 #import "components/translate/core/browser/translate_ranker.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/translate/translate_ranker_factory.h"
 #import "ios/web/public/browser_state.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

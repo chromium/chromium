@@ -120,6 +120,8 @@ struct Touchpad {
   // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
   // Example: 5022:18d1.
   string device_key;
+  // Whether the touchpad is haptic or not.
+  bool is_haptic;
   TouchpadSettings settings;
 };
 

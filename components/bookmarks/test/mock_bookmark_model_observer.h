@@ -28,6 +28,10 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
   MOCK_METHOD4(BookmarkNodeAdded,
                void(BookmarkModel*, const BookmarkNode*, size_t, bool));
 
+  MOCK_METHOD4(
+      OnWillRemoveBookmarks,
+      void(BookmarkModel*, const BookmarkNode*, size_t, const BookmarkNode*));
+
   MOCK_METHOD5(BookmarkNodeRemoved,
                void(BookmarkModel*,
                     const BookmarkNode*,

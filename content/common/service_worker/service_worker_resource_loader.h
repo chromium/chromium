@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_LOADER_H_
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace content {
@@ -20,10 +21,14 @@ namespace content {
 // handler or from a direct network request.
 class ServiceWorkerResourceLoader {
  public:
+  // Indicates where the response comes from.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class FetchResponseFrom {
-    kNoResponseYet,
-    kServiceWorker,
-    kWithoutServiceWorker,
+    kNoResponseYet = 0,
+    kServiceWorker = 1,
+    kWithoutServiceWorker = 2,
+    kMaxValue = kWithoutServiceWorker,
   };
 
   ServiceWorkerResourceLoader();
@@ -31,14 +36,13 @@ class ServiceWorkerResourceLoader {
 
   FetchResponseFrom fetch_response_from() { return fetch_response_from_; }
 
-  void set_fetch_response_from(FetchResponseFrom fetch_response_from) {
-    DCHECK_EQ(fetch_response_from_, FetchResponseFrom::kNoResponseYet);
-    fetch_response_from_ = fetch_response_from;
-  }
-
+  void SetFetchResponseFrom(FetchResponseFrom fetch_response_from);
   void reset_fetch_response_from() {
     fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
   }
+
+  // Tells if the class is main resource's class or not.
+  virtual bool IsMainResourceLoader() = 0;
 
   // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
   virtual void CommitResponseHeaders(
@@ -58,6 +62,11 @@ class ServiceWorkerResourceLoader {
   // Calls url_loader_client_->OnComplete(). |reason| will be recorded as an
   // argument of TRACE_EVENT.
   virtual void CommitCompleted(int error_code, const char* reason) = 0;
+
+  // Calls url_loader_client_->OnReceiveRedirect().
+  virtual void HandleRedirect(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
  private:
   FetchResponseFrom fetch_response_from_ = FetchResponseFrom::kNoResponseYet;

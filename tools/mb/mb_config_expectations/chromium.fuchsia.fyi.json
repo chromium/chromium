@@ -1,15 +1,4 @@
 {
-  "fuchsia-arm64-chrome-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm64",
-      "target_os": "fuchsia",
-      "test_host_cpu": "arm64",
-      "use_remoteexec": true
-    }
-  },
   "fuchsia-fyi-arm64-dbg": {
     "gn_args": {
       "is_component_build": true,
@@ -37,16 +26,6 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "target_os": "fuchsia",
-      "use_remoteexec": true
-    }
-  },
-  "fuchsia-x64-chrome-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "fuchsia_browser_type": "chrome",
-      "is_component_build": false,
-      "is_debug": false,
       "target_os": "fuchsia",
       "use_remoteexec": true
     }

@@ -232,10 +232,12 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
   // The expected updated forms should have leaked entries.
   leaked_origin.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   other_origin_same_credential.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   EXPECT_CALL(*store_, UpdateLogin(leaked_origin, _));
   EXPECT_CALL(*store_, UpdateLogin(other_origin_same_credential, _));
   InitiateGetCredentialLeakType();
@@ -252,7 +254,8 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
   // The expected updated form should have leaked entries.
   non_canonicalized_username.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username, _));
   InitiateGetCredentialLeakType();
 }
@@ -264,7 +267,8 @@ TEST_F(LeakDetectionDelegateHelperTest, DontUpdateAlreadyLeakedCredentials) {
       kOtherOrigin, kLeakedUsernameNonCanonicalized, kLeakedPassword);
   non_canonicalized_username.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   SetGetAutofillableLoginsConsumerInvocation({non_canonicalized_username});
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kNotSet, IsReused(true), {GURL(kOtherOrigin)});

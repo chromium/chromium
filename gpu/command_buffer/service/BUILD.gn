@@ -266,8 +266,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_memory_image_backing_factory.h",
     "shared_image/skia_gl_image_representation.cc",
     "shared_image/skia_gl_image_representation.h",
-    "shared_image/texture_holder_vk.cc",
-    "shared_image/texture_holder_vk.h",
+    "shared_image/wrapped_graphite_texture_backing.cc",
+    "shared_image/wrapped_graphite_texture_backing.h",
     "shared_image/wrapped_sk_image_backing.cc",
     "shared_image/wrapped_sk_image_backing.h",
     "shared_image/wrapped_sk_image_backing_factory.cc",
@@ -425,6 +425,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/angle_vulkan_image_backing.h",
       "shared_image/angle_vulkan_image_backing_factory.cc",
       "shared_image/angle_vulkan_image_backing_factory.h",
+      "shared_image/texture_holder_vk.cc",
+      "shared_image/texture_holder_vk.h",
     ]
 
     if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
@@ -510,6 +512,10 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (skia_use_dawn) {
+    sources += [
+      "shared_image/skia_graphite_dawn_image_representation.cc",
+      "shared_image/skia_graphite_dawn_image_representation.h",
+    ]
     deps += [
       "//components/viz/common:dawn_context_provider",
       "//third_party/dawn/src/dawn:cpp",

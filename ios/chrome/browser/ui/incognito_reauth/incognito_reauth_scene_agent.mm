@@ -13,13 +13,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -141,9 +142,9 @@
 
 - (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
   BOOL hasIncognitoContent = YES;
-  if (sceneState.interfaceProvider.hasIncognitoInterface) {
+  if (sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
     hasIncognitoContent =
-        sceneState.interfaceProvider.incognitoInterface.browser
+        sceneState.browserProviderInterface.incognitoBrowserProvider.browser
             ->GetWebStateList()
             ->count() > 0;
     // If there is no tabs, act as if the user authenticated since last
@@ -239,7 +240,7 @@
     return;
 
   Browser* browser =
-      self.sceneState.interfaceProvider.incognitoInterface.browser;
+      self.sceneState.browserProviderInterface.incognitoBrowserProvider.browser;
   if (browser) {
     if (browser->GetWebStateList() &&
         browser->GetWebStateList()->GetActiveWebState()) {

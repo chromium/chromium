@@ -9,9 +9,11 @@
 #include "device/vr/openxr/openxr_extension_handle.h"
 #include "device/vr/openxr/openxr_scene.h"
 #include "device/vr/openxr/openxr_scene_bounds.h"
-#include "device/vr/openxr/openxr_util.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
 
 // C++ wrapper for XrSceneObserverMSFT
 class OpenXrSceneObserver {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_ARC_VM_DATA_MIGRATION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_ARC_VM_DATA_MIGRATION_SCREEN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -127,7 +128,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   virtual device::mojom::WakeLock* GetWakeLock();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string user_id_hash_;
 
   ArcVmDataMigrationScreenView::UIState current_ui_state_ =
@@ -145,7 +146,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // |update_button_pressed_| is flipped to true.
   double lowest_battery_percent_during_migration_;
 
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
   base::TimeTicks previous_ticks_ = {};
   uint64_t previous_bytes_ = 0;
 

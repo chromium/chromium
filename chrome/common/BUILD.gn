@@ -10,6 +10,7 @@ import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/signin/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -50,7 +51,6 @@ buildflag_header("buildflags") {
     "ENABLE_WEBUI_CERTIFICATE_VIEWER=$enable_webui_certificate_viewer",
     "ENABLE_WEBUI_TAB_STRIP=$enable_webui_tab_strip",
     "OPTIMIZE_WEBUI=$optimize_webui",
-    "ENABLE_BOUND_SESSION_CREDENTIALS=$enable_bound_session_credentials",
   ]
 }
 
@@ -73,6 +73,7 @@ source_set("channel_info") {
     public_deps += [ "//chrome/install_static:install_static_util" ]
   } else if (is_mac) {
     sources += [ "channel_info_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   } else if (is_android) {
     sources += [ "channel_info_android.cc" ]
     public_deps += [ "//components/version_info/android:channel_getter" ]
@@ -186,6 +187,7 @@ static_library("common_lib") {
     "//components/cdm/common",
     "//components/client_hints/common",
     "//components/cloud_devices/common",
+    "//components/commerce/core:commerce_constants",
     "//components/component_updater",
     "//components/content_settings/core/common",
     "//components/crash/core/common",
@@ -279,8 +281,8 @@ static_library("common_lib") {
 
   if (enable_extensions) {
     sources += [
-      "controlled_frame.cc",
-      "controlled_frame.h",
+      "controlled_frame/controlled_frame.cc",
+      "controlled_frame/controlled_frame.h",
       "extensions/api/file_browser_handlers/file_browser_handler.cc",
       "extensions/api/file_browser_handlers/file_browser_handler.h",
       "extensions/api/notifications/notification_style.cc",
@@ -360,10 +362,6 @@ static_library("common_lib") {
     sources += [
       "extensions/image_writer/image_writer_util_mac.cc",
       "extensions/image_writer/image_writer_util_mac.h",
-      "mac/launchd.h",
-      "mac/launchd.mm",
-      "mac/service_management.h",
-      "mac/service_management.mm",
     ]
     public_deps += [ ":app_mode_app_support" ]
   }
@@ -497,6 +495,10 @@ static_library("common_lib") {
       "media/cdm_host_file_path.h",
     ]
     public_deps += [ "//chrome/common:version_header" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "bound_session_request_throttled_listener.h" ]
   }
 }
 
@@ -643,6 +645,7 @@ static_library("constants") {
   }
   if (is_mac) {
     sources += [ "chrome_paths_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_win) {
     sources += [ "chrome_paths_win.cc" ]
@@ -697,7 +700,10 @@ if (is_mac) {
       "mac/app_mode_common.mm",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:enable_arc",
+    ]
 
     deps = [
       ":constants",
@@ -783,6 +789,10 @@ mojom("mojo_bindings") {
 
   if (enable_plugins) {
     enabled_features += [ "enable_plugins" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    enabled_features += [ "enable_bound_session_credentials" ]
   }
 }
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 namespace blink {
 
@@ -20,8 +21,7 @@ namespace {
 
 class NGAbstractInlineTextBoxCache final {
  public:
-  static scoped_refptr<AbstractInlineTextBox> GetOrCreate(
-      const NGInlineCursor& cursor) {
+  static NGAbstractInlineTextBox* GetOrCreate(const NGInlineCursor& cursor) {
     if (!s_instance_)
       s_instance_ = new NGAbstractInlineTextBoxCache();
     return s_instance_->GetOrCreateInternal(cursor);
@@ -34,34 +34,37 @@ class NGAbstractInlineTextBoxCache final {
   }
 
  private:
-  scoped_refptr<AbstractInlineTextBox> GetOrCreateInternal(
-      const NGInlineCursor& cursor) {
+  NGAbstractInlineTextBoxCache() : map_(MakeGarbageCollected<MapType>()) {}
+
+  NGAbstractInlineTextBox* GetOrCreateInternal(const NGInlineCursor& cursor) {
     const NGFragmentItem& fragment = *cursor.CurrentItem();
     DCHECK(&fragment);
-    const auto it = map_.find(&fragment);
+    const auto it = map_->find(&fragment);
     auto* const layout_text = To<LayoutText>(fragment.GetMutableLayoutObject());
-    if (it != map_.end()) {
+    if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value;
     }
-    scoped_refptr<AbstractInlineTextBox> obj =
-        base::AdoptRef(new NGAbstractInlineTextBox(cursor));
-    map_.Set(&fragment, obj);
+    auto* obj = MakeGarbageCollected<NGAbstractInlineTextBox>(cursor);
+    map_->Set(&fragment, obj);
     layout_text->SetHasAbstractInlineTextBox();
     return obj;
   }
 
   void WillDestroyInternal(const NGFragmentItem* fragment) {
-    const auto it = map_.find(fragment);
-    if (it == map_.end())
+    const auto it = map_->find(fragment);
+    if (it == map_->end()) {
       return;
+    }
     it->value->Detach();
-    map_.erase(fragment);
+    map_->erase(fragment);
   }
 
   static NGAbstractInlineTextBoxCache* s_instance_;
 
-  HashMap<const NGFragmentItem*, scoped_refptr<AbstractInlineTextBox>> map_;
+  using MapType =
+      HeapHashMap<const NGFragmentItem*, Member<NGAbstractInlineTextBox>>;
+  Persistent<MapType> map_;
 };
 
 NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
@@ -69,7 +72,7 @@ NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
 
 }  // namespace
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::GetOrCreate(
     const NGInlineCursor& cursor) {
   if (!cursor)
     return nullptr;
@@ -84,9 +87,8 @@ void NGAbstractInlineTextBox::WillDestroy(const NGInlineCursor& cursor) {
 }
 
 NGAbstractInlineTextBox::NGAbstractInlineTextBox(const NGInlineCursor& cursor)
-    : AbstractInlineTextBox(
-          To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
-      fragment_item_(cursor.CurrentItem()),
+    : fragment_item_(cursor.CurrentItem()),
+      layout_text_(To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
       root_box_fragment_(&cursor.ContainerFragment()) {
   DCHECK(fragment_item_->IsText()) << fragment_item_;
 }
@@ -94,14 +96,24 @@ NGAbstractInlineTextBox::NGAbstractInlineTextBox(const NGInlineCursor& cursor)
 NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
   DCHECK(!fragment_item_);
   DCHECK(!root_box_fragment_);
+  DCHECK(!layout_text_);
+}
+
+void NGAbstractInlineTextBox::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_text_);
+  visitor->Trace(root_box_fragment_);
 }
 
 void NGAbstractInlineTextBox::Detach() {
   LayoutObject* prev_layout_object = GetLayoutText();
   AXObjectCache* cache = ExistingAXObjectCache();
 
-  AbstractInlineTextBox::Detach();
-  DCHECK(!GetLayoutText());
+  DCHECK(layout_text_);
+  if (cache) {
+    cache->Remove(this);
+  }
+
+  layout_text_ = nullptr;
 
   fragment_item_ = nullptr;
   root_box_fragment_ = nullptr;
@@ -111,6 +123,23 @@ void NGAbstractInlineTextBox::Detach() {
     DCHECK(IsA<LayoutText>(prev_layout_object));
     cache->InlineTextBoxesUpdated(prev_layout_object);
   }
+}
+
+LayoutText* NGAbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
+  // We only want to apply the first letter to the first inline text box
+  // for a LayoutObject.
+  if (!IsFirst()) {
+    return nullptr;
+  }
+
+  Node* node = layout_text_->GetNode();
+  if (!node) {
+    return nullptr;
+  }
+  if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject())) {
+    return layout_text->GetFirstLetterPart();
+  }
+  return nullptr;
 }
 
 NGInlineCursor NGAbstractInlineTextBox::GetCursor() const {
@@ -156,8 +185,9 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
   const NGInlineBreakToken* break_token = line_box.Current().InlineBreakToken();
   // TODO(yosin): We should support OOF fragments between |fragment_| and
   // break token.
-  if (break_token && break_token->TextOffset() != end_offset + 1)
+  if (break_token && break_token->StartTextOffset() != end_offset + 1) {
     return false;
+  }
   // Check a character in text content after |fragment_| comes from same
   // layout text of |fragment_|.
   const LayoutObject* const layout_object = cursor.Current().GetLayoutObject();
@@ -174,8 +204,7 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
   return mapping_unit.GetLayoutObject() == layout_object;
 }
 
-scoped_refptr<AbstractInlineTextBox>
-NGAbstractInlineTextBox::NextInlineTextBox() const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextInlineTextBox() const {
   NGInlineCursor next = GetCursor();
   if (!next)
     return nullptr;
@@ -209,7 +238,8 @@ unsigned NGAbstractInlineTextBox::TextOffsetInFormattingContext(
   return cursor.Current().TextStartOffset() + offset;
 }
 
-AbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection() const {
+NGAbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection()
+    const {
   const NGInlineCursor& cursor = GetCursor();
   if (!cursor)
     return kLeftToRight;
@@ -218,6 +248,15 @@ AbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection() const {
     return IsLtr(text_direction) ? kLeftToRight : kRightToLeft;
   }
   return IsLtr(text_direction) ? kTopToBottom : kBottomToTop;
+}
+
+Node* NGAbstractInlineTextBox::GetNode() const {
+  return layout_text_ ? layout_text_->GetNode() : nullptr;
+}
+
+AXObjectCache* NGAbstractInlineTextBox::ExistingAXObjectCache() const {
+  return layout_text_ ? layout_text_->GetDocument().ExistingAXObjectCache()
+                      : nullptr;
 }
 
 void NGAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
@@ -245,6 +284,186 @@ void NGAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   // crbug.com/613915 and crbug.com/615661) so add empty ranges to ensure all
   // characters have an associated range.
   widths.resize(Len());
+}
+
+void NGAbstractInlineTextBox::GetWordBoundaries(
+    Vector<WordBoundaries>& words) const {
+  GetWordBoundariesForText(words, GetText());
+
+  // TODO(crbug/1406930): Uncomment the following DCHECK and fix the dozens of
+  // failing tests.
+  // #if DCHECK_IS_ON()
+  //   if (!words.empty()) {
+  //     // Validate that our word boundary detection algorithm gives the same
+  //     output
+  //     // as the one from the Editing layer.
+  //     const int initial_offset_in_container =
+  //         static_cast<int>(TextOffsetInFormattingContext(0));
+
+  //     // 1. Compare the word offsets to the ones of the Editing algorithm
+  //     when
+  //     // moving forward.
+  //     Position editing_pos(GetNode(), initial_offset_in_container);
+  //     int editing_offset =
+  //         editing_pos.OffsetInContainerNode() - initial_offset_in_container;
+  //     for (WordBoundaries word : words) {
+  //       DCHECK_EQ(editing_offset, word.start_index)
+  //           << "[Going forward] Word boundaries are different between "
+  //              "accessibility and editing in text=\""
+  //           << GetText() << "\". Failing at editing text offset \""
+  //           << editing_offset << "\" and AX text offset \"" <<
+  //           word.start_index
+  //           << "\".";
+  //       // See comment in `AbstractInlineTextBox::GetWordBoundariesForText`
+  //       that
+  //       // justify why we only check for kWordSkipSpaces.
+  //       editing_pos =
+  //           NextWordPosition(editing_pos,
+  //           PlatformWordBehavior::kWordSkipSpaces)
+  //               .GetPosition();
+  //       editing_offset =
+  //           editing_pos.OffsetInContainerNode() -
+  //           initial_offset_in_container;
+  //     }
+  //     // Check for the last word boundary.
+  //     DCHECK_EQ(editing_offset, words[words.size() - 1].end_index)
+  //         << "[Going forward] Word boundaries are different between "
+  //            "accessibility and at the end of the inline text box. Text=\""
+  //         << GetText() << "\".";
+
+  //     // 2. Compare the word offsets to the ones of the Editing algorithm
+  //     when
+  //     // moving backwards.
+  //     //
+  //     // TODO(accessibility): Uncomment the following code to validate our
+  //     word
+  //     // boundaries also match the ones from the Editing layer when moving
+  //     // backward. This is currently failing because of crbug/1406287.
+  //     //
+  //     // const int last_text_offset =
+  //     //     initial_offset_in_container + GetText().length();
+  //     // editing_pos = Position(GetNode(), last_text_offset);
+  //     // editing_offset = editing_pos.OffsetInContainerNode() -
+  //     // initial_offset_in_container;
+
+  //     // // Check for the first word boundary.
+  //     // DCHECK_EQ(editing_offset, words[words.size() - 1].end_index)
+  //     //     << "[Going backward] Word boundaries are different between "
+  //     //        "accessibility and at the end of the inline text box.
+  //     Text=\""
+  //     //     << GetText() << "\".";
+  //     // editing_pos = PreviousWordPosition(editing_pos).GetPosition();
+  //     // editing_offset = editing_pos.OffsetInContainerNode() -
+  //     // initial_offset_in_container;
+
+  //     // Vector<WordBoundaries> reverse_words(words);
+  //     // reverse_words.Reverse();
+  //     // for (WordBoundaries word : reverse_words) {
+  //     //   DCHECK_EQ(editing_offset, word.start_index)
+  //     //       << "[Going backward] Word boundaries are different between "
+  //     //          "accessibility and editing in text=\""
+  //     //       << GetText() << "\". Failing at editing text offset \""
+  //     //       << editing_offset << "\" and AX text offset \"" <<
+  //     word.start_index
+  //     //       << "\".";
+  //     //   editing_pos = PreviousWordPosition(editing_pos).GetPosition();
+  //     //   editing_offset = editing_pos.OffsetInContainerNode() -
+  //     //   initial_offset_in_container;
+  //     // }
+  //   }
+  // #endif
+}
+
+// static
+void NGAbstractInlineTextBox::GetWordBoundariesForText(
+    Vector<WordBoundaries>& words,
+    const String& text) {
+  if (!text.length()) {
+    return;
+  }
+
+  TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+  if (!it) {
+    return;
+  }
+  absl::optional<int> word_start;
+  for (int offset = 0;
+       offset != kTextBreakDone && offset < static_cast<int>(text.length());
+       offset = it->following(offset)) {
+    // Unlike in ICU's WordBreakIterator, a word boundary is valid only if it is
+    // before, or immediately preceded by a word break as defined by the Editing
+    // code (see `IsWordBreak`). We therefore need to filter the boundaries
+    // returned by ICU's WordBreakIterator and return a subset of them. For
+    // example we should exclude a word boundary that is between two space
+    // characters, "Hello | there".
+    //
+    // IMPORTANT: This algorithm needs to stay in sync with the one used to
+    // find the next/previous word boundary in the Editing layer. See
+    // `NextWordPositionInternal` in `visible_units_word.cc` for more info.
+    //
+    // There's one noticeable difference between our implementation and the one
+    // in the Editing layer: in the Editing layer, we only skip spaces before
+    // word starts when on Windows. However, we skip spaces the accessible word
+    // offsets on all platforms because:
+    //   1. It doesn't have an impact on the screen reader user (ATs never
+    //      announce spaces).
+    //   2. The implementation is simpler. Arguably, this is a bad reason, but
+    //      the reality is that word offsets computation will sooner or later
+    //      move to the browser process where we'll have to reimplement this
+    //      algorithm. Another more near-term possibility is that Editing folks
+    //      could refactor their word boundary algorithm so that we could simply
+    //      reuse it for accessibility. Anyway, we currently do not see a strong
+    //      case to justify spending time to match this behavior perfectly.
+    if (WTF::unicode::IsPunct(text[offset]) || U16_IS_SURROGATE(text[offset])) {
+      // Case 1: A new word should start before and end after a series of
+      // punctuation marks, i.e., Consecutive punctuation marks should be
+      // accumulated into a single word. For example, "|Hello|+++---|there|".
+      // Surrogate pair runs should also be collapsed.
+      //
+      // At beginning of text, or right after an alphanumeric character or a
+      // character that cannot be a word break.
+      if (offset == 0 || WTF::unicode::IsAlphanumeric(text[offset - 1]) ||
+          !IsWordBreak(text[offset - 1])) {
+        if (word_start) {
+          words.emplace_back(*word_start, offset);
+        }
+        word_start = offset;
+      } else {
+        // Skip to the end of the punctuation/surrogate pair run.
+        continue;
+      }
+    } else if (IsWordBreak(text[offset])) {
+      // Case 2: A new word should start if `offset` is before an alphanumeric
+      // character, an underscore or a hard line break.
+      //
+      // We found a new word start or end. Append the previous word (if it
+      // exists) to the results, otherwise save this offset as a word start.
+      if (word_start) {
+        words.emplace_back(*word_start, offset);
+      }
+      word_start = offset;
+    } else if (offset > 0) {
+      // Case 3: A word should end if `offset` is proceeded by a word break or
+      // a punctuation.
+      UChar prev_character = text[offset - 1];
+      if (IsWordBreak(prev_character) ||
+          WTF::unicode::IsPunct(prev_character) ||
+          U16_IS_SURROGATE(prev_character)) {
+        if (word_start) {
+          words.emplace_back(*word_start, offset);
+          word_start = absl::nullopt;
+        }
+      }
+    }
+  }
+
+  // Case 4: If the character at last `offset` in `text` was a word break, then
+  // it would have started a new word. We need to add its corresponding word end
+  // boundary which should be at `text`'s length.
+  if (word_start) {
+    words.emplace_back(*word_start, text.length());
+    word_start = absl::nullopt;
+  }
 }
 
 String NGAbstractInlineTextBox::GetText() const {
@@ -289,8 +508,7 @@ bool NGAbstractInlineTextBox::IsLast() const {
   return !cursor;
 }
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
-    const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextOnLine() const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
@@ -301,8 +519,7 @@ scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
   return nullptr;
 }
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::PreviousOnLine()
-    const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::PreviousOnLine() const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;

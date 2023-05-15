@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 AddAccountHelper::AddAccountHelper(
@@ -48,7 +48,7 @@ void AddAccountHelper::Start(
         << " to profile " << profile_path;
     OnShowAddAccountDialogCompleted(
         profile_path,
-        account_manager::AccountAdditionResult::FromAccount(*account));
+        account_manager::AccountUpsertionResult::FromAccount(*account));
   } else {
     account_manager_facade_->ShowAddAccountDialog(
         absl::get<account_manager::AccountManagerFacade::AccountAdditionSource>(
@@ -72,7 +72,7 @@ void AddAccountHelper::UpsertAccountForTesting(
       account, token_value);
   OnShowAddAccountDialogCompleted(
       profile_path,
-      account_manager::AccountAdditionResult::FromAccount(account));
+      account_manager::AccountUpsertionResult::FromAccount(account));
 }
 
 void AddAccountHelper::OnAccountCacheUpdated() {
@@ -87,12 +87,12 @@ void AddAccountHelper::OnAccountCacheUpdated() {
 
 void AddAccountHelper::OnShowAddAccountDialogCompleted(
     const base::FilePath& profile_path,
-    const account_manager::AccountAdditionResult& result) {
+    const account_manager::AccountUpsertionResult& result) {
   DCHECK(!account_);
 
   bool add_account_failure =
       result.status() !=
-          account_manager::AccountAdditionResult::Status::kSuccess ||
+          account_manager::AccountUpsertionResult::Status::kSuccess ||
       result.account()->key.account_type() !=
           account_manager::AccountType::kGaia;
   if (add_account_failure) {

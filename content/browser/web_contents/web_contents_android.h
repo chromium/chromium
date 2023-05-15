@@ -60,6 +60,7 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaParamRef<jobject>& jview_delegate);
   base::android::ScopedJavaLocalRef<jobject> GetMainFrame(JNIEnv* env) const;
   base::android::ScopedJavaLocalRef<jobject> GetFocusedFrame(JNIEnv* env) const;
+  bool IsFocusedElementEditable(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetRenderFrameHostFromId(
       JNIEnv* env,
       jint render_process_id,
@@ -205,6 +206,8 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env);
 
   jint GetVisibility(JNIEnv* env);
+
+  void UpdateWebContentsVisibility(JNIEnv* env, jint visibiity);
 
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 

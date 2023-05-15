@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.creator;
 
 import android.content.Context;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -13,12 +15,15 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -32,14 +37,16 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private final Context mActivityContext;
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
-    private CreatorCoordinator mCreatorCoordinator;
+    private final CreatorCoordinator mCreatorCoordinator;
+    private final int mParentID;
 
     public CreatorActionDelegateImpl(Context activityContext, Profile profile,
-            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator) {
+            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator, int parentId) {
         mActivityContext = activityContext;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mCreatorCoordinator = creatorCoordinator;
+        mParentID = parentId;
     }
 
     @Override
@@ -50,7 +57,14 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                 || disposition == WindowOpenDisposition.OFF_THE_RECORD) {
             boolean offTheRecord = (disposition == WindowOpenDisposition.OFF_THE_RECORD);
-            new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
+            if (inGroup) {
+                AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(params);
+                new TabDelegate(offTheRecord)
+                        .createNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentID);
+
+            } else {
+                new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
+            }
             return;
         } else if (disposition == WindowOpenDisposition.CURRENT_TAB) {
             mCreatorCoordinator.requestOpenSheet(new GURL(params.getUrl()));
@@ -81,9 +95,30 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSignInInterstitial(int signinAccessPoint,
             BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
-        SigninBottomSheetCoordinator signinCoordinator =
-                new SigninBottomSheetCoordinator(mWindowAndroid, mBottomSheetController, mProfile,
-                        () -> { showSyncConsentActivity(signinAccessPoint); });
+        SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
+                mWindowAndroid, mBottomSheetController, mProfile, new CormorantBottomSheetStrings(),
+                () -> { showSyncConsentActivity(signinAccessPoint); }, signinAccessPoint);
         signinCoordinator.show();
+    }
+
+    /** Stores bottom sheet strings for signin from cormorant entry point */
+    public static class CormorantBottomSheetStrings implements AccountPickerBottomSheetStrings {
+        /** Returns the title string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getTitle() {
+            return R.string.signin_account_picker_bottom_sheet_title_for_cormorant_signin;
+        }
+
+        /** Returns the subtitle string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getSubtitle() {
+            return R.string.signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin;
+        }
+
+        /** Returns the cancel button string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getDismissButton() {
+            return R.string.close;
+        }
     }
 }

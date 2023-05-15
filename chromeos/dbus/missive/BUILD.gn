@@ -17,6 +17,7 @@ component("missive") {
     "//components/reporting/util:disconnectable_client",
     "//components/reporting/util:status",
     "//dbus",
+    "//google_apis",
   ]
 
   sources = [

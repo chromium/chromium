@@ -35,10 +35,6 @@ class CORE_EXPORT ClipPathClipper {
   static absl::optional<gfx::RectF> LocalClipPathBoundingBox(
       const LayoutObject&);
 
-  // Returns true if the object has a clip-path that must be implemented with
-  // a mask.
-  static bool ShouldUseMaskBasedClip(const LayoutObject&);
-
   // The argument |clip_path_owner| is the layout object that owns the
   // ClipPathOperation we are currently processing. Usually it is the
   // same as the layout object getting clipped, but in the case of nested

@@ -28,6 +28,8 @@ namespace chromeos {
 
 namespace {
 
+namespace crosapi = ::crosapi::mojom;
+
 bool IsRelatedPwaUrl(const std::string& related_pwa, GURL url_to_compare) {
   URLPattern pattern(URLPattern::SCHEME_ALL);
   return pattern.Parse(related_pwa) == URLPattern::ParseResult::kSuccess &&
@@ -150,7 +152,7 @@ void EventManager::OnBrowserAdded(Browser* browser) {
 
 EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     extensions::ExtensionId extension_id,
-    crosapi::mojom::TelemetryEventCategoryEnum category) {
+    crosapi::TelemetryEventCategoryEnum category) {
   auto is_related_pwa_open =
       IsPwaOpenForExtensionId(extension_id, browser_context_);
   // This is a noop in case the pwa is closed or there is already an existing
@@ -172,18 +174,17 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
 
 void EventManager::RemoveObservationsForExtensionAndCategory(
     extensions::ExtensionId extension_id,
-    crosapi::mojom::TelemetryEventCategoryEnum category) {
+    crosapi::TelemetryEventCategoryEnum category) {
   event_router_.ResetReceiversOfExtensionByCategory(extension_id, category);
 }
 
 void EventManager::IsEventSupported(
-    crosapi::mojom::TelemetryEventCategoryEnum category,
-    crosapi::mojom::TelemetryEventService::IsEventSupportedCallback callback) {
+    crosapi::TelemetryEventCategoryEnum category,
+    crosapi::TelemetryEventService::IsEventSupportedCallback callback) {
   GetRemoteService()->IsEventSupported(category, std::move(callback));
 }
 
-mojo::Remote<crosapi::mojom::TelemetryEventService>&
-EventManager::GetRemoteService() {
+mojo::Remote<crosapi::TelemetryEventService>& EventManager::GetRemoteService() {
   if (!remote_event_service_strategy_) {
     remote_event_service_strategy_ = RemoteEventServiceStrategy::Create();
   }

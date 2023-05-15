@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
@@ -94,7 +95,7 @@ class ChromiumHttpConnection
       const GURL& final_url,
       const network::mojom::URLResponseHead& response_header);
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   State state_ = State::NEW;
   bool has_last_chunk_ = false;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
@@ -63,6 +65,14 @@ const uint8_t kPublicKey[] = {
 // prefs to indicate that the latest seed is identical to the safe seed. Used to
 // avoid duplicating storage space.
 constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
+
+// Returns true if |signature| is empty and if the command-line flag to accept
+// empty seed signature is specified.
+bool AcceptEmptySeedSignatureForTesting(const std::string& signature) {
+  return signature.empty() &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kAcceptEmptySeedSignatureForTesting);
+}
 
 // Verifies a variations seed (the serialized proto bytes) with the specified
 // base-64 encoded signature that was received from the server and returns the
@@ -486,7 +496,10 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
   *base64_seed_signature = local_state_->GetString(
       seed_type == SeedType::LATEST ? prefs::kVariationsSeedSignature
                                     : prefs::kVariationsSafeSeedSignature);
-  if (signature_verification_enabled_) {
+  // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
+  // support switches::kAcceptEmptySeedSignatureForTesting.
+  if (signature_verification_enabled_ &&
+      !AcceptEmptySeedSignatureForTesting(*base64_seed_signature)) {
     const VerifySignatureResult result =
         VerifySeedSignature(*seed_data, *base64_seed_signature);
     if (seed_type == SeedType::LATEST) {
@@ -752,7 +765,10 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
   if (!seed.ParseFromString(seed_bytes))
     return StoreSeedResult::kFailedParse;
 
-  if (signature_verification_enabled) {
+  // TODO(crbug/1335082): get rid of |signature_verification_enabled| and only
+  // support switches::kAcceptEmptySeedSignatureForTesting.
+  if (signature_verification_enabled &&
+      !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     const VerifySignatureResult verify_result =
         VerifySeedSignature(seed_bytes, base64_seed_signature);
     switch (seed_type) {

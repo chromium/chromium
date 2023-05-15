@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -80,7 +81,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // session.
   GURL GetLastIconUrl(const base::Value::Dict& dict) const;
 
-  KioskAppDataDelegate* delegate_;  // not owned.
+  raw_ptr<KioskAppDataDelegate, ExperimentalAsh> delegate_;  // not owned.
   Status status_;
   const GURL install_url_;  // installation url.
   GURL launch_url_;         // app launch url.

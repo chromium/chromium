@@ -98,13 +98,6 @@ network::mojom::TCPConnectedSocketOptionsPtr CreateTCPConnectedSocketOptions(
   return tcp_connected_socket_options;
 }
 
-#if BUILDFLAG(ENABLE_MDNS)
-bool ResemblesMulticastDNSName(base::StringPiece hostname) {
-  return base::EndsWith(hostname, ".local") ||
-         base::EndsWith(hostname, ".local.");
-}
-#endif  // !BUILDFLAG(ENABLE_MDNS)
-
 bool ValidateAddressAndPort(RenderFrameHost& rfh,
                             const std::string& address,
                             uint16_t port,
@@ -284,11 +277,6 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = options->dns_query_type;
-#if BUILDFLAG(ENABLE_MDNS)
-  if (ResemblesMulticastDNSName(remote_addr.host())) {
-    parameters->source = net::HostResolverSource::MULTICAST_DNS;
-  }
-#endif  // !BUILDFLAG(ENABLE_MDNS)
 
   // Unretained(this) is safe here because the callback will be owned by
   // |resolver_| which in turn is owned by |this|.
@@ -319,11 +307,6 @@ void DirectSocketsServiceImpl::OpenConnectedUDPSocket(
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = options->dns_query_type;
-#if BUILDFLAG(ENABLE_MDNS)
-  if (ResemblesMulticastDNSName(remote_addr.host())) {
-    parameters->source = net::HostResolverSource::MULTICAST_DNS;
-  }
-#endif  // !BUILDFLAG(ENABLE_MDNS)
 
   // Unretained(this) is safe here because the callback will be owned by
   // |resolver_| which in turn is owned by |this|.

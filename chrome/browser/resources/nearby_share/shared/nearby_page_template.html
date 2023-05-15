@@ -50,10 +50,8 @@
 
   #pageTitle {
     color: var(--cros-text-color-primary);
-    font-family: 'Google Sans';
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 24px;
+    /* TODO(b/279623883): Remove backup CSS properties once Jelly is launched. */
+    font: var(--cros-title-1-font, normal 16px/24px 'Google Sans');
     margin: 0;
   }
 

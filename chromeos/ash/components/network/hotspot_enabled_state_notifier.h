@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_ENABLED_STATE_NOTIFIER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_ENABLED_STATE_NOTIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -45,8 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override;
 
-  HotspotController* hotspot_controller_;
-  HotspotStateHandler* hotspot_state_handler_;
+  raw_ptr<HotspotController, ExperimentalAsh> hotspot_controller_;
+  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;
   mojo::RemoteSet<hotspot_config::mojom::HotspotEnabledStateObserver>
       observers_;
 };

@@ -67,9 +67,6 @@ constexpr int kDefaultAutoclickDelayMs = 1000;
 // a new autoclick.
 constexpr int kDefaultAutoclickMovementThreshold = 20;
 
-// Whether long press diacritics is enabled by default.
-constexpr bool kDefaultLongPressDiacriticsEnabled = true;
-
 // Whether keyboard auto repeat is enabled by default.
 constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 

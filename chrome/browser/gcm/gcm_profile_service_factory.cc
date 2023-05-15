@@ -109,7 +109,12 @@ GCMProfileServiceFactory* GCMProfileServiceFactory::GetInstance() {
 GCMProfileServiceFactory::GCMProfileServiceFactory()
     : ProfileKeyedServiceFactory(
           "GCMProfileService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   DependsOn(offline_pages::PrefetchServiceFactory::GetInstance());

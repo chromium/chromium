@@ -268,7 +268,7 @@ class AssistantScreenTester extends ScreenElementApi {
   }
   /** @override */
   shouldSkip() {
-    return !loadTimeData.getBoolean('testapi_isLibAssistantEnabled');
+    return loadTimeData.getBoolean('testapi_shouldSkipAssistant');
   }
 
   /**
@@ -790,6 +790,11 @@ class GestureNavigationScreenTester extends ScreenElementApi {
   getNextButtonName() {
     return loadTimeData.getString('gestureNavigationIntroNextButton');
   }
+
+  /** @return {string} */
+  getSkipButtonName() {
+    return loadTimeData.getString('gestureNavigationIntroSkipButton');
+  }
 }
 
 class ConsolidatedConsentScreenTester extends ScreenElementApi {
@@ -927,6 +932,13 @@ class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
   }
 }
 
+class GaiaInfoScreenTester extends ScreenElementApi {
+  constructor() {
+    super('gaia-info');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+}
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -953,6 +965,7 @@ export class OobeApiProvider {
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
+      GaiaInfoScreen: new GaiaInfoScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -984,5 +997,3 @@ export class OobeApiProvider {
     };
   }
 }
-
-window.OobeAPI = new OobeApiProvider();

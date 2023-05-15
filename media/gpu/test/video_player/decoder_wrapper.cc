@@ -162,14 +162,10 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
   switch (decoder_wrapper_config_.implementation) {
     case DecoderImplementation::kVD:
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      decoder_ = VideoDecoderPipeline::Create(
-          gpu::GpuDriverBugWorkarounds(),
+      decoder_ = VideoDecoderPipeline::CreateForTesting(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          std::make_unique<PlatformVideoFramePool>(),
-          /*frame_converter=*/nullptr,
-          VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::make_unique<NullMediaLog>(),
-          /*oop_video_decoder=*/{});
+          decoder_wrapper_config_.ignore_resolution_changes_to_smaller_vp9);
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       break;
     case DecoderImplementation::kVDA:

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="100506692671054486">engin fyrri skipun</translation>
 <translation id="1009046985747440431">Ýttu á ör upp eða niður til að fletta og Enter til að velja</translation>
 <translation id="1011903154582639569">Finndu lykil og lyftu síðan til að slá inn</translation>
 <translation id="1012173283529841972">Listaatriði</translation>
@@ -459,6 +460,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="3936394396199829062">Ljósfjólubleikur</translation>
 <translation id="3943857333388298514">Líma</translation>
 <translation id="3962990492275676168">Hefja lestur frá þessum stað</translation>
+<translation id="397094149579293440">enginn texti valinn</translation>
 <translation id="3970951409746498040">Sandbrúnn</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Rjómagulur</translation>
@@ -565,6 +567,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4786285211967466855">Engin fyrri 1. stigs fyrirsögn</translation>
 <translation id="4787577491510559358">Tilkynning um snið fyrir núverandi atriði</translation>
 <translation id="479989351350248267">leita</translation>
+<translation id="4802034228771424756">enginn textareitur í fókus</translation>
 <translation id="4804818685124855865">Aftengja</translation>
 <translation id="481165870889056555">Tilkynna titil núverandi síðu</translation>
 <translation id="4815668758102003883">Fölgrænblár</translation>
@@ -587,13 +590,16 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="489907760999452556">Innri tengill</translation>
 <translation id="4909019435900810068">Færa aftur um eitt orð</translation>
 <translation id="4911349081560453449">Enginn fyrri gátreitur</translation>
+<translation id="4919186071145887492">Ekki er hægt að <ph name="COMMAND" />, reyndu aftur</translation>
 <translation id="492295894462528572">Inngangsorð</translation>
 <translation id="495046168593986294">Fletta upp</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
 <translation id="4953585991029886728">Textareitur</translation>
+<translation id="4964701498510730546">textareitur er auður</translation>
 <translation id="4973717656530883744">Lágmark <ph name="X" /></translation>
 <translation id="4974612477719259470">Enginn fyrri hnappur</translation>
 <translation id="4979404613699303341">Fyrri hnappur</translation>
+<translation id="4981239367072766915">óþekkt inntak</translation>
 <translation id="4982917827052020884">Byrjum á nokkrum lyklum sem þú munt nota reglulega. Control-lykilinn má nota til að stöðva núverandi lestur. Control-lykillinn er neðst í vinstra horni lyklaborðsins. Til að halda áfram skaltu ýta á Control-lykilinn.</translation>
 <translation id="4983588134362688868">Fara efst á síðu</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, gluggi</translation>
@@ -601,6 +607,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4994420463726586413">TIlkynna núverandi stöðu rafhlöðunnar</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, valhnappur valinn</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, hringhnappur valmyndaratriðis valinn</translation>
+<translation id="5014131807708055994">Ekki er hægt að <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Leyfa skráningu tals</translation>
 <translation id="5041394372352067729">Færa blindraletursskjá efst á síðuna</translation>
 <translation id="5042770794184672516">Auka hljóðstyrk tals</translation>

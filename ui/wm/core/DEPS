@@ -1,18 +1,9 @@
 include_rules = [
   "+third_party/skia",
   "+ui/aura",
-  "+ui/base/accelerators",
-  "+ui/base/cursor",
-  "+ui/base/hit_test.h",
-  "+ui/base/ime",
-  "+ui/base/resource",
-  "+ui/base/ui_base_paths.h",
-  "+ui/base/ui_base_types.h",
   "+ui/compositor",
   "+ui/compositor_extra",
-  "+ui/events",
   "+ui/gfx",
   "+ui/platform_window",
   "+ui/resources/grit/ui_resources.h",
-  "+ui/views/views_export.h",
 ]

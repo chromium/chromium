@@ -8,6 +8,7 @@
 #include <set>
 
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -46,7 +47,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
     void OnWindowAdded(aura::Window* new_window) override;
     void OnWindowDestroying(aura::Window* window) override;
 
-    ShelfWindowWatcher* window_watcher_;
+    raw_ptr<ShelfWindowWatcher, ExperimentalAsh> window_watcher_;
   };
 
   // Observes individual user windows to detect when they are closed or when
@@ -69,7 +70,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
     void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
     void OnWindowTitleChanged(aura::Window* window) override;
 
-    ShelfWindowWatcher* window_watcher_;
+    raw_ptr<ShelfWindowWatcher, ExperimentalAsh> window_watcher_;
   };
 
   // Creates a ShelfItem for |window|.
@@ -99,7 +100,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
 
-  ShelfModel* model_;
+  raw_ptr<ShelfModel, ExperimentalAsh> model_;
 
   ContainerWindowObserver container_window_observer_{this};
   UserWindowObserver user_window_observer_{this};

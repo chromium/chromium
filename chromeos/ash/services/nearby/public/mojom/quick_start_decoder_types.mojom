@@ -18,15 +18,26 @@ enum WifiSecurityType {
   kSAE = 5,
 };
 
-enum GetWifiCredentialsFailureReason {
-  kFailedToDecodeMessage = 1,
-  kMissingWifiInformation = 2,
-  kMissingWifiSSID = 3,
-  kMissingWifiPassword = 4,
-  kMissingWifiSecurityType = 5,
-  kMissingWifiHiddenStatus = 6,
-  kInvalidWifiSecurityType = 7,
-  kEmptyWifiSSID = 8,
+// These values are directly taken from Android, and reported back.
+enum UserVerificationResult {
+  kUserVerified = 0,
+  kUserNotVerified = 1,
+  kLSKFNotSet = 2,
+};
+
+struct UserVerificationResponse {
+  UserVerificationResult result;
+  bool is_first_user_verification;
+};
+
+struct UserVerificationRequested {
+  bool is_awaiting_user_verification;
+};
+
+enum QuickStartDecoderError {
+  kEmptyMessage = 0,
+  kUnableToReadAsJSON = 1,
+  kMessageDoesNotMatchSchema = 2,
 };
 
 struct WifiCredentials {
@@ -34,16 +45,6 @@ struct WifiCredentials {
   WifiSecurityType security_type;
   bool is_hidden;
   string password;
-};
-
-union GetWifiCredentialsResponse {
-
-  // Success - return credentials
-  WifiCredentials credentials;
-
-  // Failure - return error reason
-  GetWifiCredentialsFailureReason failure_reason;
-
 };
 
 struct GetAssertionResponse {

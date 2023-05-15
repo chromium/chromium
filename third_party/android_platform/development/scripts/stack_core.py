@@ -31,9 +31,6 @@ import symbol
 
 from pylib import constants
 
-UNKNOWN = '<unknown>'
-HEAP = '[heap]'
-STACK = '[stack]'
 _DEFAULT_JOBS=8
 _CHUNK_SIZE = 1000
 
@@ -53,6 +50,9 @@ _DALVIK_NATIVE_THREAD_LINE = re.compile("(\".*\" sysTid=[0-9]+ nice=[0-9]+.*)")
 _JAVA_STDERR_LINE = re.compile("([0-9]+)\s+[0-9]+\s+.\s+System.err:\s*(.+)")
 _MISC_HEADER = re.compile(
     '(?:Tombstone written to:|Abort message:|Revision:|Build fingerprint:).*')
+# A header used by tooling to mark a line that should be considered useful.
+# e.g. build/android/pylib/symbols/expensive_line_transformer.py
+_GENERIC_USEFUL_LOG_HEADER = re.compile('Generic useful log header: .*')
 
 # Matches LOG(FATAL) lines, like the following example:
 #   [FATAL:source_file.cc(33)] Check failed: !instances_.empty()
@@ -165,7 +165,7 @@ def PrintDivider():
 
 def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
                           arch_defined, llvm_symbolizer, apks_directory,
-                          pass_through):
+                          pass_through, flush):
   """Symbolize stacks on the fly as they are read from an input stream."""
 
   if fallback_so_file:
@@ -192,12 +192,16 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
       break
     if pass_through:
       sys.stdout.write(line)
+      if flush:
+        sys.stdout.flush()
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
     if in_stack:
       if not maybe_line:
         ConvertStreamingChunk()
+        if flush:
+          sys.stdout.flush()
         so_dirs = []
         useful_lines = []
         in_stack = False
@@ -340,7 +344,8 @@ class PreProcessLog:
           or _DEBUG_TRACE_LINE.search(line)
           or _ABI_LINE.search(line)
           or _JAVA_STDERR_LINE.search(line)
-          or _MISC_HEADER.search(line)):
+          or _MISC_HEADER.search(line)
+          or _GENERIC_USEFUL_LOG_HEADER.search(line)):
         useful_log.append(line)
         continue
 
@@ -448,7 +453,6 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
       frame, code_addr, area, _, symbol_name = match.group(
           'frame', 'address', 'lib', 'symbol_present', 'symbol_name')
       frame = int(frame)
-      logging.debug('Found trace line: %s' % line.strip())
 
       if frame <= last_frame and (trace_lines or value_lines):
         java_lines = []
@@ -461,45 +465,67 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
         pid = -1
       last_frame = frame
 
-      if area in (UNKNOWN, HEAP, STACK):
-        trace_lines.append((code_addr, '', area))
+      if not symbol_name:
+        symbol_name = ''
+
+      if not area.endswith('.so'):
+        logging.debug('Library is not a .so file. path=%s', area)
+        trace_lines.append((code_addr, symbol_name, area))
       else:
-        logging.debug('Identified lib: %s' % area)
+        logging.debug('Identified lib: %s', area)
         # If a calls b which further calls c and c is inlined to b, we want to
         # display "a -> b -> c" in the stack trace instead of just "a -> c"
         library = os.path.join(symbol.SYMBOLS_DIR,
                                symbol.TranslateLibPath(area))
-        info = llvm_symbolizer.GetSymbolInformation(library, int(code_addr,16))
-        logging.debug('symbol information: %s' % info)
-        nest_count = len(info) - 1
-        for source_symbol, source_location in info:
-          if nest_count > 0:
-            nest_count = nest_count - 1
-            trace_lines.append(('v------>', source_symbol, source_location))
-          elif '<UNKNOWN>' in source_symbol and symbol_name:
-            # If the symbolizer couldn't find a symbol name, but the trace had
-            # one, use what the trace had.
-            trace_lines.append((code_addr, symbol_name, source_location))
-          else:
-            trace_lines.append((code_addr,
-                                source_symbol,
-                                source_location))
+        if not llvm_symbolizer.IsValidTarget(library):
+          # The library was not found in SYMBOLS_DIR, it is probably a system
+          # library.
+          logging.debug('Library is not a valid target. path=%s', library)
+          trace_lines.append((code_addr, symbol_name, area))
+        else:
+          info = llvm_symbolizer.GetSymbolInformation(library,
+                                                      int(code_addr,16))
+          logging.debug('symbol information: %s', info)
+          nest_count = len(info) - 1
+          for source_symbol, source_location in info:
+            if nest_count > 0:
+              nest_count = nest_count - 1
+              trace_lines.append(('v------>', source_symbol, source_location))
+            elif '<UNKNOWN>' in source_symbol and symbol_name:
+              # If the symbolizer couldn't find a symbol name, but the trace had
+              # one, use what the trace had.
+              trace_lines.append((code_addr, symbol_name, source_location))
+            else:
+              trace_lines.append((code_addr,
+                                  source_symbol,
+                                  source_location))
 
     match = _VALUE_LINE.match(line)
     if match:
+      logging.debug('Found value line: %s', line.strip())
       (_, addr, value, area, _, symbol_name) = match.groups()
-      if area == UNKNOWN or area == HEAP or area == STACK or not area:
-        value_lines.append((addr, value, '', area))
+      if not symbol_name:
+        symbol_name = ''
+      if not area.endswith('.so'):
+        logging.debug('Library is not a .so file. path=%s', area)
+        value_lines.append((addr, value, symbol_name, area))
       else:
         library = os.path.join(symbol.SYMBOLS_DIR,
                                symbol.TranslateLibPath(area))
-        info = llvm_symbolizer.GetSymbolInformation(library, int(value,16))
-        source_symbol, source_location = info.pop()
+        if not llvm_symbolizer.IsValidTarget(library):
+          # The library was not found in SYMBOLS_DIR, it is probably a system
+          # library.
+          logging.debug('Library is not a valid target. path=%s', library)
+          value_lines.append((addr, value, symbol_name, area))
+        else:
+          info = llvm_symbolizer.GetSymbolInformation(library, int(value,16))
+          logging.debug('symbol information: %s', info)
+          source_symbol, source_location = info.pop()
 
-        value_lines.append((addr,
-                            value,
-                            source_symbol,
-                            source_location))
+          value_lines.append((addr,
+                              value,
+                              source_symbol,
+                              source_location))
 
   java_lines = []
   if pid != -1 and pid in java_stderr_by_pid:
@@ -564,7 +590,7 @@ def _GetSharedLibraryInHost(soname, sosize, dirs):
       continue
     if os.path.getsize(host_so_file) != sosize:
       continue
-    logging.debug("%s match to the one in APK" % host_so_file)
+    logging.debug("%s match to the one in APK", host_so_file)
     return host_so_file
 
 

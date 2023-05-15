@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -115,6 +115,49 @@ suite('cr_lottie_test', function() {
 
     return Array.from(
         context.getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data);
+  }
+
+
+  /**
+   * @return bool true if all elements in a and b are equal.
+   */
+  function arrayEquals(a: any[], b: any[]) {
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Waits until a pixel of the given color has rendered by polling. If the
+   * pixel does not appear after a given timeout, fails the test.
+   *
+   * @param color color of the pixel to wait for.
+   */
+  async function pollUntilRendered(color: number[]) {
+    // Handle a timeout here so that if the pixel does not appear in a
+    // reasonably long time frame, the specific mocha test fails. Otherwise, the
+    // C++ harness would timeout with no information of which test failed to
+    // render the pixel.
+    const timeoutNotice = 'TIMEOUT';
+    const timeout = new Promise(resolve => {
+      setTimeout(() => resolve(timeoutNotice), 10000);
+    });
+    const polling = new Promise(async resolve => {
+      while (true) {
+        if (arrayEquals(await samplePixel(), color)) {
+          resolve({});
+          return;
+        }
+      }
+    });
+    const result = await Promise.race([polling, timeout]);
+    assertNotEquals(result, timeoutNotice, 'Pixel ' + color + ' not rendered');
   }
 
   test('TestResize', async () => {
@@ -227,42 +270,13 @@ suite('cr_lottie_test', function() {
   });
 
   test('TestRenderFrame', async function() {
-    // TODO(crbug.com/1108915): Offscreen canvas has a race issue when used in
-    // this test framework.
-    if (1) {
-      this.skip();
-    }
-
-    // To ensure that we capture a frame from the animation and not an empty
-    // frame, we delay the capture by 2 seconds.
-    // Note: This issue is only observed in tests.
-    const kRaceTimeout = 2000;
-
     createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
-
-    const waitForFrameRender = new Promise<void>(function(resolve) {
-      window.setTimeout(resolve, kRaceTimeout);
-    });
-
-    await waitForFrameRender;
-
-    assertDeepEquals(GREEN_PIXEL, await samplePixel());
+    await pollUntilRendered(GREEN_PIXEL);
   });
 
   test('TestChangeAnimationUrl', async function() {
-    // TODO(crbug.com/1108915): Offscreen canvas has a race issue when used in
-    // this test framework.
-    if (1) {
-      this.skip();
-    }
-
-    // To ensure that we capture a frame from the animation and not an empty
-    // frame, we delay the capture by 2 seconds.
-    // Note: This issue is only observed in tests.
-    const kRaceTimeout = 2000;
-
     createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
@@ -272,25 +286,15 @@ suite('cr_lottie_test', function() {
     waitForInitializeEvent =
         eventToPromise('cr-lottie-initialized', crLottieElement);
     waitForPlayingEvent = eventToPromise('cr-lottie-playing', crLottieElement);
+    await pollUntilRendered(GREEN_PIXEL);
 
     crLottieElement.animationUrl = SAMPLE_LOTTIE_BLUE;
 
     // The previous animation should be cleared and stopped between loading.
-    // Unfortunately since the offscreen canvas is rendered asynchronously,
-    // there is no way to grab a frame in between events and have it guaranteed
-    // to be the empty frame. At least wait for the `cr-lottie-stopped` event.
     await waitForStoppedEvent;
-
     await waitForInitializeEvent;
     await waitForPlayingEvent;
-
-    const waitForFrameRender = new Promise<void>(function(resolve) {
-      setTimeout(resolve, kRaceTimeout);
-    });
-
-    await waitForFrameRender;
-
-    assertDeepEquals(BLUE_PIXEL, await samplePixel());
+    await pollUntilRendered(BLUE_PIXEL);
   });
 
   test('TestHidden', async () => {

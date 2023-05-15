@@ -25,6 +25,7 @@ TAG_HEADER = """\
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
+#             chromeos-board-jacuzzi chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -37,7 +38,9 @@ TAG_HEADER = """\
 #         lacros-chrome cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
+#         apple apple-apple-m1 apple-apple-m2
+#             apple-angle-metal-renderer:-apple-m1
+#             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011

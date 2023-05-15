@@ -125,32 +125,22 @@ void TextInput::Resync() {
 }
 
 void TextInput::Reset() {
-  surrounding_text_tracker_.Reset();
+  surrounding_text_tracker_.CancelComposition();
   if (input_method_)
     input_method_->CancelComposition(this);
 }
 
-void TextInput::SetSurroundingText(const std::u16string& text,
-                                   const gfx::Range& cursor_pos) {
+void TextInput::SetSurroundingText(
+    base::StringPiece16 text,
+    const gfx::Range& cursor_pos,
+    const absl::optional<ui::GrammarFragment>& grammar_fragment,
+    const absl::optional<ui::AutocorrectInfo>& autocorrect_info) {
   // TODO(crbug.com/1402906): Text range is not currently handled correctly.
   surrounding_text_tracker_.Update(text, 0u, cursor_pos);
 
-  // Convert utf8 grammar fragment to utf16.
-  if (grammar_fragment_at_cursor_utf8_) {
-    std::string utf8_text = base::UTF16ToUTF8(text);
-    ui::GrammarFragment fragment = *grammar_fragment_at_cursor_utf8_;
-    std::vector<size_t> offsets = {fragment.range.start(),
-                                   fragment.range.end()};
-    base::UTF8ToUTF16AndAdjustOffsets(utf8_text, &offsets);
-    grammar_fragment_at_cursor_utf16_ = ui::GrammarFragment(
-        gfx::Range(offsets[0], offsets[1]), fragment.suggestion);
-  } else {
-    grammar_fragment_at_cursor_utf16_ = absl::nullopt;
-  }
-
-  if (pending_autocorrect_info_) {
-    autocorrect_info_ = *pending_autocorrect_info_;
-    pending_autocorrect_info_ = absl::nullopt;
+  grammar_fragment_at_cursor_ = grammar_fragment;
+  if (autocorrect_info.has_value()) {
+    autocorrect_info_ = autocorrect_info.value();
   }
 
   // TODO(b/206068262): Consider introducing an API to notify surrounding text
@@ -190,21 +180,6 @@ void TextInput::SetCaretBounds(const gfx::Rect& bounds) {
   if (!input_method_)
     return;
   input_method_->OnCaretBoundsChanged(this);
-}
-
-void TextInput::SetGrammarFragmentAtCursor(
-    const absl::optional<ui::GrammarFragment>& fragment) {
-  grammar_fragment_at_cursor_utf16_ = absl::nullopt;
-  grammar_fragment_at_cursor_utf8_ = fragment;
-}
-
-void TextInput::SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                                   const gfx::Rect& autocorrect_bounds) {
-  // Since we receive the autocorrect information separately from the
-  // surrounding text information, the range and bounds may be invalid at this
-  // point, because the surrounding text this class holds is stale.
-  // Save it as the "pending" information a surrounding text update is received.
-  pending_autocorrect_info_ = {autocorrect_range, autocorrect_bounds};
 }
 
 void TextInput::FinalizeVirtualKeyboardChanges() {
@@ -420,6 +395,14 @@ void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
   surrounding_text_tracker_.OnExtendSelectionAndDelete(before, after);
 }
 
+void TextInput::ExtendSelectionAndReplace(
+    size_t before,
+    size_t after,
+    const base::StringPiece16 replacement_text) {
+  // TODO(crbug.com/1443726): Implement this using an extended Wayland API.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {
   if (ShouldStageVKState()) {
     staged_vk_occluded_bounds_ = rect;
@@ -482,7 +465,7 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
 
 absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
     const {
-  return grammar_fragment_at_cursor_utf16_;
+  return grammar_fragment_at_cursor_;
 }
 
 bool TextInput::ClearGrammarFragments(const gfx::Range& range) {

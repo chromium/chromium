@@ -51,7 +51,7 @@ void VideoCaptureServiceTest::SetUp() {
   requestable_settings_.resolution_change_policy =
       media::ResolutionChangePolicy::FIXED_RESOLUTION;
   requestable_settings_.power_line_frequency =
-      media::PowerLineFrequency::FREQUENCY_DEFAULT;
+      media::PowerLineFrequency::kDefault;
 }
 
 std::unique_ptr<VideoCaptureServiceTest::SharedMemoryVirtualDeviceContext>

@@ -313,6 +313,15 @@ ManifestDataChanges GetManifestDataChanges(
             new_install_info.shortcuts_menu_icon_bitmaps) {
       return true;
     }
+    if (existing_web_app.scope_extensions() !=
+        new_install_info.scope_extensions) {
+      return true;
+    }
+    if (new_install_info.validated_scope_extensions.has_value() &&
+        existing_web_app.validated_scope_extensions() !=
+            new_install_info.validated_scope_extensions.value()) {
+      return true;
+    }
     // TODO(crbug.com/897314): Check changes to tab_strip field once
     // icons are stored.
     // TODO(crbug.com/926083): Check more manifest fields.

@@ -105,6 +105,15 @@ export class MockFederatedAuthRequest {
   async unregisterIdP(configURL) {
   }
 
+  async resolveTokenRequest(token) {
+  }
+
+  async closeModalDialogView() {
+  }
+
+  async preventSilentAccess() {
+  }
+
   async reset() {
     this.token_ = null;
     this.selected_identity_provider_config_url_ = null;

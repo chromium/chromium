@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -18,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -36,7 +36,6 @@
 
 namespace ash {
 class FocusRingController;
-class LoginDisplayWebUI;
 class WebUILoginView;
 
 // An implementation class for OOBE and user adding screen host via WebUI.
@@ -66,7 +65,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   ~LoginDisplayHostWebUI() override;
 
   // LoginDisplayHost:
-  LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
   views::Widget* GetLoginWindowWidget() const override;
@@ -210,6 +208,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Show OOBE WebUI if signal from javascript side never came.
   void OnShowWebUITimeout();
 
+  // Callback that is called once booting animation has finished running, but
+  // the last frame is still shown.
+  void BootingAnimationFinished();
+
   // Sign in screen controller.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
@@ -217,13 +219,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   std::unique_ptr<WizardController> wizard_controller_;
 
   // Container of the screen we are displaying.
-  views::Widget* login_window_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> login_window_ = nullptr;
 
   // Container of the view we are displaying.
-  WebUILoginView* login_view_ = nullptr;
-
-  // Login display we are using.
-  std::unique_ptr<LoginDisplayWebUI> login_display_;
+  raw_ptr<WebUILoginView, ExperimentalAsh> login_view_ = nullptr;
 
   // Stores status area current visibility to be applied once login WebUI
   // is shown.

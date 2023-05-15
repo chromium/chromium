@@ -17,6 +17,7 @@ import {
 } from '../../type.js';
 import {getFpsRangeFromConstraints} from '../../util.js';
 import {StreamConstraints} from '../stream_constraints.js';
+import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {
   ModeBase,
@@ -164,6 +165,19 @@ export class Modes {
               expert.isEnabled(
                   expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING),
           );
+          if (expert.isEnabled(
+                  expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+            const captureResolution =
+                assertExists(this.getCaptureParams().captureResolution);
+            await StreamManagerChrome.getInstance().prepare({
+              ...constraints,
+              video: {
+                ...constraints.video,
+                width: captureResolution.width,
+                height: captureResolution.height,
+              },
+            });
+          }
 
           if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
             await deviceOperator.setStillCaptureResolution(
@@ -212,7 +226,7 @@ export class Modes {
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.PORTRAIT_CAPTURE),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.SCAN]: {
@@ -316,7 +330,7 @@ export class Modes {
   async updateMode(factory: ModeFactory): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
     this.current = factory.produce();
     await this.updateSaveMetadata();
@@ -328,7 +342,7 @@ export class Modes {
   async clear(): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
     this.captureParams = null;
     this.current = null;
@@ -343,7 +357,7 @@ export class Modes {
     if (expert.isEnabled(expert.ExpertOption.SAVE_METADATA)) {
       await this.enableSaveMetadata();
     } else {
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
   }
 
@@ -360,12 +374,10 @@ export class Modes {
 
   /**
    * Disables save metadata of subsequent photos in the current mode.
-   *
-   * @return Promise for the operation.
    */
-  private async disableSaveMetadata(): Promise<void> {
+  private disableSaveMetadata(): void {
     if (this.current !== null) {
-      await this.current.removeMetadataObserver();
+      this.current.removeMetadataObserver();
     }
   }
 }

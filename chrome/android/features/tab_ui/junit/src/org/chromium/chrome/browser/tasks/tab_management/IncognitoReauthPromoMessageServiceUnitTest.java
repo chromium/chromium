@@ -41,6 +41,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -139,11 +140,30 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                         mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
 
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         mIncognitoReauthPromoMessageService.dismiss();
 
         verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
         assertFalse(
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissMessageWhenGTSEnabled_RecordsCorrectImpressionMetric() {
+        mIsTabToGTSAnimationEnabled = true;
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.IncognitoReauth.PromoImpressionAfterActionCount", 1);
+
+        createIncognitoReauthPromoMessageService();
+
+        // Increasing the impression twice, records only one impression when GTS is enabled.
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
+        mIncognitoReauthPromoMessageService.dismiss();
+
+        // Verify the the metric is recorded.
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -239,7 +259,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testIncreasePromoCount_DisablesCardIfCountExceeds() {
         createIncognitoReauthPromoMessageService();
         mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
-                mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit + 1);
+                mIncognitoReauthPromoMessageService.mMaxPromoMessageCount + 1);
         mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         assertFalse(
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
@@ -261,8 +281,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSEnabled() {
         mIsTabToGTSAnimationEnabled = true;
         createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit
-                == 20
+        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount
+                == 10
             : "When animation is enabled, then the max count should be set to 20, because of double counting.";
 
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -273,7 +293,9 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
         // Mocking the maximum limit.
         final int initialShowCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
-        final int maxShowCount = mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit;
+
+        // When TabToGTS is enabled we call the preparePromoMessage twice for each promo.
+        final int maxShowCount = mIncognitoReauthPromoMessageService.mMaxPromoMessageCount * 2;
         for (int i = initialShowCount; i < maxShowCount; ++i) {
             assertTrue("Promo message should have been prepared as the current count: " + i
                             + ", is less than the max count: " + maxShowCount,
@@ -290,7 +312,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSDisabled() {
         mIsTabToGTSAnimationEnabled = false;
         createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit
+        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount
                 == 10
             : "When animation is disabled, then the max count should be set to 10, as there's no"
               + " double counting anymore.";
@@ -303,7 +325,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
         // Mocking the maximum limit.
         final int initialShowCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
-        final int maxShowCount = mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit;
+        final int maxShowCount = mIncognitoReauthPromoMessageService.mMaxPromoMessageCount;
         for (int i = initialShowCount; i < maxShowCount; ++i) {
             assertTrue("Promo message should have been prepared as the current count: " + i
                             + ", is less than the max count: " + maxShowCount,
@@ -322,7 +344,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
         // Exceed the max count.
         mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
-                mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit + 1);
+                mIncognitoReauthPromoMessageService.mMaxPromoMessageCount + 1);
         // Ensure that promo can be shown.
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
 

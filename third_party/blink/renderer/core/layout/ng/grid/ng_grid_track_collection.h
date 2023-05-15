@@ -182,9 +182,10 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit GetSetOffset(wtf_size_t set_index) const;
   wtf_size_t GetSetTrackCount(wtf_size_t set_index) const;
 
-  // Returns the accumulated extra margin at the start/end of the specified set.
-  LayoutUnit StartExtraMargin(wtf_size_t set_index) const;
-  LayoutUnit EndExtraMargin(wtf_size_t set_index) const;
+  // Returns the accumulated extra margin at the start/end of the specified set;
+  // if no index is specified, returns the extra margin of the grid container.
+  LayoutUnit StartExtraMargin(wtf_size_t set_index = 0) const;
+  LayoutUnit EndExtraMargin(wtf_size_t set_index = kNotFound) const;
 
   bool HasBaselines() const { return baselines_.has_value(); }
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
@@ -212,7 +213,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
       LayoutUnit subgrid_gutter_size,
       const NGBoxStrut& subgrid_margin,
       const NGBoxStrut& subgrid_border_scrollbar_padding,
-      GridTrackSizingDirection subgrid_track_direction) const;
+      GridTrackSizingDirection subgrid_track_direction,
+      bool is_opposite_direction_in_root_grid) const;
 
   GridTrackSizingDirection Direction() const { return track_direction_; }
   LayoutUnit GutterSize() const { return gutter_size_; }

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 
 namespace exo {
@@ -23,10 +25,10 @@ struct WaylandZxdgShell {
   WaylandZxdgShell& operator=(const WaylandZxdgShell&) = delete;
 
   // Owned by WaylandServerController, which always outlives zxdg_shell.
-  Display* const display;
+  const raw_ptr<Display, ExperimentalAsh> display;
 
   // Owned by Server, which always outlives zxdg_shell.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 void bind_zxdg_shell_v6(wl_client* client,

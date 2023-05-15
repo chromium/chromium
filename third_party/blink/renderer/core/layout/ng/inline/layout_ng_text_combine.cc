@@ -221,7 +221,8 @@ PhysicalRect LayoutNGTextCombine::ComputeTextFrameRect(
                       PhysicalSize(one_em, line_height));
 }
 
-PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
+PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow(
+    const NGInlineCursor& cursor) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
 
@@ -232,11 +233,10 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   if (style.HasAppliedTextDecorations()) {
     // |LayoutNGTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
-    const LayoutRect decoration_rect =
-        NGInkOverflow::ComputeTextDecorationOverflow(
-            style, style.GetFont(),
-            /* offset_in_container */ PhysicalOffset(), ink_overflow,
-            /* inline_context */ nullptr);
+    const LayoutRect decoration_rect = NGInkOverflow::ComputeDecorationOverflow(
+        cursor, style, style.GetFont(),
+        /* offset_in_container */ PhysicalOffset(), ink_overflow,
+        /* inline_context */ nullptr);
     ink_overflow.Unite(decoration_rect);
   }
 

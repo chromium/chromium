@@ -61,6 +61,7 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     [RaisesException] void open(ByteString method, USVString url, boolean async, optional USVString? username = null, optional USVString? password = null);
     [RaisesException] void setRequestHeader(ByteString name, ByteString value);
     [RaisesException, RuntimeEnabled=PrivateStateTokens, SecureContext, MeasureAs=TrustTokenXhr] void setPrivateToken(PrivateToken privateToken);
+    [RaisesException, RuntimeEnabled=AttributionReportingInterface, SecureContext] void setAttributionReporting(AttributionReportingRequestOptions attributionReporting);
     [RaisesException=Setter] attribute unsigned long timeout;
     [RaisesException=Setter] attribute boolean withCredentials;
     [RuntimeEnabled=TopicsXHR, SecureContext, Exposed=Window] attribute boolean deprecatedBrowsingTopics;

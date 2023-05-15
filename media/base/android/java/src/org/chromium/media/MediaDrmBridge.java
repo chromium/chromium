@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.media.MediaDrmSessionManager.SessionId;
 import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
@@ -55,7 +54,6 @@ import java.util.UUID;
  * MediaCodecAudioDecoders or MediaCodecVideoDecoders.
  */
 @JNINamespace("media")
-@MainDex
 @SuppressLint("WrongConstant")
 public class MediaDrmBridge {
     private static final String TAG = "media";
@@ -398,11 +396,18 @@ public class MediaDrmBridge {
     private static boolean isCryptoSchemeSupported(byte[] schemeUUID, String containerMimeType) {
         UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
 
-        if (containerMimeType.isEmpty()) {
-            return MediaDrm.isCryptoSchemeSupported(cryptoScheme);
-        }
+        try {
+            if (containerMimeType.isEmpty()) {
+                return MediaDrm.isCryptoSchemeSupported(cryptoScheme);
+            }
 
-        return MediaDrm.isCryptoSchemeSupported(cryptoScheme, containerMimeType);
+            return MediaDrm.isCryptoSchemeSupported(cryptoScheme, containerMimeType);
+        } catch (IllegalArgumentException e) {
+            // A few devices have broken DRM HAL configs and throw an exception here regardless of
+            // the arguments; just assume this means the scheme is not supported.
+            Log.e(TAG, "Exception in isCryptoSchemeSupported", e);
+            return false;
+        }
     }
 
     /**

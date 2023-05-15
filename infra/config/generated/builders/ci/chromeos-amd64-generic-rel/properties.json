@@ -51,6 +51,10 @@
         {
           "builder": "chromeos-amd64-generic-rel",
           "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "chromeos-amd64-generic-rel-rts",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

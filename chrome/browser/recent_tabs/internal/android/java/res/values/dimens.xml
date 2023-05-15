@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- General dimensions. -->
+    <dimen name="restore_tabs_sheet_padding">10dp</dimen>
+    <dimen name="restore_tabs_sheet_padding_content">14dp</dimen>
+    <dimen name="restore_tabs_device_icon">20dp</dimen>
+    <dimen name="restore_tabs_device_icon_margin_horizontal">18dp</dimen>
+    <dimen name="restore_tabs_fre_logo_height">100dp</dimen>
+    <dimen name="restore_tabs_inner_corner_radius">4dp</dimen>
+    <dimen name="restore_tabs_outer_corner_radius">16dp</dimen>
+
+    <!-- Home sheet dimensions. -->
+    <dimen name="restore_tabs_promo_sheet_device_card_padding">16dp</dimen>
+    <dimen name="restore_tabs_promo_sheet_expand_option_icon_margin_start">16dp</dimen>
+    <dimen name="restore_tabs_promo_sheet_expand_option_icon_margin_end">8dp</dimen>
+
+    <!-- Detail sheet dimensions. -->
+    <dimen name="restore_tabs_detail_sheet_padding_vertical">16dp</dimen>
+    <dimen name="restore_tabs_detail_sheet_spacing_vertical">2dp</dimen>
+    <dimen name="restore_tabs_detail_sheet_selected_icon_margin_start">8dp</dimen>
+    <dimen name="restore_tabs_detail_sheet_selected_icon_margin_end">16dp</dimen>
+</resources>

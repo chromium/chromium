@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="100506692671054486">কোনও পূর্ববর্তী কমান্ড নেই</translation>
 <translation id="1009046985747440431">নেভিগেট করতে 'উপরের অথবা নিচের তীরচিহ্ন'; চালু করতে 'এন্টার' টিপুন</translation>
 <translation id="1011903154582639569">একটি বোতাম খুঁজুন, তারপর টাইপ করার জন্য তুলুন</translation>
 <translation id="1012173283529841972">তালিকা আইটেম</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ল্যাভেণ্ডার ব্লাশ</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3962990492275676168">বর্তমান লোকেশন থেকে পড়া শুরু করুন</translation>
+<translation id="397094149579293440">কোনও টেক্সট বেছে নেওয়া হয়নি</translation>
 <translation id="3970951409746498040">স্যান্ডি বাদামি</translation>
 <translation id="3989324057180830702">এই বোতাম টগল করা যায়</translation>
 <translation id="3991317907213946254">মোকাসিন</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">কোনও পূর্ববর্তী লেভেল ১ শিরোনাম নেই</translation>
 <translation id="4787577491510559358">বর্তমান আইটেমের ফরম্যাটিং নিয়ে বলুন</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">ফোকাস করা কোনও টেক্সট ফিল্ড নেই</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="481165870889056555">বর্তমান পৃষ্ঠার শিরোনাম ঘোষণা করুন</translation>
 <translation id="4815668758102003883">ফ্যাকাশে ফিরোজা</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ইন্টার্নাল লিঙ্ক</translation>
 <translation id="4909019435900810068">একটি শব্দের পিছনে রাখুন</translation>
 <translation id="4911349081560453449">কোনও পূর্ববর্তী চেকবক্স নেই</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> করা যাচ্ছে না, আবার চেষ্টা করুন</translation>
 <translation id="492295894462528572">মুখবন্ধ</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4953585991029886728">পাঠ্য সম্পাদনা করুন</translation>
+<translation id="4964701498510730546">টেক্সট ফিল্ড খালি রয়েছে</translation>
 <translation id="4973717656530883744">ন্যূনতম <ph name="X" /></translation>
 <translation id="4974612477719259470">কোনও পূর্ববর্তী বোতাম নেই</translation>
 <translation id="4979404613699303341">পূর্ববর্তী বোতাম</translation>
+<translation id="4981239367072766915">বোঝা যায়নি এমন ইনপুট</translation>
 <translation id="4982917827052020884">আপনি নিয়মিত ব্যবহার করবেন এমন কয়েকটি কী দিয়ে শুরু করুন। কোনও বর্তমান স্পিচ বন্ধ করার জন্য Control কী ব্যবহার করা যাবে। আপনার কীবোর্ডের নিচে বাঁদিকের কোণে Control কী খুঁজুন। চালিয়ে যেতে, Control কী প্রেস করুন।</translation>
 <translation id="4983588134362688868">পৃষ্ঠাটির শীর্ষে ফিরে যান</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, উইন্ডো</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ব্যাটারিতে কত চার্জ আছে জানান</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, রেডিও বোতাম নির্বাচিত</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, মেনু আইটেম রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> করা যাচ্ছে না, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ভাষ্য লগ করার বিকল্পটি চালু করুন</translation>
 <translation id="5041394372352067729">পৃষ্ঠার উপরের দিকে ব্রেইল প্রদর্শন সরান</translation>
 <translation id="5042770794184672516">কথন ভলিউম বাড়ান</translation>

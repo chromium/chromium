@@ -336,7 +336,7 @@ class FragmentTreeDumper {
 
 }  // namespace
 
-NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
+NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
                                        WritingMode block_or_line_writing_mode,
                                        NGFragmentType type,
                                        unsigned sub_type)
@@ -382,7 +382,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
 }
 
 NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
-    NGContainerFragmentBuilder* builder) {
+    NGFragmentBuilder* builder) {
   OutOfFlowData* oof_data = nullptr;
   if (has_fragmented_out_of_flow_data_)
     oof_data = FragmentedOutOfFlowDataFromBuilder(builder);
@@ -1036,7 +1036,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
 }
 
 bool NGPhysicalFragment::DependsOnPercentageBlockSize(
-    const NGContainerFragmentBuilder& builder) {
+    const NGFragmentBuilder& builder) {
   NGLayoutInputNode node = builder.node_;
 
   if (!node || node.IsInline())

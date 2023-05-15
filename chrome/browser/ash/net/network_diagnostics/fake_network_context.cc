@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace ash::network_diagnostics {
 
 namespace {
 
@@ -23,17 +24,48 @@ net::IPEndPoint FakeIPAddress() {
 
 }  // namespace
 
+FakeNetworkContext::DnsResult::DnsResult(
+    int32_t result,
+    net::ResolveErrorInfo resolve_error_info,
+    absl::optional<net::AddressList> resolved_addresses,
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata)
+    : result_(result),
+      resolve_error_info_(resolve_error_info),
+      resolved_addresses_(resolved_addresses),
+      endpoint_results_with_metadata_(endpoint_results_with_metadata) {}
+
+FakeNetworkContext::DnsResult::~DnsResult() = default;
+
 FakeNetworkContext::FakeNetworkContext() = default;
 
 FakeNetworkContext::~FakeNetworkContext() = default;
 
-void FakeNetworkContext::CreateHostResolver(
-    const absl::optional<net::DnsConfigOverrides>& config_overrides,
-    mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
-  DCHECK(!resolver_);
-  resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver));
-  resolver_->set_disconnect_during_host_resolution(host_resolution_disconnect_);
-  resolver_->SetFakeDnsResult(std::move(fake_dns_result_));
+void FakeNetworkContext::ResolveHost(
+    network::mojom::HostResolverHostPtr host,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    network::mojom::ResolveHostParametersPtr optional_parameters,
+    mojo::PendingRemote<network::mojom::ResolveHostClient> response_client) {
+  if (host_resolution_disconnect_) {
+    response_client.reset();
+    return;
+  }
+  mojo::Remote<network::mojom::ResolveHostClient> rpc(
+      std::move(response_client));
+  if (fake_dns_result_) {
+    rpc->OnComplete(fake_dns_result_->result_,
+                    fake_dns_result_->resolve_error_info_,
+                    fake_dns_result_->resolved_addresses_,
+                    fake_dns_result_->endpoint_results_with_metadata_);
+  } else {
+    CHECK(!fake_dns_results_.empty());
+    auto dns_result = std::move(fake_dns_results_.front());
+    fake_dns_results_.pop_front();
+    rpc->OnComplete(dns_result->result_, dns_result->resolve_error_info_,
+                    dns_result->resolved_addresses_,
+                    dns_result->endpoint_results_with_metadata_);
+  }
+  rpc.reset();
 }
 
 void FakeNetworkContext::CreateTCPConnectedSocket(
@@ -150,5 +182,4 @@ void FakeNetworkContext::SetUdpReceiveDelay(base::TimeDelta receive_delay) {
   fake_udp_socket_->set_udp_receive_delay(receive_delay);
 }
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics

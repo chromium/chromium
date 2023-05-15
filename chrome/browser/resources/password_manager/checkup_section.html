@@ -51,8 +51,8 @@
     margin-inline-end: 20px;
   }
 
-  cr-link-row[hide-icon]::part(icon) {
-    opacity: 0;
+  cr-link-row[non-clickable]::part(icon) {
+    display: none;
   }
 
   cr-link-row {
@@ -66,6 +66,20 @@
 
   cr-link-row[show-red-icon] {
     --cr-link-row-start-icon-color: var(--google-red-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    cr-link-row {
+      --cr-link-row-start-icon-color: var(--google-green-300);
+    }
+
+    cr-link-row[show-yellow-icon] {
+      --cr-link-row-start-icon-color: var(--google-yellow-300);
+    }
+
+    cr-link-row[show-red-icon] {
+      --cr-link-row-start-icon-color: var(--google-red-300);
+    }
   }
 
   #checkupResult,
@@ -112,22 +126,25 @@
         sub-label="[[getCompromisedSectionSublabel_(status_, compromisedPasswords_)]]"
         show-yellow-icon$="[[didCompromiseCheckFail_(status_)]]"
         show-red-icon$="[[hasIssues_(compromisedPasswords_)]]"
-        hide-icon$="[[!hasIssues_(compromisedPasswords_)]]"
-        on-click="onCompromisedClick_" role-description="button">
+        non-clickable$="[[!hasIssues_(compromisedPasswords_)]]"
+        on-click="onCompromisedClick_" role-description="button"
+        aria-show-label aria-show-sublabel>
     </cr-link-row>
     <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
         label="[[reusedPasswordsText_]]" class="hr"
         sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(reusedPasswords_)]]"
-        hide-icon$="[[!hasIssues_(reusedPasswords_)]]"
-        on-click="onReusedClick_" role-description="button">
+        non-clickable$="[[!hasIssues_(reusedPasswords_)]]"
+        on-click="onReusedClick_" role-description="button"
+        aria-show-label aria-show-sublabel>
     </cr-link-row>
     <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
         label="[[weakPasswordsText_]]" class="hr"
         sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(weakPasswords_)]]"
-        hide-icon$="[[!hasIssues_(weakPasswords_)]]"
-        on-click="onWeakClick_" role-description="button">
+        non-clickable$="[[!hasIssues_(weakPasswords_)]]"
+        on-click="onWeakClick_" role-description="button"
+        aria-show-label aria-show-sublabel>
     </cr-link-row>
   </div>
 </div>

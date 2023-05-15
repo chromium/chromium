@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/platform/fonts/font_size_adjust.h"
+
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace blink {
+
+unsigned FontSizeAdjust::GetHash() const {
+  unsigned computed_hash = 0;
+  // Normalize negative zero.
+  WTF::AddFloatToHash(computed_hash, value_);
+  WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(metric_));
+  return computed_hash;
+}
+
+String FontSizeAdjust::ToString(Metric metric) const {
+  switch (metric) {
+    case Metric::kCapHeight:
+      return "cap-height";
+    case Metric::kChWidth:
+      return "ch-width";
+    case Metric::kIcWidth:
+      return "ic-width";
+    case Metric::kExHeight:
+      return "ex-height";
+  }
+  NOTREACHED();
+}
+
+String FontSizeAdjust::ToString() const {
+  if (value_ == kFontSizeAdjustNone) {
+    return "none";
+  }
+  return metric_ == Metric::kExHeight
+             ? String::Format("%f", value_)
+             : String::Format("%s %f", ToString(metric_).Ascii().c_str(),
+                              value_);
+}
+
+}  // namespace blink

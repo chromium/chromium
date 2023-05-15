@@ -14,7 +14,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
-import './kerberos_accounts.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -28,7 +27,8 @@ import {getTemplate} from './kerberos_page.html.js';
 const SettingsKerberosPageElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
+export class SettingsKerberosPageElement extends
+    SettingsKerberosPageElementBase {
   static get is() {
     return 'settings-kerberos-page';
   }
@@ -46,7 +46,7 @@ class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
           if (routes.KERBEROS_ACCOUNTS_V2) {
             map.set(
                 routes.KERBEROS_ACCOUNTS_V2.path,
-                '#kerberos-accounts-subpage-trigger');
+                '#kerberosAccountsSubpageTrigger');
           }
           return map;
         },

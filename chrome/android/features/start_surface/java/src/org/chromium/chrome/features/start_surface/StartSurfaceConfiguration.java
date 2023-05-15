@@ -74,6 +74,11 @@ public class StartSurfaceConfiguration {
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     START_SURFACE_RETURN_TIME_SECONDS_PARAM, 28800); // 8 hours
 
+    public static final String START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM =
+            "start_surface_return_time_on_tablet_seconds";
+    public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_RETURN_TIME,
+                    START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM, 28800); // 8 hours
     private static final String START_SURFACE_RETURN_TIME_USE_MODEL_PARAM =
             "start_surface_return_time_use_model";
     public static final BooleanCachedFieldTrialParameter START_SURFACE_RETURN_TIME_USE_MODEL =

@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -169,7 +170,7 @@ class NearbyConnectionBrokerImpl
       const std::string& endpoint_id,
       ::nearby::connections::mojom::PayloadTransferUpdatePtr update) override;
 
-  NearbyEndpointFinder* endpoint_finder_;
+  raw_ptr<NearbyEndpointFinder, ExperimentalAsh> endpoint_finder_;
   mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       nearby_connections_;
   std::unique_ptr<base::OneShotTimer> timer_;

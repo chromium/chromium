@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -22,25 +23,35 @@ class SnapGroup : public aura::WindowObserver {
   SnapGroup& operator=(const SnapGroup&) = delete;
   ~SnapGroup() override;
 
-  // aura::WindowObserver:
-  // TODO: Implement `OnWindowParentChanged`.
-  void OnWindowStackingChanged(aura::Window* window) override;
-  void OnWindowDestroying(aura::Window* window) override;
-
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
+
+  // Minimizes the windows in the snap group.
+  // TODO(b/279059840): Implement the restore functinalities. Combine the
+  // minimize and restore in one function.
+  void MinimizeWindows();
+
+  // aura::WindowObserver:
+  // TODO: Implement `OnWindowParentChanged`.
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   friend class SnapGroupController;
 
   // Observes the windows that are added in the `SnapGroup`.
-  void StartObservingWindows(aura::Window* window1, aura::Window* window2);
+  void StartObservingWindows();
 
   // Stops observing the windows when the `SnapGroup` gets destructed.
   void StopObservingWindows();
 
-  aura::Window* window1_;
-  aura::Window* window2_;
+  // Restores the windows bounds on snap group removed as the windows bounds are
+  // shrunk either horizontally or vertically to make room for the split view
+  // divider during `UpdateSnappedWindowsAndDividerBounds()` in
+  // `SplitViewController`.
+  void RestoreWindowsBoundsOnSnapGroupRemoved();
+
+  raw_ptr<aura::Window, ExperimentalAsh> window1_;
+  raw_ptr<aura::Window, ExperimentalAsh> window2_;
 };
 
 }  // namespace ash

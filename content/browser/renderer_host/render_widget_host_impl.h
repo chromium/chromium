@@ -506,10 +506,15 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // in flight change).
   bool RequestRepaintForTesting();
 
+  // Called after every cross-document navigation. Note that for prerender
+  // navigations, this is called before the renderer is shown.
+  void DidNavigate();
+
   // Called after every cross-document navigation. The displayed graphics of
   // the renderer is cleared after a certain timeout if it does not produce a
-  // new CompositorFrame after navigation.
-  void DidNavigate();
+  // new CompositorFrame after navigation. This is called after either
+  // navigation (for non-prerender pages) or activation (for prerender pages).
+  void StartNewContentRenderingTimeout();
 
   // Forwards the keyboard event with optional commands to the renderer. If
   // |key_event| is not forwarded for any reason, then |commands| are ignored.
@@ -822,7 +827,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DidStopFlinging();
 
   bool IsContentRenderingTimeoutRunning() const;
-  void GetContentRenderingTimeoutFrom(RenderWidgetHostImpl* other);
 
   // Called on delayed response from the renderer by either
   // 1) |hang_monitor_timeout_| (slow to ack input events) or
@@ -1079,8 +1083,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInvalidInputEventSource() override;
 
   // Dispatch input events with latency information
-  void DispatchInputEventWithLatencyInfo(const blink::WebInputEvent& event,
-                                         ui::LatencyInfo* latency);
+  void DispatchInputEventWithLatencyInfo(
+      const blink::WebInputEvent& event,
+      ui::LatencyInfo* latency,
+      ui::EventLatencyMetadata* event_latency_metadata);
 
   void WindowSnapshotReachedScreen(int snapshot_id);
 
@@ -1193,7 +1199,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Our delegate, which wants to know mainly about keyboard events.
   // It will remain non-null until DetachDelegate() is called.
-  raw_ptr<RenderWidgetHostDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<RenderWidgetHostDelegate, FlakyDanglingUntriaged> delegate_;
 
   // The delegate of the owner of this object.
   // This member is non-null if and only if this RenderWidgetHost is associated
@@ -1490,11 +1496,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_loading_voter_;
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
-
-  // Use for metrics reporting. Used to check if
-  // OnRenderFrameMetadataChangedAfterActivation is being called for the first
-  // time.
-  bool first_surface_activated_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
@@ -83,11 +85,11 @@ class ExtensionIncomingNativeMessagingTest
         extensions::ChannelEndpoint(profile()), port_id,
         extensions::MessagingEndpoint::ForNativeApp(kFakeNativeAppName),
         std::move(native_message_port), extension_->id(), GURL(),
-        std::string() /* channel_name */);
+        extensions::ChannelType::kNative, std::string() /* channel_name */);
   }
 
  private:
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension, ExperimentalAsh> extension_ = nullptr;
 };
 
 // Tests that the extension receives the onConnectNative event when the native

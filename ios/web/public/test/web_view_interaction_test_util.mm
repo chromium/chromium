@@ -15,7 +15,7 @@
 #import "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -81,6 +81,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     return nullptr;
   }
 
+  WebFrameImpl* frame = nullptr;
   JavaScriptContentWorld* world = nullptr;
   if (feature) {
     JavaScriptFeatureManager* feature_manager =
@@ -92,12 +93,16 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
                   << "JavaScriptFeature does not appear to be configured.";
       return nullptr;
     }
+    ContentWorld content_world = feature->GetSupportedContentWorld();
+    frame = static_cast<WebFrameImpl*>(
+        web_state->GetWebFramesManager(content_world)->GetMainWebFrame());
   } else {
     world = JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
         web_state->GetBrowserState());
+    frame = static_cast<WebFrameImpl*>(
+        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame());
   }
 
-  WebFrameImpl* frame = static_cast<WebFrameImpl*>(GetMainFrame(web_state));
   if (!frame) {
     DLOG(ERROR) << "JavaScript can not be called on a null WebFrame.";
     return nullptr;

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.ActionBar.LayoutParams;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -269,7 +270,7 @@ public class BaseSuggestionViewBinderUnitTest {
         mModel.set(DropdownCommonProperties.BOTTOM_MARGIN, 17);
         mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
 
-        verify(mBaseView).setLayoutParams(any());
+        verify(mBaseView, times(2)).setLayoutParams(any());
         int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
                 R.dimen.omnibox_suggestion_side_spacing);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
@@ -278,6 +279,7 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertEquals(13, layoutParams.topMargin);
         Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
         Assert.assertEquals(17, layoutParams.bottomMargin);
+        Assert.assertEquals(LayoutParams.MATCH_PARENT, layoutParams.width);
     }
 
     @Test

@@ -560,4 +560,51 @@ suite('ChooserExceptionList', function() {
               assertEquals(text, tooltip.innerHTML.trim());
             });
       });
+
+  test('show confirmation dialog on reset settings', async function() {
+    setUpChooserType(
+        ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
+        prefsUserProvider);
+    assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
+    assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
+    const chooserType =
+        await browserProxy.whenCalled('getChooserExceptionList');
+    assertEquals(ChooserType.USB_DEVICES, chooserType);
+    assertEquals(1, testElement.chooserExceptions.length);
+
+    assertChooserExceptionEquals(
+        prefsUserProvider
+            .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
+        testElement.chooserExceptions[0]!);
+
+    // Flush the container to ensure that the container is populated.
+    flush();
+
+    const chooserExceptionListEntry =
+        testElement.shadowRoot!.querySelector('chooser-exception-list-entry');
+    assertTrue(!!chooserExceptionListEntry);
+
+    const siteListEntry =
+        chooserExceptionListEntry!.shadowRoot!.querySelector('site-list-entry');
+    assertTrue(!!siteListEntry);
+
+    // Check both cancelling and accepting the dialog closes it.
+    assertFalse(testElement.$.confirmResetSettings.open);
+    ['cancel-button', 'action-button'].forEach(buttonType => {
+      testElement.shadowRoot!
+          .querySelector<HTMLElement>('#resetSettingsButton')!.click();
+      assertTrue(testElement.$.confirmResetSettings.open);
+      const actionButtonList =
+          testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+              `#confirmResetSettings .${buttonType}`);
+      assertEquals(1, actionButtonList.length);
+      actionButtonList[0]!.click();
+      assertFalse(testElement.$.confirmResetSettings.open);
+    });
+
+    const args = await browserProxy.whenCalled('resetChooserExceptionForSite');
+    assertEquals(testElement.chooserExceptions[0]!.chooserType, args[0]);
+    assertEquals(testElement.chooserExceptions[0]!.sites[0]!.origin, args[1]);
+    assertDeepEquals(testElement.chooserExceptions[0]!.object, args[2]);
+  });
 });

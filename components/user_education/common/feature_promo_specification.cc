@@ -126,6 +126,22 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForSnoozePromo(
 }
 
 // static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForSnoozePromo(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    int accessible_text_string_id,
+    AcceleratorInfo accessible_accelerator) {
+  // See `FeaturePromoSpecification::CreateForToastPromo()`.
+  CHECK_NE(body_text_string_id, accessible_text_string_id);
+  FeaturePromoSpecification spec(&feature, PromoType::kSnooze,
+                                 anchor_element_id, body_text_string_id);
+  spec.screen_reader_string_id_ = accessible_text_string_id;
+  spec.screen_reader_accelerator_ = std::move(accessible_accelerator);
+  return spec;
+}
+
+// static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForTutorialPromo(
     const base::Feature& feature,
     ui::ElementIdentifier anchor_element_id,

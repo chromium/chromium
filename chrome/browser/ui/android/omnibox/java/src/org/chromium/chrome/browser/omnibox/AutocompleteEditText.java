@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -26,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * An {@link EditText} that shows autocomplete text at the end.
@@ -68,13 +68,7 @@ public class AutocompleteEditText
      * user's typing, so we need to handle this case as well.
      */
     private void addTextWatcherForPaste() {
-        addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+        addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (wasLastEditPaste() && !mIgnoreTextChangesForAutocomplete) {

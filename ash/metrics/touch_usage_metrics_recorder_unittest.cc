@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 
 namespace ash {
@@ -34,7 +35,7 @@ class TouchUsageMetricsRecorderTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
 
   // Used to generate input events.
-  ui::test::EventGenerator* event_generator_;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
 };
 
 // Verifies that a singular TouchscreenUsageRecorder, tested in isolation, does

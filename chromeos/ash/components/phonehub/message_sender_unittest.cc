@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +30,12 @@ class MessageSenderImplTest : public testing::Test {
   void SetUp() override {
     fake_connection_manager_ =
         std::make_unique<secure_channel::FakeConnectionManager>();
-    message_sender_ =
-        std::make_unique<MessageSenderImpl>(fake_connection_manager_.get());
+    fake_feature_status_provider_ =
+        std::make_unique<FakeFeatureStatusProvider>();
+    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>(
+        fake_feature_status_provider_.get());
+    message_sender_ = std::make_unique<MessageSenderImpl>(
+        fake_connection_manager_.get(), cros_state_message_recorder_.get());
   }
 
   void VerifyMessage(proto::MessageType expected_message_type,
@@ -58,6 +63,8 @@ class MessageSenderImplTest : public testing::Test {
 
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
+  std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
+  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 

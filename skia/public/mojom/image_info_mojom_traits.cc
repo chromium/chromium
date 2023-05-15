@@ -4,6 +4,7 @@
 
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
@@ -15,19 +16,25 @@ namespace mojo {
 
 namespace {
 
-SkImageInfo MakeSkImageInfo(SkColorType color_type,
-                            SkAlphaType alpha_type,
-                            int width,
-                            int height,
-                            mojo::ArrayDataView<float> color_transfer_function,
-                            mojo::ArrayDataView<float> color_to_xyz_matrix) {
-  CHECK_GE(width, 0);
-  CHECK_GE(height, 0);
+absl::optional<SkImageInfo> MakeSkImageInfo(
+    SkColorType color_type,
+    SkAlphaType alpha_type,
+    int width,
+    int height,
+    mojo::ArrayDataView<float> color_transfer_function,
+    mojo::ArrayDataView<float> color_to_xyz_matrix) {
+  if (width < 0 || height < 0) {
+    return absl::nullopt;
+  }
   sk_sp<SkColorSpace> color_space;
   if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
     const float* data = color_transfer_function.data();
     skcms_TransferFunction transfer_function;
-    CHECK_EQ(7u, color_transfer_function.size());
+    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
+    // when it does.
+    if (color_transfer_function.size() != 7u) {
+      return absl::nullopt;
+    }
     transfer_function.g = data[0];
     transfer_function.a = data[1];
     transfer_function.b = data[2];
@@ -37,7 +44,11 @@ SkImageInfo MakeSkImageInfo(SkColorType color_type,
     transfer_function.f = data[6];
 
     skcms_Matrix3x3 to_xyz_matrix;
-    CHECK_EQ(9u, color_to_xyz_matrix.size());
+    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
+    // when it does.
+    if (color_to_xyz_matrix.size() != 9u) {
+      return absl::nullopt;
+    }
     memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(), 9 * sizeof(float));
     color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
   }
@@ -62,8 +73,7 @@ skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
       // Unknown types should not be sent over mojo.
       break;
   }
-  CHECK(false);
-  return skia::mojom::AlphaType::UNKNOWN;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -109,8 +119,7 @@ skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
       // Skia has color types not used by Chrome.
       break;
   }
-  CHECK(false);
-  return skia::mojom::ColorType::UNKNOWN;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -163,8 +172,9 @@ absl::optional<std::vector<float>>
 StructTraits<skia::mojom::ImageInfoDataView,
              SkImageInfo>::color_transfer_function(const SkImageInfo& info) {
   SkColorSpace* color_space = info.colorSpace();
-  if (!color_space)
+  if (!color_space) {
     return absl::nullopt;
+  }
   skcms_TransferFunction fn;
   color_space->transferFn(&fn);
   return std::vector<float>({fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f});
@@ -175,8 +185,9 @@ absl::optional<std::vector<float>>
 StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_to_xyz_matrix(
     const SkImageInfo& info) {
   SkColorSpace* color_space = info.colorSpace();
-  if (!color_space)
+  if (!color_space) {
     return absl::nullopt;
+  }
   skcms_Matrix3x3 to_xyz_matrix;
   CHECK(color_space->toXYZD50(&to_xyz_matrix));
 
@@ -194,8 +205,9 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
   SkColorType color_type;
   SkAlphaType alpha_type;
 
-  if (!data.ReadColorType(&color_type) || !data.ReadAlphaType(&alpha_type))
+  if (!data.ReadColorType(&color_type) || !data.ReadAlphaType(&alpha_type)) {
     return false;
+  }
 
   mojo::ArrayDataView<float> color_transfer_function;
   data.GetColorTransferFunctionDataView(&color_transfer_function);
@@ -206,12 +218,17 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
   // values can't be negative.
   auto width = base::MakeCheckedNum(data.width()).Cast<int>();
   auto height = base::MakeCheckedNum(data.height()).Cast<int>();
-  if (!width.IsValid() || !height.IsValid())
+  if (!width.IsValid() || !height.IsValid()) {
     return false;
+  }
 
-  *info = MakeSkImageInfo(
+  absl::optional<SkImageInfo> maybe_info = MakeSkImageInfo(
       color_type, alpha_type, width.ValueOrDie(), height.ValueOrDie(),
       std::move(color_transfer_function), std::move(color_to_xyz_matrix));
+  if (!maybe_info.has_value()) {
+    return false;
+  }
+  *info = *maybe_info;
   return true;
 }
 
@@ -220,8 +237,9 @@ bool StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo>::Read(
     skia::mojom::BitmapN32ImageInfoDataView data,
     SkImageInfo* info) {
   SkAlphaType alpha_type;
-  if (!data.ReadAlphaType(&alpha_type))
+  if (!data.ReadAlphaType(&alpha_type)) {
     return false;
+  }
 
   mojo::ArrayDataView<float> color_transfer_function;
   data.GetColorTransferFunctionDataView(&color_transfer_function);
@@ -232,12 +250,17 @@ bool StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo>::Read(
   // values can't be negative.
   auto width = base::MakeCheckedNum(data.width()).Cast<int>();
   auto height = base::MakeCheckedNum(data.height()).Cast<int>();
-  if (!width.IsValid() || !height.IsValid())
+  if (!width.IsValid() || !height.IsValid()) {
     return false;
+  }
 
-  *info = MakeSkImageInfo(
+  absl::optional<SkImageInfo> maybe_info = MakeSkImageInfo(
       kN32_SkColorType, alpha_type, width.ValueOrDie(), height.ValueOrDie(),
       std::move(color_transfer_function), std::move(color_to_xyz_matrix));
+  if (!maybe_info.has_value()) {
+    return false;
+  }
+  *info = *maybe_info;
   return true;
 }
 

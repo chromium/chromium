@@ -131,11 +131,6 @@ class FontMetrics {
                       LayoutUnit(Descent(baseline_type)));
   }
 
-  bool HasIdenticalAscentDescentAndLineGap(const FontMetrics& other) const {
-    return Ascent() == other.Ascent() && Descent() == other.Descent() &&
-           LineGap() == other.LineGap();
-  }
-
   float ZeroWidth() const { return zero_width_; }
   void SetZeroWidth(float zero_width) {
     zero_width_ = zero_width;

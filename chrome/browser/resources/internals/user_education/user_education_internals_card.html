@@ -9,6 +9,11 @@
   flex: 1;
 }
 
+.card-content p,
+.card-content ol {
+  color: var(--cr-secondary-text-color);
+}
+
 cr-button {
   flex: 0;
   margin-block-start: var(--cr-section-vertical-padding);
@@ -26,19 +31,19 @@ li {
 <div class="card-content">
   <h3>[[promo.displayTitle]]</h3>
   <p>Added on [[formatDate_()]]</p>
-<p hidden$="[[!showDescription_()]]">
-  [[promo.displayDescription]]
-</p>
-<p><b>Type:</b> [[promo.type]]</p>
-<p><b>OS: </b>[[formatPlatforms_()]]</p>
-<div hidden$="[[!showInstructions_()]]">
-  <p><b>Instructions:</b></p>
-  <ol>
-  <template is="dom-repeat" items="[[promo.instructions]]">
-    <li>[[item]]</li>
-  </template>
-  </ol>
-</div>
+  <p hidden$="[[!showDescription_()]]">
+    [[promo.displayDescription]]
+  </p>
+  <p><b>Type:</b> [[promo.type]]</p>
+  <p><b>OS: </b>[[formatPlatforms_()]]</p>
+  <div hidden$="[[!showInstructions_()]]">
+    <p><b>Instructions:</b></p>
+    <ol>
+    <template is="dom-repeat" items="[[promo.instructions]]">
+      <li>[[item]]</li>
+    </template>
+    </ol>
+  </div>
 </div>
 <cr-button class="action-button" id="launch" on-click="launchPromo_">
   Launch

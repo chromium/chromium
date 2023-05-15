@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_LANGUAGES_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_LANGUAGES_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -51,7 +52,7 @@ class LanguagesSection : public OsSettingsSection,
                           Profile* profile,
                           bool show_message) override;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   // Used to monitor input method changes.

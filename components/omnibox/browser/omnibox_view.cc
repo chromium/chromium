@@ -24,12 +24,16 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search/search.h"
+#include "components/search_engines/template_url_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -166,7 +170,7 @@ std::u16string OmniboxView::SanitizeTextForPaste(const std::u16string& text) {
 OmniboxView::~OmniboxView() = default;
 
 bool OmniboxView::IsEditingOrEmpty() const {
-  return (model_.get() && model_->user_input_in_progress()) ||
+  return (model() && model()->user_input_in_progress()) ||
          (GetOmniboxTextLength() == 0);
 }
 
@@ -180,15 +184,15 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_current_page_icon,
                                     SkColor color_vectors,
                                     SkColor color_bright_vectors,
-                                    IconFetchedCallback on_icon_fetched) const {
+                                    IconFetchedCallback on_icon_fetched,
+                                    bool dark_mode) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
   NOTREACHED();
   return ui::ImageModel();
 #else
 
-  // For tests, model_ will be null.
-  if (!model_) {
+  if (!model()) {
     AutocompleteMatch fake_match;
     fake_match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
     const gfx::VectorIcon& vector_icon = fake_match.GetVectorIcon(false);
@@ -196,7 +200,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                           dip_size);
   }
 
-  if (model_->ShouldShowCurrentPageIcon()) {
+  if (model()->ShouldShowCurrentPageIcon()) {
     LocationBarModel* location_bar_model =
         edit_model_delegate_->GetLocationBarModel();
     return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
@@ -204,27 +208,41 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   }
 
   gfx::Image favicon;
-  AutocompleteMatch match = model_->CurrentMatch(nullptr);
+  AutocompleteMatch match = model()->CurrentMatch(nullptr);
   if (AutocompleteMatch::IsSearchType(match.type)) {
-    // For search queries, display default search engine's favicon.
-    favicon = model_->client()->GetFaviconForDefaultSearchProvider(
+    // For search queries, display default search engine's favicon. If the
+    // default search engine is google return the icon instead of favicon for
+    // search queries with the chrome refresh feature.
+    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+      if (search::DefaultSearchProviderIsGoogle(
+              model()->client()->GetTemplateURLService())) {
+        // For non chrome builds this would return an empty image model. In
+        // those cases revert to using the favicon.
+        ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
+        if (!icon.IsEmpty()) {
+          return icon;
+        }
+      }
+    }
+
+    favicon = model()->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));
 
   } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
     // For site suggestions, display site's favicon.
-    favicon = model_->client()->GetFaviconForPageUrl(
+    favicon = model()->client()->GetFaviconForPageUrl(
         match.destination_url, std::move(on_icon_fetched));
   }
 
   if (!favicon.IsEmpty())
-    return ui::ImageModel::FromImage(model_->client()->GetSizedIcon(favicon));
+    return ui::ImageModel::FromImage(model()->client()->GetSizedIcon(favicon));
   // If the client returns an empty favicon, fall through to provide the
   // generic vector icon. |on_icon_fetched| may or may not be called later.
   // If it's never called, the vector icon we provide below should remain.
 
   // For bookmarked suggestions, display bookmark icon.
   bookmarks::BookmarkModel* bookmark_model =
-      model_->client()->GetBookmarkModel();
+      model()->client()->GetBookmarkModel();
   const bool is_bookmarked =
       bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 
@@ -241,8 +259,9 @@ void OmniboxView::SetUserText(const std::u16string& text) {
 }
 
 void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
-  if (model_)
-    model_->SetUserText(text);
+  if (model()) {
+    model()->SetUserText(text);
+  }
   SetWindowTextAndCaretPos(text, text.length(), update_popup, true);
 }
 
@@ -253,8 +272,9 @@ void OmniboxView::RevertAll() {
 
   if (base::FeatureList::IsEnabled(omnibox::kRevertModelBeforeClosingPopup)) {
     // This will clear the model's `user_input_in_progress_`.
-    if (model_)
-      model_->Revert();
+    if (model()) {
+      model()->Revert();
+    }
 
     // This will stop the `AutocompleteController`. This should happen after
     // `user_input_in_progress_` is cleared above; otherwise, closing the popup
@@ -265,16 +285,18 @@ void OmniboxView::RevertAll() {
   } else {
     // Same as above, but in reverse order.
     CloseOmniboxPopup();
-    if (model_)
-      model_->Revert();
+    if (model()) {
+      model()->Revert();
+    }
   }
 
   TextChanged();
 }
 
 void OmniboxView::CloseOmniboxPopup() {
-  if (model_)
-    model_->StopAutocomplete();
+  if (model()) {
+    model()->StopAutocomplete();
+  }
 }
 
 bool OmniboxView::IsImeShowingPopup() const {
@@ -346,17 +368,30 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
 OmniboxView::OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
                          std::unique_ptr<OmniboxClient> client)
     : edit_model_delegate_(edit_model_delegate) {
-  // |client| can be null in tests.
+  // `client` can be nullptr in tests.
+  // TODO(crbug.com/1404748): Verify if this can actually happen and prevent it
+  //  such that checking `model()` before use is no longer necessary.
   if (client) {
-    model_ = std::make_unique<OmniboxEditModel>(this, edit_model_delegate,
-                                                std::move(client));
+    controller_ = std::make_unique<OmniboxController>(this, edit_model_delegate,
+                                                      std::move(client));
   }
+}
+
+OmniboxEditModel* OmniboxView::model() {
+  return const_cast<OmniboxEditModel*>(
+      const_cast<const OmniboxView*>(this)->model());
+}
+
+const OmniboxEditModel* OmniboxView::model() const {
+  // `controller_` can be nullptr in tests.
+  return controller_ ? controller_->edit_model() : nullptr;
 }
 
 void OmniboxView::TextChanged() {
   EmphasizeURLComponents();
-  if (model_)
-    model_->OnChanged();
+  if (model()) {
+    model()->OnChanged();
+  }
 }
 
 void OmniboxView::UpdateTextStyle(

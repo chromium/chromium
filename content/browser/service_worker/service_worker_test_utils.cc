@@ -354,6 +354,20 @@ ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
       std::move(quit_closure), out);
 }
 
+blink::ServiceWorkerStatusCode WarmUpServiceWorker(
+    ServiceWorkerVersion* version) {
+  blink::ServiceWorkerStatusCode status;
+  base::RunLoop run_loop;
+  version->StartWorker(ServiceWorkerMetrics::EventType::WARM_UP,
+                       base::BindLambdaForTesting(
+                           [&](blink::ServiceWorkerStatusCode result_status) {
+                             status = result_status;
+                             run_loop.Quit();
+                           }));
+  run_loop.Run();
+  return status;
+}
+
 blink::ServiceWorkerStatusCode StartServiceWorker(
     ServiceWorkerVersion* version) {
   blink::ServiceWorkerStatusCode status;

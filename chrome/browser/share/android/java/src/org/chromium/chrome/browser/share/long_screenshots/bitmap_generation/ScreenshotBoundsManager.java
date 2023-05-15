@@ -29,7 +29,6 @@ public class ScreenshotBoundsManager {
     private Size mContentSize;
     private Point mScrollOffset;
     private int mClipHeightScaled;
-    private int mCurrYStartPosition;
 
     /**
      * @param context An instance of current Android {@link Context}.

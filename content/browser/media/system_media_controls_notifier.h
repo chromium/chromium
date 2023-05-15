@@ -10,19 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/system_media_controls/system_media_controls.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/timer/timer.h"
-#endif  // BUILDFLAG(IS_WIN)
-
-namespace system_media_controls {
-class SystemMediaControls;
-}  // namespace system_media_controls
 
 namespace content {
 
@@ -64,6 +58,25 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
  private:
   friend class SystemMediaControlsNotifierTest;
 
+  // Updates the system media controls' metadata after a brief delay. If
+  // multiple calls are received during the delay, only the last one is applied.
+  // This prevents overloading the OS with system calls.
+  void DebouncePositionUpdate(media_session::MediaPosition position);
+  void DebounceMetadataUpdate(media_session::MediaMetadata metadata);
+  void DebouncePlaybackStatusUpdate(
+      system_media_controls::SystemMediaControls::PlaybackStatus
+          playback_status);
+  void DebounceIconUpdate(const SkBitmap& bitmap);
+  void DebounceSetIsSeekToEnabled(bool is_seek_to_enabled);
+
+  void MaybeScheduleMetadataUpdate();
+  void UpdateMetadata();
+  void UpdateIcon();
+
+  // Clear the system's media controls' metadata, and any pending position or
+  // metadata updates.
+  void ClearAllMetadata();
+
   // We want to hide the controls on the lock screen on Windows in certain
   // cases. We don't want this functionality on other OSes.
 #if BUILDFLAG(IS_WIN)
@@ -91,6 +104,23 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   // global instance.
   const raw_ptr<system_media_controls::SystemMediaControls>
       system_media_controls_;
+
+  // Timer to debounce updates.
+  base::OneShotTimer metadata_update_timer_;
+  base::OneShotTimer icon_update_timer_;
+  base::OneShotTimer actions_update_timer_;
+
+  // Pending metadata to be set once `metadata_update_timer_` fires.
+  absl::optional<media_session::MediaPosition> delayed_position_update_;
+  absl::optional<media_session::MediaMetadata> delayed_metadata_update_;
+  absl::optional<system_media_controls::SystemMediaControls::PlaybackStatus>
+      delayed_playback_status_;
+
+  // Icon to use once `icon_update_timer_` fires.
+  absl::optional<SkBitmap> delayed_icon_update_;
+
+  // Pending action to set once `actions_update_timer_` fires.
+  absl::optional<bool> delayed_is_seek_to_enabled_;
 
   // Tracks current media session state/metadata.
   mojo::Remote<media_session::mojom::MediaController> media_controller_;

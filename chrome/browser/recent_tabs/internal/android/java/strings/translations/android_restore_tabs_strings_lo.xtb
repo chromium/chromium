@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lo">
+<translation id="1356944128023012143">ລາຍຊື່ຂອງອຸປະກອນທີ່ຊິ້ງແລ້ວ ແລະ ແຖບທີ່ເລືອກຈາກອຸປະກອນເຫຼົ່ານັ້ນຈະຖືກກູ້ຄືນ ເມື່ອຂັ້ນຕອນການເຮັດວຽກການກູ້ຄືນໃໝ່ຖືກປິດໄວ້.</translation>
+<translation id="1816430105422765050">ປ່ຽນເປັນອຸປະກອນທີ່ຊິ້ງອື່ນພາຍໃຕ້ລາຍການເມນູນີ້.</translation>
+<translation id="3347725959865138210">ເລືອກອຸປະກອນທີ່ທ່ານຕ້ອງການຮັບແຖບຈາກ</translation>
+<translation id="3575801299326994724">ກວດເບິ່ງແຖບທີ່ເລືອກເພື່ອໃຫ້ໄດ້ຮັບການກູ້ຄືນຈາກອຸປະກອນທີ່ເລືອກໃນປັດຈຸບັນ.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ, ອັບເດດຫຼ້າສຸດ: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> ແຖບ, ອັບເດດຫຼ້າສຸດ: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">ກັບ​ຄືນ​</translation>
+<translation id="3983305234037158273">ອຸປະກອນທີ່ຊິ້ງສຳລັບການກູ້ຄືນແຖບສາມາດຖືກປ່ຽນແປງໄດ້ເມື່ອສຳຜັດ. ນຳທາງໄປຫາກວດສອບ ຫຼື ກູ້ຄືນແຖບທີ່ເລືອກສໍາລັບອຸປະກອນປັດຈຸບັນເມື່ອສຳຜັດ. ເຊື່ອງແປ້ນພິມໄວ້ແລ້ວ.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{ເປີດ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ເປີດ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="4811934403802581334">ແຖບທີ່ເລືອກທັງໝົດຈາກອຸປະກອນທີ່ເລືອກໃນປັດຈຸບັນຈະຖືກກູ້ຄືນມາ.</translation>
+<translation id="5336031759968328813">ກວດສອບແຖບທັງໝົດ</translation>
+<translation id="8019269305087157499">ເປີດຈາກ</translation>
+<translation id="8725404154479306799">ຮັບເອົາແຖບທີ່ທ່ານປະໄວ້ຢູ່ອຸປະກອນເກົ່າ</translation>
+</translationbundle>

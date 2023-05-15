@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that promise tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mixed-promise-helper.js"></script>
+</head>
+<body>
+<script>
+const run_promise_test = () => {
+  promise_test(async () => {
+    return new Promise((resolve, reject) => {
+      const promise_task = scheduler.taskId;
+      fetch("/resources/blank.html")
+      .then(response => new Promise(r => {
+        // A JS-based promise, resolved when the image loads.
+        assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+        assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+        assert_equals(scheduler.taskId, promise_task);
+        assert_not_equals(scheduler.taskId, parent_task);
+        image_loaded = r;
+        fetched_response = response;
+        image_can_load();
+      }))
+      .then(response => {
+        assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+        assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+        assert_equals(scheduler.taskId, promise_task);
+        return response.text();
+      })
+      .then(body => {
+        return new Promise(interimResolve => {
+          assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+          assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+          assert_equals(scheduler.taskId, promise_task);
+          interimResolve();
+        });
+      })
+      .then(() => {
+        try {
+          assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+          assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+          assert_equals(scheduler.taskId, promise_task);
+          resolve();
+        } catch {
+          reject();
+        }
+      });
+    });
+  }, "All microtasks in the promise chain after fetching a resource  are " +
+     "descendants of the initiating task.");
+};
+
+run_test("run_promise_test()");
+</script>
+</body>
+</html>

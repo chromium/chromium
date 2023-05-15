@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
@@ -33,72 +34,72 @@ struct StringWithRedaction {
 // the input and output of the redactor.
 const StringWithRedaction kStringsWithRedactions[] = {
     {"aaaaaaaa [SSID=123aaaaaa]aaaaa",  // SSID.
-     "aaaaaaaa [SSID=<SSID: 1>]aaaaa", PIIType::kSSID},
+     "aaaaaaaa [SSID=(SSID: 1)]aaaaa", PIIType::kSSID},
     {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
-     "aaaaaaaa<URL: 1>", PIIType::kURL},
+     "aaaaaaaa(URL: 1)", PIIType::kURL},
     {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux
                                                   // context.
      "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
     {"aaaaaemail@example.comaaa",  // Email address.
-     "<email: 1>", PIIType::kEmail},
+     "(email: 1)", PIIType::kEmail},
     {"example@@1234",  // No PII, it is not a valid email address.
      "example@@1234", PIIType::kNone},
     {"255.255.155.2",  // IP address.
-     "<IPv4: 1>", PIIType::kIPAddress},
+     "(IPv4: 1)", PIIType::kIPAddress},
     {"255.255.155.255",  // IP address.
-     "<IPv4: 2>", PIIType::kIPAddress},
+     "(IPv4: 2)", PIIType::kIPAddress},
     {"127.0.0.1",  // IPv4 loopback.
-     "<127.0.0.0/8: 3>", PIIType::kIPAddress},
+     "(127.0.0.0/8: 3)", PIIType::kIPAddress},
     {"127.255.0.1",  // IPv4 loopback.
-     "<127.0.0.0/8: 4>", PIIType::kIPAddress},
+     "(127.0.0.0/8: 4)", PIIType::kIPAddress},
     {"0.0.0.0",  // Any IPv4.
-     "<0.0.0.0/8: 5>", PIIType::kIPAddress},
+     "(0.0.0.0/8: 5)", PIIType::kIPAddress},
     {"0.255.255.255",  // Any IPv4.
-     "<0.0.0.0/8: 6>", PIIType::kIPAddress},
+     "(0.0.0.0/8: 6)", PIIType::kIPAddress},
     {"10.10.10.100",  // IPv4 private class A.
-     "<10.0.0.0/8: 7>", PIIType::kIPAddress},
+     "(10.0.0.0/8: 7)", PIIType::kIPAddress},
     {"10.10.10.100",  // Intentional duplicate.
-     "<10.0.0.0/8: 7>", PIIType::kIPAddress},
+     "(10.0.0.0/8: 7)", PIIType::kIPAddress},
     {"10.10.10.101",  // IPv4 private class A.
-     "<10.0.0.0/8: 8>", PIIType::kIPAddress},
+     "(10.0.0.0/8: 8)", PIIType::kIPAddress},
     {"10.255.255.255",  // IPv4 private class A.
-     "<10.0.0.0/8: 9>", PIIType::kIPAddress},
+     "(10.0.0.0/8: 9)", PIIType::kIPAddress},
     {"172.16.0.0",  // IPv4 private class B.
-     "<172.16.0.0/12: 10>", PIIType::kIPAddress},
+     "(172.16.0.0/12: 10)", PIIType::kIPAddress},
     {"172.31.255.255",  // IPv4 private class B.
-     "<172.16.0.0/12: 11>", PIIType::kIPAddress},
+     "(172.16.0.0/12: 11)", PIIType::kIPAddress},
     {"172.11.5.5",  // IP address.
-     "<IPv4: 12>", PIIType::kIPAddress},
+     "(IPv4: 12)", PIIType::kIPAddress},
     {"172.111.5.5",  // IP address.
-     "<IPv4: 13>", PIIType::kIPAddress},
+     "(IPv4: 13)", PIIType::kIPAddress},
     {"192.168.0.0",  // IPv4 private class C.
-     "<192.168.0.0/16: 14>", PIIType::kIPAddress},
+     "(192.168.0.0/16: 14)", PIIType::kIPAddress},
     {"192.168.255.255",  // IPv4 private class C.
-     "<192.168.0.0/16: 15>", PIIType::kIPAddress},
+     "(192.168.0.0/16: 15)", PIIType::kIPAddress},
     {"192.169.2.120",  // IP address.
-     "<IPv4: 16>", PIIType::kIPAddress},
+     "(IPv4: 16)", PIIType::kIPAddress},
     {"169.254.0.1",  // Link local.
-     "<169.254.0.0/16: 17>", PIIType::kIPAddress},
+     "(169.254.0.0/16: 17)", PIIType::kIPAddress},
     {"169.200.0.1",  // IP address.
-     "<IPv4: 18>", PIIType::kIPAddress},
+     "(IPv4: 18)", PIIType::kIPAddress},
     {"fe80::",  // Link local.
-     "<fe80::/10: 1>", PIIType::kIPAddress},
+     "(fe80::/10: 1)", PIIType::kIPAddress},
     {"fe80::ffff",  // Link local.
-     "<fe80::/10: 2>", PIIType::kIPAddress},
+     "(fe80::/10: 2)", PIIType::kIPAddress},
     {"febf:ffff::ffff",  // Link local.
-     "<fe80::/10: 3>", PIIType::kIPAddress},
+     "(fe80::/10: 3)", PIIType::kIPAddress},
     {"fecc::1111",  // IP address.
-     "<IPv6: 4>", PIIType::kIPAddress},
+     "(IPv6: 4)", PIIType::kIPAddress},
     {"224.0.0.24",  // Multicast.
-     "<224.0.0.0/4: 19>", PIIType::kIPAddress},
+     "(224.0.0.0/4: 19)", PIIType::kIPAddress},
     {"240.0.0.0",  // IP address.
-     "<IPv4: 20>", PIIType::kIPAddress},
+     "(IPv4: 20)", PIIType::kIPAddress},
     {"255.255.255.255",  // Broadcast.
      "255.255.255.255", PIIType::kNone},
     {"100.115.92.92",  // ChromeOS.
      "100.115.92.92", PIIType::kNone},
     {"100.115.91.92",  // IP address.
-     "<IPv4: 21>", PIIType::kIPAddress},
+     "(IPv4: 21)", PIIType::kIPAddress},
     {"1.1.1.1",  // DNS
      "1.1.1.1", PIIType::kNone},
     {"8.8.8.8",  // DNS
@@ -106,7 +107,7 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"8.8.4.4",  // DNS
      "8.8.4.4", PIIType::kNone},
     {"8.8.8.4",  // IP address.
-     "<IPv4: 22>", PIIType::kIPAddress},
+     "(IPv4: 22)", PIIType::kIPAddress},
     {"255.255.259.255",  // Not an IP address.
      "255.255.259.255", PIIType::kNone},
     {"255.300.255.255",  // Not an IP address.
@@ -116,11 +117,11 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"Revision: 81600.0000.00.29.19.16_DO",  // Modem firmware
      "Revision: 81600.0000.00.29.19.16_DO", PIIType::kNone},
     {"aaaa123.123.45.4aaa",  // IP address.
-     "aaaa<IPv4: 23>aaa", PIIType::kIPAddress},
+     "aaaa(IPv4: 23)aaa", PIIType::kIPAddress},
     {"11:11;11::11",  // IP address.
-     "11:11;<IPv6: 5>", PIIType::kIPAddress},
+     "11:11;(IPv6: 5)", PIIType::kIPAddress},
     {"11::11",  // IP address.
-     "<IPv6: 5>", PIIType::kIPAddress},
+     "(IPv6: 5)", PIIType::kIPAddress},
     {"11:11:abcdef:0:0:0:0:0",  // No PII.
      "11:11:abcdef:0:0:0:0:0", PIIType::kNone},
     {"::",  // Unspecified.
@@ -138,39 +139,39 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"ff01::2",  // All routers (interface local).
      "ff01::2", PIIType::kNone},
     {"ff01::3",  // Multicast (interface local).
-     "<ff01::/16: 6>", PIIType::kIPAddress},
+     "(ff01::/16: 6)", PIIType::kIPAddress},
     {"ff02::1",  // All nodes address (link local).
      "ff02::1", PIIType::kNone},
     {"ff02::2",  // All routers (link local).
      "ff02::2", PIIType::kNone},
     {"ff02::3",  // Multicast (link local).
-     "<ff02::/16: 7>", PIIType::kIPAddress},
+     "(ff02::/16: 7)", PIIType::kIPAddress},
     {"ff02::fb",  // mDNSv6 (link local).
-     "<ff02::/16: 8>", PIIType::kIPAddress},
+     "(ff02::/16: 8)", PIIType::kIPAddress},
     {"ff08::fb",  // mDNSv6.
-     "<IPv6: 9>", PIIType::kIPAddress},
+     "(IPv6: 9)", PIIType::kIPAddress},
     {"ff0f::101",  // All NTP servers.
-     "<IPv6: 10>", PIIType::kIPAddress},
+     "(IPv6: 10)", PIIType::kIPAddress},
     {"::ffff:cb0c:10ea",  // IPv4-mapped IPV6 (IP address).
-     "<IPv6: 11>", PIIType::kIPAddress},
+     "(IPv6: 11)", PIIType::kIPAddress},
     {"::ffff:a0a:a0a",  // IPv4-mapped IPV6 (private class A).
-     "<M 10.0.0.0/8: 12>", PIIType::kIPAddress},
+     "(M 10.0.0.0/8: 12)", PIIType::kIPAddress},
     {"::ffff:a0a:a0a",  // Intentional duplicate.
-     "<M 10.0.0.0/8: 12>", PIIType::kIPAddress},
+     "(M 10.0.0.0/8: 12)", PIIType::kIPAddress},
     {"::ffff:ac1e:1e1e",  // IPv4-mapped IPV6 (private class B).
-     "<M 172.16.0.0/12: 13>", PIIType::kIPAddress},
+     "(M 172.16.0.0/12: 13)", PIIType::kIPAddress},
     {"::ffff:c0a8:640a",  // IPv4-mapped IPV6 (private class C).
-     "<M 192.168.0.0/16: 14>", PIIType::kIPAddress},
+     "(M 192.168.0.0/16: 14)", PIIType::kIPAddress},
     {"::ffff:6473:5c01",  // IPv4-mapped IPV6 (Chrome).
-     "<M 100.115.92.1: 15>", PIIType::kIPAddress},
+     "(M 100.115.92.1: 15)", PIIType::kIPAddress},
     {"64:ff9b::a0a:a0a",  // IPv4-translated 6to4 IPV6 (private class A).
-     "<T 10.0.0.0/8: 16>", PIIType::kIPAddress},
+     "(T 10.0.0.0/8: 16)", PIIType::kIPAddress},
     {"64:ff9b::6473:5c01",  // IPv4-translated 6to4 IPV6 (Chrome).
-     "<T 100.115.92.1: 17>", PIIType::kIPAddress},
+     "(T 100.115.92.1: 17)", PIIType::kIPAddress},
     {"::0101:ffff:c0a8:640a",  // IP address.
-     "<IPv6: 18>", PIIType::kIPAddress},
+     "(IPv6: 18)", PIIType::kIPAddress},
     {"aa:aa:aa:aa:aa:aa",  // MAC address (BSSID).
-     "[MAC OUI=aa:aa:aa IFACE=1]", PIIType::kMACAddress},
+     "(MAC OUI=aa:aa:aa IFACE=1)", PIIType::kMACAddress},
     {"chrome://resources/foo",  // Secure chrome resource, exempt.
      "chrome://resources/foo", PIIType::kNone},
     {"chrome://settings/crisper.js",  // Exempt settings URLs.
@@ -180,15 +181,43 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
      PIIType::kNone},
     {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
-     "<URL: 2>", PIIType::kURL},
+     "(URL: 2)", PIIType::kURL},
     {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
-     "<URL: 3>", PIIType::kURL},  // Potentially PII in parameter.
+     "(URL: 3)", PIIType::kURL},  // Potentially PII in parameter.
     {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
-     "<URL: 4>", PIIType::kURL},  // URL
+     "(URL: 4)", PIIType::kURL},  // URL
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
-     "/root/<HASH:2754 1>/foo", PIIType::kStableIdentifier},  // Hash string.
-    {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "<UID: 1>",
+     "/root/(HASH:2754 1)/foo", PIIType::kStableIdentifier},  // Hash string.
+    {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "(UID: 1)",
      PIIType::kStableIdentifier},
+    {"foo=4012-8888-8888-1881", "foo=(CREDITCARD: 1)", PIIType::kCreditCard},
+    {"foo=40 12 88 88 88 88 18 81", "foo=(CREDITCARD: 1)",
+     PIIType::kCreditCard},
+    // Max length
+    {"foo=5019717010103742", "foo=(CREDITCARD: 2)", PIIType::kCreditCard},
+    {"foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7", "foo=(CREDITCARD: 3)",
+     PIIType::kCreditCard},
+    // Too long to match.
+    {"foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7-2",
+     "foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7-2", PIIType::kNone},
+    // Number is too long.
+    {"foo=12345678901234567894", "foo=12345678901234567894", PIIType::kNone},
+    // Number is too short.
+    {"foo=12345678903", "foo=12345678903", PIIType::kNone},
+    // Luhn checksum doesn't validate.
+    {"foo=4111 1111 1111 1112", "foo=4111 1111 1111 1112", PIIType::kNone},
+    // This is probably just a timestamp.
+    {"foo=4012888888881881ms", "foo=4012888888881881ms", PIIType::kNone},
+    // This is probably just a timestamp as well.
+    {"foo=4012888888881881 ms", "foo=4012888888881881 ms", PIIType::kNone},
+    // Probably a log entry.
+    {"foo=12:00:00.359  1000   155   155 INFO",
+     "foo=12:00:00.359  1000   155   155 INFO", PIIType::kNone},
+    // Invalid IIN.
+    {"foo=0000-0000-0000-0000", "foo=0000-0000-0000-0000", PIIType::kNone},
+    // This is not a timestamp even though "ms" appears after the number.
+    {"Use 4012888888881881 or moms creditcard",
+     "Use (CREDITCARD: 1)or moms creditcard", PIIType::kCreditCard},
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -241,26 +270,26 @@ TEST_F(RedactionToolTest, Redact) {
   EXPECT_EQ("foo\nbar\n", redactor_.Redact("foo\nbar\n"));
 
   // Make sure MAC address redaction is invoked.
-  EXPECT_EQ("[MAC OUI=02:46:8a IFACE=1]",
+  EXPECT_EQ("(MAC OUI=02:46:8a IFACE=1)",
             redactor_.Redact("02:46:8a:ce:13:57"));
 
   // Make sure hash redaction is invoked.
-  EXPECT_EQ("<HASH:1122 1>",
+  EXPECT_EQ("(HASH:1122 1)",
             redactor_.Redact("11223344556677889900AABBCCDDEEFF"));
 
   // Make sure custom pattern redaction is invoked.
-  EXPECT_EQ("Cell ID: '<CellID: 1>'", RedactCustomPatterns("Cell ID: 'A1B2'"));
+  EXPECT_EQ("Cell ID: '(CellID: 1)'", RedactCustomPatterns("Cell ID: 'A1B2'"));
 
   // Make sure UUIDs are redacted.
   EXPECT_EQ(
-      "REQUEST localhost - - \"POST /printers/<UUID: 1> HTTP/1.1\" 200 291 "
+      "REQUEST localhost - - \"POST /printers/(UUID: 1) HTTP/1.1\" 200 291 "
       "Create-Job successful-ok",
       redactor_.Redact(
           "REQUEST localhost - - \"POST /printers/"
           "cb738a9f-6433-4d95-a81e-94e4ae0ed30b HTTP/1.1\" 200 291 Create-Job "
           "successful-ok"));
   EXPECT_EQ(
-      "REQUEST localhost - - \"POST /printers/<UUID: 2> HTTP/1.1\" 200 286 "
+      "REQUEST localhost - - \"POST /printers/(UUID: 2) HTTP/1.1\" 200 286 "
       "Create-Job successful-ok",
       redactor_.Redact(
           "REQUEST localhost - - \"POST /printers/"
@@ -272,28 +301,28 @@ TEST_F(RedactionToolTest, RedactMACAddresses) {
   EXPECT_EQ("", RedactMACAddresses(""));
   EXPECT_EQ("foo\nbar\n", RedactMACAddresses("foo\nbar\n"));
   EXPECT_EQ("11:22:33:44:55", RedactMACAddresses("11:22:33:44:55"));
-  EXPECT_EQ("[MAC OUI=aa:bb:cc IFACE=1]",
+  EXPECT_EQ("(MAC OUI=aa:bb:cc IFACE=1)",
             RedactMACAddresses("aa:bb:cc:dd:ee:ff"));
-  EXPECT_EQ("[MAC OUI=aa:bb:cc IFACE=1]",
+  EXPECT_EQ("(MAC OUI=aa:bb:cc IFACE=1)",
             RedactMACAddresses("aa_bb_cc_dd_ee_ff"));
-  EXPECT_EQ("[MAC OUI=aa:bb:cc IFACE=1]",
+  EXPECT_EQ("(MAC OUI=aa:bb:cc IFACE=1)",
             RedactMACAddresses("aa-bb-cc-dd-ee-ff"));
   EXPECT_EQ("00:00:00:00:00:00", RedactMACAddresses("00:00:00:00:00:00"));
   EXPECT_EQ("ff:ff:ff:ff:ff:ff", RedactMACAddresses("ff:ff:ff:ff:ff:ff"));
   EXPECT_EQ(
-      "BSSID: [MAC OUI=aa:bb:cc IFACE=1] in the middle\n"
-      "[MAC OUI=bb:cc:dd IFACE=2] start of line\n"
-      "end of line [MAC OUI=aa:bb:cc IFACE=1]\n"
+      "BSSID: (MAC OUI=aa:bb:cc IFACE=1) in the middle\n"
+      "(MAC OUI=bb:cc:dd IFACE=2) start of line\n"
+      "end of line (MAC OUI=aa:bb:cc IFACE=1)\n"
       "no match across lines aa:bb:cc:\n"
       "dd:ee:ff two on the same line:\n"
-      "x [MAC OUI=bb:cc:dd IFACE=2] [MAC OUI=cc:dd:ee IFACE=3] x\n",
+      "x (MAC OUI=bb:cc:dd IFACE=2) (MAC OUI=cc:dd:ee IFACE=3) x\n",
       RedactMACAddresses("BSSID: aa:bb:cc:dd:ee:ff in the middle\n"
                          "bb:cc:dd:ee:ff:00 start of line\n"
                          "end of line aa:bb:cc:dd:ee:ff\n"
                          "no match across lines aa:bb:cc:\n"
                          "dd:ee:ff two on the same line:\n"
                          "x bb:cc:dd:ee:ff:00 cc:dd:ee:ff:00:11 x\n"));
-  EXPECT_EQ("Remember [MAC OUI=bb:cc:dd IFACE=2]?",
+  EXPECT_EQ("Remember (MAC OUI=bb:cc:dd IFACE=2)?",
             RedactMACAddresses("Remember bB:Cc:DD:ee:ff:00?"));
 }
 
@@ -312,26 +341,26 @@ TEST_F(RedactionToolTest, RedactHashes) {
       RedactHashes("11223344556677889900aabbccddeeff11223344556677889900aabb"
                    "ccddeeff11"));
   // Test all 3 valid lengths.
-  EXPECT_EQ("<HASH:aabb 1>", RedactHashes("aabbccddeeff00112233445566778899"));
-  EXPECT_EQ("<HASH:aabb 2>",
+  EXPECT_EQ("(HASH:aabb 1)", RedactHashes("aabbccddeeff00112233445566778899"));
+  EXPECT_EQ("(HASH:aabb 2)",
             RedactHashes("aabbccddeeff00112233445566778899aabbccdd"));
   EXPECT_EQ(
-      "<HASH:9988 3>",
+      "(HASH:9988 3)",
       RedactHashes(
           "99887766554433221100ffeeddccbbaaaabbccddeeff00112233445566778899"));
   // Skip 32 byte hashes that have a at least 3 whitespace chars before it.
-  EXPECT_EQ("  <HASH:aabb 1>",
+  EXPECT_EQ("  (HASH:aabb 1)",
             RedactHashes("  aabbccddeeff00112233445566778899"));
   EXPECT_EQ("   aabbccddeeff00112233445566778899",
             RedactHashes("   aabbccddeeff00112233445566778899"));
   // Multiline test.
   EXPECT_EQ(
-      "Hash value=<HASH:aabb 1>, should be replaced as\n"
-      "well as /<HASH:aabb 1>/ and mixed case of\n"
-      "<HASH:aabb 1> but we don't go across lines\n"
+      "Hash value=(HASH:aabb 1), should be replaced as\n"
+      "well as /(HASH:aabb 1)/ and mixed case of\n"
+      "(HASH:aabb 1) but we don't go across lines\n"
       "aabbccddeeff\n00112233445566778899 but allow multiple on a line "
-      "<HASH:aabb 4>-"
-      "<HASH:0011 5>\n",
+      "(HASH:aabb 4)-"
+      "(HASH:0011 5)\n",
       RedactHashes(
           "Hash value=aabbccddeeff00112233445566778899, should be replaced as\n"
           "well as /aabbccddeeff00112233445566778899/ and mixed case of\n"
@@ -344,83 +373,83 @@ TEST_F(RedactionToolTest, RedactHashes) {
 TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("", RedactCustomPatterns(""));
 
-  EXPECT_EQ("Cell ID: '<CellID: 1>'", RedactCustomPatterns("Cell ID: 'A1B2'"));
-  EXPECT_EQ("Cell ID: '<CellID: 2>'", RedactCustomPatterns("Cell ID: 'C1D2'"));
-  EXPECT_EQ("foo Cell ID: '<CellID: 1>' bar",
+  EXPECT_EQ("Cell ID: '(CellID: 1)'", RedactCustomPatterns("Cell ID: 'A1B2'"));
+  EXPECT_EQ("Cell ID: '(CellID: 2)'", RedactCustomPatterns("Cell ID: 'C1D2'"));
+  EXPECT_EQ("foo Cell ID: '(CellID: 1)' bar",
             RedactCustomPatterns("foo Cell ID: 'A1B2' bar"));
 
-  EXPECT_EQ("foo Location area code: '<LocAC: 1>' bar",
+  EXPECT_EQ("foo Location area code: '(LocAC: 1)' bar",
             RedactCustomPatterns("foo Location area code: 'A1B2' bar"));
 
-  EXPECT_EQ("foo\na SSID='<SSID: 1>' b\n'",
+  EXPECT_EQ("foo\na SSID='(SSID: 1)' b\n'",
             RedactCustomPatterns("foo\na SSID='Joe's' b\n'"));
-  EXPECT_EQ("ssid '<SSID: 2>'", RedactCustomPatterns("ssid 'My AP'"));
+  EXPECT_EQ("ssid '(SSID: 2)'", RedactCustomPatterns("ssid 'My AP'"));
   EXPECT_EQ("bssid 'aa:bb'", RedactCustomPatterns("bssid 'aa:bb'"));
 
-  EXPECT_EQ("Scan SSID - hexdump(len=6): <SSIDHex: 1>\nfoo",
+  EXPECT_EQ("Scan SSID - hexdump(len=6): (SSIDHex: 1)\nfoo",
             RedactCustomPatterns(
                 "Scan SSID - hexdump(len=6): 47 6f 6f 67 6c 65\nfoo"));
 
   EXPECT_EQ(
-      "a\nb [SSID=<SSID: 3>] [SSID=<SSID: 1>] [SSID=foo\nbar] b",
+      "a\nb [SSID=(SSID: 3)] [SSID=(SSID: 1)] [SSID=foo\nbar] b",
       RedactCustomPatterns("a\nb [SSID=foo] [SSID=Joe's] [SSID=foo\nbar] b"));
-  EXPECT_EQ("ssid=\"<SSID: 4>\"",
+  EXPECT_EQ("ssid=\"(SSID: 4)\"",
             RedactCustomPatterns("ssid=\"LittleTsunami\""));
-  EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
+  EXPECT_EQ("* SSID=(SSID: 5)", RedactCustomPatterns("* SSID=agnagna"));
 
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: \"<SSID: 6>\" foo",
+  EXPECT_EQ("Specifier: (ArcNetworkFactory#1) SSID: \"(SSID: 6)\" foo",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest1\" foo"));
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: '<SSID: 7>' foo",
+                "Specifier: (ArcNetworkFactory#1) SSID: \"GoogleGuest1\" foo"));
+  EXPECT_EQ("Specifier: (ArcNetworkFactory#1) SSID: '(SSID: 7)' foo",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest2' foo"));
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 8>",
+                "Specifier: (ArcNetworkFactory#1) SSID: 'GoogleGuest2' foo"));
+  EXPECT_EQ("Specifier: (ArcNetworkFactory#1) SSID: (SSID: 8)",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest3"));
+                "Specifier: (ArcNetworkFactory#1) SSID: GoogleGuest3"));
   EXPECT_EQ(
-      "Specifier: <ArcNetworkFactory#1> SSID: <SSID: 9>",
+      "Specifier: (ArcNetworkFactory#1) SSID: (SSID: 9)",
       RedactCustomPatterns(
-          "Specifier: <ArcNetworkFactory#1> SSID: less than 32 characters"));
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 10>foo",
-            RedactCustomPatterns("Specifier: <ArcNetworkFactory#1> SSID: this "
+          "Specifier: (ArcNetworkFactory#1) SSID: less than 32 characters"));
+  EXPECT_EQ("Specifier: (ArcNetworkFactory#1) SSID: (SSID: 10)foo",
+            RedactCustomPatterns("Specifier: (ArcNetworkFactory#1) SSID: this "
                                  "line is 32 characters long!foo"));
   EXPECT_EQ(
       "<WifiNetworkSpecifier [, SSID Match pattern=PatternMatcher{LITERAL: "
-      "<SSID: 11>}, ...]",
+      "(SSID: 11)}, ...]",
       RedactCustomPatterns("<WifiNetworkSpecifier [, SSID Match "
                            "pattern=PatternMatcher{LITERAL: Google-A}, ...]"));
 
-  EXPECT_EQ("SerialNumber: <Serial: 1>",
+  EXPECT_EQ("SerialNumber: (Serial: 1)",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));
-  EXPECT_EQ("serial  number: <Serial: 2>",
+  EXPECT_EQ("serial  number: (Serial: 2)",
             RedactCustomPatterns("serial  number: 50C971FEE7F3x010900"));
-  EXPECT_EQ("SerialNumber: <Serial: 3>",
+  EXPECT_EQ("SerialNumber: (Serial: 3)",
             RedactCustomPatterns("SerialNumber: EVT23-17BA01-004"));
-  EXPECT_EQ("serial=\"<Serial: 4>\"",
+  EXPECT_EQ("serial=\"(Serial: 4)\"",
             RedactCustomPatterns("serial=\"1234AA5678\""));
-  EXPECT_EQ("\"serial_number\"=\"<Serial: 1>\"",
+  EXPECT_EQ("\"serial_number\"=\"(Serial: 1)\"",
             RedactCustomPatterns("\"serial_number\"=\"1217D7EF\""));
-  EXPECT_EQ("SerialNumber: <Serial: 5>",
+  EXPECT_EQ("SerialNumber: (Serial: 5)",
             RedactCustomPatterns("SerialNumber: 5:00:14.0"));
-  EXPECT_EQ("Serial: <Serial: 6>",
+  EXPECT_EQ("Serial: (Serial: 6)",
             RedactCustomPatterns("Serial: ABCEFG\x01kjmn-as:342/234\\432"));
   // Don't overly redact serial numbers, we only do this for a specific
   // formatting case for edid-decode.
   EXPECT_EQ("Foo serial number 123",
             RedactCustomPatterns("Foo serial number 123"));
-  EXPECT_EQ("Foo Serial Number <Serial: 7>",
+  EXPECT_EQ("Foo Serial Number (Serial: 7)",
             RedactCustomPatterns("Foo Serial Number 123"));
   // redact serial number separated by a | with the label "serial"
-  EXPECT_EQ("serial               | <Serial: 8>",
+  EXPECT_EQ("serial               | (Serial: 8)",
             RedactCustomPatterns("serial               | 0x1cc04416"));
-  EXPECT_EQ("serial               |<Serial: 9>",
+  EXPECT_EQ("serial               |(Serial: 9)",
             RedactCustomPatterns("serial               |0x1cc04417"));
-  EXPECT_EQ("serial|<Serial: 10>", RedactCustomPatterns("serial|0x1cc04418"));
-  EXPECT_EQ("serial|<Serial: 11>", RedactCustomPatterns("serial|agnagna"));
+  EXPECT_EQ("serial|(Serial: 10)", RedactCustomPatterns("serial|0x1cc04418"));
+  EXPECT_EQ("serial|(Serial: 11)", RedactCustomPatterns("serial|agnagna"));
   // redact attested device id that is also a serial number
-  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 12>\"",
+  EXPECT_EQ("\"attested_device_id\"=\"(Serial: 12)\"",
             RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ\""));
-  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 13>\"",
+  EXPECT_EQ("\"attested_device_id\"=\"(Serial: 13)\"",
             RedactCustomPatterns("\"attested_device_id\"=\"5CD04-5B0DZ\""));
   // The dash cannot appear first or last.
   EXPECT_EQ("\"attested_device_id\"=\"-5CD045B0DZ\"",
@@ -429,10 +458,10 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ-\""));
 
   // Valid PSM identifiers.
-  EXPECT_EQ("PSM id: <PSM ID: 1>", RedactCustomPatterns("PSM id: ABCZ/123xx"));
-  EXPECT_EQ("psm: <PSM ID: 2>", RedactCustomPatterns("psm: ABC123F2/123xx"));
-  EXPECT_EQ("PsM: <PSM ID: 3>", RedactCustomPatterns("PsM: abcf6677/123xx"));
-  EXPECT_EQ("PSM determination successful. Identifier <PSM ID: 4> not present.",
+  EXPECT_EQ("PSM id: (PSM ID: 1)", RedactCustomPatterns("PSM id: ABCZ/123xx"));
+  EXPECT_EQ("psm: (PSM ID: 2)", RedactCustomPatterns("psm: ABC123F2/123xx"));
+  EXPECT_EQ("PsM: (PSM ID: 3)", RedactCustomPatterns("PsM: abcf6677/123xx"));
+  EXPECT_EQ("PSM determination successful. Identifier (PSM ID: 4) not present.",
             RedactCustomPatterns("PSM determination successful. Identifier "
                                  "JTFE/223PE6015195 not present."));
   // Wrong number of brand code characters.
@@ -444,27 +473,27 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   // PSM mention without whitespace, e.g. in base64-encoded data.
   EXPECT_EQ("PSM+ABCZ/123xx", RedactCustomPatterns("PSM+ABCZ/123xx"));
 
-  EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
+  EXPECT_EQ("\"gaia_id\":\"(GAIA: 1)\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
-  EXPECT_EQ("gaia_id='<GAIA: 2>'", RedactCustomPatterns("gaia_id='987654321'"));
-  EXPECT_EQ("{id: <GAIA: 1>, email:",
+  EXPECT_EQ("gaia_id='(GAIA: 2)'", RedactCustomPatterns("gaia_id='987654321'"));
+  EXPECT_EQ("{id: (GAIA: 1), email:",
             RedactCustomPatterns("{id: 1234567890, email:"));
 
-  EXPECT_EQ("<email: 1>", RedactCustomPatterns("foo@bar.com"));
-  EXPECT_EQ("Email: <email: 1>.", RedactCustomPatterns("Email: foo@bar.com."));
-  EXPECT_EQ("Email:\n<email: 2>\n",
+  EXPECT_EQ("(email: 1)", RedactCustomPatterns("foo@bar.com"));
+  EXPECT_EQ("Email: (email: 1).", RedactCustomPatterns("Email: foo@bar.com."));
+  EXPECT_EQ("Email:\n(email: 2)\n",
             RedactCustomPatterns("Email:\nfooooo@bar.com\n"));
 
-  EXPECT_EQ("[<IPv6: 1>]",
+  EXPECT_EQ("[(IPv6: 1)]",
             RedactCustomPatterns("[2001:0db8:0000:0000:0000:ff00:0042:8329]"));
-  EXPECT_EQ("[<IPv6: 2>]",
+  EXPECT_EQ("[(IPv6: 2)]",
             RedactCustomPatterns("[2001:db8:0:0:0:ff00:42:8329]"));
-  EXPECT_EQ("[<IPv6: 3>]", RedactCustomPatterns("[2001:db8::ff00:42:8329]"));
-  EXPECT_EQ("[<IPv6: 4>]", RedactCustomPatterns("[aa::bb]"));
+  EXPECT_EQ("[(IPv6: 3)]", RedactCustomPatterns("[2001:db8::ff00:42:8329]"));
+  EXPECT_EQ("[(IPv6: 4)]", RedactCustomPatterns("[aa::bb]"));
   EXPECT_EQ("State::Abort", RedactCustomPatterns("State::Abort"));
 
   // Real IPv4 address
-  EXPECT_EQ("<IPv4: 1>", RedactCustomPatterns("192.160.0.1"));
+  EXPECT_EQ("(IPv4: 1)", RedactCustomPatterns("192.160.0.1"));
 
   // Non-PII IPv4 address (see MaybeScrubIPAddress)
   EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
@@ -495,8 +524,8 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("Revision: 10.10.10.10",
             RedactCustomPatterns("Revision: 10.10.10.10"));
 
-  EXPECT_EQ("<URL: 1>", RedactCustomPatterns("http://example.com/foo?test=1"));
-  EXPECT_EQ("Foo <URL: 2> Bar",
+  EXPECT_EQ("(URL: 1)", RedactCustomPatterns("http://example.com/foo?test=1"));
+  EXPECT_EQ("Foo (URL: 2) Bar",
             RedactCustomPatterns("Foo http://192.168.0.1/foo?test=1#123 Bar"));
   const char* kURLs[] = {
       "http://example.com/foo?test=1",
@@ -521,8 +550,8 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
     SCOPED_TRACE(kURLs[i]);
     std::string got = RedactCustomPatterns(kURLs[i]);
     EXPECT_TRUE(
-        base::StartsWith(got, "<URL: ", base::CompareCase::INSENSITIVE_ASCII));
-    EXPECT_TRUE(base::EndsWith(got, ">", base::CompareCase::INSENSITIVE_ASCII));
+        base::StartsWith(got, "(URL: ", base::CompareCase::INSENSITIVE_ASCII));
+    EXPECT_TRUE(base::EndsWith(got, ")", base::CompareCase::INSENSITIVE_ASCII));
   }
   // Test that "Android:" is not considered a schema with empty hier part.
   EXPECT_EQ("The following applies to Android:",
@@ -541,24 +570,24 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
   EXPECT_EQ("", RedactCustomPatternWithContext("", kPattern1));
   EXPECT_EQ("foo\nbar\n",
             RedactCustomPatternWithContext("foo\nbar\n", kPattern1));
-  EXPECT_EQ("id '<ID: 1>'",
+  EXPECT_EQ("id '(ID: 1)'",
             RedactCustomPatternWithContext("id '2345'", kPattern1));
-  EXPECT_EQ("id '<ID: 2>'",
+  EXPECT_EQ("id '(ID: 2)'",
             RedactCustomPatternWithContext("id '1234'", kPattern1));
-  EXPECT_EQ("id: '<ID: 2>'",
+  EXPECT_EQ("id: '(ID: 2)'",
             RedactCustomPatternWithContext("id: '1234'", kPattern1));
-  EXPECT_EQ("ID: '<ID: 1>'",
+  EXPECT_EQ("ID: '(ID: 1)'",
             RedactCustomPatternWithContext("ID: '2345'", kPattern1));
-  EXPECT_EQ("x1 id '<ID: 1>' 1x id '<ID: 2>'\nid '<ID: 1>'\n",
+  EXPECT_EQ("x1 id '(ID: 1)' 1x id '(ID: 2)'\nid '(ID: 1)'\n",
             RedactCustomPatternWithContext(
                 "x1 id '2345' 1x id '1234'\nid '2345'\n", kPattern1));
   // Different pattern with same alias should reuse the replacements.
-  EXPECT_EQ("id='<ID: 2>'",
+  EXPECT_EQ("id='(ID: 2)'",
             RedactCustomPatternWithContext("id='1234'", kPattern2));
   // Different alias should not reuse replacement from another pattern.
-  EXPECT_EQ("idg='<IDG: 1>'",
+  EXPECT_EQ("idg='(IDG: 1)'",
             RedactCustomPatternWithContext("idg='1234'", kPattern3));
-  EXPECT_EQ("x<FOO: 1>z",
+  EXPECT_EQ("x(FOO: 1)z",
             RedactCustomPatternWithContext("xyz", {"FOO", "()(y+)()"}));
 }
 
@@ -567,21 +596,45 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithoutContext) {
   // testing.
   CustomPatternWithAlias kPattern = {"pattern", "(o+)", PIIType::kEmail};
   EXPECT_EQ("", RedactCustomPatternWithoutContext("", kPattern));
-  EXPECT_EQ("f<pattern: 1>\nf<pattern: 2>z\nf<pattern: 1>l\n",
+  EXPECT_EQ("f(pattern: 1)\nf(pattern: 2)z\nf(pattern: 1)l\n",
             RedactCustomPatternWithoutContext("fo\nfooz\nfol\n", kPattern));
 }
 
 TEST_F(RedactionToolTest, RedactChunk) {
+  redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
+  constexpr char kHistogramName[] = "Feedback.RedactionTool.CreditCardMatch";
+  enum class CreditCardDetection {
+    kRegexMatch = 1,
+    kTimestamp = 2,
+    kRepeatedChars = 3,
+    kDoesntValidate = 4,
+    kValidated = 5,
+  };
+  using enum CreditCardDetection;
+  const base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 0);
+
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
     redaction_output.append(s.post_redaction).append("\n");
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
+
+  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 11);
+  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 2);
+  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 3);
+  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 5);
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelected) {
+  redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
   for (const auto& s : kStringsWithRedactions) {
@@ -622,9 +675,13 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
 }
 
 TEST_F(RedactionToolTest, RedactUid) {
-  EXPECT_EQ("<UID: 1>",
+  EXPECT_EQ("UID: (UID: 1)",
             redactor_.RedactAndKeepSelected(
-                "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+                "UID: B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+  // base64-encoded 33 bytes should not be treated as UID.
+  EXPECT_EQ("MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==",
+            redactor_.RedactAndKeepSelected(
+                "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==", {}));
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
@@ -636,12 +693,12 @@ TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
     {"chrome://resources/"
      "f?user="
      "99887766554433221100ffeeddccbbaaaabbccddeeff00112233445566778899",
-     "chrome://resources/f?user=<HASH:9988 1>"},  // URL that contains a hash.
+     "chrome://resources/f?user=(HASH:9988 1)"},  // URL that contains a hash.
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
-     "/root/<HASH:2754 2>/foo"},  // String that contains a hash.
+     "/root/(HASH:2754 2)/foo"},  // String that contains a hash.
     {"this is the user hash that we need to redact "
      "aabbccddeeff00112233445566778899",
-     "this is the user hash that we need to redact <HASH:aabb 3>"},  // String
+     "this is the user hash that we need to redact (HASH:aabb 3)"},  // String
                                                                      // that
                                                                      // contains
                                                                      // a hash.
@@ -650,7 +707,7 @@ TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
      "android-data/data/data/pa.ckage2/de",  // Android app storage
                                              // path that contains a
                                              // hash.
-     "8.0K\t/home/root/<HASH:aabb 3>/android-data/data/data/pa.ckage2/de"}
+     "8.0K\t/home/root/(HASH:aabb 3)/android-data/data/data/pa.ckage2/de"}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   std::string redaction_input;
@@ -727,12 +784,14 @@ TEST_F(RedactionToolTest, DetectPII) {
              "64:ff9b::6473:5c01",
              "::0101:ffff:c0a8:640a",
          }},
-        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
-      PIIType::kStableIdentifier, {
-        "27540283740a0897ab7c8de0f809add2bacde78f",
-            "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
-      }
-    }
+        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}},
+        {PIIType::kStableIdentifier,
+         {
+             "27540283740a0897ab7c8de0f809add2bacde78f",
+             "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+         }},
+        {PIIType::kCreditCard,
+         {"4012888888881881", "5019717010103742", "5019717010103742787"}},
   };
 
   EXPECT_EQ(pii_in_data, redactor_.Detect(redaction_input));
@@ -796,30 +855,30 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
   std::pair<std::string, std::string> test_cases[] = {
       // UUIDs that come from the 'blkid' tool.
       {"PTUUID=\"985dff64-9c0f-3f49-945b-2d8c2e0238ec\"",
-       "PTUUID=\"<UUID: 1>\""},
-      {"UUID=\"E064-868C\"", "UUID=\"<UUID: 2>\""},
-      {"PARTUUID=\"7D242B2B1C751832\"", "PARTUUID=\"<UUID: 3>\""},
+       "PTUUID=\"(UUID: 1)\""},
+      {"UUID=\"E064-868C\"", "UUID=\"(UUID: 2)\""},
+      {"PARTUUID=\"7D242B2B1C751832\"", "PARTUUID=\"(UUID: 3)\""},
 
       // Volume labels.
-      {"LABEL=\"ntfs\"", "LABEL=\"<Volume Label: 1>\""},
-      {"PARTLABEL=\"SD Card\"", "PARTLABEL=\"<Volume Label: 2>\""},
+      {"LABEL=\"ntfs\"", "LABEL=\"(Volume Label: 1)\""},
+      {"PARTLABEL=\"SD Card\"", "PARTLABEL=\"(Volume Label: 2)\""},
 
       // LVM UUIDd.
       {"{\"pv_fmt\":\"lvm2\", "
        "\"pv_uuid\":\"duD18x-P7QE-sTya-SaeO-aq07-YgEq-xj8UEz\", "
        "\"dev_size\":\"230.33g\"}",
-       "{\"pv_fmt\":\"lvm2\", \"pv_uuid\":\"<UUID: 4>\", "
+       "{\"pv_fmt\":\"lvm2\", \"pv_uuid\":\"(UUID: 4)\", "
        "\"dev_size\":\"230.33g\"}"},
       {"{\"lv_uuid\":\"lKYORl-TWDP-OFLT-yDnB-jlQ7-aQrE-AwA8Oa\", "
        "\"lv_name\":\"[thinpool_tdata]\"",
-       "{\"lv_uuid\":\"<UUID: 5>\", \"lv_name\":\"[thinpool_tdata]\""},
+       "{\"lv_uuid\":\"(UUID: 5)\", \"lv_name\":\"[thinpool_tdata]\""},
 
       // Removable media paths.
-      {"/media/removable/SD Card/", "/media/removable/<Volume Label: 2>/"},
+      {"/media/removable/SD Card/", "/media/removable/(Volume Label: 2)/"},
       {"'/media/removable/My Secret Volume Name' don't redact this",
-       "'/media/removable/<Volume Label: 3>' don't redact this"},
+       "'/media/removable/(Volume Label: 3)' don't redact this"},
       {"0 part /media/removable/My Secret Volume Name         With Spaces   ",
-       "0 part /media/removable/<Volume Label: 4>"},
+       "0 part /media/removable/(Volume Label: 4)"},
   };
   for (const auto& p : test_cases) {
     EXPECT_EQ(redactor_.Redact(p.first), p.second);

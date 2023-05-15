@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 294 tests; 276 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 294 tests; 292 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS -webkit-appearance: bogus-button (invalid)
 PASS -webkit-appearance: attachment (invalid)
 PASS -webkit-appearance: button-bevel (invalid)
@@ -21,7 +21,7 @@ PASS -webkit-appearance: discrete-capacity-level-indicator (invalid)
 PASS -webkit-appearance: dualbutton (invalid)
 PASS -webkit-appearance: groupbox (invalid)
 PASS -webkit-appearance: image-controls-button (invalid)
-FAIL -webkit-appearance: inner-spin-button (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "inner-spin-button" not in array [""]
+PASS -webkit-appearance: inner-spin-button (invalid)
 PASS -webkit-appearance: list-button (invalid)
 PASS -webkit-appearance: listitem (invalid)
 PASS -webkit-appearance: media-controls-background (invalid)
@@ -40,14 +40,14 @@ PASS -webkit-appearance: media-return-to-realtime-button (invalid)
 PASS -webkit-appearance: media-rewind-button (invalid)
 PASS -webkit-appearance: media-seek-back-button (invalid)
 PASS -webkit-appearance: media-seek-forward-button (invalid)
-FAIL -webkit-appearance: media-slider (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "media-slider" not in array [""]
-FAIL -webkit-appearance: media-sliderthumb (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "media-sliderthumb" not in array [""]
+PASS -webkit-appearance: media-slider (invalid)
+PASS -webkit-appearance: media-sliderthumb (invalid)
 PASS -webkit-appearance: media-time-remaining-display (invalid)
 PASS -webkit-appearance: media-toggle-closed-captions-button (invalid)
-FAIL -webkit-appearance: media-volume-slider (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "media-volume-slider" not in array [""]
+PASS -webkit-appearance: media-volume-slider (invalid)
 PASS -webkit-appearance: media-volume-slider-container (invalid)
 PASS -webkit-appearance: media-volume-slider-mute-button (invalid)
-FAIL -webkit-appearance: media-volume-sliderthumb (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "media-volume-sliderthumb" not in array [""]
+PASS -webkit-appearance: media-volume-sliderthumb (invalid)
 PASS -webkit-appearance: menuarrow (invalid)
 PASS -webkit-appearance: menubar (invalid)
 PASS -webkit-appearance: menucheckbox (invalid)
@@ -91,15 +91,15 @@ PASS -webkit-appearance: scrollbarthumb-horizontal (invalid)
 PASS -webkit-appearance: scrollbarthumb-vertical (invalid)
 PASS -webkit-appearance: scrollbartrack-horizontal (invalid)
 PASS -webkit-appearance: scrollbartrack-vertical (invalid)
-FAIL -webkit-appearance: searchfield-cancel-button (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "searchfield-cancel-button" not in array [""]
+PASS -webkit-appearance: searchfield-cancel-button (invalid)
 PASS -webkit-appearance: searchfield-decoration (invalid)
 PASS -webkit-appearance: searchfield-results-button (invalid)
 PASS -webkit-appearance: searchfield-results-decoration (invalid)
 PASS -webkit-appearance: separator (invalid)
 PASS -webkit-appearance: sheet (invalid)
 FAIL -webkit-appearance: slider-vertical (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "slider-vertical" not in array [""]
-FAIL -webkit-appearance: sliderthumb-horizontal (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "sliderthumb-horizontal" not in array [""]
-FAIL -webkit-appearance: sliderthumb-vertical (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "sliderthumb-vertical" not in array [""]
+PASS -webkit-appearance: sliderthumb-horizontal (invalid)
+PASS -webkit-appearance: sliderthumb-vertical (invalid)
 PASS -webkit-appearance: snapshotted-plugin-overlay (invalid)
 PASS -webkit-appearance: spinner (invalid)
 PASS -webkit-appearance: spinner-downbutton (invalid)
@@ -168,7 +168,7 @@ PASS appearance: discrete-capacity-level-indicator (invalid)
 PASS appearance: dualbutton (invalid)
 PASS appearance: groupbox (invalid)
 PASS appearance: image-controls-button (invalid)
-FAIL appearance: inner-spin-button (invalid) assert_in_array: style.appearance value "inner-spin-button" not in array [""]
+PASS appearance: inner-spin-button (invalid)
 PASS appearance: list-button (invalid)
 PASS appearance: listitem (invalid)
 PASS appearance: media-controls-background (invalid)
@@ -187,14 +187,14 @@ PASS appearance: media-return-to-realtime-button (invalid)
 PASS appearance: media-rewind-button (invalid)
 PASS appearance: media-seek-back-button (invalid)
 PASS appearance: media-seek-forward-button (invalid)
-FAIL appearance: media-slider (invalid) assert_in_array: style.appearance value "media-slider" not in array [""]
-FAIL appearance: media-sliderthumb (invalid) assert_in_array: style.appearance value "media-sliderthumb" not in array [""]
+PASS appearance: media-slider (invalid)
+PASS appearance: media-sliderthumb (invalid)
 PASS appearance: media-time-remaining-display (invalid)
 PASS appearance: media-toggle-closed-captions-button (invalid)
-FAIL appearance: media-volume-slider (invalid) assert_in_array: style.appearance value "media-volume-slider" not in array [""]
+PASS appearance: media-volume-slider (invalid)
 PASS appearance: media-volume-slider-container (invalid)
 PASS appearance: media-volume-slider-mute-button (invalid)
-FAIL appearance: media-volume-sliderthumb (invalid) assert_in_array: style.appearance value "media-volume-sliderthumb" not in array [""]
+PASS appearance: media-volume-sliderthumb (invalid)
 PASS appearance: menuarrow (invalid)
 PASS appearance: menubar (invalid)
 PASS appearance: menucheckbox (invalid)
@@ -238,15 +238,15 @@ PASS appearance: scrollbarthumb-horizontal (invalid)
 PASS appearance: scrollbarthumb-vertical (invalid)
 PASS appearance: scrollbartrack-horizontal (invalid)
 PASS appearance: scrollbartrack-vertical (invalid)
-FAIL appearance: searchfield-cancel-button (invalid) assert_in_array: style.appearance value "searchfield-cancel-button" not in array [""]
+PASS appearance: searchfield-cancel-button (invalid)
 PASS appearance: searchfield-decoration (invalid)
 PASS appearance: searchfield-results-button (invalid)
 PASS appearance: searchfield-results-decoration (invalid)
 PASS appearance: separator (invalid)
 PASS appearance: sheet (invalid)
 FAIL appearance: slider-vertical (invalid) assert_in_array: style.appearance value "slider-vertical" not in array [""]
-FAIL appearance: sliderthumb-horizontal (invalid) assert_in_array: style.appearance value "sliderthumb-horizontal" not in array [""]
-FAIL appearance: sliderthumb-vertical (invalid) assert_in_array: style.appearance value "sliderthumb-vertical" not in array [""]
+PASS appearance: sliderthumb-horizontal (invalid)
+PASS appearance: sliderthumb-vertical (invalid)
 PASS appearance: snapshotted-plugin-overlay (invalid)
 PASS appearance: spinner (invalid)
 PASS appearance: spinner-downbutton (invalid)

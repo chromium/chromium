@@ -94,7 +94,7 @@ StreamType StreamTypeFromKey(base::StringPiece id) {
 }
 
 int64_t ToTimestampMillis(base::Time t) {
-  return (t - base::Time::UnixEpoch()).InMilliseconds();
+  return t.is_null() ? 0L : (t - base::Time::UnixEpoch()).InMilliseconds();
 }
 
 base::Time FromTimestampMillis(int64_t millis) {
@@ -102,7 +102,7 @@ base::Time FromTimestampMillis(int64_t millis) {
 }
 
 int64_t ToTimestampNanos(base::Time t) {
-  return (t - base::Time::UnixEpoch()).InNanoseconds();
+  return t.is_null() ? 0L : (t - base::Time::UnixEpoch()).InNanoseconds();
 }
 
 base::Time FromTimestampMicros(int64_t micros) {
@@ -230,6 +230,13 @@ feedstore::Metadata MakeMetadata(const std::string& gaia) {
   md.set_stream_schema_version(feed::FeedStore::kCurrentStreamSchemaVersion);
   md.set_gaia(gaia);
   return md;
+}
+
+feedstore::DocView CreateDocView(uint64_t docid, base::Time timestamp) {
+  feedstore::DocView doc_view;
+  doc_view.set_docid(docid);
+  doc_view.set_view_time_millis(feedstore::ToTimestampMillis(timestamp));
+  return doc_view;
 }
 
 absl::optional<Metadata> SetStreamViewContentHashes(

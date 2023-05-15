@@ -113,7 +113,7 @@ void TouchObserverHud::OnDisplayConfigurationChanging() {
       widget_->GetNativeView(),
       Shell::GetContainer(root_window_, kShellWindowId_UnparentedContainer));
 
-  root_window_ = NULL;
+  root_window_ = nullptr;
 }
 
 void TouchObserverHud::OnDisplayConfigurationChanged() {

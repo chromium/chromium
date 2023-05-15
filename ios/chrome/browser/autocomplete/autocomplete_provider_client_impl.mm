@@ -18,7 +18,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/omnibox_pedal_implementation.h"
@@ -27,18 +26,19 @@
 #import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 #import "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -182,6 +182,12 @@ AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
 
 AutocompleteScoringModelService*
 AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
+  return nullptr;
+}
+
+OnDeviceTailModelService*
+AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
+  // TODO(crbug.com/1372112): implement the service factory for iOS.
   return nullptr;
 }
 

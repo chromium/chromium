@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/resize_shadow_type.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 
@@ -80,7 +81,7 @@ class ResizeShadow {
 
   // The window associated with this shadow. Guaranteed to be alive for the
   // lifetime of `this`.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // The layer to which the shadow is drawn. The layer is stacked beneath the
   // layer of |window_|.

@@ -18,11 +18,10 @@ promise_test(() => {
 
 promise_test(async t => {
   try {
-    const blob = new Blob(["abc"], {type: 'text/plain'});
-    await sharedStorage.run("operation1", {data: blob});
+    await sharedStorage.run("operation1", {data: window});
   } catch (e) {
-    assert_equals(e.name, 'Error');
-    assert_equals(e.message, '#<Blob> could not be cloned.');
+    assert_equals(e.name, 'DataCloneError');
+    assert_equals(e.message, 'Failed to execute \'run\' on \'SharedStorage\': #<Window> could not be cloned.');
     return;
   }
   assert_unreached("did not reject");

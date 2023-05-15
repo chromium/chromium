@@ -21,6 +21,7 @@ component("lacros") {
     ":lacros_paths",
     "//base",
     "//build:chromeos_buildflags",
+    "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/crosapi/mojom",
@@ -29,6 +30,7 @@ component("lacros") {
     "//components/crash/core/common",
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
+    "//services/media_session/public/mojom",
     "//ui/native_theme",
   ]
   sources = [

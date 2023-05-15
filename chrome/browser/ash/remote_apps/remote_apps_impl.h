@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_types.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
@@ -69,6 +70,8 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
                  DeleteAppCallback callback) override;
   void SortLauncherWithRemoteAppsFirst(
       SortLauncherWithRemoteAppsFirstCallback callback) override;
+  void SetPinnedApps(const std::vector<std::string>& app_ids,
+                     SetPinnedAppsCallback callback) override;
 
   void OnAppLaunched(const std::string& source_id, const std::string& app_id);
 
@@ -81,7 +84,7 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
 
   void DisconnectHandler(mojo::RemoteSetElementId id);
 
-  RemoteAppsManager* manager_ = nullptr;
+  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
   SourceToRemoteIds source_id_to_remote_id_map_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteApps> receivers_;
   // Observers with an associated source in `source_id_to_remote_id_map_`.

@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -37,7 +37,7 @@ namespace {
 
 std::unique_ptr<UserContext> RecordConfiguredFactors(
     std::unique_ptr<UserContext> context) {
-  AuthMetricsRecorder::Get()->RecordUserAuthFactors(
+  AuthEventsRecorder::Get()->RecordUserAuthFactors(
       context->GetAuthFactorsData().GetSessionFactors());
   return context;
 }
@@ -907,6 +907,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       error.ResolveToFailure(AuthFailure::TPM_ERROR);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
+    case user_data_auth::CRYPTOHOME_ERROR_CREDENTIAL_LOCKED:
       // PIN is locked out, for now mark it as auth failure, and pin lockout
       // would be detected by PinStorageCryptohome.
       error.ResolveToFailure(default_error);

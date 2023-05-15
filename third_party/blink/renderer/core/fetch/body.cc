@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -33,13 +34,27 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BodyConsumerBaseFetchCheckPoint {
+  kConstructor = 0,
+  kDidFetchDataLoadFailed = 1,
+  kMaxValue = kDidFetchDataLoadFailed,
+};
+
+void SendHistogram(BodyConsumerBaseFetchCheckPoint cp) {
+  base::UmaHistogramEnumeration("Net.Fetch.CheckPoint.BodyConsumerBase", cp);
+}
+
 class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
                          public FetchDataLoader::Client {
  public:
   explicit BodyConsumerBase(ScriptPromiseResolver* resolver)
       : resolver_(resolver),
         task_runner_(ExecutionContext::From(resolver_->GetScriptState())
-                         ->GetTaskRunner(TaskType::kNetworking)) {}
+                         ->GetTaskRunner(TaskType::kNetworking)) {
+    SendHistogram(BodyConsumerBaseFetchCheckPoint::kConstructor);
+  }
   BodyConsumerBase(const BodyConsumerBase&) = delete;
   BodyConsumerBase& operator=(const BodyConsumerBase&) = delete;
 
@@ -48,6 +63,7 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
     ScriptState::Scope scope(Resolver()->GetScriptState());
     resolver_->Reject(V8ThrowException::CreateTypeError(
         Resolver()->GetScriptState()->GetIsolate(), "Failed to fetch"));
+    SendHistogram(BodyConsumerBaseFetchCheckPoint::kDidFetchDataLoadFailed);
   }
 
   void Abort() override {

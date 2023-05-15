@@ -245,7 +245,8 @@ jboolean ForeignSessionHelper::GetForeignSessions(
     last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
         env, result, ConvertUTF8ToJavaString(env, session.GetSessionTag()),
         ConvertUTF8ToJavaString(env, session.GetSessionName()),
-        session.GetModifiedTime().ToJavaTime()));
+        session.GetModifiedTime().ToJavaTime(),
+        static_cast<int>(session.GetDeviceFormFactor())));
 
     // Push the full session, with tabs ordered by visual position.
     JNI_ForeignSessionHelper_CopySessionToJava(env, session,
@@ -280,7 +281,8 @@ jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
       last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
           env, result, ConvertUTF8ToJavaString(env, session->GetSessionTag()),
           ConvertUTF8ToJavaString(env, session->GetSessionName()),
-          session->GetModifiedTime().ToJavaTime()));
+          session->GetModifiedTime().ToJavaTime(),
+          static_cast<int>(session->GetDeviceFormFactor())));
 
       // Push the full session, with tabs ordered by visual position.
       JNI_ForeignSessionHelper_CopySessionToJava(env, *session,

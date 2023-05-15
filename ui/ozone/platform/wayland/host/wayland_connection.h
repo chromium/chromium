@@ -40,6 +40,7 @@ namespace ui {
 struct InputDevice;
 class OrgKdeKwinIdle;
 class SurfaceAugmenter;
+struct KeyboardDevice;
 struct TouchscreenDevice;
 class WaylandBufferFactory;
 class WaylandBufferManagerHost;
@@ -158,6 +159,10 @@ class WaylandConnection {
 
   zxdg_output_manager_v1* xdg_output_manager_v1() const {
     return xdg_output_manager_.get();
+  }
+
+  wp_fractional_scale_manager_v1* fractional_scale_manager_v1() const {
+    return fractional_scale_manager_v1_.get();
   }
 
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
@@ -297,6 +302,29 @@ class WaylandConnection {
     surface_submission_in_pixel_coordinates_ = enabled;
   }
 
+  bool supports_viewporter_surface_scaling() const {
+    return supports_viewporter_surface_scaling_;
+  }
+
+  void set_supports_viewporter_surface_scaling(bool enabled) {
+    supports_viewporter_surface_scaling_ = enabled;
+  }
+
+  bool UseViewporterSurfaceScaling() {
+    return supports_viewporter_surface_scaling_ &&
+           !surface_submission_in_pixel_coordinates_;
+  }
+
+  bool overlay_delegation_disabled() const {
+    return overlay_delegation_disabled_;
+  }
+
+  void set_overlay_delegation_disabled(bool disabled) {
+    overlay_delegation_disabled_ = disabled;
+  }
+
+  bool ShouldUseOverlayDelegation() const;
+
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
   void set_tablet_layout_state(display::TabletState tablet_layout_state) {
@@ -320,6 +348,7 @@ class WaylandConnection {
   // makes it possible to avoid exposing setters for all those global objects:
   // these setters would only be needed by the globals but would be visible to
   // everyone.
+  friend class FractionalScaleManager;
   friend class GtkPrimarySelectionDeviceManager;
   friend class GtkShell1;
   friend class OrgKdeKwinIdle;
@@ -352,7 +381,7 @@ class WaylandConnection {
   // how to model these input devices.
   void UpdateInputDevices();
   std::vector<InputDevice> CreateMouseDevices() const;
-  std::vector<InputDevice> CreateKeyboardDevices() const;
+  std::vector<KeyboardDevice> CreateKeyboardDevices() const;
   std::vector<TouchscreenDevice> CreateTouchscreenDevices() const;
 
   // Updates cursor related objects in this instance.
@@ -403,6 +432,7 @@ class WaylandConnection {
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
+  wl::Object<wp_fractional_scale_manager_v1> fractional_scale_manager_v1_;
 
   // Manages Wayland windows.
   WaylandWindowManager window_manager_{this};
@@ -472,6 +502,13 @@ class WaylandConnection {
   // applied. The server will be responsible to scale the buffers to the right
   // sizes.
   bool surface_submission_in_pixel_coordinates_ = false;
+
+  // This is set if wp_viewporter may be used to instruct the compositor to
+  // properly scale fractional scaled surfaces.
+  bool supports_viewporter_surface_scaling_ = false;
+
+  // This is set if delegated composition should not be used.
+  bool overlay_delegation_disabled_ = false;
 
   wl::SerialTracker serial_tracker_;
 

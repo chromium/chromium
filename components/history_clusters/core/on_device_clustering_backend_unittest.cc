@@ -82,39 +82,6 @@ class TestEntityMetadataProvider
             },
             entity_id, std::move(callback)));
   }
-  void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      optimization_guide::BatchEntityMetadataRetrievedCallback callback)
-      override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const base::flat_set<std::string>& entity_ids,
-               optimization_guide::BatchEntityMetadataRetrievedCallback
-                   callback) {
-              base::flat_map<std::string, optimization_guide::EntityMetadata>
-                  entity_metadata_map;
-              for (const auto& entity_id : entity_ids) {
-                if (entity_id == "nometadata") {
-                  continue;
-                }
-                optimization_guide::EntityMetadata metadata;
-                metadata.human_readable_name = "rewritten-" + entity_id;
-                // Add it in twice to verify that a category only gets added
-                // once and it takes the max.
-                metadata.human_readable_categories.insert(
-                    {"category-" + entity_id, 0.6});
-                metadata.human_readable_categories.insert(
-                    {"category-" + entity_id, 0.5});
-                metadata.human_readable_categories.insert(
-                    {"toolow-" + entity_id, 0.01});
-                metadata.human_readable_aliases.push_back("alias-" + entity_id);
-                entity_metadata_map[entity_id] = metadata;
-              }
-              std::move(callback).Run(entity_metadata_map);
-            },
-            entity_ids, std::move(callback)));
-  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
@@ -410,16 +377,13 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
-       GetClustersForUIMaxFilterApplied) {
+       GetClustersForUIFilterApplied) {
   std::vector<history::Cluster> clusters;
 
   QueryClustersFilterParams params;
-  params.max_clusters = 1;
+  params.has_related_searches = true;
 
   // Cluster processors and finalizers should be run.
-
-  // The below clusters contain the exact same visit so should be merged and
-  // then deduped.
 
   history::Cluster cluster1;
   cluster1.visits.emplace_back(
@@ -442,9 +406,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::Cluster> result_clusters =
       GetClustersForUI(ClusteringRequestSource::kJourneysPage,
                        std::move(params), std::move(clusters));
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(3, 1.0))));
-  EXPECT_FALSE(result_clusters[0].label->empty());
+  EXPECT_TRUE(result_clusters.empty());
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,

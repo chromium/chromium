@@ -40,7 +40,7 @@ void CopyMigrator::Migrate() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&CopyMigrator::MigrateInternal, original_profile_dir_,
+      base::BindOnce(&CopyMigrator::MigrateInternal, *original_profile_dir_,
                      std::move(progress_tracker_), cancel_flag_),
       std::move(finished_callback_));
 }

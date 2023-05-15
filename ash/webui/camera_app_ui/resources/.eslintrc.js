@@ -761,6 +761,18 @@ module.exports = {
       '@typescript-eslint/dot-notation': 'error',
 
       '@typescript-eslint/return-await': 'error',
+
+      '@typescript-eslint/strict-boolean-expressions': ['error', {
+        allowString: false,
+        allowNumber: false,
+        allowNullableObject: false,
+        // `any` is allowed here since our .eslintrc doesn't use the full
+        // tsconfig.json (contains reference to board specific files), which
+        // cause this rule to have some false negative on unrecognized types.
+        // TODO(pihsun): Change the lint action to be board dependent if we can
+        // find a way to keep running it on presubmit check.
+        allowAny: true,
+      }],
     },
   }],
 };

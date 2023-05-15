@@ -32,6 +32,10 @@
 #include "ui/wm/public/activation_client.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/message_loop/message_pump_mac.h"
+#endif
+
 constexpr gfx::Size ExtensionPopup::kMinSize;
 constexpr gfx::Size ExtensionPopup::kMaxSize;
 
@@ -250,7 +254,7 @@ void ExtensionPopup::OnExtensionUnloaded(
     DCHECK(extension_registry_observation_.IsObserving());
     extension_registry_observation_.Reset();
 
-    GetWidget()->Close();
+    CloseDeferredIfNecessary();
   }
 }
 
@@ -265,7 +269,7 @@ void ExtensionPopup::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (!tab_strip_model->empty() && selection.active_tab_changed())
-    GetWidget()->Close();
+    CloseDeferredIfNecessary();
 }
 
 void ExtensionPopup::DevToolsAgentHostAttached(
@@ -293,7 +297,8 @@ ExtensionPopup::ExtensionPopup(
                                views::BubbleBorder::STANDARD_SHADOW),
       host_(std::move(host)),
       show_action_(show_action),
-      shown_callback_(std::move(callback)) {
+      shown_callback_(std::move(callback)),
+      deferred_close_weak_ptr_factory_(this) {
   g_last_popup_for_testing = this;
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_round_corners(false);
@@ -363,12 +368,32 @@ void ExtensionPopup::ShowBubble() {
 
 void ExtensionPopup::CloseUnlessUnderInspection() {
   if (show_action_ != PopupShowAction::kShowAndInspect)
-    GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    CloseDeferredIfNecessary(views::Widget::ClosedReason::kLostFocus);
+}
+
+void ExtensionPopup::CloseDeferredIfNecessary(
+    views::Widget::ClosedReason reason) {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, defer close if we're in a nested run loop (for example, showing a
+  // context menu) to avoid messaging deallocated objects.
+  if (base::MessagePumpMac::IsHandlingSendEvent()) {
+    deferred_close_weak_ptr_factory_.InvalidateWeakPtrs();
+    auto weak_ptr = deferred_close_weak_ptr_factory_.GetWeakPtr();
+    CFRunLoopPerformBlock(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, ^{
+      if (weak_ptr) {
+        weak_ptr->GetWidget()->CloseWithReason(reason);
+      }
+    });
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  GetWidget()->CloseWithReason(reason);
 }
 
 void ExtensionPopup::HandleCloseExtensionHost(extensions::ExtensionHost* host) {
   DCHECK_EQ(host, host_.get());
-  GetWidget()->Close();
+  CloseDeferredIfNecessary();
 }
 
 BEGIN_METADATA(ExtensionPopup, views::BubbleDialogDelegateView)

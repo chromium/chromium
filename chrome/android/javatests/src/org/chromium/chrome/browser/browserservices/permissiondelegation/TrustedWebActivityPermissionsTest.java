@@ -11,9 +11,10 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -76,11 +77,11 @@ public class TrustedWebActivityPermissionsTest {
                 ServerCertificate.CERT_OK);
         mTestPage = mTestServer.getURL(TEST_PAGE);
         mOrigin = Origin.create(mTestPage);
-        mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
+        mPackage = ApplicationProvider.getApplicationContext().getPackageName();
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), mTestPage));
+                        ApplicationProvider.getApplicationContext(), mTestPage));
 
         mPermissionManager = ChromeApplicationImpl.getComponent().resolvePermissionManager();
         mPermissionManager.clearForTesting();

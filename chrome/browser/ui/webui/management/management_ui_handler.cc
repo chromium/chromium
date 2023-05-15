@@ -547,8 +547,7 @@ ManagementUIHandler::ManagementUIHandler() {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   // Get device report sources.
   if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
-      service->GetInterfaceVersion(
-          crosapi::mojom::DeviceSettingsService::Uuid_) >=
+      service->GetInterfaceVersion<crosapi::mojom::DeviceSettingsService>() >=
           static_cast<int>(crosapi::mojom::DeviceSettingsService::
                                kGetDeviceReportSourcesMinVersion)) {
     service->GetRemote<crosapi::mojom::DeviceSettingsService>()
@@ -975,8 +974,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
   }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  if (capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
-          profile)) {
+  if (capture_policy::IsGetAllScreensMediaAllowedForAnySite(profile)) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,
                                   kManagementScreenCaptureData, &info);
   }
@@ -1087,9 +1085,6 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (device_managed_) {
     device_domain = connector->GetEnterpriseDomainManager();
-  }
-  if (device_domain.empty() && connector->IsActiveDirectoryManaged()) {
-    device_domain = connector->GetRealm();
   }
   return device_domain;
 }

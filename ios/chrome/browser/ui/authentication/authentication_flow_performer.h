@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 
 class Browser;
@@ -30,15 +31,13 @@ class PrefService;
 // animation if `animated` is true.
 - (void)cancelAndDismissAnimated:(BOOL)animated;
 
-// Starts sync for `browserState`.
-- (void)commitSyncForBrowserState:(ChromeBrowserState*)browserState;
-
 // Fetches the managed status for `identity`.
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(id<SystemIdentity>)identity;
 
 // Signs `identity` with `hostedDomain` into `browserState`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
+         atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
         toBrowserState:(ChromeBrowserState*)browserState;
 
@@ -73,6 +72,11 @@ class PrefService;
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser;
+
+// Shows a snackbar confirming sign-in with `identity` and an undo button to
+// sign out the user.
+- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
+                               browser:(Browser*)browser;
 
 // Shows `error` to the user and calls `callback` on dismiss.
 - (void)showAuthenticationError:(NSError*)error

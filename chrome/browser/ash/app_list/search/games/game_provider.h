@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -55,9 +56,10 @@ class GameProvider : public SearchProvider {
       std::u16string query,
       std::vector<std::pair<const apps::Result*, double>> matches);
 
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
-  apps::AppDiscoveryService* const app_discovery_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  const raw_ptr<apps::AppDiscoveryService, ExperimentalAsh>
+      app_discovery_service_;
 
   GameIndex game_index_;
   base::CallbackListSubscription subscription_;

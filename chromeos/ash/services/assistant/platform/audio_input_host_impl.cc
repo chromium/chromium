@@ -43,7 +43,7 @@ AudioInputHostImpl::AudioInputHostImpl(
   DCHECK(power_manager_client_);
 
   audio_devices_observation_.Observe(&audio_devices_);
-  power_manager_client_observer_.Observe(power_manager_client_);
+  power_manager_client_observer_.Observe(power_manager_client_.get());
   power_manager_client_->GetSwitchStates(
       base::BindOnce(&AudioInputHostImpl::OnInitialLidStateReceived,
                      weak_factory_.GetWeakPtr()));

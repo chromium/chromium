@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -99,8 +98,7 @@ float SingleScrollbarAnimationControllerThinning::AnimationProgressAtTime(
     return 1.0f;
 
   const base::TimeDelta delta = now - last_awaken_time_;
-  return base::clamp(static_cast<float>(delta / thinning_duration_), 0.0f,
-                     1.0f);
+  return std::clamp(static_cast<float>(delta / thinning_duration_), 0.0f, 1.0f);
 }
 
 void SingleScrollbarAnimationControllerThinning::RunAnimationFrame(

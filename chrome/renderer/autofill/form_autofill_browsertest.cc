@@ -2329,7 +2329,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result1;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_NONE, &result1);
 
   FormFieldData expected;
@@ -2342,7 +2342,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
 
   FormFieldData result2;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result2);
 
   expected.id_attribute = u"element";
@@ -2361,7 +2361,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result);
 
   FormFieldData expected;
@@ -2384,7 +2384,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMaxLength) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result);
 
   FormFieldData expected;
@@ -2406,7 +2406,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
   WebInputElement element = GetInputElementById("element");
   element.SetAutofillState(WebAutofillState::kAutofilled);
   FormFieldData result;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result);
 
   FormFieldData expected;
@@ -2431,7 +2431,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
   WebInputElement element = GetInputElementById("checkbox");
   element.SetAutofillState(WebAutofillState::kAutofilled);
   FormFieldData result;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result);
 
   FormFieldData expected;
@@ -2445,7 +2445,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
 
   element = GetInputElementById("radio");
   element.SetAutofillState(WebAutofillState::kAutofilled);
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result);
   expected.id_attribute = u"radio";
   expected.name = expected.id_attribute;
@@ -2468,7 +2468,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result1;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result1);
 
   FormFieldData expected;
@@ -2482,13 +2482,13 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   FormFieldData result2;
   WebFormControlElementToFormField(
-      FormRendererId(), element, nullptr,
+      WebFormElement(), element, nullptr,
       static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTION_TEXT), &result2);
   expected.value = u"California";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
 
   FormFieldData result3;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_OPTIONS, &result3);
   expected.value.clear();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result3);
@@ -2515,7 +2515,7 @@ TEST_F(FormAutofillTest,
   element.SetAutofillState(WebAutofillState::kAutofilled);
 
   FormFieldData result1;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result1);
 
   FormFieldData expected;
@@ -2551,7 +2551,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_OPTIONS, &result);
 
   EXPECT_TRUE(result.options.empty());
@@ -2569,7 +2569,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result_sans_value;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_NONE, &result_sans_value);
 
   FormFieldData expected;
@@ -2580,7 +2580,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
 
   FormFieldData result_with_value;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result_with_value);
   expected.value =
       u"This element's value\n"
@@ -2597,7 +2597,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result_sans_value;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_NONE, &result_sans_value);
 
   FormFieldData expected;
@@ -2608,7 +2608,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
 
   FormFieldData result_with_value;
-  WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result_with_value);
   expected.value = u"2011-12";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
@@ -2625,10 +2625,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldInvalidType) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("hidden");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
 
   FormFieldData expected;
   expected.max_length = 0;
@@ -2639,8 +2638,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldInvalidType) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 
   element = GetFormControlElementById("submit");
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   expected.id_attribute = u"submit";
   expected.name = expected.id_attribute;
   expected.form_control_type = "submit";
@@ -2657,10 +2656,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("password");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
 
   FormFieldData expected;
   expected.max_length = WebInputElement::DefaultMaxLength();
@@ -2736,7 +2734,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     WebFormControlElement element = GetFormControlElementById(
         WebString::FromASCII(test_cases[i].element_id));
     FormFieldData result;
-    WebFormControlElementToFormField(FormRendererId(), element, nullptr,
+    WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                      EXTRACT_NONE, &result);
 
     FormFieldData expected;
@@ -2765,11 +2763,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectStyle) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 }
 
@@ -2782,11 +2778,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectDIRAttribute) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 }
 
@@ -2800,11 +2794,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentStyle) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 }
 
@@ -2817,11 +2809,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentDIRAttribute) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 }
 
@@ -2835,11 +2825,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenStyleAndDIRAttributMixed) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction);
 }
 
@@ -2854,11 +2842,9 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 
   // text-align: left
@@ -2871,9 +2857,8 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
   ASSERT_NE(nullptr, frame);
 
   element = GetFormControlElementById("element");
-
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction);
 }
 
@@ -2888,11 +2873,9 @@ TEST_F(FormAutofillTest,
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction);
 }
 
@@ -2907,11 +2890,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenAncestorHasInlineStyle) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormRendererId form_id(element.Form().UniqueRendererFormId());
-
   FormFieldData result;
-  WebFormControlElementToFormField(form_id, element, nullptr, EXTRACT_VALUE,
-                                   &result);
+  WebFormControlElementToFormField(element.Form(), element, nullptr,
+                                   EXTRACT_VALUE, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 }
 
@@ -3589,10 +3570,6 @@ TEST_F(FormAutofillTest, Labels) {
 // at the moment. Moreover, it seems like the form is parsed multiple times, so
 // checking for metrics is tricky.
 TEST_F(FormAutofillTest, LabelForAttribute) {
-  base::test::ScopedFeatureList improved_label_for_inference;
-  improved_label_for_inference.InitAndEnableFeature(
-      features::kAutofillImprovedLabelForInference);
-
   LoadHTML(R"(
     <label for=fieldId>foo</label>
     <label for=fieldId>bar</label>
@@ -3603,9 +3580,9 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
   base::HistogramTester histogram_tester;
   FormData form;
   // Simulate seeing an unowned form containing just the input "fieldID".
-  UnownedFormElementsAndFieldSetsToFormData(
-      {}, {GetFormControlElementById("fieldId")}, {}, nullptr,
-      GetMainFrame()->GetDocument(), nullptr, EXTRACT_NONE, &form, nullptr);
+  UnownedFormElementsToFormData({GetFormControlElementById("fieldId")}, {},
+                                nullptr, GetMainFrame()->GetDocument(), nullptr,
+                                EXTRACT_NONE, &form, nullptr);
   ASSERT_EQ(form.fields.size(), 1u);
   FormFieldData& form_field_data = form.fields[0];
 
@@ -5357,9 +5334,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 }
 
-TEST_F(FormAutofillTest,
-       UnownedFormElementsAndFieldSetsToFormDataFieldsets) {
-  std::vector<WebElement> fieldsets;
+TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5367,32 +5342,27 @@ TEST_F(FormAutofillTest,
 
   LoadHTML("<HEAD><TITLE>delivery info</TITLE></HEAD>"
            "<DIV>"
-           "  <FIELDSET>"
-           "    <LABEL for='firstname'>First name:</LABEL>"
-           "    <LABEL for='lastname'>Last name:</LABEL>"
-           "    <INPUT type='text' id='firstname' value='John'/>"
-           "    <INPUT type='text' id='lastname' value='Smith'/>"
-           "  </FIELDSET>"
-           "  <FIELDSET>"
-           "    <LABEL for='email'>Email:</LABEL>"
-           "    <INPUT type='text' id='email' value='john@example.com'/>"
-           "  </FIELDSET>"
+           "  <LABEL for='firstname'>First name:</LABEL>"
+           "  <LABEL for='lastname'>Last name:</LABEL>"
+           "  <INPUT type='text' id='firstname' value='John'/>"
+           "  <INPUT type='text' id='lastname' value='Smith'/>"
+           "  <LABEL for='email'>Email:</LABEL>"
+           "  <INPUT type='text' id='email' value='john@example.com'/>"
            "</DIV>");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_EQ(3U, control_elements.size());
-  ASSERT_EQ(2U, fieldsets.size());
 
   std::vector<WebElement> iframe_elements;
 
   FormData form;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+  EXPECT_TRUE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
+      extract_mask, &form, nullptr));
 
   EXPECT_TRUE(form.name.empty());
   EXPECT_FALSE(form.action.is_valid());
@@ -5423,80 +5393,7 @@ TEST_F(FormAutofillTest,
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 }
 
-TEST_F(FormAutofillTest,
-       UnownedFormElementsAndFieldSetsToFormDataControlOutsideOfFieldset) {
-  std::vector<WebElement> fieldsets;
-  std::vector<WebFormControlElement> control_elements;
-
-  const ExtractMask extract_mask =
-      static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTIONS);
-
-  LoadHTML(
-      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
-      "<DIV>"
-      "  <FIELDSET>"
-      "    <LABEL for='firstname'>First name:</LABEL>"
-      "    <LABEL for='lastname'>Last name:</LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  </FIELDSET>"
-      "  <DIV><LABEL for='email'>Email:</LABEL></DIV>"
-      "  <INPUT type='text' id='email' value='john@example.com'/>"
-      "</DIV>");
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
-  ASSERT_EQ(3U, control_elements.size());
-  ASSERT_EQ(1U, fieldsets.size());
-
-  std::vector<WebElement> iframe_elements;
-
-  FormData form;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
-
-  EXPECT_TRUE(form.name.empty());
-  EXPECT_FALSE(form.action.is_valid());
-
-  const std::vector<FormFieldData>& fields = form.fields;
-  ASSERT_EQ(3U, fields.size());
-
-  FormFieldData expected;
-  expected.form_control_type = "text";
-  expected.max_length = WebInputElement::DefaultMaxLength();
-
-  expected.id_attribute = u"firstname";
-  expected.name = expected.id_attribute;
-  expected.value = u"John";
-  expected.label = u"First name:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
-
-  expected.id_attribute = u"lastname";
-  expected.name = expected.id_attribute;
-  expected.value = u"Smith";
-  expected.label = u"Last name:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
-
-  expected.id_attribute = u"email";
-  expected.name = expected.id_attribute;
-  expected.value = u"john@example.com";
-  // With AutofillImprovedLabelForInference, labels assigned with the for-
-  // attribute are even associated outside of fieldsets. Otherwise, the logic
-  // defaults to div-label inference here, which is broken in many ways.
-  // TODO(crbug.com/1368977): Improve div-label inference.
-  expected.label =
-      base::FeatureList::IsEnabled(features::kAutofillImprovedLabelForInference)
-          ? u"Email:"
-          : u"First name: Last name: Email:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
-}
-
-TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
-  std::vector<WebElement> fieldsets;
+TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5508,20 +5405,18 @@ TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_TRUE(control_elements.empty());
-  ASSERT_TRUE(fieldsets.empty());
 
   std::vector<WebElement> iframe_elements;
 
   FormData form;
-  EXPECT_FALSE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+  EXPECT_FALSE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
+      extract_mask, &form, nullptr));
 }
 
 TEST_F(FormAutofillTest, FormlessForms) {
-  std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5533,17 +5428,16 @@ TEST_F(FormAutofillTest, FormlessForms) {
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_FALSE(control_elements.empty());
-  ASSERT_TRUE(fieldsets.empty());
 
   std::vector<WebElement> iframe_elements;
 
   {
     FormData form;
-    EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, iframe_elements, nullptr,
-        frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+    EXPECT_TRUE(UnownedFormElementsToFormData(
+        control_elements, iframe_elements, nullptr, frame->GetDocument(),
+        nullptr, extract_mask, &form, nullptr));
   }
 }
 

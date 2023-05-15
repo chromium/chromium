@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 import {
+  startColorChangeUpdater,
+} from
+    'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+
+import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
@@ -43,7 +48,6 @@ import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import * as timertick from './views/camera/timertick.js';
 import {CameraIntent} from './views/camera_intent.js';
-import {Dialog} from './views/dialog.js';
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
@@ -126,7 +130,6 @@ export class App {
     nav.setup([
       this.cameraView,
       new Warning(),
-      new Dialog(ViewName.MESSAGE_DIALOG),
       new View(ViewName.SPLASH),
     ]);
 
@@ -144,14 +147,17 @@ export class App {
           element.click();
         }
       });
-      const localStorageKey = element.dataset['key'] === undefined ?
-          null :
-          util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+      function getKey(element: HTMLInputElement) {
+        return element.dataset['key'] === undefined ?
+            null :
+            util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+      }
       const stateKey = element.dataset['state'] === undefined ?
           null :
           state.assertState(element.dataset['state']);
 
       function save(element: HTMLInputElement) {
+        const localStorageKey = getKey(element);
         if (localStorageKey !== null) {
           localStorage.set(localStorageKey, element.checked);
         }
@@ -182,6 +188,7 @@ export class App {
           }
         });
       }
+      const localStorageKey = getKey(element);
       if (localStorageKey !== null) {
         const value = localStorage.getBool(localStorageKey, element.checked);
         util.toggleChecked(element, value);
@@ -406,6 +413,27 @@ function preloadImages() {
 }
 
 /**
+ * Append dynamic color CSS files and setup watcher for color changes.
+ */
+async function setupDynamicColor(): Promise<void> {
+  function loadCSS(url: string): Promise<void> {
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      link.addEventListener('load', () => resolve());
+      document.head.appendChild(link);
+    });
+  }
+  if (loadTimeData.getChromeFlag(Flag.JELLY)) {
+    startColorChangeUpdater();
+    await loadCSS('chrome://theme/colors.css?sets=ref,sys');
+  } else {
+    await loadCSS('/css/colors_default.css');
+  }
+}
+
+/**
  * Singleton of the App object.
  */
 let instance: App|null = null;
@@ -419,6 +447,8 @@ let instance: App|null = null;
   }
 
   const perfLogger = new PerfLogger();
+
+  await setupDynamicColor();
 
   const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
 

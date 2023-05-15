@@ -217,6 +217,28 @@ bool InputMethodEngine::DeleteSurroundingText(int context_id,
   return true;
 }
 
+base::expected<void, InputMethodEngine::Error>
+InputMethodEngine::ReplaceSurroundingText(
+    int context_id,
+    int length_before_selection,
+    int length_after_selection,
+    const base::StringPiece16 replacement_text) {
+  if (!IsActive()) {
+    return base::unexpected(Error::kInputMethodNotActive);
+  }
+  if (context_id != context_id_ || context_id_ == -1) {
+    return base::unexpected(Error::kIncorrectContextId);
+  }
+
+  if (TextInputTarget* input_context =
+          IMEBridge::Get()->GetInputContextHandler()) {
+    input_context->ReplaceSurroundingText(
+        length_before_selection, length_after_selection, replacement_text);
+  }
+
+  return base::ok();
+}
+
 bool InputMethodEngine::FinishComposingText(int context_id,
                                             std::string* error) {
   if (context_id != context_id_ || context_id_ == -1) {
@@ -714,6 +736,7 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
     int context_id,
     const std::u16string& suggestion,
     size_t delete_previous_utf16_len,
+    bool use_replace_surrounding_text,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -724,12 +747,34 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
     return false;
   }
 
-  if (delete_previous_utf16_len) {
-    DeleteSurroundingText(context_id_, -delete_previous_utf16_len,
-                          delete_previous_utf16_len, error);
-  }
+  if (use_replace_surrounding_text) {
+    if (delete_previous_utf16_len) {
+      if (base::expected<void, Error> result = ReplaceSurroundingText(
+              context_id_, delete_previous_utf16_len, 0, suggestion);
+          !result.has_value()) {
+        switch (result.error()) {
+          case Error::kInputMethodNotActive:
+            *error = kErrorNotActive;
+            return false;
+          case Error::kIncorrectContextId:
+            *error = base::StringPrintf(
+                "%s request context id = %d, current context id = %d",
+                kErrorWrongContext, context_id, context_id_);
+            return false;
+        }
+      }
+    } else {
+      CommitText(context_id, suggestion, error);
+    }
+  } else {
+    if (delete_previous_utf16_len) {
+      DeleteSurroundingText(context_id_,
+                            -static_cast<int>(delete_previous_utf16_len),
+                            delete_previous_utf16_len, error);
+    }
 
-  CommitText(context_id, suggestion, error);
+    CommitText(context_id, suggestion, error);
+  }
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
@@ -938,8 +983,8 @@ bool InputMethodEngine::AcceptSuggestion(int context_id, std::string* error) {
     }
     size_t confirmed_length = aw_handler->GetConfirmedLength();
     if (confirmed_length > 0) {
-      DeleteSurroundingText(context_id_, -confirmed_length, confirmed_length,
-                            error);
+      DeleteSurroundingText(context_id_, -static_cast<int>(confirmed_length),
+                            confirmed_length, error);
     }
     CommitText(context_id_, suggestion_text, error);
     aw_handler->HideSuggestion();

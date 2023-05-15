@@ -7,13 +7,44 @@
 #include <tuple>
 
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 
 namespace extensions {
+
+namespace {
+
+// Returns true if `process_id` is associated with a WebUI process.
+bool ProcessHasWebUIBindings(int process_id) {
+  // TODO(crbug.com/1055656): HasWebUIBindings does not always return true for
+  // WebUIs. This should be changed to use something else.
+  return content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      process_id);
+}
+
+// Returns true if `process_id` is associated with a webview owned by the
+// extension with the specified `extension_id`.
+bool IsWebViewProcessForExtension(int process_id,
+                                  const ExtensionId& extension_id) {
+  WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
+  if (!web_view_state->IsGuest(process_id)) {
+    return false;
+  }
+
+  std::string webview_owner;
+  int owner_process_id = -1;
+  bool found_info = web_view_state->GetOwnerInfo(process_id, &owner_process_id,
+                                                 &webview_owner);
+  return found_info && webview_owner == extension_id;
+}
+
+}  // namespace
 
 // Item
 struct ProcessMap::Item {
@@ -119,6 +150,64 @@ bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
          !is_lock_screen_context_;
 }
 
+bool ProcessMap::CanProcessHostContextType(
+    const Extension* extension,
+    const content::RenderProcessHost& process,
+    Feature::Context context_type) {
+  const int process_id = process.GetID();
+  switch (context_type) {
+    case Feature::UNSPECIFIED_CONTEXT:
+      // We never consider unspecified contexts valid. Even though they would be
+      // permissionless, they should never be able to make a request to the
+      // browser.
+      return false;
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+    case Feature::BLESSED_EXTENSION_CONTEXT:
+      // Offscreen documents run in the main extension process, so both of these
+      // require a privileged extension process.
+      return extension && IsPrivilegedExtensionProcess(*extension, process_id);
+    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+      return extension &&
+             IsWebViewProcessForExtension(process_id, extension->id());
+    case Feature::CONTENT_SCRIPT_CONTEXT:
+      // Currently, we assume any process can host a content script.
+      // TODO(crbug.com/1186557): This could be better by looking at
+      // ContentScriptTracker, as we do for user scripts below.
+      return !!extension;
+    case Feature::USER_SCRIPT_CONTEXT:
+      return extension &&
+             ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+                 process, extension->id());
+    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+      // Lock screen contexts are essentially blessed contexts that run on the
+      // lock screen profile. We don't run component hosted apps there, so no
+      // need to allow those.
+      return is_lock_screen_context_ && extension &&
+             !extension->is_hosted_app() &&
+             Contains(extension->id(), process_id);
+    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+      // A blessed web page is a (non-component) hosted app process.
+      return extension && extension->is_hosted_app() &&
+             extension->location() != mojom::ManifestLocation::kComponent &&
+             Contains(extension->id(), process_id);
+    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+      // Unfortunately, we have no way of checking if a *process* can host
+      // untrusted webui contexts. Callers should look at (ideally, the
+      // browser-verified) origin.
+      [[fallthrough]];
+    case Feature::WEB_PAGE_CONTEXT:
+      // Any context not associated with an extension, not running in an
+      // extension process, and without webui bindings can be considered a
+      // web page process.
+      return !extension && !Contains(process_id) &&
+             !ProcessHasWebUIBindings(process_id);
+    case Feature::WEBUI_CONTEXT:
+      // Don't consider extensions in webui (like content scripts) to be
+      // webui.
+      return !extension && ProcessHasWebUIBindings(process_id);
+  }
+}
+
 Feature::Context ProcessMap::GetMostLikelyContextType(
     const Extension* extension,
     int process_id,
@@ -129,10 +218,7 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   // TODO(crbug.com/1055168): Move this into the !extension if statement below
   // or document why we want to return WEBUI_CONTEXT for content scripts in
   // WebUIs.
-  // TODO(crbug.com/1055656): HasWebUIBindings does not always return true for
-  // WebUIs. This should be changed to use something else.
-  if (content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-          process_id)) {
+  if (ProcessHasWebUIBindings(process_id)) {
     return Feature::WEBUI_CONTEXT;
   }
 
@@ -146,9 +232,18 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   }
 
   if (!Contains(extension->id(), process_id)) {
-    // This could equally be UNBLESSED_EXTENSION_CONTEXT, but we don't record
-    // which processes have extension frames in them.
-    // TODO(kalman): Investigate this.
+    // If the process map doesn't contain the process, it might be an extension
+    // frame in a webview.
+    // We (deliberately) don't add webview-hosted frames to the process map and
+    // don't classify them as BLESSED_EXTENSION_CONTEXTs.
+    if (url && extension->origin().IsSameOriginWith(*url) &&
+        IsWebViewProcessForExtension(process_id, extension->id())) {
+      // Yep, it's an extension frame in a webview.
+      return Feature::UNBLESSED_EXTENSION_CONTEXT;
+    }
+
+    // Otherwise, it's a content script (the context in which an extension can
+    // run in an unassociated, non-webview process).
     return Feature::CONTENT_SCRIPT_CONTEXT;
   }
 

@@ -1841,6 +1841,17 @@ bool Database::OpenInternal(const std::string& db_file_path,
   auto sqlite_result_code = ToSqliteResultCode(
       sqlite3_open_v2(uri_file_path.c_str(), &db_, open_flags, vfs_name));
   if (sqlite_result_code != SqliteResultCode::kOk) {
+    // sqlite3_open_v2() will usually create a database connection handle, even
+    // if an error occurs (see https://www.sqlite.org/c3ref/open.html).
+    // Therefore, we'll clear `db_` immediately - particularly before triggering
+    // an error callback which may check whether a database connection exists.
+    if (base::FeatureList::IsEnabled(features::kClearDbIfCloseFails) && db_) {
+      // Deallocate resources allocated during the failed open.
+      // See https://www.sqlite.org/c3ref/close.html.
+      sqlite3_close(db_);
+      db_ = nullptr;
+    }
+
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_open_v2()");
     bool was_poisoned = poisoned_;

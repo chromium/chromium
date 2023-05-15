@@ -918,7 +918,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Now delete the entity and restore it with the same bookmark node.
   BookmarkUndoService undo_service;
-  undo_service.Start(bookmark_model());
+  undo_service.StartObservingBookmarkModel(bookmark_model());
   bookmark_model()->Remove(folder,
                            bookmarks::metrics::BookmarkEditSource::kOther);
 

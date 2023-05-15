@@ -16,11 +16,13 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -156,5 +158,17 @@ public class SingleTabViewBinderUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
                         BrowserUiUtils.ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD));
+    }
+
+    @Test
+    @SmallTest
+    public void testStartMargin() {
+        int lateralMargin = 100;
+        MarginLayoutParams marginLayoutParams =
+                (MarginLayoutParams) mSingleTabView.getLayoutParams();
+        assertEquals(0, marginLayoutParams.getMarginStart());
+
+        mPropertyModel.set(LATERAL_MARGIN, lateralMargin);
+        assertEquals(100, marginLayoutParams.getMarginStart());
     }
 }

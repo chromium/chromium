@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -571,7 +572,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     LOG_IF(WARNING, !success) << "Failed to connect to status updated signal.";
   }
 
-  dbus::ObjectProxy* update_engine_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> update_engine_proxy_;
   base::ObserverList<Observer>::Unchecked observers_;
   update_engine::StatusResult last_status_;
 

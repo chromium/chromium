@@ -34,7 +34,7 @@
 <translation id="1272293450992660632">പിൻ മൂല്യങ്ങൾ പൊരുത്തപ്പെടുന്നില്ല.</translation>
 <translation id="1280820357415527819">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു</translation>
 <translation id="1293556467332435079">Files</translation>
-<translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വമേധയാ പുനരാരംഭിക്കും.</translation>
+<translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വയമേവ പുനരാരംഭിക്കും.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
 <translation id="1313405956111467313">സ്വയമേവയുള്ള പ്രോക്സി ക്രമീകരണം</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
@@ -166,7 +166,6 @@
 <translation id="23721837607121582">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ഫയലുകൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="2383454254762599978">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="2387458720915042159">പ്രോക്‌സി കണക്ഷൻ തരം</translation>
 <translation id="2389832672041313158">ബർമീസ്/മ്യാൻമർ</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ഉപകരണം വായിക്കാൻ മാത്രമുള്ള മോഡിലാണ്</translation>
 <translation id="4826849268470072925">തമിഴ് ITRANS</translation>
 <translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="4843566743023903107">Chromebase-കൾ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">സ്വീഡിഷ്</translation>
 <translation id="6990081529015358884">നിങ്ങൾക്ക് മതിയായ ഇടമില്ല</translation>
 <translation id="6993826899923627728">ഈ ഇനങ്ങൾ നിങ്ങളുടെ ട്രാഷിലാണുള്ളത്</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ഫോൾഡറുകൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="7008426324576352165">അപ്‌ലോഡ് പൂർത്തിയാക്കാൻ നിങ്ങളുടെ സ്ഥാപനത്തിന് കൂടുതൽ സ്‌റ്റോറേജ് ആവശ്യമാണ്.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ഫയലുകൾ നീക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -791,6 +788,7 @@
 <translation id="7252604552361840748">മുകളിലുള്ള വിപുലീകരണം കണ്ടെത്തുക</translation>
 <translation id="7256405249507348194">തിരിച്ചറിയാനാകാത്ത പിശക്: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ലഭ്യമായ സേവനങ്ങൾ</translation>
+<translation id="7291818353625820805">കീകൾ ആവർത്തിക്കണോ? കീബോർഡ് ക്രമീകരണത്തിൽ പോയി ആക്‌സന്റ് അടയാളങ്ങൾ ഓഫാക്കുക</translation>
 <translation id="7292816689782057017">അഡ്‌മിൻ നയം കാരണം, ചില ലൊക്കേഷനുകളിൽ സംരക്ഷിക്കുന്നത് നിയന്ത്രിച്ചിരിക്കുന്നു.</translation>
 <translation id="7294063083760278948">തെലുങ്ക് ലിപ്യന്തരണം</translation>
 <translation id="7295662345261934369">മറ്റുള്ളവരുമായി പങ്കിടുക</translation>
@@ -809,7 +807,7 @@
 <translation id="7419668828140929293">"<ph name="FILENAME" />" പുനഃസ്ഥാപിക്കുന്നു</translation>
 <translation id="7458955835361612701">അടുത്തിടെയുള്ള ചിത്രങ്ങളൊന്നുമില്ല</translation>
 <translation id="7460898608667578234">ഉക്രേനിയന്‍</translation>
-<translation id="7469894403370665791">ഈ നെറ്റ്‍വര്‍ക്കിലേക്ക് സ്വപ്രേരിതമായി ബന്ധിപ്പിക്കുന്നു</translation>
+<translation id="7469894403370665791">ഈ നെറ്റ്‍വര്‍ക്കിലേക്ക് സ്വയമേവ ബന്ധിപ്പിക്കുന്നു</translation>
 <translation id="7486315294984620427">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തണം.</translation>
 <translation id="749452993132003881">ഹിരാഗാന</translation>
 <translation id="7495372004724182530">മലയാള ഉച്ചാരണശബ്‌ദം</translation>

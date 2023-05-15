@@ -177,7 +177,7 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     content::RenderFrameHost* ad_frame =
         ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     const std::string no_op_script = "// No-op script";
-    EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
+    EXPECT_TRUE(ExecJs(ad_frame, no_op_script));
   }
 
   content::WebContents* web_contents() {

@@ -16,6 +16,7 @@ source_set("common") {
   public_deps = [
     ":types",
     "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//components/device_signals/core/common",
     "//third_party/abseil-cpp:absl",
   ]

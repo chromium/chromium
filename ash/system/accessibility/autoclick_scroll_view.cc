@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -143,7 +144,7 @@ class AutoclickScrollButton : public CustomShapeButton,
 
     SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(icon_, kColorAshIconColorPrimary));
+        ui::ImageModel::FromVectorIcon(*icon_, kColorAshIconColorPrimary));
 
     SetClipPath(CreateCustomShapePath(gfx::Rect(GetPreferredSize())));
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -314,7 +315,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)
@@ -358,35 +359,26 @@ const char* AutoclickScrollBubbleView::GetClassName() const {
 
 // ------ AutoclickScrollView  ------ //
 
-AutoclickScrollView::AutoclickScrollView()
-    : scroll_up_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollUp,
-          kAutoclickScrollUpIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_UP,
-          ButtonId::kScrollUp)),
-      scroll_down_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollDown,
-          kAutoclickScrollDownIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_DOWN,
-          ButtonId::kScrollDown)),
-      scroll_left_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollLeft,
-          kAutoclickScrollLeftIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_LEFT,
-          ButtonId::kScrollLeft)),
-      scroll_right_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollRight,
-          kAutoclickScrollRightIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_RIGHT,
-          ButtonId::kScrollRight)),
-      close_scroll_button_(new AutoclickScrollCloseButton()) {
+AutoclickScrollView::AutoclickScrollView() {
   SetPreferredSize(gfx::Size(kScrollPadButtonHypotenuseDips,
                              kScrollPadButtonHypotenuseDips));
-  AddChildView(close_scroll_button_);
-  AddChildView(scroll_up_button_);
-  AddChildView(scroll_down_button_);
-  AddChildView(scroll_left_button_);
-  AddChildView(scroll_right_button_);
+  close_scroll_button_ =
+      AddChildView(std::make_unique<AutoclickScrollCloseButton>());
+  scroll_up_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollUp, kAutoclickScrollUpIcon,
+      IDS_ASH_AUTOCLICK_SCROLL_UP, ButtonId::kScrollUp));
+  scroll_down_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollDown,
+      kAutoclickScrollDownIcon, IDS_ASH_AUTOCLICK_SCROLL_DOWN,
+      ButtonId::kScrollDown));
+  scroll_left_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollLeft,
+      kAutoclickScrollLeftIcon, IDS_ASH_AUTOCLICK_SCROLL_LEFT,
+      ButtonId::kScrollLeft));
+  scroll_right_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollRight,
+      kAutoclickScrollRightIcon, IDS_ASH_AUTOCLICK_SCROLL_RIGHT,
+      ButtonId::kScrollRight));
 }
 
 void AutoclickScrollView::Layout() {

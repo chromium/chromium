@@ -14,9 +14,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/guid.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -75,7 +75,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   };
 
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
-                               base::GUID report_id,
+                               base::Uuid report_id,
                                url::Origin reporting_origin,
                                DebugMode debug_mode,
                                base::Value::Dict additional_fields,
@@ -97,7 +97,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   std::string SerializeAsJson() const;
 
   base::Time scheduled_report_time;
-  base::GUID report_id;  // Used to prevent double counting.
+  base::Uuid report_id;  // Used to prevent double counting.
   url::Origin reporting_origin;
   DebugMode debug_mode;
   base::Value::Dict additional_fields;

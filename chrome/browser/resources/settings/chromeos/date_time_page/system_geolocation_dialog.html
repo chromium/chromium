@@ -1,0 +1,33 @@
+<style include="settings-shared">
+  #dialogBody {
+    padding-top: 10px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 370px;
+  }
+
+</style>
+
+<cr-dialog id="enableSystemGeolocationDialog" show-on-attach>
+  <div slot="title">
+    $i18n{timeZoneGeolocationDialogTitle}
+  </div>
+  <div slot="body" id="dialogBody">
+    <localized-link localized-string="$i18n{timeZoneGeolocationDialogBody}"
+      link-url="$i18n{timeZoneGeolocationDialogLearnMoreUrl}">
+    </localized-link>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton"
+        class="cancel-button"
+        on-click="onCancelClicked_">
+      $i18n{timeZoneGeolocationDialogCancelButton}
+    </cr-button>
+    <cr-button id="enableConfirmation"
+        class="action-button"
+        on-click="onEnableClicked_">
+      $i18n{timeZoneGeolocationDialogTurnOnButton}
+    </cr-button>
+  </div>
+</cr-dialog>

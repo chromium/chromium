@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientUiVisibility, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientUiVisibility, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -36,6 +36,7 @@ suite('AmbientSubpageTest', function() {
       isAmbientModeAllowed: true,
       isPersonalizationJellyEnabled: true,
       isScreenSaverPreviewEnabled: true,
+      isScreenSaverDurationEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
@@ -55,6 +56,7 @@ suite('AmbientSubpageTest', function() {
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null,
       animationTheme = AnimationTheme.kSlideshow, previews: Url[] = [],
+      duration: number|null = 10,
       queryParams: QueryParams = {}): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
@@ -62,6 +64,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
     personalizationStore.data.ambient.previews = previews;
+    personalizationStore.data.ambient.duration = duration;
     const ambientSubpage =
         initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams});
     personalizationStore.notifyObservers();
@@ -205,7 +208,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.click();
+    toggleButton.click();
     let action = await personalizationStore.waitForAction(
                      AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -215,7 +218,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.click();
+    toggleButton.click();
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -238,7 +241,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.$.toggle.click();
+    toggleButton.click();
     let action = await personalizationStore.waitForAction(
                      AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -246,7 +249,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.$.toggle.click();
+    toggleButton.click();
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -401,6 +404,36 @@ suite('AmbientSubpageTest', function() {
     assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
   });
 
+  test('sets duration when a new duration list item is clicked', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const durationList =
+        ambientSubpageElement.shadowRoot!.querySelector('duration-list');
+    assertTrue(!!durationList, 'Duration setting should be renderered');
+
+    const durationOptions =
+        durationList!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
+            'cr-radio-button');
+    assertEquals(
+        5, durationOptions!.length, 'Duration should have exactly 5 options');
+
+    const optionFiveMin = durationOptions[0];
+    const optionTenMin = durationOptions[1];
+    assertTrue(
+        optionTenMin!.checked, 'Ten minutes option is initially selected');
+    personalizationStore.expectAction(
+        AmbientActionName.SET_SCREEN_SAVER_DURATION);
+
+    optionFiveMin!.click();
+    assertTrue(optionFiveMin!.checked, 'Clicked five minutes option');
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_SCREEN_SAVER_DURATION) as
+        SetScreenSaverDurationAction;
+    assertEquals(5, action.minutes, 'Five minutes option should be set');
+  });
+
   test('has main settings visible with path ambient', async () => {
     ambientSubpageElement =
         initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
@@ -420,7 +453,7 @@ suite('AmbientSubpageTest', function() {
   test('scroll to image source when clicked from thumbnail', async () => {
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit, true,
-        AnimationTheme.kSlideshow, [],
+        AnimationTheme.kSlideshow, [], 10,
         {scrollTo: ScrollableTarget.TOPIC_SOURCE_LIST});
 
     await ambientProvider.whenCalled('setAmbientObserver');

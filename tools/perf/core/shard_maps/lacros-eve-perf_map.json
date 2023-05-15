@@ -10,28 +10,19 @@
         "benchmarks": {
             "rendering.desktop.notracing": {
                 "abridged": false
-            }
-        }
-    },
-    "2": {
-        "benchmarks": {
+            },
             "speedometer2": {
                 "abridged": false
             }
         }
     },
-    "3": {
-        "benchmarks": {}
-    },
     "extra_infos": {
         "num_stories": 3,
-        "predicted_min_shard_time": 0,
-        "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 357.0,
+        "predicted_min_shard_time": 284.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 484.0,
         "predicted_max_shard_index": 1,
         "shard #0": 284.0,
-        "shard #1": 357.0,
-        "shard #2": 127.0,
-        "shard #3": 0
+        "shard #1": 484.0
     }
 }

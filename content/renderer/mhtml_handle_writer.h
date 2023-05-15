@@ -60,10 +60,9 @@ class MHTMLHandleWriter {
   virtual void Close() = 0;
 
  private:
-  base::TimeTicks mhtml_write_start_time_;
-
   scoped_refptr<base::TaskRunner> main_thread_task_runner_;
   MHTMLWriteCompleteCallback callback_;
+  bool is_writing_ = false;
 };
 
 // Wraps a base::File target to write MHTML contents to.

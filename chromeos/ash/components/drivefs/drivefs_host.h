@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -122,12 +123,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
     dialog_handler_ = dialog_handler;
   }
 
-  void SetAlwaysEnableDocsOffline(bool enabled) {
-    always_enable_docs_offline_ = enabled;
-  }
-
-  bool ShouldAlwaysEnableDocsOffline() { return always_enable_docs_offline_; }
-
  private:
   class AccountTokenDelegate;
   class MountState;
@@ -139,19 +134,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   // The path to the user's profile.
   const base::FilePath profile_path_;
 
-  Delegate* const delegate_;
-  MountObserver* const mount_observer_;
-  network::NetworkConnectionTracker* const network_connection_tracker_;
-  const base::Clock* const clock_;
-  ash::disks::DiskMountManager* const disk_mount_manager_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<MountObserver, ExperimentalAsh> mount_observer_;
+  const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
+      network_connection_tracker_;
+  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
+      disk_mount_manager_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   std::unique_ptr<DriveFsAuth> account_token_delegate_;
-
-  // When user intent to enable docs offline has been captured in some other
-  // form (e.g. from enabling bulk pinning) don't show the enable docs offline
-  // notification.
-  bool always_enable_docs_offline_ = false;
 
   // State specific to the current mount, or null if not mounted.
   std::unique_ptr<MountState> mount_state_;

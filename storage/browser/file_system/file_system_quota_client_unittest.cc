@@ -4,10 +4,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -163,7 +163,8 @@ class FileSystemQuotaClientTest : public testing::Test {
         auto bucket =
             GetOrCreateBucket(file.origin_url, kDefaultBucketName,
                               FileSystemTypeToQuotaStorageType(file.type));
-        quota_manager_->SetQuota(bucket.storage_key, bucket.type,
+        ASSERT_TRUE(bucket.has_value());
+        quota_manager_->SetQuota(bucket->storage_key, bucket->type,
                                  1024 * 1024 * 100);
         ASSERT_TRUE(
             CreateFileSystemDirectory(path, file.origin_url, file.type));
@@ -173,7 +174,7 @@ class FileSystemQuotaClientTest : public testing::Test {
           // create it later, this will fail due to a quota mismatch.  If we
           // call this before we create the root, it succeeds, but hasn't
           // actually created the cache.
-          GetBucketUsage(quota_client, bucket);
+          GetBucketUsage(quota_client, *bucket);
         }
       } else {
         ASSERT_TRUE(
@@ -209,28 +210,25 @@ class FileSystemQuotaClientTest : public testing::Test {
     ASSERT_EQ(future.Get(), blink::mojom::QuotaStatusCode::kOk);
   }
 
-  BucketLocator GetOrCreateBucket(const std::string& origin,
-                                  const std::string& name,
-                                  StorageType type) {
+  storage::QuotaErrorOr<BucketLocator> GetOrCreateBucket(
+      const std::string& origin,
+      const std::string& name,
+      StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_->GetOrCreateBucketDeprecated(
         {blink::StorageKey::CreateFromStringForTesting(origin), name}, type,
         future.GetCallback());
-    auto bucket = future.Take();
-    EXPECT_TRUE(bucket.has_value());
-    return bucket->ToBucketLocator();
+    return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
-  BucketLocator GetBucket(const std::string& origin,
-                          const std::string& name,
-                          StorageType type) {
+  storage::QuotaErrorOr<BucketLocator> GetBucket(const std::string& origin,
+                                                 const std::string& name,
+                                                 StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_->GetBucketByNameUnsafe(
         blink::StorageKey::CreateFromStringForTesting(origin), name, type,
         future.GetCallback());
-    auto bucket = future.Take();
-    EXPECT_TRUE(bucket.has_value());
-    return bucket->ToBucketLocator();
+    return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
   int64_t usage() const { return usage_; }
@@ -270,7 +268,8 @@ TEST_F(FileSystemQuotaClientTest, NoFileSystemTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
   auto bucket = GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
+  ASSERT_TRUE(bucket.has_value());
+  EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
 }
 
 TEST_F(FileSystemQuotaClientTest, NoFileTest) {
@@ -280,17 +279,19 @@ TEST_F(FileSystemQuotaClientTest, NoFileTest) {
                         {{true, "", 0, kDummyURL1, kFileSystemTypeTemporary}});
 
   auto bucket = GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bucket.has_value());
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
+    EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
   }
 }
 
 TEST_F(FileSystemQuotaClientTest, NonDefaultBucket) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   auto bucket = GetOrCreateBucket(kDummyURL1, "logs_bucket", kTemporary);
-  ASSERT_FALSE(bucket.is_default);
-  EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
-  DeleteBucketData(&quota_client, bucket);
+  ASSERT_TRUE(bucket.has_value());
+  ASSERT_FALSE(bucket->is_default);
+  EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
+  DeleteBucketData(&quota_client, *bucket);
 }
 
 TEST_F(FileSystemQuotaClientTest, OneFileTest) {
@@ -305,8 +306,9 @@ TEST_F(FileSystemQuotaClientTest, OneFileTest) {
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
   auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bucket.has_value());
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(4921 + file_paths_cost, GetBucketUsage(quota_client, bucket));
+    EXPECT_EQ(4921 + file_paths_cost, GetBucketUsage(quota_client, *bucket));
   }
 }
 
@@ -322,9 +324,10 @@ TEST_F(FileSystemQuotaClientTest, TwoFilesTest) {
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
   auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bucket.has_value());
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(10310 + 41 + file_paths_cost,
-              GetBucketUsage(quota_client, bucket));
+              GetBucketUsage(quota_client, *bucket));
   }
 }
 
@@ -341,8 +344,9 @@ TEST_F(FileSystemQuotaClientTest, EmptyFilesTest) {
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
   auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bucket.has_value());
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(file_paths_cost, GetBucketUsage(quota_client, bucket));
+    EXPECT_EQ(file_paths_cost, GetBucketUsage(quota_client, *bucket));
   }
 }
 
@@ -359,9 +363,10 @@ TEST_F(FileSystemQuotaClientTest, SubDirectoryTest) {
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
   auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bucket.has_value());
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(11921 + 4814 + file_paths_cost,
-              GetBucketUsage(quota_client, bucket));
+              GetBucketUsage(quota_client, *bucket));
   }
 }
 
@@ -387,9 +392,10 @@ TEST_F(FileSystemQuotaClientTest, MultiTypeTest) {
 
   for (int i = 0; i < 2; i++) {
     auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+    ASSERT_TRUE(bucket.has_value());
     EXPECT_EQ(133 + 14 + file_paths_cost_temporary + 193 + 9 +
                   file_paths_cost_persistent,
-              GetBucketUsage(quota_client, bucket));
+              GetBucketUsage(quota_client, *bucket));
   }
 }
 
@@ -429,13 +435,15 @@ TEST_F(FileSystemQuotaClientTest, MultiDomainTest) {
 
   for (int i = 0; i < 2; i++) {
     auto bucket1 = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
+    ASSERT_TRUE(bucket1.has_value());
     auto bucket2 = GetBucket(kDummyURL2, kDefaultBucketName, kTemporary);
+    ASSERT_TRUE(bucket2.has_value());
     EXPECT_EQ(1331 + 134 + file_paths_cost_temporary1 + 1903 + 19 +
                   file_paths_cost_persistent1,
-              GetBucketUsage(quota_client, bucket1));
+              GetBucketUsage(quota_client, *bucket1));
     EXPECT_EQ(1319 + 113 + file_paths_cost_temporary2 + 2013 + 18 +
                   file_paths_cost_persistent2,
-              GetBucketUsage(quota_client, bucket2));
+              GetBucketUsage(quota_client, *bucket2));
   }
 }
 
@@ -453,18 +461,19 @@ TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
   // Dispatching three GetUsage tasks.
   set_additional_callback_count(0);
   auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  GetBucketUsageAsync(quota_client, bucket);
-  RunAdditionalBucketUsageTask(quota_client, bucket);
-  RunAdditionalBucketUsageTask(quota_client, bucket);
+  ASSERT_TRUE(bucket.has_value());
+  GetBucketUsageAsync(quota_client, *bucket);
+  RunAdditionalBucketUsageTask(quota_client, *bucket);
+  RunAdditionalBucketUsageTask(quota_client, *bucket);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
 
   // Once more, in a different order.
   set_additional_callback_count(0);
-  RunAdditionalBucketUsageTask(quota_client, bucket);
-  GetBucketUsageAsync(quota_client, bucket);
-  RunAdditionalBucketUsageTask(quota_client, bucket);
+  RunAdditionalBucketUsageTask(quota_client, *bucket);
+  GetBucketUsageAsync(quota_client, *bucket);
+  RunAdditionalBucketUsageTask(quota_client, *bucket);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
@@ -523,31 +532,36 @@ TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
 
   auto foo_temp_bucket =
       GetBucket("http://foo.com/", kDefaultBucketName, kTemporary);
-  DeleteBucketData(&quota_client, foo_temp_bucket);
+  ASSERT_TRUE(foo_temp_bucket.has_value());
+  DeleteBucketData(&quota_client, *foo_temp_bucket);
 
   auto buz_temp_bucket =
       GetOrCreateBucket("http://buz.com/", kDefaultBucketName, kTemporary);
-  DeleteBucketData(&quota_client, buz_temp_bucket);
+  ASSERT_TRUE(buz_temp_bucket.has_value());
+  DeleteBucketData(&quota_client, *buz_temp_bucket);
 
-  EXPECT_EQ(0, GetBucketUsage(quota_client, foo_temp_bucket));
-  EXPECT_EQ(0, GetBucketUsage(quota_client, buz_temp_bucket));
+  EXPECT_EQ(0, GetBucketUsage(quota_client, *foo_temp_bucket));
+  EXPECT_EQ(0, GetBucketUsage(quota_client, *buz_temp_bucket));
 
   auto foo_https_temp_bucket =
       GetBucket("https://foo.com/", kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(foo_https_temp_bucket.has_value());
   EXPECT_EQ(2 + file_paths_cost_temporary_foo_https,
-            GetBucketUsage(quota_client, foo_https_temp_bucket));
+            GetBucketUsage(quota_client, *foo_https_temp_bucket));
 
   auto bar_temp_bucket =
       GetBucket("http://bar.com/", kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bar_temp_bucket.has_value());
   EXPECT_EQ(
       8 + file_paths_cost_temporary_bar + 16 + file_paths_cost_persistent_bar,
-      GetBucketUsage(quota_client, bar_temp_bucket));
+      GetBucketUsage(quota_client, *bar_temp_bucket));
 
   auto bar_https_temp_bucket =
       GetBucket("https://bar.com/", kDefaultBucketName, kTemporary);
+  ASSERT_TRUE(bar_https_temp_bucket.has_value());
   EXPECT_EQ(64 + file_paths_cost_temporary_bar_https + 32 +
                 file_paths_cost_persistent_bar_https,
-            GetBucketUsage(quota_client, bar_https_temp_bucket));
+            GetBucketUsage(quota_client, *bar_https_temp_bucket));
 }
 
 }  // namespace storage

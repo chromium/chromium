@@ -5,29 +5,10 @@
 component("scheduling_metrics") {
   sources = [
     "task_duration_metric_reporter.h",
-    "thread_metrics.cc",
-    "thread_metrics.h",
     "thread_type.h",
-    "total_duration_metric_reporter.cc",
-    "total_duration_metric_reporter.h",
   ]
 
   defines = [ "IS_SCHEDULING_METRICS_IMPL" ]
 
   public_deps = [ "//base" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "thread_metrics_unittest.cc",
-    "total_duration_metric_reporter_unittest.cc",
-  ]
-
-  deps = [
-    ":scheduling_metrics",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

@@ -8,27 +8,27 @@
     <!-- This page is intended to be used by the cross-platform
          PlatformNotificationServiceBrowserTest. -->
     <script src="notification_test_utils.js"></script>
+    <script src="../result_queue.js"></script>
     <script>
       var messagePort = null,
-          messageStack = [],
-          expectingMessage = false;
+          messageQueue = new ResultQueue();
 
       // Requests permission to display Web Notifications. Will return the
       // permission level to the DOM Automation Controller.
       function RequestPermission() {
-        Notification.requestPermission(function (level) {
-          domAutomationController.send(level);
-        });
+        return Notification.requestPermission();
       }
 
       // Instantiates a new non-persistent notification with the given |title|
       // and |options| and forwards the notification shown or error event.
       function DisplayNonPersistentNotification(title, options) {
         const notification = new Notification(title, options || {});
-        notification.addEventListener('show', e =>
-          domAutomationController.send('ok'));
-        notification.addEventListener('error', e =>
-          domAutomationController.send('could not show notification'));
+        return new Promise(resolve => {
+          notification.addEventListener('show', e =>
+            resolve('ok'));
+          notification.addEventListener('error', e =>
+            resolve('could not show notification'));
+        });
       }
 
       // Instantiates a new non-persistent notification with the given |title|
@@ -39,8 +39,10 @@
         notification.addEventListener('show', e => {
           notification.close();
         });
-        notification.addEventListener('close', e => {
-          domAutomationController.send('ok');
+        return new Promise(resolve => {
+          notification.addEventListener('close', e => {
+            resolve('ok');
+          });
         });
       }
 
@@ -50,28 +52,25 @@
         options = options || { body: 'Hello, world!',
                                icon: 'icon.png' };
 
-        GetActivatedServiceWorker('platform_notification_service.js',
+        return GetActivatedServiceWorker('platform_notification_service.js',
                                   location.pathname)
             .then(function (registration) {
               return registration.showNotification(title, options);
             }).then(function () {
               messagePort.addEventListener('message', function (event) {
-                if (expectingMessage)
-                  domAutomationController.send(event.data);
-                else
-                  messageStack.push(event.data);
+                messageQueue.push(event.data);
               });
 
-              domAutomationController.send('ok');
+              return 'ok';
             }).catch(function (error) {
-              domAutomationController.send('' + error);
+              return '' + error;
             });
       }
 
       // Displays a persistent notification having every field in its options
       // bag filled out with non-default values.
       function DisplayPersistentAllOptionsNotification() {
-        DisplayPersistentNotification('Title', {
+        return DisplayPersistentNotification('Title', {
           dir: 'rtl',
           lang: 'nl-NL',
           body: 'Contents',
@@ -94,7 +93,7 @@
 
       // Displays a persistent notification with vibrate field.
       function DisplayPersistentNotificationVibrate() {
-        DisplayPersistentNotification('Title', {
+        return DisplayPersistentNotification('Title', {
           body: 'Contents',
           vibrate: [100, 200, 300]
         });
@@ -102,26 +101,28 @@
 
       // Displays a persistent notification with a data: URL as its image.
       function DisplayPersistentNotificationDataUrlImage() {
-        fetch('icon.png').then(function(response) {
+        return fetch('icon.png').then(function(response) {
           return response.blob();
         }).then(function(blob) {
           var reader = new FileReader();
           reader.readAsDataURL(blob);
-          reader.onloadend = function() {
-            DisplayPersistentNotification('Data URL Title', {
+          return new Promise(resolve => {
+            reader.onloadend = resolve;
+          }).then(function() {
+            return DisplayPersistentNotification('Data URL Title', {
               body: 'Contents',
               icon: reader.result
             });
-          };
+          });
         });
       }
 
       // Displays a persistent notification with a blob URL as its image.
       function DisplayPersistentNotificationBlobImage() {
-        fetch('icon.png').then(function(response) {
+        return fetch('icon.png').then(function(response) {
           return response.blob();
         }).then(function(blob) {
-          DisplayPersistentNotification('Blob Title', {
+          return DisplayPersistentNotification('Blob Title', {
             body: 'Contents',
             icon: URL.createObjectURL(blob)
           });
@@ -130,7 +131,7 @@
 
       // Displays a persistent notification with action buttons.
       function DisplayPersistentNotificationWithActionButtons() {
-        DisplayPersistentNotification('action_button_click', {
+        return DisplayPersistentNotification('action_button_click', {
           body: 'Contents',
           actions: [
             { action: 'actionId1', title: 'actionTitle1', icon: 'icon.png' },
@@ -141,7 +142,7 @@
 
       // Displays a persistent notification with a reply button.
       function DisplayPersistentNotificationWithReplyButton() {
-        DisplayPersistentNotification('action_button_click', {
+        return DisplayPersistentNotification('action_button_click', {
           body: 'Contents',
           actions: [
             { action: 'actionId1', title: 'actionTitle1', icon: 'icon.png',
@@ -152,7 +153,7 @@
 
       // Displays a persistent notification with scenario set to incoming-call.
       function DisplayIncomingCallNotification() {
-        DisplayPersistentNotification('Title', {
+        return DisplayPersistentNotification('Title', {
           body: 'Contents',
           image: 'icon.png',
           scenario: 'incoming-call',
@@ -162,7 +163,7 @@
       // Displays a persistent notification with scenario set to incoming-call
       // with an action button.
       function DisplayIncomingCallNotificationWithActionButton() {
-        DisplayPersistentNotification('Title', {
+        return DisplayPersistentNotification('Title', {
           body: 'Contents',
           image: 'icon.png',
           scenario: 'incoming-call',
@@ -174,7 +175,7 @@
 
       // Gets a comma separated list of currently displayed notification titles
       function GetDisplayedNotifications() {
-        GetActivatedServiceWorker('platform_notification_service.js',
+        return GetActivatedServiceWorker('platform_notification_service.js',
           location.pathname).then(function (sw) {
             return sw.getNotifications();
           }).then(function (notifications) {
@@ -184,29 +185,18 @@
               if (i < (notifications.length -1))
                   notificationResult = notificationResult.concat(',');
             }
-            if (expectingMessage)
-              domAutomationController.send(notificationResult);
-            else
-              messageStack.push(notificationResult);
+            messageQueue.push(notificationResult);
 
-            domAutomationController.send('ok');
+            return 'ok';
           }).catch(function (error) {
-            domAutomationController.send('' + error);
+            return '' + error;
           });
       }
 
-      // Returns the latest received message from the worker. If no message has
-      // been received, nothing will be done. For successfully registered
-      // Service Workers this is OK, however, since the "message" event handler
-      // in DisplayPersistentNotification will take care of notifying the DOM
-      // Automation Controller instead.
+      // Returns the next received message from the worker. Messages are
+      // returned in the order they are received.
       function GetMessageFromWorker() {
-        if (!messageStack.length) {
-          expectingMessage = true;
-          return;
-        }
-
-        domAutomationController.send('' + messageStack.pop());
+        return messageQueue.pop();
       }
     </script>
   </body>

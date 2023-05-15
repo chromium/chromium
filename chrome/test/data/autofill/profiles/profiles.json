@@ -10,6 +10,7 @@
       "ADDRESS_HOME_STREET_ADDRESS" : "1600 Amphitheatre Parkway\nApartment 1",
       "ADDRESS_HOME_STREET_NAME" : "Amphitheatre Parkway",
       "ADDRESS_HOME_HOUSE_NUMBER" : "1600",
+      "ADDRESS_HOME_SUBPREMISE": "1",
       "ADDRESS_HOME_APT_NUM" : "1",
       "ADDRESS_HOME_ZIP" : "94043",
       "ADDRESS_HOME_CITY" : "Mountain View",

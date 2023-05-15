@@ -91,7 +91,7 @@ testcase.openOfficeWordFile = async () => {
 
   // Disable office setup flow so the dialog doesn't open when the file is
   // opened.
-  await sendTestMessage({name: 'setOfficeSetupComplete', complete: true});
+  await sendTestMessage({name: 'setOfficeFileHandler'});
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(

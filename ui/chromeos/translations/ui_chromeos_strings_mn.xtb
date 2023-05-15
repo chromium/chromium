@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
 <translation id="2377590462528165447">Linux-тэй <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан байна</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файлууд сонгогдлоо</translation>
 <translation id="2383454254762599978">Хогийн сав руу зөөх</translation>
 <translation id="2387458720915042159">Прокси холболтын төрөл</translation>
 <translation id="2389832672041313158">Бирм/Мьянмар</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4826849268470072925">Тамил ITRANS</translation>
 <translation id="482932175346970750">Хөтчидөө <ph name="BEGIN_BOLD" />chrome://extensions-г<ph name="END_BOLD" /> бичнэ үү</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
@@ -753,7 +751,6 @@
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Таны хангалттай зай алга байна.</translation>
 <translation id="6993826899923627728">Эдгээр зүйл таны хогийн саванд байна</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> файл сонгосон байна</translation>
 <translation id="7008426324576352165">Танай байгууллагад байршуулалтыг дуусгахад илүү их хадгалах сан шаардлагатай.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> файлыг зөөхийг администраторын бодлогоор блоклосон</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -788,6 +785,7 @@
 <translation id="7252604552361840748">Дээрх өргөтгөлийг олно уу</translation>
 <translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
+<translation id="7291818353625820805">Товчнуудыг давтахыг хүсэж байна уу? Гарын тохиргоонд өргөлтийн тэмдгүүдийг унтраана уу</translation>
 <translation id="7292816689782057017">Администраторын бодлого нь зарим байршилд хадгалахыг хязгаарладаг.</translation>
 <translation id="7294063083760278948">Тэлүгү галиг</translation>
 <translation id="7295662345261934369">Бусадтай хуваалцах</translation>

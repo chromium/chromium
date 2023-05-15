@@ -170,6 +170,12 @@ bool XrSessionCoordinator::EnsureARCoreLoaded() {
 #endif
 }
 
+ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetCurrentActivityContext() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_XrSessionCoordinator_getCurrentActivityContext(env);
+}
+
+// static
 ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetApplicationContext() {
   JNIEnv* env = AttachCurrentThread();
   return Java_XrSessionCoordinator_getApplicationContext(env);

@@ -3424,6 +3424,9 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
 
   auto sub_support = std::make_unique<CompositorFrameSinkSupport>(
       &sub_client, &manager_, kAnotherFrameSinkId, false /* is_root */);
+  if (BeginFrameAcksEnabled()) {
+    sub_support->SetWantsBeginFrameAcks();
+  }
 
   const gfx::Size display_size(100, 100);
   display_->Resize(display_size);

@@ -108,13 +108,13 @@ s! {
 
     pub struct sched_param {
         pub sched_priority: ::c_int,
-        #[cfg(any(target_env = "musl", target_os = "emscripten"))]
+        #[cfg(any(target_env = "musl", target_os = "emscripten", target_env = "ohos"))]
         pub sched_ss_low_priority: ::c_int,
-        #[cfg(any(target_env = "musl", target_os = "emscripten"))]
+        #[cfg(any(target_env = "musl", target_os = "emscripten", target_env = "ohos"))]
         pub sched_ss_repl_period: ::timespec,
-        #[cfg(any(target_env = "musl", target_os = "emscripten"))]
+        #[cfg(any(target_env = "musl", target_os = "emscripten", target_env = "ohos"))]
         pub sched_ss_init_budget: ::timespec,
-        #[cfg(any(target_env = "musl", target_os = "emscripten"))]
+        #[cfg(any(target_env = "musl", target_os = "emscripten", target_env = "ohos"))]
         pub sched_ss_max_repl: ::c_int,
     }
 
@@ -231,11 +231,11 @@ s_no_extra_traits! {
 
     pub struct sockaddr_storage {
         pub ss_family: sa_family_t,
-        __ss_align: ::size_t,
         #[cfg(target_pointer_width = "32")]
-        __ss_pad2: [u8; 128 - 2 * 4],
+        __ss_pad2: [u8; 128 - 2 - 4],
         #[cfg(target_pointer_width = "64")]
-        __ss_pad2: [u8; 128 - 2 * 8],
+        __ss_pad2: [u8; 128 - 2 - 8],
+        __ss_align: ::size_t,
     }
 
     pub struct utsname {
@@ -557,7 +557,29 @@ pub const XATTR_CREATE: ::c_int = 0x1;
 pub const XATTR_REPLACE: ::c_int = 0x2;
 
 cfg_if! {
-    if #[cfg(not(target_env = "uclibc"))] {
+    if #[cfg(target_os = "android")] {
+        pub const RLIM64_INFINITY: ::c_ulonglong = !0;
+    } else {
+        pub const RLIM64_INFINITY: ::rlim64_t = !0;
+    }
+}
+
+cfg_if! {
+    if #[cfg(target_env = "ohos")] {
+        pub const LC_CTYPE: ::c_int = 0;
+        pub const LC_NUMERIC: ::c_int = 1;
+        pub const LC_TIME: ::c_int = 2;
+        pub const LC_COLLATE: ::c_int = 3;
+        pub const LC_MONETARY: ::c_int = 4;
+        pub const LC_MESSAGES: ::c_int = 5;
+        pub const LC_PAPER: ::c_int = 6;
+        pub const LC_NAME: ::c_int = 7;
+        pub const LC_ADDRESS: ::c_int = 8;
+        pub const LC_TELEPHONE: ::c_int = 9;
+        pub const LC_MEASUREMENT: ::c_int = 10;
+        pub const LC_IDENTIFICATION: ::c_int = 11;
+        pub const LC_ALL: ::c_int = 12;
+    } else if #[cfg(not(target_env = "uclibc"))] {
         pub const LC_CTYPE: ::c_int = 0;
         pub const LC_NUMERIC: ::c_int = 1;
         pub const LC_TIME: ::c_int = 2;
@@ -973,7 +995,11 @@ pub const TCP_QUICKACK: ::c_int = 12;
 pub const TCP_CONGESTION: ::c_int = 13;
 pub const TCP_MD5SIG: ::c_int = 14;
 cfg_if! {
-    if #[cfg(all(target_os = "linux", any(target_env = "gnu", target_env = "musl")))] {
+    if #[cfg(all(target_os = "linux", any(
+            target_env = "gnu",
+            target_env = "musl",
+            target_env = "ohos"
+        )))] {
         // WARN: deprecated
         pub const TCP_COOKIE_TRANSACTIONS: ::c_int = 15;
     }
@@ -1006,6 +1032,7 @@ cfg_if! {
         pub const TCP_CM_INQ: ::c_int = TCP_INQ;
         // NOTE: Some CI images doesn't have this option yet.
         // pub const TCP_TX_DELAY: ::c_int = 37;
+        pub const TCP_MD5SIG_MAXKEYLEN: usize = 80;
     }
 }
 
@@ -1201,6 +1228,7 @@ pub const AT_REMOVEDIR: ::c_int = 0x200;
 pub const AT_SYMLINK_FOLLOW: ::c_int = 0x400;
 pub const AT_NO_AUTOMOUNT: ::c_int = 0x800;
 pub const AT_EMPTY_PATH: ::c_int = 0x1000;
+pub const AT_RECURSIVE: ::c_int = 0x8000;
 
 pub const LOG_CRON: ::c_int = 9 << 3;
 pub const LOG_AUTHPRIV: ::c_int = 10 << 3;
@@ -1434,6 +1462,7 @@ cfg_if! {
         pub const UDF_SUPER_MAGIC: ::c_long = 0x15013346;
         pub const USBDEVICE_SUPER_MAGIC: ::c_long = 0x00009fa2;
         pub const XENFS_SUPER_MAGIC: ::c_long = 0xabba1974;
+        pub const NSFS_MAGIC: ::c_long = 0x6e736673;
     } else if #[cfg(target_arch = "s390x")] {
         pub const ADFS_SUPER_MAGIC: ::c_uint = 0x0000adf5;
         pub const AFFS_SUPER_MAGIC: ::c_uint = 0x0000adff;
@@ -1487,6 +1516,7 @@ cfg_if! {
         pub const UDF_SUPER_MAGIC: ::c_uint = 0x15013346;
         pub const USBDEVICE_SUPER_MAGIC: ::c_uint = 0x00009fa2;
         pub const XENFS_SUPER_MAGIC: ::c_uint = 0xabba1974;
+        pub const NSFS_MAGIC: ::c_uint = 0x6e736673;
     }
 }
 
@@ -1612,6 +1642,14 @@ safe_f! {
 
     pub {const} fn IPTOS_ECN(x: u8) -> u8 {
         x & ::IPTOS_ECN_MASK
+    }
+
+    #[allow(ellipsis_inclusive_range_patterns)]
+    pub {const} fn KERNEL_VERSION(a: u32, b: u32, c: u32) -> u32 {
+        ((a << 16) + (b << 8)) + match c {
+            0 ... 255 => c,
+            _ => 255,
+        }
     }
 }
 
@@ -1772,6 +1810,8 @@ extern "C" {
     pub fn sendmsg(fd: ::c_int, msg: *const ::msghdr, flags: ::c_int) -> ::ssize_t;
     pub fn recvmsg(fd: ::c_int, msg: *mut ::msghdr, flags: ::c_int) -> ::ssize_t;
     pub fn uname(buf: *mut ::utsname) -> ::c_int;
+
+    pub fn strchrnul(s: *const ::c_char, c: ::c_int) -> *mut ::c_char;
 }
 
 cfg_if! {

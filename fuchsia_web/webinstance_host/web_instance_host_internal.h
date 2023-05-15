@@ -25,9 +25,9 @@ enum class ContextFeatureFlags : uint64_t;
 // Registers product data for the web_instance Component, ensuring it is
 // registered regardless of how the Component is launched and without requiring
 // all of its clients to provide the required services (until a better solution
-// is available - see crbug.com/1211174). This should only be called once per
+// is available - see crbug.com/1275224). This should only be called once per
 // process, and the calling thread must have an async_dispatcher.
-void RegisterWebInstanceProductData(base::StringPiece component_url);
+void RegisterWebInstanceProductData(base::StringPiece absolute_component_url);
 
 // File names must not contain directory separators, nor match the special
 // current- nor parent-directory filenames.

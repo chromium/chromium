@@ -151,6 +151,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_MENU:
       url = GURL(kChromeHelpViaMenuURL);
       break;
+    case HELP_SOURCE_WEBHID:
+      url = GURL(kChooserHidOverviewUrl);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);
@@ -474,9 +477,10 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowWebStore(Browser* browser) {
+void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
   ShowSingletonTabIgnorePathOverwriteNTP(
-      browser, extension_urls::GetWebstoreLaunchURL());
+      browser, extension_urls::AppendUtmSource(
+                   extension_urls::GetWebstoreLaunchURL(), utm_source_value));
 }
 
 void ShowPrivacySandboxSettings(Browser* browser) {
@@ -486,6 +490,13 @@ void ShowPrivacySandboxSettings(Browser* browser) {
   } else {
     ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
   }
+}
+
+void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
+  CHECK(
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
+  ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
 }
 
 void ShowPrivacySandboxAdPersonalization(Browser* browser) {

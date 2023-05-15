@@ -11,9 +11,9 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
+
 namespace keys = manifest_keys;
 namespace dnr_api = api::declarative_net_request;
 
@@ -46,10 +46,10 @@ base::Value ToValue(const TestRulesetInfo& info) {
 
 template <typename T>
 base::Value::List ToValue(const std::vector<T>& vec) {
-  ListBuilder builder;
+  base::Value::List builder;
   for (const T& t : vec)
     builder.Append(ToValue(t));
-  return builder.Build();
+  return builder;
 }
 
 template <typename T>
@@ -290,27 +290,26 @@ base::Value::Dict CreateManifest(
   if (flags & kConfig_HasBackgroundScript)
     background_scripts.push_back("background.js");
 
-  DictionaryBuilder manifest_builder;
+  base::Value::Dict manifest_builder;
 
   if (flags & kConfig_OmitDeclarativeNetRequestKey) {
     DCHECK(ruleset_info.empty());
   } else {
     manifest_builder.Set(
         dnr_api::ManifestKeys::kDeclarativeNetRequest,
-        DictionaryBuilder()
-            .Set(dnr_api::DNRInfo::kRuleResources, ToValue(ruleset_info))
-            .Build());
+        base::Value::Dict().Set(dnr_api::DNRInfo::kRuleResources,
+                                ToValue(ruleset_info)));
   }
 
-  return manifest_builder.Set(keys::kName, extension_name)
+  // std::move() to trigger rvalue overloads.
+  return std::move(manifest_builder)
+      .Set(keys::kName, extension_name)
       .Set(keys::kPermissions, ToValue(permissions))
       .Set(keys::kVersion, "1.0")
       .Set(keys::kManifestVersion, 2)
-      .Set("background", DictionaryBuilder()
-                             .Set("scripts", ToValue(background_scripts))
-                             .Build())
-      .Set(keys::kBrowserAction, DictionaryBuilder().Build())
-      .Build();
+      .Set("background",
+           base::Value::Dict().Set("scripts", ToValue(background_scripts)))
+      .Set(keys::kBrowserAction, base::Value::Dict());
 }
 
 base::Value::List ToListValue(const std::vector<std::string>& vec) {

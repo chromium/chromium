@@ -77,7 +77,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   // invalidations to a corresponding client.
   std::map<std::string, syncer::ModelTypeSet> token_to_interested_data_types_;
 
-  std::vector<base::raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
+  std::vector<raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
       fake_gcm_drivers_;
 };
 

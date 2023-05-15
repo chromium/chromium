@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/input_method_manager/test_input_method_manager_bridge.h"
@@ -122,7 +123,7 @@ class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
   }
 
  private:
-  ui::InputMethod* const input_method_;
+  const raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
 
   int send_key_event_call_count_ = 0;
   std::vector<std::tuple<int, int>> composition_range_history_;

@@ -4,14 +4,17 @@
 
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 
-#include <set>
+#include <array>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -349,14 +352,12 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     SessionManagerClient::InitializeFakeInMemory();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    const std::string kAffiliationID = "id";
+    constexpr base::StringPiece kAffiliationID = "id";
     // Initialize device policy.
-    std::set<std::string> device_affiliation_ids;
-    device_affiliation_ids.insert(kAffiliationID);
     auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
         FakeSessionManagerClient::Get());
-    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
-        &policy_helper_, device_affiliation_ids)));
+    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
+        &policy_helper_, std::array{kAffiliationID}));
 
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -731,6 +732,8 @@ class SystemProxyCredentialsReuseBrowserTest
 
 // Verifies that the policy provided credentials are not used for regular users.
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest, RegularUser) {
+  base::AddTagToTestResult("feature_id",
+                             "screenplay-04b4c463-f720-4cd4-9e50-7ee009d9a241");
   SetManagedProxy();
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
   LoginWithDialog(kProxyUsername16, kProxyPassword16);

@@ -6,11 +6,11 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_TYPE_H_
 
 // Enum defining the different styles for the toolbar.
-typedef NS_ENUM(NSInteger, ToolbarType) {
+enum class ToolbarType {
   // Primary toolbar.
-  PRIMARY = 0,
+  kPrimary,
   // Secondary toolbar.
-  SECONDARY = 1,
+  kSecondary,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_TYPE_H_

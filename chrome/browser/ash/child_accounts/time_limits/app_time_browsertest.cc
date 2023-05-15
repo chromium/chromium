@@ -10,6 +10,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -174,7 +175,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
                                           LoggedInUserMixin::LogInType::kChild,
                                           embedded_test_server(), this};
 
-  ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
 };
 

@@ -19,20 +19,22 @@
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -43,7 +45,6 @@
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
 #import "ios/chrome/browser/ui/badges/badge_mediator.h"
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
@@ -55,7 +56,6 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_controller_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
@@ -67,7 +67,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -142,6 +141,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (UIViewController*)locationBarViewController {
   return self.viewController;
+}
+
+- (instancetype)initWithBrowser:(Browser*)browser {
+  CHECK(browser);
+  return [super initWithBaseViewController:nil browser:browser];
 }
 
 - (void)start {
@@ -329,7 +333,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     if (destination_url_entered_without_scheme) {
       web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
     }
-    NSMutableDictionary* combinedExtraHeaders =
+    NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
         [web_navigation_util::VariationHeadersForURL(
             url, self.browserState->IsOffTheRecord()) mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
@@ -415,9 +419,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  DefaultBrowserSceneAgent* agent =
-      [DefaultBrowserSceneAgent agentFromScene:sceneState];
-  [agent.nonModalScheduler logUserPastedInOmnibox];
+  [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
+      logUserPastedInOmnibox];
   LogToFETUserPastedURLIntoOmnibox(
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState()));

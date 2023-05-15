@@ -99,7 +99,7 @@ TEST(PasswordManagerMetricsUtil, LogIsPasswordProtectedMetric) {
   LogIsPasswordProtected(false);
 
   // Not testing individual bucket counts since we have 10% random noise
-  histogram_tester.ExpectTotalCount("PasswordManager.IsPasswordProtected", 2);
+  histogram_tester.ExpectTotalCount("PasswordManager.IsPasswordProtected2", 2);
 }
 
 }  // namespace password_manager::metrics_util

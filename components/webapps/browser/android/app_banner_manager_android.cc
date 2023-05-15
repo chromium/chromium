@@ -28,7 +28,6 @@
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -170,26 +169,10 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
   AppBannerManager::PerformInstallableWebAppCheck();
 }
 
-void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge() {
-  manager()->GetData(
-      ParamsToPerformWorkerCheck(),
-      base::BindOnce(
-          &AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge,
-          weak_factory_.GetWeakPtr()));
-}
-
-void AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge(
-    const InstallableData& data) {
-  if (ambient_badge_manager_) {
-    ambient_badge_manager_->OnWorkerCheckResult(data);
-  }
-}
-
-bool AppBannerManagerAndroid::HasSufficientEngagementForAmbientBadge() {
-  double score = GetSiteEngagementService()->GetScore(validated_url_);
-  int min_engagement =
-      features::kAmbientBadgeSiteEngagement_MinEngagement.Get();
-  return score >= min_engagement;
+void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
+    InstallableParams params,
+    InstallableCallback callback) {
+  manager()->GetData(params, std::move(callback));
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -207,9 +190,9 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
   if (native_app_data_.is_null()) {
     a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
     a2hs_params->shortcut_info = ShortcutInfo::CreateShortcutInfo(
-        manifest_url_, manifest(), primary_icon_url_);
+        manifest_url_, manifest(), primary_icon_url_,
+        has_maskable_primary_icon_);
     a2hs_params->install_source = install_source;
-    a2hs_params->has_maskable_primary_icon = has_maskable_primary_icon_;
   } else {
     a2hs_params->app_type = AddToHomescreenParams::AppType::NATIVE;
     a2hs_params->native_app_data = native_app_data_;
@@ -264,13 +247,6 @@ void AppBannerManagerAndroid::OnInstallEvent(
       (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
        a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB)) {
     switch (event) {
-      case AddToHomescreenInstaller::Event::INSTALL_STARTED:
-        AppBannerSettingsHelper::RecordBannerEvent(
-            web_contents(), web_contents()->GetVisibleURL(),
-            a2hs_params.shortcut_info->url.spec(),
-            AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-            base::Time::Now());
-        break;
       case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
         SendBannerAccepted();
         OnInstall(a2hs_params.shortcut_info->display);
@@ -535,17 +511,6 @@ void AppBannerManagerAndroid::Install(
                                     std::move(a2hs_event_callback));
 }
 
-void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
-  ambient_badge_manager_ = std::make_unique<AmbientBadgeManager>(
-      web_contents(), GetAndroidWeakPtr());
-  ambient_badge_manager_->MaybeShow(
-      validated_url_, GetAppName(),
-      CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
-          web_contents(), InstallTrigger::AMBIENT_BADGE)),
-      base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
-                     AppBannerManagerAndroid::GetAndroidWeakPtr()));
-}
-
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(
     const std::u16string& platform) const {
   return base::EqualsASCII(platform, kPlatformPlay);
@@ -569,8 +534,8 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   // one is in flight for the current site.
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
-         WebappsClient::Get()->IsInstallationInProgress(
-             web_contents(), manifest_url_, manifest_id_);
+         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
+                                                        manifest_id_);
 }
 
 void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

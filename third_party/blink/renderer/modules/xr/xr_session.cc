@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
@@ -369,8 +368,8 @@ XRSession::XRSession(
 
   // Clamp to a reasonable min/max size for the default framebuffer scale.
   recommended_framebuffer_scale_ =
-      base::clamp(device_config->default_framebuffer_scale,
-                  kMinDefaultFramebufferScale, kMaxDefaultFramebufferScale);
+      std::clamp(device_config->default_framebuffer_scale,
+                 kMinDefaultFramebufferScale, kMaxDefaultFramebufferScale);
 
   UpdateViews(device_config->views);
 

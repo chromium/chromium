@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 class AppWindowShelfItemController;
@@ -57,8 +58,8 @@ class AppWindowShelfController : public wm::ActivationChangeObserver,
 
  private:
   // Unowned pointers.
-  ChromeShelfController* owner_;
-  wm::ActivationClient* activation_client_ = nullptr;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> owner_;
+  raw_ptr<wm::ActivationClient, ExperimentalAsh> activation_client_ = nullptr;
 
   // ash::ShelfModelObserver:
   void ShelfItemDelegateChanged(const ash::ShelfID& id,

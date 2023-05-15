@@ -6,8 +6,8 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "base/version.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
@@ -80,7 +80,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
                          !fcm_configuration.vapid_auth_secret().empty();
 
   if (canSendViaSync) {
-    message.set_message_id(base::GenerateGUID());
+    message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
     EncryptMessage(
         kSharingSenderID, fcm_configuration.sender_id_p256dh(),
         fcm_configuration.sender_id_auth_secret(), message,
@@ -132,7 +132,7 @@ void SharingFCMSender::SendMessageToServerTarget(
     return;
   }
 
-  message.set_message_id(base::GenerateGUID());
+  message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EncryptMessage(
       kSharingSenderID, server_channel.p256dh(), server_channel.auth_secret(),
       message, SharingChannelType::kServer, std::move(callback),

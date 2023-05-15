@@ -461,7 +461,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Returns the AddressTrackerLinux if present.
-  static const AddressMapOwnerLinux* GetAddressMapOwner();
+  static AddressMapOwnerLinux* GetAddressMapOwner();
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -631,7 +631,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Returns the AddressMapOwnerLinux if present.
-  virtual const AddressMapOwnerLinux* GetAddressMapOwnerInternal() const;
+  virtual AddressMapOwnerLinux* GetAddressMapOwnerInternal();
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

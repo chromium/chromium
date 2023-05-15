@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 
-#import "base/guid.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
@@ -66,7 +66,8 @@ class AutofillCreditCardTableViewControllerTest
             chrome_browser_state_.get());
     PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
-    autofill::CreditCard credit_card(base::GenerateGUID(), origin);
+    autofill::CreditCard credit_card(
+        base::Uuid::GenerateRandomV4().AsLowercaseString(), origin);
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
                            base::ASCIIToUTF16(card_holder_name));
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,

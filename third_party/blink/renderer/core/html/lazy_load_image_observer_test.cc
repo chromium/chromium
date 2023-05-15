@@ -9,12 +9,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
@@ -27,7 +24,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -37,20 +33,16 @@ namespace blink {
 
 namespace {
 
-Vector<char> ReadTestImage() {
-  return test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png"))
-      ->CopyAs<Vector<char>>();
+const Vector<char>& TestImage() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const Vector<char>, test_image,
+      (test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png"))
+           ->CopyAs<Vector<char>>()));
+  return test_image;
 }
 
-class LazyLoadImagesSimTest : public ::testing::WithParamInterface<bool>,
-                              public SimTest {
+class LazyLoadImagesSimTest : public SimTest {
  protected:
-  LazyLoadImagesSimTest() : scoped_lazy_image_loading_for_test_(GetParam()) {}
-
-  void SetLazyLoadEnabled(bool enabled) {
-    WebView().GetPage()->GetSettings().SetLazyLoadEnabled(enabled);
-  }
-
   void LoadMainResource(const String& html_body) {
     SimRequest main_resource("https://example.com/", "text/html");
     LoadURL("https://example.com/");
@@ -58,124 +50,9 @@ class LazyLoadImagesSimTest : public ::testing::WithParamInterface<bool>,
     main_resource.Complete(html_body);
     GetDocument().UpdateStyleAndLayoutTree();
   }
-
-  const ComputedStyle* GetElementComputedStyle(const Element& element,
-                                               PseudoId pseudo_id) {
-    if (pseudo_id == kPseudoIdNone)
-      return element.GetComputedStyle();
-    return element.GetPseudoElement(pseudo_id)->GetComputedStyle();
-  }
-
-  void ExpectCSSBackgroundImageDeferredState(const char* element_id,
-                                             PseudoId pseudo_id,
-                                             bool deferred) {
-    const ComputedStyle* deferred_image_style = GetElementComputedStyle(
-        *GetDocument().getElementById(element_id), pseudo_id);
-    EXPECT_TRUE(deferred_image_style->HasBackgroundImage());
-    bool is_background_image_found = false;
-    for (const FillLayer* background_layer =
-             &deferred_image_style->BackgroundLayers();
-         background_layer; background_layer = background_layer->Next()) {
-      if (StyleImage* deferred_image = background_layer->GetImage()) {
-        EXPECT_TRUE(deferred_image->IsImageResource());
-        EXPECT_EQ(deferred, deferred_image->IsLazyloadPossiblyDeferred());
-        EXPECT_NE(deferred, deferred_image->IsLoaded());
-        is_background_image_found = true;
-      }
-    }
-    EXPECT_TRUE(is_background_image_found);
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeEager));
-  }
-
-  void VerifyImageElementWithDimensionDeferred(const char* img_attribute) {
-    bool is_lazyload_image_enabled = GetParam();
-    SimRequest image_resource("https://example.com/img.png", "image/png");
-
-    if (is_lazyload_image_enabled) {
-      LoadMainResource(String::Format(R"HTML(
-        <body onload='console.log("main body onload");'>
-          <div style='height:10000px;'></div>
-          <img src="img.png" loading="lazy" %s
-               onload= 'console.log("deferred_image onload");'>
-        </body>)HTML",
-                                      img_attribute));
-    } else {
-      LoadMainResource(String::Format(R"HTML(
-        <body onload='console.log("main body onload");'>
-          <div style='height:10000px;'></div>
-          <img src="img.png" %s
-               onload= 'console.log("deferred_image onload");'>
-        </body>)HTML",
-                                      img_attribute));
-    }
-
-    if (!is_lazyload_image_enabled)
-      image_resource.Complete(ReadTestImage());
-
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-    if (!is_lazyload_image_enabled)
-      EXPECT_TRUE(ConsoleMessages().Contains("deferred_image onload"));
-
-    if (is_lazyload_image_enabled) {
-      // Scroll down until the image element is visible.
-      GetDocument().View()->LayoutViewport()->SetScrollOffset(
-          ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
-      Compositor().BeginFrame();
-      test::RunPendingTasks();
-      image_resource.Complete(ReadTestImage());
-      test::RunPendingTasks();
-      EXPECT_TRUE(ConsoleMessages().Contains("deferred_image onload"));
-    }
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_EQ(is_lazyload_image_enabled,
-              GetDocument().IsUseCounted(
-                  WebFeature::kLazyLoadImageLoadingAttributeLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeEager));
-  }
-
- private:
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test_;
 };
 
-TEST_P(LazyLoadImagesSimTest, LargeImageHeight100Width100) {
-  VerifyImageElementWithDimensionDeferred("height='100px' width='100px'");
-}
-
-TEST_P(LazyLoadImagesSimTest, LargeImageHeight1Width100) {
-  VerifyImageElementWithDimensionDeferred("height='1px' width='100px'");
-}
-
-TEST_P(LazyLoadImagesSimTest, LargeImageHeight100Width1) {
-  VerifyImageElementWithDimensionDeferred("height='100px' width='1px'");
-}
-
-TEST_P(LazyLoadImagesSimTest, LargeImageStyleHeight100Width100) {
-  VerifyImageElementWithDimensionDeferred(
-      "style='height: 100px; width: 100px;'");
-}
-
-TEST_P(LazyLoadImagesSimTest, LargeImageStyleHeight100Width1) {
-  VerifyImageElementWithDimensionDeferred("style='height: 100px; width: 1px;'");
-}
-
-TEST_P(LazyLoadImagesSimTest, LargeImageStyleHeight1Width100) {
-  VerifyImageElementWithDimensionDeferred("style='height: 1px; width: 100px;'");
-}
-
-TEST_P(LazyLoadImagesSimTest, ImgSrcset) {
-  if (!GetParam())  // Only test when LazyImage is enabled.
-    return;
-  SetLazyLoadEnabled(true);
+TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
   WebView().Resize(gfx::Size(100, 1));
   LoadMainResource(R"HTML(
         <body onload='console.log("main body onload");'>
@@ -202,7 +79,7 @@ TEST_P(LazyLoadImagesSimTest, ImgSrcset) {
   SimRequest image_resource("https://example.com/img.png?200w", "image/png");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  image_resource.Complete(ReadTestImage());
+  image_resource.Complete(TestImage());
   test::RunPendingTasks();
   EXPECT_TRUE(ConsoleMessages().Contains("deferred_image onload"));
 
@@ -210,16 +87,67 @@ TEST_P(LazyLoadImagesSimTest, ImgSrcset) {
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LazyLoadImagesSimTest,
-                         ::testing::Bool() /*is_lazyload_image_enabled*/);
+TEST_F(LazyLoadImagesSimTest, LazyLoadedImageSizeHistograms) {
+  HistogramTester histogram_tester;
+  SimRequest lazy_a_resource("https://example.com/lazy_a.png", "image/png");
+  SimRequest eager_resource("https://example.com/eager.png", "image/png");
+  SimRequest lazy_b_resource("https://example.com/lazy_b.png", "image/png");
+  LoadMainResource(R"HTML(
+      <img src="lazy_a.png" loading="lazy">
+      <img src="eager.png" loading="eager">
+      <img src="lazy_b.png" loading="lazy">
+    )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Initially, no lazy images should have loaded.
+  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 0);
+
+  // Load the first lazy loaded image.
+  lazy_a_resource.Complete(TestImage());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // We should have one lazy load sample, and one before-load lazy load sample.
+  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
+  int size_kb = TestImage().size() / 1024;
+  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 1);
+  ASSERT_FALSE(GetDocument().LoadEventFinished());
+  histogram_tester.ExpectTotalCount(
+      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", size_kb, 1);
+
+  // Load the eager image which completes the document load.
+  eager_resource.Complete(TestImage());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Load should finish, but because the eager image is not lazy, the lazy load
+  // metrics should not change.
+  ASSERT_TRUE(GetDocument().LoadEventFinished());
+  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
+
+  // Load the second lazy loaded image.
+  lazy_b_resource.Complete(TestImage());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // We should still only have one before-load sample, but we should have two
+  // lazy load samples overall.
+  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 2);
+  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 2);
+  histogram_tester.ExpectTotalCount(
+      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
+}
 
 enum class LazyLoadImagesParams {
-  kDisabled = 0,
-  // LazyImageLoading enabled, DelayOutOfViewportLazyImages disabled.
-  kEnabled,
-  // LazyImageLoading enabled, DelayOutOfViewportLazyImages enabled.
-  kEnabledWithDelayOutOfViewportLazyImages
+  kDelayOutOfViewportDisabled,
+  kDelayOutOfViewportEnabled
 };
 
 class LazyLoadImagesParamsTest
@@ -231,20 +159,9 @@ class LazyLoadImagesParamsTest
   static constexpr int kViewportHeight = 600;
 
   LazyLoadImagesParamsTest()
-      : lazy_image_loading_(std::get<LazyLoadImagesParams>(GetParam()) !=
-                            LazyLoadImagesParams::kDisabled),
-        delay_out_of_viewport_lazy_images_(
+      : delay_out_of_viewport_lazy_images_(
             std::get<LazyLoadImagesParams>(GetParam()) ==
-            LazyLoadImagesParams::kEnabledWithDelayOutOfViewportLazyImages) {
-    // Ensure DelayOutOfViewportLazyImages is not enabled with just
-    // `LazyLoadImagesParams::kEnabled`. This DCHECK ensures we remove
-    // `LazyLoadImagesParams::kEnabledWithDelayOutOfViewportLazyImages` when
-    // DelayOutOfViewportLazyImages is enabled by default.
-    if (RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled()) {
-      DCHECK(std::get<LazyLoadImagesParams>(GetParam()) !=
-             LazyLoadImagesParams::kEnabled);
-    }
-  }
+            LazyLoadImagesParams::kDelayOutOfViewportEnabled) {}
 
   void SetUp() override {
     GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
@@ -266,8 +183,6 @@ class LazyLoadImagesParamsTest
     settings.SetLazyImageLoadingDistanceThresholdPx2G(500);
     settings.SetLazyImageLoadingDistanceThresholdPx3G(600);
     settings.SetLazyImageLoadingDistanceThresholdPx4G(700);
-    settings.SetLazyLoadEnabled(
-        RuntimeEnabledFeatures::LazyImageLoadingEnabled());
   }
 
   // When DelayOutOfViewportLazyImages is enabled, this returns the threshold
@@ -281,7 +196,6 @@ class LazyLoadImagesParamsTest
   }
 
  private:
-  ScopedLazyImageLoadingForTest lazy_image_loading_;
   ScopedDelayOutOfViewportLazyImagesForTest delay_out_of_viewport_lazy_images_;
 };
 
@@ -320,11 +234,6 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
   css_resource.Complete("img { width: 50px; height: 50px; }");
   test::RunPendingTasks();
 
-  Vector<char> full_image = ReadTestImage();
-  ASSERT_LT(2048U, full_image.size());
-  Vector<char> partial_image;
-  partial_image.Append(full_image.data(), 2048U);
-
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
@@ -334,7 +243,7 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
   EXPECT_FALSE(ConsoleMessages().Contains("auto onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("unset onload"));
 
-  eager_resource.Complete(full_image);
+  eager_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -342,18 +251,11 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
   EXPECT_FALSE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("eager onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("lazy onload"));
-  // When automatic lazy image loading is enabled, images that are not
-  // explicitly `loading=lazy` will still block the window load event.
-  // Therefore, the following two images are either:
-  //   a.) Fetched eagerly, when automatic lazy image loading is disabled
-  //       - And therefore block the window load event
-  //   b.) Fetched lazily, when automatic lazy image loading is enabled
-  //       - And still block the window load event, if fetched before it fires.
   EXPECT_FALSE(ConsoleMessages().Contains("auto onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("unset onload"));
 
-  auto_resource->Complete(full_image);
-  unset_resource->Complete(full_image);
+  auto_resource->Complete(TestImage());
+  unset_resource->Complete(TestImage());
 
   // Run pending tasks to process load events from `auto_resource` and
   // `unset_resource`.
@@ -362,17 +264,14 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  // The explicitly `loading=lazy` image never blocks the window load event.
-  if (RuntimeEnabledFeatures::LazyImageLoadingEnabled())
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-  else
-    EXPECT_FALSE(ConsoleMessages().Contains("main body onload"));
+  // `loading=lazy` never blocks the window load event.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("eager onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("lazy onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("auto onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("unset onload"));
 
-  lazy_resource->Complete(full_image);
+  lazy_resource->Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -429,12 +328,7 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
   EXPECT_FALSE(ConsoleMessages().Contains("auto onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("unset onload"));
 
-  Vector<char> full_image = ReadTestImage();
-  ASSERT_LT(2048U, full_image.size());
-  Vector<char> partial_image;
-  partial_image.Append(full_image.data(), 2048U);
-
-  eager_resource.Complete(full_image);
+  eager_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -445,33 +339,27 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
   EXPECT_FALSE(ConsoleMessages().Contains("auto onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("unset onload"));
 
-  if (!RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
-    lazy_resource->Complete(full_image);
-  }
-
-  auto_resource->Complete(full_image);
-  unset_resource->Complete(full_image);
+  auto_resource->Complete(TestImage());
+  unset_resource->Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("eager onload"));
 
-  if (RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
-    // Scroll down so that the images are near the viewport.
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(
-        ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
+  // Scroll down so that the images are near the viewport.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
 
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
 
-    EXPECT_FALSE(ConsoleMessages().Contains("lazy onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("lazy onload"));
 
-    lazy_resource->Complete(full_image);
+  lazy_resource->Complete(TestImage());
 
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-  }
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("eager onload"));
@@ -484,10 +372,8 @@ INSTANTIATE_TEST_SUITE_P(
     LazyImageLoading,
     LazyLoadImagesParamsTest,
     ::testing::Combine(
-        ::testing::Values(
-            LazyLoadImagesParams::kDisabled,
-            LazyLoadImagesParams::kEnabled,
-            LazyLoadImagesParams::kEnabledWithDelayOutOfViewportLazyImages),
+        ::testing::Values(LazyLoadImagesParams::kDelayOutOfViewportEnabled,
+                          LazyLoadImagesParams::kDelayOutOfViewportDisabled),
         ::testing::Values(WebEffectiveConnectionType::kTypeUnknown,
                           WebEffectiveConnectionType::kTypeOffline,
                           WebEffectiveConnectionType::kTypeSlow2G,
@@ -495,13 +381,11 @@ INSTANTIATE_TEST_SUITE_P(
                           WebEffectiveConnectionType::kType3G,
                           WebEffectiveConnectionType::kType4G)));
 
-class LazyLoadAutomaticImagesTest : public SimTest {
+class LazyLoadImagesTest : public SimTest {
  public:
   static constexpr int kViewportWidth = 800;
   static constexpr int kViewportHeight = 600;
   static constexpr int kLoadingDistanceThreshold = 300;
-
-  LazyLoadAutomaticImagesTest() : scoped_lazy_image_loading_for_test_(true) {}
 
   void SetUp() override {
     GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
@@ -517,8 +401,6 @@ class LazyLoadAutomaticImagesTest : public SimTest {
         kLoadingDistanceThreshold);
     settings.SetLazyFrameLoadingDistanceThresholdPx4G(
         kLoadingDistanceThreshold);
-    settings.SetLazyLoadEnabled(
-        RuntimeEnabledFeatures::LazyImageLoadingEnabled());
   }
 
   void LoadMainResourceWithImageFarFromViewport(const char* image_attributes) {
@@ -544,35 +426,6 @@ class LazyLoadAutomaticImagesTest : public SimTest {
     EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
   }
 
-  void TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      const char* image_attributes) {
-    SimSubresourceRequest full_resource("https://example.com/image.png",
-                                        "image/png");
-
-    LoadMainResourceWithImageFarFromViewport(image_attributes);
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-    EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
-
-    // Scrolling down should trigger the fetch of the image.
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(
-        ScrollOffset(0, kLoadingDistanceThreshold + kViewportHeight),
-        mojom::blink::ScrollType::kProgrammatic);
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-    full_resource.Complete(ReadTestImage());
-    test::RunPendingTasks();
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-    EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_TRUE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeEager));
-  }
-
   void TestLoadImageExpectingFullImageLoad(const char* image_attributes) {
     SimSubresourceRequest full_resource("https://example.com/image.png",
                                         "image/png");
@@ -582,7 +435,7 @@ class LazyLoadAutomaticImagesTest : public SimTest {
     EXPECT_FALSE(ConsoleMessages().Contains("main body onload"));
     EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
 
-    full_resource.Complete(ReadTestImage());
+    full_resource.Complete(TestImage());
 
     Compositor().BeginFrame();
     test::RunPendingTasks();
@@ -590,20 +443,13 @@ class LazyLoadAutomaticImagesTest : public SimTest {
     EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
     EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
     EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeLazy));
     EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeEager));
   }
-
- private:
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test_;
-  ScopedLazyImageVisibleLoadTimeMetricsForTest
-      scoped_lazy_image_visible_load_time_metrics_for_test_ = true;
 };
 
-TEST_F(LazyLoadAutomaticImagesTest, LoadAllImagesIfPrinting) {
+TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrinting) {
   TestLoadImageExpectingLazyLoad("id='my_image' loading='lazy'");
 
   // The body's load event should have already fired.
@@ -627,14 +473,14 @@ TEST_F(LazyLoadAutomaticImagesTest, LoadAllImagesIfPrinting) {
   // The loads in this case are blocking the load event.
   EXPECT_EQ(1, GetDocument().Fetcher()->BlockingRequestCount());
 
-  img_resource.Complete(ReadTestImage());
+  img_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromLazyToEager) {
+TEST_F(LazyLoadImagesTest, AttributeChangedFromLazyToEager) {
   TestLoadImageExpectingLazyLoad("id='my_image' loading='lazy'");
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
@@ -646,7 +492,7 @@ TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromLazyToEager) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  full_resource.Complete(ReadTestImage());
+  full_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -654,14 +500,12 @@ TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromLazyToEager) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
   EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-  EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeEager));
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromAutoToEager) {
+TEST_F(LazyLoadImagesTest, AttributeChangedFromAutoToEager) {
   TestLoadImageExpectingFullImageLoad("id='my_image' loading='auto'");
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
@@ -673,14 +517,12 @@ TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromAutoToEager) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
   EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeEager));
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromUnsetToEager) {
+TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
   TestLoadImageExpectingFullImageLoad("id='my_image'");
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
@@ -692,128 +534,12 @@ TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromUnsetToEager) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
   EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeEager));
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageWithLazyAttr) {
-  TestLoadImageExpectingLazyLoad("loading='lazy' width='1px' height='1px'");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeEager));
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageViaStyleWithLazyAttr) {
-  TestLoadImageExpectingLazyLoad(
-      "loading='lazy' style='width:1px;height:1px;'");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeEager));
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageWidth1Height1) {
-  TestLoadImageExpectingFullImageLoad("width='1px' height='1px'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageWidth10Height10) {
-  TestLoadImageExpectingFullImageLoad("width='10px' height='10px'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageWidth1Height11) {
-  TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      "width='1px' height='11px' loading='lazy'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageViaStyleWidth1Height1) {
-  TestLoadImageExpectingFullImageLoad("style='width:1px;height:1px;'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageViaStyleWidth10Height10) {
-  TestLoadImageExpectingFullImageLoad("style='width:10px;height:10px;'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, TinyImageViaStyleWidth11Height1) {
-  TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      "style='width:11px;height:1px;'  loading='lazy'");
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, JavascriptCreatedImageFarFromViewport) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  LoadURL("https://example.com/");
-
-  main_resource.Complete(String::Format(
-      R"HTML(
-        <body onload='console.log("main body onload");'>
-        <div style='height: %dpx;'></div>
-        <script>
-          var my_image = new Image(50, 50);
-          my_image.onload = function() { console.log('my_image onload'); };
-          my_image.src = 'https://example.com/image.png';
-          document.body.appendChild(my_image);
-        </script>
-        </body>)HTML",
-      kViewportHeight + kLoadingDistanceThreshold + 100));
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  EXPECT_FALSE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_FALSE(ConsoleMessages().Contains("my_image onload"));
-
-  image_resource.Complete(ReadTestImage());
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_TRUE(ConsoleMessages().Contains("my_image onload"));
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, JavascriptCreatedImageAddedAfterLoad) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  LoadURL("https://example.com/");
-
-  main_resource.Complete(String::Format(
-      R"HTML(
-        <body onload='console.log("main body onload");'>
-        <div style='height: %dpx;'></div>
-        <script>
-          var my_image = new Image(50, 50);
-          my_image.onload = function() {
-            console.log('my_image onload');
-            document.body.appendChild(this);
-          };
-          my_image.src = 'https://example.com/image.png';
-        </script>
-        </body>)HTML",
-      kViewportHeight + kLoadingDistanceThreshold + 100));
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  EXPECT_FALSE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_FALSE(ConsoleMessages().Contains("my_image onload"));
-
-  image_resource.Complete(ReadTestImage());
-
-  test::RunPendingTasks();
-
-  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_TRUE(ConsoleMessages().Contains("my_image onload"));
-}
-
-TEST_F(LazyLoadAutomaticImagesTest, ImageInsideLazyLoadedFrame) {
+TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
   ScopedLazyFrameLoadingForTest scoped_lazy_frame_loading_for_test(true);
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -883,14 +609,9 @@ TEST_F(LazyLoadAutomaticImagesTest, ImageInsideLazyLoadedFrame) {
   EXPECT_FALSE(ConsoleMessages().Contains("auto onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("unset onload"));
 
-  Vector<char> full_image = ReadTestImage();
-  ASSERT_LT(2048U, full_image.size());
-  Vector<char> partial_image;
-  partial_image.Append(full_image.data(), 2048U);
-
-  eager_resource.Complete(full_image);
-  auto_resource.Complete(full_image);
-  unset_resource.Complete(full_image);
+  eager_resource.Complete(TestImage());
+  auto_resource.Complete(TestImage());
+  unset_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -913,7 +634,7 @@ TEST_F(LazyLoadAutomaticImagesTest, ImageInsideLazyLoadedFrame) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  lazy_resource.Complete(full_image);
+  lazy_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -927,7 +648,7 @@ TEST_F(LazyLoadAutomaticImagesTest, ImageInsideLazyLoadedFrame) {
   EXPECT_TRUE(ConsoleMessages().Contains("unset onload"));
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
+TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -935,29 +656,36 @@ TEST_F(LazyLoadAutomaticImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
                                        "image/png");
 
   LoadURL("https://example.com/");
-  main_resource.Complete(
-      "<body><img src='https://example.com/image.png' /></body>");
-  image_resource.Complete(ReadTestImage());
+  // In-viewport lazy loaded images will be visible before being loaded because
+  // the intersection observer only starts loading them after they are visible.
+  // To work around this, we use a non-lazy image that synchronously loads which
+  // causes the in-viewport lazy image to also be loaded before it is visible.
+  main_resource.Complete(R"HTML(
+        <!doctype html>
+        <img src='https://example.com/image.png'/>
+        <img src='https://example.com/image.png' loading="lazy"/>
+      )HTML");
+  image_resource.Complete(TestImage());
 
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // visible yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 0, 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0, 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
+TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -974,31 +702,31 @@ TEST_F(LazyLoadAutomaticImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
   // VisibleBeforeLoaded should have been recorded immediately when the image
   // became visible.
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
 
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // finished loading yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
 
-  image_resource.Complete(ReadTestImage());
+  image_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
+TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1025,7 +753,7 @@ TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  image_resource.Complete(ReadTestImage());
+  image_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1033,7 +761,7 @@ TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // visible yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 
   // Scroll down such that the image is visible.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
@@ -1044,16 +772,16 @@ TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 0, 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0, 1);
 }
 
-TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
+TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1083,28 +811,88 @@ TEST_F(LazyLoadAutomaticImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
   // VisibleBeforeLoaded should have been recorded immediately when the image
   // became visible.
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
 
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // finished loading yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 
-  image_resource.Complete(ReadTestImage());
+  image_resource.Complete(TestImage());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G", 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 1);
+}
+
+// LazyLoadImages metrics should not be recorded for non-lazy image loads.
+TEST_F(LazyLoadImagesTest, NonLazyIgnoredForLazyLoadImagesMetrics) {
+  HistogramTester histogram_tester;
+
+  SimRequest main_resource("https://aa.com/", "text/html");
+  SimSubresourceRequest above_resource("https://aa.com/above.png", "image/png");
+  SimSubresourceRequest below_resource("https://aa.com/below.png", "image/png");
+  LoadURL("https://aa.com/");
+  main_resource.Complete(
+      String::Format(R"HTML(
+        <!doctype html>
+        <img src='https://aa.com/above.png'/>
+        <div style='height: %dpx;'></div>
+        <img src='https://aa.com/below.png'/>)HTML",
+                     kViewportHeight + kLoadingDistanceThreshold + 100));
+  above_resource.Complete(TestImage());
+  below_resource.Complete(TestImage());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+}
+
+// Allow lazy loading of file:/// urls.
+TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
+  SimRequest main_resource("file:///test.html", "text/html");
+  SimSubresourceRequest image_resource("file:///image.png", "image/png");
+
+  LoadURL("file:///test.html");
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <div style='height: %dpx;'></div>
+        <img id='lazy' src='file:///image.png' loading='lazy'/>
+      )HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* lazy = To<HTMLImageElement>(GetDocument().getElementById("lazy"));
+  EXPECT_FALSE(lazy->CachedImage()->IsLoading());
+
+  // Scroll down such that the image is visible.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
+      mojom::blink::ScrollType::kProgrammatic);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(lazy->CachedImage()->IsLoading());
 }
 
 class DelayOutOfViewportLazyImagesTest : public SimTest {
@@ -1113,9 +901,7 @@ class DelayOutOfViewportLazyImagesTest : public SimTest {
   static constexpr int kViewportHeight = 600;
   static constexpr int kDistanceThresholdPx = 1000;
 
-  DelayOutOfViewportLazyImagesTest()
-      : lazy_image_loading_for_test_(true),
-        delay_out_of_viewport_for_test_(true) {}
+  DelayOutOfViewportLazyImagesTest() : delay_out_of_viewport_for_test_(true) {}
 
   void SetUp() override {
     GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
@@ -1128,11 +914,9 @@ class DelayOutOfViewportLazyImagesTest : public SimTest {
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetLazyImageLoadingDistanceThresholdPx4G(kDistanceThresholdPx);
-    settings.SetLazyLoadEnabled(true);
   }
 
  private:
-  ScopedLazyImageLoadingForTest lazy_image_loading_for_test_;
   ScopedDelayOutOfViewportLazyImagesForTest delay_out_of_viewport_for_test_;
 };
 

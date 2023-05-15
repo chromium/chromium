@@ -11,11 +11,12 @@
 
 namespace media {
 // VideoRateControl is an interface to compute proper quantization
-// parameter and loop filter level for vp8 and vp9.
+// parameter and loop filter level for vp8, vp9, and av1.
 // T is a libvpx::VP(8|9)RateControlRtcConfig
 // S is a libvpx::VP(8|9)RateControlRTC
 // U is a libvpx::VP(8|9)FrameParamsQpRTC
-template <typename T, typename S, typename U>
+// V is the type returned by loop filter computation.
+template <typename T, typename S, typename U, typename V>
 class VideoRateControl {
  public:
   // Creates VideoRateControl using libvpx implementation.
@@ -41,8 +42,8 @@ class VideoRateControl {
     impl_->ComputeQP(frame_params);
     return impl_->GetQP();
   }
-  // GetLoopfilterLevel() is only available for VP9 -- see .cc file.
-  virtual int GetLoopfilterLevel() const { return -1; }
+  // GetLoopfilterLevel() needs to be called after ComputeQP().
+  virtual V GetLoopfilterLevel() const { return impl_->GetLoopfilterLevel(); }
   virtual void PostEncodeUpdate(uint64_t encoded_frame_size,
                                 const U& frame_params);
 

@@ -54,6 +54,12 @@ FastPairHandshakeImpl::FastPairHandshakeImpl(
 
 FastPairHandshakeImpl::~FastPairHandshakeImpl() = default;
 
+void FastPairHandshakeImpl::SetUpHandshake(
+    OnFailureCallback on_failure_callback,
+    OnCompleteCallbackNew on_success_callback) {}
+
+void FastPairHandshakeImpl::Reset() {}
+
 void FastPairHandshakeImpl::OnGattClientInitializedCallback(
     absl::optional<PairFailure> failure) {
   if (failure) {

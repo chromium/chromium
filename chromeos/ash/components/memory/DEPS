@@ -5,6 +5,7 @@ include_rules = [
   "+services/resource_coordinator",
   "+chromeos/ash/components/dbus/debug_daemon",
   "+chromeos/ash/components/dbus/resourced",
+  "+chromeos/ash/components/dbus/swap_management",
   "+components/memory_pressure",
   "+content/public/child",
 ]

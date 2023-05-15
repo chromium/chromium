@@ -167,10 +167,7 @@ gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
     const DrawQuad& rpdq,
     const cc::FilterOperations& filters) {
   const SharedQuadState* shared_quad_state = rpdq.shared_quad_state;
-  float max_pixel_movement = filters.MaximumPixelMovement();
-  gfx::RectF rect(rpdq.rect);
-  rect.Inset(-max_pixel_movement);
-  gfx::Rect expanded_rect = gfx::ToEnclosingRect(rect);
+  gfx::Rect expanded_rect = filters.ExpandRectForPixelMovement(rpdq.rect);
 
   // expanded_rect in the target space
   return cc::MathUtil::MapEnclosingClippedRect(

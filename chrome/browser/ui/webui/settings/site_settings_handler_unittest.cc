@@ -13,11 +13,13 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +42,8 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/hid/hid_chooser_context.h"
+#include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -47,12 +51,18 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/serial/serial_chooser_context.h"
+#include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -91,6 +101,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -104,7 +115,11 @@
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
+#include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
+#include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -123,17 +138,6 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/hid/hid_chooser_context.h"
-#include "chrome/browser/hid/hid_chooser_context_factory.h"
-#include "chrome/browser/serial/serial_chooser_context.h"
-#include "chrome/browser/serial/serial_chooser_context_factory.h"
-#include "services/device/public/cpp/test/fake_hid_manager.h"
-#include "services/device/public/cpp/test/fake_serial_port_manager.h"
-#include "services/device/public/mojom/hid.mojom.h"
-#include "services/device/public/mojom/serial.mojom.h"
 #endif
 
 namespace {
@@ -225,17 +229,20 @@ apps::AppPtr MakeApp(const std::string& app_id,
   return app;
 }
 
-void InstallWebApp(Profile* profile, const GURL& start_url) {
+void RegisterWebApp(Profile* profile, apps::AppPtr app) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   std::vector<apps::AppPtr> deltas;
-  deltas.push_back(
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
-              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
-              apps::InstallReason::kSync));
+  deltas.push_back(std::move(app));
   cache.OnApps(std::move(deltas), apps::AppType::kWeb,
                /*should_notify_initialized=*/true);
 }
+
+struct TestModels {
+  scoped_refptr<browsing_data::MockCookieHelper> cookie_helper;
+  scoped_refptr<browsing_data::MockLocalStorageHelper> local_storage_helper;
+  const raw_ref<FakeBrowsingDataModel, ExperimentalAsh> browsing_data_model;
+};
 
 }  // namespace
 
@@ -536,8 +543,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     EXPECT_EQ(expected_incognito, data.arg2()->GetBool());
   }
 
-  void ValidateZoom(const std::string& expected_host,
-                    const std::string& expected_zoom,
+  struct ZoomLevel {
+    std::string host_or_spec;
+    std::string display_name;
+    std::string zoom;
+  };
+
+  void ValidateZoom(const std::vector<ZoomLevel>& zoom_levels,
                     size_t expected_total_calls) {
     EXPECT_EQ(expected_total_calls, web_ui()->call_data().size());
 
@@ -549,20 +561,22 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     ASSERT_TRUE(data.arg2()->is_list());
     const base::Value::List& exceptions = data.arg2()->GetList();
-    if (expected_host.empty()) {
-      EXPECT_EQ(0U, exceptions.size());
-    } else {
-      EXPECT_EQ(1U, exceptions.size());
+    ASSERT_EQ(zoom_levels.size(), exceptions.size());
+    for (size_t i = 0; i < zoom_levels.size(); i++) {
+      const ZoomLevel& zoom_level = zoom_levels[i];
+      const base::Value::Dict& exception = exceptions[i].GetDict();
 
-      const base::Value::Dict& exception = exceptions[0].GetDict();
+      const std::string* host_or_spec = exception.FindString("hostOrSpec");
+      ASSERT_TRUE(host_or_spec);
+      ASSERT_EQ(zoom_level.host_or_spec, *host_or_spec);
 
-      const std::string* host = exception.FindString("origin");
-      ASSERT_TRUE(host);
-      ASSERT_EQ(expected_host, *host);
+      const std::string* display_name = exception.FindString("displayName");
+      ASSERT_TRUE(display_name);
+      ASSERT_EQ(zoom_level.display_name, *display_name);
 
       const std::string* zoom = exception.FindString("zoom");
       ASSERT_TRUE(zoom);
-      ASSERT_EQ(expected_zoom, *zoom);
+      ASSERT_EQ(zoom_level.zoom, *zoom);
     }
   }
 
@@ -626,9 +640,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     }
   }
 
-  // TODO(https://crbug.com/835712): Currently only set up the cookies and local
-  // storage nodes, will update all other nodes in the future.
-  void SetupModels() {
+  void SetupModels(base::OnceCallback<void(const TestModels& models)> setup) {
     scoped_refptr<browsing_data::MockCookieHelper>
         mock_browsing_data_cookie_helper;
     scoped_refptr<browsing_data::MockLocalStorageHelper>
@@ -653,95 +665,88 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
-        blink::StorageKey::CreateFromStringForTesting(
-            "https://www.example.com/"),
-        2);
+    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>(
+        ChromeBrowsingDataModelDelegate::CreateForProfile(profile()));
+
+    std::move(setup).Run(
+        {mock_browsing_data_cookie_helper,
+         mock_browsing_data_local_storage_helper,
+         ToRawRef<ExperimentalAsh>(*fake_browsing_data_model)});
 
     mock_browsing_data_local_storage_helper->Notify();
-
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://example.com"), "A=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com/"), "B=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://abc.example.com"), "C=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com"), "A=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com"), "B=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com.au"), "A=1");
-
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://google.com.au"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.another-example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(GURL("https://google.com")));
-
-    // Add an entry which will not be grouped with any other entries. This
-    // will require a placeholder origin to be correctly added & removed.
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://ungrouped.com"), "A=1");
-
     mock_browsing_data_cookie_helper->Notify();
-
-    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-    fake_browsing_data_model->AddBrowsingData(
-        url::Origin::Create(GURL("https://www.google.com")),
-        BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
 
     handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
                                    std::move(fake_browsing_data_model));
+  }
+
+  // TODO(https://crbug.com/835712): Currently only set up the cookies and local
+  // storage nodes, will update all other nodes in the future.
+  void SetupModels() {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.local_storage_helper->AddLocalStorageForStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(
+              "https://www.example.com/"),
+          2);
+
+      models.cookie_helper->AddCookieSamples(GURL("http://example.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://www.example.com/"),
+                                             "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://abc.example.com"),
+                                             "C=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com"), "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com.au"),
+                                             "A=1");
+
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://google.com.au"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.another-example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com")));
+
+      // Add an entry which will not be grouped with any other entries. This
+      // will require a placeholder origin to be correctly added & removed.
+      models.cookie_helper->AddCookieSamples(GURL("http://ungrouped.com"),
+                                             "A=1");
+
+      models.browsing_data_model->AddBrowsingData(
+          url::Origin::Create(GURL("https://www.google.com")),
+          BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
+    }));
   }
 
   void SetupModelsWithIsolatedWebAppData(
       const std::string& isolated_web_app_url,
       int64_t usage) {
-    auto container = std::make_unique<LocalDataContainer>(
-        /*browsing_data_cookie_helper=*/nullptr,
-        /*database_helper=*/nullptr,
-        /*browsing_data_local_storage_helper=*/nullptr,
-        /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
-        /*file_system_helper=*/nullptr,
-        /*quota_helper=*/nullptr,
-        /*service_worker_helper=*/nullptr,
-        /*data_shared_worker_helper=*/nullptr,
-        /*cache_storage_helper=*/nullptr);
-    auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
-        std::move(container), profile()->GetExtensionSpecialStoragePolicy());
-
-    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-    fake_browsing_data_model->AddBrowsingData(
-        url::Origin::Create(GURL(isolated_web_app_url)),
-        static_cast<BrowsingDataModel::StorageType>(
-            ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
-        usage);
-
-    handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
-                                   std::move(fake_browsing_data_model));
+    SetupModels(base::BindLambdaForTesting([&](const TestModels& models) {
+      models.browsing_data_model->AddBrowsingData(
+          url::Origin::Create(GURL(isolated_web_app_url)),
+          static_cast<BrowsingDataModel::StorageType>(
+              ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+          usage);
+    }));
   }
 
   base::Value::List GetOnStorageFetchedSentList() {
     handler()->ClearAllSitesMapForTesting();
 
-    base::Value::List get_all_sites_args;
-    get_all_sites_args.Append(kCallbackId);
+    auto get_all_sites_args = base::Value::List().Append(kCallbackId);
     handler()->HandleGetAllSites(get_all_sites_args);
     handler()->ServicePendingRequests();
 
@@ -799,11 +804,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   scoped_refptr<const extensions::Extension> LoadExtension(
       const std::string& extension_name) {
     auto extension = extensions::ExtensionBuilder()
-                         .SetManifest(extensions::DictionaryBuilder()
+                         .SetManifest(base::Value::Dict()
                                           .Set("name", kExtensionName)
                                           .Set("version", "1.0.0")
-                                          .Set("manifest_version", 3)
-                                          .Build())
+                                          .Set("manifest_version", 3))
                          .Build();
 
     extensions::TestExtensionSystem* extension_system =
@@ -1119,6 +1123,107 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(SiteSettingsHandlerTest, Cookies) {
+  base::Value::List get_all_sites_args;
+  get_all_sites_args.Append(kCallbackId);
+
+  // Tests that a cookie eTLD+1 origin, which should use a placeholder in
+  // AllSitesMap, returns the correct origin in GetAllSites.
+  // This corresponds to case 1 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("http://c1.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c1.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(1, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "http://c1.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that multiple cookie eTLD+1 origins result in a single origin being
+  // returned in GetAllSites.
+  // This corresponds to case 2 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("https://c2.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://c2.com"), "B=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c2.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(2, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "http://c2.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(2, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that an HTTP cookie origin will reuse an equivalent HTTPS origin if
+  // one exists.
+  // This corresponds to case 3 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.browsing_data_model->AddBrowsingData(
+          url::Origin::Create(GURL("https://w.c3.com")),
+          BrowsingDataModel::StorageType::kTrustTokens, 50);
+      models.cookie_helper->AddCookieSamples(GURL("http://w.c3.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c3.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(1, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "https://w.c3.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that placeholder cookie eTLD+1 origins get removed from AllSitesMap
+  // when a more specific origin is added later.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("https://c4.com"), "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://w.c4.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c4.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(2, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "https://w.c4.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+}
+
 TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   // Constants used only in this test.
   std::string kAllowed = content_settings::ContentSettingToString(
@@ -1393,7 +1498,12 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 }
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
-  InstallWebApp(profile(), GURL("http://abc.example.com/path"));
+  GURL start_url("http://abc.example.com/path");
+  RegisterWebApp(
+      profile(),
+      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
+              apps::InstallReason::kSync));
 
   SetupModels();
 
@@ -1550,8 +1660,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
   {
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
@@ -1570,8 +1679,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     // Check there is 1 blocked origin.
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
     ASSERT_EQ(1U, exceptions.size());
   }
@@ -1588,8 +1696,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     // Check that there are no blocked or embargoed origins.
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
     ASSERT_TRUE(exceptions.empty());
   }
@@ -1718,10 +1825,10 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
   EXPECT_EQ(
       *ukm_recorder.GetEntryMetric(entry, "Source"),
       static_cast<int64_t>(permissions::PermissionSourceUI::SITE_SETTINGS));
-  size_t num_values = 0;
-  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-            ContentSettingTypeToHistogramValue(
-                ContentSettingsType::NOTIFICATIONS, &num_values));
+
+  EXPECT_EQ(
+      *ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+      ContentSettingTypeToHistogramValue(ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
@@ -1917,11 +2024,10 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
 
   scoped_refptr<const extensions::Extension> extension;
   extension = extensions::ExtensionBuilder()
-                  .SetManifest(extensions::DictionaryBuilder()
+                  .SetManifest(base::Value::Dict()
                                    .Set("name", kExtensionName)
                                    .Set("version", "1.0.0")
-                                   .Set("manifest_version", 2)
-                                   .Build())
+                                   .Set("manifest_version", 2))
                   .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                   .Build();
 
@@ -1943,8 +2049,7 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
 }
 
 TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
-  // When the extension is loaded, the displayName is the extension's name, and
-  // there is extensionNameWithId field.
+  // When the extension is loaded, displayName is the extension's name and id.
   auto extension = LoadExtension(kExtensionName);
   auto extension_url = extension->url().spec();
   {
@@ -1957,28 +2062,14 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       get_origin_permissions_args.Append(std::move(category_list));
     }
     handler()->HandleGetOriginPermissions(get_origin_permissions_args);
-    ValidateOrigin(extension_url, extension_url, kExtensionName,
+    std::string expected_display_name =
+        base::StringPrintf("Test Extension (ID: %s)", extension->id().c_str());
+    ValidateOrigin(extension_url, extension_url, expected_display_name,
                    CONTENT_SETTING_ASK,
                    site_settings::SiteSettingSource::kDefault, 1U);
-    // Validates the extensionNameWithId field.
-    {
-      const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-      EXPECT_EQ("cr.webUIResponse", data.function_name());
-      ASSERT_TRUE(data.arg3()->is_list());
-      EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value& exception = data.arg3()->GetList()[0];
-      ASSERT_TRUE(exception.is_dict());
-      const std::string* extension_name_with_id =
-          exception.GetDict().FindString(site_settings::kExtensionNameWithId);
-      ASSERT_TRUE(extension_name_with_id);
-      ASSERT_EQ(base::StringPrintf("Test Extension (ID: %s)",
-                                   extension->id().c_str()),
-                *extension_name_with_id);
-    }
   }
 
-  // When the extension is unloaded, the displayName is the extension's origin,
-  // and there is no extensionNameWithId field.
+  // When the extension is unloaded, the displayName is the extension's origin.
   UnloadExtension(extension->id());
   {
     base::Value::List get_origin_permissions_args;
@@ -1994,17 +2085,6 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
         extension_url, extension_url,
         base::StringPrintf("chrome-extension://%s", extension->id().c_str()),
         CONTENT_SETTING_ASK, site_settings::SiteSettingSource::kDefault, 2U);
-    // Validates there is no extensionNameWithId field.
-    {
-      const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-      EXPECT_EQ("cr.webUIResponse", data.function_name());
-      ASSERT_TRUE(data.arg3()->is_list());
-      EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
-      const std::string* extension_name_with_id =
-          exception.FindString(site_settings::kExtensionNameWithId);
-      ASSERT_FALSE(extension_name_with_id);
-    }
   }
 }
 
@@ -2035,25 +2115,159 @@ TEST_F(SiteSettingsHandlerTest, Incognito) {
 }
 
 TEST_F(SiteSettingsHandlerTest, ZoomLevels) {
-  std::string host("http://www.google.com");
+  std::string http_host("www.google.com");
+  std::string error_host("chromewebdata");
+  std::string data_url("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==");
   double zoom_level = 1.1;
 
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(profile());
-  host_zoom_map->SetZoomLevelForHost(host, zoom_level);
-  ValidateZoom(host, "122%", 1U);
+  host_zoom_map->SetZoomLevelForHost(http_host, zoom_level);
+  host_zoom_map->SetZoomLevelForHost(error_host, zoom_level);
+  host_zoom_map->SetZoomLevelForHost(data_url, zoom_level);
+  ValidateZoom({{error_host, "(Chrome error pages)", "122%"},
+                {data_url, data_url, "122%"},
+                {http_host, http_host, "122%"}},
+               3U);
 
   base::Value::List args;
   handler()->HandleFetchZoomLevels(args);
-  ValidateZoom(host, "122%", 2U);
+  ValidateZoom({{error_host, "(Chrome error pages)", "122%"},
+                {data_url, data_url, "122%"},
+                {http_host, http_host, "122%"}},
+               4U);
 
-  args.Append("http://www.google.com");
+  args.Append(http_host);
   handler()->HandleRemoveZoomLevel(args);
-  ValidateZoom("", "", 3U);
+  args.front() = base::Value(error_host);
+  handler()->HandleRemoveZoomLevel(args);
+  args.front() = base::Value(data_url);
+  handler()->HandleRemoveZoomLevel(args);
+  ValidateZoom({}, 7U);
 
   double default_level = host_zoom_map->GetDefaultZoomLevel();
-  double level = host_zoom_map->GetZoomLevelForHostAndScheme("http", host);
+  double level = host_zoom_map->GetZoomLevelForHostAndScheme("http", http_host);
   EXPECT_EQ(default_level, level);
+}
+
+class SiteSettingsHandlerIsolatedWebAppTest : public SiteSettingsHandlerTest {
+ public:
+  void SetUp() override {
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    InstallIsolatedWebApp(iwa_url(), "IWA Name");
+
+    SiteSettingsHandlerTest::SetUp();
+  }
+
+ protected:
+  GURL iwa_url() {
+    return GURL(
+        "isolated-app://"
+        "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  }
+
+  web_app::AppId InstallIsolatedWebApp(const GURL& iwa_url,
+                                       const std::string& name) {
+    web_app::AppId app_id =
+        web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, name);
+    RegisterWebApp(profile(), MakeApp(app_id, apps::AppType::kWeb,
+                                      iwa_url.spec(), apps::Readiness::kReady,
+                                      apps::InstallReason::kUser));
+    return app_id;
+  }
+
+  content::HostZoomMap* GetIwaHostZoomMap(const GURL& url) {
+    auto url_info = *web_app::IsolatedWebAppUrlInfo::Create(url);
+    content::StoragePartition* iwa_partition = profile()->GetStoragePartition(
+        url_info.storage_partition_config(profile()));
+    return content::HostZoomMap::GetForStoragePartition(iwa_partition);
+  }
+};
+
+TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
+  GURL https_url("https://" + iwa_url().host());
+
+  SetupModelsWithIsolatedWebAppData(iwa_url().spec(), 50);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(iwa_url(), iwa_url(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(https_url, https_url,
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+
+  base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+  ASSERT_EQ(site_groups.size(), 2u);
+  const base::Value::Dict& group1 = site_groups[0].GetDict();
+  const base::Value::Dict& origin1 =
+      CHECK_DEREF(group1.FindList("origins"))[0].GetDict();
+  EXPECT_EQ(CHECK_DEREF(group1.FindString("etldPlus1")), iwa_url());
+  EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
+  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url());
+  EXPECT_EQ(origin1.FindDouble("usage").value(), 50.0);
+
+  const base::Value::Dict& group2 = site_groups[1].GetDict();
+  const base::Value::Dict& origin2 =
+      CHECK_DEREF(group2.FindList("origins"))[0].GetDict();
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_url().host());
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_url().host());
+  EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
+  EXPECT_EQ(origin2.FindDouble("usage").value(), 0.0);
+}
+
+TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
+  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(iwa_url());
+
+  std::string host_or_spec = url::Origin::Create(iwa_url()).Serialize();
+  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  ValidateZoom({{host_or_spec, "IWA Name", "122%"}}, 1U);
+
+  base::Value::List args;
+  handler()->HandleFetchZoomLevels(args);
+  ValidateZoom({{host_or_spec, "IWA Name", "122%"}}, 2U);
+
+  args.Append(host_or_spec);
+  handler()->HandleRemoveZoomLevel(args);
+  ValidateZoom({}, 3U);
+
+  double default_level = iwa_host_zoom_map->GetDefaultZoomLevel();
+  double level = iwa_host_zoom_map->GetZoomLevelForHostAndScheme(
+      "isolated-app", iwa_url().host());
+  EXPECT_EQ(default_level, level);
+}
+
+TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevelsSortedByAppName) {
+  GetIwaHostZoomMap(iwa_url())->SetZoomLevelForHost(iwa_url().host(), 1.1);
+
+  // Install 3 more IWAs.
+  GURL iwa3_url(
+      "isolated-app://"
+      "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  InstallIsolatedWebApp(iwa3_url, "IWA Name 3");
+  GetIwaHostZoomMap(iwa3_url)->SetZoomLevelForHost(iwa3_url.host(), 1.1);
+
+  GURL iwa2_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  InstallIsolatedWebApp(iwa2_url, "IWA Name 2");
+  GetIwaHostZoomMap(iwa2_url)->SetZoomLevelForHost(iwa2_url.host(), 1.1);
+
+  // Don't set a zoom for this app to make sure it's not in the list.
+  GURL iwa4_url(
+      "isolated-app://"
+      "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  InstallIsolatedWebApp(iwa4_url, "IWA Name 4");
+
+  base::Value::List args;
+  handler()->HandleFetchZoomLevels(args);
+
+  ValidateZoom(
+      {{url::Origin::Create(iwa_url()).Serialize(), "IWA Name", "122%"},
+       {url::Origin::Create(iwa2_url).Serialize(), "IWA Name 2", "122%"},
+       {url::Origin::Create(iwa3_url).Serialize(), "IWA Name 3", "122%"}},
+      2U);
 }
 
 class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
@@ -3819,7 +4033,6 @@ TEST_F(SiteSettingsHandlerBluetoothTest, HandleSetOriginPermissionsPolicyOnly) {
   TestHandleSetOriginPermissionsPolicyOnly();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class SiteSettingsHandlerHidTest
     : public SiteSettingsHandlerChooserExceptionTest {
  protected:
@@ -3954,12 +4167,14 @@ class SiteSettingsHandlerHidTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*persistent_device_);
+    return base::Value(
+        HidChooserContext::DeviceInfoToValue(*persistent_device_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*user_granted_device_);
+    return base::Value(
+        HidChooserContext::DeviceInfoToValue(*user_granted_device_));
   }
 
   std::string GetAllDevicesDisplayName() override { return "Any HID device"; }
@@ -4198,12 +4413,14 @@ class SiteSettingsHandlerSerialTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*persistent_port_);
+    return base::Value(
+        SerialChooserContext::PortInfoToValue(*persistent_port_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*user_granted_port_);
+    return base::Value(
+        SerialChooserContext::PortInfoToValue(*user_granted_port_));
   }
 
   std::string GetAllDevicesDisplayName() override { return "Any serial port"; }
@@ -4260,7 +4477,6 @@ TEST_F(SiteSettingsHandlerSerialTest, HandleSetOriginPermissions) {
 TEST_F(SiteSettingsHandlerSerialTest, HandleSetOriginPermissionsPolicyOnly) {
   TestHandleSetOriginPermissionsPolicyOnly();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SiteSettingsHandlerUsbTest
     : public SiteSettingsHandlerChooserExceptionTest {
@@ -4400,12 +4616,14 @@ class SiteSettingsHandlerUsbTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*persistent_device_);
+    return base::Value(
+        UsbChooserContext::DeviceInfoToValue(*persistent_device_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*user_granted_device_);
+    return base::Value(
+        UsbChooserContext::DeviceInfoToValue(*user_granted_device_));
   }
 
   std::string GetAllDevicesDisplayName() override {
@@ -4630,8 +4848,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   // In the beginning, there should be nothing stored in the origin data.
   ASSERT_EQ(0u, user_prefs->GetDict(prefs::kMediaCdmOriginData).size());
 
-  base::Value::Dict entry_google;
-  entry_google.Set(
+  auto entry_google = base::Value::Dict().Set(
       "https://www.google.com/",
       base::UnguessableTokenToValue(base::UnguessableToken::Create()));
 

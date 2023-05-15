@@ -12,6 +12,7 @@
 
 enum class UrlLoadStrategy;
 
+@protocol HistoryCoordinatorDelegate;
 @protocol HistoryPresentationDelegate;
 
 // Coordinator that presents History.
@@ -24,8 +25,11 @@ enum class UrlLoadStrategy;
 // Delegate used to make the Tab UI visible.
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
 
-// Stops this Coordinator then calls `completionHandler`.
-- (void)stopWithCompletion:(ProceduralBlock)completionHandler;
+// The delegate handling coordinator dismissal.
+@property(nonatomic, weak) id<HistoryCoordinatorDelegate> delegate;
+
+// Dismisses this Coordinator then calls `completionHandler`.
+- (void)dismissWithCompletion:(ProceduralBlock)completionHandler;
 
 @end
 

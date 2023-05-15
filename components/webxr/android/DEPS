@@ -6,7 +6,6 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public",
   "+device/vr/android",
   "+device/vr/buildflags",
-  "+device/vr/public/cpp",
   "+mojo/public/cpp/bindings",
   "+ui/android",
   "+ui/base",

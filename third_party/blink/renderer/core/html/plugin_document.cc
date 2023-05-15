@@ -181,7 +181,7 @@ WebPluginContainerImpl* PluginDocumentParser::GetPluginView() const {
 }
 
 PluginDocument::PluginDocument(const DocumentInit& initializer)
-    : HTMLDocument(initializer, kPluginDocumentClass),
+    : HTMLDocument(initializer, {DocumentClass::kPlugin}),
       background_color_(
           GetFrame()->GetPluginData()->PluginBackgroundColorForMimeType(
               initializer.GetMimeType())) {

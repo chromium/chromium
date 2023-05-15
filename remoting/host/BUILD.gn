@@ -50,6 +50,12 @@ process_version("remoting_version") {
   output = "$target_gen_dir/version.h"
 }
 
+# ChromeOS enterprise parameters used in common host classes.
+# Split out in its own target to prevent GN from pulling in chromeos deps.
+source_set("enterprise_params") {
+  sources = [ "//remoting/host/chromeos/chromeos_enterprise_params.h" ]
+}
+
 source_set("host") {
   public_deps = [
     ":common",
@@ -432,6 +438,7 @@ static_library("common") {
     "//remoting/host/security_key",
     "//remoting/host/webauthn",
     "//remoting/proto/ftl/v1:ftl_messages",
+    "//remoting/proto/remoting/v1:chrome_os_enterprise_options",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
     "//remoting/resources",
@@ -451,6 +458,7 @@ static_library("common") {
 
   public_deps = [
     ":common_headers",
+    ":enterprise_params",
     ":host_extension",
     "//ipc",
     "//remoting/host/base",
@@ -582,6 +590,7 @@ static_library("common") {
       "disconnect_window_linux.cc",
       "pairing_registry_delegate_linux.cc",
       "pairing_registry_delegate_linux.h",
+      "usage_stats_consent_linux.cc",
       "xsession_chooser_linux.cc",
     ]
     if (remoting_use_x11) {
@@ -593,7 +602,7 @@ static_library("common") {
       ]
     }
 
-    # webRTC only enables portal support if PipeWire support is enabled
+    # WebRTC only enables portal support if PipeWire support is enabled
     if (rtc_use_pipewire) {
       configs += [ "//third_party/webrtc/modules/portal:gio" ]
     }
@@ -832,6 +841,7 @@ source_set("unit_tests") {
     "//remoting/host/setup:common",
     "//remoting/host/webauthn:unit_tests",
     "//remoting/proto",
+    "//remoting/proto/remoting/v1:chrome_os_enterprise_options",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol:test_support",
     "//remoting/resources",

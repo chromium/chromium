@@ -7,7 +7,7 @@
 #include "base/base64url.h"
 #include "net/base/url_util.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
@@ -44,4 +44,4 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url) {
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

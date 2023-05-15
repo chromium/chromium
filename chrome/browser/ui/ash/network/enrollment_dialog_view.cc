@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,7 +67,7 @@ class EnrollmentDialogView : public views::DialogDelegateView {
 
   bool accepted_;
   std::string network_name_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   GURL target_uri_;
 };
 
@@ -158,7 +159,7 @@ class DialogEnrollmentDelegate {
  private:
   std::string network_guid_;
   std::string network_name_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 DialogEnrollmentDelegate::DialogEnrollmentDelegate(

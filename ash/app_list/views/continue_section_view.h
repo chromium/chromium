@@ -9,6 +9,7 @@
 #include "ash/app_list/views/continue_task_container_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -137,7 +138,7 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // when the privacy notice does not have enough items after an update.
   void MaybeAnimateOutPrivacyNotice();
 
-  AppListViewDelegate* const view_delegate_;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
   bool tablet_mode_ = false;
 
@@ -145,10 +146,12 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   base::OneShotTimer privacy_notice_shown_timer_;
 
   // Not owned.
-  AppListNudgeController* nudge_controller_ = nullptr;
+  raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
+      nudge_controller_ = nullptr;
 
-  AppListToastView* privacy_toast_ = nullptr;
-  ContinueTaskContainerView* suggestions_container_ = nullptr;
+  raw_ptr<AppListToastView, ExperimentalAsh> privacy_toast_ = nullptr;
+  raw_ptr<ContinueTaskContainerView, ExperimentalAsh> suggestions_container_ =
+      nullptr;
 
   base::WeakPtrFactory<ContinueSectionView> weak_ptr_factory_{this};
 };

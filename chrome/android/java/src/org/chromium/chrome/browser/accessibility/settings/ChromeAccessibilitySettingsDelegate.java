@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.accessibility.settings;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -21,9 +20,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
 public class ChromeAccessibilitySettingsDelegate implements AccessibilitySettingsDelegate {
-    private static final String READER_MODE_SELECTED_HISTOGRAM =
-            "DomDistiller.ReaderModeAccessibilitySettingSelected";
-
     private static class AccessibilityTabSwitcherDelegate implements BooleanPreferenceDelegate {
         @Override
         public boolean isEnabled() {
@@ -44,7 +40,6 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
 
         @Override
         public void setEnabled(boolean value) {
-            RecordHistogram.recordBooleanHistogram(READER_MODE_SELECTED_HISTOGRAM, (Boolean) value);
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) value);
         }

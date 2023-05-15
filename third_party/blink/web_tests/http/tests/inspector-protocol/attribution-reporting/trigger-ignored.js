@@ -10,9 +10,15 @@
 
   const issue = dp.Audits.onceIssueAdded();
 
-  await dp.Runtime.evaluate({expression: `
-    fetch('/inspector-protocol/attribution-reporting/resources/register-source-and-trigger.php',{headers:{'Attribution-Reporting-Eligible':'event-source'}});
-  `});
+  await dp.Runtime.evaluate({
+    expression: `
+    fetch('/inspector-protocol/attribution-reporting/resources/register-source-and-trigger.php',
+        {attributionReporting: {
+          eventSourceEligible: true,
+          triggerEligible: false,
+        }});
+  `
+  });
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();

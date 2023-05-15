@@ -8,11 +8,25 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+bool IsDisabledStateAllowed(
+    parent_access_ui::mojom::ParentAccessParams::FlowType flow_type) {
+  return flow_type == parent_access_ui::mojom::ParentAccessParams::FlowType::
+                          kExtensionAccess;
+}
+}  // namespace
+
 namespace ash {
 
 ParentAccessStateTracker::ParentAccessStateTracker(
-    parent_access_ui::mojom::ParentAccessParams::FlowType flow_type)
+    parent_access_ui::mojom::ParentAccessParams::FlowType flow_type,
+    bool is_disabled)
     : flow_type_(flow_type) {
+  if (is_disabled) {
+    CHECK(IsDisabledStateAllowed(flow_type_));
+    flow_result_ = FlowResult::kRequestsDisabled;
+    return;
+  }
   switch (flow_type_) {
     case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
       // Initialize flow result to kParentAuthentication for flows without an
@@ -31,19 +45,10 @@ ParentAccessStateTracker::~ParentAccessStateTracker() {
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
       flow_result_, FlowResult::kNumStates);
-
-  switch (flow_type_) {
-    case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
-      base::UmaHistogramEnumeration(
-          parent_access::GetHistogramTitleForFlowType(
-              parent_access::kParentAccessFlowResultHistogramBase, flow_type_),
-          flow_result_, FlowResult::kNumStates);
-      break;
-    case parent_access_ui::mojom::ParentAccessParams::FlowType::
-        kExtensionAccess:
-      // TODO(b/262451256): Implement metrics for extension flow.
-      break;
-  }
+  base::UmaHistogramEnumeration(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase, flow_type_),
+      flow_result_, FlowResult::kNumStates);
 }
 
 void ParentAccessStateTracker::OnWebUiStateChanged(FlowResult result) {

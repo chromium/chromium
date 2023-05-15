@@ -7,9 +7,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 
 import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
-import {createPaymentsSection, getLocalAndServerCreditCardListItems} from './payments_section_utils.js';
+import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
@@ -44,6 +45,7 @@ suite('PaymentsSection', function() {
       removeCardExpirationAndTypeTitles: true,
       virtualCardEnrollmentEnabled: true,
       showIbansSettings: true,
+      deviceAuthAvailable: true,
     });
   });
 
@@ -265,5 +267,215 @@ suite('PaymentsSection', function() {
                 '#addPaymentMethods');
         assertTrue(!!addPaymentMethodsButton);
         assertTrue(addPaymentMethodsButton.hidden);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleShownIfBiometricIsAvailableAndAutofillToggleIsOn',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        if (isMac || isWindows) {
+          assertTrue(!!mandatoryAuthToggle);
+        } else {
+          assertFalse(!!mandatoryAuthToggle);
+        }
+      });
+
+  test(
+      'verifyMandatoryAuthToggleShownIfBiometricIsNotAvailableAndMandatoryAuthToggleIsOn',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: false});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: true},
+            });
+
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        if (isMac || isWindows) {
+          assertTrue(!!mandatoryAuthToggle);
+        } else {
+          assertFalse(!!mandatoryAuthToggle);
+        }
+      });
+
+  test(
+      'verifyMandatoryAuthToggleShownIfBiometricIsAvailableAndMandatoryAuthToggleIsOn',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: true},
+            });
+
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        if (isMac || isWindows) {
+          assertTrue(!!mandatoryAuthToggle);
+        } else {
+          assertFalse(!!mandatoryAuthToggle);
+        }
+      });
+
+  test(
+      'verifyMandatoryAuthToggleNotShownIfBiometricIsNotAvailableAndMandatoryAuthToggleIsOff',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: false});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+        assertFalse(!!mandatoryAuthToggle);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleNotShownIfBiometricIsAvailableAndAutofillToggleIsOffAndMandatoryAuthToggleIsOn',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: false},
+              payment_methods_mandatory_reauth: {value: true},
+            });
+
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+        assertFalse(!!mandatoryAuthToggle);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleNotShownIfBiometricIsAvailableAndAutofillToggleIsOff',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: false},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+
+        assertFalse(section.$.autofillCreditCardToggle.disabled);
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        assertFalse(!!mandatoryAuthToggle);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleNotShownIfMandatoryAuthToggleIsOffAndAutofillToggleIsOff',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: false});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: false},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+
+        assertFalse(section.$.autofillCreditCardToggle.disabled);
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        assertFalse(!!mandatoryAuthToggle);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleNotShownIfMandatoryAuthToggleIsOnAndAutofillToggleIsOff',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: false});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: false},
+              payment_methods_mandatory_reauth: {value: true},
+            });
+
+        assertFalse(section.$.autofillCreditCardToggle.disabled);
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        assertFalse(!!mandatoryAuthToggle);
+      });
+
+  test(
+      'verifyMandatoryAuthToggleDoesTriggerUserAuthWhenClicked',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+
+        if (isMac || isWindows) {
+          const paymentsManagerProxy =
+              PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+          const expectations = getDefaultExpectations();
+
+          assertTrue(!!mandatoryAuthToggle);
+          mandatoryAuthToggle.click();
+          expectations.authenticateUserAndFlipMandatoryAuthToggle = 1;
+          paymentsManagerProxy.assertExpectations(expectations);
+        } else {
+          assertFalse(!!mandatoryAuthToggle);
+        }
+      });
+
+  test(
+      'verifyMandatoryAuthToggleDoesNotTriggersUserAuthWhenNotClicked',
+      async function() {
+        loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+              credit_card_enabled: {value: true},
+              payment_methods_mandatory_reauth: {value: false},
+            });
+        const mandatoryAuthToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mandatoryAuthToggle');
+        const paymentsManagerProxy =
+            PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+        const expectations = getDefaultExpectations();
+
+        if (isMac || isWindows) {
+          assertTrue(!!mandatoryAuthToggle);
+        } else {
+          assertFalse(!!mandatoryAuthToggle);
+        }
+        paymentsManagerProxy.assertExpectations(expectations);
       });
 });

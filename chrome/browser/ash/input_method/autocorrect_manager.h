@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
@@ -251,8 +252,8 @@ class AutocorrectManager {
   int context_id_ = 0;
 
   // Not owned by this class.
-  SuggestionHandlerInterface* suggestion_handler_;
-  Profile* profile_;
+  raw_ptr<SuggestionHandlerInterface, ExperimentalAsh> suggestion_handler_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;

@@ -127,16 +127,18 @@ class AuthenticationService : public KeyedService,
   virtual id<SystemIdentity> GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
 
-  // Grants signin::ConsentLevel::kSignin to `identity`.
-  // This method does not set up Sync-the-feature for the identity.
-  // Virtual for testing.
-  virtual void SignIn(id<SystemIdentity> identity);
+  // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
+  // at `accessPoint`. This method does not set up Sync-the-feature for the
+  // identity. Virtual for testing.
+  virtual void SignIn(id<SystemIdentity> identity,
+                      signin_metrics::AccessPoint access_point);
 
-  // Grants signin::ConsentLevel::kSync to `identity`.
-  // This starts setting up Sync-the-feature, but the setup will only complete
-  // once SyncUserSettings::SetFirstSetupComplete() is called.
-  // Virtual for testing.
-  virtual void GrantSyncConsent(id<SystemIdentity> identity);
+  // Grants signin::ConsentLevel::kSync to `identity` and records the event at
+  // `access_point`. This starts setting up Sync-the-feature, but the setup will
+  // only complete once SyncUserSettings::SetFirstSetupComplete() is called.
+  // This method is used for testing. Virtual for testing.
+  virtual void GrantSyncConsent(id<SystemIdentity> identity,
+                                signin_metrics::AccessPoint access_point);
 
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,

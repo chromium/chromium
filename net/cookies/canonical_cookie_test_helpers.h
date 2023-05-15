@@ -82,11 +82,11 @@ MATCHER(IsInclude, "") {
   return testing::ExplainMatchResult(true, status.IsInclude(), result_listener);
 }
 
-// Helper for checking that status.HasDowngradeWarning() == true.
-MATCHER(HasDowngradeWarning, "") {
+// Helper for checking that status.HasSchemefulDowngradeWarning() == true.
+MATCHER(HasSchemefulDowngradeWarning, "") {
   CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(true, status.HasDowngradeWarning(),
-                                     result_listener);
+  return testing::ExplainMatchResult(
+      true, status.HasSchemefulDowngradeWarning(), result_listener);
 }
 
 // Helper for checking that status.HasWarningReason(reason) == true.

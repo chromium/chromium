@@ -125,12 +125,6 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
 }
 
 template <typename Base>
-RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
-  Base::CheckIsNotDestroyed();
-  return Base::RecalcChildLayoutOverflowNG();
-}
-
-template <typename Base>
 void LayoutNGMixin<Base>::RecalcVisualOverflow() {
   Base::CheckIsNotDestroyed();
   if (Base::CanUseFragmentsForVisualOverflow()) {
@@ -152,8 +146,7 @@ MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
   DCHECK(!Base::IsTableCell());
 
   NGBlockNode node(const_cast<LayoutNGMixin<Base>*>(this));
-  if (!node.CanUseNewLayout())
-    return Base::ComputeIntrinsicLogicalWidths();
+  CHECK(node.CanUseNewLayout());
 
   NGConstraintSpace space = ConstraintSpaceForMinMaxSizes();
   return node
@@ -305,12 +298,11 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   DCHECK(this->CreatesNewFormattingContext());
 
   const NGLayoutResult* previous_result = Base::GetSingleCachedLayoutResult();
-  bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will
   // include any stretched sizes if applicable.
   NGConstraintSpace constraint_space =
-      is_layout_root && CanUseConstraintSpaceForCaching(previous_result, *this)
+      CanUseConstraintSpaceForCaching(previous_result, *this)
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
@@ -327,7 +319,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.
-  if (is_layout_root && previous_result) {
+  if (previous_result) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
             .FirstBaseline() != physical_fragment.FirstBaseline()) {
       if (auto* containing_block = Base::ContainingBlock()) {
@@ -349,30 +341,6 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   }
 
   return result;
-}
-
-template <typename Base>
-void LayoutNGMixin<Base>::UpdateMargins() {
-  Base::CheckIsNotDestroyed();
-
-  const LayoutBlock* containing_block = Base::ContainingBlock();
-  if (!containing_block || !containing_block->IsLayoutBlockFlow())
-    return;
-
-  // In the legacy engine, for regular block container layout, children
-  // calculate and store margins on themselves, while in NG that's done by the
-  // container. Since this object is a LayoutNG entry-point, we'll have to do it
-  // on ourselves, since that's what the legacy container expects.
-  const ComputedStyle& style = Base::StyleRef();
-  const ComputedStyle& cb_style = containing_block->StyleRef();
-  const auto writing_direction = cb_style.GetWritingDirection();
-  LayoutUnit available_logical_width =
-      LayoutBoxUtils::AvailableLogicalWidth(*this, containing_block);
-  NGBoxStrut margins = ComputePhysicalMargins(style, available_logical_width)
-                           .ConvertToLogical(writing_direction);
-  ResolveInlineMargins(style, cb_style, available_logical_width,
-                       Base::LogicalWidth(), &margins);
-  Base::SetMargin(margins.ConvertToPhysical(writing_direction));
 }
 
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;

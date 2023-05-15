@@ -11,6 +11,7 @@
 #include "ash/multi_capture/multi_capture_service_client.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

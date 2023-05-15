@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
@@ -124,7 +125,8 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
   }
 
  protected:
-  MockComponentExtensionIMEManagerDelegate* mock_delegate_;
+  raw_ptr<MockComponentExtensionIMEManagerDelegate, ExperimentalAsh>
+      mock_delegate_;
   std::unique_ptr<ComponentExtensionIMEManager> component_ext_mgr_;
   std::vector<ComponentExtensionIME> ime_list_;
 };

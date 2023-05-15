@@ -17,7 +17,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
@@ -30,8 +29,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 class UpdateMenuItemViewBinder implements CustomViewBinder {
     private static final int UPDATE_ITEM_VIEW_TYPE = 0;
     private final MenuItemState mItemState;
-    private Integer mHighlightedItemId;
-    private AppMenuClickHandler mAppMenuClickHandler;
 
     UpdateMenuItemViewBinder() {
         super();

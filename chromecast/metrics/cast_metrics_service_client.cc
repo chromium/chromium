@@ -10,11 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/base/chromecast_switches.h"
@@ -125,7 +125,8 @@ CastMetricsServiceClient::LoadClientInfo() {
     // instead of just being FDR'ed.
     if (!pref_service_->GetString(kMetricsOldClientID).empty()) {
       // Force old client id to be regenerated. See b/9487011.
-      client_info->client_id = base::GenerateGUID();
+      client_info->client_id =
+          base::Uuid::GenerateRandomV4().AsLowercaseString();
       pref_service_->SetBoolean(prefs::kMetricsIsNewClientID, true);
       return client_info;
     }
@@ -133,7 +134,8 @@ CastMetricsServiceClient::LoadClientInfo() {
   }
 
   // Use "forced" client ID if available.
-  if (!force_client_id_.empty() && base::IsValidGUID(force_client_id_)) {
+  if (!force_client_id_.empty() &&
+      base::Uuid::ParseCaseInsensitive(force_client_id_).is_valid()) {
     client_info->client_id = force_client_id_;
     return client_info;
   }

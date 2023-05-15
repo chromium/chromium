@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -23,13 +22,15 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.Locale;
 
 /**
  * Prompt that asks users to confirm user's name before saving card to Google.
  */
-public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implements TextWatcher {
+public class AutofillNameFixFlowPrompt
+        extends AutofillSaveCardPromptBase implements EmptyTextWatcher {
     /**
      * An interface to handle the interaction with
      * an AutofillNameFixFlowPrompt object.
@@ -109,12 +110,6 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
                 mUserNameInput.getText().toString().trim().isEmpty());
     }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
     /**
      * Handle tooltip icon clicked. If tooltip is already opened, don't show another. Otherwise

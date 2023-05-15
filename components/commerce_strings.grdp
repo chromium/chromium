@@ -123,6 +123,11 @@
     <message name="IDS_SIDE_PANEL_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmark folder in the side panel. Users can click this item to view their tracked products.">
       Tracked Products
     </message>
+    <message name="IDS_PRICE_TRACKING_CHIP_IPH" desc="Text shown when user see the price tracking chip for the first time. Text attached to the price tracking chip to show the usefulness of the feature.">
+      Get email alerts if the price drops on any site
+    </message>
+
+
     <if expr="is_macosx">
       <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
         Untrack Price

@@ -4,11 +4,11 @@
 
 #include "chromecast/media/cma/backend/alsa/alsa_volume_control.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -223,7 +223,7 @@ float AlsaVolumeControl::GetRoundtripVolume(float volume) {
   }
 
   long level = 0;  // NOLINT(runtime/int)
-  level = std::round((base::clamp(volume, 0.0f, 1.0f) *
+  level = std::round((std::clamp(volume, 0.0f, 1.0f) *
                       (volume_range_max_ - volume_range_min_)) +
                      volume_range_min_);
   return static_cast<float>(level - volume_range_min_) /

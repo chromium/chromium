@@ -19,10 +19,12 @@ constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
     base::Milliseconds(350);
 
-// In the conceptual overview table, the window margin is the space reserved
-// around the window within the cell. This margin does not overlap so the
-// closest distance between adjacent windows will be twice this amount.
-constexpr int kWindowMargin = 5;
+// In the conceptual overview table, the space between two adjacent items
+// horizontally and vertically.
+constexpr int kSpaceBetweenItemsDp = 10;
+
+// The amount we want to enlarge the dragged overview window.
+constexpr int kDraggingEnlargeDp = 10;
 
 // Height of an item header.
 constexpr int kHeaderHeightDp = WindowMiniView::kHeaderHeightDp;

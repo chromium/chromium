@@ -18,7 +18,6 @@
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
 @protocol GridEmptyView;
-@protocol GridImageDataSource;
 @protocol GridShareableItemsProvider;
 @class GridTransitionLayout;
 @class GridViewController;
@@ -111,8 +110,9 @@
 @property(nonatomic, strong) UIView<GridEmptyView>* emptyStateView;
 // Returns YES if the grid has no items.
 @property(nonatomic, readonly, getter=isGridEmpty) BOOL gridEmpty;
-// Currently visible items in the grid.
-@property(nonatomic, readonly) NSSet<NSString*>* visibleGridItems;
+// Returns YES if the inactive grid has no items.
+@property(nonatomic, readonly, getter=isInactiveGridEmpty)
+    BOOL inactiveGridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
 // The current mode for the grid.
@@ -133,8 +133,6 @@
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 // Tracks if a drop animation is in progress.
 @property(nonatomic, assign) BOOL dropAnimationInProgress;
-// Data source for images.
-@property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
 // Data source for acquiring data to power PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
 // YES if the selected cell is visible in the grid.
@@ -168,8 +166,12 @@
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;
 
-// Notifies the ViewController that its content is being displayed or hidden.
+// Notifies the ViewController that its content might soon be displayed.
+- (void)prepareForAppearance;
+// Notifies the ViewController that its content is being displayed.
 - (void)contentWillAppearAnimated:(BOOL)animated;
+- (void)contentDidAppear;
+// Notifies the ViewController that its content is being hidden.
 - (void)contentWillDisappear;
 
 // Notifies the grid that it is about to be dismissed.

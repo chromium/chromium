@@ -191,8 +191,8 @@ TEST_F(NotificationsEngagementServiceTest,
   std::string displayedDate = service()->GetBucketLabel(base::Time::Now());
   base::Value* entryForDate = website_engagement_dict3.Find(displayedDate);
 
-  ASSERT_EQ(2, entryForDate->FindIntKey(kDisplayedKey).value());
-  ASSERT_EQ(3, entryForDate->FindIntKey(kEngagementKey).value());
+  ASSERT_EQ(2, entryForDate->GetDict().FindInt(kDisplayedKey).value());
+  ASSERT_EQ(3, entryForDate->GetDict().FindInt(kEngagementKey).value());
 }
 
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {

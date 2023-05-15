@@ -7,14 +7,17 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/recording/audio_capturer.h"
 #include "chromeos/ash/services/recording/gif_encoder.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
@@ -207,7 +210,10 @@ RecordingService::~RecordingService() {
 void RecordingService::RecordFullscreen(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -217,8 +223,9 @@ void RecordingService::RecordFullscreen(
 
   StartNewRecording(
       std::move(client), std::move(video_capturer),
-      std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-      output_file_path,
+      std::move(microphone_stream_factory),
+      std::move(system_audio_stream_factory),
+      std::move(drive_fs_quota_delegate), output_file_path,
       VideoCaptureParams::CreateForFullscreenCapture(
           frame_sink_id, frame_sink_size_dip, device_scale_factor));
 }
@@ -226,7 +233,10 @@ void RecordingService::RecordFullscreen(
 void RecordingService::RecordWindow(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -237,7 +247,8 @@ void RecordingService::RecordWindow(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
+                    std::move(microphone_stream_factory),
+                    std::move(system_audio_stream_factory),
                     std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForWindowCapture(
                         frame_sink_id, subtree_capture_id, frame_sink_size_dip,
@@ -247,7 +258,10 @@ void RecordingService::RecordWindow(
 void RecordingService::RecordRegion(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -257,7 +271,8 @@ void RecordingService::RecordRegion(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
+                    std::move(microphone_stream_factory),
+                    std::move(system_audio_stream_factory),
                     std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForRegionCapture(
                         frame_sink_id, frame_sink_size_dip, device_scale_factor,
@@ -268,9 +283,10 @@ void RecordingService::StopRecording() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   refresh_timer_.Stop();
   video_capturer_remote_->Stop();
-  if (audio_capturer_)
-    audio_capturer_->Stop();
-  audio_capturer_.reset();
+  for (auto& capturer : audio_capturers_) {
+    capturer->Stop();
+  }
+  audio_capturers_.clear();
 }
 
 void RecordingService::OnRecordedWindowChangingRoot(
@@ -374,19 +390,14 @@ void RecordingService::OnFrameCaptured(
     return;
   }
 
-  if (!info->color_space) {
-    DLOG(ERROR) << "Missing mandatory color space info.";
-    return;
-  }
-
   DCHECK(current_video_capture_params_);
   const gfx::Rect& visible_rect =
       current_video_capture_params_->GetVideoFrameVisibleRect(
           info->visible_rect);
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       info->pixel_format, info->coded_size, visible_rect, visible_rect.size(),
-      reinterpret_cast<uint8_t*>(const_cast<void*>(mapping.memory())),
-      mapping.size(), info->timestamp);
+      reinterpret_cast<const uint8_t*>(mapping.memory()), mapping.size(),
+      info->timestamp);
   if (!frame) {
     DLOG(ERROR) << "Failed to create a VideoFrame.";
     return;
@@ -400,7 +411,7 @@ void RecordingService::OnFrameCaptured(
              callbacks) {},
       std::move(mapping), std::move(callbacks)));
   frame->set_metadata(info->metadata);
-  frame->set_color_space(info->color_space.value());
+  frame->set_color_space(info->color_space);
 
   if (video_thumbnail_.isNull())
     video_thumbnail_ = ExtractImageFromVideoFrame(*frame);
@@ -431,43 +442,13 @@ void RecordingService::OnLog(const std::string& message) {
   DLOG(WARNING) << message;
 }
 
-void RecordingService::OnCaptureStarted() {}
-
-void RecordingService::Capture(const media::AudioBus* audio_source,
-                               base::TimeTicks audio_capture_time,
-                               double volume,
-                               bool key_pressed) {
-  // This is called on a worker thread created by the |audio_capturer_| (See
-  // |media::AudioDeviceThread|. The given |audio_source| wraps audio data in a
-  // shared memory with the audio service. Calling |audio_capturer_->Stop()|
-  // will destroy that thread and the shared memory mapping before we get a
-  // chance to encode and flush the remaining frames (See
-  // media::AudioInputDevice::Stop(), and
-  // media::AudioInputDevice::AudioThreadCallback::Process() for details). It is
-  // safer that we own our AudioBuses that are kept alive until encoded and
-  // flushed.
-  auto audio_data =
-      media::AudioBus::Create(audio_source->channels(), audio_source->frames());
-  audio_source->CopyTo(audio_data.get());
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RecordingService::OnAudioCaptured,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(audio_data), audio_capture_time));
-}
-
-void RecordingService::OnCaptureError(
-    media::AudioCapturerSource::ErrorCode code,
-    const std::string& message) {
-  LOG(ERROR) << "AudioCaptureError: code=" << static_cast<uint32_t>(code)
-             << ", " << message;
-}
-
-void RecordingService::OnCaptureMuted(bool is_muted) {}
-
 void RecordingService::StartNewRecording(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     std::unique_ptr<VideoCaptureParams> capture_params) {
@@ -484,7 +465,8 @@ void RecordingService::StartNewRecording(
       base::BindOnce(&TerminateServiceImmediately));
 
   current_video_capture_params_ = std::move(capture_params);
-  const bool should_record_audio = audio_stream_factory.is_valid();
+  const bool should_record_audio = microphone_stream_factory.is_valid() ||
+                                   system_audio_stream_factory.is_valid();
 
   encoder_capabilities_ = CreateEncoderCapabilities(output_file_path);
   encoder_muxer_ = CreateEncoder(
@@ -499,13 +481,23 @@ void RecordingService::StartNewRecording(
   if (!should_record_audio)
     return;
 
-  audio_capturer_ = audio::CreateInputDevice(
-      std::move(audio_stream_factory),
-      std::string(media::AudioDeviceDescription::kDefaultDeviceId),
-      audio::DeadStreamDetection::kEnabled);
-  DCHECK(audio_capturer_);
-  audio_capturer_->Initialize(audio_parameters_, this);
-  audio_capturer_->Start();
+  if (microphone_stream_factory) {
+    audio_capturers_.emplace_back(std::make_unique<AudioCapturer>(
+        media::AudioDeviceDescription::kDefaultDeviceId,
+        std::move(microphone_stream_factory), audio_parameters_,
+        BindRepeatingToMainThread(&RecordingService::OnAudioCaptured)));
+  }
+
+  if (system_audio_stream_factory) {
+    audio_capturers_.emplace_back(std::make_unique<AudioCapturer>(
+        media::AudioDeviceDescription::kLoopbackInputDeviceId,
+        std::move(system_audio_stream_factory), audio_parameters_,
+        BindRepeatingToMainThread(&RecordingService::OnAudioCaptured)));
+  }
+
+  for (auto& capturer : audio_capturers_) {
+    capturer->Start();
+  }
 }
 
 void RecordingService::ReconfigureVideoEncoder() {
@@ -573,9 +565,10 @@ void RecordingService::OnVideoCapturerDisconnected() {
   // capturer. We will stop the recording and flush whatever video chunks we
   // currently have.
   did_failure_occur_ = true;
-  if (audio_capturer_)
-    audio_capturer_->Stop();
-  audio_capturer_.reset();
+  for (auto& capturer : audio_capturers_) {
+    capturer->Stop();
+  }
+  audio_capturers_.clear();
   TerminateRecording(mojom::RecordingStatus::kVizVideoCapturerDisconnected);
 }
 
@@ -586,8 +579,15 @@ void RecordingService::OnAudioCaptured(
   DCHECK(encoder_muxer_);
 
   // We ignore any subsequent frames after a failure.
-  if (did_failure_occur_)
+  if (did_failure_occur_) {
     return;
+  }
+
+  if (audio_capturers_.size() > 1) {
+    // Audio mixing has not been implemented yet.
+    NOTIMPLEMENTED_LOG_ONCE();
+    return;
+  }
 
   encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeAudio)
       .WithArgs(std::move(audio_bus), audio_capture_time);

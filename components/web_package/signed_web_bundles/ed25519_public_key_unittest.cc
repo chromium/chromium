@@ -24,25 +24,22 @@ constexpr std::array<uint8_t, 32> kPublicKey2 = {
 }
 
 TEST(Ed25519PublicKeyTest, ValidPublicKey) {
-  base::expected<Ed25519PublicKey, std::string> public_key1 =
+  const auto public_key1 =
       Ed25519PublicKey::Create(base::make_span(kPublicKey1));
-  EXPECT_TRUE(public_key1.has_value()) << public_key1.error();
-  EXPECT_EQ(public_key1->bytes(), kPublicKey1);
+  EXPECT_EQ(public_key1.bytes(), kPublicKey1);
 }
 
 TEST(Ed25519PublicKeyTest, Comparators) {
-  base::expected<Ed25519PublicKey, std::string> public_key1 =
+  const auto public_key1 =
       Ed25519PublicKey::Create(base::make_span(kPublicKey1));
-  base::expected<Ed25519PublicKey, std::string> public_key2 =
+  const auto public_key2 =
       Ed25519PublicKey::Create(base::make_span(kPublicKey2));
-  EXPECT_TRUE(public_key1.has_value()) << public_key1.error();
-  EXPECT_TRUE(public_key2.has_value()) << public_key2.error();
 
-  EXPECT_TRUE(*public_key1 == *public_key1);
-  EXPECT_TRUE(*public_key1 != *public_key2);
+  EXPECT_TRUE(public_key1 == public_key1);
+  EXPECT_TRUE(public_key1 != public_key2);
 
-  EXPECT_FALSE(*public_key1 == *public_key2);
-  EXPECT_FALSE(*public_key1 != *public_key1);
+  EXPECT_FALSE(public_key1 == public_key2);
+  EXPECT_FALSE(public_key1 != public_key1);
 }
 
 TEST(Ed25519PublicKeyTest, InvalidPublicKey) {
@@ -51,8 +48,7 @@ TEST(Ed25519PublicKeyTest, InvalidPublicKey) {
   // Make the key one byte too long.
   invalid_public_key.push_back(0xff);
 
-  auto public_key = Ed25519PublicKey::Create(invalid_public_key);
-  EXPECT_FALSE(public_key.has_value());
+  EXPECT_FALSE(Ed25519PublicKey::Create(invalid_public_key).has_value());
 }
 
 }  // namespace web_package

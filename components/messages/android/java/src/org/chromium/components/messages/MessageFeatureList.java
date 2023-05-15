@@ -7,13 +7,11 @@ package org.chromium.components.messages;
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Message features.
  */
 @JNINamespace("messages")
-@MainDex
 public class MessageFeatureList {
     public static final String MESSAGES_FOR_ANDROID_STACKING_ANIMATION =
             "MessagesForAndroidStackingAnimation";

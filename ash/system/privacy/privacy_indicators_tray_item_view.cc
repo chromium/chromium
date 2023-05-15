@@ -590,10 +590,11 @@ void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
 }
 
 void PrivacyIndicatorsTrayItemView::RecordRepeatedShows() {
-  // We are only interested in more than 1 repeated shows per 100ms. Also only
-  // records in primary display.
-  if (count_repeated_shows_ <= 1 || !IsInPrimaryDisplay(GetWidget())) {
-    count_repeated_shows_ = 0;
+  // Only records in primary display. Note that we also record the metric when
+  // `count_repeated_shows_` is one even though this is not a bad signal. This
+  // is because we want to record proper shows so we can analyze the repeated
+  // shows in context.
+  if (count_repeated_shows_ == 0 || !IsInPrimaryDisplay(GetWidget())) {
     return;
   }
 

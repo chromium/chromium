@@ -9,13 +9,17 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -45,7 +49,9 @@ class StackingBarLabelButton : public PillButton {
                          NotificationCenterView* notification_center_view)
       : PillButton(std::move(callback),
                    text,
-                   PillButton::Type::kAccentFloatingWithoutIcon,
+                   chromeos::features::IsJellyEnabled()
+                       ? PillButton::Type::kFloatingWithoutIcon
+                       : PillButton::Type::kAccentFloatingWithoutIcon,
                    /*icon=*/nullptr,
                    kNotificationPillButtonHorizontalSpacing),
         notification_center_view_(notification_center_view) {
@@ -66,7 +72,7 @@ class StackingBarLabelButton : public PillButton {
   }
 
  private:
-  NotificationCenterView* notification_center_view_;
+  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_;
 };
 
 BEGIN_METADATA(StackingBarLabelButton, PillButton)
@@ -100,8 +106,11 @@ class StackedNotificationBar::StackedNotificationBarIcon
     if (!notification)
       return;
 
-    SkColor accent_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    SkColor accent_color =
+        chromeos::features::IsJellyEnabled()
+            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
+            : AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorPrimary);
     gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
         kStackedNotificationIconSize, accent_color, SK_ColorTRANSPARENT,
         accent_color);
@@ -251,11 +260,16 @@ StackedNotificationBar::StackedNotificationBar(
 
   message_center::MessageCenter::Get()->AddObserver(this);
 
-  SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  count_label_->SetEnabledColor(label_color);
-  count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  if (chromeos::features::IsJellyEnabled()) {
+    count_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *count_label_);
+  } else {
+    count_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary));
+    count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
+        1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  }
 
   layout_manager_->SetFlexForView(spacer_, 1);
 

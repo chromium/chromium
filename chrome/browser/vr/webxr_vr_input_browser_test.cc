@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
@@ -16,6 +17,16 @@
 // End-to-end tests for user input interaction with WebXR.
 
 namespace vr {
+
+namespace {
+const std::vector<std::string>& GetDefaultOpenXrProfiles() {
+  static base::NoDestructor<std::vector<std::string>> kDefaultOpenXrProfiles{
+      {"microsoft-mixed-reality", "windows-mixed-reality",
+       "generic-trigger-squeeze-touchpad-thumbstick"}};
+
+  return *kDefaultOpenXrProfiles;
+}
+}  // namespace
 
 // Helper function for verifying the XRInputSource.profiles array contents.
 void VerifyInputSourceProfilesArray(
@@ -397,12 +408,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadMinimumData) {
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
 
   if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
-    // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
-    // because it only supports that type of controller and fills in default
-    // values if those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
+    VerifyInputSourceProfilesArray(t, GetDefaultOpenXrProfiles());
   }
 
   t->RunJavaScriptOrFail("done()");
@@ -466,12 +472,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleGamepads) {
   t->PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(0, false, 0)");
 
   if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
-    // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
-    // because it only supports that type of controller and fills in default
-    // values if those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
+    VerifyInputSourceProfilesArray(t, GetDefaultOpenXrProfiles());
   }
 
   t->RunJavaScriptOrFail("done()");
@@ -562,12 +563,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadCompleteData) {
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
 
   if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
-    // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
-    // because it only supports that type of controller and fills in default
-    // values if those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
+    VerifyInputSourceProfilesArray(t, GetDefaultOpenXrProfiles());
   }
 
   t->RunJavaScriptOrFail("done()");

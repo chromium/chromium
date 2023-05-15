@@ -45,7 +45,10 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -102,7 +105,6 @@ class HitTestLatencyRecorder {
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
-      layout_state_(nullptr),
       layout_quote_head_(nullptr),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -243,6 +245,22 @@ void LayoutView::ComputeLogicalHeight(
   computed_values.extent_ = LayoutUnit(ViewLogicalHeightForBoxSizing());
 }
 
+LayoutUnit LayoutView::ComputeMinimumWidth() {
+  if (!RuntimeEnabledFeatures::RemoveLegacySizeComputationEnabled()) {
+    return PreferredLogicalWidths().min_size;
+  }
+  const ComputedStyle& style = StyleRef();
+  WritingMode mode = style.GetWritingMode();
+  NGConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
+  LayoutUnit min = NGBlockNode(this)
+                       .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+                                           builder.ToConstraintSpace())
+                       .sizes.min_size;
+  DCHECK_EQ(min, PreferredLogicalWidths().min_size);
+  return min;
+}
+
 bool LayoutView::IsChildAllowed(LayoutObject* child,
                                 const ComputedStyle&) const {
   NOT_DESTROYED();
@@ -269,13 +287,6 @@ bool LayoutView::CanHaveChildren() const {
   return !owner->IsDisplayNone();
 }
 
-#if DCHECK_IS_ON()
-void LayoutView::CheckLayoutState() {
-  NOT_DESTROYED();
-  DCHECK(!layout_state_->Next());
-}
-#endif
-
 bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   NOT_DESTROYED();
   LocalFrame& frame = GetFrameView()->GetFrame();
@@ -296,47 +307,6 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   return false;
 }
 
-void LayoutView::UpdateBlockLayout(bool relayout_children) {
-  NOT_DESTROYED();
-  SubtreeLayoutScope layout_scope(*this);
-
-  // Use calcWidth/Height to get the new width/height, since this will take the
-  // full page zoom factor into account.
-  relayout_children |=
-      !ShouldUsePrintingLayout() &&
-      (!frame_view_ || LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
-       LogicalHeight() != ViewLogicalHeightForBoxSizing());
-
-  if (relayout_children) {
-    layout_scope.SetChildNeedsLayout(this);
-    for (LayoutObject* child = FirstChild(); child;
-         child = child->NextSibling()) {
-      if (child->IsSVGRoot())
-        continue;
-
-      if ((child->IsBox() &&
-           To<LayoutBox>(child)->HasRelativeLogicalHeight()) ||
-          child->StyleRef().LogicalHeight().IsPercentOrCalc() ||
-          child->StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
-          child->StyleRef().LogicalMaxHeight().IsPercentOrCalc())
-        layout_scope.SetChildNeedsLayout(child);
-    }
-
-    if (GetDocument().SvgExtensions())
-      GetDocument()
-          .AccessSVGExtensions()
-          .InvalidateSVGRootsWithRelativeLengthDescendents(&layout_scope);
-  }
-
-  if (!NeedsLayout())
-    return;
-
-  LayoutBlockFlow::UpdateBlockLayout(relayout_children);
-
-  // TODO(1229581): Remove this logic.
-  NOTREACHED_NORETURN();
-}
-
 void LayoutView::UpdateLayout() {
   NOT_DESTROYED();
   if (!GetDocument().Printing()) {
@@ -353,9 +323,6 @@ void LayoutView::UpdateLayout() {
     fragmentation_context_.Clear();
   }
 
-  DCHECK(!layout_state_);
-  LayoutState root_layout_state(*this);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The font code in FontPlatformData does not have a direct connection to the
   // document, the frame or anything from which we could retrieve the device
@@ -371,10 +338,6 @@ void LayoutView::UpdateLayout() {
 #endif
 
   LayoutBlockFlow::UpdateLayout();
-
-#if DCHECK_IS_ON()
-  CheckLayoutState();
-#endif
   ClearNeedsLayout();
 }
 
@@ -539,8 +502,7 @@ void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(LocalRectToAbsoluteQuad(
-      PhysicalRect(PhysicalOffset(), PhysicalSizeToBeNoop(Layer()->Size())),
-      mode));
+      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), mode));
 }
 
 void LayoutView::CommitPendingSelection() {
@@ -883,7 +845,7 @@ bool LayoutView::BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
   NOT_DESTROYED();
   // The base background color applies to the main frame only.
   return GetFrame()->IsMainFrame() &&
-         !frame_view_->BaseBackgroundColor().HasAlpha();
+         frame_view_->BaseBackgroundColor().IsOpaque();
 }
 
 gfx::SizeF LayoutView::ViewportSizeForViewportUnits() const {
@@ -1008,6 +970,9 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
        layout_object = layout_object->NextInPreOrder(stay_within)) {
     if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(layout_object)) {
       ng_list_item->UpdateCounterStyle();
+    } else if (auto* inline_list_item =
+                   DynamicTo<LayoutNGInlineListItem>(layout_object)) {
+      inline_list_item->UpdateCounterStyle();
     } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
       counter->UpdateCounter();
     }

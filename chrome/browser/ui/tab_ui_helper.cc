@@ -31,7 +31,8 @@ std::u16string FormatUrlToSubdomain(const GURL& url) {
 }  // namespace
 
 TabUIHelper::TabUIData::TabUIData(const GURL& url)
-    : title(FormatUrlToSubdomain(url)), favicon(favicon::GetDefaultFavicon()) {}
+    : title(FormatUrlToSubdomain(url)),
+      favicon(favicon::GetDefaultFaviconModel()) {}
 
 TabUIHelper::TabUIHelper(content::WebContents* contents)
     : WebContentsObserver(contents),
@@ -54,10 +55,11 @@ std::u16string TabUIHelper::GetTitle() const {
 #endif
 }
 
-gfx::Image TabUIHelper::GetFavicon() const {
-  if (ShouldUseFaviconFromHistory() && tab_ui_data_)
-    return tab_ui_data_->favicon;
-  return favicon::TabFaviconFromWebContents(web_contents());
+ui::ImageModel TabUIHelper::GetFavicon() const {
+  return ShouldUseFaviconFromHistory() && tab_ui_data_
+             ? tab_ui_data_->favicon
+             : ui::ImageModel::FromImage(
+                   favicon::TabFaviconFromWebContents(web_contents()));
 }
 
 bool TabUIHelper::ShouldHideThrobber() const {
@@ -149,7 +151,9 @@ void TabUIHelper::OnHostFaviconFetched(
 void TabUIHelper::UpdateFavicon(
     const favicon_base::FaviconImageResult& favicon) {
   if (tab_ui_data_) {
-    tab_ui_data_->favicon = favicon.image;
+    // TODO(crbug.com/1099602): This should be updated to support ui::ImageModel
+    // instead of gfx::Image.
+    tab_ui_data_->favicon = ui::ImageModel::FromImage(favicon.image);
     web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
   }
 }

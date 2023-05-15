@@ -10,7 +10,7 @@ namespace page_info {
 
 // Returns true if kPageInfoAboutThisSiteMoreInfo and dependent features are
 // enabled.
-bool IsMoreAboutThisSiteFeatureEnabled();
+bool IsAboutThisSiteFeatureEnabled();
 
 // Returns true if `kPageInfoAboutThisSiteNewIcon` and dependent features are
 // enabled.

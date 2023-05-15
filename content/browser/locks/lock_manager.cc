@@ -14,8 +14,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -324,7 +324,8 @@ void LockManager::BindReceiver(
 
   // TODO(jsbell): This should reflect the 'environment id' from HTML,
   // and be the same opaque string seen in Service Worker client ids.
-  const std::string client_id = base::GenerateGUID();
+  const std::string client_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   receivers_.Add(this, std::move(receiver), {client_id, bucket_id});
 }

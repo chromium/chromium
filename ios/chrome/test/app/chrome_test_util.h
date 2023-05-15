@@ -57,6 +57,10 @@ void RemoveAllInfoBars();
 // all the views are dismissed.
 void ClearPresentedState(ProceduralBlock completion);
 
+// Presents the signed in accounts view controller if conditions to be presented
+// are met.
+void PresentSignInAccountsViewControllerIfNecessary();
+
 // Sets the value of a boolean local state pref.
 // TODO(crbug.com/647022): Clean up other tests that use this helper function.
 void SetBooleanLocalStatePref(const char* pref_name, bool value);

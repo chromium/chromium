@@ -35,14 +35,14 @@ api::dashboard_private::Result WebstoreInstallHelperResultToDashboardApiResult(
     WebstoreInstallHelper::Delegate::InstallHelperResultCode result) {
   switch (result) {
     case WebstoreInstallHelper::Delegate::UNKNOWN_ERROR:
-      return api::dashboard_private::RESULT_UNKNOWN_ERROR;
+      return api::dashboard_private::Result::kUnknownError;
     case WebstoreInstallHelper::Delegate::ICON_ERROR:
-      return api::dashboard_private::RESULT_ICON_ERROR;
+      return api::dashboard_private::Result::kIconError;
     case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
-      return api::dashboard_private::RESULT_MANIFEST_ERROR;
+      return api::dashboard_private::Result::kManifestError;
   }
   NOTREACHED();
-  return api::dashboard_private::RESULT_NONE;
+  return api::dashboard_private::Result::kNone;
 }
 
 }  // namespace
@@ -61,7 +61,7 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (!crx_file::id_util::IdIsValid(params_->details.id)) {
-    return RespondNow(BuildResponse(api::dashboard_private::RESULT_INVALID_ID,
+    return RespondNow(BuildResponse(api::dashboard_private::Result::kInvalidId,
                                     kDashboardInvalidIdError));
   }
 
@@ -70,7 +70,7 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
     icon_url = source_url().Resolve(*params_->details.icon_url);
     if (!icon_url.is_valid()) {
       return RespondNow(
-          BuildResponse(api::dashboard_private::RESULT_INVALID_ICON_URL,
+          BuildResponse(api::dashboard_private::Result::kInvalidIconUrl,
                         kDashboardInvalidIconUrlError));
     }
   }
@@ -122,7 +122,7 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     // The browser window has gone away.
-    Respond(BuildResponse(api::dashboard_private::RESULT_USER_CANCELLED,
+    Respond(BuildResponse(api::dashboard_private::Result::kUserCancelled,
                           kDashboardUserCancelledError));
     // Matches the AddRef in Run().
     Release();
@@ -166,8 +166,8 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
             ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
   bool accepted = (payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
   Respond(
-      BuildResponse(accepted ? api::dashboard_private::RESULT_EMPTY_STRING
-                             : api::dashboard_private::RESULT_USER_CANCELLED,
+      BuildResponse(accepted ? api::dashboard_private::Result::kEmptyString
+                             : api::dashboard_private::Result::kUserCancelled,
                     accepted ? std::string() : kDashboardUserCancelledError));
 
   Release();  // Matches the AddRef in Run().
@@ -178,8 +178,9 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::BuildResponse(
     api::dashboard_private::Result result, const std::string& error) {
   // The web store expects an empty string on success.
   auto args = ShowPermissionPromptForDelegatedInstall::Results::Create(result);
-  if (result == api::dashboard_private::RESULT_EMPTY_STRING)
+  if (result == api::dashboard_private::Result::kEmptyString) {
     return ArgumentList(std::move(args));
+  }
   return ErrorWithArguments(std::move(args), error);
 }
 

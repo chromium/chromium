@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_util.h"
+#import "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -26,6 +27,10 @@
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using base::NumberToString;
 using base::StringToUint;
@@ -58,7 +63,7 @@ void ConvertValueToBool(base::OnceCallback<void(BOOL)> callback,
   }
   std::move(callback).Run(result);
 }
-}
+}  // namespace
 
 namespace autofill {
 
@@ -69,8 +74,9 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
   // there is no need to check for active mixed content here.
   web::NavigationManager* manager = web_state->GetNavigationManager();
   const web::NavigationItem* nav_item = manager->GetLastCommittedItem();
-  if (!nav_item)
+  if (!nav_item) {
     return false;
+  }
 
   const web::SSLStatus& ssl = nav_item->GetSSL();
   return nav_item->GetURL().SchemeIsCryptographic() && ssl.certificate &&
@@ -80,8 +86,9 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
 std::unique_ptr<base::Value> ParseJson(NSString* json_string) {
   absl::optional<base::Value> json_value =
       base::JSONReader::Read(base::SysNSStringToUTF8(json_string));
-  if (!json_value)
+  if (!json_value) {
     return nullptr;
+  }
   return base::Value::ToUniquePtrValue(std::move(*json_value));
 }
 
@@ -90,64 +97,70 @@ bool ExtractFormsData(NSString* forms_json,
                       const std::u16string& form_name,
                       const GURL& main_frame_url,
                       const GURL& frame_origin,
+                      const FieldDataManager& field_data_manager,
                       std::vector<FormData>* forms_data) {
   DCHECK(forms_data);
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
-  if (!forms_value)
+  if (!forms_value) {
     return false;
+  }
 
   // Returned data should be a list of forms.
-  if (!forms_value->is_list())
+  if (!forms_value->is_list()) {
     return false;
+  }
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : forms_value->GetList()) {
+  for (const auto& form_value : forms_value->GetList()) {
+    const auto* form_dict = form_value.GetIfDict();
+    if (!form_dict) {
+      continue;
+    }
     autofill::FormData form;
-    if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
-                        frame_origin, &form))
+    if (ExtractFormData(*form_dict, filtered, form_name, main_frame_url,
+                        frame_origin, field_data_manager, &form)) {
       forms_data->push_back(std::move(form));
+    }
   }
   return true;
 }
 
-bool ExtractFormData(const base::Value& form_value,
+bool ExtractFormData(const base::Value::Dict& form,
                      bool filtered,
                      const std::u16string& form_name,
                      const GURL& main_frame_url,
                      const GURL& form_frame_origin,
+                     const FieldDataManager& field_data_manager,
                      autofill::FormData* form_data) {
   DCHECK(form_data);
-  // Each form should be a JSON dictionary.
-  if (!form_value.is_dict())
-    return false;
-
-  const base::Value::Dict& form_dictionary = form_value.GetDict();
-
   // Form data is copied into a FormData object field-by-field.
-  const std::string* name = form_dictionary.FindString("name");
-  if (!name)
+  const std::string* name = form.FindString("name");
+  if (!name) {
     return false;
+  }
   form_data->name = base::UTF8ToUTF16(*name);
-  if (filtered && form_name != form_data->name)
+  if (filtered && form_name != form_data->name) {
     return false;
+  }
 
   // Origin is mandatory.
-  const std::string* origin_ptr = form_dictionary.FindString("origin");
-  if (!origin_ptr)
+  const std::string* origin_ptr = form.FindString("origin");
+  if (!origin_ptr) {
     return false;
+  }
   std::u16string origin = base::UTF8ToUTF16(*origin_ptr);
 
   // Use GURL object to verify origin of host frame URL.
   form_data->url = GURL(origin);
-  if (form_data->url.DeprecatedGetOriginAsURL() != form_frame_origin)
+  if (form_data->url.DeprecatedGetOriginAsURL() != form_frame_origin) {
     return false;
+  }
 
   // main_frame_origin is used for logging UKM.
   form_data->main_frame_origin = url::Origin::Create(main_frame_url);
 
-  const std::string* unique_renderer_id =
-      form_dictionary.FindString("unique_renderer_id");
+  const std::string* unique_renderer_id = form.FindString("unique_renderer_id");
   if (unique_renderer_id && !unique_renderer_id->empty()) {
     StringToUint(*unique_renderer_id, &form_data->unique_renderer_id.value());
   } else {
@@ -156,34 +169,34 @@ bool ExtractFormData(const base::Value& form_value,
 
   // Action is optional.
   std::u16string action;
-  if (const std::string* action_ptr = form_dictionary.FindString("action")) {
+  if (const std::string* action_ptr = form.FindString("action")) {
     action = base::UTF8ToUTF16(*action_ptr);
   }
   form_data->action = GURL(action);
 
   // Optional fields.
-  if (const std::string* name_attribute =
-          form_dictionary.FindString("name_attribute")) {
+  if (const std::string* name_attribute = form.FindString("name_attribute")) {
     form_data->name_attribute = base::UTF8ToUTF16(*name_attribute);
   }
-  if (const std::string* id_attribute =
-          form_dictionary.FindString("id_attribute")) {
+  if (const std::string* id_attribute = form.FindString("id_attribute")) {
     form_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
   }
   form_data->is_form_tag =
-      form_dictionary.FindBool("is_form_tag").value_or(form_data->is_form_tag);
-  if (const std::string* frame_id = form_dictionary.FindString("frame_id")) {
+      form.FindBool("is_form_tag").value_or(form_data->is_form_tag);
+  if (const std::string* frame_id = form.FindString("frame_id")) {
     form_data->frame_id = *frame_id;
   }
 
   // Field list (mandatory) is extracted.
-  const base::Value::List* fields_list = form_dictionary.FindList("fields");
-  if (!fields_list)
+  const base::Value::List* fields_list = form.FindList("fields");
+  if (!fields_list) {
     return false;
+  }
   for (const auto& field_dict : *fields_list) {
     autofill::FormFieldData field_data;
     if (field_dict.is_dict() &&
-        ExtractFormFieldData(field_dict.GetDict(), &field_data)) {
+        ExtractFormFieldData(field_dict.GetDict(), field_data_manager,
+                             &field_data)) {
       form_data->fields.push_back(std::move(field_data));
     } else {
       return false;
@@ -193,6 +206,7 @@ bool ExtractFormData(const base::Value& form_value,
 }
 
 bool ExtractFormFieldData(const base::Value::Dict& field,
+                          const FieldDataManager& field_data_manager,
                           autofill::FormFieldData* field_data) {
   const std::string* name;
   const std::string* form_control_type;
@@ -262,8 +276,9 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   const base::Value::List* option_values = field.FindList("option_values");
   const base::Value::List* option_contents = field.FindList("option_contents");
   if (option_values && option_contents) {
-    if (option_values->size() != option_contents->size())
+    if (option_values->size() != option_contents->size()) {
       return false;
+    }
     auto value_it = option_values->begin();
     auto content_it = option_contents->begin();
     while (value_it != option_values->end() &&
@@ -276,6 +291,14 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
       ++value_it;
       ++content_it;
     }
+  }
+
+  // Fill user input and properties mask.
+  if (field_data_manager.HasFieldData(field_data->unique_renderer_id)) {
+    field_data->user_input =
+        field_data_manager.GetUserInput(field_data->unique_renderer_id);
+    field_data->properties_mask = field_data_manager.GetFieldPropertiesMask(
+        field_data->unique_renderer_id);
   }
 
   return true;
@@ -329,15 +352,18 @@ void ExecuteJavaScriptFunction(const std::string& name,
 bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   DCHECK(ids);
   std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
-  if (!ids_value)
+  if (!ids_value) {
     return false;
+  }
 
-  if (!ids_value->is_list())
+  if (!ids_value->is_list()) {
     return false;
+  }
 
   for (const auto& unique_id : ids_value->GetList()) {
-    if (!unique_id.is_string())
+    if (!unique_id.is_string()) {
       return false;
+    }
     uint32_t id_num = 0;
     StringToUint(unique_id.GetString(), &id_num);
     ids->push_back(FieldRendererId(id_num));

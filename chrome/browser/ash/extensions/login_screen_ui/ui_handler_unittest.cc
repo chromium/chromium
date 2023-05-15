@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
@@ -211,13 +212,15 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;
-  ash::StubInstallAttributes* stub_install_attributes_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<ash::StubInstallAttributes, ExperimentalAsh>
+      stub_install_attributes_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
+      nullptr;
   scoped_refptr<const extensions::Extension> extension_;
 
   TestLoginScreen test_login_screen_;
 
-  FakeWindowFactory* fake_window_factory_ = nullptr;
+  raw_ptr<FakeWindowFactory, ExperimentalAsh> fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
 };

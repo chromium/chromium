@@ -109,6 +109,13 @@ export interface ManageProfilesBrowserProxy {
   getProfileStatistics(profilePath: string): void;
 
   /**
+   * Stops showing the profile statistics and removes the related keep alive,
+   * unloading the profile for which the statistics are currently being shown if
+   * it has no more keep alives.
+   */
+  closeProfileStatistics(): void;
+
+  /**
    * Removes profile.
    */
   removeProfile(profilePath: string): void;
@@ -225,6 +232,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   getProfileStatistics(profilePath: string) {
     chrome.send('getProfileStatistics', [profilePath]);
+  }
+
+  closeProfileStatistics() {
+    chrome.send('closeProfileStatistics');
   }
 
   selectNewAccount(profileColor: number|null) {

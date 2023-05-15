@@ -38,7 +38,7 @@ class BrowserCleanupHandler : public CleanupHandler,
  private:
   raw_ptr<content::BrowsingDataRemover> data_remover_;
   CleanupHandlerCallback callback_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace chromeos

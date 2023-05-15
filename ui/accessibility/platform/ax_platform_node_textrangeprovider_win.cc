@@ -154,6 +154,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Compare(ITextRangeProvider* other,
   if (other->QueryInterface(IID_PPV_ARGS(&other_provider)) != S_OK)
     return UIA_E_INVALIDOPERATION;
 
+  other_provider->SnapStartAndEndToMaxTextOffsetIfBeyond();
+
   if (*start() == *(other_provider->start()) &&
       *end() == *(other_provider->end())) {
     *result = TRUE;
@@ -173,6 +175,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::CompareEndpoints(
   Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin> other_provider;
   if (other->QueryInterface(IID_PPV_ARGS(&other_provider)) != S_OK)
     return UIA_E_INVALIDOPERATION;
+
+  other_provider->SnapStartAndEndToMaxTextOffsetIfBeyond();
 
   const AXPositionInstance& this_provider_endpoint =
       (this_endpoint == TextPatternRangeEndpoint_Start) ? start() : end();
@@ -212,6 +216,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     SetStart(std::move(normalized_start));
     SetEnd(std::move(normalized_end));
   }
+
+  SnapStartAndEndToMaxTextOffsetIfBeyond();
 
   // Determine if start is on a boundary of the specified TextUnit, if it is
   // not, move backwards until it is. Move the end forwards from start until it
@@ -895,10 +901,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByRange(
     TextPatternRangeEndpoint this_endpoint,
     ITextRangeProvider* other,
     TextPatternRangeEndpoint other_endpoint) {
-  // Please refer to the big comment on `FindText` on as to why this is needed.
-  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kSuppressCharacter);
-
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
 
@@ -907,6 +909,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByRange(
   Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin> other_provider;
   if (other->QueryInterface(IID_PPV_ARGS(&other_provider)) != S_OK)
     return UIA_E_INVALIDOPERATION;
+
+  SnapStartAndEndToMaxTextOffsetIfBeyond();
+  other_provider->SnapStartAndEndToMaxTextOffsetIfBeyond();
 
   const AXPositionInstance& other_provider_endpoint =
       (other_endpoint == TextPatternRangeEndpoint_Start)
@@ -1509,6 +1514,16 @@ void AXPlatformNodeTextRangeProviderWin::SetEnd(AXPositionInstance new_end) {
   endpoints_.SetEnd(std::move(new_end));
 }
 
+void AXPlatformNodeTextRangeProviderWin::
+    SnapStartAndEndToMaxTextOffsetIfBeyond() {
+  if (start()) {
+    start()->SnapToMaxTextOffsetIfBeyond();
+  }
+  if (end()) {
+    end()->SnapToMaxTextOffsetIfBeyond();
+  }
+}
+
 void AXPlatformNodeTextRangeProviderWin::SetOwnerForTesting(
     AXPlatformNodeWin* owner) {
   owner_for_test_ = owner;
@@ -1542,9 +1557,7 @@ AXNode* AXPlatformNodeTextRangeProviderWin::GetSelectionCommonAnchor() {
 // if we move by word from a text field (focusable) to a static text (not
 // focusable), the selection will stay on the text field because the DOM focused
 // element will still be the text field. To avoid that, we need to remove the
-// focus from this element. Since |ax::mojom::Action::kBlur| is not implemented,
-// we perform a |ax::mojom::Action::focus| action on the root node. The result
-// is the same.
+// focus from this element.
 void AXPlatformNodeTextRangeProviderWin::
     RemoveFocusFromPreviousSelectionIfNeeded(const AXNodeRange& new_selection) {
   const AXNode* old_selection_node = GetSelectionCommonAnchor();
@@ -1572,9 +1585,16 @@ void AXPlatformNodeTextRangeProviderWin::
         GetRootDelegate(old_selection_node->tree()->GetAXTreeID());
     DCHECK(root_delegate);
 
-    AXActionData focus_action;
-    focus_action.action = ax::mojom::Action::kFocus;
-    root_delegate->AccessibilityPerformAction(focus_action);
+    AXPlatformNodeWin* old_selection_platform_node =
+        GetPlatformNodeFromAXNode(old_selection_node);
+    if (!old_selection_platform_node) {
+      return;
+    }
+
+    AXActionData blur_action;
+    blur_action.action = ax::mojom::Action::kBlur;
+    old_selection_platform_node->GetDelegate()->AccessibilityPerformAction(
+        blur_action);
   }
 }
 

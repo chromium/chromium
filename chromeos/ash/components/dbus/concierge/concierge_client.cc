@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -213,14 +214,6 @@ class ConciergeClientImpl : public ConciergeClient {
     concierge_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
-  void GetContainerSshKeys(
-      const concierge::ContainerSshKeysRequest& request,
-      chromeos::DBusMethodCallback<concierge::ContainerSshKeysResponse>
-          callback) override {
-    CallMethod(concierge::kGetContainerSshKeysMethod, request,
-               std::move(callback));
-  }
-
   void AttachUsbDevice(
       base::ScopedFD fd,
       const concierge::AttachUsbDeviceRequest& request,
@@ -302,6 +295,14 @@ class ConciergeClientImpl : public ConciergeClient {
                      std::move(callback));
   }
 
+  void AggressiveBalloon(
+      const vm_tools::concierge::AggressiveBalloonRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+    CallMethod(concierge::kAggressiveBalloonMethod, request,
+               std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,
@@ -328,6 +329,12 @@ class ConciergeClientImpl : public ConciergeClient {
     concierge_proxy_->ConnectToSignal(
         concierge::kVmConciergeInterface, concierge::kVmStoppingSignal,
         base::BindRepeating(&ConciergeClientImpl::OnVmStoppingSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&ConciergeClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    concierge_proxy_->ConnectToSignal(
+        concierge::kVmConciergeInterface, concierge::kVmSwappingSignal,
+        base::BindRepeating(&ConciergeClientImpl::OnVmSwappingSignal,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&ConciergeClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -462,6 +469,22 @@ class ConciergeClientImpl : public ConciergeClient {
     }
   }
 
+  void OnVmSwappingSignal(dbus::Signal* signal) {
+    DCHECK_EQ(signal->GetInterface(), concierge::kVmConciergeInterface);
+    DCHECK_EQ(signal->GetMember(), concierge::kVmSwappingSignal);
+
+    concierge::VmSwappingSignal vm_swapping_signal;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&vm_swapping_signal)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+
+    for (auto& observer : vm_observer_list_) {
+      observer.OnVmSwapping(vm_swapping_signal);
+    }
+  }
+
   void OnDiskImageProgress(dbus::Signal* signal) {
     DCHECK_EQ(signal->GetInterface(), concierge::kVmConciergeInterface);
     DCHECK_EQ(signal->GetMember(), concierge::kDiskImageProgressSignal);
@@ -493,12 +516,14 @@ class ConciergeClientImpl : public ConciergeClient {
       is_disk_import_progress_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kVmStoppingSignal) {
       is_vm_stopping_signal_connected_ = is_connected;
+    } else if (signal_name == concierge::kVmSwappingSignal) {
+      // DO NOTHING.
     } else {
       NOTREACHED();
     }
   }
 
-  dbus::ObjectProxy* concierge_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> concierge_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_{
       ConciergeClient::kObserverListPolicy};

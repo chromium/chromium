@@ -150,7 +150,7 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
       GetItemViewAt(1)));
 }
 
@@ -176,12 +176,12 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
 
   if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 }
@@ -221,12 +221,12 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
 
   if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 
@@ -288,7 +288,7 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
       event_generator->MoveMouseTo(grid_center);
     }
 
-    const int revision_number = use_folder_icon_refresh() ? 3 : 2;
+    const int revision_number = use_folder_icon_refresh() ? 4 : 3;
 
     std::string filename = base::NumberToString(i + 1) + "_items_folder";
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

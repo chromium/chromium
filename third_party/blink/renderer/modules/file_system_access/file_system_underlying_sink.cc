@@ -349,6 +349,7 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     return ScriptPromise();
   }
 
+  offset_ = position;
   std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source;
   switch (data->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
@@ -495,11 +496,13 @@ void FileSystemUnderlyingSink::TruncateComplete(
 void FileSystemUnderlyingSink::CloseComplete(
     mojom::blink::FileSystemAccessErrorPtr result) {
   DCHECK(pending_operation_);
-  file_system_access_error::ResolveOrReject(pending_operation_, *result);
-  pending_operation_ = nullptr;
+
   // We close the mojo pipe because we intend this writable file stream to be
   // discarded after close. Subsequent operations will fail.
   writer_remote_.reset();
+
+  file_system_access_error::ResolveOrReject(pending_operation_, *result);
+  pending_operation_ = nullptr;
 }
 
 void FileSystemUnderlyingSink::Trace(Visitor* visitor) const {

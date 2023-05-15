@@ -359,11 +359,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
     const Node* parent = element->parentNode();
-    const ComputedStyle* parent_style = parent->GetComputedStyle();
-    bool is_inside =
-        parent_style->ListStylePosition() == EListStylePosition::kInside ||
-        (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
-    if (is_inside) {
+    if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
       return MakeGarbageCollected<LayoutNGInsideListMarker>(element);
     }
     return MakeGarbageCollected<LayoutNGOutsideListMarker>(element);
@@ -435,7 +431,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
 LayoutBlockFlow* LayoutObject::CreateBlockFlowOrListItem(
     Element* element,
     const ComputedStyle& style) {
-  if (style.Display() == EDisplay::kListItem && element &&
+  if (style.IsDisplayListItem() && element &&
       element->GetPseudoId() != kPseudoIdBackdrop) {
     // Create a LayoutBlockFlow with a ListItemOrdinal and maybe a ::marker.
     // ::backdrop is excluded since it's not tree-abiding, and ListItemOrdinal
@@ -813,8 +809,9 @@ bool LayoutObject::IsRenderedLegendInternal() const {
 }
 
 bool LayoutObject::IsListMarkerForSummary() const {
-  if (!IsListMarkerIncludingAll())
+  if (!IsListMarker()) {
     return false;
+  }
   if (const auto* summary =
           DynamicTo<HTMLSummaryElement>(Parent()->GetNode())) {
     if (!summary->IsMainSummary())
@@ -832,19 +829,7 @@ bool LayoutObject::IsListMarkerForSummary() const {
 bool LayoutObject::IsInListMarker() const {
   // List markers are either leaf nodes (legacy LayoutListMarker), or have
   // exactly one leaf child. So there's no need to traverse ancestors.
-  return Parent() && Parent()->IsListMarkerIncludingAll();
-}
-
-LayoutObject* LayoutObject::NonCulledParent() const {
-  LayoutObject* parent = Parent();
-  for (; parent; parent = parent->Parent()) {
-    if (const auto* parent_inline_box = DynamicTo<LayoutInline>(parent)) {
-      if (!parent_inline_box->AlwaysCreateLineBoxesForLayoutInline())
-        continue;
-    }
-    return parent;
-  }
-  return nullptr;
+  return Parent() && Parent()->IsListMarker();
 }
 
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {
@@ -1207,9 +1192,9 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
 
 LayoutBox* LayoutObject::ContainingNGBox() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() && Parent() &&
-      Parent()->IsMedia())
+  if (Parent() && Parent()->IsMedia()) {
     return To<LayoutBox>(Parent());
+  }
   LayoutBlock* containing_block = ContainingBlock();
   if (!containing_block)
     return nullptr;
@@ -1319,6 +1304,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       // when `contain: strict` is explicitly set.
       if (fragment.HasAnchorQuery())
         return false;
+    } else if (RuntimeEnabledFeatures::LayoutNewSubtreeRootEnabled()) {
+      // We need a previous layout result to begin layout at a subtree root.
+      return false;
     }
 
     // A box which doesn't establish a new formating context can pass a whole
@@ -1426,14 +1414,12 @@ void LayoutObject::SetChildNeedsCollectInlines() {
   } while (object);
 }
 
-void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
-                                               SubtreeLayoutScope* layouter) {
+void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
   DCHECK(!GetDocument().InPostLifecycleSteps());
 #endif
-  DCHECK(!layouter || this != layouter->Root());
   // When we're in layout, we're marking a descendant as needing layout with
   // the intention of visiting it during this layout. We shouldn't be
   // scheduling it to be laid out later. Also, scheduleRelayout() must not be
@@ -1489,16 +1475,6 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
 #endif
 
     object->MarkSelfPaintingLayerForVisualOverflowRecalc();
-
-    if (layouter) {
-      layouter->RecordObjectMarkedForLayout(object);
-
-      if (object == layouter->Root()) {
-        if (auto* painting_layer = PaintingLayer())
-          painting_layer->SetNeedsVisualOverflowRecalc();
-        return;
-      }
-    }
 
     last = object;
     if (schedule_relayout && ObjectIsRelayoutBoundary(last))
@@ -2803,12 +2779,15 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         (style_->UnresolvedFloating() != new_style.UnresolvedFloating())) {
       // For changes in float styles, we need to conceivably remove ourselves
       // from the floating objects list.
-      To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
+      if (!RuntimeEnabledFeatures::
+              LayoutDisableBrokenFloatInvalidationEnabled()) {
+        To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
+      }
     } else if (IsOutOfFlowPositioned() &&
                (style_->GetPosition() != new_style.GetPosition())) {
       // For changes in positioning styles, we need to conceivably remove
       // ourselves from the positioned objects list.
-      To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
+      LayoutBlock::RemovePositionedObject(To<LayoutBox>(this));
     }
 
     affects_parent_block_ =
@@ -3391,13 +3370,19 @@ void LayoutObject::GetTransformFromContainer(
     const LayoutObject* container_object,
     const PhysicalOffset& offset_in_container,
     gfx::Transform& transform,
-    const PhysicalSize* size) const {
+    const PhysicalSize* size,
+    const gfx::Transform* fragment_transform) const {
   NOT_DESTROYED();
   transform.MakeIdentity();
-  PaintLayer* layer =
-      HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
-  if (layer && layer->Transform())
-    transform.PreConcat(layer->CurrentTransform());
+  if (fragment_transform) {
+    transform.PreConcat(*fragment_transform);
+  } else {
+    PaintLayer* layer =
+        HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
+    if (layer && layer->Transform()) {
+      transform.PreConcat(layer->CurrentTransform());
+    }
+  }
 
   transform.PostTranslate(offset_in_container.left.ToFloat(),
                           offset_in_container.top.ToFloat());
@@ -4701,6 +4686,14 @@ void LayoutObject::SetIsBackgroundAttachmentFixedObject(
     GetFrameView()->AddBackgroundAttachmentFixedObject(this);
   else
     GetFrameView()->RemoveBackgroundAttachmentFixedObject(this);
+}
+
+void LayoutObject::SetCanCompositeBackgroundAttachmentFixed(
+    bool can_fast_scroll) {
+  if (can_fast_scroll != bitfields_.CanCompositeBackgroundAttachmentFixed()) {
+    bitfields_.SetCanCompositeBackgroundAttachmentFixed(can_fast_scroll);
+    SetNeedsPaintPropertyUpdate();
+  }
 }
 
 PhysicalRect LayoutObject::DebugRect() const {

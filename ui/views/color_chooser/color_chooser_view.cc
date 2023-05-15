@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
@@ -341,8 +340,8 @@ void SaturationValueView::ProcessEventAtLocation(const gfx::Point& point) {
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   SkScalar saturation = (point.x() - kBorderWidth) / scalar_size;
   SkScalar value = SK_Scalar1 - (point.y() - kBorderWidth) / scalar_size;
-  saturation = base::clamp(saturation, 0.0f, SK_Scalar1);
-  value = base::clamp(value, 0.0f, SK_Scalar1);
+  saturation = std::clamp(saturation, 0.0f, SK_Scalar1);
+  value = std::clamp(value, 0.0f, SK_Scalar1);
   OnSaturationValueChanged(saturation, value);
   changed_callback_.Run(saturation, value);
 }

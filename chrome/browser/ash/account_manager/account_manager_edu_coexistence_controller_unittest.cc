@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
@@ -101,8 +102,10 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
  private:
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
-  account_manager::AccountManager* account_manager_ = nullptr;
-  account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
+  raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
+      nullptr;
+  raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_ = nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingProfile testing_profile_;
 };

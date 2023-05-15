@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -84,7 +85,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   std::unique_ptr<DiscoveredDevicesProvider> discovered_devices_provider_;
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;
   std::unique_ptr<DeviceOperationHandler> device_operation_handler_;
-  FastPairDelegate* fast_pair_delegate_ = nullptr;
+  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_ = nullptr;
 };
 
 }  // namespace ash::bluetooth_config

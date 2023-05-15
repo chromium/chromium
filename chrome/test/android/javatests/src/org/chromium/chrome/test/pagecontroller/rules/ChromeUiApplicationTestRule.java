@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.test.pagecontroller.rules;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.rules.ExternalResource;
 
@@ -83,7 +84,7 @@ public class ChromeUiApplicationTestRule extends ExternalResource {
         // If the runner didn't pass the package name under test to us, then we can assume
         // that the target package name provided in the AndroidManifest is the app-under-test.
         if (mPackageName == null) {
-            mPackageName = InstrumentationRegistry.getTargetContext().getPackageName();
+            mPackageName = ApplicationProvider.getApplicationContext().getPackageName();
         }
     }
 

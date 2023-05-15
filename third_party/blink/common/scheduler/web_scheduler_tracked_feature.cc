@@ -190,7 +190,7 @@ bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
 }
 
 WebSchedulerTrackedFeatures StickyFeatures() {
-  constexpr WebSchedulerTrackedFeatures features = WebSchedulerTrackedFeatures(
+  constexpr WebSchedulerTrackedFeatures features = {
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
@@ -214,7 +214,7 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
       WebSchedulerTrackedFeature::kKeepaliveRequest,
       WebSchedulerTrackedFeature::kDummy,
-      WebSchedulerTrackedFeature::kAuthorizationHeader);
+      WebSchedulerTrackedFeature::kAuthorizationHeader};
   return features;
 }
 

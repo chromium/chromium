@@ -8,6 +8,7 @@
 #include <array>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -101,7 +102,7 @@ class MetricsReporter : public chromeos::PowerManagerClient::Observer {
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
-  PrefService* pref_service_;  // Not owned.
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;  // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 

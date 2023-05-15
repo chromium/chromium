@@ -860,6 +860,17 @@ FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service
 
 See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
 
+<a name="TOC-Are-all-Chrome-updates-important--"></a>
+### Are all Chrome updates important?
+
+Yes - see [our updates FAQ](updates.md).
+
+<a name="TOC-What-older-Chrome-versions-are-supported--"></a>
+### What older Chrome versions are supported?
+
+We always recommend being on the most recent Chrome stable version - see
+[our updates FAQ](updates.md).
+
 <a name="TOC-Im-making-a-Chromium-based-browser-how-should-I-secure-it-"></a>
 ### I'm making a Chromium-based browser. How should I secure it?
 

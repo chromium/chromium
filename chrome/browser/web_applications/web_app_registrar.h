@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -185,6 +186,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Requires app registry to be in a ready state.
   int CountUserInstalledApps() const;
 
+  // Count a number of all apps which are installed by the user but not locally
+  // installed (aka installed via sync).
+  int CountUserInstalledNotLocallyInstalledApps() const;
+
   // All names are UTF8 encoded.
   std::string GetAppShortName(const AppId& app_id) const;
   std::string GetAppDescription(const AppId& app_id) const;
@@ -220,6 +225,14 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the "url_handlers" field from the app manifest.
   apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const;
+
+  // Returns the `scope_extensions` field from the app manifest after
+  // validation. Entries with an origin that validated association with this web
+  // app are returned. Other entries are removed. See
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // for association requirements.
+  base::flat_set<ScopeExtensionInfo> GetValidatedScopeExtensions(
+      const AppId& app_id) const;
 
   GURL GetAppManifestUrl(const AppId& app_id) const;
 
@@ -271,6 +284,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns whether |url| is in the scope of |app_id|.
   bool IsUrlInAppScope(const GURL& url, const AppId& app_id) const;
+
+  // Returns the strength of matching |url| to the extended & regular scope of
+  // |app_id|. Returns 0 if not in extended scope.
+  size_t GetAppExtendedScopeScore(const GURL& url, const AppId& app_id) const;
 
   // Returns the strength of matching |url_spec| to the scope of |app_id|,
   // returns 0 if not in scope.

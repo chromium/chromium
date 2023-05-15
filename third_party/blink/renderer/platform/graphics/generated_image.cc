@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -44,7 +44,7 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
                                  const cc::PaintFlags& base_flags,
                                  const gfx::RectF& dest_rect,
                                  const ImageTilingInfo& tiling_info,
-                                 const ImageDrawOptions& draw_options) {
+                                 const ImageDrawOptions& options) {
   gfx::RectF tile_rect = tiling_info.image_rect;
   tile_rect.set_size(tile_rect.size() + tiling_info.spacing);
 
@@ -53,6 +53,13 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
   pattern_matrix.preScale(tiling_info.scale.x(), tiling_info.scale.y());
   pattern_matrix.preTranslate(tile_rect.x(), tile_rect.y());
 
+  ImageDrawOptions draw_options(options);
+  // TODO(fs): Computing sampling options using `size_` and the tile source
+  // rect doesn't seem all too useful since they should be in the same space.
+  // Should probably be using the tile source mapped to destination space
+  // (instead of `size_`).
+  draw_options.sampling_options = dest_context.ComputeSamplingOptions(
+      *this, gfx::RectF(size_), tiling_info.image_rect);
   sk_sp<PaintShader> tile_shader = CreateShader(
       tile_rect, &pattern_matrix, tiling_info.image_rect, draw_options);
 
@@ -69,16 +76,11 @@ sk_sp<PaintShader> GeneratedImage::CreateShader(
     const SkMatrix* pattern_matrix,
     const gfx::RectF& src_rect,
     const ImageDrawOptions& draw_options) {
-  auto paint_controller =
-      std::make_unique<PaintController>(PaintController::kTransient);
-  GraphicsContext context(*paint_controller);
-  context.BeginRecording();
-  DrawTile(context, src_rect, draw_options);
-  PaintRecord record = context.EndRecording();
-
+  PaintRecorder recorder;
+  DrawTile(recorder.beginRecording(), src_rect, draw_options);
   return PaintShader::MakePaintRecord(
-      std::move(record), gfx::RectFToSkRect(tile_rect), SkTileMode::kRepeat,
-      SkTileMode::kRepeat, pattern_matrix);
+      recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(tile_rect),
+      SkTileMode::kRepeat, SkTileMode::kRepeat, pattern_matrix);
 }
 
 PaintImage GeneratedImage::PaintImageForCurrentFrame() {

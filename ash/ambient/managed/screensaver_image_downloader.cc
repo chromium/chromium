@@ -1,0 +1,339 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/ambient/managed/screensaver_image_downloader.h"
+
+#include "base/files/file_util.h"
+#include "base/hash/sha1.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace ash {
+
+namespace {
+
+constexpr net::NetworkTrafficAnnotationTag
+    kScreensaverImageDownloaderNetworkTag =
+        net::DefineNetworkTrafficAnnotation("screensaver_image_downloader",
+                                            R"(
+        semantics {
+          sender: "Managed Screensaver"
+          description:
+            "Fetch external image files that will be cached and displayed "
+            "in the policy-controlled screensaver."
+          trigger:
+            "An update to the ScreensaverLockScreenImages policy that includes "
+            "new references to external image files."
+          data:
+            "This request does not send any data from the device. It fetches"
+            "images from URLs provided by the policy."
+          destination: OTHER
+          user_data {
+            type: NONE
+          }
+          internal {
+            contacts {
+              email: "mpetrisor@google.com"
+            }
+            contacts {
+              email: "eariassoto@google.com"
+            }
+          }
+          last_reviewed: "2023-03-30"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature is controlled by enterprise policies, and cannot"
+            "be overridden by users. It is disabled by default."
+          chrome_policy {
+            ScreensaverLockScreenImages {
+              ScreensaverLockScreenImages {
+                  entries: ""
+              }
+            }
+          }
+        })");
+constexpr char kCacheFileExt[] = ".cache";
+
+constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
+constexpr int kMaxUrlFetchRetries = 3;
+
+// This limit is specified in the policy definition for the policies
+// ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
+constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
+
+std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
+    const std::string& url) {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL(url);
+  request->method = net::HttpRequestHeaders::kGetMethod;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  CHECK(request->url.SchemeIs(url::kHttpsScheme));
+
+  auto loader = network::SimpleURLLoader::Create(
+      std::move(request), kScreensaverImageDownloaderNetworkTag);
+  const int retry_mode = network::SimpleURLLoader::RETRY_ON_5XX |
+                         network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE;
+  loader->SetRetryOptions(kMaxUrlFetchRetries, retry_mode);
+  return loader;
+}
+
+// Helper function to extract response code from `SimpleURLLoader`.
+int GetResponseCode(network::SimpleURLLoader* simple_loader) {
+  if (!simple_loader->ResponseInfo() ||
+      !simple_loader->ResponseInfo()->headers) {
+    return -1;
+  }
+  return simple_loader->ResponseInfo()->headers->response_code();
+}
+
+bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
+  if (!base::DirectoryExists(download_directory) &&
+      !base::CreateDirectory(download_directory)) {
+    LOG(ERROR) << "Cannot create download directory";
+    // TODO(b/276208772): Track result with metrics
+    return false;
+  }
+  if (!base::PathIsWritable(download_directory)) {
+    LOG(ERROR) << "Cannot write to download directory";
+    // TODO(b/276208772): Track result with metrics
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+ScreensaverImageDownloader::ScreensaverImageDownloader(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    const base::FilePath& download_directory,
+    ImageListUpdatedCallback image_list_updated_callback)
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      shared_url_loader_factory_(shared_url_loader_factory),
+      download_directory_(download_directory),
+      image_list_updated_callback_(image_list_updated_callback) {}
+
+ScreensaverImageDownloader::~ScreensaverImageDownloader() = default;
+
+void ScreensaverImageDownloader::UpdateImageUrlList(
+    const base::Value::List& image_url_list) {
+  if (image_url_list.empty()) {
+    // If the screensaver is listening to updates, notify that the images are no
+    // longer available before deleting them.
+    image_list_updated_callback_.Run(std::vector<base::FilePath>());
+
+    ClearRequestQueue();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    DeleteDownloadedImages();
+    return;
+  }
+
+  for (size_t i = 0;
+       i < kMaxUrlsToProcessFromPolicy && i < image_url_list.size(); ++i) {
+    const base::Value& value = image_url_list[i];
+    if (!value.is_string() || value.GetString().empty()) {
+      continue;
+    }
+    // Canonicalize URLs and require HTTPS.
+    GURL url(value.GetString());
+    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+      LOG(WARNING) << "Ignored invalid URL: " << url;
+      continue;
+    }
+    LOG(WARNING) << "Queue URL: " << url;
+    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url.spec());
+    QueueDownloadJob(std::move(job));
+  }
+}
+
+std::vector<base::FilePath> ScreensaverImageDownloader::GetScreensaverImages() {
+  return std::vector<base::FilePath>(downloaded_images_.begin(),
+                                     downloaded_images_.end());
+}
+
+void ScreensaverImageDownloader::SetImagesForTesting(
+    const std::vector<base::FilePath>& images_file_paths) {
+  downloaded_images_ = base::flat_set<base::FilePath>(images_file_paths);
+}
+
+base::FilePath ScreensaverImageDownloader::GetDowloadDirForTesting() {
+  return download_directory_;
+}
+
+ScreensaverImageDownloader::Job::Job(const std::string& image_url)
+    : image_url(image_url) {}
+
+ScreensaverImageDownloader::Job::~Job() = default;
+
+std::string ScreensaverImageDownloader::Job::file_name() const {
+  const std::string hash = base::SHA1HashString(image_url);
+  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+  return encoded_hash + kCacheFileExt;
+}
+
+void ScreensaverImageDownloader::QueueDownloadJob(
+    std::unique_ptr<Job> download_job) {
+  CHECK(download_job);
+
+  // TODO(b/276208772): Track queue usage with metrics
+  if (queue_state_ == QueueState::kWaiting) {
+    CHECK(downloading_queue_.empty());
+    StartDownloadJob(std::move(download_job));
+  } else {
+    downloading_queue_.emplace(std::move(download_job));
+  }
+}
+
+void ScreensaverImageDownloader::ClearRequestQueue() {
+  base::queue<std::unique_ptr<Job>> buffer_queue;
+  buffer_queue.swap(downloading_queue_);
+  queue_state_ = QueueState::kWaiting;
+
+  while (!buffer_queue.empty()) {
+    FinishDownloadJob(std::move(buffer_queue.front()),
+                      ScreensaverImageDownloadResult::kCancelled,
+                      absl::nullopt);
+    buffer_queue.pop();
+  }
+}
+
+void ScreensaverImageDownloader::DeleteDownloadedImages() {
+  // TODO(b/278548884): Do not ignore callback result and track its result.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     download_directory_));
+}
+
+void ScreensaverImageDownloader::StartDownloadJob(
+    std::unique_ptr<Job> download_job) {
+  queue_state_ = QueueState::kDownloading;
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&VerifyOrCreateDownloadDirectory, download_directory_),
+      base::BindOnce(
+          &ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted,
+          weak_ptr_factory_.GetWeakPtr(), std::move(download_job)));
+}
+
+void ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted(
+    std::unique_ptr<Job> download_job,
+    bool can_download_file) {
+  if (!can_download_file) {
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kFileSystemWriteError,
+                      absl::nullopt);
+    return;
+  }
+
+  // The download folder exists, check if the file is already in cache before
+  // attempting to download it.
+  const base::FilePath file_path =
+      download_directory_.AppendASCII(download_job->file_name());
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, file_path),
+      base::BindOnce(&ScreensaverImageDownloader::OnCheckIsFileIsInCache,
+                     weak_ptr_factory_.GetWeakPtr(), file_path,
+                     std::move(download_job)));
+}
+
+void ScreensaverImageDownloader::OnCheckIsFileIsInCache(
+    const base::FilePath& file_path,
+    std::unique_ptr<Job> download_job,
+    bool is_file_present) {
+  if (is_file_present) {
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kSuccess, file_path);
+    return;
+  }
+
+  CHECK(shared_url_loader_factory_);
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      CreateSimpleURLLoader(download_job->image_url);
+
+  auto* loader = simple_loader.get();
+  // Download to temp file first to guarantee entire image is written without
+  // errors before attempting to read it.
+  loader->DownloadToTempFile(
+      shared_url_loader_factory_.get(),
+      base::BindOnce(&ScreensaverImageDownloader::OnUrlDownloadedToTempFile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(simple_loader),
+                     std::move(download_job)),
+      kMaxFileSizeInBytes);
+}
+
+void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
+    std::unique_ptr<network::SimpleURLLoader> simple_loader,
+    std::unique_ptr<Job> download_job,
+    base::FilePath temp_path) {
+  const base::FilePath desired_path =
+      download_directory_.AppendASCII(download_job->file_name());
+  if (simple_loader->NetError() != net::OK || temp_path.empty()) {
+    LOG(ERROR) << "Downloading to file failed with error code: "
+               << GetResponseCode(simple_loader.get()) << " with network error "
+               << simple_loader->NetError();
+
+    if (!temp_path.empty()) {
+      // Clean up temporary file.
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
+    }
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kNetworkError,
+                      absl::nullopt);
+    return;
+  }
+
+  // Swap the temporary file to the desired path, and then run the callback.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::Move, temp_path, desired_path),
+      base::BindOnce(&ScreensaverImageDownloader::OnUrlDownloadToFileComplete,
+                     weak_ptr_factory_.GetWeakPtr(), desired_path,
+                     std::move(download_job)));
+}
+
+void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
+    const base::FilePath& path,
+    std::unique_ptr<Job> download_job,
+    bool file_is_present) {
+  if (!file_is_present) {
+    DLOG(WARNING) << "Could not save the downloaded file to " << path;
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kFileSaveError,
+                      absl::nullopt);
+    return;
+  }
+
+  FinishDownloadJob(std::move(download_job),
+                    ScreensaverImageDownloadResult::kSuccess, path);
+}
+
+void ScreensaverImageDownloader::FinishDownloadJob(
+    std::unique_ptr<Job> download_job,
+    ScreensaverImageDownloadResult result,
+    absl::optional<base::FilePath> path) {
+  // TODO(b/276208772): Track result with metrics
+  if (result == ScreensaverImageDownloadResult::kSuccess) {
+    downloaded_images_.insert(*path);
+    image_list_updated_callback_.Run(std::vector<base::FilePath>(
+        downloaded_images_.begin(), downloaded_images_.end()));
+  }
+
+  if (downloading_queue_.empty()) {
+    queue_state_ = QueueState::kWaiting;
+  } else {
+    StartDownloadJob(std::move(downloading_queue_.front()));
+    downloading_queue_.pop();
+  }
+}
+
+}  // namespace ash

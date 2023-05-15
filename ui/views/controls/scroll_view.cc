@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -35,6 +34,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -86,7 +86,7 @@ bool DoesDescendantHaveLayer(View* view) {
 // Returns the position for the view so that it isn't scrolled off the visible
 // region.
 int CheckScrollBounds(int viewport_size, int content_size, int current_pos) {
-  return base::clamp(current_pos, 0, std::max(content_size - viewport_size, 0));
+  return std::clamp(current_pos, 0, std::max(content_size - viewport_size, 0));
 }
 
 // Make sure the content is not scrolled out of bounds
@@ -313,10 +313,12 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   }
 
   FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
-    auto* v = static_cast<ScrollView*>(view);
-    return v->draw_focus_indicator_;
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<ScrollView>(view);
+        CHECK(v);
+        return v->draw_focus_indicator_;
+      }));
 }
 
 ScrollView::~ScrollView() = default;
@@ -598,7 +600,7 @@ int ScrollView::GetHeightForWidth(int width) const {
   width = std::max(0, width - insets.width());
   int height = contents_ ? contents_->GetHeightForWidth(width) + insets.height()
                          : insets.height();
-  return base::clamp(height, min_height_, max_height_);
+  return std::clamp(height, min_height_, max_height_);
 }
 
 void ScrollView::Layout() {
@@ -1033,8 +1035,8 @@ void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {
   const int contents_max_y =
       std::max(contents_viewport_->height(), contents_->height());
 
-  int x = base::clamp(contents_region.x(), 0, contents_max_x);
-  int y = base::clamp(contents_region.y(), 0, contents_max_y);
+  int x = std::clamp(contents_region.x(), 0, contents_max_x);
+  int y = std::clamp(contents_region.y(), 0, contents_max_y);
 
   // Figure out how far and down the rectangle will go taking width
   // and height into account.  This will be "clipped" by the viewport.

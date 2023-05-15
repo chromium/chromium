@@ -142,8 +142,7 @@ void SVGDocumentExtensions::RemoveSVGRootWithRelativeLengthDescendents(
   relative_length_svg_roots_.erase(svg_root);
 }
 
-void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
-    SubtreeLayoutScope* scope) {
+void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents() {
 #if DCHECK_IS_ON()
   DCHECK(!in_relative_length_svg_roots_invalidation_);
   base::AutoReset<bool> in_relative_length_svg_roots_change(
@@ -151,7 +150,7 @@ void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
 #endif
 
   for (SVGSVGElement* element : relative_length_svg_roots_)
-    element->InvalidateRelativeLengthClients(scope);
+    element->InvalidateRelativeLengthClients();
 }
 
 bool SVGDocumentExtensions::ZoomAndPanEnabled() const {

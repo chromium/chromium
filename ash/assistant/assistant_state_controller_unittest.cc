@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -113,7 +114,7 @@ class AssistantStateControllerTest : public AshTestBase {
   TestAssistantStateObserver* observer() { return observer_.get(); }
 
  private:
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   std::unique_ptr<TestAssistantStateObserver> observer_;
 };
 

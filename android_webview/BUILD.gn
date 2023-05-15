@@ -105,7 +105,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     base_module_target = ":system_webview_base_bundle_module"
     bundle_name = "SystemWebView"
     min_sdk_version = default_min_sdk_version
-    compress_shared_libraries = true
   }
 
   if (is_official_build) {
@@ -763,6 +762,7 @@ java_cpp_features("common_java_features_srcjar") {
 android_library("common_java") {
   sources = [
     "java/src/org/chromium/android_webview/common/AwResource.java",
+    "java/src/org/chromium/android_webview/common/BadRequestRecorder.java",
     "java/src/org/chromium/android_webview/common/CommandLineUtil.java",
     "java/src/org/chromium/android_webview/common/DeveloperModeUtils.java",
     "java/src/org/chromium/android_webview/common/Flag.java",
@@ -903,13 +903,6 @@ repack("repack_pack") {
   if (webview_includes_weblayer) {
     sources += [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]
     deps += [ "//weblayer:resources" ]
-
-    # These resources are primarily useful for developers. To avoid increasing
-    # the size of WebView they are only included in non-stable channels.
-    if (android_channel != "stable") {
-      sources += [ "$root_gen_dir/content/dev_ui_content_resources.pak" ]
-      deps += [ "//content:dev_ui_content_resources" ]
-    }
   }
 }
 

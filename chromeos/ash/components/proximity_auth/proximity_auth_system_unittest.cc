@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -122,7 +123,7 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
     return life_cycle;
   }
 
-  FakeRemoteDeviceLifeCycle* life_cycle_;
+  raw_ptr<FakeRemoteDeviceLifeCycle, ExperimentalAsh> life_cycle_;
 };
 
 }  // namespace
@@ -207,7 +208,7 @@ class ProximityAuthSystemTest : public testing::Test {
   std::unique_ptr<ash::secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<TestableProximityAuthSystem> proximity_auth_system_;
-  MockUnlockManager* unlock_manager_;
+  raw_ptr<MockUnlockManager, ExperimentalAsh> unlock_manager_;
   std::unique_ptr<MockProximityAuthPrefManager> pref_manager_;
   std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;

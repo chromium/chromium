@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -467,26 +468,24 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
       app_launch_info->first_non_pinned_tab_index = first_non_pinned_tab_index;
 
     // Fill in the URL list
-    app_launch_info->urls.emplace();
     const base::Value::List* tabs = app.FindList(kTabs);
     if (tabs) {
       for (auto& tab : *tabs) {
         std::string url;
         if (GetString(tab.GetDict(), kTabUrl, &url)) {
-          app_launch_info->urls.value().emplace_back(url);
+          app_launch_info->urls.emplace_back(url);
         }
       }
     }
 
     // Fill the tab groups
-    app_launch_info->tab_group_infos.emplace();
     const base::Value::List* tab_groups = app.FindList(kTabGroups);
     if (tab_groups) {
       for (auto& tab : *tab_groups) {
         absl::optional<tab_groups::TabGroupInfo> tab_group =
             MakeTabGroupInfoFromDict(tab.GetDict());
         if (tab_group.has_value()) {
-          app_launch_info->tab_group_infos->push_back(
+          app_launch_info->tab_group_infos.push_back(
               std::move(tab_group.value()));
         }
       }
@@ -889,13 +888,14 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
 
   app_data.Set(kAppType, app_type);
 
-  if (app->urls.has_value())
-    app_data.Set(kTabs, ConvertURLsToBrowserAppTabValues(app->urls.value()));
+  if (!app->urls.empty()) {
+    app_data.Set(kTabs, ConvertURLsToBrowserAppTabValues(app->urls));
+  }
 
-  if (app->tab_group_infos.has_value()) {
+  if (!app->tab_group_infos.empty()) {
     base::Value::List tab_groups_value;
 
-    for (const auto& tab_group : app->tab_group_infos.value()) {
+    for (const auto& tab_group : app->tab_group_infos) {
       tab_groups_value.Append(ConvertTabGroupInfoToDict(tab_group));
     }
 
@@ -1236,14 +1236,11 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
             app.app().browser_app_window().active_tab_index();
       }
 
-      app_launch_info->urls.emplace();
-      FillUrlList(app.app().browser_app_window(),
-                  &app_launch_info->urls.value());
+      FillUrlList(app.app().browser_app_window(), &app_launch_info->urls);
 
       if (app.app().browser_app_window().tab_groups_size() > 0) {
-        app_launch_info->tab_group_infos.emplace();
         FillTabGroupInfosFromProto(app.app().browser_app_window(),
-                                   &app_launch_info->tab_group_infos.value());
+                                   &app_launch_info->tab_group_infos);
       }
 
       if (app.app().browser_app_window().has_show_as_app()) {
@@ -1469,8 +1466,9 @@ void FillBrowserAppTabs(const std::vector<GURL>& gurls,
 // `app_restore_data`.
 void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
                           BrowserAppWindow* out_browser_app_window) {
-  if (app_restore_data->urls.has_value())
-    FillBrowserAppTabs(app_restore_data->urls.value(), out_browser_app_window);
+  if (!app_restore_data->urls.empty()) {
+    FillBrowserAppTabs(app_restore_data->urls, out_browser_app_window);
+  }
 
   if (app_restore_data->active_tab_index.has_value()) {
     out_browser_app_window->set_active_tab_index(
@@ -1482,8 +1480,8 @@ void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
         app_restore_data->app_type_browser.value());
   }
 
-  if (app_restore_data->tab_group_infos.has_value()) {
-    FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos.value(),
+  if (!app_restore_data->tab_group_infos.empty()) {
+    FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos,
                                 out_browser_app_window);
   }
 
@@ -2023,8 +2021,17 @@ std::unique_ptr<DeskTemplate> FromSyncProto(
     desk_template->set_updated_time(
         ProtoTimeToTime(pb_entry.updated_time_windows_epoch_micros()));
   }
-
   desk_template->set_desk_restore_data(ConvertToRestoreData(pb_entry));
+  if (pb_entry.has_client_cache_guid()) {
+    desk_template->set_client_cache_guid(pb_entry.client_cache_guid());
+  }
+  if (pb_entry.has_device_form_factor()) {
+    desk_template->set_device_form_factor(
+        syncer::ToDeviceInfoFormFactor(pb_entry.device_form_factor()));
+  } else {
+    desk_template->set_device_form_factor(
+        syncer::DeviceInfo::FormFactor::kUnknown);
+  }
   return desk_template;
 }
 
@@ -2048,6 +2055,11 @@ sync_pb::WorkspaceDeskSpecifics ToSyncProto(const DeskTemplate* desk_template,
     FillWorkspaceDeskSpecifics(cache, desk_template->desk_restore_data(),
                                &pb_entry);
   }
+  if (!desk_template->client_cache_guid().empty()) {
+    pb_entry.set_client_cache_guid(desk_template->client_cache_guid());
+  }
+  pb_entry.set_device_form_factor(
+      syncer::ToDeviceFormFactorProto(desk_template->device_form_factor()));
   return pb_entry;
 }
 

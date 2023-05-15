@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/capture_mode/camera_video_frame_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -124,7 +125,7 @@ class CameraVideoFrameRenderer : public CameraVideoFrameHandler::Delegate,
 
   // The currently observed `BeginFrameSource` which will notify us with
   // `OnBeginFrameDerivedImpl()`.
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
 
   // A callback used for tests to be called after `frame` has been rendered.
   base::OnceCallback<void(scoped_refptr<media::VideoFrame> frame)>

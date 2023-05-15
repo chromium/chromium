@@ -102,34 +102,29 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
       "  timeout: 10000,"
       "  attestation: '$1',"
       "  pubKeyCredParams: [{type: 'public-key', alg: -7}]"
-      "}}).then(c => window.domAutomationController.send('OK'),"
-      "         e => window.domAutomationController.send(e.toString()));";
+      "}}).then(c => 'OK',"
+      "         e => e.toString());";
   const std::string register_script = base::ReplaceStringPlaceholders(
       kRegisterTemplate, std::vector<std::string>{"none"}, nullptr);
 
   content::WebContents* const initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  std::string result;
   // When operating in the foreground, the operation should succeed.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_EQ(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
   // Open a new tab to put the previous page in the background.
   chrome::NewTab(browser());
 
   // When in the background, the same request should result in a focus error.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
+  std::string result =
+      content::EvalJs(initial_web_contents, register_script).ExtractString();
   constexpr char kFocusErrorSubstring[] = "the page does not have focus";
   EXPECT_THAT(result, ::testing::HasSubstr(kFocusErrorSubstring));
 
   // Close the tab and the action should succeed again.
   chrome::CloseTab(browser());
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_EQ(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
   // Start the request in the foreground and open a new tab between starting and
   // finishing the request. This should fail because we don't want foreground
@@ -143,24 +138,20 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
             return true;
           },
           browser());
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
+  result =
+      content::EvalJs(initial_web_contents, register_script).ExtractString();
   EXPECT_THAT(result, ::testing::HasSubstr(kFocusErrorSubstring));
 
   // Close the tab and the action should succeed again.
   chrome::CloseTab(browser());
   virtual_device_factory->mutable_state()->simulate_press_callback.Reset();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_EQ(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
   // Open dev tools and check that operations still succeed.
   DevToolsWindow* dev_tools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(
           initial_web_contents, true /* docked, not a separate window */);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_EQ(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 
   // Open a second browser window.
@@ -170,16 +161,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
 
   // Operations in the (now unfocused) window should still succeed, as the
   // calling tab is still the active tab in that window.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_THAT(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
   // Check that closing the window brings things back to a focused state.
   chrome::CloseWindow(new_window);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(initial_web_contents,
-                                                     register_script, &result));
-  EXPECT_EQ(result, "OK");
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
   // Requesting "direct" attestation will trigger a permissions prompt.
   virtual_device_factory->mutable_state()->simulate_press_callback =
@@ -194,11 +181,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   const std::string get_assertion_with_attestation_script =
       base::ReplaceStringPlaceholders(
           kRegisterTemplate, std::vector<std::string>{"direct"}, nullptr);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      initial_web_contents, get_assertion_with_attestation_script, &result));
+  EXPECT_EQ("OK", content::EvalJs(initial_web_contents,
+                                  get_assertion_with_attestation_script));
 
   EXPECT_TRUE(permission_requested());
-  EXPECT_EQ(result, "OK");
 }
 
 }  // anonymous namespace

@@ -149,7 +149,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/core/editing/substring_util.h"
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
@@ -660,11 +659,11 @@ void WebFrameWidgetImpl::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                           GetStringAtPointCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  NSAttributedString* string = SubstringUtil::AttributedWordAtPoint(
-      this, point_in_local_root, baseline_point);
+  base::ScopedCFTypeRef<CFAttributedStringRef> string =
+      SubstringUtil::AttributedWordAtPoint(this, point_in_local_root,
+                                           baseline_point);
   if (string) {
-    attributed_string =
-        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+    attributed_string = ui::mojom::blink::AttributedString::From(string.get());
   }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);
@@ -679,13 +678,9 @@ void WebFrameWidgetImpl::BindWidgetCompositor(
 void WebFrameWidgetImpl::BindInputTargetClient(
     mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver) {
   DCHECK(!input_target_receiver_.is_bound());
-  TaskType priority = TaskType::kInternalDefault;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kInputTargetClientHighPriority)) {
-    priority = TaskType::kInternalInputBlocking;
-  }
-  input_target_receiver_.Bind(std::move(receiver),
-                              local_root_->GetTaskRunner(priority));
+  input_target_receiver_.Bind(
+      std::move(receiver),
+      local_root_->GetTaskRunner(TaskType::kInternalInputBlocking));
 }
 
 void WebFrameWidgetImpl::FrameSinkIdAt(const gfx::PointF& point,
@@ -1422,8 +1417,13 @@ void WebFrameWidgetImpl::WillBeginMainFrame() {
     animation_frame_timing_monitor_->WillBeginMainFrame();
   }
 
-  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled())
+  NotifyViewTransitionRenderingHasBegun();
+}
+
+void WebFrameWidgetImpl::NotifyViewTransitionRenderingHasBegun() {
+  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
     return;
+  }
 
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(), [](WebLocalFrameImpl* local_frame) {
@@ -1450,6 +1450,23 @@ void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
       local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
         DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
             ->ReportLongAnimationFrameTiming(timing_info);
+      });
+}
+
+void WebFrameWidgetImpl::ReportLongTaskTiming(base::TimeTicks start_time,
+                                              base::TimeTicks end_time,
+                                              ExecutionContext* task_context) {
+  CHECK(local_root_);
+  CHECK(local_root_->GetFrame());
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
+        CHECK(local_frame->GetFrame());
+        CHECK(local_frame->GetFrame()->DomWindow());
+        // Note: |task_context| could be the execution context of any same-agent
+        // frame.
+        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
+            ->ReportLongTask(start_time, end_time, task_context,
+                             /*has_multiple_contexts=*/false);
       });
 }
 
@@ -3130,12 +3147,9 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
                               base::TimeTicks timestamp) override {
-    if (base::FeatureList::IsEnabled(
-            features::kReportFCPOnlyOnSuccessfulCommit)) {
-      if (reason != DidNotSwapReason::SWAP_FAILS &&
-          reason != DidNotSwapReason::COMMIT_NO_UPDATE) {
-        return DidNotSwapAction::KEEP_ACTIVE;
-      }
+    if (reason != DidNotSwapReason::SWAP_FAILS &&
+        reason != DidNotSwapReason::COMMIT_NO_UPDATE) {
+      return DidNotSwapAction::KEEP_ACTIVE;
     }
 
     DidNotSwapAction action = DidNotSwapAction::BREAK_PROMISE;
@@ -4499,6 +4513,8 @@ WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
 }
 
 void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
+  NotifyViewTransitionRenderingHasBegun();
+
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(), [](WebLocalFrameImpl* local_frame) {
         LocalFrame* core_frame = local_frame->GetFrame();

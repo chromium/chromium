@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/sync_device_info/local_device_info_util.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -21,10 +22,8 @@ std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
 
   for (const auto& app : restore_data->app_id_to_launch_list()) {
     for (const auto& window : app.second) {
-      if (window.second->tab_group_infos.has_value()) {
-        for (const auto& tab_group : window.second->tab_group_infos.value()) {
-          result += "\n" + tab_group.ToString() + ",";
-        }
+      for (const auto& tab_group : window.second->tab_group_infos) {
+        result += "\n" + tab_group.ToString() + ",";
       }
     }
   }
@@ -35,7 +34,7 @@ std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
 
 }  // namespace
 
-DeskTemplate::DeskTemplate(base::GUID uuid,
+DeskTemplate::DeskTemplate(base::Uuid uuid,
                            DeskTemplateSource source,
                            const std::string& name,
                            const base::Time created_time,
@@ -44,7 +43,8 @@ DeskTemplate::DeskTemplate(base::GUID uuid,
       source_(source),
       type_(type),
       created_time_(created_time),
-      template_name_(base::UTF8ToUTF16(name)) {}
+      template_name_(base::UTF8ToUTF16(name)),
+      device_form_factor_(syncer::GetLocalDeviceFormFactor()) {}
 
 DeskTemplate::~DeskTemplate() = default;
 
@@ -78,6 +78,7 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   if (desk_restore_data_)
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
   desk_template->set_launch_id(launch_id_);
+  desk_template->set_client_cache_guid(client_cache_guid_);
   return desk_template;
 }
 

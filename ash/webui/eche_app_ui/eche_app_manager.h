@@ -9,12 +9,14 @@
 
 #include <memory>
 
+#include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -89,6 +91,9 @@ class EcheAppManager : public KeyedService {
   void BindSystemInfoProviderInterface(
       mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
 
+  void BindAccessibilityProviderInterface(
+      mojo::PendingReceiver<mojom::AccessibilityProvider> receiver);
+
   void BindNotificationGeneratorInterface(
       mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
@@ -115,7 +120,7 @@ class EcheAppManager : public KeyedService {
   void Shutdown() override;
 
  private:
-  phonehub::PhoneHubManager* phone_hub_manager_;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
@@ -135,6 +140,7 @@ class EcheAppManager : public KeyedService {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  std::unique_ptr<AccessibilityProvider> accessibility_provider_;
   std::unique_ptr<AppsAccessManager> apps_access_manager_;
   std::unique_ptr<EcheTrayStreamStatusObserver>
       eche_tray_stream_status_observer_;

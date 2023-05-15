@@ -35,11 +35,11 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -135,8 +135,8 @@ public class TabSelectionEditorTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
-                    .setRevision(6)
-                    .setDescription("TabSelectionEditorV2 replaced v1")
+                    .setRevision(8)
+                    .setDescription("TabGridThumbnailView update.")
                     .build();
 
     @Mock
@@ -536,10 +536,11 @@ public class TabSelectionEditorTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/1420233")
     public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
-        prepareBlankTab(2, false);
+        prepareBlankTabWithThumbnail(2, false);
         prepareBlankTabGroup(3, false);
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
+        prepareBlankTabWithThumbnail(1, false);
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
         List<Tab> beforeTabOrder = getTabsInCurrentTabModel();
 
@@ -549,7 +550,10 @@ public class TabSelectionEditorTest {
         });
         assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
 
+        // Enter tab switcher to get all thumbnails.
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
+        TabUiTestHelper.verifyAllTabsHaveThumbnail(
+                sActivityTestRule.getActivity().getCurrentTabModel());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorGroupAction.createAction(sActivityTestRule.getActivity(),
@@ -575,10 +579,16 @@ public class TabSelectionEditorTest {
         assertEquals("Group 8 selected tabs", group.getContentDescription());
 
         // Force the position to something fixed to 100% avoid flakes here.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(R.id.tab_list_view))
-                    .scrollToPosition(4);
-        });
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    TabListRecyclerView recyclerView =
+                            ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                                    R.id.tab_list_view));
+                    recyclerView.scrollToPosition(4);
+                    return recyclerView;
+                });
+
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo");
 
@@ -1093,6 +1103,13 @@ public class TabSelectionEditorTest {
 
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
+
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_0.85");
     }
@@ -1122,6 +1139,13 @@ public class TabSelectionEditorTest {
 
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
+
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_one_selected_tab_0.85");
     }
@@ -1150,6 +1174,12 @@ public class TabSelectionEditorTest {
         });
 
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_one_pre_selected_tab_0.85");
@@ -1179,6 +1209,12 @@ public class TabSelectionEditorTest {
         });
 
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_pre_selected_tab_0.85");
@@ -1208,6 +1244,12 @@ public class TabSelectionEditorTest {
         });
 
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_all_pre_selected_tab_0.85");
@@ -1218,9 +1260,13 @@ public class TabSelectionEditorTest {
     @Feature({"RenderTest"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testSelectionAction_Toggle() throws IOException {
-        prepareBlankTab(3, false);
+        prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
+        // Enter tab switcher to get all thumbnails.
+        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
+        TabUiTestHelper.verifyAllTabsHaveThumbnail(
+                sActivityTestRule.getActivity().getCurrentTabModel());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(
@@ -1242,6 +1288,12 @@ public class TabSelectionEditorTest {
                 .verifyItemSelectedAtAdapterPosition(1)
                 .verifyItemSelectedAtAdapterPosition(2)
                 .verifyToolbarSelectionText("3 tabs");
+        TabListRecyclerView tabListRecyclerView =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
+                            R.id.tab_list_view));
+                });
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "selection_action_all_tabs_selected");
@@ -1253,6 +1305,7 @@ public class TabSelectionEditorTest {
                 .verifyItemNotSelectedAtAdapterPosition(1)
                 .verifyItemNotSelectedAtAdapterPosition(2)
                 .verifyToolbarSelectionText("Select tabs");
+        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "selection_action_all_tabs_deselected");

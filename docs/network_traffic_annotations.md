@@ -108,13 +108,13 @@ in the `NetworkTrafficAnnotation` message of
      well.
    * `trigger`: What user action triggered the network request. Use a textual
      description. This should be a human readable string.
-   * `user_data`: What nature of data is being sent, as enums. 
-      Any personally identifiable (PII) data, provided by user or generated 
-      by Google, should be pointed out. You can include multiple 
-      values, and you may want to supplement this with the data field. 
+   * `user_data`: What nature of data is being sent, as enums.
+      Any personally identifiable (PII) data, provided by user or generated
+      by Google, should be pointed out. You can include multiple
+      values, and you may want to supplement this with the data field.
       All available User data enums can be found [here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/privacy/traffic_annotation.proto?q=UserDataType).
-   * `data`: Textual description of data being sent, for things that aren't 
-      covered by user_data enum values. You can also use this field if 
+   * `data`: Textual description of data being sent, for things that aren't
+      covered by user_data enum values. You can also use this field if
       more context needs to be provided to describe user_data.
    * `destination`: Target of the network request. It can be either the website
      that user visits and interacts with, a Google service, a request that does
@@ -126,15 +126,15 @@ in the `NetworkTrafficAnnotation` message of
      ZeroSuggest), use  `GOOGLE_OWNED_SERVICE`. If the request can go to other
      domains and is perceived as a part of a website rather than a native
      browser feature, use `WEBSITE`. Use `LOCAL` if the request is processed
-     locally and doesn't go to network, otherwise use `OTHER`. If `OTHER` is
-     used, please add plain text description in `destination_other`
-     field.
+     locally and doesn't go to network. If the request goes to a third-party proxy
+     first and then is forwarded to a Google service, use `PROXIED_GOOGLE_OWNED_SERVICE`.
+     Otherwise use `OTHER`. If `OTHER` is used, please add plain text description in `destination_other` field.
    * `destination_other`: Human readable description in case the destination
      points to `OTHER`.
-   * `internal`: Data that is meant to be visible internally, example point of contacts, 
+   * `internal`: Data that is meant to be visible internally, example point of contacts,
       should be placed inside internal field. This field should not be used in any
       external reports.
-     * `contacts`: A person's or team's email address who are point-of-contact 
+     * `contacts`: A person's or team's email address who are point-of-contact
         for questions, issues, or bugs related to this network request.
    * `last_reviewed`: Date when this annotation was last reviewed in YYYY-MM-DD format.
 * `policy`: These set of fields specify the controls that a user may have
@@ -175,7 +175,7 @@ in the `NetworkTrafficAnnotation` message of
      this request, a justification can be presented here.
    * `deprecated_policies`: Policy names disabling or limiting this network request
       which are currently deprecated. These should be a subset of the policies in the
-      `chrome_policy` field. If a policy is removed from the `chrome_policy` field, 
+      `chrome_policy` field. If a policy is removed from the `chrome_policy` field,
       then it should be removed from this field also.
 * `comments`: If required, any human readable extra comments.
 

@@ -38,7 +38,7 @@ static const char *DemangleIt(const char * const mangled) {
   }
 }
 
-// Test corner cases of bounary conditions.
+// Test corner cases of boundary conditions.
 TEST(Demangle, CornerCases) {
   char tmp[10];
   EXPECT_TRUE(Demangle("_Z6foobarv", tmp, sizeof(tmp)));

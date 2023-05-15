@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -26,10 +27,12 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -51,10 +54,16 @@ constexpr char16_t kTestNotificationMessage[] = u"message";
 constexpr char16_t kTestNotificationDisplaySource[] = u"display-source";
 constexpr char kTestNotificationOriginUrl[] = "https://example.com/";
 
+constexpr char16_t kSourceText[] = u"prodotto";
+constexpr char16_t kTranslatedText[] = u"product";
+
 constexpr int kFakeImageWidth = 300;
 constexpr int kFakeImageHeight = 300;
 
 constexpr int kAnimationCompletionPollingInterval = 50;  // milliseconds
+
+constexpr int kQuickAnswersResultTypeIconSizeDip = 12;
+constexpr int kRichAnswersResultTypeIconSizeDip = 16;
 
 gfx::Image CreateFakeImage() {
   SkBitmap bitmap;
@@ -205,6 +214,37 @@ class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
     SetQuickAnswersEnabled(true);
   }
 
+  // Simulate a valid QuickAnswer translation response.
+  std::unique_ptr<QuickAnswersSession> CreateQuickAnswerTranslationResponse() {
+    std::unique_ptr<quick_answers::QuickAnswer> quick_answer =
+        std::make_unique<quick_answers::QuickAnswer>();
+    quick_answer->result_type = ResultType::kTranslationResult;
+    quick_answer->title.push_back(
+        std::make_unique<quick_answers::QuickAnswerText>(
+            l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
+                                      kSourceText, u"Italian")));
+    quick_answer->first_answer_row.push_back(
+        std::make_unique<quick_answers::QuickAnswerResultText>(
+            base::UTF16ToUTF8(kTranslatedText)));
+
+    std::unique_ptr<TranslationResult> translation_result =
+        std::make_unique<TranslationResult>();
+    translation_result->text_to_translate = kSourceText;
+    translation_result->translated_text = kTranslatedText;
+    translation_result->target_locale = "en";
+    translation_result->source_locale = "it";
+
+    std::unique_ptr<QuickAnswersSession> quick_answers_session =
+        std::make_unique<QuickAnswersSession>();
+    quick_answers_session->quick_answer = std::move(quick_answer);
+    quick_answers_session->structured_result =
+        std::make_unique<StructuredResult>();
+    quick_answers_session->structured_result->translation_result =
+        std::move(translation_result);
+
+    return quick_answers_session;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       chromeos::features::kQuickAnswersRichCard};
@@ -212,9 +252,7 @@ class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
                        RichAnswersDismissedOnOutOfBoundsClick) {
-  std::unique_ptr<ui::test::EventGenerator> event_generator_ =
-      std::make_unique<ui::test::EventGenerator>(
-          ash::Shell::GetPrimaryRootWindow());
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
 
   views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
@@ -229,27 +267,16 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       quick_answers_view_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(quick_answers_view_widget != nullptr);
 
-  // Simulate having received a valid QuickAnswer response, which is necessary
-  // for triggering the rich answers view.
-  std::unique_ptr<quick_answers::QuickAnswer> quick_answer =
-      std::make_unique<quick_answers::QuickAnswer>();
-  quick_answer->result_type = ResultType::kTranslationResult;
-  quick_answer->title.push_back(
-      std::make_unique<quick_answers::QuickAnswerText>(
-          l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                    u"prodotto", u"Italian")));
-  quick_answer->first_answer_row.push_back(
-      std::make_unique<quick_answers::QuickAnswerResultText>(
-          l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_TRANSLATION_INTENT)));
+  // Simulate having received a valid QuickAnswer response.
   controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      std::move(quick_answer));
+      CreateQuickAnswerTranslationResponse());
 
   // Click on the quick answers view to trigger the rich answers view.
   views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
-  event_generator_->MoveMouseTo(
+  event_generator.MoveMouseTo(
       quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
-  event_generator_->ClickLeftButton();
+  event_generator.ClickLeftButton();
 
   // Check that the quick answers view closes when the rich answers view shows.
   views::Widget* rich_answers_view_widget =
@@ -262,9 +289,9 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   // Click outside the rich answers view window bounds to dismiss it.
   gfx::Rect rich_answers_bounds =
       rich_answers_view_widget->GetWindowBoundsInScreen();
-  event_generator_->MoveMouseTo(
+  event_generator.MoveMouseTo(
       gfx::Point(rich_answers_bounds.x() / 2, rich_answers_bounds.y() / 2));
-  event_generator_->ClickLeftButton();
+  event_generator.ClickLeftButton();
 
   // Check that the rich answers view is dismissed.
   ASSERT_TRUE(rich_answers_view_widget->IsClosed());
@@ -272,9 +299,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
                        RichAnswersNotTriggeredOnInvalidResult) {
-  std::unique_ptr<ui::test::EventGenerator> event_generator_ =
-      std::make_unique<ui::test::EventGenerator>(
-          ash::Shell::GetPrimaryRootWindow());
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
 
   views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
@@ -293,14 +318,67 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   // rich answers view since no valid QuickAnswer result is provided.
   views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
-  event_generator_->MoveMouseTo(
+  event_generator.MoveMouseTo(
       quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
-  event_generator_->ClickLeftButton();
+  event_generator.ClickLeftButton();
 
   // Check that all quick answers views are closed.
   ASSERT_TRUE(quick_answers_view_widget->IsClosed());
   ASSERT_TRUE(controller()->GetVisibilityForTesting() ==
               QuickAnswersVisibility::kClosed);
+}
+
+IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
+                       CorrespondingResultTypeIconShown) {
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+
+  views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  params.x = kCursorXToOverlapWithANotification;
+  params.y = kCursorYToOverlapWithANotification;
+  ShowMenu(params);
+
+  views::Widget* quick_answers_view_widget =
+      quick_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(quick_answers_view_widget != nullptr);
+
+  // Simulate having received a valid QuickAnswer response.
+  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
+      CreateQuickAnswerTranslationResponse());
+
+  // Check that the shown result type icon on the QuickAnswersView
+  // correctly corresponds to the Quick Answers result type.
+  quick_answers::QuickAnswersView* quick_answers_view =
+      static_cast<quick_answers::QuickAnswersView*>(
+          quick_answers_view_widget->GetContentsView());
+  ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
+      omnibox::kAnswerTranslationIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
+  ASSERT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
+              expected_image_model);
+
+  // Click on the quick answers view to trigger the rich answers view.
+  views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
+  event_generator.MoveMouseTo(
+      quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+  views::Widget* rich_answers_view_widget =
+      rich_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(rich_answers_view_widget != nullptr);
+
+  // Check that the shown result type icon on the RichAnswersView
+  // correctly corresponds to the Quick Answers result type.
+  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
+      rich_answers_view_widget->GetContentsView());
+  expected_image_model = ui::ImageModel::FromVectorIcon(
+      omnibox::kAnswerTranslationIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
+  ASSERT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
+              expected_image_model);
 }
 
 }  // namespace quick_answers

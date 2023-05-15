@@ -97,8 +97,7 @@ class AboutThisSiteServiceTest : public testing::Test {
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
 
     service_ = std::make_unique<AboutThisSiteService>(
-        std::move(client_mock), template_url_service_.get(),
-        /*allow_missing_description*/ false);
+        std::move(client_mock), template_url_service_.get());
   }
 
   void SetOptimizationGuideAllowed(bool allowed) {

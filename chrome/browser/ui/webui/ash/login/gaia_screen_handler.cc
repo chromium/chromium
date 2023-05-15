@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
@@ -34,7 +33,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -228,12 +226,6 @@ std::string GetSSOProfile() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetSSOProfile();
-}
-
-std::string GetRealm() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetRealm();
 }
 
 std::string GetChromeType() {
@@ -436,11 +428,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   if (!app_locale.empty())
     params.Set("hl", app_locale);
 
-  std::string realm(GetRealm());
-  if (!realm.empty()) {
-    params.Set("realm", realm);
-  }
-
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
@@ -493,8 +480,10 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   switch (gaia_path_) {
     case GaiaPath::kDefault:
-      // Use the default gaia signin path embedded/setup/v2/chromeos which is
-      // set in authenticator.js
+      params.Set(
+          "gaiaPath",
+          GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(
+              1));
       break;
     case GaiaPath::kChildSignup:
       params.Set("gaiaPath", GaiaUrls::GetInstance()
@@ -658,7 +647,7 @@ void GaiaScreenHandler::InitAfterJavascriptAllowed() {
   }
 }
 
-void GaiaScreenHandler::RegisterMessages() {
+void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("webviewLoadAborted",
               &GaiaScreenHandler::HandleWebviewLoadAborted);
   AddCallback("completeLogin", &GaiaScreenHandler::HandleCompleteLogin);
@@ -685,8 +674,6 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
   AddCallback("showLoadingTimeoutError",
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
-
-  BaseScreenHandler::RegisterMessages();
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
@@ -1181,6 +1168,10 @@ void GaiaScreenHandler::Hide() {
 
 void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
   gaia_path_ = gaia_path;
+}
+
+GaiaScreenHandler::GaiaPath GaiaScreenHandler::GetGaiaPath() {
+  return gaia_path_;
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {

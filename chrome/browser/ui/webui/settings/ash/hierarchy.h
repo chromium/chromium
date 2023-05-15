@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -56,7 +57,7 @@ class Hierarchy {
 
    private:
     chromeos::settings::mojom::Section section_;
-    const Hierarchy* hierarchy_;
+    raw_ptr<const Hierarchy, ExperimentalAsh> hierarchy_;
   };
 
   class SubpageMetadata {
@@ -99,7 +100,7 @@ class Hierarchy {
     // |modify_url_callback_|.
     std::string unmodified_url_path_with_parameters_;
 
-    const Hierarchy* hierarchy_;
+    raw_ptr<const Hierarchy, ExperimentalAsh> hierarchy_;
   };
 
   // The location of a setting, which includes its section and, if applicable,
@@ -173,7 +174,8 @@ class Hierarchy {
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const;
 
-  const OsSettingsSections* sections_;  // Owned by |OsSettingsManager|
+  raw_ptr<const OsSettingsSections, ExperimentalAsh>
+      sections_;  // Owned by |OsSettingsManager|
 };
 
 #ifdef DCHECK

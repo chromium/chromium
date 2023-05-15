@@ -20,6 +20,10 @@
            kChromeColorsStart) \
   E_CPONLY(kColorAppMenuHighlightSeverityHigh) \
   E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
+  E_CPONLY(kColorAppMenuHighlightDefault) \
+  E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
+  E_CPONLY(kColorAppMenuChipInkDropHover) \
+  E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \
@@ -129,11 +133,19 @@
   E_CPONLY(kColorMediaRouterIconActive) \
   E_CPONLY(kColorMediaRouterIconWarning) \
   /* New tab button colors. */ \
+  E_CPONLY(kColorNewTabButtonForegroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonForegroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonBackgroundFrameActive) \
   E_CPONLY(kColorNewTabButtonBackgroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonFocusRing) \
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
+  /* New tab button colors for ChromeRefresh.*/ \
+  /* TODO (crbug.com/1399942) remove when theming works */ \
+  E_CPONLY(kColorNewTabButtonCRForegroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonCRForegroundFrameInactive) \
+  E_CPONLY(kColorNewTabButtonCRBackgroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonCRBackgroundFrameInactive) \
   /* New Tab Page colors. */ \
   E_CPONLY(kColorNewTabPageActionButtonBackground) \
   E_CPONLY(kColorNewTabPageActionButtonBorder) \
@@ -219,6 +231,8 @@
   E_CPONLY(kColorOmniboxResultsBackgroundHovered) \
   E_CPONLY(kColorOmniboxResultsBackgroundSelected) \
   E_CPONLY(kColorOmniboxResultsButtonBorder) \
+  E_CPONLY(kColorOmniboxResultsButtonIcon) \
+  E_CPONLY(kColorOmniboxResultsButtonIconSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDrop) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
@@ -318,6 +332,8 @@
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
+  /* Share-this-tab dialg colors. */ \
+  E_CPONLY(kColorShareThisTabSourceViewBorder) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
@@ -325,8 +341,21 @@
   E_CPONLY(kColorSidePanelBadgeForeground) \
   E_CPONLY(kColorSidePanelBadgeForegroundUpdated) \
   E_CPONLY(kColorSidePanelCardBackground) \
+  E_CPONLY(kColorSidePanelCardPrimaryForeground) \
+  E_CPONLY(kColorSidePanelCardSecondaryForeground) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkForeground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeColorPickerOptionBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionForeground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeThemeBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeWebStoreOptionBorder) \
+  E_CPONLY(kColorSidePanelDivider) \
+  E_CPONLY(kColorSidePanelEditFooterBorder) \
   E_CPONLY(kColorSidePanelFilterChipBorder) \
   E_CPONLY(kColorSidePanelFilterChipForeground) \
   E_CPONLY(kColorSidePanelFilterChipForegroundSelected) \
@@ -335,6 +364,7 @@
   E_CPONLY(kColorSidePanelFilterChipBackgroundHover) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
+  E_CPONLY(kColorSidePanelTextfieldBackgroundHover) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
@@ -360,6 +390,8 @@
   E_CPONLY(kColorTabBackgroundActiveFrameInactive) \
   E_CPONLY(kColorTabBackgroundInactiveFrameActive) \
   E_CPONLY(kColorTabBackgroundInactiveFrameInactive) \
+  E_CPONLY(kColorTabBackgroundHoverFrameActive) \
+  E_CPONLY(kColorTabBackgroundHoverFrameInactive) \
   E_CPONLY(kColorTabCloseButtonFocusRingActive) \
   E_CPONLY(kColorTabCloseButtonFocusRingInactive) \
   E_CPONLY(kColorTabFocusRingActive) \
@@ -368,6 +400,8 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
+  E_CPONLY(kColorTabDividerFrameActive) \
+  E_CPONLY(kColorTabDividerFrameInactive) \
   E_CPONLY(kColorTabHoverCardBackground) \
   E_CPONLY(kColorTabHoverCardForeground) \
   /* The colors used for tab groups in the tabstrip. */ \
@@ -463,8 +497,11 @@
   E_CPONLY(kColorToolbarButtonIconPressed) \
   E_CPONLY(kColorToolbarButtonText) \
   E_CPONLY(kColorToolbarContentAreaSeparator) \
+  E_CPONLY(kColorToolbarExtensionSeparatorDisabled) \
+  E_CPONLY(kColorToolbarExtensionSeparatorEnabled) \
   E_CPONLY(kColorToolbarFeaturePromoHighlight) \
   E_CPONLY(kColorToolbarInkDrop) \
+  E_CPONLY(kColorToolbarInkDropHover) \
   E_CPONLY(kColorToolbarInkDropRipple) \
   E_CPONLY(kColorToolbarSeparator) \
   E_CPONLY(kColorToolbarSeparatorDefault) \
@@ -527,6 +564,11 @@
   E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
   E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
   E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
+  E_CPONLY(kColorReadAnythingFocusRingBackground) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \

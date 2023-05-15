@@ -737,7 +737,7 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
   // Allocates a block of local memory of the specified |size|, ensuring that
   // the memory will not be physically allocated until accessed and will read
   // as zero when that happens.
-  static Memory AllocateLocalMemory(size_t size);
+  static Memory AllocateLocalMemory(size_t size, base::StringPiece name);
 
   // Deallocates a block of local |memory| of the specified |size|.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);

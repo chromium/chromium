@@ -136,4 +136,27 @@ std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid) {
   return byte_array;
 }
 
+// |guid_string| is a binary serialization of a GUID in network byte order
+// format.
+GUID GetGUIDFromString(const std::string& guid_string) {
+  DCHECK_EQ(guid_string.length(), sizeof(GUID));
+
+  GUID reversed_guid =
+      *(reinterpret_cast<UNALIGNED const GUID*>(guid_string.c_str()));
+  reversed_guid.Data1 = _byteswap_ulong(reversed_guid.Data1);
+  reversed_guid.Data2 = _byteswap_ushort(reversed_guid.Data2);
+  reversed_guid.Data3 = _byteswap_ushort(reversed_guid.Data3);
+  // Data4 is already a byte array so no need to byte swap.
+  return reversed_guid;
+}
+
+std::string GetStringFromGUID(REFGUID guid) {
+  GUID guid_tmp = guid;
+  guid_tmp.Data1 = _byteswap_ulong(guid_tmp.Data1);
+  guid_tmp.Data2 = _byteswap_ushort(guid_tmp.Data2);
+  guid_tmp.Data3 = _byteswap_ushort(guid_tmp.Data3);
+
+  return std::string(reinterpret_cast<char*>(&guid_tmp), sizeof(GUID));
+}
+
 }  // namespace media

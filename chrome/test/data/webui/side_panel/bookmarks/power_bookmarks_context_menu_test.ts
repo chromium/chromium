@@ -86,6 +86,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuUntrackPrice: 'Untrack price',
       menuRename: 'Rename',
       tooltipDelete: 'Delete',
+      tooltipMove: 'Move',
     });
 
     powerBookmarksContextMenu =
@@ -180,7 +181,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
-    assertEquals(menuItems.length, 4);
+    assertEquals(menuItems.length, 6);
     assertEquals(
         menuItems[0]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTabWithCount')),
@@ -196,6 +197,14 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     assertEquals(
         menuItems[3]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTabGroupWithCount')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('tooltipMove')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
         true);
   });
 

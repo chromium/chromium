@@ -33,11 +33,10 @@ class ShellNativeAppWindowAuraTest : public ExtensionsTest {
 TEST_F(ShellNativeAppWindowAuraTest, Bounds) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "test extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   AppWindow* app_window = new AppWindow(

@@ -243,28 +243,8 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesCount) {
             resultConsumerGroups_[resultConsumerGroupIndex_].suggestions.count);
 }
 
-// Tests that the suggestions are sorted by SearchVSURL.
-TEST_F(OmniboxPopupMediatorTest, UpdateMatchesSorting) {
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-      std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndDisableFeature(omnibox::kAdaptiveSuggestionsCount);
-  SetVisibleSuggestionCount(0);
-
-  autocomplete_result_.AppendMatches(GetAutocompleteMatches());
-  [mediator_ updateMatches:autocomplete_result_];
-  EXPECT_EQ(1ul, resultConsumerGroups_.count);
-  // Expect SearchVSURL skipping the first suggestion because its the omnibox's
-  // content.
-  ExpectGroupBySearchVSURL(0, 1, autocomplete_result_.size());
-}
-
-// Tests that with adaptive suggestions, if all suggestions are visible, they
-// are sorted by search VS URL.
-TEST_F(OmniboxPopupMediatorTest, AdaptiveSuggestionsAllVisible) {
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-      std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndEnableFeature(omnibox::kAdaptiveSuggestionsCount);
-
+// Tests that if all suggestions are visible, they are sorted by search VS URL.
+TEST_F(OmniboxPopupMediatorTest, SuggestionsAllVisible) {
   autocomplete_result_.AppendMatches(GetAutocompleteMatches());
   SetVisibleSuggestionCount(autocomplete_result_.size());
   [mediator_ updateMatches:autocomplete_result_];
@@ -275,13 +255,9 @@ TEST_F(OmniboxPopupMediatorTest, AdaptiveSuggestionsAllVisible) {
   ExpectGroupBySearchVSURL(0, 1, autocomplete_result_.size());
 }
 
-// Tests that with adaptive suggestions, if only part of the suggestions are
-// visible, the first part is sorted by search VS URL.
-TEST_F(OmniboxPopupMediatorTest, AdaptiveSuggestionsPartVisible) {
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-      std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndEnableFeature(omnibox::kAdaptiveSuggestionsCount);
-
+// Tests that if only part of the suggestions are visible, the first part is
+// sorted by search VS URL.
+TEST_F(OmniboxPopupMediatorTest, SuggestionsPartVisible) {
   // Set Visible suggestion count.
   const NSUInteger visibleSuggestionCount = 5;
   SetVisibleSuggestionCount(visibleSuggestionCount);

@@ -7,13 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/values.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/web_state/ui/crw_touch_tracking_recognizer.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace web {
 
@@ -268,10 +265,10 @@ class WebStateImpl;
 - (void)handleNavigationWillChangeState;
 
 // Handles a navigation did push state message for the current webpage.
-- (void)handleNavigationDidPushStateMessage:(base::Value*)message;
+- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict;
 
 // Handles a navigation did replace state message for the current webpage.
-- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message;
+- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict;
 
 // Retrieves the existing web frames in `contentWorld`.
 - (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld;

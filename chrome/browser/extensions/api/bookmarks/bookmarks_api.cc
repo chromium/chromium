@@ -109,8 +109,9 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     return nullptr;
   }
   const BookmarkNode* parent = bookmarks::GetBookmarkNodeByID(model, parent_id);
-  if (!CanBeModified(parent, error))
+  if (!CanBeModified(parent, error) || !parent->is_folder()) {
     return nullptr;
+  }
 
   size_t index;
   if (!details.index) {  // Optional (defaults to end).

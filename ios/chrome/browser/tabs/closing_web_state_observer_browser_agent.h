@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_TABS_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 
-#import "ios/chrome/browser/main/browser_observer.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
 namespace sessions {
 class TabRestoreService;
@@ -47,10 +47,6 @@ class ClosingWebStateObserverBrowserAgent
                           web::WebState* old_web_state,
                           web::WebState* new_web_state,
                           int index) override;
-
-  void WillDetachWebStateAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) override;
 
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,

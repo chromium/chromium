@@ -152,7 +152,7 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void FillOrPreviewForm(mojom::RendererFormDataAction action,
                                  const FormData& form,
                                  const FormFieldData& field,
-                                 int unique_id,
+                                 Suggestion::FrontendId unique_id,
                                  const AutofillTriggerSource trigger_source);
   void FillCreditCardFormImpl(const FormData& form,
                               const FormFieldData& field,
@@ -194,24 +194,24 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int identifier,
+                                   Suggestion::FrontendId identifier,
                                    std::u16string* title,
                                    std::u16string* body);
 
   // Remove the credit card or Autofill profile that matches |unique_id|
   // from the database. Returns true if deletion is allowed.
-  bool RemoveAutofillProfileOrCreditCard(int unique_id);
+  bool RemoveAutofillProfileOrCreditCard(Suggestion::FrontendId unique_id);
 
   // Remove the specified suggestion from single field filling. |frontend_id| is
   // the PopupItemId of the suggestion.
   void RemoveCurrentSingleFieldSuggestion(const std::u16string& name,
                                           const std::u16string& value,
-                                          int frontend_id);
+                                          Suggestion::FrontendId frontend_id);
 
   // Invoked when the user selected |value| in a suggestions list from single
   // field filling. |frontend_id| is the PopupItemId of the suggestion.
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       int frontend_id,
+                                       Suggestion::FrontendId frontend_id,
                                        const FormData& form,
                                        const FormFieldData& field);
 
@@ -314,7 +314,7 @@ class BrowserAutofillManager : public AutofillManager,
   // then logs that the promo code suggestions footer was selected.
   void OnSeePromoCodeOfferDetailsSelected(const GURL& offer_details_url,
                                           const std::u16string& value,
-                                          int frontend_id,
+                                          Suggestion::FrontendId frontend_id,
                                           const FormData& form,
                                           const FormFieldData& field);
 
@@ -532,11 +532,11 @@ class BrowserAutofillManager : public AutofillManager,
   // functions to AutofillSuggestionGenerator.
   // Gets the card referred to by the guid |unique_id|. Returns |nullptr| if
   // card does not exist.
-  CreditCard* GetCreditCard(int unique_id);
+  CreditCard* GetCreditCard(Suggestion::FrontendId unique_id);
 
   // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if
   // profile does not exist.
-  AutofillProfile* GetProfile(int unique_id);
+  AutofillProfile* GetProfile(Suggestion::FrontendId unique_id);
 
   // Determines whether a fill on |form| initiated from |triggered_field| will
   // wind up filling a credit card number. This is useful to determine if we

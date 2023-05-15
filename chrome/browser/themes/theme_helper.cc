@@ -79,37 +79,27 @@ bool ThemeHelper::HasCustomImage(int id,
          theme_supplier->HasCustomImage(id);
 }
 
-// static
-int ThemeHelper::GetDisplayProperty(int id,
-                                    const CustomThemeSupplier* theme_supplier) {
+ThemeHelper::ThemeHelper() = default;
+
+ThemeHelper::~ThemeHelper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+int ThemeHelper::GetDisplayProperty(
+    int id,
+    const CustomThemeSupplier* theme_supplier) const {
   int result = 0;
   if (theme_supplier && theme_supplier->GetDisplayProperty(id, &result)) {
     return result;
   }
 
-  switch (id) {
-    case TP::NTP_BACKGROUND_ALIGNMENT:
-      return TP::ALIGN_CENTER;
-
-    case TP::NTP_BACKGROUND_TILING:
-      return TP::NO_REPEAT;
-
-    case TP::NTP_LOGO_ALTERNATE:
-      return 0;
-
-    case TP::SHOULD_FILL_BACKGROUND_TAB_COLOR:
-      return 1;
-
-    default:
-      return -1;
-  }
+  return GetDefaultDisplayProperty(id);
 }
 
-// static
 base::RefCountedMemory* ThemeHelper::GetRawData(
     int id,
     const CustomThemeSupplier* theme_supplier,
-    ui::ResourceScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) const {
   // Check to see whether we should substitute some images.
   int ntp_alternate =
       GetDisplayProperty(TP::NTP_LOGO_ALTERNATE, theme_supplier);
@@ -126,12 +116,6 @@ base::RefCountedMemory* ThemeHelper::GetRawData(
   }
 
   return data;
-}
-
-ThemeHelper::ThemeHelper() = default;
-
-ThemeHelper::~ThemeHelper() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 color_utils::HSL ThemeHelper::GetTint(
@@ -161,6 +145,25 @@ gfx::ImageSkia* ThemeHelper::GetImageSkiaNamed(
 bool ThemeHelper::ShouldUseNativeFrame(
     const CustomThemeSupplier* theme_supplier) const {
   return false;
+}
+
+int ThemeHelper::GetDefaultDisplayProperty(int id) const {
+  switch (id) {
+    case TP::NTP_BACKGROUND_ALIGNMENT:
+      return TP::ALIGN_CENTER;
+
+    case TP::NTP_BACKGROUND_TILING:
+      return TP::NO_REPEAT;
+
+    case TP::NTP_LOGO_ALTERNATE:
+      return 0;
+
+    case TP::SHOULD_FILL_BACKGROUND_TAB_COLOR:
+      return 1;
+
+    default:
+      return -1;
+  }
 }
 
 // static

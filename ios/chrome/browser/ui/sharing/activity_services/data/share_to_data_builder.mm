@@ -7,8 +7,8 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -46,7 +46,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       // title. If this ever changes, then a decision has to be made on which
       // one should be used for sharing.
       DCHECK([tab_util::GetTabTitle(web_state)
-          isEqual:base::SysUTF16ToNSString(original_title)]);
+          isEqualToString:base::SysUTF16ToNSString(original_title)]);
       is_original_title = YES;
     }
   }

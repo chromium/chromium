@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Décodage d'images</translation>
 <translation id="1785415724048343560">Recommandé pour une expérience optimale</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Source : <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Les sites associés peuvent voir votre activité dans le groupe</translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour maintenir votre connexion ou mémoriser les articles de votre panier</translation>
 <translation id="3165022941318558018">Autorisez un site à utiliser des cookies tiers</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de données stockées</translation>
-<translation id="3203366800380907218">Sur le Web</translation>
 <translation id="321187648315454507">Pour autoriser <ph name="APP_NAME" /> à vous envoyer des notifications, activez également celles-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3248611290851046188">Ce site définit les centres d'intérêt que les autres sites peuvent utiliser pour vous proposer des annonces. Il obtient aussi vos centres d'intérêt via Chrome pour afficher des annonces plus pertinentes.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3707034683772193706">Un site auquel vous accédez peut enregistrer une petite quantité d'informations dans Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3721953990244350188">Ignorer et afficher la prochaine action disponible</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5225463052809312700">Activer la caméra</translation>
-<translation id="5229337741799419985">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5264323282659631142">Supprimer "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pour quitter le mode plein écran, faites glisser un doigt du haut vers le bas, puis appuyez sur le bouton Retour.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6689172468748959065">Photos de profil</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
-<translation id="6701547804986694515">Un site auquel vous accédez peut enregistrer des informations dans Chrome pour confirmer que vous n'êtes pas un robot. À mesure que vous naviguez, les sites peuvent vérifier à partir des données de Chrome et d'un site auquel vous avez accédé précédemment que vous êtes probablement une personne bien réelle.</translation>
 <translation id="6722828510648505498">Bloquer les invites de connexion des services d'identité.</translation>
 <translation id="6746124502594467657">Descendre</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations ?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Vous avez l'habitude de bloquer les notifications. Pour les autoriser, appuyez sur "Détails".</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7383715096023715447">Paramètres pour <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation. Toutefois, les sites peuvent partager quelques informations lors de la validation.</translation>
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7423538860840206698">Accès en lecture au presse-papiers bloqué</translation>
 <translation id="7425915948813553151">Thème sombre pour les sites</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
 <translation id="8823559166155093873">Bloquer les cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">À mesure que vous naviguez, les sites peuvent vérifier à partir des données de Chrome et d'un site auquel vous avez accédé précédemment que vous êtes probablement une personne réelle</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

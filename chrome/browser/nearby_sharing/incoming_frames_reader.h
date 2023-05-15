@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -63,10 +64,10 @@ class IncomingFramesReader {
       absl::optional<sharing::mojom::V1Frame::Tag> frame_type);
   sharing::mojom::NearbySharingDecoder* GetOrStartNearbySharingDecoder();
 
-  ash::nearby::NearbyProcessManager* process_manager_;
+  raw_ptr<ash::nearby::NearbyProcessManager, ExperimentalAsh> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
-  NearbyConnection* connection_;
+  raw_ptr<NearbyConnection, ExperimentalAsh> connection_;
   absl::optional<sharing::mojom::V1Frame::Tag> frame_type_;
   base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
       callback_;

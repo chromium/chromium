@@ -20,11 +20,11 @@ source_set("feature_engagement") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
-    "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:event_exporter_factory",
     "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
   ]

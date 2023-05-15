@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -22,8 +23,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
-
-class ContentAutofillDriver;
 
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
 // order to handle frame-transcending forms.
@@ -144,9 +143,14 @@ class ContentAutofillRouter {
 
   // Deletes all forms and fields related to |driver| (and this driver only).
   // Must be called whenever |driver| is destroyed.
-  // As a simple performance optimization, if |driver| is a main frame, the
-  // whole router is reset to the initial state.
-  void UnregisterDriver(ContentAutofillDriver* driver);
+  //
+  // |driver_is_dying| indicates if the |driver| is being destructed or about to
+  // be destructed. Typically, the driver dies on cross-origin navigations but
+  // survives same-origin navigations (but more precisely this depends on the
+  // lifecycle of the content::RenderFrameHost). If the driver survives, the
+  // router may keep the meta data is collected about the frame (in particular,
+  // the parent frame).
+  void UnregisterDriver(ContentAutofillDriver* driver, bool driver_is_dying);
 
   // Returns the ContentAutofillDriver* for which AskForValuesToFill() was
   // called last.

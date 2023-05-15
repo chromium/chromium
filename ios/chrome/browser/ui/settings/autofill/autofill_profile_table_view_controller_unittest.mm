@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
-#import "base/guid.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -72,9 +72,7 @@ class AutofillProfileTableViewControllerTest
     ChromeTableViewControllerTest::TearDown();
   }
 
-  void AddProfile(const std::string& origin,
-                  const std::string& name,
-                  const std::string& address) {
+  void AddProfile(const std::string& name, const std::string& address) {
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
@@ -87,7 +85,7 @@ class AutofillProfileTableViewControllerTest
     personal_data_manager->SetSyncServiceForTest(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
-    autofill::AutofillProfile autofill_profile(base::GenerateGUID(), origin);
+    autofill::AutofillProfile autofill_profile;
     autofill_profile.SetRawInfo(autofill::NAME_FULL, base::ASCIIToUTF16(name));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));
@@ -121,7 +119,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestInitialization) {
 
 // Adding a single address results in an address section.
 TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
-  AddProfile("https://www.example.com/", "John Doe", "1 Main Street");
+  AddProfile("John Doe", "1 Main Street");
   CreateController();
   CheckController();
 
@@ -133,7 +131,15 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
 
 // Deleting the only profile results in item deletion and section deletion.
 TEST_F(AutofillProfileTableViewControllerTest, TestOneProfileItemDeleted) {
-  AddProfile("https://www.example.com/", "John Doe", "1 Main Street");
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfilesUnionView)) {
+    // The test is incompatible with the feature as now the user is asked to
+    // confirm the deletion.
+    // TODO(crbug.com/1423319): Cleanup
+    return;
+  }
+
+  AddProfile("John Doe", "1 Main Street");
   CreateController();
   CheckController();
 

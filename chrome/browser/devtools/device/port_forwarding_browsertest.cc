@@ -113,19 +113,14 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest,
 
   content::WebContents* wc = browser()->tab_strip_model()->GetWebContentsAt(0);
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc, "window.domAutomationController.send(document.title)", &result));
-  ASSERT_EQ("Port forwarding test", result) << "Document has not loaded.";
+  ASSERT_EQ("Port forwarding test", content::EvalJs(wc, "document.title"))
+      << "Document has not loaded.";
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc, "window.domAutomationController.send(getBodyTextContent())",
-      &result));
-  ASSERT_EQ("content", result) << "Javascript has not loaded.";
+  ASSERT_EQ("content", content::EvalJs(wc, "getBodyTextContent()"))
+      << "Javascript has not loaded.";
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc, "window.domAutomationController.send(getBodyMarginLeft())", &result));
-  ASSERT_EQ("100px", result) << "CSS has not loaded.";
+  ASSERT_EQ("100px", content::EvalJs(wc, "getBodyMarginLeft()"))
+      << "CSS has not loaded.";
 
   // Test that disabling port forwarding is handled normally.
   wait_for_port_forwarding.set_skip_empty_devices(false);

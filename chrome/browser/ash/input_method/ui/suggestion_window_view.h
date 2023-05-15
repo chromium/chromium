@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/ui/indexed_suggestion_candidate_button.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_accessibility_label.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
@@ -85,6 +86,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
   void LearnMoreClicked();
+  raw_ptr<views::ImageButton, ExperimentalAsh> getLearnMoreButton();
 
  private:
   SuggestionWindowView(gfx::NativeView parent,
@@ -109,22 +111,22 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
                                bool highlighted);
 
   // The delegate to handle events from this class.
-  AssistiveDelegate* const delegate_;
+  const raw_ptr<AssistiveDelegate, ExperimentalAsh> delegate_;
 
   // The view containing all the suggestions if multiple candidates are
   // visible.
-  views::View* multiple_candidate_area_;
+  raw_ptr<views::View, ExperimentalAsh> multiple_candidate_area_;
 
   // The view containing the completion view. If this is visible then there is
   // only one suggestion to show.
-  CompletionSuggestionView* completion_view_;
+  raw_ptr<CompletionSuggestionView, ExperimentalAsh> completion_view_;
 
   // The setting link, positioned below candidate_area_.
   // TODO(crbug/1102175): Rename setting to settings since there can be multiple
   // things to set.
-  views::Link* setting_link_;
+  raw_ptr<views::Link, ExperimentalAsh> setting_link_;
 
-  views::ImageButton* learn_more_button_;
+  raw_ptr<views::ImageButton, ExperimentalAsh> learn_more_button_;
 
   // TODO(crbug/1099062): Add tests for mouse hovered and pressed.
   base::flat_map<views::View*, base::CallbackListSubscription> subscriptions_;

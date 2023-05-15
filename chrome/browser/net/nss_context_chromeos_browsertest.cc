@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/net/nss_service_factory.h"
 
 #include <memory>
@@ -137,8 +138,8 @@ class DBTester {
                                                  std::move(done_callback));
   }
 
-  Profile* profile_ = nullptr;
-  net::NSSCertDatabase* db_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> db_ = nullptr;
   // Indicates if the tester should expect to receive a database with
   // initialized system slot or not.
   bool will_have_system_slot_ = false;

@@ -42,8 +42,7 @@ class ChromePingManagerFactoryTest : public testing::Test {
   void RunShouldFetchAccessTokenForReportTest(bool is_enhanced_protection,
                                               bool is_signed_in,
                                               bool expect_should_fetch);
-  raw_ptr<TestingProfile> SetUpProfile(bool is_enhanced_protection,
-                                       bool is_signed_in);
+  TestingProfile* SetUpProfile(bool is_enhanced_protection, bool is_signed_in);
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -89,10 +88,10 @@ void ChromePingManagerFactoryTest::SetUpFeatureList(
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
-raw_ptr<TestingProfile> ChromePingManagerFactoryTest::SetUpProfile(
+TestingProfile* ChromePingManagerFactoryTest::SetUpProfile(
     bool is_enhanced_protection,
     bool is_signed_in) {
-  raw_ptr<TestingProfile> profile = profile_manager_->CreateTestingProfile(
+  TestingProfile* profile = profile_manager_->CreateTestingProfile(
       "testing_profile", IdentityTestEnvironmentProfileAdaptor::
                              GetIdentityTestEnvironmentFactories());
   if (is_enhanced_protection) {
@@ -111,8 +110,7 @@ void ChromePingManagerFactoryTest::RunShouldFetchAccessTokenForReportTest(
     bool is_enhanced_protection,
     bool is_signed_in,
     bool expect_should_fetch) {
-  raw_ptr<TestingProfile> profile =
-      SetUpProfile(is_enhanced_protection, is_signed_in);
+  TestingProfile* profile = SetUpProfile(is_enhanced_protection, is_signed_in);
   EXPECT_EQ(ChromePingManagerFactory::ShouldFetchAccessTokenForReport(profile),
             expect_should_fetch);
 }
@@ -120,7 +118,7 @@ void ChromePingManagerFactoryTest::RunShouldFetchAccessTokenForReportTest(
 void ChromePingManagerFactoryTest::RunReportThreatDetailsTest(
     bool is_csbrr_page_load_token_enabled) {
   SetUpFeatureList(is_csbrr_page_load_token_enabled);
-  raw_ptr<TestingProfile> profile =
+  TestingProfile* profile =
       SetUpProfile(/*is_enhanced_protection=*/false, /*is_signed_in=*/false);
   auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
 
@@ -179,7 +177,7 @@ TEST_F(ChromePingManagerFactoryTest,
                                          /*expect_should_fetch=*/false);
 }
 TEST_F(ChromePingManagerFactoryTest, NoPingManagerForIncognito) {
-  raw_ptr<TestingProfile> profile = TestingProfile::Builder().BuildIncognito(
+  TestingProfile* profile = TestingProfile::Builder().BuildIncognito(
       profile_manager_->CreateTestingProfile("testing_profile"));
   EXPECT_EQ(ChromePingManagerFactory::GetForBrowserContext(profile), nullptr);
 }

@@ -754,7 +754,11 @@ bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
 void ManagePasswordsUIController::AuthenticateUserWithMessage(
     const std::u16string& message,
     AvailabilityCallback callback) {
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  if (bypass_user_auth_for_testing_) {
+    std::move(callback).Run(true);
+    return;
+  }
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   std::move(callback).Run(true);
   return;
 #else
@@ -807,6 +811,12 @@ void ManagePasswordsUIController::
                          FinishMovingPasswordAfterAccountStoreOptInAuth,
                      weak_ptr_factory_.GetWeakPtr(),
                      passwords_data_.form_manager()));
+}
+
+[[nodiscard]] std::unique_ptr<base::AutoReset<bool>>
+ManagePasswordsUIController::BypassUserAuthtForTesting() {
+  return std::make_unique<base::AutoReset<bool>>(&bypass_user_auth_for_testing_,
+                                                 true);
 }
 
 void ManagePasswordsUIController::HidePasswordBubble() {

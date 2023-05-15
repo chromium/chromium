@@ -394,7 +394,7 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 
   const chromeos::WindowPinType previous_type =
       window->GetProperty(lacros::kWindowPinTypeKey);
-  DCHECK_NE(previous_type, chromeos::WindowPinType::kTrustedPinned)
+  CHECK_NE(previous_type, chromeos::WindowPinType::kPinned)
       << "Extensions only set Trusted Pinned";
 
   bool previous_pinned =
@@ -1276,27 +1276,29 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   absl::optional<tabs::Create::Params> params =
       tabs::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!ExtensionTabUtil::IsTabStripEditable())
-    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  return RespondNow([&] {
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return Error(tabs_constants::kTabStripNotEditableError);
+    }
 
-  ExtensionTabUtil::OpenTabParams options;
-  options.window_id = params->create_properties.window_id;
-  options.opener_tab_id = params->create_properties.opener_tab_id;
-  options.active = params->create_properties.selected;
-  // The 'active' property has replaced the 'selected' property.
-  options.active = params->create_properties.active;
-  options.pinned = params->create_properties.pinned;
-  options.index = params->create_properties.index;
-  options.url = params->create_properties.url;
+    ExtensionTabUtil::OpenTabParams options;
+    options.window_id = params->create_properties.window_id;
+    options.opener_tab_id = params->create_properties.opener_tab_id;
+    options.active = params->create_properties.selected;
+    // The 'active' property has replaced the 'selected' property.
+    options.active = params->create_properties.active;
+    options.pinned = params->create_properties.pinned;
+    options.index = params->create_properties.index;
+    options.url = params->create_properties.url;
 
-  std::string error;
-  auto result = ExtensionTabUtil::OpenTab(this, options, user_gesture());
-  if (!result.has_value())
-    return RespondNow(Error(result.error()));
+    auto result = ExtensionTabUtil::OpenTab(this, options, user_gesture());
+    if (!result.has_value()) {
+      return Error(result.error());
+    }
 
-  // Return data about the newly created tab.
-  return RespondNow(has_callback() ? WithArguments(std::move(*result))
-                                   : NoArguments());
+    // Return data about the newly created tab.
+    return has_callback() ? WithArguments(std::move(*result)) : NoArguments();
+  }());
 }
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {

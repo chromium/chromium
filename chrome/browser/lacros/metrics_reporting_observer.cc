@@ -56,7 +56,7 @@ MetricsReportingObserver::MetricsReportingObserver(
   DCHECK(metrics_service_);
   auto* lacros_service = chromeos::LacrosService::Get();
 
-  if (lacros_service->IsMetricsReportingAvailable()) {
+  if (lacros_service->IsSupported<crosapi::mojom::MetricsReporting>()) {
     lacros_service->BindMetricsReporting(
         metrics_reporting_remote_.BindNewPipeAndPassReceiver());
     metrics_reporting_remote_->AddObserver(
@@ -68,7 +68,7 @@ MetricsReportingObserver::~MetricsReportingObserver() = default;
 
 void MetricsReportingObserver::InitSettingsFromAsh() {
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsMetricsReportingAvailable()) {
+  if (!lacros_service->IsSupported<crosapi::mojom::MetricsReporting>()) {
     LOG(WARNING) << "MetricsReporting API not available";
     return;
   }

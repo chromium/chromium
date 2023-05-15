@@ -25,6 +25,14 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?r
   headersSize: 0
   receivedDataSize: 0
 
+url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?cached=1
+  isChunked: false
+  isH2: false
+  redirected: false
+  headersSize: 101
+  receivedDataSize: 0
+  reportedTotalSize: 101
+
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?
   isChunked: false
   isH2: false

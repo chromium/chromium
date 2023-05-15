@@ -255,12 +255,6 @@
   <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_ERROR" desc="The text displayed in the status column when one or more of the DnsOverHttpsTemplates server template URIs is invalid.">
     One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.
   </message>
-  <message name="IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR" desc="The text displayed in the status column when the DnsOverHttpsSalt policy is set but the DnsOverHttpsTemplateWithIdentifiers policy is not set.">
-    The <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> value is not relevant, and will not be used, unless the <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS">DnsOverHttpsTemplateWithIdentifiers</ph> policy is set.
-  </message>
-    <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS_IRRELEVANT_ERROR" desc="The text displayed in the status column when the DnsOverHttpsSalt policy is EMPTY but the DnsOverHttpsTemplateWithIdentifiers policy is set.">
-    The <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS">DnsOverHttpsTemplateWithIdentifiers</ph> policy is not used unless the <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> policy is set.
-  </message>
   <message name="IDS_POLICY_SECURE_DNS_SALT_INVALID_ERROR" desc="The text displayed in the status column when the value of DnsOverHttpsSalt is invalid.">
     The <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> value is invalid and will not be used.
   </message>
@@ -991,5 +985,8 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DEVICE_POST_REBOOT_TITLE" desc="The title for notification informing the user that the device was restarted by the administrator.">
     Your administrator restarted your device
+  </message>
+  <message name="IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO" desc="The text displayed in the status column when a browsing data policy is applied for types for which sync will be automatically disabled.">
+    This policy automatically disables syncing across devices for: <ph name="ACTION_LIST">$1<ex>passwords, autofill</ex></ph>.
   </message>
 </grit-part>

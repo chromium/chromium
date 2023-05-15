@@ -37,6 +37,7 @@ class ExtensionAction {
   enum ShowAction {
     ACTION_NONE,
     ACTION_SHOW_POPUP,
+    ACTION_TOGGLE_SIDE_PANEL,
     // We don't need a SHOW_CONTEXT_MENU because that's handled separately in
     // the UI.
   };

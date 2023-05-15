@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -108,6 +110,19 @@ bool IsUrlAllowlisted(const std::string& url) {
   return false;
 }
 
+inline std::string RequestTypeToString(projector::mojom::RequestType method) {
+  switch (method) {
+    case projector::mojom::RequestType::kPost:
+      return "POST";
+    case projector::mojom::RequestType::kGet:
+      return "GET";
+    case projector::mojom::RequestType::kPatch:
+      return "PATCH";
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 // The maximum number of retries for the SimpleURLLoader requests. Three times
 // is an arbitrary number to start with.
 const int kMaxRetries = 3;
@@ -119,19 +134,19 @@ ProjectorXhrSender::ProjectorXhrSender(
     : url_loader_factory_(url_loader_factory) {}
 ProjectorXhrSender::~ProjectorXhrSender() = default;
 
-void ProjectorXhrSender::Send(const GURL& url,
-                              const std::string& method,
-                              const std::string& request_body,
-                              bool use_credentials,
-                              bool use_api_key,
-                              SendRequestCallback callback,
-                              const base::Value::Dict& headers,
-                              const std::string& account_email) {
+void ProjectorXhrSender::Send(
+    const GURL& url,
+    projector::mojom::RequestType method,
+    const absl::optional<std::string>& request_body,
+    bool use_credentials,
+    bool use_api_key,
+    SendRequestCallback callback,
+    const absl::optional<base::flat_map<std::string, std::string>>& headers,
+    const absl::optional<std::string>& account_email) {
   if (!IsUrlAllowlisted(url.spec())) {
     std::move(callback).Run(
-        /*success=*/false,
         /*response_body=*/std::string(),
-        /*error=*/"UNSUPPORTED_URL");
+        /*response_code=*/projector::mojom::XhrResponseCode::kUnsupportedURL);
     LOG(ERROR) << "URL is not supported.";
     return;
   }
@@ -149,34 +164,37 @@ void ProjectorXhrSender::Send(const GURL& url,
   if (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
       !IsValidEmail(account_email)) {
     std::move(callback).Run(
-        /*success=*/false,
         /*response_body=*/std::string(),
-        /*error=*/"INVALID_ACCOUNT_EMAIL");
+        /*response_code=*/projector::mojom::XhrResponseCode::
+            kInvalidAccountEmail);
     LOG(ERROR) << "User email is invalid";
     return;
   }
 
-  const std::string& email =
-      (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
-       !account_email.empty())
-          ? account_email
-          : ProjectorAppClient::Get()
+  std::string email;
+  if (account_email.has_value() && !account_email->empty() &&
+      ash::features::IsProjectorViewerUseSecondaryAccountEnabled()) {
+    email = *account_email;
+  } else {
+    email = ProjectorAppClient::Get()
                 ->GetIdentityManager()
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                 .email;
+  }
+
   // Fetch OAuth token for authorizing the request.
   oauth_token_fetcher_.GetAccessTokenFor(
       email, base::BindOnce(&ProjectorXhrSender::OnAccessTokenRequestCompleted,
                             weak_factory_.GetWeakPtr(), request_url, method,
-                            request_body, headers.Clone(), use_credentials,
+                            request_body, headers, use_credentials,
                             std::move(callback)));
 }
 
 void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     const GURL& url,
-    const std::string& method,
-    const std::string& request_body,
-    const base::Value::Dict& headers,
+    projector::mojom::RequestType method,
+    const absl::optional<std::string>& request_body,
+    const absl::optional<base::flat_map<std::string, std::string>>& headers,
     bool use_credentials,
     SendRequestCallback callback,
     const std::string& email,
@@ -184,9 +202,9 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     const signin::AccessTokenInfo& info) {
   if (error.state() != GoogleServiceAuthError::State::NONE) {
     std::move(callback).Run(
-        /*success=*/false,
         /*response_body=*/std::string(),
-        /*error=*/"TOKEN_FETCH_FAILURE");
+        /*response_code=*/projector::mojom::XhrResponseCode::
+            kTokenFetchFailure);
     LOG(ERROR) << "Failed to reqeust access token, error:" << error.ToString();
     return;
   }
@@ -195,17 +213,18 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
               /*allow_cookie=*/use_credentials, std::move(callback));
 }
 
-void ProjectorXhrSender::SendRequest(const GURL& url,
-                                     const std::string& method,
-                                     const std::string& request_body,
-                                     const std::string& token,
-                                     const base::Value::Dict& headers,
-                                     bool allow_cookie,
-                                     SendRequestCallback callback) {
+void ProjectorXhrSender::SendRequest(
+    const GURL& url,
+    projector::mojom::RequestType method,
+    const absl::optional<std::string>& request_body,
+    const std::string& token,
+    const absl::optional<base::flat_map<std::string, std::string>>& headers,
+    bool allow_cookie,
+    SendRequestCallback callback) {
   // Build resource request.
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
-  resource_request->method = method;
+  resource_request->method = RequestTypeToString(method);
   // The OAuth token will be empty if the request is using end user credentials
   // for authorization.
   if (!token.empty()) {
@@ -215,8 +234,10 @@ void ProjectorXhrSender::SendRequest(const GURL& url,
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       "application/json");
 
-  for (auto [key, value] : headers) {
-    resource_request->headers.SetHeader(key, value.GetString());
+  if (headers.has_value()) {
+    for (auto [key, value] : *headers) {
+      resource_request->headers.SetHeader(key, value);
+    }
   }
 
   // Send resource request.
@@ -228,8 +249,10 @@ void ProjectorXhrSender::SendRequest(const GURL& url,
   // for non-2xx response.
   loader->SetAllowHttpErrorResults(true);
 
-  if (!request_body.empty())
-    loader->AttachStringForUpload(request_body, "application/json");
+  if (request_body.has_value() && !request_body->empty()) {
+    loader->AttachStringForUpload(*request_body, "application/json");
+  }
+
   loader->SetRetryOptions(
       kMaxRetries,
       network::SimpleURLLoader::RETRY_ON_5XX |
@@ -260,10 +283,12 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   bool is_success =
       response_body && response_code >= 200 && response_code < 300;
   auto response_body_or_empty = response_body ? *response_body : std::string();
+
   std::move(callback).Run(
-      /*success=*/is_success,
       /*response_body=*/response_body_or_empty,
-      /*error=*/is_success ? std::string() : "XHR_FETCH_FAILURE");
+      /*response_code=*/is_success
+          ? projector::mojom::XhrResponseCode::kSuccess
+          : projector::mojom::XhrResponseCode::kXhrFetchFailure);
   if (!is_success) {
     LOG(ERROR) << "Failed to send XHR request, Http error code: "
                << response_code
@@ -273,7 +298,9 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   loader_map_.erase(request_id);
 }
 
-bool ProjectorXhrSender::IsValidEmail(const std::string& email) {
+bool ProjectorXhrSender::IsValidEmail(
+    const absl::optional<std::string>& email_check) {
+  const auto email = email_check.value_or(std::string());
   if (email.empty()) {
     return true;
   }

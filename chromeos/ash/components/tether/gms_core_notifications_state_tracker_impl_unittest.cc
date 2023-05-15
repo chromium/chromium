@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,7 +62,7 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
   }
 
  private:
-  GmsCoreNotificationsStateTrackerImpl* tracker_;
+  raw_ptr<GmsCoreNotificationsStateTrackerImpl, ExperimentalAsh> tracker_;
 
   uint32_t change_count_ = 0;
   std::vector<std::string> names_from_last_update_;

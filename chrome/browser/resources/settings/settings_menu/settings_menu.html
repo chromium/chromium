@@ -11,7 +11,7 @@
       }
 
       #menu {
-        color: var(--settings-nav-item-color);
+        color: var(--google-grey-700);
         display: flex;
         flex-direction: column;
         min-width: fit-content;
@@ -47,6 +47,10 @@
       }
 
       @media (prefers-color-scheme: dark) {
+        #menu {
+          color: var(--cr-primary-text-color);
+        }
+
         .menu-separator {
           border-bottom: var(--cr-separator-line);  /* override */
         }
@@ -78,16 +82,13 @@
           $i18n{privacyPageTitle}
           <paper-ripple></paper-ripple>
         </a>
-        <template is="dom-if" id="performanceDomIf"
-            if="[[performanceFeaturesAvailable_]]">
-          <a role="menuitem" id="performance" href="/performance"
-              class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.performance]]">
-            <iron-icon icon="settings:performance"></iron-icon>
-            $i18n{performancePageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-        </template>
+        <a role="menuitem" id="performance" href="/performance"
+            class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.performance]]">
+          <iron-icon icon="settings:performance"></iron-icon>
+          $i18n{performancePageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
         <a role="menuitem" id="appearance" href="/appearance"
             hidden="[[!pageVisibility.appearance]]"
             class="cr-nav-menu-item">

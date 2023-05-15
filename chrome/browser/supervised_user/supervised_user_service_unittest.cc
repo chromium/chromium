@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 #include <stddef.h>
 
@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
@@ -38,20 +40,14 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
-#include "extensions/common/features/feature_channel.h"
-#include "extensions/common/manifest_constants.h"
-
-using extensions::Extension;
-#endif
-
 using content::MessageLoopRunner;
+
+namespace {
+
+constexpr char kExampleHost0[] = "http://www.example0.com";
+constexpr char kExampleURL1[] = "http://www.example1.com/123";
+
+}  // namespace
 
 namespace {
 
@@ -141,7 +137,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    SupervisedUserService* service =
+    supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
     service->Init();
   }
@@ -160,7 +156,7 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
 };
 
 TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(profile_->IsChild());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -177,14 +173,132 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   EXPECT_TRUE(service->IsURLFilteringEnabled());
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(SupervisedUserServiceTest, AreExtensionsPermissionsEnabled) {
+TEST_F(SupervisedUserServiceTest,
+       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   EXPECT_TRUE(profile_->IsChild());
-  SupervisedUserService* service =
+
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+#else
   EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+#endif
 }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+
+TEST_F(SupervisedUserServiceTest,
+       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  EXPECT_TRUE(profile_->IsChild());
+
+  supervised_user::SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+#else
+  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+#endif
+}
+
+TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
+  base::HistogramTester histogram_tester;
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Overriding the value of prefs::kSupervisedUserSafeSites and
+  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
+  // needed, otherwise no report could be triggered by policies change. Since
+  // the default values are the same of override values, the WebFilterType
+  // doesn't change and no report here.
+  prefs->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                    supervised_user::SupervisedUserURLFilter::ALLOW);
+  prefs->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+
+  // Blocks `kExampleHost0`.
+  {
+    ScopedDictPrefUpdate hosts_update(prefs, prefs::kSupervisedUserManualHosts);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, false);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kBlockedListOnly,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+
+  // Approves `kExampleHost0`.
+  {
+    ScopedDictPrefUpdate hosts_update(prefs, prefs::kSupervisedUserManualHosts);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, true);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kApprovedListOnly,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+
+  // Blocks `kExampleURL1`.
+  {
+    ScopedDictPrefUpdate urls_update(prefs, prefs::kSupervisedUserManualURLs);
+    base::Value::Dict& urls = urls_update.Get();
+    urls.Set(kExampleURL1, false);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::kBoth,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
+}
 
 class SupervisedUserServiceTestUnsupervised
     : public SupervisedUserServiceTestBase {
@@ -194,7 +308,7 @@ class SupervisedUserServiceTestUnsupervised
 };
 
 TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service->IsURLFilteringEnabled());
 
@@ -208,14 +322,12 @@ TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
   EXPECT_FALSE(service->IsURLFilteringEnabled());
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
   EXPECT_FALSE(profile_->IsChild());
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
 }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
@@ -233,214 +345,3 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
       prefs->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
                         /* SupervisedUserURLFilter::WARN */ 1));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-class SupervisedUserServiceExtensionTestBase
-    : public extensions::ExtensionServiceTestBase {
- public:
-  explicit SupervisedUserServiceExtensionTestBase(bool is_supervised)
-      : is_supervised_(is_supervised), channel_(version_info::Channel::DEV) {}
-  ~SupervisedUserServiceExtensionTestBase() override {}
-
-  void SetUp() override {
-    ExtensionServiceTestBase::SetUp();
-    ExtensionServiceInitParams params;
-    params.profile_is_supervised = is_supervised_;
-    InitializeExtensionService(params);
-    // Flush the message loop, to ensure that credentials have been loaded in
-    // Identity Manager.
-    base::RunLoop().RunUntilIdle();
-
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile_.get());
-    service->Init();
-
-    supervised_user::SupervisedUserURLFilter* url_filter =
-        service->GetURLFilter();
-    url_filter->SetBlockingTaskRunnerForTesting(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-    url_filter_observer_.Init(url_filter);
-  }
-
-  void TearDown() override {
-    // Flush the message loop, to ensure all posted tasks run.
-    base::RunLoop().RunUntilIdle();
-  }
-
- protected:
-  scoped_refptr<const extensions::Extension> MakeThemeExtension() {
-    base::Value::Dict source;
-    source.Set(extensions::manifest_keys::kName, "Theme");
-    source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
-    source.Set(extensions::manifest_keys::kVersion, "1.0");
-    extensions::ExtensionBuilder builder;
-    scoped_refptr<const extensions::Extension> extension =
-        builder.SetManifest(std::move(source)).Build();
-    return extension;
-  }
-
-  scoped_refptr<const extensions::Extension> MakeExtension() {
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder("Extension").Build();
-    return extension;
-  }
-
-  bool is_supervised_;
-  extensions::ScopedCurrentChannel channel_;
-  SupervisedUserURLFilterObserver url_filter_observer_;
-};
-
-class SupervisedUserServiceExtensionTestUnsupervised
-    : public SupervisedUserServiceExtensionTestBase {
- public:
-  SupervisedUserServiceExtensionTestUnsupervised()
-      : SupervisedUserServiceExtensionTestBase(false) {}
-};
-
-TEST_F(SupervisedUserServiceExtensionTestUnsupervised,
-       AreExtensionsPermissionsEnabled) {
-  EXPECT_FALSE(profile_->IsChild());
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
-}
-
-class SupervisedUserServiceExtensionTest
-    : public SupervisedUserServiceExtensionTestBase {
- public:
-  SupervisedUserServiceExtensionTest()
-      : SupervisedUserServiceExtensionTestBase(true) {}
-};
-
-TEST_F(SupervisedUserServiceExtensionTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-  EXPECT_TRUE(profile_->IsChild());
-
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
-#else
-  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
-#endif
-}
-
-TEST_F(SupervisedUserServiceExtensionTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-  EXPECT_TRUE(profile_->IsChild());
-
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
-}
-
-TEST_F(SupervisedUserServiceExtensionTest,
-       ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_.get(),
-                                                           false);
-  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
-      prefs::kSupervisedUserExtensionsMayRequestPermissions));
-  EXPECT_TRUE(profile_->IsChild());
-
-  // Check that a supervised user can install and uninstall a theme even if
-  // they are not allowed to install extensions.
-  {
-    scoped_refptr<const extensions::Extension> theme = MakeThemeExtension();
-
-    std::u16string error_1;
-    EXPECT_TRUE(supervised_user_service->UserMayLoad(theme.get(), &error_1));
-    EXPECT_TRUE(error_1.empty());
-
-    std::u16string error_2;
-    EXPECT_FALSE(
-        supervised_user_service->MustRemainInstalled(theme.get(), &error_2));
-    EXPECT_TRUE(error_2.empty());
-  }
-
-  // Now check a different kind of extension; the supervised user should not be
-  // able to load it. It should also not need to remain installed.
-  {
-    scoped_refptr<const extensions::Extension> extension = MakeExtension();
-
-    std::u16string error_1;
-    EXPECT_FALSE(
-        supervised_user_service->UserMayLoad(extension.get(), &error_1));
-    EXPECT_FALSE(error_1.empty());
-
-    std::u16string error_2;
-    EXPECT_FALSE(
-        supervised_user_service->UserMayInstall(extension.get(), &error_2));
-    EXPECT_FALSE(error_2.empty());
-
-    std::u16string error_3;
-    EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
-                                                              &error_3));
-    EXPECT_TRUE(error_3.empty());
-  }
-
-#if DCHECK_IS_ON()
-  EXPECT_FALSE(supervised_user_service->GetDebugPolicyProviderName().empty());
-#endif
-}
-
-TEST_F(SupervisedUserServiceExtensionTest,
-       ExtensionManagementPolicyProviderWithSUInitiatedInstalls) {
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  // Enable child users to initiate extension installs by simulating the
-  // toggling of "Permissions for sites, apps and extensions" to enabled.
-  supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_.get(),
-                                                           true);
-  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
-      prefs::kSupervisedUserExtensionsMayRequestPermissions));
-  EXPECT_TRUE(profile_->IsChild());
-
-  // The supervised user should be able to load and uninstall the extensions
-  // they install.
-  {
-    scoped_refptr<const extensions::Extension> extension = MakeExtension();
-
-    std::u16string error;
-    EXPECT_TRUE(supervised_user_service->UserMayLoad(extension.get(), &error));
-    EXPECT_TRUE(error.empty());
-
-    std::u16string error_2;
-    EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
-                                                              &error_2));
-    EXPECT_TRUE(error_2.empty());
-
-    std::u16string error_3;
-    extensions::disable_reason::DisableReason reason =
-        extensions::disable_reason::DISABLE_NONE;
-    EXPECT_TRUE(supervised_user_service->MustRemainDisabled(extension.get(),
-                                                            &reason, &error_3));
-    EXPECT_EQ(extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
-              reason);
-    EXPECT_FALSE(error_3.empty());
-
-    std::u16string error_4;
-    EXPECT_TRUE(supervised_user_service->UserMayModifySettings(extension.get(),
-                                                               &error_4));
-    EXPECT_TRUE(error_4.empty());
-
-    std::u16string error_5;
-    EXPECT_TRUE(
-        supervised_user_service->UserMayInstall(extension.get(), &error_5));
-    EXPECT_TRUE(error_5.empty());
-  }
-
-#if DCHECK_IS_ON()
-  EXPECT_FALSE(supervised_user_service->GetDebugPolicyProviderName().empty());
-#endif
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

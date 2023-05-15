@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
@@ -227,14 +228,15 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   void RunCallback(const TpmChallengeKeyResult& result);
 
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  AttestationFlow* attestation_flow_ = nullptr;
+  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_ = nullptr;
   // Can be nullptr.
-  MachineCertificateUploader* machine_certificate_uploader_ = nullptr;
+  raw_ptr<MachineCertificateUploader, ExperimentalAsh>
+      machine_certificate_uploader_ = nullptr;
 
   TpmChallengeKeyCallback callback_;
   // |profile_| may be nullptr if this is an instance that is used device-wide
   // and only intended to work with machine keys.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   AttestationKeyType key_type_ = AttestationKeyType::KEY_DEVICE;
   bool will_register_key_ = false;

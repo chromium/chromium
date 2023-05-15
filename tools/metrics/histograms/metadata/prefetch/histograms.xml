@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.CookiesToCopy" units="count"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2023-08-27">
+    enum="HttpResponseCode" expires_after="2023-11-05">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -561,21 +561,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of spare renderers that were attempted to be started on
     the SRP, when the feature param is enabled.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.WasPrefetchTypeStateChangeValid"
-    enum="BooleanSupported" expires_after="2023-04-25">
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <summary>
-    Records whether a pretch type change was or was not supported by the
-    PrefetchProxy code. A page can change the speculation rule for a given
-    prefetch, but not all possible changes are currently supported. If the type
-    change is not supported then the prefetch retains its initial type.
-
-    This histogram is recorded each time the type of a prefetch is attempted to
-    be changed.
   </summary>
 </histogram>
 

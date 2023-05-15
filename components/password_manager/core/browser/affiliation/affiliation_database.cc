@@ -40,7 +40,7 @@ const int kCompatibleVersion = 1;
 // Struct to hold table builder for "eq_classes", "eq_class_members",
 // and "eq_class_groups" tables.
 struct SQLTableBuilders {
-  std::vector<raw_ptr<SQLTableBuilder>> AsVector() const {
+  std::vector<SQLTableBuilder*> AsVector() const {
     // It's important to keep builders in this order as tables are migrated one
     // by one.
     return {eq_classes, eq_class_members, eq_class_groups, psl_extensions};
@@ -164,7 +164,7 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
   InitializeTableBuilders(builders);
 
   int version = metatable.GetVersionNumber();
-  for (raw_ptr<SQLTableBuilder> builder : builders.AsVector()) {
+  for (SQLTableBuilder* builder : builders.AsVector()) {
     if (!EnsureCurrentVersion(sql_connection_.get(), version, builder)) {
       LOG(WARNING) << "Failed to set up " << builder->TableName() << " table.";
       sql_connection_->Poison();
@@ -490,18 +490,13 @@ void AffiliationDatabase::SQLErrorCallback(int error,
   sql::UmaHistogramSqliteResult("PasswordManager.AffiliationDatabase.Error",
                                 error);
 
-  if (sql::IsErrorCatastrophic(error)) {
+  if (sql::IsErrorCatastrophic(error) && sql_connection_->is_open()) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
     sql_connection_->RazeAndPoison();
-    return;
   }
-
-  // The default handling is to assert on debug and to ignore on release.
-  if (!sql::Database::IsExpectedSqliteError(error))
-    DLOG(FATAL) << sql_connection_->GetErrorMessage();
 }
 
 }  // namespace password_manager

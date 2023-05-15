@@ -64,7 +64,8 @@ void CrosHotspotConfig::AddObserver(
     hotspot_state_handler_->AddObserver(this);
   }
 
-  observers_.Add(std::move(observer));
+  auto observer_id = observers_.Add(std::move(observer));
+  observers_.Get(observer_id)->OnHotspotInfoChanged();
 }
 
 void CrosHotspotConfig::GetHotspotInfo(GetHotspotInfoCallback callback) {
@@ -100,18 +101,20 @@ void CrosHotspotConfig::DisableHotspot(DisableHotspotCallback callback) {
 
 // HotspotStateHandler::Observer:
 void CrosHotspotConfig::OnHotspotStatusChanged() {
-  for (auto& observer : observers_)
-    observer->OnHotspotInfoChanged();
+  NotifyObservers();
 }
 
 // HotspotCapabilitiesProvider::Observer:
 void CrosHotspotConfig::OnHotspotCapabilitiesChanged() {
-  for (auto& observer : observers_)
-    observer->OnHotspotInfoChanged();
+  NotifyObservers();
 }
 
 // HotspotConfigurationHandler::Observer:
 void CrosHotspotConfig::OnHotspotConfigurationChanged() {
+  NotifyObservers();
+}
+
+void CrosHotspotConfig::NotifyObservers() {
   for (auto& observer : observers_) {
     observer->OnHotspotInfoChanged();
   }

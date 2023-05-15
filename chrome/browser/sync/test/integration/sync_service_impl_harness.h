@@ -65,12 +65,16 @@ class SyncServiceImplHarness {
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
   void SignOutPrimaryAccount();
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // The underlying implementation for mimic-ing persistent auth errors isn't
+  // implemented on Android, see https://crbug.com/1373448.
+#if !BUILDFLAG(IS_ANDROID)
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
   void EnterSyncPausedStateForPrimaryAccount();
   void ExitSyncPausedStateForPrimaryAccount();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
@@ -103,16 +107,13 @@ class SyncServiceImplHarness {
   // For example, this can be used to simulate a sign-in/sign-out or can be
   // useful to recover from a lost birthday.
   // To start from a clear slate, clear server data first, then call
-  // StopSyncServiceAndClearData() followed by StartSyncService().
-  // To simulate the user being offline for a while, call
-  // StopSyncServiceWithoutClearingData() followed by StartSyncService().
+  // StopSyncServiceAndClearData() followed by EnableSyncFeature().
 
   // Stops the sync service and clears all local sync data.
   void StopSyncServiceAndClearData();
-  // Stops the sync service but keeps all local sync data around.
-  void StopSyncServiceWithoutClearingData();
-  // Starts the sync service after a previous stop.
-  bool StartSyncService();
+  // Turns on sync-the-feature and waits until sync-the-feature is active.
+  // Returns true if and only if sync setup completed successfully.
+  bool EnableSyncFeature();
 
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,

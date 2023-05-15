@@ -201,7 +201,7 @@ SBOX_TESTS_COMMAND int IPC_Leak(int argc, wchar_t** argv) {
   // broker.
   PolicyGlobal* policy = GenerateBlankPolicy();
   PolicyGlobal* current_policy =
-      (PolicyGlobal*)sandbox::GetGlobalPolicyMemory();
+      (PolicyGlobal*)sandbox::GetGlobalPolicyMemoryForTesting();
   CopyPolicyToTarget(policy, policy->data_size + sizeof(PolicyGlobal),
                      current_policy);
 
@@ -271,6 +271,10 @@ TEST(IPCTest, IPCLeak) {
   static_assert(std::size(test_data) == TESTIPC_LAST, "Not enough tests.");
   for (auto test : test_data) {
     TestRunner runner;
+    // There has to be a policy allocated for the child to have one to replace.
+    runner.AddRule(sandbox::SubSystem::kFiles,
+                   sandbox::Semantics::kFilesAllowReadonly,
+                   L"c:\\Windows\\System32\\Nothing.txt");
     std::wstring command = std::wstring(L"IPC_Leak ");
     command += std::to_wstring(test.test_id);
     EXPECT_EQ(test.expected_result,

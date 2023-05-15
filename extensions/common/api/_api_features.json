@@ -108,7 +108,7 @@
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["blessed_extension"],
-    "platforms": ["chromeos", "linux"]
+    "platforms": ["chromeos", "lacros", "linux"]
   },
   "bluetoothPrivate": [{
     "dependencies": ["permission:bluetoothPrivate"],
@@ -215,7 +215,7 @@
   },
   "feedbackPrivate.readLogSource": [
     {
-      "platforms": ["chromeos"],
+      "platforms": ["chromeos", "lacros"],
       "session_types": ["kiosk"]
     },
     {
@@ -351,7 +351,7 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://apps/",
+      "chrome://apps/*",
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
@@ -425,6 +425,7 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome://apps/*",
       "chrome-untrusted://demo-mode-app/*"
     ]
   },
@@ -556,7 +557,7 @@
   "runtime.getContexts": {
     "min_manifest_version": 3,
     "contexts": ["blessed_extension"],
-    "channel": "trunk",
+    "channel": "dev",
     "feature_flag": "ApiRuntimeGetContexts"
   },
   "runtime.getURL": {
@@ -603,6 +604,12 @@
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
   },
+  "runtime.onUserScriptConnect": {
+    // NOTE: We can readily open this up to offscreen extensions and
+    // lockscreen extensions, if there's desire. For now, limit it.
+    "contexts": ["blessed_extension"],
+    "min_manifest_version": 3
+  },
   "runtime.onMessage": {
     "contexts": [
       "blessed_extension",
@@ -619,6 +626,12 @@
       "lock_screen_extension",
       "offscreen_extension"
     ]
+  },
+  "runtime.onUserScriptMessage": {
+    // NOTE: We can readily open this up to offscreen extensions and
+    // lockscreen extensions, if there's desire. For now, limit it.
+    "contexts": ["blessed_extension"],
+    "min_manifest_version": 3
   },
   "runtime.sendMessage": [{
     // Everything except WebUI.
@@ -735,7 +748,8 @@
       "content_script",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension"
+      "unblessed_extension",
+      "user_script"
     ]
   }, {
     "channel": "stable",

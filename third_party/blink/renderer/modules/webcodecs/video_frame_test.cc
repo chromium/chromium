@@ -227,7 +227,7 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   auto* init = VideoFrameInit::Create();
   init->setTimestamp(0);
 
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
   sk_sp<SkImage> original_image = surface->makeImageSnapshot();
 
@@ -298,7 +298,7 @@ void TestWrappedVideoFrameImageReuse(V8TestingScope& scope,
 TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromImage) {
   V8TestingScope scope;
 
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
   sk_sp<SkImage> original_image = surface->makeImageSnapshot();
 
@@ -317,7 +317,7 @@ TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromImage) {
 TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromVideoFrameFromImage) {
   V8TestingScope scope;
 
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
   sk_sp<SkImage> original_image = surface->makeImageSnapshot();
 
@@ -398,7 +398,7 @@ TEST_F(VideoFrameTest, HandleMonitoring) {
       media_frame1, scope.GetExecutionContext(), source1);
   verify_expectations(/* source1 */ 1, 1, 0, /* source2 */ 0, 0, 0);
 
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
   sk_sp<SkImage> sk_image = surface->makeImageSnapshot();
   auto handle_2_1 = base::MakeRefCounted<VideoFrameHandle>(

@@ -15,6 +15,6 @@ interface mixin GPUProgrammablePassEncoder {
         GPUSize32 dynamicOffsetsDataLength);
 
     void pushDebugGroup(USVString groupLabel);
-    void popDebugGroup();
+    [NoAllocDirectCall] void popDebugGroup();
     void insertDebugMarker(USVString markerLabel);
 };

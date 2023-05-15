@@ -65,6 +65,9 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
     return a.scroll_behavior;
   }
 
+  // Returns false if `data` could not be read into `out`, which may occur if
+  // `data` was created using newer versions of enums than `out` supports,
+  // or if some other value cannot be read.
   static bool Read(ax::mojom::AXActionDataDataView data, ui::AXActionData* out);
 };
 

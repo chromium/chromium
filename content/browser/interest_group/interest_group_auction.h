@@ -72,28 +72,59 @@ class CONTENT_EXPORT InterestGroupAuction
  public:
   // Post auction signals (signals only available after auction completes such
   // as winning bid) for debug loss/win reporting.
-  struct PostAuctionSignals {
-    PostAuctionSignals() = default;
+  struct CONTENT_EXPORT PostAuctionSignals {
+    PostAuctionSignals();
 
     // For now, top-level post auction signals do not have
-    // `highest_scoring_other_bid` or `made_highest_scoring_other_bid`.
-    PostAuctionSignals(double winning_bid, bool made_winning_bid)
-        : winning_bid(winning_bid), made_winning_bid(made_winning_bid) {}
-
+    // `highest_scoring_other_bid` information.
     PostAuctionSignals(double winning_bid,
-                       bool made_winning_bid,
-                       double highest_scoring_other_bid,
-                       bool made_highest_scoring_other_bid)
-        : winning_bid(winning_bid),
-          made_winning_bid(made_winning_bid),
-          highest_scoring_other_bid(highest_scoring_other_bid),
-          made_highest_scoring_other_bid(made_highest_scoring_other_bid) {}
+                       absl::optional<blink::AdCurrency> winning_bid_currency,
+                       bool made_winning_bid);
 
-    ~PostAuctionSignals() = default;
+    PostAuctionSignals(
+        double winning_bid,
+        absl::optional<blink::AdCurrency> winning_bid_currency,
+        bool made_winning_bid,
+        double highest_scoring_other_bid,
+        absl::optional<blink::AdCurrency> highest_scoring_other_bid_currency,
+        bool made_highest_scoring_other_bid);
+
+    ~PostAuctionSignals();
+
+    PostAuctionSignals(PostAuctionSignals&) = delete;
+    PostAuctionSignals& operator=(PostAuctionSignals&) = delete;
+
+    // Computes appropriate information to provide for winningBid information,
+    // dependent on whether bidder-currency or seller-currency is expected.
+    static void FillWinningBidInfo(
+        const url::Origin& owner,
+        absl::optional<url::Origin> winner_owner,
+        double winning_bid,
+        absl::optional<double> winning_bid_in_seller_currency,
+        const absl::optional<blink::AdCurrency>& seller_currency,
+        bool& out_made_winning_bid,
+        double& out_winning_bid,
+        absl::optional<blink::AdCurrency>& out_winning_bid_currency);
+
+    // Computes appropriate information to provide for highestScoringOtherBid
+    // information, dependent on whether bidder-currency or seller-currency is
+    // expected.
+    static void FillRelevantHighestScoringOtherBidInfo(
+        const url::Origin& owner,
+        absl::optional<url::Origin> highest_scoring_other_bid_owner,
+        double highest_scoring_other_bid,
+        absl::optional<double> highest_scoring_other_bid_in_seller_currency,
+        const absl::optional<blink::AdCurrency>& seller_currency,
+        bool& out_made_highest_scoring_other_bid,
+        double& out_highest_scoring_other_bid,
+        absl::optional<blink::AdCurrency>&
+            out_highest_scoring_other_bid_currency);
 
     double winning_bid = 0.0;
+    absl::optional<blink::AdCurrency> winning_bid_currency;
     bool made_winning_bid = false;
     double highest_scoring_other_bid = 0.0;
+    absl::optional<blink::AdCurrency> highest_scoring_other_bid_currency;
     bool made_highest_scoring_other_bid = false;
   };
 
@@ -235,10 +266,13 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // Requests made to Private aggregation API in generateBid() and scoreAd().
     // Keyed by reporting origin of the associated requests, i.e., buyer origin
-    // for generateBid() and seller origin for scoreAd().
+    // for generateBid() and seller origin for scoreAd(), plus a bool that's
+    // true for top-level seller requests only, which is used to make sure they
+    // get the top-level signals.
+    //
     // TODO(qingxinwu): Consider only saving the requests without saving Origin,
     // since copying Origin is expensive.
-    std::map<url::Origin, PrivateAggregationRequests>
+    std::map<std::pair<url::Origin, bool>, PrivateAggregationRequests>
         private_aggregation_requests;
 
     // Requests made to Private aggregation API in generateBid() for the
@@ -263,7 +297,7 @@ class CONTENT_EXPORT InterestGroupAuction
     Bid(BidRole bid_role,
         std::string ad_metadata,
         double bid,
-        std::string bid_currency,
+        absl::optional<blink::AdCurrency> bid_currency,
         absl::optional<double> ad_cost,
         blink::AdDescriptor ad_descriptor,
         std::vector<blink::AdDescriptor> ad_component_descriptors,
@@ -297,7 +331,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // auction_worklet::mojom::BidderWorkletBid.
     const std::string ad_metadata;
     const double bid;
-    const std::string bid_currency;
+    const absl::optional<blink::AdCurrency> bid_currency;
     const absl::optional<double> ad_cost;
     const blink::AdDescriptor ad_descriptor;
     const std::vector<blink::AdDescriptor> ad_component_descriptors;
@@ -333,6 +367,7 @@ class CONTENT_EXPORT InterestGroupAuction
     ScoredBid(double score,
               absl::optional<uint32_t> scoring_signals_data_version,
               std::unique_ptr<Bid> bid,
+              absl::optional<double> bid_in_seller_currency,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
                   component_auction_modified_bid_params);
     ~ScoredBid();
@@ -345,6 +380,9 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // The bid that came from the bidder or component Auction.
     const std::unique_ptr<Bid> bid;
+
+    // Bidder's bid currency-converted by the seller to seller's own currency.
+    const absl::optional<double> bid_in_seller_currency;
 
     // Modifications that should be applied to `bid` before the parent
     // auction uses it. Only present for bids in component Auctions. When
@@ -455,6 +493,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // auction failed for any reason other than the seller rejecting all bids.
   void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const;
+
+  // Returns the requested ad size specified by the auction config. Called
+  // after the bidding and scoring phase completes, to set the container size
+  // in the fenced frame config resulting from the auction.
+  absl::optional<blink::AdSize> RequestedAdSize() const;
 
   // Retrieves any debug reporting URLs. May only be called once, since it takes
   // ownership of stored reporting URLs. This is called internally by
@@ -622,6 +665,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // there's a tie for the second highest score, one of the second highest
     // scoring bids is randomly chosen.
     double highest_scoring_other_bid = 0.0;
+    absl::optional<double> highest_scoring_other_bid_in_seller_currency;
     double second_highest_score = 0.0;
     // Whether all bids of the highest score are from the same interest group
     // owner.
@@ -728,6 +772,7 @@ class CONTENT_EXPORT InterestGroupAuction
       double score,
       auction_worklet::mojom::ComponentAuctionModifiedBidParams*
           component_auction_modified_bid_params,
+      absl::optional<double> bid_in_seller_currency,
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url);
 
@@ -737,8 +782,8 @@ class CONTENT_EXPORT InterestGroupAuction
       auction_worklet::mojom::RejectReason reject_reason,
       auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
-      uint32_t scoring_signals_data_version,
-      bool has_scoring_signals_data_version,
+      absl::optional<double> bid_in_seller_currency,
+      absl::optional<uint32_t> scoring_signals_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
@@ -751,17 +796,19 @@ class CONTENT_EXPORT InterestGroupAuction
       double score,
       auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
-      uint32_t data_version,
-      bool has_data_version,
+      absl::optional<double> bid_in_seller_currency,
+      absl::optional<uint32_t> scoring_signals_data_version,
       LeaderInfo& leader_info);
 
   // Invoked when the bid becomes the new highest scoring other bid, to handle
   // calculation of post auction signals. `owner` is nullptr in the event the
   // bid is tied with the top bid, and they have different origins.
-  void OnNewHighestScoringOtherBid(double score,
-                                   double bid_value,
-                                   const url::Origin* owner,
-                                   LeaderInfo& leader_info);
+  void OnNewHighestScoringOtherBid(
+      double score,
+      double bid_value,
+      absl::optional<double> bid_in_seller_currency,
+      const url::Origin* owner,
+      LeaderInfo& leader_info);
 
   absl::optional<base::TimeDelta> SellerTimeout();
 

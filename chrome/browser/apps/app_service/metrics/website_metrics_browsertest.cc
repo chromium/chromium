@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -305,7 +306,8 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AppPlatformMetricsService* app_platform_metrics_service_ = nullptr;
+  raw_ptr<AppPlatformMetricsService, ExperimentalAsh>
+      app_platform_metrics_service_ = nullptr;
 #else
   WebsiteMetricsServiceLacros* website_metrics_service_ = nullptr;
 #endif
@@ -780,8 +782,14 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_TRUE(url_infos().empty());
 }
 
+// TODO(crbug.com/1441731): Test is flaky.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MoveActivatedTabToNewBrowser DISABLED_MoveActivatedTabToNewBrowser
+#else
+#define MAYBE_MoveActivatedTabToNewBrowser MoveActivatedTabToNewBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MoveActivatedTabToNewBrowser) {
+                       MAYBE_MoveActivatedTabToNewBrowser) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();

@@ -16,6 +16,7 @@
 #include <winsock2.h>  // for timeval
 #endif
 
+#include <array>
 #include <cfloat>
 #include <chrono>  // NOLINT(build/c++11)
 #include <cmath>
@@ -1824,6 +1825,13 @@ TEST(Duration, AbslStringify) {
   // verify that StrFormat("%v", d) works as expected.
   absl::Duration d = absl::Seconds(1);
   EXPECT_EQ(absl::StrFormat("%v", d), absl::FormatDuration(d));
+}
+
+TEST(Duration, NoPadding) {
+  // Should match the size of a struct with uint32_t alignment and no padding.
+  using NoPadding = std::array<uint32_t, 3>;
+  EXPECT_EQ(sizeof(NoPadding), sizeof(absl::Duration));
+  EXPECT_EQ(alignof(NoPadding), alignof(absl::Duration));
 }
 
 }  // namespace

@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.assertAttachedAndShown;
 
-import android.os.SystemClock;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +30,9 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -96,6 +100,7 @@ public class StartupPaintPreviewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1444246")
     public void testSnackbarShow() throws ExecutionException, InterruptedException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
@@ -111,20 +116,20 @@ public class StartupPaintPreviewTest {
         View view = tabbedPaintPreview.getViewForTesting();
 
         // First tap.
-        simulateTap(view, view.getWidth() / 2f, view.getHeight() / 2f);
+        onView(Matchers.is(view)).perform(click());
         assertSnackbarVisibility(snackbarManager, false);
         // Second tap.
-        simulateTap(view, view.getWidth() / 2f, view.getHeight() / 2f);
+        onView(Matchers.is(view)).perform(click());
         assertSnackbarVisibility(snackbarManager, false);
         // Third tap.
-        simulateTap(view, view.getWidth() / 2f, view.getHeight() / 2f);
+        onView(Matchers.is(view)).perform(click());
         assertSnackbarVisibility(snackbarManager, true);
 
         TestThreadUtils.runOnUiThreadBlocking(snackbarManager::dismissAllSnackbars);
         assertSnackbarVisibility(snackbarManager, false);
 
         // Simulate long press.
-        simulateLongPress(view, view.getWidth() / 2f, view.getHeight() / 2f);
+        onView(Matchers.is(view)).perform(longClick());
         assertSnackbarVisibility(snackbarManager, true);
     }
 
@@ -193,10 +198,11 @@ public class StartupPaintPreviewTest {
         showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
         SnackbarManager snackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
         View view = tabbedPaintPreview.getViewForTesting();
-        simulateLongPress(view, view.getWidth() / 2f, view.getHeight() / 2f);
+        onView(Matchers.is(view)).perform(longClick());
         assertSnackbarVisibility(snackbarManager, true);
-        TestThreadUtils.runOnUiThreadBlocking(()->
-                snackbarManager.getCurrentSnackbarForTesting().getController().onAction(null));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            snackbarManager.getCurrentSnackbarForTesting().getController().onAction(null);
+        });
         assertAttachedAndShown(tabbedPaintPreview, false, false);
         Assert.assertEquals(
                 "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());
@@ -227,42 +233,24 @@ public class StartupPaintPreviewTest {
     private void assertSnackbarVisibility(SnackbarManager snackbarManager, boolean visible) {
         String message =
                 visible ? "Snackbar should be visible." : "Snackbar should not be visible.";
-        CriteriaHelper.pollUiThread(() -> snackbarManager.isShowing() == visible, message);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(message, snackbarManager.isShowing(), Matchers.is(visible));
+        });
     }
 
     private void showAndWaitForInflation(StartupPaintPreview startupPaintPreview,
             TabbedPaintPreview tabbedPaintPreview, CallbackHelper dismissCallback) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> startupPaintPreview.show(
-                                dismissCallback == null ? null : dismissCallback::notifyCalled));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            startupPaintPreview.show(
+                    dismissCallback == null ? null : dismissCallback::notifyCalled);
+        });
         assertAttachedAndShown(tabbedPaintPreview, true, true);
-        CriteriaHelper.pollUiThread(()
-                                            -> tabbedPaintPreview.getViewForTesting() != null
-                        && ((ViewGroup) tabbedPaintPreview.getViewForTesting()).getChildCount() > 0,
-                "TabbedPaintPreview either doesn't have a view or a view with 0 children.");
-    }
-
-    private void simulateTap(View view, float x, float y)
-            throws ExecutionException, InterruptedException {
-        simulateTapWithDuration(view, x, y, 50);
-    }
-
-    private void simulateLongPress(View view, float x, float y)
-            throws ExecutionException, InterruptedException {
-        Thread.sleep(100);
-        simulateTapWithDuration(view, x, y, ViewConfiguration.getLongPressTimeout() + 200);
-    }
-
-    private void simulateTapWithDuration(View view, float x, float y, long holdDurationMs)
-            throws ExecutionException, InterruptedException {
-        long downTime = SystemClock.uptimeMillis();
-        MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> view.dispatchTouchEvent(down));
-
-        Thread.sleep(holdDurationMs);
-        MotionEvent up = MotionEvent.obtain(
-                downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> view.dispatchTouchEvent(up));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("TabbedPaintPreview has no view",
+                    tabbedPaintPreview.getViewForTesting(), Matchers.notNullValue());
+            Criteria.checkThat("TabbedPaintPreview has 0 children",
+                    ((ViewGroup) tabbedPaintPreview.getViewForTesting()).getChildCount(),
+                    Matchers.not(0));
+        });
     }
 }

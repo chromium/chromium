@@ -62,9 +62,9 @@ class DriveFileSuggestionProvider : public FileSuggestionProvider {
       DriveSuggestValidationStatus validation_status,
       const absl::optional<std::vector<FileSuggestData>>& suggest_results);
 
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
-  const base::raw_ptr<drive::DriveIntegrationService> drive_service_;
+  const raw_ptr<drive::DriveIntegrationService> drive_service_;
 
   // The drive client from which the raw suggest data (i.e. the data before
   // validation) is fetched.

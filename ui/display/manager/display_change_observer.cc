@@ -27,9 +27,9 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/display_properties_parser.h"
 #include "ui/display/manager/touch_device_manager.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -51,7 +51,7 @@ struct DeviceScaleFactorDPIThreshold {
 };
 
 // Update the list of zoom levels whenever a new device scale factor is added
-// here. See zoom level list in /ui/display/manager/display_manager_util.cc
+// here. See zoom level list in /ui/display/manager/util/display_manager_util.cc
 const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
     {310.f, kDsf_2_666}, {270.0f, 2.4f},  {230.0f, 2.0f}, {220.0f, kDsf_1_777},
     {180.0f, 1.6f},      {150.0f, 1.25f}, {0.0f, 1.0f},
@@ -356,7 +356,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   new_info.set_maximum_cursor_size(snapshot->maximum_cursor_size());
 
-  new_info.set_rounded_corners_radii(panel_radii);
+  new_info.set_panel_corners_radii(panel_radii);
 
   new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
 

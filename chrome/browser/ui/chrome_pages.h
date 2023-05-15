@@ -53,6 +53,9 @@ enum HelpSource {
   // Menus (e.g. app menu or Chrome OS system menu).
   HELP_SOURCE_MENU,
 
+  // WebHID help center article.
+  HELP_SOURCE_WEBHID,
+
   // WebUI (the "About" page).
   HELP_SOURCE_WEBUI,
 
@@ -191,8 +194,9 @@ void ShowSafeBrowsingEnhancedProtection(Browser* browser);
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
-void ShowWebStore(Browser* browser);
+void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
+void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowPrivacySandboxAdPersonalization(Browser* browser);
 void ShowPrivacySandboxLearnMore(Browser* browser);
 void ShowAddresses(Browser* browser);

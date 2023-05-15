@@ -32,20 +32,14 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
     return;
   }
 
-  const base::Value* app_value = app_list.FindListKey("recommendedApp");
-  if (!app_value || !app_value->is_list()) {
-    std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
-    return;
-  }
-
-  const base::Value::List& apps = app_value->GetList();
-  if (apps.empty()) {
+  const base::Value::List* apps = app_list.GetDict().FindList("recommendedApp");
+  if (!apps || apps->empty()) {
     std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
   }
 
   std::vector<Result> results;
-  for (auto& big_app : apps) {
+  for (auto& big_app : *apps) {
     const base::Value::Dict* big_app_dict = big_app.GetIfDict();
     if (big_app_dict) {
       const base::Value::Dict* app = big_app_dict->FindDict("androidApp");

@@ -307,7 +307,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->content_language.has_value()
           ? absl::make_optional(ConvertToBlink(in->content_language.value()))
           : absl::nullopt,
-      ConvertToBlink(in->no_vary_search_with_parse_error));
+      ConvertToBlink(in->no_vary_search_with_parse_error),
+      in->observe_browsing_topics);
 }
 
 }  // namespace mojom
@@ -321,9 +322,11 @@ const Vector<AtomicString>& ReplaceHeaders() {
   // The list of response headers that we do not copy from the original
   // response when generating a ResourceResponse for a MIME payload.
   // Note: this is called only on the main thread.
-  DEFINE_STATIC_LOCAL(Vector<AtomicString>, headers,
-                      ({"content-type", "content-length", "content-disposition",
-                        "content-range", "range", "set-cookie"}));
+  DEFINE_STATIC_LOCAL(
+      Vector<AtomicString>, headers,
+      ({http_names::kLowerContentType, http_names::kLowerContentLength,
+        http_names::kLowerContentDisposition, http_names::kLowerContentRange,
+        http_names::kLowerRange, http_names::kLowerSetCookie}));
   return headers;
 }
 

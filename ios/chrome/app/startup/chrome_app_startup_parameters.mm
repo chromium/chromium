@@ -200,7 +200,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if (!gurl.is_valid() || gurl.scheme().length() == 0)
     return nil;
 
-  if ([completeURL.scheme isEqual:kWidgetKitSchemeChrome]) {
+  if ([completeURL.scheme isEqualToString:kWidgetKitSchemeChrome]) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_WIDGET_KIT_COMMAND,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -208,17 +208,17 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     const char* command = "";
     NSString* sourceWidget = completeURL.host;
 
-    if ([completeURL.path isEqual:kWidgetKitActionSearch]) {
+    if ([completeURL.path isEqualToString:kWidgetKitActionSearch]) {
       command = app_group::kChromeAppGroupFocusOmniboxCommand;
-    } else if ([completeURL.path isEqual:kWidgetKitActionIncognito]) {
+    } else if ([completeURL.path isEqualToString:kWidgetKitActionIncognito]) {
       command = app_group::kChromeAppGroupIncognitoSearchCommand;
-    } else if ([completeURL.path isEqual:kWidgetKitActionVoiceSearch]) {
+    } else if ([completeURL.path isEqualToString:kWidgetKitActionVoiceSearch]) {
       command = app_group::kChromeAppGroupVoiceSearchCommand;
-    } else if ([completeURL.path isEqual:kWidgetKitActionQRReader]) {
+    } else if ([completeURL.path isEqualToString:kWidgetKitActionQRReader]) {
       command = app_group::kChromeAppGroupQRScannerCommand;
-    } else if ([completeURL.path isEqual:kWidgetKitActionLens]) {
+    } else if ([completeURL.path isEqualToString:kWidgetKitActionLens]) {
       command = app_group::kChromeAppGroupLensCommand;
-    } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
+    } else if ([completeURL.path isEqualToString:kWidgetKitActionGame]) {
       if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
       } else if ([sourceWidget

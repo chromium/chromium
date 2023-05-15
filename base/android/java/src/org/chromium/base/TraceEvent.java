@@ -23,7 +23,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MainDex;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Java mirror of Chrome trace event API. See base/trace_event/trace_event.h.
@@ -45,8 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @MainDex
 public class TraceEvent implements AutoCloseable {
     private static volatile boolean sEnabled; // True when tracing into Chrome's tracing service.
-    private static AtomicBoolean sNativeTracingReady = new AtomicBoolean();
-    private static AtomicBoolean sUiThreadReady = new AtomicBoolean();
+    private static volatile boolean sUiThreadReady;
     private static boolean sEventNameFilteringEnabled;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -302,7 +300,7 @@ public class TraceEvent implements AutoCloseable {
             ThreadUtils.getUiThreadLooper().setMessageLogging(
                     enabled ? LooperMonitorHolder.sInstance : null);
         }
-        if (sUiThreadReady.get()) {
+        if (sUiThreadReady) {
             ViewHierarchyDumper.updateEnabledState();
         }
     }
@@ -335,15 +333,12 @@ public class TraceEvent implements AutoCloseable {
     }
 
     public static void onNativeTracingReady() {
-        // Register an enabled observer, such that java traces are always
-        // enabled with native.
-        sNativeTracingReady.set(true);
         TraceEventJni.get().registerEnabledObserver();
     }
 
     // Called by ThreadUtils.
     static void onUiThreadReady() {
-        sUiThreadReady.set(true);
+        sUiThreadReady = true;
         if (sEnabled) {
             ViewHierarchyDumper.updateEnabledState();
         }
@@ -648,21 +643,18 @@ public class TraceEvent implements AutoCloseable {
         }
 
         public static void updateEnabledState() {
-            if (!ThreadUtils.runningOnUiThread()) {
-                ThreadUtils.postOnUiThread(() -> { updateEnabledState(); });
-                return;
-            }
-
-            if (TraceEventJni.get().viewHierarchyDumpEnabled()) {
-                if (sInstance == null) {
-                    sInstance = new ViewHierarchyDumper();
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+                if (TraceEventJni.get().viewHierarchyDumpEnabled()) {
+                    if (sInstance == null) {
+                        sInstance = new ViewHierarchyDumper();
+                    }
+                    enable();
+                } else {
+                    if (sInstance != null) {
+                        disable();
+                    }
                 }
-                enable();
-            } else {
-                if (sInstance != null) {
-                    disable();
-                }
-            }
+            });
         }
 
         private static void dumpView(ActivityInfo collection, int parentId, View v) {

@@ -122,27 +122,50 @@ void CloudUploadPageHandler::RespondWithLocalTaskAndClose(int task_position) {
 void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   using file_manager::file_tasks::kActionIdOpenInOffice;
 
+  // TODO(b:275912658): Only set handlers if that group has no type set already
   file_manager::file_tasks::SetWordFileHandlerToFilesSWA(profile_,
                                                          kActionIdOpenInOffice);
   file_manager::file_tasks::SetExcelFileHandlerToFilesSWA(
       profile_, kActionIdOpenInOffice);
   file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA(
       profile_, kActionIdOpenInOffice);
-  file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
-void CloudUploadPageHandler::SetAlwaysMoveOfficeFiles(bool always_move) {
-  file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile_, always_move);
-}
-
-void CloudUploadPageHandler::SetOfficeMoveConfirmationShownTrue() {
-  file_manager::file_tasks::SetOfficeMoveConfirmationShown(profile_, true);
-}
-
-void CloudUploadPageHandler::OfficeMoveConfirmationShown(
-    OfficeMoveConfirmationShownCallback callback) {
+void CloudUploadPageHandler::GetAlwaysMoveOfficeFilesToDrive(
+    GetAlwaysMoveOfficeFilesToDriveCallback callback) {
   std::move(callback).Run(
-      file_manager::file_tasks::OfficeMoveConfirmationShown(profile_));
+      file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_));
+}
+
+void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToDrive(bool always_move) {
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile_,
+                                                            always_move);
+}
+
+void CloudUploadPageHandler::GetAlwaysMoveOfficeFilesToOneDrive(
+    GetAlwaysMoveOfficeFilesToOneDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(profile_));
+}
+
+void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToOneDrive(
+    bool always_move) {
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile_,
+                                                               always_move);
+}
+
+void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForDrive(
+    GetOfficeMoveConfirmationShownForDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+          profile_));
+}
+
+void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForOneDrive(
+    GetOfficeMoveConfirmationShownForOneDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile_));
 }
 
 }  // namespace ash::cloud_upload

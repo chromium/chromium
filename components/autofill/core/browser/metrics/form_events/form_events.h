@@ -158,11 +158,24 @@ enum FormEvent {
   // DenseSet<FormEvent> and passing it to a UKM builder.
   FORM_EVENT_RESERVED_NOT_FOR_USE = 63,
 
-  // The number of events is temporarily rounded up to 64 to prepare the code
-  // for passing this threshold (UKM events are uploaded as uint64 blocks of a
-  // bit mask). Once we pass the 64 threshold, this should reflect the real last
-  // value.
-  NUM_FORM_EVENTS = 64,
+  // Credit card suggestions were shown, and they included at least one
+  // suggestion with metadata. Logged once per page load.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN_ONCE = 64,
+  // Credit card suggestions were shown, and none had metadata. Logged once per
+  // page load.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE = 65,
+  // The selected credit card suggestion had metadata. Logged once per page
+  // load.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE = 66,
+  // The selected credit card suggestion did not have metadata. Logged once per
+  // page load.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE = 67,
+
+  // Next form event should use 62 if possible. One note is that if the newly
+  // added events are a group of related events, maybe it is easier to continue
+  // using 68 to make sure they are in the same UKM metric.
+
+  NUM_FORM_EVENTS,
 };
 
 }  // namespace autofill::autofill_metrics

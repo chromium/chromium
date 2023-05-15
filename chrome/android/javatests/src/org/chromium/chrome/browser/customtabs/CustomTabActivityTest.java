@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -42,6 +46,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -58,10 +63,11 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
@@ -106,9 +112,13 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils.ClientIdentifierType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -119,6 +129,7 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -137,6 +148,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
@@ -295,7 +307,7 @@ public class CustomTabActivityTest {
      */
     private Intent createMinimalCustomTabIntent() {
         return CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
     }
 
     @Test
@@ -349,8 +361,8 @@ public class CustomTabActivityTest {
 
     private Bundle makeBottomBarBundle(int id, Bitmap icon, String description) {
         Bundle bundle = new Bundle();
-        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
+                0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
         bundle.putInt(CustomTabsIntent.KEY_ID, sIdToIncrement++);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
@@ -372,7 +384,7 @@ public class CustomTabActivityTest {
     }
 
     private Bitmap createVectorDrawableBitmap(@DrawableRes int resId, int widthDp, int heightDp) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Drawable vectorDrawable = AppCompatResources.getDrawable(context, resId);
         Bitmap bitmap = createTestBitmap(widthDp, heightDp);
         Canvas canvas = new Canvas(bitmap);
@@ -518,13 +530,13 @@ public class CustomTabActivityTest {
 
         ArrayList<Bundle> toolbarItems = new ArrayList<>(2);
         final PendingIntent pi1 =
-                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(), 0,
                         new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         final OnFinishedForTest onFinished1 = new OnFinishedForTest(pi1);
         toolbarItems.add(CustomTabsIntentTestUtils.makeToolbarItemBundle(
                 expectedIcon1, "Good test", pi1, sIdToIncrement++));
         final PendingIntent pi2 =
-                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 1,
+                PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(), 1,
                         new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         assertThat(pi2, not(equalTo(pi1)));
         final OnFinishedForTest onFinished2 = new OnFinishedForTest(pi2);
@@ -659,14 +671,14 @@ public class CustomTabActivityTest {
         // constraint that a) it already exists in production code, and b) it only contains views
         // with the @RemoteView annotation.
         RemoteViews remoteViews =
-                new RemoteViews(InstrumentationRegistry.getTargetContext().getPackageName(),
+                new RemoteViews(ApplicationProvider.getApplicationContext().getPackageName(),
                         R.layout.share_sheet_item);
         remoteViews.setTextViewText(R.id.text, "Kittens!");
         remoteViews.setTextViewText(R.id.display_new, "So fluffy");
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_email_googblue_36dp);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS, new int[] {R.id.icon});
-        PendingIntent pi2 = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(),
+        PendingIntent pi2 = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
                 0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT, pi2);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -695,7 +707,7 @@ public class CustomTabActivityTest {
         pref.writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, true);
 
         Intent intent = CustomTabsIntentTestUtils.createCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage, false, builder -> {});
+                ApplicationProvider.getApplicationContext(), mTestPage, false, builder -> {});
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         connection.newSession(token);
@@ -713,7 +725,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testRecordRetainableSession_WithoutWarmupAndSession() {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Activity emptyActivity = startBlankUiTestActivity();
 
         Intent intent =
@@ -752,7 +764,7 @@ public class CustomTabActivityTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1308065")
     public void testLoadNewUrlWithSession() throws Exception {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         final Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -799,7 +811,7 @@ public class CustomTabActivityTest {
                 "/chrome/test/data/android/customtabs/test_window_open.html");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), testUrl));
+                        ApplicationProvider.getApplicationContext(), testUrl));
         final TabModelSelector tabSelector =
                 mCustomTabActivityTestRule.getActivity().getTabModelSelector();
 
@@ -924,7 +936,7 @@ public class CustomTabActivityTest {
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -981,7 +993,7 @@ public class CustomTabActivityTest {
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
@@ -1029,7 +1041,7 @@ public class CustomTabActivityTest {
     private void hideDomainAndEnsureTitleIsSet(
             final String url, boolean useHiddenTab, final String expectedTitle) throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
@@ -1067,7 +1079,7 @@ public class CustomTabActivityTest {
     @SmallTest
     public void testPrecreatedRenderer() throws Exception {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
@@ -1121,7 +1133,7 @@ public class CustomTabActivityTest {
     public void testWarmupAndLaunchRegularChrome() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         Intent intent = new Intent(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class);
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Instrumentation.ActivityMonitor monitor =
@@ -1200,7 +1212,7 @@ public class CustomTabActivityTest {
         String url = mTestServer.getURL("/echoheader?Cookie");
         Uri requestUri = Uri.parse(mTestServer.getURL("/set-cookie?acookie"));
 
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -1804,7 +1816,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    public void testLaunchPartialCustomTabActivity() throws Exception {
+    public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1817,6 +1829,15 @@ public class CustomTabActivityTest {
         int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
         WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
         assertNotEquals("The window should have non-full height", fullHeight, attrs.height);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assertTrue("Incorrect strategy type",
+                coordinator.getCustomTabSizeStrategyForTesting()
+                                instanceof PartialCustomTabBottomSheetStrategy);
 
         // Verify the hierarchy of the enclosing layouts that PCCT relies on for its operation.
         CallbackHelper eventHelper = new CallbackHelper();
@@ -1833,6 +1854,197 @@ public class CustomTabActivityTest {
             });
         });
         eventHelper.waitForCallback(0);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_SideSheet() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 100);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.LANDSCAPE));
+        });
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        if (displayManager.getActiveStrategyType()
+                != PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET) {
+            return;
+        }
+
+        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+        View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        CustomTabToolbar toolbar = (CustomTabToolbar) toolbarView;
+        ImageButton maximizeButton = toolbar.getMaximizeButtonForTest();
+        Assert.assertNotNull(maximizeButton);
+
+        // A Normal CCT width is set to MATCH_PARENT while Partial CCT has non-zero value.
+        int fullWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        assertNotEquals("The window should have non-full width", fullWidth, attrs.width);
+
+        int maxWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
+        assertEquals("The window should be max width", maxWidth, attrs.width);
+
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
+        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+
+        assertNotEquals("The window should not be max width", maxWidth, attrs.width);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_Transition() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 600);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.PORTRAIT));
+        });
+
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int devicePortraitWidthDp = (int) (displayMetrics.widthPixels / displayMetrics.density);
+        int deviceLandscapeWidthDp = (int) (displayMetrics.heightPixels / displayMetrics.density);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        // A Normal CCT width is set to MATCH_PARENT while Partial CCT has non-zero value.
+        int fullHeightWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        if (devicePortraitWidthDp >= 600) {
+            assertNotEquals("The window should have non-full width", fullHeightWidth, attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals(
+                    "The window should have non-full height", fullHeightWidth, attrs.height);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.LANDSCAPE));
+        });
+
+        displayMetrics = getActivity().getResources().getDisplayMetrics();
+        if (deviceLandscapeWidthDp >= 600) {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.PORTRAIT));
+        });
+
+        displayMetrics = getActivity().getResources().getDisplayMetrics();
+        if (devicePortraitWidthDp >= 600) {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals("The window should have non-max height", displayMetrics.heightPixels,
+                    attrs.height);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_FullSize() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        int fullWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        assertEquals("The window should have full width", fullWidth, attrs.width);
+        assertEquals("The window should have full height", fullHeight, attrs.height);
+        assertEquals("Incorrect strategy type", displayManager.getActiveStrategyType(),
+                PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE);
     }
 
     private void doOpaqueOriginTest(boolean enabled, boolean prefetch) throws Exception {
@@ -2026,7 +2238,7 @@ public class CustomTabActivityTest {
 
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         activityStartTimeMs.set(SystemClock.uptimeMillis());
@@ -2087,11 +2299,11 @@ public class CustomTabActivityTest {
 
     private CustomTabsSessionToken warmUpAndLaunchUrlWithSession() throws Exception {
         return warmUpAndLaunchUrlWithSession(CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage));
+                ApplicationProvider.getApplicationContext(), mTestPage));
     }
 
     private Activity startBlankUiTestActivity() {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent emptyIntent = new Intent(context, BlankUiTestActivity.class);
         emptyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return InstrumentationRegistry.getInstrumentation().startActivitySync(emptyIntent);
@@ -2160,7 +2372,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void doesNotLaunchJavaScriptUrls_dispatchToCustomTabActivity() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String javaScriptUrl = "javascript: alert('Hello');";
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -2178,7 +2390,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void doesNotLaunchJavaScriptUrls_dispatch() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String javaScriptUrl = "javascript: alert('Hello');";
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

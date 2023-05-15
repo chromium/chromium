@@ -629,8 +629,11 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
 void StreamingSearchPrefetchURLLoader::OnHandleReady(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
+  // In the early shutdown pathway, |this| will be deleted soon.
+  if (!forwarding_client_) {
+    return;
+  }
   if (result == MOJO_RESULT_OK) {
     PushData();
     return;

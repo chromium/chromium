@@ -344,10 +344,6 @@ mojom("media") {
           cpp = "::media::VideoEncodeAccelerator::Config::StorageType"
         },
         {
-          mojom = "arc.mojom.VideoEncodeAccelerator.Error"
-          cpp = "::media::VideoEncodeAccelerator::Error"
-        },
-        {
           mojom = "arc.mojom.VideoEncodeProfile"
           cpp = "::media::VideoEncodeAccelerator::SupportedProfile"
         },

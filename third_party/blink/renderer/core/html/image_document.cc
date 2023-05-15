@@ -197,7 +197,7 @@ void ImageDocumentParser::Finish() {
 // --------
 
 ImageDocument::ImageDocument(const DocumentInit& initializer)
-    : HTMLDocument(initializer, kImageDocumentClass),
+    : HTMLDocument(initializer, {DocumentClass::kImage}),
       div_element_(nullptr),
       image_element_(nullptr),
       image_size_is_known_(false),

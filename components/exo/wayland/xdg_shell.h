@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 struct wl_resource;
 
@@ -28,10 +30,10 @@ struct WaylandXdgShell {
   WaylandXdgShell& operator=(const WaylandXdgShell&) = delete;
 
   // Owned by WaylandServerController, which always outlives xdg_shell.
-  Display* const display;
+  const raw_ptr<Display, ExperimentalAsh> display;
 
   // Owned by Server, which always outlives xdg_shell.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 struct WaylandXdgSurface {
@@ -46,7 +48,7 @@ struct WaylandXdgSurface {
   std::unique_ptr<XdgShellSurface> shell_surface;
 
   // Owned by Server, which always outlives this surface.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 void bind_xdg_shell(wl_client* client,
@@ -65,12 +67,12 @@ struct ShellSurfaceData {
   ShellSurfaceData(const ShellSurfaceData&) = delete;
   ShellSurfaceData& operator=(const ShellSurfaceData&) = delete;
 
-  ShellSurface* const shell_surface;
+  const raw_ptr<ShellSurface, ExperimentalAsh> shell_surface;
 
   // Owned by Server, which always outlives xdg_shell.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 
-  wl_resource* const surface_resource;
+  const raw_ptr<wl_resource, ExperimentalAsh> surface_resource;
 };
 
 ShellSurfaceData GetShellSurfaceFromToplevelResource(

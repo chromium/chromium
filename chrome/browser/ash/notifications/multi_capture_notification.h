@@ -23,7 +23,7 @@ namespace ash {
 
 // MultiCaptureNotification manages the notification informing the user of
 // automatic multi captures being started. On managed devices, administrators
-// can enforce automatic capturing by using the getDisplayMediaSet API.
+// can enforce automatic capturing by using the getAllScreensMedia API.
 // Users are notified to make sure their privacy is respected.
 class MultiCaptureNotification : public MultiCaptureServiceClient::Observer {
  public:

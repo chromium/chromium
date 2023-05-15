@@ -125,13 +125,13 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                      base::TimeTicks match_selection_timestamp,
                      WindowOpenDisposition disposition);
     ~ExecutionContext();
-    const raw_ref<Client, DanglingUntriaged> client_;
+    const raw_ref<Client, FlakyDanglingUntriaged> client_;
     OpenUrlCallback open_url_callback_;
     base::TimeTicks match_selection_timestamp_;
     WindowOpenDisposition disposition_;
   };
 
-  OmniboxAction(LabelStrings strings, GURL url, bool takes_over_match = false);
+  OmniboxAction(LabelStrings strings, GURL url);
 
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
@@ -144,8 +144,8 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // `executed` is set to true if the action was also executed by the user.
   virtual void RecordActionShown(size_t position, bool executed) const {}
 
-  // Takes the action associated with this Action.  Non-navigation
-  // Actions must override the default, but Navigation Actions don't need to.
+  // Takes the action associated with this OmniboxAction. Non-navigation
+  // actions must override the default, but navigation actions don't need to.
   virtual void Execute(ExecutionContext& context) const;
 
   // Returns true if this Action is ready to be used now, or false if
@@ -153,12 +153,6 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Pedal may not be ready to trigger if no update is available.)
   virtual bool IsReadyToTrigger(const AutocompleteInput& input,
                                 const AutocompleteProviderClient& client) const;
-
-  // Returns true if the Action should take over the whole match - that is:
-  // If the user presses Enter or clicks on the match at all, the navigation
-  // is ignored and the action is executed. Note, when this returns true, the
-  // action chip should be un-rendered, because the whole match IS the action.
-  bool TakesOverMatch() const;
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   // Returns the vector icon to represent this Action.
@@ -187,9 +181,6 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
-
-  // Used to make the action chip take over the whole match.
-  const bool takes_over_match_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_H_

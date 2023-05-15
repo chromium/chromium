@@ -54,6 +54,8 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
@@ -95,7 +97,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull ObservableSupplier<Profile> profileObservableSupplier,
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState, @NonNull ActionChipsDelegate actionChipsDelegate,
+            @NonNull BookmarkState bookmarkState,
+            @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
             @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mParent = parent;
@@ -114,7 +117,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 urlBarEditingTextProvider, listModel, new Handler(), modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState,
-                actionChipsDelegate, openHistoryClustersDelegate);
+                omniboxActionDelegate, openHistoryClustersDelegate);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

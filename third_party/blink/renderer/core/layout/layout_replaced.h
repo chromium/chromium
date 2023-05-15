@@ -74,8 +74,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // or underflow the final content box by 1px.
   static PhysicalRect PreSnappedRectForPersistentSizing(const PhysicalRect&);
 
-  bool NeedsPreferredWidthsRecalculation() const override;
-
   void RecalcVisualOverflow() override;
 
   // These values are specified to be 300 and 150 pixels in the CSS 2.1 spec.
@@ -204,6 +202,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize size,
       const NGPhysicalBoxStrut& border_padding) const;
 
+  // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
@@ -215,8 +219,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize size,
       const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size) const;
-
-  void ComputeIntrinsicSizingInfoForReplacedContent(IntrinsicSizingInfo&) const;
 
   absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();

@@ -22,7 +22,8 @@ PrintPreviewUIUntrustedConfig::PrintPreviewUIUntrustedConfig()
 PrintPreviewUIUntrustedConfig::~PrintPreviewUIUntrustedConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-PrintPreviewUIUntrustedConfig::CreateWebUIController(content::WebUI* web_ui) {
+PrintPreviewUIUntrustedConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                     const GURL& url) {
   return std::make_unique<PrintPreviewUIUntrusted>(web_ui);
 }
 

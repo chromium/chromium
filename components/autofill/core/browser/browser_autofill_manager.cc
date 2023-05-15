@@ -65,7 +65,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -203,8 +202,9 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
-FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(int frontend_id) {
-  switch (static_cast<PopupItemId>(frontend_id)) {
+FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(
+    Suggestion::FrontendId frontend_id) {
+  switch (frontend_id.as_popup_item_id()) {
     case POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY:
       return FillDataType::kSingleFieldFormFillerAutocomplete;
     case POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY:
@@ -541,8 +541,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, client->GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
-
-  CountryNames::SetLocaleString(app_locale_);
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {
@@ -955,9 +953,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // the form), it's possible that later modifications lead to more accurate
   // votes. In this case we just want to cache the upload and have a chance to
   // override it with better data.
-  // TODO(crbug.com/1383502) Remove the "&& IsEnabled()" part.
-  if (!observed_submission &&
-      base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
+  if (!observed_submission) {
     call_after_determine_field_types = base::BindOnce(
         &BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback,
         weak_ptr_factory_.GetWeakPtr(), raw_form->form_signature(),
@@ -1354,7 +1350,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
     mojom::RendererFormDataAction action,
     const FormData& form,
     const FormFieldData& field,
-    int unique_id,
+    Suggestion::FrontendId unique_id,
     const AutofillTriggerSource trigger_source) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
@@ -1578,7 +1574,7 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
 bool BrowserAutofillManager::GetDeletionConfirmationText(
     const std::u16string& value,
-    int identifier,
+    Suggestion::FrontendId identifier,
     std::u16string* title,
     std::u16string* body) {
   if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
@@ -1592,8 +1588,9 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
     return true;
   }
 
-  if (identifier < 0)
+  if (identifier.as_int() < 0) {
     return false;
+  }
 
   const CreditCard* credit_card = GetCreditCard(identifier);
   const AutofillProfile* profile = GetProfile(identifier);
@@ -1625,7 +1622,8 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
   return false;  // The ID was valid. The entry may have been deleted in a race.
 }
 
-bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(int unique_id) {
+bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
+    Suggestion::FrontendId unique_id) {
   const CreditCard* credit_card = GetCreditCard(unique_id);
   if (credit_card) {
     return credit_card_access_manager_->DeleteCard(credit_card);
@@ -1646,14 +1644,14 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(int unique_id) {
 void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
     const std::u16string& name,
     const std::u16string& value,
-    int frontend_id) {
+    Suggestion::FrontendId frontend_id) {
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
       name, value, frontend_id);
 }
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    int frontend_id,
+    Suggestion::FrontendId frontend_id,
     const FormData& form,
     const FormFieldData& field) {
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value,
@@ -2144,19 +2142,21 @@ bool BrowserAutofillManager::RefreshDataModels() {
          !client()->GetPersonalDataManager()->GetCreditCards().empty();
 }
 
-CreditCard* BrowserAutofillManager::GetCreditCard(int unique_id) {
+CreditCard* BrowserAutofillManager::GetCreditCard(
+    Suggestion::FrontendId unique_id) {
   Suggestion::BackendId credit_card_id =
       suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
   return client()->GetPersonalDataManager()->GetCreditCardByGUID(
       credit_card_id.value());
 }
 
-AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
+AutofillProfile* BrowserAutofillManager::GetProfile(
+    Suggestion::FrontendId unique_id) {
   Suggestion::BackendId profile_id =
       suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
 
   std::string guid = profile_id.value();
-  if (base::IsValidUuid(guid)) {
+  if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
     return client()->GetPersonalDataManager()->GetProfileByGUID(guid);
   }
   return nullptr;
@@ -3457,7 +3457,7 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
 void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
     const GURL& offer_details_url,
     const std::u16string& value,
-    int frontend_id,
+    Suggestion::FrontendId frontend_id,
     const FormData& form,
     const FormFieldData& field) {
   client()->OpenPromoCodeOfferDetailsURL(offer_details_url);
@@ -3484,7 +3484,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
-          form_structure, *autofill_field);
+          form_structure, *autofill_field,
+          AutocompleteStateForSubmittedField(*autofill_field));
     }
 
     // Clear log events.

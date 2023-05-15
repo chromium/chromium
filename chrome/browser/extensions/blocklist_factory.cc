@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -27,7 +28,12 @@ BlocklistFactory::BlocklistFactory()
     : ProfileKeyedServiceFactory(
           "Blocklist",
           // Redirected in incognito.
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 }
 
@@ -35,7 +41,7 @@ BlocklistFactory::~BlocklistFactory() {}
 
 KeyedService* BlocklistFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
-  return new Blocklist(ExtensionPrefs::Get(context));
+  return new Blocklist(Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 }  // namespace extensions

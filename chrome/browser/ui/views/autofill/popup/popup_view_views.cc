@@ -60,7 +60,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-using autofill::PopupItemId;
 using views::BubbleBorder;
 
 namespace autofill {
@@ -70,7 +69,10 @@ namespace {
 // By spec, dropdowns should always have a width which is a multiple of 12.
 constexpr int kAutofillPopupWidthMultiple = 12;
 
-constexpr int kAutofillPopupMinWidth = 0;
+// The minimum width should exceed the maximum size of a cursor, which is 128
+// (see crbug.com/1434330).
+constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 13;
+static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
 
@@ -88,7 +90,8 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 
   // Separators are a special case: They belong into the footer iff the next
   // item exists and is a footer item.
-  int frontend_id = suggestions[line_number].frontend_id;
+  PopupItemId frontend_id =
+      suggestions[line_number].frontend_id.as_popup_item_id();
   return frontend_id == PopupItemId::POPUP_ITEM_ID_SEPARATOR
              ? IsFooterItem(suggestions, line_number + 1)
              : IsFooterFrontendId(frontend_id);
@@ -275,8 +278,9 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     if (index->second != PopupRowView::CellType::kContent) {
       return false;
     }
-    int frontend_id = controller_->GetSuggestionAt(index->first).frontend_id;
-    if (frontend_id <= 0 &&
+    Suggestion::FrontendId frontend_id =
+        controller_->GetSuggestionAt(index->first).frontend_id;
+    if (frontend_id.as_int() <= 0 &&
         !base::Contains(kItemsTriggeringFieldFilling, frontend_id) &&
         frontend_id != POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
       return false;
@@ -350,22 +354,15 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     return;
   }
 
-  for (int row = 0; row < controller_->GetLineCount(); ++row) {
-    // Show the in-product-help promo anchored to this bubble.
-    // The in-product-help promo is a bubble anchored to this row item to show
-    // educational messages. The promo bubble should only be shown once in one
-    // session and has a limit for how many times it can be shown at most in a
-    // period of time.
-    if (controller_->GetSuggestionAt(row).feature_for_iph ==
-        "IPH_AutofillVirtualCardSuggestion") {
-      GetPopupRowViewAt(row).SetProperty(
-          views::kElementIdentifierKey,
-          kAutofillCreditCardSuggestionEntryElementId);
-
-      browser->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
-    }
-  }
+  // Show the in-product-help promo anchored to this bubble.
+  // The in-product-help promo is a bubble anchored to this row item to show
+  // educational messages. The promo bubble should only be shown once in one
+  // session and has a limit for how many times it can be shown at most in a
+  // period of time.
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
 }
 
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
@@ -408,8 +405,9 @@ void PopupViewViews::CreateChildViews() {
     for (; current_line_number < kSuggestions.size() &&
            !IsFooterItem(kSuggestions, current_line_number);
          ++current_line_number) {
-      int frontend_id = kSuggestions[current_line_number].frontend_id;
-      switch (frontend_id) {
+      Suggestion::FrontendId frontend_id =
+          kSuggestions[current_line_number].frontend_id;
+      switch (frontend_id.as_popup_item_id()) {
         case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>()));
@@ -426,8 +424,28 @@ void PopupViewViews::CreateChildViews() {
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
-          rows_.push_back(body_container->AddChildView(
-              PopupRowView::Create(*this, current_line_number)));
+          PopupRowView* row_view = body_container->AddChildView(
+              PopupRowView::Create(*this, current_line_number));
+          rows_.push_back(row_view);
+
+          const std::string& feature_for_iph =
+              kSuggestions[current_line_number].feature_for_iph;
+
+          // Set appropriate element ids for IPH targets, it is important to
+          // set them earlier to make sure the elements are discoverable later
+          // during popup's visibility change and the promo bubble showing.
+          if (feature_for_iph ==
+              feature_engagement::kIPHAutofillVirtualCardSuggestionFeature
+                  .name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillCreditCardSuggestionEntryElementId);
+          }
+          if (feature_for_iph ==
+              feature_engagement::
+                  kIPHAutofillExternalAccountProfileSuggestionFeature.name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillSuggestionElementId);
+          }
       }
     }
 

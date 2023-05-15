@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -126,7 +127,8 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
         })");
 
 struct CustomizationDocumentTestOverride {
-  ServicesCustomizationDocument* customization_document = nullptr;
+  raw_ptr<ServicesCustomizationDocument, ExperimentalAsh>
+      customization_document = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 };
 
@@ -250,7 +252,7 @@ class ServicesCustomizationExternalLoader
  private:
   bool is_apps_set_ = false;
   base::Value::Dict apps_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 // CustomizationDocument implementation. ---------------------------------------
@@ -455,7 +457,7 @@ class ServicesCustomizationDocument::ApplyingTask {
   void Finished(bool success);
 
  private:
-  ServicesCustomizationDocument* document_;
+  raw_ptr<ServicesCustomizationDocument, ExperimentalAsh> document_;
 
   // This is error-checking flag to prevent destroying unfinished task
   // or double finish.

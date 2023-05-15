@@ -173,7 +173,7 @@ class AutoclickTest : public AshTestBase {
         GetAutoclickController()
             ->GetMenuBubbleControllerForTesting()
             ->scroll_bubble_controller_.get();
-    return controller ? controller->scroll_view_ : nullptr;
+    return controller ? controller->scroll_view_.get() : nullptr;
   }
 
   views::Widget* GetAutoclickBubbleWidget() {

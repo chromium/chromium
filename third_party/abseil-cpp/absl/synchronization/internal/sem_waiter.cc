@@ -46,6 +46,8 @@ SemWaiter::SemWaiter() : wakeups_(0) {
 #if defined(__GLIBC__) && \
     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
 #define ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT 1
+#elif defined(__ANDROID_API__) && __ANDROID_API__ >= 30
+#define ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT 1
 #endif
 
 // Calls sem_timedwait() or possibly something else like
@@ -53,13 +55,7 @@ SemWaiter::SemWaiter() : wakeups_(0) {
 // KernelTimeout requested. The return value is the same as a call to the return
 // value to a call to sem_timedwait().
 int SemWaiter::TimedWait(KernelTimeout t) {
-#ifndef __GOOGLE_GRTE_VERSION__
-  constexpr bool kRelativeTimeoutSupported = true;
-#else
-  constexpr bool kRelativeTimeoutSupported = false;
-#endif
-
-  if (kRelativeTimeoutSupported && t.is_relative_timeout()) {
+  if (KernelTimeout::SupportsSteadyClock() && t.is_relative_timeout()) {
 #if defined(ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT) && defined(CLOCK_MONOTONIC)
     const auto abs_clock_timeout = t.MakeClockAbsoluteTimespec(CLOCK_MONOTONIC);
     return sem_clockwait(&sem_, CLOCK_MONOTONIC, &abs_clock_timeout);

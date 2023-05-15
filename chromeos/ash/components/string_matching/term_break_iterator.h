@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
+
 namespace base::i18n {
 class UTF16CharIterator;
 }
@@ -57,7 +59,7 @@ class TermBreakIterator {
   // Returns new state for given |ch|.
   State GetNewState(char16_t ch);
 
-  const std::u16string& word_;
+  const raw_ref<const std::u16string, ExperimentalAsh> word_;
   size_t prev_;
   size_t pos_;
 

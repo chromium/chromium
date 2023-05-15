@@ -23,7 +23,8 @@
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -58,8 +59,11 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
     : OmniboxView(
           edit_model_delegate,
           edit_model_delegate
-              ? std::make_unique<ChromeOmniboxClientIOS>(edit_model_delegate,
-                                                         browser_state)
+              ? std::make_unique<ChromeOmniboxClientIOS>(
+                    edit_model_delegate,
+                    browser_state,
+                    feature_engagement::TrackerFactory::GetForBrowserState(
+                        browser_state))
               : nullptr),
       field_(field),
       edit_model_delegate_(edit_model_delegate),
@@ -494,10 +498,10 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 
     // The IME exception kicks in if the current marked text is not equal to the
     // previous marked text.  Two nil strings should be considered equal, so
-    // There is logic to avoid calling into isEqual: in that case.
+    // There is logic to avoid calling into isEqualToString: in that case.
     proceed_without_user_event =
         (marked_text_before_change_ || current_marked_text) &&
-        ![current_marked_text isEqual:marked_text_before_change_];
+        ![current_marked_text isEqualToString:marked_text_before_change_];
   }
 
   if (!processing_user_event && !proceed_without_user_event)
@@ -610,8 +614,6 @@ void OmniboxViewIOS::OnDeleteBackward() {
       // never sets the input-in-progress flag.
       if (model())
         model()->SetInputInProgress(YES);
-    } else {
-      RemoveQueryRefinementChip();
     }
   }
 }
@@ -621,11 +623,8 @@ void OmniboxViewIOS::ClearText() {
   // user can start typing a new query.
   if (![field_ isFirstResponder])
     [field_ becomeFirstResponder];
-  if (field_.text.length == 0) {
-    // If `field_` is empty, remove the query refinement chip.
-    RemoveQueryRefinementChip();
-  } else {
-    // Otherwise, just remove the text in the omnibox.
+  if (field_.text.length != 0) {
+    // Remove the text in the omnibox.
     // Calling -[UITextField setText:] does not trigger
     // -[id<UITextFieldDelegate> textDidChange] so it must be called explicitly.
     OnClear();
@@ -635,10 +634,6 @@ void OmniboxViewIOS::ClearText() {
   // Calling OnDidChange() can trigger a scroll event, which removes focus from
   // the omnibox.
   [field_ becomeFirstResponder];
-}
-
-void OmniboxViewIOS::RemoveQueryRefinementChip() {
-  edit_model_delegate_->OnChanged();
 }
 
 void OmniboxViewIOS::EndEditing() {

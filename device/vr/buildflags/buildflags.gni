@@ -13,11 +13,17 @@ declare_args() {
 
   enable_cardboard = false
 
+  # Controls inclusion of code for ARCore that must be identical across configs.
+  enable_arcore = is_android && !is_cast_android &&
+                (current_cpu == "arm" || current_cpu == "arm64")
+
   use_command_buffer = is_win
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  enable_openxr = checkout_openxr && is_win
+  enable_openxr = checkout_openxr &&
+                  (is_win || (is_android && !is_cast_android &&
+                              (current_cpu == "arm" || current_cpu == "arm64")))
 }
 
 declare_args() {
@@ -26,6 +32,7 @@ declare_args() {
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr =
       enable_gvr_services || enable_openxr ||
+      enable_cardboard || enable_arcore ||
       (is_linux && !is_castos && (current_cpu == "x64" || current_cpu == "x86"))
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
@@ -33,10 +40,4 @@ declare_args() {
 }
 
 declare_args() {
-  # Controls inclusion of code for ARCore that must be identical across configs.
-  # Once crbug.com/920424 is resolved, this will exactly control whether ARCore
-  # is supported.
-  # TODO(crbug.com/843374): AR should not depend on |enable_vr|.
-  enable_arcore = enable_vr && is_android && !is_cast_android &&
-                  (current_cpu == "arm" || current_cpu == "arm64")
 }

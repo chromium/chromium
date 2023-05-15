@@ -70,50 +70,42 @@ ThreadCheckerImpl& ThreadCheckerImpl::operator=(ThreadCheckerImpl&& other) {
 
 bool ThreadCheckerImpl::CalledOnValidThread(
     std::unique_ptr<debug::StackTrace>* out_bound_at) const {
-  const bool has_thread_been_destroyed = ThreadLocalStorage::HasBeenDestroyed();
-
   AutoLock auto_lock(lock_);
-  return CalledOnValidThreadInternal(out_bound_at, has_thread_been_destroyed);
+  return CalledOnValidThreadInternal(out_bound_at);
 }
 
 bool ThreadCheckerImpl::CalledOnValidThreadInternal(
-    std::unique_ptr<debug::StackTrace>* out_bound_at,
-    bool has_thread_been_destroyed) const {
-  // TaskToken/SequenceToken access thread-local storage. During destruction
-  // the state of thread-local storage is not guaranteed to be in a consistent
-  // state. Further, task-runner only installs the tokens when running a task.
-  if (!has_thread_been_destroyed) {
-    EnsureAssigned();
+    std::unique_ptr<debug::StackTrace>* out_bound_at) const {
+  // If we're detached, bind to current state.
+  EnsureAssigned();
 
-    // Always return true when called from the task from which this
-    // ThreadCheckerImpl was assigned to a thread.
-    if (task_token_ == TaskToken::GetForCurrentThread())
-      return true;
-
-    // If this ThreadCheckerImpl is bound to a valid SequenceToken, it must be
-    // equal to the current SequenceToken and there must be a registered
-    // SingleThreadTaskRunner::CurrentDefaultHandle. Otherwise, the fact that
-    // the current task runs on the thread to which this ThreadCheckerImpl is
-    // bound is fortuitous.
-    if (sequence_token_.IsValid() &&
-        (sequence_token_ != SequenceToken::GetForCurrentThread() ||
-         !SingleThreadTaskRunner::HasCurrentDefault())) {
-      if (out_bound_at && bound_at_) {
-        *out_bound_at = std::make_unique<debug::StackTrace>(*bound_at_);
-      }
-      return false;
-    }
-  } else if (thread_id_.is_null()) {
-    // We're in tls destruction but the |thread_id_| hasn't been assigned yet.
-    // Assign it now. This doesn't call EnsureAssigned() as to do so while in
-    // tls destruction may result in the wrong TaskToken/SequenceToken.
-    if (g_log_thread_and_sequence_checker_binding)
-      bound_at_ = std::make_unique<debug::StackTrace>(size_t{10});
-    thread_id_ = PlatformThread::CurrentRef();
+  // Always return true when called from the task from which this
+  // ThreadCheckerImpl was assigned to a thread.
+  if (task_token_.IsValid() &&
+      task_token_ == TaskToken::GetForCurrentThread()) {
     return true;
   }
 
-  if (thread_id_ != PlatformThread::CurrentRef()) {
+  // If this ThreadCheckerImpl is bound to a valid SequenceToken, it must be
+  // equal to the current SequenceToken and there must be a registered
+  // SingleThreadTaskRunner::CurrentDefaultHandle. Otherwise, the fact that
+  // the current task runs on the thread to which this ThreadCheckerImpl is
+  // bound is fortuitous.
+  //
+  // TODO(pbos): This preserves existing behavior that `sequence_token_` is
+  // ignored after TLS shutdown. It should either be documented here why that is
+  // necessary (shouldn't this destroy on sequence?) or
+  // SequenceCheckerTest.CalledOnValidSequenceFromThreadDestruction should be
+  // updated to reflect the expected behavior.
+  //
+  // See SequenceCheckerImpl::CalledOnValidSequence for additional context.
+  const bool sequence_is_invalid =
+      sequence_token_.IsValid() &&
+      (sequence_token_ != SequenceToken::GetForCurrentThread() ||
+       !SingleThreadTaskRunner::HasCurrentDefault()) &&
+      !ThreadLocalStorage::HasBeenDestroyed();
+
+  if (sequence_is_invalid || thread_id_ != PlatformThread::CurrentRef()) {
     if (out_bound_at && bound_at_) {
       *out_bound_at = std::make_unique<debug::StackTrace>(*bound_at_);
     }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,6 +23,8 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -134,7 +137,7 @@ void EduAccountLoginHandler::RegisterMessages() {
 }
 
 void EduAccountLoginHandler::OnJavascriptDisallowed() {
-  family_fetcher_.reset();
+  list_family_members_fetcher_.reset();
   access_token_fetcher_.reset();
   gaia_auth_fetcher_.reset();
   profile_image_fetcher_.reset();
@@ -187,17 +190,20 @@ void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
 }
 
 void EduAccountLoginHandler::FetchFamilyMembers() {
-  DCHECK(!family_fetcher_);
+  DCHECK(!list_family_members_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* account_manager = g_browser_process->platform_part()
                               ->GetAccountManagerFactory()
                               ->GetAccountManager(profile->GetPath().value());
   DCHECK(account_manager);
 
-  family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
-      this, IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory());
-  family_fetcher_->StartGetFamilyMembers();
+  list_family_members_fetcher_ = FetchListFamilyMembers(
+      *IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory(),
+      base::BindOnce(
+          &EduAccountLoginHandler::OnListFamilyMembersResponse,
+          base::Unretained(this)));  // Unretained(.) is safe because `this`
+                                     // owns `list_family_members_fetcher_`.
 }
 
 void EduAccountLoginHandler::FetchParentImages(
@@ -252,33 +258,46 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
       child_oauth_access_token, parent_obfuscated_gaia_id, parent_credential);
 }
 
-void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
-    const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
-  family_fetcher_.reset();
+void EduAccountLoginHandler::OnListFamilyMembersResponse(
+    KidsExternalFetcherStatus status,
+    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+        response) {
+  if (!status.IsOk()) {
+    OnListFamilyMembersFailure(status);
+    return;
+  }
+  OnListFamilyMembersSuccess(*response);
+  // Release response.
+}
+
+void EduAccountLoginHandler::OnListFamilyMembersSuccess(
+    const kids_chrome_management::ListFamilyMembersResponse& response) {
+  list_family_members_fetcher_.reset();
   base::Value::List parents;
   std::map<std::string, GURL> profile_image_urls;
 
-  for (const auto& member : members) {
-    if (member.role != FamilyInfoFetcher::HEAD_OF_HOUSEHOLD &&
-        member.role != FamilyInfoFetcher::PARENT) {
+  for (const auto& member : response.members()) {
+    if (member.role() != kids_chrome_management::HEAD_OF_HOUSEHOLD &&
+        member.role() != kids_chrome_management::PARENT) {
       continue;
     }
 
     base::Value::Dict parent;
-    parent.Set("email", member.email);
-    parent.Set("displayName", member.display_name);
-    parent.Set(kObfuscatedGaiaIdKey, member.obfuscated_gaia_id);
+    parent.Set("email", member.profile().email());
+    parent.Set("displayName", member.profile().display_name());
+    parent.Set(kObfuscatedGaiaIdKey, member.user_id());
 
     parents.Append(std::move(parent));
-    profile_image_urls[member.obfuscated_gaia_id] =
-        GURL(member.profile_image_url);
+    profile_image_urls[member.user_id()] =
+        GURL(member.profile().profile_image_url());
   }
 
   FetchParentImages(std::move(parents), profile_image_urls);
 }
 
-void EduAccountLoginHandler::OnFailure(FamilyInfoFetcher::ErrorCode error) {
-  family_fetcher_.reset();
+void EduAccountLoginHandler::OnListFamilyMembersFailure(
+    KidsExternalFetcherStatus status) {
+  list_family_members_fetcher_.reset();
   RejectJavascriptCallback(base::Value(get_parents_callback_id_),
                            base::Value::List());
   get_parents_callback_id_.clear();

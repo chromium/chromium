@@ -45,7 +45,7 @@
 #include "ui/base/test/ui_controls.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -254,7 +254,7 @@ int LaunchChromeTests(size_t parallel_jobs,
   base::FilePath path;
   CHECK(base::PathService::Get(base::DIR_EXE, &path));
   path = path.Append(chrome::kFrameworkName);
-  base::mac::SetOverrideFrameworkBundlePath(path);
+  base::apple::SetOverrideFrameworkBundlePath(path);
 #endif
 
 #if BUILDFLAG(IS_WIN)

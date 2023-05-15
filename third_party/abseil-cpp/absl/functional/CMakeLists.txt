@@ -90,6 +90,7 @@ absl_cc_library(
   DEPS
     absl::base_internal
     absl::core_headers
+    absl::any_invocable
     absl::meta
   PUBLIC
 )

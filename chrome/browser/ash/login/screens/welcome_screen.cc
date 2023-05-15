@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -195,9 +194,6 @@ WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,
       exit_callback_(exit_callback) {
   input_method::InputMethodManager::Get()->AddObserver(this);
 
-  ad_migration_utils::CheckChromadMigrationOobeFlow(
-      base::BindOnce(&WelcomeScreen::UpdateChromadMigrationOobeFlow,
-                     weak_ptr_factory_.GetWeakPtr()));
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   CHECK(accessibility_manager);
   accessibility_subscription_ = accessibility_manager->RegisterCallback(
@@ -366,11 +362,10 @@ void WelcomeScreen::ShowImpl() {
   }
 
   // Skip this screen if this is an automatic enrollment as part of Zero-Touch
-  // hands off flow or Chromad Migration flow.
+  // hands off flow.
   // TODO(crbug.com/1295708): Move this check to an implementation of
   // BaseScreen:MaybeSkip().
-  if (is_chromad_migration_oobe_flow_ ||
-      WizardController::IsZeroTouchHandsOffOobeFlow()) {
+  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnContinueButtonPressed();
     return;
   }
@@ -386,12 +381,12 @@ void WelcomeScreen::ShowImpl() {
       base::DefaultTickClock::GetInstance(), this);
   if (view_)
     view_->Show();
+
+  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
+  // The shortcut method enables a simpler workflow for testers, while the
+  // feature flag will enable us to perform a first run field trial.
   if (features::IsOobeQuickStartEnabled()) {
-    bootstrap_controller_ =
-        LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-    bootstrap_controller_->GetFeatureSupportStatusAsync(
-        base::BindOnce(&WelcomeScreen::OnFeatureSupportStatusDetermined,
-                       weak_ptr_factory_.GetWeakPtr()));
+    EnableQuickStart();
   }
 
   if (LoginScreenClientImpl::HasInstance()) {
@@ -402,7 +397,7 @@ void WelcomeScreen::ShowImpl() {
 void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
 
-  if (features::IsOobeQuickStartEnabled()) {
+  if (context()->quick_start_enabled) {
     bootstrap_controller_.reset();
   }
 }
@@ -410,7 +405,7 @@ void WelcomeScreen::HideImpl() {
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
-    DCHECK(features::IsOobeQuickStartEnabled());
+    CHECK(context()->quick_start_enabled);
     Exit(Result::QUICK_START);
     return;
   }
@@ -552,6 +547,13 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
     if (view_)
       view_->ShowRemoraRequisitionDialog();
     return true;
+  } else if (action == LoginAcceleratorAction::kEnableQuickStart) {
+    if (context()->quick_start_enabled) {
+      return true;
+    }
+
+    EnableQuickStart();
+    return true;
   }
 
   return false;
@@ -570,12 +572,22 @@ void WelcomeScreen::InputMethodChanged(
   }
 }
 
-void WelcomeScreen::OnFeatureSupportStatusDetermined(
+void WelcomeScreen::EnableQuickStart() {
+  context()->quick_start_enabled = true;
+  bootstrap_controller_ =
+      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+  bootstrap_controller_->GetFeatureSupportStatusAsync(
+      base::BindOnce(&WelcomeScreen::OnGetQuickStartFeatureSupportStatus,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WelcomeScreen::OnGetQuickStartFeatureSupportStatus(
     quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
   if (status != quick_start::TargetDeviceConnectionBroker::
                     FeatureSupportStatus::kSupported) {
     return;
   }
+
   if (!view_) {
     return;
   }
@@ -680,17 +692,6 @@ void WelcomeScreen::OnSystemTrayBubbleShown() {
 
 ChromeVoxHintDetector* WelcomeScreen::GetChromeVoxHintDetectorForTesting() {
   return chromevox_hint_detector_.get();
-}
-
-void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
-  is_chromad_migration_oobe_flow_ = exists;
-
-  if (is_hidden() || !is_chromad_migration_oobe_flow_)
-    return;
-
-  // Simulates a user action, in case this screen is already shown and this OOBE
-  // flow is part of Chromad to cloud migration.
-  OnContinueButtonPressed();
 }
 
 void WelcomeScreen::OnAccessibilityStatusChanged(

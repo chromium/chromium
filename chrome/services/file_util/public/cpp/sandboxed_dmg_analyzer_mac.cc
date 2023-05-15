@@ -13,6 +13,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
@@ -118,8 +119,11 @@ void SandboxedDMGAnalyzer::ReportFileFailure(
 void SandboxedDMGAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (remote_analyzer_) {
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
+        temp_file_getter_remote =
+            temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeDmgFile(
-        std::move(file),
+        std::move(file), std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());

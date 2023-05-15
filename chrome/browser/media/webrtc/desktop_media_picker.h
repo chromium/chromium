@@ -93,7 +93,7 @@ class DesktopMediaPicker {
   // |request|. If no request is available the default picker, namely
   // DesktopMediaPickerViews is used.
   static std::unique_ptr<DesktopMediaPicker> Create(
-      const content::MediaStreamRequest* request = nullptr);
+      const content::MediaStreamRequest* request);
 
   DesktopMediaPicker() = default;
 

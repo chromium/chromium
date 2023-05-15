@@ -62,6 +62,7 @@ include_rules = [
 specific_include_rules = {
     ".*test\.cc" : [
         "+base/containers/circular_deque.h",
+        "+base/numerics/ranges.h",
         "+base/run_loop.h",
         "+cc/layers/layer.h",
         "+media/video/fake_gpu_memory_buffer.h",

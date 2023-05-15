@@ -163,6 +163,13 @@ union SmartCardConnectResult {
   SmartCardError error;
 };
 
+// Result of a PC/SC request that sends back data on success.
+// Otherwise, an error.
+union SmartCardDataResult {
+  array<uint8> data;
+  SmartCardError error;
+};
+
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
@@ -170,12 +177,15 @@ interface SmartCardConnection {
   Disconnect(SmartCardDisposition disposition)
       => (SmartCardResult result);
 
+  // Sends an APDU to the smart card and receives a response back from it.
+  Transmit(SmartCardProtocol protocol, array<uint8> data)
+      => (SmartCardDataResult result);
+
   // TODO(crbug.com/1386175): Add methods:
   // * BeginTransaction()
   // * EndTransaction()
   // * Status()
   // * Control()
-  // * Transmit()
   // * GetAttrib()
   // * SetAttrib()
 };

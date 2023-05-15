@@ -1,3 +1,6 @@
+<if expr="chromeos_ash">
+  <style include="cros-color-overrides"></style>
+</if>
 <style include="cr-icons cr-shared-style">
   :host {
     --card-border-color: var(--cros-button-stroke-color-secondary);
@@ -292,7 +295,7 @@
       on-dom-change="domChangeDownloadFailed_">
     <div id="contactsFailed" class="content">
       <iron-icon id="contactsFailedImage"
-          icon="nearby-images:contacts-download-failed">
+        icon$="[[getContactsFailedIcon_(isJellyEnabled_)]]">
       </iron-icon>
       <div id="contactsFailedMessage"></div>
     </div>
@@ -303,7 +306,7 @@
       if="[[showEmptyState_(selectedVisibility, contactsState)]]">
     <div id="noContactsContainer" class="content">
       <iron-icon id="noContactsImage"
-          icon="nearby-images:contacts-empty">
+          icon$="[[getContactsEmptyIcon_(isJellyEnabled_)]]">
       </iron-icon>
       <div class="cr-title-text">
         $i18n{nearbyShareContactVisibilityNoContactsTitle}

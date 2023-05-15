@@ -84,6 +84,15 @@ class SSLHostStateDelegate {
   // |host|.
   virtual void RevokeUserAllowExceptions(const std::string& host) = 0;
 
+  // Sets HTTPS-First Mode enforcement for the given `host`.
+  virtual void SetHttpsEnforcementForHost(
+      const std::string& host,
+      bool enforce,
+      StoragePartition* storage_partition) = 0;
+  // Returns whether HTTPS-First Mode is enabled for the given `host`.
+  virtual bool IsHttpsEnforcedForHost(const std::string& host,
+                                      StoragePartition* storage_partition) = 0;
+
   // Returns whether the user has allowed a certificate error exception or
   // HTTP exception for |host|. This does not mean that *all* certificate errors
   // are allowed, just that there exists an exception. To see if a particular

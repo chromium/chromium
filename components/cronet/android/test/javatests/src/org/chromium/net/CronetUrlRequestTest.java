@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -756,7 +755,6 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet // Java impl doesn't support MockUrlRequestJobFactory
-    @DisabledTest(message = "crbug.com/1315367")
     public void testMockReadDataAsyncError() throws Exception {
         final int arbitraryNetError = -5;
         TestUrlRequestCallback callback =

@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Daripada <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Laman berkaitan boleh melihat aktiviti anda dalam kumpulan</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingat item dalam troli beli-belah anda</translation>
 <translation id="3165022941318558018">Benarkan laman menggunakan kuki pihak ketiga</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data disimpan</translation>
-<translation id="3203366800380907218">Daripada web</translation>
 <translation id="321187648315454507">Untuk membolehkan <ph name="APP_NAME" /> menghantar pemberitahuan kepada anda, hidupkan juga pemberitahuan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Laman ini mentakrifkan minat yang boleh digunakan oleh laman lain untuk memaparkan iklan kepada anda. Laman ini juga mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
+<translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
 <translation id="3721953990244350188">Ketepikan dan tunjukkan tindakan seterusnya yang tersedia</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Kenalan yang anda pilih akan dikongsi dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dilawati hari ini</translation>
 <translation id="5225463052809312700">Hidupkan kamera</translation>
-<translation id="5229337741799419985">Tetapan ini berfungsi tanpa mengenal pasti identiti anda atau membenarkan laman melihat sejarah penyemakan imbas anda</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
-<translation id="6701547804986694515">Laman yang anda lawati boleh menyimpan maklumat dengan Chrome yang mengesahkan bahawa anda bukan bot. Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang anda lawati sebelum ini bahawa anda berkemungkinan orang sebenar</translation>
 <translation id="6722828510648505498">Sekat gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">Anda biasanya menyekat pemberitahuan. Untuk membenarkan pemberitahuan, ketik Butiran.</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7383715096023715447">Tetapan untuk <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Tetapan ini berfungsi tanpa mengenal pasti identiti anda atau membenarkan laman melihat sejarah penyemakan imbas anda tetapi laman boleh berkongsi sedikit maklumat sebagai sebahagian daripada proses pengesahan</translation>
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Sekat tapak daripada mengakses penderia</translation>
 <translation id="8823559166155093873">Sekat kuki</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang telah anda lawati sebelum ini bahawa anda berkemungkinan merupakan orang yang sebenar</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Zum masuk</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

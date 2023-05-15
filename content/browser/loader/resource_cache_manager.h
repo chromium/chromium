@@ -6,12 +6,15 @@
 #define CONTENT_BROWSER_LOADER_RESOURCE_CACHE_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <set>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/process_lock.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom.h"
 #include "url/origin.h"
@@ -20,6 +23,7 @@ namespace content {
 
 class NavigationRequest;
 class RenderFrameHostImpl;
+class ResourceCacheHostObserver;
 
 // Used as a key to group ResourceCache.
 struct ResourceCacheKey {
@@ -65,8 +69,17 @@ class CONTENT_EXPORT ResourceCacheManager {
       mojo::PendingRemote<blink::mojom::ResourceCache>& pending_remote,
       NavigationRequest& navigation_request);
 
-  // Called when a RenderFrameHostImpl is deleted.
-  void RenderFrameHostDeleted(RenderFrameHostImpl& render_frame_host);
+  // Called when a RenderFrameHostImpl became ineligible to host a
+  // ResourceCache, e.g., the renderer is deleted or is stored in BFCache.
+  void RenderFrameHostBecameIneligible(RenderFrameHostImpl& render_frame_host);
+
+  // Called when lifecycle state of `render_frame_host` has changed.
+  void RenderFrameHostStateChanged(RenderFrameHostImpl& render_frame_host,
+                                   RenderFrameHost::LifecycleState old_state,
+                                   RenderFrameHost::LifecycleState new_state);
+
+  // Destroys a host observer.
+  void DestroyHostObserver(ResourceCacheHostObserver* observer);
 
   // Returns true when a frame associated with `render_frame_host` is
   // hosting a ResourceCache.
@@ -86,12 +99,21 @@ class CONTENT_EXPORT ResourceCacheManager {
     GlobalRenderFrameHostId render_frame_host_id;
   };
 
+  // Inserts `render_frame_host_id` to `non_hosting_frame_hosts_`.
+  void InsertNonHostingRenderFrameId(
+      const ResourceCacheKey& key,
+      GlobalRenderFrameHostId render_frame_host_id);
+
   // Looks for an active ResourceCache. If not found, tries to create a new
   // ResourceCache in a renderer. Returns a RenderFrameHostImpl that hosts the
   // ResourceCache. Returns nullptr when no resource cache is/ found nor
   // created.
   RenderFrameHostImpl* FindOrMaybeCreateResourceCache(
       const ResourceCacheKey& key);
+
+  // Makes `render_frame_host` host a ResourceCache.
+  void HostResourceCache(RenderFrameHostImpl& render_frame_host,
+                         const ResourceCacheKey& key);
 
   // Creates blink::mojom::ResourceCache interface from `render_frame_host`.
   mojo::Remote<blink::mojom::ResourceCache> CreateResourceCacheRemote(
@@ -111,6 +133,16 @@ class CONTENT_EXPORT ResourceCacheManager {
   // ResourceCache is disconnected.
   std::map<ResourceCacheKey, std::set<GlobalRenderFrameHostId>>
       non_hosting_frame_hosts_;
+
+  // A set of WebContentsObservers to keep track of lifecycle state changes of
+  // RenderFrameHosts that host ResourceCaches. Used to handle lifecycle state
+  // changes. If a RenderFrameHost becomes inactive (e.g. pending deletion,
+  // BFCached), the host becomes ineligible to host a ResourceCache. If the
+  // RenderFrameHost becomes active again, the RenderFrameHost becomes eligible
+  // to use/host a ResourceCache.
+  std::set<std::unique_ptr<ResourceCacheHostObserver>,
+           base::UniquePtrComparator>
+      host_observers_;
 
   base::WeakPtrFactory<ResourceCacheManager> weak_ptr_factory_{this};
 };

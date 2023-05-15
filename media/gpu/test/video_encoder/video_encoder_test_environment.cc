@@ -38,6 +38,30 @@ struct CodecParamToProfile {
     {"av1", AV1PROFILE_PROFILE_MAIN},
 };
 
+struct SVCConfig {
+  const char* svc_mode;
+  const size_t num_spatial_layers;
+  const size_t num_temporal_layers;
+  const VideoEncodeAccelerator::Config::InterLayerPredMode
+      inter_layer_pred_mode;
+} kSVCModeParamToSVCConfig[] = {
+    {"L1T1", 1, 1, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
+    {"L1T2", 1, 2, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
+    {"L1T3", 1, 3, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
+    {"L2T1_KEY", 2, 1,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L2T2_KEY", 2, 2,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L2T3_KEY", 2, 3,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L3T1_KEY", 3, 1,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L3T2_KEY", 3, 2,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L3T3_KEY", 3, 3,
+     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+};
+
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
                                  const uint32_t framerate) {
   // This calculation is based on tinyurl.com/cros-platform-video-encoding.
@@ -51,8 +75,9 @@ GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
                         size_t num_temporal_layers) {
   // Returns empty spatial layer config because one temporal layer stream is
   // equivalent to a simple stream.
-  if (num_temporal_layers == 1u && num_spatial_layers == 1u)
+  if (num_spatial_layers == 1 && num_temporal_layers == 1) {
     return {};
+  }
 
   constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
       {1, 0, 0},  // For one spatial layer.
@@ -94,8 +119,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     bool enable_bitstream_validator,
     const base::FilePath& output_folder,
     const std::string& codec,
-    size_t num_temporal_layers,
-    size_t num_spatial_layers,
+    const std::string& svc_mode,
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
     Bitrate::Mode bitrate_mode,
@@ -132,14 +156,28 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
-  const auto* it = base::ranges::find(kCodecParamToProfile, codec,
-                                      &CodecParamToProfile::codec);
-  if (it == std::end(kCodecParamToProfile)) {
+  const auto* codec_it = base::ranges::find(kCodecParamToProfile, codec,
+                                            &CodecParamToProfile::codec);
+  if (codec_it == std::end(kCodecParamToProfile)) {
     LOG(ERROR) << "Unknown codec: " << codec;
     return nullptr;
   }
+  const VideoCodecProfile profile = codec_it->profile;
 
-  const VideoCodecProfile profile = it->profile;
+  size_t num_temporal_layers = 1u;
+  size_t num_spatial_layers = 1u;
+  auto inter_layer_pred_mode =
+      VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+  const auto* svc_it = base::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
+                                          &SVCConfig::svc_mode);
+  if (svc_it == std::end(kSVCModeParamToSVCConfig)) {
+    LOG(ERROR) << "Unsupported svc_mode: " << svc_mode;
+    return nullptr;
+  }
+  num_spatial_layers = svc_it->num_spatial_layers;
+  num_temporal_layers = svc_it->num_temporal_layers;
+  inter_layer_pred_mode = svc_it->inter_layer_pred_mode;
+
   if (num_spatial_layers > 1u && profile != VP9PROFILE_PROFILE0) {
     LOG(ERROR) << "Spatial layer encoding is supported only if output profile "
                << "is vp9";
@@ -195,9 +233,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   }
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
-      num_temporal_layers, num_spatial_layers, bitrate, save_output_bitstream,
-      reverse, frame_output_config, combined_enabled_features,
-      combined_disabled_features);
+      inter_layer_pred_mode, num_spatial_layers, num_temporal_layers, bitrate,
+      save_output_bitstream, reverse, frame_output_config,
+      combined_enabled_features, combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -205,8 +243,9 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     bool enable_bitstream_validator,
     const base::FilePath& output_folder,
     VideoCodecProfile profile,
-    size_t num_temporal_layers,
+    VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
+    size_t num_temporal_layers,
     const Bitrate& bitrate,
     bool save_output_bitstream,
     bool reverse,
@@ -218,15 +257,14 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       enable_bitstream_validator_(enable_bitstream_validator),
       output_folder_(output_folder),
       profile_(profile),
-      num_temporal_layers_(num_temporal_layers),
-      num_spatial_layers_(num_spatial_layers),
-      bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers_,
-                                                num_temporal_layers_,
+      inter_layer_pred_mode_(inter_layer_pred_mode),
+      bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers,
+                                                num_temporal_layers,
                                                 bitrate)),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
                                               video_.get(),
-                                              num_spatial_layers_,
-                                              num_temporal_layers_)),
+                                              num_spatial_layers,
+                                              num_temporal_layers)),
       save_output_bitstream_(save_output_bitstream),
       reverse_(reverse),
       frame_output_config_(frame_output_config),
@@ -262,6 +300,11 @@ VideoCodecProfile VideoEncoderTestEnvironment::Profile() const {
 const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
 VideoEncoderTestEnvironment::SpatialLayers() const {
   return spatial_layers_;
+}
+
+VideoEncodeAccelerator::Config::InterLayerPredMode
+VideoEncoderTestEnvironment::InterLayerPredMode() const {
+  return inter_layer_pred_mode_;
 }
 
 const VideoBitrateAllocation& VideoEncoderTestEnvironment::BitrateAllocation()

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/active_host.h"
 
@@ -202,8 +203,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   void SetClockForTesting(base::Clock* test_clock);
 
-  ActiveHost* active_host_;
-  base::Clock* clock_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   base::Time connect_to_host_start_time_;
   std::string active_host_device_id_;

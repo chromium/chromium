@@ -578,6 +578,32 @@ bool Statement::ColumnBlobAsString(int column_index, std::string* result) {
   return true;
 }
 
+bool Statement::ColumnBlobAsString16(int column_index, std::u16string* result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(result);
+
+#if DCHECK_IS_ON()
+  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
+  DCHECK(step_called_) << __func__ << " can only be used after Step()";
+#endif  // DCHECK_IS_ON()
+
+  if (!CheckValid()) {
+    return false;
+  }
+  DCHECK_GE(column_index, 0);
+  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
+      << "Invalid column index";
+
+  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
+  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
+  if (result_buffer && size > 0) {
+    result->assign(reinterpret_cast<const char16_t*>(result_buffer), size / 2);
+  } else {
+    result->clear();
+  }
+  return true;
+}
+
 bool Statement::ColumnBlobAsVector(int column_index,
                                    std::vector<char>* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

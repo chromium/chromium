@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -131,6 +132,31 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
   AppId app_id =
       GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
+  std::string app_id_unhashed =
+      GenerateAppIdUnhashed(web_app_info.manifest_id, web_app_info.start_url);
+  OnDidGetWebAppOriginAssociations origin_association_validated_callback =
+      base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
+                     weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
+                     options, std::move(callback), app_id);
+
+  if (options.skip_origin_association_validation ||
+      web_app_info.scope_extensions.empty() ||
+      web_app_info.validated_scope_extensions.has_value()) {
+    std::move(origin_association_validated_callback).Run(ScopeExtensions());
+    return;
+  }
+
+  origin_association_manager_->GetWebAppOriginAssociations(
+      GURL(app_id_unhashed), web_app_info.scope_extensions,
+      std::move(origin_association_validated_callback));
+}
+
+void WebAppInstallFinalizer::OnOriginAssociationValidated(
+    WebAppInstallInfo web_app_info,
+    FinalizeOptions options,
+    InstallFinalizedCallback callback,
+    AppId app_id,
+    ScopeExtensions validated_scope_extensions) {
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
   std::unique_ptr<WebApp> web_app;
   if (existing_web_app) {
@@ -138,6 +164,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   } else {
     web_app = std::make_unique<WebApp>(app_id);
   }
+
+  web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
   if (existing_web_app) {
     // There is a chance that existing sources type(s) are user uninstallable
@@ -368,7 +396,8 @@ void WebAppInstallFinalizer::SetSubsystems(
     WebAppIconManager* icon_manager,
     WebAppPolicyManager* policy_manager,
     WebAppTranslationManager* translation_manager,
-    WebAppCommandManager* command_manager) {
+    WebAppCommandManager* command_manager,
+    WebAppOriginAssociationManager* origin_association_manager) {
   install_manager_ = install_manager;
   registrar_ = registrar;
   ui_manager_ = ui_manager;
@@ -378,6 +407,7 @@ void WebAppInstallFinalizer::SetSubsystems(
   policy_manager_ = policy_manager;
   translation_manager_ = translation_manager;
   command_manager_ = command_manager;
+  origin_association_manager_ = origin_association_manager;
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

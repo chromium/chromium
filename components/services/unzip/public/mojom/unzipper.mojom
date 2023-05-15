@@ -4,7 +4,7 @@
 
 module unzip.mojom;
 
-import "components/services/filesystem/public/mojom/directory.mojom";
+import "components/services/storage/public/mojom/filesystem/directory.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -55,7 +55,7 @@ interface Unzipper {
   // If provided, |listener| is called repeatedly with the bytes extracted.
   Unzip(
       mojo_base.mojom.ReadOnlyFile zip_file,
-      pending_remote<filesystem.mojom.Directory> output_dir,
+      pending_remote<storage.mojom.Directory> output_dir,
       UnzipOptions options,
       pending_remote<UnzipFilter>? filter,
       pending_remote<UnzipListener>? listener) => (bool result);

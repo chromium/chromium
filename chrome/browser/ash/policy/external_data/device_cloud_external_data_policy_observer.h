@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -75,13 +76,13 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
   void OnDeviceExternalDataFetched(std::unique_ptr<std::string> data,
                                    const base::FilePath& file_path);
 
-  PolicyService* const policy_service_;
+  const raw_ptr<PolicyService, ExperimentalAsh> policy_service_;
 
   // The policy that |this| observes.
   const std::string policy_;
 
   // Delegate that takes care of policy data updates. Cannot be null.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_{
       this};

@@ -1,4 +1,4 @@
-<style include="cr-hidden-style">
+<style include="cr-hidden-style sp-shared-style">
   :host {
     align-items: center;
     display: flex;
@@ -85,22 +85,14 @@
   :host-context([chrome-refresh-2023]) ::slotted([slot=metadata]) {
     line-height: 16px;
   }
-
-  #suffixButtons {
-    align-items: center;
-    display: grid;
-    gap: 8px;
-    grid-auto-columns: 16px;
-    grid-auto-flow: column;
-    justify-items: center;
-  }
 </style>
 
 <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
     hidden$="[[hideBackButton]]" disabled$="[[disableBackButton]]"
-    on-click="onBackButtonClick_" aria-label$="[[backButtonLabel]]">
+    on-click="onBackButtonClick_" aria-label$="[[backButtonAriaLabel]]"
+    title$="[[backButtonTitle]]">
 </cr-icon-button>
 
 <slot name="heading"></slot>
 <slot name="metadata"></slot>
-<div id="suffixButtons"><slot name="buttons"></slot></div>
+<div class="sp-icon-buttons-row"><slot name="buttons"></slot></div>

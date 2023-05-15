@@ -5,6 +5,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace feature_engagement {
@@ -20,9 +21,15 @@ BASE_FEATURE(kIPHDummyFeature, "IPH_Dummy", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+BASE_FEATURE(kIPHAutofillFeedbackNewBadgeFeature,
+             "IPH_AutofillFeedbackNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHBatterySaverModeFeature,
              "IPH_BatterySaverMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHCompanionSidePanelFeature,
+             "IPH_CompanionSidePanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
              "IPH_DesktopSharedHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -71,6 +78,9 @@ BASE_FEATURE(kIPHPerformanceNewBadgeFeature,
 BASE_FEATURE(kIPHPowerBookmarksSidePanelFeature,
              "IPH_PowerBookmarksSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPriceTrackingChipFeature,
+             "IPH_PriceTrackingChipFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPriceTrackingPageActionIconLabelFeature,
              "IPH_PriceTrackingPageActionIconLabelFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -110,15 +120,16 @@ BASE_FEATURE(kIPHDesktopPwaInstallFeature,
 BASE_FEATURE(kIPHProfileSwitchFeature,
              "IPH_ProfileSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHIntentChipFeature,
-             "IPH_IntentChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHWebUiHelpBubbleTestFeature,
              "IPH_WebUiHelpBubbleTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPriceTrackingInSidePanelFeature,
              "IPH_PriceTrackingInSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHBackNavigationMenuFeature,
+             "IPH_BackNavigationMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -436,9 +447,6 @@ BASE_FEATURE(kIPHDefaultSiteViewFeature,
 BASE_FEATURE(kIPHFollowWhileBrowsingFeature,
              "IPH_FollowWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHOverflowMenuTipFeature,
-             "IPH_OverflowMenuTip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature,
              "IPH_PriceNotificationsWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -469,6 +477,18 @@ BASE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature,
 BASE_FEATURE(kIPHiOSPromoDefaultBrowserFeature,
              "IPH_iOSPromoDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSNewTabToolbarItemFeature,
+             "IPH_iOSNewTabToolbarItemFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSTabGridToolbarItemFeature,
+             "IPH_iOSTabGridToolbarItemFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature,
+             "IPH_iOSHistoryOnOverflowMenuFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSShareToolbarItemFeature,
+             "IPH_iOSShareToolbarItemFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

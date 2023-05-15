@@ -298,21 +298,8 @@ void FakeAppInstance::SendInstallationFinished(const std::string& package_name,
       mojom::InstallationResultPtr(result.Clone()));
 }
 
-void FakeAppInstance::CanHandleResolutionDeprecated(
-    const std::string& package_name,
-    const std::string& activity,
-    const gfx::Rect& dimension,
-    CanHandleResolutionDeprecatedCallback callback) {
-  std::move(callback).Run(true);
-}
-
 void FakeAppInstance::UninstallPackage(const std::string& package_name) {
   app_host_->OnPackageRemoved(package_name);
-}
-
-void FakeAppInstance::GetTaskInfoDeprecated(
-    int32_t task_id, GetTaskInfoDeprecatedCallback callback) {
-  LOG(FATAL) << "GetTaskInfo is deprecated: b/265158447";
 }
 
 void FakeAppInstance::SetTaskActive(int32_t task_id) {}
@@ -533,5 +520,17 @@ void FakeAppInstance::GetPackageIcon(const std::string& package_name,
 }
 
 void FakeAppInstance::RemoveCachedIcon(const std::string& icon_resource_id) {}
+
+void FakeAppInstance::SendInstallationProgressChanged(
+    const std::string& package_name,
+    float progress) {
+  app_host_->OnInstallationProgressChanged(package_name, progress);
+}
+
+void FakeAppInstance::SendInstallationActiveChanged(
+    const std::string& package_name,
+    bool active) {
+  app_host_->OnInstallationActiveChanged(package_name, active);
+}
 
 }  // namespace arc

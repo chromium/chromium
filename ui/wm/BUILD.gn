@@ -173,6 +173,7 @@ test("wm_unittests") {
     "//ui/events/platform",
     "//ui/gfx",
     "//ui/gfx:gfx_skia",
+    "//ui/gfx:test_support",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",

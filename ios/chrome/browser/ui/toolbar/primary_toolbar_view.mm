@@ -33,11 +33,6 @@
 // ContentView of the vibrancy effect if there is one, self otherwise.
 @property(nonatomic, strong) UIView* contentView;
 
-// Container for the location bar, redefined as readwrite.
-@property(nonatomic, strong, readwrite) UIView* locationBarContainer;
-// The height of the container for the location bar, redefined as readwrite.
-@property(nonatomic, strong, readwrite) NSLayoutConstraint* locationBarHeight;
-
 // StackView containing the leading buttons (relative to the location bar). It
 // should only contain ToolbarButtons. Redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIStackView* leadingStackView;
@@ -75,6 +70,15 @@
 
 // Button to cancel the edit of the location bar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIButton* cancelButton;
+
+#pragma mark** Location bar. **
+// Location bar containing the omnibox.
+@property(nonatomic, strong) UIView* locationBarView;
+// Container for the location bar, redefined as readwrite.
+@property(nonatomic, strong, readwrite) UIView* locationBarContainer;
+// The height of the container for the location bar, redefined as readwrite.
+@property(nonatomic, strong, readwrite)
+    NSLayoutConstraint* locationBarContainerHeight;
 // Button taking the full size of the toolbar. Expands the toolbar when  tapped.
 // Redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIButton* collapsedToolbarButton;
@@ -91,10 +95,9 @@
 
 @implementation PrimaryToolbarView
 
-@synthesize locationBarView = _locationBarView;
 @synthesize fakeOmniboxTarget = _fakeOmniboxTarget;
 @synthesize locationBarBottomConstraint = _locationBarBottomConstraint;
-@synthesize locationBarHeight = _locationBarHeight;
+@synthesize locationBarContainerHeight = _locationBarContainerHeight;
 @synthesize buttonFactory = _buttonFactory;
 @synthesize allButtons = _allButtons;
 @synthesize progressBar = _progressBar;
@@ -307,14 +310,14 @@
   ]];
 
   // LocationBar constraints. The constant value is set by the VC.
-  self.locationBarHeight =
+  self.locationBarContainerHeight =
       [self.locationBarContainer.heightAnchor constraintEqualToConstant:0];
   self.locationBarBottomConstraint = [self.locationBarContainer.bottomAnchor
       constraintEqualToAnchor:self.bottomAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
     self.locationBarBottomConstraint,
-    self.locationBarHeight,
+    self.locationBarContainerHeight,
   ]];
   [self.contractedConstraints addObjectsFromArray:@[
     [self.locationBarContainer.trailingAnchor
@@ -389,7 +392,7 @@
   AddSameConstraints(self, self.collapsedToolbarButton);
 }
 
-#pragma mark - Property accessors
+#pragma mark - AdaptiveToolbarView
 
 - (void)setLocationBarView:(UIView*)locationBarView {
   if (_locationBarView == locationBarView) {
@@ -419,8 +422,6 @@
   }
   return _allButtons;
 }
-
-#pragma mark - AdaptiveToolbarView
 
 - (ToolbarButton*)openNewTabButton {
   return nil;

@@ -238,14 +238,11 @@ ContentAnalysisDelegate::OverrideCancelButtonText() const {
 }
 
 // static
-bool ContentAnalysisDelegate::IsEnabled(
-    Profile* profile,
-    GURL url,
-    Data* data,
-    enterprise_connectors::AnalysisConnector connector) {
-  auto* service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
+bool ContentAnalysisDelegate::IsEnabled(Profile* profile,
+                                        GURL url,
+                                        Data* data,
+                                        AnalysisConnector connector) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile);
   // If the corresponding Connector policy isn't set, don't perform scans.
   if (!service || !service->IsConnectorEnabled(connector))
     return false;
@@ -271,8 +268,8 @@ void ContentAnalysisDelegate::CreateForWebContents(
     CompletionCallback callback,
     safe_browsing::DeepScanAccessPoint access_point) {
   Factory* testing_factory = GetFactoryStorage();
-  bool wait_for_verdict = data.settings.block_until_verdict ==
-                          enterprise_connectors::BlockUntilVerdict::kBlock;
+  bool wait_for_verdict =
+      data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
                       ? base::WrapUnique(new ContentAnalysisDelegate(
@@ -312,9 +309,16 @@ void ContentAnalysisDelegate::CreateForWebContents(
     delegate->RunCallback();
   }
 
-  // Upload service callback will delete the delegate.
-  if (work_being_done)
+  // If all requests are already done, just let `delegate` go out of scope.
+  if (delegate->all_work_done_) {
+    return;
+  }
+
+  // ... otherwise, let the last response from the upload service callback
+  // delete the delegate when there is no more work.
+  if (work_being_done) {
     delegate.release();
+  }
 }
 
 // static
@@ -354,6 +358,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   std::string user_action_token = base::RandBytesAsString(128);
   user_action_id_ =
       base::HexEncode(user_action_token.data(), user_action_token.size());
+  page_content_type_ = web_contents->GetContentsMimeType();
   result_.text_results.resize(data_.text.size(), false);
   result_.image_result = false;
   result_.paths_results.resize(data_.paths.size(), false);
@@ -362,7 +367,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
 
 void ContentAnalysisDelegate::StringRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -406,7 +411,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
 
 void ContentAnalysisDelegate::ImageRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -489,7 +494,7 @@ bool ContentAnalysisDelegate::CancelDialog() {
 
 void ContentAnalysisDelegate::PageRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -582,7 +587,7 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
         base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::BULK_DATA_ENTRY, request.get());
+    PrepareRequest(BULK_DATA_ENTRY, request.get());
     UploadTextForDeepScanning(std::move(request));
   }
 }
@@ -609,7 +614,7 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::BULK_DATA_ENTRY, request.get());
+    PrepareRequest(BULK_DATA_ENTRY, request.get());
     UploadImageForDeepScanning(std::move(request));
   }
 }
@@ -626,8 +631,13 @@ void ContentAnalysisDelegate::PreparePageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::PageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::PRINT, request.get());
+    PrepareRequest(PRINT, request.get());
     request->set_filename(title_);
+    request->set_printer_name(data_.printer_name);
+    request->set_printer_type(data_.printer_type);
+    if (!page_content_type_.empty()) {
+      request->set_content_type(page_content_type_);
+    }
     UploadPageForDeepScanning(std::move(request));
   }
 }
@@ -636,7 +646,7 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 // are handled by
 // chrome/browser/enterprise/connectors/analysis/files_request_handler.h
 void ContentAnalysisDelegate::PrepareRequest(
-    enterprise_connectors::AnalysisConnector connector,
+    AnalysisConnector connector,
     BinaryUploadService::Request* request) {
   if (data_.settings.cloud_or_local_settings.is_cloud_analysis()) {
     request->set_device_token(
@@ -721,6 +731,15 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 
   AckAllRequests();
 
+  if (callback_running_ && !dialog_ && *UIEnabledStorage()) {
+    // This code path implies that RunCallback has already been called,
+    // and that we are racing against a non-blocking scan. In such a
+    // case, we let the other caller handle deletion of `this`, and let
+    // them know no more work is needed.
+    all_work_done_ = true;
+    return;
+  }
+
   if (!UpdateDialog() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
     // yet.
@@ -729,10 +748,14 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 }
 
 void ContentAnalysisDelegate::RunCallback() {
-  if (callback_.is_null())
+  DCHECK(!callback_running_);
+  if (callback_.is_null()) {
     return;
+  }
 
+  callback_running_ = true;
   std::move(callback_).Run(data_, result_);
+  callback_running_ = false;
 
   // Since `result_` might have been tweaked by `callback_`, `final_actions_`
   // need to be updated before Acks are sent.

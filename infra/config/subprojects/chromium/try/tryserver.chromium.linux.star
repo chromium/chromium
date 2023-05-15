@@ -197,7 +197,7 @@ try_.builder(
 try_.builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    executable = "recipe:chromium_libfuzzer_trybot",
+    executable = "recipe:chromium/fuzz",
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -238,7 +238,7 @@ try_.orchestrator_builder(
     experiments = {
         "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -401,6 +401,8 @@ try_.orchestrator_builder(
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -554,6 +556,8 @@ try_.orchestrator_builder(
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -588,7 +592,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_clang",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = True,
     cores = 32,
     # This builder produces the clang binaries used on all builders. Since it
@@ -601,7 +605,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_rust",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = True,
     cores = 32,
     # This builder produces the rustc binaries used on all builders. Since it
@@ -725,6 +729,14 @@ try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
     execution_timeout = 20 * time.hour,
+    use_javascript_coverage = True,
+)
+
+try_.builder(
+    name = "chromeos-js-code-coverage",
+    mirrors = ["ci/chromeos-js-code-coverage"],
+    execution_timeout = 20 * time.hour,
+    use_javascript_coverage = True,
 )
 
 # ML experimental builder, modifies RTS itself to use a ml model
@@ -742,4 +754,9 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+)
+
+try_.builder(
+    name = "linux-cr23-rel",
+    mirrors = ["ci/linux-cr23-rel"],
 )

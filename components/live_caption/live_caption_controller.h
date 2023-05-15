@@ -45,9 +45,10 @@ class LiveCaptionController : public KeyedService,
                               public speech::SodaInstaller::Observer,
                               public ui::NativeThemeObserver {
  public:
-  explicit LiveCaptionController(PrefService* profile_prefs,
-                                 PrefService* global_prefs,
-                                 content::BrowserContext* browser_context);
+  LiveCaptionController(PrefService* profile_prefs,
+                        PrefService* global_prefs,
+                        const std::string& application_locale,
+                        content::BrowserContext* browser_context);
   ~LiveCaptionController() override;
   LiveCaptionController(const LiveCaptionController&) = delete;
   LiveCaptionController& operator=(const LiveCaptionController&) = delete;
@@ -109,6 +110,8 @@ class LiveCaptionController : public KeyedService,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   absl::optional<ui::CaptionStyle> caption_style_;
+
+  const std::string application_locale_;
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;

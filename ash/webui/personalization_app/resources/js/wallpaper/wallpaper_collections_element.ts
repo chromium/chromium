@@ -20,9 +20,8 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GooglePhotosEnablementState, OnlineImageType, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
-import {isDarkLightModeEnabled, isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
+import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {isGooglePhotosIntegrationEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
@@ -46,6 +45,7 @@ enum TileType {
 
 interface LoadingTile {
   type: TileType.LOADING;
+  id: string;
 }
 
 interface GooglePhotosTile {
@@ -76,6 +76,15 @@ interface OnlineTile {
 }
 
 type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile;
+
+// "regular" backdrop collections are displayed differently than the special
+// "timeOfDay" wallpaper collection. Split them to make them easier to handle.
+// The special "timeOfDay" collection may not exist depending on the device and
+// features enabled.
+interface SplitCollections {
+  regular: WallpaperCollection[];
+  timeOfDay: WallpaperCollection|null;
+}
 
 /**
  * Before switching entirely to WallpaperGridItem, have to deal with a mix of
@@ -148,10 +157,11 @@ function getLocalTile(
     localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>):
     LocalTile|LoadingTile {
   if (localImagesLoading) {
-    return {type: TileType.LOADING};
+    return {type: TileType.LOADING, id: kLocalCollectionId};
   }
 
   if (!localImages || localImages.length === 0) {
+    // TODO(b/282050032): After Jelly is launched, remove the preview image.
     return {
       count: getCountText(0),
       disabled: true,
@@ -182,6 +192,29 @@ function getLocalTile(
   };
 }
 
+function getOnlineTile(
+    collection: WallpaperCollection, imageCount: number|null): OnlineTile {
+  return {
+    count: getCountText(imageCount || 0),
+    // If `imageCount` is null or 0, this collection failed to load and the user
+    // cannot select it.
+    disabled: !imageCount,
+    id: collection.id,
+    info: collection.descriptionContent,
+    name: collection.name,
+    preview: collection.previews,
+    type: TileType.IMAGE_ONLINE,
+  };
+}
+
+function getTemporaryBackdropCollectionId(index: number) {
+  return `backdrop_collection_${index}`;
+}
+
+function isTimeOfDay({id}: WallpaperCollection|Tile): boolean {
+  return id === loadTimeData.getString('timeOfDayWallpaperCollectionId');
+}
+
 export class WallpaperCollections extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-collections';
@@ -200,7 +233,16 @@ export class WallpaperCollections extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      collections_: Array,
+      collections_: {
+        type: Array,
+        observer: 'onCollectionsChanged_',
+      },
+
+      /**
+       * Wallpaper collections split out into "regular" collections, and the
+       * special time of day collection.
+       */
+      splitCollections_: Object,
 
       images_: Object,
 
@@ -243,8 +285,38 @@ export class WallpaperCollections extends WithPersonalizationStore {
         value() {
           // Fill the view with loading tiles. Will be adjusted to the correct
           // number of tiles when collections are received.
-          return getLoadingPlaceholders(
-              (): LoadingTile => ({type: TileType.LOADING}));
+          const placeholders = getLoadingPlaceholders<LoadingTile>(
+              () => ({type: TileType.LOADING, id: ''}));
+
+          let currentIndex = 0;
+          // Time of day tile.
+          if (isTimeOfDayWallpaperEnabled()) {
+            placeholders[currentIndex].id =
+                loadTimeData.getString('timeOfDayWallpaperCollectionId');
+            currentIndex++;
+          }
+
+          // Local images tile.
+          placeholders[currentIndex].id = kLocalCollectionId;
+          currentIndex++;
+
+          // Google Photos tile.
+          if (isGooglePhotosIntegrationEnabled()) {
+            placeholders[currentIndex].id = kGooglePhotosCollectionId;
+            currentIndex++;
+          }
+
+          // The rest of the backdrop tiles. Actual number will be adjusted once
+          // collections are received. The actual id is not important as long as
+          // they are unique.
+          const firstBackdropIndex = currentIndex;
+          while (currentIndex < placeholders.length) {
+            placeholders[currentIndex].id = getTemporaryBackdropCollectionId(
+                currentIndex - firstBackdropIndex);
+            currentIndex++;
+          }
+
+          return placeholders;
         },
       },
 
@@ -254,6 +326,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   override hidden: boolean;
   private collections_: WallpaperCollection[]|null;
+  private splitCollections_: SplitCollections|null;
   private images_: Record<string, WallpaperImage[]|null>;
   private imagesLoading_: Record<string, boolean>;
   private imageCounts_: Record<string, number|null>;
@@ -267,7 +340,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   static get observers() {
     return [
       'onLocalImagesChanged_(localImages_, localImagesLoading_, localImageData_)',
-      'onCollectionLoaded_(collections_, imageCounts_)',
+      'onCollectionLoaded_(splitCollections_, imageCounts_)',
     ];
   }
 
@@ -303,6 +376,22 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /**
+   * Tiles are laid out
+   * `[time_of_day?, local, google_photos?, ...regular backdrop tiles...]`.
+   * Get the index of the first regular backdrop tile.
+   * @returns the index of the first regular backdrop tile.
+   */
+  private getFirstRegularBackdropTileIndex(): number {
+    const firstBackdropIndex = this.tiles_.findIndex(
+        tile => tile.id !== kLocalCollectionId &&
+            tile.id !== kGooglePhotosCollectionId && !isTimeOfDay(tile));
+    assert(
+        firstBackdropIndex > 0,
+        'first backdrop index must always be greater than 0');
+    return firstBackdropIndex;
+  }
+
+  /**
    * Notify that this element visibility has changed.
    */
   private async onHiddenChanged_(hidden: boolean) {
@@ -310,6 +399,55 @@ export class WallpaperCollections extends WithPersonalizationStore {
       document.title = this.i18n('wallpaperLabel');
     }
     afterNextRender(this, () => this.notifyResize());
+  }
+
+  /**
+   * Called when the list of wallpaper collections changes. Collections are not
+   * actually displayed until they have completed loading, which is handled by
+   * `onCollectionLoaded_`.
+   */
+  private onCollectionsChanged_(collections: WallpaperCollection[]|null) {
+    if (!isNonEmptyArray(collections)) {
+      this.splitCollections_ = null;
+      return;
+    }
+
+    const timeOfDay = collections.find(isTimeOfDay) ?? null;
+    if (!timeOfDay && isTimeOfDayWallpaperEnabled()) {
+      console.error('missing time of day wallpaper from collections');
+      this.tiles_ = this.tiles_.filter(tile => !isTimeOfDay(tile));
+    }
+
+    this.splitCollections_ = {
+      regular: collections.filter(collection => !isTimeOfDay(collection)),
+      timeOfDay,
+    };
+
+    // This is the index of the first tile after the "special" tiles like time
+    // of day, local images, and google photos.
+    const firstBackdropIndex = this.getFirstRegularBackdropTileIndex();
+    const desiredNumTiles =
+        this.splitCollections_.regular.length + firstBackdropIndex;
+
+    // Adjust the number of loading tiles to match the collections that just
+    // came in.  There may be more (or fewer) loading tiles than necessary to
+    // display all collections. Match the number of tiles to the correct length.
+    if (this.tiles_.length < desiredNumTiles) {
+      this.push(
+          'tiles_',
+          ...Array.from(
+              {length: desiredNumTiles - this.tiles_.length},
+              (_, i): LoadingTile => {
+                return {
+                  type: TileType.LOADING,
+                  id: getTemporaryBackdropCollectionId(
+                      i - firstBackdropIndex + this.tiles_.length),
+                };
+              }));
+    }
+    if (this.tiles_.length > desiredNumTiles) {
+      this.splice('tiles_', desiredNumTiles);
+    }
   }
 
   /**
@@ -356,68 +494,64 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * A value of null indicates that the given collection id has failed to load.
    */
   private onCollectionLoaded_(
-      collections: WallpaperCollection[]|null,
+      splitCollections: SplitCollections|null,
       imageCounts: Record<string, number|null>) {
-    if (!isNonEmptyArray(collections) || !imageCounts) {
+    if (!splitCollections || !isNonEmptyArray(splitCollections.regular) ||
+        !imageCounts) {
       return;
     }
 
-    // The first tile in the collections grid is reserved for local images. The
-    // second tile is reserved for Google Photos, provided that the integration
-    // is enabled. The tile index of other collections must be `offset` so as
-    // not to occupy reserved space.
-    const offset = isGooglePhotosIntegrationEnabled() ? 2 : 1;
+    const firstBackdropIndex = this.getFirstRegularBackdropTileIndex();
 
-    if (this.tiles_.length < collections.length + offset) {
-      this.push(
-          'tiles_',
-          ...Array.from(
-              {length: collections.length + offset - this.tiles_.length},
-              (): LoadingTile => ({type: TileType.LOADING})));
-    }
-    if (this.tiles_.length > collections.length + offset) {
-      this.splice('tiles_', collections.length + offset);
-    }
-
-    collections.forEach((collection, i) => {
-      const index = i + offset;
-      const tile = this.tiles_[index];
+    splitCollections.regular.forEach((collection, i) => {
       assert(
           isNonEmptyArray(collection.previews),
           `preview images required for collection ${collection.id}`);
 
+      const index = i + firstBackdropIndex;
+      const tile = this.tiles_[index];
+
       if (imageCounts[collection.id] === undefined) {
+        // Collection is still loading, skip.
         return;
       }
-      const count = getCountText(imageCounts[collection.id] || 0);
-      if (tile.type !== TileType.IMAGE_ONLINE || count !== tile.count) {
-        // Return all the previews in D/L mode to display the split view.
-        // Otherwise, only the first preview is needed.
-        const preview = isDarkLightModeEnabled() ? collection.previews :
-                                                   [collection.previews[0]];
-
-        const newTile: OnlineTile = {
-          count,
-          // If `imageCounts[collection.id]` is null, this collection failed to
-          // load and the user cannot select it.
-          disabled: imageCounts[collection.id] === null,
-          id: collection.id,
-          info: collection.descriptionContent,
-          name: collection.name,
-          preview,
-          type: TileType.IMAGE_ONLINE,
-        };
+      const newTile = getOnlineTile(collection, imageCounts[collection.id]);
+      if (tile.type !== newTile.type || tile.id !== newTile.id ||
+          tile.count !== newTile.count) {
         this.set(`tiles_.${index}`, newTile);
       }
     });
+
+    if (splitCollections.timeOfDay &&
+        imageCounts[splitCollections.timeOfDay.id] !== undefined) {
+      const tileIndex = this.tiles_.findIndex(isTimeOfDay);
+      if (tileIndex < 0) {
+        console.warn('received time of day collection when not supported');
+        return;
+      }
+      const tile = this.tiles_[tileIndex];
+      const newTile = getOnlineTile(
+          splitCollections.timeOfDay,
+          imageCounts[splitCollections.timeOfDay.id]);
+      if (tile.type !== newTile.type || tile.count !== newTile.count) {
+        this.set(`tiles_.${tileIndex}`, newTile);
+      }
+    }
   }
 
   /** Invoked on changes to |googlePhotosEnabled_|. */
-  private onGooglePhotosEnabledChanged_(
-      googlePhotosEnabled: WallpaperCollections['googlePhotosEnabled_']) {
+  private onGooglePhotosEnabledChanged_(googlePhotosEnabled:
+                                            GooglePhotosEnablementState|
+                                        undefined) {
     if (googlePhotosEnabled !== undefined) {
+      assert(
+          isGooglePhotosIntegrationEnabled(),
+          'google photos integration must be enabled');
       const tile = getGooglePhotosTile(googlePhotosEnabled);
-      this.set('tiles_.1', tile);
+      const index =
+          this.tiles_.findIndex(tile => tile.id === kGooglePhotosCollectionId);
+      assert(index >= 0, 'could not find google photos tile');
+      this.set(`tiles_.${index}`, tile);
     }
   }
 
@@ -430,7 +564,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
       localImagesLoading: boolean,
       localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>) {
     const tile = getLocalTile(localImages, localImagesLoading, localImageData);
-    this.set('tiles_.0', tile);
+    const index = this.tiles_.findIndex(tile => tile.id === kLocalCollectionId);
+    assert(index >= 0, 'could not find local tile');
+    this.set(`tiles_.${index}`, tile);
   }
 
   /** Navigate to the correct route based on user selection. */
@@ -463,11 +599,6 @@ export class WallpaperCollections extends WithPersonalizationStore {
             this.collections_.find(collection => collection.id === tile.id);
         assert(collection, 'collection with matching id required');
         PersonalizationRouter.instance().selectCollection(collection);
-        if (this.isTimeOfDayCollection_(tile)) {
-          // Dismisses the banner after the user navigates into the Time of Day
-          // collection.
-          dismissTimeOfDayBanner(this.getStore());
-        }
         return;
     }
   }
@@ -493,12 +624,12 @@ export class WallpaperCollections extends WithPersonalizationStore {
     return !!item && !this.isLoadingTile_(item) && !item.disabled;
   }
 
+  private isLocalNoImagesTile_(item: Tile): boolean {
+    return !!item && this.isLocalTile_(item) && item.count === getCountText(0);
+  }
+
   private isTimeOfDayCollection_(item: Tile|null): boolean {
-    return this.isOnlineTile_(item) &&
-        (this.images_[item.id] || [])
-            .some(
-                ({type}) => type === OnlineImageType.kMorning ||
-                    type === OnlineImageType.kLateAfternoon);
+    return this.isOnlineTile_(item) && isTimeOfDay(item);
   }
 
   private getAriaIndex_(index: number): number {

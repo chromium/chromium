@@ -44,9 +44,6 @@ testcase.showMyFiles = async () => {
     'Offline: SubDirectoryItem',
     'Trash: EntryListItem',
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedElementLabels.pop();  // Remove 'Trash: ...'.
-  }
 
   // Open Files app on local Downloads.
   const appId =

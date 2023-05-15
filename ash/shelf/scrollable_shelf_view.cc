@@ -20,7 +20,9 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -145,7 +147,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
   }
 
  private:
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,13 +156,14 @@ class ScrollableShelfView::ScrollableShelfArrowView
 class ScrollableShelfView::ScopedActiveInkDropCountImpl
     : public ScrollableShelfView::ScopedActiveInkDropCount {
  public:
-  explicit ScopedActiveInkDropCountImpl(ScrollableShelfView* owner)
-      : owner_(owner) {
-    owner_->OnActiveInkDropChange(/*increase=*/true);
+  explicit ScopedActiveInkDropCountImpl(
+      base::RepeatingCallback<void(bool)> callback)
+      : on_active_ink_drop_change_callback_(callback) {
+    on_active_ink_drop_change_callback_.Run(/*increase=*/true);
   }
 
   ~ScopedActiveInkDropCountImpl() override {
-    owner_->OnActiveInkDropChange(/*increase=*/false);
+    on_active_ink_drop_change_callback_.Run(/*increase=*/false);
   }
 
   ScopedActiveInkDropCountImpl(const ScopedActiveInkDropCountImpl& rhs) =
@@ -169,7 +172,7 @@ class ScrollableShelfView::ScopedActiveInkDropCountImpl
       const ScopedActiveInkDropCountImpl& rhs) = delete;
 
  private:
-  ScrollableShelfView* owner_ = nullptr;
+  base::RepeatingCallback<void(bool)> on_active_ink_drop_change_callback_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +205,8 @@ class ScrollableShelfContainerView : public ShelfContainerView,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
 };
 
 void ScrollableShelfContainerView::TranslateShelfView(
@@ -228,6 +232,9 @@ void ScrollableShelfContainerView::Layout() {
     shelf_view_bounds.set_y(ShelfConfig::Get()->GetAppIconEndPadding());
 
   shelf_view_->SetBoundsRect(shelf_view_bounds);
+  shelf_view_->shelf()
+      ->shelf_layout_manager()
+      ->HandleScrollableShelfContainerBoundsChange();
 }
 
 bool ScrollableShelfContainerView::DoesIntersectRect(
@@ -303,7 +310,8 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
   }
 
  private:
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -863,8 +871,9 @@ void ScrollableShelfView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void ScrollableShelfView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.parent != shelf_view_)
+  if (details.parent != shelf_view_.get()) {
     return;
+  }
 
   shelf_view_->UpdateShelfItemViewsVisibility();
 
@@ -980,7 +989,8 @@ void ScrollableShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
   // gets focused, it should update the visibility of the hotseat.
   if (Shell::Get()->IsInTabletMode() &&
       !shelf_widget->hotseat_widget()->IsExtended()) {
-    shelf_widget->shelf_layout_manager()->UpdateVisibilityState();
+    shelf_widget->shelf_layout_manager()->UpdateVisibilityState(
+        /*force_layout=*/false);
   }
 }
 
@@ -999,7 +1009,8 @@ void ScrollableShelfView::HandleAccessibleActionScrollToMakeVisible(
     ShelfButton* button) {
   // Scrollable shelf can only be hidden in tablet mode.
   GetShelf()->hotseat_widget()->set_manually_extended(true);
-  GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
+  GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState(
+      /*force_layout=*/false);
 }
 
 void ScrollableShelfView::OnButtonWillBeRemoved() {
@@ -1036,7 +1047,9 @@ ScrollableShelfView::CreateScopedActiveInkDropCount(const ShelfButton* sender) {
   if (!ShouldCountActivatedInkDrop(sender))
     return nullptr;
 
-  return std::make_unique<ScopedActiveInkDropCountImpl>(this);
+  return std::make_unique<ScopedActiveInkDropCountImpl>(
+      base::BindRepeating(&ScrollableShelfView::OnActiveInkDropChange,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScrollableShelfView::ShowContextMenuForViewImpl(

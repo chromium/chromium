@@ -30,6 +30,7 @@
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
@@ -86,6 +87,33 @@ void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
   std::string msg;
   EXPECT_TRUE(message_queue.WaitForMessage(&msg));
   EXPECT_EQ("\"Hello from acking script!\"", msg);
+}
+
+// Executes a `script` as a user script associated with the given `extension_id`
+// within the primary main frame of `web_contents`, waiting for the injection to
+// complete.
+void ExecuteUserScript(content::WebContents& web_contents,
+                       const ExtensionId& extension_id,
+                       const std::string& script) {
+  base::RunLoop run_loop;
+
+  ScriptExecutor script_executor(&web_contents);
+  std::vector<mojom::JSSourcePtr> sources;
+  sources.push_back(mojom::JSSource::New(script, GURL()));
+  script_executor.ExecuteScript(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+          std::move(sources), mojom::ExecutionWorld::kUserScript,
+          blink::mojom::WantResultOption::kWantResult,
+          blink::mojom::UserActivationOption::kDoNotActivate,
+          blink::mojom::PromiseResultOption::kAwait)),
+      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
+      ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+      base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
+          run_loop.QuitWhenIdleClosure()));
+
+  run_loop.Run();
 }
 
 // Test suite covering `extensions::ContentScriptTracker` from
@@ -196,6 +224,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+  // Sanity check: injecting a content script should not count as injecting a
+  // user script.
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+  // And the extension page should never be considered as a content script
+  // target.
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
 
@@ -214,6 +248,74 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
+}
+
+// Tests tracking of user scripts through the ScriptExecutor.
+// The vast majority of implementation is the same for content script and user
+// script tracking, so this is the main spot we explicitly test user script
+// specific tracking.
+IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
+                       ProgrammaticUserScript) {
+  // Install a test extension.
+  // TODO(https://crbug.com/1429408): There's currently no way for extensions
+  // to trigger user script injections, so this extension is really just to
+  // have one we force to be associated with the injection. When the userScripts
+  // API is fully developed, we should update this to use the developer-facing
+  // API.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Programmatic",
+        "version": "1.0",
+        "manifest_version": 3,
+        "host_permissions": ["<all_urls>"]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to an arbitrary, mostly-empty test page.
+  GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Verify that initially no processes show up as having been injected with
+  // user scripts.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Programmatically inject a user script.
+  static constexpr char kUserScript[] =
+      "document.body.innerText = 'user script has run';";
+  ExecuteUserScript(*web_contents, extension->id(), kUserScript);
+
+  // Verify that the right processes show up as having been injected with
+  // content scripts.
+  EXPECT_EQ("user script has run",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+  // Sanity check: injecting a user script should not count as injecting a
+  // content script.
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Navigate to a different same-site document and verify if
+  // ContentScriptTracker still thinks that user scripts have been injected.
+  //
+  // DidProcessRunUserScriptFromExtension is expected to return true, because
+  // user scripts have been injected into the renderer process in the *past*,
+  // even though the *current* set of documents hosted in the renderer process
+  // have not run a user script.
+  GURL new_url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
+  EXPECT_EQ("This page has a title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 // Tests what happens when the ExtensionMsg_ExecuteCode is sent *after* sending
@@ -1227,7 +1329,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
 
     content::WebContentsAddedObserver guest_contents_observer;
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         app_contents,
         content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
     guest_contents = guest_contents_observer.GetWebContents();
@@ -1342,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
 
     content::WebContentsAddedObserver guest_contents_observer;
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         app_contents,
         content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
     guest_contents = guest_contents_observer.GetWebContents();

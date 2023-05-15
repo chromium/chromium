@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -107,7 +108,8 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
   // Unowned by RlweDmserverClientImpl. Its used to communicate with the
   // device management service.
-  DeviceManagementService* const device_management_service_;
+  const raw_ptr<DeviceManagementService, ExperimentalAsh>
+      device_management_service_;
 
   // Its being used for both PSM requests e.g. RLWE OPRF request and RLWE query
   // request.

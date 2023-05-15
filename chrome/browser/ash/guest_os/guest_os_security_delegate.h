@@ -12,10 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/exo/security_delegate.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace exo {
 class WaylandServerHandle;
 }
@@ -29,18 +25,6 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
 
   ~GuestOsSecurityDelegate() override;
 
-  using BuildCallback =
-      base::OnceCallback<void(base::WeakPtr<GuestOsSecurityDelegate>,
-                              bool,
-                              const base::FilePath& path)>;
-
-  // When |security_delegate| is used to build a wayland server, we transfer
-  // ownership to Exo. The |callback| will be invoked with the result of that
-  // build.
-  static void BuildServer(
-      std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
-      BuildCallback callback);
-
   // When |security_delegate| is used to build a wayland server, we transfer
   // ownership to Exo. The |callback| will be invoked with the result of that
   // build.
@@ -50,16 +34,6 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
       base::OnceCallback<void(base::WeakPtr<GuestOsSecurityDelegate>,
                               std::unique_ptr<exo::WaylandServerHandle>)>
           callback);
-
-  // This method safely removes the server at |path| based on whether
-  // |security_delegate| is still valid or not. This is useful if you think
-  // removing the server might race against exo's shutdown.
-  static void MaybeRemoveServer(
-      base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
-      const base::FilePath& path);
-
-  // exo::SecurityDelegate overrides:
-  std::string GetSecurityContext() const override;
 
  private:
   base::WeakPtrFactory<GuestOsSecurityDelegate> weak_factory_;

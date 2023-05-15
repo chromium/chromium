@@ -6,7 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.graphics.Color;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -118,8 +118,8 @@ public class TabThemeTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "Flaky: https://crbug.com/1355516")
     public void testThemeColorIsCorrect() throws ExecutionException, TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -178,8 +178,8 @@ public class TabThemeTest {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testOverlayColorOnFrozenNativePages() throws ExecutionException, TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 

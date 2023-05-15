@@ -14,6 +14,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "url/scheme_host_port.h"
 
 namespace network::cors {
 namespace {
@@ -74,7 +75,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
   void NotifyLoaderClientOnReceiveResponseWithUseAsDictionaryHeader(
       std::vector<std::pair<std::string, std::string>> extra_headers = {}) {
     extra_headers.emplace_back(
-        network::shared_dictionary::kUseAsDictionaryHeaderName, "p=\"/path*\"");
+        network::shared_dictionary::kUseAsDictionaryHeaderName,
+        "match=\"/path*\"");
     NotifyLoaderClientOnReceiveResponse(extra_headers,
                                         std::move(consumer_handle_));
   }
@@ -90,9 +92,13 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
   void CheckDictionaryInStorage(
       bool expect_exists,
       const GURL& dictionary_url = GURL("https://origin.test/test")) {
+    ASSERT_TRUE(isolation_info_.frame_origin());
+    absl::optional<net::SharedDictionaryStorageIsolationKey> isolation_key =
+        net::SharedDictionaryStorageIsolationKey::MaybeCreate(isolation_info_);
+    ASSERT_TRUE(isolation_key);
     scoped_refptr<SharedDictionaryStorage> storage =
         network_context()->GetSharedDictionaryManager()->GetStorage(
-            isolation_info_.network_isolation_key());
+            *isolation_key);
     const auto& dictionary_map = GetInMemoryDictionaryMap(storage.get());
     if (!expect_exists) {
       EXPECT_TRUE(dictionary_map.empty());
@@ -100,7 +106,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     }
 
     ASSERT_EQ(1u, dictionary_map.size());
-    EXPECT_EQ(url::Origin::Create(dictionary_url),
+    EXPECT_EQ(url::SchemeHostPort(dictionary_url),
               dictionary_map.begin()->first);
 
     ASSERT_EQ(1u, dictionary_map.begin()->second.size());
@@ -110,14 +116,14 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     EXPECT_EQ(dictionary_url, dictionary_info.url());
     EXPECT_EQ(shared_dictionary::kDefaultExpiration,
               dictionary_info.expiration());
-    EXPECT_EQ("/path*", dictionary_info.path_pattern());
+    EXPECT_EQ("/path*", dictionary_info.match());
     EXPECT_EQ(kTestData.size(), dictionary_info.size());
     EXPECT_EQ(kTestData, std::string(dictionary_info.data()->data(),
                                      dictionary_info.size()));
   }
 
   const std::map<
-      url::Origin,
+      url::SchemeHostPort,
       std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)

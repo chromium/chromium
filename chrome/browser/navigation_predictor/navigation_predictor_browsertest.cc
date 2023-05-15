@@ -223,9 +223,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineOffTheRecord) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, url));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(content::ExecuteScript(
-      incognito->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('google').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(incognito->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('google').click();"));
   base::RunLoop().RunUntilIdle();
 
   auto entries = test_ukm_recorder->GetMergedEntriesByName(
@@ -249,9 +249,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineHttp) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('google').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('google').click();"));
   base::RunLoop().RunUntilIdle();
 
   auto entries = test_ukm_recorder->GetMergedEntriesByName(
@@ -421,9 +421,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, ClickAnchorElement) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
 
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('google').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('google').click();"));
+  base::RunLoop().RunUntilIdle();
+
+  // Navigate to another page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL("/1.html")));
   base::RunLoop().RunUntilIdle();
 
   // Make sure the click has been logged.
@@ -465,9 +469,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, url));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(content::ExecuteScript(
-      incognito->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('google').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(incognito->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('google').click();"));
   content::WaitForLoadStop(
       incognito->tab_strip_model()->GetActiveWebContents());
 

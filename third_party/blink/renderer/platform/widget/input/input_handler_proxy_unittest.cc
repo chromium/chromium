@@ -120,6 +120,9 @@ class FakeCompositorDelegateForInput : public cc::CompositorDelegateForInput {
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override {}
+  bool HasScrollLinkedAnimation(cc::ElementId for_scroller) const override {
+    return false;
+  }
 
  private:
   mutable cc::ScrollTree scroll_tree_;
@@ -365,7 +368,7 @@ class TestInputHandlerProxy : public InputHandlerProxy {
 
   // This is needed because the tests can't directly call
   // DispatchQueuedInputEvents since it is private.
-  void DispatchQueuedInputEventsHelper() { DispatchQueuedInputEvents(); }
+  void DispatchQueuedInputEventsHelper() { DispatchQueuedInputEvents(true); }
 };
 
 // Whether or not the input handler says that the viewport is scrolling the

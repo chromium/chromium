@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
@@ -19,10 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-#include "base/allocator/dispatcher/standard_hooks.h"
-#endif
 
 namespace base {
 
@@ -174,35 +169,14 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   ResetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 }
 
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-// static
-PoissonAllocationSampler* PoissonAllocationSampler::instance_ = nullptr;
-#endif
-
 // static
 ABSL_CONST_INIT std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
     PoissonAllocationSampler::profiling_state_{0};
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-  CHECK_EQ(nullptr, instance_);
-  instance_ = this;
-#endif
-
   Init();
   auto* sampled_addresses = new LockFreeAddressHashSet(64);
   g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
-
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-  // Install the allocator hooks immediately, to better match the behaviour
-  // of base::allocator::Initializer.
-  //
-  // TODO(crbug/1137393): Use base::allocator::Initializer to install the
-  // PoissonAllocationSampler hooks. All observers need to be passed to the
-  // initializer at the same time so this will install the hooks even
-  // earlier in process startup.
-  allocator::dispatcher::InstallStandardAllocatorHooks();
-#endif
 }
 
 // static

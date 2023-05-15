@@ -8,11 +8,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
-import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -36,8 +33,7 @@ import java.util.List;
 /**
  * Handles collecting and pushing state information to the UrlBar model.
  */
-class UrlBarMediator
-        implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.UrlTextChangeListener, TextWatcher {
+class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.UrlTextChangeListener {
     private final PropertyModel mModel;
 
     private Callback<Boolean> mOnFocusChangeCallback;
@@ -47,14 +43,7 @@ class UrlBarMediator
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
 
-    // The numbers for "MobileOmnibox.LongPressPasteAge", the expected time range of time is from
-    // 1ms to 1 hour, and 100 buckets.
-    private static final long MIN_TIME_MILLIS = 1;
-    private static final long MAX_TIME_MILLIS = DateUtils.HOUR_IN_MILLIS;
-    private static final int NUM_OF_BUCKETS = 100;
-
     private final List<UrlTextChangeListener> mUrlTextChangeListeners = new ArrayList<>();
-    private final List<TextWatcher> mTextChangedListeners = new ArrayList<>();
 
     /**
      * Creates a URLBarMediator.
@@ -72,24 +61,17 @@ class UrlBarMediator
         mModel.set(UrlBarProperties.SHOW_CURSOR, false);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
-        mModel.set(UrlBarProperties.TEXT_CHANGED_LISTENER, this);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
     }
 
     public void destroy() {
         mUrlTextChangeListeners.clear();
-        mTextChangedListeners.clear();
         mOnFocusChangeCallback = (unused) -> {};
     }
 
     /** Adds a listener for url text changes. */
     public void addUrlTextChangeListener(UrlTextChangeListener listener) {
         mUrlTextChangeListeners.add(listener);
-    }
-
-    /** @see android.widget.TextView#addTextChangedListener */
-    public void addTextChangedListener(TextWatcher textWatcher) {
-        mTextChangedListeners.add(textWatcher);
     }
 
     /**
@@ -107,7 +89,8 @@ class UrlBarMediator
         }
 
         // Do not scroll to the end of the host for URLs such as data:, javascript:, etc...
-        if (data.url != null && data.originEndIndex == data.displayText.length()) {
+        if (data.url != null && data.displayText != null
+                && data.originEndIndex == data.displayText.length()) {
             Uri uri = Uri.parse(data.url);
             String scheme = uri.getScheme();
             if (!TextUtils.isEmpty(scheme)
@@ -363,30 +346,6 @@ class UrlBarMediator
         for (int i = 0; i < mUrlTextChangeListeners.size(); i++) {
             mUrlTextChangeListeners.get(i).onTextChanged(
                     textWithoutAutocomplete, textWithAutocomplete);
-        }
-    }
-
-    /** @see TextWatcher */
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        for (int i = 0; i < mTextChangedListeners.size(); i++) {
-            mTextChangedListeners.get(i).beforeTextChanged(s, start, count, after);
-        }
-    }
-
-    /** @see TextWatcher */
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        for (int i = 0; i < mTextChangedListeners.size(); i++) {
-            mTextChangedListeners.get(i).onTextChanged(s, start, before, count);
-        }
-    }
-
-    /** @see TextWatcher */
-    @Override
-    public void afterTextChanged(Editable editable) {
-        for (int i = 0; i < mTextChangedListeners.size(); i++) {
-            mTextChangedListeners.get(i).afterTextChanged(editable);
         }
     }
 }

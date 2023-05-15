@@ -47,6 +47,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
   void PrintAndWaitUntilPreviewIsReadyAndLoaded(const PrintParams& params);
 
   void SetNumExpectedMessages(unsigned int num);
+  void ResetNumReceivedMessages();
   void WaitUntilCallbackReceived();
   void CheckForQuit();
 

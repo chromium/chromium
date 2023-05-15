@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -132,7 +133,7 @@ class TestUnlockManager : public UnlockManagerImpl {
   void OnProximityMonitorDestroyed() { proximity_monitor_destroyed_ = true; }
 
   // Owned by the super class.
-  MockProximityMonitor* proximity_monitor_ = nullptr;
+  raw_ptr<MockProximityMonitor, ExperimentalAsh> proximity_monitor_ = nullptr;
   bool proximity_monitor_destroyed_ = false;
 };
 
@@ -227,7 +228,8 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
   NiceMock<MockProximityAuthClient> proximity_auth_client_;
   NiceMock<MockMessenger> messenger_;
   std::unique_ptr<TestUnlockManager> unlock_manager_;
-  base::MockOneShotTimer* mock_bluetooth_suspension_recovery_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh>
+      mock_bluetooth_suspension_recovery_timer_ = nullptr;
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;

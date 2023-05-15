@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
@@ -14,7 +15,6 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 
@@ -27,14 +27,12 @@ std::unique_ptr<KeyedService> BuildOverrideRegistrar(
 
 scoped_refptr<const Extension> GetNtpExtension(const std::string& name) {
   return ExtensionBuilder()
-      .SetManifest(
-          DictionaryBuilder()
-              .Set("name", name)
-              .Set("version", "1.0")
-              .Set("manifest_version", 2)
-              .Set("chrome_url_overrides",
-                   DictionaryBuilder().Set("newtab", "newtab.html").Build())
-              .Build())
+      .SetManifest(base::Value::Dict()
+                       .Set("name", name)
+                       .Set("version", "1.0")
+                       .Set("manifest_version", 2)
+                       .Set("chrome_url_overrides",
+                            base::Value::Dict().Set("newtab", "newtab.html")))
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();
 }

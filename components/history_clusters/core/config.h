@@ -10,8 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
-class PrefService;
-
 namespace history_clusters {
 
 namespace switches {
@@ -19,8 +17,6 @@ namespace switches {
 extern const char kShouldShowAllClustersOnProminentUiSurfaces[];
 
 }  // namespace switches
-
-class HistoryClustersService;
 
 // The default configuration. Always use |GetConfig()| to get the current
 // configuration.
@@ -104,12 +100,12 @@ struct Config {
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
   // update clusters 5 minutes after startup.
-  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 1;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // often to update clusters in minutes. E.g., by default, will update clusters
   // every 1 hour.
-  int persist_clusters_in_history_db_period_minutes = 60;
+  int persist_clusters_in_history_db_period_minutes = 1;
 
   // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
   // persistence occurs on a timer (see the above 2 params). If enabled, will
@@ -338,7 +334,7 @@ struct Config {
 
   // Whether to use the new clustering path that does context clustering at
   // navigation and embellishes clusters for display at UI time.
-  bool use_navigation_context_clusters = false;
+  bool use_navigation_context_clusters = true;
 
   // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
@@ -356,6 +352,11 @@ struct Config {
   // Whether to the icon or menu item.
   bool hide_visits_icon = true;
 
+  // Whether new tab groups created by "Open all in new tab group" should be
+  // named after the cluster title. If false, the new tab group is anonymous,
+  // which is the pre-M115 behavior.
+  bool named_new_tab_groups = true;
+
   // The `kUseUrlForDisplayCache` feature and child params.
 
   // Whether to use a cache to store the site engagement scores per host. Used
@@ -365,6 +366,21 @@ struct Config {
 
   // The max number of URLs that should be stored in the URL for display cache.
   int url_for_display_cache_size = 100;
+
+  // The `kJourneysZeroStateFiltering` feature and child params.
+
+  bool apply_zero_state_filtering = false;
+
+  // The `kNtpChromeCartInHistoryClusterModule` child params.
+
+  // Whether to use the NTP-specific algorithms and signals for determining
+  // intracluster ranking.
+  bool use_ntp_specific_intracluster_ranking = false;
+
+  // Returns the weight to use for the visit duration when ranking visits within
+  // a cluster. Will always be greater than or equal to 0 specifically on the
+  // NTP surface when `use_ntp_specific_intracluster_ranking is true`.
+  float ntp_visit_duration_ranking_weight = 1.0;
 
   // Lonely features without child params.
 
@@ -429,11 +445,6 @@ base::flat_set<std::string> JourneysMidBlocklist();
 // cached.
 bool IsApplicationLocaleSupportedByJourneys(
     const std::string& application_locale);
-
-// Checks some prerequisites for history cluster omnibox suggestions and
-// actions.
-bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
-                                PrefService* prefs);
 
 // Gets the current configuration.
 const Config& GetConfig();

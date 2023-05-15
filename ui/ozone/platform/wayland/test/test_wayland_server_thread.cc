@@ -53,6 +53,7 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
       output_(base::BindRepeating(
           &TestWaylandServerThread::OnTestOutputMetricsFlush,
           base::Unretained(this))),
+      zcr_text_input_extension_v1_(config.text_input_extension_version),
       controller_(FROM_HERE) {
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -145,17 +146,7 @@ bool TestWaylandServerThread::Start() {
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;
 
-  switch (config_.text_input_extension_version) {
-    case TextInputExtensionVersion::kV7:
-      zcr_text_input_extension_v1_ =
-          std::make_unique<TestZcrTextInputExtensionV1>(7);
-      break;
-    case TextInputExtensionVersion::kV8:
-      zcr_text_input_extension_v1_ =
-          std::make_unique<TestZcrTextInputExtensionV1>(8);
-      break;
-  }
-  if (!zcr_text_input_extension_v1_->Initialize(display_.get())) {
+  if (!zcr_text_input_extension_v1_.Initialize(display_.get())) {
     return false;
   }
 

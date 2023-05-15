@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 
 #include "base/path_service.h"
@@ -114,8 +115,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ClientSideDetectionServiceBrowserTest,
                          testing::Bool());
 
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_ModelUpdatesPropagated DISABLED_ModelUpdatesPropagated
+#else
+#define MAYBE_ModelUpdatesPropagated ModelUpdatesPropagated
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       ModelUpdatesPropagated) {
+                       MAYBE_ModelUpdatesPropagated) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -131,12 +138,6 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
 
     base::RunLoop run_loop;
     waiter->SetCallback(run_loop.QuitClosure());
-
-    ClientSideModel model;
-    model.set_version(123);
-    model.set_max_words_per_term(0);
-    std::string model_str;
-    model.SerializeToString(&model_str);
 
     if (base::FeatureList::IsEnabled(
             kClientSideDetectionModelOptimizationGuide)) {
@@ -163,6 +164,12 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
       csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
                                                      additional_files_path);
     } else {
+      ClientSideModel model;
+      model.set_version(123);
+      model.set_max_words_per_term(0);
+      std::string model_str;
+      model.SerializeToString(&model_str);
+
       ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
           CSDModelType::kProtobuf);
       ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
@@ -209,8 +216,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
   }
 }
 
-// TODO(crbug.com/1427919): Flaky on Linux Tests.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
 #else
 #define MAYBE_TfLiteClassification TfLiteClassification
@@ -225,6 +232,10 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
 
   base::HistogramTester histogram_tester;
 
+  safe_browsing::ClientSideDetectionService* csd_service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
   // Update the model and wait for confirmation
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -235,67 +246,61 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
     base::RunLoop run_loop;
     waiter->SetCallback(run_loop.QuitClosure());
 
-    ClientSideModel model;
-    model.set_version(123);
-    model.set_max_words_per_term(0);
-
-    model.mutable_tflite_metadata()->set_input_width(48);
-    model.mutable_tflite_metadata()->set_input_height(48);
-
-    std::vector<std::pair<std::string, double>> thresholds{
-        {"502fd246eb6fad3eae0387c54e4ebe74", 2.0},
-        {"7c4065b088444b37d273872b771e6940", 2.0},
-        {"712036bd72bf185a2a4f88de9141d02d", 2.0},
-        {"9e9c15bfa7cb3f8699e2271116a4175c", 2.0},
-        {"6c2cb3f559e7a03f37dd873fc007dc65", 2.0},
-        {"1cbeb74661a5e7e05c993f2524781611", 2.0},
-        {"989790016b6adca9d46b9c8ec6b8fe3a", 2.0},
-        {"501067590331ca2d243c669e6084c47e", 2.0},
-        {"40aed7e33c100058e54c73af3ed49524", 2.0},
-        {"62f53ea23c7ad2590db711235a45fd38", 2.0},
-        {"ee6fb9baa44f192bc3c53d8d3c6f7a3d", 2.0},
-        {"ea54b0830d871286e2b4023bbb431710", 2.0},
-        {"25645a55b844f970337218ea8f1f26b7", 2.0},
-        {"c9a8640be09f97f170f1a2708058c48f", 2.0},
-        {"953255ea26aa8578d06593ff33e99298", 2.0}};
-    for (const auto& label_and_threshold : thresholds) {
-      TfLiteModelMetadata::Threshold* threshold =
-          model.mutable_tflite_metadata()->add_thresholds();
-      threshold->set_label(label_and_threshold.first);
-      threshold->set_threshold(label_and_threshold.second);
-    }
-
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    std::string model_str;
-    model.SerializeToString(&model_str);
-
     if (!base::FeatureList::IsEnabled(
             kClientSideDetectionModelOptimizationGuide)) {
+      ClientSideModel model;
+      model.set_version(123);
+      model.set_max_words_per_term(0);
+
+      model.mutable_tflite_metadata()->set_input_width(48);
+      model.mutable_tflite_metadata()->set_input_height(48);
+
+      std::vector<std::pair<std::string, double>> thresholds{
+          {"502fd246eb6fad3eae0387c54e4ebe74", 2.0},
+          {"7c4065b088444b37d273872b771e6940", 2.0},
+          {"712036bd72bf185a2a4f88de9141d02d", 2.0},
+          {"9e9c15bfa7cb3f8699e2271116a4175c", 2.0},
+          {"6c2cb3f559e7a03f37dd873fc007dc65", 2.0},
+          {"1cbeb74661a5e7e05c993f2524781611", 2.0},
+          {"989790016b6adca9d46b9c8ec6b8fe3a", 2.0},
+          {"501067590331ca2d243c669e6084c47e", 2.0},
+          {"40aed7e33c100058e54c73af3ed49524", 2.0},
+          {"62f53ea23c7ad2590db711235a45fd38", 2.0},
+          {"ee6fb9baa44f192bc3c53d8d3c6f7a3d", 2.0},
+          {"ea54b0830d871286e2b4023bbb431710", 2.0},
+          {"25645a55b844f970337218ea8f1f26b7", 2.0},
+          {"c9a8640be09f97f170f1a2708058c48f", 2.0},
+          {"953255ea26aa8578d06593ff33e99298", 2.0}};
+      for (const auto& label_and_threshold : thresholds) {
+        TfLiteModelMetadata::Threshold* threshold =
+            model.mutable_tflite_metadata()->add_thresholds();
+        threshold->set_label(label_and_threshold.first);
+        threshold->set_threshold(label_and_threshold.second);
+      }
+
+      std::string model_str;
+      model.SerializeToString(&model_str);
       ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
           CSDModelType::kProtobuf);
       ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
-      ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-          std::move(tflite_model));
       ClientSidePhishingModel::GetInstance()
           ->NotifyCallbacksOfUpdateForTesting();
 
       run_loop.Run();
     } else {
-      safe_browsing::ClientSideDetectionService* csd_service =
-          ClientSideDetectionServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      base::FilePath tflite_path;
+      ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
+#if BUILDFLAG(IS_ANDROID)
+      tflite_path = tflite_path.AppendASCII("safe_browsing")
+                        .AppendASCII("visual_model_android.tflite");
+#else
+      tflite_path = tflite_path.AppendASCII("safe_browsing")
+                        .AppendASCII("visual_model_desktop.tflite");
+#endif
+      base::File tflite_model(tflite_path,
+                              base::File::FLAG_OPEN | base::File::FLAG_READ);
+      ASSERT_TRUE(tflite_model.IsValid());
+
       base::FilePath model_file_path;
       ASSERT_TRUE(
           base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
@@ -341,9 +346,6 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
       EXPECT_EQ(123, request.model_version());
     } else {
       EXPECT_EQ(27, request.model_version());
-      safe_browsing::ClientSideDetectionService* csd_service =
-          ClientSideDetectionServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
       csd_service->ClassifyPhishingThroughThresholds(&request);
 
       histogram_tester.ExpectUniqueSample(
@@ -354,8 +356,16 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
   }
 }
 
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
+  DISABLED_TfLiteClassificationAfterTwoModelUploads
+#else
+#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
+  TfLiteClassificationAfterTwoModelUploads
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       TfLiteClassificationAfterTwoModelUploads) {
+                       MAYBE_TfLiteClassificationAfterTwoModelUploads) {
   if (!base::FeatureList::IsEnabled(
           kClientSideDetectionModelOptimizationGuide)) {
     return;
@@ -478,14 +488,14 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
             kClientSideDetectionModelOptimizationGuide)) {
       EXPECT_EQ(123, request.model_version());
     } else {
-      EXPECT_EQ(27, request.model_version());
+      EXPECT_EQ(27, request.model_version());  // Example model file version
 
       csd_service->ClassifyPhishingThroughThresholds(&request);
 
       histogram_tester.ExpectUniqueSample(
           "SBClientPhishing.ClassifyThresholdsResult",
           safe_browsing::SBClientDetectionClassifyThresholdsResult::kSuccess,
-          1);  // Example model file version
+          1);
     }
   }
 }

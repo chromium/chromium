@@ -159,6 +159,10 @@ bool IsSplitToolbarMode(UITraitCollection* traitCollection);
 
 // Returns the current first responder for keyWindow.
 UIResponder* GetFirstResponder();
+// Returns the current first responder for `windowScene.keyWindow`. If none,
+// returns the current first responder for the first window which has one in
+// this scene, if any.
+UIResponder* GetFirstResponderInWindowScene(UIWindowScene* windowScene);
 
 // Trigger a haptic vibration for various types of actions. This is a no-op for
 // devices that do not support haptic feedback.

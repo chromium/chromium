@@ -76,14 +76,9 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   auto is_api_available = [web_contents](const std::string& api_name) {
-    constexpr char kScript[] =
-        R"({
-             domAutomationController.send(chrome.hasOwnProperty($1));
-           })";
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents, content::JsReplace(kScript, api_name), &result));
-    return result;
+    constexpr char kScript[] = "chrome.hasOwnProperty($1);";
+    return content::EvalJs(web_contents, content::JsReplace(kScript, api_name))
+        .ExtractBool();
   };
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webstore_url));

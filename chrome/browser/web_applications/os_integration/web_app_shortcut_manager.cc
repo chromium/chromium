@@ -209,12 +209,14 @@ void WebAppShortcutManager::DeleteShortcuts(
 
 void WebAppShortcutManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     const AppId& app_id,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     ResultCallback callback) {
   icon_manager_->ReadAllShortcutsMenuIcons(
       app_id,
       base::BindOnce(
           &WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, shortcuts_menu_item_infos,
+          std::move(callback)));
 }
 
 void WebAppShortcutManager::RegisterShortcutsMenuWithOs(
@@ -305,17 +307,11 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
 
 void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
     const AppId& app_id,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     ResultCallback callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
-  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
-      registrar_->GetAppShortcutsMenuItemInfos(app_id);
-  if (!shortcuts_menu_item_infos.empty()) {
-    RegisterShortcutsMenuWithOs(app_id, shortcuts_menu_item_infos,
-                                shortcuts_menu_icon_bitmaps,
-                                std::move(callback));
-  } else {
-    std::move(callback).Run(Result::kError);
-  }
+  RegisterShortcutsMenuWithOs(app_id, shortcuts_menu_item_infos,
+                              shortcuts_menu_icon_bitmaps, std::move(callback));
 }
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
@@ -331,7 +327,8 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
       internals::GetShortcutDataDir(*shortcut_info);
   internals::PostShortcutIOTaskAndReplyWithResult(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
-                     std::move(shortcut_data_dir), std::move(old_name)),
+                     std::move(shortcut_data_dir), std::move(old_name),
+                     /*user_specified_locations=*/absl::nullopt),
       std::move(shortcut_info), std::move(update_finished_callback));
 }
 

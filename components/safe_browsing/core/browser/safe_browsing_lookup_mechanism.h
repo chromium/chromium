@@ -62,7 +62,6 @@ class SafeBrowsingLookupMechanism {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db,
       MechanismExperimentHashDatabaseCache experiment_cache_selection);
   virtual ~SafeBrowsingLookupMechanism();
   SafeBrowsingLookupMechanism(const SafeBrowsingLookupMechanism&) = delete;
@@ -90,11 +89,6 @@ class SafeBrowsingLookupMechanism {
   // Used for interactions with the database, such as running a hash-based
   // check or checking the high-confidence allowlist.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
-
-  // Whether safe browsing database can be checked. It is set to false when
-  // enterprise real time URL lookup is enabled and safe browsing is disabled
-  // for this profile.
-  bool can_check_db_;
 
   // Specifies which hash database cache to use if a hash-database lookup ends
   // up occurring. For more details, see the comments above the definition of

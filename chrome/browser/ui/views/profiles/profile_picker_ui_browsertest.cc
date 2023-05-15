@@ -28,7 +28,6 @@
 namespace {
 struct ProfilePickerTestParam {
   PixelTestParam pixel_test_param;
-  bool use_tangible_sync_flow = false;
   bool use_multiple_profiles = false;
 };
 
@@ -42,8 +41,8 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const ProfilePickerTestParam kTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "Default"}},
-    {.pixel_test_param = {.test_suffix = "DefaultMultipleProfiles"},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
      .use_multiple_profiles = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
                           .use_dark_theme = true,
@@ -52,19 +51,6 @@ const ProfilePickerTestParam kTestParams[] = {
      .use_multiple_profiles = true},
     {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
-    {.pixel_test_param = {.test_suffix = "TS"}, .use_tangible_sync_flow = true},
-    {.pixel_test_param = {.test_suffix = "TSMultipleProfiles"},
-     .use_tangible_sync_flow = true,
-     .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix = "DarkRtlSmallTSMultipleProfiles",
-                          .use_dark_theme = true,
-                          .use_right_to_left_language = true,
-                          .use_small_window = true},
-     .use_tangible_sync_flow = true,
-     .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix = "TSCR2023",
-                          .use_chrome_refresh_2023_style = true},
-     .use_tangible_sync_flow = true},
 };
 
 void AddMultipleProfiles(Profile* profile, size_t number_of_profiles) {
@@ -87,12 +73,6 @@ class ProfilePickerUIPixelTest
   ProfilePickerUIPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-    if (GetParam().use_tangible_sync_flow) {
-      enabled_features.push_back(switches::kTangibleSync);
-    } else {
-      disabled_features.push_back(switches::kTangibleSync);
-    }
-
     InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
                           enabled_features, disabled_features);
   }

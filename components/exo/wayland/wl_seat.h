@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 
 namespace exo {
@@ -24,10 +26,10 @@ struct WaylandSeat {
   WaylandSeat& operator=(const WaylandSeat&) = delete;
 
   // Owned by Display, which always outlives wl_seat.
-  Seat* const seat;
+  const raw_ptr<Seat, ExperimentalAsh> seat;
 
   // Owned by Server, which always outlives wl_seat.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 void bind_seat(wl_client* client, void* data, uint32_t version, uint32_t id);

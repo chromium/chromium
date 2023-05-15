@@ -12,6 +12,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
 #include "components/exo/keyboard_observer.h"
@@ -134,8 +135,8 @@ class WaylandKeyboardDeviceConfigurationDelegate
 
   wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  wl_resource* resource_;
-  Keyboard* keyboard_;
+  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
 };
 
 void keyboard_device_configuration_destroy(wl_client* client,

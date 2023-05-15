@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -138,8 +139,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
   void OnKioskLoginFailure() override { ++observed_kiosk_login_failure_count_; }
 
   ash::AuthFailure auth_failure_ = ash::AuthFailure(ash::AuthFailure::NONE);
-  Profile* logged_in_ = nullptr;
-  Profile* logged_out_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> logged_in_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> logged_out_ = nullptr;
   bool locked_ = false;
   bool unlocked_ = false;
   session_manager::UnlockType unlock_type_ =
@@ -149,7 +150,7 @@ class ManagedSessionServiceTest : public ::testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   session_manager::SessionManager session_manager_;

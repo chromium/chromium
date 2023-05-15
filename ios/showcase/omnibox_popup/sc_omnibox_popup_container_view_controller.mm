@@ -78,7 +78,7 @@ CGFloat kFakeTextBoxWidth = 240;
   // Popup uses same colors as the toolbar, so the ToolbarConfiguration is
   // used to get the style.
   ToolbarConfiguration* configuration =
-      [[ToolbarConfiguration alloc] initWithStyle:NORMAL];
+      [[ToolbarConfiguration alloc] initWithStyle:ToolbarStyle::kNormal];
 
   UIView* containerView = [[UIView alloc] init];
   [containerView addSubview:self.popupViewController.view];

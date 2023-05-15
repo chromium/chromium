@@ -2,6 +2,7 @@ Test that console.timeStamp generates Performance.metrics event
 title: test1
 	Timestamp
 	AudioHandlers
+	AudioWorkletProcessors
 	Documents
 	Frames
 	JSEventListeners
@@ -38,6 +39,7 @@ title: test1
 title: test1
 	Timestamp
 	AudioHandlers
+	AudioWorkletProcessors
 	Documents
 	Frames
 	JSEventListeners
@@ -74,6 +76,7 @@ title: test1
 title: 
 	Timestamp
 	AudioHandlers
+	AudioWorkletProcessors
 	Documents
 	Frames
 	JSEventListeners

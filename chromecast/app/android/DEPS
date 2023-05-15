@@ -1,7 +1,6 @@
 include_rules = [
   "+chromecast/android",
   "+chromecast/browser/android",
-  "+chromecast/cast_shell_jni_registration_generated.h",
   "+jni",
   "+components/prefs",
 ]

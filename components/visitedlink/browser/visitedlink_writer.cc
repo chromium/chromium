@@ -120,6 +120,16 @@ void AsyncTruncate(base::ScopedFILE* file) {
   }
 }
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "AddFingerprint" in tools/metrics/histograms/enums.xml.
+enum class AddFingerprint {
+  kNewVisit = 0,
+  kAlreadyVisited = 1,
+  kTableError = 2,
+  kMaxValue = kTableError,
+};
+
 }  // namespace
 
 struct VisitedLinkWriter::LoadFromFileResult
@@ -204,7 +214,7 @@ class VisitedLinkWriter::TableBuilder
   void OnCompleteMainThread();
 
   // Owner of this object. MAY ONLY BE ACCESSED ON THE MAIN THREAD!
-  raw_ptr<VisitedLinkWriter, DanglingUntriaged> writer_;
+  raw_ptr<VisitedLinkWriter, FlakyDanglingUntriaged> writer_;
 
   // Indicates whether the operation has failed or not.
   bool success_;
@@ -451,6 +461,8 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
     Fingerprint fingerprint,
     bool send_notifications) {
   if (!hash_table_ || table_length_ == 0) {
+    UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
+                              AddFingerprint::kTableError);
     NOTREACHED();  // Not initialized.
     return null_hash_;
   }
@@ -459,8 +471,11 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
   Hash first_hash = cur_hash;
   while (true) {
     Fingerprint cur_fingerprint = FingerprintAt(cur_hash);
-    if (cur_fingerprint == fingerprint)
+    if (cur_fingerprint == fingerprint) {
+      UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
+                                AddFingerprint::kAlreadyVisited);
       return null_hash_;  // This fingerprint is already in there, do nothing.
+    }
 
     if (cur_fingerprint == null_fingerprint_) {
       // End of probe sequence found, insert here.
@@ -469,6 +484,8 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
       // If allowed, notify listener that a new visited link was added.
       if (send_notifications)
         listener_->Add(fingerprint);
+      UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
+                                AddFingerprint::kNewVisit);
       return cur_hash;
     }
 
@@ -478,6 +495,8 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
       // This means that we've wrapped around and are about to go into an
       // infinite loop. Something was wrong with the hashtable resizing
       // logic, so stop here.
+      UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
+                                AddFingerprint::kTableError);
       NOTREACHED();
       return null_hash_;
     }

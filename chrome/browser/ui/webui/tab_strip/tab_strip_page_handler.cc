@@ -484,23 +484,29 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   tab_data->url = tab_renderer_data.visible_url;
 
-  if (!tab_renderer_data.favicon.isNull()) {
+  const ui::ColorProvider& provider =
+      web_ui_->GetWebContents()->GetColorProvider();
+  const gfx::ImageSkia default_favicon =
+      favicon::GetDefaultFaviconModel().Rasterize(&provider);
+  const gfx::ImageSkia raster_favicon =
+      tab_renderer_data.favicon.Rasterize(&provider);
+
+  if (!tab_renderer_data.favicon.IsEmpty()) {
     // Themified icons only apply to a few select chrome URLs.
     if (tab_renderer_data.should_themify_favicon) {
-      tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-          ThemeFavicon(tab_renderer_data.favicon, false),
-          web_ui_->GetDeviceScaleFactor()));
+      tab_data->favicon_url = GURL(
+          webui::EncodePNGAndMakeDataURI(ThemeFavicon(raster_favicon, false),
+                                         web_ui_->GetDeviceScaleFactor()));
       tab_data->active_favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-          ThemeFavicon(tab_renderer_data.favicon, true),
-          web_ui_->GetDeviceScaleFactor()));
+          ThemeFavicon(raster_favicon, true), web_ui_->GetDeviceScaleFactor()));
     } else {
       tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-          tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor()));
+          tab_renderer_data.favicon.Rasterize(&provider),
+          web_ui_->GetDeviceScaleFactor()));
     }
 
     tab_data->is_default_favicon =
-        tab_renderer_data.favicon.BackedBySameObjectAs(
-            favicon::GetDefaultFavicon().AsImageSkia());
+        raster_favicon.BackedBySameObjectAs(default_favicon);
   } else {
     tab_data->is_default_favicon = true;
   }

@@ -90,7 +90,7 @@ EuiccStatusUploader::EuiccStatusUploader(
 
   hermes_manager_observation_.Observe(ash::HermesManagerClient::Get());
   hermes_euicc_observation_.Observe(ash::HermesEuiccClient::Get());
-  cloud_policy_client_observation_.Observe(client_);
+  cloud_policy_client_observation_.Observe(client_.get());
 
   auto* network_handler = ash::NetworkHandler::Get();
   network_handler->managed_cellular_pref_handler()->AddObserver(this);

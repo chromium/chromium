@@ -31,6 +31,8 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin),
               (override));
+
+  MOCK_METHOD(bool, IsWebAttributionReportingAllowed, (), (override));
 };
 
 using MockAttributionReportingContentBrowserClient =

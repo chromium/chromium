@@ -42,10 +42,10 @@ bool ExplicitlyAllowedNetworkPortsPolicyHandler::CheckListEntry(
 }
 
 void ExplicitlyAllowedNetworkPortsPolicyHandler::ApplyList(
-    base::Value filtered_list,
+    base::Value::List filtered_list,
     PrefValueMap* prefs) {
   base::Value::List integer_list;
-  for (const base::Value& value : filtered_list.GetList()) {
+  for (const base::Value& value : filtered_list) {
     const std::string& as_string = value.GetString();
     int as_int;
     const bool success = base::StringToInt(as_string, &as_int);

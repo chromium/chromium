@@ -8,6 +8,7 @@ pub type blksize_t = ::c_int;
 pub type fsblkcnt64_t = ::c_ulong;
 pub type fsfilcnt64_t = ::c_ulong;
 pub type __u64 = ::c_ulonglong;
+pub type __s64 = ::c_longlong;
 
 s! {
     pub struct pthread_attr_t {

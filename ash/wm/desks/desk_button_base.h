@@ -8,12 +8,13 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 
-class DesksBarView;
+class DeskBarViewBase;
 
 // The base class of buttons that appear in the desk bar view classes. It's
 // guaranteed this button always lives under a desk bar view.
@@ -29,7 +30,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // hierarchy.
   DeskButtonBase(const std::u16string& text,
                  bool set_text,
-                 DesksBarView* bar_view,
+                 DeskBarViewBase* bar_view,
                  base::RepeatingClosure pressed_callback,
                  int corner_radius);
   ~DeskButtonBase() override;
@@ -68,7 +69,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  protected:
   // The desk bar view instance above this button in the view hierarchy.
-  DesksBarView* bar_view_;
+  raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
 
  private:
   friend class DesksTestApi;

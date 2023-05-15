@@ -29,12 +29,14 @@ namespace {
 // Utility functions to make a model type set out of a small number of
 // model types.
 
+// TODO(crbug/1444105): MakeSet() seems pretty redundant, can be replaced with
+// its body.
 syncer::ModelTypeSet MakeSet(syncer::ModelType type) {
-  return syncer::ModelTypeSet(type);
+  return {type};
 }
 
 syncer::ModelTypeSet MakeSet(syncer::ModelType type1, syncer::ModelType type2) {
-  return syncer::ModelTypeSet(type1, type2);
+  return {type1, type2};
 }
 
 // An ordered list of model types sets to migrate.  Used by

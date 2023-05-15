@@ -19,64 +19,141 @@
 
 namespace storage {
 
-// A class representing a filesystem URL which consists of origin URL,
-// type and an internal path used inside the filesystem.
+// The equivalent of a file path, but for the virtual file systems that this
+// C++ API serves. storage::FileSystemContext::CreateFileStreamReader takes a
+// storage::FileSystemURL argument the same way that fopen takes a file path.
 //
-// When a FileSystemURL instance is created for a GURL (for filesystem: scheme),
-// each accessor method would return following values:
 //
-// Example: For a URL 'filesystem:http://foo.com/temporary/foo/bar':
-//   origin() returns 'http://foo.com',
-//   mount_type() returns kFileSystemTypeTemporary,
-//   virtual_path() returns 'foo/bar',
-//   type() returns the same value as mount_type(),
-//   path() returns the same value as virtual_path(),
-//   bucket() returns nullopt unless explicitly set with SetBucket(),
+// # Historical Usage
 //
-// All other accessors return empty or invalid value.
+// Originally (https://www.w3.org/TR/2012/WD-file-system-api-20120417/ is from
+// 2012), a FileSystemURL (the C++ object) represented a URL whose scheme was
+// "filesystem" (instead of e.g. "http", "file" or "data").
 //
-// FileSystemURL can also be created to represent a 'cracked' filesystem URL if
-// the original URL's type/path is pointing to a mount point which can be
-// further resolved to a lower filesystem type/path.
+// For example, running this JavaScript
+// (https://gist.github.com/miketaylr/df58ae669abc4eec1b514f4cfc71fc21) on
+// https://example.com could produce
+//   "filesystem:https://example.com/temporary/coolguy.txt"
+// which you could navigate to in the browser.
 //
-// Example: Assume a path '/media/removable' is mounted at mount name
-// 'mount_name' with type kFileSystemTypeFoo as an external file system.
+// Apart from some colons and slashes, this URL string literally concatenates:
+//  - a scheme, "filesystem".
+//  - an origin, "https://example.com".
+//  - a mount type, "temporary".
+//  - a relative path, also called a virtual path, "coolguy.txt". This example
+//    has no slashes but, in general, the relative path could be "a/b/c.dat".
 //
-// The original URL would look like:
-//     'filesystem:http://bar.com/external/mount_name/foo/bar':
+// The C++ object (in 2012) was basically just those fields:
+// https://chromiumcodereview.appspot.com/10566002/diff/18001/webkit/fileapi/file_system_url.h
 //
-// FileSystemURL('http://bar.com',
-//               kFileSystemTypeExternal,
-//               'mount_name/foo/bar'
-//               'mount_name',
-//               kFileSystemTypeFoo,
-//               '/media/removable/foo/bar');
-// would create a FileSystemURL whose accessors return:
+// Note that the "File System" and "File System Entry" JS APIs are different to
+// the similarly named but more recent "File System Access" JS API. Similarly,
+// "filesystem:etc" URLs are not the same as "file:etc" URLs.
 //
-//   origin() returns 'http://bar.com',
-//   mount_type() returns kFileSystemTypeExternal,
-//   virtual_path() returns 'mount_name/foo/bar',
-//   type() returns the kFileSystemTypeFoo,
-//   path() returns '/media/removable/foo/bar',
 //
-// Note that in either case virtual_path() always returns the path part after
-// 'type' part in the original URL, and mount_type() always returns the 'type'
-// part in the original URL.
+// # Evolution
 //
-// Additionally, following accessors would return valid values:
-//   filesystem_id() returns 'mount_name'.
+// The C++ object has gained additional fields since then:
+//  - its optional BucketLocator configures partitioned storage.
+//  - its 'origin' has grown from an url::Origin to be a blink::StorageKey.
+//    The distinction can matter for web pages containing third-party iframes.
+//  - see the "Cracking" section, below.
 //
-// It is impossible to directly create a valid FileSystemURL instance (except by
-// using CreatedForTest methods, which should not be used in production code).
-// To get a valid FileSystemURL, one of the following methods can be used:
-// <Friend>::CrackURL, <Friend>::CreateCrackedFileSystemURL, where <Friend> is
-// one of the friended classes.
+// This extra data isn't part of the string form. Creating a FileSystemURL
+// (from a factory method) and then optionally calling its setter methods
+// (SetBucket) fills in these other fields. Converting such a FileSystemURL
+// back to string form can lose information.
 //
-// TODO(ericu): Look into making virtual_path() [and all FileSystem API virtual
-// paths] just an std::string, to prevent platform-specific base::FilePath
-// behavior from getting invoked by accident. Currently the base::FilePath
-// returned here needs special treatment, as it may contain paths that are
-// illegal on the current platform.
+//
+// # Current Usage
+//
+// Third party JavaScript can obtain a FileSystemURL (in string form) by
+// calling the FileSystemEntry.toURL() JavaScript API.
+// https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry/toURL
+//
+// Per that mozilla.org page, its use (in web-facing JS) is deprecated in favor
+// of the "File System Access" API.
+//
+// Outside of web-facing JS, Chrome and particularly ChromeOS still uses
+// FileSystemURLs internally (as C++ objects) to be 'virtual file paths' in its
+// virtual file systems. But serialization to and from the string or GURL form
+// (and subsequent sharing with JS code) is a legacy concept. The "URL" in the
+// "FileSystemURL" class name is part of its history but now inaccurate.
+//
+//
+// # Cracking
+//
+// FileSystemURLs can wrap (provide an alternative name for) real (kernel
+// visible) files, virtual files or even other FileSystemURLs. Cracking is the
+// process of recursively unwrapping the outer layers to recover a name or
+// identifier for the underlying, inner-most resource.
+//
+// Cracking is a concept at the C++ API level but is not part of the JS API. It
+// applies when the original URL's mount_type() identifies a MountPoints
+// subclass (ExternalMountPoints or IsolatedContext) and so its virtual_path()
+// can be further resolved to a lower level type() and path().
+//
+// When recursion occurs, also known as having multiple rounds of cracking,
+// then mount_filesystem_id() and filesystem_id() return information from the
+// outer-most (first round) and inner-most (last round). If there is only one
+// round of cracking then the two strings should be equal. When cracking does
+// not apply then these strings should be empty.
+//
+// Permission checking on the top-level mount information should be done with
+// the mount_filesystem_id(). Low-level operations should use filesystem_id(),
+// as well as the type(), path() and mount_option() that also come from the
+// last round of cracking.
+//
+// Cracking is done at FileSystemURL-constructor time, although the non-trivial
+// FileSystemURL constructors are private. Outside of test code, use the
+// <Friend>::CrackURL or <Friend>::CreateCrackedFileSystemURL factory methods,
+// where <Friend> is one of the friended classes.
+//
+//
+// # Accessors
+//
+// For example, parsing "filesystem:http://example.com/temporary/bar/qux":
+//  - origin() returns "http://example.com",
+//  - mount_type() returns kFileSystemTypeTemporary,
+//  - virtual_path() returns "bar/qux",
+//  - type() returns the same value as mount_type(),
+//  - path() returns the same value as virtual_path(),
+//
+// For example, if path "/media/removable" is mounted at "my_mount_name" with
+// type kFileSystemTypeFoo as an external file system, then parsing and
+// cracking "filesystem:chrome://file-manager/external/my_mount_name/x/y":
+//  - origin() returns "chrome://file-manager",
+//  - mount_type() returns kFileSystemTypeExternal,
+//  - virtual_path() returns "my_mount_name/x/y",
+//  - type() returns the kFileSystemTypeFoo,
+//  - path() returns "/media/removable/x/y",
+//
+// Additionally:
+//  - filesystem_id() returns "my_mount_name".
+//
+// The naming is unfortunate, but URL paths (what GURL::path() returns) are not
+// the same as what FileSystemURL::path() returns. The FileSystemURL::path()
+// often locates a real file on the kernel-level file system but it does not
+// have to and sometimes it's just a string identifier (presented in C++ as a
+// base::FilePath) whose meaning depends on the FileSystemURL::type().
+//
+// For example, kFileSystemTypeProvided (which corresponds to the
+// https://developer.chrome.com/docs/extensions/reference/fileSystemProvider/
+// JS API) does not serve real files. For that type, path() returns something
+// like "/provided/extensionid:filesystemid:userhash/a/b/c.txt", where
+// "/provided" is ash::file_system_provider::util::kProvidedMountPointRoot.
+// The serving code path goes through the ExternalMountPoints class, but
+// there's no "provided" directory in the root of the real file system.
+//
+//
+// # Known Issues
+//
+// TODO(crbug.com/956231): Look into making virtual_path() [and all FileSystem
+// API virtual paths] just an std::string, to prevent platform-specific
+// base::FilePath behavior from getting invoked by accident. Currently the
+// base::FilePath returned here needs special treatment, as it may contain
+// paths that are illegal on the current platform.
+//
 // To avoid problems, use VirtualPath::BaseName and
 // VirtualPath::GetComponents instead of the base::FilePath methods.
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
@@ -122,7 +199,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
 
   // Returns the original path part of this URL.
   // See the class comment for details.
-  // TODO(kinuko): this must return std::string.
+  // TODO(crbug.com/956231): this must return std::string.
   const base::FilePath& virtual_path() const { return virtual_path_; }
 
   // Returns the filesystem ID/mount name for isolated/external filesystem URLs.
@@ -189,23 +266,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
 
   bool is_valid_;
 
-  // Values parsed from the original URL.
+  // Fields parsed from the original URL (the string form), although the
+  // url::Origin has grown into a blink::StorageKey.
   blink::StorageKey storage_key_;
   FileSystemType mount_type_;
   base::FilePath virtual_path_;
 
-  // Values obtained by cracking URLs.
-  // |mount_filesystem_id_| is retrieved from the first round of cracking,
-  // and the rest of the fields are from recursive cracking. Permission
-  // checking on the top-level mount information should be done with the former,
-  // and the low-level file operation should be implemented with the latter.
+  // Fields obtained from cracking.
+  //
+  // |mount_filesystem_id_| is set from the first round of cracking. The other
+  // fields are set from recursive cracking (the last round).
   std::string mount_filesystem_id_;
   FileSystemType type_;
   base::FilePath path_;
   std::string filesystem_id_;
   FileSystemMountOption mount_option_;
 
-  // Values that must be explicitly set.
+  // Fields that must be explicitly set separately.
   absl::optional<BucketLocator> bucket_;
 };
 

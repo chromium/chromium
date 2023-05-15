@@ -18,9 +18,7 @@
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 static constexpr size_t kNonceLength = 12;
 
@@ -524,6 +522,4 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
   return result;
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

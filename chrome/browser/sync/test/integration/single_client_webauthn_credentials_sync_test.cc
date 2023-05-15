@@ -4,14 +4,17 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -29,6 +32,7 @@ using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::LocalPasskeysMatchChecker;
 using webauthn_credentials_helper::NewPasskey;
 using webauthn_credentials_helper::PasskeyHasSyncId;
+using webauthn_credentials_helper::PasskeySyncActiveChecker;
 using webauthn_credentials_helper::ServerPasskeysMatchChecker;
 
 constexpr int kSingleProfile = 0;
@@ -198,5 +202,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_THAT(GetModel().GetAllSyncIds(),
               testing::UnorderedElementsAreArray(expected_sync_ids));
 }
+
+// The unconsented primary account isn't supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that passkeys sync on transport mode only if the user has consented to
+// showing credentials from their Google account.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       TransportModeConsent) {
+  const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
+  ASSERT_TRUE(SetupClients());
+
+  AccountInfo account_info = secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // Passkeys should not be syncing.
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL));
+
+  // Let the user opt in to transport mode and wait for passkeys to start
+  // syncing.
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  PasskeySyncActiveChecker(GetSyncService(0)).Wait();
+  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,
+                                        ElementsAre(PasskeyHasSyncId(sync_id)))
+                  .Wait());
+
+  // Opt out. The passkey should be removed.
+  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

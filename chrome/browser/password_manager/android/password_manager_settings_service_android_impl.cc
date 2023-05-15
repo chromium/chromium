@@ -83,12 +83,9 @@ bool IsUnenrolledFromUPM(PrefService* pref_service) {
 // pref to temporarily prevent password saves. If the user doesn't use GMS,
 // saving keeps working and only the syncing of changes is delayed.
 bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service) {
-  // The messages feature is a subset of UPM. The actual feature is irrelevant.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
-    return false;  // Non-UPM users can still save.
-  }
   // Ensure the user is still enrolled. Evicted users can still save normally.
+  // TODO(crbug.com/1443356): possibly auth error disables password saving
+  // after pwd sync is turned off.
   return !IsUnenrolledFromUPM(pref_service) &&
          pref_service->GetBoolean(
              password_manager::prefs::kSavePasswordsSuspendedByError);
@@ -101,7 +98,6 @@ PasswordManagerSettingsServiceAndroidImpl::
                                               syncer::SyncService* sync_service)
     : pref_service_(pref_service), sync_service_(sync_service) {
   DCHECK(pref_service_);
-  DCHECK(sync_service_);
   DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
   if (!PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor())
     return;
@@ -124,7 +120,6 @@ PasswordManagerSettingsServiceAndroidImpl::
       bridge_helper_(std::move(bridge_helper)),
       lifecycle_helper_(std::move(lifecycle_helper)) {
   DCHECK(pref_service_);
-  DCHECK(sync_service_);
   if (!bridge_helper_)
     return;
   Init();
@@ -205,7 +200,11 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
   is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service_);
-  sync_service_->AddObserver(this);
+  if (sync_service_) {
+    // The `sync_service_` can be null when --disable-sync has been passed in as
+    // a command line flag.
+    sync_service_->AddObserver(this);
+  }
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(

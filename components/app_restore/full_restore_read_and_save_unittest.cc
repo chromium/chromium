@@ -9,6 +9,7 @@
 
 #include "ash/constants/app_types.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -117,7 +118,7 @@ class FullRestoreReadHandlerTestApi {
   }
 
  private:
-  FullRestoreReadHandler* read_handler_;
+  raw_ptr<FullRestoreReadHandler, ExperimentalAsh> read_handler_;
 };
 
 class FullRestoreSaveHandlerTestApi {
@@ -203,7 +204,7 @@ class FullRestoreSaveHandlerTestApi {
     return save_handler_->arc_save_handler_.get();
   }
 
-  FullRestoreSaveHandler* save_handler_;
+  raw_ptr<FullRestoreSaveHandler, ExperimentalAsh> save_handler_;
 };
 
 // Unit tests for restore data.
@@ -923,10 +924,10 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
   EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
   const auto& data = app_restore_data_it->second;
-  EXPECT_TRUE(data->urls.has_value());
-  EXPECT_EQ(data->urls.value().size(), 2u);
-  EXPECT_EQ(data->urls.value()[0], GURL(kExampleUrl1));
-  EXPECT_EQ(data->urls.value()[1], GURL(kExampleUrl2));
+  EXPECT_FALSE(data->urls.empty());
+  EXPECT_EQ(data->urls.size(), 2u);
+  EXPECT_EQ(data->urls[0], GURL(kExampleUrl1));
+  EXPECT_EQ(data->urls[1], GURL(kExampleUrl2));
 
   EXPECT_TRUE(data->active_tab_index.has_value());
   EXPECT_EQ(data->active_tab_index.value(), active_tab_index);
@@ -958,10 +959,10 @@ TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
   const auto& data = app_restore_data_it->second;
   EXPECT_TRUE(data->handler_id.has_value());
   EXPECT_EQ(kHandlerId, data->handler_id.value());
-  EXPECT_TRUE(data->file_paths.has_value());
-  EXPECT_EQ(2u, data->file_paths.value().size());
-  EXPECT_EQ(base::FilePath(kFilePath1), data->file_paths.value()[0]);
-  EXPECT_EQ(base::FilePath(kFilePath2), data->file_paths.value()[1]);
+  EXPECT_FALSE(data->file_paths.empty());
+  EXPECT_EQ(2u, data->file_paths.size());
+  EXPECT_EQ(base::FilePath(kFilePath1), data->file_paths[0]);
+  EXPECT_EQ(base::FilePath(kFilePath2), data->file_paths[1]);
 }
 
 // Verify the Lacros browser window is saved correctly when the window is

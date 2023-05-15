@@ -126,18 +126,16 @@ ErrorOr<std::string> GetQueryParameter(const GURL& url) {
     // This situation will never happen if check for the query path is
     // done before calling this function.
     return base::unexpected(
-        base::StrCat({"could not get any value from query path in "
-                      "Query GET URL: ",
-                      url.spec()}));
+        "could not get any value from query path in Query GET URL: " +
+        url.spec());
   }
   size_t slash = value.find('/', strlen(kApiServerQueryPath));
   if (slash != std::string::npos) {
     return base::ok(value.substr(slash + 1));
   } else {
     return base::unexpected(
-        base::StrCat({"could not get any value from query path in "
-                      "Query GET URL: ",
-                      url.spec()}));
+        "could not get any value from query path in Query GET URL: " +
+        url.spec());
   }
 }
 
@@ -167,7 +165,7 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromGETQueryURL(
                              &decoded_query)) {
     return base::unexpected(base::StrCat(
         {"could not base64-decode value of path in Query GET URL: \"",
-         query_parameter->c_str(), "\""}));
+         *query_parameter, "\""}));
   }
   return ParseProtoContents<AutofillPageQueryRequest>(decoded_query);
 }
@@ -212,11 +210,10 @@ ErrorOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
 // Gets Query request proto content from HTTP POST body.
 ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
     const network::ResourceRequest& resource_request) {
-  ErrorOr<std::string> query = PeelAutofillPageResourceQueryRequestWrapper(
-      GetStringFromDataElements(resource_request.request_body->elements()));
-  if (!query.has_value())
-    return base::unexpected(query.error());
-  return ParseProtoContents<AutofillPageQueryRequest>(query.value());
+  return PeelAutofillPageResourceQueryRequestWrapper(
+             GetStringFromDataElements(
+                 resource_request.request_body->elements()))
+      .and_then(ParseProtoContents<AutofillPageQueryRequest>);
 }
 
 bool IsSingleFormRequest(const AutofillPageQueryRequest& query) {
@@ -259,13 +256,8 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
         "Unable to retrieve serialized request from WPR request_node");
   }
   std::string http_text = SplitHTTP(decoded_request_text).second;
-  ErrorOr<std::string> query =
-      PeelAutofillPageResourceQueryRequestWrapper(http_text);
-  if (!query.has_value()) {
-    return base::unexpected(query.error());
-  }
-  http_text = query.value();
-  return ParseProtoContents<AutofillPageQueryRequest>(http_text);
+  return PeelAutofillPageResourceQueryRequestWrapper(http_text).and_then(
+      ParseProtoContents<AutofillPageQueryRequest>);
 }
 
 // Gets AutofillQueryResponseContents from WPR recorded HTTP response body.
@@ -282,9 +274,8 @@ ErrorOr<AutofillQueryResponse> GetAutofillResponseFromRequestNode(
   auto http_pair = SplitHTTP(compressed_response_text);
   std::string decompressed_body;
   if (!compression::GzipUncompress(http_pair.second, &decompressed_body)) {
-    return base::unexpected(
-        base::StrCat({"Could not gzip decompress HTTP response: ",
-                      GetHexString(http_pair.second)}));
+    return base::unexpected("Could not gzip decompress HTTP response: " +
+                            GetHexString(http_pair.second));
   }
 
   // Eventual response needs header information, so lift that as well.

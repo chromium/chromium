@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
@@ -35,7 +36,7 @@ class BruschettaInstallerMock : public bruschetta::BruschettaInstaller {
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
 
-  MOCK_METHOD(const base::GUID&, GetDownloadGuid, (), (const));
+  MOCK_METHOD(const base::Uuid&, GetDownloadGuid, (), (const));
 
   MOCK_METHOD(void,
               DownloadStarted,
@@ -94,7 +95,7 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
         }));
   }
 
-  BruschettaInstallerView* view_;
+  raw_ptr<BruschettaInstallerView, ExperimentalAsh> view_;
   std::unique_ptr<bruschetta::BruschettaInstallerMock> installer_;
 };
 

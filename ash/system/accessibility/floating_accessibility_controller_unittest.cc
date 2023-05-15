@@ -65,11 +65,11 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   FloatingMenuPosition menu_position() { return controller()->position_; }
 
   FloatingAccessibilityView* menu_view() {
-    return controller() ? controller()->menu_view_ : nullptr;
+    return controller() ? controller()->menu_view_.get() : nullptr;
   }
 
   views::Widget* widget() {
-    return controller() ? controller()->bubble_widget_ : nullptr;
+    return controller() ? controller()->bubble_widget_.get() : nullptr;
   }
 
   AutoclickMenuView* autoclick_menu_view() {
@@ -77,7 +77,7 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
         Shell::Get()
             ->autoclick_controller()
             ->GetMenuBubbleControllerForTesting();
-    return controller ? controller->menu_view_ : nullptr;
+    return controller ? controller->menu_view_.get() : nullptr;
   }
 
   bool detailed_view_shown() {
@@ -106,14 +106,15 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   }
 
   ImeMenuTray* GetImeTray() {
-    ImeMenuTray* result = menu_view() ? menu_view()->ime_button_ : nullptr;
+    ImeMenuTray* result =
+        menu_view() ? menu_view()->ime_button_.get() : nullptr;
     EXPECT_NE(result, nullptr) << "Ime tray is not currently visible";
     return result;
   }
 
   TrayBackgroundView* GetVirtualKeyboardTray() {
     TrayBackgroundView* result =
-        menu_view() ? menu_view()->virtual_keyboard_button_ : nullptr;
+        menu_view() ? menu_view()->virtual_keyboard_button_.get() : nullptr;
     EXPECT_NE(result, nullptr)
         << "Virtual keyboard tray is not currently visible";
     return result;
@@ -619,7 +620,7 @@ TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
   views::FocusManager* focus_manager = widget()->GetFocusManager();
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::FOCUS_SHELF, {});
+      AcceleratorAction::kFocusShelf, {});
   // If nothing else is enabled, it should focus on the detailed view button.
   EXPECT_EQ(focus_manager->GetFocusedView(),
             GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList));
@@ -630,7 +631,7 @@ TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
             GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList));
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::FOCUS_SHELF, {});
+      AcceleratorAction::kFocusShelf, {});
   // It should get back to the settings list button.
   EXPECT_EQ(focus_manager->GetFocusedView(),
             GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList));
@@ -642,7 +643,7 @@ TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
   // We should be focused on the first button in the menu.
   // Order: select to speak, virtual keyboard, settings menu, position.
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::FOCUS_SHELF, {});
+      AcceleratorAction::kFocusShelf, {});
   EXPECT_EQ(focus_manager->GetFocusedView(),
             GetMenuButton(FloatingAccessibilityView::ButtonId::kSelectToSpeak));
 }

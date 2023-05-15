@@ -101,6 +101,7 @@ void SVGColorProperty::CalculateAnimatedValue(
   Color to_at_end_of_duration_color =
       to_at_end_of_duration_style_color.Resolve(fallback_color, color_scheme);
 
+  // TODO(crbug.com/1399566): Use float color and don't clobber colorspace.
   float animated_red = ComputeAnimatedNumber(
       parameters, percentage, repeat_count, from_color.Red(), to_color.Red(),
       to_at_end_of_duration_color.Red());
@@ -111,15 +112,15 @@ void SVGColorProperty::CalculateAnimatedValue(
       parameters, percentage, repeat_count, from_color.Blue(), to_color.Blue(),
       to_at_end_of_duration_color.Blue());
   float animated_alpha = ComputeAnimatedNumber(
-      parameters, percentage, repeat_count, from_color.Alpha(),
-      to_color.Alpha(), to_at_end_of_duration_color.Alpha());
+      parameters, percentage, repeat_count, from_color.AlphaAsInteger(),
+      to_color.AlphaAsInteger(), to_at_end_of_duration_color.AlphaAsInteger());
 
   if (parameters.is_additive) {
     Color animated_color = style_color_.Resolve(fallback_color, color_scheme);
     animated_red += animated_color.Red();
     animated_green += animated_color.Green();
     animated_blue += animated_color.Blue();
-    animated_alpha += animated_color.Alpha();
+    animated_alpha += animated_color.AlphaAsInteger();
   }
 
   style_color_ = StyleColor(

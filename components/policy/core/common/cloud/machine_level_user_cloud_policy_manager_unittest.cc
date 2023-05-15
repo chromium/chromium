@@ -23,7 +23,7 @@ class MockMachineLevelUserCloudPolicyStore
  public:
   MockMachineLevelUserCloudPolicyStore()
       : MachineLevelUserCloudPolicyStore(
-            DMToken::CreateEmptyTokenForTesting(),
+            DMToken::CreateEmptyToken(),
             std::string(),
             base::FilePath(),
             base::FilePath(),

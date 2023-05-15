@@ -12,6 +12,10 @@
 #include "components/device_signals/core/system_signals/mac/mac_platform_delegate.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace system_signals {
 
 MacSystemSignalsService::MacSystemSignalsService(

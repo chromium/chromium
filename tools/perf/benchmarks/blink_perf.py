@@ -479,12 +479,12 @@ class ServiceWorkerRequestHandler(
     return None
 
 
-@benchmark.Info(
-    component='Blink>ServiceWorker',
-    emails=[
-        'shimazu@chromium.org', 'falken@chromium.org', 'ting.shao@intel.com'
-    ],
-    documentation_url='https://bit.ly/blink-perf-benchmarks')
+@benchmark.Info(component='Blink>ServiceWorker',
+                emails=[
+                    'yyanagisawa@chromium.org',
+                    'chrome-worker@google.com',
+                ],
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfServiceWorker(_BlinkPerfBenchmark):
   SUBDIR = 'service_worker'
 

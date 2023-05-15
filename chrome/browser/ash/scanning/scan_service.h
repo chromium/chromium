@@ -12,6 +12,7 @@
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -184,10 +185,10 @@ class ScanService : public scanning::mojom::ScanService,
   mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
-  LorgnetteScannerManager* lorgnette_scanner_manager_;
+  raw_ptr<LorgnetteScannerManager, ExperimentalAsh> lorgnette_scanner_manager_;
 
   // The browser context from which scans are initiated.
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   // Indicates whether there was a failure to save scanned images.
   bool page_save_failed_;

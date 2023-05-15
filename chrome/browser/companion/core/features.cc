@@ -18,7 +18,19 @@ BASE_FEATURE(kSidePanelCompanion,
              "SidePanelCompanion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
-    &kSidePanelCompanion, "companion-homepage-url", "https://www.example.com"};
+    &kSidePanelCompanion, "companion-homepage-url",
+    "https://lens.google.com/companion"};
+
+constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
+    &kSidePanelCompanion, "companion-image-upload-url",
+    "https://www.example.com"};
+constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
+    &kSidePanelCompanion, "open-companion-for-image-search", true};
+constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
+    &kSidePanelCompanion, "open-companion-for-web-search", true};
+
+constexpr base::FeatureParam<bool> kOpenLinksInCurrentTab{
+    &kSidePanelCompanion, "open-links-in-current-tab", true};
 
 }  // namespace features
 

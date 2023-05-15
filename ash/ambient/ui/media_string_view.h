@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -99,16 +100,16 @@ class MediaStringView : public views::View,
   views::Label* media_text_label_for_testing() { return media_text_; }
 
   // Unowned. Must out live |MediaStringView|.
-  base::raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
+  raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
 
   // Music eighth note.
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
 
   // Container of media info text.
-  views::View* media_text_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> media_text_container_ = nullptr;
 
   // With an extra copy of media info text for scrolling animation.
-  views::Label* media_text_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> media_text_ = nullptr;
 
   // Used to receive updates to the active media controller.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;

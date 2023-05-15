@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"

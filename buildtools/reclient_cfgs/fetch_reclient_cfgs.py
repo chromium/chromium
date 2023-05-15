@@ -78,14 +78,18 @@ def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance):
         return False
     with open(tmpl_path) as f:
       reproxy_cfg_tmpl = string.Template(REPROXY_CFG_HEADER+f.read())
-    scandeps_bin_name = 'scandeps_server'
+    depsscanner_address = 'exec://' + os.path.join(CHROMIUM_SRC,
+                                                   'buildtools',
+                                                   'reclient',
+                                                   'scandeps_server')
     if sys.platform.startswith('win'):
-       scandeps_bin_name += ".exe"
+       # TODO(b/278871789) re-enable when reproxy version is > 105
+       # depsscanner_address += ".exe"
+       depsscanner_address = ""
     reproxy_cfg = reproxy_cfg_tmpl.substitute({
       'rbe_instance': rbe_instance,
       'reproxy_cfg_template': reproxy_cfg_template,
-      'scandeps_bin_path':
-        os.path.join(CHROMIUM_SRC, 'buildtools', 'reclient', scandeps_bin_name),
+      'depsscanner_address': depsscanner_address,
     })
     reproxy_cfg_path = os.path.join(THIS_DIR, 'reproxy.cfg')
     with open(reproxy_cfg_path, 'w') as f:

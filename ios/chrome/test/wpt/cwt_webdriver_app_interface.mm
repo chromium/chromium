@@ -15,15 +15,16 @@
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/wpt/cwt_stderr_logger.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -44,7 +45,8 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 WebStateList* GetCurrentWebStateList() {
   return chrome_test_util::GetMainController()
-      .interfaceProvider.currentInterface.browser->GetWebStateList();
+      .browserProviderInterface.currentBrowserProvider.browser
+      ->GetWebStateList();
 }
 
 web::WebState* GetWebStateWithId(NSString* tab_id) {
@@ -198,7 +200,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)
       return;
-    web::WebFrame* mainFrame = web::GetMainFrame(webState);
+    web::WebFrame* mainFrame =
+        webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
     if (!mainFrame) {
       return;
     }

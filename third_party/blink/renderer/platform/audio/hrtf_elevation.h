@@ -59,20 +59,13 @@ class HRTFElevation {
   static std::unique_ptr<HRTFElevation> CreateByInterpolatingSlices(
       HRTFElevation* hrtf_elevation1,
       HRTFElevation* hrtf_elevation2,
-      float x,
-      float sample_rate);
+      float x);
 
   HRTFElevation(const HRTFElevation&) = delete;
   HRTFElevation& operator=(const HRTFElevation&) = delete;
 
-  // Returns the list of left or right ear HRTFKernels for all the azimuths
-  // going from 0 to 360 degrees.
-  HRTFKernelList* KernelListL() { return kernel_list_l_.get(); }
-  HRTFKernelList* KernelListR() { return kernel_list_r_.get(); }
-
-  double ElevationAngle() const { return elevation_angle_; }
-  unsigned NumberOfAzimuths() const { return kNumberOfTotalAzimuths; }
-  float SampleRate() const { return sample_rate_; }
+  // Total number of azimuths after interpolation.
+  static unsigned NumberOfAzimuths();
 
   // Returns the left and right kernels for the given azimuth index.
   // The interpolated delays based on azimuthBlend: 0 -> 1 are returned in
@@ -84,19 +77,13 @@ class HRTFElevation {
                              double& frame_delay_l,
                              double& frame_delay_r);
 
-  // Spacing, in degrees, between every azimuth loaded from resource.
-  static constexpr unsigned kAzimuthSpacing = 15;
-
-  // Number of azimuths loaded from resource.
-  static constexpr unsigned kNumberOfRawAzimuths = 360 / kAzimuthSpacing;
-
-  // Interpolates by this factor to get the total number of azimuths from every
-  // azimuth loaded from resource.
-  static constexpr unsigned kInterpolationFactor = 8;
-
-  // Total number of azimuths after interpolation.
-  static constexpr unsigned kNumberOfTotalAzimuths =
-      kNumberOfRawAzimuths * kInterpolationFactor;
+ private:
+  HRTFElevation(std::unique_ptr<HRTFKernelList> kernel_list_l,
+                std::unique_ptr<HRTFKernelList> kernel_list_r,
+                int elevation)
+      : kernel_list_l_(std::move(kernel_list_l)),
+        kernel_list_r_(std::move(kernel_list_r)),
+        elevation_angle_(elevation) {}
 
   // Given a specific azimuth and elevation angle, returns the left and right
   // HRTFKernel.
@@ -111,20 +98,14 @@ class HRTFElevation {
       std::unique_ptr<HRTFKernel>& kernel_l,
       std::unique_ptr<HRTFKernel>& kernel_r);
 
- private:
-  HRTFElevation(std::unique_ptr<HRTFKernelList> kernel_list_l,
-                std::unique_ptr<HRTFKernelList> kernel_list_r,
-                int elevation,
-                float sample_rate)
-      : kernel_list_l_(std::move(kernel_list_l)),
-        kernel_list_r_(std::move(kernel_list_r)),
-        elevation_angle_(elevation),
-        sample_rate_(sample_rate) {}
+  // Returns the list of left or right ear HRTFKernels for all the azimuths
+  // going from 0 to 360 degrees.
+  HRTFKernelList* KernelListL() { return kernel_list_l_.get(); }
+  HRTFKernelList* KernelListR() { return kernel_list_r_.get(); }
 
   std::unique_ptr<HRTFKernelList> kernel_list_l_;
   std::unique_ptr<HRTFKernelList> kernel_list_r_;
-  double elevation_angle_;
-  float sample_rate_;
+  const double elevation_angle_;
 };
 
 }  // namespace blink

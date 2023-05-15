@@ -21,10 +21,6 @@ declare_args() {
   use_v4l2_codec =
       is_chromeos_lacros && (target_cpu == "arm" || target_cpu == "arm64")
 
-  # Indicates if Video4Linux2 AML encoder is used. This is used for AML
-  # platforms which have v4l2 hardware encoder
-  use_v4l2_codec_aml = false
-
   # Indicates if VA-API-based hardware acceleration is to be used. This
   # is typically the case on x86-based ChromeOS devices.
   # VA-API should also be compiled by default on x11-using linux devices

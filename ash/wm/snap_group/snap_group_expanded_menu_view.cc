@@ -12,7 +12,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/functional/bind.h"
@@ -23,7 +23,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -39,7 +38,8 @@ SplitViewController* split_view_controller() {
 }  // namespace
 
 SnapGroupExpandedMenuView::SnapGroupExpandedMenuView(SnapGroup* snap_group)
-    : swap_windows_button_(AddChildView(std::make_unique<IconButton>(
+    : snap_group_(snap_group),
+      swap_windows_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(
               &SnapGroupExpandedMenuView::OnSwapWindowsButtonPressed,
               base::Unretained(this)),
@@ -66,9 +66,14 @@ SnapGroupExpandedMenuView::SnapGroupExpandedMenuView(SnapGroup* snap_group)
           IDS_ASH_SNAP_GROUP_UPDATE_RIGHT_WINDOW,
           /*is_togglable=*/false,
           /*has_border=*/true))),
-      unlock_button_(AddChildView(std::make_unique<SnapGroupLockOrUnlockButton>(
-          snap_group->window1(),
-          snap_group->window2()))) {
+      unlock_button_(AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&SnapGroupExpandedMenuView::OnUnLockButtonPressed,
+                              base::Unretained(this)),
+          IconButton::Type::kMediumFloating,
+          &kLockScreenEasyUnlockOpenIcon,
+          IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS,
+          /*is_togglable=*/false,
+          /*has_border=*/true))) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
@@ -99,6 +104,11 @@ void SnapGroupExpandedMenuView::OnUpdateSecondaryWindowButtonPressed() {
 void SnapGroupExpandedMenuView::OnSwapWindowsButtonPressed() {
   split_view_controller()->SwapWindows(
       SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton);
+}
+
+void SnapGroupExpandedMenuView::OnUnLockButtonPressed() {
+  Shell::Get()->snap_group_controller()->RemoveSnapGroup(snap_group_);
+  // `this` will be deleted after this line.
 }
 
 BEGIN_METADATA(SnapGroupExpandedMenuView, views::View)

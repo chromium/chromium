@@ -16,13 +16,17 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
@@ -37,6 +41,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -51,6 +56,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -69,9 +75,9 @@ import java.util.Set;
  * Derived classes must implement {@link #onSyncAccepted}/{@link #onSyncRefused} to define
  * what happens after the signin flow.
  */
-public abstract class SyncConsentFragmentBase
-        extends Fragment implements AccountPickerCoordinator.Listener, AccountsChangeObserver,
-                                    SigninManager.SignInStateObserver {
+public abstract class SyncConsentFragmentBase extends Fragment
+        implements AccountPickerCoordinator.Listener, AccountsChangeObserver,
+                   SigninManager.SignInStateObserver, DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SyncConsentFragmentBase.AccessPoint";
     private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
     private static final String ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW =
@@ -117,6 +123,7 @@ public abstract class SyncConsentFragmentBase
     private final AccountManagerFacade mAccountManagerFacade;
     protected boolean mIsChild;
 
+    private FrameLayout mFrameLayout;
     private SigninView mSigninView;
     private SyncConsentView mSyncConsentView;
     private ConsentTextTracker mConsentTextTracker;
@@ -143,6 +150,11 @@ public abstract class SyncConsentFragmentBase
     private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
     private @Nullable AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
+    private @Nullable WindowAndroid mWindowAndroid;
+    private @Nullable DeviceLockCoordinator mDeviceLockCoordinator;
+
+    private Runnable mDeviceLockPageCallback;
+    private boolean mDeviceLockReady;
 
     /**
      * Creates an argument bundle for the default {@link SyncConsentFragment} flow.
@@ -374,6 +386,7 @@ public abstract class SyncConsentFragmentBase
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mFrameLayout = new FrameLayout(getContext());
         if (mShowTangibleSyncConsentView) {
             createSyncConsentView(inflater, container);
         } else {
@@ -381,8 +394,35 @@ public abstract class SyncConsentFragmentBase
         }
 
         updateConsentText();
+        displaySignInOrSyncView();
+        return mFrameLayout;
+    }
 
-        return mSyncConsentView != null ? mSyncConsentView : mSigninView;
+    private void displaySignInOrSyncView() {
+        mFrameLayout.removeAllViews();
+        mFrameLayout.addView(mSyncConsentView != null ? mSyncConsentView : mSigninView);
+    }
+
+    private void displayDeviceLockPage(Runnable onSuccess) {
+        mDeviceLockPageCallback = onSuccess;
+        mAccountManagerFacade.getAccounts().then((accounts) -> {
+            Account selectedAccount =
+                    AccountUtils.findAccountByName(accounts, mSelectedAccountName);
+            assert selectedAccount != null;
+
+            mDeviceLockCoordinator = new DeviceLockCoordinator(
+                    true, this, getWindowAndroid(), getActivity(), selectedAccount);
+        });
+    }
+
+    @VisibleForTesting
+    public Runnable getDeviceLockPageCallbackForTesting() {
+        return mDeviceLockPageCallback;
+    }
+
+    @VisibleForTesting
+    public boolean getDeviceLockReadyForTesting() {
+        return mDeviceLockReady;
     }
 
     private void createSyncConsentView(LayoutInflater inflater, ViewGroup container) {
@@ -431,6 +471,38 @@ public abstract class SyncConsentFragmentBase
         mSigninView.getAccountPickerEndImageView().setImageDrawable(endImageViewDrawable);
 
         setHasAccounts(true);
+    }
+
+    private WindowAndroid getWindowAndroid() {
+        return getDelegate().getWindowAndroid();
+    }
+
+    private SyncConsentDelegate getDelegate() {
+        return (SyncConsentDelegate) getActivity();
+    }
+
+    @Override
+    public void setView(View view) {
+        mFrameLayout.removeAllViews();
+        mFrameLayout.addView(view);
+    }
+
+    @Override
+    public void onDeviceLockReady() {
+        mDeviceLockCoordinator.destroy();
+        mDeviceLockCoordinator = null;
+
+        // Run the callback, or wait until #onResume if the fragment is not yet RESUMED.
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+            mDeviceLockPageCallback.run();
+        } else {
+            mDeviceLockReady = true;
+        }
+    }
+
+    @Override
+    public void onDeviceLockRefused() {
+        refuseSignIn();
     }
 
     @Override
@@ -660,12 +732,24 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void onRefuseButtonClicked(View button) {
+        refuseSignIn();
+    }
+
+    private void refuseSignIn() {
         RecordUserAction.record("Signin_Undo_Signin");
         mRecordUndoSignin = false;
         onSyncRefused();
     }
 
     private void onAcceptButtonClicked(View button) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            displayDeviceLockPage(() -> { initiateSignIn(button); });
+            return;
+        }
+        initiateSignIn(button);
+    }
+
+    private void initiateSignIn(View button) {
         if (!areControlsEnabled()) return;
         mIsSigninInProgress = true;
         mRecordUndoSignin = false;
@@ -836,6 +920,9 @@ public abstract class SyncConsentFragmentBase
                 AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
 
         if (mSigninView != null) mSigninView.startAnimations();
+        if (mDeviceLockReady) {
+            mDeviceLockPageCallback.run();
+        }
     }
 
     @Override

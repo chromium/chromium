@@ -22,6 +22,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -271,7 +272,7 @@ class BrowserTestBase : public ::testing::Test {
   bool use_software_compositing_ = false;
 
   // Initial WebContents to watch for navigations during SetUpOnMainThread.
-  raw_ptr<WebContents, DanglingUntriaged> initial_web_contents_ = nullptr;
+  base::WeakPtr<WebContents> initial_web_contents_;
 
   // Whether SetUp was called. This value is checked in the destructor of this
   // class to ensure that SetUp was called. If it's not called, the test will

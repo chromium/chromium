@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_CONTAINER_H_
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/functional/callback.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -49,8 +50,10 @@ class ASH_EXPORT SavedDeskSaveDeskButtonContainer
   SavedDeskSaveDeskButton* GetButtonFromType(
       SavedDeskSaveDeskButton::Type type);
 
-  SavedDeskSaveDeskButton* save_desk_as_template_button_ = nullptr;
-  SavedDeskSaveDeskButton* save_desk_for_later_button_ = nullptr;
+  raw_ptr<SavedDeskSaveDeskButton, ExperimentalAsh>
+      save_desk_as_template_button_ = nullptr;
+  raw_ptr<SavedDeskSaveDeskButton, ExperimentalAsh>
+      save_desk_for_later_button_ = nullptr;
 
   // Object responsible for observing accessibility setting changes.
   std::unique_ptr<SaveDeskButtonContainerAccessibilityObserver>

@@ -2859,6 +2859,7 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipX |
+             ui::OwnedWindowConstraintAdjustment::kAdjustmentResizeX |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
   EXPECT_EQ(
@@ -2919,6 +2920,7 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipX |
+             ui::OwnedWindowConstraintAdjustment::kAdjustmentResizeX |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
   auto anchor_rect = anchor->anchor_rect;

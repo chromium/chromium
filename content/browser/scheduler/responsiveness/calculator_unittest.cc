@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/responsiveness_calculator_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,8 @@ constexpr int kCongestionThresholdInMs = 100;
 
 class FakeCalculator : public Calculator {
  public:
+  using Calculator::Calculator;
+
   MOCK_METHOD3(EmitResponsivenessMock,
                void(CongestionType congestion_type,
                     size_t congested_slices,
@@ -54,10 +57,31 @@ class FakeCalculator : public Calculator {
 
 }  // namespace
 
+class MockDelegate : public ResponsivenessCalculatorDelegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  // ResponsivenessCalculatorDelegate:
+  MOCK_METHOD(void, OnMeasurementIntervalEnded, (), (override));
+  MOCK_METHOD(void,
+              OnResponsivenessEmitted,
+              (int sample,
+               int min,
+               int exclusive_max,
+               size_t buckets),
+              (override));
+};
+
 class ResponsivenessCalculatorTest : public testing::Test {
  public:
   void SetUp() override {
-    calculator_ = std::make_unique<testing::StrictMock<FakeCalculator>>();
+    auto delegate = std::make_unique<
+        testing::NiceMock<MockDelegate>>();  // NiceMock because the delegate is
+                                             // only verified in one test.
+    delegate_ = delegate.get();
+    calculator_ = std::make_unique<testing::StrictMock<FakeCalculator>>(
+        std::move(delegate));
     last_calculation_time_ = calculator_->GetLastCalculationTime();
 #if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener::NotifyApplicationStateChange(
@@ -98,6 +122,7 @@ class ResponsivenessCalculatorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<FakeCalculator> calculator_;
+  raw_ptr<MockDelegate> delegate_;
   base::TimeTicks last_calculation_time_;
 };
 
@@ -773,6 +798,49 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
   calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
                                              kStartTime, kFinishTime,
                                              congested_slices);
+}
+
+TEST_F(ResponsivenessCalculatorTest, Delegate) {
+  calculator_->OnFirstIdle();
+
+  // To have a valid interval, there needs to be at least 30 seconds that
+  // passed, during which there was at least one event.
+  int interval_start = 0;
+  int interval_mid = 15000;
+  int interval_end = kMeasurementIntervalInMs + 1000;
+
+  EXPECT_EXECUTION_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
+
+  // OnResponsivenessEmitted() is not invoked for the first interval.
+  EXPECT_CALL(*delegate_, OnMeasurementIntervalEnded());
+  EXPECT_CALL(*delegate_, OnResponsivenessEmitted(_, _, _, _)).Times(0);
+
+  AddEventUI(interval_start, interval_start, interval_start);
+  AddEventUI(interval_mid, interval_mid,
+             interval_mid + kCongestionThresholdInMs + 20);
+  AddEventUI(interval_end, interval_end, interval_end);
+
+  // Repeat the same interval immediately following the first one.
+  interval_start += interval_end;
+  interval_mid += interval_end;
+  interval_end += interval_end;
+
+  EXPECT_EXECUTION_CONGESTED_SLICES(1u,
+                                    StartupStage::kFirstIntervalAfterFirstIdle);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstIntervalAfterFirstIdle);
+
+  // OnResponsivenessEmitted() is invoked for subsequent intervals.
+  {
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*delegate_, OnMeasurementIntervalEnded());
+    EXPECT_CALL(*delegate_, OnResponsivenessEmitted(_, _, _, _));
+  }
+
+  AddEventUI(interval_start, interval_start, interval_start);
+  AddEventUI(interval_mid, interval_mid,
+             interval_mid + kCongestionThresholdInMs + 20);
+  AddEventUI(interval_end, interval_end, interval_end);
 }
 
 }  // namespace responsiveness

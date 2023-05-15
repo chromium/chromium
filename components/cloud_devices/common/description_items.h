@@ -42,6 +42,8 @@ namespace cloud_devices {
 template <class Option, class Traits>
 class ListCapability {
  public:
+  using OptionVector = std::vector<Option>;
+
   ListCapability();
   ListCapability(ListCapability&& other);
 
@@ -69,9 +71,28 @@ class ListCapability {
 
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
 
- private:
-  using OptionVector = std::vector<Option>;
+  typename OptionVector::iterator begin() { return options_.begin(); }
+  typename OptionVector::const_iterator begin() const {
+    return options_.begin();
+  }
+
+  typename OptionVector::iterator end() { return options_.end(); }
+  typename OptionVector::const_iterator end() const { return options_.end(); }
+
+  // Returns JSON path for this item relative to the root of the CDD.
+  virtual std::string GetPath() const;
+
+ protected:
   OptionVector options_;
+};
+
+// Represents a CJT item that is stored as a JSON list.  This works similarly to
+// ListCapability except it's used for ticket items instead of capabilities.
+template <class Option, class Traits>
+class ListTicketItem : public ListCapability<Option, Traits> {
+ public:
+  // ListCapability:
+  std::string GetPath() const override;
 };
 
 // Represents CDD capability stored as JSON list with default_value value.

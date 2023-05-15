@@ -1096,7 +1096,13 @@ policies:
   1095: InsecureHashesInTLSHandshakesEnabled
   1096: DeviceLoginScreenGeolocationAccessLevel
   1097: DeviceReportNetworkEvents
-
+  1098: SafeBrowsingExtensionProtectionAllowed
+  1099: ShowDisplaySizeScreenEnabled
+  1100: AnonymousSearchEnabled
+  1101: LegacyTechReportAllowlist
+  1102: ReportAppInventory
+  1103: ReportAppUsage
+  1104: ReportAppUsageCollectionRateMs
 atomic_groups:
   1: Homepage
   2: RemoteAccess

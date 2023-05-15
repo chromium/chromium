@@ -91,11 +91,11 @@ class BindingsMessagePortConnector
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  base::raw_ref<Client> const client_;
+  raw_ref<Client> const client_;
 
   on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
 
-  base::raw_ptr<content::NavigationHandle> active_navigation_ = nullptr;
+  raw_ptr<content::NavigationHandle> active_navigation_ = nullptr;
 
   base::WeakPtrFactory<BindingsMessagePortConnector> weak_factory_;
 };

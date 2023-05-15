@@ -53,9 +53,9 @@ class RenderWidgetHostNSViewBridgeOwner
                        base::Unretained(this)));
 
     if (responder_delegate_creation_callback) {
-      base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
-          rw_delegate(std::move(responder_delegate_creation_callback).Run());
-      [bridge_->GetNSView() setResponderDelegate:rw_delegate.get()];
+      [bridge_->GetNSView()
+          setResponderDelegate:std::move(responder_delegate_creation_callback)
+                                   .Run()];
     }
   }
 

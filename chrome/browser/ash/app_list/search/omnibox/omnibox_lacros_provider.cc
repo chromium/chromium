@@ -65,7 +65,8 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
       AutocompleteInput input;
 
       SearchSuggestionParser::SuggestResult suggest_result(
-          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED, /*subtypes=*/{},
+          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+          /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
           /*from_keyword=*/false,
           /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
           /*input_text=*/query);
@@ -95,6 +96,7 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kCamelCase);
 
+  query_finished_ = false;
   // Use page classification value CHROMEOS_APP_LIST to differentiate the
   // suggest requests initiated by ChromeOS app_list from the ones by Chrome
   // omnibox.
@@ -110,6 +112,7 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
 void OmniboxLacrosProvider::StopQuery() {
   last_query_.clear();
   last_tokenized_query_.reset();
+  query_finished_ = false;
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -162,7 +165,12 @@ void OmniboxLacrosProvider::OnResultsReceived(
   std::move(list_results.begin(), list_results.end(),
             std::back_inserter(new_results));
 
-  SwapResults(&new_results);
+  // The search system requires only return once per StartSearch, so we need to
+  // ensure no further results swap after the first one.
+  if (!query_finished_) {
+    query_finished_ = true;
+    SwapResults(&new_results);
+  }
 }
 
 }  // namespace app_list

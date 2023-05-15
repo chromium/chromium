@@ -39,8 +39,6 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
@@ -56,9 +54,6 @@
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -72,8 +67,18 @@
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
@@ -107,18 +112,18 @@
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_scene_agent.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
+#import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
+#import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/policy/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
@@ -132,6 +137,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -143,13 +149,11 @@
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -238,6 +242,7 @@ void InjectNTP(Browser* browser) {
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
                                SceneUIProvider,
+                               HistoryCoordinatorDelegate,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
                                WebStateListObserving,
@@ -382,19 +387,19 @@ void InjectNTP(Browser* browser) {
   return _mainCoordinator;
 }
 
-- (id<BrowserInterface>)mainInterface {
+- (WrangledBrowser*)mainInterface {
   return self.browserViewWrangler.mainInterface;
 }
 
-- (id<BrowserInterface>)currentInterface {
+- (WrangledBrowser*)currentInterface {
   return self.browserViewWrangler.currentInterface;
 }
 
-- (id<BrowserInterface>)incognitoInterface {
+- (WrangledBrowser*)incognitoInterface {
   return self.browserViewWrangler.incognitoInterface;
 }
 
-- (id<BrowserInterfaceProvider>)interfaceProvider {
+- (id<BrowserProviderInterface>)browserProviderInterface {
   return self.browserViewWrangler;
 }
 
@@ -407,9 +412,8 @@ void InjectNTP(Browser* browser) {
   self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
 
   if (parameters.openedViaFirstPartyScheme) {
-    DefaultBrowserSceneAgent* sceneAgent =
-        [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
-    [sceneAgent.nonModalScheduler logUserEnteredAppViaFirstPartyScheme];
+    [[NonModalDefaultBrowserPromoSchedulerSceneAgent
+        agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
     [self notifyFETAppOpenedViaFirstParty];
   }
 }
@@ -453,7 +457,7 @@ void InjectNTP(Browser* browser) {
                            tabOpener:self
                connectionInformation:self
                   startupInformation:self.sceneState.appState.startupInformation
-                   interfaceProvider:self.interfaceProvider
+                        browserState:self.currentInterface.browserState
                            initStage:self.sceneState.appState.initStage];
   }
 
@@ -471,7 +475,19 @@ void InjectNTP(Browser* browser) {
                withUrlLoadParams:params
              tabOpenedCompletion:nil];
     } else if (ActivityIsTabMove(activity)) {
-      [self handleTabMoveActivity:activity];
+      if ([self isTabActivityValid:activity]) {
+        [self handleTabMoveActivity:activity];
+      } else {
+        // If the tab does not exist, open a new tab.
+        UrlLoadParams params =
+            UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+        ApplicationMode mode = self.currentInterface.incognito
+                                   ? ApplicationMode::INCOGNITO
+                                   : ApplicationMode::NORMAL;
+        [self openOrReuseTabInMode:mode
+                 withUrlLoadParams:params
+               tabOpenedCompletion:nil];
+      }
     } else if (!activityWithCompletion) {
       // Completion involves user interaction.
       // Only one can be triggered.
@@ -534,7 +550,7 @@ void InjectNTP(Browser* browser) {
   BOOL incognito = GetIncognitoFromTabMoveActivity(activity);
   NSString* tabID = GetTabIDFromActivity(activity);
 
-  id<BrowserInterface> interface = self.interfaceProvider.currentInterface;
+  WrangledBrowser* interface = self.currentInterface;
 
   // It's expected that the current interface matches `incognito`.
   DCHECK(interface.incognito == incognito);
@@ -614,7 +630,7 @@ void InjectNTP(Browser* browser) {
                          tabOpener:self
              connectionInformation:self
                 startupInformation:self.sceneState.appState.startupInformation
-                 interfaceProvider:self.interfaceProvider
+                      browserState:self.currentInterface.browserState
                          initStage:self.sceneState.appState.initStage];
 }
 
@@ -835,17 +851,15 @@ void InjectNTP(Browser* browser) {
       PromosManagerFactory::GetForBrowserState(browserState);
 
   // Add scene agents that require CommandDispatcher.
-  DefaultBrowserSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserSceneAgent alloc]
+  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
+      [[DefaultBrowserPromoSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
-  defaultBrowserAgent.nonModalScheduler.browser = mainBrowser;
   if (IsDefaultBrowserInPromoManagerEnabled()) {
     defaultBrowserAgent.promosManager = promosManager;
   }
   [self.sceneState addAgent:defaultBrowserAgent];
-  if (defaultBrowserAgent.nonModalScheduler) {
-    [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];
-  }
+  [self.sceneState
+      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
@@ -897,7 +911,7 @@ void InjectNTP(Browser* browser) {
   policyWatcherAgent->Initialize(policyChangeCommandsHandler);
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
-      initWithBrowserInterfaceProvider:self.browserViewWrangler];
+      initWithBrowserProviderInterface:self.browserViewWrangler];
   [self.sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
   [self createInitialUI:[self initialUIMode]];
@@ -959,8 +973,7 @@ void InjectNTP(Browser* browser) {
   // the last tab), then instead show the regular UI.
 
   if (self.sceneState.incognitoContentVisible &&
-      !self.interfaceProvider.incognitoInterface.browser->GetWebStateList()
-           ->empty()) {
+      !self.incognitoInterface.browser->GetWebStateList()->empty()) {
     return ApplicationMode::INCOGNITO;
   }
 
@@ -1270,6 +1283,22 @@ void InjectNTP(Browser* browser) {
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
 }
 
+// Returns 'YES' if the tabID from the given `activity` is valid.
+- (BOOL)isTabActivityValid:(NSUserActivity*)activity {
+  NSString* tabID = GetTabIDFromActivity(activity);
+
+  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
+  const std::set<Browser*>& browsers = self.currentInterface.incognito
+                                           ? browserList->AllIncognitoBrowsers()
+                                           : browserList->AllRegularBrowsers();
+
+  BrowserAndIndex tabInfo = FindBrowserAndIndex(tabID, browsers);
+
+  return tabInfo.tab_index != WebStateList::kInvalidIndex;
+}
+
 // Sets a LocalState pref marking the TOS EULA as accepted.
 // If this function is called, the EULA flag is not set but the FRE was not
 // displayed.
@@ -1405,6 +1434,7 @@ void InjectNTP(Browser* browser) {
   self.historyCoordinator.loadStrategy =
       self.currentInterface.incognito ? UrlLoadStrategy::ALWAYS_IN_INCOGNITO
                                       : UrlLoadStrategy::NORMAL;
+  self.historyCoordinator.delegate = self;
   [self.historyCoordinator start];
 }
 
@@ -1527,14 +1557,30 @@ void InjectNTP(Browser* browser) {
   Browser* browser = self.mainInterface.browser;
   id<ApplicationCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  self.settingsNavigationController =
-      [SettingsNavigationController userFeedbackControllerForBrowser:browser
-                                                            delegate:self
-                                                    userFeedbackData:data
-                                                             handler:handler];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+
+  if (ios::provider::CanUseStartUserFeedbackFlow()) {
+    UserFeedbackConfiguration* configuration =
+        [[UserFeedbackConfiguration alloc] init];
+    configuration.data = data;
+    configuration.handler = handler;
+    configuration.singleSignOnService =
+        GetApplicationContext()->GetSSOService();
+
+    NSError* error;
+    ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
+                                         &error);
+    UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess",
+                          error == nil);
+  } else {
+    self.settingsNavigationController =
+        [SettingsNavigationController userFeedbackControllerForBrowser:browser
+                                                              delegate:self
+                                                      userFeedbackData:data
+                                                               handler:handler];
+    [baseViewController presentViewController:self.settingsNavigationController
+                                     animated:YES
+                                   completion:nil];
+  }
 }
 
 - (UserFeedbackData*)createUserFeedbackDataForSender:(UserFeedbackSender)sender
@@ -1658,6 +1704,14 @@ void InjectNTP(Browser* browser) {
       self.signinCoordinator = [SigninCoordinator
           forcedSigninCoordinatorWithBaseViewController:baseViewController
                                                 browser:mainBrowser];
+      break;
+    case AuthenticationOperationSigninAndSyncWithTwoScreens:
+      self.signinCoordinator = [SigninCoordinator
+          twoScreensSigninCoordinatorWithBaseViewController:baseViewController
+                                                    browser:mainBrowser
+                                                accessPoint:command.accessPoint
+                                                promoAction:command
+                                                                .promoAction];
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
@@ -2240,9 +2294,9 @@ void InjectNTP(Browser* browser) {
 - (void)startVoiceSearchInCurrentBVC {
   // If the background (non-current) BVC is playing TTS audio, call
   // -startVoiceSearch on it to stop the TTS.
-  id<BrowserInterface> interface = self.mainInterface == self.currentInterface
-                                       ? self.incognitoInterface
-                                       : self.mainInterface;
+  WrangledBrowser* interface = self.mainInterface == self.currentInterface
+                                   ? self.incognitoInterface
+                                   : self.mainInterface;
   if (interface.playingTTS) {
     [interface.bvc startVoiceSearch];
   } else {
@@ -2367,7 +2421,7 @@ void InjectNTP(Browser* browser) {
   ApplicationModeForTabOpening targetMode =
       incognitoMode ? ApplicationModeForTabOpening::INCOGNITO
                     : ApplicationModeForTabOpening::NORMAL;
-  id<BrowserInterface> targetInterface =
+  WrangledBrowser* targetInterface =
       [self extractInterfaceBaseOnMode:targetMode];
 
   web::WebState* currentWebState =
@@ -2478,13 +2532,11 @@ void InjectNTP(Browser* browser) {
 // expectNewForegroundTab on the BVC first to avoid extra work and possible page
 // load side-effects for the tab being replaced.
 - (void)setCurrentInterfaceForMode:(ApplicationMode)mode {
-  DCHECK(self.interfaceProvider);
-  BOOL incognitio = mode == ApplicationMode::INCOGNITO;
-  id<BrowserInterface> currentInterface =
-      self.interfaceProvider.currentInterface;
-  id<BrowserInterface> newInterface =
-      incognitio ? self.interfaceProvider.incognitoInterface
-                 : self.interfaceProvider.mainInterface;
+  DCHECK(self.browserViewWrangler);
+  BOOL incognito = mode == ApplicationMode::INCOGNITO;
+  WrangledBrowser* currentInterface = self.currentInterface;
+  WrangledBrowser* newInterface =
+      incognito ? self.incognitoInterface : self.mainInterface;
   if (currentInterface && currentInterface == newInterface) {
     return;
   }
@@ -2494,7 +2546,7 @@ void InjectNTP(Browser* browser) {
   // application mode.
   [self updateActiveWebStateSnapshot];
 
-  self.interfaceProvider.currentInterface = newInterface;
+  self.browserViewWrangler.currentInterface = newInterface;
 
   if (!self.activatingBrowser) {
     [self displayCurrentBVCAndFocusOmnibox:NO dismissTabSwitcher:YES];
@@ -2538,9 +2590,8 @@ void InjectNTP(Browser* browser) {
         << "self.signinCoordinator: "
         << base::SysNSStringToUTF8([self.signinCoordinator description]);
     // This will dismiss the SSO view controller.
-    [self.interfaceProvider.currentInterface
-        clearPresentedStateWithCompletion:completion
-                           dismissOmnibox:dismissOmnibox];
+    [self.currentInterface clearPresentedStateWithCompletion:completion
+                                              dismissOmnibox:dismissOmnibox];
   };
   ProceduralBlock completionWithoutBVC = ^{
     // `self.currentInterface.bvc` may exist but tab switcher should be
@@ -2645,19 +2696,17 @@ void InjectNTP(Browser* browser) {
   ApplicationMode targetMode;
 
   if (tabOpeningTargetMode == ApplicationModeForTabOpening::CURRENT) {
-    targetMode = self.interfaceProvider.currentInterface.incognito
-                     ? ApplicationMode::INCOGNITO
-                     : ApplicationMode::NORMAL;
+    targetMode = self.currentInterface.incognito ? ApplicationMode::INCOGNITO
+                                                 : ApplicationMode::NORMAL;
   } else if (tabOpeningTargetMode == ApplicationModeForTabOpening::NORMAL) {
     targetMode = ApplicationMode::NORMAL;
   } else {
     targetMode = ApplicationMode::INCOGNITO;
   }
 
-  id<BrowserInterface> targetInterface =
-      targetMode == ApplicationMode::NORMAL
-          ? self.interfaceProvider.mainInterface
-          : self.interfaceProvider.incognitoInterface;
+  WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
+                                         ? self.mainInterface
+                                         : self.incognitoInterface;
   ProceduralBlock startupCompletion =
       [self completionBlockForTriggeringAction:[self.startupParameters
                                                        postOpeningAction]];
@@ -2722,10 +2771,9 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode {
-  id<BrowserInterface> interface =
-      targetMode == ApplicationMode::INCOGNITO
-          ? self.interfaceProvider.incognitoInterface
-          : self.interfaceProvider.mainInterface;
+  WrangledBrowser* interface = targetMode == ApplicationMode::INCOGNITO
+                                   ? self.incognitoInterface
+                                   : self.mainInterface;
   DCHECK(interface);
   PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(interface.browser);
@@ -2767,9 +2815,9 @@ void InjectNTP(Browser* browser) {
 - (void)openOrReuseTabInMode:(ApplicationMode)targetMode
            withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
          tabOpenedCompletion:(ProceduralBlock)tabOpenedCompletion {
-  id<BrowserInterface> targetInterface = targetMode == ApplicationMode::NORMAL
-                                             ? self.mainInterface
-                                             : self.incognitoInterface;
+  WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
+                                         ? self.mainInterface
+                                         : self.incognitoInterface;
 
   BrowserViewController* targetBVC = targetInterface.bvc;
   web::WebState* currentWebState =
@@ -2896,21 +2944,26 @@ void InjectNTP(Browser* browser) {
   };
 
   if (self.settingsNavigationController) {
+    // Store a reference to the presentingViewController in case the user
+    // is dismissing the Signin screen and then dismisses Settings before
+    // the Signin screen is done animating, which will delay the execution of
+    // the `dismissSettings` block stopping the code from accessing
+    // the `presentingViewController` property.
+    __weak UIViewController* weakPresentingViewController =
+        [self.settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [self.settingsNavigationController cleanUpSettings];
-      UIViewController* presentingViewController =
-          [self.settingsNavigationController presentingViewController];
-      // If presentingViewController is nil it means the VC was already
-      // dismissed by some other action like swiping down.
-      DCHECK(presentingViewController);
-      [presentingViewController dismissViewControllerAnimated:animated
-                                                   completion:completion];
-      self.settingsNavigationController = nil;
+      [weakSelf.settingsNavigationController cleanUpSettings];
+      DCHECK(weakPresentingViewController);
+      [weakPresentingViewController dismissViewControllerAnimated:animated
+                                                       completion:completion];
+      weakSelf.settingsNavigationController = nil;
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
     if (self.signinCoordinator) {
+      // If signinCoordinator is already dismissing, completion execution will
+      // happen when it is done animating.
       [self interruptSigninCoordinatorAnimated:animated
                                     completion:dismissSettings];
     } else if (dismissSettings) {
@@ -3144,8 +3197,8 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  self.interfaceProvider.mainInterface.userInteractionEnabled = YES;
-  self.interfaceProvider.incognitoInterface.userInteractionEnabled = YES;
+  self.mainInterface.userInteractionEnabled = YES;
+  self.incognitoInterface.userInteractionEnabled = YES;
   [self.currentInterface setPrimary:YES];
 }
 
@@ -3195,13 +3248,13 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-- (id<BrowserInterface>)extractInterfaceBaseOnMode:
+- (WrangledBrowser*)extractInterfaceBaseOnMode:
     (ApplicationModeForTabOpening)targetMode {
   DCHECK(targetMode != ApplicationModeForTabOpening::UNDETERMINED);
   ApplicationMode applicationMode;
 
   if (targetMode == ApplicationModeForTabOpening::CURRENT) {
-    applicationMode = self.interfaceProvider.currentInterface.incognito
+    applicationMode = self.currentInterface.incognito
                           ? ApplicationMode::INCOGNITO
                           : ApplicationMode::NORMAL;
   } else if (targetMode == ApplicationModeForTabOpening::NORMAL) {
@@ -3210,10 +3263,9 @@ void InjectNTP(Browser* browser) {
     applicationMode = ApplicationMode::INCOGNITO;
   }
 
-  id<BrowserInterface> targetInterface =
-      applicationMode == ApplicationMode::NORMAL
-          ? self.interfaceProvider.mainInterface
-          : self.interfaceProvider.incognitoInterface;
+  WrangledBrowser* targetInterface = applicationMode == ApplicationMode::NORMAL
+                                         ? self.mainInterface
+                                         : self.incognitoInterface;
 
   return targetInterface;
 }
@@ -3384,6 +3436,19 @@ void InjectNTP(Browser* browser) {
 
 - (UIViewController*)activeViewController {
   return self.mainCoordinator.activeViewController;
+}
+
+#pragma mark - HistoryCoordinatorDelegate
+
+- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [self.historyCoordinator dismissWithCompletion:^{
+    if (completion) {
+      completion();
+    }
+    [weakSelf.historyCoordinator stop];
+    weakSelf.historyCoordinator = nil;
+  }];
 }
 
 @end

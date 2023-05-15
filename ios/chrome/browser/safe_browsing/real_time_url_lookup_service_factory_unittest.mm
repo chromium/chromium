@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 

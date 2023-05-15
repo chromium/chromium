@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -162,8 +161,19 @@ public class NQETest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @DisabledTest(message = "crbug.com/796260")
     public void testQuicDisabled() throws Exception {
+        // Set up HistogramWatcher before starting CronetEngine. This is because the
+        // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of this
+        // and the count at assertExpected() call time to confirm that new samples are logged.
+        UmaRecorderHolder.onLibraryLoaded(); // Hackish workaround to crbug.com/1338919
+        var writeCountHistogram = HistogramWatcher.newBuilder()
+                                          .expectIntRecord("NQE.Prefs.WriteCount", 1)
+                                          .allowExtraRecordsForHistogramsAbove()
+                                          .build();
+        var readCountHistogram = HistogramWatcher.newBuilder()
+                                         .expectIntRecord("NQE.Prefs.ReadCount", 1)
+                                         .allowExtraRecordsForHistogramsAbove()
+                                         .build();
         ExperimentalCronetEngine.Builder cronetEngineBuilder =
                 new ExperimentalCronetEngine.Builder(getContext());
         assertTrue(RttThroughputValues.INVALID_RTT_THROUGHPUT < 0);
@@ -189,17 +199,6 @@ public class NQETest {
 
         cronetEngine.addRttListener(rttListener);
         cronetEngine.addThroughputListener(throughputListener);
-
-        // Hackish workaround to crbug.com/1338919
-        UmaRecorderHolder.onLibraryLoaded();
-        var writeCountHistogram = HistogramWatcher.newBuilder()
-                                          .expectIntRecord("NQE.Prefs.WriteCount", 1)
-                                          .allowExtraRecordsForHistogramsAbove()
-                                          .build();
-        var readCountHistogram = HistogramWatcher.newBuilder()
-                                         .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                         .allowExtraRecordsForHistogramsAbove()
-                                         .build();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -274,7 +273,38 @@ public class NQETest {
     public void testPrefsWriteRead() throws Exception {
         // When the loop is run for the first time, network quality is written to the disk. The
         // test verifies that in the next loop, the network quality is read back.
+
+        UmaRecorderHolder.onLibraryLoaded(); // Hackish workaround to crbug.com/1338919
         for (int i = 0; i <= 1; ++i) {
+            // Set up HistogramWatcher before starting CronetEngine. This is because the
+            // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of
+            // this and the count at assertExpected() call time to confirm that new samples are
+            // logged.
+            HistogramWatcher readCountHistogram = HistogramWatcher.newBuilder()
+                                                          .expectIntRecord("NQE.Prefs.ReadCount", 1)
+                                                          .allowExtraRecordsForHistogramsAbove()
+                                                          .build();
+
+            // Stored network quality in the pref should be read in the second iteration.
+            HistogramWatcher readPrefsSizeHistogram;
+            if (i == 0) {
+                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
+                                                 .expectIntRecord("NQE.Prefs.ReadSize", 0)
+                                                 .build();
+            } else {
+                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
+                                                 .expectIntRecord("NQE.Prefs.ReadSize", 1)
+                                                 .allowExtraRecordsForHistogramsAbove()
+                                                 .build();
+            }
+
+            // NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_CACHED_ESTIMATE: 3
+            HistogramWatcher cachedRttHistogram =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord("NQE.RTT.ObservationSource", 3)
+                            .allowExtraRecordsForHistogramsAbove()
+                            .build();
+
             ExperimentalCronetEngine.Builder cronetEngineBuilder =
                     new ExperimentalCronetEngine.Builder(getContext());
             assertTrue(RttThroughputValues.INVALID_RTT_THROUGHPUT < 0);
@@ -301,34 +331,6 @@ public class NQETest {
             final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
             cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, true);
             cronetEngine.addRttListener(rttListener);
-
-            // Hackish workaround to crbug.com/1338919
-            if (i == 0) UmaRecorderHolder.onLibraryLoaded();
-
-            HistogramWatcher readCountHistogram = HistogramWatcher.newBuilder()
-                                                          .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                                          .allowExtraRecordsForHistogramsAbove()
-                                                          .build();
-
-            // Stored network quality in the pref should be read in the second iteration.
-            HistogramWatcher readPrefsSizeHistogram;
-            if (i == 0) {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 0)
-                                                 .build();
-            } else {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 1)
-                                                 .allowExtraRecordsForHistogramsAbove()
-                                                 .build();
-            }
-
-            // NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_CACHED_ESTIMATE: 3
-            HistogramWatcher cachedRttHistogram =
-                    HistogramWatcher.newBuilder()
-                            .expectIntRecord("NQE.RTT.ObservationSource", 3)
-                            .allowExtraRecordsForHistogramsAbove()
-                            .build();
 
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder builder =
@@ -370,7 +372,6 @@ public class NQETest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @DisabledTest(message = "crbug.com/796260")
     public void testQuicDisabledWithParams() throws Exception {
         ExperimentalCronetEngine.Builder cronetEngineBuilder =
                 new ExperimentalCronetEngine.Builder(getContext());

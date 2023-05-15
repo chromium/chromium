@@ -55,14 +55,15 @@ PowerBookmarkSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   return ApplyChanges(std::move(metadata_change_list), entity_changes,
                       /*is_initial_merge=*/true);
 }
 
-absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+PowerBookmarkSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   return ApplyChanges(std::move(metadata_change_list), entity_changes,

@@ -10,7 +10,7 @@
 
 html {
   --card-max-width: 960px;
-  --side-bar-width: 250px;
+  --side-bar-width: 300px;
   --toolbar-height: 56px;
   /* Centered cards has a max-width of var(--cr-centered-card-max-width)
    * and a width of a certain percentage. Therefore, to make room for the
@@ -22,4 +22,12 @@ html {
   --section-min-height: 48px;
   /* Spacing between a control (e.g. checkbox) and its label. */
   --two-line-section-min-height: 64px;
+
+  --error-color: var(--google-red-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --error-color: var(--google-red-300);
+  }
 }

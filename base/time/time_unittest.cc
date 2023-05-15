@@ -1584,6 +1584,53 @@ TEST(TimeTicks, Android_FromJavaNanoTime_ClocksMatch) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+class LiveTicksOverride {
+ public:
+  static LiveTicks Now() {
+    now_ticks_ += Seconds(1);
+    return now_ticks_;
+  }
+
+  static LiveTicks now_ticks_;
+};
+
+// static
+LiveTicks LiveTicksOverride::now_ticks_;
+
+TEST(LiveTicks, NowOverride) {
+  LiveTicksOverride::now_ticks_ = LiveTicks::Min();
+
+  // Override is not active. All Now() methods should return a sensible value.
+  LiveTicks initial_live_ticks = LiveTicks::Now();
+  EXPECT_LE(initial_live_ticks, LiveTicks::Now());
+  EXPECT_LT(LiveTicks::Now(), LiveTicks::Max());
+  EXPECT_LE(initial_live_ticks, subtle::LiveTicksNowIgnoringOverride());
+  EXPECT_LT(subtle::LiveTicksNowIgnoringOverride(), LiveTicks::Max());
+
+  {
+    // Set override.
+    subtle::ScopedTimeClockOverrides overrides(nullptr, nullptr, nullptr,
+                                               &LiveTicksOverride::Now);
+
+    // Overridden value is returned and incremented when Now() is called.
+    EXPECT_EQ(LiveTicks::Min() + Seconds(1), LiveTicks::Now());
+    EXPECT_EQ(LiveTicks::Min() + Seconds(2), LiveTicks::Now());
+
+    // NowIgnoringOverride() still returns real ticks.
+    EXPECT_LE(initial_live_ticks, subtle::LiveTicksNowIgnoringOverride());
+    EXPECT_LT(subtle::LiveTicksNowIgnoringOverride(), LiveTicks::Max());
+
+    // IgnoringOverride methods didn't call NowOverrideTickClock::NowTicks().
+    EXPECT_EQ(LiveTicks::Min() + Seconds(3), LiveTicks::Now());
+  }
+
+  // All methods return real ticks again.
+  EXPECT_LE(initial_live_ticks, LiveTicks::Now());
+  EXPECT_LT(LiveTicks::Now(), LiveTicks::Max());
+  EXPECT_LE(initial_live_ticks, subtle::LiveTicksNowIgnoringOverride());
+  EXPECT_LT(subtle::LiveTicksNowIgnoringOverride(), LiveTicks::Max());
+}
+
 TEST(TimeDelta, FromAndIn) {
   // static_assert also checks that the contained expression is a constant
   // expression, meaning all its components are suitable for initializing global

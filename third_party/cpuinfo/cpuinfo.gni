@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+use_cpuinfo =
+    # cpuinfo is not supported on these chips.
+    current_cpu != "ppc64" && current_cpu != "ppc64le" &&
+    current_cpu != "s390" && current_cpu != "s390x" &&
+    # cpuinfo is not supported on fuchsia.
+    !is_fuchsia &&
+    # cpuinfo is crashy on the Windows Arm64 chips.
+    !(is_win && current_cpu == "arm64") &&
+    # There's a few arm architectures that are not supported by cpuinfo,
+    # especially amongst ChromeOS devices.
+    # See //third_party/cpuinfo/src/src/arm/linux/cp.h.
+    (!defined(arm_arch) ||
+     (arm_arch != "armv7-a+crc" && arm_arch != "armv8-a+crc" &&
+      arm_arch != "armv8-a+crc+crypto"))

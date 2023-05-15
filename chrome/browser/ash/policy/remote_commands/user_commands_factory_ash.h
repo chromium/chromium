@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 
 class Profile;
@@ -28,7 +29,7 @@ class UserCommandsFactoryAsh : public RemoteCommandsFactory {
       RemoteCommandsService* service) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace policy

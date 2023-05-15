@@ -279,7 +279,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   bool is_hanging_ = false;
 };
 
-class FakePolicyService : public policy::MockPolicyService {
+class FakePolicyService : public testing::NiceMock<policy::MockPolicyService> {
  public:
   void SimulateCloudPolicyUpdate() {
     ASSERT_TRUE(observer_);
@@ -623,7 +623,7 @@ class TurnSyncOnHelperTest : public testing::Test {
     syncer::MockSyncService* mock_sync_service = GetMockSyncService(profile);
     ON_CALL(*mock_sync_service, GetDisableReasons())
         .WillByDefault(Return(syncer::SyncService::DisableReasonSet(
-            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)));
+            {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
   }
 
   void SetExpectationsForSyncAborted() {

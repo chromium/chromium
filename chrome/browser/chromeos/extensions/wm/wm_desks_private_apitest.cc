@@ -5,9 +5,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
       browser()->profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
   // Waiting for desk launch animation to settle
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, ListDesksTest) {
       browser()->profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
     waiter.Wait();
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchToDifferentDeskTest) {
       get_active_desk_function.get(), "[]", browser()->profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   // Launch a desk.
   auto launch_desk_function =
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchToDifferentDeskTest) {
       browser()->profile());
   EXPECT_TRUE(desk_id_1->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
   histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
 
   // Waiting for desk launch animation to settle
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchToCurrentDeskTest) {
       get_active_desk_function.get(), "[]", browser()->profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   // Switches to the current desk.
   auto switch_desk_function =
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
       save_desk_function.get(), R"([])", browser()->profile());
   EXPECT_TRUE(result->is_dict());
   auto desk_id = result->GetDict().Find("savedDeskUuid")->GetString();
-  EXPECT_TRUE(base::GUID::ParseCaseInsensitive(desk_id).is_valid());
+  EXPECT_TRUE(base::Uuid::ParseCaseInsensitive(desk_id).is_valid());
 
   // Waiting for desk launch animation to settle
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
       browser()->profile());
   EXPECT_TRUE(desk_id_1->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
 
   // Waiting for desk removal animation to settle
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
@@ -304,7 +304,13 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
 }
 
 // Tests save and delete a desk.
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndDeleteDeskTest) {
+// TODO(1430982): Flaky on linux-chromeos-rel.
+#if defined(NDEBUG)
+#define MAYBE_SaveAndDeleteDeskTest DISABLED_SaveAndDeleteDeskTest
+#else
+#define MAYBE_SaveAndDeleteDeskTest SaveAndDeleteDeskTest
+#endif
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, MAYBE_SaveAndDeleteDeskTest) {
   // Save a desk.
   auto save_desk_function =
       base::MakeRefCounted<WmDesksPrivateSaveActiveDeskFunction>();
@@ -315,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndDeleteDeskTest) {
       save_desk_function.get(), R"([])", browser()->profile());
   EXPECT_TRUE(result->is_dict());
   auto desk_id = result->GetDict().Find("savedDeskUuid")->GetString();
-  EXPECT_TRUE(base::GUID::ParseCaseInsensitive(desk_id).is_valid());
+  EXPECT_TRUE(base::Uuid::ParseCaseInsensitive(desk_id).is_valid());
 
   // Waiting for desk launch animation to settle
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
@@ -363,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByInvalidIDTest) {
 
 // Tests retrieve desk with non-exist deskID.
 IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByNonExistIDTest) {
-  auto desk_id = base::GUID::GenerateRandomV4().AsLowercaseString();
+  auto desk_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   // Retrieve desk by Id.
   auto get_desk_by_id_function =
       base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();

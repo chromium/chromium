@@ -133,9 +133,10 @@ GURL GetSigninPromoURL() {
 class FooWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
-  MOCK_METHOD2(NewWebUI,
-               std::unique_ptr<content::WebUIController>(content::WebUI* web_ui,
-                                                         const GURL& url));
+  MOCK_METHOD(std::unique_ptr<content::WebUIController>,
+              NewWebUI,
+              (content::WebUI * web_ui, const GURL& url),
+              (override));
 };
 
 bool AddToSet(std::set<content::WebContents*>* set,
@@ -173,9 +174,15 @@ class MockInlineSigninHelper : public InlineSigninHelper {
   MockInlineSigninHelper(const MockInlineSigninHelper&) = delete;
   MockInlineSigninHelper& operator=(const MockInlineSigninHelper&) = delete;
 
-  MOCK_METHOD1(OnClientOAuthSuccess, void(const ClientOAuthResult& result));
-  MOCK_METHOD1(OnClientOAuthFailure, void(const GoogleServiceAuthError& error));
-  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
+  MOCK_METHOD(void,
+              OnClientOAuthSuccess,
+              (const ClientOAuthResult& result),
+              (override));
+  MOCK_METHOD(void,
+              OnClientOAuthFailure,
+              (const GoogleServiceAuthError& error),
+              (override));
+  MOCK_METHOD(void, CreateSyncStarter, (const std::string&), (override));
 
   GaiaAuthFetcher* GetGaiaAuthFetcher() { return GetGaiaAuthFetcherForTest(); }
 };
@@ -225,7 +232,7 @@ class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
   MockSyncStarterInlineSigninHelper& operator=(
       const MockSyncStarterInlineSigninHelper&) = delete;
 
-  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
+  MOCK_METHOD(void, CreateSyncStarter, (const std::string&), (override));
 };
 
 MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(

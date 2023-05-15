@@ -91,6 +91,9 @@ using Window = XID;
 #define GL_TEXTURE_USAGE_ANGLE                           0x93A2
 #define GL_FRAMEBUFFER_ATTACHMENT_ANGLE                  0x93A3
 
+// GL_ANGLE_renderability_validation
+#define GL_RENDERABILITY_VALIDATION_ANGLE 0x9EA0
+
 // GL_EXT_texture_storage
 #define GL_TEXTURE_IMMUTABLE_FORMAT_EXT                  0x912F
 #define GL_ALPHA8_EXT                                    0x803C

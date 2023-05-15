@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS document.open() changes document's URL (fully active document)
-FAIL document.open() does not change document's URL (active but not fully active document) assert_equals: expected (string) "http://web-platform.test:8001/common/blank.html" but got (undefined) undefined
-PASS document.open() does not change document's URL (non-active document with an associated Window object; frame is removed)
-PASS document.open() does not change document's URL (non-active document with an associated Window object; navigated away)
-PASS document.open() does not change document's URL (non-active document without an associated Window object)
-Harness: the test ran to completion.
-

@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/features.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
@@ -117,7 +117,6 @@ void AttachBrowserAgents(Browser* browser) {
   WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   ReadingListBrowserAgent::CreateForBrowser(browser);
 
-  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   PagePlaceholderBrowserAgent::CreateForBrowser(browser);
 
   // This needs to be called last in case any downstream browser agents need to

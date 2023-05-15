@@ -472,15 +472,18 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                 size_t payload_size,
                                 std::vector<PlatformHandle> handles);
 
+ protected:
   enum class MessageType {
     kSent,
     kReceive,
   };
 
-  // Calculates if the next sample should be recorded to an histogram
-  // sub-sampled for counting IPC metrics and records histograms for Sent
-  // and Receive message types. Records histogram randomly for ~1/1000 calls.
-  void MaybeLogHistogramForIPCMetrics(MessageType type);
+  // Records histograms that count sent/received messages per process type.
+  // Must be guarded by a call to ShouldRecordSubsampledHistograms().
+  static void LogHistogramForIPCMetrics(MessageType type);
+
+  // Returns true for ~1/1000 calls. Used to reduce reporting overhead.
+  bool ShouldRecordSubsampledHistograms();
 
  private:
   friend class base::RefCountedThreadSafe<Channel>;

@@ -16,6 +16,7 @@
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -164,8 +165,8 @@ class DumpAccessibilityTestBase
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
   // Returns a list of captured events fired after the invoked action.
-  using InvokeAction = base::OnceCallback<base::Value()>;
-  std::pair<base::Value, std::vector<std::string>> CaptureEvents(
+  using InvokeAction = base::OnceCallback<EvalJsResult()>;
+  std::pair<EvalJsResult, std::vector<std::string>> CaptureEvents(
       InvokeAction invoke_action,
       ui::AXMode mode);
 

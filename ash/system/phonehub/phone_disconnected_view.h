@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -39,9 +40,10 @@ class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
   void ButtonPressed(phone_hub_metrics::InterstitialScreenEvent event,
                      base::RepeatingClosure callback);
 
-  phonehub::ConnectionScheduler* connection_scheduler_ = nullptr;
+  raw_ptr<phonehub::ConnectionScheduler, ExperimentalAsh>
+      connection_scheduler_ = nullptr;
 
-  PhoneHubInterstitialView* content_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView, ExperimentalAsh> content_view_ = nullptr;
 };
 
 }  // namespace ash

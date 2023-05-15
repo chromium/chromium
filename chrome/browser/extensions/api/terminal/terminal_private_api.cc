@@ -702,7 +702,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
   } else {
     guest_os::LaunchTerminalWithUrl(
         Profile::FromBrowserContext(browser_context()),
-        display::kInvalidDisplayId, GURL(*url));
+        display::kInvalidDisplayId, /*restore_id=*/0, GURL(*url));
   }
 
   return RespondNow(NoArguments());
@@ -737,14 +737,9 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   info.Set("alternative_emulator",
            base::FeatureList::IsEnabled(
                ash::features::kTerminalAlternativeEmulator));
-  info.Set("multi_profile",
-           base::FeatureList::IsEnabled(ash::features::kTerminalMultiProfile));
-  info.Set("sftp", base::FeatureList::IsEnabled(ash::features::kTerminalSftp));
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));
-  info.Set("tmux_integration", base::FeatureList::IsEnabled(
-                                   ash::features::kTerminalTmuxIntegration));
   return RespondNow(WithArguments(std::move(info)));
 }
 

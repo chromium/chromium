@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="100506692671054486">ਕੋਈ ਪਿਛਲਾ ਆਦੇਸ਼ ਨਹੀਂ</translation>
 <translation id="1009046985747440431">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਉੱਪਰ ਜਾਂ ਹੇਠਾਂ ਵੱਲ ਦੀ ਤੀਰ ਕੁੰਜੀ ਦਬਾਓ; ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="1011903154582639569">ਕਿਸੇ ਕੁੰਜੀ 'ਤੇ ਜਾਓ ਫਿਰ ਟਾਈਪ ਕਰਨ ਲਈ ਉਂਗਲ ਚੁੱਕੋ</translation>
 <translation id="1012173283529841972">ਸੂਚੀ ਆਈਟਮ</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">ਫਿੱਕਾ ਗੁਲਾਬੀ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
 <translation id="3962990492275676168">ਮੌਜੂਦਾ ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਤੋਂ ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="397094149579293440">ਕੋਈ ਚੁਣੀ ਲਿਖਤ ਨਹੀਂ</translation>
 <translation id="3970951409746498040">ਰੇਤੀਲਾ ਭੂਰਾ</translation>
 <translation id="3989324057180830702">ਟੌਗਲ ਬਟਨ</translation>
 <translation id="3991317907213946254">ਦਾਲਚੀਨੀ</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">ਕੋਈ ਪਿਛਲਾ ਪੱਧਰ 1 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="4787577491510559358">ਮੌਜੂਦ ਆਈਟਮ ਦੀ ਫਾਰਮੈਟਿੰਗ ਦੱਸੋ</translation>
 <translation id="479989351350248267">ਖੋਜੋ</translation>
+<translation id="4802034228771424756">ਕੋਈ ਫੋਕਸ ਕੀਤਾ ਲਿਖਤ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="4804818685124855865">ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="481165870889056555">ਮੌਜੂਦਾ ਸਫ਼ੇ ਦੇ ਸਿਰਲੇਖ ਦੀ ਘੋਸ਼ਣਾ ਕਰੋ</translation>
 <translation id="4815668758102003883">ਫਿੱਕਾ ਫਿਰੋਜ਼ੀ</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">ਅੰਦਰੂਨੀ ਲਿੰਕ</translation>
 <translation id="4909019435900810068">ਇੱਕ ਸ਼ਬਦ ਪਿੱਛੇ ਵੱਲ ਲਿਜਾਓ</translation>
 <translation id="4911349081560453449">ਕੋਈ ਪਿਛਲਾ ਚੈੱਕ-ਬਾਕਸ ਨਹੀਂ</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="492295894462528572">ਭੂਮਿਕਾ</translation>
 <translation id="495046168593986294">ਉੱਪਰ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="495170559598752135">ਕਿਰਿਆਵਾਂ</translation>
 <translation id="4953585991029886728">ਲਿਖਤ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
+<translation id="4964701498510730546">ਲਿਖਤ ਖੇਤਰ ਖਾਲੀ ਹੈ</translation>
 <translation id="4973717656530883744">ਮਿੰਟ <ph name="X" /></translation>
 <translation id="4974612477719259470">ਕੋਈ ਪਿਛਲਾ ਬਟਨ ਨਹੀਂ</translation>
 <translation id="4979404613699303341">ਪਿਛਲਾ ਬਟਨ</translation>
+<translation id="4981239367072766915">ਅਣਪਛਾਤਾ ਇਨਪੁੱਟ</translation>
 <translation id="4982917827052020884">ਚਲੋ ਉਹਨਾਂ ਕੁੰਜੀਆਂ ਨਾਲ ਸ਼ੁਰੂ ਕਰੀਏ ਜਿਹਨਾਂ ਨੂੰ ਤੁਸੀਂ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋਗੇ। ਕਿਸੇ ਮੌਜੂਦਾ ਬੋਲਚਾਲ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ Control ਕੁੰਜੀ ਵਰਤੀ ਜਾ ਸਕਦੀ ਹੈ। Control ਕੁੰਜੀ ਨੂੰ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੇ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲੱਭੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, Control ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="4983588134362688868">ਸਫ਼ੇ ਤੇ ਟੌਪ ਤੇ ਜਾਓ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, window</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ਬੈਟਰੀ ਦੀ ਮੌਜੂਦਾ ਸਥਿਤੀ ਦੱਸੋ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ਰੇਡੀਓ ਬਟਨ ਚੁਣਿਆ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ਮੀਨੂ ਆਈਟਮ ਰੇਡੀਓ ਬਟਨ ਚੁਣਿਆ ਗਿਆ</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ਬੋਲੀ ਲੌਗਿੰਗ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5041394372352067729">ਸਫ਼ੇ ਦੇ ਟੌਪ ਤੇ ਬ੍ਰੇਲ ਡਿਸਪਲੇ ਮੂਵ ਕਰੋ</translation>
 <translation id="5042770794184672516">ਸਪੀਚ ਵੌਲਿਊਮ ਵਧਾਓ</translation>

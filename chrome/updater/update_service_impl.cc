@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
+#include "chrome/updater/change_owners_task.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -283,10 +284,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
 
   // The installer should make an updater registration, but in case it halts
   // before it does, synthesize a registration if necessary here.
-  if (!base::Contains(persisted_data_->GetAppIds(),
-                      base::ToLowerASCII(kUpdaterAppId),
-                      static_cast<std::string (*)(base::StringPiece)>(
-                          &base::ToLowerASCII))) {
+  const base::Version registered_updater_version =
+      persisted_data_->GetProductVersion(kUpdaterAppId);
+  if (!registered_updater_version.IsValid() ||
+      base::Version(kUpdaterVersion) > registered_updater_version) {
     RegistrationRequest updater_request;
     updater_request.app_id = kUpdaterAppId;
     updater_request.version = base::Version(kUpdaterVersion);
@@ -301,6 +302,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   new_tasks.push_back(base::BindOnce(&UpdateUsageStatsTask::Run,
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
+  new_tasks.push_back(
+      MakeChangeOwnersTask(base::MakeRefCounted<PersistedData>(
+                               GetUpdaterScope(), config_->GetPrefService()),
+                           GetUpdaterScope()));
 
   new_tasks.push_back(base::BindOnce(
       [](scoped_refptr<UpdateServiceImpl> update_service_impl,

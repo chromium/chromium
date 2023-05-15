@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 
 class Profile;
@@ -64,7 +65,7 @@ class ScopedTestMountPoint {
   const storage::FileSystemType file_system_type_;
   const file_manager::VolumeType volume_type_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   bool mounted_ = false;
   base::ScopedTempDir temp_dir_;
 };

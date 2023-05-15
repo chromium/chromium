@@ -58,11 +58,13 @@ class FederatedIdentityPermissionContextDelegate {
 
   // Determine whether there is an existing permission grant to share identity
   // information for the given account to the `relying_party_requester` when
-  // embedded in `relying_party_embedder`.
-  virtual bool HasSharingPermission(const url::Origin& relying_party_requester,
-                                    const url::Origin& relying_party_embedder,
-                                    const url::Origin& identity_provider,
-                                    const std::string& account_id) = 0;
+  // embedded in `relying_party_embedder`. `account_id` can be omitted to
+  // represent "sharing permission for any account".
+  virtual bool HasSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const absl::optional<std::string>& account_id) = 0;
 
   // Grants permission to share identity information for the given account to
   // `relying_party_requester` when embedded in `relying_party_embedder`.

@@ -19,6 +19,7 @@
 #include "ash/app_list/model/folder_image.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace gfx {
@@ -138,7 +139,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   std::map<AppListConfigType, std::unique_ptr<FolderImage>> folder_images_;
 
   // Set when a folder item is being dragged.
-  AppListItem* dragged_item_ = nullptr;
+  raw_ptr<AppListItem, ExperimentalAsh> dragged_item_ = nullptr;
 
   base::ScopedObservation<AppListConfigProvider,
                           AppListConfigProvider::Observer>

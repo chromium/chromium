@@ -38,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
+        FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE,
         FeatureConstants.DOWNLOAD_SETTINGS_FEATURE,
         FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
         FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE,
@@ -118,6 +119,8 @@ public @interface FeatureConstants {
     String KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE = "IPH_KeyboardAccessoryPaymentFilling";
     String KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE = "IPH_KeyboardAccessoryPaymentOffer";
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
+    String KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE =
+            "IPH_AutofillExternalAccountProfileSuggestion";
     String KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE = "IPH_KeyboardAccessoryBarSwiping";
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
     String PAGE_ZOOM_FEATURE = "IPH_PageZoom";

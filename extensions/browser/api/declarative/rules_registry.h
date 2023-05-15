@@ -242,7 +242,7 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
                            const std::string& error);
 
   // The context to which this rules registry belongs.
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   // The ID of the thread on which the rules registry lives.
   const content::BrowserThread::ID owner_thread_;

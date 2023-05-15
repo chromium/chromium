@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
@@ -21,7 +22,8 @@ class EnrollmentFwmpHelperTest : public testing::Test {
   void TearDown() override { ash::InstallAttributesClient::Shutdown(); }
 
  protected:
-  ash::FakeInstallAttributesClient* install_attributes_client_;
+  raw_ptr<ash::FakeInstallAttributesClient, ExperimentalAsh>
+      install_attributes_client_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment;

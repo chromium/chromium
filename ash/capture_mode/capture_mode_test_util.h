@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
@@ -39,6 +40,7 @@ class View;
 
 namespace ash {
 
+class PillButton;
 class IconButton;
 class CaptureModeController;
 class CaptureModeBarView;
@@ -98,11 +100,9 @@ void ClickOrTapView(const views::View* view,
                     bool in_table_mode,
                     ui::test::EventGenerator* event_generator);
 
+views::Widget* GetCaptureModeBarWidget();
+
 CaptureModeBarView* GetCaptureModeBarView();
-
-IconButton* GetFullscreenToggleButton();
-
-IconButton* GetRegionToggleButton();
 
 UserNudgeController* GetUserNudgeController();
 
@@ -132,6 +132,16 @@ void PressAndReleaseKeyOnVK(ui::test::EventGenerator* event_generator,
 // Reads a PNG image from disk and decodes it. Returns the bitmap image, if the
 // bitmap was successfully read from disk or an empty gfx::Image otherwise.
 gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path);
+
+// Gets the buttons inside the capture bar view.
+IconButton* GetImageToggleButton();
+IconButton* GetVideoToggleButton();
+IconButton* GetFullscreenToggleButton();
+IconButton* GetRegionToggleButton();
+IconButton* GetWindowToggleButton();
+PillButton* GetStartRecordingButton();
+IconButton* GetSettingsButton();
+IconButton* GetCloseButton();
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
@@ -180,7 +190,7 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
                                views::View* starting_view) override;
 
  private:
-  views::View* const view_;
+  const raw_ptr<views::View, ExperimentalAsh> view_;
   base::RunLoop wait_loop_;
 };
 

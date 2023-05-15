@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/view_tracker.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 class QuickAnswersView;
@@ -35,7 +35,7 @@ class QuickAnswersUiController {
   QuickAnswersUiController(const QuickAnswersUiController&) = delete;
   QuickAnswersUiController& operator=(const QuickAnswersUiController&) = delete;
 
-  // Constructs/resets |quick_answers_view_|.
+  // Constructs/resets the Quick Answers card view.
   void CreateQuickAnswersView(const gfx::Rect& anchor_bounds,
                               const std::string& title,
                               const std::string& query,
@@ -97,25 +97,29 @@ class QuickAnswersUiController {
   // showing.
   bool IsShowingRichAnswersView() const;
 
-  QuickAnswersView* quick_answers_view() {
-    return static_cast<QuickAnswersView*>(quick_answers_view_tracker_.view());
+  quick_answers::QuickAnswersView* quick_answers_view() {
+    return static_cast<quick_answers::QuickAnswersView*>(
+        quick_answers_widget_->GetContentsView());
   }
   quick_answers::UserConsentView* user_consent_view() {
     return static_cast<quick_answers::UserConsentView*>(
-        user_consent_view_tracker_.view());
+        user_consent_widget_->GetContentsView());
   }
   quick_answers::RichAnswersView* rich_answers_view() {
     return static_cast<quick_answers::RichAnswersView*>(
-        rich_answers_view_tracker_.view());
+        rich_answers_widget_->GetContentsView());
   }
 
  private:
+  // Constructs/resets the Quick Answers rich card view.
+  void CreateRichAnswersView();
+
   raw_ptr<QuickAnswersControllerImpl> controller_ = nullptr;
 
-  // Trackers for quick answers related views.
-  views::ViewTracker quick_answers_view_tracker_;
-  views::ViewTracker user_consent_view_tracker_;
-  views::ViewTracker rich_answers_view_tracker_;
+  // Widget pointers for quick answers related views.
+  views::UniqueWidgetPtr quick_answers_widget_;
+  views::UniqueWidgetPtr user_consent_widget_;
+  views::UniqueWidgetPtr rich_answers_widget_;
 
   std::string query_;
 

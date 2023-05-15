@@ -9,14 +9,30 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
+#include "build/build_config.h"
 
 #include <sys/mman.h>
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#include <sys/prctl.h>
+#endif
 
 namespace base::allocator::dispatcher::internal {
 
 void* MMapAllocator::AllocateMemory(size_t size_in_bytes) {
   void* const mmap_res = mmap(nullptr, size_in_bytes, PROT_READ | PROT_WRITE,
                               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
+  if (mmap_res != MAP_FAILED) {
+    // Allow the anonymous memory region allocated by mmap(MAP_ANONYMOUS) to
+    // be identified in /proc/$PID/smaps.  This helps improve visibility into
+    // Chromium's memory usage on Android.
+    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, mmap_res, size_in_bytes,
+          "tls-mmap-allocator");
+  }
+#endif
+#endif
 
   return (mmap_res != MAP_FAILED) ? mmap_res : nullptr;
 }

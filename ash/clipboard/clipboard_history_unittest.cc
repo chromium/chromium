@@ -14,15 +14,18 @@
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
@@ -152,7 +155,7 @@ class ClipboardHistoryTest : public AshTestBase {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
-  ClipboardHistory* clipboard_history_ = nullptr;
+  raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_ = nullptr;
 };
 
 // Tests that with nothing copied, nothing is shown.
@@ -463,7 +466,7 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmapEncodingPreserved) {
       data_to_duplicate.sequence_number_token();
   const auto original_timestamp = items.back().time_copied();
   EXPECT_FALSE(data_to_duplicate.maybe_png());
-  auto png = ui::ClipboardData::EncodeBitmapData(test_bitmap_1);
+  auto png = ui::clipboard_util::EncodeBitmapToPng(test_bitmap_1);
   data_to_duplicate.SetPngDataAfterEncoding(png);
   EXPECT_TRUE(data_to_duplicate.maybe_png());
 
@@ -513,11 +516,11 @@ TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
   ui::ClipboardData data;
   data.set_markup_data("plain html with no img or table tags");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            ClipboardHistoryItem::DisplayFormat::kText);
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kText);
 
   data.set_markup_data("<img> </img>");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            ClipboardHistoryItem::DisplayFormat::kHtml);
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml);
 }
 
 // Tests that exactly one Ash.ClipboardHistory.ControlToVDelayV2 histogram entry

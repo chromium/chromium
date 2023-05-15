@@ -47,8 +47,8 @@ TEST(CachedCallbackTest, SuccessIsPropagated) {
   borealis::NiceCallbackFactory<void(SuccessfulCache::Result)> callbacks;
   EXPECT_CALL(callbacks, Call(_))
       .WillOnce(Invoke([](SuccessfulCache::Result result) {
-        EXPECT_TRUE(result);
-        EXPECT_EQ(*result.Value(), "success");
+        EXPECT_TRUE(result.has_value());
+        EXPECT_EQ(*result.value(), "success");
       }));
   sc.Get(callbacks.BindOnce());
   EXPECT_NE(sc.MaybeGet(), nullptr);
@@ -93,8 +93,8 @@ TEST(CachedCallbackTest, FailureIsPropagated) {
   borealis::NiceCallbackFactory<void(FailureCache::Result)> callbacks;
   EXPECT_CALL(callbacks, Call(_))
       .WillOnce(Invoke([](FailureCache::Result result) {
-        EXPECT_FALSE(result);
-        EXPECT_EQ(result.Error(), TestErrors::kFoo);
+        EXPECT_FALSE(result.has_value());
+        EXPECT_EQ(result.error(), TestErrors::kFoo);
       }));
   fc.Get(callbacks.BindOnce());
 }
@@ -105,8 +105,9 @@ class DelayedCache : public SuccessfulCache {
 
   void DelayCallback(RealCallback callback) {
     // Busy loop until needed.
-    while (delay)
+    while (delay) {
       continue;
+    }
     std::move(callback).Run(
         SuccessfulCache::RealResult(std::make_unique<std::string>("success")));
   }
@@ -122,6 +123,10 @@ class DelayedCache : public SuccessfulCache {
   std::atomic_bool delay = true;
 };
 
+MATCHER(ExpectedTrue, "") {
+  return arg.has_value();
+}
+
 TEST(CachedCallbackTest, CanEnqueueCallbacks) {
   base::test::TaskEnvironment task_environment_;
   borealis::StrictCallbackFactory<void(DelayedCache::Result)> callbacks;
@@ -132,7 +137,7 @@ TEST(CachedCallbackTest, CanEnqueueCallbacks) {
   dc.Get(callbacks.BindOnce());
   // We use a strict mock to show that the below expectation hasn't fired yet
   // and therefore must be queued.
-  EXPECT_CALL(callbacks, Call(::testing::IsTrue())).Times(3);
+  EXPECT_CALL(callbacks, Call(ExpectedTrue())).Times(3);
   dc.delay = false;
   task_environment_.RunUntilIdle();
 }
@@ -159,8 +164,8 @@ TEST(CachedCallbackTest, CanAbort) {
   EXPECT_CALL(callbacks, Call(_))
       .Times(3)
       .WillRepeatedly(Invoke([](NonCompletingCache::Result res) {
-        EXPECT_FALSE(res);
-        EXPECT_EQ(res.Error(), TestErrors::kFoo);
+        EXPECT_FALSE(res.has_value());
+        EXPECT_EQ(res.error(), TestErrors::kFoo);
       }));
   ncc.reset();
 }

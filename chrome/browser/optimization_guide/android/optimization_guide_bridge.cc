@@ -42,7 +42,7 @@ namespace {
 
 ScopedJavaLocalRef<jbyteArray> ToJavaSerializedAnyMetadata(
     JNIEnv* env,
-    const optimization_guide::OptimizationMetadata optimization_metadata) {
+    const optimization_guide::OptimizationMetadata& optimization_metadata) {
   // We do not expect the following metadatas to be populated for optimization
   // types getting called from Java.
   DCHECK(!optimization_metadata.loading_predictor_metadata());
@@ -63,6 +63,39 @@ void OnOptimizationGuideDecision(
   Java_OptimizationGuideBridge_onOptimizationGuideDecision(
       env, java_callback, static_cast<int>(decision),
       ToJavaSerializedAnyMetadata(env, metadata));
+}
+
+base::flat_set<proto::OptimizationType> JavaIntArrayToOptTypesSet(
+    JNIEnv* env,
+    const JavaParamRef<jintArray>& joptimization_types) {
+  std::vector<int> joptimization_types_vector;
+  JavaIntArrayToIntVector(env, joptimization_types,
+                          &joptimization_types_vector);
+  base::flat_set<optimization_guide::proto::OptimizationType>
+      optimization_types;
+  for (const int joptimization_type : joptimization_types_vector) {
+    // Handles parsing of reserved tag numbers.
+    if (proto::OptimizationType_IsValid(joptimization_type)) {
+      optimization_types.insert(
+          static_cast<proto::OptimizationType>(joptimization_type));
+    }
+  }
+  return optimization_types;
+}
+
+void OnOnDemandOptimizationGuideDecision(
+    const JavaRef<jobject>& java_callback,
+    const GURL& url,
+    const base::flat_map<proto::OptimizationType,
+                         OptimizationGuideDecisionWithMetadata>& metadata) {
+  JNIEnv* env = AttachCurrentThread();
+  for (const auto& type_and_decision : metadata) {
+    Java_OptimizationGuideBridge_onOnDemandOptimizationGuideDecision(
+        env, java_callback, url::GURLAndroid::FromNativeGURL(env, url),
+        static_cast<int>(type_and_decision.first),
+        static_cast<int>(type_and_decision.second.decision),
+        ToJavaSerializedAnyMetadata(env, type_and_decision.second.metadata));
+  }
 }
 
 }  // namespace
@@ -185,19 +218,10 @@ void OptimizationGuideBridge::Destroy(JNIEnv* env) {
 void OptimizationGuideBridge::RegisterOptimizationTypes(
     JNIEnv* env,
     const JavaParamRef<jintArray>& joptimization_types) {
-  // Convert optimization types to proto.
-  std::vector<int> joptimization_types_vector;
-  JavaIntArrayToIntVector(env, joptimization_types,
-                          &joptimization_types_vector);
-  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-  for (const int joptimization_type : joptimization_types_vector) {
-    optimization_types.push_back(
-        static_cast<optimization_guide::proto::OptimizationType>(
-            joptimization_type));
-  }
-
+  base::flat_set<proto::OptimizationType> opt_types_set =
+      JavaIntArrayToOptTypesSet(env, joptimization_types);
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
-      optimization_types);
+      {opt_types_set.begin(), opt_types_set.end()});
 }
 
 void OptimizationGuideBridge::CanApplyOptimizationAsync(
@@ -228,6 +252,23 @@ void OptimizationGuideBridge::CanApplyOptimization(
               optimization_type),
           &optimization_metadata);
   OnOptimizationGuideDecision(java_callback, decision, optimization_metadata);
+}
+
+void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
+    JNIEnv* env,
+    const JavaParamRef<jobjectArray>& java_gurls,
+    const JavaParamRef<jintArray>& optimization_types,
+    jint request_context,
+    const JavaParamRef<jobject>& java_callback) {
+  // Convert GURLs to native.
+  std::vector<GURL> urls;
+  url::GURLAndroid::JavaGURLArrayToGURLVector(env, java_gurls, &urls);
+
+  optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
+      urls, JavaIntArrayToOptTypesSet(env, optimization_types),
+      static_cast<proto::RequestContext>(request_context),
+      base::BindRepeating(&OnOnDemandOptimizationGuideDecision,
+                          ScopedJavaGlobalRef<jobject>(env, java_callback)));
 }
 
 void OptimizationGuideBridge::OnNewPushNotification(

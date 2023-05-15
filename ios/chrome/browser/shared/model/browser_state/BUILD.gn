@@ -1,0 +1,93 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_state") {
+  sources = [
+    "browser_state_info_cache.cc",
+    "browser_state_info_cache.h",
+    "browser_state_info_cache_observer.h",
+    "browser_state_otr_helper.cc",
+    "browser_state_otr_helper.h",
+    "chrome_browser_state.h",
+    "chrome_browser_state.mm",
+    "chrome_browser_state_manager.h",
+  ]
+
+  public_deps = [
+    "//ios/web",
+    "//net",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/sync_preferences",
+    "//components/variations/net",
+    "//components/webdata_services",
+    "//ios/chrome/browser/net:net_types",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/url:constants",
+    "//ios/components/webui:url_constants",
+    "//ios/web/public/webui",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_browser_state_unittest.cc",
+    "test_chrome_browser_state_manager_unittest.cc",
+  ]
+  deps = [
+    ":browser_state",
+    ":test_support",
+    "//base",
+    "//components/variations/net",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_chrome_browser_state.h",
+    "test_chrome_browser_state.mm",
+    "test_chrome_browser_state_manager.cc",
+    "test_chrome_browser_state_manager.h",
+  ]
+
+  public_deps = [ ":browser_state" ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/profile_metrics",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/undo",
+    "//components/user_prefs",
+    "//components/webdata_services",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/policy:policy",
+    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/ui/ntp:logo",
+    "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/test:test_support",
+    "//ios/web",
+    "//net:test_support",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

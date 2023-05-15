@@ -8,6 +8,7 @@
 #include <sddl.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -15,9 +16,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -104,8 +104,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      base::clamp(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
-      base::clamp(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
+      std::clamp(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
+      std::clamp(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.
@@ -312,7 +312,7 @@ bool RdpSession::Initialize(const ScreenResolution& resolution) {
   // Create an RDP session.
   Microsoft::WRL::ComPtr<IRdpDesktopSessionEventHandler> event_handler(
       new EventHandler(weak_factory_.GetWeakPtr()));
-  terminal_id_ = base::GenerateGUID();
+  terminal_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::win::ScopedBstr terminal_id(base::UTF8ToWide(terminal_id_));
   result = rdp_desktop_session_->Connect(
       host_size.width(), host_size.height(), kDefaultRdpDpi, kDefaultRdpDpi,

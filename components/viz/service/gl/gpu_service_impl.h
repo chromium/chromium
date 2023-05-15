@@ -254,9 +254,11 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                        const std::string& key,
                        const std::string& shader) override;
 
-  // Attempts to atomically shut down the process but only if not running in
-  // host process. An error message will be logged.
-  void MaybeExitOnContextLost() override;
+  // Attempts to atomically shut down the process. Only does so if (a) not
+  // running in host process or (b) the context loss is irrecoverable and an
+  // immediate crash is better than entering a context loss loop. An error
+  // message will be logged.
+  void MaybeExitOnContextLost(bool synthetic_loss) override;
   bool IsExiting() const override;
   gpu::Scheduler* GetGpuScheduler() override;
 

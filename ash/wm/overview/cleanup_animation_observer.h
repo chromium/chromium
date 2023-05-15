@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace views {
@@ -41,7 +42,7 @@ class ASH_EXPORT CleanupAnimationObserver
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  OverviewDelegate* owner_;
+  raw_ptr<OverviewDelegate, ExperimentalAsh> owner_;
 };
 
 }  // namespace ash

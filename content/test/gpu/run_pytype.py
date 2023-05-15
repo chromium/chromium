@@ -34,10 +34,13 @@ EXTRA_PATHS = [
 EXTRA_PATHS.append(GPU_DIR)
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
+    # Directories.
     'flake_suppressor',
     'gold_inexact_matching',
     'gpu_tests',
     'unexpected_passes',
+    # Files.
+    'unexpected_pass_finder.py',
 ]
 FILES_AND_DIRECTORIES_TO_CHECK = [
     os.path.join(GPU_DIR, f) for f in FILES_AND_DIRECTORIES_TO_CHECK

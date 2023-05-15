@@ -47,7 +47,6 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
         text_run_(run),
         font_(font),
         spacing_(run),
-        width_so_far_(0),
         start_index_(0) {
     DCHECK(font);
 
@@ -56,17 +55,12 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     // fall back on shaping the entire run.
     shape_by_word_ = font_->CanShapeWordByWord();
 
-    // SVG sets SpacingDisabled because it handles spacing by themselves.
-    if (!run.SpacingDisabled())
-      spacing_.SetSpacingAndExpansion(font->GetFontDescription());
+    spacing_.SetSpacingAndExpansion(font->GetFontDescription());
   }
   CachingWordShapeIterator(const CachingWordShapeIterator&) = delete;
   CachingWordShapeIterator& operator=(const CachingWordShapeIterator&) = delete;
 
   bool Next(scoped_refptr<const ShapeResult>* word_result) {
-    if (UNLIKELY(text_run_.AllowTabs()))
-      return NextForAllowTabs(word_result);
-
     if (!shape_by_word_) {
       if (start_index_)
         return false;
@@ -174,37 +168,10 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     }
   }
 
-  bool NextForAllowTabs(scoped_refptr<const ShapeResult>* word_result) {
-    unsigned length = text_run_.length();
-    if (start_index_ >= length)
-      return false;
-
-    if (UNLIKELY(text_run_[start_index_] == kTabulationCharacter)) {
-      for (unsigned i = start_index_ + 1;; i++) {
-        if (i == length || text_run_[i] != kTabulationCharacter) {
-          *word_result = ShapeResult::CreateForTabulationCharacters(
-              font_, text_run_, width_so_far_, i - start_index_);
-          start_index_ = i;
-          break;
-        }
-      }
-    } else if (!shape_by_word_) {
-      if (!ShapeToEndIndex(word_result, EndIndexUntil(kTabulationCharacter)))
-        return false;
-    } else {
-      if (!NextWord(word_result))
-        return false;
-    }
-    DCHECK(*word_result);
-    width_so_far_ += (*word_result)->Width();
-    return true;
-  }
-
   ShapeCache* shape_cache_;
   const TextRun& text_run_;
   const Font* font_;
   ShapeResultSpacing<TextRun> spacing_;
-  float width_so_far_;  // Used only when allowTabs()
   unsigned start_index_ : 31;
   unsigned shape_by_word_ : 1;
 };

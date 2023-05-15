@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,20 +16,24 @@
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
 
@@ -74,18 +79,22 @@ struct PasswordGenerationControllerImpl::GenerationElementData {
   uint32_t max_password_length;
 };
 
-base::WeakPtr<password_manager::PasswordManagerDriver>
+base::WeakPtr<password_manager::ContentPasswordManagerDriver>
 PasswordGenerationControllerImpl::GetActiveFrameDriver() const {
   return active_frame_driver_;
 }
 
 void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
-    const password_manager::PasswordManagerDriver* target_frame_driver,
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+        target_frame_driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data,
     gfx::RectF element_bounds_in_screen_space) {
-  if (!IsActiveFrameDriver(target_frame_driver))
-    return;
-  DCHECK(!dialog_view_);
+  // We can't be sure that the active frame driver would be set in the
+  // FocusedInputChanged by now, because there is a race condition. The roots
+  // of the OnAutomaticGenerationAvailable and FocusedInputChanged calls are
+  // the same in the renderer. So we need to set it here too.
+  FocusedInputChanged(autofill::mojom::FocusedFieldType::kFillablePasswordField,
+                      std::move(target_frame_driver));
 
   active_frame_driver_->GetPasswordManager()
       ->SetGenerationElementAndTypeForForm(
@@ -101,17 +110,33 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
 
   generation_element_data_ = std::make_unique<GenerationElementData>(ui_data);
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet) &&
+      touch_to_fill_generation_state_ == TouchToFillState::kNone) {
+    touch_to_fill_generation_controller_ =
+        std::make_unique<TouchToFillPasswordGenerationController>(
+            active_frame_driver_);
+    touch_to_fill_generation_controller_->ShowTouchToFill();
+    touch_to_fill_generation_state_ = TouchToFillState::kIsShowing;
+    return;
+  }
+  if (touch_to_fill_generation_state_ == TouchToFillState::kIsShowing) {
+    return;
+  }
+
   if (!manual_filling_controller_) {
     manual_filling_controller_ =
         ManualFillingController::GetOrCreate(&GetWebContents());
   }
 
   DCHECK(manual_filling_controller_);
-  manual_filling_controller_->OnAutomaticGenerationStatusChanged(true);
+  manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction(true),
+      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 }
 
 void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
-    const password_manager::PasswordManagerDriver* target_frame_driver,
+    const password_manager::ContentPasswordManagerDriver* target_frame_driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
   if (!IsActiveFrameDriver(target_frame_driver) ||
       !manual_generation_requested_)
@@ -122,10 +147,15 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
     autofill::mojom::FocusedFieldType focused_field_type,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver) {
   TRACE_EVENT0("passwords",
                "PasswordGenerationControllerImpl::FocusedInputChanged");
-  ResetState();
+  // It's probably a duplicate notification.
+  if (IsActiveFrameDriver(driver.get()) &&
+      focused_field_type == FocusedFieldType::kFillablePasswordField) {
+    return;
+  }
+  ResetFocusState();
   if (focused_field_type == FocusedFieldType::kFillablePasswordField)
     active_frame_driver_ = std::move(driver);
 }
@@ -142,7 +172,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
 
 void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
     const std::u16string& password,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
     PasswordGenerationType type) {
   if (!driver)
     return;
@@ -151,12 +181,12 @@ void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
   driver->GeneratedPasswordAccepted(
       generation_element_data_->form_data,
       generation_element_data_->generation_element_id, password);
-  ResetState();
+  ResetFocusState();
 }
 
 void PasswordGenerationControllerImpl::GeneratedPasswordRejected(
     PasswordGenerationType type) {
-  ResetState();
+  ResetFocusState();
   password_manager::metrics_util::LogGenerationDialogChoice(
       GenerationDialogChoice::kRejected, type);
 }
@@ -167,6 +197,16 @@ gfx::NativeWindow PasswordGenerationControllerImpl::top_level_native_window() {
 
 content::WebContents* PasswordGenerationControllerImpl::web_contents() {
   return &GetWebContents();
+}
+
+autofill::FieldSignature
+PasswordGenerationControllerImpl::get_field_signature_for_testing() {
+  return generation_element_data_->field_signature;
+}
+
+autofill::FormSignature
+PasswordGenerationControllerImpl::get_form_signature_for_testing() {
+  return generation_element_data_->form_signature;
 }
 
 // static
@@ -230,19 +270,38 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
 }
 
 bool PasswordGenerationControllerImpl::IsActiveFrameDriver(
-    const password_manager::PasswordManagerDriver* driver) const {
+    const password_manager::ContentPasswordManagerDriver* driver) const {
   if (!active_frame_driver_)
     return false;
   return active_frame_driver_.get() == driver;
 }
 
-void PasswordGenerationControllerImpl::ResetState() {
+void PasswordGenerationControllerImpl::ResetFocusState() {
   if (manual_filling_controller_)
-    manual_filling_controller_->OnAutomaticGenerationStatusChanged(false);
+    manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+        ShouldShowAction(false),
+        autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
   active_frame_driver_.reset();
   generation_element_data_.reset();
   dialog_view_.reset();
   manual_generation_requested_ = false;
+}
+
+void PasswordGenerationControllerImpl::HideBottomSheetIfNeeded() {
+  if (touch_to_fill_generation_state_ != TouchToFillState::kNone) {
+    touch_to_fill_generation_state_ = TouchToFillState::kNone;
+    // TODO (crbug.com/1421753): Destroy the
+    // touch_to_fill_generation_controller_ when the bottom sheet is dismissed.
+    touch_to_fill_generation_controller_.reset();
+  }
+}
+
+void PasswordGenerationControllerImpl::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (active_frame_driver_ &&
+      active_frame_driver_->render_frame_host() == render_frame_host) {
+    HideBottomSheetIfNeeded();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl);

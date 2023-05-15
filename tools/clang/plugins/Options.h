@@ -20,6 +20,7 @@ struct Options {
   bool check_raw_ptr_fields = false;
   bool check_stack_allocated = false;
   bool check_raw_ref_fields = false;
+  bool check_raw_ptr_to_stack_allocated = false;
   std::string exclude_fields_file;
   std::vector<std::string> raw_ptr_paths_to_exclude_lines;
 };

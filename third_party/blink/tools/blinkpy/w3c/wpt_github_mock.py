@@ -37,6 +37,10 @@ class MockWPTGitHub(object):
         self.merged_index = merged_index
         self.check_runs = []
 
+    def all_provisional_pull_requests(self):
+        self.calls.append('all_provisional_pull_requests')
+        return self.pull_requests
+
     def all_pull_requests(self, limit=30):
         self.calls.append('all_pull_requests')
         return self.pull_requests

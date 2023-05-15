@@ -42,12 +42,9 @@ public class AutofillTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private static final String TAG = "AutofillTest";
-
     private static final String AUTOFILL_TYPE = "Autofill Profiles";
 
     private static final String GUID = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-    private static final String ORIGIN = "https://www.chromium.org/";
 
     private static final String STREET = "1600 Amphitheatre Pkwy";
     private static final String CITY = "Mountain View";
@@ -161,7 +158,6 @@ public class AutofillTest {
             String street, String city, String state, String zip) {
         AutofillProfileSpecifics profile = AutofillProfileSpecifics.newBuilder()
                                                    .setGuid(GUID)
-                                                   .setOrigin(ORIGIN)
                                                    .setAddressHomeLine1(street)
                                                    .setAddressHomeCity(city)
                                                    .setAddressHomeState(state)

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/commerce/session_proto_db_factory.h"
 
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 

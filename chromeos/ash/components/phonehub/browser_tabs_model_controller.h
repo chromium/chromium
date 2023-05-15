@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_CONTROLLER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
@@ -39,10 +40,12 @@ class BrowserTabsModelController
 
   void UpdateBrowserTabsModel();
 
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
   BrowserTabsModel cached_model_;
-  BrowserTabsModelProvider* browser_tabs_model_provider_;
-  MutablePhoneModel* mutable_phone_model_;
+  raw_ptr<BrowserTabsModelProvider, ExperimentalAsh>
+      browser_tabs_model_provider_;
+  raw_ptr<MutablePhoneModel, ExperimentalAsh> mutable_phone_model_;
 };
 
 }  // namespace phonehub

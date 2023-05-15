@@ -190,16 +190,20 @@ void ArcGhostWindowHandler::OnWindowInfoUpdated(int window_id,
   auto window_info = ::arc::mojom::WindowInfo::New();
   window_info->window_id = window_id;
   window_info->display_id = display_id;
-  window_info->bounds = gfx::Rect(bounds);
   window_info->state = state;
-
-  if (is_app_instance_connected_) {
-    ::arc::UpdateWindowInfo(std::move(window_info));
-    return;
+  // Do not override bounds in window info if the window state type is not
+  // specified when ghost window launched.
+  if (window_info->state !=
+      static_cast<int32_t>(chromeos::WindowStateType::kDefault)) {
+    window_info->bounds = gfx::Rect(bounds);
   }
 
   session_id_to_pending_window_info_[window_info->window_id] =
-      std::move(window_info);
+      window_info->Clone();
+
+  if (is_app_instance_connected_) {
+    ::arc::UpdateWindowInfo(std::move(window_info));
+  }
 }
 
 }  // namespace ash::full_restore

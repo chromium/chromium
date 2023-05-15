@@ -16,19 +16,6 @@ constexpr char kSingleStreamName[] = "screen_stream";
 VideoStreamEventRouter::VideoStreamEventRouter() = default;
 VideoStreamEventRouter::~VideoStreamEventRouter() = default;
 
-void VideoStreamEventRouter::OnTargetFramerateChanged(
-    webrtc::ScreenId screen_id,
-    int framerate) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  auto observer = GetObserver(screen_id);
-  if (observer) {
-    observer->OnTargetFramerateChanged(framerate);
-  } else {
-    LOG(WARNING) << "No registered VideoChannelStateObserver for " << screen_id;
-  }
-}
-
 void VideoStreamEventRouter::OnEncodedFrameSent(
     webrtc::ScreenId screen_id,
     webrtc::EncodedImageCallback::Result result,

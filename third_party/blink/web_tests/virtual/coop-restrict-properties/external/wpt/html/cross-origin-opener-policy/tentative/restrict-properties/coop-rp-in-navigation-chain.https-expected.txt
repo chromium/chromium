@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL COOP: restrict-properties has no impact in a navigation chain between multiple unsafe-none pages. assert_false: Popup is closed from opener? expected false got true
-Harness: the test ran to completion.
-

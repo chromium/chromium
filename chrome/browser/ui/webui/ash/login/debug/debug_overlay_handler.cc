@@ -19,7 +19,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "ui/display/display_switches.h"
 #include "ui/snapshot/snapshot.h"
@@ -153,7 +152,7 @@ void DebugOverlayHandler::ToggleColorMode() {
 
 void DebugOverlayHandler::HandleSwitchWallpaper(const std::string& color) {
   if (color == "def") {
-    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+    ash::WallpaperController::Get()->ShowOobeWallpaper();
     return;
   }
 

@@ -222,12 +222,14 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
-  // Prefetch, browsing_topics, and keepalive are all disjoint request types.
-  // They cannot be true at the same time.
+  // Prefetch is disjoint with browsing_topics and keepalive.
+  // TODO(https://crbug.com/1441113): browsing_topics and keepalive are disjoint
+  // in our implementation, but the fetch API does not enforce this, so
+  // browsing_topics wins and keepalive is ignored. Either allow them
+  // simultaneously or make them mutually exclusive in the fetch API.
   const bool request_is_prefetch = request.load_flags & net::LOAD_PREFETCH;
-  CHECK(!((request_is_prefetch && request.browsing_topics) ||
-          (request_is_prefetch && request.keepalive) ||
-          (request.browsing_topics && request.keepalive)));
+  CHECK(!(request_is_prefetch && request.browsing_topics));
+  CHECK(!(request_is_prefetch && request.keepalive));
 
   // Use |prefetch_loader_factory_| for prefetch requests to send the requests
   // to the PrefetchURLLoaderService in the browser process and trigger the

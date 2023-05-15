@@ -74,13 +74,13 @@ BASE_FEATURE(kDownloadTailoredWarnings,
 
 BASE_FEATURE(kEsbIphBubbleAndCollapseSettings,
              "EsbIphBubbleAndCollapseSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph{
-    &kEsbIphBubbleAndCollapseSettings, "EnableEsbIphBubble", false};
+    &kEsbIphBubbleAndCollapseSettings, "EnableEsbIphBubble", true};
 
 const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableCollapse{
-    &kEsbIphBubbleAndCollapseSettings, "EnableEsbSettingCollapse", false};
+    &kEsbIphBubbleAndCollapseSettings, "EnableEsbSettingCollapse", true};
 
 BASE_FEATURE(kExtensionTelemetry,
              "SafeBrowsingExtensionTelemetry",
@@ -100,7 +100,7 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
 
 BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryPersistence,
              "SafeBrowsingExtensionTelemetryPersistence",
@@ -145,7 +145,7 @@ BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
 
 BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal,
              "SafeBrowsingExtensionTelemetryDeclarativeNetRequestSignal",

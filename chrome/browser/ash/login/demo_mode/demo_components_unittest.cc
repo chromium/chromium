@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
 #include <memory>
@@ -78,7 +79,8 @@ class DemoComponentsTest : public testing::Test {
         std::move(fake_cros_component_manager));
   }
 
-  FakeCrOSComponentManager* cros_component_manager_ = nullptr;
+  raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
+      nullptr;
   content::BrowserTaskEnvironment task_environment_;
 
  private:

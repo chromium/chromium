@@ -22,6 +22,7 @@
 
 namespace feed {
 class FeedStream;
+class LaunchReliabilityLogger;
 
 // Fetches additional content from the network when the model is already loaded.
 // Unlike |LoadStreamTask|, this task does not directly persist data to
@@ -64,7 +65,13 @@ class LoadMoreTask : public offline_pages::Task {
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
   void ProcessNetworkResponse(std::unique_ptr<feedwire::Response> response_body,
                               NetworkResponseInfo response_info);
+  void RequestFinished(LoadStreamStatus status,
+                       int network_status_code,
+                       int64_t server_receive_timestamp_ns,
+                       int64_t server_send_timestamp_ns);
   void Done(LoadStreamStatus status);
+
+  LaunchReliabilityLogger& GetLaunchReliabilityLogger() const;
 
   StreamType stream_type_;
   const raw_ref<FeedStream> stream_;  // Unowned.

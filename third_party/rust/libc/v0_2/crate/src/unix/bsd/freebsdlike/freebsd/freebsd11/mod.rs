@@ -434,6 +434,14 @@ pub const MINCORE_SUPER: ::c_int = 0x20;
 /// max length of devicename
 pub const SPECNAMELEN: ::c_int = 63;
 
+safe_f! {
+    pub {const} fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
+        let major = major as ::dev_t;
+        let minor = minor as ::dev_t;
+        (major << 8) | minor
+    }
+}
+
 extern "C" {
     // Return type ::c_int was removed in FreeBSD 12
     pub fn setgrent() -> ::c_int;
@@ -454,7 +462,10 @@ extern "C" {
         msgflg: ::c_int,
     ) -> ::c_int;
 
-    pub fn fdatasync(fd: ::c_int) -> ::c_int;
+    // Type of `path` argument changed from `const void*` to `void*`
+    // in FreeBSD 12
+    pub fn dirname(path: *const ::c_char) -> *mut ::c_char;
+    pub fn basename(path: *const ::c_char) -> *mut ::c_char;
 }
 
 cfg_if! {

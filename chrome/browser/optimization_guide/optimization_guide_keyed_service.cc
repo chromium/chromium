@@ -159,6 +159,7 @@ void OptimizationGuideKeyedService::Initialize() {
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
   base::WeakPtr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store;
+  base::FilePath model_downloads_dir;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -211,12 +212,20 @@ void OptimizationGuideKeyedService::Initialize() {
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
 
     if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      // Do not explicitly hand off the model downloads directory to
+      // off-the-record profiles. Underneath the hood, this variable is only
+      // used in non off-the-record profiles to know where to download the model
+      // files to. Off-the-record profiles read the model locations from the
+      // original profiles they are associated with.
+      model_downloads_dir = profile_path.Append(
+          optimization_guide::kOptimizationGuidePredictionModelDownloads);
       prediction_model_and_features_store_ =
           std::make_unique<optimization_guide::OptimizationGuideStore>(
               proto_db_provider,
               profile_path.Append(
                   optimization_guide::
                       kOptimizationGuidePredictionModelMetadataStore),
+              model_downloads_dir,
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
               profile->GetPrefs());
@@ -231,17 +240,6 @@ void OptimizationGuideKeyedService::Initialize() {
       tab_url_provider_.get(), url_loader_factory,
       MaybeCreatePushNotificationManager(profile),
       optimization_guide_logger_.get());
-  base::FilePath model_downloads_dir;
-  if (!optimization_guide::features::IsInstallWideModelStoreEnabled() &&
-      !profile->IsOffTheRecord()) {
-    // Do not explicitly hand off the model downloads directory to
-    // off-the-record profiles. Underneath the hood, this variable is only used
-    // in non off-the-record profiles to know where to download the model files
-    // to. Off-the-record profiles read the model locations from the original
-    // profiles they are associated with.
-    model_downloads_dir = profile_path.Append(
-        optimization_guide::kOptimizationGuidePredictionModelDownloads);
-  }
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store,

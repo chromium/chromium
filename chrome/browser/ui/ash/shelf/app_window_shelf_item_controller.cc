@@ -192,7 +192,7 @@ void AppWindowShelfItemController::ItemSelected(
     return;
   }
 
-  auto* last_active = last_active_window_;
+  auto* last_active = last_active_window_.get();
   if (last_active && !filter_predicate.is_null() &&
       !filter_predicate.Run(last_active->GetNativeWindow())) {
     last_active = nullptr;

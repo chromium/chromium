@@ -102,7 +102,7 @@ class DeviceScheduledRebootHandler
   void RebootDevice(const std::string& reboot_description) const;
 
   // Used to retrieve Chrome OS settings. Not owned.
-  const base::raw_ptr<ash::CrosSettings> cros_settings_;
+  const raw_ptr<ash::CrosSettings> cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;
@@ -118,7 +118,7 @@ class DeviceScheduledRebootHandler
   absl::optional<base::TimeDelta> reboot_delay_for_testing_;
 
   // Scheduler for reboot notification and dialog. Unowned.
-  base::raw_ptr<RebootNotificationsScheduler> notifications_scheduler_;
+  raw_ptr<RebootNotificationsScheduler> notifications_scheduler_;
 
   // Indicating if the reboot should be skipped.
   bool skip_reboot_ = false;

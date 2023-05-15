@@ -19,6 +19,24 @@ declare global {
         PIN = 'PIN',
       }
 
+      // The problems a given PIN might have.
+      enum CredentialProblem {
+        TOO_SHORT = 'TOO_SHORT',
+        TOO_LONG = 'TOO_LONG',
+        TOO_WEAK = 'TOO_WEAK',
+        CONTAINS_NONDIGIT = 'CONTAINS_NONDIGIT',
+      }
+
+      export interface CredentialCheck {
+        errors: CredentialProblem[];
+        warnings: CredentialProblem[];
+      }
+
+      export interface CredentialRequirements {
+        minLength: number;
+        maxLength: number;
+      }
+
       // TODO(crbug/1368302) Update to use promises instead of callback
       export const onActiveModesChanged:
           ChromeEvent<(activeModes: QuickUnlockMode[]) => void>;
@@ -48,6 +66,16 @@ declare global {
       export function setPinAutosubmitEnabled(
           token: string, pin: string, enabled: boolean,
           onComplete: (success: boolean) => void): void;
+
+      // TODO(crbug/1368302) Update to use promises instead of callback
+      export function checkCredential(
+          mode: QuickUnlockMode, credential: string,
+          onComplete: (check: CredentialCheck) => void): void;
+
+      // TODO(crbug/1368302) Update to use promises instead of callback
+      export function getCredentialRequirements(
+          mode: QuickUnlockMode,
+          onComplete: (requirements: CredentialRequirements) => void): void;
     }
   }
 }

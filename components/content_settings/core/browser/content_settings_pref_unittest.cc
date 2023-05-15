@@ -143,8 +143,8 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
-        CreatePatternString(rule.primary_pattern, rule.secondary_pattern),
-        GetTagFromDummyContentSetting(rule.value.GetDict()));
+        CreatePatternString(rule->primary_pattern, rule->secondary_pattern),
+        GetTagFromDummyContentSetting(rule->value().GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,
@@ -211,8 +211,8 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
-        CreatePatternString(rule.primary_pattern, rule.secondary_pattern),
-        GetTagFromDummyContentSetting(rule.value.GetDict()));
+        CreatePatternString(rule->primary_pattern, rule->secondary_pattern),
+        GetTagFromDummyContentSetting(rule->value().GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,
@@ -268,7 +268,7 @@ TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
   // still parsed correctly.
   EXPECT_EQ(content_settings_pref.GetNumExceptions(), 1u);
   auto it = content_settings_pref.GetRuleIterator(false);
-  base::Time retrieved_last_modified = it->Next().metadata.last_modified;
+  base::Time retrieved_last_modified = it->Next()->metadata.last_modified;
   EXPECT_EQ(last_modified, retrieved_last_modified);
 }
 

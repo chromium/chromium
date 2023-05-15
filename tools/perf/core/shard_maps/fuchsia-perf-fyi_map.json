@@ -5,7 +5,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 56,
+                "end": 57,
                 "abridged": false
             }
         }
@@ -13,8 +13,8 @@
     "1": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 56,
-                "end": 102,
+                "begin": 57,
+                "end": 103,
                 "abridged": false
             }
         }
@@ -22,8 +22,8 @@
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 102,
-                "end": 163,
+                "begin": 103,
+                "end": 165,
                 "abridged": false
             }
         }
@@ -31,8 +31,8 @@
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 163,
-                "end": 256,
+                "begin": 165,
+                "end": 263,
                 "abridged": false
             }
         }
@@ -40,8 +40,8 @@
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 256,
-                "end": 323,
+                "begin": 263,
+                "end": 331,
                 "abridged": false
             }
         }
@@ -49,8 +49,8 @@
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 323,
-                "end": 366,
+                "begin": 331,
+                "end": 375,
                 "abridged": false
             }
         }
@@ -58,8 +58,8 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 366,
-                "end": 413,
+                "begin": 375,
+                "end": 422,
                 "abridged": false
             }
         }
@@ -67,7 +67,7 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 413,
+                "begin": 422,
                 "abridged": false
             },
             "system_health.memory_desktop": {
@@ -94,17 +94,17 @@
         }
     },
     "extra_infos": {
-        "num_stories": 504,
+        "num_stories": 513,
         "predicted_min_shard_time": 1324.0,
-        "predicted_min_shard_index": 0,
+        "predicted_min_shard_index": 8,
         "predicted_max_shard_time": 1385.0,
         "predicted_max_shard_index": 6,
-        "shard #0": 1324.0,
+        "shard #0": 1334.0,
         "shard #1": 1365.0,
-        "shard #2": 1341.0,
-        "shard #3": 1336.0,
-        "shard #4": 1343.0,
-        "shard #5": 1341.0,
+        "shard #2": 1366.0,
+        "shard #3": 1354.0,
+        "shard #4": 1348.0,
+        "shard #5": 1373.0,
         "shard #6": 1385.0,
         "shard #7": 1355.0,
         "shard #8": 1324.0,

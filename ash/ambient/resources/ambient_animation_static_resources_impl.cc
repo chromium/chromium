@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/ambient/resources/grit/ash_ambient_lottie_resources.h"
 #include "base/check.h"
@@ -118,11 +119,11 @@ class AmbientAnimationStaticResourcesImpl
     : public AmbientAnimationStaticResources {
  public:
   AmbientAnimationStaticResourcesImpl(
-      AmbientTheme theme,
+      AmbientUiSettings ui_settings,
       int lottie_json_resource_id,
       base::flat_map<base::StringPiece, int> asset_id_to_resource_id,
       bool create_serializable_skottie)
-      : theme_(theme),
+      : ui_settings_(std::move(ui_settings)),
         animation_(CreateSkottieWrapper(lottie_json_resource_id,
                                         create_serializable_skottie)),
         asset_id_to_resource_id_(std::move(asset_id_to_resource_id)) {
@@ -152,10 +153,12 @@ class AmbientAnimationStaticResourcesImpl
     return *image;
   }
 
-  AmbientTheme GetAmbientTheme() const override { return theme_; }
+  const AmbientUiSettings& GetUiSettings() const override {
+    return ui_settings_;
+  }
 
  private:
-  const AmbientTheme theme_;
+  const AmbientUiSettings ui_settings_;
   // The skottie animation object built off of the animation json string
   // loaded from the resource pak.
   const scoped_refptr<cc::SkottieWrapper> animation_;
@@ -168,13 +171,16 @@ class AmbientAnimationStaticResourcesImpl
 
 // static
 std::unique_ptr<AmbientAnimationStaticResources>
-AmbientAnimationStaticResources::Create(AmbientTheme theme, bool serializable) {
-  if (!GetAnimationThemeToLottieResourceIdMap().contains(theme))
+AmbientAnimationStaticResources::Create(AmbientUiSettings ui_settings,
+                                        bool serializable) {
+  if (!GetAnimationThemeToLottieResourceIdMap().contains(ui_settings.theme())) {
     return nullptr;
+  }
 
   return std::make_unique<AmbientAnimationStaticResourcesImpl>(
-      theme, GetAnimationThemeToLottieResourceIdMap().at(theme),
-      GetAssetIdToResourceIdMapForTheme(theme), serializable);
+      ui_settings,
+      GetAnimationThemeToLottieResourceIdMap().at(ui_settings.theme()),
+      GetAssetIdToResourceIdMapForTheme(ui_settings.theme()), serializable);
 }
 
 }  // namespace ash

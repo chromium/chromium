@@ -198,7 +198,7 @@ const std::string BuildRequestBody(
 
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
-absl::optional<ash::PendingScreencast> GetPendingScreencast(
+absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     const base::FilePath& container_dir,
     const base::FilePath& drivefs_mounted_point,
     bool upload_failed) {
@@ -243,11 +243,12 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
   if (media_file_count != 1 || metadata_file_count != 1)
     return absl::nullopt;
 
-  ash::PendingScreencast pending_screencast{container_dir};
-  pending_screencast.created_time = created_time;
-  pending_screencast.name = media_name;
-  pending_screencast.total_size_in_bytes = total_size_in_bytes;
-  pending_screencast.upload_failed = upload_failed;
+  ash::PendingScreencastContainer pending_screencast{container_dir};
+  pending_screencast.SetTotalSizeInBytes(total_size_in_bytes);
+  pending_screencast.SetName(media_name);
+  pending_screencast.SetCreatedTime(created_time);
+  pending_screencast.set_upload_failed(upload_failed);
+
   return pending_screencast;
 }
 
@@ -256,14 +257,14 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
 // ".projector" files which failed to upload. Checks whether these files are
 // valid screencast files. Calculates the upload progress or error state and
 // returns valid pending or error screencasts.
-ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
+ash::PendingScreencastContainerSet ProcessAndGenerateNewScreencasts(
     const std::vector<drivefs::mojom::ItemEvent>&
         pending_webm_or_projector_events,
     const std::set<base::FilePath>& error_syncing_file,
     const base::FilePath drivefs_mounted_point) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // The valid screencasts set.
-  ash::PendingScreencastSet screencasts;
+  ash::PendingScreencastContainerSet screencasts;
 
   if (!base::PathExists(drivefs_mounted_point) ||
       (pending_webm_or_projector_events.empty() &&
@@ -273,12 +274,13 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
 
   // A map of container directory path to pending screencast. Each screencast
   // has a unique container directory path in DriveFS.
-  std::map<base::FilePath, ash::PendingScreencast> container_to_screencasts;
+  std::map<base::FilePath, ash::PendingScreencastContainer>
+      container_to_screencasts;
 
   // Creates error screencasts from `error_syncing_file`:
   for (const auto& upload_failed_file : error_syncing_file) {
     const base::FilePath container_dir = upload_failed_file.DirName();
-    auto new_screencast = GetPendingScreencast(
+    auto new_screencast = GetPendingScreencastContainer(
         container_dir, drivefs_mounted_point, /*upload_failed=*/true);
     if (new_screencast)
       container_to_screencasts[container_dir] = new_screencast.value();
@@ -298,6 +300,7 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
     // folder.
     auto iter = container_to_screencasts.find(container_dir);
     if (iter != container_to_screencasts.end()) {
+      ash::PendingScreencastContainer& entry = iter->second;
       // Calculates remaining untranferred bytes of a screencast by adding up
       // its transferred bytes of its files. `pending_event.bytes_to_transfer`
       // is the total bytes of current file.
@@ -305,18 +308,20 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
       // `pending_webm_or_projector_events.bytes_transferred`. The missing files
       // might be uploaded or not uploaded. To get an accurate
       // `bytes_transferred`, use DriveIntegrationService::GetMetadata().
-      if (!iter->second.upload_failed)
-        iter->second.bytes_transferred += pending_event.bytes_transferred;
+      if (!entry.pending_screencast().upload_failed) {
+        entry.SetTotalBytesTransferred(entry.bytes_transferred() +
+                                       pending_event.bytes_transferred);
+      }
 
       // Skips getting the size of a folder if it has been validated before.
       continue;
     }
 
-    auto new_screencast = GetPendingScreencast(
+    auto new_screencast = GetPendingScreencastContainer(
         container_dir, drivefs_mounted_point, /*upload_failed=*/false);
 
     if (new_screencast) {
-      new_screencast->bytes_transferred = pending_event.bytes_transferred;
+      new_screencast->SetTotalBytesTransferred(pending_event.bytes_transferred);
       container_to_screencasts[container_dir] = new_screencast.value();
     }
   }
@@ -433,7 +438,7 @@ void PendingScreencastManager::OnError(
   error_syncing_files_.insert(error_file);
 }
 
-const ash::PendingScreencastSet&
+const ash::PendingScreencastContainerSet&
 PendingScreencastManager::GetPendingScreencasts() const {
   return pending_screencast_cache_;
 }
@@ -518,7 +523,7 @@ void PendingScreencastManager::OnAppActiveStatusChanged(bool is_active) {
 
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
-    const ash::PendingScreencastSet& screencasts) {
+    const ash::PendingScreencastContainerSet& screencasts) {
   const base::TimeTicks now = base::TimeTicks::Now();
   ash::RecordPendingScreencastBatchIOTaskDuration(now - task_start_tick);
 
@@ -601,14 +606,14 @@ void PendingScreencastManager::SendDrivePatchRequest(
 
   xhr_sender_->Send(
       GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
-      ash::kRequestMethodPatch, request_body,
+      ash::projector::mojom::RequestType::kPatch, request_body,
       /*use_credentials=*/false,
       /*use_api_key=*/false,
-      base::BindOnce([](bool success, const std::string& response_body,
-                        const std::string& error) {
-        if (!success) {
+      base::BindOnce([](const std::string& response_body,
+                        ash::projector::mojom::XhrResponseCode response_code) {
+        if (response_code != ash::projector::mojom::XhrResponseCode::kSuccess) {
           LOG(ERROR) << "Failed to send Drive patch request for file."
-                     << " Error: " << error;
+                     << " Error: " << response_code;
         }
       }));
 }

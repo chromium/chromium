@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -110,12 +111,12 @@ class RemotingServiceWrapper : public CrdHostDelegate::RemotingServiceProxy {
   void StartSession(SupportSessionParamsPtr params,
                     const remoting::ChromeOsEnterpriseParams& enterprise_params,
                     StartSessionCallback callback) override {
-    implementation_.StartSession(std::move(params), enterprise_params,
-                                 std::move(callback));
+    implementation_->StartSession(std::move(params), enterprise_params,
+                                  std::move(callback));
   }
 
  private:
-  RemotingServiceProxy& implementation_;
+  const raw_ref<RemotingServiceProxy, ExperimentalAsh> implementation_;
 };
 
 // Represents the response to the CRD host request, which is
@@ -344,6 +345,21 @@ TEST_F(CrdHostDelegateTest, ShouldPassTerminateUponInputTrueToRemotingService) {
                                     session_finished_callback());
 
   EXPECT_EQ(actual_parameters.terminate_upon_input, true);
+}
+
+TEST_F(CrdHostDelegateTest, ShouldPassAdminEmailToRemotingService) {
+  SessionParameters parameters;
+  parameters.admin_email = "the.admin@email.com";
+
+  SupportSessionParamsPtr actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters->authorized_helper, "the.admin@email.com");
 }
 
 TEST_F(CrdHostDelegateTest,

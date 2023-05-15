@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/overlays/overlay_presenter_impl.h"
 
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
@@ -13,8 +11,10 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"

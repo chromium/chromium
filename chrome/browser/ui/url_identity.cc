@@ -46,6 +46,10 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
         url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   } else if (options.default_options.Has(DefaultFormatOptions::kHostname)) {
     name = url_formatter::IDNToUnicode(url.host());
+  } else if (options.default_options.Has(
+                 DefaultFormatOptions::kOmitSchemePathAndTrivialSubdomains)) {
+    name = url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+        url);
   } else {
     name = url_formatter::FormatUrlForSecurityDisplay(url);
   }
@@ -80,10 +84,8 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
 absl::optional<web_app::AppId> GetIsolatedWebAppIdFromUrl(const GURL& url) {
   base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
       web_app::IsolatedWebAppUrlInfo::Create(url);
-  if (!url_info.has_value()) {
-    return absl::nullopt;
-  }
-  return url_info.value().app_id();
+  return url_info.has_value() ? absl::make_optional(url_info.value().app_id())
+                              : absl::nullopt;
 }
 
 UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
@@ -95,7 +97,11 @@ UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  if (!provider) {  // fallback to default
+    // WebAppProvider can be null in ChromeOS depending on whether Lacros is
+    // enabled or not.
+    return CreateDefaultUrlIdentityFromUrl(url, options);
+  }
 
   absl::optional<web_app::AppId> app_id = GetIsolatedWebAppIdFromUrl(url);
   if (!app_id.has_value()) {  // fallback to default

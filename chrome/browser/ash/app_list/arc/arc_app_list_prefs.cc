@@ -27,6 +27,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -94,6 +95,7 @@ constexpr char kUninstalled[] = "uninstalled";
 constexpr char kVPNProvider[] = "vpnprovider";
 constexpr char kPermissionStateGranted[] = "granted";
 constexpr char kPermissionStateManaged[] = "managed";
+constexpr char kPermissionStateDetails[] = "details";
 constexpr char kWebAppInfo[] = "web_app_info";
 constexpr char kTitle[] = "title";
 constexpr char kStartUrl[] = "start_url";
@@ -157,7 +159,7 @@ class NotificationsEnabledDeferred {
   }
 
  private:
-  PrefService* const prefs_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 };
 
 bool WriteIconFile(const base::FilePath& icon_path,
@@ -851,10 +853,18 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
                            .value_or(false);
         bool managed = permission_state_dict->FindBool(kPermissionStateManaged)
                            .value_or(false);
+        const std::string* details =
+            permission_state_dict->FindString(kPermissionStateDetails);
+
+        absl::optional<std::string> details_opt;
+        if (details != nullptr) {
+          details_opt = *details;
+        }
+
         arc::mojom::AppPermission permission =
             static_cast<arc::mojom::AppPermission>(permission_type);
-        permissions.emplace(permission,
-                            arc::mojom::PermissionState::New(granted, managed));
+        permissions.emplace(permission, arc::mojom::PermissionState::New(
+                                            granted, managed, details_opt));
       } else {
         LOG(ERROR) << "Permission state was not a dictionary.";
       }
@@ -1194,7 +1204,7 @@ void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void ArcAppListPrefs::OnArcSessionStopped(arc::ArcStopReason stop_reason) {
-  arc_app_metrics_util_->reportIncompleteInstalls();
+  arc_app_metrics_util_->reportMetrics();
 }
 
 void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
@@ -1782,15 +1792,21 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 
   base::Value::Dict permissions_dict;
   if (package.permission_states.has_value()) {
-    // Support new format
-    for (const auto& permission : package.permission_states.value()) {
+    for (const auto& [permission_type, permission_state] :
+         package.permission_states.value()) {
       base::Value::Dict permission_state_dict;
       permission_state_dict.Set(kPermissionStateGranted,
-                                permission.second->granted);
+                                permission_state->granted);
       permission_state_dict.Set(kPermissionStateManaged,
-                                permission.second->managed);
+                                permission_state->managed);
+
+      if (permission_state->details.has_value()) {
+        permission_state_dict.Set(kPermissionStateDetails,
+                                  permission_state->details.value());
+      }
+
       permissions_dict.Set(
-          base::NumberToString(static_cast<int64_t>(permission.first)),
+          base::NumberToString(static_cast<int64_t>(permission_type)),
           std::move(permission_state_dict));
     }
     package_dict.Set(kPermissionStates, std::move(permissions_dict));
@@ -1826,6 +1842,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 
 void ArcAppListPrefs::RemovePackageFromPrefs(const std::string& package_name) {
   ScopedDictPrefUpdate(prefs_, arc::prefs::kArcPackages)->Remove(package_name);
+  OnArcAppListRefreshed(profile_);
 }
 
 void ArcAppListPrefs::OnAppListRefreshed(
@@ -2412,10 +2429,27 @@ void ArcAppListPrefs::OnInstallationStarted(
   if (prefs_->GetBoolean(ash::prefs::kRecordArcAppSyncMetrics) &&
       !(sync_service_ && sync_service_->IsPackageSyncing(*package_name)) &&
       !IsDefaultPackage(*package_name)) {
-    arc_app_metrics_util_->recordAppInstallStartTime(*package_name);
+    arc_app_metrics_util_->recordAppInstallStartTime(
+        *package_name, IsControlledByPolicy(*package_name));
   }
   for (auto& observer : observer_list_)
     observer.OnInstallationStarted(*package_name);
+}
+
+void ArcAppListPrefs::OnInstallationProgressChanged(
+    const std::string& package_name,
+    float progress) {
+  for (auto& observer : observer_list_) {
+    observer.OnInstallationProgressChanged(package_name, progress);
+  }
+}
+
+void ArcAppListPrefs::OnInstallationActiveChanged(
+    const std::string& package_name,
+    bool active) {
+  for (auto& observer : observer_list_) {
+    observer.OnInstallationActiveChanged(package_name, active);
+  }
 }
 
 void ArcAppListPrefs::OnInstallationFinished(
@@ -2440,7 +2474,8 @@ void ArcAppListPrefs::OnInstallationFinished(
         reason = InstallationCounterReasonEnum::POLICY;
       }
       UMA_HISTOGRAM_ENUMERATION("Arc.AppInstalledReason", reason);
-      arc_app_metrics_util_->maybeReportInstallTimeDelta(result->package_name);
+      arc_app_metrics_util_->maybeReportInstallTimeDelta(
+          result->package_name, IsControlledByPolicy(result->package_name));
       packages_to_be_added_.insert(result->package_name);
     }
   }

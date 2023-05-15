@@ -458,7 +458,6 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
-    helpBubble.forceCloseButton = true;
     helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     assertEquals(3, getNumButtons(), 'there should be three buttons');

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -145,10 +146,10 @@ class BorealisInstallerTest : public testing::Test,
   std::unique_ptr<BorealisContextManagerMock> test_context_manager_;
   std::unique_ptr<BorealisWindowManager> test_window_manager_;
   std::unique_ptr<BorealisDiskManagerDispatcher> test_disk_dispatcher_;
-  BorealisServiceFake* fake_service_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
   std::unique_ptr<BorealisInstallerImpl> installer_impl_;
-  BorealisInstaller* installer_;
+  raw_ptr<BorealisInstaller, ExperimentalAsh> installer_;
   std::unique_ptr<MockObserver> observer_;
   dlcservice::DlcsWithContent current_dlcs_;
 };
@@ -307,17 +308,17 @@ TEST_F(BorealisInstallerTest, SucessfulInstallationRecordMetrics) {
 
 TEST_F(BorealisInstallerTest, IncompleteInstallationRecordMetrics) {
   // This error is arbitrarily chosen for simplicity.
-  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorAllocation);
 
   EXPECT_CALL(*observer_,
-              OnInstallationEnded(BorealisInstallResult::kDlcInternalError,
+              OnInstallationEnded(BorealisInstallResult::kDlcNeedSpaceError,
                                   testing::Not("")));
   StartAndRunToCompletion();
 
   histogram_tester_.ExpectTotalCount(kBorealisInstallNumAttemptsHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(kBorealisInstallResultHistogram,
-                                       BorealisInstallResult::kDlcInternalError,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisInstallResultHistogram,
+      BorealisInstallResult::kDlcNeedSpaceError, 1);
   histogram_tester_.ExpectTotalCount(kBorealisInstallOverallTimeHistogram, 0);
 }
 
@@ -327,9 +328,8 @@ TEST_F(BorealisInstallerTest, ReportsStartupFailureAsError) {
       .WillOnce(
           testing::Invoke([](BorealisContextManager::ResultCallback callback) {
             std::move(callback).Run(
-                BorealisContextManager::ContextOrFailure::Unexpected(
-                    Described<BorealisStartupResult>{
-                        BorealisStartupResult::kStartVmFailed, "Some Error"}));
+                base::unexpected(Described<BorealisStartupResult>{
+                    BorealisStartupResult::kStartVmFailed, "Some Error"}));
           }));
 
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kCheckingIfAllowed));
@@ -362,20 +362,6 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
   StartAndRunToCompletion();
 }
 
-TEST_F(BorealisInstallerTest, RetriesAfterInternalFailure) {
-  PrepareSuccessfulInstallation();
-  FakeDlcserviceClient()->set_install_errors({dlcservice::kErrorInternal,
-                                              dlcservice::kErrorInternal,
-                                              dlcservice::kErrorNone});
-
-  EXPECT_CALL(*observer_,
-              OnInstallationEnded(BorealisInstallResult::kSuccess, ""));
-  StartAndRunToCompletion();
-
-  histogram_tester_.ExpectTotalCount(kBorealisInstallRetriesHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kBorealisInstallRetriesHistogram, 2, 1);
-}
-
 // Note that we don't check if the DLC has/hasn't been installed, since the
 // mocked DLC service will always succeed, so we only care about how the error
 // code returned by the service is handled by the installer.
@@ -394,14 +380,8 @@ INSTANTIATE_TEST_SUITE_P(
     BorealisInstallerTestDlcErrors,
     BorealisInstallerTestDlc,
     testing::Values(std::pair<std::string, BorealisInstallResult>(
-                        dlcservice::kErrorInternal,
-                        BorealisInstallResult::kDlcInternalError),
-                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorInvalidDlc,
                         BorealisInstallResult::kDlcUnsupportedError),
-                    std::pair<std::string, BorealisInstallResult>(
-                        dlcservice::kErrorBusy,
-                        BorealisInstallResult::kDlcBusyError),
                     std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorNeedReboot,
                         BorealisInstallResult::kDlcNeedRebootError),
@@ -446,7 +426,7 @@ class BorealisUninstallerTest : public BorealisInstallerTest {
   }
 
  protected:
-  BorealisServiceFake* fake_service_ = nullptr;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_ = nullptr;
 };
 
 using CallbackFactory = StrictCallbackFactory<void(BorealisUninstallResult)>;

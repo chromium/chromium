@@ -68,7 +68,6 @@ class CodeCacheHostMockImpl : public mojom::blink::CodeCacheHost {
       const KURL& url,
       base::Time expected_response_time,
       mojo_base::BigBuffer data,
-      const scoped_refptr<const SecurityOrigin>& cache_storage_origin,
       const String& cache_storage_cache_name) override {
     sim_->CacheMetadataInCacheStorage(url);
   }

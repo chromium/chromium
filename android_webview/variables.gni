@@ -23,6 +23,4 @@ if (webview_includes_weblayer) {
   upstream_only_webview_deps += [ "//weblayer/browser/java:upstream_java" ]
 }
 
-webview_jinja_variables = [ "use_isolated_splits=$weblayer_in_split" ]
-
 webview_product_config_java_package = "org.chromium.android_webview"

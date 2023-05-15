@@ -22,7 +22,8 @@ namespace net {
 class NetworkChangeNotifierLinux::BlockingThreadObjects {
  public:
   explicit BlockingThreadObjects(
-      const std::unordered_set<std::string>& ignored_interfaces);
+      const std::unordered_set<std::string>& ignored_interfaces,
+      scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner);
   BlockingThreadObjects(const BlockingThreadObjects&) = delete;
   BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
@@ -32,12 +33,12 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
     return address_tracker_.GetCurrentConnectionType();
   }
 
-  const internal::AddressTrackerLinux* address_tracker() const {
-    return &address_tracker_;
-  }
+  internal::AddressTrackerLinux* address_tracker() { return &address_tracker_; }
 
-  // Begin watching for DNS and netlink changes.
+  // Begin watching for netlink changes.
   void Init();
+
+  void InitForTesting(base::ScopedFD netlink_fd);  // IN-TEST
 
  private:
   void OnIPAddressChanged();
@@ -49,7 +50,8 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
-    const std::unordered_set<std::string>& ignored_interfaces)
+    const std::unordered_set<std::string>& ignored_interfaces,
+    scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner)
     : address_tracker_(
           base::BindRepeating(&NetworkChangeNotifierLinux::
                                   BlockingThreadObjects::OnIPAddressChanged,
@@ -58,10 +60,17 @@ NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
               &NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged,
               base::Unretained(this)),
           base::DoNothing(),
-          ignored_interfaces) {}
+          ignored_interfaces,
+          std::move(blocking_thread_runner)) {}
 
 void NetworkChangeNotifierLinux::BlockingThreadObjects::Init() {
   address_tracker_.Init();
+  last_type_ = GetCurrentConnectionType();
+}
+
+void NetworkChangeNotifierLinux::BlockingThreadObjects::InitForTesting(
+    base::ScopedFD netlink_fd) {
+  address_tracker_.InitWithFdForTesting(std::move(netlink_fd));  // IN-TEST
   last_type_ = GetCurrentConnectionType();
 }
 
@@ -84,24 +93,48 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged() {
   }
 }
 
+// static
+std::unique_ptr<NetworkChangeNotifierLinux>
+NetworkChangeNotifierLinux::CreateWithSocketForTesting(
+    const std::unordered_set<std::string>& ignored_interfaces,
+    base::ScopedFD netlink_fd) {
+  auto ncn_linux = std::make_unique<NetworkChangeNotifierLinux>(
+      ignored_interfaces, /*initialize_blocking_thread_objects=*/false,
+      base::PassKey<NetworkChangeNotifierLinux>());
+  ncn_linux->InitBlockingThreadObjectsForTesting(  // IN-TEST
+      std::move(netlink_fd));
+  return ncn_linux;
+}
+
 NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
     const std::unordered_set<std::string>& ignored_interfaces)
+    : NetworkChangeNotifierLinux(ignored_interfaces,
+                                 /*initialize_blocking_thread_objects*/ true,
+                                 base::PassKey<NetworkChangeNotifierLinux>()) {}
+
+NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
+    const std::unordered_set<std::string>& ignored_interfaces,
+    bool initialize_blocking_thread_objects,
+    base::PassKey<NetworkChangeNotifierLinux>)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsLinux()),
       blocking_thread_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       blocking_thread_objects_(
-          new BlockingThreadObjects(ignored_interfaces),
+          new BlockingThreadObjects(ignored_interfaces,
+                                    blocking_thread_runner_),
           // Ensure |blocking_thread_objects_| lives on
           // |blocking_thread_runner_| to prevent races where
           // NetworkChangeNotifierLinux outlives
           // TaskEnvironment. https://crbug.com/938126
           base::OnTaskRunnerDeleter(blocking_thread_runner_)) {
-  blocking_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkChangeNotifierLinux::BlockingThreadObjects::Init,
-                     // The Unretained pointer is safe here because it's
-                     // posted before the deleter can post.
-                     base::Unretained(blocking_thread_objects_.get())));
+  if (initialize_blocking_thread_objects) {
+    blocking_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NetworkChangeNotifierLinux::BlockingThreadObjects::Init,
+                       // The Unretained pointer is safe here because it's
+                       // posted before the deleter can post.
+                       base::Unretained(blocking_thread_objects_.get())));
+  }
 }
 
 NetworkChangeNotifierLinux::~NetworkChangeNotifierLinux() {
@@ -121,13 +154,25 @@ NetworkChangeNotifierLinux::NetworkChangeCalculatorParamsLinux() {
   return params;
 }
 
+void NetworkChangeNotifierLinux::InitBlockingThreadObjectsForTesting(
+    base::ScopedFD netlink_fd) {
+  DCHECK(blocking_thread_objects_);
+  blocking_thread_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &NetworkChangeNotifierLinux::BlockingThreadObjects::InitForTesting,
+          // The Unretained pointer is safe here because it's
+          // posted before the deleter can post.
+          base::Unretained(blocking_thread_objects_.get()),
+          std::move(netlink_fd)));
+}
+
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierLinux::GetCurrentConnectionType() const {
   return blocking_thread_objects_->GetCurrentConnectionType();
 }
 
-const AddressMapOwnerLinux*
-NetworkChangeNotifierLinux::GetAddressMapOwnerInternal() const {
+AddressMapOwnerLinux* NetworkChangeNotifierLinux::GetAddressMapOwnerInternal() {
   return blocking_thread_objects_->address_tracker();
 }
 

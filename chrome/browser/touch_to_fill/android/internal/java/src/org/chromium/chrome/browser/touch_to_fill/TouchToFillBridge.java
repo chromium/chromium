@@ -68,9 +68,9 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private static void insertWebAuthnCredential(
-            WebAuthnCredential[] credentials, int index, String username, String id) {
-        credentials[index] = new WebAuthnCredential(username, id);
+    private static void insertWebAuthnCredential(WebAuthnCredential[] credentials, int index,
+            String rpId, byte[] credentialId, byte[] userId, String username) {
+        credentials[index] = new WebAuthnCredential(rpId, credentialId, userId, username);
     }
 
     @CalledByNative

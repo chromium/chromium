@@ -10,7 +10,7 @@
 <translation id="1299858300159559687">አሁን ያለውን ገጽዎን ያትሙ</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ወይም <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ወደ የመስመር መጨረሻ ይሂዱ</translation>
-<translation id="1499072997694708844">ማናቸውንም ክፍት አግኝ መስኮት ይዝጉ ወይም የእርስዎን አሁን ያለውን ገጽ መጫን ያስቁሙ</translation>
+<translation id="1499072997694708844">ማናቸውንም ክፍት አግኝ መስኮት ይዝጉ ወይም የእርስዎን አሁን ያለውን ገፅ መጫን ያስቁሙ</translation>
 <translation id="1516966594427080024">አዲስ ትር ማንነት በማያሳውቅ ሁነታ ውስጥ ይክፈቱ</translation>
 <translation id="152892567002884378">ድምፅ ጨምር</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />፣ ከዚያ <ph name="ESC" /></translation>
@@ -20,7 +20,7 @@
 <translation id="168356808214100546"><ph name="ALT" />ን ተጭነው ይያዙ፣  መክፈት የሚፈልጉትን መስኮት እስኪያገኙ ድረስ <ph name="TAB" /> መታ ያድርጉ፣ ከዚያ ይልቀቁ።</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">በአድራሻ አሞሌው ላይ ወዳለው ግቤትዎ www. እና .com ያክሉ፣ ከዚያ ገጹን ይክፈቱ</translation>
-<translation id="1768987374400973299">ቅጽበታዊ ገጽ እይታን ያንሱ/ ይቅረጹ</translation>
+<translation id="1768987374400973299">ቅጽበታዊ ገፅ እይታን ያንሱ/ ይቅረጹ</translation>
 <translation id="1872219238824176091">አሁን ያለውን ዴስክ አስወግድ</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />፣ ከዚያ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ወይም <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ወደ የሚቀጥለው ትር ይሂዱ</translation>
@@ -34,7 +34,7 @@
 <translation id="2181097965834437145">የእልባት አሞሌን አሳይ ወይም ደብቅ</translation>
 <translation id="2185166372312820725">ወደ ቀዳሚው ትር ሂድ</translation>
 <translation id="2194790690264064655"><ph name="CTRL" /> ይጫኑ እና አገናኝ ጠቅ ያድርጉ</translation>
-<translation id="2246352309084894470">የሙሉ ማያ ገጽ አስጀማሪውን ይክፈቱ/ይዝጉ</translation>
+<translation id="2246352309084894470">የሙሉ ማያ ገፅ አስጀማሪውን ይክፈቱ/ይዝጉ</translation>
 <translation id="2354531887393764880">ነጥብ</translation>
 <translation id="2382644247745281995">በአሁኑ የቁልፍ ሰሌዳ አቀማመጥ አይደገፍም</translation>
 <translation id="2397416548179033562">የChrome ምናሌ አሳይ</translation>
@@ -55,10 +55,10 @@
 <translation id="2789868185375229787">በገጹ ላይ ያሳንሱ</translation>
 <translation id="2804480015716812239"><ph name="ALT" /> ይጫኑ እና አገናኝ ጠቅ ያድርጉ</translation>
 <translation id="2830827904629746450">በስተቀኝ በኩል መስኮት ይሰኩ</translation>
-<translation id="2840766858109427815">ወደ የሚቀጥለው ገጽ ወደፊት ይሂዱ</translation>
+<translation id="2840766858109427815">ወደ የሚቀጥለው ገፅ ወደፊት ይሂዱ</translation>
 <translation id="2872353916818027657">ዋና ማሳያውን ቀይር</translation>
 <translation id="2914313326123580426">የገንቢ መሣሪያዎች ፓነልን አሳይ ወይም ደብቅ</translation>
-<translation id="292495055542441795">ሙሉ ማያ ገጽ ቀያይር</translation>
+<translation id="292495055542441795">ሙሉ ማያ ገፅ ቀያይር</translation>
 <translation id="3020183492814296499">አቋራጮች</translation>
 <translation id="3084301071537457911">በእርስዎ መደርደሪያ ላይ ቀጣዩን ንጥል ያድምቁ</translation>
 <translation id="309173601632226815">በእርስዎ መደርደሪያ ላይ አስጀማሪ አዝራሩን ያድምቁ</translation>
@@ -72,7 +72,7 @@
 <translation id="3422679037938588196">ለፍለጋዎ ወደ ቀዳሚው ተዛማጅ ይሂዱ</translation>
 <translation id="353037708190149633">ሁሉንም የተከፈቱ ገጾች በአሁኑ መስኮትዎ ውስጥ በአዲስ አቃፊ ውስጥ እንደ እልባት ያስቀምጧቸው</translation>
 <translation id="355103131818127604">አገናኙን ከበስተጀርባ በአዲስ ትር ውስጥ ይክፈቱ</translation>
-<translation id="3622741593887335780">አጉላ (ሲተከል ወይም የሙሉ ማያ ገጽ ማጉያዎች ሲነቁ)</translation>
+<translation id="3622741593887335780">አጉላ (ሲተከል ወይም የሙሉ ማያ ገፅ ማጉያዎች ሲነቁ)</translation>
 <translation id="3633851487917460983">ቅንጥብ ሰሌዳን ክፈት</translation>
 <translation id="3649256019230929621">መስኮትን ያሳንሱት</translation>
 <translation id="3655154169297074232">ትሮች እና መስኮቶች</translation>
@@ -99,7 +99,7 @@
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> ወይም <ph name="ENTER" /></translation>
 <translation id="4240486403425279990">የአጠቃላይ እይታ ሁነታ</translation>
 <translation id="4275283744500212192">የመስኮት አቀማመጥ አማራጮችን ይክፈቱ</translation>
-<translation id="4382340674111381977">ወደ ቀዳሚ ገጽ ወደ ኋላ ይመለሱ</translation>
+<translation id="4382340674111381977">ወደ ቀዳሚ ገፅ ወደ ኋላ ይመለሱ</translation>
 <translation id="4458670250301149821">በመተግበሪያ ፍርግርግ ውስጥ ከአቃፊ ወደ ውስጥ/ውጭ የመተግበሪያ አዶን ያንቀሳቅሱ</translation>
 <translation id="4472417192667361414">የስርዓት እና የማሳያ ቅንብሮች</translation>
 <translation id="449214506787633354"><ph name="CTRL" />፣ በመቀጠል <ph name="LEFT" /> ወይም <ph name="RIGHT" /> ወይም <ph name="UP" /> ወይም <ph name="DOWN" /></translation>
@@ -112,7 +112,7 @@
 <translation id="4916163929714267752">አገናኙን በአዲስ መስኮት ውስጥ ይክፈቱ</translation>
 <translation id="5030659775136592441">የዕልባት አቀናባሪን አሳይ</translation>
 <translation id="5034421018520995080">ወደ ገጹ አናት ይሂዱ</translation>
-<translation id="5104462712192763270">አሁን ያለውን የእርስዎን ገጽ ያስቀምጡ</translation>
+<translation id="5104462712192763270">አሁን ያለውን የእርስዎን ገፅ ያስቀምጡ</translation>
 <translation id="5121628974188116412">ወደ ገጹ ግርጌ ይሂዱ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5236674127086649162">የተሸጎጠ ይዘትን ሳይጠቀሙ አሁን ያለውን ገጽዎ ዳግም ይጫኑ</translation>
@@ -121,7 +121,7 @@
 <translation id="539072479502328326">የተተከለውን ማጉያ ያብሩ ወይም ያጥፉ</translation>
 <translation id="5466615362193675484">የቁልፍ ሁነታን መጠን ለመቀየር ምናሌውን ይቀያይሩ</translation>
 <translation id="5541719484267030947">ትሩን እየጎተቱ እያሉ <ph name="ESC" />ን ይጫኑ</translation>
-<translation id="5554139136362089836">የአሁኑን ገጽ ይፈልጉ</translation>
+<translation id="5554139136362089836">የአሁኑን ገፅ ይፈልጉ</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ይጫኑ እና አገናኝ ጠቅ ያድርጉ</translation>
 <translation id="561814908794220892">ድረ-ገጹን በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="5620219513321115856">ንቁ መስኮትን በቀኝ በኩል ወደ ያለው ዴስክ ያንቀሳቅሱ</translation>
@@ -133,32 +133,32 @@
 <translation id="5899919361772749550">የገንቢ መሣሪያዎች መሥሪያን አሳይ ወይም ደብቅ</translation>
 <translation id="5919628958418675842">የግላዊነት ማያ ገጽን ያብሩ ወይም ያጥፉ</translation>
 <translation id="5921745308587794300">መስኮትን አሽከርክር</translation>
-<translation id="5926306472221400972">የሙሉ ማያ ገጽ ቅጽበታዊ ገጽ ዕይታን ያንሱ</translation>
+<translation id="5926306472221400972">የሙሉ ማያ ገፅ ቅጽበታዊ ገፅ ዕይታን ያንሱ</translation>
 <translation id="6022924867608035986">የፍለጋ ሳጥን ጽሑፍን አጽዳ</translation>
 <translation id="6052614013050385269">አገናኝን በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="6143669479988153888">በገጹ ላይ ያሳንሱ</translation>
-<translation id="6185696379715117369">ገጽ ወደላይ</translation>
+<translation id="6185696379715117369">ገፅ ወደላይ</translation>
 <translation id="6228457605945141550">ብሩህነትን ቀንስ</translation>
 <translation id="6276708887952587684">የገጽ ምንጭን ይመልከቱ</translation>
 <translation id="6321940490215594447">የታሪክ ገጹን ይክፈቱ</translation>
 <translation id="6340769215862220182">ማሳያን ማጉላት</translation>
-<translation id="634687982629734605">በእነዚህ መካከል ትኩረትን ቀያይር፦ የሁኔታ አካባቢ (የእርስዎ የመለያ ሥዕል የሚታይበት ቦታ) አስጀማሪ፣ የአድራሻ አሞሌ፣ የእልባቶች አሞሌ (የሚታይ ከሆነ)፣ የተከፈተው ድረ-ገጽ፣ የውርዶች አሞሌ (የሚታይ ከሆነ)። ሊተኮርበት የሚችል መገናኛ ከታየ በምትኩ ትኩረትን ወደዚያ ይውሰዱት።</translation>
+<translation id="634687982629734605">በእነዚህ መካከል ትኩረትን ቀያይር፦ የሁኔታ አካባቢ (የእርስዎ የመለያ ሥዕል የሚታይበት ቦታ) አስጀማሪ፣ የአድራሻ አሞሌ፣ የእልባቶች አሞሌ (የሚታይ ከሆነ)፣ የተከፈተው ድረ-ገፅ፣ የውርዶች አሞሌ (የሚታይ ከሆነ)። ሊተኮርበት የሚችል መገናኛ ከታየ በምትኩ ትኩረትን ወደዚያ ይውሰዱት።</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">ጽሑፍን እስከ የመስመሩ መጨረሻ ይምረጡ</translation>
 <translation id="6425378783626925378">በእርስዎ መደርደሪያ ላይ 1-8 አዶዎችን ጠቅ ያድርጉ</translation>
 <translation id="6435207348963613811">በእርስዎ መደርደሪያ ላይ ቀዳሚውን ንጥል ያድምቁ</translation>
 <translation id="6445033640292336367">ትሩን ወደ የመጀመሪያው አቀማመጡ ይመልሱ</translation>
-<translation id="6474744297082284761">አሳንስ (ሲተከል ወይም የሙሉ ማያ ገጽ ማጉያዎች ሲነቁ)</translation>
+<translation id="6474744297082284761">አሳንስ (ሲተከል ወይም የሙሉ ማያ ገፅ ማጉያዎች ሲነቁ)</translation>
 <translation id="649811797655257835">ፋይሉን ይምረጡ፣ ከዚያ <ph name="SPACE" /> ይጫኑ</translation>
 <translation id="6515089016094047210">የቀን መቁጠሪያ መግብርን ይክፈቱ ወይም ይዝጉ።</translation>
-<translation id="6551886416582667425">ከፊል ቅጽበታዊ ገጽ እይታ ያንሱ/ይቅረጹ</translation>
+<translation id="6551886416582667425">ከፊል ቅጽበታዊ ገፅ እይታ ያንሱ/ይቅረጹ</translation>
 <translation id="6556040137485212400">ለረጅሙ ጊዜ ስራ ላይ ያልዋለውን መስኮት ይክፈቱ</translation>
 <translation id="666343722268997814">ለደመቀው ንጥል በቀኝ ጠቅ ምናሌን ይክፈቱ</translation>
 <translation id="6671538777808758331">ለፍለጋዎ ወደ ቀጣዩ ተዛማጅ ይሂዱ</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> ወይም <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">መስኮት በስተግራ በኩል ይሰኩ</translation>
 <translation id="6692847073476874842">አንድ ፋይልን በፋይሎች መተግበሪያ ውስጥ በቅድመ-ዕይታ ይመልከቱ</translation>
-<translation id="671928215901716392">ማያ ገጽ ይቆልፉ</translation>
+<translation id="671928215901716392">ማያ ገፅ ይቆልፉ</translation>
 <translation id="6727005317916125192">ቀዳሚ ንጥል</translation>
 <translation id="6740781404993465795">ቀጣዩን ቃል ወይም ፊደል ይምረጡ</translation>
 <translation id="6755851152783057058">ወደ የመጨረሻው ጥቅም ላይ የዋለው የግቤት ዘዴ ይቀይሩ</translation>
@@ -178,7 +178,7 @@
 <translation id="7611271430932669992">ትኩረቱን ወደ ብቅ-ባዮች እና መገናኛዎች ይውሰዱ</translation>
 <translation id="7635348532214572995">በመተግበሪያው ፍርግርግ ዙሪያ የመተግበሪያ አዶን አንቀሳቅስ</translation>
 <translation id="766326951329901120">ይዘትን ከቅንጥብ ሰሌዳው ላይ እንደ ዝርግ ጽሁፍ ለጥፍ</translation>
-<translation id="7673453620027697230">የመስኮት ቅጽበታዊ ገጽ እይታን ያንሱ/ይቅረጹ</translation>
+<translation id="7673453620027697230">የመስኮት ቅጽበታዊ ገፅ እይታን ያንሱ/ይቅረጹ</translation>
 <translation id="7703010453515335249">ቅንፍ ግራ</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />፣ ከዚያ <ph name="SPACE" /> ወይም <ph name="ENTER" /></translation>
@@ -202,7 +202,7 @@
 <translation id="8727232706774971183">የእርስዎን ማሳወቂያዎች ይመልከቱ</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> ከ1 እስከ 8</translation>
 <translation id="8881584919399569791">ንቁ መስኮትን በግራ በኩል ወደ ያለው ዴስክ ያንቀሳቅሱ</translation>
-<translation id="88986195241502842">ገጽ ወደ ታች</translation>
+<translation id="88986195241502842">ገፅ ወደ ታች</translation>
 <translation id="8924883688469390268">ወደ ቀደሚው ተጠቃሚ ቀይር</translation>
 <translation id="8941626538514548667">በአሳሹ ውስጥ የድር ይዘትን ያተኩሩ</translation>
 <translation id="8977648847395357314">በአድራሻ አሞሌ ውስጥ ይዘቱን ይምረጡ</translation>
@@ -214,7 +214,7 @@
 <translation id="906458777597946297">መስኮቱን ያስፉት</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />፣ በመቀጠል <ph name="LEFT" /> ወይም <ph name="RIGHT" /> ወይም <ph name="UP" /> ወይም <ph name="DOWN" /></translation>
 <translation id="9091855755813503076">ወደ የመስመር መጀመሪያ ይሂዱ</translation>
-<translation id="9106898733795143799">ገጽ እና ድር አሳሽ</translation>
+<translation id="9106898733795143799">ገፅ እና ድር አሳሽ</translation>
 <translation id="9162942292291287644">ለ<ph name="QUERY" /> ምንም የፍለጋ ውጤቶች የሉም</translation>
 <translation id="9179672198516322668">ታዋቂ አቋራጮች</translation>
 <translation id="93603345341560814"><ph name="SHIFT" />ን ይጫኑ እና አገናኝ ላይ ጠቅ ያድርጉ</translation>

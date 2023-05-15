@@ -96,7 +96,7 @@ class PersonalizationAppThemeProviderImpl
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  base::raw_ptr<ColorPaletteController> color_palette_controller_ =
+  raw_ptr<ColorPaletteController> color_palette_controller_ =
       nullptr;  // owned by Shell
 
   base::ScopedObservation<ash::DarkLightModeControllerImpl,

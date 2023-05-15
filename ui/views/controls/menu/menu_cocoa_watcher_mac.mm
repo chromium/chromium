@@ -39,15 +39,15 @@ BOOL ShouldIgnoreNotification(NSNotification* notification) {
 
 struct MenuCocoaWatcherMac::ObjCStorage {
   // Tokens representing the notification observers.
-  id observer_token_other_menu_ = nil;
-  id observer_token_new_window_focus_ = nil;
-  id observer_token_app_change_ = nil;
+  id observer_token_other_menu = nil;
+  id observer_token_new_window_focus = nil;
+  id observer_token_app_change = nil;
 };
 
 MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
     : callback_(std::move(callback)),
       objc_storage_(std::make_unique<ObjCStorage>()) {
-  objc_storage_->observer_token_other_menu_ =
+  objc_storage_->observer_token_other_menu =
       [[NSNotificationCenter defaultCenter]
           addObserverForName:NSMenuDidBeginTrackingNotification
                       object:nil
@@ -59,7 +59,7 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
 
                     ExecuteCallback();
                   }];
-  objc_storage_->observer_token_new_window_focus_ =
+  objc_storage_->observer_token_new_window_focus =
       [[NSNotificationCenter defaultCenter]
           addObserverForName:NSWindowDidBecomeKeyNotification
                       object:nil
@@ -71,7 +71,7 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
 
                     ExecuteCallback();
                   }];
-  objc_storage_->observer_token_app_change_ =
+  objc_storage_->observer_token_app_change =
       [[[NSWorkspace sharedWorkspace] notificationCenter]
           addObserverForName:NSWorkspaceDidActivateApplicationNotification
                       object:nil
@@ -92,11 +92,11 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
 
 MenuCocoaWatcherMac::~MenuCocoaWatcherMac() {
   [[NSNotificationCenter defaultCenter]
-      removeObserver:objc_storage_->observer_token_other_menu_];
+      removeObserver:objc_storage_->observer_token_other_menu];
   [[NSNotificationCenter defaultCenter]
-      removeObserver:objc_storage_->observer_token_new_window_focus_];
+      removeObserver:objc_storage_->observer_token_new_window_focus];
   [[[NSWorkspace sharedWorkspace] notificationCenter]
-      removeObserver:objc_storage_->observer_token_app_change_];
+      removeObserver:objc_storage_->observer_token_app_change];
 }
 
 void MenuCocoaWatcherMac::SetNotificationFilterForTesting(

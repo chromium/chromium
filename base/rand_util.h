@@ -191,6 +191,13 @@ class BASE_EXPORT MetricsSubSampler {
   MetricsSubSampler();
   bool ShouldSample(double probability);
 
+  // Disables subsampling in a scope. Useful for testing.
+  class BASE_EXPORT ScopedDisableForTesting {
+   public:
+    ScopedDisableForTesting();
+    ~ScopedDisableForTesting();
+  };
+
  private:
   InsecureRandomGenerator generator_;
 };

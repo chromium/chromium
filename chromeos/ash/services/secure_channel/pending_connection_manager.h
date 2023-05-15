@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash::secure_channel {
 
 class AuthenticatedChannel;
@@ -53,7 +55,7 @@ class PendingConnectionManager {
       const ConnectionDetails& connection_details);
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash::secure_channel

@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "dbus/object_path.h"
 
 namespace ash {
 
@@ -30,13 +29,21 @@ void FakeSMSClient::GetAll(const std::string& service_name,
     return;
   }
 
+  pending_get_all_callback_ = std::move(callback);
+  pending_get_all_object_path_ = object_path;
+}
+
+void FakeSMSClient::CompleteGetAll() {
+  DCHECK(pending_get_all_callback_) << "No pending call to GetAll()";
+
   base::Value::Dict sms;
   sms.Set("Number", "000-000-0000");
-  sms.Set("Text", "FakeSMSClient: Test Message: " + object_path.value());
+  sms.Set("Text", "FakeSMSClient: Test Message: " +
+                      pending_get_all_object_path_.value());
   sms.Set("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
-
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(sms)));
+      FROM_HERE,
+      base::BindOnce(std::move(pending_get_all_callback_), std::move(sms)));
 }
 
 }  // namespace ash

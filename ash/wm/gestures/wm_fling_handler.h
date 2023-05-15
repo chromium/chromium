@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -60,7 +61,7 @@ class WmFlingHandler : public ui::CompositorAnimationObserver {
   absl::optional<gfx::Vector2dF> fling_last_offset_;
 
   // The compositor we are observing.
-  ui::Compositor* observed_compositor_ = nullptr;
+  raw_ptr<ui::Compositor, ExperimentalAsh> observed_compositor_ = nullptr;
 
   StepCallback on_step_callback_;
   base::RepeatingClosure on_end_callback_;

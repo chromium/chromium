@@ -23,30 +23,24 @@
 
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
-    : views::MenuButton(std::move(callback), u"") {
-  SetAccessibleName(
+    : views::MenuButton(std::move(callback)) {
+  SetAccessibilityProperties(
+      ax::mojom::Role::kMenu,
       l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-  views::InstallPillHighlightPathGenerator(this);
 }
 
 SavedTabGroupOverflowButton::~SavedTabGroupOverflowButton() = default;
 
 void SavedTabGroupOverflowButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  // If the button would have no name, avoid crashing by setting the name
-  // explicitly empty.
-  if (GetAccessibleName().empty()) {
-    node_data->SetNameExplicitlyEmpty();
-  }
-
   views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
+  node_data->role = ax::mojom::Role::kMenu;
+  node_data->SetNameChecked(
       l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
 }
 

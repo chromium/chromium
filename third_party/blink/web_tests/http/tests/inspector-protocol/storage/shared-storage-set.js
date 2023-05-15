@@ -80,5 +80,9 @@
   await getSharedStorageMetadata(dp, testRunner, baseOrigin);
   await getSharedStorageEntries(dp, testRunner, baseOrigin);
 
+  await dp.Storage.clearSharedStorageEntries({
+    ownerOrigin: baseOrigin
+  });
+
   testRunner.completeTest();
 })

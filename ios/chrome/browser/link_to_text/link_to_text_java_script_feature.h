@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
 
+#include "base/gtest_prod_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "base/values.h"

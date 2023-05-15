@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -323,7 +324,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
 
   // Local state prefs, not owned.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // `finished_callback_` should be called once migration is completed/failed.
   // Call this on UI thread.

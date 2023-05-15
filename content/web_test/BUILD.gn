@@ -23,6 +23,7 @@ mojom("web_test_common_mojom") {
   sources = [
     "common/fake_bluetooth_chooser.mojom",
     "common/mojo_echo.mojom",
+    "common/mojo_optional_numerics_unittest.mojom",
     "common/web_test.mojom",
     "common/web_test_bluetooth_fake_adapter_setter.mojom",
   ]
@@ -93,12 +94,12 @@ static_library("web_test_browser") {
     "browser/leak_detector.h",
     "browser/mojo_echo.cc",
     "browser/mojo_echo.h",
+    "browser/mojo_optional_numerics_unittest.cc",
+    "browser/mojo_optional_numerics_unittest.h",
     "browser/mojo_web_test_helper.cc",
     "browser/mojo_web_test_helper.h",
     "browser/test_info_extractor.cc",
     "browser/test_info_extractor.h",
-    "browser/web_test_attribution_manager.cc",
-    "browser/web_test_attribution_manager.h",
     "browser/web_test_background_fetch_delegate.cc",
     "browser/web_test_background_fetch_delegate.h",
     "browser/web_test_bluetooth_adapter_provider.cc",
@@ -141,6 +142,10 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
+
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
 
   if (is_mac) {
     sources += [
@@ -362,7 +367,7 @@ static_library("web_test_renderer") {
     "//third_party/blink/renderer/core/web_test",
   ]
 
-  if (enable_printing) {
+  if (enable_printing || enable_printing_unittests) {
     sources += [
       "renderer/pixel_dump.cc",
       "renderer/pixel_dump.h",

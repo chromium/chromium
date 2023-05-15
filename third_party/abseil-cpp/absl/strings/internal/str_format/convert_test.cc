@@ -1241,9 +1241,9 @@ TEST_F(FormatConvertTest, GlibcHasCorrectTraits) {
   const NativePrintfTraits &native_traits = VerifyNativeImplementation();
   // If one of the following tests break then it is either because the above PP
   // macro guards failed to exclude a new platform (likely) or because something
-  // has changed in the implemention of glibc sprintf float formatting behavior.
-  // If the latter, then the code that computes these flags needs to be
-  // revisited and/or possibly the StrFormat implementation.
+  // has changed in the implementation of glibc sprintf float formatting
+  // behavior.  If the latter, then the code that computes these flags needs to
+  // be revisited and/or possibly the StrFormat implementation.
   EXPECT_TRUE(native_traits.hex_float_has_glibc_rounding);
   EXPECT_TRUE(native_traits.hex_float_prefers_denormal_repr);
   EXPECT_TRUE(

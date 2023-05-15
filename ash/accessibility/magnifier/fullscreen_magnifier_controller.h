@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event_handler.h"
@@ -254,7 +255,7 @@ class ASH_EXPORT FullscreenMagnifierController
   void MoveCursorTo(const gfx::Point& root_location);
 
   // Target root window. This must not be NULL.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // True if the magnified window is currently animating a change. Otherwise,
   // false.

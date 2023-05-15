@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -63,7 +64,7 @@ class ArcWallpaperServiceTest : public testing::Test {
   ArcWallpaperServiceTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {}
 
   ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
   ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
@@ -118,14 +119,15 @@ class ArcWallpaperServiceTest : public testing::Test {
   }
 
  protected:
-  arc::ArcWallpaperService* service_ = nullptr;
+  raw_ptr<arc::ArcWallpaperService, ExperimentalAsh> service_ = nullptr;
   std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  ash::FakeChromeUserManager* const user_manager_ = nullptr;
+  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.

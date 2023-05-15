@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -114,7 +115,7 @@ class InformationTextArea : public views::View {
     label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(2, 2, 2, 4)));
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(label_);
+    AddChildView(label_.get());
   }
 
   InformationTextArea(const InformationTextArea&) = delete;
@@ -160,7 +161,7 @@ class InformationTextArea : public views::View {
   }
 
  private:
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
   int min_width_;
   absl::optional<BorderPosition> position_;
 };
@@ -197,16 +198,16 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   candidate_area_->SetVisible(false);
   preedit_->SetBorderFromPosition(InformationTextArea::BOTTOM);
   if (candidate_window_.orientation() == ui::CandidateWindow::VERTICAL) {
-    AddChildView(preedit_);
-    AddChildView(candidate_area_);
-    AddChildView(auxiliary_text_);
+    AddChildView(preedit_.get());
+    AddChildView(candidate_area_.get());
+    AddChildView(auxiliary_text_.get());
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   } else {
-    AddChildView(preedit_);
-    AddChildView(auxiliary_text_);
-    AddChildView(candidate_area_);
+    AddChildView(preedit_.get());
+    AddChildView(auxiliary_text_.get());
+    AddChildView(candidate_area_.get());
     auxiliary_text_->SetAlignment(gfx::ALIGN_LEFT);
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::BOTTOM);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(

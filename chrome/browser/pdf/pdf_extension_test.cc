@@ -811,14 +811,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureInternalPluginDisabled) {
       "</body></html>";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(data_url)));
   WebContents* web_contents = GetActiveWebContents();
-  bool plugin_loaded = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents,
-      "var plugin_loaded = "
-      "    document.getElementsByTagName('embed')[0].postMessage !== undefined;"
-      "window.domAutomationController.send(plugin_loaded);",
-      &plugin_loaded));
-  ASSERT_FALSE(plugin_loaded);
+  ASSERT_EQ(false,
+            content::EvalJs(
+                web_contents,
+                "var plugin_loaded = "
+                "    document.getElementsByTagName('embed')[0].postMessage !== "
+                "undefined;"
+                "plugin_loaded;"));
 }
 
 // Ensure cross-origin replies won't work for getSelectedText.
@@ -995,13 +994,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
-  ASSERT_TRUE(content::ExecuteScript(guest_view->GetGuestMainFrame(),
-                                     "while (viewer.viewport.getZoom() < 1) {"
-                                     "  viewer.viewport.zoomIn();"
-                                     "}"
-                                     "setTimeout(() => {"
-                                     "  viewer.viewport.zoomIn();"
-                                     "}, 1);"));
+  ASSERT_TRUE(content::ExecJs(guest_view->GetGuestMainFrame(),
+                              "while (viewer.viewport.getZoom() < 1) {"
+                              "  viewer.viewport.zoomIn();"
+                              "}"
+                              "setTimeout(() => {"
+                              "  viewer.viewport.zoomIn();"
+                              "}, 1);"));
 
   watcher.Wait();
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
@@ -1338,11 +1337,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigationOnCorrectTab) {
   content::TestNavigationObserver active_navigation_observer(
       active_web_contents);
   content::TestNavigationObserver navigation_observer(web_contents);
-  ASSERT_TRUE(
-      content::ExecuteScript(guest->GetGuestMainFrame(),
-                             "viewer.navigator_.navigate("
-                             "    'www.example.com',"
-                             "    WindowOpenDisposition.CURRENT_TAB);"));
+  ASSERT_TRUE(content::ExecJs(guest->GetGuestMainFrame(),
+                              "viewer.navigator_.navigate("
+                              "    'www.example.com',"
+                              "    WindowOpenDisposition.CURRENT_TAB);"));
   navigation_observer.Wait();
 
   EXPECT_FALSE(navigation_observer.last_navigation_url().is_empty());
@@ -1604,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   // Click on the link which opens the PDF via JS.
   content::TestNavigationObserver navigation_observer(web_contents);
   const char kPdfLinkClick[] = "document.getElementById('link').click();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, kPdfLinkClick));
+  ASSERT_TRUE(content::ExecJs(web_contents, kPdfLinkClick));
   navigation_observer.Wait();
   const GURL& current_url = web_contents->GetLastCommittedURL();
   ASSERT_EQ("/pdf/test-link.pdf", current_url.path());
@@ -1662,9 +1660,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, LinkClickInPdfInNonTab) {
   MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
   ASSERT_TRUE(guest);
   ASSERT_TRUE(
-      content::ExecuteScript(guest->GetGuestMainFrame(),
-                             "window.viewer.browserApi.getStreamInfo().tabId = "
-                             "    chrome.tabs.TAB_ID_NONE;"));
+      content::ExecJs(guest->GetGuestMainFrame(),
+                      "window.viewer.browserApi.getStreamInfo().tabId = "
+                      "    chrome.tabs.TAB_ID_NONE;"));
 
   FailOnNavigation fail_if_mimehandler_navigates(guest->web_contents());
   SimulateMouseClickAt(guest, blink::WebInputEvent::kNoModifiers,
@@ -1885,7 +1883,7 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   }
 
   void SaveEditedPdf(MimeHandlerViewGuest* guest) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         guest->GetGuestMainFrame(),
         "var viewer = document.getElementById('viewer');"
         "var toolbar = viewer.shadowRoot.getElementById('toolbar');"
@@ -2281,12 +2279,12 @@ void EnsureCustomPinchZoomInvoked(content::RenderFrameHost* guest_mainframe,
                                   base::OnceClosure send_events) {
   constexpr char kListenPinchUpdate[] = R"(
       const gestureDetector = viewer.viewport.getGestureDetectorForTesting();
-      const updatePromise = new Promise((resolve) => {
+      var updatePromise = new Promise((resolve) => {
         gestureDetector.getEventTarget().addEventListener('pinchupdate',
                                                           resolve);
       });
   )";
-  ASSERT_TRUE(content::ExecuteScript(guest_mainframe, kListenPinchUpdate));
+  ASSERT_TRUE(content::ExecJs(guest_mainframe, kListenPinchUpdate));
 
   zoom::ZoomChangedWatcher zoom_watcher(
       contents,
@@ -2299,14 +2297,8 @@ void EnsureCustomPinchZoomInvoked(content::RenderFrameHost* guest_mainframe,
 
   std::move(send_events).Run();
 
-  bool got_update;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      guest_mainframe,
-      "updatePromise.then(function(update) { "
-      "  window.domAutomationController.send(!!update); "
-      "});",
-      &got_update));
-  EXPECT_TRUE(got_update);
+  EXPECT_EQ(true, content::EvalJs(guest_mainframe,
+                                  "updatePromise.then((update) => !!update);"));
 
   zoom_watcher.Wait();
 
@@ -2423,16 +2415,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   gfx::Point point_in_pdf(250, 250);
 
   // Inject script to count MouseLeaves in the PDF.
-  ASSERT_TRUE(content::ExecuteScript(
-      guest_mainframe,
-      "var enter_count = 0;\n"
-      "var leave_count = 0;\n"
-      "document.addEventListener('mouseenter', function (){\n"
-      "  enter_count++;"
-      "});\n"
-      "document.addEventListener('mouseleave', function (){\n"
-      "  leave_count++;"
-      "});"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_mainframe,
+                      "var enter_count = 0;\n"
+                      "var leave_count = 0;\n"
+                      "document.addEventListener('mouseenter', function (){\n"
+                      "  enter_count++;"
+                      "});\n"
+                      "document.addEventListener('mouseleave', function (){\n"
+                      "  leave_count++;"
+                      "});"));
 
   // Inject some MouseMoves to invoke a MouseLeave in the PDF.
   WebContents* embedder_contents = GetActiveWebContents();
@@ -2512,15 +2504,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
   ASSERT_TRUE(guest_mainframe);
 
   const std::string script =
-      "window.domAutomationController.send("
-      "    window.getComputedStyle(document.body, null)."
-      "    getPropertyValue('background-color'))";
-  std::string outer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(GetActiveWebContents(),
-                                                     script, &outer));
-  std::string inner;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(guest_mainframe, script, &inner));
+      "window.getComputedStyle(document.body, null)."
+      "getPropertyValue('background-color')";
+  std::string outer =
+      content::EvalJs(GetActiveWebContents(), script).ExtractString();
+  std::string inner = content::EvalJs(guest_mainframe, script).ExtractString();
   EXPECT_EQ(inner, outer);
 }
 
@@ -2536,12 +2524,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
   const std::string script =
       "const is_plugin_focused = document.activeElement === "
       "document.body;"
-      "window.domAutomationController.send(is_plugin_focused);";
+      "is_plugin_focused;";
 
-  bool result = false;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(guest_mainframe, script, &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(guest_mainframe, script));
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
@@ -2556,12 +2541,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
   const std::string script =
       "const is_plugin_focused = document.activeElement === "
       "document.body;"
-      "window.domAutomationController.send(is_plugin_focused);";
+      "is_plugin_focused;";
 
-  bool result = false;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(guest_mainframe, script, &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(guest_mainframe, script));
 }
 
 // A helper for waiting for the first request for |url_to_intercept|.
@@ -2739,9 +2721,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
   ASSERT_TRUE(guest_mainframe);
 
   // Set focus on last toolbar element (zoom-out-button).
-  ASSERT_TRUE(
-      content::ExecuteScript(guest_mainframe,
-                             R"(viewer.shadowRoot.querySelector('#zoomToolbar')
+  ASSERT_TRUE(content::ExecJs(guest_mainframe,
+                              R"(viewer.shadowRoot.querySelector('#zoomToolbar')
          .$['zoom-out-button']
          .$$('cr-icon-button')
          .focus();)"));
@@ -2760,7 +2741,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
       window.domAutomationController.send('zoom-out-button');
     });
   )";
-  ASSERT_TRUE(content::ExecuteScript(guest_mainframe, kScript));
+  ASSERT_TRUE(content::ExecJs(guest_mainframe, kScript));
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [guest_mainframe, this](bool reverse) {

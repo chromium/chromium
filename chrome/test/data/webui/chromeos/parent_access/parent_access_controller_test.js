@@ -24,7 +24,7 @@ suite(parent_access_controller_tests.suiteName, function() {
   let parentAccessController;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     // The test uses an iframe instead of a webview because a webview
     // can't load content from a chrome:// URL. This is OK because the
     // functionality being tested here doesn't rely on webview features.

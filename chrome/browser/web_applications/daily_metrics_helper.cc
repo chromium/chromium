@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/types/pass_key.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -24,8 +23,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service_utils.h"
+#include "components/ukm/app_source_url_recorder.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -46,30 +44,16 @@ int BucketedDailySeconds(base::TimeDelta delta) {
   return std::max(1, result);
 }
 
-bool ShouldRecordAppKeyedMetrics(syncer::SyncService* sync_service) {
-  switch (
-      syncer::GetUploadToGoogleState(sync_service, syncer::ModelType::APPS)) {
-    case syncer::UploadState::NOT_ACTIVE:
-      return false;
-    case syncer::UploadState::INITIALIZING:
-      // Note that INITIALIZING is considered good enough, because syncing apps
-      // is known to be enabled, and transient errors don't really matter here.
-    case syncer::UploadState::ACTIVE:
-      return true;
-  }
-}
-
 }  // namespace
 
-// This class exists just to be friended by |UkmRecorder| to control the
-// emission of Web app UKMs in UkmRecorder.
+// This class exists just to be friended by `AppSourceUrlRecorder` to control
+// the emission of web app AppKMs.
 class DesktopWebAppUkmRecorder {
  public:
   static void Emit(const DailyInteraction& record) {
     DCHECK(record.start_url.is_valid());
     ukm::SourceId source_id =
-        ukm::UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(
-            base::PassKey<DesktopWebAppUkmRecorder>(), record.start_url);
+        ukm::AppSourceUrlRecorder::GetSourceIdForPWA(record.start_url);
     ukm::builders::WebApp_DailyInteraction builder(source_id);
     builder.SetUsed(true)
         .SetInstalled(record.installed)
@@ -98,6 +82,7 @@ class DesktopWebAppUkmRecorder {
     }
 #endif
     builder.Record(ukm::UkmRecorder::Get());
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
   }
 };
 
@@ -229,11 +214,7 @@ void EmitRecord(DailyInteraction record, Profile* profile) {
       origin, base::BindOnce(&EmitIfSourceIdExists, std::move(record)));
 }
 
-void EmitRecords(Profile* profile, syncer::SyncService* sync_service) {
-  if (!ShouldRecordAppKeyedMetrics(sync_service)) {
-    return;
-  }
-
+void EmitRecords(Profile* profile) {
   const base::Value::Dict& urls_to_features =
       profile->GetPrefs()->GetDict(prefs::kWebAppsDailyMetrics);
 
@@ -281,22 +262,19 @@ DailyInteraction::DailyInteraction(GURL start_url)
 DailyInteraction::DailyInteraction(const DailyInteraction&) = default;
 DailyInteraction::~DailyInteraction() = default;
 
-void FlushOldRecordsAndUpdate(DailyInteraction& record,
-                              Profile* profile,
-                              syncer::SyncService* sync_service) {
+void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (metrics::date_changed_helper::HasDateChangedSinceLastCall(
           profile->GetPrefs(), prefs::kWebAppsDailyMetricsDate)) {
-    EmitRecords(profile, sync_service);
+    EmitRecords(profile);
     RemoveRecords(profile->GetPrefs());
   }
   UpdateRecord(record, profile->GetPrefs());
 }
 
-void FlushAllRecordsForTesting(Profile* profile,  // IN-TEST
-                               syncer::SyncService* sync_service) {
+void FlushAllRecordsForTesting(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  EmitRecords(profile, sync_service);
+  EmitRecords(profile);
   RemoveRecords(profile->GetPrefs());
 }
 

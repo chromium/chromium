@@ -61,10 +61,6 @@ BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
              "UseLoadSimulatedRequestForErrorPageNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLongPressSurroundingText,
-             "LongPressSurroundingText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableEmails,
              "EnableEmailsExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -114,6 +110,13 @@ bool IsLoadSimulatedRequestAPIEnabled() {
 bool IsFullscreenAPIEnabled() {
   if (@available(iOS 16.0, *)) {
     return base::FeatureList::IsEnabled(kEnableFullscreenAPI);
+  }
+  return false;
+}
+
+bool IsWebInspectorSupportEnabled() {
+  if (@available(iOS 16.4, *)) {
+    return base::FeatureList::IsEnabled(kEnableWebInspector);
   }
   return false;
 }

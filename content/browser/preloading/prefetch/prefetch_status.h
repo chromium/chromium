@@ -14,8 +14,10 @@ namespace content {
 // These are also mapped onto the first content internal range of
 // `PreloadingEligibility` and onto `PreloadingFailureReason`.
 enum class PrefetchStatus {
+  // Deprecated. Replaced by `kPrefetchResponseUsed`.
+  //
   // The interceptor used a prefetch.
-  kPrefetchUsedNoProbe = 0,
+  // kPrefetchUsedNoProbe = 0,
 
   // Deprecated. Probe success implies the response is used. Thus replaced
   // by `kPrefetchResponseUsed`.
@@ -31,9 +33,11 @@ enum class PrefetchStatus {
   // made.
   kPrefetchNotStarted = 3,
 
+  // Deprecated. No longer a reason for ineligibility.
+  //
   // The url was not eligible to be prefetched because it is a Google-owned
   // domain.
-  kPrefetchNotEligibleGoogleDomain = 4,
+  // kPrefetchNotEligibleGoogleDomain = 4,
 
   // The url was not eligible to be prefetched because the user had cookies for
   // that origin.
@@ -47,8 +51,10 @@ enum class PrefetchStatus {
   // https://.
   kPrefetchNotEligibleSchemeIsNotHttps = 7,
 
+  // Deprecated. No longer a reason for ineligibility.
+  //
   // The url was not eligible to be prefetched because its host was an IP
-  // address. [DEPRECATED]
+  // address.
   // kPrefetchNotEligibleHostIsIPAddress = 8,
 
   // The url was not eligible to be prefetched because it uses a non-default
@@ -71,35 +77,47 @@ enum class PrefetchStatus {
   // The prefetch finished successfully but was never used.
   kPrefetchSuccessful = 14,
 
+  // Deprecated. No longer used.
+  //
   // The navigation off of the Google SRP was to a url that was not on the SRP.
-  kNavigatedToLinkNotOnSRP = 15,
+  // kNavigatedToLinkNotOnSRP = 15,
 
+  // Deprecated. NSP no longer supported.
+  //
   // Variants of the first three statuses with the additional context of a
   // successfully completed NoStatePrefetch.
-  kPrefetchUsedNoProbeWithNSP = 16,
-  kPrefetchUsedProbeSuccessWithNSP = 17,
-  kPrefetchNotUsedProbeFailedWithNSP = 18,
+  // kPrefetchUsedNoProbeWithNSP = 16,
+  // kPrefetchUsedProbeSuccessWithNSP = 17,
+  // kPrefetchNotUsedProbeFailedWithNSP = 18,
 
+  // Deprecated. NSP no longer supported
+  //
   // Variants of the first three statuses within the additional context of a
   // link that was eligible for NoStatePrefetch, but was not started because
   // the Prerender code denied the request.
-  kPrefetchUsedNoProbeNSPAttemptDenied = 19,
-  kPrefetchUsedProbeSuccessNSPAttemptDenied = 20,
-  kPrefetchNotUsedProbeFailedNSPAttemptDenied = 21,
+  // kPrefetchUsedNoProbeNSPAttemptDenied = 19,
+  // kPrefetchUsedProbeSuccessNSPAttemptDenied = 20,
+  // kPrefetchNotUsedProbeFailedNSPAttemptDenied = 21,
 
+  // Deprecated. NSP no longer supported.
+  //
   // Variants of the first three statuses with in the additional context of a
   // link that was eligible for NoStatePrefetch that was never started.
-  kPrefetchUsedNoProbeNSPNotStarted = 22,
-  kPrefetchUsedProbeSuccessNSPNotStarted = 23,
-  kPrefetchNotUsedProbeFailedNSPNotStarted = 24,
+  // kPrefetchUsedNoProbeNSPNotStarted = 22,
+  // kPrefetchUsedProbeSuccessNSPNotStarted = 23,
+  // kPrefetchNotUsedProbeFailedNSPNotStarted = 24,
 
+  // Deprecated. Subresources no longer supported.
+  //
   // A subresource which was not fetched because it was throttled by an
   // experimental control for the max number of subresources per prerender.
-  kSubresourceThrottled = 25,
+  // kSubresourceThrottled = 25,
 
+  // Deprecated. No longer a reason for ineligibilty.
+  //
   // The position of the link in the navigation prediction was not eligible to
   // be prefetch due to experiment controls.
-  kPrefetchPositionIneligible = 26,
+  // kPrefetchPositionIneligible = 26,
 
   // A previous prefetch to the origin got a HTTP 503 response with an
   // Retry-After header that has no elapsed yet.
@@ -118,17 +136,21 @@ enum class PrefetchStatus {
   // The prefetch was eligible, but too much time elapsed between the prefetch
   // and the interception.
   kPrefetchIsStale = 30,
-  kPrefetchIsStaleWithNSP = 31,
-  kPrefetchIsStaleNSPAttemptDenied = 32,
-  kPrefetchIsStaleNSPNotStarted = 33,
+
+  // Deprecated. NSP no longer supported
+  // kPrefetchIsStaleWithNSP = 31,
+  // kPrefetchIsStaleNSPAttemptDenied = 32,
+  // kPrefetchIsStaleNSPNotStarted = 33,
 
   // The prefetch was not used because cookies were added to the URL after the
   // initial eligibility check.
   kPrefetchNotUsedCookiesChanged = 34,
 
+  // Deprecated. Support for redirecs added.
+  //
   // The prefetch was redirected, but following redirects was disabled.
   // See crbug.com/1266876 for more details.
-  kPrefetchFailedRedirectsDisabled_DEPRECATED = 35,
+  // kPrefetchFailedRedirectsDisabled = 35,
 
   // The url was not eligible to be prefetched because its host was not unique
   // (e.g., a non publicly routable IP address or a hostname which is not
@@ -161,8 +183,20 @@ enum class PrefetchStatus {
   // prefetch.
   kPrefetchFailedIneligibleRedirect = 44,
 
+  // The prefetch was not made because prefetches exceeded the limit per
+  // page.
+  kPrefetchFailedPerPageLimitExceeded = 45,
+
+  // The prefetch needed to fetch a same-site cross-origin URL and required the
+  // use of the prefetch proxy. These prefetches are blocked since the default
+  // network context cannot be configured to use the prefetch proxy for a single
+  // prefetch request.
+  // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
+  // that require the prefetch proxy to be made.
+  kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy = 46,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchFailedIneligibleRedirect,
+  kMaxValue = kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy,
 };
 
 }  // namespace content

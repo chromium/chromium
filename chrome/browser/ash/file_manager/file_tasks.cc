@@ -109,7 +109,6 @@ const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 const char kActionIdOpenInOffice[] = "open-in-office";
 const char kActionIdOpenWeb[] = "OPEN_WEB";
-const char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
 
 // Searches for the installed extension in order of preference.
 std::string GetODFSExtensionId(Profile* profile) {
@@ -124,8 +123,8 @@ std::string GetODFSExtensionId(Profile* profile) {
     const auto& extension_id = provider_id.GetExtensionId();
 
     // App from official internal build.
-    if (extension_id == kODFSExtensionId) {
-      return kODFSExtensionId;
+    if (extension_id == extension_misc::kODFSExtensionId) {
+      return extension_misc::kODFSExtensionId;
     }
 
     // App built manually from internal repo.
@@ -368,7 +367,7 @@ void PostProcessFoundTasks(Profile* profile,
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
+  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     disabled_actions.emplace(kActionIdWebDriveOfficeWord);
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
@@ -439,9 +438,19 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
                                const TaskDescriptor& task,
                                const std::vector<FileSystemURL>& file_urls,
                                gfx::NativeWindow modal_parent) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   bool offline = drive::util::GetDriveConnectionStatus(profile) !=
                  drive::util::DRIVE_CONNECTED;
-  if (offline) {
+  if (!integration_service || !integration_service->IsMounted() ||
+      !integration_service->GetDriveFsInterface()) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                              OfficeDriveErrors::DRIVEFS_INTERFACE);
+
+    return GetUserFallbackChoice(
+        profile, task, file_urls, modal_parent,
+        ash::office_fallback::FallbackReason::kDriveUnavailable);
+  } else if (offline) {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
                               OfficeDriveErrors::OFFLINE);
     // TODO(petermarshall): Quick Office vs. other default handler.
@@ -450,21 +459,9 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
         ash::office_fallback::FallbackReason::kOffline);
   }
 
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (integration_service && integration_service->IsMounted() &&
-      integration_service->GetDriveFsInterface()) {
-    return ash::cloud_upload::CloudOpenTask::Execute(
-        profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
-        modal_parent);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveErrors::DRIVEFS_INTERFACE);
-
-    return GetUserFallbackChoice(
-        profile, task, file_urls, modal_parent,
-        ash::office_fallback::FallbackReason::kDriveUnavailable);
-  }
+  return ash::cloud_upload::CloudOpenTask::Execute(
+      profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
+      modal_parent);
 }
 
 using ash::file_system_provider::ProvidedFileSystemInfo;
@@ -494,11 +491,20 @@ ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
+  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToDrive, false);
+  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToOneDrive, false);
+  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForDrive,
+                                false);
+  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForOneDrive,
+                                false);
   registry->RegisterBooleanPref(
-      prefs::kOfficeSetupComplete, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMove, false);
-  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShown, false);
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, false);
   registry->RegisterTimePref(prefs::kOfficeFileMovedToOneDrive, base::Time());
   registry->RegisterTimePref(prefs::kOfficeFileMovedToGoogleDrive,
                              base::Time());
@@ -1147,11 +1153,15 @@ bool IsHtmlFile(const base::FilePath& path) {
 }
 
 bool IsOfficeFile(const base::FilePath& path) {
-  constexpr const char* kOfficeExtensions[] = {".doc",  ".docx", ".xls",
-                                               ".xlsx", ".ppt",  ".pptx"};
-  for (const char* extension : kOfficeExtensions) {
-    if (path.MatchesExtension(extension)) {
-      return true;
+  std::vector<std::set<std::string>> groups = {WordGroupExtensions(),
+                                               ExcelGroupExtensions(),
+                                               PowerPointGroupExtensions()};
+
+  for (const std::set<std::string>& group : groups) {
+    for (const std::string& extension : group) {
+      if (path.MatchesExtension(extension)) {
+        return true;
+      }
     }
   }
   return false;
@@ -1166,13 +1176,33 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
-void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, {".doc", ".docx"},
-      {"application/msword",
-       "application/"
-       "vnd.openxmlformats-officedocument.wordprocessingml.document"});
+std::set<std::string> WordGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".doc", ".docx"}));
+  return *extensions;
 }
+
+std::set<std::string> WordGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/msword",
+           "application/"
+           "vnd.openxmlformats-officedocument.wordprocessingml.document"}));
+  return *mime_types;
+}
+
+bool HasExplicitDefaultFileHandler(Profile* profile,
+                                   const std::string& extension) {
+  std::string lower_extension = base::ToLowerASCII(extension);
+  const base::Value::Dict& extension_task_prefs =
+      profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
+  return extension_task_prefs.contains(lower_extension);
+}
+
+void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
+  UpdateDefaultTask(profile, task, WordGroupExtensions(), WordGroupMimeTypes());
+}
+
 void SetWordFileHandlerToFilesSWA(Profile* profile,
                                   const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
@@ -1180,11 +1210,25 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
   SetWordFileHandler(profile, task);
 }
 
+std::set<std::string> ExcelGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".xls", ".xlsm", ".xlsx"}));
+  return *extensions;
+}
+
+std::set<std::string> ExcelGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/vnd.ms-excel",
+           "application/vnd.ms-excel.sheet.macroEnabled.12",
+           "application/"
+           "vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  return *mime_types;
+}
+
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, {".xls", ".xlsx"},
-      {"application/vnd.ms-excel",
-       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  UpdateDefaultTask(profile, task, ExcelGroupExtensions(),
+                    ExcelGroupMimeTypes());
 }
 
 void SetExcelFileHandlerToFilesSWA(Profile* profile,
@@ -1194,12 +1238,24 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
   SetExcelFileHandler(profile, task);
 }
 
+std::set<std::string> PowerPointGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".ppt", ".pptx"}));
+  return *extensions;
+}
+
+std::set<std::string> PowerPointGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/vnd.ms-powerpoint",
+           "application/"
+           "vnd.openxmlformats-officedocument.presentationml.presentation"}));
+  return *mime_types;
+}
+
 void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, {".ppt", ".pptx"},
-      {"application/vnd.ms-powerpoint",
-       "application/"
-       "vnd.openxmlformats-officedocument.presentationml.presentation"});
+  UpdateDefaultTask(profile, task, PowerPointGroupExtensions(),
+                    PowerPointGroupMimeTypes());
 }
 
 void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
@@ -1209,29 +1265,88 @@ void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
   SetPowerPointFileHandler(profile, task);
 }
 
-void SetOfficeSetupComplete(Profile* profile, bool complete) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeSetupComplete, complete);
+void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool always_move) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive,
+                                  always_move);
 }
 
-bool OfficeSetupComplete(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kOfficeSetupComplete);
+bool GetAlwaysMoveOfficeFilesToDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive);
 }
 
-void SetAlwaysMoveOfficeFiles(Profile* profile, bool always_move) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMove, always_move);
+void SetAlwaysMoveOfficeFilesToOneDrive(Profile* profile, bool always_move) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToOneDrive,
+                                  always_move);
 }
 
-bool AlwaysMoveOfficeFiles(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMove);
+bool GetAlwaysMoveOfficeFilesToOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeFilesAlwaysMoveToOneDrive);
 }
 
-void SetOfficeMoveConfirmationShown(Profile* profile, bool complete) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeMoveConfirmationShown,
+void SetOfficeMoveConfirmationShownForDrive(Profile* profile, bool complete) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeMoveConfirmationShownForDrive,
                                   complete);
 }
 
-bool OfficeMoveConfirmationShown(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kOfficeMoveConfirmationShown);
+bool GetOfficeMoveConfirmationShownForDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForDrive);
+}
+
+void SetOfficeMoveConfirmationShownForOneDrive(Profile* profile,
+                                               bool complete) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForOneDrive, complete);
+}
+
+bool GetOfficeMoveConfirmationShownForOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForOneDrive);
+}
+
+void SetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile,
+                                                   bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive);
+}
+
+void SetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile,
+                                                      bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive);
+}
+
+void SetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile,
+                                                   bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive);
+}
+
+void SetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile,
+                                                      bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive);
 }
 
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved) {

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -94,7 +95,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   mojo::Remote<mojom::DevicePairingDelegate> delegate_;
   mojo::Remote<mojom::KeyEnteredHandler> key_entered_handler_;
 
-  AdapterStateController* adapter_state_controller_;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
 
   // Client callback set in PairDevice(), to be invoked once pairing has
   // finished.

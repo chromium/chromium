@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -20,8 +21,6 @@
 class Profile;
 
 namespace ash {
-
-class LacrosLauncher;
 
 // Responsible for the startup of the app for Chrome App kiosk.
 class StartupAppLauncher : public KioskAppLauncher,
@@ -44,7 +43,6 @@ class StartupAppLauncher : public KioskAppLauncher,
     kNotStarted,
     kInitializingNetwork,
     kWaitingForCache,
-    kWaitingForLacros,
     kInstallingApp,
     kReadyToLaunch,
     kWaitingForWindow,
@@ -60,7 +58,6 @@ class StartupAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
   void BeginInstall();
-  void LaunchLacros(base::OnceClosure);
   void InstallAppInAsh();
   void InstallAppInLacros();
   void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
@@ -78,7 +75,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   void OnKioskExtensionLoadedInCache(const std::string& app_id) override;
   void OnKioskExtensionDownloadFailed(const std::string& app_id) override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string app_id_;
   const bool should_skip_install_;
 
@@ -87,7 +84,6 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   KioskAppLauncher::ObserverList observers_;
   std::unique_ptr<ChromeKioskAppInstaller> installer_;
-  std::unique_ptr<LacrosLauncher> lacros_launcher_;
   std::unique_ptr<ChromeKioskAppLauncher> launcher_;
 
   base::ScopedObservation<KioskAppManagerBase, KioskAppManagerObserver>

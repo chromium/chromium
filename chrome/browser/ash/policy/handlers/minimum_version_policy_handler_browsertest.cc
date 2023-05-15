@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -132,7 +133,8 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 
   DevicePolicyCrosTestHelper helper_;
   base::test::ScopedFeatureList feature_list_;
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_ = nullptr;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +81,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
   clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "",
                        ui::ClipboardContentType::kSanitized);
 
-  // Show a toast that says the GIF has been copied to the clipboard.
+  // Show a toast that says "GIF copied to clipboard".
   ToastManager::Get()->Show(ToastData(
       kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
       l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));
@@ -156,7 +157,7 @@ class InsertObserver : public ui::InputMethodObserver {
   }
   int focus_change_count_ = 0;
   base::OneShotTimer delete_timer_;
-  ui::InputMethod* ime_;
+  raw_ptr<ui::InputMethod, ExperimentalAsh> ime_;
   bool inserted_ = false;
 };
 

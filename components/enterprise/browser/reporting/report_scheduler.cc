@@ -236,7 +236,7 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
   if (cloud_policy_client_->is_registered())
     return true;
 
-  policy::DMToken dm_token;
+  auto dm_token = policy::DMToken::CreateEmptyToken();
   std::string client_id;
   if (profile_request_generator_) {
     // Get token for profile reporting

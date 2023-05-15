@@ -12,6 +12,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
@@ -60,10 +61,14 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   void UpdateGreeting();
   void UpdateSuggestions();
 
-  AssistantViewDelegate* const delegate_;    // Owned by AssistantController.
-  views::Label* greeting_ = nullptr;         // Owned by view hierarchy.
-  views::Label* intro_ = nullptr;            // Owned by view hierarchy.
-  views::TableLayoutView* table_ = nullptr;  // Owned by view hierarchy.
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+      delegate_;  // Owned by AssistantController.
+  raw_ptr<views::Label, ExperimentalAsh> greeting_ =
+      nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> intro_ =
+      nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::TableLayoutView, ExperimentalAsh> table_ =
+      nullptr;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

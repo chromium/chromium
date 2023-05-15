@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +47,7 @@ class PendingNetworkConfigurationTrackerImpl
       const NetworkIdentifier& id) override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   base::Value::Dict dict_;
 };
 

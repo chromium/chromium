@@ -4,7 +4,10 @@
 
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
+
+GEN('#if !BUILDFLAG(IS_LINUX)');
 GEN('#include "ui/base/ui_base_features.h"');
+GEN('#endif');
 
 var CssTest = class extends testing.Test {
   /** @override */
@@ -34,6 +37,7 @@ TEST_F('TextDefaultsTest', 'All', function() {
   runMochaSuite('TextDefaults')
 });
 
+GEN('#if !BUILDFLAG(IS_LINUX)');
 var TextDefaultsSystemFontTest = class extends TextDefaultsTest {
   /** @override */
   get featureList() {
@@ -48,6 +52,7 @@ var TextDefaultsSystemFontTest = class extends TextDefaultsTest {
 TEST_F('TextDefaultsSystemFontTest', 'All', function() {
   runMochaSuite('TextDefaultsSystemFont')
 });
+GEN('#endif')
 
 var ColorProviderCSSColorsTest = class extends CssTest {
   /** @override */

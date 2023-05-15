@@ -9,8 +9,8 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "components/sync/model/string_ordinal.h"
@@ -146,7 +146,8 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
 
   for (const auto& position : page_breaks_to_add) {
     syncable_service_->AddPageBreakItem(
-        std::string(kImplicitPageBreakIdPrefix) + base::GenerateGUID(),
+        std::string(kImplicitPageBreakIdPrefix) +
+            base::Uuid::GenerateRandomV4().AsLowercaseString(),
         position);
   }
 

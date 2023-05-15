@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 
+namespace quick_answers {
+
 QuickAnswersFocusSearch::QuickAnswersFocusSearch(
     views::View* view,
     const GetFocusableViewsCallback& callback)
@@ -58,3 +60,5 @@ views::FocusTraversable* QuickAnswersFocusSearch::GetFocusTraversableParent() {
 views::View* QuickAnswersFocusSearch::GetFocusTraversableParentView() {
   return nullptr;
 }
+
+}  // namespace quick_answers

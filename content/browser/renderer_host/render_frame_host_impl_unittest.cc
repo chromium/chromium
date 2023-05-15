@@ -564,9 +564,66 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
       std::move(params),
       blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept,
       /*should_replace_current_entry=*/false);
+  EXPECT_FALSE(delegate->should_show_loading_ui());
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->ShouldShowLoadingUI());
 
-  // navigateEvent.intercept() should leave WebContents in the loading
-  // state and showing loading UI, unlike other same-document navigations.
+  // After a delay, the NavigationApi sends a message to start the loading UI.
+  // This delay is to prevent jitters due to short same-document navigations.
+  main_test_rfh()->SendStartLoadingForAsyncNavigationApiCommit();
+
+  // Once the delay has elapsed, navigateEvent.intercept() should leave
+  // WebContents in the loading state and showing loading UI, unlike other
+  // same-document navigations.
+  EXPECT_TRUE(delegate->should_show_loading_ui());
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_TRUE(contents()->ShouldShowLoadingUI());
+}
+
+TEST_F(RenderFrameHostImplTest, NavigationApiInterceptBrowserInitiated) {
+  // Initial commit.
+  const GURL url1("http://foo");
+  NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
+
+  std::unique_ptr<LoadingStateChangedDelegate> delegate =
+      std::make_unique<LoadingStateChangedDelegate>();
+  contents()->SetDelegate(delegate.get());
+  ASSERT_FALSE(delegate->should_show_loading_ui());
+  ASSERT_FALSE(contents()->IsLoading());
+  ASSERT_FALSE(contents()->ShouldShowLoadingUI());
+
+  // Emulate navigateEvent.intercept().
+  const GURL url2("http://foo#a");
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateBrowserInitiated(url2, contents());
+  navigation->Start();
+  ASSERT_TRUE(contents()->IsLoading());
+  ASSERT_FALSE(contents()->ShouldShowLoadingUI());
+
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->did_create_new_entry = false;
+  params->url = url2;
+  params->origin = url::Origin::Create(url2);
+  params->referrer = blink::mojom::Referrer::New();
+  params->transition = ui::PAGE_TRANSITION_LINK;
+  params->should_update_history = true;
+  params->method = "GET";
+  params->page_state = blink::PageState::CreateFromURL(url2);
+  params->post_id = -1;
+  main_test_rfh()->SendDidCommitSameDocumentNavigation(
+      std::move(params),
+      blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept, true);
+  EXPECT_FALSE(delegate->should_show_loading_ui());
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->ShouldShowLoadingUI());
+
+  // After a delay, the NavigationApi sends a message to start the loading UI.
+  // This delay is to prevent jitters due to short same-document navigations.
+  main_test_rfh()->SendStartLoadingForAsyncNavigationApiCommit();
+
+  // Once the delay has elapsed, navigateEvent.intercept() should leave
+  // WebContents in the loading state and showing loading UI, unlike other
+  // same-document navigations.
   EXPECT_TRUE(delegate->should_show_loading_ui());
   EXPECT_TRUE(contents()->IsLoading());
   EXPECT_TRUE(contents()->ShouldShowLoadingUI());
@@ -1021,7 +1078,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_read_context()
+                  ->runtime_feature_state_read_context()
                   .IsDisableThirdPartyStoragePartitioningEnabled());
 
   // Create a child frame and navigate to `child_url`.
@@ -1080,14 +1137,14 @@ TEST_F(RenderFrameHostImplTest,
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_read_context()
+                  ->runtime_feature_state_read_context()
                   .IsTestFeatureEnabled());
 
   // Now add a child and check its RFSRC.
   auto* child_frame = main_test_rfh()->AppendChild("child");
   EXPECT_TRUE(
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(child_frame)
-          ->runtime_feature_read_context()
+          ->runtime_feature_state_read_context()
           .IsTestFeatureEnabled());
 
   // Navigating the child away should change the RFSRC.
@@ -1098,7 +1155,7 @@ TEST_F(RenderFrameHostImplTest,
       child_navigation->GetFinalRenderFrameHost());
   EXPECT_FALSE(
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(child_frame)
-          ->runtime_feature_read_context()
+          ->runtime_feature_state_read_context()
           .IsTestFeatureEnabled());
 }
 

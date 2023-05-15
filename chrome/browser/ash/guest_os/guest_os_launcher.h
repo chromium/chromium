@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ash/borealis/infra/expected.h"
+#include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 
@@ -16,7 +17,7 @@ class Profile;
 namespace guest_os::launcher {
 
 using ResponseType =
-    borealis::Expected<vm_tools::launch::EnsureVmLaunchedResponse, std::string>;
+    base::expected<vm_tools::launch::EnsureVmLaunchedResponse, std::string>;
 
 using LaunchCallback = base::OnceCallback<void(ResponseType)>;
 

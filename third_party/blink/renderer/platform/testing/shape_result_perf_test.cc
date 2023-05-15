@@ -55,10 +55,8 @@ class ShapeResultPerfTest {
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
 
-    return TextRun(
-        text, /* xpos */ 0, /* expansion */ 0,
-        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-        ltr ? TextDirection::kLtr : TextDirection::kRtl, false);
+    return TextRun(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
+                   false);
   }
 
   void ReportResult(const std::string& metric_prefix,

@@ -22,7 +22,7 @@
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 // Test that certain features are/are-not enabled in our SQLite.
@@ -627,19 +627,19 @@ TEST_F(SQLiteFeaturesTest, TimeMachine) {
   ASSERT_TRUE(base::PathExists(journal_path));
 
   // Not excluded to start.
-  EXPECT_FALSE(base::mac::GetBackupExclusion(db_path_));
-  EXPECT_FALSE(base::mac::GetBackupExclusion(journal_path));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(db_path_));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(journal_path));
 
   // Exclude the main database file.
-  EXPECT_TRUE(base::mac::SetBackupExclusion(db_path_));
+  EXPECT_TRUE(base::apple::SetBackupExclusion(db_path_));
 
-  EXPECT_TRUE(base::mac::GetBackupExclusion(db_path_));
-  EXPECT_FALSE(base::mac::GetBackupExclusion(journal_path));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(db_path_));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(journal_path));
 
   EXPECT_TRUE(db_.Open(db_path_));
   ASSERT_TRUE(db_.Execute("INSERT INTO t VALUES (1)"));
-  EXPECT_TRUE(base::mac::GetBackupExclusion(db_path_));
-  EXPECT_TRUE(base::mac::GetBackupExclusion(journal_path));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(db_path_));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(journal_path));
 
   // TODO(shess): In WAL mode this will touch -wal and -shm files.  -shm files
   // could be always excluded.

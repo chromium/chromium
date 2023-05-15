@@ -131,8 +131,7 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
 
   TestingProfile* profile =
       profile_manager_.CreateTestingProfile("fake-profile");
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting("fake-token"));
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&CreateMockRealtimeCrashReportingClient));
   MockRealtimeCrashReportingClient* reporting_client =

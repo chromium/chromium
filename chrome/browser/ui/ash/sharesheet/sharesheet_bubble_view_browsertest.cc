@@ -8,11 +8,12 @@
 
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -95,7 +96,7 @@ class SharesheetBubbleViewBrowserTest
   }
 
  protected:
-  views::Widget* sharesheet_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> sharesheet_widget_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -114,10 +115,10 @@ IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
 class SharesheetBubbleViewPolicyBrowserTest
     : public SharesheetBubbleViewBrowserTest {
  public:
-  class MockFilesController : public policy::DlpFilesController {
+  class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
     explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-        : DlpFilesController(rules_manager) {}
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,
@@ -211,7 +212,8 @@ class SharesheetBubbleViewPolicyBrowserTest
   }
 
   apps::AppServiceTest app_service_test_;
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
 };
 

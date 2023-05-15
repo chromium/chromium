@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
@@ -151,7 +152,7 @@ class CryptohomePkcs11ClientImpl : public CryptohomePkcs11Client {
   }
 
   // D-Bus proxy for cryptohomed, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   base::WeakPtrFactory<CryptohomePkcs11ClientImpl> weak_factory_{this};
 };

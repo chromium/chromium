@@ -11,12 +11,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -46,7 +45,8 @@ constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 // -----------------------------------------------------------------------------
 // ZeroStateDefaultDeskButton:
 
-ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
+ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(
+    DeskBarViewBase* bar_view)
     : DeskButtonBase(
           DesksController::Get()->desks()[0]->name(),
           /*set_text=*/true,
@@ -107,7 +107,7 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // ZeroStateIconButton:
 
-ZeroStateIconButton::ZeroStateIconButton(DesksBarView* bar_view,
+ZeroStateIconButton::ZeroStateIconButton(DeskBarViewBase* bar_view,
                                          const gfx::VectorIcon* button_icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure callback)

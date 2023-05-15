@@ -898,7 +898,7 @@ void NativeInputMethodEngineObserver::OnFocus(
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
 
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    assistive_suggester_->OnFocus(context_id);
+    assistive_suggester_->OnFocus(context_id, context);
   }
   autocorrect_manager_->OnFocus(context_id);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
@@ -943,10 +943,17 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
 
   // TODO(b/200611333): Make input_method_->OnFocus return the overriding
   // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings = WithAutocorrectOverride(
-      /*base_settings=*/CreateSettingsFromPrefs(*prefs_, engine_id),
-      /*autocorrect_enabled=*/!autocorrect_manager_
-          ->DisabledByInvalidExperimentContext());
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id);
+  // TODO(b/280539785): Simplify AC enabling logic and avoid redundant checks.
+  if (IsUsEnglishEngine(engine_id) &&
+      GetPhysicalKeyboardAutocorrectPref(*prefs_, engine_id) ==
+          AutocorrectPreference::kEnabledByDefault) {
+    settings = WithAutocorrectOverride(
+        /*base_settings=*/std::move(settings),
+        /*autocorrect_enabled=*/!autocorrect_manager_
+            ->DisabledByInvalidExperimentContext());
+  }
   OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                             settings);
 
@@ -1003,10 +1010,17 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     const ui::KeyEvent& event,
     TextInputMethod::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    if (assistive_suggester_->OnKeyEvent(event)) {
-      std::move(callback).Run(
-          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
-      return;
+    switch (assistive_suggester_->OnKeyEvent(event)) {
+      case AssistiveSuggesterKeyResult::kHandled:
+        std::move(callback).Run(
+            ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
+        return;
+      case AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat:
+        std::move(callback).Run(
+            ui::ime::KeyEventHandledState::kNotHandledSuppressAutoRepeat);
+        return;
+      case AssistiveSuggesterKeyResult::kNotHandled:
+        break;
     }
   }
   if (autocorrect_manager_->OnKeyEvent(event)) {
@@ -1366,10 +1380,11 @@ void NativeInputMethodEngineObserver::RequestSuggestions(
 }
 
 void NativeInputMethodEngineObserver::DisplaySuggestions(
-    const std::vector<ime::AssistiveSuggestion>& suggestions) {
+    const std::vector<ime::AssistiveSuggestion>& suggestions,
+    const absl::optional<ime::SuggestionsTextContext>& context) {
   if (!IsTextClientActive())
     return;
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions, context);
 }
 
 void NativeInputMethodEngineObserver::UpdateCandidatesWindow(

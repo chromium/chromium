@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -60,7 +62,7 @@ class AppsGridRowChangeAnimator {
   }
 
  private:
-  const AppsGridView* apps_grid_view_ = nullptr;
+  raw_ptr<const AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
 
   // Whether a new row change animation is currently being set up.
   bool setting_up_animation_ = false;

@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -53,44 +56,27 @@ enum class GlobalScope {
   kSharedStorageWorklet,
 };
 
-// Use the native v8::ValueSerializer here as opposed to using
-// blink::V8ScriptValueSerializer. It's capable of serializing objects of
-// primitive types. It's TBD whether we want to support any other non-primitive
-// types supported by blink::V8ScriptValueSerializer.
-bool Serialize(ScriptState* script_state,
-               const SharedStorageRunOperationMethodOptions* options,
-               ExceptionState& exception_state,
-               Vector<uint8_t>& output) {
-  DCHECK(output.empty());
-
-  if (!options->hasData())
-    return true;
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::ValueSerializer serializer(isolate);
-
-  v8::TryCatch try_catch(isolate);
-
-  bool wrote_value;
-  if (!serializer
-           .WriteValue(script_state->GetContext(), options->data().V8Value())
-           .To(&wrote_value)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return false;
+absl::optional<BlinkCloneableMessage> Serialize(
+    const SharedStorageRunOperationMethodOptions* options,
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state) {
+  scoped_refptr<SerializedScriptValue> serialized_value =
+      options->hasData()
+          ? SerializedScriptValue::Serialize(
+                options->data().GetIsolate(), options->data().V8Value(),
+                SerializedScriptValue::SerializeOptions(), exception_state)
+          : SerializedScriptValue::UndefinedValue();
+  if (exception_state.HadException()) {
+    return absl::nullopt;
   }
 
-  DCHECK(wrote_value);
+  BlinkCloneableMessage output;
+  output.message = std::move(serialized_value);
+  output.sender_agent_cluster_id = execution_context.GetAgentClusterID();
+  output.sender_origin = execution_context.GetSecurityOrigin()->IsolatedCopy();
+  // TODO(yaoxia): do we need to set `output.sender_stack_trace_id`?
 
-  std::pair<uint8_t*, size_t> buffer = serializer.Release();
-
-  output.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(buffer.second));
-  output.Append(buffer.first, static_cast<wtf_size_t>(buffer.second));
-  DCHECK_EQ(output.size(), buffer.second);
-
-  free(buffer.first);
-
-  return true;
+  return output;
 }
 
 void LogTimingHistogramForVoidOperation(
@@ -140,10 +126,13 @@ void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!success) {
-    ScriptState::Scope scope(script_state);
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        error_message));
+    if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope scope(script_state);
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+          error_message));
+    }
     if (caller == blink::SharedStorageVoidOperation::kRun) {
       LogSharedStorageWorkletError(
           SharedStorageWorkletErrorType::kRunWebVisible);
@@ -187,6 +176,7 @@ SharedStorage::~SharedStorage() = default;
 
 void SharedStorage::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_worklet_);
+  visitor->Trace(shared_storage_document_service_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -433,10 +423,13 @@ ScriptPromise SharedStorage::get(ScriptState* script_state,
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (status == mojom::blink::SharedStorageGetStatus::kError) {
-                  ScriptState::Scope scope(script_state);
-                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                      script_state->GetIsolate(),
-                      DOMExceptionCode::kOperationError, error_message));
+                  if (IsInParallelAlgorithmRunnable(
+                          resolver->GetExecutionContext(), script_state)) {
+                    ScriptState::Scope scope(script_state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kOperationError, error_message));
+                  }
                   return;
                 }
 
@@ -484,10 +477,13 @@ ScriptPromise SharedStorage::length(ScriptState* script_state,
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
-              ScriptState::Scope scope(script_state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  error_message));
+              if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                                script_state)) {
+                ScriptState::Scope scope(script_state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    script_state->GetIsolate(),
+                    DOMExceptionCode::kOperationError, error_message));
+              }
               return;
             }
 
@@ -556,10 +552,13 @@ ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
-              ScriptState::Scope scope(script_state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  error_message));
+              if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                                script_state)) {
+                ScriptState::Scope scope(script_state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    script_state->GetIsolate(),
+                    DOMExceptionCode::kOperationError, error_message));
+              }
               return;
             }
 
@@ -583,7 +582,7 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
     return ScriptValue();
   }
 
-  const absl::optional<String>& embedder_context =
+  const String& embedder_context =
       To<SharedStorageWorkletGlobalScope>(execution_context)
           ->embedder_context();
 
@@ -595,7 +594,7 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
 
   base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
                             true);
-  return ScriptValue::From(script_state, embedder_context.value());
+  return ScriptValue::From(script_state, embedder_context);
 }
 
 // This C++ overload is called by JavaScript:
@@ -630,6 +629,7 @@ ScriptPromise SharedStorage::selectURL(
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  CHECK(options);
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -781,8 +781,9 @@ ScriptPromise SharedStorage::selectURL(
     index++;
   }
 
-  Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+  absl::optional<BlinkCloneableMessage> serialized_data =
+      Serialize(options, *execution_context, exception_state);
+  if (!serialized_data) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
@@ -797,11 +798,18 @@ ScriptPromise SharedStorage::selectURL(
   }
 
   bool keep_alive = options->keepAlive();
+  WTF::String context_id;
+  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
+                                        /*out_string=*/&context_id)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+    return promise;
+  }
 
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
-          name, std::move(converted_urls), std::move(serialized_data),
-          keep_alive,
+          name, std::move(converted_urls), std::move(*serialized_data),
+          keep_alive, std::move(context_id),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
                  base::TimeTicks start_time, bool resolve_to_config,
@@ -812,10 +820,13 @@ ScriptPromise SharedStorage::selectURL(
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (!success) {
-                  ScriptState::Scope scope(script_state);
-                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                      script_state->GetIsolate(),
-                      DOMExceptionCode::kOperationError, error_message));
+                  if (IsInParallelAlgorithmRunnable(
+                          resolver->GetExecutionContext(), script_state)) {
+                    ScriptState::Scope scope(script_state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kOperationError, error_message));
+                  }
                   LogSharedStorageWorkletError(
                       SharedStorageWorkletErrorType::kSelectURLWebVisible);
                   return;
@@ -852,6 +863,7 @@ ScriptPromise SharedStorage::run(
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  CHECK(options);
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -861,8 +873,9 @@ ScriptPromise SharedStorage::run(
     return ScriptPromise();
   }
 
-  Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+  absl::optional<BlinkCloneableMessage> serialized_data =
+      Serialize(options, *execution_context, exception_state);
+  if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return ScriptPromise();
   }
@@ -878,10 +891,16 @@ ScriptPromise SharedStorage::run(
   }
 
   bool keep_alive = options->keepAlive();
+  WTF::String context_id;
+  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
+                                        /*out_string=*/&context_id)) {
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
+    return promise;
+  }
 
   GetSharedStorageDocumentService(execution_context)
       ->RunOperationOnWorklet(
-          name, std::move(serialized_data), keep_alive,
+          name, std::move(*serialized_data), keep_alive, std::move(context_id),
           WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
                         WrapPersistent(this),
                         blink::SharedStorageVoidOperation::kRun,

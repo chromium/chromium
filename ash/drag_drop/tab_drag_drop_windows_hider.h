@@ -8,6 +8,7 @@
 #include <map>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -35,11 +36,11 @@ class ASH_EXPORT TabDragDropWindowsHider : public aura::WindowObserver {
 
  private:
   // The window from which the drag originated.
-  aura::Window* source_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> source_window_;
 
   // The root window the drag is taking place within. Guaranteed to be
   // non-null during the lifetime of |this|.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // Maintains the map between windows and their visibilities. All windows
   // except the dragged window and the source window should stay hidden during

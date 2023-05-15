@@ -121,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenPolicyTest, FullscreenAllowedApp) {
 
   // Verify that the window cannot be toggled into fullscreen mode via apps
   // APIs.
-  EXPECT_TRUE(content::ExecuteScript(
-      window->web_contents(), "chrome.app.window.current().fullscreen();"));
+  EXPECT_TRUE(content::ExecJs(window->web_contents(),
+                              "chrome.app.window.current().fullscreen();"));
   EXPECT_FALSE(window->GetBaseWindow()->IsFullscreen());
 
   // Verify that the window cannot be toggled into fullscreen mode from within

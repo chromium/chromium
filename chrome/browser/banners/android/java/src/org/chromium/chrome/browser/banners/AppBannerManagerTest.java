@@ -33,11 +33,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiSelector;
@@ -265,7 +266,8 @@ public class AppBannerManagerTest {
 
         AppBannerManager.ignoreChromeChannelForTesting();
         AppBannerManager.setTotalEngagementForTesting(10);
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
         mBottomSheetController = mTabbedActivityTestRule.getActivity()
@@ -551,7 +553,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledEventModalWebAppBannerCustomTab() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         triggerModalWebAppBanner(mCustomTabActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithAction(
@@ -620,7 +622,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledModalNativeAppBannerCustomTab() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         triggerModalNativeAppBanner(mCustomTabActivityTestRule,
@@ -700,7 +702,7 @@ public class AppBannerManagerTest {
     public void testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         triggerModalBannerMultipleTimes(mCustomTabActivityTestRule,
@@ -731,7 +733,7 @@ public class AppBannerManagerTest {
     public void testModalWebAppBannerCanBeTriggeredMultipleTimesCustomTab() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         triggerModalBannerMultipleTimes(mCustomTabActivityTestRule,
@@ -1325,50 +1327,6 @@ public class AppBannerManagerTest {
         checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         ContextUtils.initApplicationContextForTests(contextToRestore);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
-    public void testAmbientBadgeInsufficientEngagement() throws Exception {
-        String url = WebappTestPage.getServiceWorkerUrlWithAction(
-                mTestServer, "call_stashed_prompt_on_click");
-        // Set the engagement to trigger beforeinstall event but not ambient badge.
-        resetEngagementForUrl(url, 10);
-
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
-
-        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.PENDING_ENGAGEMENT);
-        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
-
-        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
-        tapAndWaitForModalBanner(tab);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
-    public void testAmbientBadgeSufficientEngagement() throws Exception {
-        String url = WebappTestPage.getServiceWorkerUrlWithAction(
-                mTestServer, "call_stashed_prompt_on_click");
-        // Set the engagement big enough for ambient badge.
-        resetEngagementForUrl(url, 100);
-
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
-
-        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
-        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
-
-        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
-        tapAndWaitForModalBanner(tab);
     }
 
     @Test

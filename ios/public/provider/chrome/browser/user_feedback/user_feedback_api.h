@@ -25,6 +25,20 @@ bool IsUserFeedbackSupported();
 UIViewController* CreateUserFeedbackViewController(
     UserFeedbackConfiguration* configuration);
 
+// Returns whether the `StartUserFeedbackFlow` function is supported.
+bool CanUseStartUserFeedbackFlow();
+
+// Asks the provider to start the user feedback flow presented off of the
+// provided `presenting_view_controller`. The information required to construct
+// the user feedback and the objects used to interact with the application are
+// passed via the `configuration` object and errors are returned in `error`.
+//
+// This function must only be called if `CanUseStartUserFeedbackFlow()`
+// returns `true`.
+bool StartUserFeedbackFlow(UserFeedbackConfiguration* configuration,
+                           UIViewController* presenting_view_controller,
+                           NSError** error);
+
 // Uploads all pending user feedbacks.
 //
 // This function must only be called if `IsUserFeedbackSupported()`

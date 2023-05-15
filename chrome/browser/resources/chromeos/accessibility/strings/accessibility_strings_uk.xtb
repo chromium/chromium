@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="100506692671054486">немає попередньої команди</translation>
 <translation id="1009046985747440431">Натискайте стрілки вгору чи вниз для навігації; натисніть Enter, щоб активувати</translation>
 <translation id="1011903154582639569">Знайдіть клавішу й підніміть палець, щоб ввести символ</translation>
 <translation id="1012173283529841972">Пункт списку</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Рожево-лавандовий</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3962990492275676168">Почати читати з поточного місця</translation>
+<translation id="397094149579293440">текст не вибрано</translation>
 <translation id="3970951409746498040">Пісочний</translation>
 <translation id="3989324057180830702">перемикач</translation>
 <translation id="3991317907213946254">Мокасиновий</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Немає попереднього заголовка рівня 1</translation>
 <translation id="4787577491510559358">Озвучувати формат поточного елемента</translation>
 <translation id="479989351350248267">пошук</translation>
+<translation id="4802034228771424756">текстове поле не виділено</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="481165870889056555">Повідомити назву поточної сторінки</translation>
 <translation id="4815668758102003883">Блідо-бірюзовий</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Внутрішнє посилання</translation>
 <translation id="4909019435900810068">Перемістити назад на слово</translation>
 <translation id="4911349081560453449">Немає попереднього прапорця</translation>
+<translation id="4919186071145887492">Не вдалося виконати команду "<ph name="COMMAND" />". Повторіть спробу.</translation>
 <translation id="492295894462528572">Передмова</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953585991029886728">Редагування тексту</translation>
+<translation id="4964701498510730546">текстове поле порожнє</translation>
 <translation id="4973717656530883744">Мін. <ph name="X" /></translation>
 <translation id="4974612477719259470">Немає попередньої кнопки</translation>
 <translation id="4979404613699303341">Попередня кнопка</translation>
+<translation id="4981239367072766915">введені дані не розпізнано</translation>
 <translation id="4982917827052020884">Почнімо з клавіш, якими ви будете часто користуватися. Клавішею Control можна зупинити озвучення. Вона розташована внизу ліворуч на клавіатурі. Щоб продовжити, натисніть клавішу Control.</translation>
 <translation id="4983588134362688868">Перейти вгору сторінки</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, вікно</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Озвучувати поточний стан акумулятора</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, перемикач вибрано</translation>
 <translation id="5012724933919010465">Вибрано перемикач пункту меню "<ph name="NAME" />"</translation>
+<translation id="5014131807708055994">Не вдалося виконати команду "<ph name="COMMAND" />". Причина: <ph name="REASON" />.</translation>
 <translation id="5020651427400641814">Увімкнути реєстрацію мовлення</translation>
 <translation id="5041394372352067729">Перемістити брайлівський дисплей угору сторінки</translation>
 <translation id="5042770794184672516">Збільшити гучність мовлення</translation>

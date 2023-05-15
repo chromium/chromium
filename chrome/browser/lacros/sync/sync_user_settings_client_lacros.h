@@ -36,7 +36,7 @@ class SyncUserSettingsClientLacros
  private:
   void OnIsAppsSyncEnabledFetched(bool is_apps_sync_enabled);
 
-  base::raw_ptr<syncer::SyncUserSettings> sync_user_settings_;
+  raw_ptr<syncer::SyncUserSettings> sync_user_settings_;
   mojo::Receiver<crosapi::mojom::SyncUserSettingsClientObserver>
       observer_receiver_{this};
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient> remote_;

@@ -246,7 +246,7 @@ export class StreamManager {
     const shouldHaveBuiltinCamera =
         deviceType === 'chromebook' || deviceType === 'chromebase';
     let attempts = 5;
-    while (attempts--) {
+    while (attempts-- > 0) {
       const devices = (await navigator.mediaDevices.enumerateDevices())
                           .filter((device) => device.kind === 'videoinput');
       if (!shouldHaveBuiltinCamera || devices.length > 0) {

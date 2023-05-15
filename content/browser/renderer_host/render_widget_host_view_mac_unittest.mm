@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -235,14 +236,13 @@ blink::WebPointerProperties::PointerType GetPointerType(
 NSEvent* MockTabletEventWithParams(CGEventType type,
                                    bool is_entering_proximity,
                                    NSPointingDeviceType device_type) {
-  CGEventRef cg_event = CGEventCreate(NULL);
+  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreate(/*source=*/nullptr));
   CGEventSetType(cg_event, type);
   CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
   CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventPointerType,
                               device_type);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-  CFRelease(cg_event);
   return event;
 }
 
@@ -256,8 +256,8 @@ NSEvent* MockMouseEventWithParams(CGEventType mouse_type,
   // an NSEvent, below, flips the location back to bottom left origin.
   CGPoint cg_location =
       CGPointMake(location.x, NSHeight(NSScreen.screens[0].frame) - location.y);
-  CGEventRef cg_event =
-      CGEventCreateMouseEvent(NULL, mouse_type, cg_location, button);
+  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+      /*source=*/nullptr, mouse_type, cg_location, button));
   CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
   CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
@@ -269,7 +269,6 @@ NSEvent* MockMouseEventWithParams(CGEventType mouse_type,
       base::Time::kNanosecondsPerMicrosecond;
   CGEventSetTimestamp(cg_event, timestamp);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-  CFRelease(cg_event);
   return event;
 }
 
@@ -432,12 +431,11 @@ gfx::Rect GetExpectedRect(const gfx::Point& origin,
 // should correspond to a method in |MockPhaseMethods| that returns the desired
 // phase.
 NSEvent* MockScrollWheelEventWithPhase(SEL mockPhaseSelector, int32_t delta) {
-  CGEventRef cg_event = CGEventCreateScrollWheelEvent(
-      nullptr, kCGScrollEventUnitLine, 1, delta, 0);
+  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
+      /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
   CGEventSetTimestamp(cg_event, timestamp);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-  CFRelease(cg_event);
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(phase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);
@@ -449,12 +447,11 @@ NSEvent* MockScrollWheelEventWithMomentumPhase(SEL mockPhaseSelector,
   // Create a fake event with phaseNone. This is for resetting the phase info
   // of CGEventRef.
   MockScrollWheelEventWithPhase(@selector(phaseNone), 0);
-  CGEventRef cg_event = CGEventCreateScrollWheelEvent(
-      nullptr, kCGScrollEventUnitLine, 1, delta, 0);
+  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
+      /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
   CGEventSetTimestamp(cg_event, timestamp);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-  CFRelease(cg_event);
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(momentumPhase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);

@@ -2,17 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-# Remove Log.d(), Log.v(), and all isLoggable() where the return value is
-# unused (e.g. if it was guarding a call to Log.d()).
--assumenosideeffects class android.util.Log {
-  static int d(...);
-  static int v(...);
-  # Don't use "return false" here because some code guards info logs behind
-  # isLoggable(DEBUG) as a way to enable logs via adb.
-  # https://crbug.com/1366880
-  static boolean isLoggable(...);
-}
+# Remove Log.d(), Log.v(), and corresponding isLoggable() calls.
+# Log.DEBUG = 3, Log.VERBOSE = 2.
+# https://stackoverflow.com/questions/73876633/what-does-the-r8-maximumremovedandroidloglevel-option
+-maximumremovedandroidloglevel 3
 
 # Makes try-with-resources less inefficient. Saved 3.8kb when added.
 -assumenosideeffects class java.lang.Throwable {

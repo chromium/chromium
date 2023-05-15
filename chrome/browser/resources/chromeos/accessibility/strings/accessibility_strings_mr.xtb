@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="100506692671054486">कोणतीही मागील कमांड नाही</translation>
 <translation id="1009046985747440431">नेव्हिगेट करण्यासाठी अप किंवा डाउन ॲरो प्रेस करा; ॲक्टिव्हेट करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="1011903154582639569">की शोधा, नंतर टाइप करण्यासाठी उचला</translation>
 <translation id="1012173283529841972">सूची आयटम</translation>
@@ -441,7 +442,7 @@
 <translation id="3821689185319271077">पॉइंटर अँकर नाही</translation>
 <translation id="3840823741487267909">संक्षिप्त रूप</translation>
 <translation id="3841319830220785495">डीफॉल्ट नैसर्गिक आवाज</translation>
-<translation id="385383972552776628">पर्याय पृष्‍ठ उघडा</translation>
+<translation id="385383972552776628">पर्यायी पेज उघडा</translation>
 <translation id="3856075812838139784">केवळ वाचनीय</translation>
 <translation id="3857141338659865495">मध्यम हिरवट निळा</translation>
 <translation id="3870295413168340326">मागील पातळी तीन शीर्षक नाही</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">फिकट जांभळा</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3962990492275676168">वर्तमान स्‍थानावरून वाचन सुरू करा</translation>
+<translation id="397094149579293440">मजकूर निवडलेला नाही</translation>
 <translation id="3970951409746498040">पिवळसर तपकिरी</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">तपकिरी</translation>
@@ -472,7 +474,7 @@
 <translation id="4047910800766704982">तुमचे डिव्हाइस ऑनलाइन असताना तुम्ही नैसर्गिक, मानवासारखा आवाज वापरू शकता. प्रक्रिया करण्यासाठी मजकूर Google कडे पाठवला जाईल. तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="4053520724192563562">लिंबू</translation>
 <translation id="4054936709456751127">sts</translation>
-<translation id="4058278702844053247">पृष्‍ठ लोड होणे प्रगतीपथावर आहे</translation>
+<translation id="4058278702844053247">पेज लोड होणे प्रगतीपथावर आहे</translation>
 <translation id="4065205963140826639">पुढील बटण शोधण्यासाठी आता शोध + उजबा बाण वापरून पहा, नंतर ते क्लिक करण्यासाठी शोध + Space प्रेस करा.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{टिल्डि}other{# टिल्डि}}</translation>
 <translation id="409334809956508737">मागील ऑब्जेक्ट</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">मागील पातळी एक शीर्षक नाही</translation>
 <translation id="4787577491510559358">सध्याचा आयटम फॉरमॅट केला असल्याचे सूचित करा</translation>
 <translation id="479989351350248267">शोध</translation>
+<translation id="4802034228771424756">फोकस केलेले मजकूर फील्ड नाही</translation>
 <translation id="4804818685124855865">‍डिस्कनेक्ट</translation>
 <translation id="481165870889056555">वर्तमान पृष्‍ठाचे शीर्षक घोषित करा</translation>
 <translation id="4815668758102003883">फिकट हिरवट निळा</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">अंतर्गत लिंक</translation>
 <translation id="4909019435900810068">एक शब्द मागे जा</translation>
 <translation id="4911349081560453449">मागील चेकबॉक्‍स नाही</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> करू शकत नाही, पुन्हा प्रयत्न करा</translation>
 <translation id="492295894462528572">प्रस्तावना</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953585991029886728">मजकूर संपादित करा</translation>
+<translation id="4964701498510730546">मजकूर फील्ड रिकामे आहे</translation>
 <translation id="4973717656530883744">किमान <ph name="X" /></translation>
 <translation id="4974612477719259470">मागील बटण नाही</translation>
 <translation id="4979404613699303341">मागील बटण</translation>
+<translation id="4981239367072766915">अनोळखी इनपुट</translation>
 <translation id="4982917827052020884">तुम्ही नियमितपणे वापराल अशा काही कीसह सुरुवात करू या. सध्याचे कोणतेही भाषण थांबवण्यासाठी कंट्रोल की वापरली जाऊ शकते. तुमच्या कीबोर्डच्या डाव्या कोपर्‍यात कंट्रोल की आढळेल. पुढे सुरू ठेवण्यासाठी कंट्रोल की प्रेस करा.</translation>
 <translation id="4983588134362688868">पृष्ठाच्या शीर्षस्थानी जा</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, विंडो</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">बॅटरीची सध्याची स्थिती सूचित करा</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, रेडिओ बटण निवडले</translation>
 <translation id="5012724933919010465"><ph name="NAME" /> हे मेनू आयटम रेडिओ बटण निवडले</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> करू शकत नाही, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">स्पीच लॉगिंग सुरू करा</translation>
 <translation id="5041394372352067729">ब्रेल डिस्प्ले पेजच्या सर्वात वर हलवा</translation>
 <translation id="5042770794184672516">बोलण्‍याचा आवाज वाढवा</translation>

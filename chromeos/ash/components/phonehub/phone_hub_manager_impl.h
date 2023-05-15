@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
+#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/feature_setup_response_processor.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -108,6 +110,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<UserActionRecorder> user_action_recorder_;
+  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
   std::unique_ptr<MessageReceiver> message_receiver_;
   std::unique_ptr<MessageSender> message_sender_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
@@ -139,9 +142,10 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<FeatureSetupResponseProcessor>
       feature_setup_response_processor_;
   std::unique_ptr<PingManager> ping_manager_;
-  eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
+  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+      eche_connection_status_handler_ = nullptr;
+  raw_ptr<eche_app::SystemInfoProvider, ExperimentalAsh> system_info_provider_ =
       nullptr;
-  eche_app::SystemInfoProvider* system_info_provider_ = nullptr;
 };
 
 }  // namespace phonehub

@@ -26,8 +26,8 @@ class IncompleteClass;
 
 #ifdef _MSC_VER
 // These tests verify expectations about sizes of MSVC pointers to methods.
-// Pointers to methods are distinguished by whether their class hierachies
-// contain single inheritance, multiple inheritance, or virtual inheritence.
+// Pointers to methods are distinguished by whether their class hierarchies
+// contain single inheritance, multiple inheritance, or virtual inheritance.
 
 // Declare classes of the various MSVC inheritance types.
 class __single_inheritance SingleInheritance{};

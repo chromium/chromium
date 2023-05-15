@@ -12,6 +12,7 @@
 #include "base/time/default_tick_clock.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
@@ -57,8 +58,8 @@ void TabletModeControllerTestApi::AttachExternalMouse() {
 void TabletModeControllerTestApi::AttachExternalTouchpad() {
   // Similar to |AttachExternalMouse|.
   base::RunLoop().RunUntilIdle();
-  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
-      {ui::InputDevice(4, ui::InputDeviceType::INPUT_DEVICE_USB, "touchpad")});
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({ui::TouchpadDevice(
+      4, ui::InputDeviceType::INPUT_DEVICE_USB, "touchpad")});
   if (!IsTabletModeControllerInitialized()) {
     tablet_mode_controller_->OnInputDeviceConfigurationChanged(
         ui::InputDeviceEventObserver::kTouchpad);

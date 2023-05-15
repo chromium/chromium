@@ -423,6 +423,54 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
+  // Home directory itself should not be allowed.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, home_dir,
+                HandleType::kDirectory, UserAction::kOpen));
+  // $HOME/Library should be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library"), HandleType::kDirectory,
+                UserAction::kOpen));
+  // $HOME/Library/Mobile Documents should be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library/Mobile Documents"),
+                HandleType::kDirectory, UserAction::kOpen));
+  // Paths within $HOME/Library/Mobile Documents should not be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library/Mobile Documents/foo"),
+                HandleType::kDirectory, UserAction::kOpen));
+  // Except for $HOME/Library/Mobile Documents/com~apple~CloudDocs, which should
+  // be blocked.
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          home_dir.AppendASCII("Library/Mobile Documents/com~apple~CloudDocs"),
+          HandleType::kDirectory, UserAction::kOpen));
+  // Paths within $HOME/Library/Mobile Documents/com~apple~CloudDocs should not
+  // be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII(
+                    "Library/Mobile Documents/com~apple~CloudDocs/foo"),
+                HandleType::kDirectory, UserAction::kOpen));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_UNCPath) {
@@ -1453,8 +1501,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   grant.reset();
 
@@ -1467,8 +1514,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1510,8 +1556,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   grant.reset();
 
@@ -1524,8 +1569,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1660,9 +1704,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ASSERT_EQ(objects.size(), 2u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(objects[1]->origin, kTestOrigin2.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            initial_time);
-  EXPECT_EQ(base::ValueToTime(objects[1]->value.GetDict().Find("time")), Now());
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), initial_time);
+  EXPECT_EQ(base::ValueToTime(objects[1]->value.Find("time")), Now());
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1691,8 +1734,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            initial_time);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), initial_time);
 
   // Permissions should now be expired and can be revoked.
   Advance(ChromeFileSystemAccessPermissionContext::

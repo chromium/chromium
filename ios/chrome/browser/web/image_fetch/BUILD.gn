@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("image_fetch") {
@@ -24,14 +24,18 @@ source_set("image_fetch") {
   ]
 }
 
-optimize_js("image_fetch_js") {
+optimize_ts("image_fetch_js") {
   visibility = [
     ":image_fetch",
     ":unit_tests",
   ]
 
-  primary_script = "resources/image_fetch.js"
-  sources = [ "resources/image_fetch.js" ]
+  sources = [ "resources/image_fetch.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unit_tests") {
@@ -46,7 +50,7 @@ source_set("unit_tests") {
     ":image_fetch_js",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/test",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -15,10 +16,19 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/compositor/test/test_utils.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
@@ -30,12 +40,14 @@ crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
     bool is_capturing_screen,
     const std::u16string& title,
     std::string url,
+    const crosapi::mojom::VideoConferenceAppType app_type =
+        crosapi::mojom::VideoConferenceAppType::kChromeTab,
     const base::UnguessableToken& id = base::UnguessableToken::Create()) {
   return crosapi::mojom::VideoConferenceMediaAppInfo::New(
       id,
       /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
       is_capturing_microphone, is_capturing_screen, title,
-      /*url=*/GURL(url));
+      /*url=*/GURL(url), app_type);
 }
 
 // Verifies the information of `ReturnToAppButton`.
@@ -105,11 +117,33 @@ class ReturnToAppPanelTest : public AshTestBase {
             BubbleViewID::kReturnToApp));
   }
 
-  views::View* GetReturnToAppContainer(ReturnToAppPanel* panel) {
+  ReturnToAppPanel::ReturnToAppContainer* GetReturnToAppContainer(
+      ReturnToAppPanel* panel) {
     return panel->container_view_;
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
+
+  // Get the instance that handle bounds change for the expand/collapse
+  // animation.
+  gfx::LinearAnimation* GetBoundsChangeAnimation() {
+    return GetReturnToAppContainer(GetReturnToAppPanel())->animation_.get();
+  }
+
+  void AnimateToValue(double animation_value) {
+    auto* animation = GetBoundsChangeAnimation();
+    EXPECT_TRUE(animation->is_animating());
+    animation->SetCurrentValue(animation_value);
+    GetReturnToAppContainer(GetReturnToAppPanel())
+        ->AnimationProgressed(animation);
+  }
+
+  // Wait until the bounds change animation is completed.
+  void WaitForAnimation() {
+    do {
+      base::RunLoop().RunUntilIdle();
+    } while (GetBoundsChangeAnimation()->is_animating());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -232,7 +266,9 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_FALSE(second_app_row->GetVisible());
 
   // Clicking the summary row should expand the panel.
-  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
+  summary_row->OnButtonClicked(
+      /*id=*/base::UnguessableToken::Null(),
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
   EXPECT_TRUE(summary_row->expanded());
 
   // Verify the views in expanded state:
@@ -244,7 +280,9 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_TRUE(second_app_row->GetVisible());
 
   // Click again. Should be in collapsed state.
-  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
+  summary_row->OnButtonClicked(
+      /*id=*/base::UnguessableToken::Null(),
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
   EXPECT_FALSE(summary_row->expanded());
 }
 
@@ -289,6 +327,11 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
 }
 
 TEST_F(ReturnToAppPanelTest, ReturnToApp) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  base::HistogramTester histogram_tester;
+
   auto app_id1 = base::UnguessableToken::Create();
   auto app_id2 = base::UnguessableToken::Create();
 
@@ -296,11 +339,14 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl, /*id=*/app_id1));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp,
+      /*id=*/app_id1));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/"", /*id=*/app_id2));
+      /*url=*/"", /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp,
+      /*id=*/app_id2));
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();
@@ -324,9 +370,284 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   LeftClickOn(first_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id1]);
   EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kChromeApp, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kArcApp, 0);
 
   LeftClickOn(second_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id2]);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kArcApp, 1);
+}
+
+TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  ASSERT_FALSE(summary_row->expanded());
+
+  auto panel_initial_height = return_to_app_panel->size().height();
+  auto* vc_bubble = video_conference_tray()->GetBubbleView();
+  auto bubble_initial_height = vc_bubble->size().height();
+
+  // The animation should start after we click the summary row to expand the
+  // panel.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  AnimateToValue(0.5);
+
+  auto panel_mid_animation_height = return_to_app_panel->size().height();
+  auto bubble_mid_animation_height = vc_bubble->size().height();
+
+  // Make sure that the panel is expanding and the bubble is also expanding in
+  // the same amount.
+  EXPECT_GT(panel_mid_animation_height, panel_initial_height);
+  EXPECT_EQ(panel_mid_animation_height - panel_initial_height,
+            bubble_mid_animation_height - bubble_initial_height);
+
+  // Test the same thing when animation ends.
+  WaitForAnimation();
+
+  auto panel_end_animation_height = return_to_app_panel->size().height();
+  auto bubble_end_animation_height = vc_bubble->size().height();
+
+  EXPECT_GT(panel_end_animation_height, panel_mid_animation_height);
+  EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
+            bubble_end_animation_height - bubble_mid_animation_height);
+}
+
+TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+
+  LeftClickOn(summary_row);
+  WaitForAnimation();
+
+  ASSERT_TRUE(summary_row->expanded());
+
+  auto panel_initial_height = return_to_app_panel->size().height();
+  auto* vc_bubble = video_conference_tray()->GetBubbleView();
+  auto bubble_initial_height = vc_bubble->size().height();
+
+  // The animation should start after we click the summary row again to collapse
+  // the panel.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  // Normally, a layer animation will be performed to fade out the return to app
+  // buttons. However, since we are simulating different stage of the bounds
+  // change animation, we will set visibility right away here to prevent the
+  // layer animation from interfering with the bounds change animation
+  // simulation.
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
+  first_app_row->SetVisible(false);
+  second_app_row->SetVisible(false);
+
+  AnimateToValue(0.5);
+
+  auto panel_mid_animation_height = return_to_app_panel->size().height();
+  auto bubble_mid_animation_height = vc_bubble->size().height();
+
+  // Make sure that the panel is collapsing and the bubble is also collapsing in
+  // the same amount.
+  EXPECT_LT(panel_mid_animation_height, panel_initial_height);
+  EXPECT_EQ(panel_mid_animation_height - panel_initial_height,
+            bubble_mid_animation_height - bubble_initial_height);
+
+  // Test the same thing when animation ends.
+  WaitForAnimation();
+
+  auto panel_end_animation_height = return_to_app_panel->size().height();
+  auto bubble_end_animation_height = vc_bubble->size().height();
+
+  EXPECT_LT(panel_end_animation_height, panel_mid_animation_height);
+  EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
+            bubble_end_animation_height - bubble_mid_animation_height);
+}
+
+// Verify that the layer animations to show/hide the view are performed with
+// the expected visibility and opacity before and after the animation.
+TEST_F(ReturnToAppPanelTest, LayerAnimations) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+
+  // Expand animation: The return to app buttons should fade in.
+  LeftClickOn(summary_row);
+
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
+
+  EXPECT_EQ(0, first_app_row->layer()->opacity());
+  EXPECT_EQ(0, second_app_row->layer()->opacity());
+
+  ui::LayerAnimationStoppedWaiter layer_animation_waiter;
+  layer_animation_waiter.Wait(first_app_row->layer());
+  layer_animation_waiter.Wait(second_app_row->layer());
+
+  EXPECT_EQ(1, first_app_row->layer()->opacity());
+  EXPECT_EQ(1, second_app_row->layer()->opacity());
+
+  // End the rest of the animation to test collapse animation.
+  WaitForAnimation();
+  ASSERT_TRUE(summary_row->expanded());
+
+  // Collapse animation: The return to app buttons should fade out and the
+  // summary icons should fade in.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  auto* summary_icons = summary_row->icons_container();
+  EXPECT_EQ(0, summary_icons->layer()->opacity());
+
+  EXPECT_TRUE(first_app_row->GetVisible());
+  EXPECT_TRUE(second_app_row->GetVisible());
+
+  layer_animation_waiter.Wait(summary_icons->layer());
+  layer_animation_waiter.Wait(first_app_row->layer());
+  layer_animation_waiter.Wait(second_app_row->layer());
+
+  EXPECT_EQ(1, summary_icons->layer()->opacity());
+  EXPECT_FALSE(first_app_row->GetVisible());
+  EXPECT_FALSE(second_app_row->GetVisible());
+}
+
+TEST_F(ReturnToAppPanelTest, ReturnToAppButtonTextElide) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false,
+      /*title=*/
+      u"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+      u"eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_container =
+      GetReturnToAppContainer(GetReturnToAppPanel());
+  auto* app_button = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  auto* app_button_label = app_button->label();
+
+  // With a long title, the app title should still fit inside the button (the
+  // width of the label should still be smaller).
+  EXPECT_LT(app_button_label->width(), app_button->width());
+
+  const char16_t kEllipsisString[] = {0x2026, 0};
+
+  // The display text should end with the ellipsis.
+  EXPECT_TRUE(base::EndsWith(app_button_label->GetDisplayTextForTesting(),
+                             kEllipsisString));
+}
+
+TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
+
+  auto expected_camera_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
+  auto expected_microphone_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
+  auto expected_screen_share_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
+
+  // Verify accessible name for each row.
+  EXPECT_EQ(expected_camera_text + expected_microphone_text +
+                expected_screen_share_text +
+                l10n_util::GetStringFUTF16Int(
+                    IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT, 2),
+            summary_row->GetAccessibleName());
+  EXPECT_EQ(expected_camera_text +
+                l10n_util::GetStringFUTF16(
+                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Meet"),
+            first_app_row->GetAccessibleName());
+  EXPECT_EQ(expected_microphone_text + expected_screen_share_text +
+                l10n_util::GetStringFUTF16(
+                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Zoom"),
+            second_app_row->GetAccessibleName());
 }
 
 }  // namespace ash::video_conference

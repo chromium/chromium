@@ -23,7 +23,6 @@
 #include "content/renderer/pepper/video_decoder_shim.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/ipc/client/gpu_video_decode_accelerator_host.h"
 #include "media/video/video_decode_accelerator.h"
@@ -110,20 +109,6 @@ media::VideoCodecProfile PepperToMediaVideoProfile(PP_VideoProfile profile) {
 
 }  // namespace
 
-bool ShouldUseMojoVideoDecoderForPepper() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableUseMojoVideoDecoderForPepper)) {
-    LOG(WARNING) << "UseMojoVideoDecoderForPepper: Disabled by policy";
-    return false;
-  }
-
-  auto enabled =
-      base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper);
-  LOG(WARNING) << "UseMojoVideoDecoderForPepper: feature controlled: "
-               << enabled;
-  return enabled;
-}
-
 PepperVideoDecoderHost::PendingDecode::PendingDecode(
     int32_t decode_id,
     uint32_t shm_id,
@@ -154,31 +139,17 @@ PepperVideoDecoderHost::PepperVideoDecoderHost(RendererPpapiHost* host,
       renderer_ppapi_host_(host) {}
 
 PepperVideoDecoderHost::~PepperVideoDecoderHost() {
-  DCHECK(!(legacy_hardware_video_decoder_path_initialized_ &&
-           mojo_video_decoder_path_initialized_));
-
   auto hw_behavior = HardwareAccelerationBehavior::kOther;
   if (software_fallback_used_) {
-    if (!legacy_hardware_video_decoder_path_initialized_ &&
-        !mojo_video_decoder_path_initialized_) {
-      hw_behavior = HardwareAccelerationBehavior::kSoftwareDecoderOnly;
-    } else if (legacy_hardware_video_decoder_path_initialized_) {
-      hw_behavior = HardwareAccelerationBehavior::
-          kHardwareDecoderWithoutMojoVideoDecoderAndThenSoftwareDecoder;
-    } else if (mojo_video_decoder_path_initialized_) {
+    if (mojo_video_decoder_path_initialized_) {
       hw_behavior = HardwareAccelerationBehavior::
           kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder;
     } else {
-      NOTREACHED();
+      hw_behavior = HardwareAccelerationBehavior::kSoftwareDecoderOnly;
     }
-  } else {
-    if (legacy_hardware_video_decoder_path_initialized_) {
-      hw_behavior = HardwareAccelerationBehavior::
-          kHardwareDecoderOnlyWithoutMojoVideoDecoder;
-    } else if (mojo_video_decoder_path_initialized_) {
-      hw_behavior = HardwareAccelerationBehavior::
-          kHardwareDecoderOnlyWithMojoVideoDecoder;
-    }
+  } else if (mojo_video_decoder_path_initialized_) {
+    hw_behavior =
+        HardwareAccelerationBehavior::kHardwareDecoderOnlyWithMojoVideoDecoder;
   }
 
   base::UmaHistogramEnumeration(
@@ -236,36 +207,20 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
   min_picture_count_ = min_picture_count;
 
   if (acceleration != PP_HARDWAREACCELERATION_NONE) {
-    if (!ShouldUseMojoVideoDecoderForPepper()) {
-      // This is not synchronous, but subsequent IPC messages will be buffered,
-      // so it is okay to immediately send IPC messages.
-      if (command_buffer->channel()) {
-        decoder_ = base::WrapUnique<media::VideoDecodeAccelerator>(
-            new media::GpuVideoDecodeAcceleratorHost(command_buffer));
-        media::VideoDecodeAccelerator::Config vda_config(profile_);
-        vda_config.supported_output_formats.assign(
-            {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});
-        if (decoder_->Initialize(vda_config, this)) {
-          initialized_ = true;
-          legacy_hardware_video_decoder_path_initialized_ = true;
-          return PP_OK;
-        }
-      }
-    } else {
-      uint32_t shim_texture_pool_size = media::limits::kMaxVideoFrames + 1;
-      shim_texture_pool_size =
-          std::max(shim_texture_pool_size, min_picture_count_);
-      auto new_decoder = VideoDecoderShim::Create(this, shim_texture_pool_size,
-                                                  /*use_hw_decoder=*/true);
-      if (new_decoder &&
-          new_decoder->Initialize(
-              media::VideoDecodeAccelerator::Config(profile_), this)) {
-        decoder_.reset(new_decoder.release());
-        initialized_ = true;
-        mojo_video_decoder_path_initialized_ = true;
-        return PP_OK;
-      }
+    uint32_t shim_texture_pool_size = media::limits::kMaxVideoFrames + 1;
+    shim_texture_pool_size =
+        std::max(shim_texture_pool_size, min_picture_count_);
+    auto new_decoder = VideoDecoderShim::Create(this, shim_texture_pool_size,
+                                                /*use_hw_decoder=*/true);
+    if (new_decoder &&
+        new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
+                                this)) {
+      decoder_.reset(new_decoder.release());
+      initialized_ = true;
+      mojo_video_decoder_path_initialized_ = true;
+      return PP_OK;
     }
+
     decoder_.reset();
     if (acceleration == PP_HARDWAREACCELERATION_ONLY)
       return PP_ERROR_NOTSUPPORTED;

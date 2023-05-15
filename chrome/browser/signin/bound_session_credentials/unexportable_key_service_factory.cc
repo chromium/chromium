@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -55,6 +56,10 @@ UnexportableKeyServiceFactory::~UnexportableKeyServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UnexportableKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!switches::IsBoundSessionCredentialsEnabled()) {
+    return nullptr;
+  }
+
   if (!unexportable_keys::UnexportableKeyServiceImpl::
           IsUnexportableKeyProviderSupported()) {
     // Do not create a service if the platform doesn't support unexportable

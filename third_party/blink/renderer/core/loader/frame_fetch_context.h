@@ -107,7 +107,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool AllowImage(bool images_enabled, const KURL&) const override;
 
   void PopulateResourceRequest(ResourceType,
-                               const FetchParameters::ResourceWidth&,
+                               const absl::optional<float> resource_width,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
 
@@ -115,7 +115,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
-  void AddClientHintsIfNecessary(const FetchParameters::ResourceWidth&,
+  void AddClientHintsIfNecessary(const absl::optional<float> resource_width,
                                  ResourceRequest&);
 
   void AddReducedAcceptLanguageIfNecessary(ResourceRequest&);

@@ -105,10 +105,11 @@ public interface SigninManager {
     boolean isSigninDisabledByPolicy();
 
     /**
-     * @return Whether true if the current user is not demo user and the user has a reasonable
-     *         Google Play Services installed.
+     * Returns whether the user can sign-in (maybe after an update to Google Play services).
+     * @param requireUpdatedPlayServices Indicates whether an updated version of play services is
+     *         required or not.
      */
-    boolean isSigninSupported();
+    boolean isSigninSupported(boolean requireUpdatedPlayServices);
 
     /**
      * @return Whether force sign-in is enabled by policy.

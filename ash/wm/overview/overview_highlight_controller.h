@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -110,14 +111,15 @@ class ASH_EXPORT OverviewHighlightController {
 
   // The overview session which owns this object. Guaranteed to be non-null for
   // the lifetime of |this|.
-  OverviewSession* const overview_session_;
+  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // If an item that is selected is deleted, store its index, so the next
   // traversal can pick up where it left off.
   absl::optional<int> deleted_index_ = absl::nullopt;
 
   // The current view that is being highlighted, if any.
-  OverviewHighlightableView* highlighted_view_ = nullptr;
+  raw_ptr<OverviewHighlightableView, ExperimentalAsh> highlighted_view_ =
+      nullptr;
 
   // Helps to update the current a11y override window. And accessibility
   // features will focus on the window that is being set. Once `this` goes out

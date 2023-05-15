@@ -32,8 +32,8 @@ class StylePath final : public BasicShape {
 
   CSSValue* ComputedCSSValue() const;
 
-  void GetPath(Path&, const gfx::RectF&, float zoom) override;
-  WindRule GetWindRule() const override { return wind_rule_; }
+  void GetPath(Path&, const gfx::RectF&, float zoom) const override;
+  WindRule GetWindRule() const { return wind_rule_; }
 
   ShapeType GetType() const override { return kStylePathType; }
 

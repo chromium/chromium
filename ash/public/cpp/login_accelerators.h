@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -42,6 +40,7 @@ enum LoginAcceleratorAction {
   kDeviceRequisitionRemora,
   kStartDemoMode,
   kLaunchDiagnostics,
+  kEnableQuickStart,
 };
 
 struct LoginAcceleratorData {

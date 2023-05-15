@@ -39,9 +39,7 @@ class IntentChipButton : public OmniboxChipButton {
   // OmniboxChipButton:
   ui::ImageModel GetIconImageModel() const override;
   const gfx::VectorIcon& GetIcon() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  bool pending_promo_ = false;
   const raw_ptr<Browser> browser_;
   const raw_ptr<PageActionIconView::Delegate> delegate_;
 };

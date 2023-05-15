@@ -11,18 +11,6 @@
 
 namespace media {
 
-namespace {
-
-// Arbitrary limit above what is considered a reasonable request.
-constexpr size_t kCombinedMappedSizesCountLimit = 6;
-
-void SortSizesDescending(std::vector<gfx::Size>& sizes) {
-  std::sort(sizes.begin(), sizes.end(),
-            [](gfx::Size& a, gfx::Size& b) { return a.height() > b.height(); });
-}
-
-}  // namespace
-
 VideoCaptureFeedback::VideoCaptureFeedback() = default;
 VideoCaptureFeedback::VideoCaptureFeedback(const VideoCaptureFeedback& other) =
     default;
@@ -59,29 +47,12 @@ void VideoCaptureFeedback::Combine(const VideoCaptureFeedback& other) {
 
   // If any consumer wants mapped frames, all of them should get it.
   require_mapped_frame |= other.require_mapped_frame;
-
-  // Merge mapped sizes for all consumers.
-  for (const gfx::Size& mapped_size : other.mapped_sizes) {
-    // Skip duplicates.
-    if (base::Contains(mapped_sizes, mapped_size)) {
-      continue;
-    }
-    // As a safety measure, limit the number of sizes that can be asked for.
-    if (mapped_sizes.size() >= kCombinedMappedSizesCountLimit) {
-      LOG(WARNING) << "Consumer mapped sizes count exceeds "
-                   << kCombinedMappedSizesCountLimit;
-      break;
-    }
-    mapped_sizes.push_back(mapped_size);
-  }
-  SortSizesDescending(mapped_sizes);
 }
 
 bool VideoCaptureFeedback::Empty() const {
   return !std::isfinite(max_framerate_fps) &&
          max_pixels == std::numeric_limits<int>::max() &&
-         (resource_utilization < 0.0) && !require_mapped_frame &&
-         mapped_sizes.empty();
+         (resource_utilization < 0.0) && !require_mapped_frame;
 }
 
 VideoCaptureFeedback& VideoCaptureFeedback::WithUtilization(float utilization) {
@@ -102,13 +73,6 @@ VideoCaptureFeedback& VideoCaptureFeedback::WithMaxPixels(int pixels) {
 
 VideoCaptureFeedback& VideoCaptureFeedback::RequireMapped(bool require) {
   require_mapped_frame = require;
-  return *this;
-}
-
-VideoCaptureFeedback& VideoCaptureFeedback::WithMappedSizes(
-    std::vector<gfx::Size> sizes) {
-  mapped_sizes = std::move(sizes);
-  SortSizesDescending(mapped_sizes);
   return *this;
 }
 

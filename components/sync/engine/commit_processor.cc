@@ -91,7 +91,7 @@ ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
     case GatheringPhase::kRegular:
       return Difference(commit_types_, Union(Union(HighPriorityUserTypes(),
                                                    LowPriorityUserTypes()),
-                                             ModelTypeSet(NIGORI)));
+                                             {NIGORI}));
     case GatheringPhase::kLowPriority:
       return Intersection(commit_types_, LowPriorityUserTypes());
     case GatheringPhase::kDone:

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -23,9 +24,12 @@
 #include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/clip_recorder.h"
@@ -237,7 +241,7 @@ class ScrollContentsView : public views::View {
     if (!details.is_add && details.parent == this) {
       headers_.erase(std::remove_if(headers_.begin(), headers_.end(),
                                     [details](const Header& header) {
-                                      return header.view == details.child;
+                                      return header.view.get() == details.child;
                                     }),
                      headers_.end());
     } else if (details.is_add && details.parent == this &&
@@ -266,7 +270,7 @@ class ScrollContentsView : public views::View {
         : view(view), natural_offset(view->y()), draw_separator_below(false) {}
 
     // A header View that can be decorated as sticky.
-    views::View* view;
+    raw_ptr<views::View, ExperimentalAsh> view;
 
     // Offset from the top of ScrollContentsView to |view|'s original vertical
     // position.
@@ -365,7 +369,7 @@ class ScrollContentsView : public views::View {
     canvas->DrawRect(shadowed_area, flags);
   }
 
-  views::BoxLayout* box_layout_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
 
   // Header child views that stick to the top of visible viewport when scrolled.
   std::vector<Header> headers_;
@@ -494,11 +498,17 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
   if (icon.is_empty()) {
     item->AddLabelRow(text);
   } else {
-    item->AddIconAndLabel(
-        gfx::CreateVectorIcon(
-            icon, AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kIconColorPrimary)),
-        text);
+    if (chromeos::features::IsJellyEnabled()) {
+      item->AddIconAndLabel(
+          ui::ImageModel::FromVectorIcon(icon, cros_tokens::kCrosSysOnSurface),
+          text);
+    } else {
+      item->AddIconAndLabel(
+          gfx::CreateVectorIcon(
+              icon, AshColorProvider::Get()->GetContentLayerColor(
+                        AshColorProvider::ContentLayerType::kIconColorPrimary)),
+          text);
+    }
   }
 
   if (features::IsQsRevampEnabled()) {
@@ -537,18 +547,33 @@ TriView* TrayDetailedView::AddScrollListSubHeader(views::View* container,
   auto* color_provider = AshColorProvider::Get();
   sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
-  sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(sub_header_label_,
-                                   TrayPopupUtils::FontStyle::kSubHeader);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                               *title_label_);
+  } else {
+    sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(sub_header_label_,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
+  }
+
   header->AddView(TriView::Container::CENTER, sub_header_label_);
 
   sub_header_image_view_ =
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
   sub_header_icon_ = &icon;
-  sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
-      icon, color_provider->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_header_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        icon,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)));
+  } else {
+    sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
+        icon, color_provider->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+
   header->AddView(TriView::Container::START, sub_header_image_view_);
 
   container->AddChildView(header);
@@ -620,10 +645,17 @@ std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
 
   title_label_ = TrayPopupUtils::CreateDefaultLabel();
   title_label_->SetText(l10n_util::GetStringUTF16(string_id));
-  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(title_label_,
-                                   TrayPopupUtils::FontStyle::kTitle);
+  if (chromeos::features::IsJellyEnabled()) {
+    title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosTitle1, *title_label_);
+  } else {
+    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(title_label_,
+                                     TrayPopupUtils::FontStyle::kTitle);
+  }
+
   tri_view->AddView(TriView::Container::CENTER, title_label_);
   tri_view->SetContainerVisible(TriView::Container::END, false);
 
@@ -707,18 +739,24 @@ void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   if (title_label_) {
-    title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    if (!chromeos::features::IsJellyEnabled()) {
+      title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
   }
   if (sub_header_label_) {
-    sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    if (!chromeos::features::IsJellyEnabled()) {
+      sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
   }
   if (sub_header_image_view_) {
-    sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
-        *sub_header_icon_,
-        color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    if (!chromeos::features::IsJellyEnabled()) {
+      sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
+          *sub_header_icon_,
+          color_provider->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    }
   }
   if (title_separator_) {
     title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);

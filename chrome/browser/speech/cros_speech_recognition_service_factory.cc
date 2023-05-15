@@ -34,7 +34,12 @@ CrosSpeechRecognitionServiceFactory::CrosSpeechRecognitionServiceFactory()
           "SpeechRecognitionService",
           // Incognito profiles should use their own instance of the browser
           // context.
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {}
 
 CrosSpeechRecognitionServiceFactory::~CrosSpeechRecognitionServiceFactory() =
     default;

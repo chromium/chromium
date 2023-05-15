@@ -381,7 +381,9 @@ TEST_F(AnnotationTextManagerTest, ClickAnnotation) {
   NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
   CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
   ClickAnnotation(0);
-  EXPECT_EQ(observer()->clicks(), 1);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 1;
+  }));
 }
 
 }  // namespace web

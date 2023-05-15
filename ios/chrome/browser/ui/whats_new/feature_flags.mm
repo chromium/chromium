@@ -9,11 +9,11 @@
 #error "This file requires ARC support."
 #endif
 
-BASE_FEATURE(kWhatsNewIOS, "WhatsNewIOS", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWhatsNewIOS, "WhatsNewIOS", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kWhatsNewModuleBasedLayoutParam[] = "whats_new_module_based_layout";
 
 bool IsWhatsNewModuleBasedLayout() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kWhatsNewIOS, kWhatsNewModuleBasedLayoutParam, false);
+      kWhatsNewIOS, kWhatsNewModuleBasedLayoutParam, true);
 }

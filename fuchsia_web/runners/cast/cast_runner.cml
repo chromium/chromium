@@ -6,6 +6,7 @@
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
+    "trace/client.shard.cml",
     "vulkan/client.shard.cml",
   ],
   program: {
@@ -59,7 +60,6 @@
     },
     {
       // Capabilities used by the Runner itself.
-      // (Those also used by WebInstanceHost or WebEngine are commented out.)
       protocol: [
         "chromium.cast.ApplicationConfigManager",
         "chromium.cast.CorsExemptHeaderProvider",

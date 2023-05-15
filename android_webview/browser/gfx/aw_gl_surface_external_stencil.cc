@@ -5,12 +5,19 @@
 #include "android_webview/browser/gfx/aw_gl_surface_external_stencil.h"
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
+#include "base/feature_list.h"
 #include "base/strings/stringize_macros.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_helper.h"
 
 namespace android_webview {
+
+namespace {
+BASE_FEATURE(kWorkaroundMali450StenciLBug,
+             "WorkaroundMali450StenciLBug",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 class AwGLSurfaceExternalStencil::BlitContext {
  public:
@@ -189,22 +196,24 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     // a driver bug that causes rendering to break.
     glFlush();
 
-    // Restore stencil state.
-    glEnable(GL_STENCIL_TEST);
-    glStencilFuncSeparate(GL_FRONT, stencil_state.stencil_front_func,
-                          stencil_state.stencil_front_mask,
-                          stencil_state.stencil_front_ref);
-    glStencilFuncSeparate(GL_BACK, stencil_state.stencil_back_func,
-                          stencil_state.stencil_back_mask,
-                          stencil_state.stencil_back_ref);
-    glStencilMaskSeparate(GL_FRONT, stencil_state.stencil_front_writemask);
-    glStencilMaskSeparate(GL_BACK, stencil_state.stencil_back_writemask);
-    glStencilOpSeparate(GL_FRONT, stencil_state.stencil_front_fail_op,
-                        stencil_state.stencil_front_z_fail_op,
-                        stencil_state.stencil_front_z_pass_op);
-    glStencilOpSeparate(GL_BACK, stencil_state.stencil_back_fail_op,
-                        stencil_state.stencil_back_z_fail_op,
-                        stencil_state.stencil_back_z_pass_op);
+    if (!base::FeatureList::IsEnabled(kWorkaroundMali450StenciLBug)) {
+      // Restore stencil state.
+      glEnable(GL_STENCIL_TEST);
+      glStencilFuncSeparate(GL_FRONT, stencil_state.stencil_front_func,
+                            stencil_state.stencil_front_mask,
+                            stencil_state.stencil_front_ref);
+      glStencilFuncSeparate(GL_BACK, stencil_state.stencil_back_func,
+                            stencil_state.stencil_back_mask,
+                            stencil_state.stencil_back_ref);
+      glStencilMaskSeparate(GL_FRONT, stencil_state.stencil_front_writemask);
+      glStencilMaskSeparate(GL_BACK, stencil_state.stencil_back_writemask);
+      glStencilOpSeparate(GL_FRONT, stencil_state.stencil_front_fail_op,
+                          stencil_state.stencil_front_z_fail_op,
+                          stencil_state.stencil_front_z_pass_op);
+      glStencilOpSeparate(GL_BACK, stencil_state.stencil_back_fail_op,
+                          stencil_state.stencil_back_z_fail_op,
+                          stencil_state.stencil_back_z_pass_op);
+    }
 
     // Bind required context.
     blit_context_->Bind();
@@ -212,6 +221,25 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     // Bind real frame buffer.
     glBindFramebufferEXT(GL_FRAMEBUFFER,
                          AwGLSurface::GetBackingFramebufferObject());
+
+    if (base::FeatureList::IsEnabled(kWorkaroundMali450StenciLBug)) {
+      // Restore stencil state.
+      glEnable(GL_STENCIL_TEST);
+      glStencilFuncSeparate(GL_FRONT, stencil_state.stencil_front_func,
+                            stencil_state.stencil_front_ref,
+                            stencil_state.stencil_front_mask);
+      glStencilFuncSeparate(GL_BACK, stencil_state.stencil_back_func,
+                            stencil_state.stencil_back_ref,
+                            stencil_state.stencil_back_mask);
+      glStencilMaskSeparate(GL_FRONT, stencil_state.stencil_front_writemask);
+      glStencilMaskSeparate(GL_BACK, stencil_state.stencil_back_writemask);
+      glStencilOpSeparate(GL_FRONT, stencil_state.stencil_front_fail_op,
+                          stencil_state.stencil_front_z_fail_op,
+                          stencil_state.stencil_front_z_pass_op);
+      glStencilOpSeparate(GL_BACK, stencil_state.stencil_back_fail_op,
+                          stencil_state.stencil_back_z_fail_op,
+                          stencil_state.stencil_back_z_pass_op);
+    }
 
     // Scale clip rect to (0, 0)x(1, 1) space.
     gfx::QuadF quad = gfx::QuadF(gfx::RectF(clip_rect_));

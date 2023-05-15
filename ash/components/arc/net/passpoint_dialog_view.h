@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -43,7 +44,7 @@ class PasspointDialogView : public views::BoxLayoutView {
     }
 
    private:
-    PasspointDialogView* const view_;
+    const raw_ptr<PasspointDialogView, ExperimentalAsh> view_;
   };
 
   PasspointDialogView(mojom::PasspointApprovalRequestPtr request,
@@ -60,6 +61,7 @@ class PasspointDialogView : public views::BoxLayoutView {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void AddedToWidget() override;
 
  private:
   // Get width to be used by label. This is calculated by getting the dialog's
@@ -77,6 +79,7 @@ class PasspointDialogView : public views::BoxLayoutView {
   void OnLearnMoreClicked();
   void OnButtonClicked(bool allow);
 
+  std::u16string app_name_;
   PasspointDialogCallback callback_;
 
   // Added for testing.

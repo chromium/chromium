@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -28,6 +29,7 @@ class IdentityManager;
 
 namespace ash {
 
+class GlanceablesClassroomClientImpl;
 class GlanceablesTasksClientImpl;
 
 // Browser context keyed service that owns implementations of interfaces from
@@ -66,13 +68,16 @@ class GlanceablesKeyedService : public KeyedService {
   void UpdateRegistrationInAsh() const;
 
   // The profile for which this keyed service was created.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Identity manager associated with `profile_`.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;
+
+  // Instance of the `GlanceablesClassroomClient` interface implementation.
+  std::unique_ptr<GlanceablesClassroomClientImpl> classroom_client_;
 
   // Instance of the `GlanceablesTasksClient` interface implementation.
   std::unique_ptr<GlanceablesTasksClientImpl> tasks_client_;

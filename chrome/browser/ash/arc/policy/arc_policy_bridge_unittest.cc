@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -349,9 +350,9 @@ class ArcPolicyBridgeTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<ArcBridgeService> bridge_service_;
-  CertStoreService* cert_store_service_;  // Not owned.
+  raw_ptr<CertStoreService, ExperimentalAsh> cert_store_service_;  // Not owned.
 
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;
@@ -436,32 +437,6 @@ TEST_F(ArcPolicyBridgeTest, ArcPolicyTest) {
       "{\"apkCacheEnabled\":true,"
       "\"applications\":"
       "[{\"installType\":\"REQUIRED\","
-      "\"lockTaskAllowed\":false,"
-      "\"packageName\":\"com.google.android.apps.youtube.kids\","
-      "\"permissionGrants\":[]"
-      "}],"
-      "\"defaultPermissionPolicy\":\"GRANT\","
-      "\"guid\":\"" +
-      instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
-}
-
-TEST_F(ArcPolicyBridgeTest, InstallTypeOptionalMigrationTest) {
-  policy_map().Set(
-      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      base::Value("{\"applications\":"
-                  "[{\"packageName\":\"com.google.android.apps.youtube.kids\","
-                  "\"installType\":\"OPTIONAL\","
-                  "\"lockTaskAllowed\":false,"
-                  "\"permissionGrants\":[]"
-                  "}],"
-                  "\"defaultPermissionPolicy\":\"GRANT\""
-                  "}"),
-      nullptr);
-  GetPoliciesAndVerifyResult(
-      "{\"apkCacheEnabled\":true,"
-      "\"applications\":"
-      "[{\"installType\":\"AVAILABLE\","
       "\"lockTaskAllowed\":false,"
       "\"packageName\":\"com.google.android.apps.youtube.kids\","
       "\"permissionGrants\":[]"

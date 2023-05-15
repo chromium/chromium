@@ -87,6 +87,10 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
   if (!container_)
     return;
 
+  if (!layout_object_) {
+    return;
+  }
+
   if (layout_object_->IsDescendantOf(&layout_object)) {
     // `<span contenteditable>...</span>` reaches here.
     return Clear();

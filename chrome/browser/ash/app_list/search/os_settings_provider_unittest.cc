@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
@@ -125,9 +126,10 @@ class MockSearchHandler : public ash::settings::SearchHandler {
     results_ = std::move(results);
   }
 
-  ash::settings::SearchTagRegistry* search_tag_registry_;
-  ash::settings::OsSettingsSections* sections_;
-  ash::settings::Hierarchy* hierarchy_;
+  raw_ptr<ash::settings::SearchTagRegistry, ExperimentalAsh>
+      search_tag_registry_;
+  raw_ptr<ash::settings::OsSettingsSections, ExperimentalAsh> sections_;
+  raw_ptr<ash::settings::Hierarchy, ExperimentalAsh> hierarchy_;
   std::vector<SettingsResultPtr> results_;
 };
 
@@ -219,8 +221,8 @@ class OsSettingsProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  apps::AppServiceProxy* proxy_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
   std::unique_ptr<OsSettingsProvider> provider_;
 };
 

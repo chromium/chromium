@@ -31,6 +31,10 @@ using ::testing::Invoke;
 
 namespace media {
 
+MATCHER_P(ExpectEncoderStatusCode, expected_code, "encoder status code") {
+  return arg.code() == expected_code;
+}
+
 static const gfx::Size kInputVisibleSize(64, 48);
 
 // Mock implementation of the Mojo "service" side of the VEA dialogue. Upon an
@@ -147,7 +151,7 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
                void(unsigned int, const gfx::Size&, size_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
-  MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
+  MOCK_METHOD1(NotifyErrorStatus, void(const media::EncoderStatus&));
   MOCK_METHOD1(NotifyEncoderInfoChange, void(const media::VideoEncoderInfo&));
 };
 
@@ -364,9 +368,9 @@ TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnectAfterInitialize) {
   EXPECT_TRUE(mojo_vea()->Initialize(config, mock_vea_client.get(),
                                      std::make_unique<media::NullMediaLog>()));
   mojo_vea_receiver_->Close();
-  EXPECT_CALL(
-      *mock_vea_client,
-      NotifyError(VideoEncodeAccelerator::Error::kPlatformFailureError));
+  EXPECT_CALL(*mock_vea_client,
+              NotifyErrorStatus(ExpectEncoderStatusCode(
+                  EncoderStatus::Codes::kEncoderMojoConnectionError)));
   base::RunLoop().RunUntilIdle();
 }
 

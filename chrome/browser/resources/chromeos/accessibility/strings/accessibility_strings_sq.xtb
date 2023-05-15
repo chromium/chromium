@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="100506692671054486">asnjë komandë e mëparshme</translation>
 <translation id="1009046985747440431">Shtyp shigjetën lart ose poshtë për të naviguar; shtyp "Enter" për ta aktivizuar</translation>
 <translation id="1011903154582639569">Gjej një tast, pastaj ngrije për të shkruar</translation>
 <translation id="1012173283529841972">Artikull liste</translation>
@@ -459,6 +460,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3936394396199829062">Skuqje vjollcë</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3962990492275676168">Nis leximin nga vendndodhja aktuale</translation>
+<translation id="397094149579293440">nuk është zgjedhur asnjë tekst</translation>
 <translation id="3970951409746498040">Kafe ranore</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mokasinë</translation>
@@ -565,6 +567,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4786285211967466855">Nuk ka titull të mëparshëm të nivelit 1</translation>
 <translation id="4787577491510559358">Njofto për formatimin për artikullin aktual</translation>
 <translation id="479989351350248267">kërko</translation>
+<translation id="4802034228771424756">asnjë fushë teksti nuk është e fokusuar</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="481165870889056555">Njofto për titullin e faqes aktuale</translation>
 <translation id="4815668758102003883">Gurkali e zbehtë</translation>
@@ -587,13 +590,16 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="489907760999452556">Lidhje e brendshme</translation>
 <translation id="4909019435900810068">Lëviz prapa një fjalë</translation>
 <translation id="4911349081560453449">Nuk ka një kuti kontrolli të mëparshme</translation>
+<translation id="4919186071145887492">Komanda "<ph name="COMMAND" />" nuk mund të kryhet, provo përsëri</translation>
 <translation id="492295894462528572">Parathënie</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953585991029886728">Redakto tekstin</translation>
+<translation id="4964701498510730546">fusha e tekstit është bosh</translation>
 <translation id="4973717656530883744">Minimumi <ph name="X" /></translation>
 <translation id="4974612477719259470">Nuk ka buton të mëparshëm</translation>
 <translation id="4979404613699303341">Butoni i mëparshëm</translation>
+<translation id="4981239367072766915">hyrje e panjohur</translation>
 <translation id="4982917827052020884">Le të nisim me disa taste që ti i përdor rregullisht. Tasti Control mund të përdoret për të ndaluar çdo ligjërim aktual. Gjej tastin Control në këndin e poshtëm majtas të tastierës sate. Për të vazhduar, shtyp tastin Control.</translation>
 <translation id="4983588134362688868">Kalo në krye të faqes</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, dritarja</translation>
@@ -601,6 +607,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4994420463726586413">Njofto për statusin aktual të baterisë</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, butoni i radios i zgjedhur</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, butoni i radios i artikullit të menysë është i zgjedhur</translation>
+<translation id="5014131807708055994">Komanda "<ph name="COMMAND" />" nuk mund të kryhet, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Aktivizo regjistrimin e ligjërimit</translation>
 <translation id="5041394372352067729">Zhvendos afishimin Braille në krye të faqes</translation>
 <translation id="5042770794184672516">Rrit volumin e ligjërimit</translation>

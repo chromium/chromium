@@ -151,7 +151,6 @@ var objectsToTest = [
 
     [ "new XPathEvaluator()" ], // XPathEvaluator
     [ "new XPathEvaluator().evaluate('/', document, null, 0, null)" ], // XPathResult
-    [ "document.createNSResolver(document)" ], // XPathNSResolver
     [ "document.createExpression('/', document.createNSResolver(document))" ] // XPathExpression
 
     // should not cache: NodeIterator, NodeFilter, TreeWalker, XMLHttpRequest

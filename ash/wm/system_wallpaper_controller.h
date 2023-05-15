@@ -6,9 +6,8 @@
 #define ASH_WM_SYSTEM_WALLPAPER_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
-#include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 
@@ -34,18 +33,14 @@ class SystemWallpaperController : public aura::WindowObserver {
 
   ~SystemWallpaperController() override;
 
-  void SetColor(SkColor color);
-
-  // aura::WindowObserver overrides:
+  // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* root,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
 
  private:
-  class HostContentLayerDelegate;
-
-  aura::Window* root_window_;  // not owned
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;  // not owned
 
   std::unique_ptr<ui::Layer> layer_;
 };

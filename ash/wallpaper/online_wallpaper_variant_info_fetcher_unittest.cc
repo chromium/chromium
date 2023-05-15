@@ -143,10 +143,9 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
 
   client_.AddCollection(kCollectionId, images);
 
-  WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
+  WallpaperInfo info(kLightUrl, WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kOnline, base::Time::Now());
   info.collection_id = kCollectionId;
-  info.asset_id = kLightAssetId;
   const std::map<ScheduleCheckpoint, std::string> expected_mapping = {
       {ScheduleCheckpoint::kSunrise, kLightUrl},
       {ScheduleCheckpoint::kMorning, kLightUrl},
@@ -221,10 +220,9 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
 
   client_.AddCollection(kCollectionId, images);
 
-  WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
+  WallpaperInfo info(kLightUrl, WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kOnline, base::Time::Now());
   info.collection_id = kCollectionId;
-  info.asset_id = kLightAssetId;
   const std::map<ScheduleCheckpoint, std::string> expected_mapping = {
       {ScheduleCheckpoint::kSunrise, kLightUrl},
       {ScheduleCheckpoint::kMorning, kMorningUrl},
@@ -253,11 +251,10 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest, FetchOnlineWallpaper_NoDarkMode) {
   client_.AddCollection(kCollectionId, images);
 
   base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
-  WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
+  WallpaperInfo info(images[0].image_url(),
+                     WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kOnline, base::Time::Now());
   info.collection_id = kCollectionId;
-  // Pick an arbiratry asset in the set.
-  info.asset_id = images.front().asset_id();
 
   // Initial request will pass because variants are not populated in |info|.
   // Requesting dark mode when there are only light assets.

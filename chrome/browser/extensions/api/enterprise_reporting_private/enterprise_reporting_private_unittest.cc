@@ -986,7 +986,7 @@ class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
  public:
   EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest() {
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("fake-token"));
+        policy::DMToken::CreateValidToken("fake-token"));
   }
 
   bool url_check_enabled() const { return GetParam(); }
@@ -1108,8 +1108,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   params.Append(enqueue_record_request.ToValue());
 
   // Set up DM token
-  const auto dm_token =
-      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue);
+  const auto dm_token = policy::DMToken::CreateValidToken(kTestDMTokenValue);
   policy::SetDMTokenForTesting(dm_token);
 
   api_test_utils::RunFunction(
@@ -1152,7 +1151,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+      policy::DMToken::CreateValidToken(kTestDMTokenValue));
 
   api_test_utils::RunFunction(
       function_.get(), std::move(params),
@@ -1183,7 +1182,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+      policy::DMToken::CreateValidToken(kTestDMTokenValue));
 
   api_test_utils::RunFunction(
       function_.get(), std::move(params),
@@ -1211,7 +1210,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   params.Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
-  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
+  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
 
   api_test_utils::RunFunction(
       function_.get(), std::move(params),
@@ -1247,7 +1246,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+      policy::DMToken::CreateValidToken(kTestDMTokenValue));
 
   api_test_utils::RunFunction(
       function_.get(), std::move(params),

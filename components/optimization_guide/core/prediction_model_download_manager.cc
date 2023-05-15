@@ -118,7 +118,7 @@ void PredictionModelDownloadManager::StartDownload(
   download::DownloadParams download_params;
   download_params.client =
       download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
-  download_params.guid = base::GenerateUuid();
+  download_params.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   download_params.custom_data[kPredictionModelOptimizationTargetCustomDataKey] =
       proto::OptimizationTarget_Name(optimization_target);
   download_params.callback =

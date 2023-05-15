@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -181,7 +182,9 @@ void BufferingBytesConsumer::OnTimerFired(TimerBase*) {
 }
 
 void BufferingBytesConsumer::OnStateChange() {
+  base::debug::Alias(&client_);
   BytesConsumer::Client* client = client_;
+  base::debug::Alias(&client);
   BufferData();
   if (client)
     client->OnStateChange();

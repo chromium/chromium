@@ -10,8 +10,6 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -43,11 +41,6 @@ using testing::AtLeast;
 
 namespace gpu {
 namespace {
-
-bool IsGLSupported(viz::SharedImageFormat format) {
-  return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-         format != viz::SinglePlaneFormat::kBGR_565;
-}
 
 class MockProgressReporter : public gl::ProgressReporter {
  public:
@@ -158,8 +151,7 @@ using GLTextureImageBackingFactoryWithReadbackTest =
     GLTextureImageBackingFactoryWithUploadTest;
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::ResourceFormat::YUV_420_BIPLANAR);
+  auto format = viz::LegacyMultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -210,11 +202,10 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
                            use_passthrough(), gles2::DisallowedFeatures());
   const gles2::Validators* validators = feature_info->validators();
 
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = viz::SharedImageFormat::SinglePlane(
-        static_cast<viz::ResourceFormat>(i));
-    if (!IsGLSupported(format) || format.IsCompressed())
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
       continue;
+    }
     int storage_format = TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);
 

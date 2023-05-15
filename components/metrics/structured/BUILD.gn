@@ -16,8 +16,14 @@ static_library("structured") {
     "key_data.h",
     "persistent_proto.cc",
     "persistent_proto.h",
+    "reporting/structured_metrics_reporting_service.cc",
+    "reporting/structured_metrics_reporting_service.h",
+    "structured_metrics_prefs.cc",
+    "structured_metrics_prefs.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
+    "structured_metrics_recorder.cc",
+    "structured_metrics_recorder.h",
   ]
 
   public_deps = [
@@ -232,6 +238,7 @@ source_set("unit_tests") {
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
+    "structured_metrics_recorder_unittest.cc",
   ]
 
   deps = [

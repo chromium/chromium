@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/suggestion_window_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include <string>
 
@@ -84,7 +85,7 @@ class SuggestionWindowViewTest
                : absl::make_optional(std::distance(children.cbegin(), it));
   }
 
-  SuggestionWindowView* suggestion_window_view_;
+  raw_ptr<SuggestionWindowView, ExperimentalAsh> suggestion_window_view_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   std::vector<std::u16string> candidates_;

@@ -177,6 +177,8 @@ component("fido") {
       "hid/fido_hid_packet.h",
       "large_blob.cc",
       "large_blob.h",
+      "mac/icloud_keychain.h",
+      "mac/icloud_keychain_sys.h",
       "make_credential_request_handler.cc",
       "make_credential_request_handler.h",
       "make_credential_task.cc",
@@ -228,6 +230,8 @@ component("fido") {
       "mac/discovery.h",
       "mac/get_assertion_operation.h",
       "mac/get_assertion_operation.mm",
+      "mac/icloud_keychain.mm",
+      "mac/icloud_keychain_sys.mm",
       "mac/keychain.h",
       "mac/keychain.mm",
       "mac/make_credential_operation.h",
@@ -243,7 +247,10 @@ component("fido") {
       "Foundation.framework",
       "LocalAuthentication.framework",
       "Security.framework",
+      "AuthenticationServices.framework",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -452,5 +459,7 @@ source_set("test_support") {
       "mac/scoped_touch_id_test_environment.h",
       "mac/scoped_touch_id_test_environment.mm",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }

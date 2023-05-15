@@ -761,11 +761,8 @@ NGBreakStatus BreakBeforeChildIfNeeded(
         CalculateBreakBetweenValue(child, layout_result, *builder);
     if (IsForcedBreakValue(space, break_between)) {
       BreakBeforeChild(space, child, &layout_result, fragmentainer_block_offset,
-                       kBreakAppealPerfect, /* is_forced_break */ true, builder,
-                       /* block_size_override */ absl::nullopt,
-                       flex_column_break_info
-                           ? &flex_column_break_info->break_after
-                           : nullptr);
+                       kBreakAppealPerfect, /* is_forced_break */ true,
+                       builder);
       return NGBreakStatus::kBrokeBefore;
     }
   }
@@ -799,8 +796,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
                       absl::optional<NGBreakAppeal> appeal,
                       bool is_forced_break,
                       NGBoxFragmentBuilder* builder,
-                      absl::optional<LayoutUnit> block_size_override,
-                      EBreakBetween* flex_column_break_after) {
+                      absl::optional<LayoutUnit> block_size_override) {
 #if DCHECK_IS_ON()
   DCHECK(layout_result || block_size_override);
   if (layout_result && layout_result->Status() == NGLayoutResult::kSuccess) {
@@ -822,7 +818,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
 
   if (layout_result && space.ShouldPropagateChildBreakValues() &&
       !is_forced_break)
-    builder->PropagateChildBreakValues(*layout_result, flex_column_break_after);
+    builder->PropagateChildBreakValues(*layout_result);
 
   // We'll drop the fragment (if any) on the floor and retry at the start of the
   // next fragmentainer.
@@ -1158,10 +1154,9 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
   // Break before the child. Note that there may be a better break further up
   // with higher appeal (but it's too early to tell), in which case this
   // breakpoint will be replaced.
-  BreakBeforeChild(
-      space, child, layout_result, fragmentainer_block_offset, appeal_before,
-      /* is_forced_break */ false, builder, block_size_override,
-      flex_column_break_info ? &flex_column_break_info->break_after : nullptr);
+  BreakBeforeChild(space, child, layout_result, fragmentainer_block_offset,
+                   appeal_before,
+                   /* is_forced_break */ false, builder, block_size_override);
   return true;
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_manager_client.h"
@@ -82,7 +83,7 @@ class HermesManagerClientImpl : public HermesManagerClient {
     }
   }
 
-  dbus::ObjectProxy* object_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> object_proxy_;
   std::unique_ptr<Properties> properties_;
   base::WeakPtrFactory<HermesManagerClientImpl> weak_ptr_factory_{this};
 };

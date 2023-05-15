@@ -2,6 +2,16 @@
   wallpaper-grid-item[data-is-time-of-day-wallpaper] {
     --personalization-app-grid-item-border-radius: 40px;
   }
+  wallpaper-grid-item[data-is-time-of-day-wallpaper]::part(border) {
+    border: unset;
+  }
+  wallpaper-grid-item[data-is-time-of-day-wallpaper]::part(item) {
+    overflow: unset;
+  }
+  wallpaper-grid-item[data-is-time-of-day-wallpaper]::part(icon) {
+    left: 3px;
+    top: 3px;
+  }
 </style>
 <main id="main" tabindex="-1"
     aria-label$="[[getMainAriaLabel_(collectionId, collections_)]]">

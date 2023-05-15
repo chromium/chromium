@@ -5,20 +5,10 @@
 source_set("application_context") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context.h",
-    "application_context.mm",
-  ]
-  deps = [ "//base" ]
-}
-
-source_set("application_context_impl") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
     "application_context_impl.h",
     "application_context_impl.mm",
   ]
   deps = [
-    ":application_context",
     "//base",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:feature_flags",
@@ -39,7 +29,6 @@ source_set("application_context_impl") {
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browser_state:ios_thread",
     "//ios/chrome/browser/component_updater",
     "//ios/chrome/browser/crash_report/breadcrumbs",
@@ -54,6 +43,8 @@ source_set("application_context_impl") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/update_client",
     "//ios/chrome/common",
     "//ios/components/security_interstitials/safe_browsing",

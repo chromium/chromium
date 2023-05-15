@@ -27,12 +27,12 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
-#include "chrome/browser/ash/login/ui/login_display.h"
-#include "chrome/browser/ash/login/ui/login_display_mojo.h"
 #include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -45,14 +45,20 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -166,6 +172,34 @@ void ShowOwnerPod(const AccountId& owner) {
                                                        /*enabled=*/false);
 }
 
+void UpdatePinAuthAvailability(const AccountId& account_id) {
+  quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
+      // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
+      // true if there's a set up PIN, even if the quick unlock policy disables
+      // it. And if PIN is pref-based it always returns false regardless of the
+      // policy because pref-based PIN doesn't have capability to decrypt the
+      // user's cryptohome. So just pass an arbitrary purpose here.
+      account_id, quick_unlock::Purpose::kAny,
+      base::BindOnce(
+          [](const AccountId& account_id, bool can_authenticate) {
+            if (!LoginScreen::Get() || !LoginScreen::Get()->GetModel()) {
+              return;
+            }
+            LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+                account_id, can_authenticate);
+          },
+          account_id));
+}
+
+void UpdateChallengeResponseAuthAvailability(const AccountId& account_id) {
+  const bool enable_challenge_response =
+      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
+  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
+      account_id, enable_challenge_response);
+}
+
+LoginDisplayHostMojo* g_login_display_host_mojo = nullptr;
+
 }  // namespace
 
 LoginDisplayHostMojo::AuthState::AuthState(
@@ -176,11 +210,12 @@ LoginDisplayHostMojo::AuthState::AuthState(
 LoginDisplayHostMojo::AuthState::~AuthState() = default;
 
 LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
-    : login_display_(std::make_unique<LoginDisplayMojo>(this)),
-      user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
+    : user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
       user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
+  CHECK(!g_login_display_host_mojo);
+  g_login_display_host_mojo = this;
   user_selection_screen_->SetView(user_board_view_mojo_.get());
 
   allow_new_user_subscription_ = CrosSettings::Get()->AddSettingsObserver(
@@ -197,6 +232,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
 }
 
 LoginDisplayHostMojo::~LoginDisplayHostMojo() {
+  g_login_display_host_mojo = nullptr;
   scoped_activity_observation_.Reset();
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
   if (!dialog_) {
@@ -210,6 +246,11 @@ LoginDisplayHostMojo::~LoginDisplayHostMojo() {
   dialog_->Close();
 }
 
+// static
+LoginDisplayHostMojo* LoginDisplayHostMojo::Get() {
+  return g_login_display_host_mojo;
+}
+
 void LoginDisplayHostMojo::OnDialogDestroyed(
     const OobeUIDialogDelegate* dialog) {
   LOG(WARNING) << "OnDialogDestroyed";
@@ -220,9 +261,9 @@ void LoginDisplayHostMojo::OnDialogDestroyed(
   }
 }
 
-void LoginDisplayHostMojo::SetUserCount(int user_count) {
+void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   const bool was_zero_users = !has_user_pods_;
-  has_user_pods_ = user_count > 0;
+  has_user_pods_ = users.size() > 0;
 
   // Hide Gaia dialog in case empty list of users switched to a non-empty one.
   // And if the dialog shows login screen.
@@ -232,6 +273,74 @@ void LoginDisplayHostMojo::SetUserCount(int user_count) {
         WizardController::IsSigninScreen(
             wizard_controller_->current_screen()->screen_id())))) {
     HideOobeDialog();
+  }
+
+  UpdateAddUserButtonStatus();
+  auto* client = LoginScreenClientImpl::Get();
+
+  // SetUsers could be called multiple times. Init the Views-login UI only on
+  // the first call.
+  if (!initialized_) {
+    client->SetDelegate(this);
+    LoginScreen::Get()->ShowLoginScreen();
+  }
+  user_selection_screen_->Init(users);
+  LoginScreen::Get()->GetModel()->SetUserList(
+      user_selection_screen_->UpdateAndReturnUserListForAsh());
+  user_selection_screen_->SetUsersLoaded(true /*loaded*/);
+
+  if (user_manager::UserManager::IsInitialized()) {
+    // Enable pin and challenge-response authentication for any users who can
+    // use them.
+    for (const user_manager::User* user : users) {
+      if (!user->IsDeviceLocalAccount()) {
+        UpdatePinAuthAvailability(user->GetAccountId());
+        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      }
+    }
+  }
+
+  if (initialized_) {
+    return;
+  }
+  initialized_ = true;
+
+  // login-prompt-visible is a special signal sent by chrome to notify upstart
+  // utility and the rest of the platform that the chrome has successfully
+  // started and the system can proceed with initialization of other system
+  // services.
+  VLOG(1) << "Emitting login-prompt-visible";
+  SessionManagerClient::Get()->EmitLoginPromptVisible();
+
+  // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+  LOG(WARNING) << __func__ << " NotifyLoginOrLockScreenVisible";
+  session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
+
+  // If there no available users exist, delay showing the dialogs until after
+  // GAIA dialog is shown (GAIA dialog will check these local state values,
+  // too). Login UI will show GAIA dialog if no user are registered, which
+  // might hide any UI shown here.
+  if (users.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/1105387): Part of initial screen logic.
+  // Check whether factory reset or debugging feature have been requested in
+  // prior session, and start reset or enable debugging wizard as needed.
+  // This has to happen after login-prompt-visible, as some reset dialog
+  // features (TPM firmware update) depend on system services running, which
+  // is in turn blocked on the 'login-prompt-visible' signal.
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state->GetBoolean(::prefs::kFactoryResetRequested)) {
+    StartWizard(ResetView::kScreenId);
+  } else if (local_state->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
+    StartWizard(EnableDebuggingScreenView::kScreenId);
+  } else if (local_state->GetBoolean(::prefs::kEnableAdbSideloadingRequested)) {
+    StartWizard(EnableAdbSideloadingScreenView::kScreenId);
+  } else if (!KioskAppManager::Get()->GetAutoLaunchApp().empty() &&
+             KioskAppManager::Get()->IsAutoLaunchRequested()) {
+    VLOG(0) << "Showing auto-launch warning";
+    StartWizard(KioskAutolaunchScreenView::kScreenId);
   }
 }
 
@@ -264,10 +373,6 @@ void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
   } else {
     dialog_->SetShouldDisplayCaptivePortal(true);
   }
-}
-
-LoginDisplay* LoginDisplayHostMojo::GetLoginDisplay() {
-  return login_display_.get();
 }
 
 ExistingUserController* LoginDisplayHostMojo::GetExistingUserController() {
@@ -305,7 +410,6 @@ content::WebContents* LoginDisplayHostMojo::GetOobeWebContents() const {
 }
 
 WebUILoginView* LoginDisplayHostMojo::GetWebUILoginView() const {
-  NOTREACHED();
   return nullptr;
 }
 
@@ -692,7 +796,7 @@ void LoginDisplayHostMojo::OnAuthFailure(const AuthFailure& error) {
   // is not initiated from mojo, ie, if LoginDisplay::Delegate::Login() is
   // called directly.
   if (pending_auth_state_) {
-    login_display_->UpdatePinKeyboardState(pending_auth_state_->account_id);
+    UpdatePinAuthAvailability(pending_auth_state_->account_id);
     GetLoginScreenCertProviderService()
         ->AbortSignatureRequestsForAuthenticatingUser(
             pending_auth_state_->account_id);

@@ -8,13 +8,16 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
@@ -48,17 +51,26 @@ class HeaderView : public views::Label {
  public:
   HeaderView() {
     SetText(l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_TITLE));
-    SetLineHeight(kHeaderLabelLineHeight);
-    SetFontList(font_list()
-                    .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
-                                         font_list().GetFontSize())
-                    .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
     SetAutoColorReadabilityEnabled(false);
     SetSubpixelRenderingEnabled(false);
     SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                            *this);
+    } else {
+      SetFontList(font_list()
+                      .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
+                                           font_list().GetFontSize())
+                      .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    }
+
+    // Overriding because the typography line height set does not match Phone
+    // Hub specs.
+    SetLineHeight(kHeaderLabelLineHeight);
   }
 
   ~HeaderView() override = default;

@@ -25,13 +25,13 @@ class LocalDeviceDataProvider {
   // Updates the persisted shared credential ids saved to prefs.
   virtual void UpdatePersistedSharedCredentials(
       const std::vector<::nearby::internal::SharedCredential>&
-          shared_credentials) = 0;
+          new_shared_credentials) = 0;
 
   // Returns true if the shared credentials for the local device have
   // changed.
   virtual bool HaveSharedCredentialsChanged(
       const std::vector<::nearby::internal::SharedCredential>&
-          shared_credentials) = 0;
+          new_shared_credentials) = 0;
 
   // Returns the unique device identifier if it exists. If not,generates a
   // unique device identifier, persists to prefs, and returns it.
@@ -47,6 +47,10 @@ class LocalDeviceDataProvider {
   // to Prefs to be accessed during Metadata construction
   virtual void SaveUserRegistrationInfo(const std::string& display_name,
                                         const std::string& image_url) = 0;
+
+  // Checks if the first time registration information returned from the
+  // server is persisted to prefs.
+  virtual bool IsUserRegistrationInfoSaved() = 0;
 };
 
 }  // namespace ash::nearby::presence

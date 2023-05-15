@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -645,9 +644,8 @@ std::string SpdyTestUtil::ConstructSpdyReplyString(
     if (key[0] == ':')
       key = key.substr(1);
     for (const std::string& value :
-         base::SplitString(base::StringViewToStringPiece(it->second),
-                           base::StringPiece("\0", 1), base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_ALL)) {
+         base::SplitString(it->second, base::StringPiece("\0", 1),
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       reply_string += key + ": " + value + "\n";
     }
   }
@@ -955,7 +953,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     int stream_id,
     base::StringPiece data,
     bool fin) {
-  spdy::SpdyDataIR data_ir(stream_id, base::StringPieceToStringView(data));
+  spdy::SpdyDataIR data_ir(stream_id, data);
   data_ir.set_fin(fin);
   return spdy::SpdySerializedFrame(
       headerless_spdy_framer_.SerializeData(data_ir));
@@ -966,7 +964,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     base::StringPiece data,
     bool fin,
     int padding_length) {
-  spdy::SpdyDataIR data_ir(stream_id, base::StringPieceToStringView(data));
+  spdy::SpdyDataIR data_ir(stream_id, data);
   data_ir.set_fin(fin);
   data_ir.set_padding_len(padding_length);
   return spdy::SpdySerializedFrame(

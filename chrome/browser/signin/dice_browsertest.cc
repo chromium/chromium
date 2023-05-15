@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -57,6 +56,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -84,6 +84,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/base/signin_switches.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -718,8 +719,19 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+class DiceBrowserTestWithBoundSessionCredentialsEnabled
+    : public DiceBrowserTest {
+ public:
+  DiceBrowserTestWithBoundSessionCredentialsEnabled() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableBoundSessionCrendentials};
+};
+
 // Checks that signin on Gaia triggers the fetch for a refresh token.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SigninWithTokenBinding) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
+                       SigninWithTokenBinding) {
   crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
 
   // Navigate to Gaia and sign in.
@@ -1042,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
                                     signin::ConsentLevel::kSignin));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kSyncRequested));
+      syncer::prefs::internal::kSyncRequested));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -1143,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
                                     signin::ConsentLevel::kSignin));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kSyncRequested));
+      syncer::prefs::internal::kSyncRequested));
 
   // Wait until the sync confirmation webUI is created but not fully loaded
   // yet. The native dialog is not displayed yet since it waits until the webUI

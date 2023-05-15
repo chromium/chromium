@@ -96,7 +96,9 @@ const char* kNetworkListeningDurationMetric =
 const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
 const char* kOnDeviceSpeechMetric =
     "Accessibility.CrosDictation.UsedOnDeviceSpeech";
-const char* kPumpkinMetric = "Accessibility.CrosDictation.UsedPumpkin";
+const char* kPumpkinUsedMetric = "Accessibility.CrosDictation.UsedPumpkin";
+const char* kPumpkinSucceededMetric =
+    "Accessibility.CrosDictation.PumpkinSucceeded";
 const char* kMacroRecognizedMetric =
     "Accessibility.CrosDictation.MacroRecognized";
 const char* kMacroSucceededMetric =
@@ -466,28 +468,24 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   std::string GetEditableValue() {
-    std::string output;
     std::string script;
     switch (editable_type()) {
       case EditableType::kTextArea:
       case EditableType::kInput:
-        script =
-            "window.domAutomationController.send("
-            "document.getElementById('input').value)";
+        script = "document.getElementById('input').value";
         break;
       case EditableType::kContentEditable:
       case EditableType::kFormattedContentEditable:
         // Replace all non-breaking spaces with regular spaces. Otherwise,
         // string comparisons will unexpectedly fail.
         script =
-            "window.domAutomationController.send("
             "document.getElementById('input').innerText.replaceAll("
-            "'\u00a0', ' '));";
+            "'\u00a0', ' ');";
         break;
     }
-    CHECK(ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
-    return output;
+    return content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                           script)
+        .ExtractString();
   }
 
   void WaitForEditableValue(const std::string& value) {
@@ -1563,13 +1561,13 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter waiter(kPumpkinMetric);
+  HistogramWaiter waiter(kPumpkinUsedMetric);
   SendFinalResultAndWait("Undo");
   waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinUsedMetric,
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
 }
@@ -2023,13 +2021,18 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Repeat) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter waiter(kPumpkinMetric);
+  HistogramWaiter used_waiter(kPumpkinUsedMetric);
+  HistogramWaiter succeeded_waiter(kPumpkinSucceededMetric);
   SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
-  waiter.Wait();
+  used_waiter.Wait();
+  succeeded_waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinUsedMetric,
+                                       /*sample=*/true,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinSucceededMetric,
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
 }
@@ -2067,8 +2070,47 @@ class DictationContextCheckingTest : public DictationTest {
     DictationTest::TearDownOnMainThread();
   }
 
-  void WaitForVisibleIcon(DictationBubbleIconType icon) {
+  void WaitForProperties(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<std::u16string>>& hints) {
+    dictation_bubble_test_helper_->WaitForVisibility(visible);
     dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
+    if (text.has_value()) {
+      dictation_bubble_test_helper_->WaitForVisibleText(text.value());
+    }
+    if (hints.has_value()) {
+      dictation_bubble_test_helper_->WaitForVisibleHints(hints.value());
+    }
+  }
+
+  // Attempts to run `command` within an empty editable and waits for the UI to
+  // show the appropriate context-checking failure.
+  void RunEmptyEditableTest(const std::string& command) {
+    SendFinalResultAndWait(command);
+    std::u16string message =
+        u"Can't " + base::ASCIIToUTF16(command) + u", text field is empty";
+    WaitForProperties(
+        /*visible=*/true,
+        /*icon=*/DictationBubbleIconType::kMacroFail,
+        /*text=*/message,
+        /*hints=*/absl::optional<std::vector<std::u16string>>());
+  }
+
+  // Attempts to run `command` on an editable with no selection and waits for
+  // the UI to show the appropriate context-checking failure.
+  void RunNoSelectionTest(const std::string& command) {
+    SendFinalResultAndWaitForEditableValue("Hello world", "Hello world");
+    SendFinalResultAndWait(command);
+    std::u16string message =
+        u"Can't " + base::ASCIIToUTF16(command) + u", no selected text";
+    WaitForProperties(
+        /*visible=*/true,
+        /*icon=*/DictationBubbleIconType::kMacroFail,
+        /*text=*/message,
+        /*hints=*/absl::optional<std::vector<std::u16string>>());
+    SendFinalResultAndWaitForEditableValue("delete all", "");
   }
 
  private:
@@ -2094,16 +2136,109 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable)));
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectEmptyEditable) {
-  SendFinalResultAndWait("unselect");
-  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, EmptyEditable) {
+  std::vector<std::string> commands{
+      "unselect",
+      "cut",
+      "copy",
+      "delete one character",
+      "left one character",
+      "right one character",
+      "up one line",
+      "down one line",
+      "select all",
+      "delete one word",
+      "delete one sentence",
+      "right one word",
+      "left one word",
+      "delete the phrase hello",
+      "replace hello with world",
+      "insert hello before world",
+      "select between hello and world",
+      "left one sentence",
+      "right one sentence",
+      "delete all",
+      "to start",
+      "to end",
+      "select previous word",
+      "select next word",
+      "select previous letter",
+      "select next letter",
+  };
+
+  for (const auto& command : commands) {
+    RunEmptyEditableTest(command);
+  }
 }
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, NoSelection) {
+  std::vector<std::string> commands{
+      "unselect",
+      "cut",
+      "copy",
+  };
+
+  for (const auto& command : commands) {
+    RunNoSelectionTest(command);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
   std::string text = "Hello world";
   SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWait("unselect");
-  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForSelectionChanged("Unselect");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForClipboardChanged("Cut");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForClipboardChanged("Copy");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFail) {
+  SendFinalResultAndWait("repeat");
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kMacroFail,
+      /*text=*/u"Can't repeat, no previous command",
+      /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFailUnselect) {
+  RunEmptyEditableTest("unselect");
+  // Wait for UI to return to standby mode.
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  RunEmptyEditableTest("repeat");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatSuccessful) {
+  SendFinalResultAndWaitForEditableValue("Test", "Test");
+  SendFinalResultAndWaitForEditableValue("Repeat", "Test test");
+  SendFinalResultAndWaitForEditableValue("Repeat", "Test test test");
 }
 
 class NotificationCenterDictationTest : public DictationTest {

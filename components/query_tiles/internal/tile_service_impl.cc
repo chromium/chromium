@@ -94,7 +94,7 @@ void TileServiceImpl::OnFetchFinished(
     if (parse_success) {
       TileGroup group;
       TileGroupFromResponse(response_proto, &group);
-      group.id = base::GenerateUuid();
+      group.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
       group.last_updated_ts = clock_->Now();
       auto group_copy = std::make_unique<TileGroup>(group);
       tile_manager_->SaveTiles(

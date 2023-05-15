@@ -1032,54 +1032,6 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
             server_custom_dictionary->GetWords().size());
 }
 
-#if BUILDFLAG(IS_WIN)
-// Failing consistently on Win7+. See crbug.com/230534.
-#define MAYBE_RecordSizeStatsCorrectly DISABLED_RecordSizeStatsCorrectly
-#else
-#define MAYBE_RecordSizeStatsCorrectly RecordSizeStatsCorrectly
-#endif
-
-TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
-  // Record a baseline.
-  SpellCheckHostMetrics::RecordCustomWordCountStats(123);
-
-  HistogramBase* histogram =
-      StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != nullptr);
-  std::unique_ptr<HistogramSamples> baseline = histogram->SnapshotSamples();
-
-  // Load the dictionary which should be empty.
-  base::FilePath path =
-      profile_.GetPath().Append(chrome::kCustomDictionaryFileName);
-  EXPECT_TRUE(LoadDictionaryFile(path)->words.empty());
-
-  // We expect there to be an entry with 0.
-  histogram =
-      StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != nullptr);
-  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
-
-  samples->Subtract(*baseline);
-  EXPECT_EQ(0,samples->sum());
-
-  std::unique_ptr<SpellcheckCustomDictionary::Change> change(
-      new SpellcheckCustomDictionary::Change);
-  change->AddWord("bar");
-  change->AddWord("foo");
-  UpdateDictionaryFile(std::move(change), path);
-
-  // Load the dictionary again and it should have 2 entries.
-  EXPECT_EQ(2u, LoadDictionaryFile(path)->words.size());
-
-  histogram =
-      StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != nullptr);
-  std::unique_ptr<HistogramSamples> samples2 = histogram->SnapshotSamples();
-
-  samples2->Subtract(*baseline);
-  EXPECT_EQ(2,samples2->sum());
-}
-
 TEST_F(SpellcheckCustomDictionaryTest, HasWord) {
   SpellcheckService* spellcheck_service =
       SpellcheckServiceFactory::GetForContext(&profile_);

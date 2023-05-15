@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -72,7 +73,8 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     explicit SimpleThreadImpl(const WTF::String& name_prefix,
                               const base::SimpleThread::Options& options,
                               bool supports_gc,
-                              NonMainThreadImpl* worker_thread);
+                              NonMainThreadImpl* worker_thread,
+                              base::MessagePumpType message_pump_type);
 
     // Creates the thread's scheduler. Must be invoked before starting the
     // thread or accessing the default TaskRunner.
@@ -103,6 +105,8 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
 
    private:
     void Run() override;
+
+    const base::MessagePumpType message_pump_type_;
 
     // Internal queue not exposed externally nor to the scheduler used for
     // internal operations such as posting the task that will stop the run

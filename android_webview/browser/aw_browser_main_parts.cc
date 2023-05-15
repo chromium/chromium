@@ -41,6 +41,7 @@
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
@@ -132,6 +133,7 @@ int AwBrowserMainParts::PreCreateThreads() {
 
   crash_reporter::InitializeCrashKeys();
   variations::InitCrashKeys();
+  CHECK(metrics::SubprocessMetricsProvider::CreateInstance());
 
   RegisterSyntheticTrials();
 
@@ -173,6 +175,14 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
       AwWebUIControllerFactory::GetInstance());
   content::RenderFrameHost::AllowInjectingJavaScript();
   metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
+
+  // Requesting the |OriginTrialsControllerDelegate| will initialize
+  // it if the feature is enabled.
+  //
+  // This should be done as soon as possible in the start-up process, in order
+  // to load the database from disk.
+  AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
+
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -181,28 +191,12 @@ void AwBrowserMainParts::WillRunMainMessageLoop(
   NOTREACHED();
 }
 
-namespace {
-
-void LoadOriginTrialsControllerDelegateOnUiThread() {
-  // Requesting the |OriginTrialsControllerDelegate| will initialize
-  // it if the feature is enabled.
-  //
-  // This should be done as soon as possible in the start-up process, in order
-  // to load the database from disk.
-  AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
-}
-
-}  // namespace
-
 void AwBrowserMainParts::PostCreateThreads() {
   heap_profiling::Mode mode = heap_profiling::GetModeForStartup();
   if (mode != heap_profiling::Mode::kNone)
     heap_profiling::Supervisor::GetInstance()->Start(base::NullCallback());
 
   MaybeSetupSystemTracing();
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&LoadOriginTrialsControllerDelegateOnUiThread));
 }
 
 }  // namespace android_webview

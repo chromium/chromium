@@ -224,13 +224,26 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
             ->GetPrimaryMainFrame()
             ->GetHidService(service_.BindNewPipeAndPassReceiver());
         break;
-      case kCreateUsingServiceWorkerContextCore:
+      case kCreateUsingServiceWorkerContextCore: {
+        auto scope = GURL(kTestUrl);
+        auto origin = url::Origin::Create(scope);
+        auto worker_url = scope.Resolve("worker.js");
         embedded_worker_test_helper_ =
             std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
-        HidService::Create(embedded_worker_test_helper_->context()->AsWeakPtr(),
-                           url::Origin::Create(GURL(kTestUrl)),
-                           service_.BindNewPipeAndPassReceiver());
+        EmbeddedWorkerTestHelper::RegistrationAndVersionPair pair =
+            embedded_worker_test_helper_->PrepareRegistrationAndVersion(
+                scope, worker_url);
+        worker_version_ = pair.second;
+        auto* embedded_worker = worker_version_->GetEmbeddedWorkerForTesting();
+        embedded_worker_test_helper_->StartWorker(
+            embedded_worker,
+            embedded_worker_test_helper_->CreateStartParams(pair.second));
+        EXPECT_CALL(hid_delegate(), IsServiceWorkerAllowedForOrigin(origin))
+            .WillOnce(Return(true));
+        embedded_worker->BindHidService(origin,
+                                        service_.BindNewPipeAndPassReceiver());
         break;
+      }
     }
     return service_;
   }
@@ -251,13 +264,14 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
     return nullptr;
   }
 
-  void CheckWebContentsHidServiceConnectedState(HidServiceCreationType type,
-                                                bool expected_state) {
-    // Skip the check when there is no web content.
-    if (type == kCreateUsingServiceWorkerContextCore) {
-      return;
+  void CheckHidServiceConnectedState(HidServiceCreationType type,
+                                     bool expected_state) {
+    if (type == kCreateUsingRenderFrameHost) {
+      ASSERT_EQ(web_contents_->IsConnectedToHidDevice(), expected_state);
+    } else if (type == kCreateUsingServiceWorkerContextCore) {
+      ASSERT_EQ(worker_version_->GetExternalRequestCountForTest(),
+                expected_state ? 1u : 0u);
     }
-    ASSERT_EQ(web_contents_->IsConnectedToHidDevice(), expected_state);
   }
 
  protected:
@@ -271,6 +285,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
 
   // For create hid service using service worker.
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_test_helper_;
+  scoped_refptr<content::ServiceWorkerVersion> worker_version_;
 };
 
 class HidServiceRenderFrameHostTest : public RenderViewHostImplTestHarness,
@@ -390,7 +405,7 @@ TEST_P(HidServiceTest, OpenAndCloseHidConnection) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -411,7 +426,7 @@ TEST_P(HidServiceTest, OpenAndCloseHidConnection) {
   run_loop.Run();
   EXPECT_TRUE(connection.is_connected());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
 
   base::RunLoop disconnect_run_loop;
   // Destroying |connection| will also disconnect the watcher.
@@ -422,7 +437,7 @@ TEST_P(HidServiceTest, OpenAndCloseHidConnection) {
   connection.reset();
 
   disconnect_run_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_P(HidServiceTest, OpenHidConnectionFail) {
@@ -437,7 +452,7 @@ TEST_P(HidServiceTest, OpenHidConnectionFail) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -458,7 +473,7 @@ TEST_P(HidServiceTest, OpenHidConnectionFail) {
   EXPECT_FALSE(pending_remote_future.Take());
 
   run_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
@@ -581,7 +596,7 @@ TEST_P(HidServiceTest, RevokeDevicePermission) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -602,7 +617,7 @@ TEST_P(HidServiceTest, RevokeDevicePermission) {
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&hid_delegate());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   base::RunLoop disconnect_loop;
@@ -620,7 +635,7 @@ TEST_P(HidServiceTest, RevokeDevicePermission) {
   testing::Mock::VerifyAndClearExpectations(&hid_delegate());
 
   disconnect_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
   EXPECT_FALSE(connection.is_connected());
 }
 
@@ -633,7 +648,7 @@ TEST_P(HidServiceTest, RevokeDevicePermissionWithoutConnection) {
   hid_delegate().OnPermissionRevoked(origin);
 
   base::RunLoop().RunUntilIdle();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_P(HidServiceTest, DeviceRemovedDisconnect) {
@@ -653,7 +668,7 @@ TEST_P(HidServiceTest, DeviceRemovedDisconnect) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -673,7 +688,7 @@ TEST_P(HidServiceTest, DeviceRemovedDisconnect) {
           }));
   run_loop.Run();
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   base::RunLoop disconnect_loop;
@@ -687,7 +702,7 @@ TEST_P(HidServiceTest, DeviceRemovedDisconnect) {
   DisconnectDevice(*device_info);
 
   disconnect_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
   EXPECT_FALSE(connection.is_connected());
 }
 
@@ -725,7 +740,7 @@ TEST_P(HidServiceTest, DeviceChangedDoesNotDisconnect) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -744,7 +759,7 @@ TEST_P(HidServiceTest, DeviceChangedDoesNotDisconnect) {
           }));
   run_loop.Run();
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   // Update the device info. Permissions are not affected.
@@ -755,7 +770,7 @@ TEST_P(HidServiceTest, DeviceChangedDoesNotDisconnect) {
   UpdateDevice(*updated_device_info);
 
   // Make sure the device is still connected.
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   base::RunLoop disconnect_loop;
@@ -770,7 +785,7 @@ TEST_P(HidServiceTest, DeviceChangedDoesNotDisconnect) {
   hid_delegate().OnPermissionRevoked(origin);
 
   disconnect_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
   EXPECT_FALSE(connection.is_connected());
 }
 
@@ -808,7 +823,7 @@ TEST_P(HidServiceTest, UnblockedDeviceChangedToBlockedDisconnects) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   base::RunLoop connect_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -827,7 +842,7 @@ TEST_P(HidServiceTest, UnblockedDeviceChangedToBlockedDisconnects) {
           }));
   connect_loop.Run();
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   // Update the device info. With the update, the device loses permission and
@@ -845,7 +860,7 @@ TEST_P(HidServiceTest, UnblockedDeviceChangedToBlockedDisconnects) {
   UpdateDevice(*updated_device_info);
   disconnect_loop.Run();
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
   EXPECT_FALSE(connection.is_connected());
 }
 
@@ -913,7 +928,7 @@ TEST_P(HidServiceTest, Forget) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
       future_connection;
@@ -925,7 +940,7 @@ TEST_P(HidServiceTest, Forget) {
   mojo::Remote<device::mojom::HidConnection> connection(
       future_connection.Take());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
   EXPECT_TRUE(connection.is_connected());
 
   base::RunLoop disconnect_loop;
@@ -946,7 +961,7 @@ TEST_P(HidServiceTest, Forget) {
   service->Forget(std::move(device_info), forget_callback.Get());
 
   disconnect_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
   EXPECT_FALSE(connection.is_connected());
 }
 
@@ -964,7 +979,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRemoveDevices) {
     ConnectDevice(*device_info);
     devices.push_back(std::move(device_info));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   std::vector<mojo::Remote<device::mojom::HidConnection>> connections;
   std::vector<FakeHidConnectionClient> connection_clients(num_devices);
@@ -975,7 +990,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRemoveDevices) {
     connections.push_back(OpenDevice(service, devices[device_idx],
                                      connection_clients[device_idx]));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
 
   base::RunLoop run_loop;
   auto barrier = base::BarrierClosure(num_devices, run_loop.QuitClosure());
@@ -986,7 +1001,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRemoveDevices) {
     DisconnectDevice(*device);
   }
   run_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
@@ -1003,7 +1018,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
     ConnectDevice(*device_info);
     devices.push_back(std::move(device_info));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   std::vector<mojo::Remote<device::mojom::HidConnection>> connections;
   std::vector<FakeHidConnectionClient> connection_clients(num_devices);
@@ -1014,7 +1029,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
     connections.push_back(OpenDevice(service, devices[device_idx],
                                      connection_clients[device_idx]));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
 
   // Simulate user revoking permission.
   EXPECT_CALL(hid_delegate(), HasDevicePermission)
@@ -1034,7 +1049,7 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
       .WillRepeatedly(RunClosure(barrier));
   hid_delegate().OnPermissionRevoked(origin);
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
@@ -1051,7 +1066,7 @@ TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
     ConnectDevice(*device_info);
     devices.push_back(std::move(device_info));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
   std::vector<mojo::Remote<device::mojom::HidConnection>> connections;
   std::vector<FakeHidConnectionClient> connection_clients(num_devices);
@@ -1062,7 +1077,7 @@ TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
     connections.push_back(OpenDevice(service, devices[device_idx],
                                      connection_clients[device_idx]));
   }
-  CheckWebContentsHidServiceConnectedState(service_creation_type, true);
+  CheckHidServiceConnectedState(service_creation_type, true);
 
   base::RunLoop run_loop;
   auto barrier = base::BarrierClosure(num_devices, run_loop.QuitClosure());
@@ -1071,7 +1086,7 @@ TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
       .WillRepeatedly(RunClosure(barrier));
   service.reset();
   run_loop.Run();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
@@ -1371,10 +1386,8 @@ TEST_P(HidServiceTest, ConnectionFailedWithoutPermission) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 
-  base::RunLoop run_loop;
-  mojo::Remote<device::mojom::HidConnection> connection;
   TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
       pending_remote_future;
   EXPECT_CALL(hid_delegate(), GetDeviceInfo)
@@ -1383,8 +1396,7 @@ TEST_P(HidServiceTest, ConnectionFailedWithoutPermission) {
   service->Connect(kTestGuid, std::move(hid_connection_client),
                    pending_remote_future.GetCallback());
   EXPECT_FALSE(pending_remote_future.Take());
-  run_loop.RunUntilIdle();
-  CheckWebContentsHidServiceConnectedState(service_creation_type, false);
+  CheckHidServiceConnectedState(service_creation_type, false);
 }
 
 }  // namespace content

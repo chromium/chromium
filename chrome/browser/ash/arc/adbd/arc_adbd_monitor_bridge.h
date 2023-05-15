@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/adbd.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -61,7 +62,8 @@ class ArcAdbdMonitorBridge
   void StopArcVmAdbdInternal(chromeos::VoidDBusMethodCallback,
                              bool adb_over_usb_enabled);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // For callbacks.
   base::WeakPtrFactory<ArcAdbdMonitorBridge> weak_factory_{this};

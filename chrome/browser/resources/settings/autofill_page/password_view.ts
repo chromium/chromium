@@ -9,10 +9,11 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../i18n_setup.js';
 // <if expr="is_chromeos">
-import '../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 // </if>
 import '../settings_shared.css.js';
 import './password_edit_dialog.js';

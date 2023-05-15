@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Snimanje je zaustavljeno zbog malo prostora za pohranu na uređaju. Da snimite više videozapisa, morate osloboditi prostor na uređaju.</translation>
 <translation id="2036868001356139588">Trajanje tajmera</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> je aktivna</translation>
-<translation id="2128052519899549250">Snimite ubrzani videozapis</translation>
 <translation id="2134029355740465625">Postavke videozapisa</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="2175927920773552910">QR kôd</translation>
@@ -54,7 +53,7 @@
 <translation id="3411958449466169012">Tajmer je isključen</translation>
 <translation id="3448774564454087943">Videozapis nije sačuvan jer je prekratak</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
-<translation id="3517926952904427380">Snimanje uspravne fotografije nije uspjelo</translation>
+<translation id="3517926952904427380">Snimanje portretne fotografije nije uspjelo</translation>
 <translation id="3566302376254083266">Pomjeranje prema gornjem lijevom uglu</translation>
 <translation id="3573890771273113519">Prebacivanje na način rada skeniranja</translation>
 <translation id="3583444040776960729">Donji lijevi ugao dokumenta</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Otkriven je dokument</translation>
 <translation id="414641094616694804">Nije moguće promijeniti rezoluciju ove kamere</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
-<translation id="4281620174117014503">Srednja rezolucija</translation>
 <translation id="428234092390943511">Sličica stranice</translation>
 <translation id="4383571725254449280">Zapisnici o radu štampača</translation>
 <translation id="4445542136948522167">Zaustavi fotografiranje</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Pomjeranje ulijevo</translation>
 <translation id="5374917190292010970">4K (2160 p)</translation>
-<translation id="5577251651370645658">Ubrzani videozapis</translation>
 <translation id="5662366948659129155">Skeniranje <ph name="COUNT" />. stranice</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="574392208103952083">Srednje</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući način rada za stručnjake</translation>
 <translation id="5759254179196327752">Skeniranje dokumenta</translation>
@@ -122,7 +120,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="6888362557094394345">Pomjeranje nadolje</translation>
 <translation id="695140971690006676">Vrati sve na zadano</translation>
 <translation id="6965382102122355670">Uredu</translation>
-<translation id="6965830616442491568">Uspravno</translation>
+<translation id="6965830616442491568">Portret</translation>
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="7134221860976209830">Tajmer za 10 sekundi</translation>
 <translation id="7191890674911603392">Vrsta snimanja</translation>
@@ -138,6 +136,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7670511624014457267">60 fps</translation>
 <translation id="7671804233658741790">Donji desni ugao dokumenta</translation>
+<translation id="7684446460490665873">Snimite ubrzani videozapis</translation>
 <translation id="7692090236657809299">Omogućite pomicanje naginjanje zumiranje</translation>
 <translation id="7726641833034062494">Snimi normalan videozapis</translation>
 <translation id="7748344063862150053">Gornji desni ugao dokumenta</translation>
@@ -155,7 +154,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8711011893539266636">Uključite/isključite mikrofon. Mikrofon je isključen</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
-<translation id="8815966864175525708">Prebacite da snimite fotografiju profila</translation>
+<translation id="8815966864175525708">Prebacite da snimite portretnu fotografiju</translation>
 <translation id="8828441885228359828">Nastavi snimanje</translation>
 <translation id="8870695351537079478">Nije moguće pokrenuti snimanje</translation>
 <translation id="8880167521484863515">4 naprema 3</translation>
@@ -163,6 +162,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="9045010116236796332">Postavite sve ivice dokumenta unutar okvira</translation>
 <translation id="9045155556724273246">10 sekundi</translation>
 <translation id="906331135292332864">Obrađivanje slike...</translation>
+<translation id="9161584225258678723">Ubrzani videozapis</translation>
 <translation id="922762992951083513">Preslikavanje je uključeno</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 </translationbundle>

@@ -115,13 +115,12 @@ void FakeWebStateDelegate::OnAuthRequired(
   last_authentication_request_->auth_callback = std::move(callback);
 }
 
-bool FakeWebStateDelegate::HandlePermissionsDecisionRequest(
+void FakeWebStateDelegate::HandlePermissionsDecisionRequest(
     WebState* source,
     NSArray<NSNumber*>* permissions,
     WebStatePermissionDecisionHandler handler) {
   last_requested_permissions_ = permissions;
-  handler(should_grant_permissions_);
-  return true;
+  handler(permission_decision_);
 }
 
 }  // namespace web

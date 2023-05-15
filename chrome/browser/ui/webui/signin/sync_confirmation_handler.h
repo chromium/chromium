@@ -76,6 +76,13 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // |SetAccountInfo| with the signed-in user's picture url.
   virtual void HandleAccountInfoRequest(const base::Value::List& args);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Handles the "openDeviceSyncSettings" message from the page. No arguments.
+  // This message is sent when the user clicks on the device settings link
+  // in the sync confirmation dialog, which keep the dialogue open and open
+  // new window in ash for device sync settings .
+  virtual void HandleOpenDeviceSyncSettings(const base::Value::List& args);
+#endif
   // Records the user's consent to sync. Called from |HandleConfirm| and
   // |HandleGoToSettings|, and expects two parameters to be passed through
   // these methods from the WebUI:

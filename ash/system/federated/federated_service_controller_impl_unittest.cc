@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
@@ -42,7 +43,8 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
   }
 
  protected:
-  FederatedServiceControllerImpl* controller_ = nullptr;
+  raw_ptr<FederatedServiceControllerImpl, ExperimentalAsh> controller_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

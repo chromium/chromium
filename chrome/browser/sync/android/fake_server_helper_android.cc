@@ -83,7 +83,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
           base::android::ConvertJavaStringToUTF8(env, title), converted_guid);
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
-  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+  bookmark_builder.SetParentGuid(base::Uuid::ParseLowercase(
       base::android::ConvertJavaStringToUTF8(env, parent_guid)));
   return bookmark_builder.BuildBookmark(gurl);
 }
@@ -251,7 +251,7 @@ static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(
           base::android::ConvertJavaStringToUTF8(env, title));
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
-  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+  bookmark_builder.SetParentGuid(base::Uuid::ParseLowercase(
       base::android::ConvertJavaStringToUTF8(env, parent_guid)));
 
   fake_server_ptr->InjectEntity(bookmark_builder.BuildFolder());
@@ -296,7 +296,7 @@ static void JNI_FakeServerHelper_ModifyBookmarkFolderEntity(
           base::android::ConvertJavaStringToUTF8(env, guid));
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
-  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+  bookmark_builder.SetParentGuid(base::Uuid::ParseLowercase(
       base::android::ConvertJavaStringToUTF8(env, parent_guid)));
 
   sync_pb::SyncEntity proto;

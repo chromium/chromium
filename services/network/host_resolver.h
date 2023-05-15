@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   std::set<std::unique_ptr<HostResolverMdnsListener>, base::UniquePtrComparator>
       listeners_;
 
-  const raw_ptr<net::HostResolver, DanglingUntriaged> internal_resolver_;
+  const raw_ptr<net::HostResolver, FlakyDanglingUntriaged> internal_resolver_;
   const raw_ptr<net::NetLog> net_log_;
 
   base::WeakPtrFactory<HostResolver> weak_factory_{this};

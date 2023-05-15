@@ -6,19 +6,46 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+static_library("fetcher") {
+  sources = [
+    "kids_access_token_fetcher.cc",
+    "kids_access_token_fetcher.h",
+    "kids_external_fetcher.cc",
+    "kids_external_fetcher.h",
+    "kids_external_fetcher_config.cc",
+    "kids_external_fetcher_config.h",
+    "kids_external_fetcher_requests.h",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common",
+    "//google_apis",
+    "//net/traffic_annotation",
+    "//url",
+  ]
+}
+
 static_library("browser") {
   sources = [
     "kids_chrome_management_client.cc",
     "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
     "kids_management_url_checker_client.h",
+    "parental_control_metrics.cc",
+    "parental_control_metrics.h",
     "permission_request_creator.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
+    "supervised_user_metrics_service.cc",
+    "supervised_user_metrics_service.h",
     "supervised_user_pref_store.cc",
     "supervised_user_pref_store.h",
+    "supervised_user_service.cc",
+    "supervised_user_service.h",
     "supervised_user_service_observer.h",
     "supervised_user_settings_service.cc",
     "supervised_user_settings_service.h",
@@ -35,6 +62,7 @@ static_library("browser") {
     "//components/history/core/common",
     "//components/keyed_service/core",
     "//components/policy/core/common:common_constants",
+    "//components/pref_registry",
     "//components/safe_search_api",
     "//components/supervised_user/core/browser/proto",
     "//extensions/buildflags",
@@ -42,6 +70,7 @@ static_library("browser") {
   ]
 
   deps = [
+    ":fetcher",
     "//base",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/google/core/common",
@@ -62,12 +91,30 @@ static_library("browser") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fetcher_config_test_utils.cc",
+    "fetcher_config_test_utils.h",
+  ]
+  deps = [
+    ":fetcher",
+    "//base",
+    "//net/traffic_annotation",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "kids_access_token_fetcher_unittest.cc",
+    "kids_external_fetcher_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
+    "parental_control_metrics_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_error_page_unittest.cc",
+    "supervised_user_metrics_service_unittest.cc",
     "supervised_user_pref_store_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
@@ -76,6 +123,8 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":fetcher",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",

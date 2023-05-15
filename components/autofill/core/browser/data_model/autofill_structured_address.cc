@@ -4,15 +4,20 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
+#include <string>
 #include <utility>
+
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/metrics/converge_to_extreme_length_address_metrics.h"
@@ -27,9 +32,17 @@ std::u16string AddressComponentWithRewriter::RewriteValue(
                                 value);
 }
 
-std::u16string AddressComponentWithRewriter::ValueForComparison(
+std::u16string AddressComponentWithRewriter::GetValueForComparison(
     const AddressComponent& other) const {
-  return RewriteValue(NormalizedValue(), GetCommonCountryForMerge(other));
+  return RewriteValue(GetNormalizedValue(), GetCommonCountry(other));
+}
+
+std::u16string
+AddressComponentWithRewriter::GetValueForComparisonForOtherSupportedType(
+    ServerFieldType field_type,
+    const AddressComponent& other) const {
+  return RewriteValue(NormalizeValue(GetValueForOtherSupportedType(field_type)),
+                      GetCommonCountry(other));
 }
 
 StreetNameNode::StreetNameNode(AddressComponent* parent)
@@ -220,81 +233,54 @@ bool StreetAddressNode::IsValueValid() const {
   return !base::Contains(address_lines_, std::u16string());
 }
 
-bool StreetAddressNode::ConvertAndGetTheValueForAdditionalFieldTypeName(
-    const std::string& type_name,
-    std::u16string* value) const {
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 0 ? address_lines_.at(0) : std::u16string();
-    }
-    return true;
-  }
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 1 ? address_lines_.at(1) : std::u16string();
-    }
-    return true;
-  }
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 2 ? address_lines_.at(2) : std::u16string();
-    }
-    return true;
-  }
+std::u16string StreetAddressNode::GetValueForOtherSupportedType(
+    ServerFieldType field_type) const {
+  // It is assumed below that field_type is an address line type.
+  CHECK(IsSupportedType(field_type));
+  return GetAddressLine(field_type);
+}
 
-  return false;
+std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
+  const size_t line_index = AddressLineIndex(type);
+  return address_lines_.size() > line_index ? address_lines_.at(line_index)
+                                            : std::u16string();
 }
 
 // Implements support for setting the value of the individual address lines.
-bool StreetAddressNode::ConvertAndSetValueForAdditionalFieldTypeName(
-    const std::string& type_name,
+void StreetAddressNode::SetValueForOtherSupportedType(
+    ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
-  size_t index = 0;
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
-    index = 0;
-  } else if (type_name ==
-             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
-    index = 1;
-  } else if (type_name ==
-             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
-    index = 2;
-  } else {
-    return false;
+  CHECK(IsSupportedType(field_type));
+  const size_t line_index = AddressLineIndex(field_type);
+  // Make sure that there are enough address lines stored.
+  if (line_index >= address_lines_.size()) {
+    address_lines_.resize(line_index + 1);
   }
-
-  // Make sure that there are three address lines stored.
-  if (index >= address_lines_.size())
-    address_lines_.resize(index + 1, std::u16string());
-
-  bool change = address_lines_[index] != value;
-  if (change)
-    address_lines_[index] = value;
-
-  while (!address_lines_.empty() && address_lines_.back().empty())
+  const bool change = address_lines_[line_index] != value;
+  if (change) {
+    address_lines_[line_index] = value;
+  }
+  // Remove empty trailing address lines.
+  while (!address_lines_.empty() && address_lines_.back().empty()) {
     address_lines_.pop_back();
-
+  }
   // By calling the base class implementation, the recreation of the address
   // lines from the street address is omitted.
   if (change) {
     AddressComponent::SetValue(base::JoinString(address_lines_, u"\n"), status);
   }
-
-  return true;
 }
 
 void StreetAddressNode::PostAssignSanitization() {
   CalculateAddressLines();
 }
 
-void StreetAddressNode::GetAdditionalSupportedFieldTypes(
-    ServerFieldTypeSet* supported_types) const {
-  supported_types->insert(ADDRESS_HOME_LINE1);
-  supported_types->insert(ADDRESS_HOME_LINE2);
-  supported_types->insert(ADDRESS_HOME_LINE3);
+const ServerFieldTypeSet StreetAddressNode::GetAdditionalSupportedFieldTypes()
+    const {
+  constexpr ServerFieldTypeSet additional_supported_field_types{
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+  return additional_supported_field_types;
 }
 
 // Country codes are mergeable if they are the same of if one is empty.
@@ -374,7 +360,7 @@ PostalCodeNode::PostalCodeNode(AddressComponent* parent)
 
 PostalCodeNode::~PostalCodeNode() = default;
 
-std::u16string PostalCodeNode::NormalizedValue() const {
+std::u16string PostalCodeNode::GetNormalizedValue() const {
   return NormalizeValue(GetValue(), /*keep_white_space=*/false);
 }
 
@@ -384,6 +370,13 @@ SortingCodeNode::SortingCodeNode(AddressComponent* parent)
                        MergeMode::kReplaceEmpty | kUseMostRecentSubstring) {}
 
 SortingCodeNode::~SortingCodeNode() = default;
+
+LandmarkNode::LandmarkNode(AddressComponent* parent)
+    : AddressComponent(ADDRESS_HOME_LANDMARK,
+                       parent,
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+
+LandmarkNode::~LandmarkNode() = default;
 
 AddressNode::AddressNode() : AddressNode(nullptr) {}
 
@@ -409,26 +402,29 @@ bool AddressNode::WipeInvalidStructure() {
   // For structured addresses, currently it is sufficient to wipe the structure
   // of the street address, because this is the only directly assignable value
   // that has a substructure.
-  return street_address_.WipeInvalidStructure();
+  if (street_address_.WipeInvalidStructure()) {
+    // Unset value for the root, which is the remaining non settings visible
+    // node.
+    UnsetValue();
+    return true;
+  }
+
+  return false;
 }
 
-void AddressNode::MigrateLegacyStructure(bool is_verified_profile) {
+void AddressNode::MigrateLegacyStructure() {
   // If this component already has a verification status, no profile is regarded
   // as already verified.
   if (GetVerificationStatus() != VerificationStatus::kNoStatus)
     return;
 
-  // Otherwise set the status of the subcomponents either to observed or
-  // verified depending on |is_verified_profile| if they already have a value
-  // assigned. Note, those are all the tokens that are already present in the
-  // unstructured address representation.
+  // Otherwise set the status of the subcomponents to observed if they already
+  // have a value assigned. Note, those are all the tokens that are already
+  // present in the unstructured address representation.
   for (auto* component : Subcomponents()) {
     if (!component->GetValue().empty() &&
         component->GetVerificationStatus() == VerificationStatus::kNoStatus) {
-      component->SetValue(component->GetValue(),
-                          is_verified_profile
-                              ? VerificationStatus::kUserVerified
-                              : VerificationStatus::kObserved);
+      component->SetValue(component->GetValue(), VerificationStatus::kObserved);
     }
   }
 }

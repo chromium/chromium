@@ -50,20 +50,12 @@
 }
 
 - (UIImage*)iconImage {
-  if (UseSymbolsInOmnibox()) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
-        self.defaultSearchEngineIsGoogle) {
-      return GetBrandedGoogleIcon();
-    }
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  } else {
-    if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
-        self.defaultSearchEngineIsGoogle && [self fallbackAnswerBrandedIcon]) {
-      return [[self fallbackAnswerBrandedIcon]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+  if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
+      self.defaultSearchEngineIsGoogle) {
+    return GetBrandedGoogleIconForOmnibox();
   }
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   return GetOmniboxSuggestionIcon(self.suggestionIconType);
 }
 

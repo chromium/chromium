@@ -594,7 +594,7 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::Value::List& args) {
   // Sync was set up but then was reset via the dashboard. This also pokes the
   // SyncService to start up immediately, i.e. bypass deferred startup.
   if (service)
-    service->GetUserSettings()->SetSyncRequested();
+    service->SetSyncFeatureRequested();
 
   GetLoginUIService()->SetLoginUI(this);
 
@@ -782,15 +782,16 @@ void PeopleHandler::CloseSyncSetup() {
   // (i.e. if the user is running in guest mode in cros and brings up settings).
   LoginUIService* service = GetLoginUIService();
   if (service) {
+    auto self_weak_ptr = weak_factory_.GetWeakPtr();
     syncer::SyncService* sync_service = GetSyncService();
 
     // Don't log a cancel event if the sync setup dialog is being
     // automatically closed due to an auth error.
     if ((service->current_login_ui() == this) &&
-        (!sync_service ||
-         (!sync_service->GetUserSettings()->IsFirstSetupComplete() &&
-          sync_service->GetAuthError().state() ==
-              GoogleServiceAuthError::NONE))) {
+        (!sync_service || (!sync_service->GetUserSettings()
+                                ->IsInitialSyncFeatureSetupComplete() &&
+                           sync_service->GetAuthError().state() ==
+                               GoogleServiceAuthError::NONE))) {
       if (configuring_sync_) {
         // If the user clicked "Cancel" while setting up sync, disable sync
         // because we don't want the sync engine to remain in the
@@ -805,7 +806,8 @@ void PeopleHandler::CloseSyncSetup() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
           // Revoke sync consent on desktop Chrome if they click cancel during
           // initial setup or close sync setup without confirming sync.
-          if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+          if (!sync_service->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete()) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(
@@ -818,6 +820,14 @@ void PeopleHandler::CloseSyncSetup() {
     }
 
     service->LoginUIClosed(this);
+
+    // The call to RevokeSyncConsent() above may delete the current browser that
+    // owns `this` if force signin is enabled. Accessing instance members caused
+    // crashes (see https://crbug.com/1441820) which we guard against by
+    // checking a weak pointer to the current instance.
+    if (!self_weak_ptr) {
+      return;
+    }
   }
 
   // Alert the sync service anytime the sync setup dialog is closed. This can
@@ -894,7 +904,7 @@ void PeopleHandler::BeforeUnloadDialogCancelled() {
       signin::ConsentLevel::kSync));
   syncer::SyncService* service = GetSyncService();
   DCHECK(service && service->IsSetupInProgress() &&
-         !service->GetUserSettings()->IsFirstSetupComplete());
+         !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
   base::RecordAction(
       base::UserMetricsAction("Signin_Signin_CancelAbortAdvancedSyncSettings"));
@@ -909,7 +919,6 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   }
 
   sync_status.Set("supervisedUser", profile_->IsChild());
-  sync_status.Set("childUser", profile_->IsChild());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
@@ -942,7 +951,7 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   sync_status.Set(
       "firstSetupInProgress",
       service && !disallowed_by_policy && service->IsSetupInProgress() &&
-          !service->GetUserSettings()->IsFirstSetupComplete() &&
+          !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
@@ -1078,11 +1087,12 @@ void PeopleHandler::MarkFirstSetupComplete() {
   // Note that this has to happen *before* checking if first-time setup is
   // already marked complete, because on some platforms (e.g. ChromeOS) that
   // gets set automatically.
-  service->GetUserSettings()->SetSyncRequested();
+  service->SetSyncFeatureRequested();
 
   // If the first-time setup is already complete, there's nothing else to do.
-  if (service->GetUserSettings()->IsFirstSetupComplete())
+  if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
+  }
 
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
       service->GetUserSettings(), profile_->GetPrefs());

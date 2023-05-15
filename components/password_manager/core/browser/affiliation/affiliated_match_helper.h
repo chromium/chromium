@@ -58,6 +58,10 @@ class AffiliatedMatchHelper {
       const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
 
+  // Similar to |GetAffiliatedAndroidAndWebRealms()|, but for groups.
+  virtual void GetGroup(const PasswordFormDigest& observed_form,
+                        AffiliatedRealmsCallback result_callback);
+
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.
@@ -77,8 +81,8 @@ class AffiliatedMatchHelper {
   void DoDeferredInitialization();
 
   // Called back by AffiliationService to supply the list of facets
-  // affiliated with |original_facet_uri| so that a GetAffiliatedAndroidRealms()
-  // call can be completed.
+  // affiliated with |original_facet_uri| so that a
+  // |GetAffiliatedAndroidAndWebRealms()| call can be completed.
   void CompleteGetAffiliatedAndroidAndWebRealms(
       const FacetURI& original_facet_uri,
       AffiliatedRealmsCallback result_callback,
@@ -95,6 +99,13 @@ class AffiliatedMatchHelper {
       base::OnceClosure barrier_closure,
       const AffiliatedFacets& results,
       bool success);
+
+  // Called back by AffiliationService to supply the list of facets
+  // that are in same group with |original_facet_uri| so that a
+  // GetGroup() call can be completed.
+  void CompleteGetGroup(const FacetURI& original_facet_uri,
+                        AffiliatedRealmsCallback result_callback,
+                        const std::vector<GroupedFacets>& groups);
 
   raw_ptr<AffiliationService, DanglingUntriaged> affiliation_service_;
 

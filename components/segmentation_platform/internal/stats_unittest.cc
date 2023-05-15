@@ -103,8 +103,6 @@ TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
 }
 
 TEST(StatsTest, SegmentSwitchWithMultiOutput) {
-  std::string computed_histogram(
-      "SegmentationPlatform.PowerUser.PostProcessing.TopLabel.Computed");
   std::string switched_histogram(
       "SegmentationPlatform.PowerUser.PostProcessing.TopLabel.Switched");
 
@@ -135,7 +133,7 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
       /*timestamp=*/base::Time::Now());
 
   // Low -> Low. No switched histograms.
-  RecordSegmentSelectionUpdated(config, result_low, result_low);
+  RecordClassificationResultUpdated(config, result_low, result_low);
   EXPECT_THAT(tester.GetAllSamples(switched_histogram), testing::ElementsAre());
 
   // Verify all possible combinations in a 3-label classifier.
@@ -148,20 +146,15 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
   // label 1 -> label 2 : 102
   // label 2 -> label 0 : 200
   // label 2 -> label 1 : 201
-  RecordSegmentSelectionUpdated(config, absl::nullopt, result_low);
-  RecordSegmentSelectionUpdated(config, absl::nullopt, result_medium);
-  RecordSegmentSelectionUpdated(config, absl::nullopt, result_high);
-  RecordSegmentSelectionUpdated(config, result_low, result_medium);
-  RecordSegmentSelectionUpdated(config, result_low, result_high);
-  RecordSegmentSelectionUpdated(config, result_medium, result_low);
-  RecordSegmentSelectionUpdated(config, result_medium, result_high);
-  RecordSegmentSelectionUpdated(config, result_high, result_low);
-  RecordSegmentSelectionUpdated(config, result_high, result_medium);
-
-  tester.ExpectTotalCount(computed_histogram, 10);
-  EXPECT_THAT(tester.GetAllSamples(computed_histogram),
-              testing::ElementsAre(base::Bucket(0, 4), base::Bucket(1, 3),
-                                   base::Bucket(2, 3)));
+  RecordClassificationResultUpdated(config, absl::nullopt, result_low);
+  RecordClassificationResultUpdated(config, absl::nullopt, result_medium);
+  RecordClassificationResultUpdated(config, absl::nullopt, result_high);
+  RecordClassificationResultUpdated(config, result_low, result_medium);
+  RecordClassificationResultUpdated(config, result_low, result_high);
+  RecordClassificationResultUpdated(config, result_medium, result_low);
+  RecordClassificationResultUpdated(config, result_medium, result_high);
+  RecordClassificationResultUpdated(config, result_high, result_low);
+  RecordClassificationResultUpdated(config, result_high, result_medium);
 
   tester.ExpectTotalCount(switched_histogram, 9);
   EXPECT_THAT(tester.GetAllSamples(switched_histogram),
@@ -170,6 +163,46 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
                                    base::Bucket(2, 1), base::Bucket(100, 1),
                                    base::Bucket(102, 1), base::Bucket(200, 1),
                                    base::Bucket(201, 1)));
+}
+
+TEST(StatsTest, SegmentComputedWithMultiOutput) {
+  std::string computed_histogram(
+      "SegmentationPlatform.PowerUser.PostProcessing.TopLabel.Computed");
+
+  base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kPowerUserKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
+
+  auto result_low = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.2},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_medium = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.3},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_high = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.8},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_underflow = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  RecordClassificationResultComputed(config, result_low);
+  RecordClassificationResultComputed(config, result_medium);
+  RecordClassificationResultComputed(config, result_high);
+
+  tester.ExpectTotalCount(computed_histogram, 3);
+  EXPECT_THAT(tester.GetAllSamples(computed_histogram),
+              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1),
+                                   base::Bucket(2, 1)));
 }
 
 TEST(StatsTest, BooleanSegmentSwitch) {

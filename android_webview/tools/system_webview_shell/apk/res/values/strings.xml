@@ -18,6 +18,7 @@
     <string name="menu_reload_webview">Reload</string>
     <string name="menu_reset_webview">Destroy and create new WebView</string>
     <string name="menu_clear_cache">Clear cache</string>
+    <string name="menu_get_cookie">Get Cookie</string>
     <string name="menu_enable_tracing">Enable tracing</string>
     <string name="menu_force_dark_off">Force Dark Off</string>
     <string name="menu_force_dark_auto">Force Dark Auto</string>

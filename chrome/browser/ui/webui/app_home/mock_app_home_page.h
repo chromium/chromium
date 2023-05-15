@@ -19,9 +19,9 @@ class MockAppHomePage : public app_home::mojom::Page {
 
   mojo::PendingRemote<app_home::mojom::Page> BindAndGetRemote();
 
-  MOCK_METHOD1(AddApp, void(app_home::mojom::AppInfoPtr));
-  MOCK_METHOD1(RemoveApp, void(app_home::mojom::AppInfoPtr));
-  MOCK_METHOD1(EnableExtensionApp, void(const std::string&));
+  MOCK_METHOD(void, AddApp, (app_home::mojom::AppInfoPtr));
+  MOCK_METHOD(void, RemoveApp, (app_home::mojom::AppInfoPtr));
+  MOCK_METHOD(void, EnableExtensionApp, (const std::string&));
   mojo::Receiver<app_home::mojom::Page> receiver_{this};
 };
 

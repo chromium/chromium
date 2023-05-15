@@ -21,10 +21,10 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {FocusConfig} from '../focus_config.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
-import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 import {getTemplate} from './os_settings_animated_pages.html.js';
 import {OsSettingsSubpageElement} from './os_settings_subpage.js';

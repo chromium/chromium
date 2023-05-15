@@ -26,8 +26,6 @@ typedef NSImage* PlatformImage;
 typedef gfx::ImageSkia PlatformImage;
 #endif
 
-std::vector<float> Get1xAnd2xScales();
-
 // Create a bitmap of |width|x|height|.
 const SkBitmap CreateBitmap(int width, int height);
 

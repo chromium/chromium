@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
+#include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
+#include "base/check.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -13,9 +16,12 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace {
 
@@ -40,6 +46,41 @@ ChromeUserEducationDelegate::ChromeUserEducationDelegate() {
 
 ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
 
+std::unique_ptr<user_education::HelpBubble>
+ChromeUserEducationDelegate::CreateHelpBubble(
+    const AccountId& account_id,
+    ash::HelpBubbleId help_bubble_id,
+    user_education::HelpBubbleParams help_bubble_params,
+    ui::ElementIdentifier element_id,
+    ui::ElementContext element_context) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  CHECK(IsPrimaryProfile(profile));
+
+  // If a tracked `element` cannot be found for the specified `element_id` and
+  // `element_context` pair, there's nothing to anchor a help bubble to.
+  ui::TrackedElement* const element =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          element_id, element_context);
+  if (!element) {
+    return nullptr;
+  }
+
+  // Help bubble factories expect `help_bubble_id` to be provided via extended
+  // properties being as it is a ChromeOS specific platform construct.
+  help_bubble_params.extended_properties.values().Merge(std::move(
+      ash::user_education_util::CreateExtendedProperties(help_bubble_id)
+          .values()));
+
+  return UserEducationServiceFactory::GetForProfile(profile)
+      ->help_bubble_factory_registry()
+      .CreateHelpBubble(element, std::move(help_bubble_params));
+}
+
 void ChromeUserEducationDelegate::RegisterTutorial(
     const AccountId& account_id,
     ash::TutorialId tutorial_id,
@@ -50,7 +91,7 @@ void ChromeUserEducationDelegate::RegisterTutorial(
 
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  DCHECK(IsPrimaryProfile(profile));
+  CHECK(IsPrimaryProfile(profile));
 
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_registry()
@@ -70,7 +111,7 @@ void ChromeUserEducationDelegate::StartTutorial(
 
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  DCHECK(IsPrimaryProfile(profile));
+  CHECK(IsPrimaryProfile(profile));
 
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_service()

@@ -13,12 +13,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "ipc/ipc_sender.h"
 
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+class RenderProcessHost;
 class WebContents;
 }
 
@@ -26,7 +28,6 @@ namespace extensions {
 
 class Extension;
 class ExtensionAPI;
-class ProcessMap;
 class WindowController;
 
 // ExtensionFunctionDispatcher receives requests to execute functions from
@@ -139,7 +140,7 @@ class ExtensionFunctionDispatcher {
       int requesting_process_id,
       bool is_worker_request,
       const GURL* rfh_url,
-      const ProcessMap& process_map,
+      Feature::Context context_type,
       ExtensionAPI* api,
       ExtensionFunction::ResponseCallback callback,
       content::RenderFrameHost* render_frame_host);
@@ -147,7 +148,7 @@ class ExtensionFunctionDispatcher {
   void DispatchWithCallbackInternal(
       const mojom::RequestParams& params,
       content::RenderFrameHost* render_frame_host,
-      int render_process_id,
+      content::RenderProcessHost& render_process_host,
       ExtensionFunction::ResponseCallback callback);
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);

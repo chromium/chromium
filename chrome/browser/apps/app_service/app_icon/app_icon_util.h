@@ -43,6 +43,7 @@ enum IconEffects : uint32_t {
                               // icon, and apply the mask to the standard icon
                               // This effect combines kCrOsStandardBackground
                               // and kCrOsStandardMask together.
+  kGuestOsBadge = 0x200,      // Badge used to identify Crostini apps.
 };
 
 inline IconEffects operator|(IconEffects a, IconEffects b) {

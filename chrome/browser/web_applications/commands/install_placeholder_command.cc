@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,8 @@ InstallPlaceholderCommand::InstallPlaceholderCommand(
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<AppLock>("InstallPlaceholderCommand"),
       profile_(profile),
-      app_id_(GenerateAppId(/*manifest_id=*/"", install_options.install_url)),
+      app_id_(GenerateAppId(/*manifest_id=*/absl::nullopt,
+                            install_options.install_url)),
       lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_options_(install_options),
       callback_(std::move(callback)),
@@ -67,8 +69,6 @@ const LockDescription& InstallPlaceholderCommand::lock_description() const {
 base::Value InstallPlaceholderCommand::ToDebugValue() const {
   return base::Value(debug_value_.Clone());
 }
-
-void InstallPlaceholderCommand::OnSyncSourceRemoved() {}
 
 void InstallPlaceholderCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
@@ -189,10 +189,8 @@ void InstallPlaceholderCommand::OnInstallFinalized(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
       app_id,
-      (ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source)));
-
-  RecordAppBanner(web_contents_.get(), install_options_.install_url);
+      ConvertExternalInstallSourceToInstallSource(
+          install_options_.install_source));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
 

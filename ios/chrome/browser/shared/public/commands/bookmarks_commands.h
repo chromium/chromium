@@ -8,25 +8,34 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
-
+class GURL;
 @class ReadingListAddCommand;
+@class URLWithTitle;
+namespace web {
+class WebState;
+}  // namespace web
 
+// TODO(crbug.com/1445428): Remove this commands.
 // Protocol for commands arounds Bookmarks manipulation.
 @protocol BookmarksCommands <NSObject>
 
-// Adds bookmarks for the given list of URLs in `command`.
-// If `command.presentFolderChooser` is true:
-// - the user will be prompted to choose a location to store the bookmarks.
-// Otherwise, only a single URL must be provided:
+// Adds bookmarks for the given list of URLs.
+// The user will be prompted to choose a location to store the bookmarks.
+- (void)bookmarkWithFolderChooser:(NSArray<URLWithTitle*>*)URLs;
+
+// Adds bookmark for the last committed URL, and tab title.
+// Behaves as `-(void)bookmark:(URLWithTitle*)` otherwise.
+- (void)bookmarkWithWebState:(web::WebState*)webState;
+
+// Adds bookmark for the URL.
 // - If it is already bookmarked, the "edit bookmark" flow will begin.
 // - If it is not already bookmarked, it will be bookmarked automatically and an
 //   "Edit" button will be provided in the displayed snackbar message.
-- (void)bookmark:(BookmarkAddCommand*)command;
+- (void)createOrEditBookmarkWithURL:(URLWithTitle*)URLWithTitle;
 
 // Opens the Bookmarks UI in edit mode and selects the bookmark node
-// corresponding to the values provided within `command`.
-- (void)openToExternalBookmark:(BookmarkAddCommand*)command;
+// corresponding to `URL`.
+- (void)openToExternalBookmark:(GURL)URL;
 
 @end
 

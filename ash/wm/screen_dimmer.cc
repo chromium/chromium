@@ -4,8 +4,6 @@
 
 #include "ash/wm/screen_dimmer.h"
 
-#include <memory>
-
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/window_user_data.h"
@@ -17,18 +15,12 @@ namespace ash {
 namespace {
 
 // Opacity when it's dimming the entire screen.
-const float kDimmingLayerOpacityForRoot = 0.4f;
-
-// Opacity for lock screen.
-const float kDimmingLayerOpacityForLockScreen = 0.5f;
+constexpr float kDimmingLayerOpacityForRoot = 0.4f;
 
 }  // namespace
 
-ScreenDimmer::ScreenDimmer(Container container)
-    : container_(container),
-      is_dimming_(false),
-      at_bottom_(false),
-      window_dimmers_(std::make_unique<WindowUserData<WindowDimmer>>()) {
+ScreenDimmer::ScreenDimmer()
+    : window_dimmers_(std::make_unique<WindowUserData<WindowDimmer>>()) {
   Shell::Get()->AddShellObserver(this);
 }
 
@@ -46,28 +38,19 @@ void ScreenDimmer::SetDimming(bool should_dim) {
   Update(should_dim);
 }
 
-aura::Window::Windows ScreenDimmer::GetAllContainers() {
-  return container_ == Container::ROOT
-             ? Shell::GetAllRootWindows()
-             : GetContainersForAllRootWindows(
-                   kShellWindowId_LockScreenContainersContainer);
-}
-
 void ScreenDimmer::OnRootWindowAdded(aura::Window* root_window) {
   Update(is_dimming_);
 }
 
 void ScreenDimmer::Update(bool should_dim) {
-  for (aura::Window* container : GetAllContainers()) {
+  for (aura::Window* container : Shell::GetAllRootWindows()) {
     WindowDimmer* window_dimmer = window_dimmers_->Get(container);
     if (should_dim) {
       if (!window_dimmer) {
         window_dimmers_->Set(container,
                              std::make_unique<WindowDimmer>(container));
         window_dimmer = window_dimmers_->Get(container);
-        window_dimmer->SetDimOpacity(container_ == Container::ROOT
-                                         ? kDimmingLayerOpacityForRoot
-                                         : kDimmingLayerOpacityForLockScreen);
+        window_dimmer->SetDimOpacity(kDimmingLayerOpacityForRoot);
       }
       if (at_bottom_)
         container->StackChildAtBottom(window_dimmer->window());

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
@@ -121,6 +122,9 @@ class TestSearchResultProducer : public cam::SearchController {
   // cam::SearchController overrides:
   void Search(const std::u16string& query, SearchCallback callback) override {
     last_query_ = query;
+
+    // Reset the remote and send a new pending receiver to ash.
+    publisher_.reset();
     std::move(callback).Run(publisher_.BindNewEndpointAndPassReceiver());
   }
 
@@ -214,7 +218,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 
@@ -251,6 +255,8 @@ TEST_F(OmniboxLacrosProviderTest, NewResults) {
   std::vector<cam::SearchResultPtr> to_produce;
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_1"));
   ProduceResults(std::move(to_produce));
+
+  StartSearch(u"query2");
 
   // Then produce another.
   to_produce.clear();
@@ -396,7 +402,7 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 

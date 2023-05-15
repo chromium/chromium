@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Decodor de imagini</translation>
 <translation id="1785415724048343560">Se recomandă pentru o experiență optimă</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Site-urile conexe îți pot vedea activitatea în grup</translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
@@ -126,7 +125,6 @@
 <translation id="3162899666601560689">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături</translation>
 <translation id="3165022941318558018">Permite ca un site să folosească cookie-uri terță parte</translation>
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
-<translation id="3203366800380907218">De pe web</translation>
 <translation id="321187648315454507">Pentru a permite aplicației <ph name="APP_NAME" /> să îți trimită notificări, activează notificările și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3248611290851046188">Acest site definește categorii de interese pe care le pot folosi alte site-uri pentru a-ți afișa anunțuri. În plus, site-ul preia interesele tale din Chrome ca să-ți afișeze anunțuri mai relevante.</translation>
@@ -150,6 +148,7 @@
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
+<translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
@@ -228,7 +227,6 @@
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="5225463052809312700">Activează camera foto</translation>
-<translation id="5229337741799419985">Această setare funcționează fără să te identifice sau să permită site-urilor să îți vadă istoricul de navigare</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5264323282659631142">Elimină „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
@@ -315,7 +313,6 @@
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6689172468748959065">Fotografii de profil</translation>
 <translation id="6697925417670533197">Descărcări active</translation>
-<translation id="6701547804986694515">Un site pe care îl accesezi poate salva informații în Chrome care validează faptul că nu ești o aplicație bot. În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală.</translation>
 <translation id="6722828510648505498">Blochează solicitările de conectare de la serviciile de identitate.</translation>
 <translation id="6746124502594467657">Mutați în jos</translation>
 <translation id="6749077623962119521">Resetezi permisiunile?</translation>
@@ -348,6 +345,7 @@
 <translation id="7302486331832100261">De obicei blochezi notificările. Ca să le permiți, atinge Detalii.</translation>
 <translation id="7366415735885268578">Adaugă un site</translation>
 <translation id="7383715096023715447">Setări pentru <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Această setare funcționează fără a te identifica și fără a permite site-urilor să-ți vadă istoricul de navigare, deși acestea pot trimite un volum mic de informații în cadrul verificării</translation>
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>
@@ -437,6 +435,7 @@
 <translation id="8816026460808729765">Blochează întotdeauna accesul site-urilor la senzori</translation>
 <translation id="8823559166155093873">Blochează cookie-urile</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală</translation>
 <translation id="8899807382908246773">Anunțuri deranjante</translation>
 <translation id="8903921497873541725">Mărește</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

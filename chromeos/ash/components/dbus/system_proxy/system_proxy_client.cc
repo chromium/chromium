@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -224,7 +225,7 @@ class SystemProxyClientImpl : public SystemProxyClient {
   AuthenticationRequiredCallback auth_required_callback_;
 
   // D-Bus proxy for the SystemProxy daemon, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   base::WeakPtrFactory<SystemProxyClientImpl> weak_factory_{this};
 };

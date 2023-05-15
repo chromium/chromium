@@ -42,6 +42,7 @@ test("fake_libva_driver_unittest") {
     ":fake_drv_video",
     "//base",
     "//base/test:test_support",
+    "//build/config/linux/libdrm",
     "//media/gpu/vaapi:libva_stubs",
     "//testing/gtest",
   ]

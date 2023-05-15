@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -173,7 +172,7 @@ void CmaBackendShim::AddDataOnMediaThread(
 }
 
 void CmaBackendShim::SetVolumeMultiplier(float multiplier) {
-  multiplier = base::clamp(multiplier, 0.0f, 1.0f);
+  multiplier = std::clamp(multiplier, 0.0f, 1.0f);
   POST_MEDIA_TASK(&CmaBackendShim::SetVolumeMultiplierOnMediaThread,
                   multiplier);
 }

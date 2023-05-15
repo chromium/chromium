@@ -22,12 +22,12 @@ void AddColorMixers(ColorProvider* provider,
   AddCoreDefaultColorMixer(provider, key);
   AddNativeCoreColorMixer(provider, key);
   AddUiColorMixer(provider, key);
-  AddNativeUiColorMixer(provider, key);
   if (features::IsChromeRefresh2023()) {
     // This must come after the UI and native UI mixers to ensure leaf node
     // colors are overridden with GM3 recipes when the refresh flag is enabled.
     AddMaterialUiColorMixer(provider, key);
   }
+  AddNativeUiColorMixer(provider, key);
   AddNativePostprocessingMixer(provider, key);
 }
 

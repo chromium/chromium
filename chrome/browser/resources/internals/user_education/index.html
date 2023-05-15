@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html $i18n{chromeRefresh2023Attribute}>
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
     <title>User Education Internals</title>
     <style>
-      @media (prefers-color-scheme: dark) {
-        html {
-          background: var(--md-background-color);
-        }
-      }
-
       html,
       body {
         height: 100%;
         margin: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: var(--md-background-color);
+        }
       }
   </style>
   </head>

@@ -103,7 +103,7 @@ static absl::optional<CSSSyntaxDefinition> ConvertSyntax(
   return CSSSyntaxStringParser(To<CSSStringValue>(value).Value()).Parse();
 }
 
-static bool ConvertInherts(const CSSValue& value) {
+static bool ConvertInherits(const CSSValue& value) {
   CSSValueID inherits_id = To<CSSIdentifierValue>(value).GetValueID();
   DCHECK(inherits_id == CSSValueID::kTrue || inherits_id == CSSValueID::kFalse);
   return inherits_id == CSSValueID::kTrue;
@@ -136,7 +136,7 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
   if (!inherits_value) {
     return nullptr;
   }
-  bool inherits = ConvertInherts(*inherits_value);
+  bool inherits = ConvertInherits(*inherits_value);
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#initial-value-descriptor
   const CSSValue* initial_value = rule.GetInitialValue();

@@ -22,4 +22,19 @@ BASE_FEATURE(kSupportsUserDataFlatHashMap,
              "SupportsUserDataFlatHashMap",
              FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Force to enable LowEndDeviceMode partially on Android mid-range devices.
+// Such devices aren't considered low-end, but we'd like experiment with
+// a subset of low-end features to see if we get a good memory vs. performance
+// tradeoff.
+//
+// TODO(crbug.com/1434873): |#if| out 32-bit before launching or going to
+// high Stable %, because we will enable the feature only for <8GB 64-bit
+// devices, where we didn't ship yet. However, we first need a larger
+// population to collect data.
+BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
+             "PartialLowEndModeOnMidRangeDevices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace base::features

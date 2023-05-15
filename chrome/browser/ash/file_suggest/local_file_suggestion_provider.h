@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -60,7 +61,7 @@ class LocalFileSuggestionProvider
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Any file not modified at least as recently as `max_last_modified_time_` ago
   // will be filtered out of results.

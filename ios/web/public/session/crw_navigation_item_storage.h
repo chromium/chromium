@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/referrer.h"
-#import "ios/web/public/ui/page_display_state.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -35,8 +34,6 @@ extern NSString* const kNavigationItemStorageReferrerPolicyKey;
 extern NSString* const kNavigationItemStorageTimestampKey;
 // Page title (NSString).
 extern NSString* const kNavigationItemStorageTitleKey;
-// The PageDisplayState (NSDictionary).
-extern NSString* const kNavigationItemStoragePageDisplayStateKey;
 // HTTP request headers (NSDictionary).
 extern NSString* const kNavigationItemStorageHTTPRequestHeadersKey;
 // Whether or not to bypass showing the resubmit data confirmation when loading
@@ -51,7 +48,6 @@ extern const char kNavigationItemSerializedVirtualURLSizeHistogram[];
 extern const char kNavigationItemSerializedURLSizeHistogram[];
 extern const char kNavigationItemSerializedReferrerURLSizeHistogram[];
 extern const char kNavigationItemSerializedTitleSizeHistogram[];
-extern const char kNavigationItemSerializedDisplayStateSizeHistogram[];
 extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 
 }  // namespace web
@@ -65,9 +61,9 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 @property(nonatomic, assign) web::Referrer referrer;
 @property(nonatomic, assign) base::Time timestamp;
 @property(nonatomic, assign) const std::u16string& title;
-@property(nonatomic, assign) web::PageDisplayState displayState;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
-@property(nonatomic, copy) NSDictionary* HTTPRequestHeaders;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, NSString*>* HTTPRequestHeaders;
 
 @end
 

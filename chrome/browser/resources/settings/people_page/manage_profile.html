@@ -55,7 +55,7 @@
   #outerRow {
     align-items: center;
     display: flex;
-    min-height: var(--settings-row-two-line-min-height);
+    min-height: var(--cr-section-two-line-min-height);
     padding: 0 var(--cr-section-padding);
   }
 
@@ -70,7 +70,7 @@
     <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
         on-change="onProfileNameChanged_"
         on-keydown="onProfileNameKeydown_"
-        disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
+        maxlength="500"
         aria-label="$i18n{nameInputLabel}" auto-validate required
         spellcheck="false">
     </cr-input>

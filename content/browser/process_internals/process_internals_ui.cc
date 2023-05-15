@@ -11,7 +11,8 @@
 #include "base/functional/bind.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_handler_impl.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/process_resources.h"
+#include "content/grit/process_resources_map.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -34,11 +35,9 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIProcessInternalsHost);
 
-  source->AddResourcePath("process_internals.js", IDR_PROCESS_INTERNALS_JS);
-  source->AddResourcePath("process_internals.css", IDR_PROCESS_INTERNALS_CSS);
-  source->AddResourcePath("process_internals.mojom-webui.js",
-                          IDR_PROCESS_INTERNALS_MOJO_JS);
-  source->SetDefaultResource(IDR_PROCESS_INTERNALS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kProcessResources, kProcessResourcesSize));
+  source->SetDefaultResource(IDR_PROCESS_PROCESS_INTERNALS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
@@ -89,8 +90,9 @@ class DrmGpuDisplayManager {
       const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
       const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const;
 
-  ScreenManager* const screen_manager_;         // Not owned.
-  DrmDeviceManager* const drm_device_manager_;  // Not owned.
+  const raw_ptr<ScreenManager, ExperimentalAsh> screen_manager_;  // Not owned.
+  const raw_ptr<DrmDeviceManager, ExperimentalAsh>
+      drm_device_manager_;  // Not owned.
 
   std::vector<std::unique_ptr<DrmDisplay>> displays_;
 

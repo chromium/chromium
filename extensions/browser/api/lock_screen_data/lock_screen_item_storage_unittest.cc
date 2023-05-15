@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -39,7 +40,6 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/lock_screen_data.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -343,7 +343,7 @@ class OperationQueue {
 
  private:
   std::string id_;
-  ItemRegistry* item_registry_;
+  raw_ptr<ItemRegistry, ExperimentalAsh> item_registry_;
   base::queue<PendingOperation> pending_operations_;
   std::vector<char> content_;
   bool deleted_ = false;
@@ -385,7 +385,7 @@ class TestDataItem : public DataItem {
   }
 
  private:
-  OperationQueue* operations_;
+  raw_ptr<OperationQueue, ExperimentalAsh> operations_;
 };
 
 class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
@@ -658,29 +658,26 @@ class LockScreenItemStorageTest : public ExtensionsTest {
 
   scoped_refptr<const Extension> CreateTestExtension(
       const ExtensionId& extension_id) {
-    DictionaryBuilder app_builder;
+    base::Value::Dict app_builder;
     app_builder.Set("background",
-                    DictionaryBuilder()
-                        .Set("scripts", ListBuilder().Append("script").Build())
-                        .Build());
-    ListBuilder app_handlers_builder;
-    app_handlers_builder.Append(DictionaryBuilder()
+                    base::Value::Dict().Set(
+                        "scripts", base::Value::List().Append("script")));
+    base::Value::List app_handlers_builder;
+    app_handlers_builder.Append(base::Value::Dict()
                                     .Set("action", "new_note")
-                                    .Set("enabled_on_lock_screen", true)
-                                    .Build());
+                                    .Set("enabled_on_lock_screen", true));
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetID(extension_id)
             .SetManifest(
-                DictionaryBuilder()
+                base::Value::Dict()
                     .Set("name", "Test app")
                     .Set("version", "1.0")
                     .Set("manifest_version", 2)
-                    .Set("app", app_builder.Build())
-                    .Set("action_handlers", app_handlers_builder.Build())
+                    .Set("app", std::move(app_builder))
+                    .Set("action_handlers", std::move(app_handlers_builder))
                     .Set("permissions",
-                         ListBuilder().Append("lockScreen").Build())
-                    .Build())
+                         base::Value::List().Append("lockScreen")))
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
     return extension;
@@ -784,7 +781,8 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Whether the test is expected to create deprecated value store version.
   bool can_create_deprecated_value_store_ = false;
 
-  TestLockScreenValueStoreMigrator* value_store_migrator_ = nullptr;
+  raw_ptr<TestLockScreenValueStoreMigrator, ExperimentalAsh>
+      value_store_migrator_ = nullptr;
 };
 
 }  // namespace

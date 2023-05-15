@@ -20,7 +20,7 @@ class VulkanImplementation;
 
 // A generic Skia vulkan representation which can be used by any backing on
 // Android.
-class SkiaVkAndroidImageRepresentation : public SkiaImageRepresentation {
+class SkiaVkAndroidImageRepresentation : public SkiaGaneshImageRepresentation {
  public:
   SkiaVkAndroidImageRepresentation(
       SharedImageManager* manager,

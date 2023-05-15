@@ -13,6 +13,7 @@
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -33,7 +34,7 @@ CmdBufferSurfaceProvider::CmdBufferSurfaceProvider() {
 CmdBufferSurfaceProvider::~CmdBufferSurfaceProvider() = default;
 
 sk_sp<SkSurface> CmdBufferSurfaceProvider::MakeSurface(const gfx::Size& size) {
-  return SkSurface::MakeRenderTarget(
+  return SkSurfaces::RenderTarget(
       gr_context_.get(), skgpu::Budgeted::kNo,
       SkImageInfo::MakeN32Premul(size.width(), size.height()), 0,
       kTopLeft_GrSurfaceOrigin, nullptr);
@@ -42,8 +43,8 @@ sk_sp<SkSurface> CmdBufferSurfaceProvider::MakeSurface(const gfx::Size& size) {
 GLuint CmdBufferSurfaceProvider::FlushSurface(SkSurface* surface,
                                               GLuint reuse_texture_id) {
   surface->getCanvas()->flush();
-  GrBackendTexture backend_texture =
-      surface->getBackendTexture(SkSurface::kFlushRead_BackendHandleAccess);
+  GrBackendTexture backend_texture = SkSurfaces::GetBackendTexture(
+      surface, SkSurfaces::BackendHandleAccess::kFlushRead);
   DCHECK(backend_texture.isValid());
   GrGLTextureInfo info;
   bool result = backend_texture.getGLTextureInfo(&info);

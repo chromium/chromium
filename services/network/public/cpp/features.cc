@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 
@@ -48,12 +47,6 @@ BASE_FEATURE(kDelayRequestsOnMultiplexedConnections,
 // streaming over an active P2P connection.
 BASE_FEATURE(kPauseBrowserInitiatedHeavyTrafficForP2P,
              "PauseBrowserInitiatedHeavyTrafficForP2P",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
-// resources if they look sensitive.
-BASE_FEATURE(kCORBProtectionSniffing,
-             "CORBProtectionSniffing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kProactivelyThrottleLowPriorityRequests is enabled,
@@ -103,6 +96,13 @@ BASE_FEATURE(kDnsOverHttpsUpgrade,
 #endif
 );
 
+// When enabled, the requests in a third party context to domains included in
+// the Masked Domain List Component will use the Privacy Proxy to shield the
+// client's IP.
+BASE_FEATURE(kMaskedDomainList,
+             "MaskedDomainList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
 // "Generated-Names._mdns_name_generator._udp.local" with a list of generated
@@ -111,37 +111,26 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
              "MdnsResponderGeneratedNameListing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
-// Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
-//
-// This is ORB v0.1 - it doesn't implement the full spec from
-// https://github.com/annevk/orb:
-// - No Javascript sniffing is done.  Instead the implementation uses all
-//   of CORB's confirmation sniffers (for HTML, XML and JSON).
-// - Blocking is still done by injecting an empty response rather than erroring
-//   out the network request
-// - Other differences and more details can be found in
-//   //services/network/public/cpp/corb/README.md
-//
-// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
-BASE_FEATURE(kOpaqueResponseBlockingV01_LAUNCHED,
-             "OpaqueResponseBlockingV01",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
 // This is ORB v0.2.
-// This should only be enabled when ORB v0.1 is, too.
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preprocessing the Attribution API's trigger registration ping
-// requests, potentially adding attestation headers, and handling their
+// requests, potentially adding verification headers, and handling their
 // responses. (See
-// https://github.com/WICG/attribution-reporting-api/blob/main/trigger_attestation.md)
-BASE_FEATURE(kAttributionReportingTriggerAttestation,
-             "AttributionReportingTriggerAttestation",
+// https://github.com/WICG/attribution-reporting-api/blob/main/report_verification.md)
+BASE_FEATURE(kAttributionReportingReportVerification,
+             "AttributionReportingReportVerification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Gate access to Attribution Reporting cross app and web APIs that allow
+// registering with a native attribution API.
+BASE_FEATURE(kAttributionReportingCrossAppWeb,
+             "AttributionReportingCrossAppWeb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preprocessing requests with the Private State Tokens API Fetch flags
@@ -250,12 +239,6 @@ BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow batching SimpleURLLoaders when the underlying network state is
-// inactive.
-BASE_FEATURE(kBatchSimpleURLLoader,
-             "BatchSimpleURLLoader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNetworkServiceMemoryCache,
              "NetworkServiceMemoryCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -318,7 +301,7 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
 // preflights.
 BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
              "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables out-of-process system DNS resolution so getaddrinfo() never runs in
 // the network service sandbox. System DNS resolution will instead be brokered
@@ -338,11 +321,9 @@ BASE_FEATURE(kPrefetchNoVarySearch,
 BASE_FEATURE(kLessChattyNetworkService,
              "LessChattyNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kAddressTrackerLinuxOutOfNetworkService,
-             "AddressTrackerLinuxOutOfNetworkService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_LINUX)
-
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
+             "NetworkServiceEmptyOutOfProcess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace network::features

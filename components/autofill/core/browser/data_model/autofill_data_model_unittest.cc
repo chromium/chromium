@@ -26,37 +26,8 @@ const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
 
 }  // namespace
 
-TEST(AutofillDataModelTest, IsVerified) {
-  TestAutofillDataModel model("guid", std::string());
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin("http://www.example.com");
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin("https://www.example.com");
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin("file:///tmp/example.txt");
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin("data:text/plain;charset=utf-8;base64,ZXhhbXBsZQ==");
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin("chrome://settings/autofill");
-  EXPECT_FALSE(model.IsVerified());
-
-  model.set_origin(kSettingsOrigin);
-  EXPECT_TRUE(model.IsVerified());
-
-  model.set_origin("Some gibberish string");
-  EXPECT_TRUE(model.IsVerified());
-
-  model.set_origin(std::string());
-  EXPECT_FALSE(model.IsVerified());
-}
-
 TEST(AutofillDataModelTest, GetMetadata) {
-  TestAutofillDataModel model("guid", std::string());
+  TestAutofillDataModel model("guid");
   model.set_use_count(10);
   model.set_use_date(kArbitraryTime);
 
@@ -70,14 +41,14 @@ TEST(AutofillDataModelTest, SetMetadata) {
   metadata.use_count = 10;
   metadata.use_date = kArbitraryTime;
 
-  TestAutofillDataModel model("guid", std::string());
+  TestAutofillDataModel model("guid");
   EXPECT_TRUE(model.SetMetadata(metadata));
   EXPECT_EQ(metadata.use_count, model.use_count());
   EXPECT_EQ(metadata.use_date, model.use_date());
 }
 
 TEST(AutofillDataModelTest, IsDeletable) {
-  TestAutofillDataModel model("guid", std::string());
+  TestAutofillDataModel model("guid");
   model.set_use_date(kArbitraryTime);
 
   TestAutofillClock test_clock;

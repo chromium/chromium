@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/network_change_notifier_passive.h"
+
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "net/base/network_change_notifier_passive.h"
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 
@@ -18,6 +20,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include <linux/rtnetlink.h>
+
 #include "net/base/network_change_notifier_linux.h"
 #endif
 
@@ -91,6 +95,13 @@ void NetworkChangeNotifierPassive::GetCurrentMaxBandwidthAndConnectionType(
   *connection_type = connection_type_;
   *max_bandwidth_mbps = max_bandwidth_mbps_;
 }
+
+#if BUILDFLAG(IS_LINUX)
+AddressMapOwnerLinux*
+NetworkChangeNotifierPassive::GetAddressMapOwnerInternal() {
+  return &address_map_cache_;
+}
+#endif
 
 // static
 NetworkChangeNotifier::NetworkChangeCalculatorParams

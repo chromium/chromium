@@ -37,8 +37,9 @@ NSError* CreateMissingIdentitySigninError() {
 }
 
 SigninErrorCategory GetSigninErrorCategory(NSError* error) {
-  if (![error.domain isEqual:kTestSigninErrorDomain])
+  if (![error.domain isEqualToString:kTestSigninErrorDomain]) {
     return SigninErrorCategory::kUnknownError;
+  }
 
   switch (static_cast<TestSigninErrorCode>(error.code)) {
     case TestSigninErrorCode::kUserCancelled:

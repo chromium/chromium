@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/delay_policy.h"
@@ -184,13 +183,15 @@ void DisplayScheduler::MaybeCreateHintSession(
 
 void DisplayScheduler::ReportFrameTime(
     base::TimeDelta frame_time,
-    base::flat_set<base::PlatformThreadId> thread_ids) {
+    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::TimeTicks draw_start,
+    HintSession::BoostType boost_type) {
   MaybeCreateHintSession(std::move(thread_ids));
   if (hint_session_) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
                                             frame_time, base::Microseconds(1),
                                             base::Milliseconds(50), 50);
-    hint_session_->ReportCpuCompletionTime(frame_time);
+    hint_session_->ReportCpuCompletionTime(frame_time, draw_start, boost_type);
   }
 }
 
@@ -311,7 +312,7 @@ int DisplayScheduler::MaxPendingSwaps() const {
   // here the 0.8 constant is chosen to bias rounding up.
   int deadline_max_pending_swaps =
       (total_time_nanos + 0.8 * interval_nanos) / interval_nanos;
-  return base::clamp(deadline_max_pending_swaps, 0, param_max_pending_swaps);
+  return std::clamp(deadline_max_pending_swaps, 0, param_max_pending_swaps);
 }
 
 void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {

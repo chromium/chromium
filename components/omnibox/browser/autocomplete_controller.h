@@ -38,14 +38,15 @@
 class ClipboardProvider;
 class DocumentProvider;
 class HistoryFuzzyProvider;
-class HistoryURLProvider;
 class HistoryQuickProvider;
+class HistoryURLProvider;
 class KeywordProvider;
+class OmniboxTriggeredFeatureService;
+class OnDeviceHeadProvider;
 class SearchProvider;
 class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
-class OnDeviceHeadProvider;
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -298,16 +299,17 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
-  // Annotates the final set of suggestions (open tab match, pedals, keyword
-  // info, etc.) and fires notifications that the result and potentially the
-  // default match has changed.
-  void AnnotateResultAndNotifyChanged(
+  // Calls `SortAndCull()`, then annotates the final set of suggestions (with
+  // open tab match, pedals, keyword info, etc.). Upon completion, notifies the
+  // listeners that the result and potentially the default match has changed.
+  void SortCullAndAnnotateResult(
       const absl::optional<AutocompleteMatch>& last_default_match,
       const std::u16string& last_default_associated_keyword,
-      bool force_notify_default_match_changed);
+      bool force_notify_default_match_changed,
+      absl::optional<AutocompleteMatch> default_match_to_preserve);
 
-  // Updates ML scoring signals of suggestions in the autocomplete result.
-  void UpdateScoringSignals();
+  // Attaches actions to matches: pedals, history clusters, tab switch, etc.
+  void AttachActions();
 
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance
@@ -333,6 +335,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Invokes `NotifyChanged()` through `notify_changed_debouncer_`.
   void DelayedNotifyChanged(bool notify_default_match);
 
+  // Cancels any pending `NotifyChanged()` invocation through
+  // `notify_changed_debouncer_`.
+  void CancelDelayedNotifyChanged();
+
   // Updates |done_| to be accurate with respect to current providers' statuses.
   void CheckIfDone();
 
@@ -346,11 +352,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // triggered by a user's idleness, i.e., not an explicit user action.
   void StopHelper(bool clear_result, bool due_to_user_inactivity);
 
-  // Helper for UpdateKeywordDescriptions(). Returns whether curbing the keyword
-  // descriptions is enabled, and whether there is enough input to guarantee
-  // that the Omnibox is in keyword mode.
-  bool ShouldCurbKeywordDescriptions(const std::u16string& keyword);
-
   // MemoryDumpProvider:
   bool OnMemoryDump(
       const base::trace_event::MemoryDumpArgs& args,
@@ -362,24 +363,28 @@ class AutocompleteController : public AutocompleteProviderListener,
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
-  // Called when the model is done running for all the eligible matches in
-  // `results_.matches_`. Redistributes the existing relevance scores to the
-  // matches based on the model output (i.e. highest relevance now belongs to
-  // the match with the highest output value, and vice versa), re-sorts and
-  // trims the matches, and calls `completion_callback`.
+  // Runs the async scoring model for all the eligible matches in
+  // `results_.matches_` and bypasses the ineligible matches. Passes
+  // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
+  // once the model is done for all the eligible matches, whether successfully
+  // or not, and all the ineligible matches are bypassed.
+  void RunUrlScoringModel(base::OnceClosure completion_callback);
+
+  // Tries to cancel any pending requests to the scoring model and prevents
+  // `OnUrlScoringModelDone()` and its completion callback from being called.
+  void CancelUrlScoringModel();
+
+  // Called when the async scoring model is done running for all the eligible
+  // matches in `results_.matches_` and all the ineligible matches are bypassed.
+  // Redistributes the existing relevance scores to the matches based on the
+  // model output (i.e. highest relevance now belongs to the match with the
+  // highest output value, and vice versa), re-sorts and trims the matches, and
+  // calls `completion_callback`.
   void OnUrlScoringModelDone(
-      AutocompleteInput input,
       const base::ElapsedTimer elapsed_timer,
       base::OnceClosure completion_callback,
-      std::vector<std::pair<absl::optional<float>, size_t>>
-          outputs_and_match_indices);
-
-  // If ML Relevance Scoring is not enabled returns false. Otherwise runs the
-  // model asynchronously for all the eligible matches in `results_.matches_`
-  // and returns true. Passes `completion_callback` to `OnUrlScoringModelDone()`
-  // callback which is called once the scoring is done for all the eligible
-  // matches, whether successfully or not.
-  bool MaybeRunUrlScoringModel(base::OnceClosure completion_callback);
+      std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
+          outputs_and_match_info);
 
   base::ObserverList<Observer> observers_;
 
@@ -502,13 +507,13 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   raw_ptr<TemplateURLService> template_url_service_;
 
+  raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
+
   // Combined, used to cancel model execution requests sent to
   // `AutocompleteScoringModelService` and to prevent its callbacks from being
   // called `base::CancelableTaskTracker` alone is insufficient because it
-  // cannot cancel tasks that have already started.
+  // cannot cancel tasks that have already started to run.
   base::CancelableTaskTracker scoring_model_task_tracker_;
-  base::WeakPtr<AutocompleteController> scoring_model_weak_ptr_;
-
   base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
 

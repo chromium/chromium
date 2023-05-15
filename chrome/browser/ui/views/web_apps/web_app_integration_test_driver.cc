@@ -451,7 +451,9 @@ class BrowserAddedWaiter final : public BrowserListObserver {
 class PageLoadWaiter final : public content::WebContentsObserver {
  public:
   explicit PageLoadWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
+      : WebContentsObserver(web_contents) {
+    CHECK(web_contents);
+  }
   ~PageLoadWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
@@ -1387,7 +1389,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
   base::RunLoop run_loop;
   BrowserAddedWaiter browser_added_waiter;
 #if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #else
   web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #endif
@@ -1436,7 +1438,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   base::RunLoop run_loop;
   BrowserAddedWaiter browser_added_waiter;
 #if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #else
   web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #endif
@@ -1470,17 +1472,47 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
 
   WebAppRegistrar& app_registrar = provider()->registrar_unsafe();
+#if BUILDFLAG(IS_CHROMEOS)
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
-  if (display_mode == blink::mojom::DisplayMode::kBrowser) {
+  bool is_open_in_app_browser =
+      (display_mode != blink::mojom::DisplayMode::kBrowser);
+  if (is_open_in_app_browser) {
+    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
+    active_app_id_ = app_id;
+  } else {
     ui_test_utils::UrlLoadObserver url_observer(
         app_registrar.GetAppLaunchUrl(app_id),
         content::NotificationService::AllSources());
     LaunchBrowserForWebAppInTab(profile(), app_id);
     url_observer.Wait();
-  } else {
-    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
-    active_app_id_ = app_id;
   }
+#else
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler(&test_web_ui);
+
+  auto event_ptr = app_home::mojom::ClickEvent::New();
+  event_ptr->button = 0.0;
+  event_ptr->alt_key = false;
+  event_ptr->ctrl_key = false;
+  event_ptr->meta_key = false;
+  event_ptr->shift_key = false;
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      app_registrar.GetAppLaunchUrl(app_id),
+      content::NotificationService::AllSources());
+  app_home_page_handler.LaunchApp(app_id, std::move(event_ptr));
+  url_observer.Wait();
+
+  // The app_browser_ is needed only for apps that open in a new window, and is
+  // nullptr for apps that launch in a tab.
+  app_browser_ = GetBrowserForAppId(profile(), app_id);
+  active_app_id_ = app_id;
+#endif
   AfterStateChangeAction();
 }
 
@@ -1566,15 +1598,33 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
     app_browser_ = GetBrowserForAppId(profile(), app_id);
+    bool had_open_browsers = false;
+    for (auto* profile : GetAllProfiles()) {
+      auto* provider = GetProviderForProfile(profile);
+      if (!provider) {
+        continue;
+      }
+      if (provider->ui_manager().GetNumWindowsForApp(app_id) > 0) {
+        had_open_browsers = true;
+      }
+    }
+    base::RunLoop run_loop;
+    apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
-    if (!app_browser_) {
+    run_loop.Run();
+    if (!app_browser_ && !had_open_browsers) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
     }
-    active_app_id_ = app_id;
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+    if (app_browser_) {
+      active_app_id_ = app_id;
+      EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+    }
   } else {
+    base::RunLoop run_loop;
+    apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    run_loop.Run();
   }
 #else
   if (is_open_in_app_browser) {
@@ -1690,6 +1740,26 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   content::WebContentsAddedObserver nav_observer;
   app_home_page_handler.ShowAppSettings(app_id);
   // Wait for new web contents to be created.
+  nav_observer.GetWebContents();
+  AfterStateChangeAction();
+#endif
+}
+
+void WebAppIntegrationTestDriver::OpenAppSettingsFromCommand(Site site) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  Browser* app_browser = GetAppBrowserForSite(site);
+  ASSERT_TRUE(app_browser);
+
+  content::WebContentsAddedObserver nav_observer;
+
+  // Click App Settings from app browser.
+  CHECK(chrome::ExecuteCommand(app_browser, IDC_WEB_APP_SETTINGS));
+  // Wait for new web content to be created.
   nav_observer.GetWebContents();
   AfterStateChangeAction();
 #endif
@@ -2082,21 +2152,7 @@ void WebAppIntegrationTestDriver::SwitchActiveProfile(
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  const char* profile_name_str = nullptr;
-  switch (profile_name) {
-    case ProfileName::kDefault:
-      profile_name_str = "Default";
-      break;
-    case ProfileName::kProfile2:
-      profile_name_str = "Profile2";
-      break;
-  }
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath profile_path = user_data_dir.AppendASCII(profile_name_str);
-  active_profile_ =
-      g_browser_process->profile_manager()->GetProfile(profile_path);
+  active_profile_ = GetOrCreateProfile(profile_name);
   // Make sure the profile has at least one browser by creating one if one
   // doesn't exist already.
   if (!chrome::FindTabbedBrowser(active_profile_,
@@ -2856,7 +2912,7 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
   } else {
 #endif
     ASSERT_TRUE(previous_browser_state.has_value());
-    EXPECT_GT(most_recent_browser_state->tabs.size(),
+    EXPECT_GE(most_recent_browser_state->tabs.size(),
               previous_browser_state->tabs.size());
     int tab_diff = most_recent_browser_state->tabs.size() -
                    previous_browser_state->tabs.size();
@@ -3115,11 +3171,18 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
+  CheckPwaWindowCreatedImpl(profile(), site, number);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
+                                                            Site site,
+                                                            Number number) {
   DCHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
-      GetStateForProfile(after_state_change_action_state_.get(), profile());
+      GetStateForProfile(after_state_change_action_state_.get(), profile);
   absl::optional<ProfileState> before_action_profile =
-      GetStateForProfile(before_state_change_action_state_.get(), profile());
+      GetStateForProfile(before_state_change_action_state_.get(), profile);
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
 
@@ -3146,6 +3209,17 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
       ASSERT_EQ(2, app_window_diff);
       break;
   }
+}
+
+void WebAppIntegrationTestDriver::CheckPwaWindowCreatedInProfile(
+    Site site,
+    Number number,
+    ProfileName profile_name) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  Profile* profile = GetOrCreateProfile(profile_name);
+  CheckPwaWindowCreatedImpl(profile, site, number);
   AfterStateCheckAction();
 }
 
@@ -3342,6 +3416,37 @@ void WebAppIntegrationTestDriver::CheckNoSubApps() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+
+  bool app_launched = false;
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    // Bypass apps that open in standalone windows.
+    if (AppBrowserController::IsWebApp(browser)) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+      if (!app_id) {
+        continue;
+      }
+
+      if (*app_id == GetAppIdBySiteMode(site)) {
+        app_launched = true;
+        break;
+      }
+    }
+  }
+  EXPECT_TRUE(app_launched);
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
@@ -3432,16 +3537,28 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   FlushShortcutTasks();
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   AwaitManifestSystemIdle();
-  auto* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-        PageLoadWaiter page_load_waiter(web_contents);
-        page_load_waiter.Wait();
+
+  auto get_first_loading_web_contents = []() -> content::WebContents* {
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+        content::WebContents* web_contents =
+            browser->tab_strip_model()->GetWebContentsAt(i);
+        if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+          return web_contents;
+        }
       }
     }
+    return nullptr;
+  };
+
+  // In some circumstances, this loop could hang forever (if pages never
+  // complete loading, or if they cause reloads, etc). However, these
+  // tests only use static test pages that don't do that, so this should
+  // be safe.
+  while (content::WebContents* loading_web_content =
+             get_first_loading_web_contents()) {
+    PageLoadWaiter page_load_waiter(loading_web_content);
+    page_load_waiter.Wait();
   }
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
@@ -3622,6 +3739,25 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
   }
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
+}
+
+Profile* WebAppIntegrationTestDriver::GetOrCreateProfile(
+    ProfileName profile_name) {
+  const char* profile_name_str = nullptr;
+  switch (profile_name) {
+    case ProfileName::kDefault:
+      profile_name_str = "Default";
+      break;
+    case ProfileName::kProfile2:
+      profile_name_str = "Profile2";
+      break;
+  }
+  CHECK(profile_name_str);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath profile_path = user_data_dir.AppendASCII(profile_name_str);
+  return g_browser_process->profile_manager()->GetProfile(profile_path);
 }
 
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(

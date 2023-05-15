@@ -6,6 +6,7 @@
 import re
 import textwrap
 from style_variable_generator.opacity import Opacity
+from abc import ABC, abstractmethod
 
 
 def split_args(arg_str):
@@ -28,11 +29,141 @@ def split_args(arg_str):
     yield arg_str[prev_index:].strip()
 
 
+# Attempts to parse special variables, returns the Color if successful.
+def from_white_black(var):
+    if var == 'white':
+        return ColorRGB([255, 255, 255])
+
+    if var == 'black':
+        return ColorRGB([0, 0, 0])
+
+    return None
+
+
+def from_rgb_ref(rgb_ref):
+    match = re.match(r'^\$([a-z0-9_\.\-]+)\.rgb$', rgb_ref)
+    if not match:
+        raise ValueError(f'Expected a reference to an RGB variable: {rgb_ref}')
+
+    rgb_var = match.group(1)
+
+    color = from_white_black(rgb_var)
+    if color is None:
+        return ColorRGBVar(rgb_var + '.rgb')
+
+    return color
+
+
+def ParseColor(value):
+    def ParseHex(value):
+        match = re.match(r'^#([0-9a-f]*)$', value)
+        if not match:
+            return None
+
+        value = match.group(1)
+        if len(value) != 6:
+            raise ValueError('Expected #RRGGBB')
+
+        return ColorRGB([int(x, 16) for x in textwrap.wrap(value, 2)],
+                        Opacity(1))
+
+    def ParseRGB(value):
+        match = re.match(r'^rgb\((.*)\)$', value)
+        if not match:
+            return None
+
+        values = match.group(1).split(',')
+        if len(values) == 1:
+            color = from_rgb_ref(values[0])
+            color.opacity = Opacity(1)
+            return color
+
+        if len(values) == 3:
+            return ColorRGB([int(x) for x in values], Opacity(1))
+
+        raise ValueError('rgb() expected to have either 1 reference or 3 ints')
+
+    def ParseRGBA(value):
+        match = re.match(r'^rgba\((.*)\)$', value)
+        if not match:
+            return None
+
+        values = [x.strip() for x in match.group(1).split(',')]
+        if len(values) == 2:
+            color = from_rgb_ref(values[0])
+            color.opacity = Opacity(values[1])
+            return color
+
+        if len(values) == 4:
+            return ColorRGB([int(x) for x in values[0:3]], Opacity(values[3]))
+
+        raise ValueError('rgba() expected to have either'
+                         '1 reference + alpha, or 3 ints + alpha')
+
+    def ParseBlend(value):
+        match = re.match(r'^blend\((.*)\)$', value)
+        if not match:
+            return None
+
+        values = list(split_args(match.group(1)))
+        if len(values) == 2:
+            # blend(color1, color2)
+            return ColorBlend([ParseColor(values[0]), ParseColor(values[1])])
+        elif len(values) == 3:
+            # blend(color1, blendPercentage%, color2)
+            blendPercentage = int(re.match(r'(\d+)%', values[1]).group(1))
+            return ColorBlend([ParseColor(values[0]),
+                               ParseColor(values[2])], blendPercentage)
+
+        raise ValueError('Unexpected number of arguments for blend()')
+
+    def ParseVariableReference(value):
+        match = re.match(r'^\$([\w\.\-]+)$', value)
+        if not match:
+            return None
+
+        var = match.group(1)
+
+        color = from_white_black(var)
+        if color is not None:
+            color.opacity = Opacity(1)
+            return color
+
+        if value.endswith('.rgb'):
+            raise ValueError(
+                'color reference cannot resolve to an rgb reference')
+
+        return ColorVar(var)
+
+    parsers = [
+        ParseHex,
+        ParseRGB,
+        ParseRGBA,
+        ParseBlend,
+        ParseVariableReference,
+    ]
+
+    value = re.sub(r'_rgb\b', '.rgb', value)
+
+    parsed = None
+    for p in parsers:
+        parsed = p(value)
+        if parsed is not None:
+            break
+
+    if parsed is None:
+        raise ValueError('Malformed color value')
+    if not isinstance(parsed, Color):
+        raise ValueError(repr(parsed))
+
+    return parsed
+
+
 class Color:
     '''A representation of a single color value.
 
     This color can be of the following formats:
-    - #RRGGBB
+    - #rrggbb
     - rgb(r, g, b)
     - rgba(r, g, b, a)
     - rgba(r, g, b, $named_opacity)
@@ -46,181 +177,97 @@ class Color:
     with '.rgb'.
     '''
 
-    def __init__(self, value_str=None):
-        self.var = None
-        self.rgb_var = None
-        self.r = -1
-        self.g = -1
-        self.b = -1
-        # If non-empty, this color is the result of blending two other
-        # colors using the "A over B" operation, where A is blended_colors[0]
-        # and B is blended_colors[1].
-        self.blended_colors = []
+    @abstractmethod
+    def GetFormula(self):
+        pass
 
-        self.opacity = None
+    @abstractmethod
+    def __repr__(self):
+        pass
 
-        if value_str is not None:
-            # Legacy support for old '_rgb'-style RGB refs.
-            value_str = re.sub(r'_rgb\b', '.rgb', value_str)
 
-            self.Parse(value_str)
-            if not self.var and not self.blended_colors and not self.opacity:
-                raise ValueError(repr(self))
-
-    def _AssignRGB(self, rgb):
-        for v in rgb:
-            if not (0 <= v <= 255):
-                raise ValueError('RGB value out of bounds')
-
-        (self.r, self.g, self.b) = rgb
-
-    # Attempts to parse special variables, returns True if successful.
-    def _ParseWhiteBlack(self, var):
-        if var == 'white':
-            self._AssignRGB([255, 255, 255])
-            return True
-
-        if var == 'black':
-            self._AssignRGB([0, 0, 0])
-            return True
-
-        return False
-
-    def _ParseRGBRef(self, rgb_ref):
-        match = re.match(r'^\$([a-z0-9_\.\-]+)\.rgb$', rgb_ref)
-        if not match:
-            raise ValueError(
-                f'Expected a reference to an RGB variable: {rgb_ref}')
-
-        rgb_var = match.group(1)
-
-        if not self._ParseWhiteBlack(rgb_var):
-            self.rgb_var = rgb_var + '.rgb'
-
-    def RGBVarToVar(self):
-        assert (self.rgb_var)
-        return self.rgb_var.replace('.rgb', '')
-
-    def Parse(self, value):
-        def ParseHex(value):
-            match = re.match(r'^#([0-9a-f]*)$', value)
-            if not match:
-                return False
-
-            value = match.group(1)
-            if len(value) != 6:
-                raise ValueError('Expected #RRGGBB')
-
-            self._AssignRGB([int(x, 16) for x in textwrap.wrap(value, 2)])
-            self.opacity = Opacity(1)
-
-            return True
-
-        def ParseRGB(value):
-            match = re.match(r'^rgb\((.*)\)$', value)
-            if not match:
-                return False
-
-            self.opacity = Opacity(1)
-
-            values = match.group(1).split(',')
-            if len(values) == 1:
-                self._ParseRGBRef(values[0])
-                return True
-
-            if len(values) == 3:
-                self._AssignRGB([int(x) for x in values])
-                return True
-
-            raise ValueError(
-                'rgb() expected to have either 1 reference or 3 ints')
-
-        def ParseRGBA(value):
-            match = re.match(r'^rgba\((.*)\)$', value)
-            if not match:
-                return False
-
-            values = [x.strip() for x in match.group(1).split(',')]
-            if len(values) == 2:
-                self._ParseRGBRef(values[0])
-                self.opacity = Opacity(values[1])
-                return True
-
-            if len(values) == 4:
-                self._AssignRGB([int(x) for x in values[0:3]])
-                self.opacity = Opacity(values[3])
-                return True
-
-            raise ValueError('rgba() expected to have either'
-                             '1 reference + alpha, or 3 ints + alpha')
-
-        def ParseBlend(value):
-            match = re.match(r'^blend\((.*)\)$', value)
-            if not match:
-                return False
-
-            values = list(split_args(match.group(1)))
-            if len(values) == 2:
-                self.blended_colors.append(Color(values[0]))
-                self.blended_colors.append(Color(values[1]))
-                return True
-
-            raise ValueError('blend() expected to have 2 colors')
-
-        def ParseVariableReference(value):
-            match = re.match(r'^\$([\w\d_\.\-]+)$', value)
-            if not match:
-                return False
-
-            var = match.group(1)
-
-            if self._ParseWhiteBlack(var):
-                self.opacity = Opacity(1)
-                return True
-
-            if value.endswith('.rgb'):
-                raise ValueError(
-                    'color reference cannot resolve to an rgb reference')
-
-            self.var = var
-            return True
-
-        parsers = [
-            ParseHex,
-            ParseRGB,
-            ParseRGBA,
-            ParseBlend,
-            ParseVariableReference,
-        ]
-
-        parsed = False
-        for p in parsers:
-            parsed = p(value)
-            if parsed:
-                break
-
-        if not parsed:
-            raise ValueError('Malformed color value')
+class ColorRGB(Color):
+    def __init__(self, rgb=None, opacity=None):
+        super().__init__()
+        if rgb is None:
+            (self.r, self.g, self.b) = [-1, -1, -1]
+        else:
+            if not all([(0 <= v <= 255) for v in rgb]):
+                raise ValueError(f'RGB value out of bounds: {rgb}')
+            (self.r, self.g, self.b) = rgb
+        self.opacity = opacity
 
     def GetFormula(self):
-        if self.blended_colors:
-            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
-                                      self.blended_colors[1].GetFormula())
-        if self.var:
-            return self.var
-        if self.rgb_var:
-            a = self.opacity.GetReadableStr()
-            return '%s @ %s' % (self.rgb_var, a)
         a = repr(self.opacity)
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
 
     def __repr__(self):
         a = repr(self.opacity)
-
-        if self.var:
-            return 'var(--%s)' % self.var
-
-        if self.rgb_var:
-            return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
-
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
+
+
+class ColorRGBVar(Color):
+    def __init__(self, rgb_var=None, opacity=None):
+        super().__init__()
+        if not re.match(r'^[\w\.\-]+\.rgb$', rgb_var):
+            raise ValueError(f'"{rgb_var}" is not a valid RGBVar value')
+        self.rgb_var = rgb_var
+        self.opacity = opacity
+
+    def ToVar(self):
+        assert (self.rgb_var)
+        return self.rgb_var.replace('.rgb', '')
+
+    def GetFormula(self):
+        a = self.opacity.GetReadableStr()
+        return '%s @ %s' % (self.rgb_var, a)
+
+    def __repr__(self):
+        a = repr(self.opacity)
+        return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
+
+
+class ColorVar(Color):
+    def __init__(self, var=None):
+        super().__init__()
+        if not re.match(r'^[\w\.\-]+$', var):
+            raise ValueError(f'{var} is not a valid var value')
+        self.var = var
+
+    def GetFormula(self):
+        return self.var
+
+    def __repr__(self):
+        return 'var(--%s)' % self.var
+
+
+class ColorBlend(Color):
+    '''This color is the result of blending two other colors
+
+    It uses the "A over B" operation, where A is blended_colors[0] and B is
+    blended_colors[1]. The mix percentace is `opacity`. If `opacity` is not
+    provided, the mix percentage may be taken from A's opacity.
+    '''
+    def __init__(self, colors=[], blendPercentage=None):
+        super().__init__()
+        if len(colors) not in [0, 2]:
+            raise ValueError(
+                f'Can only color-mix 2 colors. Found: {len(colors)}')
+        if not all(isinstance(c, Color) for c in colors):
+            raise ValueError(f'Non-Color found in {colors}')
+
+        self.blended_colors = colors
+        self.blendPercentage = blendPercentage
+
+    def GetFormula(self):
+        if self.blendPercentage is None:
+            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
+                                      self.blended_colors[1].GetFormula())
+        return 'blend(%s, %s, %s)' % (self.blended_colors[0].GetFormula(),
+                                      self.blendPercentage,
+                                      self.blended_colors[1].GetFormula())
+
+    def __repr__(self):
+        return (
+            f'blend({repr(self.blended_colors)}, {repr(self.blendPercentage)})'
+        )

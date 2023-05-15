@@ -12,6 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
+#             chromeos-board-jacuzzi chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -24,7 +25,9 @@
 #         lacros-chrome cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
+#         apple apple-apple-m1 apple-apple-m2
+#             apple-angle-metal-renderer:-apple-m1
+#             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
@@ -94,7 +97,7 @@ crbug.com/1409453 [ win amd ] WebCodecs_DrawImage_hw_decoder [ Failure ]
 crbug.com/1409453 [ win amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 
 # Not all platform encoders are very good at adhering to specified bitrate
-crbug.com/1368785 [ mac-x86_64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
+crbug.com/1368785 [ asan intel-0x3e9b mac-x86_64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
 
 # AVC VBR seems to be unreliable on some Android devices
 crbug.com/1368785 [ android-pixel-6 android-t arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
@@ -121,17 +124,13 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ F
 # finder:enable-unused
 
 # Temporary expectation while hardware encoder color spaces are added.
-crbug.com/1377842 [ win ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_vp09.00.10.08_prefer-hardware [ Failure ]
 
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_1500000 [ Failure ]
-
 crbug.com/1429736 [ chromeos chromeos-board-kevin ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+
+crbug.com/1444151 [ mac apple-apple-m2 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

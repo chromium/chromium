@@ -53,14 +53,19 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
       URLIndexPrivateData::GetTermsAndWordStartsOffsets(lower_raw_string);
 
   for (auto& match : *result) {
-    // Skip non-URL matches.
+    // Skip ineligible matches.
     if (!IsEligibleMatch(match)) {
       continue;
     }
 
+    // Initialize the scoring signals if needed.
+    if (!match.scoring_signals) {
+      match.scoring_signals = absl::make_optional<ScoringSignals>();
+    }
+
     // Skip this match if it already has history signals.
-    if (match.scoring_signals.has_typed_count() &&
-        match.scoring_signals.has_total_title_match_length()) {
+    if (match.scoring_signals->has_typed_count() &&
+        match.scoring_signals->has_total_title_match_length()) {
       continue;
     }
 
@@ -71,27 +76,18 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
     }
 
     // Populate scoring signals.
-    if (!match.scoring_signals.has_typed_count()) {
-      match.scoring_signals.set_typed_count(row.typed_count());
-      match.scoring_signals.set_visit_count(row.visit_count());
-      match.scoring_signals.set_elapsed_time_last_visit_secs(
+    if (!match.scoring_signals->has_typed_count()) {
+      match.scoring_signals->set_typed_count(row.typed_count());
+      match.scoring_signals->set_visit_count(row.visit_count());
+      match.scoring_signals->set_elapsed_time_last_visit_secs(
           (base::Time::Now() - row.last_visit()).InSeconds());
     }
-    if (!match.scoring_signals.has_total_title_match_length()) {
+    if (!match.scoring_signals->has_total_title_match_length()) {
       PopulateTitleMatchingSignals(lower_raw_terms,
                                    lower_terms_to_word_starts_offsets,
-                                   row.title(), &match.scoring_signals);
+                                   row.title(), &*match.scoring_signals);
     }
   }
-}
-
-// static
-bool HistoryScoringSignalsAnnotator::IsEligibleMatch(
-    const AutocompleteMatch& match) {
-  return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-         match.type == AutocompleteMatchType::HISTORY_URL ||
-         match.type == AutocompleteMatchType::HISTORY_TITLE ||
-         match.type == AutocompleteMatchType::BOOKMARK_TITLE;
 }
 
 void HistoryScoringSignalsAnnotator::PopulateTitleMatchingSignals(

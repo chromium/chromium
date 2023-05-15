@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace content {
 
@@ -69,7 +70,9 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
           remote_container_host,
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
           remote_controller,
-      const std::string& client_id);
+      const std::string& client_id,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption
+          fetch_handler_bypass_option);
 
   ControllerServiceWorkerConnector(const ControllerServiceWorkerConnector&) =
       delete;
@@ -103,6 +106,11 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
 
   const std::string& client_id() const { return client_id_; }
 
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+  fetch_handler_bypass_option() const {
+    return fetch_handler_bypass_option_;
+  }
+
  private:
   void SetControllerServiceWorker(
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller);
@@ -127,6 +135,10 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   // The web-exposed client id, used for FetchEvent#clientId (i.e.,
   // ServiceWorkerContainerHost::client_uuid).
   std::string client_id_;
+
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+      fetch_handler_bypass_option_ =
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
 };
 
 }  // namespace content

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -76,10 +77,6 @@ class OobeTest : public OobeBaseTest {
     }
 
     OobeBaseTest::TearDownOnMainThread();
-  }
-
-  LoginDisplay* GetLoginDisplay() {
-    return LoginDisplayHost::default_host()->GetLoginDisplay();
   }
 
   views::Widget* GetLoginWindowWidget() {
@@ -172,7 +169,7 @@ class InvalidPendingScreenTest : public OobeBaseTest,
 };
 
 IN_PROC_BROWSER_TEST_F(InvalidPendingScreenTest, WelcomeScreenShown) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
 }
 
 class DisplayOobeTest : public OobeBaseTest {

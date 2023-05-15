@@ -8,8 +8,6 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
@@ -24,11 +22,6 @@ using ::testing::NotNull;
 
 class AmbientAnimationShieldControllerTest : public AmbientAshTestBase {
  protected:
-  void SetUp() override {
-    enable_dark_light_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
-    AmbientAshTestBase::SetUp();
-  }
-
   void SetDarkModeEnabled(bool dark_mode_enabled) {
     auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
     CHECK(dark_light_mode_controller);
@@ -42,7 +35,6 @@ class AmbientAnimationShieldControllerTest : public AmbientAshTestBase {
     return shield_view;
   }
 
-  base::test::ScopedFeatureList enable_dark_light_;
   views::View parent_view_;
 };
 

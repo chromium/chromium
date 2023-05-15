@@ -93,6 +93,9 @@
 // NO-OP if it is already stopped.
 - (void)stopAnimatingActivityIndicator;
 
+// Sets the background color for the favicon container view.
+- (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_URL_ITEM_H_

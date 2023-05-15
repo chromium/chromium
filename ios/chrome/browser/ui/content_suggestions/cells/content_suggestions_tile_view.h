@@ -7,14 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+enum class ContentSuggestionsTileType {
+  kMostVisited,
+  kShortcuts,
+};
+
 // A generic Content Suggestions tile view. Provides a title label and an image container on a
 // squircle-shaped background. Concrete subclasses of this are used to display
 // most visited tiles and shortcut tiles on NTP and other places.
 @interface ContentSuggestionsTileView : UIView <UIPointerInteractionDelegate>
 
-// Initializer that will lay itself out as placeholder tile with no text or
-// favicon if `isPlaceholder` is YES.
-- (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder;
+// Initializes view with tile `type` to allow for different layout
+// configurations.
+- (instancetype)initWithFrame:(CGRect)frame
+                     tileType:(ContentSuggestionsTileType)type;
 
 // Container for the image view. Used in subclasses.
 @property(nonatomic, strong, readonly) UIView* imageContainerView;

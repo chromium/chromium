@@ -6,65 +6,64 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <string>
-#include <utility>
+#import <memory>
+#import <string>
+#import <utility>
 
-#include "base/format_macros.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/mac/foundation_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "base/uuid.h"
-#include "base/values.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
-#include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/field_data_manager.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_data_predictions.h"
-#include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "base/format_macros.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
+#import "base/mac/foundation_util.h"
+#import "base/memory/weak_ptr.h"
+#import "base/metrics/field_trial.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "base/uuid.h"
+#import "base/values.h"
+#import "components/autofill/core/browser/autofill_field.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/metrics/autofill_metrics.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/popup_types.h"
+#import "components/autofill/core/browser/ui/suggestion.h"
+#import "components/autofill/core/common/autofill_constants.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/core/common/autofill_tick_clock.h"
+#import "components/autofill/core/common/autofill_util.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/form_data_predictions.h"
+#import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#include "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "ios/web/common/url_scheme_util.h"
-#include "ios/web/public/deprecated/url_verification_constants.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/deprecated/url_verification_constants.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/gfx/geometry/rect.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -291,11 +290,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   GURL pageURL = _webState->GetLastCommittedURL();
   GURL frameOrigin =
       frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
+  scoped_refptr<autofill::FieldDataManager> fieldDataManager =
+      _fieldDataManager;
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, requiredFieldsCount, base::BindOnce(^(NSString* formJSON) {
         std::vector<autofill::FormData> formData;
         bool success = autofill::ExtractFormsData(
-            formJSON, filtered, formNameCopy, pageURL, frameOrigin, &formData);
+            formJSON, filtered, formNameCopy, pageURL, frameOrigin,
+            *fieldDataManager, &formData);
         completionHandler(success, formData);
       }));
 }
@@ -432,6 +434,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
+  // TODO(crbug.com/1394920): Make `suggestion.identifier` a `FrontendId`.
+  autofill::Suggestion::FrontendId frontend_id(suggestion.identifier);
+
   if (suggestion.acceptanceA11yAnnouncement != nil) {
     __weak AutofillAgent* weakSelf = self;
     // The announcement is done asyncronously with certain delay to make sure
@@ -460,14 +465,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         });
   }
 
-  if (suggestion.identifier > 0) {
+  if (frontend_id.as_int() > 0) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.frontend_id = suggestion.identifier;
+      autofill_suggestion.frontend_id = frontend_id;
       autofill_suggestion.payload = autofill::Suggestion::BackendId();
       _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
     }
@@ -489,14 +494,16 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
-  if (suggestion.identifier == autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  if (frontend_id.as_popup_item_id() ==
+      autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
              formName:SysNSStringToUTF8(formName)
                 value:SysNSStringToUTF16(suggestion.value)
               inFrame:frame];
-  } else if (suggestion.identifier == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
+  } else if (frontend_id.as_popup_item_id() ==
+             autofill::POPUP_ITEM_ID_CLEAR_FORM) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -512,7 +519,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
           suggestionHandledCompletionCopy();
         }));
 
-  } else if (suggestion.identifier ==
+  } else if (frontend_id.as_popup_item_id() ==
              autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
@@ -520,7 +527,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED() << "unknown identifier " << suggestion.identifier;
+    NOTREACHED() << "unknown identifier " << frontend_id;
   }
 }
 
@@ -560,8 +567,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // Store the form data when WebState is not visible, to send it as soon as it
   // becomes visible again, e.g., when the CVC unmask prompt is showing.
   if (!_webState->IsVisible()) {
-    _pendingFormData =
-        std::make_pair(web::GetWebFrameId(frame), std::move(autofillData));
+    _pendingFormData = std::make_pair(frame ? frame->GetFrameId() : "",
+                                      std::move(autofillData));
   } else {
     [self sendData:std::move(autofillData) toFrame:frame];
   }
@@ -621,7 +628,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // "clear form" button.
     NSString* value = nil;
     NSString* displayDescription = nil;
-    if (popup_suggestion.frontend_id >= 0) {
+    if (popup_suggestion.frontend_id.as_int() >= 0) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.frontend_id ==
               autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
@@ -660,13 +667,18 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                                      autofill::PopupType::kCreditCards
                          ? base::SysUTF8ToNSString(popup_suggestion.icon)
                          : nil;
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:value
-                         displayDescription:displayDescription
-                                       icon:icon
-                                 identifier:popup_suggestion.frontend_id
-                             requiresReauth:NO
-                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+    FormSuggestion* suggestion = [FormSuggestion
+               suggestionWithValue:value
+                displayDescription:displayDescription
+                              icon:icon
+                        identifier:popup_suggestion.frontend_id.as_int()
+                    requiresReauth:NO
+        acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+
+    if (!popup_suggestion.feature_for_iph.empty()) {
+      suggestion.featureForIPH =
+          base::SysUTF8ToNSString(popup_suggestion.feature_for_iph);
+    }
 
     // Put "clear form" entry at the front of the suggestions.
     if (popup_suggestion.frontend_id == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
@@ -920,7 +932,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   bool success = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
-      webState->GetLastCommittedURL(), frame->GetSecurityOrigin(), &forms);
+      webState->GetLastCommittedURL(), frame->GetSecurityOrigin(),
+      *_fieldDataManager, &forms);
 
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];

@@ -39,6 +39,7 @@
 #include "net/der/encode_values.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -87,7 +88,7 @@ base::Value::List PEMCertValueList(const ParsedCertificateList& certs) {
   base::Value::List value;
   for (const auto& cert : certs) {
     std::string pem;
-    X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringPiece(),
+    X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringView(),
                                           &pem);
     value.Append(std::move(pem));
   }
@@ -129,6 +130,7 @@ RevocationPolicy NoRevocationChecking() {
   policy.crl_allowed = false;
   policy.allow_missing_info = true;
   policy.allow_unable_to_check = true;
+  policy.enforce_baseline_requirements = false;
   return policy;
 }
 
@@ -186,6 +188,11 @@ class CertVerifyProcTrustStore {
   }
 
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const {
+    if (TestRootCerts::HasInstance() &&
+        TestRootCerts::GetInstance()->IsKnownRoot(
+            trust_anchor->der_cert().AsSpan())) {
+      return true;
+    }
     return system_trust_store_->IsKnownRoot(trust_anchor);
   }
 
@@ -336,21 +343,24 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       policy.crl_allowed = true;
       policy.allow_missing_info = false;
       policy.allow_unable_to_check = false;
+      policy.enforce_baseline_requirements = false;
       return policy;
     }
 
     // Use soft-fail revocation checking for VERIFY_REV_CHECKING_ENABLED.
     if (flags_ & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) {
+      const bool is_known_root =
+          !certs.empty() && trust_store_->IsKnownRoot(certs.back().get());
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
       // Publicly trusted certs are required to have OCSP by the Baseline
       // Requirements and CRLs can be quite large, so disable the fallback to
       // CRLs for chains to known roots.
-      policy.crl_allowed =
-          !certs.empty() && !trust_store_->IsKnownRoot(certs.back().get());
+      policy.crl_allowed = !is_known_root;
       policy.allow_missing_info = true;
       policy.allow_unable_to_check = true;
+      policy.enforce_baseline_requirements = is_known_root;
       return policy;
     }
 
@@ -367,7 +377,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       return false;
 
     SHA256HashValue root_fingerprint;
-    crypto::SHA256HashString(root->der_cert().AsStringPiece(),
+    crypto::SHA256HashString(root->der_cert().AsStringView(),
                              root_fingerprint.data,
                              sizeof(root_fingerprint.data));
 
@@ -468,7 +478,7 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
 void AppendPublicKeyHashes(const der::Input& spki_bytes,
                            HashValueVector* hashes) {
   HashValue sha256(HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki_bytes.AsStringPiece(), sha256.data(),
+  crypto::SHA256HashString(spki_bytes.AsStringView(), sha256.data(),
                            crypto::kSHA256Length);
   hashes->push_back(sha256);
 }
@@ -591,6 +601,8 @@ CertPathBuilder::Result TryBuildPath(
       crl_set, net_fetcher, verification_type, digest_policy, flags,
       trust_store, ocsp_response, ev_metadata, checked_revocation, deadline);
 
+  absl::optional<CertIssuerSourceAia> aia_cert_issuer_source;
+
   // Initialize the path builder.
   CertPathBuilder path_builder(
       target, trust_store->trust_store(), &path_builder_delegate,
@@ -604,12 +616,13 @@ CertPathBuilder::Result TryBuildPath(
 
   // Allow the path builder to discover intermediates through AIA fetching.
   // TODO(crbug.com/634484): hook up netlog to AIA.
-  std::unique_ptr<CertIssuerSourceAia> aia_cert_issuer_source;
-  if (net_fetcher) {
-    aia_cert_issuer_source = std::make_unique<CertIssuerSourceAia>(net_fetcher);
-    path_builder.AddCertIssuerSource(aia_cert_issuer_source.get());
-  } else {
-    LOG(ERROR) << "No net_fetcher for performing AIA chasing.";
+  if (!(flags & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)) {
+    if (net_fetcher) {
+      aia_cert_issuer_source.emplace(net_fetcher);
+      path_builder.AddCertIssuerSource(&aia_cert_issuer_source.value());
+    } else {
+      LOG(ERROR) << "No net_fetcher for performing AIA chasing.";
+    }
   }
 
   path_builder.SetIterationLimit(kPathBuilderIterationLimit);

@@ -8,89 +8,24 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import os
-import tempfile
-
 USE_PYTHON3 = True
 
 
-def python3_command(input_api):
-    if not input_api.is_windows:
-        return 'python3'
-
-    # The subprocess module on Windows does not look at PATHEXT, so we cannot
-    # rely on 'python3' working. Instead we must check each possible name to
-    # find the working one.
-    input_api.logging.debug('Searching for Python 3 command name')
-
-    exts = list(filter(len, input_api.environ.get('PATHEXT', '').split(';')))
-    for ext in [''] + exts:
-        python = 'python3%s' % ext
-        input_api.logging.debug('Trying "%s"' % python)
-        try:
-            input_api.subprocess.check_output([python, '--version'])
-            return python
-        except WindowsError:
-            pass
-    raise WindowsError('Unable to find a valid python3 command name')
-
-
 def _LintWPT(input_api, output_api):
-    """Lint functionality duplicated from web-platform-tests upstream.
+    """Lint functionality encompassing web-platform-tests upstream.
 
     This is to catch lint errors that would otherwise be caught in WPT CI.
     See https://web-platform-tests.org/writing-tests/lint-tool.html for more
     information about the lint tool.
     """
+    tools_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                        input_api.os_path.pardir,
+                                        input_api.os_path.pardir, 'tools')
+    if tools_path not in input_api.sys.path:
+        input_api.sys.path.insert(0, tools_path)
+    from blinkpy.presubmit.common_checks import lint_wpt_root
     wpt_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt')
-    linter_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                         'third_party', 'wpt_tools', 'wpt',
-                                         'wpt')
-
-    paths_in_wpt = []
-    for abs_path in input_api.AbsoluteLocalPaths():
-        if abs_path.endswith(input_api.os_path.relpath(abs_path, wpt_path)):
-            paths_in_wpt.append(abs_path)
-
-    # If there are changes in web_tests/external that aren't in wpt, e.g.
-    # changes to wpt_automation or this presubmit script, then we can return
-    # to avoid running the linter on all files in wpt (which is slow).
-    if not paths_in_wpt:
-        return []
-
-    # We have to set delete=False and then let the object go out of scope so
-    # that the file can be opened by name on Windows.
-    with tempfile.NamedTemporaryFile('w+', newline='', delete=False) as f:
-        for path in paths_in_wpt:
-            f.write('%s\n' % path)
-        paths_name = f.name
-    args = [
-        python3_command(input_api),
-        linter_path,
-        'lint',
-        '--repo-root=%s' % wpt_path,
-        # To avoid false positives, do not lint files not upstreamed from
-        # Chromium.
-        '--ignore-glob=*-expected.txt',
-        '--ignore-glob=*.ini',
-        '--ignore-glob=*DIR_METADATA',
-        '--ignore-glob=*OWNERS',
-        '--ignore-glob=config.json',
-        '--paths-file=%s' % paths_name,
-    ]
-
-    proc = input_api.subprocess.Popen(args,
-                                      stdout=input_api.subprocess.PIPE,
-                                      stderr=input_api.subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    os.remove(paths_name)
-
-    if proc.returncode != 0:
-        return [
-            output_api.PresubmitError('wpt lint failed:',
-                                      long_text=stdout + stderr)
-        ]
-    return []
+    return lint_wpt_root(input_api, output_api, wpt_path)
 
 
 def _DontModifyIDLFiles(input_api, output_api):

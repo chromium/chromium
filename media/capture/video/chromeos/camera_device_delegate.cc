@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -901,6 +900,7 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
       case cros::mojom::CaptureIntent::DEFAULT:
         return false;
       case cros::mojom::CaptureIntent::STILL_CAPTURE:
+      case cros::mojom::CaptureIntent::PORTRAIT_CAPTURE:
         return true;
       case cros::mojom::CaptureIntent::VIDEO_RECORD:
         return ShouldUseBlobVideoSnapshot();
@@ -1379,8 +1379,8 @@ bool CameraDeviceDelegate::SetPointsOfInterest(
   // the closest allowed value.
   // ref: https://www.w3.org/TR/image-capture/#points-of-interest
 
-  double x = base::clamp(points_of_interest[0]->x, 0.0, 1.0);
-  double y = base::clamp(points_of_interest[0]->y, 0.0, 1.0);
+  double x = std::clamp(points_of_interest[0]->x, 0.0, 1.0);
+  double y = std::clamp(points_of_interest[0]->y, 0.0, 1.0);
 
   // Handle rotation, still in normalized square space.
   std::tie(x, y) = [&]() -> std::pair<double, double> {

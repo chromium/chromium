@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
 
 #include <cstring>
+#include <regex>
 #include <string>
 
 #include "base/containers/span.h"
@@ -12,14 +13,17 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/idle/action.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
+#include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -67,14 +71,13 @@ bool RequiresSyncDisabled(const std::string& name) {
       kClearDownloadHistoryActionName,
       kClearCookiesAndOtherSiteDataActionName,
       kClearCachedImagesAndFilesActionName,
-      kClearSiteSettingsActionName,
       kReloadPagesActionName,
-  };
+      kClearHostedAppDataActionName};
   return !base::ranges::any_of(
       base::make_span(kActionsAllowedWithSync),
       [&name](const char* s) { return !std::strcmp(s, name.c_str()); });
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  //! BUILDFLAG(IS_ANDROID)
 
 absl::optional<ActionType> NameToActionType(const std::string& name) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -113,6 +116,15 @@ absl::optional<ActionType> NameToActionType(const std::string& name) {
     return ActionType::kReloadPages;
   }
   return absl::nullopt;
+}
+
+std::string GetActionBrowsingDataTypeName(const std::string& action) {
+  // Get the data type to be cleared if the action is to clear browsig data.
+  const char kPrefix[] = "clear_";
+  if (!base::StartsWith(action, kPrefix, base::CompareCase::SENSITIVE)) {
+    return std::string();
+  }
+  return action.substr(std::strlen(kPrefix));
 }
 
 }  // namespace
@@ -189,6 +201,15 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
   }
   prefs->SetValue(prefs::kIdleTimeoutActions,
                   base::Value(std::move(converted_actions)));
+
+  if (browsing_data::IsPolicyDependencyEnabled()) {
+    std::string log_message;
+    browsing_data::DisableSyncTypes(forced_disabled_sync_types_, prefs,
+                                    policy_name(), log_message);
+    if (log_message != std::string()) {
+      LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
+    }
+  }
 }
 
 bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
@@ -215,9 +236,11 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
 #if !BUILDFLAG(IS_ANDROID)
   const base::Value* sync_disabled =
       policies.GetValue(policy::key::kSyncDisabled, base::Value::Type::BOOLEAN);
-  if (!sync_disabled || !sync_disabled->GetBool()) {
-    // SyncDisabled is false. Check actions that require SyncDisabled=true,
-    // and show a user-friendly error message if needed.
+  if (sync_disabled && sync_disabled->GetBool()) {
+    return true;
+  }
+
+  if (!browsing_data::IsPolicyDependencyEnabled()) {
     std::vector<std::string> invalid_actions;
     const base::Value* value =
         policies.GetValue(policy_name(), base::Value::Type::LIST);
@@ -234,9 +257,57 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
                                    base::JoinString(invalid_actions, ", ")});
       return false;
     }
+    return true;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#else
+  if (!browsing_data::IsPolicyDependencyEnabled()) {
+    return true;
+  }
+#endif  //! BUILDFLAG(IS_ANDROID)
+
+// BrowserSignin policy is not available on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  const auto* browser_signin_disabled = policies.GetValue(
+      policy::key::kBrowserSignin, base::Value::Type::INTEGER);
+  if (browser_signin_disabled && browser_signin_disabled->GetInt() == 0) {
+    return true;
+  }
+#endif
+
+  // Automatically disable sync for the required data types.
+  const base::Value* value =
+      policies.GetValue(this->policy_name(), base::Value::Type::LIST);
+  DCHECK(value);
+  base::Value::List clear_data_actions;
+  for (const base::Value& action : value->GetList()) {
+    std::string clear_data_action =
+        GetActionBrowsingDataTypeName(action.GetString());
+    if (!clear_data_action.empty()) {
+      clear_data_actions.Append(clear_data_action);
+    }
+  }
+  forced_disabled_sync_types_ = browsing_data::GetSyncTypesForClearBrowsingData(
+      base::Value(std::move(clear_data_actions)));
 
   return true;
+}
+
+// TODO(esalma): Move this logic to `ApplyPolicySettings()` after fixing
+// crbug.com/1435069.
+void IdleTimeoutActionsPolicyHandler::PrepareForDisplaying(
+    policy::PolicyMap* policies) const {
+  policy::PolicyMap::Entry* entry = policies->GetMutable(policy_name());
+  if (!entry || forced_disabled_sync_types_.Size() == 0) {
+    return;
+  }
+  // `PolicyConversionsClient::GetPolicyValue()` doesn't support
+  // MessageType::kInfo in the PolicyErrorMap, so add the message to the policy
+  // when it is prepared to be displayed on chrome://policy.
+  if (forced_disabled_sync_types_.Size() > 0) {
+    entry->AddMessage(policy::PolicyMap::MessageType::kInfo,
+                      IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO,
+                      {base::UTF8ToUTF16(UserSelectableTypeSetToString(
+                          forced_disabled_sync_types_))});
+  }
 }
 }  // namespace enterprise_idle

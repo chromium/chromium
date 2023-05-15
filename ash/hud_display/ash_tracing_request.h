@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/platform_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -167,7 +168,7 @@ class AshTracingRequest {
 
   bool user_logged_in_ = false;
 
-  AshTracingManager* tracing_manager_;
+  raw_ptr<AshTracingManager, ExperimentalAsh> tracing_manager_;
 
   // This object is deleted once tracing is stopped.
   std::unique_ptr<AshTracingHandler> tracing_handler_;

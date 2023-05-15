@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
@@ -41,6 +42,7 @@ GlanceablesKeyedService::GlanceablesKeyedService(Profile* profile)
 GlanceablesKeyedService::~GlanceablesKeyedService() = default;
 
 void GlanceablesKeyedService::Shutdown() {
+  classroom_client_.reset();
   tasks_client_.reset();
   UpdateRegistrationInAsh();
 }
@@ -67,10 +69,13 @@ GlanceablesKeyedService::CreateRequestSenderForClient(
 }
 
 void GlanceablesKeyedService::CreateClients() {
-  tasks_client_ =
-      std::make_unique<GlanceablesTasksClientImpl>(base::BindRepeating(
-          &GlanceablesKeyedService::CreateRequestSenderForClient,
-          base::Unretained(this)));
+  const auto create_request_sender_callback = base::BindRepeating(
+      &GlanceablesKeyedService::CreateRequestSenderForClient,
+      base::Unretained(this));
+  classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
+      create_request_sender_callback);
+  tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
+      create_request_sender_callback);
   UpdateRegistrationInAsh();
 }
 
@@ -81,6 +86,7 @@ void GlanceablesKeyedService::UpdateRegistrationInAsh() const {
   DCHECK(Shell::Get()->glanceables_v2_controller());
   Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
       account_id_, GlanceablesV2Controller::ClientsRegistration{
+                       .classroom_client = classroom_client_.get(),
                        .tasks_client = tasks_client_.get()});
 }
 

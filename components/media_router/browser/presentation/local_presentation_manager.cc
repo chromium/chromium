@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using blink::mojom::PresentationConnectionResult;
 using blink::mojom::PresentationInfo;
 
 namespace media_router {
@@ -117,9 +118,10 @@ void LocalPresentationManager::LocalPresentation::RegisterController(
         receiver_connection_receiver,
     const MediaRoute& route) {
   if (!receiver_callback_.is_null()) {
-    receiver_callback_.Run(PresentationInfo::New(presentation_info_),
-                           std::move(controller_connection_remote),
-                           std::move(receiver_connection_receiver));
+    receiver_callback_.Run(PresentationConnectionResult::New(
+        PresentationInfo::New(presentation_info_),
+        std::move(controller_connection_remote),
+        std::move(receiver_connection_receiver)));
   } else {
     pending_controllers_.insert(std::make_pair(
         render_frame_host_id, std::make_unique<ControllerConnection>(
@@ -140,10 +142,10 @@ void LocalPresentationManager::LocalPresentation::RegisterReceiver(
   DCHECK(receiver_callback_.is_null());
   DCHECK(receiver_web_contents);
   for (auto& controller : pending_controllers_) {
-    receiver_callback.Run(
+    receiver_callback.Run(PresentationConnectionResult::New(
         PresentationInfo::New(presentation_info_),
         std::move(controller.second->controller_connection_remote),
-        std::move(controller.second->receiver_connection_receiver));
+        std::move(controller.second->receiver_connection_receiver)));
   }
   receiver_callback_ = receiver_callback;
   receiver_web_contents_ = receiver_web_contents;

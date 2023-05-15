@@ -16,6 +16,7 @@
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "ui/views/view.h"
 
@@ -57,7 +58,7 @@ class ASH_EXPORT LockContentsViewTestApi {
   FingerprintState GetFingerPrintState(const AccountId& account_id) const;
 
  private:
-  LockContentsView* const view_;
+  const raw_ptr<LockContentsView, ExperimentalAsh> view_;
 };
 
 }  // namespace ash

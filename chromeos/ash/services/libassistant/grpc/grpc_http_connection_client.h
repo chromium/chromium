@@ -58,8 +58,7 @@ class GrpcHttpConnectionClient {
   void OnRpcExited(grpc::ClientContext* context, const grpc::Status& status);
 
   // `http_connection_factory_` must outlive this class.
-  base::raw_ptr<assistant_client::HttpConnectionFactory>
-      http_connection_factory_;
+  raw_ptr<assistant_client::HttpConnectionFactory> http_connection_factory_;
 
   // The following section is only accessed by the constructor thread.
   // Thread running the completion queue.  CQ has to be shutdown before we

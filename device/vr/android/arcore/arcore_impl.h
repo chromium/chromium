@@ -14,6 +14,7 @@
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
+#include "device/vr/create_anchor_request.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/hit_test_subscription_data.h"
@@ -25,29 +26,6 @@ class ArCorePlaneManager;
 
 using AnchorId = base::IdTypeU64<class AnchorTag>;
 
-class CreateAnchorRequest {
- public:
-  const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
-  gfx::Transform GetNativeOriginFromAnchor() const;
-  base::TimeTicks GetRequestStartTime() const;
-
-  ArCore::CreateAnchorCallback TakeCallback();
-
-  CreateAnchorRequest(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor,
-      ArCore::CreateAnchorCallback callback);
-  CreateAnchorRequest(CreateAnchorRequest&& other);
-  ~CreateAnchorRequest();
-
- private:
-  mojom::XRNativeOriginInformationPtr native_origin_information_;
-  const gfx::Transform native_origin_from_anchor_;
-  const base::TimeTicks request_start_time_;
-
-  ArCore::CreateAnchorCallback callback_;
-};
-
 class CreatePlaneAttachedAnchorRequest {
  public:
   uint64_t GetPlaneId() const;
@@ -55,13 +33,13 @@ class CreatePlaneAttachedAnchorRequest {
   gfx::Transform GetNativeOriginFromAnchor() const;
   base::TimeTicks GetRequestStartTime() const;
 
-  ArCore::CreateAnchorCallback TakeCallback();
+  CreateAnchorCallback TakeCallback();
 
   CreatePlaneAttachedAnchorRequest(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor,
       uint64_t plane_id,
-      ArCore::CreateAnchorCallback callback);
+      CreateAnchorCallback callback);
   CreatePlaneAttachedAnchorRequest(CreatePlaneAttachedAnchorRequest&& other);
   ~CreatePlaneAttachedAnchorRequest();
 
@@ -71,7 +49,7 @@ class CreatePlaneAttachedAnchorRequest {
   const uint64_t plane_id_;
   const base::TimeTicks request_start_time_;
 
-  ArCore::CreateAnchorCallback callback_;
+  CreateAnchorCallback callback_;
 };
 
 // This class should be created and accessed entirely on a Gl thread.

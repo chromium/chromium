@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -14,13 +14,10 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/features.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -28,8 +25,13 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
@@ -52,15 +54,14 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
+#import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
@@ -88,7 +89,6 @@
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -102,6 +102,7 @@
                                   InactiveTabsCoordinatorDelegate,
                                   SceneStateObserver,
                                   SnackbarCoordinatorDelegate,
+                                  HistoryCoordinatorDelegate,
                                   TabContextMenuDelegate,
                                   TabGridMediatorDelegate,
                                   TabPresentationDelegate,
@@ -326,12 +327,14 @@
 
   [self dismissPopovers];
 
+  [self.inactiveTabsCoordinator hide];
+
   if (_bookmarksCoordinator) {
     [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
   }
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {
-    [self.historyCoordinator stopWithCompletion:completion];
+    [self closeHistoryWithCompletion:completion];
   } else if (completion) {
     completion();
   }
@@ -398,9 +401,8 @@
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
-  DefaultBrowserSceneAgent* agent =
-      [DefaultBrowserSceneAgent agentFromScene:sceneState];
-  [agent.nonModalScheduler logTabGridEntered];
+  [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
+      logTabGridEntered];
 
   // Store the currentActivePage at this point in code, to be potentially used
   // during execution of the dispatched block to get the transition from Browser
@@ -426,6 +428,41 @@
     }
   }
 
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock transitionCompletionBlock = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    strongSelf.bvcContainer = nil;
+    [strongSelf.baseViewController contentDidAppear];
+
+    if (shouldDisplayBringAndroidTabsPrompt) {
+      [strongSelf displayBringAndroidTabsPrompt];
+    }
+  };
+
+  ProceduralBlock transitionBlock = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    [strongSelf
+        performBrowserToTabGridTransitionWithActivePage:currentActivePage
+                                       animationEnabled:animated
+                                             completion:
+                                                 transitionCompletionBlock];
+    // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
+    // for the status bar style to update. Work around that delay by taking
+    // the snapshot first (during
+    // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
+    // updating the status bar style afterwards.
+    strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
+  };
+
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.bvcContainer) {
@@ -433,29 +470,7 @@
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
     // API.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      self.transitionHandler = [[TabGridTransitionHandler alloc]
-          initWithLayoutProvider:self.baseViewController];
-      self.transitionHandler.animationDisabled = !animated;
-      [self.transitionHandler
-          transitionFromBrowser:self.bvcContainer
-                      toTabGrid:self.baseViewController
-                     activePage:currentActivePage
-                 withCompletion:^{
-                   self.bvcContainer = nil;
-                   [self.baseViewController contentDidAppear];
-                   if (shouldDisplayBringAndroidTabsPrompt) {
-                     [self displayBringAndroidTabsPrompt];
-                   }
-                 }];
-
-      // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
-      // for the status bar style to update. Work around that delay by taking
-      // the snapshot first (during
-      // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
-      // updating the status bar style afterwards.
-      self.baseViewController.childViewControllerForStatusBarStyle = nil;
-    });
+    dispatch_async(dispatch_get_main_queue(), transitionBlock);
   } else if (shouldDisplayBringAndroidTabsPrompt) {
     [self displayBringAndroidTabsPrompt];
   }
@@ -548,7 +563,8 @@
       // complete, reset the tab grid mode.
       self.baseViewController.tabGridMode = TabGridModeNormal;
     }
-    if (!GetFirstResponder()) {
+    if (!GetFirstResponderInWindowScene(
+            self.baseViewController.view.window.windowScene)) {
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.
       [self.bvcContainer.currentBVC becomeFirstResponder];
@@ -561,16 +577,10 @@
 
   [self.baseViewController contentWillDisappearAnimated:animated];
 
-  self.transitionHandler = [[TabGridTransitionHandler alloc]
-      initWithLayoutProvider:self.baseViewController];
-  self.transitionHandler.animationDisabled = !animated;
-  [self.transitionHandler
-      transitionFromTabGrid:self.baseViewController
-                  toBrowser:self.bvcContainer
-                 activePage:self.baseViewController.activePage
-             withCompletion:^{
-               extendedCompletion();
-             }];
+  [self performTabGridToBrowserTransitionWithActivePage:self.baseViewController
+                                                            .activePage
+                                       animationEnabled:animated
+                                             completion:extendedCompletion];
 
   // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
   // the status bar style to update. Work around that delay by taking the
@@ -618,6 +628,43 @@
       NOTREACHED();
       break;
   }
+}
+
+// Performs the Browser to Tab Grid transition.
+- (void)performBrowserToTabGridTransitionWithActivePage:(TabGridPage)activePage
+                                       animationEnabled:(BOOL)animationEnabled
+                                             completion:
+                                                 (ProceduralBlock)completion {
+  self.transitionHandler =
+      [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
+  [self.transitionHandler transitionFromBrowser:self.bvcContainer
+                                      toTabGrid:self.baseViewController
+                                     activePage:activePage
+                                 withCompletion:completion];
+}
+
+// Performs the Tab Grid to Browser transition.
+- (void)performTabGridToBrowserTransitionWithActivePage:(TabGridPage)activePage
+                                       animationEnabled:(BOOL)animationEnabled
+                                             completion:
+                                                 (ProceduralBlock)completion {
+  self.transitionHandler =
+      [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
+  [self.transitionHandler transitionFromTabGrid:self.baseViewController
+                                      toBrowser:self.bvcContainer
+                                     activePage:activePage
+                                 withCompletion:completion];
+}
+
+// Creates a transition handler with `animationEnabled` parameter.
+- (TabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
+    (BOOL)animationEnabled {
+  TabGridTransitionHandler* transitionHandler =
+      [[TabGridTransitionHandler alloc]
+          initWithLayoutProvider:self.baseViewController];
+  transitionHandler.animationDisabled = !animationEnabled;
+
+  return transitionHandler;
 }
 
 #pragma mark - Private (Thumb Strip)
@@ -753,10 +800,9 @@
         initWithConsumer:baseViewController.pinnedTabsConsumer];
     self.pinnedTabsMediator.browser = _regularBrowser;
     baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
-    baseViewController.pinnedTabsImageDataSource = self.pinnedTabsMediator;
   }
 
-  if (IsInactiveTabsEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
         initWithConsumer:baseViewController.regularTabsConsumer
             webStateList:_inactiveBrowser->GetWebStateList()
@@ -777,9 +823,7 @@
     baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
   }
 
-  baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.priceCardDataSource = self.priceCardMediator;
-  baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
 
   baseViewController.regularTabsShareableItemsProvider =
       self.regularTabsMediator;
@@ -808,7 +852,7 @@
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
 
-  if (IsInactiveTabsEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:_inactiveBrowser
@@ -936,6 +980,9 @@
   self.inactiveTabsButtonMediator = nil;
   [self.inactiveTabsCoordinator stop];
   self.inactiveTabsCoordinator = nil;
+
+  [self.historyCoordinator stop];
+  self.historyCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -1127,11 +1174,12 @@
   self.historyCoordinator.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   self.historyCoordinator.presentationDelegate = self;
+  self.historyCoordinator.delegate = self;
   [self.historyCoordinator start];
 }
 
 - (void)showInactiveTabs {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsEnabled());
   [self.inactiveTabsCoordinator show];
 }
 
@@ -1140,8 +1188,6 @@
 - (void)inactiveTabsCoordinator:
             (InactiveTabsCoordinator*)inactiveTabsCoordinator
             didSelectItemWithID:(NSString*)itemID {
-  // TODO(crbug.com/1418021): Add metrics when the user activate back an
-  // inactive tab and bring it back to the active tab list.
   WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
   int toInsertIndex = regularWebStateList->count();
 
@@ -1158,7 +1204,7 @@
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
   [self.inactiveTabsCoordinator hide];
 }
 
@@ -1212,6 +1258,19 @@
   [self showActiveRegularTabFromRecentTabs];
 }
 
+#pragma mark - HistoryCoordinatorDelegate
+
+- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [self.historyCoordinator dismissWithCompletion:^{
+    if (completion) {
+      completion();
+    }
+    [weakSelf.historyCoordinator stop];
+    weakSelf.historyCoordinator = nil;
+  }];
+}
+
 #pragma mark - TabContextMenuDelegate
 
 - (void)shareURL:(const GURL&)URL
@@ -1249,7 +1308,7 @@
   } else {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridOpenedBookmarkEditorForNewBookmark"));
-    [self.bookmarksCoordinator bookmarkURL:URL title:title];
+    [self.bookmarksCoordinator createBookmarkURL:URL title:title];
   }
 }
 
@@ -1324,6 +1383,11 @@
           self.baseViewController.traitCollection) !=
       [self isThumbStripEnabled]) {
     [self updateThumbstripIfNeededOnViewController:self.baseViewController];
+  }
+
+  if (level == SceneActivationLevelBackground) {
+    // When going in the background, hide the Inactive Tabs UI.
+    [self.inactiveTabsCoordinator hide];
   }
 }
 

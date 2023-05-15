@@ -26,9 +26,20 @@ html:not(body) {
   --cros-sys-on_primary_container-rgb: 255, 255, 255;
   --cros-sys-on_primary_container: rgb(var(--cros-sys-on_primary_container-rgb));
 
+  --cros-sys-blend_opac: color-mix(in srgb, rgb(255, 255, 255) 40.0%, var(--cros-ref-primary50));
+
+  --cros-sys-blend_a_ref_blend: color-mix(in srgb, rgb(255, 255, 255) 40.0%, var(--cros-sys-blend_opac));
+
+  --cros-sys-blend_a_blend: color-mix(in srgb, rgb(255, 255, 255) 40.0%, color-mix(in srgb, var(--cros-sys-blend_opac) 2.0%, rgb(255, 255, 255)));
+
   --cros-sys-disabled_opacity: 0.38;
 
   --cros-sys-reference_opacity: var(--cros-sys-disabled_opacity);
+
+  --cros-color-primary-rgb: var(--cros-sys-primary_container-rgb);
+  --cros-color-primary: var(--cros-sys-primary_container);
+  --cros-color-primary-light: var(--cros-sys-primary_container);
+  --cros-color-primary-dark: var(--cros-sys-primary_container);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,8 +53,19 @@ html:not(body) {
   --cros-sys-primary_container-rgb: var(--cros-ref-primary50-rgb);
   --cros-sys-primary_container: rgba(var(--cros-sys-primary_container-rgb), var(--cros-sys-disabled_opacity));
 
-  --cros-sys-on_primary_container: color-mix(in srgb, rgb(255, 255, 255) 4.0%, rgb(var(--cros-ref-primary50-rgb)));
+  --cros-sys-on_primary_container: color-mix(in srgb, rgb(255, 255, 255) 4.0%, var(--cros-ref-primary50));
+
+  --cros-sys-blend_opac: color-mix(in srgb, rgb(255, 255, 255) 40.0%, var(--cros-ref-primary50));
+
+  --cros-sys-blend_a_ref_blend: color-mix(in srgb, rgb(255, 255, 255) 40.0%, var(--cros-sys-blend_opac));
+
+  --cros-sys-blend_a_blend: color-mix(in srgb, rgb(255, 255, 255) 40.0%, color-mix(in srgb, var(--cros-sys-blend_opac) 2.0%, rgb(255, 255, 255)));
 
   --cros-sys-reference_opacity: 1;
+
+  --cros-color-primary-rgb: var(--cros-sys-primary_container-rgb);
+  --cros-color-primary: var(--cros-sys-primary_container);
+  --cros-color-primary-light: var(--cros-sys-primary_container);
+  --cros-color-primary-dark: var(--cros-sys-primary_container);
 }
 }

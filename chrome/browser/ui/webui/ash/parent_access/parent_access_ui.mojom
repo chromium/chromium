@@ -125,4 +125,8 @@ interface ParentAccessUIHandler {
   // When called, indicates that that the request has completed with the
   // specified result, which will cause the Parent Access UI to close.
   OnParentAccessDone(ParentAccessResult result) => ();
+
+  // Called when the UI has switched from the before screen to the
+  // ParentAuthentication screen.
+  OnBeforeScreenDone() => ();
 };

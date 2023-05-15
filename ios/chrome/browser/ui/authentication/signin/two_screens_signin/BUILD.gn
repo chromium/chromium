@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("two_screens_signin") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "two_screens_signin_coordinator.h",
+    "two_screens_signin_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/history_sync",
+    "//ios/chrome/browser/ui/first_run/signin",
+    "//ios/chrome/browser/ui/first_run/tangible_sync",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_type",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "two_screens_signin_coordinator_unittest.mm" ]
+  deps = [
+    ":two_screens_signin",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/tangible_sync:signin_ui",
+    "//ios/chrome/browser/ui/first_run/signin:signin_ui",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+  ]
+}

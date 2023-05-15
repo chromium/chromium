@@ -14,8 +14,14 @@
 
 #include "util/linux/pac_helper.h"
 
-#if __has_feature(ptrauth_intrinsics)
-#include <ptrauth.h>
+#if defined(__has_feature)
+#define CRASHPAD_HAS_FEATURE(x) __has_feature(x)
+#else
+#define CRASHPAD_HAS_FEATURE(x) 0
+#endif
+
+#if CRASHPAD_HAS_FEATURE(ptrauth_intrinsics)
+  #include <ptrauth.h>
 #endif
 
 #include "util/misc/address_types.h"
@@ -23,7 +29,7 @@
 namespace crashpad {
 
 VMAddress StripPACBits(VMAddress address) {
-#if __has_feature(ptrauth_intrinsics)
+#if CRASHPAD_HAS_FEATURE(ptrauth_intrinsics)
     address = ptrauth_strip(address, ptrauth_key_function_pointer);
 #elif defined(ARCH_CPU_ARM64)
     // Strip any pointer authentication bits that are assigned to the address.

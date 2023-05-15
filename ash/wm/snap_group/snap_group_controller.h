@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 
 namespace aura {
 class Window;
@@ -21,10 +22,19 @@ class SnapGroup;
 
 // Works as the centralized place to manage the `SnapGroup`. A single instance
 // of this class will be created and owned by `Shell`. It controls the creation
-// and destruction of the `SnapGroup`. TODO: It also implements the
-// `OverviewObserver` and `TabletObserver`.
+// and destruction of the `SnapGroup`.
+// TODO: It should also implement the `OverviewObserver` and `TabletObserver`.
 class ASH_EXPORT SnapGroupController {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called to notify with the creation of snap group.
+    virtual void OnSnapGroupCreated() = 0;
+
+    // Called to notify the removal of snap group.
+    virtual void OnSnapGroupRemoved() = 0;
+  };
+
   using SnapGroups = std::vector<std::unique_ptr<SnapGroup>>;
   using WindowToSnapGroupMap = base::flat_map<aura::Window*, SnapGroup*>;
 
@@ -55,6 +65,9 @@ class ASH_EXPORT SnapGroupController {
   // snap group or nullptr otherwise.
   SnapGroup* GetSnapGroupForGivenWindow(aura::Window* window);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Returns true if the feature flag `kSnapGroup` is enabled and the feature
   // param `kAutomaticallyLockGroup` is true, i.e. a snap group will be created
   // automatically on two windows snapped.
@@ -76,13 +89,6 @@ class ASH_EXPORT SnapGroupController {
   // group.
   aura::Window* RetrieveTheOtherWindowInSnapGroup(aura::Window* window) const;
 
-  // Restores the windows bounds on snap group removed as the windows bounds are
-  // shrunk either horizontally or vertically to make room for the split view
-  // divider during `UpdateSnappedWindowsAndDividerBounds()` in
-  // `SplitViewController`.
-  void RestoreWindowsBoundsOnSnapGroupRemoved(aura::Window* window1,
-                                              aura::Window* window2);
-
   // Contains all the `SnapGroup`(s), we will have one `SnapGroup` globally for
   // the first iteration but will have multiple in the future iteration.
   SnapGroups snap_groups_;
@@ -91,6 +97,8 @@ class ASH_EXPORT SnapGroupController {
   // `SnapGroup` with the `aura::Window*` and can also be used to decide if a
   // window is in a `SnapGroup` or not.
   WindowToSnapGroupMap window_to_snap_group_map_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

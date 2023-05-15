@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,7 +84,7 @@ class MarketingBackendConnector
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string access_token_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   static base::RepeatingCallback<void(std::string)>*
       request_finished_for_tests_;

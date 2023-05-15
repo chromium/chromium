@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -26,11 +28,14 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -42,6 +47,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -1135,6 +1141,11 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
 
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        KeepAliveRendererProcessWithServiceWorker) {
+  if (IsKeepAliveInBrowserMigrationEnabled()) {
+    // TODO(crbug.com/1356128): Add keepalive in-browser support for workers.
+    return;
+  }
+
   base::RunLoop run_loop;
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, run_loop.QuitClosure()));
@@ -1828,7 +1839,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     std::string reload_script(
         "var f = document.getElementById('child-0');"
         "f.src = f.src;");
-    EXPECT_TRUE(ExecuteScript(root, reload_script));
+    EXPECT_TRUE(ExecJs(root, reload_script));
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh0 = root->child_at(0)->current_frame_host();
@@ -1876,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     std::string reload_script(
         "var f = document.getElementById('child-1');"
         "f.src = f.src;");
-    EXPECT_TRUE(ExecuteScript(root, reload_script));
+    EXPECT_TRUE(ExecJs(root, reload_script));
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh1 = root->child_at(1)->current_frame_host();
@@ -2178,6 +2189,159 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     ASSERT_TRUE(renderer_result.has_value());
     EXPECT_EQ(*renderer_result, browser_result);
   }
+}
+
+class CreationObserver : public RenderProcessHostCreationObserver {
+ public:
+  explicit CreationObserver(
+      base::RepeatingClosure closure = base::RepeatingClosure())
+      : closure_(std::move(closure)) {}
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(RenderProcessHost* process_host) override {
+    if (closure_) {
+      closure_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure closure_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HostCreationObserved) {
+  int created_count = 0;
+  CreationObserver creation_observer(
+      base::BindLambdaForTesting([&created_count]() { ++created_count; }));
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  ASSERT_TRUE(process->IsReady());
+  EXPECT_EQ(1, created_count);
+  process->Cleanup();
+}
+
+// Notification of RenderProcessHost creation should not crash if creation
+// observers are added during notification of another creation observer.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       HostCreationObserversAddedDuringNotification) {
+  std::vector<std::unique_ptr<CreationObserver>> added_creation_observers;
+  const int kObserversToAdd = 1000;
+  int added_observer_notification_count = 0;
+  const auto increment_added_observer_notification_count =
+      base::BindLambdaForTesting([&added_observer_notification_count]() {
+        ++added_observer_notification_count;
+      });
+  CreationObserver creation_observer1(base::BindLambdaForTesting(
+      [&added_creation_observers,
+       increment_added_observer_notification_count]() {
+        for (int i = 0; i < kObserversToAdd; ++i) {
+          added_creation_observers.push_back(std::make_unique<CreationObserver>(
+              increment_added_observer_notification_count));
+        }
+      }));
+  CreationObserver creation_observer2;
+
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  EXPECT_TRUE(process->IsReady());
+  EXPECT_EQ(kObserversToAdd, added_observer_notification_count);
+  process->Cleanup();
+}
+
+// Notification of RenderProcessHost creation should not crash if a creation
+// observer is destroyed during notification of another creation observer.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       HostCreationObserversDestroyedDuringNotification) {
+  base::OnceClosure destroy_second_observer;
+  CreationObserver creation_observer1(
+      base::BindLambdaForTesting([&destroy_second_observer]() {
+        std::move(destroy_second_observer).Run();
+      }));
+  auto creation_observer2 = std::make_unique<CreationObserver>();
+  destroy_second_observer = base::BindLambdaForTesting(
+      [&creation_observer2]() { creation_observer2.reset(); });
+
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  EXPECT_TRUE(process->IsReady());
+  EXPECT_EQ(nullptr, creation_observer2.get());
+  process->Cleanup();
+}
+
+namespace {
+
+bool FetchScript(Shell* shell, GURL url) {
+  EvalJsResult result = EvalJs(shell, JsReplace(R"(
+      new Promise(resolve => {
+        const script = document.createElement("script");
+        script.src = $1;
+        script.onerror = () => resolve("error");
+        script.onload = () => resolve("fetched");
+        document.body.appendChild(script);
+      });
+    )",
+                                                url));
+  return result.ExtractString() == "fetched";
+}
+
+}  // namespace
+
+// Tests that BrowsingDataRemover clears renderer's in-memory resource cache.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ClearResourceCache) {
+  constexpr const char* kScriptPath = "/cacheable.js";
+
+  // Count the number of requests from the renderer. This doesn't count requests
+  // that are served via the renderer's in-memory cache.
+  size_t num_script_requests_from_renderer = 0;
+  embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request) {
+        if (request.relative_url == kScriptPath) {
+          ++num_script_requests_from_renderer;
+        }
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kScriptUrl = embedded_test_server()->GetURL(kScriptPath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+
+  // The first fetch. The renderer's in-memory cache doesn't contain a response
+  // so the counter should be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 1u);
+
+  // The second fetch. The response will be served from the renderer's in-memory
+  // cache. The counter should not be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 1u);
+
+  // Clear the renderer's in-memory cache.
+  BrowsingDataRemover* remover =
+      shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
+  BrowsingDataRemoverCompletionObserver observer(remover);
+  remover->RemoveAndReply(
+      /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_CACHE,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+  observer.BlockUntilCompletion();
+
+  // Fetch again. The response in the renderer's in-memory cache was evicted so
+  // the counter should be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 2u);
 }
 
 }  // namespace content

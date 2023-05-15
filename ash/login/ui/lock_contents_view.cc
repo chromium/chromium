@@ -61,9 +61,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -298,8 +299,8 @@ class UserAddingScreenIndicator : public views::View {
   }
 
  private:
-  views::ImageView* info_icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 }  // namespace
@@ -436,7 +437,7 @@ LockContentsView::~LockContentsView() {
     // here.
     if (unlock_attempt.second > 0) {
       RecordAndResetPasswordAttempts(
-          AuthMetricsRecorder::AuthenticationOutcome::kFailure,
+          AuthEventsRecorder::AuthenticationOutcome::kFailure,
           unlock_attempt.first);
     }
   }
@@ -646,6 +647,11 @@ bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
+  if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/276246832): We should avoid re-layouting during Authentication.
+    LOG(WARNING)
+        << "LockContentsView::OnUsersChanged called during Authentication.";
+  }
   // The debug view will potentially call this method many times. Make sure to
   // invalidate any child references.
   primary_big_view_ = nullptr;
@@ -1837,7 +1843,7 @@ void LockContentsView::OnAuthenticate(bool auth_success,
 
     // Times a password was incorrectly entered until user succeeds.
     RecordAndResetPasswordAttempts(
-        AuthMetricsRecorder::AuthenticationOutcome::kSuccess, account_id);
+        AuthEventsRecorder::AuthenticationOutcome::kSuccess, account_id);
   } else {
     ++unlock_attempt_by_user_[account_id];
     if (authenticated_by_pin) {
@@ -1994,7 +2000,7 @@ void LockContentsView::RemoveUser(bool is_primary) {
   }
 
   LoginBigUserView* to_remove =
-      is_primary ? primary_big_view_ : opt_secondary_big_view_;
+      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
   DCHECK(to_remove->GetCurrentUser().can_remove);
   AccountId user = to_remove->GetCurrentUser().basic_user_info.account_id;
 
@@ -2278,7 +2284,7 @@ void LockContentsView::RecoverUserButtonPressed() {
       .UpdateReauthReason(account_id,
                           static_cast<int>(ReauthReason::kForgotPassword));
   RecordAndResetPasswordAttempts(
-      AuthMetricsRecorder::AuthenticationOutcome::kRecovery, account_id);
+      AuthEventsRecorder::AuthenticationOutcome::kRecovery, account_id);
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
   HideAuthErrorMessage();
 }
@@ -2510,9 +2516,9 @@ void LockContentsView::SetKioskLicenseModeForTesting(
 }
 
 void LockContentsView::RecordAndResetPasswordAttempts(
-    AuthMetricsRecorder::AuthenticationOutcome outcome,
+    AuthEventsRecorder::AuthenticationOutcome outcome,
     AccountId account_id) {
-  AuthMetricsRecorder::Get()->OnExistingUserLoginExit(
+  AuthEventsRecorder::Get()->OnExistingUserLoginExit(
       outcome, unlock_attempt_by_user_[account_id]);
   unlock_attempt_by_user_[account_id] = 0;
 }

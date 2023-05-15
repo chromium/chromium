@@ -43,7 +43,7 @@ class ASH_EXPORT AmbientAnimationAttributionProvider
           new_topics) override;
 
  private:
-  const base::raw_ptr<lottie::Animation> animation_;
+  const raw_ptr<lottie::Animation> animation_;
   // Set of text nodes in the animation that should hold attribution for a
   // photo. It is expected that the size of this vector matches the number of
   // dynamic image assets in the animation (1 for each photo).

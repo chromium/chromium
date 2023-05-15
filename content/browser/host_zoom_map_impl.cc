@@ -72,30 +72,30 @@ GURL HostZoomMap::GetURLFromEntry(NavigationEntry* entry) {
   }
 }
 
+// static
 HostZoomMap* HostZoomMap::GetDefaultForBrowserContext(BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  StoragePartition* partition = context->GetDefaultStoragePartition();
-  DCHECK(partition);
-  return partition->GetHostZoomMap();
+  return GetForStoragePartition(context->GetDefaultStoragePartition());
 }
 
+// static
 HostZoomMap* HostZoomMap::Get(SiteInstance* instance) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  StoragePartition* partition =
-      instance->GetBrowserContext()->GetStoragePartition(instance);
-  DCHECK(partition);
-  return partition->GetHostZoomMap();
+  return GetForStoragePartition(
+      instance->GetBrowserContext()->GetStoragePartition(instance));
 }
 
+// static
 HostZoomMap* HostZoomMap::GetForWebContents(WebContents* contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(wjmaclean): Update this behaviour to work with OOPIF.
   // See crbug.com/528407.
-  StoragePartition* partition =
-      contents->GetBrowserContext()->GetStoragePartition(
-          contents->GetSiteInstance());
-  DCHECK(partition);
-  return partition->GetHostZoomMap();
+  return Get(contents->GetSiteInstance());
+}
+
+// static
+HostZoomMap* HostZoomMap::GetForStoragePartition(
+    StoragePartition* storage_partition) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(storage_partition);
+  return storage_partition->GetHostZoomMap();
 }
 
 // Helper function for setting/getting zoom levels for WebContents without

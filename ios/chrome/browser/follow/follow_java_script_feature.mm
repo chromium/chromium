@@ -4,11 +4,7 @@
 
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -44,12 +40,14 @@ FollowJavaScriptFeature::~FollowJavaScriptFeature() = default;
 
 void FollowJavaScriptFeature::GetWebPageURLs(web::WebState* web_state,
                                              ResultCallback callback) {
-  if (!web::GetMainFrame(web_state)) {
+  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  if (!main_frame) {
     std::move(callback).Run(nil);
     return;
   }
   CallJavaScriptFunction(
-      web::GetMainFrame(web_state), kGetRSSLinkFunction, /* parameters= */ {},
+      main_frame, kGetRSSLinkFunction,
+      /* parameters= */ {},
       base::BindOnce(&FollowJavaScriptFeature::HandleResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_state->GetLastCommittedURL(), std::move(callback)),

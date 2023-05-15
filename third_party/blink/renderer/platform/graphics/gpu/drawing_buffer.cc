@@ -601,7 +601,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   // Populate the output mailbox and callback.
   {
     *out_resource = viz::TransferableResource::MakeGpu(
-        color_buffer_for_mailbox->mailbox, GL_LINEAR,
+        color_buffer_for_mailbox->mailbox,
         color_buffer_for_mailbox->texture_target,
         color_buffer_for_mailbox->produce_sync_token, size_,
         color_buffer_for_mailbox->format,
@@ -784,7 +784,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
       context_provider_->GetWeakPtr(), resource_provider,
       cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/opengl_flip_y_extension_,
-      /*is_overlay_candidate=*/true);
+      /*is_overlay_candidate=*/canvas_resource_buffer->is_overlay_candidate);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -802,19 +802,14 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
 
   SkImageInfo resource_info = SkImageInfo::MakeN32Premul(
       out_resource.size.width(), out_resource.size.height());
-  switch (out_resource.format.resource_format()) {
-    case viz::RGBA_8888:
-      resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
-      break;
-    case viz::RGBX_8888:
-      resource_info = resource_info.makeColorType(kRGB_888x_SkColorType);
-      break;
-    case viz::RGBA_F16:
-      resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
-      break;
-    default:
-      NOTREACHED();
-      break;
+  if (out_resource.format == viz::SinglePlaneFormat::kRGBA_8888) {
+    resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
+  } else if (out_resource.format == viz::SinglePlaneFormat::kRGBX_8888) {
+    resource_info = resource_info.makeColorType(kRGB_888x_SkColorType);
+  } else if (out_resource.format == viz::SinglePlaneFormat::kRGBA_F16) {
+    resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
+  } else {
+    NOTREACHED();
   }
 
   return ExternalCanvasResource::Create(
@@ -1883,7 +1878,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
               gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-              origin, back_buffer_alpha_type, usage | additional_usage_flags);
+              origin, back_buffer_alpha_type, usage | additional_usage_flags,
+              "WebGLDrawingBuffer");
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
           // parameters on OSX.
@@ -1904,9 +1900,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         back_buffer_alpha_type = kUnpremul_SkAlphaType;
       }
 
-      back_buffer_mailbox = sii->CreateSharedImage(
-          color_buffer_format_, size, color_space_, origin,
-          back_buffer_alpha_type, usage, gpu::kNullSurfaceHandle);
+      back_buffer_mailbox =
+          sii->CreateSharedImage(color_buffer_format_, size, color_space_,
+                                 origin, back_buffer_alpha_type, usage,
+                                 "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
     }
   }
 
@@ -1935,7 +1932,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
         back_buffer_alpha_type, texture_target, texture_id, nullptr,
-        /*is_overlay_candidate=*/false, front_buffer_mailbox);
+        /*is_overlay_candidate=*/true, front_buffer_mailbox);
   }
 
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
@@ -1962,7 +1959,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                               texture_target, 0, 0);
     gl_->DeleteFramebuffers(1, &fbo);
   }
-  const bool is_overlay_candidate = !!gpu_memory_buffer;
+  const bool is_overlay_candidate = !!gpu_memory_buffer || using_swap_chain_;
 
   return base::MakeRefCounted<ColorBuffer>(
       weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,

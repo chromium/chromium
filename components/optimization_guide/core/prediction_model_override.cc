@@ -76,7 +76,7 @@ void OnModelOverrideUnzipped(proto::OptimizationTarget optimization_target,
                              OnPredictionModelBuiltCallback callback,
                              bool success) {
   if (!success) {
-    LOG(ERROR) << FilePathToString(base_model_dir) << "failed to unzip";
+    LOG(ERROR) << FilePathToString(base_model_dir) << " failed to unzip";
     std::move(callback).Run(nullptr);
     return;
   }

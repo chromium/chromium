@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/assistant/internal/grpc_transport/grpc_client_cq_tag.h"
@@ -194,7 +195,7 @@ class RPCState : public chromeos::libassistant::GrpcClientCQTag {
   // An instance used by an async gRPC client to manage asynchronous rpc
   // operations. An RPC call is bound to a CompletionQueue when performed
   // using the stub.
-  grpc::CompletionQueue* cq_ = nullptr;
+  raw_ptr<grpc::CompletionQueue, ExperimentalAsh> cq_ = nullptr;
 
   // An instance used by a gRPC client to invoke rpc methods implemented in
   // the server.

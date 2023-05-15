@@ -38,7 +38,7 @@ bool TermBreakIterator::Advance() {
   };
 
   while (iter_->Advance()) {
-    const State new_state = GetNewState(word_[iter_->array_pos()]);
+    const State new_state = GetNewState((*word_)[iter_->array_pos()]);
     const bool is_boundary = kBoundary[state_][new_state];
     state_ = new_state;
     if (is_boundary)
@@ -53,7 +53,7 @@ bool TermBreakIterator::Advance() {
 
 const std::u16string TermBreakIterator::GetCurrentTerm() const {
   DCHECK(prev_ != npos && pos_ != npos);
-  return word_.substr(prev_, pos_ - prev_);
+  return word_->substr(prev_, pos_ - prev_);
 }
 
 TermBreakIterator::State TermBreakIterator::GetNewState(char16_t ch) {

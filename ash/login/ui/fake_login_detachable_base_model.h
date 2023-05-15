@@ -10,6 +10,7 @@
 
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/ui/login_detachable_base_model.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ class FakeLoginDetachableBaseModel : public LoginDetachableBaseModel {
   bool SetPairedBaseAsLastUsedByUser(const UserInfo& user_info) override;
 
  private:
-  LoginDataDispatcher* data_dispatcher_;
+  raw_ptr<LoginDataDispatcher, ExperimentalAsh> data_dispatcher_;
 
   // Current pairing status.
   DetachableBasePairingStatus pairing_status_ =

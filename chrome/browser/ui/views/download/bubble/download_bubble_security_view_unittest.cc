@@ -21,6 +21,7 @@
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -46,6 +47,12 @@ class MockDownloadBubbleNavigationHandler
   void OpenSecurityDialog(DownloadBubbleRowView*) override {}
   void CloseDialog(views::Widget::ClosedReason) override {}
   void ResizeDialog() override {}
+  base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockDownloadBubbleNavigationHandler> weak_factory_{this};
 };
 
 }  // namespace
@@ -76,14 +83,14 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
     bubble_delegate_ = bubble_delegate.get();
     bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>();
-    security_view_ = bubble_delegate_->SetContentsView(
-        std::make_unique<DownloadBubbleSecurityView>(bubble_controller_.get(),
-                                                     bubble_navigator_.get(),
-                                                     bubble_delegate_));
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
     bubble_controller_ =
         std::make_unique<MockDownloadBubbleUIController>(browser_.get());
+    security_view_ = bubble_delegate_->SetContentsView(
+        std::make_unique<DownloadBubbleSecurityView>(
+            bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+            bubble_delegate_));
 
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
         /*is_partial_view=*/true, browser_.get());
@@ -131,43 +138,47 @@ TEST_F(DownloadBubbleSecurityViewTest,
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/true)
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
           // Cancel button
-          .AddSubpageButton(std::u16string(), DownloadCommands::Command::KEEP,
-                            /*is_prominent=*/false));
+          .AddSecondarySubpageButton(std::u16string(),
+                                     DownloadCommands::Command::KEEP,
+                                     ui::kColorAlertHighSeverity));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
 
   // Two buttons, none prominent
-  row_view_->SetUIInfoForTesting(
+  DownloadUIModel::BubbleUIInfo info =
       DownloadUIModel::BubbleUIInfo(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/false)
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
           // Cancel button
-          .AddSubpageButton(std::u16string(), DownloadCommands::Command::KEEP,
-                            /*is_prominent=*/false));
+          .AddSecondarySubpageButton(std::u16string(),
+                                     DownloadCommands::Command::KEEP,
+                                     ui::kColorAlertHighSeverity);
+  info.subpage_buttons[0].is_prominent = false;  // Primary buttons are
+                                                 // prominent by default.
+  row_view_->SetUIInfoForTesting(std::move(info));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
   // One button, none prominent
-  row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
-          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
-          .AddPrimaryButton(DownloadCommands::Command::KEEP)
-          // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/false));
+  info = DownloadUIModel::BubbleUIInfo(std::u16string())
+             .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
+             .AddPrimaryButton(DownloadCommands::Command::KEEP)
+             // OK button
+             .AddPrimarySubpageButton(std::u16string(),
+                                      DownloadCommands::Command::DISCARD);
+  info.subpage_buttons[0].is_prominent = false;  // Primary buttons are
+                                                 // prominent by default.
+  row_view_->SetUIInfoForTesting(std::move(info));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
@@ -189,7 +200,8 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
   // Back action logged.
   {
     auto security_view = std::make_unique<DownloadBubbleSecurityView>(
-        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        bubble_delegate_);
     security_view->UpdateSecurityView(row_view_.get());
 
     security_view->BackButtonPressed();
@@ -205,7 +217,8 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
   // Close action logged
   {
     auto security_view = std::make_unique<DownloadBubbleSecurityView>(
-        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        bubble_delegate_);
     security_view->UpdateSecurityView(row_view_.get());
 
     security_view->CloseBubble();
@@ -220,7 +233,8 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
   // Dismiss action logged
   {
     auto security_view = std::make_unique<DownloadBubbleSecurityView>(
-        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        bubble_delegate_);
     security_view->UpdateSecurityView(row_view_.get());
 
     security_view.reset();
@@ -233,7 +247,8 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
   // Dismiss action logged after update
   {
     auto security_view = std::make_unique<DownloadBubbleSecurityView>(
-        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        bubble_delegate_);
     security_view->UpdateSecurityView(row_view_.get());
 
     security_view->BackButtonPressed();

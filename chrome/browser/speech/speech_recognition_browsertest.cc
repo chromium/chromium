@@ -111,21 +111,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   std::u16string success_title(u"PASS");
   std::u16string failure_title(u"FAIL");
 
-  const char kRetriveTranscriptScript[] =
-      "window.domAutomationController.send(window.getFirstTranscript())";
+  const char kRetriveTranscriptScript[] = "window.getFirstTranscript()";
   const char kExpectedTranscript[] = "Pictures of the moon";
 
   {
     content::TitleWatcher title_watcher(web_contents, success_title);
     title_watcher.AlsoWaitForTitle(failure_title);
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents, "testSpeechRecognition()"));
+    EXPECT_TRUE(content::ExecJs(web_contents, "testSpeechRecognition()"));
     EXPECT_EQ(success_title, title_watcher.WaitAndGetTitle());
 
-    std::string output;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents, kRetriveTranscriptScript, &output));
-    EXPECT_EQ(kExpectedTranscript, output);
+    EXPECT_EQ(kExpectedTranscript,
+              content::EvalJs(web_contents, kRetriveTranscriptScript));
   }
 
   // Navigating to an https page will force RFH change within
@@ -137,14 +133,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   {
     content::TitleWatcher title_watcher(web_contents, success_title);
     title_watcher.AlsoWaitForTitle(failure_title);
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents, "testSpeechRecognition()"));
+    EXPECT_TRUE(content::ExecJs(web_contents, "testSpeechRecognition()"));
     EXPECT_EQ(success_title, title_watcher.WaitAndGetTitle());
 
-    std::string output;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents, kRetriveTranscriptScript, &output));
-    EXPECT_EQ(kExpectedTranscript, output);
+    EXPECT_EQ(kExpectedTranscript,
+              content::EvalJs(web_contents, kRetriveTranscriptScript));
   }
 
   // Close the tab to so that we see WCO::WebContentsDestroyed().

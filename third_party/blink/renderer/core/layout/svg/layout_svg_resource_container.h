@@ -67,9 +67,8 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
            resource_type == kRadialGradientResourceType;
   }
 
-  void InvalidateCacheAndMarkForLayout(LayoutInvalidationReasonForTracing,
-                                       SubtreeLayoutScope* = nullptr);
-  void InvalidateCacheAndMarkForLayout(SubtreeLayoutScope* = nullptr);
+  void InvalidateCacheAndMarkForLayout(LayoutInvalidationReasonForTracing);
+  void InvalidateCacheAndMarkForLayout();
 
   bool FindCycle() const;
 

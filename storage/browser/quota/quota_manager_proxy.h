@@ -202,7 +202,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
 
-  virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
+  virtual void OnClientWriteFailed(const blink::StorageKey& storage_key);
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,
                                     const blink::StorageKey& storage_key,
@@ -218,6 +218,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       BucketId bucket,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
+
+  // To be called by a client when bytes are about to be written to get the
+  // amount of space left in the given bucket. Checks against quota remaining in
+  // the bucket and across the whole StorageKey. The returned value is the
+  // amount of space remaining in bytes.
+  void GetBucketSpaceRemaining(
+      const BucketLocator& bucket,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback);
 
   virtual void IsStorageUnlimited(
       const blink::StorageKey& storage_key,

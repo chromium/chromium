@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -21,15 +20,12 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
@@ -111,10 +107,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
 }  // namespace
 
 PageDiscardingHelper::PageDiscardingHelper()
-    : page_discarder_(std::make_unique<mechanism::PageDiscarder>()),
-      site_data_reader_callback_(
-          base::BindRepeating(&SiteDataRecorder::Data::GetReaderForPageNode)) {}
-
+    : page_discarder_(std::make_unique<mechanism::PageDiscarder>()) {}
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
 void PageDiscardingHelper::DiscardAPage(
@@ -275,11 +268,6 @@ void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
   DiscardAttemptMarker::Destroy(PageNodeImpl::FromNode(page_node));
 }
 
-void PageDiscardingHelper::SetSiteDataReaderCallbackForTesting(
-    SiteDataReaderCallback callback) {
-  site_data_reader_callback_ = callback;
-}
-
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
@@ -295,6 +283,12 @@ void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   graph->UnregisterObject(this);
   graph->RemovePageNodeObserver(this);
   graph_ = nullptr;
+}
+
+const PageLiveStateDecorator::Data*
+PageDiscardingHelper::GetPageNodeLiveStateData(
+    const PageNode* page_node) const {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node);
 }
 
 PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
@@ -326,10 +320,6 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   }
 
   // Don't discard tabs that have recently played audio.
-  // This is used instead of SiteDataReader::UsesAudioInBackground(), which
-  // returns whether the site has used audio in the background in previous
-  // sessions, to avoid protecting tabs like media players that are allowed to
-  // play audio in the background but aren't currently being used.
   auto it = last_change_to_non_audible_time_.find(page_node);
   if (it != last_change_to_non_audible_time_.end()) {
     if (base::TimeTicks::Now() - it->second < kTabAudioProtectionTime) {
@@ -350,39 +340,35 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   }
 
   // Don't discard tabs that don't have a main frame yet.
-  auto* main_frame = page_node->GetMainFrameNode();
-  if (!main_frame) {
+  // TODO(crbug.com/1441986): Due to a state tracking bug, sometimes there are
+  // two frames marked "current". In that case GetMainFrameNode() returns an
+  // arbitrary one, which may not have the url set correctly. As a workaround
+  // ignore the returned frame and use GetMainFrameUrl() for the url.
+  if (!page_node->GetMainFrameNode()) {
     return CanDiscardResult::kProtected;
   }
 
   // Only discard http(s) pages and internal pages to make sure that we don't
   // discard extensions or other PageNode that don't correspond to a tab.
+  const GURL& main_frame_url = page_node->GetMainFrameUrl();
   bool is_web_page_or_internal_page =
-      main_frame->GetURL().SchemeIsHTTPOrHTTPS() ||
-      main_frame->GetURL().SchemeIs("chrome");
+      main_frame_url.SchemeIsHTTPOrHTTPS() || main_frame_url.SchemeIs("chrome");
   if (!is_web_page_or_internal_page) {
     return CanDiscardResult::kProtected;
   }
 
-  if (!main_frame->GetURL().is_valid() || main_frame->GetURL().is_empty()) {
-    return CanDiscardResult::kProtected;
-  }
-
-  // `HadUserEdits()` is currently a superset of `HadFormInteraction()` but
-  // that may change so check both here (the check is not expensive).
-  if (page_node->HadFormInteraction() || page_node->HadUserEdits()) {
+  if (!main_frame_url.is_valid() || main_frame_url.is_empty()) {
     return CanDiscardResult::kProtected;
   }
 
   // The enterprise policy to except pages from discarding applies to both
   // proactive and urgent discards.
   if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
-                                 main_frame->GetURL())) {
+                                 main_frame_url)) {
     return CanDiscardResult::kProtected;
   }
 
-  const auto* live_state_data =
-      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  const auto* live_state_data = GetPageNodeLiveStateData(page_node);
 
   // The live state data won't be available if none of these events ever
   // happened on the page.
@@ -433,6 +419,9 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
               ContentSettingsType::NOTIFICATIONS)) {
         return CanDiscardResult::kProtected;
       }
+      if (live_state_data->UpdatedTitleOrFaviconInBackground()) {
+        return CanDiscardResult::kProtected;
+      }
     }
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
@@ -445,18 +434,10 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
 #endif
   }
 
-  if (is_proactive) {
-    const auto* site_data_reader = site_data_reader_callback_.Run(page_node);
-    if (site_data_reader) {
-      if (site_data_reader->UpdatesFaviconInBackground() ==
-          SiteFeatureUsage::kSiteFeatureInUse) {
-        return CanDiscardResult::kProtected;
-      }
-      if (site_data_reader->UpdatesTitleInBackground() ==
-          SiteFeatureUsage::kSiteFeatureInUse) {
-        return CanDiscardResult::kProtected;
-      }
-    }
+  // `HadUserEdits()` is currently a superset of `HadFormInteraction()` but
+  // that may change so check both here (the check is not expensive).
+  if (page_node->HadFormInteraction() || page_node->HadUserEdits()) {
+    return CanDiscardResult::kProtected;
   }
 
   // TODO(sebmarchand): Do not discard crashed tabs.
@@ -495,10 +476,9 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
   if (it != last_change_to_non_audible_time_.end()) {
     ret.Set("non_audible_change_time", TimeDeltaFromNowToValue(it->second));
   }
-  auto* main_frame = node->GetMainFrameNode();
-  if (main_frame) {
+  if (!node->GetMainFrameUrl().is_empty()) {
     ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
-                                                    main_frame->GetURL()));
+                                                    node->GetMainFrameUrl()));
   }
   return ret;
 }

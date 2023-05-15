@@ -5,7 +5,10 @@
 #include "components/exo/wayland/clients/simple.h"
 
 #include <presentation-time-client-protocol.h>
+#include <single-pixel-buffer-v1-client-protocol.h>
 
+#include <climits>
+#include <cstdint>
 #include <iostream>
 
 #include "base/command_line.h"
@@ -95,7 +98,7 @@ void VSyncTimingUpdate(void* data,
 Simple::Simple() = default;
 
 void Simple::Run(int frames,
-                 const bool log_vsync_timing_updates,
+                 const RunParam& run_param,
                  PresentationFeedback* feedback) {
   wl_display_roundtrip(display_.get());
   // We always send this bug fix ID as a sanity check.
@@ -106,10 +109,10 @@ void Simple::Run(int frames,
       FeedbackSyncOutput, FeedbackPresented, FeedbackDiscarded};
 
   std::unique_ptr<zcr_vsync_timing_v1> vsync_timing;
-  if (log_vsync_timing_updates) {
+  if (run_param.log_vsync_timing_updates) {
     if (globals_.vsync_feedback) {
       vsync_timing.reset(zcr_vsync_feedback_v1_get_vsync_timing(
-          globals_.vsync_feedback.get(), globals_.output.get()));
+          globals_.vsync_feedback.get(), globals_.outputs.back().get()));
       DCHECK(vsync_timing);
       static zcr_vsync_timing_v1_listener vsync_timing_listener = {
           VSyncTimingUpdate};
@@ -127,6 +130,8 @@ void Simple::Run(int frames,
 
   std::unique_ptr<wl_callback> frame_callback;
   bool frame_callback_pending = false;
+  wp_viewport* viewport =
+      wp_viewporter_get_viewport(globals_.wp_viewporter.get(), surface_.get());
   do {
     if (frame_callback_pending)
       continue;
@@ -134,14 +139,35 @@ void Simple::Run(int frames,
     if (frame_count == frames)
       break;
 
-    Buffer* buffer = DequeueBuffer();
-    if (!buffer)
-      continue;
-
-    SkCanvas* canvas = buffer->sk_surface->getCanvas();
-
+    wl_buffer* buffer;
     static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK};
-    canvas->clear(kColors[++frame_count % std::size(kColors)]);
+    SkColor color = kColors[++frame_count % std::size(kColors)];
+    if (run_param.single_pixel_buffer) {
+      SkColor4f precise_color = SkColor4f::FromColor(color);
+      // Single Pixel Buffer protocol uses premultiplied color.
+      uint32_t red =
+          UINT_MAX * (double)precise_color.fR * (double)precise_color.fA;
+      uint32_t green =
+          UINT_MAX * (double)precise_color.fG * (double)precise_color.fA;
+      uint32_t blue =
+          UINT_MAX * (double)precise_color.fB * (double)precise_color.fA;
+      uint32_t alpha = UINT_MAX * (double)precise_color.fA;
+      buffer = wp_single_pixel_buffer_manager_v1_create_u32_rgba_buffer(
+          globals_.wp_single_pixel_buffer_manager_v1.get(), red, green, blue,
+          alpha);
+      wp_viewport_set_destination(viewport, surface_size_.width(),
+                                  surface_size_.height());
+    } else {
+      Buffer* dequeued_buffer = DequeueBuffer();
+      if (!dequeued_buffer) {
+        continue;
+      }
+
+      SkCanvas* canvas = dequeued_buffer->sk_surface->getCanvas();
+
+      canvas->clear(color);
+      buffer = dequeued_buffer->buffer.get();
+    }
 
     if (gr_context_) {
       gr_context_->flushAndSubmit();
@@ -152,7 +178,8 @@ void Simple::Run(int frames,
     wl_surface_set_buffer_transform(surface_.get(), transform_);
     wl_surface_damage(surface_.get(), 0, 0, surface_size_.width(),
                       surface_size_.height());
-    wl_surface_attach(surface_.get(), buffer->buffer.get(), 0, 0);
+
+    wl_surface_attach(surface_.get(), buffer, 0, 0);
 
     // Set up the frame callback.
     frame_callback_pending = true;

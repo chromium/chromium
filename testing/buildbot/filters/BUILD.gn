@@ -74,12 +74,6 @@ source_set("browser_tests_filters") {
   ]
 }
 
-source_set("chrome_junit_tests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter" ]
-}
-
 source_set("chrome_public_test_apk_filters") {
   testonly = true
 
@@ -88,6 +82,7 @@ source_set("chrome_public_test_apk_filters") {
     "//testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter",
   ]
@@ -254,7 +249,7 @@ source_set("gin_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.pie_arm64.gin_unittests_coverage.filter",
+    "//testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter",
   ]
 }

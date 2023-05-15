@@ -9,8 +9,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
@@ -127,6 +129,11 @@ bool DeviceReportingSettingsLacros::GetBoolean(const std::string& policy_name,
   return false;
 }
 
+bool DeviceReportingSettingsLacros::GetReportingEnabled(const std::string& path,
+                                                        bool* out_value) const {
+  return GetBoolean(path, out_value);
+}
+
 bool DeviceReportingSettingsLacros::GetInteger(const std::string& policy_name,
                                                int* out_value) const {
   crosapi::mojom::DeviceSettings* const device_settings =
@@ -149,6 +156,16 @@ bool DeviceReportingSettingsLacros::GetInteger(const std::string& policy_name,
   }
 
   // Cannot retrieve device reporting setting for the given policy via cros api.
+  return false;
+}
+
+bool DeviceReportingSettingsLacros::GetList(
+    const std::string& policy_name,
+    const base::Value::List** out_value) const {
+  DCHECK(out_value);
+
+  // No use cases for this yet.
+  NOTIMPLEMENTED();
   return false;
 }
 

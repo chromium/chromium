@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
@@ -83,7 +84,7 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 
   // The ScreenLocker that owns this instance.
-  ScreenLocker* const screen_locker_ = nullptr;
+  const raw_ptr<ScreenLocker, ExperimentalAsh> screen_locker_ = nullptr;
 
   // Time when lock was initiated, required for metrics.
   base::TimeTicks lock_time_;

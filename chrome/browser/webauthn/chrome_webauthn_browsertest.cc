@@ -92,29 +92,29 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
 
 static constexpr char kGetAssertionCredID1234[] = R"((() => {
   let cred_id = new Uint8Array([1,2,3,4]);
-  navigator.credentials.get({ publicKey: {
+  return navigator.credentials.get({ publicKey: {
     challenge: cred_id,
     timeout: 10000,
     userVerification: 'discouraged',
     allowCredentials: [{type: 'public-key', id: cred_id}],
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
 })())";
 
 static constexpr char kMakeCredential[] = R"((() => {
-  navigator.credentials.create({ publicKey: {
+  return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
     user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
     pubKeyCredParams: [{type: "public-key", alg: -7}],
     challenge: new Uint8Array([0]),
     timeout: 10000,
     userVerification: 'discouraged',
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
 })())";
 
 static constexpr char kMakeDiscoverableCredential[] = R"((() => {
-  navigator.credentials.create({ publicKey: {
+  return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
     user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
     pubKeyCredParams: [{type: "public-key", alg: -7}],
@@ -124,8 +124,8 @@ static constexpr char kMakeDiscoverableCredential[] = R"((() => {
     authenticatorSelection: {
       requireResidentKey: true,
     },
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
 })())";
 
 IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
@@ -182,12 +182,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       std::move(virtual_device_factory));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kGetAssertionCredID1234, &result));
-
-  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kGetAssertionCredID1234));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -223,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
       cred_id = cred.rawId;
       if (!cred.getClientExtensionResults().largeBlob ||
           !cred.getClientExtensionResults().largeBlob.supported) {
-        window.domAutomationController.send('large blob not supported');
-        return;
+        throw new Error('large blob not supported');
       }
       return navigator.credentials.get({ publicKey: {
         challenge: new TextEncoder().encode('run a marathon'),
@@ -237,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
       }});
     }).then(assertion => {
       if (!assertion.getClientExtensionResults().largeBlob.written) {
-        window.domAutomationController.send('large blob not written to');
-        return;
+        throw new Error('large blob not written to');
       }
       return navigator.credentials.get({ publicKey: {
         challenge: new TextEncoder().encode('solve p=np'),
@@ -252,18 +248,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
     }).then(assertion => {
       if (new TextDecoder().decode(
           assertion.getClientExtensionResults().largeBlob.blob) != blob) {
-        window.domAutomationController.send('blob does not match');
-        return;
+        throw new Error('blob does not match');
       }
-      window.domAutomationController.send('webauthn: OK');
-    }).catch(error => window.domAutomationController.send(
-                      'webauthn: ' + error.toString()));)";
+      return 'webauthn: OK';
+    }).catch(error => 'webauthn: ' + error.toString());)";
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kMakeCredentialLargeBlob, &result));
-  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialLargeBlob));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -427,7 +420,7 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
 
  protected:
   static constexpr char kRequest[] = R"((() => {
-    navigator.credentials.get({
+    return navigator.credentials.get({
       publicKey: {
         timeout: 1000,
         challenge: new Uint8Array([
@@ -451,8 +444,8 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
           }],
         },
       },
-    }).then(c => window.domAutomationController.send('webauthn: OK'),
-            e => window.domAutomationController.send('error ' + e));
+    }).then(c => 'webauthn: OK',
+            e => 'error ' + e);
   })())";
 
   void DoRequest(std::string server_link_data) {
@@ -473,12 +466,10 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
     const std::string request =
         base::ReplaceStringPlaceholders(kRequest, {server_link_data}, nullptr);
 
-    std::string result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), request,
-        &result));
-
-    EXPECT_EQ("webauthn: OK", result);
+    EXPECT_EQ(
+        "webauthn: OK",
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        request));
   }
 
   class ExtensionObserver
@@ -800,10 +791,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kGetAssertionCredID1234, &result));
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kGetAssertionCredID1234));
 
   constexpr char kExpectedTrace[] = R"(
 TYPE: ga
@@ -822,7 +813,6 @@ CONTACT: phone_instance=4 step=3
 CONTACT: phone_instance=0 step=4
 )";
   EXPECT_EQ(kExpectedTrace, trace_.str());
-  EXPECT_EQ("webauthn: OK", result);
 }
 
 // These two tests are separate, rather than a for loop, because the testing
@@ -839,11 +829,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, RequestTypesMakeCredential) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), kMakeCredential,
-      &result));
-  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredential));
   EXPECT_TRUE(trace_.str().find("TYPE: mc\n") != std::string::npos)
       << trace_.str();
 }
@@ -859,11 +848,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kMakeDiscoverableCredential, &result));
-  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeDiscoverableCredential));
   EXPECT_TRUE(trace_.str().find("TYPE: mc\n") != std::string::npos)
       << trace_.str();
 }

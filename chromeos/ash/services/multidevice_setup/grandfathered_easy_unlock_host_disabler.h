@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
@@ -93,9 +94,9 @@ class GrandfatheredEasyUnlockHostDisabler
       absl::optional<multidevice::RemoteDeviceRef> device);
   absl::optional<multidevice::RemoteDeviceRef> GetEasyUnlockHostToDisable();
 
-  HostBackendDelegate* host_backend_delegate_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  PrefService* pref_service_;
+  raw_ptr<HostBackendDelegate, ExperimentalAsh> host_backend_delegate_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   std::unique_ptr<base::OneShotTimer> timer_;
   absl::optional<multidevice::RemoteDeviceRef> current_better_together_host_;
 

@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/themed_vector_icon.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/display.h"
@@ -45,6 +46,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -56,6 +58,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -67,6 +70,9 @@ constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
 constexpr int kBadgeSize = 16;
 constexpr int kCircularImageButtonSize = 28;
+constexpr int kCircularImageButtonRefreshSize = 32;
+constexpr float kShortcutIconToImageRatio = 9.0f / 16.0f;
+constexpr float kShortcutIconToImageRefreshRatio = 10.0f / 16.0f;
 // TODO(crbug.com/1128499): Remove this constant by extracting art height from
 // |avatar_header_art|.
 constexpr int kHeaderArtHeight = 80;
@@ -193,12 +199,16 @@ class CircularImageButton : public views::ImageButton {
   CircularImageButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       const std::u16string& text,
-                      SkColor background_profile_color = SK_ColorTRANSPARENT,
-                      bool show_border = false)
+                      int button_size = kCircularImageButtonSize,
+                      bool has_background_color = false,
+                      bool show_border = false,
+                      SkColor themed_icon_color = SK_ColorTRANSPARENT)
       : ImageButton(std::move(callback)),
         icon_(icon),
-        background_profile_color_(background_profile_color),
-        show_border_(show_border) {
+        button_size_(button_size),
+        has_background_color_(has_background_color),
+        show_border_(show_border),
+        themed_icon_color_(themed_icon_color) {
     SetTooltipText(text);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
@@ -208,21 +218,30 @@ class CircularImageButton : public views::ImageButton {
   // views::ImageButton:
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();
-    constexpr float kShortcutIconToImageRatio = 9.0f / 16.0f;
     const int kBorderThickness = show_border_ ? 1 : 0;
-    const SkScalar kButtonRadius =
-        (kCircularImageButtonSize + 2 * kBorderThickness) / 2.0f;
+    const SkScalar kButtonRadius = (button_size_ + 2 * kBorderThickness) / 2.0f;
 
     const auto* color_provider = GetColorProvider();
     SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-    if (background_profile_color_ != SK_ColorTRANSPARENT)
-      icon_color = GetProfileForegroundIconColor(background_profile_color_);
-    gfx::ImageSkia image =
-        ImageForMenu(*icon_, kShortcutIconToImageRatio, icon_color);
-    SetImage(views::Button::STATE_NORMAL,
-             SizeImage(image, kCircularImageButtonSize));
+    if (features::IsChromeRefresh2023() && has_background_color_) {
+      // TODO(crbug.com/1422119): Set colors for hover and pressed states.
+      SkColor background_color =
+          color_provider->GetColor(ui::kColorSysTonalContainer);
+      icon_color = color_provider->GetColor(ui::kColorSysOnTonalContainer);
+      SetBackground(
+          views::CreateRoundedRectBackground(background_color, kButtonRadius));
+    } else if (themed_icon_color_ != SK_ColorTRANSPARENT) {
+      icon_color = themed_icon_color_;
+    }
+    gfx::ImageSkia image = ImageForMenu(*icon_,
+                                        features::IsChromeRefresh2023()
+                                            ? kShortcutIconToImageRefreshRatio
+                                            : kShortcutIconToImageRatio,
+                                        icon_color);
+    SetImage(views::Button::STATE_NORMAL, SizeImage(image, button_size_));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
 
+    // TODO(crbug.com/1422119): Remove border for Chrome Refresh 2023.
     if (show_border_) {
       const SkColor separator_color =
           color_provider->GetColor(ui::kColorMenuSeparator);
@@ -233,8 +252,23 @@ class CircularImageButton : public views::ImageButton {
 
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
-  const SkColor background_profile_color_;
+  // In Chrome Refresh 2023, this kind of button could have different sizes in
+  // different sections of the Profile Menu, which is also different from the
+  // size in the previous version of the menu.
+  int button_size_;
+  // In Chrome Refresh 2023, some buttons on the Profile Menu have a background
+  // color that is based on the profile theme color and on light or dark mode,
+  // while other buttons have a transparent background. In the previous version
+  // of the menu, all backgrounds are transparent.
+  bool has_background_color_;
   bool show_border_;
+  // In the Profile Menu previous to Chrome Refresh 2023, icons that appears on
+  // top of a background with the profile theme color (e.g. edit button) have a
+  // different color than the default icon color. For the default icons, this is
+  // set to transparent and not used.
+  // TODO(crbug.com/1422119): Remove this parameter after Chrome Refresh 2023 is
+  // launched.
+  SkColor themed_icon_color_;
 };
 
 BEGIN_METADATA(CircularImageButton, views::ImageButton)
@@ -605,8 +639,11 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
                             base::Unretained(this),
                             std::move(edit_button_params->edit_action)),
         *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
-        avatar_header_art.empty() ? profile_background_color
-                                  : SK_ColorTRANSPARENT);
+        kCircularImageButtonSize, /*has_background_color=*/false,
+        /*show_border=*/false,
+        avatar_header_art.empty()
+            ? GetProfileForegroundIconColor(profile_background_color)
+            : SK_ColorTRANSPARENT);
   }
 
   BuildProfileBackgroundContainer(
@@ -735,8 +772,11 @@ void ProfileMenuViewBase::AddShortcutFeatureButton(
       std::make_unique<CircularImageButton>(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
-          icon, text, SK_ColorTRANSPARENT,
-          /*show_border=*/true));
+          icon, text,
+          features::IsChromeRefresh2023() ? kCircularImageButtonRefreshSize
+                                          : kCircularImageButtonSize,
+          /*has_background_color=*/true,
+          /*show_border=*/!features::IsChromeRefresh2023()));
   button->SetFlipCanvasOnPaintForRTLUI(false);
 }
 

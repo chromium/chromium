@@ -6,9 +6,9 @@
 
 #include <dlfcn.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/mac/bundle_locations.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -26,7 +26,7 @@ bool LoadResources(const std::string& pref_locale) {
     // DirName() calls strip "Contents/MacOS/<binary>" from the path.
     base::FilePath path =
         base::FilePath(info.dli_fname).DirName().DirName().DirName();
-    base::mac::SetOverrideFrameworkBundlePath(path);
+    base::apple::SetOverrideFrameworkBundlePath(path);
 
     // Override the locale with the value from Cocoa.
     if (pref_locale.empty()) {

@@ -93,6 +93,16 @@ _APKS = {
     '64': [
         ('CHROME', 'CHROME', '64'),
         ('CHROME_MODERN', 'CHROME_MODERN', '64'),
+        ('MONOCHROME', 'MONOCHROME', '64'),
+        ('TRICHROME', 'TRICHROME', '64'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '64'),
+        ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '64'),
+        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '64'),
+        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '64'),
+    ],
+    'hybrid': [
+        ('CHROME', 'CHROME', '64'),
+        ('CHROME_MODERN', 'CHROME_MODERN', '64'),
         ('MONOCHROME', 'MONOCHROME', '32_64'),
         ('MONOCHROME_32', 'MONOCHROME', '32'),
         ('MONOCHROME_32_64', 'MONOCHROME', '32_64'),
@@ -104,7 +114,6 @@ _APKS = {
         ('TRICHROME_64_32', 'TRICHROME', '64_32'),
         ('TRICHROME_64_32_HIGH', 'TRICHROME', '64_32_high'),
         ('TRICHROME_64', 'TRICHROME', '64'),
-        ('TRICHROME_64_HIGH', 'TRICHROME', '64_32_high'),  # Deprecated.
         ('TRICHROME_AUTO_64_32', 'TRICHROME_AUTO', '64_32'),
         ('TRICHROME_BETA', 'TRICHROME_BETA', '32_64'),
         ('TRICHROME_32_BETA', 'TRICHROME_BETA', '32'),
@@ -112,8 +121,6 @@ _APKS = {
         ('TRICHROME_64_32_BETA', 'TRICHROME_BETA', '64_32'),
         ('TRICHROME_64_32_HIGH_BETA', 'TRICHROME_BETA', '64_32_high'),
         ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
-        # Deprecated
-        ('TRICHROME_64_HIGH_BETA', 'TRICHROME_BETA', '64_32_high'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
@@ -129,9 +136,12 @@ _APKS = {
 # Splits input build config architecture to manufacturer and bitness.
 _ARCH_TO_MFG_AND_BITNESS = {
     'arm': ('arm', '32'),
-    'arm64': ('arm', '64'),
+    'arm64': ('arm', 'hybrid'),
+    # Until riscv64 needs a unique version code to ship APKs to the store,
+    # point to the 'arm' bitmask.
+    'riscv64': ('arm', '64'),
     'x86': ('intel', '32'),
-    'x64': ('intel', '64'),
+    'x64': ('intel', 'hybrid'),
 }
 
 # Expose the available choices to other scripts.
@@ -175,21 +185,52 @@ things here:
   version needs to be a higher versionCode, as otherwise a 64-bit device would
   prefer the 32-bit version that does not include any 64-bit code, and fail.
 """
-_ABIS_TO_DIGIT_MASK = {
-    'arm': {
-        '32': 0,
-        '32_64': 3,
-        '64_32': 4,
-        '64': 5,
-        '64_32_high': 9,
-    },
-    'intel': {
-        '32': 1,
-        '32_64': 6,
-        '64_32': 7,
-        '64': 8,
-    },
-}
+
+
+def _GetAbisToDigitMask(build_number):
+  """Return the correct digit mask based on build number.
+
+  Updated from build 5750: Some intel devices advertise support for arm,
+  so arm codes must be lower than x86 codes to prevent providing an
+  arm-optimized build to intel devices.
+
+  Returns:
+    A dictionary of architecture mapped to bitness
+    mapped to version code suffix.
+  """
+
+  if build_number < 5750:
+    return {
+        'arm': {
+            '32': 0,
+            '32_64': 3,
+            '64_32': 4,
+            '64': 5,
+            '64_32_high': 9,
+        },
+        'intel': {
+            '32': 1,
+            '32_64': 6,
+            '64_32': 7,
+            '64': 8,
+        },
+    }
+  return {
+      'arm': {
+          '32': 0,
+          '32_64': 1,
+          '64_32': 2,
+          '64_32_high': 3,
+          '64': 4,
+      },
+      'intel': {
+          '32': 6,
+          '32_64': 7,
+          '64_32': 8,
+          '64': 9,
+      },
+  }
+
 
 VersionCodeComponents = namedtuple('VersionCodeComponents', [
     'build_number',
@@ -249,7 +290,7 @@ def TranslateVersionCode(version_code, is_webview=False):
         package_name = package
         break
 
-  for arch, bitness_to_number in _ABIS_TO_DIGIT_MASK.items():
+  for arch, bitness_to_number in _GetAbisToDigitMask(build_number).items():
     for bitness, number in bitness_to_number.items():
       if abi_digit == number:
         abi = arch if arch != 'intel' else 'x86'
@@ -295,10 +336,11 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
 
   version_codes = {}
 
+  abi_to_digit_mask = _GetAbisToDigitMask(int(version_values['BUILD']))
   for apk, package, abis in _APKS[bitness]:
     if abis == '64_32_high' and arch != 'arm64':
       continue
-    abi_part = _ABIS_TO_DIGIT_MASK[mfg][abis]
+    abi_part = abi_to_digit_mask[mfg][abis]
     package_part = _PACKAGE_NAMES[package]
 
     version_code_name = apk + '_VERSION_CODE'

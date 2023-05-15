@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
@@ -227,8 +228,8 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
     std::move(callback).Run(error, proto);
   }
 
-  dbus::Bus* bus_ = nullptr;
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

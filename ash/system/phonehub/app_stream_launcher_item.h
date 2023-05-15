@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -38,8 +39,9 @@ class ASH_EXPORT AppStreamLauncherItem : public views::View {
  private:
   // Owned by views hierarchy.
   // TODO(b/259426750) refactor PhoneHubRecentAppButton to a more generic name.
-  PhoneHubRecentAppButton* recent_app_button_ = nullptr;
-  views::LabelButton* label_ = nullptr;
+  raw_ptr<PhoneHubRecentAppButton, ExperimentalAsh> recent_app_button_ =
+      nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> label_ = nullptr;
 };
 
 }  // namespace ash

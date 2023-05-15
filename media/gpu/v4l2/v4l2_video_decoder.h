@@ -12,8 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/lru_cache.h"
-#include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -116,20 +114,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
     kError,
   };
 
-  class BitstreamIdGenerator {
-   public:
-    BitstreamIdGenerator() { DETACH_FROM_SEQUENCE(sequence_checker_); }
-    int32_t GetNextBitstreamId() {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      next_bitstream_buffer_id_ = (next_bitstream_buffer_id_ + 1) & 0x7FFFFFFF;
-      return next_bitstream_buffer_id_;
-    }
-
-   private:
-    int32_t next_bitstream_buffer_id_ = 0;
-    SEQUENCE_CHECKER(sequence_checker_);
-  };
-
   // Setup format for input queue.
   bool SetupInputFormat(uint32_t input_format_fourcc);
 
@@ -209,8 +193,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
-
-  BitstreamIdGenerator bitstream_id_generator_;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 

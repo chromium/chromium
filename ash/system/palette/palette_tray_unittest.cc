@@ -24,7 +24,9 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
+#include "base/files/safe_base_name.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -96,7 +98,7 @@ class PaletteTrayTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
-  PaletteTray* palette_tray_ = nullptr;  // not owned
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
 };
@@ -630,7 +632,7 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
   }
 
  protected:
-  PaletteTray* palette_tray_external_ = nullptr;
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_external_ = nullptr;
 
   std::unique_ptr<PaletteTrayTestApi> test_api_external_;
 };
@@ -774,7 +776,7 @@ class PaletteTrayTestWithProjector : public PaletteTrayTest {
   }
 
  protected:
-  ProjectorSessionImpl* projector_session_;
+  raw_ptr<ProjectorSessionImpl, ExperimentalAsh> projector_session_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -794,7 +796,8 @@ TEST_F(PaletteTrayTestWithProjector,
 
   // Verify palette tray is hidden and the active tool is deactivated during
   // Projector session.
-  projector_session_->Start("projector_data");
+  projector_session_->Start(
+      base::SafeBaseName::Create("projector_data").value());
   EXPECT_FALSE(palette_tray_->GetVisible());
   EXPECT_EQ(
       test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),

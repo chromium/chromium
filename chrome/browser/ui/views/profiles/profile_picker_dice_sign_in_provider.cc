@@ -294,9 +294,6 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
   return signin::GetChromeSyncURLForDice({
       .request_dark_scheme = host_->ShouldUseDarkColors(),
-      .for_promo_flow =
-          base::FeatureList::IsEnabled(kPromoGaiaFlow) ||
-          signin_access_point_ ==
-              signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
+      .for_promo_flow = true,
   });
 }

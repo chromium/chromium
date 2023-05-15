@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -82,6 +83,7 @@ struct CredentialUIEntry {
   CredentialUIEntry();
   explicit CredentialUIEntry(const PasswordForm& form);
   explicit CredentialUIEntry(const std::vector<PasswordForm>& forms);
+  explicit CredentialUIEntry(const PasskeyCredential& passkey);
   explicit CredentialUIEntry(
       const CSVPassword& csv_password,
       PasswordForm::Store to_store = PasswordForm::Store::kProfileStore);
@@ -91,6 +93,9 @@ struct CredentialUIEntry {
 
   CredentialUIEntry& operator=(const CredentialUIEntry& other);
   CredentialUIEntry& operator=(CredentialUIEntry&& other);
+
+  // True if this credential is a passkey, false otherwise.
+  bool is_passkey = false;
 
   // List of facets represented by this entry which contains the display name,
   // url and sign-on realm of a credential.

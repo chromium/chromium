@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {str} from '../../../common/js/util.js';
+import {str, util} from '../../../common/js/util.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
@@ -12,9 +12,9 @@ import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 /**
  * InstallLinuxPackageDialog is used as the handler for .deb files.
  */
-  /**
-   * Creates dialog in DOM tree.
-   */
+/**
+ * Creates dialog in DOM tree.
+ */
 export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.
@@ -36,9 +36,18 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
 
     // The OK button normally dismisses the dialog, so add a button we can
     // customize.
-    this.installButton_ = this.okButton.cloneNode(false /* deep */);
-    this.installButton_.textContent =
-        str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
+    if (util.isJellyEnabled()) {
+      // Need to copy the whole sub tree because we need child elements.
+      this.installButton_ = this.okButton.cloneNode(true /* deep */);
+      // When Jelly is on, we have child elements inside the button, setting
+      // textContent of the button will remove all children.
+      this.installButton_.childNodes[0].textContent =
+          str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
+    } else {
+      this.installButton_ = this.okButton.cloneNode(false /* deep */);
+      this.installButton_.textContent =
+          str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
+    }
     this.installButton_.addEventListener(
         'click', this.onInstallClick_.bind(this));
     this.buttons.insertBefore(this.installButton_, this.okButton);

@@ -21,7 +21,7 @@ bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
   DCHECK(document_data);
 
   blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_read_context();
+      document_data->runtime_feature_state_read_context();
 
   return read_context.IsDisableThirdPartyStoragePartitioningEnabled();
 }

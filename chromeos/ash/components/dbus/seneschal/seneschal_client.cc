@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
@@ -135,7 +136,7 @@ class SeneschalClientImpl : public SeneschalClient {
 
   base::ObserverList<Observer> observer_list_;
 
-  dbus::ObjectProxy* seneschal_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> seneschal_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

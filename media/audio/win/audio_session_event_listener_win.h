@@ -7,29 +7,29 @@
 
 #include <audiopolicy.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/functional/callback.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
-class MEDIA_EXPORT AudioSessionEventListener : public IAudioSessionEvents {
+class MEDIA_EXPORT AudioSessionEventListener
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IAudioSessionEvents> {
  public:
-  // Calls RegisterAudioSessionNotification() on |client| and calls
+  // Handles event callbacks from
+  // IAudioSessionControl::RegisterAudioSessionNotification().  Runs
   // |device_change_cb| when OnSessionDisconnected() is called.
   //
   // Since the IAudioClient session is dead after the disconnection, we use a
   // OnceCallback. The delivery of this notification is fatal to the |client|.
-  AudioSessionEventListener(IAudioClient* client,
-                            base::OnceClosure device_change_cb);
-  virtual ~AudioSessionEventListener();
+  AudioSessionEventListener(base::OnceClosure device_change_cb);
+  ~AudioSessionEventListener() override;
 
  private:
   friend class AudioSessionEventListenerTest;
-
-  IFACEMETHODIMP_(ULONG) AddRef() override;
-  IFACEMETHODIMP_(ULONG) Release() override;
-  IFACEMETHODIMP QueryInterface(REFIID iid, void** object) override;
 
   // IAudioSessionEvents implementation.
   IFACEMETHODIMP OnChannelVolumeChanged(DWORD channel_count,
@@ -50,7 +50,6 @@ class MEDIA_EXPORT AudioSessionEventListener : public IAudioSessionEvents {
   IFACEMETHODIMP OnStateChanged(AudioSessionState new_state) override;
 
   base::OnceClosure device_change_cb_;
-  Microsoft::WRL::ComPtr<IAudioSessionControl> audio_session_control_;
 };
 
 }  // namespace media

@@ -2,32 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+
+#include <string>
+#include <vector>
+
 #include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager {
 
-namespace {
-
-std::u16string ToUsernameString(const PasskeyCredential::Username& username) {
-  if (username.value() && !username.value()->empty()) {
-    return base::UTF8ToUTF16(*username.value());
-  }
-  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
-}
-
-}  // namespace
-
-PasskeyCredential::PasskeyCredential(const Username& username,
-                                     const DeviceName& device_name,
-                                     const BackendId& backend_id)
-    : username_(ToUsernameString(username)),
-      device_name_(device_name),
-      backend_id_(backend_id) {}
+PasskeyCredential::PasskeyCredential(Source source,
+                                     std::string rp_id,
+                                     std::vector<uint8_t> credential_id,
+                                     std::vector<uint8_t> user_id,
+                                     std::string username,
+                                     std::string display_name)
+    : source_(source),
+      rp_id_(std::move(rp_id)),
+      credential_id_(std::move(credential_id)),
+      user_id_(std::move(user_id)),
+      username_(std::move(username)),
+      display_name_(std::move(display_name)) {}
 
 PasskeyCredential::~PasskeyCredential() = default;
 
@@ -37,6 +32,19 @@ PasskeyCredential& PasskeyCredential::operator=(const PasskeyCredential&) =
 
 PasskeyCredential::PasskeyCredential(PasskeyCredential&&) = default;
 PasskeyCredential& PasskeyCredential::operator=(PasskeyCredential&&) = default;
+
+int PasskeyCredential::GetAuthenticatorLabel() const {
+  switch (source_) {
+    case Source::kWindowsHello:
+      return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+    case Source::kTouchId:
+      return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+    case Source::kAndroidPhone:
+      return IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+    case Source::kOther:
+      return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+  }
+}
 
 bool operator==(const PasskeyCredential& lhs,
                 const PasskeyCredential& rhs) = default;

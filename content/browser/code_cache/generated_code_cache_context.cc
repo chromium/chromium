@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -87,6 +88,8 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
             path.AppendASCII("webui_js"), max_bytes_webui_js,
             GeneratedCodeCache::CodeCacheType::kWebUIJavaScript),
         base::OnTaskRunnerDeleter(task_runner_)};
+
+    UMA_HISTOGRAM_BOOLEAN("WebUICodeCache.FeatureEnabled", true);
   }
 
   generated_js_code_cache_ = {

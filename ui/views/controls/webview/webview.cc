@@ -167,6 +167,11 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
   UpdateCrashedOverlayView();
 }
 
+base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(
+    WebContentsAttachedCallback callback) {
+  return web_contents_attached_callbacks_.Add(callback);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, View overrides:
 
@@ -410,7 +415,7 @@ void WebView::AttachWebContentsNativeView() {
   if (HasFocus())
     OnFocus();
 
-  OnWebContentsAttached();
+  web_contents_attached_callbacks_.Notify(this);
 }
 
 void WebView::DetachWebContentsNativeView() {

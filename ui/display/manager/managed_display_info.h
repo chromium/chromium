@@ -102,30 +102,30 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // - |zoom-factor| is floating value, e.g. @1.5 or @1.25.
   // - |resolution list| is the list of size that is given in
   //   |width x height [% refresh_rate]| separated by '|'.
-  // - |rounded_display_radii| is a list of integer values separated by '|'
-  //   that specifies the radius of each corner of display with format:
+  // - |panel_corners_radii| is a list of integer values separated by '|'
+  //   that specifies the radius of each corner of display's panel with format:
   //     upper_left|upper_right|lower_right|lower_left
   //   If only one radius is specified, |radius|, it is the radius for all four
   //   corners.
   // A couple of examples:
   // "100x100"
   //      100x100 window at 0,0 origin. 1x device scale factor. no overscan.
-  //      no rotation. 1.0 zoom factor. no rounded display.
+  //      no rotation. 1.0 zoom factor. no rounded panel.
   // "100x100~16|16|10|10"
   //      100x100 window at 0,0 origin. 1x device scale factor. no overscan.
   //      no rotation. 1.0 zoom factor. display with rounded
-  //      corners of radii (16,16,10,10).
+  //      panel of radii (16,16,10,10).
   // "5+5-300x200~18"
   //      300x200 window at 5,5 origin. 2x device scale factor.
   //      no overscan, no rotation. 1.0 zoom factor. display with rounded
-  //      corners of radii (18,18,18,18).
+  //      panel of radii (18,18,18,18).
   // "5+5-300x200*2"
   //      300x200 window at 5,5 origin. 2x device scale factor.
   //      no overscan, no rotation. 1.0 zoom factor. no rounded display.
   // "300x200/ol"
   //      300x200 window at 0,0 origin. 1x device scale factor.
   //      with 5% overscan. rotated to left (90 degree counter clockwise).
-  //      1.0 zoom factor. no rounded display.
+  //      1.0 zoom factor. no rounded panel.
   // "10+20-300x200/u@1.5"
   //      300x200 window at 10,20 origin. 1x device scale factor.
   //      no overscan. flipped upside-down (180 degree) and 1.5 zoom factor.
@@ -314,11 +314,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   int32_t year_of_manufacture() const { return year_of_manufacture_; }
   void set_year_of_manufacture(int32_t year) { year_of_manufacture_ = year; }
 
-  const gfx::RoundedCornersF& rounded_corners_radii() const {
-    return rounded_corners_radii_;
+  const gfx::RoundedCornersF& panel_corners_radii() const {
+    return panel_corners_radii_;
   }
-  void set_rounded_corners_radii(const gfx::RoundedCornersF radii) {
-    rounded_corners_radii_ = radii;
+  void set_panel_corners_radii(const gfx::RoundedCornersF radii) {
+    panel_corners_radii_ = radii;
   }
 
   VariableRefreshRateState variable_refresh_rate_state() const {
@@ -445,8 +445,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // 0 if EDID says so or if the EDID (retrieval) was faulty.
   uint32_t bits_per_channel_;
 
-  // Radii for the corners of the display. The default radii is (0, 0, 0, 0).
-  gfx::RoundedCornersF rounded_corners_radii_;
+  // Radii of the corners of the physical panel of the display. The value is
+  // specified through command-line via switch `display-properties`. The default
+  // radii is (0, 0, 0, 0).
+  gfx::RoundedCornersF panel_corners_radii_;
 
   DrmFormatsAndModifiers drm_formats_and_modifiers_;
 

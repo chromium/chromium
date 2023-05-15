@@ -683,7 +683,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterRotated) {
       FuzzyPixelComparator()
           .DiscardAlpha()
           .SetErrorPixelsPercentageLimit(5.f)
-          .SetAbsErrorLimit(2));
+          .SetAbsErrorLimit(3));
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("backdrop_filter_rotated_.png"))

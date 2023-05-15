@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
@@ -74,7 +75,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   // replaced, owned by `views::View`. `FillLayout` wants to size child views to
   // fit the parent's bounds, but children of `ChannelIndicatorView` need to
   // have specific sizes and insets regardless of the parent's bounds.
-  views::BoxLayout* box_layout_;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_;
 
   ScopedSessionObserver session_observer_;
 

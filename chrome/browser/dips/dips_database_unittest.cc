@@ -492,13 +492,13 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
             [&]() { return std::vector<std::string>{}; });
       case DIPSTriggeringAction::kBounce:
         return base::BindLambdaForTesting(
-            [&]() { return db_->GetSitesThatBounced(); });
+            [&]() { return db_->GetSitesThatBounced(grace_period); });
       case DIPSTriggeringAction::kStorage:
         return base::BindLambdaForTesting(
-            [&]() { return db_->GetSitesThatUsedStorage(); });
+            [&]() { return db_->GetSitesThatUsedStorage(grace_period); });
       case DIPSTriggeringAction::kStatefulBounce:
         return base::BindLambdaForTesting(
-            [&]() { return db_->GetSitesThatBouncedWithState(); });
+            [&]() { return db_->GetSitesThatBouncedWithState(grace_period); });
     }
   }
 

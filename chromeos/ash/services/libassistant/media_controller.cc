@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/media_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
@@ -208,7 +209,7 @@ class MediaController::GrpcEventsObserver
 
   mojom::MediaDelegate& delegate() { return *parent_->delegate_; }
 
-  MediaController* const parent_;
+  const raw_ptr<MediaController, ExperimentalAsh> parent_;
 };
 
 MediaController::MediaController()

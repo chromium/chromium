@@ -20,7 +20,20 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './password_move_multiple_passwords_to_account_dialog.html.js';
-import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
+
+/**
+ * This should be kept in sync with the enum in
+ * components/password_manager/core/browser/password_manager_metrics_util.h.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+enum MoveToAccountStoreTrigger {
+  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD = 0,
+  EXPLICITLY_TRIGGERED_IN_SETTINGS = 1,
+  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS = 2,
+  USER_OPTED_IN_AFTER_SAVING_LOCALLY = 3,
+  COUNT = 4,
+}
 
 export interface PasswordMoveMultiplePasswordsToAccountDialogElement {
   $: {

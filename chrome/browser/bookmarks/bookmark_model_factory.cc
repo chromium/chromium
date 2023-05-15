@@ -50,8 +50,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(
 #endif
   bookmark_model->Load(profile->GetPath(),
                        bookmarks::StorageType::kLocalOrSyncable);
-  BookmarkUndoServiceFactory::GetForProfile(profile)->Start(
-      bookmark_model.get());
+  BookmarkUndoServiceFactory::GetForProfile(profile)
+      ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;
 }
 

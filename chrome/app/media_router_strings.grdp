@@ -108,6 +108,9 @@
   <message name="IDS_MEDIA_ROUTER_SINK_DISCONNECTING" desc="Text shown as the status of a Cast device that has a Cast session that is ending.">
     Disconnecting...
   </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_PAUSED" desc="Text shows as the status of a Cast device that has a Cast session that is paused.">
+    Casting is paused
+  </message>
   <message name="IDS_MEDIA_ROUTER_STOP_CASTING" desc="Text shown when user hovers over the stop icon for a cast device.">
     Stop casting
   </message>

@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Snimanje je zaustavljeno zbog male količine prostora za pohranu na uređaju. Da biste mogli nastaviti snimati videozapise, morate osloboditi prostor na uređaju.</translation>
 <translation id="2036868001356139588">Trajanje odbrojavanja</translation>
 <translation id="2064538373111010176">Aktivno: <ph name="CAMERA" /></translation>
-<translation id="2128052519899549250">Snimite ubrzani videozapis</translation>
 <translation id="2134029355740465625">Postavke videozapisa</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="2175927920773552910">QR kôd</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Otkriven je dokument</translation>
 <translation id="414641094616694804">Za ovu se kameru ne može promijeniti razlučivost</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
-<translation id="4281620174117014503">Razlučivost za medije</translation>
 <translation id="428234092390943511">Minijatura stranice</translation>
 <translation id="4383571725254449280">Ispis zapisnika o izvedbi</translation>
 <translation id="4445542136948522167">Zaustavi snimanje fotografije</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5320594929574852403">Kreće se ulijevo</translation>
 <translation id="5374917190292010970">4K (2160 p)</translation>
-<translation id="5577251651370645658">Ubrzani videozapis</translation>
 <translation id="5662366948659129155">Skeniranje stranice <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="574392208103952083">Srednje</translation>
 <translation id="5746169159649715125">Spremi kao PDF</translation>
 <translation id="5753488212459587150">Omogući stručni način rada</translation>
 <translation id="5759254179196327752">Čitanje dokumenta</translation>
@@ -138,6 +136,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7670511624014457267">60 okv/s</translation>
 <translation id="7671804233658741790">Donji desni kut dokumenta</translation>
+<translation id="7684446460490665873">Snimite ubrzani videozapis</translation>
 <translation id="7692090236657809299">Omogući pomicanje/naginjanje/zumiranje</translation>
 <translation id="7726641833034062494">Snimite normalan videozapis</translation>
 <translation id="7748344063862150053">Gornji desni kut dokumenta</translation>
@@ -163,6 +162,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="9045010116236796332">Postavite sve rubove dokumenta unutar okvira</translation>
 <translation id="9045155556724273246">Deset sekundi</translation>
 <translation id="906331135292332864">Obrada slike...</translation>
+<translation id="9161584225258678723">Ubrzani videozapis</translation>
 <translation id="922762992951083513">Uključi zrcaljenje</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 </translationbundle>

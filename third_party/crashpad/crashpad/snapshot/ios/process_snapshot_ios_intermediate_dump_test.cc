@@ -16,7 +16,8 @@
 
 #include <mach-o/loader.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"

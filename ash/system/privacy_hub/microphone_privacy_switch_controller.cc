@@ -16,9 +16,11 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/system_notification_controller.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
 namespace {
@@ -81,18 +83,8 @@ void MicrophonePrivacySwitchController::OnInputMuteChanged(
   mic_muted_by_mute_switch_ =
       CrasAudioHandler::Get()->input_muted_by_microphone_mute_switch();
 
-  // The `VideoConferenceTrayController` shows this info as a toast.
-  if (!features::IsVideoConferenceEnabled()) {
-    if (features::IsPrivacyIndicatorsEnabled()) {
-      // Only show the notification when a stream starts (handled in
-      // `OnNumberOfInputStreamsWithPermissionChanged()`), and always dismiss
-      // the notification if mute is turned off.
-      if (!mic_mute_on_) {
-        SetMicrophoneNotificationVisible(mic_mute_on_);
-      }
-    } else if (input_stream_count_) {
-      SetMicrophoneNotificationVisible(mic_mute_on_);
-    }
+  if (!mic_mute_on_) {
+    SetMicrophoneNotificationVisible(false);
   }
 
   // `pref_change_registrar_` is only initialized after a user logs in.
@@ -128,17 +120,30 @@ void MicrophonePrivacySwitchController::
     return;
   }
 
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    // If the hardware switch is on, call `SetMicrophoneNotificationVisible()`
-    // to ensure the text is updated to reflect the hw switch. Only show the
-    // notification when a stream starts (handled in
-    // `OnNumberOfInputStreamsWithPermissionChanged()`), and always dismiss the
-    // notification if mute is turned off.
-    if (mic_muted_by_mute_switch_ || !mic_mute_on_) {
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
+
+  if (mic_mute_on_) {
+    bool is_mic_sw_switch_notification_shown =
+        privacy_hub_notification_controller
+            ->IsSoftwareSwitchNotificationDisplayedForSensor(
+                SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+
+    if (is_mic_sw_switch_notification_shown) {
+      // Set priority to LOW to make sure the notification will be just added
+      // to the message center (and not be shown as a popup).
+      privacy_hub_notification_controller
+          ->SetPriorityForMicrophoneHardwareNotification(
+              message_center::NotificationPriority::LOW_PRIORITY);
       SetMicrophoneNotificationVisible(mic_mute_on_);
+      // Restore priority to DEFAULT - so next notifications to be popups.
+      privacy_hub_notification_controller
+          ->SetPriorityForMicrophoneHardwareNotification(
+              message_center::NotificationPriority::DEFAULT_PRIORITY);
     }
-  } else if (input_stream_count_) {
-    SetMicrophoneNotificationVisible(mic_mute_on_);
+  } else {
+    SetMicrophoneNotificationVisible(false);
   }
 }
 
@@ -186,8 +191,8 @@ void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
     return;
   }
 
-  PrivacyHubNotificationController* const privacy_hub_notification_controller =
-      Shell::Get()->system_notification_controller()->privacy_hub();
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
 
   if (visible) {
     if (mic_muted_by_mute_switch_) {
@@ -212,8 +217,9 @@ void MicrophonePrivacySwitchController::UpdateMicrophoneNotification() {
     return;
   }
 
-  PrivacyHubNotificationController* const privacy_hub_notification_controller =
-      Shell::Get()->system_notification_controller()->privacy_hub();
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
 
   if (mic_muted_by_mute_switch_) {
     privacy_hub_notification_controller->UpdateHardwareSwitchNotification(

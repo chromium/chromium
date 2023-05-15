@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/ranges/algorithm.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 
 namespace ash {
@@ -95,7 +95,7 @@ bool FakeStubCellularNetworksProvider::GetStubNetworkMetadata(
   if (!base::Contains(stub_iccid_and_eid_pairs_, iccid, &IccidEidPair::first))
     return false;
 
-  *service_path_out = GenerateStubCellularServicePath(iccid);
+  *service_path_out = cellular_utils::GenerateStubCellularServicePath(iccid);
   *guid_out = GetGuidForStubIccid(iccid);
   return true;
 }
@@ -106,7 +106,7 @@ const std::string& FakeStubCellularNetworksProvider::GetGuidForStubIccid(
 
   // If we have not yet generated a GUID for this ICCID, generate one.
   if (guid.empty())
-    guid = base::GenerateGUID();
+    guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   return guid;
 }

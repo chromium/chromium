@@ -264,7 +264,7 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
       base::BindOnce(&GetLoginsOrEmptyListOnFailure)
           .Then(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
                                std::move(completion))),
-      FormSupportsPSL(form_digest), {form_digest});
+      /*include_psl=*/false, {form_digest});
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
@@ -292,7 +292,7 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   }
   // If there is no helper to retrieve affiliations with, inform the
   // `request_handler` that there are no affiliated logins.
-  request_handler->AffiliatedLoginsClosure().Run({});
+  request_handler->NonFormLoginsClosure().Run({});
 
   // And request the regular logins for `form`.
   backend_->FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(),
@@ -505,8 +505,7 @@ void PasswordStore::UnblocklistInternal(
 
   std::vector<PasswordForm> forms_to_remove;
   for (auto& form : forms) {
-    // Ignore PSL matches for blocked entries.
-    if (form->blocked_by_user && !form->is_public_suffix_match) {
+    if (form->blocked_by_user) {
       forms_to_remove.push_back(std::move(*form));
     }
   }
@@ -541,7 +540,7 @@ void PasswordStore::GetLoginsForFormAndForAffiliatedRealms(
 
   auto branding_injection_for_affiliations_callback =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                     this, request_handler->AffiliatedLoginsClosure());
+                     this, request_handler->NonFormLoginsClosure());
 
   // This callback is to be owned and executed from `affiliated_match_helper_`.
   // Since `Shutdown` resets the `affiliated_match_helper_` before shutting down
@@ -556,6 +555,24 @@ void PasswordStore::GetLoginsForFormAndForAffiliatedRealms(
   affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
       form, request_handler->AffiliationsClosure().Then(
                 std::move(get_logins_for_affiliations_callback)));
+
+  if (base::FeatureList::IsEnabled(
+          features::kFillingAcrossAffiliatedWebsites) &&
+      base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
+    auto branding_injection_for_group_callback =
+        base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
+                       this, request_handler->NonFormLoginsClosure());
+    auto get_logins_for_group_callback =
+        base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
+                       base::Unretained(backend_.get()),
+                       std::move(branding_injection_for_group_callback),
+                       /*include_psl=*/false);
+
+    // Retrieve the group, then retrieve logins for those realms.
+    affiliated_match_helper_->GetGroup(
+        form, request_handler->GroupClosure().Then(
+                  std::move(get_logins_for_group_callback)));
+  }
 
   // Retrieve logins for `form`. The request will be handled by the
   // `request_handler`.

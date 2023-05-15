@@ -27,7 +27,12 @@ MerchantPromoCodeManagerFactory::GetInstance() {
 MerchantPromoCodeManagerFactory::MerchantPromoCodeManagerFactory()
     : ProfileKeyedServiceFactory(
           "MerchantPromoCodeManager",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(PersonalDataManagerFactory::GetInstance());
 }
 
@@ -36,7 +41,7 @@ MerchantPromoCodeManagerFactory::~MerchantPromoCodeManagerFactory() = default;
 KeyedService* MerchantPromoCodeManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  raw_ptr<MerchantPromoCodeManager> service = new MerchantPromoCodeManager();
+  MerchantPromoCodeManager* service = new MerchantPromoCodeManager();
   service->Init(PersonalDataManagerFactory::GetForBrowserContext(context),
                 profile->IsOffTheRecord());
   return service;

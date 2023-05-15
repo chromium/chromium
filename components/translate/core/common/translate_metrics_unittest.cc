@@ -23,9 +23,6 @@ using base::TimeTicks;
 namespace translate {
 namespace {
 
-const int kTrue = 1;
-const int kFalse = 0;
-
 class MetricsRecorder {
  public:
   explicit MetricsRecorder(const char* key) : key_(key) {
@@ -65,16 +62,6 @@ class MetricsRecorder {
     EXPECT_EQ(expected_model_complement_sub_code,
               GetCountWithoutSnapshot(
                   LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY));
-  }
-
-  void CheckScheme(int expected_http, int expected_https, int expected_others) {
-    ASSERT_EQ(metrics_internal::kTranslatePageScheme, key_);
-
-    Snapshot();
-
-    EXPECT_EQ(expected_http, GetCountWithoutSnapshot(SCHEME_HTTP));
-    EXPECT_EQ(expected_https, GetCountWithoutSnapshot(SCHEME_HTTPS));
-    EXPECT_EQ(expected_others, GetCountWithoutSnapshot(SCHEME_OTHERS));
   }
 
   void CheckTotalCount(int count) {
@@ -186,30 +173,6 @@ TEST(TranslateMetricsTest, ReportUserActionDuration) {
   ReportUserActionDuration(begin, end);
   recorder.CheckValueInLogs(3776000.0);
   recorder.CheckTotalCount(1);
-}
-
-TEST(TranslateMetricsTest, ReportPageScheme) {
-  MetricsRecorder recorder(metrics_internal::kTranslatePageScheme);
-  recorder.CheckScheme(0, 0, 0);
-  ReportPageScheme("http");
-  recorder.CheckScheme(1, 0, 0);
-  ReportPageScheme("https");
-  recorder.CheckScheme(1, 1, 0);
-  ReportPageScheme("ftp");
-  recorder.CheckScheme(1, 1, 1);
-}
-
-TEST(TranslateMetricsTest, ReportSimilarLanguageMatch) {
-  MetricsRecorder recorder(metrics_internal::kTranslateSimilarLanguageMatch);
-  recorder.CheckTotalCount(0);
-  EXPECT_EQ(0, recorder.GetCount(kTrue));
-  EXPECT_EQ(0, recorder.GetCount(kFalse));
-  ReportSimilarLanguageMatch(true);
-  EXPECT_EQ(1, recorder.GetCount(kTrue));
-  EXPECT_EQ(0, recorder.GetCount(kFalse));
-  ReportSimilarLanguageMatch(false);
-  EXPECT_EQ(1, recorder.GetCount(kTrue));
-  EXPECT_EQ(1, recorder.GetCount(kFalse));
 }
 
 TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {

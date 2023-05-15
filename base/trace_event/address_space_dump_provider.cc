@@ -49,12 +49,12 @@ class AddressSpaceStatsDumperImpl final
         address_space_stats->configurable_pool_stats.usage * kSuperPageSize);
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
-    // Pkey pool usage is applicable with the appropriate buildflag.
-#if BUILDFLAG(ENABLE_PKEYS)
+    // Thread isolated pool usage is applicable with the appropriate buildflag.
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     dump->AddScalar(
-        "pkey_pool_usage", MemoryAllocatorDump::kUnitsBytes,
-        address_space_stats->pkey_pool_stats.usage * kSuperPageSize);
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+        "thread_isolated_pool_usage", MemoryAllocatorDump::kUnitsBytes,
+        address_space_stats->thread_isolated_pool_stats.usage * kSuperPageSize);
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
     // Additionally, largest possible reservation is also available on
     // 64-bit platforms.
@@ -74,12 +74,13 @@ class AddressSpaceStatsDumperImpl final
                     address_space_stats->configurable_pool_stats
                             .largest_available_reservation *
                         kSuperPageSize);
-#if BUILDFLAG(ENABLE_PKEYS)
-    dump->AddScalar(
-        "pkey_pool_largest_reservation", MemoryAllocatorDump::kUnitsBytes,
-        address_space_stats->pkey_pool_stats.largest_available_reservation *
-            kSuperPageSize);
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    dump->AddScalar("thread_isolated_pool_largest_reservation",
+                    MemoryAllocatorDump::kUnitsBytes,
+                    address_space_stats->thread_isolated_pool_stats
+                            .largest_available_reservation *
+                        kSuperPageSize);
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

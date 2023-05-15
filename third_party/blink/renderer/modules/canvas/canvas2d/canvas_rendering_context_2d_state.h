@@ -9,6 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -27,7 +28,6 @@ class CanvasRenderingContext2D;
 class CanvasFilter;
 class CanvasGradient;
 class CanvasPattern;
-class CanvasStyle;
 class CSSValue;
 class Element;
 
@@ -134,28 +134,54 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void ClearResolvedFilter();
   void ValidateFilterState() const;
 
-  void SetStrokeColor(Color color);
-  void SetStrokePattern(CanvasPattern* pattern);
-  void SetStrokeGradient(CanvasGradient* gradient);
-  void SetStrokeStyle(CanvasStyle*);
-  CanvasStyle* StrokeStyle() const { return stroke_style_.Get(); }
+  void SetStrokeColor(Color color) {
+    if (stroke_style_.SetColor(color)) {
+      stroke_style_.ApplyColorToFlags(stroke_flags_, global_alpha_);
+    }
+  }
+  void SetStrokePattern(CanvasPattern* pattern) {
+    stroke_style_.SetPattern(pattern);
+  }
+  void SetStrokeGradient(CanvasGradient* gradient) {
+    stroke_style_.SetGradient(gradient);
+  }
+  const CanvasStyle& StrokeStyle() const { return stroke_style_; }
 
-  void SetFillColor(Color color);
-  void SetFillPattern(CanvasPattern* pattern);
-  void SetFillGradient(CanvasGradient* gradient);
-  void SetFillStyle(CanvasStyle*);
-  CanvasStyle* FillStyle() const { return fill_style_.Get(); }
+  void SetFillColor(Color color) {
+    if (fill_style_.SetColor(color)) {
+      fill_style_.ApplyColorToFlags(fill_flags_, global_alpha_);
+    }
+  }
+  void SetFillPattern(CanvasPattern* pattern) {
+    fill_style_.SetPattern(pattern);
+  }
+  void SetFillGradient(CanvasGradient* gradient) {
+    fill_style_.SetGradient(gradient);
+  }
+  const CanvasStyle& FillStyle() const { return fill_style_; }
 
   // Prefer to use Style() over StrokeStyle() and FillStyle()
   // if properties of CanvasStyle are concerned
-  CanvasStyle* Style(PaintType) const;
+  const CanvasStyle& Style(PaintType type) const {
+    // Using DCHECK below because this is a critical hotspot.
+    DCHECK(type != kImagePaintType);
+    return type == kStrokePaintType ? stroke_style_ : fill_style_;
+  }
 
   // Check the pattern in StrokeStyle or FillStyle depending on the PaintType
-  bool HasPattern(PaintType) const;
+  bool HasPattern(PaintType type) const {
+    CanvasPattern* pattern = Style(type).GetCanvasPattern();
+    return pattern != nullptr && pattern->GetPattern() != nullptr;
+  }
 
   // Only to be used if the CanvasRenderingContext2DState has Pattern
   // Pattern is in either StrokeStyle or FillStyle depending on the PaintType
-  bool PatternIsAccelerated(PaintType) const;
+  bool PatternIsAccelerated(PaintType type) const {
+    // Using DCHECK here because condition is somewhat tautological and
+    // provides little added value to Release builds
+    DCHECK(HasPattern(type));
+    return Style(type).GetCanvasPattern()->GetPattern()->IsTextureBacked();
+  }
 
   enum Direction { kDirectionInherit, kDirectionRTL, kDirectionLTR };
 
@@ -259,11 +285,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
-  using PassKey = base::PassKey<CanvasRenderingContext2DState>;
-
   void UpdateLineDash() const;
-  void UpdateStrokeStyle() const;
-  void UpdateFillStyle() const;
   void UpdateFilterQuality() const;
   void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
@@ -274,8 +296,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   String unparsed_stroke_color_;
   String unparsed_fill_color_;
-  Member<CanvasStyle> stroke_style_;
-  Member<CanvasStyle> fill_style_;
+  CanvasStyle stroke_style_;
+  CanvasStyle fill_style_;
 
   mutable cc::PaintFlags stroke_flags_;
   mutable cc::PaintFlags fill_flags_;
@@ -336,8 +358,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   bool has_complex_clip_ : 1;
   bool letter_spacing_is_set_ : 1;
   bool word_spacing_is_set_ : 1;
-  mutable bool fill_style_dirty_ : 1;
-  mutable bool stroke_style_dirty_ : 1;
   mutable bool line_dash_dirty_ : 1;
 
   bool image_smoothing_enabled_;
@@ -349,7 +369,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return (!shadow_color_.IsTransparent()) &&
+  return (!shadow_color_.IsFullyTransparent()) &&
          (shadow_blur_ || !shadow_offset_.IsZero());
 }
 

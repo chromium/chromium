@@ -118,8 +118,15 @@ void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
       track_box->LocalToAncestorPoint(PhysicalOffset(), input_box);
   if (is_vertical) {
     track_size = track_box->ContentHeight() - thumb_box->Size().Height();
-    position = point_in_track.top - thumb_box->Size().Height() / 2 -
-               thumb_box->MarginBottom();
+    position = point_in_track.top - thumb_box->Size().Height() / 2;
+    if (is_left_to_right_direction &&
+        !RuntimeEnabledFeatures::
+            FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+      position -= thumb_box->MarginBottom() - track_size;
+    } else {
+      position -= is_left_to_right_direction ? thumb_box->MarginTop()
+                                             : thumb_box->MarginBottom();
+    }
     current_position = thumb_offset.top;
   } else {
     track_size = track_box->ContentWidth() - thumb_box->Size().Width();
@@ -132,7 +139,12 @@ void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
   const Decimal ratio =
       Decimal::FromDouble(static_cast<double>(position) / track_size);
   const Decimal fraction =
-      is_vertical || !is_left_to_right_direction ? Decimal(1) - ratio : ratio;
+      (is_vertical && is_left_to_right_direction &&
+       !RuntimeEnabledFeatures::
+           FormControlsVerticalWritingModeDirectionSupportEnabled()) ||
+              !is_left_to_right_direction
+          ? Decimal(1) - ratio
+          : ratio;
   StepRange step_range(input->CreateStepRange(kRejectAny));
   Decimal value =
       step_range.ClampValue(step_range.ValueFromProportion(fraction));
@@ -141,9 +153,13 @@ void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
   if (closest.IsFinite()) {
     double closest_fraction =
         step_range.ProportionFromValue(closest).ToDouble();
-    double closest_ratio = is_vertical || !is_left_to_right_direction
-                               ? 1.0 - closest_fraction
-                               : closest_fraction;
+    double closest_ratio =
+        (is_vertical && is_left_to_right_direction &&
+         !RuntimeEnabledFeatures::
+             FormControlsVerticalWritingModeDirectionSupportEnabled()) ||
+                !is_left_to_right_direction
+            ? 1.0 - closest_fraction
+            : closest_fraction;
     LayoutUnit closest_position(track_size * closest_ratio);
     const LayoutUnit snapping_threshold(5);
     if ((closest_position - position).Abs() <= snapping_threshold)
@@ -290,14 +306,17 @@ void SliderThumbElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
 
-  if (host_style.EffectiveAppearance() == kSliderVerticalPart)
+  if (host_style.EffectiveAppearance() == kSliderVerticalPart &&
+      !RuntimeEnabledFeatures::
+          RemoveNonStandardAppearanceValueSliderVerticalEnabled()) {
     builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
-  else if (host_style.EffectiveAppearance() == kSliderHorizontalPart)
+  } else if (host_style.EffectiveAppearance() == kSliderHorizontalPart) {
     builder.SetEffectiveAppearance(kSliderThumbHorizontalPart);
-  else if (host_style.EffectiveAppearance() == kMediaSliderPart)
+  } else if (host_style.EffectiveAppearance() == kMediaSliderPart) {
     builder.SetEffectiveAppearance(kMediaSliderThumbPart);
-  else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart)
+  } else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart) {
     builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
+  }
   if (builder.HasEffectiveAppearance())
     LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
 }

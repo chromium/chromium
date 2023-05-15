@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -180,14 +181,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
 
 class ShillPropertyHandlerTest : public testing::Test {
  public:
-  ShillPropertyHandlerTest()
-      : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        manager_test_(NULL),
-        device_test_(NULL),
-        service_test_(NULL),
-        profile_test_(NULL) {}
-
+  ShillPropertyHandlerTest() = default;
   ShillPropertyHandlerTest(const ShillPropertyHandlerTest&) = delete;
   ShillPropertyHandlerTest& operator=(const ShillPropertyHandlerTest&) = delete;
 
@@ -286,14 +280,19 @@ class ShillPropertyHandlerTest : public testing::Test {
     AddService(shill::kTypeCellular, "stub_cellular1", shill::kStateIdle);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_ =
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI;
   std::unique_ptr<TestListener> listener_;
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  ShillManagerClient::TestInterface* manager_test_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ShillServiceClient::TestInterface* service_test_;
-  ShillProfileClient::TestInterface* profile_test_;
+  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_ =
+      nullptr;
+  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_ =
+      nullptr;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_ =
+      nullptr;
+  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_ =
+      nullptr;
 };
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {

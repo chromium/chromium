@@ -13,7 +13,6 @@
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -157,10 +156,6 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
 // Verifies that the bubble UI respects the dark mode setting. For convenience
 // purposes, we perform checks on the label's text and background color.
 TEST_F(DictationBubbleControllerTest, DarkMode) {
-  // Enable dark mode feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
-  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService());

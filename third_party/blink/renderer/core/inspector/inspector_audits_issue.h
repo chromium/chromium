@@ -49,7 +49,6 @@ enum class AttributionReportingIssueType {
   kInsecureContext,
   kInvalidRegisterSourceHeader,
   kInvalidRegisterTriggerHeader,
-  kInvalidEligibleHeader,
   kSourceAndTriggerHeaders,
   kSourceIgnored,
   kTriggerIgnored,
@@ -58,6 +57,7 @@ enum class AttributionReportingIssueType {
   kInvalidRegisterOsSourceHeader,
   kInvalidRegisterOsTriggerHeader,
   kWebAndOsHeaders,
+  kNoWebOrOsSupport,
 };
 
 enum class SharedArrayBufferIssueType {

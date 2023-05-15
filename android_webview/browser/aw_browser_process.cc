@@ -64,7 +64,7 @@ AwBrowserProcess::AwBrowserProcess(
           &AwBrowserProcess::OnLoseForeground, base::Unretained(this)));
 
   app_link_manager_ =
-      absl::make_unique<EnterpriseAuthenticationAppLinkManager>(local_state());
+      std::make_unique<EnterpriseAuthenticationAppLinkManager>(local_state());
 }
 
 AwBrowserProcess::~AwBrowserProcess() {

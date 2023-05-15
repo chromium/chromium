@@ -133,8 +133,7 @@ void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
   auto* explanatory_message = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT,
-          controller_->GetLinkedCard()
-              ->CardIdentifierStringForAutofillDisplay()),
+          controller_->GetLinkedCard()->CardNameAndLastFourDigits()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   explanatory_message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   explanatory_message->SetMultiLine(true);

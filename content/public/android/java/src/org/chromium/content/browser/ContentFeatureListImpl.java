@@ -6,14 +6,12 @@ package org.chromium.content.browser;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Implementation of {@link ContentFeatureList}.
  * Java accessor for base/feature_list.h state.
  */
 @JNINamespace("content::android")
-@MainDex
 public class ContentFeatureListImpl {
     /**
      * Returns whether the specified feature is enabled or not.

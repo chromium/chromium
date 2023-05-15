@@ -56,6 +56,14 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     // remove it.
     CHECK(success);
   }
+
+  bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
+    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
+           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
+    const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
+    return DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
+        ToScriptWrappable(traced), traced);
+  }
 };
 
 }  // namespace

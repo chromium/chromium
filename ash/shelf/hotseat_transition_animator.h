@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -70,7 +71,7 @@ class ASH_EXPORT HotseatTransitionAnimator
                                              HotseatState new_state);
 
   // The widget which owns the HotseatWidget. Owned by Shelf.
-  ShelfWidget* const shelf_widget_;
+  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
 
   // Whether hotseat animations should be animated for the current session
   // state.
@@ -82,7 +83,7 @@ class ASH_EXPORT HotseatTransitionAnimator
   base::ObserverList<Observer> observers_;
 
   // A test observer used to wait for the hotseat transition animation.
-  TestObserver* test_observer_ = nullptr;
+  raw_ptr<TestObserver, ExperimentalAsh> test_observer_ = nullptr;
 
   base::WeakPtrFactory<HotseatTransitionAnimator> weak_ptr_factory_{this};
 };

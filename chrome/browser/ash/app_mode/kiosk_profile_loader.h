@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -69,7 +70,7 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
 
   const AccountId account_id_;
   const KioskAppType app_type_;
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   int failed_mount_attempts_;
   std::unique_ptr<CryptohomedChecker> cryptohomed_checker_;
   std::unique_ptr<LoginPerformer> login_performer_;

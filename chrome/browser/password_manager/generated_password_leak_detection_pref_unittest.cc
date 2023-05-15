@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -49,25 +47,10 @@ std::unique_ptr<TestingProfile> BuildTestProfile(
 namespace settings_api = extensions::api::settings_private;
 namespace settings_private = extensions::settings_private;
 
-// The test parameter controls whether the user is signed in.
-class GeneratedPasswordLeakDetectionPrefTest
-    : public testing::TestWithParam<bool> {
+class GeneratedPasswordLeakDetectionPrefTest : public testing::Test {
  public:
   GeneratedPasswordLeakDetectionPrefTest() {
     identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
-  }
-
-  // Initializes the identity environment based on the |signed_in| parameter.
-  // For signed in users adds primary account, otherwise enables the feature for
-  // unauthenticated leak detection.
-  void InitializeUserAccount(bool signed_in) {
-    if (signed_in) {
-      identity_test_env()->MakePrimaryAccountAvailable(
-          kTestProfileName, signin::ConsentLevel::kSignin);
-    } else {
-      feature_list_.InitAndEnableFeature(
-          password_manager::features::kLeakDetectionUnauthenticated);
-    }
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -85,7 +68,6 @@ class GeneratedPasswordLeakDetectionPrefTest
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_ =
       BuildTestProfile(test_url_loader_factory_);
@@ -98,13 +80,7 @@ class GeneratedPasswordLeakDetectionPrefTest
       profile_.get()};
 };
 
-TEST_P(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
-  // This test initializes non-default identity described below, so there is no
-  // point of running it twice.
-  if (GetParam() == false) {
-    return;
-  }
-
+TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
   // Check that when source information changes, the pref observer is fired.
   GeneratedPasswordLeakDetectionPref pref(profile());
   settings_private::TestGeneratedPrefObserver test_observer;
@@ -159,9 +135,7 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
             kGeneratedPasswordLeakDetectionPref);
 }
 
-TEST_P(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
-  InitializeUserAccount(/*signed_in=*/GetParam());
-
+TEST_F(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
   // Check the generated pref both updates, and respects updates to, the
   // underlying preference.
   GeneratedPasswordLeakDetectionPref pref(profile());
@@ -201,9 +175,7 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 }
 
-TEST_P(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
-  InitializeUserAccount(/*signed_in=*/GetParam());
-
+TEST_F(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
   GeneratedPasswordLeakDetectionPref pref(profile());
   prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
                        std::make_unique<base::Value>(true));
@@ -227,9 +199,7 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
 
-TEST_P(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
-  InitializeUserAccount(/*signed_in=*/GetParam());
-
+TEST_F(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
   // Check that the management state of the underlying preference is applied
   // to the generated preference.
   GeneratedPasswordLeakDetectionPref pref(profile());
@@ -262,7 +232,3 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         GeneratedPasswordLeakDetectionPrefTest,
-                         testing::Bool());

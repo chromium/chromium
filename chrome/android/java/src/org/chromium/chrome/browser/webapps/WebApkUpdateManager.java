@@ -209,8 +209,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             destroyFetcher();
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)
-                && TextUtils.isEmpty(mInfo.manifestId())) {
+        if (TextUtils.isEmpty(mInfo.manifestId())) {
             RecordHistogram.recordBooleanHistogram(
                     "WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade", needsUpgrade);
         }
@@ -375,7 +374,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     private void recordWebApkUpdateUniqueIdHistogram(WebappInfo oldInfo, WebappInfo fetchedInfo) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)) return;
         if (fetchedInfo == null) return;
 
         String baseName = "WebApk.Update.UniqueId"

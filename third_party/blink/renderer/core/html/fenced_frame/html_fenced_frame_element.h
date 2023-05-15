@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_HTML_FENCED_FRAME_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_HTML_FENCED_FRAME_ELEMENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -49,7 +50,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     explicit FencedFrameDelegate(HTMLFencedFrameElement* outer_element)
         : outer_element_(outer_element) {}
     virtual ~FencedFrameDelegate();
-    void Trace(Visitor* visitor) const;
+    virtual void Trace(Visitor* visitor) const;
 
     virtual void Navigate(const KURL&, const String&) = 0;
     // This method is used to clean up all state in preparation for destruction,
@@ -60,6 +61,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual void AttachLayoutTree() {}
     virtual bool SupportsFocus() { return false; }
     virtual void MarkFrozenFrameSizeStale() {}
+    virtual void MarkContainerSizeStale() {}
     virtual void DidChangeFramePolicy(const FramePolicy& frame_policy) {}
 
    protected:
@@ -124,6 +126,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Navigate(const KURL& url,
                 absl::optional<bool> deprecated_should_freeze_initial_size =
                     absl::nullopt,
+                absl::optional<gfx::Size> container_size = absl::nullopt,
                 absl::optional<gfx::Size> content_size = absl::nullopt,
                 String embedder_shared_storage_context = String());
 
@@ -144,7 +147,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
   // Element overrides.
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool IsURLAttribute(const Attribute&) const override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
@@ -154,6 +156,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
+
+  // Set the size of the fenced frame outer container. Used for container size
+  // specified by FencedFrameConfig.
+  void SetContainerSize(const gfx::Size& container_size);
 
   // Make sure that the fenced frame size is not frozen. (If it is already
   // unfrozen, this is a no-op.)

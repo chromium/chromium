@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"
@@ -122,7 +123,7 @@ class MockGCMDriver : public testing::StrictMock<gcm::FakeGCMDriver> {
   }
 
  private:
-  gcm::GCMConnectionObserver* observer_ = nullptr;
+  raw_ptr<gcm::GCMConnectionObserver, ExperimentalAsh> observer_ = nullptr;
 };
 
 class HeartbeatSchedulerTest : public testing::Test {

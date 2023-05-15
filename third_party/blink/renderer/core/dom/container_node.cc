@@ -1639,14 +1639,6 @@ NodeListsNodeData& ContainerNode::EnsureNodeLists() {
 Element* ContainerNode::GetAutofocusDelegate() const {
   Element* element = ElementTraversal::Next(*this, this);
   while (element) {
-    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-      if (DynamicTo<HTMLDialogElement>(html_element) ||
-          html_element->HasPopoverAttribute()) {
-        element = ElementTraversal::NextSkippingChildren(*element, this);
-        continue;
-      }
-    }
-
     if (!element->IsAutofocusable()) {
       element = ElementTraversal::Next(*element, this);
       continue;

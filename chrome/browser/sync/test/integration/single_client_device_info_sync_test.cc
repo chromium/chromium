@@ -315,19 +315,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
 
-// CommitLocalDevice_TransportOnly and DownloadRemoteDevices_TransportOnly are
-// flaky on Android.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
-                       CommitLocalDevice_TransportOnly) {
-  ASSERT_TRUE(SetupClients());
+// On ChromeOS, Sync-the-feature gets started automatically once a primary
+// account is signed in and transport mode is not a thing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, Sync-the-feature gets started automatically once a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1191225): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CommitLocalDevice_TransportOnly \
+  DISABLED_CommitLocalDevice_TransportOnly
+#else
+#define MAYBE_CommitLocalDevice_TransportOnly CommitLocalDevice_TransportOnly
+#endif  // BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       MAYBE_CommitLocalDevice_TransportOnly) {
+  ASSERT_TRUE(SetupClients());
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -343,19 +344,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                   .Wait());
 }
 
+// TODO(crbug.com/1191225): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DownloadRemoteDevices_TransportOnly \
+  DISABLED_DownloadRemoteDevices_TransportOnly
+#else
+#define MAYBE_DownloadRemoteDevices_TransportOnly \
+  DownloadRemoteDevices_TransportOnly
+#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
-                       DownloadRemoteDevices_TransportOnly) {
+                       MAYBE_DownloadRemoteDevices_TransportOnly) {
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
 
   ASSERT_TRUE(SetupClients());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, Sync-the-feature gets started automatically once a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -369,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {

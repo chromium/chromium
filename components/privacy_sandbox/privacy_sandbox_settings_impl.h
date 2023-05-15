@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
+#include "components/browsing_topics/common/common_types.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/memory/raw_ptr.h"
@@ -73,13 +75,17 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   void SetTopicsBlockedForTesting() override;
   void SetPrivacySandboxEnabled(bool enabled) override;
   bool IsPrivacySandboxRestricted() const override;
+  bool IsSubjectToM1NoticeRestricted() const override;
+  bool IsRestrictedNoticeEnabled() const override;
   void OnCookiesCleared() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) override;
+  void SetPrivacySandboxAttestationsMapForTesting(
+      const PrivacySandboxAttestationsMap& attestations_map) override;
 
  private:
-  friend class PrivacySandboxSettingsM1Test;
+  friend class PrivacySandboxSettingsTest;
   // Called when the First-Party Sets enabled preference is changed.
   void OnFirstPartySetsEnabledPrefChanged();
 
@@ -103,10 +109,14 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kApisDisabled = 3,
     kSiteDataAccessBlocked = 4,
     kMismatchedConsent = 5,
-    kMaxValue = kMismatchedConsent,
+    kAttestationFailed = 6,
+    kMaxValue = kAttestationFailed,
   };
 
   static bool IsAllowed(Status status);
+
+  // Get the Topics that are disabled by Finch.
+  const std::vector<browsing_topics::Topic>& GetFinchDisabledTopics();
 
   // Whether the site associated with the URL is allowed to access privacy
   // sandbox APIs within the context of |top_frame_origin|.
@@ -145,6 +155,15 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Which topics are disabled by Finch; This is set and read by
+  // GetFinchDisabledTopics.
+  std::vector<browsing_topics::Topic> finch_disabled_topics_;
+
+  // A data structure for storing and checking Privacy Sandbox attestations,
+  // i.e. whether particular sites have opted in to using particular Privacy
+  // Sandbox APIs.
+  PrivacySandboxAttestations attestations_;
 };
 
 }  // namespace privacy_sandbox

@@ -8,7 +8,8 @@
 #include <string>
 
 #include "ash/components/arc/net/cert_manager.h"
-
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "net/cert/nss_cert_database.h"
@@ -71,7 +72,7 @@ class CertManagerImpl : public CertManager {
                                      const std::string& cert_pem,
                                      ImportPrivateKeyAndCertCallback callback,
                                      net::NSSCertDatabase* database);
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtrFactory<CertManagerImpl> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(CertManagerImplTest, ImportKeyAndCertTest);

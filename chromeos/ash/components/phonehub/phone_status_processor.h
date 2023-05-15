@@ -7,6 +7,7 @@
 
 #include <google/protobuf/repeated_field.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -29,6 +30,7 @@ class NotificationProcessor;
 class ScreenLockManager;
 class RecentAppsInteractionHandler;
 class AppStreamManager;
+class CrosStateMessageRecorder;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -59,7 +61,8 @@ class PhoneStatusProcessor
       PrefService* pref_service,
       AppStreamManager* app_stream_manager,
       AppStreamLauncherDataModel* app_stream_launcher_data_model,
-      IconDecoder* icon_decoder_);
+      IconDecoder* icon_decoder_,
+      CrosStateMessageRecorder* cros_state_message_recorder);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -109,20 +112,26 @@ class PhoneStatusProcessor
       AppListUpdateType app_list_update_type,
       std::unique_ptr<std::vector<IconDecoder::DecodingData>> decode_items);
 
-  DoNotDisturbController* do_not_disturb_controller_;
-  FeatureStatusProvider* feature_status_provider_;
-  MessageReceiver* message_receiver_;
-  FindMyDeviceController* find_my_device_controller_;
-  MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
-  ScreenLockManager* screen_lock_manager_;
-  NotificationProcessor* notification_processor_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  MutablePhoneModel* phone_model_;
-  RecentAppsInteractionHandler* recent_apps_interaction_handler_;
-  PrefService* pref_service_;
-  AppStreamManager* app_stream_manager_;
-  AppStreamLauncherDataModel* app_stream_launcher_data_model_;
-  IconDecoder* icon_decoder_;
+  raw_ptr<DoNotDisturbController, ExperimentalAsh> do_not_disturb_controller_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<MessageReceiver, ExperimentalAsh> message_receiver_;
+  raw_ptr<FindMyDeviceController, ExperimentalAsh> find_my_device_controller_;
+  raw_ptr<MultideviceFeatureAccessManager, ExperimentalAsh>
+      multidevice_feature_access_manager_;
+  raw_ptr<ScreenLockManager, ExperimentalAsh> screen_lock_manager_;
+  raw_ptr<NotificationProcessor, ExperimentalAsh> notification_processor_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<MutablePhoneModel, ExperimentalAsh> phone_model_;
+  raw_ptr<RecentAppsInteractionHandler, ExperimentalAsh>
+      recent_apps_interaction_handler_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<AppStreamManager, ExperimentalAsh> app_stream_manager_;
+  raw_ptr<AppStreamLauncherDataModel, ExperimentalAsh>
+      app_stream_launcher_data_model_;
+  raw_ptr<IconDecoder, ExperimentalAsh> icon_decoder_;
+  raw_ptr<CrosStateMessageRecorder, ExperimentalAsh>
+      cros_state_message_recorder_;
   base::TimeTicks connection_initialized_timestamp_ = base::TimeTicks();
   bool has_received_first_app_list_update_ = false;
 

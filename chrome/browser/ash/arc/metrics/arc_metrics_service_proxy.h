@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_METRICS_ARC_METRICS_SERVICE_PROXY_H_
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -60,8 +61,8 @@ class ArcMetricsServiceProxy : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  ArcAppListPrefs* const arc_app_list_prefs_;
-  ArcMetricsService* const arc_metrics_service_;
+  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  const raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
 };
 
 }  // namespace arc

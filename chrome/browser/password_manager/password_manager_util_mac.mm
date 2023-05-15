@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 #include <Security/Authorization.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
@@ -24,7 +24,7 @@ NSString* UserAuthenticationRightName() {
   // The authentication right name is of the form
   // `org.chromium.Chromium.access-passwords` or
   // `com.google.Chrome.access-passwords`.
-  return [[base::mac::MainBundle() bundleIdentifier]
+  return [[base::apple::MainBundle() bundleIdentifier]
       stringByAppendingString:@".access-passwords"];
 }
 
@@ -96,6 +96,9 @@ std::u16string GetMessageForLoginPrompt(
     case password_manager::ReauthPurpose::EXPORT:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+    case password_manager::ReauthPurpose::IMPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
   }
 }
 

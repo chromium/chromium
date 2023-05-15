@@ -85,20 +85,19 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
-  bool result = false;
   std::string script =
-      "for (i=0; i < document.images.length; i++) {"
-      "  if ((document.images[i].naturalWidth != 0) &&"
-      "      (document.images[i].naturalHeight != 0)) {"
-      "    window.domAutomationController.send(true);"
+      "new Promise(resolve => {"
+      "  for (i=0; i < document.images.length; i++) {"
+      "    if ((document.images[i].naturalWidth != 0) &&"
+      "        (document.images[i].naturalHeight != 0)) {"
+      "      resolve(true);"
+      "    }"
       "  }"
-      "}"
-      "window.domAutomationController.send(false);";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      script,
-      &result));
-  EXPECT_TRUE(result);
+      "  resolve(false);"
+      "});";
+  EXPECT_EQ(true,
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), script));
 
   browser()->profile()->GetPrefs()->SetInteger(
       content_settings::WebsiteSettingsRegistry::GetInstance()
@@ -109,12 +108,9 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
-  result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      script,
-      &result));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false,
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), script));
 }
 
 // Verify that enabling/disabling Javascript in prefs works.
@@ -157,20 +153,20 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
-  bool result = false;
   std::string script =
-      "for (i=0; i < document.images.length; i++) {"
-      "  if ((document.images[i].naturalWidth != 0) &&"
-      "      (document.images[i].naturalHeight != 0)) {"
-      "    window.domAutomationController.send(true);"
+      "new Promise(resolve => {"
+      "  for (i=0; i < document.images.length; i++) {"
+      "    if ((document.images[i].naturalWidth != 0) &&"
+      "        (document.images[i].naturalHeight != 0)) {"
+      "      resolve(true);"
+      "    }"
       "  }"
-      "}"
-      "window.domAutomationController.send(false);";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      incognito_browser->tab_strip_model()->GetActiveWebContents(),
-      script,
-      &result));
-  EXPECT_TRUE(result);
+      "  resolve(false);"
+      "});";
+  EXPECT_EQ(true,
+            content::EvalJs(
+                incognito_browser->tab_strip_model()->GetActiveWebContents(),
+                script));
 }
 
 // Verify setting homepage preference to newtabpage across restarts. Part1

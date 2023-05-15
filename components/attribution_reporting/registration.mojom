@@ -5,6 +5,7 @@
 module attribution_reporting.mojom;
 
 import "components/aggregation_service/aggregation_service.mojom";
+import "components/attribution_reporting/source_registration_time_config.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -157,4 +158,8 @@ struct TriggerRegistration {
 
   // Specifies the deployment option for the aggregation service.
   aggregation_service.mojom.AggregationCoordinator aggregation_coordinator;
+
+  // Specifies whether to include source registration time in aggregatable
+  // reports.
+  SourceRegistrationTimeConfig source_registration_time_config;
 };

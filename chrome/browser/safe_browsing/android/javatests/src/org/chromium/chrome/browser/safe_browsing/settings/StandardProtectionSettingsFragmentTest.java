@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,8 +20,6 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -136,7 +132,6 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @EnableFeatures({ChromeFeatureList.LEAK_DETECTION_UNAUTHENTICATED})
     public void testPasswordLeakDetectionPreferenceEnabledForSignedOutUsers() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
@@ -166,51 +161,6 @@ public class StandardProtectionSettingsFragmentTest {
             Assert.assertEquals(enabled_state_error_message + FROM_NATIVE,
                     !is_password_leak_detection_enabled,
                     getPrefService().getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED));
-        });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @DisableFeatures({ChromeFeatureList.LEAK_DETECTION_UNAUTHENTICATED})
-    public void testPasswordLeakDetectionPreferenceDisabledWithoutAccount() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        });
-        launchSettingsActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + ENABLED_STATE,
-                    mPasswordLeakDetectionPreference.isEnabled());
-            Assert.assertFalse(ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + CHECKED_STATE,
-                    mPasswordLeakDetectionPreference.isChecked());
-        });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @DisableFeatures({ChromeFeatureList.LEAK_DETECTION_UNAUTHENTICATED})
-    public void testPasswordLeakDetectionPreferenceSummary() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED, true);
-            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        });
-        launchSettingsActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // The password leak detection preference should be unchecked and disabled because there
-            // is no available account.
-            Assert.assertFalse(ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + CHECKED_STATE,
-                    mPasswordLeakDetectionPreference.isChecked());
-            Assert.assertFalse(ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + ENABLED_STATE,
-                    mPasswordLeakDetectionPreference.isEnabled());
-            Assert.assertEquals(
-                    "Leak detection summary should not be null if it should be checked but "
-                            + "not checked due to lack of account.",
-                    InstrumentationRegistry.getTargetContext().getString(
-                            R.string.passwords_leak_detection_switch_signed_out_enable_description),
-                    mPasswordLeakDetectionPreference.getSummary());
         });
     }
 

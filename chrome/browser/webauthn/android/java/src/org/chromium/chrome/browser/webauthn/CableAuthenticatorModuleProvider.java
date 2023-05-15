@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
+import org.chromium.device.DeviceFeatureList;
 
 /**
  * Provides a UI that attempts to install the caBLEv2 Authenticator module. If already installed, or
@@ -232,17 +232,18 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
 
         // GMSCore will immediately fail all requests if a screenlock
         // isn't configured.
-        return hasScreenLockConfigured();
-    }
+        final Context context = ContextUtils.getApplicationContext();
+        KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        if (!km.isDeviceSecure()) {
+            return false;
+        }
 
-    // canDeviceSupportCable has checked that the system is >= N (API level 24)
-    // before calling this function.
-    @RequiresApi(24)
-    private static boolean hasScreenLockConfigured() {
-        KeyguardManager km =
-                (KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.KEYGUARD_SERVICE);
-        return km.isDeviceSecure();
+        if (DeviceFeatureList.isEnabled(
+                    DeviceFeatureList.WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
+            return true;
+        }
+
+        return NotificationManagerCompat.from(context).areNotificationsEnabled();
     }
 
     @NativeMethods

@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
@@ -324,7 +325,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendMessageChannel, *message, parse_result.async_type,
+      ChannelType::kSendMessage, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
@@ -368,7 +369,8 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), *message, parse_result.async_type, response_callback);
+      ChannelType::kNative, *message, parse_result.async_type,
+      response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "

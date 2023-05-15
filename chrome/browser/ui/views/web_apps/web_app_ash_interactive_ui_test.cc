@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -65,8 +66,8 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
     EXPECT_FALSE(menu_button->IsMenuShowing());
   }
 
-  BrowserView* browser_view_ = nullptr;
-  ImmersiveModeController* controller_ = nullptr;
+  raw_ptr<BrowserView, ExperimentalAsh> browser_view_ = nullptr;
+  raw_ptr<ImmersiveModeController, ExperimentalAsh> controller_ = nullptr;
 };
 
 // Test that the web app menu button opens a menu on click.

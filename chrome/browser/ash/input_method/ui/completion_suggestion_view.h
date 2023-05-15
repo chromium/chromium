@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_COMPLETION_SUGGESTION_VIEW_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -84,13 +85,15 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
                          const size_t confirmed_length);
 
   // The suggestion label renders the suggestion text.
-  CompletionSuggestionLabelView* suggestion_label_ = nullptr;
+  raw_ptr<CompletionSuggestionLabelView, ExperimentalAsh> suggestion_label_ =
+      nullptr;
   // The annotation view renders annotations.
-  views::View* annotation_container_ = nullptr;
-  views::View* down_and_enter_annotation_label_ = nullptr;
-  views::View* tab_annotation_label_ = nullptr;
-  views::ImageView* down_icon_ = nullptr;
-  views::ImageView* arrow_icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> annotation_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> down_and_enter_annotation_label_ =
+      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> tab_annotation_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> down_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> arrow_icon_ = nullptr;
 
   int suggestion_width_ = 0;
   int min_width_ = 0;

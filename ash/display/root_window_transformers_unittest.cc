@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/display/root_window_transformers.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -109,7 +110,7 @@ class TestEventHandler : public ui::EventHandler {
 
  private:
   gfx::Point mouse_location_;
-  aura::Window* target_root_;
+  raw_ptr<aura::Window, ExperimentalAsh> target_root_;
 
   float touch_radius_x_;
   float touch_radius_y_;

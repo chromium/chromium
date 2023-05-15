@@ -334,9 +334,10 @@ class OzonePlatformWayland : public OzonePlatform,
           override_supports_ssd_for_test == SupportsSsdForTest::kNotSet) ||
           override_supports_ssd_for_test == SupportsSsdForTest::kYes;
       properties.supports_overlays =
-          ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
+          connection_->ShouldUseOverlayDelegation() &&
+          connection_->viewporter();
       properties.supports_non_backed_solid_color_buffers =
-          ui::IsWaylandOverlayDelegationEnabled() &&
+          connection_->ShouldUseOverlayDelegation() &&
           connection_->buffer_manager_host()
               ->SupportsNonBackedSolidColorBuffers();
       // Primary planes can be transluscent due to underlay strategy. As a
@@ -344,7 +345,8 @@ class OzonePlatformWayland : public OzonePlatform,
       // To prevent this, an opaque background image is stacked below the
       // accelerated widget to occlude contents below.
       properties.needs_background_image =
-          ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
+          connection_->ShouldUseOverlayDelegation() &&
+          connection_->viewporter();
       if (connection_->zaura_shell()) {
         properties.supports_activation =
             zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
@@ -367,11 +369,11 @@ class OzonePlatformWayland : public OzonePlatform,
       // These properties are set when the GetPlatformRuntimeProperties is
       // called on the gpu process side.
       properties.supports_non_backed_solid_color_buffers =
-          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_overlays() &&
           buffer_manager_->supports_non_backed_solid_color_buffers();
       // See the comment above.
       properties.needs_background_image =
-          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_overlays() &&
           buffer_manager_->supports_viewporter();
       properties.supports_native_pixmaps =
           surface_factory_->SupportsNativePixmaps();

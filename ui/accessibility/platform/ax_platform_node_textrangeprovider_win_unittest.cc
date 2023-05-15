@@ -1038,6 +1038,112 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderClone) {
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_clone, L"some text");
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, CompareWithInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  BOOL are_same;
+  text_range_provider_a->Compare(text_range_provider_b.Get(), &are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       CompareEndpointsWithInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  int result;
+  text_range_provider_a->CompareEndpoints(
+      TextPatternRangeEndpoint_End, text_range_provider_b.Get(),
+      TextPatternRangeEndpoint_End, &result);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest, MoveByRangeInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  text_range_provider_a->MoveEndpointByRange(TextPatternRangeEndpoint_End,
+                                             text_range_provider_b.Get(),
+                                             TextPatternRangeEndpoint_End);
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderCompareEndpoints) {
   Init(BuildTextDocument({"some text", "more text"},
@@ -5377,7 +5483,12 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestTextRangeProviderWinFindTextInContentEditable) {
   // Before the commit that added this test, we had incorrect behavior when
-  // finding text in this tree scenario.
+  // finding text in the following tree scenario:
+  // ++1 kRootWebArea
+  // ++++2 kGenericContainer
+  // ++++++3 kParagraph
+  // ++++++++4 kStaticText
+  // ++++++++++5 kInlineTextBox
   // Before, UIA FindText would modify the range's `start` and `end` before
   // finding any text in some situations. It would do so according to
   // `AXEmbeddedObjectBehavior::kExpose`, which meant that in this case,
@@ -5391,17 +5502,51 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   //
   // See `AXPLatformNodeTextRangeProvider::FindText` for a more detailed
   // explanation of the embedded object character.
-  TestAXTreeUpdate update(std::string(R"HTML(
-      ++1 kRootWebArea
-      ++++2 kGenericContainer states=kRichlyEditable,kEditable
-      ++++++3 kParagraph
-      ++++++++4 kStaticText name="foo"
-      ++++++++++5 kInlineTextBox name="foo"
-    )HTML"));
 
-  AXTree* tree = Init(update);
+  ui::AXNodeData root_1;
+  ui::AXNodeData generic_container_2;
+  ui::AXNodeData paragraph_3;
+  ui::AXNodeData static_text_4;
+  ui::AXNodeData inline_box_5;
 
-  AXNode* div_node = GetNodeFromTree(tree->GetAXTreeID(), 2);
+  root_1.id = 1;
+  generic_container_2.id = 2;
+  paragraph_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {generic_container_2.id};
+
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.child_ids = {paragraph_3.id};
+  generic_container_2.AddState(ax::mojom::State::kRichlyEditable);
+  generic_container_2.AddState(ax::mojom::State::kEditable);
+  generic_container_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  paragraph_3.role = ax::mojom::Role::kParagraph;
+  paragraph_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("foo");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("foo");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1, generic_container_2, paragraph_3, static_text_4,
+                  inline_box_5};
+
+  Init(update);
+
+  AXNode* div_node = GetNodeFromTree(tree_data.tree_id, generic_container_2.id);
 
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(div_node));
@@ -5424,75 +5569,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
   text_range_provider->FindText(find_string.Get(), false, false,
                                 &text_range_provider_found);
-  ASSERT_TRUE(text_range_provider_found.Get());
-}
-
-TEST_F(AXPlatformNodeTextRangeProviderTest,
-       TestTextRangeProviderMovingByRangeInContentEditable) {
-  // This test is testing the same scenario as the test
-  // `TestTextRangeProviderWinFindTextInContentEditable`,
-  // but in this case it is the `MoveEndpointByRange` API that was computing the
-  // result incorrectly due to the `AXEmbeddedObject`.
-  TestAXTreeUpdate update(std::string(R"HTML(
-      ++1 kRootWebArea
-      ++++2 kGenericContainer states=kRichlyEditable,kEditable
-      ++++++3 kParagraph
-      ++++++++4 kStaticText
-      ++++++++++5 kInlineTextBox
-    )HTML"));
-
-  update.nodes[3].SetName("hello yes no");
-  update.nodes[4].SetName("hello yes no");
-
-  AXTree* tree = Init(update);
-
-  AXNode* div_node = GetNodeFromTree(tree->GetAXTreeID(), 2);
-  AXNode* inline_tb_node = GetNodeFromTree(tree->GetAXTreeID(), 5);
-
-  AXPlatformNodeWin* div_owner =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(div_node));
-
-  AXPlatformNodeWin* inline_tb_owner =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(inline_tb_node));
-
-  // start: TextPosition, anchor_id=5, text_offset=0, annotated_text=hello <y>es
-  // no end  : TextPosition, anchor_id=5, text_offset=5, annotated_text=hello
-  // yes<> no
-  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_1;
-  {
-    ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-        AXEmbeddedObjectBehavior::kSuppressCharacter);
-    CreateTextRangeProviderWin(
-        text_range_provider_1, inline_tb_owner,
-        /*start_anchor=*/inline_tb_node, /*start_offset=*/6,
-        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor=*/inline_tb_node, /*end_offset=*/9,
-        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
-  }
-
-  // start: TextPosition, anchor_id=2, text_offset=12, annotated_text=<>hello
-  // yes no end  : TextPosition, anchor_id=2, text_offset=12,
-  // annotated_text=hello yes no<>
-  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_2;
-  {
-    ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-        AXEmbeddedObjectBehavior::kSuppressCharacter);
-    CreateTextRangeProviderWin(
-        text_range_provider_2, div_owner,
-        /*start_anchor=*/div_node, /*start_offset=*/0,
-        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor=*/div_node, /*end_offset=*/12,
-        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
-  }
-
-  EXPECT_HRESULT_SUCCEEDED(text_range_provider_2->MoveEndpointByRange(
-      TextPatternRangeEndpoint_Start, text_range_provider_1.Get(),
-      TextPatternRangeEndpoint_Start));
-
-  base::win::ScopedBstr find_string(L"yes");
-  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
-  text_range_provider_2->FindText(find_string.Get(), false, false,
-                                  &text_range_provider_found);
   ASSERT_TRUE(text_range_provider_found.Get());
 }
 

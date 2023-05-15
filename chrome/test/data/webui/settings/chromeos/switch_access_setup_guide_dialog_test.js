@@ -339,30 +339,30 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
   });
 
   test('Illustration changes with switch count', function() {
-    const switchCountIllustration = dialog.$.chooseSwitchCountIllustration;
-    assertTrue(!!switchCountIllustration);
-    assertEquals('illustration one-switch', switchCountIllustration.className);
+    const chooseSwitchCountEl =
+        dialog.shadowRoot.querySelector('#chooseSwitchCount');
+    assertTrue(!!chooseSwitchCountEl);
+    assertEquals('1', chooseSwitchCountEl.getAttribute('data-switch-count'));
 
-    const switchCountGroup = dialog.$.switchCountGroup;
+    const switchCountGroup =
+        dialog.shadowRoot.querySelector('#switchCountGroup');
     assertTrue(!!switchCountGroup);
 
     const twoSwitches = switchCountGroup.querySelector('[name="two-switches"]');
     assertTrue(!!twoSwitches);
     switchCountGroup.select_(twoSwitches);
-    assertEquals(
-        'illustration two-switches', switchCountIllustration.className);
+    assertEquals('2', chooseSwitchCountEl.getAttribute('data-switch-count'));
 
     const threeSwitches =
         switchCountGroup.querySelector('[name="three-switches"]');
     assertTrue(!!threeSwitches);
     switchCountGroup.select_(threeSwitches);
-    assertEquals(
-        'illustration three-switches', switchCountIllustration.className);
+    assertEquals('3', chooseSwitchCountEl.getAttribute('data-switch-count'));
 
     const oneSwitch = switchCountGroup.querySelector('[name="one-switch"]');
     assertTrue(!!oneSwitch);
     switchCountGroup.select_(oneSwitch);
-    assertEquals('illustration one-switch', switchCountIllustration.className);
+    assertEquals('1', chooseSwitchCountEl.getAttribute('data-switch-count'));
   });
 
   test('Assignment pane behaves correctly', function() {

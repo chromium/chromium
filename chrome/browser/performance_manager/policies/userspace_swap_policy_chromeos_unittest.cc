@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
@@ -171,7 +172,8 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment browser_env_;
   TestGraphImpl graph_;
-  MockUserspaceSwapPolicy* policy_ = nullptr;  // Not owned.
+  raw_ptr<MockUserspaceSwapPolicy, ExperimentalAsh> policy_ =
+      nullptr;  // Not owned.
 
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;

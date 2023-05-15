@@ -3,6 +3,7 @@ include_rules = [
   "+base/numerics/math_constants.h",
   "+base/profiler/sample_metadata.h",
   "+base/strings/string_number_conversions.h",
+  "+base/task/current_thread.h",
   "+cc/base/features.h",
   "+cc/input/input_handler.h",
   "+cc/input/scroll_behavior.h",

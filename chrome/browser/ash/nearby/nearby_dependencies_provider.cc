@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
@@ -136,7 +137,7 @@ class MdnsResponderFactory : public sharing::mojom::MdnsResponderFactory {
   void Shutdown() { is_shutdown_ = true; }
 
   bool is_shutdown_ = false;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::CallbackListSubscription shutdown_subscription_;
 };
 

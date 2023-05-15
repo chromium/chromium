@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_COHORT_USE_CASE_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   private_computing::ActiveStatus GenerateActiveStatus() override;
 
  private:
-  ChurnActiveStatus* const churn_active_status_ptr_;
+  const raw_ptr<ChurnActiveStatus, ExperimentalAsh> churn_active_status_ptr_;
 };
 
 }  // namespace ash::device_activity

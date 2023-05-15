@@ -86,11 +86,6 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-// Enables scanning of to-be-printed pages and documents for sensitive data if
-// the OnPrintEnterpriseConnector policy is enabled.
-BASE_FEATURE(kEnablePrintContentAnalysis,
-             "EnablePrintContentAnalysis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables print scanning after preview options have been selected instead of
 // when the user initiates the printing to bring up the preview

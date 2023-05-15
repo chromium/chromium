@@ -7,9 +7,9 @@
 The main HTTP server is run on 8001, while the main HTTPS server is run on 8444.
 
 URL paths are relative to the web-platform-tests root, e.g. the test:
-    web_tests/external/wpt/referrer-policy/origin/http-rp/same-origin/http-http/img-tag/generic.no-redirect.http.html
-Could be tried by running this scrip then navigating to:
-    http://localhost:8001/referrer-policy/origin/http-rp/same-origin/http-http/img-tag/generic.no-redirect.http.html
+    web_tests/external/wpt/referrer-policy/generic/meta-tag-in-svg-image.html
+Could be tried by running this script, then navigating to:
+    http://localhost:8001/referrer-policy/generic/meta-tag-in-svg-image.html
 """
 
 from blinkpy.web_tests.servers import cli_wrapper

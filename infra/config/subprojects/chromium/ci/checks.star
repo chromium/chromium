@@ -44,10 +44,7 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-
-    # Adding sheriff rotations to none for the time being until we confirm
-    # this works
-    sheriff_rotations = None,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",

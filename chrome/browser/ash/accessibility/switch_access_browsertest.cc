@@ -66,13 +66,10 @@ class SwitchAccessTest : public InProcessBrowserTest {
   }
 
   std::string GetInputString() {
-    std::string output;
-    std::string script =
-        "window.domAutomationController.send("
-        "document.getElementById('in').value)";
-    CHECK(ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
-    return output;
+    std::string script = "document.getElementById('in').value";
+    return content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                           script)
+        .ExtractString();
   }
 
   void SetUpOnMainThread() override {

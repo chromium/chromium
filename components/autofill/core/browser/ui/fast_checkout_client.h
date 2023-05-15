@@ -43,11 +43,10 @@ class FastCheckoutClient {
   virtual void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) = 0;
 
   // Returns `true` if a run could be launched on `form` and `field`.
-  // TODO(crbug.com/1379149): Remove once bug is resolved.
   virtual bool IsSupported(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
-      const autofill::AutofillManager& autofill_manager) = 0;
+      const autofill::AutofillManager& autofill_manager) const = 0;
 
   virtual bool IsNotShownYet() const = 0;
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -105,16 +106,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSession
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::OneShotTimer* const timer_;
+  const raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_;
   std::unique_ptr<DiskMounter> disk_mounter_;
   std::unique_ptr<DriveFsConnection> connection_;
-  MountObserver* const observer_;
+  const raw_ptr<MountObserver, ExperimentalAsh> observer_;
 
   // The path where DriveFS is mounted.
   base::FilePath mount_path_;
 
   // Mojo interface to the DriveFS process.
-  mojom::DriveFs* drivefs_ = nullptr;
+  raw_ptr<mojom::DriveFs, ExperimentalAsh> drivefs_ = nullptr;
 
   bool drivefs_has_started_ = false;
   bool drivefs_has_terminated_ = false;

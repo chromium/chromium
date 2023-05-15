@@ -539,14 +539,21 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
                                              base::OnceClosure complete) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
+  // TODO(crbug.com/1225444): Complete partitioned cookies implementation for
+  // WebView. The current implementation is a temporary fix for
+  // crbug.com/1442333 to let the app access its 1p partitioned cookie.
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->GetCookieList(
-        host, options, net::CookiePartitionKeyCollection::Todo(),
+        host, options,
+        net::CookiePartitionKeyCollection(
+            net::CookiePartitionKey::FromWire(net::SchemefulSite(host))),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
     GetCookieStore()->GetCookieListWithOptionsAsync(
-        host, options, net::CookiePartitionKeyCollection::Todo(),
+        host, options,
+        net::CookiePartitionKeyCollection(
+            net::CookiePartitionKey::FromWire(net::SchemefulSite(host))),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }

@@ -69,7 +69,7 @@ std::string OIDStringToDER(base::StringPiece policy) {
 }  // namespace
 
 bool EVRootCAMetadata::IsEVPolicyOID(der::Input policy_oid) const {
-  return policy_oids_.find(policy_oid.AsStringPiece()) != policy_oids_.end();
+  return policy_oids_.find(policy_oid.AsStringView()) != policy_oids_.end();
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,

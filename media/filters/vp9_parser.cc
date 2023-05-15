@@ -14,7 +14,6 @@
 #include <algorithm>
 
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -149,7 +148,7 @@ size_t ClampQ(int64_t q) {
 
 int ClampLf(int lf) {
   constexpr int kMaxLoopFilterLevel = 63;
-  return base::clamp(lf, 0, kMaxLoopFilterLevel);
+  return std::clamp(lf, 0, kMaxLoopFilterLevel);
 }
 
 std::string IncrementIV(const std::string& iv, uint32_t by) {

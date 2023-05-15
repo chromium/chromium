@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -118,7 +119,7 @@ class PluginVmFilesTest : public testing::Test {
   FakePluginVmFeatures fake_plugin_vm_features_;
   base::test::ScopedRunningOnChromeOS running_on_chromeos_;
   std::string app_id_;
-  storage::ExternalMountPoints* mount_points_;
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
   std::string mount_name_;
 };
 

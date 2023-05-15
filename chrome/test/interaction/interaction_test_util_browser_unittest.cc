@@ -77,7 +77,7 @@ class InteractionTestUtilBrowserTest : public views::ViewsTestBase {
 };
 
 TEST_F(InteractionTestUtilBrowserTest, PressHoverButton) {
-  base::raw_ptr<HoverButton> hover_button;
+  raw_ptr<HoverButton> hover_button;
   auto pressed = base::BindLambdaForTesting([&]() {
     hover_button->parent()->RemoveChildViewT(hover_button);
     hover_button = nullptr;

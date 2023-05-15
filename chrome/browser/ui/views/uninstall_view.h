@@ -46,9 +46,15 @@ class UninstallView : public views::DialogDelegateView,
   void OnDialogAccepted();
   void OnDialogCancelled();
 
-  views::Checkbox* delete_profile_ = nullptr;
-  views::Checkbox* change_default_browser_ = nullptr;
-  views::Combobox* browsers_combo_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::Checkbox* delete_profile_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::Checkbox* change_default_browser_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::Combobox* browsers_combo_ = nullptr;
   std::unique_ptr<BrowsersMap> browsers_;
   const raw_ref<int> user_selection_;
   base::RepeatingClosure quit_closure_;

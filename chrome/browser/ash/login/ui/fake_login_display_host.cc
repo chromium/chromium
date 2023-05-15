@@ -36,10 +36,6 @@ FakeLoginDisplayHost::FakeLoginDisplayHost()
 
 FakeLoginDisplayHost::~FakeLoginDisplayHost() = default;
 
-LoginDisplay* FakeLoginDisplayHost::GetLoginDisplay() {
-  return nullptr;
-}
-
 ExistingUserController* FakeLoginDisplayHost::GetExistingUserController() {
   return nullptr;
 }

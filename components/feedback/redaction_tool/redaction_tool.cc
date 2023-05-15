@@ -4,6 +4,7 @@
 
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/validation.h"
 #ifdef USE_SYSTEM_RE2
 #include <re2/re2.h>
 #else
@@ -29,6 +31,13 @@ using re2::RE2;
 using redaction_internal::IPAddress;
 
 namespace redaction {
+
+namespace features {
+COMPONENT_EXPORT(REDACTION_TOOL)
+BASE_FEATURE(kEnableCreditCardRedaction,
+             "EnableCreditCardRedaction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace {
 
@@ -449,6 +458,7 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
      PIIType::kStableIdentifier},
     // Eche UID which is a base64 conversion of a 32 bytes public key.
     {"UID",
+     "(?:[^A-Za-z0-9+/])"
      "((?:[A-Za-z0-9+/]{4}){10}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=))",
      PIIType::kStableIdentifier},
 };
@@ -499,6 +509,12 @@ bool FindAndConsumeAndGetSkipped(re2::StringPiece* input,
                                       std::size(args));
 }
 
+bool HasRepeatedChar(re2::StringPiece text, char c) {
+  return std::adjacent_find(text.begin(), text.end(), [c](char c1, char c2) {
+           return (c1 == c) && (c2 == c);
+         }) != text.end();
+}
+
 // The following MAC addresses will not be redacted as they are not specific
 // to a device but have general meanings.
 const char* const kUnredactedMacAddresses[] = {
@@ -507,7 +523,33 @@ const char* const kUnredactedMacAddresses[] = {
 };
 constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
-constexpr char kFeedbackRedactionToolHistogramName[] = "Feedback.RedactionTool";
+void RecordPIIRedactedHistogram(const PIIType pii_type) {
+  UMA_HISTOGRAM_ENUMERATION("Feedback.RedactionTool", pii_type);
+}
+
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "CreditCardDetection" in //tools/metrics/histograms/enums.xml.
+enum class CreditCardDetection {
+  kRegexMatch = 1,
+  kTimestamp = 2,
+  kRepeatedChars = 3,
+  kDoesntValidate = 4,
+  kValidated = 5,
+  kMaxValue = kValidated,
+};
+
+void RecordCreditCardRedactionHistogram(CreditCardDetection step) {
+  UMA_HISTOGRAM_ENUMERATION("Feedback.RedactionTool.CreditCardMatch", step);
+}
+
+bool IsCreditCardRedactionEnabled() {
+  return base::FeatureList::GetInstance()
+             ? base::FeatureList::IsEnabled(
+                   features::kEnableCreditCardRedaction)
+             : features::kEnableCreditCardRedaction.default_state ==
+                   base::FEATURE_ENABLED_BY_DEFAULT;
+}
 
 }  // namespace
 
@@ -531,6 +573,9 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
 
   std::map<PIIType, std::set<std::string>> detected;
 
+  if (IsCreditCardRedactionEnabled()) {
+    RedactCreditCardNumbers(input, &detected);
+  }
   RedactMACAddresses(input, &detected);
   // This function will add to |detected| only on Chrome OS as Android app
   // storage paths are only detected for Chrome OS.
@@ -556,6 +601,14 @@ std::string RedactionTool::RedactAndKeepSelected(
   // Copy |input| so we can modify it.
   std::string redacted = input;
 
+  // Do this before MAC addresses as credit cards can use the - as identifier as
+  // well and the length could also match a MAC address. Since the credit card
+  // check does additional validation against issuer length and Luhns checksum
+  // the number of false positives should be lower when ordered like this.
+  if (IsCreditCardRedactionEnabled() &&
+      pii_types_to_keep.find(PIIType::kCreditCard) == pii_types_to_keep.end()) {
+    redacted = RedactCreditCardNumbers(std::move(redacted), nullptr);
+  }
   if (pii_types_to_keep.find(PIIType::kMACAddress) == pii_types_to_keep.end()) {
     redacted = RedactMACAddresses(std::move(redacted), nullptr);
   }
@@ -577,6 +630,10 @@ std::string RedactionTool::RedactAndKeepSelected(
     redacted = RedactHashes(std::move(redacted), nullptr);
   }
   return redacted;
+}
+
+void RedactionTool::EnableCreditCardRedaction(const bool enabled) {
+  redact_credit_cards_ = enabled;
 }
 
 RE2* RedactionTool::GetRegExp(const std::string& pattern) {
@@ -629,7 +686,7 @@ std::string RedactionTool::RedactMACAddresses(
       // If not found, build up a replacement MAC address by generating a new
       // NIC part.
       int mac_id = mac_addresses_.size() - kNumUnredactedMacs;
-      replacement_mac = base::StringPrintf("[MAC OUI=%s IFACE=%d]",
+      replacement_mac = base::StringPrintf("(MAC OUI=%s IFACE=%d)",
                                            oui_string.c_str(), mac_id);
       mac_addresses_[mac] = replacement_mac;
     }
@@ -638,12 +695,10 @@ std::string RedactionTool::RedactMACAddresses(
     }
     skipped.AppendToString(&result);
     result += replacement_mac;
+    RecordPIIRedactedHistogram(PIIType::kMACAddress);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kMACAddress);
 
   return result;
 }
@@ -691,7 +746,7 @@ std::string RedactionTool::RedactHashes(
     if (replacement_hash.empty()) {
       // If not found, build up a replacement value.
       replacement_hash = base::StringPrintf(
-          "<HASH:%s %zd>", hash_prefix_string.c_str(), hashes_.size());
+          "(HASH:%s %zd)", hash_prefix_string.c_str(), hashes_.size());
       hashes_[hash] = replacement_hash;
     }
     if (detected != nullptr) {
@@ -699,12 +754,11 @@ std::string RedactionTool::RedactHashes(
     }
 
     result += replacement_hash;
+
+    RecordPIIRedactedHistogram(PIIType::kStableIdentifier);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kStableIdentifier);
 
   return result;
 }
@@ -769,17 +823,98 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
       (*detected)[PIIType::kAndroidAppStoragePath].insert(
           app_specific.as_string());
     }
+    RecordPIIRedactedHistogram(PIIType::kAndroidAppStoragePath);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kAndroidAppStoragePath);
 
   return result;
 #else
   return input;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+std::string RedactionTool::RedactCreditCardNumbers(
+    const std::string& input,
+    std::map<PIIType, std::set<std::string>>* detected) {
+  std::string result;
+  result.reserve(input.size());
+
+  RE2* cc_re = GetRegExp(
+      "[^\\d\\n]{1,5}[ :='\"]"  // pre sequence: Make sure we're not
+                                // matching a memory dump or in some
+                                // continuous string of numbers.
+      "((?:[\\d -]){12,37})"    // sequence: Creditcard length is 12-19 and we
+                                // allow up to one separation character (space
+                                // or hyphen) between each of them.
+      "(\n|\\D{2,3})");         // post sequence: Not trying to match inside a
+                                // continuous number block, so the characters
+                                // after the potential match should either be a
+                                // newline or 2-3 non digits.
+
+  re2::StringPiece text(input);
+  re2::StringPiece skipped;
+  re2::StringPiece sequence;
+  re2::StringPiece post_sequence;
+
+  while (FindAndConsumeAndGetSkipped(&text, *cc_re, &skipped, &sequence,
+                                     &post_sequence)) {
+    skipped.AppendToString(&result);
+    RecordCreditCardRedactionHistogram(CreditCardDetection::kRegexMatch);
+
+    // Timestamps in ms have a surprisingly high number of false positives.
+    // Also log entries but those usually only match if there are several spaces
+    // tying unrelated numbers together.
+    if (post_sequence.contains("ms")) {
+      RecordCreditCardRedactionHistogram(CreditCardDetection::kTimestamp);
+      sequence.AppendToString(&result);
+      post_sequence.AppendToString(&result);
+      continue;
+    }
+
+    if (HasRepeatedChar(sequence, ' ') || HasRepeatedChar(sequence, '-')) {
+      RecordCreditCardRedactionHistogram(CreditCardDetection::kRepeatedChars);
+      sequence.AppendToString(&result);
+      post_sequence.AppendToString(&result);
+      continue;
+    }
+
+    std::string number;
+    base::RemoveChars(base::StringPiece(sequence), "- ", &number);
+
+    const auto cc_it = credit_cards_.find(number);
+    if (cc_it != credit_cards_.cend()) {
+      result += cc_it->second;
+      post_sequence.AppendToString(&result);
+      RecordCreditCardRedactionHistogram(CreditCardDetection::kValidated);
+      continue;
+    }
+
+    if (redaction::IsValidCreditCardNumber(number)) {
+      RecordCreditCardRedactionHistogram(CreditCardDetection::kValidated);
+      const auto& [it, success] = credit_cards_.emplace(
+          number,
+          base::StrCat({"(CREDITCARD: ",
+                        base::NumberToString(credit_cards_.size() + 1), ")"}));
+      if (redact_credit_cards_) {
+        RecordPIIRedactedHistogram(PIIType::kCreditCard);
+        result += it->second;
+      } else {
+        sequence.AppendToString(&result);
+      }
+      if (detected) {
+        (*detected)[PIIType::kCreditCard].insert(it->first);
+      }
+    } else {
+      RecordCreditCardRedactionHistogram(CreditCardDetection::kDoesntValidate);
+      sequence.AppendToString(&result);
+    }
+    post_sequence.AppendToString(&result);
+  }
+
+  text.AppendToString(&result);
+
+  return result;
 }
 
 std::string RedactionTool::RedactAndKeepSelectedCustomPatterns(
@@ -833,7 +968,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
       // The weird NumberToString trick is because Windows does not like
       // to deal with %zu and a size_t in printf, nor does it support %llu.
       replacement_id = base::StringPrintf(
-          "<%s: %s>", pattern.alias,
+          "(%s: %s)", pattern.alias,
           base::NumberToString(identifier_space->size() + 1).c_str());
       (*identifier_space)[matched_id_as_string] = replacement_id;
     } else {
@@ -846,11 +981,9 @@ std::string RedactionTool::RedactCustomPatternWithContext(
     pre_matched_id.AppendToString(&result);
     result += replacement_id;
     post_matched_id.AppendToString(&result);
+    RecordPIIRedactedHistogram(pattern.pii_type);
   }
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            pattern.pii_type);
 
   return result;
 }
@@ -951,7 +1084,7 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
         // The weird NumberToString trick is because Windows does not like
         // to deal with %zu and a size_t in printf, nor does it support %llu.
         replacement_id = base::StringPrintf(
-            "<%s: %s>",
+            "(%s: %s)",
             replacement_id.empty() ? pattern.alias : replacement_id.c_str(),
             base::NumberToString(identifier_space->size() + 1).c_str());
         (*identifier_space)[matched_id_as_string] = replacement_id;
@@ -968,11 +1101,10 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
 
     skipped.AppendToString(&result);
     result += replacement_id;
+
+    RecordPIIRedactedHistogram(pattern.pii_type);
   }
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            pattern.pii_type);
 
   return result;
 }

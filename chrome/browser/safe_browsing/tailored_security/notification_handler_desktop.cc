@@ -17,8 +17,10 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -114,8 +116,13 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
       kTailoredSecurityUnconsentedPromotionNotificationId;
   const std::u16string& title = l10n_util::GetStringUTF16(
       IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_TITLE);
-  const std::u16string& description = l10n_util::GetStringUTF16(
-      IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION);
+  const std::u16string& description =
+      (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityUpdatedMessages))
+          ? l10n_util::GetStringUTF16(
+                IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION_UPDATED)
+          : l10n_util::GetStringUTF16(
+                IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION);
   const std::u16string& primary_button = l10n_util::GetStringUTF16(
       IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT);
   const std::u16string& secondary_button =

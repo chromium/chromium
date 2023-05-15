@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
-<translation id="2378075407703503998">ເລືອກ <ph name="SELCTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
 <translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">ບໍ່ມີວິດີໂອຫຼ້າສຸດ</translation>
 <translation id="3634507049637220048">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="3645233063072417428">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
+<translation id="3658269352872031728">ເລືອກ <ph name="SELECTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
 <translation id="3685122418104378273">ການ​ຊິງ​ຄ໌ Google Drive ປິດ​ໃຊ້​ງານ​ໂດຍ​ມາດ​ຕະ​ຖານ​ແລ້ວ, ເມື່ອ​ກຳ​ລັງ​ໃຊ້​ຂໍ້​ມູນ​ມື​ຖື.</translation>
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
 <translation id="4826849268470072925">ພາສາທາມິລ (ITRANS)</translation>
 <translation id="482932175346970750">ພິມ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ໃສ່ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
-<translation id="4839847978919684242">ເລືອກ <ph name="SELCTED_FILES_COUNT" /> ລາຍ​ການແລ້ວ</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
@@ -578,6 +577,7 @@
 <translation id="5533102081734025921">ຮູບ <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">ກໍາລັງຄິດໄລ່ຂະໜາດ</translation>
 <translation id="554153475311314364">ການແປທັບສັບພາສາກຣີກ</translation>
+<translation id="5554171655917412781">ເລືອກ <ph name="SELECTED_FOLDERS_COUNT" /> ໂຟນເດີແລ້ວ</translation>
 <translation id="5580591966435005537">ເຄື່ອງສະເໝືອນ</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
 <translation id="5583664733673201137">ຄວາມກວ້າງເຄື່ອງໝາຍວັກຕອນເຕັມແລ້ວ</translation>
@@ -600,6 +600,7 @@
 <translation id="5724172041621205163">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມປັດຕາໂຊດ</translation>
 <translation id="57383366388012121">ເດືອນທີ່ຜ່ານມາ</translation>
 <translation id="5756666464756035725">QWERTY ພາ​ສາ​ຮົງ​ກາ​ລີ</translation>
+<translation id="5760252553414789727">ເລືອກ <ph name="SELECTED_FILES_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="5763377084591234761">ພາສາເຢຍລະມັນ (ສະວິດເຊີແລນ)</translation>
 <translation id="5769519078756170258">ໂຮສ ຫຼື ໂດເມນທີ່ຈະຍົກເວັ້ນ</translation>
 <translation id="5775750595919327203">ພາສາອູຣະດູ</translation>
@@ -755,7 +756,6 @@
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
 <translation id="6993826899923627728">ລາຍການເຫຼົ່ານີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ</translation>
-<translation id="6998711733709403587">ເລືອກໂຟນເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
 <translation id="7008426324576352165">ອົງກອນຂອງທ່ານຕ້ອງການບ່ອນຈັດເກັບຂໍ້ມູນເພີ່ມເຕີມເພື່ອສຳເລັດການອັບໂຫຼດ.</translation>
 <translation id="7009985720488544166">ການຍ້າຍໄຟລ໌ <ph name="COUNT" /> ໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +790,7 @@
 <translation id="7252604552361840748">ຊອກຫາສ່ວນຂະຫຍາຍຂ້າງເທິງ</translation>
 <translation id="7256405249507348194">ຄວາມ​ຜິດ​ພາດ​ທີ່ບໍ່​ຮັບຮູ້​ໄດ້: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ການ​ບໍ​ລິ​ການ​ທີ່​ມີ​ຢູ່</translation>
+<translation id="7291818353625820805">ຕ້ອງການໃຫ້ປຸ່ມເຮັດວຽກຊ້ຳບໍ? ກະລຸນາປິດເຄື່ອງໝາຍສຳນຽງໃນການຕັ້ງຄ່າແປ້ນພິມ</translation>
 <translation id="7292816689782057017">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບຈຳກັດສິດເຂົ້າເຖິງສະຖານທີ່ຈຳນວນໜຶ່ງ.</translation>
 <translation id="7294063083760278948">ການແປທັບສັບພາສາເຕລູກູ</translation>
 <translation id="7295662345261934369">ແບ່ງປັນກັບຄົນອື່ນ</translation>
@@ -918,6 +919,7 @@
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="8269755669432358899">ຫຍໍ້ແຜງຄຳຕິຊົມໄຟລ໌ລົງ</translation>
 <translation id="8280151743281770066">ການອອກສຽງພາສາອາກເມນີ</translation>
+<translation id="8285791779547722821">ໄດ້ຖືກເຂົ້າລະຫັດ <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8297012244086013755">ຮາງກຸລ 3 ຊຸດ (​ບໍ່​ໃຊ້ປຸ່ມ  shift)</translation>
 <translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>

@@ -108,6 +108,12 @@ gfx::Insets ScrollableAppsGridView::GetTilePadding(int page) const {
   return gfx::Insets::VH(-kVerticalTilePadding, -horizontal_tile_padding);
 }
 
+bool ScrollableAppsGridView::ShouldContainerHandleDragEvents() {
+  // Apps grid folder view handles its own drag and drop events, otherwise, it
+  // should delegate to the apps grid container.
+  return !IsInFolder();
+}
+
 gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   // AppListItemList may contain page break items, so use the view_model().
   size_t items = view_model()->view_size() + pulsing_blocks_model().view_size();

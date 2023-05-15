@@ -14,6 +14,7 @@
 #include "components/cast_streaming/browser/control/remoting/remoting_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/mirroring_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
+#include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
@@ -71,7 +72,7 @@ StreamingInitializationInfo CreateMirroringInitializationInfo(
 CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
-    openscreen::cast::ReceiverConstraints av_constraints,
+    ReceiverConfig av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
@@ -92,14 +93,15 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
       this, &environment_, &cast_message_port_converter_->GetMessagePort(),
-      std::move(av_constraints));
+      ToOpenscreenConstraints(av_constraints));
 
   if (renderer_controls) {
     playback_command_dispatcher_ = std::make_unique<PlaybackCommandDispatcher>(
         task_runner, std::move(renderer_controls.value().control_configuration),
         base::BindRepeating(
             &CastStreamingSession::ReceiverSessionClient::OnFlushUntil,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr()),
+        std::move(av_constraints.remoting));
     playback_command_dispatcher_->RegisterCommandSource(
         std::move(renderer_controls.value().external_renderer_controls));
   }
@@ -464,7 +466,7 @@ CastStreamingSession::~CastStreamingSession() = default;
 void CastStreamingSession::Start(
     Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
-    openscreen::cast::ReceiverConstraints av_constraints,
+    ReceiverConfig av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG(1) << __func__;

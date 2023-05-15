@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_from_manifest_command.h"
+#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -163,7 +163,7 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
       "meltingpot.googleusercontent.com"};
 
   provider->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallFromManifestCommand>(
+      std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::PRELOADED_OEM,
           /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
           /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),

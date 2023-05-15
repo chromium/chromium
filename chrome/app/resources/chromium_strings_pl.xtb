@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="113122355610423240">Chromium jest domyślną przeglądarką</translation>
 <translation id="1131805035311359397">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Rozszerzenia do Chromium miały dostęp do urządzeń HID}=1{Rozszerzenia do Chromium mają dostęp do urządzenia HID}few{Rozszerzenia do Chromium mają dostęp do # urządzeń HID}many{Rozszerzenia do Chromium mają dostęp do # urządzeń HID}other{Rozszerzenia do Chromium mają dostęp do # urządzenia HID}}</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Administrator automatycznie zamyka przeglądarkę Chromium, gdy nie jest ona używana przez 1 minutę. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}few{Administrator automatycznie zamyka przeglądarkę Chromium, gdy nie jest ona używana przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}many{Administrator automatycznie zamyka przeglądarkę Chromium, gdy nie jest ona używana przez # minut. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}other{Administrator automatycznie zamyka przeglądarkę Chromium, gdy nie jest ona używana przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}}</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
@@ -22,7 +23,6 @@
 
 Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
-<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Przeglądarka Chromium została połączona z urządzeniem HID}=1{Przeglądarka Chromium jest połączona z urządzeniem HID}few{Przeglądarka Chromium jest połączona z urządzeniami HID}many{Przeglądarka Chromium jest połączona z urządzeniami HID}other{Przeglądarka Chromium jest połączona z urządzeniami HID}}</translation>
 <translation id="1708666629004767631">Dostępna jest nowa, bezpieczniejsza wersja Chromium.</translation>
 <translation id="17264556997921157">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chromium ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
 <translation id="1733725117201708356">Chromium usunie wkrótce dane przeglądania</translation>
@@ -59,6 +59,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2478295928299953161">Przeglądarka Chromium zostanie wkrótce zamknięta</translation>
 <translation id="2483889755041906834">W Chromium</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
+<translation id="2554739539410784893">Chromium próbuje zastąpić obecne hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="2560420686485554789">Chromium musi mieć dostęp do pamięci, by pobierać pliki</translation>
 <translation id="2572494885440352020">Pomoc Chromium</translation>
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
@@ -243,8 +244,11 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6442900851116057561">Uruchom ponownie Chromium OS</translation>
 <translation id="6455857529632101747">Witamy w profilach Chromium</translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
+<translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
+<translation id="6539122709674868420">Twoja organizacja zamyka przeglądarkę Chromium, gdy nie jest ona używana przez <ph name="TIMEOUT_DURATION" />. Dane przeglądania zostały usunięte. Może to obejmować historię, autouzupełnianie i pobrane pliki.</translation>
 <translation id="6542839706527980775">Każdy profil zawiera własne dane Chromium, takie jak zakładki, historia, hasła i inne</translation>
+<translation id="656935081669708576">Możesz przełączyć się na wyświetlanie haseł z innego profilu Chromium</translation>
 <translation id="6570579332384693436">Aby naprawić błędy pisowni, Chromium wysyła tekst wpisany w polach tekstowych do Google</translation>
 <translation id="6598877126913850652">Otwórz ustawienia powiadomień Chromium</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
@@ -279,6 +283,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="7025789849649390912">Instalacja zatrzymana.</translation>
 <translation id="705851970750939768">Zaktualizuj Chromium</translation>
 <translation id="7067091210845072982">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
+<translation id="7173822816570314652">Twoja organizacja usuwa dane Chromium, gdy nie są one używane przez <ph name="TIMEOUT_DURATION" />. Może to obejmować historię, autouzupełnianie i pobrane pliki.</translation>
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
@@ -333,6 +338,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8248265253516264921">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>
 <translation id="8266560134891435528">Chromium nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="8290862415967981663">Ten plik może być niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
+<translation id="8318772038038596122">Twoja organizacja zamyka przeglądarkę Chromium, gdy nie jest ona używana przez <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Chromium pozwala na więcej</translation>
 <translation id="8330519371938183845">Zaloguj się, by synchronizować dane Chromium i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>
@@ -351,6 +357,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>
 <translation id="8621669128220841554">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Chromium ponownie.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Rozszerzenie do Chromium miało dostęp do urządzeń HID}=1{Rozszerzenie do Chromium ma dostęp do urządzenia HID}few{Rozszerzenie do Chromium ma dostęp do # urządzeń HID}many{Rozszerzenie do Chromium ma dostęp do # urządzeń HID}other{Rozszerzenie do Chromium ma dostęp do # urządzenia HID}}</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
@@ -367,6 +374,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
 <translation id="907832235989677238">Zaloguj się w Chromium. Jeśli chcesz zalogować się na konto tylko raz, możesz <ph name="GUEST_LINK_BEGIN" />skorzystać z trybu gościa na urządzeniu<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Aplikacja Chromium została automatycznie zamknięta</translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium uruchomi się ponownie za godzinę}few{Chromium uruchomi się ponownie za # godziny}many{Chromium uruchomi się ponownie za # godzin}other{Chromium uruchomi się ponownie za # godziny}}</translation>
 <translation id="9106612006984859720">Aby w przyszłości otrzymywać aktualizacje Chromium, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.1.</translation>

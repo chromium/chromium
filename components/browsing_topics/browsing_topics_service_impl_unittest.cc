@@ -23,10 +23,6 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
-#include "components/optimization_guide/content/browser/test_page_content_annotations_service.h"
-#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -95,7 +91,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service,
+      std::unique_ptr<Annotator> annotator,
       base::queue<EpochTopics> mock_calculator_results,
       base::TimeDelta calculator_finish_delay)
       : BrowsingTopicsServiceImpl(
@@ -103,7 +99,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
             privacy_sandbox_settings,
             history_service,
             site_data_manager,
-            annotations_service,
+            std::move(annotator),
             base::BindRepeating(
                 content_settings::PageSpecificContentSettings::TopicAccessed)),
         mock_calculator_results_(std::move(mock_calculator_results)),
@@ -122,7 +118,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service,
+      Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback) override {
     DCHECK(!mock_calculator_results_.empty());
@@ -133,9 +129,8 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
     mock_calculator_results_.pop();
 
     return std::make_unique<TesterBrowsingTopicsCalculator>(
-        privacy_sandbox_settings, history_service, site_data_manager,
-        annotations_service, std::move(callback), std::move(next_epoch),
-        calculator_finish_delay_);
+        privacy_sandbox_settings, history_service, site_data_manager, annotator,
+        std::move(callback), std::move(next_epoch), calculator_finish_delay_);
   }
 
   const BrowsingTopicsState& browsing_topics_state() override {
@@ -211,14 +206,6 @@ class BrowsingTopicsServiceImplTest
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
-    page_content_annotations_service_ =
-        optimization_guide::TestPageContentAnnotationsService::Create(
-            /*optimization_guide_model_provider=*/nullptr,
-            history_service_.get());
-
-    page_content_annotations_service_->OverridePageContentAnnotatorForTesting(
-        &test_page_content_annotator_);
-
     task_environment()->RunUntilIdle();
   }
 
@@ -243,9 +230,6 @@ class BrowsingTopicsServiceImplTest
     history_service_->SetOnBackendDestroyTask(run_loop.QuitClosure());
     history_service_->Shutdown();
     run_loop.Run();
-
-    page_content_annotations_service_.reset();
-    task_environment()->RunUntilIdle();
 
     host_content_settings_map_->ShutdownOnUIThread();
 
@@ -294,8 +278,8 @@ class BrowsingTopicsServiceImplTest
     browsing_topics_service_ = std::make_unique<TesterBrowsingTopicsService>(
         temp_dir_.GetPath(), privacy_sandbox_settings_.get(),
         history_service_.get(), topics_site_data_manager(),
-        page_content_annotations_service_.get(),
-        std::move(mock_calculator_results), kCalculatorDelay);
+        std::make_unique<TestAnnotator>(), std::move(mock_calculator_results),
+        kCalculatorDelay);
   }
 
   const BrowsingTopicsState& browsing_topics_state() {
@@ -319,11 +303,6 @@ class BrowsingTopicsServiceImplTest
       privacy_sandbox_settings_;
 
   std::unique_ptr<history::HistoryService> history_service_;
-
-  std::unique_ptr<optimization_guide::PageContentAnnotationsService>
-      page_content_annotations_service_;
-
-  optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   std::unique_ptr<TesterBrowsingTopicsService> browsing_topics_service_;
 
@@ -1879,6 +1858,61 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
   EXPECT_EQ(result[5].topic_id(), Topic(6));
   EXPECT_EQ(result[6].topic_id(), Topic(9));
   EXPECT_EQ(result[7].topic_id(), Topic(10));
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     start_time - kOneTestDay));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime2));
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics,
+        {{"time_period_per_epoch",
+          base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+         {"browsing_topics_max_epoch_introduction_delay",
+          base::StrCat(
+              {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
+               "s"})},
+         {"browsing_topics_disabled_topics_list", "20,10,7"}}}},
+      /*disabled_features=*/{});
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish file loading.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
+
+  std::vector<privacy_sandbox::CanonicalTopic> result =
+      browsing_topics_service_->GetTopTopicsForDisplay();
+
+  // Don't receive 7 and 10 (they are blocked by Finch) and 8 (it's blocked
+  // because it's descended from 7).
+  EXPECT_EQ(result.size(), 7u);
+  EXPECT_EQ(result[0].topic_id(), Topic(6));
+  EXPECT_EQ(result[1].topic_id(), Topic(9));
+  EXPECT_EQ(result[2].topic_id(), Topic(1));
+  EXPECT_EQ(result[3].topic_id(), Topic(2));
+  EXPECT_EQ(result[4].topic_id(), Topic(3));
+  EXPECT_EQ(result[5].topic_id(), Topic(4));
+  EXPECT_EQ(result[6].topic_id(), Topic(5));
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {

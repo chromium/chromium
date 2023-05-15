@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -415,8 +414,8 @@ void MessagePumpForUI::ScheduleNativeTimer(
   } else {
     // TODO(gab): ::SetTimer()'s documentation claims it does this for us.
     // Consider removing this safety net.
-    delay_msec =
-        clamp(delay_msec, UINT(USER_TIMER_MINIMUM), UINT(USER_TIMER_MAXIMUM));
+    delay_msec = std::clamp(delay_msec, static_cast<UINT>(USER_TIMER_MINIMUM),
+                            static_cast<UINT>(USER_TIMER_MAXIMUM));
 
     // Tell the optimizer to retain the delay to simplify analyzing hangs.
     base::debug::Alias(&delay_msec);

@@ -12,7 +12,6 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
-#include "ui/views/view.h"
 
 namespace content {
 class WebContents;
@@ -53,8 +52,8 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   bool Deregister(const SidePanelEntry::Key& key);
 
   // Deregisters the entry for the given SidePanelEntry::Key and returns the
-  // view for the entry or nullptr if one does not exist.
-  std::unique_ptr<views::View> DeregisterAndReturnView(
+  // entry or nullptr if one does not exist.
+  std::unique_ptr<SidePanelEntry> DeregisterAndReturnEntry(
       const SidePanelEntry::Key& key);
 
   // Set the active entry in the side panel to be |entry|.
@@ -68,7 +67,7 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   void OnEntryIconUpdated(SidePanelEntry* entry) override;
 
  private:
-  void RemoveEntry(SidePanelEntry* entry);
+  std::unique_ptr<SidePanelEntry> RemoveEntry(SidePanelEntry* entry);
 
   // The last active entry hosted in the side panel used to determine what entry
   // should be visible. This is reset by the coordinator when the panel is

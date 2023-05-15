@@ -24,7 +24,6 @@ NSString* const kNavigationItemStorageReferrerURLDeprecatedKey = @"referrer";
 NSString* const kNavigationItemStorageReferrerPolicyKey = @"referrerPolicy";
 NSString* const kNavigationItemStorageTimestampKey = @"timestamp";
 NSString* const kNavigationItemStorageTitleKey = @"title";
-NSString* const kNavigationItemStoragePageDisplayStateKey = @"state";
 NSString* const kNavigationItemStorageHTTPRequestHeadersKey = @"httpHeaders";
 NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
 
@@ -38,8 +37,6 @@ const char kNavigationItemSerializedReferrerURLSizeHistogram[] =
     "Session.WebStates.NavigationItem.SerializedReferrerURLSize";
 const char kNavigationItemSerializedTitleSizeHistogram[] =
     "Session.WebStates.NavigationItem.SerializedTitleSize";
-const char kNavigationItemSerializedDisplayStateSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedDisplayStateSize";
 const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
     "Session.WebStates.NavigationItem.SerializedRequestHeadersSize";
 
@@ -61,8 +58,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   [description appendFormat:@"referrer : %s, ", _referrer.url.spec().c_str()];
   [description appendFormat:@"timestamp : %f, ", _timestamp.ToCFAbsoluteTime()];
   [description appendFormat:@"title : %@, ", base::SysUTF16ToNSString(_title)];
-  [description
-      appendFormat:@"displayState : %@", _displayState.GetDescription()];
   [description
       appendFormat:@"userAgentType : %s, ",
                    web::GetUserAgentTypeDescription(_userAgentType).c_str()];
@@ -130,9 +125,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
     // Use a transition type of reload so that we don't incorrectly increase
     // the typed count.  This is what desktop chrome does.
     _title = base::SysNSStringToUTF16(title);
-    NSDictionary* serializedDisplayState = [aDecoder
-        decodeObjectForKey:web::kNavigationItemStoragePageDisplayStateKey];
-    _displayState = web::PageDisplayState(serializedDisplayState);
     _HTTPRequestHeaders = [aDecoder
         decodeObjectForKey:web::kNavigationItemStorageHTTPRequestHeadersKey];
   }
@@ -186,18 +178,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   serializedSizeInBytes += serializedTitleSizeInBytes;
   base::UmaHistogramMemoryKB(web::kNavigationItemSerializedTitleSizeHistogram,
                              serializedTitleSizeInBytes / 1024);
-
-  NSDictionary* displayState = _displayState.GetSerialization();
-  [aCoder encodeObject:displayState
-                forKey:web::kNavigationItemStoragePageDisplayStateKey];
-  int serializedDisplayStateSizeInBytes =
-      [[NSKeyedArchiver archivedDataWithRootObject:displayState
-                             requiringSecureCoding:NO
-                                             error:nullptr] length];
-  serializedSizeInBytes += serializedDisplayStateSizeInBytes;
-  base::UmaHistogramMemoryKB(
-      web::kNavigationItemSerializedDisplayStateSizeHistogram,
-      serializedDisplayStateSizeInBytes / 1024);
 
   std::string userAgent = web::GetUserAgentTypeDescription(_userAgentType);
   web::nscoder_util::EncodeString(

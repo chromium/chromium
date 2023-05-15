@@ -28,8 +28,6 @@
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/main_application_delegate.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -37,10 +35,13 @@
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -48,7 +49,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #import "ios/net/cookies/cookie_store_ios.h"
@@ -256,13 +256,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self.startupInformation expireFirstUserActionRecorder];
 
   // Do not save cookies if it is already in progress.
-  id<BrowserInterface> currentInterface =
-      _browserLauncher.interfaceProvider.currentInterface;
-  if (currentInterface.browserState && !_savingCookies) {
+  id<BrowserProvider> currentBrowserProvider =
+      _browserLauncher.browserProviderInterface.currentBrowserProvider;
+  if (currentBrowserProvider.browser && !_savingCookies) {
     // Save cookies to disk. The empty critical closure guarantees that the task
     // will be run before backgrounding.
     scoped_refptr<net::URLRequestContextGetter> getter =
-        currentInterface.browserState->GetRequestContext();
+        currentBrowserProvider.browser->GetBrowserState()->GetRequestContext();
     _savingCookies = YES;
     __weak AppState* weakSelf = self;
 
@@ -303,17 +303,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
   if (self.initStage < InitStageBrowserObjectsForUI) {
-    // Start the initialization in the case it wasn't already done before
-    // foregrounding the app. `initStage` will be greater than InitStageStart if
-    // the initialization was already started.
-    if (self.initStage == InitStageStart) {
-      // TODO(crbug.com/1346512): Remove this code path after some time in
-      // canary. This is meant to be easy to revert. Initialization is always
-      // started at application:didFinishLaunchingWithOptions: and transitions
-      // past InitStageStart before returning to the runloop.
-      NOTREACHED();
-      [self queueTransitionToFirstInitStage];
-    }
+    // Invariant: The app has passed InitStageStart.
+    CHECK(self.initStage != InitStageStart);
     // TODO(crbug.com/1197330): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
@@ -390,7 +381,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // provider (and no tabs).
   if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
-      sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
+      sceneState.browserProviderInterface.currentBrowserProvider
+          .userInteractionEnabled = NO;
     }
   }
 
@@ -454,25 +446,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 }
 
-- (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
-                               stateBackground:(BOOL)stateBackground {
-  [_browserLauncher setLaunchOptions:launchOptions];
-
-  [self queueTransitionToFirstInitStage];
-
-  // `stateBackground` is wrongly always YES, even in regular foreground
-  // launches. This variable is a legacy before we started supporting
-  // multi-scene.
-  // TODO(crbug.com/1346512): Remove this code path after some time in
-  // canary. This is meant to be easy to revert.
-  DCHECK(stateBackground);
-  if (!stateBackground) {
-    [self initializeUIPreSafeMode];
-  }
-
-  return YES;
-}
-
 - (void)addObserver:(id<AppStateObserver>)observer {
   [self.observers addObserver:observer];
 
@@ -507,29 +480,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self queueTransitionToInitStage:nextInitStage];
 }
 
-- (void)queueTransitionToFirstInitStage {
+- (void)startInitialization {
   [self queueTransitionToInitStage:InitStageStart];
-}
-
-- (void)queueTransitionToInitStage:(InitStage)initStage {
-  if (self.isIncrementingInitStage) {
-    // It is an error to queue more than one transition at once.
-    DCHECK(!self.needsIncrementInitStage);
-
-    // Set a flag to increment after the observers are notified of the current
-    // change.
-    self.needsIncrementInitStage = YES;
-    return;
-  }
-
-  self.isIncrementingInitStage = YES;
-  self.initStage = initStage;
-  self.isIncrementingInitStage = NO;
-
-  if (self.needsIncrementInitStage) {
-    self.needsIncrementInitStage = NO;
-    [self queueTransitionToNextInitStage];
-  }
 }
 
 #pragma mark - Multiwindow-related
@@ -616,6 +568,27 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+}
+
+- (void)queueTransitionToInitStage:(InitStage)initStage {
+  if (self.isIncrementingInitStage) {
+    // It is an error to queue more than one transition at once.
+    DCHECK(!self.needsIncrementInitStage);
+
+    // Set a flag to increment after the observers are notified of the current
+    // change.
+    self.needsIncrementInitStage = YES;
+    return;
+  }
+
+  self.isIncrementingInitStage = YES;
+  self.initStage = initStage;
+  self.isIncrementingInitStage = NO;
+
+  if (self.needsIncrementInitStage) {
+    self.needsIncrementInitStage = NO;
+    [self queueTransitionToNextInitStage];
+  }
 }
 
 #pragma mark - UIBlockerManager

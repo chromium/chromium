@@ -26,7 +26,7 @@ import com.google.android.gms.common.api.ApiException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
@@ -148,8 +148,7 @@ public class PasswordManagerHelper {
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
             SettingsLauncher settingsLauncher, SyncService syncService,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            boolean managePasskeys) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, boolean managePasskeys) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
@@ -240,8 +239,7 @@ public class PasswordManagerHelper {
      *         loading dialog.
      */
     public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
-            SyncService syncService,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            SyncService syncService, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         assert canUseUpm();
 
         Optional<String> account = hasChosenToSyncPasswords(syncService)
@@ -437,7 +435,7 @@ public class PasswordManagerHelper {
     @VisibleForTesting
     static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
             SyncService syncService, LoadingModalDialogCoordinator loadingDialogCoordinator,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         assert canUseUpm();
         assert syncService != null;
 
@@ -468,7 +466,7 @@ public class PasswordManagerHelper {
     @VisibleForTesting
     static void launchPasswordCheckup(@PasswordCheckReferrer int referrer, Optional<String> account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         assert canUseUpm();
 
         PasswordCheckupClientHelper checkupClient;
@@ -629,7 +627,7 @@ public class PasswordManagerHelper {
     }
 
     private static void showGmsUpdateDialog(
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         ModalDialogManager modalDialogManager = modalDialogManagerSupplier.get();
         if (modalDialogManager == null) return;
 

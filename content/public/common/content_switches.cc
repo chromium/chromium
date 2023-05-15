@@ -479,12 +479,12 @@ const char kForcePresentationReceiverForTesting[] =
 // Force renderer accessibility to be on instead of enabling it on demand when
 // a screen reader is detected. The disable-renderer-accessibility switch
 // overrides this if present.
+// This switch has an optional parameter that forces an AXMode bundle. The three
+// available bundle settings are: 'basic', 'form-controls', and 'complete'. If
+// the bundle argument is invalid, then the forced AXMode will default to
+// 'complete'. If the bundle argument is missing, then the initial AXMode will
+// default to complete but allow changes to the AXMode during execution.
 const char kForceRendererAccessibility[]    = "force-renderer-accessibility";
-
-// Force Skia's CPU backend to use analytic anti-aliasing for all content
-// (rather than a mix of analytic and supersampling). Test migration tool for
-// https://crbug.com/1421297
-const char kForceSkiaAnalyticAntialiasing[] = "force-skia-analytic-aa";
 
 // Extra command line options for launching the GPU process (normally used
 // for debugging). Use like renderer-cmd-prefix.
@@ -922,12 +922,6 @@ const char kForceWebRtcIPHandlingPolicy[] = "force-webrtc-ip-handling-policy";
 // This flag expects a value.  Example: --max-gum-fps=17.5
 const char kWebRtcMaxCaptureFramerate[] = "max-gum-fps";
 
-// Configure the maximum CPU time percentage of a single core that can be
-// consumed for desktop capturing. Default is 50. Set 100 to disable the
-// throttling of the capture.
-const char kWebRtcMaxCpuConsumptionPercentage[] =
-    "webrtc-max-cpu-consumption-percentage";
-
 // Enable capture and local storage of WebRTC event logs without visiting
 // chrome://webrtc-internals. This is useful for automated testing. It accepts
 // the path to which the local logs would be stored. Disabling is not possible
@@ -986,9 +980,17 @@ const char kRemoteDebuggingSocketName[]     = "remote-debugging-socket-name";
 // Java debugger is attached.
 const char kRendererWaitForJavaDebugger[] = "renderer-wait-for-java-debugger";
 
+// Provides user-level memory pressure signal parameters for renderer processes.
+// The parameters are a pair of base::TimeDelta(). The first one is
+// inert interval and the second one is minimum interval.
+// If any valid parameters are specified, the renderer processes know that
+// the browser process enabled user-level memory pressure signal feature.
+const char kUserLevelMemoryPressureSignalParams[] =
+    "user-level-memory-pressure-signal-params";
+
 // Disables debug crash dumps for OOPR.
 const char kDisableOoprDebugCrashDump[] = "disable-oopr-debug-crash-dump";
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enable the aggressive flushing of DOM Storage to minimize data loss.
 const char kEnableAggressiveDOMStorageFlushing[] =

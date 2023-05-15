@@ -23,7 +23,7 @@ INSERT INTO buckets(origin, type, name, use_count, last_accessed, last_modified,
 INSERT INTO buckets(origin, type, name, use_count, last_accessed, last_modified, expiration, quota)
   VALUES('http://b/', 0, 'bucket_b', 111, 13250042735631065, 13260999511438890, 9223372036854775807, 1000);
 INSERT INTO buckets(origin, type, name, use_count, last_accessed, last_modified, expiration, quota)
-  VALUES('http://c/', 1, 'bucket_c', 321, 13261163582572088, 13261079941303629, 9223372036854775807, 10000);
+  VALUES('http://c/', 2, 'bucket_c', 321, 13261163582572088, 13261079941303629, 9223372036854775807, 10000);
 
 CREATE UNIQUE INDEX buckets_by_storage_key ON buckets(origin, type, name);
 

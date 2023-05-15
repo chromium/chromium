@@ -310,7 +310,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="CpuTime.PreActivation">
     <summary>
-      Wall time of tasks attributed to the frame after the frame recieved user
+      Wall time of tasks attributed to the frame after the frame received user
       activation. Measured in millseconds.
     </summary>
   </metric>
@@ -381,7 +381,7 @@ be describing additional metrics about the same event.
   <metric name="Status.CrossOrigin">
     <summary>
       An enum representing whether the frame was Cross-Origin or Same-Origin to
-      it's parent frame. See FrameData::OriginStatus.
+      its parent frame. See FrameData::OriginStatus.
     </summary>
   </metric>
   <metric name="Status.Media">
@@ -420,14 +420,14 @@ be describing additional metrics about the same event.
   <metric name="Visibility.FrameHeight">
     <summary>
       Last known height of the iframe in pixels. Not reported accurately when
-      &quot;Visiblity.Hidden&quot; is true. This is rounded down to the nearest
+      &quot;Visibility.Hidden&quot; is true. This is rounded down to the nearest
       exponential bucket (with a bucket ratio of 1.15).
     </summary>
   </metric>
   <metric name="Visibility.FrameWidth">
     <summary>
       Last known width of the iframe in pixels. Not reported accurately when
-      &quot;Visiblity.Hidden&quot; is true. This is rounded down to the nearest
+      &quot;Visibility.Hidden&quot; is true. This is rounded down to the nearest
       exponential bucket (with a bucket ratio of 1.15).
     </summary>
   </metric>
@@ -680,7 +680,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="AdsInterestGroup.AuctionLatency">
+<event name="AdsInterestGroup.AuctionLatency.V2">
   <owner>orrb@google.com</owner>
   <owner>chrome-ads-core@google.com</owner>
   <summary>
@@ -743,6 +743,39 @@ be describing additional metrics about the same event.
       two or greater.
     </summary>
   </metric>
+  <metric name="MaxGenerateBidCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the Script and/or WASM
+      load. If both Script and WASM were requested, this is the latency of the
+      slower of the two to complete.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidConfigPromisesLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the fulfillment of the
+      config promises.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the download of the
+      DirectFromSellerSignals. This combines the PerBuyerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidTrustedBiddingSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the download of the
+      TrustedBiddingSignals. This includes *all* TrustedBiddingSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
+    </summary>
+  </metric>
   <metric name="MaxGenerateSingleBidLatencyInMillis">
     <summary>
       Aggregated across all components for a multi-seller auctions, this records
@@ -777,6 +810,79 @@ be describing additional metrics about the same event.
       two or greater.
     </summary>
   </metric>
+  <metric name="MeanGenerateBidCodeReadyCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the Script and/or WASM load. This combines Script and WASM
+      loads.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the Script and/or WASM
+      load. If both Script and WASM were requested, this is the latency of the
+      slower of the two to complete.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidConfigPromisesCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the fulfillment of the config promises.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidConfigPromisesLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the fulfillment of the
+      config promises.
+    </summary>
+  </metric>
+  <metric
+      name="MeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the download of the DirectFromSellerSignals. This combines the
+      PerBuyerSignals and AuctionSignals since they should arrive at roughly the
+      same time.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the download of the
+      DirectFromSellerSignals. This combines the PerBuyerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric
+      name="MeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the download of the TrustedBiddingSignals. This includes *all*
+      TrustedBiddingSignals for that buyer, because of how those all need to be
+      available in order to reprioritize InterestGroups and apply per-buyer
+      group limits.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidTrustedBiddingSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the download of the
+      TrustedBiddingSignals. This includes *all* TrustedBiddingSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
+    </summary>
+  </metric>
   <metric name="MeanGenerateSingleBidLatencyInMillis">
     <summary>
       Aggregated across all components for a multi-seller auctions, this records
@@ -786,6 +892,38 @@ be describing additional metrics about the same event.
       Like the UMA metric, this measures each distinct call to
       GenerateSingleBid, for which there could be two for a given InterestGroup,
       one that satisfies the kAnon threshold, and one that doesn't.
+    </summary>
+  </metric>
+  <metric name="MeanTimeBidsQueuedWaitingForConfigPromisesInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time that bids that were ready for scoring before the config
+      promises were fulfilled were blocked waiting on the config promises. For
+      multi-seller auctions, this only includes bids in the component auctions,
+      and not rescoring of bids in the top-level auction.
+    </summary>
+  </metric>
+  <metric name="MeanTimeBidsQueuedWaitingForSellerWorkletInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time that bids that were ready for scoring before the seller
+      worklet became available were blocked waiting on the seller worklet. For
+      multi-seller auctions, this only includes bids in the component auctions,
+      and not rescoring of bids in the top-level auction.
+    </summary>
+  </metric>
+  <metric name="MeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillis">
+    <summary>
+      Only recorded for multi-seller auctions, this records the mean time that
+      top-level bids that were ready for rescoring before the config promises
+      were fulfilled were blocked waiting on the config promises.
+    </summary>
+  </metric>
+  <metric name="MeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillis">
+    <summary>
+      Only recorded for multi-seller auctions, this records the mean time that
+      top-level bids that were ready for rescoring before the seller worklet
+      became available were blocked waiting on the seller worklet.
     </summary>
   </metric>
   <metric name="NumBidderWorklets">
@@ -845,6 +983,24 @@ be describing additional metrics about the same event.
       NumInterestGroups metric.
     </summary>
   </metric>
+  <metric name="NumBidsQueuedWaitingForConfigPromises">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the total number of bids that were ready for scoring before the config
+      promises were fulfilled. For multi-seller auctions, this only includes
+      bids in the component auctions, and not rescoring of bids in the top-level
+      auction.
+    </summary>
+  </metric>
+  <metric name="NumBidsQueuedWaitingForSellerWorklet">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the total number of bids that were ready for scoring before the seller
+      worklet became available. For multi-seller auctions, this only includes
+      bids in the component auctions, and not rescoring of bids in the top-level
+      auction.
+    </summary>
+  </metric>
   <metric name="NumDistinctOwnersWithInterestGroups">
     <summary>
       The number of buyers with InterestGroups participating in an auction,
@@ -856,6 +1012,38 @@ be describing additional metrics about the same event.
       Also unlike NumOwnersWithInterestGroups, this metric has a value even if
       there are no bidders eligible to participate in this auction, though, in
       this case, that value is likely to be zero.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidCodeReadyOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      Script and/or WASM load.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidConfigPromisesOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      fulfillment of the config promises.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidDirectFromSellerSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      download of the DirectFromSellerSignals. This combines the PerBuyerSignals
+      and AuctionSignals since they should arrive at roughly the same time.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidTrustedBiddingSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      download of the TrustedBiddingSignals. This includes *all*
+      TrustedBiddingSignals for that buyer, because of how those all need to be
+      available in order to reprioritize InterestGroups and apply per-buyer
+      group limits.
     </summary>
   </metric>
   <metric name="NumInterestGroups">
@@ -872,9 +1060,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="NumInterestGroupsWithNoBids">
     <summary>
-      Number of instances in which the the BidderWorklet doesn't bid, maybe
-      because it failed to load or crashed. Because there's no bid, ScoreAd
-      won't be called for these.
+      Number of instances in which the BidderWorklet doesn't bid, maybe because
+      it failed to load or crashed. Because there's no bid, ScoreAd won't be
+      called for these.
     </summary>
   </metric>
   <metric name="NumInterestGroupsWithOnlyNonKAnonBid">
@@ -925,6 +1113,18 @@ be describing additional metrics about the same event.
       metric, Ads.InterestGroup.Auction.NumSellersWithBidders. No value is
       defined for this metric if there are no bidders eligible to participate in
       this auction.
+    </summary>
+  </metric>
+  <metric name="NumTopLevelBidsQueuedWaitingForConfigPromises">
+    <summary>
+      Only recorded for multi-seller auctions, this records the number of bids
+      that were ready for rescoring before the config promises were fulfilled.
+    </summary>
+  </metric>
+  <metric name="NumTopLevelBidsQueuedWaitingForSellerWorklet">
+    <summary>
+      Only recorded for multi-seller auctions, this records the number of bids
+      that were ready for rescoring before the seller worklet became available.
     </summary>
   </metric>
   <metric name="Result" enum="AuctionResult">
@@ -2496,7 +2696,7 @@ be describing additional metrics about the same event.
 <event name="Autofill.FormFillSuccessIOS">
   <owner>kazinova@google.com</owner>
   <summary>
-    Records whether the the form was successfully filled by Autofill on iOS. The
+    Records whether the form was successfully filled by Autofill on iOS. The
     metric is used to measure silent renderer fails when the filling request is
     executed successfully but the results reported in a callback are empty.
   </summary>
@@ -2989,6 +3189,12 @@ be describing additional metrics about the same event.
     All information about a specific field, recorded at form submission or form
     destruction time (whatever comes first).
   </summary>
+  <metric name="AutocompleteState" enum="AutofillAutocompleteState">
+    <summary>
+      The field's autocomplete attribute value, the values are from
+      |AutofillMetrics::AutocompleteState|.
+    </summary>
+  </metric>
   <metric name="AutofillSkippedStatus">
     <summary>
       Whether filling the field was skipped during autofill, and if it was
@@ -3825,6 +4031,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.JavaScriptFramework.Versions" singular="True">
+  <owner>houssein@chromium.org</owner>
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    Metrics stating the detected major+minor version of known frameworks when
+    detected. This event is recorded when the page is loaded. Note that a page
+    can use multiple frameworks at the same time, hence why this reports each
+    framework individually instead of a single number. The version numbers here
+    are a bit mask: 0xMMmm (Major+minor), e.g. version 16.3 would be 0x1003
+  </summary>
+  <metric name="AngularVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Angular version
+    </summary>
+  </metric>
+  <metric name="NextJSVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the NextJS version
+    </summary>
+  </metric>
+  <metric name="NuxtVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Nuxt version
+    </summary>
+  </metric>
+  <metric name="VueVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Vue version
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.PageLoad">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -4006,13 +4244,6 @@ be describing additional metrics about the same event.
       between navigation and First Contentful Paint, in microseconds.
     </summary>
   </metric>
-  <metric name="ScrollDocumentUpdate">
-    <summary>
-      The time spent doing forced document updates due to update scroll-related
-      data, between navigation and First Contentful Paint, in microseconds.
-      Includes actions like scroll-to-fragment.
-    </summary>
-  </metric>
   <metric name="ScrollingCoordinator">
     <obsolete>
       Merged into CompositingCommit in http://crrev.com/815947 in M88.
@@ -4062,6 +4293,8 @@ be describing additional metrics about the same event.
       The time spent doing forced document updates due to a user action such as
       input, find-in-page or printing, between navigation and First Contentful
       Paint, in microseconds.
+
+      As of 04/2023, updates for scrolling are included in this metric.
     </summary>
   </metric>
   <metric name="VisualUpdateDelay">
@@ -5157,18 +5390,6 @@ be describing additional metrics about the same event.
       An int in the range [0,100].
     </summary>
   </metric>
-  <metric name="ScrollDocumentUpdate">
-    <summary>
-      The time spent doing forced document updates due to update scroll-related
-      data, during a sampled frame, in microseconds.
-    </summary>
-  </metric>
-  <metric name="ScrollDocumentUpdateBeginMainFrame">
-    <summary>
-      The time spent doing forced document updates due to update scroll-related
-      data, during the BeginMainFrame block of a sampled frame, in microseconds.
-    </summary>
-  </metric>
   <metric name="ScrollingCoordinator">
     <obsolete>
       Merged into Blink.MainFrame.CompositingCommitRatio in
@@ -5344,8 +5565,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="StyleBeginMainFrame">
     <summary>
-      The total main frame time spent updating style information and and
-      building the layout tree, in microseconds.
+      The total main frame time spent updating style information and building
+      the layout tree, in microseconds.
     </summary>
   </metric>
   <metric name="StylePercentage">
@@ -5407,6 +5628,8 @@ be describing additional metrics about the same event.
     <summary>
       The time spent doing forced document updates due to a user action such as
       input, find-in-page or printing, during a sampled frame, in microseconds.
+
+      As of 04/2023, updates for scrolling are included in this metric.
     </summary>
   </metric>
   <metric name="UserDrivenDocumentUpdateBeginMainFrame">
@@ -5414,6 +5637,8 @@ be describing additional metrics about the same event.
       The time spent doing forced document updates due to a user action such as
       input, find-in-page or printing, during the BeginMainFrame block of a
       sampled frame, in microseconds.
+
+      As of 04/2023, updates for scrolling are included in this metric.
     </summary>
   </metric>
   <metric name="VisualUpdateDelay">
@@ -5823,7 +6048,7 @@ be describing additional metrics about the same event.
     &quot;EventId&quot;, it means &quot;ChargeEventHistory&quot; is the charge
     history when &quot;SmartCharging&quot; event is logged. ChargeEventHistory
     records an array. Each ChargeEventHistory event records an item in the
-    array, specified by it's index ChargeEventHistoryIndex. Items in the same
+    array, specified by its index ChargeEventHistoryIndex. Items in the same
     array will have same source ID and EventId.
   </summary>
   <metric name="ChargeEventHistoryDuration">
@@ -5966,7 +6191,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="AppInputEventCount">
     <summary>
-      The number of the input events happened in each five mintues.
+      The number of the input events happened in each five minutes.
     </summary>
   </metric>
   <metric name="AppInputEventSource" enum="AppInputEventSource">
@@ -6472,6 +6697,201 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="Companion.PageView">
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records metrics for the companion side panel. The events correspond to a
+    single page load in the main frame and the metrics are flushed when the page
+    navigates away. For most of the UI surfaces, only the last event (e.g.
+    displayed or clicked) is recorded.
+  </summary>
+  <metric name="ATX.ComponentPosition">
+    <summary>
+      The position of the ATX surface in the page.
+    </summary>
+  </metric>
+  <metric name="ATX.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the ATX surface.
+    </summary>
+  </metric>
+  <metric name="CQ.ClickPosition">
+    <summary>
+      The position of the CQ element that was clicked with respect to its parent
+      list.
+    </summary>
+  </metric>
+  <metric name="CQ.ComponentPosition">
+    <summary>
+      The position of the CQ surface in the page.
+    </summary>
+  </metric>
+  <metric name="CQ.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the CQ surface.
+    </summary>
+  </metric>
+  <metric name="CQ.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the CQ suface after
+      eligibility check after text finder API. Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="CQ.NumEntriesShown">
+    <summary>
+      The number of child elements actually shown within the CQ suface after
+      eligibility check through text finder API. Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="OpenTrigger" enum="SidePanelOpenTrigger">
+    <summary>
+      The UI location from which the companion page was opened.
+    </summary>
+  </metric>
+  <metric name="PageEntities.ClickPosition">
+    <summary>
+      The position of the page entities element that was clicked with respect to
+      its parent list.
+    </summary>
+  </metric>
+  <metric name="PageEntities.ComponentPosition">
+    <summary>
+      The position of the page entities surface in the page.
+    </summary>
+  </metric>
+  <metric name="PageEntities.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the page entities surface.
+    </summary>
+  </metric>
+  <metric name="PageEntities.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the page entities suface.
+      Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="PageEntities.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the page entities suface.
+      Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="PH.ComponentPosition">
+    <summary>
+      The position of the PH surface in the page.
+    </summary>
+  </metric>
+  <metric name="PH.Feedback" enum="Companion.PhFeedback">
+    <summary>
+      The last user feedback event on the PH surface.
+    </summary>
+  </metric>
+  <metric name="PH.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the PH surface.
+    </summary>
+  </metric>
+  <metric name="PromoEvent" enum="Companion.PromoEvent">
+    <summary>
+      The last event on the promo surface.
+    </summary>
+  </metric>
+  <metric name="RegionSearch.ClickCount">
+    <summary>
+      The number of times region search in the multimodal box was clicked.
+    </summary>
+  </metric>
+  <metric name="RelQr.ClickPosition">
+    <summary>
+      The position of the RelQr element that was clicked with respect to its
+      parent list.
+    </summary>
+  </metric>
+  <metric name="RelQr.ComponentPosition">
+    <summary>
+      The position of the RelQr surface in the page.
+    </summary>
+  </metric>
+  <metric name="RelQr.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the RelQr surface.
+    </summary>
+  </metric>
+  <metric name="RelQr.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the RelQr suface. Clamped to
+      a max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQr.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the RelQr suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQs.ClickPosition">
+    <summary>
+      The position of the RelQs element that was clicked with respect to its
+      parent list.
+    </summary>
+  </metric>
+  <metric name="RelQs.ComponentPosition">
+    <summary>
+      The position of the RelQs surface in the page.
+    </summary>
+  </metric>
+  <metric name="RelQs.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the RelQs surface.
+    </summary>
+  </metric>
+  <metric name="RelQs.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the RelQs suface. Clamped to
+      a max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQs.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the RelQs suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="TextSearchCount">
+    <summary>
+      The number of times text search box was used.
+    </summary>
+  </metric>
+  <metric name="VQ.ClickPosition">
+    <summary>
+      The position of the VQ element that was clicked with respect to its parent
+      list.
+    </summary>
+  </metric>
+  <metric name="VQ.ComponentPosition">
+    <summary>
+      The position of the VQ surface in the page.
+    </summary>
+  </metric>
+  <metric name="VQ.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the VQ surface.
+    </summary>
+  </metric>
+  <metric name="VQ.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the VQ suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="VQ.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the VQ suface. Clamped to a max
+      value of 10.
+    </summary>
   </metric>
 </event>
 
@@ -7009,7 +7429,7 @@ be describing additional metrics about the same event.
     &quot;DailyChargeSummary&quot; event has them same source ID and
     &quot;EventId&quot;, it means &quot;DailyChargeSummary&quot; is the summary
     when &quot;SmartCharging&quot; event is logged. DailyChargeSummary records
-    an array. Each event records an item in the array, specified by it's index
+    an array. Each event records an item in the array, specified by its index
     DailySummaryIndex. Items in the same array will have same source ID and
     EventId.
   </summary>
@@ -7194,6 +7614,12 @@ be describing additional metrics about the same event.
       the end of the chain.
     </summary>
   </metric>
+  <metric name="IsPartialRedirectChain">
+    <summary>
+      True if the chain is missing the end URL. Any comparisons to the final
+      site are invalid for this redirect.
+    </summary>
+  </metric>
   <metric name="RedirectAndFinalSiteSame" enum="BooleanSameSite">
     <summary>
       True when the redirect site is the same as the site at the end of the
@@ -7339,7 +7765,7 @@ be describing additional metrics about the same event.
   <metric name="TimeSinceStart">
     <summary>
       The difference in the time between when the download finished and when it
-      began, expressed in miliseconds.
+      began, expressed in milliseconds.
     </summary>
   </metric>
 </event>
@@ -7383,7 +7809,7 @@ be describing additional metrics about the same event.
   <metric name="TimeSinceStart">
     <summary>
       The difference in the time between when the download interrupted and when
-      it began, expressed in miliseconds.
+      it began, expressed in milliseconds.
     </summary>
   </metric>
 </event>
@@ -7408,7 +7834,7 @@ be describing additional metrics about the same event.
   <metric name="TimeSinceStart">
     <summary>
       The difference in the time between when the download resumed and when it
-      began, expressed in miliseconds.
+      began, expressed in milliseconds.
     </summary>
   </metric>
 </event>
@@ -7607,7 +8033,7 @@ be describing additional metrics about the same event.
 <event name="Extensions.CrossOriginFetchFromContentScript3">
   <obsolete>
     Deprecated in Chrome 87 / September 2020 - it was not needed anymore since
-    CORS-for-content-scripts has succesfully shipped in M85.
+    CORS-for-content-scripts has successfully shipped in M85.
   </obsolete>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -8251,7 +8677,7 @@ be describing additional metrics about the same event.
   <summary>
     Tracks the duration of stages in the rendering pipeline when processing a
     single frame in response to an input event. To meet UKM goals for data
-    volume, a Poisson process with an exponential decay multipler is used to
+    volume, a Poisson process with an exponential decay multiplier is used to
     sample events for recporting. It will sample many reandomly distributed
     events early during page load and initial interaction, then samples at an
     exponentially decreasing rate to effectively cap the number of samples. All
@@ -11641,7 +12067,7 @@ be describing additional metrics about the same event.
   <owner>fdoray@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Counts loads of each type that occured on a top-level document. Recorded
+    Counts loads of each type that occurred on a top-level document. Recorded
     when a top-level document is unloaded. This can be used to diagnose changes
     to the &quot;Total pageloads&quot; shown on stability dashboard.
 
@@ -11845,15 +12271,18 @@ be describing additional metrics about the same event.
       defined in |LocalNetworkRequestsPageLoadMetricsObserver|. Possible values
       are 0 for public resources requested by private pages, 1 for private
       resources requested by public pages, 2 for private resources within the
-      same reserved IP space as the loaded private page, 4 for for private
-      resources within a different reserved IP space than the loaded private
-      page, 8 for resources requested by public pages that are suspected to be
-      routers, and 16 for localhost resources.
+      same reserved IP space as the loaded private page, 4 for private resources
+      within a different reserved IP space than the loaded private page, 8 for
+      resources requested by public pages that are suspected to be routers, and
+      16 for localhost resources.
     </summary>
   </metric>
 </event>
 
 <event name="LoginDetection" singular="True">
+  <obsolete>
+    Deprecated as of 04/2023.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -11885,7 +12314,7 @@ be describing additional metrics about the same event.
     <summary>
       A boolean representing whether or not the warning was triggered by the
       first URL in the chain, or whether the warning was triggered by the final
-      (commited) URL.
+      (committed) URL.
     </summary>
   </metric>
   <metric name="UserAction">
@@ -11927,7 +12356,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="DidCommit" enum="Boolean">
     <summary>
-      Set to 1 if the navigation successfully commited.
+      Set to 1 if the navigation successfully committed.
     </summary>
   </metric>
 </event>
@@ -12377,7 +12806,7 @@ be describing additional metrics about the same event.
   <owner>frs@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Event recorded when the EME API GetStatusForPolicy promise is resovled.
+    Event recorded when the EME API GetStatusForPolicy promise is resolved.
   </summary>
   <metric name="IsAdFrame" enum="Boolean">
     <summary>
@@ -12519,7 +12948,7 @@ be describing additional metrics about the same event.
 
     To tweak the scoring function we are logging the total number of significant
     media playbacks, the total number of visits, the calculated engagement score
-    and the new number of significant media playbacks that occured this visit.
+    and the new number of significant media playbacks that occurred this visit.
   </summary>
   <metric name="Engagement.IsHigh">
     <summary>
@@ -13813,7 +14242,7 @@ be describing additional metrics about the same event.
     <summary>
       Number of render processes that were blocked from contributing to
       SubFrameProcessPMF.Total. A process can have its contribution blocked if
-      the process has responsiblities outside the scope of the relevant tab. If
+      the process has responsibilities outside the scope of the relevant tab. If
       this is non-zero, TabPMF will be undefined.
     </summary>
     <aggregation>
@@ -13929,8 +14358,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ViewportInitialScaleX10">
     <summary>
-      Specified initial viewport scaling multipled by 10. 1 means 0.1, 100 means
-      10. [1-100].
+      Specified initial viewport scaling multiplied by 10. 1 means 0.1, 100
+      means 10. [1-100].
     </summary>
   </metric>
 </event>
@@ -14705,7 +15134,7 @@ be describing additional metrics about the same event.
     interval the background task checks the state of the system including how
     the user is interacting with the system and whether the system is online or
     offline. The data for each run of the background task is persisted to prefs.
-    Upon a sucessful navigation in Chrome, all data in prefs are logged to UKM
+    Upon a successful navigation in Chrome, all data in prefs are logged to UKM
     and then cleared. This means that the first page load of a session will have
     a burst of events being recorded, but subsequent page loads will likely have
     no events. The background task is scheduled when Chrome opens, and it will
@@ -16029,7 +16458,7 @@ be describing additional metrics about the same event.
       occurred on the page (including all subframes) during the session. This
       metric's integral value is 100x the fractional cumulative layout shift
       score described in the explainer. Stable since M79; previous versions are
-      expermental and subject to fluctuation between releases. Log of major
+      experimental and subject to fluctuation between releases. Log of major
       changes: http://bit.ly/chrome-speed-metrics-changelog
     </summary>
     <aggregation>
@@ -16409,7 +16838,7 @@ be describing additional metrics about the same event.
       Deprecated 09/2021 in favor of Net.JavaScriptBytes2.
     </obsolete>
     <summary>
-      The sum of decoded body lengths of all JavaScript resouces that completed
+      The sum of decoded body lengths of all JavaScript resources that completed
       loading on the page. This is rounded down to the nearest exponential
       bucket (with a bucket spacing factor of 10). On mobile this only records
       bytes up until the page/app is backgrounded.
@@ -16417,7 +16846,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Net.JavaScriptBytes2">
     <summary>
-      The sum of decoded body lengths of all JavaScript resouces that completed
+      The sum of decoded body lengths of all JavaScript resources that completed
       loading on the page. This is rounded down to the nearest exponential
       bucket (with a bucket spacing factor of 1.3). On mobile this only records
       bytes up until the page/app is backgrounded.
@@ -16428,7 +16857,7 @@ be describing additional metrics about the same event.
       Deprecated 09/2021 in favor of Net.JavaScriptMaxBytes2.
     </obsolete>
     <summary>
-      The max of decoded body lengths of all JavaScript resouces that completed
+      The max of decoded body lengths of all JavaScript resources that completed
       loading on the page. This is rounded down to the nearest exponential
       bucket (with a bucket spacing factor of 10). On mobile this only records
       bytes up until the page/app is backgrounded.
@@ -16436,7 +16865,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Net.JavaScriptMaxBytes2">
     <summary>
-      The max of decoded body lengths of all JavaScript resouces that completed
+      The max of decoded body lengths of all JavaScript resources that completed
       loading on the page. This is rounded down to the nearest exponential
       bucket (with a bucket spacing factor of 1.3). On mobile this only records
       bytes up until the page/app is backgrounded.
@@ -16819,7 +17248,7 @@ be describing additional metrics about the same event.
     <owner>mcrouse@chromium.org</owner>
     <owner>tbansal@chromium.org</owner>
     <summary>
-      Measures the Site Engagement Score for the commited URL rounded to the
+      Measures the Site Engagement Score for the committed URL rounded to the
       nearest 10.
     </summary>
   </metric>
@@ -17498,7 +17927,7 @@ be describing additional metrics about the same event.
   <metric name="EndEvent"
       enum="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
     <summary>
-      Records how the flow was ended, e.g. whether it ended with an generated
+      Records how the flow was ended, e.g. whether it ended with a generated
       password from a manual flow, a password reset link, etc.
     </summary>
   </metric>
@@ -17554,7 +17983,7 @@ be describing additional metrics about the same event.
   <summary>
     Metrics related to the usage and support of .well-known/change-password. The
     .well-known/change-password standard is defined to redirect to the sites
-    change password form. We collect whether a site supports the standart or
+    change password form. We collect whether a site supports the standard or
     not. https://wicg.github.io/change-password-url/
   </summary>
   <metric name="WellKnownChangePasswordResult"
@@ -17679,7 +18108,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.BlockingFrame">
+<event name="PerformanceAPI.LongAnimationFrame">
   <owner>nrosenthal@chromium.org</owner>
   <summary>
     This event is associated with the LongAnimationFrame Web Platform API. The
@@ -17707,768 +18136,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Duration.EffectiveBlocking">
     <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSCompilation">
-    <summary>
-      The total duration of long-script JS compilation, in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution">
-    <summary>
-      The total duration of long-script JS execution, not including compilation,
-      in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.EventListeners">
-    <summary>
-      The total duration spent in event listeners (e.g. onclick).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
-    <summary>
-      The total duration spent in promise resolve/reject tasks.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
-    <summary>
-      The total duration spent in script blocks (script element, import)
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
-    <summary>
-      The total duration spent in user callbacks (e.g. requestAnimationFrame).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.Forced">
-    <summary>
-      The total duration of forced style and layout in long scripts.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.RenderPhase">
-    <summary>
-      The total duration of the style and layout lifecycle phase, not including
-      forced style and layout.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.Total">
-    <summary>
-      The duration of the long animation frame in milliseconds. Mirrors the
-      value reported in PerformanceEntry.duration.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.BlockingInput">
-  <owner>nrosenthal@chromium.org</owner>
-  <summary>
-    This event is associated with the LongAnimationFrame Web Platform API. The
-    metrics are recorded when a long animation frame is detected and reported to
-    the page. For more details see https://crbug.com/1392685.
-  </summary>
-  <metric name="DidPause" enum="Boolean">
-    <summary>
-      True if there was a pause (sync XHR, dialog) during the long frame.
-    </summary>
-  </metric>
-  <metric name="Duration.DelayDefer">
-    <summary>
-      A positive or negative duration in milliseconds, representing the time
-      between the desired time for rendering the frame and rendering it in
-      practice. Positive means delayed, negative means deferred.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.EffectiveBlocking">
-    <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSCompilation">
-    <summary>
-      The total duration of long-script JS compilation, in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution">
-    <summary>
-      The total duration of long-script JS execution, not including compilation,
-      in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.EventListeners">
-    <summary>
-      The total duration spent in event listeners (e.g. onclick).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
-    <summary>
-      The total duration spent in promise resolve/reject tasks.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
-    <summary>
-      The total duration spent in script blocks (script element, import)
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
-    <summary>
-      The total duration spent in user callbacks (e.g. requestAnimationFrame).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.Forced">
-    <summary>
-      The total duration of forced style and layout in long scripts.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.RenderPhase">
-    <summary>
-      The total duration of the style and layout lifecycle phase, not including
-      forced style and layout.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.Total">
-    <summary>
-      The duration of the long animation frame in milliseconds. Mirrors the
-      value reported in PerformanceEntry.duration.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.NonBlocking">
-  <owner>nrosenthal@chromium.org</owner>
-  <summary>
-    This event is associated with the LongAnimationFrame Web Platform API. The
-    metrics are recorded when a long animation frame is detected and reported to
-    the page. For more details see https://crbug.com/1392685.
-  </summary>
-  <metric name="DidPause" enum="Boolean">
-    <summary>
-      True if there was a pause (sync XHR, dialog) during the long frame.
-    </summary>
-  </metric>
-  <metric name="Duration.DelayDefer">
-    <summary>
-      A positive or negative duration in milliseconds, representing the time
-      between the desired time for rendering the frame and rendering it in
-      practice. Positive means delayed, negative means deferred.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.EffectiveBlocking">
-    <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSCompilation">
-    <summary>
-      The total duration of long-script JS compilation, in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution">
-    <summary>
-      The total duration of long-script JS execution, not including compilation,
-      in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.EventListeners">
-    <summary>
-      The total duration spent in event listeners (e.g. onclick).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
-    <summary>
-      The total duration spent in promise resolve/reject tasks.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
-    <summary>
-      The total duration spent in script blocks (script element, import)
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
-    <summary>
-      The total duration spent in user callbacks (e.g. requestAnimationFrame).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.Forced">
-    <summary>
-      The total duration of forced style and layout in long scripts.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.RenderPhase">
-    <summary>
-      The total duration of the style and layout lifecycle phase, not including
-      forced style and layout.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.Total">
-    <summary>
-      The duration of the long animation frame in milliseconds. Mirrors the
-      value reported in PerformanceEntry.duration.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.BlockingFrame">
-  <owner>nrosenthal@chromium.org</owner>
-  <summary>
-    This event is associated with the LongAnimationFrame Web Platform API. The
-    metrics are recorded when a long animation frame is detected and reported to
-    the page. For more details see https://crbug.com/1392685.
-  </summary>
-  <metric name="DidPause" enum="Boolean">
-    <summary>
-      True if there was a pause (sync XHR, dialog) during the long frame.
-    </summary>
-  </metric>
-  <metric name="Duration.DelayDefer">
-    <summary>
-      A positive or negative duration in milliseconds, representing the time
-      between the desired time for rendering the frame and rendering it in
-      practice. Positive means delayed, negative means deferred.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.EffectiveBlocking">
-    <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSCompilation">
-    <summary>
-      The total duration of long-script JS compilation, in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution">
-    <summary>
-      The total duration of long-script JS execution, not including compilation,
-      in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.EventListeners">
-    <summary>
-      The total duration spent in event listeners (e.g. onclick).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
-    <summary>
-      The total duration spent in promise resolve/reject tasks.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
-    <summary>
-      The total duration spent in script blocks (script element, import)
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
-    <summary>
-      The total duration spent in user callbacks (e.g. requestAnimationFrame).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.Forced">
-    <summary>
-      The total duration of forced style and layout in long scripts.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.RenderPhase">
-    <summary>
-      The total duration of the style and layout lifecycle phase, not including
-      forced style and layout.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.Total">
-    <summary>
-      The duration of the long animation frame in milliseconds. Mirrors the
-      value reported in PerformanceEntry.duration.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.BlockingInput">
-  <owner>nrosenthal@chromium.org</owner>
-  <summary>
-    This event is associated with the LongAnimationFrame Web Platform API. The
-    metrics are recorded when a long animation frame is detected and reported to
-    the page. For more details see https://crbug.com/1392685.
-  </summary>
-  <metric name="DidPause" enum="Boolean">
-    <summary>
-      True if there was a pause (sync XHR, dialog) during the long frame.
-    </summary>
-  </metric>
-  <metric name="Duration.DelayDefer">
-    <summary>
-      A positive or negative duration in milliseconds, representing the time
-      between the desired time for rendering the frame and rendering it in
-      practice. Positive means delayed, negative means deferred.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.EffectiveBlocking">
-    <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSCompilation">
-    <summary>
-      The total duration of long-script JS compilation, in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution">
-    <summary>
-      The total duration of long-script JS execution, not including compilation,
-      in milliseconds.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.EventListeners">
-    <summary>
-      The total duration spent in event listeners (e.g. onclick).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
-    <summary>
-      The total duration spent in promise resolve/reject tasks.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
-    <summary>
-      The total duration spent in script blocks (script element, import)
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
-    <summary>
-      The total duration spent in user callbacks (e.g. requestAnimationFrame).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.Forced">
-    <summary>
-      The total duration of forced style and layout in long scripts.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.StyleAndLayout.RenderPhase">
-    <summary>
-      The total duration of the style and layout lifecycle phase, not including
-      forced style and layout.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.Total">
-    <summary>
-      The duration of the long animation frame in milliseconds. Mirrors the
-      value reported in PerformanceEntry.duration.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.NonBlocking">
-  <owner>nrosenthal@chromium.org</owner>
-  <summary>
-    This event is associated with the LongAnimationFrame Web Platform API. The
-    metrics are recorded when a long animation frame is detected and reported to
-    the page. For more details see https://crbug.com/1392685.
-  </summary>
-  <metric name="DidPause" enum="Boolean">
-    <summary>
-      True if there was a pause (sync XHR, dialog) during the long frame.
-    </summary>
-  </metric>
-  <metric name="Duration.DelayDefer">
-    <summary>
-      A positive or negative duration in milliseconds, representing the time
-      between the desired time for rendering the frame and rendering it in
-      practice. Positive means delayed, negative means deferred.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Duration.EffectiveBlocking">
-    <summary>
-      The duration in milliseconds, representing the time the LoAF blocked an
-      actual UI event or pending render.
+      The duration in milliseconds, representing the time the LoAF was blocking.
     </summary>
     <aggregation>
       <history>
@@ -18777,7 +18445,7 @@ be describing additional metrics about the same event.
 
 <event name="PerformanceManager.PageResourceUsage">
   <owner>anthonyvd@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <summary>
     Metrics detailing the estimated resources used by pages. The resources of a
     renderer process are allocated to all pages hosted in that process using the
@@ -19208,7 +18876,7 @@ be describing additional metrics about the same event.
     <summary>
       Time (in milliseconds) taken by the user to make a decision on a
       permission prompt after it was displayed, if at all. Ignoring a prompt
-      doesnt count as a decision.
+      doesn't count as a decision.
     </summary>
   </metric>
 </event>
@@ -19535,7 +19203,7 @@ be describing additional metrics about the same event.
     of time, the duration of this interval is recorded in the
     IntervalDurationSeconds metric.
 
-    The events aren't tied to a specific URL, a timer independant of any load
+    The events aren't tied to a specific URL, a timer independent of any load
     event runs in Chrome and report these events at regular intervals. All the
     metrics associated to this event are for the last interval. The URL attached
     to the event is the one that has been visible for the longest time during
@@ -19814,7 +19482,7 @@ be describing additional metrics about the same event.
   <metric name="PrefetchHeaderLatencyMs">
     <summary>
       Time between the prefetch request was sent and the time the response
-      headers were received. Unset if the headers have not been receved by the
+      headers were received. Unset if the headers have not been received by the
       time the user navigated to the current page.
     </summary>
   </metric>
@@ -19922,7 +19590,7 @@ be describing additional metrics about the same event.
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
-    Logged once for each preconnection request sent to the browser in resopnse
+    Logged once for each preconnection request sent to the browser in response
     to the user interacting with an anchor element. Associated with the Source
     ID of the page triggering the preconnection.
   </summary>
@@ -20370,7 +20038,7 @@ be describing additional metrics about the same event.
     PresentationErrorType::PRESENTATION_REQUEST_CANCELLED This error is created
     when users close the dialog without starting a Presentation. (2)
     PresentationErrorType::NO_PRESENTATION_FOUND This error might happen when a
-    website implemnting CastSDK try to join a route every time the page loads.
+    website implementing CastSDK try to join a route every time the page loads.
   </summary>
   <metric name="PresentationRequest" enum="Boolean">
     <summary>
@@ -21105,6 +20773,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SamesiteRedirectContextDowngrade">
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    A collection of metrics which are recorded for cookies whose inclusion would
+    be changed if the redirect chain was considered in their same-site
+    calculation. This change in inclusion is because the same-site context would
+    &quot;downgrade&quot; from a more permissive context to a less permissive
+    context, one which may not allow a cookie's inclusion.
+  </summary>
+  <metric name="AgePerCookie">
+    <summary>
+      Records the age of the cookies, in minutes, for cookies which are being
+      read (on a requset or via JS). The value rounded down to the exponential
+      bucket with factor of 2.0.
+    </summary>
+  </metric>
+  <metric name="SamesiteValueReadPerCookie" enum="SameSiteCookieValue">
+    <summary>
+      Records the SameSite value of the cookie for cookies which are being read
+      (on a request or via JS).
+    </summary>
+  </metric>
+  <metric name="SamesiteValueWritePerCookie" enum="SameSiteCookieValue">
+    <summary>
+      Records the SameSite value of the cookie for cookies which are being
+      written (on a response or via JS).
+    </summary>
+  </metric>
+</event>
+
 <event name="SchemefulSameSiteContextDowngrade">
   <owner>bingler@chromium.org</owner>
   <metric name="RequestPerCookie"
@@ -21114,7 +20812,7 @@ be describing additional metrics about the same event.
       a cookie which is being sent on a request along with the secureness of the
       origin the cookie is attempting to be sent to. This is recorded once per
       cookie when the cookie is included in the request or if the cookie
-      excluded due to insufficent same-site context only. Cookies that meet the
+      excluded due to insufficient same-site context only. Cookies that meet the
       above conditions but without a downgrade warning are not recorded.
     </summary>
   </metric>
@@ -21125,7 +20823,7 @@ be describing additional metrics about the same event.
       a cookie which is being set by a response along with the secureness of the
       origin that is attempting to set the cookie. This is recorded once per
       cookie when the cookie is allowed to be set or if the cookie is ignored
-      due to insufficent same-site context only. Cookies that meet the above
+      due to insufficient same-site context only. Cookies that meet the above
       conditions but without a downgrade warning are not recorded.
     </summary>
   </metric>
@@ -23608,14 +23306,14 @@ be describing additional metrics about the same event.
     page load to when the event is recorded. This event is recorded when a page
     load is completed and every time that Chrome is backgrounded during the
     course of the page load. This means we can record multiple events for a
-    single page load, but it guarentees that we will still record data in
+    single page load, but it guarantees that we will still record data in
     instances where the user backgrounds then kills Chrome.
   </summary>
   <metric name="FinalSourceLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
       enum="LocaleCodeISO639">
     <summary>
       The source language at the time the event is recorded. In most cases this
-      will match the intial source language, but the user can change the source
+      will match the initial source language, but the user can change the source
       language manually if they want. Note that the semantic_type attribute is
       included in order to remain consistent with the previous Translate UKM
       proto.
@@ -23815,10 +23513,20 @@ be describing additional metrics about the same event.
       A boolean signaling that the event has occurred (typically only records
       true values).
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
 <event name="TrustedWebActivity.QualityEnforcementViolation" singular="True">
+  <obsolete>
+    Deprecated 05/2023.
+  </obsolete>
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -23933,7 +23641,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="UnloadQueueingDuration">
     <summary>
-      Measures the time in miliseconds from when the browser sends the commit
+      Measures the time in milliseconds from when the browser sends the commit
       navigation request to the renderer to when the renderer dispatches unload
       events. Only records for same-process navigations since unload handlers
       are run in a different process for cross-process navigations.
@@ -24098,7 +23806,7 @@ be describing additional metrics about the same event.
   <metric name="ScreenDimToOffDelay">
     <summary>
       Delay after which the screen will be turned off in seconds, as measured
-      from screen is dimmed. If dim is diabled, it is the delay from the start
+      from screen is dimmed. If dim is disabled, it is the delay from the start
       of inactivity.
     </summary>
   </metric>
@@ -24295,7 +24003,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="EventId">
     <summary>
-      Randomly generated ID that links together settings events that occured at
+      Randomly generated ID that links together settings events that occurred at
       the same time.
     </summary>
   </metric>
@@ -24764,7 +24472,8 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="V8CompileHints.Version4">
+<event name="V8CompileHints.Version5"
+    skip_proto_reason="Too many metrics causing scalability issue b/275678348">
   <owner>marja@chromium.org</owner>
   <owner>v8-loading@google.com</owner>
   <summary>

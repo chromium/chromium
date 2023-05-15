@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
@@ -75,7 +76,7 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   void OnStateChanged() override { scroll_bar_->OnThumbStateChanged(); }
 
  private:
-  RoundedScrollBar* const scroll_bar_;
+  const raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_;
 };
 
 RoundedScrollBar::RoundedScrollBar(bool horizontal)

@@ -19,7 +19,8 @@ function optionsChanged(
     return true;
   }
   return fresh.location !== stored.location ||
-      fresh.recency !== stored.recency || fresh.type !== stored.type;
+      fresh.recency !== stored.recency ||
+      fresh.fileCategory !== stored.fileCategory;
 }
 
 export function search(state: State, action: SearchAction): State {

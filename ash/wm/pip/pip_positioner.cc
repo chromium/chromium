@@ -17,7 +17,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/numerics/safe_conversions.h"
-#include "ui/aura/window.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/wm/core/coordinate_conversion.h"
 

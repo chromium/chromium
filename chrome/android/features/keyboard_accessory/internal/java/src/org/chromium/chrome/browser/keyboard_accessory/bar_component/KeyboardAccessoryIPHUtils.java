@@ -47,6 +47,9 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
                 return;
+            case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
+                // Noop as the event is triggered in native AutofillPopupControllerImpl.
+                return;
         }
         assert false : "No filling event emitted for feature: " + feature;
     }
@@ -181,6 +184,9 @@ class KeyboardAccessoryIPHUtils {
                 return R.string.iph_keyboard_accessory_payment_virtual_cards;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
                 return R.string.iph_keyboard_accessory_payment_offer;
+            case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
+                return org.chromium.chrome.R.string
+                        .autofill_iph_external_account_profile_suggestion;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

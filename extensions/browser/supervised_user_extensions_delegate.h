@@ -33,10 +33,13 @@ class SupervisedUserExtensionsDelegate {
 
   virtual ~SupervisedUserExtensionsDelegate() = default;
 
+  // Updates registration of management policy provider for supervised users.
+  virtual void UpdateManagementPolicyRegistration() = 0;
+
   // Returns true if the primary account is a supervised child.
   virtual bool IsChild() const = 0;
 
-  // Returns true if the parent has already approved the |extension|.
+  // Returns true if the parent has already approved the `extension`.
   virtual bool IsExtensionAllowedByParent(
       const extensions::Extension& extension) const = 0;
 
@@ -59,6 +62,21 @@ class SupervisedUserExtensionsDelegate {
       const extensions::Extension& extension,
       content::WebContents* web_contents,
       ExtensionApprovalDoneCallback extension_approval_callback) = 0;
+
+  // Returns true if the primary account represents a supervised child account
+  // who may install extensions with parent permission.
+  virtual bool CanInstallExtensions() const = 0;
+
+  // Updates the set of approved extensions to add approval for `extension`.
+  virtual void AddExtensionApproval(const extensions::Extension& extension) = 0;
+
+  // Updates the set of approved extensions to remove approval for `extension`.
+  virtual void RemoveExtensionApproval(
+      const extensions::Extension& extension) = 0;
+
+  // Records when an extension has been enabled or disabled by parental
+  // controls.
+  virtual void RecordExtensionEnablementUmaMetrics(bool enabled) const = 0;
 };
 
 }  // namespace extensions

@@ -52,6 +52,7 @@ source_set("test_support") {
 proto_library("power_manager_proto") {
   sources = [
     "//third_party/cros_system_api/dbus/power_manager/backlight.proto",
+    "//third_party/cros_system_api/dbus/power_manager/battery_saver.proto",
     "//third_party/cros_system_api/dbus/power_manager/charge_history_state.proto",
     "//third_party/cros_system_api/dbus/power_manager/idle.proto",
     "//third_party/cros_system_api/dbus/power_manager/input_event.proto",

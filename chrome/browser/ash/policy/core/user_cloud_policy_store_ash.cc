@@ -41,13 +41,11 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
     ash::SessionManagerClient* session_manager_client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const AccountId& account_id,
-    const base::FilePath& user_policy_key_dir,
-    bool is_active_directory)
+    const base::FilePath& user_policy_key_dir)
     : UserCloudPolicyStoreBase(background_task_runner,
                                PolicyScope::POLICY_SCOPE_USER),
       session_manager_client_(session_manager_client),
       account_id_(account_id),
-      is_active_directory_(is_active_directory),
       cached_policy_key_loader_(
           std::make_unique<CachedPolicyKeyLoader>(cryptohome_misc_client,
                                                   background_task_runner,
@@ -58,7 +56,6 @@ UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() {}
 
 void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_active_directory_);
 
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
@@ -145,8 +142,6 @@ void UserCloudPolicyStoreAsh::LoadImmediately() {
 
 void UserCloudPolicyStoreAsh::ValidatePolicyForStore(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
-  DCHECK(!is_active_directory_);
-
   // Create and configure a validator.
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
@@ -169,8 +164,6 @@ void UserCloudPolicyStoreAsh::ValidatePolicyForStore(
 
 void UserCloudPolicyStoreAsh::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
-  DCHECK(!is_active_directory_);
-
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -193,8 +186,6 @@ void UserCloudPolicyStoreAsh::OnPolicyToStoreValidated(
 }
 
 void UserCloudPolicyStoreAsh::OnPolicyStored(bool success) {
-  DCHECK(!is_active_directory_);
-
   if (!success) {
     status_ = STATUS_STORE_ERROR;
     NotifyStoreError();
@@ -241,13 +232,9 @@ void UserCloudPolicyStoreAsh::OnPolicyRetrieved(
   }
 
   // Load |cached_policy_key_| to verify the loaded policy.
-  if (is_active_directory_) {
-    ValidateRetrievedPolicy(std::move(policy));
-  } else {
-    cached_policy_key_loader_->EnsurePolicyKeyLoaded(
-        base::BindOnce(&UserCloudPolicyStoreAsh::ValidateRetrievedPolicy,
-                       weak_factory_.GetWeakPtr(), std::move(policy)));
-  }
+  cached_policy_key_loader_->EnsurePolicyKeyLoaded(
+      base::BindOnce(&UserCloudPolicyStoreAsh::ValidateRetrievedPolicy,
+                     weak_factory_.GetWeakPtr(), std::move(policy)));
 }
 
 void UserCloudPolicyStoreAsh::ValidateRetrievedPolicy(
@@ -281,21 +268,11 @@ UserCloudPolicyStoreAsh::CreateValidatorForLoad(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  if (is_active_directory_) {
-    validator->ValidateTimestamp(
-        base::Time(), CloudPolicyValidatorBase::TIMESTAMP_NOT_VALIDATED);
-    validator->ValidateDMToken(std::string(),
-                               CloudPolicyValidatorBase::DM_TOKEN_NOT_REQUIRED);
-    validator->ValidateDeviceId(
-        std::string(), CloudPolicyValidatorBase::DEVICE_ID_NOT_REQUIRED);
-  } else {
-    validator->ValidateUser(account_id_);
-    // The policy loaded from session manager need not be validated using the
-    // verification key since it is secure, and since there may be legacy policy
-    // data that was stored without a verification key.
-    validator->ValidateSignature(
-        cached_policy_key_loader_->cached_policy_key());
-  }
+  validator->ValidateUser(account_id_);
+  // The policy loaded from session manager need not be validated using the
+  // verification key since it is secure, and since there may be legacy policy
+  // data that was stored without a verification key.
+  validator->ValidateSignature(cached_policy_key_loader_->cached_policy_key());
   return validator;
 }
 

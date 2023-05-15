@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;

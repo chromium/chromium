@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -17,8 +18,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -381,8 +382,20 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
           ? ChromeBrowserState::FromBrowserState(_webState->GetBrowserState())
           : nullptr;
   if (browserState) {
+    int dismissCount = browserState->GetPrefs()->GetInteger(
+        prefs::kIosPasswordBottomSheetDismissCount);
     browserState->GetPrefs()->SetInteger(
         prefs::kIosPasswordBottomSheetDismissCount, 0);
+    if (dismissCount > 0) {
+      // Log how many times the bottom sheet had been dismissed before being
+      // re-enabled.
+      static constexpr int kHistogramMin = 1;
+      static constexpr int kHistogramMax = 4;
+      static constexpr size_t kHistogramBuckets = 3;
+      base::UmaHistogramCustomCounts(
+          "IOS.ResetDismissCount.Password.BottomSheet", dismissCount,
+          kHistogramMin, kHistogramMax, kHistogramBuckets);
+    }
   }
 }
 

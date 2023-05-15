@@ -8,13 +8,6 @@
 
 namespace web_app {
 
-ScopeExtensionInfo::ScopeExtensionInfo(const url::Origin& origin)
-    : origin(origin) {}
-
-ScopeExtensionInfo::ScopeExtensionInfo(const url::Origin& origin,
-                                       bool has_origin_wildcard)
-    : origin(origin), has_origin_wildcard(has_origin_wildcard) {}
-
 base::Value ScopeExtensionInfo::AsDebugValue() const {
   base::Value::Dict root = base::Value::Dict()
                                .Set("origin", origin.GetDebugString())

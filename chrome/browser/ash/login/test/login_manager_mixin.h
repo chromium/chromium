@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -187,8 +188,8 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   bool skip_post_login_screens_ = false;
 
   LocalStateMixin local_state_mixin_;
-  FakeGaiaMixin* fake_gaia_mixin_;
-  CryptohomeMixin* cryptohome_mixin_;
+  raw_ptr<FakeGaiaMixin, ExperimentalAsh> fake_gaia_mixin_;
+  raw_ptr<CryptohomeMixin, ExperimentalAsh> cryptohome_mixin_;
 };
 
 }  // namespace ash

@@ -20,12 +20,25 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 
 // static
 std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::CreateAndStart(
     const AppId& app_id,
     const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     UninstallCallback callback,
     OsIntegrationManager& os_integration_manager,
     WebAppSyncBridge& sync_bridge,
@@ -36,14 +49,21 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::CreateAndStart(
     PrefService& profile_prefs,
     webapps::WebappUninstallSource uninstall_source) {
   return base::WrapUnique(new WebAppUninstallJob(
-      app_id, app_origin, std::move(callback), os_integration_manager,
-      sync_bridge, icon_manager, registrar, install_manager,
-      translation_manager, profile_prefs, uninstall_source));
+      app_id, app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      std::move(callback), os_integration_manager, sync_bridge, icon_manager,
+      registrar, install_manager, translation_manager, profile_prefs,
+      uninstall_source));
 }
 
 WebAppUninstallJob::WebAppUninstallJob(
     const AppId& app_id,
     const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     UninstallCallback callback,
     OsIntegrationManager& os_integration_manager,
     WebAppSyncBridge& sync_bridge,
@@ -59,17 +79,25 @@ WebAppUninstallJob::WebAppUninstallJob(
       sync_bridge_(&sync_bridge),
       install_manager_(&install_manager),
       uninstall_source_(uninstall_source) {
-  Start(app_origin, os_integration_manager, icon_manager, translation_manager,
+  Start(app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+        os_integration_manager, icon_manager, translation_manager,
         profile_prefs);
 }
 
 WebAppUninstallJob::~WebAppUninstallJob() = default;
 
-void WebAppUninstallJob::Start(const url::Origin& app_origin,
-                               OsIntegrationManager& os_integration_manager,
-                               WebAppIconManager& icon_manager,
-                               WebAppTranslationManager& translation_manager,
-                               PrefService& profile_prefs) {
+void WebAppUninstallJob::Start(
+    const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    OsIntegrationManager& os_integration_manager,
+    WebAppIconManager& icon_manager,
+    WebAppTranslationManager& translation_manager,
+    PrefService& profile_prefs) {
   DCHECK(install_manager_);
 
   DCHECK(state_ == State::kNotStarted);
@@ -108,6 +136,28 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
   translation_manager.DeleteTranslations(
       app_id_, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
                               weak_ptr_factory_.GetWeakPtr()));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (ResolveExperimentalWebAppIsolationFeature() ==
+          ExperimentalWebAppIsolationMode::kProfile &&
+      app_profile_path.has_value()) {
+    CHECK(Profile::IsWebAppProfilePath(app_profile_path.value()));
+    auto* profile_manager = g_browser_process->profile_manager();
+
+    // Check whether the profile exists or not before removing it.
+    if (profile_manager->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(app_profile_path.value())) {
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .MaybeScheduleProfileForDeletion(
+              app_profile_path.value(), base::DoNothing(),
+              ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
+    } else {
+      LOG(ERROR) << "cannot find web app profile at "
+                 << app_profile_path.value();
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {

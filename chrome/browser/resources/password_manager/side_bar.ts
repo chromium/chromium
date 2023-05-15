@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './shared_style.css.js';
 import './icons.html.js';
 
@@ -16,6 +17,25 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './side_bar.html.js';
+
+/**
+ * Represents different referrers when navigating to the Password Check page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Needs to stay in sync with PasswordCheckReferrer in enums.xml and
+ * password_check_referrer.h.
+ */
+enum PasswordCheckReferrer {
+  SAFETY_CHECK = 0,            // Web UI, recorded in JavaScript.
+  PASSWORD_SETTINGS = 1,       // Web UI, recorded in JavaScript.
+  PHISH_GUARD_DIALOG = 2,      // Native UI, recorded in C++.
+  PASSWORD_BREACH_DIALOG = 3,  // Native UI, recorded in C++.
+  // Must be last.
+  COUNT = 4,
+}
+
 
 export interface PasswordManagerSideBarElement {
   $: {
@@ -92,6 +112,9 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
       const params = new URLSearchParams();
       params.set(UrlParam.START_CHECK, 'true');
       Router.getInstance().updateRouterParams(params);
+      chrome.metricsPrivate.recordEnumerationValue(
+          'PasswordManager.BulkCheck.PasswordCheckReferrer',
+          PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.COUNT);
     }
   }
 

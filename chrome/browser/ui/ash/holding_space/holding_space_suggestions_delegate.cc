@@ -92,8 +92,9 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   DCHECK(suggestions_by_type_.empty());
   for (const auto& item : base::Reversed(model()->items())) {
     // Skip if `item` is not a suggestion.
-    if (HoldingSpaceItem::IsSuggestion(item->type()))
+    if (HoldingSpaceItem::IsSuggestionType(item->type())) {
       suggestions_by_type_[item->type()].push_back(item->file_path());
+    }
   }
 
   file_suggest_service_observation_.Observe(

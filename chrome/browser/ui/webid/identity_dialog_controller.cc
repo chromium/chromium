@@ -25,7 +25,7 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
+    const absl::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -36,7 +36,7 @@ void IdentityDialogController::ShowAccountsDialog(
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(top_frame_for_display, iframe_url_for_display,
+  account_view_->Show(top_frame_for_display, iframe_for_display,
                       identity_provider_data, sign_in_mode,
                       show_auto_reauthn_checkbox);
 }
@@ -44,20 +44,27 @@ void IdentityDialogController::ShowAccountsDialog(
 void IdentityDialogController::ShowFailureDialog(
     content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    SigninToIdPCallback signin_callback) {
   const GURL rp_url = rp_web_contents->GetLastCommittedURL();
   rp_web_contents_ = rp_web_contents;
   on_dismiss_ = std::move(dismiss_callback);
+  on_signin_ = std::move(signin_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
   // Else:
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  account_view_->ShowFailureDialog(top_frame_for_display, idp_for_display,
-                                   idp_metadata);
+  account_view_->ShowFailureDialog(top_frame_for_display, iframe_for_display,
+                                   idp_for_display, idp_metadata);
+}
+
+void IdentityDialogController::OnSigninToIdP() {
+  std::move(on_signin_).Run();
 }
 
 void IdentityDialogController::ShowIdpSigninFailureDialog(
@@ -97,4 +104,16 @@ gfx::NativeView IdentityDialogController::GetNativeView() {
 
 content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
+}
+
+content::WebContents* IdentityDialogController::ShowModalDialog(
+    const GURL& url,
+    DismissCallback dismiss_callback) {
+  // TODO(crbug.com/1429083): connect the dimiss_callback to the
+  // modal dialog close button.
+  return account_view_->ShowModalDialog(url);
+}
+
+void IdentityDialogController::CloseModalDialog() {
+  account_view_->CloseModalDialog();
 }

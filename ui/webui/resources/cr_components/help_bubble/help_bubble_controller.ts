@@ -248,7 +248,6 @@ export class HelpBubbleController {
     this.bubble_.bodyText = params.bodyText;
     this.bubble_.bodyIconName = params.bodyIconName || null;
     this.bubble_.bodyIconAltText = params.bodyIconAltText;
-    this.bubble_.forceCloseButton = params.forceCloseButton;
     this.bubble_.titleText = params.titleText || '';
     this.bubble_.progress = params.progress || null;
     this.bubble_.buttons = params.buttons;

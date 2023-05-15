@@ -12,6 +12,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -83,7 +84,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     void OnBootCompleted() override { ++(test_->on_boot_completed_counter_); }
 
    private:
-    ArcBootPhaseMonitorBridgeTest* const test_;
+    const raw_ptr<ArcBootPhaseMonitorBridgeTest, ExperimentalAsh> test_;
   };
 
   ArcSessionManager* arc_session_manager() const {
@@ -117,7 +118,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     }
 
    private:
-    ArcBootPhaseMonitorBridgeTest* const test_;
+    const raw_ptr<ArcBootPhaseMonitorBridgeTest, ExperimentalAsh> test_;
   };
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -130,7 +131,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  ArcBootPhaseMonitorBridge* boot_phase_monitor_bridge_;
+  raw_ptr<ArcBootPhaseMonitorBridge, ExperimentalAsh>
+      boot_phase_monitor_bridge_;
 
   size_t record_uma_counter_ = 0;
   base::TimeDelta last_time_delta_;

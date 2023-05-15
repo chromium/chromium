@@ -7,12 +7,13 @@
 #include "base/command_line.h"
 #include "content/shell/common/shell_switches.h"
 
-@interface ShellRenderWidgetHostViewMacDelegate () {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation ShellRenderWidgetHostViewMacDelegate {
   BOOL _drop_events;
 }
-@end
-
-@implementation ShellRenderWidgetHostViewMacDelegate
 
 - (id)init {
   if ((self = [super init])) {
@@ -22,6 +23,7 @@
   }
   return self;
 }
+
 - (BOOL)handleEvent:(NSEvent*)event {
   return _drop_events;
 }

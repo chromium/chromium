@@ -19,13 +19,13 @@ message ListOfSpanEntry {
   repeated SpanEntry values = 1;
 }
 
-// Rect from gfx.mojom
+// Rect from ash/components/arc/mojom/gfx.mojom
 // Next ID: 5
 message Rect {
-  int32 x = 1;
-  int32 y = 2;
-  int32 width = 3;
-  int32 height = 4;
+  int32 left = 1;
+  int32 top = 2;
+  int32 right = 3;
+  int32 bottom = 4;
 }
 
 // For future maintainers, each of the below enums were hand picked
@@ -43,8 +43,7 @@ message Rect {
 // https://crsrc.org/c/ash/components/arc/mojom/accessibility_helper.mojom;drc=fe2603dde9e9e94d6d0b31e4a249ead557396436
 // For more context, see: go/exo-a11y-service, go/exo-a11y-infrastructure,
 // go/eche-a11y-design
-
-// Next ID: 25
+// Next ID: 26
 enum AccessibilityEventType {
   reserved 6;
   TYPE_VIEW_FOCUSED = 0;
@@ -71,6 +70,7 @@ enum AccessibilityEventType {
   TYPE_WINDOWS_CHANGED = 22;
   TYPE_VIEW_CONTEXT_CLICKED = 23;
   TYPE_ASSIST_READING_CONTEXT = 24;
+  TYPE_EVENT_TYPE_UNKNOWN = 25;
 }
 
 // ContentChangeType lists the possible sub types of WINDOW_STATE_CHANGED and
@@ -368,20 +368,21 @@ enum AccessibilityLiveRegionType {
 
 // These fields are taken from AccessibilityWindowInfo's window types.
 // https://developer.android.com/reference/android/view/View#summary
-// Next ID: 5
+// Next ID: 6
 enum AccessibilityWindowType {
   reserved 2;
   TYPE_ACCESSIBILITY_OVERLAY = 0;
   TYPE_APPLICATION = 1;
   TYPE_SPLIT_SCREEN_DIVIDER = 3;
   TYPE_SYSTEM = 4;
+  TYPE_WINDOW_TYPE_UNKNOWN = 5;
 }
 
-// AccessibilityActionInAndroid is an object to send information of
+// AccessibilityActionInHost is an object to send information of
 // available AccessibilityAction in Android to Chrome.
 // https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction.html
 // Next ID: 3
-message AccessibilityActionInAndroid {
+message AccessibilityActionInHost {
   int32 id = 1;
   string label = 2;
 }
@@ -405,8 +406,8 @@ message AccessibilityNodeInfoData {
   AccessibilityRangeInfoData range_info = 10;
   int32 window_id = 11;
   bool is_virtual_node = 12;
-  repeated AccessibilityActionInAndroid standard_actions = 13;
-  repeated AccessibilityActionInAndroid custom_actions = 14;
+  repeated AccessibilityActionInHost standard_actions = 13;
+  repeated AccessibilityActionInHost custom_actions = 14;
 }
 
 // AccessibilityWindowInfoData is an object to contain info about

@@ -5,14 +5,12 @@
 #include "ash/wm/desks/desks_controller.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -27,8 +25,8 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_animations.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -57,7 +55,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -66,12 +63,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"
@@ -399,7 +393,7 @@ class DesksController::DeskTraversalsMetricsHelper {
 
   // Pointer to the DesksController that owns this. Guaranteed to be not
   // nullptr for the lifetime of |this|.
-  DesksController* const controller_;
+  const raw_ptr<DesksController, ExperimentalAsh> controller_;
 
   base::OneShotTimer timer_;
 
@@ -426,6 +420,10 @@ DesksController::DesksController()
   weekly_active_desks_scheduler_.Start(
       FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
+
+  if (ash::features::IsDeskButtonEnabled()) {
+    desk_bar_controller_ = std::make_unique<DeskBarController>();
+  }
 }
 
 DesksController::~DesksController() {
@@ -514,6 +512,7 @@ void DesksController::OnNewUserShown() {
 }
 
 void DesksController::Shutdown() {
+  desk_bar_controller_.reset();
   animation_.reset();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 }
@@ -551,7 +550,7 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
   return desks_[previous_index].get();
 }
 
-Desk* DesksController::GetDeskByUuid(const base::GUID& desk_uuid) const {
+Desk* DesksController::GetDeskByUuid(const base::Uuid& desk_uuid) const {
   auto it = base::ranges::find(desks_, desk_uuid, &Desk::uuid);
   return it != desks_.end() ? it->get() : nullptr;
 }
@@ -1008,7 +1007,7 @@ void DesksController::RestoreNameOfDeskAtIndex(std::u16string name,
   desks_[index]->SetName(std::move(name), /*set_by_user=*/true);
 }
 
-void DesksController::RestoreGuidOfDeskAtIndex(base::GUID guid, size_t index) {
+void DesksController::RestoreGuidOfDeskAtIndex(base::Uuid guid, size_t index) {
   DCHECK(guid.is_valid());
   DCHECK_LT(index, desks_.size());
   desks_[index]->SetGuid(std::move(guid));
@@ -1320,10 +1319,9 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
     // Not all window states are supported.
     const bool restoreable_state =
         chromeos::IsNormalWindowStateType(target_state) ||
+        chromeos::IsSnappedWindowStateType(target_state) ||
         target_state == chromeos::WindowStateType::kMinimized ||
-        target_state == chromeos::WindowStateType::kMaximized ||
-        target_state == chromeos::WindowStateType::kPrimarySnapped ||
-        target_state == chromeos::WindowStateType::kSecondarySnapped;
+        target_state == chromeos::WindowStateType::kMaximized;
 
     if (restoreable_state) {
       WindowState* window_state =
@@ -1351,13 +1349,12 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           case chromeos::WindowStateType::kPrimarySnapped:
           case chromeos::WindowStateType::kSecondarySnapped:
             if (window_state->CanSnap()) {
-              window_state->set_snap_action_source(
-                  WindowSnapActionSource::kOthers);
-
-              const WMEvent event(
+              const WindowSnapWMEvent event(
                   target_state == chromeos::WindowStateType::kPrimarySnapped
                       ? WM_EVENT_SNAP_PRIMARY
-                      : WM_EVENT_SNAP_SECONDARY);
+                      : WM_EVENT_SNAP_SECONDARY,
+                  WindowSnapActionSource::
+                      kSnapByFullRestoreOrDeskTemplateOrSavedDesk);
               window_state->OnWMEvent(&event);
             }
             break;

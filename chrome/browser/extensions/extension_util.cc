@@ -74,8 +74,7 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
 bool HasIsolatedStorage(const std::string& extension_id,
                         content::BrowserContext* context) {
   const Extension* extension =
-      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-          extension_id);
+      ExtensionRegistry::Get(context)->GetInstalledExtension(extension_id);
   return extension && HasIsolatedStorage(*extension, context);
 }
 

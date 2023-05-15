@@ -5,6 +5,8 @@
 #ifndef UI_GFX_PLATFORM_FONT_MAC_H_
 #define UI_GFX_PLATFORM_FONT_MAC_H_
 
+#include <CoreText/CoreText.h>
+
 #include "base/mac/scoped_nsobject.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
@@ -25,10 +27,10 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   // constructor.
   explicit PlatformFontMac(SystemFontType system_font_type);
 
-  // Constructs a PlatformFontMac for containing the NSFont* |native_font|. Do
+  // Constructs a PlatformFontMac for containing the CTFontRef |ct_font|. Do
   // not call this for a system-specified font; use the |SystemFontType|
-  // constructor for that. |native_font| must not be null.
-  explicit PlatformFontMac(NativeFont native_font);
+  // constructor for that. |ct_font| must not be null.
+  explicit PlatformFontMac(CTFontRef ct_font);
 
   // Constructs a PlatformFontMac representing the font with name |font_name|
   // and the size |font_size|. Do not call this for a system-specified font; use
@@ -60,11 +62,11 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   std::string GetActualFontName() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
-  NativeFont GetNativeFont() const override;
+  CTFontRef GetCTFont() const override;
   sk_sp<SkTypeface> GetNativeSkTypeface() const override;
 
-  // A utility function to get the weight of an NSFont. Used by the unit test.
-  static Font::Weight GetFontWeightFromNSFontForTesting(NSFont* font);
+  // A utility function to get the weight of a CTFontRef. Used by the unit test.
+  static Font::Weight GetFontWeightFromCTFontForTesting(CTFontRef font);
 
  private:
   struct FontSpec {
@@ -74,10 +76,10 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
     Font::Weight weight;
   };
 
-  PlatformFontMac(NativeFont font,
+  PlatformFontMac(CTFontRef font,
                   absl::optional<SystemFontType> system_font_type);
 
-  PlatformFontMac(NativeFont font,
+  PlatformFontMac(CTFontRef font,
                   absl::optional<SystemFontType> system_font_type,
                   FontSpec spec);
 
@@ -93,7 +95,7 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   // NSFont instance, this holds that NSFont instance. Otherwise this NSFont
   // instance is constructed from the name, size, and style. If there is no
   // active font that matched those criteria a default font is used.
-  base::scoped_nsobject<NSFont> native_font_;
+  base::scoped_nsobject<NSFont> ns_font_;
 
   // If the font is a system font, and if so, what kind.
   const absl::optional<SystemFontType> system_font_type_;

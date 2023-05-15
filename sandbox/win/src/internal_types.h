@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace sandbox {
 
@@ -60,7 +61,9 @@ class IPCInt {
 
  private:
   union U {
-    void* vp;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION void* vp;
     uint32_t i32;
   } buffer_;
 };

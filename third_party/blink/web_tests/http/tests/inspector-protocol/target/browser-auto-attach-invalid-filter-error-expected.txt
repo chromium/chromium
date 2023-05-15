@@ -1,0 +1,10 @@
+Tests enabling auto-attach on Browser with filter allowing both tab and page results in an error.
+Expected error when auto-attaching with wildcard filter{
+    error : {
+        code : -32602
+        message : Filter should not simultaneously allow "tab" and "page", page targets are attached via tab targets
+    }
+    id : <number>
+    sessionId : <string>
+}
+

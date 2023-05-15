@@ -22,7 +22,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/value_builder.h"
 
 namespace utils = extensions::api_test_utils;
 

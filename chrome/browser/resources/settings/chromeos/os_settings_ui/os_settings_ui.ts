@@ -36,7 +36,7 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
-import {OsPageVisibility, osPageVisibility} from '../os_page_visibility.js';
+import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -128,7 +128,17 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         observer: 'onNarrowChanged_',
       },
 
-      pageVisibility_: {type: Object, value: osPageVisibility},
+      /**
+       * Used to determine which pages and menu items are available (not to be
+       * confused with page visibility) to the user.
+       * See os_page_availability.ts for more details.
+       */
+      pageAvailability_: {
+        type: Object,
+        value: () => {
+          return createPageAvailability();
+        },
+      },
 
       havePlayStoreApp_: Boolean,
 
@@ -136,19 +146,11 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       showArcvmManageUsb_: Boolean,
 
-      showCrostini_: Boolean,
-
       showToolbar_: Boolean,
 
       showNavMenu_: Boolean,
 
       showPluginVm_: Boolean,
-
-      showReset_: Boolean,
-
-      showStartup_: Boolean,
-
-      showKerberosSection_: Boolean,
 
       /**
        * The threshold at which the toolbar will change from normal to narrow
@@ -166,17 +168,13 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private advancedOpenedInMain_: boolean;
   private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
-  private pageVisibility_: OsPageVisibility;
+  private pageAvailability_: OsPageAvailability;
   private havePlayStoreApp_: boolean;
   private showAndroidApps_: boolean;
   private showArcvmManageUsb_: boolean;
-  private showCrostini_: boolean;
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
   private showPluginVm_: boolean;
-  private showReset_: boolean;
-  private showStartup_: boolean;
-  private showKerberosSection_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
@@ -231,15 +229,9 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.havePlayStoreApp_ = loadTimeData.getBoolean('havePlayStoreApp');
     this.showAndroidApps_ = loadTimeData.getBoolean('androidAppsVisible');
     this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
-    this.showCrostini_ = loadTimeData.getBoolean('showCrostini');
     this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
-    this.showReset_ = loadTimeData.getBoolean('allowPowerwash');
-    this.showStartup_ = loadTimeData.getBoolean('showStartup');
-
-    this.showKerberosSection_ = loadTimeData.valueExists('isKerberosEnabled') &&
-        loadTimeData.getBoolean('isKerberosEnabled');
 
     this.addEventListener('show-container', () => {
       this.$.container.style.visibility = 'visible';

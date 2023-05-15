@@ -12,6 +12,7 @@ namespace blink {
 
 class DOMException;
 class PrivateToken;
+class ExecutionContext;
 
 // Converts an IDL trustToken object to its Mojo counterpart.
 // The elements of trustToken (and of TrustTokenParams) comprise:
@@ -32,9 +33,11 @@ class PrivateToken;
 // - for signing, |issuer| must be provided and must be a valid HTTP(S) URL.
 // If this validation fails, throws a TypeError against |exception_state| and
 // returns false.
-bool ConvertTrustTokenToMojom(const PrivateToken& in,
-                              ExceptionState* exception_state,
-                              network::mojom::blink::TrustTokenParams* out);
+bool ConvertTrustTokenToMojomAndCheckPermissions(
+    const PrivateToken& in,
+    const ExecutionContext* execution_context,
+    ExceptionState* exception_state,
+    network::mojom::blink::TrustTokenParams* out);
 
 // Converts a Mojo TrustTokenOperationStatus denoting an error into a
 // DOMException suitable for displaying to the API's client.

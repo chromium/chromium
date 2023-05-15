@@ -161,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
 
   const base::Value& error_log =
       (*GetProvider().install_manager().error_log())[0];
-
-  EXPECT_EQ(4u, error_log.DictSize());
+  EXPECT_TRUE(error_log.is_dict());
+  EXPECT_EQ(4u, error_log.GetDict().size());
 
   EXPECT_EQ(TrimLineEndings(expected_error),
             TrimLineEndings(error_log.DebugString()));
@@ -177,12 +177,12 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
 
   const base::Value& error_log =
       (*GetProvider().install_manager().error_log())[0];
-
-  EXPECT_EQ(4u, error_log.DictSize());
+  EXPECT_TRUE(error_log.is_dict());
+  EXPECT_EQ(4u, error_log.GetDict().size());
 
   // Parses base url from the log: the port for embedded_test_server() changes
   // on every test run.
-  const std::string* url_value = error_log.FindStringKey("!url");
+  const std::string* url_value = error_log.GetDict().FindString("!url");
   ASSERT_TRUE(url_value);
   GURL url{*url_value};
   ASSERT_TRUE(url.is_valid());

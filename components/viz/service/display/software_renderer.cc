@@ -735,7 +735,7 @@ sk_sp<SkImage> SoftwareRenderer::ApplyImageFilter(
                              : quad->rect.origin();
   SkImageInfo dst_info =
       SkImageInfo::MakeN32Premul(result_rect->width(), result_rect->height());
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(dst_info);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(dst_info);
   if (!surface)
     return nullptr;
 

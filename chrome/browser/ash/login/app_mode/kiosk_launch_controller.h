@@ -22,6 +22,7 @@
 
 namespace app_mode {
 class ForceInstallObserver;
+class LacrosLauncher;
 }  // namespace app_mode
 
 namespace ash {
@@ -124,9 +125,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   bool waiting_for_network() const {
     return app_state_ == AppState::kInitNetwork;
   }
-  bool showing_network_dialog() const {
-    return network_ui_controller_->IsShowingNetworkConfigScreen();
-  }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
 
@@ -152,9 +150,11 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
  private:
   friend class KioskLaunchControllerTest;
+  friend class KioskLaunchControllerUsingLacrosTest;
 
   enum AppState {
-    kCreatingProfile = 0,   // Profile is being created.
+    kCreatingProfile = 0,  // Profile is being created.
+    kLaunchingLacros,
     kInitLauncher,          // Launcher is initializing
     kInstallingApp,         // App is being installed.
     kInstallingExtensions,  // Force-installed extensions are being installed.
@@ -167,6 +167,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnCancelAppLaunch();
   void OnNetworkConfigRequested();
   void InitializeKeyboard();
+  void LaunchLacros();
+  void OnLacrosLaunchComplete();
   void InitializeLauncher();
 
   // `KioskAppLauncher::Observer`
@@ -226,6 +228,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // Used to login into kiosk user profile.
   std::unique_ptr<KioskProfileLoader> kiosk_profile_loader_;
+
+  std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
 
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;

@@ -11,6 +11,7 @@
 
 @protocol BrandingViewControllerDelegate;
 @protocol FormSuggestionClient;
+@class LayoutGuideCenter;
 @class ManualFillAccessoryViewController;
 @protocol ManualFillAccessoryViewControllerDelegate;
 
@@ -25,6 +26,9 @@
 // Delegate object for the branding view controller.
 @property(nonatomic, weak) id<BrandingViewControllerDelegate>
     brandingViewControllerDelegate;
+
+// The layout guide center to use to refer to the first suggestion label.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Shows the manual fallback icons as the first option in the suggestions bar,
 // and locks them in that position.

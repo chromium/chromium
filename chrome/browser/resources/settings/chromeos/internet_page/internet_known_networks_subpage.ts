@@ -10,17 +10,19 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../../settings_shared.css.js';
 import './internet_shared.css.js';
 
+import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
+import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ConfigProperties, CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConfigProperties, CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -34,10 +36,12 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route} from '../router.js';
 
 import {getTemplate} from './internet_known_networks_subpage.html.js';
+import {PasspointListenerMixin, PasspointListenerMixinInterface} from './passpoint_listener_mixin.js';
 
 interface SettingsInternetKnownNetworksPageElement {
   $: {
     dotsMenu: CrActionMenuElement,
+    subscriptionDotsMenu: CrActionMenuElement,
   };
 }
 
@@ -47,10 +51,12 @@ const SettingsInternetKnownNetworksPageElementBase =
           NetworkListenerBehavior,
           CrPolicyNetworkBehaviorMojo,
         ],
-        DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as
+        PasspointListenerMixin(
+            DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement))))) as
     Constructor<PolymerElement&I18nMixinInterface&RouteObserverMixinInterface&
                 DeepLinkingMixinInterface&NetworkListenerBehaviorInterface&
-                CrPolicyNetworkBehaviorMojoInterface>;
+                CrPolicyNetworkBehaviorMojoInterface&
+                PasspointListenerMixinInterface>;
 
 class SettingsInternetKnownNetworksPageElement extends
     SettingsInternetKnownNetworksPageElementBase {
@@ -77,6 +83,17 @@ class SettingsInternetKnownNetworksPageElement extends
        */
       networkStateList_: {
         type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * List of all the passpoint subscriptions available.
+       */
+      passpointSubscriptionsList_: {
+        type: Array,
+        notify: true,
         value() {
           return [];
         },
@@ -117,10 +134,13 @@ class SettingsInternetKnownNetworksPageElement extends
 
   networkType: NetworkType|undefined;
   private enableForget_: boolean;
-  private networkConfig_: CrosNetworkConfigRemote;
+  private networkConfig_: CrosNetworkConfigInterface;
   private networkStateList_: OncMojo.NetworkStateProperties[];
+  private passpointService_: PasspointServiceInterface;
+  private passpointSubscriptionsList_: PasspointSubscription[];
   private pendingSettingId_: Setting|null;
   private selectedGuid_: string;
+  private selectedSubscriptionId_: string;
   private showAddPreferred_: boolean;
   private showRemovePreferred_: boolean;
 
@@ -128,9 +148,15 @@ class SettingsInternetKnownNetworksPageElement extends
     super();
 
     this.selectedGuid_ = '';
+    this.selectedSubscriptionId_ = '';
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+    if (this.isPasspointSettingsEnabled) {
+      this.passpointService_ =
+          MojoConnectivityProvider.getInstance().getPasspointService();
+    }
   }
 
   /**
@@ -149,6 +175,8 @@ class SettingsInternetKnownNetworksPageElement extends
         this.pendingSettingId_ = result.pendingSettingId;
       }
     });
+
+    this.refreshSubscriptions_();
   }
 
   /** CrosNetworkConfigObserver impl */
@@ -201,6 +229,16 @@ class SettingsInternetKnownNetworksPageElement extends
     }
   }
 
+  private async refreshSubscriptions_(): Promise<void> {
+    if (!this.isPasspointSettingsEnabled ||
+        this.networkType !== NetworkType.kWiFi) {
+      this.passpointSubscriptionsList_ = [];
+      return;
+    }
+    const response = await this.passpointService_.listPasspointSubscriptions();
+    this.passpointSubscriptionsList_ = response.result;
+  }
+
   private networkIsPreferred_(networkState: OncMojo.NetworkStateProperties):
       boolean {
     // Currently we treat NetworkStateProperties.Priority as a boolean.
@@ -225,6 +263,20 @@ class SettingsInternetKnownNetworksPageElement extends
   private getNetworkDisplayName_(networkState: OncMojo.NetworkStateProperties):
       string {
     return OncMojo.getNetworkStateDisplayName(networkState);
+  }
+
+  private shouldShowPasspointSection_(subscriptionsList:
+                                          PasspointSubscription[]): boolean {
+    return this.networkType === NetworkType.kWiFi &&
+        this.isPasspointSettingsEnabled && subscriptionsList.length > 0;
+  }
+
+  private getSubscriptionDisplayName_(subscription: PasspointSubscription):
+      string {
+    if (subscription.friendlyName && subscription.friendlyName !== '') {
+      return subscription.friendlyName;
+    }
+    return subscription.domains[0];
   }
 
   private getEnterpriseIconAriaLabel_(
@@ -326,11 +378,58 @@ class SettingsInternetKnownNetworksPageElement extends
     event.stopPropagation();
   }
 
+  private onSubscriptionListItemTap_(
+      event: DomRepeatEvent<PasspointSubscription>): void {
+    const showPasspointEvent = new CustomEvent(
+        'show-passpoint-detail',
+        {bubbles: true, composed: true, detail: event.model.item});
+    this.dispatchEvent(showPasspointEvent);
+    event.stopPropagation();
+  }
+
   /**
    * Make sure events in embedded components do not propagate to onDetailsClick_.
    */
   private doNothing_(event: Event): void {
     event.stopPropagation();
+  }
+
+  private onSubscriptionMenuButtonTap_(
+      event: DomRepeatEvent<PasspointSubscription>): void {
+    const button = event.target as HTMLButtonElement;
+    this.selectedSubscriptionId_ = event.model.item.id;
+    this.$.subscriptionDotsMenu.showAt(button);
+    event.stopPropagation();
+  }
+
+  private getSubscriptionMenuButtonTitle_(subscription: PasspointSubscription):
+      string {
+    return this.i18n(
+        'knownNetworksMenuButtonTitle',
+        this.getSubscriptionDisplayName_(subscription));
+  }
+
+  private async onSubscriptionForgetTap_(): Promise<void> {
+    this.$.subscriptionDotsMenu.close();
+    this.selectedSubscriptionId_ = '';
+    const response = await this.passpointService_.deletePasspointSubscription(
+        this.selectedSubscriptionId_);
+    if (!response.success) {
+      console.warn(
+          'Forget subscription failed for: ' + this.selectedSubscriptionId_);
+    }
+  }
+
+  override async onPasspointSubscriptionAdded(subscription:
+                                                  PasspointSubscription) {
+    this.push('passpointSubscriptionsList_', subscription);
+  }
+
+  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription) {
+    const list = this.passpointSubscriptionsList_.filter((sub) => {
+      return sub.id !== subscription.id;
+    });
+    this.passpointSubscriptionsList_ = list;
   }
 }
 

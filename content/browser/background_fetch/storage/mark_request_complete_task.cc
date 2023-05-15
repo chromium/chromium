@@ -6,7 +6,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"

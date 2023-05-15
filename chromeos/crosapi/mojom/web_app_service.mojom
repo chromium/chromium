@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/web_app_types.mojom";
+import "url/mojom/url.mojom";
 
 // Describes an Android package associated with a web app.
 [Stable]
@@ -29,8 +30,8 @@ struct WebApkCreationParams {
 
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
-// Next version: 4
-// Next method id: 5
+// Next version: 5
+// Next method id: 6
 [Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
@@ -60,6 +61,15 @@ interface WebAppProviderBridge {
   // Returns the ids of all the sub-apps of the given app.
   [MinVersion=3]
   GetSubAppIds@4(string app_id) => (array<string> sub_apps);
+
+  // Navigates to the specified install url and waits for the web app manifest
+  // to load. If there is an installable web app that the user has not
+  // installed, it will automatically trigger the install dialog in Lacros.
+  [MinVersion=4]
+  ScheduleNavigateAndTriggerInstallDialog@5(
+    url.mojom.Url install_url,
+    url.mojom.Url origin_url,
+    bool is_renderer_initiated);
 };
 
 // An interface implemented in ash-chrome. Allows lacros-chrome:

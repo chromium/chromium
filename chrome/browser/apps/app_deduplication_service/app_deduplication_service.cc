@@ -9,15 +9,18 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace {
@@ -51,6 +54,10 @@ AppDeduplicationService::AppDeduplicationService(Profile* profile)
 }
 
 AppDeduplicationService::~AppDeduplicationService() = default;
+
+bool AppDeduplicationService::IsServiceOn() {
+  return !duplication_map_.empty();
+}
 
 void AppDeduplicationService::StartLoginFlow() {
   const int hours_diff =
@@ -308,28 +315,23 @@ void AppDeduplicationService::DeduplicateDataToEntries(
   uint32_t index = 1;
   for (auto const& group : data.app_group()) {
     DuplicateGroup duplicate_group;
-    for (auto const& app : group.app()) {
-      const std::string& app_id = app.app_id();
-      const std::string& platform = app.platform();
-      EntryId entry_id;
-
-      if (platform == "arc") {
-        entry_id = EntryId(app_id, AppType::kArc);
-      } else if (platform == "web") {
-        entry_id = EntryId(app_id, AppType::kWeb);
-      } else if (platform == "phonehub") {
-        entry_id = EntryId(app_id);
-      } else if (platform == "website") {
-        GURL entry_url = GURL(app_id);
-        if (entry_url.is_valid()) {
-          entry_id = EntryId(GURL(app_id));
-        } else {
-          continue;
-        }
-      } else {
+    for (auto const& id : group.package_id()) {
+      absl::optional<PackageId> package_id = PackageId::FromString(id);
+      if (!package_id.has_value()) {
+        // TODO(sharminzaman@): Add support for websites.
         continue;
       }
 
+      AppType source = package_id.value().app_type();
+      std::string app_id = package_id.value().identifier();
+      EntryId entry_id;
+
+      if (source == AppType::kArc || source == AppType::kWeb) {
+        entry_id = EntryId(app_id, source);
+      } else {
+        LOG(ERROR) << "Source is an unsupported type.";
+        NOTREACHED();
+      }
       entry_to_group_map_[entry_id] = index;
       // Initialize entry status.
       entry_status_[entry_id] = entry_id.entry_type == EntryType::kApp

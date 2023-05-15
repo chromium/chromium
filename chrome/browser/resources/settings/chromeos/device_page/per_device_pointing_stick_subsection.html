@@ -4,7 +4,9 @@
   }
 </style>
 <div id="pointingStick">
-  <h2 class="device-name">[[getPointingStickName(pointingStick.name)]]</h2>
+  <h2 class="subsection-header">
+    [[getPointingStickName(pointingStick.name)]]
+  </h2>
   <div class="subsection">
     <div class="settings-box">
       <div class="start settings-box-text"
@@ -12,7 +14,7 @@
         $i18n{pointingStickPrimaryButton}
       </div>
       <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
-          aria-labeledby="pointingStickSwapButtonLabel"
+          label="[[getPointingStickName(pointingStick.name)]]"
           pref="{{primaryRightPref}}"
           menu-options="[[swapPrimaryOptions]]"
           deep-link-focus-id$=
@@ -20,19 +22,24 @@
       </settings-dropdown-menu>
       </div>
       <settings-toggle-button id="pointingStickAcceleration"
+          aria-label=
+              "[[getPointingStickName(pointingStick.name)]]
+               $i18n{pointingStickAccelerationLabel}"
           class="hr"
           pref="{{accelerationPref}}"
           label="$i18n{pointingStickAccelerationLabel}"
           deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
       </settings-toggle-button>
-      <div class="settings-box">
+      <div class="settings-box bottom-divider">
       <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
         $i18n{pointingStickSpeed}
       </div>
       <settings-slider id="pointingStickSpeedSlider"
           pref="{{sensitivityPref}}"
           ticks="[[sensitivityValues]]"
-          label-aria="$i18n{pointingStickSpeed}"
+          label-aria=
+              "[[getPointingStickName(pointingStick.name)]]
+               $i18n{pointingStickSpeed}"
           label-min="$i18n{pointerSlow}"
           label-max="$i18n{pointerFast}"
           deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">

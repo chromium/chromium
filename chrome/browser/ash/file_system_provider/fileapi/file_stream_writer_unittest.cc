@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -100,8 +101,10 @@ class FileSystemProviderFileStreamWriter : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;  // Owned by TestingProfileManager.
-  FakeProvidedFileSystem* provided_file_system_;  // Owned by Service.
+  raw_ptr<TestingProfile, ExperimentalAsh>
+      profile_;  // Owned by TestingProfileManager.
+  raw_ptr<FakeProvidedFileSystem, ExperimentalAsh>
+      provided_file_system_;  // Owned by Service.
   storage::FileSystemURL file_url_;
   storage::FileSystemURL wrong_file_url_;
 };

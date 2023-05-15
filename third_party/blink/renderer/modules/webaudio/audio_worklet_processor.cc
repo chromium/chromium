@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -46,7 +47,15 @@ AudioWorkletProcessor::AudioWorkletProcessor(
     AudioWorkletGlobalScope* global_scope,
     const String& name,
     MessagePort* port)
-    : global_scope_(global_scope), processor_port_(port), name_(name) {}
+    : global_scope_(global_scope), processor_port_(port), name_(name) {
+  InstanceCounters::IncrementCounter(
+      InstanceCounters::kAudioWorkletProcessorCounter);
+}
+
+AudioWorkletProcessor::~AudioWorkletProcessor() {
+  InstanceCounters::DecrementCounter(
+      InstanceCounters::kAudioWorkletProcessorCounter);
+}
 
 bool AudioWorkletProcessor::Process(
     const Vector<scoped_refptr<AudioBus>>& inputs,

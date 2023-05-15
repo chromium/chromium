@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #endif
 
 namespace content {

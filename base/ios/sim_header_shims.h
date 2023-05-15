@@ -16,7 +16,8 @@
 #include <sys/param.h>
 
 // This file includes the necessary headers that are not part of the
-// iOS public SDK in order to support multiprocess support on iOS.
+// iOS public SDK in order to support multiprocess and memory instrumentations
+// on iOS.
 
 __BEGIN_DECLS
 
@@ -40,7 +41,16 @@ const char* bootstrap_strerror(kern_return_t r);
 #define BOOTSTRAP_NO_MEMORY 1105
 #define BOOTSTRAP_NO_CHILDREN 1106
 
+// These values are copied from darwin-xnu/osfmk/mach/shared_region.h.
+// https://github.com/apple/darwin-xnu/blob/8f02f2a044b9bb1ad951987ef5bab20ec9486310/osfmk/mach/shared_region.h#L86-L87
+#define SHARED_REGION_BASE_ARM64 0x180000000ULL
+#define SHARED_REGION_SIZE_ARM64 0x100000000ULL
+
 int proc_pidpath(int pid, void* buffer, uint32_t buffersize);
+int proc_regionfilename(int pid,
+                        uint64_t address,
+                        void* buffer,
+                        uint32_t buffersize);
 #define PROC_PIDPATHINFO_MAXSIZE (4 * MAXPATHLEN)
 
 __END_DECLS

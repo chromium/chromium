@@ -23,20 +23,6 @@ import("//build/rust/rust_target.gni")
 #     discovered source files must match this list. (This is not yet enforced,
 #     but will be.)
 #
-#   epoch (optional)
-#     The major version of the library, which is used to differentiate between
-#     multiple versions of the same library name. This includes all leading 0s
-#     and the first non-zero value in the crate's version. This should be left
-#     as the default, which is "0", for first-party code unless there are
-#     multiple versions of a crate present. For third-party code, the version
-#     epoch (matching the directory it is found in) should be specified.
-#
-#     Examples:
-#       1.0.2 => epoch = "1"
-#       4.2.0 => epoch = "4"
-#       0.2.7 => epoch = "0.2"
-#       0.0.3 => epoch = "0.0.3"
-#
 #   edition (optional)
 #     Edition of the Rust language to be used.
 #     Options are "2015", "2018" and "2021". Defaults to "2021".
@@ -135,6 +121,13 @@ import("//build/rust/rust_target.gni")
 #   test_inputs (optional)
 #     Same as above but for the unit tests target
 #
+#   rustc_metadata (optional)
+#     Override the metadata identifying the target's version. This allows e.g.
+#     linking otherwise conflicting versions of the same Rust library. The
+#     metadata string will also be appended to the output library names.
+#     Should be used sparingly, since generally we should have one version and
+#     build of each target.
+#
 # Example of usage:
 #
 #   rust_static_library("foo_bar") {
@@ -150,16 +143,14 @@ import("//build/rust/rust_target.gni")
 # This template is intended to serve the same purpose as 'rustc_library'
 # in Fuchsia.
 template("rust_static_library") {
-  exclude_forwards = TESTONLY_AND_VISIBILITY + [ "configs" ]
   _target_name = target_name
 
   rust_target(_target_name) {
-    forward_variables_from(invoker, "*", exclude_forwards)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "configs" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    if (defined(invoker.configs)) {
-      library_configs = []
-      library_configs = invoker.configs
-    }
+    library_configs = invoker.configs
     target_type = "rust_library"
   }
 }

@@ -140,41 +140,6 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
   }
 }
 
-TEST_F(SafariImporterTest, FaviconImport) {
-  scoped_refptr<SafariImporter> importer(GetSafariImporter());
-  sql::Database db;
-  ASSERT_TRUE(importer->OpenDatabase(&db));
-
-  SafariImporter::FaviconMap favicon_map;
-  importer->ImportFaviconURLs(&db, &favicon_map);
-
-  favicon_base::FaviconUsageDataList favicons;
-  importer->LoadFaviconData(&db, favicon_map, &favicons);
-
-  size_t num_favicons = favicons.size();
-  ASSERT_EQ(num_favicons, 2U);
-
-  favicon_base::FaviconUsageData& fav0 = favicons[0];
-  EXPECT_EQ("http://s.ytimg.com/yt/favicon-vfl86270.ico",
-            fav0.favicon_url.spec());
-  EXPECT_GT(fav0.png_data.size(), 0U);
-  EXPECT_EQ(fav0.urls.size(), 1U);
-  EXPECT_TRUE(fav0.urls.find(GURL("http://www.youtube.com/"))
-      != fav0.urls.end());
-
-  favicon_base::FaviconUsageData& fav1 = favicons[1];
-  EXPECT_EQ("http://www.opensearch.org/favicon.ico",
-            fav1.favicon_url.spec());
-  EXPECT_GT(fav1.png_data.size(), 0U);
-  EXPECT_EQ(fav1.urls.size(), 2U);
-  EXPECT_TRUE(fav1.urls.find(GURL("http://www.opensearch.org/Home"))
-      != fav1.urls.end());
-
-  EXPECT_TRUE(fav1.urls.find(
-      GURL("http://www.opensearch.org/Special:Search?search=lalala&go=Search"))
-          != fav1.urls.end());
-}
-
 TEST_F(SafariImporterTest, CanImport) {
   uint16_t items = importer::NONE;
   EXPECT_TRUE(SafariImporterCanImport(

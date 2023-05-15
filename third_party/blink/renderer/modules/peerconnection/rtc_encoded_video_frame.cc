@@ -340,9 +340,7 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       !metadata->hasDecodeTargetIndications() ||
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
       !metadata->hasCodec() ||
-      (!metadata->hasCodecSpecifics() &&
-       (metadata->codec() == "vp8" || metadata->codec() == "vp9" ||
-        metadata->codec() == "h264")) ||
+      (!metadata->hasCodecSpecifics() && (metadata->codec() == "vp8")) ||
       !metadata->hasSynchronizationSource()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
@@ -410,13 +408,10 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       }
       break;
     }
-    case webrtc::VideoCodecType::kVideoCodecAV1:
-      break;
     default:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidModificationError,
-          "setMetadata() does not support this codec.");
-      return;
+      // Using a codec which doesn't support exposing & modifying codec-specific
+      // info, so just leave the original intact and continue.
+      break;
   }
 
   std::vector<uint32_t> csrcs;

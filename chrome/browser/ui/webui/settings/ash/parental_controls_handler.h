@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PARENTAL_CONTROLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PARENTAL_CONTROLS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
@@ -34,7 +35,7 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   void HandleShowAddSupervisionDialog(const base::Value::List& args);
   void HandleLaunchFamilyLinkSettings(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash::settings

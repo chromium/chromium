@@ -9,7 +9,8 @@
     },
   },
   legacy_mappings: {
-    legacy_color: '$text_color_primary',
+    'cros-legacy-color': '$text_color_primary',
+    'cros-legacy-color-w-opacity': 'rgba($text_color_primary.rgb, .3)',
   },
   colors: {
     text_color_primary: {

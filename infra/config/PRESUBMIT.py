@@ -119,7 +119,7 @@ def CheckGnIsolateMapPylSynced(input_api, output_api):
       tb_gn_isolate_map = f.read()
     if ic_gn_isolate_map != tb_gn_isolate_map:
       sync_script_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                'scripts/sync-isolate-map.pyl')
+                                                'scripts/sync-isolate-map.py')
       return [
           output_api.PresubmitError(
               '//testing/buildbot/gn_isolate_map.pyl must be kept in sync with'

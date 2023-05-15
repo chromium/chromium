@@ -15,7 +15,7 @@
 
 #if PA_CONFIG(POINTER_COMPRESSION)
 
-#if !PA_CONFIG(GLUE_CORE_POOLS)
+#if !BUILDFLAG(GLUE_CORE_POOLS)
 #error "Pointer compression only works with glued pools"
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

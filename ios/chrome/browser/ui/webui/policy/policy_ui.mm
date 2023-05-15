@@ -15,7 +15,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "components/version_ui/version_handler_helper.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"

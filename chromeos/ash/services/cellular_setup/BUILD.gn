@@ -19,6 +19,7 @@ static_library("cellular_setup") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
@@ -113,6 +114,7 @@ source_set("unit_tests") {
     ":cellular_setup",
     ":esim_manager",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/hermes",

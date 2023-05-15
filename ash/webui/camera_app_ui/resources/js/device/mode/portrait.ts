@@ -49,7 +49,7 @@ export class Portrait extends Photo {
   override async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
     let photoSettings: PhotoSettings;
-    if (this.captureResolution) {
+    if (this.captureResolution !== null) {
       photoSettings = {
         imageWidth: this.captureResolution.width,
         imageHeight: this.captureResolution.height,

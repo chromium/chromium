@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ARC_MOUNT_PROVIDER_H_
 #define CHROME_BROWSER_ASH_ARC_ARC_MOUNT_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 
@@ -40,7 +41,7 @@ class ArcMountProvider : public guest_os::GuestOsMountProvider {
   void Prepare(PrepareCallback callback) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const int cid_;
 
   // Note: This should remain the last member so it'll be destroyed and

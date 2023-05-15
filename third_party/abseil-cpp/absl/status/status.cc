@@ -80,10 +80,8 @@ std::ostream& operator<<(std::ostream& os, StatusCode code) {
 namespace status_internal {
 
 static absl::optional<size_t> FindPayloadIndexByUrl(
-    const Payloads* payloads,
-    absl::string_view type_url) {
-  if (payloads == nullptr)
-    return absl::nullopt;
+    const Payloads* payloads, absl::string_view type_url) {
+  if (payloads == nullptr) return absl::nullopt;
 
   for (size_t i = 0; i < payloads->size(); ++i) {
     if ((*payloads)[i].type_url == type_url) return i;
@@ -125,8 +123,7 @@ absl::optional<absl::Cord> Status::GetPayload(
   const auto* payloads = GetPayloads();
   absl::optional<size_t> index =
       status_internal::FindPayloadIndexByUrl(payloads, type_url);
-  if (index.has_value())
-    return (*payloads)[index.value()].payload;
+  if (index.has_value()) return (*payloads)[index.value()].payload;
 
   return absl::nullopt;
 }
@@ -303,7 +300,7 @@ std::string Status::ToStringSlow(StatusToStringMode mode) const {
   absl::StrAppend(&text, absl::StatusCodeToString(code()), ": ", message());
 
   const bool with_payload = (mode & StatusToStringMode::kWithPayload) ==
-                      StatusToStringMode::kWithPayload;
+                            StatusToStringMode::kWithPayload;
 
   if (with_payload) {
     status_internal::StatusPayloadPrinter printer =

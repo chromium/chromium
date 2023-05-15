@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -55,7 +56,7 @@ class BeginMainFrameWaiter : public ui::CompositorObserver {
   }
 
  private:
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
   bool done_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

@@ -120,7 +120,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   context_params->http_cache_enabled = true;
   DCHECK(!context_params->http_cache_directory);
 
-  if (prefetch_type_.IsProxyRequired() &&
+  if (prefetch_type_.IsProxyRequiredWhenCrossOrigin() &&
       !prefetch_type_.IsProxyBypassedForTesting()) {
     PrefetchProxyConfigurator* prefetch_proxy_configurator =
         prefetch_service_->GetPrefetchProxyConfigurator();
@@ -148,7 +148,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   CreateNetworkContextInNetworkService(
       network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 
-  if (prefetch_type_.IsProxyRequired() &&
+  if (prefetch_type_.IsProxyRequiredWhenCrossOrigin() &&
       !prefetch_type_.IsProxyBypassedForTesting()) {
     // Configure a context client to ensure Web Reports and other privacy leak
     // surfaces won't be enabled.

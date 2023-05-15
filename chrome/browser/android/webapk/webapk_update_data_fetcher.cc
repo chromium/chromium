@@ -178,13 +178,6 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
-      web_manifest_url_ != *data.manifest_url) {
-    UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                              ManifestResult::kDifferent,
-                              ManifestResult::kMaxValue);
-    return;
-  } else {
     GURL new_manifest_id(blink::GetIdFromManifest(*data.manifest));
     if (web_manifest_id_.is_empty()) {
       // Don't have an existing manifest ID, check if either manifest URL or
@@ -206,7 +199,6 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
                                 ManifestResult::kMaxValue);
       return;
     }
-  }
 
   UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
                             ManifestResult::kFound, ManifestResult::kMaxValue);

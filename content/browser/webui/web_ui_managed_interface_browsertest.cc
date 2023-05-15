@@ -241,7 +241,7 @@ class WebUIManagedInterfaceBrowserTest : public ContentBrowserTest {
     RenderFrameHost* eval_frame =
         frame ? frame : ConvertToRenderFrameHost(shell());
     TestNavigationObserver observer(shell()->web_contents(), 1);
-    EXPECT_TRUE(ExecuteScript(eval_frame, "location.reload()"));
+    EXPECT_TRUE(ExecJs(eval_frame, "location.reload()"));
     observer.Wait();
   }
 
@@ -434,8 +434,8 @@ IN_PROC_BROWSER_TEST_F(WebUIManagedInterfaceBrowserTest, RemoveIframe) {
 
   // Iframe removal will destroy interface impls.
   RenderFrameDeletedObserver frame_deleted_observer(foo_frame);
-  EXPECT_TRUE(ExecuteScript(
-      shell(), "document.getElementById('untrusted-webui').remove()"));
+  EXPECT_TRUE(
+      ExecJs(shell(), "document.getElementById('untrusted-webui').remove()"));
   frame_deleted_observer.WaitUntilDeleted();
   EXPECT_EQ(0, InstanceCounter<FooImpl>::count());
 }

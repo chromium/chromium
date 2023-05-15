@@ -45,6 +45,8 @@ struct DecoderWrapperConfig {
   size_t max_outstanding_decode_requests = 1;
   DecoderImplementation implementation = DecoderImplementation::kVDA;
   bool linear_output = false;
+  // See VP9Decoder for information on this.
+  bool ignore_resolution_changes_to_smaller_vp9 = false;
 };
 
 // This class wraps the VideoDecoder implementation and associated

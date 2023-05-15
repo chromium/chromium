@@ -1,8 +1,8 @@
 {
-  "Lacros FYI Release (eve)": {
-    "args_file": "//build/args/chromeos/eve.gni",
+  "Lacros FYI Release (jacuzzi)": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
+      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -14,10 +14,10 @@
       "use_remoteexec": true
     }
   },
-  "Lacros FYI Release (jacuzzi)": {
-    "args_file": "//build/args/chromeos/jacuzzi.gni",
+  "Lacros FYI Release (octopus)": {
+    "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,

@@ -15,13 +15,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
@@ -254,6 +255,8 @@ class DiceResponseHandlerTest : public testing::Test,
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableBoundSessionCrendentials};
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;

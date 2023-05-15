@@ -8,9 +8,8 @@
 
 #include "ash/curtain/security_curtain_controller.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/system/power/power_button_menu_curtain_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/power/power_button_menu_view.h"
@@ -66,7 +65,8 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     : public views::View,
       public ui::ImplicitAnimationObserver {
  public:
-  PowerButtonMenuBackgroundView(base::RepeatingClosure show_animation_done)
+  explicit PowerButtonMenuBackgroundView(
+      base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetOpacity(0.f);
@@ -113,8 +113,7 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     layer()->SetColor(
-        DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
-                                    kPowerButtonMenuFullscreenShieldColor));
+        GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
   }
 
   // A callback for when the animation that shows the power menu has finished.
@@ -130,10 +129,10 @@ PowerButtonMenuScreenView::PowerButtonMenuScreenView(
       power_button_offset_percentage_(power_button_offset_percentage) {
   power_button_screen_background_shield_ =
       new PowerButtonMenuBackgroundView(show_animation_done);
-  AddChildView(power_button_screen_background_shield_);
+  AddChildView(power_button_screen_background_shield_.get());
   power_button_menu_view_ =
       new PowerButtonMenuView(shutdown_reason, power_button_position_);
-  AddChildView(power_button_menu_view_);
+  AddChildView(power_button_menu_view_.get());
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }

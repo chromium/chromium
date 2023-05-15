@@ -48,7 +48,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
   const autofill::AutofillCountry country(country_code, locale);
   return Java_FastCheckoutAutofillProfile_Constructor(
       env, ConvertUTF8ToJavaString(env, profile.guid()),
-      ConvertUTF8ToJavaString(env, profile.origin()),
       profile.record_type() == autofill::AutofillProfile::LOCAL_PROFILE,
       ConvertUTF16ToJavaString(
           env, profile.GetInfo(autofill::NAME_HONORIFIC_PREFIX, locale)),
@@ -124,8 +123,6 @@ CreateFastCheckoutAutofillProfileFromJava(
     profile->set_guid(guid);
   }
 
-  profile->set_origin(ConvertJavaStringToUTF8(
-      Java_FastCheckoutAutofillProfile_getOrigin(env, jprofile)));
   MaybeSetInfo(profile.get(), autofill::NAME_FULL,
                Java_FastCheckoutAutofillProfile_getFullName(env, jprofile),
                locale);

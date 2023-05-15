@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "url/gurl.h"
@@ -101,14 +102,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   static int IntervalForNextRequestForTesting(const int requests);
 
  private:
-  const Delegate* const delegate_;
+  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   const GURL url_;
 
   const ApplyTimeZoneCallback apply_timezone_;
   const DelayNetworkCallClosure delay_network_call_;
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 

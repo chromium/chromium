@@ -14,10 +14,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
@@ -76,7 +77,7 @@ void AccountManagerMojoService::SetAccountManagerUI(
 }
 
 void AccountManagerMojoService::OnAccountAdditionFinishedForTesting(
-    const account_manager::AccountAdditionResult& result) {
+    const account_manager::AccountUpsertionResult& result) {
   OnAccountAdditionFinished(result);
 }
 
@@ -115,9 +116,9 @@ void AccountManagerMojoService::ShowAddAccountDialog(
     ShowAddAccountDialogCallback callback) {
   DCHECK(account_manager_ui_);
   if (account_manager_ui_->IsDialogShown()) {
-    std::move(callback).Run(ToMojoAccountAdditionResult(
-        account_manager::AccountAdditionResult::FromStatus(
-            account_manager::AccountAdditionResult::Status::
+    std::move(callback).Run(ToMojoAccountUpsertionResult(
+        account_manager::AccountUpsertionResult::FromStatus(
+            account_manager::AccountUpsertionResult::Status::
                 kAlreadyInProgress)));
     return;
   }
@@ -182,6 +183,8 @@ void AccountManagerMojoService::ReportAuthError(
     mojom::GoogleServiceAuthErrorPtr mojo_error) {
   absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
+  base::UmaHistogramBoolean("AccountManager.ReportAuthError.IsAccountKeyEmpty",
+                            !maybe_account_key.has_value());
   if (!maybe_account_key) {
     LOG(ERROR) << "Can't unmarshal account with id: " << mojo_account_key->id
                << " and type: " << mojo_account_key->account_type;
@@ -223,7 +226,7 @@ void AccountManagerMojoService::OnAccountRemoved(
 }
 
 void AccountManagerMojoService::OnAccountAdditionFinished(
-    const account_manager::AccountAdditionResult& result) {
+    const account_manager::AccountUpsertionResult& result) {
   if (!account_addition_in_progress_)
     return;
 
@@ -236,17 +239,17 @@ void AccountManagerMojoService::OnAddAccountDialogClosed() {
 
   // Account addition is still in progress. It means that user didn't complete
   // the account addition flow and closed the dialog.
-  FinishAddAccount(account_manager::AccountAdditionResult::FromStatus(
-      account_manager::AccountAdditionResult::Status::kCancelledByUser));
+  FinishAddAccount(account_manager::AccountUpsertionResult::FromStatus(
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser));
 }
 
 void AccountManagerMojoService::FinishAddAccount(
-    const account_manager::AccountAdditionResult& result) {
+    const account_manager::AccountUpsertionResult& result) {
   account_addition_in_progress_ = false;
 
   DCHECK(!account_addition_callback_.is_null());
   std::move(account_addition_callback_)
-      .Run(ToMojoAccountAdditionResult(result));
+      .Run(ToMojoAccountUpsertionResult(result));
   NotifySigninDialogClosed();
 }
 

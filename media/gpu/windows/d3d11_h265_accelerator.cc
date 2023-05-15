@@ -13,9 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/media_buildflags.h"
@@ -32,18 +30,6 @@ namespace media {
 namespace {
 
 using H265DecoderStatus = H265Decoder::H265Accelerator::Status;
-
-// Converts SubsampleEntry to D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK.
-void AppendSubsamples(
-    const std::vector<SubsampleEntry>& from,
-    std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>* to) {
-  for (const auto& from_entry : from) {
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK subsample = {};
-    subsample.ClearSize = from_entry.clear_bytes;
-    subsample.EncryptedSize = from_entry.cypher_bytes;
-    to->push_back(subsample);
-  }
-}
 
 }  // namespace
 
@@ -72,15 +58,10 @@ D3D11H265Accelerator::D3D11H265Accelerator(
     MediaLog* media_log,
     ComD3D11VideoDevice video_device,
     std::unique_ptr<VideoContextWrapper> video_context)
-    : client_(client),
-      media_log_(media_log),
-      video_device_(video_device),
-      video_context_(std::move(video_context)) {
-  DCHECK(client);
-  DCHECK(media_log_);
-  client->SetDecoderCB(base::BindRepeating(
-      &D3D11H265Accelerator::SetVideoDecoder, base::Unretained(this)));
-}
+    : D3DAccelerator(client,
+                     media_log,
+                     std::move(video_device),
+                     std::move(video_context)) {}
 
 D3D11H265Accelerator::~D3D11H265Accelerator() {}
 
@@ -104,14 +85,10 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
     const H265Picture::Vector& ref_pic_list,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> pic) {
-  const bool is_encrypted = pic->decrypt_config();
-  if (is_encrypted) {
-    RecordFailure("Cannot find decrypt context for the frame.",
-                  D3D11Status::Codes::kCryptoConfigFailed);
-    return H265DecoderStatus::kFail;
-  }
-
   HRESULT hr;
   for (;;) {
     D3D11H265Picture* d3d11_pic = pic->AsD3D11H265Picture();
@@ -123,7 +100,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     if (result.has_value()) {
       output_view = std::move(result).value();
     } else {
-      RecordFailure(std::move(result).error());
+      RecordFailure("Picture AcquireOutputView failed",
+                    std::move(result).error().code());
       return H265DecoderStatus::kFail;
     }
 
@@ -634,25 +612,6 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
   size_t remaining_bitstream = out_bitstream_size;
   size_t start_location = 0;
 
-  if (pic->decrypt_config()) {
-    // For now, the entire frame has to fit into the bitstream buffer. This way
-    // the subsample ClearSize adjustment below should work.
-    if (bitstream_buffer_size_ < remaining_bitstream) {
-      RecordFailure("Input slice NALU (" +
-                        base::NumberToString(remaining_bitstream) +
-                        ") too big to fit in the bistream buffer (" +
-                        base::NumberToString(bitstream_buffer_size_) + ").",
-                    D3D11Status::Codes::kBitstreamBufferSliceTooBig);
-      return H265DecoderStatus::kFail;
-    }
-
-    AppendSubsamples(subsamples, &subsamples_);
-    if (!subsamples.empty()) {
-      // Follow same logic as D3D11H264Accelerator.
-      subsamples_[subsamples_.size() - subsamples.size()].ClearSize += 3;
-    }
-  }
-
   while (remaining_bitstream > 0) {
     if (bitstream_buffer_size_ < remaining_bitstream &&
         slice_info_.size() > 0) {
@@ -762,16 +721,6 @@ bool D3D11H265Accelerator::SubmitSliceData() {
     buffers[3].DataSize = sizeof(DXVA_Qmatrix_HEVC);
   }
 
-  if (!frame_iv_.empty()) {
-    buffers[2].pIV = frame_iv_.data();
-    buffers[2].IVSize = frame_iv_.size();
-    // Subsmaples matter iff there is IV, for decryption.
-    if (!subsamples_.empty()) {
-      buffers[2].pSubSampleMappingBlock = subsamples_.data();
-      buffers[2].SubSampleMappingCount = subsamples_.size();
-    }
-  }
-
   hr = video_context_->SubmitDecoderBuffers(
       video_decoder_.Get(),
       use_scaling_lists_ ? std::size(buffers) : std::size(buffers) - 1,
@@ -780,8 +729,6 @@ bool D3D11H265Accelerator::SubmitSliceData() {
   slice_info_.clear();
   bitstream_buffer_bytes_ = nullptr;
   bitstream_buffer_size_ = 0;
-  frame_iv_.clear();
-  subsamples_.clear();
   if (!SUCCEEDED(hr)) {
     RecordFailure("SubmitDecoderBuffers failed",
                   D3D11Status::Codes::kSubmitDecoderBuffersFailed, hr);
@@ -822,25 +769,6 @@ void D3D11H265Accelerator::Reset() {
 bool D3D11H265Accelerator::OutputPicture(scoped_refptr<H265Picture> pic) {
   D3D11H265Picture* our_pic = pic->AsD3D11H265Picture();
   return our_pic && client_->OutputResult(our_pic, our_pic->picture);
-}
-
-void D3D11H265Accelerator::RecordFailure(const std::string& reason,
-                                         D3D11Status::Codes code,
-                                         HRESULT hr) const {
-  std::string hr_string;
-  if (!SUCCEEDED(hr))
-    hr_string = ": " + logging::SystemErrorCodeToString(hr);
-
-  DLOG(ERROR) << reason << hr_string;
-  MEDIA_LOG(ERROR, media_log_) << hr_string << ": " << reason;
-}
-
-void D3D11H265Accelerator::RecordFailure(D3D11Status error) const {
-  RecordFailure(error.message(), error.code());
-}
-
-void D3D11H265Accelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
-  video_decoder_ = std::move(video_decoder);
 }
 
 }  // namespace media

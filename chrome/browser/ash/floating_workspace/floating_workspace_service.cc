@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -82,6 +83,7 @@ void FloatingWorkspaceService::InitForTest(
       // For testings we don't need to add itself to observer list of
       // DeskSyncBridge, tests can be done by calling
       // EntriesAddedOrUpdatedRemotely directly so InitForV2 can be skipped.
+      StartCaptureAndUploadActiveDesk();
       break;
   }
 }
@@ -167,21 +169,26 @@ void FloatingWorkspaceService::OnDeskModelDestroying() {
 
 void FloatingWorkspaceService::EntriesAddedOrUpdatedRemotely(
     const std::vector<const DeskTemplate*>& new_entries) {
-  bool found_floating_workspace_template = false;
+  const DeskTemplate* floating_workspace_template = nullptr;
   for (const DeskTemplate* desk_template : new_entries) {
     if (desk_template &&
         desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
-      floating_workspace_metrics_util::
-          RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeTicks::Now() -
-                                                    initialization_timestamp_);
-      RestoreFloatingWorkspaceTemplate(desk_template);
-      found_floating_workspace_template = true;
+      // Set the to be floating workspace template to the latest floating
+      // workspace template found.
+      if (!floating_workspace_template ||
+          floating_workspace_template->GetLastUpdatedTime() <
+              desk_template->GetLastUpdatedTime()) {
+        floating_workspace_template = desk_template;
+      }
     }
   }
-  // Completed waiting for desk templates to download. Unable to find a floating
-  // workspace template. Emit a metric indictating we timeout because there is
-  // no floating workspace template.
-  if (!found_floating_workspace_template) {
+
+  if (floating_workspace_template) {
+    RestoreFloatingWorkspaceTemplate(floating_workspace_template);
+  } else {
+    // Completed waiting for desk templates to download. Unable to find a
+    // floating workspace template. Emit a metric indictating we timeout because
+    // there is no floating workspace template.
     floating_workspace_metrics_util::
         RecordFloatingWorkspaceV2TemplateLaunchTimeout(
             floating_workspace_metrics_util::LaunchTemplateTimeoutType::
@@ -262,18 +269,29 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
-  DesksClient::Get()->CaptureActiveDesk(
+  GetDesksClient()->CaptureActiveDesk(
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
       DeskTemplateType::kFloatingWorkspace);
 }
 
+void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
+    std::unique_ptr<DeskTemplate> desk_template) {
+  OnTemplateCaptured(absl::nullopt, std::move(desk_template));
+}
+
+// TODO(b/274502821): create garbage collection method for stale floating
+// workspace templates.
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
   // Desk templates have been downloaded.
   if (!should_run_restore_) {
     return;
   }
+  // Record metrics for window and tab count and also the time it took to
+  // download the floating workspace template.
+  floating_workspace_metrics_util::RecordFloatingWorkspaceV2TemplateLoadTime(
+      base::TimeTicks::Now() - initialization_timestamp_);
   RecordWindowAndTabCountHistogram(*desk_template);
   // Check if template has been downloaded after 15 seconds (TBD).
   if (base::TimeTicks::Now() >
@@ -294,11 +312,15 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
 
 void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
-  DesksClient::Get()->LaunchDeskTemplate(
+  GetDesksClient()->LaunchDeskTemplate(
       desk_template->uuid(),
       base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
                      weak_pointer_factory_.GetWeakPtr()),
       desk_template->template_name());
+}
+
+DesksClient* FloatingWorkspaceService::GetDesksClient() {
+  return DesksClient::Get();
 }
 
 bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
@@ -379,7 +401,7 @@ void FloatingWorkspaceService::HandleTemplateUploadErrors(
 
 void FloatingWorkspaceService::OnTemplateLaunched(
     absl::optional<DesksClient::DeskActionError> error,
-    const base::GUID& desk_uuid) {
+    const base::Uuid& desk_uuid) {
   // Disable future floating workspace restore.
   should_run_restore_ = false;
   if (error) {
@@ -396,16 +418,39 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   if (!desk_template) {
     return;
   }
+  // Check if there's an associated floating workspace uuid from the desk sync
+  // bridge. If there is, use that one. The `floating_workspace_uuid_ is
+  // populated once during the first capture of the session if there is known
+  // information from the sync bridge and the info may be outdated for the sync
+  // bridge. However, the sync bridge does not need to know the new uuid since
+  // the current service will handle it. Ignore for testing.
+  if (!floating_workspace_uuid_.has_value() && !is_testing_) {
+    absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
+        desk_sync_service_->GetDeskSyncBridge()->GetFloatingWorkspaceUuid();
+    if (floating_workspace_uuid_from_desk_model.has_value()) {
+      floating_workspace_uuid_ =
+          floating_workspace_uuid_from_desk_model.value();
+    }
+  }
+  if (floating_workspace_uuid_.has_value() &&
+      floating_workspace_uuid_.value().is_valid()) {
+    desk_template->set_uuid(floating_workspace_uuid_.value());
+  } else {
+    floating_workspace_uuid_ = desk_template->uuid();
+  }
 
   // If successfully captured desk, remove old entry and record new uuid.
-  if (!FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
-          desk_template.get())) {
-    // Upload and save the template.
-    desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
-        std::move(desk_template),
-        base::BindOnce(&FloatingWorkspaceService::OnTemplateUploaded,
-                       weak_pointer_factory_.GetWeakPtr()));
+  if (!IsCurrentDeskSameAsPrevious(desk_template.get())) {
+    UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
+}
+void FloatingWorkspaceService::UploadFloatingWorkspaceTemplateToDeskModel(
+    std::unique_ptr<DeskTemplate> desk_template) {
+  // Upload and save the template.
+  desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
+      std::move(desk_template),
+      base::BindOnce(&FloatingWorkspaceService::OnTemplateUploaded,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 void FloatingWorkspaceService::OnTemplateUploaded(

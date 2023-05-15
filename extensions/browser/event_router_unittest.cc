@@ -24,6 +24,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
 
@@ -72,6 +73,23 @@ class MockEventRouterObserver : public EventRouter::Observer {
   std::string last_event_name_;
 };
 
+class MockEventDispatcher : public mojom::EventDispatcher {
+ public:
+  MockEventDispatcher() = default;
+  ~MockEventDispatcher() override = default;
+
+  mojo::PendingAssociatedRemote<mojom::EventDispatcher> BindAndPassRemote() {
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
+  }
+
+  // mojom::EventDispatcher:
+  void DispatchEvent(mojom::DispatchEventParamsPtr params,
+                     base::Value::List event_args) override {}
+
+ private:
+  mojo::AssociatedReceiver<mojom::EventDispatcher> receiver_{this};
+};
+
 using EventListenerConstructor =
     base::RepeatingCallback<std::unique_ptr<EventListener>(
         const std::string& /* event_name */,
@@ -117,10 +135,10 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
 scoped_refptr<const Extension> CreateExtension(bool component,
                                                bool persistent) {
   ExtensionBuilder builder;
-  base::Value::Dict manifest;
-  manifest.Set("name", "foo");
-  manifest.Set("version", "1.0.0");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "foo")
+                      .Set("version", "1.0.0")
+                      .Set("manifest_version", 2);
   manifest.SetByDottedPath("background.page", "background.html");
   manifest.SetByDottedPath("background.persistent", persistent);
   builder.SetManifest(std::move(manifest));
@@ -132,10 +150,10 @@ scoped_refptr<const Extension> CreateExtension(bool component,
 
 scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   ExtensionBuilder builder;
-  base::Value::Dict manifest;
-  manifest.Set("name", "foo");
-  manifest.Set("version", "1.0.0");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "foo")
+                      .Set("version", "1.0.0")
+                      .Set("manifest_version", 2);
   manifest.SetByDottedPath("background.service_worker", "worker.js");
   builder.SetManifest(std::move(manifest));
   return builder.Build();
@@ -601,11 +619,10 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetID(id)
-            .SetManifest(DictionaryBuilder()
+            .SetManifest(base::Value::Dict()
                              .Set("name", "Test app")
                              .Set("version", "1.0")
-                             .Set("manifest_version", 2)
-                             .Build())
+                             .Set("manifest_version", 2))
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
   };
@@ -701,8 +718,11 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   // 3) service worker listeners for ext3
   const int sw_version_id = 10;
   const int sw_thread_id = 100;
+  MockEventDispatcher sw_event_dispatcher;
   event_router()->AddServiceWorkerEventListener(
       event_name, process4.get(), ext3, GURL(), sw_version_id, sw_thread_id);
+  event_router()->BindServiceWorkerEventDispatcher(
+      process4->GetID(), sw_thread_id, sw_event_dispatcher.BindAndPassRemote());
 
   // Dispatch without callback set.
   event_router()->DispatchEventToExtension(ext1, create_event(event_name));

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
@@ -85,7 +86,7 @@ class TestObserver final : public SecureChannel::Observer {
   }
 
  private:
-  SecureChannel* secure_channel_;
+  raw_ptr<SecureChannel, ExperimentalAsh> secure_channel_;
   std::vector<SecureChannelStatusChange> connection_status_changes_;
   std::vector<ReceivedMessage> received_messages_;
   std::vector<int> sent_sequence_numbers_;
@@ -116,7 +117,7 @@ class DeletingObserver final : public SecureChannel::Observer {
   }
 
  private:
-  std::unique_ptr<SecureChannel>* secure_channel_;
+  raw_ptr<std::unique_ptr<SecureChannel>, ExperimentalAsh> secure_channel_;
 };
 
 class TestAuthenticatorFactory final
@@ -129,13 +130,13 @@ class TestAuthenticatorFactory final
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate) override {
     last_instance_ = new FakeAuthenticator();
-    return base::WrapUnique(last_instance_);
+    return base::WrapUnique(last_instance_.get());
   }
 
   Authenticator* last_instance() { return last_instance_; }
 
  private:
-  Authenticator* last_instance_;
+  raw_ptr<Authenticator, ExperimentalAsh> last_instance_;
 };
 
 multidevice::RemoteDeviceRef CreateTestRemoteDevice() {
@@ -171,8 +172,8 @@ class SecureChannelConnectionTest : public testing::Test {
         new FakeConnection(test_device_, /* should_auto_connect */ false);
 
     EXPECT_FALSE(fake_connection_->observers().size());
-    secure_channel_ =
-        base::WrapUnique(new SecureChannel(base::WrapUnique(fake_connection_)));
+    secure_channel_ = base::WrapUnique(
+        new SecureChannel(base::WrapUnique(fake_connection_.get())));
     EXPECT_EQ(static_cast<size_t>(1), fake_connection_->observers().size());
     EXPECT_EQ(secure_channel_.get(), fake_connection_->observers()[0]);
 
@@ -243,8 +244,9 @@ class SecureChannelConnectionTest : public testing::Test {
         test_authenticator_factory_->last_instance());
 
     fake_secure_context_ = new FakeSecureContext();
-    authenticator->last_callback().Run(Authenticator::Result::SUCCESS,
-                                       base::WrapUnique(fake_secure_context_));
+    authenticator->last_callback().Run(
+        Authenticator::Result::SUCCESS,
+        base::WrapUnique(fake_secure_context_.get()));
   }
 
   void ConnectAndAuthenticate() {
@@ -334,13 +336,13 @@ class SecureChannelConnectionTest : public testing::Test {
   void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
   // Owned by secure_channel_.
-  FakeConnection* fake_connection_;
+  raw_ptr<FakeConnection, ExperimentalAsh> fake_connection_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
 
   // Owned by secure_channel_ once authentication has completed successfully.
-  FakeSecureContext* fake_secure_context_;
+  raw_ptr<FakeSecureContext, ExperimentalAsh> fake_secure_context_;
 
   std::vector<SecureChannelStatusChange> verified_status_changes_;
 

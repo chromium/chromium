@@ -76,7 +76,8 @@ bool DeviceInfoService::ServiceRequestReceived(
 }
 
 void DeviceInfoService::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe) {
+    mojo::ScopedMessagePipeHandle receiver_pipe,
+    const absl::optional<std::string>&) {
   receivers_.Add(this, mojo::PendingReceiver<mojom::MeetDevicesInfo>(
                            std::move(receiver_pipe)));
 }

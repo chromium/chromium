@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_backing.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
@@ -42,6 +43,7 @@ WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
     : SharedImageBackingFactory(kSupportedUsage),
       context_state_(std::move(context_state)),
+      use_graphite_(context_state_->graphite_context()),
       is_drdc_enabled_(
           features::IsDrDcEnabled() &&
           !context_state_->feature_info()->workarounds().disable_drdc) {}
@@ -69,15 +71,26 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   // That should be fine for now since we do not have/use any locks in backing.
   DCHECK(!is_thread_safe ||
          (context_state_->GrContextIsVulkan() && is_drdc_enabled_));
-  auto texture = std::make_unique<WrappedSkImageBacking>(
+  if (use_graphite_) {
+    auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
+        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
+        color_space, surface_origin, alpha_type, usage, context_state_,
+        /*is_thread_safe=*/false);
+    if (!backing->Initialize()) {
+      return nullptr;
+    }
+    return backing;
+  }
+  CHECK(context_state_->gr_context());
+  auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, context_state_,
       /*is_thread_safe=*/is_thread_safe &&
           context_state_->GrContextIsVulkan() && is_drdc_enabled_);
-  if (!texture->Initialize(debug_label)) {
+  if (!backing->Initialize(debug_label)) {
     return nullptr;
   }
-  return texture;
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -91,15 +104,26 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     base::span<const uint8_t> data) {
-  auto texture = std::make_unique<WrappedSkImageBacking>(
+  if (use_graphite_) {
+    auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
+        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
+        color_space, surface_origin, alpha_type, usage, context_state_,
+        /*is_thread_safe=*/false);
+    if (!backing->InitializeWithData(data)) {
+      return nullptr;
+    }
+    return backing;
+  }
+  CHECK(context_state_->gr_context());
+  auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, context_state_,
       /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
           is_drdc_enabled_);
-  if (!texture->InitializeWithData(debug_label, data, /*stride=*/0)) {
+  if (!backing->InitializeWithData(debug_label, data)) {
     return nullptr;
   }
-  return texture;
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -114,8 +138,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 bool WrappedSkImageBackingFactory::IsSupported(
@@ -177,6 +200,10 @@ bool WrappedSkImageBackingFactory::IsSupported(
       // ETC1 is only supported with initial pixel upload.
       return false;
     }
+    // TODO(crbug.com/1430206): Enable once compressed formats are supported.
+    if (use_graphite_) {
+      return false;
+    }
     auto backend_format = context_state_->gr_context()->compressedBackendFormat(
         SkTextureCompressionType::kETC1_RGB8);
     if (!backend_format.isValid()) {
@@ -185,14 +212,17 @@ bool WrappedSkImageBackingFactory::IsSupported(
     return true;
   }
 
-  // Check that skia can create the required backend textures.
-  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-    SkColorType color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
-    auto backend_format = context_state_->gr_context()->defaultBackendFormat(
-        color_type, GrRenderable::kYes);
-    if (!backend_format.isValid()) {
-      return false;
+  // TODO(b/281151641): Check for formats are supported with graphite.
+  if (context_state_->gr_context()) {
+    // Check that skia-ganesh can create the required backend textures.
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      SkColorType color_type =
+          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
+      auto backend_format = context_state_->gr_context()->defaultBackendFormat(
+          color_type, GrRenderable::kYes);
+      if (!backend_format.isValid()) {
+        return false;
+      }
     }
   }
 

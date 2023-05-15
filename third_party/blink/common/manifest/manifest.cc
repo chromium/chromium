@@ -122,15 +122,6 @@ bool Manifest::TranslationItem::operator==(const TranslationItem& other) const {
   return AsTuple(*this) == AsTuple(other);
 }
 
-Manifest::UrlPattern::UrlPattern() = default;
-
-Manifest::UrlPattern::~UrlPattern() = default;
-
-bool operator==(const Manifest::UrlPattern& left,
-                const Manifest::UrlPattern& right) {
-  return left.pathname == right.pathname;
-}
-
 Manifest::HomeTabParams::HomeTabParams() = default;
 
 Manifest::HomeTabParams::~HomeTabParams() = default;

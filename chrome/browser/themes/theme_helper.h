@@ -52,19 +52,21 @@ class ThemeHelper {
 
   static bool HasCustomImage(int id, const CustomThemeSupplier* theme_supplier);
 
-  static int GetDisplayProperty(int id,
-                                const CustomThemeSupplier* theme_supplier);
-
-  static base::RefCountedMemory* GetRawData(
-      int id,
-      const CustomThemeSupplier* theme_supplier,
-      ui::ResourceScaleFactor scale_factor);
-
   ThemeHelper();
   virtual ~ThemeHelper();
 
   ThemeHelper(const ThemeHelper&) = delete;
   ThemeHelper& operator=(const ThemeHelper&) = delete;
+
+  // Gets the effective value of a themeable display property, either from the
+  // `theme_supplier` if available or the default.
+  int GetDisplayProperty(int id,
+                         const CustomThemeSupplier* theme_supplier) const;
+
+  base::RefCountedMemory* GetRawData(
+      int id,
+      const CustomThemeSupplier* theme_supplier,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // Get the specified tint - |id| is one of the TINT_* enum values.
   color_utils::HSL GetTint(int id,
@@ -85,6 +87,9 @@ class ThemeHelper {
   void DCheckCalledOnValidSequence() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
+
+  // Gets the default value of a themeable display property.
+  virtual int GetDefaultDisplayProperty(int id) const;
 
  private:
   friend class theme_service_internal::ThemeServiceTest;

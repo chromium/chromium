@@ -199,12 +199,11 @@ void ExternallyInstalledWebAppPrefs::Insert(
     ExternalInstallSource install_source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetKey(kExtensionId, base::Value(app_id));
-  dict.SetKey(kInstallSource, base::Value(static_cast<int>(install_source)));
-
   ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  update->Set(url.spec(), std::move(dict));
+  update->Set(url.spec(),
+              base::Value::Dict()
+                  .Set(kExtensionId, app_id)
+                  .Set(kInstallSource, static_cast<int>(install_source)));
 }
 
 bool ExternallyInstalledWebAppPrefs::Remove(const GURL& url) {

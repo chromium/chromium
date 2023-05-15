@@ -8,6 +8,8 @@
  */
 import './sandboxed_load_time_data.js';
 
+import {addColorChangeListener, removeColorChangeListener, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+
 import {MessagePipe} from './message_pipe.js';
 import {Message} from './message_types.js';
 
@@ -73,10 +75,27 @@ const DELEGATE = {
     return /** @type {!Promise<!helpApp.DeviceInfo>} */ (
         parentMessagePipe.sendMessage(Message.GET_DEVICE_INFO));
   },
+  /**
+   * @override
+   * @param {string} url
+   */
+  async openUrlInBrowser(url) {
+    await parentMessagePipe.sendMessage(Message.OPEN_URL_IN_BROWSER, url);
+  },
 };
 
 window.customLaunchData = {
   delegate: DELEGATE,
 };
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Start listening to color change events. These events get picked up by logic
+  // in ts_helpers.ts on the google3 side.
+  startColorChangeUpdater();
+});
+// Expose functions to bind to color change events to window so they can be
+// automatically picked up by installColors(). See ts_helpers.ts in google3.
+window['addColorChangeListener'] = addColorChangeListener;
+window['removeColorChangeListener'] = removeColorChangeListener;
 
 export const TEST_ONLY = {parentMessagePipe};

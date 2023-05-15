@@ -565,7 +565,7 @@ std::u16string Truncate(const std::u16string& data) {
 void BindAutofillProfileToStatement(const AutofillProfile& profile,
                                     const base::Time& modification_date,
                                     sql::Statement* s) {
-  DCHECK(base::IsValidUuid(profile.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
   int index = 0;
   s->BindString(index++, profile.guid());
 
@@ -578,7 +578,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
   s->BindInt64(index++, profile.use_count());
   s->BindInt64(index++, profile.use_date().ToTimeT());
   s->BindInt64(index++, modification_date.ToTimeT());
-  s->BindString(index++, profile.origin());
+  s->BindString(index++, "");  // Origin is deprecated
   s->BindString(index++, profile.language_code());
   s->BindString(index++, profile.profile_label());
   s->BindBool(index++, profile.disallow_settings_visible_updates());
@@ -614,7 +614,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
                                const base::Time& modification_date,
                                sql::Statement* s,
                                const AutofillTableEncryptor& encryptor) {
-  DCHECK(base::IsValidUuid(credit_card.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
   int index = 0;
   s->BindString(index++, credit_card.guid());
 
@@ -636,7 +636,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
 void BindIBANToStatement(const IBAN& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
-  DCHECK(base::IsValidUuid(iban.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
   int index = 0;
   s->BindString(index++, iban.guid());
 
@@ -690,7 +690,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
 
   int index = 0;
   credit_card->set_guid(s.ColumnString(index++));
-  DCHECK(base::IsValidUuid(credit_card->guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card->guid()).is_valid());
 
   for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
                                CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
@@ -715,7 +715,7 @@ std::unique_ptr<IBAN> IBANFromStatement(
 
   int index = 0;
   iban->set_guid(s.ColumnString(index++));
-  DCHECK(base::IsValidUuid(iban->guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(iban->guid()).is_valid());
   iban->set_use_count(s.ColumnInt64(index++));
   iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
 
@@ -1074,6 +1074,7 @@ std::vector<ServerFieldType> GetStoredContactInfoTypes() {
           ADDRESS_HOME_COUNTRY,
           ADDRESS_HOME_APT_NUM,
           ADDRESS_HOME_FLOOR,
+          ADDRESS_HOME_LANDMARK,
           EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER,
           BIRTHDATE_DAY,
@@ -1112,6 +1113,11 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
   if (!s.Run())
     return false;
   for (ServerFieldType type : GetStoredContactInfoTypes()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableNewStreetLevelFieldTypes) &&
+        type == ADDRESS_HOME_LANDMARK) {
+      continue;
+    }
     InsertBuilder(db, s, kContactInfoTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
@@ -1137,7 +1143,7 @@ std::unique_ptr<AutofillProfile> GetAutofillProfileFromContactInfoTable(
     return nullptr;
   }
   auto profile = std::make_unique<AutofillProfile>(
-      guid, /*origin=*/"", AutofillProfile::Source::kAccount);
+      guid, AutofillProfile::Source::kAccount);
   int index = 0;
   profile->set_use_count(s.ColumnInt64(index++));
   profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
@@ -1200,12 +1206,11 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitVirtualCardUsageDataTable();
 }
 
-bool AutofillTable::IsSyncable() {
-  return true;
-}
-
 bool AutofillTable::MigrateToVersion(int version,
                                      bool* update_compatible_version) {
+  if (!db_->is_open()) {
+    return false;
+  }
   // Migrate if necessary.
   switch (version) {
     case 83:
@@ -1651,7 +1656,7 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
 }
 
 bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
-  DCHECK(base::IsValidUuid(profile.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
   std::unique_ptr<AutofillProfile> old_profile =
       GetAutofillProfile(profile.guid(), profile.source());
@@ -1702,7 +1707,7 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
 bool AutofillTable::RemoveAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   if (profile_source == AutofillProfile::Source::kAccount) {
     sql::Transaction transaction(db_);
     return transaction.Begin() &&
@@ -1726,7 +1731,7 @@ bool AutofillTable::RemoveAllAutofillProfiles(
 std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   if (profile_source == AutofillProfile::Source::kAccount)
     return GetAutofillProfileFromContactInfoTable(db_, guid);
 
@@ -1742,9 +1747,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
 
   auto profile = std::make_unique<AutofillProfile>(
-      guid, /*origin=*/s.ColumnString(0),
-      AutofillProfile::Source::kLocalOrSyncable);
-  DCHECK(base::IsValidUuid(profile->guid()));
+      guid, AutofillProfile::Source::kLocalOrSyncable);
+  DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
 
   // Get associated name info using guid.
   AddAutofillProfileNamesToProfile(db_, profile.get());
@@ -1938,7 +1942,7 @@ bool AutofillTable::AddIBAN(const IBAN& iban) {
 }
 
 bool AutofillTable::UpdateIBAN(const IBAN& iban) {
-  DCHECK(base::IsValidUuid(iban.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
 
   std::unique_ptr<IBAN> old_iban = GetIBAN(iban.guid());
   if (!old_iban) {
@@ -1960,12 +1964,12 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
 }
 
 bool AutofillTable::RemoveIBAN(const std::string& guid) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   return DeleteWhereColumnEq(db_, kIBANsTable, kGuid, guid);
 }
 
 std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
   SelectBuilder(db_, s, kIBANsTable,
                 {kGuid, kUseCount, kUseDate, kValue, kNickname},
@@ -2013,7 +2017,7 @@ bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
 }
 
 bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
-  DCHECK(base::IsValidUuid(credit_card.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
 
   std::unique_ptr<CreditCard> old_credit_card =
       GetCreditCard(credit_card.guid());
@@ -2040,7 +2044,7 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
 }
 
 bool AutofillTable::RemoveCreditCard(const std::string& guid) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   return DeleteWhereColumnEq(db_, kCreditCardsTable, kGuid, guid);
 }
 
@@ -2073,7 +2077,7 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
 
 std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
     const std::string& guid) {
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
   SelectBuilder(db_, s, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
@@ -2651,31 +2655,19 @@ bool AutofillTable::GetAutofillOffers(
   return s.Succeeded();
 }
 
-bool AutofillTable::AddVirtualCardUsageData(
+bool AutofillTable::AddOrUpdateVirtualCardUsageData(
     const VirtualCardUsageData& virtual_card_usage_data) {
-  if (GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id())) {
-    return false;
-  }
-  sql::Statement s;
-  InsertBuilder(db_, s, kVirtualCardUsageDataTable,
-                {kId, kInstrumentId, kMerchantDomain, kLastFour});
-  BindVirtualCardUsageDataToStatement(virtual_card_usage_data, s);
-  return s.Run();
-}
-
-bool AutofillTable::UpdateVirtualCardUsageData(
-    const VirtualCardUsageData& virtual_card_usage_data) {
-  std::unique_ptr<VirtualCardUsageData> old_data =
+  std::unique_ptr<VirtualCardUsageData> existing_data =
       GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id());
-  if (!old_data) {
-    return false;
-  }
-
   sql::Statement s;
-  UpdateBuilder(db_, s, kVirtualCardUsageDataTable,
-                {kId, kInstrumentId, kMerchantDomain, kLastFour}, "id=?1");
+  if (!existing_data) {
+    InsertBuilder(db_, s, kVirtualCardUsageDataTable,
+                  {kId, kInstrumentId, kMerchantDomain, kLastFour});
+  } else {
+    UpdateBuilder(db_, s, kVirtualCardUsageDataTable,
+                  {kId, kInstrumentId, kMerchantDomain, kLastFour}, "id=?1");
+  }
   BindVirtualCardUsageDataToStatement(virtual_card_usage_data, s);
-
   return s.Run();
 }
 
@@ -3482,6 +3474,9 @@ bool AutofillTable::AddFormFieldValuesTime(
 bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
                                           std::vector<AutofillChange>* changes,
                                           base::Time time) {
+  if (!db_->is_open()) {
+    return false;
+  }
   // TODO(crbug.com/1424298): Remove once it is understood where the `false`
   // results are coming from.
   auto create_debug_info = [this](const char* failure_location) {

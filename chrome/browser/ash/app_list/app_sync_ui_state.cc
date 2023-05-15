@@ -120,7 +120,7 @@ void AppSyncUIState::SetStatus(Status status) {
 
 void AppSyncUIState::CheckAppSync() {
   if (!sync_service_ ||
-      !sync_service_->GetUserSettings()->IsFirstSetupComplete()) {
+      !sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
   }
 

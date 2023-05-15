@@ -61,20 +61,26 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     VideoCodecProfile output_profile,
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
+    VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
     const VideoBitrateAllocation& bitrate_allocation,
     bool reverse)
     : output_profile(output_profile),
       output_resolution(video->Resolution()),
+      spatial_layers(spatial_layers),
       num_temporal_layers(spatial_layers.empty()
                               ? 1
                               : spatial_layers[0].num_of_temporal_layers),
       num_spatial_layers(
           std::max(spatial_layers.size(), static_cast<size_t>(1u))),
-      spatial_layers(spatial_layers),
+      inter_layer_pred_mode(inter_layer_pred_mode),
       bitrate_allocation(bitrate_allocation),
       framerate(video->FrameRate()),
       num_frames_to_encode(video->NumFrames()),
-      reverse(reverse) {}
+      reverse(reverse) {
+  CHECK_EQ(spatial_layers.size() <= 1u,
+           inter_layer_pred_mode ==
+               VideoEncodeAccelerator::Config::InterLayerPredMode::kOff);
+}
 
 VideoEncoderClientConfig::VideoEncoderClientConfig(
     const VideoEncoderClientConfig&) = default;
@@ -497,7 +503,8 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
       absl::nullopt /* h264_output_level*/, false /* is_constrained_h264 */,
       encoder_client_config_.input_storage_type,
       VideoEncodeAccelerator::Config::ContentType::kCamera,
-      encoder_client_config_.spatial_layers);
+      encoder_client_config_.spatial_layers,
+      encoder_client_config_.inter_layer_pred_mode);
 
   encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),

@@ -15,8 +15,6 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -75,13 +73,12 @@ public class PrivacySandboxDialogNoticeRestrictedV4
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
             dismiss();
         } else if (id == R.id.settings_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
             dismiss();
-            PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                    getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+            mSettingsLauncher.launchSettingsActivity(getContext(), AdMeasurementFragmentV4.class);
         } else if (id == R.id.more_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {

@@ -31,6 +31,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.components.autofill.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +150,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
         });
 
         // Update the model as the user edits the field.
-        mInput.addTextChangedListener(new TextWatcher() {
+        mInput.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 fieldModel.setValue(s.toString());
@@ -166,9 +167,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
                             new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                 }
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {

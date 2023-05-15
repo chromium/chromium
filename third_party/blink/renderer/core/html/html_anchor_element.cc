@@ -275,6 +275,13 @@ void HTMLAnchorElement::ParseAttribute(
         document_rules->ReferrerPolicyAttributeChanged(this);
       }
     }
+  } else if (params.name == html_names::kTargetAttr) {
+    if (isConnected() && IsLink()) {
+      if (auto* document_rules =
+              DocumentSpeculationRules::FromIfExists(GetDocument())) {
+        document_rules->TargetAttributeChanged(this);
+      }
+    }
   } else {
     HTMLElement::ParseAttribute(params);
   }

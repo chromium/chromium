@@ -70,7 +70,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const std::string& account_id) {
+    const absl::optional<std::string>& account_id) {
   // TODO(crbug.com/1334019): This is currently origin-bound, but we would like
   // this grant to apply at the 'site' (aka eTLD+1) level. We should override
   // GetGrantedObject to find a grant that matches the RP's site rather
@@ -83,9 +83,13 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     return false;
 
   const base::Value::List* account_list =
-      granted_object->value.GetDict().FindList(kAccountIdsKey);
+      granted_object->value.FindList(kAccountIdsKey);
   if (!account_list)
     return false;
+
+  if (!account_id) {
+    return true;
+  }
 
   for (auto& account_id_value : *account_list) {
     if (account_id_value.GetString() == account_id)
@@ -108,8 +112,8 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
                              identity_provider);
   const auto granted_object = GetGrantedObject(relying_party_requester, key);
   if (granted_object) {
-    base::Value new_object = granted_object->value.Clone();
-    AddToAccountList(new_object.GetDict(), account_id);
+    base::Value::Dict new_object = granted_object->value.Clone();
+    AddToAccountList(new_object, account_id);
     UpdateObjectPermission(relying_party_requester, granted_object->value,
                            std::move(new_object));
   } else {
@@ -118,8 +122,7 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
     new_object.Set(kRpEmbedderKey, relying_party_embedder.Serialize());
     new_object.Set(idp_origin_key_, identity_provider.Serialize());
     AddToAccountList(new_object, account_id);
-    GrantObjectPermission(relying_party_requester,
-                          base::Value(std::move(new_object)));
+    GrantObjectPermission(relying_party_requester, std::move(new_object));
   }
 }
 
@@ -137,9 +140,8 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
   if (!object)
     return;
 
-  base::Value new_object = object->value.Clone();
-  base::Value::List* account_ids =
-      new_object.GetDict().FindList(kAccountIdsKey);
+  base::Value::Dict new_object = object->value.Clone();
+  base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
   if (account_ids)
     account_ids->EraseValue(base::Value(account_id));
 
@@ -153,13 +155,11 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
 }
 
 std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
-    const base::Value& object) {
+    const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
-  const std::string* rp_requester_origin =
-      object.GetDict().FindString(kRpRequesterKey);
-  const std::string* rp_embedder_origin =
-      object.GetDict().FindString(kRpEmbedderKey);
-  const std::string* idp_origin = object.GetDict().FindString(idp_origin_key_);
+  const std::string* rp_requester_origin = object.FindString(kRpRequesterKey);
+  const std::string* rp_embedder_origin = object.FindString(kRpEmbedderKey);
+  const std::string* idp_origin = object.FindString(idp_origin_key_);
   return BuildKey(
       rp_requester_origin ? absl::optional<std::string>(*rp_requester_origin)
                           : absl::nullopt,
@@ -169,13 +169,13 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
 }
 
 bool FederatedIdentityAccountKeyedPermissionContext::IsValidObject(
-    const base::Value& object) {
-  return object.is_dict() && object.GetDict().FindString(idp_origin_key_);
+    const base::Value::Dict& object) {
+  return object.FindString(idp_origin_key_);
 }
 
 std::u16string
 FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
-    const base::Value& object) {
+    const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
-  return base::UTF8ToUTF16(*object.GetDict().FindString(idp_origin_key_));
+  return base::UTF8ToUTF16(*object.FindString(idp_origin_key_));
 }

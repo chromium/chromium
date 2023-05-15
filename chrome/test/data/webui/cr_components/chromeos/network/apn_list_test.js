@@ -179,6 +179,21 @@ suite('ApnListTest', function() {
     assertFalse(!!getZeroStateText());
     assertTrue(!!getErrorMessage());
     assertEquals('Can\'t connect to network.', getErrorMessageText());
+
+    // Add a connected APN. The error should not show.
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      apnList: {
+        activeValue: [connectedApn],
+      },
+    };
+    await flushTasks();
+    assertFalse(!!getZeroStateText());
+    assertFalse(!!getErrorMessage());
+    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 1);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+    assertTrue(apns[0].isConnected);
   });
 
   test('There is no Connected APN and no custom APNs', async function() {

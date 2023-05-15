@@ -9,6 +9,14 @@
 
 namespace arc::input_overlay {
 
+// About Json strings.
+constexpr char kMouseAction[] = "mouse_action";
+constexpr char kPrimaryClick[] = "primary_click";
+constexpr char kSecondaryClick[] = "secondary_click";
+constexpr char kHoverMove[] = "hover_move";
+constexpr char kPrimaryDragMove[] = "primary_drag_move";
+constexpr char kSecondaryDragMove[] = "secondary_drag_move";
+
 // System version for AlphaV2.
 constexpr char kSystemVersionAlphaV2[] = "0.2";
 
@@ -100,6 +108,16 @@ enum class TapLabelPosition {
   kBottomRight = 3,
   // Undefined label position. Starts to use in AlphaV2.
   kNone = 4,
+};
+
+// The UI state related to user operations.
+enum class UIState {
+  // UI is not hovered or dragged.
+  kDefault = 0,
+  // UI is under dragging.
+  kDrag,
+  // UI is mouse hovered.
+  kHover,
 };
 
 // These values are about how the reposition is achieved for the metrics record.

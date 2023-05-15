@@ -8,6 +8,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_system_state_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,7 @@ class ArcSystemStateBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeSystemStateInstance system_state_instance_;
   TestingProfile profile_;
-  ArcSystemStateBridge* bridge_ = nullptr;
+  raw_ptr<ArcSystemStateBridge, ExperimentalAsh> bridge_ = nullptr;
 };
 
 TEST_F(ArcSystemStateBridgeTest, ConstructDestruct) {

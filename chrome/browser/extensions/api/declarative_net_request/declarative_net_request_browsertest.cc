@@ -113,7 +113,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
@@ -145,15 +144,20 @@ using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultRulesetID[] = "id";
 
+template <class T>
+base::Value::List VectorToList(const std::vector<T>& values) {
+  base::Value::List lv;
+  for (const auto& value : values) {
+    lv.Append(value);
+  }
+  return lv;
+}
+
 // Returns true if |window.scriptExecuted| is true for the given frame.
 bool WasFrameWithScriptLoaded(content::RenderFrameHost* rfh) {
   if (!rfh)
     return false;
-  bool script_resource_was_loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      rfh, "domAutomationController.send(!!window.scriptExecuted)",
-      &script_resource_was_loaded));
-  return script_resource_was_loaded;
+  return content::EvalJs(rfh, "!!window.scriptExecuted").ExtractBool();
 }
 
 // Helper to wait for ruleset load in response to extension load.
@@ -453,14 +457,8 @@ class DeclarativeNetRequestBrowserTest
           });
     )";
 
-    base::Value::List ids_to_disable =
-        ListBuilder()
-            .Append(rule_ids_to_disable.begin(), rule_ids_to_disable.end())
-            .Build();
-    base::Value::List ids_to_enable =
-        ListBuilder()
-            .Append(rule_ids_to_enable.begin(), rule_ids_to_enable.end())
-            .Build();
+    base::Value::List ids_to_disable = VectorToList(rule_ids_to_disable);
+    base::Value::List ids_to_enable = VectorToList(rule_ids_to_enable);
 
     const std::string script = content::JsReplace(
         kScript, ruleset_id, base::Value(std::move(ids_to_disable)),
@@ -502,10 +500,7 @@ class DeclarativeNetRequestBrowserTest
                 : ['expected:', expected, '; actual:', actual].join(''));
           });
     )";
-    base::Value::List expected = ListBuilder()
-                                     .Append(expected_disabled_rule_ids.begin(),
-                                             expected_disabled_rule_ids.end())
-                                     .Build();
+    base::Value::List expected = VectorToList(expected_disabled_rule_ids);
     std::string result = ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         content::JsReplace(kScript, ruleset_id_string, std::move(expected)));
@@ -549,7 +544,7 @@ class DeclarativeNetRequestBrowserTest
 
     const char* referrer_policy = use_frame_referrer ? "origin" : "no-referrer";
 
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetPrimaryMainFrame(),
         base::StringPrintf(R"(
           document.getElementsByName('%s')[0].referrerPolicy = '%s';
@@ -721,15 +716,13 @@ class DeclarativeNetRequestBrowserTest
     )";
 
     // Serialize |rules_to_add|.
-    ListBuilder rules_to_add_builder;
+    base::Value::List rules_to_add_builder;
     for (const auto& rule : rules_to_add)
       rules_to_add_builder.Append(rule.ToValue());
 
     // Serialize |rule_ids|.
     base::Value::List rule_ids_to_remove_value =
-        ListBuilder()
-            .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
-            .Build();
+        VectorToList(rule_ids_to_remove);
 
     const char* function_name = nullptr;
     switch (scope) {
@@ -743,7 +736,7 @@ class DeclarativeNetRequestBrowserTest
 
     const std::string script =
         content::JsReplace(base::StringPrintf(kScript, function_name),
-                           base::Value(rules_to_add_builder.Build()),
+                           base::Value(std::move(rules_to_add_builder)),
                            base::Value(std::move(rule_ids_to_remove_value)));
     ASSERT_EQ("success", ExecuteScriptInBackgroundPageAndReturnString(
                              extension_id, script));
@@ -877,14 +870,8 @@ class DeclarativeNetRequestBrowserTest
       });
     )";
 
-    base::Value::List ids_to_remove =
-        ListBuilder()
-            .Append(ruleset_ids_to_remove.begin(), ruleset_ids_to_remove.end())
-            .Build();
-    base::Value::List ids_to_add =
-        ListBuilder()
-            .Append(ruleset_ids_to_add.begin(), ruleset_ids_to_add.end())
-            .Build();
+    base::Value::List ids_to_remove = VectorToList(ruleset_ids_to_remove);
+    base::Value::List ids_to_add = VectorToList(ruleset_ids_to_add);
 
     const std::string script =
         content::JsReplace(kScript, base::Value(std::move(ids_to_remove)),
@@ -2403,12 +2390,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ImageCollapsed) {
         browser(),
         embedded_test_server()->GetURL("google.com", "/image.html")));
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
-    bool is_image_collapsed = false;
-    const std::string script =
-        "domAutomationController.send(!!window.imageCollapsed);";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(), script,
-                                                     &is_image_collapsed));
-    return is_image_collapsed;
+    const std::string script = "!!window.imageCollapsed;";
+    return content::EvalJs(web_contents(), script).ExtractBool();
   };
 
   // Initially the image shouldn't be collapsed.
@@ -2442,13 +2425,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
     constexpr char kScript[] = R"(
         var iframe = document.getElementsByName('%s')[0];
         var collapsed = iframe.clientWidth === 0 && iframe.clientHeight === 0;
-        domAutomationController.send(collapsed);
+        collapsed;
     )";
-    bool collapsed = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        GetPrimaryMainFrame(), base::StringPrintf(kScript, frame_name.c_str()),
-        &collapsed));
-    EXPECT_EQ(expect_collapsed, collapsed);
+    EXPECT_EQ(expect_collapsed,
+              content::EvalJs(GetPrimaryMainFrame(),
+                              base::StringPrintf(kScript, frame_name.c_str())));
   };
 
   const std::string kFrameName1 = "frame1";
@@ -5424,10 +5405,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 
     auto execute_script = [](content::RenderFrameHost* frame,
                              const std::string& script) {
-      bool subresource_loaded = false;
-      EXPECT_TRUE(content::ExecuteScriptAndExtractBool(frame, script,
-                                                       &subresource_loaded));
-      return subresource_loaded;
+      return content::EvalJs(frame, script).ExtractBool();
     };
 
     for (const auto& test_case : test_cases) {
@@ -5441,10 +5419,8 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       content::RenderFrameHost* frame = GetPrimaryMainFrame();
 
       // sub-frame.
-      EXPECT_EQ(
-          !(test_case.blocked_mask & kSubframe),
-          execute_script(
-              frame, "domAutomationController.send(!!window.frameLoaded);"));
+      EXPECT_EQ(!(test_case.blocked_mask & kSubframe),
+                execute_script(frame, "!!window.frameLoaded;"));
 
       // stylesheet
       EXPECT_EQ(!(test_case.blocked_mask & kStylesheet),
@@ -5557,51 +5533,49 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   bool TryLoadScript(const std::string& script_src) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    bool success = false;
     std::string script = base::StringPrintf(R"(
       (() => {
         const script = document.createElement('script');
-        script.addEventListener('load', () => {
-          window.domAutomationController.send(true);
+        return new Promise(resolve => {
+          script.addEventListener('load', () => {
+            resolve(true);
+          });
+          script.addEventListener('error', () => {
+            resolve(false);
+          });
+          script.src = '%s';
+          document.body.appendChild(script);
         });
-        script.addEventListener('error', () => {
-          window.domAutomationController.send(false);
-        });
-        script.src = '%s';
-        document.body.appendChild(script);
       })();
                                           )",
                                             script_src.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
-                                            script, &success));
-    return success;
+    return EvalJs(web_contents->GetPrimaryMainFrame(), script).ExtractBool();
   }
 
   bool TryLoadBundle(const std::string& href, const std::string& resources) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    bool success = false;
     std::string script = base::StringPrintf(R"(
           (() => {
             const script = document.createElement('script');
             script.type = 'webbundle';
-            script.addEventListener('load', () => {
-              window.domAutomationController.send(true);
+            return new Promise(resolve => {
+              script.addEventListener('load', () => {
+                resolve(true);
+              });
+              script.addEventListener('error', () => {
+                resolve(false);
+              });
+              script.textContent = JSON.stringify({
+                source: '%s',
+                resources: ['%s'],
+              });
+              document.body.appendChild(script);
             });
-            script.addEventListener('error', () => {
-              window.domAutomationController.send(false);
-            });
-            script.textContent = JSON.stringify({
-              source: '%s',
-              resources: ['%s'],
-            });
-            document.body.appendChild(script);
           })();
         )",
                                             href.c_str(), resources.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
-                                            script, &success));
-    return success;
+    return EvalJs(web_contents->GetPrimaryMainFrame(), script).ExtractBool();
   }
 
   // Registers a request handler for static content.

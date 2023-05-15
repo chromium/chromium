@@ -115,7 +115,7 @@ TEST_F(TouchDevicesControllerSigninTest, SetTapDraggingEnabled) {
 // Tests that touchpad enabled user pref works properly under debug accelerator.
 TEST_F(TouchDevicesControllerSigninTest, ToggleTouchpad) {
   ASSERT_TRUE(GetUserPrefTouchpadEnabled());
-  debug::PerformDebugActionIfEnabled(DEBUG_TOGGLE_TOUCH_PAD);
+  debug::PerformDebugActionIfEnabled(AcceleratorAction::kDebugToggleTouchPad);
   EXPECT_FALSE(GetUserPrefTouchpadEnabled());
 
   // Switch to user 2 and switch back.
@@ -124,7 +124,7 @@ TEST_F(TouchDevicesControllerSigninTest, ToggleTouchpad) {
   SwitchActiveUser(kUser1Email);
   EXPECT_FALSE(GetUserPrefTouchpadEnabled());
 
-  debug::PerformDebugActionIfEnabled(DEBUG_TOGGLE_TOUCH_PAD);
+  debug::PerformDebugActionIfEnabled(AcceleratorAction::kDebugToggleTouchPad);
   EXPECT_TRUE(GetUserPrefTouchpadEnabled());
 }
 
@@ -154,7 +154,8 @@ TEST_F(TouchDevicesControllerSigninTest, SetTouchscreenEnabled) {
   ASSERT_TRUE(GetGlobalTouchscreenEnabled());
   ASSERT_TRUE(GetUserPrefTouchscreenEnabled());
 
-  debug::PerformDebugActionIfEnabled(DEBUG_TOGGLE_TOUCH_SCREEN);
+  debug::PerformDebugActionIfEnabled(
+      AcceleratorAction::kDebugToggleTouchScreen);
   EXPECT_TRUE(GetGlobalTouchscreenEnabled());
   EXPECT_FALSE(GetUserPrefTouchscreenEnabled());
 
@@ -165,7 +166,8 @@ TEST_F(TouchDevicesControllerSigninTest, SetTouchscreenEnabled) {
   EXPECT_TRUE(GetGlobalTouchscreenEnabled());
   EXPECT_FALSE(GetUserPrefTouchscreenEnabled());
 
-  debug::PerformDebugActionIfEnabled(DEBUG_TOGGLE_TOUCH_SCREEN);
+  debug::PerformDebugActionIfEnabled(
+      AcceleratorAction::kDebugToggleTouchScreen);
   EXPECT_TRUE(GetUserPrefTouchscreenEnabled());
   EXPECT_TRUE(GetGlobalTouchscreenEnabled());
 

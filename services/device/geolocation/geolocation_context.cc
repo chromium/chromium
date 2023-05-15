@@ -42,8 +42,9 @@ void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
   impls_.erase(it);
 }
 
-void GeolocationContext::SetOverride(mojom::GeopositionPtr geoposition) {
-  geoposition_override_ = std::move(geoposition);
+void GeolocationContext::SetOverride(
+    mojom::GeopositionResultPtr geoposition_result) {
+  geoposition_override_ = std::move(geoposition_result);
   for (auto& impl : impls_) {
     impl->SetOverride(*geoposition_override_);
   }

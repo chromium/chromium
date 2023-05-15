@@ -49,6 +49,7 @@ using ::chromeos::settings::mojom::kHotspotSubpagePath;
 using ::chromeos::settings::mojom::kKnownNetworksSubpagePath;
 using ::chromeos::settings::mojom::kMobileDataNetworksSubpagePath;
 using ::chromeos::settings::mojom::kNetworkSectionPath;
+using ::chromeos::settings::mojom::kPasspointDetailSubpagePath;
 using ::chromeos::settings::mojom::kTetherDetailsSubpagePath;
 using ::chromeos::settings::mojom::kVpnDetailsSubpagePath;
 using ::chromeos::settings::mojom::kWifiDetailsSubpagePath;
@@ -994,6 +995,29 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE},
       {"hotspotConfigNotLoginErrorMessage",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NOT_LOGIN_ERROR_MESSAGE},
+      {"passpointProviderLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_PROVIDER_LABEL},
+      {"passpointRemoveButton",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_SUBSCRIPTION},
+      {"passpointSectionLabel", IDS_SETTINGS_INTERNET_PASSPOINT_SECTION_LABEL},
+      {"passpointHeadlineText", IDS_SETTINGS_INTERNET_PASSPOINT_HEADLINE},
+      {"passpointSubscriptionExpirationLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION},
+      {"passpointSourceLabel", IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE},
+      {"passpointTrustedCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA},
+      {"passpointSystemCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA},
+      {"passpointDomainsLabel", IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS},
+      {"passpointDomainsA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL},
+      {"passpointRemovalTitle", IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE},
+      {"passpointRemovalDescription",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION},
+      {"passpointLearnMoreA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y},
+      {"passpointRemoveCancelA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y},
+      {"passpointRemoveConfirmA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1179,6 +1203,13 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kMobileDataNetworks,
                             kMobileDataNetworksSettings, generator);
   generator->RegisterTopLevelAltSetting(mojom::Setting::kMobileOnOff);
+
+  // Passpoint details.
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_INTERNET_PASSPOINT_DETAILS,
+      mojom::Subpage::kPasspointDetails, mojom::Subpage::kKnownNetworks,
+      mojom::SearchResultIcon::kWifi, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPasspointDetailSubpagePath);
 
   // Cellular details. Cellular details are considered a child of the mobile
   // data subpage. However, note that if Instant Tethering is not available,

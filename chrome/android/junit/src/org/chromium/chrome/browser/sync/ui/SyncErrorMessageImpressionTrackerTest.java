@@ -22,10 +22,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -34,9 +31,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-/**
- * Unit tests for SyncErrorMessageImpressionTracker.
- * */
+/** Unit tests for SyncErrorMessageImpressionTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SyncErrorMessageImpressionTrackerTest {
@@ -76,29 +71,6 @@ public class SyncErrorMessageImpressionTrackerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
-    public void testNotEnoughTimeSinceLastSyncErrorUINoPwm() {
-        final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
-        mSharedPrefsManager.writeLong(
-                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfFirstSyncMessage);
-        mFakeTimeTestRule.advanceMillis(
-                SyncErrorMessageImpressionTracker.MINIMAL_DURATION_BETWEEN_UI_MS);
-        assertFalse(SyncErrorMessageImpressionTracker.canShowNow());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
-    public void testEnoughTimeSinceLastSyncErrorUINoPwm() {
-        final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
-        mSharedPrefsManager.writeLong(
-                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfFirstSyncMessage);
-        mFakeTimeTestRule.advanceMillis(
-                SyncErrorMessageImpressionTracker.MINIMAL_DURATION_BETWEEN_UI_MS + 1);
-        assertTrue(SyncErrorMessageImpressionTracker.canShowNow());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     public void testNotEnoughTimeSinceLastSyncErrorUI() {
         final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
         mSharedPrefsManager.writeLong(
@@ -117,7 +89,6 @@ public class SyncErrorMessageImpressionTrackerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     public void testNotEnoughTimeSinceLastPwmUI() {
         final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
         mSharedPrefsManager.writeLong(
@@ -136,7 +107,6 @@ public class SyncErrorMessageImpressionTrackerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     public void testEnoughTimeSinceBothUis() {
         final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
         mSharedPrefsManager.writeLong(

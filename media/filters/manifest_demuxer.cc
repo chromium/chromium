@@ -65,6 +65,8 @@ bool ManifestDemuxer::ManifestDemuxerStream::SupportsConfigChanges() {
 
 ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  impl_.reset();
+  chunk_demuxer_.reset();
 }
 
 ManifestDemuxer::ManifestDemuxer(
@@ -140,18 +142,43 @@ void ManifestDemuxer::AbortPendingReads() {
 }
 
 void ManifestDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (!media_task_runner_->RunsTasksInCurrentSequence()) {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ManifestDemuxer::StartWaitingForSeek,
+                                  weak_factory_.GetWeakPtr(), seek_time));
+    return;
+  }
+  media_time_ = seek_time;
   chunk_demuxer_->StartWaitingForSeek(seek_time);
   impl_->StartWaitingForSeek();
 }
 
 void ManifestDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {
+  if (!media_task_runner_->RunsTasksInCurrentSequence()) {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ManifestDemuxer::CancelPendingSeek,
+                                  weak_factory_.GetWeakPtr(), seek_time));
+    return;
+  }
+
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug/1266991): In the current implementation, if a seek happens while
-  // another seek is pending, the first seek is allowed to finish before
-  // starting the second seek. As a result, there isn't really a good way to
-  // cancel a pending one, so we don't do anything.
-  NOTIMPLEMENTED();
+
+  // Since cancellation happens from the main thread, it's possible for a
+  // function order to look like:
+  // Main Thread                           | Media Thread
+  // --------------------------------------|-----------------------------------
+  // CancelPendingSeek                     |
+  //         |                             |   CompletePendingSeek
+  //          `----------------------------|-> CancelPendingSeek
+  // so `pending_seek_` might already be called. If `pending_seek_` is still
+  // pending, then canceling the chunk demuxer pending seek should execute
+  // its callback immediately with a success status, and we'd just then be left
+  // waiting for the engine to finish.
+  // TODO(crbug/1266991): Make the engine cancelable as well.
+  if (pending_seek_) {
+    AbortPendingReads();
+    chunk_demuxer_->CancelPendingSeek(seek_time);
+  }
 }
 
 void ManifestDemuxer::Seek(base::TimeDelta time,
@@ -175,28 +202,21 @@ void ManifestDemuxer::Seek(base::TimeDelta time,
 void ManifestDemuxer::SeekInternal() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  // SeekInternal can be delayed and potentially called after a pending event
-  // finishes. Pending events should not restart playback which was stopped
-  // prior to the seek being requested, so we can check that it's still 0.
-  CHECK_EQ(current_playback_rate_, 0);
-
   has_pending_event_ = true;
 
   // Cancel any outstanding events, we don't want them interrupting us.
   cancelable_next_event_.Cancel();
 
-  // ManifestDemuxer::Engine::Seek returns true if it cleared data from
-  // ChunkDemuxer and needs a new call to `OnTimeUpdate`. If this is the
-  // case, ChunkDemuxer won't finish it's seek process until new data is
-  // appended as a result of the player event. However it's possible for that
-  // data to come in chunks, so ChunkDemuxer might think it's ready to finish
-  // it's seek when only some of the data has come in. As a result, we have to
-  // wait for both `OnChunkDemuxerSeeked` AND `OnEngineSeekComplete` to finish.
-  // Each of them will check |seek_waiting_on_engine_|, the first will clear the
-  // flag, and the second will notice the cleared flag and finish the seek
-  // process.
+  // Seek the engine first, since it might clear out data from the chunk demuxer
+  // and reset it into a state where it can accept the correct timestamps. If
+  // ManifestDemuxer::Engine::Seek returns true, then it means that a new fetch
+  // event is required to repopulate the chunk demuxer's buffers.
   seek_waiting_on_engine_ = impl_->Seek(media_time_);
 
+  // Seek the demuxer and signal that we are waiting on it to complete. The seek
+  // won't be finished until the ChunkDemuxer has finished seeking and the
+  // engine is ready.
+  seek_waiting_on_demuxer_ = true;
   chunk_demuxer_->Seek(media_time_,
                        base::BindOnce(&ManifestDemuxer::OnChunkDemuxerSeeked,
                                       weak_factory_.GetWeakPtr()));
@@ -209,18 +229,15 @@ void ManifestDemuxer::SeekInternal() {
 }
 
 bool ManifestDemuxer::IsSeekable() const {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  // The underlying wrapping ChunkDemuxer is seekable.
+  DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
   return impl_->IsSeekable();
 }
 
 void ManifestDemuxer::Stop() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  cancelable_next_event_.Cancel();
   impl_->Stop();
   chunk_demuxer_->Stop();
-  impl_.reset();
-  chunk_demuxer_.reset();
-  cancelable_next_event_.Cancel();
 }
 
 base::TimeDelta ManifestDemuxer::GetStartTime() const {
@@ -252,7 +269,6 @@ int64_t ManifestDemuxer::GetMemoryUsage() const {
 
 absl::optional<container_names::MediaContainerName>
 ManifestDemuxer::GetContainerForMetrics() const {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // TODO(crbug/1266991): Consider how this is used. HLS can involve multiple
   // stream types (mp2t, mp4, etc). Refactor to report something useful.
   return absl::nullopt;
@@ -392,9 +408,10 @@ void ManifestDemuxer::OnChunkDemuxerInitialized(PipelineStatus init_status) {
 
 void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  seek_waiting_on_demuxer_ = false;
 
   if (!pending_seek_) {
-    OnError(std::move(seek_status));
+    seek_waiting_on_engine_ = false;
     return;
   }
 
@@ -406,46 +423,32 @@ void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
     return;
   }
 
-  if (seek_waiting_on_engine_) {
-    // If this flag was set, then there is a simultaneous wait for both
-    // OnChunkDemuxerSeeked and OnEngineSeekComplete, and we were called first.
-    // We should set the flag back to false, so that OnEngineSeekComplete can
-    // finish the seeking process.
-    seek_waiting_on_engine_ = false;
-    return;
-  }
-
   // Complete the seek with an ok-status. This function already handles non-ok
   // status results above.
-  CompletePendingSeek();
+  TryCompletePendingSeek();
 }
 
 void ManifestDemuxer::OnEngineSeekComplete(base::TimeDelta delay_time) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  seek_waiting_on_engine_ = false;
 
   if (!pending_seek_) {
-    // OnChunkDemuxerSeeked returned earlier with an error, so we don't have
-    // anything to do. Make sure that the seek waiting flag was cleaned up.
-    CHECK_EQ(seek_waiting_on_engine_, false);
-    return;
-  }
-
-  if (seek_waiting_on_engine_) {
-    // If the flag is still set, we were called before OnChunkDemuxerSeeked.
-    // Set the flag back to false, so that when OnChunkDemuxerSeeked is called,
-    // it will finish up and execute the pending_seek_ callback.
-    seek_waiting_on_engine_ = false;
+    seek_waiting_on_demuxer_ = false;
     return;
   }
 
   // Complete the seek with an ok-status. If the chunk demuxer had failed to
   // seek, it would have already posted the `pending_seek_` call with its
   // failure status.
-  CompletePendingSeek();
+  TryCompletePendingSeek();
 }
 
-void ManifestDemuxer::CompletePendingSeek() {
+void ManifestDemuxer::TryCompletePendingSeek() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (seek_waiting_on_engine_ || seek_waiting_on_demuxer_) {
+    return;
+  }
 
   CHECK(pending_seek_);
   std::move(pending_seek_).Run(OkStatus());
@@ -469,7 +472,7 @@ void ManifestDemuxer::OnDemuxerStreamRead(
   if (status == DemuxerStream::Status::kOk) {
     // The entire vector must be checked as timestamps are often out of order.
     for (const auto& buffer : buffers) {
-      if (buffer->timestamp() > media_time_) {
+      if (!buffer->end_of_stream() && buffer->timestamp() > media_time_) {
         media_time_ = buffer->timestamp();
       }
     }

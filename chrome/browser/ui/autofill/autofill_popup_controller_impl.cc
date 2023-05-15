@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,7 +62,7 @@ static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
     base::Milliseconds(500);
 
 // Returns true if the given id refers to an element that can be accepted.
-bool CanAccept(int id) {
+bool CanAccept(PopupItemId id) {
   return id != POPUP_ITEM_ID_SEPARATOR &&
          id != POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE &&
          id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE && id != POPUP_ITEM_ID_TITLE;
@@ -323,6 +324,15 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
   }
 
+  if (web_contents_ &&
+      suggestion.feature_for_iph ==
+          feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature.name) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext())
+        ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
+  }
+
   absl::optional<std::u16string> announcement =
       suggestion.acceptance_a11y_announcement;
   if (announcement) {
@@ -428,7 +438,7 @@ void AutofillPopupControllerImpl::SelectSuggestion(
 
   if (index) {
     DCHECK_LT(*index, suggestions_.size());
-    if (!CanAccept(GetSuggestionAt(*index).frontend_id)) {
+    if (!CanAccept(GetSuggestionAt(*index).frontend_id.as_popup_item_id())) {
       index = absl::nullopt;
     }
   }
@@ -451,8 +461,8 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
   if (suggestions_.empty()) {
     return false;
   }
-  int id = suggestions_[0].frontend_id;
-  return id > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
+  Suggestion::FrontendId id = suggestions_[0].frontend_id;
+  return id.as_int() > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
          id == POPUP_ITEM_ID_SCAN_CREDIT_CARD;
 }
 

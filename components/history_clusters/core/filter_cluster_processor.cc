@@ -34,37 +34,7 @@ bool IsFunctionalFilter(QueryClustersFilterParams filter_params) {
          !filter_params.categories_blocklist.empty() ||
          filter_params.is_search_initiated ||
          filter_params.has_related_searches ||
-         filter_params.is_shown_on_prominent_ui_surfaces ||
-         filter_params.max_clusters > 0;
-}
-
-// Returns whether `visit` could possibly be classified as one of the categories
-// in `categories`.
-bool IsVisitInCategories(const history::ClusterVisit& visit,
-                         const base::flat_set<std::string>& categories) {
-  for (const auto& visit_category :
-       visit.annotated_visit.content_annotations.model_annotations.categories) {
-    if (categories.contains(visit_category.id)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Returns whether `cluster` could possibly be classified as one of the
-// categories in `categories`.
-bool IsClusterInCategories(const history::Cluster& cluster,
-                           const base::flat_set<std::string>& categories) {
-  for (const auto& visit : cluster.visits) {
-    if (!IsShownVisitCandidate(visit)) {
-      continue;
-    }
-
-    if (IsVisitInCategories(visit, categories)) {
-      return true;
-    }
-  }
-  return false;
+         filter_params.is_shown_on_prominent_ui_surfaces;
 }
 
 }  // namespace
@@ -100,14 +70,6 @@ void FilterClusterProcessor::ProcessClusters(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter" +
           GetHistogramNameSliceForRequestSource(clustering_request_source_),
       clusters->size());
-
-  if (filter_params_->max_clusters > 0) {
-    SortClustersUsingFilterParams(clusters);
-
-    if (clusters->size() > filter_params_->max_clusters) {
-      clusters->resize(filter_params_->max_clusters);
-    }
-  }
 }
 
 bool FilterClusterProcessor::DoesClusterMatchFilter(
@@ -226,43 +188,6 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
   }
 
   return matches_filter;
-}
-
-void FilterClusterProcessor::SortClustersUsingFilterParams(
-    std::vector<history::Cluster>* clusters) const {
-  // Within each cluster, sort visits.
-  for (auto& cluster : *clusters) {
-    StableSortVisits(cluster.visits);
-  }
-
-  // After that, sort clusters based on `filter_params_`.
-  base::ranges::stable_sort(*clusters, [this](const auto& c1, const auto& c2) {
-    if (c1.visits.empty()) {
-      return false;
-    }
-    if (c2.visits.empty()) {
-      return true;
-    }
-
-    // Boost categories if provided.
-    if (!filter_params_->categories_boostlist.empty()) {
-      bool c1_has_visit_in_categories =
-          IsClusterInCategories(c1, filter_params_->categories_boostlist);
-      bool c2_has_visit_in_categories =
-          IsClusterInCategories(c2, filter_params_->categories_boostlist);
-
-      if (c1_has_visit_in_categories ^ c2_has_visit_in_categories) {
-        return c1_has_visit_in_categories;
-      }
-    }
-
-    // Otherwise, fall back to reverse chronological.
-    base::Time c1_time = c1.visits.front().annotated_visit.visit_row.visit_time;
-    base::Time c2_time = c2.visits.front().annotated_visit.visit_row.visit_time;
-
-    // Use c1 > c2 to get more recent clusters BEFORE older clusters.
-    return c1_time > c2_time;
-  });
 }
 
 }  // namespace history_clusters

@@ -11,6 +11,7 @@ include_rules = [
   "+components/signin/public",
   "+components/storage_monitor",
   "+components/sync",
+  "+components/supervised_user",
   "+components/sync_preferences",
   "+components/update_client",
   "+components/value_store",

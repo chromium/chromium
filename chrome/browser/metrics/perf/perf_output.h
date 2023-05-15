@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -59,7 +60,7 @@ class PerfOutputCall {
   void StopImpl();
 
   // A non-retaining pointer to the DebugDaemonClient instance.
-  ash::DebugDaemonClient* debug_daemon_client_;
+  raw_ptr<ash::DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
 
   // Used to capture perf data written to a pipe.
   std::unique_ptr<chromeos::PipeReader> perf_data_pipe_reader_;

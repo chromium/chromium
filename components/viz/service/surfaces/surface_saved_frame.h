@@ -29,16 +29,10 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   struct RenderPassDrawData {
     RenderPassDrawData();
-    RenderPassDrawData(const CompositorRenderPass& render_pass, float opacity);
+    explicit RenderPassDrawData(const CompositorRenderPass& render_pass);
 
     // This represents the size of the copied texture.
     gfx::Size size;
-    // This is a transform that takes `rect` into a root render pass space. Note
-    // that this makes this result dependent on the structure of the compositor
-    // frame render pass list used to request the copy output.
-    gfx::Transform target_transform;
-    // Opacity accumulated from the original frame.
-    float opacity = 1.f;
   };
 
   struct OutputCopyResult {
@@ -74,7 +68,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     FrameResult& operator=(FrameResult&& other);
 
-    OutputCopyResult root_result;
     std::vector<absl::optional<OutputCopyResult>> shared_results;
     base::flat_set<ViewTransitionElementResourceId> empty_resource_ids;
   };
@@ -100,14 +93,11 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds() const;
 
  private:
-  enum class ResultType { kRoot, kShared };
-
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
       const CompositorRenderPassList& render_pass_list) const;
 
-  void NotifyCopyOfOutputComplete(ResultType type,
-                                  size_t shared_index,
+  void NotifyCopyOfOutputComplete(size_t shared_index,
                                   const RenderPassDrawData& info,
                                   std::unique_ptr<CopyOutputResult> result);
 

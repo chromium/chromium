@@ -140,6 +140,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/permissions/permission_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -189,9 +190,8 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/locale_change_guard.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/core/user_policy_manager_builder_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_factory_ash.h"
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
@@ -573,7 +573,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   // policy data immediately.
   bool force_immediate_policy_load = !async_prefs;
 
-  policy::UserCloudPolicyManager* user_cloud_policy_manager;
+  policy::CloudPolicyManager* cloud_policy_manager;
   policy::ConfigurationPolicyProvider* policy_provider;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (force_immediate_policy_load)
@@ -581,15 +581,11 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   else
     ash::DeviceSettingsService::Get()->LoadIfNotPresent();
 
-  policy::CreateConfigurationPolicyProvider(
-      this, force_immediate_policy_load, io_task_runner_,
-      &user_cloud_policy_manager_ash_, &active_directory_policy_manager_);
+  user_cloud_policy_manager_ash_ = policy::CreateUserCloudPolicyManagerAsh(
+      this, force_immediate_policy_load, io_task_runner_);
 
-  user_cloud_policy_manager = nullptr;
+  cloud_policy_manager = nullptr;
   policy_provider = GetUserCloudPolicyManagerAsh();
-  if (!policy_provider) {
-    policy_provider = GetActiveDirectoryPolicyManager();
-  }
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (IsMainProfile()) {
@@ -599,7 +595,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
         schema_registry_service_->registry(), std::move(loader));
     user_policy_provider_->Init(schema_registry_service_->registry());
     policy_provider = user_policy_provider_.get();
-    user_cloud_policy_manager = nullptr;
+    cloud_policy_manager = nullptr;
 
     // Start lacros-chrome volume list provider, which is robust against
     // API unavailability in ash-chrome.
@@ -610,17 +606,34 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 #else
   {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
-        GetPath(), GetPolicySchemaRegistryService()->registry(),
-        force_immediate_policy_load, io_task_runner_,
-        base::BindRepeating(&content::GetNetworkConnectionTracker));
-    user_cloud_policy_manager = user_cloud_policy_manager_.get();
-    policy_provider = user_cloud_policy_manager;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    ProfileAttributesEntry* entry =
+        profile_manager->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(GetPath());
+
+    if (entry && !entry->GetProfileManagementEnrollmentToken().empty()) {
+      profile_cloud_policy_manager_ = policy::ProfileCloudPolicyManager::Create(
+          GetPath(), GetPolicySchemaRegistryService()->registry(),
+          force_immediate_policy_load, io_task_runner_,
+          base::BindRepeating(&content::GetNetworkConnectionTracker));
+      cloud_policy_manager = profile_cloud_policy_manager_.get();
+    } else {
+#else
+    {
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
+          GetPath(), GetPolicySchemaRegistryService()->registry(),
+          force_immediate_policy_load, io_task_runner_,
+          base::BindRepeating(&content::GetNetworkConnectionTracker));
+      cloud_policy_manager = user_cloud_policy_manager_.get();
+    }
+    policy_provider = cloud_policy_manager;
   }
 #endif
   profile_policy_connector_ =
       policy::CreateProfilePolicyConnectorForBrowserContext(
-          schema_registry_service_->registry(), user_cloud_policy_manager,
+          schema_registry_service_->registry(), cloud_policy_manager,
           policy_provider, g_browser_process->browser_policy_connector(),
           force_immediate_policy_load, this);
 
@@ -1267,15 +1280,15 @@ policy::SchemaRegistryService* ProfileImpl::GetPolicySchemaRegistryService() {
 policy::UserCloudPolicyManagerAsh* ProfileImpl::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_ash_.get();
 }
-
-policy::ActiveDirectoryPolicyManager*
-ProfileImpl::GetActiveDirectoryPolicyManager() {
-  return active_directory_policy_manager_.get();
-}
 #else
 policy::UserCloudPolicyManager* ProfileImpl::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
 }
+
+policy::ProfileCloudPolicyManager* ProfileImpl::GetProfileCloudPolicyManager() {
+  return profile_cloud_policy_manager_.get();
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::ConfigurationPolicyProvider*
@@ -1283,15 +1296,17 @@ ProfileImpl::configuration_policy_provider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (user_cloud_policy_manager_ash_)
     return user_cloud_policy_manager_ash_.get();
-  if (active_directory_policy_manager_)
-    return active_directory_policy_manager_.get();
   return nullptr;
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (user_policy_provider_)
     return user_policy_provider_.get();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return user_cloud_policy_manager_.get();
+  if (user_cloud_policy_manager_.get()) {
+    return user_cloud_policy_manager_.get();
+  } else {
+    return profile_cloud_policy_manager_.get();
+  }
 #endif
 }
 

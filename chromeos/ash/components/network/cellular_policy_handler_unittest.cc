@@ -61,6 +61,7 @@ const char kWifiServicePath[] = "wifi_service_path";
 const char kWifiGuid[] = "wifi_guid";
 const char kWifiName[] = "wifi";
 const base::TimeDelta kInstallationRetryDelay = base::Days(1);
+const base::TimeDelta kInstallationRetryDelayExponential = base::Minutes(12);
 
 void CheckShillConfiguration(bool is_installed) {
   std::string service_path =
@@ -371,6 +372,75 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
   base::RunLoop().RunUntilIdle();
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
+}
+
+TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
+  SetupEuicc();
+
+  base::HistogramTester histogram_tester;
+
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
+
+  // Make the first installation attempt fail due to an user error
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorAlreadyDisabled);
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+
+  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
+
+  // As this is an user error, retry shouldn't happen
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/0);
+
+  // Make the second installation attempt fail due to a dependency error
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorSendHttpsFailure);
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+
+  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
+
+  // For dependency errors, retry should happen after the wait time of one day
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+
+  // Make the third installation attempt fail due to an internal error
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorUnknown);
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+
+  FastForwardBy(kInstallationRetryDelayExponential);
+
+  // For internal errors, retry should follow an exponential backoff with the
+  // initial delay of 5 minutes.
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/2);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {

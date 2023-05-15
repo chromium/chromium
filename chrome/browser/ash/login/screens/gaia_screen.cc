@@ -59,6 +59,8 @@ std::string GaiaScreen::GetResultString(Result result) {
   switch (result) {
     case Result::BACK:
       return "Back";
+    case Result::BACK_CHILD:
+      return "BackChild";
     case Result::CANCEL:
       return "Cancel";
     case Result::ENTERPRISE_ENROLL:
@@ -171,7 +173,13 @@ void GaiaScreen::HideImpl() {
 void GaiaScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
-    exit_callback_.Run(Result::BACK);
+    GaiaView::GaiaPath gaiaPath = view_->GetGaiaPath();
+    if (gaiaPath == GaiaView::GaiaPath::kChildSignup ||
+        gaiaPath == GaiaView::GaiaPath::kChildSignin) {
+      exit_callback_.Run(Result::BACK_CHILD);
+    } else {
+      exit_callback_.Run(Result::BACK);
+    }
   } else if (action_id == kUserActionCancel) {
     exit_callback_.Run(Result::CANCEL);
   } else if (action_id == kUserActionStartEnrollment) {

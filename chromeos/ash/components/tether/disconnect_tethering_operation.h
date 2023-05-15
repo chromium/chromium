@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_DISCONNECT_TETHERING_OPERATION_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -91,7 +92,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   int disconnect_message_sequence_number_ = -1;
   bool has_sent_message_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   base::Time disconnect_start_time_;
 };
 

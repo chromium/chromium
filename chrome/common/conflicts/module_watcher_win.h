@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -144,7 +145,9 @@ class ModuleWatcher {
   // The current callback. Can end up being invoked on any thread.
   OnModuleEventCallback callback_;
   // Used by the DllNotification mechanism.
-  void* dll_notification_cookie_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* dll_notification_cookie_ = nullptr;
 
   base::WeakPtrFactory<ModuleWatcher> weak_ptr_factory_{this};
 };

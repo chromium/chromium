@@ -1,0 +1,10 @@
+{
+    "aggregation_coordinator_identifier": "aws-cloud",
+    "aggregation_service_payloads": [ {
+       "debug_cleartext_payload": "omRkYXRhgqJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAaJldmFsdWVEAAAABGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAA2lvcGVyYXRpb25paGlzdG9ncmFt",
+       "key_id": "example_id",
+       "payload": "CW59aBHtPq2IxSpPrZgjBEBr2r3vCHu2nbncyPH5fV4sBzPt2O0vE8Xp//Edt9pAnblEke+AicrvDew1oIgIo5p+L/HOysmE0J/o5/cN3fGqmgU0cEzXCc7JKbxFFiFxb9TSTBE6LG1XdTcS2Tggk9on8jdA37+AChmKLyrawwM7Andk0NvkPLTWDo3/vst1Sx84"
+    } ],
+    "debug_key": "123",
+    "shared_info": "{\"api\":\"shared-storage\",\"debug_mode\":\"enabled\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"0.1\"}"
+}

@@ -223,34 +223,5 @@ TEST_F(OnDeviceClusteringUtilTest, RemoveEmptyClusters) {
   EXPECT_THAT(clusters[0].visits.size(), 1u);
 }
 
-TEST_F(OnDeviceClusteringUtilTest, IsShownVisitCandidateZeroScore) {
-  history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
-                                           base::Time::FromTimeT(10)),
-      absl::nullopt, 0.0);
-
-  ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
-}
-
-TEST_F(OnDeviceClusteringUtilTest, IsShownVisitCandidateNoTitle) {
-  history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
-                                           base::Time::FromTimeT(10)),
-      absl::nullopt, 0.0);
-  cluster_visit.annotated_visit.url_row.set_title(u"");
-
-  ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
-}
-
-TEST_F(OnDeviceClusteringUtilTest, IsShownVisitCandidate) {
-  history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
-                                           base::Time::FromTimeT(10)),
-      absl::nullopt, 1.0);
-  cluster_visit.annotated_visit.url_row.set_title(u"sometitle");
-
-  ASSERT_TRUE(IsShownVisitCandidate(cluster_visit));
-}
-
 }  // namespace
 }  // namespace history_clusters

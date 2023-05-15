@@ -53,7 +53,7 @@ suite('ChromeColorsTest', () => {
     await setInitialSettings(0);
 
     const eventPromise = eventToPromise('back-click', chromeColorsElement);
-    chromeColorsElement.$.backButton.click();
+    chromeColorsElement.$.heading.getBackButton().click();
     const event = await eventPromise;
     assertTrue(!!event);
   });

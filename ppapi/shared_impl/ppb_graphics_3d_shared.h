@@ -68,10 +68,9 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
   void SwapBuffersACK(int32_t pp_error);
 
  protected:
-  PPB_Graphics3D_Shared(PP_Instance instance, bool use_shared_images_swapchain);
+  explicit PPB_Graphics3D_Shared(PP_Instance instance);
   PPB_Graphics3D_Shared(const HostResource& host_resource,
-                        const gfx::Size& size,
-                        bool use_shared_images_swapchain);
+                        const gfx::Size& size);
   ~PPB_Graphics3D_Shared() override;
 
   virtual gpu::CommandBuffer* GetCommandBuffer() = 0;
@@ -83,8 +82,6 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
   bool HasPendingSwap() const;
   bool CreateGLES2Impl(gpu::gles2::GLES2Implementation* share_gles2);
   void DestroyGLES2Impl();
-
-  const bool use_shared_images_swapchain_;
 
  private:
   std::unique_ptr<gpu::gles2::GLES2CmdHelper> gles2_helper_;

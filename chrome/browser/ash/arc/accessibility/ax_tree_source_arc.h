@@ -13,6 +13,7 @@
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
@@ -214,7 +215,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   absl::optional<std::string> notification_key_;
 
   // Window corresponding this tree.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // Cache of mapping from the *Android* window id to the last focused node id.
   std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;
@@ -228,9 +229,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
 
   // A delegate that handles accessibility actions on behalf of this tree. The
   // delegate is valid during the lifetime of this tree.
-  const Delegate* const delegate_;
+  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
 
-  extensions::AutomationEventRouterInterface*
+  raw_ptr<extensions::AutomationEventRouterInterface, ExperimentalAsh>
       automation_event_router_for_test_ = nullptr;
 };
 

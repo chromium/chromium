@@ -980,7 +980,7 @@ class SchemaNodesGenerator:
       f.write('};\n\n')
 
     f.write('const internal::SchemaData* GetChromeSchemaData() {\n')
-    f.write('  static constexpr internal::SchemaData chrome_schema_data = {\n'
+    f.write('  static const internal::SchemaData kChromeSchemaData = {\n'
             '    kSchemas,\n')
     f.write('    kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
     f.write('    kProperties,\n' if self.properties_nodes else '  nullptr,\n')
@@ -994,7 +994,7 @@ class SchemaNodesGenerator:
     f.write('    %d,  // validation_schema root index\n' %
             self.validation_schema_root_index)
     f.write('  };\n\n')
-    f.write('  return &chrome_schema_data;\n' '}\n\n')
+    f.write('  return &kChromeSchemaData;\n' '}\n\n')
 
   def GetByID(self, id_str):
     if not isinstance(id_str, string_type):

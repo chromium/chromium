@@ -32,6 +32,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
@@ -63,7 +64,6 @@ DownloadBubbleUIController::DownloadBubbleUIController(
     : browser_(browser),
       profile_(browser->profile()),
       update_service_(update_service),
-      download_manager_(profile_->GetDownloadManager()),
       offline_manager_(
           OfflineItemModelManagerFactory::GetForBrowserContext(profile_)) {}
 
@@ -76,10 +76,6 @@ void DownloadBubbleUIController::HideDownloadUi() {
 void DownloadBubbleUIController::HandleButtonPressed() {
   RecordDownloadBubbleInteraction();
   display_controller_->HandleButtonPressed();
-}
-
-void DownloadBubbleUIController::OnDownloadManagerGoingDown() {
-  download_manager_ = nullptr;
 }
 
 void DownloadBubbleUIController::OnOfflineItemsAdded(
@@ -100,8 +96,14 @@ void DownloadBubbleUIController::OnDownloadItemAdded(
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
     const DownloadUIModel* model) const {
-  return download::IsDownloadBubbleV2Enabled(profile_) &&
-         model->GetDownloadItem() && model->GetDownloadItem()->IsOffTheRecord();
+  return download::IsDownloadBubbleV2Enabled(profile_) && model->profile() &&
+         model->profile()->IsIncognitoProfile();
+}
+
+bool DownloadBubbleUIController::ShouldShowGuestIcon(
+    const DownloadUIModel* model) const {
+  return download::IsDownloadBubbleV2Enabled(profile_) && model->profile() &&
+         model->profile()->IsGuestSession();
 }
 
 void DownloadBubbleUIController::OnOfflineItemRemoved(const ContentId& id) {
@@ -147,8 +149,12 @@ void DownloadBubbleUIController::OnDownloadItemUpdated(
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     bool is_main_view) {
   std::vector<DownloadUIModelPtr> all_items;
+  if (!update_service_->IsInitialized()) {
+    return all_items;
+  }
   update_service_->GetAllModelsToDisplay(
-      all_items, /*force_backfill_download_items=*/true);
+      all_items, GetWebAppIdForBrowser(browser_),
+      /*force_backfill_download_items=*/true);
   std::vector<DownloadUIModelPtr> items_to_return;
   for (auto& model : all_items) {
     if (!is_main_view && model->WasActionedOn()) {
@@ -246,7 +252,8 @@ void DownloadBubbleUIController::RetryDownload(
     DownloadCommands::Command command) {
   DCHECK(command == DownloadCommands::RETRY);
   display_controller_->HideBubble();
-  if (!download_manager_) {
+  content::DownloadManager* download_manager = profile_->GetDownloadManager();
+  if (!download_manager) {
     return;
   }
   RecordDownloadRetry(
@@ -281,7 +288,7 @@ void DownloadBubbleUIController::RetryDownload(
   download_url_params->set_download_source(
       download::DownloadSource::RETRY_FROM_BUBBLE);
 
-  download_manager_->DownloadUrl(std::move(download_url_params));
+  download_manager->DownloadUrl(std::move(download_url_params));
 }
 
 void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
@@ -303,4 +310,9 @@ void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_->profile());
   tracker->NotifyEvent("download_bubble_interaction");
+}
+
+base::WeakPtr<DownloadBubbleUIController>
+DownloadBubbleUIController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }

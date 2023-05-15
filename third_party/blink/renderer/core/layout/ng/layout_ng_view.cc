@@ -33,21 +33,29 @@ bool LayoutNGView::IsFragmentationContextRoot() const {
   return ShouldUsePrintingLayout();
 }
 
-void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
-  relayout_children |=
-      !ShouldUsePrintingLayout() &&
-      (!GetFrameView() || LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
-       LogicalHeight() != ViewLogicalHeightForBoxSizing());
-  if (relayout_children && GetDocument().SvgExtensions()) {
+void LayoutNGView::UpdateBlockLayout() {
+  is_resizing_initial_containing_block_ =
+      LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
+      LogicalHeight() != ViewLogicalHeightForBoxSizing();
+  bool invalidate_svg_roots =
+      GetDocument().SvgExtensions() && !ShouldUsePrintingLayout() &&
+      (!GetFrameView() || is_resizing_initial_containing_block_);
+  if (invalidate_svg_roots) {
     GetDocument()
         .AccessSVGExtensions()
-        .InvalidateSVGRootsWithRelativeLengthDescendents(nullptr);
+        .InvalidateSVGRootsWithRelativeLengthDescendents();
   }
 
-  NGConstraintSpace constraint_space =
-      NGConstraintSpace::CreateFromLayoutObject(*this);
+  const auto& style = StyleRef();
+  NGConstraintSpaceBuilder builder(
+      style.GetWritingMode(), style.GetWritingDirection(),
+      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  builder.SetAvailableSize(InitialContainingBlockSize());
+  builder.SetIsFixedInlineSize(true);
+  builder.SetIsFixedBlockSize(true);
 
-  NGBlockNode(this).Layout(constraint_space);
+  NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  is_resizing_initial_containing_block_ = false;
 }
 
 MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {

@@ -30,6 +30,10 @@ component("cpp") {
   output_name = "network_cpp"
 
   sources = [
+    "attribution_utils.cc",
+    "attribution_utils.h",
+    "browsing_topics_parser.cc",
+    "browsing_topics_parser.h",
     "client_hints.cc",
     "client_hints.h",
     "constants.cc",
@@ -119,8 +123,6 @@ component("cpp") {
     "simple_url_loader.cc",
     "simple_url_loader.h",
     "simple_url_loader_stream_consumer.h",
-    "simple_url_loader_throttle.cc",
-    "simple_url_loader_throttle.h",
     "single_request_url_loader_factory.cc",
     "single_request_url_loader_factory.h",
     "source_stream_to_data_pipe.cc",
@@ -133,7 +135,6 @@ component("cpp") {
     "timing_allow_origin_parser.h",
     "trust_token_http_headers.cc",
     "trust_token_http_headers.h",
-    "trust_token_operation_authorization.h",
     "url_util.cc",
     "url_util.h",
     "variants_header_parser.cc",
@@ -311,27 +312,28 @@ component("cross_origin_embedder_policy") {
 }
 
 # This component is separate from `:cpp_base` to avoid a circular dependency as
-# its needed by :trigger_attestation_traits.
-component("trigger_attestation") {
+# its needed by :attribution_traits.
+component("attribution") {
   sources = [
-    "trigger_attestation.cc",
-    "trigger_attestation.h",
+    "attribution_reporting_runtime_features.h",
+    "trigger_verification.cc",
+    "trigger_verification.h",
   ]
   deps = [ "//base" ]
-  defines = [ "IS_NETWORK_CPP_TRIGGER_ATTESTATION_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_ATTRIBUTION_IMPL" ]
 }
 
 # This component is separate from
 # //services/network/public/mojom:url_loader_base to use the same typemap for
 # both Blink and non-Blink bindings.
-component("trigger_attestation_traits") {
+component("attribution_traits") {
   sources = [
     "attribution_mojom_traits.cc",
     "attribution_mojom_traits.h",
-    "trigger_attestation.h",
+    "trigger_verification.h",
   ]
   deps = [
-    ":trigger_attestation",
+    ":attribution",
     "//base",
     "//services/network/public/mojom:mojom_attribution_shared",
   ]
@@ -427,6 +429,8 @@ component("cpp_base") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":attribution",
+    ":attribution_traits",
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
@@ -435,7 +439,6 @@ component("cpp_base") {
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
     ":structured_headers_mojom_support",
-    ":trigger_attestation",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
@@ -450,6 +453,7 @@ component("cpp_base") {
     "//net",
     "//services/network/public/mojom:cookies_mojom",
     "//services/network/public/mojom:mojom_first_party_sets",
+    "//services/network/public/mojom:mojom_network_isolation_key",
     "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
@@ -466,6 +470,13 @@ component("cpp_base") {
 
   if (is_fuchsia) {
     sources += [ "transferable_directory_fuchsia.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "network_interface_change_listener_mojom_traits.cc",
+      "network_interface_change_listener_mojom_traits.h",
+    ]
   }
 
   # Since URLLoader is typedmapped in mojo and the class also uses the mojo
@@ -488,13 +499,13 @@ source_set("test_support") {
 
   sources = [
     "is_potentially_trustworthy_unittest.h",
-    "trigger_attestation_test_utils.cc",
-    "trigger_attestation_test_utils.h",
+    "trigger_verification_test_utils.cc",
+    "trigger_verification_test_utils.h",
   ]
 
   public_deps = [
+    ":attribution",
     ":cpp",
-    ":trigger_attestation",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
@@ -507,6 +518,8 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "attribution_utils_unittest.cc",
+    "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",
@@ -561,7 +574,7 @@ source_set("tests") {
     "timing_allow_origin_parser_unittest.cc",
     "transferable_directory_unittest.cc",
     "transferable_socket_unittest.cc",
-    "trigger_attestation_unittest.cc",
+    "trigger_verification_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
     "variants_header_parser_unittest.cc",
@@ -574,6 +587,10 @@ source_set("tests") {
       "server/http_server_unittest.cc",
       "server/web_socket_encoder_unittest.cc",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
   }
 
   deps = [

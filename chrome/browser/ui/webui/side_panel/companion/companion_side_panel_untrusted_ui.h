@@ -54,7 +54,8 @@ class CompanionSidePanelUntrustedUIConfig : public content::WebUIConfig {
   ~CompanionSidePanelUntrustedUIConfig() override = default;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_SIDE_PANEL_UNTRUSTED_UI_H_

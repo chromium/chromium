@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -44,6 +45,7 @@ class WebAppProvider;
 struct IsolationData;
 class WebApp;
 enum class ApiApprovalState;
+struct SynchronizeOsOptions;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -62,7 +64,7 @@ class WebAppCommandScheduler {
                      InstallIsolatedWebAppCommandError>)>;
 
   WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
-  ~WebAppCommandScheduler();
+  virtual ~WebAppCommandScheduler();
 
   void Shutdown();
 
@@ -159,12 +161,22 @@ class WebAppCommandScheduler {
       FetchInstallabilityForChromeManagementCallback callback,
       const base::Location& location = FROM_HERE);
 
+  void ScheduleNavigateAndTriggerInstallDialog(
+      const GURL& install_url,
+      const GURL& origin_url,
+      bool is_renderer_initiated,
+      NavigateAndTriggerInstallDialogCommandCallback callback,
+      const base::Location& location = FROM_HERE);
+
   // Schedules a command that installs the Isolated Web App described by the
   // given IsolatedWebAppUrlInfo and IsolationData.
-  void InstallIsolatedWebApp(const IsolatedWebAppUrlInfo& url_info,
-                             const IsolatedWebAppLocation& location,
-                             InstallIsolatedWebAppCallback callback,
-                             const base::Location& call_location = FROM_HERE);
+  virtual void InstallIsolatedWebApp(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      InstallIsolatedWebAppCallback callback,
+      const base::Location& call_location = FROM_HERE);
 
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(
@@ -268,9 +280,11 @@ class WebAppCommandScheduler {
 
   // Used to schedule a synchronization of a web app's OS states with the
   // current DB states.
-  void SynchronizeOsIntegration(const AppId& app_id,
-                                base::OnceClosure synchronize_callback,
-                                const base::Location& location = FROM_HERE);
+  void SynchronizeOsIntegration(
+      const AppId& app_id,
+      base::OnceClosure synchronize_callback,
+      absl::optional<SynchronizeOsOptions> synchronize_options = absl::nullopt,
+      const base::Location& location = FROM_HERE);
 
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.

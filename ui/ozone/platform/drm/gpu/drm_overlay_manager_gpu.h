@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
@@ -47,7 +48,7 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
       const std::vector<OverlaySurfaceCandidate>& candidates,
       const std::vector<OverlayStatus>& status);
 
-  DrmThreadProxy* const drm_thread_proxy_;
+  const raw_ptr<DrmThreadProxy, ExperimentalAsh> drm_thread_proxy_;
 
   bool has_set_displays_configured_callback_ = false;
 

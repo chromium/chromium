@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -73,11 +74,11 @@ class BrowserAppInstanceRegistry
       return instance;
     }
     instance =
-        FindInstanceIf(ash_instance_tracker_.app_tab_instances_, predicate);
+        FindInstanceIf(ash_instance_tracker_->app_tab_instances_, predicate);
     if (instance) {
       return instance;
     }
-    return FindInstanceIf(ash_instance_tracker_.app_window_instances_,
+    return FindInstanceIf(ash_instance_tracker_->app_window_instances_,
                           predicate);
   }
 
@@ -86,9 +87,9 @@ class BrowserAppInstanceRegistry
       PredicateT predicate) const {
     std::set<const BrowserAppInstance*> result;
     SelectInstances(result, lacros_app_instances_, predicate);
-    SelectInstances(result, ash_instance_tracker_.app_tab_instances_,
+    SelectInstances(result, ash_instance_tracker_->app_tab_instances_,
                     predicate);
-    SelectInstances(result, ash_instance_tracker_.app_window_instances_,
+    SelectInstances(result, ash_instance_tracker_->app_window_instances_,
                     predicate);
     return result;
   }
@@ -101,7 +102,7 @@ class BrowserAppInstanceRegistry
     if (instance) {
       return instance;
     }
-    return FindInstanceIf(ash_instance_tracker_.window_instances_, predicate);
+    return FindInstanceIf(ash_instance_tracker_->window_instances_, predicate);
   }
 
   template <typename PredicateT>
@@ -109,7 +110,8 @@ class BrowserAppInstanceRegistry
       PredicateT predicate) const {
     std::set<const BrowserWindowInstance*> result;
     SelectInstances(result, lacros_window_instances_, predicate);
-    SelectInstances(result, ash_instance_tracker_.window_instances_, predicate);
+    SelectInstances(result, ash_instance_tracker_->window_instances_,
+                    predicate);
     return result;
   }
 
@@ -204,7 +206,8 @@ class BrowserAppInstanceRegistry
 
   void OnControllerDisconnected();
 
-  BrowserAppInstanceTracker& ash_instance_tracker_;
+  const raw_ref<BrowserAppInstanceTracker, ExperimentalAsh>
+      ash_instance_tracker_;
 
   // Lacros app instances.
   BrowserAppInstanceMap<base::UnguessableToken, BrowserAppInstance>

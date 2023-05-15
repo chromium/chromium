@@ -12,7 +12,7 @@
   DevToolsAPI._sendCommand = (sessionId, method, params) => {
     protocolMessages.push({sessionId, method, params});
     return originalSendCommand(sessionId, method, params);
-  }
+  };
   window.onerror = (msg) => testRunner.log('onerror: ' + msg);
   window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
   let errorForLog = new Error();
@@ -50,14 +50,17 @@
         const objectStore = db.createObjectStore("test-store");
         objectStore.add("test-data", "test-key");
         resolve('key-value pair added successfully');
+        db.close();
       };
     })
   `);
 
   const [listUpdatedEvent, contentUpdatedEvent, value] = await Promise.all(
     [listUpdatedPromise, contentUpdatedPromise, valuePromise]);
-  testRunner.log(listUpdatedEvent);
-  testRunner.log(contentUpdatedEvent, "Title", ['databaseName', 'sessionId']);
+  testRunner.log(
+      listUpdatedEvent, '', ['databaseName', 'sessionId', 'bucketId']);
+  testRunner.log(
+      contentUpdatedEvent, '', ['databaseName', 'sessionId', 'bucketId']);
   testRunner.log(value);
   errorForLog = new Error();
 
@@ -82,6 +85,7 @@
         const store = db.transaction(['test-store'],'readwrite').objectStore('test-store');
         store.add("one-more-test-data", "one-more-test-key");
         resolve("one more key-value pair added");
+        db.close();
       };
     })
   `);

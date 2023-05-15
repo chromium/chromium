@@ -51,6 +51,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -173,7 +174,7 @@ class WindowCycleListTestApi {
   }
 
   const std::vector<TabSliderButton*> GetTabSliderButtons() const {
-    auto* tab_slider = cycle_view()->tab_slider_;
+    auto* tab_slider = cycle_view()->tab_slider_.get();
     if (!tab_slider) {
       static const std::vector<TabSliderButton*> empty;
       return empty;
@@ -189,7 +190,7 @@ class WindowCycleListTestApi {
   }
 
  private:
-  const WindowCycleList* const cycle_list_;
+  const raw_ptr<const WindowCycleList, ExperimentalAsh> cycle_list_;
 };
 
 using aura::Window;
@@ -2004,7 +2005,7 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  ui::test::EventGenerator* generator_;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
 };
 
 // Tests that when user taps tab slider buttons, the active mode should
@@ -3289,14 +3290,14 @@ class MultiUserWindowCycleControllerTest
   }
 
  private:
-  ui::test::EventGenerator* generator_;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  TestingPrefServiceSimple* user_1_prefs_ = nullptr;
-  TestingPrefServiceSimple* user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_2_prefs_ = nullptr;
 };
 
 // Tests that when the active user prefs' |prefs::kAltTabPerDesk| is updated,

@@ -30,7 +30,6 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -954,95 +953,37 @@ CustomStoragePartitionBrowserClient::GetStoragePartitionConfigForSite(
   return StoragePartitionConfig::CreateDefault(browser_context);
 }
 
-ResumeCommitClosureSetObserver::ResumeCommitClosureSetObserver(
-    base::SafeRef<NavigationHandle> original_navigation,
-    mojom::DidCommitProvisionalLoadParamsPtr original_params,
-    mojom::DidCommitProvisionalLoadInterfaceParamsPtr original_interface_params)
-    : original_navigation_(std::move(original_navigation)),
-      original_params_(std::move(original_params)),
-      original_interface_params_(std::move(original_interface_params)) {}
-
-ResumeCommitClosureSetObserver::~ResumeCommitClosureSetObserver() {
-  NavigationRequest* original_request =
-      NavigationRequest::From(&*original_navigation_);
-  // Post a task just to avoid any potential weirdness with reentrancy.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&RenderFrameHostImpl::DidCommitNavigation,
-                     base::Unretained(original_request->GetRenderFrameHost()),
-                     original_request, std::move(original_params_),
-                     std::move(original_interface_params_)));
+CommitNavigationPauser::CommitNavigationPauser(RenderFrameHostImpl* rfh) {
+  rfh->SetCommitCallbackInterceptorForTesting(this);
 }
 
-// Installs an observer that waits for `resume_commit_closure_` to be set on
-// the next `NavigationRequest` seen by `DidStartNavigation()`.
-class BeginNavigationInCommitCallbackInterceptor::ObserverInstaller
-    : public WebContentsObserver {
- public:
-  explicit ObserverInstaller(
-      WebContents* web_contents,
-      base::SafeRef<NavigationHandle> original_navigation,
-      mojom::DidCommitProvisionalLoadParamsPtr original_params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr
-          original_interface_params)
-      : WebContentsObserver(web_contents),
-        original_navigation_(std::move(original_navigation)),
-        original_params_(std::move(original_params)),
-        original_interface_params_(std::move(original_interface_params)) {}
+CommitNavigationPauser::~CommitNavigationPauser() = default;
 
-  // WebContentsObserver overrides:
-  void DidStartNavigation(NavigationHandle* handle) override {
-    NavigationRequest::From(handle)->set_resume_commit_closure(
-        base::BindLambdaForTesting(
-            [observer = std::make_unique<ResumeCommitClosureSetObserver>(
-                 std::move(original_navigation_), std::move(original_params_),
-                 std::move(original_interface_params_))] {}));
-  }
+void CommitNavigationPauser::WaitForCommitAndPause() {
+  loop_.Run();
+}
 
-  base::SafeRef<NavigationHandle> original_navigation_;
-  mojom::DidCommitProvisionalLoadParamsPtr original_params_;
-  mojom::DidCommitProvisionalLoadInterfaceParamsPtr original_interface_params_;
-};
+void CommitNavigationPauser::ResumePausedCommit() {
+  // The caller is responsible for ensuring the paused request is still alive
+  // and not discarded.
+  DCHECK(paused_request_);
+  paused_request_->GetRenderFrameHost()->DidCommitNavigation(
+      paused_request_.get(), std::move(paused_params_),
+      std::move(paused_interface_params_));
+}
 
-BeginNavigationInCommitCallbackInterceptor::
-    BeginNavigationInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
-                                               const GURL& url)
-    : frame_tree_node_(frame_tree_node), url_(url) {}
-
-bool BeginNavigationInCommitCallbackInterceptor::WillProcessDidCommitNavigation(
+bool CommitNavigationPauser::WillProcessDidCommitNavigation(
     NavigationRequest* request,
     mojom::DidCommitProvisionalLoadParamsPtr* params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
   request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
       nullptr);
 
-  absl::optional<ObserverInstaller> observer_installer;
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // If navigation queueing is enabled, the navigation to `url_` will not
-    // commit until the commit suspended by this interceptor completes:
-    // instead, it will be queued/suspended and the navigation code will
-    // internally set a closure to resume committing the navigation when
-    // the suspended `request` completes.
-    //
-    // `BeginNavigateToURLFromRenderer()` waits for the new navigation from
-    // the renderer to start, so arm a hook to install an (indirect) observer
-    // that:
-    // - waits for the navigation code to install a resume commit closure
-    // - resumes the suspended `request` to test that the queued navigation
-    //   eventually completes.
-    observer_installer.emplace(
-        WebContents::FromRenderFrameHost(request->GetRenderFrameHost()),
-        request->GetSafeRef(), std::move(*params),
-        std::move(*interface_params));
-  }
+  paused_request_ = request->GetWeakPtr();
+  paused_params_ = std::move(*params);
+  paused_interface_params_ = std::move(*interface_params);
 
-  // At this point, the renderer has already committed the RenderFrame, but
-  // on the browser side, the RenderFrameHost is still speculative. Begin
-  // another navigation.
-  //
-  // If navigation queueing is disabled, this should result in the speculative
-  // RFH being discarded with a pending commit in flight.
-  EXPECT_TRUE(BeginNavigateToURLFromRenderer(frame_tree_node_.get(), url_));
+  loop_.Quit();
 
   // Ignore the commit message.
   return false;

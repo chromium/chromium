@@ -304,11 +304,12 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
   WaitForPrerenderLoadCompletion(*GetWebContents(), gurl);
 }
 
-int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url) {
+int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,
+                                      int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerender", "prerendering_url",
               prerendering_url);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  AddPrerenderAsync(prerendering_url);
+  AddPrerenderAsync(prerendering_url, world_id);
 
   WaitForPrerenderLoadCompletion(prerendering_url);
   int host_id = GetHostForUrl(prerendering_url);
@@ -316,17 +317,23 @@ int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url) {
   return host_id;
 }
 
-void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
+void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
+                                            int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerenderAsync",
               "prerendering_url", prerendering_url);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   std::string script = JsReplace(kAddSpeculationRuleScript, prerendering_url);
 
-  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
-  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
-  // with it. See the quick migration guide for EvalJs for more information.
-  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
+    // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
+    // because some test pages have ContentSecurityPolicy and EvalJs cannot work
+    // with it. See the quick migration guide for EvalJs for more information.
+    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::UTF8ToUTF16(script), base::NullCallback());
+  } else {
+    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
+        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
+  }
 }
 
 void PrerenderTestHelper::AddMultiplePrerenderAsync(
@@ -544,6 +551,10 @@ std::string PrerenderTestHelper::GenerateHistogramName(
     case content::PrerenderTriggerType::kSpeculationRule:
       DCHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) + ".SpeculationRule";
+    case content::PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      DCHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) +
+             ".SpeculationRuleFromIsolatedWorld";
     case content::PrerenderTriggerType::kEmbedder:
       DCHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;

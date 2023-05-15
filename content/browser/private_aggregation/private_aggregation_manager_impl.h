@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace base {
@@ -53,6 +55,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
+      absl::optional<std::string> context_id,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,

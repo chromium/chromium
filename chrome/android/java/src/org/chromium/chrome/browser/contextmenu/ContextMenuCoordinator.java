@@ -14,6 +14,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -133,6 +134,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             layout.getLocationOnScreen(layoutScreenLocation);
             x += layoutScreenLocation[0];
             y += layoutScreenLocation[1];
+
+            // Also take the Window offset into account. This is necessary when a partial width/
+            // height window hosts the activity.
+            Window activityWindow = activity.getWindow();
+            var attrs = activityWindow.getAttributes();
+            x += attrs.x;
+            y += attrs.y;
         }
 
         // If drag drop is enabled, the context menu needs to be anchored next to the drag shadow.
@@ -177,11 +185,16 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             desiredPopupContentWidth =
                     activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width);
         }
-        View webContentView = webContents.getViewAndroidDelegate() != null && isDragDropEnabled
-                ? webContents.getViewAndroidDelegate().getContainerView()
-                : null;
+
+        // When drag and drop is enabled, context menu will be dismissed by web content when drag
+        // moves beyond certain threshold. ContentView will need to receive drag events dispatched
+        // from ContextMenuDialog in order to calculate the movement.
+        View dragDispatchingTargetView =
+                isDragDropEnabled ? webContents.getViewAndroidDelegate().getContainerView() : null;
+
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, dialogTopMarginPx,
-                dialogBottomMarginPx, popupMargin, desiredPopupContentWidth, webContentView, rect);
+                dialogBottomMarginPx, popupMargin, desiredPopupContentWidth,
+                dragDispatchingTargetView, rect);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
@@ -283,7 +296,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      *
      * @param activity Used to inflate the dialog.
      * @param layout The inflated context menu layout that will house the context menu.
-     * @param view The inflated view that contains the list view.
+     * @param menuView The inflated view that contains the list view.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
      *                    defined in XML.
@@ -291,22 +304,24 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      *                       defined in XML.
      * @param popupMargin The margin for the popup window.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
-     * @param webContentView The web content view presented behind the context menu.
+     * @param dragDispatchingTargetView The view presented behind the context menu. If provided,
+     *         drag event happened outside of ContextMenu will be dispatched into this View.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *             coordinates are expected to be screen coordinates.
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
     @VisibleForTesting
-    static ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
+    static ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View menuView,
             boolean isPopup, int topMarginPx, int bottomMarginPx, @Nullable Integer popupMargin,
-            @Nullable Integer desiredPopupContentWidth, @Nullable View webContentView, Rect rect) {
+            @Nullable Integer desiredPopupContentWidth, @Nullable View dragDispatchingTargetView,
+            Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         boolean shouldRemoveScrim = ContextMenuUtils.usePopupContextMenuForContext(activity);
         final ContextMenuDialog dialog = new ContextMenuDialog(activity,
                 R.style.ThemeOverlay_BrowserUI_AlertDialog, topMarginPx, bottomMarginPx, layout,
-                view, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,
-                webContentView, rect, ChromeAccessibilityUtil.get());
+                menuView, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,
+                dragDispatchingTargetView, rect, ChromeAccessibilityUtil.get());
         dialog.setContentView(layout);
 
         return dialog;

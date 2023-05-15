@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -125,14 +126,16 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_);
+    container_->AddChildView(view_.get());
     SetWidget(CreateWidgetWithContent(container_));
   }
 
   base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
-  views::View* container_ = nullptr;   // Owned by test widget view hierarchy.
-  LoginAuthUserView* view_ = nullptr;  // Owned by test widget view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh> container_ =
+      nullptr;  // Owned by test widget view hierarchy.
+  raw_ptr<LoginAuthUserView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by test widget view hierarchy.
 };
 
 class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,

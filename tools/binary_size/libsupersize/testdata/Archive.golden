@@ -1,6 +1,11 @@
 elf_algorithm=linker_map
 git_revision=abc123
 map_file_name=test.map
+Section .arsc: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: has 100.0% of 35982248 bytes accounted for from 17 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).

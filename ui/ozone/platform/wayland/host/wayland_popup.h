@@ -30,6 +30,12 @@ class WaylandPopup : public WaylandWindow {
   ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
 
   // WaylandWindow overrides:
+  void TooltipShown(const char* text,
+                    int32_t x,
+                    int32_t y,
+                    int32_t width,
+                    int32_t height) override;
+  void TooltipHidden() override;
 
   // Configure related:
   void HandleSurfaceConfigure(uint32_t serial) override;
@@ -60,17 +66,6 @@ class WaylandPopup : public WaylandWindow {
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
  private:
-  // zaura_surface listeners
-  static void DeskChanged(void* data, zaura_surface* surface, int32_t state) {}
-  static void TooltipShown(void* data,
-                           zaura_surface* surface,
-                           const char* text,
-                           int32_t x,
-                           int32_t y,
-                           int32_t width,
-                           int32_t height);
-  static void TooltipHidden(void* data, zaura_surface* surface);
-
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
 

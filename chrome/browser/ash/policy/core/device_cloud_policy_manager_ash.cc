@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
@@ -151,6 +152,8 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
 
 // static
 void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
+  ReportingUserTracker::RegisterPrefs(registry);
+
   registry->RegisterDictionaryPref(::prefs::kServerBackedDeviceState);
   registry->RegisterBooleanPref(::prefs::kRemoveUsersRemoteCommand, false);
   registry->RegisterStringPref(::prefs::kLastRsuDeviceIdUploaded,
@@ -283,10 +286,21 @@ void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
 void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
   user_manager_observation_.Observe(user_manager);
+  reporting_user_tracker_ =
+      std::make_unique<ReportingUserTracker>(user_manager);
 }
 
 void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
     user_manager::UserManager* user_manager) {
+  // Several instances internally hold the reference to the
+  // ReportingUserTracker instance, so should be released via Shutdown()
+  // before this is reached.
+  DCHECK(!status_uploader_);
+  DCHECK(!login_logout_reporter_);
+  DCHECK(!user_added_removed_reporter_);
+  DCHECK(!lock_unlock_reporter_);
+
+  reporting_user_tracker_.reset();
   user_manager_observation_.Reset();
 }
 
@@ -305,8 +319,8 @@ void DeviceCloudPolicyManagerAsh::OnUserToBeRemoved(
   }
 
   const std::string email = account_id.GetUserEmail();
-  users_to_be_removed_.insert_or_assign(account_id,
-                                        helper_->ShouldReportUser(email));
+  users_to_be_removed_.insert_or_assign(
+      account_id, reporting_user_tracker_->ShouldReportUser(email));
 }
 
 void DeviceCloudPolicyManagerAsh::OnUserRemoved(
@@ -352,9 +366,10 @@ void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
 
 void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
     ManagedSessionService* managed_session_service) {
+  CHECK(reporting_user_tracker_.get());
   auto collector = std::make_unique<DeviceStatusCollector>(
-      local_state_, ash::system::StatisticsProvider::GetInstance(),
-      managed_session_service);
+      local_state_, reporting_user_tracker_.get(),
+      ash::system::StatisticsProvider::GetInstance(), managed_session_service);
 
   status_uploader_ = std::make_unique<StatusUploader>(
       client(), std::move(collector), task_runner_,
@@ -372,17 +387,18 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
 
   managed_session_service_ = std::make_unique<ManagedSessionService>();
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
-      managed_session_service_.get());
+      reporting_user_tracker_.get(), managed_session_service_.get());
 
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
-      std::move(users_to_be_removed_), managed_session_service_.get());
+      std::move(users_to_be_removed_), reporting_user_tracker_.get(),
+      managed_session_service_.get());
   for (const auto& [user_email, reason] : removed_users_) {
     user_added_removed_reporter_->ProcessRemovedUser(user_email, reason);
   }
   removed_users_.clear();
 
   lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
-      managed_session_service_.get());
+      reporting_user_tracker_.get(), managed_session_service_.get());
 }
 
 }  // namespace policy

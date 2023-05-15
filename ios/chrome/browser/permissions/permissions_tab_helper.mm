@@ -32,7 +32,11 @@ void HandlePermissionDialogResponse(
     OverlayResponse* response) API_AVAILABLE(ios(15.0)) {
   PermissionsDialogResponse* dialog_response =
       response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
-  handler(dialog_response && dialog_response->capture_allow());
+  web::PermissionDecision decision =
+      dialog_response && dialog_response->capture_allow()
+          ? web::PermissionDecisionGrant
+          : web::PermissionDecisionDeny;
+  handler(decision);
 }
 
 }  // namespace

@@ -16,6 +16,10 @@ H265Picture::~H265Picture() = default;
 H265DPB::H265DPB() = default;
 H265DPB::~H265DPB() = default;
 
+V4L2H265Picture* H265Picture::AsV4L2H265Picture() {
+  return nullptr;
+}
+
 VaapiH265Picture* H265Picture::AsVaapiH265Picture() {
   return nullptr;
 }

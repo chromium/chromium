@@ -17,17 +17,26 @@
   #zoneSelector {
     background-color: var(--cros-tab-slider-track-color);
     border-radius: 24px;
+    column-gap: 2px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0,1fr));
     grid-template-rows: minmax(0,1fr);
     margin-block-end: 28px;
+    margin-block-start: 2px;
     width: 100%;
   }
 
   paper-ripple {
     border-radius: 24px;
-    color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+
+  .zone-tab[aria-selected=false] paper-ripple {
+    color: var(--cros-sys-ripple_neutral_on_subtle);
+  }
+
+  .zone-tab[aria-selected=true] paper-ripple {
+    color: var(--cros-sys-ripple_primary);
   }
 
   .zone-tab {
@@ -35,7 +44,7 @@
     border: 2px solid var(--cros-tab-slider-track-color);
     border-radius: 24px;
     box-sizing: border-box;
-    color: var(--cros-sys-on_primary_container, var(--cros-button-label-color-secondary));
+    color: var(--cros-sys-secondary, var(--cros-button-label-color-secondary));
     cursor: pointer;
     font: var(--cros-button-2-font);
     height: 100%;
@@ -47,6 +56,11 @@
   .zone-tab[aria-selected=true] {
     background-color: var(--cros-sys-primary, var(--cros-button-background-color-primary));
     color: var(--cros-sys-on_primary, var(--cros-button-label-color-primary));
+  }
+
+  .zone-tab[aria-selected=false]:hover {
+    background-color: var(--cros-sys-hover_on_subtle, var(--cros-ripple-color));
+    color: var(--cros-sys-on_surface);
   }
 
   .zone-title-container {
@@ -69,15 +83,25 @@
     word-break: break-all;
     word-wrap: break-word;
   }
+
+  #zoneSelector:focus-visible,
+  color-selector:focus-visible {
+    outline: none;
+  }
+
+  .zone-tab:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
 </style>
 <cr-dialog id="dialog" show-on-attach>
-  <div slot="body">
+  <div slot="body" aria-label=" ">
     <iron-a11y-keys id="zoneKeys" keys="left right enter" on-keys-pressed="onZoneKeysPress_">
     </iron-a11y-keys>
     <iron-selector
         id="zoneSelector"
         selected="0"
         selected-item="{{ironSelectedZone_}}"
+        aria-label$="[[getZoneTabListAriaLabel_()]]"
         role="tablist">
       <template is="dom-repeat" items="[[zoneIdxs_]]" as="zoneIdx">
         <div
@@ -86,6 +110,7 @@
             tabindex$="[[getZoneTabIndex_(zoneIdx, zoneSelected_)]]"
             data-zone-idx$="[[zoneIdx]]"
             on-click="onClickZoneTab_"
+            aria-description$="[[getZoneColorDescription_(zoneIdx, zoneColors_)]]"
             aria-selected$="[[getZoneAriaSelected_(zoneIdx, zoneSelected_)]]"
             role="tab">
           <paper-ripple fit></paper-ripple>
@@ -100,7 +125,8 @@
         is-customized-dialog
         selected-color="[[getSelectedColor_(zoneSelected_, zoneColors_)]]"
         on-wallpaper-color-selected="onWallpaperColorSelected_"
-        on-preset-color-selected="onPresetColorSelected_">
+        on-preset-color-selected="onPresetColorSelected_"
+        role="tabpanel">
       <div slot="button-container" class="customization-button-container">
         <cr-button class="primary action-button" id="dialogCloseButton"
             on-click="onClickCloseDialog_">

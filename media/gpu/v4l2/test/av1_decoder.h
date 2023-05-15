@@ -55,8 +55,7 @@ class Av1Decoder : public VideoDecoder {
 
   Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-             std::unique_ptr<V4L2Queue> OUTPUT_queue,
-             std::unique_ptr<V4L2Queue> CAPTURE_queue);
+             gfx::Size display_resolution);
 
   // Reads an OBU frame, if there is one available. If an |obu_parser_|
   // didn't exist and there is data to be read, |obu_parser_| will be

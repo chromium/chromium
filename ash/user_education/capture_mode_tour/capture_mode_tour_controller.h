@@ -8,14 +8,16 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/user_education_feature_controller.h"
 
 namespace ash {
 
+// TODO(http://b/280840559): Remove tutorial concepts.
 // Controller responsible for Capture Mode Tour feature tutorials. Note that the
 // `CaptureModeTourController` is owned by the `UserEducationController` and
 // exists if and only if the Capture Mode Tour feature is enabled.
-class ASH_EXPORT CaptureModeTourController : public TutorialController {
+class ASH_EXPORT CaptureModeTourController
+    : public UserEducationFeatureController {
  public:
   CaptureModeTourController();
   CaptureModeTourController(const CaptureModeTourController&) = delete;
@@ -28,7 +30,7 @@ class ASH_EXPORT CaptureModeTourController : public TutorialController {
   static CaptureModeTourController* Get();
 
  private:
-  // TutorialController:
+  // UserEducationFeatureController:
   std::map<TutorialId, user_education::TutorialDescription>
   GetTutorialDescriptions() override;
 };

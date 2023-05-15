@@ -73,8 +73,8 @@ class LacrosExtensionAppsControllerTest
 IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, ShowsInShelf) {
   // If ash is does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kDoesItemExistInShelfMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";
@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, ShowsInShelf) {
 IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   // If ash does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kSelectContextMenuForShelfItemMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";
@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
 IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
   // If ash does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kGetContextMenuForShelfItemMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";
@@ -243,8 +243,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest,
                        UninstallContextMenu) {
   // If ash does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kSelectContextMenuForShelfItemMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";

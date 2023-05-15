@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
@@ -161,7 +162,7 @@ class NearbyShareActionTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<NearbyShareAction> nearby_share_action_;
 };
 

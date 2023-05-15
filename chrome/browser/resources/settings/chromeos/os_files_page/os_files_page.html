@@ -24,9 +24,8 @@
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <template is="dom-if" if="[[showOfficeSettings_]]">
-      <!-- TODO(b:254586358): Move label string to a resource file and i18n -->
       <cr-link-row id="office" class="hr" on-click="onTapOffice_"
-          label="Office"
+          label="$i18n{officeLabel}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -45,7 +44,7 @@
   </template>
   <template is="dom-if" if="[[showOfficeSettings_]]">
     <template is="dom-if" route-path="/officeFiles">
-      <os-settings-subpage page-title="Office Files">
+      <os-settings-subpage page-title="$i18n{officeSubpageTitle}">
         <settings-office-page prefs="{{prefs}}">
         </settings-office-page>
       </os-settings-subpage>

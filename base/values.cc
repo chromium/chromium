@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/cxx20_erase_vector.h"
-#include "base/cxx17_backports.h"
 #include "base/cxx20_to_address.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -1153,60 +1152,12 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-absl::optional<bool> Value::FindBoolKey(StringPiece key) const {
-  return GetDict().FindBool(key);
-}
-
 absl::optional<int> Value::FindIntKey(StringPiece key) const {
   return GetDict().FindInt(key);
 }
 
-const std::string* Value::FindStringKey(StringPiece key) const {
-  return GetDict().FindString(key);
-}
-
-std::string* Value::FindStringKey(StringPiece key) {
-  return GetDict().FindString(key);
-}
-
-const Value* Value::FindDictKey(StringPiece key) const {
-  const Value* result = GetDict().Find(key);
-  if (!result || result->type() != Type::DICT) {
-    return nullptr;
-  }
-  return result;
-}
-
-Value* Value::FindDictKey(StringPiece key) {
-  return const_cast<Value*>(std::as_const(*this).FindDictKey(key));
-}
-
-const Value* Value::FindListKey(StringPiece key) const {
-  const Value* result = GetDict().Find(key);
-  if (!result || result->type() != Type::LIST) {
-    return nullptr;
-  }
-  return result;
-}
-
-Value* Value::FindListKey(StringPiece key) {
-  return const_cast<Value*>(std::as_const(*this).FindListKey(key));
-}
-
 Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
-}
-
-Value* Value::SetBoolKey(StringPiece key, bool value) {
-  return GetDict().Set(key, value);
-}
-
-Value* Value::SetIntKey(StringPiece key, int value) {
-  return GetDict().Set(key, value);
-}
-
-Value* Value::SetDoubleKey(StringPiece key, double value) {
-  return GetDict().Set(key, value);
 }
 
 Value* Value::SetStringKey(StringPiece key, StringPiece value) {
@@ -1279,10 +1230,6 @@ const Value* Value::FindListPath(StringPiece path) const {
 
 Value* Value::FindListPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindListPath(path));
-}
-
-size_t Value::DictSize() const {
-  return GetDict().size();
 }
 
 bool operator==(const Value& lhs, const Value& rhs) {

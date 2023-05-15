@@ -80,6 +80,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
                            AppLock& lock) override;
   void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
                                   const AppId& to_app) override;
+  content::WebContents* CreateNewTab() override;
+  void TriggerInstallDialog(content::WebContents* web_contents) override;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

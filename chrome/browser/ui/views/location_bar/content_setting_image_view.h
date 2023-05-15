@@ -41,7 +41,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
                                 public views::WidgetObserver {
  public:
   METADATA_HEADER(ContentSettingImageView);
-
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaActivityIndicatorElementId);
   class Delegate {
    public:
     // Delegate should return true if the content setting icon should be hidden.
@@ -96,6 +96,10 @@ class ContentSettingImageView : public IconLabelBubbleView,
   }
   user_education::HelpBubble* critical_promo_bubble_for_testing() {
     return critical_promo_bubble_.get();
+  }
+
+  const gfx::VectorIcon* get_icon_for_testing() const {
+    return content_setting_image_model_->get_icon_for_testing();
   }
 
  private:

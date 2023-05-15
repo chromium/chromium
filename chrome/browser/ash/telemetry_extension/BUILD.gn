@@ -6,60 +6,12 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
-source_set("telemetry_extension") {
-  sources = [
-    "diagnostics_service_ash.cc",
-    "diagnostics_service_ash.h",
-    "diagnostics_service_converters.cc",
-    "diagnostics_service_converters.h",
-    "probe_service_ash.cc",
-    "probe_service_ash.h",
-    "probe_service_converters.cc",
-    "probe_service_converters.h",
-    "telemetry_event_forwarder.cc",
-    "telemetry_event_forwarder.h",
-    "telemetry_event_service_ash.cc",
-    "telemetry_event_service_ash.h",
-    "telemetry_event_service_converters.cc",
-    "telemetry_event_service_converters.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-    "//chromeos/ash/components/dbus",
-    "//chromeos/ash/components/dbus/debug_daemon",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
-    "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_health/public/mojom:types",
-    "//mojo/public/cpp/bindings",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "diagnostics_service_ash_unittest.cc",
-    "diagnostics_service_converters_unittest.cc",
-    "probe_service_ash_unittest.cc",
-    "probe_service_converters_unittest.cc",
-    "telemetry_event_service_ash_unittest.cc",
-    "telemetry_event_service_converters_unittest.cc",
-  ]
+
   deps = [
-    ":telemetry_extension",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-    "//chromeos/ash/components/dbus",
-    "//chromeos/ash/components/dbus/debug_daemon",
-    "//chromeos/ash/components/mojo_service_manager",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
-    "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_health/public/mojom:types",
-    "//testing/gmock",
-    "//testing/gtest",
+    "diagnostics:unit_tests",
+    "events:unit_tests",
+    "telemetry:unit_tests",
   ]
 }

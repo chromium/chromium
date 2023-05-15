@@ -33,9 +33,6 @@ std::unique_ptr<WebThreadScheduler> CreateWebMainThreadSchedulerForTests();
 std::unique_ptr<WebMockThreadScheduler>
 CreateMockWebMainThreadSchedulerForTests();
 
-void RunIdleTasksForTesting(WebThreadScheduler& scheduler,
-                            base::OnceClosure callback);
-
 // Returns a SequencedTaskRunner. This implementation is same as
 // base::SequencedTaskRunner::GetCurrentDefault(), but this is intended to be
 // used for testing. See crbug.com/794123.

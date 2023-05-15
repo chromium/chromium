@@ -17,7 +17,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace wm {
 namespace {
@@ -111,7 +110,8 @@ TEST(CursorUtil, GetCursorData) {
         EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
                   gfx::ScaleToFlooredSize(
                       test.size[base::checked_cast<int>(size)], scale));
-        const float resource_scale = gfx::ImageSkia::MapToResourceScale(scale);
+        const float resource_scale = ui::GetScaleForResourceScaleFactor(
+            ui::GetSupportedResourceScaleFactorForRescale(scale));
         EXPECT_EQ(pointer_data->hotspot,
                   gfx::ScaleToFlooredPoint(
                       test.hotspot[base::checked_cast<int>(size)]

@@ -16,15 +16,17 @@ SpeculationRule::SpeculationRule(
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
     absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
     absl::optional<network::mojom::ReferrerPolicy> referrer_policy,
-    absl::optional<mojom::blink::SpeculationEagerness> eagerness,
-    network::mojom::blink::NoVarySearchPtr no_vary_search_expected)
+    mojom::blink::SpeculationEagerness eagerness,
+    network::mojom::blink::NoVarySearchPtr no_vary_search_expected,
+    mojom::blink::SpeculationInjectionWorld injection_world)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
       target_browsing_context_name_hint_(target_hint),
       referrer_policy_(referrer_policy),
       eagerness_(eagerness),
-      no_vary_search_expected_(std::move(no_vary_search_expected)) {}
+      no_vary_search_expected_(std::move(no_vary_search_expected)),
+      injection_world_(injection_world) {}
 
 SpeculationRule::~SpeculationRule() = default;
 

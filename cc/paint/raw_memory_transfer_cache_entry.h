@@ -37,6 +37,7 @@ class CC_PAINT_EXPORT ServiceRawMemoryTransferCacheEntry final
   ~ServiceRawMemoryTransferCacheEntry() final;
   size_t CachedSize() const final;
   bool Deserialize(GrDirectContext* context,
+                   skgpu::graphite::Recorder* graphite_recorder,
                    base::span<const uint8_t> data) final;
   const std::vector<uint8_t>& data() { return data_; }
 

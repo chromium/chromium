@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -125,20 +126,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
 
   // Queries the quota and usage and then runs the given |task|.
   // If an error occurs during the quota query it runs |error_callback| instead.
-  void GetUsageAndQuotaThenRunTask(const FileSystemURL& url,
-                                   base::OnceClosure task,
-                                   base::OnceClosure error_callback);
+  void GetBucketSpaceRemainingAndRunTask(const FileSystemURL& url,
+                                         base::OnceClosure task,
+                                         base::OnceClosure error_callback);
 
   // Called after the quota info is obtained from the quota manager
-  // (which is triggered by GetUsageAndQuotaThenRunTask).
+  // (which is triggered by GetBucketSpaceRemainingAndRunTask).
   // Sets the quota info in the operation_context_ and then runs the given
   // |task| if the returned quota status is successful, otherwise runs
   // |error_callback|.
-  void DidGetUsageAndQuotaAndRunTask(base::OnceClosure task,
-                                     base::OnceClosure error_callback,
-                                     blink::mojom::QuotaStatusCode status,
-                                     int64_t usage,
-                                     int64_t quota);
+  void DidGetBucketSpaceRemaining(base::OnceClosure task,
+                                  base::OnceClosure error_callback,
+                                  QuotaErrorOr<int64_t> space_left);
 
   // The 'body' methods that perform the actual work (i.e. posting the
   // file task on proxy_) after the quota check.

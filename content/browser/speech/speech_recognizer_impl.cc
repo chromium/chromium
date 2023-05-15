@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -858,14 +857,14 @@ void SpeechRecognizerImpl::UpdateSignalAndNoiseLevels(const float& rms,
   // Perhaps it might be quite expensive on mobile.
   float level = (rms - kAudioMeterMinDb) /
       (kAudioMeterDbRange / kAudioMeterRangeMaxUnclipped);
-  level = base::clamp(level, 0.0f, kAudioMeterRangeMaxUnclipped);
+  level = std::clamp(level, 0.0f, kAudioMeterRangeMaxUnclipped);
   const float smoothing_factor = (level > audio_level_) ? kUpSmoothingFactor :
                                                           kDownSmoothingFactor;
   audio_level_ += (level - audio_level_) * smoothing_factor;
 
   float noise_level = (endpointer_.NoiseLevelDb() - kAudioMeterMinDb) /
       (kAudioMeterDbRange / kAudioMeterRangeMaxUnclipped);
-  noise_level = base::clamp(noise_level, 0.0f, kAudioMeterRangeMaxUnclipped);
+  noise_level = std::clamp(noise_level, 0.0f, kAudioMeterRangeMaxUnclipped);
 
   listener()->OnAudioLevelsChange(
       session_id(), clip_detected ? 1.0f : audio_level_, noise_level);

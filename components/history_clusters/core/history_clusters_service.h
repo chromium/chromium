@@ -86,7 +86,9 @@ class HistoryClustersService : public base::SupportsUserData,
   // Returns true if the Journeys feature is enabled for the current application
   // locale. This is a cached wrapper of `IsJourneysEnabled()` within features.h
   // that's already evaluated against the g_browser_process application locale.
-  bool IsJourneysEnabled() const;
+  // This now also includes checking the pref for whether Journeys is visible to
+  // the user. Virtual for testing.
+  virtual bool IsJourneysEnabled() const;
 
   // Returns true if the Journeys use of Images is enabled.
   static bool IsJourneysImagesEnabled();
@@ -133,7 +135,8 @@ class HistoryClustersService : public base::SupportsUserData,
   //   if the caller wants the newest visits.
   // - `recluster`, if true, forces reclustering as if
   //   `persist_clusters_in_history_db` were false.
-  // Virtual for testing.
+  // The caller is responsible for checking `IsJourneysEnabled()` before calling
+  // this method. Virtual for testing.
   virtual std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       QueryClustersFilterParams filter_params,
@@ -141,11 +144,6 @@ class HistoryClustersService : public base::SupportsUserData,
       QueryClustersContinuationParams continuation_params,
       bool recluster,
       QueryClustersCallback callback);
-
-  // Invokes `UpdateClusters()` after a short delay, then again periodically.
-  // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,
-  // then every 1 hour afterwards.
-  void RepeatedlyUpdateClusters();
 
   // Entrypoint to the `HistoryClustersServiceTaskUpdateClusters`. Updates the
   // persisted clusters in the history DB and invokes `callback` when done.
@@ -174,6 +172,11 @@ class HistoryClustersService : public base::SupportsUserData,
  private:
   friend class HistoryClustersServiceTestApi;
   friend class HistoryClustersServiceTestBase;
+
+  // Invokes `UpdateClusters()` after a short delay, then again periodically.
+  // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,
+  // then every 1 hour afterwards.
+  void RepeatedlyUpdateClusters();
 
   // Starts a keyword cache refresh, if necessary.
   // TODO(manukh): `StartKeywordCacheRefresh()` and
@@ -279,7 +282,8 @@ class HistoryClustersService : public base::SupportsUserData,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
 
-  ContextClustererHistoryServiceObserver context_clusterer_observer_;
+  std::unique_ptr<ContextClustererHistoryServiceObserver>
+      context_clusterer_observer_;
 
   // Used to store keyword caches across restarts.
   raw_ptr<PrefService> pref_service_ = nullptr;

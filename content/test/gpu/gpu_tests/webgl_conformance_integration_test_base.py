@@ -23,8 +23,10 @@ import gpu_path_util
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 
 JAVASCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests', 'javascript')
+TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
+                                 'webgl_test_page.html')
 
-WEBSOCKET_JAVASCRIPT_TIMEOUT_S = 30
+WEBSOCKET_JAVASCRIPT_TIMEOUT_S = 5
 HEARTBEAT_TIMEOUT_S = 15
 ASAN_MULTIPLIER = 2
 SLOW_MULTIPLIER = 4
@@ -73,6 +75,7 @@ class WebGLConformanceIntegrationTestBase(
   _command_decoder = ''
   _verified_flags = False
   _original_environ = None
+  page_loaded = False
 
   # Scripts read from file during process start up.
   _conformance_harness_script = None
@@ -99,13 +102,6 @@ class WebGLConformanceIntegrationTestBase(
     return {
         # crbug.com/1347970.
         'conformance/textures/misc/texture-video-transparent.html',
-        # Specifically when using Metal, this test can be rather slow. When run
-        # in parallel, even a minute is not long enough for it to reliably run,
-        # as it does not properly send heartbeats (possibly due to a large
-        # amount of work being done). Instead of increasing the heartbeat
-        # timeout further, run it serially. Can potentially be removed depending
-        # on the response to crbug.com/1363349.
-        'conformance/glsl/bugs/complex-glsl-does-not-crash.html',
     }
 
   @classmethod
@@ -122,6 +118,17 @@ class WebGLConformanceIntegrationTestBase(
                       action='store_true',
                       default=False,
                       help='Whether to enable Metal debug layers')
+
+  @classmethod
+  def StartBrowser(cls) -> None:
+    cls.page_loaded = False
+    super().StartBrowser()
+
+  @classmethod
+  def StopBrowser(cls) -> None:
+    if cls.websocket_server:
+      cls.websocket_server.ClearCurrentConnection()
+    super().StopBrowser()
 
   @classmethod
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
@@ -269,6 +276,23 @@ class WebGLConformanceIntegrationTestBase(
     return True
 
   def _NavigateTo(self, test_path: str, harness_script: str) -> None:
+    if not self.__class__.page_loaded:
+      # If we haven't loaded the test page that we use to run tests within an
+      # iframe, load it and establish the websocket connection.
+      url = self.UrlOfStaticFilePath(TEST_PAGE_RELPATH)
+      self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
+      self.tab.WaitForDocumentReadyStateToBeComplete(timeout=5)
+      self.tab.action_runner.EvaluateJavaScript(
+          'connectWebsocket("%d")' %
+          self.__class__.websocket_server.server_port,
+          timeout=WEBSOCKET_JAVASCRIPT_TIMEOUT_S)
+      self.__class__.websocket_server.WaitForConnection()
+      response = self.__class__.websocket_server.Receive(
+          WEBSOCKET_JAVASCRIPT_TIMEOUT_S)
+      response = json.loads(response)
+      assert response['type'] == 'CONNECTION_ACK'
+      self.__class__.page_loaded = True
+
     gpu_info = self.browser.GetSystemInfo().gpu
     self._crash_count = gpu_info.aux_attributes['process_crash_count']
     if not self._verified_flags:
@@ -278,24 +302,10 @@ class WebGLConformanceIntegrationTestBase(
           and self._VerifyCommandDecoder(gpu_info)):
         self._verified_flags = True
     url = self.UrlOfStaticFilePath(test_path)
-    self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
-    # TODO(crbug.com/1432592): Remove this special casing once the flaky adb
-    # issues are investigated/resolved.
-    if self.browser.platform.GetOSName() != 'android':
-      self.tab.action_runner.EvaluateJavaScript(
-          'connectWebsocket("%d")' %
-          self.__class__.websocket_server.server_port,
-          timeout=self._GetWebsocketJavaScriptTimeout())
-      self.__class__.websocket_server.WaitForConnection()
+    self.tab.action_runner.EvaluateJavaScript('runTest("%s")' % url)
 
   def _HandleMessageLoop(self, test_timeout: float) -> None:
-    # TODO(crbug.com/1432592): Remove this special casing once the flaky adb
-    # issues are investigated/resolved.
-    if self.browser.platform.GetOSName() == 'android':
-      self.tab.action_runner.WaitForJavaScriptCondition(
-          'webglTestHarness._finished', timeout=test_timeout)
-      return
-
+    got_test_started = False
     start_time = time.time()
     try:
       while True:
@@ -309,6 +319,13 @@ class WebGLConformanceIntegrationTestBase(
               'Hit %.3f second global timeout, but page continued to send '
               'messages over the websocket, i.e. was not due to a renderer '
               'crash.' % test_timeout)
+
+        if not got_test_started:
+          if response_type != 'TEST_STARTED':
+            raise RuntimeError('Got response %s when expected a test start.' %
+                               response_type)
+          got_test_started = True
+          continue
 
         if response_type == 'TEST_HEARTBEAT':
           continue
@@ -334,17 +351,6 @@ class WebGLConformanceIntegrationTestBase(
       raise RuntimeError(
           'Detected closed websocket (%.3f seconds since test start) - likely '
           'caused by a renderer crash' % (time.time() - start_time)) from e
-    finally:
-      self.__class__.websocket_server.ClearCurrentConnection()
-
-  def _GetWebsocketJavaScriptTimeout(self) -> int:
-    # Most tests should be able to run JavaScript immediately after page load.
-    # However, some tests will do so much work that we're unable to actually
-    # run the JavaScript for quite a while.
-    return int(
-        NON_STANDARD_WEBSOCKET_JAVASCRIPT_TIMEOUTS.get(
-            self.shortName(), WEBSOCKET_JAVASCRIPT_TIMEOUT_S) *
-        self._GetTimeoutMultiplier())
 
   def _GetHeartbeatTimeout(self) -> int:
     return int(
@@ -386,13 +392,14 @@ class WebGLConformanceIntegrationTestBase(
                                 test_args: WebGLTestArgs) -> None:
     self._NavigateTo(test_path, self._GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
-        'window._loaded', timeout=self._GetTestTimeout())
+        'testIframeLoaded', timeout=self._GetTestTimeout())
     context_type = 'webgl2' if test_args.webgl_version == 2 else 'webgl'
     extension_list_string = '['
     for extension in test_args.extension_list:
       extension_list_string = extension_list_string + extension + ', '
     extension_list_string = extension_list_string + ']'
     self.tab.action_runner.EvaluateJavaScript(
+        'testIframe.contentWindow.'
         'checkSupportedExtensions({{ extensions_string }}, {{context_type}})',
         extensions_string=extension_list_string,
         context_type=context_type)
@@ -401,9 +408,10 @@ class WebGLConformanceIntegrationTestBase(
   def _RunExtensionTest(self, test_path: str, test_args: WebGLTestArgs) -> None:
     self._NavigateTo(test_path, self._GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
-        'window._loaded', timeout=self._GetTestTimeout())
+        'testIframeLoaded', timeout=self._GetTestTimeout())
     context_type = 'webgl2' if test_args.webgl_version == 2 else 'webgl'
     self.tab.action_runner.EvaluateJavaScript(
+        'testIframe.contentWindow.'
         'checkExtension({{ extension }}, {{ context_type }})',
         extension=test_args.extension,
         context_type=context_type)
@@ -499,7 +507,7 @@ class WebGLConformanceIntegrationTestBase(
         os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                      webgl_test_util.conformance_relpath),
         os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
-                     webgl_test_util.extensions_relpath)
+                     webgl_test_util.extensions_relpath),
     ])
 
   @classmethod
@@ -512,7 +520,9 @@ class WebGLConformanceIntegrationTestBase(
 
   @staticmethod
   def _DidWebGLTestSucceed(tab: ct.Tab) -> bool:
-    return tab.EvaluateJavaScript('webglTestHarness._allTestSucceeded')
+    # Ensure that we actually ran tests and they all passed.
+    return tab.EvaluateJavaScript('webglTestHarness._allTestSucceeded '
+                                  '&& webglTestHarness._totalTests > 0')
 
   @staticmethod
   def _WebGLTestMessages(tab: ct.Tab) -> str:

@@ -64,8 +64,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<Array<!projectorApp.Account>>}
    */
   getAccounts() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getAccounts', []);
+    return browserProxy.getAccounts();
   },
 
   /**
@@ -83,8 +82,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<boolean>}
    */
   startProjectorSession(storageDir) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'startProjectorSession', [storageDir]);
+    return browserProxy.startProjectorSession(storageDir);
   },
 
   /**
@@ -93,8 +91,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<!projectorApp.OAuthToken>}
    */
   getOAuthTokenForAccount(account) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getOAuthTokenForAccount', [account]);
+    return Promise.reject('Unsupported method getOauthTokenForAccount');
   },
 
   /**
@@ -104,8 +101,7 @@ const CLIENT_DELEGATE = {
    * @param {!Array<ProjectorError>} msg Error messages.
    */
   onError(msg) {
-    AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'onError', [msg]);
+    console.error('Received error messages:', msg);
   },
 
   /**
@@ -114,8 +110,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<Array<projectorApp.PendingScreencast>>}
    */
   getPendingScreencasts() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getPendingScreencasts', []);
+    return browserProxy.getPendingScreencasts();
   },
 
   /*
@@ -134,16 +129,9 @@ const CLIENT_DELEGATE = {
   sendXhr(
       url, method, requestBody, useCredentials, useApiKey, headers,
       accountEmail) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'sendXhr', [
-          url,
-          method,
-          requestBody ? requestBody : '',
-          !!useCredentials,
-          !!useApiKey,
-          headers,
-          accountEmail,
-        ]);
+    return browserProxy.sendXhr(
+        url, method, requestBody, !!useCredentials, !!useApiKey, headers,
+        accountEmail);
   },
 
   /**
@@ -172,8 +160,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<Object>}
    */
   getUserPref(userPref) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getUserPref', [userPref]);
+    return browserProxy.getUserPref(userPref);
   },
 
   /**
@@ -185,8 +172,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise} Promise resolved when the request was handled.
    */
   setUserPref(userPref, value) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'setUserPref', [userPref, value]);
+    return browserProxy.setUserPref(userPref, value);
   },
 
   /**
@@ -194,8 +180,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise}
    */
   openFeedbackDialog() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'openFeedbackDialog', []);
+    return browserProxy.openFeedbackDialog();
   },
 
   /**
@@ -260,10 +245,11 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     this.callbackRouter_.onSodaInstalled.addListener(() => {
       getAppElement().onSodaInstalled();
     });
+    this.callbackRouter_.onScreencastsStateChange.addListener(
+        (pendingScreencasts) => {
+          getAppElement().onScreencastsStateChange(pendingScreencasts);
+        });
 
-    this.registerMethod('onScreencastsStateChange', (pendingScreencasts) => {
-      getAppElement().onScreencastsStateChange(pendingScreencasts);
-    });
     this.registerMethod('onFileLoaded', (args) => {
       if (args.length !== 3) {
         console.error('Invalid argument to onFileLoaded', args);

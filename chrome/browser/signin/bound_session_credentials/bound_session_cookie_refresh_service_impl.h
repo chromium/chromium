@@ -8,10 +8,13 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 
 #include <memory>
+
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 class SigninClient;
 
@@ -22,20 +25,22 @@ class BoundSessionCookieRefreshServiceImpl
   explicit BoundSessionCookieRefreshServiceImpl(
       SigninClient* client,
       signin::IdentityManager* identity_manager);
+
   ~BoundSessionCookieRefreshServiceImpl() override;
 
+  // BoundSessionCookieRefreshService:
   void Initialize() override;
-
-  // Returns true if session is bound.
   bool IsBoundSession() const override;
+  chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
+  void AddBoundSessionRequestThrottledListenerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+          receiver) override;
 
-  // Called when a network request requires a fresh SIDTS cookie. This function
-  // is intended to be called by network requests throttlers.
-  // The callback will be called once the cookie is fresh or the session is
-  // terminated. Note: The callback might be called synchronously if the
-  // previous conditions apply.
+  // chrome::mojom::BoundSessionRequestThrottledListener:
   void OnRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) override;
+      OnRequestBlockedOnCookieCallback resume_blocked_request) override;
+
+  base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
  private:
   class BoundSessionStateTracker;
@@ -48,6 +53,10 @@ class BoundSessionCookieRefreshServiceImpl
           const GURL& url,
           const std::string& cookie_name,
           Delegate* delegate)>;
+
+  // BoundSessionCookieRefreshService:
+  void SetRendererBoundSessionParamsUpdaterDelegate(
+      RendererBoundSessionParamsUpdaterDelegate renderer_updater) override;
 
   void set_controller_factory_for_testing(
       const BoundSessionCookieControllerFactoryForTesting&
@@ -70,9 +79,16 @@ class BoundSessionCookieRefreshServiceImpl
   const raw_ptr<SigninClient> client_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
+  RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
 
   std::unique_ptr<BoundSessionStateTracker> bound_session_tracker_;
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
+
+  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
+      renderer_request_throttled_listener_;
+
+  base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_IMPL_H_

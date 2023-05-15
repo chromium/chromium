@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class Browser;
 
@@ -30,6 +31,12 @@ const extensions::Extension* GetExtensionForAppID(const std::string& app_id,
 AppListControllerDelegate::Pinnable GetPinnableForAppID(
     const std::string& app_id,
     Profile* profile);
+
+// Whether the pin state of the app with `app_id` is editable according to its
+// `app_type`.
+bool IsAppPinEditable(apps::AppType app_type,
+                      const std::string& app_id,
+                      Profile* profile);
 
 // Returns true when the given |browser| is listed in the browser application
 // list.

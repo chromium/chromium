@@ -43,7 +43,8 @@ class DisplayAndroidManager : public display::ScreenBase {
                      jint rotationDegrees,
                      jint bitsPerPixel,
                      jint bitsPerComponent,
-                     jboolean isWideColorGamut);
+                     jboolean isWideColorGamut,
+                     jfloat hdrMaxLuminanceRatio);
   void RemoveDisplay(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& jobject,
                      jint sdkDisplayId);
@@ -62,6 +63,7 @@ class DisplayAndroidManager : public display::ScreenBase {
                               int rotationDegrees,
                               int bitsPerPixel,
                               int bitsPerComponent,
+                              jfloat hdrMaxLuminanceRatio,
                               bool isWideColorGamut);
 
   const bool use_display_wide_color_gamut_;

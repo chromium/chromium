@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "ui/events/back_gesture_event.h"
 
@@ -46,7 +47,7 @@ class TabOnBackGestureHandler {
   void Destroy(JNIEnv* env);
 
  private:
-  TabAndroid* const tab_android_;
+  const raw_ptr<TabAndroid> tab_android_;
   bool is_in_progress_ = false;
 };
 }  // namespace gesturenav

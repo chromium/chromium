@@ -137,6 +137,12 @@ void RunOnOsLoginSubManager::Execute(
                      std::move(execute_done)));
 }
 
+// TODO(b/279068663): Implement if needed.
+void RunOnOsLoginSubManager::ForceUnregister(const AppId& app_id,
+                                             base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 void RunOnOsLoginSubManager::StartUnregistration(
     const AppId& app_id,
     const proto::WebAppOsIntegrationState& current_state,

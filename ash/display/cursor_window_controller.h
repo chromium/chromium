@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/ash_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/aura/window.h"
@@ -116,7 +117,7 @@ class ASH_EXPORT CursorWindowController {
 
   base::ObserverList<Observer> observers_;
 
-  aura::Window* container_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> container_ = nullptr;
 
   // The current cursor-compositing state.
   bool is_cursor_compositing_enabled_ = false;

@@ -1,9 +1,5 @@
 [
     {
-        "duration": "523.0",
-        "name": "speedometer2/Speedometer2"
-    },
-    {
         "duration": "900.0",
         "name": "base_perftests/_gtest_"
     }

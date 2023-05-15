@@ -9,7 +9,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/win/access_control_list.h"
@@ -153,6 +155,16 @@ bool ConfigBase::Freeze() {
 PolicyGlobal* ConfigBase::policy() {
   DCHECK(configured_);
   return policy_;
+}
+
+absl::optional<base::span<const uint8_t>> ConfigBase::policy_span() {
+  if (policy_) {
+    // Note: this is not policy().data_size as that relates to internal data,
+    // not the entire allocated policy area.
+    return base::span<const uint8_t>(reinterpret_cast<uint8_t*>(policy_.get()),
+                                     kPolMemSize);
+  }
+  return absl::nullopt;
 }
 
 std::vector<std::wstring>& ConfigBase::blocklisted_dlls() {
@@ -432,6 +444,7 @@ PolicyBase::PolicyBase(base::StringPiece tag)
       config_ptr_(nullptr),
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
+      delegate_data_(nullptr),
       job_() {
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
@@ -617,8 +630,8 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   DWORD win_error = ERROR_SUCCESS;
   // Initialize the sandbox infrastructure for the target.
   // TODO(wfh) do something with win_error code here.
-  ret = target->Init(dispatcher_.get(), config()->policy(), kIPCMemSize,
-                     kPolMemSize, &win_error);
+  ret = target->Init(dispatcher_.get(), config()->policy_span(),
+                     delegate_data_span(), kIPCMemSize, &win_error);
 
   if (ret != SBOX_ALL_OK)
     return ret;
@@ -725,6 +738,21 @@ bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
   if (!handle_closer)
     return true;
   return handle_closer->InitializeTargetHandles(target);
+}
+
+absl::optional<base::span<const uint8_t>> PolicyBase::delegate_data_span() {
+  if (delegate_data_) {
+    return base::make_span(*delegate_data_);
+  }
+  return absl::nullopt;
+}
+
+void PolicyBase::AddDelegateData(base::span<const uint8_t> data) {
+  CHECK(data.size() > 0u);
+  // Can only set this once - as there is only one region sent to the child.
+  CHECK(!delegate_data_);
+  delegate_data_ =
+      std::make_unique<std::vector<const uint8_t>>(data.begin(), data.end());
 }
 
 }  // namespace sandbox

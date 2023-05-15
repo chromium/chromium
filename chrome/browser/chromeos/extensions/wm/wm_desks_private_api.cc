@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -78,7 +78,7 @@ WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
       api::wm_desks_private::GetDeskTemplateJson::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->template_uuid);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->template_uuid);
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
@@ -130,7 +130,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
 
 void WmDesksPrivateLaunchDeskFunction::OnLaunchDesk(
     std::string error,
-    const base::GUID& desk_uuid) {
+    const base::Uuid& desk_uuid) {
   if (!error.empty()) {
     base::UmaHistogramBoolean(kApiLaunchDeskResult, false);
     Respond(Error(std::move(error)));
@@ -151,7 +151,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
   bool combine_desk = params->remove_desk_options
                           ? params->remove_desk_options->combine_desks
                           : false;
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_id);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_id);
   if (!uuid.is_valid()) {
     base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
@@ -260,7 +260,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateDeleteSavedDeskFunction::Run() {
   absl::optional<api::wm_desks_private::DeleteSavedDesk::Params> params =
       api::wm_desks_private::DeleteSavedDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->saved_desk_uuid);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->saved_desk_uuid);
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
@@ -292,7 +292,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRecallSavedDeskFunction::Run() {
   absl::optional<api::wm_desks_private::RecallSavedDesk::Params> params =
       api::wm_desks_private::RecallSavedDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->saved_desk_uuid);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->saved_desk_uuid);
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
@@ -306,7 +306,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRecallSavedDeskFunction::Run() {
 
 void WmDesksPrivateRecallSavedDeskFunction::OnRecalledSavedDesk(
     std::string error,
-    const base::GUID& desk_Id) {
+    const base::Uuid& desk_Id) {
   if (!error.empty()) {
     Respond(Error(std::move(error)));
     return;
@@ -329,7 +329,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateGetActiveDeskFunction::Run() {
 
 void WmDesksPrivateGetActiveDeskFunction::OnGetActiveDesk(
     std::string error_string,
-    const base::GUID& desk_Id) {
+    const base::Uuid& desk_Id) {
   if (!error_string.empty()) {
     Respond(Error(std::move(error_string)));
     return;
@@ -346,7 +346,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
   absl::optional<api::wm_desks_private::SwitchDesk::Params> params =
       api::wm_desks_private::SwitchDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_uuid);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_uuid);
   if (!uuid.is_valid()) {
     base::UmaHistogramBoolean(kApiSwitchDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
@@ -376,7 +376,7 @@ WmDesksPrivateGetDeskByIDFunction::~WmDesksPrivateGetDeskByIDFunction() =
 ExtensionFunction::ResponseAction WmDesksPrivateGetDeskByIDFunction::Run() {
   auto params = api::wm_desks_private::GetDeskByID::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_uuid);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_uuid);
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }

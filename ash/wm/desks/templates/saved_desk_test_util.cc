@@ -3,21 +3,21 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "base/memory/raw_ref.h"
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
-#include "ash/wm/desks/templates/saved_desk_item_view.h"
-#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/test/bind.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -42,17 +42,18 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
  public:
   explicit BoundsAnimatorWaiter(views::BoundsAnimator& animator)
       : animator_(animator) {
-    animator_.AddObserver(this);
+    animator_->AddObserver(this);
   }
 
   BoundsAnimatorWaiter(const BoundsAnimatorWaiter&) = delete;
   BoundsAnimatorWaiter& operator=(const BoundsAnimatorWaiter&) = delete;
 
-  ~BoundsAnimatorWaiter() override { animator_.RemoveObserver(this); }
+  ~BoundsAnimatorWaiter() override { animator_->RemoveObserver(this); }
 
   void Wait() {
-    if (!animator_.IsAnimating())
+    if (!animator_->IsAnimating()) {
       return;
+    }
 
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -66,7 +67,7 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
       run_loop_->Quit();
   }
 
-  views::BoundsAnimator& animator_;
+  const raw_ref<views::BoundsAnimator, ExperimentalAsh> animator_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -254,6 +255,70 @@ void WaitForSavedDeskUI() {
   SavedDeskPresenterTestApi(overview_session->saved_desk_presenter())
       .SetOnUpdateUiClosure(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+const app_restore::AppRestoreData* QueryRestoreData(
+    const DeskTemplate& saved_desk,
+    absl::optional<std::string> app_id,
+    absl::optional<int32_t> window_id) {
+  const auto& app_id_to_launch_list =
+      saved_desk.desk_restore_data()->app_id_to_launch_list();
+
+  auto app_it = app_id ? app_id_to_launch_list.find(*app_id)
+                       : app_id_to_launch_list.begin();
+  if (app_it == app_id_to_launch_list.end()) {
+    // No matching app found, or the app list is empty.
+    return nullptr;
+  }
+
+  const auto& launch_list = app_it->second;
+  auto window_it =
+      window_id ? launch_list.find(*window_id) : launch_list.begin();
+  if (window_it == launch_list.end()) {
+    // No matching window found, or the window list is is empty.
+    return nullptr;
+  }
+
+  return window_it->second.get();
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       std::unique_ptr<DeskTemplate> saved_desk) {
+  base::RunLoop loop;
+  desk_model->AddOrUpdateEntry(
+      std::move(saved_desk),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            CHECK_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                     status);
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateSource source,
+                       DeskTemplateType type,
+                       std::unique_ptr<app_restore::RestoreData> restore_data) {
+  auto saved_desk =
+      std::make_unique<DeskTemplate>(uuid, source, name, created_time, type);
+  saved_desk->set_desk_restore_data(std::move(restore_data));
+
+  AddSavedDeskEntry(desk_model, std::move(saved_desk));
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateType type) {
+  AddSavedDeskEntry(desk_model, uuid, name, created_time,
+                    DeskTemplateSource::kUser, type,
+                    std::make_unique<app_restore::RestoreData>());
 }
 
 }  // namespace ash

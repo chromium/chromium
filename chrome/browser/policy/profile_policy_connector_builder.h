@@ -21,14 +21,14 @@ class CloudPolicyStore;
 class ConfigurationPolicyProvider;
 class ProfilePolicyConnector;
 class SchemaRegistry;
-class UserCloudPolicyManager;
+class CloudPolicyManager;
 
 // Factory method that creates and initializes a new instance of
 // ProfilePolicyConnector for the given |context|.
 std::unique_ptr<ProfilePolicyConnector>
 CreateProfilePolicyConnectorForBrowserContext(
     SchemaRegistry* schema_registry,
-    UserCloudPolicyManager* user_cloud_policy_manager,
+    CloudPolicyManager* cloud_policy_manager,
     ConfigurationPolicyProvider* user_policy_provider,
     policy::ChromeBrowserPolicyConnector* browser_policy_connector,
     bool force_immediate_load,

@@ -32,9 +32,10 @@
   TestRunner.completeTest();
 
   function dumpIconResult() {
-    var hasIcon = !!UI.inspectorView.tabbedPane.tabsElement.getElementsByClassName('smallicon-warning').length;
+    const icons = UI.inspectorView.tabbedPane.tabsElement.getElementsByTagName('devtools-icon');
+    const warnings = [...icons].filter(icon => icon.data.iconName === 'warning-filled');
     TestRunner.addResult('Is blocking: ' + SDK.multitargetNetworkManager.isBlocking());
-    TestRunner.addResult(hasIcon ? 'Has Icon' : 'Does Not Have Icon');
+    TestRunner.addResult(Boolean(warnings.length) ? 'Has Icon' : 'Does Not Have Icon');
     TestRunner.addResult('');
   }
 })();

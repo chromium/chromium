@@ -116,6 +116,7 @@ static WTF::String PaintPhaseAsDebugString(int paint_phase) {
 static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
   switch (type) {
     DEBUG_STRING_CASE(BoxDecorationBackground);
+    DEBUG_STRING_CASE(FixedAttachmentBackground);
     DEBUG_STRING_CASE(Caret);
     DEBUG_STRING_CASE(CapsLockIndicator);
     DEBUG_STRING_CASE(ColumnRules);

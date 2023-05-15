@@ -7,6 +7,10 @@
     width: 100%;
   }
 
+  :host-context(body.jelly-enabled) #title {
+    font: var(--cros-title-1-font);
+  }
+
   :host([is-narrow]) #leftContent {
     padding-inline-start: 14px;
   }

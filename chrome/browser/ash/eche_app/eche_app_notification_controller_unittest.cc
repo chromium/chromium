@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,7 +93,7 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     notification->delegate()->Click(0, absl::nullopt);
   }
 
-  MockNewWindowDelegate* new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_;
 
  private:
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;

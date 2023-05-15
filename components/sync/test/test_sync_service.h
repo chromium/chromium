@@ -37,6 +37,7 @@ class TestSyncService : public SyncService {
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
+  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
@@ -63,8 +64,9 @@ class TestSyncService : public SyncService {
   void FireSyncCycleCompleted();
 
   // SyncService implementation.
-  syncer::SyncUserSettings* GetUserSettings() override;
-  const syncer::SyncUserSettings* GetUserSettings() const override;
+  void SetSyncFeatureRequested() override;
+  TestSyncUserSettings* GetUserSettings() override;
+  const TestSyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;
   TransportState GetTransportState() const override;
   UserActionableError GetUserActionableError() const override;
@@ -74,6 +76,7 @@ class TestSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
+  bool IsSyncFeatureDisabledViaDashboard() const override;
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
@@ -85,7 +88,7 @@ class TestSyncService : public SyncService {
   void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
-  void DataTypePreconditionChanged(syncer::ModelType type) override;
+  void DataTypePreconditionChanged(ModelType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
@@ -120,6 +123,9 @@ class TestSyncService : public SyncService {
   // KeyedService implementation.
   void Shutdown() override;
 
+ protected:
+  bool IsSyncFeatureConsideredRequested() const override;
+
  private:
   TestSyncUserSettings user_settings_;
 
@@ -129,6 +135,7 @@ class TestSyncService : public SyncService {
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
+  bool sync_feature_disabled_via_dashboard_ = false;
 
   ModelTypeSet failed_data_types_;
 
@@ -137,7 +144,7 @@ class TestSyncService : public SyncService {
 
   SyncCycleSnapshot last_cycle_snapshot_;
 
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
 };

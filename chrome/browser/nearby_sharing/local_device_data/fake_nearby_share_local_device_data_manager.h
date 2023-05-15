@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
@@ -56,9 +57,11 @@ class FakeNearbyShareLocalDeviceDataManager
 
    private:
     std::vector<FakeNearbyShareLocalDeviceDataManager*> instances_;
-    PrefService* latest_pref_service_ = nullptr;
-    NearbyShareClientFactory* latest_http_client_factory_ = nullptr;
-    NearbyShareProfileInfoProvider* latest_profile_info_provider_ = nullptr;
+    raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
+    raw_ptr<NearbyShareClientFactory, ExperimentalAsh>
+        latest_http_client_factory_ = nullptr;
+    raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+        latest_profile_info_provider_ = nullptr;
   };
 
   struct UploadContactsCall {

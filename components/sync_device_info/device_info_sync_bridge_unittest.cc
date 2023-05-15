@@ -263,7 +263,7 @@ std::string SyncInvalidationsInstanceIdTokenForSuffix(int suffix) {
 }
 
 ModelTypeSet SyncInvalidationsInterestedDataTypes() {
-  return ModelTypeSet(BOOKMARKS);
+  return {BOOKMARKS};
 }
 
 DataTypeActivationRequest TestDataTypeActivationRequest(SyncMode sync_mode) {
@@ -544,8 +544,8 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
     metadata_change_list->UpdateModelTypeState(StateWithEncryption(""));
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-    bridge()->MergeSyncData(std::move(metadata_change_list),
-                            EntityChangeList());
+    bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                                EntityChangeList());
   }
 
   // Creates the bridge with no prior data on the store, and mimics sync being
@@ -856,22 +856,22 @@ TEST_F(DeviceInfoSyncBridgeTest, GetAllData) {
                   Pair(specifics2.cache_guid(), HasDeviceInfo(specifics2))));
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesEmpty) {
+TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1, change_count());
 
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          EntityChangeList());
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), EntityChangeList());
   EXPECT_FALSE(error);
   EXPECT_EQ(1, change_count());
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesInMemory) {
+TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1, change_count());
 
   const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  auto error_on_add = bridge()->ApplySyncChanges(
+  auto error_on_add = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
@@ -884,7 +884,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesInMemory) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
       EntityChange::CreateDelete(specifics.cache_guid()));
-  auto error_on_delete = bridge()->ApplySyncChanges(
+  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
   EXPECT_FALSE(error_on_delete);
@@ -892,7 +892,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesInMemory) {
   EXPECT_EQ(3, change_count());
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesStore) {
+TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesStore) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1, change_count());
 
@@ -902,8 +902,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesStore) {
       bridge()->CreateMetadataChangeList();
   metadata_changes->UpdateModelTypeState(state);
 
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          EntityAddList({specifics}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), EntityAddList({specifics}));
   EXPECT_FALSE(error);
   EXPECT_EQ(2, change_count());
 
@@ -918,7 +918,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesStore) {
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesWithLocalGuid) {
+TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesWithLocalGuid) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1, change_count());
 
@@ -931,7 +931,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesWithLocalGuid) {
   EXPECT_CALL(*processor(), Put).Times(0);
 
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
-  auto error_on_add = bridge()->ApplySyncChanges(
+  auto error_on_add = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
   EXPECT_FALSE(error_on_add);
   EXPECT_EQ(1, change_count());
@@ -944,8 +944,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDeleteNonexistent) {
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete("guid"));
   EXPECT_CALL(*processor(), Delete).Times(0);
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          std::move(entity_change_list));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error);
   EXPECT_EQ(1, change_count());
 }
@@ -963,8 +963,8 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeEmpty) {
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  auto error = bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                                       EntityChangeList());
+  auto error = bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                                           EntityChangeList());
   EXPECT_FALSE(error);
   EXPECT_EQ(1, change_count());
 
@@ -985,9 +985,9 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeLocalGuid) {
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  auto error =
-      bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                              EntityAddList({CreateLocalDeviceSpecifics()}));
+  auto error = bridge()->MergeFullSyncData(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({CreateLocalDeviceSpecifics()}));
 
   EXPECT_FALSE(error);
   EXPECT_EQ(1, change_count());
@@ -1010,26 +1010,29 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   ON_CALL(*processor(), GetEntityModificationTime)
       .WillByDefault(Return(base::Time::Now()));
 
-  // Regardless of the time, these following two ApplySyncChanges(...) calls
-  // have the same guid as the local device.
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({CreateLocalDeviceSpecifics()}));
+  // Regardless of the time, these following two
+  // ApplyIncrementalSyncChanges(...) calls have the same guid as the local
+  // device.
+  bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({CreateLocalDeviceSpecifics()}));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({CreateLocalDeviceSpecifics()}));
+  bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({CreateLocalDeviceSpecifics()}));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   // A different guid will actually contribute to the count.
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({CreateSpecifics(1)}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({CreateSpecifics(1)}));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
 
   // Now set time to long ago in the past, it should not be active anymore.
-  bridge()->ApplySyncChanges(
+  bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({CreateSpecifics(1, base::Time::Now() - base::Days(365))}));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
@@ -1061,8 +1064,9 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
       .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(5)));
 
   // With two devices, the local device gets ignored because it doesn't overlap.
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({specifics1, specifics2}));
+  bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
@@ -1070,8 +1074,8 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
 
   // The third device is also overlapping with the first two (and the local one
   // is still excluded).
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({specifics3}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
@@ -1102,7 +1106,7 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithNonOverlappingTime) {
   ON_CALL(*processor(), GetEntityModificationTime(specifics3.cache_guid()))
       .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(6)));
 
-  bridge()->ApplySyncChanges(
+  bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics1, specifics2, specifics3}));
 
@@ -1141,7 +1145,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   ON_CALL(*processor(), GetEntityModificationTime(specifics3.cache_guid()))
       .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(6)));
 
-  bridge()->ApplySyncChanges(
+  bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics1, specifics2, specifics3}));
 
@@ -1171,8 +1175,9 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
       .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
 
   // With two devices, the local device gets ignored because it doesn't overlap.
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({specifics1, specifics2}));
+  bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
@@ -1195,8 +1200,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
       .WillByDefault(Return(base::Time::Now()));
 
   // A different guid will contribute to the count.
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({CreateSpecifics(1)}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({CreateSpecifics(1)}));
   ASSERT_THAT(GetAllData(), SizeIs(2));
   ASSERT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
   ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
@@ -1206,8 +1211,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   // If the Chrome version is not present, it should not be exposed as device.
   sync_pb::DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
   specifics2.clear_chrome_version();
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({specifics2}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({specifics2}));
   ASSERT_THAT(GetAllData(), SizeIs(3));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
@@ -1219,8 +1224,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   sync_pb::DeviceInfoSpecifics specifics3 = CreateSpecifics(3);
   specifics3.clear_chrome_version();
   specifics3.mutable_chrome_version_info()->set_version_number("someversion");
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({specifics3}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({specifics3}));
   ASSERT_THAT(GetAllData(), SizeIs(4));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
@@ -1249,8 +1254,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDisableSyncChanges) {
   ASSERT_TRUE(bridge()->IsPulseTimerRunningForTest());
 
   const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          EntityAddList({specifics}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   ASSERT_FALSE(error);
   ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
@@ -1271,8 +1276,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDisableSyncChanges) {
   // contain remote data.
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              EntityChangeList());
   // Local device.
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
   EXPECT_TRUE(bridge()->IsPulseTimerRunningForTest());
@@ -1288,7 +1293,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ExpireOldEntriesUponStartup) {
       CreateSpecifics(1, base::Time::Now() - base::Days(57));
   const DeviceInfoSpecifics specifics_fresh =
       CreateSpecifics(1, base::Time::Now() - base::Days(55));
-  auto error = bridge()->ApplySyncChanges(
+  auto error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics_old, specifics_fresh}));
 
@@ -1475,9 +1480,9 @@ TEST_F(DeviceInfoSyncBridgeTest,
   const std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
 
-  EXPECT_CALL(callback, Run(ModelTypeSet(syncer::SESSIONS)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityChangeList());
+  EXPECT_CALL(callback, Run(ModelTypeSet({syncer::SESSIONS})));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityChangeList());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest,
@@ -1496,8 +1501,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
   EXPECT_CALL(callback, Run).Times(0);
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityChangeList());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityChangeList());
 }
 
 // This test mimics the case when OnSyncStarting is called before the metadata
@@ -1630,15 +1635,15 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldInvokeCallbackOnReadAllMetadata) {
 TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  absl::optional<ModelError> error = bridge()->ApplySyncChanges(
+  absl::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
   ASSERT_FALSE(error);
   ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
   changes.push_back(EntityChange::CreateDelete(specifics.cache_guid()));
-  error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                     std::move(changes));
+  error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
 
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
@@ -1659,7 +1664,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   // The reupload should only be triggered once, to prevent any possible
   // ping-pong between devices.
   EXPECT_CALL(*processor(), Put(CacheGuidForSuffix(kLocalSuffix), _, _));
-  absl::optional<ModelError> error = bridge()->ApplySyncChanges(
+  absl::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
 
@@ -1669,8 +1674,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   changes.clear();
   changes.push_back(
       EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
-  error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                     std::move(changes));
+  error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
 
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
@@ -1737,8 +1742,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
   {
     DeviceInfoSpecifics remote_specifics = CreateSpecifics(1);
     remote_specifics.set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_PHONE);
-    bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                               EntityAddList({remote_specifics}));
+    bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                          EntityAddList({remote_specifics}));
     EXPECT_THAT(
         bridge()->GetDeviceInfo(remote_specifics.cache_guid())->os_type(),
         DeviceInfo::OsType::kAndroid);
@@ -1752,8 +1757,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
     DeviceInfoSpecifics remote_specifics = CreateSpecifics(1);
     remote_specifics.set_manufacturer("Apple Inc.");
     remote_specifics.set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_PHONE);
-    bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                               EntityAddList({remote_specifics}));
+    bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                          EntityAddList({remote_specifics}));
     EXPECT_THAT(
         bridge()->GetDeviceInfo(remote_specifics.cache_guid())->os_type(),
         DeviceInfo::OsType::kIOS);

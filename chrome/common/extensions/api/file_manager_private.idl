@@ -253,7 +253,9 @@ enum EntryPropertyName {
   isExternalMedia,
   isArbitrarySyncFolder,
   syncStatus,
-  progress
+  progress,
+  shortcut,
+  syncCompletedTime
 };
 
 // Source of the volume data.
@@ -323,6 +325,17 @@ enum IOTaskType {
   restore_to_destination,
   trash,
   zip
+};
+
+enum PolicyErrorType {
+  dlp,
+  enterprise_connectors,
+  dlp_warning_timeout
+};
+
+enum PolicyDialogType {
+  warning,
+  error
 };
 
 enum RecentDateBucket {
@@ -549,6 +562,13 @@ dictionary EntryProperties {
   // E.g., pasting, syncing. Note: currently, this is exclusively being used
   // for Drive syncing.
   double? progress;
+
+  // Time in milliseconds since the epoch when the file last received a
+  // "completed" sync status.
+  double? syncCompletedTime;
+
+  // True if the entry is a shortcut.
+  boolean? shortcut;
 };
 
 // Information about total and remaining size on the mount point.
@@ -1086,6 +1106,10 @@ dictionary ProgressStatus {
   // Current state of the task sending the progress.
   IOTaskState state;
 
+  // Type of policy error that occurred, if any.
+  // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
+  PolicyErrorType? policyError;
+
   // Name of the first source entry.
   DOMString sourceName;
 
@@ -1192,18 +1216,18 @@ dictionary BulkPinProgress {
   BulkPinStage stage;
 
   // Estimated amount of free space on the stateful partition in bytes.
-  long freeSpaceBytes;
+  double freeSpaceBytes;
 
   // Estimated amount of free space required in order to successfully complete
   // pinning.
-  long requiredSpaceBytes;
+  double requiredSpaceBytes;
 
   // Estimated amount of bytes remaining to be downloaded in order to
   // successfully complete pinning.
-  long bytesToPin;
+  double bytesToPin;
 
   // Bytes that have been downloaded so far.
-  long pinnedBytes;
+  double pinnedBytes;
 
   // Total number of files to pin.
   long filesToPin;
@@ -1925,6 +1949,10 @@ interface Functions {
   // each I/O task's progress status.
   static void resumeIOTask(long taskId, ResumeParams params);
 
+  // Shows a policy dialog for a task. Task ids are communicated to the Files
+  // App in each I/O task's progress status.
+  static void showPolicyDialog(long taskId, PolicyDialogType type);
+
   // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
   // progress status.
   static void progressPausedTasks();
@@ -1949,6 +1977,10 @@ interface Functions {
 
   // Returns the current progress of the bulk pinning manager.
   static void getBulkPinProgress(GetBulkPinProgressCallback callback);
+
+  // Starts calculating the space required to pin all the items in a users My
+  // drive.
+  static void calculateBulkPinRequiredSpace(SimpleCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
@@ -1986,5 +2018,7 @@ interface Events {
   // Event broadcast when the list of Guest OSs that support Guest->Host file
   // sharing changes.
   static void onMountableGuestsChanged(MountableGuest[] guests);
+
+  static void onBulkPinProgress(BulkPinProgress progress);
 };
 };

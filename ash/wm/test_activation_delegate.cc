@@ -4,28 +4,15 @@
 
 #include "ash/wm/test_activation_delegate.h"
 
-#include "ash/wm/window_util.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/events/event.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
-TestActivationDelegate::TestActivationDelegate()
-    : window_(NULL),
-      window_was_active_(false),
-      activate_(true),
-      activated_count_(0),
-      lost_active_count_(0),
-      should_activate_count_(0) {}
+TestActivationDelegate::TestActivationDelegate() = default;
 
 TestActivationDelegate::TestActivationDelegate(bool activate)
-    : window_(NULL),
-      window_was_active_(false),
-      activate_(activate),
-      activated_count_(0),
-      lost_active_count_(0),
-      should_activate_count_(0) {}
+    : activate_(activate) {}
 
 void TestActivationDelegate::SetWindow(aura::Window* window) {
   window_ = window;

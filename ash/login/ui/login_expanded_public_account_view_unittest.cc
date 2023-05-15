@@ -13,6 +13,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -84,8 +85,8 @@ class LoginExpandedPublicAccountViewTest
     container_ = new views::BoxLayoutView();
     container_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-    container_->AddChildView(public_account_);
-    container_->AddChildView(other_view_);
+    container_->AddChildView(public_account_.get());
+    container_->AddChildView(other_view_.get());
     auto widget = CreateWidgetWithContent(container_);
     switch (GetParam().orientation) {
       case Orientation::kLandscape:
@@ -154,9 +155,10 @@ class LoginExpandedPublicAccountViewTest
   LoginUserInfo user_;
 
   // Owned by test widget view hierarchy.
-  views::BoxLayoutView* container_ = nullptr;
-  LoginExpandedPublicAccountView* public_account_ = nullptr;
-  views::View* other_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> public_account_ =
+      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> other_view_ = nullptr;
 };
 
 }  // namespace

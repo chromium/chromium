@@ -76,10 +76,6 @@ std::vector<uint8_t> ScopedSECItemToBytes(const crypto::ScopedSECItem& value) {
                : std::vector<uint8_t>();
 }
 
-std::vector<uint8_t> StrToBytes(const std::string& val) {
-  return std::vector<uint8_t>(val.begin(), val.end());
-}
-
 // Base class to store state that is common to all NSS database operations and
 // to provide convenience methods to call back.
 // Keeps track of the originating task runner.
@@ -576,7 +572,7 @@ class GetKeyLocationsState : public NSSOperationState {
 class SetAttributeForKeyState : public NSSOperationState {
  public:
   SetAttributeForKeyState(ServiceWeakPtr weak_ptr,
-                          const std::string& public_key_spki_der,
+                          std::vector<uint8_t> public_key_spki_der,
                           CK_ATTRIBUTE_TYPE attribute_type,
                           std::vector<uint8_t> attribute_value,
                           SetAttributeForKeyCallback callback)
@@ -597,7 +593,7 @@ class SetAttributeForKeyState : public NSSOperationState {
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
   const CK_ATTRIBUTE_TYPE attribute_type_;
   const std::vector<uint8_t> attribute_value_;
 
@@ -616,7 +612,7 @@ class SetAttributeForKeyState : public NSSOperationState {
 class GetAttributeForKeyState : public NSSOperationState {
  public:
   GetAttributeForKeyState(ServiceWeakPtr weak_ptr,
-                          const std::string& public_key_spki_der,
+                          std::vector<uint8_t> public_key_spki_der,
                           CK_ATTRIBUTE_TYPE attribute_type,
                           GetAttributeForKeyCallback callback)
       : NSSOperationState(weak_ptr),
@@ -636,7 +632,7 @@ class GetAttributeForKeyState : public NSSOperationState {
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
   const CK_ATTRIBUTE_TYPE attribute_type_;
 
  private:
@@ -1392,9 +1388,8 @@ void SetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<SetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
-      StrToBytes(state->public_key_spki_der_), state->slot_.get());
-
+  crypto::ScopedSECKEYPrivateKey private_key =
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
     return;
@@ -1437,8 +1432,8 @@ void GetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<GetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
-      StrToBytes(state->public_key_spki_der_), state->slot_.get());
+  crypto::ScopedSECKEYPrivateKey private_key =
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1548,7 +1543,7 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
+void PlatformKeysServiceImpl::SignRsaPkcs1(
     absl::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
@@ -1601,7 +1596,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::SignECDSADigest(
+void PlatformKeysServiceImpl::SignEcdsa(
     absl::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
@@ -1801,7 +1796,7 @@ void PlatformKeysServiceImpl::GetKeyLocations(
 
 void PlatformKeysServiceImpl::SetAttributeForKey(
     TokenId token_id,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     KeyAttributeType attribute_type,
     std::vector<uint8_t> attribute_value,
     SetAttributeForKeyCallback callback) {
@@ -1812,8 +1807,8 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
       /*map_to_softoken_attrs=*/IsSetMapToSoftokenAttrsForTesting());
 
   auto state = std::make_unique<SetAttributeForKeyState>(
-      weak_factory_.GetWeakPtr(), public_key_spki_der, ck_attribute_type,
-      std::move(attribute_value), std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
+      ck_attribute_type, std::move(attribute_value), std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1832,7 +1827,7 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
 
 void PlatformKeysServiceImpl::GetAttributeForKey(
     TokenId token_id,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     KeyAttributeType attribute_type,
     GetAttributeForKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1842,8 +1837,8 @@ void PlatformKeysServiceImpl::GetAttributeForKey(
       /*map_to_softoken_attrs=*/IsSetMapToSoftokenAttrsForTesting());
 
   auto state = std::make_unique<GetAttributeForKeyState>(
-      weak_factory_.GetWeakPtr(), public_key_spki_der, ck_attribute_type,
-      std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
+      ck_attribute_type, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

@@ -20,3 +20,8 @@ function CrFingerprintProgressArcElement() {}
  */
 CrFingerprintProgressArcElement.prototype.setProgress = function(
     prevPercentComplete, currPercentComplete, isComplete) {};
+
+/**
+ * @param {boolean} shouldPlay
+ */
+CrFingerprintProgressArcElement.prototype.setPlay = function(shouldPlay) {};

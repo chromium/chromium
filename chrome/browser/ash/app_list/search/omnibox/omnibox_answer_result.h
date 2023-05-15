@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_ANSWER_RESULT_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
@@ -52,8 +53,8 @@ class OmniboxAnswerResult : public ChromeSearchResult,
   bool IsDictionaryResult() const;
   bool IsWeatherResult() const;
 
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
   const crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;

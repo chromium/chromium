@@ -10,11 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -106,13 +108,18 @@ void AppServiceInternalsPageHandlerImpl::GetPromiseApps(
   std::vector<mojom::app_service_internals::PromiseAppInfoPtr> result;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy) {
+  if (!proxy || !proxy->PromiseAppRegistryCache()) {
     std::move(callback).Run(std::move(result));
     return;
   }
   for (auto const& promise_app :
-       proxy->PromiseAppRegistryCache().GetAllPromiseApps()) {
+       proxy->PromiseAppRegistryCache()->GetAllPromiseApps()) {
     std::stringstream debug_info;
     debug_info << *promise_app;
     result.emplace_back(absl::in_place,

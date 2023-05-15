@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -39,7 +40,7 @@ constexpr float kHalf = 0.5;
 std::vector<Position> ParseLocation(const base::Value::List& position) {
   std::vector<Position> positions;
   for (const base::Value& val : position) {
-    auto pos = ParsePosition(val);
+    const auto pos = ParsePosition(val.GetDict());
     if (!pos) {
       LOG(ERROR) << "Failed to parse location.";
       positions.clear();
@@ -59,8 +60,8 @@ void InitPositions(std::vector<Position>& positions) {
 
 }  // namespace
 
-std::unique_ptr<Position> ParsePosition(const base::Value& value) {
-  auto* type = value.FindStringKey(kType);
+std::unique_ptr<Position> ParsePosition(const base::Value::Dict& dict) {
+  const auto* type = dict.FindString(kType);
   if (!type) {
     LOG(ERROR) << "There must be type for each position.";
     return nullptr;
@@ -76,8 +77,7 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value) {
     return nullptr;
   }
 
-  DCHECK(value.is_dict());
-  bool succeed = pos->ParseFromJson(value.GetDict());
+  bool succeed = pos->ParseFromJson(dict);
   if (!succeed) {
     LOG(ERROR) << "Position is parsed incorrectly on type: " << *type;
     return nullptr;
@@ -113,9 +113,9 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 }
 
 absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
-    const base::Value& value,
+    const base::Value::Dict& value,
     const base::StringPiece key_name) {
-  const std::string* key = value.FindStringKey(kKey);
+  const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";
     return absl::nullopt;
@@ -128,10 +128,10 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     return absl::nullopt;
   }
   // "modifiers" is optional.
-  auto* modifier_list = value.FindListKey(kModifiers);
+  const base::Value::List* modifier_list = value.FindList(kModifiers);
   int modifiers = 0;
   if (modifier_list) {
-    for (const base::Value& val : modifier_list->GetList()) {
+    for (const base::Value& val : *modifier_list) {
       if (base::ToLowerASCII(val.GetString()) == kCtrl) {
         modifiers |= ui::EF_CONTROL_DOWN;
       } else if (base::ToLowerASCII(val.GetString()) == kShift) {
@@ -147,26 +147,19 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
 }
 
 Action::Action(TouchInjector* touch_injector)
-    : touch_injector_(touch_injector),
-      allow_reposition_(touch_injector->allow_reposition()),
-      beta_(touch_injector->beta()) {}
+    : touch_injector_(touch_injector), beta_(touch_injector->beta()) {}
 
 Action::~Action() = default;
 
-bool Action::ParseFromJson(const base::Value& value) {
-  if (!value.is_dict()) {
-    LOG(ERROR) << "Value must be a dictionary.";
-    return false;
-  }
-
+bool Action::ParseFromJson(const base::Value::Dict& value) {
   // Name can be empty.
-  auto* name = value.GetDict().FindString(kName);
+  auto* name = value.FindString(kName);
   if (name) {
     name_ = *name;
   }
 
   // Unique ID is required.
-  auto id = value.GetDict().FindInt(kID);
+  auto id = value.FindInt(kID);
   if (!id) {
     LOG(ERROR) << "Must have unique ID for action {" << name_ << "}";
     return false;
@@ -174,12 +167,12 @@ bool Action::ParseFromJson(const base::Value& value) {
   id_ = *id;
 
   // Parse action device source.
-  auto* sources = value.FindListKey(kInputSources);
-  if (!sources || !sources->is_list()) {
+  const base::Value::List* sources = value.FindList(kInputSources);
+  if (!sources) {
     LOG(ERROR) << "Must have input source(s) for each action.";
     return false;
   }
-  for (auto& source : sources->GetList()) {
+  for (auto& source : *sources) {
     if (!source.is_string()) {
       LOG(ERROR) << "Must have input source(s) in string.";
       return false;
@@ -197,20 +190,18 @@ bool Action::ParseFromJson(const base::Value& value) {
   }
 
   // Location can be empty for mouse related actions.
-  const base::Value::List* position = value.GetDict().FindList(kLocation);
+  const base::Value::List* position = value.FindList(kLocation);
   if (position) {
     auto parsed_pos = ParseLocation(*position);
     if (!parsed_pos.empty()) {
       original_positions_ = parsed_pos;
       on_left_or_middle_side_ =
           (original_positions_.front().anchor().x() <= kHalf);
-      if (allow_reposition_) {
-        current_positions_ = std::move(parsed_pos);
-      }
+      current_positions_ = std::move(parsed_pos);
     }
   }
   // Parse action radius.
-  if (!ParsePositiveFraction(value.GetDict(), kRadius, &radius_)) {
+  if (!ParsePositiveFraction(value, kRadius, &radius_)) {
     return false;
   }
 
@@ -232,7 +223,7 @@ bool Action::ParseFromProto(const ActionProto& proto) {
   original_input_ = InputElement::ConvertFromProto(proto.input_element());
   current_input_ = std::make_unique<InputElement>(*original_input_);
 
-  if (allow_reposition_ && !proto.positions().empty()) {
+  if (!proto.positions().empty()) {
     std::vector<Position> positions;
     for (const auto& pos_proto : proto.positions()) {
       auto position = Position::ConvertFromProto(pos_proto);
@@ -255,7 +246,7 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
       current_input_ = std::move(input_element);
     }
   }
-  if (allow_reposition_ && !proto.positions().empty()) {
+  if (!proto.positions().empty()) {
     auto position = Position::ConvertFromProto(proto.positions()[0]);
     DCHECK(position);
     if (position) {
@@ -306,7 +297,7 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
 
 void Action::BindPending() {
   // Check whether position is adjusted.
-  if (allow_reposition_ && pending_position_) {
+  if (pending_position_) {
     current_positions_[0] = *pending_position_;
     pending_position_.reset();
     UpdateTouchDownPositions();
@@ -325,7 +316,7 @@ void Action::BindPending() {
 void Action::CancelPendingBind() {
   // Clear the pending positions.
   bool canceled = false;
-  if (allow_reposition_ && pending_position_) {
+  if (pending_position_) {
     pending_position_.reset();
     canceled = true;
   }
@@ -343,9 +334,7 @@ void Action::CancelPendingBind() {
 }
 
 void Action::ResetPendingBind() {
-  if (allow_reposition_) {
-    pending_position_.reset();
-  }
+  pending_position_.reset();
   pending_input_.reset();
 }
 
@@ -377,8 +366,7 @@ void Action::RestoreToDefault() {
     pending_input_ = std::make_unique<InputElement>(*original_input_);
     restored = true;
   }
-  if (allow_reposition_ &&
-      GetCurrentDisplayedPosition() != original_positions_[0]) {
+  if (GetCurrentDisplayedPosition() != original_positions_[0]) {
     pending_position_.reset();
     pending_position_ = std::make_unique<Position>(original_positions_[0]);
     restored = true;
@@ -552,7 +540,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
       customized = true;
     }
 
-    if (allow_reposition_ && original_positions_ != current_positions_) {
+    if (original_positions_ != current_positions_) {
       // Now only supports changing and saving the first touch position.
       auto pos_proto = current_positions_[0].ConvertToProto();
       *proto->add_positions() = *pos_proto;
@@ -591,9 +579,7 @@ void Action::UpdateTouchDownPositions() {
   touch_down_positions_.clear();
   const auto& content_bounds = touch_injector_->content_bounds();
   for (size_t i = 0; i < original_positions_.size(); i++) {
-    auto point = allow_reposition_
-                     ? current_positions_[i].CalculatePosition(content_bounds)
-                     : original_positions_[i].CalculatePosition(content_bounds);
+    auto point = current_positions_[i].CalculatePosition(content_bounds);
     const auto calculated_point = point.ToString();
     point.Offset(content_bounds.origin().x(), content_bounds.origin().y());
     const auto root_point = point.ToString();

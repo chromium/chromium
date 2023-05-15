@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_
 
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
@@ -365,10 +366,10 @@ class PersonalizationAppWallpaperProviderImpl
   // user's background.
   std::set<base::FilePath> local_images_;
 
-  content::WebUI* const web_ui_ = nullptr;
+  const raw_ptr<content::WebUI, ExperimentalAsh> web_ui_ = nullptr;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
-  Profile* const profile_ = nullptr;
+  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   base::ScopedObservation<ash::WallpaperController,
                           ash::WallpaperControllerObserver>

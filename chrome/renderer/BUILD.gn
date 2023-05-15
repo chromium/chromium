@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -115,9 +116,21 @@ static_library("renderer") {
     ]
   }
 
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
+      "bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.cc",
+      "bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h",
+    ]
+  }
+
   defines = []
 
-  public_deps = [ "//components/contextual_search:buildflags" ]
+  public_deps = [
+    "//components/contextual_search:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+  ]
 
   deps = [
     "//base/allocator:buildflags",
@@ -156,6 +169,7 @@ static_library("renderer") {
     "//components/no_state_prefetch/renderer",
     "//components/omnibox/common",
     "//components/optimization_guide/content/renderer",
+    "//components/optimization_guide/core:features",
     "//components/page_image_annotation/content/renderer",
     "//components/page_load_metrics/renderer",
     "//components/paint_preview/buildflags",
@@ -417,6 +431,7 @@ static_library("renderer") {
       "//components/crx_file",
       "//components/services/screen_ai/buildflags",
       "//components/services/screen_ai/public/mojom",
+      "//third_party/re2:re2",
     ]
   }
 

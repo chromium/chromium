@@ -4,7 +4,6 @@
 
 #include "ash/style/rounded_label.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
@@ -58,14 +57,11 @@ void RoundedLabel::OnThemeChanged() {
 }
 
 void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {
-  if (features::IsDarkLightModeEnabled()) {
-    views::HighlightBorder::PaintBorderToCanvas(
-        canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false);
-  }
+  views::HighlightBorder::PaintBorderToCanvas(
+      canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2);
 }
 
 }  // namespace ash

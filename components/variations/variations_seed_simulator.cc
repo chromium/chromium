@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
@@ -27,15 +28,6 @@ enum ChangeType {
   CHANGED_KILL_BEST_EFFORT,
   CHANGED_KILL_CRITICAL,
 };
-
-// Fills in |current_state| with the current process' active field trials, as a
-// map of trial names to group names.
-void GetCurrentTrialState(std::map<std::string, std::string>* current_state) {
-  base::FieldTrial::ActiveGroups trial_groups;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&trial_groups);
-  for (auto& group : trial_groups)
-    (*current_state)[group.trial_name] = group.group_name;
-}
 
 // Simulate group assignment for the specified study with PERMANENT consistency.
 // Returns the experiment group that will be selected. Mirrors logic in
@@ -163,12 +155,21 @@ ChangeType SessionStudyGroupChanged(const ProcessedStudy& processed_study,
   return NO_CHANGE;
 }
 
+}  // namespace
+
 SeedSimulationResult ComputeDifferences(
     const std::vector<ProcessedStudy>& processed_studies,
     const VariationsLayers& layers,
     const EntropyProviders& entropy_providers) {
+  // Fill in |current_state| with the current process' active field trials, as a
+  // map of trial names to group names.
   std::map<std::string, std::string> current_state;
-  GetCurrentTrialState(&current_state);
+  base::FieldTrial::ActiveGroups trial_groups;
+  base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+      &trial_groups);
+  for (auto& group : trial_groups) {
+    current_state[group.trial_name] = group.group_name;
+  }
 
   SeedSimulationResult result;
   for (const auto& processed_study : processed_studies) {
@@ -218,8 +219,6 @@ SeedSimulationResult ComputeDifferences(
 
   return result;
 }
-
-}  // namespace
 
 SeedSimulationResult SimulateSeedStudies(
     const VariationsSeed& seed,

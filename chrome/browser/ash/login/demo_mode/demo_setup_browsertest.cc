@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   test::WaitForNetworkSelectionScreen();
 
   test::OobeJS().ClickOnPath(kNetworkBackButton);
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnTermsScreen) {
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
   test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
   test::OobeJS().ClickOnPath(kDemoSetupErrorDialogBack);
 
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
 }
 
 // TODO(crbug.com/1399073): Flaky on ChromeOS.

@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -489,6 +490,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     mutable_chromeos_data->set_oem_installed(chromeos_data.oem_installed);
     mutable_chromeos_data->set_handles_file_open_intents(
         chromeos_data.handles_file_open_intents);
+    if (chromeos_data.app_profile_path.has_value()) {
+      CHECK(!chromeos_data.app_profile_path.value().empty());
+      mutable_chromeos_data->set_app_profile_path(
+          FilePathToProto(chromeos_data.app_profile_path.value()));
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -670,6 +676,14 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     scope_extension_proto->set_origin(scope_extension.origin.Serialize());
     scope_extension_proto->set_has_origin_wildcard(
         scope_extension.has_origin_wildcard);
+  }
+
+  for (const auto& valid_extension : web_app.validated_scope_extensions()) {
+    WebAppScopeExtensionProto* scope_extension_proto =
+        local_data->add_scope_extensions_validated();
+    scope_extension_proto->set_origin(valid_extension.origin.Serialize());
+    scope_extension_proto->set_has_origin_wildcard(
+        valid_extension.has_origin_wildcard);
   }
 
   if (web_app.lock_screen_start_url().is_valid()) {
@@ -938,6 +952,13 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     chromeos_data->oem_installed = chromeos_data_proto.oem_installed();
     chromeos_data->handles_file_open_intents =
         chromeos_data_proto.handles_file_open_intents();
+    if (chromeos_data_proto.has_app_profile_path()) {
+      auto parsed_path =
+          ProtoToFilePath(chromeos_data_proto.app_profile_path());
+      CHECK(parsed_path.has_value());
+      CHECK(!parsed_path.value().empty());
+      chromeos_data->app_profile_path = std::move(parsed_path);
+    }
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
@@ -1289,7 +1310,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
 
-  std::vector<ScopeExtensionInfo> scope_extensions;
+  base::flat_set<ScopeExtensionInfo> scope_extensions;
   for (const auto& scope_extension_proto : local_data.scope_extensions()) {
     ScopeExtensionInfo scope_extension;
 
@@ -1304,9 +1325,29 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     scope_extension.has_origin_wildcard =
         scope_extension_proto.has_origin_wildcard();
 
-    scope_extensions.push_back(std::move(scope_extension));
+    scope_extensions.insert(std::move(scope_extension));
   }
   web_app->SetScopeExtensions(std::move(scope_extensions));
+
+  base::flat_set<ScopeExtensionInfo> valid_scope_extensions;
+  for (const auto& scope_extension_proto :
+       local_data.scope_extensions_validated()) {
+    ScopeExtensionInfo scope_extension;
+
+    url::Origin origin =
+        url::Origin::Create(GURL(scope_extension_proto.origin()));
+    if (origin.opaque()) {
+      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
+                  << origin.GetDebugString();
+      return nullptr;
+    }
+    scope_extension.origin = std::move(origin);
+    scope_extension.has_origin_wildcard =
+        scope_extension_proto.has_origin_wildcard();
+
+    valid_scope_extensions.insert(std::move(scope_extension));
+  }
+  web_app->SetValidatedScopeExtensions(std::move(valid_scope_extensions));
 
   if (local_data.has_lock_screen_start_url()) {
     web_app->SetLockScreenStartUrl(GURL(local_data.lock_screen_start_url()));

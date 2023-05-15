@@ -44,9 +44,6 @@ constexpr auto kDarkLightModeEnabledPadding =
                       16,
                       kBubbleHorizontalSidePaddingDip);
 
-constexpr auto kDarkLightModeDisabledPadding =
-    gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip);
-
 }  // namespace
 
 PhoneConnectedView::PhoneConnectedView(
@@ -54,46 +51,34 @@ PhoneConnectedView::PhoneConnectedView(
     : phone_hub_manager_(phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      features::IsDarkLightModeEnabled() ? kDarkLightModeEnabledPadding
-                                         : kDarkLightModeDisabledPadding));
+      views::BoxLayout::Orientation::kVertical, kDarkLightModeEnabledPadding));
 
   layout->SetDefaultFlex(1);
 
   AddChildView(std::make_unique<MultideviceFeatureOptInView>(
       phone_hub_manager->GetMultideviceFeatureAccessManager()));
 
-  setup_layered_view(
-      quick_actions_view_ =
-          AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));
+  quick_actions_view_ =
+      AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager));
 
   auto* phone_model = phone_hub_manager->GetPhoneModel();
   if (phone_model) {
-    setup_layered_view(AddChildView(std::make_unique<TaskContinuationView>(
-        phone_model, phone_hub_manager->GetUserActionRecorder())));
+    AddChildView(std::make_unique<TaskContinuationView>(
+        phone_model, phone_hub_manager->GetUserActionRecorder()));
   }
 
   auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
   if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
-    setup_layered_view(AddChildView(std::make_unique<CameraRollView>(
-        camera_roll_manager, phone_hub_manager->GetUserActionRecorder())));
+    AddChildView(std::make_unique<CameraRollView>(
+        camera_roll_manager, phone_hub_manager->GetUserActionRecorder()));
   }
 
   auto* recent_apps_handler =
       phone_hub_manager->GetRecentAppsInteractionHandler();
   if (features::IsEcheSWAEnabled() && recent_apps_handler) {
-    setup_layered_view(AddChildView(std::make_unique<PhoneHubRecentAppsView>(
-        recent_apps_handler, phone_hub_manager, this)));
+    AddChildView(std::make_unique<PhoneHubRecentAppsView>(
+        recent_apps_handler, phone_hub_manager, this));
   }
 
   auto* ping_manager = phone_hub_manager->GetPingManager();

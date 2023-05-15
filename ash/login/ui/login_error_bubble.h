@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -41,8 +42,8 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  views::View* content_ = nullptr;
-  views::ImageView* alert_icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> content_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> alert_icon_ = nullptr;
 
   std::u16string message_;
 };

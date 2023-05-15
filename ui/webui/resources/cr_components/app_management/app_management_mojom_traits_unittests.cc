@@ -131,6 +131,17 @@ TEST(AppManagementMojomTraitsTest, RoundTripPermissions) {
             permission, output));
     EXPECT_EQ(*permission, *output);
   }
+  {
+    auto permission = std::make_unique<apps::Permission>(
+        apps::PermissionType::kLocation,
+        std::make_unique<apps::PermissionValue>(true),
+        /*is_managed=*/false, /*details=*/"While in use");
+    apps::PermissionPtr output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<app_management::mojom::Permission>(
+            permission, output));
+    EXPECT_EQ(*permission, *output);
+  }
 }
 
 TEST(AppManagementMojomTraitsTest, RoundTripInstallReason) {

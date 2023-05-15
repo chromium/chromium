@@ -55,7 +55,6 @@ class TabStripSceneLayer : public SceneLayer {
                            jint width,
                            jint height,
                            jfloat y_offset,
-                           jboolean should_readd_background,
                            jint background_color);
 
   void UpdateNewTabButton(
@@ -168,6 +167,8 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> right_fade_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
+
+  const bool is_tab_strip_redesign_enabled_ = false;
 
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;

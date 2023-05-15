@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_TEST_SUPPORT_MOCK_AUTH_FACTOR_ENGINE_H_
+#define CHROMEOS_ASH_COMPONENTS_OSAUTH_TEST_SUPPORT_MOCK_AUTH_FACTOR_ENGINE_H_
+
+#include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace ash {
+
+class MockAuthFactorEngine : public AuthFactorEngine {
+ public:
+  MockAuthFactorEngine();
+  MockAuthFactorEngine(const MockAuthFactorEngine&) = delete;
+  MockAuthFactorEngine& operator=(const MockAuthFactorEngine&) = delete;
+  ~MockAuthFactorEngine() override;
+
+  MOCK_METHOD(AshAuthFactor, GetFactor, (), (override));
+  MOCK_METHOD(void, InitializeCommon, (CommonInitCallback), (override));
+  MOCK_METHOD(void, ShutdownCommon, (ShutdownCallback), (override));
+  MOCK_METHOD(void,
+              StartAuthFlow,
+              (const AccountId&, AuthPurpose, FactorEngineObserver*),
+              (override));
+  MOCK_METHOD(void,
+              StopAuthFlow,
+              (const AccountId&, AuthPurpose, ShutdownCallback),
+              (override));
+  MOCK_METHOD(void, SetUsageAllowed, (UsageAllowed), (override));
+  MOCK_METHOD(bool, IsDisabledByPolicy, (), (override));
+  MOCK_METHOD(bool, IsLockedOut, (), (override));
+  MOCK_METHOD(bool, IsOrientationRestricted, (), (override));
+  MOCK_METHOD(void, InitializationTimedOut, (), (override));
+  MOCK_METHOD(void, ShutdownTimedOut, (), (override));
+};
+
+}  // namespace ash
+
+#endif  // CHROMEOS_ASH_COMPONENTS_OSAUTH_TEST_SUPPORT_MOCK_AUTH_FACTOR_ENGINE_H_

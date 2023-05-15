@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_FAKE_EXTENDED_AUTHENTICATOR_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void OnAuthSuccess(const UserContext& context);
   void OnAuthFailure(AuthState state, const AuthFailure& error);
 
-  AuthStatusConsumer* consumer_;
+  raw_ptr<AuthStatusConsumer, ExperimentalAsh> consumer_;
 
   UserContext expected_user_context_;
   bool last_unlock_webauthn_secret_ = false;

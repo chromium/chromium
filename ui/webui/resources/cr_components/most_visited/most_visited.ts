@@ -101,6 +101,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
         observer: 'onSingleRowChange_',
       },
 
+      /** If true, reflows tiles that are overflowing. */
+      reflowOnOverflow: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * When the tile icon background is dark, the icon color is white for
        * contrast. This can be used to determine the color of the tile hover as
@@ -217,6 +223,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   public theme: MostVisitedTheme|null;
+  public reflowOnOverflow: boolean;
   public singleRow: boolean;
   private useWhiteTileIcon_: boolean;
   private useTitlePill_: boolean;
@@ -240,7 +247,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private tiles_: MostVisitedTile[];
   private toastContent_: string;
   private visible_: boolean;
-
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
@@ -358,6 +364,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return 0;
     }
 
+    if (this.reflowOnOverflow && this.tiles_) {
+      return Math.ceil(
+          (this.tiles_.length + (this.showAdd_ ? 1 : 0)) / this.columnCount_);
+    }
+
     if (this.singleRow) {
       return 1;
     }
@@ -371,6 +382,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeMaxVisibleTiles_(): number {
+    if (this.reflowOnOverflow) {
+      return this.computeMaxTiles_();
+    }
+
     return this.columnCount_ * this.rowCount_;
   }
 
@@ -563,6 +578,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private isHidden_(index: number): boolean {
+    if (this.reflowOnOverflow) {
+      return false;
+    }
+
     return index >= this.maxVisibleTiles_;
   }
 

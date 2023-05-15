@@ -9,7 +9,6 @@
 
 #include "cc/paint/filter_operation.h"
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -206,7 +205,7 @@ static float ClampAmountForFilterType(float amount,
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY:
     case FilterOperation::ALPHA_THRESHOLD:
-      return base::clamp(amount, 0.f, 1.f);
+      return std::clamp(amount, 0.f, 1.f);
     case FilterOperation::SATURATE:
     case FilterOperation::BRIGHTNESS:
     case FilterOperation::CONTRAST:

@@ -500,6 +500,7 @@ function _makeIconTemplateGetter() {
     m: getSymbolIcon('.dexmethodicon'),
     p: getSymbolIcon('.localpakicon'),
     P: getSymbolIcon('.nonlocalpakicon'),
+    a: getSymbolIcon('.arscicon'),
     o: getSymbolIcon('.othericon'),  // used as default icon
     '*': null,
   };
@@ -514,14 +515,21 @@ function _makeIconTemplateGetter() {
     unchanged: getDiffStatusIcon('.unchangedicon'),
   };
 
-  const getMetricsIcon = (q) => {
-    return assertNotNull(g_el.divMetricsIcons.querySelector(q))
+  const getMiscIcon = (q) => {
+    return assertNotNull(g_el.divMiscIcons.querySelector(q))
   };
   const metricsIcons = {
     group: getSymbolIcon('.groupicon'),  // Reuse.
-    elf: getSymbolIcon('.fileicon'),     // Reuse.
-    dex: getSymbolIcon('.dexicon'),      // Reuse.
-    metrics: getMetricsIcon('.metricsicon'),
+    elf: getMiscIcon('.elficon'),
+    dex: getSymbolIcon('.dexicon'),    // Reuse.
+    arsc: getSymbolIcon('.arscicon'),  // Reuse.
+    metrics: getMiscIcon('.metricsicon'),
+    other: getSymbolIcon('.othericon'),  // Reuse.
+  };
+
+  const metadataIcons = {
+    root: getMiscIcon('.metadataicon'),
+    group: getSymbolIcon('.groupicon'),  // Reuse.
   };
 
   /** @type {Map<string, {color:string, description:string}>} */
@@ -605,12 +613,21 @@ function _makeIconTemplateGetter() {
     return metricsIcons[key].cloneNode(true);
   }
 
+  /**
+   * @param {string} key
+   * @return {SVGSVGElement}
+   */
+  function getMetadataIconTemplate(key) {
+    return metadataIcons[key].cloneNode(true);
+  }
+
   return {
     getIconTemplate,
     getIconTemplateWithFill,
     getIconStyle,
     getDiffStatusTemplate,
     getMetricsIconTemplate,
+    getMetadataIconTemplate,
   };
 }
 
@@ -715,6 +732,7 @@ const {
   getIconStyle,
   getDiffStatusTemplate,
   getMetricsIconTemplate,
+  getMetadataIconTemplate,
 } = _makeIconTemplateGetter();
 const {makeBytesElement, getSizeContents, setSizeClasses} =
     _makeSizeTextGetter();

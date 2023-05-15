@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
@@ -152,9 +154,17 @@ class TextInput : public ui::TextInputClient,
   void Reset();
 
   // Sets the surrounding text in the app.
-  // |cursor_pos| is the range of |text|.
-  void SetSurroundingText(const std::u16string& text,
-                          const gfx::Range& cursor_pos);
+  // Ranges of |cursor_pos|, |grammar_fragment| and |autocorrect_info| are
+  // relative to |text|.
+  // |grammar_fragment| is the grammar fragment at the cursor position,
+  // if given.
+  // |autocorrect_info->bounds| is the bounding rect around the autocorrected
+  // text and is relative to the window origin.
+  void SetSurroundingText(
+      base::StringPiece16 text,
+      const gfx::Range& cursor_pos,
+      const absl::optional<ui::GrammarFragment>& grammar_fragment,
+      const absl::optional<ui::AutocorrectInfo>& autocorrect_info);
 
   // Sets the text input type, mode, flags, |should_do_learning|,
   // |can_compose_inline| and |surrounding_text_supported|.
@@ -167,16 +177,6 @@ class TextInput : public ui::TextInputClient,
 
   // Sets the bounds of the text caret, relative to the window origin.
   void SetCaretBounds(const gfx::Rect& bounds);
-
-  // Sets grammar fragment at the cursor position.
-  void SetGrammarFragmentAtCursor(
-      const absl::optional<ui::GrammarFragment>& fragment);
-
-  // Sets the autocorrect range and bounds. `autocorrect_bounds` is the
-  // bounding rect around the autocorreced text, and are relative to
-  // to the window origin.
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds);
 
   // Finalizes pending virtual keyboard requested changes.
   void FinalizeVirtualKeyboardChanges();
@@ -211,6 +211,9 @@ class TextInput : public ui::TextInputClient,
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
   void ExtendSelectionAndDelete(size_t before, size_t after) override;
+  void ExtendSelectionAndReplace(size_t before,
+                                 size_t after,
+                                 base::StringPiece16 replacement_text) override;
   void EnsureCaretNotInRect(const gfx::Rect& rect) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) override;
@@ -265,14 +268,14 @@ class TextInput : public ui::TextInputClient,
   // |surface_| and |seat_| are non-null if and only if the TextInput is in a
   // pending or active state, in which case the TextInput will be observing the
   // Seat.
-  Surface* surface_ = nullptr;
-  Seat* seat_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<Seat, ExperimentalAsh> seat_ = nullptr;
 
   // If the TextInput is active (associated window has focus) and the
   // InputMethod is available, this is set and the TextInput will be its
   // focused client. Otherwise, it is null and the TextInput is not attached
   // to any InputMethod, so the TextInputClient overrides will not be called.
-  ui::InputMethod* input_method_ = nullptr;
+  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_ = nullptr;
 
   base::ScopedObservation<ash::input_method::InputMethodManager,
                           ash::input_method::InputMethodManager::Observer>
@@ -307,31 +310,11 @@ class TextInput : public ui::TextInputClient,
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
 
   // Cache of the grammar fragment at cursor position, send from Lacros side.
-  // Wayland API sends the fragment range in utf8 and what IME needs is utf16.
-  // To correctly convert the utf8 range to utf16, we need the updated
-  // surrounding text, which is not available when we receive the grammar
-  // fragment. It is guaranteed that on Lacros side, it always updates grammar
-  // fragment before updating surrounding text. So we store the utf8 fragment in
-  // |grammar_fragment_at_cursor_utf8_| when we receive it and when we receive
-  // the surrounding text update next time, we convert the utf8 fragment to
-  // utf16 fragment and store it in |grammar_fragment_at_cursor_utf16_|. When
-  // IME requests current grammar fragment, we always return the utf16 version.
-  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf8_;
-  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf16_;
-
-  struct AutocorrectInfo {
-    gfx::Range range;
-    gfx::Rect bounds;
-  };
+  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_;
 
   // Latest autocorrect information that was sent from the Wayland client.
   // along with the last surrounding text change.
-  AutocorrectInfo autocorrect_info_;
-
-  // Latest autocorrect information that was received without a receiving a
-  // corresponding surrounding text. Once this class receives a surrounding text
-  // update, `autocorrect_info_` will take on this pending value, if it exists.
-  absl::optional<AutocorrectInfo> pending_autocorrect_info_;
+  ui::AutocorrectInfo autocorrect_info_;
 
   // True when client has made virtual keyboard related requests but haven't
   // sent the virtual keyboard finalize request.

@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -46,7 +46,7 @@ RlweDmserverClientImpl::RlweDmserverClientImpl(
     RlweClientFactory rlwe_client_factory)
     : plaintext_id_(plaintext_id),
       psm_rlwe_client_(rlwe_client_factory.Run(plaintext_id)),
-      random_device_id_(base::GenerateGUID()),
+      random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       url_loader_factory_(url_loader_factory),
       device_management_service_(device_management_service) {
   CHECK(psm_rlwe_client_);

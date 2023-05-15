@@ -128,12 +128,12 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
       base::MockCallback<Button::PressedCallback::Callback>>;
 
   std::unique_ptr<Widget> widget_;
-  base::raw_ptr<FlexLayoutView> contents_;
-  base::raw_ptr<TabbedPane> tabs_;
-  base::raw_ptr<FlexLayoutView> buttons_;
-  base::raw_ptr<LabelButton> button1_;
-  base::raw_ptr<LabelButton> button2_;
-  base::raw_ptr<ScrollView> scroll_;
+  raw_ptr<FlexLayoutView> contents_;
+  raw_ptr<TabbedPane> tabs_;
+  raw_ptr<FlexLayoutView> buttons_;
+  raw_ptr<LabelButton> button1_;
+  raw_ptr<LabelButton> button2_;
+  raw_ptr<ScrollView> scroll_;
   ButtonCallbackMock button1_callback_;
   ButtonCallbackMock button2_callback_;
 };

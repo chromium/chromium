@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/views/controls/scroll_view.h"
@@ -55,7 +56,7 @@ class ASH_EXPORT ScrollViewGradientHelper {
   void RemoveMaskLayer();
 
   // The scroll view being decorated.
-  views::ScrollView* const scroll_view_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
 
   // The height of the gradient in DIPs.
   const int gradient_height_;

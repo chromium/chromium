@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/login_database.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Security/Security.h>
 #include <stddef.h>
 
@@ -11,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
@@ -94,8 +96,8 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   CFDictionarySetValue(query, kSecAttrAccount, item_ref);
   CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue);
 
-  CFDataRef data;
-  OSStatus status = SecItemCopyMatching(query, (CFTypeRef*)&data);
+  ScopedCFTypeRef<CFTypeRef> data_cftype;
+  OSStatus status = SecItemCopyMatching(query, data_cftype.InitializeInto());
   if (status != errSecSuccess) {
     OSSTATUS_LOG(INFO, status) << "Failed to retrieve password from keychain";
     if (status == errSecItemNotFound || status == errSecDecode)
@@ -104,10 +106,10 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
       return ENCRYPTION_RESULT_SERVICE_FAILURE;
   }
 
+  CFDataRef data = base::mac::CFCast<CFDataRef>(data_cftype);
   const size_t size = CFDataGetLength(data);
   std::unique_ptr<UInt8[]> buffer(new UInt8[size]);
   CFDataGetBytes(data, CFRangeMake(0, size), buffer.get());
-  CFRelease(data);
 
   *plain_text = base::UTF8ToUTF16(
       std::string(static_cast<char*>(static_cast<void*>(buffer.get())),

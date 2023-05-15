@@ -44,6 +44,8 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/border_value.h"
@@ -57,7 +59,6 @@
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_box.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
@@ -107,6 +108,7 @@ class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
 class StyleInitialData;
+class StyleRay;
 class StyleResolver;
 class StyleResolverState;
 class StyleSelfAlignmentData;
@@ -770,7 +772,7 @@ class ComputedStyle : public ComputedStyleBase,
   bool HasMaskBoxImageOutsets() const {
     return MaskBoxImageInternal().HasImage() && MaskBoxImageOutset().NonZero();
   }
-  LayoutRectOutsets MaskBoxImageOutsets() const {
+  NGPhysicalBoxStrut MaskBoxImageOutsets() const {
     return ImageOutsets(MaskBoxImageInternal());
   }
   const BorderImageLengthBox& MaskBoxImageOutset() const {
@@ -805,6 +807,13 @@ class ComputedStyle : public ComputedStyleBase,
     return base::ValuesEquivalent(ListStyleType(), other.ListStyleType());
   }
 
+  // list-style-position
+
+  // Returns true if ::marker should be rendered inline.
+  // In some cases, it should be inline even if `list-style-position` property
+  // value is `outside`.
+  bool MarkerShouldBeInside(const Node& parent_node) const;
+
   // quotes
   bool QuotesDataEquivalent(const ComputedStyle&) const;
 
@@ -824,7 +833,6 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT const FontDescription& GetFontDescription() const {
     return GetFont().GetFontDescription();
   }
-  bool HasIdenticalAscentDescentAndLineGap(const ComputedStyle& other) const;
   bool HasFontRelativeUnits() const {
     return HasEmUnits() || HasRootFontRelativeUnits() ||
            HasGlyphRelativeUnits();
@@ -999,9 +1007,9 @@ class ComputedStyle : public ComputedStyleBase,
     return !HasAutoColumnCount() || !HasAutoColumnWidth();
   }
   bool ColumnRuleIsTransparent() const {
-    return !ColumnRuleColor()
-                .Resolve(GetCurrentColor(), UsedColorScheme())
-                .Alpha();
+    return ColumnRuleColor()
+        .Resolve(GetCurrentColor(), UsedColorScheme())
+        .IsFullyTransparent();
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
@@ -1291,11 +1299,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Border utility functions
-  LayoutRectOutsets ImageOutsets(const NinePieceImage&) const;
+  NGPhysicalBoxStrut ImageOutsets(const NinePieceImage&) const;
   bool HasBorderImageOutsets() const {
     return BorderImage().HasImage() && BorderImage().Outset().NonZero();
   }
-  LayoutRectOutsets BorderImageOutsets() const {
+  NGPhysicalBoxStrut BorderImageOutsets() const {
     return ImageOutsets(BorderImage());
   }
   bool BorderImageSlicesFill() const { return BorderImage().Fill(); }
@@ -1758,6 +1766,10 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
+  bool DependsOnContainerQueries() const {
+    return DependsOnSizeContainerQueries() || DependsOnStyleContainerQueries();
+  }
+
   static bool IsContentVisibilityVisible(
       EContentVisibility content_visibility,
       const AtomicString& toggle_visibility) {
@@ -2131,7 +2143,7 @@ class ComputedStyle : public ComputedStyleBase,
   };
   void ApplyTransform(gfx::Transform&,
                       const LayoutBox* box,
-                      const LayoutSize& border_box_data_size,
+                      PhysicalSize border_box_data_size,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
@@ -2381,7 +2393,7 @@ class ComputedStyle : public ComputedStyleBase,
            HasEffectiveAppearance() || BoxShadow();
   }
 
-  LayoutRectOutsets BoxDecorationOutsets() const;
+  NGPhysicalBoxStrut BoxDecorationOutsets() const;
 
   // Background utility functions.
   const FillLayer& BackgroundLayers() const { return BackgroundInternal(); }
@@ -2538,7 +2550,9 @@ class ComputedStyle : public ComputedStyleBase,
   static bool IsDisplayBlockContainer(EDisplay display) {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||
            display == EDisplay::kInlineBlock ||
-           display == EDisplay::kFlowRoot || display == EDisplay::kTableCell ||
+           display == EDisplay::kFlowRoot ||
+           display == EDisplay::kInlineFlowRootListItem ||
+           display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
   }
 
@@ -2565,6 +2579,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   static bool IsDisplayReplacedType(EDisplay display) {
     return display == EDisplay::kInlineBlock ||
+           display == EDisplay::kInlineFlowRootListItem ||
            display == EDisplay::kWebkitInlineBox ||
            display == EDisplay::kInlineFlex ||
            display == EDisplay::kInlineTable ||
@@ -2631,10 +2646,17 @@ class ComputedStyle : public ComputedStyleBase,
                                 const LayoutBox* box,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
-  PointAndTangent CalculatePointAndTangentOnRay(
+  PointAndTangent CalculatePointAndTangentOnBasicShape(
+      const BasicShape& shape,
       const LayoutBox* box,
-      const gfx::RectF& bounding_box) const;
-  PointAndTangent CalculatePointAndTangentOnPath() const;
+      const gfx::PointF starting_point,
+      const gfx::SizeF reference_box_size) const;
+  PointAndTangent CalculatePointAndTangentOnRay(
+      const StyleRay& ray,
+      const LayoutBox* box,
+      const gfx::PointF starting_point,
+      const gfx::SizeF reference_box_size) const;
+  PointAndTangent CalculatePointAndTangentOnPath(const Path& path) const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
                                             const StyleDifference&) const;

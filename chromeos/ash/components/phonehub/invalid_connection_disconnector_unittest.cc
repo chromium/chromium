@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/invalid_connection_disconnector.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
@@ -67,7 +68,7 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   MutablePhoneModel fake_phone_model_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
   std::unique_ptr<InvalidConnectionDisconnector>
       invalid_connection_disconnector_;
 };

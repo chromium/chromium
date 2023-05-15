@@ -151,7 +151,8 @@ class PasswordCheckManager
   };
 
   // password_manager::SavedPasswordsPresenter::Observer:
-  void OnSavedPasswordsChanged() override;
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override;
 
   // InsecureCredentialsManager::Observer
   void OnInsecureCredentialsChanged() override;

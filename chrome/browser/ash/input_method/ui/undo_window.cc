@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
@@ -88,9 +87,6 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
 }
 
 void UndoWindow::OnThemeChanged() {
-  // Without the scoped light mode, default for ash color provider is dark mode,
-  // which is bad.
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   undo_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
       gfx::CreateVectorIcon(

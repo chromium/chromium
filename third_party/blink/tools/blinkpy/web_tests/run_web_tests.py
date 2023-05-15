@@ -39,7 +39,6 @@ from blinkpy.web_tests.models import test_run_results
 from blinkpy.web_tests.port.factory import configuration_options
 from blinkpy.web_tests.port.factory import platform_options
 from blinkpy.web_tests.port.factory import wpt_options
-from blinkpy.web_tests.port.factory import python_server_options
 from blinkpy.web_tests.views import printing
 
 _log = logging.getLogger(__name__)
@@ -112,29 +111,6 @@ def parse_args(args):
 
     option_group_definitions.append(('web-platform-tests (WPT) Options',
                                      wpt_options()))
-
-    option_group_definitions.append(('Python Server Options',
-                                     python_server_options()))
-
-    option_group_definitions.append((
-        'Android-specific Options',
-        [
-            optparse.make_option(
-                '--adb-device',
-                action='append',
-                default=[],
-                dest='adb_devices',
-                help='Run Android web tests on these devices'),
-            # FIXME: Flip this to be off by default once we can log the
-            # device setup more cleanly.
-            optparse.make_option(
-                '--no-android-logging',
-                dest='android_logging',
-                action='store_false',
-                default=True,
-                help=('Do not log android-specific debug messages (default '
-                      'is to log as part of --debug-rwt-logging)')),
-        ]))
 
     option_group_definitions.append(('Fuchsia-specific Options', [
         optparse.make_option(
@@ -267,12 +243,6 @@ def parse_args(args):
             optparse.make_option(
                 '--write-run-histories-to',
                 help='Path to write the JSON test run histories.'),
-            # FIXME(tansell): Remove this option if nobody is found who needs it.
-            optparse.make_option(
-                '--json-failing-test-results',
-                help=
-                'Path to write the JSON test results for only *failing* tests.'
-            ),
             optparse.make_option(
                 '--no-show-results',
                 dest='show_results',
@@ -615,27 +585,6 @@ def parse_args(args):
                  'Default is 1 second, can be overriden for specific use cases.'
                  )),
             optparse.make_option(
-                '--git-revision',
-                help=(
-                    'The Chromium git revision being tested. This is only used '
-                    'for an experimental Skia Gold dryrun.')),
-            optparse.make_option(
-                '--gerrit-issue',
-                help=(
-                    'The Gerrit issue/CL number being tested, if applicable. '
-                    'This is only used for an experimental Skia Gold dryrun.'
-                )),
-            optparse.make_option(
-                '--gerrit-patchset',
-                help=(
-                    'The Gerrit patchset being tested, if applicable. This is '
-                    'only used for an experimental Skia Gold dryrun.')),
-            optparse.make_option(
-                '--buildbucket-id',
-                help=(
-                    'The Buildbucket ID of the bot running the test. This is '
-                    'only used for an experimental Skia Gold dryrun.')),
-            optparse.make_option(
                 '--ignore-testharness-expected-txt',
                 action='store_true',
                 help=('Ignore *-expected.txt for all testharness tests. All '
@@ -662,16 +611,6 @@ def parse_args(args):
                 default='',
                 help='The name of the builder shown on the waterfall running '
                 'this script, e.g. "Mac10.13 Tests".'),
-            # TODO(qyearsley): This is not actually a Buildbot master since
-            # Buildbot is gone; all instances of the term "master" in this
-            # code-base should be removed after test-results.appspot.com is
-            # removed.
-            optparse.make_option('--master-name'),
-            optparse.make_option(
-                '--test-results-server',
-                default='',
-                help='If specified, upload results JSON files to this '
-                'App Engine server.'),
         ]))
 
     option_parser = optparse.OptionParser(

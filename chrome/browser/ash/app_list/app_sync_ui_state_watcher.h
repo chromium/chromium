@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_observer.h"
 
 class AppListModelUpdater;
@@ -26,9 +27,9 @@ class AppSyncUIStateWatcher : public AppSyncUIStateObserver {
   // AppSyncUIStateObserver overrides:
   void OnAppSyncUIStatusChanged() override;
 
-  AppSyncUIState* app_sync_ui_state_;
+  raw_ptr<AppSyncUIState, ExperimentalAsh> app_sync_ui_state_;
   // Owned by AppListSyncableService
-  AppListModelUpdater* model_updater_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_

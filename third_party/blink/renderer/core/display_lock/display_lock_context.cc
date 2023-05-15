@@ -793,9 +793,7 @@ bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
   DCHECK(ConnectedToView());
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetNeedsRepaint();
-    document_->View()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kDisplayLockContextNeedsPaintArtifactCompositorUpdate);
+    document_->View()->SetPaintArtifactCompositorNeedsUpdate();
     return true;
   }
   return false;

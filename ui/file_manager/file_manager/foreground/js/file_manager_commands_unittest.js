@@ -320,6 +320,7 @@ export async function testExtractAllCommand(done) {
     directoryModel: {
       isOnNative: () => true,
       isReadOnly: () => false,
+      getCurrentRootType: () => VolumeManagerCommon.RootType.DOWNLOADS,
     },
     getCurrentDirectoryEntry: () => folderEntry,
     getSelection: () => currentSelection,

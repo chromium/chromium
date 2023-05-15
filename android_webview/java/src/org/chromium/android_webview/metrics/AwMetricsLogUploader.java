@@ -25,12 +25,9 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 
 import java.net.HttpURLConnection;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A custom WebView AndroidMetricsLogConsumer. It
@@ -40,136 +37,109 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
-    private static final long SEND_DATA_TIMEOUT_MS = 10_000;
+    private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;
 
-    private final InitialMetricsServiceConnection mInitialConnection;
-    private final boolean mWaitForResults;
+    private final AtomicReference<MetricsLogUploaderServiceConnection> mInitialConnection;
+    private final boolean mIsAsync;
     private final boolean mUseDefaultUploadQos;
 
     /**
-     * @param waitForResults Whether logging should wait for a status for the platform or return
-     * early.
+     * @param isAsync Whether logging is happening on a background thread or if it is being called
+     * from the main thread.
+     * @param useDefaultUploadQos Used to experiment modifying the QOS upload rate.
      */
-    public AwMetricsLogUploader(boolean waitForResults, boolean useDefaultUploadQos) {
-        mInitialConnection = new InitialMetricsServiceConnection();
-        mWaitForResults = waitForResults;
+    public AwMetricsLogUploader(boolean isAsync, boolean useDefaultUploadQos) {
+        // A service connection that is used to establish an initial connection to the
+        // MetricsUploadService to keep it alive until the first metrics log is ready.
+        mInitialConnection = new AtomicReference();
+        mIsAsync = isAsync;
         mUseDefaultUploadQos = useDefaultUploadQos;
-    }
-
-    // A service connection that is used to establish an initial connection to the
-    // MetricsUploadService to keep it alive until the first metrics log is ready. Currently it does
-    // nothing but it can be later used to query metrics service configs like sampling state of the
-    // device ... etc, during startup.
-    private static class InitialMetricsServiceConnection implements ServiceConnection {
-        private final AtomicBoolean mBound = new AtomicBoolean();
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {}
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {}
-
-        public void initialize() {
-            boolean bindingResult = bindToMetricsUploadService(this);
-            mBound.set(bindingResult);
-            if (!bindingResult) {
-                Log.w(TAG, "Failed to initially bind to MetricsUploadService");
-            }
-        }
-
-        /**
-         * Unbind the service connection if it's still bound to the service, do nothing otherwise.
-         *
-         * This method is thread-safe.
-         */
-        public void unbind() {
-            if (mBound.getAndSet(false)) {
-                ContextUtils.getApplicationContext().unbindService(this);
-            }
-        }
     }
 
     // A service connection that sends the given serialized metrics log data to
     // MetricsUploadService. It closes the connection after sending the metrics log.
     private static class MetricsLogUploaderServiceConnection implements ServiceConnection {
         private final boolean mUseDefaultUploadQos;
-        private final @NonNull byte[] mData;
-        private final CompletableFuture<Integer> mResult;
-        private final AtomicBoolean mPosted = new AtomicBoolean();
+        private final LinkedBlockingQueue<IMetricsUploadService> mConnectionsQueue;
 
         public MetricsLogUploaderServiceConnection(boolean useDefaultUploadQos,
-                @NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
+                LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
             mUseDefaultUploadQos = useDefaultUploadQos;
-            mData = data;
-            mResult = resultFuture;
+            mConnectionsQueue = connectionsQueue;
+        }
+
+        public boolean bind() {
+            Intent intent = new Intent();
+            intent.setClassName(
+                    AwBrowserProcess.getWebViewPackageName(), ServiceNames.METRICS_UPLOAD_SERVICE);
+            return ServiceHelper.bindService(
+                    ContextUtils.getApplicationContext(), intent, this, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            // We want to avoid re-posting if the service connection dies
-            // and reconnects.
-            if (mPosted.getAndSet(true)) {
-                return;
+            // If onServiceConnected is incorrectly called twice in a row without
+            // onServiceDisconnected, we will still try take the latest service connection for
+            // a hope of working.
+            mConnectionsQueue.clear();
+            IMetricsUploadService uploadService = IMetricsUploadService.Stub.asInterface(service);
+            // Keep track of if the service is updated again since the last clear.
+            if (!mConnectionsQueue.offer(uploadService)) {
+                Log.d(TAG, "Attempted to re-bind with service twice.");
             }
-            // onServiceConnected is called on the app main looper so post it to a background thread
-            // for execution. No need to enforce the order in which the logs are sent to the service
-            // as this isn't required/enforced by UMA.
-            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-                IMetricsUploadService uploadService =
-                        IMetricsUploadService.Stub.asInterface(service);
-                try {
-                    int status = uploadService.uploadMetricsLog(mData, mUseDefaultUploadQos);
-                    mResult.complete(status);
-                } catch (RemoteException e) {
-                    Log.d(TAG, "Failed to send serialized metrics data to service", e);
-                    mResult.complete(HttpURLConnection.HTTP_INTERNAL_ERROR);
-                } finally {
-                    ContextUtils.getApplicationContext().unbindService(this);
-                }
-            });
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {}
+        public void onServiceDisconnected(ComponentName name) {
+            // If we get an unexpected disconnection, we should no longer trust the connection we
+            // have queued.
+            // If the metrics service already has a connection it will simply fail when trying to
+            // make a call.
+            // This should be helpful for the first connection where there is a more considerable
+            // delta between when we first bind, and when we try to send data.
+            mConnectionsQueue.clear();
+        }
 
-        public int sendData(boolean waitForResults) {
-            bindToMetricsUploadService(this);
-            if (!waitForResults) {
+        /**
+         * Note: Once this method has run, it will automatically unbind the connection so this
+         * connection should not be used after calling this method "once".
+         */
+        public int sendData(boolean isAsync, @NonNull byte[] data) {
+            // If we are on the main thread, we cannot block waiting to connect to the service so we
+            // need to fire and forget. In this case all we can do is report back OK.
+            if (!isAsync) {
+                PostTask.postTask(
+                        TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { uploadToService(data); });
+
                 return HttpURLConnection.HTTP_OK;
             }
-            // The logs could have still been sent by the service even if we haven't gotten a
-            // response here so our choice is to either drop the logs or allow for duplication.
+
+            return uploadToService(data);
+        }
+
+        private int uploadToService(@NonNull byte[] data) {
             try {
-                return mResult.get(SEND_DATA_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            } catch (CancellationException e) {
-                Log.e(TAG, "Request to send data cancelled", e);
-                // If the future was cancelled, we will treat this as a situation to retry.
-                return HttpURLConnection.HTTP_GONE;
+                IMetricsUploadService uploadService = mConnectionsQueue.poll(
+                        SERVICE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+                // Null returned from poll means we timed out
+                if (uploadService == null) {
+                    Log.e(TAG, "Failed to receive response from upload service in time");
+                    return HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+                }
+
+                return uploadService.uploadMetricsLog(data, mUseDefaultUploadQos);
+            } catch (RemoteException e) {
+                Log.d(TAG, "Failed to send serialized metrics data to service", e);
             } catch (InterruptedException e) {
                 Log.e(TAG, "Request to send data interrupted while waiting", e);
                 return HttpURLConnection.HTTP_UNAVAILABLE;
-            } catch (ExecutionException e) {
-                Log.e(TAG, "Request to send data completed with exception", e);
-                // In this case the request hit the server so we will treat this as a discarded log.
-                // The Chromium metrics service will drop http 400s.
-                return HttpURLConnection.HTTP_BAD_REQUEST;
-            } catch (TimeoutException e) {
-                Log.e(TAG, "Failed to receive response from upload service in time", e);
-                // We decided to allow for duplication because there is quite a long time out so not
-                // receiving a response for this long probably means there was an issue with
-                // logging. This code path could also be called if the service connection has a
-                // failure.
-                return HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+            } finally {
+                ContextUtils.getApplicationContext().unbindService(this);
             }
-        }
-    }
 
-    private static boolean bindToMetricsUploadService(ServiceConnection connection) {
-        Intent intent = new Intent();
-        intent.setClassName(
-                AwBrowserProcess.getWebViewPackageName(), ServiceNames.METRICS_UPLOAD_SERVICE);
-        return ServiceHelper.bindService(
-                ContextUtils.getApplicationContext(), intent, connection, Context.BIND_AUTO_CREATE);
+            return HttpURLConnection.HTTP_INTERNAL_ERROR;
+        }
     }
 
     /**
@@ -179,25 +149,43 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
      */
     @Override
     public int log(@NonNull byte[] data) {
-        return log(data, new CompletableFuture());
+        return log(data, new LinkedBlockingQueue(1));
     }
 
     @VisibleForTesting
-    public int log(@NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
-        MetricsLogUploaderServiceConnection connection =
-                new MetricsLogUploaderServiceConnection(mUseDefaultUploadQos, data, resultFuture);
-        int status = connection.sendData(mWaitForResults);
-        // Unbind the initial connection if it's still bound, since a new connection is now bound to
-        // the service.
-        mInitialConnection.unbind();
-        return status;
+    public int log(@NonNull byte[] data,
+            @NonNull LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
+        MetricsLogUploaderServiceConnection connection = mInitialConnection.getAndSet(null);
+
+        if (connection == null) {
+            connection =
+                    new MetricsLogUploaderServiceConnection(mUseDefaultUploadQos, connectionsQueue);
+
+            if (!connection.bind()) {
+                Log.w(TAG, "Failed to bind to MetricsUploadService");
+                return HttpURLConnection.HTTP_UNAVAILABLE;
+            }
+        }
+
+        return connection.sendData(mIsAsync, data);
     }
 
     /**
      * Initialize a connection to {@link org.chromium.android_webview.services.MetricsUploadService}
      * and keep it alive until the first metrics log data is sent for upload.
+     *
+     * We do this because we already pay the startup cost of the non-embedded process due to other
+     * webview non-embedded services running early on.
+     * We can hopefully save some time on initially spinning the process since we know we
+     * are going to attempt to upload pretty soon after starting up WebView the first time.
      */
     public void initialize() {
-        mInitialConnection.initialize();
+        MetricsLogUploaderServiceConnection connection = new MetricsLogUploaderServiceConnection(
+                mUseDefaultUploadQos, new LinkedBlockingQueue(1));
+        if (connection.bind()) {
+            mInitialConnection.set(connection);
+        } else {
+            Log.w(TAG, "Failed to initially bind to MetricsUploadService");
+        }
     }
 }

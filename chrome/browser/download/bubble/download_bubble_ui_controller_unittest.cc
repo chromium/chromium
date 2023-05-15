@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -98,6 +99,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   bool GetAllModelsToDisplay(
       std::vector<DownloadUIModelPtr>& models,
+      const web_app::AppId* web_app_id,
       bool force_backfill_download_items = true) override {
     models.clear();
     int download_item_index = 0, offline_item_index = 0;
@@ -105,14 +107,14 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
     for (ModelType type : model_types_) {
       if (type == ModelType::kDownloadItem) {
         auto model = DownloadItemModel::Wrap(
-            download_items_.at(download_item_index++).get());
+            download_items_->at(download_item_index++).get());
         if (model->ShouldShowInBubble()) {
           models.push_back(std::move(model));
         }
       } else {
         auto model = OfflineItemModel::Wrap(
             OfflineItemModelManagerFactory::GetForBrowserContext(profile_),
-            offline_items_.at(offline_item_index++));
+            offline_items_->at(offline_item_index++));
         if (model->ShouldShowInBubble()) {
           models.push_back(std::move(model));
         }
@@ -123,16 +125,20 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   void AddModel(ModelType type) { model_types_.push_back(type); }
 
+  bool IsInitialized() const override { return true; }
+
   MOCK_METHOD(DownloadDisplayController::ProgressInfo,
               GetProgressInfo,
-              (),
+              (const web_app::AppId*),
               (const override));
 
  private:
   raw_ptr<Profile> profile_;
   std::vector<ModelType> model_types_;
-  const std::vector<std::unique_ptr<StrictMockDownloadItem>>& download_items_;
-  const OfflineItemList& offline_items_;
+  const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>,
+                ExperimentalAsh>
+      download_items_;
+  const raw_ref<const OfflineItemList, ExperimentalAsh> offline_items_;
 };
 
 class DownloadBubbleUIControllerTest : public testing::Test {
@@ -184,8 +190,6 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     second_display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
             browser_.get(), second_controller_.get());
-    controller_->set_manager_for_testing(manager_);
-    second_controller_->set_manager_for_testing(manager_);
   }
 
   void TearDown() override {

@@ -49,7 +49,9 @@ import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -127,10 +129,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private LocationBarModel mLocationBarModel;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
+    private ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
+            new ObserverList<>();
 
     // Whether the maximization button should be shown when it can. Set to {@code true}
     // while the side sheet is running with the maximize button option on.
     private boolean mMaximizeButtonEnabled;
+
+    private OnClickListener mCloseClickListener;
 
     /**
      * Whether to use the toolbar as handle to resize the Window height.
@@ -158,7 +164,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
          *
          * @param handler The handler for closing the current tab.
          */
-        void setCloseClickHandler(Runnable handler);
+        void setCloseClickHandler(OnClickListener handler);
+
+        /**
+         * Start the closing animation. This should be invoked before the close click handler
+         * set via {@link #setCloseClickHandler} to avoid seeing a blank content during
+         * the animation.
+         */
+        void startCloseAnimation();
+
+        /**
+         * Close the toolbar and the tab.
+         */
+        void close();
     }
 
     private HandleStrategy mHandleStrategy;
@@ -214,7 +232,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomTabCloseClickHandler(OnClickListener listener) {
-        mCloseButton.setOnClickListener(listener);
+        mCloseClickListener = listener;
+        if (mHandleStrategy == null) {
+            // Normal CCT does not have HandleStrategy.
+            mCloseButton.setOnClickListener(listener);
+        } else {
+            setHandleStrategyCloseClickHandler(listener);
+        }
+    }
+
+    private void setHandleStrategyCloseClickHandler(OnClickListener listener) {
+        // Let the close button click initiate the closing animation first. The actual
+        // closing task will follow the animation.
+        mCloseButton.setOnClickListener(v -> mHandleStrategy.startCloseAnimation());
+        mHandleStrategy.setCloseClickHandler(listener);
     }
 
     @Override
@@ -364,6 +395,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return (ImageButton) mCustomActionButtons.getChildAt(index);
     }
 
+    @VisibleForTesting
+    public ImageButton getMaximizeButtonForTest() {
+        return (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+    }
+
     @Override
     protected int getTabStripHeight() {
         return 0;
@@ -412,19 +448,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return false;
     }
 
-    public void setHandleStrategy(@Nullable HandleStrategy strategy) {
+    public void setHandleStrategy(HandleStrategy strategy) {
         if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
                     ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
             mLocationBar.showBranding();
         }
 
-        // When the (P)CCT does not need to be resized the handle strategy can be null.
-        if (strategy == null) {
-            mHandleStrategy = null;
-            return;
-        }
         mHandleStrategy = strategy;
-        mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
+        if (mCloseClickListener != null) setHandleStrategyCloseClickHandler(mCloseClickListener);
     }
 
     /**
@@ -750,6 +781,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (textureMode) {
             mLastCustomTabCaptureStateToken = generateCaptureStateToken();
         }
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        // Ignore when the changed view is our self. This happens on startup, and is not our
+        // container being changed.
+        if (changedView != this) {
+            for (Callback<Integer> observer : mContainerVisibilityChangeObserverList) {
+                observer.onResult(visibility);
+            }
+        }
+    }
+
+    /** Subscribe to container visibility changes. */
+    public void addContainerVisibilityChangeObserver(Callback<Integer> observer) {
+        mContainerVisibilityChangeObserverList.addObserver(observer);
+    }
+
+    /** Unsubscribe to container visibility changes. */
+    public void removeContainerVisibilityChangeObserver(Callback<Integer> observer) {
+        mContainerVisibilityChangeObserverList.removeObserver(observer);
     }
 
     private CustomTabCaptureStateToken generateCaptureStateToken() {
@@ -1228,10 +1280,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 displayText = formattedDisplayText;
             } else {
                 UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
-                displayText = urlBarData.displayText.subSequence(
-                        urlBarData.originStartIndex, urlBarData.originEndIndex);
                 originStart = 0;
-                originEnd = displayText.length();
+                if (urlBarData.displayText != null) {
+                    displayText = urlBarData.displayText.subSequence(
+                            urlBarData.originStartIndex, urlBarData.originEndIndex);
+                    originEnd = displayText.length();
+                } else {
+                    displayText = null;
+                    originEnd = 0;
+                }
             }
 
             mUrlCoordinator.setUrlBarData(

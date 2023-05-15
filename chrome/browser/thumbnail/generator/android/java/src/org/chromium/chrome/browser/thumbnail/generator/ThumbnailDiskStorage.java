@@ -21,7 +21,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailCacheEntry.ContentId;
@@ -159,9 +158,6 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.ThumbnailDiskStorage.CachedBitmap.Found", bitmap != null);
-
             if (bitmap != null) {
                 onThumbnailRetrieved(mRequest.getContentId(), bitmap, mRequest.getIconSize());
                 return;
@@ -313,9 +309,6 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
                 Log.e(TAG, "Error while reading from disk.", e);
             }
         }
-
-        RecordHistogram.recordMemoryKBHistogram("Android.ThumbnailDiskStorage.Size",
-                (int) (mSizeBytes / ConversionUtils.BYTES_PER_KILOBYTE));
     }
 
     /**

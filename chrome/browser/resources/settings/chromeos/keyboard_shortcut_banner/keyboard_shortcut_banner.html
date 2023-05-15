@@ -1,4 +1,4 @@
-<style>
+<style include="cros-color-overrides">
   :host {
     align-items: center;
     border: 1px solid var(--cr-separator-color);
@@ -6,19 +6,21 @@
     column-gap: 12px;
     display: flex;
     flex-shrink: 0;
-    font-family: Roboto, sans-serif;
-    font-size: 13px;
     margin: 4px;
     outline-width: 0;
     padding: 12px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)):host {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
   }
 
   #icon {
     background: center / cover no-repeat;
     background-image: url(chrome://os-settings/images/keyboard_shortcut.svg);
     flex-shrink: 0;
-    height: 48px;
-    width: 48px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -28,16 +30,38 @@
     }
   }
 
+  #icon,
+  #keyboardShortcutIcon {
+    height: 48px;
+    width: 48px;
+  }
+
+  :host-context(body.jelly-enabled) #icon {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #keyboardShortcutIcon {
+    display: none;
+  }
+
   #text {
     flex: 1;
   }
 
   h2 {
     color: var(--cr-primary-text-color);
+    margin: 0;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) h2 {
     font-family: 'Google Sans', Roboto, sans-serif;
     font-size: 15px;
     font-weight: 500;
-    margin: 0;
+  }
+
+  :host-context(body.jelly-enabled) h2 {
+    font: var(--cros-headline-1-font);
   }
 
   .reminder-message {
@@ -71,7 +95,7 @@
     color: var(--cros-text-color-prominent);
   }
 
-  cr-button {
+  :host-context(body:not(.jelly-enabled)) cr-button {
     --border-color: transparent;
     --hover-border-color: transparent;
     --disabled-border-color: transparent;
@@ -79,6 +103,9 @@
 </style>
 
 <div id="icon"></div>
+
+<iron-icon id="keyboardShortcutIcon" icon="os-settings:keyboard-shortcut">
+</iron-icon>
 
 <div id="text">
   <h2>[[header]]</h2>

@@ -1,7 +1,10 @@
-caption: Specify a salt value to be used in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> when evaluating identify information
+caption: Specify a salt value to be used in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> when evaluating identity information
 desc: |-
- This salt is used as a salt value when hashing identity information included in the <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> string.
-    If the <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> is used then this must be set and must be a string between 8 and 32 characters.
+  This salt is used as a salt value when hashing identity information included in the <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> string.
+
+  The salt must be a string between 8 and 32 characters.
+
+  In version 114 and later, this policy is optional if the <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> policy is set. If this policy is not set, then the identifiers in the template URIs configured via the <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME">DnsOverHttpsTemplatesWithIdentifiers</ph> policy are hashed without a salt.
 example_value: salt-for-hashing
 features:
   dynamic_refresh: true

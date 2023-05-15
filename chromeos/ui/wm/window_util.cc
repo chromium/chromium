@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -18,68 +19,6 @@
 namespace chromeos::wm {
 
 namespace {
-
-bool CanFloatWindowInClamshell(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(features::IsWindowLayoutMenuEnabled());
-
-  if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanResize) == 0) {
-    return false;
-  }
-
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
-  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
-  if (minimum_size.width() > work_area.width() - 2 * kFloatedWindowPaddingDp ||
-      minimum_size.height() >
-          work_area.height() - 2 * kFloatedWindowPaddingDp) {
-    return false;
-  }
-  return true;
-}
-
-bool CanFloatWindowInTablet(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(features::IsWindowLayoutMenuEnabled());
-
-  if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanResize) == 0) {
-    return false;
-  }
-
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
-  const bool landscape = IsLandscapeOrientationForWindow(window);
-
-  const int preferred_height =
-      GetPreferredFloatedWindowTabletSize(work_area, landscape).height();
-  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
-  if (minimum_size.height() > preferred_height)
-    return false;
-
-  const int landscape_width =
-      landscape ? work_area.width() : work_area.height();
-
-  // The maximize size for a floated window is half the landscape width minus
-  // some space for the split view divider and padding.
-  if (minimum_size.width() >
-      ((landscape_width - kSplitviewDividerShortSideLength) / 2 -
-       kFloatedWindowPaddingDp * 2)) {
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
-
-bool IsLandscapeOrientationForWindow(aura::Window* window) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  const OrientationType orientation = RotationToOrientation(
-      GetDisplayNaturalOrientation(display), display.rotation());
-  return IsLandscapeOrientation(orientation);
-}
 
 gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
                                               bool landscape) {
@@ -96,6 +35,92 @@ gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
   return gfx::Size(preferred_width, preferred_height);
 }
 
+bool CanFloatWindowInClamshell(aura::Window* window) {
+  CHECK(window);
+  CHECK(features::IsWindowLayoutMenuEnabled());
+
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+  if (minimum_size.width() > work_area.width() - 2 * kFloatedWindowPaddingDp ||
+      minimum_size.height() >
+          work_area.height() - 2 * kFloatedWindowPaddingDp) {
+    return false;
+  }
+  return true;
+}
+
+bool CanFloatWindowInTablet(aura::Window* window) {
+  return !GetFloatedWindowTabletSize(window).IsEmpty();
+}
+
+}  // namespace
+
+bool IsLandscapeOrientationForWindow(aura::Window* window) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const OrientationType orientation = RotationToOrientation(
+      GetDisplayNaturalOrientation(display), display.rotation());
+  return IsLandscapeOrientation(orientation);
+}
+
+gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
+  CHECK(window);
+  CHECK(features::IsWindowLayoutMenuEnabled());
+
+  if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
+       aura::client::kResizeBehaviorCanResize) == 0) {
+    return gfx::Size();
+  }
+
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+  const bool landscape = IsLandscapeOrientationForWindow(window);
+
+  const gfx::Size preferred_size =
+      GetPreferredFloatedWindowTabletSize(work_area, landscape);
+  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+  if (minimum_size.height() > preferred_size.height()) {
+    return gfx::Size();
+  }
+
+  const int landscape_width =
+      landscape ? work_area.width() : work_area.height();
+
+  // The maximum size for a floated window is half the landscape width minus
+  // some space for the split view divider and padding.
+  const int maximum_float_width =
+      (landscape_width - kSplitviewDividerShortSideLength) / 2 -
+      kFloatedWindowPaddingDp * 2;
+  if (minimum_size.width() > maximum_float_width) {
+    return gfx::Size();
+  }
+
+  // For browsers, we need to add some padding to the minimum size since the
+  // browser returns a minimum size that makes the omnibox untappable for many
+  // websites. However, we don't add this padding if it causes an otherwise
+  // floatable window to not be floatable anymore.
+  // TODO(b/278769645): Remove this workaround once browser returns a viable
+  // minimum size.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const int minimum_width_padding = kBrowserExtraPaddingDp;
+#else
+  const int minimum_width_padding =
+      window->GetProperty(aura::client::kAppType) ==
+              static_cast<int>(ash::AppType::BROWSER)
+          ? kBrowserExtraPaddingDp
+          : 0;
+#endif
+
+  // If the preferred width is less than the minimum width, use the minimum
+  // width. Add padding to the preferred width if the window is a browser, but
+  // don't exceed the maximum float width.
+  int width = std::max(preferred_size.width(),
+                       minimum_size.width() + minimum_width_padding);
+  width = std::min(width, maximum_float_width);
+  return gfx::Size(width, preferred_size.height());
+}
+
 bool CanFloatWindow(aura::Window* window) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only app window can be floated. All windows on lacros side are expected to
@@ -104,9 +129,35 @@ bool CanFloatWindow(aura::Window* window) {
       static_cast<int>(ash::AppType::NON_APP)) {
     return false;
   }
+
+  if (!window->GetProperty(kSupportsFloatedStateKey)) {
+    return false;
+  }
 #endif
+
+  if (window->GetProperty(aura::client::kZOrderingKey) !=
+      ui::ZOrderLevel::kNormal) {
+    return false;
+  }
+
   return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
                                             : CanFloatWindowInClamshell(window);
+}
+
+bool IsGameWindow(aura::Window* window) {
+  DCHECK(window);
+  return window->GetProperty(kIsGameKey);
+}
+
+bool ApplyDynamicColorToWindowFrameHeader(aura::Window* window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const int app_type = window->GetProperty(aura::client::kAppType);
+  if (app_type == static_cast<int>(ash::AppType::ARC_APP) ||
+      app_type == static_cast<int>(ash::AppType::CROSTINI_APP)) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 }  // namespace chromeos::wm

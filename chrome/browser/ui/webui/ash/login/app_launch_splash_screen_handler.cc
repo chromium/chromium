@@ -114,7 +114,7 @@ void AppLaunchSplashScreenHandler::SetNetworkRequired() {
   is_network_required_ = true;
 }
 
-void AppLaunchSplashScreenHandler::RegisterMessages() {
+void AppLaunchSplashScreenHandler::DeclareJSCallbacks() {
   AddCallback("configureNetwork",
               &AppLaunchSplashScreenHandler::HandleConfigureNetwork);
 }

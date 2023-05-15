@@ -92,8 +92,7 @@ void ProtocolCommand::OnSocketClosed() {
   delete this;
 }
 
-ProtocolCommand::~ProtocolCommand() {
-}
+ProtocolCommand::~ProtocolCommand() {}
 
 // AgentHostDelegate ----------------------------------------------------------
 
@@ -110,16 +109,18 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   }
 
   void SendMessageToBackend(std::string message) {
-    if (socket_opened_)
+    if (socket_opened_) {
       web_socket_->SendFrame(std::move(message));
-    else
+    } else {
       pending_messages_.push_back(std::move(message));
+    }
   }
 
   void OnSocketOpened() override {
     socket_opened_ = true;
-    for (std::string& message : pending_messages_)
+    for (std::string& message : pending_messages_) {
       SendMessageToBackend(std::move(message));
+    }
     pending_messages_.clear();
   }
 
@@ -154,7 +155,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& local_id,
       const std::string& target_path,
       const std::string& type,
-      base::Value* value);
+      const base::Value::Dict* value);
 
   AgentHostDelegate(const AgentHostDelegate&) = delete;
   AgentHostDelegate& operator=(const AgentHostDelegate&) = delete;
@@ -168,7 +169,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
                     const std::string& local_id,
                     const std::string& target_path,
                     const std::string& type,
-                    base::Value* value);
+                    const base::Value::Dict* value);
   // DevToolsExternalAgentProxyDelegate overrides.
   void Attach(content::DevToolsExternalAgentProxy* proxy) override;
   void Detach(content::DevToolsExternalAgentProxy* proxy) override;
@@ -202,39 +203,43 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       proxies_;
 };
 
-static std::string GetStringProperty(const base::Value& value,
+static std::string GetStringProperty(const base::Value::Dict& value,
                                      const std::string& name) {
-  const std::string* result = value.FindStringKey(name);
+  const std::string* result = value.FindString(name);
   return result ? *result : std::string();
 }
 
 static std::string BuildUniqueTargetId(const std::string& serial,
                                        const std::string& browser_id,
-                                       const base::Value& value) {
-  return base::StringPrintf("%s:%s:%s", serial.c_str(),
-      browser_id.c_str(), GetStringProperty(value, "id").c_str());
+                                       const base::Value::Dict& value) {
+  return base::StringPrintf("%s:%s:%s", serial.c_str(), browser_id.c_str(),
+                            GetStringProperty(value, "id").c_str());
 }
 
-static std::string GetFrontendURLFromValue(const base::Value& value,
+static std::string GetFrontendURLFromValue(const base::Value::Dict& value,
                                            const std::string& browser_version) {
   std::string frontend_url = GetStringProperty(value, "devtoolsFrontendUrl");
   size_t ws_param = frontend_url.find("?ws");
-  if (ws_param != std::string::npos)
+  if (ws_param != std::string::npos) {
     frontend_url = frontend_url.substr(0, ws_param);
-  if (base::StartsWith(frontend_url, "http:", base::CompareCase::SENSITIVE))
+  }
+  if (base::StartsWith(frontend_url, "http:", base::CompareCase::SENSITIVE)) {
     frontend_url = "https:" + frontend_url.substr(5);
-  if (!browser_version.empty())
+  }
+  if (!browser_version.empty()) {
     frontend_url += "?remoteVersion=" + browser_version;
+  }
   return frontend_url;
 }
 
-static std::string GetTargetPath(const base::Value& value) {
+static std::string GetTargetPath(const base::Value::Dict& value) {
   std::string target_path = GetStringProperty(value, "webSocketDebuggerUrl");
 
   if (base::StartsWith(target_path, "ws://", base::CompareCase::SENSITIVE)) {
     size_t pos = target_path.find("/", 5);
-    if (pos == std::string::npos)
+    if (pos == std::string::npos) {
       pos = 5;
+    }
     target_path = target_path.substr(pos);
   } else {
     target_path = std::string();
@@ -251,17 +256,18 @@ AgentHostDelegate::GetOrCreateAgentHost(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    base::Value* value) {
+    const base::Value::Dict* value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<DevToolsAgentHost> result =
       DevToolsAgentHost::GetForId(local_id);
-  if (result)
+  if (result) {
     return result;
+  }
 
   AgentHostDelegate* delegate = new AgentHostDelegate(
       device, browser_id, browser_version, local_id, target_path, type, value);
-  result = content::DevToolsAgentHost::Forward(
-      local_id, base::WrapUnique(delegate));
+  result =
+      content::DevToolsAgentHost::Forward(local_id, base::WrapUnique(delegate));
   delegate->agent_host_ = result.get();
   return result;
 }
@@ -273,7 +279,7 @@ AgentHostDelegate::AgentHostDelegate(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    base::Value* value)
+    const base::Value::Dict* value)
     : device_(device),
       browser_id_(browser_id),
       local_id_(local_id),
@@ -290,8 +296,7 @@ AgentHostDelegate::AgentHostDelegate(
       favicon_url_(GURL(value ? GetStringProperty(*value, "faviconUrl") : "")),
       agent_host_(nullptr) {}
 
-AgentHostDelegate::~AgentHostDelegate() {
-}
+AgentHostDelegate::~AgentHostDelegate() = default;
 
 void AgentHostDelegate::Attach(content::DevToolsExternalAgentProxy* proxy) {
   std::unique_ptr<WebSocketProxy> ws_proxy(new WebSocketProxy(proxy));
@@ -334,22 +339,23 @@ std::string AgentHostDelegate::GetFrontendURL() {
 }
 
 bool AgentHostDelegate::Activate() {
-  std::string request = base::StringPrintf(kActivatePageRequest,
-                                           remote_id_.c_str());
+  std::string request =
+      base::StringPrintf(kActivatePageRequest, remote_id_.c_str());
   device_->SendJsonRequest(browser_id_, request, base::DoNothing());
   return true;
 }
 
 void AgentHostDelegate::Reload() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (target_path_.empty())
+  if (target_path_.empty()) {
     return;
+  }
   new ProtocolCommand(device_, browser_id_, target_path_, kPageReloadCommand);
 }
 
 bool AgentHostDelegate::Close() {
-  std::string request = base::StringPrintf(kClosePageRequest,
-                                           remote_id_.c_str());
+  std::string request =
+      base::StringPrintf(kClosePageRequest, remote_id_.c_str());
   device_->SendJsonRequest(browser_id_, request, base::DoNothing());
   return true;
 }
@@ -363,8 +369,9 @@ void AgentHostDelegate::SendMessageToBackend(
     base::span<const uint8_t> message) {
   auto it = proxies_.find(proxy);
   // We could have detached due to physical connection being closed.
-  if (it == proxies_.end())
+  if (it == proxies_.end()) {
     return;
+  }
   it->second->SendMessageToBackend(std::string(message.begin(), message.end()));
 }
 
@@ -459,28 +466,33 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
       browser->socket(), kPageListRequest,
       base::BindOnce(&DiscoveryRequest::ReceivedPages, this, device, browser));
 
-  if (result < 0)
+  if (result < 0) {
     return;
+  }
   // Parse version, append to package name if available,
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
-  if (value && value->is_dict()) {
-    const std::string* browser_name = value->FindStringKey("Browser");
-    if (browser_name) {
-      std::vector<std::string> parts = base::SplitString(
-          *browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      if (parts.size() == 2)
-        browser->version_ = parts[1];
-      else
-        browser->version_ = *browser_name;
+  absl::optional<base::Value::Dict> value_dict =
+      base::JSONReader::ReadDict(response);
+  if (!value_dict) {
+    return;
+  }
+  const std::string* browser_name = value_dict->FindString("Browser");
+  if (browser_name) {
+    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+        *browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (parts.size() == 2) {
+      browser->version_ = parts[1];
+    } else {
+      browser->version_ = *browser_name;
     }
-    browser->browser_target_id_ = GetTargetPath(*value);
-    if (browser->browser_target_id_.empty())
-      browser->browser_target_id_ = kBrowserTargetSocket;
-    const std::string* package = value->FindStringKey("Android-Package");
-    if (package) {
-      browser->display_name_ =
-          AndroidDeviceManager::GetBrowserName(browser->socket(), *package);
-    }
+  }
+  browser->browser_target_id_ = GetTargetPath(*value_dict);
+  if (browser->browser_target_id_.empty()) {
+    browser->browser_target_id_ = kBrowserTargetSocket;
+  }
+  const std::string* package = value_dict->FindString("Android-Package");
+  if (package) {
+    browser->display_name_ =
+        AndroidDeviceManager::GetBrowserName(browser->socket(), *package);
   }
 }
 
@@ -490,15 +502,22 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
     int result,
     const std::string& response) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (result < 0)
+  if (result < 0) {
     return;
+  }
   absl::optional<base::Value> value = base::JSONReader::Read(response);
-  if (value && value->is_list()) {
-    for (base::Value& page_value : value->GetList()) {
-      if (page_value.is_dict())
-        browser->pages_.push_back(new RemotePage(device, browser->browser_id_,
-                                                 browser->version_,
-                                                 std::move(page_value)));
+  if (!value) {
+    return;
+  }
+  auto* value_list = value->GetIfList();
+  if (!value_list) {
+    return;
+  }
+  for (base::Value& page_value : *value_list) {
+    if (page_value.is_dict()) {
+      browser->pages_.push_back(
+          new RemotePage(device, browser->browser_id_, browser->version_,
+                         std::move(page_value).TakeDict()));
     }
   }
 }
@@ -509,14 +528,13 @@ DevToolsDeviceDiscovery::RemotePage::RemotePage(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const std::string& browser_id,
     const std::string& browser_version,
-    base::Value dict)
+    base::Value::Dict dict)
     : device_(device),
       browser_id_(browser_id),
       browser_version_(browser_version),
       dict_(std::move(dict)) {}
 
-DevToolsDeviceDiscovery::RemotePage::~RemotePage() {
-}
+DevToolsDeviceDiscovery::RemotePage::~RemotePage() {}
 
 scoped_refptr<content::DevToolsAgentHost>
 DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
@@ -526,12 +544,12 @@ DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
   std::string type = GetStringProperty(dict_, "type");
 
   std::string port_num = browser_id_;
-  if (type == "node")
+  if (type == "node") {
     port_num = GURL(GetStringProperty(dict_, "webSocketDebuggerUrl")).port();
+  }
 
   agent_host_ = AgentHostDelegate::GetOrCreateAgentHost(
-      device_, port_num, browser_version_, local_id, target_path, type,
-      &dict_);
+      device_, port_num, browser_version_, local_id, target_path, type, &dict_);
   return agent_host_;
 }
 
@@ -544,8 +562,7 @@ DevToolsDeviceDiscovery::RemoteBrowser::RemoteBrowser(
       browser_id_(browser_info.socket_name),
       display_name_(browser_info.display_name),
       user_(browser_info.user),
-      type_(browser_info.type) {
-}
+      type_(browser_info.type) {}
 
 bool DevToolsDeviceDiscovery::RemoteBrowser::IsChrome() {
   return type_ == AndroidDeviceManager::BrowserInfo::kTypeChrome;
@@ -558,8 +575,7 @@ std::string DevToolsDeviceDiscovery::RemoteBrowser::GetId() {
 DevToolsDeviceDiscovery::RemoteBrowser::ParsedVersion
 DevToolsDeviceDiscovery::RemoteBrowser::GetParsedVersion() {
   ParsedVersion result;
-  for (const base::StringPiece& part :
-       base::SplitStringPiece(
+  for (const base::StringPiece& part : base::SplitStringPiece(
            version_, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     int value = 0;
     base::StringToInt(part, &value);
@@ -568,8 +584,7 @@ DevToolsDeviceDiscovery::RemoteBrowser::GetParsedVersion() {
   return result;
 }
 
-DevToolsDeviceDiscovery::RemoteBrowser::~RemoteBrowser() {
-}
+DevToolsDeviceDiscovery::RemoteBrowser::~RemoteBrowser() {}
 
 // DevToolsDeviceDiscovery::RemoteDevice --------------------------------------
 
@@ -586,8 +601,7 @@ DevToolsDeviceDiscovery::RemoteDevice::RemoteDevice(
   }
 }
 
-DevToolsDeviceDiscovery::RemoteDevice::~RemoteDevice() {
-}
+DevToolsDeviceDiscovery::RemoteDevice::~RemoteDevice() {}
 
 // DevToolsDeviceDiscovery ----------------------------------------------------
 

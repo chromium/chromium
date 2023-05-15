@@ -229,8 +229,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // Backoff to resume fetch images.
   net::BackoffEntry resume_fetch_image_backoff_;
 
-  const base::raw_ptr<AmbientPhotoCache> photo_cache_;
-  const base::raw_ptr<AmbientPhotoCache> backup_photo_cache_;
+  const raw_ptr<AmbientPhotoCache> photo_cache_;
+  const raw_ptr<AmbientPhotoCache> backup_photo_cache_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

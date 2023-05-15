@@ -13,7 +13,9 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 
@@ -27,7 +29,9 @@ const int kMaxScreensToShowChoobe = 10;
 // Optional screens to be shown in CHOOBE screen. The screen tiles are
 // shown in the same order they are listed in this list.
 const StaticOobeScreenId kOptionalScreens[] = {
+    TouchpadScrollScreenView::kScreenId,
     ThemeSelectionScreenView::kScreenId,
+    DisplaySizeScreenView::kScreenId,
 };
 
 bool IsOptionalScreen(OobeScreenId screen_id) {
@@ -200,9 +204,13 @@ void ChoobeFlowController::EnsureEligibleScreensPopulated() {
 }
 
 bool ChoobeFlowController::IsScreenEligible(OobeScreenId id) {
-  LoginDisplayHost* host = LoginDisplayHost::default_host();
-  BaseScreen* screen_obj = host->GetWizardController()->GetScreen(id);
-  return !screen_obj->ShouldBeSkipped(*host->GetWizardContext());
+  auto* host = LoginDisplayHost::default_host();
+  auto* wizard_controller = host->GetWizardController();
+  if (!wizard_controller->HasScreen(id)) {
+    return false;
+  }
+  return !wizard_controller->GetScreen(id)->ShouldBeSkipped(
+      *host->GetWizardContext());
 }
 
 }  // namespace ash

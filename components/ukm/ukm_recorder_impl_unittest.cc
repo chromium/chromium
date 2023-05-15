@@ -232,7 +232,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
 
   // Recording is disabled for extensions, thus new extension URL will not be
   // recorded.
-  recorder.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
+  recorder.UpdateRecording({UkmConsentType::MSBB});
   recorder.UpdateSourceURL(id4, GURL("chrome-extension://abc/index.html"));
   EXPECT_FALSE(recorder.recording_state_.Has(UkmConsentType::EXTENSIONS));
   EXPECT_EQ(2U, recorder.sources().size());
@@ -410,23 +410,23 @@ TEST(UkmRecorderImplTest, VerifyShouldDropEntry) {
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(app_entry.get()));
 
   // Update service with MSBB consent.
-  impl.UpdateRecording(UkmConsentState(MSBB));
+  impl.UpdateRecording({MSBB});
   EXPECT_FALSE(impl.ShouldDropEntryForTesting(msbb_entry.get()));
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(app_entry.get()));
 
   // Update service with App-sync consent as well.
-  impl.UpdateRecording(UkmConsentState(MSBB, APPS));
+  impl.UpdateRecording({MSBB, APPS});
   EXPECT_FALSE(impl.ShouldDropEntryForTesting(msbb_entry.get()));
   EXPECT_FALSE(impl.ShouldDropEntryForTesting(app_entry.get()));
 
   // Update service with only App-sync consent.
   // Only applicable to ASH builds but will not affect the test.
-  impl.UpdateRecording(UkmConsentState(APPS));
+  impl.UpdateRecording({APPS});
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(msbb_entry.get()));
   EXPECT_FALSE(impl.ShouldDropEntryForTesting(app_entry.get()));
 
   // Disabling recording will supersede any consent state.
-  impl.UpdateRecording(UkmConsentState(MSBB, APPS));
+  impl.UpdateRecording({MSBB, APPS});
   impl.DisableRecording();
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(msbb_entry.get()));
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(app_entry.get()));

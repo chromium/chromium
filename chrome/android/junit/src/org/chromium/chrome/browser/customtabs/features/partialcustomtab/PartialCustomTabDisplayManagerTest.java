@@ -19,8 +19,9 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
@@ -41,6 +42,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
@@ -72,7 +74,7 @@ public class PartialCustomTabDisplayManagerTest {
     private PartialCustomTabDisplayManager createPcctDisplayManager(
             @Px int heightPx, @Px int widthPx) {
         return createPcctDisplayManager(
-                heightPx, widthPx, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+                heightPx, widthPx, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
     }
 
     private PartialCustomTabDisplayManager createPcctDisplayManager(
@@ -82,7 +84,7 @@ public class PartialCustomTabDisplayManagerTest {
                 mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mOnActivityLayoutCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
                 true, /*showMaximizeButton=*/true, decorationType, ACTIVITY_SIDE_SHEET_POSITION_END,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
                 (type, maximized, sideSheetPosition, sideSheetAnimation) -> {
@@ -101,61 +103,89 @@ public class PartialCustomTabDisplayManagerTest {
 
     @Test
     public void create_FullSize_HeightNotSetWidthNotSet() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 0);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_FullSize_WidthSetCompactDevice() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configCompactDevice();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 500);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 800);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
+        int expected = PartialCustomTabType.SIDE_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager =
-                createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+                createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         assertEquals(
                 "Breakpoint value is incorrect", 840, displayManager.getBreakPointDpForTesting());
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
     @Test
     public void create_SideSheet_AboveBreakPoint() {
+        int expected = PartialCustomTabType.SIDE_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
     @Test
     public void create_BottomSheet_HeightWidthSet_Compact() {
+        int expected = PartialCustomTabType.BOTTOM_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configCompactDevice();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(
-                350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        PartialCustomTabDisplayManager displayManager =
+                createPcctDisplayManager(350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         assertEquals(
                 "Breakpoint value is incorrect", 600, displayManager.getBreakPointDpForTesting());
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
     @Test
     public void create_BottomSheet_HeightSetWidthNot() {
+        int expected = PartialCustomTabType.BOTTOM_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(800, 0);
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
     @Test
@@ -232,6 +262,31 @@ public class PartialCustomTabDisplayManagerTest {
 
         // The destroyed bottom sheet should have its height state back to 'initial'.
         assertFalse(displayManager.getSizeStrategyForTesting().isMaximized());
+    }
+
+    @Test
+    public void closeAnimationNotInvokedTwice() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        Runnable finish = Mockito.mock(Runnable.class);
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        Runnable finish2 = Mockito.mock(Runnable.class);
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
+
+        mPCCTTestRule.configLandscapeMode();
+        displayManager = createPcctDisplayManager();
+        assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
+
+        displayManager = createPcctDisplayManager(0, 0);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
     }
 
     @Test
@@ -538,6 +593,13 @@ public class PartialCustomTabDisplayManagerTest {
 
         LocalizationUtils.setRtlForTesting(true);
         assertEquals(R.anim.slide_in_left,
+                PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
+
+        // BOTTOM_SHEET -> slide up (with height and width set, compact portrait)
+        mPCCTTestRule.configCompactDevice_Portrait();
+        when(provider.getInitialActivityWidth()).thenReturn(500);
+        when(provider.getActivityBreakPoint()).thenReturn(50);
+        assertEquals(R.anim.slide_in_up,
                 PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
     }
 }

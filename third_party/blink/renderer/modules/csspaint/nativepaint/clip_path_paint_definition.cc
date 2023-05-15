@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_definition.h"
 
+#include "cc/paint/paint_recorder.h"
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -16,12 +17,8 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
-#include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
-#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -268,10 +265,7 @@ PaintRecord ClipPathPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
-  const ClipPathPaintWorkletInput* input =
-      To<ClipPathPaintWorkletInput>(compositor_input);
-  gfx::SizeF clip_area_size = input->ContainerSize();
-  gfx::RectF reference_box = input->GetReferenceBox();
+  const auto* input = To<ClipPathPaintWorkletInput>(compositor_input);
 
   const Vector<InterpolationValue>& interpolation_values =
       input->InterpolationValues();
@@ -323,18 +317,18 @@ PaintRecord ClipPathPaintDefinition::Paint(
       InterpolateShapes(from, basic_shape_types[result_index], to,
                         basic_shape_types[result_index + 1], adjusted_progress);
 
+  const gfx::RectF reference_box = input->GetReferenceBox();
   Path path = current_shape->GetPath(reference_box, input->Zoom());
-  PaintRenderingContext2DSettings* context_settings =
-      PaintRenderingContext2DSettings::Create();
-  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::ToRoundedSize(clip_area_size), context_settings, 1, 1,
-      worker_backing_thread_->BackingThread().GetTaskRunner());
+
+  cc::InspectablePaintRecorder paint_recorder;
+  const gfx::Size clip_area_size(gfx::ToRoundedSize(input->ContainerSize()));
+  cc::PaintCanvas* canvas = paint_recorder.beginRecording(clip_area_size);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  rendering_context->GetPaintCanvas()->drawPath(path.GetSkPath(), flags);
+  canvas->drawPath(path.GetSkPath(), flags);
 
-  return rendering_context->GetRecord();
+  return paint_recorder.finishRecordingAsPicture();
 }
 
 // Creates a deferred image of size clip_area_size that will be painted via

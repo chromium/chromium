@@ -5,6 +5,7 @@
 #include "components/exo/display.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
@@ -78,7 +79,7 @@ class DisplayTest : public test::ExoTestBase {
   }
 
  private:
-  TestPropertyResolver* resolver_;
+  raw_ptr<TestPropertyResolver, ExperimentalAsh> resolver_;
 };
 
 TEST_F(DisplayTest, CreateSurface) {
@@ -173,8 +174,9 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface1 =
       display.CreateOrGetClientControlledShellSurface(
           surface1.get(), ash::kShellWindowId_SystemModalContainer,
-          /*default_scale_factor=*/2.0,
-          /*default_scale_cancellation=*/true);
+          /*default_device_scale_factor=*/2.0,
+          /*default_scale_cancellation=*/true,
+          /*supports_floated_state=*/true);
   ASSERT_TRUE(shell_surface1);
   EXPECT_EQ(shell_surface1->scale(), 2.0);
 
@@ -182,8 +184,9 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
   std::unique_ptr<ShellSurfaceBase> shell_surface2 =
       display.CreateOrGetClientControlledShellSurface(
           surface2.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_scale_factor=*/1.0,
-          /*default_scale_cancellation=*/true);
+          /*default_device_scale_factor=*/1.0,
+          /*default_scale_cancellation=*/true,
+          /*supports_floated_state=*/true);
   EXPECT_TRUE(shell_surface2);
 }
 
@@ -212,8 +215,9 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       display.CreateOrGetClientControlledShellSurface(
           surface_with_id.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_scale_factor=*/2.0,
-          /*default_scale_cancellation=*/true);
+          /*default_device_scale_factor=*/2.0,
+          /*default_scale_cancellation=*/true,
+          /*supports_floated_state=*/true);
   EXPECT_EQ(shell_surface.get(), external_shell_surface_observer);
   EXPECT_EQ(surface_with_id.get(), shell_surface->root_surface());
 
@@ -323,8 +327,9 @@ TEST_F(DisplayTest, PinnedAlwaysOnTopWindow) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       display.CreateOrGetClientControlledShellSurface(
           surface.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_scale_factor=*/2.0,
-          /*default_scale_cancellation=*/true);
+          /*default_device_scale_factor=*/2.0,
+          /*default_scale_cancellation=*/true,
+          /*supports_floated_state=*/true);
   ASSERT_TRUE(shell_surface);
   EXPECT_EQ(shell_surface->scale(), 2.0);
 

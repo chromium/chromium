@@ -50,7 +50,9 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
+	  // (3 * 4 + 3) choose 3 = 455
+	  // 455 / (455 - 1 + exp(14)) = .0003782
+          "randomized_trigger_rate": 0.0003782,
           "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",

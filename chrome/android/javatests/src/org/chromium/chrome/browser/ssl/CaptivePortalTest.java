@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ssl;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -91,7 +91,8 @@ public class CaptivePortalTest {
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getContext(), ServerCertificate.CERT_MISMATCHED_NAME);
+                ApplicationProvider.getApplicationContext(),
+                ServerCertificate.CERT_MISMATCHED_NAME);
 
         CaptivePortalHelper.setOSReportsCaptivePortalForTesting(false);
         CaptivePortalHelper.setCaptivePortalCertificateForTesting("sha256/test");

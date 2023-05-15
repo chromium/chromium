@@ -39,10 +39,6 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.format;
   }
 
-  static uint32_t filter(const viz::TransferableResource& resource) {
-    return resource.filter;
-  }
-
   static gfx::Size size(const viz::TransferableResource& resource) {
     return resource.size;
   }

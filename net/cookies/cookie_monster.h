@@ -719,6 +719,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Number of distinct partitioned cookies globally. This is used to enforce a
   // global maximum on the number of partitioned cookies.
   size_t num_partitioned_cookies_ = 0u;
+  // Number of partitioned cookies whose partition key has a nonce.
+  size_t num_nonced_partitioned_cookies_ = 0u;
 
   bool same_party_attribute_enabled_ = false;
 

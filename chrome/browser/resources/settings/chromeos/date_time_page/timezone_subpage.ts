@@ -7,18 +7,18 @@
  * time zone settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '../../controls/controlled_radio_button.js';
-import '../../controls/settings_dropdown_menu.js';
-import '../../controls/settings_radio_group.js';
+import '/shared/settings/controls/controlled_radio_button.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_radio_group.js';
 import '../../settings_shared.css.js';
 import './timezone_selector.js';
 
+import {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
@@ -66,10 +66,16 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         type: Object,
         value: () => new Set<Setting>([Setting.kChangeTimeZone]),
       },
+
+      showEnableSystemGeolocationDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private browserProxy_: TimeZoneBrowserProxy;
+  private showEnableSystemGeolocationDialog_: boolean;
 
   constructor() {
     super();
@@ -166,6 +172,33 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     for (const radio of radios) {
       radio.disabled = true;
     }
+  }
+
+  private onTimeZoneSelectionChanged_(): void {
+    const geolocationAllowed =
+        this.getPref('ash.user.geolocation_allowed').value;
+    if (geolocationAllowed) {
+      return;
+    }
+
+    let selectedTimezoneOption = null;
+    const dropDown = this.$.timeZoneResolveMethodDropdown;
+    if (dropDown.pref) {
+      selectedTimezoneOption = dropDown.pref.value;
+    }
+
+    // Pop up geolocation dialog, when user wants to enable precise timezone,
+    // but the system geolocation access is disabled.
+    if (selectedTimezoneOption ===
+            TimeZoneAutoDetectMethod.SEND_ALL_LOCATION_INFO ||
+        selectedTimezoneOption ===
+            TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
+      this.showEnableSystemGeolocationDialog_ = true;
+    }
+  }
+
+  private onEnableSystemGeolocationDialogClosed_(): void {
+    this.showEnableSystemGeolocationDialog_ = false;
   }
 }
 

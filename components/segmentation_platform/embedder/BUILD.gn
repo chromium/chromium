@@ -11,6 +11,8 @@ if (is_android) {
 
 source_set("embedder") {
   sources = [
+    "input_delegate/tab_rank_dispatcher.cc",
+    "input_delegate/tab_rank_dispatcher.h",
     "model_provider_factory_impl.cc",
     "model_provider_factory_impl.h",
   ]
@@ -22,6 +24,8 @@ source_set("embedder") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//components/sessions:session_id",
+    "//components/sync_sessions:sync_sessions",
     "//url",
   ]
 
@@ -35,7 +39,10 @@ source_set("unit_tests") {
 
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
-  sources = [ "model_provider_factory_impl_unittest.cc" ]
+  sources = [
+    "input_delegate/tab_rank_dispatcher_unittest.cc",
+    "model_provider_factory_impl_unittest.cc",
+  ]
 
   deps = [
     ":embedder",
@@ -47,6 +54,8 @@ source_set("unit_tests") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sync_sessions:sync_sessions",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

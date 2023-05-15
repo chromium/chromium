@@ -52,8 +52,8 @@ bool IsTestControllerAvailable(
     return false;
   }
 
-  int interface_version = lacros_service->GetInterfaceVersion(
-      crosapi::mojom::TestController::Uuid_);
+  int interface_version =
+      lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
   return (interface_version >= static_cast<int>(min_version));
 }
 

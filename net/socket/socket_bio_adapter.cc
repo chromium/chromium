@@ -64,9 +64,9 @@ SocketBIOAdapter::SocketBIOAdapter(StreamSocket* socket,
       read_buffer_capacity_(read_buffer_capacity),
       write_buffer_capacity_(write_buffer_capacity),
       delegate_(delegate) {
-  bio_.reset(BIO_new(&kBIOMethod));
-  bio_->ptr = this;
-  bio_->init = 1;
+  bio_.reset(BIO_new(BIOMethod()));
+  BIO_set_data(bio_.get(), this);
+  BIO_set_init(bio_.get(), 1);
 
   read_callback_ = base::BindRepeating(&SocketBIOAdapter::OnSocketReadComplete,
                                        weak_factory_.GetWeakPtr());
@@ -75,16 +75,19 @@ SocketBIOAdapter::SocketBIOAdapter(StreamSocket* socket,
 }
 
 SocketBIOAdapter::~SocketBIOAdapter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // BIOs are reference-counted and may outlive the adapter. Clear the pointer
   // so future operations fail.
-  bio_->ptr = nullptr;
+  BIO_set_data(bio_.get(), nullptr);
 }
 
 bool SocketBIOAdapter::HasPendingReadData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return read_result_ > 0;
 }
 
 size_t SocketBIOAdapter::GetAllocationSize() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t buffer_size = 0;
   if (read_buffer_)
     buffer_size += read_buffer_capacity_;
@@ -95,6 +98,7 @@ size_t SocketBIOAdapter::GetAllocationSize() const {
 }
 
 int SocketBIOAdapter::BIORead(char* out, int len) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (len <= 0)
     return len;
 
@@ -115,9 +119,10 @@ int SocketBIOAdapter::BIORead(char* out, int len) {
     // layer reads the record header and body in separate reads to avoid
     // overreading, but issuing one is more efficient. SSL sockets are not
     // reused after shutdown for non-SSL traffic, so overreading is fine.
-    DCHECK(!read_buffer_);
-    DCHECK_EQ(0, read_offset_);
+    CHECK(!read_buffer_);
+    CHECK_EQ(0, read_offset_);
     read_buffer_ = base::MakeRefCounted<IOBuffer>(read_buffer_capacity_);
+    read_result_ = ERR_IO_PENDING;
     int result = socket_->ReadIfReady(
         read_buffer_.get(), read_buffer_capacity_,
         base::BindOnce(&SocketBIOAdapter::OnSocketReadIfReadyComplete,
@@ -128,9 +133,8 @@ int SocketBIOAdapter::BIORead(char* out, int len) {
       result = socket_->Read(read_buffer_.get(), read_buffer_capacity_,
                              read_callback_);
     }
-    if (result == ERR_IO_PENDING) {
-      read_result_ = ERR_IO_PENDING;
-    } else {
+    if (result != ERR_IO_PENDING) {
+      // `HandleSocketReadResult` will update `read_result_` based on `result`.
       HandleSocketReadResult(result);
     }
   }
@@ -164,7 +168,9 @@ int SocketBIOAdapter::BIORead(char* out, int len) {
 }
 
 void SocketBIOAdapter::HandleSocketReadResult(int result) {
-  DCHECK_NE(ERR_IO_PENDING, result);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(ERR_IO_PENDING, result);
+  CHECK_EQ(ERR_IO_PENDING, read_result_);
 
   // If an EOF, canonicalize to ERR_CONNECTION_CLOSED here, so that higher
   // levels don't report success.
@@ -179,15 +185,17 @@ void SocketBIOAdapter::HandleSocketReadResult(int result) {
 }
 
 void SocketBIOAdapter::OnSocketReadComplete(int result) {
-  DCHECK_EQ(ERR_IO_PENDING, read_result_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(ERR_IO_PENDING, read_result_);
 
   HandleSocketReadResult(result);
   delegate_->OnReadReady();
 }
 
 void SocketBIOAdapter::OnSocketReadIfReadyComplete(int result) {
-  DCHECK_EQ(ERR_IO_PENDING, read_result_);
-  DCHECK_GE(OK, result);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(ERR_IO_PENDING, read_result_);
+  CHECK_GE(OK, result);
 
   // Do not use HandleSocketReadResult() because result == OK doesn't mean EOF.
   read_result_ = result;
@@ -196,12 +204,13 @@ void SocketBIOAdapter::OnSocketReadIfReadyComplete(int result) {
 }
 
 int SocketBIOAdapter::BIOWrite(const char* in, int len) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (len <= 0)
     return len;
 
   // If the write buffer is not empty, there must be a pending Write() to flush
   // it.
-  DCHECK(write_buffer_used_ == 0 || write_error_ == ERR_IO_PENDING);
+  CHECK(write_buffer_used_ == 0 || write_error_ == ERR_IO_PENDING);
 
   // If a previous Write() failed, report the error.
   if (write_error_ != OK && write_error_ != ERR_IO_PENDING) {
@@ -211,7 +220,7 @@ int SocketBIOAdapter::BIOWrite(const char* in, int len) {
 
   // Instantiate the write buffer if needed.
   if (!write_buffer_) {
-    DCHECK_EQ(0, write_buffer_used_);
+    CHECK_EQ(0, write_buffer_used_);
     write_buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
     write_buffer_->SetCapacity(write_buffer_capacity_);
   }
@@ -250,7 +259,7 @@ int SocketBIOAdapter::BIOWrite(const char* in, int len) {
   }
 
   // Either the buffer is now full or there is no more input.
-  DCHECK(len == 0 || write_buffer_used_ == write_buffer_->capacity());
+  CHECK(len == 0 || write_buffer_used_ == write_buffer_->capacity());
 
   // Schedule a socket Write() if necessary. (The ring buffer may previously
   // have been empty.)
@@ -270,22 +279,30 @@ int SocketBIOAdapter::BIOWrite(const char* in, int len) {
 }
 
 void SocketBIOAdapter::SocketWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (write_error_ == OK && write_buffer_used_ > 0) {
+    int write_buffer_used_old = write_buffer_used_;
     int write_size =
         std::min(write_buffer_used_, write_buffer_->RemainingCapacity());
+    write_error_ = ERR_IO_PENDING;
     int result = socket_->Write(write_buffer_.get(), write_size,
                                 write_callback_, kTrafficAnnotation);
-    if (result == ERR_IO_PENDING) {
-      write_error_ = ERR_IO_PENDING;
-      return;
+    // If `write_buffer_used_` changed across a call to the underlying socket,
+    // something went very wrong.
+    //
+    // TODO(crbug.com/1440692): Remove this once the crash is resolved.
+    CHECK_EQ(write_buffer_used_old, write_buffer_used_);
+    if (result != ERR_IO_PENDING) {
+      // `HandleSocketWriteResult` will update `write_error_` based on `result.
+      HandleSocketWriteResult(result);
     }
-
-    HandleSocketWriteResult(result);
   }
 }
 
 void SocketBIOAdapter::HandleSocketWriteResult(int result) {
-  DCHECK_NE(ERR_IO_PENDING, result);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(ERR_IO_PENDING, result);
+  CHECK_EQ(ERR_IO_PENDING, write_error_);
 
   if (result < 0) {
     write_error_ = result;
@@ -297,6 +314,8 @@ void SocketBIOAdapter::HandleSocketWriteResult(int result) {
   }
 
   // Advance the ring buffer.
+  CHECK_LE(result, write_buffer_used_);
+  CHECK_LE(result, write_buffer_->RemainingCapacity());
   write_buffer_->set_offset(write_buffer_->offset() + result);
   write_buffer_used_ -= result;
   if (write_buffer_->RemainingCapacity() == 0)
@@ -309,7 +328,8 @@ void SocketBIOAdapter::HandleSocketWriteResult(int result) {
 }
 
 void SocketBIOAdapter::OnSocketWriteComplete(int result) {
-  DCHECK_EQ(ERR_IO_PENDING, write_error_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(ERR_IO_PENDING, write_error_);
 
   bool was_full = write_buffer_used_ == write_buffer_->capacity();
 
@@ -333,15 +353,17 @@ void SocketBIOAdapter::OnSocketWriteComplete(int result) {
 }
 
 void SocketBIOAdapter::CallOnReadReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (read_result_ == ERR_IO_PENDING)
     delegate_->OnReadReady();
 }
 
 SocketBIOAdapter* SocketBIOAdapter::GetAdapter(BIO* bio) {
-  DCHECK_EQ(&kBIOMethod, bio->method);
-  SocketBIOAdapter* adapter = reinterpret_cast<SocketBIOAdapter*>(bio->ptr);
-  if (adapter)
-    DCHECK_EQ(bio, adapter->bio());
+  SocketBIOAdapter* adapter =
+      reinterpret_cast<SocketBIOAdapter*>(BIO_get_data(bio));
+  if (adapter) {
+    CHECK_EQ(bio, adapter->bio());
+  }
   return adapter;
 }
 
@@ -383,17 +405,16 @@ long SocketBIOAdapter::BIOCtrlWrapper(BIO* bio,
   return 0;
 }
 
-const BIO_METHOD SocketBIOAdapter::kBIOMethod = {
-    0,        // type (unused)
-    nullptr,  // name (unused)
-    SocketBIOAdapter::BIOWriteWrapper,
-    SocketBIOAdapter::BIOReadWrapper,
-    nullptr,  // puts
-    nullptr,  // gets
-    SocketBIOAdapter::BIOCtrlWrapper,
-    nullptr,  // create
-    nullptr,  // destroy
-    nullptr,  // callback_ctrl
-};
+const BIO_METHOD* SocketBIOAdapter::BIOMethod() {
+  static const BIO_METHOD* kMethod = []() {
+    BIO_METHOD* method = BIO_meth_new(0, nullptr);
+    CHECK(method);
+    CHECK(BIO_meth_set_write(method, SocketBIOAdapter::BIOWriteWrapper));
+    CHECK(BIO_meth_set_read(method, SocketBIOAdapter::BIOReadWrapper));
+    CHECK(BIO_meth_set_ctrl(method, SocketBIOAdapter::BIOCtrlWrapper));
+    return method;
+  }();
+  return kMethod;
+}
 
 }  // namespace net

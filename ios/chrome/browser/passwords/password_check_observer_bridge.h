@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // Objective-C protocol mirroring IOSChromePasswordCheckManager::Observer.
 @protocol PasswordCheckObserver <NSObject>

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -94,10 +93,10 @@ void SnapSearchResult::set_visible_range(const gfx::RangeF& range) {
 }
 
 void SnapSearchResult::Clip(float max_snap, float max_visible) {
-  snap_offset_ = base::clamp(snap_offset_, 0.0f, max_snap);
+  snap_offset_ = std::clamp(snap_offset_, 0.0f, max_snap);
   visible_range_ =
-      gfx::RangeF(base::clamp(visible_range_.start(), 0.0f, max_visible),
-                  base::clamp(visible_range_.end(), 0.0f, max_visible));
+      gfx::RangeF(std::clamp(visible_range_.start(), 0.0f, max_visible),
+                  std::clamp(visible_range_.end(), 0.0f, max_visible));
 }
 
 void SnapSearchResult::Union(const SnapSearchResult& other) {
@@ -180,7 +179,7 @@ bool SnapContainerData::FindSnapPosition(
       // we cannot always assume that the incoming value fits this criteria we
       // clamp it to the bounds to ensure this variant.
       SnapSearchResult initial_snap_position_y = {
-          base::clamp(base_position.y(), 0.f, max_position_.y()),
+          std::clamp(base_position.y(), 0.f, max_position_.y()),
           gfx::RangeF(0, max_position_.x())};
       selected_x = FindClosestValidArea(
           SearchAxis::kX, strategy, initial_snap_position_y, active_element_id);
@@ -192,7 +191,7 @@ bool SnapContainerData::FindSnapPosition(
     }
     if (!selected_y) {
       SnapSearchResult initial_snap_position_x = {
-          base::clamp(base_position.x(), 0.f, max_position_.x()),
+          std::clamp(base_position.x(), 0.f, max_position_.x()),
           gfx::RangeF(0, max_position_.y())};
       selected_y = FindClosestValidArea(
           SearchAxis::kY, strategy, initial_snap_position_x, active_element_id);

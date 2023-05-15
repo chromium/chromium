@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/extension_messages.h"
@@ -155,8 +156,8 @@ void RendererStartupHelper::InitializeProcess(
 
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
-  std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
-  if (!webview_partition_id.empty()) {
+  if (WebViewRendererState::GetInstance()->IsGuest(process->GetID())) {
+    std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
     renderer->SetWebViewPartitionID(webview_partition_id);
   }
 
@@ -333,6 +334,26 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
     mojom::Renderer* renderer = GetRenderer(process);
     if (renderer)
       renderer->SetDeveloperMode(in_developer_mode);
+  }
+}
+
+void RendererStartupHelper::SetUserScriptWorldCsp(const Extension& extension,
+                                                  const std::string& csp) {
+  mojom::UserScriptWorldInfoPtr info =
+      mojom::UserScriptWorldInfo::New(extension.id(), csp);
+  for (auto& process_entry : process_mojo_map_) {
+    content::RenderProcessHost* process = process_entry.first;
+    mojom::Renderer* renderer = GetRenderer(process);
+    if (!renderer) {
+      continue;
+    }
+
+    if (!util::IsExtensionVisibleToContext(extension,
+                                           process->GetBrowserContext())) {
+      continue;
+    }
+
+    renderer->UpdateUserScriptWorld(info.Clone());
   }
 }
 

@@ -463,7 +463,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
       alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
              : viz::SinglePlaneFormat::kRGBX_8888,
       size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      usage, gpu::kNullSurfaceHandle);
+      usage, "XRWebGLDrawingBuffer", gpu::kNullSurfaceHandle);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -607,8 +607,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
     // to transferToImageBitmap are made back-to-back, if the framebuffer is
     // incomplete (likely due to a failed buffer allocation), or when the
     // context gets lost.
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size_.width(), size_.height());
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size_.width(), size_.height()));
     return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
   }
 

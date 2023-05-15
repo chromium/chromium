@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -50,6 +51,7 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
@@ -222,11 +224,25 @@ bool GetFirstRunSentinelFilePath(base::FilePath* path) {
   return true;
 }
 
-// Create the first run sentinel file; returns false on failure.
-bool CreateSentinel() {
+// Create the first run sentinel file; returns the status of the operation.
+startup_metric_utils::FirstRunSentinelCreationResult CreateSentinel() {
   base::FilePath first_run_sentinel;
-  return GetFirstRunSentinelFilePath(&first_run_sentinel) &&
-         base::WriteFile(first_run_sentinel, "");
+  if (!GetFirstRunSentinelFilePath(&first_run_sentinel)) {
+    return startup_metric_utils::FirstRunSentinelCreationResult::
+        kFailedToGetPath;
+  }
+
+  if (base::PathExists(first_run_sentinel)) {
+    return startup_metric_utils::FirstRunSentinelCreationResult::
+        kFilePathExists;
+  }
+
+  if (!base::WriteFile(first_run_sentinel, "")) {
+    return startup_metric_utils::FirstRunSentinelCreationResult::
+        kFileSystemError;
+  }
+
+  return startup_metric_utils::FirstRunSentinelCreationResult::kSuccess;
 }
 
 // Reads the creation time of the first run sentinel file. If the first run
@@ -341,8 +357,11 @@ bool IsMetricsReportingOptIn() {
 }
 
 void CreateSentinelIfNeeded() {
-  if (IsChromeFirstRun())
-    CreateSentinel();
+  if (IsChromeFirstRun()) {
+    auto sentinel_creation_result = CreateSentinel();
+    startup_metric_utils::RecordFirstRunSentinelCreation(
+        sentinel_creation_result);
+  }
 
   // Causes the first run sentinel creation time to be read and cached, while
   // I/O is still allowed.

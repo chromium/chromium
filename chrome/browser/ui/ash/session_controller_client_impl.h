@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
@@ -161,14 +162,15 @@ class SessionControllerClientImpl
   void OnStateChanged() override;
 
   // SessionController instance in ash.
-  ash::SessionController* session_controller_ = nullptr;
+  raw_ptr<ash::SessionController, ExperimentalAsh> session_controller_ =
+      nullptr;
 
   // Tracks users whose profiles are being loaded.
   std::set<AccountId> pending_users_;
 
   // If the session is for a supervised user, the profile of that user.
   // Chrome OS only supports a single supervised user in a session.
-  Profile* supervised_user_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> supervised_user_profile_ = nullptr;
 
   base::CallbackListSubscription subscription_;
 

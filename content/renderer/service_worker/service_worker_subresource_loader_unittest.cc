@@ -15,7 +15,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/test/fake_network_url_loader_factory.h"
@@ -33,6 +35,7 @@
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
@@ -554,7 +557,8 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           remote_container_host.InitWithNewPipeAndPassReceiver());
       connector_ = base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(remote_container_host),
-          mojo::NullRemote() /*remote_controller*/, "" /*client_id*/);
+          mojo::NullRemote() /*remote_controller*/, "" /*client_id*/,
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
     }
     mojo::Remote<network::mojom::URLLoaderFactory>
         service_worker_url_loader_factory;
@@ -963,6 +967,71 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, DropController_TooManyRestart) {
     histogram_tester.ExpectTotalCount(
         "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
   }
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest,
+       DropController_RestartFetchEvent_RaceNetworkRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kServiceWorkerBypassFetchHandler,
+      {{"strategy", "opt-in"},
+       {"bypass_for", "all_with_race_network_request"}});
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateSubresourceLoaderFactory();
+
+  {
+    network::ResourceRequest request =
+        CreateRequest(GURL("https://www.example.com/foo.png"));
+    mojo::Remote<network::mojom::URLLoader> loader;
+    std::unique_ptr<network::TestURLLoaderClient> client;
+    StartRequest(factory, request, &loader, &client);
+    fake_controller_.RunUntilFetchEvent();
+
+    EXPECT_EQ(request.url, fake_controller_.fetch_event_request().url);
+    EXPECT_EQ(request.method, fake_controller_.fetch_event_request().method);
+    EXPECT_EQ(1, fake_controller_.fetch_event_count());
+    EXPECT_EQ(1, fake_container_host_.get_controller_service_worker_count());
+  }
+
+  // Loading another resource reuses the existing connection to the
+  // ControllerServiceWorker (i.e. it doesn't increase the get controller
+  // service worker count).
+  {
+    network::ResourceRequest request =
+        CreateRequest(GURL("https://www.example.com/foo2.png"));
+    mojo::Remote<network::mojom::URLLoader> loader;
+    std::unique_ptr<network::TestURLLoaderClient> client;
+    StartRequest(factory, request, &loader, &client);
+    fake_controller_.RunUntilFetchEvent();
+
+    EXPECT_EQ(request.url, fake_controller_.fetch_event_request().url);
+    EXPECT_EQ(request.method, fake_controller_.fetch_event_request().method);
+    EXPECT_EQ(2, fake_controller_.fetch_event_count());
+    EXPECT_EQ(1, fake_container_host_.get_controller_service_worker_count());
+    client->RunUntilComplete();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo3.png"));
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  StartRequest(factory, request, &loader, &client);
+
+  // Drop the connection to the ControllerServiceWorker.
+  fake_controller_.ClearReceivers();
+  base::RunLoop().RunUntilIdle();
+
+  // If connection is closed during fetch event, it's restarted and successfully
+  // finishes.
+  EXPECT_EQ(request.url, fake_controller_.fetch_event_request().url);
+  EXPECT_EQ(request.method, fake_controller_.fetch_event_request().method);
+  EXPECT_EQ(3, fake_controller_.fetch_event_count());
+  EXPECT_EQ(2, fake_container_host_.get_controller_service_worker_count());
+  histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {

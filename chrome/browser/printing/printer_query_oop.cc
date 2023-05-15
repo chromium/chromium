@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_worker_oop.h"
@@ -31,6 +32,29 @@ std::unique_ptr<PrintJobWorker> PrinterQueryOop::TransferContextToNewWorker(
   // supporting OOP system print dialogs.
   return CreatePrintJobWorker(print_job);
 }
+
+#if BUILDFLAG(IS_WIN)
+void PrinterQueryOop::UpdatePrintableArea(
+    PrintSettings* print_settings,
+    OnDidUpdatePrintableAreaCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string printer_name = base::UTF16ToUTF8(print_settings->device_name());
+  PRINTER_LOG(EVENT) << "Updating paper printable area via service for "
+                     << printer_name;
+
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+
+  // Caller is required to ensure `print_settings` stays alive until `callback`
+  // runs.
+  service_mgr.GetPaperPrintableArea(
+      printer_name, print_settings->requested_media(),
+      base::BindOnce(&PrinterQueryOop::OnDidGetPaperPrintableArea,
+                     weak_factory_.GetWeakPtr(), print_settings,
+                     std::move(callback)));
+}
+#endif
 
 void PrinterQueryOop::SetClientId(
     PrintBackendServiceManager::ClientId client_id) {
@@ -220,6 +244,10 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     PRINTER_LOG(ERROR) << "Error updating print settings via service for `"
                        << device_name << "`: " << result;
 
+    // `PrintViewManagerBase` owns the client ID, so `PrinterQueryOop` must not
+    // unregister it.  Just drop any local reference to it.
+    query_with_ui_client_id_.reset();
+
     // TODO(crbug.com/809738)  Fill in support for handling of access-denied
     // result code.
   } else {
@@ -239,6 +267,22 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
   }
   InvokeSettingsCallback(std::move(callback), result);
 }
+
+#if BUILDFLAG(IS_WIN)
+void PrinterQueryOop::OnDidGetPaperPrintableArea(
+    PrintSettings* print_settings,
+    OnDidUpdatePrintableAreaCallback callback,
+    const gfx::Rect& printable_area_um) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (printable_area_um.IsEmpty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  print_settings->UpdatePrinterPrintableArea(printable_area_um);
+  std::move(callback).Run(/*success=*/true);
+}
+#endif
 
 void PrinterQueryOop::SendEstablishPrintingContext(
     PrintBackendServiceManager::ClientId client_id,

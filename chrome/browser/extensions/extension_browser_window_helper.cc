@@ -96,10 +96,6 @@ void ExtensionBrowserWindowHelper::OnExtensionUnloaded(
   // terminated case (as when the extension crashed), we let the sad tabs stay.
   if (reason != extensions::UnloadedExtensionReason::TERMINATE)
     CleanUpTabsOnUnload(extension);
-
-  // If an extension page was active, the toolbar may need to be updated to hide
-  // the extension name in the location icon.
-  browser_->window()->UpdateToolbar(nullptr);
 }
 
 void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(

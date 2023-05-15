@@ -21,7 +21,8 @@ class PrintPreviewUIUntrustedConfig : public content::WebUIConfig {
 
   // content::WebUIConfig:
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 class PrintPreviewUIUntrusted : public ui::UntrustedWebUIController {

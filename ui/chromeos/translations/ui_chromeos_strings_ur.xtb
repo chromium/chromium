@@ -166,7 +166,6 @@
 <translation id="23721837607121582">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">فہرست والے منظر پر سوئچ کریں</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> فولڈرز کا Linux کے ساتھ اشتراک کیا گیا</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> فائلیں منتخب کی گئیں</translation>
 <translation id="2383454254762599978">کوڑے دان میں منتقل کریں</translation>
 <translation id="2387458720915042159">پراکسی کنکشن کی قسم</translation>
 <translation id="2389832672041313158">برمی/میانمار</translation>
@@ -321,6 +320,7 @@
 <translation id="3619593063686672873">حالیہ کوئی ویڈیو نہیں ہے</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> آئٹمز منتقل کیے گئے۔</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> فائلیں منتخب کی گئیں</translation>
 <translation id="3685122418104378273">‏موبائل ڈیٹا استعمال کرتے وقت، Google Drive کی مطابقت پذیری بطور ڈیفالٹ غیر فعال کر دی جاتی ہے۔</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> منسوخ کریں۔</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="CONNECTION_STATUS" />، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی کی تفصیلات</translation>
@@ -471,7 +471,6 @@
 <translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
 <translation id="4826849268470072925">‏تمل ITRANS</translation>
 <translation id="482932175346970750">‏اپنے براؤزر میں <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ٹائپ کریں</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> آئٹمز منتخب کیے گئے</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="485316830061041779">جرمن</translation>
@@ -578,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> تصویر</translation>
 <translation id="5534520101572674276">سائز کو شمار کیا جا رہا ہے</translation>
 <translation id="554153475311314364">يونانی نقل حرفی</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> فولڈرز منتخب کر لیے گئے</translation>
 <translation id="5580591966435005537">ورچوئل مشین</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5583664733673201137">رموز اوقاف کی چوڑائی پوری ہے</translation>
@@ -600,6 +600,7 @@
 <translation id="5724172041621205163">‏تھائی میں Pattachote کی بورڈ</translation>
 <translation id="57383366388012121">گزشتہ ماہ</translation>
 <translation id="5756666464756035725">‏ہنگریائی QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> آئٹمز منتخب ہو گئے</translation>
 <translation id="5763377084591234761">جرمن (سوئٹزر لینڈ)</translation>
 <translation id="5769519078756170258">خارج کرنے کے لیے میزبان یا ڈومین</translation>
 <translation id="5775750595919327203">اردو</translation>
@@ -755,7 +756,6 @@
 <translation id="6989942356279143254">سویڈش</translation>
 <translation id="6990081529015358884">آپ کے پاس جگہ ختم ہو گئی ہے</translation>
 <translation id="6993826899923627728">یہ آئٹمز آپ کے کوڑے دان میں ہیں</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> فولڈرز منتخب کر لیے گئے</translation>
 <translation id="7008426324576352165">آپ کی تنظیم کو اپ لوڈ مکمل کرنے کے لیے مزید اسٹوریج کی ضرورت ہے۔</translation>
 <translation id="7009985720488544166">منتظم کی پالیسی کے تحت، <ph name="COUNT" /> فائلز کو منتقل کرنا مسدود ہے</translation>
 <translation id="7012943028104619157">‎<ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -790,6 +790,7 @@
 <translation id="7252604552361840748">اوپر ایکسٹینشن تلاش کریں</translation>
 <translation id="7256405249507348194">غیر شناخت شدہ خرابی: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">دستیاب سروسز</translation>
+<translation id="7291818353625820805">کلیدوں کو دہرانا چاہتے ہیں؟ کی بورڈ کی ترتیبات میں تلفظ کے نشانات آف کریں</translation>
 <translation id="7292816689782057017">منتظم کی پالیسی کچھ مقامات پر بچت کو محدود کرتی ہے۔</translation>
 <translation id="7294063083760278948">تیلگو نقل حرفی</translation>
 <translation id="7295662345261934369">دوسروں کے ساتھ اشتراک کریں</translation>

@@ -278,8 +278,8 @@ class ElementTrackerViews::WidgetTracker : public WidgetObserver {
     tracker_->widget_trackers_.erase(widget_);
   }
 
-  const base::raw_ptr<ElementTrackerViews> tracker_;
-  const base::raw_ptr<Widget> widget_;
+  const raw_ptr<ElementTrackerViews> tracker_;
+  const raw_ptr<Widget> widget_;
   bool visible_ = false;
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 };

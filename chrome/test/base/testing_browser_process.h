@@ -77,6 +77,10 @@ class TestingBrowserProcess : public BrowserProcess {
   // Convenience method to get g_browser_process as a TestingBrowserProcess*.
   static TestingBrowserProcess* GetGlobal();
 
+  // Convenience method to both teardown and destroy the TestingBrowserProcess
+  // instance
+  static void TearDownAndDeleteInstance();
+
   TestingBrowserProcess(const TestingBrowserProcess&) = delete;
   TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
 
@@ -182,6 +186,9 @@ class TestingBrowserProcess : public BrowserProcess {
 #endif
 
  private:
+  // Perform necessary cleanup prior to destruction of |g_browser_process|
+  static void StartTearDown();
+
   // See CreateInstance() and DestoryInstance() above.
   TestingBrowserProcess();
   ~TestingBrowserProcess() override;

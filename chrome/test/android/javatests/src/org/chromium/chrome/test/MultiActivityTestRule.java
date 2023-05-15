@@ -6,7 +6,7 @@ package org.chromium.chrome.test;
 
 import android.content.Context;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 import org.junit.rules.TestRule;
@@ -61,7 +61,7 @@ public class MultiActivityTestRule implements TestRule {
     }
 
     private void ruleSetUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        mContext = ApplicationProvider.getApplicationContext();
         ChromeApplicationTestUtils.setUp(mContext);
     }
 

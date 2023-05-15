@@ -27,6 +27,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -109,8 +110,8 @@ class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
       event->StopPropagation();
   }
 
-  HoldingSpaceTrayBubble* const bubble_;
-  HoldingSpaceViewDelegate* const delegate_;
+  const raw_ptr<HoldingSpaceTrayBubble, ExperimentalAsh> bubble_;
+  const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
 };
 
 // ChildBubbleContainerLayout --------------------------------------------------
@@ -190,7 +191,7 @@ class ChildBubbleContainerLayout {
       child_layout.child_view->SetBoundsRect(child_layout.bounds);
   }
 
-  views::View* const host_;
+  const raw_ptr<views::View, ExperimentalAsh> host_;
   const int child_spacing_;
 
   // Maximum height restriction for the layout. If zero, it is assumed that

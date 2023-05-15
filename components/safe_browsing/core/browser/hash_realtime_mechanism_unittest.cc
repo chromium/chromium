@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -18,9 +17,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/platform_test.h"
 
-// TODO(crbug.com/1392143): [Also TODO(thefrog)] Migrate these tests to
-// safe_browsing_url_checker_impl_unittest.cc once SafeBrowsingUrlCheckerImpl
-// supports hash-prefix real-time lookups.
+// TODO(crbug.com/1410253): [Also TODO(thefrog)] Delete this whole file when
+// deprecating the experiment. Similarly to url_realtime_mechanism_unittest.cc,
+// these test cases only exist because the hash real-time mechanism returns
+// information used by the experimenter that SafeBrowsingUrlCheckerImpl doesn't
+// need, so it does not make sense for that to be tested within
+// SafeBrowsingUrlCheckerTest.
 
 namespace safe_browsing {
 
@@ -79,10 +81,6 @@ class MockHashRealTimeService : public HashRealTimeService {
   base::WeakPtrFactory<MockHashRealTimeService> weak_factory_{this};
 };
 
-// This is copied from safe_browsing_url_checker_impl_unittest.cc. The tests in
-// this file will be added to that file soon, once SafeBrowsingUrlCheckerImpl
-// supports hash-prefix real-time lookups, at which point this duplicate code
-// will be deleted.
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
@@ -212,49 +210,20 @@ class HashRealTimeMechanismTest : public PlatformTest {
   }
 
   std::unique_ptr<HashRealTimeMechanism> CreateHashRealTimeMechanism(
-      GURL& url,
-      bool can_check_db) {
+      GURL& url) {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
     return std::make_unique<HashRealTimeMechanism>(
         url, SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING}),
-        database_manager_, can_check_db,
-        base::SequencedTaskRunner::GetCurrentDefault(),
+        database_manager_, base::SequencedTaskRunner::GetCurrentDefault(),
         hash_rt_service_->GetWeakPtr(),
         MechanismExperimentHashDatabaseCache::kNoExperiment);
-  }
-
-  void CheckHashRealTimeMetrics(
-      absl::optional<bool> expected_local_match_result,
-      absl::optional<bool> expected_is_service_found) {
-    if (!expected_local_match_result.has_value()) {
-      histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.LocalMatch.Result", /*expected_count=*/0);
-    } else {
-      histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.LocalMatch.Result",
-          /*sample=*/expected_local_match_result.value() ? AsyncMatch::MATCH
-                                                         : AsyncMatch::NO_MATCH,
-          /*expected_bucket_count=*/1);
-    }
-    if (!expected_is_service_found.has_value()) {
-      histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.IsLookupServiceFound",
-          /*expected_count=*/0);
-    } else {
-      histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.IsLookupServiceFound",
-          /*sample=*/expected_is_service_found.value(),
-          /*expected_bucket_count=*/1);
-    }
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   std::unique_ptr<MockHashRealTimeService> hash_rt_service_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_ =
-      std::make_unique<base::HistogramTester>();
 };
 
 MATCHER_P4(Matches,
@@ -271,55 +240,9 @@ MATCHER_P4(Matches,
          arg->url_real_time_lookup_response == nullptr;
 }
 
-TEST_F(HashRealTimeMechanismTest, CanCheckUrl_HashRealTime) {
-  auto can_check_url =
-      [](std::string url,
-         network::mojom::RequestDestination request_destination =
-             network::mojom::RequestDestination::kDocument) {
-        EXPECT_TRUE(GURL(url).is_valid());
-        return HashRealTimeMechanism::CanCheckUrl(GURL(url),
-                                                  request_destination);
-      };
-  // Yes: HTTPS and main-frame URL.
-  EXPECT_TRUE(can_check_url("https://example.test/path"));
-  // Yes: HTTP and main-frame URL.
-  EXPECT_TRUE(can_check_url("http://example.test/path"));
-  // No: It's not a mainframe URL.
-  EXPECT_FALSE(can_check_url("https://example.test/path",
-                             network::mojom::RequestDestination::kFrame));
-  // No: The URL scheme is not HTTP/HTTPS.
-  EXPECT_FALSE(can_check_url("ftp://example.test/path"));
-  // No: It's localhost.
-  EXPECT_FALSE(can_check_url("http://localhost/path"));
-  // No: The host is an IP address, but is not publicly routable.
-  EXPECT_FALSE(can_check_url("http://0.0.0.0"));
-  // Yes: The host is an IP address and is publicly routable.
-  EXPECT_TRUE(can_check_url("http://1.0.0.0"));
-  // No: Hostname does not have at least 1 dot.
-  EXPECT_FALSE(can_check_url("https://example/path"));
-  // No: Hostname does not have at least 3 characters.
-  EXPECT_FALSE(can_check_url("https://e./path"));
-}
-
-TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_CantCheckDb) {
-  GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/false);
-  base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
-      callback;
-  auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_CALL(callback, Run(testing::_)).Times(0);
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
-  EXPECT_EQ(result.is_safe_synchronously, true);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
-
-  task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
-                           /*expected_is_service_found=*/absl::nullopt);
-}
-
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   database_manager_->SetAllowlistResultForUrl(url, true);
@@ -336,13 +259,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
                           /*real_time_request_failed=*/false)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
   database_manager_->SetAllowlistResultForUrl(url, true);
@@ -359,13 +280,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
                           /*real_time_request_failed=*/false)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                         SB_THREAT_TYPE_SAFE,
                                         /*should_fail_lookup=*/false);
@@ -384,13 +303,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
                   /*real_time_request_failed=*/false)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                         SB_THREAT_TYPE_URL_UNWANTED,
                                         /*should_fail_lookup=*/false);
@@ -410,13 +327,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
           /*real_time_request_failed=*/false)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_.reset();
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
@@ -434,13 +349,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
                           /*real_time_request_failed=*/true)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/false);
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, absl::nullopt,
                                         SB_THREAT_TYPE_URL_MALWARE,
                                         /*should_fail_lookup=*/true);
@@ -460,8 +373,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
                           /*real_time_request_failed=*/true)))
       .Times(1);
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
 }
 
 }  // namespace safe_browsing

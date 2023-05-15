@@ -24,6 +24,6 @@ message InfoCardTrackingState {
   optional int64 last_view_timestamp = 6;
 }
 message InfoCardServingInfo {
-  repeated int32 fulfilled_info_card_types = 1;
-  repeated int64 known_info_card_types = 2;
+  repeated int32 fulfilled_info_card_types = 1 [packed = true];
+  repeated int64 known_info_card_types = 2 [packed = true];
 }

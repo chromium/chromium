@@ -12,8 +12,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_session_observer_views.h"
+#include "components/live_caption/caption_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 
 namespace captions {
@@ -85,5 +88,21 @@ CaptionBubbleContextViews::GetCaptionBubbleSessionObserver() {
     return std::move(web_contents_observer_);
 
   return nullptr;
+}
+
+OpenCaptionSettingsCallback
+CaptionBubbleContextViews::GetOpenCaptionSettingsCallback() {
+  // Unretained is safe because the caption bubble context outlives the caption
+  // bubble that uses this callback.
+  return base::BindRepeating(&CaptionBubbleContextViews::OpenCaptionSettings,
+                             base::Unretained(this));
+}
+
+void CaptionBubbleContextViews::OpenCaptionSettings() {
+  content::OpenURLParams params(GURL(GetCaptionSettingsUrl()),
+                                content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  web_contents_->OpenURL(params);
 }
 }  // namespace captions

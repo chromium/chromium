@@ -22,6 +22,7 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -63,8 +64,8 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
-  ShelfView* shelf_view_ = nullptr;
-  ShelfModel* shelf_model_ = nullptr;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfModel, ExperimentalAsh> shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;
 };
 
@@ -257,7 +258,7 @@ class ShelfPartyQsTileTest : public NoSessionAshTestBase {
   FeaturePodButton* qs_tile_button_view() { return qs_tile_button_view_.get(); }
 
  private:
-  ShelfModel* shelf_model_ = nullptr;
+  raw_ptr<ShelfModel, ExperimentalAsh> shelf_model_ = nullptr;
   std::unique_ptr<ShelfPartyFeaturePodController> qs_tile_controller_;
   std::unique_ptr<FeaturePodButton> qs_tile_button_view_;
 };

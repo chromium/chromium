@@ -117,6 +117,11 @@ _disallowed_deps =
       # Ensure WebEngine is not communicating with the Finch service until it
       # is explicitly supported. See crbug.com/1155712.
       "//components/variations/service",
+
+      # WebEngine should use Perfetto instead of libtrace. Vulkan depends on
+      # trace-engine, but there should be no dependencies on trace-provider.
+      "//third_party/fuchsia-sdk/sdk/pkg/trace",
+      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
     ]
 
 source_set("web_engine_export_from_implementation") {
@@ -129,7 +134,7 @@ repack("web_engine_pak") {
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
+    "$root_gen_dir/content/gpu_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
@@ -140,7 +145,7 @@ repack("web_engine_pak") {
   deps = [
     "//components/resources:components_resources",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
+    "//content/browser/resources/gpu:resources",
     "//content/browser/tracing:resources",
     "//gpu/command_buffer/service",
     "//mojo/public/js:resources",
@@ -243,6 +248,7 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings:fuchsia.settings_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx:fuchsia.ui.gfx_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_cpp_hlcpp_conversion",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",

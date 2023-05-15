@@ -58,5 +58,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

@@ -25,8 +25,8 @@ source_set("whats_new") {
     ":feature_flags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser:utils",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
@@ -70,10 +70,10 @@ source_set("util") {
     ":constants",
     ":feature_flags",
     "//base",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
   ]
 }

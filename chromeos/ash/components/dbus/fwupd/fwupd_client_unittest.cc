@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
@@ -273,7 +274,7 @@ class FwupdClientTest : public testing::Test {
   }
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  FwupdClient* fwupd_client_ = nullptr;
+  raw_ptr<FwupdClient, ExperimentalAsh> fwupd_client_ = nullptr;
   std::unique_ptr<FwupdProperties> expected_properties_;
 
  private:

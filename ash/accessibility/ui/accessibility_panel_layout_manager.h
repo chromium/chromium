@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,7 +82,7 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   void UpdateWorkAreaForPanelHeight();
 
   // The panel being managed (e.g. the ChromeVoxPanel's native aura window).
-  aura::Window* panel_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> panel_window_ = nullptr;
 
   // Window bounds when not in fullscreen
   gfx::Rect panel_bounds_ = gfx::Rect(0, 0, 0, 0);

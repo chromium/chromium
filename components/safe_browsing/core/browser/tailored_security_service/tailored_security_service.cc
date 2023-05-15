@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
@@ -45,9 +46,6 @@ namespace safe_browsing {
 namespace {
 
 const int kRepeatingCheckTailoredSecurityBitDelayInMinutes = 5;
-
-constexpr char kAPIScope[] =
-    "https://www.googleapis.com/auth/chrome-safe-browsing";
 
 const char kQueryTailoredSecurityServiceUrl[] =
     "https://history.google.com/history/api/lookup?client=aesb";
@@ -145,7 +143,8 @@ class RequestImpl : public TailoredSecurityService::Request {
     access_token_fetcher_ =
         identity_manager_->CreateAccessTokenFetcherForAccount(
             GetAccountForRequest(identity_manager_),
-            /*oauth_consumer_name=*/"tailored_security_service", {kAPIScope},
+            /*oauth_consumer_name=*/"tailored_security_service",
+            {GaiaConstants::kChromeSafeBrowsingOAuth2Scope},
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
             signin::AccessTokenFetcher::Mode::kImmediate);
@@ -172,7 +171,7 @@ class RequestImpl : public TailoredSecurityService::Request {
     // invalidate the token and try again.
     if (response_code_ == net::HTTP_UNAUTHORIZED && ++auth_retry_count_ <= 1) {
       signin::ScopeSet oauth_scopes;
-      oauth_scopes.insert(kAPIScope);
+      oauth_scopes.insert(GaiaConstants::kChromeSafeBrowsingOAuth2Scope);
       identity_manager_->RemoveAccessTokenFromCache(
           GetAccountForRequest(identity_manager_), oauth_scopes, access_token_);
       access_token_.clear();
@@ -280,8 +279,12 @@ TailoredSecurityService::GetNumberOfPendingTailoredSecurityServiceRequests() {
   return pending_tailored_security_requests_.size();
 }
 
-void TailoredSecurityService::AddQueryRequest() {
+bool TailoredSecurityService::AddQueryRequest() {
   DCHECK(!is_shut_down_);
+  if (!can_query_) {
+    return false;
+  }
+
   active_query_request_++;
   if (active_query_request_ == 1) {
     if (base::Time::Now() - last_updated_ <=
@@ -302,11 +305,12 @@ void TailoredSecurityService::AddQueryRequest() {
           &TailoredSecurityService::QueryTailoredSecurityBit);
     }
   }
+  return true;
 }
 
 void TailoredSecurityService::RemoveQueryRequest() {
   DCHECK(!is_shut_down_);
-  DCHECK(active_query_request_ >= 0);
+  DCHECK_GE(active_query_request_, 0UL);
   active_query_request_--;
   if (active_query_request_ == 0) {
     timer_.Stop();
@@ -322,6 +326,10 @@ void TailoredSecurityService::QueryTailoredSecurityBit() {
 void TailoredSecurityService::StartRequest(
     QueryTailoredSecurityBitCallback callback) {
   DCHECK(!is_shut_down_);
+  if (!can_query_) {
+    saved_callback_ = std::move(callback);
+    return;
+  }
 
   // Wrap the original callback into a generic completion callback.
   CompletionCallback completion_callback =
@@ -463,9 +471,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
   std::unique_ptr<Request> request =
       CreateRequest(url, std::move(completion_callback), traffic_annotation);
 
-  base::Value enable_tailored_security_service(base::Value::Type::DICT);
-  enable_tailored_security_service.SetBoolKey("history_recording_enabled",
-                                              is_enabled);
+  auto enable_tailored_security_service =
+      base::Value::Dict().Set("history_recording_enabled", is_enabled);
   std::string post_data;
   base::JSONWriter::Write(enable_tailored_security_service, &post_data);
   request->SetPostData(post_data);
@@ -500,6 +507,17 @@ void TailoredSecurityService::Shutdown() {
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TailoredSecurityService::SetCanQuery(bool can_query) {
+  can_query_ = can_query;
+  if (can_query) {
+    if (!saved_callback_.is_null()) {
+      StartRequest(std::move(saved_callback_));
+    }
+  } else {
+    timer_.Stop();
+  }
 }
 
 }  // namespace safe_browsing

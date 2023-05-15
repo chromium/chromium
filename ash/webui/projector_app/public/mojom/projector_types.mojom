@@ -37,3 +37,62 @@ struct NewScreencastPrecondition {
     NewScreencastPreconditionState state;
     array<NewScreencastPreconditionReason> reasons;
 };
+
+// The pending screencast that is currently being uploaded to
+// Google Drive through DrifeFs. Sent from the browser process to
+// the Javascript world.
+struct PendingScreencast {
+    // The display name of screencast. If `container_dir` is
+    // "/root/projector_data/abc", the `name` is "abc".
+    string name;
+    // The upload progress of the pending screencast.
+    uint32 upload_progress;
+    // The media file created time.
+    double created_time;
+    // True after observing
+    // drivefs::mojom::DriveError::kCantUploadStorageFull for
+    // the first time. Screencast's status might go through
+    // error -> uploading -> error -> ... -> uploaded,
+    // but it will display the error state until
+    // successfully uploaded to avoid over commnucation with user.
+    bool upload_failed;
+};
+
+enum PrefsThatProjectorCanAskFor {
+    kProjectorCreationFlowEnabled = 0,
+    kProjectorExcludeTranscriptDialogShown = 1,
+    kProjectorViewerOnboardingShowCount = 2,
+    kProjectorGalleryOnboardingShowCount = 3,
+};
+
+// The error code for the XhrResponse.
+enum XhrResponseCode {
+    kSuccess = 0,
+    kTokenFetchFailure = 1,
+    kXhrFetchFailure = 2,
+    kUnsupportedURL = 3,
+    kInvalidAccountEmail = 4,
+};
+
+// XhrResponse sent from the browser process the JS WebUI.
+struct XhrResponse {
+    string response;
+    XhrResponseCode response_code;
+};
+
+// The HTTP request type that comes from the JS WebUI.
+enum RequestType {
+    kPost = 0,
+    kGet = 1,
+    kPatch = 2,
+};
+
+// Sent from the browser to the JS WebUI to provide information
+// about the account.
+struct Account {
+    // The associated email address.
+    string email;
+
+    // Whether the account is the primary user account.
+    bool is_primary_user;
+};

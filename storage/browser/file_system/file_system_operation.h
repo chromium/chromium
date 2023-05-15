@@ -356,7 +356,7 @@ class FileSystemOperation {
   // the metadata of the file itself (as well as GetMetadata does),
   // while in remote filesystem case the backend may want to download the file
   // into a temporary snapshot file and return the metadata of the
-  // temporary file.  Or if the implementaiton already has the local cache
+  // temporary file.  Or if the implementation already has the local cache
   // data for |path| it can simply return the path to the cache.
   virtual void CreateSnapshotFile(const FileSystemURL& path,
                                   SnapshotFileCallback callback) = 0;

@@ -21,7 +21,8 @@ interface SafeArchiveAnalyzer {
 
   // Build flag FULL_SAFE_BROWSING, on OS_MAC: Analyze the |dmg_file|
   // for malicious download protection.
-  AnalyzeDmgFile(mojo_base.mojom.ReadOnlyFile dmg_file)
+  AnalyzeDmgFile(mojo_base.mojom.ReadOnlyFile dmg_file,
+                 pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
   // Build flag FULL_SAFE_BROWSING: Analyze the |rar_file| for malicious

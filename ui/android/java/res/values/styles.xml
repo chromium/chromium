@@ -89,6 +89,9 @@ found in the LICENSE file.
     <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
+    <style name="TextAppearance.Headline2Thick" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textSize">@dimen/headline2_size</item>
+    </style>
     <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>

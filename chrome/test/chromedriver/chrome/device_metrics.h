@@ -8,16 +8,17 @@
 struct DeviceMetrics {
   DeviceMetrics(int width, int height, double device_scale_factor, bool touch,
                 bool mobile);
-  ~DeviceMetrics();
+  DeviceMetrics() = default;
+  DeviceMetrics(const DeviceMetrics&) = default;
+  ~DeviceMetrics() = default;
 
-  int width;
-  int height;
-  double device_scale_factor;
-  bool touch;
-  bool mobile;
-  bool fit_window;
-  bool text_autosizing;
-  double font_scale_factor;
+  DeviceMetrics& operator=(const DeviceMetrics&) = default;
+
+  int width = 0;
+  int height = 0;
+  double device_scale_factor = 0;
+  bool touch = true;
+  bool mobile = true;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVICE_METRICS_H_

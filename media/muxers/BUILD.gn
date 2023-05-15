@@ -11,12 +11,20 @@ source_set("muxers") {
   visibility = [ "//media" ]
 
   sources = [
+    "box_byte_stream.cc",
+    "box_byte_stream.h",
     "file_webm_muxer_delegate.cc",
     "file_webm_muxer_delegate.h",
     "live_webm_muxer_delegate.cc",
     "live_webm_muxer_delegate.h",
+    "mp4_box_writer.cc",
+    "mp4_box_writer.h",
+    "mp4_movie_box_writer.cc",
+    "mp4_movie_box_writer.h",
     "mp4_muxer_context.cc",
     "mp4_muxer_context.h",
+    "mp4_type_conversion.cc",
+    "mp4_type_conversion.h",
     "muxer.cc",
     "muxer.h",
     "output_position_tracker.cc",
@@ -39,7 +47,10 @@ source_set("muxers") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "box_byte_stream_unittest.cc",
+    "mp4_muxer_box_writer_unittest.cc",
     "mp4_muxer_context_unittest.cc",
+    "mp4_type_conversion_unittest.cc",
     "output_position_tracker_unittest.cc",
     "webm_muxer_unittest.cc",
   ]

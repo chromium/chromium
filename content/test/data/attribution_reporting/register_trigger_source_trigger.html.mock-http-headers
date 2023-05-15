@@ -1,5 +1,0 @@
-HTTP/1.1 301 Moved Permanently
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Headers: *
-Attribution-Reporting-Register-Trigger:{"event_trigger_data":[{"trigger_data": "5"}]}
-Location: /register_source_trigger_redirect_chain.html

@@ -6,9 +6,14 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/range/range.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace mojo {
 
@@ -16,7 +21,7 @@ ui::mojom::blink::AttributedStringPtr
 TypeConverter<ui::mojom::blink::AttributedStringPtr, CFAttributedStringRef>::
     Convert(CFAttributedStringRef cf_attributed_string) {
   NSAttributedString* ns_attributed_string =
-      base::mac::CFToNSCast(cf_attributed_string);
+      base::apple::CFToNSPtrCast(cf_attributed_string);
 
   // Create the return value.
   ui::mojom::blink::AttributedStringPtr attributed_string =

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -138,7 +139,7 @@ class ArcDlcInstallerTest : public testing::Test {
     return dlc_list;
   }
 
-  ash::FakeDlcserviceClient* fake_dlc_client_;
+  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlc_client_;
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 };

@@ -84,6 +84,82 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       /*set_mean_function=*/&UkmEntry::SetMeanGenerateSingleBidLatencyInMillis,
       /*set_max_function=*/&UkmEntry::SetMaxGenerateSingleBidLatencyInMillis);
 
+  MaybeSetMeanAndMaxLatency(
+      generate_bid_code_ready_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidCodeReadyLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxGenerateBidCodeReadyLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      generate_bid_config_promises_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidConfigPromisesLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxGenerateBidConfigPromisesLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      generate_bid_direct_from_seller_signals_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidDirectFromSellerSignalsLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxGenerateBidDirectFromSellerSignalsLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      generate_bid_trusted_bidding_signals_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidTrustedBiddingSignalsLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxGenerateBidTrustedBiddingSignalsLatencyInMillis);
+
+  SetNumAndMaybeMeanLatency(
+      generate_bid_code_ready_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumGenerateBidCodeReadyOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidCodeReadyCriticalPathLatencyInMillis);
+  SetNumAndMaybeMeanLatency(
+      generate_bid_config_promises_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumGenerateBidConfigPromisesOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanGenerateBidConfigPromisesCriticalPathLatencyInMillis);
+  SetNumAndMaybeMeanLatency(
+      generate_bid_direct_from_seller_signals_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumGenerateBidDirectFromSellerSignalsOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::
+          SetMeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillis);
+  SetNumAndMaybeMeanLatency(
+      generate_bid_trusted_bidding_signals_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumGenerateBidTrustedBiddingSignalsOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::
+          SetMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillis);
+
+  SetNumAndMaybeMeanLatency(
+      top_level_bid_queued_waiting_for_config_promises_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumTopLevelBidsQueuedWaitingForConfigPromises,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillis);
+  SetNumAndMaybeMeanLatency(
+      top_level_bid_queued_waiting_for_seller_worklet_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumTopLevelBidsQueuedWaitingForSellerWorklet,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillis);
+
+  SetNumAndMaybeMeanLatency(
+      bid_queued_waiting_for_config_promises_aggregator_,
+      /*set_num_function=*/&UkmEntry::SetNumBidsQueuedWaitingForConfigPromises,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeBidsQueuedWaitingForConfigPromisesInMillis);
+  SetNumAndMaybeMeanLatency(
+      bid_queued_waiting_for_seller_worklet_aggregator_,
+      /*set_num_function=*/&UkmEntry::SetNumBidsQueuedWaitingForSellerWorklet,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeBidsQueuedWaitingForSellerWorkletInMillis);
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -182,6 +258,57 @@ void AuctionMetricsRecorder::RecordGenerateSingleBidLatency(
   generate_single_bid_latency_aggregator_.RecordLatency(latency);
 }
 
+void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencies(
+    const auction_worklet::mojom::GenerateBidDependencyLatencies&
+        generate_bid_dependency_latencies) {
+  GenerateBidDependencyCriticalPath critical_path;
+
+  MaybeRecordGenerateBidDependencyLatency(
+      GenerateBidDependencyCriticalPath::Dependency::kCodeReady,
+      generate_bid_dependency_latencies.code_ready_latency,
+      generate_bid_code_ready_latency_aggregator_, critical_path);
+
+  MaybeRecordGenerateBidDependencyLatency(
+      GenerateBidDependencyCriticalPath::Dependency::kConfigPromises,
+      generate_bid_dependency_latencies.config_promises_latency,
+      generate_bid_config_promises_latency_aggregator_, critical_path);
+
+  MaybeRecordGenerateBidDependencyLatency(
+      GenerateBidDependencyCriticalPath::Dependency::kDirectFromSellerSignals,
+      generate_bid_dependency_latencies.direct_from_seller_signals_latency,
+      generate_bid_direct_from_seller_signals_latency_aggregator_,
+      critical_path);
+
+  MaybeRecordGenerateBidDependencyLatency(
+      GenerateBidDependencyCriticalPath::Dependency::kTrustedBiddingSignals,
+      generate_bid_dependency_latencies.trusted_bidding_signals_latency,
+      generate_bid_trusted_bidding_signals_latency_aggregator_, critical_path);
+
+  RecordGenerateBidDependencyLatencyCriticalPath(critical_path);
+}
+
+void AuctionMetricsRecorder::RecordTopLevelBidQueuedWaitingForConfigPromises(
+    base::TimeDelta delay) {
+  top_level_bid_queued_waiting_for_config_promises_aggregator_.RecordLatency(
+      delay);
+}
+
+void AuctionMetricsRecorder::RecordTopLevelBidQueuedWaitingForSellerWorklet(
+    base::TimeDelta delay) {
+  top_level_bid_queued_waiting_for_seller_worklet_aggregator_.RecordLatency(
+      delay);
+}
+
+void AuctionMetricsRecorder::RecordBidQueuedWaitingForConfigPromises(
+    base::TimeDelta delay) {
+  bid_queued_waiting_for_config_promises_aggregator_.RecordLatency(delay);
+}
+
+void AuctionMetricsRecorder::RecordBidQueuedWaitingForSellerWorklet(
+    base::TimeDelta delay) {
+  bid_queued_waiting_for_seller_worklet_aggregator_.RecordLatency(delay);
+}
+
 void AuctionMetricsRecorder::LatencyAggregator::RecordLatency(
     base::TimeDelta latency) {
   // Negative latencies are meaningless; don't record them at all.
@@ -219,6 +346,68 @@ void AuctionMetricsRecorder::MaybeSetMeanAndMaxLatency(
     base::invoke(set_max_function, builder_,
                  GetSemanticBucketMinForDurationTiming(
                      aggregator.GetMaxLatency().InMilliseconds()));
+  }
+}
+
+void AuctionMetricsRecorder::SetNumAndMaybeMeanLatency(
+    AuctionMetricsRecorder::LatencyAggregator& aggregator,
+    EntrySetFunction set_num_function,
+    EntrySetFunction set_mean_function) {
+  base::invoke(
+      set_num_function, builder_,
+      GetExponentialBucketMinForCounts1000(aggregator.GetNumRecords()));
+  if (aggregator.GetNumRecords() > 0) {
+    base::invoke(set_mean_function, builder_,
+                 GetSemanticBucketMinForDurationTiming(
+                     aggregator.GetMeanLatency().InMilliseconds()));
+  }
+}
+
+void AuctionMetricsRecorder::MaybeRecordGenerateBidDependencyLatency(
+    GenerateBidDependencyCriticalPath::Dependency dependency,
+    absl::optional<base::TimeDelta> latency,
+    LatencyAggregator& aggregator,
+    GenerateBidDependencyCriticalPath& critical_path) {
+  if (latency) {
+    aggregator.RecordLatency(*latency);
+    if (*latency >= critical_path.last_resolved_dependency_latency) {
+      critical_path.last_resolved_dependency = dependency;
+      critical_path.penultimate_resolved_dependency_latency =
+          critical_path.last_resolved_dependency_latency;
+      critical_path.last_resolved_dependency_latency = *latency;
+    } else if (*latency >
+               critical_path.penultimate_resolved_dependency_latency) {
+      critical_path.penultimate_resolved_dependency_latency = *latency;
+    }
+  }
+}
+
+void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencyCriticalPath(
+    GenerateBidDependencyCriticalPath& critical_path) {
+  if (!critical_path.last_resolved_dependency.has_value()) {
+    return;
+  }
+  base::TimeDelta critical_path_latency =
+      critical_path.last_resolved_dependency_latency -
+      critical_path.penultimate_resolved_dependency_latency;
+  using Dependency = GenerateBidDependencyCriticalPath::Dependency;
+  switch (*critical_path.last_resolved_dependency) {
+    case Dependency::kCodeReady:
+      generate_bid_code_ready_critical_path_aggregator_.RecordLatency(
+          critical_path_latency);
+      break;
+    case Dependency::kConfigPromises:
+      generate_bid_config_promises_critical_path_aggregator_.RecordLatency(
+          critical_path_latency);
+      break;
+    case Dependency::kDirectFromSellerSignals:
+      generate_bid_direct_from_seller_signals_critical_path_aggregator_
+          .RecordLatency(critical_path_latency);
+      break;
+    case Dependency::kTrustedBiddingSignals:
+      generate_bid_trusted_bidding_signals_critical_path_aggregator_
+          .RecordLatency(critical_path_latency);
+      break;
   }
 }
 

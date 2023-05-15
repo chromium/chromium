@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SETTINGS_OWNER_PENDING_SETTING_CONTROLLER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -111,7 +112,7 @@ class OwnerPendingSettingController
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
   absl::optional<base::Value> value_notified_to_observers_;
   base::RepeatingClosureList callback_list_;
   base::CallbackListSubscription setting_subscription_;

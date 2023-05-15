@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_CONFIGURATION_HANDLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -86,7 +87,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
 
   absl::optional<base::Value::Dict> hotspot_config_;
 
-  HotspotController* hotspot_controller_ = nullptr;
+  raw_ptr<HotspotController, ExperimentalAsh> hotspot_controller_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotConfigurationHandler> weak_ptr_factory_{this};

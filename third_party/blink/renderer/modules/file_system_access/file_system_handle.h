@@ -61,7 +61,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise isSameEntry(ScriptState*,
                             FileSystemHandle* other,
                             ExceptionState&);
-  ScriptPromise getUniqueId(ScriptState*);
+  ScriptPromise getUniqueId(ScriptState*, ExceptionState&);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
   // if the context is already destroyed.
@@ -90,7 +90,8 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               bool)>) = 0;
   virtual void GetUniqueIdImpl(
-      base::OnceCallback<void(const WTF::String&)>) = 0;
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                              const WTF::String&)>) = 0;
 
   String name_;
 };

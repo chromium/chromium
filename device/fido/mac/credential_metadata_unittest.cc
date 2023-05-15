@@ -9,9 +9,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 namespace {
 
 bool MetadataEq(const CredentialMetadata& lhs, const CredentialMetadata& rhs) {
@@ -199,6 +197,4 @@ TEST(CredentialMetadata, ToPublicKeyCredentialUserEntity) {
 }
 
 }  // namespace
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

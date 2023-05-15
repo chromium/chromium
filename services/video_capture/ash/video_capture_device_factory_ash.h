@@ -30,7 +30,7 @@ class VideoCaptureDeviceFactoryAsh
     : public crosapi::mojom::VideoCaptureDeviceFactory {
  public:
   explicit VideoCaptureDeviceFactoryAsh(
-      raw_ptr<video_capture::DeviceFactory> device_factory);
+      video_capture::DeviceFactory* device_factory);
   VideoCaptureDeviceFactoryAsh(const VideoCaptureDeviceFactoryAsh&) = delete;
   VideoCaptureDeviceFactoryAsh& operator=(const VideoCaptureDeviceFactoryAsh&) =
       delete;

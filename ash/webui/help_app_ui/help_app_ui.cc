@@ -13,12 +13,10 @@
 #include "ash/webui/help_app_ui/help_app_page_handler.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
-#include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/types.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
@@ -36,13 +34,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUIHelpAppHost);
 
-  // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
-  // no longer needed.
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_DARK_LIGHT_HTML);
-  } else {
-    source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_HTML);
-  }
+  source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_DARK_LIGHT_HTML);
   source->AddResourcePath("app_icon_192.png", IDR_HELP_APP_ICON_192);
   source->AddResourcePath("app_icon_512.png", IDR_HELP_APP_ICON_512);
   source->AddResourcePath("browser_proxy.js", IDR_HELP_APP_BROWSER_PROXY_JS);
@@ -83,6 +75,9 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                         });
 
   if (MaybeConfigureTestableDataSource(host_source)) {
+    host_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src chrome://resources chrome://webui-test 'self';");
     host_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::TrustedTypes,
         std::string("trusted-types test-harness;"));

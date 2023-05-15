@@ -35,6 +35,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace global_media_controls {
 
 namespace {
@@ -84,12 +88,13 @@ MediaItemUIView::MediaItemUIView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     std::unique_ptr<MediaItemUIFooter> footer_view,
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-    absl::optional<media_message_center::NotificationTheme> theme,
+    absl::optional<media_message_center::NotificationTheme> notification_theme,
+    absl::optional<media_message_center::MediaColorTheme> media_color_theme,
     absl::optional<media_message_center::MediaDisplayPage> media_display_page)
     : views::Button(base::BindRepeating(&MediaItemUIView::ContainerClicked,
                                         base::Unretained(this))),
       id_(id),
-      is_cros_(theme.has_value()) {
+      has_notification_theme_(notification_theme.has_value()) {
   DCHECK(item);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -100,11 +105,12 @@ MediaItemUIView::MediaItemUIView(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // The updated UI requires notification theme to be set while the toolbar
+  // The updated UI requires media color theme to be set while the toolbar
   // media button does not provide it, so we need to verify the source display
   // page is from the quick settings.
   bool use_cros_updated_ui =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
+      chromeos::features::IsJellyrollEnabled() &&
       media_display_page.has_value();
 #else
   bool use_cros_updated_ui = false;
@@ -122,12 +128,13 @@ MediaItemUIView::MediaItemUIView(
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {
-    DCHECK(theme.has_value());
+    DCHECK(media_color_theme.has_value());
     view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
-        this, std::move(item), theme.value(), media_display_page.value());
+        this, std::move(item), media_color_theme.value(),
+        media_display_page.value());
   } else {
     gfx::Size dismiss_button_size =
-        is_cros_ ? kCrOSDismissButtonSize : kDismissButtonSize;
+        has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
       dismiss_button_size = kModernDismissButtonSize;
     }
@@ -159,16 +166,17 @@ MediaItemUIView::MediaItemUIView(
         std::make_unique<views::SlideOutController>(this, this);
 
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
-      footer_view_ = footer_view_.get();
+      footer_view_ = footer_view.get();
       view = std::make_unique<
           media_message_center::MediaNotificationViewModernImpl>(
           this, std::move(item), std::move(dismiss_button_placeholder),
-          std::move(footer_view), kModernUIWidth, theme);
+          std::move(footer_view), kModernUIWidth, notification_theme);
       SetPreferredSize(kModernUISize);
     } else {
       view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
           this, std::move(item), std::move(dismiss_button_placeholder),
-          std::u16string(), kWidth, /*should_show_icon=*/false, theme);
+          std::u16string(), kWidth, /*should_show_icon=*/false,
+          notification_theme);
 
       UpdateFooterView(std::move(footer_view));
       SetPreferredSize(kNormalSize);
@@ -380,8 +388,8 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
     return;
   }
 
-  int icon_size =
-      is_cros_ ? kCrOSDismissButtonIconSize : kDismissButtonIconSize;
+  int icon_size = has_notification_theme_ ? kCrOSDismissButtonIconSize
+                                          : kDismissButtonIconSize;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
     icon_size = kModernDismissButtonIconSize;
 

@@ -47,6 +47,37 @@ std::vector<std::pair<std::string, std::string>> MakeHeaderPairs(
   return result;
 }
 
+class RequestTrustedParamsBuilder {
+ public:
+  RequestTrustedParamsBuilder() = default;
+  ~RequestTrustedParamsBuilder() = default;
+
+  RequestTrustedParamsBuilder& WithClientSecurityState(
+      mojom::ClientSecurityStatePtr client_security_state) {
+    params_.client_security_state = std::move(client_security_state);
+    return *this;
+  }
+
+  // Convenience shortcut for a default `ClientSecurityState` with a `policy`.
+  RequestTrustedParamsBuilder& WithLocalNetworkRequestPolicy(
+      mojom::LocalNetworkRequestPolicy policy) {
+    return WithClientSecurityState(ClientSecurityStateBuilder()
+                                       .WithLocalNetworkRequestPolicy(policy)
+                                       .Build());
+  }
+
+  RequestTrustedParamsBuilder& WithDevToolsObserver(
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer) {
+    params_.devtools_observer = std::move(devtools_observer);
+    return *this;
+  }
+
+  ResourceRequest::TrustedParams Build() const { return params_; }
+
+ private:
+  ResourceRequest::TrustedParams params_;
+};
+
 class CorsURLLoaderPrivateNetworkAccessTest : public CorsURLLoaderTestBase {};
 
 TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpaceSimple) {
@@ -246,7 +277,6 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
-      {"Access-Control-Allow-Methods", "PUT"},
       {"Access-Control-Allow-Origin", "https://foo.example"},
       {"Access-Control-Allow-Credentials", "true"},
   });
@@ -257,6 +287,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
 
+  // Even though `Access-Control-Allow-Methods` is also missing, the PNA header
+  // missing is noticed first. See https://crbug.com/1424847.
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
   expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
@@ -606,6 +638,88 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, RedirectAfterPreflight) {
       mojom::PrivateNetworkAccessPreflightResult::kNone);
 }
 
+// Regression test for https://crbug.com/1432684.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
+       RedirectAfterPnaOnlyWarningPreflight) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator_origin;
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .Build();
+
+  CreateLoaderAndStart(request);
+
+  // Private network request.
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
+
+  // Private Network Access preflight.
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse({
+      {"Access-Control-Allow-Methods", "PUT"},
+      {"Access-Control-Allow-Origin", "https://example.com"},
+      {"Access-Control-Allow-Credentials", "true"},
+      {"Access-Control-Allow-Private-Network", "true"},
+  });
+  NotifyLoaderClientOnComplete(net::OK);
+
+  // Actual request.
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ(GetRequest().method, "PUT");
+
+  // Redirect.
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(302, "PUT", GURL("https://other.example")));
+  RunUntilRedirectReceived();
+
+  // The preflight is reported correctly.
+  EXPECT_EQ(client().response_head()->private_network_access_preflight_result,
+            mojom::PrivateNetworkAccessPreflightResult::kSuccess);
+
+  FollowRedirect();
+
+  // CORS preflight.
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  // Preflight response is missing CORS headers.
+  // Due to https://crbug.com/1432684, `CorsURLLoader` used to encounter a CHECK
+  // failure at this point.
+  NotifyLoaderClientOnReceiveResponse();
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kUnknown,
+                  network::mojom::IPAddressSpace::kUnknown)));
+
+  // No PNA preflight reported for the redirected request, since the preflight
+  // was CORS-only.
+  EXPECT_EQ(
+      client().completion_status().private_network_access_preflight_result,
+      mojom::PrivateNetworkAccessPreflightResult::kNone);
+}
+
 // This test verifies that PNA preflight results are cached per target IP
 // address space.
 TEST_F(CorsURLLoaderPrivateNetworkAccessTest, CachesPreflightResult) {
@@ -719,37 +833,6 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, DoesNotShareCache) {
   // Second preflight request.
   EXPECT_EQ(GetRequest().method, "OPTIONS");
 }
-
-class RequestTrustedParamsBuilder {
- public:
-  RequestTrustedParamsBuilder() = default;
-  ~RequestTrustedParamsBuilder() = default;
-
-  RequestTrustedParamsBuilder& WithClientSecurityState(
-      mojom::ClientSecurityStatePtr client_security_state) {
-    params_.client_security_state = std::move(client_security_state);
-    return *this;
-  }
-
-  // Convenience shortcut for a default `ClientSecurityState` with a `policy`.
-  RequestTrustedParamsBuilder& WithLocalNetworkRequestPolicy(
-      mojom::LocalNetworkRequestPolicy policy) {
-    return WithClientSecurityState(ClientSecurityStateBuilder()
-                                       .WithLocalNetworkRequestPolicy(policy)
-                                       .Build());
-  }
-
-  RequestTrustedParamsBuilder& WithDevToolsObserver(
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer) {
-    params_.devtools_observer = std::move(devtools_observer);
-    return *this;
-  }
-
-  ResourceRequest::TrustedParams Build() const { return params_; }
-
- private:
-  ResourceRequest::TrustedParams params_;
-};
 
 // The following `PrivateNetworkAccessPolicyWarn*` tests verify the correct
 // functioning of the `kPreflightWarn` private network request policy. That is,

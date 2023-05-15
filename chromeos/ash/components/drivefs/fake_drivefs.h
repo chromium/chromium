@@ -65,7 +65,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                    const mojom::Capabilities& capabilities,
                    const mojom::FolderFeature& folder_feature,
                    const std::string& doc_id,
-                   const std::string& alternate_url);
+                   const std::string& alternate_url,
+                   bool shortcut);
 
   void DisplayConfirmDialog(
       drivefs::mojom::DialogReasonPtr reason,
@@ -92,6 +93,24 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       (drivefs::mojom::DriveFs::GetOfflineFilesSpaceUsageCallback callback),
       (override));
 
+  MOCK_METHOD(void,
+              ImmediatelyUpload,
+              (const base::FilePath& path,
+               drivefs::mojom::DriveFs::ImmediatelyUploadCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              UpdateFromPairedDoc,
+              (const base::FilePath& path,
+               drivefs::mojom::DriveFs::UpdateFromPairedDocCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              GetItemFromCloudStore,
+              (const base::FilePath& path,
+               drivefs::mojom::DriveFs::GetItemFromCloudStoreCallback callback),
+              (override));
+
   const base::FilePath& mount_path() { return mount_path_; }
 
   absl::optional<bool> IsItemPinned(const std::string& path);
@@ -113,6 +132,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     std::string doc_id;
     int64_t stable_id = 0;
     std::string alternate_url;
+    bool shortcut = false;
   };
 
   absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(
@@ -209,6 +229,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void SetDocsOfflineEnabled(
       bool enabled,
       drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) override;
+
+  void ClearOfflineFiles(
+      drivefs::mojom::DriveFs::ClearOfflineFilesCallback) override;
 
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;

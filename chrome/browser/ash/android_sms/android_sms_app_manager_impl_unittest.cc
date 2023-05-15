@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -166,7 +167,7 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
   std::unique_ptr<FakeAndroidSmsAppSetupController>
       fake_android_sms_app_setup_controller_;
 
-  TestPwaDelegate* test_pwa_delegate_;
+  raw_ptr<TestPwaDelegate, ExperimentalAsh> test_pwa_delegate_;
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<AndroidSmsAppManagerImpl> android_sms_app_manager_;

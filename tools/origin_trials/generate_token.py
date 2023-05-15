@@ -8,8 +8,8 @@
 usage: generate_token.py [-h] [--key-file KEY_FILE]
                          [--expire-days EXPIRE_DAYS |
                           --expire-timestamp EXPIRE_TIMESTAMP]
-                         [--is_subdomain | --no-subdomain]
-                         [--is_third-party | --no-third-party]
+                         [--is-subdomain | --no-subdomain]
+                         [--is-third-party | --no-third-party]
                          [--usage-restriction USAGE_RESTRICTION]
                          --version=VERSION
                          origin trial_name

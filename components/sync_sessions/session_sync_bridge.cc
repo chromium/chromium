@@ -129,7 +129,7 @@ SessionSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> SessionSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(!syncing_);
@@ -137,8 +137,8 @@ absl::optional<syncer::ModelError> SessionSyncBridge::MergeSyncData(
 
   StartLocalSessionEventHandler();
 
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
 void SessionSyncBridge::StartLocalSessionEventHandler() {
@@ -173,7 +173,8 @@ void SessionSyncBridge::StartLocalSessionEventHandler() {
   notify_foreign_session_updated_cb_.Run();
 }
 
-absl::optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+SessionSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -345,8 +346,8 @@ void SessionSyncBridge::OnSyncStarting(
   // |store_| may be already initialized if sync was previously started and
   // then stopped.
   if (store_) {
-    // If initial sync was already done, MergeSyncData() will never be called so
-    // we need to start syncing local changes.
+    // If initial sync was already done, MergeFullSyncData() will never be
+    // called so we need to start syncing local changes.
     if (change_processor()->IsTrackingMetadata()) {
       StartLocalSessionEventHandler();
     }
@@ -377,8 +378,8 @@ void SessionSyncBridge::OnStoreInitialized(
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // If initial sync was already done, MergeSyncData() will never be called so
-  // we need to start syncing local changes.
+  // If initial sync was already done, MergeFullSyncData() will never be called
+  // so we need to start syncing local changes.
   if (change_processor()->IsTrackingMetadata()) {
     StartLocalSessionEventHandler();
   }

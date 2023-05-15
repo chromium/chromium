@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -171,7 +172,8 @@ class FakeFastInitiationAdvertiserFactory
   }
 
  private:
-  FakeFastInitiationAdvertiser* last_fake_fast_initiation_advertiser_ = nullptr;
+  raw_ptr<FakeFastInitiationAdvertiser, ExperimentalAsh>
+      last_fake_fast_initiation_advertiser_ = nullptr;
   bool should_succeed_on_start_ = false;
   bool stop_advertising_called_ = false;
   bool fast_initiation_advertiser_destroyed_ = false;
@@ -243,7 +245,8 @@ class FakeFastInitiationScannerFactory : public FastInitiationScanner::Factory {
  private:
   void OnScannerDestroyed() { ++scanner_destroyed_count_; }
 
-  FakeFastInitiationScanner* last_fake_fast_initiation_scanner_ = nullptr;
+  raw_ptr<FakeFastInitiationScanner, ExperimentalAsh>
+      last_fake_fast_initiation_scanner_ = nullptr;
   size_t scanner_created_count_ = 0u;
   size_t scanner_destroyed_count_ = 0u;
   bool is_hardware_support_available_ = true;
@@ -615,7 +618,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     wifi_network_handler_ = wifi_network_handler.get();
     auto service = std::make_unique<NearbySharingServiceImpl>(
         &prefs_, notification_display_service, profile_,
-        base::WrapUnique(fake_nearby_connections_manager_),
+        base::WrapUnique(fake_nearby_connections_manager_.get()),
         &mock_nearby_process_manager_, std::move(power_client),
         std::move(wifi_network_handler));
 
@@ -1514,11 +1517,13 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  FakeNearbyConnectionsManager* fake_nearby_connections_manager_ = nullptr;
-  FakePowerClient* power_client_ = nullptr;
-  FakeWifiNetworkConfigurationHandler* wifi_network_handler_ = nullptr;
+  raw_ptr<FakeNearbyConnectionsManager, ExperimentalAsh>
+      fake_nearby_connections_manager_ = nullptr;
+  raw_ptr<FakePowerClient, ExperimentalAsh> power_client_ = nullptr;
+  raw_ptr<FakeWifiNetworkConfigurationHandler, ExperimentalAsh>
+      wifi_network_handler_ = nullptr;
   FakeNearbyShareLocalDeviceDataManager::Factory
       local_device_data_manager_factory_;
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
@@ -1536,10 +1541,12 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_support_state_;
-  device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
+  raw_ptr<device::BluetoothAdapter::Observer, ExperimentalAsh>
+      adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
-  device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
+  raw_ptr<device::MockBluetoothLowEnergyScanSession, ExperimentalAsh>
+      mock_scan_session_ = nullptr;
   NiceMock<ash::nearby::MockNearbySharingDecoder> mock_decoder_;
   FakeNearbyConnection connection_;
   size_t set_advertising_interval_call_count_ = 0u;
@@ -1686,7 +1693,7 @@ class TestObserver : public NearbySharingService::Observer {
   bool devices_detected_called_ = false;
   bool devices_not_detected_called_ = false;
   bool scanning_stopped_called_ = false;
-  NearbySharingService* service_;
+  raw_ptr<NearbySharingService, ExperimentalAsh> service_;
 };
 
 TEST_P(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {
@@ -5009,6 +5016,7 @@ TEST_P(NearbySharingServiceImplRestartTest, RestartsServiceWhenAppropriate) {
 
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kPresenceMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
       expected_to_restart =
           is_enabled && recent_shutdown_count <=
@@ -5036,6 +5044,7 @@ INSTANTIATE_TEST_SUITE_P(
             NearbyProcessShutdownReason::kNormal,
             NearbyProcessShutdownReason::kCrash,
             NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection,
+            NearbyProcessShutdownReason::kPresenceMojoPipeDisconnection,
             NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection),
         testing::Values(0,
                         NearbySharingServiceImpl::

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
@@ -33,8 +34,17 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
    public:
     // Session parameters used to start the CRD host.
     struct SessionParameters {
+      SessionParameters();
+      ~SessionParameters();
+
+      SessionParameters(const SessionParameters&);
+      SessionParameters& operator=(const SessionParameters&);
+      SessionParameters(SessionParameters&&);
+      SessionParameters& operator=(SessionParameters&&);
+
       std::string oauth_token = "";
       std::string user_name = "";
+      absl::optional<std::string> admin_email;
       bool terminate_upon_input = false;
       bool show_confirmation_dialog = false;
       bool curtain_local_user_session = false;
@@ -129,6 +139,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // True if the admin requested a curtained remote access session.
   bool curtain_local_user_session_ = false;
 
+  // The email address of the admin user who issued the remote command.
+  absl::optional<std::string> admin_email_;
+
   // -- End of command parameters --
 
   // Fake OAuth token that will be used once the next time we need to fetch an
@@ -137,7 +150,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   // The Delegate is used to interact with chrome services and CRD host.
   // Owned by DeviceCommandsFactoryAsh.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   bool terminate_session_attempted_ = false;
 

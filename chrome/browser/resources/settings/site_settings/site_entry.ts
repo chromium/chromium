@@ -198,23 +198,14 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Returns a user-friendly name for the siteGroup.
-   * If grouped_() is true and eTLD+1 is available, returns the eTLD+1,
-   * otherwise return the origin representation for the first origin.
-   * @param siteGroup The eTLD+1 group of origins.
+   * @param siteGroup The group of origins.
    * @return The user-friendly name.
    */
   private siteGroupRepresentation_(siteGroup: SiteGroup): string {
     if (!siteGroup) {
       return '';
     }
-    if (this.grouped_(siteGroup)) {
-      if (siteGroup.etldPlus1 !== '') {
-        return siteGroup.etldPlus1;
-      }
-      // Fall back onto using the host of the first origin, if no eTLD+1 name
-      // was computed.
-    }
-    return this.originRepresentation(siteGroup.origins[0].origin);
+    return siteGroup.displayName;
   }
 
   /**
@@ -247,14 +238,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
       this.cookieString_ = string;
     });
     this.updateOrigins_(this.sortMethod);
-    this.displayName_ = siteGroup.isolatedWebAppName ??
-        this.siteGroupRepresentation_(siteGroup);
-
-    // For an extension |siteGroup|, try to show the extension name if the
-    // extension name is not empty.
-    if (this.isExtension_(siteGroup) && siteGroup.extensionName !== undefined) {
-      this.displayName_ = siteGroup.extensionName;
-    }
+    this.displayName_ = this.siteGroupRepresentation_(siteGroup);
   }
 
   /**
@@ -525,8 +509,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   private getSubpageLabel_(target: string): string {
     return this.i18n(
-        'siteSettingsSiteDetailsSubpageAccessibilityLabel',
-        this.originRepresentation(target));
+        'siteSettingsSiteDetailsSubpageAccessibilityLabel', target);
   }
 
   private getRemoveOriginButtonTitle_(origin: string): string {
@@ -536,7 +519,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   private getMoreActionsLabel_(): string {
     return this.i18n(
-        'firstPartySetsMoreActionsTitle', this.siteGroup.etldPlus1);
+        'firstPartySetsMoreActionsTitle', this.siteGroup.displayName);
   }
   /**
    * Update the order and data display text for origins.

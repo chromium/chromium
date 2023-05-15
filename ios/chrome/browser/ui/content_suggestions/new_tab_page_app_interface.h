@@ -10,13 +10,6 @@
 // App interface for the NTP.
 @interface NewTabPageAppInterface : NSObject
 
-// Returns the short name of the default search engine.
-+ (NSString*)defaultSearchEngine;
-
-// Resets the default search engine to `defaultSearchEngine`.
-// `defaultSearchEngine` should be its short name.
-+ (void)resetSearchEngineTo:(NSString*)defaultSearchEngine;
-
 // Returns the width the search field is supposed to have when the collection
 // has `collectionWidth`. `traitCollection` is the trait collection of the view
 // displaying the omnibox, its Size Class is used in the computation.

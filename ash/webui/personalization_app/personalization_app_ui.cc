@@ -12,12 +12,12 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
-#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
@@ -122,6 +122,22 @@ void AddStrings(content::WebUIDataSource* source) {
       {"dynamicColorLabel", IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_LABEL},
       {"dynamicColorDescription",
        IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_DESCRIPTION},
+      {"colorSchemeTonalSpot",
+       IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_TONAL_SPOT},
+      {"colorSchemeNeutral",
+       IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_NEUTRAL},
+      {"colorSchemeVibrant",
+       IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_VIBRANT},
+      {"colorSchemeExpressive",
+       IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_EXPRESSIVE},
+      {"staticColorGoogleBlue",
+       IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_GOOGLE_BLUE},
+      {"staticColorLightPink",
+       IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_LIGHT_PINK},
+      {"staticColorDarkGreen",
+       IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_DARK_GREEN},
+      {"staticColorLightPurple",
+       IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_LIGHT_PURPLE},
       {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
       {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
       {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
@@ -277,6 +293,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"wallpaperColorDescription",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_DESCRIPTION},
       {"zoneTitle", IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_ZONE_TITLE},
+      {"keyboardZonesTitle", IDS_PERSONALIZATION_APP_KEYBOARD_ZONES_TITLE},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.
@@ -319,6 +336,9 @@ void AddStrings(content::WebUIDataSource* source) {
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("googlePhotosURL", GetGooglePhotosURL());
+
+  source->AddString("timeOfDayWallpaperCollectionId",
+                    wallpaper_constants::kTimeOfDayWallpaperCollectionId);
 
   source->AddString("timeOfDayBannerImageUrl",
                     GetAmbientBackendController()->GetPromoBannerUrl());
@@ -428,9 +448,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosSharedAlbumsEnabled",
                      features::IsWallpaperGooglePhotosSharedAlbumsEnabled());
 
-  source->AddBoolean("isDarkLightModeEnabled",
-                     features::IsDarkLightModeEnabled());
-
   source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
 
   source->AddBoolean(
@@ -452,6 +469,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isTimeOfDayScreenSaverEnabled",
                      features::IsTimeOfDayScreenSaverEnabled());
+
+  source->AddBoolean("isTimeOfDayWallpaperEnabled",
+                     features::IsTimeOfDayWallpaperEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

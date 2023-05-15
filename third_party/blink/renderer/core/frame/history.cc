@@ -229,10 +229,8 @@ void History::go(ScriptState* script_state,
       task_id = tracker->RunningTaskAttributionId(script_state);
     }
     DCHECK(frame->Client());
-    if (frame->Client()->NavigateBackForward(delta, task_id)) {
-      if (Page* page = frame->GetPage())
-        page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
-    }
+    frame->Client()->NavigateBackForward(delta, task_id);
+    frame->GetPage()->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
   } else {
     // We intentionally call reload() for the current frame if delta is zero.
     // Otherwise, navigation happens on the root frame.

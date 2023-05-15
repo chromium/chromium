@@ -55,20 +55,6 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, Basics) {
-  // Load up some extensions so that we can query their info and adjust their
-  // setings in the API test.
-  base::FilePath base_dir = test_data_dir_.AppendASCII("developer");
-  EXPECT_TRUE(LoadExtension(base_dir.AppendASCII("hosted_app")));
-  EXPECT_TRUE(InstallExtension(base_dir.AppendASCII("packaged_app"), 1,
-                               mojom::ManifestLocation::kInternal));
-  LoadExtension(base_dir.AppendASCII("simple_extension"));
-
-  ASSERT_TRUE(RunExtensionTest("developer/test",
-                               {.launch_as_platform_app = true},
-                               {.load_as_component = true}));
-}
-
 // Tests opening the developer tools for an app window.
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   base::FilePath dir;

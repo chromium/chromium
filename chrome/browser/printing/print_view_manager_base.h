@@ -247,6 +247,19 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                           bool succeeded);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  // Helpers for UpdatePrintSettings().
+#if BUILDFLAG(IS_WIN)
+  void OnDidUpdatePrintableArea(std::unique_ptr<PrinterQuery> printer_query,
+                                base::Value::Dict job_settings,
+                                std::unique_ptr<PrintSettings> print_settings,
+                                UpdatePrintSettingsCallback callback,
+                                bool success);
+#endif
+  void CompleteUpdatePrintSettings(
+      base::Value::Dict job_settings,
+      std::unique_ptr<PrintSettings> print_settings,
+      UpdatePrintSettingsCallback callback);
+
   // Helpers for PrintForPrintPreview();
   void OnPrintSettingsDone(scoped_refptr<base::RefCountedMemory> print_data,
                            uint32_t page_count,

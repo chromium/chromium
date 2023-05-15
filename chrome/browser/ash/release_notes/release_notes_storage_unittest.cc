@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -80,7 +81,7 @@ class ReleaseNotesStorageTest : public testing::Test,
         /*disabled_features=*/{});
   }
 
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;

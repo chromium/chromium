@@ -15,6 +15,8 @@
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
+namespace quick_answers {
+
 QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
     QuickAnswersView* view)
     : view_(view) {
@@ -237,3 +239,5 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
       return;
   }
 }
+
+}  // namespace quick_answers

@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -50,7 +51,7 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
  private:
   ~UsbNotificationDelegate() override = default;
 
-  PowerNotificationController* const controller_;
+  const raw_ptr<PowerNotificationController, ExperimentalAsh> controller_;
 };
 
 std::string GetNotificationStateString(

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ui_base_types.h"
 
@@ -44,7 +45,7 @@ class MessageBox {
 
  private:
   class Core;
-  Core* core_;
+  raw_ptr<Core, ExperimentalAsh> core_;
   base::ThreadChecker thread_checker_;
 };
 

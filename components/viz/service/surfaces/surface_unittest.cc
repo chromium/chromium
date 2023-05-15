@@ -76,6 +76,9 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &frame_sink_manager_, kArbitraryFrameSinkId, kIsRoot);
+  if (BeginFrameAcksEnabled()) {
+    support->SetWantsBeginFrameAcks();
+  }
   uint32_t frame_token = 0;
   {
     CompositorFrame frame =

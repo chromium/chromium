@@ -39,7 +39,7 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
   }
@@ -58,7 +58,7 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
         r1);
@@ -95,7 +95,7 @@ void CanvasGradient::addColorStop(double value,
                                           "') could not be parsed as a color.");
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddColorStop, value,
                                                 color.Rgb());
   }

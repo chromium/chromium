@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,51 +43,19 @@ using password_manager::PasskeyCredential;
 
 namespace {
 
-constexpr uint8_t kUserId1[] = {'1', '2', '3', '4'};
-constexpr uint8_t kUserId2[] = {'5', '6', '7', '8'};
+constexpr uint8_t kUserId[] = {'1', '2', '3', '4'};
 constexpr char kUserName1[] = "John.Doe@example.com";
 constexpr char kUserName2[] = "Jane.Doe@example.com";
-constexpr char kDisplayName1[] = "John Doe";
-constexpr char kDisplayName2[] = "Jane Doe";
-constexpr char kCredId1[] = {'a', 'b', 'c', 'd'};
-constexpr char kCredId2[] = {'e', 'f', 'g', 'h'};
+constexpr uint8_t kCredId1[] = {'a', 'b', 'c', 'd'};
+constexpr uint8_t kCredId2[] = {'e', 'f', 'g', 'h'};
 constexpr char kRpId[] = "example.com";
 
-std::vector<uint8_t> UserId1() {
-  return std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1));
-}
-std::vector<uint8_t> UserId2() {
-  return std::vector<uint8_t>(std::begin(kUserId2), std::end(kUserId2));
-}
-std::string UserName1() {
-  return std::string(kUserName1);
-}
-std::string UserName2() {
-  return std::string(kUserName2);
-}
-std::string DisplayName1() {
-  return std::string(kDisplayName1);
-}
-std::string DisplayName2() {
-  return std::string(kDisplayName2);
-}
-std::u16string DeviceName1() {
-  return u"Pixel 3a";
-}
-std::u16string DeviceName2() {
-  return u"Nexus 5";
-}
-std::vector<uint8_t> CredId1() {
-  return std::vector<uint8_t>(std::begin(kCredId1), std::end(kCredId1));
-}
-std::vector<uint8_t> CredId2() {
-  return std::vector<uint8_t>(std::begin(kCredId2), std::end(kCredId2));
-}
-std::string BackendId1() {
-  return base::Base64Encode(CredId1());
-}
-std::string BackendId2() {
-  return base::Base64Encode(CredId2());
+PasskeyCredential CreatePasskey(std::vector<uint8_t> cred_id,
+                                std::string username) {
+  return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
+                           std::string(kRpId), std::move(cred_id),
+                           device::fido_parsing_utils::Materialize(kUserId),
+                           std::move(username));
 }
 
 }  // namespace
@@ -136,7 +105,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #else
     delegate_->OnWebAuthnRequestPending(
         main_rfh(), creds, /*is_conditional_request=*/true,
-        base::BindOnce(
+        base::BindRepeating(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
             base::Unretained(this)));
 #endif
@@ -172,13 +141,11 @@ class ChromeWebAuthnCredentialsDelegateTest
 // Testing retrieving passkeys when there are 2 public key credentials
 // present.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
-                           PasskeyCredential::DeviceName(DeviceName1()),
-                           PasskeyCredential::BackendId(BackendId1()));
-  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
-                           PasskeyCredential::DeviceName(DeviceName2()),
-                           PasskeyCredential::BackendId(BackendId2()));
+  std::vector<PasskeyCredential> credentials{
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId1),
+                    kUserName1),
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
+                    kUserName2)};
   credentials_delegate_->OnCredentialsReceived(credentials);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
@@ -189,13 +156,11 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
 // Testing retrieving suggestions when the credentials are not received until
 // afterward.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
-                           PasskeyCredential::DeviceName(DeviceName1()),
-                           PasskeyCredential::BackendId(BackendId1()));
-  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
-                           PasskeyCredential::DeviceName(DeviceName2()),
-                           PasskeyCredential::BackendId(BackendId2()));
+  std::vector<PasskeyCredential> credentials{
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId1),
+                    kUserName1),
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
+                    kUserName2)};
   credentials_delegate_->OnCredentialsReceived(credentials);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
@@ -214,47 +179,47 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 // Testing selection of a credential.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId,
+                     device::fido_parsing_utils::Materialize(kCredId1),
                      device::PublicKeyCredentialUserEntity(
-                         UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
+                         device::fido_parsing_utils::Materialize(kUserId),
+                         kUserName1, /*display_name=*/absl::nullopt));
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId,
+                     device::fido_parsing_utils::Materialize(kCredId2),
                      device::PublicKeyCredentialUserEntity(
-                         UserId2(), UserName2(), DisplayName2()));
+                         device::fido_parsing_utils::Materialize(kUserId),
+                         kUserName2, /*display_name=*/absl::nullopt));
 
   SetCredList(users);
 
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
-                           PasskeyCredential::DeviceName(DeviceName1()),
-                           PasskeyCredential::BackendId(BackendId1()));
-  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
-                           PasskeyCredential::DeviceName(DeviceName2()),
-                           PasskeyCredential::BackendId(BackendId2()));
+  std::vector<PasskeyCredential> credentials{
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId1),
+                    kUserName1),
+      CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
+                    kUserName2)};
   credentials_delegate_->OnCredentialsReceived(credentials);
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
   dialog_model()->SetAccountPreselectedCallback(
       base::BindLambdaForTesting([&](std::vector<uint8_t> credential_id) {
-        EXPECT_EQ(credential_id, CredId2());
+        EXPECT_THAT(credential_id, testing::ElementsAreArray(kCredId2));
         run_loop.Quit();
       }));
 #endif
 
-  credentials_delegate_->SelectPasskey(base::Base64Encode(CredId2()));
+  credentials_delegate_->SelectPasskey(base::Base64Encode(kCredId2));
 
 #if BUILDFLAG(IS_ANDROID)
   auto credential_id = GetSelectedId();
-  EXPECT_EQ(credential_id, CredId2());
+  EXPECT_THAT(*credential_id, testing::ElementsAreArray(kCredId2));
 #endif
 }
 
 // Test aborting a request.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
-                           PasskeyCredential::DeviceName(DeviceName1()),
-                           PasskeyCredential::BackendId(BackendId1()));
+  std::vector<PasskeyCredential> credentials{CreatePasskey(
+      device::fido_parsing_utils::Materialize(kCredId1), kUserName1)};
   credentials_delegate_->OnCredentialsReceived(credentials);
   credentials_delegate_->NotifyWebAuthnRequestAborted();
   EXPECT_FALSE(credentials_delegate_->GetPasskeys());

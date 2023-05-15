@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.core.deps.guava.primitives.Ints;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -120,7 +120,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                                        .findViewById(R.id.bookmark_toolbar);
 
             when(mBookmarkModel.getRootFolderId()).thenReturn(BOOKMARK_ID_ROOT);
-            when(mBookmarkModel.getTopLevelFolderParentIDs())
+            when(mBookmarkModel.getTopLevelFolderParentIds())
                     .thenReturn(Collections.singletonList(BOOKMARK_ID_ROOT));
 
             BookmarkItem rootBookmarkItem = new BookmarkItem(

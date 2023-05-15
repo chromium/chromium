@@ -5,23 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_HID_HID_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_HID_HID_H_
 
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/device/public/mojom/hid.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -33,7 +31,6 @@ class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT HID : public EventTargetWithInlineData,
-                           public ExecutionContextLifecycleObserver,
                            public Supplement<NavigatorBase>,
                            public device::mojom::blink::HidManagerClient,
                            public HIDDevice::ServiceInterface {
@@ -51,9 +48,6 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
   // EventTarget:
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
-
-  // ExecutionContextLifecycleObserver:
-  void ContextDestroyed() override;
 
   // device::mojom::HidManagerClient:
   void DeviceAdded(device::mojom::blink::HidDeviceInfoPtr device_info) override;
@@ -113,9 +107,8 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
   HeapMojoRemote<mojom::blink::HidService> service_;
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<device::mojom::blink::HidManagerClient> receiver_{
-      this};
+  HeapMojoAssociatedReceiver<device::mojom::blink::HidManagerClient, HID>
+      receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_device_promises_;
   HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;

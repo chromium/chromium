@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -120,8 +121,8 @@ class DeviceSettingsProvider
   // Pending callbacks that need to be invoked after settings verification.
   std::vector<base::OnceClosure> callbacks_;
 
-  DeviceSettingsService* device_settings_service_;
-  PrefService* local_state_;
+  raw_ptr<DeviceSettingsService, ExperimentalAsh> device_settings_service_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   mutable PrefValueMap migration_values_;
 

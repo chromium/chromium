@@ -10,6 +10,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -238,6 +239,9 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   SystemNotificationBuilder& SetOptionalFields(
       const message_center::RichNotificationData& optional_fields);
 
+  // Returns currently set optional fields.
+  const message_center::RichNotificationData& GetOptionalFields();
+
   // Set the warning level.
   // Default: `message_center::SystemNotificationWarningLevel::NORMAL`
   SystemNotificationBuilder& SetWarningLevel(
@@ -266,7 +270,8 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   absl::optional<message_center::NotifierId> notifier_id_;
   NotificationCatalogName catalog_name_ = NotificationCatalogName::kNone;
   scoped_refptr<message_center::NotificationDelegate> delegate_ = nullptr;
-  const gfx::VectorIcon* small_image_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> small_image_ =
+      &gfx::kNoneIcon;
   message_center::RichNotificationData optional_fields_;
   message_center::SystemNotificationWarningLevel warning_level_ =
       message_center::SystemNotificationWarningLevel::NORMAL;

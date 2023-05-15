@@ -44,14 +44,14 @@ using bookmarks::BookmarkNode;
   return self;
 }
 
-- (base::GUID)guidForIdentifier:(int)identifier {
+- (base::Uuid)guidForIdentifier:(int)identifier {
   if ((identifier < 0) || (identifier >= 2))
-    return base::GUID();
+    return base::Uuid();
   DCHECK(_nodes[identifier]);
   return _nodes[identifier]->uuid();
 }
 
-- (void)openURLForGUID:(base::GUID)guid {
+- (void)openURLForGUID:(base::Uuid)guid {
   base::span<const BookmarkNode*> nodes = base::make_span(_nodes);
   auto it = base::ranges::find_if(nodes, [&guid](const BookmarkNode* node) {
     return node->uuid() == guid;

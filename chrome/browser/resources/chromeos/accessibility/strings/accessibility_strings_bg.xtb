@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="100506692671054486">няма предишна команда</translation>
 <translation id="1009046985747440431">За придвижване натиснете клавиша със стрелка нагоре или надолу, за активиране използвайте Enter</translation>
 <translation id="1011903154582639569">Намерете клавиш, след което вдигнете пръст, за да въведете</translation>
 <translation id="1012173283529841972">Списъчен елемент</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">лавандуловорозово</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3962990492275676168">Стартиране на четенето от текущото местоположение</translation>
+<translation id="397094149579293440">не е избран текст</translation>
 <translation id="3970951409746498040">пясъчнокафяво</translation>
 <translation id="3989324057180830702">бутон за превключване</translation>
 <translation id="3991317907213946254">мока</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Няма предишно заглавие от първо ниво</translation>
 <translation id="4787577491510559358">Съобщаване на форматирането за текущия елемент</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">фокусът не е върху текстово поле</translation>
 <translation id="4804818685124855865">Изключване</translation>
 <translation id="481165870889056555">Съобщаване на заглавието на текущата страница</translation>
 <translation id="4815668758102003883">бледотюркоазено</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Вътрешна връзка</translation>
 <translation id="4909019435900810068">Преместване назад с една дума</translation>
 <translation id="4911349081560453449">Няма предишно квадратче за отметка</translation>
+<translation id="4919186071145887492">Изпълнението на командата „<ph name="COMMAND" />“ не е възможно. Опитайте отново</translation>
 <translation id="492295894462528572">Предговор</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953585991029886728">Текстово поле</translation>
+<translation id="4964701498510730546">текстовото поле е празно</translation>
 <translation id="4973717656530883744">Минимум <ph name="X" /></translation>
 <translation id="4974612477719259470">Няма предишен бутон</translation>
 <translation id="4979404613699303341">Предишният бутон</translation>
+<translation id="4981239367072766915">въведеното не е разпознато</translation>
 <translation id="4982917827052020884">Да започнем с няколко клавиша, които ще използвате често. Клавишът Control може да се използва за спиране на говора. Той се намира в долния ляв ъгъл на клавиатурата. За да продължите, натиснете клавиша Control.</translation>
 <translation id="4983588134362688868">Преминаване към началото на страницата</translation>
 <translation id="4986606102545753256">„<ph name="NAME" />“, прозорец</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Съобщаване на текущото състояние на батерията</translation>
 <translation id="4997282455736854877">„<ph name="NAME" />“, маркиран бутон за избор</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, маркиран бутон за избор на елемент от меню</translation>
+<translation id="5014131807708055994">Изпълнението на командата „<ph name="COMMAND" />“ не е възможно, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Активиране на регистрирането за говора</translation>
 <translation id="5041394372352067729">Преместване на брайловия дисплей в горната част на страницата</translation>
 <translation id="5042770794184672516">Увеличаване на силата на звука на говора</translation>

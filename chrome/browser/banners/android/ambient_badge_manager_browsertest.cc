@@ -6,10 +6,14 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/android/ambient_badge_manager.h"
@@ -23,14 +27,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+using ::base::test::RunOnceCallback;
+using testing::_;
+
 namespace webapps {
 
 class TestAmbientBadgeManager : public AmbientBadgeManager {
  public:
   explicit TestAmbientBadgeManager(
       content::WebContents* web_contents,
-      base::WeakPtr<AppBannerManagerAndroid> app_banner_manager)
-      : AmbientBadgeManager(web_contents, app_banner_manager) {}
+      base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service,
+      PrefService* prefs)
+      : AmbientBadgeManager(web_contents,
+                            app_banner_manager,
+                            segmentation_platform_service,
+                            prefs) {}
 
   TestAmbientBadgeManager(const TestAmbientBadgeManager&) = delete;
   TestAmbientBadgeManager& operator=(const TestAmbientBadgeManager&) = delete;
@@ -61,6 +74,13 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
   explicit TestAppBannerManager(content::WebContents* web_contents)
       : AppBannerManagerAndroid(web_contents) {}
 
+  explicit TestAppBannerManager(
+      content::WebContents* web_contents,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service)
+      : AppBannerManagerAndroid(web_contents),
+        mock_segmentation_(segmentation_platform_service) {}
+
   TestAppBannerManager(const TestAppBannerManager&) = delete;
   TestAppBannerManager& operator=(const TestAppBannerManager&) = delete;
 
@@ -79,9 +99,14 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
   }
 
  protected:
+  Profile* profile() {
+    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  }
+
   void MaybeShowAmbientBadge() override {
     ambient_badge_test_ = std::make_unique<TestAmbientBadgeManager>(
-        web_contents(), GetAndroidWeakPtr());
+        web_contents(), GetAndroidWeakPtr(), mock_segmentation_,
+        profile()->GetPrefs());
 
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
@@ -93,15 +118,10 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
                        AppBannerManagerAndroid::GetAndroidWeakPtr()));
   }
 
-  void OnDidPerformWorkerCheckForAmbientBadge(
-      const InstallableData& data) override {
-    if (ambient_badge_test_) {
-      ambient_badge_test_->OnWorkerCheckResult(data);
-    }
-  }
-
  private:
   std::unique_ptr<TestAmbientBadgeManager> ambient_badge_test_;
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      mock_segmentation_;
   AmbientBadgeManager::State target_badge_state_;
   base::OnceClosure on_badge_done_;
 };
@@ -134,10 +154,6 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
  protected:
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  Profile* profile() {
-    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
   virtual void SetUpFeatureList() {
@@ -242,6 +258,90 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSecondVisitTest,
           AmbientBadgeManager::State::kPendingEngagement);
 
   // Load again, can show.
+  RunTest(app_banner_manager.get(),
+          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
+          AmbientBadgeManager::State::kShowing);
+}
+
+class AmbientBadgeManagerSmartTest : public AmbientBadgeManagerBrowserTest {
+ public:
+  AmbientBadgeManagerSmartTest() = default;
+
+  AmbientBadgeManagerSmartTest(const AmbientBadgeManagerSmartTest&) = delete;
+  AmbientBadgeManagerSmartTest& operator=(const AmbientBadgeManagerSmartTest&) =
+      delete;
+
+  ~AmbientBadgeManagerSmartTest() override = default;
+
+  void SetUpFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kInstallPromptSegmentation},
+        /*disabled_features=*/{features::kAmbientBadgeSuppressFirstVisit});
+  }
+
+  segmentation_platform::ClassificationResult GetClassificationResult(
+      std::string label) {
+    segmentation_platform::ClassificationResult result(
+        segmentation_platform::PredictionStatus::kSucceeded);
+    result.ordered_labels.emplace_back(label);
+    return result;
+  }
+
+  segmentation_platform::MockSegmentationPlatformService
+      mock_segmentation_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, ShowInstallMessages) {
+  EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(GetClassificationResult("ShowMessage")));
+
+  auto app_banner_manager = std::make_unique<TestAppBannerManager>(
+      web_contents(), &mock_segmentation_service_);
+
+  RunTest(app_banner_manager.get(),
+          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
+          AmbientBadgeManager::State::kShowing);
+}
+
+IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest,
+                       BlockedBySegmentationResult) {
+  EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(GetClassificationResult("DontShow")));
+
+  auto app_banner_manager = std::make_unique<TestAppBannerManager>(
+      web_contents(), &mock_segmentation_service_);
+
+  RunTest(app_banner_manager.get(),
+          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
+          AmbientBadgeManager::State::kSegmentation);
+}
+
+IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, BlockedByGuardrail) {
+  EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
+      .Times(testing::Exactly(3))
+      .WillRepeatedly(
+          RunOnceCallback<3>(GetClassificationResult("ShowMessage")));
+
+  auto app_banner_manager = std::make_unique<TestAppBannerManager>(
+      web_contents(), &mock_segmentation_service_);
+
+  // Showing OK for the first visit
+  RunTest(app_banner_manager.get(),
+          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
+          AmbientBadgeManager::State::kShowing);
+
+  // Explicitly dismiss the badge.
+  app_banner_manager->GetBadgeManagerForTest()->BadgeDismissed();  // IN-TEST
+  EXPECT_EQ(AmbientBadgeManager::State::kDismissed,
+            app_banner_manager->GetBadgeManagerForTest()->state());  // IN-TEST
+
+  // Badge blocked because it was recently dismissed.
+  RunTest(app_banner_manager.get(),
+          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
+          AmbientBadgeManager::State::kBlocked);
+
+  // Badge can show again after 91 days.
+  webapps::AppBannerManager::SetTimeDeltaForTesting(91);
   RunTest(app_banner_manager.get(),
           embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
           AmbientBadgeManager::State::kShowing);

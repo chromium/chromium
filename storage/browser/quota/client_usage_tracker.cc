@@ -129,26 +129,10 @@ int64_t ClientUsageTracker::GetCachedUsage() const {
   return usage;
 }
 
-std::map<std::string, int64_t> ClientUsageTracker::GetCachedHostsUsage() const {
+const std::map<BucketLocator, int64_t>&
+ClientUsageTracker::GetCachedBucketsUsage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<std::string, int64_t> host_usage;
-  for (const auto& bucket_and_usage : cached_bucket_usage_) {
-    const std::string& host =
-        bucket_and_usage.first.storage_key.origin().host();
-    host_usage[host] += bucket_and_usage.second;
-  }
-  return host_usage;
-}
-
-std::map<blink::StorageKey, int64_t>
-ClientUsageTracker::GetCachedStorageKeysUsage() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<blink::StorageKey, int64_t> storage_key_usage;
-  for (const auto& bucket_and_usage : cached_bucket_usage_) {
-    const blink::StorageKey& storage_key = bucket_and_usage.first.storage_key;
-    storage_key_usage[storage_key] += bucket_and_usage.second;
-  }
-  return storage_key_usage;
+  return cached_bucket_usage_;
 }
 
 void ClientUsageTracker::SetUsageCacheEnabled(

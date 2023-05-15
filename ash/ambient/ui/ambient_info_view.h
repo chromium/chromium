@@ -8,6 +8,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -48,11 +49,11 @@ class ASH_EXPORT AmbientInfoView : public views::View,
   void InitLayout();
 
   // Owned by |AmbientController| and should always outlive |this|.
-  AmbientViewDelegate* delegate_ = nullptr;
+  raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
 
-  GlanceableInfoView* glanceable_info_view_ = nullptr;
-  views::Label* details_label_ = nullptr;
-  views::Label* related_details_label_ = nullptr;
+  raw_ptr<GlanceableInfoView, ExperimentalAsh> glanceable_info_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> details_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> related_details_label_ = nullptr;
 };
 
 }  // namespace ash

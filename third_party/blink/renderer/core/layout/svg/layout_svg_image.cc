@@ -64,6 +64,7 @@ void LayoutSVGImage::Trace(Visitor* visitor) const {
 void LayoutSVGImage::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
   LayoutSVGModelObject::StyleDidChange(diff, old_style);

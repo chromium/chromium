@@ -128,11 +128,11 @@ class CastMediaNotificationItemTest : public testing::Test {
   }
 
  protected:
-  MOCK_METHOD3(CreateBitmapFetcher,
-               std::unique_ptr<BitmapFetcher>(
-                   const GURL& url,
-                   BitmapFetcherDelegate* delegate,
-                   const net::NetworkTrafficAnnotationTag& traffic_annotation));
+  MOCK_METHOD(std::unique_ptr<BitmapFetcher>,
+              CreateBitmapFetcher,
+              (const GURL& url,
+               BitmapFetcherDelegate* delegate,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation));
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;

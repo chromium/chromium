@@ -62,10 +62,14 @@ class GpuChannelManagerDelegate {
                                const blink::WebGPUExecutionContextToken& token,
                                GetIsolationKeyCallback cb) = 0;
 
-  // Cleanly exits the GPU process in response to an error. This will not exit
-  // with in-process GPU as that would also exit the browser. This can only be
-  // called from the GPU thread.
-  virtual void MaybeExitOnContextLost() = 0;
+  // Cleanly exits the GPU process in response to an error. `synthetic_loss` is
+  // true iff the context loss event was generated internally by Chrome rather
+  // than being a true backend context loss.  In most cases this will not exit
+  // with in-process GPU as that would also exit the browser (in some cases the
+  // delegate might cause a deliberate crash if it determines that the context
+  // loss is irrecoverable and that crashing is better than entering a context
+  // loss loop). This can only be called from the GPU thread.
+  virtual void MaybeExitOnContextLost(bool synthetic_loss) = 0;
 
   // Returns true if the GPU process is exiting. This can be called from any
   // thread.

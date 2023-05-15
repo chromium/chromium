@@ -10,8 +10,10 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/common/pref_names.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(
@@ -20,7 +22,8 @@ CartHandler::CartHandler(
     content::WebContents* web_contents)
     : handler_(this, std::move(handler)),
       cart_service_(CartServiceFactory::GetForProfile(profile)),
-      web_contents_(web_contents) {}
+      web_contents_(web_contents),
+      pref_service_(profile->GetPrefs()) {}
 
 CartHandler::~CartHandler() = default;
 
@@ -37,6 +40,11 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
         base::BindOnce(&CartHandler::GetCartDataCallback,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
+}
+
+void CartHandler::GetCartFeatureEnabled(
+    GetCartFeatureEnabledCallback callback) {
+  std::move(callback).Run(cart_service_->IsCartEnabled());
 }
 
 void CartHandler::HideCartModule() {

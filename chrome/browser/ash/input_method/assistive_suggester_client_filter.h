@@ -29,7 +29,8 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
 
   // AssistiveSuggesterSwitch overrides
   void FetchEnabledSuggestionsThen(
-      FetchEnabledSuggestionsCallback callback) override;
+      FetchEnabledSuggestionsCallback callback,
+      const TextInputMethod::InputContext& context) override;
 
  private:
   // Used to fetch the url from the current browser instance.

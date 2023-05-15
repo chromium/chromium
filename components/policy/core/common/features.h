@@ -14,22 +14,14 @@
 namespace policy {
 namespace features {
 
-// Enable reporting Login events to the reporting connector when the Password
-// Manager detects that the user logged in to a web page.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kLoginEventReporting);
-
-// Enable reporting password leaks to the reporting connector when the Password
-// Manager's Leak Detector has found some compromised credentials.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
+// Enable detection/upload Crowdstrike Agent signals with security
+// events.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kCrowdstrikeSignalReporting);
 
 // Enable the UserCloudSigninRestrictionPolicyFetcher to get the
 // ManagedAccountsSigninRestriction policy for a dasher account.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kEnableUserCloudSigninRestrictionPolicyFetcher);
-
-// Causes the DMToken to be deleted (rather than invalidated) when a browser is
-// deleted from CBCM.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
+POLICY_EXPORT
+BASE_DECLARE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enable comma-separated strings for list policies on Android.

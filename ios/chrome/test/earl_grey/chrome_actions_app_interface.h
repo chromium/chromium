@@ -34,7 +34,14 @@
 
 // Action to tap a web element described by the given `selector` on the current
 // web state.
+// Checks the effect of the tap using JavaScript.
 + (id<GREYAction>)tapWebElement:(ElementSelector*)selector;
+
+// Action to tap a web element described by the given `selector` on the current
+// web state.
+// Does not check the effect of the tap. This function is expected to be use
+// when the effect of the tap is on the browser side (e.g. showing a popup).
++ (id<GREYAction>)tapWebElementUnverified:(ElementSelector*)selector;
 
 // Action to scroll to top of a collection.
 // On iOS 13 the settings menu appears as a card that can be dismissed with a

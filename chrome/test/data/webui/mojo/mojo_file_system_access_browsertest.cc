@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(MojoFileSystemAccessBrowserTest, CanResolveFilePath) {
   // Reload the page to trigger RenderFrameHost reuse. The API should remain
   // available.
   content::TestNavigationObserver observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "location.reload()"));
   observer.Wait();
   EXPECT_EQ(true, content::EvalJs(
                       web_contents,

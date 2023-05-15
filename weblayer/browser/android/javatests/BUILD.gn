@@ -9,12 +9,14 @@ import("//build/config/android/rules.gni")
 android_library("webengine_java_tests") {
   testonly = true
   sources = [
+    "src/org/chromium/webengine/test/AllowedOriginsTest.java",
     "src/org/chromium/webengine/test/CookieManagerTest.java",
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
     "src/org/chromium/webengine/test/ExternalIntentsTest.java",
     "src/org/chromium/webengine/test/FaviconTest.java",
     "src/org/chromium/webengine/test/FullscreenCallbackTest.java",
     "src/org/chromium/webengine/test/PostMessageTest.java",
+    "src/org/chromium/webengine/test/ProfileManagerTest.java",
     "src/org/chromium/webengine/test/StatePersistenceTest.java",
     "src/org/chromium/webengine/test/TabManagerTest.java",
     "src/org/chromium/webengine/test/TabNavigationControllerTest.java",

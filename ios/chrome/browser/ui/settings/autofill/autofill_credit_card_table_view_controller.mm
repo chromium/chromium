@@ -15,11 +15,11 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -243,7 +243,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   AutofillCardItem* item = [[AutofillCardItem alloc] initWithType:ItemTypeCard];
   item.text = creditCardName;
-  item.leadingDetailText = autofill::GetCreditCardIdentifierString(creditCard);
+  item.leadingDetailText =
+      autofill::GetCreditCardNameAndLastFourDigits(creditCard);
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = creditCardName;
   item.deletable = autofill::IsCreditCardLocal(creditCard);

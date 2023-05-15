@@ -17,11 +17,12 @@
     width: 24px;
   }
 </style>
-<cr-toolbar id="mainToolbar"
+<cr-toolbar id="mainToolbar" on-keydown="onKeyDown_"
     page-name="$i18n{title}" clear-label="$i18n{clearSearch}"
-    search-prompt="$i18n{searchPrompt}"
+    search-prompt="$i18n{searchPrompt}" menu-label="$i18n{menuButtonLabel}"
     autofocus on-search-changed="onSearchChanged_"
-    role="banner" show-menu="[[narrow]]" narrow="[[narrow]]">
+    role="banner" show-menu="[[narrow]]" narrow="[[narrow]]"
+    narrow-threshold="1200">
   <picture slot="product-logo">
     <img id="product-logo"
         srcset="chrome://password-manager/images/password_manager_logo.svg"

@@ -1,0 +1,46 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "all_web_state_list_observation_registrar.h",
+    "all_web_state_list_observation_registrar.mm",
+    "browser.h",
+    "browser_list.h",
+    "browser_list_factory.h",
+    "browser_list_factory.mm",
+    "browser_list_observer.h",
+    "browser_list_observer.mm",
+    "browser_observer.h",
+    "browser_observer_bridge.h",
+    "browser_observer_bridge.mm",
+    "browser_provider.h",
+    "browser_provider_interface.h",
+    "browser_user_data.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "all_web_state_list_observation_registrar_unittest.mm" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

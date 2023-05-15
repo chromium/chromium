@@ -9,5 +9,6 @@ found in the LICENSE file.
         <item>Shell</item>
         <item>UI/WebEngine State Test</item>
         <item>Navigation Test</item>
+        <item>SPA Test</item>
     </string-array>
 </resources>

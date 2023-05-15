@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="100506692671054486">முந்தைய கட்டளை இல்லை</translation>
 <translation id="1009046985747440431">மேலும் கீழும் செல்வதற்கு மேல் அல்லது கீழ் அம்புக்குறியை அழுத்தவும், செயல்படுத்த enterரை அழுத்தவும்</translation>
 <translation id="1011903154582639569">சொற்களை உள்ளிட, ஒரு விசையைக் கண்டறிந்து அதைத் தட்டவும்</translation>
 <translation id="1012173283529841972">பட்டியல் உருப்படி</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">லாவெண்டர் பிளஷ்</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3962990492275676168">நடப்பு இருப்பிடத்திலிருந்து படிக்கத் தொடங்கு</translation>
+<translation id="397094149579293440">எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="3970951409746498040">சாண்டி பிரவுன்</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">மோகாசின்</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">முந்தைய 1ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
 <translation id="4787577491510559358">தற்போதைய உருப்படியின் வடிவமைப்பைத் தெரிவிக்கும்</translation>
 <translation id="479989351350248267">தேடல்</translation>
+<translation id="4802034228771424756">உள்ளீடு தேவைப்படும் புலம் ஃபோகஸ் செய்யப்படவில்லை</translation>
 <translation id="4804818685124855865">தொடர்பைத் துண்டி</translation>
 <translation id="481165870889056555">தற்போதைய பக்கத்தின் தலைப்பை அறிவிக்கவும்</translation>
 <translation id="4815668758102003883">பேல் டெர்க்காய்ஸ்</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">அக இணைப்பு</translation>
 <translation id="4909019435900810068">முந்தைய வார்த்தைக்குச் செல்</translation>
 <translation id="4911349081560453449">முந்தையத் தேர்வுப் பெட்டி இல்லை</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> முடியவில்லை. மீண்டும் முயலவும்</translation>
 <translation id="492295894462528572">அறிமுகம்</translation>
 <translation id="495046168593986294">மேலே நகர்த்து</translation>
 <translation id="495170559598752135">செயல்கள்</translation>
 <translation id="4953585991029886728">உரையைத் திருத்து</translation>
+<translation id="4964701498510730546">உள்ளீடு தேவைப்படும் புலம் காலியாக உள்ளது</translation>
 <translation id="4973717656530883744">குறைந்தபட்சம் <ph name="X" /></translation>
 <translation id="4974612477719259470">முந்தைய பட்டன் எதுவும் இல்லை</translation>
 <translation id="4979404613699303341">முந்தைய பட்டன்</translation>
+<translation id="4981239367072766915">அடையாளம் காண முடியாத உள்ளீடு</translation>
 <translation id="4982917827052020884">நீங்கள் வழக்கமாகப் பயன்படுத்தும் சில விசைகளிலிருந்து தொடங்குவோம். தற்போது வாசித்துக் காட்டப்படுவதை நிறுத்த Ctrl விசையைப் பயன்படுத்தலாம். Ctrl விசை, கீபோர்டின் கீழ் இடது மூலையில் இருக்கும். தொடர, Ctrl விசையை அழுத்தவும்.</translation>
 <translation id="4983588134362688868">பக்கத்தின் மேல்பகுதிக்குச் செல்லவும்</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, சாளரம்</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">தற்போதைய பேட்டரி நிலையைத் தெரிவிக்கும்</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ரேடியோ பட்டன் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, மெனு விருப்பம் ரேடியோ பட்டனுக்கான தேர்வு செய்யப்பட்டுள்ளது</translation>
+<translation id="5014131807708055994"><ph name="REASON" /> என்பதால் <ph name="COMMAND" /> முடியவில்லை</translation>
 <translation id="5020651427400641814">பேச்சுப் பதிவை இயக்கவும்</translation>
 <translation id="5041394372352067729">பக்கத்தின் மேல்பகுதிக்கு பிரெய்ல் காட்சியை நகர்த்து</translation>
 <translation id="5042770794184672516">பேச்சு ஒலியளவை அதிகரி</translation>

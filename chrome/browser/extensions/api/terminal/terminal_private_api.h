@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -43,7 +44,7 @@ class TerminalPrivateAPI : public BrowserContextKeyedAPI {
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "TerminalPrivateAPI"; }
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 

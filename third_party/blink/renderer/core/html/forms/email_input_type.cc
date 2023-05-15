@@ -326,4 +326,8 @@ String EmailInputType::VisibleValue() const {
   return builder.ToString();
 }
 
+void EmailInputType::MultipleAttributeChanged() {
+  GetElement().SetValueFromRenderer(SanitizeValue(GetElement().Value()));
+}
+
 }  // namespace blink

@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -56,6 +60,30 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
     return false;
   }
 
+  return true;
+}
+
+bool CheckPrivateAggregationContextId(
+    const SharedStorageRunOperationMethodOptions& options,
+    ScriptState& script_state,
+    ScriptPromiseResolver& resolver,
+    WTF::String* out_string) {
+  *out_string = WTF::String();
+
+  if (!options.hasPrivateAggregationConfig() ||
+      !options.privateAggregationConfig()->hasContextId()) {
+    return true;
+  }
+
+  if (options.privateAggregationConfig()->contextId().length() >
+      kPrivateAggregationApiContextIdMaxLength) {
+    resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state.GetIsolate(), DOMExceptionCode::kDataError,
+        "contextId length cannot be larger than 64"));
+    return false;
+  }
+
+  *out_string = options.privateAggregationConfig()->contextId();
   return true;
 }
 

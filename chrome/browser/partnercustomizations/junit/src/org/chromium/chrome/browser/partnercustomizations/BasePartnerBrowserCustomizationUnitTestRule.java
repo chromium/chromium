@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -65,7 +65,7 @@ public class BasePartnerBrowserCustomizationUnitTestRule implements TestRule {
     }
 
     Context getContextWrapper() {
-        return new ContextWrapper(InstrumentationRegistry.getContext()) {
+        return new ContextWrapper(ApplicationProvider.getApplicationContext()) {
             @Override
             public Context getApplicationContext() {
                 return getBaseContext();

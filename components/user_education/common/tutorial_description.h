@@ -219,6 +219,11 @@ struct TutorialDescription {
     // 2. if this step is the last step of a tutorial
     NextButtonCallback next_button_callback = NextButtonCallback();
 
+    // Platform-specific properties that can be set for a bubble step. If an
+    // extended property evolves to warrant cross-platform support, it should be
+    // promoted out of extended properties.
+    HelpBubbleParams::ExtendedProperties extended_properties;
+
     // returns true iff all of the required parameters exist to display a
     // bubble.
     bool ShouldShowBubble() const;
@@ -234,13 +239,17 @@ struct TutorialDescription {
     }
 
     Step& NameElement(const char name_[]) {
-      name_elements_callback = base::BindRepeating(
+      return NameElements(base::BindRepeating(
           [](const char name[], ui::InteractionSequence* sequence,
              ui::TrackedElement* element) {
             sequence->NameElement(element, base::StringPiece(name));
             return true;
           },
-          name_);
+          name_));
+    }
+
+    Step& NameElements(NameElementsCallback name_elements_callback_) {
+      name_elements_callback = std::move(name_elements_callback_);
       return *this;
     }
 
@@ -279,6 +288,12 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleArrow(HelpBubbleArrow arrow_) {
       arrow = arrow_;
+      return *this;
+    }
+
+    BubbleStep& SetExtendedProperties(
+        HelpBubbleParams::ExtendedProperties extended_properties_) {
+      extended_properties = std::move(extended_properties_);
       return *this;
     }
 

@@ -61,7 +61,7 @@ const char kSanitizedInputAndCommandLine[] =
 void SimulateTextType(content::WebContents* contents,
                       const char* experiment_id,
                       const char* text) {
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents, base::StringPrintf(
                     "var parent = document.getElementById('%s');"
                     "var textarea = parent.getElementsByTagName('textarea')[0];"
@@ -74,7 +74,7 @@ void SimulateTextType(content::WebContents* contents,
 void ToggleEnableDropdown(content::WebContents* contents,
                           const char* experiment_id,
                           bool enable) {
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents,
       base::StringPrintf(
           "var k = document.getElementById('%s');"
@@ -87,51 +87,41 @@ void ToggleEnableDropdown(content::WebContents* contents,
 
 std::string GetOriginListText(content::WebContents* contents,
                               const char* experiment_id) {
-  std::string text;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      contents,
-      base::StringPrintf(
-          "var k = document.getElementById('%s');"
-          "var s = k.getElementsByClassName('experiment-origin-list-value')[0];"
-          "window.domAutomationController.send(s.value );",
-          experiment_id),
-      &text));
-  return text;
+  return content::EvalJs(
+             contents,
+             base::StringPrintf(
+                 "var k = document.getElementById('%s');"
+                 "var s = "
+                 "k.getElementsByClassName('experiment-origin-list-value')[0];"
+                 "s.value;",
+                 experiment_id))
+      .ExtractString();
 }
 
 bool IsDropdownEnabled(content::WebContents* contents,
                        const char* experiment_id) {
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      base::StringPrintf(
-          "var k = document.getElementById('%s');"
-          "var s = k.getElementsByClassName('experiment-enable-disable')[0];"
-          "window.domAutomationController.send(s.value == 'enabled');",
-          experiment_id),
-      &result));
-  return result;
+  return content::EvalJs(
+             contents,
+             base::StringPrintf(
+                 "var k = document.getElementById('%s');"
+                 "var s = "
+                 "k.getElementsByClassName('experiment-enable-disable')[0];"
+                 "s.value == 'enabled';",
+                 experiment_id))
+      .ExtractBool();
 }
 
 bool IsFlagPresent(content::WebContents* contents, const char* experiment_id) {
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      base::StringPrintf("var k = document.getElementById('%s');"
-                         "window.domAutomationController.send(k != null);",
-                         experiment_id),
-      &result));
-  return result;
+  return content::EvalJs(contents, base::StringPrintf(
+                                       "var k = document.getElementById('%s');"
+                                       "k != null;",
+                                       experiment_id))
+      .ExtractBool();
 }
 
 void WaitForExperimentalFeatures(content::WebContents* contents) {
-  bool unused;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "experimentalFeaturesReadyForTest.then(() => {"
-      "  window.domAutomationController.send(true);"
-      "});",
-      &unused));
+  ASSERT_TRUE(content::ExecJs(
+      contents, "experimentalFeaturesReadyForTest.then(() => true);"));
 }
 
 const std::vector<flags_ui::FeatureEntry> GetFeatureEntries(

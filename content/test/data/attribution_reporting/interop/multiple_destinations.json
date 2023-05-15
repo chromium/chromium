@@ -93,7 +93,7 @@
             "https://anotherdestination.test",
             "https://destination.test"
           ],
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",
@@ -108,7 +108,7 @@
             "https://anotherdestination.test",
             "https://destination.test"
           ],
-          "randomized_trigger_rate": 0.0024,
+          "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",

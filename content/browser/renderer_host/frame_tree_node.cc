@@ -518,21 +518,33 @@ void FrameTreeNode::SetAttributes(
 }
 
 bool FrameTreeNode::IsLoading() const {
+  return GetLoadingState() != LoadingState::NONE;
+}
+
+LoadingState FrameTreeNode::GetLoadingState() const {
   RenderFrameHostImpl* current_frame_host =
       render_manager_.current_frame_host();
-
   DCHECK(current_frame_host);
 
-  if (navigation_request_)
-    return true;
+  if (navigation_request_) {
+    // If navigation_request_ is non-null, the navigation has not been moved to
+    // the RenderFrameHostImpl or sent to the renderer to be committed. This
+    // loading UI policy is provisional, as the navigation API might "intercept"
+    // a same-document commit and change it from LOADING_WITHOUT_UI to
+    // LOADING_UI_REQUESTED.
+    return navigation_request_->IsSameDocument()
+               ? LoadingState::LOADING_WITHOUT_UI
+               : LoadingState::LOADING_UI_REQUESTED;
+  }
 
   RenderFrameHostImpl* speculative_frame_host =
       render_manager_.speculative_frame_host();
   // TODO(dcheng): Shouldn't a FrameTreeNode with a speculative RenderFrameHost
   // always be considered loading?
-  if (speculative_frame_host && speculative_frame_host->is_loading())
-    return true;
-  return current_frame_host->is_loading();
+  if (speculative_frame_host && speculative_frame_host->is_loading()) {
+    return LoadingState::LOADING_UI_REQUESTED;
+  }
+  return current_frame_host->loading_state();
 }
 
 bool FrameTreeNode::HasPendingCrossDocumentNavigation() const {
@@ -566,14 +578,14 @@ void FrameTreeNode::TakeNavigationRequest(
   DCHECK(!navigation_request->common_params().url.SchemeIs(
       url::kJavaScriptScheme));
 
-  bool was_previously_loading =
-      frame_tree().LoadingTree()->IsLoadingIncludingInnerFrameTrees();
+  LoadingState previous_frame_tree_loading_state =
+      frame_tree().LoadingTree()->GetLoadingState();
 
   // Reset the previous NavigationRequest owned by `this`. However, there's no
   // need to reset the state: there's still an ongoing load, and the
   // RenderFrameHostManager will take care of updates to the speculative
   // RenderFrameHost in DidCreateNavigationRequest below.
-  if (was_previously_loading) {
+  if (previous_frame_tree_loading_state != LoadingState::NONE) {
     if (navigation_request_ && navigation_request_->IsNavigationStarted()) {
       // Mark the old request as aborted.
       navigation_request_->set_net_error(net::ERR_ABORTED);
@@ -587,11 +599,7 @@ void FrameTreeNode::TakeNavigationRequest(
     was_discarded_ = false;
   }
   render_manager()->DidCreateNavigationRequest(navigation_request_.get());
-
-  bool to_different_document = !NavigationTypeUtils::IsSameDocument(
-      navigation_request_->common_params().navigation_type);
-
-  DidStartLoading(to_different_document, was_previously_loading);
+  DidStartLoading(previous_frame_tree_loading_state);
 }
 
 void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
@@ -614,15 +622,15 @@ void FrameTreeNode::ResetNavigationRequestButKeepState() {
   navigation_request_.reset();
 }
 
-void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
-                                    bool was_previously_loading) {
+void FrameTreeNode::DidStartLoading(
+    LoadingState previous_frame_tree_loading_state) {
   TRACE_EVENT2("navigation", "FrameTreeNode::DidStartLoading",
-               "frame_tree_node", frame_tree_node_id(),
-               "should_show_loading_ui ", should_show_loading_ui);
+               "frame_tree_node", frame_tree_node_id(), "loading_state",
+               GetLoadingState());
   base::ElapsedTimer timer;
 
-  frame_tree().LoadingTree()->DidStartLoadingNode(*this, should_show_loading_ui,
-                                                  was_previously_loading);
+  frame_tree().LoadingTree()->NodeLoadingStateChanged(
+      *this, previous_frame_tree_loading_state);
 
   // Set initial load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
@@ -657,11 +665,21 @@ void FrameTreeNode::DidStopLoading() {
   current_frame_host()->browsing_context_state()->OnDidStopLoading();
 
   FrameTree* loading_tree = frame_tree().LoadingTree();
-  // When loading tree is null, ignore invoking DidStopLoadingNode as the frame
-  // tree is already deleted. This can happen when prerendering gets cancelled
-  // and DidStopLoading is called during FrameTree destruction.
-  if (loading_tree)
-    loading_tree->DidStopLoadingNode(*this);
+  // When loading tree is null, ignore invoking NodeLoadingStateChanged as the
+  // frame tree is already deleted. This can happen when prerendering gets
+  // cancelled and DidStopLoading is called during FrameTree destruction.
+  if (loading_tree && !loading_tree->IsLoadingIncludingInnerFrameTrees()) {
+    // If `loading_tree->IsLoadingIncludingInnerFrameTrees()` is now false, this
+    // was the last FrameTreeNode to be loading, and the FrameTree as a whole
+    // has now stopped loading. Notify the FrameTree.
+    // It doesn't matter whether we pass LOADING_UI_REQUESTED or
+    // LOADING_WITHOUT_UI as the previous_frame_tree_loading_state param,
+    // because the previous value is only used to detect when the FrameTree's
+    // overall loading state hasn't changed, and we know that the new state will
+    // be LoadingState::NONE.
+    loading_tree->NodeLoadingStateChanged(*this,
+                                          LoadingState::LOADING_UI_REQUESTED);
+  }
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
@@ -905,7 +923,9 @@ FrameTreeNode::GetFencedFramePropertiesForEditing() {
 
 void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {
   absl::optional<FencedFrameProperties>& properties =
       GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
@@ -927,7 +947,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
         "origin to the mapped url from the fenced frame config.");
     return;
   }
-  properties->UpdateAutomaticBeaconData(event_data, destination);
+  properties->UpdateAutomaticBeaconData(event_data, destinations,
+                                        attribution_reporting_runtime_features);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(
@@ -1001,10 +1022,6 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
   // Error page isolation is enabled for main frames only (crbug.com/1092524).
-  // Note that this will also enable error page isolation for fenced frames in
-  // MPArch mode, but not ShadowDOM mode.
-  // See the issue in crbug.com/1264224#c7 for why it can't be enabled for
-  // ShadowDOM mode.
   return SiteIsolationPolicy::IsErrorPageIsolationEnabled(IsMainFrame());
 }
 

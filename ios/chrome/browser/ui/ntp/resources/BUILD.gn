@@ -8,12 +8,16 @@ colorset("fake_omnibox_bottom_gradient_color") {
   sources = [ "fake_omnibox_bottom_gradient_color.colorset/Contents.json" ]
 }
 
+colorset("fake_omnibox_background_color") {
+  sources = [ "fake_omnibox_background_color.colorset/Contents.json" ]
+}
+
 colorset("fake_omnibox_top_gradient_color") {
   sources = [ "fake_omnibox_top_gradient_color.colorset/Contents.json" ]
 }
 
-colorset("ntp_background_bottom_gradient_color") {
-  sources = [ "ntp_background_bottom_gradient_color.colorset/Contents.json" ]
+colorset("ntp_background_color") {
+  sources = [ "ntp_background_color.colorset/Contents.json" ]
 }
 
 imageset("ntp_opentabs_last_row_h") {

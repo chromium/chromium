@@ -1,8 +1,8 @@
-<style>
+<style include="sp-shared-style">
   #showShortcutsToggleContainer {
     display: flex;
     justify-content: space-between;
-    margin: 16px;
+    margin: 0 16px 16px 16px;
   }
 
   #showShortcutsToggleTitle {
@@ -53,11 +53,7 @@
   }
 
   hr {
-    background-color: var(--horizontal-rule-color);
-    border: none;
-    height: 1px;
     margin-bottom: 16px;
-    width: 100%;
   }
 </style>
 <div id="showShortcutsToggleContainer">
@@ -67,7 +63,7 @@
 </div>
 <div id="options">
   <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
-    <hr>
+    <hr class="sp-hr">
     <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
       selected="[[shortcutsRadioSelection_]]"
       on-selected-changed="onShortcutsRadioSelectionChanged_">

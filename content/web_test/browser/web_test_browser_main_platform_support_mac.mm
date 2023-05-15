@@ -11,17 +11,21 @@
 #include "content/browser/sandbox_parameters_mac.h"
 #include "net/test/test_data_directory.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 namespace {
 
-void SetDefaultsToWebTestValues(void) {
+void SetDefaultsToWebTestValues() {
   // So we can match the Blink web tests, we want to force a bunch of
   // preferences that control appearance to match.
   // (We want to do this as early as possible in application startup so
   // the settings are in before any higher layers could cache values.)
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   // Do not set text-rendering prefs (AppleFontSmoothing,
   // AppleAntiAliasingThreshold) here: Skia picks the right settings for this
   // in web test mode, see FontSkia.cpp in WebKit and

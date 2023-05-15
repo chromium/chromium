@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
-#include "chrome/browser/login_detection/password_store_sites.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -33,21 +32,9 @@ class LoginDetectionKeyedService : public KeyedService {
   explicit LoginDetectionKeyedService(Profile* profile);
   ~LoginDetectionKeyedService() override;
 
-  // Returns the login type detected for |url|. This does not perform any
-  // detection. Only returns types based on previously detected logins saved in
-  // persistent memory.
-  LoginDetectionType GetPersistentLoginDetection(const GURL& url) const;
-
  private:
   // Guaranteed to outlive |this|.
   raw_ptr<Profile> profile_;
-
-  // Set of sites that should be treated as logged-in, retrieved from field
-  // trial.
-  const std::set<std::string, OriginComparator> field_trial_logged_in_sites_;
-
-  const PasswordStoreSites profile_password_sites_;
-  const PasswordStoreSites account_password_sites_;
 };
 
 }  // namespace login_detection

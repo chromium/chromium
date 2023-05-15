@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace gpu {
 
@@ -34,10 +35,10 @@ SkiaVkOzoneImageRepresentation::SkiaVkOzoneImageRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::unique_ptr<VulkanImage> vulkan_image,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(context_state->gr_context(),
-                              manager,
-                              backing,
-                              tracker),
+    : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                    manager,
+                                    backing,
+                                    tracker),
       vulkan_image_(std::move(vulkan_image)),
       context_state_(std::move(context_state)) {
   DCHECK(backing);
@@ -89,7 +90,7 @@ std::vector<sk_sp<SkSurface>> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
       surface_props != surface_->props()) {
     SkColorType sk_color_type = viz::ToClosestSkColorType(
         /*gpu_compositing=*/true, format());
-    surface_ = SkSurface::MakeFromBackendTexture(
+    surface_ = SkSurfaces::WrapBackendTexture(
         gr_context, promise_texture_->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type, color_space().ToSkColorSpace(),
         &surface_props);

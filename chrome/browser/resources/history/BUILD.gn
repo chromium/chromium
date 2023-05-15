@@ -68,6 +68,4 @@ build_webui("build") {
       "lazy_load.js",
     ]
   }
-
-  enable_source_maps = enable_webui_inline_sourcemaps
 }

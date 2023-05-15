@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -187,16 +186,6 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
             ChromeOSLimitedAccessAccountReconcilorDelegate::ReconcilorBehavior::
                 kChild,
             IdentityManagerFactory::GetForProfile(profile));
-      }
-
-      // Only for Active Directory accounts on Chrome OS.
-      // TODO(https://crbug.com/993317): Remove the check for
-      // |IsAccountManagerAvailable| after fixing https://crbug.com/1008349 and
-      // https://crbug.com/993317.
-      if (ash::IsAccountManagerAvailable(profile) &&
-          ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
-        return std::make_unique<
-            signin::ActiveDirectoryAccountReconcilorDelegate>();
       }
 
       if (profile->GetPrefs()->GetBoolean(

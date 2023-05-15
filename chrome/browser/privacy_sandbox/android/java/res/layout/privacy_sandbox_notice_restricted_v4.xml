@@ -56,17 +56,9 @@ found in the LICENSE file.
                     style="@style/TextAppearance.Headline.Primary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
-                    android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_restricted_description_1"
-                    app:leading="@dimen/text_size_medium_leading"
-                    style="@style/TextAppearance.TextMedium.Secondary" />
-
-                <org.chromium.ui.widget.TextViewWithLeading
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_restricted_description_2"
+                    android:text="@string/privacy_sandbox_m1_notice_restricted_description_1_android"
                     app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
@@ -74,9 +66,25 @@ found in the LICENSE file.
                     android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    app:srcCompat="@drawable/privacy_sandbox_interests_illustration_v4"
+                    app:srcCompat="@drawable/privacy_sandbox_notice_eea_illustration_v4"
                     android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_m1_notice_restricted_description_android"
+                    app:leading="@dimen/text_size_medium_leading"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_m1_notice_restricted_description_2"
+                    app:leading="@dimen/text_size_medium_leading"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_marginBottom="@dimen/list_item_default_margin"

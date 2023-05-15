@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "dbus/bus.h"
@@ -28,8 +29,6 @@ namespace {
 // 100MB/s takes about 80 seconds. 5 minutes would give us a fudge factor of
 // roughly 4x.
 constexpr int kHibermanResumeTimeoutMs = 5 * 60 * 1000;
-constexpr int kHibermanTestHibermanAliveTimeoutMs = 1000;
-constexpr char kMethodNameHasOwner[] = "NameHasOwner";
 
 HibermanClient* g_instance = nullptr;
 
@@ -48,7 +47,10 @@ class HibermanClientImpl : public HibermanClient {
     proxy_ = bus->GetObjectProxy(
         ::hiberman::kHibernateServiceName,
         dbus::ObjectPath(::hiberman::kHibernateServicePath));
-    TestHibermanAlive(bus);
+
+    WaitForServiceToBeAvailable(
+        base::BindOnce(&HibermanClientImpl::WaitAvailableCallback,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // HibermanClient override:
@@ -99,28 +101,8 @@ class HibermanClientImpl : public HibermanClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  void TestHibermanAlive(dbus::Bus* bus) {
-    dbus::ObjectProxy* dbus_proxy = bus->GetObjectProxy(
-        DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-
-    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(hiberman::kHibernateServiceName);
-
-    dbus_proxy->CallMethod(&method_call, kHibermanTestHibermanAliveTimeoutMs,
-                           base::BindOnce(&HibermanClientImpl::OnTestAlive,
-                                          weak_factory_.GetWeakPtr()));
-  }
-
-  void OnTestAlive(dbus::Response* response) {
-    dbus::MessageReader reader(response);
-    if (!response || !reader.PopBool(&alive_) || !alive_) {
-      VLOG(1) << hiberman::kHibernateServiceName << " is unowned.";
-      alive_ = false;
-      return;
-    }
-
-    VLOG(1) << hiberman::kHibernateServiceName << " is alive and responsive";
+  void WaitAvailableCallback(bool service_is_available) {
+    alive_ = service_is_available;
   }
 
   // We need to test if hiberman is responding on the dbus interface, we do this
@@ -128,7 +110,7 @@ class HibermanClientImpl : public HibermanClient {
   bool alive_ = false;
 
   // D-Bus proxy for hiberman, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
   base::WeakPtrFactory<HibermanClientImpl> weak_factory_{this};
 };
 

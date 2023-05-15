@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
@@ -171,7 +172,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
   std::unordered_map<StreamType, std::unique_ptr<StreamContext>>
       stream_context_;
 
-  CameraDeviceContext* device_context_;
+  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
 
   bool video_capture_use_gmb_;
 

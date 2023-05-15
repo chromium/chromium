@@ -41,13 +41,16 @@ class ShellFederatedPermissionContext
   bool ShouldCompleteRequestImmediately() const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
-  bool HasAutoReauthnContentSetting() override;
+  bool IsAutoReauthnSettingEnabled() override;
   bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;
+  void SetRequiresUserMediation(const GURL& rp_url,
+                                bool requires_user_mediation) override;
+  bool RequiresUserMediation(const GURL& rp_url) override;
 
   // FederatedIdentityPermissionContextDelegate
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
@@ -62,10 +65,11 @@ class ShellFederatedPermissionContext
   void RevokeActiveSession(const url::Origin& relying_party_requester,
                            const url::Origin& identity_provider,
                            const std::string& account_identifier) override;
-  bool HasSharingPermission(const url::Origin& relying_party_requester,
-                            const url::Origin& relying_party_embedder,
-                            const url::Origin& identity_provider,
-                            const std::string& account_id) override;
+  bool HasSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const absl::optional<std::string>& account_id) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
@@ -103,6 +107,9 @@ class ShellFederatedPermissionContext
 
   // A set of embargoed origins.
   std::set<url::Origin> embargoed_origins_;
+
+  // A set of urls that require user mediation.
+  std::set<GURL> require_user_mediation_sites_;
 };
 
 }  // namespace content

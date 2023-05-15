@@ -62,6 +62,8 @@ static_library("test_support") {
   sources = [
     "fake_bluetooth_adapter.cc",
     "fake_bluetooth_adapter.h",
+    "fake_quick_pair_browser_delegate.cc",
+    "fake_quick_pair_browser_delegate.h",
     "fast_pair/fast_pair_service_data_creator.cc",
     "fast_pair/fast_pair_service_data_creator.h",
     "mock_quick_pair_browser_delegate.cc",
@@ -70,9 +72,12 @@ static_library("test_support") {
 
   deps = [
     ":common",
+    "//ash/constants",
+    "//ash/quick_pair/repository",
     "//base/test:test_support",
     "//chromeos/ash/services/quick_pair/public/mojom",
     "//components/image_fetcher/core",
+    "//components/prefs:test_support",
     "//device/bluetooth:mocks",
     "//services/network/public/cpp",
     "//testing/gtest",

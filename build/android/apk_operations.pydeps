@@ -105,6 +105,7 @@ pylib/constants/__init__.py
 pylib/constants/host_paths.py
 pylib/symbols/__init__.py
 pylib/symbols/deobfuscator.py
+pylib/symbols/expensive_line_transformer.py
 pylib/utils/__init__.py
 pylib/utils/app_bundle_utils.py
 pylib/utils/simpleperf.py

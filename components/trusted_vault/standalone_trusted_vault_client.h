@@ -26,7 +26,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
+namespace trusted_vault {
 
 class StandaloneTrustedVaultBackend;
 
@@ -35,7 +35,7 @@ class StandaloneTrustedVaultBackend;
 // platform-dependent crypto mechanisms (OSCrypt).
 //
 // Reading of the file is done lazily.
-class StandaloneTrustedVaultClient : public TrustedVaultClient {
+class StandaloneTrustedVaultClient : public syncer::TrustedVaultClient {
  public:
   // |identity_manager| must not be null and must outlive this object.
   // |url_loader_factory| must not be null.
@@ -106,6 +106,6 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   base::WeakPtrFactory<StandaloneTrustedVaultClient> weak_ptr_factory_{this};
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_CLIENT_H_

@@ -129,6 +129,8 @@ consoles.console_view(
     ("fuchsia-fyi-arm64-size", "gardener|p/chrome|arm64", "size"),
     ("fuchsia-fyi-astro", "gardener|hardware", "ast"),
     ("fuchsia-fyi-sherlock", "gardener|hardware", "sher"),
+    ("fuchsia-smoke-astro", "gardener|hardware|smoke", "ast"),
+    ("fuchsia-smoke-sherlock", "gardener|hardware|smoke", "sher"),
     ("fuchsia-perf-ast", "gardener|hardware|perf", "ast"),
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
@@ -154,11 +156,11 @@ exec("./ci/chromium.fyi.star")
 exec("./ci/chromium.gpu.star")
 exec("./ci/chromium.gpu.experimental.star")
 exec("./ci/chromium.gpu.fyi.star")
+exec("./ci/chromium.infra.star")
 exec("./ci/chromium.linux.star")
 exec("./ci/chromium.mac.star")
 exec("./ci/chromium.memory.star")
 exec("./ci/chromium.memory.fyi.star")
-exec("./ci/chromium.packager.star")
 exec("./ci/chromium.rust.star")
 exec("./ci/chromium.swangle.star")
 exec("./ci/chromium.updater.star")

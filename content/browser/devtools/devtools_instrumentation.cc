@@ -133,48 +133,6 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
   return issue;
 }
 
-std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
-    const blink::mojom::TrustedWebActivityIssueDetailsPtr& issue_details) {
-  protocol::String type_string;
-  switch (issue_details->violation_type) {
-    case blink::mojom::TwaQualityEnforcementViolationType::kHttpError:
-      type_string =
-          protocol::Audits::TwaQualityEnforcementViolationTypeEnum::KHttpError;
-      break;
-    case blink::mojom::TwaQualityEnforcementViolationType::kUnavailableOffline:
-      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
-          KUnavailableOffline;
-      break;
-    case blink::mojom::TwaQualityEnforcementViolationType::kDigitalAssetLinks:
-      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
-          KDigitalAssetLinks;
-      break;
-  }
-
-  auto twa_details = protocol::Audits::TrustedWebActivityIssueDetails::Create()
-                         .SetUrl(issue_details->url.spec())
-                         .SetViolationType(type_string)
-                         .Build();
-  if (issue_details->http_error_code)
-    twa_details->SetHttpStatusCode(issue_details->http_error_code);
-  if (issue_details->package_name)
-    twa_details->SetPackageName(*issue_details->package_name);
-  if (issue_details->signature)
-    twa_details->SetSignature(*issue_details->signature);
-
-  auto protocol_issue_details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetTwaQualityEnforcementDetails(std::move(twa_details))
-          .Build();
-  auto issue =
-      protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
-          .SetDetails(std::move(protocol_issue_details))
-          .Build();
-  return issue;
-}
-
 std::string FederatedAuthRequestResultToProtocol(
     blink::mojom::FederatedAuthRequestResult result) {
   using blink::mojom::FederatedAuthRequestResult;
@@ -202,6 +160,10 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownListEmpty;
     }
+    case FederatedAuthRequestResult::
+        kErrorFetchingWellKnownInvalidContentType: {
+      return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidContentType;
+    }
     case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
       return FederatedAuthRequestIssueReasonEnum::ConfigNotInWellKnown;
     }
@@ -217,6 +179,9 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::ConfigInvalidResponse;
     }
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType: {
+      return FederatedAuthRequestIssueReasonEnum::ConfigInvalidContentType;
+    }
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;
     }
@@ -226,6 +191,11 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataInvalidResponse;
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidContentType: {
+      return FederatedAuthRequestIssueReasonEnum::
+          ClientMetadataInvalidContentType;
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::AccountsHttpNotFound;
@@ -239,6 +209,9 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
       return FederatedAuthRequestIssueReasonEnum::AccountsListEmpty;
     }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType: {
+      return FederatedAuthRequestIssueReasonEnum::AccountsInvalidContentType;
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenHttpNotFound;
     }
@@ -247,6 +220,9 @@ std::string FederatedAuthRequestResultToProtocol(
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidContentType;
     }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return FederatedAuthRequestIssueReasonEnum::Canceled;
@@ -473,7 +449,8 @@ void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
-    PreloadingTriggeringOutcome status) {
+    PreloadingTriggeringOutcome status,
+    PrefetchStatus prefetch_status) {
   if (!ftn) {
     return;
   }
@@ -482,7 +459,7 @@ void DidUpdatePrefetchStatus(
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
                    initiator_devtools_navigation_token, initiating_frame_id,
-                   prefetch_url, status);
+                   prefetch_url, status, prefetch_status);
 }
 
 void DidUpdatePrerenderStatus(
@@ -1513,10 +1490,7 @@ void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info) {
   std::unique_ptr<protocol::Audits::InspectorIssue> issue;
-  if (info->code ==
-      blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue) {
-    issue = BuildTWAQualityIssue(info->details->twa_issue_details);
-  } else if (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
+  if (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
     issue = BuildHeavyAdIssue(info->details->heavy_ad_issue_details);
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
@@ -1917,12 +1891,13 @@ void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
 }
 
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host,
+                                bool auto_reauthn) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
   if (!ftn) {
     return;
   }
-  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
+  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown, auto_reauthn);
 }
 
 }  // namespace devtools_instrumentation

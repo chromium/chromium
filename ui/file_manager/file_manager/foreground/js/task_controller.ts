@@ -10,10 +10,8 @@
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -41,16 +39,6 @@ interface ExtractingTasks {
   params: chrome.fileManagerPrivate.IOTaskParams;
 }
 
-/**
- * Small helper function that makes easier to flip from Store to non-Store
- * tasks.
- */
-function shouldUseStore() {
-  // Enabling the Store by default, meaning when the experimental flag is ON we
-  // fallback to the legacy version.
-  return !util.isFilesAppExperimental();
-}
-
 export class TaskController {
   private fileTransferController_: FileTransferController|null = null;
   private taskHistory_: TaskHistory;
@@ -68,19 +56,16 @@ export class TaskController {
    * multiple times.
    */
   private tasks_: Promise<FileTasks>|null = null;
-  private tasksEntries_: Entry[];
   /** Map used to track extract IOTasks in progress.  */
   private extractTasks_: Map<number, ExtractingTasks> = new Map();
-  /** Selected entries from the last time onSelectionChanged_ was called.  */
-  private lastSelectedEntries_: Entry[];
   private store_: Store;
   private selectionFilesData_: FileData[] = [];
   private selectionKeys_: FileKey[] = [];
   private selectionTasks_: StoreFileTasks|undefined;
 
   constructor(
-      private dialogType_: DialogType, private volumeManager_: VolumeManager,
-      private ui_: FileManagerUI, private metadataModel_: MetadataModel,
+      private volumeManager_: VolumeManager, private ui_: FileManagerUI,
+      private metadataModel_: MetadataModel,
       private directoryModel_: DirectoryModel,
       private selectionHandler_: FileSelectionHandler,
       private metadataUpdateController_: MetadataUpdateController,
@@ -90,21 +75,9 @@ export class TaskController {
         assertInstanceof(document.querySelector('#default-task'), Command);
     this.openWithCommand_ =
         assertInstanceof(document.querySelector('#open-with'), Command);
-    this.tasksEntries_ = [];
-    this.lastSelectedEntries_ = [];
     this.store_ = getStore();
 
-    if (shouldUseStore()) {
-      this.store_.subscribe(this);
-    } else {
-      // These events are superseded by the store.
-      this.selectionHandler_.addEventListener(
-          FileSelectionHandler.EventType.CHANGE,
-          this.onSelectionChanged_.bind(this));
-      this.selectionHandler_.addEventListener(
-          FileSelectionHandler.EventType.CHANGE_THROTTLED,
-          this.updateTasks_.bind(this));
-    }
+    this.store_.subscribe(this);
 
     ui_.taskMenuButton.addEventListener(
         'select', this.onTaskItemClicked_.bind(this));
@@ -126,15 +99,13 @@ export class TaskController {
       this.selectionFilesData_ = getFilesData(newState, keys ?? []);
       // Kickoff the async/ActionsProducer to fetch the tasks for the new
       // selection.
-      if (shouldUseStore()) {
-        this.tasks_ = null;
-        // Only fetch if there is anything to fetch.
-        if (keys.length > 0) {
-          this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
-        }
-        // Hides the button while fetching the tasks.
-        this.maybeHideButton();
+      this.tasks_ = null;
+      // Only fetch if there is anything to fetch.
+      if (keys.length > 0) {
+        this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
       }
+      // Hides the button while fetching the tasks.
+      this.maybeHideButton();
     }
 
     if (tasks !== this.selectionTasks_) {
@@ -410,56 +381,20 @@ export class TaskController {
     return mimeType || '';
   }
 
-  /** Handles change of selection and clears context menu.  */
-  private onSelectionChanged_() {
-    if (window.IN_TEST) {
-      (this.ui_.taskMenuButton as unknown as HTMLElement)
-          .removeAttribute('get-tasks-completed');
-    }
-    const selection = this.selectionHandler_.selection;
-    // Caller of update context menu task items.
-    // FileSelectionHandler.EventType.CHANGE
-    if (this.dialogType_ === DialogType.FULL_PAGE &&
-        (selection.directoryCount > 0 || selection.fileCount > 0)) {
-      // Compare entries while ignoring changes inside directories.
-      if (!util.isSameEntries(this.lastSelectedEntries_, selection.entries)) {
-        // Update the context menu if selection changed.
-        this.updateContextMenuTaskItems_([]);
-      }
-    } else {
-      // Update context menu.
-      this.updateContextMenuTaskItems_([]);
-    }
-    this.lastSelectedEntries_ = selection.entries;
-  }
-
   /**
    * Explicitly removes the cached tasks first and and re-calculates the
    * current tasks.
    */
   private clearCacheAndUpdateTasks_() {
     this.tasks_ = null;
-    if (shouldUseStore()) {
-      // Dispatch an empty fetch to invalidate any ongoing fetch.
-      this.store_.dispatch(fetchFileTasks([]));
-    }
+    // Dispatch an empty fetch to invalidate any ongoing fetch.
+    this.store_.dispatch(fetchFileTasks([]));
     this.updateTasks_();
   }
 
   private maybeHideButton(): boolean {
-    const selection = this.selectionHandler_.selection;
     // For the Store version the other conditions are checked in the store.
-    const shouldDisableTasks = shouldUseStore() ?
-        (this.selectionTasks_?.tasks ?? []).length === 0 :
-        (
-            // File Picker/Save As doesn't show the "Open" button.
-            this.dialogType_ !== DialogType.FULL_PAGE ||
-            // The list of available tasks should not be available to trashed
-            // items.
-            this.directoryModel_.getCurrentRootType() ==
-                VolumeManagerCommon.RootType.TRASH ||
-            // Nothing selected, so no "Open" button.
-            selection.totalCount === 0);
+    const shouldDisableTasks = (this.selectionTasks_?.tasks ?? []).length === 0;
 
     if (shouldDisableTasks) {
       this.ui_.taskMenuButton.hidden = true;
@@ -501,17 +436,7 @@ export class TaskController {
   }
 
   async getFileTasks(): Promise<FileTasks> {
-    if (shouldUseStore()) {
-      return this.getFileTasksStore_();
-    }
-    const selection = this.selectionHandler_.selection;
-    if (this.tasks_ &&
-        util.isSameEntries(this.tasksEntries_, selection.entries)) {
-      return this.tasks_;
-    }
-    this.tasksEntries_ = selection.entries;
-    this.tasks_ = this.fetchTasks_();
-    return this.tasks_;
+    return this.getFileTasksStore_();
   }
 
   private async getFileTasksStore_(): Promise<FileTasks> {
@@ -534,33 +459,6 @@ export class TaskController {
         this.directoryModel_, this.ui_, this.fileTransferController_!, entries,
         this.taskHistory_, this.progressCenter_, this));
     return this.tasks_;
-  }
-
-  /**
-   * Fetch FileTasks, it should be only used by getFileTasks() because
-   * getFileTasks() takes into account the caching.
-   */
-  private async fetchTasks_(): Promise<FileTasks> {
-    const selection = this.selectionHandler_.selection;
-    await selection.computeAdditional(this.metadataModel_);
-    if (this.selectionHandler_.selection !== selection) {
-      if (util.isSameEntries(this.tasksEntries_, selection.entries)) {
-        this.tasks_ = null;
-      }
-      throw new Error('stale selection');
-    }
-    const tasks = await FileTasks.create(
-        this.volumeManager_, this.metadataModel_, this.directoryModel_,
-        this.ui_, this.fileTransferController_!, selection.entries,
-        this.taskHistory_, this.crostini_, this.progressCenter_, this);
-
-    if (this.selectionHandler_.selection !== selection) {
-      if (util.isSameEntries(this.tasksEntries_, selection.entries)) {
-        this.tasks_ = null;
-      }
-      throw new Error('stale selection');
-    }
-    return tasks;
   }
 
   /** Returns whether default task command can be executed or not. */
@@ -632,7 +530,8 @@ export class TaskController {
         defaultTask != null && !defaultTask.isDlpBlocked;
     this.shouldHideDefaultTask_ = defaultTask == null;
     this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
-    this.canExecuteOpenActions_ = taskCount > 1;
+    this.canExecuteOpenActions_ = taskCount > 1 ||
+      (taskCount === 1 && !defaultTask);
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
     this.ui_.tasksSeparator.hidden = taskCount === 0;

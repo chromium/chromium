@@ -42,6 +42,8 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure callback) override;
+  void ForceUnregister(const AppId& app_id,
+                       base::OnceClosure callback) override;
 
  private:
   void CreateShortcut(const AppId& app_id,
@@ -49,6 +51,7 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
   void UpdateShortcut(const AppId& app_id,
+                      absl::optional<SynchronizeOsOptions> synchronize_options,
                       const std::u16string& old_app_title,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);

@@ -48,10 +48,9 @@ class VisitSegmentDatabase {
   // ID of the newly created segment, or 0 on failure.
   SegmentID CreateSegment(URLID url_id, const std::string& segment_name);
 
-  // Increase the segment visit count by the provided amount. Return true on
+  // Update the segment visit count by the provided amount. Return true on
   // success.
-  bool IncreaseSegmentVisitCount(SegmentID segment_id, base::Time ts,
-                                 int amount);
+  bool UpdateSegmentVisitCount(SegmentID segment_id, base::Time ts, int amount);
 
   // Returns the highest-scored segments up to `max_result_count`. If
   // `url_filter` is non-null, then only URLs for which it returns true will be

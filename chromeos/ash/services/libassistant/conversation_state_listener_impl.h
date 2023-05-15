@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONVERSATION_STATE_LISTENER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONVERSATION_STATE_LISTENER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
@@ -54,13 +56,17 @@ class ConversationStateListenerImpl
       assistant::AssistantInteractionResolution resolution);
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
+  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>,
+                ExperimentalAsh>
       speech_recognition_observers_;
 
   // Owned by |ConversationController|.
-  const mojo::RemoteSet<mojom::ConversationObserver>& conversation_observers_;
+  const raw_ref<const mojo::RemoteSet<mojom::ConversationObserver>,
+                ExperimentalAsh>
+      conversation_observers_;
 
-  AudioInputController* const audio_input_controller_ = nullptr;
+  const raw_ptr<AudioInputController, ExperimentalAsh> audio_input_controller_ =
+      nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

@@ -98,12 +98,18 @@ class RTxtGenerator:
       if child.tag == 'declare-styleable':
         ret.update(self._ParseDeclareStyleable(child))
       else:
-        if child.tag == 'item':
+        if child.tag in ('item', 'public'):
           resource_type = child.attrib['type']
         elif child.tag in ('array', 'integer-array', 'string-array'):
           resource_type = 'array'
         else:
           resource_type = child.tag
+        parsed_element = ElementTree.tostring(child, encoding='unicode').strip()
+        assert resource_type in resource_utils.ALL_RESOURCE_TYPES, (
+            f'Infered resource type ({resource_type}) from xml entry '
+            f'({parsed_element}) (found in {xml_path}) is not listed in '
+            'resource_utils.ALL_RESOURCE_TYPES. Teach resources_parser.py how '
+            'to parse this entry and/or add to the list.')
         name = _ResourceNameToJavaSymbol(child.attrib['name'])
         ret.add(_TextSymbolEntry('int', resource_type, name, _DUMMY_RTXT_ID))
     return ret

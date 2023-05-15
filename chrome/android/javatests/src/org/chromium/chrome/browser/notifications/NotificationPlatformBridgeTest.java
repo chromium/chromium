@@ -19,7 +19,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -34,6 +34,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -135,6 +136,7 @@ public class NotificationPlatformBridgeTest {
     @LargeTest
     @Feature({"Browser", "Notifications"})
     @Test
+    @DisabledTest(message = "https://crbug.com/1435133")
     public void testPermissionDenied() throws Exception {
         // Notifications permission should initially be prompt, and showing should fail.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
@@ -175,6 +177,7 @@ public class NotificationPlatformBridgeTest {
     @MediumTest
     @Feature({"Browser", "Notifications"})
     @Test
+    @DisabledTest(message = "https://crbug.com/1435133")
     public void testPermissionGranted() throws Exception {
         // Notifications permission should initially be prompt, and showing should fail.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
@@ -209,7 +212,7 @@ public class NotificationPlatformBridgeTest {
     public void testDefaultNotificationProperties() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         Notification notification = showAndGetNotification("MyNotification", "{body: 'Hello'}");
 
@@ -297,7 +300,7 @@ public class NotificationPlatformBridgeTest {
     public void testReplyToNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         UserActionTester actionTester = new UserActionTester();
 
@@ -342,7 +345,7 @@ public class NotificationPlatformBridgeTest {
     public void testReplyToNotificationWithEmptyReply() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         // +0.5 engagement from navigating to the test page.
         Assert.assertEquals(0.5, getEngagementScoreBlocking(), 0);
@@ -555,7 +558,7 @@ public class NotificationPlatformBridgeTest {
 
         Assert.assertEquals("MyNotification", NotificationTestUtil.getExtraTitle(notification));
 
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Bitmap smallIcon = NotificationTestUtil.getSmallIconFromNotification(context, notification);
         Assert.assertNotNull(smallIcon);
 
@@ -593,7 +596,7 @@ public class NotificationPlatformBridgeTest {
 
         Assert.assertEquals("MyNotification", NotificationTestUtil.getExtraTitle(notification));
 
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Bitmap largeIcon = NotificationTestUtil.getLargeIconFromNotification(context, notification);
         Assert.assertNotNull(largeIcon);
         Assert.assertEquals(Color.RED, largeIcon.getPixel(0, 0));
@@ -615,7 +618,7 @@ public class NotificationPlatformBridgeTest {
 
         Assert.assertEquals("NoIconNotification", NotificationTestUtil.getExtraTitle(notification));
 
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Assert.assertNotNull(
                 NotificationTestUtil.getLargeIconFromNotification(context, notification));
 

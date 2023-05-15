@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_IN_MEMORY_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_IN_MEMORY_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "crypto/secure_hash.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
@@ -18,13 +19,23 @@ namespace network {
 
 // A SharedDictionaryWriter which stores the dictionary in memory. This can be
 // obtained using SharedDictionaryStorageInMemory::MaybeCreateWriter().
-class SharedDictionaryWriterInMemory : public SharedDictionaryWriter {
+class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterInMemory
+    : public SharedDictionaryWriter {
  public:
+  enum class Result {
+    kSuccess,
+    kErrorAborted,
+    kErrorSizeZero,
+    kErrorSizeExceedsLimit,
+  };
   using FinishCallback =
-      base::OnceCallback<void(scoped_refptr<net::IOBuffer>,
-                              size_t,
+      base::OnceCallback<void(Result result,
+                              scoped_refptr<net::IOBuffer> buffer,
+                              size_t size,
                               const net::SHA256HashValue& hash)>;
 
+  // `finish_callback` is called when the entire dictionary binary has been
+  // stored to the memory, or when an error occurs.
   explicit SharedDictionaryWriterInMemory(FinishCallback finish_callback);
 
   // SharedDictionaryWriter
@@ -37,6 +48,7 @@ class SharedDictionaryWriterInMemory : public SharedDictionaryWriter {
   FinishCallback finish_callback_;
   std::unique_ptr<crypto::SecureHash> secure_hash_;
   std::vector<std::string> data_;
+  size_t total_size_ = 0;
 };
 
 }  // namespace network

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -79,7 +80,7 @@ class ASH_EXPORT PowerButtonScreenshotController : public ui::EventHandler {
   base::OneShotTimer volume_up_timer_;
 
   // Time source for performed action times.
-  const base::TickClock* tick_clock_;  // Not owned.
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;  // Not owned.
 };
 
 }  // namespace ash

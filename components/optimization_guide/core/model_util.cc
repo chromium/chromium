@@ -96,6 +96,11 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationAdaptiveToolbar";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
       return "SegmentationTabletProductivityUser";
+    case proto::
+        OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING:
+      return "NewTabPageHistoryClustersModuleRanking";
+    case proto::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO:
+      return "WebAppInstallationPromo";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
@@ -205,6 +210,20 @@ bool CheckAllPathsExist(
     }
   }
   return true;
+}
+
+base::FilePath ConvertToRelativePath(const base::FilePath& parent,
+                                     const base::FilePath& child) {
+  DCHECK(parent.IsAbsolute());
+  DCHECK(child.IsAbsolute());
+  DCHECK(parent.IsParent(child));
+  const auto parent_components = parent.GetComponents();
+  const auto child_components = child.GetComponents();
+  base::FilePath relative_path;
+  for (size_t i = parent_components.size(); i < child_components.size(); i++) {
+    relative_path = relative_path.Append(child_components[i]);
+  }
+  return relative_path;
 }
 
 std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key) {

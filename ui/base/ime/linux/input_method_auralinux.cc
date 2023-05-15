@@ -392,38 +392,22 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   if (client->GetTextRange(&text_range) &&
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
+    absl::optional<GrammarFragment> fragment;
+    absl::optional<AutocorrectInfo> autocorrect;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // SetGrammarFragmentAtCursor must happen before SetSurroundingText to make
-    // sure it is properly updated before IME needs it.
-    auto grammar_fragment_opt = client->GetGrammarFragmentAtCursor();
-    if (grammar_fragment_opt) {
-      auto fragment = grammar_fragment_opt.value();
-      // Convert utf16 offsets to utf8.
-      std::vector<size_t> offsets = {fragment.range.start(),
-                                     fragment.range.end()};
-      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
-      context_->SetGrammarFragmentAtCursor(
-          ui::GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
-                                         static_cast<uint32_t>(offsets[1])),
-                              fragment.suggestion));
-    } else {
-      context_->SetGrammarFragmentAtCursor(
-          ui::GrammarFragment(gfx::Range(), ""));
-    }
-
-    // Send the updated autocorrect information before surrounding text,
-    // as surrounding text changes may trigger the IME to ask for the
-    // autocorrect information.
-    context_->SetAutocorrectInfo(client->GetAutocorrectRange(),
-                                 client->GetAutocorrectCharacterBounds());
+    fragment = client->GetGrammarFragmentAtCursor();
+    autocorrect = AutocorrectInfo{
+        client->GetAutocorrectRange(),
+        client->GetAutocorrectCharacterBounds(),
+    };
 #endif
-
     if (surrounding_text_ != text || text_range_ != text_range ||
         selection_range_ != selection_range) {
       surrounding_text_ = text;
       text_range_ = text_range;
       selection_range_ = selection_range;
-      context_->SetSurroundingText(text, text_range, selection_range);
+      context_->SetSurroundingText(text, text_range, selection_range, fragment,
+                                   autocorrect);
     }
   }
 }

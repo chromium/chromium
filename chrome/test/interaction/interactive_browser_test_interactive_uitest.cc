@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 #include <memory>
@@ -11,28 +10,35 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
+#include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
 
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+constexpr char kDocumentWithTitle[] = "/title3.html";
 }
 
 class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
@@ -313,4 +319,71 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
           })),
       InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
       WithElement(kTabSearchWebViewName, base::DoNothing()));
+}
+
+namespace {
+
+// Simple bubble containing a WebView. Allows us to simulate swapping out one
+// WebContents for another.
+class WebBubbleView : public views::BubbleDialogDelegateView {
+ public:
+  ~WebBubbleView() override = default;
+
+  // Creates a bubble with a WebView and loads `url` in the view.
+  static WebBubbleView* CreateBubble(Browser* browser, GURL url) {
+    BrowserView* const browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser);
+    auto bubble_ptr = base::WrapUnique(
+        new WebBubbleView(browser_view->toolbar(), browser->profile(), url));
+    auto* const bubble = bubble_ptr.get();
+    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_ptr))
+        ->Show();
+    return bubble;
+  }
+
+  // Swaps out the current WebContents for a new one and loads `url` into that
+  // new WebContents.
+  void SwapWebContents(GURL url) {
+    owned_web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile_));
+    web_view_->SetWebContents(owned_web_contents_.get());
+    web_view_->LoadInitialURL(url);
+  }
+
+  // Gets the WebView displayed by this bubble.
+  views::WebView* web_view() { return web_view_; }
+
+ private:
+  WebBubbleView(views::View* anchor_view, Profile* profile, GURL url)
+      : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT),
+        profile_(profile) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    web_view_ = AddChildView(std::make_unique<views::WebView>(profile));
+    web_view_->LoadInitialURL(url);
+  }
+
+  const base::raw_ptr<Profile> profile_;
+  base::raw_ptr<views::WebView> web_view_;
+  std::unique_ptr<content::WebContents> owned_web_contents_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       SwappingWebViewWebContentsTreatedAsNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithTitle);
+
+  auto* const bubble = WebBubbleView::CreateBubble(browser(), url);
+
+  RunTestSequence(InstrumentNonTabWebView(kWebContentsId, bubble->web_view()),
+                  // Need to flush here because we're still responding to the
+                  // original WebContents being shown, so we can't destroy the
+                  // WebContents until the call resolves.
+                  FlushEvents(), Do([&]() { bubble->SwapWebContents(url2); }),
+                  WaitForWebContentsNavigation(kWebContentsId, url2));
+
+  bubble->GetWidget()->CloseNow();
 }

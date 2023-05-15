@@ -21,7 +21,6 @@ struct NtExports {
   NtOpenFileFunction                     OpenFile;
   NtOpenThreadFunction                   OpenThread;
   NtOpenProcessFunction                  OpenProcess;
-  NtOpenProcessTokenFunction             OpenProcessToken;
   NtOpenProcessTokenExFunction           OpenProcessTokenEx;
   NtProtectVirtualMemoryFunction         ProtectVirtualMemory;
   NtQueryAttributesFileFunction          QueryAttributesFile;

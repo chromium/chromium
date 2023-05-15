@@ -38,6 +38,11 @@ id<FormSuggestionProvider> PasswordTabHelper::GetSuggestionProvider() {
   return controller_.suggestionProvider;
 }
 
+id<PasswordsAccountStorageNoticeHandler>
+PasswordTabHelper::GetPasswordsAccountStorageNoticeHandler() {
+  return controller_;
+}
+
 password_manager::PasswordGenerationFrameHelper*
 PasswordTabHelper::GetGenerationHelper() {
   return controller_.passwordManagerDriver->GetPasswordGenerationHelper();

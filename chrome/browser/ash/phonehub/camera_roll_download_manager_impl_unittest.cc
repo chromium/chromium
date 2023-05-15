@@ -15,6 +15,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -61,7 +62,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
       : profile_manager_(CreateTestingProfileManager()),
         profile_(profile_manager_->CreateTestingProfile(kUserEmail)),
         user_manager_(new ash::FakeChromeUserManager),
-        user_manager_owner_(base::WrapUnique(user_manager_)) {
+        user_manager_owner_(base::WrapUnique(user_manager_.get())) {
     AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
@@ -140,10 +141,11 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* const profile_;
-  ash::FakeChromeUserManager* const user_manager_;
+  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
-  HoldingSpaceKeyedService* holding_space_keyed_service_;
+  raw_ptr<HoldingSpaceKeyedService, ExperimentalAsh>
+      holding_space_keyed_service_;
   std::unique_ptr<holding_space::ScopedTestMountPoint> downloads_mount_;
 
   std::unique_ptr<CameraRollDownloadManagerImpl> camera_roll_download_manager_;

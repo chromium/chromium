@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "cc/paint/filter_operation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
 
@@ -105,6 +106,13 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
     }
   }
   return false;
+}
+
+gfx::Rect FilterOperations::ExpandRectForPixelMovement(
+    const gfx::Rect& rect) const {
+  gfx::RectF expanded_rect(rect);
+  expanded_rect.Outset(MaximumPixelMovement());
+  return gfx::ToEnclosingRect(expanded_rect);
 }
 
 float FilterOperations::MaximumPixelMovement() const {

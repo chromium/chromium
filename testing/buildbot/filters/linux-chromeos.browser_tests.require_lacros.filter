@@ -6,6 +6,7 @@ AccessibilityExtension*
 Autoclick*
 AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
+ChromeAppKioskLacrosTest*
 ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
@@ -18,7 +19,7 @@ VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
 WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
-WebKioskAshRequiresLacrosTest*
+WebKioskLacrosTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxBackgroundTest.TextSelectionAndLiveRegion

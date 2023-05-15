@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
@@ -79,9 +78,7 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // This is a user and primary profile, so this service serves the lock screen
-  // and manages the Smart Lock user flow for only one user.
-  EasyUnlockService* service = new EasyUnlockServiceRegular(
+  EasyUnlockService* service = new EasyUnlockService(
       Profile::FromBrowserContext(context),
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),

@@ -19,11 +19,11 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
 namespace errors = manifest_errors;
 namespace dnr_api = api::declarative_net_request;
 
@@ -146,12 +146,10 @@ TEST_F(DNRManifestTest, InvalidRulesFileKey) {
 
 TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
   const char kRulesetFile[] = "file1.json";
-  base::Value::Dict manifest = CreateManifest({});
-  manifest.Set(dnr_api::ManifestKeys::kDeclarativeNetRequest,
-               DictionaryBuilder()
-                   .Set(dnr_api::DNRInfo::kRuleResources,
-                        (ListBuilder().Append(kRulesetFile)).Build())
-                   .Build());
+  base::Value::Dict manifest = CreateManifest({}).Set(
+      dnr_api::ManifestKeys::kDeclarativeNetRequest,
+      base::Value::Dict().Set(dnr_api::DNRInfo::kRuleResources,
+                              base::Value::List().Append(kRulesetFile)));
 
   WriteManifestAndRuleset(manifest, {});
 

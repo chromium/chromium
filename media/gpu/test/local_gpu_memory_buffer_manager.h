@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -65,7 +66,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
                                  gfx::BufferUsage usage);
 
  private:
-  gbm_device* gbm_device_;
+  raw_ptr<gbm_device, ExperimentalAsh> gbm_device_;
 };
 
 }  // namespace media

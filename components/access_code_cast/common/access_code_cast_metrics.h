@@ -115,6 +115,8 @@ class AccessCodeCastMetrics {
   static const char kHistogramDialogCloseReason[];
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
+  static const char kHistogramFreezeCount[];
+  static const char kHistogramFreezeDuration[];
   static const char kHistogramRememberedDevicesCount[];
   static const char kHistogramRouteDiscoveryTypeAndSource[];
   static const char kHistogramRouteDuration[];
@@ -148,6 +150,13 @@ class AccessCodeCastMetrics {
   // Records where the user clicked to open the AccessCodeCast dialog.
   static void RecordDialogOpenLocation(
       AccessCodeCastDialogOpenLocation location);
+
+  // Records the number of times a mirroring session is paused during its
+  // duration.
+  static void RecordMirroringPauseCount(int count);
+
+  // Records the duration of time that a mirroring session is paused.
+  static void RecordMirroringPauseDuration(base::TimeDelta duration);
 
   // Records the count of cast devices which are currently being remembered
   // being the AccessCodeCastSinkService.

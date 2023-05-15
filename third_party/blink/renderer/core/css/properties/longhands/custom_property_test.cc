@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -143,6 +144,26 @@ TEST_F(CustomPropertyTest, ComputedCSSValueLateRegistration) {
   const CSSValue* value = GetComputedValue(property);
   EXPECT_TRUE(value->IsCustomPropertyDeclaration());
   EXPECT_EQ("100px", value->CssText());
+}
+
+TEST_F(CustomPropertyTest, ComputedCSSValueNumberCalc) {
+  RegisterProperty(GetDocument(), "--x", "<number>", "0", false);
+  CustomProperty property("--x", GetDocument());
+  SetElementWithStyle("--x:calc(24 / 10)");
+  const CSSValue* value = GetComputedValue(property);
+  ASSERT_TRUE(value->IsNumericLiteralValue());
+  const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
+  EXPECT_DOUBLE_EQ(2.4, numeric_literal->GetDoubleValue());
+}
+
+TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
+  RegisterProperty(GetDocument(), "--x", "<integer>", "0", false);
+  CustomProperty property("--x", GetDocument());
+  SetElementWithStyle("--x:calc(24 / 10)");
+  const CSSValue* value = GetComputedValue(property);
+  ASSERT_TRUE(value->IsNumericLiteralValue());
+  const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
+  EXPECT_DOUBLE_EQ(2.0, numeric_literal->GetDoubleValue());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {

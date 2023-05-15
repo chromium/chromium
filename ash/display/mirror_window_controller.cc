@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/display/mirror_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -98,7 +99,7 @@ class MirroringScreenPositionClient
   }
 
  private:
-  MirrorWindowController* controller_;  // not owned.
+  raw_ptr<MirrorWindowController, ExperimentalAsh> controller_;  // not owned.
 };
 
 // A trivial CaptureClient that does nothing. That is, calls to set/release
@@ -147,7 +148,7 @@ struct MirrorWindowController::MirroringHostInfo {
   ~MirroringHostInfo();
   std::unique_ptr<AshWindowTreeHost> ash_host;
   gfx::Size mirror_window_host_size;
-  aura::Window* mirror_window = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> mirror_window = nullptr;
 };
 
 MirrorWindowController::MirroringHostInfo::MirroringHostInfo() = default;

@@ -307,9 +307,8 @@ FilesystemProxy::LockFile(const base::FilePath& path) {
         FilesystemImpl::LockFileLocal(full_path);
     if (!result.has_value())
       return base::unexpected(result.error());
-    std::unique_ptr<FileLock> lock = std::make_unique<LocalFileLockImpl>(
-        std::move(full_path), std::move(result.value()));
-    return lock;
+    return std::make_unique<LocalFileLockImpl>(std::move(full_path),
+                                               std::move(result.value()));
   }
 
   mojo::PendingRemote<mojom::FileLock> remote_lock;
@@ -319,9 +318,7 @@ FilesystemProxy::LockFile(const base::FilePath& path) {
   if (error != base::File::FILE_OK)
     return base::unexpected(error);
 
-  std::unique_ptr<FileLock> lock =
-      std::make_unique<RemoteFileLockImpl>(std::move(remote_lock));
-  return lock;
+  return std::make_unique<RemoteFileLockImpl>(std::move(remote_lock));
 }
 
 bool FilesystemProxy::SetOpenedFileLength(base::File* file, uint64_t length) {

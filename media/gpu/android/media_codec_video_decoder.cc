@@ -61,34 +61,43 @@ bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
 
 std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
     DeviceInfo* device_info,
-    bool allow_software_codecs = false) {
+    const bool allow_media_codec_software_decoder) {
   std::vector<SupportedVideoDecoderConfig> supported_configs;
   for (const auto& info : GetDecoderInfoCache()) {
     const auto codec = VideoCodecProfileToVideoCodec(info.profile);
+    // Some DRM key system doesn't require a secure decoder to decrypt the
+    // stream (e.g. Widevine L3). When this function is called, we have no idea
+    // on which key system will be used. So we simply declare all the decoders
+    // to support encrypted content playback. If the playback does require a
+    // secure decoder, it will fail when creating MediaCodec.
+    constexpr bool kAllowEncrypted = true;
     if ((codec == VideoCodec::kVP8 && device_info->IsVp8DecoderAvailable()) ||
         (codec == VideoCodec::kVP9 && device_info->IsVp9DecoderAvailable()) ||
         (codec == VideoCodec::kAV1 && device_info->IsAv1DecoderAvailable())) {
-      // We don't compile support into libvpx for these profiles, so allow them
-      // for all resolutions. Tests require availability of software codecs.
-      const bool require_encrypted = !allow_software_codecs &&
-                                     info.profile != VP9PROFILE_PROFILE2 &&
-                                     info.profile != VP9PROFILE_PROFILE3;
-      supported_configs.emplace_back(
-          info.profile, info.profile, info.coded_size_min, info.coded_size_max,
-          /*allow_encrypted=*/true, require_encrypted);
-
       // Don't allow software decoding since we bundle VP8, VP9, AV1 decoders.
-      if (!info.is_software_codec && require_encrypted) {
-        // Require a minimum of 360p even for hardware decoding of VP8, VP9.
-        auto coded_size_min = info.coded_size_min;
-        if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
-          coded_size_min.SetToMax(gfx::Size(360, 360));
-        }
-        supported_configs.emplace_back(info.profile, info.profile,
-                                       coded_size_min, info.coded_size_max,
-                                       /*allow_encrypted=*/false,
-                                       /*require_encrypted=*/false);
+      const bool can_use_builtin_software_decoder =
+          info.profile != VP9PROFILE_PROFILE2 &&
+          info.profile != VP9PROFILE_PROFILE3 &&
+          info.secure_codec_capability == SecureCodecCapability::kClear;
+      const bool is_os_software_decoder_allowed =
+          !can_use_builtin_software_decoder ||
+          allow_media_codec_software_decoder;
+      if (info.is_software_codec && !is_os_software_decoder_allowed) {
+        continue;
       }
+
+      // Require a minimum of 360p even for hardware decoding of VP8, VP9.
+      auto coded_size_min = info.coded_size_min;
+      if (!info.is_software_codec && can_use_builtin_software_decoder &&
+          (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9)) {
+        coded_size_min.SetToMax(gfx::Size(360, 360));
+      }
+
+      supported_configs.emplace_back(
+          info.profile, info.profile, coded_size_min, info.coded_size_max,
+          kAllowEncrypted,
+          /*require_encrypted=*/info.secure_codec_capability ==
+              SecureCodecCapability::kEncrypted);
       continue;
     }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -101,10 +110,11 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
         || codec == VideoCodec::kDolbyVision
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
     ) {
-      supported_configs.emplace_back(info.profile, info.profile,
-                                     info.coded_size_min, info.coded_size_max,
-                                     /*allow_encrypted=*/true,
-                                     /*require_encrypted=*/false);
+      supported_configs.emplace_back(
+          info.profile, info.profile, info.coded_size_min, info.coded_size_max,
+          kAllowEncrypted,
+          /*require_encrypted=*/info.secure_codec_capability ==
+              SecureCodecCapability::kEncrypted);
     }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   }
@@ -205,8 +215,9 @@ PendingDecode::~PendingDecode() = default;
 // static
 std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigs() {
-  static const auto configs =
-      GetSupportedConfigsInternal(DeviceInfo::GetInstance());
+  static const auto configs = GetSupportedConfigsInternal(
+      DeviceInfo::GetInstance(),
+      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder));
   return configs;
 }
 

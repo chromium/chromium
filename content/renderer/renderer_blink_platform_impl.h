@@ -30,11 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/services/font/public/cpp/font_loader.h"  // nogncheck
-#include "third_party/skia/include/core/SkRefCnt.h"           // nogncheck
-#endif
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace blink {
 namespace scheduler {
@@ -198,6 +194,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
           blink::mojom::ServiceWorkerContainerHostInterfaceBase>
           service_worker_container_host,
       const blink::WebString& client_id,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption
+          fetch_handler_bypass_option,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;
@@ -220,17 +218,16 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
   base::PlatformThreadId GetIOThreadId() const override;
-  attribution_reporting::mojom::OsSupport GetOsSupportForAttributionReporting()
-      override;
+  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
   scoped_refptr<base::SingleThreadTaskRunner> VideoFrameCompositorTaskRunner()
       override;
 #if BUILDFLAG(IS_ANDROID)
   void SetPrivateMemoryFootprint(
       uint64_t private_memory_footprint_bytes) override;
   bool IsUserLevelMemoryPressureSignalEnabled() override;
-  base::TimeDelta InertIntervalOfUserLevelMemoryPressureSignal() override;
-  base::TimeDelta MinimumIntervalOfUserLevelMemoryPressureSignal() override;
-#endif
+  std::pair<base::TimeDelta, base::TimeDelta>
+  InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.
@@ -261,10 +258,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   // Event that signals `io_thread_id_` is set and ready to be read.
   mutable base::WaitableEvent io_thread_id_ready_event_;
   base::PlatformThreadId io_thread_id_ = base::kInvalidThreadId;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  sk_sp<font_service::FontLoader> font_loader_;
-#endif
 
   // Thread to run the VideoFrameCompositor on.
   std::unique_ptr<base::Thread> video_frame_compositor_thread_;

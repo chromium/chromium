@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -12,6 +14,8 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,12 +23,17 @@
 
 namespace {
 
-class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
-                                  public MediaDialogViewObserver {
+class MediaToolbarButtonWatcher
+    : public MediaToolbarButtonObserver,
+      public MediaDialogViewObserver,
+      public global_media_controls::MediaItemManagerObserver {
  public:
-  explicit MediaToolbarButtonWatcher(MediaToolbarButtonView* button)
-      : button_(button) {
+  MediaToolbarButtonWatcher(
+      MediaToolbarButtonView* button,
+      global_media_controls::MediaItemManager* item_manager)
+      : button_(button), item_manager_(item_manager) {
     button_->AddObserver(this);
+    item_manager_->AddObserver(this);
   }
 
   MediaToolbarButtonWatcher(const MediaToolbarButtonWatcher&) = delete;
@@ -33,6 +42,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   ~MediaToolbarButtonWatcher() override {
     button_->RemoveObserver(this);
+    item_manager_->RemoveObserver(this);
     if (observed_dialog_ &&
         observed_dialog_ == MediaDialogView::GetDialogViewForTesting()) {
       observed_dialog_->RemoveObserver(this);
@@ -68,6 +78,11 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   void OnMediaButtonEnabled() override {}
   void OnMediaButtonDisabled() override {}
+
+  // MediaItemManagerObserver implementation. OnMediaDialogOpened() is shared
+  // with the MediaToolbarButtonObserver interface.
+  void OnItemListChanged() override {}
+  void OnMediaDialogClosed() override {}
 
   [[nodiscard]] bool WaitForDialogOpened() {
     if (MediaDialogView::IsShowing())
@@ -215,6 +230,10 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   const raw_ptr<MediaToolbarButtonView> button_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
+  // We observe MediaItemManager for the dialog opening event. There may be a
+  // better observation target than this.
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
+
   bool waiting_for_dialog_opened_ = false;
   bool waiting_for_button_shown_ = false;
   bool waiting_for_button_hidden_ = false;
@@ -259,15 +278,18 @@ bool MediaDialogUiForTest::IsToolbarIconVisible() {
 }
 
 bool MediaDialogUiForTest::WaitForToolbarIconShown() {
-  return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonShown();
+  return MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
+      .WaitForButtonShown();
 }
 
 bool MediaDialogUiForTest::WaitForToolbarIconHidden() {
-  return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonHidden();
+  return MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
+      .WaitForButtonHidden();
 }
 
 bool MediaDialogUiForTest::WaitForDialogOpened() {
-  return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForDialogOpened();
+  return MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
+      .WaitForDialogOpened();
 }
 
 bool MediaDialogUiForTest::IsDialogVisible() {
@@ -276,15 +298,24 @@ bool MediaDialogUiForTest::IsDialogVisible() {
 
 void MediaDialogUiForTest::WaitForDialogToContainText(
     const std::u16string& text) {
-  MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForDialogToContainText(text);
+  MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
+      .WaitForDialogToContainText(text);
 }
 
 void MediaDialogUiForTest::WaitForItemCount(int count) {
-  MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForItemCount(count);
+  MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
+      .WaitForItemCount(count);
 }
 
 void MediaDialogUiForTest::WaitForPictureInPictureButtonVisibility(
     bool visible) {
-  MediaToolbarButtonWatcher(GetToolbarIcon())
+  MediaToolbarButtonWatcher(GetToolbarIcon(), GetItemManager())
       .WaitForPictureInPictureButtonVisibility(visible);
+}
+
+global_media_controls::MediaItemManager* MediaDialogUiForTest::GetItemManager()
+    const {
+  return MediaNotificationServiceFactory::GetForProfile(
+             browser_callback_.Run()->profile())
+      ->media_item_manager();
 }

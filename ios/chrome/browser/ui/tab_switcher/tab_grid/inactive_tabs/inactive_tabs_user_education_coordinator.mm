@@ -31,7 +31,9 @@ const CGFloat kTileShadowOffsetX = 0;
 const CGFloat kTileShadowOffsetY = 5;
 const CGFloat kTileShadowOpacity = 0.1;
 const CGFloat kIconPadding = 12;
-const CGFloat kImageSpacing = 32;
+const CGFloat kImageTopSpacing = 20;
+const CGFloat kImageBottomSpacing = 8;
+const CGFloat kSpacing = 1;
 
 // Returns the image to show in the user-education confirmation alert.
 UIImage* ConfirmationAlertImage() {
@@ -99,6 +101,7 @@ UIImage* ConfirmationAlertImage() {
   _confirmationAlert = [[ConfirmationAlertViewController alloc] init];
   _confirmationAlert.titleString =
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE);
+  _confirmationAlert.titleTextStyle = UIFontTextStyleTitle2;
   _confirmationAlert.subtitleString = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE),
@@ -109,7 +112,11 @@ UIImage* ConfirmationAlertImage() {
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_GO_TO_SETTINGS);
   _confirmationAlert.image = ConfirmationAlertImage();
   _confirmationAlert.imageHasFixedSize = YES;
-  _confirmationAlert.customSpacingBeforeImageIfNoNavigationBar = kImageSpacing;
+  _confirmationAlert.customSpacingBeforeImageIfNoNavigationBar =
+      kImageTopSpacing;
+  _confirmationAlert.customSpacingAfterImage = kImageBottomSpacing;
+  _confirmationAlert.customSpacing = kSpacing;
+  _confirmationAlert.topAlignedLayout = YES;
   _confirmationAlert.showDismissBarButton = NO;
   _confirmationAlert.actionHandler = self;
   _confirmationAlert.presentationController.delegate = self;

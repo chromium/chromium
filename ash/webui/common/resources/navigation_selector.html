@@ -2,6 +2,11 @@
 :host {
   --focus-border-width: 1px;
 }
+
+:host-context(body.jelly-enabled) .navigation-item {
+  font: var(--cros-button-2-font);
+}
+
 .navigation-item {
   --active-shadow-rgb: transparent; /* Disable Active Shadow on cr-button */
   --focus-shadow-color: transparent; /* Disable Focus Shadow on cr-button */
@@ -67,7 +72,7 @@ cr-expand-button {
 </style>
 
 <div id="navigationSelectorComponent">
-  <div id="navigationSelectorMenu">
+  <nav id="navigationSelectorMenu">
     <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
         <cr-button class$="{{computeInitialClass_(item)}}" tabindex="0"
             part="navigation-item"
@@ -77,5 +82,5 @@ cr-expand-button {
           [[item.name]]
         </cr-button>
     </template>
-  </div>
+  </nav>
 </div>

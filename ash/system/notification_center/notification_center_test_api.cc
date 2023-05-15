@@ -207,7 +207,7 @@ NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
           ->status_area_widget();
   return features::IsQsRevampEnabled()
              ? status_area_widget->notification_center_tray()
-                   ->bubble_->notification_center_view_
+                   ->bubble_->notification_center_view_.get()
              : status_area_widget->unified_system_tray()
                    ->message_center_bubble()
                    ->notification_center_view();

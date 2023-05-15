@@ -43,7 +43,7 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
   }
 
  private:
-  base::raw_ptr<PrefService> pref_;
+  raw_ptr<PrefService> pref_;
   base::Value::Dict data_;
 };
 

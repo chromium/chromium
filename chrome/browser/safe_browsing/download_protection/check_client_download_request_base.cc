@@ -315,7 +315,8 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
            ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE ||
        client_download_request_->download_type() ==
            ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE) &&
-      client_download_request_->archive_valid() &&
+      client_download_request_->archive_summary().parser_status() ==
+          ClientDownloadRequest::ArchiveSummary::VALID &&
       base::ranges::all_of(
           client_download_request_->archived_binary(),
           [](const ClientDownloadRequest::ArchivedBinary& archived_binary) {
@@ -464,6 +465,13 @@ void CheckClientDownloadRequestBase::SendRequest() {
   if (!access_token_.empty()) {
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token_);
+  }
+
+  network::mojom::URLLoaderFactory* url_loader_factory =
+      service_->GetURLLoaderFactory(GetBrowserContext()).get();
+  if (!url_loader_factory) {
+    FinishRequest(DownloadCheckResult::UNKNOWN, REASON_SERVER_PING_FAILED);
+    return;
   }
 
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

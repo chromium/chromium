@@ -290,7 +290,6 @@ function populateTestExceptions() {
             embeddingOrigin: '',
             setting: ContentSetting.ALLOW,
             displayName: iwaOrigin,
-            isolatedWebAppName: 'IWA',
           }),
           createRawSiteException(nonIwaOrigin, {
             embeddingOrigin: '',
@@ -1113,7 +1112,7 @@ suite('SiteList', function() {
     assertEquals(
         firstItem.shadowRoot!.querySelector<HTMLElement>(
                                  '.url-directionality')!.textContent!.trim(),
-        prefsIsolatedWebApp!.exceptions!.notifications[0]!.isolatedWebAppName);
+        prefsIsolatedWebApp!.exceptions!.notifications[0]!.displayName);
 
     // Validate that non-IWAs can be edited.
     const secondItem = entries[1]!;

@@ -118,6 +118,9 @@
 // Returns matcher for `text` being a substring of the text in the omnibox.
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text;
 
+// Returns matcher for omniboxAutocomplete label in the omnibox.
++ (id<GREYMatcher>)omniboxAutocompleteLabel;
+
 // Returns matcher for `text` being a substring of the text in the location
 // view.
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text;
@@ -275,8 +278,14 @@
 // Returns matcher for the privacy safe browsing table view.
 + (id<GREYMatcher>)settingsPrivacySafeBrowsingTableView;
 
-// Returns matcher for the price notifications table view.
-+ (id<GREYMatcher>)settingsPriceNotificationsTableView;
+// Returns matcher for the notifications table view.
++ (id<GREYMatcher>)settingsNotificationsTableView;
+
+// Returns matcher for the inactive tabs table view.
++ (id<GREYMatcher>)settingsInactiveTabsTableView;
+
+// Returns matcher for the tabs table view.
++ (id<GREYMatcher>)settingsTabsTableView;
 
 // Returns matcher for the tracking price table view.
 + (id<GREYMatcher>)settingsTrackingPriceTableView;
@@ -287,6 +296,13 @@
 // Returns matcher for the Google Services Settings button on the main Settings
 // screen.
 + (id<GREYMatcher>)googleServicesSettingsButton;
+
+// Returns matcher for the Inactive Tabs Settings button on the Tabs Settings
+// screen.
++ (id<GREYMatcher>)inactiveTabsSettingsButton;
+
+// Returns matcher for the Tabs Settings button on the main Settings screen.
++ (id<GREYMatcher>)tabsSettingsButton;
 
 // Returns matcher for the Manage Sync Settings button on the main Settings
 // screen.
@@ -305,8 +321,8 @@
 // Returns matcher for the Privacy cell on the main Settings screen.
 + (id<GREYMatcher>)settingsMenuPrivacyButton;
 
-// Returns matcher for the Price Notifications cell on the main Settings screen.
-+ (id<GREYMatcher>)settingsMenuPriceNotificationsButton;
+// Returns matcher for the Notifications cell on the main Settings screen.
++ (id<GREYMatcher>)settingsMenuNotificationsButton;
 
 // Returns matcher for the Save passwords cell on the main Settings screen.
 + (id<GREYMatcher>)settingsMenuPasswordsButton;
@@ -521,6 +537,12 @@
 
 // Returns a matcher matching cells that can be swiped-to-dismiss.
 + (id<GREYMatcher>)cellCanBeSwipedToDismissed;
+
+// Returns a matcher to password table view.
++ (id<GREYMatcher>)passwordsTableViewMatcher;
+
+// Returns a matcher to default browser settings table view.
++ (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher;
 
 #pragma mark - Overflow Menu Destinations
 

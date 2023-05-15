@@ -194,7 +194,7 @@ TEST_F(ProfileCustomizationSyncedThemeWaiterTest, SyncDisabled) {
       Run(ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncCannotStart));
 
   test_sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   WaitForSyncedTheme(callback.Get());
 }
 
@@ -209,7 +209,7 @@ TEST_F(ProfileCustomizationSyncedThemeWaiterTest,
 
   WaitForSyncedTheme(callback.Get());
   test_sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   test_sync_service()->FireStateChanged();
 }
 

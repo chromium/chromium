@@ -424,7 +424,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {
-    if (!default_settings_->Parse(*it, true)) {
+    if (!default_settings_->Parse(it->GetDict(), true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
       default_settings_->ResetSettings();
     }
@@ -432,12 +432,10 @@ void WebAppPolicyManager::ParsePolicySettings() {
 
   // Read policy for individual web apps
   for (const auto& iter : web_apps_list) {
-    const std::string* web_app_id_str = iter.FindStringKey(kManifestId);
+    const auto& dict = iter.GetDict();
+    const std::string* web_app_id_str = dict.FindString(kManifestId);
 
     if (*web_app_id_str == kWildcard)
-      continue;
-
-    if (!iter.is_dict())
       continue;
 
     GURL url = GURL(*web_app_id_str);
@@ -447,7 +445,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
     }
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
-    if (by_url.Parse(iter, false)) {
+    if (by_url.Parse(dict, /*for_default_settings=*/false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;
@@ -654,6 +652,26 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     OverrideManifest(install_url, manifest);
 }
 
+bool WebAppPolicyManager::IsPreventCloseEnabled(const AppId& app_id) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          features::kDesktopPWAsEnforceWebAppSettingsPolicy) ||
+      !base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose)) {
+    return false;
+  }
+
+  const std::string unhashed_id =
+      app_registrar_->GetComputedUnhashedAppId(app_id);
+  auto it = settings_by_url_.find(unhashed_id);
+  if (it != settings_by_url_.end()) {
+    return it->second.prevent_close;
+  }
+  return default_settings_->prevent_close;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 void WebAppPolicyManager::OnAppsSynchronized(
     std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
@@ -677,9 +695,9 @@ WebAppPolicyManager::WebAppSetting::WebAppSetting() {
   ResetSettings();
 }
 
-bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value& dict,
+bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
                                                bool for_default_settings) {
-  const std::string* run_on_os_login_str = dict.FindStringKey(kRunOnOsLogin);
+  const std::string* run_on_os_login_str = dict.FindString(kRunOnOsLogin);
   if (run_on_os_login_str) {
     if (*run_on_os_login_str == kAllowed) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
@@ -693,11 +711,26 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value& dict,
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // The value of "prevent_close" shall only be considered if run-on-os-login
+  // is enforced.
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsEnforceWebAppSettingsPolicy) &&
+      base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose) &&
+      run_on_os_login_policy == RunOnOsLoginPolicy::kRunWindowed) {
+    absl::optional<bool> prevent_close_value = dict.FindBool(kPreventClose);
+    if (prevent_close_value && *prevent_close_value) {
+      prevent_close = true;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   return true;
 }
 
 void WebAppPolicyManager::WebAppSetting::ResetSettings() {
   run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
+  prevent_close = false;
 }
 
 WebAppPolicyManager::CustomManifestValues::CustomManifestValues() = default;

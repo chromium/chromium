@@ -36,7 +36,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
       std::numeric_limits<float>::epsilon()) {
     return pixel_diff_.CompareNativeWindowScreenshotInRects(
         full_name, primary_root_window, primary_root_window->bounds(),
-        /*algorithm=*/nullptr, rects_in_screen);
+        &positive_if_only_algorithm_, rects_in_screen);
   }
 
   // Convert rects from screen coordinates to pixel coordinates.
@@ -53,7 +53,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
 
   return pixel_diff_.CompareNativeWindowScreenshotInRects(
       full_name, primary_root_window, primary_root_window->bounds(),
-      /*algorithm=*/nullptr, rects_in_pixel);
+      &positive_if_only_algorithm_, rects_in_pixel);
 }
 
 }  // namespace ash

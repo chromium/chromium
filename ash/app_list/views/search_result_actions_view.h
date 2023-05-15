@@ -9,6 +9,8 @@
 
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -20,6 +22,8 @@ class SearchResultView;
 // strip. Each action is presented as a button and horizontally laid out.
 class ASH_EXPORT SearchResultActionsView : public views::View {
  public:
+  METADATA_HEADER(SearchResultActionsView);
+
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
 
   SearchResultActionsView(const SearchResultActionsView&) = delete;
@@ -38,9 +42,6 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
 
   // Updates the button UI upon the SearchResultView's UI state change.
   void UpdateButtonsOnStateChanged();
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // Selects the result action expected to be initially selected when the parent
   // result view gets selected.
@@ -84,7 +85,8 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
   // If an action is currently selected, the selected action index.
   absl::optional<int> selected_action_;
 
-  SearchResultActionsViewDelegate* const delegate_;  // Not owned.
+  const raw_ptr<SearchResultActionsViewDelegate, ExperimentalAsh>
+      delegate_;  // Not owned.
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

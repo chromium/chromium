@@ -11,6 +11,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -19,7 +20,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 
 import {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './bluetooth_braille_display_manager.js';
@@ -28,15 +29,11 @@ import {getTemplate} from './bluetooth_braille_display_ui.html.js';
 const CONNECTED_METRIC_NAME =
     'Accessibility.ChromeVox.BluetoothBrailleDisplayConnectedButtonClick';
 const PINCODE_TIMEOUT_MS = 60000;
-
-export interface BluetoothBrailleDisplayUiElement {
-  $: {
-    connectOrDisconnect: CrButtonElement,
-    forget: CrButtonElement,
-    displaySelect: SettingsDropdownMenuElement,
-    controls: HTMLDivElement,
-  };
-}
+// TODO(b/281743542): Update string for empty braille display picker.
+const BLANK_BRAILLE_DISPLAY_MENU_ITEM = {
+  value: '',
+  name: '',
+};
 
 /**
  * A widget used for interacting with bluetooth braille displays.
@@ -79,7 +76,7 @@ export class BluetoothBrailleDisplayUiElement extends
        */
       brailleDisplayMenuOptions_: {
         type: Array,
-        value: [],
+        value: [BLANK_BRAILLE_DISPLAY_MENU_ITEM],
       },
     };
   }
@@ -118,10 +115,21 @@ export class BluetoothBrailleDisplayUiElement extends
   }
 
   onDisplayListChanged(displays: chrome.bluetooth.Device[]) {
-    this.brailleDisplayMenuOptions_ = displays.map(display => ({
-                                                     value: display.address,
-                                                     name: display.name!,
-                                                   }));
+    // If there are no displays, just include a blank menu item.
+    if (displays.length === 0) {
+      this.brailleDisplayMenuOptions_ = [BLANK_BRAILLE_DISPLAY_MENU_ITEM];
+    } else {
+      this.brailleDisplayMenuOptions_ = displays.map(display => ({
+                                                       value: display.address,
+                                                       name: display.name!,
+                                                     }));
+      // If the blank option was selected, update the display selection.
+      if (this.brailleDisplayAddressPref_.value === '') {
+        this.set(
+            'brailleDisplayAddressPref_.value',
+            this.selectedAndConnectedDisplayAddress_ || displays[0].address);
+      }
+    }
     this.updateControls_();
   }
 
@@ -174,8 +182,12 @@ export class BluetoothBrailleDisplayUiElement extends
       }
     }
 
-    const connectOrDisconnect = this.$.connectOrDisconnect;
-    const displaySelect = this.$.displaySelect;
+    const connectOrDisconnect =
+        castExists(this.shadowRoot!.querySelector<CrButtonElement>(
+            '#connectOrDisconnect'));
+    const displaySelect =
+        castExists(this.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#displaySelect'));
 
     connectOrDisconnect.disabled = display.connecting!;
     displaySelect.disabled = display.connecting!;
@@ -192,7 +204,8 @@ export class BluetoothBrailleDisplayUiElement extends
       }
     };
 
-    const forget = this.$.forget;
+    const forget =
+        castExists(this.shadowRoot!.querySelector<CrButtonElement>('#forget'));
     forget.disabled = (!display.paired || display.connecting)!;
     forget.onclick = () => this.manager_.forget(display);
   }

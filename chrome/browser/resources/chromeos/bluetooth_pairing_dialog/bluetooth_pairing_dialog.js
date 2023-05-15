@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_ui.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -53,10 +56,32 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Whether the Jelly feature flag is enabled.
+     * @private
+     */
+    isJellyEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.valueExists('isJellyEnabled') &&
+            loadTimeData.getBoolean('isJellyEnabled');
+      },
+    },
   },
 
   /** @override */
   attached() {
+    if (this.isJellyEnabled_) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
+      document.head.appendChild(link);
+      document.body.classList.add('jelly-enabled');
+      startColorChangeUpdater();
+    }
+
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     if (!dialogArgs) {
       return;

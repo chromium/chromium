@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_INPUT_CONTAINER_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "ui/message_center/views/notification_input_container.h"
 
 namespace ash {

@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -20,6 +21,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/mock_user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -44,17 +46,11 @@ constexpr UkmMetricHash TestMetric(uint64_t val) {
 }
 
 }  // namespace
-class MockUserActionSignalHandler : public UserActionSignalHandler {
- public:
-  MockUserActionSignalHandler() : UserActionSignalHandler(nullptr) {}
-  MOCK_METHOD(void, SetRelevantUserActions, (std::set<uint64_t>));
-  MOCK_METHOD(void, EnableMetrics, (bool));
-};
 
 class MockHistoryObserver : public HistoryServiceObserver {
  public:
   MOCK_METHOD1(SetHistoryBasedSegments,
-               void(base::flat_set<proto::SegmentId>&& history_based_segments));
+               void(base::flat_set<proto::SegmentId> history_based_segments));
 };
 
 // Noop version. For database calls, just passes the calls to the DB.
@@ -121,7 +117,8 @@ class SignalFilterProcessorTest : public testing::Test {
     storage_service_ = std::make_unique<StorageService>(
         std::move(moved_segment_database), nullptr,
         std::move(moved_signal_config),
-        std::make_unique<TestDefaultModelManager>(), ukm_data_manager_.get());
+        std::make_unique<TestDefaultModelManager>(), nullptr,
+        ukm_data_manager_.get());
 
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
         storage_service_.get(), user_action_signal_handler_.get(),

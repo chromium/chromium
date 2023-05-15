@@ -304,14 +304,14 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebAppInstallInfo& web_app_info,
                                    ResultCallback callback);
-
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
 
  private:
   class OsHooksBarrier;
 
-  virtual void StartSubManagerExecutionIfRequired(
+  // Synchronize:
+  void StartSubManagerExecutionIfRequired(
       const AppId& app_id,
       absl::optional<SynchronizeOsOptions> options,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
@@ -329,10 +329,18 @@ class OsIntegrationManager : public AppRegistrarObserver {
       size_t index,
       base::OnceClosure on_all_execution_done_db_write);
 
-  virtual void WriteStateToDB(
+  void WriteStateToDB(
       const AppId& app_id,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
+
+  // Used to call ForceUnregister() on all sub managers to remove any
+  // OS integrations from the OS. This runs synchronously in the order
+  // that the sub managers are stored inside the sub_managers_ vector.
+  void ForceUnregisterOsIntegrationOnSubManager(
+      const AppId& app_id,
+      size_t index,
+      base::OnceClosure final_callback);
 
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebAppInstallInfo> web_app_info,
@@ -367,7 +375,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
-  bool set_subsystems_called = false;
+  bool set_subsystems_called_ = false;
   bool first_synchronize_called_ = false;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>

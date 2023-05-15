@@ -65,10 +65,8 @@ ParentAccessUI::GetHandlerForTest() {
 void ParentAccessUI::SetUpResources() {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui()), chrome::kChromeUIParentAccessHost);
+  webui::EnableTrustedTypesCSP(source);
 
-  // The Polymer JS bundle requires this at the moment because it sets innerHTML
-  // on an element, which violates the Trusted Types CSP.
-  source->DisableTrustedTypesCSP();
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.

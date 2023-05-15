@@ -1,0 +1,1114 @@
+Tests `generateWebDriverValue` provides proper `webDriverValue` format
+
+Testing 'undefined':
+Testing undefined with {"serialization":"deep"}
+{
+    type : undefined
+}
+Testing undefined with {"serialization":"deep","maxDepth":0}
+{
+    type : undefined
+}
+Testing undefined with {"serialization":"deep","maxDepth":1}
+{
+    type : undefined
+}
+Testing undefined with {"serialization":"deep","maxDepth":99}
+{
+    type : undefined
+}
+
+Testing 'null':
+Testing null with {"serialization":"deep"}
+{
+    type : null
+}
+Testing null with {"serialization":"deep","maxDepth":0}
+{
+    type : null
+}
+Testing null with {"serialization":"deep","maxDepth":1}
+{
+    type : null
+}
+Testing null with {"serialization":"deep","maxDepth":99}
+{
+    type : null
+}
+
+Testing ''some_string'':
+Testing 'some_string' with {"serialization":"deep"}
+{
+    type : string
+    value : some_string
+}
+Testing 'some_string' with {"serialization":"deep","maxDepth":0}
+{
+    type : string
+    value : some_string
+}
+Testing 'some_string' with {"serialization":"deep","maxDepth":1}
+{
+    type : string
+    value : some_string
+}
+Testing 'some_string' with {"serialization":"deep","maxDepth":99}
+{
+    type : string
+    value : some_string
+}
+
+Testing ''2'':
+Testing '2' with {"serialization":"deep"}
+{
+    type : string
+    value : 2
+}
+Testing '2' with {"serialization":"deep","maxDepth":0}
+{
+    type : string
+    value : 2
+}
+Testing '2' with {"serialization":"deep","maxDepth":1}
+{
+    type : string
+    value : 2
+}
+Testing '2' with {"serialization":"deep","maxDepth":99}
+{
+    type : string
+    value : 2
+}
+
+Testing 'Number.NaN':
+Testing Number.NaN with {"serialization":"deep"}
+{
+    type : number
+    value : NaN
+}
+Testing Number.NaN with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : NaN
+}
+Testing Number.NaN with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : NaN
+}
+Testing Number.NaN with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : NaN
+}
+
+Testing '-0':
+Testing -0 with {"serialization":"deep"}
+{
+    type : number
+    value : -0
+}
+Testing -0 with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : -0
+}
+Testing -0 with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : -0
+}
+Testing -0 with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : -0
+}
+
+Testing 'Infinity':
+Testing Infinity with {"serialization":"deep"}
+{
+    type : number
+    value : Infinity
+}
+Testing Infinity with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : Infinity
+}
+Testing Infinity with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : Infinity
+}
+Testing Infinity with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : Infinity
+}
+
+Testing '-Infinity':
+Testing -Infinity with {"serialization":"deep"}
+{
+    type : number
+    value : -Infinity
+}
+Testing -Infinity with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : -Infinity
+}
+Testing -Infinity with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : -Infinity
+}
+Testing -Infinity with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : -Infinity
+}
+
+Testing '3':
+Testing 3 with {"serialization":"deep"}
+{
+    type : number
+    value : 3
+}
+Testing 3 with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : 3
+}
+Testing 3 with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : 3
+}
+Testing 3 with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : 3
+}
+
+Testing '1.4':
+Testing 1.4 with {"serialization":"deep"}
+{
+    type : number
+    value : 1.4
+}
+Testing 1.4 with {"serialization":"deep","maxDepth":0}
+{
+    type : number
+    value : 1.4
+}
+Testing 1.4 with {"serialization":"deep","maxDepth":1}
+{
+    type : number
+    value : 1.4
+}
+Testing 1.4 with {"serialization":"deep","maxDepth":99}
+{
+    type : number
+    value : 1.4
+}
+
+Testing 'true':
+Testing true with {"serialization":"deep"}
+{
+    type : boolean
+    value : true
+}
+Testing true with {"serialization":"deep","maxDepth":0}
+{
+    type : boolean
+    value : true
+}
+Testing true with {"serialization":"deep","maxDepth":1}
+{
+    type : boolean
+    value : true
+}
+Testing true with {"serialization":"deep","maxDepth":99}
+{
+    type : boolean
+    value : true
+}
+
+Testing 'false':
+Testing false with {"serialization":"deep"}
+{
+    type : boolean
+    value : false
+}
+Testing false with {"serialization":"deep","maxDepth":0}
+{
+    type : boolean
+    value : false
+}
+Testing false with {"serialization":"deep","maxDepth":1}
+{
+    type : boolean
+    value : false
+}
+Testing false with {"serialization":"deep","maxDepth":99}
+{
+    type : boolean
+    value : false
+}
+
+Testing '42n':
+Testing 42n with {"serialization":"deep"}
+{
+    type : bigint
+    value : 42
+}
+Testing 42n with {"serialization":"deep","maxDepth":0}
+{
+    type : bigint
+    value : 42
+}
+Testing 42n with {"serialization":"deep","maxDepth":1}
+{
+    type : bigint
+    value : 42
+}
+Testing 42n with {"serialization":"deep","maxDepth":99}
+{
+    type : bigint
+    value : 42
+}
+
+Testing '(Symbol('foo'))':
+Testing (Symbol('foo')) with {"serialization":"deep"}
+{
+    type : symbol
+}
+Testing (Symbol('foo')) with {"serialization":"deep","maxDepth":0}
+{
+    type : symbol
+}
+Testing (Symbol('foo')) with {"serialization":"deep","maxDepth":1}
+{
+    type : symbol
+}
+Testing (Symbol('foo')) with {"serialization":"deep","maxDepth":99}
+{
+    type : symbol
+}
+
+Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]':
+Testing [1, 'foo', true, new RegExp(/foo/g), [1]] with {"serialization":"deep"}
+{
+    type : array
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : regexp
+            value : {
+                flags : g
+                pattern : foo
+            }
+        }
+        [4] : {
+            type : array
+            value : [
+                [0] : {
+                    type : number
+                    value : 1
+                }
+            ]
+        }
+    ]
+}
+Testing [1, 'foo', true, new RegExp(/foo/g), [1]] with {"serialization":"deep","maxDepth":0}
+{
+    type : array
+}
+Testing [1, 'foo', true, new RegExp(/foo/g), [1]] with {"serialization":"deep","maxDepth":1}
+{
+    type : array
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : regexp
+            value : {
+                flags : g
+                pattern : foo
+            }
+        }
+        [4] : {
+            type : array
+        }
+    ]
+}
+Testing [1, 'foo', true, new RegExp(/foo/g), [1]] with {"serialization":"deep","maxDepth":99}
+{
+    type : array
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : regexp
+            value : {
+                flags : g
+                pattern : foo
+            }
+        }
+        [4] : {
+            type : array
+            value : [
+                [0] : {
+                    type : number
+                    value : 1
+                }
+            ]
+        }
+    ]
+}
+
+Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})':
+Testing ({'foo': {'bar': 'baz'}, 'qux': 'quux'}) with {"serialization":"deep"}
+{
+    type : object
+    value : [
+        [0] : [
+            [0] : foo
+            [1] : {
+                type : object
+                value : [
+                    [0] : [
+                        [0] : bar
+                        [1] : {
+                            type : string
+                            value : baz
+                        }
+                    ]
+                ]
+            }
+        ]
+        [1] : [
+            [0] : qux
+            [1] : {
+                type : string
+                value : quux
+            }
+        ]
+    ]
+}
+Testing ({'foo': {'bar': 'baz'}, 'qux': 'quux'}) with {"serialization":"deep","maxDepth":0}
+{
+    type : object
+}
+Testing ({'foo': {'bar': 'baz'}, 'qux': 'quux'}) with {"serialization":"deep","maxDepth":1}
+{
+    type : object
+    value : [
+        [0] : [
+            [0] : foo
+            [1] : {
+                type : object
+            }
+        ]
+        [1] : [
+            [0] : qux
+            [1] : {
+                type : string
+                value : quux
+            }
+        ]
+    ]
+}
+Testing ({'foo': {'bar': 'baz'}, 'qux': 'quux'}) with {"serialization":"deep","maxDepth":99}
+{
+    type : object
+    value : [
+        [0] : [
+            [0] : foo
+            [1] : {
+                type : object
+                value : [
+                    [0] : [
+                        [0] : bar
+                        [1] : {
+                            type : string
+                            value : baz
+                        }
+                    ]
+                ]
+            }
+        ]
+        [1] : [
+            [0] : qux
+            [1] : {
+                type : string
+                value : quux
+            }
+        ]
+    ]
+}
+
+Testing '(()=>{})':
+Testing (()=>{}) with {"serialization":"deep"}
+{
+    type : function
+}
+Testing (()=>{}) with {"serialization":"deep","maxDepth":0}
+{
+    type : function
+}
+Testing (()=>{}) with {"serialization":"deep","maxDepth":1}
+{
+    type : function
+}
+Testing (()=>{}) with {"serialization":"deep","maxDepth":99}
+{
+    type : function
+}
+
+Testing '(function(){})':
+Testing (function(){}) with {"serialization":"deep"}
+{
+    type : function
+}
+Testing (function(){}) with {"serialization":"deep","maxDepth":0}
+{
+    type : function
+}
+Testing (function(){}) with {"serialization":"deep","maxDepth":1}
+{
+    type : function
+}
+Testing (function(){}) with {"serialization":"deep","maxDepth":99}
+{
+    type : function
+}
+
+Testing '(async ()=>{})':
+Testing (async ()=>{}) with {"serialization":"deep"}
+{
+    type : function
+}
+Testing (async ()=>{}) with {"serialization":"deep","maxDepth":0}
+{
+    type : function
+}
+Testing (async ()=>{}) with {"serialization":"deep","maxDepth":1}
+{
+    type : function
+}
+Testing (async ()=>{}) with {"serialization":"deep","maxDepth":99}
+{
+    type : function
+}
+
+Testing '(async function(){})':
+Testing (async function(){}) with {"serialization":"deep"}
+{
+    type : function
+}
+Testing (async function(){}) with {"serialization":"deep","maxDepth":0}
+{
+    type : function
+}
+Testing (async function(){}) with {"serialization":"deep","maxDepth":1}
+{
+    type : function
+}
+Testing (async function(){}) with {"serialization":"deep","maxDepth":99}
+{
+    type : function
+}
+
+Testing 'new RegExp(/foo/g)':
+Testing new RegExp(/foo/g) with {"serialization":"deep"}
+{
+    type : regexp
+    value : {
+        flags : g
+        pattern : foo
+    }
+}
+Testing new RegExp(/foo/g) with {"serialization":"deep","maxDepth":0}
+{
+    type : regexp
+    value : {
+        flags : g
+        pattern : foo
+    }
+}
+Testing new RegExp(/foo/g) with {"serialization":"deep","maxDepth":1}
+{
+    type : regexp
+    value : {
+        flags : g
+        pattern : foo
+    }
+}
+Testing new RegExp(/foo/g) with {"serialization":"deep","maxDepth":99}
+{
+    type : regexp
+    value : {
+        flags : g
+        pattern : foo
+    }
+}
+
+Testing 'new Date(1654004849000)':
+Testing new Date(1654004849000) with {"serialization":"deep"}
+{
+    type : date
+    value : 2022-05-31T13:47:29.000Z
+}
+Testing new Date(1654004849000) with {"serialization":"deep","maxDepth":0}
+{
+    type : date
+    value : 2022-05-31T13:47:29.000Z
+}
+Testing new Date(1654004849000) with {"serialization":"deep","maxDepth":1}
+{
+    type : date
+    value : 2022-05-31T13:47:29.000Z
+}
+Testing new Date(1654004849000) with {"serialization":"deep","maxDepth":99}
+{
+    type : date
+    value : 2022-05-31T13:47:29.000Z
+}
+
+Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])':
+Testing new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]]) with {"serialization":"deep"}
+{
+    type : map
+    value : [
+        [0] : [
+            [0] : {
+                type : number
+                value : 1
+            }
+            [1] : {
+                type : number
+                value : 2
+            }
+        ]
+        [1] : [
+            [0] : foo
+            [1] : {
+                type : string
+                value : bar
+            }
+        ]
+        [2] : [
+            [0] : {
+                type : boolean
+                value : true
+            }
+            [1] : {
+                type : boolean
+                value : false
+            }
+        ]
+        [3] : [
+            [0] : baz
+            [1] : {
+                type : array
+                value : [
+                    [0] : {
+                        type : number
+                        value : 1
+                    }
+                ]
+            }
+        ]
+    ]
+}
+Testing new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]]) with {"serialization":"deep","maxDepth":0}
+{
+    type : map
+}
+Testing new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]]) with {"serialization":"deep","maxDepth":1}
+{
+    type : map
+    value : [
+        [0] : [
+            [0] : {
+                type : number
+                value : 1
+            }
+            [1] : {
+                type : number
+                value : 2
+            }
+        ]
+        [1] : [
+            [0] : foo
+            [1] : {
+                type : string
+                value : bar
+            }
+        ]
+        [2] : [
+            [0] : {
+                type : boolean
+                value : true
+            }
+            [1] : {
+                type : boolean
+                value : false
+            }
+        ]
+        [3] : [
+            [0] : baz
+            [1] : {
+                type : array
+            }
+        ]
+    ]
+}
+Testing new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]]) with {"serialization":"deep","maxDepth":99}
+{
+    type : map
+    value : [
+        [0] : [
+            [0] : {
+                type : number
+                value : 1
+            }
+            [1] : {
+                type : number
+                value : 2
+            }
+        ]
+        [1] : [
+            [0] : foo
+            [1] : {
+                type : string
+                value : bar
+            }
+        ]
+        [2] : [
+            [0] : {
+                type : boolean
+                value : true
+            }
+            [1] : {
+                type : boolean
+                value : false
+            }
+        ]
+        [3] : [
+            [0] : baz
+            [1] : {
+                type : array
+                value : [
+                    [0] : {
+                        type : number
+                        value : 1
+                    }
+                ]
+            }
+        ]
+    ]
+}
+
+Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])':
+Testing new Set([1, 'foo', true, [1], new Map([[1,2]])]) with {"serialization":"deep"}
+{
+    type : set
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : array
+            value : [
+                [0] : {
+                    type : number
+                    value : 1
+                }
+            ]
+        }
+        [4] : {
+            type : map
+            value : [
+                [0] : [
+                    [0] : {
+                        type : number
+                        value : 1
+                    }
+                    [1] : {
+                        type : number
+                        value : 2
+                    }
+                ]
+            ]
+        }
+    ]
+}
+Testing new Set([1, 'foo', true, [1], new Map([[1,2]])]) with {"serialization":"deep","maxDepth":0}
+{
+    type : set
+}
+Testing new Set([1, 'foo', true, [1], new Map([[1,2]])]) with {"serialization":"deep","maxDepth":1}
+{
+    type : set
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : array
+        }
+        [4] : {
+            type : map
+        }
+    ]
+}
+Testing new Set([1, 'foo', true, [1], new Map([[1,2]])]) with {"serialization":"deep","maxDepth":99}
+{
+    type : set
+    value : [
+        [0] : {
+            type : number
+            value : 1
+        }
+        [1] : {
+            type : string
+            value : foo
+        }
+        [2] : {
+            type : boolean
+            value : true
+        }
+        [3] : {
+            type : array
+            value : [
+                [0] : {
+                    type : number
+                    value : 1
+                }
+            ]
+        }
+        [4] : {
+            type : map
+            value : [
+                [0] : [
+                    [0] : {
+                        type : number
+                        value : 1
+                    }
+                    [1] : {
+                        type : number
+                        value : 2
+                    }
+                ]
+            ]
+        }
+    ]
+}
+
+Testing 'new WeakMap()':
+Testing new WeakMap() with {"serialization":"deep"}
+{
+    type : weakmap
+}
+Testing new WeakMap() with {"serialization":"deep","maxDepth":0}
+{
+    type : weakmap
+}
+Testing new WeakMap() with {"serialization":"deep","maxDepth":1}
+{
+    type : weakmap
+}
+Testing new WeakMap() with {"serialization":"deep","maxDepth":99}
+{
+    type : weakmap
+}
+
+Testing 'new WeakSet()':
+Testing new WeakSet() with {"serialization":"deep"}
+{
+    type : weakset
+}
+Testing new WeakSet() with {"serialization":"deep","maxDepth":0}
+{
+    type : weakset
+}
+Testing new WeakSet() with {"serialization":"deep","maxDepth":1}
+{
+    type : weakset
+}
+Testing new WeakSet() with {"serialization":"deep","maxDepth":99}
+{
+    type : weakset
+}
+
+Testing 'new Error('SOME_ERROR_TEXT')':
+Testing new Error('SOME_ERROR_TEXT') with {"serialization":"deep"}
+{
+    type : error
+}
+Testing new Error('SOME_ERROR_TEXT') with {"serialization":"deep","maxDepth":0}
+{
+    type : error
+}
+Testing new Error('SOME_ERROR_TEXT') with {"serialization":"deep","maxDepth":1}
+{
+    type : error
+}
+Testing new Error('SOME_ERROR_TEXT') with {"serialization":"deep","maxDepth":99}
+{
+    type : error
+}
+
+Testing 'Promise.resolve()':
+Testing Promise.resolve() with {"serialization":"deep"}
+{
+    type : promise
+}
+Testing Promise.resolve() with {"serialization":"deep","maxDepth":0}
+{
+    type : promise
+}
+Testing Promise.resolve() with {"serialization":"deep","maxDepth":1}
+{
+    type : promise
+}
+Testing Promise.resolve() with {"serialization":"deep","maxDepth":99}
+{
+    type : promise
+}
+
+Testing 'new Int32Array()':
+Testing new Int32Array() with {"serialization":"deep"}
+{
+    type : typedarray
+}
+Testing new Int32Array() with {"serialization":"deep","maxDepth":0}
+{
+    type : typedarray
+}
+Testing new Int32Array() with {"serialization":"deep","maxDepth":1}
+{
+    type : typedarray
+}
+Testing new Int32Array() with {"serialization":"deep","maxDepth":99}
+{
+    type : typedarray
+}
+
+Testing 'new ArrayBuffer()':
+Testing new ArrayBuffer() with {"serialization":"deep"}
+{
+    type : arraybuffer
+}
+Testing new ArrayBuffer() with {"serialization":"deep","maxDepth":0}
+{
+    type : arraybuffer
+}
+Testing new ArrayBuffer() with {"serialization":"deep","maxDepth":1}
+{
+    type : arraybuffer
+}
+Testing new ArrayBuffer() with {"serialization":"deep","maxDepth":99}
+{
+    type : arraybuffer
+}
+
+Testing 'document.body':
+Testing document.body with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 1
+        localName : body
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.body with {"serialization":"deep","maxDepth":0}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 1
+        localName : body
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.body with {"serialization":"deep","maxDepth":1}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 1
+        localName : body
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.body with {"serialization":"deep","maxDepth":99}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 1
+        localName : body
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+
+Testing 'window':
+Testing window with {"serialization":"deep"}
+{
+    type : window
+}
+Testing window with {"serialization":"deep","maxDepth":0}
+{
+    type : window
+}
+Testing window with {"serialization":"deep","maxDepth":1}
+{
+    type : window
+}
+Testing window with {"serialization":"deep","maxDepth":99}
+{
+    type : window
+}
+
+Testing 'document.querySelector('body > div')':
+Testing document.querySelector('body > div') with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.querySelector('body > div') with {"serialization":"deep","maxDepth":0}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.querySelector('body > div') with {"serialization":"deep","maxDepth":1}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+Testing document.querySelector('body > div') with {"serialization":"deep","maxDepth":99}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+    }
+}
+
+Testing 'new URL('http://example.com')':
+Testing new URL('http://example.com') with {"serialization":"deep"}
+{
+    type : platformobject
+}
+Testing new URL('http://example.com') with {"serialization":"deep","maxDepth":0}
+{
+    type : platformobject
+}
+Testing new URL('http://example.com') with {"serialization":"deep","maxDepth":1}
+{
+    type : platformobject
+}
+Testing new URL('http://example.com') with {"serialization":"deep","maxDepth":99}
+{
+    type : platformobject
+}
+

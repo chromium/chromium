@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   // Validate that a blur event on another element than our focused one doesn't
   // hide the tooltip.
   std::string javascript = "document.getElementById('b2').blur();";
-  EXPECT_TRUE(content::ExecuteScript(web_contents(), javascript));
+  EXPECT_TRUE(content::ExecJs(web_contents(), javascript));
 
   EXPECT_TRUE(helper()->IsTooltipVisible());
   EXPECT_EQ(expected_text_1, helper()->GetTooltipText());
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   // Validate that a focus on another element will hide the tooltip.
   javascript = "document.getElementById('b2').focus();";
 
-  EXPECT_TRUE(content::ExecuteScript(web_contents(), javascript));
+  EXPECT_TRUE(content::ExecJs(web_contents(), javascript));
   tooltip_monitor()->WaitUntilTooltipClosed();
   EXPECT_FALSE(tooltip_monitor()->IsWidgetActive());
   EXPECT_FALSE(helper()->IsTooltipVisible());
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 
   // Validate that the blur call hides the tooltip.
   javascript = "document.getElementById('b1').blur();";
-  EXPECT_TRUE(content::ExecuteScript(web_contents(), javascript));
+  EXPECT_TRUE(content::ExecJs(web_contents(), javascript));
 
   EXPECT_FALSE(tooltip_monitor()->IsWidgetActive());
   EXPECT_FALSE(helper()->IsTooltipVisible());

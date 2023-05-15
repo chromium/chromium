@@ -19,7 +19,7 @@ import android.graphics.Rect;
  *    Bundle provided by the service.
  */
 interface IDirectWritingServiceCallback {
-    const int VERSION = 1;
+    const int VERSION = 3;
 
     /**
     * Gets version of Aidl
@@ -42,6 +42,15 @@ interface IDirectWritingServiceCallback {
     * Should run on main looper
     */
     void bindEditIn(float x, float y) = 10;
+
+    /**
+    * Called when the Service needs updated Edit field position. Used when the soft keyboard is
+    * being shown or hidden to position the Direct writing widget toolbar near edit bounds.
+    * This should respond by calling IDirectWritingService.onBoundedEditTextChanged with updated
+    * bounds of focused edit field.
+    * Should run on main looper.
+    */
+    void updateBoundedEditTextRect() = 11;
     // Bound EditText }
 
     // { EditText Text and Selection Setter
@@ -273,4 +282,12 @@ interface IDirectWritingServiceCallback {
     */
     void onTextViewExtraCommand(String action, inout Bundle bundle) = 901;
     // TextView }
+
+    /**
+    * Direct writing service may be stopped to save memory when unused for a while. This method is
+    * called to check if still hovering over writable fields to avoid stopping the service.
+    *
+    * @return true if the stylus handwriting hover icon is currently being shown, false otherwise.
+    */
+    boolean isHoverIconShowing() = 902;
 }

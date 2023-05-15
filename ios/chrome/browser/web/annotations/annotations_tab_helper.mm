@@ -10,9 +10,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -21,7 +21,7 @@
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -110,23 +110,8 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     manager->RemoveHighlight();
   }
 
-  if (match.resultType == NSTextCheckingTypePhoneNumber) {
-    NSString* phone_number =
-        [match.phoneNumber stringByReplacingOccurrencesOfString:@" "
-                                                     withString:@""];
-    NSString* phone_number_call_format =
-        [NSString stringWithFormat:@"tel:%@", phone_number];
-    [[UIApplication sharedApplication]
-                  openURL:[NSURL URLWithString:phone_number_call_format]
-                  options:@{}
-        completionHandler:nil];
-  } else if (web::IsNSTextCheckingResultEmail(match)) {
-    base::RecordAction(
-        base::UserMetricsAction("IOS.EmailExperience.OneTap.CreateEmail"));
-    MailtoHandlerServiceFactory::GetForBrowserState(
-        ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))
-        ->HandleMailtoURL(match.URL);
-  } else {
+  if (!ios::provider::HandleIntentTypesForOneTap(web_state, match,
+                                                 base_view_controller_)) {
     NSArray<CRWContextMenuItem*>* items =
         ios::provider::GetContextMenuElementsToAdd(
             web_state, match, base::SysUTF8ToNSString(text),
@@ -144,7 +129,11 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     absl::optional<base::Value> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (GetMainFrame(web_state_) && deferred) {
+  web::ContentWorld content_world =
+      web::AnnotationsTextManager::GetFeatureContentWorld();
+  web::WebFrame* main_frame =
+      web_state_->GetWebFramesManager(content_world)->GetMainWebFrame();
+  if (main_frame && deferred) {
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
 

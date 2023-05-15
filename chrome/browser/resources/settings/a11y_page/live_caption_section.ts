@@ -11,7 +11,7 @@
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../strings.m.js';
 
@@ -19,15 +19,14 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {getTemplate} from './live_caption_section.html.js';
 
 // clang-format off
 // <if expr="not is_chromeos">
-import '../controls/settings_dropdown_menu.js';
+import '/shared/settings/controls/settings_dropdown_menu.js';
 import './live_translate_section.js';
 import '../languages_page/add_languages_dialog.js';
 
@@ -37,9 +36,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
 // clang-format on
@@ -225,10 +222,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
           'accessibility.captions.live_caption_language',
           this.installedLanguagePacks_[0].code);
     }
-  }
-
-  private hasSome_(list: any[]): boolean {
-    return !!list.length;
   }
 
   private onLanguagesAdded_(e: CustomEvent<string[]>) {

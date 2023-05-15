@@ -11,14 +11,17 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 enum class VcEffectId;
 
-class ASH_EXPORT AudioEffectsController : public VcEffectsDelegate,
-                                          public SessionObserver {
+class ASH_EXPORT AudioEffectsController
+    : public CrasAudioHandler::AudioObserver,
+      public SessionObserver,
+      public VcEffectsDelegate {
  public:
   AudioEffectsController();
 
@@ -39,6 +42,9 @@ class ASH_EXPORT AudioEffectsController : public VcEffectsDelegate,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
  private:
+  // CrasAudioHandler::AudioObserver:
+  void OnActiveInputNodeChanged() override;
+
   // Construct effect for noise cancellation.
   void AddNoiseCancellationEffect();
 
@@ -47,6 +53,9 @@ class ASH_EXPORT AudioEffectsController : public VcEffectsDelegate,
 
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
+
+  // Indicates if noise cancellation is supported for the current input device.
+  bool noise_cancellation_supported_ = false;
 
   base::WeakPtrFactory<AudioEffectsController> weak_factory_{this};
 };

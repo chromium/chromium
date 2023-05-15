@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL drawImage() of an APNG draws the poster frame assert_approx_equals: Red channel of the pixel at (50, 25) expected 0 +/- 2 but got 255
+Harness: the test ran to completion.
+

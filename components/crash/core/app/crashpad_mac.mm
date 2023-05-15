@@ -12,9 +12,10 @@
 #include <map>
 #include <vector>
 
+#include "base/apple/bridging.h"
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -29,6 +30,10 @@
 #include "third_party/crashpad/crashpad/minidump/minidump_file_writer.h"
 #include "third_party/crashpad/crashpad/snapshot/mac/process_snapshot_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace crash_reporter {
 
 namespace {
@@ -37,12 +42,13 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
   static std::map<std::string, std::string> annotations = []() -> auto {
     std::map<std::string, std::string> process_annotations;
     @autoreleasepool {
-      NSBundle* outer_bundle = base::mac::OuterBundle();
+      NSBundle* outer_bundle = base::apple::OuterBundle();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       process_annotations["prod"] = "Chrome_Mac";
 #else
-      NSString* product = base::mac::ObjCCast<NSString>([outer_bundle
-          objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleNameKey)]);
+      NSString* product = base::mac::ObjCCast<NSString>(
+          [outer_bundle objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(
+                                                       kCFBundleNameKey)]);
       process_annotations["prod"] =
           base::SysNSStringToUTF8(product).append("_Mac");
 #endif
@@ -77,7 +83,7 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
       }
 
       NSString* version =
-          base::mac::ObjCCast<NSString>([base::mac::FrameworkBundle()
+          base::mac::ObjCCast<NSString>([base::apple::FrameworkBundle()
               objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
 
@@ -141,7 +147,7 @@ bool PlatformCrashpadInitialization(
 
   if (initial_client) {
     @autoreleasepool {
-      base::FilePath framework_bundle_path = base::mac::FrameworkBundlePath();
+      base::FilePath framework_bundle_path = base::apple::FrameworkBundlePath();
       base::FilePath handler_path =
           framework_bundle_path.Append("Helpers").Append(
               "chrome_crashpad_handler");

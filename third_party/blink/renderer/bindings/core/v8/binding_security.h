@@ -39,8 +39,6 @@
 namespace blink {
 
 class DOMWindow;
-class ExceptionState;
-class Frame;
 class LocalDOMWindow;
 class Location;
 class Node;
@@ -53,8 +51,6 @@ class CORE_EXPORT BindingSecurity {
   STATIC_ONLY(BindingSecurity);
 
  public:
-  using ErrorReportOption = BindingSecurityForPlatform::ErrorReportOption;
-
   static void Init();
 
   // Checks if the caller (|accessing_window|) is allowed to access the JS
@@ -66,19 +62,11 @@ class CORE_EXPORT BindingSecurity {
   //
   // DOMWindow
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const DOMWindow* target,
-                                  ExceptionState&);
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const DOMWindow* target,
-                                  ErrorReportOption);
+                                  const DOMWindow* target);
 
   // Location
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Location* target,
-                                  ExceptionState&);
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Location* target,
-                                  ErrorReportOption);
+                                  const Location* target);
 
   // Checks if the caller (|accessing_window|) is allowed to access the JS
   // returned object (|target|), where the returned object is the JS object
@@ -92,34 +80,20 @@ class CORE_EXPORT BindingSecurity {
   //
   // Node
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Node* target,
-                                  ExceptionState&);
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Node* target,
-                                  ErrorReportOption);
+                                  const Node* target);
 
-  // These overloads should be used only when checking a general access from
-  // one context to another context.  For access to a receiver object or
-  // returned object, you should use the above overloads.
-  static bool ShouldAllowAccessToFrame(const LocalDOMWindow* accessing_window,
-                                       const Frame* target,
-                                       ExceptionState&);
-  static bool ShouldAllowAccessToFrame(const LocalDOMWindow* accessing_window,
-                                       const Frame* target,
-                                       ErrorReportOption);
-
-  // These overloads should be used only when checking a general access from
-  // one context to another context.  For access to a receiver object or
+  // This function should be used only when checking a general access from
+  // one context to another context. For access to a receiver object or
   // returned object, you should use the above overloads.
   static bool ShouldAllowAccessToV8Context(
       v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> target_context,
-      ExceptionState&);
-  static bool ShouldAllowAccessToV8Context(
-      v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> target_context,
-      ErrorReportOption);
+      v8::MaybeLocal<v8::Context> target_context);
 
+  static void FailedAccessCheckFor(v8::Isolate*,
+                                   const WrapperTypeInfo*,
+                                   v8::Local<v8::Object> holder);
+
+ private:
   // Checks if a wrapper creation of the given wrapper type associated with
   // |creation_context| is allowed in |accessing_context|.
   static bool ShouldAllowWrapperCreationOrThrowException(
@@ -134,25 +108,6 @@ class CORE_EXPORT BindingSecurity {
       v8::MaybeLocal<v8::Context> creation_context,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Value> cross_context_exception);
-
-  static void FailedAccessCheckFor(v8::Isolate*,
-                                   const WrapperTypeInfo*,
-                                   v8::Local<v8::Object> holder);
-
- private:
-  // Returns true if |accessingWindow| is allowed named access to |targetWindow|
-  // because they're the same origin.  Note that named access should be allowed
-  // even if they're cross origin as long as the browsing context name matches
-  // the browsing context container's name.
-  //
-  // Unlike shouldAllowAccessTo, this function returns true even when
-  // |accessingWindow| or |targetWindow| is a RemoteDOMWindow, but remember that
-  // only limited operations are allowed on a RemoteDOMWindow.
-  //
-  // This function should be only used from V8Window::NamedPropertyGetterCustom.
-  friend class V8Window;
-  static bool ShouldAllowNamedAccessTo(const DOMWindow* accessing_window,
-                                       const DOMWindow* target_window);
 };
 
 }  // namespace blink

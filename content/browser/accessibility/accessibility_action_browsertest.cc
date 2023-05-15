@@ -222,6 +222,45 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusAction) {
   EXPECT_EQ(target->GetId(), focus->GetId());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, BlurAction) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <button>One</button>
+      <button>Two</button>
+      <button>Three</button>
+      )HTML");
+
+  BrowserAccessibility* target = FindNode(ax::mojom::Role::kButton, "One");
+  ASSERT_NE(nullptr, target);
+
+  // First, set the focus.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+  GetManager()->SetFocus(*target);
+  ASSERT_TRUE(waiter1.WaitForNotification());
+
+  BrowserAccessibility* focus = GetManager()->GetFocus();
+  ASSERT_NE(nullptr, focus);
+  EXPECT_EQ(target->GetId(), focus->GetId());
+
+  // Second, fire the blur event to validate that it works.
+  AccessibilityNotificationWaiter waiter2(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kBlur);
+  AccessibilityNotificationWaiter waiter3(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::FOCUS_CHANGED);
+
+  GetManager()->Blur(*target);
+
+  ASSERT_TRUE(waiter2.WaitForNotification());
+  ASSERT_TRUE(waiter3.WaitForNotification());
+
+  focus = GetManager()->GetFocus();
+  ASSERT_NE(nullptr, focus);
+
+  // The focus should have moved to the root of the tree.
+  EXPECT_EQ(GetManager()->GetRoot()->id(), focus->GetId());
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        IncrementDecrementActions) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -1204,6 +1243,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "SVG link was clicked!");
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       ClickAXNodeGeneratedFromCSSContent) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+        <style>
+        a::before{
+            content: "Content";
+        }
+        </style>
+        <a href="https://www.google.com"><h1>Test</h1></a>
+      )HTML");
+
+  AccessibilityNotificationWaiter click_waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  BrowserAccessibility* target_node =
+      FindNode(ax::mojom::Role::kStaticText, "Content");
+  ASSERT_NE(target_node, nullptr);
+  GetManager()->DoDefaultAction(*target_node);
+  ASSERT_TRUE(click_waiter.WaitForNotification());
 }
 
 // These tests only makes sense on platforms where the popup menu is implemented

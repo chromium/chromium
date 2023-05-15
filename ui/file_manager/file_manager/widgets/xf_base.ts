@@ -7,6 +7,8 @@
  * @suppress {checkTypes} closure can't recognize LitElement
  */
 
+import '../common/js/tslib_shim.js';
+
 import {classMap, css, CSSResult, CSSResultGroup, customElement, html, ifDefined, LitElement, nothing, property, PropertyValues, query, repeat, state, styleMap, svg} from 'chrome://resources/mwc/lit/index.js';
 
 export {

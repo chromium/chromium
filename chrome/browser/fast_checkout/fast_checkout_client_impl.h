@@ -12,6 +12,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_keyboard_suppressor.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -52,9 +53,10 @@ class FastCheckoutClientImpl
   bool IsRunning() const override;
   bool IsShowing() const override;
   void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) override;
-  bool IsSupported(const autofill::FormData& form,
-                   const autofill::FormFieldData& field,
-                   const autofill::AutofillManager& autofill_manager) override;
+  bool IsSupported(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      const autofill::AutofillManager& autofill_manager) const override;
   bool IsNotShownYet() const override;
 
   // FastCheckoutControllerImpl::Delegate:
@@ -89,6 +91,10 @@ class FastCheckoutClientImpl
   void OnFullCardRequestFailed(
       autofill::CreditCard::RecordType card_type,
       autofill::payments::FullCardRequest::FailureType failure_type) override;
+
+  autofill::TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {
+    return keyboard_suppressor_;
+  }
 
   // Filling state of a form during a run.
   enum class FillingState {
@@ -145,9 +151,6 @@ class FastCheckoutClientImpl
   // Displays the bottom sheet UI. If the underlying autofill data is updated,
   // the method is called again to refresh the information displayed in the UI.
   void ShowFastCheckoutUI();
-
-  // Turns keyboard suppression on and off.
-  void SetShouldSuppressKeyboard(bool suppress);
 
   // Returns the Autofill log manager if available.
   autofill::LogManager* GetAutofillLogManager() const;
@@ -283,6 +286,11 @@ class FastCheckoutClientImpl
 
   // Hash of the unique run ID used for metrics.
   int64_t run_id_ = 0;
+
+  // Suppresses the keyboard between
+  // AutofillManager::Observer::On{Before,After}AskForValuesToFill() events if
+  // FC may be shown.
+  autofill::TouchToFillKeyboardSuppressor keyboard_suppressor_;
 
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>

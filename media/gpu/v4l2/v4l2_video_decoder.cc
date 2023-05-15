@@ -27,6 +27,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_status.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
@@ -44,9 +45,12 @@ constexpr size_t kInputBufferMaxSizeFor1080p = 1024 * 1024;
 constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 
 // Input format V4L2 fourccs this class supports.
-constexpr uint32_t kSupportedInputFourccs[] = {
+const std::vector<uint32_t> kSupportedInputFourccs = {
     // V4L2 stateless formats
     V4L2_PIX_FMT_H264_SLICE,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    V4L2_PIX_FMT_HEVC_SLICE,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     V4L2_PIX_FMT_VP8_FRAME,
     V4L2_PIX_FMT_VP9_FRAME,
     V4L2_PIX_FMT_AV1_FRAME,
@@ -91,9 +95,7 @@ V4L2VideoDecoder::GetSupportedConfigs() {
   if (!device)
     return absl::nullopt;
 
-  auto configs = device->GetSupportedDecodeProfiles(
-      std::size(kSupportedInputFourccs), kSupportedInputFourccs);
-
+  auto configs = device->GetSupportedDecodeProfiles(kSupportedInputFourccs);
   if (configs.empty())
     return absl::nullopt;
 
@@ -303,8 +305,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   for (const auto api : {kStateful, kStateless}) {
     const auto fourcc =
         V4L2Device::VideoCodecProfileToV4L2PixFmt(profile_, api);
-    constexpr uint32_t kInvalidV4L2PixFmt = 0;
-    if (fourcc == kInvalidV4L2PixFmt ||
+    if (fourcc == V4L2_PIX_FMT_INVALID ||
         !device_->Open(V4L2Device::Type::kDecoder, fourcc)) {
       continue;
     }
@@ -387,9 +388,10 @@ bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   DCHECK_EQ(state_, State::kInitialized);
 
   // Check if the format is supported.
-  std::vector<uint32_t> formats = device_->EnumerateSupportedPixelformats(
+  const auto v4l2_codecs_as_pix_fmts = EnumerateSupportedPixFmts(
+      base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-  if (!base::Contains(formats, fourcc)) {
+  if (!base::Contains(v4l2_codecs_as_pix_fmts, fourcc)) {
     DVLOGF(1) << FourccToString(fourcc) << " not recognised, skipping...";
     return false;
   }
@@ -424,10 +426,12 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
 
-  // Get the supported output formats and their corresponding negotiated sizes.
+  const auto v4l2_pix_fmts = EnumerateSupportedPixFmts(
+      base::BindRepeating(&V4L2Device::Ioctl, device_),
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+
   std::vector<PixelLayoutCandidate> candidates;
-  for (const uint32_t& pixfmt : device_->EnumerateSupportedPixelformats(
-           V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
+  for (const uint32_t& pixfmt : v4l2_pix_fmts) {
     const auto candidate = Fourcc::FromV4L2PixFmt(pixfmt);
     if (!candidate) {
       DVLOGF(1) << FourccToString(pixfmt) << " is not recognised, skipping...";
@@ -606,9 +610,8 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  const int32_t bitstream_id = bitstream_id_generator_.GetNextBitstreamId();
   backend_->EnqueueDecodeTask(std::move(buffer),
-                              std::move(trampoline_decode_cb), bitstream_id);
+                              std::move(trampoline_decode_cb));
 }
 
 bool V4L2VideoDecoder::StartStreamV4L2Queue(bool start_output_queue) {

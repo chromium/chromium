@@ -130,14 +130,6 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
   hdr.frame_type =
       keyframe ? Vp8FrameHeader::KEYFRAME : Vp8FrameHeader::INTERFRAME;
 
-  // TODO(sprang): Make this dynamic. Value based on reference implementation
-  // in libyami (https://github.com/intel/libyami).
-
-  // Sets the highest loop filter level.
-  // TODO(b/188853141): Set a loop filter level computed by a rate controller
-  // every frame once the rate controller supports it.
-  hdr.loopfilter_hdr.level = 63;
-
   // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
   // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
   // only when a macroblock level loop filter adjustment.
@@ -264,12 +256,6 @@ VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       min_qp(kMinQP),
       max_qp(kMaxQP) {}
 
-void VP8VaapiVideoEncoderDelegate::Reset() {
-  current_params_ = EncodeParams();
-  reference_frames_.Clear();
-  frame_num_ = 0;
-}
-
 VP8VaapiVideoEncoderDelegate::VP8VaapiVideoEncoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
@@ -323,14 +309,18 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
   coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
                           base::bits::AlignUp(visible_size_.height(), 16));
 
-  Reset();
+  current_params_ = EncodeParams();
+  reference_frames_.Clear();
+  frame_num_ = 0;
 
   VideoBitrateAllocation initial_bitrate_allocation;
-  if (num_temporal_layers_ > 1)
+  if (num_temporal_layers_ > 1) {
     initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
-  else
+    current_params_.error_resilient_mode = true;
+  } else {
     initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target_bps());
-
+    current_params_.error_resilient_mode = false;
+  }
   if (config.content_type ==
       VideoEncodeAccelerator::Config::ContentType::kDisplay) {
     current_params_.min_qp = kScreenMinQP;
@@ -533,8 +523,12 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
 
   picture.frame_hdr->quantization_hdr.y_ac_qi =
       rate_ctrl_->ComputeQP(frame_params);
+  picture.frame_hdr->loopfilter_hdr.level =
+      base::checked_cast<uint8_t>(rate_ctrl_->GetLoopfilterLevel());
   DVLOGF(4) << "qp="
             << static_cast<int>(picture.frame_hdr->quantization_hdr.y_ac_qi)
+            << ", filter_level="
+            << static_cast<int>(picture.frame_hdr->loopfilter_hdr.level)
             << (keyframe ? " (keyframe)" : "")
             << (picture.metadata_for_encoding
                     ? " temporal id=" +
@@ -564,7 +558,7 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   seq_param.frame_height = frame_header->height;
   seq_param.frame_width_scale = frame_header->horizontal_scale;
   seq_param.frame_height_scale = frame_header->vertical_scale;
-  seq_param.error_resilient = 1;
+  seq_param.error_resilient = encode_params.error_resilient_mode;
   seq_param.bits_per_second = encode_params.bitrate_allocation.GetSumBps();
   seq_param.intra_period = encode_params.kf_period_frames;
 
@@ -615,7 +609,7 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
       frame_header->loopfilter_hdr.loop_filter_adj_enable;
 
   pic_param.pic_flags.bits.refresh_entropy_probs =
-      frame_header->refresh_entropy_probs;
+      !encode_params.error_resilient_mode;
   pic_param.pic_flags.bits.refresh_golden_frame =
       frame_header->refresh_golden_frame;
   pic_param.pic_flags.bits.refresh_alternate_frame =

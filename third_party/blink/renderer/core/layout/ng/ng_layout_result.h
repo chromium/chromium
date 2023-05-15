@@ -32,8 +32,8 @@ namespace blink {
 
 class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
-class NGContainerFragmentBuilder;
 class NGExclusionSpace;
+class NGFragmentBuilder;
 class NGLineBoxFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
@@ -89,7 +89,7 @@ class CORE_EXPORT NGLayoutResult final
 
   // Delegate constructor that sets up what it can, based on the builder.
   NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                 NGContainerFragmentBuilder* builder);
+                 NGFragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
@@ -111,6 +111,19 @@ class CORE_EXPORT NGLayoutResult final
 
   int LinesUntilClamp() const {
     return HasRareData() ? rare_data_->lines_until_clamp : 0;
+  }
+
+  // Return true if this is an orthogonal writing-mode root that depends on the
+  // size of the initial containing block.
+  bool HasOrthogonalFallbackInlineSize() const {
+    return space_.UsesOrthogonalFallbackInlineSize();
+  }
+
+  // Return true if there's an orthogonal writing-mode root descendant inside
+  // that depends on the size of the initial containing block.
+  bool HasOrthogonalFallbackSizeDescendant() const {
+    return HasRareData() &&
+           rare_data_->has_orthogonal_fallback_size_descendant();
   }
 
   // Return the adjustment baked into the fragment's block-offset that's caused
@@ -285,15 +298,18 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   absl::optional<LayoutUnit> MinimalSpaceShortage() const {
-    if (!HasRareData() || rare_data_->minimal_space_shortage == kIndefiniteSize)
+    if (!HasRareData() || space_.IsInitialColumnBalancingPass() ||
+        rare_data_->minimal_space_shortage == kIndefiniteSize) {
       return absl::nullopt;
+    }
     return rare_data_->minimal_space_shortage;
   }
 
   LayoutUnit TallestUnbreakableBlockSize() const {
-    if (!HasRareData() ||
-        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize)
+    if (!HasRareData() || !space_.IsInitialColumnBalancingPass() ||
+        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize) {
       return LayoutUnit();
+    }
     return rare_data_->tallest_unbreakable_block_size;
   }
 
@@ -525,12 +541,9 @@ class CORE_EXPORT NGLayoutResult final
                                     bool check_no_fragmentation = true) const;
 #endif
 
-  using NGContainerFragmentBuilderPassKey =
-      base::PassKey<NGContainerFragmentBuilder>;
+  using NGFragmentBuilderPassKey = base::PassKey<NGFragmentBuilder>;
   // This constructor is for a non-success status.
-  NGLayoutResult(NGContainerFragmentBuilderPassKey,
-                 EStatus,
-                 NGContainerFragmentBuilder*);
+  NGLayoutResult(NGFragmentBuilderPassKey, EStatus, NGFragmentBuilder*);
 
   // This constructor requires a non-null fragment and sets a success status.
   using NGBoxFragmentBuilderPassKey = base::PassKey<NGBoxFragmentBuilder>;
@@ -581,6 +594,8 @@ class CORE_EXPORT NGLayoutResult final
         LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<uint8_t, 1>;
     using DataUnionTypeValue =
         PositionFallbackResultIsSetFlag::DefineNextValue<uint8_t, 3>;
+    using HasOrthogonalFallbackSizeDescendantFlag =
+        DataUnionTypeValue::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -643,6 +658,14 @@ class CORE_EXPORT NGLayoutResult final
 
     void set_position_fallback_result_is_set(bool flag) {
       return bit_field.set<PositionFallbackResultIsSetFlag>(flag);
+    }
+
+    bool has_orthogonal_fallback_size_descendant() const {
+      return bit_field.get<HasOrthogonalFallbackSizeDescendantFlag>();
+    }
+
+    void set_has_orthogonal_fallback_size_descendant(bool flag) {
+      return bit_field.set<HasOrthogonalFallbackSizeDescendantFlag>(flag);
     }
 
     DataUnionType data_union_type() const {

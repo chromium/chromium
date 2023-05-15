@@ -1447,8 +1447,21 @@ void Router::Flush(const OperationContext& context, FlushBehavior behavior) {
     decaying_inward_link->Deactivate();
   }
 
-  if (bridge_link && outward_link && !inward_link && !decaying_inward_link &&
-      !decaying_outward_link) {
+  // If we have an outward link, and we have no decaying outward link (or our
+  // decaying outward link has just finished decaying above), we consider the
+  // the outward link to be stable.
+  const bool has_stable_outward_link =
+      outward_link && (!decaying_outward_link || outward_link_decayed);
+
+  // If we have no primary inward link, and we have no decaying inward link
+  // (or our decaying inward link has just finished decaying above), this
+  // router has no inward-facing links.
+  const bool has_no_inward_links =
+      !inward_link && (!decaying_inward_link || inward_link_decayed);
+
+  // Bridge bypass is only possible with no inward links and a stable outward
+  // link.
+  if (bridge_link && has_stable_outward_link && has_no_inward_links) {
     MaybeStartBridgeBypass(context);
   }
 

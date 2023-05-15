@@ -4,6 +4,7 @@
 
 #include "content/shell/browser/shell_download_manager_delegate.h"
 
+#include <algorithm>
 #include <string>
 
 #include "build/build_config.h"
@@ -15,7 +16,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"

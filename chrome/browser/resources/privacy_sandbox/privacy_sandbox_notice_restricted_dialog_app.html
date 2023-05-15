@@ -9,25 +9,30 @@
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRestrictedDescription1}
     </div>
+    <div class="banner">
+      <img class="fledge-banner" alt="">
+    </div>
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRestrictedDescription2}
     </div>
-    <div class="banner">
-      <!-- TODO(b/277180533): finalize images and text. -->
-      <img class="topics-banner" alt="">
-    </div>
-    <div class="section cr-secondary-text">
+    <div class="section cr-secondary-text" id="lastTextElement">
       $i18n{m1NoticeRestrictedDescription3}
     </div>
     <div class="buttons-container">
-      <!-- TODO(b/277180678): re-evaluate reuse of the settings event. -->
-      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      <cr-button id="settingsButton" on-click="onRestrictedNoticeOpenSettings">
         $i18n{m1NoticeRestrictedSettingsButton}
       </cr-button>
-      <!-- TODO(b/277180678): handle acknowledgement event. -->
-      <cr-button id="ackButton" class="action-button">
+      <cr-button id="ackButton" class="action-button"
+          on-click="onRestrictedNoticeAcknowledge">
         $i18n{m1NoticeRestrictedAckButton}
       </cr-button>
     </div>
+  </div>
+  <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+    <cr-button id="moreButton" on-click="onNoticeMoreClicked"
+        class="action-button" aria-hidden="true" tabindex="-1">
+      $i18n{m1DialogMoreButton}
+      <iron-icon icon="cr:expand-more"></iron-icon>
+    </cr-button>
   </div>
 </div>

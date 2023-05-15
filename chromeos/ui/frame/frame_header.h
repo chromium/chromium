@@ -189,6 +189,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Starts fade transition animation with given duration.
   void StartTransitionAnimation(base::TimeDelta duration);
 
+  ui::ColorId GetColorIdForCurrentMode() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, BackButtonAlignment);
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, TitleIconAlignment);

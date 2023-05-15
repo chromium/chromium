@@ -32,8 +32,19 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
   // OverlayResponseSupport that guarantees that `response` is created with a
+  // save_address_profile_infobar_modal_responses::NoThanksViewAction.
+  void NoThanksCallback(OverlayRequest* request, OverlayResponse* response);
+
+  // Used as a callback for OverlayResponses dispatched through `request`'s
+  // callback manager.  The OverlayDispatchCallback is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // save_address_profile_infobar_modal_responses::CancelViewAction.
   void CancelModalCallback(OverlayRequest* request, OverlayResponse* response);
+
+  // Used as an optional completion callback for `request`.  Removes the
+  // request's infobar from its manager upon completion.
+  void RemoveInfobarCompletionCallback(OverlayRequest* request,
+                                       OverlayResponse* response);
 
   // OverlayRequestCallbackInstaller:
   void InstallCallbacksInternal(OverlayRequest* request) override;

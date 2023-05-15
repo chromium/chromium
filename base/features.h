@@ -20,6 +20,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
+#endif
+
 }  // namespace base::features
 
 #endif  // BASE_FEATURES_H_

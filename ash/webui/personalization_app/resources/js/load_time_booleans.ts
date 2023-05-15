@@ -19,10 +19,6 @@ export function isGooglePhotosSharedAlbumsEnabled() {
   return loadTimeData.getBoolean('isGooglePhotosSharedAlbumsEnabled');
 }
 
-export function isDarkLightModeEnabled() {
-  return loadTimeData.getBoolean('isDarkLightModeEnabled');
-}
-
 export function isAmbientModeAllowed() {
   return loadTimeData.getBoolean('isAmbientModeAllowed');
 }
@@ -53,4 +49,8 @@ export function isUserAvatarCustomizationSelectorsEnabled() {
 
 export function isTimeOfDayScreenSaverEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayScreenSaverEnabled');
+}
+
+export function isTimeOfDayWallpaperEnabled() {
+  return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
 }

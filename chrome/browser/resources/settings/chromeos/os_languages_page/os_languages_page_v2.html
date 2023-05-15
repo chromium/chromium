@@ -131,8 +131,7 @@
         <cr-link-row id="manageGoogleAccountLanguage"
             label="$i18n{manageGoogleAccountLanguageLabel}"
             on-click="openManageGoogleAccountLanguage_"
-            external
-            button-aria-description="$i18n{opensInNewTab}">
+            external>
         </cr-link-row>
       </div>
     </div>
@@ -158,7 +157,7 @@
             on-change="onTranslateCheckboxChange_"
             hidden="[[!prefs.translate.enabled.value]]"
             disabled="[[disableTranslateCheckbox_(
-                detailLanguage_.state, languages.translateTarget)]]">
+                detailLanguage_.state, languages.translateTarget)]]" noink>
           $i18n{offerToTranslateThisLanguage}
         </cr-checkbox>
         <button class="dropdown-item" role="menuitem"

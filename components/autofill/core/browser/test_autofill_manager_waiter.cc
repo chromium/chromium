@@ -319,7 +319,7 @@ const FormStructure* WaitForMatchingForm(
 
     base::ScopedObservation<AutofillManager, AutofillManager::Observer>
         observation_{this};
-    const raw_ref<AutofillManager, DanglingUntriaged> manager_;
+    const raw_ref<AutofillManager, FlakyDanglingUntriaged> manager_;
     base::RepeatingCallback<bool(const FormStructure&)> pred_;
     base::RunLoop run_loop_;
     raw_ptr<const FormStructure> matching_form_ = nullptr;

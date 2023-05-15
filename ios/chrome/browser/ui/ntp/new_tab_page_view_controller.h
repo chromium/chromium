@@ -7,17 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class BubblePresenter;
-@class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @class FeedHeaderViewController;
 @class FeedMetricsRecorder;
 @class FeedWrapperViewController;
 @protocol NewTabPageContentDelegate;
+@class NewTabPageHeaderViewController;
 @protocol OverscrollActionsControllerDelegate;
 @class ViewRevealingVerticalPanHandler;
 
@@ -25,8 +25,8 @@
 // non-incognito new tab page.
 @interface NewTabPageViewController
     : UIViewController <ThumbStripSupporting,
-                        ContentSuggestionsHeaderViewControllerDelegate,
                         NewTabPageConsumer,
+                        NewTabPageHeaderViewControllerDelegate,
                         UIScrollViewDelegate>
 
 // View controller wrapping the feed.
@@ -37,9 +37,8 @@
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
     overscrollDelegate;
 
-// The content suggestions header, containing the fake omnibox and the doodle.
-@property(nonatomic, weak)
-    ContentSuggestionsHeaderViewController* headerController;
+// The NTP header, containing the fake omnibox and the doodle.
+@property(nonatomic, weak) NewTabPageHeaderViewController* headerViewController;
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> ntpContentDelegate;

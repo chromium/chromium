@@ -44,7 +44,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
  protected:
   // Constants for validating the data reported by the analyzer.
   struct BinaryData {
-    const char* file_basename;
+    const char* file_path;
     safe_browsing::ClientDownloadRequest_DownloadType download_type;
     const uint8_t* sha256_digest;
     int64_t length;
@@ -142,8 +142,8 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   void ExpectBinary(
       const BinaryData& data,
       const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary) {
-    ASSERT_TRUE(binary.has_file_basename());
-    EXPECT_EQ(data.file_basename, binary.file_basename());
+    ASSERT_TRUE(binary.has_file_path());
+    EXPECT_EQ(data.file_path, binary.file_path());
     ASSERT_TRUE(binary.has_download_type());
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
@@ -158,7 +158,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
     // ExtractImageFeatures for Windows, which only works on PE
     // files.
-    if (binary.file_basename().find(".exe") != std::string::npos) {
+    if (binary.file_path().find(".exe") != std::string::npos) {
       ExpectPEHeaders(data, binary);
       return;
     }
@@ -166,7 +166,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
 #if BUILDFLAG(IS_MAC)
     // ExtractImageFeatures for Mac, which only works on MachO
     // files.
-    if (binary.file_basename().find("executablefat") != std::string::npos) {
+    if (binary.file_path().find("executablefat") != std::string::npos) {
       ExpectMachOHeaders(data, binary);
       return;
     }
@@ -270,7 +270,7 @@ TEST_F(SandboxedZipAnalyzerTest, NoBinaries) {
   EXPECT_FALSE(results.has_executable);
   EXPECT_FALSE(results.has_archive);
   ASSERT_EQ(1, results.archived_binary.size());
-  EXPECT_EQ(results.archived_binary[0].file_basename(), "simple_exe.txt");
+  EXPECT_EQ(results.archived_binary[0].file_path(), "simple_exe.txt");
   EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
 }
@@ -336,7 +336,7 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedTooManyNestedArchive) {
                   "download_protection/zipfile_too_many_nested_archives.zip"),
               &results);
   ASSERT_TRUE(results.success);
-  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_executable);
   EXPECT_TRUE(results.has_archive);
   EXPECT_EQ(14, results.archived_binary.size());
   ASSERT_EQ(3u, results.archived_archive_filenames.size());
@@ -385,9 +385,9 @@ TEST_F(SandboxedZipAnalyzerTest,
   ASSERT_EQ(3, results.archived_binary.size());
 
   BinaryData SignedExe = kSignedExe;
-  SignedExe.file_basename = "signed.exe ";
+  SignedExe.file_path = "signed.exe ";
   BinaryData UnsignedExe = kUnsignedExe;
-  UnsignedExe.file_basename = "unsigned.exe.";
+  UnsignedExe.file_path = "unsigned.exe.";
   ExpectBinary(SignedExe, results.archived_binary.Get(0));
   ExpectBinary(UnsignedExe, results.archived_binary.Get(1));
   ASSERT_EQ(1u, results.archived_archive_filenames.size());
@@ -427,22 +427,22 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   bool found_unsigned = false;
   bool found_signed = false;
   for (const auto& binary : results.archived_binary) {
-    if (kSignedMachO.file_basename == binary.file_basename()) {
+    if (kSignedMachO.file_path == binary.file_path()) {
       found_signed = true;
       ExpectBinary(kSignedMachO, binary);
     }
 
-    if (kUnsignedMachO.file_basename == binary.file_basename()) {
+    if (kUnsignedMachO.file_path == binary.file_path()) {
       found_unsigned = true;
       ExpectBinary(kUnsignedMachO, binary);
     }
   }
 
   if (!found_unsigned || !found_signed) {
-    LOG(ERROR) << "Expected to find: " << kSignedMachO.file_basename << " and "
-               << kUnsignedMachO.file_basename;
+    LOG(ERROR) << "Expected to find: " << kSignedMachO.file_path << " and "
+               << kUnsignedMachO.file_path;
     for (const auto& binary : results.archived_binary) {
-      LOG(ERROR) << "Found " << binary.file_basename();
+      LOG(ERROR) << "Found " << binary.file_path();
     }
   }
   EXPECT_TRUE(found_unsigned);

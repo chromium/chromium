@@ -19,6 +19,13 @@ enum class CSSMathOperator {
   kMin,
   kMax,
   kClamp,
+  kRoundNearest,
+  kRoundUp,
+  kRoundDown,
+  kRoundToZero,
+  kMod,
+  kRem,
+  kHypot,
   kInvalid
 };
 

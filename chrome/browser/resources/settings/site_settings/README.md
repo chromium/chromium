@@ -21,8 +21,6 @@ folder. Arguably, the most important pages are:
 *   [all_sites.html](https://cs.chromium.org/chromium/src/chrome/browser/resources/settings/site_settings/all_sites.html)
     lists all sites that have any relevant information to the users
     (`chrome://settings/content/all`).
-*   [category_default_setting.html](https://cs.chromium.org/chromium/src/chrome/browser/resources/settings/site_settings/category_default_setting.html?g=0)
-    is used to show some particular settings category (e.g. "location").
 *   [site_details.html](https://cs.chromium.org/chromium/src/chrome/browser/resources/settings/site_settings/site_details.html?type=cs&g=0)
     displays a detailed page for a particular origin.
 

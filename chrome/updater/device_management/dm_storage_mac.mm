@@ -5,6 +5,7 @@
 #include "chrome/updater/device_management/dm_storage.h"
 
 #import <Foundation/Foundation.h>
+
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,12 +15,15 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/mac_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace updater {
 namespace {

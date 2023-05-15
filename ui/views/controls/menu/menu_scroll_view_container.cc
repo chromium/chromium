@@ -41,10 +41,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace views {
 
 namespace {
@@ -328,6 +324,16 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
+  if (border_color_id_.has_value()) {
+    ui::ColorProvider* color_provider = GetColorProvider();
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color_provider->GetColor(border_color_id_.value()));
+    canvas->DrawRoundRect(GetLocalBounds(), extra.menu_background.corner_radius,
+                          flags);
+    return;
+  }
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupBackground,
                           ui::NativeTheme::kNormal, bounds, extra);
@@ -493,15 +499,11 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (ash::features::IsDarkLightModeEnabled()) {
-      background_view_->SetBorder(std::make_unique<HighlightBorder>(
-          GetRoundedCorners(),
-          // corner_radius_,
-          chromeos::features::IsJellyrollEnabled()
-              ? HighlightBorder::Type::kHighlightBorderOnShadow
-              : HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false));
-    }
+    background_view_->SetBorder(std::make_unique<HighlightBorder>(
+        GetRoundedCorners(),
+        chromeos::features::IsJellyrollEnabled()
+            ? HighlightBorder::Type::kHighlightBorderOnShadow
+            : HighlightBorder::Type::kHighlightBorder1));
 #endif
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));

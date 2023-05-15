@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "base/system/sys_info.h"
 
 namespace base {
@@ -19,7 +18,7 @@ size_t RecommendedMaxNumberOfThreadsInThreadGroup(size_t min,
   const auto num_of_cores = static_cast<size_t>(SysInfo::NumberOfProcessors());
   const size_t threads =
       std::ceil<size_t>(num_of_cores * cores_multiplier) + offset;
-  return clamp(threads, min, max);
+  return std::clamp(threads, min, max);
 }
 
 }  // namespace base

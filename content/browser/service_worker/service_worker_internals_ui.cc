@@ -25,7 +25,8 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/service_worker_resources.h"
+#include "content/grit/service_worker_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -356,11 +357,10 @@ ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
   source->UseStringsJs();
-  source->AddResourcePath("serviceworker_internals.js",
-                          IDR_SERVICE_WORKER_INTERNALS_JS);
-  source->AddResourcePath("serviceworker_internals.css",
-                          IDR_SERVICE_WORKER_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_SERVICE_WORKER_INTERNALS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kServiceWorkerResources, kServiceWorkerResourcesSize));
+  source->SetDefaultResource(IDR_SERVICE_WORKER_SERVICEWORKER_INTERNALS_HTML);
+
   source->DisableDenyXFrameOptions();
 
   web_ui->AddMessageHandler(std::make_unique<ServiceWorkerInternalsHandler>());

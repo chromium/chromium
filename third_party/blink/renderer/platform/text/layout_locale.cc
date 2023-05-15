@@ -225,7 +225,7 @@ const LayoutLocale& LayoutLocale::GetDefault() {
   if (UNLIKELY(!data.default_locale)) {
     AtomicString language = DefaultLanguage();
     data.default_locale =
-        LayoutLocale::Get(!language.empty() ? language : "en");
+        LayoutLocale::Get(!language.empty() ? language : AtomicString("en"));
   }
   return *data.default_locale;
 }
@@ -334,10 +334,6 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
   if (string_.Contains('@'))
     return string_;
 
-  std::string utf8_locale = string_.Utf8();
-  Vector<char> buffer(static_cast<wtf_size_t>(utf8_locale.length() + 11), 0);
-  memcpy(buffer.data(), utf8_locale.c_str(), utf8_locale.length());
-
   const char* keyword_value = nullptr;
   switch (mode) {
     default:
@@ -356,25 +352,47 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
       keyword_value = "loose";
       break;
   }
+  constexpr wtf_size_t kMaxLbValueLen = 6;
+  DCHECK(!keyword_value || strlen(keyword_value) <= kMaxLbValueLen);
+  constexpr wtf_size_t kMaxKeywordsLen =
+      /* strlen("@lb=") */ 4 + kMaxLbValueLen;
+  class ULocaleKeywordBuilder {
+   public:
+    explicit ULocaleKeywordBuilder(const std::string& utf8_locale)
+        : length_(base::saturated_cast<wtf_size_t>(utf8_locale.length())),
+          buffer_(length_ + kMaxKeywordsLen + 1, 0) {
+      // The `buffer_` is initialized to 0 above.
+      memcpy(buffer_.data(), utf8_locale.c_str(), length_);
+    }
+    explicit ULocaleKeywordBuilder(const String& locale)
+        : ULocaleKeywordBuilder(locale.Utf8()) {}
 
-  ICUError status;
-  int32_t length_needed = uloc_setKeywordValue(
-      "lb", keyword_value, buffer.data(), buffer.size(), &status);
-  if (U_SUCCESS(status))
-    return AtomicString::FromUTF8(buffer.data(), length_needed);
+    AtomicString ToAtomicString() const {
+      return AtomicString::FromUTF8(buffer_.data(), length_);
+    }
 
-  if (status == U_BUFFER_OVERFLOW_ERROR) {
-    buffer.Grow(length_needed + 1);
-    memset(buffer.data() + utf8_locale.length(), 0,
-           buffer.size() - utf8_locale.length());
-    status = U_ZERO_ERROR;
-    int32_t length_needed2 = uloc_setKeywordValue(
-        "lb", keyword_value, buffer.data(), buffer.size(), &status);
-    DCHECK_EQ(length_needed, length_needed2);
-    if (U_SUCCESS(status) && length_needed == length_needed2)
-      return AtomicString::FromUTF8(buffer.data(), length_needed);
+    bool SetKeywordValue(const char* keyword_name, const char* value) {
+      ICUError status;
+      int32_t length_needed = uloc_setKeywordValue(
+          keyword_name, value, buffer_.data(), buffer_.size(), &status);
+      if (U_SUCCESS(status)) {
+        DCHECK_GE(length_needed, 0);
+        length_ = length_needed;
+        DCHECK_LT(length_, buffer_.size());
+        return true;
+      }
+      DCHECK_NE(status, U_BUFFER_OVERFLOW_ERROR);
+      return false;
+    }
+
+   private:
+    wtf_size_t length_;
+    Vector<char> buffer_;
+  } builder(string_);
+
+  if (builder.SetKeywordValue("lb", keyword_value)) {
+    return builder.ToAtomicString();
   }
-
   NOTREACHED();
   return string_;
 }

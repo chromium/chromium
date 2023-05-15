@@ -181,6 +181,8 @@ class HistogramThreadsafeTest : public testing::Test {
   }
 
   void TearDown() override {
+    histograms_.clear();
+    allocator_view_.reset();
     GlobalHistogramAllocator::ReleaseForTesting();
     ASSERT_FALSE(GlobalHistogramAllocator::Get());
   }
@@ -305,9 +307,9 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
   // vs a vector). Hence, the goal of doing this test multiple time is to have
   // coverage of the SingleSample scenario, because once the histogram has moved
   // to using a vector, it will not use SingleSample again.
-  // Note: |kNumIterations| was 200 on 4/2023, but was decreased because the
+  // Note: |kNumIterations| was 100 on 4/2023, but was decreased because the
   // workload was causing flakiness (timing out).
-  constexpr size_t kNumIterations = 100;
+  constexpr size_t kNumIterations = 50;
   for (size_t iteration = 0; iteration < kNumIterations; ++iteration) {
     // TL;DR of the test: multiple threads are created, which will each emit to
     // the same histograms and snapshot their delta multiple times. We keep
@@ -331,12 +333,12 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     // samples found in the snapshots so that we can compare that they match
     // later on.
     constexpr size_t kNumThreads = 2;
-    constexpr size_t kNumEmissions = 2000;
-    std::unique_ptr<SnapshotDeltaThread> threads[kNumThreads];
+    constexpr size_t kNumEmissions = 1000;
     subtle::Atomic32 real_total_samples_count = 0;
     std::vector<subtle::Atomic32> real_bucket_counts(kHistogramMax, 0);
     subtle::Atomic32 snapshots_total_samples_count = 0;
     std::vector<subtle::Atomic32> snapshots_bucket_counts(kHistogramMax, 0);
+    std::unique_ptr<SnapshotDeltaThread> threads[kNumThreads];
     for (size_t i = 0; i < kNumThreads; ++i) {
       threads[i] = std::make_unique<SnapshotDeltaThread>(
           StringPrintf("SnapshotDeltaThread.%zu.%zu", iteration, i),

@@ -20,6 +20,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -193,8 +194,8 @@ class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
   }
 
  private:
-  views::View* shown_now_;
-  views::View* shown_after_;
+  raw_ptr<views::View, ExperimentalAsh> shown_now_;
+  raw_ptr<views::View, ExperimentalAsh> shown_after_;
 };
 
 }  // namespace

@@ -25,7 +25,6 @@ include_rules = [
     "+base/trace_event",
     "+build/build_config.h",
     "+cc",
-    "+components/attribution_reporting",
     "+components/viz/common",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_latency.h",
@@ -52,7 +51,7 @@ include_rules = [
     "+services/network/public/cpp/cors/preflight_result.h",
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
-    "+services/network/public/cpp/trigger_attestation.h",
+    "+services/network/public/cpp/trigger_verification.h",
 
     # Enforce to use mojom-shared.h in blink/public so that it can compile
     # inside and outside Blink.
@@ -60,6 +59,7 @@ include_rules = [
     "+services/network/public/mojom/blocked_by_response_reason.mojom-shared.h",
     "+services/network/public/mojom/content_security_policy.mojom-shared.h",
     "+services/network/public/mojom/cors.mojom-shared.h",
+    "+services/network/public/mojom/attribution.mojom-shared.h",
     "+services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h",
     "+services/network/public/mojom/data_pipe_getter.mojom-shared.h",
     "+services/network/public/mojom/fetch_api.mojom-forward.h",

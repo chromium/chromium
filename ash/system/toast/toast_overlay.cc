@@ -4,8 +4,10 @@
 
 #include "ash/system/toast/toast_overlay.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -19,6 +21,7 @@
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -62,8 +65,10 @@ gfx::Rect GetUserWorkAreaBounds(aura::Window* window) {
 // the current hotseat state
 void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
                                          const HotseatWidget* hotseat_widget) {
-  if (hotseat_widget->state() == HotseatState::kExtended)
-    bounds.set_height(bounds.height() - hotseat_widget->GetHotseatSize());
+  if (hotseat_widget->state() == HotseatState::kExtended) {
+    bounds.set_height(bounds.height() - hotseat_widget->GetHotseatSize() -
+                      ShelfConfig::Get()->hotseat_bottom_padding());
+  }
   if (hotseat_widget->state() == HotseatState::kShownHomeLauncher)
     bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
 }
@@ -87,7 +92,7 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
   }
 
  private:
-  ToastOverlay* const overlay_;
+  const raw_ptr<ToastOverlay, ExperimentalAsh> overlay_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };
@@ -145,7 +150,6 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& dismiss_text,
                            const gfx::VectorIcon& leading_icon,
                            base::TimeDelta duration,
-                           bool show_on_lock_screen,
                            bool persist_on_hover,
                            aura::Window* root_window,
                            base::RepeatingClosure dismiss_callback)
@@ -171,10 +175,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   params.accept_events = true;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = CalculateOverlayBounds();
-  // Show toasts above the app list and below the lock screen.
-  params.parent = root_window_->GetChildById(
-      show_on_lock_screen ? kShellWindowId_LockSystemModalContainer
-                          : kShellWindowId_SystemModalContainer);
+  params.parent =
+      root_window_->GetChildById(kShellWindowId_DragImageAndTooltipContainer);
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(true);
   overlay_widget_->SetContentsView(overlay_view_.get());
@@ -196,6 +198,19 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   }
 
   keyboard::KeyboardUIController::Get()->AddObserver(this);
+
+  if (features::AreSideAlignedToastsEnabled()) {
+    auto* window_controller = RootWindowController::ForWindow(root_window_);
+    if (window_controller->GetStatusAreaWidget()) {
+      // `UnifiedSystemTray` is observed when side aligned toasts are enabled so
+      // we can shift the toast baseline up when slider bubbles are visible.
+      // The observation is safe on external monitor disconnect because
+      // ToastManagerImpl deletes the ToastOverlay before the root window is
+      // destroyed.
+      scoped_unified_system_tray_observer_.Observe(
+          window_controller->GetStatusAreaWidget()->unified_system_tray());
+    }
+  }
 }
 
 ToastOverlay::~ToastOverlay() {
@@ -248,26 +263,71 @@ bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
   return true;
 }
 
+void ToastOverlay::OnSliderBubbleHeightChanged() {
+  // We only update toast baseline if they are aligned to the side.
+  if (features::AreSideAlignedToastsEnabled()) {
+    UpdateOverlayBounds();
+  }
+}
+
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // If the native window has not been initialized, as in the first call, get
-  // the default root window. Otherwise get the window for this overlay_widget
+  // the default root window. Otherwise get the window for this `overlay_widget`
   // to handle multiple monitors properly.
   auto* window = overlay_widget_->IsNativeWidgetInitialized()
                      ? overlay_widget_->GetNativeWindow()
-                     : root_window_;
+                     : root_window_.get();
   auto* window_controller = RootWindowController::ForWindow(window);
   auto* hotseat_widget = window_controller->shelf()->hotseat_widget();
 
   gfx::Rect bounds = GetUserWorkAreaBounds(window);
 
-  if (hotseat_widget)
+  if (hotseat_widget) {
     AdjustWorkAreaBoundsForHotseatState(bounds, hotseat_widget);
+  }
 
-  int target_y =
+  if (features::AreSideAlignedToastsEnabled()) {
+    // Toasts should always follow the status area and will usually show on the
+    // bottom-right of the screen. They will show at the bottom-left whenever
+    // the shelf is left-aligned or for RTL when the shelf is not right aligned.
+    auto alignment = window_controller->shelf()->alignment();
+    const int target_x =
+        ((base::i18n::IsRTL() && alignment != ShelfAlignment::kRight) ||
+         alignment == ShelfAlignment::kLeft)
+            ? bounds.x() + ToastOverlay::kOffset
+            : bounds.right() - widget_size_.width() - ToastOverlay::kOffset;
+
+    const int target_y = bounds.bottom() - widget_size_.height() -
+                         ToastOverlay::kOffset - CalculateSliderBubbleOffset();
+
+    return gfx::Rect(gfx::Point(target_x, target_y), widget_size_);
+  }
+
+  const int target_y =
       bounds.bottom() - widget_size_.height() - ToastOverlay::kOffset;
   bounds.ClampToCenteredSize(widget_size_);
   bounds.set_y(target_y);
   return bounds;
+}
+
+// Calculates the y offset used to shift side aligned toasts up whenever case a
+// slider bubble is visible.
+int ToastOverlay::CalculateSliderBubbleOffset() {
+  // Slider bubble offset is only used for side aligned toasts.
+  if (!features::AreSideAlignedToastsEnabled()) {
+    return 0;
+  }
+
+  auto* unified_system_tray = RootWindowController::ForWindow(root_window_)
+                                  ->GetStatusAreaWidget()
+                                  ->unified_system_tray();
+
+  // If a slider bubble is visible, the toast baseline will be shifted
+  // up by the slider bubble's height + a default spacing offset.
+  return unified_system_tray->IsSliderBubbleShown()
+             ? unified_system_tray->GetSliderBubbleHeight() +
+                   ToastOverlay::kOffset
+             : 0;
 }
 
 void ToastOverlay::OnButtonClicked() {

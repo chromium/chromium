@@ -51,7 +51,7 @@ class TestClient {
   }
 
   // Convenient getters of globals.
-  wl_output* output() { return globals().output.get(); }
+  wl_output* output() { return globals().outputs.back().get(); }
   wl_compositor* compositor() { return globals().compositor.get(); }
   wl_shm* shm() { return globals().shm.get(); }
   wp_presentation* presentation() { return globals().presentation.get(); }
@@ -61,7 +61,10 @@ class TestClient {
   wl_subcompositor* subcompositor() { return globals().subcompositor.get(); }
   wl_touch* touch() { return globals().touch.get(); }
   zaura_shell* aura_shell() { return globals().aura_shell.get(); }
-  zaura_output* aura_output() { return globals().aura_output.get(); }
+  zaura_output* aura_output() { return globals().aura_outputs.back().get(); }
+  zaura_output_manager* aura_output_manager() {
+    return globals().aura_output_manager.get();
+  }
   zxdg_shell_v6* xdg_shell_v6() { return globals().xdg_shell_v6.get(); }
   xdg_wm_base* xdg_wm_base() { return globals().xdg_wm_base.get(); }
   zwp_fullscreen_shell_v1* fullscreen_shell() {

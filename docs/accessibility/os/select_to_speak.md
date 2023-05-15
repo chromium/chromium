@@ -5,9 +5,9 @@ Select to Speak is a Chrome OS feature to read text on the screen out loud.
 
 There are millions of users who greatly benefit from some text-to-speech but
 don’t quite need a full screen reading experience where everything is read
-aloud each step of the way. For these users, whether they are low vision, 
+aloud each step of the way. For these users, whether they are low vision,
 dyslexic, neurologically diverse, or simply prefer to listen to text read
-aloud instead of visually reading it, we have built Select-to-Speak. 
+aloud instead of visually reading it, we have built Select-to-Speak.
 
 ## Using Select to Speak
 
@@ -51,8 +51,8 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/
 
 - Floating panel, system/accessibility/select_to_speak_menu_bubble_controller.h
 
-In addition, there are settings for STS in 
-chrome/browser/resources/settings/a11y_page/manage_a11y_page.*
+In addition, there are settings for STS in
+chrome/browser/resources/settings/a11y_page/manage_a11y_subpage.*
 
 ### Tests
 
@@ -111,7 +111,7 @@ Most STS logic takes place in
 Input to the extension is handled by input_handler.js, which handles user
 input from mouse, keyboard, and touchscreen events. Most logic here revolves
 around keeping track of state to see if the user has requested text using
-one of the three ways to activate the feature, search + mouse, tray button 
+one of the three ways to activate the feature, search + mouse, tray button
 + mouse, or search + s.
 
 #### Determining selected content
@@ -138,35 +138,35 @@ block parent are selected.
 
 select_to_speak.js requests focus information from the Automation API. The
 focus result is sent to SelectToSpeak.requestSpeakSelectedText_, which
-uses Automation selection to determine which nodes are selected. The 
+uses Automation selection to determine which nodes are selected. The
 complexity of logic here is converting between Automation selection and
 its deep equivalent, i.e. from parent nodes and offsets to their leaves.
 This occurs in NodeUtils.getDeepEquivalentForSelection. When the first and
 last nodes in selection are found, SelectToSpeak.readNodesInSelection_ is
-used to determine the entire list of AutomationNodes which should be sent 
+used to determine the entire list of AutomationNodes which should be sent
 for speech.
 
 #### Speaking selected content
 
 SelectToSpeak.startSpeechQueue_ takes a list of AutomationNodes, determines
 their text content, and sends the result to the Text to Speech API for
-speech. It begins by mapping the text content of the nodes to the nodes 
+speech. It begins by mapping the text content of the nodes to the nodes
 themselves, so that STS can speak smoothly across node boundaries (i.e.
 across line breaks) and follow speech progress with a highlight. The mapping
-between text and nodes occurs in repeated calls to 
-ParagraphUtils.buildNodeGroup to build lists of nodes that should be spoken 
+between text and nodes occurs in repeated calls to
+ParagraphUtils.buildNodeGroup to build lists of nodes that should be spoken
 smoothly.
 
 
-Each node group is sent to the Text to Speech API, with callbacks to allow 
-for speech progress tracking, enabling the highlight to be dynamically 
+Each node group is sent to the Text to Speech API, with callbacks to allow
+for speech progress tracking, enabling the highlight to be dynamically
 updated with each word.
 
 #### Highlighting content during speech
 
 On each word boundary event, the TTS API sends a callback which is handled
 by SelectToSpeak.onTtsWordEvent_. This is used to check against the list of
-nodes being spoken to see which node is currently being spoken, and further 
+nodes being spoken to see which node is currently being spoken, and further
 check against the words in the node to see which word is spoken.
 
 #### Edge cases
@@ -183,12 +183,12 @@ This occurs in SelectToSpeak.updateFromNodeState_.
 
 ### Communication with SelectToSpeakTray
 
-STS runs in the extension process, but needs to communicate its three states 
+STS runs in the extension process, but needs to communicate its three states
 (Inactive, Selecting, and Speaking) to the STS button in the status tray.
 It also needs to listen for users requesting state change using the
 SelectToSpeakTray button. The STS extension uses the AccessibitilityPrivate
 method setSelectToSpeakState to inform the SelectToSpeakTray of a
-status change, and listens to onSelectToSpeakStateChangeRequested to know 
+status change, and listens to onSelectToSpeakStateChangeRequested to know
 when a user wants to change state. The STS extension is the source of truth
 for STS state.
 
@@ -285,7 +285,7 @@ position, passing in the new effective TTS rate as an option.
 
 ### Special case: Google Drive apps
 
-Google Drive apps require a few work-arounds to work correctly with STS. 
+Google Drive apps require a few work-arounds to work correctly with STS.
 
 - Any time a Google Drive document is loaded (such as a Doc, Sheet or Slides
 document), the script
@@ -318,7 +318,7 @@ for more details on design as well as UMA.
 
 - Overall product design, [go/select-to-speak-design](go/select-to-speak-design)
 
-- On-Screen UI for touch and tablet modes, 
+- On-Screen UI for touch and tablet modes,
 [go/chromeos-sts-on-screen-ui](go/chromeos-sts-on-screen-ui)
 
 - Reading text at keystroke,

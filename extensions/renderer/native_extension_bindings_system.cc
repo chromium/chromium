@@ -14,6 +14,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/context_type_adapter.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
@@ -840,6 +841,10 @@ void NativeExtensionBindingsSystem::SendRequest(
     std::unique_ptr<APIRequestHandler::Request> request,
     v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
+  CHECK_NE(Feature::UNSPECIFIED_CONTEXT, script_context->context_type())
+      << "Attempting to send a request from an unspecified context type. "
+      << "Request: " << request->method_name
+      << ", Context: " << script_context->GetDebugString();
 
   GURL url;
   blink::WebLocalFrame* frame = script_context->web_frame();
@@ -853,6 +858,8 @@ void NativeExtensionBindingsSystem::SendRequest(
   params->arguments = std::move(request->arguments_list);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;
+  params->context_type =
+      FeatureContextToMojomContext(script_context->context_type());
   params->request_id = request->request_id;
   params->has_callback = request->has_async_response_handler;
   params->user_gesture = request->has_user_gesture;

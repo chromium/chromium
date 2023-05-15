@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/toplevel_window_event_handler.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/app_types.h"
@@ -104,7 +105,7 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   bool in_resize_loop_ = false;
 };
 
@@ -1094,7 +1095,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
   // Snap the window to the right.
   WindowState* window_state = WindowState::Get(w1.get());
   ASSERT_TRUE(window_state->CanSnap());
-  const WMEvent event(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  const WindowSnapWMEvent event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state->OnWMEvent(&event);
   ASSERT_TRUE(window_state->IsSnapped());
 

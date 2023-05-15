@@ -943,7 +943,9 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
                                            read_buffer_->num_occupied_bytes()),
                            next_read_size_hint);
     if (result == DispatchResult::kOK) {
-      MaybeLogHistogramForIPCMetrics(MessageType::kReceive);
+      if (ShouldRecordSubsampledHistograms()) {
+        LogHistogramForIPCMetrics(MessageType::kReceive);
+      }
       read_buffer_->Discard(*next_read_size_hint);
       *next_read_size_hint = 0;
     } else if (result == DispatchResult::kNotEnoughData) {
@@ -1090,12 +1092,8 @@ bool Channel::OnControlMessage(Message::MessageType message_type,
   return false;
 }
 
-void Channel::MaybeLogHistogramForIPCMetrics(MessageType type) {
-  {
-    base::AutoLock hold(lock_);
-    if (!sub_sampler_.ShouldSample(0.001))
-      return;
-  }
+// static
+void Channel::LogHistogramForIPCMetrics(MessageType type) {
   if (type == MessageType::kSent) {
     UMA_HISTOGRAM_ENUMERATION(
         "Mojo.Channel.WriteSendMessageProcessType",
@@ -1121,6 +1119,11 @@ MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
   return;
 }
 #endif
+
+bool Channel::ShouldRecordSubsampledHistograms() {
+  base::AutoLock hold(lock_);
+  return sub_sampler_.ShouldSample(0.001);
+}
 
 }  // namespace core
 }  // namespace mojo

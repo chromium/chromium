@@ -50,10 +50,10 @@
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
@@ -374,7 +374,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return history_navigation_virtual_time_pauser_;
   }
 
-  HeapObserverSet<PageVisibilityObserver>& PageVisibilityObserverSet() {
+  HeapLinkedHashSet<WeakMember<PageVisibilityObserver>>&
+  PageVisibilityObserverSet() {
     return page_visibility_observer_set_;
   }
 
@@ -471,7 +472,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const Member<FocusController> focus_controller_;
   const Member<ContextMenuController> context_menu_controller_;
   const Member<PageScaleConstraintsSet> page_scale_constraints_set_;
-  HeapObserverSet<PageVisibilityObserver> page_visibility_observer_set_;
+  HeapLinkedHashSet<WeakMember<PageVisibilityObserver>>
+      page_visibility_observer_set_;
   const Member<PointerLockController> pointer_lock_controller_;
   Member<ScrollingCoordinator> scrolling_coordinator_;
   const Member<BrowserControls> browser_controls_;

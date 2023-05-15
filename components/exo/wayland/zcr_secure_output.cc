@@ -6,6 +6,7 @@
 
 #include <secure-output-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
@@ -55,7 +56,7 @@ class Security : public SurfaceObserver {
   }
 
  private:
-  Surface* surface_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 void security_destroy(wl_client* client, wl_resource* resource) {

@@ -7,7 +7,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
@@ -136,4 +138,10 @@ Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
     browser_to_show_animation = chrome::FindLastActiveWithProfile(profile);
   }
   return browser_to_show_animation;
+}
+
+const web_app::AppId* GetWebAppIdForBrowser(const Browser* browser) {
+  return web_app::AppBrowserController::IsWebApp(browser)
+             ? &browser->app_controller()->app_id()
+             : nullptr;
 }

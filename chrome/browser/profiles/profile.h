@@ -45,10 +45,10 @@ class WebUI;
 namespace policy {
 class SchemaRegistryService;
 class ProfilePolicyConnector;
+class ProfileCloudPolicyManager;
 class UserCloudPolicyManager;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class ActiveDirectoryPolicyManager;
 class UserCloudPolicyManagerAsh;
 #endif
 }  // namespace policy
@@ -298,6 +298,10 @@ class Profile : public content::BrowserContext {
   virtual const Profile* GetOriginalProfile() const = 0;
 
   // Returns whether the profile is associated with the account of a child.
+  // This method should not be used in new code to gate child-specific
+  // functionality. Prefer a feture specific method
+  // (eg. `SupervisedUserService::IsURLFilteringEnabled()`) or alternatively
+  // use `SupervisedUserService::IsSubjectToParentalControls()`.
   virtual bool IsChild() const = 0;
 
   // Returns whether opening browser windows is allowed in this profile. For
@@ -346,13 +350,10 @@ class Profile : public content::BrowserContext {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the UserCloudPolicyManagerAsh.
   virtual policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() = 0;
-
-  // Returns the ActiveDirectoryPolicyManager.
-  virtual policy::ActiveDirectoryPolicyManager*
-  GetActiveDirectoryPolicyManager() = 0;
 #else
   // Returns the UserCloudPolicyManager.
   virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
+  virtual policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() = 0;
 #endif
 
   virtual policy::ProfilePolicyConnector* GetProfilePolicyConnector() = 0;
@@ -439,6 +440,13 @@ class Profile : public content::BrowserContext {
 
   // Returns true if this is the main profile as defined above.
   virtual bool IsMainProfile() const = 0;
+
+  // Returns true if the profile path is for an web app profile.
+  static bool IsWebAppProfilePath(const base::FilePath& profile_path);
+
+  // Returns true if the name of the profile (i.e. `profile_path.BaseName()`) is
+  // for an web app profile.
+  static bool IsWebAppProfileName(const std::string& profile_path);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool CanUseDiskWhenOffTheRecord() override;

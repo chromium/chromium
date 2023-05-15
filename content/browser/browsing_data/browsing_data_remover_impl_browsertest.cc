@@ -10,10 +10,14 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -23,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -90,7 +95,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
 
 namespace content {
 
-class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
+class BrowsingDataRemoverImplBrowserTest
+    : public ContentBrowserTest,
+      public BackForwardCacheMetricsTestMatcher {
  public:
   BrowsingDataRemoverImplBrowserTest()
       : ssl_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
@@ -104,7 +111,10 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(ssl_server_.Start());
   }
 
-  void SetUpOnMainThread() override {}
+  void SetUpOnMainThread() override {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
 
   void RemoveAndWait(uint64_t remove_mask) {
     content::BrowsingDataRemover* remover =
@@ -238,8 +248,21 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
         ->GetNetworkContext();
   }
 
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+  const base::HistogramTester& histogram_tester() override {
+    return *histogram_tester_;
+  }
+
+  const net::test_server::EmbeddedTestServer& ssl_server() {
+    return ssl_server_;
+  }
+
  private:
   net::test_server::EmbeddedTestServer ssl_server_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Verify that TransportSecurityState data is cleared for REMOVE_CACHE.
@@ -292,6 +315,35 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
 
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES);
   EXPECT_FALSE(IsHttpAuthCacheSet());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
+                       ClearBackForwardCacheEntries) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  GURL url_1 = ssl_server().GetURL("/title1.html");
+  GURL url_2 = ssl_server().GetURL("/title2.html");
+
+  // 1) Navigate to url_1, then to url_2.
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 2) Go back, the page should be restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 3) Navigate to url_2 again.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 4) Remove the browsing data with DATA_TYPE_CACHE and go back, the page
+  // should not be restored from BFCache since the BFCache entry should be
+  // flushed.
+  RemoveAndWait(BrowsingDataRemover::DATA_TYPE_CACHE);
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed},
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 class CookiesBrowsingDataRemoverImplBrowserTest

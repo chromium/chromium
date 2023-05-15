@@ -1888,8 +1888,6 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
   EXPECT_TRUE(state.GetStaticPKPState("blog.torproject.org", &pkp_state));
   EXPECT_FALSE(pkp_state.spki_hashes.empty());
 
-  EXPECT_TRUE(HasStaticPublicKeyPins("www.twitter.com"));
-
   // Facebook has pinning and hsts on facebook.com, but only pinning on
   // subdomains.
   EXPECT_TRUE(state.GetStaticPKPState("facebook.com", &pkp_state));
@@ -1956,17 +1954,6 @@ TEST_F(TransportSecurityStateStaticTest, BuiltinCertPins) {
   EXPECT_TRUE(HasStaticPublicKeyPins("www.gstatic.com"));
   EXPECT_TRUE(HasStaticPublicKeyPins("ssl.google-analytics.com"));
   EXPECT_TRUE(HasStaticPublicKeyPins("www.googleplex.com"));
-
-  EXPECT_TRUE(HasStaticPublicKeyPins("twitter.com"));
-  EXPECT_FALSE(HasStaticPublicKeyPins("foo.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("www.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("api.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("oauth.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("mobile.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("dev.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("business.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("platform.twitter.com"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("si0.twimg.com"));
 }
 
 TEST_F(TransportSecurityStateStaticTest, OptionalHSTSCertPins) {

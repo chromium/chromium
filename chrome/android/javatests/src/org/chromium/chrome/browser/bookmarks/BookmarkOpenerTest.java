@@ -9,8 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -39,6 +39,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class BookmarkOpenerTest {
         }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false);
+            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
             mBookmarkOpener = mBookmarkManagerCoordinator.getBookmarkOpenerForTesting();
         });
     }

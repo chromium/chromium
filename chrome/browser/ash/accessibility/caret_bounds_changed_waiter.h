@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_CARET_BOUNDS_CHANGED_WAITER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_CARET_BOUNDS_CHANGED_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -30,7 +31,7 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
 
-  ui::InputMethod* input_method_;
+  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
   base::RunLoop run_loop_;
 };
 

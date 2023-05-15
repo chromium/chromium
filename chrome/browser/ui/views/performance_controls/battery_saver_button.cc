@@ -14,6 +14,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -23,7 +24,8 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&BatterySaverButton::OnClicked,
                                         base::Unretained(this))),
       browser_view_(browser_view) {
-  SetVectorIcon(kBatterySaverIcon);
+  SetVectorIcon(features::IsChromeRefresh2023() ? kBatterySaverRefreshIcon
+                                                : kBatterySaverIcon);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 

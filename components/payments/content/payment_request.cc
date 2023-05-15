@@ -206,6 +206,7 @@ void PaymentRequest::Init(
 
   // Log metrics around which payment methods are requested by the merchant.
   GURL google_pay_url(methods::kGooglePay);
+  GURL google_pay_authentication_url(methods::kGooglePayAuthentication);
   GURL android_pay_url(methods::kAndroidPay);
   GURL google_play_billing_url(methods::kGooglePlayBilling);
   std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
@@ -213,6 +214,11 @@ void PaymentRequest::Init(
       base::Contains(spec_->url_payment_method_identifiers(),
                      android_pay_url)) {
     method_categories.push_back(JourneyLogger::PaymentMethodCategory::kGoogle);
+  }
+  if (base::Contains(spec_->url_payment_method_identifiers(),
+                     google_pay_authentication_url)) {
+    method_categories.push_back(
+        JourneyLogger::PaymentMethodCategory::kGooglePayAuthentication);
   }
   if (base::Contains(spec_->url_payment_method_identifiers(),
                      google_play_billing_url)) {
@@ -933,6 +939,8 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
       for (const std::string& method : selected_app->GetAppMethodNames()) {
         if (method == methods::kGooglePay || method == methods::kAndroidPay) {
           return JourneyLogger::PaymentMethodCategory::kGoogle;
+        } else if (method == methods::kGooglePayAuthentication) {
+          return JourneyLogger::PaymentMethodCategory::kGooglePayAuthentication;
         } else if (method == methods::kGooglePlayBilling) {
           return JourneyLogger::PaymentMethodCategory::kPlayBilling;
         }

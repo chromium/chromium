@@ -26,6 +26,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -121,14 +122,20 @@ class AppApiTest : public extensions::ExtensionApiTest {
     EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(2)->GetWebUI());
 
     // We should have opened 2 new extension tabs. Including the original blank
-    // tab, we now have 3 tabs. The two app tabs should not be in the same
-    // process, since they do not have the background permission.  (Thus, we
-    // want to separate them to improve responsiveness.)
+    // tab, we now have 3 tabs.
     ASSERT_EQ(3, browser()->tab_strip_model()->count());
+    // The two app tabs don't have the background permission. To improve
+    // responsiveness, they should not be in the same process unless the
+    // kProcessPerSiteUpToMainFrameThreshold feature is enabled. The assumption
+    // of the kProcessPerSiteUpToMainFrameThreshold is that sharing a process
+    // with a threshold doesn't hurt responsiveness.
     WebContents* tab1 = browser()->tab_strip_model()->GetWebContentsAt(1);
     WebContents* tab2 = browser()->tab_strip_model()->GetWebContentsAt(2);
-    EXPECT_NE(tab1->GetPrimaryMainFrame()->GetProcess(),
-              tab2->GetPrimaryMainFrame()->GetProcess());
+    if (!base::FeatureList::IsEnabled(
+            features::kProcessPerSiteUpToMainFrameThreshold)) {
+      EXPECT_NE(tab1->GetPrimaryMainFrame()->GetProcess(),
+                tab2->GetPrimaryMainFrame()->GetProcess());
+    }
 
     // Opening tabs with window.open should keep the page in the opener's
     // process.
@@ -264,12 +271,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
                 ->GetWebContentsAt(6)
                 ->GetPrimaryMainFrame()
                 ->GetProcess());
-  bool windowOpenerValid = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetWebContentsAt(6),
-      "window.domAutomationController.send(window.opener != null)",
-      &windowOpenerValid));
-  ASSERT_TRUE(windowOpenerValid);
+  ASSERT_EQ(true,
+            content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(6),
+                            "window.opener != null"));
 }
 
 // Test that hosted apps without the background permission use a process per app
@@ -482,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   content::LoadStopObserver js_reload_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location.reload().";
-  ASSERT_TRUE(content::ExecuteScript(contents, "location.reload();"));
+  ASSERT_TRUE(content::ExecJs(contents, "location.reload();"));
   js_reload_observer.Wait();
   LOG(INFO) << "Executing location.reload() - done.";
   EXPECT_TRUE(process_map->Contains(
@@ -495,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   content::LoadStopObserver js_reload_observer2(
       browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location = location.";
-  ASSERT_TRUE(content::ExecuteScript(contents, "location = location;"));
+  ASSERT_TRUE(content::ExecJs(contents, "location = location;"));
   js_reload_observer2.Wait();
   LOG(INFO) << "Executing location = location - done.";
   EXPECT_FALSE(process_map->Contains(
@@ -547,12 +551,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ServerRedirectToAppFromExtension) {
   test_navigation_observer.Wait();
 
   // App has loaded, and chrome.app.isInstalled should be true.
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "chrome.app.isInstalled"));
 }
 
 // Tests that if an extension launches an app via chrome.tabs.create with an URL
@@ -580,12 +581,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ClientRedirectToAppFromExtension) {
   test_navigation_observer.Wait();
 
   // App has loaded, and chrome.app.isInstalled should be true.
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "chrome.app.isInstalled"));
 }
 
 // Tests that if we have an app process (path1/container.html) with a non-app
@@ -642,12 +640,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(process_map->Contains(
       contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(contents, "chrome.app.isInstalled"));
 
   // Crash the tab and reload it, chrome.app.isInstalled should still be true.
   content::CrashTab(browser()->tab_strip_model()->GetActiveWebContents());
@@ -655,11 +648,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
       browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(contents, "chrome.app.isInstalled"));
 }
 
 // Test that a cross-site renderer-initiated navigation away from a hosted app
@@ -697,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   GURL non_app_url(base_url.Resolve("path3/empty.html"));
   {
     content::TestNavigationObserver observer(popup_contents);
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         popup_contents,
         base::StringPrintf("location = '%s';", non_app_url.spec().c_str())));
     observer.Wait();

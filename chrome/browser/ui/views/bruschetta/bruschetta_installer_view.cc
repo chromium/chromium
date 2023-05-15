@@ -291,11 +291,11 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
         case InstallerState::kInstallStarted:
           // We don't really spend any time in the InstallStarted state, the
           // real first step is installing DLC so fall through to that.
-        case InstallerState::kDlcInstall:
+        case InstallerState::kToolsDlcInstall:
+        case InstallerState::kFirmwareDlcInstall:
           return l10n_util::GetStringUTF16(
               IDS_BRUSCHETTA_INSTALLER_INSTALLING_DLC_MESSAGE);
         case InstallerState::kBootDiskDownload:
-        case InstallerState::kFirmwareDownload:
         case InstallerState::kPflashDownload:
         case InstallerState::kOpenFiles:
           return l10n_util::GetStringUTF16(

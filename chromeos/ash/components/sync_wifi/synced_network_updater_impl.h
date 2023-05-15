@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_SYNCED_NETWORK_UPDATER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_SYNCED_NETWORK_UPDATER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -82,16 +83,17 @@ class SyncedNetworkUpdaterImpl
                              bool success);
 
   std::unique_ptr<PendingNetworkConfigurationTracker> tracker_;
-  chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config_;
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, ExperimentalAsh>
+      cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
       networks_;
-  TimerFactory* timer_factory_;
+  raw_ptr<TimerFactory, ExperimentalAsh> timer_factory_;
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       change_guid_to_timer_map_;
   base::flat_map<std::string, int> network_guid_to_updates_counter_;
-  SyncedNetworkMetricsLogger* metrics_logger_;
+  raw_ptr<SyncedNetworkMetricsLogger, ExperimentalAsh> metrics_logger_;
 
   base::WeakPtrFactory<SyncedNetworkUpdaterImpl> weak_ptr_factory_{this};
 };

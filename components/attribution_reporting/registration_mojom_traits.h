@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
@@ -286,6 +287,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   aggregation_coordinator(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.aggregation_coordinator;
+  }
+
+  static attribution_reporting::mojom::SourceRegistrationTimeConfig
+  source_registration_time_config(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.source_registration_time_config;
   }
 
   static bool Read(

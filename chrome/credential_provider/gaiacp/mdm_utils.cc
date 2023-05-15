@@ -139,7 +139,7 @@ bool IsEnrolledWithGoogleMdm(const std::wstring& mdm_url) {
   return is_enrolled;
 }
 
-HRESULT ExtractRegistrationData(const base::Value& registration_data,
+HRESULT ExtractRegistrationData(const base::Value::Dict& registration_data,
                                 std::wstring* out_email,
                                 std::wstring* out_id_token,
                                 std::wstring* out_access_token,
@@ -154,10 +154,6 @@ HRESULT ExtractRegistrationData(const base::Value& registration_data,
   DCHECK(out_username);
   DCHECK(out_domain);
   DCHECK(out_is_ad_user_joined);
-  if (!registration_data.is_dict()) {
-    LOGFN(ERROR) << "Registration data is not a dictionary";
-    return E_INVALIDARG;
-  }
 
   *out_email = GetDictString(registration_data, kKeyEmail);
   *out_id_token = GetDictString(registration_data, kKeyMdmIdToken);
@@ -205,8 +201,9 @@ HRESULT ExtractRegistrationData(const base::Value& registration_data,
   return S_OK;
 }
 
-HRESULT RegisterWithGoogleDeviceManagement(const std::wstring& mdm_url,
-                                           const base::Value& properties) {
+HRESULT RegisterWithGoogleDeviceManagement(
+    const std::wstring& mdm_url,
+    const base::Value::Dict& properties) {
   // Make sure all the needed data is present in the dictionary.
   std::wstring email;
   std::wstring id_token;
@@ -261,31 +258,27 @@ HRESULT RegisterWithGoogleDeviceManagement(const std::wstring& mdm_url,
   }
 
   // Build the json data needed by the server.
-  base::Value registration_data(base::Value::Type::DICT);
-  registration_data.SetStringKey("id_token", base::WideToUTF8(id_token));
-  registration_data.SetStringKey("access_token",
-                                 base::WideToUTF8(access_token));
-  registration_data.SetStringKey("sid", base::WideToUTF8(sid));
-  registration_data.SetStringKey("username", base::WideToUTF8(username));
-  registration_data.SetStringKey("domain", base::WideToUTF8(domain));
-  registration_data.SetStringKey("serial_number",
-                                 base::WideToUTF8(serial_number));
-  registration_data.SetStringKey("machine_guid",
-                                 base::WideToUTF8(machine_guid));
-  registration_data.SetStringKey(
-      "admin_local_user_group_name",
-      base::WideToUTF8(local_administrators_group_name));
-  registration_data.SetStringKey("builtin_administrator_name",
-                                 base::WideToUTF8(builtin_administrator_name));
-  registration_data.SetStringKey(kKeyIsAdJoinedUser,
-                                 base::WideToUTF8(is_ad_joined_user));
+  auto registration_data =
+      base::Value::Dict()
+          .Set("id_token", base::WideToUTF8(id_token))
+          .Set("access_token", base::WideToUTF8(access_token))
+          .Set("sid", base::WideToUTF8(sid))
+          .Set("username", base::WideToUTF8(username))
+          .Set("domain", base::WideToUTF8(domain))
+          .Set("serial_number", base::WideToUTF8(serial_number))
+          .Set("machine_guid", base::WideToUTF8(machine_guid))
+          .Set("admin_local_user_group_name",
+               base::WideToUTF8(local_administrators_group_name))
+          .Set("builtin_administrator_name",
+               base::WideToUTF8(builtin_administrator_name))
+          .Set(kKeyIsAdJoinedUser, base::WideToUTF8(is_ad_joined_user));
 
   // Send device resource ID if available as part of the enrollment payload.
   // Enrollment backend should not assume that this will always be available.
   std::wstring user_device_resource_id = GetUserDeviceResourceId(sid);
   if (!user_device_resource_id.empty()) {
-    registration_data.SetStringKey("resource_id",
-                                   base::WideToUTF8(user_device_resource_id));
+    registration_data.Set("resource_id",
+                          base::WideToUTF8(user_device_resource_id));
   }
 
   std::string registration_data_str;
@@ -460,7 +453,7 @@ bool IsOnlineLoginEnforced(const std::wstring& sid) {
   return is_online_login_enforced_for_user;
 }
 
-HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties) {
+HRESULT EnrollToGoogleMdmIfNeeded(const base::Value::Dict& properties) {
   LOGFN(VERBOSE);
 
   if (UserPoliciesManager::Get()->CloudPoliciesEnabled()) {

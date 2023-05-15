@@ -4,6 +4,8 @@
 
 #include "ash/system/audio/audio_effects_controller.h"
 
+#include <memory>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -23,9 +25,11 @@ AudioEffectsController::AudioEffectsController() {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 AudioEffectsController::~AudioEffectsController() {
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
   VideoConferenceTrayEffectsManager& effects_manager =
       VideoConferenceTrayController::Get()->effects_manager();
   if (effects_manager.IsDelegateRegistered(this)) {
@@ -33,14 +37,21 @@ AudioEffectsController::~AudioEffectsController() {
   }
 }
 
+bool IsNoiseCancellationSupported() {
+  auto* cras_audio_handler = CrasAudioHandler::Get();
+  return cras_audio_handler->IsNoiseCancellationSupportedForDevice(
+      cras_audio_handler->GetPrimaryActiveInputNode());
+}
+
 bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kNoiseCancellation:
-      return CrasAudioHandler::Get()->noise_cancellation_supported();
+      return IsNoiseCancellationSupported();
     case VcEffectId::kLiveCaption:
       return captions::IsLiveCaptionFeatureSupported();
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return false;
@@ -58,6 +69,7 @@ absl::optional<int> AudioEffectsController::GetEffectState(
                  : 0;
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return absl::nullopt;
@@ -87,6 +99,7 @@ void AudioEffectsController::OnEffectControlActivated(
     }
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return;
@@ -104,12 +117,12 @@ void AudioEffectsController::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  const bool noise_cancellation_supported =
+  noise_cancellation_supported_ =
       IsEffectSupported(VcEffectId::kNoiseCancellation);
   const bool live_caption_supported =
       IsEffectSupported(VcEffectId::kLiveCaption);
 
-  if (noise_cancellation_supported) {
+  if (noise_cancellation_supported_) {
     AddNoiseCancellationEffect();
   }
 
@@ -117,9 +130,32 @@ void AudioEffectsController::OnActiveUserPrefServiceChanged(
     AddLiveCaptionEffect();
   }
 
-  if (noise_cancellation_supported || live_caption_supported) {
+  if (noise_cancellation_supported_ || live_caption_supported) {
     effects_manager.RegisterDelegate(this);
   }
+}
+
+void AudioEffectsController::OnActiveInputNodeChanged() {
+  const bool noise_cancellation_supported = IsNoiseCancellationSupported();
+
+  if (noise_cancellation_supported_ == noise_cancellation_supported) {
+    return;
+  }
+
+  noise_cancellation_supported_ = noise_cancellation_supported;
+
+  const bool effect_added = GetEffectById(VcEffectId::kNoiseCancellation);
+
+  if (noise_cancellation_supported_ && !effect_added) {
+    AddNoiseCancellationEffect();
+  } else if (!noise_cancellation_supported_ && effect_added) {
+    RemoveEffect(VcEffectId::kNoiseCancellation);
+  }
+
+  VideoConferenceTrayController::Get()
+      ->effects_manager()
+      .NotifyEffectSupportStateChanged(VcEffectId::kNoiseCancellation,
+                                       noise_cancellation_supported_);
 }
 
 void AudioEffectsController::AddNoiseCancellationEffect() {

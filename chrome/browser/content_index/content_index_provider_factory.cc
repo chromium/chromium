@@ -25,7 +25,12 @@ ContentIndexProviderFactory* ContentIndexProviderFactory::GetInstance() {
 ContentIndexProviderFactory::ContentIndexProviderFactory()
     : ProfileKeyedServiceFactory(
           "ContentIndexProvider",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());

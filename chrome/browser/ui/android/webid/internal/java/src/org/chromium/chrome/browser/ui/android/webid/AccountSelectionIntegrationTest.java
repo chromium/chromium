@@ -94,9 +94,10 @@ public class AccountSelectionIntegrationTest {
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
-    private static final Account ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
-    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, false);
+    private static final Account ANA = new Account("Ana", "ana@one.test", "Ana Doe", "Ana",
+            TEST_PROFILE_PIC, /*hints=*/new String[0], true);
+    private static final Account BOB =
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, /*hints=*/new String[0], false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null);
@@ -140,7 +141,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -154,7 +155,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -212,7 +213,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());

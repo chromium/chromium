@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WINDOW_BACKDROP_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -74,7 +75,7 @@ class ASH_PUBLIC_EXPORT WindowBackdrop {
 
   // The window that this WindowBackdrop associates with. Will be valid during
   // this WindowBackdrop's lifetime.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   BackdropMode mode_ = BackdropMode::kAuto;
   BackdropType type_ = BackdropType::kOpaque;

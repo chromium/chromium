@@ -333,10 +333,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // Backlog of tasks waiting on initialization.
   std::vector<base::OnceClosure> task_backlog_;
 
-  // Set based on features::kPartitionNelAndReportingByNetworkIsolationKey on
-  // construction.
-  bool respect_network_anonymization_key_ = base::FeatureList::IsEnabled(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+  // Set based on network state partitioning status on construction.
+  bool respect_network_anonymization_key_ =
+      NetworkAnonymizationKey::IsPartitioningEnabled();
 
   base::WeakPtrFactory<NetworkErrorLoggingServiceImpl> weak_factory_{this};
 

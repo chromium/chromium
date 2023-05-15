@@ -166,6 +166,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   MOCK_METHOD(void, LogInfoMessage, (const std::string&));
   MOCK_METHOD(void, LogErrorMessage, (const std::string&));
   MOCK_METHOD(void, OnSourceChanged, ());
+  MOCK_METHOD(void, OnRemotingStateChanged, (bool is_remoting));
 
   MOCK_METHOD(void, OnGetVideoCaptureHost, ());
   MOCK_METHOD(void, OnGetNetworkContext, ());
@@ -314,6 +315,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
     EXPECT_CALL(*this, OnInitialized());
+    EXPECT_CALL(*this, OnRemotingStateChanged(false));
     session_host_ = std::make_unique<OpenscreenSessionHost>(
         std::move(session_params), gfx::Size(1920, 1080),
         std::move(session_observer_remote), std::move(resource_provider_remote),
@@ -385,6 +387,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
       EXPECT_CALL(*this, OnError(SessionError::ANSWER_TIME_OUT)).Times(0);
       // Expect to send OFFER message to fallback on mirroring.
       EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
+      EXPECT_CALL(*this, OnRemotingStateChanged(false));
       // The start of remoting is expected to fail.
       EXPECT_CALL(
           remoting_source_,
@@ -442,6 +445,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
         .Times(0);
     EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    EXPECT_CALL(*this, OnRemotingStateChanged(true));
     if (is_remote_playback_) {
       EXPECT_TRUE(video_host_ && video_host_->paused());
     }
@@ -466,6 +470,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
     // Expect to send OFFER message to fallback on mirroring.
     EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
+    EXPECT_CALL(*this, OnRemotingStateChanged(false));
     EXPECT_CALL(remoting_source_, OnStopped(reason));
     remoter_->Stop(reason);
     task_environment_.RunUntilIdle();
@@ -845,7 +850,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
-                                       media::cast::Codec::CODEC_VIDEO_VP8 &&
+                                       media::cast::Codec::kVideoVp8 &&
                                    config.use_hardware_encoder;
                           }));
 #endif
@@ -880,7 +885,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
-                                       media::cast::Codec::CODEC_VIDEO_H264 &&
+                                       media::cast::Codec::kVideoH264 &&
                                    config.use_hardware_encoder;
                           }));
 #endif

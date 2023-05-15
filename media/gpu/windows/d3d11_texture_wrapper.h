@@ -143,22 +143,14 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                  size_t array_slice,
                  scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
                  GPUResourceInitCB gpu_resource_init_cb);
-
     GpuResources(const GpuResources&) = delete;
     GpuResources& operator=(const GpuResources&) = delete;
-
     ~GpuResources();
 
    private:
-    void OnWillDestroyStub(bool have_context);
-
-    bool is_stub_destroyed_ = false;
-
     scoped_refptr<CommandBufferHelper> helper_;
-
     std::vector<std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>>
         shared_images_;
-
     base::WeakPtrFactory<GpuResources> weak_factory_{this};
   };
 

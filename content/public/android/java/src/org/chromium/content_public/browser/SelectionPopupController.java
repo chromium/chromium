@@ -58,6 +58,20 @@ public interface SelectionPopupController {
     }
 
     /**
+     * Set allow using magnifer built using surface control instead of the system-proivded one.
+     */
+    static void setAllowSurfaceControlMagnifier() {
+        SelectionPopupControllerImpl.setAllowSurfaceControlMagnifier();
+    }
+
+    /**
+     * Check if need to disable SurfaceControl during selection.
+     */
+    static boolean needsSurfaceViewDuringSelection() {
+        return !SelectionPopupControllerImpl.isMagnifierWithSurfaceControlSupported();
+    }
+
+    /**
      * Set {@link ActionMode.Callback} used by {@link SelectionPopupController}.
      * @param callback ActionMode.Callback instance.
      */

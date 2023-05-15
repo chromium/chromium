@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "chrome/installer/util/experiment_metrics.h"
 #include "ui/events/event_handler.h"
@@ -167,7 +168,9 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   raw_ptr<views::Widget> popup_ = nullptr;
 
   // The close button; owned by |popup_|.
-  views::View* close_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* close_button_ = nullptr;
 
   // True when the mouse is considered to be hovering over the dialog.
   bool has_hover_ = false;

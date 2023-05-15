@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -126,7 +125,7 @@ class AttributionInteropParser {
       return base::unexpected(error_stream_.str());
     }
 
-    base::ranges::sort(events_, /*comp=*/{}, &GetEventTime);
+    base::ranges::sort(events_);
     return std::move(events_);
   }
 
@@ -169,15 +168,9 @@ class AttributionInteropParser {
     ParseUint64(dict, "event_source_trigger_data_cardinality",
                 config.event_level_limit.event_source_trigger_data_cardinality,
                 required);
-    ParseRandomizedResponseRate(
-        dict, "navigation_source_randomized_response_rate",
-        config.event_level_limit.navigation_source_randomized_response_rate,
-        required);
-    ParseRandomizedResponseRate(
-        dict, "event_source_randomized_response_rate",
-        config.event_level_limit.event_source_randomized_response_rate,
-        required);
-
+    ParseRandomizedResponseEpsilon(
+        dict, "randomized_response_epsilon",
+        config.event_level_limit.randomized_response_epsilon, required);
     ParseInt(dict, "max_aggregatable_reports_per_destination",
              config.aggregate_limit.max_reports_per_destination, required);
     ParseInt64(dict, "aggregatable_budget_per_source",
@@ -198,6 +191,8 @@ class AttributionInteropParser {
       config.aggregate_limit.delay_span =
           base::Minutes(aggregatable_report_delay_span);
     }
+
+    // TODO(linnan): Parse null reports rate if it's supported in interop tests.
 
     return error_stream_.str();
   }
@@ -320,10 +315,10 @@ class AttributionInteropParser {
 
                   events_.emplace_back(
                       StorableSource(std::move(*reporting_origin),
-                                     std::move(*registration), source_time,
+                                     std::move(*registration),
                                      std::move(*source_origin), *source_type,
                                      /*is_within_fenced_frame=*/false),
-                      debug_permission);
+                      source_time, debug_permission);
                 });
           });
         },
@@ -370,16 +365,13 @@ class AttributionInteropParser {
                         }
 
                         events_.emplace_back(
-                            AttributionTriggerAndTime{
-                                .trigger = AttributionTrigger(
-                                    std::move(*reporting_origin),
-                                    std::move(*trigger_registration),
-                                    std::move(*destination_origin),
-                                    /*attestation=*/absl::nullopt,
-                                    /*is_within_fenced_frame=*/false),
-                                .time = trigger_time,
-                            },
-                            debug_permission);
+                            AttributionTrigger(
+                                std::move(*reporting_origin),
+                                std::move(*trigger_registration),
+                                std::move(*destination_origin),
+                                /*verification=*/absl::nullopt,
+                                /*is_within_fenced_frame=*/false),
+                            trigger_time, debug_permission);
                       });
           });
         },
@@ -413,7 +405,9 @@ class AttributionInteropParser {
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
       if (!time.is_null() && !time.is_inf()) {
-        if (base::ranges::find(events_, time, &GetEventTime) != events_.end()) {
+        auto iter = base::ranges::find(
+            events_, time, [](const auto& event) { return event.time; });
+        if (iter != events_.end()) {
           *Error() << "must be distinct from all others: " << milliseconds;
         }
         return time;
@@ -556,34 +550,40 @@ class AttributionInteropParser {
                         allow_zero);
   }
 
-  void ParseRandomizedResponseRate(const base::Value::Dict& dict,
-                                   base::StringPiece key,
-                                   double& result,
-                                   bool required) {
+  void ParseRandomizedResponseEpsilon(const base::Value::Dict& dict,
+                                      base::StringPiece key,
+                                      double& result,
+                                      bool required) {
     auto context = PushContext(key);
-
     const base::Value* value = dict.Find(key);
 
     if (value) {
-      absl::optional<double> d = value->GetIfDouble();
-      if (d && *d >= 0 && *d <= 1) {
-        result = *d;
-        return;
+      const std::string* s = value->GetIfString();
+      if (s) {
+        if (*s == "inf") {
+          result = std::numeric_limits<double>::infinity();
+          return;
+        }
+        if (base::StringToDouble(*s, &result) && result >= 0) {
+          return;
+        }
       }
     } else if (!required) {
       return;
     }
 
-    *Error() << "must be a double between 0 and 1 formatted as string";
+    *Error() << "must be \"inf\" or a non-negative double formated as a "
+                "base-10 string";
   }
 };
 
 }  // namespace
 
 AttributionSimulationEvent::AttributionSimulationEvent(
-    absl::variant<StorableSource, AttributionTriggerAndTime> event,
+    absl::variant<StorableSource, AttributionTrigger> event,
+    base::Time time,
     bool debug_permission)
-    : event(std::move(event)), debug_permission(debug_permission) {}
+    : event(std::move(event)), time(time), debug_permission(debug_permission) {}
 
 AttributionSimulationEvent::~AttributionSimulationEvent() = default;
 
@@ -614,17 +614,6 @@ std::string MergeAttributionConfig(const base::Value::Dict& dict,
                                    AttributionConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
-}
-
-base::Time GetEventTime(const AttributionSimulationEvent& event) {
-  return absl::visit(
-      base::Overloaded{
-          [](const StorableSource& source) {
-            return source.common_info().source_time();
-          },
-          [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
-      },
-      event.event);
 }
 
 }  // namespace content

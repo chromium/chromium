@@ -117,9 +117,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
   arc::mojom::WindowInfoPtr predict_window_info =
       PredictAppWindowInfo(app_info, window_info.Clone());
 
-  // TODO(sstan): PredictAppWindowInfo should always return fulfilled info.
-  if (!predict_window_info || !predict_window_info->bounds.has_value())
-    return false;
+  DCHECK(predict_window_info);
 
   arc_task_handler->GetWindowPredictorArcAppRestoreHandler(launch_counter)
       ->LaunchGhostWindowWithApp(
@@ -165,10 +163,14 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
       window_info->bounds = GetMiddleBounds(disp, GetTabletSize());
       break;
     case arc::mojom::WindowSizeType::kPhoneSize:
+      window_info->state =
+          static_cast<int32_t>(chromeos::WindowStateType::kNormal);
+      window_info->bounds = GetMiddleBounds(disp, GetPhoneSize());
+      break;
     case arc::mojom::WindowSizeType::kUnknown:
     default:
       window_info->state =
-          static_cast<int32_t>(chromeos::WindowStateType::kNormal);
+          static_cast<int32_t>(chromeos::WindowStateType::kDefault);
       window_info->bounds = GetMiddleBounds(disp, GetPhoneSize());
   }
 

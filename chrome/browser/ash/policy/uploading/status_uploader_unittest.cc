@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"
@@ -47,7 +48,7 @@ constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 class MockDeviceStatusCollector : public DeviceStatusCollector {
  public:
   explicit MockDeviceStatusCollector(PrefService* local_state)
-      : DeviceStatusCollector(local_state, nullptr, nullptr) {}
+      : DeviceStatusCollector(local_state, nullptr, nullptr, nullptr) {}
   MOCK_METHOD1(GetStatusAsync, void(StatusCollectorCallback));
 
   MOCK_METHOD0(OnSubmittedSuccessfully, void());
@@ -164,7 +165,7 @@ class StatusUploaderTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<MockDeviceStatusCollector> collector_;
-  MockDeviceStatusCollector* collector_ptr_;
+  raw_ptr<MockDeviceStatusCollector, ExperimentalAsh> collector_ptr_;
   ui::UserActivityDetector detector_;
   MockCloudPolicyClient client_;
   TestingPrefServiceSimple prefs_;

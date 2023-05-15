@@ -26,8 +26,8 @@ namespace {
 constexpr char kDefaultGattManagerClientUuid[] =
     "e060b902508c485f8b0e27639c7f2d41";
 
-// Default to requesting eatt support with gatt client.
-constexpr bool kDefaultEattSupport = true;
+// Default to not requesting eatt support with gatt client.
+constexpr bool kDefaultEattSupport = false;
 
 void HandleResponse(const char* method, DBusResult<Void> result) {
   if (!result.has_value()) {

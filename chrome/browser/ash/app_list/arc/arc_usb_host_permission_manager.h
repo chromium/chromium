@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/usb/usb_host_ui_delegate.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -211,9 +212,9 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   // has resolved the current request.
   bool is_permission_dialog_visible_ = false;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  ArcAppListPrefs* const arc_app_list_prefs_;
+  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
 };

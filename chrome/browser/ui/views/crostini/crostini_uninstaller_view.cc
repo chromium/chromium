@@ -61,7 +61,7 @@ bool CrostiniUninstallerView::Accept() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   progress_bar_ = new views::ProgressBar();
-  AddChildView(progress_bar_);
+  AddChildView(progress_bar_.get());
   // Setting value to -1 makes the progress bar play the
   // "indeterminate animation".
   progress_bar_->SetValue(-1);
@@ -102,7 +102,7 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
   message_label_ = new views::Label(message);
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label_);
+  AddChildView(message_label_.get());
 }
 
 CrostiniUninstallerView::~CrostiniUninstallerView() {

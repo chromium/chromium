@@ -6,12 +6,14 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -67,18 +69,35 @@ std::unique_ptr<app_restore::RestoreData> CreateRestoreData(
 }
 
 std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
-    std::string name) {
+    std::string name,
+    base::Time creation_time) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          base::GUID::ParseCaseInsensitive(
-              "c098bdcf-5803-484b-9bfd-d3a9a4b497ab"),
-          ash::DeskTemplateSource::kUser, name, base::Time::Now(),
-          DeskTemplateType::kFloatingWorkspace);
+          base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kUser, name,
+          creation_time, DeskTemplateType::kFloatingWorkspace);
   std::unique_ptr<app_restore::RestoreData> restore_data =
       CreateRestoreData(std::vector<int>(10, 1));
   desk_template->set_desk_restore_data(std::move(restore_data));
   return desk_template;
 }
+
+class MockDesksClient : public DesksClient {
+ public:
+  MockDesksClient() = default;
+
+  void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
+                         ash::DeskTemplateType template_type) override {
+    std::move(callback).Run(absl::nullopt, captured_desk_template_->Clone());
+  }
+
+  void SetCapturedDeskTemplate(
+      std::unique_ptr<const DeskTemplate> captured_template) {
+    captured_desk_template_ = std::move(captured_template);
+  }
+
+ private:
+  std::unique_ptr<const DeskTemplate> captured_desk_template_;
+};
 
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  public:
@@ -127,7 +146,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
  private:
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
-  sync_sessions::SyncedSession* local_session_ = nullptr;
+  raw_ptr<sync_sessions::SyncedSession, ExperimentalAsh> local_session_ =
+      nullptr;
 };
 
 }  // namespace
@@ -139,6 +159,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
       : FloatingWorkspaceService(profile) {
     InitForTest(version);
     mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
+    mock_desks_client_ = std::make_unique<MockDesksClient>();
   }
 
   void RestoreLocalSessionWindows() override {
@@ -163,8 +184,14 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
     mock_open_tabs_->SetForeignSessionsForTesting(foreign_sessions);
   }
 
+  MockDesksClient* GetMockDesksClient() { return mock_desks_client_.get(); }
+
   const DeskTemplate* GetRestoredFloatingWorkspaceTemplate() {
     return restored_floating_workspace_template_;
+  }
+
+  DeskTemplate* GetUploadedFloatingWorkspaceTemplate() {
+    return uploaded_desk_template_;
   }
 
  private:
@@ -176,10 +203,18 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
       const DeskTemplate* desk_template) override {
     restored_floating_workspace_template_ = desk_template;
   }
+  void UploadFloatingWorkspaceTemplateToDeskModel(
+      std::unique_ptr<DeskTemplate> desk_template) override {
+    uploaded_desk_template_ = desk_template.get();
+    previously_captured_desk_template_ = std::move(desk_template);
+  }
 
   const sync_sessions::SyncedSession* restored_session_ = nullptr;
-  const DeskTemplate* restored_floating_workspace_template_ = nullptr;
+  raw_ptr<const DeskTemplate, ExperimentalAsh>
+      restored_floating_workspace_template_ = nullptr;
+  DeskTemplate* uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
+  std::unique_ptr<MockDesksClient> mock_desks_client_;
 };
 
 class FloatingWorkspaceServiceTest : public testing::Test {
@@ -380,7 +415,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
   std::vector<const DeskTemplate*> desk_template_entries;
   const std::string template_name = "floating_workspace_template";
   std::unique_ptr<const DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now());
   desk_template_entries.push_back(floating_workspace_template.get());
   test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
       desk_template_entries);
@@ -398,7 +433,7 @@ TEST_F(FloatingWorkspaceServiceTest, FloatingWorkspaceTemplateTimeOut) {
   std::vector<const DeskTemplate*> desk_template_entries;
   const std::string template_name = "floating_workspace_template";
   std::unique_ptr<const DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now());
   desk_template_entries.push_back(floating_workspace_template.get());
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
@@ -417,7 +452,7 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
   std::vector<const DeskTemplate*> desk_template_entries;
   const std::string template_name = "floating_workspace_template";
   std::unique_ptr<const DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now());
   desk_template_entries.push_back(floating_workspace_template.get());
   test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
       desk_template_entries);
@@ -439,7 +474,7 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
   std::vector<const DeskTemplate*> desk_template_entries;
   const std::string template_name = "floating_workspace_template";
   std::unique_ptr<const DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now());
   desk_template_entries.push_back(floating_workspace_template.get());
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
@@ -459,6 +494,114 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
       static_cast<int>(floating_workspace_metrics_util::
                            LaunchTemplateTimeoutType::kPassedWaitPeriod),
       1u);
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(std::move(floating_workspace_template));
+
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetUploadedFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate()
+          ->created_time(),
+      creation_time);
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
+  // Upload should be skipped if two captured templates are the same.
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time first_captured_template_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> first_captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(
+          template_name, first_captured_template_creation_time);
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(first_captured_floating_workspace_template));
+  // Trigger the first capture task.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  const base::Time second_captured_template_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> second_captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(
+          template_name, second_captured_template_creation_time);
+
+  // Set the 2nd template to be captured.
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(second_captured_floating_workspace_template));
+  // Fast forward by capture interval capture a second time.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetUploadedFloatingWorkspaceTemplate());
+  // Second captured template is the same as first, template should not be
+  // updated, creation time is first template's creation time.
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate()
+          ->created_time(),
+      first_captured_template_creation_time);
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       CaptureDifferentFloatingWorkspaceTemplate) {
+  // Upload should be executed if two captured templates are the different.
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time first_captured_template_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> first_captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(
+          template_name, first_captured_template_creation_time);
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(first_captured_floating_workspace_template));
+  // Trigger the first capture task.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  const base::Time second_captured_template_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> second_captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(
+          template_name, second_captured_template_creation_time);
+
+  // Create new restore data different than 1st captured one.
+  std::unique_ptr<app_restore::RestoreData> restore_data =
+      CreateRestoreData(std::vector<int>(11, 1));
+  second_captured_floating_workspace_template->set_desk_restore_data(
+      std::move(restore_data));
+  // Set the 2nd template to be captured.
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(second_captured_floating_workspace_template));
+  // Fast forward by capture interval capture a second time.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetUploadedFloatingWorkspaceTemplate());
+  // Second captured template has different restore data than first, template
+  // should be updated, replacing the first one.
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate()
+          ->created_time(),
+      second_captured_template_creation_time);
 }
 
 }  // namespace ash

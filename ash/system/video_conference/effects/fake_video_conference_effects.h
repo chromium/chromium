@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 
@@ -150,8 +151,9 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
-  // Returns the number of times the button for `state` has been activated.
-  int GetNumActivationsForTesting(int state);
+  // Returns the number of times the button for `state_value` has been
+  // activated.
+  int GetNumActivationsForTesting(int state_value);
 
  private:
   // Adds a `std::unique_ptr<VcEffectState>` to `effect`.
@@ -227,7 +229,7 @@ class EffectRepository {
   ~EffectRepository();
 
  private:
-  FakeVideoConferenceTrayController* controller_;
+  raw_ptr<FakeVideoConferenceTrayController, ExperimentalAsh> controller_;
   std::unique_ptr<CatEarsEffect> cat_ears_;
   std::unique_ptr<DogFurEffect> dog_fur_;
   std::unique_ptr<SpaceshipEffect> spaceship_;

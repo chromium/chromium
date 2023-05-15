@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 
 #import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 #import "ios/web/public/web_state.h"
 

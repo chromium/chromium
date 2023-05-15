@@ -12,7 +12,7 @@ source_set("update_client") {
     "//base",
     "//components/update_client",
     "//components/version_info",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common",
   ]
 }

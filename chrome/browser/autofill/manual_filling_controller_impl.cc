@@ -104,6 +104,7 @@ bool IsRelevantActionForVisibility(AccessoryAction action) {
     // These cases are sufficient as a reason for showing the fallback sheet.
     case AccessoryAction::USE_OTHER_PASSWORD:
     case AccessoryAction::GENERATE_PASSWORD_MANUAL:
+    case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
       return true;
 
     case AccessoryAction::COUNT:
@@ -177,10 +178,11 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
   FromWebContents(web_contents)->Initialize();
 }
 
-void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
-    bool available) {
+void ManualFillingControllerImpl::OnAccessoryActionAvailabilityChanged(
+    ShouldShowAction shouldShowAction,
+    autofill::AccessoryAction action) {
   DCHECK(view_);
-  view_->OnAutomaticGenerationStatusChanged(available);
+  view_->OnAccessoryActionAvailabilityChanged(shouldShowAction, action);
 }
 
 void ManualFillingControllerImpl::RefreshSuggestions(
@@ -501,6 +503,10 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return cc_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
+    case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
+      // TODO(crbug/1444418): Implement.
+      NOTIMPLEMENTED();
+      ABSL_FALLTHROUGH_INTENDED;
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
                    << static_cast<int>(action);

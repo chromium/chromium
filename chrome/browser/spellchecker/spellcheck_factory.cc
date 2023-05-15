@@ -30,7 +30,12 @@ SpellcheckServiceFactory* SpellcheckServiceFactory::GetInstance() {
 SpellcheckServiceFactory::SpellcheckServiceFactory()
     : ProfileKeyedServiceFactory(
           "SpellcheckService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   // TODO(erg): Uncomment these as they are initialized.
   // DependsOn(RequestContextFactory::GetInstance());
 }

@@ -186,9 +186,6 @@
       <message desc="Label for the help button." name="IDS_HELP_BUTTON">
         Help
       </message>
-      <message desc="Label for the dismissing button in the dialog." name="IDS_DIALOG_CANCEL_BUTTON">
-        Cancel
-      </message>
       <message desc="Label for the gallery button." name="IDS_GALLERY_BUTTON">
         Go to Gallery
       </message>
@@ -312,6 +309,15 @@
       </message>
       <message desc="Label for expert mode option: Multi-stream video recording." name="IDS_EXPERT_MULTISTREAM_RECORDING">
         Multistream video recording
+      </message>
+      <message desc="Label for multi-stream recording option: Scale frames by Chrome." name="IDS_EXPERT_MULTISTREAM_RECORDING_CHROME">
+        Scale frames by Chrome
+      </message>
+      <message desc="Label for multi-stream recording option: Disabled." name="IDS_EXPERT_MULTISTREAM_RECORDING_DISABLED">
+        Disabled
+      </message>
+      <message desc="Label for multi-stream recording option: Scale frames by Camera HAL." name="IDS_EXPERT_MULTISTREAM_RECORDING_HAL">
+        Scale frames by Camera HAL
       </message>
       <message desc="Label for expert mode option: enable video FPS picker for builtin camera." name="IDS_EXPERT_ENABLE_FPS_PICKER_FOR_BUILTIN">
         Enable video FPS picker
@@ -453,11 +459,11 @@
       <message desc="Label for spoken feedback to read out for recording GIF type video." name="IDS_RECORD_GIF_VIDEO_OPTION">
         Record GIF video
       </message>
-      <message desc="Label for recording time-lapse video option." name="IDS_LABEL_RECORD_TIME_LAPSE_VIDEO_OPTION">
-        Time-lapse
+      <message desc="Label for recording time lapse video option." name="IDS_LABEL_RECORD_TIME_LAPSE_VIDEO_OPTION">
+        Time Lapse
       </message>
-      <message desc="Label for spoken feedback to read out for recording time-lapse video." name="IDS_RECORD_TIME_LAPSE_VIDEO_OPTION">
-        Record time-lapse video
+      <message desc="Label for spoken feedback to read out for recording time lapse video." name="IDS_RECORD_TIME_LAPSE_VIDEO_OPTION">
+        Record time lapse video
       </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm
@@ -591,7 +597,7 @@ If your feedback is about image or video quality, please attach a sample photo o
         Full resolution
       </message>
       <message desc="Label of the option to specify the medium resolution in the resolution settings" name="IDS_LABEL_MEDIUM_RESOLUTION">
-        Medium resolution
+        Medium
       </message>
       <message desc="Label of the option to select other aspect ratio rather than the common ones (4:3, 16:9)." name="IDS_LABEL_OTHER_ASPECT_RATIO">
         Others

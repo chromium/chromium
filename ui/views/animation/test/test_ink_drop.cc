@@ -12,6 +12,8 @@ TestInkDrop::~TestInkDrop() = default;
 
 void TestInkDrop::HostSizeChanged(const gfx::Size& new_size) {}
 
+void TestInkDrop::HostViewThemeChanged() {}
+
 void TestInkDrop::HostTransformChanged(const gfx::Transform& new_transform) {}
 
 InkDropState TestInkDrop::GetTargetInkDropState() const {

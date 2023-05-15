@@ -23,6 +23,7 @@ class SigninDelegateImpl : public SigninDelegate {
   ~SigninDelegateImpl() override;
 
   bool AllowedSignin() override;
+  bool IsSignedIn() override;
   void StartSigninFlow() override;
 
  private:
@@ -42,13 +43,12 @@ bool SigninDelegateImpl::AllowedSignin() {
     return false;
   }
 
-  // Check if already signed in.
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
-  }
+  return true;
+}
 
-  return false;
+bool SigninDelegateImpl::IsSignedIn() {
+  return IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin);
 }
 
 void SigninDelegateImpl::StartSigninFlow() {

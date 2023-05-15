@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -53,8 +54,15 @@ const int64_t kBytesPerFullHashEntry = 32;
 // smaller than this number, the allowlist is considered as unavailable.
 const int kHighConfidenceAllowlistMinimumEntryCount = 100;
 
+// If the switch is present, any high-confidence allowlist check will return
+// that it does not match the allowlist.
+const char kSkipHighConfidenceAllowlist[] =
+    "safe-browsing-skip-high-confidence-allowlist";
+
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
+
+const char* const kStoreFileNamesToDelete[] = {"IpMalware.store"};
 
 ListInfos GetListInfos() {
   // NOTE(vakh): When adding a store here, add the corresponding store-specific
@@ -85,8 +93,6 @@ ListInfos GetListInfos() {
   const bool kSyncNever = false;
 
   return ListInfos({
-      ListInfo(kSyncOnDesktopBuilds, "IpMalware.store", GetIpMalwareId(),
-               SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncAlways, "UrlSoceng.store", GetUrlSocEngId(),
                SB_THREAT_TYPE_URL_PHISHING),
       ListInfo(kSyncAlways, "UrlMalware.store", GetUrlMalwareId(),
@@ -242,6 +248,29 @@ void RecordCheckUrlForHighConfidenceAllowlistBoolean(
   base::UmaHistogramBoolean(histogram_name, value);
 }
 
+void MaybeDeleteStore(const base::FilePath& path) {
+  bool path_exists = base::PathExists(path);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.V4UnusedStoreFileExists" + GetUmaSuffixForStore(path),
+      path_exists);
+  if (!path_exists) {
+    return;
+  }
+
+  // The MmapHashPrefixMap maintains several helper files stored in the same
+  // directory as the main store file. These are usually found by looking at the
+  // `hash_files` field in the `V4StoreFileFormat`, but we haven't read the
+  // store at this point. Instead we use the fact that these helper files have a
+  // simple structure to delete them all.
+  base::FileEnumerator enumerator(
+      path.DirName(), false, base::FileEnumerator::FILES,
+      path.BaseName().value() + FILE_PATH_LITERAL("*"));
+  for (base::FilePath store_path = enumerator.Next(); !store_path.empty();
+       store_path = enumerator.Next()) {
+    base::DeleteFile(store_path);
+  }
+}
+
 }  // namespace
 
 V4LocalDatabaseManager::PendingCheck::PendingCheck(
@@ -334,6 +363,8 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
+
+  DeleteUnusedStoreFiles();
 }
 
 V4LocalDatabaseManager::~V4LocalDatabaseManager() {
@@ -461,6 +492,10 @@ bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
     const std::string& metric_variation) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSkipHighConfidenceAllowlist)) {
+    return false;
+  }
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
@@ -553,22 +588,6 @@ bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
   }
 
   return HandleUrlSynchronously(url, stores_to_check);
-}
-
-bool V4LocalDatabaseManager::MatchMalwareIP(const std::string& ip_address) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  if (!enabled_ || !v4_database_) {
-    return false;
-  }
-
-  FullHashStr hashed_encoded_ip;
-  if (!V4ProtocolManagerUtil::IPAddressToEncodedIPV6Hash(ip_address,
-                                                         &hashed_encoded_ip)) {
-    return false;
-  }
-
-  return HandleHashSynchronously(hashed_encoded_ip,
-                                 StoresToCheck({GetIpMalwareId()}));
 }
 
 ThreatSource V4LocalDatabaseManager::GetThreatSource() const {
@@ -876,18 +895,6 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
   }
 }
 
-bool V4LocalDatabaseManager::HandleHashSynchronously(
-    const FullHashStr& hash,
-    const StoresToCheck& stores_to_check) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-
-  std::set<FullHashStr> hashes{hash};
-  std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check, hashes);
-
-  return GetPrefixMatches(check);
-}
-
 bool V4LocalDatabaseManager::HandleUrlSynchronously(
     const GURL& url,
     const StoresToCheck& stores_to_check) {
@@ -1134,6 +1141,25 @@ V4LocalDatabaseManager::CopyAndRemoveAllPendingChecks() {
     check->is_in_pending_checks = false;
   }
   return pending_checks;
+}
+
+void V4LocalDatabaseManager::DeleteUnusedStoreFiles() {
+  for (auto* const store_filename_to_delete : kStoreFileNamesToDelete) {
+    // Is the file marked for deletion also being used for a valid V4Store?
+    auto it = std::find_if(std::begin(list_infos_), std::end(list_infos_),
+                           [&store_filename_to_delete](ListInfo const& li) {
+                             return li.filename() == store_filename_to_delete;
+                           });
+    if (list_infos_.end() == it) {
+      const base::FilePath store_path =
+          base_path_.AppendASCII(store_filename_to_delete);
+      base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                                 base::BindOnce(&MaybeDeleteStore, store_path));
+    } else {
+      NOTREACHED() << "Trying to delete a store file that's in use: "
+                   << store_filename_to_delete;
+    }
+  }
 }
 
 }  // namespace safe_browsing

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -29,7 +30,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
 
   ~EventRewriterDelegateImpl() override;
 
-  void set_pref_service_for_testing(const PrefService* pref_service) {
+  void set_pref_service_for_testing(PrefService* pref_service) {
     pref_service_for_testing_ = pref_service;
   }
 
@@ -48,13 +49,17 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override;
   void SuppressModifierKeyRewrites(bool should_suppress) override;
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override;
+  void RecordEventRemappedToRightClick() override;
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override;
 
  private:
-  const PrefService* GetPrefService() const;
+  PrefService* GetPrefService() const;
 
-  const PrefService* pref_service_for_testing_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_for_testing_;
 
-  wm::ActivationClient* activation_client_;
+  raw_ptr<wm::ActivationClient, DanglingUntriaged | ExperimentalAsh>
+      activation_client_;
 
   // Handles showing notifications when deprecated event rewrites occur.
   std::unique_ptr<DeprecationNotificationController> deprecation_controller_;

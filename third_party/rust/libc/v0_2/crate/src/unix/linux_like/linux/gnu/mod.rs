@@ -37,7 +37,8 @@ s! {
         pub stx_dev_major: u32,
         pub stx_dev_minor: u32,
         pub stx_mnt_id: u64,
-        __statx_pad2: u64,
+        pub stx_dio_mem_align: u32,
+        pub stx_dio_offset_align: u32,
         __statx_pad3: [u64; 12],
     }
 
@@ -729,27 +730,6 @@ pub const PF_NFC: ::c_int = AF_NFC;
 pub const PF_VSOCK: ::c_int = AF_VSOCK;
 pub const PF_XDP: ::c_int = AF_XDP;
 
-/* DCCP socket options */
-pub const DCCP_SOCKOPT_PACKET_SIZE: ::c_int = 1;
-pub const DCCP_SOCKOPT_SERVICE: ::c_int = 2;
-pub const DCCP_SOCKOPT_CHANGE_L: ::c_int = 3;
-pub const DCCP_SOCKOPT_CHANGE_R: ::c_int = 4;
-pub const DCCP_SOCKOPT_GET_CUR_MPS: ::c_int = 5;
-pub const DCCP_SOCKOPT_SERVER_TIMEWAIT: ::c_int = 6;
-pub const DCCP_SOCKOPT_SEND_CSCOV: ::c_int = 10;
-pub const DCCP_SOCKOPT_RECV_CSCOV: ::c_int = 11;
-pub const DCCP_SOCKOPT_AVAILABLE_CCIDS: ::c_int = 12;
-pub const DCCP_SOCKOPT_CCID: ::c_int = 13;
-pub const DCCP_SOCKOPT_TX_CCID: ::c_int = 14;
-pub const DCCP_SOCKOPT_RX_CCID: ::c_int = 15;
-pub const DCCP_SOCKOPT_QPOLICY_ID: ::c_int = 16;
-pub const DCCP_SOCKOPT_QPOLICY_TXQLEN: ::c_int = 17;
-pub const DCCP_SOCKOPT_CCID_RX_INFO: ::c_int = 128;
-pub const DCCP_SOCKOPT_CCID_TX_INFO: ::c_int = 192;
-
-/// maximum number of services provided on the same listening port
-pub const DCCP_SERVICE_LIST_MAX_LEN: ::c_int = 32;
-
 pub const SIGEV_THREAD_ID: ::c_int = 4;
 
 pub const BUFSIZ: ::c_uint = 8192;
@@ -874,6 +854,10 @@ pub const PTRACE_INTERRUPT: ::c_uint = 0x4207;
 pub const PTRACE_LISTEN: ::c_uint = 0x4208;
 pub const PTRACE_PEEKSIGINFO: ::c_uint = 0x4209;
 pub const PTRACE_GET_SYSCALL_INFO: ::c_uint = 0x420e;
+pub const PTRACE_SYSCALL_INFO_NONE: ::__u8 = 0;
+pub const PTRACE_SYSCALL_INFO_ENTRY: ::__u8 = 1;
+pub const PTRACE_SYSCALL_INFO_EXIT: ::__u8 = 2;
+pub const PTRACE_SYSCALL_INFO_SECCOMP: ::__u8 = 3;
 
 // linux/fs.h
 
@@ -954,6 +938,8 @@ pub const NT_LWPSTATUS: ::c_int = 16;
 pub const NT_LWPSINFO: ::c_int = 17;
 pub const NT_PRFPXREG: ::c_int = 20;
 
+pub const ELFOSABI_ARM_AEABI: u8 = 64;
+
 // linux/keyctl.h
 pub const KEYCTL_DH_COMPUTE: u32 = 23;
 pub const KEYCTL_PKEY_QUERY: u32 = 24;
@@ -1016,6 +1002,7 @@ pub const STATX_BLOCKS: ::c_uint = 0x0400;
 pub const STATX_BASIC_STATS: ::c_uint = 0x07ff;
 pub const STATX_BTIME: ::c_uint = 0x0800;
 pub const STATX_MNT_ID: ::c_uint = 0x1000;
+pub const STATX_DIOALIGN: ::c_uint = 0x2000;
 pub const STATX_ALL: ::c_uint = 0x0fff;
 pub const STATX__RESERVED: ::c_int = 0x80000000;
 pub const STATX_ATTR_COMPRESSED: ::c_int = 0x0004;
@@ -1024,6 +1011,9 @@ pub const STATX_ATTR_APPEND: ::c_int = 0x0020;
 pub const STATX_ATTR_NODUMP: ::c_int = 0x0040;
 pub const STATX_ATTR_ENCRYPTED: ::c_int = 0x0800;
 pub const STATX_ATTR_AUTOMOUNT: ::c_int = 0x1000;
+pub const STATX_ATTR_MOUNT_ROOT: ::c_int = 0x2000;
+pub const STATX_ATTR_VERITY: ::c_int = 0x00100000;
+pub const STATX_ATTR_DAX: ::c_int = 0x00200000;
 
 pub const SOMAXCONN: ::c_int = 4096;
 
@@ -1201,14 +1191,6 @@ extern "C" {
     pub fn ntp_gettime(buf: *mut ntptimeval) -> ::c_int;
     pub fn clock_adjtime(clk_id: ::clockid_t, buf: *mut ::timex) -> ::c_int;
 
-    pub fn copy_file_range(
-        fd_in: ::c_int,
-        off_in: *mut ::off64_t,
-        fd_out: ::c_int,
-        off_out: *mut ::off64_t,
-        len: ::size_t,
-        flags: ::c_uint,
-    ) -> ::ssize_t;
     pub fn fanotify_mark(
         fd: ::c_int,
         flags: ::c_uint,
@@ -1308,11 +1290,47 @@ extern "C" {
         buflen: ::size_t,
         result: *mut *mut ::group,
     ) -> ::c_int;
+    pub fn fgetpwent_r(
+        stream: *mut ::FILE,
+        pwd: *mut ::passwd,
+        buf: *mut ::c_char,
+        buflen: ::size_t,
+        result: *mut *mut ::passwd,
+    ) -> ::c_int;
+    pub fn fgetgrent_r(
+        stream: *mut ::FILE,
+        grp: *mut ::group,
+        buf: *mut ::c_char,
+        buflen: ::size_t,
+        result: *mut *mut ::group,
+    ) -> ::c_int;
 
     pub fn sethostid(hostid: ::c_long) -> ::c_int;
 
     pub fn memfd_create(name: *const ::c_char, flags: ::c_uint) -> ::c_int;
     pub fn mlock2(addr: *const ::c_void, len: ::size_t, flags: ::c_uint) -> ::c_int;
+
+    pub fn euidaccess(pathname: *const ::c_char, mode: ::c_int) -> ::c_int;
+    pub fn eaccess(pathname: *const ::c_char, mode: ::c_int) -> ::c_int;
+
+    pub fn asctime_r(tm: *const ::tm, buf: *mut ::c_char) -> *mut ::c_char;
+    pub fn ctime_r(timep: *const time_t, buf: *mut ::c_char) -> *mut ::c_char;
+
+    pub fn strftime(
+        s: *mut ::c_char,
+        max: ::size_t,
+        format: *const ::c_char,
+        tm: *const ::tm,
+    ) -> ::size_t;
+    pub fn strptime(s: *const ::c_char, format: *const ::c_char, tm: *mut ::tm) -> *mut ::c_char;
+
+    pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
+    /// POSIX version of `basename(3)`, defined in `libgen.h`.
+    #[link_name = "__xpg_basename"]
+    pub fn posix_basename(path: *mut ::c_char) -> *mut ::c_char;
+    /// GNU version of `basename(3)`, defined in `string.h`.
+    #[link_name = "basename"]
+    pub fn gnu_basename(path: *const ::c_char) -> *mut ::c_char;
 }
 
 extern "C" {
@@ -1330,6 +1348,40 @@ extern "C" {
 extern "C" {
     pub fn gnu_get_libc_release() -> *const ::c_char;
     pub fn gnu_get_libc_version() -> *const ::c_char;
+}
+
+// posix/spawn.h
+extern "C" {
+    // Added in `glibc` 2.29
+    pub fn posix_spawn_file_actions_addchdir_np(
+        actions: *mut ::posix_spawn_file_actions_t,
+        path: *const ::c_char,
+    ) -> ::c_int;
+    // Added in `glibc` 2.29
+    pub fn posix_spawn_file_actions_addfchdir_np(
+        actions: *mut ::posix_spawn_file_actions_t,
+        fd: ::c_int,
+    ) -> ::c_int;
+    // Added in `glibc` 2.34
+    pub fn posix_spawn_file_actions_addclosefrom_np(
+        actions: *mut ::posix_spawn_file_actions_t,
+        from: ::c_int,
+    ) -> ::c_int;
+    // Added in `glibc` 2.35
+    pub fn posix_spawn_file_actions_addtcsetpgrp_np(
+        actions: *mut ::posix_spawn_file_actions_t,
+        tcfd: ::c_int,
+    ) -> ::c_int;
+}
+
+// mntent.h
+extern "C" {
+    pub fn getmntent_r(
+        stream: *mut ::FILE,
+        mntbuf: *mut ::mntent,
+        buf: *mut ::c_char,
+        buflen: ::c_int,
+    ) -> *mut ::mntent;
 }
 
 cfg_if! {

@@ -40,7 +40,7 @@ HostCursorProxy::~HostCursorProxy() {
 
 void HostCursorProxy::CursorSet(gfx::AcceleratedWidget widget,
                                 const std::vector<SkBitmap>& bitmaps,
-                                const gfx::Point& location,
+                                const absl::optional<gfx::Point>& location,
                                 base::TimeDelta frame_delay) {
   if (ui_thread_ref_ == base::PlatformThread::CurrentRef()) {
     main_cursor_->SetCursor(widget, bitmaps, location, frame_delay);

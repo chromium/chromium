@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -90,7 +89,7 @@ class ChromeBrowsingDataLifetimeManagerTest
 
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
-    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+    GetProfile()->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                   base::Value(true));
   }
 
@@ -140,7 +139,7 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
     if (GetParam() == BrowserType::Incognito)
       UseIncognitoBrowser();
 #endif
-    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+    GetProfile()->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                   base::Value(true));
   }
 };
@@ -456,16 +455,21 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
+// TODO(crbug.com/1441381): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Autofill DISABLED_Autofill
+#else
+#define MAYBE_Autofill Autofill
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       Autofill) {
+                       MAYBE_Autofill) {
   // No autofill data saved in incognito mode.
   if (IsIncognito())
     return;
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["autofill"]}])";
 
-  autofill::AutofillProfile profile("01234567-89ab-cdef-fedc-ba9876543210",
-                                    autofill::test::kEmptyOrigin);
+  autofill::AutofillProfile profile("01234567-89ab-cdef-fedc-ba9876543210");
   autofill::test::SetProfileInfo(
       &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");

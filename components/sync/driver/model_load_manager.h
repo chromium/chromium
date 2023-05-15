@@ -14,6 +14,7 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -106,7 +107,7 @@ class ModelLoadManager {
   // The delegate in charge of handling model load results.
   const raw_ptr<ModelLoadManagerDelegate> delegate_;
 
-  ConfigureContext configure_context_;
+  absl::optional<ConfigureContext> configure_context_;
 
   // Data types that are enabled.
   ModelTypeSet preferred_types_without_errors_;

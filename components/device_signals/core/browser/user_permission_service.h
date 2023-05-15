@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 
-#include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace device_signals {
@@ -47,20 +46,32 @@ enum class UserPermission {
 // validating the affiliation of the user's organization.
 class UserPermissionService : public KeyedService {
  public:
-  using CanCollectCallback = base::OnceCallback<void(UserPermission)>;
-
   ~UserPermissionService() override = default;
 
-  // Will asynchronously verify whether context-aware signals can be collected
-  // on behalf of the user represented by `user_context`. The determined user
-  // permission is returned via `callback`.
-  virtual void CanUserCollectSignals(const UserContext& user_context,
-                                     CanCollectCallback callback) = 0;
+  // Returns true if consent is required based on the current context and is
+  // missing.
+  virtual bool ShouldCollectConsent() const = 0;
 
-  // Will asynchronously verify whether context-aware signals can be collected
+  // Will verify whether context-aware signals can be collected
+  // on behalf of the user represented by `user_context`. Returns `kGranted` if
+  // collection is allowed.
+  virtual UserPermission CanUserCollectSignals(
+      const UserContext& user_context) const = 0;
+
+  // Will verify whether context-aware signals can be collected
   // based on the current context (e.g. browser-wide management, user logged-in
-  // to a Profile). The determined user permission is returned via `callback`.
-  virtual void CanCollectSignals(CanCollectCallback callback) = 0;
+  // to a Profile). Returns `kGranted` if collection is allowed.
+  virtual UserPermission CanCollectSignals() const = 0;
+
+  // Returns whether the user has explicitly agreed to device signals being
+  // shared or not. Depending on the current management context, the returned
+  // value could be false even though signals can be collected. This function
+  // is exposed publicly mostly for debugging purposes.
+  virtual bool HasUserConsented() const = 0;
+
+  // Will evaluate whether the user's consent should be reset or not based on
+  // the current management context.
+  virtual void ResetUserConsentIfNeeded() = 0;
 };
 
 }  // namespace device_signals

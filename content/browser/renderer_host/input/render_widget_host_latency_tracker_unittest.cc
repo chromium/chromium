@@ -222,16 +222,22 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
           blink::WebMouseWheelEvent::kPhaseChanged);
       base::TimeTicks now = base::TimeTicks::Now();
       wheel.SetTimeStamp(now);
+      ui::EventLatencyMetadata event_latency_metadata;
       ui::LatencyInfo wheel_latency(ui::SourceEventType::WHEEL);
       wheel_latency.AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
       AddFakeComponentsWithTimeStamp(*tracker(), &wheel_latency, now);
       AddRenderingScheduledComponent(&wheel_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(wheel, &wheel_latency);
+      tracker()->OnInputEvent(wheel, &wheel_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(wheel_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           wheel, &wheel_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -287,16 +293,22 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
           blink::WebMouseWheelEvent::kPhaseChanged);
       base::TimeTicks now = base::TimeTicks::Now();
       wheel.SetTimeStamp(now);
+      ui::EventLatencyMetadata event_latency_metadata;
       ui::LatencyInfo wheel_latency(ui::SourceEventType::WHEEL);
       wheel_latency.AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
       AddFakeComponentsWithTimeStamp(*tracker(), &wheel_latency, now);
       AddRenderingScheduledComponent(&wheel_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(wheel, &wheel_latency);
+      tracker()->OnInputEvent(wheel, &wheel_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(wheel_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           wheel, &wheel_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -350,13 +362,19 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
       base::TimeTicks now = base::TimeTicks::Now();
       scroll.SetTimeStamp(now);
       ui::LatencyInfo scroll_latency(ui::SourceEventType::INERTIAL);
+      ui::EventLatencyMetadata event_latency_metadata;
       AddFakeComponentsWithTimeStamp(*tracker(), &scroll_latency, now);
       AddRenderingScheduledComponent(&scroll_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(scroll, &scroll_latency);
+      tracker()->OnInputEvent(scroll, &scroll_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(scroll_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(scroll_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           scroll, &scroll_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -396,13 +414,19 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
       base::TimeTicks now = base::TimeTicks::Now();
       scroll.SetTimeStamp(now);
       ui::LatencyInfo scroll_latency;
+      ui::EventLatencyMetadata event_latency_metadata;
       AddFakeComponentsWithTimeStamp(*tracker(), &scroll_latency, now);
       AddRenderingScheduledComponent(&scroll_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(scroll, &scroll_latency);
+      tracker()->OnInputEvent(scroll, &scroll_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(scroll_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(scroll_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           scroll, &scroll_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -412,17 +436,23 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
       blink::SyntheticWebTouchEvent touch;
       touch.PressPoint(0, 0);
       touch.PressPoint(1, 1);
+      ui::EventLatencyMetadata event_latency_metadata;
       ui::LatencyInfo touch_latency(ui::SourceEventType::TOUCH);
       base::TimeTicks now = base::TimeTicks::Now();
       touch_latency.AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
       AddFakeComponentsWithTimeStamp(*tracker(), &touch_latency, now);
       AddRenderingScheduledComponent(&touch_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(touch, &touch_latency);
+      tracker()->OnInputEvent(touch, &touch_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(touch_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(touch_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           touch, &touch_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -476,9 +506,10 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestTouchToScrollHistograms) {
       base::TimeTicks now = base::TimeTicks::Now();
       scroll.SetTimeStamp(now);
       ui::LatencyInfo scroll_latency;
+      ui::EventLatencyMetadata event_latency_metadata;
       AddFakeComponentsWithTimeStamp(*tracker(), &scroll_latency, now);
       AddRenderingScheduledComponent(&scroll_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(scroll, &scroll_latency);
+      tracker()->OnInputEvent(scroll, &scroll_latency, &event_latency_metadata);
       EXPECT_TRUE(scroll_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
       EXPECT_TRUE(scroll_latency.FindLatency(
@@ -493,16 +524,22 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestTouchToScrollHistograms) {
       touch.PressPoint(0, 0);
       touch.PressPoint(1, 1);
       ui::LatencyInfo touch_latency(ui::SourceEventType::TOUCH);
+      ui::EventLatencyMetadata event_latency_metadata;
       base::TimeTicks now = base::TimeTicks::Now();
       touch_latency.AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
       AddFakeComponentsWithTimeStamp(*tracker(), &touch_latency, now);
       AddRenderingScheduledComponent(&touch_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(touch, &touch_latency);
+      tracker()->OnInputEvent(touch, &touch_latency, &event_latency_metadata);
+      base::TimeTicks begin_rwh_timestamp;
       EXPECT_TRUE(touch_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
       EXPECT_TRUE(touch_latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+      EXPECT_FALSE(
+          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                begin_rwh_timestamp);
       tracker()->OnInputEventAck(
           touch, &touch_latency,
           blink::mojom::InputEventResultState::kNotConsumed);
@@ -558,14 +595,21 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_ScrollbarEndToEndHistograms) {
       const bool on_main[] = {true, false};
       for (bool on_main_thread : on_main) {
         ui::LatencyInfo scrollbar_latency(ui::SourceEventType::SCROLLBAR);
+        ui::EventLatencyMetadata event_latency_metadata;
         AddFakeComponentsWithTimeStamp(*tracker(), &scrollbar_latency, now);
         scrollbar_latency.AddLatencyNumberWithTimestamp(component, now);
         AddRenderingScheduledComponent(&scrollbar_latency, on_main_thread, now);
-        tracker()->OnInputEvent(mouse_move, &scrollbar_latency);
+        tracker()->OnInputEvent(mouse_move, &scrollbar_latency,
+                                &event_latency_metadata);
+        base::TimeTicks begin_rwh_timestamp;
         EXPECT_TRUE(scrollbar_latency.FindLatency(
-            ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+            ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
         EXPECT_TRUE(scrollbar_latency.FindLatency(
             ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
+        EXPECT_FALSE(
+            event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+        EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+                  begin_rwh_timestamp);
         tracker()->OnInputEventAck(
             mouse_move, &scrollbar_latency,
             blink::mojom::InputEventResultState::kNotConsumed);
@@ -594,13 +638,14 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, LatencyTerminatedOnAckIfGSUIgnored) {
       base::TimeTicks now = base::TimeTicks::Now();
       scroll.SetTimeStamp(now);
       ui::LatencyInfo scroll_latency;
+      ui::EventLatencyMetadata event_latency_metadata;
       scroll_latency.set_source_event_type(
           source_device == blink::WebGestureDevice::kTouchscreen
               ? ui::SourceEventType::TOUCH
               : ui::SourceEventType::WHEEL);
       AddFakeComponentsWithTimeStamp(*tracker(), &scroll_latency, now);
       AddRenderingScheduledComponent(&scroll_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(scroll, &scroll_latency);
+      tracker()->OnInputEvent(scroll, &scroll_latency, &event_latency_metadata);
       tracker()->OnInputEventAck(
           scroll, &scroll_latency,
           blink::mojom::InputEventResultState::kNoConsumerExists);
@@ -613,11 +658,18 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, ScrollLatency) {
   auto scroll_begin = blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
       5, -5, blink::WebGestureDevice::kTouchscreen);
   ui::LatencyInfo scroll_latency;
+  ui::EventLatencyMetadata event_latency_metadata;
   scroll_latency.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT);
-  tracker()->OnInputEvent(scroll_begin, &scroll_latency);
+  tracker()->OnInputEvent(scroll_begin, &scroll_latency,
+                          &event_latency_metadata);
+  base::TimeTicks begin_rwh_timestamp;
   EXPECT_TRUE(scroll_latency.FindLatency(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
   EXPECT_EQ(2U, scroll_latency.latency_components().size());
+  EXPECT_FALSE(
+      event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+  EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+            begin_rwh_timestamp);
 
   // The first GestureScrollUpdate should be provided with
   // INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT.
@@ -625,15 +677,22 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, ScrollLatency) {
       blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
           5.f, -5.f, 0, blink::WebGestureDevice::kTouchscreen);
   scroll_latency = ui::LatencyInfo();
+  event_latency_metadata = ui::EventLatencyMetadata();
   scroll_latency.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT);
-  tracker()->OnInputEvent(first_scroll_update, &scroll_latency);
+  tracker()->OnInputEvent(first_scroll_update, &scroll_latency,
+                          &event_latency_metadata);
+  begin_rwh_timestamp = base::TimeTicks();
   EXPECT_TRUE(scroll_latency.FindLatency(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
   EXPECT_TRUE(scroll_latency.FindLatency(
       ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT, nullptr));
   EXPECT_FALSE(scroll_latency.FindLatency(
       ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, nullptr));
   EXPECT_EQ(3U, scroll_latency.latency_components().size());
+  EXPECT_FALSE(
+      event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+  EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+            begin_rwh_timestamp);
 
   // Subsequent GestureScrollUpdates should be provided with
   // INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT.
@@ -641,15 +700,22 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, ScrollLatency) {
       blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
           -5.f, 5.f, 0, blink::WebGestureDevice::kTouchscreen);
   scroll_latency = ui::LatencyInfo();
+  event_latency_metadata = ui::EventLatencyMetadata();
   scroll_latency.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT);
-  tracker()->OnInputEvent(scroll_update, &scroll_latency);
+  tracker()->OnInputEvent(scroll_update, &scroll_latency,
+                          &event_latency_metadata);
+  begin_rwh_timestamp = base::TimeTicks();
   EXPECT_TRUE(scroll_latency.FindLatency(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
   EXPECT_FALSE(scroll_latency.FindLatency(
       ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT, nullptr));
   EXPECT_TRUE(scroll_latency.FindLatency(
       ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, nullptr));
   EXPECT_EQ(3U, scroll_latency.latency_components().size());
+  EXPECT_FALSE(
+      event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
+  EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
+            begin_rwh_timestamp);
 }
 
 TEST_F(RenderWidgetHostLatencyTrackerTest, KeyEndToEndLatency) {

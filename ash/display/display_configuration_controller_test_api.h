@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash {
 class DisplayConfigurationController;
 class ScreenRotationAnimator;
@@ -34,7 +36,7 @@ class DisplayConfigurationControllerTestApi {
       std::unique_ptr<ScreenRotationAnimator> animator);
 
  private:
-  DisplayConfigurationController* controller_;
+  raw_ptr<DisplayConfigurationController, ExperimentalAsh> controller_;
 };
 
 }  // namespace ash

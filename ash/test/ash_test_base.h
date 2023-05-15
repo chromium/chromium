@@ -123,8 +123,8 @@ class AshTestBase : public testing::Test {
 
   // Update the display configuration as given in |display_specs|.
   // See ash::DisplayManagerTestApi::UpdateDisplay for more details.
-  // Note: To add rounded-corners properly upon startup, set it via
-  // specifying the command line switch `ash-host-window-bounds`.
+  // Note: To properly specify the radii of display's panel upon startup, set it
+  // via specifying the command line switch `ash-host-window-bounds`.
   void UpdateDisplay(const std::string& display_specs);
 
   // Returns a root Window. Usually this is the active root Window, but that
@@ -236,6 +236,9 @@ class AshTestBase : public testing::Test {
   bool ExitOverview(
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
+  // Waits for shelf animation in all displays.
+  void WaitForShelfAnimation();
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
@@ -258,9 +261,14 @@ class AshTestBase : public testing::Test {
       const;
 
   void set_start_session(bool start_session) { start_session_ = start_session; }
+
   void set_create_global_cras_audio_handler(
       bool create_global_cras_audio_handler) {
     create_global_cras_audio_handler_ = create_global_cras_audio_handler;
+  }
+
+  void set_create_quick_pair_mediator(bool create_quick_pair_mediator) {
+    create_quick_pair_mediator_ = create_quick_pair_mediator;
   }
 
   base::test::TaskEnvironment* task_environment() {
@@ -379,6 +387,10 @@ class AshTestBase : public testing::Test {
   // `SetUp()` doesn't create a global `CrasAudioHandler` instance if this is
   // set to false.
   bool create_global_cras_audio_handler_ = true;
+
+  // `SetUp()` doesn't create a global `QuickPairMediator` instance if this is
+  // set to false.
+  bool create_quick_pair_mediator_ = true;
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -33,7 +34,10 @@ void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kQuickUnlockFingerprintRecord, 0);
 }
 
-FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
+FingerprintStorage::FingerprintStorage(Profile* profile)
+    : profile_(profile),
+      auth_performer_(UserDataAuthClient::Get()),
+      legacy_fingerprint_engine_(&auth_performer_) {
   if (!BiodClient::Get()) {
     // Could be nullptr in tests.
     return;
@@ -73,7 +77,8 @@ bool FingerprintStorage::IsEligible() const {
 }
 
 absl::optional<bool> FingerprintStorage::IsAccessible() const {
-  return IsFingerprintEnabled(profile_, Purpose::kAny);
+  return legacy_fingerprint_engine_.IsFingerprintEnabled(
+      *profile_->GetPrefs(), LegacyFingerprintEngine::Purpose::kAny);
 }
 
 bool FingerprintStorage::IsEnabled() const {
@@ -97,7 +102,10 @@ void FingerprintStorage::RecordFingerprintUnlockResult(
 }
 
 bool FingerprintStorage::IsFingerprintAvailable(Purpose purpose) const {
-  return !ExceededUnlockAttempts() && IsFingerprintEnabled(profile_, purpose) &&
+  return !ExceededUnlockAttempts() &&
+         legacy_fingerprint_engine_.IsFingerprintEnabled(
+             *profile_->GetPrefs(),
+             legacy_fingerprint_engine_.FromQuickUnlockPurpose(purpose)) &&
          HasRecord();
 }
 
@@ -186,7 +194,8 @@ void FingerprintStorage::OnGetRecords(
     LOG(ERROR) << "Get Records failure";
     return;
   }
-  if (!IsFingerprintDisabledByPolicy(profile_->GetPrefs(), Purpose::kAny)) {
+  if (!legacy_fingerprint_engine_.IsFingerprintDisabledByPolicy(
+          *profile_->GetPrefs(), LegacyFingerprintEngine::Purpose::kAny)) {
     profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
                                      fingerprints_list_mapping.size());
     return;

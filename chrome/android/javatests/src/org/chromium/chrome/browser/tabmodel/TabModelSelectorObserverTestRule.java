@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -83,7 +83,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         TabModelOrderController orderController = new TabModelOrderControllerImpl(mSelector);
         TabContentManager tabContentManager = new TabContentManager(
-                InstrumentationRegistry.getTargetContext(), null, false, mSelector::getTabById);
+                ApplicationProvider.getApplicationContext(), null, false, mSelector::getTabById);
         tabContentManager.initWithNative();
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();

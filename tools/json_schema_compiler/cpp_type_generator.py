@@ -86,7 +86,12 @@ class CppTypeGenerator(object):
       CamelCaseWithUpperFirst: kCamelCaseWithUpperFirst.
       x86_64: kX86_64
       x86_ARCH: kX86Arch
+      '': EmptyString
     """
+
+    if not name:
+      return 'EmptyString'
+
     change_to_upper = True
     last_was_lower = True
     result = ''

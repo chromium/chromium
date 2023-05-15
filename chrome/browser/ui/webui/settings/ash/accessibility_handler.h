@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCESSIBILITY_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCESSIBILITY_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -60,7 +61,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   speech::LanguageCode GetDictationLocale();
   std::u16string GetDictationLocaleDisplayName();
 
-  Profile* profile_;  // Weak pointer.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Weak pointer.
 
   // Timer to record user changed value for the accessibility setting to turn
   // shelf navigation buttons on in tablet mode. The metric is recorded with 10

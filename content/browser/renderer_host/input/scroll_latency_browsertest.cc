@@ -212,7 +212,8 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
 // Disabled due to flakiness https://crbug.com/1163246.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) ||                                         \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_MultipleWheelScroll DISABLED_MultipleWheelScroll
 #else
 #define MAYBE_MultipleWheelScroll MultipleWheelScroll
@@ -227,7 +228,9 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MAYBE_MultipleWheelScroll) {
 
 // Disabled due to flakiness https://crbug.com/1163246
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+    BUILDFLAG(IS_MAC) ||                                                 \
+    (BUILDFLAG(IS_CHROMEOS) &&                                           \
+     (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
 #define MAYBE_MultipleWheelScrollOnMain DISABLED_MultipleWheelScrollOnMain
 #else
 #define MAYBE_MultipleWheelScrollOnMain MultipleWheelScrollOnMain

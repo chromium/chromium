@@ -11,7 +11,6 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -170,10 +169,10 @@
   // set to topLayoutGuide after the view creation on iOS 10.
   [self.view setUp];
 
-  self.view.locationBarHeight.constant =
+  self.view.locationBarContainerHeight.constant =
       [self locationBarHeightForFullscreenProgress:1];
   self.view.locationBarContainer.layer.cornerRadius =
-      self.view.locationBarHeight.constant / 2;
+      self.view.locationBarContainerHeight.constant / 2;
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 
@@ -228,7 +227,7 @@
     (UIViewController*)locationBarViewController {
   [self addChildViewController:locationBarViewController];
   [locationBarViewController didMoveToParentViewController:self];
-  self.view.locationBarView = locationBarViewController.view;
+  [self.view setLocationBarView:locationBarViewController.view];
 }
 
 - (void)setIsNTP:(BOOL)isNTP {
@@ -266,10 +265,10 @@
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   self.view.leadingStackView.alpha = alphaValue;
   self.view.trailingStackView.alpha = alphaValue;
-  self.view.locationBarHeight.constant =
+  self.view.locationBarContainerHeight.constant =
       [self locationBarHeightForFullscreenProgress:progress];
   self.view.locationBarContainer.layer.cornerRadius =
-      self.view.locationBarHeight.constant / 2;
+      self.view.locationBarContainerHeight.constant / 2;
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
   self.previousFullscreenProgress = progress;
@@ -347,10 +346,10 @@
                 self.previousFullscreenProgress];
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.view.locationBarHeight.constant = [self
+    self.view.locationBarContainerHeight.constant = [self
         locationBarHeightForFullscreenProgress:self.previousFullscreenProgress];
     self.view.locationBarContainer.layer.cornerRadius =
-        self.view.locationBarHeight.constant / 2;
+        self.view.locationBarContainerHeight.constant / 2;
   }
   if (!ShowThumbStripInTraitCollection(self.traitCollection)) {
     self.view.topCornersRounded = NO;

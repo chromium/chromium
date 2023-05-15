@@ -11,8 +11,12 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -32,7 +36,10 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
+#include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -72,13 +79,19 @@
 #include "ui/aura/window.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
+#include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/native_window_tracker.h"
 #include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
 
 namespace {
+
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
   explicit TestObserver(app_list::AppListSyncableService* syncable_service)
@@ -96,9 +109,45 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
   void OnAddOrUpdateFromSyncItemForTest() override { ++add_or_update_count_; }
 
  private:
-  app_list::AppListSyncableService* const syncable_service_;
+  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      syncable_service_;
   size_t add_or_update_count_ = 0;
 };
+
+class ActiveWindowWaiter : public wm::ActivationChangeObserver {
+ public:
+  explicit ActiveWindowWaiter(aura::Window* root_window) {
+    observation_.Observe(wm::GetActivationClient(root_window));
+  }
+
+  ActiveWindowWaiter(const ActiveWindowWaiter&) = delete;
+  ActiveWindowWaiter& operator=(const ActiveWindowWaiter&) = delete;
+
+  ~ActiveWindowWaiter() override = default;
+
+  aura::Window* Wait() {
+    run_loop_.Run();
+    return found_window_;
+  }
+
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override {
+    if (gained_active) {
+      found_window_ = gained_active;
+      observation_.Reset();
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
+
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      observation_{this};
+};
+
 }  // namespace
 
 // Test AppListClient::IsAppOpen for extension apps.
@@ -163,6 +212,54 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   // The app list should not be dismissed when the dialog is shown.
   EXPECT_TRUE(client->app_list_visible());
   EXPECT_TRUE(client->GetAppListWindow());
+}
+
+// TODO(crbug.com/1444649): Test is flaky.
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       DISABLED_HidingBubbleLauncherCancelsAppUninstall) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  const extensions::Extension* app = InstallPlatformApp("minimal");
+
+  // Show the app list and request app uninstall.
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  // Open the uninstall dialog.
+  client->UninstallApp(profile(), app->id());
+  base::RunLoop().RunUntilIdle();
+
+  aura::Window* app_list_window = client->GetAppListWindow();
+  std::unique_ptr<views::NativeWindowTracker> app_list_tracker =
+      views::NativeWindowTracker::Create(app_list_window);
+  auto transient_children = wm::GetTransientChildren(app_list_window);
+  ASSERT_FALSE(transient_children.empty());
+
+  aura::Window* dialog_window = transient_children[0];
+  std::unique_ptr<views::NativeWindowTracker> dialog_tracker =
+      views::NativeWindowTracker::Create(dialog_window);
+
+  // Hide the app list, and verify that the dialog window was closed.
+  ASSERT_TRUE(client->app_list_visible());
+  client->DismissView();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(client->app_list_visible());
+
+  ASSERT_FALSE(app_list_tracker->WasNativeWindowDestroyed());
+  EXPECT_TRUE(wm::GetTransientChildren(app_list_window).empty());
+
+  EXPECT_TRUE(dialog_tracker->WasNativeWindowDestroyed());
+
+  // Reopen the app list, and verify that request to uninstall the app shows the
+  // uninstall dialog.
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  EXPECT_TRUE(client->GetAppListWindow());
+  client->UninstallApp(profile(), app->id());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
@@ -239,7 +336,7 @@ class SelfDestroyAppItem : public ChromeAppListItem {
   }
 
  private:
-  AppListModelUpdater* updater_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> updater_;
 };
 
 // Verifies that activating an app item which destroys itself during activation
@@ -446,6 +543,157 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   // the bound WeakPtr to fail sequence check on a worker thread.
   // TODO(crbug.com/965065): Remove after fixing AppLaunchEventLogger.
   content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       OpenSearchResultOnPrimaryDisplay) {
+  display::test::DisplayManagerTestApi display_manager(
+      ash::ShellTestApi().display_manager());
+  display_manager.UpdateDisplay("400x300,500x500");
+
+  const display::Display& primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  AppListClientImpl* const client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  // Associate |client| with the current profile.
+  client->UpdateProfile();
+
+  EXPECT_EQ(display::kInvalidDisplayId, client->GetAppListDisplayId());
+
+  aura::Window* const primary_root_window =
+      ash::Shell::GetRootWindowForDisplayId(primary_display.id());
+
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindowInRootWindow(
+      primary_root_window,
+      /*wait_for_opening_animation=*/true);
+
+  EXPECT_EQ(primary_display.id(), client->GetAppListDisplayId());
+
+  // Simluate search, and verify an activated search result opens on the
+  // primary display.
+  const std::u16string app_query = u"Chrom";
+  const std::string app_id = app_constants::kChromeAppId;
+  const std::string app_result_id =
+      base::StringPrintf("chrome-extension://%s/", app_id.c_str());
+
+  app_list::SearchResultsChangedWaiter results_changed_waiter(
+      AppListClientImpl::GetInstance()->search_controller(),
+      {app_list::ResultType::kInstalledApp});
+  app_list::ResultsWaiter results_waiter(app_query);
+
+  // Search by title and the app must present in the results.
+  ash::AppListTestApi().SimulateSearch(app_query);
+
+  results_changed_waiter.Wait();
+  results_waiter.Wait();
+
+  app_list::SearchController* const search_controller =
+      client->search_controller();
+  ASSERT_TRUE(search_controller);
+  ASSERT_TRUE(search_controller->FindSearchResult(app_result_id));
+
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+
+  ActiveWindowWaiter window_waiter(primary_root_window);
+
+  client->OpenSearchResult(model_updater->model_id(), app_result_id,
+                           ui::EF_NONE,
+                           ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+                           ash::AppListLaunchType::kAppSearchResult, 0,
+                           false /* launch_as_default */);
+
+  aura::Window* const app_window = window_waiter.Wait();
+  ASSERT_TRUE(app_window);
+  EXPECT_EQ(primary_root_window, app_window->GetRootWindow());
+  EXPECT_EQ(app_id,
+            ash::ShelfID::Deserialize(app_window->GetProperty(ash::kShelfIDKey))
+                .app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       OpenSearchResultOnSecondaryDisplay) {
+  display::test::DisplayManagerTestApi display_manager(
+      ash::ShellTestApi().display_manager());
+  display_manager.UpdateDisplay("400x300,500x500");
+
+  const display::Display& secondary_display =
+      display_manager.GetSecondaryDisplay();
+  AppListClientImpl* const client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  // Associate |client| with the current profile.
+  client->UpdateProfile();
+
+  EXPECT_EQ(display::kInvalidDisplayId, client->GetAppListDisplayId());
+
+  aura::Window* const secondary_root_window =
+      ash::Shell::GetRootWindowForDisplayId(secondary_display.id());
+
+  // Open app list on a secondary display.
+  {
+    display::ScopedDisplayForNewWindows scoped_display(secondary_display.id());
+    client->ShowAppList(ash::AppListShowSource::kSearchKey);
+    ash::AppListTestApi().WaitForBubbleWindowInRootWindow(
+        secondary_root_window,
+        /*wait_for_opening_animation=*/true);
+  }
+
+  EXPECT_EQ(secondary_display.id(), client->GetAppListDisplayId());
+
+  // Simluate search, and verify an activated search result opens on the
+  // secondary display.
+  const std::u16string app_query = u"Chrom";
+  const std::string app_id = app_constants::kChromeAppId;
+  const std::string app_result_id =
+      base::StringPrintf("chrome-extension://%s/", app_id.c_str());
+
+  app_list::SearchResultsChangedWaiter results_changed_waiter(
+      AppListClientImpl::GetInstance()->search_controller(),
+      {app_list::ResultType::kInstalledApp});
+  app_list::ResultsWaiter results_waiter(app_query);
+
+  // Search by title and the app must present in the results.
+  ash::AppListTestApi().SimulateSearch(app_query);
+
+  results_changed_waiter.Wait();
+  results_waiter.Wait();
+
+  app_list::SearchController* const search_controller =
+      client->search_controller();
+  ASSERT_TRUE(search_controller);
+  ASSERT_TRUE(search_controller->FindSearchResult(app_result_id));
+
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+
+  ActiveWindowWaiter window_waiter(secondary_root_window);
+
+  client->OpenSearchResult(model_updater->model_id(), app_result_id,
+                           ui::EF_NONE,
+                           ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+                           ash::AppListLaunchType::kAppSearchResult, 0,
+                           false /* launch_as_default */);
+
+  aura::Window* const app_window = window_waiter.Wait();
+  ASSERT_TRUE(app_window);
+  EXPECT_EQ(secondary_root_window, app_window->GetRootWindow());
+  EXPECT_EQ(app_id,
+            ash::ShelfID::Deserialize(app_window->GetProperty(ash::kShelfIDKey))
+                .app_id);
+
+  // Open app list on the primary display, and verify `GetAppListDisplayId()`
+  // returns the display where the launcher is shown.
+
+  {
+    display::ScopedDisplayForNewWindows scoped_display(
+        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+    client->ShowAppList(ash::AppListShowSource::kSearchKey);
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/true);
+  }
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+            client->GetAppListDisplayId());
 }
 
 class AppListClientImplLacrosOnlyBrowserTest
@@ -655,7 +903,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  AppListModelUpdater* model_updater_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

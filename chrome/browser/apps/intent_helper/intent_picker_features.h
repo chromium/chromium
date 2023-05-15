@@ -12,8 +12,6 @@ namespace apps::features {
 BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
 BASE_DECLARE_FEATURE(kLinkCapturingInfoBar);
 BASE_DECLARE_FEATURE(kIntentChipSkipsPicker);
-BASE_DECLARE_FEATURE(kIntentChipAppIcon);
-BASE_DECLARE_FEATURE(kLinkCapturingAutoDisplayIntentPicker);
 
 // Returns true if the overall link capturing UI update feature is enabled.
 bool LinkCapturingUiUpdateEnabled();
@@ -27,16 +25,6 @@ bool ShouldIntentChipSkipIntentPicker();
 // web app through the Intent Picker. Only returns true if
 // LinkCapturingUiUpdateEnabled() returns true.
 bool LinkCapturingInfoBarEnabled();
-
-// Returns true if the Intent Chip should show the app icon for the app which
-// can handle the current URL. If false, a generic icon should always be used.
-// Only returns true if LinkCapturingUiUpdateEnabled() returns true.
-bool AppIconInIntentChipEnabled();
-
-// Returns true if the intent picker bubble should automatically display when
-// navigating through a link click to a page with installed link capturing apps.
-// Always returns true if LinkCapturingUiUpdateEnabled() returns false.
-bool IntentPickerAutoDisplayEnabled();
 
 }  // namespace apps::features
 

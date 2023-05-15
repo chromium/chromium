@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+// WebNNGraph runs in the GPU process and is called by the renderer process to
+// compile and execute a computational graph. Graph building and execution is
+// performed by calling hardware accelerated OS machine learning APIs.
+interface WebNNGraph {
+  // TODO(crbug.com/1273291): Add `Build` and `Compute` method to compile and
+  // execute computational graph with system framework.
+};

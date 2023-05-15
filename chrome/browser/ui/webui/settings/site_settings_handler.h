@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,8 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/origin.h"
 
 class BrowsingDataModel;
 class PrefChangeRegistrar;
@@ -41,6 +44,42 @@ class SiteSettingsHandler
       public permissions::ObjectPermissionContextBase::PermissionObserver,
       public CookiesTreeModel::Observer {
  public:
+  // The key used to group origins together in the UI. If two origins map to
+  // the same GroupingKey, they should be displayed in the same UI group. For
+  // normal web content, this will be equal to the eTLD+1.
+  class GroupingKey {
+   public:
+    static GroupingKey Create(const url::Origin& origin);
+    static GroupingKey CreateFromEtldPlus1(const std::string& etld_plus1);
+
+    GroupingKey(const GroupingKey& other);
+    GroupingKey& operator=(const GroupingKey& other);
+    ~GroupingKey();
+
+    std::string Serialize() const;
+
+    // Returns the eTLD+1 that this GroupingKey represents, or nullopt if it
+    // doesn't represent an eTLD+1.
+    absl::optional<std::string> GetEtldPlusOne() const;
+
+    // Returns the origin that this GroupingKey represents, or nullopt if it
+    // doesn't represent an origin.
+    absl::optional<url::Origin> GetOrigin() const;
+
+    bool operator<(const GroupingKey& other) const;
+
+   private:
+    explicit GroupingKey(const absl::variant<std::string, url::Origin>& value);
+
+    url::Origin ToOrigin() const;
+
+    // eTLD+1 or Origin
+    absl::variant<std::string, url::Origin> value_;
+  };
+
+  using AllSitesMap =
+      std::map<GroupingKey, std::set<std::pair<url::Origin, bool>>>;
+
   explicit SiteSettingsHandler(Profile* profile);
 
   SiteSettingsHandler(const SiteSettingsHandler&) = delete;
@@ -111,6 +150,7 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            ChangingFlashSettingForSiteIsRemembered);
 #endif
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Cookies);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, DefaultSettingSource);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExceptionHelpers);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExtensionDisplayName);
@@ -176,6 +216,9 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest,
+                           ZoomLevelsSortedByAppName);
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
   // serviced when both models are built.
@@ -190,18 +233,15 @@ class SiteSettingsHandler
 
   // Calculates the data storage that has been used for each origin, and
   // stores the information in the |all_sites_map| and |origin_size_map|.
-  void GetOriginStorage(
-      std::map<std::string, std::set<std::pair<std::string, bool>>>*
-          all_sites_map,
-      std::map<std::string, int64_t>* origin_size_map);
+  void GetOriginStorage(AllSitesMap* all_sites_map,
+                        std::map<url::Origin, int64_t>* origin_size_map);
 
-  // Calculates the number of cookies for each etld+1 and each origin, and
-  // stores the information in the |all_sites_map| and |origin_cookie_map|.
-  void GetOriginCookies(
-      std::map<std::string, std::set<std::pair<std::string, bool>>>*
-          all_sites_map,
+  // Calculates the number of cookies for each etld+1 and each host, and
+  // stores the information in the |all_sites_map| and |host_cookie_map|.
+  void GetHostCookies(
+      AllSitesMap* all_sites_map,
       std::map<std::pair<std::string, absl::optional<std::string>>, int>*
-          origin_cookie_map);
+          host_cookie_map);
 
   // Asynchronously fetches the usage for a given origin. Replies back with
   // OnGetUsageInfo above.
@@ -385,7 +425,7 @@ class SiteSettingsHandler
       observed_profiles_{this};
 
   // Keeps track of events related to zooming.
-  base::CallbackListSubscription host_zoom_map_subscription_;
+  std::vector<base::CallbackListSubscription> host_zoom_map_subscriptions_;
 
   // The origin for which to fetch usage.
   std::string usage_origin_;
@@ -417,14 +457,15 @@ class SiteSettingsHandler
   // resetting the models.
   bool models_set_for_testing_ = false;
 
+  // Populated every time the user reloads the All Sites page.
+  // Maps GroupingKeys to sets of (origin, is_partitioned) pairs.
+  AllSitesMap all_sites_map_;
+
+  // Stores the origins that have permission settings.
+  std::set<url::Origin> origin_permission_set_;
+
   // Whether to send all sites list on model update.
   bool send_sites_list_ = false;
-
-  // Populated every time the user reloads the All Sites page.
-  std::map<std::string, std::set<std::pair<std::string, bool>>> all_sites_map_;
-
-  // Store the origins that has permission settings.
-  std::set<std::string> origin_permission_set_;
 
   // Whether to send site detail data on model update.
   bool update_site_details_ = false;

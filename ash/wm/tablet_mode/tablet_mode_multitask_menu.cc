@@ -10,14 +10,12 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
-#include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
@@ -30,7 +28,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -44,15 +42,9 @@ constexpr int kVerticalPosition = 8;
 constexpr int kShadowOutset = 12;
 
 // Menu layout values.
+constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
-// Padding between the edges of the menu and the elements.
-constexpr int kPaddingWide = 12;
-// Padding between each column of elements.
-constexpr int kPaddingNarrow = 6;
-
-// Dogfood feedback button layout values.
-constexpr int kButtonWidth = 120;
-constexpr int kButtonHeight = 28;
+constexpr gfx::Insets kInsideBorderInsets(16);
 
 // Menu animation values.
 constexpr base::TimeDelta kPositionAnimationDurationMs =
@@ -74,8 +66,7 @@ class TabletModeMultitaskMenuView : public views::View {
         kCornerRadius,
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder1));
 
     SetUseDefaultFillLayout(true);
 
@@ -110,12 +101,6 @@ class TabletModeMultitaskMenuView : public views::View {
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
             window, std::move(callback), buttons, /*anchor_view=*/nullptr));
 
-    // base::Unretained() is safe since `this` also destroys `menu_view_base_`
-    // and its child `feedback_button_`.
-    menu_view_base_->feedback_button()->SetCallback(base::BindRepeating(
-        &TabletModeMultitaskMenuView::ShowFeedbackPageForMenu,
-        base::Unretained(this)));
-
     if (menu_view_base_->partial_button() &&
         !split_view_controller->CanSnapWindow(window,
                                               chromeos::kOneThirdSnapRatio)) {
@@ -127,45 +112,14 @@ class TabletModeMultitaskMenuView : public views::View {
           false);
     }
 
-    auto* layout = menu_view_base_->SetLayoutManager(
-        std::make_unique<views::TableLayout>());
-    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddRows(1, views::TableLayout::kFixedSize, 0)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddRows(1, views::TableLayout::kFixedSize, kButtonHeight)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide);
-
-    // Feedback button should be ignored by the layout, as otherwise it will be
-    // counted as an element in the table and forced to the second row,
-    // first column.
-    layout->SetChildViewIgnoredByLayout(menu_view_base_->feedback_button(),
-                                        true);
-    auto pref_size = menu_view_base_->GetPreferredSize();
-    menu_view_base_->feedback_button()->SetBounds(
-        (pref_size.width() - kButtonWidth) / 2,
-        pref_size.height() - kButtonHeight - kPaddingWide, kButtonWidth,
-        kButtonHeight);
+    auto* layout =
+        menu_view_base_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
+            kBetweenButtonSpacing));
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -186,13 +140,6 @@ class TabletModeMultitaskMenuView : public views::View {
   SystemShadow* shadow() { return shadow_.get(); }
 
  private:
-  // Shows a dogfood feedback page for the multitask menu.
-  void ShowFeedbackPageForMenu() {
-    Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-        ShellDelegate::FeedbackSource::kWindowLayoutMenu,
-        /*description_template=*/"#WindowLayoutMenu");
-  }
-
   raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
@@ -204,10 +151,8 @@ END_METADATA
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     TabletModeMultitaskMenuEventHandler* event_handler,
     aura::Window* window)
-    : event_handler_(event_handler), window_(window) {
-  // Start observing the window.
-  DCHECK(window);
-  observed_window_.Observe(window);
+    : event_handler_(event_handler) {
+  CHECK(window);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -234,12 +179,12 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   menu_view_ =
       widget_->SetContentsView(std::make_unique<TabletModeMultitaskMenuView>(
-          window_, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
-                                       weak_factory_.GetWeakPtr())));
+          window, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
+                                      weak_factory_.GetWeakPtr())));
 
   // Set the widget on the top center of the window.
   const gfx::Size menu_size(menu_view_->GetPreferredSize());
-  const gfx::Rect window_bounds(window_->GetBoundsInScreen());
+  const gfx::Rect window_bounds(window->GetBoundsInScreen());
 
   // The invisible widget needs to be big enough to include both the menu and
   // shadow otherwise it would mask parts out. Explicitly set the widget size
@@ -279,11 +224,14 @@ void TabletModeMultitaskMenu::Animate(bool show) {
   if (view_layer->GetAnimator()->is_animating()) {
     return;
   }
+
   if (show) {
     RecordMultitaskMenuEntryType(
         chromeos::MultitaskMenuEntryType::kGestureScroll);
   }
-  views::AnimationBuilder()
+
+  views::AnimationBuilder animation_builder;
+  animation_builder
       .OnEnded(show ? base::DoNothing()
                     : base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                           weak_factory_.GetWeakPtr()))
@@ -297,12 +245,28 @@ void TabletModeMultitaskMenu::Animate(bool show) {
                                0, -menu_view_->GetPreferredSize().height() -
                                       kVerticalPosition),
                     gfx::Tween::ACCEL_20_DECEL_100);
+  ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer();
+  if (cue_layer) {
+    animation_builder.GetCurrentSequence().SetTransform(
+        cue_layer,
+        show ? gfx::Transform::MakeTranslation(
+                   0,
+                   menu_view_->GetPreferredSize().height() + kVerticalPosition)
+             : gfx::Transform(),
+        gfx::Tween::ACCEL_20_DECEL_100);
+  }
 }
 
 void TabletModeMultitaskMenu::AnimateFadeOut() {
   ui::Layer* view_layer = menu_view_->layer();
-  if (view_layer->GetAnimator()->is_animating())
+  // If the fade out animation is already underway, no need to start another
+  // one. This can happen for example if buttons are clicked rapidly while fade
+  // out has started.
+  if (view_layer->GetAnimator()->is_animating() &&
+      view_layer->GetTargetOpacity() == 0.0f) {
     return;
+  }
+
   views::AnimationBuilder()
       .OnEnded(base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                    weak_factory_.GetWeakPtr()))
@@ -321,6 +285,9 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
     initial_y_ = menu_view_->bounds().bottom();
     menu_view_->layer()->SetTransform(
         gfx::Transform::MakeTranslation(0, translation_y));
+    if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+      cue_layer->SetTransform(gfx::Transform::MakeTranslation(0, initial_y));
+    }
   } else {
     // Drag up can start from anywhere in the menu; simply save `initial_y` to
     // update drag relative to it.
@@ -336,6 +303,12 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   }
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, translation_y));
+
+  if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+    cue_layer->SetTransform(gfx::Transform::MakeTranslation(
+        0, menu_view_->GetPreferredSize().height() + kVerticalPosition +
+               translation_y));
+  }
 }
 
 void TabletModeMultitaskMenu::EndDrag() {
@@ -354,18 +327,16 @@ void TabletModeMultitaskMenu::Reset() {
   event_handler_->ResetMultitaskMenu();
 }
 
-void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
-  DCHECK(observed_window_.IsObservingSource(window));
-
-  observed_window_.Reset();
-  window_ = nullptr;
-
-  // Destroys `this`.
-  Reset();
-}
-
 void TabletModeMultitaskMenu::OnNativeFocusChanged(
     gfx::NativeView focused_now) {
+  ui::Layer* view_layer = menu_view_->layer();
+  // Prevent fade out while we are animating to show. This can happen if the
+  // drag goes out of bounds while the menu is animating.
+  if (view_layer->GetAnimator()->is_animating() &&
+      view_layer->GetTargetOpacity() == 1.0f) {
+    return;
+  }
+
   if (widget_->GetNativeView() != focused_now) {
     // Destroys `this` at the end of animation.
     AnimateFadeOut();

@@ -253,8 +253,8 @@ static_library("browser") {
     "logging/log_router.h",
     "logging/text_log_receiver.cc",
     "logging/text_log_receiver.h",
-    "manual_testing_profile_import.cc",
-    "manual_testing_profile_import.h",
+    "manual_testing_import.cc",
+    "manual_testing_import.h",
     "merchant_promo_code_manager.cc",
     "merchant_promo_code_manager.h",
     "metrics/autofill_metrics.cc",
@@ -313,6 +313,8 @@ static_library("browser") {
     "payments/autofill_error_dialog_context.h",
     "payments/autofill_offer_manager.cc",
     "payments/autofill_offer_manager.h",
+    "payments/autofill_payments_feature_availability.cc",
+    "payments/autofill_payments_feature_availability.h",
     "payments/autofill_wallet_model_type_controller.cc",
     "payments/autofill_wallet_model_type_controller.h",
     "payments/card_unmask_challenge_option.cc",
@@ -919,7 +921,7 @@ source_set("unit_tests") {
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
     "logging/text_log_receiver_unittest.cc",
-    "manual_testing_profile_import_unittest.cc",
+    "manual_testing_import_unittest.cc",
     "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
     "metrics/converge_to_extreme_length_address_metrics_unittest.cc",
@@ -1024,11 +1026,6 @@ source_set("unit_tests") {
       "ui/label_formatter_unittest.cc",
       "ui/label_formatter_utils_unittest.cc",
     ]
-  }
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [ "browser_autofill_manager_unittest.cc" ]
   }
 
   defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]

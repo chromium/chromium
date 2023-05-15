@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -160,7 +161,7 @@ class OAuth2LoginManager : public KeyedService,
   void RecordSessionRestoreOutcome(SessionRestoreOutcome outcome,
                                    SessionRestoreState state);
 
-  Profile* user_profile_;
+  raw_ptr<Profile, ExperimentalAsh> user_profile_;
   SessionRestoreState state_;
 
   // Whether there is pending TokenService::LoadCredentials call.

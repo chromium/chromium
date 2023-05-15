@@ -86,8 +86,6 @@ public class SignOutDialogCoordinator {
             Context context, String managedDomain, @ActionType int actionType) {
         final View view =
                 LayoutInflater.from(context).inflate(R.layout.signout_wipe_storage_dialog, null);
-        ((TextView) view.findViewById(android.R.id.title))
-                .setText(getTitleRes(managedDomain, actionType));
         ((TextView) view.findViewById(android.R.id.message))
                 .setText(getMessage(context, managedDomain));
 
@@ -153,11 +151,13 @@ public class SignOutDialogCoordinator {
         mGaiaServiceType = gaiaServiceType;
         mListener = listener;
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                         .with(ModalDialogProperties.TITLE,
+                                 context.getString(getTitleRes(managedDomain, actionType)))
                          .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                  context.getString(R.string.continue_button))
                          .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                  context.getString(R.string.cancel))
+                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                          .with(ModalDialogProperties.CUSTOM_VIEW, view)
                          .with(ModalDialogProperties.CONTROLLER, createController())
                          .build();

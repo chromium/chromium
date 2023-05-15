@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
@@ -106,10 +107,11 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   // than UMA aggregation periods and don't change feature state.
   void LogFeatureStates() const;
 
-  PrefService* pref_service_;
-  HostStatusProvider* host_status_provider_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<AndroidSmsPairingStateTracker, ExperimentalAsh>
+      android_sms_pairing_state_tracker_;
   const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>
       global_state_feature_managers_;
 

@@ -125,16 +125,6 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
   return CharacterRange(to_x, from_x, -min_y, max_y);
 }
 
-Vector<CharacterRange> ShapeResultBuffer::IndividualCharacterRanges(
-    TextDirection direction,
-    float total_width) const {
-  Vector<CharacterRange> ranges;
-  float current_x = direction == TextDirection::kRtl ? total_width : 0;
-  for (const scoped_refptr<const ShapeResult>& result : results_)
-    current_x = result->IndividualCharacterRanges(&ranges, current_x);
-  return ranges;
-}
-
 void ShapeResultBuffer::AddRunInfoAdvances(const ShapeResult::RunInfo& run_info,
                                            double offset,
                                            Vector<double>& advances) {

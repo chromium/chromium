@@ -79,23 +79,22 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
     return false;
   }
 
-  const base::Value* experiments_value =
-      experiments_data->FindListKey(kResponseExperimentsKeyName);
+  const base::Value::List* experiments_value =
+      experiments_data->GetDict().FindList(kResponseExperimentsKeyName);
   if (!experiments_value) {
     LOGFN(ERROR) << "User experiments not found!";
     return false;
   }
 
-  if (experiments_value->is_list()) {
-    for (const auto& item : experiments_value->GetList()) {
-      auto* f = item.FindStringKey(kResponseFeatureKeyName);
-      auto* v = item.FindStringKey(kResponseValueKeyName);
-      if (!f || !v) {
-        LOGFN(WARNING) << "Either feature or value are not found!";
-      }
-
-      experiments_to_values_[*f].second[base::WideToUTF8(sid)] = *v;
+  for (const auto& item : *experiments_value) {
+    const auto& item_dict = item.GetDict();
+    auto* f = item_dict.FindString(kResponseFeatureKeyName);
+    auto* v = item_dict.FindString(kResponseValueKeyName);
+    if (!f || !v) {
+      LOGFN(WARNING) << "Either feature or value are not found!";
     }
+
+    experiments_to_values_[*f].second[base::WideToUTF8(sid)] = *v;
   }
   return true;
 }

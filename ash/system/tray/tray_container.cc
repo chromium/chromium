@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
@@ -94,8 +93,7 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
 
   // We only add highlight border to the system tray when it is in tablet mode
   // and not in app mode.
-  if (!features::IsDarkLightModeEnabled() || !Shell::Get()->IsInTabletMode() ||
-      ShelfConfig::Get()->is_in_app()) {
+  if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) {
     return;
   }
 
@@ -120,8 +118,7 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
       rounded_corners,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2,
-      /*use_light_colors=*/false);
+          : views::HighlightBorder::Type::kHighlightBorder2);
 }
 
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {

@@ -11,10 +11,24 @@
 
 namespace commerce::metrics {
 
+const char kPDPNavShoppingListEligibleHistogramName[] =
+    "Commerce.PDPNavigation.ShoppingList.Eligible";
 const char kPDPStateHistogramName[] = "Commerce.PDPStateOnNavigation";
+const char kPDPStateWithLocalMetaName[] = "Commerce.PDPStateWithLocalMeta";
 
 void RecordPDPStateToUma(ShoppingPDPState state) {
   base::UmaHistogramEnumeration(kPDPStateHistogramName, state);
+}
+
+void RecordPDPNavShoppingListEligible(ShoppingPDPState state,
+                                      bool is_shopping_list_eligible) {
+  // Only record this metric for pages that were determined to be PDPs.
+  if (state == ShoppingPDPState::kNotPDP) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(kPDPNavShoppingListEligibleHistogramName,
+                            is_shopping_list_eligible);
 }
 
 ShoppingPDPState ComputeStateForOptGuideResult(
@@ -42,11 +56,11 @@ ShoppingPDPState ComputeStateForOptGuideResult(
   return ShoppingPDPState::kIsPDPWithoutClusterId;
 }
 
-void RecordPDPStateForNavigation(
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata,
-    PrefService* pref_service,
-    bool is_off_the_record) {
+void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
+                      const optimization_guide::OptimizationMetadata& metadata,
+                      PrefService* pref_service,
+                      bool is_off_the_record,
+                      bool is_shopping_list_eligible) {
   // If optimization guide isn't allowed to run, don't attempt to query and
   // record the metrics.
   if (!pref_service ||
@@ -55,7 +69,25 @@ void RecordPDPStateForNavigation(
     return;
   }
 
-  RecordPDPStateToUma(ComputeStateForOptGuideResult(decision, metadata));
+  ShoppingPDPState state = ComputeStateForOptGuideResult(decision, metadata);
+
+  RecordPDPStateToUma(state);
+  RecordPDPNavShoppingListEligible(state, is_shopping_list_eligible);
+}
+
+void RecordPDPStateWithLocalMeta(bool detected_by_server,
+                                 bool detected_by_client) {
+  ShoppingPDPDetectionMethod detection_method =
+      ShoppingPDPDetectionMethod::kNotPDP;
+  if (detected_by_server && detected_by_client) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPServerAndLocalMeta;
+  } else if (detected_by_server) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPServerOnly;
+  } else if (detected_by_client) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPLocalMetaOnly;
+  }
+
+  base::UmaHistogramEnumeration(kPDPStateWithLocalMetaName, detection_method);
 }
 
 }  // namespace commerce::metrics

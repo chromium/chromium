@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
@@ -137,7 +138,10 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"bottom\\\"\"}" :
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"undocked\\\"\"}";
   scoped_refptr<content::DevToolsAgentHost> agent(
-      content::DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
+      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
+          ? content::DevToolsAgentHost::GetOrCreateForTab(
+                inspected_web_contents)
+          : content::DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
   DevToolsWindow::ToggleDevToolsWindow(inspected_web_contents, profile, true,
                                        DevToolsToggleAction::Show(), settings);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());

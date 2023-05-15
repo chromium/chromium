@@ -70,25 +70,17 @@ public class RedirectHandler {
         public final boolean isFromTyping;
         public final boolean isFromFormSubmit;
         public final boolean isFromIntent;
-        private boolean mHasUserGesture;
+        public final boolean hasUserGesture;
 
         public InitialNavigationState(boolean isRendererInitiated, boolean hasUserGesture,
                 boolean isFromReload, boolean isFromTyping, boolean isFromFormSubmit,
                 boolean isFromIntent) {
             this.isRendererInitiated = isRendererInitiated;
-            mHasUserGesture = hasUserGesture;
+            this.hasUserGesture = hasUserGesture;
             this.isFromReload = isFromReload;
             this.isFromTyping = isFromTyping;
             this.isFromFormSubmit = isFromFormSubmit;
             this.isFromIntent = isFromIntent;
-        }
-
-        public boolean hasUserGesture() {
-            return mHasUserGesture;
-        }
-
-        private void clearUserGesture() {
-            mHasUserGesture = false;
         }
     }
 
@@ -100,6 +92,7 @@ public class RedirectHandler {
         // TODO(https://crbug.com/1286053): Plumb through the user activation time from blink.
         final long mNavigationChainStartTime = currentRealtime();
         boolean mUsedBackOrForward;
+        boolean mPerformedCrossFrameNavigation;
         final InitialNavigationState mInitialNavigationState;
 
         NavigationChainState(boolean hasUserStartedNonInitialNavigation,
@@ -171,14 +164,6 @@ public class RedirectHandler {
         mIntentState = null;
         mNavigationChainState = null;
         mIsPrefetchLoadForIntent = false;
-    }
-
-    /**
-     * Clears the user gesture bit for the current Navigation Chain.
-     */
-    public void clearUserGesture() {
-        if (mNavigationChainState == null) return;
-        mNavigationChainState.mInitialNavigationState.clearUserGesture();
     }
 
     /**
@@ -397,7 +382,7 @@ public class RedirectHandler {
 
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {
         if (!mNavigationChainState.mInitialNavigationState.isRendererInitiated
-                || mNavigationChainState.mInitialNavigationState.hasUserGesture()) {
+                || mNavigationChainState.mInitialNavigationState.hasUserGesture) {
             return;
         }
 
@@ -408,6 +393,14 @@ public class RedirectHandler {
                         + millisSinceLastGesture + "ms ago.");
         RecordHistogram.recordTimesHistogram(
                 "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
+    }
+
+    public void setPerformedCrossFrameNavigation() {
+        mNavigationChainState.mPerformedCrossFrameNavigation = true;
+    }
+
+    public boolean navigationChainPerformedCrossFrameNavigation() {
+        return mNavigationChainState.mPerformedCrossFrameNavigation;
     }
 
     // Facilitates simulated waiting in tests.

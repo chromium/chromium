@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sharing/sharing_message_bridge_impl.h"
 
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "chrome/browser/sharing/features.h"
 #include "components/sync/model/dummy_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -85,7 +85,8 @@ void SharingMessageBridgeImpl::SendSharingMessage(
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
   // Fill in the internal message id with unique generated identifier.
-  const std::string message_id = base::GenerateGUID();
+  const std::string message_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   specifics->set_message_id(message_id);
   std::unique_ptr<syncer::EntityData> entity_data =
       MoveToEntityData(std::move(specifics));
@@ -118,7 +119,7 @@ SharingMessageBridgeImpl::CreateMetadataChangeList() {
   return std::make_unique<syncer::DummyMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> SharingMessageBridgeImpl::MergeSyncData(
+absl::optional<syncer::ModelError> SharingMessageBridgeImpl::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
@@ -126,7 +127,8 @@ absl::optional<syncer::ModelError> SharingMessageBridgeImpl::MergeSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError> SharingMessageBridgeImpl::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+SharingMessageBridgeImpl::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   sync_pb::SharingMessageCommitError no_error_message;
@@ -240,8 +242,8 @@ void SharingMessageBridgeImpl::ApplyDisableSyncChanges(
 
 void SharingMessageBridgeImpl::OnSyncPaused() {
   // The controller always clears metadata so this is only reachable for the
-  // case where the initial download is interrupted before MergeSyncData() is
-  // invoked, which means there are no outgoing messages.
+  // case where the initial download is interrupted before MergeFullSyncData()
+  // is invoked, which means there are no outgoing messages.
   CHECK(!change_processor()->IsTrackingMetadata());
   CHECK(pending_commits_.empty());
 }

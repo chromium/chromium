@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -110,10 +111,10 @@ SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(context_state->gr_context(),
-                              manager,
-                              backing,
-                              tracker),
+    : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                    manager,
+                                    backing,
+                                    tracker),
       client_(client),
       context_state_(std::move(context_state)),
       promise_textures_(std::move(promise_textures)) {
@@ -156,7 +157,7 @@ std::vector<sk_sp<SkSurface>> SkiaGLCommonRepresentation::BeginWriteAccess(
     if (sk_color_type == kGray_8_SkColorType) {
       sk_color_type = kAlpha_8_SkColorType;
     }
-    auto surface = SkSurface::MakeFromBackendTexture(
+    auto surface = SkSurfaces::WrapBackendTexture(
         context_state_->gr_context(),
         promise_textures_[plane]->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,

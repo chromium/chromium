@@ -169,6 +169,12 @@ void FileHandlingSubManager::Execute(
                             desired_state, std::move(callback)));
 }
 
+// TODO(b/279068663): Implement if needed.
+void FileHandlingSubManager::ForceUnregister(const AppId& app_id,
+                                             base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 void FileHandlingSubManager::Unregister(
     const AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,

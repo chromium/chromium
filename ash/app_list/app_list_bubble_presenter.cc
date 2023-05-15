@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -42,6 +43,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -314,6 +316,22 @@ void AppListBubblePresenter::Dismiss() {
   if (bubble_view_) {
     aura::Window* bubble_window = bubble_view_->GetWidget()->GetNativeWindow();
     DCHECK(bubble_window);
+
+    // Close all transient child windows in the app list (e.g. uninstall dialog)
+    // when the app list is dismissed.
+    auto* manager = ::wm::TransientWindowManager::GetOrCreate(bubble_window);
+    if (manager) {
+      std::vector<aura::Window*> children = manager->transient_children();
+      for (auto* child : children) {
+        views::Widget* child_widget =
+            views::Widget::GetWidgetForNativeWindow(child);
+        if (child_widget) {
+          child_widget->CloseWithReason(
+              views::Widget::ClosedReason::kUnspecified);
+        }
+      }
+    }
+
     Shelf* shelf = Shelf::ForWindow(bubble_window);
     const bool is_side_shelf = !shelf->IsHorizontalAlignment();
     bubble_view_->StartHideAnimation(

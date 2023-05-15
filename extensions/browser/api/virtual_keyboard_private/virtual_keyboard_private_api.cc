@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -18,6 +19,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/clipboard/clipboard_history_item.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
@@ -67,17 +69,19 @@ base::Value::Dict SerializeClipboardHistoryItem(
   }
 
   switch (item.display_format()) {
-    case ash::ClipboardHistoryItem::DisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+      NOTREACHED_NORETURN();
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       clipboard_item.text_data = base::UTF16ToUTF8(item.display_text());
       clipboard_item.display_format = DisplayFormat::kText;
       break;
-    case ash::ClipboardHistoryItem::DisplayFormat::kPng:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       clipboard_item.display_format = DisplayFormat::kPng;
       break;
-    case ash::ClipboardHistoryItem::DisplayFormat::kHtml:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       clipboard_item.display_format = DisplayFormat::kHtml;
       break;
-    case ash::ClipboardHistoryItem::DisplayFormat::kFile:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       DCHECK(!clipboard_item.image_data.has_value());
 
       const auto& icon = item.icon();
@@ -248,8 +252,9 @@ VirtualKeyboardPrivateSetOccludedBoundsFunction::Run() {
 
   std::vector<gfx::Rect> occluded_bounds;
   occluded_bounds.reserve(params->bounds_list.size());
-  for (const auto& bounds : params->bounds_list)
+  for (const auto& bounds : params->bounds_list) {
     occluded_bounds.push_back(KeyboardBoundsToRect(bounds));
+  }
 
   if (!delegate()->SetOccludedBounds(occluded_bounds))
     return RespondNow(Error(kVirtualKeyboardNotEnabled));
@@ -264,8 +269,9 @@ VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
 
   std::vector<gfx::Rect> hit_test_bounds;
   hit_test_bounds.reserve(params->bounds_list.size());
-  for (const auto& bounds : params->bounds_list)
+  for (const auto& bounds : params->bounds_list) {
     hit_test_bounds.push_back(KeyboardBoundsToRect(bounds));
+  }
 
   if (!delegate()->SetHitTestBounds(hit_test_bounds))
     return RespondNow(Error(kVirtualKeyboardNotEnabled));

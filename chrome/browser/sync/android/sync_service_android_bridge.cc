@@ -105,14 +105,9 @@ void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
   Java_SyncServiceImpl_syncStateChanged(env, java_sync_service_.get(env));
 }
 
-jboolean SyncServiceAndroidBridge::IsSyncRequested(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->GetUserSettings()->IsSyncRequested();
-}
-
 void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->GetUserSettings()->SetSyncRequested();
+  native_sync_service_->SetSyncFeatureRequested();
 }
 
 jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {
@@ -161,9 +156,11 @@ void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
   }
 }
 
-jboolean SyncServiceAndroidBridge::IsFirstSetupComplete(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(
+    JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->GetUserSettings()->IsFirstSetupComplete();
+  return native_sync_service_->GetUserSettings()
+      ->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncServiceAndroidBridge::SetFirstSetupComplete(JNIEnv* env, jint source) {
@@ -188,6 +185,15 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
   return UserSelectableTypeSetToJavaIntArray(env, user_selectable_types);
 }
 
+jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
+                                                         jint type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
+  CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
+  return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
+      static_cast<syncer::UserSelectableType>(type));
+}
+
 void SyncServiceAndroidBridge::SetSelectedTypes(
     JNIEnv* env,
     jboolean sync_everything,
@@ -199,6 +205,8 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
   syncer::UserSelectableTypeSet user_selectable_types;
   for (int type : types_vector) {
+    CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
+    CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
     user_selectable_types.Put(static_cast<syncer::UserSelectableType>(type));
   }
 

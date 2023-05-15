@@ -36,6 +36,14 @@ SkPath CreateArcPath(gfx::RectF oval, float start_angle, float sweep_angle) {
 }  // namespace
 
 //------------------------------------------------------------------------------
+// Badges
+
+Badges::Badges() = default;
+Badges::~Badges() = default;
+Badges::Badges(const Badges&) = default;
+Badges& Badges::operator=(const Badges&) = default;
+
+//------------------------------------------------------------------------------
 // NetworkIconImageSource
 
 NetworkIconImageSource::NetworkIconImageSource(const gfx::Size& size,

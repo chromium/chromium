@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -42,9 +43,9 @@ class ChromeVoxHintDetector {
 
   bool chromevox_hint_given_ = false;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
-  Observer* observer_;
+  raw_ptr<Observer, ExperimentalAsh> observer_;
 
   std::unique_ptr<IdleDetector> idle_detector_;
 

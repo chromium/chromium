@@ -11,7 +11,9 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -44,11 +46,21 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   title_label->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetHandlesTooltips(false);
-  title_label->SetFontList(grid_->app_list_config()->app_title_font());
-  title_label->SetLineHeight(
-      grid_->app_list_config()->app_title_max_line_height());
   title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title_label->SetEnabledColorId(cros_tokens::kTextColorPrimary);
+
+  const AppListConfig* const app_list_config = grid_->app_list_config();
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(
+        app_list_config->type() == AppListConfigType::kDense
+            ? TypographyToken::kCrosAnnotation1
+            : TypographyToken::kCrosButton2,
+        *title_label);
+    title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    title_label->SetFontList(app_list_config->app_title_font());
+    title_label->SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  }
+  title_label->SetLineHeight(app_list_config->app_title_max_line_height());
   title_label->SetText(title);
   if (item_in_folder_icon_) {
     // The title's opacity of the item should be changed separately if it is in

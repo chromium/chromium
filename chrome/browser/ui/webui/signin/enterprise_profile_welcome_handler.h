@@ -21,7 +21,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
 struct AccountInfo;
@@ -44,7 +43,6 @@ class EnterpriseProfileWelcomeHandler
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       const AccountInfo& account_info,
-      absl::optional<SkColor> profile_color,
       signin::SigninChoiceCallback proceed_callback);
   ~EnterpriseProfileWelcomeHandler() override;
 
@@ -85,12 +83,12 @@ class EnterpriseProfileWelcomeHandler
   void HandleProceed(const base::Value::List& args);
   void HandleCancel(const base::Value::List& args);
 
-  // Sends an updated profile info (avatar and colors) to the WebUI.
+  // Sends an updated profile info (avatar and strings) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does
   // nothing if the profile path does not match the current profile.
   void UpdateProfileInfo(const base::FilePath& profile_path);
 
-  // Computes the profile info (avatar and colors) to be sent to the WebUI.
+  // Computes the profile info (avatar and strings) to be sent to the WebUI.
   base::Value::Dict GetProfileInfoValue();
 
   // Returns the ProfilesAttributesEntry associated with the current profile.
@@ -116,7 +114,6 @@ class EnterpriseProfileWelcomeHandler
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
-  absl::optional<SkColor> profile_color_;
   signin::SigninChoiceCallback proceed_callback_;
 };
 

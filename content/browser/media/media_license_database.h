@@ -38,7 +38,7 @@ class MediaLicenseDatabase {
   MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenDatabase(
       bool is_retry = false);
 
-  void OnDatabaseOpenError(int error, sql::Statement* stmt);
+  void OnDatabaseError(int error, sql::Statement* stmt);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

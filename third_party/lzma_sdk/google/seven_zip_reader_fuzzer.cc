@@ -99,7 +99,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   archive_file->Write(0, reinterpret_cast<const char*>(data), size);
 
   Delegate delegate;
-  seven_zip::Extract(archive_file->Duplicate(), delegate);
+
+  std::unique_ptr<seven_zip::SevenZipReader> reader =
+      seven_zip::SevenZipReader::Create(archive_file->Duplicate(), delegate);
+  if (reader) {
+    reader->Extract();
+  }
 
   return 0;
 }

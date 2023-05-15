@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -218,9 +219,9 @@ class PeripheralNotificationManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeTypecdClient* fake_typecd_client_;
-  FakePciguardClient* fake_pciguard_client_;
-  PeripheralNotificationManager* manager_ = nullptr;
+  raw_ptr<FakeTypecdClient, ExperimentalAsh> fake_typecd_client_;
+  raw_ptr<FakePciguardClient, ExperimentalAsh> fake_pciguard_client_;
+  raw_ptr<PeripheralNotificationManager, ExperimentalAsh> manager_ = nullptr;
   FakeObserver fake_observer_;
 };
 

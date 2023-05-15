@@ -21,7 +21,7 @@ class MockAXScreenAIAnnotator : public AXScreenAIAnnotator {
   explicit MockAXScreenAIAnnotator(content::BrowserContext* context)
       : AXScreenAIAnnotator(context) {}
 
-  // TODO(https://1278249): Consider making Screen AI component available for
+  // TODO(crbug.com/1443345): Consider making Screen AI component available for
   // tests. The test should refrain from trying to bind to it while it is not
   // available.
   MOCK_METHOD(void,
@@ -41,14 +41,14 @@ class MockAXScreenAIAnnotator : public AXScreenAIAnnotator {
 
 using ScreenAIServiceTest = InProcessBrowserTest;
 
-// TODO(https://crbug.com/1278249): Test is disabled as it requires delayed
+// TODO(crbug.com/1443345): Test is disabled as it requires delayed
 // connection to the service, but for PDF use case we need immediate connection
 // or adding extra boilerplate code to trigger it. Since PDF is the primary
 // goal, the test is disabled until the issue is fixed.
 IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, DISABLED_ScreenshotTest) {
   MockAXScreenAIAnnotator* annotator =
       new MockAXScreenAIAnnotator(browser()->profile());
-  // TODO(https://crbug.com/1278249): Pass |annotator| to
+  // TODO(crbug.com/1443345): Pass |annotator| to
   // AXScreenAIAnnotatorFactory to be used for test.
 
   base::RunLoop run_loop;
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, DISABLED_ScreenshotTest) {
   browser()->RunScreenAIAnnotator();
   run_loop.Run();
 
-  // TODO(https://crbug.com/1278249): Add a test that mocks
+  // TODO(crbug.com/1443345): Add a test that mocks
   // |OnScreenshotReceived| and returns the expected proto, and observe its
   // application on the accessibility tree(s).
 }

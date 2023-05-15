@@ -280,8 +280,11 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     // TODO(crbug.com/921655): Add support for User Agent Client hints on
     // WebView.
-    features.DisableIfNotSet(blink::features::kUserAgentClientHint);
-
+    if (cl->HasSwitch(switches::kWebViewEnableUserAgentClientHints)) {
+      features.EnableIfNotSet(blink::features::kUserAgentClientHint);
+    } else {
+      features.DisableIfNotSet(blink::features::kUserAgentClientHint);
+    }
     // Disable Reducing User Agent minor version on WebView.
     features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
 
@@ -500,7 +503,9 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
   memory_system::Initializer()
       .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce)
+                                   PoissonAllocationSamplerInclusion::kEnforce,
+                               memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kIgnore)
       .Initialize(memory_system_);
 }
 }  // namespace android_webview

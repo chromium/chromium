@@ -336,16 +336,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Whether lazy loading of frames and images is enabled.
   bool lazy_load_enabled = true;
 
-  // Specifies how close a lazily loaded iframe or image should be from the
-  // viewport before it should start being loaded in, depending on the effective
-  // connection type of the current network. Blink will use the default distance
-  // threshold for effective connection types that aren't specified here.
-  std::map<EffectiveConnectionType, int>
-      lazy_frame_loading_distance_thresholds_px;
-  std::map<EffectiveConnectionType, int>
-      lazy_image_loading_distance_thresholds_px;
-  std::map<EffectiveConnectionType, int> lazy_image_first_k_fully_load;
-
   // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
   // sites.
   bool allow_mixed_content_upgrades;

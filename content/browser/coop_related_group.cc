@@ -11,23 +11,14 @@
 
 namespace content {
 
-// Start the CoopRelatedGroup ID counter from 1 to avoid a conflict with the
-// invalid CoopRelatedGroupId value, which is 0 in its underlying IdType32.
-int CoopRelatedGroup::next_coop_related_group_id_ = 1;
-
 CoopRelatedGroup::CoopRelatedGroup(BrowserContext* browser_context,
                                    bool is_guest,
                                    bool is_fenced)
-    : id_(CoopRelatedGroupId::FromUnsafeValue(next_coop_related_group_id_++)),
-      browser_context_(browser_context),
+    : browser_context_(browser_context),
       is_guest_(is_guest),
       is_fenced_(is_fenced) {}
 
 CoopRelatedGroup::~CoopRelatedGroup() = default;
-
-CoopRelatedGroupId CoopRelatedGroup::GetId() {
-  return id_;
-}
 
 scoped_refptr<BrowsingInstance>
 CoopRelatedGroup::FindSuitableBrowsingInstanceForCoopPolicy(

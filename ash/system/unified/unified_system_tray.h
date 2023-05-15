@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -40,6 +41,7 @@ class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class ChannelIndicatorView;
 class CurrentLocaleView;
+class HotspotTrayView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
@@ -81,6 +83,9 @@ class ASH_EXPORT UnifiedSystemTray
 
     // Gets called when leaving from the calendar view.
     virtual void OnLeavingCalendarView() {}
+
+    // Gets called when a slider bubble is shown or closed.
+    virtual void OnSliderBubbleHeightChanged() {}
   };
 
   explicit UnifiedSystemTray(Shelf* shelf);
@@ -104,14 +109,20 @@ class ASH_EXPORT UnifiedSystemTray
   // accelerator is shown.
   bool IsSliderBubbleShown() const;
 
+  // Gets the height of the slider bubble used to calculate the baseline of
+  // notification popups and side aligned toasts so they don't overlap.
+  int GetSliderBubbleHeight() const;
+
   // True if the bubble containing notifications is visible..
   bool IsMessageCenterBubbleShown() const;
 
   // True if the bubble is active.
   bool IsBubbleActive() const;
 
-  // Closes all non-system tray bubbles (e.g. volume/brightness, and toasts) if
-  // any are shown.
+  // Closes all secondary bubbles (e.g. volume/brightness sliders, autozoom,
+  // privacy screen toast) if any are shown.
+  // TODO(b/279044049): Consider making autozoom and privacy screen slider
+  // bubbles, or have them extend a common class with sliders.
   void CloseSecondaryBubbles();
 
   // Activates the system tray bubble.
@@ -153,10 +164,10 @@ class ASH_EXPORT UnifiedSystemTray
   // message center opens.
   void SetTargetNotification(const std::string& notification_id);
 
-  // Sets the height of the system tray bubble from the edge of the work area
-  // so that the notification popups don't overlap with the tray. Pass 0 if no
-  // bubble is shown.
-  void SetTrayBubbleHeight(int height);
+  // Notifies the height of the secondary bubble (e.g. Volume/Brightness
+  // sliders, Privacy screen/Autozoom toast) if one is showing so notification
+  // popups or toasts won't overlap with it. Pass 0 if no bubble is shown.
+  void NotifySecondaryBubbleHeight(int height);
 
   // Transfer focus to the message center bubble. Will focus only on the message
   // center if vox is enabled. Otherwise, will focus on the first element in the
@@ -311,16 +322,19 @@ class ASH_EXPORT UnifiedSystemTray
       notification_icons_controller_;
 
   // Owned by the views hierarchy.
-  CurrentLocaleView* current_locale_view_ = nullptr;
-  ImeModeView* ime_mode_view_ = nullptr;
-  ManagedDeviceTrayItemView* managed_device_view_ = nullptr;
-  CameraMicTrayItemView* camera_view_ = nullptr;
-  CameraMicTrayItemView* mic_view_ = nullptr;
-  TimeTrayItemView* time_view_ = nullptr;
-  PrivacyIndicatorsTrayItemView* privacy_indicators_view_ = nullptr;
-
-  NetworkTrayView* network_tray_view_ = nullptr;
-  ChannelIndicatorView* channel_indicator_view_ = nullptr;
+  raw_ptr<CurrentLocaleView, ExperimentalAsh> current_locale_view_ = nullptr;
+  raw_ptr<ImeModeView, ExperimentalAsh> ime_mode_view_ = nullptr;
+  raw_ptr<ManagedDeviceTrayItemView, ExperimentalAsh> managed_device_view_ =
+      nullptr;
+  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> camera_view_ = nullptr;
+  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> mic_view_ = nullptr;
+  raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<PrivacyIndicatorsTrayItemView, ExperimentalAsh>
+      privacy_indicators_view_ = nullptr;
+  raw_ptr<HotspotTrayView, ExperimentalAsh> hotspot_tray_view_ = nullptr;
+  raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_ = nullptr;
+  raw_ptr<ChannelIndicatorView, ExperimentalAsh> channel_indicator_view_ =
+      nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

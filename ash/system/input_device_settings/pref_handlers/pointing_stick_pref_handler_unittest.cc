@@ -84,7 +84,6 @@ class PointingStickPrefHandlerTest : public AshTestBase {
   void InitializePrefService() {
     local_state()->registry()->RegisterBooleanPref(
         prefs::kOwnerPrimaryPointingStickButtonRight, /*default_value=*/false);
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     pref_service_->registry()->RegisterDictionaryPref(

@@ -158,7 +158,8 @@
     on-click="onLinkClick_"
     selected="[[selectedUrl_]]">
   <template is="dom-repeat" items="[[basicMenuItems_]]" id="topMenuRepeat">
-    <a href="[[item.path]]" class="item" hidden="[[item.hidden]]">
+    <a href="[[item.path]]" class="item"
+        data-page-name$="[[item.pageName]]">
       <iron-icon icon="[[item.icon]]"></iron-icon>
       [[item.label]]
     </a>
@@ -178,7 +179,8 @@
         on-click="onLinkClick_"
         selected="[[selectedUrl_]]">
       <template is="dom-repeat" items="[[advancedMenuItems_]]">
-        <a href="[[item.path]]" class="item" hidden="[[item.hidden]]">
+        <a href="[[item.path]]" class="item"
+            data-page-name$="[[item.pageName]]">
           <iron-icon icon="[[item.icon]]"></iron-icon>
           [[item.label]]
         </a>

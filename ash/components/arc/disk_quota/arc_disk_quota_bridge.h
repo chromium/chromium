@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
@@ -60,7 +61,8 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   void OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
                           absl::optional<int64_t> reply);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   AccountId account_id_;
 

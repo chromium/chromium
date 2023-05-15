@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -63,8 +64,8 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void EndCurrentSession();
   void OnBindingDisconnected();
 
-  Hierarchy* hierarchy_;
-  OsSettingsSections* sections_;
+  raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
+  raw_ptr<OsSettingsSections, ExperimentalAsh> sections_;
 
   std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
   mojo::Receiver<mojom::UserActionRecorder> receiver_{this};

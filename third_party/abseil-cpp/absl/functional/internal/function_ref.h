@@ -20,6 +20,7 @@
 #include <type_traits>
 
 #include "absl/base/internal/invoke.h"
+#include "absl/functional/any_invocable.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
@@ -86,6 +87,12 @@ R InvokeFunction(VoidPtr ptr, typename ForwardT<Args>::type... args) {
 
 template <typename Sig>
 void AssertNonNull(const std::function<Sig>& f) {
+  assert(f != nullptr);
+  (void)f;
+}
+
+template <typename Sig>
+void AssertNonNull(const AnyInvocable<Sig>& f) {
   assert(f != nullptr);
   (void)f;
 }

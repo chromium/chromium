@@ -10,19 +10,19 @@ wesokuhara@google.com
 xiaohuic@chromium.org
 
 # Backup reviewers
-cowmoo@chromium.org
+cowmoo@google.com
 
 # Subdir OWNERS can approve global changes related to their subdir.
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/crostini_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/device_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/guest_os/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/internet_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/keyboard_shortcut_banner/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/multidevice_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/nearby_share_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_apps_page/app_notifications_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_bluetooth_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_files_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_languages_page/OWNERS
-per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_printing_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/crostini_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/device_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/guest_os/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/internet_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/keyboard_shortcut_banner/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/multidevice_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/nearby_share_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_apps_page/app_notifications_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_bluetooth_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_files_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_languages_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/settings/chromeos/os_printing_page/OWNERS

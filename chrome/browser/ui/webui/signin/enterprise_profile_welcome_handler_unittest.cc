@@ -54,8 +54,7 @@ class EnterpriseProfileWelcomeHandlerTestBase
 
     message_handler_ = std::make_unique<EnterpriseProfileWelcomeHandler>(
         /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
-        show_link_data_option, account_info_, absl::optional<SkColor>(),
-        std::move(proceed_callback));
+        show_link_data_option, account_info_, std::move(proceed_callback));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }

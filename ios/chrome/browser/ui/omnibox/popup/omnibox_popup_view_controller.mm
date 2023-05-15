@@ -909,7 +909,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
 /// class.
 - (void)updateBackgroundColor {
   ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
-      initWithStyle:self.incognito ? INCOGNITO : NORMAL];
+      initWithStyle:self.incognito ? ToolbarStyle::kIncognito
+                                   : ToolbarStyle::kNormal];
 
   if (IsRegularXRegularSizeClass(self)) {
     self.view.backgroundColor = configuration.backgroundColor;

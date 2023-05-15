@@ -4,10 +4,12 @@
 
 #include "ui/gfx/text_utils.h"
 
+#import <CoreText/CoreText.h>
 #import <UIKit/UIKit.h>
 
 #include <cmath>
 
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/gfx/font_list.h"
 
@@ -19,8 +21,9 @@ int GetStringWidth(const std::u16string& text, const FontList& font_list) {
 
 float GetStringWidthF(const std::u16string& text, const FontList& font_list) {
   NSString* ns_text = base::SysUTF16ToNSString(text);
-  NativeFont native_font = font_list.GetPrimaryFont().GetNativeFont();
-  NSDictionary* attributes = @{NSFontAttributeName : native_font};
+  CTFontRef font = font_list.GetPrimaryFont().GetCTFont();
+  NSDictionary* attributes =
+      @{NSFontAttributeName : base::mac::CFToNSCast(font)};
   return [ns_text sizeWithAttributes:attributes].width;
 }
 

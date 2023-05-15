@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
@@ -128,18 +129,17 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
 
     return browsing_topics_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        std::move(pending_factory));
+        network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
   }
 
   network::mojom::URLResponseHeadPtr CreateResponseHead(
-      absl::optional<std::string> topics_header_value) {
+      bool parsed_header_value) {
     auto head = network::mojom::URLResponseHead::New();
-    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
-    if (topics_header_value) {
-      head->headers->AddHeader("Observe-Browsing-Topics",
-                               topics_header_value.value());
-    }
+    network::mojom::ParsedHeadersPtr parsed_headers =
+        network::mojom::ParsedHeaders::New();
+    parsed_headers->observe_browsing_topics = parsed_header_value;
+    head->parsed_headers = std::move(parsed_headers);
 
     return head;
   }
@@ -219,9 +219,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedBeforeCommit) {
       "Sec-Browsing-Topics", &topics_header_value);
   EXPECT_FALSE(has_topics_header);
 
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -262,11 +261,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedAfterCommit) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
-  // The topics response header value "?1" will cause an observation to be
+  // The true topics response header value will cause an observation to be
   // recorded.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -311,9 +309,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
       "Sec-Browsing-Topics", &topics_header_value);
   EXPECT_FALSE(has_topics_header);
 
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -365,59 +362,15 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestFromSubframe) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
-  // The topics response header value "?1" will cause an observation to be
+  // The true topics response header value will cause an observation to be
   // recorded.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
-}
-
-TEST_F(BrowsingTopicsURLLoaderServiceTest, HasNoObserveResponseHeader) {
-  NavigatePage(GURL("https://google.com"));
-
-  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
-  network::TestURLLoaderFactory proxied_url_loader_factory;
-  mojo::Remote<network::mojom::URLLoader> remote_loader;
-  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
-
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
-      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
-  bind_context->OnDidCommitNavigation(
-      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
-
-  remote_url_loader_factory->CreateLoaderAndStart(
-      remote_loader.BindNewPipeAndPassReceiver(),
-      /*request_id=*/0, /*options=*/0,
-      CreateResourceRequest(GURL("https://foo1.com")),
-      client.InitWithNewPipeAndPassRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-  remote_url_loader_factory.FlushForTesting();
-
-  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      &proxied_url_loader_factory.pending_requests()->back();
-
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
-
-  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-
-  // Expect no further handling for topics as the response does not contain the
-  // topics header.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 }
 
 TEST_F(BrowsingTopicsURLLoaderServiceTest, HasFalseValueObserveResponseHeader) {
@@ -453,54 +406,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, HasFalseValueObserveResponseHeader) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
-  // Expect no further handling for topics as the response header value is "?0"
-  // (i.e. false).
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?0"),
-      /*body=*/{}, absl::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-}
-
-TEST_F(BrowsingTopicsURLLoaderServiceTest, HasMalformedObserveResponseHeader) {
-  NavigatePage(GURL("https://google.com"));
-
-  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
-  network::TestURLLoaderFactory proxied_url_loader_factory;
-  mojo::Remote<network::mojom::URLLoader> remote_loader;
-  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
-
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
-      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
-  bind_context->OnDidCommitNavigation(
-      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
-
-  remote_url_loader_factory->CreateLoaderAndStart(
-      remote_loader.BindNewPipeAndPassReceiver(),
-      /*request_id=*/0, /*options=*/0,
-      CreateResourceRequest(GURL("https://foo1.com")),
-      client.InitWithNewPipeAndPassRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-  remote_url_loader_factory.FlushForTesting();
-
-  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      &proxied_url_loader_factory.pending_requests()->back();
-
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
-
-  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-
   // Expect no further handling for topics as the response header value is
-  // malformed.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1, ?0"),
-      /*body=*/{}, absl::nullopt);
+  // false.
+  pending_request->client->OnReceiveResponse(CreateResponseHead(false),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
@@ -541,11 +450,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, EmptyTopics) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
-  // The topics response header value "?1" will cause an observation to be
+  // The true topics response header value will cause an observation to be
   // recorded.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -591,9 +499,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
       "Sec-Browsing-Topics", &topics_header_value);
   EXPECT_FALSE(has_topics_header);
 
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -632,9 +539,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
       "Sec-Browsing-Topics", &topics_header_value);
   EXPECT_FALSE(has_topics_header);
 
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -681,10 +587,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectTopicsUpdated) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://foo2.com");
 
-  // The topics response header value "?1" for the initial request will cause an
+  // The true topics response header value for the initial request will cause an
   // observation to be recorded.
-  pending_request->client->OnReceiveRedirect(
-      redirect_info, CreateResponseHead(/*topics_header_value=*/"?1"));
+  pending_request->client->OnReceiveRedirect(redirect_info,
+                                             CreateResponseHead(true));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -713,11 +619,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectTopicsUpdated) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 3u);
 
-  // The topics response header value "?1" will cause an observation to be
+  // The true topics response header value will cause an observation to be
   // recorded.
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 4u);
@@ -766,10 +671,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectNotEligibleForTopics) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://foo4.com");
 
-  // The topics response header value "?1" for the initial request will cause an
+  // The true topics response header value for the initial request will cause an
   // observation to be recorded.
-  pending_request->client->OnReceiveRedirect(
-      redirect_info, CreateResponseHead(/*topics_header_value=*/"?1"));
+  pending_request->client->OnReceiveRedirect(redirect_info,
+                                             CreateResponseHead(true));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -795,9 +700,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectNotEligibleForTopics) {
           "Sec-Browsing-Topics", &redirect_topics_header_value);
   EXPECT_FALSE(redirect_has_topics_header);
 
-  pending_request->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -842,9 +746,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoRequests) {
     EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
   }
 
-  pending_request1->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request1->client->OnReceiveResponse(CreateResponseHead(true),
+                                              /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -876,9 +779,8 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoRequests) {
     EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
   }
 
-  pending_request2->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request2->client->OnReceiveResponse(CreateResponseHead(true),
+                                              /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -954,18 +856,16 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoFactories) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
-  pending_request1->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request1->client->OnReceiveResponse(CreateResponseHead(true),
+                                              /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
 
-  pending_request2->client->OnReceiveResponse(
-      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
-      absl::nullopt);
+  pending_request2->client->OnReceiveResponse(CreateResponseHead(true),
+                                              /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);

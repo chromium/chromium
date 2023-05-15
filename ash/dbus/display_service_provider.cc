@@ -48,8 +48,7 @@ class DisplayServiceProvider::Impl {
 
 void DisplayServiceProvider::Impl::SetDimming(bool dimmed) {
   if (!screen_dimmer_) {
-    screen_dimmer_ =
-        std::make_unique<ScreenDimmer>(ScreenDimmer::Container::ROOT);
+    screen_dimmer_ = std::make_unique<ScreenDimmer>();
   }
   screen_dimmer_->SetDimming(dimmed);
 }

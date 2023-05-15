@@ -735,23 +735,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.lazy_load_enabled;
   }
 
-  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
-  lazy_frame_loading_distance_thresholds_px(
-      const blink::web_pref::WebPreferences& r) {
-    return r.lazy_frame_loading_distance_thresholds_px;
-  }
-
-  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
-  lazy_image_loading_distance_thresholds_px(
-      const blink::web_pref::WebPreferences& r) {
-    return r.lazy_image_loading_distance_thresholds_px;
-  }
-
-  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
-  lazy_image_first_k_fully_load(const blink::web_pref::WebPreferences& r) {
-    return r.lazy_image_first_k_fully_load;
-  }
-
   static bool allow_mixed_content_upgrades(
       const blink::web_pref::WebPreferences& r) {
     return r.allow_mixed_content_upgrades;

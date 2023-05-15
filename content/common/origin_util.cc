@@ -15,8 +15,13 @@
 namespace content {
 
 bool OriginCanAccessServiceWorkers(const GURL& url) {
-  if (url.SchemeIsHTTPOrHTTPS() && network::IsUrlPotentiallyTrustworthy(url))
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  if (url.SchemeIsHTTPOrHTTPS() && network::IsUrlPotentiallyTrustworthy(url)) {
     return true;
+  }
 
   if (base::Contains(GetServiceWorkerSchemes(), url.scheme())) {
     return true;

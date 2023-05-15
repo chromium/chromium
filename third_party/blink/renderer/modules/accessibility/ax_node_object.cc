@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -2278,6 +2279,27 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   return ax_target;
 }
 
+const AtomicString& AXNodeObject::EffectiveTarget() const {
+  // The "target" attribute defines the target browser context and is supported
+  // on <a>, <area>, <base>, and <form>. Valid values are: "frame_name", "self",
+  // "blank", "top", and "parent", where "frame_name" is the value of the "name"
+  // attribute on any enclosing iframe.
+  //
+  // <area> is a subclass of <a>, while <base> provides the document's base
+  // target that any <a>'s or any <area>'s target can override.
+  // `HtmlAnchorElement::GetEffectiveTarget()` will take <base> into account.
+  //
+  // <form> is out of scope, because it affects the target to which the form is
+  // submitted, and could also be overridden by a "formTarget" attribute on e.g.
+  // a form's submit button. However, screen reader users have no need to know
+  // to which target (browser context) a form would be submitted.
+  const auto* anchor = DynamicTo<HTMLAnchorElement>(GetNode());
+  if (anchor) {
+    return anchor->GetEffectiveTarget();
+  }
+  return AXObject::EffectiveTarget();
+}
+
 AccessibilityOrientation AXNodeObject::Orientation() const {
   const AtomicString& aria_orientation =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kOrientation);
@@ -3677,12 +3699,17 @@ String AXNodeObject::TextFromDescendants(
 #if defined(AX_FAIL_FAST_BUILD)
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
-  for (AXObject* child : children) {
-    if (!child || child->IsDetached()) {
-      // If this child was destroyed while processing another, the weak member
-      // will become null.
-      continue;
+  wtf_size_t num_children = children.size();
+  for (wtf_size_t index = 0; index < num_children; index++) {
+    DCHECK_EQ(children.size(), num_children);
+    if (index >= children.size()) {
+      // TODO(accessibility) Remove this condition once we solve all causes of
+      // the child list being altered during this loop.
+      break;
     }
+    AXObject* child = children[index];
+    DCHECK(child);
+    DCHECK(!child->IsDetached());
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4086,10 +4113,9 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   }
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
-  for (scoped_refptr<AbstractInlineTextBox> box =
-           layout_text->FirstAbstractInlineTextBox();
-       box.get(); box = box->NextInlineTextBox()) {
-    AXObject* ax_box = AXObjectCache().GetOrCreate(box.get(), this);
+  for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
+       box = box->NextInlineTextBox()) {
+    AXObject* ax_box = AXObjectCache().GetOrCreate(box, this);
     if (!ax_box)
       continue;
 
@@ -4693,6 +4719,33 @@ const AtomicString& AXNodeObject::GetInternalsAttribute(
   if (!element.DidAttachInternals())
     return g_null_atom;
   return element.EnsureElementInternals().FastGetAttribute(attribute);
+}
+
+bool AXNodeObject::OnNativeBlurAction() {
+  Document* document = GetDocument();
+  Node* node = GetNode();
+  if (!document || !node) {
+    return false;
+  }
+
+  document->UpdateStyleAndLayoutTreeForNode(node);
+
+  // An AXObject's node will always be of type `Element`, `Document` or
+  // `Text`. If the object we're currently on is associated with the currently
+  // focused element or the document object, we want to clear the focus.
+  // Otherwise, no modification is needed.
+  Element* element = GetElement();
+  if (element) {
+    element->blur();
+    return true;
+  }
+
+  if (IsA<Document>(GetNode())) {
+    document->ClearFocusedElement();
+    return true;
+  }
+
+  return false;
 }
 
 bool AXNodeObject::OnNativeFocusAction() {

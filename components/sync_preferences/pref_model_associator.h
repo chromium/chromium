@@ -40,6 +40,7 @@ class PrefServiceForAssociator {
   virtual base::Value::Type GetRegisteredPrefType(
       const std::string& pref_name) const = 0;
   virtual void OnIsSyncingChanged() = 0;
+  virtual uint32_t GetWriteFlags(const std::string& pref_name) const = 0;
 };
 
 // Contains all preference sync related logic.
@@ -85,6 +86,7 @@ class PrefModelAssociator : public syncer::SyncableService,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
+  void OnBrowserShutdown(syncer::ModelType type) override;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -157,6 +159,8 @@ class PrefModelAssociator : public syncer::SyncableService,
   // Notifies the synced pref observers that the pref for the given |path| is
   // synced.
   void NotifyStartedSyncing(const std::string& path) const;
+
+  void Stop(bool is_browser_shutdown);
 
   // The datatype that this associator is responsible for, either PREFERENCES or
   // PRIORITY_PREFERENCES or OS_PREFERENCES or OS_PRIORITY_PREFERENCES.

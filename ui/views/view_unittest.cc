@@ -61,6 +61,7 @@
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_features.h"
@@ -69,7 +70,14 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
-using testing::ElementsAre;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsNull;
+using ::testing::Mock;
+using ::testing::Pointee;
+using ::testing::StrictMock;
+using ::testing::WithArg;
 
 namespace {
 
@@ -6424,6 +6432,63 @@ TEST_F(ViewObserverTest, ChildViewReordered) {
   View* child_view2 = view->AddChildView(NewView());
   view->ReorderChildView(child_view2, 0);
   EXPECT_EQ(child_view2, view_reordered());
+}
+
+class MockViewObserver : public ViewObserver {
+ public:
+  // ViewObserver:
+  MOCK_METHOD(void,
+              OnViewPropertyChanged,
+              (View * observed_view, const void* key, int64_t old_value),
+              (override));
+};
+
+ACTION_TEMPLATE(ExpectThatViewProperty,
+                HAS_1_TEMPLATE_PARAMS(typename, T),
+                AND_1_VALUE_PARAMS(Matcher)) {
+  EXPECT_THAT(ui::ClassPropertyCaster<T*>::FromInt64(arg0), Matcher);
+}
+
+TEST_F(ViewObserverTest, ViewPropertyChanged) {
+  // Create `view`.
+  std::unique_ptr<View> view = NewView();
+
+  // Observe `view`.
+  StrictMock<MockViewObserver> view_observer;
+  base::ScopedObservation<View, ViewObserver> view_observation(&view_observer);
+  view_observation.Observe(view.get());
+
+  constexpr auto kNewValue = gfx::Insets::TLBR(1, 2, 3, 4);
+
+  // Expect that setting `kNewValue` to the `kMarginsKey` will notify observers.
+  // Because a property at `kMarginsKey` was not previously set, the `old_value`
+  // should be a `nullptr`.
+  EXPECT_CALL(
+      view_observer,
+      OnViewPropertyChanged(Eq(view.get()), Eq(kMarginsKey), /*old_value*/ _))
+      .WillOnce(WithArg<2>(ExpectThatViewProperty<gfx::Insets>(IsNull())));
+
+  // Set `kNewValue` to `kMarginsKey` and verify expectations.
+  view->SetProperty(kMarginsKey, kNewValue);
+  Mock::VerifyAndClearExpectations(&view_observer);
+  EXPECT_THAT(view->GetProperty(kMarginsKey), Pointee(Eq(kNewValue)));
+
+  constexpr auto kPreviousValue = kNewValue;
+  constexpr auto kAnotherNewValue = gfx::Insets::TLBR(5, 6, 7, 8);
+
+  // Expect that setting `kAnotherNewValue` to the `kMarginsKey` will notify
+  // observers. Because a property at `kMarginsKey` was previously set, the
+  // `old_value` should point to the `kPreviousValue`.
+  EXPECT_CALL(
+      view_observer,
+      OnViewPropertyChanged(Eq(view.get()), Eq(kMarginsKey), /*old_value=*/_))
+      .WillOnce(WithArg<2>(
+          ExpectThatViewProperty<gfx::Insets>(Pointee(Eq(kPreviousValue)))));
+
+  // Set `kAnotherNewValue` to `kMarginsKey` and verify expectations.
+  view->SetProperty(kMarginsKey, kAnotherNewValue);
+  Mock::VerifyAndClearExpectations(&view_observer);
+  EXPECT_THAT(view->GetProperty(kMarginsKey), Pointee(Eq(kAnotherNewValue)));
 }
 
 // Provides a simple parent view implementation which tracks layer change

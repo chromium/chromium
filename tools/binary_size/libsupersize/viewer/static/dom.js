@@ -157,14 +157,14 @@ class MainElements {
         /** @type {!HTMLDivElement} */ (this.query('#div-diff-status-icons'));
 
     /** @public {!HTMLDivElement} */
-    this.divMetricsIcons =
-        /** @type {!HTMLDivElement} */ (this.query('#div-metrics-icons'));
+    this.divMiscIcons =
+        /** @type {!HTMLDivElement} */ (this.query('#div-misc-icons'));
 
-    /** @type {!HTMLTemplateElement} Template for groups in the symbol tree. */
+    /** @type {!HTMLTemplateElement} Template for groups in the Symbol Tree. */
     this.tmplSymbolTreeGroup = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-symbol-tree-group'));
 
-    /** @type {!HTMLTemplateElement} Template for leaves in the symbol tree. */
+    /** @type {!HTMLTemplateElement} Template for leaves in the Symbol Tree. */
     this.tmplSymbolTreeLeaf = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-symbol-tree-leaf'));
 
@@ -176,11 +176,11 @@ class MainElements {
     this.ulSymbolTree =
         /** @type {!HTMLUListElement} */ (this.query('#ul-symbol-tree'));
 
-    /** @type {!HTMLTemplateElement} Template for groups in the metrics tree. */
+    /** @type {!HTMLTemplateElement} Template for groups in the Metrics Tree. */
     this.tmplMetricsTreeGroup = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-metrics-tree-group'));
 
-    /** @type {!HTMLTemplateElement} Template for leaves in the metrics tree. */
+    /** @type {!HTMLTemplateElement} Template for leaves in the Metrics Tree. */
     this.tmplMetricsTreeLeaf = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-metrics-tree-leaf'));
 
@@ -196,13 +196,25 @@ class MainElements {
     this.divNoSymbolsMsg =
         /** @type {!HTMLDivElement} */ (this.query('#div-no-symbols-msg'));
 
+    /**
+     * @type {!HTMLTemplateElement} Template for groups in the Metadata Tree.
+     */
+    this.tmplMetadataTreeGroup = /** @type {!HTMLTemplateElement} */ (
+        this.query('#tmpl-metadata-tree-group'));
+
+    /**
+     * @type {!HTMLTemplateElement} Template for leaves in the Metadata Tree.
+     */
+    this.tmplMetadataTreeLeaf = /** @type {!HTMLTemplateElement} */ (
+        this.query('#tmpl-metadata-tree-leaf'));
+
     /** @public {!HTMLDivElement} */
     this.divMetadataView =
         /** @type {!HTMLDivElement} */ (this.query('#div-metadata-view'));
 
-    /** @public {!HTMLPreElement} */
-    this.preMetadataContent =
-        /** @type {!HTMLPreElement} */ (this.query('#pre-metadata-content'));
+    /** @type {!HTMLUListElement} */
+    this.ulMetadataTree =
+        /** @type {!HTMLUListElement} */ (this.query('#ul-metadata-tree'));
 
     /** @public {!HTMLDivElement} */
     this.divInfocardArtifact =

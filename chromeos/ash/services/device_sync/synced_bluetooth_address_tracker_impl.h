@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/device_sync/synced_bluetooth_address_tracker.h"
@@ -72,8 +73,8 @@ class SyncedBluetoothAddressTrackerImpl
   void ScheduleSyncIfAddressChanged();
   std::string GetAddress();
 
-  CryptAuthScheduler* cryptauth_scheduler_;
-  PrefService* pref_service_;
+  raw_ptr<CryptAuthScheduler, ExperimentalAsh> cryptauth_scheduler_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::vector<BluetoothAddressCallback> pending_callbacks_during_init_;

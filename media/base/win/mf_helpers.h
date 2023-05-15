@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -74,7 +75,9 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;
-  uint8_t* buffer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION uint8_t* buffer_;
   DWORD max_length_;
   DWORD current_length_;
 };
@@ -107,6 +110,13 @@ MEDIA_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 
 // Converts a GUID (little endian) to a bytes array (big endian).
 MEDIA_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
+
+// Returns a GUID from a binary serialization of a GUID string in network byte
+// order format.
+MEDIA_EXPORT GUID GetGUIDFromString(const std::string& guid_string);
+
+// Returns a binary serialization of a GUID string in network byte order format.
+MEDIA_EXPORT std::string GetStringFromGUID(REFGUID guid);
 
 }  // namespace media
 

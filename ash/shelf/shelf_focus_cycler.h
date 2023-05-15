@@ -6,6 +6,7 @@
 #define ASH_SHELF_SHELF_FOCUS_CYCLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 class Shelf;
@@ -45,7 +46,7 @@ class ASH_EXPORT ShelfFocusCycler {
 
  private:
   // Owned by RootWindowController.
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
 
 }  // namespace ash

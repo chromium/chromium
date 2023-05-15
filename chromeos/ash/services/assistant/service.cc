@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -151,7 +152,7 @@ class ScopedAshSessionObserver {
  private:
   SessionController* controller() const { return SessionController::Get(); }
 
-  SessionActivationObserver* const observer_;
+  const raw_ptr<SessionActivationObserver, ExperimentalAsh> observer_;
   const AccountId account_id_;
 };
 
@@ -206,7 +207,8 @@ class Service::Context : public ServiceContext {
   }
 
  private:
-  Service* const parent_;  // |this| is owned by |parent_|.
+  const raw_ptr<Service, ExperimentalAsh>
+      parent_;  // |this| is owned by |parent_|.
 };
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>

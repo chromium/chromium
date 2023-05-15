@@ -113,8 +113,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
   ~SkiaOutputDeviceDCompGLSurface() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkSurfaceCharacterization& characterization,
+  bool Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
   bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
@@ -158,8 +159,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
   ~SkiaOutputDeviceDCompPresenter() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkSurfaceCharacterization& characterization,
+  bool Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
   bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;

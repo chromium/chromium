@@ -33,6 +33,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -133,8 +134,7 @@ class BatteryView : public views::View {
     if (stylus_battery_delegate_.ShouldShowBatteryStatus() != GetVisible())
       SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
 
-    icon_->SetImage(
-        stylus_battery_delegate_.GetBatteryImage(GetColorProvider()));
+    icon_->SetImage(stylus_battery_delegate_.GetBatteryImage());
     label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
                        stylus_battery_delegate_.IsBatteryStatusEligible() &&
                        !stylus_battery_delegate_.IsBatteryStatusStale() &&
@@ -143,8 +143,8 @@ class BatteryView : public views::View {
 
  private:
   StylusBatteryDelegate stylus_battery_delegate_;
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 class TitleView : public views::View {
@@ -215,9 +215,9 @@ class TitleView : public views::View {
 
   // Unowned pointers to button views so we can determine which button was
   // clicked.
-  views::View* settings_button_;
-  views::View* help_button_;
-  PaletteTray* palette_tray_;
+  raw_ptr<views::View, ExperimentalAsh> settings_button_;
+  raw_ptr<views::View, ExperimentalAsh> help_button_;
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
 };
 
 // Used as a Shell pre-target handler to notify PaletteTray of stylus events.
@@ -240,7 +240,7 @@ class StylusEventHandler : public ui::EventHandler {
   }
 
  private:
-  PaletteTray* palette_tray_;
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
 };
 
 }  // namespace
@@ -635,24 +635,12 @@ void PaletteTray::ShowBubble() {
   bubble_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   // Add title.
-  auto* title_view =
-      bubble_view->AddChildView(std::make_unique<TitleView>(this));
-  setup_layered_view(title_view);
+  bubble_view->AddChildView(std::make_unique<TitleView>(this));
 
   // Add horizontal separator between the title and tools.
   auto* separator =
       bubble_view->AddChildView(std::make_unique<views::Separator>());
-  setup_layered_view(separator);
   separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
@@ -662,8 +650,7 @@ void PaletteTray::ShowBubble() {
   // ripples.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
-    bubble_view->AddChildView(view.view);
-    setup_layered_view(view.view);
+    bubble_view->AddChildView(view.view.get());
   }
 
   // Show the bubble.

@@ -277,13 +277,13 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     MultiThumbnailCardProvider(Context context, TabContentManager tabContentManager,
             TabModelSelector tabModelSelector) {
         mContext = context;
-        Resources resource = context.getResources();
+        Resources resources = context.getResources();
 
         mTabContentManager = tabContentManager;
         mTabModelSelector = tabModelSelector;
-        mRadius = resource.getDimension(R.dimen.tab_list_mini_card_radius);
+        mRadius = resources.getDimension(R.dimen.tab_list_mini_card_radius);
         mFaviconFrameCornerRadius =
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
+                resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
 
         mTabListFaviconProvider = new TabListFaviconProvider(context, false);
 
@@ -306,14 +306,14 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mThumbnailFramePaint = new Paint();
         mThumbnailFramePaint.setStyle(Paint.Style.STROKE);
         mThumbnailFramePaint.setStrokeWidth(
-                resource.getDimension(R.dimen.tab_list_mini_card_frame_size));
+                resources.getDimension(R.dimen.tab_list_mini_card_frame_size));
         mThumbnailFramePaint.setColor(SemanticColorUtils.getDividerLineBgColor(context));
         mThumbnailFramePaint.setAntiAlias(true);
 
         // TODO(996048): Use pre-defined styles to avoid style out of sync if any text/color styles
         // changes.
         mTextPaint = new Paint();
-        mTextPaint.setTextSize(resource.getDimension(R.dimen.compositor_tab_title_text_size));
+        mTextPaint.setTextSize(resources.getDimension(R.dimen.compositor_tab_title_text_size));
         mTextPaint.setFakeBoldText(true);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
@@ -329,9 +329,9 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mFaviconBackgroundPaint.setColor(mFaviconBackgroundPaintColor);
         mFaviconBackgroundPaint.setStyle(Paint.Style.FILL);
         mFaviconBackgroundPaint.setShadowLayer(
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_radius), 0,
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
-                resource.getColor(R.color.modern_grey_800_alpha_38));
+                resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_radius), 0,
+                resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
+                resources.getColor(R.color.modern_grey_800_alpha_38));
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override

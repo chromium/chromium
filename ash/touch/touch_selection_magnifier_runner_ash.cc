@@ -13,9 +13,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/selection_bound.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 
@@ -23,7 +25,19 @@ namespace ash {
 
 namespace {
 
+constexpr float kMagnifierScale = 1.25f;
+
 constexpr int kMagnifierRadius = 20;
+
+// Size of the magnified area, which excludes border and shadows.
+constexpr gfx::Size kMagnifierSize{100, 40};
+
+// Offset to apply to the magnifier bounds so that the magnifier is shown
+// vertically above the caret (or selection endpoint). The offset specifies
+// vertical displacement from the the top of the caret to the bottom of the
+// magnified area. Note that it is negative since the bottom of the magnified
+// area should be above the top of the caret.
+constexpr int kMagnifierVerticalBoundsOffset = -8;
 
 constexpr int kMagnifierBorderThickness = 1;
 
@@ -37,34 +51,49 @@ const gfx::Outsets kMagnifierShadowOutsets =
 // Bounds of the zoom layer in coordinates of its parent. These zoom layer
 // bounds are fixed since we only update the bounds of the parent magnifier
 // layer when the magnifier moves.
-const gfx::Rect kZoomLayerBounds =
-    gfx::Rect(kMagnifierShadowOutsets.left(),
-              kMagnifierShadowOutsets.top(),
-              TouchSelectionMagnifierRunnerAsh::kMagnifierSize.width(),
-              TouchSelectionMagnifierRunnerAsh::kMagnifierSize.height());
+const gfx::Rect kZoomLayerBounds = gfx::Rect(kMagnifierShadowOutsets.left(),
+                                             kMagnifierShadowOutsets.top(),
+                                             kMagnifierSize.width(),
+                                             kMagnifierSize.height());
 
 // Size of the border layer, which includes space for the zoom layer and
 // surrounding border and shadows.
 const gfx::Size kBorderLayerSize =
-    TouchSelectionMagnifierRunnerAsh::kMagnifierSize +
-    kMagnifierShadowOutsets.size();
+    kMagnifierSize + kMagnifierShadowOutsets.size();
 
 // Duration of the animation when updating magnifier bounds.
 constexpr base::TimeDelta kMagnifierTransitionDuration = base::Milliseconds(50);
 
-// Gets the bounds of the magnifier layer for showing the specified point of
-// interest. These bounds include the magnifier border and shadows.
-// `point_of_interest` and returned bounds are in coordinates of the magnifier's
-// parent container.
-gfx::Rect GetMagnifierLayerBounds(const gfx::Point& point_of_interest) {
-  const gfx::Size& size = TouchSelectionMagnifierRunnerAsh::kMagnifierSize;
+// Gets the bounds of the magnifier layer given an anchor point. The magnifier
+// layer bounds should be horizontally centered above the anchor point (except
+// possibly at the edges of the parent container) and include the magnifier
+// border and shadows. `magnifier_anchor_point` and returned bounds are in
+// coordinates of the magnifier's parent container.
+gfx::Rect GetMagnifierLayerBounds(const gfx::Size& parent_container_size,
+                                  const gfx::Point& magnifier_anchor_point) {
   const gfx::Point origin(
-      point_of_interest.x() - size.width() / 2,
-      point_of_interest.y() - size.height() / 2 +
-          TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset);
-  gfx::Rect magnifier_layer_bounds(origin, size);
+      magnifier_anchor_point.x() - kMagnifierSize.width() / 2,
+      magnifier_anchor_point.y() - kMagnifierSize.height() +
+          kMagnifierVerticalBoundsOffset);
+  gfx::Rect magnifier_layer_bounds(origin, kMagnifierSize);
   magnifier_layer_bounds.Outset(kMagnifierShadowOutsets);
+  // Adjust the magnifier layer to be completely within the parent container
+  // while keeping the magnifier size fixed.
+  magnifier_layer_bounds.AdjustToFit(gfx::Rect(parent_container_size));
   return magnifier_layer_bounds;
+}
+
+// Gets the zoom layer background offset needed to center `focus_center` in the
+// magnified area. `magnifier_layer_bounds` and `focus_center` are in
+// coordinates of the magnifier's parent container.
+// TODO(b/275014115): Currently the magnifier doesn't show the very edge of the
+// screen. Figure out correct background offset to fix this while keeping the
+// magnified area completely inside the parent container.
+gfx::Point GetZoomLayerBackgroundOffset(const gfx::Rect& magnifier_layer_bounds,
+                                        const gfx::Point& focus_center) {
+  return gfx::Point(0, magnifier_layer_bounds.y() +
+                           kZoomLayerBounds.CenterPoint().y() -
+                           focus_center.y());
 }
 
 // Gets the border color using `color_provider_source`. Defaults to black if
@@ -142,7 +171,7 @@ TouchSelectionMagnifierRunnerAsh::~TouchSelectionMagnifierRunnerAsh() = default;
 
 void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
     aura::Window* context,
-    const gfx::PointF& position) {
+    const gfx::SelectionBound& focus_bound) {
   DCHECK(context);
   DCHECK(!current_context_ || current_context_ == context);
   if (!current_context_) {
@@ -153,20 +182,49 @@ void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
   DCHECK(root_window);
   aura::Window* parent_container =
       GetMagnifierParentContainerForRoot(root_window);
-  gfx::PointF position_in_parent(position);
-  aura::Window::ConvertPointToTarget(context, parent_container,
-                                     &position_in_parent);
 
+  bool created_new_magnifier_layer = false;
   if (!magnifier_layer_) {
-    CreateMagnifierLayer(parent_container, position_in_parent);
+    Observe(ColorUtil::GetColorProviderSourceForWindow(parent_container));
+    // Create the magnifier layer, but don't add it to the parent container yet.
+    // We will add it to the parent container after setting its bounds, so that
+    // the magnifier doesn't appear initially in the wrong spot.
+    CreateMagnifierLayer();
+    created_new_magnifier_layer = true;
+  }
+
+  // Set up the animation for updating the magnifier bounds.
+  ui::ScopedLayerAnimationSettings settings(magnifier_layer_->GetAnimator());
+  if (created_new_magnifier_layer) {
+    // Set the magnifier to appear immediately once its bounds are set.
+    settings.SetTransitionDuration(base::Milliseconds(0));
+    settings.SetTweenType(gfx::Tween::ZERO);
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   } else {
-    ui::ScopedLayerAnimationSettings settings(magnifier_layer_->GetAnimator());
+    // Set the magnifier to move smoothly from its current bounds to the updated
+    // bounds.
     settings.SetTransitionDuration(kMagnifierTransitionDuration);
     settings.SetTweenType(gfx::Tween::LINEAR);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    magnifier_layer_->SetBounds(
-        GetMagnifierLayerBounds(gfx::ToRoundedPoint(position_in_parent)));
+  }
+
+  // Update magnifier bounds and background offset.
+  gfx::Rect focus_rect = gfx::ToRoundedRect(
+      gfx::BoundingRect(focus_bound.edge_start(), focus_bound.edge_end()));
+  aura::Window::ConvertRectToTarget(context, parent_container, &focus_rect);
+  const gfx::Rect magnifier_layer_bounds = GetMagnifierLayerBounds(
+      parent_container->bounds().size(), focus_rect.top_center());
+  magnifier_layer_->SetBounds(magnifier_layer_bounds);
+  zoom_layer_->SetBackgroundOffset(GetZoomLayerBackgroundOffset(
+      magnifier_layer_bounds, focus_rect.CenterPoint()));
+
+  // Add magnifier layer to parent container if needed.
+  if (created_new_magnifier_layer) {
+    parent_container->layer()->Add(magnifier_layer_.get());
+  } else {
+    DCHECK_EQ(magnifier_layer_->parent(), parent_container->layer());
   }
 }
 
@@ -202,30 +260,16 @@ const ui::Layer* TouchSelectionMagnifierRunnerAsh::GetMagnifierLayerForTesting()
   return magnifier_layer_.get();
 }
 
-const ui::Layer* TouchSelectionMagnifierRunnerAsh::GetZoomLayerForTesting()
-    const {
-  return zoom_layer_.get();
-}
-
-void TouchSelectionMagnifierRunnerAsh::CreateMagnifierLayer(
-    aura::Window* parent_container,
-    const gfx::PointF& position_in_parent) {
-  Observe(ColorUtil::GetColorProviderSourceForWindow(parent_container));
-  ui::Layer* parent_layer = parent_container->layer();
-
+void TouchSelectionMagnifierRunnerAsh::CreateMagnifierLayer() {
   // Create the magnifier layer, which will parent the zoom layer and border
   // layer.
   magnifier_layer_ = std::make_unique<ui::Layer>(ui::LAYER_NOT_DRAWN);
-  magnifier_layer_->SetBounds(
-      GetMagnifierLayerBounds(gfx::ToRoundedPoint(position_in_parent)));
   magnifier_layer_->SetFillsBoundsOpaquely(false);
-  parent_layer->Add(magnifier_layer_.get());
 
   // Create the zoom layer, which will show the magnified area.
   zoom_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   zoom_layer_->SetBounds(kZoomLayerBounds);
   zoom_layer_->SetBackgroundZoom(kMagnifierScale, 0);
-  zoom_layer_->SetBackgroundOffset(gfx::Point(0, kMagnifierVerticalOffset));
   zoom_layer_->SetFillsBoundsOpaquely(false);
   zoom_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF{kMagnifierRadius});
   magnifier_layer_->Add(zoom_layer_.get());

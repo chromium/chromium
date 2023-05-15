@@ -109,9 +109,9 @@ class VideoConferenceAppServiceClient
   void HandleMediaUsageUpdate();
 
   // These registries are used for observing app behaviors.
-  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
-  base::raw_ptr<apps::AppRegistryCache> app_registry_;
-  base::raw_ptr<apps::AppCapabilityAccessCache> capability_cache_;
+  raw_ptr<apps::InstanceRegistry> instance_registry_;
+  raw_ptr<apps::AppRegistryCache> app_registry_;
+  raw_ptr<apps::AppCapabilityAccessCache> capability_cache_;
 
   // Unique id associated with this client. It is used by the VcManager to
   // identify clients.

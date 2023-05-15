@@ -86,7 +86,7 @@ void WebAppOriginAssociationManager::Task::OnAssociationParsed(
   auto& scope_extension = GetCurrentScopeExtension();
   for (auto& associated_app : association->apps) {
     if (associated_app->web_app_identity == web_app_identity_) {
-      result_.push_back(scope_extension);
+      result_.insert(scope_extension);
       scope_extension.Reset();
       // Only information in the first valid app is saved.
       break;

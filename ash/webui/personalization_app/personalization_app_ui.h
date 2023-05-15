@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -24,11 +27,23 @@ class ColorChangeHandler;
 
 namespace ash::personalization_app {
 
+class PersonalizationAppUI;
 class PersonalizationAppAmbientProvider;
 class PersonalizationAppKeyboardBacklightProvider;
 class PersonalizationAppThemeProvider;
 class PersonalizationAppWallpaperProvider;
 class PersonalizationAppUserProvider;
+
+class PersonalizationAppUIConfig
+    : public SystemWebAppUIConfig<PersonalizationAppUI> {
+ public:
+  explicit PersonalizationAppUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(
+            ash::personalization_app::kChromeUIPersonalizationAppHost,
+            SystemWebAppType::PERSONALIZATION,
+            create_controller_func) {}
+};
 
 class PersonalizationAppUI : public ui::MojoWebUIController {
  public:

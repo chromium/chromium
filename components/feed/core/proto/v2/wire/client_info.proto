@@ -9,6 +9,7 @@ package feedwire;
 import "components/feed/core/proto/v2/wire/chrome_client_info.proto";
 import "components/feed/core/proto/v2/wire/device.proto";
 import "components/feed/core/proto/v2/wire/display_info.proto";
+import "components/feed/core/proto/v2/wire/language_preferences.proto";
 import "components/feed/core/proto/v2/wire/version.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -18,6 +19,8 @@ message ClientInfo {
     UNKNOWN_PLATFORM = 0;
     ANDROID_ID = 1;
     IOS = 2;
+    MOBILE_WEB = 3;
+    DESKTOP_WEB = 4;
   }
   enum AppType {
     CHROME_ANDROID = 3;
@@ -31,5 +34,6 @@ message ClientInfo {
   optional string client_instance_id = 7;
   optional string advertising_id = 8;
   optional Device device = 10;
+  optional LanguagePreferences language_preferences = 15;
   optional ChromeClientInfo chrome_client_info = 338478298;
 }

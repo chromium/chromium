@@ -7,8 +7,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "extensions/shell/browser/shell_native_app_window.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace extensions {
 class ShellNativeAppWindowMac;
@@ -17,10 +20,7 @@ class ShellNativeAppWindowMac;
 // A window controller for ShellNativeAppWindowMac to handle NSNotifications
 // and pass them to the C++ implementation.
 @interface ShellNativeAppWindowController
-    : NSWindowController<NSWindowDelegate> {
- @private
-  extensions::ShellNativeAppWindowMac* _appWindow;  // Owns us.
-}
+    : NSWindowController <NSWindowDelegate>
 
 @property(assign, nonatomic) extensions::ShellNativeAppWindowMac* appWindow;
 
@@ -61,7 +61,7 @@ class ShellNativeAppWindowMac : public ShellNativeAppWindow {
  private:
   NSWindow* window() const;
 
-  base::scoped_nsobject<ShellNativeAppWindowController> window_controller_;
+  ShellNativeAppWindowController* __strong window_controller_;
 };
 
 }  // namespace extensions

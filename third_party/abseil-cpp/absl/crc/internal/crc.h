@@ -53,7 +53,7 @@ class CRC {
   // points to an array of "length" zero bytes.
   virtual void ExtendByZeroes(uint32_t* crc, size_t length) const = 0;
 
-  // Inverse opration of ExtendByZeroes.  If `crc` is the CRC value of a string
+  // Inverse operation of ExtendByZeroes.  If `crc` is the CRC value of a string
   // ending in `length` zero bytes, this returns a CRC value of that string
   // with those zero bytes removed.
   virtual void UnextendByZeroes(uint32_t* crc, size_t length) const = 0;
@@ -68,7 +68,7 @@ class CRC {
   // any reduction of error-detection ability in the outer CRC.
   // Unscramble() performs the inverse transformation.
   // It is strongly recommended that CRCs be scrambled before storage or
-  // transmission, and unscrambled at the other end before futher manipulation.
+  // transmission, and unscrambled at the other end before further manipulation.
   virtual void Scramble(uint32_t* crc) const = 0;
   virtual void Unscramble(uint32_t* crc) const = 0;
 

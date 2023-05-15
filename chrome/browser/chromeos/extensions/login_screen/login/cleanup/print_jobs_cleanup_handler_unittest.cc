@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
@@ -140,7 +141,7 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple test_prefs_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<history::HistoryService> history_service_;

@@ -207,11 +207,13 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
   auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
-  focus_ring->SetHasFocusPredicate([&](View* view) {
-    return view->GetVisible() && GetMatchSelected() &&
-           (popup_view_->GetSelection().state ==
-            OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-  });
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* results, const View* view) {
+        return view->GetVisible() && results->GetMatchSelected() &&
+               (results->popup_view_->GetSelection().state ==
+                OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
+      },
+      base::Unretained(this)));
   focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
@@ -221,12 +223,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   // the whole row highlighted. This fixes that. It doesn't seem necessary to
   // further observe the child controls of |button_row_|.
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(button_row_);
-
-  keyword_view_ = suggestion_button_container->AddChildView(
-      std::make_unique<OmniboxMatchCellView>(this));
-  keyword_view_->SetVisible(false);
-  keyword_view_->icon()->SetFlipCanvasOnPaintForRTLUI(true);
-  keyword_view_->icon()->SizeToPreferredSize();
 }
 
 OmniboxResultView::~OmniboxResultView() {}
@@ -251,13 +247,10 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   match_ = match.GetMatchWithContentsAndDescriptionPossiblySwapped();
 
-  const int suggestion_indent =
-      popup_view_->InExplicitExperimentalKeywordMode() ? 70 : 0;
   suggestion_view_->SetProperty(views::kMarginsKey,
-                                gfx::Insets::TLBR(0, suggestion_indent, 0, 0));
+                                gfx::Insets::TLBR(0, 0, 0, 0));
 
   suggestion_view_->OnMatchUpdate(this, match_);
-  keyword_view_->OnMatchUpdate(this, match_);
   UpdateRemoveSuggestionVisibility();
 
   suggestion_view_->content()->SetTextWithStyling(match_.contents,
@@ -279,7 +272,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   button_row_->UpdateFromModel();
 
   ApplyThemeAndRefreshIcons();
-  SetWidths();
+  InvalidateLayout();
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
@@ -302,7 +295,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
                                     ? kColorOmniboxResultsTextDimmedSelected
                                     : kColorOmniboxResultsTextDimmed;
   suggestion_view_->separator()->ApplyTextColor(dimmed_id);
-  keyword_view_->separator()->ApplyTextColor(dimmed_id);
   if (remove_suggestion_button_->GetVisible())
     views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
 
@@ -316,10 +308,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     suggestion_view_->ClearIcon();
   else
     suggestion_view_->SetIcon(*icon.ToImageSkia());
-
-  keyword_view_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
-      omnibox::kKeywordSearchIcon, icon_color_id,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
 
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
@@ -344,13 +332,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     // the results needs to be recomputed.
     suggestion_view_->content()->ReapplyStyling();
     suggestion_view_->description()->ReapplyStyling();
-  }
-
-  if (force_reapply_styles) {
-    keyword_view_->content()->ReapplyStyling();
-    keyword_view_->description()->ReapplyStyling();
-  } else if (keyword_view_->GetVisible()) {
-    keyword_view_->description()->ApplyTextColor(dimmed_id);
   }
 
   button_row_->SetThemeState(GetThemeState());
@@ -587,18 +568,11 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
     InvalidateLayout();
 }
 
-void OmniboxResultView::SetWidths() {
-  keyword_view_->SetPreferredSize(
-      gfx::Size(width(), keyword_view_->CalculatePreferredSize().height()));
-
-  InvalidateLayout();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxResultView, views::View overrides, private:
 
 void OmniboxResultView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  SetWidths();
+  InvalidateLayout();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

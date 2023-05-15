@@ -443,7 +443,8 @@
         valid_values: ["border", "border-color", "border-radius",
                        "border-style", "border-width", "contain-intrinsic-size",
                        "inset", "margin", "max-size", "min-size", "overflow",
-                       "padding", "scroll-margin", "scroll-padding", "size",
+                       "padding", "scroll-margin", "scroll-padding",
+                       "scroll-start", "scroll-start-target", "size",
                        "visited-border-color"],
       },
       // The name of the mapping function used to convert between equivalent
@@ -900,7 +901,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-range-end",
@@ -913,7 +914,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-timeline",
@@ -926,7 +927,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
       is_animation_property: true,
     },
     {
@@ -1162,7 +1163,7 @@
       name_for_methods: "SizeAdjust",
       converter: "ConvertFontSizeAdjust",
       priority: "High",
-      keywords: ["none"],
+      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
@@ -2692,7 +2693,8 @@
         "table-row-group", "table-header-group", "table-footer-group",
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
-        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none"
+        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
+        "flow", "math"
       ],
       typedom_types: ["Keyword"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
@@ -2797,7 +2799,7 @@
     },
     {
       name: "flex-direction",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
       field_template: "keyword",
       typedom_types: ["Keyword"],
@@ -2826,7 +2828,7 @@
     },
     {
       name: "flex-wrap",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
       field_template: "keyword",
       typedom_types: ["Keyword"],
@@ -3040,6 +3042,32 @@
       runtime_flag: "CSSHyphenateLimitChars",
     },
     {
+      name: "popover-show-delay",
+      runtime_flag: "HTMLPopoverHint",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "float",
+      interpolable: true,
+      typedom_types: ["Time"],
+      converter: "ConvertTimeValue",
+      default_value: "0.5",
+      supports_incremental_style: true,
+    },
+    {
+      name: "popover-hide-delay",
+      runtime_flag: "HTMLPopoverHint",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "float",
+      interpolable: true,
+      typedom_types: ["Time"],
+      converter: "ConvertTimeValue",
+      default_value: "HUGE_VALF",
+      supports_incremental_style: true,
+    },
+    {
       name: "hyphens",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -3085,7 +3113,6 @@
       inherited: false,
       keywords: ["drop", "normal", "raise"],
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSInitialLetter",
       type_name: "StyleInitialLetter",
       valid_for_first_letter: true,
     },
@@ -3556,10 +3583,10 @@
       interpolable: true,
       field_group: "*",
       field_template: "pointer",
-      include_paths: ["third_party/blink/renderer/core/style/basic_shapes.h"],
+      include_paths: ["third_party/blink/renderer/core/style/offset_path_operation.h"],
       wrapper_pointer_name: "scoped_refptr",
       default_value: "nullptr",
-      type_name: "BasicShape",
+      type_name: "OffsetPathOperation",
       converter: "ConvertOffsetPath",
       keywords: ["none"],
       typedom_types: ["Keyword"],
@@ -4406,6 +4433,126 @@
       computable: false,
     },
     {
+      name: "scroll-start-block",
+      property_methods: ["ParseSingleValue"],
+      field_group: "*->start",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
+      default_value: "blink::ScrollStartData()",
+      type_name: "ScrollStartData",
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "block"
+      },
+      keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
+      typedom_types: ["Keyword", "Length", "Percentage"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-inline",
+      property_methods: ["ParseSingleValue"],
+      field_group: "*->start",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
+      default_value: "blink::ScrollStartData()",
+      type_name: "ScrollStartData",
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "inline"
+      },
+      keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
+      typedom_types: ["Keyword", "Length", "Percentage"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-x",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*->start",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
+      default_value: "blink::ScrollStartData()",
+      type_name: "ScrollStartData",
+      converter: "ConvertScrollStart",
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "horizontal"
+      },
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-y",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*->start",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
+      default_value: "blink::ScrollStartData()",
+      type_name: "ScrollStartData",
+      converter: "ConvertScrollStart",
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "vertical"
+      },
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-target-block",
+      property_methods: ["ParseSingleValue"],
+      field_group: "*->target",
+      field_template: "keyword",
+      default_value: "none",
+      type_name: "EScrollStartTarget",
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "block",
+      },
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-target-inline",
+      property_methods: ["ParseSingleValue"],
+      field_group: "*->target",
+      field_template: "keyword",
+      default_value: "none",
+      type_name: "EScrollStartTarget",
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "inline",
+      },
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-target-x",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*->target",
+      field_template: "keyword",
+      type_name: "EScrollStartTarget",
+      default_value: "none",
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "horizontal"
+      },
+      keywords: ["none", "auto"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-target-y",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*->target",
+      field_template: "keyword",
+      type_name: "EScrollStartTarget",
+      default_value: "none",
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "vertical"
+      },
+      keywords: ["none", "auto"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
       name: "scroll-timeline-attachment",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*->timeline",
@@ -4414,7 +4561,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "scroll-timeline-axis",
@@ -4425,7 +4572,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "scroll-timeline-name",
@@ -4437,7 +4584,7 @@
       wrapper_pointer_name: "Persistent",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "shape-image-threshold",
@@ -4921,6 +5068,7 @@
       computable: false,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_highlight: true,
     },
     {
       name: "text-underline-position",
@@ -5185,7 +5333,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-axis",
@@ -5196,7 +5344,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-inset",
@@ -5208,7 +5356,7 @@
       type_name: "Vector<TimelineInset>",
       converter: "ConvertViewTimelineInset",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-name",
@@ -5220,7 +5368,7 @@
       wrapper_pointer_name: "Persistent",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-transition-name",
@@ -5970,7 +6118,7 @@
       inherited: true,
       field_template: "primitive",
       field_size: 2,  // Ensure this is in sync with `kTextWrapBits`.
-      keywords: ["wrap", "nowrap", "balance"],
+      keywords: ["wrap", "nowrap", "balance", "pretty"],
       type_name: "TextWrap",
       default_value: "TextWrap::kWrap",
       include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
@@ -6559,24 +6707,6 @@
       is_property: false,
     },
     {
-      name: "source",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
-      name: "start",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
-      name: "end",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
       name: "ascent-override",
       is_descriptor: true,
       is_property: false,
@@ -6681,7 +6811,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: 'CSSScrollTimeline',
+      runtime_flag: 'ScrollTimeline',
     },
     {
       // Variant of the "animation" shorthand which includes the
@@ -6706,7 +6836,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: 'CSSScrollTimeline',
+      runtime_flag: 'ScrollTimeline',
     },
     {
       name: "background",
@@ -7203,10 +7333,22 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "scroll-start",
+      longhands: ["scroll-start-block", "scroll-start-inline"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
+      name: "scroll-start-target",
+      longhands: ["scroll-start-target-block", "scroll-start-target-inline"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
       name: "scroll-timeline",
       longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "text-decoration",
@@ -7232,7 +7374,7 @@
       name: "view-timeline",
       longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-border-after",
@@ -7746,7 +7888,17 @@
       name_for_methods: "AlignSelfBlockCenter",
       converter: "ConvertInternalAlignSelfBlock",
     },
-
+    {
+      name: "-internal-align-content-block",
+      property_methods: ["ParseSingleValue"],
+      inherited: false,
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      name_for_methods: "AlignContentBlockCenter",
+      converter: "ConvertInternalAlignContentBlock",
+    },
     // Aliases; these map to the same CSSPropertyID
     {
       name: "-epub-caption-side",
@@ -7810,7 +7962,7 @@
       name: "-webkit-alternative-animation-with-timeline",
       alias_for: "-alternative-animation-with-timeline",
       alternative_of: "-webkit-animation",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-alternative-animation-with-delay-start-end",

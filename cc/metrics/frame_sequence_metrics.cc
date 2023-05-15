@@ -87,20 +87,6 @@ std::string GetThroughputV3HistogramName(FrameSequenceTrackerType type,
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
-std::string GetMissedDeadlineHistogramName(FrameSequenceTrackerType type,
-                                           const char* thread_name) {
-  return base::StrCat(
-      {"Graphics.Smoothness.PercentMissedDeadlineFrames.", thread_name, ".",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
-bool IsInteractionType(FrameSequenceTrackerType sequence_type) {
-  return sequence_type == FrameSequenceTrackerType::kScrollbarScroll ||
-         sequence_type == FrameSequenceTrackerType::kTouchScroll ||
-         sequence_type == FrameSequenceTrackerType::kWheelScroll ||
-         sequence_type == FrameSequenceTrackerType::kPinchZoom;
-}
-
 }  // namespace
 
 FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type)
@@ -234,8 +220,6 @@ void FrameSequenceMetrics::AdvanceTrace(base::TimeTicks timestamp) {
 void FrameSequenceMetrics::ReportMetrics() {
   DCHECK_LE(impl_throughput_.frames_produced, impl_throughput_.frames_expected);
   DCHECK_LE(main_throughput_.frames_produced, main_throughput_.frames_expected);
-  DCHECK_LE(impl_throughput_.frames_ontime, impl_throughput_.frames_expected);
-  DCHECK_LE(main_throughput_.frames_ontime, main_throughput_.frames_expected);
 
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
   trace_data_.Terminate();
@@ -255,11 +239,6 @@ void FrameSequenceMetrics::ReportMetrics() {
     frames_checkerboarded_ = 0;
     return;
   }
-
-  const bool main_report = ThroughputData::CanReportHistogram(
-      this, SmoothEffectDrivingThread::kMain, main_throughput_);
-  const bool compositor_report = ThroughputData::CanReportHistogram(
-      this, SmoothEffectDrivingThread::kCompositor, impl_throughput_);
 
   const auto thread_type = GetEffectiveThread();
   const bool is_animation = ShouldReportForAnimation(type(), thread_type);
@@ -299,60 +278,6 @@ void FrameSequenceMetrics::ReportMetrics() {
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
     v3_ = {};
-  }
-
-  absl::optional<int> impl_throughput_percent_missed;
-  absl::optional<int> main_throughput_percent_missed;
-
-  // Report the throughput metrics.
-  if (compositor_report) {
-    impl_throughput_percent_missed =
-        ThroughputData::ReportMissedDeadlineFramePercentHistogram(
-            this, SmoothEffectDrivingThread::kCompositor,
-            GetIndexForMetric(SmoothEffectDrivingThread::kCompositor, type_),
-            impl_throughput_);
-  }
-  if (main_report) {
-    main_throughput_percent_missed =
-        ThroughputData::ReportMissedDeadlineFramePercentHistogram(
-            this, SmoothEffectDrivingThread::kMain,
-            GetIndexForMetric(SmoothEffectDrivingThread::kMain, type_),
-            main_throughput_);
-  }
-
-  // Report for the 'scrolling thread' for the scrolling interactions.
-  if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {
-    absl::optional<int> scrolling_thread_throughput_missed;
-    switch (scrolling_thread_) {
-      case SmoothEffectDrivingThread::kCompositor:
-        scrolling_thread_throughput_missed = impl_throughput_percent_missed;
-        break;
-      case SmoothEffectDrivingThread::kMain:
-        scrolling_thread_throughput_missed = main_throughput_percent_missed;
-        break;
-      case SmoothEffectDrivingThread::kUnknown:
-        NOTREACHED();
-        break;
-    }
-    if (scrolling_thread_throughput_missed.has_value()) {
-      if (type_ == FrameSequenceTrackerType::kWheelScroll) {
-        UMA_HISTOGRAM_PERCENTAGE(
-            GetMissedDeadlineHistogramName(
-                FrameSequenceTrackerType::kWheelScroll, "ScrollingThread"),
-            scrolling_thread_throughput_missed.value());
-      } else if (type_ == FrameSequenceTrackerType::kTouchScroll) {
-        UMA_HISTOGRAM_PERCENTAGE(
-            GetMissedDeadlineHistogramName(
-                FrameSequenceTrackerType::kTouchScroll, "ScrollingThread"),
-            scrolling_thread_throughput_missed.value());
-      } else {
-        DCHECK_EQ(type_, FrameSequenceTrackerType::kScrollbarScroll);
-        UMA_HISTOGRAM_PERCENTAGE(
-            GetMissedDeadlineHistogramName(
-                FrameSequenceTrackerType::kScrollbarScroll, "ScrollingThread"),
-            scrolling_thread_throughput_missed.value());
-      }
-    }
   }
 
   // Report the checkerboarding metrics.
@@ -428,102 +353,6 @@ void FrameSequenceMetrics::NotifyNoUpdateForJankReporter(
     jank_reporter_->AddFrameWithNoUpdate(sequence_number, frame_interval);
 }
 
-bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(
-    FrameSequenceMetrics* metrics,
-    SmoothEffectDrivingThread thread_type,
-    const ThroughputData& data) {
-  const auto sequence_type = metrics->type();
-  DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-
-  // All video frames and SET compositor animations are compositor thread only.
-  if ((sequence_type == FrameSequenceTrackerType::kVideo ||
-       sequence_type == FrameSequenceTrackerType::kSETCompositorAnimation) &&
-      thread_type == SmoothEffectDrivingThread::kMain)
-    return false;
-
-  // RAF, CanvasAnimation and SET main thread animations are main thread only.
-  if ((sequence_type == FrameSequenceTrackerType::kRAF ||
-       sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
-       sequence_type == FrameSequenceTrackerType::kSETMainThreadAnimation) &&
-      thread_type == SmoothEffectDrivingThread::kCompositor)
-    return false;
-
-  if (data.frames_expected < kMinFramesForThroughputMetric)
-    return false;
-
-  const bool is_animation =
-      ShouldReportForAnimation(sequence_type, thread_type);
-
-  return is_animation || IsInteractionType(sequence_type) ||
-         sequence_type == FrameSequenceTrackerType::kVideo ||
-         sequence_type == FrameSequenceTrackerType::kRAF ||
-         sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
-         sequence_type == FrameSequenceTrackerType::kSETMainThreadAnimation ||
-         sequence_type == FrameSequenceTrackerType::kSETCompositorAnimation;
-}
-
-int FrameSequenceMetrics::ThroughputData::
-    ReportMissedDeadlineFramePercentHistogram(
-        FrameSequenceMetrics* metrics,
-        SmoothEffectDrivingThread thread_type,
-        int metric_index,
-        const ThroughputData& data) {
-  const auto sequence_type = metrics->type();
-  DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-
-  // Throughput means the percent of frames that was expected to show on the
-  // screen but didn't. In other words, the lower the throughput is, the
-  // smoother user experience.
-  const int percent = data.MissedDeadlineFramePercent();
-
-  const bool is_animation =
-      ShouldReportForAnimation(sequence_type, thread_type);
-  const bool is_interaction = ShouldReportForInteraction(
-      metrics->type(), thread_type, metrics->GetEffectiveThread());
-
-  if (is_animation) {
-    TRACE_EVENT_INSTANT2(
-        "cc,benchmark", "PercentMissedDeadlineFrames.AllAnimations",
-        TRACE_EVENT_SCOPE_THREAD, "frames_expected", data.frames_expected,
-        "frames_ontime", data.frames_ontime);
-
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations",
-        percent);
-  }
-
-  if (is_interaction) {
-    TRACE_EVENT_INSTANT2(
-        "cc,benchmark", "PercentMissedDeadlineFrames.AllInteractions",
-        TRACE_EVENT_SCOPE_THREAD, "frames_expected", data.frames_expected,
-        "frames_ontime", data.frames_ontime);
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions",
-        percent);
-  }
-
-  if (is_animation || is_interaction) {
-    TRACE_EVENT_INSTANT2(
-        "cc,benchmark", "PercentMissedDeadlineFrames.AllSequences",
-        TRACE_EVENT_SCOPE_THREAD, "frames_expected", data.frames_expected,
-        "frames_ontime", data.frames_ontime);
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences",
-        percent);
-  }
-
-  const char* thread_name =
-      thread_type == SmoothEffectDrivingThread::kCompositor ? "CompositorThread"
-                                                            : "MainThread";
-  STATIC_HISTOGRAM_POINTER_GROUP(
-      GetMissedDeadlineHistogramName(sequence_type, thread_name), metric_index,
-      kMaximumHistogramIndex, Add(percent),
-      base::LinearHistogram::FactoryGet(
-          GetMissedDeadlineHistogramName(sequence_type, thread_name), 1, 100,
-          101, base::HistogramBase::kUmaTargetedHistogramFlag));
-  return percent;
-}
-
 void FrameSequenceMetrics::ThroughputData::ReportCheckerboardingHistogram(
     FrameSequenceMetrics* metrics,
     SmoothEffectDrivingThread thread_type,
@@ -561,11 +390,9 @@ FrameSequenceMetrics::ThroughputData::ToTracedValue(
   if (effective_thread == SmoothEffectDrivingThread::kMain) {
     dict->SetInteger("main-frames-produced", main.frames_produced);
     dict->SetInteger("main-frames-expected", main.frames_expected);
-    dict->SetInteger("main-frames-ontime", main.frames_ontime);
   } else {
     dict->SetInteger("impl-frames-produced", impl.frames_produced);
     dict->SetInteger("impl-frames-expected", impl.frames_expected);
-    dict->SetInteger("impl-frames-ontime", impl.frames_ontime);
   }
   return dict;
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +19,27 @@
 
 namespace content {
 class WebContents;
+}
+
+SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
+
+SavedTabGroupModelListener::SavedTabGroupModelListener(
+    SavedTabGroupModel* model,
+    Profile* profile)
+    : model_(model), profile_(profile) {
+  DCHECK(model);
+  DCHECK(profile);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserAdded(browser);
+  }
+  BrowserList::GetInstance()->AddObserver(this);
+}
+
+SavedTabGroupModelListener::~SavedTabGroupModelListener() {
+  BrowserList::GetInstance()->RemoveObserver(this);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserRemoved(browser);
+  }
 }
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
@@ -64,19 +86,28 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
   // Remove `contents` from its current saved group, if it's in one.
   for (auto& [local_group_id, listener] : local_tab_group_listeners_) {
     if (local_group_id != new_local_group_id) {
-      listener.RemoveWebContentsIfPresent(contents);
+      if (listener.MaybeRemoveWebContentsFromLocal(contents) ==
+          LocalTabGroupListener::Liveness::kGroupDeleted) {
+        // If this emptied the group, the saved group was removed, so we must
+        // stop listening to `local_group_id`.
+        DisconnectLocalTabGroup(local_group_id);
+        // Not only did we find our old group, we also concurrently modified the
+        // data structure we're iterating over. Abort, abort.
+        break;
+      }
     }
   }
 
   // Add it to its new group.
   if (new_local_group_id.has_value() &&
-      local_tab_group_listeners_.contains(new_local_group_id.value())) {
+      base::Contains(local_tab_group_listeners_, new_local_group_id.value())) {
     LocalTabGroupListener& listener =
         local_tab_group_listeners_.at(new_local_group_id.value());
     const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
         new_local_group_id.value());
     CHECK(browser);
-    listener.AddWebContents(contents, browser->tab_strip_model(), index);
+    listener.AddWebContentsFromLocal(contents, browser->tab_strip_model(),
+                                     index);
   }
 }
 
@@ -89,36 +120,15 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
 
   for (const tab_groups::TabGroupId& group_id :
        tab_strip_model->group_model()->ListTabGroups()) {
-    if (local_tab_group_listeners_.contains(group_id)) {
+    if (base::Contains(local_tab_group_listeners_, group_id)) {
       DisconnectLocalTabGroup(group_id);
     }
   }
 }
 
-SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
-
-SavedTabGroupModelListener::SavedTabGroupModelListener(
-    SavedTabGroupModel* model,
-    Profile* profile)
-    : model_(model), profile_(profile) {
-  DCHECK(model);
-  DCHECK(profile);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
-  BrowserList::GetInstance()->AddObserver(this);
-}
-
-SavedTabGroupModelListener::~SavedTabGroupModelListener() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserRemoved(browser);
-  }
-}
-
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
-    std::vector<std::pair<content::WebContents*, base::GUID>> mapping) {
+    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping) {
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 
@@ -136,7 +146,7 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
 
 void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
+  if (!base::Contains(local_tab_group_listeners_, group_id)) {
     return;
   }
   local_tab_group_listeners_.at(group_id).PauseTracking();
@@ -144,7 +154,7 @@ void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
+  if (!base::Contains(local_tab_group_listeners_, group_id)) {
     return;
   }
   local_tab_group_listeners_.at(group_id).ResumeTracking();
@@ -155,12 +165,34 @@ void SavedTabGroupModelListener::DisconnectLocalTabGroup(
   local_tab_group_listeners_.erase(tab_group_id);
 }
 
+void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
+    tab_groups::TabGroupId local_group_id) {
+  if (!base::Contains(local_tab_group_listeners_, local_group_id)) {
+    return;
+  }
+
+  local_tab_group_listeners_.at(local_group_id).GroupRemovedFromSync();
+  DisconnectLocalTabGroup(local_group_id);
+}
+
+void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
+    tab_groups::TabGroupId local_group_id) {
+  if (!base::Contains(local_tab_group_listeners_, local_group_id)) {
+    return;
+  }
+
+  if (local_tab_group_listeners_.at(local_group_id).UpdateFromSync() ==
+      LocalTabGroupListener::Liveness::kGroupDeleted) {
+    DisconnectLocalTabGroup(local_group_id);
+  }
+}
+
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
   if (profile_ != browser->profile()) {
     return;
   }
 
-  if (observed_browsers_.contains(browser)) {
+  if (base::Contains(observed_browsers_, browser)) {
     return;
   }
 
@@ -174,6 +206,6 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
-  CHECK(observed_browsers_.contains(browser));
+  CHECK(base::Contains(observed_browsers_, browser));
   observed_browsers_.erase(browser);
 }

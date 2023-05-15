@@ -323,6 +323,12 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
 
+  # b/279351324: Until crrev.com/c/4475024 upreved.
+  "a11y.LiveCaption.lacros",
+
+  # b/281983222
+  "inputs.InputMethodShelfInputs",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
@@ -365,4 +371,7 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1431937
   "tast.lacros.ShelfLaunch.primary",
+
+  # https://crbug.com/1440735
+  "mlservice.WebHandwritingRecognition.lacros",
 ]

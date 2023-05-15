@@ -660,7 +660,7 @@ const internal::PropertiesNode kProperties[] = {
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
-  static constexpr internal::SchemaData chrome_schema_data = {
+  static const internal::SchemaData kChromeSchemaData = {
     kSchemas,
     kPropertyNodes,
     kProperties,
@@ -671,7 +671,7 @@ const internal::SchemaData* GetChromeSchemaData() {
     -1,  // validation_schema root index
   };
 
-  return &chrome_schema_data;
+  return &kChromeSchemaData;
 }
 
 

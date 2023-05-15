@@ -109,6 +109,9 @@ const char kChoobeSelectedScreens[] = "oobe.choobe_selected_screens";
 // List of screens completed during the CHOOBE part of the onboarding flow.
 const char kChoobeCompletedScreens[] = "oobe.choobe_completed_screens";
 
+//  A boolean pref of the drive pinning screen
+const char kOobeDrivePinningEnabledDeferred[] = "oobe.drive_pinning_defer";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).

@@ -93,7 +93,7 @@ class PDFExtensionJSTest : public PDFExtensionTestBase {
            };
            document.body.appendChild(s);)";
 
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         guest->GetGuestMainFrame(),
         base::StringPrintf(kModuleLoaderTemplate,
                            chrome::kChromeUIWebUITestHost, filename.c_str())));
@@ -282,7 +282,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerToolbarDropdown) {
 #endif  // BUILDFLAG(ENABLE_INK)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, PdfOcrToolbar) {
+// TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+// Select-to-Speak.
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, DISABLED_PdfOcrToolbar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("pdf_ocr_toolbar_test.js", "test.pdf");

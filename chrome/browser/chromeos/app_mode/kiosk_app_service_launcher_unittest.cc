@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/app_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -94,7 +95,7 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   }
 
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxy* app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
 
   std::unique_ptr<FakePublisher> publisher_;
   std::unique_ptr<KioskAppServiceLauncher> launcher_;

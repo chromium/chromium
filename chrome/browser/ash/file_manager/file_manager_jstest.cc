@@ -158,6 +158,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
   RunTestURL("foreground/js/file_tasks_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, GuestOsController) {
+  RunTestURL("foreground/js/guest_os_controller_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {
   RunTestURL("foreground/js/file_transfer_controller_unittest.js");
 }
@@ -350,6 +354,14 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {
   RunTestURL("state/reducers/volumes_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerBulkPinning) {
+  RunTestURL("state/reducers/bulk_pinning_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerPreferences) {
+  RunTestURL("state/reducers/preferences_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
   RunTestURL("containers/nudge_container_unittest.js");
 }
@@ -360,6 +372,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SearchContainer) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfConflictDialog) {
   RunTestURL("widgets/xf_conflict_dialog_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfCloudPanel) {
+  RunTestURL("widgets/xf_cloud_panel_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfDlpRestrictionDetailsDialog) {
@@ -396,6 +412,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfPathDisplay) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BreadcrumbContainer) {
   RunTestURL("containers/breadcrumb_container_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, CloudPanelContainer) {
+  RunTestURL("containers/cloud_panel_container_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeContainer) {

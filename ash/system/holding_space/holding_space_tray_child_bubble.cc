@@ -166,11 +166,7 @@ void HoldingSpaceTrayChildBubble::Init() {
       kHoldingSpaceChildBubblePadding, kHoldingSpaceChildBubbleChildSpacing));
 
   // Layer.
-  // TODO(crbug/1313073): In dark light mode, since we have changed to use a
-  // textured layer instead of a solid color layer, we need to remove all the
-  // layer set up in the children of this view to remove layer redundancy.
-  SetPaintToLayer(features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
-                                                     : ui::LAYER_SOLID_COLOR);
+  SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   layer()->SetFillsBoundsOpaquely(false);
@@ -209,8 +205,7 @@ void HoldingSpaceTrayChildBubble::Init() {
       kBubbleCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="100506692671054486">inget tidigare kommando</translation>
 <translation id="1009046985747440431">Flytta markeringen med uppåtpil eller nedåtpil, aktivera med retur</translation>
 <translation id="1011903154582639569">Leta upp en tangent och lyft sedan fingret för att skriva tecknet</translation>
 <translation id="1012173283529841972">Post i lista</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavendelrosa</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3962990492275676168">Börja läsa från aktuell plats</translation>
+<translation id="397094149579293440">ingen markerad text</translation>
 <translation id="3970951409746498040">Sandbrun</translation>
 <translation id="3989324057180830702">på/av-knapp</translation>
 <translation id="3991317907213946254">Mockasinbrun</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Det finns ingen föregående rubrik på nivå 1</translation>
 <translation id="4787577491510559358">Läs upp formatering för det aktuella objektet</translation>
 <translation id="479989351350248267">sök</translation>
+<translation id="4802034228771424756">inget textfält i fokus</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="481165870889056555">Läs upp den aktuella sidans titel</translation>
 <translation id="4815668758102003883">Blekt turkos</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Intern länk</translation>
 <translation id="4909019435900810068">Flytta bakåt ett ord</translation>
 <translation id="4911349081560453449">Det finns ingen föregående kryssruta</translation>
+<translation id="4919186071145887492">Det går inte att <ph name="COMMAND" />, försök igen</translation>
 <translation id="492295894462528572">Förord</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4953585991029886728">Textinmatning</translation>
+<translation id="4964701498510730546">textfältet är tomt</translation>
 <translation id="4973717656530883744">Minst <ph name="X" /></translation>
 <translation id="4974612477719259470">Det finns ingen föregående knapp</translation>
 <translation id="4979404613699303341">Föregående knapp</translation>
+<translation id="4981239367072766915">okänd inmatning</translation>
 <translation id="4982917827052020884">Vi börjar med några vanliga tangenter. Ctrl-tangenten kan användas för att stoppa en pågående uppläsning. Du hittar Ctrl-tangenten längst ned till vänster på tangentbordet. Tryck på Ctrl-tangenten för att fortsätta.</translation>
 <translation id="4983588134362688868">Till början av sidan</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, fönster</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Läs upp aktuell batteristatus</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, markerad alternativknapp</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyalternativ med markerad alternativknapp</translation>
+<translation id="5014131807708055994">Det går inte att <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Aktivera loggning av tal</translation>
 <translation id="5041394372352067729">Flytta punktskriftsskärmen till sidans början</translation>
 <translation id="5042770794184672516">Höj talvolymen</translation>

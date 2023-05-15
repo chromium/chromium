@@ -11,8 +11,8 @@ source_set("forced_signin") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager:identity_manager",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",

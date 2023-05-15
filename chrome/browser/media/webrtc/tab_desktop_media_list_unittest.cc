@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -42,7 +43,6 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/test_app_window_contents.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -206,11 +206,10 @@ class TabDesktopMediaListTest : public testing::Test,
     if (!extension_) {
       extension_ =
           extensions::ExtensionBuilder()
-              .SetManifest(extensions::DictionaryBuilder()
+              .SetManifest(base::Value::Dict()
                                .Set("name", "TabListUnitTest Extension")
                                .Set("version", "1.0")
-                               .Set("manifest_version", 2)
-                               .Build())
+                               .Set("manifest_version", 2))
               .Build();
     }
     return extension_.get();

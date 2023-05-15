@@ -11,13 +11,14 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
@@ -35,14 +35,13 @@
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
@@ -149,8 +148,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     self.webState->AddObserver(_webStateObserver.get());
   }
 
-  [self.contentSuggestionsHeaderConsumer setLogoVendor:self.logoVendor];
-  [self.contentSuggestionsHeaderConsumer
+  [self.headerConsumer setLogoVendor:self.logoVendor];
+  [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
   self.templateURLService->Load();
@@ -260,7 +259,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  DCHECK(self.contentSuggestionsHeaderConsumer);
+  DCHECK(self.headerConsumer);
   [self.consumer omniboxDidResignFirstResponder];
 }
 
@@ -286,7 +285,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                    self.templateURLService->search_terms_data()) ==
                SEARCH_ENGINE_GOOGLE;
   }
-  [self.contentSuggestionsHeaderConsumer setLogoIsShowing:showLogo];
+  [self.headerConsumer setLogoIsShowing:showLogo];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

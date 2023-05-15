@@ -79,6 +79,11 @@ bool TestCaptureModeDelegate::IsDoingAudioRecording() const {
   return recording_service_ && recording_service_->IsDoingAudioRecording();
 }
 
+int TestCaptureModeDelegate::GetNumberOfAudioCapturers() const {
+  return recording_service_ ? recording_service_->GetNumberOfAudioCapturers()
+                            : 0;
+}
+
 base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
 

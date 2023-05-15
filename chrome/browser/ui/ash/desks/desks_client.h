@@ -11,10 +11,11 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sessions/core/session_id.h"
@@ -94,8 +95,9 @@ class DesksClient : public ash::SessionObserver {
   // pointer to the captured desk template, otherwise, `callback` will be
   // invoked with an `DeskActionError` error as the `result` and a nullptr for
   // desk template.
-  void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
-                         ash::DeskTemplateType template_type);
+  virtual void CaptureActiveDesk(
+      CaptureActiveDeskAndSaveTemplateCallback callback,
+      ash::DeskTemplateType template_type);
 
   using DeleteDeskTemplateCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result)>;
@@ -105,7 +107,7 @@ class DesksClient : public ash::SessionObserver {
   // to be removed,|callback| will be invoked with the success result code.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
-  void DeleteDeskTemplate(const base::GUID& template_uuid,
+  void DeleteDeskTemplate(const base::Uuid& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
   using GetDeskTemplatesCallback =
@@ -124,13 +126,13 @@ class DesksClient : public ash::SessionObserver {
                               const base::Value& template_json)>;
   // Takes in |uuid| and fetches the stringified json representation of a
   // desk template.
-  void GetTemplateJson(const base::GUID& uuid,
+  void GetTemplateJson(const base::Uuid& uuid,
                        Profile* profile,
                        GetTemplateJsonCallback callback);
 
   using LaunchDeskCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result,
-                              const base::GUID& desk_uuid)>;
+                              const base::Uuid& desk_uuid)>;
   // Launches the desk template with `template_uuid` as a new desk.
   // `template_uuid` should be the unique id for an existing desk template. If
   // no such id can be found or we are at the max desk limit (currently is 8)
@@ -142,13 +144,13 @@ class DesksClient : public ash::SessionObserver {
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void LaunchDeskTemplate(
-      const base::GUID& template_uuid,
+      const base::Uuid& template_uuid,
       LaunchDeskCallback callback,
       const std::u16string& customized_desk_name = std::u16string());
 
   // Launches an empty new desk. Desk name will be set to `customized_desk_name`
   // variant if it's provided, otherwise will be set to auto generated name.
-  base::expected<const base::GUID, DeskActionError> LaunchEmptyDesk(
+  base::expected<const base::Uuid, DeskActionError> LaunchEmptyDesk(
       const std::u16string& customized_desk_name = std::u16string());
 
   using ErrorHandlingCallBack =
@@ -156,7 +158,7 @@ class DesksClient : public ash::SessionObserver {
   // Remove a desk, close all windows if `close_all` set to true, otherwise
   // combine the windows to the active desk to the left.
   absl::optional<DesksClient::DeskActionError> RemoveDesk(
-      const base::GUID& desk_uuid,
+      const base::Uuid& desk_uuid,
       bool close_all);
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
@@ -182,15 +184,15 @@ class DesksClient : public ash::SessionObserver {
                                        bool all_desk);
 
   // Returns the UUID of active desk.
-  base::GUID GetActiveDesk();
+  base::Uuid GetActiveDesk();
 
   // Retrieves desk by its UUID.
   virtual base::expected<const ash::Desk*, DesksClient::DeskActionError>
-  GetDeskByID(const base::GUID& desk_uuid) const;
+  GetDeskByID(const base::Uuid& desk_uuid) const;
 
   // Switches to the target desk, returns error string if operation fails.
   absl::optional<DesksClient::DeskActionError> SwitchDesk(
-      const base::GUID& desk_uuid);
+      const base::Uuid& desk_uuid);
 
   // If `window` is a lacros window that has an app id, return it.
   absl::optional<std::string> GetAppIdForLacrosWindow(
@@ -222,7 +224,7 @@ class DesksClient : public ash::SessionObserver {
   // Callback function that is run after a saved desk called and moved from
   // library.
   void OnRecallSavedDesk(DesksClient::LaunchDeskCallback callback,
-                         const base::GUID& desk_id,
+                         const base::Uuid& desk_id,
                          desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Callback function that is called once the DesksController has captured the
@@ -244,7 +246,7 @@ class DesksClient : public ash::SessionObserver {
 
   // Called by a launch performance tracker when it has completed monitoring the
   // launch of a template.
-  void RemoveLaunchPerformanceTracker(const base::GUID& tracker_uuid);
+  void RemoveLaunchPerformanceTracker(const base::Uuid& tracker_uuid);
 
   // Get the pointer to the window by `browser_session_id`.
   aura::Window* GetWindowByBrowserSessionId(SessionID browser_session_id);
@@ -258,9 +260,9 @@ class DesksClient : public ash::SessionObserver {
 
   // Convenience pointer to ash::DesksController. Guaranteed to be not null for
   // the duration of `this`.
-  ash::DesksController* const desks_controller_;
+  const raw_ptr<ash::DesksController, ExperimentalAsh> desks_controller_;
 
-  Profile* active_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> active_profile_ = nullptr;
 
   // Maps launch id to a launch handler.
   std::map<int32_t, std::unique_ptr<DesksTemplatesAppLaunchHandler>>
@@ -288,7 +290,7 @@ class DesksClient : public ash::SessionObserver {
 
   // Mapping of template ids that are being launched to their launch performance
   // trackers.
-  base::flat_map<base::GUID, std::unique_ptr<LaunchPerformanceTracker>>
+  base::flat_map<base::Uuid, std::unique_ptr<LaunchPerformanceTracker>>
       template_ids_to_launch_performance_trackers_;
 
   base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};

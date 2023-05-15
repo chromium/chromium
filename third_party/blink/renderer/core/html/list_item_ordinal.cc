@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 
 namespace blink {
@@ -26,7 +27,7 @@ bool ListItemOrdinal::IsList(const Node& node) {
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
-  return layout_object && layout_object->IsLayoutNGListItem();
+  return layout_object && layout_object->IsListItemIncludingNG();
 }
 
 bool ListItemOrdinal::IsListItem(const Node& node) {
@@ -40,9 +41,12 @@ bool ListItemOrdinal::IsInReversedOrderedList(const Node& node) {
 }
 
 ListItemOrdinal* ListItemOrdinal::Get(const Node& item_node) {
-  if (auto* list_item =
-          DynamicTo<LayoutNGListItem>(item_node.GetLayoutObject())) {
+  auto* object = item_node.GetLayoutObject();
+  if (auto* list_item = DynamicTo<LayoutNGListItem>(object)) {
     return &list_item->Ordinal();
+  } else if (auto* inline_list_item =
+                 DynamicTo<LayoutNGInlineListItem>(object)) {
+    return &inline_list_item->Ordinal();
   }
   return nullptr;
 }
@@ -189,9 +193,12 @@ void ListItemOrdinal::InvalidateSelf(const Node& item_node, ValueType type) {
   DCHECK_NE(type, kUpdated);
   SetType(type);
 
-  if (auto* list_item =
-          DynamicTo<LayoutNGListItem>(item_node.GetLayoutObject())) {
+  auto* object = item_node.GetLayoutObject();
+  if (auto* list_item = DynamicTo<LayoutNGListItem>(object)) {
     list_item->OrdinalValueChanged();
+  } else if (auto* inline_list_item =
+                 DynamicTo<LayoutNGInlineListItem>(object)) {
+    inline_list_item->OrdinalValueChanged();
   }
 }
 

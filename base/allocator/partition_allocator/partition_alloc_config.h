@@ -54,16 +54,6 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 0
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_IOS)
 
-// Puts the regular and BRP pools right next to each other, so that we can
-// check "belongs to one of the two pools" with a single bitmask operation.
-//
-// This setting is specific to 64-bit, as 32-bit has a different implementation.
-#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(GLUE_CORE_POOLS)
-#define PA_CONFIG_GLUE_CORE_POOLS() 1
-#else
-#define PA_CONFIG_GLUE_CORE_POOLS() 0
-#endif
-
 #if BUILDFLAG(HAS_64_BIT_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #include <linux/version.h>
@@ -308,7 +298,7 @@ constexpr bool kUseLazyCommit = false;
 #if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 #define PA_CONFIG_POINTER_COMPRESSION() 1
 
-#if !PA_CONFIG(GLUE_CORE_POOLS)
+#if !BUILDFLAG(GLUE_CORE_POOLS)
 #error "Pointer compression works only with contiguous pools"
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

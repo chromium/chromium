@@ -121,7 +121,7 @@ class AppViewTest : public AppShellTest {
 
     ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s', '%s')", test_name.c_str(),
                            app_embedded->id().c_str())))

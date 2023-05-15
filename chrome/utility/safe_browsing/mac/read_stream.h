@@ -11,6 +11,8 @@
 
 #include <vector>
 
+#include "base/files/file.h"
+
 namespace safe_browsing {
 namespace dmg {
 
@@ -85,6 +87,10 @@ class MemoryReadStream : public ReadStream {
 // Reads the given |stream| until end-of-stream is reached, storying the read
 // bytes into |data|. Returns true on success and false on error.
 bool ReadEntireStream(ReadStream* stream, std::vector<uint8_t>* data);
+
+// CopyStreamToFile reads from `source` and writes the entire contents
+// of it into `dest`. Returns true on success and false on failure.
+bool CopyStreamToFile(ReadStream* source, base::File& dest);
 
 }  // namespace dmg
 }  // namespace safe_browsing

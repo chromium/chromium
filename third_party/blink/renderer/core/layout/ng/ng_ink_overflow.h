@@ -10,15 +10,20 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 
 namespace blink {
 
 class AffineTransform;
+class AppliedTextDecoration;
 class ComputedStyle;
 class Font;
+class NGFragmentItem;
+class NGInlineCursor;
 class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
+class Text;
 
 // Represents an ink-overflow rectangle. Used for:
 // - Objects without children, such as text runs.
@@ -115,6 +120,7 @@ class CORE_EXPORT NGInkOverflow {
 
   // Compute and set ink overflow for text.
   Type SetTextInkOverflow(Type type,
+                          const NGInlineCursor& cursor,
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
                           const PhysicalRect& rect_in_container,
@@ -125,6 +131,7 @@ class CORE_EXPORT NGInkOverflow {
   // |rect| represents scaled rectangle, and |*ink_overflow_out| will store
   // unscaled rectangle.
   Type SetSvgTextInkOverflow(Type type,
+                             const NGInlineCursor& cursor,
                              const NGTextFragmentPaintInfo& text_info,
                              const ComputedStyle& style,
                              const Font& scaled_font,
@@ -135,6 +142,7 @@ class CORE_EXPORT NGInkOverflow {
                              PhysicalRect* ink_overflow_out);
 
   static absl::optional<PhysicalRect> ComputeTextInkOverflow(
+      const NGInlineCursor& cursor,
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const Font& scaled_font,
@@ -150,12 +158,15 @@ class CORE_EXPORT NGInkOverflow {
                                                 const LayoutRect& ink_overflow);
 
   // Returns ink-overflow with text decoration overflow in logical direction.
-  // Note: |style| should have applied text decorations and |ink_overflow|
-  // should be in logical direction.
-  static LayoutRect ComputeTextDecorationOverflow(
+  // |inline_context| may be null.
+  // Note: |ink_overflow| should be in logical direction.
+  // Returns ink-overflow with text decoration, markers and highlights
+  // overflow in the logical direction.
+  static LayoutRect ComputeDecorationOverflow(
+      const NGInlineCursor& cursor,
       const ComputedStyle& style,
       const Font& scaled_font,
-      const PhysicalOffset& offset_in_container,
+      const PhysicalOffset& container_offset,
       const LayoutRect& ink_overflow,
       const NGInlinePaintContext* inline_context);
 
@@ -172,6 +183,25 @@ class CORE_EXPORT NGInkOverflow {
 #endif
 
  private:
+  static LayoutRect ComputeAppliedDecorationOverflow(
+      const ComputedStyle& style,
+      const Font& scaled_font,
+      const PhysicalOffset& offset_in_container,
+      const LayoutRect& ink_overflow,
+      const NGInlinePaintContext* inline_context,
+      const AppliedTextDecoration* decoration_override = nullptr);
+
+  static LayoutRect ComputeSpellingOrGrammarOverflow(
+      const DocumentMarkerVector& markers,
+      const DocumentMarker::MarkerType type,
+      const NGFragmentItem* fragment_item,
+      Text* node,
+      const ComputedStyle& style,
+      const Font& scaled_font,
+      const PhysicalOffset& offset_in_container,
+      const LayoutRect& ink_overflow,
+      const NGInlinePaintContext* inline_context);
+
   PhysicalRect FromOutsets(const PhysicalSize& size) const;
 
   void CheckType(Type type) const;

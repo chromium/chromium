@@ -11,11 +11,8 @@ source_set("tangible_sync") {
   deps = [
     "//base:base",
     "//components/sync/driver",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication/tangible_sync",

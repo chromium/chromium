@@ -103,13 +103,15 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 
   // Check to see if sync has been disabled via the dashboard and needs to be
   // set up once again.
-  if (!service->GetUserSettings()->IsSyncRequested()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (service->IsSyncFeatureDisabledViaDashboard()) {
     return {SyncStatusMessageType::kSyncError,
             IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  if (service->GetUserSettings()->IsFirstSetupComplete()) {
+  if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Check for a passphrase error.
     if (service->GetUserSettings()
             ->IsPassphraseRequiredForPreferredDataTypes()) {
@@ -219,9 +221,10 @@ SyncStatusLabels GetSyncStatusLabels(
 }
 
 SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
   return GetSyncStatusLabels(
       SyncServiceFactory::GetForProfile(profile), identity_manager,
       ChromeSigninClientFactory::GetForProfile(profile)
@@ -243,9 +246,9 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   if (!service->HasSyncConsent()) {
     // Only trusted vault errors can be shown if the account isn't a consented
     // primary account.
-    // Note the condition checked is not IsFirstSetupComplete(), because the
-    // setup incomplete case is treated separately below. See the comment in
-    // ShouldRequestSyncConfirmation() about dashboard resets.
+    // Note the condition checked is not IsInitialSyncFeatureSetupComplete(),
+    // because the setup incomplete case is treated separately below. See the
+    // comment in ShouldRequestSyncConfirmation() about dashboard resets.
     return GetTrustedVaultError(service, profile->GetPrefs());
   }
 
@@ -329,12 +332,12 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
   // the dashboard.
   return !service->IsLocalSyncEnabled() && service->HasSyncConsent() &&
          !service->IsSetupInProgress() &&
-         !service->GetUserSettings()->IsFirstSetupComplete();
+         !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
-  return settings->IsFirstSetupComplete() &&
+  return settings->IsInitialSyncFeatureSetupComplete() &&
          settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
@@ -345,7 +348,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
     return false;
   }
 
-  if (settings->IsFirstSetupComplete()) {
+  if (settings->IsInitialSyncFeatureSetupComplete()) {
     return true;
   }
 
@@ -361,7 +364,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
   // transport mode so calling IsTrustedVaultKeyRequiredForPreferredDataTypes()
   // is enough.
   //
-  // WARNING: Must match PasswordModelTypeController::GetPreconditionState().
+  // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
       pref_service, sync_service);
 }
@@ -374,7 +377,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
     return false;
   }
 
-  if (settings->IsFirstSetupComplete()) {
+  if (settings->IsInitialSyncFeatureSetupComplete()) {
     return true;
   }
 
@@ -389,7 +392,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
   // (SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() relies on the preferred
   // types).
   //
-  // WARNING: Must match PasswordModelTypeController::GetPreconditionState().
+  // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
       pref_service, sync_service);
 }

@@ -10,6 +10,7 @@
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 /******** ForWhichExtensionType ********/
 
@@ -47,9 +48,15 @@ bool ForWhichExtensionType::Matches(
   }
 
   if (extension->is_extension()) {
+    // Web File Handlers use the `file_handlers` manifest key for registration.
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
+            extension->manifest_version())) {
+      return true;
+    }
+
     // QuickOffice extensions do not use file browser handler manifest key
     // to register their handlers for MS Office files; instead, they use
-    // file_handler manifest key(like the way chrome apps do). We should
+    // file_handler manifest key (like the way chrome apps do). We should
     // always publish quickoffice extensions since they are the default handlers
     // for MS Office files.
     if (extension_misc::IsQuickOfficeExtension(extension->id())) {

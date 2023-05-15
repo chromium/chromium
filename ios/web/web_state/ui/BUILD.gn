@@ -29,6 +29,7 @@ source_set("ui") {
     "//ios/web/js_features/scroll_helper",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_util",
+    "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:navigation_manager_util",
@@ -82,16 +83,17 @@ source_set("ui") {
 }
 
 source_set("web_controller_header") {
-  deps = [
-    ":crw_web_view_navigation_proxy",
-    "//base",
-    "//ios/web/public/deprecated",
-  ]
-
   sources = [
     "crw_touch_tracking_recognizer.h",
     "crw_web_controller.h",
   ]
+
+  deps = [
+    ":crw_web_view_navigation_proxy",
+    "//ios/web/public/deprecated",
+  ]
+
+  public_deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -53,6 +53,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // tree for a native window.
   static void RegisterNativeWindowHandler(NativeWindowHandlerCallback handler);
 
+  // Disallow any updates to the AXMode when needing to force a certain AXMode,
+  // like during testing.
+  static void DisallowAXModeChanges();
+
   // Register and unregister to receive notifications about AXMode changes
   // for this node.
   static void AddAXModeObserver(AXModeObserver* observer);
@@ -141,6 +145,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
       native_window_handler_;
 
   static AXMode ax_mode_;
+
+  static bool disallow_ax_mode_changes_;
 
   // This allows UI menu popups like to act as if they are focused in the
   // exposed platform accessibility API, even though actual focus remains in

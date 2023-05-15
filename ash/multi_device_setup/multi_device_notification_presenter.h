@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -132,7 +133,7 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   void FlushForTesting();
 
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 
   // Notification currently showing or
   // Status::kNoNotificationVisible if there isn't one.

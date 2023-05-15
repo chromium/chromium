@@ -30,18 +30,19 @@ namespace network {
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
  public:
-  SharedDictionaryDiskCache(
-      const base::FilePath& cache_directory_path,
-#if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
-#endif  // BUILDFLAG(IS_ANDROID)
-      scoped_refptr<disk_cache::BackendFileOperationsFactory>
-          file_operations_factory);
-  ~SharedDictionaryDiskCache();
+  SharedDictionaryDiskCache();
+  virtual ~SharedDictionaryDiskCache();
 
   SharedDictionaryDiskCache(const SharedDictionaryDiskCache&) = delete;
   SharedDictionaryDiskCache& operator=(const SharedDictionaryDiskCache&) =
       delete;
+
+  void Initialize(const base::FilePath& cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+                  base::android::ApplicationStatusListener* app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+                  scoped_refptr<disk_cache::BackendFileOperationsFactory>
+                      file_operations_factory);
 
   disk_cache::EntryResult OpenOrCreateEntry(
       const std::string& key,
@@ -50,16 +51,27 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
   int DoomEntry(const std::string& key, net::CompletionOnceCallback callback);
   int ClearAll(net::CompletionOnceCallback callback);
 
- private:
-  enum class State { kInitializing, kInitialized, kFailed };
-
-  void DidCreateBackend(disk_cache::BackendResult result);
-
   base::WeakPtr<SharedDictionaryDiskCache> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
-  State state_ = State::kInitializing;
+ protected:
+  // Virtual for testing
+  virtual disk_cache::BackendResult CreateCacheBackend(
+      const base::FilePath& cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+      base::android::ApplicationStatusListener* app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory,
+      disk_cache::BackendResultCallback callback);
+
+ private:
+  enum class State { kBeforeInitialize, kInitializing, kInitialized, kFailed };
+
+  void DidCreateBackend(disk_cache::BackendResult result);
+
+  State state_ = State::kBeforeInitialize;
   std::unique_ptr<disk_cache::Backend> backend_;
   std::vector<base::OnceClosure> pending_disk_cache_tasks_;
   base::WeakPtrFactory<SharedDictionaryDiskCache> weak_factory_{this};

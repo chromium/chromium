@@ -136,7 +136,8 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
-      url_info, DevModeProxy{.proxy_url = proxy_origin}, future.GetCallback());
+      url_info, DevModeProxy{.proxy_url = proxy_origin}, /*keep_alive=*/nullptr,
+      /*profile_keep_alive=*/nullptr, future.GetCallback());
 
   CHECK(future.Get().has_value()) << future.Get().error();
 

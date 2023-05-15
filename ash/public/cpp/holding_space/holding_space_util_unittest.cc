@@ -4,15 +4,136 @@
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_client.h"
+#include "ash/test/ash_test_base.h"
+#include "base/pickle.h"
+#include "base/strings/strcat.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 
-namespace ash {
-namespace holding_space_util {
+namespace ash::holding_space_util {
+namespace {
 
-using HoldingSpaceUtilTest = ::testing::Test;
+// Helpers ---------------------------------------------------------------------
+
+// Returns a created `ui::OSExchangeData` instance with optional file paths
+// stored (a) at the file system sources storage location used by the Files app,
+// and/or (b) at the filenames storage location.
+std::unique_ptr<ui::OSExchangeData> CreateOSExchangeData(
+    const std::u16string& file_system_sources,
+    const std::vector<base::FilePath>& filenames) {
+  auto data = std::make_unique<ui::OSExchangeData>(
+      std::make_unique<ui::OSExchangeDataProviderNonBacked>());
+
+  if (!file_system_sources.empty()) {
+    base::Pickle pickle;
+    ui::WriteCustomDataToPickle(
+        std::unordered_map<std::u16string, std::u16string>(
+            {{u"fs/sources", file_system_sources}}),
+        &pickle);
+    data->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(), pickle);
+  }
+
+  if (!filenames.empty()) {
+    std::vector<ui::FileInfo> infos;
+    for (const auto& filename : filenames) {
+      infos.emplace_back(filename, filename.BaseName());
+    }
+    data->SetFilenames(infos);
+  }
+
+  return data;
+}
+
+}  // namespace
+
+// Tests -----------------------------------------------------------------------
+
+using HoldingSpaceUtilTest = NoSessionAshTestBase;
+
+// Verifies that `holding_space_util::ExtractFilePaths()` is WAI.
+TEST_F(HoldingSpaceUtilTest, ExtractFilePaths) {
+  std::unique_ptr<ui::OSExchangeData> data;
+  std::u16string file_system_sources;
+  std::vector<base::FilePath> filenames;
+
+  // Log in a user.
+  AccountId account_id = AccountId::FromUserEmail("user@test");
+  SimulateUserLogin(account_id);
+
+  // Initialize holding space for the user.
+  HoldingSpaceModel model;
+  testing::NiceMock<MockHoldingSpaceClient> client;
+  HoldingSpaceController* controller = HoldingSpaceController::Get();
+  controller->RegisterClientAndModelForUser(account_id, &client, &model);
+
+  // Configure the `client` to crack file system URLs.
+  ON_CALL(client, CrackFileSystemUrl)
+      .WillByDefault(testing::Invoke([](const GURL& file_system_url) {
+        return base::FilePath(base::StrCat(
+            {"//path/to/", std::string(&file_system_url.spec().back())}));
+      }));
+
+  // Case: Empty.
+  data = CreateOSExchangeData(file_system_sources, filenames);
+  for (bool fallback_to_filenames : {false, true}) {
+    EXPECT_TRUE(ExtractFilePaths(*data, fallback_to_filenames).empty());
+  }
+
+  // Case: Only file system sources.
+  file_system_sources = u"file-system:a\nfile-system:b\nfile-system:c";
+  data = CreateOSExchangeData(file_system_sources, filenames);
+  for (bool fallback_to_filenames : {false, true}) {
+    EXPECT_THAT(
+        ExtractFilePaths(*data, fallback_to_filenames),
+        testing::ElementsAre(testing::Eq(base::FilePath("//path/to/a")),
+                             testing::Eq(base::FilePath("//path/to/b")),
+                             testing::Eq(base::FilePath("//path/to/c"))));
+  }
+
+  // Case: Both file system sources and filenames.
+  filenames.emplace_back("//path/to/d");
+  filenames.emplace_back("//path/to/e");
+  filenames.emplace_back("//path/to/f");
+  data = CreateOSExchangeData(file_system_sources, filenames);
+  for (bool fallback_to_filenames : {false, true}) {
+    EXPECT_THAT(
+        ExtractFilePaths(*data, fallback_to_filenames),
+        testing::ElementsAre(testing::Eq(base::FilePath("//path/to/a")),
+                             testing::Eq(base::FilePath("//path/to/b")),
+                             testing::Eq(base::FilePath("//path/to/c"))));
+  }
+
+  // Case: Only filenames.
+  file_system_sources.clear();
+  data = CreateOSExchangeData(file_system_sources, filenames);
+  for (bool fallback_to_filenames : {false, true}) {
+    EXPECT_THAT(
+        ExtractFilePaths(*data, fallback_to_filenames),
+        testing::Conditional(
+            fallback_to_filenames,
+            testing::ElementsAre(testing::Eq(base::FilePath("//path/to/d")),
+                                 testing::Eq(base::FilePath("//path/to/e")),
+                                 testing::Eq(base::FilePath("//path/to/f"))),
+            testing::IsEmpty()));
+  }
+
+  // Clean up holding space for the user before client/model go out of scope.
+  controller->RegisterClientAndModelForUser(account_id, /*client=*/nullptr,
+                                            /*model=*/nullptr);
+}
 
 // Verifies that `holding_space_util::ToString()` is WAI.
 // NOTE: These values are persisted to histograms and must remain unchanged.
@@ -84,5 +205,4 @@ TEST_F(HoldingSpaceUtilTest, ToString) {
   }
 }
 
-}  // namespace holding_space_util
-}  // namespace ash
+}  // namespace ash::holding_space_util

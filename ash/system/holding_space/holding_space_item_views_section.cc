@@ -252,8 +252,9 @@ void HoldingSpaceItemViewsSection::PreferredSizeChanged() {
 
 void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.parent != container_)
+  if (details.parent != container_.get()) {
     return;
+  }
 
   // Update visibility when becoming empty or non-empty. Note that in the case
   // of a view being added, `ViewHierarchyChanged()` is called *after* the view
@@ -320,7 +321,7 @@ void HoldingSpaceItemViewsSection::DestroyPlaceholder() {
   if (!placeholder_)
     return;
 
-  RemoveChildViewT(placeholder_);
+  RemoveChildViewT(placeholder_.get());
   placeholder_ = nullptr;
 
   // In the absence of `placeholder_`, the `header_` should only be visible

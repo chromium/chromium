@@ -4,6 +4,9 @@
 
 #include "ui/base/cursor/mojom/cursor_mojom_traits.h"
 
+#include <limits>
+#include <utility>
+
 #include "base/numerics/safe_conversions.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,6 +14,7 @@
 #include "ui/base/cursor/mojom/cursor.mojom.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -96,6 +100,48 @@ TEST_F(CursorStructTraitsTest, TestDeviceScaleFactors) {
     ASSERT_TRUE(EchoCursor(input, &output));
     EXPECT_EQ(scale, output.image_scale_factor());
   }
+}
+
+TEST_F(CursorStructTraitsTest, TestCustomCursorConstraints) {
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(32, 32);
+  const gfx::Point kHotspot = gfx::Point(10, 20);
+  Cursor input, output;
+
+  input = ui::Cursor::NewCustom(SkBitmap(), gfx::Point());
+  ASSERT_TRUE(EchoCursor(input, &output));
+  EXPECT_EQ(input, output);
+
+  input = ui::Cursor::NewCustom(kBitmap, kHotspot, 1.5f);
+  ASSERT_TRUE(EchoCursor(input, &output));
+  EXPECT_EQ(input, output);
+
+  // Value taken from ui/base/cursor/cursor.cc.
+  static constexpr int kMaximumCursorDIPSize = 128;
+
+  // Expect a failure when the 1x scaled image width is too large.
+  input = ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(kMaximumCursorDIPSize + 1, 3), kHotspot, 1.0f);
+  EXPECT_FALSE(EchoCursor(input, &output));
+
+  // Expect a failure when the 1x scaled image height is too large.
+  input = ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(3, kMaximumCursorDIPSize + 1), kHotspot, 1.0f);
+  EXPECT_FALSE(EchoCursor(input, &output));
+
+  // Expect a failure when the scaled image width is too large.
+  input = ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(kMaximumCursorDIPSize / 2, 5), kHotspot, 0.02f);
+  EXPECT_FALSE(EchoCursor(input, &output));
+
+  // Expect a failure when the scaled image height is too large.
+  input = ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(5, kMaximumCursorDIPSize / 4), kHotspot, 0.1f);
+  EXPECT_FALSE(EchoCursor(input, &output));
+
+  // Expect a failure if calculating the image size overflows.
+  input = ui::Cursor::NewCustom(gfx::test::CreateBitmap(10, 10), kHotspot,
+                                std::numeric_limits<float>::epsilon());
+  EXPECT_FALSE(EchoCursor(input, &output));
 }
 
 }  // namespace ui

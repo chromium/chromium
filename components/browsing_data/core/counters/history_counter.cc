@@ -137,7 +137,7 @@ void HistoryCounter::OnGetLocalHistoryCount(
 
 void HistoryCounter::OnGetWebHistoryCount(
     history::WebHistoryService::Request* request,
-    const base::Value* result) {
+    base::optional_ref<base::Value::Dict> result) {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for |MergeResults|.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -151,10 +151,9 @@ void HistoryCounter::OnGetWebHistoryCount(
   // If the query failed, err on the safe side and inform the user that they
   // may have history items stored in Sync. Otherwise, we expect at least one
   // entry in the "event" list.
-  if (!result) {
+  if (!result.has_value()) {
     has_synced_visits_ = true;
-  } else if (const base::Value::List* events =
-                 result->GetDict().FindList("event")) {
+  } else if (const base::Value::List* events = result->FindList("event")) {
     has_synced_visits_ = !events->empty();
   } else {
     has_synced_visits_ = false;

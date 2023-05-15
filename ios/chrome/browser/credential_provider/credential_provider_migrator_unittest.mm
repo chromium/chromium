@@ -41,7 +41,6 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:url
                                            serviceName:nil
                                                   user:username
-                                  validationIdentifier:nil
                                                   note:nil];
 }
 

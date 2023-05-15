@@ -74,7 +74,7 @@ void SystemTokenCertDbStorage::GetDatabase(GetDatabaseCallback callback) {
   DCHECK(callback);
 
   if (system_token_cert_database_) {
-    std::move(callback).Run(system_token_cert_database_);
+    std::move(callback).Run(system_token_cert_database_.get());
   } else if (system_token_cert_db_retrieval_failed_) {
     std::move(callback).Run(/*nss_cert_database=*/nullptr);
   } else {

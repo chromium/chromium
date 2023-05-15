@@ -175,9 +175,8 @@ IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL video_url = https_server()->GetURL(GetParam().host, GetParam().path);
-  EXPECT_TRUE(ExecuteScript(web_contents, "appendEmbedToDOM('" +
-                                              video_url.spec() + "','" +
-                                              GetParam().type + "');"));
+  EXPECT_TRUE(ExecJs(web_contents, "appendEmbedToDOM('" + video_url.spec() +
+                                       "','" + GetParam().type + "');"));
   WaitForYouTubeRequest();
 }
 
@@ -189,9 +188,8 @@ IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
      browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL video_url = https_server()->GetURL(GetParam().host, GetParam().path);
-  EXPECT_TRUE(ExecuteScript(web_contents, "appendDataEmbedToDOM('" +
-                                              video_url.spec() + "','" +
-                                              GetParam().type + "');"));
+  EXPECT_TRUE(ExecJs(web_contents, "appendDataEmbedToDOM('" + video_url.spec() +
+                                       "','" + GetParam().type + "');"));
   WaitForYouTubeRequest();
 }
 

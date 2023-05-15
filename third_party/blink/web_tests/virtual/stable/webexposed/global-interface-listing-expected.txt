@@ -63,6 +63,8 @@ interface Animation : EventTarget
     getter pending
     getter playState
     getter playbackRate
+    getter rangeEnd
+    getter rangeStart
     getter ready
     getter replaceState
     getter startTime
@@ -83,6 +85,8 @@ interface Animation : EventTarget
     setter onfinish
     setter onremove
     setter playbackRate
+    setter rangeEnd
+    setter rangeStart
     setter startTime
     setter timeline
 interface AnimationEffect
@@ -105,7 +109,9 @@ interface AnimationPlaybackEvent : Event
 interface AnimationTimeline
     attribute @@toStringTag
     getter currentTime
+    getter duration
     method constructor
+    method getCurrentTime
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -1529,6 +1535,7 @@ interface Document : Node
     getter onresize
     getter onresume
     getter onscroll
+    getter onscrollend
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -1737,6 +1744,7 @@ interface Document : Node
     setter onresize
     setter onresume
     setter onscroll
+    setter onscrollend
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -2623,7 +2631,6 @@ interface GPUSupportedLimits
     getter maxComputeWorkgroupsPerDimension
     getter maxDynamicStorageBuffersPerPipelineLayout
     getter maxDynamicUniformBuffersPerPipelineLayout
-    getter maxFragmentCombinedOutputResources
     getter maxInterStageShaderComponents
     getter maxInterStageShaderVariables
     getter maxSampledTexturesPerShaderStage
@@ -3146,6 +3153,7 @@ interface HTMLElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -3276,6 +3284,7 @@ interface HTMLElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -5008,6 +5017,7 @@ interface MathMLElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -5116,6 +5126,7 @@ interface MathMLElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -6165,6 +6176,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter domainLookupStart
     getter encodedBodySize
     getter fetchStart
+    getter firstInterimResponseStart
     getter initiatorType
     getter nextHopProtocol
     getter redirectEnd
@@ -7064,6 +7076,7 @@ interface SVGElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -7174,6 +7187,7 @@ interface SVGElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -8044,6 +8058,11 @@ interface ScriptProcessorNode : AudioNode
     getter onaudioprocess
     method constructor
     setter onaudioprocess
+interface ScrollTimeline : AnimationTimeline
+    attribute @@toStringTag
+    getter axis
+    getter source
+    method constructor
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag
     getter blockedURI
@@ -8878,6 +8897,12 @@ interface VideoPlaybackQuality
     getter droppedVideoFrames
     getter totalVideoFrames
     method constructor
+interface ViewTimeline : ScrollTimeline
+    attribute @@toStringTag
+    getter endOffset
+    getter startOffset
+    getter subject
+    method constructor
 interface ViewTransition
     attribute @@toStringTag
     getter finished
@@ -8896,6 +8921,9 @@ interface VirtualKeyboard : EventTarget
     setter ongeometrychange
     setter overlaysContent
 interface VirtualKeyboardGeometryChangeEvent : Event
+    attribute @@toStringTag
+    method constructor
+interface VisibilityStateEntry : PerformanceEntry
     attribute @@toStringTag
     method constructor
 interface VisualViewport : EventTarget
@@ -11177,6 +11205,7 @@ namespace console
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -11391,6 +11420,7 @@ namespace console
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked

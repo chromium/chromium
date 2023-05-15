@@ -19,7 +19,8 @@ class MockProjectorController : public ash::ProjectorController {
   ~MockProjectorController() override;
 
   // ProjectorController:
-  MOCK_METHOD1(StartProjectorSession, void(const std::string& storageDir));
+  MOCK_METHOD1(StartProjectorSession,
+               void(const base::SafeBaseName& storageDir));
   MOCK_METHOD1(SetClient, void(ash::ProjectorClient* client));
   MOCK_METHOD0(OnSpeechRecognitionAvailabilityChanged, void());
   MOCK_METHOD1(OnTranscription,

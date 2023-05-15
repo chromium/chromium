@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -70,7 +71,8 @@ class ArcPaymentAppBridge : public KeyedService {
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 
 }  // namespace arc

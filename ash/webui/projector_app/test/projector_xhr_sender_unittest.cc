@@ -64,20 +64,21 @@ TEST_F(ProjectorXhrSenderTest, Success) {
   base::RunLoop run_loop;
 
   const std::string& test_response_body = "{}";
-  sender()->Send(
-      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
-      /*use_credentials=*/false,
-      /*use_api_key=*/false,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body, run_loop.QuitClosure()));
+  sender()->Send(GURL(kTestDriveRequestUrl),
+                 projector::mojom::RequestType::kGet, /*request_body=*/"",
+                 /*use_credentials=*/false,
+                 /*use_api_key=*/false,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body, run_loop.QuitClosure()));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);
@@ -91,38 +92,40 @@ TEST_F(ProjectorXhrSenderTest, Success) {
 TEST_F(ProjectorXhrSenderTest, TwoRequests) {
   base::RunLoop run_loop;
   const std::string& test_response_body = "{}";
-  sender()->Send(
-      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
-      /*use_credentials=*/false,
-      /*use_api_key=*/false,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body, run_loop.QuitClosure()));
+  sender()->Send(GURL(kTestDriveRequestUrl),
+                 projector::mojom::RequestType::kGet, /*request_body=*/"",
+                 /*use_credentials=*/false,
+                 /*use_api_key=*/false,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body, run_loop.QuitClosure()));
 
   base::RunLoop run_loop2;
   const std::string& test_response_body2 = "{data: {}}";
   auto translation_url = GURL(kTestTranslationRequestUrl);
-  sender()->Send(
-      translation_url, "GET", /*request_body=*/"",
-      /*use_credentials=*/false,
-      /*use_api_key=*/false,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body2, run_loop2.QuitClosure()));
+  sender()->Send(translation_url, projector::mojom::RequestType::kGet,
+                 /*request_body=*/"",
+                 /*use_credentials=*/false,
+                 /*use_api_key=*/false,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body2, run_loop2.QuitClosure()));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);
@@ -141,20 +144,21 @@ TEST_F(ProjectorXhrSenderTest, UseCredentials) {
   base::RunLoop run_loop;
 
   const std::string& test_response_body = "{}";
-  sender()->Send(
-      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
-      /*use_credentials=*/true,
-      /*use_api_key=*/false,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body, run_loop.QuitClosure()));
+  sender()->Send(GURL(kTestDriveRequestUrl),
+                 projector::mojom::RequestType::kGet, /*request_body=*/"",
+                 /*use_credentials=*/true,
+                 /*use_api_key=*/false,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body, run_loop.QuitClosure()));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);
@@ -171,19 +175,20 @@ TEST_F(ProjectorXhrSenderTest, UseApiKey) {
 
   auto url = GURL(kTestTranslationRequestUrl);
   const std::string& test_response_body = "{}";
-  sender()->Send(
-      url, "GET", /*request_body=*/"", /*use_credentials=*/false,
-      /*use_api_key=*/true,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body, run_loop.QuitClosure()));
+  sender()->Send(url, projector::mojom::RequestType::kGet, /*request_body=*/"",
+                 /*use_credentials=*/false,
+                 /*use_api_key=*/true,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body, run_loop.QuitClosure()));
 
   // Verify that http request is sent with API key.
   mock_app_client().test_url_loader_factory().AddResponse(
@@ -196,14 +201,16 @@ TEST_F(ProjectorXhrSenderTest, NetworkError) {
   base::RunLoop run_loop;
 
   sender()->Send(
-      GURL(kTestDriveRequestUrl), /*method=*/"GET", /*request_body=*/"",
+      GURL(kTestDriveRequestUrl),
+      /*method=*/projector::mojom::RequestType::kGet, /*request_body=*/"",
       /*use_credentials=*/false, /*use_api_key=*/false,
       base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_FALSE(success);
+          [](base::RepeatingClosure quit_closure,
+             const std::string& response_body,
+             projector::mojom::XhrResponseCode response_code) {
             EXPECT_EQ("", response_body);
-            EXPECT_EQ("XHR_FETCH_FAILURE", error);
+            EXPECT_EQ(response_code,
+                      projector::mojom::XhrResponseCode::kXhrFetchFailure);
             quit_closure.Run();
           },
           run_loop.QuitClosure()));
@@ -222,14 +229,16 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
   base::RunLoop run_loop;
 
   sender()->Send(
-      GURL("https://example.com"), /*method=*/"GET", /*request_body=*/"",
+      GURL("https://example.com"),
+      /*method=*/projector::mojom::RequestType::kGet, /*request_body=*/"",
       /*use_credentials=*/false, /*use_api_key=*/false,
       base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_FALSE(success);
+          [](base::RepeatingClosure quit_closure,
+             const std::string& response_body,
+             projector::mojom::XhrResponseCode response_code) {
             EXPECT_EQ("", response_body);
-            EXPECT_EQ("UNSUPPORTED_URL", error);
+            EXPECT_EQ(response_code,
+                      projector::mojom::XhrResponseCode::kUnsupportedURL);
             quit_closure.Run();
           },
           run_loop.QuitClosure()));
@@ -244,21 +253,22 @@ TEST_F(ProjectorXhrSenderTest, SuccessWithPrimaryEmail) {
   base::RunLoop run_loop;
 
   const std::string& test_response_body = "{}";
-  sender()->Send(
-      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
-      /*use_credentials=*/false,
-      /*use_api_key=*/false,
-      base::BindOnce(
-          [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
-            EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
-            quit_closure.Run();
-          },
-          test_response_body, run_loop.QuitClosure()),
-      base::Value::Dict(), kTestUserEmail);
+  sender()->Send(GURL(kTestDriveRequestUrl),
+                 projector::mojom::RequestType::kGet, /*request_body=*/"",
+                 /*use_credentials=*/false,
+                 /*use_api_key=*/false,
+                 base::BindOnce(
+                     [](const std::string& expected_response_body,
+                        base::RepeatingClosure quit_closure,
+                        const std::string& response_body,
+                        projector::mojom::XhrResponseCode response_code) {
+                       EXPECT_EQ(expected_response_body, response_body);
+                       EXPECT_EQ(response_code,
+                                 projector::mojom::XhrResponseCode::kSuccess);
+                       quit_closure.Run();
+                     },
+                     test_response_body, run_loop.QuitClosure()),
+                 base::flat_map<std::string, std::string>(), kTestUserEmail);
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);
@@ -276,18 +286,20 @@ TEST_F(ProjectorXhrSenderTest, InvalidAccountEmail) {
   base::RunLoop run_loop;
 
   sender()->Send(
-      GURL(kTestDriveRequestUrl), /*method=*/"GET", /*request_body=*/"",
+      GURL(kTestDriveRequestUrl),
+      /*method=*/projector::mojom::RequestType::kGet, /*request_body=*/"",
       /*use_credentials=*/false, /*use_api_key=*/false,
       base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_FALSE(success);
+          [](base::RepeatingClosure quit_closure,
+             const std::string& response_body,
+             projector::mojom::XhrResponseCode response_code) {
             EXPECT_EQ("", response_body);
-            EXPECT_EQ("INVALID_ACCOUNT_EMAIL", error);
+            EXPECT_EQ(response_code,
+                      projector::mojom::XhrResponseCode::kInvalidAccountEmail);
             quit_closure.Run();
           },
           run_loop.QuitClosure()),
-      /*headers=*/base::Value::Dict(),
+      /*headers=*/base::flat_map<std::string, std::string>(),
       /*account_email*/ kInvalidTestUserEmail);
 
   run_loop.Run();
@@ -301,20 +313,22 @@ TEST_F(ProjectorXhrSenderTest, SuccessWithSecondaryEmail) {
 
   const std::string& test_response_body = "{}";
   sender()->Send(
-      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
+      GURL(kTestDriveRequestUrl), projector::mojom::RequestType::kGet,
+      /*request_body=*/"",
       /*use_credentials=*/false,
       /*use_api_key=*/false,
       base::BindOnce(
           [](const std::string& expected_response_body,
-             base::RepeatingClosure quit_closure, bool success,
-             const std::string& response_body, const std::string& error) {
-            EXPECT_TRUE(success);
+             base::RepeatingClosure quit_closure,
+             const std::string& response_body,
+             projector::mojom::XhrResponseCode response_code) {
             EXPECT_EQ(expected_response_body, response_body);
-            EXPECT_EQ("", error);
+            EXPECT_EQ(response_code,
+                      projector::mojom::XhrResponseCode::kSuccess);
             quit_closure.Run();
           },
           test_response_body, run_loop.QuitClosure()),
-      base::Value::Dict(), kTestUserSecondaryEmail);
+      base::flat_map<std::string, std::string>(), kTestUserSecondaryEmail);
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);

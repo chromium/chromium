@@ -404,16 +404,16 @@ inline void EventDispatcher::DispatchEventPostProcess(
     // Non-bubbling events call only one default event handler, the one for the
     // target.
     node_->DefaultEventHandler(*event_);
-    DCHECK(!event_->defaultPrevented());
     // For bubbling events, call default event handlers on the same targets in
     // the same order as the bubbling phase.
-    if (!event_->DefaultHandled() && event_->bubbles()) {
+    if (!event_->DefaultHandled() && !event_->defaultPrevented() &&
+        event_->bubbles()) {
       wtf_size_t size = event_->GetEventPath().size();
       for (wtf_size_t i = 1; i < size; ++i) {
         event_->GetEventPath()[i].GetNode().DefaultEventHandler(*event_);
-        DCHECK(!event_->defaultPrevented());
-        if (event_->DefaultHandled())
+        if (event_->DefaultHandled() || event_->defaultPrevented()) {
           break;
+        }
       }
     }
   } else {

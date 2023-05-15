@@ -193,8 +193,9 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Account consistency is unavailable on Managed Guest Sessions and Public
   // Sessions.
-  if (profiles::IsPublicSession())
+  if (profiles::IsPublicSession() || profile->IsGuestSession()) {
     return AccountConsistencyMethod::kDisabled;
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_MIRROR)

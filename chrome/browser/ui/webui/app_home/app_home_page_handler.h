@@ -115,6 +115,10 @@ class AppHomePageHandler
  private:
   Browser* GetCurrentBrowser();
 
+  // Used to load the deprecated apps dialog if a chrome app is launched from
+  // the command line.
+  void LoadDeprecatedAppsDialogIfRequired();
+
   // Returns the ExtensionUninstallDialog object for this class, creating it if
   // needed.
   extensions::ExtensionUninstallDialog* CreateExtensionUninstallDialog();
@@ -187,6 +191,11 @@ class AppHomePageHandler
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
   // Set of deprecated app ids for showing on dialog.
   std::set<extensions::ExtensionId> deprecated_app_ids_;
+
+  // Do not spam showing the dialog on every app install or any changes on the
+  // page. Only show the dialog once the page loads when this class gets
+  // constructed.
+  bool has_maybe_loaded_deprecated_apps_dialog_ = false;
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppHomePageHandler> weak_ptr_factory_{this};

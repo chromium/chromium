@@ -556,7 +556,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
-  [BookmarkEarlGrey waitForBookmarkModelLoaded:YES];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [ChromeEarlGreyUI openTabGrid];
 
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
@@ -1274,7 +1274,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey loadURL:_URL4];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
 
-  [BookmarkEarlGrey waitForBookmarkModelLoaded:YES];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
@@ -1687,7 +1687,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that suggested actions section does not appear in search mode for
 // incognito page.
-- (void)testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
+// TODO(crbug.com/1443003): This test is flaky.
+- (void)FLAKY_testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
   [self loadTestURLsInNewIncognitoTabs];
   [ChromeEarlGreyUI openTabGrid];
 

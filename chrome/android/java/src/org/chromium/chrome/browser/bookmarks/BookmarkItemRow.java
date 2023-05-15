@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -25,10 +25,12 @@ import org.chromium.url.GURL;
 // TODO (crbug.com/1424431): Make this class more extensible.
 public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     private GURL mUrl;
+
     private RoundedIconGenerator mIconGenerator;
-    private final int mMinIconSize;
-    private final int mDisplayedIconSize;
     private boolean mFaviconCancelled;
+
+    private int mFetchFaviconSize;
+    private int mDisplayFaviconSize;
 
     /**
      * Factory constructor for building the view programmatically.
@@ -45,24 +47,11 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     public BookmarkItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        boolean isVisualRefreshEnabled = BookmarkFeatures.isBookmarksVisualRefreshEnabled();
-        mMinIconSize = isVisualRefreshEnabled
-                ? getResources().getDimensionPixelSize(R.dimen.bookmark_refresh_min_start_icon_size)
-                : getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
-
-        mDisplayedIconSize = isVisualRefreshEnabled
-                ? getResources().getDimensionPixelSize(
-                        R.dimen.bookmark_refresh_preferred_start_icon_size)
-                : getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        if (isVisualRefreshEnabled) {
-            mIconGenerator = new RoundedIconGenerator(mDisplayedIconSize, mDisplayedIconSize,
-                    mDisplayedIconSize / 2,
-                    getContext().getColor(R.color.default_favicon_background_color),
-                    getResources().getDimensionPixelSize(
-                            R.dimen.bookmark_refresh_circular_monogram_text_size));
-        } else {
-            mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
-        }
+        final @BookmarkRowDisplayPref int displayPref = BookmarkUiPrefs.getDisplayPrefForLegacy();
+        mIconGenerator =
+                BookmarkUtils.getRoundedIconGenerator(getContext(), getResources(), displayPref);
+        mFetchFaviconSize = BookmarkUtils.getFaviconFetchSize(getResources());
+        mDisplayFaviconSize = BookmarkUtils.getFaviconDisplaySize(getResources(), displayPref);
     }
 
     // BookmarkRow implementation.
@@ -93,7 +82,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getUrlForDisplay());
         mFaviconCancelled = false;
-        mDelegate.getLargeIconBridge().getLargeIconForUrl(mUrl, mMinIconSize, this);
+        mDelegate.getLargeIconBridge().getLargeIconForUrl(mUrl, mFetchFaviconSize, this);
         return item;
     }
 
@@ -109,7 +98,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
             @IconType int iconType) {
         if (mFaviconCancelled) return;
         Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
-                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
+                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayFaviconSize);
         setIconDrawable(iconDrawable);
     }
 

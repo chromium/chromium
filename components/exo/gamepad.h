@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/exo/gamepad_delegate.h"
@@ -96,7 +97,7 @@ class Gamepad {
   base::ObserverList<GamepadObserver>::Unchecked observer_list_;
 
   // Methods to control gamepad vibration are routed through InputController.
-  ui::InputController* input_controller_;
+  raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;
 
   // A timer to keep track of vibration requests.
   base::OneShotTimer vibration_timer_;

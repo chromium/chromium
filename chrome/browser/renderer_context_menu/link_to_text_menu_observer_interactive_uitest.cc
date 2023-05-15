@@ -93,7 +93,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     menu()->set_web_contents(web_contents);
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-    EXPECT_TRUE(ExecuteScript(main_frame, "window.focus();"));
+    EXPECT_TRUE(ExecJs(main_frame, "window.focus();"));
   }
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* main_frame_a = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame_b = ChildFrameAt(main_frame_a, 0);
-  EXPECT_TRUE(ExecuteScript(child_frame_b, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child_frame_b, "window.focus();"));
   EXPECT_EQ(child_frame_b, web_contents->GetFocusedFrame());
 
   menu()->set_web_contents(web_contents);

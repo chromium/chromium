@@ -20,6 +20,9 @@ class AccessibilityState {
    public:
     // Called when the animator duration scale changes.
     virtual void OnAnimatorDurationScaleChanged() = 0;
+
+    // Called during browser startup and any time enabled services change.
+    virtual void RecordAccessibilityServiceInfoHistograms() = 0;
   };
 
   // Registers a delegate to listen to animator duration scale changes.
@@ -31,13 +34,12 @@ class AccessibilityState {
   // Notifies all delegates of an animator duration scale change.
   static void NotifyAnimatorDurationScaleObservers();
 
+  // Notifies all delegates to record service info histograms.
+  static void NotifyRecordAccessibilityServiceInfoHistogram();
+
   // --------------------------------------------------------------------------
   // Methods that call into AccessibilityState.java via JNI
   // --------------------------------------------------------------------------
-
-  // Register Java-side Android accessibility state observers and ensure
-  // AccessibilityState is initialized.
-  static void RegisterObservers();
 
   // Returns the event mask of all running accessibility services.
   static int GetAccessibilityServiceEventTypeMask();

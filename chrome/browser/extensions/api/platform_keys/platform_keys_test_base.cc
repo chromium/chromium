@@ -4,9 +4,13 @@
 
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 
+#include <array>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -33,8 +37,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-const char kAffiliationID[] = "some-affiliation-id";
-const char kTestUserinfoToken[] = "fake-userinfo-token";
+constexpr char kAffiliationID[] = "some-affiliation-id";
+constexpr char kTestUserinfoToken[] = "fake-userinfo-token";
 
 PlatformKeysTestBase::PlatformKeysTestBase(
     SystemTokenStatus system_token_status,
@@ -107,10 +111,9 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
           ash::FakeSessionManagerClient::Get());
 
   if (enrollment_status() == EnrollmentStatus::ENROLLED) {
-    std::set<std::string> device_affiliation_ids;
-    device_affiliation_ids.insert(kAffiliationID);
     ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-        &device_policy_test_helper_, device_affiliation_ids));
+        &device_policy_test_helper_,
+        std::array{base::StringPiece(kAffiliationID)}));
     device_policy_test_helper_.InstallOwnerKey();
     install_attributes_.Get()->SetCloudManaged(
         policy::PolicyBuilder::kFakeDomain,
@@ -118,11 +121,10 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
   }
 
   if (user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
-    std::set<std::string> user_affiliation_ids;
-    user_affiliation_ids.insert(kAffiliationID);
     policy::UserPolicyBuilder user_policy;
     ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
-        &user_policy, account_id_, user_affiliation_ids));
+        &user_policy, account_id_,
+        std::array{base::StringPiece(kAffiliationID)}));
   }
 
   mock_policy_provider_.SetDefaultReturns(

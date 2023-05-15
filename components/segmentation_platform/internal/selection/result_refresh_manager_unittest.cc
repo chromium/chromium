@@ -13,10 +13,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
-#include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -62,7 +62,7 @@ class ResultRefreshManagerTest : public testing::Test {
     client2_result_provider_ = std::make_unique<MockResultProvider>();
 
     result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
-        configs_, std::move(cached_result_writer_), PlatformOptions(false));
+        configs_, cached_result_writer_.get(), PlatformOptions(false));
   }
 
   std::unique_ptr<CachedResultWriter> SetupCachedResultWriter() {

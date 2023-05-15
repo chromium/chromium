@@ -8,7 +8,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -64,13 +64,14 @@ class CONTENT_EXPORT AttributionTrigger {
     kProhibitedByBrowserPolicy = 10,
     kDeduplicated = 11,
     kReportWindowPassed = 12,
-    kMaxValue = kReportWindowPassed,
+    kExcessiveReports = 13,
+    kMaxValue = kExcessiveReports,
   };
 
   AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
                      attribution_reporting::TriggerRegistration registration,
                      attribution_reporting::SuitableOrigin destination_origin,
-                     absl::optional<network::TriggerAttestation> attestation,
+                     absl::optional<network::TriggerVerification> verification,
                      bool is_within_fenced_frame);
 
   AttributionTrigger(const AttributionTrigger&);
@@ -97,8 +98,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
-  const absl::optional<network::TriggerAttestation>& attestation() const {
-    return attestation_;
+  const absl::optional<network::TriggerVerification>& verification() const {
+    return verification_;
   }
 
  private:
@@ -110,7 +111,7 @@ class CONTENT_EXPORT AttributionTrigger {
   attribution_reporting::SuitableOrigin destination_origin_;
 
   // Optional token attesting to the veracity of the trigger.
-  absl::optional<network::TriggerAttestation> attestation_;
+  absl::optional<network::TriggerVerification> verification_;
 
   // Whether the trigger is registered within a fenced frame tree.
   bool is_within_fenced_frame_;

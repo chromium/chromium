@@ -5,8 +5,12 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include <string>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/url_constants.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/url_matcher/url_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
@@ -62,6 +66,23 @@ bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents) {
 
   return outer_most_content->GetLastCommittedURL() ==
          GURL(chrome::kChromeUIEDUCoexistenceLoginURLV2);
+}
+
+ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
+  // Do not create for Incognito profile.
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOriginalOnly)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      .Build();
+}
+
+ProfileSelections BuildProfileSelectionsLegacy() {
+  CHECK(!base::FeatureList::IsEnabled(
+      supervised_user::kUpdateSupervisedUserFactoryCreation));
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOriginalOnly)
+      .WithGuest(ProfileSelection::kOriginalOnly)
+      .Build();
 }
 
 }  // namespace supervised_user

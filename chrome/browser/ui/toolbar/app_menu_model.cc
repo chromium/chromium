@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -61,7 +62,9 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -75,6 +78,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
+#include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -168,6 +172,11 @@ absl::optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
                                     ui::EscapeMenuLabelAmpersands(app_name));
 }
 
+bool IsPasswordManagerPage(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         url.DomainIs(password_manager::kChromeUIPasswordManagerHost);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,11 +223,21 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #else
     int help_string_id = IDS_HELP_PAGE;
 #endif
-    AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
+    AddItemWithStringId(IDC_ABOUT, IDS_ABOUT);
+    if (features::IsChromeRefresh2023()) {
+      SetIcon(
+          GetIndexOfCommandId(IDC_ABOUT).value(),
+          ui::ImageModel::FromVectorIcon(vector_icons::kInfoRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
-      AddItem(IDC_CHROME_WHATS_NEW,
-              l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW));
+      AddItemWithStringId(IDC_CHROME_WHATS_NEW, IDS_CHROME_WHATS_NEW);
+      if (features::IsChromeRefresh2023()) {
+        SetIcon(GetIndexOfCommandId(IDC_CHROME_WHATS_NEW).value(),
+                ui::ImageModel::FromVectorIcon(
+                    kReleaseAlertIcon, ui::kColorMenuIcon, kDefaultIconSize));
+      }
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
@@ -226,9 +245,20 @@ class HelpMenuModel : public ui::SimpleMenuModel {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
       SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU).value(),
               ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
+    } else if (features::IsChromeRefresh2023()) {
+      SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU).value(),
+              ui::ImageModel::FromVectorIcon(kHelpMenuIcon, ui::kColorMenuIcon,
+                                             kDefaultIconSize));
     }
-    if (browser->profile()->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed))
+    if (browser->profile()->GetPrefs()->GetBoolean(
+            prefs::kUserFeedbackAllowed)) {
       AddItemWithStringId(IDC_FEEDBACK, IDS_FEEDBACK);
+      if (features::IsChromeRefresh2023()) {
+        SetIcon(GetIndexOfCommandId(IDC_FEEDBACK).value(),
+                ui::ImageModel::FromVectorIcon(kReportIcon, ui::kColorMenuIcon,
+                                               kDefaultIconSize));
+      }
+    }
   }
 };
 
@@ -258,7 +288,8 @@ void ToolsMenuModel::Build(Browser* browser) {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA);
-  if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+  if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) &&
+      !features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
   AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
@@ -306,45 +337,70 @@ void ExtensionsMenuModel::Build(Browser* browser) {
       GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
           .value(),
       kVisitChromeWebStoreMenuItem);
+  if (features::IsChromeRefresh2023()) {
+    SetIcon(
+        GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
+            kDefaultIconSize));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    SetIcon(
+        GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
+            .value(),
+        ui::ImageModel::FromVectorIcon(vector_icons::kGoogleChromeWebstoreIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+#endif
+  }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// PasswordsAndAutofillSubMenuModel
+
+PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate)
+    : SimpleMenuModel(delegate) {
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_PASSWORD_MANAGER, IDS_PASSWORD_MANAGER_SUBMENU_OPTION,
+      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+      ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+      ui::ImageModel::FromVectorIcon(kLocationOnChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+}
+
+PasswordsAndAutofillSubMenuModel::~PasswordsAndAutofillSubMenuModel() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FindAndEditSubMenuModel
 
 FindAndEditSubMenuModel::FindAndEditSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser,
-    AppMenuIconController* app_menu_icon_controller)
-    : SimpleMenuModel(delegate),
-      app_menu_icon_controller_(app_menu_icon_controller) {
-  Build(browser);
-}
-
-FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
-
-void FindAndEditSubMenuModel::Build(Browser* browser) {
+    ui::SimpleMenuModel::Delegate* delegate)
+    : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
       IDC_FIND, IDS_FIND,
-      ui::ImageModel::FromVectorIcon(
-          kSearchMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
       IDC_CUT, IDS_CUT,
-      ui::ImageModel::FromVectorIcon(
-          kCutMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_COPY, IDS_COPY,
-      ui::ImageModel::FromVectorIcon(
-          kCopyMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_PASTE, IDS_PASTE,
-      ui::ImageModel::FromVectorIcon(
-          kPasteMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
 }
+
+FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
@@ -409,7 +465,8 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
          command_id == IDC_LACROS_DATA_MIGRATION ||
 #endif
-         command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
+         (command_id == IDC_INSTALL_PWA && !features::IsChromeRefresh2023()) ||
+         command_id == IDC_UPGRADE_DIALOG;
 }
 
 std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
@@ -476,6 +533,11 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_PERFORMANCE) {
     browser()->window()->NotifyFeatureEngagementEvent(
         feature_engagement::events::kPerformanceMenuItemActivated);
+  }
+
+  if (command_id == IDC_VIEW_PASSWORDS) {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        password_manager::prefs::kPasswordsPrefWithNewLabelUsed, true);
   }
 
   LogMenuMetrics(command_id);
@@ -557,7 +619,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+            features::IsChromeRefresh2023());
       // Logging the original histograms for experiment comparison purposes.
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
@@ -566,7 +629,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+            features::IsChromeRefresh2023());
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
@@ -612,6 +676,14 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Print", delta);
       LogMenuAction(MENU_ACTION_PRINT);
+      break;
+
+    case IDC_TRANSLATE_PAGE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.TranslatePage",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_TRANSLATE_PAGE);
       break;
 
     case IDC_ROUTE_MEDIA:
@@ -817,17 +889,17 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_OPEN_IN_CHROME);
       break;
-    case IDC_SITE_SETTINGS:
-      if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SiteSettings",
-                                   delta);
-      }
-      LogMenuAction(MENU_ACTION_SITE_SETTINGS);
-      break;
     case IDC_WEB_APP_MENU_APP_INFO:
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AppInfo", delta);
       LogMenuAction(MENU_ACTION_APP_INFO);
+      break;
+    case IDC_VIEW_PASSWORDS:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.PasswordManager",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_PASSWORD_MANAGER);
       break;
   }
 
@@ -975,6 +1047,17 @@ void AppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
+  if (!browser_->profile()->IsGuestSession() &&
+      features::IsChromeRefresh2023() &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    sub_menus_.push_back(
+        std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
+    AddSubMenuWithStringId(IDC_PASSWORDS_AND_AUTOFILL_MENU,
+                           IDS_PASSWORDS_AND_AUTOFILL_MENU,
+                           sub_menus_.back().get());
+  }
+
   if (!browser_->profile()->IsOffTheRecord()) {
     sub_menus_.push_back(
         std::make_unique<RecentTabsSubMenuModel>(provider_, browser_));
@@ -989,26 +1072,44 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     bookmark_sub_menu_model_ =
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
-    AddSubMenuWithStringId(IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_MENU,
+
+    AddSubMenuWithStringId(IDC_BOOKMARKS_MENU,
+                           features::IsChromeRefresh2023()
+                               ? IDS_BOOKMARKS_AND_LISTS_MENU
+                               : IDS_BOOKMARKS_MENU,
                            bookmark_sub_menu_model_.get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
                            kBookmarksMenuItem);
   }
-  if (!browser_->profile()->IsOffTheRecord() &&
+  WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!browser_->profile()->IsOffTheRecord() && web_contents &&
+      !IsPasswordManagerPage(web_contents->GetURL()) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerRedesign)) {
     AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(),
                            kPasswordManagerMenuItem);
+    if (!browser_->profile()->GetPrefs()->GetBoolean(
+            password_manager::prefs::kPasswordsPrefWithNewLabelUsed)) {
+      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(), true);
+    }
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+      features::IsChromeRefresh2023()) {
     // Extensions sub menu.
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringId(IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
                            sub_menus_.back().get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
+    if (features::IsChromeRefresh2023()) {
+      SetIcon(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
+              ui::ImageModel::FromVectorIcon(
+                  vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
+                  kDefaultIconSize));
+    }
   }
 
   AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
@@ -1023,8 +1124,20 @@ void AppMenuModel::Build() {
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
   if (features::IsChromeRefresh2023()) {
-    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(
-        this, browser_, app_menu_icon_controller_));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (companion::IsCompanionFeatureEnabled()) {
+      // TODO(josephjoopark): Update CSC string with StringId when finalized.
+      AddItem(IDC_SHOW_SEARCH_COMPANION, u"Chrome Search Companion");
+    }
+#endif
+
+    // TODO(josephjoopark): Update translate string with StringId when
+    // finalized.
+    AddItem(IDC_TRANSLATE_PAGE, u"Google Translate");
+  }
+
+  if (features::IsChromeRefresh2023()) {
+    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
                            sub_menus_.back().get());
   } else {
@@ -1034,6 +1147,12 @@ void AppMenuModel::Build() {
   if (absl::optional<std::u16string> name =
           GetInstallPWAAppMenuItemName(browser_)) {
     AddItem(IDC_INSTALL_PWA, *name);
+    if (features::IsChromeRefresh2023()) {
+      SetIcon(
+          GetIndexOfCommandId(IDC_INSTALL_PWA).value(),
+          ui::ImageModel::FromVectorIcon(kInstallDesktopChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
   } else if (absl::optional<web_app::AppId> app_id =
                  web_app::GetWebAppForActiveTab(browser_)) {
     auto* provider =
@@ -1048,6 +1167,11 @@ void AppMenuModel::Build() {
       AddItem(
           IDC_OPEN_IN_PWA_WINDOW,
           l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
+      if (features::IsChromeRefresh2023()) {
+        SetIcon(GetIndexOfCommandId(IDC_OPEN_IN_PWA_WINDOW).value(),
+                ui::ImageModel::FromVectorIcon(
+                    kDesktopWindowsIcon, ui::kColorMenuIcon, kDefaultIconSize));
+      }
     }
   }
 
@@ -1138,14 +1262,11 @@ void AppMenuModel::Build() {
               vector_icons::kBusinessIcon,
               ui::kColorMenuItemForegroundHighlighted, kIconSize));
     } else {
-      const int kIconSize = 16;
-      AddItemWithIcon(
-          IDC_SHOW_MANAGEMENT_PAGE,
-          chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-          ui::ImageModel::FromVectorIcon(
-              vector_icons::kBusinessChromeRefreshIcon,
-              app_menu_icon_controller_->GetIconColor(absl::nullopt),
-              kIconSize));
+      AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
+                      chrome::GetManagedUiMenuItemLabel(browser_->profile()),
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kBusinessChromeRefreshIcon,
+                          ui::kColorMenuIcon, kDefaultIconSize));
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1155,9 +1276,8 @@ void AppMenuModel::Build() {
       auto index = GetIndexOfCommandId(command_id);
       if (index) {
         SetIcon(index.value(),
-                ui::ImageModel::FromVectorIcon(
-                    vector_icon,
-                    app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+                ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
+                                               kDefaultIconSize));
       }
     };
     set_icon(IDC_NEW_TAB, kNewTabRefreshIcon);
@@ -1166,14 +1286,19 @@ void AppMenuModel::Build() {
     set_icon(IDC_RECENT_TABS_MENU, kHistoryIcon);
     set_icon(IDC_SHOW_DOWNLOADS, kDownloadMenuIcon);
     set_icon(IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
+    set_icon(IDC_VIEW_PASSWORDS, kKeyChromeRefreshIcon);
     set_icon(IDC_ZOOM_MENU, kZoomInIcon);
     set_icon(IDC_PRINT, kPrintMenuIcon);
+    set_icon(IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
     set_icon(IDC_ROUTE_MEDIA, kCastMenuIcon);
     set_icon(IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
+    set_icon(IDC_PASSWORDS_AND_AUTOFILL_MENU, kKeyChromeRefreshIcon);
     set_icon(IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
     set_icon(IDC_OPTIONS, kSettingsMenuIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     set_icon(IDC_HELP_MENU, kHelpMenuIcon);
+    set_icon(IDC_SHOW_SEARCH_COMPANION,
+             vector_icons::kGoogleGLogoMonochromeIcon);
 #endif
     set_icon(IDC_EXIT, kExitMenuIcon);
   }

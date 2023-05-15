@@ -696,14 +696,35 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
       return Promise.reject(new Error('The pipe has already been closed.'));
     }
 
+    // Turns a functions args into an object where each property corresponds to
+    // an argument.
+    //
+    // Each argument in `args` has a single corresponding field in `fields`
+    // except for optional numerics which map to two fields in `fields`. This
+    // means args' indexes don't exactly match `fields`'s. As we iterate
+    // over the fields we keep track of how many optional numeric args we've
+    // seen to get the right `args` index.
     const value = {};
-    paramStruct.$.structSpec.fields.forEach(
-        (field, index) => value[field.name] = args[index]);
+    let nullableValueKindFields = 0;
+    paramStruct.$.structSpec.fields.forEach((field, index) => {
+      const fieldArgsIndex = index - nullableValueKindFields;
+      if (!mojo.internal.isNullableValueKindField(field)) {
+        value[field.name] = args[fieldArgsIndex];
+        return;
+      }
+
+      const props = field.nullableValueKindProperties;
+      if (props.isPrimary) {
+        nullableValueKindFields++;
+        value[props.originalFieldName] = args[fieldArgsIndex];
+      }
+    });
+
     const requestId = this.endpoint_.generateRequestId();
     this.endpoint_.send(
-        ordinal, requestId,
-        maybeResponseStruct ? mojo.internal.kMessageFlagExpectsResponse : 0,
-        paramStruct, value);
+      ordinal, requestId,
+      maybeResponseStruct ? mojo.internal.kMessageFlagExpectsResponse : 0,
+      paramStruct, value);
     if (!maybeResponseStruct) {
       return Promise.resolve();
     }
@@ -1057,10 +1078,24 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
     if (!request)
       throw new Error('Received malformed message');
 
-    let result = handler.handler.apply(
-        null,
-        handler.paramStruct.$.structSpec.fields.map(
-            field => request[field.name]));
+    // Each field in `handler.paramStruct.$.structSpec.fields` corresponds to
+    // an argument, except for optional numerics where two fields correspond to
+    // a single argument.
+    const args = [];
+    for (const field of handler.paramStruct.$.structSpec.fields) {
+      if (!mojo.internal.isNullableValueKindField(field)) {
+        args.push(request[field.name]);
+        continue;
+      }
+
+      const props = field.nullableValueKindProperties;
+      if (!props.isPrimary) {
+        continue;
+      }
+      args.push(request[props.originalFieldName]);
+    }
+
+    let result = handler.handler.apply(null, args);
 
     // If the message expects a response, the handler must return either a
     // well-formed response object, or a Promise that will eventually yield one.

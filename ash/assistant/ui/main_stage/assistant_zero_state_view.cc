@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -39,6 +40,10 @@ namespace {
 // Appearance.
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
+
+// TODO(b/274527683): add i18n strings.
+constexpr char16_t kLearnMoreLabelText[] = u"Learn more about Google Assistant";
+constexpr char16_t kLearnMoreButtonA11yName[] = u"Learn more about Assistant";
 
 constexpr base::StringPiece kLearnMoreUrl =
     "https://support.google.com/chromebook?p=assistant";
@@ -165,14 +170,17 @@ void AssistantZeroStateView::InitLayout() {
   layout->SetFlexForView(spacer_, 1);
 
   // Learn more toast.
-  // TODO(b/274527683): add i18n strings.
   learn_more_toast_ = AddChildView(
-      AppListToastView::Builder(u"Learn more about Google Assistant")
+      AppListToastView::Builder(kLearnMoreLabelText)
           .SetButton(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
                      base::BindRepeating(
                          &AssistantZeroStateView::OnLearnMoreButtonPressed,
                          base::Unretained(this)))
           .Build());
+  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kLink);
+  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideName(
+      kLearnMoreButtonA11yName);
   learn_more_toast_->SetID(AssistantViewID::kLearnMoreToast);
   learn_more_toast_->SetProperty(
       views::kMarginsKey,

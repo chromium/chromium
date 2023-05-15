@@ -8,7 +8,6 @@
 #include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
-#include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"

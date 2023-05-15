@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
@@ -74,7 +75,7 @@ class StringWrapperComparator {
 
  private:
   const bool increasing_;
-  icu::Collator* const collator_;
+  const raw_ptr<icu::Collator, ExperimentalAsh> collator_;
 };
 
 struct EphemeralAwareName {
@@ -96,7 +97,7 @@ class EphemeralStateAndNameComparator {
       const reorder::SyncItemWrapper<EphemeralAwareName>& rhs) const;
 
  private:
-  icu::Collator* const collator_;
+  const raw_ptr<icu::Collator, ExperimentalAsh> collator_;
 };
 
 // Gets a list of wrappers based on the mappings from ids to sync items.

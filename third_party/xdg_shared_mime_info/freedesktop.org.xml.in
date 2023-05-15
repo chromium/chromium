@@ -269,8 +269,6 @@ command to generate the output files.
   </mime-type>
   <mime-type type="application/pgp-encrypted">
     <comment>PGP/MIME-encrypted message header</comment>
-    <sub-class-of type="text/plain"/>
-    <generic-icon name="text-x-generic"/>
     <magic>
       <match type="string" value="-----BEGIN PGP MESSAGE-----" offset="0"/>
     </magic>
@@ -283,8 +281,6 @@ command to generate the output files.
     <comment>PGP keys</comment>
     <acronym>PGP</acronym>
     <expanded-acronym>Pretty Good Privacy</expanded-acronym>
-    <sub-class-of type="text/plain"/>
-    <generic-icon name="text-x-generic"/>
     <magic>
       <match type="string" value="-----BEGIN PGP PUBLIC KEY BLOCK-----" offset="0"/>
       <match type="string" value="-----BEGIN PGP PRIVATE KEY BLOCK-----" offset="0"/>
@@ -302,8 +298,6 @@ command to generate the output files.
   </mime-type>
   <mime-type type="application/pgp-signature">
     <comment>detached OpenPGP signature</comment>
-    <sub-class-of type="text/plain"/>
-    <generic-icon name="text-x-generic"/>
     <magic>
       <match type="string" value="-----BEGIN PGP SIGNATURE-----" offset="0"/>
     </magic>
@@ -1341,7 +1335,7 @@ command to generate the output files.
   </mime-type>
   <mime-type type="application/vnd.android.package-archive">
     <comment>Android package</comment>
-    <sub-class-of type="application/x-java-archive"/>
+    <sub-class-of type="application/java-archive"/>
     <glob pattern="*.apk"/>
   </mime-type>
   <mime-type type="application/vnd.symbian.install">
@@ -2533,12 +2527,12 @@ command to generate the output files.
       <match type="string" value="S T O P" offset="0"/>
     </magic>
   </mime-type>
-  <mime-type type="application/x-java-archive">
+  <mime-type type="application/java-archive">
     <comment>Java archive</comment>
     <sub-class-of type="application/zip"/>
     <generic-icon name="package-x-generic"/>
     <alias type="application/x-jar"/>
-    <alias type="application/java-archive"/>
+    <alias type="application/x-java-archive"/>
     <glob pattern="*.jar"/>
   </mime-type>
   <mime-type type="application/x-java">
@@ -3704,6 +3698,11 @@ command to generate the output files.
     <glob pattern="*.cr"/>
     <alias type="text/crystal"/>
   </mime-type>
+  <mime-type type="text/julia">
+    <comment>Julia source code</comment>
+    <sub-class-of type="text/plain"/>
+    <glob pattern="*.jl"/>
+  </mime-type>  
   <mime-type type="text/rust">
     <comment>Rust source code</comment>
     <sub-class-of type="text/plain"/>
@@ -5873,6 +5872,7 @@ command to generate the output files.
     <comment>glTF model</comment>
     <acronym>glTF</acronym>
     <expanded-acronym>GL Transmission Format</expanded-acronym>
+    <generic-icon name="image-x-generic"/>
     <magic>
       <match type="string" value="glTF" offset="0"/>
     </magic>
@@ -5882,6 +5882,7 @@ command to generate the output files.
     <comment>glTF model</comment>
     <acronym>glTF</acronym>
     <expanded-acronym>GL Transmission Format</expanded-acronym>
+    <generic-icon name="image-x-generic"/>
     <sub-class-of type="application/json"/>
     <glob pattern="*.gltf"/>
   </mime-type>
@@ -5901,6 +5902,7 @@ command to generate the output files.
   <mime-type type="model/obj">
     <comment>OBJ 3D model</comment>
     <sub-class-of type="text/plain"/>
+    <generic-icon name="image-x-generic"/>
     <magic>
       <match type="string" value=" OBJ File: '" offset="0:64"/>
       <match type="string" value="mtllib " offset="0:256"/>
@@ -5909,6 +5911,7 @@ command to generate the output files.
   </mime-type>
   <mime-type type="model/mtl">
     <comment>OBJ 3D model material library</comment>
+    <generic-icon name="image-x-generic"/>
     <sub-class-of type="text/plain"/>
     <magic>
       <match type="string" value="# Blender MTL File: '" offset="0"/>
@@ -7743,12 +7746,14 @@ command to generate the output files.
     <glob pattern="*.3mf"/>
     <alias type="application/vnd.ms-3mfdocument"/>
     <sub-class-of type="application/zip"/>
+    <generic-icon name="image-x-generic"/>
   </mime-type>
 
   <mime-type type="model/stl">
     <comment>STL 3D model</comment>
     <acronym>STL</acronym>
     <expanded-acronym>StereoLithography</expanded-acronym>
+    <generic-icon name="image-x-generic"/>
     <magic>
       <match type="string" value="solid" offset="0"/>
       <match type="string" value="SOLID" offset="0"/>
@@ -7963,6 +7968,14 @@ command to generate the output files.
     <alias type="image/avif-sequence"/>
   </mime-type>
 
+  <mime-type type="image/qoi">
+    <comment>Quite OK Image Format</comment>
+    <magic>
+      <match type="string" value="qoif" offset="0"/>
+    </magic>
+    <glob pattern="*.qoi"/>
+  </mime-type>
+
   <mime-type type="video/vnd.radgamettools.bink">
     <comment>Bink Video</comment>
     <magic>
@@ -8027,5 +8040,12 @@ command to generate the output files.
     <sub-class-of type="application/xml"/>
     <root-XML namespaceURI="http://www.w3.org/2005/sparql-results#" localName="sparql"/>
     <glob pattern="*.srx"/>
+  </mime-type>
+  <mime-type type="application/x-openvpn-profile">
+    <comment>OpenVPN profile</comment>
+    <sub-class-of type="text/plain"/>
+    <generic-icon name="text-x-generic"/>
+    <glob pattern="*.openvpn"/>
+    <glob pattern="*.ovpn"/>
   </mime-type>
 </mime-info>

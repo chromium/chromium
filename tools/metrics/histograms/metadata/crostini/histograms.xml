@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
-    expires_after="2023-08-13">
+    expires_after="2023-10-15">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult" enum="CrostiniResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult.MultiContainerCreation"
-    enum="CrostiniResult" expires_after="2023-05-01">
+    enum="CrostiniResult" expires_after="2024-05-01">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Sshfs.Mount.TimeTaken" units="ms"
-    expires_after="2023-08-14">
+    expires_after="2023-10-15">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TerminalSettingsChanged"
-    enum="CrostiniTerminalSetting" expires_after="2023-08-20">
+    enum="CrostiniTerminalSetting" expires_after="2023-10-22">
   <owner>joelhockey@chromium.org</owner>
   <owner>lxj@google.com</owner>
   <summary>
@@ -601,13 +601,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UninstallResult.Reason" enum="CrostiniResult"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
     The result of a completed Crostini uninstallation. This is recorded when an
-    uninstall that the user triggered via the Crostini uninstaller dialog
-    finishes, either successfully or unsuccessful.
+    uninstall completes either successfully or unsuccessfully, including both
+    those manually triggered via the Crostini uninstaller, and those triggered
+    internally by cancelling a Crostini installation.
   </summary>
 </histogram>
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 
 namespace extensions {
+class CWSInfoServiceInterface;
 class CrxInstaller;
 class Extension;
 }  // namespace extensions
@@ -56,6 +57,7 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
 
  private:
+  std::unique_ptr<extensions::CWSInfoServiceInterface> cws_info_service_;
   base::WeakPtrFactory<TestExtensionService> weak_ptr_factory_{this};
 };
 

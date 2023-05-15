@@ -8,6 +8,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -43,7 +44,7 @@ class PartialMagnifierControllerTestApi {
   }
 
  private:
-  PartialMagnifierController* controller_;
+  raw_ptr<PartialMagnifierController, ExperimentalAsh> controller_;
 };
 
 class PartialMagnifierControllerTest : public AshTestBase {

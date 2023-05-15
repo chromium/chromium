@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/child_accounts/website_approval_notifier.h"
@@ -52,7 +53,7 @@ class ChildUserService : public KeyedService,
     app_time::AppTimeController* app_time_controller();
 
    private:
-    ChildUserService* const service_;
+    const raw_ptr<ChildUserService, ExperimentalAsh> service_;
   };
 
   // These enum values represent the current Family Link user's time limit
@@ -111,7 +112,7 @@ class ChildUserService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   std::unique_ptr<app_time::AppTimeController> app_time_controller_;
 

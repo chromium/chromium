@@ -46,15 +46,15 @@ void OnLaunchCompleteReportRestoreMetrics(
     Profile* profile,
     int restore_id,
     apps::AppLaunchParams params_for_restore,
-    Browser* browser,
-    content::WebContents* web_contents,
+    base::WeakPtr<Browser> browser,
+    base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer launch_container) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!SessionID::IsValidValue(restore_id)) {
     RecordAppLaunchMetrics(
         profile, apps::AppType::kWeb, params_for_restore.app_id,
         params_for_restore.launch_source, params_for_restore.container);
-    std::move(callback).Run(web_contents);
+    std::move(callback).Run(web_contents.get());
     return;
   }
 
@@ -62,9 +62,10 @@ void OnLaunchCompleteReportRestoreMetrics(
       profile, apps::AppType::kWeb, params_for_restore.app_id,
       apps::LaunchSource::kFromFullRestore, params_for_restore.container);
 
-  int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
+  int session_id =
+      apps::GetSessionIdForRestoreFromWebContents(web_contents.get());
   if (!SessionID::IsValidValue(session_id)) {
-    std::move(callback).Run(web_contents);
+    std::move(callback).Run(web_contents.get());
     return;
   }
 
@@ -78,7 +79,7 @@ void OnLaunchCompleteReportRestoreMetrics(
   full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
 
 #endif
-  std::move(callback).Run(web_contents);
+  std::move(callback).Run(web_contents.get());
 }
 
 void LaunchAppWithParamsImpl(

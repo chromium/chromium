@@ -25,6 +25,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -95,10 +96,6 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
                                   : base::UnguessableToken::Create().ToString();
 }
 
-scoped_refptr<base::RefCountedMemory> GetPreviewWallpaper() {
-  return WallpaperController::Get()->GetPreviewImage();
-}
-
 std::string GetJpegDataUrl(const unsigned char* data, size_t size) {
   std::string output = "data:image/jpeg;base64,";
   base::Base64EncodeAppend(base::make_span(data, size), &output);
@@ -159,15 +156,7 @@ void PersonalizationAppWallpaperProviderImpl::BindInterface(
 
 void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
     content::WebUIDataSource::GotDataCallback callback) {
-  // |GetWallpaperAsJpegBytes| is called in the hot path of switching wallpaper
-  // on the UI thread right after user makes a new selection. Make sure to do
-  // resizing and encoding on a task runner to avoid locking up the UI as the
-  // user's wallpaper is being set.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&GetPreviewWallpaper), std::move(callback));
+  WallpaperController::Get()->LoadPreviewImage(std::move(callback));
 }
 
 bool PersonalizationAppWallpaperProviderImpl::IsEligibleForGooglePhotos() {
@@ -392,8 +381,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   switch (info->type) {
     case ash::WallpaperType::kDaily:
     case ash::WallpaperType::kOnline: {
-      if (info->collection_id.empty() || !info->asset_id.has_value()) {
-        DVLOG(2) << "no collection_id or asset_id found";
+      if (info->collection_id.empty() || !info->unit_id.has_value()) {
+        DVLOG(2) << "no collection_id or unit_id found";
         // Older versions of ChromeOS do not store these information, need to
         // look up all collections and match URL.
         FetchCollections(base::BindOnce(
@@ -438,6 +427,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     case ash::WallpaperType::kDefault:
     case ash::WallpaperType::kDevice:
     case ash::WallpaperType::kOneShot:
+    case ash::WallpaperType::kOobe:
     case ash::WallpaperType::kPolicy:
     case ash::WallpaperType::kThirdParty:
       NotifyWallpaperChanged(
@@ -701,6 +691,10 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   DCHECK(wallpaper_controller);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+  if (collection_id == wallpaper_constants::kTimeOfDayWallpaperCollectionId) {
+    wallpaper_receiver_.ReportBadMessage("Unsupported wallpaper collection");
     return;
   }
   wallpaper_controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
@@ -1009,12 +1003,13 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
   const backdrop::Image* backend_image = nullptr;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
-      if (!proto_image.has_image_url() || !proto_image.has_asset_id())
+      if (!proto_image.has_image_url() || !proto_image.has_unit_id()) {
         break;
-      bool is_same_asset_id = info.asset_id.has_value() &&
-                              proto_image.asset_id() == info.asset_id.value();
+      }
+      bool is_same_unit_id = info.unit_id.has_value() &&
+                             proto_image.unit_id() == info.unit_id.value();
       bool is_same_url = info.location.rfind(proto_image.image_url(), 0) == 0;
-      if (is_same_asset_id || is_same_url) {
+      if (is_same_url || is_same_unit_id) {
         backend_image = &proto_image;
         break;
       }

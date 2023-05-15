@@ -12,6 +12,8 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -97,7 +99,7 @@ class FakeEventConverterEvdev : public EventConverterEvdev {
 class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
  public:
   explicit StubDeviceEventDispatcherEvdev(
-      base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>
+      base::RepeatingCallback<void(const std::vector<KeyboardDevice>& devices)>
           callback)
       : callback_(callback) {}
   ~StubDeviceEventDispatcherEvdev() override = default;
@@ -113,7 +115,7 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {}
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices,
+      const std::vector<KeyboardDevice>& devices,
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     callback_.Run(devices);
   }
@@ -123,8 +125,9 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
                                    bool has_mouse) override {}
   void DispatchPointingStickDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
-                                      bool has_haptic_touchpad) override {}
+  void DispatchTouchpadDevicesUpdated(
+      const std::vector<TouchpadDevice>& devices,
+      bool has_haptic_touchpad) override {}
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
   void DispatchDeviceListsComplete() override {}
@@ -137,7 +140,7 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
 
  private:
-  base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>
+  base::RepeatingCallback<void(const std::vector<KeyboardDevice>& devices)>
       callback_;
 };
 
@@ -162,7 +165,7 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
  public:
   InputDeviceFactoryEvdevTest() = default;
 
-  std::vector<InputDevice> keyboards_;
+  std::vector<KeyboardDevice> keyboards_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -177,7 +180,7 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
   }
 
  private:
-  void DispatchCallback(const std::vector<InputDevice>& devices) {
+  void DispatchCallback(const std::vector<KeyboardDevice>& devices) {
     keyboards_ = devices;
   }
 };

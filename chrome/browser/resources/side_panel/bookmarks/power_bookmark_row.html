@@ -3,6 +3,14 @@
     pointer-events: none;
   }
 
+  :host([drop-position='into']) cr-url-list-item {
+    background: var(--cr-hover-background-color);
+  }
+
+  :host-context(.focus-outline-visible):host(:focus) cr-url-list-item {
+    background-color: var(--cr-active-background-color);
+  }
+
   cr-url-list-item[size=compact] {
     padding-inline-end: 14px;
     padding-inline-start: 14px;
@@ -32,9 +40,13 @@
     height: 18px;
     width: 18px;
   }
+
+  :host-context([chrome-refresh-2023]) .sp-labelless-input:hover {
+    --cr-input-background-color: transparent;
+  }
 </style>
 
-<cr-url-list-item
+<cr-url-list-item id="crUrlListItem"
     role="listitem"
     size="[[getItemSize_(compact)]]"
     url="[[bookmark.url]]"
@@ -45,7 +57,8 @@
     button-aria-label="[[rowAriaLabel]]"
     button-aria-description="[[rowAriaDescription]]"
     on-click="onRowClicked_"
-    on-contextmenu="onContextMenu_">
+    on-contextmenu="onContextMenu_"
+    force-hover="[[forceHover]]">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
     <cr-checkbox slot="prefix" hidden="[[!hasCheckbox]]"
         on-change="onCheckboxChange_"
@@ -70,6 +83,7 @@
    <slot slot="badges" id="badges" name="badges"></slot>
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
+        title="[[trailingIconTooltip]]"
         aria-label="[[trailingIconAriaLabel]]">
   </template>
 

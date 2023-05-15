@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Inspelningen avslutades eftersom lagringsutrymmet är nästan fullt på enheten. Du måste frigöra utrymme på enheten om du vill spela in fler videor.</translation>
 <translation id="2036868001356139588">Timerns längd</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
-<translation id="2128052519899549250">Spela in en timelapsevideo</translation>
 <translation id="2134029355740465625">Videoinställningar</translation>
 <translation id="2144806332417375165">Anpassade videoparametrar</translation>
 <translation id="2175927920773552910">QR-kod</translation>
@@ -67,7 +66,6 @@
 <translation id="4121305183798804752">Ett dokument identifierades</translation>
 <translation id="414641094616694804">Det går inte att ändra upplösning för den här kameran</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
-<translation id="4281620174117014503">Medelhög upplösning</translation>
 <translation id="428234092390943511">Sidminiatyr</translation>
 <translation id="4383571725254449280">Skriva ut resultatloggar</translation>
 <translation id="4445542136948522167">Sluta ta foton</translation>
@@ -92,9 +90,9 @@
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5320594929574852403">Flyttas åt vänster</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Timelapse</translation>
 <translation id="5662366948659129155">Skannar sida <ph name="COUNT" />.</translation>
 <translation id="5671277269877808209">Kvadratiskt</translation>
+<translation id="574392208103952083">Medelstark</translation>
 <translation id="5746169159649715125">Spara som PDF</translation>
 <translation id="5753488212459587150">Aktivera expertläge</translation>
 <translation id="5759254179196327752">Skanna dokument</translation>
@@ -138,6 +136,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Nedre högra hörnet på dokumentet</translation>
+<translation id="7684446460490665873">Spela in en timelapsevideo</translation>
 <translation id="7692090236657809299">Aktivera panorering, lutning och zoom</translation>
 <translation id="7726641833034062494">Spela in normal video</translation>
 <translation id="7748344063862150053">Övre högra hörnet på dokumentet</translation>
@@ -163,6 +162,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="9045010116236796332">Placera dokumentets kanter i ramen</translation>
 <translation id="9045155556724273246">Tio sekunder</translation>
 <translation id="906331135292332864">Bilden bearbetas …</translation>
+<translation id="9161584225258678723">Timelapse</translation>
 <translation id="922762992951083513">Spegling på</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 </translationbundle>

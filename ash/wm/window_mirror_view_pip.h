@@ -14,7 +14,7 @@ namespace ash {
 // PIP windows with the controls not shown.
 class WindowMirrorViewPip : public WindowMirrorView {
  public:
-  WindowMirrorViewPip(aura::Window* source, bool trilinear_filtering_on_init);
+  explicit WindowMirrorViewPip(aura::Window* source);
 
   WindowMirrorViewPip(const WindowMirrorViewPip&) = delete;
   WindowMirrorViewPip& operator=(const WindowMirrorViewPip&) = delete;
